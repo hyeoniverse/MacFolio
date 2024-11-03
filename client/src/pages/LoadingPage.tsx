@@ -4,7 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 const LoadingPage = () => {
   const [progress, setProgress] = useState(0);
   const isInteractedRef = useRef(false); // useRef로 isInteracted 상태 관리
-  const mp3Url = process.env.REACT_APP_MUSIC_URL;
+  const mp3Url = process.env.REACT_APP_SFX_URL;
 
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
@@ -14,7 +14,7 @@ const LoadingPage = () => {
     const startLoading = () => {
       if (!isInteractedRef.current) {
         isInteractedRef.current = true; // isInteracted 상태를 useRef로 설정
-        audio = new Audio(`${mp3Url}/macstart.mp3`); // 오디오 파일 경로 설정
+        audio = new Audio(`${mp3Url}/mac-startup.mp3`); // 오디오 파일 경로 설정
 
         audio.play().catch((error) => {
           console.error('Audio playback failed:', error);
