@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppState } from '../../contexts/AppContext';
 import { useMemoContext } from '../../contexts/MemoContext';
-import { database } from '../../services/firebase';
-import { ref, onValue, set, remove, update } from 'firebase/database';
-import { Folder as FolderT } from '../../types/MemoTypes';
-import { Memo as MemoT } from '../../types/MemoTypes';
-
 import '../../styles/Memo.css';
+
 import Container from '../common/Container';
 import Modal from '../common/Modal';
 import { ScrollArea } from '../common/ScrollArea';
@@ -19,140 +15,126 @@ import MemoItem from './memo/MemoItem';
 const Memo: React.FC = () => {
 	const { apps } = useAppState();
 	const {
+		memos,
+		folders,
 		selectedFolder,
 		selectedMemo,
 		searchQuery,
 		isCreating,
+		newMemo,
 		showPasswordModal,
 		showErrorModal,
 		setSearchQuery,
 		setSelectedFolder,
+		setMemos,
 		setSelectedMemo,
 		setIsCreating,
+		setNewMemo,
 		setShowPasswordModal,
 		setShowErrorModal,
+		createMemo,
+		deleteMemo,
+		resetMemoState,
+		resetMemoCreateState,
+
 		filteredMemos,
+		fetchFoldersAndSetFirstMemo,
+		fetchFoldersAndSetSelectedMemo,
 	} = useMemoContext();
 
 	const memoAppState = apps['memo'];
 	const isRunning = memoAppState.isRunning;
 	const isMinimized = memoAppState.isMinimized;
-
 	const [isScrolled, setIsScrolled] = useState(false);
-	const [folders, setFolders] = useState<FolderT[]>([]);
-	const [memos, setMemos] = useState<MemoT[]>([]);
-	const [newMemo, setNewMemo] = useState<MemoT>({
-		id: 0,
-		title: '',
-		content: '',
-		created_at: '',
-		folder_id: selectedFolder,
-		password: '',
-	});
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [deletePassword, setDeletePassword] = useState('');
 	const [showFailureModal, setShowFailureModal] = useState(false);
 	const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-	const handleAppStateChange = () => {
-		if (!isRunning) {
-			setFolders([]);
-			setMemos([]);
-		} else if (isRunning && !isMinimized) {
-			fetchFolders();
-			fetchMemos(selectedFolder);
-		}
-	};
-
-	useEffect(() => {
-		// 선택된 폴더가 변경될 때마다 새 데이터를 자동으로 가져옵니다.
-		if (!selectedFolder) return;
-		console.log(`폴더 ${selectedFolder} 데이터를 불러옵니다.`);
-	}, [selectedFolder]);
-
-	const fetchFolders = () => {
-		const folderRef = ref(database, 'folders');
-		onValue(folderRef, (snapshot) => {
-			const data = snapshot.val();
-			setFolders(data ? (Object.values(data) as FolderT[]) : []);
-
-			console.log('폴더 데이터를 불러왔습니다.', folders);
-		});
-	};
-
-	const fetchMemos = (folderId: number) => {
-		if (folderId === 0) return;
-		const memoRef = ref(database, `memos/${folderId}`);
-		onValue(memoRef, (snapshot) => {
-			const data = snapshot.val();
-			setMemos(data ? (Object.values(data) as MemoT[]) : []);
-		});
-	};
-
+	// 앱 상태 변경 시 처리
 	useEffect(() => {
 		handleAppStateChange();
 	}, [isRunning, isMinimized]);
 
 	useEffect(() => {
-		fetchMemos(selectedFolder);
-	}, [selectedFolder]);
+		if (isCreating) {
+			// 폴더 변경 시 새로운 폴더 ID를 반영하여 임시 메모를 생성
+			setNewMemo((prev) => ({ ...prev, folder_id: selectedFolder }));
+		}
+	}, [selectedFolder, isCreating]);
 
-	const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-		setIsScrolled(event.currentTarget.scrollTop > 50);
+	const handleAppStateChange = () => {
+		if (!isRunning) resetMemoState();
+		if (isRunning && !isMinimized) {
+			fetchFoldersAndSetFirstMemo();
+			fetchFoldersAndSetSelectedMemo();
+		}
 	};
 
-	const handleCreateMemo = () => {
-		const id = Date.now();
-		const memoRef = ref(database, `memos/${selectedFolder}/${id}`);
-		set(memoRef, {
-			...newMemo,
-			id,
-			folder_id: selectedFolder,
-			created_at: new Date().toISOString(),
-		});
-		setNewMemo({
-			id: 0,
-			title: '',
-			content: '',
-			created_at: '',
-			folder_id: selectedFolder,
-			password: '',
-		});
+	const handleResetMemo = () => {
+		resetMemoCreateState();
+		setSelectedMemo(memos.find((memo) => memo.id !== '0' && memo.folder_id === selectedFolder) || null);
 	};
 
-	const handleDeleteMemo = (id: number, password: string) => {
-		const memoRef = ref(database, `memos/${selectedFolder}/${id}`);
-		remove(memoRef)
-			.then(() => {
-				setShowSuccessModal(true);
-			})
-			.catch(() => {
-				setShowFailureModal(true);
-			});
+	const handleCreateMemo = async () => {
+		await createMemo();
 	};
-
-	const handleUpdateMemo = (id: number, updatedFields: Partial<MemoT>) => {
-		const memoRef = ref(database, `memos/${selectedFolder}/${id}`);
-		update(memoRef, updatedFields);
-	};
-
-	if (!isRunning || isMinimized) return null;
 
 	const handleAddTempMemo = () => {
 		setIsCreating(true);
-		setSelectedMemo({
-			id: 0,
-			title: '',
-			content: '',
-			created_at: '',
+		const tempMemo = {
+			id: '0',
+			title: '새로운 메모',
+			content: '작성 중...',
+			date: new Date().toLocaleString(),
 			folder_id: selectedFolder,
-			password: '',
+		};
+
+		// 임시 메모를 최상단에 추가하면서 기존 메모들을 유지
+		setMemos((prevMemos) => {
+			// 고정 메모(id === 1)를 유지하고 임시 메모를 최상단에 추가
+			const fixedMemos = prevMemos.filter((memo) => memo.id === '1');
+			const otherMemos = prevMemos.filter((memo) => memo.id !== '1' && memo.id !== '0');
+
+			// 임시 메모를 최상단에 추가하고 나머지 메모들을 뒤에 위치
+			return [tempMemo, ...fixedMemos, ...otherMemos];
 		});
+
+		// 임시 메모를 선택
+		setSelectedMemo(tempMemo);
 	};
 
-	function handlePasswordChange(event: React.ChangeEvent<HTMLInputElement>): void {
-		setNewMemo({ ...newMemo, password: event.target.value });
-	}
+	const handleDeleteMemo = async (id: string, password: string) => {
+		const result = await deleteMemo(id, password);
+		setDeletePassword('');
+
+		if (result) {
+			setShowSuccessModal(true);
+
+			// 메모 삭제 후 선택된 폴더의 최신 메모 선택 (고정 메모 제외)
+			const updatedMemos = memos.filter((memo) => memo.id !== id); // 삭제된 메모를 제외
+			setMemos(updatedMemos); // 최신 메모 목록 업데이트
+
+			const folderMemos = updatedMemos
+				.filter((memo) => memo.folder_id === selectedFolder && memo.id !== '1') // 고정 메모 제외
+				.sort((a, b) => Number(b.id) - Number(a.id)); // 최신 메모가 가장 앞에 오도록 정렬
+
+			setSelectedMemo(folderMemos.length > 0 ? folderMemos[0] : null); // 최신 메모 선택
+		} else {
+			setShowFailureModal(true);
+		}
+	};
+
+	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const input = e.target.value;
+		if (input.length <= 20) {
+			setNewMemo({ ...newMemo, password: input });
+		}
+	};
+
+	const handleScroll = (event: React.UIEvent<HTMLDivElement>) => setIsScrolled(event.currentTarget.scrollTop > 50);
+
+	if (!isRunning || isMinimized) return null;
 
 	return (
 		<Container title="Memo" appName="memo">
@@ -189,7 +171,7 @@ const Memo: React.FC = () => {
 					>
 						{isCreating ? (
 							<div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-								<button onClick={() => handleDeleteMemo(selectedMemo?.id || 0, deletePassword)}>
+								<button onClick={handleResetMemo}>
 									<i
 										className="fa-solid fa-delete-left"
 										style={{ fontSize: '1.2rem', color: '#edbb4d' }}
@@ -226,7 +208,7 @@ const Memo: React.FC = () => {
 										<Trash2 className="icon" />
 									</button>
 								</div>
-								<div className="center-tools">
+								<div>
 									<button>
 										<Type className="icon" />
 									</button>
@@ -292,7 +274,9 @@ const Memo: React.FC = () => {
 						selectedMemo && (
 							<div className="memo-view">
 								<h2 className="text-2xl font-bold mb-4">{selectedMemo.title}</h2>
-								<p className="whitespace-pre-wrap">{selectedMemo.content}</p>
+								<p
+									dangerouslySetInnerHTML={{ __html: selectedMemo.content.replace(/\n/g, '<br>') }}
+								></p>
 							</div>
 						)
 					)}
@@ -310,7 +294,7 @@ const Memo: React.FC = () => {
 					<div style={{ display: 'flex', gap: '1rem' }}>
 						<button
 							onClick={() => {
-								handleDeleteMemo(selectedMemo?.id || 0, deletePassword);
+								handleDeleteMemo(selectedMemo?.id || '0', deletePassword);
 								setDeletePassword('');
 								setShowDeleteModal(false);
 							}}

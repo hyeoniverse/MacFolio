@@ -1,42 +1,23 @@
-import React, { useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
 import './App.css';
 import DesktopPage from './pages/DesktopPage';
 import LoadingPage from './pages/LoadingPage';
 
-// Load the sound files
-const mp3Url = process.env.REACT_APP_SFX_URL;
-const mouseDownSound = new Audio(`${mp3Url}/mouse-down.mp3`);
-const mouseUpSound = new Audio(`${mp3Url}/mouse-up.mp3`);
-
 const App: React.FC = () => {
-	const handleMouseDown = useCallback(() => {
-		mouseDownSound.play();
-	}, []);
+	const [isLoading, setIsLoading] = useState(true);
 
-	const handleMouseUp = useCallback(() => {
-		mouseUpSound.play();
-	}, []);
-
-	useEffect(() => {
-		// Add global event listeners
-		document.addEventListener('mousedown', handleMouseDown);
-		document.addEventListener('mouseup', handleMouseUp);
-
-		// Cleanup event listeners on component unmount
-		return () => {
-			document.removeEventListener('mousedown', handleMouseDown);
-			document.removeEventListener('mouseup', handleMouseUp);
-		};
-	}, [handleMouseDown, handleMouseUp]);
+	// 로딩이 완료되면 LoadingPage를 제거하기 위한 콜백 함수
+	const handleLoadingComplete = () => {
+		setIsLoading(false);
+	};
 
 	return (
-		<Router>
-			<Routes>
-				<Route path="" element={<LoadingPage />} />
-				<Route path="/desktop" element={<DesktopPage />} />
-			</Routes>
-		</Router>
+		<div className="App">
+			{/* DesktopPage는 항상 렌더링 */}
+			<DesktopPage />
+			{/* 로딩 중일 때만 LoadingPage 오버레이 표시 */}
+			{isLoading && <LoadingPage onLoadingComplete={handleLoadingComplete} />}
+		</div>
 	);
 };
 

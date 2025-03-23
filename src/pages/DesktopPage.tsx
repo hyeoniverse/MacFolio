@@ -13,24 +13,31 @@ import Blog from '../components/apps/Blog';
 import Mail from '../components/apps/Mail';
 
 const DesktopPage = () => {
-  return (
-    <div style={{ display: 'flex' }}>
-    <AppStateProvider><MusicProvider>
-      <div className="App">
-      <StatusBar />
-      <MusicPlayer />
-      <Safari />
-      <MemoProvider>
-        <Memo />
-      </MemoProvider>
-      <Github />
-      <Blog />
-      <Mail />
-      <Dock />
-      </div>
-    </MusicProvider></AppStateProvider>
-    </div>
-  );
+	return (
+		<div
+			className="App"
+			style={{
+				width: '100vw',
+				height: '100vh',
+				overflow: 'hidden',
+			}}
+		>
+			<AppStateProvider>
+				<MusicProvider>
+					<StatusBar />
+					<MusicPlayer />
+					<Safari />
+					<MemoProvider>
+						<Memo />
+					</MemoProvider>
+					<Github />
+					<Blog />
+					<Mail />
+					<Dock />
+				</MusicProvider>
+			</AppStateProvider>
+		</div>
+	);
 };
 
 export default DesktopPage;

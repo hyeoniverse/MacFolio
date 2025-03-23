@@ -5,7 +5,7 @@ import Container from '../common/Container';
 import Profile from './GithubProfile'; // 프로필 컴포넌트
 import '../../styles/Github.css';
 
-const imgUrl = process.env.REACT_APP_IMAGE_URL;
+const imgUrl = import.meta.env.REACT_APP_IMAGE_URL;
 
 interface Repository {
 	id: string;
@@ -34,7 +34,7 @@ const featuredRepos: Repository[] = [
 		description: 'Unity를 이용한 미니 게임',
 		language: 'C#',
 		languageColor: '#178600',
-		url: 'https://github.com/username/project2',
+		url: 'https://github.com/CodingKirby/SproutFarm',
 	},
 	{
 		id: '3',

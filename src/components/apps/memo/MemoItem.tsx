@@ -6,7 +6,7 @@ const MemoItem: React.FC<MemoItemProps> = ({ memo, isActive, setSelectedMemo, fo
 	return (
 		<div className={`memo-item ${isActive ? 'active' : ''}`} onClick={() => setSelectedMemo(memo)}>
 			<h3 className="memo-title">{memo.title}</h3>
-			<p className="memo-date">{memo.created_at}</p>
+			<p className="memo-date">{memo.date}</p>
 			<p className="memo-content">{memo.content}</p>
 			<p className="memo-content">
 				<i className="fa-solid fa-folder"></i>

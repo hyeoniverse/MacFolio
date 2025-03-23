@@ -7,21 +7,21 @@
 
 @font-face {
   font-family: 'MacSystemFont';
-  src: url('../public/fonts/AppleSDGothicNeoR.ttf') format('truetype');
-  font-weight: normal;
   font-style: normal;
+  font-weight: normal;
+  src: url('/fonts/AppleSDGothicNeoR.ttf') format('truetype');
 }
 
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: -apple-system, MacSystemFont, Arial, sans-serif;
-  background-image: url('../public/imgs/background.png');
-  background-size: cover;
-  background-position: center;
+  background-image: url('/imgs/background.png');
   background-repeat: no-repeat;
   background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  font-family: -apple-system, MacSystemFont, Arial, sans-serif;
 }
 
 a {
@@ -36,8 +36,8 @@ header {
 }
 
 header h1 {
-  font-size: 3em;
   margin-bottom: 20px;
+  font-size: 3em;
 }
 
 header p {
