@@ -78,7 +78,6 @@
 }
 
 @media screen and (max-width: 300px) {
-
   .dock-left {
     display: none;
   }
@@ -92,5 +91,4 @@
     border-right: none;
     right: 0;
   }
-  
 }
