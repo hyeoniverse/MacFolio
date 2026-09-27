@@ -4,8 +4,9 @@ import { useAppState } from '@/desktop/AppStateContext';
 import AppWindow from '@/desktop/window/Window';
 import Profile from '@/apps/github/GithubProfile'; // 프로필 컴포넌트
 import '@/apps/github/Github.css';
+import { env } from '@/shared/config/env';
 
-const imgUrl = import.meta.env.VITE_APP_IMAGE_URL;
+const imgUrl = env.imageUrl;
 
 interface Repository {
 	id: string;

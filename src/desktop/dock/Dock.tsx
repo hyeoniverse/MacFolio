@@ -6,30 +6,18 @@ import { useAppState } from '@/desktop/AppStateContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/desktop/dock/Toast.css';
+import { env } from '@/shared/config/env';
+import { APP_MANIFEST, DOCK_APPS, type AppName } from '@/apps/manifest';
 
-const imgUrl = import.meta.env.VITE_APP_IMAGE_URL;
+const imgUrl = env.imageUrl;
+const iconOf = (appName: AppName) => `${imgUrl}/${APP_MANIFEST[appName].icon}`;
 
 const Dock: React.FC = () => {
 	const { apps, openApp, maximizeApp, bringAppToFront } = useAppState();
-	const [hiddenItems, setHiddenItems] = useState<string[]>([]);
+	const [hiddenItems, setHiddenItems] = useState<AppName[]>([]);
 	const [dockWidth, setDockWidth] = useState(window.innerWidth);
 	const [isLaunchpadOpen, setIsLaunchpadOpen] = useState(false); // 모달 상태 관리
 	const [isSharing, setIsSharing] = useState(false); // share 앱의 인디케이터 상태 관리
-
-	const dockItems = [
-		{ name: 'finder', icon: `${imgUrl}/finder.png` },
-		{ name: 'music', icon: `${imgUrl}/music.png` },
-		{ name: 'safari', icon: `${imgUrl}/safari.png` },
-		{ name: 'photos', icon: `${imgUrl}/photos.png` },
-		{ name: 'messages', icon: `${imgUrl}/messages.png` },
-		{ name: 'memo', icon: `${imgUrl}/memo.png` },
-		{ name: 'github', icon: `${imgUrl}/github.png` },
-		{ name: 'blog', icon: `${imgUrl}/blog.png` },
-		{ name: 'notion', icon: `${imgUrl}/notion.png` },
-		{ name: 'mail', icon: `${imgUrl}/mail.png` },
-		{ name: 'share', icon: `${imgUrl}/share.png` },
-		{ name: 'settings', icon: `${imgUrl}/settings.png` },
-	];
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -46,26 +34,28 @@ const Dock: React.FC = () => {
 		const availableWidth = dockWidth - 300;
 		const maxItems = Math.floor(availableWidth / 100);
 
-		if (dockItems.length > maxItems) {
-			const hidden = dockItems.slice(maxItems).map((item) => item.name);
-			setHiddenItems(hidden);
+		if (DOCK_APPS.length > maxItems) {
+			setHiddenItems(DOCK_APPS.slice(maxItems));
 		} else {
 			setHiddenItems([]);
 		}
 	}, [dockWidth]);
 
-	const handleAppOpen = (appName: string) => {
-		const appState = apps[appName as keyof typeof apps];
+	const isShareApp = (appName: AppName) => APP_MANIFEST[appName].action?.type === 'share';
 
-		bringAppToFront(appName as keyof typeof apps);
+	const handleAppOpen = (appName: AppName) => {
+		const appState = apps[appName];
+		const action = APP_MANIFEST[appName].action;
 
-		if (appName === 'notion') {
-			// Notion 페이지로 새 탭에서 이동
-			window.open('https://calico-octave-0a0.notion.site/62b2692248d045bdb1796368054b3ac2?pvs=74', '_blank');
+		bringAppToFront(appName);
+
+		if (action?.type === 'link') {
+			// 외부 페이지로 새 탭에서 이동
+			window.open(action.url, '_blank');
 			return;
 		}
 
-		if (appName === 'share') {
+		if (action?.type === 'share') {
 			// share 앱 클릭 시 Toast 메시지 표시
 			navigator.clipboard.writeText(window.location.href);
 			setIsSharing(true); // Toast 표시 시 인디케이터 활성화
@@ -76,9 +66,9 @@ const Dock: React.FC = () => {
 				onClose: () => setIsSharing(false), // Toast가 닫힐 때 인디케이터 비활성화
 			});
 		} else if (appState.isRunning) {
-			maximizeApp(appName as keyof typeof apps);
+			maximizeApp(appName);
 		} else {
-			openApp(appName as keyof typeof apps);
+			openApp(appName);
 		}
 	};
 
@@ -103,11 +93,11 @@ const Dock: React.FC = () => {
 	};
 
 	// Launchpad 내에서의 share 앱 상태를 따로 관리 (Launchpad 안에서는 인디케이터 표시 안 함)
-	const getLaunchpadAppState = (appName: string) => {
-		if (appName === 'share') {
+	const getLaunchpadAppState = (appName: AppName) => {
+		if (isShareApp(appName)) {
 			return isSharing; // share 앱의 경우 인디케이터는 isSharing 상태에 따름
 		}
-		return apps[appName as keyof typeof apps].isRunning; // Launchpad 내에서도 앱이 실행 중이면 인디케이터 유지
+		return apps[appName].isRunning; // Launchpad 내에서도 앱이 실행 중이면 인디케이터 유지
 	};
 
 	return (
@@ -124,21 +114,17 @@ const Dock: React.FC = () => {
 			/>
 			<div className="dock">
 				<div className="dock-left">
-					{dockItems.map(
-						(item) =>
-							!hiddenItems.includes(item.name) && (
+					{DOCK_APPS.map(
+						(appName) =>
+							!hiddenItems.includes(appName) && (
 								<DockItem
-									key={item.name}
-									icon={item.icon}
+									key={appName}
+									icon={iconOf(appName)}
 									// share 앱에만 isSharing 적용
-									isActive={
-										item.name === 'share'
-											? isSharing
-											: apps[item.name as keyof typeof apps].isRunning
-									}
-									isHidden={hiddenItems.includes(item.name)}
-									onClick={() => handleAppOpen(item.name)}
-									disableRadius={item.name === 'notion'}
+									isActive={isShareApp(appName) ? isSharing : apps[appName].isRunning}
+									isHidden={hiddenItems.includes(appName)}
+									onClick={() => handleAppOpen(appName)}
+									disableRadius={APP_MANIFEST[appName].squareIcon}
 								/>
 							)
 					)}
@@ -153,7 +139,7 @@ const Dock: React.FC = () => {
 				</div>
 				<div className="dock-right">
 					<DockItem
-						icon={`${imgUrl}/bin.png`}
+						icon={iconOf('bin')}
 						isActive={false}
 						isHidden={false}
 						onClick={() => console.log('Bin clicked')}
@@ -169,11 +155,11 @@ const Dock: React.FC = () => {
 							{hiddenItems.map((hiddenItem) => (
 								<DockItem
 									key={hiddenItem}
-									icon={dockItems.find((item) => item.name === hiddenItem)?.icon || ''}
+									icon={iconOf(hiddenItem)}
 									isActive={getLaunchpadAppState(hiddenItem)} // Launchpad 내 숨겨진 앱의 인디케이터만 표시
 									isHidden={false}
 									onClick={() => handleAppOpen(hiddenItem)}
-									disableRadius={hiddenItem === 'notion'}
+									disableRadius={APP_MANIFEST[hiddenItem].squareIcon}
 								/>
 							))}
 						</div>

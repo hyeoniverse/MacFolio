@@ -3,9 +3,10 @@ import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/AppStateContext';
 import '@/apps/safari/Safari.css';
 import '@/desktop/window/Window.css';
+import { env } from '@/shared/config/env';
 
 const Safari: React.FC = () => {
-	const imageUrl = `${import.meta.env.VITE_APP_IMAGE_URL}`;
+	const imageUrl = env.imageUrl;
 
 	// useAppState를 이용해 앱 상태를 관리
 	const { apps, closeApp, minimizeApp } = useAppState();

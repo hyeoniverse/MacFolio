@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import '@/desktop/window/Window.css';
-import { AppName, useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/AppStateContext';
+import type { AppName } from '@/apps/manifest';
 
 interface AppWindowProps {
 	title: string;

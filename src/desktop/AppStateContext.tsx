@@ -1,20 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-
-// Define app names and states
-export type AppName =
-	| 'finder'
-	| 'music'
-	| 'safari'
-	| 'photos'
-	| 'messages'
-	| 'memo'
-	| 'github'
-	| 'blog'
-	| 'notion'
-	| 'mail'
-	| 'share'
-	| 'settings'
-	| 'bin';
+import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
 
 export type AppState = {
 	isRunning: boolean;
@@ -38,21 +23,12 @@ interface AppContextType {
 }
 
 // Default initial states for all apps
-const initialAppStates: Record<AppName, AppState> = {
-	finder: { isRunning: true, isMinimized: false, zIndex: 1 },
-	music: { isRunning: true, isMinimized: false, zIndex: 1 },
-	safari: { isRunning: true, isMinimized: false, zIndex: 1 },
-	photos: { isRunning: false, isMinimized: false, zIndex: 1 },
-	messages: { isRunning: false, isMinimized: false, zIndex: 1 },
-	memo: { isRunning: false, isMinimized: false, zIndex: 1 },
-	github: { isRunning: false, isMinimized: false, zIndex: 1 },
-	blog: { isRunning: false, isMinimized: false, zIndex: 1 },
-	notion: { isRunning: false, isMinimized: false, zIndex: 1 },
-	mail: { isRunning: false, isMinimized: false, zIndex: 1 },
-	share: { isRunning: false, isMinimized: false, zIndex: 1 },
-	settings: { isRunning: false, isMinimized: false, zIndex: 1 },
-	bin: { isRunning: false, isMinimized: false, zIndex: 1 },
-};
+const initialAppStates = Object.fromEntries(
+	APP_NAMES.map((name) => [
+		name,
+		{ isRunning: APP_MANIFEST[name].runningAtStart ?? false, isMinimized: false, zIndex: 1 },
+	])
+) as Record<AppName, AppState>;
 
 // Create context
 const AppContext = createContext<AppContextType | undefined>(undefined);

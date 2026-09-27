@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '@/desktop/loading/LoadingScreen.css';
+import { env } from '@/shared/config/env';
 
 interface LoadingScreenProps {
 	onLoadingComplete: () => void;
@@ -9,7 +10,7 @@ interface LoadingScreenProps {
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	const [progress, setProgress] = useState(0);
 	const isInteractedRef = useRef(false);
-	const mp3Url = import.meta.env.VITE_APP_SFX_URL;
+	const mp3Url = env.sfxUrl;
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

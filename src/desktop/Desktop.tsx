@@ -1,16 +1,9 @@
 import { AppStateProvider } from '@/desktop/AppStateContext';
 import { MusicProvider } from '@/apps/music/MusicContext';
-import { MemoProvider } from '@/apps/memo/MemoContext';
+import { WINDOW_APPS } from '@/apps/registry';
 
 import StatusBar from '@/desktop/status-bar/StatusBar';
 import Dock from '@/desktop/dock/Dock';
-
-import Safari from '@/apps/safari/Safari';
-import MusicPlayer from '@/apps/music/MusicPlayer';
-import Memo from '@/apps/memo/Memo';
-import Github from '@/apps/github/Github';
-import Blog from '@/apps/blog/Blog';
-import Mail from '@/apps/mail/Mail';
 
 const Desktop = () => {
 	return (
@@ -23,16 +16,12 @@ const Desktop = () => {
 			}}
 		>
 			<AppStateProvider>
+				{/* StatusBar의 볼륨 조절도 음악 상태를 쓰므로 MusicProvider는 전역에 둔다 */}
 				<MusicProvider>
 					<StatusBar />
-					<MusicPlayer />
-					<Safari />
-					<MemoProvider>
-						<Memo />
-					</MemoProvider>
-					<Github />
-					<Blog />
-					<Mail />
+					{WINDOW_APPS.map(({ name, Component }) => (
+						<Component key={name} />
+					))}
 					<Dock />
 				</MusicProvider>
 			</AppStateProvider>
