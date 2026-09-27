@@ -3,7 +3,8 @@
 macOS 데스크톱을 웹으로 구현한 포트폴리오입니다. Dock에서 앱을 열고, 창을 옮기고, 최소화할 수 있습니다.
 
 - **앱:** Safari, Music, Memo, GitHub, Blog, Mail
-- **스택:** React 19, TypeScript, Vite, Firebase (Realtime Database, Hosting)
+- **스택:** React 19, TypeScript, Vite, Cloudflare Pages
+- **주소:** https://macfolio.hyeoniverse.com
 
 ## 실행
 
