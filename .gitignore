@@ -1,2 +1,19 @@
-server/.env
-client/node_modules/.cache
+# dependencies
+node_modules
+
+# build output
+dist
+build
+.next
+
+# firebase
+.firebase
+
+# env
+.env
+.env.*
+!.env.example
+
+# misc
+.DS_Store
+*.log

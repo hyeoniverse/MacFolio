@@ -1,0 +1,409 @@
+.memo-container {
+	display: flex;
+	overflow: hidden;
+  width: 100%;
+	height: 100%;
+	background-color: #f8fafc;
+}
+
+/* Left Column - Folders */
+.folder-list {
+	padding: 1rem 0.5rem;
+	border-right: 1px solid #d1d5db;
+	overflow-y: scroll;
+	width: 50%;
+	background-color: #f3f4f6;
+  word-break: break-all;
+	transition: width 0.3s ease;
+	scrollbar-width: none;
+}
+
+.folder-list h2 {
+	margin-bottom: 1rem;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #374151;
+	text-align: center;
+}
+
+.folder-item {
+	margin-bottom: 0.75rem;
+	padding: 0.75rem;
+	width: 100%;
+	font-size: 1rem;
+	color: #4b5563;
+	text-align: left;
+	white-space: normal;
+	word-break: keep-all;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+	cursor: pointer;
+	border-radius: 1rem;
+}
+
+.folder-item:hover {
+	background-color: #e2e8f0;
+	transform: translateY(-2px);
+}
+
+.folder-item.active {
+	background-color: #edbb4d;
+	font-weight: 500;
+	color: #ffffff;
+}
+
+/* Middle Column - Notes List */
+.notes-list {
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid #e5e7eb;
+	overflow-y: scroll;
+	width: 70%;
+	height: 100%;
+	background-color: #ffffff;
+	scrollbar-width: none;
+}
+
+.notes-list .search-input {
+	display: flex;
+	align-items: center;
+	padding: 0.5rem;
+	border-bottom: 1px solid #e5e7eb;
+	width: 100%;
+	height: 3rem;
+	background-color: #f8fafc;
+}
+
+.notes-list .search-input input {
+	padding: 0.3rem 1rem;
+	border: 1px solid #d1d5db;
+	width: 100%;
+	background-color: #f1f5f9;
+	transition: border-color 0.2s;
+	border-radius: 0.7rem;
+}
+
+.notes-list .search-input input:focus {
+	outline: none;
+	background-color: #ffffff;
+}
+
+.no-notes {
+	padding: 1rem;
+	color: #6b7280;
+	text-align: center;
+}
+
+.notes-list .memo-item {
+	padding: 1.25rem;
+	border-bottom: 1px solid #f3f4f6;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+	cursor: pointer;
+}
+
+.notes-list .memo-item:hover {
+	background-color: #f1f5f9;
+}
+
+.notes-list .memo-item.active {
+	background-color: #edbb4d;
+}
+
+.notes-list .memo-title {
+	overflow: hidden;
+	font-size: 1.125rem;
+	font-weight: 600;
+	color: #1f2937;
+	text-align: left;
+	white-space: nowrap;
+	word-break: break-word;
+	text-overflow: ellipsis;
+}
+
+.notes-list .memo-item.active .memo-title {
+	color: #ffffff;
+}
+
+.notes-list .memo-item.active .memo-date {
+	font-size: 0.7rem;
+	color: #ffffff;
+}
+
+.notes-list .memo-item.active .memo-content {
+	font-size: 0.875rem;
+	color: #ffffff;
+}
+
+.notes-list .memo-date {
+	padding-bottom: 0.25rem;
+	font-size: 0.7rem;
+	color: #6b7280;
+	text-align: left;
+}
+
+.notes-list .memo-content {
+	display: -webkit-box;
+	margin-bottom: 0.2rem;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+	font-size: 0.875rem;
+	color: #6b7280;
+	text-align: left;
+	word-break: break-all;
+	text-overflow: ellipsis;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1; /* 원하는 최대 줄 수로 변경 (예: 3줄까지 표시) */
+	line-clamp: 1; /* 줄 수를 지정 */
+}
+
+.notes-list .memo-content i {
+	padding-right: 0.5rem;
+}
+
+/* Right Column - Note Content */
+.memo-content {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: column;
+  
+	margin: 0;
+	padding: 0;
+	overflow-y: scroll;
+	position: sticky;
+	top: 0;
+
+	width: 100%;
+	height: 100%;
+	background-color: #ffffff;
+	text-align: left;
+	scrollbar-width: none;
+}
+
+.memo-tools {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+	background-color: #ffffff;
+}
+
+.memo-content .memo-tools.scrolled {
+	border-bottom: 1px solid #d1d5db;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.memo-content .memo-tools .icon {
+	overflow: visible;
+	width: 1.2rem;
+	height: 1.2rem;
+	color: #edbb4d;
+	transition: background-color 0.2s ease;
+	border-radius: 0.5rem;
+}
+
+.memo-content h2 {
+	margin: 1rem 1.2rem 0.5rem;
+	overflow-y: scroll;
+	max-height: 5rem;
+	font-size: 1.2rem;
+	font-weight: 700;
+	color: #1f2937;
+	text-align: left;
+	scrollbar-width: none;
+}
+
+.memo-content p {
+	margin: 0.5rem 1.2rem;
+	padding-bottom: 1.5rem;
+	font-size: 1rem; /* 본문을 약간 더 크게 */
+	line-height: 1.6;
+	color: #4b5563; /* 가독성 좋은 중간 밝기의 텍스트 */
+	white-space: pre-wrap;
+}
+
+/* 버튼과 아이콘 스타일 향상 */
+button {
+	padding: 0.5rem;
+	border: none;
+	background: none;
+	transition: background-color 0.2s ease;
+	cursor: pointer;
+	border-radius: 0.5rem;
+}
+
+button:hover {
+	background-color: #f3f4f6;
+}
+
+.create-memo {
+	display: flex;
+	flex-direction: column;
+	overflow-y: scroll;
+	width: 100%;
+	height: 100%;
+	background-color: #ffffff;
+	scrollbar-width: none;
+}
+
+.create-memo-content {
+	display: flex;
+	padding: 1rem;
+	border: none;
+	overflow-y: visible;
+	width: 100%;
+	height: 100%;
+	font-size: 1rem;
+	color: #4b5563;
+	text-align: left;
+	resize: none;
+	border-radius: 0.8rem;
+}
+
+.create-memo-title {
+	padding: 0.5rem 1rem;
+	border: none;
+	width: 100%;
+	font-family: 'MacSystemFont';
+	font-size: 1.2rem;
+	font-weight: 700;
+	color: #1f2937;
+	text-align: left;
+	border-radius: 0.8rem;
+}
+
+.create-memo-title::placeholder {
+	color: #6b7280;
+}
+
+/*
+  .create-memo-title:focus {
+    color: #6b7280;
+    border: #f3f4f6 1px solid;
+    box-shadow: inset 0 -1rem 1rem 0.2rem rgba(0, 0, 0, 0.1);
+  }
+  */
+
+.create-memo-content::placeholder {
+	color: #6b7280;
+}
+
+/*
+  .create-memo-content:focus {
+    color: #6b7280;
+    border: #f3f4f6 1px solid;
+    box-shadow: inset 0 -1rem 1rem 0.2rem rgba(0, 0, 0, 0.1);
+  }
+  */
+
+.create-memo-password {
+	justify-items: left;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	width: 100%;
+	height: 100%;
+	font-family: 'MacSystemFont';
+	font-size: 2rem;
+	font-weight: 500;
+	color: #1f2937;
+	text-align: center;
+	text-align: left;
+	border-radius: 0.8rem;
+}
+
+.create-memo-password::placeholder {
+	font-size: 1rem;
+	color: #6b7280;
+}
+
+/*
+  .create-memo-password:focus {
+    color: #6b7280;
+    border: #f3f4f6 1px solid;
+    box-shadow: inset 0 -1rem 1rem 0.2rem rgba(0, 0, 0, 0.1);
+  }
+  */
+
+/* 모달 오버레이 스타일 */
+/* Container를 기준으로 모달을 중앙에 배치 */
+.modal-overlay {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 1000;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5); /* 배경을 약간 어둡게 */
+	transform: translate(-50%, -50%);
+}
+
+/* 모달 콘텐츠 스타일 */
+.modal-content {
+	display: grid;
+	gap: 0.5rem;
+	align-items: center;
+
+	justify-content: space-between;
+	flex-direction: column;
+	padding: 1.5rem;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+	z-index: 1001;
+
+	width: fit-content;
+	height: fit-content;
+
+	background: white;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr auto auto auto;
+	border-radius: 1rem;
+}
+
+.modal-content p {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+
+	width: fit-content;
+	height: fit-content;
+	text-align: left;
+}
+
+/* 비밀번호 입력 필드 스타일 */
+.modal-content input[type='password'] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	box-shadow: -0.2rem 0.2rem 0.4rem rgba(0, 0, 0, 0.1), inset 0.1rem 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+	width: 100%;
+	font-size: 0.8rem;
+	border-radius: 0.8rem;
+}
+
+/* 모달 내 버튼 스타일 */
+.modal-content button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem 1rem;
+	border: none;
+	box-shadow: -0.2rem 0.2rem 0.4rem rgba(0, 0, 0, 0.1), inset 0.1rem 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+	width: 100%;
+	background-color: #edbb4d;
+	font-size: 1rem;
+	color: white;
+	cursor: pointer;
+	border-radius: 0.8rem;
+}
+
+.modal-content button:hover {
+	background-color: #dca946;
+}
