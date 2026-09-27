@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/DockItem.css';
+import '@/desktop/dock/DockItem.css';
 
 interface DockItemProps {
 	icon: string;

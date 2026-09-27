@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import Container from '../common/Container';
-import { useAppState } from '../../contexts/AppContext';
-import '../../styles/Safari.css';
-import '../../styles/Container.css';
+import AppWindow from '@/desktop/window/Window';
+import { useAppState } from '@/desktop/AppStateContext';
+import '@/apps/safari/Safari.css';
+import '@/desktop/window/Window.css';
 
 const Safari: React.FC = () => {
 	const imageUrl = `${import.meta.env.VITE_APP_IMAGE_URL}`;
@@ -43,7 +43,7 @@ const Safari: React.FC = () => {
 	if (!isRunning || isMinimized) return null;
 
 	return (
-		<Container title="Portfolio" appName="safari">
+		<AppWindow title="Portfolio" appName="safari">
 			<header>
 				<h1>
 					<strong>김정현의 포트폴리오</strong>
@@ -66,7 +66,7 @@ const Safari: React.FC = () => {
 					</div>
 				))}
 			</div>
-		</Container>
+		</AppWindow>
 	);
 };
 

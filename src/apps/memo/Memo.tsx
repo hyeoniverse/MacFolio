@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppState } from '../../contexts/AppContext';
-import { useMemoContext } from '../../contexts/MemoContext';
-import '../../styles/Memo.css';
+import { useAppState } from '@/desktop/AppStateContext';
+import { useMemoContext } from '@/apps/memo/MemoContext';
+import '@/apps/memo/Memo.css';
 
-import Container from '../common/Container';
-import Modal from '../common/Modal';
-import { ScrollArea } from '../common/ScrollArea';
+import AppWindow from '@/desktop/window/Window';
+import Modal from '@/shared/ui/Modal';
+import { ScrollArea } from '@/shared/ui/ScrollArea';
 import { Trash2, Type, AlignLeft, Grid, Share, PenBox } from 'lucide-react';
 
-import SearchInput from './memo/SearchInput';
-import FolderList from './memo/FolderList';
-import MemoItem from './memo/MemoItem';
+import SearchInput from '@/apps/memo/components/SearchInput';
+import FolderList from '@/apps/memo/components/FolderList';
+import MemoItem from '@/apps/memo/components/MemoItem';
 
 const Memo: React.FC = () => {
 	const { apps } = useAppState();
@@ -137,7 +137,7 @@ const Memo: React.FC = () => {
 	if (!isRunning || isMinimized) return null;
 
 	return (
-		<Container title="Memo" appName="memo">
+		<AppWindow title="Memo" appName="memo">
 			<div className="memo-container">
 				<FolderList folders={folders} selectedFolder={selectedFolder} setSelectedFolder={setSelectedFolder} />
 
@@ -346,7 +346,7 @@ const Memo: React.FC = () => {
 					</div>
 				</Modal>
 			)}
-		</Container>
+		</AppWindow>
 	);
 };
 

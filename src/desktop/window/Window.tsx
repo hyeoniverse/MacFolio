@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
-import '../../styles/Container.css';
-import { AppName, useAppState } from '../../contexts/AppContext';
+import '@/desktop/window/Window.css';
+import { AppName, useAppState } from '@/desktop/AppStateContext';
 
-interface ContainerProps {
+interface AppWindowProps {
 	title: string;
 	appName: AppName;
 	children: React.ReactNode;
@@ -12,7 +12,7 @@ interface ContainerProps {
 	onClick?: () => void;
 }
 
-const Container: React.FC<ContainerProps> = ({
+const AppWindow: React.FC<AppWindowProps> = ({
 	title,
 	appName,
 	children,
@@ -316,4 +316,4 @@ const Container: React.FC<ContainerProps> = ({
 	);
 };
 
-export default Container;
+export default AppWindow;
