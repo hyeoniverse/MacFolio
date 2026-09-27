@@ -8,10 +8,11 @@ macOS 데스크톱을 웹으로 구현한 포트폴리오입니다. Dock에서 �
 ## 실행
 
 ```bash
-cp .env.example .env   # 값 채우기
 npm install
 npm run dev
 ```
+
+설정 없이 바로 실행됩니다. Firebase를 연결하려면 `.env.example`을 `.env`로 복사해 값을 채우세요. 연결하지 않으면 Memo는 브라우저 localStorage에 저장됩니다.
 
 | 명령 | 설명 |
 | --- | --- |
