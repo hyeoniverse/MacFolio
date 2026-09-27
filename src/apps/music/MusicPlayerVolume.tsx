@@ -1,7 +1,7 @@
 // Path: client/src/components/common/VolumeModal.tsx
 
 import React from 'react';
-import { useMusic } from '../../contexts/MusicContext'; // MusicContext 사용
+import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
 
 interface VolumeModalProps {
 	isVisible: boolean;

@@ -1,9 +1,9 @@
 // Path: client/src/components/common/StatusBar.tsx
 
 import React, { useState, useEffect } from 'react';
-import { useMusic } from '../../contexts/MusicContext'; // MusicContext 사용
-import VolumeModal from '../apps/MusicPlayerVolume'; // VolumeModal 가져오기
-import '../../styles/Statusbar.css';
+import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
+import VolumeModal from '@/apps/music/MusicPlayerVolume'; // VolumeModal 가져오기
+import '@/desktop/status-bar/StatusBar.css';
 
 const StatusBar: React.FC = () => {
 	const [time, setTime] = useState<string>('');

@@ -1,9 +1,9 @@
 import React from 'react';
-import { useAppState } from '../../contexts/AppContext';
+import { useAppState } from '@/desktop/AppStateContext';
 
-import Container from '../common/Container';
-import Profile from './GithubProfile'; // 프로필 컴포넌트
-import '../../styles/Github.css';
+import AppWindow from '@/desktop/window/Window';
+import Profile from '@/apps/github/GithubProfile'; // 프로필 컴포넌트
+import '@/apps/github/Github.css';
 
 const imgUrl = import.meta.env.VITE_APP_IMAGE_URL;
 
@@ -75,7 +75,7 @@ const Github: React.FC = () => {
 	if (!isRunning || isMinimized) return null;
 
 	return (
-		<Container title="GitHub" appName="github">
+		<AppWindow title="GitHub" appName="github">
 			<div className="github-layout">
 				<div className="left-section">
 					<div className="profile-container">
@@ -127,7 +127,7 @@ const Github: React.FC = () => {
 					</div>
 				</div>
 			</div>
-		</Container>
+		</AppWindow>
 	);
 };
 

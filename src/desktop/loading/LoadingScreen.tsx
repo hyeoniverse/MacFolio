@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import '../styles/Loading.css';
+import '@/desktop/loading/LoadingScreen.css';
 
-interface LoadingPageProps {
+interface LoadingScreenProps {
 	onLoadingComplete: () => void;
 }
 
-const LoadingPage: React.FC<LoadingPageProps> = ({ onLoadingComplete }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	const [progress, setProgress] = useState(0);
 	const isInteractedRef = useRef(false);
 	const mp3Url = import.meta.env.VITE_APP_SFX_URL;
@@ -67,4 +67,4 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ onLoadingComplete }) => {
 	);
 };
 
-export default LoadingPage;
+export default LoadingScreen;

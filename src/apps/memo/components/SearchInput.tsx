@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { SearchInputProps } from '../../../types/MemoTypes';
+import { SearchInputProps } from '@/apps/memo/memo.types';
 
 const SearchInput: React.FC<SearchInputProps> = ({ searchQuery, setSearchQuery }) => {
 	const inputRef = useRef<HTMLInputElement>(null);

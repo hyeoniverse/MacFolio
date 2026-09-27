@@ -1,5 +1,5 @@
 import React from 'react';
-import { FolderListProps } from '../../../types/MemoTypes';
+import { FolderListProps } from '@/apps/memo/memo.types';
 
 const FolderList: React.FC<FolderListProps> = ({ folders, selectedFolder, setSelectedFolder }) => (
 	<div className="folder-list">

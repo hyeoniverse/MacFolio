@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import DockItem from './DockItem';
-import '../../styles/Dock.css';
-import { useAppState } from '../../contexts/AppContext';
+import DockItem from '@/desktop/dock/DockItem';
+import '@/desktop/dock/Dock.css';
+import { useAppState } from '@/desktop/AppStateContext';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../../styles/Toast.css';
+import '@/desktop/dock/Toast.css';
 
 const imgUrl = import.meta.env.VITE_APP_IMAGE_URL;
 

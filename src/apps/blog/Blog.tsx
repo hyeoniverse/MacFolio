@@ -1,7 +1,7 @@
 import React from 'react';
-import Container from '../common/Container';
-import { useAppState } from '../../contexts/AppContext';
-import '../../styles/Container.css';
+import AppWindow from '@/desktop/window/Window';
+import { useAppState } from '@/desktop/AppStateContext';
+import '@/desktop/window/Window.css';
 
 const Blog: React.FC = () => {
 	const { apps, bringAppToFront } = useAppState();
@@ -17,7 +17,7 @@ const Blog: React.FC = () => {
 	if (!isRunning || isMinimized) return null;
 
 	return (
-		<Container
+		<AppWindow
 			title="My Blog"
 			appName="blog"
 			appStyle={{
@@ -60,7 +60,7 @@ const Blog: React.FC = () => {
 					></div>
 				)}
 			</div>
-		</Container>
+		</AppWindow>
 	);
 };
 

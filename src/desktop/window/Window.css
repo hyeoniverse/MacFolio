@@ -23,7 +23,7 @@
   border-radius: 0.8rem;
 }
 
-/* Container 애니메이션 */
+/* 창 애니메이션 */
 @keyframes minimize {
   0% {
     transform: scale(1);

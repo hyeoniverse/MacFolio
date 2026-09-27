@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useAppState } from "../../contexts/AppContext";
+import { useAppState } from '@/desktop/AppStateContext';
 import {
   useMusic,
   albums,
   trackNames,
   albumArtworks,
-} from "../../contexts/MusicContext";
+} from '@/apps/music/MusicContext';
 
-import "../../styles/MusicPlayer.css";
-import "../../styles/Container.css";
+import '@/apps/music/MusicPlayer.css';
+import '@/desktop/window/Window.css';
 
 const MusicPlayer: React.FC = () => {
   const { apps, closeApp, minimizeApp, bringAppToFront } = useAppState();

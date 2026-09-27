@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Container from '../common/Container';
-import { useAppState } from '../../contexts/AppContext';
-import '../../styles/Mail.css'; // Mail 관련 스타일 추가
+import AppWindow from '@/desktop/window/Window';
+import { useAppState } from '@/desktop/AppStateContext';
+import '@/apps/mail/Mail.css'; // Mail 관련 스타일 추가
 
 const Mail: React.FC = () => {
 	// useAppState로 앱 상태 관리
@@ -31,7 +31,7 @@ const Mail: React.FC = () => {
 	if (!isRunning || isMinimized) return null;
 
 	return (
-		<Container title="Mail" appName="mail" appStyle={{ overflow: 'hidden' }}>
+		<AppWindow title="Mail" appName="mail" appStyle={{ overflow: 'hidden' }}>
 			<div className="mail-app">
 				<div className="mail-list">
 					<h3>Inbox</h3>
@@ -65,7 +65,7 @@ const Mail: React.FC = () => {
 					)}
 				</div>
 			</div>
-		</Container>
+		</AppWindow>
 	);
 };
 

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Folder, Memo, MemoContextProps } from '../types/MemoTypes';
-import { database } from '../services/firebase';
+import { Folder, Memo, MemoContextProps } from '@/apps/memo/memo.types';
+import { database } from '@/shared/lib/firebase';
 import { ref, get, push, set, remove } from 'firebase/database';
 
 const MemoContext = createContext<MemoContextProps | undefined>(undefined);

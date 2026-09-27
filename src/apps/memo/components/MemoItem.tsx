@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoItemProps } from '../../../types/MemoTypes';
+import { MemoItemProps } from '@/apps/memo/memo.types';
 
 const MemoItem: React.FC<MemoItemProps> = ({ memo, isActive, setSelectedMemo, folders }) => {
 	const folderName = folders.find((folder) => folder.id === memo.folder_id)?.title || 'Unknown Folder';
