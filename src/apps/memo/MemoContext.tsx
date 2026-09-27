@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { Folder, Memo, MemoContextProps } from '@/apps/memo/memo.types';
-import { database } from '@/shared/lib/firebase';
-import { ref, get, push, set, remove } from 'firebase/database';
+import { getMemoRepository, MemoRecord } from '@/apps/memo/repository';
 
 const MemoContext = createContext<MemoContextProps | undefined>(undefined);
 
@@ -23,51 +22,28 @@ export const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		id: '0',
 	});
 
-	// 폴더 및 메모 불러오기 (firebase Realtime Database 사용)
+	// 폴더 및 메모 불러오기 (Firebase가 없으면 localStorage)
 	const fetchFoldersAndMemos = async () => {
 		try {
-			// folders 데이터 가져오기
-			const foldersRef = ref(database, 'memos/folders');
-			const foldersSnapshot = await get(foldersRef);
+			const repository = await getMemoRepository();
+			const { folders: foldersData, memos: memosData } = await repository.load();
 
-			if (foldersSnapshot.exists()) {
-				const foldersData = foldersSnapshot.val();
+			// 객체 형태를 배열로 변환 (key를 id로 사용)
+			const foldersArray: Folder[] = Object.keys(foldersData).map((key) => ({
+				id: key,
+				title: foldersData[key],
+			}));
+			setFolders(foldersArray);
 
-				// foldersData가 객체 형태인 경우 배열로 변환
-				const foldersArray: Folder[] = Object.keys(foldersData).map((key) => ({
-					id: key,
-					title: foldersData[key],
-				}));
-				setFolders(foldersArray);
-			} else {
-				console.log('No folders data available');
-			}
-
-			// memos 데이터 가져오기
-			const memosRef = ref(database, 'memos/memo');
-			const memosSnapshot = await get(memosRef);
-
-			if (memosSnapshot.exists()) {
-				const memosData = memosSnapshot.val();
-
-				// memosData가 객체 형태인 경우 배열로 변환 (key를 id로 사용)
-				const memosArray: Memo[] = Object.keys(memosData).map((key) => ({
-					id: key,
+			const formattedMemos: Memo[] = Object.keys(memosData)
+				.sort((a, b) => Number(b) - Number(a))
+				.map((key) => ({
 					...memosData[key],
+					id: key,
+					folder_id: memosData[key].folder_id.toString(),
+					date: new Date(memosData[key].created_at).toLocaleString('ko-KR'),
 				}));
-
-				console.log('memosArray', memosArray);
-				const formattedMemos = memosArray
-					.sort((a, b) => Number(b.id) - Number(a.id))
-					.map((memo: any) => ({
-						...memo,
-						folder_id: memo.folder_id.toString(),
-						date: new Date(memo.created_at).toLocaleString('ko-KR'),
-					}));
-				setMemos(formattedMemos);
-			} else {
-				console.log('No memos data available');
-			}
+			setMemos(formattedMemos);
 		} catch (error) {
 			console.error('Error fetching folders and memos:', error);
 		}
@@ -108,25 +84,27 @@ export const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		});
 	};
 
-	// 새 메모 생성 (firebase Realtime Database 사용)
+	// 새 메모 생성
 	const createMemo = async () => {
 		if (!newMemo.title || !newMemo.content || !newMemo.password) {
 			setShowErrorModal(true);
 			return;
 		}
 		try {
-			const memosRef = ref(database, 'memos');
-			const newMemoRef = push(memosRef); // 새로운 고유 key 생성
-			const memoData = {
-				...newMemo,
+			const repository = await getMemoRepository();
+			// id와 date는 화면용 값이라 저장하지 않는다 (id는 저장소의 key)
+			const memoData: MemoRecord = {
+				title: newMemo.title,
+				content: newMemo.content,
+				password: newMemo.password,
 				folder_id: selectedFolder,
 				created_at: new Date().toISOString(),
 			};
-			await set(newMemoRef, memoData);
-			const createdMemo = {
+			const id = await repository.create(memoData);
+			const createdMemo: Memo = {
 				...memoData,
-				id: newMemoRef.key || '', // 생성된 key를 id로 사용, 빈 문자열로 기본값 설정
-				date: new Date().toLocaleString('ko-KR'),
+				id,
+				date: new Date(memoData.created_at).toLocaleString('ko-KR'),
 			};
 			resetMemoCreateState();
 			setMemos((prevMemos) => [createdMemo, ...prevMemos.filter((memo) => memo.id !== '0')]);
@@ -137,25 +115,22 @@ export const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		}
 	};
 
-	// 메모 삭제 (firebase Realtime Database 사용)
+	// 메모 삭제
 	const deleteMemo = async (id: string, password: string): Promise<boolean> => {
 		try {
-			const memoRef = ref(database, `memos/${id}`);
-			const snapshot = await get(memoRef);
-			if (snapshot.exists()) {
-				const memoData = snapshot.val();
-				if (memoData.password !== password) {
-					// 비밀번호가 일치하지 않을 경우 에러 모달 표시 등 처리
-					setShowErrorModal(true);
-					return false;
-				}
-				await remove(memoRef);
-				await fetchFoldersAndMemos();
-				return true;
-			} else {
+			const repository = await getMemoRepository();
+			const result = await repository.remove(id, password);
+			if (result === 'wrong-password') {
+				// 비밀번호가 일치하지 않을 경우 에러 모달 표시
+				setShowErrorModal(true);
+				return false;
+			}
+			if (result === 'not-found') {
 				console.error('Memo not found');
 				return false;
 			}
+			await fetchFoldersAndMemos();
+			return true;
 		} catch (error) {
 			console.error('Error deleting memo:', error);
 			return false;
