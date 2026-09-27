@@ -22,7 +22,7 @@ export const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		id: '0',
 	});
 
-	// 폴더 및 메모 불러오기 (Firebase가 없으면 localStorage)
+	// 폴더 및 메모 불러오기
 	const fetchFoldersAndMemos = async () => {
 		try {
 			const repository = await getMemoRepository();
