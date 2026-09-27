@@ -6,9 +6,6 @@ dist
 build
 .next
 
-# firebase
-.firebase
-
 # env
 .env
 .env.*

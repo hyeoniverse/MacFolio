@@ -1,6 +1,6 @@
 import type { MemoRecord, MemoRepository, MemoSnapshot } from './types';
 
-// Firebase 설정이 없을 때 쓰는 저장소. 브라우저 localStorage에 저장한다.
+// 브라우저 localStorage에 저장하는 저장소.
 const STORAGE_KEY = 'macfolio:memos';
 
 const seed = (): MemoSnapshot => ({
