@@ -3,24 +3,33 @@
 macOS 데스크톱을 웹으로 구현한 포트폴리오입니다. Dock에서 앱을 열고, 창을 옮기고, 최소화할 수 있습니다.
 
 - **앱:** Safari, Music, Memo, GitHub, Blog, Mail
-- **스택:** React 19, TypeScript, Vite, Cloudflare Pages
+- **스택:** React 19, TypeScript, Vite, pnpm workspaces + Turborepo, Cloudflare Workers
 - **주소:** https://macfolio.hyeoniverse.com
 
 ## 실행
 
 ```bash
-npm install
-npm run dev
+corepack enable   # package.json에 고정된 pnpm 버전을 사용
+pnpm install
+pnpm dev
 ```
 
-설정 없이 바로 실행됩니다. Memo는 브라우저 localStorage에 저장됩니다. 에셋을 다른 곳(CDN 등)에서 불러오려면 `.env.example`을 `.env`로 복사해 경로를 채우세요.
+설정 없이 바로 실행됩니다. Memo는 브라우저 localStorage에 저장됩니다. 에셋을 다른 곳(CDN 등)에서 불러오려면 `apps/react/.env.example`을 `apps/react/.env`로 복사해 경로를 채우세요.
 
 | 명령 | 설명 |
 | --- | --- |
-| `npm run dev` | 개발 서버 |
-| `npm run build` | 타입 체크 후 `dist/`로 빌드 |
-| `npm run preview` | 빌드 결과 미리보기 |
-| `npm run typecheck` | 타입 체크만 실행 |
+| `pnpm dev` | 개발 서버 |
+| `pnpm build` | 모든 패키지 타입 체크 후 빌드 |
+| `pnpm typecheck` | 타입 체크만 실행 |
+| `pnpm test` | 테스트 실행 |
+
+## 구조
+
+```
+apps/
+  react/          # 데스크톱 UI (Vite + React)
+packages/         # 앱 간에 공유하는 패키지
+```
 
 ## CRA → Vite 마이그레이션
 
