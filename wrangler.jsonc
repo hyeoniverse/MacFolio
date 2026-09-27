@@ -7,6 +7,8 @@
 	"build": {
 		"command": "npm run build"
 	},
+	// main 외 브랜치에서 `wrangler preview`로 미리보기 URL을 만들 때 필요하다 (비어 있어도 됨)
+	"previews": {},
 	// Worker 스크립트 없이 Vite 빌드 결과(dist)만 정적 파일로 서빙한다
 	"assets": {
 		"directory": "./dist",
