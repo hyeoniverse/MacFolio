@@ -17,3 +17,6 @@ build
 
 # cloudflare
 .wrangler
+
+# turborepo
+.turbo
