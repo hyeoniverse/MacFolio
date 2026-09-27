@@ -1,4 +1,4 @@
-// Memo 저장소 인터페이스. 구현체(Firebase, localStorage, 이후 API 서버)를 바꿔 끼울 수 있다.
+// Memo 저장소 인터페이스. 구현체(localStorage, 이후 API 서버)를 바꿔 끼울 수 있다.
 
 /** 저장소에 저장되는 메모. id는 저장소의 key다. */
 export interface MemoRecord {

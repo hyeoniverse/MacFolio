@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-설정 없이 바로 실행됩니다. Firebase를 연결하려면 `.env.example`을 `.env`로 복사해 값을 채우세요. 연결하지 않으면 Memo는 브라우저 localStorage에 저장됩니다.
+설정 없이 바로 실행됩니다. Memo는 브라우저 localStorage에 저장됩니다. 에셋을 다른 곳(CDN 등)에서 불러오려면 `.env.example`을 `.env`로 복사해 경로를 채우세요.
 
 | 명령 | 설명 |
 | --- | --- |
