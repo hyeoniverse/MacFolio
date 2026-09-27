@@ -17,3 +17,6 @@ build
 # misc
 .DS_Store
 *.log
+
+# cloudflare
+.wrangler
