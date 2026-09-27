@@ -6,9 +6,6 @@ dist
 build
 .next
 
-# firebase
-.firebase
-
 # env
 .env
 .env.*
@@ -17,3 +14,6 @@ build
 # misc
 .DS_Store
 *.log
+
+# cloudflare
+.wrangler
