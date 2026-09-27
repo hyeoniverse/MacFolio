@@ -3,6 +3,10 @@
 	// Cloudflare 대시보드에 연결된 Worker 이름과 같아야 한다
 	"name": "macfolio",
 	"compatibility_date": "2026-09-27",
+	// 배포 전에 빌드를 실행한다 (대시보드의 빌드 명령 설정과 무관하게 dist를 만든다)
+	"build": {
+		"command": "npm run build"
+	},
 	// Worker 스크립트 없이 Vite 빌드 결과(dist)만 정적 파일로 서빙한다
 	"assets": {
 		"directory": "./dist",
