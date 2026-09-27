@@ -1,0 +1,38 @@
+# MacFolio
+
+macOS 데스크톱을 웹으로 구현한 포트폴리오입니다. Dock에서 앱을 열고, 창을 옮기고, 최소화할 수 있습니다.
+
+- **앱:** Safari, Music, Memo, GitHub, Blog, Mail
+- **스택:** React 19, TypeScript, Vite, Firebase (Realtime Database, Hosting)
+
+## 실행
+
+```bash
+cp .env.example .env   # 값 채우기
+npm install
+npm run dev
+```
+
+| 명령 | 설명 |
+| --- | --- |
+| `npm run dev` | 개발 서버 |
+| `npm run build` | 타입 체크 후 `dist/`로 빌드 |
+| `npm run preview` | 빌드 결과 미리보기 |
+| `npm run typecheck` | 타입 체크만 실행 |
+
+## CRA → Vite 마이그레이션
+
+deprecated된 Create React App에서 Vite로 옮겼습니다.
+
+| 항목 | CRA | Vite |
+| --- | --- | --- |
+| dev 서버 시작 | 5.05초 | 0.58초 |
+| 프로덕션 빌드 | 6.33초 | 1.88초 |
+| JS 번들 (gzip) | 138.2 KB | 127.7 KB |
+| 설치 패키지 수 | 1,438개 | 171개 |
+
+측정 방법과 전환 과정은 [docs/migration-cra-to-vite.md](docs/migration-cra-to-vite.md)에 정리했습니다.
+
+## 로드맵
+
+아키텍처 결정과 앞으로의 계획은 [#8](https://github.com/hyeoniverse/MacFolio/issues/8)에서 관리합니다.
