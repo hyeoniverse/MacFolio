@@ -6,9 +6,10 @@ import React, {
   useCallback,
   useEffect,
 } from "react";
+import { env } from "@/shared/config/env";
 
-const imgUrl = import.meta.env.VITE_APP_IMAGE_URL;
-const mp3Url = import.meta.env.VITE_APP_MUSIC_URL;
+const imgUrl = env.imageUrl;
+const mp3Url = env.musicUrl;
 // 음원 정보
 const trackUrls = [
   `${mp3Url}/1.mp3`,
