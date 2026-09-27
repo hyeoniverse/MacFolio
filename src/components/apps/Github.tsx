@@ -5,7 +5,7 @@ import Container from '../common/Container';
 import Profile from './GithubProfile'; // 프로필 컴포넌트
 import '../../styles/Github.css';
 
-const imgUrl = import.meta.env.REACT_APP_IMAGE_URL;
+const imgUrl = import.meta.env.VITE_APP_IMAGE_URL;
 
 interface Repository {
 	id: string;

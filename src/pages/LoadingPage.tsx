@@ -11,7 +11,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ onLoadingComplete }) => {
 	const isInteractedRef = useRef(false);
 	const mp3Url = import.meta.env.VITE_APP_SFX_URL;
 	const audioRef = useRef<HTMLAudioElement | null>(null);
-	const timerRef = useRef<number | null>(null);
+	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 	useEffect(() => {
 		const startLoading = () => {
@@ -26,7 +26,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ onLoadingComplete }) => {
 				timerRef.current = setInterval(() => {
 					setProgress((oldProgress) => {
 						if (oldProgress >= 100) {
-							clearInterval(timerRef.current as number);
+							clearInterval(timerRef.current ?? undefined);
 							audioRef.current?.pause();
 							// 렌더링 사이클이 끝난 후 onLoadingComplete 호출 및 커스텀 이벤트 디스패치
 							setTimeout(() => {
@@ -44,7 +44,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ onLoadingComplete }) => {
 		document.addEventListener('click', startLoading);
 
 		return () => {
-			clearInterval(timerRef.current as number);
+			clearInterval(timerRef.current ?? undefined);
 			audioRef.current?.pause();
 			document.removeEventListener('click', startLoading);
 		};
