@@ -242,7 +242,8 @@
 }
 
 .memo-sidebar-bar .memo-lights-space {
-	width: 60px;
+	/* 패널 왼쪽 8px + 70px = 78px: 접었을 때 도구 막대의 여닫기 단추(12 + 58 + 간격 8)와 같은 자리 */
+	width: 70px;
 }
 
 .memo-sidebar-bar .memo-new-folder-button {
@@ -259,7 +260,7 @@
 
 /* 묶음 이름 (macOS 메모의 'iCloud') */
 .memo-folders h2 {
-	margin: 0 0 4px calc(8px + 14px);
+	margin: 0 0 4px 4px;
 	color: var(--memo-muted);
 	font-size: 11px;
 	font-weight: 600;
