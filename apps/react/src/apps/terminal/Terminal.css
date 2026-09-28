@@ -1,0 +1,76 @@
+/* macOS 터미널 기본 프로필: 라이트는 흰 바탕, 다크는 검은 바탕 */
+[data-app='terminal'] {
+	--terminal-bg: #ffffff;
+	--terminal-text: #1d1d1f;
+	--terminal-muted: #8a8a8e;
+	--terminal-error: #c41a16;
+	--terminal-prompt: #1d1d1f;
+	--terminal-link: #0e63c7;
+	--terminal-caret: #1d1d1f;
+}
+
+:root[data-theme='dark'] [data-app='terminal'] {
+	--terminal-bg: #1e1e1e;
+	--terminal-text: #f2f2f2;
+	--terminal-muted: #8e8e93;
+	--terminal-error: #ff6b6b;
+	--terminal-prompt: #f2f2f2;
+	--terminal-link: #6cb6ff;
+	--terminal-caret: #f2f2f2;
+}
+
+.terminal {
+	height: 100%;
+	padding: 6px 8px 10px;
+	overflow-y: auto;
+	background-color: var(--terminal-bg);
+	color: var(--terminal-text);
+	font-family: ui-monospace, SFMono-Regular, Menlo, 'D2Coding', monospace;
+	font-size: 12.5px;
+	line-height: 1.5;
+	text-align: left;
+	cursor: text;
+}
+
+.terminal-line {
+	min-height: 1.5em;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.terminal-line.muted {
+	color: var(--terminal-muted);
+}
+
+.terminal-line.error {
+	color: var(--terminal-error);
+}
+
+.terminal-line.link {
+	display: block;
+	color: var(--terminal-link);
+	text-decoration: underline;
+}
+
+.terminal-prompt {
+	color: var(--terminal-prompt);
+	font-weight: 600;
+	white-space: pre;
+}
+
+.terminal-input-line {
+	display: flex;
+	gap: 0.6em;
+}
+
+.terminal-input-line input {
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--terminal-text);
+	caret-color: var(--terminal-caret);
+	font: inherit;
+	outline: none;
+}
