@@ -43,7 +43,7 @@
 }
 
 /* 모서리 핸들 */
-.top-left {
+.resize-handle.top-left {
 	top: -10px;
 	left: -10px;
 	z-index: 10;
@@ -52,7 +52,7 @@
 	cursor: nwse-resize;
 }
 
-.top-right {
+.resize-handle.top-right {
 	top: -10px;
 	right: -10px;
 	z-index: 10;
@@ -61,7 +61,7 @@
 	cursor: nesw-resize;
 }
 
-.bottom-left {
+.resize-handle.bottom-left {
 	bottom: -10px;
 	left: -10px;
 	z-index: 10;
@@ -70,7 +70,7 @@
 	cursor: nesw-resize;
 }
 
-.bottom-right {
+.resize-handle.bottom-right {
 	right: -10px;
 	bottom: -10px;
 	z-index: 10;
@@ -80,7 +80,7 @@
 }
 
 /* 변 핸들 */
-.top {
+.resize-handle.top {
 	top: -5px;
 	right: 0;
 	left: 0;
@@ -89,7 +89,7 @@
 	cursor: ns-resize;
 }
 
-.right {
+.resize-handle.right {
 	top: 0;
 	right: -5px;
 	bottom: 0;
@@ -98,7 +98,7 @@
 	cursor: ew-resize;
 }
 
-.bottom {
+.resize-handle.bottom {
 	right: 0;
 	bottom: -5px;
 	left: 0;
@@ -107,7 +107,7 @@
 	cursor: ns-resize;
 }
 
-.left {
+.resize-handle.left {
 	top: 0;
 	bottom: 0;
 	left: -5px;
@@ -224,4 +224,29 @@
 	border-radius: 0.4rem;
 	background-color: var(--color-accent);
 	color: var(--color-on-accent);
+}
+
+/* 통합형 창 (chrome="unified"): 제목 표시줄 없이 신호등 버튼이 내용 위에 떠 있다 */
+.container.unified {
+	border-radius: 22px;
+	/* 모서리 크기 조절 핸들이 둥근 모서리에 잘리지 않도록 틀은 자르지 않고 내용만 자른다 */
+	overflow: visible;
+}
+
+.container.unified .macos-titlebar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 3;
+	height: 52px;
+	padding: 0 14px;
+	border: none;
+	background: none;
+	border-radius: 0;
+}
+
+.container.unified .content {
+	height: 100%;
+	overflow: hidden;
+	border-radius: inherit;
 }

@@ -75,7 +75,8 @@ test.describe('창', () => {
 		const maximized = (await mail.boundingBox())!;
 		const viewport = page.viewportSize()!;
 		expect(maximized.width).toBeCloseTo(viewport.width, 0);
-		expect(maximized.y + maximized.height).toBeCloseTo(viewport.height, 0);
+		// Dock 영역(136px)은 비워 둔다
+		expect(maximized.y + maximized.height).toBeCloseTo(viewport.height - 136, 0);
 
 		await mail.getByRole('button', { name: '전체 화면' }).click();
 		const restored = (await mail.boundingBox())!;
