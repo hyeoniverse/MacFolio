@@ -120,9 +120,10 @@ const MusicPlayer: React.FC = () => {
 		}
 	}, [isPlaying, updatePlayerVisualState]);
 
-	if (!isRunning) return null;
-
 	useEffect(() => {
+		// 창이 닫혀 있으면 자동 재생 이벤트를 받지 않는다
+		if (!isRunning) return;
+
 		const handleStartMusic = () => {
 			if (!isPlaying) {
 				togglePlayPause(); // 자동 재생 시작
@@ -134,7 +135,10 @@ const MusicPlayer: React.FC = () => {
 		return () => {
 			window.removeEventListener('startMusic', handleStartMusic);
 		};
-	}, [isPlaying, togglePlayPause]);
+	}, [isRunning, isPlaying, togglePlayPause]);
+
+	// hook은 모두 이 위에서 호출해야 한다. 렌더링마다 hook 호출 수가 달라지면 React가 에러를 던진다.
+	if (!isRunning) return null;
 
 	return (
 		<div
