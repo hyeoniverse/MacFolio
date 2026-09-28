@@ -117,9 +117,9 @@ export const COMMANDS: Record<string, Command> = {
 		description: '다룰 수 있는 기술',
 		run: () =>
 			output([
-				pair('언어', SKILLS.languages.join(', ')),
-				pair('데이터', SKILLS.data.join(', ')),
-				pair('도구', SKILLS.tools.join(', ')),
+				pair('프론트엔드', SKILLS.frontend.join(', ')),
+				pair('백엔드', SKILLS.backend.join(', ')),
+				pair('인터랙션', SKILLS.interaction.join(', ')),
 				pair('이 사이트', SITE_STACK.join(', ')),
 			]),
 	},
