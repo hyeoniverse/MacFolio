@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bringToFront } from './appStack';
+import { bringToFront, foregroundApp, minimizeAll } from './appStack';
 
 const apps = {
 	a: { zIndex: 3, isMinimized: false, isRunning: true },
@@ -31,5 +31,27 @@ describe('bringToFront', () => {
 
 	it('다른 필드는 그대로 둔다', () => {
 		expect(bringToFront(apps, 'c').c.isRunning).toBe(false);
+	});
+});
+
+describe('foregroundApp', () => {
+	it('실행 중이고 최소화되지 않은 앱 중 맨 앞의 앱을 고른다', () => {
+		expect(foregroundApp(apps)).toBe('a');
+	});
+
+	it('최소화된 앱과 실행 중이 아닌 앱은 고르지 않는다', () => {
+		expect(foregroundApp({ ...apps, a: { ...apps.a, isMinimized: true } })).toBeNull();
+	});
+});
+
+describe('minimizeAll', () => {
+	it('실행 중인 앱을 모두 최소화한다', () => {
+		const next = minimizeAll(apps);
+		expect(next.a.isMinimized).toBe(true);
+		expect(foregroundApp(next)).toBeNull();
+	});
+
+	it('실행 중이 아닌 앱은 그대로 둔다', () => {
+		expect(minimizeAll(apps).c).toBe(apps.c);
 	});
 });

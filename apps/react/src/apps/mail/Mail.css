@@ -37,8 +37,12 @@
 	background-color: var(--mail-window-bg);
 }
 
-.mail {
+.mail-shell {
 	container-type: inline-size;
+	height: 100%;
+}
+
+.mail {
 	display: grid;
 	grid-template-columns: 200px 280px 1fr;
 	gap: 8px;
@@ -415,6 +419,21 @@
 	margin-top: 6px;
 }
 
+/* 목록으로 돌아가기 (좁은 창에서만 보인다) */
+.mail-back {
+	display: none;
+	align-items: center;
+	gap: 6px;
+	position: relative;
+	z-index: 4;
+	margin-bottom: 12px;
+	padding: 4px 0;
+	border: none;
+	background: none;
+	color: var(--mail-accent) !important;
+	font-size: 15px !important;
+}
+
 /* 좁은 창: 메일상자 패널을 숨긴다 */
 @container (max-width: 720px) {
 	.mail {
@@ -428,5 +447,42 @@
 	/* 신호등 버튼과 겹치지 않도록 목록 위를 비운다 */
 	.mail-list-toolbar {
 		padding-top: 44px;
+	}
+}
+
+/* 더 좁은 창: 목록과 읽기를 한 화면씩 */
+@container (max-width: 560px) {
+	.mail {
+		grid-template-columns: 1fr;
+	}
+
+	.mail.detail-open .mail-list,
+	.mail:not(.detail-open) .mail-reader {
+		display: none;
+	}
+
+	.mail-back {
+		display: flex;
+	}
+
+	/* 신호등 버튼 아래로 */
+	.mail-reader {
+		padding-top: 44px;
+	}
+}
+
+/* 모바일: 화면을 가득 채우므로 떠 있는 패널 대신 평평하게 */
+.container.mobile .mail {
+	padding: 0;
+}
+
+.container.mobile .mail-list {
+	padding-top: 8px;
+	border-right: none;
+}
+
+@container (max-width: 560px) {
+	.container.mobile .mail-reader {
+		padding-top: 12px;
 	}
 }

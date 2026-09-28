@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '@/desktop/loading/LoadingScreen.css';
 import { env } from '@/shared/config/env';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
 interface LoadingScreenProps {
 	onLoadingComplete: () => void;
@@ -9,6 +10,7 @@ interface LoadingScreenProps {
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	const [progress, setProgress] = useState(0);
+	const startLabel = `${useIsMobile() ? '탭' : '클릭'}하여 로딩을 시작하세요`;
 	const isInteractedRef = useRef(false);
 	const mp3Url = env.sfxUrl;
 	const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -55,10 +57,10 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 		<div className="loading-container">
 			<i className="fa-brands fa-apple loading-icon" />
 			{!isInteractedRef.current ? (
-				<p className="loading-text">클릭하여 로딩을 시작하세요</p>
+				<p className="loading-text">{startLabel}</p>
 			) : (
 				<p className="loading-text" style={{ visibility: 'hidden' }}>
-					클릭하여 로딩을 시작하세요
+					{startLabel}
 				</p>
 			)}
 			<div className="progress-bar-container">

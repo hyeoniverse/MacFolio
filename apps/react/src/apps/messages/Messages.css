@@ -644,3 +644,20 @@
 		top: 44px;
 	}
 }
+
+/* 모바일: 화면을 가득 채우므로 떠 있는 패널 대신 평평하게 */
+.container.mobile .messages {
+	padding: 0;
+}
+
+.container.mobile .messages-sidebar {
+	border-radius: 0;
+	box-shadow: none;
+}
+
+/* 모바일에는 신호등 버튼이 없으므로 뒤로 가기 버튼을 위로 올린다 */
+@container (max-width: 640px) {
+	.container.mobile .messages-chat-toolbar {
+		top: 8px;
+	}
+}

@@ -6,6 +6,8 @@ import AppErrorBoundary from '@/desktop/window/AppErrorBoundary';
 
 import StatusBar from '@/desktop/status-bar/StatusBar';
 import Dock from '@/desktop/dock/Dock';
+import MobileHome from '@/desktop/mobile/MobileHome';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
 /**
  * 한 번이라도 열린 앱만 렌더링한다. 처음 열 때 지연 로딩 앱의 코드를 불러오고,
@@ -23,6 +25,9 @@ const OpenedApps = () => {
 };
 
 const Desktop = () => {
+	// 좁은 화면에서는 macOS 메뉴 막대·Dock 대신 iOS 홈 화면을 보여준다. 앱 창은 같은 컴포넌트를 쓴다.
+	const isMobile = useIsMobile();
+
 	return (
 		<div
 			className="App"
@@ -35,9 +40,18 @@ const Desktop = () => {
 			<AppStateProvider>
 				{/* StatusBar의 볼륨 조절도 음악 상태를 쓰므로 MusicProvider는 전역에 둔다 */}
 				<MusicProvider>
-					<StatusBar />
-					<OpenedApps />
-					<Dock />
+					{isMobile ? (
+						<>
+							<MobileHome />
+							<OpenedApps />
+						</>
+					) : (
+						<>
+							<StatusBar />
+							<OpenedApps />
+							<Dock />
+						</>
+					)}
 				</MusicProvider>
 			</AppStateProvider>
 		</div>

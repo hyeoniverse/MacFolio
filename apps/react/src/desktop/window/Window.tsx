@@ -4,6 +4,8 @@ import { useAppState } from '@/desktop/AppStateContext';
 import type { AppName } from '@/apps/manifest';
 import { useWindowFrame } from '@/desktop/window/useWindowFrame';
 import type { ResizeDirection } from '@/desktop/window/geometry';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 
 interface AppWindowProps {
 	title: string;
@@ -49,7 +51,8 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	onClick,
 	chrome = 'titlebar',
 }) => {
-	const { apps, closeApp, minimizeApp, bringAppToFront } = useAppState();
+	const { apps, closeApp, minimizeApp, bringAppToFront, goHome } = useAppState();
+	const isMobile = useIsMobile();
 	const { rect, toggleMaximize, dragHandlers, resizeHandlers } = useWindowFrame(appName);
 	const [isMinimizing, setIsMinimizing] = useState(false);
 	const minimizeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -58,6 +61,37 @@ const AppWindow: React.FC<AppWindowProps> = ({
 
 	const { isRunning, isMinimized, zIndex } = apps[appName];
 	if (!isRunning || isMinimized) return null;
+
+	// 모바일: 화면을 가득 채우고, 신호등 버튼 대신 홈 인디케이터로 홈 화면에 돌아간다
+	if (isMobile) {
+		return (
+			<div
+				data-app={appName}
+				aria-label={title}
+				className={`container mobile ${chrome === 'unified' ? 'unified' : ''}`}
+				style={{ ...appStyle, zIndex }}
+				onClick={onClick}
+			>
+				{chrome === 'titlebar' ? (
+					<div className="mobile-navbar" style={titleBarStyle}>
+						<button type="button" className="mobile-navbar-home" onClick={goHome}>
+							<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>홈
+						</button>
+						<span className="title">{title}</span>
+					</div>
+				) : (
+					// 통합형 창은 신호등 버튼이 있던 자리에 홈 버튼을 띄운다
+					<button type="button" className="mobile-navbar-home floating" onClick={goHome}>
+						<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>홈
+					</button>
+				)}
+				<div className="content" style={{ ...contentStyle }}>
+					{children}
+				</div>
+				<HomeIndicator onHome={goHome} />
+			</div>
+		);
+	}
 
 	const handleMinimize = () => {
 		setIsMinimizing(true);

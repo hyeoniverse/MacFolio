@@ -435,3 +435,110 @@
 		transform 0.3s ease,
 		opacity 0.3s ease;
 }
+
+/* ─── 모바일: 지금 재생 중 ─── */
+.now-playing {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+	position: relative;
+	min-height: 100%;
+	padding: 24px 28px 32px;
+	overflow: hidden;
+	color: #fff;
+	isolation: isolate;
+}
+
+/* 앨범 커버를 흐리게 깐 배경 */
+.now-playing::before {
+	position: absolute;
+	inset: -40px;
+	z-index: -1;
+	background: var(--artwork) center / cover;
+	filter: blur(40px) brightness(0.6);
+	content: '';
+}
+
+.now-playing-art {
+	width: min(72vw, 300px);
+	aspect-ratio: 1;
+	object-fit: cover;
+	border-radius: 14px;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+	transform: scale(0.86);
+	transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.now-playing-art.playing {
+	transform: scale(1);
+}
+
+.now-playing-info {
+	display: flex;
+	flex-direction: column;
+	align-self: stretch;
+	gap: 2px;
+	text-align: left;
+}
+
+.now-playing-info strong {
+	font-size: 20px;
+}
+
+.now-playing-info span {
+	font-size: 16px;
+	opacity: 0.7;
+}
+
+.now-playing-seek {
+	align-self: stretch;
+	height: 6px;
+	border-radius: 3px;
+	background-color: rgba(255, 255, 255, 0.3);
+	cursor: pointer;
+}
+
+.now-playing-seek div {
+	height: 100%;
+	border-radius: inherit;
+	background-color: #fff;
+	pointer-events: none;
+}
+
+.now-playing-time {
+	display: flex;
+	justify-content: space-between;
+	align-self: stretch;
+	margin-top: -10px;
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+	opacity: 0.7;
+}
+
+.now-playing-controls {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	align-self: stretch;
+}
+
+.now-playing-controls button {
+	width: 56px;
+	height: 56px;
+	border: none;
+	border-radius: 50%;
+	background: none;
+	color: inherit;
+	font-size: 24px;
+	cursor: pointer;
+}
+
+.now-playing-controls button.active {
+	color: #ff375f;
+}
+
+.now-playing-controls button.play {
+	font-size: 34px;
+}
