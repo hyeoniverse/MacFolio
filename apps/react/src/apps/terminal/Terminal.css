@@ -1,0 +1,151 @@
+/* macOS 터미널 기본 프로필: 라이트는 흰 바탕, 다크는 검은 바탕 */
+[data-app='terminal'] {
+	--terminal-bg: #ffffff;
+	--terminal-text: #1d1d1f;
+	--terminal-muted: #6e6e73;
+	--terminal-key: #8a4f00;
+	--terminal-error: #c41a16;
+	--terminal-user: #1a7f37;
+	--terminal-path: #0550ae;
+	--terminal-link: #0550ae;
+	--terminal-caret: #1d1d1f;
+}
+
+:root[data-theme='dark'] [data-app='terminal'] {
+	--terminal-bg: #1c1c1e;
+	--terminal-text: #ececf0;
+	--terminal-muted: #9a9aa0;
+	--terminal-key: #f0b86e;
+	--terminal-error: #ff7b72;
+	--terminal-user: #56d364;
+	--terminal-path: #79c0ff;
+	--terminal-link: #79c0ff;
+	--terminal-caret: #ececf0;
+}
+
+.terminal {
+	/* macOS 터미널 기본값(SF Mono 12px, 촘촘한 줄 간격)에 맞춘다. 한글은 글자 높이가 커서 1.3 */
+	--terminal-font-size: 12px;
+	--terminal-line-height: 1.3;
+	height: 100%;
+	padding: 4px 8px 8px;
+	overflow-y: auto;
+	background-color: var(--terminal-bg);
+	color: var(--terminal-text);
+	font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, 'D2Coding', monospace;
+	font-size: var(--terminal-font-size);
+	line-height: var(--terminal-line-height);
+	text-align: left;
+	cursor: text;
+}
+
+.terminal-line {
+	min-height: calc(var(--terminal-line-height) * 1em);
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.terminal-line.heading {
+	font-weight: 700;
+}
+
+.terminal-line.muted {
+	color: var(--terminal-muted);
+}
+
+.terminal-line.error {
+	color: var(--terminal-error);
+}
+
+.terminal a {
+	color: var(--terminal-link);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.terminal-line.link {
+	display: block;
+}
+
+/* 프롬프트: 사용자@호스트(초록) 경로(파랑) % */
+.terminal-prompt {
+	white-space: pre;
+}
+
+.terminal-prompt-user {
+	color: var(--terminal-user);
+}
+
+.terminal-prompt-path {
+	color: var(--terminal-path);
+}
+
+/* 이름 · 값 격자: 한글이 섞여도 칸이 맞고, 긴 값은 값 칸 안에서 줄바꿈 */
+.terminal-pairs {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	column-gap: 2ch;
+}
+
+.terminal-pairs dt {
+	color: var(--terminal-key);
+	white-space: nowrap;
+}
+
+.terminal-pairs dd {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+/* 번호 목록: 번호 뒤에 맞춰 줄바꿈 */
+.terminal-items {
+	list-style: none;
+}
+
+.terminal-items li {
+	display: grid;
+	grid-template-columns: 3ch 1fr;
+}
+
+.terminal-item-marker {
+	color: var(--terminal-muted);
+}
+
+.terminal-item-title {
+	font-weight: 700;
+}
+
+.terminal-item-tag {
+	margin-left: 1ch;
+	color: var(--terminal-muted);
+}
+
+.terminal-item-tag::before {
+	content: '(';
+}
+
+.terminal-item-tag::after {
+	content: ')';
+}
+
+.terminal-item-detail {
+	display: block;
+	color: var(--terminal-muted);
+}
+
+.terminal-input-line {
+	display: flex;
+	gap: 1ch;
+}
+
+.terminal-input-line input {
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--terminal-text);
+	caret-color: var(--terminal-caret);
+	font: inherit;
+	outline: none;
+}
