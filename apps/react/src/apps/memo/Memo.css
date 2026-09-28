@@ -1062,6 +1062,15 @@
 		padding-top: 0;
 	}
 
+	/* 모바일에서는 뒤로 가기가 제목 막대에 하나만 있다 (본문 안의 뒤로 가기는 숨긴다) */
+	.container.mobile .memo-back {
+		display: none;
+	}
+
+	.container.mobile .memo-reader .memo-scroll {
+		padding-top: 12px;
+	}
+
 	.container.mobile .memo-folder-scroll {
 		padding-top: 12px;
 	}

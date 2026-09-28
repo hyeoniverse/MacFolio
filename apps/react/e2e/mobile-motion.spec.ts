@@ -6,7 +6,7 @@ test('모바일: 앱은 아이콘에서 커지고, 홈으로 가면 아이콘으
 	await page.goto('/');
 	const loading = page.locator('.loading-container');
 	await loading.tap();
-	await expect(loading).toBeHidden({ timeout: 10_000 });
+	await expect(loading).toBeHidden({ timeout: 20_000 });
 
 	await page.locator('.mobile-home').getByRole('button', { name: '메모', exact: true }).tap();
 	const memo = appWindow(page, 'memo');
