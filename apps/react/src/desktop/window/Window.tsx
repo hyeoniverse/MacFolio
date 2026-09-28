@@ -13,6 +13,12 @@ interface AppWindowProps {
 	contentStyle?: React.CSSProperties;
 	titleBarStyle?: React.CSSProperties;
 	onClick?: () => void;
+	/**
+	 * titlebar: 제목 표시줄이 있는 창 (기본)
+	 * unified: macOS 26처럼 제목 표시줄 없이 신호등 버튼이 내용 위에 떠 있는 창.
+	 *   창 위쪽 52px를 잡아 옮길 수 있고, 그 영역의 버튼은 z-index를 올려야 누를 수 있다.
+	 */
+	chrome?: 'titlebar' | 'unified';
 }
 
 const RESIZE_DIRECTIONS: ResizeDirection[] = [
@@ -41,6 +47,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	contentStyle,
 	titleBarStyle,
 	onClick,
+	chrome = 'titlebar',
 }) => {
 	const { apps, closeApp, minimizeApp, bringAppToFront } = useAppState();
 	const { rect, toggleMaximize, dragHandlers, resizeHandlers } = useWindowFrame(appName);
@@ -63,7 +70,8 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	return (
 		<div
 			data-app={appName}
-			className={`container ${isMinimizing ? 'minimizing' : ''}`}
+			aria-label={chrome === 'unified' ? title : undefined}
+			className={`container ${chrome === 'unified' ? 'unified' : ''} ${isMinimizing ? 'minimizing' : ''}`}
 			style={{
 				...appStyle,
 				left: rect.x,
@@ -92,7 +100,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 					<span className="minimize" role="button" aria-label="최소화" onClick={handleMinimize}></span>
 					<span className="fullscreen" role="button" aria-label="전체 화면" onClick={toggleMaximize}></span>
 				</div>
-				<span className="title">{title}</span>
+				{chrome === 'titlebar' && <span className="title">{title}</span>}
 			</div>
 			<div className="content" style={{ ...contentStyle }}>
 				{children}
