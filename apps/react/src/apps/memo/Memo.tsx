@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import AppWindow from '@/desktop/window/Window';
-import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { ALL_CATEGORY, filterPosts, formatPostDate, listCategories, type Post } from './posts';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
@@ -63,14 +62,6 @@ const Memo: React.FC = () => {
 
 	return (
 		<AppWindow title="메모" appName="memo">
-			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
-			<MobileNavigation
-				{...(pane === 'reader'
-					? { backLabel: category, onBack: () => setPane('list') }
-					: pane === 'list'
-						? { backLabel: '폴더', onBack: () => setPane('folders') }
-						: {})}
-			/>
 			<div className="memo-shell">
 				<div className={`memo pane-${pane}`} data-nav={nav}>
 					<nav className="memo-folders" aria-label="카테고리">
