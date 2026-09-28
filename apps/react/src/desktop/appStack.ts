@@ -48,3 +48,10 @@ export function minimizeAll<Name extends string, App extends RunningApp>(apps: R
 	}
 	return next;
 }
+
+/** 실행 중인 앱을 최근에 쓴 순서(zIndex가 큰 순)로. 모바일 앱 전환기의 카드 순서 */
+export function runningByRecency<Name extends string>(apps: Record<Name, RunningApp>): Name[] {
+	return (Object.keys(apps) as Name[])
+		.filter((name) => apps[name].isRunning)
+		.sort((a, b) => apps[b].zIndex - apps[a].zIndex);
+}

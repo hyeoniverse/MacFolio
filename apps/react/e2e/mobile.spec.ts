@@ -64,7 +64,7 @@ test.describe('모바일', () => {
 			await expect(content).toBeVisible();
 			const overflow = await content.evaluate((el) => el.scrollWidth - el.clientWidth);
 			expect(overflow, `${label}이(가) 가로로 넘친다`).toBeLessThanOrEqual(1);
-			await page.locator('.home-indicator').tap();
+			await page.locator('.container.mobile .home-indicator').tap();
 		}
 	});
 
@@ -229,5 +229,72 @@ test.describe('모바일', () => {
 		await shortcuts.getByRole('button', { name: /연락처/ }).tap();
 		await shortcuts.getByRole('button', { name: '메시지 열기' }).tap();
 		await expect(appWindow(page, 'messages')).toBeVisible();
+	});
+
+	test('앱 전환기: 길게 쓸어 올리면 실행 중인 앱이 카드로 보이고, 골라서 돌아가거나 밀어 올려 닫는다', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		await homeApp(page, 'Safari').tap();
+		await appWindow(page, 'safari').getByRole('button', { name: '홈 화면으로' }).tap();
+		await homeApp(page, '메모').tap();
+		const memo = appWindow(page, 'memo');
+		await expect(memo).toBeVisible();
+
+		/** 요소를 잡고 위로 끈다 */
+		const swipeUp = async (target: ReturnType<Page['locator']>, distance: number) => {
+			const box = (await target.boundingBox())!;
+			const x = box.x + box.width / 2;
+			const y = box.y + box.height / 2;
+			await page.mouse.move(x, y);
+			await page.mouse.down();
+			await page.mouse.move(x, y - distance, { steps: 8 });
+			await page.mouse.up();
+		};
+
+		// 짧게 쓸어 올리면 홈, 길게 쓸어 올리면 전환기
+		await swipeUp(memo.locator('.home-indicator'), 220);
+		const switcher = page.getByRole('dialog', { name: '앱 전환기' });
+		await expect(switcher).toBeVisible();
+		const cards = page.locator('.mobile-app-frame.in-switcher');
+		await expect(cards).toHaveCount(2);
+		// 가장 최근에 쓴 앱이 첫 카드 (가운데)
+		const firstCard = await cards.evaluateAll((elements) =>
+			elements
+				.find((el) => (el as HTMLElement).style.getPropertyValue('--card-index') === '0')
+				?.getAttribute('aria-label')
+		);
+		expect(firstCard).toBe('메모 열기');
+
+		// 카드를 누르면 그 앱으로
+		await page.getByRole('button', { name: 'Safari 열기' }).tap();
+		await expect(switcher).toBeHidden();
+		await expect(appWindow(page, 'safari')).toBeVisible();
+
+		// 카드를 위로 밀면 앱이 닫힌다
+		await swipeUp(appWindow(page, 'safari').locator('.home-indicator'), 220);
+		await expect(cards).toHaveCount(2);
+		// 가운데 카드(방금 쓴 Safari)를 밀어 올린다
+		await swipeUp(page.getByRole('button', { name: 'Safari 열기' }), 200);
+		await expect(cards).toHaveCount(1);
+		await expect(cards).toHaveAttribute('aria-label', '메모 열기');
+
+		// 빈 곳을 누르면 홈으로
+		const { width, height } = page.viewportSize()!;
+		await page.mouse.click(width / 2, height - 10);
+		await expect(switcher).toBeHidden();
+		await expect(page.locator('.container.mobile')).toHaveCount(0);
+	});
+
+	test('홈 화면에서도 아래에서 길게 쓸어 올리면 앱 전환기가 열린다', async ({ page }) => {
+		await enterHome(page);
+		const gesture = page.locator('.mobile-home .home-gesture');
+		const box = (await gesture.boundingBox())!;
+		await page.mouse.move(box.x + box.width / 2, box.y + 5);
+		await page.mouse.down();
+		await page.mouse.move(box.x + box.width / 2, box.y - 220, { steps: 8 });
+		await page.mouse.up();
+		const switcher = page.getByRole('dialog', { name: '앱 전환기' });
+		await expect(switcher).toContainText('실행 중인 앱이 없습니다');
 	});
 });

@@ -5,6 +5,8 @@ import '@/desktop/mobile/MobileHome.css';
 import { APP_MANIFEST, APP_NAMES, type AppName } from '@/apps/manifest';
 import { WINDOW_APPS } from '@/apps/registry';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
+import HomeIndicator from '@/desktop/mobile/HomeIndicator';
+import { openSwitcher } from '@/desktop/mobile/switcherStore';
 import { env } from '@/shared/config/env';
 import { PROFILE } from '@/shared/profile';
 
@@ -53,6 +55,8 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 					<AppIcon key={name} name={name} showLabel onLaunch={() => launch(name)} />
 				))}
 			</nav>
+
+			<HomeIndicator className="home-gesture" onSwitcher={openSwitcher} />
 
 			<nav className="mobile-dock" aria-label="Dock">
 				{MOBILE_DOCK.map((name) => (

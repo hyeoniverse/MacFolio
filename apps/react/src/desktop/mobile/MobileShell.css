@@ -387,3 +387,82 @@
 	clip-path: inset(50%);
 	white-space: nowrap;
 }
+
+/* ─── 앱 화면 틀과 앱 전환기 카드 (MobileAppFrame) ─── */
+.mobile-app-frame {
+	--card-scale: 0.62;
+	--card-step: calc(100vw * 0.66);
+	position: fixed;
+	inset: 0;
+	transition: transform var(--duration-slow) var(--ease-out);
+}
+
+/* 카드: 실제 앱 화면을 줄여 옆으로 늘어놓는다. 첫 카드(가장 최근 앱)가 가운데 */
+.mobile-app-frame.in-switcher {
+	transform: translateX(calc(var(--card-index) * var(--card-step) + var(--switcher-scroll, 0px)))
+		translateY(var(--card-lift, 0px)) scale(var(--card-scale));
+	cursor: pointer;
+	touch-action: none;
+}
+
+.mobile-app-frame.in-switcher .container.mobile {
+	overflow: hidden;
+	border-radius: 56px;
+	box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+	transition: border-radius var(--duration-slow) var(--ease-out);
+}
+
+/* 옆으로 끄는 동안에는 손가락을 바로 따라간다 */
+.switcher-dragging .mobile-app-frame.in-switcher {
+	transition: none;
+}
+
+/* 카드 위의 앱 이름 (카드와 함께 줄어드므로 크게 쓴다) */
+.switcher-label {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	position: absolute;
+	bottom: 100%;
+	left: 8px;
+	margin-bottom: 20px;
+	color: #fff;
+	font-size: 28px;
+	font-weight: 600;
+	text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.switcher-label img {
+	width: 60px;
+	height: 60px;
+	border-radius: 14px;
+}
+
+/* 전환기 배경: 홈 화면을 흐리게 */
+.app-switcher {
+	position: fixed;
+	inset: 0;
+	z-index: 1400;
+	display: grid;
+	place-items: center;
+	background-color: rgba(0, 0, 0, 0.35);
+	backdrop-filter: blur(24px);
+	-webkit-backdrop-filter: blur(24px);
+	color: rgba(255, 255, 255, 0.85);
+	font-size: 15px;
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+/* 홈 화면 아래: 쓸어 올리면 앱 전환기 */
+.home-indicator.home-gesture {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: none;
+}
+
+.home-indicator.home-gesture span {
+	background-color: #fff;
+	opacity: 0.6;
+}

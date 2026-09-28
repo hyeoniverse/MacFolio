@@ -1,13 +1,14 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import '@/desktop/window/Window.css';
 import { useAppState } from '@/desktop/AppStateContext';
 import type { AppName } from '@/apps/manifest';
 import { useWindowFrame } from '@/desktop/window/useWindowFrame';
 import type { ResizeDirection } from '@/desktop/window/geometry';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
-import HomeIndicator from '@/desktop/mobile/HomeIndicator';
+import MobileAppFrame from '@/desktop/mobile/MobileAppFrame';
+import { switcherStore, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
+import { runningByRecency } from '@/desktop/appStack';
 import { animateClose, animateOpen } from '@/desktop/window/windowMotion';
-import { MobileNavContext, type MobileNav } from '@/desktop/window/mobileNav';
 
 interface AppWindowProps {
 	title: string;
@@ -57,18 +58,26 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	const isMobile = useIsMobile();
 	const { rect, toggleMaximize, dragHandlers, resizeHandlers } = useWindowFrame(appName);
 	const frameRef = useRef<HTMLDivElement>(null);
-	// 모바일 제목 막대를 앱이 바꿀 때 (useMobileNav)
-	const [mobileNav, setMobileNav] = useState<MobileNav | null>(null);
+	const switcherOpen = useSwitcherOpen();
 
 	const { isRunning, isMinimized, zIndex } = apps[appName];
 	const visible = isRunning && !isMinimized;
+	// 모바일 앱 전환기가 열려 있으면 최소화된 앱도 카드로 보인다
+	const cards = isMobile && switcherOpen ? runningByRecency(apps) : [];
+	const cardIndex = cards.indexOf(appName);
 
-	// 보이게 될 때마다(열기, 최소화에서 되돌리기) 아이콘에서 커지며 나타난다
+	// 보이게 될 때마다(열기, 최소화에서 되돌리기) 아이콘에서 커지며 나타난다.
+	// 앱 전환기에서 카드를 골라 돌아온 앱은 카드에서 커지므로(CSS) 건너뛴다.
 	useLayoutEffect(() => {
-		if (visible && frameRef.current) animateOpen(frameRef.current, { appName, mobile: isMobile });
+		if (!visible || !frameRef.current) return;
+		if (switcherStore.getState().switchedTo === appName) {
+			switcherStore.setState({ switchedTo: null });
+			return;
+		}
+		animateOpen(frameRef.current, { appName, mobile: isMobile });
 	}, [visible, appName, isMobile]);
 
-	if (!visible) return null;
+	if (!visible && cardIndex < 0) return null;
 
 	/** 애니메이션이 끝난 뒤 action을 실행한다 */
 	const leave = (toLauncher: boolean, action: () => void) => {
@@ -91,27 +100,22 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	// 모바일: 화면을 가득 채우고, 신호등 버튼 대신 홈 인디케이터로 홈 화면에 돌아간다
 	if (isMobile) {
 		return (
-			<div
-				ref={frameRef}
-				data-app={appName}
-				aria-label={title}
-				className={`container mobile ${chrome === 'unified' ? 'unified' : ''}`}
-				style={{ ...appStyle, zIndex }}
+			<MobileAppFrame
+				appName={appName}
+				title={title}
+				chrome={chrome}
+				zIndex={zIndex}
+				frameRef={frameRef}
+				cardIndex={cardIndex < 0 ? null : cardIndex}
+				cardCount={cards.length}
+				onHome={handleHome}
 				onClick={onClick}
+				appStyle={appStyle}
+				contentStyle={contentStyle}
+				titleBarStyle={titleBarStyle}
 			>
-				{/* iOS 제목 막대: 모든 앱에 같은 모양. 왼쪽 버튼은 첫 화면에서는 홈, 앱 안으로 들어가면 앱이 정한 뒤로 가기 */}
-				<div className="mobile-navbar" style={titleBarStyle}>
-					<button type="button" className="mobile-navbar-home" onClick={mobileNav?.onBack ?? handleHome}>
-						<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
-						{mobileNav?.backLabel ?? '홈'}
-					</button>
-					<span className="title">{mobileNav?.title ?? title}</span>
-				</div>
-				<div className="content" style={{ ...contentStyle }}>
-					<MobileNavContext.Provider value={setMobileNav}>{children}</MobileNavContext.Provider>
-				</div>
-				<HomeIndicator onHome={handleHome} />
-			</div>
+				{children}
+			</MobileAppFrame>
 		);
 	}
 
