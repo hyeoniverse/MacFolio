@@ -12,7 +12,14 @@ const context: CommandContext = {
 	],
 };
 
-const texts = (lines: Line[]) => lines.map((line) => (line.kind === 'link' ? line.href : line.text));
+/** 줄을 비교하기 쉬운 글자로 */
+const texts = (lines: Line[]) =>
+	lines.map((line) => {
+		if (line.kind === 'link') return line.href;
+		if (line.kind === 'pair') return `${line.key}: ${line.value}`;
+		if (line.kind === 'item') return `${line.marker} ${line.title}`;
+		return line.text;
+	});
 
 describe('parse', () => {
 	it('공백으로 명령과 인자를 나눈다', () => {
@@ -37,15 +44,21 @@ describe('runCommand', () => {
 
 	it('help는 숨긴 명령(sudo)을 빼고 보여준다', () => {
 		const output = texts(runCommand('help', context).lines).join('\n');
-		expect(output).toContain('whoami');
-		expect(output).toContain('open <앱>');
+		expect(output).toContain('whoami: 저를 소개합니다');
+		expect(output).toContain('open <앱>: 앱 열기');
 		expect(output).not.toContain('sudo');
 	});
 
-	it('projects는 번호 목록, project <번호>는 자세히와 링크', () => {
-		expect(texts(runCommand('projects', context).lines)[0]).toMatch(/^1\. /);
+	it('projects는 번호 목록, project <번호>는 자세히와 저장소 링크', () => {
+		expect(runCommand('projects', context).lines[0]).toEqual({
+			kind: 'item',
+			marker: '1.',
+			title: PROJECTS[0].name,
+			detail: PROJECTS[0].description,
+			tag: PROJECTS[0].language,
+		});
 		const detail = runCommand('project 1', context).lines;
-		expect(detail.at(-1)).toEqual({ kind: 'link', label: PROJECTS[0].url, href: PROJECTS[0].url });
+		expect(detail.at(-1)).toEqual({ kind: 'pair', key: '저장소', value: PROJECTS[0].url, href: PROJECTS[0].url });
 		expect(runCommand('project 99', context).lines[0].kind).toBe('error');
 	});
 
@@ -58,11 +71,10 @@ describe('runCommand', () => {
 	});
 
 	it('contact는 GitHub과 이메일 링크를 보여준다', () => {
-		const links = runCommand('contact', context).lines.filter((line) => line.kind === 'link');
-		expect(links.map((line) => line.kind === 'link' && line.href)).toEqual([
-			'https://github.com/hyeoniverse',
-			'mailto:hyeoniverse.dev@gmail.com',
-		]);
+		const hrefs = runCommand('contact', context).lines.flatMap((line) =>
+			line.kind === 'pair' && line.href ? [line.href] : []
+		);
+		expect(hrefs).toEqual(['https://github.com/hyeoniverse', 'mailto:hyeoniverse.dev@gmail.com']);
 	});
 
 	it('clear, exit은 효과만 돌려준다', () => {
@@ -71,7 +83,7 @@ describe('runCommand', () => {
 	});
 
 	it('history와 echo', () => {
-		expect(texts(runCommand('history', context).lines)).toEqual(['   1  whoami', '   2  skills']);
+		expect(texts(runCommand('history', context).lines)).toEqual(['1 whoami', '2 skills']);
 		expect(texts(runCommand('echo  안녕  하세요', context).lines)).toEqual(['안녕 하세요']);
 	});
 });
