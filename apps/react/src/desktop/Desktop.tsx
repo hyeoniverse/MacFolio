@@ -1,6 +1,7 @@
 import { AppStateProvider } from '@/desktop/AppStateContext';
 import { MusicProvider } from '@/apps/music/MusicContext';
 import { WINDOW_APPS } from '@/apps/registry';
+import AppErrorBoundary from '@/desktop/window/AppErrorBoundary';
 
 import StatusBar from '@/desktop/status-bar/StatusBar';
 import Dock from '@/desktop/dock/Dock';
@@ -20,7 +21,9 @@ const Desktop = () => {
 				<MusicProvider>
 					<StatusBar />
 					{WINDOW_APPS.map(({ name, Component }) => (
-						<Component key={name} />
+						<AppErrorBoundary key={name} appName={name}>
+							<Component />
+						</AppErrorBoundary>
 					))}
 					<Dock />
 				</MusicProvider>
