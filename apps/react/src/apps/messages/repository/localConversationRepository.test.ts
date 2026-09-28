@@ -13,7 +13,7 @@ const memoryStorage = () => {
 const input = (text: string, nickname = '민수') => ({ nickname, password: 'pw1234', text });
 
 describe('createLocalConversationRepository', () => {
-	it('처음에는 사이트 주인의 고정 방만 있다', async () => {
+	it('처음에는 사이트 주인의 고정 안내만 있다', async () => {
 		const repo = createLocalConversationRepository('visitor-a', memoryStorage());
 		const threads = await repo.listThreads();
 		expect(threads).toHaveLength(1);
@@ -21,49 +21,49 @@ describe('createLocalConversationRepository', () => {
 		expect((await repo.listMessages(PINNED_THREAD_ID)).every((m) => m.fromOwner && !m.mine)).toBe(true);
 	});
 
-	it('글을 써도 방은 생기지 않는다', async () => {
+	it('답글을 달아도 목록에 항목이 생기지 않는다', async () => {
 		const repo = createLocalConversationRepository('visitor-a', memoryStorage());
 		const posted = await repo.postMessage(PINNED_THREAD_ID, input('반가워요'));
 		expect(posted).toMatchObject({ text: '반가워요', mine: true, nickname: '민수' });
 		expect(await repo.listThreads()).toHaveLength(1);
 	});
 
-	it('쓰기로 새 방을 만들면 첫 글과 함께 생기고, 한 사람당 하나만 만들 수 있다', async () => {
+	it('쓰기로 남긴 피드백마다 항목이 생기고, 한 사람이 여러 개 남길 수 있다', async () => {
 		const repo = createLocalConversationRepository('visitor-a', memoryStorage());
-		const created = await repo.createThread(input('내 방 첫 글'));
-		if (!('thread' in created)) throw new Error('방이 만들어져야 한다');
-		expect(created.thread).toMatchObject({ title: '민수', mine: true, lastMessage: { text: '내 방 첫 글' } });
-		expect(created.message).toMatchObject({ threadId: created.thread.id, mine: true });
+		const first = await repo.createThread(input('디자인이 예뻐요'));
+		expect(first.thread).toMatchObject({ title: '민수', mine: true, summary: '디자인이 예뻐요' });
+		expect(first.message).toMatchObject({ threadId: first.thread.id, mine: true });
 
-		const again = await repo.createThread(input('또 만들기', '다른 이름'));
-		expect(again).toEqual({ existing: expect.objectContaining({ id: created.thread.id }) });
-		expect(await repo.listThreads()).toHaveLength(2);
+		const second = await repo.createThread(input('음악 앱 건의가 있어요'));
+		expect(second.thread.id).not.toBe(first.thread.id);
+		expect(await repo.listThreads()).toHaveLength(3);
 	});
 
-	it('다른 사람의 방에도 쓸 수 있고, 작성자는 브라우저마다 구분된다', async () => {
+	it('다른 사람의 피드백에 답글을 달 수 있고, 미리보기는 피드백 본문·시각은 마지막 활동', async () => {
 		const storage = memoryStorage();
-		const a = createLocalConversationRepository('visitor-a', storage);
-		const b = createLocalConversationRepository('visitor-b', storage);
+		let clock = new Date('2026-09-28T01:00:00Z');
+		const a = createLocalConversationRepository('visitor-a', storage, () => clock);
+		const b = createLocalConversationRepository('visitor-b', storage, () => clock);
 
-		const created = await a.createThread(input('A의 방', '민수'));
-		if (!('thread' in created)) throw new Error('방이 만들어져야 한다');
-		await b.postMessage(created.thread.id, input('B가 A의 방에', '지영'));
+		const { thread } = await a.createThread(input('모바일에서 깨져요', '민수'));
+		clock = new Date('2026-09-28T02:00:00Z');
+		await b.postMessage(thread.id, input('저도 그래요', '지영'));
 
-		const seenByA = await a.listMessages(created.thread.id);
-		const seenByB = await b.listMessages(created.thread.id);
-		expect(seenByA.map((m) => [m.nickname, m.mine])).toEqual([
+		expect((await a.listMessages(thread.id)).map((m) => [m.nickname, m.mine])).toEqual([
 			['민수', true],
 			['지영', false],
 		]);
-		expect(seenByB.map((m) => [m.nickname, m.mine])).toEqual([
-			['민수', false],
-			['지영', true],
-		]);
-		// B는 글만 썼으므로 B의 방은 없다
+		const listed = (await b.listThreads()).find((t) => t.id === thread.id)!;
+		expect(listed).toMatchObject({
+			mine: false,
+			summary: '모바일에서 깨져요',
+			lastMessage: { text: '저도 그래요', createdAt: '2026-09-28T02:00:00.000Z' },
+		});
+		// 답글만 단 지영의 항목은 생기지 않는다
 		expect((await b.listThreads()).some((t) => t.mine)).toBe(false);
 	});
 
-	it('없는 방에는 쓸 수 없다', async () => {
+	it('없는 피드백에는 답글을 달 수 없다', async () => {
 		const repo = createLocalConversationRepository('visitor-a', memoryStorage());
 		expect(await repo.postMessage('nope', input('hi'))).toBe('not-found');
 	});

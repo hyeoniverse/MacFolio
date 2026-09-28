@@ -13,10 +13,11 @@ interface Props {
 	children?: React.ReactNode;
 	error?: string;
 	autoFocus?: boolean;
+	placeholder?: string;
 }
 
 /** macOS 메시지 앱의 떠 있는 알약 입력창. Enter로 보내고 Shift+Enter로 줄을 바꾼다. */
-const Composer: React.FC<Props> = ({ onSend, children, error: externalError, autoFocus }) => {
+const Composer: React.FC<Props> = ({ onSend, children, error: externalError, autoFocus, placeholder = '메시지' }) => {
 	const [text, setText] = useState('');
 	const [error, setError] = useState<string>();
 	const [sending, setSending] = useState(false);
@@ -43,7 +44,7 @@ const Composer: React.FC<Props> = ({ onSend, children, error: externalError, aut
 			<div className="messages-field">
 				<textarea
 					aria-label="메시지"
-					placeholder="메시지"
+					placeholder={placeholder}
 					rows={1}
 					maxLength={LIMITS.text.max}
 					value={text}

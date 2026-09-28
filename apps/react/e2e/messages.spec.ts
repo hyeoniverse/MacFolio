@@ -26,84 +26,82 @@ async function becomeVisitor(page: Page, id: string) {
 	}, id);
 }
 
-test.describe('메시지', () => {
-	test('처음에는 김정현의 방명록이 열리고, 바로 글을 쓸 수 있다', async ({ page }) => {
+const compose = (messages: Locator) => messages.getByRole('button', { name: '새 피드백' }).first();
+const items = (messages: Locator) => messages.locator('.messages-thread');
+
+test.describe('메시지 (감상·의견·피드백)', () => {
+	test('처음에는 김정현의 안내가 열리고, 누구나 답글을 달 수 있다', async ({ page }) => {
 		const messages = await openMessages(page);
-		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeVisible();
+		await expect(messages.getByRole('region', { name: '김정현의 안내' })).toBeVisible();
 		await expect(transcript(messages)).toContainText('안녕하세요, 김정현입니다');
-		await expect(textbox(messages)).toBeVisible();
+		await expect(items(messages)).toHaveCount(0);
 
 		// 주인 글은 오른쪽 클릭 메뉴가 없다
 		await messages.locator('.messages-bubble').first().click({ button: 'right' });
 		await expect(messages.getByRole('menu')).toHaveCount(0);
-	});
-
-	test('방명록에 글을 써도 목록에 새 항목이 생기지 않는다', async ({ page }) => {
-		let messages = await openMessages(page);
-		const threads = messages.locator('.messages-thread');
-		await expect(threads).toHaveCount(0);
 
 		await post(messages, '민수', '반가워요!');
 		await expect(messages.locator('.messages-bubble-row.right')).toHaveText(/반가워요!/);
 		await expect(messages.getByText('전송됨')).toHaveCount(1);
-		await expect(threads).toHaveCount(0);
+		// 답글은 목록에 항목을 만들지 않는다
+		await expect(items(messages)).toHaveCount(0);
+	});
 
-		// 새로고침해도 이름은 남고 비밀번호는 남지 않는다
+	test('쓰기 버튼으로 남긴 피드백마다 목록에 항목이 생긴다', async ({ page }) => {
+		let messages = await openMessages(page);
+		await compose(messages).click();
+		await expect(messages.getByRole('region', { name: '새 피드백' })).toBeVisible();
+		await post(messages, '민수', '디자인이 예뻐요');
+		await expect(messages.getByRole('region', { name: '민수의 피드백' })).toBeVisible();
+
+		await compose(messages).click();
+		await post(messages, '민수', '음악 앱에 건의가 있어요');
+		await expect(items(messages)).toHaveCount(2);
+		// 미리보기는 피드백 본문, 최근 활동 순
+		await expect(items(messages).first()).toContainText('음악 앱에 건의가 있어요');
+		await expect(items(messages).first()).toContainText('나');
+
+		// 새로고침해도 남고, 이름은 기억하고 비밀번호는 기억하지 않는다
 		messages = await openMessages(page);
+		await expect(items(messages)).toHaveCount(2);
 		await expect(messages.getByLabel('이름')).toHaveValue('민수');
 		await expect(messages.getByLabel('비밀번호', { exact: true })).toHaveValue('');
 	});
 
-	test('쓰기 버튼으로만 내 방이 생기고, 다시 누르면 내 방을 연다', async ({ page }) => {
+	test('새 피드백은 취소 버튼이나 Esc로 그만두고 보던 항목으로 돌아간다', async ({ page }) => {
 		const messages = await openMessages(page);
-		await messages.getByRole('button', { name: '새 메시지' }).first().click();
-		await expect(messages.getByRole('region', { name: '새로운 메시지' })).toBeVisible();
-
-		await post(messages, '민수', '내 방 첫 글');
-		await expect(messages.getByRole('region', { name: '민수의 방명록' })).toBeVisible();
-		await expect(messages.getByRole('button', { name: /^민수.*나/ })).toBeVisible();
-
-		await messages.getByRole('button', { name: '김정현' }).click();
-		await messages.getByRole('button', { name: '새 메시지' }).first().click();
-		await expect(messages.getByRole('region', { name: '민수의 방명록' })).toBeVisible();
-		await expect(messages.locator('.messages-thread')).toHaveCount(1);
-	});
-
-	test('새 메시지는 취소 버튼이나 Esc로 그만두고 이전 방으로 돌아간다', async ({ page }) => {
-		const messages = await openMessages(page);
-		const compose = messages.getByRole('button', { name: '새 메시지' }).first();
-
-		await compose.click();
+		await compose(messages).click();
 		await messages.getByRole('button', { name: '취소' }).click();
-		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeVisible();
+		await expect(messages.getByRole('region', { name: '김정현의 안내' })).toBeVisible();
 
-		await compose.click();
-		await expect(messages.getByRole('region', { name: '새로운 메시지' })).toBeVisible();
+		await compose(messages).click();
+		await expect(messages.getByRole('region', { name: '새 피드백' })).toBeVisible();
 		await page.keyboard.press('Escape');
-		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeVisible();
-		await expect(messages.locator('.messages-thread')).toHaveCount(0);
+		await expect(messages.getByRole('region', { name: '김정현의 안내' })).toBeVisible();
+		await expect(items(messages)).toHaveCount(0);
 	});
 
-	test('다른 사람의 방에도 쓸 수 있고, 사람마다 구분되어 보인다', async ({ page }) => {
+	test('다른 사람의 피드백에 답글을 달 수 있고, 사람마다 구분되어 보인다', async ({ page }) => {
 		let messages = await openMessages(page);
-		await messages.getByRole('button', { name: '새 메시지' }).first().click();
-		await post(messages, '민수', '민수의 첫 글');
+		await compose(messages).click();
+		await post(messages, '민수', '모바일에서 깨져요');
 
 		await becomeVisitor(page, 'visitor-b');
 		messages = await openMessages(page);
-		await messages.getByRole('button', { name: /^민수/ }).click();
-		await expect(messages.getByRole('region', { name: '민수의 방명록' })).toBeVisible();
-		await post(messages, '지영', '민수님 방에 남겨요');
-		// 지영에게는 자기 글이라 오른쪽, 민수의 글은 왼쪽
-		await expect(messages.locator('.messages-bubble-row.right')).toHaveText(/민수님 방에 남겨요/);
-		await expect(messages.locator('.messages-bubble-row.left')).toHaveText(/민수의 첫 글/);
-		// 글만 썼으므로 지영의 방은 생기지 않는다
-		await expect(messages.locator('.messages-thread')).toHaveCount(1);
+		await items(messages).first().click();
+		await expect(messages.getByRole('region', { name: '민수의 피드백' })).toBeVisible();
+		await post(messages, '지영', '저도 그래요');
+		// 지영에게는 자기 글이 오른쪽, 민수의 글은 왼쪽
+		await expect(messages.locator('.messages-bubble-row.right')).toHaveText(/저도 그래요/);
+		await expect(messages.locator('.messages-bubble-row.left')).toHaveText(/모바일에서 깨져요/);
+		// 답글만 달았으므로 항목은 그대로 하나
+		await expect(items(messages)).toHaveCount(1);
+		await expect(items(messages).first()).toContainText('모바일에서 깨져요');
 
 		await becomeVisitor(page, 'visitor-c');
 		messages = await openMessages(page);
-		await messages.getByRole('button', { name: /^민수/ }).click();
-		const row = messages.locator('.messages-bubble-row.left', { hasText: '민수님 방에 남겨요' });
+		await items(messages).first().click();
+		const row = messages.locator('.messages-bubble-row.left', { hasText: '저도 그래요' });
 		await expect(row.locator('.messages-sender')).toHaveText('지영');
 	});
 
@@ -126,7 +124,7 @@ test.describe('메시지', () => {
 		await expect(transcript(messages)).toContainText('남길 메시지');
 	});
 
-	test('이름이 없으면 보내지 않고, 입력한 메시지는 남겨 둔다', async ({ page }) => {
+	test('이름이 없으면 보내지 않고, 입력한 내용은 남겨 둔다', async ({ page }) => {
 		const messages = await openMessages(page);
 		await messages.getByLabel('비밀번호', { exact: true }).fill('pw1234');
 		await textbox(messages).fill('이름 없이');
@@ -146,6 +144,22 @@ test.describe('메시지', () => {
 		await expect(messages.locator('.messages-bubble')).toHaveCount(before);
 	});
 
+	test('예전 형식으로 저장된 목록은 지운다', async ({ page }) => {
+		await page.goto('/');
+		await page.evaluate(() =>
+			localStorage.setItem(
+				'macfolio:messages',
+				JSON.stringify({
+					threads: [{ id: 'old', ownerId: 'x', title: '예전 방', createdAt: '2026-09-01T00:00:00Z' }],
+					messages: [],
+				})
+			)
+		);
+		const messages = await openMessages(page);
+		await expect(items(messages)).toHaveCount(0);
+		expect(await page.evaluate(() => localStorage.getItem('macfolio:messages'))).toBeNull();
+	});
+
 	test('창이 좁으면 목록과 대화를 한 화면씩 보여주고, 뒤로 가기로 목록에 돌아간다', async ({ page }) => {
 		const messages = await openMessages(page);
 		const handle = (await messages.locator('.resize-handle.bottom-right').boundingBox())!;
@@ -155,10 +169,10 @@ test.describe('메시지', () => {
 		await page.mouse.up();
 
 		await expect(messages.getByRole('complementary', { name: '대화 목록' })).toBeVisible();
-		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeHidden();
+		await expect(messages.getByRole('region', { name: '김정현의 안내' })).toBeHidden();
 
 		await messages.getByRole('button', { name: '김정현' }).click();
-		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeVisible();
+		await expect(messages.getByRole('region', { name: '김정현의 안내' })).toBeVisible();
 		await expect(messages.getByRole('complementary', { name: '대화 목록' })).toBeHidden();
 
 		await messages.getByRole('button', { name: '대화 목록' }).click();

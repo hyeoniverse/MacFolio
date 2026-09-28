@@ -14,19 +14,18 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) 
 	const now = new Date();
 	const pinned = threads.filter((t) => t.pinned);
 	const matches = (thread: Thread) =>
-		!query.trim() ||
-		`${thread.title} ${thread.lastMessage?.text ?? ''}`.toLowerCase().includes(query.trim().toLowerCase());
+		!query.trim() || `${thread.title} ${thread.summary ?? ''}`.toLowerCase().includes(query.trim().toLowerCase());
 	const others = threads.filter((t) => !t.pinned && matches(t));
 
 	return (
 		<aside className="messages-sidebar" aria-label="대화 목록">
-			{/* 신호등 버튼 자리. 좁은 창에서는 새 메시지 버튼이 여기로 온다 */}
+			{/* 신호등 버튼 자리. 좁은 창에서는 새 피드백 버튼이 여기로 온다 */}
 			<div className="messages-sidebar-top">
 				<button
 					type="button"
 					className="messages-round-button messages-compose-compact"
-					aria-label="새 메시지"
-					title="새 메시지"
+					aria-label="새 피드백"
+					title="새 피드백"
 					onClick={onCompose}
 				>
 					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
@@ -84,13 +83,13 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) 
 										</time>
 									)}
 								</span>
-								<span className="messages-thread-preview">{thread.lastMessage?.text ?? '아직 글이 없어요'}</span>
+								<span className="messages-thread-preview">{thread.summary ?? ''}</span>
 							</span>
 						</button>
 					</li>
 				))}
 				{others.length === 0 && (
-					<li className="messages-empty">{query ? '검색 결과가 없습니다.' : '아직 대화가 없어요.'}</li>
+					<li className="messages-empty">{query ? '검색 결과가 없습니다.' : '아직 남겨진 피드백이 없어요.'}</li>
 				)}
 			</ul>
 		</aside>

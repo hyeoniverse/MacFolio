@@ -7,7 +7,7 @@ import { buildTimeline, displayName, LIMITS, type InputErrors, type Message, typ
 import type { DeleteResult } from '../repository';
 
 interface Props {
-	/** null이면 새 방을 만드는 화면 */
+	/** null이면 새 피드백을 남기는 화면 */
 	thread: Thread | null;
 	messages: Message[];
 	identity: {
@@ -19,7 +19,7 @@ interface Props {
 	focusRequest: number;
 	/** 좁은 창에서 대화 목록으로 돌아가기 */
 	onBack: () => void;
-	/** 새 메시지를 그만두기 */
+	/** 새 피드백을 그만두기 */
 	onCancelNew: () => void;
 	onCompose: () => void;
 	onSend: (text: string) => Promise<InputErrors>;
@@ -37,9 +37,9 @@ const TimeLabel: React.FC<{ label: string }> = ({ label }) => {
 };
 
 const subtitleOf = (thread: Thread) => {
-	if (thread.pinned) return '방명록 · 누구나 쓸 수 있어요';
-	if (thread.mine) return '내 방명록';
-	return `${thread.title}님의 방명록`;
+	if (thread.pinned) return '안내 · 누구나 답글을 달 수 있어요';
+	if (thread.mine) return '내가 남긴 피드백';
+	return `${thread.title}님의 피드백`;
 };
 
 const ChatView: React.FC<Props> = ({
@@ -59,12 +59,12 @@ const ChatView: React.FC<Props> = ({
 	const listEnd = useRef<HTMLDivElement>(null);
 	const timeline = buildTimeline(messages, { now: new Date() });
 
-	// 대화를 열거나 새 메시지가 생기면 맨 아래로
+	// 항목을 열거나 새 글이 생기면 맨 아래로
 	useEffect(() => {
 		listEnd.current?.scrollIntoView({ block: 'end' });
 	}, [thread?.id, messages.length]);
 
-	// 새 메시지 화면은 Esc로 그만둔다 (팝업이 열려 있으면 팝업이 먼저 닫힌다)
+	// 새 피드백 화면은 Esc로 그만둔다 (팝업이 열려 있으면 팝업이 먼저 닫힌다)
 	useEffect(() => {
 		if (thread) return;
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -82,8 +82,11 @@ const ChatView: React.FC<Props> = ({
 	};
 
 	return (
-		<section className="messages-chat" aria-label={thread ? `${thread.title}의 방명록` : '새로운 메시지'}>
-			{/* 창 왼쪽 위에 떠 있는 버튼: 뒤로 가기(좁은 창에서만), 새 메시지 */}
+		<section
+			className="messages-chat"
+			aria-label={thread ? (thread.pinned ? `${thread.title}의 안내` : `${thread.title}의 피드백`) : '새 피드백'}
+		>
+			{/* 창 왼쪽 위에 떠 있는 버튼: 뒤로 가기(좁은 창에서만), 새 피드백 */}
 			<div className="messages-chat-toolbar">
 				<button type="button" className="messages-round-button messages-back" aria-label="대화 목록" onClick={onBack}>
 					<i className="fa-solid fa-chevron-left" aria-hidden="true" />
@@ -91,8 +94,8 @@ const ChatView: React.FC<Props> = ({
 				<button
 					type="button"
 					className="messages-round-button"
-					aria-label="새 메시지"
-					title="새 메시지"
+					aria-label="새 피드백"
+					title="새 피드백"
 					onClick={onCompose}
 				>
 					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
@@ -111,8 +114,8 @@ const ChatView: React.FC<Props> = ({
 				</header>
 			) : (
 				<header className="messages-chat-header">
-					<span className="messages-name-pill">새로운 메시지</span>
-					<span className="messages-chat-subtitle">첫 메시지를 보내면 목록에 내 방명록이 생겨요</span>
+					<span className="messages-name-pill">새 피드백</span>
+					<span className="messages-chat-subtitle">감상, 의견, 피드백을 남겨 주세요. 보내면 목록에 올라가요</span>
 					<button type="button" className="messages-cancel" onClick={onCancelNew}>
 						취소
 					</button>
@@ -156,6 +159,7 @@ const ChatView: React.FC<Props> = ({
 
 			<Composer
 				key={focusRequest}
+				placeholder={thread ? '답글' : '감상, 의견, 피드백'}
 				autoFocus={focusRequest > 0}
 				error={errors.nickname ?? errors.password}
 				onSend={async (text) => {
