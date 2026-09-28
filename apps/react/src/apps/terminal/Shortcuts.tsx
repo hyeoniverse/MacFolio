@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { APP_MANIFEST, APP_NAMES } from '@/apps/manifest';
 import { runCommand, toBlocks, type Block, type CommandContext } from './commands';
 import { commandInValue, projectCommand, SHORTCUTS } from './shortcutList';
@@ -123,14 +124,16 @@ const Shortcuts: React.FC = () => {
 
 	return (
 		<AppWindow title="단축어" appName="terminal">
+			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
+			<MobileNavigation
+				{...(page
+					? { backLabel: stack.length > 1 ? stack[stack.length - 2].title : '단축어', onBack: pop, title: '' }
+					: { title: '' })}
+			/>
 			{/* 화면이 바뀔 때마다 새로 그려서 옆에서 들어오는 애니메이션이 돈다 */}
 			<div key={stack.length} className="shortcuts" data-nav={nav}>
 				{page ? (
 					<section className="shortcut-result" aria-label={page.title}>
-						<button type="button" className="shortcut-back" onClick={pop}>
-							<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
-							{stack.length > 1 ? stack[stack.length - 2].title : '단축어'}
-						</button>
 						<h1>{page.title}</h1>
 						<p className="shortcut-command">
 							<span aria-hidden="true">$</span> {page.command}

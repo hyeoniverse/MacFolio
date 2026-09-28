@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import '@/desktop/window/Window.css';
 import { useAppState } from '@/desktop/AppStateContext';
 import type { AppName } from '@/apps/manifest';
@@ -7,6 +7,7 @@ import type { ResizeDirection } from '@/desktop/window/geometry';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import { animateClose, animateOpen } from '@/desktop/window/windowMotion';
+import { MobileNavContext, type MobileNav } from '@/desktop/window/mobileNav';
 
 interface AppWindowProps {
 	title: string;
@@ -56,6 +57,8 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	const isMobile = useIsMobile();
 	const { rect, toggleMaximize, dragHandlers, resizeHandlers } = useWindowFrame(appName);
 	const frameRef = useRef<HTMLDivElement>(null);
+	// 모바일 제목 막대를 앱이 바꿀 때 (useMobileNav)
+	const [mobileNav, setMobileNav] = useState<MobileNav | null>(null);
 
 	const { isRunning, isMinimized, zIndex } = apps[appName];
 	const visible = isRunning && !isMinimized;
@@ -96,21 +99,16 @@ const AppWindow: React.FC<AppWindowProps> = ({
 				style={{ ...appStyle, zIndex }}
 				onClick={onClick}
 			>
-				{chrome === 'titlebar' ? (
-					<div className="mobile-navbar" style={titleBarStyle}>
-						<button type="button" className="mobile-navbar-home" onClick={handleHome}>
-							<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>홈
-						</button>
-						<span className="title">{title}</span>
-					</div>
-				) : (
-					// 통합형 창은 신호등 버튼이 있던 자리에 홈 버튼을 띄운다
-					<button type="button" className="mobile-navbar-home floating" onClick={handleHome}>
-						<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>홈
+				{/* iOS 제목 막대: 모든 앱에 같은 모양. 왼쪽 버튼은 첫 화면에서는 홈, 앱 안으로 들어가면 앱이 정한 뒤로 가기 */}
+				<div className="mobile-navbar" style={titleBarStyle}>
+					<button type="button" className="mobile-navbar-home" onClick={mobileNav?.onBack ?? handleHome}>
+						<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
+						{mobileNav?.backLabel ?? '홈'}
 					</button>
-				)}
+					<span className="title">{mobileNav?.title ?? title}</span>
+				</div>
 				<div className="content" style={{ ...contentStyle }}>
-					{children}
+					<MobileNavContext.Provider value={setMobileNav}>{children}</MobileNavContext.Provider>
 				</div>
 				<HomeIndicator onHome={handleHome} />
 			</div>

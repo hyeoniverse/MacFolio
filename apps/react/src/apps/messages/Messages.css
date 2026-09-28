@@ -677,9 +677,11 @@
 	box-shadow: none;
 }
 
-/* 모바일에는 신호등 버튼이 없으므로 뒤로 가기 버튼을 위로 올린다 */
-@container (max-width: 640px) {
-	.container.mobile .messages-chat-toolbar {
-		top: 8px;
-	}
+/* 모바일에서는 뒤로 가기가 제목 막대에 있다 (useMobileNav) */
+.container.mobile .messages-chat-toolbar {
+	display: none;
+}
+
+.container.mobile .messages-sidebar-top {
+	min-height: 0;
 }

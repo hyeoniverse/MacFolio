@@ -49,11 +49,11 @@ test.describe('모바일', () => {
 		await expect(safari).toBeHidden();
 
 		// 제목 막대의 홈 버튼으로도 돌아온다
-		await homeApp(page, '메모').tap();
-		const memo = appWindow(page, 'memo');
-		await expect(memo).toBeVisible();
-		await memo.getByRole('button', { name: '홈', exact: true }).tap();
-		await expect(memo).toBeHidden();
+		await homeApp(page, '시스템 설정').tap();
+		const settings = appWindow(page, 'settings');
+		await expect(settings).toBeVisible();
+		await settings.getByRole('button', { name: '홈', exact: true }).tap();
+		await expect(settings).toBeHidden();
 	});
 
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {
@@ -80,8 +80,13 @@ test.describe('모바일', () => {
 		await expect(memo.getByRole('article', { name: 'CRA에서 Vite로 옮기기' })).toBeVisible();
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeHidden();
 
-		await memo.getByRole('article').getByRole('button', { name: '모든 글' }).tap();
-		await memo.getByRole('region', { name: '글 목록' }).getByRole('button', { name: '폴더' }).tap();
+		// 뒤로 가기는 제목 막대에 하나만 있다
+		const back = memo.locator('.mobile-navbar-home');
+		await expect(back).toHaveText('모든 글');
+		await back.tap();
+		await expect(back).toHaveText('폴더');
+		await back.tap();
+		await expect(back).toHaveText('홈');
 		await expect(memo.getByRole('navigation', { name: '카테고리' })).toBeVisible();
 
 		await memo.getByRole('button', { name: /^개발기/ }).tap();

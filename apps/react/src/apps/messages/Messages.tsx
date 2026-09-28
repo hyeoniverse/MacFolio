@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Sidebar from './components/Sidebar';
 import ChatView from './components/ChatView';
 import { NEW_THREAD, useConversations } from './useConversations';
@@ -29,6 +30,10 @@ const Messages: React.FC = () => {
 
 	return (
 		<AppWindow title="메시지" appName="messages" chrome="unified">
+			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
+			<MobileNavigation
+				{...(conversations.isChatOpen ? { backLabel: '메시지', onBack: back(conversations.back) } : {})}
+			/>
 			<div className={`messages ${conversations.isChatOpen ? 'chat-open' : ''}`} data-nav={nav}>
 				<Sidebar
 					threads={conversations.threads}
