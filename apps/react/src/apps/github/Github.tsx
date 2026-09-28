@@ -1,63 +1,188 @@
 import React from 'react';
-
 import AppWindow from '@/desktop/window/Window';
-import Profile from '@/apps/github/GithubProfile'; // 프로필 컴포넌트
-import '@/apps/github/Github.css';
 import { env } from '@/shared/config/env';
-import { PROFILE, PROJECTS } from '@/shared/profile';
+import { useSettings } from '@/shared/settings/settingsStore';
+import { resolveTheme } from '@/shared/settings/settings';
+import {
+	GITHUB_PROFILE,
+	LANGUAGE_COLORS,
+	PINNED_REPOS,
+	README,
+	statsCard,
+	type PinnedRepo,
+} from '@/apps/github/githubProfile';
+import '@/apps/github/Github.css';
 
-const imgUrl = env.imageUrl;
+const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
+/** 고정 저장소 카드 (GitHub의 Pinned) */
+const RepoCard: React.FC<{ repo: PinnedRepo }> = ({ repo }) => (
+	<li className="gh-repo">
+		<div className="gh-repo-head">
+			<i className="fa-solid fa-book-bookmark" aria-hidden="true" />
+			<a href={repo.url} {...external} className="gh-repo-name">
+				{repo.owner !== GITHUB_PROFILE.login && <span className="gh-repo-owner">{repo.owner}/</span>}
+				{repo.name}
+			</a>
+			<span className="gh-badge">Public</span>
+		</div>
+		{repo.description && <p className="gh-repo-description">{repo.description}</p>}
+		<div className="gh-repo-meta">
+			<span>
+				<span className="gh-language-dot" style={{ backgroundColor: LANGUAGE_COLORS[repo.language] }} />
+				{repo.language}
+			</span>
+			{repo.stars > 0 && (
+				<span>
+					<i className="fa-regular fa-star" aria-hidden="true" /> {repo.stars}
+				</span>
+			)}
+			{repo.forks > 0 && (
+				<span>
+					<i className="fa-solid fa-code-fork" aria-hidden="true" /> {repo.forks}
+				</span>
+			)}
+			{repo.homepage && (
+				<a href={repo.homepage} {...external}>
+					<i className="fa-solid fa-link" aria-hidden="true" /> 데모
+				</a>
+			)}
+		</div>
+	</li>
+);
+
+/**
+ * GitHub: https://github.com/hyeoniverse 프로필을 GitHub 화면처럼 보여준다.
+ * 왼쪽에 프로필, 오른쪽에 프로필 README와 고정 저장소.
+ */
 const Github: React.FC = () => {
+	const { theme } = useSettings();
+	// 통계 카드는 밝은·어두운 이미지가 따로 있다
+	const cardTheme = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches);
+
 	return (
 		<AppWindow title="GitHub" appName="github">
-			<div className="github-shell">
-				<div className="github-layout">
-					<div className="left-section">
-						<div className="profile-container">
-							<div className="profile-image">
-								<img src={`${imgUrl}/me.png`} alt="Profile" />
-							</div>
-							<div className="profile-info">
-								<h2>Kim Jeong Hyeon</h2>
-								<p>App Developer | Frontend Enthusiast</p>
-								<p>Seoul Women's University</p>
-								<p>
-									<i className="fa-solid fa-map-marker-alt"></i>
-									<strong>Seoul, South Korea</strong>
-								</p>
-								<div className="profile-links">
-									<a href={PROFILE.github} target="_blank" rel="noopener noreferrer">
-										GitHub
-									</a>
-									<a href={`mailto:${PROFILE.email}`}>Email</a>
-								</div>
-							</div>
-						</div>
-					</div>
+			<div className="gh-shell">
+				<div className="gh">
+					<header className="gh-header">
+						<i className="fa-brands fa-github" aria-hidden="true" />
+						<strong>{GITHUB_PROFILE.login}</strong>
+						<nav className="gh-tabs" aria-label="GitHub 탭">
+							<span className="gh-tab active" aria-current="page">
+								<i className="fa-solid fa-book-open" aria-hidden="true" /> Overview
+							</span>
+							<a className="gh-tab" href={`${GITHUB_PROFILE.url}?tab=repositories`} {...external}>
+								<i className="fa-solid fa-book-bookmark" aria-hidden="true" /> Repositories
+								<span className="gh-counter">{GITHUB_PROFILE.repositories}</span>
+							</a>
+						</nav>
+					</header>
 
-					<div className="right-section">
-						<Profile />
-						<h2>📌 Pinned Repositories</h2>
-						<div className="repos-list">
-							{PROJECTS.map((repo) => (
-								<div key={repo.id} className="repo-card">
-									<div className="repo-card-header">
-										<a href={repo.url} target="_blank" rel="noopener noreferrer">
-											<h3>{repo.name}</h3>
-										</a>
-										<span className="badge">Public</span>
-									</div>
-									<p className="repo-card-description">{repo.description}</p>
-									<div className="repo-card-footer">
-										<span className="repo-language">
-											<span className="repo-language-color" style={{ backgroundColor: repo.languageColor }}></span>
-											{repo.language}
-										</span>
-									</div>
+					<div className="gh-body">
+						<aside className="gh-profile" aria-label="프로필">
+							<img
+								className="gh-avatar"
+								src={GITHUB_PROFILE.avatar}
+								alt={`${GITHUB_PROFILE.login}의 프로필 사진`}
+								// GitHub 이미지를 못 불러오면 사이트에 있는 사진
+								onError={(event) => {
+									event.currentTarget.src = `${env.imageUrl}/me.png`;
+								}}
+							/>
+							<div className="gh-names">
+								<h1>{GITHUB_PROFILE.name}</h1>
+								<p>{GITHUB_PROFILE.login}</p>
+							</div>
+							<p className="gh-bio">{GITHUB_PROFILE.bio}</p>
+							<a className="gh-button" href={GITHUB_PROFILE.url} {...external}>
+								Follow
+							</a>
+							<p className="gh-follow">
+								<i className="fa-solid fa-user-group" aria-hidden="true" />
+								<strong>{GITHUB_PROFILE.followers}</strong> followers · <strong>{GITHUB_PROFILE.following}</strong>{' '}
+								following
+							</p>
+							<ul className="gh-details">
+								<li>
+									<i className="fa-solid fa-location-dot" aria-hidden="true" /> {GITHUB_PROFILE.location}
+								</li>
+								<li>
+									<i className="fa-solid fa-link" aria-hidden="true" />
+									<a href={GITHUB_PROFILE.website} {...external}>
+										{GITHUB_PROFILE.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+									</a>
+								</li>
+							</ul>
+						</aside>
+
+						<main className="gh-main">
+							<article className="gh-readme" aria-label="README">
+								<p className="gh-readme-path">
+									{GITHUB_PROFILE.login} / README<span>.md</span>
+								</p>
+
+								<div className="gh-banner" role="img" aria-label={README.banner.title}>
+									<strong>{README.banner.title}</strong>
+									<span>{README.banner.subtitle}</span>
 								</div>
-							))}
-						</div>
+
+								<h2>👋 About Me</h2>
+								<ul className="gh-about">
+									{README.about.map((item) => (
+										<li key={item.title}>
+											{item.emoji} <strong>{item.title}</strong> — {item.text}
+										</li>
+									))}
+								</ul>
+
+								<table className="gh-now">
+									<tbody>
+										{README.now.map((row) => (
+											<tr key={row.label}>
+												<td>{row.emoji}</td>
+												<th scope="row">{row.label}</th>
+												<td>{row.text}</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+
+								<h2>🛠 Tech Stack</h2>
+								<div className="gh-center">
+									<img className="gh-stack" src={README.stackImage} alt={README.stackAlt} />
+									<p className="gh-muted">{README.stackSummary}</p>
+								</div>
+
+								<h2>📊 GitHub Stats</h2>
+								<div className="gh-center gh-stats">
+									<img src={statsCard('stats', cardTheme)} alt="GitHub Stats" loading="lazy" />
+									<img src={statsCard('top-langs', cardTheme)} alt="Top Languages" loading="lazy" />
+								</div>
+
+								<h2>📬 Contact</h2>
+								<div className="gh-center gh-contact">
+									{README.contact.map((item) => (
+										<a
+											key={item.label}
+											href={item.href}
+											{...(item.href.startsWith('mailto:') ? {} : external)}
+											style={{ backgroundColor: item.color }}
+										>
+											<i className={item.icon} aria-hidden="true" /> {item.label}
+										</a>
+									))}
+								</div>
+							</article>
+
+							<section className="gh-pinned" aria-label="Pinned">
+								<h2>Pinned</h2>
+								<ul>
+									{PINNED_REPOS.map((repo) => (
+										<RepoCard key={repo.url} repo={repo} />
+									))}
+								</ul>
+							</section>
+						</main>
 					</div>
 				</div>
 			</div>

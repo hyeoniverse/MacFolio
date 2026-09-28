@@ -3,18 +3,18 @@
 export const PROFILE = {
 	name: '김정현',
 	nameEn: 'Kim Jeong Hyeon',
-	role: 'App Developer | Frontend Enthusiast',
+	role: 'Frontend Focused Fullstack Developer',
 	school: '서울여자대학교',
 	location: 'Seoul, South Korea',
 	github: 'https://github.com/hyeoniverse',
 	email: 'hyeoniverse.dev@gmail.com',
 } as const;
 
-/** GitHub 프로필의 기술 배지 */
+/** 다룰 수 있는 기술 (GitHub 프로필 README의 Tech Stack) */
 export const SKILLS = {
-	languages: ['Swift', 'Python', 'Java', 'C#', 'JavaScript', 'HTML5', 'CSS3'],
-	data: ['MySQL', 'Firebase'],
-	tools: ['GitHub', 'Notion'],
+	frontend: ['React', 'Next.js', 'TypeScript', 'JavaScript', 'TailwindCSS', 'Zustand'],
+	backend: ['Node.js', 'Express', 'MySQL', 'Supabase', 'Firebase'],
+	interaction: ['GSAP', 'Framer Motion', 'Three.js'],
 } as const;
 
 /** 이 사이트(MacFolio)를 만든 기술 */
