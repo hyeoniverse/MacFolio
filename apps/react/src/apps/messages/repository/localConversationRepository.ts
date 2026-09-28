@@ -3,7 +3,8 @@ import type { ConversationRepository } from './types';
 
 // 브라우저에만 저장하는 구현. IP를 알 수 없으므로 브라우저 id로 사람을 구분하고,
 // 비밀번호는 로컬에서도 평문으로 두지 않고 해시로 저장한다.
-export const STORAGE_KEY = 'macfolio:messages';
+/** 저장 형식 버전이 바뀌면 키를 바꾼다. 예전 키의 데이터는 index.ts에서 지운다 */
+export const STORAGE_KEY = 'macfolio:messages:v2';
 export const PINNED_THREAD_ID = 'owner';
 const OWNER_AUTHOR_ID = 'owner';
 
@@ -33,7 +34,7 @@ interface StoredData {
 
 type KeyValueStorage = Pick<Storage, 'getItem' | 'setItem'>;
 
-/** 사이드바 맨 위 고정 방: 사이트 주인의 방명록 */
+/** 사이드바 맨 위 고정 항목: 사이트 주인의 안내 */
 const PINNED_THREAD: StoredThread = {
 	id: PINNED_THREAD_ID,
 	ownerId: OWNER_AUTHOR_ID,
@@ -44,7 +45,7 @@ const PINNED_MESSAGES: StoredMessage[] = [
 	{ id: 'owner-1', text: '안녕하세요, 김정현입니다 👋', createdAt: '2026-09-28T00:00:00.000Z' },
 	{
 		id: 'owner-2',
-		text: '방문해 주셔서 감사해요. 편하게 한마디 남겨 주세요. 다른 분들의 방에도 글을 남길 수 있어요!',
+		text: '포트폴리오를 보고 느낀 점, 의견, 피드백을 편하게 남겨 주세요. 왼쪽 위 쓰기 버튼으로 새 피드백을 남길 수 있어요!',
 		createdAt: '2026-09-28T00:00:05.000Z',
 	},
 ].map((message) => ({
@@ -114,16 +115,15 @@ export function createLocalConversationRepository(
 	});
 
 	const toThread = (thread: StoredThread, messages: StoredMessage[], me: string): Thread => {
-		const last = messages
-			.filter((m) => m.threadId === thread.id)
-			.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-			.at(-1);
+		const own = messages.filter((m) => m.threadId === thread.id).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+		const last = own.at(-1);
 		return {
 			id: thread.id,
 			title: thread.title,
 			createdAt: thread.createdAt,
 			pinned: thread.id === PINNED_THREAD_ID || undefined,
 			mine: thread.ownerId === me,
+			summary: own[0]?.text,
 			lastMessage: last && { text: last.text, createdAt: last.createdAt },
 		};
 	};
@@ -146,8 +146,6 @@ export function createLocalConversationRepository(
 		async createThread(input) {
 			const me = await authorIdPromise;
 			const data = read();
-			const existing = data.threads.find((t) => t.ownerId === me);
-			if (existing) return { existing: toThread(existing, data.messages, me) };
 
 			const thread: StoredThread = {
 				id: crypto.randomUUID(),

@@ -6,8 +6,8 @@ import { NEW_THREAD, useConversations } from './useConversations';
 import '@/apps/messages/Messages.css';
 
 /**
- * 메시지: 사람별 공개 방명록. 고정된 사이트 주인(김정현)의 방이 있고, 방문자도 처음 글을 쓰면 자기 방이 생긴다.
- * 누구나 어느 방에나 쓸 수 있다. 창이 좁으면 목록과 대화를 한 화면씩 보여준다.
+ * 메시지: 감상·의견·피드백을 남기는 공간. 쓰기 버튼으로 남긴 피드백 하나가 목록의 항목 하나가 되고,
+ * 누구나 어느 피드백에나 답글을 달 수 있다. 창이 좁으면 목록과 대화를 한 화면씩 보여준다.
  */
 const Messages: React.FC = () => {
 	const conversations = useConversations();

@@ -1,20 +1,25 @@
 // 메시지 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
-// 대화방은 사람별 공개 방명록이다. 고정된 주인(김정현) 방이 있고, 방문자도 처음 글을 쓰면 자기 방이 생긴다.
-// 누구나 어느 방에나 쓸 수 있다. 사람은 서버에서는 IP(해시), 로컬에서는 브라우저 id로 구분한다.
+// 감상·의견·피드백을 남기는 공간이다. 쓰기 버튼으로 남긴 피드백 하나가 목록의 항목 하나가 되고,
+// 누구나 어느 피드백에나 답글을 달 수 있다. 맨 위에는 사이트 주인(김정현)의 안내가 고정된다.
+// 사람은 서버에서는 IP(해시), 로컬에서는 브라우저 id로 구분한다.
 
 export const OWNER_NAME = '김정현';
 
+/** 목록의 항목 하나: 피드백 하나와 그 답글들 (고정 항목은 사이트 주인의 안내) */
 export interface Thread {
 	id: string;
-	/** 방 주인의 이름 (고정 방은 사이트 주인) */
+	/** 피드백을 남긴 사람의 이름 (고정 항목은 사이트 주인) */
 	title: string;
-	/** 방 주인 IP의 앞 두 자리 (서버에서만. 예: "211.234") */
+	/** 남긴 사람 IP의 앞 두 자리 (서버에서만. 예: "211.234") */
 	ipPrefix?: string;
 	createdAt: string;
-	/** 사이드바 맨 위에 고정되는 사이트 주인의 방명록 */
+	/** 사이드바 맨 위에 고정되는 사이트 주인의 안내 */
 	pinned?: boolean;
-	/** 보고 있는 사람의 방인지 */
+	/** 보고 있는 사람이 남긴 피드백인지 */
 	mine?: boolean;
+	/** 피드백 본문 (첫 메시지). 목록 미리보기에 쓴다 */
+	summary?: string;
+	/** 마지막 활동 (목록 정렬과 시각 표시) */
 	lastMessage?: { text: string; createdAt: string };
 }
 
@@ -84,7 +89,7 @@ export function sortMessages(messages: Message[]): Message[] {
 	return [...messages].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
 
-/** 고정 대화가 맨 위, 나머지는 최근 메시지 순 */
+/** 고정 항목이 맨 위, 나머지는 최근 활동 순 */
 export function sortThreads(threads: Thread[]): Thread[] {
 	const latest = (thread: Thread) => thread.lastMessage?.createdAt ?? thread.createdAt;
 	return [...threads].sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned) || latest(b).localeCompare(latest(a)));
