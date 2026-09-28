@@ -1,44 +1,69 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
+import type { Page } from '@playwright/test';
 
-test('Memo: 작성한 메모가 유지되고, 비밀번호가 맞아야 삭제된다', async ({ page }) => {
-	const storedTitles = () =>
-		page.evaluate(() =>
-			Object.values(JSON.parse(localStorage.getItem('macfolio:memos') ?? '{"memos":{}}').memos).map(
-				(memo) => (memo as { title: string }).title
-			)
-		);
-
+async function openMemo(page: Page) {
 	await enterDesktop(page);
 	await dockItem(page, 'memo').click();
 	const memo = appWindow(page, 'memo');
-	await expect(memo.locator('.folder-list')).toContainText('모든 메모');
+	await expect(memo).toBeVisible();
+	return memo;
+}
 
-	// 작성
-	await memo.locator('button:has(svg[class*="pen"])').click();
-	await memo.locator('.create-memo-title').fill('E2E 테스트');
-	await memo.locator('.create-memo-content').fill('내용입니다');
-	await memo.locator('button:has(.fa-check)').click();
-	await page.getByPlaceholder('삭제 시 이용할 비밀번호를 입력해주세요').fill('pw1234');
-	await page.getByRole('button', { name: '확인' }).click();
-	await expect.poll(storedTitles).toContain('E2E 테스트');
+test.describe('메모 (블로그)', () => {
+	test('글 목록이 최신순으로 보이고, 첫 글의 본문이 열린다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const items = memo.getByRole('region', { name: '글 목록' }).locator('.memo-item');
+		await expect(items).not.toHaveCount(0);
 
-	// 새로고침 후에도 유지
-	await enterDesktop(page);
-	await dockItem(page, 'memo').click();
-	await expect(memo.locator('.notes-list')).toContainText('E2E 테스트');
+		const firstTitle = (await items.first().locator('strong').textContent())!;
+		await expect(memo.getByRole('article')).toHaveAccessibleName(firstTitle);
+		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(firstTitle);
+	});
 
-	// 틀린 비밀번호로는 삭제되지 않음
-	await memo.locator('.notes-list').getByText('E2E 테스트').click();
-	await memo.locator('button:has(svg[class*="trash"])').click();
-	await page.getByPlaceholder('비밀번호를 입력해주세요', { exact: true }).fill('wrong');
-	await page.getByRole('button', { name: '삭제' }).click();
-	await expect.poll(storedTitles).toContain('E2E 테스트');
-	await page.getByRole('button', { name: '확인' }).first().click();
+	test('글을 고르면 Markdown 본문(제목, 표, 코드)이 렌더링된다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
 
-	// 맞는 비밀번호로 삭제
-	await memo.locator('.notes-list').getByText('E2E 테스트').click();
-	await memo.locator('button:has(svg[class*="trash"])').click();
-	await page.getByPlaceholder('비밀번호를 입력해주세요', { exact: true }).fill('pw1234');
-	await page.getByRole('button', { name: '삭제' }).click();
-	await expect.poll(storedTitles).not.toContain('E2E 테스트');
+		const article = memo.getByRole('article', { name: 'CRA에서 Vite로 옮기기' });
+		await expect(article.getByRole('heading', { name: '왜 옮겼나' })).toBeVisible();
+		await expect(article.getByRole('table')).toContainText('dev 서버 시작');
+		await expect(article.locator('code').first()).toBeVisible();
+	});
+
+	test('카테고리와 검색어로 글을 거른다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const items = memo.locator('.memo-item');
+		const total = await items.count();
+
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await folders.getByRole('button', { name: /^개발기/ }).click();
+		await expect(items).not.toHaveCount(0);
+
+		await memo.getByRole('searchbox', { name: '글 검색' }).fill('Fast Refresh');
+		await expect(items).toHaveCount(1);
+		await expect(items.first()).toContainText('CRA에서 Vite로 옮기기');
+
+		await memo.getByRole('searchbox', { name: '글 검색' }).fill('존재하지 않는 검색어');
+		await expect(memo.getByText('검색 결과가 없습니다.')).toBeVisible();
+
+		await memo.getByRole('searchbox', { name: '글 검색' }).fill('');
+		await folders.getByRole('button', { name: /^모든 글/ }).click();
+		await expect(items).toHaveCount(total);
+	});
+
+	test('본문의 링크는 새 탭으로 열린다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const links = memo.getByRole('article').locator('.memo-markdown a');
+		for (const link of await links.all()) {
+			await expect(link).toHaveAttribute('target', '_blank');
+			await expect(link).toHaveAttribute('rel', /noopener/);
+		}
+	});
+
+	test('예전 메모(방명록) 데이터는 지운다', async ({ page }) => {
+		await page.goto('/');
+		await page.evaluate(() => localStorage.setItem('macfolio:memos', '{"folders":{},"memos":{}}'));
+		await openMemo(page);
+		expect(await page.evaluate(() => localStorage.getItem('macfolio:memos'))).toBeNull();
+	});
 });
