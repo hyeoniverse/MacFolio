@@ -59,7 +59,17 @@ export function canMoveFolder(from: string, parent: string): boolean {
 /** 폴더를 parent 아래로 옮긴다 (parent가 ''이면 맨 위로). 안의 글과 하위 폴더도 함께 옮겨 간다 */
 export function moveFolder(organization: Organization, from: string, parent: string): Organization {
 	if (!canMoveFolder(from, parent)) return organization;
-	const to = join(parent, lastName(from));
+	return relocate(organization, from, join(parent, lastName(from)));
+}
+
+/** 폴더 이름을 바꾼다. 안의 글과 하위 폴더도 새 경로를 따라간다 */
+export function renameFolder(organization: Organization, path: string, name: string): Organization {
+	const to = join(parentOf(path), name.trim());
+	return to === path ? organization : relocate(organization, path, to);
+}
+
+/** 폴더를 from에서 to 경로로 옮긴다 */
+function relocate(organization: Organization, from: string, to: string): Organization {
 	return {
 		folders: [...new Set(organization.folders.map((path) => rebase(path, from, to)))],
 		posts: Object.fromEntries(Object.entries(organization.posts).map(([slug, path]) => [slug, rebase(path, from, to)])),

@@ -17,6 +17,11 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 
+	// 로딩 화면이 화면을 덮었으니 배경화면을 보여도 된다 (index.html의 booting)
+	useEffect(() => {
+		document.documentElement.classList.remove('booting');
+	}, []);
+
 	useEffect(() => {
 		const startLoading = () => {
 			if (!isInteractedRef.current) {

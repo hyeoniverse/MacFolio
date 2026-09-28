@@ -86,7 +86,7 @@
 /* 신호등 버튼 자리 (사이드바를 닫았을 때 도구 막대 앞, 사이드바 막대 앞) */
 .memo-lights-space {
 	flex: none;
-	width: 66px;
+	width: 58px;
 }
 
 /* 도구 막대의 버튼. 통합형 창의 끌기 영역(z-index 3)보다 위에 있어야 눌린다 */
@@ -175,6 +175,26 @@
 	overflow-y: auto;
 }
 
+.memo-toolbar-heading {
+	flex: 1;
+	min-width: 0;
+	margin-left: 4px;
+	line-height: 1.2;
+}
+
+.memo-toolbar-heading h2 {
+	overflow: hidden;
+	font-size: 15px;
+	font-weight: 700;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-toolbar-heading p {
+	color: var(--memo-muted);
+	font-size: 11px;
+}
+
 .memo-toolbar-title {
 	flex: 1;
 	min-width: 0;
@@ -225,8 +245,9 @@
 	width: 60px;
 }
 
-.memo-sidebar-bar .memo-sidebar-toggle {
+.memo-sidebar-bar .memo-new-folder-button {
 	margin-left: auto;
+	font-size: 14px;
 }
 
 .memo-folder-scroll {
@@ -284,9 +305,9 @@
 	gap: 7px;
 	min-width: 0;
 	height: 100%;
-	padding: 0 8px 0 6px;
+	padding: 0 10px 0 7px;
 	border: none;
-	border-radius: 7px;
+	border-radius: 9px;
 	background: none;
 	font-size: 13px;
 	text-align: left;
@@ -341,51 +362,107 @@
 	opacity: 0.4;
 }
 
-/* 방문자가 만든 빈 폴더: 마우스를 올리면 글 수 자리에 지우기 단추 */
-.memo-folder-remove {
-	display: none;
+/* 폴더에 마우스를 올리면 글 수 앞에 ••• (메뉴) */
+.memo-folder-more {
+	/* 평소에는 투명하게 두어 키보드로도 닿게 한다 (display: none이면 포커스할 수 없다) */
+	display: grid;
+	opacity: 0;
 	place-items: center;
 	position: absolute;
-	right: 6px;
-	width: 18px;
-	height: 18px;
+	right: 34px;
+	width: 20px;
+	height: 20px;
+	padding: 0;
 	border: none;
 	border-radius: 50%;
-	background-color: var(--memo-hover);
-	color: var(--memo-muted) !important;
-	font-size: 9px;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text) !important;
+	font-size: 10px;
 }
 
-.memo-folder-row:hover .memo-folder-remove,
-.memo-folder-remove:focus-visible {
-	display: grid;
+.memo-folder-row:hover .memo-folder-more,
+.memo-folder-row.menu-open .memo-folder-more,
+.memo-folder-more:focus-visible {
+	opacity: 1;
 }
 
-.memo-folder-row:has(.memo-folder-remove:is(:hover, :focus-visible)) .memo-count,
-.memo-folder-row:hover:has(.memo-folder-remove) .memo-count {
-	visibility: hidden;
+.memo-folder-row:has(.memo-folder.active) .memo-folder-more {
+	background-color: rgba(255, 255, 255, 0.35);
+	color: var(--memo-on-accent) !important;
 }
 
-/* 새 폴더 이름 입력 */
-.memo-new-folder .memo-folder-row {
-	gap: 7px;
-	padding-right: 4px;
+/* 메뉴를 연 폴더는 테두리로 표시 */
+.memo-folder-row.menu-open .memo-folder:not(.active) {
+	box-shadow: inset 0 0 0 2px var(--memo-accent);
 }
 
-.memo-new-folder .memo-folder-row > i {
-	flex: none;
-	width: 16px;
-	margin-left: 6px;
-	color: var(--memo-accent);
+.memo-folder-menu {
+	display: flex;
+	flex-direction: column;
+	/* body에 그린다 (사이드바 패널에 잘리지 않게). 위치는 연 자리 */
+	position: fixed;
+	z-index: 10000;
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	min-width: 180px;
+	padding: 5px;
+	border-radius: 12px;
+	background-color: var(--color-popover-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.15),
+		0 10px 30px rgba(0, 0, 0, 0.2);
+	color: var(--color-popover-text);
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top left;
+}
+
+.memo-folder-menu button {
+	display: flex;
+	color: inherit;
+	cursor: pointer;
+	align-items: center;
+	gap: 9px;
+	padding: 5px 9px;
+	border: none;
+	border-radius: 6px;
+	background: none;
 	font-size: 13px;
-	text-align: center;
+	text-align: left;
 }
 
-.memo-new-folder input {
+.memo-folder-menu button i {
+	width: 14px;
+	font-size: 12px;
+	text-align: center;
+	opacity: 0.8;
+}
+
+.memo-folder-menu button:hover:not(:disabled) {
+	background-color: var(--color-accent);
+	color: var(--color-on-accent) !important;
+}
+
+.memo-folder-menu button:disabled {
+	opacity: 0.4;
+	cursor: default !important;
+}
+
+.memo-folder-menu hr {
+	margin: 4px 8px;
+	border: none;
+	border-top: 1px solid var(--color-divider);
+}
+
+/* 폴더 이름 입력 (새 폴더, 이름 바꾸기): 폴더 줄과 같은 모양이라 들여쓰기가 맞는다 */
+.memo-folder.editing {
+	cursor: text;
+}
+
+.memo-folder.editing input {
 	flex: 1;
 	min-width: 0;
 	height: 22px;
-	padding: 0 6px;
+	margin-left: -4px;
+	padding: 0 4px;
 	border: 1px solid var(--memo-accent);
 	border-radius: 5px;
 	outline: none;
@@ -396,28 +473,9 @@
 }
 
 .memo-folder-error {
-	margin: 0 0 4px calc(var(--depth, 0) * 16px + 43px);
+	margin: 0 0 4px calc(var(--depth, 0) * var(--row-indent, 16px) + 14px + 29px);
 	color: var(--memo-danger);
 	font-size: 11px;
-}
-
-/* 사이드바 아래: 새로운 폴더 */
-.memo-add-folder {
-	display: flex;
-	flex: none;
-	align-items: center;
-	gap: 7px;
-	margin: 0 10px 10px;
-	padding: 6px 8px;
-	border: none;
-	border-radius: 7px;
-	background: none;
-	color: var(--memo-muted) !important;
-	font-size: 13px;
-}
-
-.memo-add-folder:hover {
-	background-color: var(--memo-hover);
 }
 
 /* ─── 글 목록 ─── */

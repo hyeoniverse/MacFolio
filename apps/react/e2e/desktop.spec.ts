@@ -1,6 +1,28 @@
 import { test, expect, enterDesktop, dockItem, appWindow, zIndexOf } from './fixtures';
 
 test.describe('데스크톱', () => {
+	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
+		// 스크립트를 늦게 받게 해서 로딩 화면이 뜨기 전의 모습을 본다
+		let release = () => {};
+		const held = new Promise<void>((resolve) => (release = resolve));
+		await page.route(/\.js$/, async (route) => {
+			await held;
+			await route.continue();
+		});
+		// 모듈 스크립트는 DOMContentLoaded를 막으므로 HTML을 다 읽은 시점까지만 기다린다
+		await page.goto('/', { waitUntil: 'commit' });
+		await page.waitForFunction(() => document.readyState !== 'loading');
+		const body = await page.evaluate(() => {
+			const style = getComputedStyle(document.body);
+			return { image: style.backgroundImage, color: style.backgroundColor };
+		});
+		expect(body).toEqual({ image: 'none', color: 'rgb(0, 0, 0)' });
+
+		release();
+		await expect(page.locator('.loading-container')).toBeVisible();
+		await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('booting'))).toBe(false);
+	});
+
 	test('로딩 화면을 넘기면 Dock과 시작 앱이 보인다', async ({ page }) => {
 		await enterDesktop(page);
 
