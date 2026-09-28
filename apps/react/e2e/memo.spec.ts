@@ -290,4 +290,29 @@ test.describe('메모 (블로그)', () => {
 		await expect(folders.getByRole('button', { name: /^보관/ })).toContainText('0');
 		await expect(folders.getByRole('button', { name: /^개발기/ })).toBeVisible();
 	});
+
+	test('메모를 고정하면 맨 위 고정됨 묶음에 들어가고, 풀 수 있다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const title = '테스트를 붙이자 보인 버그들';
+
+		// 우클릭 메뉴로 고정
+		await memo.locator('.memo-item', { hasText: title }).click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '메모 고정' }).click();
+		const pinned = memo.getByRole('list', { name: '고정됨' });
+		await expect(pinned.locator('.memo-item')).toHaveText([new RegExp(title)]);
+
+		// 갤러리에서도 고정된 메모 묶음에 있다
+		await memo.getByRole('button', { name: '갤러리로 보기' }).click();
+		await expect(memo.getByRole('list', { name: '고정된 메모' })).toContainText(title);
+		await memo.getByRole('button', { name: '목록으로 보기' }).click();
+
+		// 새로고침해도 고정되어 있고, 본문 위 고정 단추로 푼다
+		await enterDesktop(page);
+		await dockItem(page, 'memo').click();
+		await memo.locator('.memo-item', { hasText: title }).click();
+		const pin = memo.getByRole('button', { name: '메모 고정 해제' }).first();
+		await expect(pin).toHaveAttribute('aria-pressed', 'true');
+		await pin.click();
+		await expect(memo.getByRole('list', { name: '고정됨' })).toHaveCount(0);
+	});
 });

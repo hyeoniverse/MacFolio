@@ -9,6 +9,8 @@ import {
 	organizePosts,
 	removeFolder,
 	renameFolder,
+	setPinned,
+	splitPinned,
 	validateFolderName,
 } from './organize';
 import type { Post } from './posts';
@@ -118,5 +120,20 @@ describe('폴더는 3단까지', () => {
 		// 하위 폴더가 없는 r은 p/q 안으로 (3단) 가능
 		expect(canMoveFolder('r', 'p/q', all)).toBe(true);
 		expect(moveFolder(EMPTY_ORGANIZATION, 'x', 'p/q', all)).toBe(EMPTY_ORGANIZATION);
+	});
+});
+
+describe('메모 고정', () => {
+	it('머리말의 pinned를 따르고, 방문자가 고정을 바꿀 수 있다', () => {
+		const list = [{ ...post('a', 'x'), pinned: true }, post('b', 'x'), post('c', 'x')];
+		const org = setPinned(setPinned(EMPTY_ORGANIZATION, 'a', false), 'c', true);
+		const { pinned, others } = splitPinned(organizePosts(list, org));
+		expect(pinned.map((item) => item.slug)).toEqual(['c']);
+		expect(others.map((item) => item.slug)).toEqual(['a', 'b']);
+	});
+
+	it('고정을 바꾸지 않은 글은 그대로 둔다', () => {
+		const list = [post('a', 'x')];
+		expect(organizePosts(list, EMPTY_ORGANIZATION)[0]).toBe(list[0]);
 	});
 });

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState } from 'react';
+import ContextMenu from './ContextMenu';
 import { ALL_CATEGORY, type FolderNode } from '../posts';
 import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
@@ -111,79 +111,6 @@ const FolderNameInput: React.FC<{
 	);
 };
 
-/**
- * 폴더의 ••• 메뉴 (우클릭으로도 연다). 사이드바 패널 밖으로 나와야 하므로 body에 그리고,
- * 연 자리(anchor)에 맞춰 놓는다.
- */
-const FolderMenu: React.FC<{
-	node: FolderNode;
-	anchor: { x: number; y: number };
-	onRename: () => void;
-	onRemove: () => void;
-	onAddChild: () => void;
-	onClose: () => void;
-}> = ({ node, anchor, onRename, onRemove, onAddChild, onClose }) => {
-	const ref = useRef<HTMLDivElement>(null);
-	const removable = Boolean(node.custom) && node.count === 0;
-
-	useEffect(() => {
-		const close = (event: Event) => {
-			if (event instanceof KeyboardEvent ? event.key === 'Escape' : !ref.current?.contains(event.target as Node))
-				onClose();
-		};
-		document.addEventListener('pointerdown', close);
-		document.addEventListener('keydown', close);
-		return () => {
-			document.removeEventListener('pointerdown', close);
-			document.removeEventListener('keydown', close);
-		};
-	}, [onClose]);
-
-	const item = (label: string, icon: string, action: () => void, disabled = false, hint?: string) => (
-		<button
-			type="button"
-			role="menuitem"
-			disabled={disabled}
-			title={hint}
-			onClick={() => {
-				onClose();
-				action();
-			}}
-		>
-			<i className={icon} aria-hidden="true" />
-			{label}
-		</button>
-	);
-
-	return createPortal(
-		<div
-			ref={ref}
-			className="memo-folder-menu"
-			role="menu"
-			aria-label={`${node.name} 폴더 메뉴`}
-			style={{ left: anchor.x, top: anchor.y }}
-		>
-			{item('폴더 이름 변경', 'fa-solid fa-pen', onRename)}
-			{item(
-				'폴더 삭제',
-				'fa-regular fa-trash-can',
-				onRemove,
-				!removable,
-				removable ? undefined : node.custom ? '메모가 있는 폴더는 지울 수 없어요' : '블로그 글의 폴더는 지울 수 없어요'
-			)}
-			<hr />
-			{item(
-				'새로운 폴더',
-				'fa-solid fa-folder-plus',
-				onAddChild,
-				!canAddFolder(node.path),
-				canAddFolder(node.path) ? undefined : DEPTH_LIMIT_HINT
-			)}
-		</div>,
-		document.body
-	);
-};
-
 type RowProps = Omit<Props, 'open' | 'onToggle' | 'folders' | 'total' | 'onAddFolder'> & {
 	node: FolderNode;
 	depth: number;
@@ -209,6 +136,7 @@ const FolderRow: React.FC<RowProps> = (props) => {
 	const hasChildren = node.children.length > 0;
 	const beingDragged = props.dragging?.type === 'folder' && props.dragging.id === node.path;
 	const siblingNames = (props.siblings ?? []).filter((name) => name !== node.name);
+	const removable = Boolean(node.custom) && node.count === 0;
 
 	return (
 		<li>
@@ -277,14 +205,33 @@ const FolderRow: React.FC<RowProps> = (props) => {
 					>
 						<i className="fa-solid fa-ellipsis" aria-hidden="true" />
 					</button>
-					{menuOpen && (
-						<FolderMenu
-							node={node}
+					{menuAt && (
+						<ContextMenu
+							label={`${node.name} 폴더 메뉴`}
 							anchor={menuAt}
-							onRename={() => setRenaming(true)}
-							onRemove={() => props.onRemoveFolder(node.path)}
-							onAddChild={() => props.onStartAdding(node.path)}
 							onClose={() => setMenuAt(null)}
+							items={[
+								{ label: '폴더 이름 변경', icon: 'fa-solid fa-pen', onSelect: () => setRenaming(true) },
+								{
+									label: '폴더 삭제',
+									icon: 'fa-regular fa-trash-can',
+									onSelect: () => props.onRemoveFolder(node.path),
+									disabled: !removable,
+									hint: removable
+										? undefined
+										: node.custom
+											? '메모가 있는 폴더는 지울 수 없어요'
+											: '블로그 글의 폴더는 지울 수 없어요',
+								},
+								'separator',
+								{
+									label: '새로운 폴더',
+									icon: 'fa-solid fa-folder-plus',
+									onSelect: () => props.onStartAdding(node.path),
+									disabled: !canAddFolder(node.path),
+									hint: canAddFolder(node.path) ? undefined : DEPTH_LIMIT_HINT,
+								},
+							]}
 						/>
 					)}
 				</div>

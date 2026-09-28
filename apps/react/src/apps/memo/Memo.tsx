@@ -24,10 +24,13 @@ import {
 	removeFolder,
 	renameFolder,
 	saveOrganization,
+	setPinned,
+	splitPinned,
 	type Organization,
 } from './organize';
 import FolderSidebar, { type DragItem } from './components/FolderSidebar';
 import { ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
+import ContextMenu from './components/ContextMenu';
 import { CONTENT_IMAGES } from './contentImages';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
@@ -96,6 +99,8 @@ const Memo: React.FC = () => {
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
 	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
 	const [organization, setOrganization] = useState<Organization>(loadOrganization);
+	/** 메모 우클릭 메뉴 */
+	const [noteMenu, setNoteMenu] = useState<{ slug: string; x: number; y: number } | null>(null);
 	/** 끌고 있는 글이나 폴더 */
 	const [dragging, setDragging] = useState<DragItem | null>(null);
 
@@ -181,6 +186,100 @@ const Memo: React.FC = () => {
 		setGalleryNoteOpen(false);
 	};
 
+	const { pinned: pinnedPosts, others: otherPosts } = splitPinned(visible);
+	const togglePin = (post: Post) => setOrganization((prev) => setPinned(prev, post.slug, !post.pinned));
+	const openNoteMenu = (slug: string) => (event: React.MouseEvent) => {
+		event.preventDefault();
+		setNoteMenu({ slug, x: event.clientX, y: event.clientY });
+	};
+	const menuPost = noteMenu ? organized.find((post) => post.slug === noteMenu.slug) : undefined;
+
+	/** 고정된 메모를 먼저, 그다음 나머지. 고정된 메모가 있을 때만 묶음 이름을 단다 */
+	const sections = (render: (post: Post) => React.ReactNode, pinnedTitle: string, className: string) =>
+		pinnedPosts.length > 0 ? (
+			<>
+				<h3 className="memo-section-title">
+					<i className="fa-solid fa-thumbtack" aria-hidden="true" /> {pinnedTitle}
+				</h3>
+				<ul className={className} aria-label={pinnedTitle}>
+					{pinnedPosts.map(render)}
+				</ul>
+				{otherPosts.length > 0 && (
+					<>
+						<h3 className="memo-section-title">메모</h3>
+						<ul className={className}>{otherPosts.map(render)}</ul>
+					</>
+				)}
+			</>
+		) : (
+			<ul className={className}>{otherPosts.map(render)}</ul>
+		);
+
+	const listItem = (post: Post) => (
+		<li key={post.slug}>
+			<button
+				type="button"
+				className={`memo-item ${selected?.slug === post.slug ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
+				{...dragPost(post.slug)}
+				aria-current={selected?.slug === post.slug || undefined}
+				onContextMenu={openNoteMenu(post.slug)}
+				onClick={() => {
+					setSelectedSlug(post.slug);
+					setPane('reader');
+				}}
+			>
+				<strong>{post.title}</strong>
+				<span className="memo-item-meta">
+					<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
+				</span>
+				<span className="memo-item-folder">
+					<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
+				</span>
+			</button>
+		</li>
+	);
+
+	const card = (post: Post) => (
+		<li key={post.slug}>
+			<button
+				type="button"
+				className={`memo-card ${dragging?.id === post.slug ? 'dragging' : ''}`}
+				{...dragPost(post.slug)}
+				onContextMenu={openNoteMenu(post.slug)}
+				onClick={() => {
+					setSelectedSlug(post.slug);
+					setGalleryNoteOpen(true);
+				}}
+			>
+				<span className="memo-card-frame">
+					<CardPreview post={post} />
+					{post.pinned && (
+						<span className="memo-card-pin" aria-label="고정됨">
+							<i className="fa-solid fa-thumbtack" aria-hidden="true" />
+						</span>
+					)}
+				</span>
+				<strong>{post.title}</strong>
+				<time dateTime={post.date}>{formatPostDate(post.date)}</time>
+			</button>
+		</li>
+	);
+
+	/** 본문의 고정 단추 */
+	const pinButton = (className: string) =>
+		selected && (
+			<button
+				type="button"
+				className={`memo-tool memo-pin ${selected.pinned ? 'on' : ''} ${className}`}
+				aria-label={selected.pinned ? '메모 고정 해제' : '메모 고정'}
+				aria-pressed={Boolean(selected.pinned)}
+				title={selected.pinned ? '메모 고정 해제' : '메모 고정'}
+				onClick={() => togglePin(selected)}
+			>
+				<i className="fa-solid fa-thumbtack" aria-hidden="true" />
+			</button>
+		);
+
 	const empty = (
 		<>
 			{status === 'loading' && <p className="memo-empty">불러오는 중…</p>}
@@ -256,30 +355,7 @@ const Memo: React.FC = () => {
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
 							</button>
 							{compactSearch}
-							<ul>
-								{visible.map((post) => (
-									<li key={post.slug}>
-										<button
-											type="button"
-											className={`memo-item ${selected?.slug === post.slug ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
-											{...dragPost(post.slug)}
-											aria-current={selected?.slug === post.slug || undefined}
-											onClick={() => {
-												setSelectedSlug(post.slug);
-												setPane('reader');
-											}}
-										>
-											<strong>{post.title}</strong>
-											<span className="memo-item-meta">
-												<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
-											</span>
-											<span className="memo-item-folder">
-												<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
-											</span>
-										</button>
-									</li>
-								))}
-							</ul>
+							{sections(listItem, '고정됨', 'memo-items')}
 							{empty}
 						</div>
 					</section>
@@ -297,25 +373,7 @@ const Memo: React.FC = () => {
 								{search}
 							</div>
 							<div className="memo-scroll">
-								<ul className="memo-cards">
-									{visible.map((post) => (
-										<li key={post.slug}>
-											<button
-												type="button"
-												className={`memo-card ${dragging?.id === post.slug ? 'dragging' : ''}`}
-												{...dragPost(post.slug)}
-												onClick={() => {
-													setSelectedSlug(post.slug);
-													setGalleryNoteOpen(true);
-												}}
-											>
-												<CardPreview post={post} />
-												<strong>{post.title}</strong>
-												<time dateTime={post.date}>{formatPostDate(post.date)}</time>
-											</button>
-										</li>
-									))}
-								</ul>
+								{sections(card, '고정된 메모', 'memo-cards')}
 								{empty}
 							</div>
 						</section>
@@ -337,14 +395,18 @@ const Memo: React.FC = () => {
 								</>
 							)}
 							<span className="memo-toolbar-spacer" />
+							{pinButton('')}
 							{/* 보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
 							<ViewSwitch view={view} onChange={changeView} />
 							{search}
 						</div>
 						<div className="memo-scroll">
-							<button type="button" className="memo-back" onClick={() => setPane('list')}>
-								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
-							</button>
+							<div className="memo-reader-compact-bar">
+								<button type="button" className="memo-back" onClick={() => setPane('list')}>
+									<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
+								</button>
+								{pinButton('compact-only')}
+							</div>
 							{selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
 								<div key={selected.slug} className="memo-reader-body">
@@ -366,6 +428,21 @@ const Memo: React.FC = () => {
 							)}
 						</div>
 					</article>
+
+					{noteMenu && menuPost && (
+						<ContextMenu
+							label={`${menuPost.title} 메뉴`}
+							anchor={noteMenu}
+							onClose={() => setNoteMenu(null)}
+							items={[
+								{
+									label: menuPost.pinned ? '메모 고정 해제' : '메모 고정',
+									icon: 'fa-solid fa-thumbtack',
+									onSelect: () => togglePin(menuPost),
+								},
+							]}
+						/>
+					)}
 				</div>
 			</div>
 		</AppWindow>
