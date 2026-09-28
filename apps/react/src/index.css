@@ -17,7 +17,7 @@ html {
 	margin: 0;
 	padding: 0;
 	height: 100%;
-	background-image: url('/imgs/background.png');
+	background-image: var(--wallpaper);
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: center;
@@ -45,4 +45,8 @@ header p {
 	font-size: 1.2em;
 	line-height: 1.5;
 	color: #555;
+}
+
+:root[data-theme='dark'] header p {
+	color: var(--color-text-secondary);
 }
