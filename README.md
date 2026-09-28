@@ -41,6 +41,7 @@ title: 글 제목
 date: 2026-09-28
 category: 회고
 summary: 목록에 보일 한 줄 요약 (없으면 본문 앞부분)
+pinned: true # 목록 맨 위에 고정 (선택)
 ---
 
 본문은 Markdown으로 씁니다. 표, 코드 블록, 링크를 쓸 수 있습니다.

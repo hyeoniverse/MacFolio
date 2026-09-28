@@ -17,9 +17,11 @@ export interface Organization {
 	posts: Record<string, string>;
 	/** 옮긴 폴더 (순서대로 적용한다). 글의 원래 category 경로에 적용된다 */
 	moves: { from: string; to: string }[];
+	/** 고정을 바꾼 글: slug → 고정 여부 (머리말의 pinned보다 우선) */
+	pins: Record<string, boolean>;
 }
 
-export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [] };
+export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {} };
 
 const lastName = (path: string) => path.split('/').at(-1) ?? path;
 const parentOf = (path: string) => path.split('/').slice(0, -1).join('/');
@@ -42,14 +44,25 @@ export function validateFolderName(name: string, siblings: string[]): string | n
 	return null;
 }
 
-/** 정리 내용을 적용한 글 (category가 지금 있는 폴더로 바뀐다) */
+/** 정리 내용을 적용한 글 (category가 지금 있는 폴더로, pinned가 방문자가 고른 값으로 바뀐다) */
 export function organizePosts(posts: Post[], organization: Organization): Post[] {
 	return posts.map((post) => {
 		const moved = organization.posts[post.slug];
 		const category =
 			moved ?? organization.moves.reduce((path, move) => rebase(path, move.from, move.to), post.category);
-		return category === post.category ? post : { ...post, category };
+		const pinned = organization.pins[post.slug] ?? post.pinned ?? false;
+		return category === post.category && pinned === (post.pinned ?? false) ? post : { ...post, category, pinned };
 	});
+}
+
+/** 글을 고정하거나 고정을 푼다 */
+export function setPinned(organization: Organization, slug: string, pinned: boolean): Organization {
+	return { ...organization, pins: { ...organization.pins, [slug]: pinned } };
+}
+
+/** 고정된 글과 나머지로 나눈다 (각각 원래 순서 유지) */
+export function splitPinned(posts: Post[]): { pinned: Post[]; others: Post[] } {
+	return { pinned: posts.filter((post) => post.pinned), others: posts.filter((post) => !post.pinned) };
 }
 
 /** 폴더의 단 (맨 위 폴더가 1단, '' = 0) */
@@ -97,6 +110,7 @@ function relocate(organization: Organization, from: string, to: string): Organiz
 		folders: [...new Set(organization.folders.map((path) => rebase(path, from, to)))],
 		posts: Object.fromEntries(Object.entries(organization.posts).map(([slug, path]) => [slug, rebase(path, from, to)])),
 		moves: [...organization.moves, { from, to }],
+		pins: organization.pins,
 	};
 }
 
@@ -128,6 +142,7 @@ export function loadOrganization(): Organization {
 				folders: Array.isArray(value.folders) ? value.folders.filter((f) => typeof f === 'string') : [],
 				posts: value.posts && typeof value.posts === 'object' ? value.posts : {},
 				moves: Array.isArray(value.moves) ? value.moves.filter((m) => m && typeof m.from === 'string') : [],
+				pins: value.pins && typeof value.pins === 'object' ? value.pins : {},
 			};
 		}
 		// 예전에 만든 폴더(이름 목록)를 옮겨 온다

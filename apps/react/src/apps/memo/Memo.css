@@ -158,9 +158,46 @@
 	margin: 0;
 }
 
-/* 좁은 창에서만 목록 위에 보이는 검색 칸 */
-.memo-search.compact-only {
+/* 좁은 창에서만 보이는 것 (목록 위 검색 칸, 본문 위 고정 단추) */
+.memo .compact-only {
 	display: none;
+}
+
+/* 고정 단추: 고정되어 있으면 강조 색 */
+.memo-pin.on {
+	color: var(--memo-accent) !important;
+}
+
+.memo-pin i {
+	transform: rotate(45deg);
+}
+
+/* 고정된 메모 / 메모 묶음 이름 */
+.memo-section-title {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 10px 20px 6px;
+	color: var(--memo-muted);
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.memo-section-title i {
+	font-size: 10px;
+	transform: rotate(45deg);
+}
+
+.memo-gallery .memo-section-title {
+	margin: 14px 24px 4px;
+	color: var(--memo-text);
+	font-size: 15px;
+}
+
+.memo-reader-compact-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 /* 목록·본문·갤러리: 위에 도구 막대, 그 아래만 스크롤한다.
@@ -800,11 +837,36 @@
 	text-align: center;
 }
 
+.memo-card-frame {
+	display: block;
+	position: relative;
+	width: 100%;
+	margin-bottom: 6px;
+}
+
+/* 고정된 메모 카드: 오른쪽 위 핀 */
+.memo-card-pin {
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 26px;
+	height: 26px;
+	border-radius: 7px;
+	background-color: rgba(0, 0, 0, 0.45);
+	color: #fff;
+	font-size: 11px;
+}
+
+.memo-card-pin i {
+	transform: rotate(45deg);
+}
+
 .memo-card-preview {
 	display: block;
 	width: 100%;
 	aspect-ratio: 4 / 3;
-	margin-bottom: 6px;
 	overflow: hidden;
 	border-radius: 10px;
 	background-color: var(--memo-list-bg);
@@ -946,9 +1008,17 @@
 		display: flex;
 	}
 
-	.memo-search.compact-only {
+	.memo .compact-only {
 		display: flex;
+	}
+
+	.memo-search.compact-only {
 		margin-top: 8px;
+	}
+
+	.memo-reader .memo-pin.compact-only {
+		margin-top: 0.75rem;
+		font-size: 17px;
 	}
 
 	.memo-reader .memo-scroll {

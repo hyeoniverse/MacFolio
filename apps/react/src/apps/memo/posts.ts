@@ -12,6 +12,8 @@ export interface Post {
 	summary: string;
 	/** Markdown 본문 (머리말 제외) */
 	body: string;
+	/** 목록 맨 위에 고정 (머리말 pinned: true, 방문자가 바꿀 수 있다) */
+	pinned?: boolean;
 }
 
 export const ALL_CATEGORY = '모든 글';
@@ -55,6 +57,7 @@ export function toPost(slug: string, source: string): Post | null {
 		category: meta.category || '기타',
 		summary: meta.summary || excerpt(body),
 		body: body.trim(),
+		...(meta.pinned === 'true' && { pinned: true }),
 	};
 }
 
