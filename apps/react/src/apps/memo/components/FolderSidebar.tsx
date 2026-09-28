@@ -10,6 +10,8 @@ import { SidebarToggle } from './MemoToolbar';
 export type DragItem = { type: 'post'; id: string } | { type: 'folder'; id: string };
 
 interface Props {
+	/** 관리자만 편집(새로운 폴더, ••• 메뉴, 끌어 옮기기)할 수 있다 */
+	canEdit: boolean;
 	open: boolean;
 	onToggle: () => void;
 	folders: FolderNode[];
@@ -156,10 +158,14 @@ const FolderRow: React.FC<RowProps> = (props) => {
 				<div
 					className={`memo-folder-row ${drop.active ? 'drop-target' : ''} ${beingDragged ? 'dragging' : ''} ${menuOpen ? 'menu-open' : ''}`}
 					style={{ ['--depth' as string]: depth }}
-					onContextMenu={(event) => {
-						event.preventDefault();
-						setMenuAt({ x: event.clientX, y: event.clientY });
-					}}
+					onContextMenu={
+						props.canEdit
+							? (event) => {
+									event.preventDefault();
+									setMenuAt({ x: event.clientX, y: event.clientY });
+								}
+							: undefined
+					}
 					{...drop.handlers}
 				>
 					{hasChildren ? (
@@ -179,7 +185,7 @@ const FolderRow: React.FC<RowProps> = (props) => {
 						type="button"
 						className={`memo-folder ${current === node.path ? 'active' : ''}`}
 						aria-current={current === node.path || undefined}
-						draggable
+						draggable={props.canEdit}
 						onDragStart={(event) => {
 							event.dataTransfer.effectAllowed = 'move';
 							event.dataTransfer.setData('text/plain', node.path);
@@ -192,19 +198,21 @@ const FolderRow: React.FC<RowProps> = (props) => {
 						<span className="memo-folder-name">{node.name}</span>
 						<span className="memo-count">{node.count}</span>
 					</button>
-					<button
-						type="button"
-						className="memo-folder-more"
-						aria-label={`폴더 동작 (${node.name})`}
-						aria-haspopup="menu"
-						aria-expanded={menuOpen}
-						onClick={(event) => {
-							const rect = event.currentTarget.getBoundingClientRect();
-							setMenuAt(menuOpen ? null : { x: rect.left, y: rect.bottom + 4 });
-						}}
-					>
-						<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-					</button>
+					{props.canEdit && (
+						<button
+							type="button"
+							className="memo-folder-more"
+							aria-label={`폴더 동작 (${node.name})`}
+							aria-haspopup="menu"
+							aria-expanded={menuOpen}
+							onClick={(event) => {
+								const rect = event.currentTarget.getBoundingClientRect();
+								setMenuAt(menuOpen ? null : { x: rect.left, y: rect.bottom + 4 });
+							}}
+						>
+							<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+						</button>
+					)}
 					{menuAt && (
 						<ContextMenu
 							label={`${node.name} 폴더 메뉴`}
@@ -310,22 +318,24 @@ const FolderSidebar: React.FC<Props> = (props) => {
 			<div className="memo-sidebar-bar">
 				<span className="memo-lights-space" aria-hidden="true" />
 				<SidebarToggle open onToggle={onToggle} />
-				<button
-					type="button"
-					className="memo-tool memo-new-folder-button"
-					aria-label="새로운 폴더"
-					disabled={!canAddFolder(parentOfNew)}
-					title={
-						!canAddFolder(parentOfNew)
-							? DEPTH_LIMIT_HINT
-							: parentOfNew
-								? `'${parentOfNew.split('/').at(-1)}' 안에 새로운 폴더`
-								: '새로운 폴더'
-					}
-					onClick={() => setAddingUnder(parentOfNew)}
-				>
-					<i className="fa-solid fa-folder-plus" aria-hidden="true" />
-				</button>
+				{props.canEdit && (
+					<button
+						type="button"
+						className="memo-tool memo-new-folder-button"
+						aria-label="새로운 폴더"
+						disabled={!canAddFolder(parentOfNew)}
+						title={
+							!canAddFolder(parentOfNew)
+								? DEPTH_LIMIT_HINT
+								: parentOfNew
+									? `'${parentOfNew.split('/').at(-1)}' 안에 새로운 폴더`
+									: '새로운 폴더'
+						}
+						onClick={() => setAddingUnder(parentOfNew)}
+					>
+						<i className="fa-solid fa-folder-plus" aria-hidden="true" />
+					</button>
+				)}
 			</div>
 
 			<div className="memo-folder-scroll">
