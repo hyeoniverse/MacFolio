@@ -23,8 +23,7 @@ export async function enterDesktop(page: Page) {
 	await expect(loading).toBeHidden({ timeout: 10_000 });
 }
 
-export const dockItem = (page: Page, name: string) =>
-	page.locator('.dock').getByRole('button', { name, exact: true });
+export const dockItem = (page: Page, name: string) => page.locator('.dock').getByRole('button', { name, exact: true });
 
 export const appWindow = (page: Page, name: string) => page.locator(`[data-app="${name}"]`);
 
