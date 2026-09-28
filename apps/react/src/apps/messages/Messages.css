@@ -1,211 +1,473 @@
-/* 색상 변수: macOS 메시지 앱 색 */
+/* macOS 메시지 앱 색 */
 [data-app='messages'] {
-	--messages-bubble-visitor: #e9e9eb;
-	--messages-bubble-visitor-text: #000000;
-	--messages-bubble-owner: #0a84ff;
-	--messages-bubble-owner-text: #ffffff;
-	--messages-input-bg: #ffffff;
-	--messages-input-border: #d1d1d6;
+	--messages-bg: #ffffff;
+	--messages-sidebar-bg: #f4f4f5;
+	--messages-separator: #e3e3e6;
+	--messages-sent: #0b84fe;
+	--messages-sent-text: #ffffff;
+	--messages-received: #e9e9eb;
+	--messages-received-text: #000000;
+	--messages-meta: #8e8e93;
+	--messages-selection: #0a84ff;
+	--messages-selection-text: #ffffff;
+	--messages-search-bg: rgba(0, 0, 0, 0.06);
+	--messages-field-border: #d1d1d6;
+	--messages-send-disabled: #c7c7cc;
+	--messages-menu-bg: rgba(246, 246, 246, 0.92);
 	--messages-error: #d70015;
 }
 
 :root[data-theme='dark'] [data-app='messages'] {
-	--messages-bubble-visitor: #3a3a3c;
-	--messages-bubble-visitor-text: #ffffff;
-	--messages-input-bg: #2c2c2e;
-	--messages-input-border: #48484a;
+	--messages-bg: #1e1e1e;
+	--messages-sidebar-bg: #262628;
+	--messages-separator: #38383a;
+	--messages-received: #3b3b3d;
+	--messages-received-text: #ffffff;
+	--messages-meta: #98989d;
+	--messages-search-bg: rgba(255, 255, 255, 0.08);
+	--messages-field-border: #48484a;
+	--messages-send-disabled: #48484a;
+	--messages-menu-bg: rgba(44, 44, 46, 0.92);
 	--messages-error: #ff6961;
 }
 
 .messages {
 	display: flex;
 	height: 100%;
+	background-color: var(--messages-bg);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-size: 13px;
 	text-align: left;
 }
 
-/* 대화 목록 */
-.messages-sidebar {
-	width: 13rem;
-	padding: 0.5rem;
-	border-right: 1px solid var(--color-divider);
-	background-color: var(--color-sidebar-bg);
-}
-
-.messages-conversation {
-	display: flex;
-	align-items: center;
-	gap: 0.6rem;
-	padding: 0.5rem;
-	border-radius: 0.5rem;
-}
-
-.messages-conversation.active {
-	background-color: var(--color-accent);
-	color: var(--color-on-accent);
-}
-
-.messages-conversation p {
-	font-size: 0.75rem;
-	opacity: 0.8;
+.messages button {
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
 }
 
 .messages-avatar {
 	display: grid;
 	place-items: center;
 	flex: none;
-	width: 2.2rem;
-	height: 2.2rem;
 	border-radius: 50%;
-	background: linear-gradient(#a2a2a7, #7c7c80);
 	color: #ffffff;
+	font-weight: 500;
+	user-select: none;
 }
 
-/* 대화 */
-.messages-chat {
+.messages-me-badge {
+	margin-left: 0.35rem;
+	padding: 0 0.35rem;
+	border-radius: 0.5rem;
+	background-color: var(--messages-sent);
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 600;
+	vertical-align: 1px;
+}
+
+/* ─── 사이드바 ─── */
+.messages-sidebar {
 	display: flex;
 	flex-direction: column;
+	flex: none;
+	width: 260px;
+	border-right: 1px solid var(--messages-separator);
+	background-color: var(--messages-sidebar-bg);
+	overflow-y: auto;
+}
+
+.messages-sidebar-top {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 10px 10px 6px;
+}
+
+.messages-search {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	gap: 6px;
+	height: 28px;
+	padding: 0 8px;
+	border-radius: 7px;
+	background-color: var(--messages-search-bg);
+	color: var(--messages-meta);
+}
+
+.messages-search input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	background: none;
+	color: var(--color-text-strong);
+	font: inherit;
+	outline: none;
+}
+
+.messages-compose {
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: var(--messages-meta) !important;
+	font-size: 15px !important;
+}
+
+.messages-compose:hover {
+	background-color: var(--messages-search-bg);
+}
+
+/* 고정 대화: 큰 원형 아바타 */
+.messages-pinned {
+	display: flex;
+	gap: 8px;
+	padding: 6px 12px 10px;
+	list-style: none;
+}
+
+.messages-pinned-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+	width: 76px;
+	padding: 6px 4px;
+	border: none;
+	border-radius: 10px;
+	background: none;
+	font-size: 11px !important;
+}
+
+.messages-pinned-item.selected {
+	background-color: var(--messages-selection);
+	color: var(--messages-selection-text) !important;
+}
+
+/* 대화 목록 */
+.messages-threads {
+	padding: 0 8px 8px;
+	list-style: none;
+}
+
+.messages-thread {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 8px 8px;
+	border: none;
+	border-radius: 8px;
+	background: none;
+	text-align: left;
+}
+
+.messages-threads li + li .messages-thread:not(.selected) {
+	box-shadow: 0 -1px 0 0 var(--messages-separator);
+}
+
+.messages-thread.selected {
+	background-color: var(--messages-selection);
+	color: var(--messages-selection-text) !important;
+}
+
+.messages-thread-text {
 	flex: 1;
 	min-width: 0;
 }
 
-.messages-header {
+.messages-thread-top {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 0.6rem;
-	border-bottom: 1px solid var(--color-divider);
-	font-size: 0.9rem;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 6px;
 }
 
-.messages-header span {
-	color: var(--color-text-secondary);
-	font-size: 0.75rem;
+.messages-thread-top strong {
+	overflow: hidden;
+	color: var(--color-text-strong);
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-.messages-list {
-	flex: 1;
-	padding: 0.75rem 1rem;
-	overflow-y: auto;
+.messages-thread-top time,
+.messages-thread-preview {
+	color: var(--messages-meta);
+	font-size: 12px;
 }
 
-.messages-status,
-.messages-day {
-	margin: 0.75rem 0;
-	color: var(--color-text-secondary);
-	font-size: 0.75rem;
+.messages-thread-preview {
+	display: -webkit-box;
+	overflow: hidden;
+	margin-top: 1px;
+	line-height: 1.3;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.messages-thread.selected strong,
+.messages-thread.selected time,
+.messages-thread.selected .messages-thread-preview {
+	color: var(--messages-selection-text);
+}
+
+.messages-thread.selected .messages-me-badge {
+	background-color: #ffffff;
+	color: var(--messages-selection);
+}
+
+.messages-empty {
+	padding: 24px 8px;
+	color: var(--messages-meta);
 	text-align: center;
 }
 
-.message {
+/* ─── 대화 ─── */
+.messages-chat {
 	display: flex;
 	flex-direction: column;
-	margin-bottom: 0.6rem;
+	flex: 1;
+	position: relative;
+	min-width: 0;
 }
 
-.message.from-owner {
-	align-items: flex-end;
-}
-
-.message-nickname {
-	margin: 0 0.75rem 0.15rem;
-	color: var(--color-text-secondary);
-	font-size: 0.7rem;
-}
-
-.message-row {
+.messages-chat-header {
 	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 3px;
+	min-height: 56px;
+	padding: 6px;
+	border-bottom: 1px solid var(--messages-separator);
+	color: var(--color-text-strong);
+	font-size: 11px;
+}
+
+.messages-to {
+	align-self: stretch;
+	padding: 0 10px;
+	color: var(--color-text-strong);
+	font-size: 13px;
+}
+
+.messages-to span {
+	color: var(--messages-meta);
+}
+
+.messages-transcript {
+	flex: 1;
+	padding: 8px 18px 12px;
+	overflow-y: auto;
+}
+
+.messages-time {
+	margin: 14px 0 8px;
+	color: var(--messages-meta);
+	font-size: 11px;
+	text-align: center;
+}
+
+.messages-time strong {
+	font-weight: 600;
+}
+
+/* 말풍선 */
+.messages-bubble-row {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	margin-bottom: 2px;
+}
+
+.messages-bubble-row.right {
 	align-items: flex-end;
-	gap: 0.4rem;
-	max-width: 80%;
 }
 
-.message.from-owner .message-row {
-	flex-direction: row-reverse;
+.messages-bubble-row.left {
+	align-items: flex-start;
 }
 
-.message-bubble {
-	padding: 0.45rem 0.8rem;
-	border-radius: 1.1rem;
-	background-color: var(--messages-bubble-visitor);
-	color: var(--messages-bubble-visitor-text);
-	font-size: 0.9rem;
+.messages-bubble-row.tail {
+	margin-bottom: 8px;
+}
+
+.messages-bubble {
+	position: relative;
+	max-width: 70%;
+	padding: 6px 12px 7px;
+	border-radius: 18px;
+	font-size: 13.5px;
 	line-height: 1.35;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 }
 
-.message.from-owner .message-bubble {
-	background-color: var(--messages-bubble-owner);
-	color: var(--messages-bubble-owner-text);
+.messages-bubble-row.right .messages-bubble {
+	background-color: var(--messages-sent);
+	color: var(--messages-sent-text);
 }
 
-.message-row time {
-	flex: none;
-	color: var(--color-text-secondary);
-	font-size: 0.65rem;
+.messages-bubble-row.left .messages-bubble {
+	background-color: var(--messages-received);
+	color: var(--messages-received-text);
 }
 
-.message-delete {
-	flex: none;
-	padding: 0.2rem 0.35rem;
+/* 꼬리: 말풍선 색으로 곡선을 그리고, 배경색으로 안쪽을 깎아낸다 */
+.messages-bubble-row.tail .messages-bubble::before,
+.messages-bubble-row.tail .messages-bubble::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	height: 20px;
+}
+
+.messages-bubble-row.right.tail .messages-bubble::before {
+	right: -7px;
+	width: 20px;
+	border-bottom-left-radius: 16px 14px;
+	background-color: var(--messages-sent);
+}
+
+.messages-bubble-row.right.tail .messages-bubble::after {
+	right: -26px;
+	width: 26px;
+	border-bottom-left-radius: 10px;
+	background-color: var(--messages-bg);
+}
+
+.messages-bubble-row.left.tail .messages-bubble::before {
+	left: -7px;
+	width: 20px;
+	border-bottom-right-radius: 16px 14px;
+	background-color: var(--messages-received);
+}
+
+.messages-bubble-row.left.tail .messages-bubble::after {
+	left: -26px;
+	width: 26px;
+	border-bottom-right-radius: 10px;
+	background-color: var(--messages-bg);
+}
+
+.messages-receipt {
+	margin: 2px 4px 0 0;
+	color: var(--messages-meta);
+	font-size: 11px;
+	font-weight: 500;
+}
+
+/* 키보드 사용자를 위한 삭제 버튼 (포커스될 때만 보인다. 마우스는 오른쪽 클릭 메뉴) */
+.messages-bubble-action {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
 	border: none;
-	border-radius: 50%;
 	background: none;
-	color: var(--color-text-secondary);
-	cursor: pointer;
-	opacity: 0;
 }
 
-.message:hover .message-delete,
-.message-delete:focus-visible {
-	opacity: 1;
+.messages-bubble-action:focus-visible {
+	position: static;
+	width: auto;
+	height: auto;
+	margin-top: 2px;
+	padding: 2px 8px;
+	clip-path: none;
+	border-radius: 6px;
+	background-color: var(--messages-search-bg);
+	color: var(--messages-meta);
 }
 
-/* 입력창 */
+/* 오른쪽 클릭 메뉴 */
+.messages-context-menu {
+	position: absolute;
+	z-index: 100;
+	min-width: 150px;
+	padding: 5px;
+	border: 0.5px solid rgba(0, 0, 0, 0.15);
+	border-radius: 8px;
+	background-color: var(--messages-menu-bg);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(20px);
+	list-style: none;
+}
+
+.messages-context-menu button {
+	width: 100%;
+	padding: 3px 10px;
+	border: none;
+	border-radius: 4px;
+	background: none;
+	color: var(--color-text-strong) !important;
+	text-align: left;
+}
+
+.messages-context-menu button:hover,
+.messages-context-menu button:focus-visible {
+	background-color: var(--messages-selection);
+	color: #ffffff !important;
+	outline: none;
+}
+
+/* ─── 입력 ─── */
 .messages-composer {
 	display: flex;
 	flex-direction: column;
-	gap: 0.4rem;
-	padding: 0.6rem 0.75rem;
-	border-top: 1px solid var(--color-divider);
+	gap: 6px;
+	padding: 8px 16px 14px;
 }
 
-.messages-composer-meta {
+.messages-identity {
 	display: flex;
-	gap: 0.4rem;
+	gap: 10px;
 }
 
-.messages-composer input,
-.messages-composer textarea,
-.messages-delete-form input {
-	padding: 0.4rem 0.7rem;
-	border: 1px solid var(--messages-input-border);
-	border-radius: 1rem;
-	background-color: var(--messages-input-bg);
-	color: var(--color-text);
-	font: inherit;
-	font-size: 0.85rem;
-}
-
-.messages-composer-meta input {
+.messages-identity input {
 	flex: 1;
 	min-width: 0;
+	padding: 5px 2px;
+	border: none;
+	border-bottom: 1px solid var(--messages-separator);
+	background: none;
+	color: var(--color-text-strong);
+	font: inherit;
+	outline: none;
 }
 
-.messages-composer [aria-invalid='true'] {
-	border-color: var(--messages-error);
+.messages-identity input:focus {
+	border-bottom-color: var(--messages-selection);
 }
 
-.messages-composer-row {
+.messages-field {
 	display: flex;
 	align-items: flex-end;
-	gap: 0.4rem;
+	gap: 4px;
+	min-height: 32px;
+	padding: 3px 3px 3px 12px;
+	border: 1px solid var(--messages-field-border);
+	border-radius: 17px;
+	background-color: var(--messages-bg);
 }
 
-.messages-composer textarea {
+.messages-field textarea {
 	flex: 1;
-	min-height: 2.1rem;
-	max-height: 6rem;
+	max-height: 7rem;
+	padding: 4px 0;
+	border: none;
+	background: none;
+	color: var(--color-text-strong);
+	font: inherit;
+	font-size: 13.5px;
+	line-height: 1.35;
+	outline: none;
 	resize: none;
 	field-sizing: content;
 }
@@ -214,50 +476,87 @@
 	display: grid;
 	place-items: center;
 	flex: none;
-	width: 2rem;
-	height: 2rem;
+	width: 24px;
+	height: 24px;
 	border: none;
 	border-radius: 50%;
-	background-color: var(--messages-bubble-owner);
-	color: #ffffff;
-	cursor: pointer;
+	background-color: var(--messages-sent);
+	color: #ffffff !important;
+	font-size: 12px !important;
 }
 
 .messages-send:disabled {
-	opacity: 0.5;
+	background-color: var(--messages-send-disabled);
+	cursor: default;
+}
+
+.messages-composer [aria-invalid='true'] {
+	border-color: var(--messages-error);
 }
 
 .messages-error {
 	color: var(--messages-error);
-	font-size: 0.75rem;
+	font-size: 12px;
+}
+
+/* 읽기 전용 대화의 하단 */
+.messages-readonly {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px 14px;
+	border-top: 1px solid var(--messages-separator);
+	color: var(--messages-meta);
+	font-size: 12px;
+}
+
+.messages-readonly button {
+	padding: 4px 14px;
+	border: none;
+	border-radius: 14px;
+	background-color: var(--messages-sent);
+	color: #ffffff !important;
+	font-size: 12px !important;
+	font-weight: 500;
 }
 
 /* 삭제 팝업 */
 .messages-delete-form {
 	display: flex;
 	flex-direction: column;
-	gap: 0.6rem;
+	gap: 10px;
 	max-width: 20rem;
-	font-size: 0.85rem;
+	font-size: 13px;
 	text-align: left;
+}
+
+.messages-delete-form input {
+	padding: 5px 8px;
+	border: 1px solid var(--messages-field-border);
+	border-radius: 6px;
+	background-color: var(--messages-bg);
+	color: var(--color-text-strong);
+	font: inherit;
 }
 
 .messages-delete-actions {
 	display: flex;
 	justify-content: flex-end;
-	gap: 0.5rem;
+	gap: 8px;
 }
 
 .messages-delete-actions button {
-	padding: 0.35rem 0.9rem;
-	border: 1px solid var(--messages-input-border);
-	border-radius: 0.4rem;
-	background-color: var(--messages-input-bg);
-	color: var(--color-text);
+	padding: 3px 14px;
+	border: 1px solid var(--messages-field-border);
+	border-radius: 6px;
+	background-color: var(--messages-bg);
+	color: var(--color-text-strong);
+	font: inherit;
 	cursor: pointer;
 }
 
-.messages-delete-actions button.danger {
+.messages-delete-actions button.destructive {
 	border-color: transparent;
 	background-color: var(--messages-error);
 	color: #ffffff;
