@@ -1,18 +1,59 @@
+/* 색상 변수: 라이트 값은 기존 색 그대로, 다크 값은 styles/theme.css의 다크 톤에 맞춤 */
+[data-app='memo'] {
+	--memo-accent: #edbb4d;
+	--memo-accent-hover: #dca946;
+	--memo-accent-text: #edbb4d;
+	--memo-bg: #ffffff;
+	--memo-bg-hover: #e2e8f0;
+	--memo-bg-input: #f1f5f9;
+	--memo-bg-muted: #f3f4f6;
+	--memo-bg-subtle: #f8fafc;
+	--memo-border: #e5e7eb;
+	--memo-border-input: #cccccc;
+	--memo-border-strong: #d1d5db;
+	--memo-border-subtle: #f3f4f6;
+	--memo-on-accent: #ffffff;
+	--memo-text-body: #4b5563;
+	--memo-text-heading: #374151;
+	--memo-text-muted: #6b7280;
+	--memo-text-strong: #1f2937;
+}
+
+:root[data-theme='dark'] [data-app='memo'] {
+	--memo-accent: #edbb4d;
+	--memo-accent-hover: #dca946;
+	--memo-accent-text: #edbb4d;
+	--memo-bg: #1e1e1e;
+	--memo-bg-hover: #3a3a3c;
+	--memo-bg-input: #2c2c2e;
+	--memo-bg-muted: #2c2c2e;
+	--memo-bg-subtle: #242426;
+	--memo-border: #38383a;
+	--memo-border-input: #48484a;
+	--memo-border-strong: #48484a;
+	--memo-border-subtle: #2c2c2e;
+	--memo-on-accent: #ffffff;
+	--memo-text-body: #d1d1d6;
+	--memo-text-heading: #e5e5e7;
+	--memo-text-muted: #98989d;
+	--memo-text-strong: #f5f5f7;
+}
+
 .memo-container {
 	display: flex;
 	overflow: hidden;
 	width: 100%;
 	height: 100%;
-	background-color: #f8fafc;
+	background-color: var(--memo-bg-subtle);
 }
 
 /* Left Column - Folders */
 .folder-list {
 	padding: 1rem 0.5rem;
-	border-right: 1px solid #d1d5db;
+	border-right: 1px solid var(--memo-border-strong);
 	overflow-y: scroll;
 	width: 50%;
-	background-color: #f3f4f6;
+	background-color: var(--memo-bg-muted);
 	word-break: break-all;
 	transition: width 0.3s ease;
 	scrollbar-width: none;
@@ -22,7 +63,7 @@
 	margin-bottom: 1rem;
 	font-size: 1.25rem;
 	font-weight: 600;
-	color: #374151;
+	color: var(--memo-text-heading);
 	text-align: center;
 }
 
@@ -31,7 +72,7 @@
 	padding: 0.75rem;
 	width: 100%;
 	font-size: 1rem;
-	color: #4b5563;
+	color: var(--memo-text-body);
 	text-align: left;
 	white-space: normal;
 	word-break: keep-all;
@@ -43,25 +84,25 @@
 }
 
 .folder-item:hover {
-	background-color: #e2e8f0;
+	background-color: var(--memo-bg-hover);
 	transform: translateY(-2px);
 }
 
 .folder-item.active {
-	background-color: #edbb4d;
+	background-color: var(--memo-accent);
 	font-weight: 500;
-	color: #ffffff;
+	color: var(--memo-on-accent);
 }
 
 /* Middle Column - Notes List */
 .notes-list {
 	display: flex;
 	flex-direction: column;
-	border-right: 1px solid #e5e7eb;
+	border-right: 1px solid var(--memo-border);
 	overflow-y: scroll;
 	width: 70%;
 	height: 100%;
-	background-color: #ffffff;
+	background-color: var(--memo-bg);
 	scrollbar-width: none;
 }
 
@@ -69,35 +110,35 @@
 	display: flex;
 	align-items: center;
 	padding: 0.5rem;
-	border-bottom: 1px solid #e5e7eb;
+	border-bottom: 1px solid var(--memo-border);
 	width: 100%;
 	height: 3rem;
-	background-color: #f8fafc;
+	background-color: var(--memo-bg-subtle);
 }
 
 .notes-list .search-input input {
 	padding: 0.3rem 1rem;
-	border: 1px solid #d1d5db;
+	border: 1px solid var(--memo-border-strong);
 	width: 100%;
-	background-color: #f1f5f9;
+	background-color: var(--memo-bg-input);
 	transition: border-color 0.2s;
 	border-radius: 0.7rem;
 }
 
 .notes-list .search-input input:focus {
 	outline: none;
-	background-color: #ffffff;
+	background-color: var(--memo-bg);
 }
 
 .no-notes {
 	padding: 1rem;
-	color: #6b7280;
+	color: var(--memo-text-muted);
 	text-align: center;
 }
 
 .notes-list .memo-item {
 	padding: 1.25rem;
-	border-bottom: 1px solid #f3f4f6;
+	border-bottom: 1px solid var(--memo-border-subtle);
 	transition:
 		background-color 0.2s ease,
 		transform 0.2s ease;
@@ -105,18 +146,18 @@
 }
 
 .notes-list .memo-item:hover {
-	background-color: #f1f5f9;
+	background-color: var(--memo-bg-input);
 }
 
 .notes-list .memo-item.active {
-	background-color: #edbb4d;
+	background-color: var(--memo-accent);
 }
 
 .notes-list .memo-title {
 	overflow: hidden;
 	font-size: 1.125rem;
 	font-weight: 600;
-	color: #1f2937;
+	color: var(--memo-text-strong);
 	text-align: left;
 	white-space: nowrap;
 	word-break: break-word;
@@ -124,23 +165,23 @@
 }
 
 .notes-list .memo-item.active .memo-title {
-	color: #ffffff;
+	color: var(--memo-on-accent);
 }
 
 .notes-list .memo-item.active .memo-date {
 	font-size: 0.7rem;
-	color: #ffffff;
+	color: var(--memo-on-accent);
 }
 
 .notes-list .memo-item.active .memo-content {
 	font-size: 0.875rem;
-	color: #ffffff;
+	color: var(--memo-on-accent);
 }
 
 .notes-list .memo-date {
 	padding-bottom: 0.25rem;
 	font-size: 0.7rem;
-	color: #6b7280;
+	color: var(--memo-text-muted);
 	text-align: left;
 }
 
@@ -152,7 +193,7 @@
 	height: 100%;
 	background-color: transparent;
 	font-size: 0.875rem;
-	color: #6b7280;
+	color: var(--memo-text-muted);
 	text-align: left;
 	word-break: break-all;
 	text-overflow: ellipsis;
@@ -180,7 +221,7 @@
 
 	width: 100%;
 	height: 100%;
-	background-color: #ffffff;
+	background-color: var(--memo-bg);
 	text-align: left;
 	scrollbar-width: none;
 }
@@ -189,11 +230,11 @@
 	display: flex;
 	flex-wrap: wrap;
 	width: 100%;
-	background-color: #ffffff;
+	background-color: var(--memo-bg);
 }
 
 .memo-content .memo-tools.scrolled {
-	border-bottom: 1px solid #d1d5db;
+	border-bottom: 1px solid var(--memo-border-strong);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -201,7 +242,7 @@
 	overflow: visible;
 	width: 1.2rem;
 	height: 1.2rem;
-	color: #edbb4d;
+	color: var(--memo-accent-text);
 	transition: background-color 0.2s ease;
 	border-radius: 0.5rem;
 }
@@ -212,7 +253,7 @@
 	max-height: 5rem;
 	font-size: 1.2rem;
 	font-weight: 700;
-	color: #1f2937;
+	color: var(--memo-text-strong);
 	text-align: left;
 	scrollbar-width: none;
 }
@@ -222,12 +263,13 @@
 	padding-bottom: 1.5rem;
 	font-size: 1rem; /* 본문을 약간 더 크게 */
 	line-height: 1.6;
-	color: #4b5563; /* 가독성 좋은 중간 밝기의 텍스트 */
+	color: var(--memo-text-body); /* 가독성 좋은 중간 밝기의 텍스트 */
 	white-space: pre-wrap;
 }
 
-/* 버튼과 아이콘 스타일 향상 */
-button {
+/* 버튼과 아이콘 스타일 향상 (Memo 창 안에만 적용) */
+.memo-container button,
+.modal-content button {
 	padding: 0.5rem;
 	border: none;
 	background: none;
@@ -236,8 +278,9 @@ button {
 	border-radius: 0.5rem;
 }
 
-button:hover {
-	background-color: #f3f4f6;
+.memo-container button:hover,
+.modal-content button:hover {
+	background-color: var(--memo-bg-muted);
 }
 
 .create-memo {
@@ -246,7 +289,7 @@ button:hover {
 	overflow-y: scroll;
 	width: 100%;
 	height: 100%;
-	background-color: #ffffff;
+	background-color: var(--memo-bg);
 	scrollbar-width: none;
 }
 
@@ -258,7 +301,7 @@ button:hover {
 	width: 100%;
 	height: 100%;
 	font-size: 1rem;
-	color: #4b5563;
+	color: var(--memo-text-body);
 	text-align: left;
 	resize: none;
 	border-radius: 0.8rem;
@@ -271,31 +314,31 @@ button:hover {
 	font-family: 'MacSystemFont';
 	font-size: 1.2rem;
 	font-weight: 700;
-	color: #1f2937;
+	color: var(--memo-text-strong);
 	text-align: left;
 	border-radius: 0.8rem;
 }
 
 .create-memo-title::placeholder {
-	color: #6b7280;
+	color: var(--memo-text-muted);
 }
 
 /*
   .create-memo-title:focus {
-    color: #6b7280;
-    border: #f3f4f6 1px solid;
+    color: var(--memo-text-muted);
+    border: var(--memo-border-subtle) 1px solid;
     box-shadow: inset 0 -1rem 1rem 0.2rem rgba(0, 0, 0, 0.1);
   }
   */
 
 .create-memo-content::placeholder {
-	color: #6b7280;
+	color: var(--memo-text-muted);
 }
 
 /*
   .create-memo-content:focus {
-    color: #6b7280;
-    border: #f3f4f6 1px solid;
+    color: var(--memo-text-muted);
+    border: var(--memo-border-subtle) 1px solid;
     box-shadow: inset 0 -1rem 1rem 0.2rem rgba(0, 0, 0, 0.1);
   }
   */
@@ -310,7 +353,7 @@ button:hover {
 	font-family: 'MacSystemFont';
 	font-size: 2rem;
 	font-weight: 500;
-	color: #1f2937;
+	color: var(--memo-text-strong);
 	text-align: center;
 	text-align: left;
 	border-radius: 0.8rem;
@@ -318,13 +361,13 @@ button:hover {
 
 .create-memo-password::placeholder {
 	font-size: 1rem;
-	color: #6b7280;
+	color: var(--memo-text-muted);
 }
 
 /*
   .create-memo-password:focus {
-    color: #6b7280;
-    border: #f3f4f6 1px solid;
+    color: var(--memo-text-muted);
+    border: var(--memo-border-subtle) 1px solid;
     box-shadow: inset 0 -1rem 1rem 0.2rem rgba(0, 0, 0, 0.1);
   }
   */
@@ -362,7 +405,7 @@ button:hover {
 	width: fit-content;
 	height: fit-content;
 
-	background: white;
+	background: var(--memo-bg);
 	grid-template-columns: 1fr;
 	grid-template-rows: 1fr auto auto auto;
 	border-radius: 1rem;
@@ -387,7 +430,7 @@ button:hover {
 	align-items: center;
 	justify-content: center;
 	padding: 0.5rem;
-	border: 1px solid #ccc;
+	border: 1px solid var(--memo-border-input);
 	box-shadow:
 		-0.2rem 0.2rem 0.4rem rgba(0, 0, 0, 0.1),
 		inset 0.1rem 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
@@ -407,13 +450,13 @@ button:hover {
 		-0.2rem 0.2rem 0.4rem rgba(0, 0, 0, 0.1),
 		inset 0.1rem 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
 	width: 100%;
-	background-color: #edbb4d;
+	background-color: var(--memo-accent);
 	font-size: 1rem;
-	color: white;
+	color: var(--memo-on-accent);
 	cursor: pointer;
 	border-radius: 0.8rem;
 }
 
 .modal-content button:hover {
-	background-color: #dca946;
+	background-color: var(--memo-accent-hover);
 }
