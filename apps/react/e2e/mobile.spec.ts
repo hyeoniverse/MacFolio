@@ -295,4 +295,34 @@ test.describe('모바일', () => {
 		const switcher = page.getByRole('dialog', { name: '앱 전환기' });
 		await expect(switcher).toContainText('실행 중인 앱이 없습니다');
 	});
+
+	test('앱 전환기에서 음악을 밀어 올려 끄면 재생도 멈춘다', async ({ page }) => {
+		await enterHome(page);
+		await homeApp(page, '음악').tap();
+		const music = appWindow(page, 'music');
+		await music.getByRole('button', { name: /지브리/ }).tap();
+		await music.locator('.music-track').first().tap();
+		const widgetPlay = () =>
+			page
+				.locator('.mobile-home')
+				.getByRole('region', { name: '음악' })
+				.locator('.music-widget-controls button')
+				.nth(1);
+		await expect(widgetPlay()).toHaveAttribute('aria-label', '일시 정지');
+
+		const indicator = (await music.locator('.home-indicator').boundingBox())!;
+		const swipe = async (x: number, y: number, distance: number) => {
+			await page.mouse.move(x, y);
+			await page.mouse.down();
+			await page.mouse.move(x, y - distance, { steps: 8 });
+			await page.mouse.up();
+		};
+		await swipe(indicator.x + indicator.width / 2, indicator.y + 5, 220);
+		const card = page.getByRole('button', { name: '음악 열기' });
+		const box = (await card.boundingBox())!;
+		await swipe(box.x + box.width / 2, box.y + box.height / 2, 200);
+
+		await expect(page.locator('.mobile-app-frame.in-switcher')).toHaveCount(0);
+		await expect(widgetPlay()).toHaveAttribute('aria-label', '재생');
+	});
 });

@@ -6,7 +6,8 @@
 	color-scheme: light;
 
 	/* 배경화면 (Settings에서 바꾼다) */
-	--wallpaper: url('/imgs/background.png');
+	--wallpaper: url('/imgs/wallpapers/highsierra.jpg');
+	--wallpaper-mobile: url('/imgs/wallpapers/ios-sky-light.jpg');
 
 	/* 글자 */
 	--color-text: #333333;

@@ -3,7 +3,7 @@ import { useMusic } from '@/apps/music/MusicContext';
 import type { AppName } from '@/apps/manifest';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
 import { PULL_OPEN_PX } from '@/desktop/mobile/MobileStatusBar';
-import { WALLPAPERS } from '@/shared/settings/settings';
+import { IOS_WALLPAPERS } from '@/shared/settings/settings';
 import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
 import { PROFILE } from '@/shared/profile';
 
@@ -83,8 +83,9 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 
 	const isDark = document.documentElement.dataset.theme === 'dark';
 	const nextWallpaper = () => {
-		const index = WALLPAPERS.findIndex((wallpaper) => wallpaper.id === settings.wallpaper);
-		settingsStore.setState({ wallpaper: WALLPAPERS[(index + 1) % WALLPAPERS.length].id });
+		// 제어 센터는 모바일에만 있으므로 홈 화면(iOS) 배경화면을 바꾼다
+		const index = IOS_WALLPAPERS.findIndex((wallpaper) => wallpaper.id === settings.mobileWallpaper);
+		settingsStore.setState({ mobileWallpaper: IOS_WALLPAPERS[(index + 1) % IOS_WALLPAPERS.length].id });
 	};
 	const launch = (app: AppName) => {
 		close();

@@ -70,3 +70,22 @@
 	font-variant-numeric: tabular-nums;
 	opacity: 0.7;
 }
+
+/* 음량 막대: 양 끝에 스피커 아이콘 (VolumeBar) */
+.volume-bar {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.volume-bar .seek-bar-track {
+	flex: 1;
+}
+
+.volume-bar i {
+	flex: none;
+	width: 16px;
+	font-size: 12px;
+	text-align: center;
+	opacity: 0.6;
+}
