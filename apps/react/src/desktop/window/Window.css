@@ -225,3 +225,28 @@
 	background-color: var(--color-accent);
 	color: var(--color-on-accent);
 }
+
+/* 통합형 창 (chrome="unified"): 제목 표시줄 없이 신호등 버튼이 내용 위에 떠 있다 */
+.container.unified {
+	border-radius: 22px;
+	/* 모서리 크기 조절 핸들이 둥근 모서리에 잘리지 않도록 틀은 자르지 않고 내용만 자른다 */
+	overflow: visible;
+}
+
+.container.unified .macos-titlebar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 3;
+	height: 52px;
+	padding: 0 14px;
+	border: none;
+	background: none;
+	border-radius: 0;
+}
+
+.container.unified .content {
+	height: 100%;
+	overflow: hidden;
+	border-radius: inherit;
+}
