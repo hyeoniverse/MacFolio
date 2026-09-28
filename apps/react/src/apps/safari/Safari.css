@@ -99,4 +99,23 @@
 	background-color: var(--safari-button-hover);
 }
 
-/* MacOS 윈도우 스타일의 상단바 */
+/* 소개 헤더 (index.css의 전역 header 규칙에서 이동) */
+[data-app='safari'] header {
+	margin-top: 5rem;
+	margin-bottom: 3rem;
+}
+
+[data-app='safari'] header h1 {
+	margin-bottom: 20px;
+	font-size: 3em;
+}
+
+[data-app='safari'] header p {
+	font-size: 1.2em;
+	line-height: 1.5;
+	color: #555;
+}
+
+:root[data-theme='dark'] [data-app='safari'] header p {
+	color: var(--color-text-secondary);
+}
