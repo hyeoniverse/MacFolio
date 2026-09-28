@@ -1,4 +1,5 @@
-import { albumArtworks, albums, trackNames, useMusic } from '@/apps/music/MusicContext';
+import { useMusic } from '@/apps/music/MusicContext';
+import SeekBar from '@/apps/music/SeekBar';
 
 interface Props {
 	/** 위젯의 빈 곳을 눌렀을 때 (음악 앱 열기) */
@@ -11,20 +12,18 @@ interface Props {
  * 재생 버튼은 음악 앱을 열지 않고 바로 재생한다.
  */
 const MusicWidget = ({ onOpen, className = '' }: Props) => {
-	const { isPlaying, currentTrack, currentTime, duration, togglePlayPause, playNextTrack, playPreviousTrack } =
-		useMusic();
-	const progress = duration ? (currentTime / duration) * 100 : 0;
+	const { isPlaying, track, togglePlayPause, next, previous } = useMusic();
 
 	return (
 		<section
 			className={`music-widget ${className}`}
 			aria-label="음악"
-			style={{ ['--artwork' as string]: `url('${albumArtworks[currentTrack]}')` }}
+			style={{ ['--artwork' as string]: `url('${track.artwork}')` }}
 			onClick={(event) => {
-				if (!(event.target as Element).closest('button')) onOpen();
+				if (!(event.target as Element).closest('button, [role="slider"]')) onOpen();
 			}}
 		>
-			<img className="music-widget-art" src={albumArtworks[currentTrack]} alt="" draggable={false} />
+			<img className="music-widget-art" src={track.artwork} alt="" draggable={false} />
 			<div className="music-widget-body">
 				<p className="music-widget-status">
 					{isPlaying ? (
@@ -40,19 +39,18 @@ const MusicWidget = ({ onOpen, className = '' }: Props) => {
 						'일시 정지됨'
 					)}
 				</p>
-				<strong className="music-widget-title">{trackNames[currentTrack]}</strong>
-				<span className="music-widget-album">{albums[currentTrack]}</span>
-				<div className="music-widget-progress" aria-hidden="true">
-					<div style={{ width: `${progress}%` }}></div>
-				</div>
+				<strong className="music-widget-title">{track.title}</strong>
+				<span className="music-widget-album">{track.artist}</span>
+				{/* 누르거나 끌어서 재생 위치를 옮길 수 있다 */}
+				<SeekBar className="music-widget-seek" />
 				<div className="music-widget-controls">
-					<button type="button" aria-label="이전 곡" onClick={playPreviousTrack}>
+					<button type="button" aria-label="이전 곡" onClick={previous}>
 						<i className="fas fa-backward" aria-hidden="true"></i>
 					</button>
 					<button type="button" aria-label={isPlaying ? '일시 정지' : '재생'} onClick={togglePlayPause}>
 						<i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
 					</button>
-					<button type="button" aria-label="다음 곡" onClick={playNextTrack}>
+					<button type="button" aria-label="다음 곡" onClick={next}>
 						<i className="fas fa-forward" aria-hidden="true"></i>
 					</button>
 				</div>

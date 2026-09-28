@@ -8,7 +8,6 @@ test.describe('데스크톱', () => {
 		await expect(dockItem(page, 'launchpad')).toBeVisible();
 		await expect(dockItem(page, 'bin')).toBeVisible();
 		await expect(appWindow(page, 'safari')).toBeVisible();
-		await expect(appWindow(page, 'music')).toBeVisible();
 	});
 
 	test('Dock에서 앱을 열고 닫고 다시 열 수 있다', async ({ page }) => {
@@ -77,6 +76,7 @@ test.describe('데스크톱', () => {
 	test('Music 창을 닫아도 앱이 멈추지 않고 다시 열 수 있다', async ({ page }) => {
 		await enterDesktop(page);
 		const music = appWindow(page, 'music');
+		await dockItem(page, 'music').click();
 		await expect(music).toBeVisible();
 
 		await music.getByRole('button', { name: '닫기' }).click();

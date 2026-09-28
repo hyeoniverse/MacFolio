@@ -8,7 +8,7 @@ import '@/desktop/status-bar/StatusBar.css';
 const StatusBar: React.FC = () => {
 	const [time, setTime] = useState<string>('');
 	const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // 모달 상태 관리
-	const { isPlaying, volume, togglePlayPause, playNextTrack, playPreviousTrack } = useMusic(); // MusicContext에서 필요한 상태 및 함수 가져오기
+	const { isPlaying, volume, togglePlayPause, next: playNextTrack, previous: playPreviousTrack } = useMusic(); // MusicContext에서 필요한 상태 및 함수 가져오기
 
 	useEffect(() => {
 		const updateTime = () => {

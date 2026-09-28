@@ -108,23 +108,42 @@ test.describe('모바일', () => {
 		await expect(list).toBeVisible();
 	});
 
-	test('음악은 지금 재생 중 화면으로 열린다', async ({ page }) => {
+	test('음악: 보관함 → 재생 목록 → 곡을 누르면 재생되고, 미니 플레이어로 지금 재생 중을 연다', async ({ page }) => {
 		await enterHome(page);
 		await homeApp(page, '음악').tap();
 		const music = appWindow(page, 'music');
-		await expect(music.locator('.now-playing')).toBeVisible();
-		await expect(music.getByRole('button', { name: '재생' })).toBeVisible();
-		await expect(page.locator('.music-player')).toHaveCount(0);
+		await expect(music.getByRole('heading', { name: '보관함' })).toBeVisible();
+
+		await music.getByRole('button', { name: /잔잔한 피아노/ }).tap();
+		await expect(music.getByRole('heading', { name: '잔잔한 피아노' })).toBeVisible();
+		await expect(music.locator('.mobile-navbar-home')).toHaveText('보관함');
+
+		await music.locator('.music-track', { hasText: 'River Flows in You' }).tap();
+		await expect(music.locator('.music-track[aria-current]')).toContainText('River Flows in You');
+		await expect(music.getByRole('contentinfo', { name: '재생 막대' })).toContainText('River Flows in You');
+
+		await music.getByRole('button', { name: '지금 재생 중 열기' }).tap();
+		const sheet = music.getByRole('dialog', { name: '지금 재생 중' });
+		await expect(sheet).toBeVisible();
+		await expect(sheet.getByRole('slider', { name: '재생 위치' })).toBeVisible();
+		await expect(sheet.getByRole('region', { name: '다음 재생' })).toBeVisible();
+
+		// 닫기는 제목 막대의 버튼 하나
+		await music.locator('.mobile-navbar-home').tap();
+		await expect(sheet).toBeHidden();
 	});
 
-	test('홈 화면의 음악 위젯을 누르면 음악 앱이 열린다', async ({ page }) => {
+	test('홈 화면의 음악 위젯: 빈 곳을 누르면 음악 앱이 열리고, 재생 위치 막대는 앱을 열지 않는다', async ({ page }) => {
 		await enterHome(page);
 		const widget = page.locator('.mobile-home').getByRole('region', { name: '음악' });
 		await expect(widget).toBeVisible();
 		await expect(widget.getByRole('button', { name: '재생' })).toBeVisible();
 
+		await widget.getByRole('slider', { name: '재생 위치' }).tap();
+		await expect(appWindow(page, 'music')).toBeHidden();
+
 		await widget.locator('.music-widget-title').tap();
-		await expect(appWindow(page, 'music').locator('.now-playing')).toBeVisible();
+		await expect(appWindow(page, 'music')).toBeVisible();
 	});
 
 	test('상태 표시줄에 시간이 보이고, 앱 위에서도 남아 있다', async ({ page }) => {

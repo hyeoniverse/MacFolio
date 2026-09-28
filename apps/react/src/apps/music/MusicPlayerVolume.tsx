@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
+import '@/apps/music/MusicPlayerVolume.css';
 
 interface VolumeModalProps {
 	isVisible: boolean;

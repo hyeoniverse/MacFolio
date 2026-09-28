@@ -1,257 +1,241 @@
-import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
-import { env } from '@/shared/config/env';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { isMobileViewport } from '@/desktop/layout';
+import {
+	ALL_SONGS,
+	buildQueue,
+	findPlaylist,
+	findTrack,
+	nextPosition,
+	nextRepeatMode,
+	previousPosition,
+	TRACKS,
+	type Queue,
+	type RepeatMode,
+	type Track,
+} from './library';
 
-const imgUrl = env.imageUrl;
-const mp3Url = env.musicUrl;
-// 음원 정보
-const trackUrls = [
-	`${mp3Url}/1.mp3`,
-	`${mp3Url}/2.mp3`,
-	`${mp3Url}/3.mp3`,
-	`${mp3Url}/4.mp3`,
-	`${mp3Url}/5.mp3`,
-	`${mp3Url}/6.mp3`,
-	`${mp3Url}/7.mp3`,
-];
-export const albums = [
-	'Spirited Away',
-	'Spirited Away',
-	"Howl's Moving Castle",
-	'Yiruma',
-	'Yiruma',
-	'Higurashi When They Cry',
-	'Inuyasha',
-];
-export const trackNames = [
-	'Inochi No Namae',
-	'Itsumo Nando Demo',
-	'Merry-Go-Round of Life',
-	'Kiss the Rain',
-	'River Flows in You',
-	'You',
-	'Affections Touching Across Time',
-];
-export const albumArtworks = [
-	`${imgUrl}/Album_1.png`,
-	`${imgUrl}/Album_2.png`,
-	`${imgUrl}/Album_3.png`,
-	`${imgUrl}/Album_4.png`,
-	`${imgUrl}/Album_5.png`,
-	`${imgUrl}/Album_6.png`,
-	`${imgUrl}/Album_7.png`,
-];
-
-// 음악 상태와 제어 함수 타입 정의
 interface MusicContextType {
+	/** 지금 곡 */
+	track: Track;
+	/** 지금 재생 중인 재생 목록 */
+	playlistId: string;
+	queue: Queue;
 	isPlaying: boolean;
-	currentTrack: number;
 	currentTime: number;
 	duration: number;
 	isBuffering: boolean;
-	volume: number; // 볼륨 상태 추가
-	isShuffle: boolean;
+	volume: number;
+	shuffle: boolean;
+	repeat: RepeatMode;
+	/** 곡별 길이(초). 메타데이터를 불러온 곡만 있다 */
+	durations: Record<string, number>;
+	/** 재생 목록의 한 곡을 재생한다 (trackId를 비우면 목록의 첫 곡, 셔플이면 아무 곡) */
+	playFrom: (playlistId: string, trackId?: string) => void;
 	togglePlayPause: () => void;
-	playNextTrack: () => void;
-	playPreviousTrack: () => void;
+	next: () => void;
+	previous: () => void;
 	seekTo: (time: number) => void;
-	updatePlayerVisualState: (
-		isActive: boolean,
-		playerTrack: HTMLElement,
-		albumArt: HTMLElement,
-		titleBar: HTMLElement
-	) => void;
-	stopAndReset: () => void;
-	setVolume: (volume: number) => void; // 볼륨 제어 함수 추가
+	setVolume: (volume: number) => void;
 	toggleShuffle: () => void;
+	cycleRepeat: () => void;
+	stopAndReset: () => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
 export const useMusic = () => {
 	const context = useContext(MusicContext);
-	if (!context) {
-		throw new Error('useMusic must be used within MusicProvider');
-	}
+	if (!context) throw new Error('useMusic must be used within MusicProvider');
 	return context;
 };
 
+const INITIAL_QUEUE = buildQueue(findPlaylist(ALL_SONGS).trackIds, TRACKS[0].id, false);
+
+/** 곡 길이를 미리 알아 둔다 (목록에 시간을 보여주려고). 메타데이터만 받는다 */
+function useTrackDurations() {
+	const [durations, setDurations] = useState<Record<string, number>>({});
+	useEffect(() => {
+		const probes = TRACKS.map((t) => {
+			const audio = new Audio();
+			audio.preload = 'metadata';
+			audio.onloadedmetadata = () => setDurations((prev) => ({ ...prev, [t.id]: audio.duration }));
+			audio.src = t.src;
+			return audio;
+		});
+		return () => probes.forEach((audio) => audio.removeAttribute('src'));
+	}, []);
+	return durations;
+}
+
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const [playlistId, setPlaylistId] = useState(ALL_SONGS);
+	const [queue, setQueue] = useState<Queue>(INITIAL_QUEUE);
 	const [isPlaying, setIsPlaying] = useState(false);
-	const [currentTrack, setCurrentTrack] = useState(0);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [isBuffering, setIsBuffering] = useState(false);
-	const [volume, setVolume] = useState(1); // 초기 볼륨 1(100%)으로 설정
-	// 셔플 상태 및 재생 기록 관리
-	const [isShuffle, setIsShuffle] = useState(true);
-	const [playedTracks, setPlayedTracks] = useState<number[]>([0]);
+	const [volume, setVolumeState] = useState(1);
+	const [shuffle, setShuffle] = useState(false);
+	const [repeat, setRepeat] = useState<RepeatMode>('all');
+	const durations = useTrackDurations();
+	const track = findTrack(queue.order[queue.position]);
 
-	// 상태 업데이트
-	const togglePlayPause = useCallback(() => {
-		if (audioRef.current) {
-			if (isPlaying) {
-				audioRef.current.pause();
-			} else {
-				audioRef.current.play();
-			}
-			setIsPlaying(!isPlaying);
-		}
-	}, [isPlaying]);
+	/** 곡이 바뀐 뒤 이어서 재생할지 (src를 바꾸면 audio가 멈추므로 기억해 둔다) */
+	const playAfterLoad = useRef(false);
 
-	const toggleShuffle = () => {
-		setIsShuffle((prev) => !prev);
-		setPlayedTracks([currentTrack]);
-	};
-
-	const playNextTrack = useCallback(() => {
-		if (isShuffle) {
-			let availableTracks = trackUrls.map((_, index) => index).filter((index) => !playedTracks.includes(index));
-
-			// 모든 트랙을 재생한 경우 playedTracks 초기화
-			if (availableTracks.length === 0) {
-				setPlayedTracks([]);
-				availableTracks = trackUrls.map((_, index) => index);
-			}
-
-			// 랜덤하게 새로운 트랙 선택
-			const nextTrack = availableTracks[Math.floor(Math.random() * availableTracks.length)];
-
-			setPlayedTracks((prev) => [...prev, nextTrack]); // 재생된 트랙 목록 업데이트
-			setCurrentTrack(nextTrack);
-		} else {
-			setCurrentTrack((prev) => (prev + 1) % trackUrls.length);
-		}
-
-		setCurrentTime(0);
-		// 트랙 변경 후 자동 재생
-		setTimeout(() => {
-			if (audioRef.current) {
-				audioRef.current.play();
-			}
-			setIsPlaying(true);
-		}, 0);
-	}, [isShuffle, playedTracks]);
-
-	const playPreviousTrack = useCallback(() => {
-		if (isShuffle) {
-			if (playedTracks.length > 1) {
-				// 마지막 트랙을 제외한 나머지를 유지 (현재 트랙을 되돌리는 효과)
-				const updatedPlayedTracks = [...playedTracks];
-				updatedPlayedTracks.pop(); // 현재 트랙을 제거
-				const previousTrack = updatedPlayedTracks[updatedPlayedTracks.length - 1]; // 마지막 트랙을 가져옴
-
-				setPlayedTracks(updatedPlayedTracks); // 되돌린 기록 업데이트
-				setCurrentTrack(previousTrack); // 이전 트랙 재생
-			} else {
-				// 재생 기록이 없을 경우 현재 트랙을 다시 재생
-				setCurrentTrack(currentTrack);
-			}
-		} else {
-			setCurrentTrack((prev) => (prev - 1 + trackUrls.length) % trackUrls.length);
-		}
-
-		setCurrentTime(0);
-		// 트랙 변경 후 자동 재생
-		setTimeout(() => {
-			if (audioRef.current) {
-				audioRef.current.play();
-			}
-			setIsPlaying(true);
-		}, 0);
-	}, [isShuffle, playedTracks]);
-
-	const seekTo = (time: number) => {
-		if (audioRef.current) {
-			audioRef.current.currentTime = time;
-			setCurrentTime(time);
-		}
-	};
-
-	// 시간 업데이트
-	const handleTimeUpdate = () => {
+	const play = useCallback(() => {
 		const audio = audioRef.current;
-		if (audio && !isNaN(audio.duration)) {
-			setCurrentTime(audio.currentTime);
-			setDuration(audio.duration);
-		}
-	};
-
-	useEffect(() => {
-		const audio = audioRef.current;
-		if (audio) {
-			audio.src = trackUrls[currentTrack];
-			audio.addEventListener('timeupdate', handleTimeUpdate);
-			audio.addEventListener('canplay', () => setIsBuffering(false));
-			audio.addEventListener('waiting', () => setIsBuffering(true));
-			audio.addEventListener('ended', playNextTrack);
-
-			return () => {
-				audio.removeEventListener('timeupdate', handleTimeUpdate);
-				audio.removeEventListener('canplay', () => setIsBuffering(false));
-				audio.removeEventListener('waiting', () => setIsBuffering(true));
-				audio.removeEventListener('ended', playNextTrack);
-			};
-		}
-	}, [currentTrack, playNextTrack]);
-
-	// 시각 상태 업데이트 함수
-	const updatePlayerVisualState = useCallback(
-		(isActive: boolean, playerTrack: HTMLElement, albumArt: HTMLElement, titleBar: HTMLElement) => {
-			if (isActive) {
-				playerTrack.classList.add('active');
-				albumArt.classList.add('active');
-				titleBar.style.top = '-35px';
-			} else {
-				playerTrack.classList.remove('active');
-				albumArt.classList.remove('active');
-				titleBar.style.top = '12px';
-			}
-		},
-		[]
-	);
-
-	// 음악을 종료하고 상태 초기화
-	const stopAndReset = useCallback(() => {
-		if (audioRef.current) {
-			audioRef.current.pause();
-			audioRef.current.currentTime = 0;
-		}
-		setIsPlaying(false);
-		setCurrentTime(0);
-		setCurrentTrack(0);
+		if (!audio) return;
+		// 자동 재생이 막히거나 파일을 못 불러오면 멈춘 상태로 둔다
+		audio.play().catch(() => setIsPlaying(false));
+		setIsPlaying(true);
 	}, []);
 
-	// 볼륨 변경 함수
-	const handleVolumeChange = (newVolume: number) => {
-		if (audioRef.current) {
-			audioRef.current.volume = newVolume;
+	const pause = useCallback(() => {
+		audioRef.current?.pause();
+		setIsPlaying(false);
+	}, []);
+
+	const goTo = useCallback((position: number, autoplay: boolean) => {
+		playAfterLoad.current = autoplay;
+		setCurrentTime(0);
+		setQueue((prev) => ({ ...prev, position }));
+		// 같은 곡이면 src가 바뀌지 않으므로 여기서 처음부터 다시 재생한다
+		const audio = audioRef.current;
+		if (audio) audio.currentTime = 0;
+	}, []);
+
+	// 곡이 바뀌면 audio의 src를 바꾸고, 재생 중이었으면 이어서 재생한다
+	useEffect(() => {
+		const audio = audioRef.current;
+		if (!audio) return;
+		if (!audio.src.endsWith(track.src)) audio.src = track.src;
+		if (playAfterLoad.current) {
+			playAfterLoad.current = false;
+			audio.play().catch(() => setIsPlaying(false));
+			setIsPlaying(true);
 		}
-		setVolume(newVolume);
-	};
+	}, [track.src, queue]);
+
+	const next = useCallback(() => {
+		const position = nextPosition(queue, repeat);
+		if (position === null) {
+			pause();
+			goTo(0, false);
+		} else goTo(position, isPlaying);
+	}, [queue, repeat, isPlaying, goTo, pause]);
+
+	const previous = useCallback(() => {
+		const position = previousPosition(queue, audioRef.current?.currentTime ?? 0, repeat);
+		if (position === 'restart') {
+			if (audioRef.current) audioRef.current.currentTime = 0;
+			setCurrentTime(0);
+		} else goTo(position, true);
+	}, [queue, repeat, goTo]);
+
+	// 곡이 끝나면: 한 곡 반복이면 다시, 아니면 다음 곡
+	const onEnded = useCallback(() => {
+		if (repeat === 'one' && audioRef.current) {
+			audioRef.current.currentTime = 0;
+			play();
+			return;
+		}
+		const position = nextPosition(queue, repeat);
+		if (position === null) {
+			setIsPlaying(false);
+			goTo(0, false);
+		} else goTo(position, true);
+	}, [queue, repeat, play, goTo]);
+
+	const playFrom = useCallback(
+		(id: string, trackId?: string) => {
+			const ids = findPlaylist(id).trackIds;
+			const start = trackId ?? (shuffle ? ids[Math.floor(Math.random() * ids.length)] : ids[0]);
+			setPlaylistId(id);
+			playAfterLoad.current = true;
+			setCurrentTime(0);
+			setQueue(buildQueue(ids, start, shuffle));
+			if (audioRef.current && audioRef.current.src.endsWith(findTrack(start).src)) audioRef.current.currentTime = 0;
+		},
+		[shuffle]
+	);
+
+	const togglePlayPause = useCallback(() => (isPlaying ? pause() : play()), [isPlaying, pause, play]);
+
+	const seekTo = useCallback((time: number) => {
+		const audio = audioRef.current;
+		if (!audio) return;
+		audio.currentTime = time;
+		setCurrentTime(time);
+	}, []);
+
+	const setVolume = useCallback((value: number) => {
+		if (audioRef.current) audioRef.current.volume = value;
+		setVolumeState(value);
+	}, []);
+
+	// 셔플을 켜고 끄면 지금 곡은 그대로 두고 나머지 순서만 바꾼다
+	const toggleShuffle = useCallback(() => {
+		const next = !shuffle;
+		setShuffle(next);
+		setQueue(buildQueue(findPlaylist(playlistId).trackIds, track.id, next));
+	}, [shuffle, playlistId, track.id]);
+
+	const cycleRepeat = useCallback(() => setRepeat(nextRepeatMode), []);
+
+	const stopAndReset = useCallback(() => {
+		pause();
+		if (audioRef.current) audioRef.current.currentTime = 0;
+		setCurrentTime(0);
+	}, [pause]);
+
+	// 로딩 화면을 넘기면(사용자가 클릭한 직후라 자동 재생이 된다) 데스크톱에서는 음악을 튼다
+	useEffect(() => {
+		const start = () => {
+			if (!isMobileViewport({ width: window.innerWidth, height: window.innerHeight })) play();
+		};
+		window.addEventListener('startMusic', start);
+		return () => window.removeEventListener('startMusic', start);
+	}, [play]);
 
 	return (
 		<MusicContext.Provider
 			value={{
+				track,
+				playlistId,
+				queue,
 				isPlaying,
-				currentTrack,
 				currentTime,
 				duration,
 				isBuffering,
 				volume,
-				isShuffle,
+				shuffle,
+				repeat,
+				durations,
+				playFrom,
 				togglePlayPause,
-				playNextTrack,
-				playPreviousTrack,
+				next,
+				previous,
 				seekTo,
-				updatePlayerVisualState,
-				stopAndReset,
-				setVolume: handleVolumeChange,
+				setVolume,
 				toggleShuffle,
+				cycleRepeat,
+				stopAndReset,
 			}}
 		>
 			{children}
-			<audio ref={audioRef} />
+			<audio
+				ref={audioRef}
+				preload="metadata"
+				onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+				onDurationChange={(event) => setDuration(event.currentTarget.duration || 0)}
+				onWaiting={() => setIsBuffering(true)}
+				onCanPlay={() => setIsBuffering(false)}
+				onPlay={() => setIsPlaying(true)}
+				onPause={() => setIsPlaying(false)}
+				onEnded={onEnded}
+			/>
 		</MusicContext.Provider>
 	);
 };
