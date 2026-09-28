@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import type { AppName } from '@/apps/manifest';
+import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
 import {
 	clampRect,
@@ -39,7 +39,9 @@ type Gesture = GestureKind & { pointerX: number; pointerY: number; start: Rect }
  */
 export function useWindowFrame(appName: AppName) {
 	const viewport = useViewport();
-	const [savedRect, setSavedRect] = useState<Rect>(() => loadRect(appName) ?? defaultRect(viewport));
+	const [savedRect, setSavedRect] = useState<Rect>(
+		() => loadRect(appName) ?? defaultRect(viewport, APP_MANIFEST[appName].windowSize)
+	);
 	const [isMaximized, setIsMaximized] = useState(false);
 	const gesture = useRef<Gesture | null>(null);
 

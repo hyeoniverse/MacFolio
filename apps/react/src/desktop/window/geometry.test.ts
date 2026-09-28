@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { clampRect, defaultRect, maximizedRect, MIN_SIZE, moveRect, resizeRect, STATUSBAR_HEIGHT } from './geometry';
+import {
+	clampRect,
+	defaultRect,
+	DOCK_RESERVED_HEIGHT,
+	maximizedRect,
+	MIN_SIZE,
+	moveRect,
+	resizeRect,
+	STATUSBAR_HEIGHT,
+} from './geometry';
 
 const viewport = { width: 1600, height: 1000 };
 
@@ -10,6 +19,11 @@ describe('defaultRect', () => {
 
 	it('폭은 800을 넘지 않는다', () => {
 		expect(defaultRect({ width: 2560, height: 1440 }).width).toBe(800);
+	});
+
+	it('앱이 정한 크기가 있으면 그 크기로, 화면보다 크면 줄인다', () => {
+		expect(defaultRect(viewport, { width: 860, height: 560 })).toEqual({ x: 100, y: 100, width: 860, height: 560 });
+		expect(defaultRect({ width: 700, height: 500 }, { width: 860, height: 560 }).width).toBe(700);
 	});
 
 	it('좁은 화면에서도 최소 400×300', () => {
@@ -81,12 +95,16 @@ describe('resizeRect', () => {
 });
 
 describe('maximizedRect', () => {
-	it('상태 표시줄 아래 전체를 채운다', () => {
+	it('상태 표시줄과 Dock 사이를 채운다', () => {
 		expect(maximizedRect(viewport)).toEqual({
 			x: 0,
 			y: STATUSBAR_HEIGHT,
 			width: 1600,
-			height: 1000 - STATUSBAR_HEIGHT,
+			height: 1000 - STATUSBAR_HEIGHT - DOCK_RESERVED_HEIGHT,
 		});
+	});
+
+	it('아주 작은 화면에서도 최소 높이는 지킨다', () => {
+		expect(maximizedRect({ width: 800, height: 300 }).height).toBe(MIN_SIZE.height);
 	});
 });
