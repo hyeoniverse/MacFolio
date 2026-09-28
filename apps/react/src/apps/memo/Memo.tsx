@@ -134,8 +134,6 @@ const Memo: React.FC = () => {
 
 	const handleScroll = (event: React.UIEvent<HTMLDivElement>) => setIsScrolled(event.currentTarget.scrollTop > 50);
 
-	if (!isRunning || isMinimized) return null;
-
 	return (
 		<AppWindow title="Memo" appName="memo">
 			<div className="memo-container">

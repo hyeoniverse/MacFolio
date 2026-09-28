@@ -1,19 +1,11 @@
 import React from 'react';
 import AppWindow from '@/desktop/window/Window';
-import { useAppState } from '@/desktop/AppStateContext';
 import '@/apps/safari/Safari.css';
 import '@/desktop/window/Window.css';
 import { env } from '@/shared/config/env';
 
 const Safari: React.FC = () => {
 	const imageUrl = env.imageUrl;
-
-	// useAppState를 이용해 앱 상태를 관리
-	const { apps } = useAppState();
-
-	// 'safari' 앱의 실행 상태 및 최소화 상태를 가져옴
-	const isRunning = apps.safari.isRunning;
-	const isMinimized = apps.safari.isMinimized;
 
 	// 프로젝트 데이터
 	const projects = [
@@ -39,9 +31,6 @@ const Safari: React.FC = () => {
 			link: 'https://codingkirby.github.io/projects/CHATBuddy',
 		},
 	];
-
-	// 앱이 실행 중이 아닌 경우나 최소화된 경우에는 렌더링하지 않음
-	if (!isRunning || isMinimized) return null;
 
 	return (
 		<AppWindow title="Portfolio" appName="safari">

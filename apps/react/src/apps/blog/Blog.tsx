@@ -6,15 +6,8 @@ import '@/desktop/window/Window.css';
 const Blog: React.FC = () => {
 	const { apps, bringAppToFront } = useAppState();
 
-	// 'blog' 앱의 실행 상태 및 최소화 상태를 가져옴
-	const isRunning = apps.blog.isRunning;
-	const isMinimized = apps.blog.isMinimized;
-
 	// 현재 blog 앱이 상위에 있는지 확인 (가장 높은 zIndex 값을 가진 앱인지)
 	const isTopApp = Object.values(apps).every((app) => app.zIndex <= apps.blog.zIndex);
-
-	// 앱이 실행 중이 아닌 경우나 최소화된 경우에는 렌더링하지 않음
-	if (!isRunning || isMinimized) return null;
 
 	return (
 		<AppWindow
