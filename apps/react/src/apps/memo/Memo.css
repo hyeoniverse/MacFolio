@@ -30,7 +30,9 @@
 .memo {
 	display: grid;
 	grid-template-columns: 11rem 16rem 1fr;
+	position: relative;
 	height: 100%;
+	transition: grid-template-columns var(--duration) var(--ease-out);
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font-size: 13px;
@@ -47,9 +49,56 @@
 	list-style: none;
 }
 
-/* 폴더 (카테고리) */
+[data-app='memo'].container {
+	border-color: transparent;
+	background-color: var(--memo-bg);
+}
+
+/* 사이드바 여닫기 버튼: 신호등 버튼 옆 (통합형 창의 끌기 영역보다 위) */
+.memo-sidebar-toggle {
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: 12px;
+	left: 80px;
+	z-index: 4;
+	width: 30px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: var(--memo-muted) !important;
+}
+
+.memo-sidebar-toggle:hover {
+	background-color: var(--memo-hover);
+}
+
+.memo-sidebar-toggle svg {
+	width: 19px;
+	height: 15px;
+}
+
+/* 사이드바를 닫으면 폴더 칸이 접힌다 */
+.memo.sidebar-closed {
+	grid-template-columns: 0 16rem 1fr;
+}
+
+.memo.sidebar-closed .memo-folders {
+	padding-right: 0;
+	padding-left: 0;
+	border-right-color: transparent;
+	/* 접히는 애니메이션이 끝난 뒤 숨긴다 (잘려 보이기만 하는 게 아니라 실제로 숨는다) */
+	visibility: hidden;
+	transition: visibility 0s linear var(--duration);
+}
+
+/* 폴더 (카테고리). 위쪽은 신호등 버튼 자리 */
 .memo-folders {
-	padding: 1rem 0.5rem;
+	min-width: 0;
+	padding: 52px 0.5rem 1rem;
+	overflow-x: hidden;
 	border-right: 1px solid var(--memo-border);
 	background-color: var(--memo-sidebar-bg);
 	overflow-y: auto;
@@ -103,6 +152,8 @@
 
 /* 글 목록 */
 .memo-list {
+	/* 위쪽은 도구 막대 자리 (사이드바를 닫으면 신호등 버튼과 여닫기 버튼이 여기 온다) */
+	padding-top: 44px;
 	border-right: 1px solid var(--memo-border);
 	background-color: var(--memo-list-bg);
 	overflow-y: auto;
@@ -198,7 +249,7 @@
 
 /* 본문 */
 .memo-reader {
-	padding: 1.5rem 2rem 3rem;
+	padding: 52px 2rem 3rem;
 	overflow-y: auto;
 }
 
@@ -404,8 +455,18 @@
 }
 
 @container (max-width: 600px) {
-	.memo {
+	.memo,
+	.memo.sidebar-closed {
 		grid-template-columns: 1fr;
+	}
+
+	/* 한 칸씩 보이므로 여닫기 버튼은 필요 없다 */
+	.memo-sidebar-toggle {
+		display: none;
+	}
+
+	.memo-folders {
+		padding-top: 44px;
 	}
 
 	/* 한 칸씩 넘길 때 iOS처럼 옆에서 들어온다 */
@@ -466,4 +527,13 @@
 	.memo-lightbox {
 		padding: 1rem;
 	}
+}
+
+/* 모바일: 신호등 버튼이 없으므로 위쪽 자리를 비우지 않는다 */
+.container.mobile .memo-list {
+	padding-top: 0;
+}
+
+.container.mobile .memo-folders {
+	padding-top: 0.75rem;
 }

@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
-import { WALLPAPERS, type ThemePreference } from '@/shared/settings/settings';
+import {
+	IOS_WALLPAPERS,
+	MAC_WALLPAPERS,
+	wallpaperUrl,
+	type ResolvedTheme,
+	type ThemePreference,
+	type Wallpaper,
+} from '@/shared/settings/settings';
 import '@/apps/settings/Settings.css';
 
 type Section = 'appearance' | 'wallpaper';
@@ -16,6 +23,44 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
 	{ value: 'dark', label: '다크' },
 	{ value: 'system', label: '자동' },
 ];
+
+/** 배경화면 한 묶음 (macOS, iOS). 썸네일은 지금 화면 모드의 버전으로 보여준다 */
+const WallpaperGroup: React.FC<{
+	label: string;
+	hint: string;
+	wallpapers: readonly Wallpaper[];
+	selected: string;
+	portrait?: boolean;
+	onSelect: (id: string) => void;
+}> = ({ label, hint, wallpapers, selected, portrait = false, onSelect }) => {
+	const theme = (document.documentElement.dataset.theme ?? 'light') as ResolvedTheme;
+	return (
+		<section className="wallpaper-group">
+			<h3>{label}</h3>
+			<p className="settings-hint">{hint}</p>
+			<div className="settings-options wallpaper-grid" role="radiogroup" aria-label={`${label} 배경화면`}>
+				{wallpapers.map((wallpaper) => (
+					<button
+						key={wallpaper.id}
+						type="button"
+						role="radio"
+						aria-checked={selected === wallpaper.id}
+						className={`wallpaper-option ${selected === wallpaper.id ? 'selected' : ''}`}
+						onClick={() => onSelect(wallpaper.id)}
+					>
+						<img
+							className={`wallpaper-thumbnail ${portrait ? 'portrait' : ''}`}
+							src={wallpaperUrl(wallpaper, theme, true)}
+							alt=""
+							loading="lazy"
+						/>
+						{wallpaper.name}
+					</button>
+				))}
+			</div>
+		</section>
+	);
+};
 
 const Settings: React.FC = () => {
 	const settings = useSettings();
@@ -66,25 +111,23 @@ const Settings: React.FC = () => {
 						{section === 'wallpaper' && (
 							<>
 								<h2>배경화면</h2>
-								<div className="settings-options wallpaper-grid" role="radiogroup" aria-label="배경화면">
-									{WALLPAPERS.map((wallpaper) => (
-										<button
-											key={wallpaper.id}
-											type="button"
-											role="radio"
-											aria-checked={settings.wallpaper === wallpaper.id}
-											className={`wallpaper-option ${settings.wallpaper === wallpaper.id ? 'selected' : ''}`}
-											onClick={() => settingsStore.setState({ wallpaper: wallpaper.id })}
-										>
-											<span
-												className="wallpaper-thumbnail"
-												style={{ backgroundImage: wallpaper.css }}
-												aria-hidden="true"
-											/>
-											{wallpaper.name}
-										</button>
-									))}
-								</div>
+								<WallpaperGroup
+									label="macOS"
+									hint="데스크톱 배경화면. 다크 모드에서는 어두운 버전으로 바뀝니다."
+									wallpapers={MAC_WALLPAPERS}
+									selected={settings.wallpaper}
+									onSelect={(id) => settingsStore.setState({ wallpaper: id as (typeof MAC_WALLPAPERS)[number]['id'] })}
+								/>
+								<WallpaperGroup
+									label="iOS"
+									hint="휴대폰 홈 화면 배경화면."
+									portrait
+									wallpapers={IOS_WALLPAPERS}
+									selected={settings.mobileWallpaper}
+									onSelect={(id) =>
+										settingsStore.setState({ mobileWallpaper: id as (typeof IOS_WALLPAPERS)[number]['id'] })
+									}
+								/>
 							</>
 						)}
 					</section>

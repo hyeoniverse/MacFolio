@@ -117,11 +117,31 @@
 }
 
 /* 배경화면 선택 */
+.wallpaper-group + .wallpaper-group {
+	margin-top: 1.5rem;
+}
+
+.wallpaper-group h3 {
+	color: var(--color-text-strong);
+	font-size: 0.95rem;
+}
+
+.wallpaper-group .settings-hint {
+	margin: 0.2rem 0 0.75rem;
+}
+
 .wallpaper-thumbnail {
 	width: 8rem;
 	height: 5rem;
-	background-position: center;
-	background-size: cover;
+	object-fit: cover;
+	transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+/* iOS 배경화면은 세로 */
+.wallpaper-thumbnail.portrait {
+	width: 4.2rem;
+	height: 8.6rem;
+	border-radius: 0.8rem;
 }
 
 /* ─── 좁은 창: 항목을 위쪽 탭으로 ─── */

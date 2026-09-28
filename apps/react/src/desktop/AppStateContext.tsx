@@ -18,6 +18,11 @@ interface AppContextType {
 	toggleAppSize: (appName: AppName) => void;
 
 	closeApp: (appName: AppName) => void;
+	/**
+	 * 앱을 완전히 끈다 (모바일 앱 전환기에서 밀어 올려 닫기). 창만 닫는 closeApp과 달리
+	 * 앱 컴포넌트를 내려서 입력 중인 글 같은 상태도 사라진다. 다음에 열면 처음부터 시작한다.
+	 */
+	quitApp: (appName: AppName) => void;
 	openApp: (appName: AppName) => void;
 
 	minimizeApp: (appName: AppName) => void;
@@ -93,6 +98,13 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 		}));
 	}, []);
 
+	const quitApp = useCallback((appName: AppName) => {
+		setApps((prevState) => ({
+			...prevState,
+			[appName]: { ...prevState[appName], isRunning: false, isMinimized: false, hasOpened: false },
+		}));
+	}, []);
+
 	const openApp = useCallback((appName: AppName) => {
 		setApps((prevState) => ({
 			...prevState,
@@ -136,6 +148,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 				toggleAppState,
 				toggleAppSize,
 				closeApp,
+				quitApp,
 				openApp,
 				minimizeApp,
 				maximizeApp,

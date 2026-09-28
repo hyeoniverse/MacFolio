@@ -4,6 +4,7 @@ import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { findPlaylist, findTrack, formatTime, formatTotal, PLAYLISTS, type Playlist } from './library';
 import { useMusic } from './MusicContext';
 import SeekBar from './SeekBar';
+import VolumeBar from './VolumeBar';
 import '@/apps/music/Music.css';
 
 const PLAYLIST_ICONS: Record<string, string> = {
@@ -77,26 +78,6 @@ const Transport: React.FC<{ large?: boolean }> = ({ large = false }) => {
 	);
 };
 
-/** 음량 막대 */
-const Volume: React.FC = () => {
-	const { volume, setVolume } = useMusic();
-	return (
-		<label className="music-volume">
-			<i className={`fa-solid ${volume === 0 ? 'fa-volume-xmark' : 'fa-volume-low'}`} aria-hidden="true"></i>
-			<input
-				type="range"
-				min={0}
-				max={1}
-				step={0.01}
-				value={volume}
-				aria-label="음량"
-				onChange={(event) => setVolume(Number(event.target.value))}
-			/>
-			<i className="fa-solid fa-volume-high" aria-hidden="true"></i>
-		</label>
-	);
-};
-
 /** 다음에 재생할 곡 */
 const UpNext: React.FC = () => {
 	const { queue, playlistId, playFrom } = useMusic();
@@ -146,7 +127,7 @@ const NowPlayingSheet: React.FC = () => {
 			</div>
 			<SeekBar showTimes />
 			<Transport large />
-			<Volume />
+			<VolumeBar />
 			<UpNext />
 		</div>
 	);
@@ -285,7 +266,7 @@ const Music: React.FC = () => {
 							<SeekBar showTimes />
 						</div>
 						<div className="music-bar-right">
-							<Volume />
+							<VolumeBar />
 							<button
 								type="button"
 								className={`music-toggle ${upNextOpen ? 'on' : ''}`}

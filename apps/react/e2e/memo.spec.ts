@@ -91,4 +91,17 @@ test.describe('메모 (블로그)', () => {
 		await openMemo(page);
 		expect(await page.evaluate(() => localStorage.getItem('macfolio:memos'))).toBeNull();
 	});
+
+	test('사이드바를 여닫을 수 있다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await expect(folders.getByRole('button', { name: /모든 글/ })).toBeVisible();
+
+		await memo.getByRole('button', { name: '사이드바 가리기' }).click();
+		await expect(folders.getByRole('button', { name: /모든 글/ })).toBeHidden();
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+
+		await memo.getByRole('button', { name: '사이드바 보기' }).click();
+		await expect(folders.getByRole('button', { name: /모든 글/ })).toBeVisible();
+	});
 });

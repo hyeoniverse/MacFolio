@@ -48,7 +48,7 @@ const MobileAppFrame: React.FC<Props> = ({
 	titleBarStyle,
 	children,
 }) => {
-	const { bringAppToFront, closeApp } = useAppState();
+	const { bringAppToFront, quitApp } = useAppState();
 	const [nav, setNav] = useState<MobileNav | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
 	const gesture = useRef<{ x: number; y: number; scroll: number; axis: 'x' | 'y' | null } | null>(null);
@@ -99,9 +99,9 @@ const MobileAppFrame: React.FC<Props> = ({
 				setSwitcherScroll(-index * step);
 			} else if (g.axis === 'y') {
 				if (g.y - event.clientY >= SWIPE_CLOSE_PX) {
-					// 위로 밀어 올려 앱을 닫는다
+					// 위로 밀어 올려 앱을 완전히 끈다 (음악이면 재생도 멈춘다)
 					card?.style.setProperty('--card-lift', '-110vh');
-					setTimeout(() => closeApp(appName), 250);
+					setTimeout(() => quitApp(appName), 250);
 				} else card?.style.setProperty('--card-lift', '0px');
 			} else {
 				// 카드를 누르면 그 앱으로 돌아간다

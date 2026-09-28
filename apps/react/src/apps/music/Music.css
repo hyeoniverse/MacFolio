@@ -438,17 +438,9 @@
 	gap: 14px;
 }
 
-.music-volume {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	color: var(--music-muted);
-	font-size: 12px;
-}
-
-.music-volume input {
-	width: 90px;
-	accent-color: var(--music-text);
+.music-bar-right .volume-bar {
+	width: 140px;
+	color: var(--music-text);
 }
 
 .music-mini-controls {
@@ -535,14 +527,9 @@
 	color: #fff !important;
 }
 
-.music-now-playing .music-volume {
+.music-now-playing .volume-bar {
 	align-self: stretch;
-	color: rgba(255, 255, 255, 0.7);
-}
-
-.music-now-playing .music-volume input {
-	flex: 1;
-	accent-color: #fff;
+	color: #fff;
 }
 
 .music-now-playing .music-up-next {

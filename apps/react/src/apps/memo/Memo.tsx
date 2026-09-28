@@ -39,6 +39,8 @@ const Memo: React.FC = () => {
 	// 좁은 창에서는 한 칸씩 보여준다 (iOS 메모처럼 폴더 → 목록 → 본문). 넓은 창에서는 쓰지 않는다.
 	const [pane, setPaneState] = useState<Pane>('list');
 	// 넘어간 방향. 앞으로 가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다 (처음에는 애니메이션 없음)
+	// macOS 메모처럼 폴더 사이드바를 여닫는다 (좁은 창에서는 한 칸씩 보이므로 쓰지 않는다)
+	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
 	const setPane = (next: Pane) => {
 		setNav(PANES.indexOf(next) > PANES.indexOf(pane) ? 'forward' : 'back');
@@ -61,10 +63,26 @@ const Memo: React.FC = () => {
 	const selected = visible.find((post) => post.slug === selectedSlug) ?? visible[0] ?? null;
 
 	return (
-		<AppWindow title="메모" appName="memo">
+		<AppWindow title="메모" appName="memo" chrome="unified">
 			<div className="memo-shell">
-				<div className={`memo pane-${pane}`} data-nav={nav}>
-					<nav className="memo-folders" aria-label="카테고리">
+				<div className={`memo pane-${pane} ${sidebarOpen ? '' : 'sidebar-closed'}`} data-nav={nav}>
+					<button
+						type="button"
+						className="memo-sidebar-toggle"
+						aria-label={sidebarOpen ? '사이드바 가리기' : '사이드바 보기'}
+						aria-expanded={sidebarOpen}
+						title={sidebarOpen ? '사이드바 가리기' : '사이드바 보기'}
+						onClick={() => setSidebarOpen((open) => !open)}
+					>
+						{/* SF Symbols의 sidebar.left 모양 */}
+						<svg viewBox="0 0 20 16" aria-hidden="true">
+							<rect x="1" y="1" width="18" height="14" rx="3" fill="none" stroke="currentColor" strokeWidth="1.5" />
+							<line x1="7.5" y1="1.5" x2="7.5" y2="14.5" stroke="currentColor" strokeWidth="1.5" />
+							<line x1="3.2" y1="5" x2="5.3" y2="5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+							<line x1="3.2" y1="7.5" x2="5.3" y2="7.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+						</svg>
+					</button>
+					<nav className="memo-folders" aria-label="카테고리" inert={!sidebarOpen}>
 						<h2>
 							<i className="fa-brands fa-apple" aria-hidden="true" /> 블로그
 						</h2>

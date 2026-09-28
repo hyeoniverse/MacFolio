@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { isMobileViewport } from '@/desktop/layout';
+import { useAppState } from '@/desktop/AppStateContext';
 import {
 	ALL_SONGS,
 	buildQueue,
@@ -189,6 +190,15 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 		if (audioRef.current) audioRef.current.currentTime = 0;
 		setCurrentTime(0);
 	}, [pause]);
+
+	// 음악 앱을 끄면(창 닫기, 모바일 앱 전환기에서 밀어 올리기) 재생도 멈춘다.
+	// 실행 중이다가 꺼질 때만 멈춘다: 데스크톱은 음악 창 없이 시작해도 로딩 뒤 자동 재생한다.
+	const musicRunning = useAppState().apps.music.isRunning;
+	const wasRunning = useRef(musicRunning);
+	useEffect(() => {
+		if (wasRunning.current && !musicRunning) stopAndReset();
+		wasRunning.current = musicRunning;
+	}, [musicRunning, stopAndReset]);
 
 	// 로딩 화면을 넘기면(사용자가 클릭한 직후라 자동 재생이 된다) 데스크톱에서는 음악을 튼다
 	useEffect(() => {
