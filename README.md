@@ -31,6 +31,28 @@ apps/
 packages/         # 앱 간에 공유하는 패키지
 ```
 
+## 블로그 글 쓰기
+
+메모 앱이 블로그입니다. `apps/react/src/apps/memo/content/`에 Markdown 파일을 추가하면 글이 됩니다. 파일 이름이 글의 주소 이름이 됩니다(예: `my-first-post.md`).
+
+```md
+---
+title: 글 제목
+date: 2026-09-28
+category: 회고
+summary: 목록에 보일 한 줄 요약 (없으면 본문 앞부분)
+---
+
+본문은 Markdown으로 씁니다. 표, 코드 블록, 링크를 쓸 수 있습니다.
+
+![이미지 설명](./images/사진.png '이미지 아래 캡션 (선택)')
+```
+
+- `title`과 `date`(YYYY-MM-DD)는 필수입니다. 없거나 형식이 틀리면 목록에서 빠지고, 개발 서버 콘솔에 경고가 나옵니다.
+- `category`는 왼쪽 폴더가 됩니다. 없으면 "기타"로 들어갑니다.
+- 이미지는 `content/images/`에 넣고 글 파일 기준 상대 경로로 씁니다. 에디터의 Markdown 미리보기에서도 그대로 보입니다. `public/` 경로(`/imgs/...`)와 외부 주소도 쓸 수 있습니다.
+- `pnpm dev`로 띄우면 저장할 때마다 바로 반영되고, main에 머지하면 자동으로 배포됩니다.
+
 ## CRA → Vite 마이그레이션
 
 deprecated된 Create React App에서 Vite로 옮겼습니다.

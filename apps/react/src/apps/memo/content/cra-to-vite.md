@@ -23,6 +23,8 @@ summary: dev 서버 시작 5.05초 → 0.58초. 옮긴 이유와 측정 방법, 
 | 설치 패키지 수                 | 1,438개  | 171개    |
 | `node_modules` 크기            | 548 MB   | 276 MB   |
 
+![CRA와 Vite의 빌드 시간 비교 그래프](./images/cra-vite-benchmark.svg 'dev 서버 시작과 프로덕션 빌드 시간 (초)')
+
 같은 컴퓨터(Apple M4 Pro)에서 캐시를 지우고 3번씩 잰 평균이다. 두 버전 모두 React 19.0.0이다.
 
 측정할 때 신경 쓴 점이 있다.
