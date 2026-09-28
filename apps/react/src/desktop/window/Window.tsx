@@ -22,7 +22,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	titleBarStyle,
 	onClick,
 }) => {
-	const { apps, closeApp, minimizeApp, maximizeApp, bringAppToFront } = useAppState();
+	const { apps, closeApp, minimizeApp, bringAppToFront } = useAppState();
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [position, setPosition] = useState({ x: 100, y: 100 });
