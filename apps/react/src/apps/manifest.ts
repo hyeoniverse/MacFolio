@@ -28,6 +28,8 @@ export interface AppManifest {
 	runningAtStart?: boolean;
 	/** Dock 아이콘의 둥근 모서리를 없앨지 여부 */
 	squareIcon?: boolean;
+	/** 처음 열 때 창 크기. 없으면 화면 크기에 맞춘 기본값 (desktop/window/geometry.ts) */
+	windowSize?: { width: number; height: number };
 	/** 창을 여는 대신 실행할 동작 */
 	action?: { type: 'link'; url: string } | { type: 'share' };
 }
@@ -37,7 +39,7 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	music: { icon: 'music.png', inDock: true, runningAtStart: true },
 	safari: { icon: 'safari.png', inDock: true, runningAtStart: true },
 	photos: { icon: 'photos.png', inDock: true },
-	messages: { icon: 'messages.png', inDock: true },
+	messages: { icon: 'messages.png', inDock: true, windowSize: { width: 860, height: 560 } },
 	memo: { icon: 'memo.png', inDock: true },
 	github: { icon: 'github.png', inDock: true },
 	blog: { icon: 'blog.png', inDock: true },
