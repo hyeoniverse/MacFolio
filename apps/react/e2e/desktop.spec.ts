@@ -52,7 +52,9 @@ test.describe('데스크톱', () => {
 		await page.mouse.move(mailBar.x + 900, mailBar.y + mailBar.height / 2 + 300, { steps: 10 });
 		await page.mouse.up();
 
-		await appWindow(page, 'github').locator('.content').click({ position: { x: 20, y: 20 } });
+		await appWindow(page, 'github')
+			.locator('.content')
+			.click({ position: { x: 20, y: 20 } });
 		expect(await zIndexOf(page, 'github')).toBeGreaterThan(await zIndexOf(page, 'mail'));
 	});
 
