@@ -109,7 +109,6 @@ export const MemoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			resetMemoCreateState();
 			setMemos((prevMemos) => [createdMemo, ...prevMemos.filter((memo) => memo.id !== '0')]);
 			setSelectedMemo(createdMemo);
-			console.log('Memo created:', createdMemo);
 		} catch (error) {
 			console.error('Error saving memo:', error);
 		}

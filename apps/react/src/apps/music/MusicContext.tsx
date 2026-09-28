@@ -114,8 +114,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const playNextTrack = useCallback(() => {
-    console.log("playNextTrack");
-
     if (isShuffle) {
       let availableTracks = trackUrls
         .map((_, index) => index)
@@ -130,8 +128,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({
       // 랜덤하게 새로운 트랙 선택
       const nextTrack =
         availableTracks[Math.floor(Math.random() * availableTracks.length)];
-
-      console.log("nextTrack", nextTrack);
 
       setPlayedTracks((prev) => [...prev, nextTrack]); // 재생된 트랙 목록 업데이트
       setCurrentTrack(nextTrack);

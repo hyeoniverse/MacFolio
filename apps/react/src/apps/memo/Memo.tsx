@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
 import { useMemoContext } from '@/apps/memo/MemoContext';
 import '@/apps/memo/Memo.css';

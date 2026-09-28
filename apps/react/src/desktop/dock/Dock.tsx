@@ -142,7 +142,7 @@ const Dock: React.FC = () => {
 						icon={iconOf('bin')}
 						isActive={false}
 						isHidden={false}
-						onClick={() => console.log('Bin clicked')}
+						onClick={() => {}} // 휴지통은 아직 동작 없음
 					/>
 				</div>
 			</div>
