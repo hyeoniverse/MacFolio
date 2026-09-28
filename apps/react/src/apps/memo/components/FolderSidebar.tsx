@@ -349,8 +349,10 @@ const FolderSidebar: React.FC<Props> = (props) => {
 
 	return (
 		<nav className="memo-folders" aria-label="카테고리" inert={!open}>
+			{/* 신호등 버튼 바로 옆에 여닫기 (접었을 때와 같은 자리), 오른쪽 끝에 새로운 폴더 */}
 			<div className="memo-sidebar-bar">
 				<span className="memo-lights-space" aria-hidden="true" />
+				<SidebarToggle open onToggle={onToggle} />
 				<button
 					type="button"
 					className="memo-tool memo-new-folder-button"
@@ -360,7 +362,6 @@ const FolderSidebar: React.FC<Props> = (props) => {
 				>
 					<i className="fa-solid fa-folder-plus" aria-hidden="true" />
 				</button>
-				<SidebarToggle open onToggle={onToggle} />
 			</div>
 
 			<div className="memo-folder-scroll">

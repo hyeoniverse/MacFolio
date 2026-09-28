@@ -238,7 +238,6 @@ const Memo: React.FC = () => {
 								<h2>{folderName(category)}</h2>
 								<p>{visible.length}개의 메모</p>
 							</div>
-							<ViewSwitch view={view} onChange={changeView} />
 						</div>
 						<div className="memo-scroll">
 							<button type="button" className="memo-back" onClick={() => setPane('folders')}>
@@ -326,6 +325,8 @@ const Memo: React.FC = () => {
 								</>
 							)}
 							<span className="memo-toolbar-spacer" />
+							{/* 보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
+							<ViewSwitch view={view} onChange={changeView} />
 							{search}
 						</div>
 						<div className="memo-scroll">
