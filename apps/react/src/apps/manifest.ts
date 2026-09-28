@@ -54,7 +54,7 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 			url: 'https://calico-octave-0a0.notion.site/62b2692248d045bdb1796368054b3ac2?pvs=74',
 		},
 	},
-	mail: { label: '메일', icon: 'mail.png', inDock: true },
+	mail: { label: '메일', icon: 'mail.png', inDock: true, windowSize: { width: 900, height: 560 } },
 	share: { label: '공유', icon: 'share.png', inDock: true, action: { type: 'share' } },
 	terminal: { label: '터미널', icon: 'terminal.svg', inDock: true, windowSize: { width: 596, height: 420 } },
 	settings: { label: '시스템 설정', icon: 'settings.png', inDock: true },

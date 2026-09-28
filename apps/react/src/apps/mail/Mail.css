@@ -1,127 +1,432 @@
-/* 색상 변수: 라이트 값은 기존 색 그대로, 다크 값은 styles/theme.css의 다크 톤에 맞춤 */
+/* macOS 26 메일 앱 색 */
 [data-app='mail'] {
-	--mail-bg: #f7f7f7;
-	--mail-border: #dddddd;
-	--mail-border-subtle: #eeeeee;
-	--mail-selected-bg: #eeeeee;
-	--mail-surface: #ffffff;
-	--mail-text: #555555;
-	--mail-text-muted: #888888;
-	--mail-text-strong: #333333;
+	--mail-window-bg: #ffffff;
+	--mail-panel-bg: #f6f6f6;
+	--mail-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 6px 18px rgba(0, 0, 0, 0.06);
+	--mail-separator: #e3e3e6;
+	--mail-selected-bg: #0a84ff;
+	--mail-selected-text: #ffffff;
+	--mail-hover-bg: #ececef;
+	--mail-text: #1d1d1f;
+	--mail-muted: #6e6e73;
+	--mail-accent: #0a84ff;
+	--mail-avatar: linear-gradient(180deg, #aab2e5 0%, #8b93d0 100%);
+	--mail-float-bg: #ffffff;
+	--mail-float-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 2px 10px rgba(0, 0, 0, 0.1);
+	--mail-field-border: #e3e3e6;
+	--mail-error: #d70015;
 }
 
 :root[data-theme='dark'] [data-app='mail'] {
-	--mail-bg: #1a1a1c;
-	--mail-border: #38383a;
-	--mail-border-subtle: #2c2c2e;
-	--mail-selected-bg: #3a3a3c;
-	--mail-surface: #1e1e1e;
-	--mail-text: #c7c7cc;
-	--mail-text-muted: #98989d;
-	--mail-text-strong: #e5e5e7;
+	--mail-window-bg: #1c1c1e;
+	--mail-panel-bg: #2a2a2c;
+	--mail-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 18px rgba(0, 0, 0, 0.35);
+	--mail-separator: #3a3a3c;
+	--mail-hover-bg: #333336;
+	--mail-text: #f5f5f7;
+	--mail-muted: #98989d;
+	--mail-avatar: linear-gradient(180deg, #8f97cf 0%, #6c74b3 100%);
+	--mail-float-bg: #2c2c2e;
+	--mail-float-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.08), 0 2px 10px rgba(0, 0, 0, 0.4);
+	--mail-field-border: #3a3a3c;
+	--mail-error: #ff6961;
 }
 
-.mail-app {
-	display: flex;
+[data-app='mail'].container {
+	border-color: transparent;
+	background-color: var(--mail-window-bg);
+}
+
+.mail {
+	container-type: inline-size;
+	display: grid;
+	grid-template-columns: 200px 280px 1fr;
+	gap: 8px;
 	height: 100%;
+	padding: 8px;
+	background-color: var(--mail-window-bg);
+	color: var(--mail-text);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-size: 13px;
+	text-align: left;
+}
+
+.mail button {
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+}
+
+.mail ul {
+	list-style: none;
+}
+
+/* ─── 메일상자: 창 안에 떠 있는 둥근 패널 ─── */
+.mail-sidebar {
+	padding: 0 8px 8px;
+	border-radius: 18px;
+	background-color: var(--mail-panel-bg);
+	box-shadow: var(--mail-panel-shadow);
+}
+
+/* 신호등 버튼 자리 */
+.mail-sidebar-top {
+	height: 44px;
+}
+
+.mail-sidebar-heading {
+	margin: 4px 8px 4px;
+	color: var(--mail-muted);
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.mail-mailbox {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 	width: 100%;
-	background-color: var(--mail-bg);
+	padding: 6px 8px;
+	border: none;
+	border-radius: 8px;
+	background: none;
 }
 
+.mail-mailbox i {
+	color: var(--mail-accent);
+}
+
+.mail-mailbox.selected {
+	background-color: var(--mail-hover-bg);
+}
+
+.mail-badge {
+	margin-left: auto;
+	color: var(--mail-muted);
+	font-size: 12px;
+}
+
+/* ─── 목록 ─── */
 .mail-list {
-	width: 40%;
-	border-right: 1px solid var(--mail-border);
+	min-width: 0;
+	border-right: 1px solid var(--mail-separator);
 	overflow-y: auto;
-	background-color: var(--mail-surface);
-	box-shadow: inset 0 -1rem 1rem 0.2rem rgba(0, 0, 0, 0.1);
 }
 
-.mail-list h3 {
-	font-size: 18px;
-	color: var(--mail-text-strong);
-	padding: 1rem;
-	border-bottom: var(--mail-border) 1px solid;
+.mail-list-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 8px 10px 12px;
+}
+
+.mail-list-toolbar h2 {
+	font-size: 15px;
+}
+
+.mail-list-toolbar p {
+	color: var(--mail-muted);
+	font-size: 11px;
+}
+
+.mail-round-button {
+	position: relative;
+	z-index: 4;
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--mail-float-bg);
+	box-shadow: var(--mail-float-shadow);
+	font-size: 15px !important;
 }
 
 .mail-list ul {
-	list-style: none;
-	padding: 0;
+	padding: 0 6px;
 }
 
-.mail-list li {
-	padding: 1rem;
-	cursor: pointer;
-	border-bottom: 1px solid var(--mail-border-subtle);
-	transition: background-color 0.3s ease;
+.mail-item {
+	display: flex;
+	gap: 6px;
+	width: 100%;
+	padding: 8px 10px 10px 4px;
+	border: none;
+	border-radius: 10px;
+	background: none;
+	text-align: left;
 }
 
-.mail-list li:hover {
-	box-shadow: inset 0 0 1rem 0 rgba(0, 0, 0, 0.2);
-}
-
-.mail-list li.active {
+.mail-item.selected {
 	background-color: var(--mail-selected-bg);
-	font-weight: bold;
+	color: var(--mail-selected-text) !important;
 }
 
-.mail-subject {
-	display: block;
-	font-size: 16px;
-	color: var(--mail-text-strong);
+.mail-unread {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	margin-top: 5px;
+	border-radius: 50%;
+	background-color: var(--mail-accent);
 }
 
-.mail-from {
-	font-size: 0.7rem;
-	color: var(--mail-text-muted);
+.mail-unread.read {
+	visibility: hidden;
 }
 
-.mail-details {
-	width: 60%;
-	padding: 2rem;
-	background-color: var(--mail-surface);
-	box-shadow: inset 0 0 1rem 0.1rem rgba(0, 0, 0, 0.1);
-	border-left: 1px solid var(--mail-border);
+.mail-item.selected .mail-unread {
+	background-color: #ffffff;
 }
 
-.mail-details h4 {
-	margin-top: 0;
-	font-size: 22px;
-	color: var(--mail-text-strong);
+.mail-item-text {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	min-width: 0;
 }
 
-.mail-details p {
+.mail-item-top {
+	display: flex;
+	justify-content: space-between;
+	gap: 6px;
+}
+
+.mail-item-top time,
+.mail-item-preview {
+	color: var(--mail-muted);
+	font-size: 12px;
+}
+
+.mail-item-subject {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mail-item-preview {
+	display: -webkit-box;
+	overflow: hidden;
+	line-height: 1.35;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.mail-item.selected time,
+.mail-item.selected .mail-item-preview {
+	color: var(--mail-selected-text);
+}
+
+/* ─── 읽기 ─── */
+.mail-reader {
+	min-width: 0;
+	padding: 16px 20px;
+	overflow-y: auto;
+}
+
+.mail-avatar {
+	display: grid;
+	place-items: center;
+	flex: none;
+	border-radius: 50%;
+	background: var(--mail-avatar);
+	color: #ffffff;
+	font-weight: 600;
+}
+
+.mail-reader-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--mail-separator);
+}
+
+.mail-reader-header > div {
+	flex: 1;
+}
+
+.mail-reader-header p,
+.mail-reader-header time {
+	color: var(--mail-muted);
+	font-size: 12px;
+}
+
+.mail-reader h1 {
+	margin: 16px 0 12px;
+	font-size: 20px;
+}
+
+.mail-reader-body {
+	margin-bottom: 20px;
 	font-size: 14px;
-	color: var(--mail-text);
-	line-height: 1.6;
-	padding: 0.5rem 0;
+	line-height: 1.7;
+	white-space: pre-wrap;
 }
 
+.mail-empty {
+	display: grid;
+	place-items: center;
+	height: 100%;
+	color: var(--mail-muted);
+	font-size: 15px;
+}
+
+.mail-button {
+	/* 통합형 창의 위쪽 52px(창 끌기 영역)보다 위에 있어야 눌린다 */
+	position: relative;
+	z-index: 4;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 5px 14px;
+	border: none;
+	border-radius: 8px;
+	background-color: var(--mail-float-bg);
+	box-shadow: var(--mail-float-shadow);
+}
+
+.mail-button.primary {
+	background-color: var(--mail-accent);
+	color: #ffffff !important;
+}
+
+.mail-button:disabled {
+	opacity: 0.6;
+}
+
+/* ─── 쓰기 ─── */
 .mail-compose {
 	display: flex;
-	justify-items: center;
-	align-items: center;
-
-	padding: 0.5rem 1rem;
-	margin: 1rem;
-	border-radius: 2rem;
-	text-decoration: none;
-
-	background-color: #007bff;
-	color: white;
-	transition: background-color 0.3s ease;
-
-	position: absolute;
-	bottom: 0.5rem;
-	right: 0.5rem;
+	flex-direction: column;
+	height: 100%;
 }
 
-.mail-compose:hover {
-	background-color: #0056b3;
-}
-
-.mail-compose i {
+.mail-compose-toolbar {
 	display: flex;
-	justify-items: center;
 	align-items: center;
-	font-size: 1rem;
+	justify-content: space-between;
+	margin-bottom: 8px;
+	font-size: 15px;
+}
+
+.mail-compose-toolbar > div {
+	display: flex;
+	gap: 8px;
+}
+
+.mail-compose-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 2px;
+	border-bottom: 1px solid var(--mail-separator);
+}
+
+.mail-compose-row > span:first-child {
+	flex: none;
+	width: 72px;
+	color: var(--mail-muted);
+}
+
+.mail-compose-row input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	background: none;
+	color: var(--mail-text);
+	font: inherit;
+	outline: none;
+}
+
+.mail-compose-row.invalid {
+	border-bottom-color: var(--mail-error);
+}
+
+.mail-compose-row .mail-error {
+	flex-basis: 100%;
+	padding-left: 78px;
+}
+
+.mail-recipient {
+	padding: 1px 8px;
+	border-radius: 10px;
+	background-color: var(--mail-hover-bg);
+}
+
+.mail-compose-body {
+	flex: 1;
+	min-height: 8rem;
+	margin-top: 10px;
+	padding: 4px 2px;
+	border: none;
+	background: none;
+	color: var(--mail-text);
+	font: inherit;
+	font-size: 14px;
+	line-height: 1.6;
+	outline: none;
+	resize: none;
+}
+
+.mail-compose-body[aria-invalid='true'] {
+	box-shadow: inset 0 -1px 0 var(--mail-error);
+}
+
+.mail-error {
+	color: var(--mail-error);
+	font-size: 12px;
+}
+
+/* 보낸 뒤 */
+.mail-sent {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	height: 100%;
+	padding: 20px;
+	text-align: center;
+}
+
+.mail-sent > i {
+	color: var(--mail-accent);
+	font-size: 36px;
+}
+
+.mail-sent h2 {
+	font-size: 17px;
+}
+
+.mail-sent p {
+	max-width: 22rem;
+	color: var(--mail-muted);
+	line-height: 1.5;
+}
+
+.mail-sent-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+	margin-top: 6px;
+}
+
+/* 좁은 창: 메일상자 패널을 숨긴다 */
+@container (max-width: 720px) {
+	.mail {
+		grid-template-columns: 240px 1fr;
+	}
+
+	.mail-sidebar {
+		display: none;
+	}
+
+	/* 신호등 버튼과 겹치지 않도록 목록 위를 비운다 */
+	.mail-list-toolbar {
+		padding-top: 44px;
+	}
 }
