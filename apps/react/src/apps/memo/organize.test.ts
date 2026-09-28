@@ -7,6 +7,7 @@ import {
 	movePost,
 	organizePosts,
 	removeFolder,
+	renameFolder,
 	validateFolderName,
 } from './organize';
 import type { Post } from './posts';
@@ -84,5 +85,17 @@ describe('폴더 옮기기', () => {
 		expect(canMoveFolder('개발기/MacFolio', '개발기')).toBe(false);
 		expect(canMoveFolder('개발기/MacFolio', '')).toBe(true);
 		expect(moveFolder(EMPTY_ORGANIZATION, '개발기', '개발기')).toBe(EMPTY_ORGANIZATION);
+	});
+});
+
+describe('폴더 이름 바꾸기', () => {
+	it('안의 글과 하위 폴더가 새 이름을 따라간다', () => {
+		const org = renameFolder(addFolder(EMPTY_ORGANIZATION, '개발기', '읽을거리'), '개발기', '작업기');
+		expect(org.folders).toEqual(['작업기/읽을거리']);
+		expect(categories(organizePosts(posts, org))).toEqual({ a: '작업기/MacFolio', b: '작업기', c: '회고' });
+	});
+
+	it('같은 이름이면 그대로', () => {
+		expect(renameFolder(EMPTY_ORGANIZATION, '개발기', ' 개발기 ')).toBe(EMPTY_ORGANIZATION);
 	});
 });

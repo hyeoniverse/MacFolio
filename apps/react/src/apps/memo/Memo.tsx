@@ -21,6 +21,7 @@ import {
 	movePost,
 	organizePosts,
 	removeFolder,
+	renameFolder,
 	saveOrganization,
 	type Organization,
 } from './organize';
@@ -212,6 +213,14 @@ const Memo: React.FC = () => {
 							setOrganization((prev) => addFolder(prev, parent, name));
 							selectFolder(parent ? `${parent}/${name}` : name);
 						}}
+						onRenameFolder={(path, name) => {
+							setOrganization((prev) => renameFolder(prev, path, name));
+							// 고른 폴더(또는 그 안)의 이름이 바뀌면 새 경로를 따라간다
+							if (category === path || category.startsWith(`${path}/`)) {
+								const renamed = [...path.split('/').slice(0, -1), name].join('/');
+								setCategory(renamed + category.slice(path.length));
+							}
+						}}
 						onRemoveFolder={(path) => {
 							setOrganization((prev) => removeFolder(prev, path));
 							if (category === path || category.startsWith(`${path}/`)) selectFolder(ALL_CATEGORY);
@@ -225,6 +234,10 @@ const Memo: React.FC = () => {
 					<section className="memo-list" aria-label="글 목록">
 						<div className="memo-toolbar">
 							<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
+							<div className="memo-toolbar-heading">
+								<h2>{folderName(category)}</h2>
+								<p>{visible.length}개의 메모</p>
+							</div>
 							<ViewSwitch view={view} onChange={changeView} />
 						</div>
 						<div className="memo-scroll">
@@ -265,8 +278,11 @@ const Memo: React.FC = () => {
 						<section className="memo-gallery" aria-label="갤러리">
 							<div className="memo-toolbar">
 								<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
+								<div className="memo-toolbar-heading">
+									<h2>{folderName(category)}</h2>
+									<p>{visible.length}개의 메모</p>
+								</div>
 								<ViewSwitch view={view} onChange={changeView} />
-								<h2 className="memo-toolbar-title">{folderName(category)}</h2>
 								{search}
 							</div>
 							<div className="memo-scroll">

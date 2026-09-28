@@ -162,8 +162,10 @@ test.describe('메모 (블로그)', () => {
 		await dockItem(page, 'memo').click();
 		await expect(folder).toBeVisible();
 
+		// ••• 메뉴에서 지운다
 		await folder.hover();
-		await folders.getByRole('button', { name: '폴더 삭제 (읽을거리)' }).click();
+		await folders.getByRole('button', { name: '폴더 동작 (읽을거리)' }).click();
+		await page.getByRole('menuitem', { name: '폴더 삭제' }).click();
 		await expect(folder).toBeHidden();
 	});
 
@@ -227,5 +229,37 @@ test.describe('메모 (블로그)', () => {
 		const code = memo.getByRole('article').locator('pre code').first();
 		await expect(code).toHaveClass(/hljs/);
 		await expect(code.locator('.hljs-keyword').first()).toBeVisible();
+	});
+
+	test('폴더 메뉴: 이름 변경, 우클릭, 글이 있는 폴더는 지울 수 없다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+
+		// 우클릭으로 메뉴를 연다. 블로그 글의 폴더는 지울 수 없다
+		await folders.getByRole('button', { name: /^MacFolio/ }).click({ button: 'right' });
+		const menu = page.getByRole('menu', { name: 'MacFolio 폴더 메뉴' });
+		await expect(menu.getByRole('menuitem', { name: '폴더 삭제' })).toBeDisabled();
+
+		await menu.getByRole('menuitem', { name: '폴더 이름 변경' }).click();
+		const input = folders.getByRole('textbox', { name: '폴더 이름' });
+		await input.fill('포트폴리오');
+		await input.press('Enter');
+		await expect(folders.getByRole('button', { name: /^포트폴리오/ })).toContainText('2');
+		await expect(folders.getByRole('button', { name: /^MacFolio/ })).toHaveCount(0);
+
+		// 메뉴의 새로운 폴더는 그 폴더 안에 만든다
+		await folders.getByRole('button', { name: '폴더 동작 (포트폴리오)' }).click();
+		await page.getByRole('menuitem', { name: '새로운 폴더' }).click();
+		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('초안');
+		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
+		await folders.getByRole('button', { name: '하위 폴더 접기 (포트폴리오)' }).click();
+		await expect(folders.getByRole('button', { name: /^초안/ })).toBeHidden();
+	});
+
+	test('목록 위에 폴더 이름과 메모 수가 보인다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const heading = memo.getByRole('region', { name: '글 목록' }).locator('.memo-toolbar-heading');
+		await expect(heading).toContainText('모든 글');
+		await expect(heading).toContainText('2개의 메모');
 	});
 });
