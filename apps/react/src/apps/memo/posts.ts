@@ -88,3 +88,16 @@ export function formatPostDate(date: string): string {
 	const [year, month, day] = date.split('-').map(Number);
 	return `${year}. ${month}. ${day}.`;
 }
+
+/**
+ * 본문 이미지 주소를 실제 주소로 바꾼다.
+ * - `./images/a.png`, `images/a.png`처럼 글 파일 기준 상대 경로 → 빌드된 파일 주소 (없으면 null)
+ * - `/imgs/a.png`(public 폴더), `https://...`, `data:` → 그대로
+ * @param images content 폴더 기준 경로(`images/a.png`) → 빌드된 주소
+ */
+export function resolveImageSrc(src: string | undefined, images: Record<string, string>): string | null {
+	if (!src) return null;
+	if (/^(https?:|data:|\/)/.test(src)) return src;
+	const normalized = src.replace(/^\.\//, '');
+	return images[normalized] ?? null;
+}

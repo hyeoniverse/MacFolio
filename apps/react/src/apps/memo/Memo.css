@@ -309,3 +309,64 @@
 	color: var(--memo-text);
 	font-weight: 600;
 }
+
+/* 본문 이미지 */
+.memo-figure {
+	display: block;
+	margin: 1.2em 0;
+	text-align: center;
+}
+
+.memo-image-button {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: zoom-in !important;
+}
+
+.memo-figure img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+	border-radius: 0.6em;
+	box-shadow: 0 0 0 1px var(--memo-border);
+}
+
+.memo-caption {
+	display: block;
+	margin-top: 0.5em;
+	color: var(--memo-muted);
+	font-size: 12px;
+}
+
+.memo-image-missing {
+	display: block;
+	padding: 1em;
+	border: 1px dashed var(--memo-border);
+	border-radius: 0.6em;
+	color: var(--memo-muted);
+	font-size: 12px;
+	text-align: center;
+}
+
+/* 이미지 크게 보기 */
+.memo-lightbox {
+	display: grid;
+	place-items: center;
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	padding: 3rem;
+	background-color: rgba(0, 0, 0, 0.75);
+	cursor: zoom-out;
+}
+
+.memo-lightbox img {
+	max-width: 100%;
+	max-height: 100%;
+	border-radius: 0.6em;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}

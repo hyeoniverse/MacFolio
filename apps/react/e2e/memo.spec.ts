@@ -51,6 +51,31 @@ test.describe('메모 (블로그)', () => {
 		await expect(items).toHaveCount(total);
 	});
 
+	test('본문 이미지는 본문 폭에 맞춰 보이고, 클릭하면 크게 본다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
+
+		const image = memo.getByRole('img', { name: 'CRA와 Vite의 빌드 시간 비교 그래프' });
+		await image.scrollIntoViewIfNeeded();
+		await expect(image).toBeVisible();
+		// 글 파일 기준 상대 경로가 실제로 불러와졌다
+		expect(await image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+		const imageBox = (await image.boundingBox())!;
+		const readerBox = (await memo.locator('.memo-markdown').boundingBox())!;
+		expect(imageBox.width).toBeLessThanOrEqual(readerBox.width + 1);
+		await expect(memo.locator('.memo-caption')).toHaveText('dev 서버 시작과 프로덕션 빌드 시간 (초)');
+
+		await memo.getByRole('button', { name: /크게 보기/ }).click();
+		const lightbox = page.getByRole('dialog', { name: 'CRA와 Vite의 빌드 시간 비교 그래프' });
+		await expect(lightbox).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(lightbox).toBeHidden();
+
+		await memo.getByRole('button', { name: /크게 보기/ }).click();
+		await lightbox.click();
+		await expect(lightbox).toBeHidden();
+	});
+
 	test('본문의 링크는 새 탭으로 열린다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const links = memo.getByRole('article').locator('.memo-markdown a');

@@ -6,6 +6,7 @@ import {
 	formatPostDate,
 	listCategories,
 	parseFrontmatter,
+	resolveImageSrc,
 	sortPosts,
 	toPost,
 	type Post,
@@ -98,5 +99,25 @@ describe('목록', () => {
 describe('formatPostDate', () => {
 	it('YYYY-MM-DD를 한국식 날짜로', () => {
 		expect(formatPostDate('2026-09-08')).toBe('2026. 9. 8.');
+	});
+});
+
+describe('resolveImageSrc', () => {
+	const images = { 'images/chart.svg': '/assets/chart-abc123.svg' };
+
+	it('글 파일 기준 상대 경로는 빌드된 주소로', () => {
+		expect(resolveImageSrc('./images/chart.svg', images)).toBe('/assets/chart-abc123.svg');
+		expect(resolveImageSrc('images/chart.svg', images)).toBe('/assets/chart-abc123.svg');
+	});
+
+	it('public 경로, 외부 주소, data URL은 그대로', () => {
+		expect(resolveImageSrc('/imgs/me.png', images)).toBe('/imgs/me.png');
+		expect(resolveImageSrc('https://example.com/a.png', images)).toBe('https://example.com/a.png');
+		expect(resolveImageSrc('data:image/png;base64,AAAA', images)).toBe('data:image/png;base64,AAAA');
+	});
+
+	it('없는 파일이나 빈 주소는 null', () => {
+		expect(resolveImageSrc('./images/none.png', images)).toBeNull();
+		expect(resolveImageSrc(undefined, images)).toBeNull();
 	});
 });

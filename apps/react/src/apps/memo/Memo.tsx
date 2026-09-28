@@ -1,10 +1,27 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import AppWindow from '@/desktop/window/Window';
 import { ALL_CATEGORY, filterPosts, formatPostDate, listCategories, type Post } from './posts';
 import { getPostRepository } from './repository';
+import MarkdownImage from './components/MarkdownImage';
 import '@/apps/memo/Memo.css';
+
+/**
+ * 본문 요소 바꾸기. 컴포넌트 밖의 상수여야 한다: 렌더링마다 새 함수를 넘기면
+ * react-markdown이 요소를 매번 다시 마운트해서 이미지 크게 보기 같은 상태가 사라진다.
+ */
+const MARKDOWN_COMPONENTS: Components = {
+	// 외부 링크는 새 탭에서 연다
+	a: ({ href, children }) => (
+		<a href={href} target="_blank" rel="noopener noreferrer">
+			{children}
+		</a>
+	),
+	img: ({ src, alt, title }) => (
+		<MarkdownImage src={typeof src === 'string' ? src : undefined} alt={alt} title={title} />
+	),
+};
 
 /**
  * 메모: 블로그 글을 읽는 공간. macOS 메모 앱처럼 폴더(카테고리) · 글 목록 · 본문 세 칸으로 보여준다.
@@ -103,17 +120,7 @@ const Memo: React.FC = () => {
 							</p>
 							<h1>{selected.title}</h1>
 							<div className="memo-markdown">
-								<ReactMarkdown
-									remarkPlugins={[remarkGfm]}
-									components={{
-										// 외부 링크는 새 탭에서 연다
-										a: ({ href, children }) => (
-											<a href={href} target="_blank" rel="noopener noreferrer">
-												{children}
-											</a>
-										),
-									}}
-								>
+								<ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
 									{selected.body}
 								</ReactMarkdown>
 							</div>
