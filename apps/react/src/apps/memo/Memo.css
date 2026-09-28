@@ -467,3 +467,12 @@
 		padding: 1rem;
 	}
 }
+
+/* 모바일에서는 뒤로 가기가 제목 막대에 있다 (useMobileNav) */
+.container.mobile .memo-back {
+	display: none !important;
+}
+
+.container.mobile .memo-reader {
+	padding-top: 1rem;
+}

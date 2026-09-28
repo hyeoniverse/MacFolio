@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { PROFILE } from '@/shared/profile';
 import ComposeView from './components/ComposeView';
 import { formatMailDate, INBOX } from './contact';
@@ -51,6 +52,8 @@ const Mail: React.FC = () => {
 
 	return (
 		<AppWindow title="메일" appName="mail" chrome="unified">
+			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
+			<MobileNavigation {...(detailOpen ? { backLabel: '받은 편지함', onBack: backToList } : {})} />
 			<div className="mail-shell">
 				<div className={`mail ${detailOpen ? 'detail-open' : ''}`} data-nav={nav}>
 					<aside className="mail-sidebar" aria-label="메일상자">

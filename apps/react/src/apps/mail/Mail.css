@@ -505,3 +505,14 @@
 		padding-top: 12px;
 	}
 }
+
+/* 모바일에서는 뒤로 가기가 제목 막대에 있고 신호등 버튼도 없다 */
+.container.mobile .mail-back {
+	display: none !important;
+}
+
+@container (max-width: 720px) {
+	.container.mobile .mail-list-toolbar {
+		padding-top: 10px;
+	}
+}

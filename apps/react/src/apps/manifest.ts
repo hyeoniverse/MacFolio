@@ -9,7 +9,6 @@ export const APP_NAMES = [
 	'messages',
 	'memo',
 	'github',
-	'notion',
 	'mail',
 	'share',
 	'terminal',
@@ -46,16 +45,6 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	messages: { label: '메시지', icon: 'messages.png', inDock: true, windowSize: { width: 860, height: 560 } },
 	memo: { label: '메모', icon: 'memo.png', inDock: true, windowSize: { width: 900, height: 600 } },
 	github: { label: 'GitHub', icon: 'github.png', inDock: true },
-	notion: {
-		label: 'Notion',
-		icon: 'notion.png',
-		inDock: true,
-		squareIcon: true,
-		action: {
-			type: 'link',
-			url: 'https://calico-octave-0a0.notion.site/62b2692248d045bdb1796368054b3ac2?pvs=74',
-		},
-	},
 	mail: { label: '메일', icon: 'mail.png', inDock: true, windowSize: { width: 900, height: 560 } },
 	share: { label: '공유', icon: 'share.png', inDock: true, action: { type: 'share' } },
 	// 휴대폰 키보드로 명령어를 치기는 불편해서, 모바일에서는 같은 명령을 눌러서 실행하는 '단축어'로 보여준다

@@ -336,20 +336,8 @@
 	opacity: 0.85;
 }
 
-.mobile-navbar-home.floating {
-	position: absolute;
-	top: calc(var(--mobile-statusbar-height) + 2px);
-	left: 8px;
-	z-index: 5;
-}
-
-/* 앱 안에서 한 단계 들어간 화면(대화, 메일 읽기)에서는 앱의 뒤로 가기 버튼만 둔다 */
-.container.mobile:has(.messages.chat-open, .mail.detail-open) .mobile-navbar-home.floating {
-	display: none;
-}
-
-/* iOS처럼 제목 막대 색이 상태 표시줄 아래까지 이어진다 */
-.container.mobile:not(.unified) {
+/* iOS처럼 제목 막대 색이 상태 표시줄 아래까지 이어진다 (앱별 창 배경보다 우선) */
+.container.mobile[data-app] {
 	background-color: var(--color-titlebar-bg);
 }
 
