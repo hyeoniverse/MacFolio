@@ -5,8 +5,6 @@ import { APP_MANIFEST, APP_NAMES } from '@/apps/manifest';
 import { complete, formatDate, runCommand, type CommandContext, type Line } from './commands';
 import '@/apps/terminal/Terminal.css';
 
-const PROMPT = 'guest@macfolio ~ %';
-
 interface Entry {
 	id: number;
 	/** 입력한 명령 (안내 문구처럼 입력 없이 출력만 있는 줄은 null) */
@@ -29,14 +27,85 @@ const welcome = (): Entry => ({
 	],
 });
 
-const LineView: React.FC<{ line: Line }> = ({ line }) =>
-	line.kind === 'link' ? (
-		<a className="terminal-line link" href={line.href} target="_blank" rel="noopener noreferrer">
-			{line.label}
+/** zsh 테마처럼 색을 나눈 프롬프트: 사용자@호스트(초록) 경로(파랑) % */
+const Prompt: React.FC = () => (
+	<span className="terminal-prompt" aria-hidden="true">
+		<span className="terminal-prompt-user">guest@macfolio</span> <span className="terminal-prompt-path">~</span> %
+	</span>
+);
+
+const Value: React.FC<{ value: string; href?: string }> = ({ value, href }) =>
+	href ? (
+		<a href={href} target="_blank" rel="noopener noreferrer">
+			{value}
 		</a>
 	) : (
-		<div className={`terminal-line ${line.kind}`}>{line.text || ' '}</div>
+		<>{value}</>
 	);
+
+type Block =
+	| { type: 'pairs'; lines: Extract<Line, { kind: 'pair' }>[] }
+	| { type: 'items'; lines: Extract<Line, { kind: 'item' }>[] }
+	| { type: 'line'; line: Line };
+
+/** 연속된 pair·item 줄을 묶는다. 한 묶음은 한 격자로 그려서 칸이 맞는다 */
+function toBlocks(lines: Line[]): Block[] {
+	const blocks: Block[] = [];
+	for (const line of lines) {
+		const last = blocks.at(-1);
+		if (line.kind === 'pair') {
+			if (last?.type === 'pairs') last.lines.push(line);
+			else blocks.push({ type: 'pairs', lines: [line] });
+		} else if (line.kind === 'item') {
+			if (last?.type === 'items') last.lines.push(line);
+			else blocks.push({ type: 'items', lines: [line] });
+		} else blocks.push({ type: 'line', line });
+	}
+	return blocks;
+}
+
+const BlockView: React.FC<{ block: Block }> = ({ block }) => {
+	if (block.type === 'pairs') {
+		return (
+			<dl className="terminal-pairs">
+				{block.lines.map((line) => (
+					<React.Fragment key={line.key}>
+						<dt>{line.key}</dt>
+						<dd>
+							<Value value={line.value} href={line.href} />
+						</dd>
+					</React.Fragment>
+				))}
+			</dl>
+		);
+	}
+	if (block.type === 'items') {
+		return (
+			<ol className="terminal-items">
+				{block.lines.map((line) => (
+					<li key={line.marker}>
+						<span className="terminal-item-marker">{line.marker}</span>
+						<span>
+							<span className="terminal-item-title">{line.title}</span>
+							{line.tag && <span className="terminal-item-tag">{line.tag}</span>}
+							{line.detail && <span className="terminal-item-detail">{line.detail}</span>}
+						</span>
+					</li>
+				))}
+			</ol>
+		);
+	}
+	const { line } = block;
+	if (line.kind === 'link') {
+		return (
+			<a className="terminal-line link" href={line.href} target="_blank" rel="noopener noreferrer">
+				{line.label}
+			</a>
+		);
+	}
+	if (line.kind === 'pair' || line.kind === 'item') return null;
+	return <div className={`terminal-line ${line.kind}`}>{line.text || '\u00a0'}</div>;
+};
 
 /** 터미널: 명령어로 자기소개. 명령 처리는 commands.ts의 순수 함수가 한다. */
 const Terminal: React.FC = () => {
@@ -127,18 +196,22 @@ const Terminal: React.FC = () => {
 					{entries.map((entry) => (
 						<div key={entry.id} className="terminal-entry">
 							{entry.input !== null && (
-								<div className="terminal-line">
-									<span className="terminal-prompt">{PROMPT}</span> {entry.input}
+								<div className="terminal-line terminal-command">
+									<Prompt /> <span className="terminal-input-text">{entry.input}</span>
 								</div>
 							)}
-							{entry.lines.map((line, index) => (
-								<LineView key={index} line={line} />
-							))}
+							{entry.lines.length > 0 && (
+								<div className="terminal-result">
+									{toBlocks(entry.lines).map((block, index) => (
+										<BlockView key={index} block={block} />
+									))}
+								</div>
+							)}
 						</div>
 					))}
 				</div>
 				<label className="terminal-input-line">
-					<span className="terminal-prompt">{PROMPT}</span>
+					<Prompt />
 					<input
 						ref={inputRef}
 						aria-label="명령어 입력"

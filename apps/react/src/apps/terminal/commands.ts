@@ -3,11 +3,19 @@
 import { PROFILE, PROJECTS, SITE_STACK, SKILLS } from '@/shared/profile';
 import type { AppName } from '@/apps/manifest';
 
+/**
+ * 출력 한 줄. 화면은 종류마다 다르게 그린다.
+ * - pair: 이름 · 값 두 칸 (연속된 pair는 한 격자로 정렬되어 한글이 섞여도 줄이 맞는다)
+ * - item: 번호 목록 (긴 설명은 번호 뒤에 맞춰 줄바꿈)
+ */
 export type Line =
 	| { kind: 'text'; text: string }
+	| { kind: 'heading'; text: string }
 	| { kind: 'muted'; text: string }
 	| { kind: 'error'; text: string }
-	| { kind: 'link'; label: string; href: string };
+	| { kind: 'link'; label: string; href: string }
+	| { kind: 'pair'; key: string; value: string; href?: string }
+	| { kind: 'item'; marker: string; title: string; detail?: string; tag?: string };
 
 export type Effect =
 	{ type: 'clear' } | { type: 'open-app'; app: AppName } | { type: 'open-url'; url: string } | { type: 'close' };
@@ -32,12 +40,11 @@ interface Command {
 }
 
 const text = (value: string): Line => ({ kind: 'text', text: value });
+const heading = (value: string): Line => ({ kind: 'heading', text: value });
 const muted = (value: string): Line => ({ kind: 'muted', text: value });
 const error = (value: string): Line => ({ kind: 'error', text: value });
+const pair = (key: string, value: string, href?: string): Line => ({ kind: 'pair', key, value, href });
 const output = (lines: Line[], effects: Effect[] = []): CommandResult => ({ lines, effects });
-
-/** 이름 · 값 두 칸 정렬 (한글 폭을 따지지 않는 단순 정렬) */
-const pair = (key: string, value: string, width = 10) => text(`${key.padEnd(width)}${value}`);
 
 const findApp = (query: string, context: CommandContext) => {
 	const q = query.toLowerCase();
@@ -56,10 +63,10 @@ export const COMMANDS: Record<string, Command> = {
 		description: '사용할 수 있는 명령어',
 		run: () =>
 			output([
-				text('사용할 수 있는 명령어:'),
+				heading('사용할 수 있는 명령어'),
 				...Object.entries(COMMANDS)
 					.filter(([name]) => !HIDDEN.has(name))
-					.map(([name, command]) => pair(command.usage ?? name, command.description, 16)),
+					.map(([name, command]) => pair(command.usage ?? name, command.description)),
 				muted('Tab으로 자동 완성, ↑↓로 이전 명령을 불러올 수 있어요.'),
 			]),
 	},
@@ -67,17 +74,17 @@ export const COMMANDS: Record<string, Command> = {
 		description: '저를 소개합니다',
 		run: () =>
 			output([
-				text(`${PROFILE.name} (${PROFILE.nameEn})`),
-				text(PROFILE.role),
-				text(`${PROFILE.school} · ${PROFILE.location}`),
+				heading(`${PROFILE.name} (${PROFILE.nameEn})`),
+				pair('역할', PROFILE.role),
+				pair('학교', PROFILE.school),
+				pair('지역', PROFILE.location),
 			]),
 	},
 	neofetch: {
 		description: '이 사이트의 정보',
 		run: () =>
 			output([
-				pair('guest@macfolio', ''),
-				muted('─'.repeat(28)),
+				heading('guest@macfolio'),
 				pair('OS', 'MacFolio (웹)'),
 				pair('Shell', 'zsh (흉내)'),
 				pair('Owner', `${PROFILE.name} · ${PROFILE.role}`),
@@ -98,9 +105,13 @@ export const COMMANDS: Record<string, Command> = {
 		description: '프로젝트 목록',
 		run: () =>
 			output([
-				...PROJECTS.map((project, index) =>
-					text(`${index + 1}. ${project.name} — ${project.description} (${project.language})`)
-				),
+				...PROJECTS.map((project, index): Line => ({
+					kind: 'item',
+					marker: `${index + 1}.`,
+					title: project.name,
+					detail: project.description,
+					tag: project.language,
+				})),
 				muted('자세히 보려면: project <번호>'),
 			]),
 	},
@@ -111,11 +122,11 @@ export const COMMANDS: Record<string, Command> = {
 			const project = PROJECTS[Number(arg) - 1];
 			if (!project) return output([error(`project: 1부터 ${PROJECTS.length} 사이의 번호를 입력하세요.`)]);
 			return output([
-				text(project.name),
+				heading(project.name),
 				pair('소개', project.description),
 				pair('출처', project.project),
 				pair('언어', project.language),
-				{ kind: 'link', label: project.url, href: project.url },
+				pair('저장소', project.url, project.url),
 			]);
 		},
 	},
@@ -123,8 +134,8 @@ export const COMMANDS: Record<string, Command> = {
 		description: '연락하는 방법',
 		run: () =>
 			output([
-				{ kind: 'link', label: PROFILE.github, href: PROFILE.github },
-				{ kind: 'link', label: PROFILE.email, href: `mailto:${PROFILE.email}` },
+				pair('GitHub', PROFILE.github, PROFILE.github),
+				pair('이메일', PROFILE.email, `mailto:${PROFILE.email}`),
 				pair('감상·피드백', 'open messages'),
 				pair('메일 앱', 'open mail'),
 			]),
@@ -146,7 +157,8 @@ export const COMMANDS: Record<string, Command> = {
 	},
 	history: {
 		description: '입력한 명령 기록',
-		run: (_, { history }) => output(history.map((entry, index) => text(`${String(index + 1).padStart(4)}  ${entry}`))),
+		run: (_, { history }) =>
+			output(history.map((entry, index): Line => ({ kind: 'item', marker: `${index + 1}`, title: entry }))),
 	},
 	date: {
 		description: '현재 시각',
