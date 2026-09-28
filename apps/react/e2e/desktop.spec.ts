@@ -4,7 +4,7 @@ test.describe('데스크톱', () => {
 	test('로딩 화면을 넘기면 Dock과 시작 앱이 보인다', async ({ page }) => {
 		await enterDesktop(page);
 
-		await expect(page.locator('.dock-left .dock-item')).toHaveCount(12);
+		await expect(page.locator('.dock-left .dock-item')).toHaveCount(11);
 		await expect(dockItem(page, 'launchpad')).toBeVisible();
 		await expect(dockItem(page, 'bin')).toBeVisible();
 		await expect(appWindow(page, 'safari')).toBeVisible();
@@ -118,9 +118,9 @@ test.describe('좁은 화면', () => {
 
 		await dockItem(page, 'launchpad').click();
 		const launchpad = page.locator('.launchpad-modal');
-		await expect(launchpad.locator('.dock-item')).toHaveCount(6);
+		await expect(launchpad.locator('.dock-item')).toHaveCount(5);
 
-		// 뒤쪽 6개(github부터)가 Launchpad로 간다
+		// 뒤쪽 5개(github부터)가 Launchpad로 간다
 		await launchpad.getByRole('button', { name: 'github', exact: true }).click();
 		await expect(appWindow(page, 'github')).toBeVisible();
 	});
