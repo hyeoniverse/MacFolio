@@ -152,6 +152,7 @@ const MusicPlayer: React.FC = () => {
 				transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out', // 애니메이션 설정
 			}}
 			ref={playerRef}
+			data-app="music"
 			onClick={() => bringAppToFront('music')}
 		>
 			{/* 음악 플레이어의 타이틀바 */}
@@ -169,8 +170,8 @@ const MusicPlayer: React.FC = () => {
 			>
 				{/* 닫기 및 최소화 버튼 */}
 				<div className="traffic-lights">
-					<span className="close" onClick={handleCloseApp}></span>
-					<span className="minimize" onClick={handleMinimize}></span>
+					<span className="close" role="button" aria-label="닫기" onClick={handleCloseApp}></span>
+					<span className="minimize" role="button" aria-label="최소화" onClick={handleMinimize}></span>
 				</div>
 				<span className="title">MusicPlayer</span>
 			</div>

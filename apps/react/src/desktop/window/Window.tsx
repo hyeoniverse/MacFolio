@@ -256,6 +256,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 
 	return (
 		<div
+			data-app={appName}
 			className={`container ${isMinimizing ? 'minimizing' : ''}`} // 애니메이션을 위한 클래스 추가
 			style={{
 				...appStyle,
@@ -284,9 +285,9 @@ const AppWindow: React.FC<AppWindowProps> = ({
 				onDoubleClick={handleMaximize}
 			>
 				<div className="traffic-lights">
-					<span className="close" onClick={handleClose}></span>
-					<span className="minimize" onClick={handleMinimize}></span>
-					<span className="fullscreen" onClick={handleMaximize}></span>
+					<span className="close" role="button" aria-label="닫기" onClick={handleClose}></span>
+					<span className="minimize" role="button" aria-label="최소화" onClick={handleMinimize}></span>
+					<span className="fullscreen" role="button" aria-label="전체 화면" onClick={handleMaximize}></span>
 				</div>
 				<span className="title">{title}</span>
 			</div>

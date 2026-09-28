@@ -119,6 +119,7 @@ const Dock: React.FC = () => {
 							!hiddenItems.includes(appName) && (
 								<DockItem
 									key={appName}
+									label={appName}
 									icon={iconOf(appName)}
 									// share 앱에만 isSharing 적용
 									isActive={isShareApp(appName) ? isSharing : apps[appName].isRunning}
@@ -131,6 +132,7 @@ const Dock: React.FC = () => {
 				</div>
 				<div className="dock-left-end">
 					<DockItem
+						label="launchpad"
 						icon={`${imgUrl}/launchpad.png`}
 						isActive={false} // Launchpad 열렸을 때만 인디케이터 활성화
 						isHidden={false}
@@ -139,6 +141,7 @@ const Dock: React.FC = () => {
 				</div>
 				<div className="dock-right">
 					<DockItem
+						label="bin"
 						icon={iconOf('bin')}
 						isActive={false}
 						isHidden={false}
@@ -155,6 +158,7 @@ const Dock: React.FC = () => {
 							{hiddenItems.map((hiddenItem) => (
 								<DockItem
 									key={hiddenItem}
+									label={hiddenItem}
 									icon={iconOf(hiddenItem)}
 									isActive={getLaunchpadAppState(hiddenItem)} // Launchpad 내 숨겨진 앱의 인디케이터만 표시
 									isHidden={false}
