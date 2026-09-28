@@ -9,6 +9,7 @@ import Github from '@/apps/github/Github';
 import Blog from '@/apps/blog/Blog';
 import Mail from '@/apps/mail/Mail';
 import Settings from '@/apps/settings/Settings';
+import Messages from '@/apps/messages/Messages';
 
 const MemoApp = () => (
 	<MemoProvider>
@@ -25,6 +26,7 @@ const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
 	blog: Blog,
 	mail: Mail,
 	settings: Settings,
+	messages: Messages,
 };
 
 /** 데스크톱에 렌더링할 앱 (APP_NAMES 순서) */
