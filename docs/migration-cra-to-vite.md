@@ -10,15 +10,15 @@ Create React App(CRA)으로 만든 프로젝트를 Vite로 옮겼다. dev 서버
 
 ## 측정 결과
 
-| 항목 | CRA | Vite | 차이 |
-| --- | --- | --- | --- |
-| dev 서버 시작 (캐시 없음) | 5.05초 | 0.58초 | 약 8.7배 빠름 |
-| 프로덕션 빌드 (타입 체크 포함) | 6.33초 | 1.88초 | 약 3.4배 빠름 |
-| 프로덕션 빌드 (번들링만) | – | 1.32초 | |
-| JS 번들 (gzip) | 138.2 KB | 127.7 KB | 7.6% 감소 |
-| CSS 번들 (gzip) | 30.2 KB | 28.3 KB | 6.3% 감소 |
-| 설치 패키지 수 | 1,438개 | 171개 | 88% 감소 |
-| `node_modules` 크기 | 548 MB | 276 MB | 50% 감소 |
+| 항목                           | CRA      | Vite     | 차이          |
+| ------------------------------ | -------- | -------- | ------------- |
+| dev 서버 시작 (캐시 없음)      | 5.05초   | 0.58초   | 약 8.7배 빠름 |
+| 프로덕션 빌드 (타입 체크 포함) | 6.33초   | 1.88초   | 약 3.4배 빠름 |
+| 프로덕션 빌드 (번들링만)       | –        | 1.32초   |               |
+| JS 번들 (gzip)                 | 138.2 KB | 127.7 KB | 7.6% 감소     |
+| CSS 번들 (gzip)                | 30.2 KB  | 28.3 KB  | 6.3% 감소     |
+| 설치 패키지 수                 | 1,438개  | 171개    | 88% 감소      |
+| `node_modules` 크기            | 548 MB   | 276 MB   | 50% 감소      |
 
 시간은 3회 측정한 평균이다.
 
@@ -45,15 +45,15 @@ Create React App(CRA)으로 만든 프로젝트를 Vite로 옮겼다. dev 서버
 
 ## 무엇을 바꿨나
 
-| 영역 | CRA | Vite |
-| --- | --- | --- |
-| HTML 진입점 | `public/index.html`, `%PUBLIC_URL%` 치환 | 루트 `index.html`, `<script type="module" src="/src/main.tsx">` |
-| 환경변수 | `process.env.REACT_APP_*` | `import.meta.env.VITE_*` |
-| 타입 | `react-app-env.d.ts` (react-scripts 타입) | `vite-env.d.ts` (`vite/client` + `ImportMetaEnv`) |
-| React 플러그인 | 내장 (Babel) | `vite.config.ts`에 `@vitejs/plugin-react` |
-| 빌드 출력 | `build/` | `dist/` (`firebase.json`의 `public`도 변경) |
-| 테스트 | Jest (내장) | 제거. 이후 Vitest 도입 예정 |
-| 기타 제거 | `web-vitals`, `browserslist`, `setupTests.ts` | |
+| 영역           | CRA                                           | Vite                                                            |
+| -------------- | --------------------------------------------- | --------------------------------------------------------------- |
+| HTML 진입점    | `public/index.html`, `%PUBLIC_URL%` 치환      | 루트 `index.html`, `<script type="module" src="/src/main.tsx">` |
+| 환경변수       | `process.env.REACT_APP_*`                     | `import.meta.env.VITE_*`                                        |
+| 타입           | `react-app-env.d.ts` (react-scripts 타입)     | `vite-env.d.ts` (`vite/client` + `ImportMetaEnv`)               |
+| React 플러그인 | 내장 (Babel)                                  | `vite.config.ts`에 `@vitejs/plugin-react`                       |
+| 빌드 출력      | `build/`                                      | `dist/` (`firebase.json`의 `public`도 변경)                     |
+| 테스트         | Jest (내장)                                   | 제거. 이후 Vitest 도입 예정                                     |
+| 기타 제거      | `web-vitals`, `browserslist`, `setupTests.ts` |                                                                 |
 
 ## 전환하면서 놓쳤던 것
 

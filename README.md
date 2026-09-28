@@ -16,12 +16,12 @@ pnpm dev
 
 설정 없이 바로 실행됩니다. Memo는 브라우저 localStorage에 저장됩니다. 에셋을 다른 곳(CDN 등)에서 불러오려면 `apps/react/.env.example`을 `apps/react/.env`로 복사해 경로를 채우세요.
 
-| 명령 | 설명 |
-| --- | --- |
-| `pnpm dev` | 개발 서버 |
-| `pnpm build` | 모든 패키지 타입 체크 후 빌드 |
-| `pnpm typecheck` | 타입 체크만 실행 |
-| `pnpm test` | 테스트 실행 |
+| 명령             | 설명                          |
+| ---------------- | ----------------------------- |
+| `pnpm dev`       | 개발 서버                     |
+| `pnpm build`     | 모든 패키지 타입 체크 후 빌드 |
+| `pnpm typecheck` | 타입 체크만 실행              |
+| `pnpm test`      | 테스트 실행                   |
 
 ## 구조
 
@@ -35,12 +35,12 @@ packages/         # 앱 간에 공유하는 패키지
 
 deprecated된 Create React App에서 Vite로 옮겼습니다.
 
-| 항목 | CRA | Vite |
-| --- | --- | --- |
-| dev 서버 시작 | 5.05초 | 0.58초 |
-| 프로덕션 빌드 | 6.33초 | 1.88초 |
+| 항목           | CRA      | Vite     |
+| -------------- | -------- | -------- |
+| dev 서버 시작  | 5.05초   | 0.58초   |
+| 프로덕션 빌드  | 6.33초   | 1.88초   |
 | JS 번들 (gzip) | 138.2 KB | 127.7 KB |
-| 설치 패키지 수 | 1,438개 | 171개 |
+| 설치 패키지 수 | 1,438개  | 171개    |
 
 측정 방법과 전환 과정은 [docs/migration-cra-to-vite.md](docs/migration-cra-to-vite.md)에 정리했습니다.
 

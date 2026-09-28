@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/AppStateContext';
 import '@/apps/safari/Safari.css';
@@ -9,7 +9,7 @@ const Safari: React.FC = () => {
 	const imageUrl = env.imageUrl;
 
 	// useAppState를 이용해 앱 상태를 관리
-	const { apps, closeApp, minimizeApp } = useAppState();
+	const { apps } = useAppState();
 
 	// 'safari' 앱의 실행 상태 및 최소화 상태를 가져옴
 	const isRunning = apps.safari.isRunning;

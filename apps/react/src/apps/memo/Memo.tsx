@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
 import { useMemoContext } from '@/apps/memo/MemoContext';
 import '@/apps/memo/Memo.css';
@@ -172,10 +172,7 @@ const Memo: React.FC = () => {
 						{isCreating ? (
 							<div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
 								<button onClick={handleResetMemo}>
-									<i
-										className="fa-solid fa-delete-left"
-										style={{ fontSize: '1.2rem', color: '#edbb4d' }}
-									></i>
+									<i className="fa-solid fa-delete-left" style={{ fontSize: '1.2rem', color: '#edbb4d' }}></i>
 								</button>
 								<button
 									onClick={() => {
@@ -274,9 +271,7 @@ const Memo: React.FC = () => {
 						selectedMemo && (
 							<div className="memo-view">
 								<h2 className="text-2xl font-bold mb-4">{selectedMemo.title}</h2>
-								<p
-									dangerouslySetInnerHTML={{ __html: selectedMemo.content.replace(/\n/g, '<br>') }}
-								></p>
+								<p dangerouslySetInnerHTML={{ __html: selectedMemo.content.replace(/\n/g, '<br>') }}></p>
 							</div>
 						)
 					)}

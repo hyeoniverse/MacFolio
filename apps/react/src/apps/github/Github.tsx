@@ -116,10 +116,7 @@ const Github: React.FC = () => {
 								<p className="repo-card-description">{repo.description}</p>
 								<div className="repo-card-footer">
 									<span className="repo-language">
-										<span
-											className="repo-language-color"
-											style={{ backgroundColor: repo.languageColor }}
-										></span>
+										<span className="repo-language-color" style={{ backgroundColor: repo.languageColor }}></span>
 										{repo.language}
 									</span>
 								</div>

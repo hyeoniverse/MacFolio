@@ -1,42 +1,42 @@
 .loading-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 9999;
-    width: 100vw;
-    height: 100vh;
-    background-color: #000;
-  }
-  
-  .loading-icon {
-    margin-bottom: 2rem;
-    font-size: 8rem;
-    color: #fff;
-    filter: drop-shadow(0 0 0.3rem #fff);
-  }
-  
-  .progress-bar-container {
-    overflow: hidden;
-    width: 11rem;
-    height: 0.5rem;
-    background-color: #333;
-    border-radius: 0.5rem;
-    filter: drop-shadow(0 0 0.3rem #fff);
-  }
-  
-  .progress-bar {
-    height: 100%;
-    background-color: #fff;
-    transition: width 0.1s ease-out;
-  }
-  
-  .loading-text {
-    margin: 1rem;
-    color: #fff;
-  }
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 9999;
+	width: 100vw;
+	height: 100vh;
+	background-color: #000;
+}
+
+.loading-icon {
+	margin-bottom: 2rem;
+	font-size: 8rem;
+	color: #fff;
+	filter: drop-shadow(0 0 0.3rem #fff);
+}
+
+.progress-bar-container {
+	overflow: hidden;
+	width: 11rem;
+	height: 0.5rem;
+	background-color: #333;
+	border-radius: 0.5rem;
+	filter: drop-shadow(0 0 0.3rem #fff);
+}
+
+.progress-bar {
+	height: 100%;
+	background-color: #fff;
+	transition: width 0.1s ease-out;
+}
+
+.loading-text {
+	margin: 1rem;
+	color: #fff;
+}

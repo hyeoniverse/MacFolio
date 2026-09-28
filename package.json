@@ -6,9 +6,13 @@
 		"dev": "turbo run dev --filter=@macfolio/react",
 		"build": "turbo run build",
 		"typecheck": "turbo run typecheck",
-		"test": "turbo run test"
+		"test": "turbo run test",
+		"lint": "turbo run lint",
+		"format": "prettier --write .",
+		"format:check": "prettier --check ."
 	},
 	"devDependencies": {
+		"prettier": "^3.9.9",
 		"turbo": "^2.11.4",
 		"wrangler": "^4.142.0"
 	}
