@@ -142,7 +142,9 @@
 	white-space: normal;
 	word-break: break-all;
 	transition: box-shadow 0.2s ease;
-	transition: transform 0.2s, box-shadow 0.2s;
+	transition:
+		transform 0.2s,
+		box-shadow 0.2s;
 	border-radius: 0.5rem;
 }
 
@@ -156,14 +158,14 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-  flex-wrap: wrap;
+	flex-wrap: wrap;
 }
 
 .repo-card-header h3 {
 	margin: 0;
 	font-size: 1.2rem;
 	color: #0366d6;
-  /* white-space: nowrap; */
+	/* white-space: nowrap; */
 }
 
 .repo-card-header .badge {
@@ -173,7 +175,7 @@
 	font-weight: bold;
 	color: #0366d6;
 	text-transform: uppercase;
-  /* white-space: nowrap; */
+	/* white-space: nowrap; */
 	border-radius: 12px;
 }
 
@@ -215,7 +217,9 @@
 	padding: 1.5rem;
 	box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 1);
 	background-color: #ffffff;
-	transition: transform 0.2s, box-shadow 0.2s;
+	transition:
+		transform 0.2s,
+		box-shadow 0.2s;
 	border-radius: 1.5rem;
 }
 
