@@ -1,44 +1,30 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-	sortThreads,
-	validateMessage,
-	validateNewThread,
-	type InputErrors,
-	type Message,
-	type NewThreadInput,
-	type Thread,
-} from './conversations';
-import { getConversationRepository, PINNED_THREAD_ID, type DeleteResult, type ThreadAccess } from './repository';
+import { sortThreads, validateMessageInput, type InputErrors, type Message, type Thread } from './conversations';
+import { getConversationRepository, PINNED_THREAD_ID, type DeleteResult } from './repository';
 
-/** 이 브라우저가 시작한 대화의 작성 권한 */
-const ACCESS_KEY = 'macfolio:messages:access';
+/** 이름은 다음 방문에도 채워 두고, 비밀번호는 저장하지 않는다 */
+const NICKNAME_KEY = 'macfolio:messages:nickname';
 
-function loadAccess(): ThreadAccess | null {
+function loadNickname(): string {
 	try {
-		return JSON.parse(localStorage.getItem(ACCESS_KEY) ?? 'null') as ThreadAccess | null;
+		return localStorage.getItem(NICKNAME_KEY) ?? '';
 	} catch {
-		return null;
+		return '';
 	}
 }
-
-function saveAccess(access: ThreadAccess) {
-	try {
-		localStorage.setItem(ACCESS_KEY, JSON.stringify(access));
-	} catch {
-		// 저장하지 못하면 이번 방문 동안만 이어 쓸 수 있다
-	}
-}
-
-/** 새 대화를 쓰는 화면 */
-export const NEW_THREAD = 'new';
 
 export function useConversations() {
 	const repository = getConversationRepository();
-	const [access, setAccess] = useState<ThreadAccess | null>(loadAccess);
 	const [threads, setThreads] = useState<Thread[]>([]);
-	const [selectedId, setSelectedId] = useState<string>(() => loadAccess()?.threadId ?? PINNED_THREAD_ID);
+	const [selectedId, setSelectedId] = useState<string>(PINNED_THREAD_ID);
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+	const [nickname, setNickname] = useState(loadNickname);
+	const [password, setPassword] = useState('');
+	/** 좁은 창에서 목록 대신 대화를 보여주는지 (넓은 창에서는 둘 다 보인다) */
+	const [isChatOpen, setChatOpen] = useState(false);
+	/** 새 메시지 버튼을 누를 때마다 입력창에 커서를 둔다 */
+	const [focusRequest, setFocusRequest] = useState(0);
 
 	const refreshThreads = useCallback(
 		() =>
@@ -57,7 +43,6 @@ export function useConversations() {
 	}, [refreshThreads]);
 
 	useEffect(() => {
-		if (selectedId === NEW_THREAD) return;
 		let cancelled = false;
 		repository.listMessages(selectedId).then((list) => !cancelled && setMessages(list));
 		return () => {
@@ -65,43 +50,42 @@ export function useConversations() {
 		};
 	}, [repository, selectedId]);
 
-	const myThreadId = access?.threadId ?? null;
+	const select = useCallback((id: string) => {
+		setSelectedId(id);
+		setChatOpen(true);
+	}, []);
 
-	/** 내 대화가 있으면 그 대화로, 없으면 새 대화 화면으로 */
-	const openMyThread = useCallback(() => setSelectedId(myThreadId ?? NEW_THREAD), [myThreadId]);
+	/** 새 메시지: 사이트 주인의 방명록을 열고 입력창에 커서를 둔다 */
+	const compose = useCallback(() => {
+		select(PINNED_THREAD_ID);
+		setFocusRequest((n) => n + 1);
+	}, [select]);
 
-	const startThread = useCallback(
-		async (input: NewThreadInput): Promise<InputErrors> => {
-			const { value, errors } = validateNewThread(input);
+	/** 좁은 창에서 대화 목록으로 돌아간다 */
+	const back = useCallback(() => setChatOpen(false), []);
+
+	/** 지금 보고 있는 방에 글을 쓴다. 실패하면 필드별 이유를 돌려준다 */
+	const send = useCallback(
+		async (text: string): Promise<InputErrors> => {
+			const { value, errors } = validateMessageInput({ nickname, password, text });
 			if (Object.keys(errors).length > 0) return errors;
-			const created = await repository.createThread(value);
-			saveAccess(created.access);
-			setAccess(created.access);
-			setMessages([created.message]);
-			setSelectedId(created.thread.id);
+			const result = await repository.postMessage(selectedId, value);
+			if (result === 'not-found') return { text: '대화방을 찾을 수 없습니다.' };
+			try {
+				localStorage.setItem(NICKNAME_KEY, value.nickname);
+			} catch {
+				// 저장하지 못해도 이번 방문 동안은 유지된다
+			}
+			setMessages((prev) => [...prev, result.message]);
 			await refreshThreads();
 			return {};
 		},
-		[repository, refreshThreads]
-	);
-
-	/** 내 대화에 이어서 쓴다. 실패하면 이유를 돌려준다 */
-	const send = useCallback(
-		async (text: string): Promise<string | undefined> => {
-			const { value, error } = validateMessage(text);
-			if (error) return error;
-			if (!access) return '대화를 먼저 시작해주세요.';
-			const result = await repository.postMessage(access, value);
-			if (result === 'forbidden') return '이 대화에 메시지를 보낼 수 없습니다.';
-			setMessages((prev) => [...prev, result]);
-			await refreshThreads();
-		},
-		[access, repository, refreshThreads]
+		[nickname, password, repository, selectedId, refreshThreads]
 	);
 
 	const remove = useCallback(
-		async (messageId: string, password: string): Promise<DeleteResult> => {
-			const result = await repository.removeMessage(messageId, password);
+		async (messageId: string, deletePassword: string): Promise<DeleteResult> => {
+			const result = await repository.removeMessage(messageId, deletePassword);
 			if (result === 'deleted') {
 				setMessages((prev) => prev.filter((m) => m.id !== messageId));
 				await refreshThreads();
@@ -118,11 +102,13 @@ export function useConversations() {
 		status,
 		selectedId,
 		selectedThread,
-		messages: selectedId === NEW_THREAD ? [] : messages,
-		myThreadId,
-		select: setSelectedId,
-		openMyThread,
-		startThread,
+		messages,
+		isChatOpen,
+		focusRequest,
+		identity: { nickname, password, setNickname, setPassword },
+		select,
+		back,
+		compose,
 		send,
 		remove,
 	};

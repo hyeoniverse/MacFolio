@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { LIMITS } from '../conversations';
 
+export interface SendResult {
+	sent: boolean;
+	error?: string;
+}
+
 interface Props {
 	/** 보내기. 보내지 못했으면 sent: false와 (있다면) 이유를 돌려준다 */
 	onSend: (text: string) => Promise<SendResult>;
@@ -10,12 +15,7 @@ interface Props {
 	autoFocus?: boolean;
 }
 
-export interface SendResult {
-	sent: boolean;
-	error?: string;
-}
-
-/** macOS 메시지 앱의 둥근 입력창. Enter로 보내고 Shift+Enter로 줄을 바꾼다. */
+/** macOS 메시지 앱의 떠 있는 알약 입력창. Enter로 보내고 Shift+Enter로 줄을 바꾼다. */
 const Composer: React.FC<Props> = ({ onSend, children, error: externalError, autoFocus }) => {
 	const [text, setText] = useState('');
 	const [error, setError] = useState<string>();
@@ -35,6 +35,7 @@ const Composer: React.FC<Props> = ({ onSend, children, error: externalError, aut
 	};
 
 	const shownError = error ?? externalError;
+	const canSend = text.trim().length > 0 && !sending;
 
 	return (
 		<form className="messages-composer" onSubmit={submit}>
@@ -60,12 +61,8 @@ const Composer: React.FC<Props> = ({ onSend, children, error: externalError, aut
 						}
 					}}
 				/>
-				<button
-					type="submit"
-					className="messages-send"
-					aria-label="보내기"
-					disabled={sending || text.trim().length === 0}
-				>
+				{/* 실제 앱처럼 글을 쓰면 보내기 버튼이 나타난다 */}
+				<button type="submit" className="messages-send" aria-label="보내기" disabled={!canSend} hidden={!canSend}>
 					<i className="fa-solid fa-arrow-up" aria-hidden="true" />
 				</button>
 			</div>

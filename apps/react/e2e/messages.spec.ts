@@ -10,74 +10,71 @@ async function openMessages(page: Page) {
 const textbox = (messages: Locator) => messages.getByRole('textbox', { name: '메시지' });
 const transcript = (messages: Locator) => messages.getByRole('log');
 
-async function send(messages: Locator, text: string) {
+async function post(messages: Locator, name: string, text: string, password = 'pw1234') {
+	await messages.getByLabel('이름').fill(name);
+	await messages.getByLabel('비밀번호', { exact: true }).fill(password);
 	await textbox(messages).fill(text);
 	await textbox(messages).press('Enter');
 	await expect(transcript(messages)).toContainText(text);
 }
 
-async function startThread(messages: Locator, name: string, text: string, password = 'pw1234') {
-	await messages.getByRole('button', { name: /메시지 보내기|내 대화 시작하기/ }).click();
-	await expect(messages.getByText('받는 사람:')).toBeVisible();
-	await messages.getByLabel('이름').fill(name);
-	await messages.getByLabel('비밀번호', { exact: true }).fill(password);
-	await send(messages, text);
+/** 다른 사람(다른 IP)처럼 보이도록 브라우저 id를 바꾼다. 서버에서는 IP가 이 역할을 한다 */
+async function becomeVisitor(page: Page, id: string) {
+	await page.evaluate((visitor) => {
+		localStorage.setItem('macfolio:messages:visitor', visitor);
+		localStorage.removeItem('macfolio:messages:nickname');
+	}, id);
 }
 
 test.describe('메시지', () => {
-	test('처음에는 김정현의 고정 대화가 열리고, 읽기만 할 수 있다', async ({ page }) => {
+	test('처음에는 김정현의 방명록이 열리고, 바로 글을 쓸 수 있다', async ({ page }) => {
 		const messages = await openMessages(page);
-		await expect(messages.getByRole('region', { name: '김정현와의 대화' })).toBeVisible();
+		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeVisible();
 		await expect(transcript(messages)).toContainText('안녕하세요, 김정현입니다');
-		await expect(textbox(messages)).toHaveCount(0);
-		await expect(messages.getByRole('button', { name: '메시지 보내기' })).toBeVisible();
+		await expect(textbox(messages)).toBeVisible();
 
-		// 주인 메시지는 오른쪽 클릭 메뉴가 없다
+		// 주인 글은 오른쪽 클릭 메뉴가 없다
 		await messages.locator('.messages-bubble').first().click({ button: 'right' });
 		await expect(messages.getByRole('menu')).toHaveCount(0);
 	});
 
-	test('대화를 시작하면 내 대화가 목록에 생기고, 새로고침 후에도 이어 쓸 수 있다', async ({ page }) => {
+	test('처음 글을 쓰면 내 방이 생기고, 새로고침해도 이름은 남고 비밀번호는 남지 않는다', async ({ page }) => {
 		let messages = await openMessages(page);
-		await startThread(messages, '민수', '안녕하세요!');
+		await post(messages, '민수', '반가워요!');
 
-		await expect(messages.getByRole('region', { name: '민수와의 대화' })).toBeVisible();
-		const myThread = messages.getByRole('button', { name: /민수.*나/ });
-		await expect(myThread).toHaveAttribute('aria-current', 'true');
-		await expect(myThread).toContainText('안녕하세요!');
-
-		await send(messages, '두 번째 메시지');
-		// 전송됨은 마지막 메시지에만
+		await expect(messages.locator('.messages-bubble-row.right')).toHaveText(/반가워요!/);
 		await expect(messages.getByText('전송됨')).toHaveCount(1);
+		await expect(messages.getByRole('button', { name: /^민수.*나/ })).toBeVisible();
 
 		messages = await openMessages(page);
-		await expect(messages.getByRole('region', { name: '민수와의 대화' })).toBeVisible();
-		await send(messages, '새로고침 후에도');
-		await expect(messages.locator('.messages-bubble')).toHaveText(['안녕하세요!', '두 번째 메시지', '새로고침 후에도']);
+		await expect(messages.getByLabel('이름')).toHaveValue('민수');
+		await expect(messages.getByLabel('비밀번호', { exact: true })).toHaveValue('');
 	});
 
-	test('다른 방문자의 대화는 읽을 수 있지만 쓸 수 없다', async ({ page }) => {
+	test('다른 사람의 방에도 쓸 수 있고, 사람마다 구분되어 보인다', async ({ page }) => {
 		let messages = await openMessages(page);
-		await startThread(messages, '민수', '민수의 메시지');
-		// 다른 브라우저에서 온 방문자처럼 작성 권한을 지운다
-		await page.evaluate(() => localStorage.removeItem('macfolio:messages:access'));
+		await post(messages, '민수', '민수의 첫 글');
 
+		await becomeVisitor(page, 'visitor-b');
 		messages = await openMessages(page);
-		await startThread(messages, '지영', '지영의 메시지');
-
 		await messages.getByRole('button', { name: /^민수/ }).click();
-		await expect(transcript(messages)).toContainText('민수의 메시지');
-		await expect(textbox(messages)).toHaveCount(0);
-		await expect(messages.getByText('공개 대화예요. 누구나 읽을 수 있어요.')).toBeVisible();
+		await expect(messages.getByRole('region', { name: '민수의 방명록' })).toBeVisible();
+		await post(messages, '지영', '민수님 방에 남겨요');
+		// 지영에게는 자기 글이라 오른쪽
+		await expect(messages.locator('.messages-bubble-row.right')).toHaveText(/민수님 방에 남겨요/);
 
-		await messages.getByRole('button', { name: '내 대화로 가기' }).click();
-		await expect(messages.getByRole('region', { name: '지영와의 대화' })).toBeVisible();
+		await becomeVisitor(page, 'visitor-a-again');
+		messages = await openMessages(page);
+		await messages.getByRole('button', { name: /^민수/ }).click();
+		// 다른 사람에게는 왼쪽, 이름이 붙는다
+		const row = messages.locator('.messages-bubble-row.left', { hasText: '민수님 방에 남겨요' });
+		await expect(row.locator('.messages-sender')).toHaveText('지영');
 	});
 
 	test('오른쪽 클릭으로 지우고, 비밀번호가 맞아야 삭제된다', async ({ page }) => {
 		const messages = await openMessages(page);
-		await startThread(messages, '민수', '지울 메시지');
-		await send(messages, '남길 메시지');
+		await post(messages, '민수', '지울 메시지');
+		await post(messages, '민수', '남길 메시지');
 
 		await messages.locator('.messages-bubble', { hasText: '지울 메시지' }).click({ button: 'right' });
 		await messages.getByRole('menuitem', { name: '삭제…' }).click();
@@ -89,28 +86,46 @@ test.describe('메시지', () => {
 		await page.getByLabel('삭제 비밀번호').fill('pw1234');
 		await page.getByRole('button', { name: '삭제', exact: true }).click();
 		await expect(page.getByRole('dialog')).toBeHidden();
-		await expect(messages.locator('.messages-bubble')).toHaveText(['남길 메시지']);
+		await expect(transcript(messages)).not.toContainText('지울 메시지');
+		await expect(transcript(messages)).toContainText('남길 메시지');
 	});
 
-	test('이름이 없으면 대화를 시작하지 않고, 입력한 메시지는 남겨 둔다', async ({ page }) => {
+	test('이름이 없으면 보내지 않고, 입력한 메시지는 남겨 둔다', async ({ page }) => {
 		const messages = await openMessages(page);
-		await messages.getByRole('button', { name: '메시지 보내기' }).click();
 		await messages.getByLabel('비밀번호', { exact: true }).fill('pw1234');
 		await textbox(messages).fill('이름 없이');
 		await textbox(messages).press('Enter');
 
 		await expect(messages.getByRole('alert')).toHaveText('이름을 입력해주세요.');
 		await expect(textbox(messages)).toHaveValue('이름 없이');
-		await expect(messages.getByRole('button', { name: /이름 없이/ })).toHaveCount(0);
 	});
 
 	test('Shift+Enter는 줄바꿈이고 보내지 않는다', async ({ page }) => {
 		const messages = await openMessages(page);
-		await startThread(messages, '민수', '첫 메시지');
+		const before = await messages.locator('.messages-bubble').count();
 		await textbox(messages).fill('첫 줄');
 		await textbox(messages).press('Shift+Enter');
 		await textbox(messages).pressSequentially('둘째 줄');
 		await expect(textbox(messages)).toHaveValue('첫 줄\n둘째 줄');
-		await expect(messages.locator('.messages-bubble')).toHaveCount(1);
+		await expect(messages.locator('.messages-bubble')).toHaveCount(before);
+	});
+
+	test('창이 좁으면 목록과 대화를 한 화면씩 보여주고, 뒤로 가기로 목록에 돌아간다', async ({ page }) => {
+		const messages = await openMessages(page);
+		const handle = (await messages.locator('.resize-handle.bottom-right').boundingBox())!;
+		await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(handle.x - 420, handle.y + handle.height / 2, { steps: 8 });
+		await page.mouse.up();
+
+		await expect(messages.getByRole('complementary', { name: '대화 목록' })).toBeVisible();
+		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeHidden();
+
+		await messages.getByRole('button', { name: '김정현' }).click();
+		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeVisible();
+		await expect(messages.getByRole('complementary', { name: '대화 목록' })).toBeHidden();
+
+		await messages.getByRole('button', { name: '대화 목록' }).click();
+		await expect(messages.getByRole('complementary', { name: '대화 목록' })).toBeVisible();
 	});
 });
