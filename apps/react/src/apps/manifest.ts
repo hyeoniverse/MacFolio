@@ -56,7 +56,7 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	},
 	mail: { label: '메일', icon: 'mail.png', inDock: true },
 	share: { label: '공유', icon: 'share.png', inDock: true, action: { type: 'share' } },
-	terminal: { label: '터미널', icon: 'terminal.svg', inDock: true, windowSize: { width: 720, height: 460 } },
+	terminal: { label: '터미널', icon: 'terminal.svg', inDock: true, windowSize: { width: 596, height: 420 } },
 	settings: { label: '시스템 설정', icon: 'settings.png', inDock: true },
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false },
 };

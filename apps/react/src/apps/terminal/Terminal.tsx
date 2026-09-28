@@ -107,6 +107,31 @@ const BlockView: React.FC<{ block: Block }> = ({ block }) => {
 	return <div className={`terminal-line ${line.kind}`}>{line.text || '\u00a0'}</div>;
 };
 
+/**
+ * 창 제목의 "80×24"처럼 화면에 들어가는 열·행 수. 고정폭 글꼴의 글자 폭(0.6em)과 줄 높이로 계산한다.
+ */
+function useTerminalSize(ref: React.RefObject<HTMLDivElement | null>) {
+	const [size, setSize] = useState({ cols: 80, rows: 24 });
+	useEffect(() => {
+		const element = ref.current;
+		if (!element) return;
+		const observer = new ResizeObserver(() => {
+			const style = getComputedStyle(element);
+			const fontSize = parseFloat(style.fontSize);
+			const lineHeight = parseFloat(style.lineHeight) || fontSize * 1.3;
+			const width = element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+			const height = element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+			setSize({
+				cols: Math.max(1, Math.floor(width / (fontSize * 0.6))),
+				rows: Math.max(1, Math.floor(height / lineHeight)),
+			});
+		});
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, [ref]);
+	return size;
+}
+
 /** 터미널: 명령어로 자기소개. 명령 처리는 commands.ts의 순수 함수가 한다. */
 const Terminal: React.FC = () => {
 	const { openApp, bringAppToFront, closeApp } = useAppState();
@@ -117,7 +142,9 @@ const Terminal: React.FC = () => {
 	const [cursor, setCursor] = useState<number | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const endRef = useRef<HTMLDivElement>(null);
+	const screenRef = useRef<HTMLDivElement>(null);
 	const nextId = useRef(1);
+	const size = useTerminalSize(screenRef);
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ block: 'end' });
@@ -184,9 +211,10 @@ const Terminal: React.FC = () => {
 	};
 
 	return (
-		<AppWindow title="guest — zsh" appName="terminal">
+		<AppWindow title={`guest — -zsh — ${size.cols}×${size.rows}`} appName="terminal">
 			{/* 아무 곳이나 클릭하면 입력 칸으로 (글자를 드래그해 복사할 때는 제외) */}
 			<div
+				ref={screenRef}
 				className="terminal"
 				onClick={() => {
 					if (!window.getSelection()?.toString()) inputRef.current?.focus();
