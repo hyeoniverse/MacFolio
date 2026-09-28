@@ -130,42 +130,62 @@ export function buildTimeline(
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'] as const;
 
-/** 시간대 기준 날짜를 비교용 숫자로 (UTC 자정 기준 밀리초) */
-function dayNumber(date: Date, timeZone?: string): number {
-	const [year, month, day] = new Intl.DateTimeFormat('en-CA', {
-		timeZone,
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit',
-	})
-		.format(date)
-		.split('-')
-		.map(Number);
-	return Date.UTC(year, month - 1, day);
+interface DateParts {
+	year: number;
+	month: number;
+	day: number;
+	hour: number;
+	minute: number;
+	weekday: number;
 }
 
-const daysBetween = (date: Date, now: Date, timeZone?: string) =>
-	Math.round((dayNumber(now, timeZone) - dayNumber(date, timeZone)) / DAY_MS);
+/**
+ * 시간대 기준 날짜·시각 숫자. 문구는 직접 조립한다.
+ * Intl의 한국어 출력(예: '오전'과 'AM')은 브라우저·Node의 ICU 버전마다 달라서 숫자만 받는다.
+ */
+function partsOf(date: Date, timeZone?: string): DateParts {
+	const parts = Object.fromEntries(
+		new Intl.DateTimeFormat('en-US', {
+			timeZone,
+			year: 'numeric',
+			month: 'numeric',
+			day: 'numeric',
+			hour: 'numeric',
+			minute: 'numeric',
+			hourCycle: 'h23',
+		})
+			.formatToParts(date)
+			.map((part) => [part.type, Number(part.value)])
+	) as Record<string, number>;
+	const { year, month, day, hour, minute } = parts;
+	return { year, month, day, hour, minute, weekday: new Date(Date.UTC(year, month - 1, day)).getUTCDay() };
+}
+
+const dayNumber = ({ year, month, day }: DateParts) => Date.UTC(year, month - 1, day);
+
+/** "오전 10:36" */
+function clock({ hour, minute }: DateParts): string {
+	return `${hour < 12 ? '오전' : '오후'} ${hour % 12 || 12}:${String(minute).padStart(2, '0')}`;
+}
 
 /**
  * 대화 안의 시간 구분선 문구.
  * 오늘 → "오늘 오전 10:36", 어제 → "어제 오후 3:00", 일주일 이내 → "금요일 오후 3:00",
- * 올해 → "9월 26일 (금) 오후 3:00", 그 이전 → "2025년 9월 26일 오후 3:00"
+ * 올해 → "3월 2일 (월) 오후 3:00", 그 이전 → "2025년 9월 26일 오후 3:00"
  */
 export function formatTimeLabel(date: Date, now: Date, timeZone?: string): string {
-	const format = (options: Intl.DateTimeFormatOptions) =>
-		new Intl.DateTimeFormat('ko-KR', { timeZone, ...options }).format(date);
-	const time = format({ hour: 'numeric', minute: '2-digit' });
-	const daysAgo = daysBetween(date, now, timeZone);
+	const target = partsOf(date, timeZone);
+	const today = partsOf(now, timeZone);
+	const daysAgo = Math.round((dayNumber(today) - dayNumber(target)) / DAY_MS);
+	const time = clock(target);
 
 	if (daysAgo === 0) return `오늘 ${time}`;
 	if (daysAgo === 1) return `어제 ${time}`;
-	if (daysAgo > 1 && daysAgo < 7) return `${format({ weekday: 'long' })} ${time}`;
-	if (format({ year: 'numeric' }) === new Intl.DateTimeFormat('ko-KR', { timeZone, year: 'numeric' }).format(now)) {
-		return `${format({ month: 'long', day: 'numeric' })} (${format({ weekday: 'short' })}) ${time}`;
-	}
-	return `${format({ year: 'numeric', month: 'long', day: 'numeric' })} ${time}`;
+	if (daysAgo > 1 && daysAgo < 7) return `${WEEKDAYS[target.weekday]}요일 ${time}`;
+	if (target.year === today.year) return `${target.month}월 ${target.day}일 (${WEEKDAYS[target.weekday]}) ${time}`;
+	return `${target.year}년 ${target.month}월 ${target.day}일 ${time}`;
 }
 
 /**
@@ -173,13 +193,12 @@ export function formatTimeLabel(date: Date, now: Date, timeZone?: string): strin
  * 오늘 → "오전 10:36", 어제 → "어제", 일주일 이내 → "금요일", 그 이전 → "2026. 9. 1."
  */
 export function formatListTime(date: Date, now: Date, timeZone?: string): string {
-	const daysAgo = daysBetween(date, now, timeZone);
-	const format = (options: Intl.DateTimeFormatOptions) =>
-		new Intl.DateTimeFormat('ko-KR', { timeZone, ...options }).format(date);
-	if (daysAgo === 0) return format({ hour: 'numeric', minute: '2-digit' });
+	const target = partsOf(date, timeZone);
+	const daysAgo = Math.round((dayNumber(partsOf(now, timeZone)) - dayNumber(target)) / DAY_MS);
+	if (daysAgo === 0) return clock(target);
 	if (daysAgo === 1) return '어제';
-	if (daysAgo > 1 && daysAgo < 7) return format({ weekday: 'long' });
-	return format({ year: 'numeric', month: 'numeric', day: 'numeric' });
+	if (daysAgo > 1 && daysAgo < 7) return `${WEEKDAYS[target.weekday]}요일`;
+	return `${target.year}. ${target.month}. ${target.day}.`;
 }
 
 /** macOS 연락처처럼 이름마다 정해진 아바타 색 (같은 이름은 항상 같은 색) */
