@@ -154,6 +154,19 @@ export function loadOrganization(): Organization {
 	}
 }
 
+/**
+ * 방문자 브라우저에 남은 정리 내용을 지운다.
+ * 폴더·고정 같은 편집은 관리자만 할 수 있어서(#9), 예전에 방문자가 만든 정리 내용은 더 쓰지 않는다.
+ */
+export function discardVisitorOrganization() {
+	try {
+		localStorage.removeItem(ORGANIZATION_KEY);
+		localStorage.removeItem(LEGACY_FOLDERS_KEY);
+	} catch {
+		// 지우지 못해도 읽지 않으므로 상관없다
+	}
+}
+
 export function saveOrganization(organization: Organization) {
 	try {
 		localStorage.setItem(ORGANIZATION_KEY, JSON.stringify(organization));

@@ -17,6 +17,8 @@ import {
 import {
 	addFolder,
 	canMoveFolder,
+	discardVisitorOrganization,
+	EMPTY_ORGANIZATION,
 	loadOrganization,
 	moveFolder,
 	movePost,
@@ -32,6 +34,7 @@ import FolderSidebar, { type DragItem } from './components/FolderSidebar';
 import { ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
 import ContextMenu from './components/ContextMenu';
 import { CONTENT_IMAGES } from './contentImages';
+import { useCanEditMemo } from './admin';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
 import '@/apps/memo/Memo.css';
@@ -98,7 +101,11 @@ const Memo: React.FC = () => {
 	/** 갤러리에서 카드를 눌러 글을 연 상태 */
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
 	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
-	const [organization, setOrganization] = useState<Organization>(loadOrganization);
+	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 단추를 보이지 않는다 (admin.ts)
+	const canEdit = useCanEditMemo();
+	const [organization, setOrganization] = useState<Organization>(() =>
+		canEdit ? loadOrganization() : EMPTY_ORGANIZATION
+	);
 	/** 메모 우클릭 메뉴 */
 	const [noteMenu, setNoteMenu] = useState<{ slug: string; x: number; y: number } | null>(null);
 	/** 끌고 있는 글이나 폴더 */
@@ -119,7 +126,10 @@ const Memo: React.FC = () => {
 			.catch(() => setStatus('error'));
 	}, []);
 
-	useEffect(() => saveOrganization(organization), [organization]);
+	useEffect(() => {
+		if (canEdit) saveOrganization(organization);
+		else discardVisitorOrganization();
+	}, [canEdit, organization]);
 
 	// 정리 내용을 겹친 글 (category가 지금 있는 폴더)
 	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
@@ -171,15 +181,18 @@ const Memo: React.FC = () => {
 	};
 
 	/** 글 목록·갤러리 카드를 끌 때 */
-	const dragPost = (slug: string) => ({
-		draggable: true,
-		onDragStart: (event: React.DragEvent) => {
-			event.dataTransfer.effectAllowed = 'move';
-			event.dataTransfer.setData('text/plain', slug);
-			setDragging({ type: 'post', id: slug });
-		},
-		onDragEnd: () => setDragging(null),
-	});
+	const dragPost = (slug: string) =>
+		canEdit
+			? {
+					draggable: true,
+					onDragStart: (event: React.DragEvent) => {
+						event.dataTransfer.effectAllowed = 'move';
+						event.dataTransfer.setData('text/plain', slug);
+						setDragging({ type: 'post', id: slug });
+					},
+					onDragEnd: () => setDragging(null),
+				}
+			: {};
 
 	const changeView = (next: View) => {
 		setView(next);
@@ -188,10 +201,13 @@ const Memo: React.FC = () => {
 
 	const { pinned: pinnedPosts, others: otherPosts } = splitPinned(visible);
 	const togglePin = (post: Post) => setOrganization((prev) => setPinned(prev, post.slug, !post.pinned));
-	const openNoteMenu = (slug: string) => (event: React.MouseEvent) => {
-		event.preventDefault();
-		setNoteMenu({ slug, x: event.clientX, y: event.clientY });
-	};
+	const openNoteMenu = (slug: string) =>
+		canEdit
+			? (event: React.MouseEvent) => {
+					event.preventDefault();
+					setNoteMenu({ slug, x: event.clientX, y: event.clientY });
+				}
+			: undefined;
 	const menuPost = noteMenu ? organized.find((post) => post.slug === noteMenu.slug) : undefined;
 
 	/** 고정된 메모를 먼저, 그다음 나머지. 고정된 메모가 있을 때만 묶음 이름을 단다 */
@@ -267,6 +283,7 @@ const Memo: React.FC = () => {
 
 	/** 본문의 고정 단추 */
 	const pinButton = (className: string) =>
+		canEdit &&
 		selected && (
 			<button
 				type="button"
@@ -314,6 +331,7 @@ const Memo: React.FC = () => {
 					data-nav={nav}
 				>
 					<FolderSidebar
+						canEdit={canEdit}
 						open={sidebarOpen}
 						onToggle={toggleSidebar}
 						folders={folders}
