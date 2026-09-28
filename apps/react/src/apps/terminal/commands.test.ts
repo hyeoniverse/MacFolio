@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { complete, formatDate, parse, runCommand, type CommandContext, type Line } from './commands';
+import { complete, formatDate, parse, runCommand, toBlocks, type CommandContext, type Line } from './commands';
+import { commandInValue, projectCommand, SHORTCUTS } from './shortcutList';
 import { PROJECTS } from '@/shared/profile';
 
 const context: CommandContext = {
@@ -113,5 +114,43 @@ describe('complete', () => {
 	it('후보가 없으면 그대로', () => {
 		expect(complete('zzz', context)).toEqual({ value: 'zzz', candidates: [] });
 		expect(complete('echo hi', context)).toEqual({ value: 'echo hi', candidates: [] });
+	});
+});
+
+describe('toBlocks', () => {
+	it('연속된 pair와 item을 각각 한 묶음으로 모은다', () => {
+		const lines: Line[] = [
+			{ kind: 'heading', text: '제목' },
+			{ kind: 'pair', key: 'a', value: '1' },
+			{ kind: 'pair', key: 'b', value: '2' },
+			{ kind: 'item', marker: '1.', title: 'x' },
+			{ kind: 'text', text: '끝' },
+			{ kind: 'pair', key: 'c', value: '3' },
+		];
+		expect(toBlocks(lines).map((block) => (block.type === 'line' ? block.line.kind : block.type))).toEqual([
+			'heading',
+			'pairs',
+			'items',
+			'text',
+			'pairs',
+		]);
+	});
+});
+
+describe('SHORTCUTS', () => {
+	it('모든 단축어는 있는 명령을 실행한다', () => {
+		for (const shortcut of SHORTCUTS) {
+			expect(runCommand(shortcut.command, context).lines[0]?.kind).not.toBe('error');
+		}
+	});
+
+	it('프로젝트 번호로 자세히 보기 명령을 만든다', () => {
+		expect(projectCommand('2.')).toBe('project 2');
+		expect(runCommand(projectCommand('1.'), context).lines[0]).toEqual({ kind: 'heading', text: PROJECTS[0].name });
+	});
+
+	it('값이 open 명령일 때만 누를 수 있다', () => {
+		expect(commandInValue('open messages')).toBe('open messages');
+		expect(commandInValue('hyeoniverse.dev@gmail.com')).toBeNull();
 	});
 });

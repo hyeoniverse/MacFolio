@@ -365,3 +365,12 @@
 .container.mobile:has(.messages.chat-open, .mail.detail-open) .mobile-navbar-home.floating {
 	display: none;
 }
+
+/* iOS처럼 제목 막대 색이 상태 표시줄 아래까지 이어진다 */
+.container.mobile:not(.unified) {
+	background-color: var(--color-titlebar-bg);
+}
+
+.container.mobile:not(.unified) .content {
+	background-color: var(--color-window-bg);
+}
