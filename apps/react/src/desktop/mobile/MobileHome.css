@@ -5,7 +5,7 @@
 	position: fixed;
 	inset: 0;
 	height: 100dvh;
-	padding: calc(env(safe-area-inset-top) + 28px) 20px calc(env(safe-area-inset-bottom) + 12px);
+	padding: calc(var(--mobile-statusbar-height) + 8px) 20px calc(env(safe-area-inset-bottom) + 12px);
 	background: var(--wallpaper) center / cover no-repeat;
 	color: #fff;
 	-webkit-user-select: none;
@@ -14,7 +14,7 @@
 
 /* 소개 위젯 */
 .mobile-widget {
-	padding: 18px 20px;
+	padding: 14px 18px;
 	border-radius: 22px;
 	background-color: rgba(255, 255, 255, 0.22);
 	backdrop-filter: blur(24px) saturate(160%);
@@ -51,6 +51,13 @@
 	opacity: 0.85;
 }
 
+/* 음악 위젯 */
+.mobile-music-widget {
+	flex: none;
+	margin-top: 14px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
 /* 앱 격자: 4열 */
 .mobile-grid {
 	display: grid;
@@ -59,7 +66,7 @@
 	row-gap: 22px;
 	flex: 1;
 	min-height: 0;
-	margin-top: 28px;
+	margin-top: 24px;
 	overflow-y: auto;
 }
 
@@ -118,7 +125,8 @@
 
 /* 가로로 눕힌 휴대폰: 위젯을 숨기고 한 줄에 더 많이 놓는다 */
 @media (orientation: landscape) {
-	.mobile-widget {
+	.mobile-widget,
+	.mobile-music-widget {
 		display: none;
 	}
 

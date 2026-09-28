@@ -1,0 +1,365 @@
+:root {
+	/* 모바일 상태 표시줄 높이. 앱 창과 홈 화면이 이만큼 비운다 */
+	--mobile-statusbar-height: calc(env(safe-area-inset-top) + 44px);
+}
+
+/* ─── 상태 표시줄 ─── */
+.mobile-statusbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	/* 제어 센터(2000)보다 위 */
+	z-index: 2100;
+	height: var(--mobile-statusbar-height);
+	padding: env(safe-area-inset-top) 26px 0 34px;
+	color: #fff;
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	cursor: pointer;
+	touch-action: none;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.mobile-statusbar.app {
+	color: var(--color-text);
+}
+
+.mobile-statusbar-time {
+	font-size: 16px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.mobile-statusbar-icons {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 14px;
+}
+
+.mobile-battery {
+	display: flex;
+	position: relative;
+	width: 25px;
+	height: 12px;
+	margin-left: 2px;
+	padding: 1.5px;
+	border: 1px solid currentColor;
+	border-radius: 4px;
+	opacity: 0.95;
+}
+
+.mobile-battery::after {
+	position: absolute;
+	top: 3px;
+	right: -4px;
+	width: 2px;
+	height: 4px;
+	border-radius: 0 1px 1px 0;
+	background-color: currentColor;
+	content: '';
+}
+
+.mobile-battery span {
+	flex: 1;
+	border-radius: 2px;
+	background-color: currentColor;
+}
+
+/* ─── 음악 위젯 (홈 화면, 제어 센터) ─── */
+.music-widget {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	position: relative;
+	padding: 14px;
+	overflow: hidden;
+	border-radius: 22px;
+	color: #fff;
+	text-align: left;
+	cursor: pointer;
+	isolation: isolate;
+}
+
+/* 앨범 커버를 흐리게 깐 배경 */
+.music-widget::before {
+	position: absolute;
+	inset: -30px;
+	z-index: -1;
+	background: var(--artwork) center / cover;
+	filter: blur(28px) brightness(0.55) saturate(1.3);
+	content: '';
+}
+
+.music-widget-art {
+	flex: none;
+	width: 88px;
+	height: 88px;
+	object-fit: cover;
+	border-radius: 12px;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.music-widget-body {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+}
+
+.music-widget-status {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 11px;
+	font-weight: 600;
+	opacity: 0.75;
+}
+
+.music-widget-title,
+.music-widget-album {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.music-widget-title {
+	margin-top: 2px;
+	font-size: 16px;
+}
+
+.music-widget-album {
+	font-size: 13px;
+	opacity: 0.75;
+}
+
+.music-widget-progress {
+	height: 3px;
+	margin-top: 8px;
+	border-radius: 2px;
+	background-color: rgba(255, 255, 255, 0.3);
+}
+
+.music-widget-progress div {
+	height: 100%;
+	border-radius: inherit;
+	background-color: #fff;
+}
+
+.music-widget-controls {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 4px;
+}
+
+.music-widget-controls button {
+	width: 44px;
+	height: 36px;
+	border: none;
+	background: none;
+	color: inherit;
+	font-size: 18px;
+	cursor: pointer;
+}
+
+/* 재생 중 표시 막대 */
+.music-widget-bars {
+	display: inline-flex;
+	align-items: flex-end;
+	gap: 1.5px;
+	height: 9px;
+}
+
+.music-widget-bars span {
+	width: 2px;
+	height: 100%;
+	border-radius: 1px;
+	background-color: currentColor;
+	animation: music-bars 0.9s ease-in-out infinite alternate;
+}
+
+.music-widget-bars span:nth-child(2) {
+	animation-delay: -0.3s;
+}
+
+.music-widget-bars span:nth-child(3) {
+	animation-delay: -0.6s;
+}
+
+@keyframes music-bars {
+	from {
+		transform: scaleY(0.3);
+	}
+	to {
+		transform: scaleY(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.music-widget-bars span {
+		animation: none;
+	}
+}
+
+/* ─── 제어 센터 ─── */
+.control-center {
+	position: fixed;
+	inset: 0;
+	z-index: 2000;
+	padding: calc(var(--mobile-statusbar-height) + 16px) 22px 24px;
+	overflow-y: auto;
+	background-color: rgba(0, 0, 0, calc(0.5 * var(--cc-progress)));
+	backdrop-filter: blur(calc(28px * var(--cc-progress))) saturate(calc(100% + 60% * var(--cc-progress)));
+	-webkit-backdrop-filter: blur(calc(28px * var(--cc-progress)));
+	color: #fff;
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	touch-action: none;
+	transition:
+		background-color 0.25s ease,
+		backdrop-filter 0.25s ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.cc-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-auto-rows: minmax(72px, auto);
+	gap: 14px;
+	max-width: 420px;
+	margin: 0 auto;
+	opacity: var(--cc-progress);
+	transform: translateY(calc((1 - var(--cc-progress)) * -48px)) scale(calc(0.94 + 0.06 * var(--cc-progress)));
+	transform-origin: top center;
+	transition:
+		opacity 0.25s ease,
+		transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 손가락을 따라 움직이는 동안에는 애니메이션 없이 */
+.control-center.dragging,
+.control-center.dragging .cc-grid {
+	transition: none;
+}
+
+.cc-tile {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	border: none;
+	border-radius: 22px;
+	background-color: rgba(255, 255, 255, 0.16);
+	color: inherit;
+	font: inherit;
+	text-decoration: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.cc-tile:active {
+	filter: brightness(1.3);
+}
+
+.cc-music {
+	grid-column: span 2;
+	grid-row: span 2;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 10px;
+	padding: 14px;
+}
+
+.cc-music .music-widget-art {
+	width: 56px;
+	height: 56px;
+	border-radius: 10px;
+}
+
+.cc-music .music-widget-controls button {
+	width: 36px;
+}
+
+.cc-toggle {
+	flex-direction: column;
+	gap: 6px;
+	aspect-ratio: 1;
+	font-size: 11px;
+}
+
+.cc-toggle i {
+	font-size: 22px;
+}
+
+.cc-toggle.on {
+	background-color: #fff;
+	color: #000;
+}
+
+.cc-slider {
+	grid-row: span 2;
+	flex-direction: column;
+	justify-content: flex-end;
+	position: relative;
+	padding-bottom: 16px;
+	overflow: hidden;
+	font-size: 20px;
+}
+
+.cc-slider-fill {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: #fff;
+	pointer-events: none;
+}
+
+/* 흰 막대 위에서도 보이도록 */
+.cc-slider i {
+	position: relative;
+	color: #8e8e93;
+	pointer-events: none;
+}
+
+.cc-wide {
+	grid-column: span 3;
+	justify-content: flex-start;
+	gap: 14px;
+	padding: 0 18px;
+	text-align: left;
+}
+
+.cc-wide i {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #0a84ff;
+	font-size: 17px;
+}
+
+.cc-wide span {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.cc-wide strong {
+	font-size: 15px;
+}
+
+.cc-wide small {
+	overflow: hidden;
+	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	opacity: 0.7;
+}

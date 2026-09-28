@@ -261,7 +261,8 @@
 	border: none;
 	border-radius: 0;
 	box-shadow: none;
-	padding-top: env(safe-area-inset-top);
+	/* 위쪽은 모바일 상태 표시줄 자리 (desktop/mobile/MobileShell.css) */
+	padding-top: var(--mobile-statusbar-height);
 	/* 창 여닫는 애니메이션 대신 iOS처럼 커지며 나타난다 */
 	animation: mobile-app-open 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -355,7 +356,7 @@
 
 .mobile-navbar-home.floating {
 	position: absolute;
-	top: calc(env(safe-area-inset-top) + 6px);
+	top: calc(var(--mobile-statusbar-height) + 2px);
 	left: 8px;
 	z-index: 5;
 }
