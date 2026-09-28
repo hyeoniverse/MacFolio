@@ -6,6 +6,8 @@ export type AppState = {
 	isRunning: boolean;
 	isMinimized: boolean;
 	zIndex: number;
+	/** 한 번이라도 열린 적이 있는지. 처음 열 때부터 앱을 렌더링한다 (지연 로딩 앱은 이때 코드를 불러온다) */
+	hasOpened: boolean;
 };
 
 // Define the structure of the context
@@ -27,7 +29,12 @@ interface AppContextType {
 const initialAppStates = Object.fromEntries(
 	APP_NAMES.map((name) => [
 		name,
-		{ isRunning: APP_MANIFEST[name].runningAtStart ?? false, isMinimized: false, zIndex: 1 },
+		{
+			isRunning: APP_MANIFEST[name].runningAtStart ?? false,
+			isMinimized: false,
+			zIndex: 1,
+			hasOpened: APP_MANIFEST[name].runningAtStart ?? false,
+		},
 	])
 ) as Record<AppName, AppState>;
 
@@ -59,6 +66,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 				...prevState[appName],
 				isRunning: !prevState[appName].isRunning,
 				isMinimized: false, // 항상 실행되면 최대화 상태로 변경
+				hasOpened: true,
 			},
 		}));
 	}, []);
@@ -90,6 +98,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 				...prevState[appName],
 				isRunning: true,
 				isMinimized: false,
+				hasOpened: true,
 			},
 		}));
 	}, []);
