@@ -88,12 +88,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 			setTimeout(() => {
 				minimizeApp(appName as keyof typeof useAppState); // 애니메이션이 끝난 후 최소화 상태로 변경
 				setIsMinimizing(false); // 애니메이션 초기화
-				savePositionAndSizeToStorage(
-					position.x,
-					position.y,
-					containerSize.current.width,
-					containerSize.current.height
-				); // 최소화될 때 위치와 크기 저장
+				savePositionAndSizeToStorage(position.x, position.y, containerSize.current.width, containerSize.current.height); // 최소화될 때 위치와 크기 저장
 			}, 500); // 애니메이션 시간과 맞춰서 0.5초 뒤에 최소화
 		}
 	};
