@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>CRA와 Vite의 dev 서버 시작·프로덕션 빌드 시간 비교</title>
+  <rect width="640" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">빌드 시간 비교 (초, 낮을수록 좋음)</text>
+  <g font-size="13" fill="#4b5563">
+    <rect x="32" y="62" width="12" height="12" rx="3" fill="#9ca3af"/><text x="50" y="73">CRA</text>
+    <rect x="96" y="62" width="12" height="12" rx="3" fill="#646cff"/><text x="114" y="73">Vite</text>
+  </g>
+  <!-- 가로 막대: 1초 = 60px -->
+  <g font-size="14">
+    <text x="32" y="122" fill="#1f2937" font-weight="600">dev 서버 시작</text>
+    <rect x="200" y="104" width="303" height="22" rx="5" fill="#9ca3af"/>
+    <text x="511" y="120" fill="#4b5563">5.05</text>
+    <rect x="200" y="132" width="35" height="22" rx="5" fill="#646cff"/>
+    <text x="243" y="148" fill="#4b5563">0.58</text>
+
+    <text x="32" y="212" fill="#1f2937" font-weight="600">프로덕션 빌드</text>
+    <rect x="200" y="194" width="380" height="22" rx="5" fill="#9ca3af"/>
+    <text x="572" y="210" fill="#ffffff" text-anchor="end" font-weight="600">6.33</text>
+    <rect x="200" y="222" width="113" height="22" rx="5" fill="#646cff"/>
+    <text x="321" y="238" fill="#4b5563">1.88</text>
+  </g>
+  <text x="32" y="280" font-size="12" fill="#9ca3af">같은 컴퓨터(Apple M4 Pro)에서 캐시를 지우고 3번씩 잰 평균, 프로덕션 빌드는 타입 체크 포함</text>
+</svg>
