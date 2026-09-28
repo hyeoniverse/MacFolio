@@ -68,10 +68,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 				if (appElement) {
 					const rect = appElement.getBoundingClientRect();
 					const isOutOfBounds =
-						rect.right < 0 ||
-						rect.left > window.innerWidth ||
-						rect.bottom < 0 ||
-						rect.top > window.innerHeight;
+						rect.right < 0 || rect.left > window.innerWidth || rect.bottom < 0 || rect.top > window.innerHeight;
 
 					if (isOutOfBounds) {
 						appElement.style.transition = 'transform 0.5s ease-in-out';

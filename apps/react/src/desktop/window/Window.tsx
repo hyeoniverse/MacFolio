@@ -22,7 +22,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	titleBarStyle,
 	onClick,
 }) => {
-	const { apps, closeApp, minimizeApp, maximizeApp, bringAppToFront } = useAppState();
+	const { apps, closeApp, minimizeApp, bringAppToFront } = useAppState();
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [position, setPosition] = useState({ x: 100, y: 100 });
@@ -88,12 +88,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 			setTimeout(() => {
 				minimizeApp(appName as keyof typeof useAppState); // 애니메이션이 끝난 후 최소화 상태로 변경
 				setIsMinimizing(false); // 애니메이션 초기화
-				savePositionAndSizeToStorage(
-					position.x,
-					position.y,
-					containerSize.current.width,
-					containerSize.current.height
-				); // 최소화될 때 위치와 크기 저장
+				savePositionAndSizeToStorage(position.x, position.y, containerSize.current.width, containerSize.current.height); // 최소화될 때 위치와 크기 저장
 			}, 500); // 애니메이션 시간과 맞춰서 0.5초 뒤에 최소화
 		}
 	};
@@ -261,6 +256,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 
 	return (
 		<div
+			data-app={appName}
 			className={`container ${isMinimizing ? 'minimizing' : ''}`} // 애니메이션을 위한 클래스 추가
 			style={{
 				...appStyle,
@@ -289,9 +285,9 @@ const AppWindow: React.FC<AppWindowProps> = ({
 				onDoubleClick={handleMaximize}
 			>
 				<div className="traffic-lights">
-					<span className="close" onClick={handleClose}></span>
-					<span className="minimize" onClick={handleMinimize}></span>
-					<span className="fullscreen" onClick={handleMaximize}></span>
+					<span className="close" role="button" aria-label="닫기" onClick={handleClose}></span>
+					<span className="minimize" role="button" aria-label="최소화" onClick={handleMinimize}></span>
+					<span className="fullscreen" role="button" aria-label="전체 화면" onClick={handleMaximize}></span>
 				</div>
 				<span className="title">{title}</span>
 			</div>
