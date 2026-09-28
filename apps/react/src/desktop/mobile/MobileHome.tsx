@@ -21,7 +21,7 @@ const AppIcon = ({ name, showLabel, onLaunch }: { name: AppName; showLabel: bool
 	const { squareIcon, mobile } = APP_MANIFEST[name];
 	const { label, icon } = mobile ?? APP_MANIFEST[name];
 	return (
-		<button type="button" className="mobile-app" aria-label={label} onClick={onLaunch}>
+		<button type="button" className="mobile-app" aria-label={label} data-launch={name} onClick={onLaunch}>
 			<img src={`${env.imageUrl}/${icon}`} alt="" className={squareIcon ? 'square' : undefined} draggable={false} />
 			{showLabel && <span>{label}</span>}
 		</button>

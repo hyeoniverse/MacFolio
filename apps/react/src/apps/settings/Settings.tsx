@@ -40,7 +40,7 @@ const Settings: React.FC = () => {
 						))}
 					</nav>
 
-					<section className="settings-panel">
+					<section key={section} className="settings-panel">
 						{section === 'appearance' && (
 							<>
 								<h2>화면 모드</h2>

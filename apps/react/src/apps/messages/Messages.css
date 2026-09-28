@@ -618,8 +618,30 @@
 	color: #ffffff;
 }
 
+/* 대화를 바꾸면 살짝 나타나고, 말풍선은 꼬리 쪽에서 톡 튀어나온다 */
+.messages-chat {
+	animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+.messages-bubble-row {
+	animation: pop-in var(--duration) var(--ease-spring);
+	transform-origin: bottom left;
+}
+
+.messages-bubble-row.right {
+	transform-origin: bottom right;
+}
+
 /* ─── 좁은 창: 목록과 대화를 한 화면씩 ─── */
 @container (max-width: 640px) {
+	.messages[data-nav='forward'] .messages-chat {
+		animation: nav-forward var(--duration) var(--ease-out);
+	}
+
+	.messages[data-nav='back'] .messages-sidebar {
+		animation: nav-back var(--duration) var(--ease-out);
+	}
+
 	.messages-sidebar {
 		width: 100%;
 	}

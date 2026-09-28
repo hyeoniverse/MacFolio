@@ -23,6 +23,9 @@ const MARKDOWN_COMPONENTS: Components = {
 	),
 };
 
+type Pane = 'folders' | 'list' | 'reader';
+const PANES: Pane[] = ['folders', 'list', 'reader'];
+
 /**
  * 메모: 블로그 글을 읽는 공간. macOS 메모 앱처럼 폴더(카테고리) · 글 목록 · 본문 세 칸으로 보여준다.
  * 방문자는 읽기만 하고, 글쓰기는 관리자 로그인(#9) 이후에 붙인다.
@@ -34,7 +37,13 @@ const Memo: React.FC = () => {
 	const [query, setQuery] = useState('');
 	const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 	// 좁은 창에서는 한 칸씩 보여준다 (iOS 메모처럼 폴더 → 목록 → 본문). 넓은 창에서는 쓰지 않는다.
-	const [pane, setPane] = useState<'folders' | 'list' | 'reader'>('list');
+	const [pane, setPaneState] = useState<Pane>('list');
+	// 넘어간 방향. 앞으로 가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다 (처음에는 애니메이션 없음)
+	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
+	const setPane = (next: Pane) => {
+		setNav(PANES.indexOf(next) > PANES.indexOf(pane) ? 'forward' : 'back');
+		setPaneState(next);
+	};
 
 	useEffect(() => {
 		getPostRepository()
@@ -54,7 +63,7 @@ const Memo: React.FC = () => {
 	return (
 		<AppWindow title="메모" appName="memo">
 			<div className="memo-shell">
-				<div className={`memo pane-${pane}`}>
+				<div className={`memo pane-${pane}`} data-nav={nav}>
 					<nav className="memo-folders" aria-label="카테고리">
 						<h2>
 							<i className="fa-brands fa-apple" aria-hidden="true" /> 블로그
@@ -129,7 +138,8 @@ const Memo: React.FC = () => {
 							<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {category}
 						</button>
 						{selected && (
-							<>
+							// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
+							<div key={selected.slug} className="memo-reader-body">
 								<p className="memo-reader-date">
 									<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> · {selected.category}
 								</p>
@@ -139,7 +149,7 @@ const Memo: React.FC = () => {
 										{selected.body}
 									</ReactMarkdown>
 								</div>
-							</>
+							</div>
 						)}
 					</article>
 				</div>

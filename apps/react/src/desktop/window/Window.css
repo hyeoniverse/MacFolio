@@ -18,22 +18,18 @@
 	border-radius: 0.8rem;
 }
 
-/* 창 애니메이션 */
-@keyframes minimize {
-	0% {
-		transform: scale(1);
-		opacity: 1;
-	}
-
-	100% {
-		transform: scale(0);
-		opacity: 0;
-	}
+/* 전체 화면 전환: 위치·크기가 부드럽게 바뀐다 (Window.tsx의 FRAME_MS) */
+.container.frame-animating {
+	transition:
+		left 0.3s var(--ease-out),
+		top 0.3s var(--ease-out),
+		width 0.3s var(--ease-out),
+		height 0.3s var(--ease-out);
 }
 
-.container.minimizing {
-	animation: minimize 0.5s forwards;
-	transform-origin: bottom center;
+/* 닫히는 중에는 누를 수 없다 */
+.container.closing {
+	pointer-events: none;
 }
 
 .resize-handle {
@@ -263,21 +259,7 @@
 	box-shadow: none;
 	/* 위쪽은 모바일 상태 표시줄 자리 (desktop/mobile/MobileShell.css) */
 	padding-top: var(--mobile-statusbar-height);
-	/* 창 여닫는 애니메이션 대신 iOS처럼 커지며 나타난다 */
-	animation: mobile-app-open 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@keyframes mobile-app-open {
-	from {
-		transform: scale(0.92);
-		opacity: 0;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.container.mobile {
-		animation: none;
-	}
+	overflow: hidden;
 }
 
 .container.mobile .content {

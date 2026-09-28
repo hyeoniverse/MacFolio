@@ -8,6 +8,14 @@
 	text-align: left;
 }
 
+.shortcuts[data-nav='forward'] {
+	animation: nav-forward var(--duration) var(--ease-out);
+}
+
+.shortcuts[data-nav='back'] {
+	animation: nav-back var(--duration) var(--ease-out);
+}
+
 .shortcuts h1 {
 	margin: 4px 4px 2px;
 	font-size: 30px;

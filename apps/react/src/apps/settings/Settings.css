@@ -15,6 +15,9 @@
 }
 
 .settings-nav-item {
+	transition:
+		background-color var(--duration-fast) var(--ease-out),
+		color var(--duration-fast) var(--ease-out);
 	display: flex;
 	align-items: center;
 	gap: 0.6rem;
@@ -43,6 +46,8 @@
 }
 
 .settings-panel {
+	/* 항목을 바꾸면 살짝 떠오르며 나타난다 */
+	animation: rise-in var(--duration) var(--ease-out);
 	flex: 1;
 	padding: 1.25rem 1.5rem;
 	overflow-y: auto;

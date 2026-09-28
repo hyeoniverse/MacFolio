@@ -10,6 +10,15 @@
 	color: #fff;
 	-webkit-user-select: none;
 	user-select: none;
+	transition:
+		transform var(--duration-slow) var(--ease-out),
+		filter var(--duration-slow) var(--ease-out);
+}
+
+/* 앱이 열려 있으면 홈 화면이 살짝 뒤로 물러난다. 앱이 닫히기 시작하면(closing) 바로 돌아온다 */
+.App:has(.container.mobile:not(.closing)) .mobile-home {
+	transform: scale(0.92);
+	filter: brightness(0.7);
 }
 
 /* 소개 위젯 */
