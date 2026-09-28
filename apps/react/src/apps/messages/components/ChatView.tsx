@@ -3,26 +3,23 @@ import Avatar from './Avatar';
 import Composer from './Composer';
 import ContextMenu from './ContextMenu';
 import DeleteDialog from './DeleteDialog';
-import {
-	buildTimeline,
-	LIMITS,
-	OWNER_NAME,
-	type InputErrors,
-	type Message,
-	type NewThreadInput,
-	type Thread,
-} from '../conversations';
+import { buildTimeline, displayName, LIMITS, type InputErrors, type Message, type Thread } from '../conversations';
 import type { DeleteResult } from '../repository';
 
 interface Props {
-	/** null이면 새 대화 화면 */
-	thread: Thread | null;
+	thread: Thread;
 	messages: Message[];
-	isMine: boolean;
-	hasMyThread: boolean;
-	onOpenMyThread: () => void;
-	onStartThread: (input: NewThreadInput) => Promise<InputErrors>;
-	onSend: (text: string) => Promise<string | undefined>;
+	identity: {
+		nickname: string;
+		password: string;
+		setNickname: (value: string) => void;
+		setPassword: (value: string) => void;
+	};
+	focusRequest: number;
+	/** 좁은 창에서 대화 목록으로 돌아가기 */
+	onBack: () => void;
+	onCompose: () => void;
+	onSend: (text: string) => Promise<InputErrors>;
 	onRemove: (messageId: string, password: string) => Promise<DeleteResult>;
 }
 
@@ -36,25 +33,32 @@ const TimeLabel: React.FC<{ label: string }> = ({ label }) => {
 	);
 };
 
+const subtitleOf = (thread: Thread) => {
+	if (thread.pinned) return '방명록 · 누구나 쓸 수 있어요';
+	if (thread.mine) return '내 방명록';
+	return `${thread.title}님의 방명록`;
+};
+
 const ChatView: React.FC<Props> = ({
 	thread,
 	messages,
-	isMine,
-	hasMyThread,
-	onOpenMyThread,
-	onStartThread,
+	identity,
+	focusRequest,
+	onBack,
+	onCompose,
 	onSend,
 	onRemove,
 }) => {
 	const [menu, setMenu] = useState<{ x: number; y: number; messageId: string } | null>(null);
 	const [deleting, setDeleting] = useState<string | null>(null);
+	const [errors, setErrors] = useState<InputErrors>({});
 	const listEnd = useRef<HTMLDivElement>(null);
-	const timeline = buildTimeline(messages, { showReceipt: isMine, now: new Date() });
+	const timeline = buildTimeline(messages, { now: new Date() });
 
 	// 대화를 열거나 새 메시지가 생기면 맨 아래로
 	useEffect(() => {
 		listEnd.current?.scrollIntoView({ block: 'end' });
-	}, [thread?.id, messages.length]);
+	}, [thread.id, messages.length]);
 
 	const openMenu = (event: React.MouseEvent, message: Message) => {
 		if (message.fromOwner) return;
@@ -64,21 +68,31 @@ const ChatView: React.FC<Props> = ({
 	};
 
 	return (
-		<section className="messages-chat" aria-label={thread ? `${thread.title}와의 대화` : '새 메시지'}>
+		<section className="messages-chat" aria-label={`${thread.title}의 방명록`}>
+			{/* 창 왼쪽 위에 떠 있는 버튼: 뒤로 가기(좁은 창에서만), 새 메시지 */}
+			<div className="messages-chat-toolbar">
+				<button type="button" className="messages-round-button messages-back" aria-label="대화 목록" onClick={onBack}>
+					<i className="fa-solid fa-chevron-left" aria-hidden="true" />
+				</button>
+				<button
+					type="button"
+					className="messages-round-button"
+					aria-label="새 메시지"
+					title="새 메시지"
+					onClick={onCompose}
+				>
+					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+				</button>
+			</div>
+
 			<header className="messages-chat-header">
-				{thread ? (
-					<>
-						<Avatar name={thread.title} size={28} />
-						<span>
-							{thread.title}
-							{isMine && <span className="messages-me-badge">나</span>}
-						</span>
-					</>
-				) : (
-					<p className="messages-to">
-						<span>받는 사람:</span> {OWNER_NAME}
-					</p>
-				)}
+				<Avatar name={thread.title} />
+				<span className="messages-name-pill">
+					{displayName(thread.title, thread.ipPrefix)}
+					{thread.mine && <span className="messages-me-badge">나</span>}
+					<i className="fa-solid fa-chevron-right" aria-hidden="true" />
+				</span>
+				<span className="messages-chat-subtitle">{subtitleOf(thread)}</span>
 			</header>
 
 			<div className="messages-transcript" role="log" aria-live="polite">
@@ -95,6 +109,9 @@ const ChatView: React.FC<Props> = ({
 							className={`messages-bubble-row ${item.side} ${item.tail ? 'tail' : ''}`}
 							onContextMenu={(event) => openMenu(event, item.message)}
 						>
+							{item.showName && (
+								<span className="messages-sender">{displayName(item.message.nickname, item.message.ipPrefix)}</span>
+							)}
 							<p className="messages-bubble">{item.message.text}</p>
 							{!item.message.fromOwner && (
 								<button
@@ -113,27 +130,37 @@ const ChatView: React.FC<Props> = ({
 				<div ref={listEnd} />
 			</div>
 
-			{!thread && <NewThreadComposer onStart={onStartThread} />}
-			{thread && isMine && (
-				<Composer
-					onSend={async (text) => {
-						const error = await onSend(text);
-						return { sent: !error, error };
-					}}
-				/>
-			)}
-			{thread && !isMine && (
-				<footer className="messages-readonly">
-					<p>
-						{thread.pinned
-							? `${OWNER_NAME}에게 메시지를 보내면 나만의 대화가 생겨요.`
-							: '공개 대화예요. 누구나 읽을 수 있어요.'}
-					</p>
-					<button type="button" onClick={onOpenMyThread}>
-						{hasMyThread ? '내 대화로 가기' : thread.pinned ? '메시지 보내기' : '내 대화 시작하기'}
-					</button>
-				</footer>
-			)}
+			<Composer
+				key={focusRequest}
+				autoFocus={focusRequest > 0}
+				error={errors.nickname ?? errors.password}
+				onSend={async (text) => {
+					const result = await onSend(text);
+					setErrors(result);
+					// 이름·비밀번호 오류는 위에서 보여주고, 입력한 메시지는 지우지 않는다
+					return { sent: Object.keys(result).length === 0, error: result.text };
+				}}
+			>
+				<div className="messages-identity">
+					<input
+						aria-label="이름"
+						placeholder="이름"
+						maxLength={LIMITS.nickname.max}
+						value={identity.nickname}
+						aria-invalid={!!errors.nickname}
+						onChange={(event) => identity.setNickname(event.target.value)}
+					/>
+					<input
+						type="password"
+						aria-label="비밀번호"
+						placeholder="비밀번호 (삭제할 때 필요)"
+						maxLength={LIMITS.password.max}
+						value={identity.password}
+						aria-invalid={!!errors.password}
+						onChange={(event) => identity.setPassword(event.target.value)}
+					/>
+				</div>
+			</Composer>
 
 			{menu && (
 				<ContextMenu
@@ -147,46 +174,6 @@ const ChatView: React.FC<Props> = ({
 				<DeleteDialog onClose={() => setDeleting(null)} onDelete={(password) => onRemove(deleting, password)} />
 			)}
 		</section>
-	);
-};
-
-/** 새 대화: 이름과 비밀번호를 정하고 첫 메시지를 보낸다 */
-const NewThreadComposer: React.FC<{ onStart: (input: NewThreadInput) => Promise<InputErrors> }> = ({ onStart }) => {
-	const [nickname, setNickname] = useState('');
-	const [password, setPassword] = useState('');
-	const [errors, setErrors] = useState<InputErrors>({});
-
-	return (
-		<Composer
-			autoFocus
-			error={errors.nickname ?? errors.password}
-			onSend={async (text) => {
-				const result = await onStart({ nickname, password, text });
-				setErrors(result);
-				// 이름·비밀번호 오류는 위에서 보여주고, 입력한 메시지는 지우지 않는다
-				return { sent: Object.keys(result).length === 0, error: result.text };
-			}}
-		>
-			<div className="messages-identity">
-				<input
-					aria-label="이름"
-					placeholder="이름"
-					maxLength={LIMITS.nickname.max}
-					value={nickname}
-					aria-invalid={!!errors.nickname}
-					onChange={(event) => setNickname(event.target.value)}
-				/>
-				<input
-					type="password"
-					aria-label="비밀번호"
-					placeholder="비밀번호 (삭제할 때 필요)"
-					maxLength={LIMITS.password.max}
-					value={password}
-					aria-invalid={!!errors.password}
-					onChange={(event) => setPassword(event.target.value)}
-				/>
-			</div>
-		</Composer>
 	);
 };
 

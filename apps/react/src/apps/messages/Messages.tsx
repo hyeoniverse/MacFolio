@@ -2,36 +2,35 @@ import React from 'react';
 import AppWindow from '@/desktop/window/Window';
 import Sidebar from './components/Sidebar';
 import ChatView from './components/ChatView';
-import { NEW_THREAD, useConversations } from './useConversations';
+import { useConversations } from './useConversations';
 import '@/apps/messages/Messages.css';
 
 /**
- * 메시지: 방문자마다 공개 대화방이 생기고, 주인(김정현)이 각 방에 답장한다.
- * 누구나 모든 대화를 읽을 수 있고, 글은 이 브라우저에서 시작한 자기 대화에만 쓸 수 있다.
+ * 메시지: 사람별 공개 방명록. 고정된 사이트 주인(김정현)의 방이 있고, 방문자도 처음 글을 쓰면 자기 방이 생긴다.
+ * 누구나 어느 방에나 쓸 수 있다. 창이 좁으면 목록과 대화를 한 화면씩 보여준다.
  */
 const Messages: React.FC = () => {
 	const conversations = useConversations();
-	const { selectedId, selectedThread, myThreadId } = conversations;
+	const { selectedThread } = conversations;
 
 	return (
-		<AppWindow title="메시지" appName="messages">
-			<div className="messages">
+		<AppWindow title="메시지" appName="messages" chrome="unified">
+			<div className={`messages ${conversations.isChatOpen ? 'chat-open' : ''}`}>
 				<Sidebar
 					threads={conversations.threads}
-					selectedId={selectedId}
-					myThreadId={myThreadId}
+					selectedId={conversations.selectedId}
 					onSelect={conversations.select}
-					onCompose={conversations.openMyThread}
+					onCompose={conversations.compose}
 				/>
-				{(selectedId === NEW_THREAD || selectedThread) && (
+				{selectedThread && (
 					<ChatView
-						key={selectedId}
-						thread={selectedId === NEW_THREAD ? null : selectedThread}
+						key={selectedThread.id}
+						thread={selectedThread}
 						messages={conversations.messages}
-						isMine={selectedId === myThreadId}
-						hasMyThread={!!myThreadId}
-						onOpenMyThread={conversations.openMyThread}
-						onStartThread={conversations.startThread}
+						identity={conversations.identity}
+						focusRequest={conversations.focusRequest}
+						onBack={conversations.back}
+						onCompose={conversations.compose}
 						onSend={conversations.send}
 						onRemove={conversations.remove}
 					/>

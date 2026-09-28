@@ -1,15 +1,20 @@
-// 대화 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
-// 방문자마다 공개 대화방이 하나 생기고, 사이트 주인(김정현)이 각 방에 답장한다.
+// 메시지 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
+// 대화방은 사람별 공개 방명록이다. 고정된 주인(김정현) 방이 있고, 방문자도 처음 글을 쓰면 자기 방이 생긴다.
+// 누구나 어느 방에나 쓸 수 있다. 사람은 서버에서는 IP(해시), 로컬에서는 브라우저 id로 구분한다.
 
 export const OWNER_NAME = '김정현';
 
 export interface Thread {
 	id: string;
-	/** 방문자 닉네임 (고정 대화는 주인 이름) */
+	/** 방 주인의 이름 (고정 방은 사이트 주인) */
 	title: string;
+	/** 방 주인 IP의 앞 두 자리 (서버에서만. 예: "211.234") */
+	ipPrefix?: string;
 	createdAt: string;
-	/** 사이드바 맨 위에 고정되는 주인 소개 대화 (읽기 전용) */
+	/** 사이드바 맨 위에 고정되는 사이트 주인의 방명록 */
 	pinned?: boolean;
+	/** 보고 있는 사람의 방인지 */
+	mine?: boolean;
 	lastMessage?: { text: string; createdAt: string };
 }
 
@@ -19,11 +24,17 @@ export interface Message {
 	text: string;
 	/** ISO 8601 */
 	createdAt: string;
-	/** 주인이 쓴 글 (왼쪽 회색 말풍선). 아니면 방문자 글 (오른쪽 파란 말풍선) */
+	/** 같은 사람이 쓴 글을 묶는 데 쓰는 불투명한 id (IP나 브라우저 id의 해시) */
+	authorId: string;
+	nickname: string;
+	ipPrefix?: string;
+	/** 사이트 주인이 쓴 글 */
 	fromOwner: boolean;
+	/** 보고 있는 사람이 쓴 글 (오른쪽 말풍선) */
+	mine: boolean;
 }
 
-export interface NewThreadInput {
+export interface MessageInput {
 	nickname: string;
 	password: string;
 	text: string;
@@ -35,21 +46,10 @@ export const LIMITS = {
 	password: { min: 4, max: 20 },
 } as const;
 
-export type InputErrors = Partial<Record<keyof NewThreadInput, string>>;
+export type InputErrors = Partial<Record<keyof MessageInput, string>>;
 
-function validateText(text: string): string | undefined {
-	if (text.length < LIMITS.text.min) return '내용을 입력해주세요.';
-	if (text.length > LIMITS.text.max) return `내용은 ${LIMITS.text.max}자까지 입력할 수 있습니다.`;
-}
-
-/** 메시지 하나를 다듬고 검증한다. 서버(#9)도 같은 규칙을 쓴다. */
-export function validateMessage(text: string): { value: string; error?: string } {
-	const value = text.trim();
-	return { value, error: validateText(value) };
-}
-
-/** 새 대화 시작 입력을 다듬고 검증한다. */
-export function validateNewThread(input: NewThreadInput): { value: NewThreadInput; errors: InputErrors } {
+/** 입력을 다듬고 검증한다. 서버(#9)도 같은 규칙을 쓴다. */
+export function validateMessageInput(input: MessageInput): { value: MessageInput; errors: InputErrors } {
 	const value = { nickname: input.nickname.trim(), password: input.password, text: input.text.trim() };
 	const errors: InputErrors = {};
 
@@ -61,10 +61,22 @@ export function validateNewThread(input: NewThreadInput): { value: NewThreadInpu
 	if (value.password.length < LIMITS.password.min || value.password.length > LIMITS.password.max)
 		errors.password = `비밀번호는 ${LIMITS.password.min}~${LIMITS.password.max}자로 입력해주세요.`;
 
-	const textError = validateText(value.text);
-	if (textError) errors.text = textError;
+	if (value.text.length < LIMITS.text.min) errors.text = '내용을 입력해주세요.';
+	else if (value.text.length > LIMITS.text.max) errors.text = `내용은 ${LIMITS.text.max}자까지 입력할 수 있습니다.`;
 
 	return { value, errors };
+}
+
+/** 화면에 보여줄 이름. IP 앞 두 자리가 있으면 붙인다: "민수(211.234)" */
+export function displayName(name: string, ipPrefix?: string): string {
+	return ipPrefix ? `${name}(${ipPrefix})` : name;
+}
+
+/** IPv4는 앞 두 자리("211.234"), IPv6는 앞 두 묶음("2001:db8"). 서버에서 쓴다. */
+export function maskIp(ip: string): string {
+	const v4 = ip.replace(/^::ffff:/, '');
+	if (/^\d+\.\d+\.\d+\.\d+$/.test(v4)) return v4.split('.').slice(0, 2).join('.');
+	return ip.split(':').slice(0, 2).join(':');
 }
 
 /** 오래된 글이 위, 최신 글이 아래 */
@@ -87,28 +99,28 @@ export type TimelineItem =
 			type: 'message';
 			key: string;
 			message: Message;
-			/** 주인 글은 왼쪽, 방문자 글은 오른쪽 */
+			/** 내 글은 오른쪽, 다른 사람 글은 왼쪽 */
 			side: 'left' | 'right';
-			/** 같은 사람이 연달아 보낸 묶음의 마지막 말풍선에 꼬리를 단다 */
+			/** 다른 사람이 연달아 쓴 묶음의 첫 말풍선 위에 이름을 보여준다 */
+			showName: boolean;
+			/** 같은 사람이 연달아 쓴 묶음의 마지막 말풍선에 꼬리를 단다 */
 			tail: boolean;
-			/** 방문자가 마지막으로 보낸 메시지 아래 '전송됨' (내 대화에서만) */
+			/** 내가 마지막으로 쓴 메시지 아래 '전송됨' */
 			receipt: boolean;
 	  };
 
 /** 메시지 목록을 시간 구분선과 말풍선 묶음 정보가 붙은 목록으로 바꾼다. */
-export function buildTimeline(
-	messages: Message[],
-	options: { showReceipt: boolean; now: Date; timeZone?: string }
-): TimelineItem[] {
+export function buildTimeline(messages: Message[], options: { now: Date; timeZone?: string }): TimelineItem[] {
 	const sorted = sortMessages(messages);
 	const time = (message: Message) => Date.parse(message.createdAt);
-	const lastVisitorId = options.showReceipt ? sorted.filter((m) => !m.fromOwner).at(-1)?.id : undefined;
+	const lastMineId = sorted.filter((m) => m.mine).at(-1)?.id;
 	const items: TimelineItem[] = [];
 
 	sorted.forEach((message, index) => {
 		const prev = sorted[index - 1];
 		const next = sorted[index + 1];
-		if (!prev || time(message) - time(prev) > TIME_GAP_MS) {
+		const startsNewTime = !prev || time(message) - time(prev) > TIME_GAP_MS;
+		if (startsNewTime) {
 			items.push({
 				type: 'time',
 				key: `time-${message.id}`,
@@ -116,14 +128,16 @@ export function buildTimeline(
 				dateTime: message.createdAt,
 			});
 		}
-		const sameAsNext = !!next && next.fromOwner === message.fromOwner && time(next) - time(message) <= TIME_GAP_MS;
+		const sameAsPrev = !!prev && !startsNewTime && prev.authorId === message.authorId;
+		const sameAsNext = !!next && next.authorId === message.authorId && time(next) - time(message) <= TIME_GAP_MS;
 		items.push({
 			type: 'message',
 			key: message.id,
 			message,
-			side: message.fromOwner ? 'left' : 'right',
+			side: message.mine ? 'right' : 'left',
+			showName: !message.mine && !sameAsPrev,
 			tail: !sameAsNext,
-			receipt: message.id === lastVisitorId,
+			receipt: message.id === lastMineId,
 		});
 	});
 	return items;
@@ -201,19 +215,11 @@ export function formatListTime(date: Date, now: Date, timeZone?: string): string
 	return `${target.year}. ${target.month}. ${target.day}.`;
 }
 
-/** macOS 연락처처럼 이름마다 정해진 아바타 색 (같은 이름은 항상 같은 색) */
-const AVATAR_GRADIENTS = [
-	['#a5acb8', '#848a95'],
-	['#ff8a80', '#e8615a'],
-	['#ffb870', '#f0913c'],
-	['#6fd08c', '#40b366'],
-	['#6ec6ff', '#3a9be8'],
-	['#b39dff', '#8c6cf0'],
-	['#ff8ec1', '#ec5f9d'],
-] as const;
-
-export function avatarGradient(name: string): readonly [string, string] {
-	let hash = 0;
-	for (const char of name) hash = (hash * 31 + char.codePointAt(0)!) >>> 0;
-	return AVATAR_GRADIENTS[hash % AVATAR_GRADIENTS.length];
+/**
+ * 아바타에 보여줄 글자 (macOS 연락처와 같은 방식).
+ * 두 글자 이하는 통째로("엄마"), 그보다 길면 첫 글자("김정현" → "김")
+ */
+export function monogram(name: string): string {
+	const chars = Array.from(name.trim());
+	return chars.length <= 2 ? chars.join('') : chars[0];
 }

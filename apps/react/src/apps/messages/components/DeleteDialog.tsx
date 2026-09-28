@@ -21,7 +21,7 @@ const DeleteDialog: React.FC<Props> = ({ onClose, onDelete }) => {
 	return (
 		<Modal title="메시지 삭제" onClose={onClose}>
 			<form className="messages-delete-form" onSubmit={confirm}>
-				<p>대화를 시작할 때 정한 비밀번호를 입력하세요. 삭제한 메시지는 되돌릴 수 없습니다.</p>
+				<p>글을 쓸 때 정한 비밀번호를 입력하세요. 삭제한 메시지는 되돌릴 수 없습니다.</p>
 				<input
 					type="password"
 					aria-label="삭제 비밀번호"

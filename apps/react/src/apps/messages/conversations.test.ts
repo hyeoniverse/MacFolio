@@ -1,42 +1,47 @@
 import { describe, expect, it } from 'vitest';
 import {
-	avatarGradient,
 	buildTimeline,
+	displayName,
 	formatListTime,
 	formatTimeLabel,
 	LIMITS,
+	maskIp,
+	monogram,
 	OWNER_NAME,
 	sortThreads,
-	validateMessage,
-	validateNewThread,
+	validateMessageInput,
 	type Message,
 	type Thread,
 } from './conversations';
 
 const now = new Date('2026-09-28T03:00:00Z'); // 서울 기준 9월 28일(월) 정오
 const TZ = 'Asia/Seoul';
-const msg = (id: string, createdAt: string, fromOwner = false): Message => ({
+const msg = (id: string, createdAt: string, authorId = 'a', extra: Partial<Message> = {}): Message => ({
 	id,
 	threadId: 't',
 	text: id,
 	createdAt,
-	fromOwner,
+	authorId,
+	nickname: authorId,
+	fromOwner: false,
+	mine: false,
+	...extra,
 });
 
-describe('validateNewThread', () => {
+describe('validateMessageInput', () => {
 	it('앞뒤 공백을 지우고 통과시킨다 (비밀번호는 그대로)', () => {
-		const { value, errors } = validateNewThread({ nickname: ' 민수 ', password: ' 1234 ', text: ' 안녕하세요 ' });
+		const { value, errors } = validateMessageInput({ nickname: ' 민수 ', password: ' 1234 ', text: ' 안녕하세요 ' });
 		expect(errors).toEqual({});
 		expect(value).toEqual({ nickname: '민수', password: ' 1234 ', text: '안녕하세요' });
 	});
 
 	it('비어 있거나 길이를 넘으면 필드별로 알려준다', () => {
-		expect(Object.keys(validateNewThread({ nickname: '', password: '', text: ' ' }).errors).sort()).toEqual([
+		expect(Object.keys(validateMessageInput({ nickname: '', password: '', text: ' ' }).errors).sort()).toEqual([
 			'nickname',
 			'password',
 			'text',
 		]);
-		const { errors } = validateNewThread({
+		const { errors } = validateMessageInput({
 			nickname: 'a'.repeat(LIMITS.nickname.max + 1),
 			password: 'a'.repeat(LIMITS.password.max + 1),
 			text: 'a'.repeat(LIMITS.text.max + 1),
@@ -46,20 +51,26 @@ describe('validateNewThread', () => {
 		expect(errors.password).toBeDefined();
 	});
 
-	it('주인 이름으로는 대화를 시작할 수 없다', () => {
-		expect(validateNewThread({ nickname: OWNER_NAME, password: '1234', text: 'hi' }).errors.nickname).toBeDefined();
+	it('사이트 주인 이름은 쓸 수 없다', () => {
+		expect(validateMessageInput({ nickname: OWNER_NAME, password: '1234', text: 'hi' }).errors.nickname).toBeDefined();
 	});
 });
 
-describe('validateMessage', () => {
-	it('공백만 있으면 거부한다', () => {
-		expect(validateMessage('   ').error).toBeDefined();
-		expect(validateMessage(' 안녕 ')).toEqual({ value: '안녕', error: undefined });
+describe('IP 표시', () => {
+	it('IPv4는 앞 두 자리, IPv6는 앞 두 묶음만 남긴다', () => {
+		expect(maskIp('211.234.56.78')).toBe('211.234');
+		expect(maskIp('::ffff:175.112.3.4')).toBe('175.112');
+		expect(maskIp('2001:db8:85a3::8a2e:370:7334')).toBe('2001:db8');
+	});
+
+	it('IP 앞자리가 있으면 이름 뒤에 붙인다', () => {
+		expect(displayName('민수', '211.234')).toBe('민수(211.234)');
+		expect(displayName('민수')).toBe('민수');
 	});
 });
 
 describe('sortThreads', () => {
-	it('고정 대화가 맨 위, 나머지는 최근 메시지 순', () => {
+	it('고정 방이 맨 위, 나머지는 최근 메시지 순', () => {
 		const thread = (id: string, at: string, pinned = false): Thread => ({
 			id,
 			title: id,
@@ -79,52 +90,46 @@ describe('sortThreads', () => {
 describe('buildTimeline', () => {
 	const messages = (items: ReturnType<typeof buildTimeline>) =>
 		items.flatMap((item) => (item.type === 'message' ? [item] : []));
+	const build = (list: Message[]) => messages(buildTimeline(list, { now, timeZone: TZ }));
 
-	it('방문자 글은 오른쪽, 주인 글은 왼쪽', () => {
-		const items = buildTimeline([msg('a', '2026-09-28T01:00:00Z'), msg('b', '2026-09-28T01:01:00Z', true)], {
-			showReceipt: false,
-			now,
-			timeZone: TZ,
-		});
-		expect(messages(items).map((m) => m.side)).toEqual(['right', 'left']);
+	it('내 글은 오른쪽, 다른 사람 글은 왼쪽', () => {
+		const items = build([
+			msg('a', '2026-09-28T01:00:00Z', 'me', { mine: true }),
+			msg('b', '2026-09-28T01:01:00Z', 'x'),
+		]);
+		expect(items.map((m) => m.side)).toEqual(['right', 'left']);
 	});
 
-	it('같은 사람이 연달아 보낸 묶음의 마지막 말풍선에만 꼬리를 단다', () => {
-		const items = buildTimeline(
-			[
-				msg('a', '2026-09-28T01:00:00Z'),
-				msg('b', '2026-09-28T01:01:00Z'),
-				msg('c', '2026-09-28T01:02:00Z', true),
-				msg('d', '2026-09-28T01:03:00Z', true),
-			],
-			{ showReceipt: false, now, timeZone: TZ }
-		);
-		expect(messages(items).map((m) => [m.key, m.tail])).toEqual([
-			['a', false],
-			['b', true],
-			['c', false],
-			['d', true],
+	it('같은 사람이 연달아 쓴 글은 묶어서, 첫 말풍선에 이름·마지막 말풍선에 꼬리', () => {
+		const items = build([
+			msg('a', '2026-09-28T01:00:00Z', 'x'),
+			msg('b', '2026-09-28T01:01:00Z', 'x'),
+			msg('c', '2026-09-28T01:02:00Z', 'y'),
+		]);
+		expect(items.map((m) => [m.key, m.showName, m.tail])).toEqual([
+			['a', true, false],
+			['b', false, true],
+			['c', true, true],
 		]);
 	});
 
-	it('내 대화에서만, 방문자의 마지막 메시지에 전송됨을 표시한다', () => {
-		const list = [
-			msg('a', '2026-09-28T01:00:00Z'),
-			msg('b', '2026-09-28T01:01:00Z'),
-			msg('c', '2026-09-28T01:02:00Z', true),
-		];
-		const receipts = (showReceipt: boolean) =>
-			messages(buildTimeline(list, { showReceipt, now, timeZone: TZ }))
-				.filter((m) => m.receipt)
-				.map((m) => m.key);
-		expect(receipts(true)).toEqual(['b']);
-		expect(receipts(false)).toEqual([]);
+	it('내 글에는 이름을 붙이지 않고, 마지막 내 글에만 전송됨을 표시한다', () => {
+		const items = build([
+			msg('a', '2026-09-28T01:00:00Z', 'me', { mine: true }),
+			msg('b', '2026-09-28T01:01:00Z', 'me', { mine: true }),
+			msg('c', '2026-09-28T01:02:00Z', 'x'),
+		]);
+		expect(items.map((m) => [m.key, m.showName, m.receipt])).toEqual([
+			['a', false, false],
+			['b', false, true],
+			['c', true, false],
+		]);
 	});
 
 	it('한 시간 넘게 벌어지면 시간 구분선을 넣고 묶음을 끊는다', () => {
 		const items = buildTimeline(
 			[msg('a', '2026-09-28T00:00:00Z'), msg('b', '2026-09-28T00:30:00Z'), msg('c', '2026-09-28T02:00:00Z')],
-			{ showReceipt: false, now, timeZone: TZ }
+			{ now, timeZone: TZ }
 		);
 		expect(items.map((item) => (item.type === 'time' ? `[${item.label}]` : item.key))).toEqual([
 			'[오늘 오전 9:00]',
@@ -133,7 +138,8 @@ describe('buildTimeline', () => {
 			'[오늘 오전 11:00]',
 			'c',
 		]);
-		expect(messages(items).find((m) => m.key === 'b')?.tail).toBe(true);
+		const c = messages(items).find((m) => m.key === 'c')!;
+		expect(c.showName).toBe(true);
 	});
 });
 
@@ -167,8 +173,14 @@ describe('formatListTime', () => {
 	});
 });
 
-describe('avatarGradient', () => {
-	it('같은 이름은 항상 같은 색', () => {
-		expect(avatarGradient('민수')).toEqual(avatarGradient('민수'));
+describe('monogram', () => {
+	it('두 글자 이하는 통째로, 그보다 길면 첫 글자', () => {
+		expect(monogram('엄마')).toBe('엄마');
+		expect(monogram('김정현')).toBe('김');
+		expect(monogram(' Alex ')).toBe('A');
+	});
+
+	it('이모지 같은 여러 코드 단위 문자도 한 글자로 센다', () => {
+		expect(monogram('🙂친구')).toBe('🙂');
 	});
 });
