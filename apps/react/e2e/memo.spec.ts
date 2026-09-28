@@ -166,4 +166,66 @@ test.describe('메모 (블로그)', () => {
 		await folders.getByRole('button', { name: '폴더 삭제 (읽을거리)' }).click();
 		await expect(folder).toBeHidden();
 	});
+
+	test('폴더를 고른 채 새로운 폴더를 누르면 그 폴더 아래에 만든다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await folders.getByRole('button', { name: /^개발기/ }).click();
+		await memo.getByRole('button', { name: '새로운 폴더' }).click();
+		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('읽을거리');
+		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
+
+		await expect(folders.getByRole('button', { name: /^읽을거리/ })).toHaveAttribute('aria-current', 'true');
+		// 개발기를 접으면 함께 숨는다 (개발기 아래에 있다)
+		await folders.getByRole('button', { name: '하위 폴더 접기 (개발기)' }).click();
+		await expect(folders.getByRole('button', { name: /^읽을거리/ })).toBeHidden();
+	});
+
+	test('글과 폴더를 끌어서 다른 폴더로 옮긴다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await memo.getByRole('button', { name: '새로운 폴더' }).click();
+		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('보관');
+		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
+
+		// 글을 '보관'으로
+		await folders.getByRole('button', { name: /^모든 글/ }).click();
+		await memo
+			.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' })
+			.dragTo(folders.getByRole('button', { name: /^보관/ }));
+		await expect(folders.getByRole('button', { name: /^보관/ })).toContainText('1');
+		await folders.getByRole('button', { name: /^보관/ }).click();
+		await expect(memo.locator('.memo-item')).toHaveText([/CRA에서 Vite로 옮기기/]);
+
+		// 폴더 'MacFolio'를 '보관' 안으로: 안의 글도 따라온다
+		await folders.getByRole('button', { name: /^MacFolio/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
+		await expect(folders.getByRole('button', { name: /^보관/ })).toContainText('2');
+
+		// 새로고침해도 정리한 대로
+		await enterDesktop(page);
+		await dockItem(page, 'memo').click();
+		await expect(folders.getByRole('button', { name: /^보관/ })).toContainText('2');
+	});
+
+	test('검색 칸은 목록·갤러리 어디서든 도구 막대 오른쪽 끝에 있다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		const windowBox = (await memo.boundingBox())!;
+		const right = async () => {
+			const box = (await search.boundingBox())!;
+			return Math.round(windowBox.x + windowBox.width - (box.x + box.width));
+		};
+		const inList = await right();
+		await memo.getByRole('button', { name: '갤러리로 보기' }).first().click();
+		expect(await right()).toBe(inList);
+		expect((await search.boundingBox())!.y - windowBox.y).toBeLessThan(52);
+	});
+
+	test('코드 블록은 문법 강조가 된다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await memo.locator('.memo-item', { hasText: '테스트를 붙이자' }).click();
+		const code = memo.getByRole('article').locator('pre code').first();
+		await expect(code).toHaveClass(/hljs/);
+		await expect(code.locator('.hljs-keyword').first()).toBeVisible();
+	});
 });

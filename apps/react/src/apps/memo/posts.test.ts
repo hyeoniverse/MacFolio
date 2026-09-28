@@ -139,6 +139,15 @@ describe('폴더', () => {
 		]);
 	});
 
+	it('방문자가 만든 폴더는 글 0개로 들어가고 custom으로 표시된다', () => {
+		const tree = buildFolderTree(posts, ['개발기/읽을거리', '새 폴더']);
+		expect(tree.find((node) => node.name === '새 폴더')).toMatchObject({ count: 0, custom: true });
+		const 개발기 = tree.find((node) => node.name === '개발기')!;
+		expect(개발기.count).toBe(3);
+		expect(개발기.custom).toBeUndefined();
+		expect(개발기.children.map((child) => child.name)).toEqual(['MacFolio', '읽을거리']);
+	});
+
 	it('상위 폴더를 고르면 하위 폴더의 글도 보인다', () => {
 		expect(inFolder(posts[0], '개발기')).toBe(true);
 		expect(inFolder(posts[0], '개발')).toBe(false);

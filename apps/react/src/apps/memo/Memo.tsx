@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import ReactMarkdown, { type Components } from 'react-markdown';
+import ReactMarkdown, { type Components, type Options } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { rehypeHighlightCode } from './highlight';
 import AppWindow from '@/desktop/window/Window';
 import {
 	ALL_CATEGORY,
@@ -12,13 +13,26 @@ import {
 	resolveImageSrc,
 	type Post,
 } from './posts';
-import { loadUserFolders, saveUserFolders, withUserFolders } from './userFolders';
-import FolderSidebar from './components/FolderSidebar';
+import {
+	addFolder,
+	canMoveFolder,
+	loadOrganization,
+	moveFolder,
+	movePost,
+	organizePosts,
+	removeFolder,
+	saveOrganization,
+	type Organization,
+} from './organize';
+import FolderSidebar, { type DragItem } from './components/FolderSidebar';
 import { ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
 import { CONTENT_IMAGES } from './contentImages';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
 import '@/apps/memo/Memo.css';
+
+/** 코드 블록 문법 강조 (highlight.ts) */
+const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
 
 /**
  * 본문 요소 바꾸기. 컴포넌트 밖의 상수여야 한다: 렌더링마다 새 함수를 넘기면
@@ -78,7 +92,10 @@ const Memo: React.FC = () => {
 	const [view, setView] = useState<View>('list');
 	/** 갤러리에서 카드를 눌러 글을 연 상태 */
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
-	const [userFolders, setUserFolders] = useState<string[]>(loadUserFolders);
+	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
+	const [organization, setOrganization] = useState<Organization>(loadOrganization);
+	/** 끌고 있는 글이나 폴더 */
+	const [dragging, setDragging] = useState<DragItem | null>(null);
 
 	const setPane = (next: Pane) => {
 		setNav(PANES.indexOf(next) > PANES.indexOf(pane) ? 'forward' : 'back');
@@ -95,10 +112,12 @@ const Memo: React.FC = () => {
 			.catch(() => setStatus('error'));
 	}, []);
 
-	useEffect(() => saveUserFolders(userFolders), [userFolders]);
+	useEffect(() => saveOrganization(organization), [organization]);
 
-	const folders = useMemo(() => withUserFolders(buildFolderTree(posts), userFolders), [posts, userFolders]);
-	const visible = useMemo(() => filterPosts(posts, category, query), [posts, category, query]);
+	// 정리 내용을 겹친 글 (category가 지금 있는 폴더)
+	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
+	const folders = useMemo(() => buildFolderTree(organized, organization.folders), [organized, organization.folders]);
+	const visible = useMemo(() => filterPosts(organized, category, query), [organized, category, query]);
 	// 고른 글이 목록에 없으면(카테고리·검색으로 걸러지면) 목록의 첫 글을 보여준다
 	const selected = visible.find((post) => post.slug === selectedSlug) ?? visible[0] ?? null;
 	const toggleSidebar = () => setSidebarOpen((open) => !open);
@@ -108,6 +127,41 @@ const Memo: React.FC = () => {
 		setGalleryNoteOpen(false);
 		setPane('list');
 	};
+
+	// 끌어 놓기: 글은 다른 폴더로, 폴더는 다른 폴더 안(모든 글이면 맨 위)으로
+	const canDrop = (target: string) => {
+		if (!dragging) return false;
+		if (dragging.type === 'post') {
+			return target !== ALL_CATEGORY && organized.find((post) => post.slug === dragging.id)?.category !== target;
+		}
+		return canMoveFolder(dragging.id, target === ALL_CATEGORY ? '' : target);
+	};
+
+	const drop = (target: string) => {
+		if (!dragging) return;
+		if (dragging.type === 'post') setOrganization((prev) => movePost(prev, dragging.id, target));
+		else {
+			const parent = target === ALL_CATEGORY ? '' : target;
+			setOrganization((prev) => moveFolder(prev, dragging.id, parent));
+			// 고른 폴더를 옮겼으면 새 경로를 따라간다
+			const moved = `${parent ? `${parent}/` : ''}${dragging.id.split('/').at(-1)}`;
+			if (category === dragging.id || category.startsWith(`${dragging.id}/`)) {
+				setCategory(moved + category.slice(dragging.id.length));
+			}
+		}
+		setDragging(null);
+	};
+
+	/** 글 목록·갤러리 카드를 끌 때 */
+	const dragPost = (slug: string) => ({
+		draggable: true,
+		onDragStart: (event: React.DragEvent) => {
+			event.dataTransfer.effectAllowed = 'move';
+			event.dataTransfer.setData('text/plain', slug);
+			setDragging({ type: 'post', id: slug });
+		},
+		onDragEnd: () => setDragging(null),
+	});
 
 	const changeView = (next: View) => {
 		setView(next);
@@ -124,8 +178,8 @@ const Memo: React.FC = () => {
 		</>
 	);
 
-	const search = (
-		<label className="memo-search">
+	const searchBox = (className = '') => (
+		<label className={`memo-search ${className}`}>
 			<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
 			<input
 				type="search"
@@ -136,6 +190,9 @@ const Memo: React.FC = () => {
 			/>
 		</label>
 	);
+	// 검색 칸은 늘 창 오른쪽 위(도구 막대 끝)에 있다. 좁은 창에서는 도구 막대가 없으므로 목록 위에 둔다
+	const search = searchBox();
+	const compactSearch = searchBox('compact-only');
 
 	return (
 		<AppWindow title="메모" appName="memo" chrome="unified">
@@ -151,15 +208,18 @@ const Memo: React.FC = () => {
 						total={posts.length}
 						current={category}
 						onSelect={selectFolder}
-						existingNames={folders.map((node) => node.name)}
-						onAddFolder={(name) => {
-							setUserFolders((prev) => [...prev, name]);
-							selectFolder(name);
+						onAddFolder={(parent, name) => {
+							setOrganization((prev) => addFolder(prev, parent, name));
+							selectFolder(parent ? `${parent}/${name}` : name);
 						}}
-						onRemoveFolder={(name) => {
-							setUserFolders((prev) => prev.filter((folder) => folder !== name));
-							if (category === name) selectFolder(ALL_CATEGORY);
+						onRemoveFolder={(path) => {
+							setOrganization((prev) => removeFolder(prev, path));
+							if (category === path || category.startsWith(`${path}/`)) selectFolder(ALL_CATEGORY);
 						}}
+						dragging={dragging}
+						onDragFolder={setDragging}
+						canDrop={canDrop}
+						onDrop={drop}
 					/>
 
 					<section className="memo-list" aria-label="글 목록">
@@ -167,34 +227,37 @@ const Memo: React.FC = () => {
 							<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 							<ViewSwitch view={view} onChange={changeView} />
 						</div>
-						<button type="button" className="memo-back" onClick={() => setPane('folders')}>
-							<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
-						</button>
-						{search}
-						<ul>
-							{visible.map((post) => (
-								<li key={post.slug}>
-									<button
-										type="button"
-										className={`memo-item ${selected?.slug === post.slug ? 'active' : ''}`}
-										aria-current={selected?.slug === post.slug || undefined}
-										onClick={() => {
-											setSelectedSlug(post.slug);
-											setPane('reader');
-										}}
-									>
-										<strong>{post.title}</strong>
-										<span className="memo-item-meta">
-											<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
-										</span>
-										<span className="memo-item-folder">
-											<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
-										</span>
-									</button>
-								</li>
-							))}
-						</ul>
-						{empty}
+						<div className="memo-scroll">
+							<button type="button" className="memo-back" onClick={() => setPane('folders')}>
+								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
+							</button>
+							{compactSearch}
+							<ul>
+								{visible.map((post) => (
+									<li key={post.slug}>
+										<button
+											type="button"
+											className={`memo-item ${selected?.slug === post.slug ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
+											{...dragPost(post.slug)}
+											aria-current={selected?.slug === post.slug || undefined}
+											onClick={() => {
+												setSelectedSlug(post.slug);
+												setPane('reader');
+											}}
+										>
+											<strong>{post.title}</strong>
+											<span className="memo-item-meta">
+												<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
+											</span>
+											<span className="memo-item-folder">
+												<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
+											</span>
+										</button>
+									</li>
+								))}
+							</ul>
+							{empty}
+						</div>
 					</section>
 
 					{/* 갤러리는 갤러리로 볼 때만 그린다 (목록과 검색 칸·안내 문구가 겹치지 않게) */}
@@ -206,25 +269,28 @@ const Memo: React.FC = () => {
 								<h2 className="memo-toolbar-title">{folderName(category)}</h2>
 								{search}
 							</div>
-							<ul className="memo-cards">
-								{visible.map((post) => (
-									<li key={post.slug}>
-										<button
-											type="button"
-											className="memo-card"
-											onClick={() => {
-												setSelectedSlug(post.slug);
-												setGalleryNoteOpen(true);
-											}}
-										>
-											<CardPreview post={post} />
-											<strong>{post.title}</strong>
-											<time dateTime={post.date}>{formatPostDate(post.date)}</time>
-										</button>
-									</li>
-								))}
-							</ul>
-							{empty}
+							<div className="memo-scroll">
+								<ul className="memo-cards">
+									{visible.map((post) => (
+										<li key={post.slug}>
+											<button
+												type="button"
+												className={`memo-card ${dragging?.id === post.slug ? 'dragging' : ''}`}
+												{...dragPost(post.slug)}
+												onClick={() => {
+													setSelectedSlug(post.slug);
+													setGalleryNoteOpen(true);
+												}}
+											>
+												<CardPreview post={post} />
+												<strong>{post.title}</strong>
+												<time dateTime={post.date}>{formatPostDate(post.date)}</time>
+											</button>
+										</li>
+									))}
+								</ul>
+								{empty}
+							</div>
 						</section>
 					)}
 
@@ -243,25 +309,33 @@ const Memo: React.FC = () => {
 									</button>
 								</>
 							)}
+							<span className="memo-toolbar-spacer" />
+							{search}
 						</div>
-						<button type="button" className="memo-back" onClick={() => setPane('list')}>
-							<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
-						</button>
-						{selected && (
-							// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
-							<div key={selected.slug} className="memo-reader-body">
-								<p className="memo-reader-date">
-									<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> ·{' '}
-									{folderLabel(selected.category)}
-								</p>
-								<h1>{selected.title}</h1>
-								<div className="memo-markdown">
-									<ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
-										{selected.body}
-									</ReactMarkdown>
+						<div className="memo-scroll">
+							<button type="button" className="memo-back" onClick={() => setPane('list')}>
+								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
+							</button>
+							{selected && (
+								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
+								<div key={selected.slug} className="memo-reader-body">
+									<p className="memo-reader-date">
+										<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> ·{' '}
+										{folderLabel(selected.category)}
+									</p>
+									<h1>{selected.title}</h1>
+									<div className="memo-markdown">
+										<ReactMarkdown
+											remarkPlugins={[remarkGfm]}
+											rehypePlugins={REHYPE_PLUGINS}
+											components={MARKDOWN_COMPONENTS}
+										>
+											{selected.body}
+										</ReactMarkdown>
+									</div>
 								</div>
-							</div>
-						)}
+							)}
+						</div>
 					</article>
 				</div>
 			</div>

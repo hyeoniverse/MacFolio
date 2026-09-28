@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { ALL_CATEGORY, type FolderNode } from '../posts';
-import { FOLDER_NAME_MAX, validateFolderName } from '../userFolders';
+import { FOLDER_NAME_MAX, validateFolderName } from '../organize';
 import { SidebarToggle } from './MemoToolbar';
+
+/** 끌고 있는 것: 글(slug) 또는 폴더(경로) */
+export type DragItem = { type: 'post'; id: string } | { type: 'folder'; id: string };
 
 interface Props {
 	open: boolean;
@@ -10,27 +13,68 @@ interface Props {
 	total: number;
 	current: string;
 	onSelect: (path: string) => void;
-	/** 방문자가 만든 폴더 이름 (같은 이름을 막는 데 쓴다) */
-	existingNames: string[];
-	onAddFolder: (name: string) => void;
-	onRemoveFolder: (name: string) => void;
+	/** 새 폴더를 이 폴더 아래에 만든다 ('' = 맨 위) */
+	onAddFolder: (parent: string, name: string) => void;
+	onRemoveFolder: (path: string) => void;
+	dragging: DragItem | null;
+	onDragFolder: (item: DragItem | null) => void;
+	/** 끌고 있는 것을 target 폴더에 놓을 수 있는지 (ALL_CATEGORY = 맨 위) */
+	canDrop: (target: string) => boolean;
+	onDrop: (target: string) => void;
 }
 
-/** 폴더 한 줄: 펼침 단추 + 폴더 (+ 방문자가 만든 폴더면 지우기) */
-const FolderRow: React.FC<{
+/** 폴더에 끌어 놓기. 놓을 수 있는 폴더에 올리면 강조한다 */
+function useDropTarget(path: string, { canDrop, onDrop, dragging }: Pick<Props, 'canDrop' | 'onDrop' | 'dragging'>) {
+	const [over, setOver] = useState(false);
+	const active = over && dragging !== null && canDrop(path);
+	return {
+		active,
+		handlers: {
+			onDragOver: (event: React.DragEvent) => {
+				if (!dragging || !canDrop(path)) return;
+				event.preventDefault();
+				event.dataTransfer.dropEffect = 'move';
+				setOver(true);
+			},
+			onDragLeave: () => setOver(false),
+			onDrop: (event: React.DragEvent) => {
+				event.preventDefault();
+				setOver(false);
+				if (dragging && canDrop(path)) onDrop(path);
+			},
+		},
+	};
+}
+
+type RowProps = Pick<
+	Props,
+	'current' | 'onSelect' | 'onRemoveFolder' | 'dragging' | 'onDragFolder' | 'canDrop' | 'onDrop'
+> & {
 	node: FolderNode;
 	depth: number;
-	current: string;
 	collapsed: Set<string>;
 	onToggle: (path: string) => void;
-	onSelect: (path: string) => void;
-	onRemove: (name: string) => void;
-}> = ({ node, depth, current, collapsed, onToggle, onSelect, onRemove }) => {
-	const open = !collapsed.has(node.path);
+	/** 새 폴더를 만드는 중인 부모 폴더 (null = 만드는 중 아님) */
+	addingUnder: string | null;
+	newFolderInput: React.ReactNode;
+};
+
+/** 폴더 한 줄: 펼침 단추 + 폴더 (+ 방문자가 만든 빈 폴더면 지우기). 끌어서 다른 폴더로 옮긴다 */
+const FolderRow: React.FC<RowProps> = (props) => {
+	const { node, depth, current, collapsed, onToggle, onSelect, onRemoveFolder, addingUnder, newFolderInput } = props;
+	const open = !collapsed.has(node.path) || addingUnder === node.path;
+	const drop = useDropTarget(node.path, props);
+	const hasChildren = node.children.length > 0;
+	const beingDragged = props.dragging?.type === 'folder' && props.dragging.id === node.path;
+
 	return (
 		<li>
-			<div className="memo-folder-row" style={{ paddingLeft: depth * 14 }}>
-				{node.children.length > 0 ? (
+			<div
+				className={`memo-folder-row ${drop.active ? 'drop-target' : ''} ${beingDragged ? 'dragging' : ''}`}
+				style={{ ['--depth' as string]: depth }}
+				{...drop.handlers}
+			>
+				{hasChildren ? (
 					<button
 						type="button"
 						className={`memo-disclosure ${open ? 'open' : ''}`}
@@ -47,38 +91,37 @@ const FolderRow: React.FC<{
 					type="button"
 					className={`memo-folder ${current === node.path ? 'active' : ''}`}
 					aria-current={current === node.path || undefined}
+					draggable
+					onDragStart={(event) => {
+						event.dataTransfer.effectAllowed = 'move';
+						event.dataTransfer.setData('text/plain', node.path);
+						props.onDragFolder({ type: 'folder', id: node.path });
+					}}
+					onDragEnd={() => props.onDragFolder(null)}
 					onClick={() => onSelect(node.path)}
 				>
 					<i className="fa-regular fa-folder" aria-hidden="true" />
 					<span className="memo-folder-name">{node.name}</span>
 					<span className="memo-count">{node.count}</span>
 				</button>
-				{node.custom && (
+				{node.custom && node.count === 0 && (
 					<button
 						type="button"
 						className="memo-folder-remove"
 						aria-label={`폴더 삭제 (${node.name})`}
 						title="폴더 삭제"
-						onClick={() => onRemove(node.name)}
+						onClick={() => onRemoveFolder(node.path)}
 					>
 						<i className="fa-solid fa-xmark" aria-hidden="true" />
 					</button>
 				)}
 			</div>
-			{open && node.children.length > 0 && (
+			{open && (hasChildren || addingUnder === node.path) && (
 				<ul>
 					{node.children.map((child) => (
-						<FolderRow
-							key={child.path}
-							node={child}
-							depth={depth + 1}
-							current={current}
-							collapsed={collapsed}
-							onToggle={onToggle}
-							onSelect={onSelect}
-							onRemove={onRemove}
-						/>
+						<FolderRow key={child.path} {...props} node={child} depth={depth + 1} />
 					))}
+					{addingUnder === node.path && newFolderInput}
 				</ul>
 			)}
 		</li>
@@ -87,22 +130,23 @@ const FolderRow: React.FC<{
 
 /** 새 폴더 이름 입력 줄. Enter로 만들고 Esc로 그만둔다 */
 const NewFolderInput: React.FC<{
-	existingNames: string[];
+	depth: number;
+	siblings: string[];
 	onAdd: (name: string) => void;
 	onCancel: () => void;
-}> = ({ existingNames, onAdd, onCancel }) => {
+}> = ({ depth, siblings, onAdd, onCancel }) => {
 	const [name, setName] = useState('');
 	const [error, setError] = useState<string | null>(null);
 
 	const submit = () => {
-		const problem = validateFolderName(name, existingNames);
+		const problem = validateFolderName(name, siblings);
 		if (problem) setError(problem);
 		else onAdd(name.trim());
 	};
 
 	return (
 		<li className="memo-new-folder">
-			<div className="memo-folder-row">
+			<div className="memo-folder-row" style={{ ['--depth' as string]: depth }}>
 				<span className="memo-disclosure" aria-hidden="true" />
 				<i className="fa-regular fa-folder" aria-hidden="true" />
 				<input
@@ -126,7 +170,7 @@ const NewFolderInput: React.FC<{
 				/>
 			</div>
 			{error && (
-				<p className="memo-folder-error" role="alert">
+				<p className="memo-folder-error" role="alert" style={{ ['--depth' as string]: depth }}>
 					{error}
 				</p>
 			)}
@@ -134,23 +178,27 @@ const NewFolderInput: React.FC<{
 	);
 };
 
+/** 트리에서 경로의 폴더를 찾는다 */
+const findNode = (nodes: FolderNode[], path: string): FolderNode | null => {
+	for (const node of nodes) {
+		if (node.path === path) return node;
+		const found = findNode(node.children, path);
+		if (found) return found;
+	}
+	return null;
+};
+
 /**
  * 폴더 사이드바 (창 안에 떠 있는 패널). 위쪽은 신호등 버튼 자리이고 오른쪽에 여닫기 버튼이 있다.
- * 아래의 '새로운 폴더'로 폴더를 만든다 (방문자의 폴더는 이 브라우저에만 저장된다).
+ * 폴더를 고른 채 '새로운 폴더'를 누르면 그 폴더 아래에 만든다. 폴더와 글은 끌어서 다른 폴더로 옮긴다.
+ * (방문자가 정리한 내용은 이 브라우저에만 저장된다)
  */
-const FolderSidebar: React.FC<Props> = ({
-	open,
-	onToggle,
-	folders,
-	total,
-	current,
-	onSelect,
-	existingNames,
-	onAddFolder,
-	onRemoveFolder,
-}) => {
+const FolderSidebar: React.FC<Props> = (props) => {
+	const { open, onToggle, folders, total, current, onSelect, onAddFolder } = props;
 	const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
-	const [adding, setAdding] = useState(false);
+	/** 새 폴더를 만드는 중인 부모 ('' = 맨 위, null = 만드는 중 아님) */
+	const [addingUnder, setAddingUnder] = useState<string | null>(null);
+	const rootDrop = useDropTarget(ALL_CATEGORY, props);
 
 	const toggleFolder = (path: string) =>
 		setCollapsed((prev) => {
@@ -159,6 +207,21 @@ const FolderSidebar: React.FC<Props> = ({
 			else next.add(path);
 			return next;
 		});
+
+	const parentNode = addingUnder ? findNode(folders, addingUnder) : null;
+	const newFolderInput =
+		addingUnder === null ? null : (
+			<NewFolderInput
+				key={addingUnder}
+				depth={addingUnder ? addingUnder.split('/').length : 0}
+				siblings={(parentNode ? parentNode.children : folders).map((node) => node.name)}
+				onAdd={(name) => {
+					onAddFolder(addingUnder, name);
+					setAddingUnder(null);
+				}}
+				onCancel={() => setAddingUnder(null)}
+			/>
+		);
 
 	return (
 		<nav className="memo-folders" aria-label="카테고리" inert={!open}>
@@ -171,7 +234,12 @@ const FolderSidebar: React.FC<Props> = ({
 				<h2>블로그</h2>
 				<ul>
 					<li>
-						<div className="memo-folder-row">
+						{/* 모든 글: 폴더를 여기에 놓으면 맨 위로 옮겨 간다 */}
+						<div
+							className={`memo-folder-row ${rootDrop.active ? 'drop-target' : ''}`}
+							style={{ ['--depth' as string]: 0 }}
+							{...rootDrop.handlers}
+						>
 							<span className="memo-disclosure" aria-hidden="true" />
 							<button
 								type="button"
@@ -188,29 +256,25 @@ const FolderSidebar: React.FC<Props> = ({
 					{folders.map((node) => (
 						<FolderRow
 							key={node.path}
+							{...props}
 							node={node}
 							depth={0}
-							current={current}
 							collapsed={collapsed}
 							onToggle={toggleFolder}
-							onSelect={onSelect}
-							onRemove={onRemoveFolder}
+							addingUnder={addingUnder}
+							newFolderInput={newFolderInput}
 						/>
 					))}
-					{adding && (
-						<NewFolderInput
-							existingNames={existingNames}
-							onAdd={(name) => {
-								onAddFolder(name);
-								setAdding(false);
-							}}
-							onCancel={() => setAdding(false)}
-						/>
-					)}
+					{addingUnder === '' && newFolderInput}
 				</ul>
 			</div>
 
-			<button type="button" className="memo-add-folder" onClick={() => setAdding(true)}>
+			<button
+				type="button"
+				className="memo-add-folder"
+				title={current === ALL_CATEGORY ? '새로운 폴더' : `'${current.split('/').at(-1)}' 안에 새로운 폴더`}
+				onClick={() => setAddingUnder(current === ALL_CATEGORY ? '' : current)}
+			>
 				<i className="fa-solid fa-circle-plus" aria-hidden="true" /> 새로운 폴더
 			</button>
 		</nav>
