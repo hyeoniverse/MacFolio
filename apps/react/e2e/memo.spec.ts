@@ -140,4 +140,30 @@ test.describe('메모 (블로그)', () => {
 		await gallery.getByRole('button', { name: '목록으로 보기' }).click();
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
 	});
+
+	test('새로운 폴더를 만들고 지운다 (이 브라우저에 남는다)', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+
+		await memo.getByRole('button', { name: '새로운 폴더' }).click();
+		const input = memo.getByRole('textbox', { name: '새로운 폴더 이름' });
+		await input.fill('개발기');
+		await input.press('Enter');
+		await expect(memo.getByRole('alert')).toHaveText('이미 있는 폴더예요.');
+
+		await input.fill('읽을거리');
+		await input.press('Enter');
+		const folder = folders.getByRole('button', { name: /^읽을거리/ });
+		await expect(folder).toHaveAttribute('aria-current', 'true');
+		await expect(memo.getByText('메모 없음')).toBeVisible();
+
+		// 새로고침해도 남는다
+		await enterDesktop(page);
+		await dockItem(page, 'memo').click();
+		await expect(folder).toBeVisible();
+
+		await folder.hover();
+		await folders.getByRole('button', { name: '폴더 삭제 (읽을거리)' }).click();
+		await expect(folder).toBeHidden();
+	});
 });

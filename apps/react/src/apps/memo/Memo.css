@@ -12,6 +12,9 @@
 	--memo-muted: #6b7280;
 	--memo-search-bg: #eceef1;
 	--memo-code-bg: #f3f4f6;
+	--memo-panel-bg: rgba(243, 244, 246, 0.9);
+	--memo-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.08);
+	--memo-danger: #ff3b30;
 }
 
 :root[data-theme='dark'] [data-app='memo'] {
@@ -25,18 +28,39 @@
 	--memo-muted: #98989d;
 	--memo-search-bg: #2f2f31;
 	--memo-code-bg: #2c2c2e;
+	--memo-panel-bg: rgba(44, 44, 46, 0.9);
+	--memo-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.35);
+	--memo-danger: #ff6961;
 }
 
+[data-app='memo'].container {
+	border-color: transparent;
+	background-color: var(--memo-bg);
+}
+
+/* 떠 있는 사이드바 · 글 목록 · 본문 (갤러리로 볼 때는 사이드바 · 갤러리) */
 .memo {
 	display: grid;
-	grid-template-columns: 11rem 16rem 1fr;
+	grid-template-columns: 13rem 17rem 1fr;
 	position: relative;
 	height: 100%;
-	transition: grid-template-columns var(--duration) var(--ease-out);
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font-size: 13px;
 	text-align: left;
+	transition: grid-template-columns var(--duration) var(--ease-out);
+}
+
+.memo.sidebar-closed {
+	grid-template-columns: 0 17rem 1fr;
+}
+
+.memo.view-gallery {
+	grid-template-columns: 13rem 1fr;
+}
+
+.memo.view-gallery.sidebar-closed {
+	grid-template-columns: 0 1fr;
 }
 
 .memo button {
@@ -49,31 +73,40 @@
 	list-style: none;
 }
 
-[data-app='memo'].container {
-	border-color: transparent;
-	background-color: var(--memo-bg);
+/* ─── 도구 막대: 신호등 버튼과 같은 높이(52px)에 버튼을 차례로 놓는다 ─── */
+.memo-toolbar {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: 8px;
+	height: 52px;
+	padding: 0 12px;
 }
 
-/* 사이드바 여닫기 버튼 (통합형 창의 끌기 영역보다 위).
-   macOS 메모처럼 사이드바가 열려 있으면 사이드바 오른쪽 끝, 닫으면 신호등 버튼 옆으로 옮겨 간다 */
-.memo-sidebar-toggle {
-	display: grid;
-	place-items: center;
-	position: absolute;
-	top: 13px;
-	left: calc(11rem - 40px);
-	transition: left var(--duration) var(--ease-out);
+/* 신호등 버튼 자리 (사이드바를 닫았을 때 도구 막대 앞, 사이드바 막대 앞) */
+.memo-lights-space {
+	flex: none;
+	width: 66px;
+}
+
+/* 도구 막대의 버튼. 통합형 창의 끌기 영역(z-index 3)보다 위에 있어야 눌린다 */
+.memo-tool {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	position: relative;
 	z-index: 4;
-	width: 30px;
-	height: 26px;
-	padding: 0;
+	min-width: 30px;
+	height: 28px;
+	padding: 0 7px;
 	border: none;
-	border-radius: 6px;
+	border-radius: 7px;
 	background: none;
 	color: var(--memo-muted) !important;
 }
 
-.memo-sidebar-toggle:hover {
+.memo-tool:hover {
 	background-color: var(--memo-hover);
 }
 
@@ -82,45 +115,102 @@
 	height: 15px;
 }
 
-/* 사이드바를 닫으면 폴더 칸이 접힌다 */
-.memo.sidebar-closed {
-	grid-template-columns: 0 16rem 1fr;
+.memo-view-switch {
+	display: flex;
+	position: relative;
+	z-index: 4;
+	padding: 2px;
+	border-radius: 8px;
+	background-color: var(--memo-search-bg);
 }
 
-.memo.sidebar-closed .memo-sidebar-toggle {
-	left: 92px;
+.memo-view-switch button {
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 24px;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: var(--memo-muted) !important;
+	font-size: 12px;
 }
 
-.memo.sidebar-closed .memo-folders {
-	padding-right: 0;
-	padding-left: 0;
-	border-right-color: transparent;
-	/* 접히는 애니메이션이 끝난 뒤 숨긴다 (잘려 보이기만 하는 게 아니라 실제로 숨는다) */
-	visibility: hidden;
-	transition: visibility 0s linear var(--duration);
+.memo-view-switch button[aria-pressed='true'] {
+	background-color: var(--memo-bg);
+	color: var(--memo-text) !important;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-/* 폴더 (카테고리). 위쪽은 신호등 버튼 자리 */
-.memo-folders {
+.memo-toolbar-title {
+	flex: 1;
 	min-width: 0;
-	padding: 52px 0.5rem 1rem;
-	overflow-x: hidden;
-	border-right: 1px solid var(--memo-border);
-	background-color: var(--memo-sidebar-bg);
+	margin-left: 4px;
+	overflow: hidden;
+	font-size: 15px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* ─── 폴더 사이드바: 창 안에 떠 있는 패널 ─── */
+.memo-folders {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	margin: 8px 0 8px 8px;
+	overflow: hidden;
+	border-radius: 16px;
+	background-color: var(--memo-panel-bg);
+	box-shadow: var(--memo-panel-shadow);
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+/* 사이드바를 닫으면 칸이 접히고, 애니메이션이 끝난 뒤 실제로 숨는다 */
+.memo.sidebar-closed .memo-folders {
+	margin-left: 0;
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		opacity var(--duration-fast) var(--ease-out),
+		visibility 0s linear var(--duration);
+}
+
+/* 사이드바 위쪽: 신호등 버튼 자리, 오른쪽 끝에 여닫기 버튼 (패널 위 8px + 36px → 가운데가 신호등과 같은 26px) */
+.memo-sidebar-bar {
+	display: flex;
+	flex: none;
+	align-items: center;
+	height: 36px;
+	padding-right: 6px;
+}
+
+.memo-sidebar-bar .memo-lights-space {
+	width: 60px;
+}
+
+.memo-sidebar-bar .memo-sidebar-toggle {
+	margin-left: auto;
+}
+
+.memo-folder-scroll {
+	flex: 1;
+	min-height: 0;
+	padding: 4px 8px 8px;
 	overflow-y: auto;
 }
 
 .memo-folders h2 {
-	margin: 0 0.5rem 0.75rem;
+	margin: 6px 6px 4px;
 	color: var(--memo-muted);
 	font-size: 11px;
 	font-weight: 600;
 }
 
-/* 폴더 트리: 펼침 단추 + 폴더 */
+/* 폴더 한 줄: 펼침 단추 + 폴더 (+ 지우기) */
 .memo-folder-row {
 	display: flex;
 	align-items: center;
+	position: relative;
 }
 
 .memo-disclosure {
@@ -128,7 +218,7 @@
 	flex: none;
 	place-items: center;
 	width: 16px;
-	height: 24px;
+	height: 28px;
 	padding: 0;
 	border: none;
 	background: none;
@@ -147,13 +237,12 @@
 .memo-folder {
 	display: flex;
 	flex: 1;
-	min-width: 0;
 	align-items: center;
-	gap: 0.5rem;
-	width: 100%;
-	padding: 0.4rem 0.6rem;
+	gap: 8px;
+	min-width: 0;
+	padding: 6px 8px;
 	border: none;
-	border-radius: 0.45rem;
+	border-radius: 7px;
 	background: none;
 	text-align: left;
 }
@@ -171,35 +260,107 @@
 	color: var(--memo-on-accent) !important;
 }
 
-.memo-folder.active i {
-	color: var(--memo-on-accent);
-}
-
-.memo-count {
-	margin-left: auto;
-	color: var(--memo-muted);
-	font-size: 12px;
-}
-
+.memo-folder.active i,
 .memo-folder.active .memo-count {
 	color: var(--memo-on-accent);
 }
 
-/* 글 목록 */
+.memo-folder-name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-count {
+	color: var(--memo-muted);
+	font-size: 12px;
+}
+
+/* 방문자가 만든 폴더: 마우스를 올리면 지우기 단추 (글 수 자리에) */
+.memo-folder-remove {
+	display: none;
+	place-items: center;
+	position: absolute;
+	right: 6px;
+	width: 20px;
+	height: 20px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--memo-hover);
+	color: var(--memo-muted) !important;
+	font-size: 10px;
+}
+
+.memo-folder-row:hover .memo-folder-remove,
+.memo-folder-remove:focus-visible {
+	display: grid;
+}
+
+.memo-folder-row:hover .memo-folder-remove + * {
+	visibility: hidden;
+}
+
+.memo-new-folder .memo-folder-row {
+	gap: 8px;
+	padding: 3px 8px 3px 0;
+}
+
+.memo-new-folder .memo-folder-row > i {
+	margin-left: 8px;
+	color: var(--memo-accent);
+}
+
+.memo-new-folder input {
+	flex: 1;
+	min-width: 0;
+	padding: 3px 6px;
+	border: 1px solid var(--memo-accent);
+	border-radius: 5px;
+	outline: none;
+	background-color: var(--memo-bg);
+	color: var(--memo-text);
+	font: inherit;
+}
+
+.memo-folder-error {
+	margin: 2px 8px 6px 40px;
+	color: var(--memo-danger);
+	font-size: 11px;
+}
+
+/* 사이드바 아래: 새로운 폴더 */
+.memo-add-folder {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: 7px;
+	margin: 4px 8px 8px;
+	padding: 6px 8px;
+	border: none;
+	border-radius: 7px;
+	background: none;
+	color: var(--memo-muted) !important;
+}
+
+.memo-add-folder:hover {
+	background-color: var(--memo-hover);
+}
+
+/* ─── 글 목록 ─── */
 .memo-list {
-	/* 위쪽은 도구 막대 자리 (사이드바를 닫으면 신호등 버튼과 여닫기 버튼이 여기 온다) */
-	position: relative;
-	padding-top: 44px;
-	border-right: 1px solid var(--memo-border);
-	background-color: var(--memo-list-bg);
+	min-width: 0;
 	overflow-y: auto;
+	border-right: 1px solid var(--memo-border);
+	background-color: var(--memo-bg);
 }
 
 .memo-search {
 	display: flex;
 	align-items: center;
 	gap: 0.4rem;
-	margin: 0.75rem;
+	margin: 0 12px 8px;
 	padding: 0.35rem 0.6rem;
 	border-radius: 0.5rem;
 	background-color: var(--memo-search-bg);
@@ -217,7 +378,7 @@
 }
 
 .memo-list ul {
-	padding: 0 0.5rem 0.5rem;
+	padding: 0 8px 8px;
 }
 
 .memo-item {
@@ -283,10 +444,20 @@
 	text-align: center;
 }
 
-/* 본문 */
+/* ─── 본문 ─── */
 .memo-reader {
-	padding: 52px 2rem 3rem;
+	min-width: 0;
+	padding: 0 2rem 3rem;
 	overflow-y: auto;
+}
+
+.memo-reader-toolbar {
+	margin: 0 -2rem;
+}
+
+/* 글을 바꾸면 본문이 살짝 떠오르며 나타난다 */
+.memo-reader-body {
+	animation: rise-in var(--duration) var(--ease-out);
 }
 
 .memo-reader-date {
@@ -463,85 +634,21 @@
 	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* ─── 보기 방식: 목록 / 갤러리 ─── */
-.memo-view-switch {
-	display: flex;
-	position: absolute;
-	top: 9px;
-	right: 10px;
-	/* 통합형 창의 끌기 영역보다 위 */
-	z-index: 4;
-	padding: 2px;
-	border-radius: 8px;
-	background-color: var(--memo-search-bg);
-}
-
-.memo-view-switch button {
-	display: grid;
-	place-items: center;
-	width: 30px;
-	height: 24px;
-	border: none;
-	border-radius: 6px;
-	background: none;
-	color: var(--memo-muted) !important;
-	font-size: 12px;
-}
-
-.memo-view-switch button[aria-pressed='true'] {
-	background-color: var(--memo-bg);
-	color: var(--memo-text) !important;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-}
-
-/* 갤러리: 폴더 사이드바 옆에 글을 카드로 늘어놓는다 */
-.memo-gallery,
-.memo-gallery-back {
-	display: none;
-}
-
-.memo.view-gallery {
-	grid-template-columns: 11rem 1fr;
-}
-
-.memo.view-gallery.sidebar-closed {
-	grid-template-columns: 0 1fr;
-}
-
+/* ─── 갤러리 ─── */
 .memo.view-gallery .memo-list,
 .memo.view-gallery:not(.gallery-note) .memo-reader,
 .memo.view-gallery.gallery-note .memo-gallery {
 	display: none;
 }
 
-.memo.view-gallery:not(.gallery-note) .memo-gallery {
-	display: block;
-	position: relative;
-	padding: 0 24px 24px;
+.memo-gallery {
+	min-width: 0;
+	padding-bottom: 24px;
 	overflow-y: auto;
 	animation: fade-in var(--duration) var(--ease-out);
 }
 
-/* 위쪽 도구 막대 자리: 폴더 이름, 검색, 보기 방식 */
-.memo-gallery-bar {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	height: 52px;
-	padding-right: 80px;
-}
-
-/* 사이드바를 닫으면 신호등 버튼과 여닫기 버튼이 막대 왼쪽에 온다 */
-.memo.sidebar-closed .memo-gallery-bar {
-	padding-left: 110px;
-}
-
-.memo-gallery-bar h2 {
-	flex: 1;
-	font-size: 17px;
-}
-
-.memo-gallery-bar .memo-search {
+.memo-gallery .memo-search {
 	width: 200px;
 	margin: 0;
 }
@@ -550,7 +657,7 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 	gap: 22px 18px;
-	margin-top: 8px;
+	padding: 8px 24px 0;
 }
 
 .memo-card {
@@ -630,36 +737,12 @@
 	font-size: 11px;
 }
 
-/* 갤러리에서 연 글: 위쪽 도구 막대에 갤러리로 돌아가기 */
+/* 갤러리에서 연 글 */
 .memo.view-gallery.gallery-note .memo-reader {
-	position: relative;
 	animation: rise-in var(--duration) var(--ease-out);
 }
 
-.memo.view-gallery.gallery-note .memo-gallery-back {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	position: absolute;
-	top: 13px;
-	left: 16px;
-	z-index: 4;
-	padding: 4px 8px;
-	border: none;
-	border-radius: 6px;
-	background: none;
-	color: var(--memo-muted) !important;
-}
-
-.memo.view-gallery.gallery-note .memo-gallery-back:hover {
-	background-color: var(--memo-hover);
-}
-
-.memo.view-gallery.gallery-note.sidebar-closed .memo-gallery-back {
-	left: 130px;
-}
-
-/* ─── 좁은 창: 폴더 → 목록 → 본문을 한 칸씩 ─── */
+/* ─── 좁은 창: 폴더 → 목록 → 본문을 한 칸씩 (iOS 메모처럼) ─── */
 .memo-shell {
 	container-type: inline-size;
 	height: 100%;
@@ -681,32 +764,45 @@
 	color: var(--memo-accent);
 }
 
-/* 글을 바꾸면 본문이 살짝 떠오르며 나타난다 */
-.memo-reader-body {
-	animation: rise-in var(--duration) var(--ease-out);
-}
-
 @container (max-width: 600px) {
 	.memo,
-	.memo.sidebar-closed {
-		grid-template-columns: 1fr;
-	}
-
-	/* 한 칸씩 보이므로 여닫기 버튼과 보기 방식은 쓰지 않는다 (늘 목록) */
-	.memo-sidebar-toggle,
-	.memo-view-switch,
-	.memo .memo-gallery,
-	.memo .memo-gallery-back {
-		display: none !important;
-	}
-
+	.memo.sidebar-closed,
 	.memo.view-gallery,
 	.memo.view-gallery.sidebar-closed {
 		grid-template-columns: 1fr;
 	}
 
-	.memo-folders {
+	/* 도구 막대(여닫기, 보기 방식)와 갤러리는 쓰지 않는다. 늘 목록 */
+	.memo .memo-toolbar,
+	.memo .memo-sidebar-bar,
+	.memo .memo-gallery {
+		display: none !important;
+	}
+
+	/* 사이드바는 떠 있는 패널 대신 한 화면 전체 */
+	.memo .memo-folders {
+		margin: 0;
+		border-radius: 0;
+		box-shadow: none;
+		background-color: var(--memo-sidebar-bg);
+		opacity: 1;
+		visibility: visible;
+	}
+
+	.memo-shell .memo > :is(.memo-folders, .memo-list, .memo-reader) {
+		display: none;
+		border-right: none;
+		/* 신호등 버튼 자리 */
 		padding-top: 44px;
+	}
+
+	.memo-shell .memo.pane-folders .memo-folders {
+		display: flex;
+	}
+
+	.memo-shell .memo.pane-list .memo-list,
+	.memo-shell .memo.pane-reader .memo-reader {
+		display: block;
 	}
 
 	/* 한 칸씩 넘길 때 iOS처럼 옆에서 들어온다 */
@@ -718,34 +814,22 @@
 		animation: nav-back var(--duration) var(--ease-out);
 	}
 
-	/* 좁은 화면에서는 칸 전체가 들어오므로 본문 떠오르기는 뺀다 */
-	.memo-reader-body {
-		animation: none;
-	}
-
-	.memo-folders,
-	.memo-list,
-	.memo-reader {
-		display: none;
-		border-right: none;
-	}
-
-	.memo.pane-folders .memo-folders,
-	.memo.pane-list .memo-list,
-	.memo.pane-reader .memo-reader {
-		display: block;
-	}
-
 	.memo-back {
 		display: flex;
 	}
 
 	.memo-reader {
-		padding: 0 1.25rem 3rem;
+		padding-right: 1.25rem;
+		padding-left: 1.25rem;
 	}
 
 	.memo-reader .memo-back {
 		margin: 0.75rem 0 1rem;
+	}
+
+	/* 좁은 화면에서는 칸 전체가 들어오므로 본문 떠오르기는 뺀다 */
+	.memo-reader-body {
+		animation: none;
 	}
 
 	.memo-folder,
@@ -770,10 +854,12 @@
 }
 
 /* 모바일: 신호등 버튼이 없으므로 위쪽 자리를 비우지 않는다 */
-.container.mobile .memo-list {
-	padding-top: 0;
-}
+@container (max-width: 600px) {
+	.container.mobile .memo-shell .memo > :is(.memo-folders, .memo-list, .memo-reader) {
+		padding-top: 0;
+	}
 
-.container.mobile .memo-folders {
-	padding-top: 0.75rem;
+	.container.mobile .memo-folder-scroll {
+		padding-top: 12px;
+	}
 }

@@ -71,6 +71,8 @@ export interface FolderNode {
 	/** 하위 폴더의 글까지 센 수 */
 	count: number;
 	children: FolderNode[];
+	/** 방문자가 만든 폴더 (이 브라우저에만 있다) */
+	custom?: boolean;
 }
 
 /** 글이 그 폴더(또는 하위 폴더)에 있는지 */
