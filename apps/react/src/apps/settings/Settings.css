@@ -1,0 +1,120 @@
+.settings {
+	display: flex;
+	height: 100%;
+	text-align: left;
+}
+
+.settings-sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	width: 11rem;
+	padding: 0.75rem 0.5rem;
+	border-right: 1px solid var(--color-divider);
+	background-color: var(--color-sidebar-bg);
+}
+
+.settings-nav-item {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.45rem 0.6rem;
+	border: none;
+	border-radius: 0.4rem;
+	background: none;
+	color: var(--color-text);
+	font-size: 0.9rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.settings-nav-item i {
+	width: 1rem;
+	color: var(--color-text-secondary);
+}
+
+.settings-nav-item.active {
+	background-color: var(--color-accent);
+	color: var(--color-on-accent);
+}
+
+.settings-nav-item.active i {
+	color: var(--color-on-accent);
+}
+
+.settings-panel {
+	flex: 1;
+	padding: 1.25rem 1.5rem;
+	overflow-y: auto;
+}
+
+.settings-panel h2 {
+	margin-bottom: 1rem;
+	color: var(--color-text-strong);
+	font-size: 1.1rem;
+}
+
+.settings-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+.settings-hint {
+	margin-top: 1rem;
+	color: var(--color-text-secondary);
+	font-size: 0.8rem;
+}
+
+/* 화면 모드 선택 */
+.theme-option,
+.wallpaper-option {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-text);
+	font-size: 0.85rem;
+	cursor: pointer;
+}
+
+.theme-preview,
+.wallpaper-thumbnail {
+	display: block;
+	border: 3px solid transparent;
+	border-radius: 0.5rem;
+	box-shadow: 0 0 0 1px var(--color-divider);
+}
+
+.theme-option.selected .theme-preview,
+.wallpaper-option.selected .wallpaper-thumbnail {
+	border-color: var(--color-accent);
+}
+
+.theme-preview {
+	width: 5.5rem;
+	height: 3.5rem;
+}
+
+.theme-preview-light {
+	background: linear-gradient(#f2f2f7 0 25%, #ffffff 25%);
+}
+
+.theme-preview-dark {
+	background: linear-gradient(#2c2c2e 0 25%, #1e1e1e 25%);
+}
+
+.theme-preview-system {
+	background: linear-gradient(90deg, transparent 50%, #1e1e1e 50%), linear-gradient(#f2f2f7 0 25%, #ffffff 25%);
+}
+
+/* 배경화면 선택 */
+.wallpaper-thumbnail {
+	width: 8rem;
+	height: 5rem;
+	background-position: center;
+	background-size: cover;
+}
