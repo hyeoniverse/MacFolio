@@ -11,6 +11,7 @@ import {
 	folderName,
 	formatPostDate,
 	resolveImageSrc,
+	type FolderNode,
 	type Post,
 } from './posts';
 import {
@@ -119,6 +120,17 @@ const Memo: React.FC = () => {
 	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
 	const folders = useMemo(() => buildFolderTree(organized, organization.folders), [organized, organization.folders]);
 	const visible = useMemo(() => filterPosts(organized, category, query), [organized, category, query]);
+	// 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다)
+	const folderPaths = useMemo(() => {
+		const paths: string[] = [];
+		const walk = (nodes: FolderNode[]) =>
+			nodes.forEach((node) => {
+				paths.push(node.path);
+				walk(node.children);
+			});
+		walk(folders);
+		return paths;
+	}, [folders]);
 	// 고른 글이 목록에 없으면(카테고리·검색으로 걸러지면) 목록의 첫 글을 보여준다
 	const selected = visible.find((post) => post.slug === selectedSlug) ?? visible[0] ?? null;
 	const toggleSidebar = () => setSidebarOpen((open) => !open);
@@ -135,7 +147,7 @@ const Memo: React.FC = () => {
 		if (dragging.type === 'post') {
 			return target !== ALL_CATEGORY && organized.find((post) => post.slug === dragging.id)?.category !== target;
 		}
-		return canMoveFolder(dragging.id, target === ALL_CATEGORY ? '' : target);
+		return canMoveFolder(dragging.id, target === ALL_CATEGORY ? '' : target, folderPaths);
 	};
 
 	const drop = (target: string) => {
@@ -143,7 +155,7 @@ const Memo: React.FC = () => {
 		if (dragging.type === 'post') setOrganization((prev) => movePost(prev, dragging.id, target));
 		else {
 			const parent = target === ALL_CATEGORY ? '' : target;
-			setOrganization((prev) => moveFolder(prev, dragging.id, parent));
+			setOrganization((prev) => moveFolder(prev, dragging.id, parent, folderPaths));
 			// 고른 폴더를 옮겼으면 새 경로를 따라간다
 			const moved = `${parent ? `${parent}/` : ''}${dragging.id.split('/').at(-1)}`;
 			if (category === dragging.id || category.startsWith(`${dragging.id}/`)) {

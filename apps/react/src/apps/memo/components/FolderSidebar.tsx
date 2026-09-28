@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ALL_CATEGORY, type FolderNode } from '../posts';
-import { FOLDER_NAME_MAX, validateFolderName } from '../organize';
+import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
+
+const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
 import { SidebarToggle } from './MemoToolbar';
 
 /** 끌고 있는 것: 글(slug) 또는 폴더(경로) */
@@ -170,7 +172,13 @@ const FolderMenu: React.FC<{
 				removable ? undefined : node.custom ? '메모가 있는 폴더는 지울 수 없어요' : '블로그 글의 폴더는 지울 수 없어요'
 			)}
 			<hr />
-			{item('새로운 폴더', 'fa-solid fa-folder-plus', onAddChild)}
+			{item(
+				'새로운 폴더',
+				'fa-solid fa-folder-plus',
+				onAddChild,
+				!canAddFolder(node.path),
+				canAddFolder(node.path) ? undefined : DEPTH_LIMIT_HINT
+			)}
 		</div>,
 		document.body
 	);
@@ -330,6 +338,8 @@ const FolderSidebar: React.FC<Props> = (props) => {
 		});
 
 	const parentNode = addingUnder ? findNode(folders, addingUnder) : null;
+	/** 새로운 폴더를 만들 자리: 고른 폴더 안 (모든 글이면 맨 위) */
+	const parentOfNew = current === ALL_CATEGORY ? '' : current;
 	const newFolderInput =
 		addingUnder === null ? null : (
 			<li className="memo-new-folder">
@@ -357,8 +367,15 @@ const FolderSidebar: React.FC<Props> = (props) => {
 					type="button"
 					className="memo-tool memo-new-folder-button"
 					aria-label="새로운 폴더"
-					title={current === ALL_CATEGORY ? '새로운 폴더' : `'${current.split('/').at(-1)}' 안에 새로운 폴더`}
-					onClick={() => setAddingUnder(current === ALL_CATEGORY ? '' : current)}
+					disabled={!canAddFolder(parentOfNew)}
+					title={
+						!canAddFolder(parentOfNew)
+							? DEPTH_LIMIT_HINT
+							: parentOfNew
+								? `'${parentOfNew.split('/').at(-1)}' 안에 새로운 폴더`
+								: '새로운 폴더'
+					}
+					onClick={() => setAddingUnder(parentOfNew)}
 				>
 					<i className="fa-solid fa-folder-plus" aria-hidden="true" />
 				</button>

@@ -106,8 +106,13 @@
 	color: var(--memo-muted) !important;
 }
 
-.memo-tool:hover {
+.memo-tool:hover:not(:disabled) {
 	background-color: var(--memo-hover);
+}
+
+.memo-tool:disabled {
+	opacity: 0.35;
+	cursor: default !important;
 }
 
 .memo-sidebar-toggle svg {
