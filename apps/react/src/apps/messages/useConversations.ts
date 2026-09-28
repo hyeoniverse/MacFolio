@@ -13,6 +13,9 @@ function loadNickname(): string {
 	}
 }
 
+/** 새 방을 만드는 화면 (쓰기 버튼) */
+export const NEW_THREAD = 'new';
+
 export function useConversations() {
 	const repository = getConversationRepository();
 	const [threads, setThreads] = useState<Thread[]>([]);
@@ -25,6 +28,8 @@ export function useConversations() {
 	const [isChatOpen, setChatOpen] = useState(false);
 	/** 새 메시지 버튼을 누를 때마다 입력창에 커서를 둔다 */
 	const [focusRequest, setFocusRequest] = useState(0);
+	/** 새 메시지를 취소하면 돌아갈 방 */
+	const [previousId, setPreviousId] = useState<string>(PINNED_THREAD_ID);
 
 	const refreshThreads = useCallback(
 		() =>
@@ -43,6 +48,7 @@ export function useConversations() {
 	}, [refreshThreads]);
 
 	useEffect(() => {
+		if (selectedId === NEW_THREAD) return;
 		let cancelled = false;
 		repository.listMessages(selectedId).then((list) => !cancelled && setMessages(list));
 		return () => {
@@ -55,11 +61,20 @@ export function useConversations() {
 		setChatOpen(true);
 	}, []);
 
-	/** 새 메시지: 사이트 주인의 방명록을 열고 입력창에 커서를 둔다 */
+	const myThreadId = useMemo(() => threads.find((t) => t.mine)?.id ?? null, [threads]);
+
+	/** 쓰기 버튼: 내 방이 있으면 그 방을, 없으면 새 방을 만드는 화면을 연다 (한 사람당 방 하나) */
 	const compose = useCallback(() => {
-		select(PINNED_THREAD_ID);
+		if (myThreadId) select(myThreadId);
+		else {
+			if (selectedId !== NEW_THREAD) setPreviousId(selectedId);
+			select(NEW_THREAD);
+		}
 		setFocusRequest((n) => n + 1);
-	}, [select]);
+	}, [myThreadId, selectedId, select]);
+
+	/** 새 메시지를 그만두고 이전 방으로 돌아간다 */
+	const cancelNewThread = useCallback(() => setSelectedId(previousId), [previousId]);
 
 	/** 좁은 창에서 대화 목록으로 돌아간다 */
 	const back = useCallback(() => setChatOpen(false), []);
@@ -69,14 +84,22 @@ export function useConversations() {
 		async (text: string): Promise<InputErrors> => {
 			const { value, errors } = validateMessageInput({ nickname, password, text });
 			if (Object.keys(errors).length > 0) return errors;
-			const result = await repository.postMessage(selectedId, value);
-			if (result === 'not-found') return { text: '대화방을 찾을 수 없습니다.' };
+			if (selectedId === NEW_THREAD) {
+				const result = await repository.createThread(value);
+				// 다른 창에서 이미 방을 만들었다면 그 방에 이어서 쓴다
+				const threadId = 'thread' in result ? result.thread.id : result.existing.id;
+				if ('existing' in result) await repository.postMessage(threadId, value);
+				setSelectedId(threadId);
+			} else {
+				const result = await repository.postMessage(selectedId, value);
+				if (result === 'not-found') return { text: '대화방을 찾을 수 없습니다.' };
+				setMessages((prev) => [...prev, result]);
+			}
 			try {
 				localStorage.setItem(NICKNAME_KEY, value.nickname);
 			} catch {
 				// 저장하지 못해도 이번 방문 동안은 유지된다
 			}
-			setMessages((prev) => [...prev, result.message]);
 			await refreshThreads();
 			return {};
 		},
@@ -102,13 +125,15 @@ export function useConversations() {
 		status,
 		selectedId,
 		selectedThread,
-		messages,
+		messages: selectedId === NEW_THREAD ? [] : messages,
 		isChatOpen,
 		focusRequest,
+		isComposing: selectedId === NEW_THREAD,
 		identity: { nickname, password, setNickname, setPassword },
 		select,
 		back,
 		compose,
+		cancelNewThread,
 		send,
 		remove,
 	};

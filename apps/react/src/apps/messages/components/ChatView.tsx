@@ -7,7 +7,8 @@ import { buildTimeline, displayName, LIMITS, type InputErrors, type Message, typ
 import type { DeleteResult } from '../repository';
 
 interface Props {
-	thread: Thread;
+	/** null이면 새 방을 만드는 화면 */
+	thread: Thread | null;
 	messages: Message[];
 	identity: {
 		nickname: string;
@@ -18,6 +19,8 @@ interface Props {
 	focusRequest: number;
 	/** 좁은 창에서 대화 목록으로 돌아가기 */
 	onBack: () => void;
+	/** 새 메시지를 그만두기 */
+	onCancelNew: () => void;
 	onCompose: () => void;
 	onSend: (text: string) => Promise<InputErrors>;
 	onRemove: (messageId: string, password: string) => Promise<DeleteResult>;
@@ -45,6 +48,7 @@ const ChatView: React.FC<Props> = ({
 	identity,
 	focusRequest,
 	onBack,
+	onCancelNew,
 	onCompose,
 	onSend,
 	onRemove,
@@ -58,7 +62,17 @@ const ChatView: React.FC<Props> = ({
 	// 대화를 열거나 새 메시지가 생기면 맨 아래로
 	useEffect(() => {
 		listEnd.current?.scrollIntoView({ block: 'end' });
-	}, [thread.id, messages.length]);
+	}, [thread?.id, messages.length]);
+
+	// 새 메시지 화면은 Esc로 그만둔다 (팝업이 열려 있으면 팝업이 먼저 닫힌다)
+	useEffect(() => {
+		if (thread) return;
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape' && !document.querySelector('[role="dialog"]')) onCancelNew();
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [thread, onCancelNew]);
 
 	const openMenu = (event: React.MouseEvent, message: Message) => {
 		if (message.fromOwner) return;
@@ -68,7 +82,7 @@ const ChatView: React.FC<Props> = ({
 	};
 
 	return (
-		<section className="messages-chat" aria-label={`${thread.title}의 방명록`}>
+		<section className="messages-chat" aria-label={thread ? `${thread.title}의 방명록` : '새로운 메시지'}>
 			{/* 창 왼쪽 위에 떠 있는 버튼: 뒤로 가기(좁은 창에서만), 새 메시지 */}
 			<div className="messages-chat-toolbar">
 				<button type="button" className="messages-round-button messages-back" aria-label="대화 목록" onClick={onBack}>
@@ -85,15 +99,25 @@ const ChatView: React.FC<Props> = ({
 				</button>
 			</div>
 
-			<header className="messages-chat-header">
-				<Avatar name={thread.title} />
-				<span className="messages-name-pill">
-					{displayName(thread.title, thread.ipPrefix)}
-					{thread.mine && <span className="messages-me-badge">나</span>}
-					<i className="fa-solid fa-chevron-right" aria-hidden="true" />
-				</span>
-				<span className="messages-chat-subtitle">{subtitleOf(thread)}</span>
-			</header>
+			{thread ? (
+				<header className="messages-chat-header">
+					<Avatar name={thread.title} />
+					<span className="messages-name-pill">
+						{displayName(thread.title, thread.ipPrefix)}
+						{thread.mine && <span className="messages-me-badge">나</span>}
+						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
+					</span>
+					<span className="messages-chat-subtitle">{subtitleOf(thread)}</span>
+				</header>
+			) : (
+				<header className="messages-chat-header">
+					<span className="messages-name-pill">새로운 메시지</span>
+					<span className="messages-chat-subtitle">첫 메시지를 보내면 목록에 내 방명록이 생겨요</span>
+					<button type="button" className="messages-cancel" onClick={onCancelNew}>
+						취소
+					</button>
+				</header>
+			)}
 
 			<div className="messages-transcript" role="log" aria-live="polite">
 				{timeline.map((item) =>
