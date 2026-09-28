@@ -29,7 +29,7 @@ const Github: React.FC = () => {
 								<a href={PROFILE.github} target="_blank" rel="noopener noreferrer">
 									GitHub
 								</a>
-								<a href="mailto:codingkirby0@gmail.com">Email</a>
+								<a href={`mailto:${PROFILE.email}`}>Email</a>
 							</div>
 						</div>
 					</div>

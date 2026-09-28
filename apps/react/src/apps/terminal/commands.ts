@@ -124,8 +124,9 @@ export const COMMANDS: Record<string, Command> = {
 		run: () =>
 			output([
 				{ kind: 'link', label: PROFILE.github, href: PROFILE.github },
+				{ kind: 'link', label: PROFILE.email, href: `mailto:${PROFILE.email}` },
 				pair('감상·피드백', 'open messages'),
-				pair('메일', 'open mail'),
+				pair('메일 앱', 'open mail'),
 			]),
 	},
 	open: {

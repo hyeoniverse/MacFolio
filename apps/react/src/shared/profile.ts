@@ -7,6 +7,7 @@ export const PROFILE = {
 	school: '서울여자대학교',
 	location: 'Seoul, South Korea',
 	github: 'https://github.com/hyeoniverse',
+	email: 'hyeoniverse.dev@gmail.com',
 } as const;
 
 /** GitHub 프로필의 기술 배지 */

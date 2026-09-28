@@ -57,6 +57,14 @@ describe('runCommand', () => {
 		expect(texts(missing.lines).join('\n')).toContain('memo, messages, mail');
 	});
 
+	it('contact는 GitHub과 이메일 링크를 보여준다', () => {
+		const links = runCommand('contact', context).lines.filter((line) => line.kind === 'link');
+		expect(links.map((line) => line.kind === 'link' && line.href)).toEqual([
+			'https://github.com/hyeoniverse',
+			'mailto:hyeoniverse.dev@gmail.com',
+		]);
+	});
+
 	it('clear, exit은 효과만 돌려준다', () => {
 		expect(runCommand('clear', context)).toEqual({ lines: [], effects: [{ type: 'clear' }] });
 		expect(runCommand('exit', context).effects).toEqual([{ type: 'close' }]);

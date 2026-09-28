@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import '@/apps/mail/Mail.css'; // Mail 관련 스타일 추가
+import { PROFILE } from '@/shared/profile';
 
 const Mail: React.FC = () => {
 	// 메일 목록 데이터 (더미 데이터)
@@ -8,7 +9,7 @@ const Mail: React.FC = () => {
 		{
 			id: 1,
 			subject: 'Welcome!',
-			from: 'codingkirby0@gmail.com',
+			from: PROFILE.email,
 			content: 'Thank you for joining my site.\nI am looking for a job! Please contact me.',
 		},
 	];
@@ -37,7 +38,7 @@ const Mail: React.FC = () => {
 						))}
 					</ul>
 
-					<a className="mail-compose" href="mailto: codingkirby0@gmail.com">
+					<a className="mail-compose" href={`mailto:${PROFILE.email}`}>
 						<i className="fa-solid fa-paper-plane"></i>
 					</a>
 				</div>
