@@ -41,7 +41,7 @@
 	left: 50%;
 	width: 0.5rem;
 	height: 0.5rem;
-	background-color: rgba(0, 0, 0, 0.6);
+	background-color: var(--color-dock-indicator);
 	transition:
 		opacity 0.3s ease,
 		background-color 0.3s ease;

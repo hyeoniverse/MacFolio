@@ -1,0 +1,102 @@
+/* 색상 변수: 라이트 값은 기존 색 그대로, 다크 값은 styles/theme.css의 다크 톤에 맞춤 */
+[data-app='safari'] {
+	--safari-button-bg: #000000;
+	--safari-button-hover: #333333;
+	--safari-button-text: #ffffff;
+	--safari-card-bg: rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme='dark'] [data-app='safari'] {
+	--safari-button-bg: #f5f5f7;
+	--safari-button-hover: #d1d1d6;
+	--safari-button-text: #000000;
+	--safari-card-bg: rgba(44, 44, 46, 0.85);
+}
+
+/* Safari: 프로젝트 카드 (desktop/window/Window.css에서 이동) */
+.projects {
+	display: flex;
+	gap: 2rem;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin: 2rem;
+}
+
+.project {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	flex-direction: column;
+	padding: 1rem;
+	width: 300px;
+	height: 400px;
+	/* Set a fixed height for the entire project box */
+	background-color: var(--safari-card-bg);
+	transition: transform 0.3s ease;
+	backdrop-filter: blur(10px);
+	border-radius: 15px;
+	box-sizing: border-box;
+}
+
+.project:hover {
+	transform: translateY(-10px);
+}
+
+.img-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 15px;
+	overflow: hidden;
+	width: 100%;
+	height: 150px;
+	/* Set a fixed height for the image container */
+	border-radius: 15px;
+}
+
+.img-container img {
+	width: 100%;
+	height: 100%;
+	transition: transform 0.5s ease;
+	object-fit: cover;
+	border-radius: 15px;
+}
+
+.project:hover .img-container img {
+	transform: scale(1.05);
+}
+
+.project h2,
+.project span {
+	flex: none;
+	/* Remove flex-grow behavior */
+	margin-bottom: 0.5rem;
+	padding: 0 0.5rem 0 0.5rem;
+	width: 100%;
+	/* Ensure the text takes up the full width */
+	height: 2rem;
+	/* Set a fixed height */
+	line-height: 2rem;
+	/* Center text vertically */
+	text-align: left;
+}
+
+.project button {
+	margin-top: auto;
+	/* Push the button to the bottom */
+	padding: 0.8rem 2rem;
+	border: none;
+	width: 100%;
+	background-color: var(--safari-button-bg);
+	font-size: 1em;
+	color: var(--safari-button-text);
+	transition: background-color 0.3s ease;
+	cursor: pointer;
+	border-radius: 25px;
+}
+
+.project button:hover {
+	background-color: var(--safari-button-hover);
+}
+
+/* MacOS 윈도우 스타일의 상단바 */

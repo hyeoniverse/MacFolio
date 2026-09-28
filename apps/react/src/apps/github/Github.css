@@ -1,9 +1,32 @@
+/* 색상 변수: 라이트 값은 기존 색 그대로, 다크 값은 styles/theme.css의 다크 톤에 맞춤 */
+[data-app='github'] {
+	--github-badge-bg: #eaf5ff;
+	--github-bg: #ffffff;
+	--github-card-bg: #ffffff;
+	--github-card-border: #e1e4e8;
+	--github-link: #0366d6;
+	--github-text: #666666;
+	--github-text-muted: #586069;
+	--github-text-strong: #333333;
+}
+
+:root[data-theme='dark'] [data-app='github'] {
+	--github-badge-bg: #1f3a5f;
+	--github-bg: #1e1e1e;
+	--github-card-bg: #2c2c2e;
+	--github-card-border: #3a3a3c;
+	--github-link: #58a6ff;
+	--github-text: #98989d;
+	--github-text-muted: #8b949e;
+	--github-text-strong: #e5e5e7;
+}
+
 /* 전체 레이아웃 설정 */
 .github-layout {
 	display: flex;
 	width: 100%;
 	height: 100%;
-	background-color: #fff;
+	background-color: var(--github-bg);
 }
 
 /* 왼쪽 프로필 섹션 */
@@ -133,11 +156,11 @@
 	display: flex;
 	flex-direction: column;
 	padding: 1rem;
-	border: 1px solid #e1e4e8;
+	border: 1px solid var(--github-card-border);
 
 	box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 1);
 	width: 100%;
-	background-color: #ffffff;
+	background-color: var(--github-card-bg);
 	text-align: left;
 	white-space: normal;
 	word-break: break-all;
@@ -164,16 +187,16 @@
 .repo-card-header h3 {
 	margin: 0;
 	font-size: 1.2rem;
-	color: #0366d6;
+	color: var(--github-link);
 	/* white-space: nowrap; */
 }
 
 .repo-card-header .badge {
 	padding: 2px 6px;
-	background-color: #eaf5ff;
+	background-color: var(--github-badge-bg);
 	font-size: 0.75rem;
 	font-weight: bold;
-	color: #0366d6;
+	color: var(--github-link);
 	text-transform: uppercase;
 	/* white-space: nowrap; */
 	border-radius: 12px;
@@ -185,7 +208,7 @@
 	margin-top: 0.6rem;
 	margin-bottom: 1rem;
 	font-size: 0.9rem;
-	color: #586069;
+	color: var(--github-text-muted);
 	text-align: left;
 }
 
@@ -196,7 +219,7 @@
 	justify-content: flex-start;
 	margin-top: auto;
 	font-size: 0.85rem;
-	color: #586069;
+	color: var(--github-text-muted);
 }
 
 .repo-language {
@@ -216,7 +239,7 @@
 .repo-item {
 	padding: 1.5rem;
 	box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 1);
-	background-color: #ffffff;
+	background-color: var(--github-card-bg);
 	transition:
 		transform 0.2s,
 		box-shadow 0.2s;
@@ -231,13 +254,13 @@
 .repo-item h3 {
 	margin-bottom: 1rem;
 	font-size: 1.2rem;
-	color: #333;
+	color: var(--github-text-strong);
 }
 
 .repo-item p {
 	margin-bottom: 1rem;
 	font-size: 1rem;
-	color: #666;
+	color: var(--github-text);
 }
 
 /* 버튼 스타일 */

@@ -293,6 +293,8 @@
 }
 
 #player-controls {
+	/* 흰 버튼 위의 아이콘. 페이지 기본 글자색(다크 모드에서는 흰색)을 물려받지 않게 지정한다 */
+	color: #000;
 	display: flex;
 	align-items: center;
 	justify-content: center;
