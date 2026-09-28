@@ -1,0 +1,646 @@
+/* macOS 26 메시지 앱 색 */
+[data-app='messages'] {
+	--messages-window-bg: #ffffff;
+	--messages-panel-bg: #f6f6f6;
+	--messages-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 6px 18px rgba(0, 0, 0, 0.06);
+	--messages-search-bg: #ebebeb;
+	--messages-separator: #e1e1e3;
+	--messages-selected-bg: #e3e3e8;
+	--messages-text: #1d1d1f;
+	--messages-preview: #5f5f64;
+	--messages-meta: #8a8a8e;
+	/* 스크린샷의 문자(SMS·RCS) 초록. iMessage 파랑으로 바꾸려면 #0b84fe */
+	--messages-sent: #65c466;
+	--messages-sent-text: #ffffff;
+	--messages-received: #e9e9eb;
+	--messages-received-text: #1d1d1f;
+	--messages-avatar: linear-gradient(180deg, #aab2e5 0%, #8b93d0 100%);
+	--messages-float-bg: #ffffff;
+	--messages-float-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 2px 10px rgba(0, 0, 0, 0.1);
+	--messages-menu-bg: rgba(246, 246, 246, 0.92);
+	--messages-error: #d70015;
+}
+
+:root[data-theme='dark'] [data-app='messages'] {
+	--messages-window-bg: #1c1c1e;
+	--messages-panel-bg: #2a2a2c;
+	--messages-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 18px rgba(0, 0, 0, 0.35);
+	--messages-search-bg: #3a3a3c;
+	--messages-separator: #3a3a3c;
+	--messages-selected-bg: #3a3a3c;
+	--messages-text: #f5f5f7;
+	--messages-preview: #aeaeb2;
+	--messages-meta: #98989d;
+	--messages-sent: #34c759;
+	--messages-received: #3b3b3d;
+	--messages-received-text: #f5f5f7;
+	--messages-avatar: linear-gradient(180deg, #8f97cf 0%, #6c74b3 100%);
+	--messages-float-bg: #2c2c2e;
+	--messages-float-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.08), 0 2px 10px rgba(0, 0, 0, 0.4);
+	--messages-menu-bg: rgba(44, 44, 46, 0.92);
+	--messages-error: #ff6961;
+}
+
+[data-app='messages'].container {
+	border-color: transparent;
+	background-color: var(--messages-window-bg);
+}
+
+.messages {
+	container-type: inline-size;
+	display: flex;
+	gap: 8px;
+	height: 100%;
+	padding: 8px;
+	background-color: var(--messages-window-bg);
+	color: var(--messages-text);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-size: 13px;
+	text-align: left;
+}
+
+.messages button {
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+}
+
+/* 떠 있는 원형 버튼 (새 메시지, 뒤로 가기) */
+.messages-round-button {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--messages-float-bg);
+	box-shadow: var(--messages-float-shadow);
+	color: var(--messages-text) !important;
+	font-size: 15px !important;
+}
+
+.messages-avatar {
+	display: grid;
+	place-items: center;
+	flex: none;
+	border-radius: 50%;
+	background: var(--messages-avatar);
+	color: #ffffff;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	user-select: none;
+}
+
+.messages-me-badge {
+	margin-left: 0.35rem;
+	padding: 0 0.35rem;
+	border-radius: 0.5rem;
+	background-color: var(--messages-sent);
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 600;
+	vertical-align: 1px;
+}
+
+/* ─── 사이드바: 창 안에 떠 있는 둥근 패널 ─── */
+.messages-sidebar {
+	display: flex;
+	flex-direction: column;
+	flex: none;
+	width: 300px;
+	border-radius: 18px;
+	background-color: var(--messages-panel-bg);
+	box-shadow: var(--messages-panel-shadow);
+	overflow-y: auto;
+}
+
+/* 신호등 버튼 자리 */
+.messages-sidebar-top {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	min-height: 44px;
+	padding: 6px 10px 0;
+}
+
+/* 좁은 창에서만 보이는 새 메시지 버튼 */
+.messages-compose-compact {
+	position: relative;
+	z-index: 4;
+	display: none;
+}
+
+.messages-search {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	height: 36px;
+	margin: 4px 12px 8px;
+	padding: 0 14px;
+	border-radius: 18px;
+	background-color: var(--messages-search-bg);
+	color: var(--messages-meta);
+	font-size: 14px;
+}
+
+.messages-search input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	background: none;
+	color: var(--messages-text);
+	font: inherit;
+	outline: none;
+}
+
+/* 고정 대화: 큰 아바타 */
+.messages-pinned {
+	display: flex;
+	justify-content: center;
+	gap: 8px;
+	padding: 8px 12px 6px;
+	list-style: none;
+}
+
+.messages-pinned-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 12px;
+	border: none;
+	border-radius: 14px;
+	background: none;
+	color: var(--messages-meta) !important;
+	font-size: 12px !important;
+}
+
+.messages-pinned-item.selected {
+	background-color: var(--messages-selected-bg);
+	color: var(--messages-text) !important;
+}
+
+/* 대화 목록: 글자 시작점부터 들여 쓴 구분선 */
+.messages-threads {
+	padding: 0 8px 10px;
+	list-style: none;
+}
+
+.messages-thread {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	position: relative;
+	width: 100%;
+	padding: 10px 10px;
+	border: none;
+	border-radius: 12px;
+	background: none;
+	text-align: left;
+}
+
+.messages-threads li + li .messages-thread::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 62px;
+	right: 10px;
+	height: 1px;
+	background-color: var(--messages-separator);
+}
+
+.messages-thread.selected {
+	background-color: var(--messages-selected-bg);
+}
+
+.messages-thread.selected::before,
+.messages-threads li:has(.selected) + li .messages-thread::before {
+	display: none;
+}
+
+.messages-thread-text {
+	flex: 1;
+	min-width: 0;
+}
+
+.messages-thread-top {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 6px;
+}
+
+.messages-thread-top strong {
+	overflow: hidden;
+	color: var(--messages-text);
+	font-size: 14px;
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.messages-thread-top time {
+	flex: none;
+	color: var(--messages-meta);
+	font-size: 12px;
+}
+
+.messages-thread-preview {
+	display: -webkit-box;
+	overflow: hidden;
+	margin-top: 2px;
+	color: var(--messages-preview);
+	font-size: 13px;
+	line-height: 1.3;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.messages-empty {
+	padding: 24px 8px;
+	color: var(--messages-meta);
+	text-align: center;
+}
+
+/* ─── 대화 ─── */
+.messages-chat {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	position: relative;
+	min-width: 0;
+}
+
+.messages-chat-toolbar {
+	display: flex;
+	gap: 8px;
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	z-index: 4;
+}
+
+/* 넓은 창에서는 목록이 옆에 있으므로 뒤로 가기가 필요 없다 */
+.messages-back {
+	display: none !important;
+}
+
+.messages-chat-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 6px 60px 8px;
+}
+
+.messages-name-pill {
+	position: relative;
+	z-index: 4;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 5px 12px;
+	border-radius: 16px;
+	background-color: var(--messages-float-bg);
+	box-shadow: var(--messages-float-shadow);
+	color: var(--messages-text);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.messages-name-pill i {
+	color: var(--messages-meta);
+	font-size: 10px;
+}
+
+.messages-cancel {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 4;
+	padding: 5px 12px;
+	border: none;
+	border-radius: 16px;
+	background-color: var(--messages-float-bg);
+	box-shadow: var(--messages-float-shadow);
+	color: var(--messages-text) !important;
+	font-size: 13px !important;
+}
+
+.messages-chat-subtitle {
+	color: var(--messages-meta);
+	font-size: 11px;
+}
+
+.messages-transcript {
+	flex: 1;
+	padding: 4px 22px 12px;
+	overflow-y: auto;
+}
+
+.messages-time {
+	margin: 12px 0 8px;
+	color: var(--messages-meta);
+	font-size: 11px;
+	text-align: center;
+}
+
+.messages-time strong {
+	font-weight: 600;
+}
+
+/* 말풍선 */
+.messages-bubble-row {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	margin-bottom: 2px;
+}
+
+.messages-bubble-row.right {
+	align-items: flex-end;
+}
+
+.messages-bubble-row.left {
+	align-items: flex-start;
+}
+
+.messages-bubble-row.tail {
+	margin-bottom: 10px;
+}
+
+.messages-sender {
+	margin: 2px 14px 3px;
+	color: var(--messages-meta);
+	font-size: 11px;
+}
+
+.messages-bubble {
+	position: relative;
+	max-width: 70%;
+	padding: 7px 13px 8px;
+	border-radius: 19px;
+	font-size: 14px;
+	line-height: 1.35;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.messages-bubble-row.right .messages-bubble {
+	background-color: var(--messages-sent);
+	color: var(--messages-sent-text);
+}
+
+.messages-bubble-row.left .messages-bubble {
+	background-color: var(--messages-received);
+	color: var(--messages-received-text);
+}
+
+/* 꼬리: 말풍선 색으로 곡선을 그리고, 배경색으로 안쪽을 깎아낸다 */
+.messages-bubble-row.tail .messages-bubble::before,
+.messages-bubble-row.tail .messages-bubble::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	height: 20px;
+}
+
+.messages-bubble-row.right.tail .messages-bubble::before {
+	right: -7px;
+	width: 20px;
+	border-bottom-left-radius: 16px 14px;
+	background-color: var(--messages-sent);
+}
+
+.messages-bubble-row.right.tail .messages-bubble::after {
+	right: -26px;
+	width: 26px;
+	border-bottom-left-radius: 10px;
+	background-color: var(--messages-window-bg);
+}
+
+.messages-bubble-row.left.tail .messages-bubble::before {
+	left: -7px;
+	width: 20px;
+	border-bottom-right-radius: 16px 14px;
+	background-color: var(--messages-received);
+}
+
+.messages-bubble-row.left.tail .messages-bubble::after {
+	left: -26px;
+	width: 26px;
+	border-bottom-right-radius: 10px;
+	background-color: var(--messages-window-bg);
+}
+
+.messages-receipt {
+	margin: 3px 4px 0 0;
+	color: var(--messages-meta);
+	font-size: 11px;
+}
+
+/* 키보드 사용자를 위한 삭제 버튼 (포커스될 때만 보인다. 마우스는 오른쪽 클릭 메뉴) */
+.messages-bubble-action {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	border: none;
+	background: none;
+}
+
+.messages-bubble-action:focus-visible {
+	position: static;
+	width: auto;
+	height: auto;
+	margin-top: 2px;
+	padding: 2px 8px;
+	clip-path: none;
+	border-radius: 6px;
+	background-color: var(--messages-search-bg);
+	color: var(--messages-meta);
+}
+
+/* 오른쪽 클릭 메뉴 */
+.messages-context-menu {
+	position: absolute;
+	z-index: 100;
+	min-width: 150px;
+	padding: 5px;
+	border: 0.5px solid rgba(0, 0, 0, 0.15);
+	border-radius: 10px;
+	background-color: var(--messages-menu-bg);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(20px);
+	list-style: none;
+}
+
+.messages-context-menu button {
+	width: 100%;
+	padding: 4px 10px;
+	border: none;
+	border-radius: 5px;
+	background: none;
+	color: var(--messages-text) !important;
+	text-align: left;
+}
+
+.messages-context-menu button:hover,
+.messages-context-menu button:focus-visible {
+	background-color: #0a84ff;
+	color: #ffffff !important;
+	outline: none;
+}
+
+/* ─── 입력 ─── */
+.messages-composer {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 6px 14px 10px;
+}
+
+.messages-identity {
+	display: flex;
+	gap: 8px;
+	padding: 0 4px;
+}
+
+.messages-identity input {
+	flex: 1;
+	min-width: 0;
+	padding: 4px 2px;
+	border: none;
+	border-bottom: 1px solid var(--messages-separator);
+	background: none;
+	color: var(--messages-text);
+	font: inherit;
+	font-size: 12px;
+	outline: none;
+}
+
+.messages-identity input:focus {
+	border-bottom-color: var(--messages-meta);
+}
+
+/* 떠 있는 알약 입력창 */
+.messages-field {
+	display: flex;
+	align-items: flex-end;
+	gap: 4px;
+	min-height: 36px;
+	padding: 4px 4px 4px 16px;
+	border-radius: 18px;
+	background-color: var(--messages-float-bg);
+	box-shadow: var(--messages-float-shadow);
+}
+
+.messages-field textarea {
+	flex: 1;
+	max-height: 7rem;
+	padding: 5px 0;
+	border: none;
+	background: none;
+	color: var(--messages-text);
+	font: inherit;
+	font-size: 14px;
+	line-height: 1.35;
+	outline: none;
+	resize: none;
+	field-sizing: content;
+}
+
+.messages-send {
+	display: grid;
+	place-items: center;
+	flex: none;
+	width: 28px;
+	height: 28px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--messages-sent);
+	color: #ffffff !important;
+	font-size: 13px !important;
+}
+
+.messages-send[hidden] {
+	display: none;
+}
+
+.messages-composer [aria-invalid='true'] {
+	border-bottom-color: var(--messages-error);
+}
+
+.messages-error {
+	padding: 0 6px;
+	color: var(--messages-error);
+	font-size: 12px;
+}
+
+/* 삭제 팝업 */
+.messages-delete-form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	max-width: 20rem;
+	font-size: 13px;
+	text-align: left;
+}
+
+.messages-delete-form input {
+	padding: 6px 10px;
+	border: 1px solid var(--messages-separator);
+	border-radius: 8px;
+	background-color: var(--messages-window-bg);
+	color: var(--messages-text);
+	font: inherit;
+}
+
+.messages-delete-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.messages-delete-actions button {
+	padding: 4px 14px;
+	border: none;
+	border-radius: 8px;
+	background-color: var(--messages-search-bg);
+	color: var(--messages-text);
+	font: inherit;
+	cursor: pointer;
+}
+
+.messages-delete-actions button.destructive {
+	background-color: var(--messages-error);
+	color: #ffffff;
+}
+
+/* ─── 좁은 창: 목록과 대화를 한 화면씩 ─── */
+@container (max-width: 640px) {
+	.messages-sidebar {
+		width: 100%;
+	}
+
+	.messages.chat-open .messages-sidebar,
+	.messages:not(.chat-open) .messages-chat {
+		display: none;
+	}
+
+	.messages-back,
+	.messages-compose-compact {
+		display: grid !important;
+	}
+
+	/* 목록 화면에서는 신호등 버튼 옆에 새 메시지 버튼 */
+	.messages-chat-toolbar .messages-round-button:not(.messages-back) {
+		display: none;
+	}
+
+	/* 대화 화면에서는 신호등 버튼 아래로 */
+	.messages-chat-toolbar {
+		top: 44px;
+	}
+}
