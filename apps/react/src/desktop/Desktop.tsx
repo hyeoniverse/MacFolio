@@ -6,7 +6,7 @@ import AppErrorBoundary from '@/desktop/window/AppErrorBoundary';
 
 import StatusBar from '@/desktop/status-bar/StatusBar';
 import Dock from '@/desktop/dock/Dock';
-import MobileHome from '@/desktop/mobile/MobileHome';
+import MobileShell from '@/desktop/mobile/MobileShell';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
 /**
@@ -42,7 +42,7 @@ const Desktop = () => {
 				<MusicProvider>
 					{isMobile ? (
 						<>
-							<MobileHome />
+							<MobileShell />
 							<OpenedApps />
 						</>
 					) : (

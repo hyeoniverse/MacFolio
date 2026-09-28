@@ -124,4 +124,74 @@ test.describe('모바일', () => {
 		await expect(terminal).toBeHidden();
 		await expect(page.locator('.mobile-home')).toBeVisible();
 	});
+
+	test('홈 화면의 음악 위젯을 누르면 음악 앱이 열린다', async ({ page }) => {
+		await enterHome(page);
+		const widget = page.locator('.mobile-home').getByRole('region', { name: '음악' });
+		await expect(widget).toBeVisible();
+		await expect(widget.getByRole('button', { name: '재생' })).toBeVisible();
+
+		await widget.locator('.music-widget-title').tap();
+		await expect(appWindow(page, 'music').locator('.now-playing')).toBeVisible();
+	});
+
+	test('상태 표시줄에 시간이 보이고, 앱 위에서도 남아 있다', async ({ page }) => {
+		await enterHome(page);
+		const statusBar = page.getByRole('button', { name: '제어 센터 열기' });
+		await expect(statusBar.locator('time')).toHaveText(/^\d{1,2}:\d{2}$/);
+
+		await homeApp(page, 'Safari').tap();
+		await expect(appWindow(page, 'safari')).toBeVisible();
+		await expect(statusBar).toBeVisible();
+		// 앱 내용은 상태 표시줄 아래에서 시작한다
+		const barBox = (await statusBar.boundingBox())!;
+		const navBox = (await appWindow(page, 'safari').locator('.mobile-navbar').boundingBox())!;
+		expect(navBox.y).toBeGreaterThanOrEqual(barBox.y + barBox.height - 1);
+	});
+
+	test('상태 표시줄을 누르면 제어 센터가 열리고, 빈 곳을 누르면 닫힌다', async ({ page }) => {
+		await enterHome(page);
+		await page.getByRole('button', { name: '제어 센터 열기' }).tap();
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+		await expect(controlCenter).toBeVisible();
+
+		const { height } = page.viewportSize()!;
+		await page.touchscreen.tap(20, height - 20);
+		await expect(controlCenter).toBeHidden();
+	});
+
+	test('상태 표시줄을 끌어내리면 제어 센터가 열린다', async ({ page }) => {
+		await enterHome(page);
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+
+		// 조금만 끌면 열리지 않는다
+		await page.mouse.move(200, 20);
+		await page.mouse.down();
+		await page.mouse.move(200, 40, { steps: 3 });
+		await page.mouse.up();
+		await expect(controlCenter).toBeHidden();
+
+		await page.mouse.move(200, 20);
+		await page.mouse.down();
+		await page.mouse.move(200, 250, { steps: 6 });
+		await page.mouse.up();
+		await expect(controlCenter).toBeVisible();
+	});
+
+	test('제어 센터에서 다크 모드를 바꾸고 앱을 연다', async ({ page }) => {
+		await enterHome(page);
+		await page.getByRole('button', { name: '제어 센터 열기' }).tap();
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+
+		const darkMode = controlCenter.getByRole('button', { name: '다크 모드' });
+		const before = await page.evaluate(() => document.documentElement.dataset.theme);
+		await darkMode.tap();
+		await expect
+			.poll(() => page.evaluate(() => document.documentElement.dataset.theme))
+			.toBe(before === 'dark' ? 'light' : 'dark');
+
+		await controlCenter.getByRole('button', { name: /연락하기/ }).tap();
+		await expect(controlCenter).toBeHidden();
+		await expect(appWindow(page, 'mail')).toBeVisible();
+	});
 });

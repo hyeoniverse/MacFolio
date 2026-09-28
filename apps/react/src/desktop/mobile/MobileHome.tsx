@@ -4,7 +4,7 @@ import '@/desktop/dock/Toast.css';
 import '@/desktop/mobile/MobileHome.css';
 import { APP_MANIFEST, APP_NAMES, type AppName } from '@/apps/manifest';
 import { WINDOW_APPS } from '@/apps/registry';
-import { useLaunchApp } from '@/desktop/useLaunchApp';
+import MusicWidget from '@/desktop/mobile/MusicWidget';
 import { env } from '@/shared/config/env';
 import { PROFILE } from '@/shared/profile';
 
@@ -31,9 +31,7 @@ const AppIcon = ({ name, showLabel, onLaunch }: { name: AppName; showLabel: bool
  * 좁은 화면에서 데스크톱(StatusBar·Dock) 대신 보여주는 iOS 홈 화면.
  * 앱을 누르면 화면을 가득 채워 열리고(AppWindow 모바일 모드), 홈 인디케이터로 돌아온다.
  */
-const MobileHome = () => {
-	const { launch } = useLaunchApp();
-
+const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	return (
 		<div className="mobile-home">
 			<ToastContainer position="top-center" autoClose={1200} hideProgressBar closeOnClick />
@@ -46,6 +44,8 @@ const MobileHome = () => {
 					<i className="fa-solid fa-location-dot" aria-hidden="true"></i> {PROFILE.location}
 				</p>
 			</section>
+
+			<MusicWidget className="mobile-music-widget" onOpen={() => launch('music')} />
 
 			<nav className="mobile-grid" aria-label="앱">
 				{GRID_APPS.map((name) => (
