@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface ModalProps {
 	title: string;
@@ -6,11 +6,24 @@ interface ModalProps {
 	children: React.ReactNode;
 }
 
-// TODO(#15): onClose를 받지만 아직 쓰지 않는다. 바깥 영역 클릭·Esc로 닫기 구현 필요
-const Modal: React.FC<ModalProps> = ({ title, children }) => {
+/** 바깥 영역을 클릭하거나 Esc를 누르면 닫힌다. */
+const Modal: React.FC<ModalProps> = ({ title, onClose, children }) => {
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') onClose();
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [onClose]);
+
 	return (
-		<div className="modal-overlay">
-			<div className="modal-content">
+		<div
+			className="modal-overlay"
+			onClick={(event) => {
+				if (event.target === event.currentTarget) onClose();
+			}}
+		>
+			<div className="modal-content" role="dialog" aria-modal="true" aria-label={title}>
 				<h3>
 					<strong>{title}</strong>
 				</h3>
