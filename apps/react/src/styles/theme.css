@@ -1,0 +1,80 @@
+/*
+ * 색상 토큰. 라이트 값은 기존 디자인의 색을 그대로 옮겼다.
+ * <html data-theme="dark">이면 다크 값을 쓴다 (shared/settings/settingsStore.ts가 설정).
+ */
+:root {
+	color-scheme: light;
+
+	/* 배경화면 (Settings에서 바꾼다) */
+	--wallpaper: url('/imgs/background.png');
+
+	/* 글자 */
+	--color-text: #333333;
+	--color-text-strong: #000000;
+	--color-text-secondary: #6e6e73;
+
+	/* 강조 */
+	--color-accent: #007aff;
+	--color-accent-hover: #005bb5;
+	--color-on-accent: #ffffff;
+
+	/* 창 */
+	--color-window-bg: #ffffff;
+	--color-window-border: #d6d6d6;
+	--color-titlebar-bg: #f2f2f7;
+	--color-sidebar-bg: #f5f5f7;
+	--color-selected-bg: #e5e5ea;
+	--color-divider: #e5e5ea;
+	--color-control-bg: #ffffff;
+	--shadow-window: 10px 10px 10px rgba(0, 0, 0, 0.5);
+
+	/* 팝업·알림 */
+	--color-popover-bg: #ffffff;
+	--color-popover-text: #111111;
+	--color-overlay: rgba(0, 0, 0, 0.5);
+	--shadow-popover: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+	/* 상단 메뉴바 */
+	--color-menubar-bg: rgba(245, 245, 247, 0.8);
+	--color-menubar-text: #000000;
+
+	/* Dock */
+	--color-dock-bg: rgba(255, 255, 255, 0.3);
+	--color-dock-divider: rgba(0, 0, 0, 0.1);
+	--color-dock-indicator: rgba(0, 0, 0, 0.6);
+	--color-launchpad-bg: rgba(255, 255, 255, 0.7);
+}
+
+:root[data-theme='dark'] {
+	color-scheme: dark;
+
+	--color-text: #e5e5e7;
+	--color-text-strong: #ffffff;
+	--color-text-secondary: #98989d;
+
+	--color-accent: #0a84ff;
+	--color-accent-hover: #409cff;
+	--color-on-accent: #ffffff;
+
+	--color-window-bg: #1e1e1e;
+	--color-window-border: #3a3a3c;
+	--color-titlebar-bg: #2c2c2e;
+	--color-sidebar-bg: #252527;
+	--color-selected-bg: #3a3a3c;
+	--color-divider: #38383a;
+	--color-control-bg: #2c2c2e;
+	--shadow-window: 10px 10px 20px rgba(0, 0, 0, 0.7);
+
+	--color-popover-bg: #2c2c2e;
+	--color-popover-text: #f5f5f7;
+	--color-overlay: rgba(0, 0, 0, 0.6);
+	--shadow-popover: 0 4px 14px rgba(0, 0, 0, 0.6);
+
+	--color-menubar-bg: rgba(30, 30, 32, 0.7);
+	--color-menubar-text: #ffffff;
+
+	--color-dock-bg: rgba(40, 40, 42, 0.45);
+	--color-dock-divider: rgba(255, 255, 255, 0.15);
+	--color-dock-indicator: rgba(255, 255, 255, 0.75);
+	--color-launchpad-bg: rgba(40, 40, 42, 0.75);
+}
