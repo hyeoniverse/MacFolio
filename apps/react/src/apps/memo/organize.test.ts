@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	addFolder,
+	canAddFolder,
 	canMoveFolder,
 	EMPTY_ORGANIZATION,
 	moveFolder,
@@ -97,5 +98,25 @@ describe('폴더 이름 바꾸기', () => {
 
 	it('같은 이름이면 그대로', () => {
 		expect(renameFolder(EMPTY_ORGANIZATION, '개발기', ' 개발기 ')).toBe(EMPTY_ORGANIZATION);
+	});
+});
+
+describe('폴더는 3단까지', () => {
+	it('3단 폴더 안에는 새 폴더를 만들 수 없다', () => {
+		expect(canAddFolder('')).toBe(true);
+		expect(canAddFolder('a/b')).toBe(true);
+		expect(canAddFolder('a/b/c')).toBe(false);
+		expect(addFolder(EMPTY_ORGANIZATION, 'a/b/c', 'd')).toBe(EMPTY_ORGANIZATION);
+	});
+
+	it('옮긴 뒤 하위 폴더까지 3단을 넘으면 옮길 수 없다', () => {
+		const all = ['x', 'x/y', 'p', 'p/q', 'r'];
+		// x(2단 높이)를 p 안으로: p/x/y → 3단 (가능)
+		expect(canMoveFolder('x', 'p', all)).toBe(true);
+		// x를 p/q 안으로: p/q/x/y → 4단 (불가)
+		expect(canMoveFolder('x', 'p/q', all)).toBe(false);
+		// 하위 폴더가 없는 r은 p/q 안으로 (3단) 가능
+		expect(canMoveFolder('r', 'p/q', all)).toBe(true);
+		expect(moveFolder(EMPTY_ORGANIZATION, 'x', 'p/q', all)).toBe(EMPTY_ORGANIZATION);
 	});
 });

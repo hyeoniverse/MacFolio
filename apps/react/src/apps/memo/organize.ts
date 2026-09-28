@@ -7,6 +7,8 @@ export const ORGANIZATION_KEY = 'macfolio:memo:organization';
 /** 예전(폴더 이름 목록만 저장하던) 키 */
 const LEGACY_FOLDERS_KEY = 'macfolio:memo:folders';
 export const FOLDER_NAME_MAX = 30;
+/** 폴더는 3단까지 (예: 개발기/MacFolio/초안) */
+export const MAX_FOLDER_DEPTH = 3;
 
 export interface Organization {
 	/** 방문자가 만든 폴더의 전체 경로 (예: 읽을거리, 개발기/읽을거리) */
@@ -50,15 +52,36 @@ export function organizePosts(posts: Post[], organization: Organization): Post[]
 	});
 }
 
-/** 폴더를 parent 아래로 옮길 수 있는지. 자기 자신이나 자기 아래로는 못 옮기고, 이미 그 자리면 의미가 없다 */
-export function canMoveFolder(from: string, parent: string): boolean {
+/** 폴더의 단 (맨 위 폴더가 1단, '' = 0) */
+export const folderDepth = (path: string) => (path ? path.split('/').length : 0);
+
+/** parent 안에 새 폴더를 만들 수 있는지 (3단까지) */
+export const canAddFolder = (parent: string) => folderDepth(parent) < MAX_FOLDER_DEPTH;
+
+/**
+ * 폴더를 parent 아래로 옮길 수 있는지.
+ * 자기 자신이나 자기 아래로는 못 옮기고, 이미 그 자리면 의미가 없고, 옮긴 뒤 하위 폴더까지 3단을 넘으면 안 된다.
+ * @param allFolders 지금 있는 모든 폴더 경로 (옮길 폴더의 하위 폴더 깊이를 잰다)
+ */
+export function canMoveFolder(from: string, parent: string, allFolders: string[] = []): boolean {
 	if (parent === from || parent.startsWith(`${from}/`)) return false;
-	return parentOf(from) !== parent;
+	if (parentOf(from) === parent) return false;
+	// 옮길 폴더 자신을 포함한 높이 (하위 폴더가 없으면 1)
+	const height = Math.max(
+		1,
+		...allFolders.filter((path) => path.startsWith(`${from}/`)).map((path) => folderDepth(path) - folderDepth(from) + 1)
+	);
+	return folderDepth(parent) + height <= MAX_FOLDER_DEPTH;
 }
 
 /** 폴더를 parent 아래로 옮긴다 (parent가 ''이면 맨 위로). 안의 글과 하위 폴더도 함께 옮겨 간다 */
-export function moveFolder(organization: Organization, from: string, parent: string): Organization {
-	if (!canMoveFolder(from, parent)) return organization;
+export function moveFolder(
+	organization: Organization,
+	from: string,
+	parent: string,
+	allFolders: string[] = []
+): Organization {
+	if (!canMoveFolder(from, parent, allFolders)) return organization;
 	return relocate(organization, from, join(parent, lastName(from)));
 }
 
@@ -84,6 +107,7 @@ export function movePost(organization: Organization, slug: string, folder: strin
 
 /** 폴더를 만든다 (parent가 ''이면 맨 위) */
 export function addFolder(organization: Organization, parent: string, name: string): Organization {
+	if (!canAddFolder(parent)) return organization;
 	return { ...organization, folders: [...organization.folders, join(parent, name.trim())] };
 }
 

@@ -262,4 +262,32 @@ test.describe('메모 (블로그)', () => {
 		await expect(heading).toContainText('모든 글');
 		await expect(heading).toContainText('2개의 메모');
 	});
+
+	test('폴더는 3단까지만 만들고 옮길 수 있다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		const newFolder = memo.getByRole('button', { name: '새로운 폴더', exact: true });
+
+		// 개발기(1단) / MacFolio(2단) / 초안(3단)
+		await folders.getByRole('button', { name: /^MacFolio/ }).click();
+		await newFolder.click();
+		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('초안');
+		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
+
+		// 3단 폴더를 고르면 그 안에는 만들 수 없다
+		await expect(folders.getByRole('button', { name: /^초안/ })).toHaveAttribute('aria-current', 'true');
+		await expect(newFolder).toBeDisabled();
+		await folders.getByRole('button', { name: '폴더 동작 (초안)' }).click();
+		await expect(page.getByRole('menuitem', { name: '새로운 폴더' })).toBeDisabled();
+		await page.keyboard.press('Escape');
+
+		// 3단 높이의 개발기를 다른 폴더 안으로는 옮길 수 없다
+		await folders.getByRole('button', { name: /^모든 글/ }).click();
+		await newFolder.click();
+		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('보관');
+		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
+		await folders.getByRole('button', { name: /^개발기/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
+		await expect(folders.getByRole('button', { name: /^보관/ })).toContainText('0');
+		await expect(folders.getByRole('button', { name: /^개발기/ })).toBeVisible();
+	});
 });
