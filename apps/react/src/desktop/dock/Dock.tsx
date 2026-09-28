@@ -3,9 +3,6 @@ import DockItem from '@/desktop/dock/DockItem';
 import '@/desktop/dock/Dock.css';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import '@/desktop/dock/Toast.css';
 import { env } from '@/shared/config/env';
 import { APP_MANIFEST, DOCK_APPS, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
@@ -44,16 +41,6 @@ const Dock: React.FC = () => {
 
 	return (
 		<div>
-			<ToastContainer
-				position="top-right"
-				autoClose={1200}
-				hideProgressBar={true}
-				newestOnTop={false}
-				closeOnClick
-				pauseOnFocusLoss
-				draggable
-				pauseOnHover
-			/>
 			<div className="dock">
 				<div className="dock-left">
 					{DOCK_APPS.map(

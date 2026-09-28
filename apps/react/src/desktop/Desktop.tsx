@@ -7,6 +7,7 @@ import AppErrorBoundary from '@/desktop/window/AppErrorBoundary';
 import StatusBar from '@/desktop/status-bar/StatusBar';
 import Dock from '@/desktop/dock/Dock';
 import MobileShell from '@/desktop/mobile/MobileShell';
+import Notifications from '@/desktop/notifications/Notifications';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
 /**
@@ -52,6 +53,7 @@ const Desktop = () => {
 							<Dock />
 						</>
 					)}
+					<Notifications />
 				</MusicProvider>
 			</AppStateProvider>
 		</div>

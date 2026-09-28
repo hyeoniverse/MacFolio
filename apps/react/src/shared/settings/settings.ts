@@ -24,12 +24,14 @@ export const MAC_WALLPAPERS = [
 	{ id: 'tahoe', name: 'Tahoe', light: 'tahoe-light', dark: 'tahoe-dark' },
 ] as const satisfies readonly Wallpaper[];
 
-/** iOS 26 기본 배경화면 (모바일 홈 화면) */
+/** 역대 iOS 기본 배경화면 (모바일 홈 화면). 버전마다 분위기가 다른 것으로 골랐다 */
 export const IOS_WALLPAPERS = [
-	{ id: 'sky', name: 'Sky', light: 'ios-sky-light', dark: 'ios-sky-dark' },
-	{ id: 'shadow', name: 'Shadow', light: 'ios-shadow-light', dark: 'ios-shadow-dark' },
-	{ id: 'halo', name: 'Halo', light: 'ios-halo-light', dark: 'ios-halo-dark' },
-	{ id: 'dusk', name: 'Dusk', light: 'ios-dusk-light', dark: 'ios-dusk-dark' },
+	{ id: 'celosia', name: 'iOS 27', light: 'ios-celosia-light', dark: 'ios-celosia-dark' },
+	{ id: 'sky', name: 'iOS 26', light: 'ios-sky-light', dark: 'ios-sky-dark' },
+	{ id: 'ios18', name: 'iOS 18', light: 'ios-18-light', dark: 'ios-18-dark' },
+	{ id: 'kaleidoscope', name: 'iOS 17', light: 'ios-kaleidoscope-light', dark: 'ios-kaleidoscope-dark' },
+	{ id: 'earth', name: 'iOS 16', light: 'ios-earth' },
+	{ id: 'ios14', name: 'iOS 14', light: 'ios-14-light', dark: 'ios-14-dark' },
 ] as const satisfies readonly Wallpaper[];
 
 export type WallpaperId = (typeof MAC_WALLPAPERS)[number]['id'];
