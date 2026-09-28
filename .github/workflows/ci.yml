@@ -43,6 +43,9 @@ jobs:
       - name: 타입 체크
         run: pnpm typecheck
 
+      - name: 단위 테스트
+        run: pnpm test
+
       - name: 빌드
         run: pnpm build
 

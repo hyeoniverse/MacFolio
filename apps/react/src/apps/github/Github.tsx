@@ -1,5 +1,4 @@
 import React from 'react';
-import { useAppState } from '@/desktop/AppStateContext';
 
 import AppWindow from '@/desktop/window/Window';
 import Profile from '@/apps/github/GithubProfile'; // 프로필 컴포넌트
@@ -67,14 +66,6 @@ const featuredRepos: Repository[] = [
 ];
 
 const Github: React.FC = () => {
-	const { apps } = useAppState();
-	const memoAppState = apps['github'];
-	const isRunning = memoAppState.isRunning;
-	const isMinimized = memoAppState.isMinimized;
-
-	// 앱이 실행 중이 아닌 경우나 최소화된 경우에는 렌더링하지 않음
-	if (!isRunning || isMinimized) return null;
-
 	return (
 		<AppWindow title="GitHub" appName="github">
 			<div className="github-layout">

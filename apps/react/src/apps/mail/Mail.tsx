@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
-import { useAppState } from '@/desktop/AppStateContext';
 import '@/apps/mail/Mail.css'; // Mail 관련 스타일 추가
 
 const Mail: React.FC = () => {
-	// useAppState로 앱 상태 관리
-	const { apps } = useAppState();
-
-	// Mail 앱의 실행 상태 및 최소화 상태 가져오기
-	const isRunning = apps.mail.isRunning;
-	const isMinimized = apps.mail.isMinimized;
-
 	// 메일 목록 데이터 (더미 데이터)
 	const mails = [
 		{
@@ -26,9 +18,6 @@ const Mail: React.FC = () => {
 
 	// 선택한 메일을 상세 보기에서 보여줌
 	const mailDetails = selectedMail !== null ? mails.find((mail) => mail.id === selectedMail) : null;
-
-	// 앱이 실행 중이지 않거나 최소화된 경우에는 렌더링하지 않음
-	if (!isRunning || isMinimized) return null;
 
 	return (
 		<AppWindow title="Mail" appName="mail" appStyle={{ overflow: 'hidden' }}>
