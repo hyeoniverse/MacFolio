@@ -9,7 +9,6 @@ export const APP_NAMES = [
 	'messages',
 	'memo',
 	'github',
-	'blog',
 	'notion',
 	'mail',
 	'share',
@@ -40,9 +39,8 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	safari: { icon: 'safari.png', inDock: true, runningAtStart: true },
 	photos: { icon: 'photos.png', inDock: true },
 	messages: { icon: 'messages.png', inDock: true, windowSize: { width: 860, height: 560 } },
-	memo: { icon: 'memo.png', inDock: true },
+	memo: { icon: 'memo.png', inDock: true, windowSize: { width: 900, height: 600 } },
 	github: { icon: 'github.png', inDock: true },
-	blog: { icon: 'blog.png', inDock: true },
 	notion: {
 		icon: 'notion.png',
 		inDock: true,

@@ -85,27 +85,30 @@ test.describe('창', () => {
 });
 
 test.describe('팝업', () => {
-	async function openPasswordModal(page: Page) {
+	/** 메시지 앱에서 글을 쓰고 삭제 팝업을 연다 */
+	async function openDeleteDialog(page: Page) {
 		await enterDesktop(page);
-		await dockItem(page, 'memo').click();
-		const memo = appWindow(page, 'memo');
-		await memo.locator('button:has(svg[class*="pen"])').click();
-		await memo.locator('.create-memo-title').fill('제목');
-		await memo.locator('.create-memo-content').fill('내용');
-		await memo.locator('button:has(.fa-check)').click();
-		const dialog = page.getByRole('dialog', { name: '비밀번호 입력' });
+		await dockItem(page, 'messages').click();
+		const messages = appWindow(page, 'messages');
+		await messages.getByLabel('이름').fill('민수');
+		await messages.getByLabel('비밀번호', { exact: true }).fill('pw1234');
+		await messages.getByRole('textbox', { name: '메시지' }).fill('팝업 확인용');
+		await messages.getByRole('textbox', { name: '메시지' }).press('Enter');
+		await messages.locator('.messages-bubble', { hasText: '팝업 확인용' }).click({ button: 'right' });
+		await messages.getByRole('menuitem', { name: '삭제…' }).click();
+		const dialog = page.getByRole('dialog', { name: '메시지 삭제' });
 		await expect(dialog).toBeVisible();
 		return dialog;
 	}
 
 	test('Esc로 닫힌다', async ({ page }) => {
-		const dialog = await openPasswordModal(page);
+		const dialog = await openDeleteDialog(page);
 		await page.keyboard.press('Escape');
 		await expect(dialog).toBeHidden();
 	});
 
 	test('바깥 영역을 클릭하면 닫힌다', async ({ page }) => {
-		const dialog = await openPasswordModal(page);
+		const dialog = await openDeleteDialog(page);
 		await page.locator('.modal-overlay').click({ position: { x: 5, y: 5 } });
 		await expect(dialog).toBeHidden();
 	});
