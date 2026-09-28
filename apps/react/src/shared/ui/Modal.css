@@ -1,0 +1,37 @@
+/* 공용 팝업 (Modal.tsx). 앱별 모양은 각 앱 CSS에서 [data-app] 범위로 덧붙인다 */
+.modal-overlay {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 1000;
+	width: 100%;
+	height: 100%;
+	background: var(--color-overlay);
+	transform: translate(-50%, -50%);
+}
+
+.modal-content {
+	display: grid;
+	gap: 0.5rem;
+	align-items: center;
+
+	justify-content: space-between;
+	flex-direction: column;
+	padding: 1.5rem;
+	box-shadow:
+		0 4px 8px rgba(0, 0, 0, 0.4),
+		inset 0 2px 4px rgba(0, 0, 0, 0.3);
+	z-index: 1001;
+
+	width: fit-content;
+	height: fit-content;
+
+	background: var(--color-popover-bg);
+	color: var(--color-text);
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr auto auto auto;
+	border-radius: 1rem;
+}
