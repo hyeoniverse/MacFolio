@@ -15,6 +15,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	const mp3Url = env.sfxUrl;
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const startLoading = () => {
@@ -33,8 +34,15 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 							audioRef.current?.pause();
 							// 렌더링 사이클이 끝난 후 onLoadingComplete 호출 및 커스텀 이벤트 디스패치
 							setTimeout(() => {
-								onLoadingComplete();
 								window.dispatchEvent(new Event('startMusic'));
+								// 검은 화면이 서서히 걷히며 데스크톱이 나타난다
+								const fade = containerRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
+									duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450,
+									easing: 'ease-out',
+									fill: 'forwards',
+								});
+								if (fade) fade.onfinish = onLoadingComplete;
+								else onLoadingComplete();
 							}, 0);
 							return 100;
 						}
@@ -54,7 +62,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	}, [mp3Url, onLoadingComplete]);
 
 	return (
-		<div className="loading-container">
+		<div ref={containerRef} className="loading-container">
 			<i className="fa-brands fa-apple loading-icon" />
 			{!isInteractedRef.current ? (
 				<p className="loading-text">{startLabel}</p>

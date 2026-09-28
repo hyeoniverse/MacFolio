@@ -106,20 +106,28 @@ const Shortcuts: React.FC = () => {
 	const runOpenEffects = useOpenEffects();
 	// 누른 단축어를 쌓는다 (프로젝트 → 프로젝트 자세히)
 	const [stack, setStack] = useState<Page[]>([]);
+	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
 	const page = stack.at(-1);
 
 	const run = (next: Page) => {
 		const { effects } = runCommand(next.command, context());
 		runOpenEffects(effects);
+		setNav('forward');
 		setStack((prev) => [...prev, next]);
+	};
+
+	const pop = () => {
+		setNav('back');
+		setStack((prev) => prev.slice(0, -1));
 	};
 
 	return (
 		<AppWindow title="단축어" appName="terminal">
-			<div className="shortcuts">
+			{/* 화면이 바뀔 때마다 새로 그려서 옆에서 들어오는 애니메이션이 돈다 */}
+			<div key={stack.length} className="shortcuts" data-nav={nav}>
 				{page ? (
 					<section className="shortcut-result" aria-label={page.title}>
-						<button type="button" className="shortcut-back" onClick={() => setStack((prev) => prev.slice(0, -1))}>
+						<button type="button" className="shortcut-back" onClick={pop}>
 							<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
 							{stack.length > 1 ? stack[stack.length - 2].title : '단축어'}
 						</button>

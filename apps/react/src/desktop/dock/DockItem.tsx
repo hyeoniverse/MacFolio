@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import '@/desktop/dock/DockItem.css';
 
 interface DockItemProps {
@@ -12,11 +12,31 @@ interface DockItemProps {
 }
 
 const DockItem: React.FC<DockItemProps> = ({ label, icon, isActive, isHidden, onClick, disableRadius = false }) => {
+	const iconRef = useRef<HTMLImageElement>(null);
+	const wasActive = useRef(isActive);
+
+	// 앱이 실행되면 macOS처럼 아이콘이 두 번 튄다 (처음부터 실행 중인 앱은 튀지 않는다)
+	useEffect(() => {
+		if (isActive && !wasActive.current && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			iconRef.current?.animate(
+				[
+					{ transform: 'translateY(0)' },
+					{ transform: 'translateY(-38%)', offset: 0.25 },
+					{ transform: 'translateY(0)', offset: 0.5 },
+					{ transform: 'translateY(-20%)', offset: 0.72 },
+					{ transform: 'translateY(0)' },
+				],
+				{ duration: 700, easing: 'ease-in-out' }
+			);
+		}
+		wasActive.current = isActive;
+	}, [isActive]);
+
 	if (isHidden) return null;
 
 	return (
 		<div className="dock-item" role="button" aria-label={label} title={label} onClick={onClick}>
-			<img src={icon} alt={label} style={{ borderRadius: disableRadius ? '0' : '1rem' }} />
+			<img ref={iconRef} src={icon} alt={label} style={{ borderRadius: disableRadius ? '0' : '1rem' }} />
 			{isActive && <div className="active-indicator"></div>}
 		</div>
 	);

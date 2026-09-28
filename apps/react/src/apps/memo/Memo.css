@@ -362,6 +362,11 @@
 	padding: 3rem;
 	background-color: rgba(0, 0, 0, 0.75);
 	cursor: zoom-out;
+	animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+.memo-lightbox img {
+	animation: pop-in var(--duration) var(--ease-spring);
 }
 
 .memo-lightbox img {
@@ -393,9 +398,28 @@
 	color: var(--memo-accent);
 }
 
+/* 글을 바꾸면 본문이 살짝 떠오르며 나타난다 */
+.memo-reader-body {
+	animation: rise-in var(--duration) var(--ease-out);
+}
+
 @container (max-width: 600px) {
 	.memo {
 		grid-template-columns: 1fr;
+	}
+
+	/* 한 칸씩 넘길 때 iOS처럼 옆에서 들어온다 */
+	.memo[data-nav='forward'] > :is(.memo-folders, .memo-list, .memo-reader) {
+		animation: nav-forward var(--duration) var(--ease-out);
+	}
+
+	.memo[data-nav='back'] > :is(.memo-folders, .memo-list, .memo-reader) {
+		animation: nav-back var(--duration) var(--ease-out);
+	}
+
+	/* 좁은 화면에서는 칸 전체가 들어오므로 본문 떠오르기는 뺀다 */
+	.memo-reader-body {
+		animation: none;
 	}
 
 	.memo-folders,

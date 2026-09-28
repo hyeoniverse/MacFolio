@@ -11,6 +11,7 @@
 	height: 100%;
 	background: var(--color-overlay);
 	transform: translate(-50%, -50%);
+	animation: fade-in var(--duration-fast) var(--ease-out);
 }
 
 .modal-content {
@@ -34,4 +35,5 @@
 	grid-template-columns: 1fr;
 	grid-template-rows: 1fr auto auto auto;
 	border-radius: 1rem;
+	animation: pop-in var(--duration) var(--ease-spring);
 }

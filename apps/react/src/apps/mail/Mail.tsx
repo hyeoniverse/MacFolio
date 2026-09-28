@@ -24,6 +24,8 @@ const Mail: React.FC = () => {
 	const [composing, setComposing] = useState(false);
 	// 좁은 창에서는 목록과 읽기(쓰기)를 한 화면씩 보여준다. 넓은 창에서는 쓰지 않는다.
 	const [detailOpen, setDetailOpen] = useState(false);
+	// 넘어간 방향 (처음에는 애니메이션 없음)
+	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
 	const selected = INBOX.find((mail) => mail.id === selectedId) ?? null;
 	const unread = INBOX.filter((mail) => !readIds.has(mail.id)).length;
 
@@ -32,22 +34,25 @@ const Mail: React.FC = () => {
 		setReadIds((prev) => new Set(prev).add(id));
 		setComposing(false);
 		setDetailOpen(true);
+		setNav('forward');
 	};
 
 	const compose = () => {
 		setComposing(true);
 		setDetailOpen(true);
+		setNav('forward');
 	};
 
 	const backToList = () => {
 		setComposing(false);
 		setDetailOpen(false);
+		setNav('back');
 	};
 
 	return (
 		<AppWindow title="메일" appName="mail" chrome="unified">
 			<div className="mail-shell">
-				<div className={`mail ${detailOpen ? 'detail-open' : ''}`}>
+				<div className={`mail ${detailOpen ? 'detail-open' : ''}`} data-nav={nav}>
 					<aside className="mail-sidebar" aria-label="메일상자">
 						<div className="mail-sidebar-top" />
 						<p className="mail-sidebar-heading">메일상자</p>
@@ -105,7 +110,7 @@ const Mail: React.FC = () => {
 						{composing ? (
 							<ComposeView onSend={(input) => getMailSender().send(input)} onCancel={backToList} />
 						) : selected ? (
-							<article aria-label={selected.subject}>
+							<article key={selected.id} className="mail-reader-article" aria-label={selected.subject}>
 								<header className="mail-reader-header">
 									<Monogram name={selected.fromName} />
 									<div>
