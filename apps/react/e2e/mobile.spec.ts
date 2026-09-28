@@ -27,6 +27,9 @@ test.describe('모바일', () => {
 		// 화면이 없는 앱(Finder, 사진, 휴지통)은 홈 화면에 두지 않는다
 		await expect(homeApp(page, 'Finder')).toHaveCount(0);
 		await expect(homeApp(page, '휴지통')).toHaveCount(0);
+		// 터미널은 모바일에서 '단축어'로 보인다
+		await expect(homeApp(page, '터미널')).toHaveCount(0);
+		await expect(homeApp(page, '단축어')).toBeVisible();
 	});
 
 	test('앱은 화면을 가득 채워 열리고, 홈 인디케이터로 돌아온다', async ({ page }) => {
@@ -55,7 +58,7 @@ test.describe('모바일', () => {
 
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {
 		await enterHome(page);
-		for (const label of ['Safari', 'GitHub', '메모', '메일', '메시지', '시스템 설정', '터미널', '음악']) {
+		for (const label of ['Safari', 'GitHub', '메모', '메일', '메시지', '시스템 설정', '단축어', '음악']) {
 			await homeApp(page, label).tap();
 			const content = page.locator('.container.mobile .content');
 			await expect(content).toBeVisible();
@@ -107,22 +110,6 @@ test.describe('모바일', () => {
 		await expect(music.locator('.now-playing')).toBeVisible();
 		await expect(music.getByRole('button', { name: '재생' })).toBeVisible();
 		await expect(page.locator('.music-player')).toHaveCount(0);
-	});
-
-	test('터미널의 open 명령으로 연 앱도 화면을 가득 채운다', async ({ page }) => {
-		await enterHome(page);
-		await homeApp(page, '터미널').tap();
-		const terminal = appWindow(page, 'terminal');
-		await terminal.locator('input').fill('open settings');
-		await terminal.locator('input').press('Enter');
-
-		const settings = appWindow(page, 'settings');
-		await expect(settings).toBeVisible();
-		await settings.getByRole('button', { name: '홈 화면으로' }).tap();
-		// 홈으로 가면 뒤에 있던 터미널도 함께 내려간다
-		await expect(settings).toBeHidden();
-		await expect(terminal).toBeHidden();
-		await expect(page.locator('.mobile-home')).toBeVisible();
 	});
 
 	test('홈 화면의 음악 위젯을 누르면 음악 앱이 열린다', async ({ page }) => {
@@ -193,5 +180,30 @@ test.describe('모바일', () => {
 		await controlCenter.getByRole('button', { name: /연락하기/ }).tap();
 		await expect(controlCenter).toBeHidden();
 		await expect(appWindow(page, 'mail')).toBeVisible();
+	});
+
+	test('단축어는 터미널 명령을 눌러서 실행한다', async ({ page }) => {
+		await enterHome(page);
+		await homeApp(page, '단축어').tap();
+		const shortcuts = appWindow(page, 'terminal');
+		await expect(shortcuts.getByRole('heading', { name: '단축어' })).toBeVisible();
+		// 명령어 입력 칸은 없다
+		await expect(shortcuts.getByRole('textbox')).toHaveCount(0);
+
+		// 프로젝트 → 프로젝트 자세히 → 뒤로
+		await shortcuts.getByRole('button', { name: /프로젝트/ }).tap();
+		const list = shortcuts.getByRole('region', { name: '프로젝트' });
+		await expect(list.getByText('$ projects')).toBeVisible();
+		const first = list.locator('.shortcut-item').first();
+		const name = (await first.locator('strong').textContent())!;
+		await first.tap();
+		await expect(shortcuts.getByRole('region', { name })).toContainText('저장소');
+		await shortcuts.getByRole('button', { name: '프로젝트' }).tap();
+		await shortcuts.getByRole('button', { name: '단축어' }).tap();
+
+		// 연락처의 "메시지 열기"는 메시지 앱을 연다
+		await shortcuts.getByRole('button', { name: /연락처/ }).tap();
+		await shortcuts.getByRole('button', { name: '메시지 열기' }).tap();
+		await expect(appWindow(page, 'messages')).toBeVisible();
 	});
 });

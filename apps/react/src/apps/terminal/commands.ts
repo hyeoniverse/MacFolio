@@ -20,6 +20,28 @@ export type Line =
 export type Effect =
 	{ type: 'clear' } | { type: 'open-app'; app: AppName } | { type: 'open-url'; url: string } | { type: 'close' };
 
+/** 화면에 그릴 묶음. 연속된 pair·item 줄은 한 묶음이 되어 한 격자(목록)로 그려진다. */
+export type Block =
+	| { type: 'pairs'; lines: Extract<Line, { kind: 'pair' }>[] }
+	| { type: 'items'; lines: Extract<Line, { kind: 'item' }>[] }
+	| { type: 'line'; line: Line };
+
+/** 연속된 pair·item 줄을 묶는다. 터미널(격자)과 모바일 단축어(목록)가 함께 쓴다 */
+export function toBlocks(lines: Line[]): Block[] {
+	const blocks: Block[] = [];
+	for (const line of lines) {
+		const last = blocks.at(-1);
+		if (line.kind === 'pair') {
+			if (last?.type === 'pairs') last.lines.push(line);
+			else blocks.push({ type: 'pairs', lines: [line] });
+		} else if (line.kind === 'item') {
+			if (last?.type === 'items') last.lines.push(line);
+			else blocks.push({ type: 'items', lines: [line] });
+		} else blocks.push({ type: 'line', line });
+	}
+	return blocks;
+}
+
 export interface CommandContext {
 	/** 이전에 입력한 명령 (오래된 것부터) */
 	history: string[];

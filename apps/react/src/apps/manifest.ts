@@ -32,6 +32,8 @@ export interface AppManifest {
 	squareIcon?: boolean;
 	/** 처음 열 때 창 크기. 없으면 화면 크기에 맞춘 기본값 (desktop/window/geometry.ts) */
 	windowSize?: { width: number; height: number };
+	/** 모바일에서 다른 이름·아이콘으로 보여줄 때 (휴대폰에 더 어울리는 앱으로 바꿔 보여준다) */
+	mobile?: { label: string; icon: string };
 	/** 창을 여는 대신 실행할 동작 */
 	action?: { type: 'link'; url: string } | { type: 'share' };
 }
@@ -56,7 +58,14 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	},
 	mail: { label: '메일', icon: 'mail.png', inDock: true, windowSize: { width: 900, height: 560 } },
 	share: { label: '공유', icon: 'share.png', inDock: true, action: { type: 'share' } },
-	terminal: { label: '터미널', icon: 'terminal.svg', inDock: true, windowSize: { width: 596, height: 420 } },
+	// 휴대폰 키보드로 명령어를 치기는 불편해서, 모바일에서는 같은 명령을 눌러서 실행하는 '단축어'로 보여준다
+	terminal: {
+		label: '터미널',
+		icon: 'terminal.svg',
+		inDock: true,
+		mobile: { label: '단축어', icon: 'shortcuts.svg' },
+		windowSize: { width: 596, height: 420 },
+	},
 	settings: { label: '시스템 설정', icon: 'settings.png', inDock: true },
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false },
 };

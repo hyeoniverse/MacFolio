@@ -227,12 +227,16 @@
 }
 
 .cc-grid {
+	/* iOS 제어 센터처럼 정사각형 칸 격자. 큰 모듈은 칸을 여러 개 차지한다 */
+	--cc-gap: 16px;
+	--cc-cell: calc((min(100vw - 44px, 380px) - 3 * var(--cc-gap)) / 4);
+	/* 여러 칸짜리 모듈의 모서리. 1칸짜리 버튼은 원, 음량 막대는 알약 모양 */
+	--cc-radius: calc(var(--cc-cell) * 0.4);
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-auto-rows: minmax(72px, auto);
-	gap: 14px;
-	max-width: 420px;
-	margin: 0 auto;
+	grid-template-columns: repeat(4, var(--cc-cell));
+	grid-auto-rows: var(--cc-cell);
+	gap: var(--cc-gap);
+	justify-content: center;
 	opacity: var(--cc-progress);
 	transform: translateY(calc((1 - var(--cc-progress)) * -48px)) scale(calc(0.94 + 0.06 * var(--cc-progress)));
 	transform-origin: top center;
@@ -252,8 +256,9 @@
 	align-items: center;
 	justify-content: center;
 	min-width: 0;
+	overflow: hidden;
 	border: none;
-	border-radius: 22px;
+	border-radius: var(--cc-radius);
 	background-color: rgba(255, 255, 255, 0.16);
 	color: inherit;
 	font: inherit;
@@ -266,34 +271,59 @@
 	filter: brightness(1.3);
 }
 
+/* 음악: 2×2 */
 .cc-music {
 	grid-column: span 2;
 	grid-row: span 2;
 	flex-direction: column;
 	align-items: stretch;
-	gap: 10px;
-	padding: 14px;
+	justify-content: space-between;
+	gap: 0;
+	/* 작은 휴대폰에서도 버튼이 잘리지 않도록 칸 크기에 맞춘다 */
+	padding: calc(var(--cc-cell) * 0.2);
+}
+
+.cc-music::before {
+	display: none;
 }
 
 .cc-music .music-widget-art {
-	width: 56px;
-	height: 56px;
+	width: calc(var(--cc-cell) * 0.6);
+	height: calc(var(--cc-cell) * 0.6);
 	border-radius: 10px;
+	box-shadow: none;
+}
+
+.cc-music .music-widget-status {
+	display: none;
+}
+
+.cc-music .music-widget-title {
+	font-size: 14px;
+}
+
+.cc-music .music-widget-album {
+	font-size: 12px;
+}
+
+.cc-music .music-widget-progress {
+	margin-top: 6px;
+}
+
+.cc-music .music-widget-controls {
+	margin-top: 2px;
 }
 
 .cc-music .music-widget-controls button {
-	width: 36px;
+	width: 32px;
+	height: 28px;
+	font-size: 16px;
 }
 
+/* 1칸짜리 버튼: 원 */
 .cc-toggle {
-	flex-direction: column;
-	gap: 6px;
-	aspect-ratio: 1;
-	font-size: 11px;
-}
-
-.cc-toggle i {
-	font-size: 22px;
+	border-radius: 50%;
+	font-size: calc(var(--cc-cell) * 0.3);
 }
 
 .cc-toggle.on {
@@ -301,14 +331,15 @@
 	color: #000;
 }
 
+/* 음량: 1×2 알약 */
 .cc-slider {
 	grid-row: span 2;
 	flex-direction: column;
 	justify-content: flex-end;
 	position: relative;
-	padding-bottom: 16px;
-	overflow: hidden;
-	font-size: 20px;
+	padding-bottom: calc(var(--cc-cell) * 0.3);
+	border-radius: calc(var(--cc-cell) / 2);
+	font-size: calc(var(--cc-cell) * 0.28);
 }
 
 .cc-slider-fill {
@@ -327,11 +358,12 @@
 	pointer-events: none;
 }
 
+/* 바로 가기: 3×1 */
 .cc-wide {
 	grid-column: span 3;
 	justify-content: flex-start;
-	gap: 14px;
-	padding: 0 18px;
+	gap: 12px;
+	padding: 0 calc(var(--cc-cell) * 0.2);
 	text-align: left;
 }
 
@@ -339,8 +371,8 @@
 	display: grid;
 	flex: none;
 	place-items: center;
-	width: 40px;
-	height: 40px;
+	width: calc(var(--cc-cell) * 0.56);
+	height: calc(var(--cc-cell) * 0.56);
 	border-radius: 50%;
 	background-color: #0a84ff;
 	font-size: 17px;
@@ -362,4 +394,14 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	opacity: 0.7;
+}
+
+/* 화면에는 보이지 않고 스크린 리더만 읽는 이름 */
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }

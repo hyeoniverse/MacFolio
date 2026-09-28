@@ -1,0 +1,203 @@
+/* 모바일 '단축어' (iOS 단축어 앱) */
+.shortcuts {
+	min-height: 100%;
+	padding: 8px 16px 32px;
+	background-color: var(--color-sidebar-bg, #f2f2f7);
+	color: var(--color-text);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	text-align: left;
+}
+
+.shortcuts h1 {
+	margin: 4px 4px 2px;
+	font-size: 30px;
+	font-weight: 700;
+}
+
+.shortcuts-intro {
+	margin: 0 4px 16px;
+	color: var(--color-text-secondary);
+	font-size: 14px;
+}
+
+.shortcuts button {
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* 타일: 2열 */
+.shortcut-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+	list-style: none;
+}
+
+.shortcut-tile {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%;
+	aspect-ratio: 1.6;
+	padding: 14px;
+	border: none;
+	border-radius: 20px;
+	color: #fff !important;
+	text-align: left;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+	transition: transform 0.15s ease;
+}
+
+.shortcut-tile:active {
+	transform: scale(0.96);
+}
+
+.shortcut-tile i {
+	font-size: 22px;
+}
+
+.shortcut-tile-title {
+	margin-top: auto;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.shortcut-tile-command {
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+/* 결과 화면 */
+.shortcut-back {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 6px;
+	padding: 6px 0;
+	border: none;
+	background: none;
+	color: var(--color-accent) !important;
+	font-size: 16px !important;
+}
+
+.shortcut-command {
+	margin: 0 4px 16px;
+	color: var(--color-text-secondary);
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 12px;
+}
+
+.shortcut-heading {
+	margin: 18px 16px 6px;
+	color: var(--color-text-secondary);
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+/* iOS 목록 (inset grouped) */
+.shortcut-group {
+	display: block;
+	margin-bottom: 16px;
+	overflow: hidden;
+	border-radius: 12px;
+	background-color: var(--color-window-bg);
+	list-style: none;
+}
+
+.shortcut-row {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	width: 100%;
+	padding: 11px 16px;
+	border: none;
+	background: none;
+	text-align: left;
+}
+
+.shortcut-row + .shortcut-row,
+.shortcut-group li + li .shortcut-row {
+	box-shadow: 0 -0.5px 0 0 var(--color-divider);
+}
+
+.shortcut-row dt {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.shortcut-row dd {
+	font-size: 16px;
+	overflow-wrap: anywhere;
+}
+
+.shortcut-row a,
+.shortcut-row dd button {
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-accent) !important;
+}
+
+a.shortcut-row {
+	color: var(--color-accent);
+	font-size: 16px;
+}
+
+.shortcut-item {
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+}
+
+.shortcut-item > span:first-child {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+}
+
+.shortcut-item strong {
+	font-size: 16px;
+	font-weight: 500;
+}
+
+.shortcut-item small {
+	color: var(--color-text-secondary);
+	font-size: 13px;
+}
+
+.shortcut-tag {
+	flex: none;
+	padding: 2px 8px;
+	border-radius: 10px;
+	background-color: var(--color-sidebar-bg, #f2f2f7);
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.shortcut-item i {
+	color: var(--color-text-secondary);
+	font-size: 13px;
+}
+
+.shortcut-text {
+	margin: 0 4px 12px;
+	font-size: 16px;
+}
+
+.shortcut-text.error {
+	color: #ff3b30;
+}
+
+/* 다크 모드: iOS처럼 배경보다 목록이 밝다 */
+:root[data-theme='dark'] .shortcuts {
+	background-color: var(--color-window-bg);
+}
+
+:root[data-theme='dark'] .shortcut-group {
+	background-color: var(--color-titlebar-bg);
+}

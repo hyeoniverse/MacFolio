@@ -18,7 +18,8 @@ const launchable = (name: AppName) =>
 const GRID_APPS = APP_NAMES.filter((name) => launchable(name) && !MOBILE_DOCK.includes(name));
 
 const AppIcon = ({ name, showLabel, onLaunch }: { name: AppName; showLabel: boolean; onLaunch: () => void }) => {
-	const { label, icon, squareIcon } = APP_MANIFEST[name];
+	const { squareIcon, mobile } = APP_MANIFEST[name];
+	const { label, icon } = mobile ?? APP_MANIFEST[name];
 	return (
 		<button type="button" className="mobile-app" aria-label={label} onClick={onLaunch}>
 			<img src={`${env.imageUrl}/${icon}`} alt="" className={squareIcon ? 'square' : undefined} draggable={false} />

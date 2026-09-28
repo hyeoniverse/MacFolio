@@ -125,19 +125,19 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 					onClick={() => settingsStore.setState({ theme: isDark ? 'light' : 'dark' })}
 				>
 					<i className="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
-					<span>다크 모드</span>
+					<span className="visually-hidden">다크 모드</span>
 				</button>
 				<button type="button" className="cc-tile cc-toggle" onClick={nextWallpaper}>
 					<i className="fa-solid fa-image" aria-hidden="true"></i>
-					<span>배경화면</span>
+					<span className="visually-hidden">배경화면</span>
 				</button>
 				<button type="button" className="cc-tile cc-toggle" onClick={() => launch('share')}>
 					<i className="fa-solid fa-link" aria-hidden="true"></i>
-					<span>링크 복사</span>
+					<span className="visually-hidden">링크 복사</span>
 				</button>
 				<a className="cc-tile cc-toggle" href={PROFILE.github} target="_blank" rel="noopener noreferrer">
 					<i className="fa-brands fa-github" aria-hidden="true"></i>
-					<span>GitHub</span>
+					<span className="visually-hidden">GitHub</span>
 				</a>
 
 				<VolumeSlider />
