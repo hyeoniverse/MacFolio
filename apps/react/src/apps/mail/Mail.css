@@ -1,23 +1,46 @@
+/* 색상 변수: 라이트 값은 기존 색 그대로, 다크 값은 styles/theme.css의 다크 톤에 맞춤 */
+[data-app='mail'] {
+	--mail-bg: #f7f7f7;
+	--mail-border: #dddddd;
+	--mail-border-subtle: #eeeeee;
+	--mail-selected-bg: #eeeeee;
+	--mail-surface: #ffffff;
+	--mail-text: #555555;
+	--mail-text-muted: #888888;
+	--mail-text-strong: #333333;
+}
+
+:root[data-theme='dark'] [data-app='mail'] {
+	--mail-bg: #1a1a1c;
+	--mail-border: #38383a;
+	--mail-border-subtle: #2c2c2e;
+	--mail-selected-bg: #3a3a3c;
+	--mail-surface: #1e1e1e;
+	--mail-text: #c7c7cc;
+	--mail-text-muted: #98989d;
+	--mail-text-strong: #e5e5e7;
+}
+
 .mail-app {
 	display: flex;
 	height: 100%;
 	width: 100%;
-	background-color: #f7f7f7;
+	background-color: var(--mail-bg);
 }
 
 .mail-list {
 	width: 40%;
-	border-right: 1px solid #ddd;
+	border-right: 1px solid var(--mail-border);
 	overflow-y: auto;
-	background-color: #fff;
+	background-color: var(--mail-surface);
 	box-shadow: inset 0 -1rem 1rem 0.2rem rgba(0, 0, 0, 0.1);
 }
 
 .mail-list h3 {
 	font-size: 18px;
-	color: #333;
+	color: var(--mail-text-strong);
 	padding: 1rem;
-	border-bottom: #ddd 1px solid;
+	border-bottom: var(--mail-border) 1px solid;
 }
 
 .mail-list ul {
@@ -28,7 +51,7 @@
 .mail-list li {
 	padding: 1rem;
 	cursor: pointer;
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid var(--mail-border-subtle);
 	transition: background-color 0.3s ease;
 }
 
@@ -37,38 +60,38 @@
 }
 
 .mail-list li.active {
-	background-color: #eee;
+	background-color: var(--mail-selected-bg);
 	font-weight: bold;
 }
 
 .mail-subject {
 	display: block;
 	font-size: 16px;
-	color: #333;
+	color: var(--mail-text-strong);
 }
 
 .mail-from {
 	font-size: 0.7rem;
-	color: #888;
+	color: var(--mail-text-muted);
 }
 
 .mail-details {
 	width: 60%;
 	padding: 2rem;
-	background-color: #fff;
+	background-color: var(--mail-surface);
 	box-shadow: inset 0 0 1rem 0.1rem rgba(0, 0, 0, 0.1);
-	border-left: 1px solid #ddd;
+	border-left: 1px solid var(--mail-border);
 }
 
 .mail-details h4 {
 	margin-top: 0;
 	font-size: 22px;
-	color: #333;
+	color: var(--mail-text-strong);
 }
 
 .mail-details p {
 	font-size: 14px;
-	color: #555;
+	color: var(--mail-text);
 	line-height: 1.6;
 	padding: 0.5rem 0;
 }
