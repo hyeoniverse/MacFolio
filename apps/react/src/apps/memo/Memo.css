@@ -13,7 +13,7 @@
 	--memo-search-bg: #eceef1;
 	--memo-code-bg: #f3f4f6;
 	--memo-panel-bg: rgba(243, 244, 246, 0.9);
-	--memo-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.08);
+	--memo-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 1px 6px rgba(0, 0, 0, 0.08);
 	--memo-danger: #ff3b30;
 }
 
@@ -29,7 +29,7 @@
 	--memo-search-bg: #2f2f31;
 	--memo-code-bg: #2c2c2e;
 	--memo-panel-bg: rgba(44, 44, 46, 0.9);
-	--memo-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.35);
+	--memo-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 1px 6px rgba(0, 0, 0, 0.35);
 	--memo-danger: #ff6961;
 }
 
@@ -142,6 +142,39 @@
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
+.memo-toolbar-spacer {
+	flex: 1;
+}
+
+/* 검색 칸은 늘 도구 막대 오른쪽 끝 (목록 보기: 본문 위, 갤러리: 갤러리 위) */
+.memo-toolbar .memo-search {
+	flex: none;
+	width: 200px;
+	margin: 0;
+}
+
+/* 좁은 창에서만 목록 위에 보이는 검색 칸 */
+.memo-search.compact-only {
+	display: none;
+}
+
+/* 목록·본문·갤러리: 위에 도구 막대, 그 아래만 스크롤한다.
+   (도구 막대를 sticky로 붙이면 새 쌓임 맥락이 생겨 버튼이 창 끌기 영역 아래로 깔린다) */
+.memo-list,
+.memo-reader,
+.memo-gallery {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.memo-scroll {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
 .memo-toolbar-title {
 	flex: 1;
 	min-width: 0;
@@ -154,6 +187,9 @@
 
 /* ─── 폴더 사이드바: 창 안에 떠 있는 패널 ─── */
 .memo-folders {
+	/* 폴더 한 줄의 크기. 들여쓰기는 단계(--depth)마다 16px */
+	--row-height: 28px;
+	--row-indent: 16px;
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
@@ -161,6 +197,7 @@
 	overflow: hidden;
 	border-radius: 16px;
 	background-color: var(--memo-panel-bg);
+	/* 그림자는 패널 둘레 여백(8px) 안에 들어가도록 작게 (옆 칸과 창 가장자리에 잘리지 않게) */
 	box-shadow: var(--memo-panel-shadow);
 	transition: opacity var(--duration-fast) var(--ease-out);
 }
@@ -195,35 +232,41 @@
 .memo-folder-scroll {
 	flex: 1;
 	min-height: 0;
-	padding: 4px 8px 8px;
+	padding: 6px 10px 10px;
 	overflow-y: auto;
 }
 
+/* 묶음 이름 (macOS 메모의 'iCloud') */
 .memo-folders h2 {
-	margin: 6px 6px 4px;
+	margin: 0 0 4px calc(8px + 14px);
 	color: var(--memo-muted);
 	font-size: 11px;
 	font-weight: 600;
+	letter-spacing: 0.02em;
 }
 
-/* 폴더 한 줄: 펼침 단추 + 폴더 (+ 지우기) */
+/* 폴더 한 줄: 펼침 단추(14px) + 폴더 */
 .memo-folder-row {
 	display: flex;
 	align-items: center;
 	position: relative;
+	height: var(--row-height);
+	margin-bottom: 1px;
+	padding-left: calc(var(--depth, 0) * var(--row-indent));
+	border-radius: 7px;
 }
 
 .memo-disclosure {
 	display: grid;
 	flex: none;
 	place-items: center;
-	width: 16px;
-	height: 28px;
+	width: 14px;
+	height: 100%;
 	padding: 0;
 	border: none;
 	background: none;
 	color: var(--memo-muted) !important;
-	font-size: 9px;
+	font-size: 8px;
 }
 
 .memo-disclosure i {
@@ -238,17 +281,23 @@
 	display: flex;
 	flex: 1;
 	align-items: center;
-	gap: 8px;
+	gap: 7px;
 	min-width: 0;
-	padding: 6px 8px;
+	height: 100%;
+	padding: 0 8px 0 6px;
 	border: none;
 	border-radius: 7px;
 	background: none;
+	font-size: 13px;
 	text-align: left;
 }
 
 .memo-folder i {
+	flex: none;
+	width: 16px;
 	color: var(--memo-accent);
+	font-size: 13px;
+	text-align: center;
 }
 
 .memo-folder:hover {
@@ -274,23 +323,37 @@
 }
 
 .memo-count {
+	flex: none;
 	color: var(--memo-muted);
 	font-size: 12px;
+	font-variant-numeric: tabular-nums;
 }
 
-/* 방문자가 만든 폴더: 마우스를 올리면 지우기 단추 (글 수 자리에) */
+/* 끌어 놓기: 놓을 수 있는 폴더를 강조하고, 끌고 있는 것은 흐리게 */
+.memo-folder-row.drop-target .memo-folder {
+	box-shadow: inset 0 0 0 2px var(--memo-accent);
+	background-color: color-mix(in srgb, var(--memo-accent) 18%, transparent);
+}
+
+.memo-folder-row.dragging,
+.memo-item.dragging,
+.memo-card.dragging {
+	opacity: 0.4;
+}
+
+/* 방문자가 만든 빈 폴더: 마우스를 올리면 글 수 자리에 지우기 단추 */
 .memo-folder-remove {
 	display: none;
 	place-items: center;
 	position: absolute;
 	right: 6px;
-	width: 20px;
-	height: 20px;
+	width: 18px;
+	height: 18px;
 	border: none;
 	border-radius: 50%;
 	background-color: var(--memo-hover);
 	color: var(--memo-muted) !important;
-	font-size: 10px;
+	font-size: 9px;
 }
 
 .memo-folder-row:hover .memo-folder-remove,
@@ -298,34 +361,42 @@
 	display: grid;
 }
 
-.memo-folder-row:hover .memo-folder-remove + * {
+.memo-folder-row:has(.memo-folder-remove:is(:hover, :focus-visible)) .memo-count,
+.memo-folder-row:hover:has(.memo-folder-remove) .memo-count {
 	visibility: hidden;
 }
 
+/* 새 폴더 이름 입력 */
 .memo-new-folder .memo-folder-row {
-	gap: 8px;
-	padding: 3px 8px 3px 0;
+	gap: 7px;
+	padding-right: 4px;
 }
 
 .memo-new-folder .memo-folder-row > i {
-	margin-left: 8px;
+	flex: none;
+	width: 16px;
+	margin-left: 6px;
 	color: var(--memo-accent);
+	font-size: 13px;
+	text-align: center;
 }
 
 .memo-new-folder input {
 	flex: 1;
 	min-width: 0;
-	padding: 3px 6px;
+	height: 22px;
+	padding: 0 6px;
 	border: 1px solid var(--memo-accent);
 	border-radius: 5px;
 	outline: none;
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font: inherit;
+	font-size: 13px;
 }
 
 .memo-folder-error {
-	margin: 2px 8px 6px 40px;
+	margin: 0 0 4px calc(var(--depth, 0) * 16px + 43px);
 	color: var(--memo-danger);
 	font-size: 11px;
 }
@@ -336,12 +407,13 @@
 	flex: none;
 	align-items: center;
 	gap: 7px;
-	margin: 4px 8px 8px;
+	margin: 0 10px 10px;
 	padding: 6px 8px;
 	border: none;
 	border-radius: 7px;
 	background: none;
 	color: var(--memo-muted) !important;
+	font-size: 13px;
 }
 
 .memo-add-folder:hover {
@@ -350,13 +422,15 @@
 
 /* ─── 글 목록 ─── */
 .memo-list {
-	min-width: 0;
-	overflow-y: auto;
 	border-right: 1px solid var(--memo-border);
-	background-color: var(--memo-bg);
+	/* 배경을 칠하지 않는다 (옆의 사이드바 그림자를 가리지 않게) */
+	background: none;
 }
 
 .memo-search {
+	/* 도구 막대 안에서 끌기 영역보다 위 */
+	position: relative;
+	z-index: 4;
 	display: flex;
 	align-items: center;
 	gap: 0.4rem;
@@ -445,14 +519,8 @@
 }
 
 /* ─── 본문 ─── */
-.memo-reader {
-	min-width: 0;
+.memo-reader .memo-scroll {
 	padding: 0 2rem 3rem;
-	overflow-y: auto;
-}
-
-.memo-reader-toolbar {
-	margin: 0 -2rem;
 }
 
 /* 글을 바꾸면 본문이 살짝 떠오르며 나타난다 */
@@ -642,15 +710,11 @@
 }
 
 .memo-gallery {
-	min-width: 0;
-	padding-bottom: 24px;
-	overflow-y: auto;
 	animation: fade-in var(--duration) var(--ease-out);
 }
 
-.memo-gallery .memo-search {
-	width: 200px;
-	margin: 0;
+.memo-gallery .memo-scroll {
+	padding-bottom: 24px;
 }
 
 .memo-cards {
@@ -802,7 +866,7 @@
 
 	.memo-shell .memo.pane-list .memo-list,
 	.memo-shell .memo.pane-reader .memo-reader {
-		display: block;
+		display: flex;
 	}
 
 	/* 한 칸씩 넘길 때 iOS처럼 옆에서 들어온다 */
@@ -818,7 +882,12 @@
 		display: flex;
 	}
 
-	.memo-reader {
+	.memo-search.compact-only {
+		display: flex;
+		margin-top: 8px;
+	}
+
+	.memo-reader .memo-scroll {
 		padding-right: 1.25rem;
 		padding-left: 1.25rem;
 	}
@@ -862,4 +931,74 @@
 	.container.mobile .memo-folder-scroll {
 		padding-top: 12px;
 	}
+}
+
+/* ─── 코드 문법 강조 (highlight.js 토큰, GitHub 색) ─── */
+[data-app='memo'] {
+	--hl-keyword: #cf222e;
+	--hl-string: #0a3069;
+	--hl-number: #0550ae;
+	--hl-function: #8250df;
+	--hl-type: #953800;
+	--hl-comment: #6e7781;
+	--hl-tag: #116329;
+	--hl-attr: #0550ae;
+}
+
+:root[data-theme='dark'] [data-app='memo'] {
+	--hl-keyword: #ff7b72;
+	--hl-string: #a5d6ff;
+	--hl-number: #79c0ff;
+	--hl-function: #d2a8ff;
+	--hl-type: #ffa657;
+	--hl-comment: #8b949e;
+	--hl-tag: #7ee787;
+	--hl-attr: #79c0ff;
+}
+
+.memo-markdown .hljs-keyword,
+.memo-markdown .hljs-built_in,
+.memo-markdown .hljs-literal,
+.memo-markdown .hljs-meta .hljs-keyword {
+	color: var(--hl-keyword);
+}
+
+.memo-markdown .hljs-string,
+.memo-markdown .hljs-regexp,
+.memo-markdown .hljs-meta .hljs-string {
+	color: var(--hl-string);
+}
+
+.memo-markdown .hljs-number,
+.memo-markdown .hljs-variable.constant_,
+.memo-markdown .hljs-attr {
+	color: var(--hl-number);
+}
+
+.memo-markdown .hljs-title,
+.memo-markdown .hljs-title.function_ {
+	color: var(--hl-function);
+}
+
+.memo-markdown .hljs-type,
+.memo-markdown .hljs-title.class_,
+.memo-markdown .hljs-params {
+	color: var(--hl-type);
+}
+
+.memo-markdown .hljs-comment,
+.memo-markdown .hljs-quote {
+	color: var(--hl-comment);
+	font-style: italic;
+}
+
+.memo-markdown .hljs-tag,
+.memo-markdown .hljs-name,
+.memo-markdown .hljs-selector-tag {
+	color: var(--hl-tag);
+}
+
+.memo-markdown .hljs-attribute,
+.memo-markdown .hljs-property {
+	color: var(--hl-attr);
 }
