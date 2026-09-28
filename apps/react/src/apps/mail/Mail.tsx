@@ -1,59 +1,113 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
-import '@/apps/mail/Mail.css'; // Mail 관련 스타일 추가
 import { PROFILE } from '@/shared/profile';
+import ComposeView from './components/ComposeView';
+import { formatMailDate, INBOX } from './contact';
+import { getMailSender } from './sender';
+import '@/apps/mail/Mail.css';
 
+/** 이름의 첫 글자 아바타 */
+const Monogram: React.FC<{ name: string; size?: number }> = ({ name, size = 36 }) => (
+	<span className="mail-avatar" aria-hidden="true" style={{ width: size, height: size, fontSize: size * 0.44 }}>
+		{Array.from(name)[0]}
+	</span>
+);
+
+/**
+ * 메일: 방문자가 사이트 주인에게 연락 메일을 보내는 앱. macOS 메일처럼 메일상자 · 목록 · 읽기 세 칸.
+ * 보내기는 MailSender가 맡는다 (지금은 메일 앱 열기, 백엔드 #9 이후에는 서버 발송).
+ */
 const Mail: React.FC = () => {
-	// 메일 목록 데이터 (더미 데이터)
-	const mails = [
-		{
-			id: 1,
-			subject: 'Welcome!',
-			from: PROFILE.email,
-			content: 'Thank you for joining my site.\nI am looking for a job! Please contact me.',
-		},
-	];
+	const [selectedId, setSelectedId] = useState<string | null>(INBOX[0]?.id ?? null);
+	// 처음 보여 주는 메일은 읽은 것으로 친다
+	const [readIds, setReadIds] = useState<Set<string>>(() => new Set(INBOX[0] ? [INBOX[0].id] : []));
+	const [composing, setComposing] = useState(false);
+	const selected = INBOX.find((mail) => mail.id === selectedId) ?? null;
+	const unread = INBOX.filter((mail) => !readIds.has(mail.id)).length;
 
-	// 상태 관리 (선택된 메일)
-	const [selectedMail, setSelectedMail] = useState<number | null>(null);
-
-	// 선택한 메일을 상세 보기에서 보여줌
-	const mailDetails = selectedMail !== null ? mails.find((mail) => mail.id === selectedMail) : null;
+	const open = (id: string) => {
+		setSelectedId(id);
+		setReadIds((prev) => new Set(prev).add(id));
+		setComposing(false);
+	};
 
 	return (
-		<AppWindow title="Mail" appName="mail" appStyle={{ overflow: 'hidden' }}>
-			<div className="mail-app">
-				<div className="mail-list">
-					<h3>Inbox</h3>
+		<AppWindow title="메일" appName="mail" chrome="unified">
+			<div className="mail">
+				<aside className="mail-sidebar" aria-label="메일상자">
+					<div className="mail-sidebar-top" />
+					<p className="mail-sidebar-heading">메일상자</p>
+					<button type="button" className="mail-mailbox selected" aria-current="true">
+						<i className="fa-solid fa-inbox" aria-hidden="true" />
+						<span>받은 편지함</span>
+						{unread > 0 && <span className="mail-badge">{unread}</span>}
+					</button>
+				</aside>
+
+				<section className="mail-list" aria-label="받은 편지함">
+					<header className="mail-list-toolbar">
+						<div>
+							<h2>받은 편지함</h2>
+							<p>메일 {INBOX.length}통</p>
+						</div>
+						<button
+							type="button"
+							className="mail-round-button"
+							aria-label="새로운 메시지"
+							title="새로운 메시지"
+							onClick={() => setComposing(true)}
+						>
+							<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+						</button>
+					</header>
 					<ul>
-						{mails.map((mail) => (
-							<li
-								key={mail.id}
-								onClick={() => setSelectedMail(mail.id)}
-								className={selectedMail === mail.id ? 'active' : ''}
-							>
-								<span className="mail-subject">{mail.subject}</span>
-								<span className="mail-from">{mail.from}</span>
+						{INBOX.map((mail) => (
+							<li key={mail.id}>
+								<button
+									type="button"
+									className={`mail-item ${!composing && selectedId === mail.id ? 'selected' : ''}`}
+									aria-current={(!composing && selectedId === mail.id) || undefined}
+									onClick={() => open(mail.id)}
+								>
+									<span className={`mail-unread ${readIds.has(mail.id) ? 'read' : ''}`} aria-hidden="true" />
+									<span className="mail-item-text">
+										<span className="mail-item-top">
+											<strong>{mail.fromName}</strong>
+											<time dateTime={mail.date}>{formatMailDate(mail.date)}</time>
+										</span>
+										<span className="mail-item-subject">{mail.subject}</span>
+										<span className="mail-item-preview">{mail.body}</span>
+									</span>
+								</button>
 							</li>
 						))}
 					</ul>
+				</section>
 
-					<a className="mail-compose" href={`mailto:${PROFILE.email}`}>
-						<i className="fa-solid fa-paper-plane"></i>
-					</a>
-				</div>
-
-				<div className="mail-details">
-					{mailDetails ? (
-						<div>
-							<h4>{mailDetails.subject}</h4>
-							<p>From: {mailDetails.from}</p>
-							<p>{mailDetails.content}</p>
-						</div>
+				<section className="mail-reader">
+					{composing ? (
+						<ComposeView onSend={(input) => getMailSender().send(input)} onCancel={() => setComposing(false)} />
+					) : selected ? (
+						<article aria-label={selected.subject}>
+							<header className="mail-reader-header">
+								<Monogram name={selected.fromName} />
+								<div>
+									<strong>{selected.fromName}</strong>
+									<p>{selected.fromEmail}</p>
+									<p>받는 사람: 방문자님</p>
+								</div>
+								<time dateTime={selected.date}>{formatMailDate(selected.date)}</time>
+							</header>
+							<h1>{selected.subject}</h1>
+							<p className="mail-reader-body">{selected.body}</p>
+							<button type="button" className="mail-button primary" onClick={() => setComposing(true)}>
+								<i className="fa-solid fa-reply" aria-hidden="true" /> {PROFILE.name}에게 답장
+							</button>
+						</article>
 					) : (
-						<p>Select a mail to read</p>
+						<p className="mail-empty">선택된 메시지 없음</p>
 					)}
-				</div>
+				</section>
 			</div>
 		</AppWindow>
 	);
