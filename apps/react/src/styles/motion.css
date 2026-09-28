@@ -46,6 +46,15 @@
 	}
 }
 
+/* 음악 재생 중 막대 */
+@keyframes music-bars {
+	from {
+		transform: scaleY(0.3);
+	}
+	to {
+		transform: scaleY(1);
+	}
+}
 /* 움직임 줄이기 설정을 켠 사용자에게는 CSS 애니메이션과 전환을 끈다.
    (transition-duration만 줄이면 transition-property의 기본값 all 때문에 모든 속성에 전환이 생긴다)
    JS 애니메이션(windowMotion.ts 등)은 각자 이 설정을 확인해 건너뛴다. */

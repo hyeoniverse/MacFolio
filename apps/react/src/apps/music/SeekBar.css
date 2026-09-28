@@ -1,0 +1,72 @@
+/* 재생 위치 막대. 색은 부모의 color를 따른다 (currentColor) */
+.seek-bar {
+	--seek-height: 4px;
+	width: 100%;
+}
+
+.seek-bar-track {
+	position: relative;
+	/* 손가락으로 잡기 쉽도록 보이는 막대보다 넓게 */
+	height: 18px;
+	cursor: pointer;
+	touch-action: none;
+	outline: none;
+}
+
+.seek-bar-track::before,
+.seek-bar-fill {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	height: var(--seek-height);
+	border-radius: var(--seek-height);
+	transform: translateY(-50%);
+	transition: height var(--duration-fast) var(--ease-out);
+}
+
+.seek-bar-track::before {
+	right: 0;
+	background-color: currentColor;
+	opacity: 0.25;
+	content: '';
+}
+
+.seek-bar-fill {
+	background-color: currentColor;
+	opacity: 0.9;
+	pointer-events: none;
+}
+
+.seek-bar-thumb {
+	position: absolute;
+	top: 50%;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: currentColor;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+	transform: translate(-50%, -50%) scale(0);
+	transition: transform var(--duration-fast) var(--ease-out);
+	pointer-events: none;
+}
+
+/* 끄는 중이거나 마우스를 올리면 막대가 두꺼워지고 손잡이가 보인다 */
+.seek-bar.dragging,
+.seek-bar-track:hover,
+.seek-bar-track:focus-visible {
+	--seek-height: 7px;
+}
+
+.seek-bar.dragging .seek-bar-thumb,
+.seek-bar-track:hover .seek-bar-thumb,
+.seek-bar-track:focus-visible .seek-bar-thumb {
+	transform: translate(-50%, -50%) scale(1);
+}
+
+.seek-bar-times {
+	display: flex;
+	justify-content: space-between;
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+	opacity: 0.7;
+}

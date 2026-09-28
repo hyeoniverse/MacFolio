@@ -1,0 +1,87 @@
+/* 상태 막대의 음량 조절 팝업 (MusicPlayerVolume.tsx) */
+.volume-modal-overlay {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1000;
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.volume-container {
+	display: flex;
+
+	align-items: center;
+	justify-content: center;
+
+	box-shadow: 0 0 0.8rem rgba(0, 0, 0, 0.6);
+
+	overflow: hidden;
+	position: absolute;
+	top: 2rem;
+	right: 8.5rem;
+	z-index: 5;
+
+	width: 2rem;
+	height: 6rem;
+
+	background: rgba(0, 0, 0, 0.6);
+
+	border-radius: 0.8rem;
+}
+
+.volume-level {
+	position: absolute;
+	bottom: 0;
+	z-index: 10;
+	width: 100%;
+
+	background-color: rgba(255, 255, 255, 0.9);
+}
+
+.volume-slider {
+	display: flex;
+	z-index: 100;
+	width: 9rem;
+	height: 3rem;
+	cursor: pointer;
+	border-radius: 2rem;
+	transform: rotate(-90deg);
+	opacity: 0;
+}
+
+.volume-slider::-webkit-slider-thumb {
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	width: 60px;
+	height: 60px;
+	background-color: #ffffff;
+	cursor: pointer;
+	-webkit-appearance: none;
+	border-radius: 50%;
+}
+
+.volume-slider::-moz-range-thumb {
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	width: 60px;
+	height: 60px;
+	background-color: #ffffff;
+	cursor: pointer;
+	border-radius: 50%;
+}
+
+.volume-icon {
+	position: absolute;
+	bottom: 0.8rem;
+	left: 0.5rem;
+
+	z-index: 20;
+	font-size: 1rem;
+	color: #00aaff;
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
+}

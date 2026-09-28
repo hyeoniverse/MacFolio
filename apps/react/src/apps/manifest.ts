@@ -39,7 +39,7 @@ export interface AppManifest {
 
 export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	finder: { label: 'Finder', icon: 'finder.png', inDock: true, runningAtStart: true },
-	music: { label: '음악', icon: 'music.png', inDock: true, runningAtStart: true },
+	music: { label: '음악', icon: 'music.png', inDock: true, windowSize: { width: 960, height: 600 } },
 	safari: { label: 'Safari', icon: 'safari.png', inDock: true, runningAtStart: true },
 	photos: { label: '사진', icon: 'photos.png', inDock: true },
 	messages: { label: '메시지', icon: 'messages.png', inDock: true, windowSize: { width: 860, height: 560 } },

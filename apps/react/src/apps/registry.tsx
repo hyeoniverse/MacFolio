@@ -2,7 +2,7 @@ import { lazy, type ComponentType } from 'react';
 import { APP_NAMES, type AppName } from '@/apps/manifest';
 
 import Safari from '@/apps/safari/Safari';
-import MusicPlayer from '@/apps/music/MusicPlayer';
+import Music from '@/apps/music/Music';
 import Github from '@/apps/github/Github';
 import Mail from '@/apps/mail/Mail';
 import Settings from '@/apps/settings/Settings';
@@ -14,7 +14,7 @@ const Memo = lazy(() => import('@/apps/memo/Memo'));
 
 /** 창으로 열리는 앱의 컴포넌트. 여기 없는 앱은 Dock 아이콘만 있다. */
 const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
-	music: MusicPlayer,
+	music: Music,
 	safari: Safari,
 	memo: Memo,
 	github: Github,
