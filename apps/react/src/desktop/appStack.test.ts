@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bringToFront, foregroundApp, minimizeAll } from './appStack';
+import { bringToFront, foregroundApp, minimizeAll, runningByRecency } from './appStack';
 
 const apps = {
 	a: { zIndex: 3, isMinimized: false, isRunning: true },
@@ -53,5 +53,12 @@ describe('minimizeAll', () => {
 
 	it('실행 중이 아닌 앱은 그대로 둔다', () => {
 		expect(minimizeAll(apps).c).toBe(apps.c);
+	});
+});
+
+describe('runningByRecency', () => {
+	it('실행 중인 앱만, 최근에 쓴 순서로', () => {
+		// a(3, 실행), b(1, 최소화돼도 실행 중), c(실행 안 함)
+		expect(runningByRecency(apps)).toEqual(['a', 'b']);
 	});
 });
