@@ -20,7 +20,8 @@ export async function enterDesktop(page: Page) {
 	await page.goto('/');
 	const loading = page.locator('.loading-container');
 	await loading.click();
-	await expect(loading).toBeHidden({ timeout: 10_000 });
+	// 로딩은 약 3초(진행 막대 + 걷히기). 전체 테스트를 병렬로 돌려 CPU가 바쁘면 더 걸리므로 넉넉히 기다린다
+	await expect(loading).toBeHidden({ timeout: 20_000 });
 }
 
 export const dockItem = (page: Page, name: string) => page.locator('.dock').getByRole('button', { name, exact: true });

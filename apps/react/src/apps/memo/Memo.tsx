@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown, { type Components, type Options } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { rehypeHighlightCode } from './highlight';
 import AppWindow from '@/desktop/window/Window';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import {
 	ALL_CATEGORY,
 	buildFolderTree,
@@ -59,6 +60,22 @@ const MARKDOWN_COMPONENTS: Components = {
 };
 
 type Pane = 'folders' | 'list' | 'reader';
+
+/** 이 폭 이하면 한 칸씩 보인다 (Memo.css의 @container (max-width: 600px)와 같아야 한다) */
+const COMPACT_WIDTH = 600;
+
+/** 메모가 한 칸씩 보이는지 (컨테이너 폭으로 판단) */
+function useCompact(ref: React.RefObject<HTMLElement | null>) {
+	const [compact, setCompact] = useState(false);
+	useEffect(() => {
+		const element = ref.current;
+		if (!element) return;
+		const observer = new ResizeObserver(([entry]) => setCompact(entry.contentRect.width <= COMPACT_WIDTH));
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, [ref]);
+	return compact;
+}
 const PANES: Pane[] = ['folders', 'list', 'reader'];
 
 /** 폴더 경로를 "개발기 › MacFolio"처럼 */
@@ -103,6 +120,8 @@ const Memo: React.FC = () => {
 	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
 	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 단추를 보이지 않는다 (admin.ts)
 	const canEdit = useCanEditMemo();
+	const shellRef = useRef<HTMLDivElement>(null);
+	const compact = useCompact(shellRef);
 	const [organization, setOrganization] = useState<Organization>(() =>
 		canEdit ? loadOrganization() : EMPTY_ORGANIZATION
 	);
@@ -325,7 +344,15 @@ const Memo: React.FC = () => {
 
 	return (
 		<AppWindow title="메모" appName="memo" chrome="unified">
-			<div className="memo-shell">
+			{/* 모바일 제목 막대의 뒤로 가기를 메모 안의 이동에도 쓴다 (한 칸씩 보일 때만: 본문 → 목록 → 폴더 → 홈) */}
+			<MobileNavigation
+				{...(compact && pane === 'reader'
+					? { backLabel: folderName(category), onBack: () => setPane('list') }
+					: compact && pane === 'list'
+						? { backLabel: '폴더', onBack: () => setPane('folders') }
+						: {})}
+			/>
+			<div ref={shellRef} className="memo-shell">
 				<div
 					className={`memo pane-${pane} view-${view} ${galleryNoteOpen ? 'gallery-note' : ''} ${sidebarOpen ? '' : 'sidebar-closed'}`}
 					data-nav={nav}

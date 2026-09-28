@@ -7,7 +7,7 @@ async function enterHome(page: Page) {
 	const loading = page.locator('.loading-container');
 	await expect(loading).toContainText('탭하여');
 	await loading.tap();
-	await expect(loading).toBeHidden({ timeout: 10_000 });
+	await expect(loading).toBeHidden({ timeout: 20_000 });
 }
 
 const homeApp = (page: Page, label: string) =>
@@ -80,12 +80,16 @@ test.describe('모바일', () => {
 		await expect(memo.getByRole('article', { name: 'CRA에서 Vite로 옮기기' })).toBeVisible();
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeHidden();
 
-		// 제목 막대는 늘 "홈"이고, 메모 안의 이동은 본문 위의 버튼으로 한다
-		await expect(memo.locator('.mobile-navbar-home')).toHaveText('홈');
-		await memo.getByRole('article').getByRole('button', { name: '모든 글' }).tap();
-		await memo.getByRole('region', { name: '글 목록' }).getByRole('button', { name: '폴더' }).tap();
+		// 뒤로 가기는 제목 막대에 하나만: 본문 → 목록 → 폴더 → 홈
+		const back = memo.locator('.mobile-navbar-home');
+		await expect(memo.locator('.memo-back:visible')).toHaveCount(0);
+		await expect(back).toHaveText('모든 글');
+		await back.tap();
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+		await expect(back).toHaveText('폴더');
+		await back.tap();
 		await expect(memo.getByRole('navigation', { name: '카테고리' })).toBeVisible();
-		await expect(memo.locator('.mobile-navbar-home')).toHaveText('홈');
+		await expect(back).toHaveText('홈');
 
 		await memo.getByRole('button', { name: /^개발기/ }).tap();
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
