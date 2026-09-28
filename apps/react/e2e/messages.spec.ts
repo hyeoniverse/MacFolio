@@ -38,21 +38,55 @@ test.describe('메시지', () => {
 		await expect(messages.getByRole('menu')).toHaveCount(0);
 	});
 
-	test('처음 글을 쓰면 내 방이 생기고, 새로고침해도 이름은 남고 비밀번호는 남지 않는다', async ({ page }) => {
+	test('방명록에 글을 써도 목록에 새 항목이 생기지 않는다', async ({ page }) => {
 		let messages = await openMessages(page);
-		await post(messages, '민수', '반가워요!');
+		const threads = messages.locator('.messages-thread');
+		await expect(threads).toHaveCount(0);
 
+		await post(messages, '민수', '반가워요!');
 		await expect(messages.locator('.messages-bubble-row.right')).toHaveText(/반가워요!/);
 		await expect(messages.getByText('전송됨')).toHaveCount(1);
-		await expect(messages.getByRole('button', { name: /^민수.*나/ })).toBeVisible();
+		await expect(threads).toHaveCount(0);
 
+		// 새로고침해도 이름은 남고 비밀번호는 남지 않는다
 		messages = await openMessages(page);
 		await expect(messages.getByLabel('이름')).toHaveValue('민수');
 		await expect(messages.getByLabel('비밀번호', { exact: true })).toHaveValue('');
 	});
 
+	test('쓰기 버튼으로만 내 방이 생기고, 다시 누르면 내 방을 연다', async ({ page }) => {
+		const messages = await openMessages(page);
+		await messages.getByRole('button', { name: '새 메시지' }).first().click();
+		await expect(messages.getByRole('region', { name: '새로운 메시지' })).toBeVisible();
+
+		await post(messages, '민수', '내 방 첫 글');
+		await expect(messages.getByRole('region', { name: '민수의 방명록' })).toBeVisible();
+		await expect(messages.getByRole('button', { name: /^민수.*나/ })).toBeVisible();
+
+		await messages.getByRole('button', { name: '김정현' }).click();
+		await messages.getByRole('button', { name: '새 메시지' }).first().click();
+		await expect(messages.getByRole('region', { name: '민수의 방명록' })).toBeVisible();
+		await expect(messages.locator('.messages-thread')).toHaveCount(1);
+	});
+
+	test('새 메시지는 취소 버튼이나 Esc로 그만두고 이전 방으로 돌아간다', async ({ page }) => {
+		const messages = await openMessages(page);
+		const compose = messages.getByRole('button', { name: '새 메시지' }).first();
+
+		await compose.click();
+		await messages.getByRole('button', { name: '취소' }).click();
+		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeVisible();
+
+		await compose.click();
+		await expect(messages.getByRole('region', { name: '새로운 메시지' })).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(messages.getByRole('region', { name: '김정현의 방명록' })).toBeVisible();
+		await expect(messages.locator('.messages-thread')).toHaveCount(0);
+	});
+
 	test('다른 사람의 방에도 쓸 수 있고, 사람마다 구분되어 보인다', async ({ page }) => {
 		let messages = await openMessages(page);
+		await messages.getByRole('button', { name: '새 메시지' }).first().click();
 		await post(messages, '민수', '민수의 첫 글');
 
 		await becomeVisitor(page, 'visitor-b');
@@ -60,13 +94,15 @@ test.describe('메시지', () => {
 		await messages.getByRole('button', { name: /^민수/ }).click();
 		await expect(messages.getByRole('region', { name: '민수의 방명록' })).toBeVisible();
 		await post(messages, '지영', '민수님 방에 남겨요');
-		// 지영에게는 자기 글이라 오른쪽
+		// 지영에게는 자기 글이라 오른쪽, 민수의 글은 왼쪽
 		await expect(messages.locator('.messages-bubble-row.right')).toHaveText(/민수님 방에 남겨요/);
+		await expect(messages.locator('.messages-bubble-row.left')).toHaveText(/민수의 첫 글/);
+		// 글만 썼으므로 지영의 방은 생기지 않는다
+		await expect(messages.locator('.messages-thread')).toHaveCount(1);
 
-		await becomeVisitor(page, 'visitor-a-again');
+		await becomeVisitor(page, 'visitor-c');
 		messages = await openMessages(page);
 		await messages.getByRole('button', { name: /^민수/ }).click();
-		// 다른 사람에게는 왼쪽, 이름이 붙는다
 		const row = messages.locator('.messages-bubble-row.left', { hasText: '민수님 방에 남겨요' });
 		await expect(row.locator('.messages-sender')).toHaveText('지영');
 	});

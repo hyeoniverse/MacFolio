@@ -12,13 +12,12 @@ export interface ConversationRepository {
 	listThreads(): Promise<Thread[]>;
 	listMessages(threadId: string): Promise<Message[]>;
 	/**
-	 * 누구나 어느 방에나 쓸 수 있다. 입력은 이미 검증된 값이다 (conversations.validateMessageInput).
-	 * 글쓴이의 방이 아직 없으면 새로 만들어 createdThread로 돌려준다.
+	 * 새 방을 만들고 첫 글을 쓴다 (쓰기 버튼). 한 사람당 방은 하나라서,
+	 * 이미 방이 있으면 만들지 않고 그 방을 existing으로 돌려준다.
 	 */
-	postMessage(
-		threadId: string,
-		input: MessageInput
-	): Promise<{ message: Message; createdThread?: Thread } | 'not-found'>;
+	createThread(input: MessageInput): Promise<{ thread: Thread; message: Message } | { existing: Thread }>;
+	/** 누구나 어느 방에나 쓸 수 있다. 방은 만들지 않는다. 입력은 이미 검증된 값이다 */
+	postMessage(threadId: string, input: MessageInput): Promise<Message | 'not-found'>;
 	/** 글을 쓸 때 정한 비밀번호로 지운다 */
 	removeMessage(messageId: string, password: string): Promise<DeleteResult>;
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import AppWindow from '@/desktop/window/Window';
 import Sidebar from './components/Sidebar';
 import ChatView from './components/ChatView';
-import { useConversations } from './useConversations';
+import { NEW_THREAD, useConversations } from './useConversations';
 import '@/apps/messages/Messages.css';
 
 /**
@@ -11,7 +11,7 @@ import '@/apps/messages/Messages.css';
  */
 const Messages: React.FC = () => {
 	const conversations = useConversations();
-	const { selectedThread } = conversations;
+	const { selectedThread, isComposing } = conversations;
 
 	return (
 		<AppWindow title="메시지" appName="messages" chrome="unified">
@@ -22,14 +22,15 @@ const Messages: React.FC = () => {
 					onSelect={conversations.select}
 					onCompose={conversations.compose}
 				/>
-				{selectedThread && (
+				{(isComposing || selectedThread) && (
 					<ChatView
-						key={selectedThread.id}
-						thread={selectedThread}
+						key={isComposing ? NEW_THREAD : selectedThread!.id}
+						thread={isComposing ? null : selectedThread}
 						messages={conversations.messages}
 						identity={conversations.identity}
 						focusRequest={conversations.focusRequest}
 						onBack={conversations.back}
+						onCancelNew={conversations.cancelNewThread}
 						onCompose={conversations.compose}
 						onSend={conversations.send}
 						onRemove={conversations.remove}

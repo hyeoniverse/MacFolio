@@ -1,4 +1,4 @@
-import { OWNER_NAME, type Message, type Thread } from '../conversations';
+import { OWNER_NAME, type Message, type MessageInput, type Thread } from '../conversations';
 import type { ConversationRepository } from './types';
 
 // 브라우저에만 저장하는 구현. IP를 알 수 없으므로 브라우저 id로 사람을 구분하고,
@@ -87,6 +87,21 @@ export function createLocalConversationRepository(
 		}
 	};
 
+	const newMessage = async (threadId: string, input: MessageInput, me: string): Promise<StoredMessage> => {
+		const salt = crypto.randomUUID();
+		return {
+			id: crypto.randomUUID(),
+			threadId,
+			text: input.text,
+			createdAt: now().toISOString(),
+			authorId: me,
+			nickname: input.nickname,
+			fromOwner: false,
+			salt,
+			passwordHash: await sha256(`${salt}:${input.password}`),
+		};
+	};
+
 	const toMessage = (message: StoredMessage, me: string): Message => ({
 		id: message.id,
 		threadId: message.threadId,
@@ -128,40 +143,31 @@ export function createLocalConversationRepository(
 			return list.map((message) => toMessage(message, me));
 		},
 
-		async postMessage(threadId, { nickname, password, text }) {
+		async createThread(input) {
+			const me = await authorIdPromise;
+			const data = read();
+			const existing = data.threads.find((t) => t.ownerId === me);
+			if (existing) return { existing: toThread(existing, data.messages, me) };
+
+			const thread: StoredThread = {
+				id: crypto.randomUUID(),
+				ownerId: me,
+				title: input.nickname,
+				createdAt: now().toISOString(),
+			};
+			const message = await newMessage(thread.id, input, me);
+			const next = { threads: [...data.threads, thread], messages: [...data.messages, message] };
+			write(next);
+			return { thread: toThread(thread, next.messages, me), message: toMessage(message, me) };
+		},
+
+		async postMessage(threadId, input) {
 			const me = await authorIdPromise;
 			const data = read();
 			if (threadId !== PINNED_THREAD_ID && !data.threads.some((t) => t.id === threadId)) return 'not-found';
-
-			const salt = crypto.randomUUID();
-			const createdAt = now().toISOString();
-			const message: StoredMessage = {
-				id: crypto.randomUUID(),
-				threadId,
-				text,
-				createdAt,
-				authorId: me,
-				nickname,
-				fromOwner: false,
-				salt,
-				passwordHash: await sha256(`${salt}:${password}`),
-			};
-
-			// 처음 글을 쓰는 사람이면 그 사람의 방을 만든다
-			let createdThread: StoredThread | undefined;
-			if (!data.threads.some((t) => t.ownerId === me)) {
-				createdThread = { id: crypto.randomUUID(), ownerId: me, title: nickname, createdAt };
-			}
-
-			const next = {
-				threads: createdThread ? [...data.threads, createdThread] : data.threads,
-				messages: [...data.messages, message],
-			};
-			write(next);
-			return {
-				message: toMessage(message, me),
-				createdThread: createdThread && toThread(createdThread, next.messages, me),
-			};
+			const message = await newMessage(threadId, input, me);
+			write({ ...data, messages: [...data.messages, message] });
+			return toMessage(message, me);
 		},
 
 		async removeMessage(messageId, password) {
