@@ -1,0 +1,102 @@
+import { describe, expect, it } from 'vitest';
+import {
+	ALL_CATEGORY,
+	excerpt,
+	filterPosts,
+	formatPostDate,
+	listCategories,
+	parseFrontmatter,
+	sortPosts,
+	toPost,
+	type Post,
+} from './posts';
+
+const post = (slug: string, date: string, category: string, title = slug, body = ''): Post => ({
+	slug,
+	title,
+	date,
+	category,
+	summary: '',
+	body,
+});
+
+describe('parseFrontmatter', () => {
+	it('머리말과 본문을 나눈다', () => {
+		const { meta, body } = parseFrontmatter('---\ntitle: 안녕\ndate: 2026-09-28\n---\n\n# 본문\n');
+		expect(meta).toEqual({ title: '안녕', date: '2026-09-28' });
+		expect(body).toBe('\n# 본문\n');
+	});
+
+	it('따옴표로 감싼 값과 콜론이 들어간 값', () => {
+		expect(parseFrontmatter('---\ntitle: "A: B"\nsummary: \'요약\'\n---\n').meta).toEqual({
+			title: 'A: B',
+			summary: '요약',
+		});
+	});
+
+	it('머리말이 없으면 본문 전체', () => {
+		expect(parseFrontmatter('# 제목만')).toEqual({ meta: {}, body: '# 제목만' });
+	});
+
+	it('Windows 줄바꿈(CRLF)도 읽는다', () => {
+		expect(parseFrontmatter('---\r\ntitle: 윈도우\r\n---\r\n본문').meta.title).toBe('윈도우');
+	});
+});
+
+describe('excerpt', () => {
+	it('Markdown 문법을 걷어 내고 길면 자른다', () => {
+		const text = excerpt('# 제목\n\n**굵게** [링크](https://a.b) `코드`\n\n```js\nconst x = 1;\n```\n끝', 100);
+		expect(text).toBe('제목 굵게 링크 코드 끝');
+		expect(excerpt('가'.repeat(100), 10)).toBe(`${'가'.repeat(10)}…`);
+	});
+});
+
+describe('toPost', () => {
+	it('요약이 없으면 본문 앞부분, 카테고리가 없으면 기타', () => {
+		expect(toPost('a', '---\ntitle: 제목\ndate: 2026-09-28\n---\n본문입니다')).toEqual({
+			slug: 'a',
+			title: '제목',
+			date: '2026-09-28',
+			category: '기타',
+			summary: '본문입니다',
+			body: '본문입니다',
+		});
+	});
+
+	it('제목이나 날짜 형식이 잘못되면 null', () => {
+		expect(toPost('a', '---\ndate: 2026-09-28\n---\n')).toBeNull();
+		expect(toPost('a', '---\ntitle: t\ndate: 9월 28일\n---\n')).toBeNull();
+	});
+});
+
+describe('목록', () => {
+	const posts = [
+		post('a', '2026-09-01', '회고', 'A', 'vite 이야기'),
+		post('b', '2026-09-28', '개발기', 'B', 'React 이야기'),
+		post('c', '2026-09-28', '개발기', 'C', ''),
+	];
+
+	it('최신 글이 위, 같은 날은 제목 순', () => {
+		expect(sortPosts(posts).map((p) => p.slug)).toEqual(['b', 'c', 'a']);
+	});
+
+	it('카테고리: 모든 글이 맨 앞, 나머지는 가나다순과 글 수', () => {
+		expect(listCategories(posts)).toEqual([
+			{ name: ALL_CATEGORY, count: 3 },
+			{ name: '개발기', count: 2 },
+			{ name: '회고', count: 1 },
+		]);
+	});
+
+	it('카테고리와 검색어(제목·본문, 대소문자 무시)로 거른다', () => {
+		expect(filterPosts(posts, '개발기', '').map((p) => p.slug)).toEqual(['b', 'c']);
+		expect(filterPosts(posts, ALL_CATEGORY, 'VITE').map((p) => p.slug)).toEqual(['a']);
+		expect(filterPosts(posts, '회고', 'react')).toEqual([]);
+	});
+});
+
+describe('formatPostDate', () => {
+	it('YYYY-MM-DD를 한국식 날짜로', () => {
+		expect(formatPostDate('2026-09-08')).toBe('2026. 9. 8.');
+	});
+});

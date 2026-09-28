@@ -1,29 +1,22 @@
-import type { ComponentType } from 'react';
+import { lazy, type ComponentType } from 'react';
 import { APP_NAMES, type AppName } from '@/apps/manifest';
 
 import Safari from '@/apps/safari/Safari';
 import MusicPlayer from '@/apps/music/MusicPlayer';
-import Memo from '@/apps/memo/Memo';
-import { MemoProvider } from '@/apps/memo/MemoContext';
 import Github from '@/apps/github/Github';
-import Blog from '@/apps/blog/Blog';
 import Mail from '@/apps/mail/Mail';
 import Settings from '@/apps/settings/Settings';
 import Messages from '@/apps/messages/Messages';
 
-const MemoApp = () => (
-	<MemoProvider>
-		<Memo />
-	</MemoProvider>
-);
+// Markdown 렌더러가 무거워서 메모(블로그)는 처음 열 때 불러온다
+const Memo = lazy(() => import('@/apps/memo/Memo'));
 
 /** 창으로 열리는 앱의 컴포넌트. 여기 없는 앱은 Dock 아이콘만 있다. */
 const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
 	music: MusicPlayer,
 	safari: Safari,
-	memo: MemoApp,
+	memo: Memo,
 	github: Github,
-	blog: Blog,
 	mail: Mail,
 	settings: Settings,
 	messages: Messages,
