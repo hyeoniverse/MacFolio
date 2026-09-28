@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
-import { bringToFront } from '@/desktop/appStack';
+import { bringToFront, minimizeAll } from '@/desktop/appStack';
+import { isMobileViewport } from '@/desktop/layout';
 
 export type AppState = {
 	isRunning: boolean;
@@ -23,20 +24,19 @@ interface AppContextType {
 	maximizeApp: (appName: AppName) => void;
 
 	bringAppToFront: (appName: AppName) => void; // 앱을 맨 위로 올리는 함수
+
+	/** 실행 중인 앱을 모두 최소화한다. 모바일에서 홈 화면으로 돌아갈 때 쓴다. */
+	goHome: () => void;
 }
 
-// Default initial states for all apps
-const initialAppStates = Object.fromEntries(
-	APP_NAMES.map((name) => [
-		name,
-		{
-			isRunning: APP_MANIFEST[name].runningAtStart ?? false,
-			isMinimized: false,
-			zIndex: 1,
-			hasOpened: APP_MANIFEST[name].runningAtStart ?? false,
-		},
-	])
-) as Record<AppName, AppState>;
+/** 처음 상태. 모바일은 홈 화면에서 시작하므로 처음부터 실행되는 앱이 없다. */
+const createInitialAppStates = (mobile: boolean) =>
+	Object.fromEntries(
+		APP_NAMES.map((name) => {
+			const running = !mobile && (APP_MANIFEST[name].runningAtStart ?? false);
+			return [name, { isRunning: running, isMinimized: false, zIndex: 1, hasOpened: running }];
+		})
+	) as Record<AppName, AppState>;
 
 // Create context
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -52,7 +52,9 @@ export const useAppState = () => {
 
 // Context provider component
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [apps, setApps] = useState<Record<AppName, AppState>>(initialAppStates);
+	const [apps, setApps] = useState<Record<AppName, AppState>>(() =>
+		createInitialAppStates(isMobileViewport({ width: window.innerWidth, height: window.innerHeight }))
+	);
 
 	// 화면 밖 창을 되돌리는 처리는 창이 렌더링될 때 한다 (desktop/window/geometry.ts의 clampRect)
 	const bringAppToFront = useCallback((appName: AppName) => {
@@ -123,6 +125,10 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 		}));
 	}, []);
 
+	const goHome = useCallback(() => {
+		setApps((prevState) => minimizeAll(prevState));
+	}, []);
+
 	return (
 		<AppContext.Provider
 			value={{
@@ -134,6 +140,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 				minimizeApp,
 				maximizeApp,
 				bringAppToFront,
+				goHome,
 			}}
 		>
 			{children}

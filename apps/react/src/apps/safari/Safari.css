@@ -119,3 +119,36 @@
 :root[data-theme='dark'] [data-app='safari'] header p {
 	color: var(--color-text-secondary);
 }
+
+/* ─── 좁은 창 ─── */
+.safari {
+	container-type: inline-size;
+}
+
+@container (max-width: 600px) {
+	[data-app='safari'] header {
+		margin: 2.5rem 1.25rem 1.5rem;
+	}
+
+	[data-app='safari'] header h1 {
+		font-size: 1.9em;
+	}
+
+	[data-app='safari'] header p {
+		font-size: 1em;
+	}
+
+	.projects {
+		gap: 1.25rem;
+		margin: 1rem;
+	}
+
+	.project {
+		width: 100%;
+		height: auto;
+	}
+
+	.project:hover {
+		transform: none;
+	}
+}

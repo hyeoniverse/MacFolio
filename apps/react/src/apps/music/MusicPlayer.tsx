@@ -4,6 +4,80 @@ import { useMusic, albums, trackNames, albumArtworks } from '@/apps/music/MusicC
 
 import '@/apps/music/MusicPlayer.css';
 import '@/desktop/window/Window.css';
+import AppWindow from '@/desktop/window/Window';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
+
+const formatTime = (seconds: number) =>
+	`${Math.floor(seconds / 60)}:${Math.floor(seconds % 60)
+		.toString()
+		.padStart(2, '0')}`;
+
+/** 모바일: 화면을 가득 채우는 '지금 재생 중' 화면 */
+const NowPlaying: React.FC = () => {
+	const {
+		isPlaying,
+		currentTrack,
+		currentTime,
+		duration,
+		isShuffle,
+		togglePlayPause,
+		playNextTrack,
+		playPreviousTrack,
+		seekTo,
+		toggleShuffle,
+	} = useMusic();
+	const progress = duration ? (currentTime / duration) * 100 : 0;
+
+	return (
+		<AppWindow title="음악" appName="music">
+			<div className="now-playing" style={{ ['--artwork' as string]: `url('${albumArtworks[currentTrack]}')` }}>
+				<img
+					className={`now-playing-art ${isPlaying ? 'playing' : ''}`}
+					src={albumArtworks[currentTrack]}
+					alt={`${albums[currentTrack]} 앨범 커버`}
+				/>
+				<div className="now-playing-info">
+					<strong>{trackNames[currentTrack]}</strong>
+					<span>{albums[currentTrack]}</span>
+				</div>
+				<div
+					className="now-playing-seek"
+					role="slider"
+					aria-label="재생 위치"
+					aria-valuemin={0}
+					aria-valuemax={Math.floor(duration)}
+					aria-valuenow={Math.floor(currentTime)}
+					onClick={(e) => duration && seekTo((e.nativeEvent.offsetX / e.currentTarget.offsetWidth) * duration)}
+				>
+					<div style={{ width: `${progress}%` }}></div>
+				</div>
+				<div className="now-playing-time">
+					<span>{formatTime(currentTime)}</span>
+					<span>{formatTime(duration)}</span>
+				</div>
+				<div className="now-playing-controls">
+					<button type="button" aria-label="셔플" className={isShuffle ? 'active' : ''} onClick={toggleShuffle}>
+						<i className="fas fa-random"></i>
+					</button>
+					<button type="button" aria-label="이전 곡" onClick={playPreviousTrack}>
+						<i className="fas fa-backward"></i>
+					</button>
+					<button
+						type="button"
+						aria-label={isPlaying ? '일시 정지' : '재생'}
+						className="play"
+						onClick={togglePlayPause}
+					>
+						<i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
+					</button>
+					<button type="button" aria-label="다음 곡" onClick={playNextTrack}>
+						<i className="fas fa-forward"></i>
+					</button>
+				</div>
+			</div>
+		</AppWindow>
+	);
+};
 
 const MusicPlayer: React.FC = () => {
 	const { apps, closeApp, minimizeApp, bringAppToFront } = useAppState();
@@ -23,6 +97,7 @@ const MusicPlayer: React.FC = () => {
 		toggleShuffle,
 	} = useMusic(); // startPlaying 대신 togglePlayPause 사용
 	const { isRunning, isMinimized, zIndex } = apps.music;
+	const isMobile = useIsMobile();
 
 	const [isDragging, setIsDragging] = useState(false);
 	const [isMinimizing, setIsMinimizing] = useState(false); // minimize 애니메이션을 위한 상태 추가
@@ -139,6 +214,7 @@ const MusicPlayer: React.FC = () => {
 
 	// hook은 모두 이 위에서 호출해야 한다. 렌더링마다 hook 호출 수가 달라지면 React가 에러를 던진다.
 	if (!isRunning) return null;
+	if (isMobile) return <NowPlaying />;
 
 	return (
 		<div

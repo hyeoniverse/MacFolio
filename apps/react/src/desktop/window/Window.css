@@ -250,3 +250,117 @@
 	overflow: hidden;
 	border-radius: inherit;
 }
+
+/* ─── 모바일: 앱이 화면을 가득 채운다 ─── */
+.container.mobile {
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	inset: 0;
+	height: 100dvh;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	padding-top: env(safe-area-inset-top);
+	/* 창 여닫는 애니메이션 대신 iOS처럼 커지며 나타난다 */
+	animation: mobile-app-open 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes mobile-app-open {
+	from {
+		transform: scale(0.92);
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.container.mobile {
+		animation: none;
+	}
+}
+
+.container.mobile .content {
+	flex: 1;
+	min-height: 0;
+	height: auto;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	border-radius: 0;
+}
+
+.container.mobile.unified .content {
+	overflow: hidden;
+}
+
+.mobile-navbar {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	flex: none;
+	height: 44px;
+	padding: 0 8px;
+	border-bottom: 1px solid var(--color-window-border);
+	background-color: var(--color-titlebar-bg);
+}
+
+.mobile-navbar .title {
+	overflow: hidden;
+	max-width: 60vw;
+	font-size: 16px;
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mobile-navbar-home {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	justify-self: start;
+	padding: 8px 6px;
+	border: none;
+	background: none;
+	color: var(--color-accent);
+	font: inherit;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.mobile-navbar-home i {
+	font-size: 18px;
+}
+
+/* 홈 인디케이터: 누르거나 쓸어 올리면 홈으로 */
+.home-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 100%;
+	height: calc(22px + env(safe-area-inset-bottom));
+	padding-bottom: env(safe-area-inset-bottom);
+	border: none;
+	background-color: var(--color-window-bg);
+	cursor: pointer;
+	touch-action: none;
+}
+
+.home-indicator span {
+	width: 134px;
+	height: 5px;
+	border-radius: 3px;
+	background-color: var(--color-text);
+	opacity: 0.85;
+}
+
+.mobile-navbar-home.floating {
+	position: absolute;
+	top: calc(env(safe-area-inset-top) + 6px);
+	left: 8px;
+	z-index: 5;
+}
+
+/* 앱 안에서 한 단계 들어간 화면(대화, 메일 읽기)에서는 앱의 뒤로 가기 버튼만 둔다 */
+.container.mobile:has(.messages.chat-open, .mail.detail-open) .mobile-navbar-home.floating {
+	display: none;
+}

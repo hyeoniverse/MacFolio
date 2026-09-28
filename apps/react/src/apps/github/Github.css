@@ -277,3 +277,58 @@
 .repo-item button:hover {
 	background-color: #5a39d7;
 }
+
+/* ─── 좁은 창: 프로필을 위에, 내용을 아래에 ─── */
+.github-shell {
+	container-type: inline-size;
+	height: 100%;
+}
+
+@container (max-width: 600px) {
+	.github-layout {
+		flex-direction: column;
+		height: auto;
+		min-height: 100%;
+	}
+
+	.github-layout .left-section,
+	.github-layout .right-section {
+		width: 100%;
+		height: auto;
+		overflow: visible;
+	}
+
+	.profile-container {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		overflow: visible;
+	}
+
+	.profile-container .profile-image img {
+		width: 96px;
+		margin-bottom: 0;
+	}
+
+	.profile-container .profile-info h2 {
+		font-size: 1.4rem;
+	}
+
+	.profile-container .profile-info p {
+		margin-bottom: 0.25rem;
+		font-size: 0.9rem;
+	}
+
+	.profile-links {
+		margin-top: 0.5rem;
+	}
+
+	.right-section h2 {
+		font-size: 1.5rem;
+	}
+
+	.right-section .repos-list {
+		grid-template-columns: 1fr;
+		padding: 1rem;
+	}
+}

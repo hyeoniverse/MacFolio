@@ -34,27 +34,29 @@ const Safari: React.FC = () => {
 
 	return (
 		<AppWindow title="Portfolio" appName="safari">
-			<header>
-				<h1>
-					<strong>김정현의 포트폴리오</strong>
-				</h1>
-				<p>
-					안녕하세요, 늘 고민하는 개발자 김정현입니다.
-					<br />제 프로젝트들을 소개합니다.
-				</p>
-			</header>
-			<div className="projects">
-				{projects.map((project, index) => (
-					<div key={index} className="project">
-						<div className="img-container">
-							<img src={project.imgSrc} alt={project.title} />
+			<div className="safari">
+				<header>
+					<h1>
+						<strong>김정현의 포트폴리오</strong>
+					</h1>
+					<p>
+						안녕하세요, 늘 고민하는 개발자 김정현입니다.
+						<br />제 프로젝트들을 소개합니다.
+					</p>
+				</header>
+				<div className="projects">
+					{projects.map((project, index) => (
+						<div key={index} className="project">
+							<div className="img-container">
+								<img src={project.imgSrc} alt={project.title} />
+							</div>
+							<h2>{project.title}</h2>
+							<h2>{project.subtitle}</h2>
+							<span>{project.description}</span>
+							<button onClick={() => window.open(project.link, '_blank')}>자세히 보러가기</button>
 						</div>
-						<h2>{project.title}</h2>
-						<h2>{project.subtitle}</h2>
-						<span>{project.description}</span>
-						<button onClick={() => window.open(project.link, '_blank')}>자세히 보러가기</button>
-					</div>
-				))}
+					))}
+				</div>
 			</div>
 		</AppWindow>
 	);

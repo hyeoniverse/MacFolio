@@ -24,3 +24,27 @@ export function bringToFront<Name extends string, App extends StackedApp>(
 	next[target] = { ...apps[target], zIndex: others.length, isMinimized: false };
 	return next;
 }
+
+export interface RunningApp extends StackedApp {
+	isRunning: boolean;
+}
+
+/** 화면 맨 앞에 보이는 앱. 실행 중이고 최소화되지 않은 앱 중 zIndex가 가장 크다. 없으면 null. */
+export function foregroundApp<Name extends string>(apps: Record<Name, RunningApp>): Name | null {
+	let top: Name | null = null;
+	for (const name of Object.keys(apps) as Name[]) {
+		const app = apps[name];
+		if (!app.isRunning || app.isMinimized) continue;
+		if (top === null || app.zIndex > apps[top].zIndex) top = name;
+	}
+	return top;
+}
+
+/** 실행 중인 앱을 모두 최소화한다 (모바일의 홈으로 가기). 입력은 바꾸지 않는다. */
+export function minimizeAll<Name extends string, App extends RunningApp>(apps: Record<Name, App>): Record<Name, App> {
+	const next = { ...apps };
+	for (const name of Object.keys(apps) as Name[]) {
+		if (apps[name].isRunning) next[name] = { ...apps[name], isMinimized: true };
+	}
+	return next;
+}
