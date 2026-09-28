@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import DockItem from '@/desktop/dock/DockItem';
 import '@/desktop/dock/Dock.css';
 import { useAppState } from '@/desktop/AppStateContext';
@@ -8,38 +8,20 @@ import 'react-toastify/dist/ReactToastify.css';
 import '@/desktop/dock/Toast.css';
 import { env } from '@/shared/config/env';
 import { APP_MANIFEST, DOCK_APPS, type AppName } from '@/apps/manifest';
+import { useViewport } from '@/shared/hooks/useViewport';
 
 const imgUrl = env.imageUrl;
 const iconOf = (appName: AppName) => `${imgUrl}/${APP_MANIFEST[appName].icon}`;
 
 const Dock: React.FC = () => {
 	const { apps, openApp, maximizeApp, bringAppToFront } = useAppState();
-	const [hiddenItems, setHiddenItems] = useState<AppName[]>([]);
-	const [dockWidth, setDockWidth] = useState(window.innerWidth);
 	const [isLaunchpadOpen, setIsLaunchpadOpen] = useState(false); // 모달 상태 관리
 	const [isSharing, setIsSharing] = useState(false); // share 앱의 인디케이터 상태 관리
 
-	useEffect(() => {
-		const handleResize = () => {
-			setDockWidth(window.innerWidth);
-		};
-		window.addEventListener('resize', handleResize);
-
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	}, []);
-
-	useEffect(() => {
-		const availableWidth = dockWidth - 300;
-		const maxItems = Math.floor(availableWidth / 100);
-
-		if (DOCK_APPS.length > maxItems) {
-			setHiddenItems(DOCK_APPS.slice(maxItems));
-		} else {
-			setHiddenItems([]);
-		}
-	}, [dockWidth]);
+	// Dock에 다 들어가지 않는 앱은 Launchpad로 보낸다 (아이콘 하나당 100px, 양옆 여백 300px)
+	const { width } = useViewport();
+	const maxItems = Math.floor((width - 300) / 100);
+	const hiddenItems: AppName[] = DOCK_APPS.length > maxItems ? DOCK_APPS.slice(maxItems) : [];
 
 	const isShareApp = (appName: AppName) => APP_MANIFEST[appName].action?.type === 'share';
 

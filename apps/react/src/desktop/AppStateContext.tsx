@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
+import { bringToFront } from '@/desktop/appStack';
 
 export type AppState = {
 	isRunning: boolean;
@@ -46,40 +47,9 @@ export const useAppState = () => {
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [apps, setApps] = useState<Record<AppName, AppState>>(initialAppStates);
 
+	// 화면 밖 창을 되돌리는 처리는 창이 렌더링될 때 한다 (desktop/window/geometry.ts의 clampRect)
 	const bringAppToFront = useCallback((appName: AppName) => {
-		setApps((prevState) => {
-			const updatedApps = { ...prevState };
-
-			// Step 1: zIndex를 정렬하여 target app이 최상위가 되도록 설정
-			const sortedApps = Object.entries(updatedApps).sort(([, a], [, b]) => a.zIndex - b.zIndex);
-			sortedApps.forEach(([name], index) => {
-				updatedApps[name as AppName].zIndex = index;
-			});
-			updatedApps[appName].zIndex = sortedApps.length; // Bring to front
-
-			// Step 2: 앱이 최소화된 상태라면 복원
-			if (updatedApps[appName].isMinimized) {
-				updatedApps[appName].isMinimized = false;
-			}
-
-			// Step 3: 화면 밖에 있으면 중앙으로 이동
-			setTimeout(() => {
-				const appElement = document.getElementById(`app-${appName}`);
-				if (appElement) {
-					const rect = appElement.getBoundingClientRect();
-					const isOutOfBounds =
-						rect.right < 0 || rect.left > window.innerWidth || rect.bottom < 0 || rect.top > window.innerHeight;
-
-					if (isOutOfBounds) {
-						appElement.style.transition = 'transform 0.5s ease-in-out';
-						appElement.style.transform = `translate(${window.innerWidth / 2 - rect.width / 2}px, 
-                                                            ${window.innerHeight / 2 - rect.height / 2}px)`;
-					}
-				}
-			}, 100);
-
-			return updatedApps;
-		});
+		setApps((prevState) => bringToFront(prevState, appName));
 	}, []);
 
 	const toggleAppState = useCallback((appName: AppName) => {
@@ -130,7 +100,6 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 			[appName]: {
 				...prevState[appName],
 				isMinimized: false,
-				isMaximized: true, // isMaximized 상태 추가
 			},
 		}));
 	}, []);
