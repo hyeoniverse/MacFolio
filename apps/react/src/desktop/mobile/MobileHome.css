@@ -21,9 +21,21 @@
 	filter: brightness(0.7);
 }
 
+/* 홈 화면 위젯 공통: iOS처럼 가장자리를 아이콘 줄(4열 격자 안의 60px 아이콘)에 맞추고, 안쪽 여백을 같게 */
+.mobile-home {
+	--home-icon: 60px;
+	--widget-inset: calc((100% / 4 - var(--home-icon)) / 2);
+	--widget-padding: 16px;
+}
+
+.mobile-widget,
+.mobile-music-widget {
+	margin-inline: var(--widget-inset);
+}
+
 /* 소개 위젯 */
 .mobile-widget {
-	padding: 14px 18px;
+	padding: var(--widget-padding);
 	border-radius: 22px;
 	background-color: rgba(255, 255, 255, 0.22);
 	backdrop-filter: blur(24px) saturate(160%);
@@ -64,6 +76,7 @@
 .mobile-music-widget {
 	flex: none;
 	margin-top: 14px;
+	padding: var(--widget-padding);
 	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
 }
 
@@ -95,8 +108,8 @@
 }
 
 .mobile-app img {
-	width: 60px;
-	height: 60px;
+	width: var(--home-icon);
+	height: var(--home-icon);
 	object-fit: cover;
 	border-radius: 14px;
 	transition: transform 0.15s ease;

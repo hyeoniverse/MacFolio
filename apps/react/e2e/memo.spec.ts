@@ -104,4 +104,40 @@ test.describe('메모 (블로그)', () => {
 		await memo.getByRole('button', { name: '사이드바 보기' }).click();
 		await expect(folders.getByRole('button', { name: /모든 글/ })).toBeVisible();
 	});
+
+	test('하위 폴더를 접고 펼치고, 상위 폴더를 고르면 하위 폴더의 글도 보인다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		const child = folders.getByRole('button', { name: /^MacFolio/ });
+		await expect(child).toBeVisible();
+
+		await folders.getByRole('button', { name: /^개발기/ }).click();
+		await expect(memo.locator('.memo-item')).not.toHaveCount(0);
+
+		await folders.getByRole('button', { name: '하위 폴더 접기 (개발기)' }).click();
+		await expect(child).toBeHidden();
+		await folders.getByRole('button', { name: '하위 폴더 펼치기 (개발기)' }).click();
+		await expect(child).toBeVisible();
+	});
+
+	test('갤러리로 보기: 글을 카드로 보여주고, 카드를 누르면 글이 열리고 갤러리로 돌아온다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await memo.getByRole('button', { name: '갤러리로 보기' }).first().click();
+
+		const gallery = memo.getByRole('region', { name: '갤러리' });
+		await expect(gallery).toBeVisible();
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeHidden();
+		const cards = gallery.locator('.memo-card');
+		await expect(cards).not.toHaveCount(0);
+
+		await cards.filter({ hasText: 'CRA에서 Vite로 옮기기' }).click();
+		await expect(memo.getByRole('article', { name: 'CRA에서 Vite로 옮기기' })).toBeVisible();
+		await expect(gallery).toBeHidden();
+
+		await memo.locator('.memo-gallery-back').click();
+		await expect(gallery).toBeVisible();
+
+		await gallery.getByRole('button', { name: '목록으로 보기' }).click();
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+	});
 });

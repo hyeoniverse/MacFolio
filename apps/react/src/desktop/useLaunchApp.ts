@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { toast } from 'react-toastify';
 import { useAppState } from '@/desktop/AppStateContext';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
+import { notify } from '@/desktop/notifications/notificationStore';
+
+/** 공유 앱의 실행 중 표시(점)를 켜 두는 시간. 알림이 떠 있는 동안 */
+const SHARING_MS = 3500;
 
 /**
  * 앱 아이콘을 눌렀을 때의 동작. Dock과 모바일 홈 화면이 함께 쓴다.
@@ -24,11 +27,8 @@ export function useLaunchApp() {
 		if (action?.type === 'share') {
 			navigator.clipboard.writeText(window.location.href);
 			setIsSharing(true);
-			toast.info('링크가 복사되었습니다!', {
-				className: 'custom-toast',
-				progressClassName: 'custom-toast-progress',
-				onClose: () => setIsSharing(false),
-			});
+			notify({ app: 'share', title: '링크 복사됨', body: '링크가 복사되었습니다!' });
+			setTimeout(() => setIsSharing(false), SHARING_MS);
 			return;
 		}
 

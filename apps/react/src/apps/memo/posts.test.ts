@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+	buildFolderTree,
+	firstImage,
+	inFolder,
 	ALL_CATEGORY,
 	excerpt,
 	filterPosts,
 	formatPostDate,
-	listCategories,
 	parseFrontmatter,
 	resolveImageSrc,
 	sortPosts,
@@ -81,14 +83,6 @@ describe('목록', () => {
 		expect(sortPosts(posts).map((p) => p.slug)).toEqual(['b', 'c', 'a']);
 	});
 
-	it('카테고리: 모든 글이 맨 앞, 나머지는 가나다순과 글 수', () => {
-		expect(listCategories(posts)).toEqual([
-			{ name: ALL_CATEGORY, count: 3 },
-			{ name: '개발기', count: 2 },
-			{ name: '회고', count: 1 },
-		]);
-	});
-
 	it('카테고리와 검색어(제목·본문, 대소문자 무시)로 거른다', () => {
 		expect(filterPosts(posts, '개발기', '').map((p) => p.slug)).toEqual(['b', 'c']);
 		expect(filterPosts(posts, ALL_CATEGORY, 'VITE').map((p) => p.slug)).toEqual(['a']);
@@ -119,5 +113,42 @@ describe('resolveImageSrc', () => {
 	it('없는 파일이나 빈 주소는 null', () => {
 		expect(resolveImageSrc('./images/none.png', images)).toBeNull();
 		expect(resolveImageSrc(undefined, images)).toBeNull();
+	});
+});
+
+describe('폴더', () => {
+	const post = (category: string, slug = category): Post => ({
+		slug,
+		title: slug,
+		date: '2026-09-28',
+		category,
+		summary: '',
+		body: '',
+	});
+	const posts = [post('개발기/MacFolio', 'a'), post('개발기/MacFolio', 'b'), post('개발기', 'c'), post('회고', 'd')];
+
+	it("category의 '/'로 하위 폴더를 만들고, 상위 폴더는 하위 폴더의 글까지 센다", () => {
+		expect(buildFolderTree(posts)).toEqual([
+			{
+				name: '개발기',
+				path: '개발기',
+				count: 3,
+				children: [{ name: 'MacFolio', path: '개발기/MacFolio', count: 2, children: [] }],
+			},
+			{ name: '회고', path: '회고', count: 1, children: [] },
+		]);
+	});
+
+	it('상위 폴더를 고르면 하위 폴더의 글도 보인다', () => {
+		expect(inFolder(posts[0], '개발기')).toBe(true);
+		expect(inFolder(posts[0], '개발')).toBe(false);
+		expect(filterPosts(posts, '개발기', '').map((p) => p.slug)).toEqual(['a', 'b', 'c']);
+	});
+});
+
+describe('firstImage', () => {
+	it('본문의 첫 이미지 주소를 찾는다', () => {
+		expect(firstImage('글\n\n![설명](./images/a.png "캡션")\n![b](b.png)')).toBe('./images/a.png');
+		expect(firstImage('이미지 없음')).toBeNull();
 	});
 });

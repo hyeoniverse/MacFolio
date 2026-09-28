@@ -1,6 +1,3 @@
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import '@/desktop/dock/Toast.css';
 import '@/desktop/mobile/MobileHome.css';
 import { APP_MANIFEST, APP_NAMES, type AppName } from '@/apps/manifest';
 import { WINDOW_APPS } from '@/apps/registry';
@@ -37,8 +34,6 @@ const AppIcon = ({ name, showLabel, onLaunch }: { name: AppName; showLabel: bool
 const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	return (
 		<div className="mobile-home">
-			<ToastContainer position="top-center" autoClose={1200} hideProgressBar closeOnClick />
-
 			<section className="mobile-widget" aria-label="소개">
 				<p className="mobile-widget-eyebrow">Portfolio</p>
 				<h1>{PROFILE.name}</h1>

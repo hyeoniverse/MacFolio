@@ -92,8 +92,14 @@ test.describe('데스크톱', () => {
 		await enterDesktop(page);
 
 		await dockItem(page, 'share').click();
-		await expect(page.getByText('링크가 복사되었습니다!')).toBeVisible();
+		const notice = page.getByRole('status').filter({ hasText: '링크가 복사되었습니다!' });
+		await expect(notice).toBeVisible();
 		expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(page.url());
+
+		// macOS 알림처럼 마우스를 올리면 닫기 단추가 보인다
+		await notice.hover();
+		await notice.getByRole('button', { name: '알림 닫기' }).click();
+		await expect(notice).toBeHidden();
 	});
 });
 

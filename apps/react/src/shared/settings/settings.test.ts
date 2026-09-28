@@ -10,10 +10,10 @@ import {
 
 describe('parseSettings', () => {
 	it('올바른 값은 그대로 읽는다', () => {
-		expect(parseSettings({ theme: 'dark', wallpaper: 'sonoma', mobileWallpaper: 'dusk' })).toEqual({
+		expect(parseSettings({ theme: 'dark', wallpaper: 'sonoma', mobileWallpaper: 'earth' })).toEqual({
 			theme: 'dark',
 			wallpaper: 'sonoma',
-			mobileWallpaper: 'dusk',
+			mobileWallpaper: 'earth',
 		});
 	});
 
@@ -46,10 +46,10 @@ describe('resolveTheme', () => {
 
 describe('wallpaperCss', () => {
 	it('어두운 버전이 있으면 화면 모드를 따른다', () => {
-		const settings = { ...DEFAULT_SETTINGS, wallpaper: 'sonoma', mobileWallpaper: 'halo' } as const;
+		const settings = { ...DEFAULT_SETTINGS, wallpaper: 'sonoma', mobileWallpaper: 'kaleidoscope' } as const;
 		expect(wallpaperCss(settings, 'light')).toEqual({
 			desktop: "url('/imgs/wallpapers/sonoma-light.jpg')",
-			mobile: "url('/imgs/wallpapers/ios-halo-light.jpg')",
+			mobile: "url('/imgs/wallpapers/ios-kaleidoscope-light.jpg')",
 		});
 		expect(wallpaperCss(settings, 'dark').desktop).toContain('sonoma-dark.jpg');
 	});
