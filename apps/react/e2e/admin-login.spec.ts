@@ -1,47 +1,6 @@
 import { test, expect, enterDesktop, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
-
-const API = 'http://api.test';
-
-/**
- * 가짜 API. 실제 서버처럼 /auth/github는 로그인을 마친 뒤 사이트로 돌려보내고(?admin=signed-in),
- * 그 뒤로 /auth/me는 관리자를 알려 준다. 쿠키 대신 테스트 안의 변수로 로그인 상태를 기억한다.
- */
-async function fakeApi(page: Page, { admin = true } = {}) {
-	const state = { signedIn: false };
-	const cors = (origin: string) => ({
-		'Access-Control-Allow-Origin': origin,
-		'Access-Control-Allow-Credentials': 'true',
-	});
-	await page.addInitScript((url) => {
-		window.__MACFOLIO_API_URL__ = url;
-	}, API);
-	await page.route('https://github.com/*.png*', (route) => route.fulfill({ status: 404 }));
-	await page.route(`${API}/auth/**`, async (route) => {
-		const request = route.request();
-		const origin = (await request.headerValue('origin')) ?? 'http://localhost:4173';
-		const path = new URL(request.url()).pathname;
-		if (path === '/auth/me') {
-			return route.fulfill(
-				state.signedIn
-					? { status: 200, headers: cors(origin), json: { login: 'hyeoniverse' } }
-					: { status: 401, headers: cors(origin), json: { statusCode: 401 } }
-			);
-		}
-		if (path === '/auth/github') {
-			// 관리자 계정이면 세션이 생기고, 아니면 denied로 돌아온다
-			state.signedIn = admin;
-			const result = admin ? 'signed-in' : 'denied';
-			return route.fulfill({ status: 302, headers: { Location: `http://localhost:4173/?admin=${result}` } });
-		}
-		if (path === '/auth/logout') {
-			state.signedIn = false;
-			return route.fulfill({ status: 204, headers: cors(origin) });
-		}
-		return route.fulfill({ status: 404 });
-	});
-	return state;
-}
+import { fakeApi } from './fakeApi';
 
 const appleMenu = (page: Page) => page.getByRole('menu', { name: 'Apple 메뉴' });
 

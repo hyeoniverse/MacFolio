@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>Markdown 글 위에 서버의 정리 내용을 겹쳐 보여 주는 구조</title>
+  <rect width="640" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">글은 Markdown에, 정리는 서버에</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker></defs>
+  <g font-size="13">
+    <rect x="32" y="70" width="200" height="84" rx="10" fill="#f3f4f6"/>
+    <text x="48" y="94" fill="#1f2937" font-weight="600">Markdown 글 (저장소)</text>
+    <text x="48" y="116" fill="#6b7280" font-size="12">제목, 날짜, 본문, 원래 폴더</text>
+    <text x="48" y="134" fill="#6b7280" font-size="12">빌드할 때 함께 묶인다</text>
+    <rect x="32" y="176" width="200" height="84" rx="10" fill="#eef0ff" stroke="#646cff"/>
+    <text x="48" y="200" fill="#3f46c7" font-weight="600">정리 내용 (API · DB)</text>
+    <text x="48" y="222" fill="#3f46c7" font-size="12">만든 폴더, 옮긴 글·폴더, 고정</text>
+    <text x="48" y="240" fill="#3f46c7" font-size="12">관리자만 바꾼다</text>
+    <path d="M232 112 C 280 112, 290 160, 330 160" stroke="#6b7280" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+    <path d="M232 218 C 280 218, 290 170, 330 170" stroke="#646cff" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+    <rect x="336" y="126" width="120" height="78" rx="10" fill="#1f2937"/>
+    <text x="396" y="160" fill="#ffffff" text-anchor="middle" font-weight="600">organizePosts</text>
+    <text x="396" y="180" fill="#9ca3af" text-anchor="middle" font-size="11">겹쳐 보기 (순수 함수)</text>
+    <path d="M456 165 H492" stroke="#6b7280" stroke-width="1.6" marker-end="url(#a)"/>
+    <rect x="498" y="126" width="110" height="78" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+    <text x="553" y="160" fill="#1f2937" text-anchor="middle" font-weight="600">메모 화면</text>
+    <text x="553" y="180" fill="#6b7280" text-anchor="middle" font-size="11">방문자도 같게</text>
+  </g>
+  <text x="32" y="286" font-size="12" fill="#9ca3af">글을 옮겨도 Markdown 파일은 그대로다. 정리 내용을 비우면 원래 폴더로 돌아간다</text>
+</svg>
