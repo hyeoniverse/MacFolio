@@ -396,17 +396,20 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(table).toHaveClass(/memo-table-active/);
 		await expect(table.locator('.memo-cell-current')).toHaveCount(1);
 
-		// 열 막대는 지금 칸 위에 칸 폭만큼 (표를 가리지 않는다)
+		// 손잡이는 크기가 늘 같은 둥근 알약: 열은 지금 칸 위 가운데, 행은 표 왼쪽 (표를 가리지 않는다)
 		await table.locator('td', { hasText: 'e' }).click();
 		const colHandle = memo.getByRole('button', { name: '이 열 편집' });
 		const rowHandle = memo.getByRole('button', { name: '이 행 편집' });
 		const cell = (await table.locator('td', { hasText: 'e' }).boundingBox())!;
 		const bar = (await colHandle.boundingBox())!;
-		const top = (await table.boundingBox())!.y;
-		expect(Math.abs(bar.x - cell.x)).toBeLessThan(2);
-		expect(Math.abs(bar.width - cell.width)).toBeLessThan(2);
-		expect(bar.y + bar.height).toBeLessThanOrEqual(top);
-		expect((await rowHandle.boundingBox())!.x + 16).toBeLessThanOrEqual((await table.boundingBox())!.x);
+		const tableBox = (await table.boundingBox())!;
+		expect(bar.width).toBe(26);
+		expect(bar.height).toBe(12);
+		expect(Math.abs(bar.x + bar.width / 2 - (cell.x + cell.width / 2))).toBeLessThan(2);
+		expect(bar.y + bar.height).toBeLessThanOrEqual(tableBox.y);
+		const rowBox = (await rowHandle.boundingBox())!;
+		expect([rowBox.width, rowBox.height]).toEqual([12, 26]);
+		expect(rowBox.x + rowBox.width).toBeLessThanOrEqual(tableBox.x);
 
 		// 열 막대를 누르면 열 전체를 고르고 메뉴가 열린다
 		await colHandle.click();
@@ -448,6 +451,57 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.locator('.ProseMirror > p').first().click();
 		await expect(colHandle).toHaveCount(0);
 		await expect(table).not.toHaveClass(/memo-table-active/);
+	});
+
+	test('표: 행·열 전체를 고른 뒤 손잡이를 끌어 옮긴다 (머리글 행은 옮기지 않는다)', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('옮기기');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('위 문단');
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
+		for (const text of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']) {
+			await page.keyboard.type(text);
+			if (text !== 'i') await page.keyboard.press('Tab');
+		}
+		const table = memo.locator('.ProseMirror table');
+		const dragBy = async (handle: import('@playwright/test').Locator, dx: number, dy: number) => {
+			const box = (await handle.boundingBox())!;
+			const x = box.x + box.width / 2;
+			const y = box.y + box.height / 2;
+			await page.mouse.move(x, y);
+			await page.mouse.down();
+			await page.mouse.move(x + dx / 2, y + dy / 2, { steps: 5 });
+			await page.mouse.move(x + dx, y + dy, { steps: 5 });
+			await page.mouse.up();
+		};
+
+		// 첫 열(a·d·g)을 골라 오른쪽 끝으로 끈다
+		await table.locator('th', { hasText: 'a' }).click();
+		const colHandle = memo.getByRole('button', { name: '이 열 편집' });
+		await colHandle.click();
+		await page.keyboard.press('Escape');
+		const width = (await table.locator('th').first().boundingBox())!.width;
+		await dragBy(colHandle, width * 2.2, 0);
+		await expect(table.locator('tr').first().locator('th')).toHaveText(['b', 'c', 'a']);
+		await expect(table.locator('tr').nth(1).locator('td')).toHaveText(['e', 'f', 'd']);
+		// 끌기 뒤에는 메뉴가 열리지 않는다
+		await expect(page.getByRole('dialog', { name: '열 편집' })).toHaveCount(0);
+
+		// 마지막 행(g…)을 골라 위로 끌면 첫 본문 행이 된다 (머리글 위로는 못 간다)
+		await table.locator('td', { hasText: 'h' }).click();
+		const rowHandle = memo.getByRole('button', { name: '이 행 편집' });
+		await rowHandle.click();
+		await page.keyboard.press('Escape');
+		const height = (await table.locator('tr').nth(1).boundingBox())!.height;
+		await dragBy(rowHandle, 0, -height * 3);
+		await expect(table.locator('tr').first().locator('th')).toHaveText(['b', 'c', 'a']);
+		await expect(table.locator('tr').nth(1).locator('td')).toHaveText(['h', 'i', 'g']);
+		await expect
+			.poll(() => api.posts[0]?.body)
+			.toMatch(/\| b +\| c +\| a +\|[\s\S]*\| h +\| i +\| g +\|\n\| e +\| f +\| d +\|/);
 	});
 
 	test('표 앞뒤에 커서를 두고, 뒤에서 Backspace를 두 번 누르면 표가 지워진다', async ({ page }) => {

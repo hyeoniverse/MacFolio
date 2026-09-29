@@ -15,6 +15,9 @@ export interface TableState {
 	rows: number;
 	cols: number;
 	align: TableAlign;
+	/** 지금(고른 범위 첫) 행·열 번호. 행 0은 머리글 */
+	row: number;
+	col: number;
 	/** 고른 행·열 수 (커서만 있으면 1) */
 	selectedRows: number;
 	selectedCols: number;
@@ -61,6 +64,8 @@ export type FormatAction =
 	| { type: 'quote' }
 	| { type: 'table' }
 	| { type: 'tableOp'; op: TableOp }
+	/** 고른 행·열을 끌어서 옮기기 */
+	| { type: 'tableMove'; kind: 'row' | 'col'; from: number; to: number }
 	| { type: 'image'; src: string; alt: string; title?: string }
 	/** 고른 이미지의 설명·캡션 바꾸기 */
 	| { type: 'imageAttrs'; alt: string; title: string }

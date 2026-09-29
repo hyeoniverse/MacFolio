@@ -19,7 +19,7 @@ import {
 } from '@milkdown/kit/preset/commonmark';
 import { insertTableCommand, toggleStrikethroughCommand } from '@milkdown/kit/preset/gfm';
 import { callCommand } from '@milkdown/kit/utils';
-import { runTableOp, tableStateOf } from './tableCommands';
+import { moveTablePart, runTableOp, tableStateOf } from './tableCommands';
 import { clearFind, replaceFind, setFind } from './findPlugin';
 import { attachmentTitle } from './attachments';
 import { blockOfHeading, EMPTY_FORMAT, HEADING_LEVEL, type FormatAction, type FormatState } from './editorControls';
@@ -188,6 +188,9 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			break;
 		case 'tableOp':
 			runTableOp(ctx, action.op);
+			break;
+		case 'tableMove':
+			moveTablePart(view, action.kind, action.from, action.to);
 			break;
 		case 'image':
 			insertImage(view, { src: action.src, alt: action.alt, title: action.title ?? '' });
