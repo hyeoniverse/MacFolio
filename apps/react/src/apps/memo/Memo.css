@@ -3098,22 +3098,26 @@
 
 .memo-caption-input {
 	display: block;
-	width: min(100%, 420px);
+	width: 100%;
+	/* 캡션과 같은 자리·글자 크기로 바뀌어 들어선다 */
 	margin: 0.5em auto 0;
-	padding: 3px 8px;
-	border: 1px solid var(--memo-border);
+	padding: 1px 8px;
+	border: none;
 	border-radius: 6px;
-	background: none;
+	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;
 	font-size: 12px;
+	line-height: 1.75;
 	text-align: center;
 	outline: none;
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--memo-accent) 55%, transparent);
 }
 
-.memo-caption-input:focus {
-	border-color: var(--memo-accent);
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--memo-accent) 35%, transparent);
+/* 캡션과 입력칸은 번갈아 하나만 (display를 준 요소는 hidden 속성만으로는 숨지 않는다) */
+.memo-figure > .memo-caption[hidden],
+.memo-figure > .memo-caption-input[hidden] {
+	display: none;
 }
 
 /* 끌어다 놓을 자리 (이미지·문단을 끌 때). body에 그린다 */
