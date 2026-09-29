@@ -3033,3 +3033,94 @@
 		transition-duration: 1ms;
 	}
 }
+
+/* 이미지 틀: 그림 오른쪽 위에 내려받기 단추 (읽기·편집 화면 같은 모양) */
+/* 틀은 본문 폭 그대로 (크기 정보가 없는 SVG도 본문 폭으로 보이게), 그림은 가운데 */
+.memo-figure-frame {
+	display: block;
+	position: relative;
+}
+
+.memo-figure-download {
+	display: grid;
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: rgba(0, 0, 0, 0.55);
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	opacity: 0;
+	place-items: center;
+	backdrop-filter: blur(8px);
+	transition:
+		opacity var(--duration-fast) var(--ease-out),
+		background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-figure-frame:hover .memo-figure-download,
+.memo-figure-download:focus-visible {
+	opacity: 1;
+}
+
+.memo-figure-download:hover {
+	background-color: rgba(0, 0, 0, 0.75);
+}
+
+@media (hover: none) {
+	.memo-figure-download {
+		opacity: 1;
+	}
+}
+
+/* 편집기의 캡션: 누르면 그 자리에서 고친다. 비어 있으면 이미지를 골랐을 때만 '캡션 추가' */
+.memo-inline-editor .memo-caption {
+	cursor: text;
+}
+
+.memo-inline-editor .memo-caption:hover {
+	color: var(--memo-text);
+}
+
+.memo-inline-editor .memo-caption.empty {
+	display: none;
+	opacity: 0.6;
+}
+
+.memo-inline-editor .memo-figure.selected .memo-caption.empty {
+	display: block;
+}
+
+.memo-caption-input {
+	display: block;
+	width: min(100%, 420px);
+	margin: 0.5em auto 0;
+	padding: 3px 8px;
+	border: 1px solid var(--memo-border);
+	border-radius: 6px;
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	font-size: 12px;
+	text-align: center;
+	outline: none;
+}
+
+.memo-caption-input:focus {
+	border-color: var(--memo-accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--memo-accent) 35%, transparent);
+}
+
+/* 끌어다 놓을 자리 (이미지·문단을 끌 때). body에 그린다 */
+.milkdown-drop-indicator {
+	z-index: 10000;
+	margin: 0 !important;
+	border-radius: 2px;
+	background-color: #edbb4d;
+	box-shadow: 0 0 0 2px color-mix(in srgb, #edbb4d 30%, transparent);
+}

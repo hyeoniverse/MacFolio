@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { resolveImageSrc } from '../posts';
 import { CONTENT_IMAGES } from '../contentImages';
 import { captionParts } from '../caption';
+import { downloadImage } from '../download';
 
 interface Props {
 	src?: string;
@@ -26,14 +27,25 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 
 	return (
 		<span className="memo-figure">
-			<button
-				type="button"
-				className="memo-image-button"
-				aria-label={`${alt || '이미지'} 크게 보기`}
-				onClick={() => setZoomed(true)}
-			>
-				<img src={resolved} alt={alt} loading="lazy" decoding="async" />
-			</button>
+			<span className="memo-figure-frame">
+				<button
+					type="button"
+					className="memo-image-button"
+					aria-label={`${alt || '이미지'} 크게 보기`}
+					onClick={() => setZoomed(true)}
+				>
+					<img src={resolved} alt={alt} loading="lazy" decoding="async" />
+				</button>
+				<button
+					type="button"
+					className="memo-figure-download"
+					aria-label="이미지 내려받기"
+					title="이미지 내려받기"
+					onClick={() => void downloadImage(resolved, alt)}
+				>
+					<i className="fa-solid fa-arrow-down" aria-hidden="true" />
+				</button>
+			</span>
 			{title && (
 				<span className="memo-caption">
 					{captionParts(title).map((part, index) =>

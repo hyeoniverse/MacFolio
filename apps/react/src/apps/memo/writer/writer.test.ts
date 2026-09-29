@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from './calendar';
 import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
 import { captionParts } from '../caption';
+import { imageFileName } from '../download';
 
 describe('이미지 경로', () => {
 	const images = { 'images/a.jpg': '/assets/a-123.jpg' };
@@ -64,5 +65,14 @@ describe('캡션 링크', () => {
 			{ text: '[x](javascript:alert(1)) 그냥 [괄호]' },
 		]);
 		expect(captionParts('')).toEqual([]);
+	});
+});
+
+describe('이미지 내려받기 파일 이름', () => {
+	it('설명을 이름으로, 형식에 맞는 확장자', () => {
+		expect(imageFileName('편집기 화면', 'http://api/files/abc', 'image/png')).toBe('편집기 화면.png');
+		expect(imageFileName('', 'https://images.unsplash.com/photo-123.jpg?w=1080', 'image/jpeg')).toBe('photo-123.jpg');
+		expect(imageFileName('a/b:c?', 'x', '')).toBe('abc.png');
+		expect(imageFileName('', '/assets/memo-editor-abc.webp', '')).toBe('memo-editor-abc.webp');
 	});
 });

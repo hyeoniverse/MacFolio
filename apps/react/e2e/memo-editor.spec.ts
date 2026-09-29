@@ -311,6 +311,52 @@ test.describe('바로 고치기 (관리자)', () => {
 		expect(api.uploads.map((upload) => upload.name)).toEqual(['스크린샷.png', '보고서.pdf', '붙여넣기.png']);
 	});
 
+	test('이미지: 캡션을 눌러 그 자리에서 고치고, 내려받기 단추로 받고, 끌 때 놓을 자리가 보인다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
+		const figure = memo.locator('.ProseMirror > .memo-figure').first();
+		await expect(figure).toBeVisible();
+
+		// 캡션 고치기: 누르면 입력칸, Enter로 저장
+		const caption = figure.locator('.memo-caption');
+		const before = (await caption.textContent())!;
+		await caption.click();
+		const input = figure.getByRole('textbox', { name: '캡션' });
+		await expect(input).toBeFocused();
+		await expect(input).toHaveValue(before);
+		await input.fill('고친 캡션');
+		await page.keyboard.press('Enter');
+		await expect(caption).toHaveText('고친 캡션');
+		await expect.poll(() => api.posts[0]?.body ?? '').toContain('"고친 캡션")');
+
+		// Esc는 취소
+		await caption.click();
+		await input.fill('버릴 캡션');
+		await page.keyboard.press('Escape');
+		await expect(caption).toHaveText('고친 캡션');
+
+		// 내려받기
+		const download = page.waitForEvent('download');
+		await figure.hover();
+		await figure.getByRole('button', { name: '이미지 내려받기' }).click();
+		expect((await download).suggestedFilename()).toMatch(/\.(jpg|png|webp)$/);
+
+		// 이미지를 끌면 놓을 자리에 선이 보인다
+		const img = (await figure.locator('img').boundingBox())!;
+		const target = (await memo.locator('.ProseMirror > h2').first().boundingBox())!;
+		await page.mouse.move(img.x + img.width / 2, img.y + img.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(target.x + 40, target.y + 2, { steps: 12 });
+		const indicator = page.locator('body > .milkdown-drop-indicator');
+		await expect(indicator).toBeVisible();
+		const line = (await indicator.boundingBox())!;
+		expect(line.height).toBeLessThanOrEqual(4);
+		expect(Math.abs(line.y - target.y)).toBeLessThan(40);
+		await page.mouse.up();
+		await expect(indicator).toBeHidden();
+	});
+
 	test('Unsplash에서 찾아 넣으면 설명과 출처 캡션이 채워지고, Unsplash에 알린다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
