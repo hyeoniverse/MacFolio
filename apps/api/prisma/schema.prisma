@@ -24,3 +24,14 @@ model AdminSession {
 
   @@index([expiresAt])
 }
+
+/// 메모(블로그) 정리 내용: 만든 폴더, 옮긴 글·폴더, 고정. 글은 저장소의 Markdown 파일이고, 이 정리 내용을 겹쳐 보여 준다.
+/// 한 행만 쓴다 (id = 1). 관리자만 바꾼다
+model MemoOrganization {
+  id        Int      @id @default(1)
+  /// { folders, posts, moves, pins } (apps/react/src/apps/memo/organize.ts의 Organization)
+  data      Json
+  updatedAt DateTime @updatedAt
+  /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
+  updatedBy String
+}

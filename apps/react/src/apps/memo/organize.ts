@@ -1,10 +1,11 @@
-// 방문자가 메모를 정리한 내용: 만든 폴더, 옮긴 글, 옮긴 폴더.
-// 글은 저장소의 Markdown 파일이라 파일은 그대로 두고, 이 브라우저에만 정리 내용을 저장해 겹쳐 보여준다.
-// React에 의존하지 않는 순수 함수와 저장소만 둔다.
+// 관리자가 메모를 정리한 내용: 만든 폴더, 옮긴 글, 옮긴 폴더, 고정.
+// 글은 저장소의 Markdown 파일이라 파일은 그대로 두고, API(/memo/organization)에 저장한 정리 내용을 겹쳐 보여준다.
+// 서버도 같은 규칙(3단, 이름)을 검사한다 (apps/api/src/memo/organization.ts). React에 의존하지 않는 순수 함수만 둔다.
 import type { Post } from './posts';
 
-export const ORGANIZATION_KEY = 'macfolio:memo:organization';
-/** 예전(폴더 이름 목록만 저장하던) 키 */
+/** 예전에 방문자 브라우저에 저장하던 키 (지금은 지우기만 한다) */
+const ORGANIZATION_KEY = 'macfolio:memo:organization';
+/** 더 예전(폴더 이름 목록만 저장하던) 키 */
 const LEGACY_FOLDERS_KEY = 'macfolio:memo:folders';
 export const FOLDER_NAME_MAX = 30;
 /** 폴더는 3단까지 (예: 개발기/MacFolio/초안) */
@@ -133,30 +134,24 @@ export function removeFolder(organization: Organization, path: string): Organiza
 	};
 }
 
-export function loadOrganization(): Organization {
-	try {
-		const raw: unknown = JSON.parse(localStorage.getItem(ORGANIZATION_KEY) ?? 'null');
-		if (raw && typeof raw === 'object') {
-			const value = raw as Partial<Organization>;
-			return {
-				folders: Array.isArray(value.folders) ? value.folders.filter((f) => typeof f === 'string') : [],
-				posts: value.posts && typeof value.posts === 'object' ? value.posts : {},
-				moves: Array.isArray(value.moves) ? value.moves.filter((m) => m && typeof m.from === 'string') : [],
-				pins: value.pins && typeof value.pins === 'object' ? value.pins : {},
-			};
-		}
-		// 예전에 만든 폴더(이름 목록)를 옮겨 온다
-		const legacy: unknown = JSON.parse(localStorage.getItem(LEGACY_FOLDERS_KEY) ?? '[]');
-		localStorage.removeItem(LEGACY_FOLDERS_KEY);
-		return { ...EMPTY_ORGANIZATION, folders: Array.isArray(legacy) ? legacy.filter((f) => typeof f === 'string') : [] };
-	} catch {
-		return EMPTY_ORGANIZATION;
-	}
+/** API가 돌려준 값을 정리 내용으로 (모양이 다른 필드는 비운다) */
+export function normalizeOrganization(raw: unknown): Organization {
+	if (!raw || typeof raw !== 'object') return EMPTY_ORGANIZATION;
+	const value = raw as Partial<Organization>;
+	const isRecord = (field: unknown) => typeof field === 'object' && field !== null && !Array.isArray(field);
+	return {
+		folders: Array.isArray(value.folders) ? value.folders.filter((folder) => typeof folder === 'string') : [],
+		posts: isRecord(value.posts) ? (value.posts as Record<string, string>) : {},
+		moves: Array.isArray(value.moves)
+			? value.moves.filter((move) => move && typeof move.from === 'string' && typeof move.to === 'string')
+			: [],
+		pins: isRecord(value.pins) ? (value.pins as Record<string, boolean>) : {},
+	};
 }
 
 /**
- * 방문자 브라우저에 남은 정리 내용을 지운다.
- * 폴더·고정 같은 편집은 관리자만 할 수 있어서(#9), 예전에 방문자가 만든 정리 내용은 더 쓰지 않는다.
+ * 예전에 방문자 브라우저에 저장한 정리 내용을 지운다.
+ * 이제 정리 내용은 관리자만 바꾸고 서버에 저장하므로, 브라우저에 남은 것은 쓰지 않는다.
  */
 export function discardVisitorOrganization() {
 	try {
@@ -164,13 +159,5 @@ export function discardVisitorOrganization() {
 		localStorage.removeItem(LEGACY_FOLDERS_KEY);
 	} catch {
 		// 지우지 못해도 읽지 않으므로 상관없다
-	}
-}
-
-export function saveOrganization(organization: Organization) {
-	try {
-		localStorage.setItem(ORGANIZATION_KEY, JSON.stringify(organization));
-	} catch {
-		// 저장하지 못해도 이번 방문 동안은 보인다
 	}
 }
