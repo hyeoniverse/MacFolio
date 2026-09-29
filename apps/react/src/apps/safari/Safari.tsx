@@ -11,8 +11,8 @@ const START = 'start';
 type TabId = string;
 
 const findProject = (id: TabId) => PROJECTS.find((project) => project.id === id);
-/** 탭에 보일 짧은 제목 (예: 'QRU 큐알유' → 'QRU') */
-const tabTitle = (project?: Project) => (project ? project.name.split(/\s|\(/)[0] : '시작 페이지');
+/** 탭 제목. 지금 탭은 넓어서 다 보이고, 다른 탭은 좁아서 앞부분만 보인다 (말줄임) */
+const tabTitle = (project?: Project) => project?.name ?? '시작 페이지';
 
 /** 주소창에 보일 주소 (데모가 있으면 데모, 없으면 저장소) */
 const addressOf = (project: Project) => project.demo ?? project.url;
@@ -130,7 +130,7 @@ const Safari: React.FC = () => {
 					</button>
 				</div>
 
-				{/* 탭 막대: 프로젝트마다 탭 하나. 올리면 닫기 단추가 보인다 */}
+				{/* 탭 막대: 프로젝트마다 탭 하나. 지금 탭은 넉넉하게, 나머지는 짧게 나눠 갖는다. 올리면 닫기 단추가 보인다 */}
 				<div ref={tabList} className="safari-tabs" role="tablist" aria-label="프로젝트 탭">
 					{tabs.map((id) => {
 						const project = findProject(id);
@@ -156,7 +156,7 @@ const Safari: React.FC = () => {
 									onClick={() => setActiveId(id)}
 								>
 									<Favicon project={project} />
-									<span>{title}</span>
+									<span title={title}>{title}</span>
 								</button>
 							</div>
 						);
