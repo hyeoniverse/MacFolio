@@ -132,9 +132,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(task).toHaveAttribute('data-checked', 'false');
 		await task.click({ position: { x: 8, y: 10 } });
 		await expect(task).toHaveAttribute('data-checked', 'true');
-		await expect
-			.poll(() => api.posts[0]?.body)
-			.toBe('### 머리말이 될 줄\n\n**굵은 글**\n\n- [x] 할 일 하나\n');
+		await expect.poll(() => api.posts[0]?.body).toBe('### 머리말이 될 줄\n\n**굵은 글**\n\n- [x] 할 일 하나\n');
 
 		// 가가 메뉴의 이미지 넣기
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
