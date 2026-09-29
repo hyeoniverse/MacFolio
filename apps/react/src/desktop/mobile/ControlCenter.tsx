@@ -7,6 +7,7 @@ import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { IOS_WALLPAPERS } from '@/shared/settings/settings';
 import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
 import { PROFILE } from '@/shared/profile';
+import { signIn, useAdmin } from '@/shared/auth/adminStore';
 
 interface Props {
 	/** 열려 있는지 */
@@ -64,6 +65,7 @@ const ControlCenter = (props: Props) => (props.open || props.pull !== null ? <Pa
 
 const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 	const settings = useSettings();
+	const admin = useAdmin();
 	/** 위로 쓸어 닫는 중인 거리 */
 	const [lift, setLift] = useState<number | null>(null);
 	// 처음 그릴 때는 닫힌 모양으로 그렸다가 다음 프레임에 열어야 transition이 적용된다
@@ -157,6 +159,17 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 				</a>
 
 				<VolumeSlider />
+
+				{/* 관리자: 로그인하지 않았으면 바로 GitHub 로그인, 로그인했거나 서버가 없으면 암호 앱 */}
+				<button
+					type="button"
+					className={`cc-tile cc-toggle ${admin.status === 'signed-in' ? 'on' : ''}`}
+					aria-pressed={admin.status === 'signed-in'}
+					onClick={() => (admin.status === 'signed-out' ? signIn() : launch('passwords'))}
+				>
+					<i className="fa-solid fa-key" aria-hidden="true"></i>
+					<span className="visually-hidden">관리자 로그인</span>
+				</button>
 
 				<button type="button" className="cc-tile cc-wide" onClick={() => launch('mail')}>
 					<i className="fa-solid fa-envelope" aria-hidden="true"></i>

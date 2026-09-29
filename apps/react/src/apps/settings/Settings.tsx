@@ -9,11 +9,13 @@ import {
 	type ThemePreference,
 	type Wallpaper,
 } from '@/shared/settings/settings';
+import AdminAccount from '@/shared/auth/AdminAccount';
 import '@/apps/settings/Settings.css';
 
-type Section = 'appearance' | 'wallpaper';
+type Section = 'account' | 'appearance' | 'wallpaper';
 
 const SECTIONS: { id: Section; label: string; icon: string }[] = [
+	{ id: 'account', label: '계정', icon: 'fa-solid fa-circle-user' },
 	{ id: 'appearance', label: '화면 모드', icon: 'fa-solid fa-circle-half-stroke' },
 	{ id: 'wallpaper', label: '배경화면', icon: 'fa-solid fa-image' },
 ];
@@ -86,6 +88,13 @@ const Settings: React.FC = () => {
 					</nav>
 
 					<section key={section} className="settings-panel">
+						{section === 'account' && (
+							<>
+								<h2>계정</h2>
+								<AdminAccount />
+							</>
+						)}
+
 						{section === 'appearance' && (
 							<>
 								<h2>화면 모드</h2>

@@ -14,6 +14,7 @@ export const APP_NAMES = [
 	'share',
 	'terminal',
 	'settings',
+	'passwords',
 	'bin',
 ] as const;
 
@@ -67,6 +68,8 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 		windowSize: { width: 596, height: 420 },
 	},
 	settings: { label: '시스템 설정', icon: 'settings.png', inDock: true },
+	// 관리자 로그인 (iOS 암호 앱 모양). 데스크톱에서는 Apple 메뉴와 시스템 설정에서 같은 일을 하므로 Dock에 두지 않는다
+	passwords: { label: '암호', icon: 'passwords.svg', inDock: false, windowSize: { width: 560, height: 520 } },
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false },
 };
 
