@@ -272,6 +272,23 @@ test.describe('모바일', () => {
 		await expect(controlCenter).toBeHidden();
 	});
 
+	test('제어 센터의 관리자 단추와 홈 화면의 암호 앱에서 관리자 계정을 본다', async ({ page }) => {
+		await enterHome(page);
+		await page.getByRole('button', { name: '제어 센터 열기' }).tap();
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+		// 관리자 서버가 없으면 암호 앱을 연다 (로그인 단추는 꺼져 있다)
+		await controlCenter.getByRole('button', { name: '관리자 로그인' }).tap();
+		const passwords = appWindow(page, 'passwords');
+		await expect(passwords).toBeVisible();
+		const account = passwords.getByRole('region', { name: '관리자 계정' });
+		await expect(account).toContainText('관리자 서버가 아직 연결되지 않았습니다');
+		await expect(account.getByRole('button', { name: /GitHub로 로그인/ })).toBeDisabled();
+
+		await passwords.getByRole('button', { name: '홈 화면으로' }).tap();
+		await expect(passwords).toBeHidden();
+		await expect(homeApp(page, '암호')).toBeVisible();
+	});
+
 	test('제어 센터에서 다크 모드를 바꾸고 앱을 연다', async ({ page }) => {
 		await enterHome(page);
 		await page.getByRole('button', { name: '제어 센터 열기' }).tap();

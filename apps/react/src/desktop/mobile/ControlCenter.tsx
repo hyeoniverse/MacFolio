@@ -7,6 +7,18 @@ import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { IOS_WALLPAPERS } from '@/shared/settings/settings';
 import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
 import { PROFILE } from '@/shared/profile';
+import { signIn, useAdmin } from '@/shared/auth/adminStore';
+import type { AdminStatus } from '@/shared/auth/admin';
+import { env } from '@/shared/config/env';
+
+/** 제어 센터의 관리자 타일에 보일 상태 */
+const ADMIN_STATUS: Record<AdminStatus, (login: string | null) => string> = {
+	disabled: () => '관리자 서버 준비 중',
+	checking: () => '확인하는 중…',
+	offline: () => '관리자 서버에 연결할 수 없음',
+	'signed-out': () => 'GitHub로 로그인',
+	'signed-in': (login) => `${login}(으)로 로그인됨`,
+};
 
 interface Props {
 	/** 열려 있는지 */
@@ -64,6 +76,7 @@ const ControlCenter = (props: Props) => (props.open || props.pull !== null ? <Pa
 
 const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 	const settings = useSettings();
+	const admin = useAdmin();
 	/** 위로 쓸어 닫는 중인 거리 */
 	const [lift, setLift] = useState<number | null>(null);
 	// 처음 그릴 때는 닫힌 모양으로 그렸다가 다음 프레임에 열어야 transition이 적용된다
@@ -170,6 +183,20 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 					<span>
 						<strong>피드백 남기기</strong>
 						<small>메시지에 감상과 의견을 남겨 주세요</small>
+					</span>
+				</button>
+
+				{/* 관리자: 로그인하지 않았으면 바로 GitHub 로그인, 로그인했거나 서버가 없으면 암호 앱 */}
+				<button
+					type="button"
+					className={`cc-tile cc-wide cc-admin ${admin.status === 'signed-in' ? 'on' : ''}`}
+					aria-pressed={admin.status === 'signed-in'}
+					onClick={() => (admin.status === 'signed-out' ? signIn() : launch('passwords'))}
+				>
+					<img src={`${env.imageUrl}/passwords.svg`} alt="" />
+					<span>
+						<strong>관리자 로그인</strong>
+						<small>{ADMIN_STATUS[admin.status](admin.login)}</small>
 					</span>
 				</button>
 			</div>

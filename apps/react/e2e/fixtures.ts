@@ -1,7 +1,17 @@
 import { test as base, expect, type Page } from '@playwright/test';
 
 /** 페이지에서 처리되지 않은 에러가 나면 테스트를 실패시킨다. */
-export const test = base.extend<{ pageErrors: Error[] }>({
+export const test = base.extend<{ pageErrors: Error[]; noApi: void }>({
+	// 관리자 API가 없는 상태로 시작한다 (로컬 .env.local의 VITE_API_URL과 상관없이). 가짜 API는 테스트에서 따로 넣는다
+	noApi: [
+		async ({ page }, use) => {
+			await page.addInitScript(() => {
+				window.__MACFOLIO_API_URL__ = '';
+			});
+			await use();
+		},
+		{ auto: true },
+	],
 	pageErrors: [
 		async ({ page }, use) => {
 			const errors: Error[] = [];
