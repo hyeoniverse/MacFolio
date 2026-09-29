@@ -11,6 +11,8 @@ const KEEP_OPEN = '.ProseMirror table';
 const LONG = 26;
 const SHORT = 12;
 const GAP = 4;
+/** 행·열을 고르면 펼쳐지는 막대의 두께 */
+const BAR = 16;
 /** 이만큼 움직여야 끌기로 본다 (그보다 적으면 누르기) */
 const DRAG_START = 4;
 
@@ -93,24 +95,26 @@ const HandleMenu = ({
 /**
  * 표 손잡이 (macOS 메모처럼): 커서가 표 안에 있으면 지금 열 위와 지금 행 왼쪽에 작은 둥근 손잡이가 생긴다.
  * 누르면 그 열·행 전체를 고르고(노란 테두리) 메뉴가 열린다. 고른 채로 Backspace를 누르면 칸을 비운다.
- * 행·열 전체를 고른 뒤 손잡이를 끌면 그 행·열을 옮긴다 (머리글 행은 옮기지 않는다).
+ * 행·열 전체를 고른 뒤 손잡이를 끌면 그 행·열을 옮긴다 (첫 행으로 옮기면 그 행이 머리글이 된다).
  */
 const TableHandles = () => {
 	const { state, tableBox, run } = useEditorControls();
+	/** 손잡이가 알약 → 막대로 펼쳐지는 애니메이션이 끝나면 메뉴 자리를 다시 잰다 (메뉴가 손잡이를 가리지 않게) */
+	const [settled, setSettled] = useState(0);
 	const {
 		open: colOpen,
 		setOpen: setColOpen,
 		buttonRef: colButton,
 		panelRef: colPanel,
 		position: colPosition,
-	} = usePopover(undefined, KEEP_OPEN, 'right');
+	} = usePopover(undefined, KEEP_OPEN, 'right', settled);
 	const {
 		open: rowOpen,
 		setOpen: setRowOpen,
 		buttonRef: rowButton,
 		panelRef: rowPanel,
 		position: rowPosition,
-	} = usePopover(undefined, KEEP_OPEN, 'right');
+	} = usePopover(undefined, KEEP_OPEN, 'right', settled);
 	const [drag, setDrag] = useState<Drag | null>(null);
 	/** 방금 끌었으면 이어지는 click은 메뉴를 열지 않는다 */
 	const dragged = useRef(false);
@@ -130,8 +134,8 @@ const TableHandles = () => {
 
 	const startDrag = (kind: 'row' | 'col') => (event: React.PointerEvent<HTMLButtonElement>) => {
 		keepFocus(event);
-		// 끌기는 그 행·열 전체를 골랐을 때만 (머리글 행은 옮기지 않는다)
-		if (table.selecting !== kind || (kind === 'row' && table.row === 0)) return;
+		// 끌기는 그 행·열 전체를 골랐을 때만 (첫 행으로 옮기면 그 행이 머리글이 된다)
+		if (table.selecting !== kind) return;
 		event.currentTarget.setPointerCapture(event.pointerId);
 		const from = kind === 'col' ? table.col : table.row;
 		dragged.current = false;
@@ -160,7 +164,6 @@ const TableHandles = () => {
 		let to = edges.findIndex((edge) => pointer < (edge.start + edge.end) / 2);
 		if (to === -1) to = edges.length - 1;
 		else if (to > drag.from) to -= 1;
-		if (drag.kind === 'row') to = Math.max(1, to);
 		const line = to === drag.from ? null : to < drag.from ? edges[to].start : edges[to].end;
 		setDrag({ ...drag, to, offset: delta, line, moved: true });
 	};
@@ -199,7 +202,9 @@ const TableHandles = () => {
 								: `translateY(${drag.offset}px)`
 							: undefined,
 					}}
-				/>
+				>
+					<span className={`memo-table-selection-dot ${table.selecting}`} />
+				</span>
 			)}
 			{drag?.line != null && (
 				<span
@@ -220,45 +225,50 @@ const TableHandles = () => {
 				title={colOn ? '끌어서 열 옮기기, 눌러서 메뉴' : '이 열 편집'}
 				aria-haspopup="menu"
 				aria-expanded={colOpen}
+				// 평소에는 작은 알약, 열을 고르면 열 폭만큼 펼쳐진 막대(⌄)가 고른 테두리 위에 붙는다
 				style={{
-					left: span.left + span.width / 2 - LONG / 2,
-					top: tableBox.table.top - SHORT - GAP,
-					width: LONG,
-					height: SHORT,
+					left: colOn ? span.left : span.left + span.width / 2 - LONG / 2,
+					top: colOn ? tableBox.table.top - BAR : tableBox.table.top - SHORT - GAP,
+					width: colOn ? span.width : LONG,
+					height: colOn ? BAR : SHORT,
 					transform: drag?.kind === 'col' ? `translateX(${drag.offset}px)` : undefined,
 				}}
 				onPointerDown={startDrag('col')}
 				onPointerMove={moveDrag}
 				onPointerUp={endDrag}
 				onPointerCancel={() => setDrag(null)}
+				onTransitionEnd={(event) => event.propertyName === 'width' && setSettled((n) => n + 1)}
 				onMouseDown={keepFocus}
 				onClick={open('col')}
 			>
 				<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+				<i className="fa-solid fa-chevron-down memo-table-handle-chevron" aria-hidden="true" />
 			</button>
 			<button
 				ref={rowButton}
 				type="button"
 				className={`memo-table-handle row ${rowOn ? 'on' : ''} ${drag?.kind === 'row' && drag.moved ? 'dragging' : ''}`}
 				aria-label="이 행 편집"
-				title={rowOn && table.row > 0 ? '끌어서 행 옮기기, 눌러서 메뉴' : '이 행 편집'}
+				title={rowOn ? '끌어서 행 옮기기, 눌러서 메뉴' : '이 행 편집'}
 				aria-haspopup="menu"
 				aria-expanded={rowOpen}
 				style={{
-					left: tableBox.table.left - SHORT - GAP,
-					top: span.top + span.height / 2 - LONG / 2,
-					width: SHORT,
-					height: LONG,
+					left: rowOn ? tableBox.table.left - BAR : tableBox.table.left - SHORT - GAP,
+					top: rowOn ? span.top : span.top + span.height / 2 - LONG / 2,
+					width: rowOn ? BAR : SHORT,
+					height: rowOn ? span.height : LONG,
 					transform: drag?.kind === 'row' ? `translateY(${drag.offset}px)` : undefined,
 				}}
 				onPointerDown={startDrag('row')}
 				onPointerMove={moveDrag}
 				onPointerUp={endDrag}
 				onPointerCancel={() => setDrag(null)}
+				onTransitionEnd={(event) => event.propertyName === 'height' && setSettled((n) => n + 1)}
 				onMouseDown={keepFocus}
 				onClick={open('row')}
 			>
 				<i className="fa-solid fa-ellipsis-vertical" aria-hidden="true" />
+				<i className="fa-solid fa-chevron-right memo-table-handle-chevron" aria-hidden="true" />
 			</button>
 			{colOpen &&
 				!drag &&

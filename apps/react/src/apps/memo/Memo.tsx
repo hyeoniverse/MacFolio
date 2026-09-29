@@ -14,6 +14,7 @@ import {
 	mergeAdminPosts,
 	mergeServerPosts,
 	formatPostDate,
+	excerpt,
 	resolveImageSrc,
 	type FolderNode,
 	type AdminPost,
@@ -56,7 +57,7 @@ import RevisionsPanel from './components/RevisionsPanel';
 import SearchField from './components/SearchField';
 import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/popover';
-import { deletePost, fetchAdminPosts, fetchServerPosts } from './postsApi';
+import { deletePost, fetchAdminPosts, fetchServerPosts, type PostDraft } from './postsApi';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 
@@ -81,6 +82,9 @@ const MARKDOWN_COMPONENTS: Components = {
 };
 
 type Pane = 'folders' | 'list' | 'reader';
+
+/** 새 메모 자리가 접히며 사라지는 시간 (Memo.css의 memo-new-item-out과 같다) */
+const NEW_ITEM_LEAVE_MS = 240;
 
 /**
  * 이 폭 이하면 한 칸씩 보인다 (Memo.css의 @container (max-width: 700px)와 같아야 한다).
@@ -223,6 +227,10 @@ const Memo: React.FC = () => {
 		};
 	}, [canEdit]);
 
+	/** 새 메모에 지금 쓰고 있는 것 (목록 미리 보기) */
+	const [newPreview, setNewPreview] = useState<PostDraft | null>(null);
+	/** 사라지는 중인 새 메모 자리 (접히는 애니메이션이 끝나면 지운다) */
+	const [leavingDraft, setLeavingDraft] = useState<{ key: number; preview: PostDraft | null } | null>(null);
 	/** 새 메모를 쓰는 중이면 그 번호 (아직 한 번도 저장하지 않은 메모). 관리자가 아니면 쓰지 않는다 */
 	const [newDraftState, setNewDraft] = useState<number | null>(null);
 	const newDraft = canEdit ? newDraftState : null;
@@ -409,13 +417,13 @@ const Memo: React.FC = () => {
 		<li key={post.slug}>
 			<button
 				type="button"
-				className={`memo-item ${selected?.slug === post.slug ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
+				className={`memo-item ${selected?.slug === post.slug && newDraft === null ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
 				{...dragPost(post.slug)}
-				aria-current={selected?.slug === post.slug || undefined}
+				aria-current={(selected?.slug === post.slug && newDraft === null) || undefined}
 				onContextMenu={openNoteMenu(post.slug)}
 				onClick={() => {
 					setSelectedSlug(post.slug);
-					setNewDraft(null);
+					leaveNewDraft();
 					setPane('reader');
 				}}
 			>
@@ -442,7 +450,7 @@ const Memo: React.FC = () => {
 				onContextMenu={openNoteMenu(post.slug)}
 				onClick={() => {
 					setSelectedSlug(post.slug);
-					setNewDraft(null);
+					leaveNewDraft();
 					setGalleryNoteOpen(true);
 				}}
 			>
@@ -495,8 +503,40 @@ const Memo: React.FC = () => {
 	const startNewDraft = () => {
 		setQuery('');
 		setNewDraft(Date.now());
+		setNewPreview(null);
 		setPane('reader');
 	};
+
+	/** 새 메모를 두고 다른 글로 옮겨 간다: 목록의 새 메모 자리는 접히며 사라진다 (쓴 것이 있으면 편집기가 저장해 진짜 글로 남는다) */
+	const leaveNewDraft = () => {
+		if (newDraft === null) return;
+		const key = newDraft;
+		setLeavingDraft({ key, preview: newPreview });
+		setTimeout(() => setLeavingDraft((current) => (current?.key === key ? null : current)), NEW_ITEM_LEAVE_MS);
+		setNewDraft(null);
+	};
+
+	/** 목록 맨 위의 새 메모 (macOS 메모의 '새로운 메모': 쓰는 대로 제목·본문이 보인다) */
+	const newDraftItem = (key: number, preview: PostDraft | null, leaving: boolean) => (
+		<li key={`new-${key}`} className={`memo-new-item ${leaving ? 'leaving' : ''}`} aria-hidden={leaving || undefined}>
+			<button
+				type="button"
+				className={`memo-item ${leaving ? '' : 'active'}`}
+				aria-current={!leaving || undefined}
+				tabIndex={leaving ? -1 : undefined}
+				onClick={() => setPane('reader')}
+			>
+				<strong>{preview?.title.trim() || '새로운 메모'}</strong>
+				<span className="memo-item-meta">
+					<time>{new Intl.DateTimeFormat('ko-KR', { hour: 'numeric', minute: '2-digit' }).format(key)}</time>{' '}
+					{(preview && excerpt(preview.body)) || '추가 텍스트 없음'}
+				</span>
+				<span className="memo-item-folder">
+					<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(preview?.category ?? newFolder)}
+				</span>
+			</button>
+		</li>
+	);
 
 	const removePost = async (post: Post) => {
 		if (!window.confirm(`'${post.title}' 메모를 지울까요?`)) return;
@@ -532,15 +572,18 @@ const Memo: React.FC = () => {
 	const authorTools = (className: string) =>
 		canEdit && (
 			<>
-				<button
-					type="button"
-					className={`memo-tool ${className}`}
-					aria-label="새 메모"
-					title="새 메모"
-					onClick={startNewDraft}
-				>
-					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-				</button>
+				{/* 사이드바가 열려 있으면 새 메모는 사이드바 위쪽에 (좁은 창의 한 칸 보기에서는 여기) */}
+				{(!sidebarOpen || className === 'compact-only') && (
+					<button
+						type="button"
+						className={`memo-tool ${className}`}
+						aria-label="새 메모"
+						title="새 메모"
+						onClick={startNewDraft}
+					>
+						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+					</button>
+				)}
 				{/* 본문 서식 (편집기가 열려 있을 때만) */}
 				<span className={`memo-format-tools ${className}`}>
 					<FormatTools />
@@ -629,6 +672,8 @@ const Memo: React.FC = () => {
 		</>
 	);
 
+	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글이면 마지막 폴더) */
+	const newFolder = category === ALL_CATEGORY ? (folderPaths.at(-1) ?? '기타') : category;
 	const openFind = selected ? () => setFindSlug(selected.slug) : null;
 	const findTarget = selected?.slug ?? null;
 	const memoInFront = foregroundApp(apps) === 'memo';
@@ -682,6 +727,7 @@ const Memo: React.FC = () => {
 				>
 					<FolderSidebar
 						canEdit={canEdit}
+						onNewNote={startNewDraft}
 						open={sidebarOpen}
 						onToggle={toggleSidebar}
 						folders={folders}
@@ -723,6 +769,12 @@ const Memo: React.FC = () => {
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
 							</button>
 							{compactTools}
+							{(newDraft !== null || leavingDraft) && (
+								<ul className="memo-items memo-new-items" aria-label="새 메모">
+									{newDraft !== null && newDraftItem(newDraft, newPreview, false)}
+									{leavingDraft && newDraftItem(leavingDraft.key, leavingDraft.preview, true)}
+								</ul>
+							)}
 							{sections(listItem, '고정됨', 'memo-items')}
 							{empty}
 						</div>
@@ -804,8 +856,9 @@ const Memo: React.FC = () => {
 												Boolean(adminPosts?.find((item) => item.slug === selected!.slug)?.published))
 										}
 										onDiscarded={onWriterDiscarded}
+										onDraftChange={newDraft !== null ? setNewPreview : undefined}
 										folders={folderPaths}
-										defaultFolder={category === ALL_CATEGORY ? (folderPaths.at(-1) ?? '기타') : category}
+										defaultFolder={newFolder}
 										onSaved={onWriterSaved}
 										renderMarkdown={(body) => (
 											<ReactMarkdown

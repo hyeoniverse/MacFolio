@@ -10,7 +10,9 @@ export function usePopover(
 	fallback?: React.RefObject<HTMLElement | null>,
 	keepOpenInside?: string,
 	/** below: 단추 아래 가운데, right: 단추 오른쪽 위 (표 손잡이 메뉴) */
-	placement: 'below' | 'right' = 'below'
+	placement: 'below' | 'right' = 'below',
+	/** 바뀌면 자리를 다시 잰다 (단추가 움직이거나 커진 뒤) */
+	anchorKey?: unknown
 ) {
 	const [open, setOpen] = useState(false);
 	const buttonRef = useRef<HTMLButtonElement>(null);
@@ -31,7 +33,7 @@ export function usePopover(
 						top: rect.bottom + 8,
 					}
 		);
-	}, [open, fallback, placement]);
+	}, [open, fallback, placement, anchorKey]);
 
 	useEffect(() => {
 		if (!open) return;

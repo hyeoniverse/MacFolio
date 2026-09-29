@@ -45,12 +45,38 @@ export function tableStateOf(state: EditorState): TableState | null {
 	};
 }
 
-/** 행·열 옮기기. 머리글 행은 늘 첫 행이라 옮기지 않고, 다른 행도 머리글 자리로는 옮기지 않는다 */
+/**
+ * 행·열 옮기기. Markdown 표는 첫 행이 늘 머리글이라, 행이 첫 자리로 오가면 표를 다시 짜서
+ * 새로 첫 행이 된 행을 머리글로, 밀려난 머리글을 보통 행으로 바꾼다.
+ */
 export function moveTablePart(view: EditorView, kind: 'row' | 'col', from: number, to: number) {
-	if (from === to || (kind === 'row' && (from === 0 || to === 0))) return;
+	if (from === to) return;
+	if (kind === 'row' && (from === 0 || to === 0)) return moveRowAcrossHeader(view, from, to);
 	const pos = view.state.selection.from;
 	const command = kind === 'row' ? moveTableRow({ from, to, pos }) : moveTableColumn({ from, to, pos });
 	command(view.state, view.dispatch);
+}
+
+function moveRowAcrossHeader(view: EditorView, from: number, to: number) {
+	const { state } = view;
+	const table = findTable(state.selection.$from);
+	if (!table) return;
+	const { table_header_row, table_row, table_header, table_cell } = state.schema.nodes;
+	const rows: Node[] = [];
+	table.node.forEach((row) => rows.push(row));
+	const [moved] = rows.splice(from, 1);
+	rows.splice(to, 0, moved);
+	const rebuilt = rows.map((row, index) => {
+		const cells: Node[] = [];
+		row.forEach((cell) => cells.push((index === 0 ? table_header : table_cell).create(cell.attrs, cell.content)));
+		return (index === 0 ? table_header_row : table_row).create(null, cells);
+	});
+	const next = table.node.type.create(table.node.attrs, rebuilt);
+	const tr = state.tr.replaceWith(table.pos, table.pos + table.node.nodeSize, next);
+	// 옮긴 행을 계속 고른 채로
+	const map = TableMap.get(next);
+	const $cell = tr.doc.resolve(table.pos + 1 + map.map[to * map.width]);
+	view.dispatch(tr.setSelection(CellSelection.rowSelection($cell)));
 }
 
 export function runTableOp(ctx: Ctx, op: TableOp) {
