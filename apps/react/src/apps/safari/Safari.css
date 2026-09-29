@@ -2,29 +2,48 @@
 [data-app='safari'] {
 	--safari-bg: #ffffff;
 	--safari-toolbar-bg: #f6f6f6;
-	--safari-tabbar-bg: #e8e8ea;
-	--safari-tab-active: #f6f6f6;
+	--safari-tabbar-bg: #dedede;
+	--safari-tab-hover: rgba(0, 0, 0, 0.05);
 	--safari-border: rgba(0, 0, 0, 0.1);
+	--safari-divider: rgba(0, 0, 0, 0.16);
 	--safari-address-bg: rgba(0, 0, 0, 0.06);
 	--safari-text: #1d1d1f;
 	--safari-muted: #6e6e73;
 	--safari-card-bg: #f5f5f7;
 	--safari-chip-bg: #ffffff;
 	--safari-accent: #0071e3;
+	/* 프로젝트 페이지 (Apple 홈페이지 색) */
+	--sp-bg: #ffffff;
+	--sp-alt: #f5f5f7;
+	--sp-text: #1d1d1f;
+	--sp-muted: #6e6e73;
+	--sp-dark-bg: #000000;
+	--sp-dark-text: #f5f5f7;
+	--sp-dark-muted: #86868b;
+	--sp-line: #d2d2d7;
 }
 
 :root[data-theme='dark'] [data-app='safari'] {
 	--safari-bg: #1c1c1e;
 	--safari-toolbar-bg: #2c2c2e;
-	--safari-tabbar-bg: #232325;
-	--safari-tab-active: #2c2c2e;
+	--safari-tabbar-bg: #1f1f21;
+	--safari-tab-hover: rgba(255, 255, 255, 0.06);
 	--safari-border: rgba(255, 255, 255, 0.12);
+	--safari-divider: rgba(255, 255, 255, 0.16);
 	--safari-address-bg: rgba(255, 255, 255, 0.1);
 	--safari-text: #f5f5f7;
 	--safari-muted: #98989d;
 	--safari-card-bg: #2c2c2e;
 	--safari-chip-bg: #3a3a3c;
 	--safari-accent: #2997ff;
+	--sp-bg: #000000;
+	--sp-alt: #161617;
+	--sp-text: #f5f5f7;
+	--sp-muted: #86868b;
+	--sp-dark-bg: #1d1d1f;
+	--sp-dark-text: #f5f5f7;
+	--sp-dark-muted: #a1a1a6;
+	--sp-line: #424245;
 }
 
 [data-app='safari'].container {
@@ -119,12 +138,22 @@
 	box-shadow: inset 0 0 0 1px var(--safari-border);
 }
 
-/* ─── 탭 막대 ─── */
+.safari-address.placeholder {
+	color: var(--safari-muted);
+}
+
+.safari-address.placeholder:hover {
+	box-shadow: none;
+}
+
+/* ─── 탭 막대 (macOS Safari의 '분리된' 탭 모양) ───
+ * 탭은 막대 높이를 꽉 채우는 같은 너비의 칸이고, 사이에 가는 세로선이 있다.
+ * 고른 탭은 도구 막대와 같은 색으로 이어지고, 양옆 세로선이 사라진다. */
 .safari-tabs {
 	display: flex;
 	flex: none;
-	gap: 1px;
-	padding: 0 8px;
+	position: relative;
+	height: 30px;
 	overflow-x: auto;
 	border-top: 1px solid var(--safari-border);
 	border-bottom: 1px solid var(--safari-border);
@@ -135,40 +164,90 @@
 .safari-tab {
 	display: flex;
 	flex: 1 1 0;
+	position: relative;
+	min-width: 96px;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+/* 탭 사이 세로선 */
+.safari-tab + .safari-tab::before {
+	position: absolute;
+	top: 7px;
+	bottom: 7px;
+	left: 0;
+	width: 1px;
+	background-color: var(--safari-divider);
+	content: '';
+}
+
+.safari-tab.active::before,
+.safari-tab.active + .safari-tab::before {
+	opacity: 0;
+}
+
+.safari-tab:hover:not(.active) {
+	background-color: var(--safari-tab-hover);
+}
+
+.safari-tab.active {
+	background-color: var(--safari-toolbar-bg);
+}
+
+.safari-tab-button {
+	display: flex;
+	flex: 1;
 	align-items: center;
 	justify-content: center;
-	gap: 7px;
-	min-width: 130px;
-	height: 30px;
-	margin: 3px 0;
-	padding: 0 10px;
+	gap: 6px;
+	min-width: 0;
+	padding: 0 24px;
 	border: none;
-	border-radius: 7px;
 	background: none;
 	color: var(--safari-muted);
 	font: inherit;
 	font-size: 12px;
-	cursor: pointer;
-	transition: background-color var(--duration-fast) var(--ease-out);
+	cursor: default;
 }
 
-.safari-tab:hover:not(.active) {
-	background-color: var(--safari-address-bg);
-}
-
-.safari-tab.active {
-	background-color: var(--safari-tab-active);
-	box-shadow:
-		0 0 0 0.5px var(--safari-border),
-		0 1px 3px rgba(0, 0, 0, 0.08);
+.safari-tab.active .safari-tab-button {
 	color: var(--safari-text);
-	font-weight: 500;
 }
 
-.safari-tab span {
+.safari-tab-button span {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+/* 닫기 단추: 탭 왼쪽, 올렸을 때만 */
+.safari-tab-close {
+	display: grid;
+	position: absolute;
+	top: 50%;
+	left: 6px;
+	z-index: 1;
+	place-items: center;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	border: none;
+	border-radius: 4px;
+	background: none;
+	color: var(--safari-muted);
+	font-size: 10px;
+	opacity: 0;
+	transform: translateY(-50%);
+	cursor: default;
+}
+
+.safari-tab:hover .safari-tab-close,
+.safari-tab-close:focus-visible {
+	opacity: 1;
+}
+
+.safari-tab-close:hover {
+	background-color: var(--safari-address-bg);
+	color: var(--safari-text);
 }
 
 .safari-favicon {
@@ -176,165 +255,435 @@
 	width: 16px;
 	height: 16px;
 	border-radius: 4px;
-	object-fit: cover;
-	object-position: top left;
+	object-fit: contain;
 }
 
-/* ─── 페이지 (탭 안의 프로젝트 소개) ─── */
+/* 아이콘이 없을 때의 기본 모양 */
+.safari-favicon.fallback,
+.sp-app-icon.fallback,
+.safari-start-icon.fallback {
+	display: grid;
+	place-items: center;
+	background-color: var(--safari-address-bg);
+	color: var(--safari-muted);
+}
+
+.safari-favicon.fallback {
+	font-size: 9px;
+}
+
+/* ─── 시작 페이지 (새 탭) ─── */
+.safari-start {
+	max-width: 720px;
+	margin: 0 auto;
+	padding: 56px 32px;
+	animation: rise-in var(--duration) var(--ease-out);
+}
+
+.safari-start h2 {
+	margin-bottom: 20px;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.safari-start ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+	gap: 20px 12px;
+	list-style: none;
+}
+
+.safari-start button {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	padding: 8px 4px;
+	border: none;
+	border-radius: 12px;
+	background: none;
+	color: var(--safari-text);
+	font: inherit;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.safari-start button:hover {
+	background-color: var(--safari-address-bg);
+}
+
+.safari-start-icon {
+	width: 64px;
+	height: 64px;
+	padding: 8px;
+	border-radius: 14px;
+	background-color: #ffffff;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	object-fit: contain;
+}
+
+.safari-start-icon.fallback {
+	font-size: 24px;
+}
+
+/* ─── 페이지 ─── */
 .safari-page {
 	flex: 1;
 	min-height: 0;
 	overflow-y: auto;
+	background-color: var(--sp-bg);
 }
 
-.safari-page-content {
-	max-width: 960px;
-	margin: 0 auto;
-	padding: 48px 32px 56px;
+/* ─── 프로젝트 소개 (Apple 제품 페이지 모양) ─── */
+.sp {
+	color: var(--sp-text);
+	letter-spacing: -0.01em;
 	animation: rise-in var(--duration) var(--ease-out);
 }
 
-.safari-page-hero {
-	max-width: 680px;
+.sp a {
+	color: var(--safari-accent);
+}
+
+.sp-inner {
+	max-width: 880px;
 	margin: 0 auto;
+	padding: 0 32px;
+}
+
+/* 첫 화면 */
+.sp-hero {
+	padding: 64px 32px 0;
 	text-align: center;
 }
 
-.safari-page-context {
-	color: var(--safari-accent);
-	font-size: 13px;
+.sp-app-icon {
+	display: block;
+	width: 72px;
+	height: 72px;
+	margin: 0 auto 14px;
+	padding: 10px;
+	border-radius: 18px;
+	background-color: #ffffff;
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.08),
+		0 6px 18px rgba(0, 0, 0, 0.12);
+	object-fit: contain;
+}
+
+.sp-app-icon.fallback {
+	font-size: 28px;
+}
+
+.sp-eyebrow {
+	font-size: 19px;
 	font-weight: 600;
 }
 
-.safari-page-hero h1 {
-	margin: 6px 0 12px;
-	font-size: clamp(28px, 5cqi, 44px);
+.sp-hero h1 {
+	margin: 4px auto 0;
+	max-width: 760px;
+	font-size: clamp(34px, 7cqi, 64px);
 	font-weight: 700;
-	line-height: 1.15;
+	letter-spacing: -0.02em;
+	line-height: 1.08;
 }
 
-.safari-page-description {
-	color: var(--safari-muted);
-	font-size: 17px;
-	line-height: 1.6;
+.sp-lead {
+	max-width: 620px;
+	margin: 18px auto 0;
+	color: var(--sp-muted);
+	font-size: clamp(17px, 2.4cqi, 21px);
+	line-height: 1.45;
 }
 
-.safari-page-actions {
+.sp-links {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: center;
-	gap: 10px;
-	margin-top: 22px;
-}
-
-.safari-button {
-	display: inline-flex;
 	align-items: center;
-	gap: 7px;
-	padding: 9px 18px;
-	border: 1px solid var(--safari-border);
-	border-radius: 999px;
-	background-color: var(--safari-bg);
-	font-size: 14px;
-	font-weight: 500;
-	transition:
-		background-color var(--duration-fast) var(--ease-out),
-		transform var(--duration-fast) var(--ease-out);
+	justify-content: center;
+	gap: 16px 28px;
+	margin-top: 26px;
+	font-size: 17px;
 }
 
-.safari-button:hover {
-	background-color: var(--safari-card-bg);
-}
-
-.safari-button:active {
-	transform: scale(0.97);
-}
-
-.safari-button.primary {
-	border-color: transparent;
+.sp-pill {
+	padding: 10px 22px;
+	border-radius: 980px;
 	background-color: var(--safari-accent);
 	color: #ffffff !important;
+	transition: filter var(--duration-fast) var(--ease-out);
 }
 
-.safari-button.primary:hover {
-	filter: brightness(1.08);
+.sp-pill:hover {
+	filter: brightness(1.1);
 }
 
-/* 화면 캡처 */
-.safari-page-shot {
-	margin: 36px 0 28px;
+.sp-link i {
+	margin-left: 2px;
+	font-size: 12px;
+}
+
+.sp-link:hover {
+	text-decoration: underline !important;
+}
+
+.sp-shot {
+	max-width: 880px;
+	margin: 48px auto 0;
 	overflow: hidden;
-	border: 1px solid var(--safari-border);
-	border-radius: 16px;
-	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.14);
+	border-radius: 18px 18px 0 0;
+	box-shadow: 0 -2px 40px rgba(0, 0, 0, 0.12);
 }
 
-.safari-page-shot img {
+.sp-shot img {
 	display: block;
 	width: 100%;
-	max-height: 520px;
-	object-fit: cover;
-	object-position: top;
 }
 
-.safari-page-sections {
+/* 한눈에 보는 숫자 */
+.sp-band {
+	padding: 48px 0;
+	background-color: var(--sp-alt);
+	text-align: center;
+}
+
+.sp-meta {
+	color: var(--sp-muted);
+	font-size: 15px;
+}
+
+.sp-facts {
 	display: grid;
-	grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-	gap: 16px;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 24px;
+	margin-top: 24px;
+	list-style: none;
+}
+
+.sp-facts li {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.sp-facts strong {
+	background: linear-gradient(90deg, #0071e3, #a24bf5);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: clamp(30px, 5cqi, 48px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+}
+
+.sp-facts span {
+	color: var(--sp-muted);
+	font-size: 14px;
+}
+
+/* 섹션 */
+.sp-section {
+	padding: 80px 0;
+}
+
+.sp-alt {
+	background-color: var(--sp-alt);
+}
+
+.sp-dark {
+	background-color: var(--sp-dark-bg);
+	color: var(--sp-dark-text);
+}
+
+.sp-headline {
+	max-width: 720px;
+	margin-bottom: 40px;
+	font-size: clamp(28px, 4.6cqi, 44px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.12;
+}
+
+.sp-headline span {
+	color: var(--sp-muted);
+}
+
+.sp-dark .sp-headline span {
+	color: var(--sp-dark-muted);
+}
+
+/* 주요 기능: 둥근 타일 */
+.sp-tiles {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+	list-style: none;
+}
+
+.sp-tiles li {
+	padding: 32px;
+	border-radius: 28px;
+	background-color: var(--sp-alt);
+}
+
+.sp-tiles li.wide {
+	grid-column: span 2;
+}
+
+.sp-tiles h3,
+.sp-points h3 {
+	font-size: 22px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.sp-tiles p,
+.sp-points p {
+	margin-top: 10px;
+	color: var(--sp-muted);
+	font-size: 17px;
+	line-height: 1.5;
+}
+
+.sp-tiles li.wide h3 {
+	font-size: 28px;
+}
+
+/* 만든 방식: 검은 띠 위 두 줄 */
+.sp-points {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 36px 48px;
+	list-style: none;
+}
+
+.sp-points li {
+	padding-top: 20px;
+	border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.sp-points p {
+	color: var(--sp-dark-muted);
+}
+
+/* 진행 과정 */
+.sp-timeline {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	gap: 24px 16px;
+	list-style: none;
+}
+
+.sp-timeline li {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	position: relative;
+	padding-top: 22px;
+	border-top: 2px solid var(--sp-line);
+}
+
+.sp-timeline li::before {
+	position: absolute;
+	top: -7px;
+	left: 0;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: var(--safari-accent);
+	content: '';
+}
+
+.sp-timeline time {
+	font-size: 21px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+.sp-timeline span {
+	color: var(--sp-muted);
+	font-size: 15px;
+	line-height: 1.45;
+}
+
+/* 맡은 일, 다음 단계: 왼쪽 제목, 오른쪽 목록 */
+.sp-split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+	gap: 48px;
 	align-items: start;
 }
 
-.safari-page-side {
+.sp-split .sp-headline {
+	margin-bottom: 0;
+}
+
+.sp-checks {
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
-}
-
-.safari-page-card {
-	padding: 20px 22px;
-	border-radius: 16px;
-	background-color: var(--safari-card-bg);
-	font-size: 14px;
-	line-height: 1.6;
-}
-
-.safari-page-card h2 {
-	margin-bottom: 10px;
-	font-size: 16px;
-	font-weight: 700;
-}
-
-.safari-features {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
+	gap: 18px;
 	list-style: none;
+	font-size: 19px;
+	line-height: 1.45;
 }
 
-.safari-features li {
+.sp-checks li {
 	display: flex;
-	gap: 9px;
+	gap: 12px;
 }
 
-.safari-features i {
+.sp-checks i {
 	flex: none;
-	margin-top: 4px;
+	margin-top: 5px;
 	color: var(--safari-accent);
+	font-size: 17px;
 }
 
-.safari-stack {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
-	list-style: none;
+.sp-checks.next i {
+	color: var(--sp-muted);
 }
 
-.safari-stack li {
-	padding: 3px 10px;
-	border-radius: 999px;
-	background-color: var(--safari-chip-bg);
-	color: var(--safari-muted);
-	font-size: 12px;
+/* 기술 사양 */
+.sp-specs-title {
+	padding-bottom: 20px;
+	border-bottom: 1px solid var(--sp-line);
+	font-size: clamp(28px, 4.6cqi, 40px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.sp-specs div {
+	display: grid;
+	grid-template-columns: 200px minmax(0, 1fr);
+	gap: 16px;
+	padding: 20px 0;
+	border-bottom: 1px solid var(--sp-line);
+	font-size: 17px;
+	line-height: 1.45;
+}
+
+.sp-specs dt {
+	font-weight: 600;
+}
+
+.sp-specs dd {
+	color: var(--sp-muted);
+}
+
+/* 마무리 */
+.sp-cta {
+	padding: 72px 32px 88px;
+	background-color: var(--sp-alt);
+	text-align: center;
+}
+
+.sp-cta p {
+	font-size: clamp(26px, 4.6cqi, 40px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 
 /* ─── 좁은 창 (모바일): 도구 막대 대신 탭을 옆으로 넘긴다 ─── */
@@ -345,6 +694,7 @@
 
 	.safari-tabs {
 		gap: 6px;
+		height: auto;
 		padding: 8px 12px;
 		border-top: none;
 	}
@@ -352,26 +702,70 @@
 	.safari-tab {
 		flex: none;
 		min-width: 0;
-		height: 32px;
-		margin: 0;
-		padding: 0 12px;
 		border-radius: 999px;
+	}
+
+	.safari-tab::before {
+		display: none;
+	}
+
+	.safari-tab.active {
+		background-color: var(--safari-address-bg);
+	}
+
+	.safari-tab-button {
+		height: 32px;
+		padding: 0 12px;
 		font-size: 13px;
 	}
 
-	.safari-page-content {
-		padding: 28px 16px 40px;
+	/* 휴대폰에는 올리기가 없으므로 닫기 단추를 두지 않는다 */
+	.safari-tab-close {
+		display: none;
 	}
 
-	.safari-page-description {
-		font-size: 15px;
+	.sp-hero {
+		padding: 40px 20px 0;
 	}
 
-	.safari-page-shot {
-		margin: 24px 0 18px;
+	.sp-inner {
+		padding: 0 20px;
 	}
 
-	.safari-page-sections {
-		grid-template-columns: 1fr;
+	.sp-section {
+		padding: 56px 0;
+	}
+
+	.sp-facts,
+	.sp-tiles,
+	.sp-points,
+	.sp-split {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.sp-tiles li.wide {
+		grid-column: auto;
+	}
+
+	.sp-tiles li {
+		padding: 24px;
+		border-radius: 22px;
+	}
+
+	.sp-headline {
+		margin-bottom: 28px;
+	}
+
+	.sp-split {
+		gap: 28px;
+	}
+
+	.sp-checks {
+		font-size: 17px;
+	}
+
+	.sp-specs div {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
 	}
 }
