@@ -86,6 +86,71 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.locator('.memo-item').filter({ hasText: '새로 쓴 글' })).toBeVisible();
 	});
 
+	test('가가 메뉴와 빠른 단추로 머리말·굵게·체크리스트·표·이미지를 넣는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('서식 시험');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('머리말이 될 줄');
+
+		// 가가 → 머리말 (커서는 본문에 남는다)
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		const panel = page.getByRole('dialog', { name: '서식' });
+		await expect(panel.getByRole('menuitemradio', { name: '본문', exact: true })).toBeChecked();
+		// 문단 모양을 고르면 메뉴가 닫힌다
+		await panel.getByRole('menuitemradio', { name: '머리말', exact: true }).click();
+		await expect(panel).toBeHidden();
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await expect(panel.getByRole('menuitemradio', { name: '머리말', exact: true })).toBeChecked();
+		await page.keyboard.press('Escape');
+		await expect(panel).toBeHidden();
+
+		await page.keyboard.press('Enter');
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await panel.getByRole('button', { name: '굵게' }).click();
+		await expect(panel.getByRole('button', { name: '굵게' })).toHaveAttribute('aria-pressed', 'true');
+		await page.keyboard.press('Escape');
+		await page.keyboard.type('굵은 글');
+
+		// 좁은 도구 막대에서는 가가 메뉴에서: 체크리스트 → 앞의 동그라미를 누르면 체크된다
+		await page.keyboard.press('Enter');
+		await expect(memo.getByRole('button', { name: '체크리스트', exact: true })).toBeHidden();
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await panel.getByRole('menuitemradio', { name: '체크리스트', exact: true }).click();
+		await page.keyboard.type('할 일 하나');
+		const task = memo.locator('.ProseMirror li[data-item-type="task"]');
+		await expect(task).toHaveAttribute('data-checked', 'false');
+		await task.click({ position: { x: 8, y: 10 } });
+		await expect(task).toHaveAttribute('data-checked', 'true');
+		await expect
+			.poll(() => api.posts[0]?.body)
+			.toBe('### 머리말이 될 줄\n\n**굵은 글**\n\n- [x] 할 일 하나\n');
+
+		// 가가 메뉴의 이미지 넣기
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await panel.getByRole('menuitem', { name: '이미지 넣기…' }).click();
+		const imageForm = page.getByRole('dialog', { name: '이미지 넣기' });
+		await expect(imageForm.getByRole('textbox', { name: '이미지 주소' })).toBeFocused();
+		await page.keyboard.press('Escape');
+		await expect(imageForm).toBeHidden();
+
+		// 사이드바를 가려 넓어지면 빠른 단추가 나온다: 표
+		await memo.getByRole('button', { name: '사이드바 가리기' }).click();
+		await memo.locator('.ProseMirror p').last().click();
+		await memo.getByRole('button', { name: '표', exact: true }).click();
+		await expect(memo.locator('.ProseMirror table')).toBeVisible();
+		await expect.poll(() => api.posts[0]?.body).toContain('| ');
+
+		// 이미지: 주소와 설명을 넣는다
+		await memo.getByRole('button', { name: '이미지', exact: true }).click();
+		await imageForm.getByRole('textbox', { name: '이미지 주소' }).fill('https://example.com/a.png');
+		await imageForm.getByRole('textbox', { name: '이미지 설명' }).fill('예시 그림');
+		await imageForm.getByRole('button', { name: '넣기' }).click();
+		await expect(imageForm).toBeHidden();
+		await expect.poll(() => api.posts[0]?.body).toContain('![예시 그림](https://example.com/a.png)');
+	});
+
 	test('휴지통 단추나 우클릭으로 지우면 목록에서 사라진다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);

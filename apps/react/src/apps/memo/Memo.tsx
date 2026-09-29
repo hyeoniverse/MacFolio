@@ -45,6 +45,7 @@ import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
 import Comments from './comments/Comments';
 import PostWriter from './writer/PostWriter';
+import FormatTools from './writer/FormatTools';
 import { deletePost, fetchServerPosts } from './postsApi';
 import '@/apps/memo/Memo.css';
 
@@ -443,6 +444,10 @@ const Memo: React.FC = () => {
 				>
 					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
 				</button>
+				{/* 본문 서식 (편집기가 열려 있을 때만) */}
+				<span className={`memo-format-tools ${className}`}>
+					<FormatTools />
+				</span>
 				{selected && newDraft === null && (
 					<button
 						type="button"
