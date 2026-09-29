@@ -108,12 +108,12 @@ export const PROJECTS: Project[] = [
 		look: 'editorial',
 		tagline: '아침 뉴스, 요약해서 한 통에.',
 		description: '관심사에 맞춰 AI가 요약한 뉴스를 매일 아침 메일로 보내 주는 맞춤형 뉴스레터 서비스',
-		context: '프로그래머스 데브코스 팀 프로젝트 (2인)',
+		context: '프로그래머스 데브코스 팀 프로젝트 (5인: 프론트엔드 2, 백엔드 3)',
 		role: '기획, 유저 인증, API 연동',
 		period: '2024.12.26 – 2025.02.05',
 		facts: [
 			{ value: '6주', label: '기획부터 배포까지' },
-			{ value: '2명', label: '팀 프로젝트' },
+			{ value: '5명', label: '프론트엔드 2 · 백엔드 3' },
 			{ value: '오전 8시', label: '매일 뉴스레터 발송' },
 		],
 		highlights: [
