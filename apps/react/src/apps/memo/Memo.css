@@ -153,8 +153,6 @@
 
 /* 검색 칸은 늘 도구 막대 오른쪽 끝 (목록 보기: 본문 위, 갤러리: 갤러리 위) */
 .memo-toolbar .memo-search {
-	flex: none;
-	width: 200px;
 	margin: 0;
 }
 
@@ -716,8 +714,10 @@
 	display: inline-flex;
 	position: relative;
 	z-index: 4;
+	flex: none;
 	align-items: center;
 	gap: 5px;
+	white-space: nowrap;
 	margin-left: 6px;
 	padding: 2px 9px;
 	border-radius: 999px;
@@ -729,6 +729,70 @@
 
 .memo-admin-chip i {
 	font-size: 9px;
+}
+
+/* 본문 쪽 도구 막대가 좁으면: 관리자 표시는 열쇠만 (글자는 title로), 검색 칸은 줄어든다 */
+.memo-reader-toolbar {
+	container-type: inline-size;
+}
+
+.memo-toolbar .memo-search {
+	flex: 0 1 200px;
+	min-width: 96px;
+}
+
+/* 더 좁으면 검색 칸은 돋보기만 두고, 누르면(초점이 가면) 도구 막대 오른쪽에 펼쳐진다 (macOS 메모처럼).
+   도구 막대가 크기 기준(container)이라 자기 gap은 바꿀 수 없어서, 간격은 항목의 margin으로 준다 */
+.memo-reader-toolbar {
+	position: relative;
+	gap: 0;
+}
+
+.memo-reader-toolbar > * + * {
+	margin-left: 8px;
+}
+
+@container (max-width: 390px) {
+	.memo-reader-toolbar > * + * {
+		margin-left: 4px;
+	}
+
+	.memo-reader-toolbar .memo-search {
+		flex: none;
+		min-width: 0;
+		cursor: pointer;
+	}
+
+	.memo-reader-toolbar .memo-search input {
+		width: 0;
+	}
+
+	.memo-reader-toolbar .memo-search:focus-within,
+	.memo-reader-toolbar .memo-search:has(input:not(:placeholder-shown)) {
+		position: absolute;
+		right: 12px;
+		z-index: 5;
+		width: min(220px, calc(100% - 24px));
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+	}
+
+	.memo-reader-toolbar .memo-search:focus-within input,
+	.memo-reader-toolbar .memo-search:has(input:not(:placeholder-shown)) input {
+		width: auto;
+	}
+}
+
+@container (max-width: 560px) {
+	.memo-admin-chip {
+		width: 24px;
+		height: 24px;
+		justify-content: center;
+		padding: 0;
+	}
+
+	.memo-admin-chip span {
+		display: none;
+	}
 }
 
 /* 글쓰기·편집 */
@@ -744,19 +808,88 @@
 .memo-editor select,
 .memo-editor textarea {
 	min-width: 0;
-	border: none;
+	border: 1px solid var(--memo-border);
 	border-radius: 8px;
-	background-color: var(--memo-search-bg);
+	background-color: transparent;
 	color: var(--memo-text);
 	font: inherit;
 	outline: none;
+	transition:
+		border-color var(--duration-fast) var(--ease-out),
+		box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.memo-editor-title {
-	padding: 4px 2px !important;
-	background: none !important;
-	font-size: 1.6rem !important;
-	font-weight: 700 !important;
+.memo-editor :is(input, select, textarea):focus {
+	border-color: var(--memo-accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--memo-accent) 25%, transparent);
+}
+
+/* 폴더 고르기: macOS 팝업 단추처럼 오른쪽에 위아래 화살표 */
+.memo-editor select {
+	appearance: none;
+	padding-right: 30px;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M2 6l3-3 3 3M2 10l3 3 3-3' fill='none' stroke='%238e8e93' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-position: right 10px center;
+	background-repeat: no-repeat;
+	background-size: 9px 14px;
+	cursor: pointer;
+}
+
+/* 날짜: 칸은 다른 입력과 같게. 브라우저가 그리는 달력은 화면 모드와 강조 색만 따르게 한다 */
+.memo-editor :is(select, input[type='date']) {
+	color-scheme: light;
+	accent-color: var(--memo-accent);
+}
+
+:root[data-theme='dark'] .memo-editor :is(select, input[type='date']) {
+	color-scheme: dark;
+}
+
+.memo-editor input[type='date'] {
+	cursor: text;
+	font-variant-numeric: tabular-nums;
+}
+
+.memo-editor input[type='date']::-webkit-calendar-picker-indicator {
+	opacity: 0.5;
+	cursor: pointer;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.memo-editor input[type='date']::-webkit-calendar-picker-indicator:hover {
+	opacity: 0.9;
+}
+
+.memo-editor input[type='date']::-webkit-datetime-edit-fields-wrapper {
+	padding: 0;
+}
+
+/* 비우거나 규칙을 어겨 저장이 막힌 칸 */
+.memo-editor :is(input, select, textarea)[aria-invalid='true'] {
+	border-color: #e5484d;
+	box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.15);
+}
+
+.memo-editor .memo-editor-title {
+	padding: 4px 2px;
+	border-width: 0 0 1px;
+	border-radius: 0;
+	box-shadow: none;
+	font-size: 1.6rem;
+	font-weight: 700;
+}
+
+/* 제목은 밑줄만: 초점이 가거나 막혀도 테두리 상자 대신 밑줄 색만 바뀐다 */
+.memo-editor .memo-editor-title:is(:focus, [aria-invalid='true']) {
+	box-shadow: none;
+}
+
+.memo-editor-field-hint {
+	grid-column: 1 / -1;
+	margin-top: -4px;
+	padding-left: 36px;
+	color: var(--memo-muted);
+	font-size: 11px;
 }
 
 .memo-editor-meta {
@@ -815,11 +948,11 @@
 	font-size: 11px;
 }
 
-.memo-editor-body {
+.memo-editor .memo-editor-body {
 	min-height: 320px;
 	padding: 12px 14px;
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace !important;
-	font-size: 13px !important;
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: 13px;
 	line-height: 1.7;
 	resize: vertical;
 }
@@ -1404,7 +1537,7 @@
 	color: var(--memo-accent);
 }
 
-@container (max-width: 600px) {
+@container (max-width: 700px) {
 	.memo,
 	.memo.sidebar-closed,
 	.memo.view-gallery,
@@ -1503,7 +1636,7 @@
 }
 
 /* 모바일: 신호등 버튼이 없으므로 위쪽 자리를 비우지 않는다 */
-@container (max-width: 600px) {
+@container (max-width: 700px) {
 	.container.mobile .memo-shell .memo > :is(.memo-folders, .memo-list, .memo-reader) {
 		padding-top: 0;
 	}

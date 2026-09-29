@@ -105,4 +105,17 @@ describe('블로그 글 (e2e)', () => {
 			.expect(400);
 		expect(response.body.message).toEqual(['제목을 입력해주세요.', '폴더는 3단까지입니다: a/b/c/d']);
 	});
+
+	it('API를 거치지 않고 DB에 바로 써도 필수 항목이 비면 거절된다 (CHECK 제약)', async () => {
+		const blank = { slug: 'blank', title: '  ', date: '2026-09-29', category: '기타', body: '본문', updatedBy: 'x' };
+		await expect(prisma.post.create({ data: blank })).rejects.toThrow(/Post_required_fields/);
+		await expect(prisma.post.create({ data: { ...blank, title: '제목', body: '' } })).rejects.toThrow(
+			/Post_required_fields/
+		);
+		await expect(prisma.post.create({ data: { ...blank, title: '제목', date: '어제' } })).rejects.toThrow(
+			/Post_required_fields/
+		);
+		// 지운 표시는 내용이 비어도 된다
+		await expect(prisma.post.create({ data: { ...blank, title: '', body: '', deleted: true } })).resolves.toBeTruthy();
+	});
 });

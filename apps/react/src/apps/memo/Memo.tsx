@@ -68,20 +68,27 @@ const MARKDOWN_COMPONENTS: Components = {
 
 type Pane = 'folders' | 'list' | 'reader';
 
-/** 이 폭 이하면 한 칸씩 보인다 (Memo.css의 @container (max-width: 600px)와 같아야 한다) */
-const COMPACT_WIDTH = 600;
+/**
+ * 이 폭 이하면 한 칸씩 보인다 (Memo.css의 @container (max-width: 700px)와 같아야 한다).
+ * 폴더·목록·본문 세 칸을 나란히 두기에 700px보다 좁으면 본문이 너무 좁아진다
+ */
+const COMPACT_WIDTH = 700;
 
 /** 메모가 한 칸씩 보이는지 (컨테이너 폭으로 판단) */
-function useCompact(ref: React.RefObject<HTMLElement | null>) {
-	const [compact, setCompact] = useState(false);
+/** 이 폭 이하면 폴더 사이드바를 처음에 닫아 둔다 (macOS 메모처럼). 목록과 본문에 자리를 준다 */
+const NARROW_WIDTH = 860;
+
+/** 메모 창의 폭으로 정하는 모양: 한 칸씩(compact), 사이드바를 닫아 둘 만큼 좁음(narrow) */
+function useShellSize(ref: React.RefObject<HTMLElement | null>) {
+	const [width, setWidth] = useState(Infinity);
 	useEffect(() => {
 		const element = ref.current;
 		if (!element) return;
-		const observer = new ResizeObserver(([entry]) => setCompact(entry.contentRect.width <= COMPACT_WIDTH));
+		const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
 		observer.observe(element);
 		return () => observer.disconnect();
 	}, [ref]);
-	return compact;
+	return { compact: width <= COMPACT_WIDTH, narrow: width <= NARROW_WIDTH };
 }
 const PANES: Pane[] = ['folders', 'list', 'reader'];
 
@@ -120,7 +127,8 @@ const Memo: React.FC = () => {
 	const [pane, setPaneState] = useState<Pane>('list');
 	// 넘어간 방향. 앞으로 가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다 (처음에는 애니메이션 없음)
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
-	const [sidebarOpen, setSidebarOpen] = useState(true);
+	/** 사용자가 사이드바를 직접 열거나 닫았으면 그 값, 아니면 창 폭으로 정한다 */
+	const [sidebarChoice, setSidebarChoice] = useState<boolean | null>(null);
 	const [view, setView] = useState<View>('list');
 	/** 정렬과 날짜별 묶기. 보기 설정이라 방문자도 바꾸고, 이 브라우저에 저장한다 (arrange.ts) */
 	const [arrangement, setArrangementState] = useState<Arrangement>(loadArrangement);
@@ -136,7 +144,9 @@ const Memo: React.FC = () => {
 	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 단추를 보이지 않는다 (admin.ts)
 	const canEdit = useCanEditMemo();
 	const shellRef = useRef<HTMLDivElement>(null);
-	const compact = useCompact(shellRef);
+	const { compact, narrow } = useShellSize(shellRef);
+	// 한 칸씩 볼 때는 폴더가 따로 한 화면이라 닫지 않는다
+	const sidebarOpen = compact || (sidebarChoice ?? !narrow);
 	// 관리자가 정리한 내용 (API). 방문자도 같은 정리 내용으로 본다
 	const [organization, setOrganization] = useState<Organization>(EMPTY_ORGANIZATION);
 	/** 관리자가 방금 바꿔서 아직 저장하지 않았는지 */
@@ -240,7 +250,7 @@ const Memo: React.FC = () => {
 		setQuery('');
 		setSelectedSlug(post.slug);
 	};
-	const toggleSidebar = () => setSidebarOpen((open) => !open);
+	const toggleSidebar = () => setSidebarChoice(!sidebarOpen);
 
 	const selectFolder = (path: string) => {
 		setCategory(path);
@@ -588,7 +598,8 @@ const Memo: React.FC = () => {
 							)}
 							{canEdit && (
 								<span className="memo-admin-chip" title="관리자로 로그인했습니다">
-									<i className="fa-solid fa-key" aria-hidden="true" /> 관리자
+									<i className="fa-solid fa-key" aria-hidden="true" />
+									<span>관리자</span>
 								</span>
 							)}
 							<span className="memo-toolbar-spacer" />

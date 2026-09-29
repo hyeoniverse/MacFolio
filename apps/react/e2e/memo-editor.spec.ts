@@ -19,10 +19,19 @@ test.describe('글쓰기·편집 (관리자)', () => {
 
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		const editor = memo.getByRole('form', { name: '새 메모' });
-		// 제목 없이 저장하면 서버가 거절한 이유를 보여 준다
-		await editor.getByRole('textbox', { name: '본문' }).fill('## 첫 문단\n\n본문입니다.');
+		// 필수 항목을 비우고 저장하면 요청을 보내지 않고 그 칸을 알려 준다 (제목으로 옮겨 간다)
 		await editor.getByRole('button', { name: '저장' }).click();
 		await expect(editor.getByRole('alert')).toContainText('제목을 입력해주세요.');
+		await expect(editor.getByRole('alert')).toContainText('본문을 입력해주세요.');
+		await expect(editor.getByRole('textbox', { name: '제목' })).toHaveAttribute('aria-invalid', 'true');
+		await expect(editor.getByRole('textbox', { name: '제목' })).toBeFocused();
+		expect(api.posts).toEqual([]);
+		// 요약은 선택 사항이라고 따로 알려 준다
+		await expect(editor).toContainText('요약은 선택 사항입니다. 비워 두면 본문의 앞부분이 목록에 보입니다.');
+
+		await editor.getByRole('textbox', { name: '본문' }).fill('## 첫 문단\n\n본문입니다.');
+		// 고친 칸은 표시가 사라진다
+		await expect(editor.getByRole('textbox', { name: '본문' })).toHaveAttribute('aria-invalid', 'false');
 
 		await editor.getByRole('textbox', { name: '제목' }).fill('새로 쓴 글');
 		// 미리 보기로 Markdown을 확인한다
