@@ -9,6 +9,7 @@ import Settings from '@/apps/settings/Settings';
 import Messages from '@/apps/messages/Messages';
 import Terminal from '@/apps/terminal/Terminal';
 import SproutFarm from '@/apps/sproutfarm/SproutFarm';
+import Passwords from '@/apps/passwords/Passwords';
 
 // Markdown 렌더러가 무거워서 메모(블로그)는 처음 열 때 불러온다
 const Memo = lazy(() => import('@/apps/memo/Memo'));
@@ -24,6 +25,7 @@ const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
 	messages: Messages,
 	terminal: Terminal,
 	sproutfarm: SproutFarm,
+	passwords: Passwords,
 };
 
 /** 데스크톱에 렌더링할 앱 (APP_NAMES 순서) */

@@ -1,0 +1,115 @@
+/* 관리자 계정 카드 (설정의 계정, 암호 앱) */
+.admin-account {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	max-width: 520px;
+	text-align: left;
+}
+
+.admin-account-head {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.admin-account-head strong {
+	color: var(--color-text-strong);
+	font-size: 18px;
+}
+
+.admin-account-avatar {
+	flex: none;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.admin-account-avatar.placeholder {
+	display: grid;
+	place-items: center;
+	background: linear-gradient(#b8b8be, #8e8e93);
+	color: #ffffff;
+	font-size: 24px;
+}
+
+.admin-account-status {
+	margin-top: 2px;
+	color: var(--color-text-secondary);
+	font-size: 13px;
+}
+
+.admin-account-status[data-status='signed-in']::before {
+	display: inline-block;
+	width: 7px;
+	height: 7px;
+	margin-right: 6px;
+	border-radius: 50%;
+	background-color: #34c759;
+	vertical-align: 1px;
+	content: '';
+}
+
+.admin-account-actions {
+	display: flex;
+	gap: 8px;
+}
+
+.admin-account-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 7px 14px;
+	border: 1px solid var(--color-divider);
+	border-radius: 8px;
+	background-color: var(--color-window-bg, transparent);
+	color: var(--color-text);
+	font: inherit;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.admin-account-button.primary {
+	border-color: transparent;
+	background-color: var(--color-accent);
+	color: var(--color-on-accent);
+}
+
+.admin-account-button:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.admin-account-details {
+	overflow: hidden;
+	border: 1px solid var(--color-divider);
+	border-radius: 10px;
+	font-size: 13px;
+}
+
+.admin-account-details div {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 9px 12px;
+}
+
+.admin-account-details div + div {
+	border-top: 1px solid var(--color-divider);
+}
+
+.admin-account-details dt {
+	flex: none;
+	color: var(--color-text);
+}
+
+.admin-account-details dd {
+	color: var(--color-text-secondary);
+	text-align: right;
+}
+
+.admin-account-note {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
