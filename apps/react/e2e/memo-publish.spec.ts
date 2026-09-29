@@ -107,7 +107,7 @@ test.describe('임시 저장·게시·버전 (관리자)', () => {
 		await publish.click();
 		await expect(publish).toBeDisabled();
 
-		await memo.getByRole('button', { name: '버전 기록' }).click();
+		await memo.getByRole('button', { name: '버전 기록', exact: true }).click();
 		const panel = page.getByRole('dialog', { name: '버전 기록' });
 		const versions = panel.getByRole('list', { name: '버전' }).getByRole('button');
 		await expect(versions).toHaveCount(3);
