@@ -44,13 +44,15 @@ const DAY = 24 * 60 * 60 * 1000;
 
 /**
  * 날짜가 들어갈 묶음 이름 (macOS 메모와 같은 구간).
- * 오늘, 어제, 지난 7일, 지난 30일, 올해는 'N월', 그 전은 'YYYY년'. 미래 날짜는 '오늘'로 본다.
+ * 오늘, 어제, 지난 7일, 지난 30일, 올해는 'N월', 그 전은 'YYYY년'.
+ * 미래 날짜는 '예정' (관리자가 예약한 글. 방문자에게는 그날까지 보이지 않는다)
  */
 export function dateGroup(date: string, today: Date): string {
 	const day = toDay(date);
 	const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 	const days = Math.round((base.getTime() - day.getTime()) / DAY);
-	if (days <= 0) return '오늘';
+	if (days < 0) return '예정';
+	if (days === 0) return '오늘';
 	if (days === 1) return '어제';
 	if (days <= 7) return '지난 7일';
 	if (days <= 30) return '지난 30일';

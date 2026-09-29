@@ -11,10 +11,16 @@ import {
 	filterPosts,
 	firstImage,
 	folderName,
+	mergeAdminPosts,
+	mergeServerPosts,
 	formatPostDate,
+	excerpt,
 	resolveImageSrc,
 	type FolderNode,
+	type AdminPost,
 	type Post,
+	type PostFilter,
+	type ServerPost,
 } from './posts';
 import {
 	addFolder,
@@ -32,16 +38,28 @@ import {
 } from './organize';
 import FolderSidebar, { type DragItem } from './components/FolderSidebar';
 import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
+import { sortMenuItems } from './components/sortMenuItems';
 import { groupPosts, loadArrangement, saveArrangement, sortBy, type Arrangement } from './arrange';
 import ContextMenu from './components/ContextMenu';
 import { CONTENT_IMAGES } from './contentImages';
 import { useCanEditMemo } from './admin';
+import { useAppState } from '@/desktop/AppStateContext';
+import { foregroundApp } from '@/desktop/appStack';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
+import CodeBlock from './components/CodeBlock';
 import Comments from './comments/Comments';
+import PostWriter, { type PostWriterHandle } from './writer/PostWriter';
+import FormatTools from './writer/FormatTools';
+import RevisionsPanel from './components/RevisionsPanel';
+import SearchField from './components/SearchField';
+import FindBar from './components/FindBar';
+import { keepFocus, usePopover } from './writer/popover';
+import { deletePost, fetchAdminPosts, fetchServerPosts, type PostDraft } from './postsApi';
+import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
@@ -53,11 +71,12 @@ const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
  */
 const MARKDOWN_COMPONENTS: Components = {
 	// 외부 링크는 새 탭에서 연다
-	a: ({ href, children }) => (
-		<a href={href} target="_blank" rel="noopener noreferrer">
+	a: ({ href, title, children }) => (
+		<a href={href} title={title} target="_blank" rel="noopener noreferrer">
 			{children}
 		</a>
 	),
+	pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
 	img: ({ src, alt, title }) => (
 		<MarkdownImage src={typeof src === 'string' ? src : undefined} alt={alt} title={title} />
 	),
@@ -65,20 +84,30 @@ const MARKDOWN_COMPONENTS: Components = {
 
 type Pane = 'folders' | 'list' | 'reader';
 
-/** 이 폭 이하면 한 칸씩 보인다 (Memo.css의 @container (max-width: 600px)와 같아야 한다) */
-const COMPACT_WIDTH = 600;
+/** 새 메모 자리가 접히며 사라지는 시간 (Memo.css의 memo-new-item-out과 같다) */
+const NEW_ITEM_LEAVE_MS = 240;
+
+/**
+ * 이 폭 이하면 한 칸씩 보인다 (Memo.css의 @container (max-width: 700px)와 같아야 한다).
+ * 폴더·목록·본문 세 칸을 나란히 두기에 700px보다 좁으면 본문이 너무 좁아진다
+ */
+const COMPACT_WIDTH = 700;
 
 /** 메모가 한 칸씩 보이는지 (컨테이너 폭으로 판단) */
-function useCompact(ref: React.RefObject<HTMLElement | null>) {
-	const [compact, setCompact] = useState(false);
+/** 이 폭 이하면 폴더 사이드바를 처음에 닫아 둔다 (macOS 메모처럼). 목록과 본문에 자리를 준다 */
+const NARROW_WIDTH = 860;
+
+/** 메모 창의 폭으로 정하는 모양: 한 칸씩(compact), 사이드바를 닫아 둘 만큼 좁음(narrow) */
+function useShellSize(ref: React.RefObject<HTMLElement | null>) {
+	const [width, setWidth] = useState(Infinity);
 	useEffect(() => {
 		const element = ref.current;
 		if (!element) return;
-		const observer = new ResizeObserver(([entry]) => setCompact(entry.contentRect.width <= COMPACT_WIDTH));
+		const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
 		observer.observe(element);
 		return () => observer.disconnect();
 	}, [ref]);
-	return compact;
+	return { compact: width <= COMPACT_WIDTH, narrow: width <= NARROW_WIDTH };
 }
 const PANES: Pane[] = ['folders', 'list', 'reader'];
 
@@ -108,16 +137,30 @@ const CardPreview: React.FC<{ post: Post }> = ({ post }) => {
  * 방문자는 읽기만 하고, 글쓰기는 관리자 로그인(#9) 이후에 붙인다.
  */
 const Memo: React.FC = () => {
-	const [posts, setPosts] = useState<Post[]>([]);
+	/** 저장소의 Markdown 글 */
+	const [repoPosts, setRepoPosts] = useState<Post[]>([]);
+	/** 방문자용 서버 글 (게시한 글, 지운·예약 표시) */
+	const [publicPosts, setPublicPosts] = useState<ServerPost[]>([]);
+	/** 관리자용 서버 글 (게시한 내용과 임시 저장). 관리자로 로그인했을 때만 읽는다 */
+	const [adminPosts, setAdminPosts] = useState<AdminPost[] | null>(null);
 	const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 	const [category, setCategory] = useState(ALL_CATEGORY);
 	const [query, setQuery] = useState('');
+	/** 검색 조건 (체크리스트가 있는 메모 등) */
+	const [filter, setFilter] = useState<PostFilter | null>(null);
+	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
+	const [findSlug, setFindSlug] = useState<string | null>(null);
+	/** 검색 칸에 초점이 있는지, 도구를 모은 ••• 메뉴 (검색하는 동안 다른 도구를 접고 검색 칸을 넓힌다) */
+	const [searchFocused, setSearchFocused] = useState(false);
+	const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
+	const searching = searchFocused || moreMenu !== null;
 	const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 	// 좁은 창에서는 한 칸씩 보여준다 (iOS 메모처럼 폴더 → 목록 → 본문). 넓은 창에서는 쓰지 않는다.
 	const [pane, setPaneState] = useState<Pane>('list');
 	// 넘어간 방향. 앞으로 가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다 (처음에는 애니메이션 없음)
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
-	const [sidebarOpen, setSidebarOpen] = useState(true);
+	/** 사용자가 사이드바를 직접 열거나 닫았으면 그 값, 아니면 창 폭으로 정한다 */
+	const [sidebarChoice, setSidebarChoice] = useState<boolean | null>(null);
 	const [view, setView] = useState<View>('list');
 	/** 정렬과 날짜별 묶기. 보기 설정이라 방문자도 바꾸고, 이 브라우저에 저장한다 (arrange.ts) */
 	const [arrangement, setArrangementState] = useState<Arrangement>(loadArrangement);
@@ -127,13 +170,24 @@ const Memo: React.FC = () => {
 	};
 	// 날짜 묶음(오늘, 어제 …)의 기준. 창을 연 날로 고정한다
 	const today = useMemo(() => new Date(), []);
+	const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 	/** 갤러리에서 카드를 눌러 글을 연 상태 */
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
 	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
 	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 단추를 보이지 않는다 (admin.ts)
 	const canEdit = useCanEditMemo();
+	const { apps } = useAppState();
+	/** 관리자 목록을 읽었으면 편집기로 본다 (읽기 전에는 게시한 내용으로 읽기만) */
+	const editing = canEdit && adminPosts !== null;
+	// 관리자는 임시 저장까지 보이고, 방문자는 게시한 글만 본다
+	const posts = useMemo(
+		() => (editing ? mergeAdminPosts(repoPosts, adminPosts, todayIso) : mergeServerPosts(repoPosts, publicPosts)),
+		[editing, repoPosts, adminPosts, publicPosts, todayIso]
+	);
 	const shellRef = useRef<HTMLDivElement>(null);
-	const compact = useCompact(shellRef);
+	const { compact, narrow } = useShellSize(shellRef);
+	// 한 칸씩 볼 때는 폴더가 따로 한 화면이라 닫지 않는다
+	const sidebarOpen = compact || (sidebarChoice ?? !narrow);
 	// 관리자가 정리한 내용 (API). 방문자도 같은 정리 내용으로 본다
 	const [organization, setOrganization] = useState<Organization>(EMPTY_ORGANIZATION);
 	/** 관리자가 방금 바꿔서 아직 저장하지 않았는지 */
@@ -148,15 +202,45 @@ const Memo: React.FC = () => {
 		setPaneState(next);
 	};
 
+	// 저장소의 Markdown 글을 먼저 보여 주고, 서버의 글(관리자가 쓰거나 고친 글)을 겹친다
 	useEffect(() => {
+		let cancelled = false;
 		getPostRepository()
 			.list()
-			.then((list) => {
-				setPosts(list);
+			.then(async (list) => {
+				if (cancelled) return;
+				setRepoPosts(list);
 				setStatus('ready');
+				const server = await fetchServerPosts(env.apiUrl);
+				if (!cancelled && server.length > 0) setPublicPosts(server);
 			})
 			.catch(() => setStatus('error'));
+		return () => {
+			cancelled = true;
+		};
 	}, []);
+
+	// 관리자로 로그인하면 임시 저장까지 읽는다
+	useEffect(() => {
+		if (!canEdit) return;
+		let cancelled = false;
+		fetchAdminPosts(env.apiUrl).then((loaded) => {
+			if (!cancelled && loaded) setAdminPosts(loaded);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [canEdit]);
+
+	/** 새 메모에 지금 쓰고 있는 것 (목록 미리 보기) */
+	const [newPreview, setNewPreview] = useState<PostDraft | null>(null);
+	/** 사라지는 중인 새 메모 자리 (접히는 애니메이션이 끝나면 지운다) */
+	const [leavingDraft, setLeavingDraft] = useState<{ key: number; preview: PostDraft | null } | null>(null);
+	/** 새 메모를 쓰는 중이면 그 번호 (아직 한 번도 저장하지 않은 메모). 관리자가 아니면 쓰지 않는다 */
+	const [newDraftState, setNewDraft] = useState<number | null>(null);
+	const newDraft = canEdit ? newDraftState : null;
+	/** 새 메모가 처음 저장되면 주소가 생긴다. 그 뒤에도 같은 편집기를 이어 쓰도록 주소 → 편집기 이름을 기억한다 */
+	const [writerKeys, setWriterKeys] = useState<Record<string, string>>({});
 
 	// 예전에 방문자 브라우저에 저장된 정리 내용은 지우고, 서버의 정리 내용을 읽는다
 	useEffect(() => {
@@ -194,8 +278,17 @@ const Memo: React.FC = () => {
 	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
 	const folders = useMemo(() => buildFolderTree(organized, organization.folders), [organized, organization.folders]);
 	const visible = useMemo(
-		() => sortBy(filterPosts(organized, category, query), arrangement),
-		[organized, category, query, arrangement]
+		() =>
+			sortBy(
+				filterPosts(
+					organized,
+					category,
+					query,
+					editing ? filter : filter === 'draft' || filter === 'scheduled' ? null : filter
+				),
+				arrangement
+			),
+		[organized, category, query, filter, editing, arrangement]
 	);
 	// 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다)
 	const folderPaths = useMemo(() => {
@@ -224,7 +317,7 @@ const Memo: React.FC = () => {
 		setQuery('');
 		setSelectedSlug(post.slug);
 	};
-	const toggleSidebar = () => setSidebarOpen((open) => !open);
+	const toggleSidebar = () => setSidebarChoice(!sidebarOpen);
 
 	const selectFolder = (path: string) => {
 		setCategory(path);
@@ -329,16 +422,20 @@ const Memo: React.FC = () => {
 		<li key={post.slug}>
 			<button
 				type="button"
-				className={`memo-item ${selected?.slug === post.slug ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
+				className={`memo-item ${selected?.slug === post.slug && newDraft === null ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
 				{...dragPost(post.slug)}
-				aria-current={selected?.slug === post.slug || undefined}
+				aria-current={(selected?.slug === post.slug && newDraft === null) || undefined}
 				onContextMenu={openNoteMenu(post.slug)}
 				onClick={() => {
 					setSelectedSlug(post.slug);
+					leaveNewDraft();
 					setPane('reader');
 				}}
 			>
-				<strong>{post.title}</strong>
+				<strong>
+					{post.title}
+					{statusBadge(post)}
+				</strong>
 				<span className="memo-item-meta">
 					<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
 				</span>
@@ -358,6 +455,7 @@ const Memo: React.FC = () => {
 				onContextMenu={openNoteMenu(post.slug)}
 				onClick={() => {
 					setSelectedSlug(post.slug);
+					leaveNewDraft();
 					setGalleryNoteOpen(true);
 				}}
 			>
@@ -373,6 +471,184 @@ const Memo: React.FC = () => {
 				<time dateTime={post.date}>{formatPostDate(post.date)}</time>
 			</button>
 		</li>
+	);
+
+	const upsertAdminPost = (post: AdminPost) =>
+		setAdminPosts((list) => [...(list ?? []).filter((item) => item.slug !== post.slug), post]);
+
+	/** 편집기가 임시 저장·게시할 때마다: 목록에 반영하고, 새 메모였으면 그 글을 고른다 */
+	const onWriterSaved = (post: AdminPost) => {
+		upsertAdminPost(post);
+		if (newDraft !== null) {
+			setWriterKeys((keys) => ({ ...keys, [post.slug]: `new-${newDraft}` }));
+			setSelectedSlug(post.slug);
+			setNewDraft(null);
+		}
+	};
+
+	/** 편집기를 새로 그린다 (변경 사항을 버렸을 때) */
+	const remountWriter = (slug: string) => setWriterKeys((keys) => ({ ...keys, [slug]: `${slug}-${Date.now()}` }));
+
+	/** 변경 사항을 버렸다: 게시한 내용(없으면 저장소 원본)으로. 둘 다 없던 새 메모는 사라진다 */
+	const onWriterDiscarded = (slug: string, post: AdminPost | null) => {
+		if (post) upsertAdminPost(post);
+		else setAdminPosts((list) => (list ?? []).filter((item) => item.slug !== slug));
+		remountWriter(slug);
+	};
+
+	const writerRef = useRef<PostWriterHandle>(null);
+	const {
+		open: revisionsOpen,
+		setOpen: setRevisionsOpen,
+		buttonRef: revisionsButton,
+		panelRef: revisionsPanel,
+		position: revisionsPosition,
+	} = usePopover();
+
+	const startNewDraft = () => {
+		setQuery('');
+		setNewDraft(Date.now());
+		setNewPreview(null);
+		setPane('reader');
+	};
+
+	/** 새 메모를 두고 다른 글로 옮겨 간다: 목록의 새 메모 자리는 접히며 사라진다 (쓴 것이 있으면 편집기가 저장해 진짜 글로 남는다) */
+	const leaveNewDraft = () => {
+		if (newDraft === null) return;
+		const key = newDraft;
+		setLeavingDraft({ key, preview: newPreview });
+		setTimeout(() => setLeavingDraft((current) => (current?.key === key ? null : current)), NEW_ITEM_LEAVE_MS);
+		setNewDraft(null);
+	};
+
+	/** 목록 맨 위의 새 메모 (macOS 메모의 '새로운 메모': 쓰는 대로 제목·본문이 보인다) */
+	const newDraftItem = (key: number, preview: PostDraft | null, leaving: boolean) => (
+		<li key={`new-${key}`} className={`memo-new-item ${leaving ? 'leaving' : ''}`} aria-hidden={leaving || undefined}>
+			<button
+				type="button"
+				className={`memo-item ${leaving ? '' : 'active'}`}
+				aria-current={!leaving || undefined}
+				tabIndex={leaving ? -1 : undefined}
+				onClick={() => setPane('reader')}
+			>
+				<strong>{preview?.title.trim() || '새로운 메모'}</strong>
+				<span className="memo-item-meta">
+					<time>{new Intl.DateTimeFormat('ko-KR', { hour: 'numeric', minute: '2-digit' }).format(key)}</time>{' '}
+					{(preview && excerpt(preview.body)) || '추가 텍스트 없음'}
+				</span>
+				<span className="memo-item-folder">
+					<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(preview?.category ?? newFolder)}
+				</span>
+			</button>
+		</li>
+	);
+
+	const removePost = async (post: Post) => {
+		if (!window.confirm(`'${post.title}' 메모를 지울까요?`)) return;
+		if (!(await deletePost(env.apiUrl, post.slug))) {
+			notify({ app: 'memo', title: '지우지 못함', body: '관리자 로그인이 끝났거나 서버에 연결할 수 없습니다.' });
+			return;
+		}
+		upsertAdminPost({
+			slug: post.slug,
+			published: null,
+			publishedAt: null,
+			draft: null,
+			draftUpdatedAt: null,
+			deleted: true,
+			revisions: 0,
+		});
+	};
+
+	/** 게시 상태 표시 (관리자 목록): 게시한 적 없음, 게시하지 않은 편집, 예약 */
+	const statusBadge = (post: Post) =>
+		post.status &&
+		(post.status.draftOnly ? (
+			<span className="memo-status-badge draft">임시 저장</span>
+		) : post.status.scheduled ? (
+			<span className="memo-status-badge scheduled" title={`${formatPostDate(post.status.scheduled)}에 공개`}>
+				예약
+			</span>
+		) : post.status.changed ? (
+			<span className="memo-status-dot" role="img" aria-label="게시하지 않은 변경" title="게시하지 않은 변경" />
+		) : null);
+
+	/** 관리자 도구: 새 메모, 지우기 (고치기는 본문에서 바로 한다) */
+	const authorTools = (className: string) =>
+		canEdit && (
+			<>
+				{/* 사이드바가 열려 있으면 새 메모는 사이드바 위쪽에 (좁은 창의 한 칸 보기에서는 여기) */}
+				{(!sidebarOpen || className === 'compact-only') && (
+					<button
+						type="button"
+						className={`memo-tool ${className}`}
+						aria-label="새 메모"
+						title="새 메모"
+						onClick={startNewDraft}
+					>
+						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+					</button>
+				)}
+				{/* 본문 서식 (편집기가 열려 있을 때만) */}
+				<span className={`memo-format-tools ${className}`}>
+					<FormatTools />
+				</span>
+				{editing && selected && newDraft === null && className === '' && (
+					<button
+						ref={revisionsButton}
+						type="button"
+						className={`memo-tool ${revisionsOpen ? 'on' : ''}`}
+						aria-label="버전 기록"
+						title="버전 기록"
+						aria-haspopup="dialog"
+						aria-expanded={revisionsOpen}
+						onPointerDown={keepFocus}
+						onClick={() => setRevisionsOpen((value) => !value)}
+					>
+						<i className="fa-solid fa-clock-rotate-left" aria-hidden="true" />
+					</button>
+				)}
+				{selected && newDraft === null && (
+					<button
+						type="button"
+						className={`memo-tool ${className}`}
+						aria-label="메모 삭제"
+						title="메모 삭제"
+						onClick={() => void removePost(selected)}
+					>
+						<i className="fa-regular fa-trash-can" aria-hidden="true" />
+					</button>
+				)}
+			</>
+		);
+
+	/** 글 아래: 이전 글·다음 글, 댓글 */
+	const postFooter = (post: Post) => (
+		<>
+			{(older || newer) && (
+				<nav className="memo-post-nav" aria-label="이전 글, 다음 글">
+					{older ? (
+						<button type="button" className="older" onClick={() => openAdjacent(older)}>
+							<span>
+								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 이전 글
+							</span>
+							<strong>{older.title}</strong>
+						</button>
+					) : (
+						<span />
+					)}
+					{newer && (
+						<button type="button" className="newer" onClick={() => openAdjacent(newer)}>
+							<span>
+								다음 글 <i className="fa-solid fa-chevron-right" aria-hidden="true" />
+							</span>
+							<strong>{newer.title}</strong>
+						</button>
+					)}
+				</nav>
+			)}
+			<Comments slug={post.slug} />
+		</>
 	);
 
 	/** 본문의 고정 단추 */
@@ -396,22 +672,39 @@ const Memo: React.FC = () => {
 			{status === 'loading' && <p className="memo-empty">불러오는 중…</p>}
 			{status === 'error' && <p className="memo-empty">글을 불러오지 못했습니다.</p>}
 			{status === 'ready' && visible.length === 0 && (
-				<p className="memo-empty">{query ? '검색 결과가 없습니다.' : '메모 없음'}</p>
+				<p className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</p>
 			)}
 		</>
 	);
 
+	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글이면 마지막 폴더) */
+	const newFolder = category === ALL_CATEGORY ? (folderPaths.at(-1) ?? '기타') : category;
+	const openFind = selected ? () => setFindSlug(selected.slug) : null;
+	const findTarget = selected?.slug ?? null;
+	const memoInFront = foregroundApp(apps) === 'memo';
+	// ⌘F: 메모가 맨 앞 창이면 열린 글 안에서 찾기 (브라우저의 페이지 찾기 대신)
+	useEffect(() => {
+		if (!memoInFront || !findTarget) return;
+		const onKeyDown = (event: KeyboardEvent) => {
+			if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'f') {
+				event.preventDefault();
+				setFindSlug(findTarget);
+			}
+		};
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [memoInFront, findTarget]);
 	const searchBox = (className = '') => (
-		<label className={`memo-search ${className}`}>
-			<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-			<input
-				type="search"
-				placeholder="검색"
-				aria-label="글 검색"
-				value={query}
-				onChange={(event) => setQuery(event.target.value)}
-			/>
-		</label>
+		<SearchField
+			className={className}
+			query={query}
+			onQuery={setQuery}
+			filter={filter}
+			onFilter={setFilter}
+			admin={editing}
+			onFind={openFind}
+			onFocusChange={setSearchFocused}
+		/>
 	);
 	const sortMenu = () => <SortMenu arrangement={arrangement} onChange={setArrangement} />;
 	// 검색 칸은 늘 창 오른쪽 위(도구 막대 끝)에 있다. 좁은 창에서는 도구 막대가 없으므로 목록 위에 정렬 단추와 함께 둔다
@@ -440,6 +733,7 @@ const Memo: React.FC = () => {
 				>
 					<FolderSidebar
 						canEdit={canEdit}
+						onNewNote={startNewDraft}
 						open={sidebarOpen}
 						onToggle={toggleSidebar}
 						folders={folders}
@@ -481,6 +775,12 @@ const Memo: React.FC = () => {
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
 							</button>
 							{compactTools}
+							{(newDraft !== null || leavingDraft) && (
+								<ul className="memo-items memo-new-items" aria-label="새 메모">
+									{newDraft !== null && newDraftItem(newDraft, newPreview, false)}
+									{leavingDraft && newDraftItem(leavingDraft.key, leavingDraft.preview, true)}
+								</ul>
+							)}
 							{sections(listItem, '고정됨', 'memo-items')}
 							{empty}
 						</div>
@@ -507,7 +807,7 @@ const Memo: React.FC = () => {
 					)}
 
 					<article className="memo-reader" aria-label={selected ? selected.title : '글'}>
-						<div className="memo-toolbar memo-reader-toolbar">
+						<div className={`memo-toolbar memo-reader-toolbar ${searching ? 'searching' : ''}`}>
 							{galleryNoteOpen && (
 								<>
 									<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
@@ -521,21 +821,90 @@ const Memo: React.FC = () => {
 									</button>
 								</>
 							)}
+							{canEdit && (
+								<span className="memo-admin-chip" title="관리자로 로그인했습니다">
+									<i className="fa-solid fa-key" aria-hidden="true" />
+									<span>관리자</span>
+								</span>
+							)}
 							<span className="memo-toolbar-spacer" />
-							{pinButton('')}
-							{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
-							{sortMenu()}
-							<ViewSwitch view={view} onChange={changeView} />
+							{/* 검색하는 동안 도구는 접히고(••• 메뉴로 모인다) 검색 칸이 왼쪽으로 넓어진다 */}
+							<span className="memo-toolbar-tools" inert={searching || undefined}>
+								<span className="memo-toolbar-tools-inner">
+									{authorTools('')}
+									{pinButton('')}
+									{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
+									{sortMenu()}
+									<ViewSwitch view={view} onChange={changeView} />
+								</span>
+							</span>
+							<button
+								type="button"
+								className="memo-tool memo-toolbar-more"
+								aria-label="도구 더 보기"
+								title="도구 더 보기"
+								aria-haspopup="menu"
+								aria-expanded={moreMenu !== null}
+								tabIndex={searching ? undefined : -1}
+								// 검색 칸의 초점을 빼앗지 않는다 (누르는 순간 검색 칸이 접히지 않게)
+								onPointerDown={(event) => {
+									event.preventDefault();
+									event.stopPropagation();
+								}}
+								onClick={(event) => {
+									const rect = event.currentTarget.getBoundingClientRect();
+									setMoreMenu(moreMenu ? null : { x: rect.left, y: rect.bottom + 6 });
+								}}
+							>
+								<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+							</button>
 							{search}
 						</div>
+						{findSlug !== null && findSlug === selected?.slug && (
+							<FindBar key={findSlug} editing={editing} readerRoot={readerScroll} onClose={() => setFindSlug(null)} />
+						)}
 						<div ref={readerScroll} className="memo-scroll">
 							<div className="memo-reader-compact-bar">
 								<button type="button" className="memo-back" onClick={() => setPane('list')}>
 									<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
 								</button>
+								{authorTools('compact-only')}
 								{pinButton('compact-only')}
 							</div>
-							{selected && (
+							{editing && (newDraft !== null || selected) && (
+								// 관리자: 따로 편집 단추 없이 바로 고친다 (macOS 메모처럼)
+								<div
+									key={newDraft !== null ? `new-${newDraft}` : (writerKeys[selected!.slug] ?? selected!.slug)}
+									className="memo-reader-body"
+								>
+									<PostWriter
+										ref={writerRef}
+										post={newDraft !== null ? null : selected}
+										hasPublished={
+											newDraft === null &&
+											Boolean(selected) &&
+											(repoPosts.some((item) => item.slug === selected!.slug) ||
+												Boolean(adminPosts?.find((item) => item.slug === selected!.slug)?.published))
+										}
+										onDiscarded={onWriterDiscarded}
+										onDraftChange={newDraft !== null ? setNewPreview : undefined}
+										folders={folderPaths}
+										defaultFolder={newFolder}
+										onSaved={onWriterSaved}
+										renderMarkdown={(body) => (
+											<ReactMarkdown
+												remarkPlugins={[remarkGfm]}
+												rehypePlugins={REHYPE_PLUGINS}
+												components={MARKDOWN_COMPONENTS}
+											>
+												{body}
+											</ReactMarkdown>
+										)}
+									/>
+									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
+								</div>
+							)}
+							{!editing && selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
 								<div key={selected.slug} className="memo-reader-body">
 									<p className="memo-reader-date">
@@ -552,34 +921,76 @@ const Memo: React.FC = () => {
 											{selected.body}
 										</ReactMarkdown>
 									</div>
-									{(older || newer) && (
-										<nav className="memo-post-nav" aria-label="이전 글, 다음 글">
-											{older ? (
-												<button type="button" className="older" onClick={() => openAdjacent(older)}>
-													<span>
-														<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 이전 글
-													</span>
-													<strong>{older.title}</strong>
-												</button>
-											) : (
-												<span />
-											)}
-											{newer && (
-												<button type="button" className="newer" onClick={() => openAdjacent(newer)}>
-													<span>
-														다음 글 <i className="fa-solid fa-chevron-right" aria-hidden="true" />
-													</span>
-													<strong>{newer.title}</strong>
-												</button>
-											)}
-										</nav>
-									)}
-									<Comments slug={selected.slug} />
+									{postFooter(selected)}
 								</div>
 							)}
 						</div>
 					</article>
 
+					{revisionsOpen &&
+						editing &&
+						selected &&
+						createPortal(
+							<div
+								ref={revisionsPanel}
+								className="memo-format-panel memo-format-panel-wide"
+								role="dialog"
+								aria-label="버전 기록"
+								style={revisionsPosition}
+							>
+								<RevisionsPanel
+									key={selected.slug}
+									slug={selected.slug}
+									original={repoPosts.find((item) => item.slug === selected.slug) ?? null}
+									renderMarkdown={(body) => (
+										<ReactMarkdown
+											remarkPlugins={[remarkGfm]}
+											rehypePlugins={REHYPE_PLUGINS}
+											components={MARKDOWN_COMPONENTS}
+										>
+											{body}
+										</ReactMarkdown>
+									)}
+									onRestore={(content) => {
+										writerRef.current?.replaceContent(content);
+										setRevisionsOpen(false);
+									}}
+								/>
+							</div>,
+							document.body
+						)}
+					{moreMenu && (
+						<ContextMenu
+							label="도구 더 보기"
+							anchor={moreMenu}
+							onClose={() => setMoreMenu(null)}
+							items={[
+								...(canEdit
+									? [{ label: '새 메모', icon: 'fa-regular fa-pen-to-square', onSelect: startNewDraft }]
+									: []),
+								...(canEdit && selected
+									? [
+											{
+												label: selected.pinned ? '메모 고정 해제' : '메모 고정',
+												icon: 'fa-solid fa-thumbtack',
+												onSelect: () => togglePin(selected),
+											},
+											{
+												label: '메모 삭제',
+												icon: 'fa-regular fa-trash-can',
+												onSelect: () => void removePost(selected),
+											},
+											'separator' as const,
+										]
+									: []),
+								...sortMenuItems(arrangement, setArrangement),
+								'separator',
+								{ heading: '보기' },
+								{ label: '목록으로 보기', checked: view === 'list', onSelect: () => changeView('list') },
+								{ label: '갤러리로 보기', checked: view === 'gallery', onSelect: () => changeView('gallery') },
+							]}
+						/>
+					)}
 					{noteMenu && menuPost && (
 						<ContextMenu
 							label={`${menuPost.title} 메뉴`}
@@ -590,6 +1001,12 @@ const Memo: React.FC = () => {
 									label: menuPost.pinned ? '메모 고정 해제' : '메모 고정',
 									icon: 'fa-solid fa-thumbtack',
 									onSelect: () => togglePin(menuPost),
+								},
+								'separator',
+								{
+									label: '메모 삭제',
+									icon: 'fa-regular fa-trash-can',
+									onSelect: () => void removePost(menuPost),
 								},
 							]}
 						/>

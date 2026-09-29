@@ -47,11 +47,24 @@ test.describe('모바일', () => {
 		// 화면이 없는 앱(Finder, 사진, 휴지통)은 홈 화면에 두지 않는다
 		await expect(homeApp(page, 'Finder')).toHaveCount(0);
 		await expect(homeApp(page, '휴지통')).toHaveCount(0);
-		// 키보드로 하는 PC 게임은 휴대폰 홈 화면에 두지 않는다
-		await expect(homeApp(page, '새싹 농장')).toHaveCount(0);
+		// 새싹 농장은 모바일 모드가 있어 휴대폰에서도 연다
+		await expect(homeApp(page, '새싹 농장')).toBeVisible();
 		// 터미널은 모바일에서 '단축어'로 보인다
 		await expect(homeApp(page, '터미널')).toHaveCount(0);
 		await expect(homeApp(page, '단축어')).toBeVisible();
+	});
+
+	test('새싹 농장은 휴대폰에서도 화면을 가득 채워 게임을 띄운다', async ({ page }) => {
+		await page.route('https://sprout-farm-beta.vercel.app/**', (route) =>
+			route.fulfill({ contentType: 'text/html', body: '<button>START</button>' })
+		);
+		await enterHome(page);
+		await homeApp(page, '새싹 농장').tap();
+		const game = appWindow(page, 'sproutfarm');
+		await expect(game).toBeVisible();
+		await expect(
+			page.frameLocator('iframe[title="SproutFarm 새싹 농장"]').getByRole('button', { name: 'START' })
+		).toBeVisible();
 	});
 
 	test('앱은 화면을 가득 채워 열리고, 홈 인디케이터로 돌아온다', async ({ page }) => {

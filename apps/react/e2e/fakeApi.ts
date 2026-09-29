@@ -15,6 +15,53 @@ export interface FakeApiState {
 	saves: number;
 	/** 글마다 댓글 (가짜 서버는 비밀번호를 그대로 들고 있다) */
 	comments: Record<string, FakeComment[]>;
+	/** 관리자가 쓰거나 고친 글, 지운 표시 */
+	posts: FakePost[];
+	/** 올린 이미지·첨부 파일 */
+	uploads: FakeUpload[];
+	/** 사진 찾기: 켜진 서비스, 받은 검색어, Unsplash에 알린 사진 */
+	stock: { providers: { unsplash: boolean; pexels: boolean }; searches: string[]; downloads: string[] };
+}
+
+export interface FakeUpload {
+	id: string;
+	name: string;
+	type: string;
+	image: boolean;
+	data: Buffer;
+}
+
+/** multipart 요청에서 파일 하나를 꺼낸다 (가짜 서버용으로 단순하게) */
+function readMultipartFile(body: Buffer) {
+	const boundary = body.subarray(0, body.indexOf('\r\n')).toString('latin1');
+	const headerEnd = body.indexOf('\r\n\r\n');
+	const headers = body.subarray(0, headerEnd).toString('utf8');
+	const end = body.indexOf(`\r\n${boundary}`, headerEnd);
+	return {
+		name: headers.match(/filename="([^"]*)"/)?.[1] ?? 'file',
+		type: headers.match(/Content-Type: (\S+)/i)?.[1] ?? 'application/octet-stream',
+		data: body.subarray(headerEnd + 4, end),
+	};
+}
+
+export interface FakeContent {
+	title: string;
+	date: string;
+	category: string;
+	summary: string;
+	body: string;
+}
+
+/**
+ * 가짜 서버의 글. title…body는 마지막으로 저장한 내용(임시 저장이 있으면 그것, 없으면 게시한 내용)이라
+ * 테스트에서 '방금 저장된 것'을 바로 읽을 수 있다. published·draft는 실제 서버처럼 따로 둔다.
+ */
+export interface FakePost extends FakeContent {
+	slug: string;
+	deleted: boolean;
+	published?: FakeContent | null;
+	draft?: FakeContent | null;
+	revisions?: (FakeContent & { id: number; createdAt: string; createdBy: string })[];
 }
 
 export interface FakeComment {
@@ -46,6 +93,9 @@ export async function fakeApi(
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		saves: 0,
 		comments: {},
+		posts: [],
+		uploads: [],
+		stock: { providers: { unsplash: true, pexels: false }, searches: [], downloads: [] },
 	};
 	let nextId = 1;
 	const cors = (origin: string) => ({
@@ -58,6 +108,16 @@ export async function fakeApi(
 		window.__MACFOLIO_API_URL__ = url;
 	}, FAKE_API);
 	await page.route('https://github.com/*.png*', (route) => route.fulfill({ status: 404 }));
+	// 사진 찾기 결과의 그림 (1×1 PNG)
+	await page.route('https://images.test/**', (route) =>
+		route.fulfill({
+			contentType: 'image/png',
+			body: Buffer.from(
+				'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+				'base64'
+			),
+		})
+	);
 	await page.route(`${FAKE_API}/**`, async (route) => {
 		const request = route.request();
 		const origin = (await request.headerValue('origin')) ?? 'http://localhost:4173';
@@ -89,6 +149,180 @@ export async function fakeApi(
 			state.saves += 1;
 			return route.fulfill({ status: 200, headers: cors(origin), json: state.organization });
 		}
+		// 파일: 관리자만 올리고, 누구나 받는다. 이미지는 PNG 첫 바이트로 알아본다
+		if (path === '/files' && request.method() === 'POST') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const file = readMultipartFile(request.postDataBuffer()!);
+			const image = file.data.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+			const upload: FakeUpload = { id: `fakeupload${String(nextId++).padStart(6, '0')}`, ...file, image };
+			if (image) upload.type = 'image/png';
+			state.uploads.push(upload);
+			const { data, ...view } = upload;
+			return route.fulfill({
+				status: 201,
+				headers: cors(origin),
+				json: { ...view, size: data.length, path: `/files/${upload.id}` },
+			});
+		}
+		const filePath = path.match(/^\/files\/([\w-]+)$/);
+		if (filePath) {
+			const upload = state.uploads.find((item) => item.id === filePath[1]);
+			if (!upload) return route.fulfill({ status: 404, headers: cors(origin) });
+			return route.fulfill({
+				status: 200,
+				headers: { ...cors(origin), 'Content-Type': upload.type },
+				body: upload.data,
+			});
+		}
+
+		// 사진 찾기 (관리자만). 한 쪽에 두 장, 두 쪽까지
+		if (path.startsWith('/images/')) {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			if (path === '/images/providers')
+				return route.fulfill({ status: 200, headers: cors(origin), json: state.stock.providers });
+			const download = path.match(/^\/images\/unsplash\/([\w-]+)\/download$/);
+			if (download) {
+				state.stock.downloads.push(download[1]);
+				return route.fulfill({ status: 204, headers: cors(origin) });
+			}
+			const params = new URL(request.url()).searchParams;
+			const provider = params.get('provider') as 'unsplash' | 'pexels';
+			const q = params.get('q') ?? '';
+			const page = Number(params.get('page') ?? 1);
+			state.stock.searches.push(`${provider} ${q} ${page}`);
+			const results = [1, 2].map((n) => {
+				const id = `p${page}n${n}`;
+				return {
+					provider,
+					id,
+					thumb: `https://images.test/${id}-s.jpg`,
+					url: `https://images.test/${id}.jpg`,
+					width: 400,
+					height: 300,
+					alt: `${q} 사진 ${n}`,
+					author: `사진가${n}`,
+					authorUrl: `https://unsplash.com/@p${n}?utm_source=macfolio&utm_medium=referral`,
+					pageUrl: `https://unsplash.com/photos/${id}`,
+					color: '#88aacc',
+				};
+			});
+			return route.fulfill({ status: 200, headers: cors(origin), json: { results, hasMore: page < 2 } });
+		}
+
+		// 글: 누구나 게시한 글을 읽고, 로그인했을 때만 임시 저장·게시·버리기·지우기 (apps/api와 같은 규칙)
+		const postPath = path.match(/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions)(?:\/(\d+))?)?$/);
+		if (postPath) {
+			const [, slug, action, revisionId] = postPath;
+			const method = request.method();
+			const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+			const find = (key: string) => state.posts.find((post) => post.slug === key);
+			const pick = ({ title, date, category, summary, body }: FakeContent): FakeContent => ({
+				title,
+				date,
+				category,
+				summary,
+				body,
+			});
+			const adminView = (post: FakePost) => ({
+				slug: post.slug,
+				published: post.published ?? null,
+				publishedAt: post.published ? '2026-09-29T00:00:00.000Z' : null,
+				draft: post.draft ?? null,
+				draftUpdatedAt: post.draft ? '2026-09-29T00:00:00.000Z' : null,
+				deleted: post.deleted,
+				revisions: post.revisions?.length ?? 0,
+			});
+			const ok = (json: unknown, status = 200) => route.fulfill({ status, headers: cors(origin), json });
+
+			if (!slug && method === 'GET') {
+				// 방문자: 게시한 글 중 날짜가 된 것, 지운·예약 글은 가리는 표시로
+				const visible = state.posts
+					.filter((post) => post.deleted || post.published)
+					.map((post) =>
+						post.deleted || post.published!.date > today
+							? { slug: post.slug, title: '', date: '', category: '', summary: '', body: '', deleted: true }
+							: { slug: post.slug, ...pick(post.published!), deleted: false }
+					);
+				return ok(visible);
+			}
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			if (slug === 'admin' && !action && method === 'GET') return ok(state.posts.map(adminView));
+
+			const upsert = (post: FakePost) => {
+				state.posts = [...state.posts.filter((item) => item.slug !== post.slug), post];
+				return post;
+			};
+			if (method === 'DELETE' && slug && !action) {
+				const existing = find(slug);
+				upsert({
+					...(existing ?? { slug, title: '', date: '2026-09-29', category: '기타', summary: '', body: '' }),
+					draft: null,
+					deleted: true,
+				});
+				return route.fulfill({ status: 204, headers: cors(origin) });
+			}
+			if (action === 'revisions') {
+				const revisions = [...(find(slug!)?.revisions ?? [])].reverse();
+				if (!revisionId)
+					return ok(
+						revisions.map(({ id, title, date, createdAt, createdBy }) => ({ id, title, date, createdAt, createdBy }))
+					);
+				const revision = revisions.find((item) => item.id === Number(revisionId));
+				return revision
+					? ok(revision)
+					: route.fulfill({ status: 404, headers: cors(origin), json: { statusCode: 404 } });
+			}
+			if (action === 'draft' && method === 'DELETE') {
+				const existing = find(slug!);
+				if (!existing)
+					return route.fulfill({
+						status: 404,
+						headers: cors(origin),
+						json: { statusCode: 404, message: '글이 없습니다.' },
+					});
+				if (!existing.published) {
+					state.posts = state.posts.filter((item) => item.slug !== slug);
+					return route.fulfill({ status: 200, headers: cors(origin), body: '' });
+				}
+				return ok(adminView(upsert({ ...existing, ...existing.published, draft: null })));
+			}
+
+			const input = pick(request.postDataJSON() as FakeContent);
+			if (!input.title?.trim())
+				return route.fulfill({
+					status: 400,
+					headers: cors(origin),
+					json: { statusCode: 400, message: ['제목을 입력해주세요.'] },
+				});
+			if (action === 'publish') {
+				const existing = find(slug!);
+				const revisions = [
+					...(existing?.revisions ?? []),
+					{
+						...input,
+						id: nextId++,
+						createdAt: new Date(Date.now() + nextId * 60_000).toISOString(),
+						createdBy: 'hyeoniverse',
+					},
+				];
+				return ok(
+					adminView(upsert({ slug: slug!, ...input, deleted: false, published: input, draft: null, revisions }))
+				);
+			}
+			// 임시 저장: 새 글(POST /posts)이면 주소를 만든다
+			const key = slug ?? `${input.date}-fake${nextId++}`;
+			const existing = find(key);
+			const post = upsert({
+				slug: key,
+				...input,
+				deleted: false,
+				published: existing?.published ?? null,
+				draft: input,
+				revisions: existing?.revisions ?? [],
+			});
+			return ok(adminView(post), slug ? 200 : 201);
+		}
+
 		// 댓글: 글마다 읽고 쓰고, 비밀번호(관리자는 없이)로 지운다
 		const list = path.match(/^\/posts\/([\w-]+)\/comments$/);
 		if (list) {

@@ -55,3 +55,64 @@ model PostComment {
 
   @@index([postSlug, createdAt])
 }
+
+/// 관리자가 쓰거나 고친 블로그 글. 저장소의 Markdown 글과 주소(slug)가 같으면 이 글이 그 글을 대신한다.
+/// 게시한 내용과 임시 저장(게시하지 않은 편집)을 따로 둔다. 방문자는 게시한 내용만, 그것도 날짜가 되어야 본다(예약 발행).
+/// Markdown 글을 지우면 deleted로 남겨 둔다 (파일은 그대로 있어서, 표시가 없으면 다시 보인다)
+model Post {
+  slug        String         @id
+  /// 게시한 내용. 모두 null이면 서버에서 게시한 적 없음 (저장소 글이 그대로 보이거나, 새 글이면 아무에게도 안 보인다)
+  title       String?
+  /// YYYY-MM-DD. 오늘보다 뒤면 그날까지 방문자에게 보이지 않는다 (예약 발행)
+  date        String?
+  /// 폴더 경로 (예: 개발기/MacFolio)
+  category    String?
+  summary     String?
+  /// Markdown 본문
+  body        String?
+  publishedAt DateTime?
+  /// 임시 저장. 모두 null이면 게시한 그대로
+  draftTitle     String?
+  draftDate      String?
+  draftCategory  String?
+  draftSummary   String?
+  draftBody      String?
+  draftUpdatedAt DateTime?
+  deleted     Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
+  updatedBy   String
+  revisions   PostRevision[]
+}
+
+/// 게시할 때마다 남기는 버전 (글마다 최근 50개). 되돌리면 그 내용이 임시 저장으로 들어간다
+model PostRevision {
+  id        Int      @id @default(autoincrement())
+  postSlug  String
+  post      Post     @relation(fields: [postSlug], references: [slug], onDelete: Cascade)
+  title     String
+  date      String
+  category  String
+  summary   String
+  body      String
+  createdAt DateTime @default(now())
+  createdBy String
+
+  @@index([postSlug, createdAt])
+}
+
+/// 글에 넣은 이미지와 첨부 파일. 배포 환경마다 디스크가 다를 수 있어서 DB에 바로 둔다 (한 파일 10MB까지)
+model Upload {
+  /// 무작위 (주소를 짐작할 수 없게)
+  id        String   @id
+  /// 올린 파일 이름 (내려받을 때 이 이름으로)
+  name      String
+  /// MIME 형식. 이미지(PNG·JPEG·GIF·WebP)는 파일 앞부분으로 확인한 값
+  type      String
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now())
+  /// 올린 관리자 (GitHub 계정 이름)
+  createdBy String
+}

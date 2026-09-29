@@ -90,7 +90,11 @@ const Dock: React.FC = () => {
 									icon={iconOf(hiddenItem)}
 									isActive={isActive(hiddenItem)}
 									isHidden={false}
-									onClick={() => handleAppOpen(hiddenItem)}
+									onClick={() => {
+										// 앱을 열면 Launchpad는 닫힌다
+										closeLaunchpad();
+										handleAppOpen(hiddenItem);
+									}}
 									disableRadius={APP_MANIFEST[hiddenItem].squareIcon}
 								/>
 							))}
