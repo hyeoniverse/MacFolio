@@ -1534,38 +1534,99 @@
 	background-color: color-mix(in srgb, #edbb4d 12%, transparent);
 }
 
-/* 표 손잡이: 지금 열 위, 지금 행 왼쪽 */
+/* 표 손잡이: 지금 열 위의 막대, 지금 행 왼쪽의 손잡이 (macOS 메모) */
 .memo-table-handle {
 	position: absolute;
 	z-index: 3;
-	display: grid;
-	place-items: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	padding: 0;
 	border: none;
-	border-radius: 6px;
-	background-color: var(--memo-search-bg);
-	box-shadow: 0 0 0 1px var(--memo-border);
+	border-radius: 5px;
+	background-color: color-mix(in srgb, var(--memo-muted) 22%, transparent);
 	color: var(--memo-muted);
 	font-size: 10px;
 	cursor: pointer;
-	translate: -50% -50%;
+	opacity: 0.8;
+	transition:
+		background-color var(--duration-fast) var(--ease-out),
+		opacity var(--duration-fast) var(--ease-out);
 }
 
-.memo-table-handle.col {
-	width: 26px;
-	height: 14px;
+/* 편집기 바로 아래에 그려서 본문 문단 간격(.memo-markdown > * + *)을 받지 않게 */
+.memo-inline-editor > :is(.memo-table-handle, .memo-table-selection) {
+	margin: 0;
 }
 
+.memo-table-handle:hover {
+	opacity: 1;
+}
+
+/* 열 막대는 칸 폭만큼, 행 손잡이는 좁게 */
 .memo-table-handle.row {
-	width: 14px;
-	height: 26px;
+	border-radius: 999px;
 }
 
-.memo-table-handle:hover,
 .memo-table-handle.on {
+	border-radius: 5px 5px 0 0;
 	background-color: #edbb4d;
-	box-shadow: none;
-	color: #2b2100;
+	color: #fff;
+	opacity: 1;
+}
+
+.memo-table-handle.row.on {
+	border-radius: 5px 0 0 5px;
+}
+
+.memo-table-handle-chevron {
+	position: absolute;
+	right: 6px;
+	font-size: 9px;
+}
+
+/* 통째로 고른 표·이미지 (한 번 더 Backspace를 누르면 지워진다) */
+.memo-inline-editor table.ProseMirror-selectednode {
+	outline: 2px solid #edbb4d;
+	outline-offset: 1px;
+}
+
+/* 틈 커서 (표·이미지 앞뒤) */
+.memo-inline-editor .ProseMirror-gapcursor::after {
+	border-top-color: var(--memo-text);
+}
+
+/* 칸을 여러 개 고르면 글자 선택 색 대신 칸 색으로 보인다 (ProseMirror가 붙이는 클래스) */
+.memo-inline-editor .ProseMirror-hideselection *::selection {
+	background: transparent;
+}
+
+.memo-inline-editor .ProseMirror-hideselection {
+	caret-color: transparent;
+}
+
+/* 고른 행·열의 테두리 */
+.memo-table-selection {
+	position: absolute;
+	z-index: 2;
+	border: 2px solid #edbb4d;
+	pointer-events: none;
+}
+
+.memo-inline-editor .memo-table-active .selectedCell {
+	background-color: color-mix(in srgb, #edbb4d 14%, transparent);
+}
+
+/* 손잡이 메뉴 (macOS 메모의 표 메뉴처럼 글자만) */
+.memo-format-panel.memo-handle-panel {
+	width: auto;
+	min-width: 170px;
+	padding: 6px;
+}
+
+.memo-handle-menu button {
+	padding-left: 12px !important;
+	font-size: 14px !important;
 }
 
 /* 편집기의 표: 고른 칸, 열 너비 조절 손잡이 */

@@ -378,47 +378,108 @@ test.describe('바로 고치기 (관리자)', () => {
 		}
 	});
 
-	test('표 손잡이: 지금 열 위·행 왼쪽의 손잡이로 그 열·행을 고친다', async ({ page }) => {
+	test('표 손잡이: 열·행 전체를 골라 메뉴로 추가·삭제하고, Backspace로 칸을 비운다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('손잡이 시험');
 		await page.keyboard.press('Enter');
+		await page.keyboard.type('위 문단');
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
+		for (const text of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']) {
+			await page.keyboard.type(text);
+			if (text !== 'i') await page.keyboard.press('Tab');
+		}
 		const table = memo.locator('.ProseMirror table');
 		// 커서가 있는 표는 칸 선이, 지금 칸은 옅은 배경이 보인다
 		await expect(table).toHaveClass(/memo-table-active/);
 		await expect(table.locator('.memo-cell-current')).toHaveCount(1);
 
+		// 열 막대는 지금 칸 위에 칸 폭만큼 (표를 가리지 않는다)
+		await table.locator('td', { hasText: 'e' }).click();
 		const colHandle = memo.getByRole('button', { name: '이 열 편집' });
 		const rowHandle = memo.getByRole('button', { name: '이 행 편집' });
-		const cell = await table.locator('th').first().boundingBox();
-		const handle = await colHandle.boundingBox();
-		// 열 손잡이는 지금 칸 위 가운데
-		expect(Math.abs(handle!.x + handle!.width / 2 - (cell!.x + cell!.width / 2))).toBeLessThan(2);
+		const cell = (await table.locator('td', { hasText: 'e' }).boundingBox())!;
+		const bar = (await colHandle.boundingBox())!;
+		const top = (await table.boundingBox())!.y;
+		expect(Math.abs(bar.x - cell.x)).toBeLessThan(2);
+		expect(Math.abs(bar.width - cell.width)).toBeLessThan(2);
+		expect(bar.y + bar.height).toBeLessThanOrEqual(top);
+		expect((await rowHandle.boundingBox())!.x + 16).toBeLessThanOrEqual((await table.boundingBox())!.x);
 
+		// 열 막대를 누르면 열 전체를 고르고 메뉴가 열린다
 		await colHandle.click();
+		await expect(table.locator('.selectedCell')).toHaveCount(3);
+		await expect(memo.locator('.memo-table-selection')).toBeVisible();
 		const colMenu = page.getByRole('dialog', { name: '열 편집' });
-		await expect(colMenu.getByRole('menuitem', { name: '행 삭제' })).toHaveCount(0);
-		await colMenu.getByRole('menuitem', { name: '오른쪽에 열 추가' }).click();
-		await expect(table.locator('tr').first().locator('th')).toHaveCount(4);
+		await expect(colMenu.getByRole('menuitem')).toHaveText(['앞에 열 추가', '뒤에 열 추가', '1개의 열 삭제']);
+		// 메뉴를 닫고 Backspace: 고른 칸이 빈다
 		await page.keyboard.press('Escape');
+		await page.keyboard.press('Backspace');
+		await expect(table.locator('tr').nth(1).locator('td').nth(1)).toHaveText('');
+		await expect.poll(() => api.posts[0]?.body).toMatch(/\| a +\| +\| c +\|/);
 
-		await table.locator('td').first().click();
+		// 열 추가·삭제
+		await colHandle.click();
+		await colMenu.getByRole('menuitem', { name: '뒤에 열 추가' }).click();
+		await expect(table.locator('tr').first().locator('th')).toHaveCount(4);
+		await colMenu.getByRole('menuitem', { name: '1개의 열 삭제' }).click();
+		await expect(colMenu).toBeHidden();
+		await expect(table.locator('tr').first().locator('th')).toHaveCount(3);
+
+		// 행: 본문 행을 골라 아래에 추가하고 지운다
+		await table.locator('td', { hasText: 'g' }).click();
 		await rowHandle.click();
 		const rowMenu = page.getByRole('dialog', { name: '행 편집' });
-		await expect(rowMenu.getByRole('button', { name: '가운데 정렬' })).toHaveCount(0);
+		await expect(rowMenu.getByRole('menuitem')).toHaveText(['위에 행 추가', '아래에 행 추가', '1개의 행 삭제']);
 		await rowMenu.getByRole('menuitem', { name: '아래에 행 추가' }).click();
 		await expect(table.locator('tr')).toHaveCount(4);
-		await rowMenu.getByRole('menuitem', { name: '행 삭제' }).click();
+		await rowMenu.getByRole('menuitem', { name: '1개의 행 삭제' }).click();
 		await expect(table.locator('tr')).toHaveCount(3);
 
+		// 머리글 행은 지우지 않는다
+		await table.locator('th', { hasText: 'a' }).click();
+		await rowHandle.click();
+		await expect(rowMenu.getByRole('menuitem', { name: '1개의 행 삭제' })).toBeDisabled();
+		await page.keyboard.press('Escape');
+
 		// 표 밖으로 나가면 손잡이가 사라진다
-		await memo.locator('.ProseMirror p').last().click();
+		await memo.locator('.ProseMirror > p').first().click();
 		await expect(colHandle).toHaveCount(0);
 		await expect(table).not.toHaveClass(/memo-table-active/);
-		void api;
+	});
+
+	test('표 앞뒤에 커서를 두고, 뒤에서 Backspace를 두 번 누르면 표가 지워진다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('표 지우기');
+		await page.keyboard.press('Enter');
+		// 본문 맨 앞의 표: 앞에 문단이 없다
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
+		await page.keyboard.type('칸');
+		const editor = memo.locator('.ProseMirror');
+		await expect(editor.locator('> table')).toBeVisible();
+
+		// 첫 행에서 ↑: 표 앞 틈 커서, 거기서 쓰면 표 앞에 문단이 생긴다
+		await page.keyboard.press('ArrowUp');
+		await expect(editor.locator('.ProseMirror-gapcursor')).toHaveCount(1);
+		await page.keyboard.type('표 앞 글');
+		await expect(editor.locator('> p').first()).toHaveText('표 앞 글');
+		await expect(editor.locator('> p').first()).toBeVisible();
+		expect(await editor.evaluate((el) => el.firstElementChild?.nextElementSibling?.tagName)).toBe('TABLE');
+
+		// 표 뒤 문단 맨 앞에서 Backspace: 한 번은 표를 고르고, 한 번 더 누르면 지운다
+		await editor.locator('> p').last().click();
+		// 편집기가 클릭한 자리를 읽을 때까지 (사람은 누르고 바로 키를 치지 않는다)
+		await page.waitForTimeout(100);
+		await page.keyboard.press('Backspace');
+		await expect(editor.locator('table.ProseMirror-selectednode')).toHaveCount(1);
+		await page.keyboard.press('Backspace');
+		await expect(editor.locator('table')).toHaveCount(0);
+		await expect.poll(() => api.posts[0]?.body).not.toContain('|');
 	});
 
 	test('편집기의 코드 블록에도 읽기 화면과 같은 복사 단추가 있다', async ({ page }) => {

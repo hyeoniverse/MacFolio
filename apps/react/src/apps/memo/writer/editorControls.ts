@@ -14,12 +14,26 @@ export interface TableState {
 	rows: number;
 	cols: number;
 	align: TableAlign;
+	/** 고른 행·열 수 (커서만 있으면 1) */
+	selectedRows: number;
+	selectedCols: number;
+	/** 행 전체나 열 전체를 골랐는지 */
+	selecting: 'row' | 'col' | null;
 }
 
 export type TableAlign = 'left' | 'center' | 'right';
 
 export type TableOp =
-	'rowBefore' | 'rowAfter' | 'colBefore' | 'colAfter' | 'deleteRow' | 'deleteCol' | 'deleteTable' | TableAlign;
+	| 'rowBefore'
+	| 'rowAfter'
+	| 'colBefore'
+	| 'colAfter'
+	| 'deleteRow'
+	| 'deleteCol'
+	| 'deleteTable'
+	| 'selectRow'
+	| 'selectCol'
+	| TableAlign;
 
 /** 고른 이미지 */
 export interface ImageState {
@@ -71,8 +85,8 @@ export interface Box {
 
 export const editorControls = createStore<{
 	state: FormatState;
-	/** 커서가 있는 표와 칸의 위치 (표 손잡이를 그린다) */
-	tableBox: { table: Box; cell: Box } | null;
+	/** 커서가 있는 표와 칸, 고른 칸들의 위치 (표 손잡이와 고른 테두리를 그린다) */
+	tableBox: { table: Box; cell: Box; selection: Box | null } | null;
 	run: ((action: FormatAction) => void) | null;
 	/** 올리고 있는 파일 수 */
 	uploading: number;

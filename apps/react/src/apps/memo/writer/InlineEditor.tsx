@@ -10,6 +10,7 @@ import { Plugin, TextSelection } from '@milkdown/kit/prose/state';
 import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/view';
 import { isInTable } from '@milkdown/kit/prose/tables';
 import { trailing } from '@milkdown/kit/plugin/trailing';
+import { cursor } from '@milkdown/kit/plugin/cursor';
 import { $prose } from '@milkdown/kit/utils';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
@@ -49,7 +50,18 @@ function tableBoxOf(view: EditorView) {
 	const table = cell?.closest('table');
 	if (!root || !cell || !table) return null;
 	const origin = root.getBoundingClientRect();
-	return { table: boxOf(table, origin), cell: boxOf(cell, origin) };
+	// 고른 칸들을 모두 감싸는 사각형 (행·열 전체를 고르면 그 둘레에 테두리를 그린다)
+	const selected = [...table.querySelectorAll('.selectedCell')].map((el) => el.getBoundingClientRect());
+	const selection =
+		selected.length > 0
+			? {
+					left: Math.min(...selected.map((rect) => rect.left)) - origin.left,
+					top: Math.min(...selected.map((rect) => rect.top)) - origin.top,
+					width: Math.max(...selected.map((rect) => rect.right)) - Math.min(...selected.map((rect) => rect.left)),
+					height: Math.max(...selected.map((rect) => rect.bottom)) - Math.min(...selected.map((rect) => rect.top)),
+				}
+			: null;
+	return { table: boxOf(table, origin), cell: boxOf(cell, origin), selection };
 }
 
 const publish = (view: EditorView) =>
@@ -65,18 +77,32 @@ const publishFormat = $prose(
 		new Plugin({
 			view: (view) => {
 				publish(view);
-				const onResize = () => publish(view);
-				window.addEventListener('resize', onResize);
+				// 표 위치는 그린 뒤에 한 번 더 잰다 (바로 뒤에 글꼴·이미지·위 문단 때문에 자리가 바뀔 수 있다)
+				let frame = 0;
+				const remeasure = () => {
+					cancelAnimationFrame(frame);
+					frame = requestAnimationFrame(() => publish(view));
+				};
+				// 창 크기나 편집기 높이가 바뀌면(이미지를 다 불러오는 등) 다시 잰다
+				const resize = new ResizeObserver(remeasure);
+				resize.observe(view.dom);
+				window.addEventListener('resize', remeasure);
 				return {
 					update: (next, prev) => {
 						if (
 							next.state.doc !== prev.doc ||
 							!next.state.selection.eq(prev.selection) ||
 							next.state.storedMarks !== prev.storedMarks
-						)
+						) {
 							publish(next);
+							remeasure();
+						}
 					},
-					destroy: () => window.removeEventListener('resize', onResize),
+					destroy: () => {
+						cancelAnimationFrame(frame);
+						resize.disconnect();
+						window.removeEventListener('resize', remeasure);
+					},
 				};
 			},
 		})
@@ -215,6 +241,8 @@ const Inner = ({ markdown, onChange }: Props) => {
 				.use(codeBlockView)
 				// 글 끝이 이미지·표·코드여도 그 아래에 이어 쓸 빈 문단을 둔다
 				.use(trailing)
+				// 표·이미지 앞뒤처럼 글자를 쓸 수 없는 자리에도 커서를 둘 수 있게 (틈 커서). 거기서 Backspace로 표를 지운다
+				.use(cursor)
 				.use(publishFormat)
 				.use(activeTable)
 				.use(codeHighlight),
