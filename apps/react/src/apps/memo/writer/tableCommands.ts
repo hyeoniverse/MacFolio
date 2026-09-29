@@ -15,6 +15,8 @@ import {
 	deleteTable,
 	findTable,
 	isInTable,
+	moveTableColumn,
+	moveTableRow,
 	selectedRect,
 	TableMap,
 } from '@milkdown/kit/prose/tables';
@@ -32,6 +34,8 @@ export function tableStateOf(state: EditorState): TableState | null {
 	const cells = state.selection instanceof CellSelection ? state.selection : null;
 	return {
 		header: rect.top === 0,
+		row: rect.top,
+		col: rect.left,
 		rows: rect.map.height - 1,
 		cols: rect.map.width,
 		align: align === 'center' || align === 'right' ? align : 'left',
@@ -39,6 +43,14 @@ export function tableStateOf(state: EditorState): TableState | null {
 		selectedCols: rect.right - rect.left,
 		selecting: cells?.isColSelection() ? 'col' : cells?.isRowSelection() ? 'row' : null,
 	};
+}
+
+/** 행·열 옮기기. 머리글 행은 늘 첫 행이라 옮기지 않고, 다른 행도 머리글 자리로는 옮기지 않는다 */
+export function moveTablePart(view: EditorView, kind: 'row' | 'col', from: number, to: number) {
+	if (from === to || (kind === 'row' && (from === 0 || to === 0))) return;
+	const pos = view.state.selection.from;
+	const command = kind === 'row' ? moveTableRow({ from, to, pos }) : moveTableColumn({ from, to, pos });
+	command(view.state, view.dispatch);
 }
 
 export function runTableOp(ctx: Ctx, op: TableOp) {

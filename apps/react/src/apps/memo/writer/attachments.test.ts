@@ -23,6 +23,8 @@ describe('표 편집 규칙', () => {
 		rows: 2,
 		cols: 3,
 		align: 'left' as const,
+		row: 1,
+		col: 0,
 		selectedRows: 1,
 		selectedCols: 1,
 		selecting: null,
