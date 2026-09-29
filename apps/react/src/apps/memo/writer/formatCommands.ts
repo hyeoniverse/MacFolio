@@ -2,7 +2,8 @@
 import type { Ctx } from '@milkdown/kit/ctx';
 import { editorViewCtx } from '@milkdown/kit/core';
 import { lift } from '@milkdown/kit/prose/commands';
-import type { EditorState } from '@milkdown/kit/prose/state';
+import type { Node } from '@milkdown/kit/prose/model';
+import { TextSelection, type EditorState } from '@milkdown/kit/prose/state';
 import {
 	createCodeBlockCommand,
 	insertImageCommand,
@@ -18,13 +19,15 @@ import {
 } from '@milkdown/kit/preset/commonmark';
 import { insertTableCommand, toggleStrikethroughCommand } from '@milkdown/kit/preset/gfm';
 import { callCommand } from '@milkdown/kit/utils';
+import { runTableOp, tableStateOf } from './tableCommands';
+import { attachmentTitle } from './attachments';
 import { blockOfHeading, EMPTY_FORMAT, HEADING_LEVEL, type FormatAction, type FormatState } from './editorControls';
 
 /** 커서 자리의 서식 */
 export function formatStateOf(state: EditorState): FormatState {
 	const { $from, from, to, empty } = state.selection;
 	const parent = $from.parent;
-	const result: FormatState = { ...EMPTY_FORMAT, marks: { ...EMPTY_FORMAT.marks } };
+	const result: FormatState = { ...EMPTY_FORMAT, table: tableStateOf(state), marks: { ...EMPTY_FORMAT.marks } };
 	if (parent.type.name === 'heading') result.block = blockOfHeading(parent.attrs.level as number);
 	else if (parent.type.name === 'code_block') result.block = 'mono';
 
@@ -75,6 +78,34 @@ const leaveList = (ctx: Ctx) => {
 	}
 };
 
+/** 커서 앞에 끝나는 표의 수 */
+const tablesBefore = (doc: Node, pos: number) => {
+	let count = 0;
+	doc.descendants((node, at) => {
+		if (node.type.name === 'table' && at + node.nodeSize <= pos) count++;
+		return node.type.name !== 'table';
+	});
+	return count;
+};
+
+/** 3×3 표를 넣고 머리글 첫 칸으로 커서를 옮긴다 (편집기 기본 명령은 커서를 표 앞에 남겨 둔다) */
+function insertTable(ctx: Ctx) {
+	const view = ctx.get(editorViewCtx);
+	const index = tablesBefore(view.state.doc, view.state.selection.from);
+	if (!callCommand(insertTableCommand.key, { row: 3, col: 3 })(ctx)) return;
+	let seen = 0;
+	let target: number | null = null;
+	view.state.doc.descendants((node, pos) => {
+		if (target !== null) return false;
+		if (node.type.name !== 'table') return true;
+		if (seen++ === index) target = pos;
+		return false;
+	});
+	// 표 → 머리글 행 → 칸 → 문단 → 글자
+	if (target !== null)
+		view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, target + 4)).scrollIntoView());
+}
+
 /** 도구 막대의 명령을 실행한다. 이미 그 서식이면 푼다 (macOS 메모처럼 누를 때마다 켜고 끈다) */
 export function runFormat(ctx: Ctx, action: FormatAction) {
 	const view = ctx.get(editorViewCtx);
@@ -121,11 +152,21 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			break;
 		}
 		case 'table':
-			callCommand(insertTableCommand.key, { row: 3, col: 3 })(ctx);
+			insertTable(ctx);
+			break;
+		case 'tableOp':
+			runTableOp(ctx, action.op);
 			break;
 		case 'image':
 			callCommand(insertImageCommand.key, { src: action.src, alt: action.alt })(ctx);
 			break;
+		case 'attachment': {
+			// 파일 이름 글자에 링크를 건다. 제목(title)으로 첨부 파일임을 표시해 읽기·편집 화면이 같은 모양으로 그린다
+			const { state } = view;
+			const link = state.schema.marks.link.create({ href: action.href, title: attachmentTitle(action.size) });
+			view.dispatch(state.tr.replaceSelectionWith(state.schema.text(action.name, [link]), false).insertText(' '));
+			break;
+		}
 	}
 	view.focus();
 }

@@ -58,8 +58,8 @@ const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
  */
 const MARKDOWN_COMPONENTS: Components = {
 	// 외부 링크는 새 탭에서 연다
-	a: ({ href, children }) => (
-		<a href={href} target="_blank" rel="noopener noreferrer">
+	a: ({ href, title, children }) => (
+		<a href={href} title={title} target="_blank" rel="noopener noreferrer">
 			{children}
 		</a>
 	),

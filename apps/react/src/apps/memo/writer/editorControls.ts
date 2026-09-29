@@ -6,11 +6,27 @@ import { createStore } from '@/shared/lib/createStore';
 /** 문단 모양 (macOS 메모의 서식 이름) */
 export type BlockStyle = 'title' | 'heading' | 'subheading' | 'body' | 'mono';
 
+/** 커서가 있는 표 */
+export interface TableState {
+	/** 커서가 머리글 줄에 있는지 */
+	header: boolean;
+	/** 머리글 줄을 뺀 줄 수 */
+	rows: number;
+	cols: number;
+	align: TableAlign;
+}
+
+export type TableAlign = 'left' | 'center' | 'right';
+
+export type TableOp =
+	'rowBefore' | 'rowAfter' | 'colBefore' | 'colAfter' | 'deleteRow' | 'deleteCol' | 'deleteTable' | TableAlign;
+
 export interface FormatState {
 	block: BlockStyle;
 	/** 커서가 있는 목록 */
 	list: 'bullet' | 'ordered' | 'task' | null;
 	quote: boolean;
+	table: TableState | null;
 	marks: { strong: boolean; emphasis: boolean; strike: boolean; code: boolean };
 }
 
@@ -20,18 +36,28 @@ export type FormatAction =
 	| { type: 'list'; list: 'bullet' | 'ordered' | 'task' }
 	| { type: 'quote' }
 	| { type: 'table' }
-	| { type: 'image'; src: string; alt: string };
+	| { type: 'tableOp'; op: TableOp }
+	| { type: 'image'; src: string; alt: string }
+	/** 첨부 파일: 파일 이름을 글자로 한 링크 */
+	| { type: 'attachment'; href: string; name: string; size: number };
 
 export const EMPTY_FORMAT: FormatState = {
 	block: 'body',
 	list: null,
 	quote: false,
+	table: null,
 	marks: { strong: false, emphasis: false, strike: false, code: false },
 };
 
-export const editorControls = createStore<{ state: FormatState; run: ((action: FormatAction) => void) | null }>({
+export const editorControls = createStore<{
+	state: FormatState;
+	run: ((action: FormatAction) => void) | null;
+	/** 올리고 있는 파일 수 */
+	uploading: number;
+}>({
 	state: EMPTY_FORMAT,
 	run: null,
+	uploading: 0,
 });
 
 export function useEditorControls() {
