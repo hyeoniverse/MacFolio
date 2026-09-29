@@ -312,9 +312,19 @@
 	width: 70px;
 }
 
+.memo-sidebar-bar .memo-new-note-button,
 .memo-sidebar-bar .memo-new-folder-button {
-	margin-left: auto;
 	font-size: 14px;
+}
+
+/* 새 메모·새로운 폴더는 사이드바 오른쪽 끝에 나란히 */
+.memo-sidebar-bar .memo-new-note-button,
+.memo-sidebar-bar .memo-new-folder-button:first-of-type {
+	margin-left: auto;
+}
+
+.memo-sidebar-bar .memo-new-note-button + .memo-new-folder-button {
+	margin-left: 0;
 }
 
 .memo-folder-scroll {
@@ -1780,11 +1790,77 @@
 	color: var(--memo-text);
 }
 
-/* 행·열 전체를 고르면 노랗게, 끌어서 옮길 수 있다 */
+/* 행·열 전체를 고르면 그 폭만큼 펼쳐진 노란 막대가 고른 테두리에 붙는다 (⌄: 메뉴). 끌어서 옮길 수 있다 */
+.memo-table-handle {
+	transition:
+		left var(--duration-normal, 0.25s) var(--ease-out),
+		top var(--duration-normal, 0.25s) var(--ease-out),
+		width var(--duration-normal, 0.25s) var(--ease-out),
+		height var(--duration-normal, 0.25s) var(--ease-out),
+		border-radius var(--duration-normal, 0.25s) var(--ease-out),
+		background-color var(--duration-fast) var(--ease-out);
+}
+
 .memo-table-handle.on {
 	background-color: #edbb4d;
 	color: #fff;
 	cursor: grab;
+}
+
+.memo-table-handle.col.on {
+	border-radius: 6px 6px 0 0;
+}
+
+.memo-table-handle.row.on {
+	border-radius: 6px 0 0 6px;
+}
+
+.memo-table-handle-chevron {
+	position: absolute;
+	z-index: 1;
+	display: grid;
+	width: 12px;
+	height: 12px;
+	/* 막대와 같은 색 바탕으로 점(…) 위를 덮는다 (짧은 행에서 겹쳐 보이지 않게) */
+	border-radius: 50%;
+	background-color: #edbb4d;
+	font-size: 9px;
+	opacity: 0;
+	place-items: center;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.memo-table-handle.col .memo-table-handle-chevron {
+	right: 4px;
+}
+
+.memo-table-handle.row .memo-table-handle-chevron {
+	bottom: 3px;
+}
+
+.memo-table-handle.on .memo-table-handle-chevron {
+	opacity: 1;
+}
+
+/* 고른 테두리 가장자리 가운데의 점 */
+.memo-table-selection-dot {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: #edbb4d;
+}
+
+.memo-table-selection-dot.col {
+	top: 50%;
+	left: -6px;
+	translate: 0 -50%;
+}
+
+.memo-table-selection-dot.row {
+	top: -6px;
+	left: 50%;
+	translate: -50% 0;
 }
 
 .memo-table-handle.dragging {
@@ -2848,4 +2924,43 @@
 .memo-markdown .hljs-attribute,
 .memo-markdown .hljs-property {
 	color: var(--hl-attr);
+}
+
+/* 목록 맨 위의 새 메모: 펼쳐지며 나타나고, 쓴 것 없이 떠나면 접히며 사라진다 */
+.memo-new-item {
+	display: grid;
+	grid-template-rows: 1fr;
+	animation: memo-new-item-in 0.28s var(--ease-out) both;
+}
+
+.memo-new-item > .memo-item {
+	min-height: 0;
+	overflow: hidden;
+}
+
+.memo-new-item.leaving {
+	animation: memo-new-item-out 0.24s var(--ease-out) both;
+	pointer-events: none;
+}
+
+@keyframes memo-new-item-in {
+	from {
+		grid-template-rows: 0fr;
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+}
+
+@keyframes memo-new-item-out {
+	to {
+		grid-template-rows: 0fr;
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-new-item,
+	.memo-new-item.leaving {
+		animation-duration: 1ms;
+	}
 }

@@ -41,6 +41,8 @@ interface Props {
 	onDiscarded: (slug: string, post: AdminPost | null) => void;
 	/** 본문 미리 보기 (편집기를 불러오는 동안) */
 	renderMarkdown: (body: string) => React.ReactNode;
+	/** 쓰는 대로 알린다 (새 메모의 목록 미리 보기) */
+	onDraftChange?: (draft: PostDraft) => void;
 	ref?: React.Ref<PostWriterHandle>;
 }
 
@@ -109,6 +111,7 @@ const PostWriter = ({
 	onSaved,
 	onDiscarded,
 	renderMarkdown,
+	onDraftChange,
 	ref,
 }: Props) => {
 	const [draft, setDraft] = useState<PostDraft>(() =>
@@ -186,6 +189,8 @@ const PostWriter = ({
 		setUnpublished(true);
 		setStatus({ kind: 'idle' });
 		setDraft((prev) => ({ ...prev, ...patch }));
+		// 목록 미리 보기에 알린다 (고칠 때마다 부르는 이벤트 처리 중이라 지금 내용에 바로 더한다)
+		onDraftChange?.({ ...draft, ...patch });
 	};
 
 	useImperativeHandle(ref, () => ({

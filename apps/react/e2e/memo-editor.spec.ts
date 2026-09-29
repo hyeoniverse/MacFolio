@@ -415,6 +415,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await colHandle.click();
 		await expect(table.locator('.selectedCell')).toHaveCount(3);
 		await expect(memo.locator('.memo-table-selection')).toBeVisible();
+		// 고르면 알약이 열 폭만큼 펼쳐진 막대(⌄)가 된다
+		await expect.poll(async () => Math.round((await colHandle.boundingBox())!.width)).toBe(Math.round(cell.width));
 		const colMenu = page.getByRole('dialog', { name: '열 편집' });
 		await expect(colMenu.getByRole('menuitem')).toHaveText(['앞에 열 추가', '뒤에 열 추가', '1개의 열 삭제']);
 		// 메뉴를 닫고 Backspace: 고른 칸이 빈다
@@ -453,7 +455,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(table).not.toHaveClass(/memo-table-active/);
 	});
 
-	test('표: 행·열 전체를 고른 뒤 손잡이를 끌어 옮긴다 (머리글 행은 옮기지 않는다)', async ({ page }) => {
+	test('표: 행·열 전체를 고른 뒤 손잡이를 끌어 옮긴다 (맨 위로 옮기면 머리글이 된다)', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
@@ -490,18 +492,23 @@ test.describe('바로 고치기 (관리자)', () => {
 		// 끌기 뒤에는 메뉴가 열리지 않는다
 		await expect(page.getByRole('dialog', { name: '열 편집' })).toHaveCount(0);
 
-		// 마지막 행(g…)을 골라 위로 끌면 첫 본문 행이 된다 (머리글 위로는 못 간다)
+		// 마지막 행(h…)을 골라 한 칸 위로
 		await table.locator('td', { hasText: 'h' }).click();
 		const rowHandle = memo.getByRole('button', { name: '이 행 편집' });
 		await rowHandle.click();
 		await page.keyboard.press('Escape');
 		const height = (await table.locator('tr').nth(1).boundingBox())!.height;
-		await dragBy(rowHandle, 0, -height * 3);
-		await expect(table.locator('tr').first().locator('th')).toHaveText(['b', 'c', 'a']);
+		await dragBy(rowHandle, 0, -height * 1.3);
 		await expect(table.locator('tr').nth(1).locator('td')).toHaveText(['h', 'i', 'g']);
+		await expect(table.locator('tr').nth(2).locator('td')).toHaveText(['e', 'f', 'd']);
+
+		// 맨 위로 끌면 그 행이 머리글이 되고, 원래 머리글은 본문 행이 된다
+		await dragBy(rowHandle, 0, -height * 1.5);
+		await expect(table.locator('tr').first().locator('th')).toHaveText(['h', 'i', 'g']);
+		await expect(table.locator('tr').nth(1).locator('td')).toHaveText(['b', 'c', 'a']);
 		await expect
 			.poll(() => api.posts[0]?.body)
-			.toMatch(/\| b +\| c +\| a +\|[\s\S]*\| h +\| i +\| g +\|\n\| e +\| f +\| d +\|/);
+			.toMatch(/\| h +\| i +\| g +\|\n\| -+ \| -+ \| -+ \|\n\| b +\| c +\| a +\|\n\| e +\| f +\| d +\|/);
 	});
 
 	test('표 앞뒤에 커서를 두고, 뒤에서 Backspace를 두 번 누르면 표가 지워진다', async ({ page }) => {
@@ -549,6 +556,33 @@ test.describe('바로 고치기 (관리자)', () => {
 			(await block.locator('code').textContent())!
 		);
 		// 복사해도 글은 바뀌지 않는다
+		expect(api.posts).toEqual([]);
+	});
+
+	test('새 메모: 사이드바의 새로운 폴더 옆 단추로 시작하면 목록 맨 위에 새로운 메모가 생기고, 쓴 것 없이 떠나면 사라진다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		// 사이드바 위쪽: 새 메모가 새로운 폴더 왼쪽에
+		const bar = memo.locator('.memo-sidebar-bar');
+		const compose = bar.getByRole('button', { name: '새 메모', exact: true });
+		const folder = bar.getByRole('button', { name: '새로운 폴더' });
+		expect((await compose.boundingBox())!.x).toBeLessThan((await folder.boundingBox())!.x);
+
+		await compose.click();
+		const placeholder = memo.locator('.memo-new-item');
+		await expect(placeholder).toHaveCount(1);
+		await expect(placeholder).toContainText('새로운 메모');
+		await expect(placeholder).toContainText('추가 텍스트 없음');
+		// 쓰는 대로 목록에 보인다
+		await page.keyboard.type('쓰다 만 제목');
+		await expect(placeholder.locator('strong')).toHaveText('쓰다 만 제목');
+
+		// 본문 없이 다른 글로 옮겨 가면 접히며 사라진다 (저장하지 않는다)
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' }).click();
+		await expect(placeholder).toHaveClass(/leaving/);
+		await expect(placeholder).toHaveCount(0);
 		expect(api.posts).toEqual([]);
 	});
 
