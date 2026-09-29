@@ -121,7 +121,7 @@ const Safari: React.FC = () => {
 						</span>
 					)}
 					{active && (
-						<a className="safari-tool" href={addressOf(active)} {...external} aria-label="새 탭에서 열기">
+						<a className="safari-tool safari-share" href={addressOf(active)} {...external} aria-label="새 탭에서 열기">
 							<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
 						</a>
 					)}
