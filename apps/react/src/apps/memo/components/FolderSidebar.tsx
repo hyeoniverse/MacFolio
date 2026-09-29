@@ -20,6 +20,8 @@ interface Props {
 	onSelect: (path: string) => void;
 	/** 새 폴더를 이 폴더 아래에 만든다 ('' = 맨 위) */
 	onAddFolder: (parent: string, name: string) => void;
+	/** 새 메모 (관리자). 사이드바 위쪽의 새로운 폴더 단추 왼쪽에 둔다 */
+	onNewNote?: () => void;
 	onRenameFolder: (path: string, name: string) => void;
 	onRemoveFolder: (path: string) => void;
 	dragging: DragItem | null;
@@ -318,6 +320,17 @@ const FolderSidebar: React.FC<Props> = (props) => {
 			<div className="memo-sidebar-bar">
 				<span className="memo-lights-space" aria-hidden="true" />
 				<SidebarToggle open onToggle={onToggle} />
+				{props.canEdit && props.onNewNote && (
+					<button
+						type="button"
+						className="memo-tool memo-new-note-button"
+						aria-label="새 메모"
+						title="새 메모"
+						onClick={props.onNewNote}
+					>
+						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+					</button>
+				)}
 				{props.canEdit && (
 					<button
 						type="button"

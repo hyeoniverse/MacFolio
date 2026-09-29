@@ -66,7 +66,7 @@ const WallpaperGroup: React.FC<{
 
 const Settings: React.FC = () => {
 	const settings = useSettings();
-	const [section, setSection] = useState<Section>('appearance');
+	const [section, setSection] = useState<Section>('account');
 
 	return (
 		<AppWindow title="시스템 설정" appName="settings">

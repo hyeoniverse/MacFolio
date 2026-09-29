@@ -5,13 +5,23 @@ const theme = (page: Page) => page.evaluate(() => document.documentElement.datas
 const windowBackground = (page: Page, name: string) =>
 	appWindow(page, name).evaluate((el) => getComputedStyle(el).backgroundColor);
 
+/** 설정을 열고 화면 모드로 간다 (처음에는 계정이 열린다) */
 async function openSettings(page: Page) {
 	await enterDesktop(page);
 	await dockItem(page, 'settings').click();
-	return appWindow(page, 'settings');
+	const settings = appWindow(page, 'settings');
+	await settings.getByRole('button', { name: '화면 모드' }).click();
+	return settings;
 }
 
 test.describe('Settings', () => {
+	test('처음 열면 계정이 보인다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'settings').click();
+		const settings = appWindow(page, 'settings');
+		await expect(settings.getByRole('region', { name: '관리자 계정' })).toBeVisible();
+	});
+
 	test('다크 모드를 고르면 창이 어두워지고, 새로고침해도 유지된다', async ({ page }) => {
 		const settings = await openSettings(page);
 		expect(await theme(page)).toBe('light');

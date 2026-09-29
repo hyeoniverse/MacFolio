@@ -117,4 +117,20 @@ describe('댓글 (e2e)', () => {
 		// 관리자 댓글은 방문자가 비밀번호로 지울 수 없다
 		await request(server()).delete(`/comments/${own.body.id}`).send({ password: '1234' }).expect(403);
 	});
+
+	it('DB에 바로 써도 이름·내용이 비거나 방문자 비밀번호가 없으면 거절된다 (CHECK 제약)', async () => {
+		const base = { postSlug: 'cra-to-vite', name: '민수', body: '내용', ipHash: 'x', passwordHash: 'scrypt$a$b' };
+		await expect(prisma.postComment.create({ data: { ...base, name: ' ' } })).rejects.toThrow(
+			/PostComment_required_fields/
+		);
+		await expect(prisma.postComment.create({ data: { ...base, body: '' } })).rejects.toThrow(
+			/PostComment_required_fields/
+		);
+		await expect(prisma.postComment.create({ data: { ...base, passwordHash: null } })).rejects.toThrow(
+			/PostComment_required_fields/
+		);
+		await expect(
+			prisma.postComment.create({ data: { ...base, passwordHash: null, isAdmin: true } })
+		).resolves.toBeTruthy();
+	});
 });

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
 	adjacentPosts,
+	mergeAdminPosts,
+	mergeServerPosts,
 	buildFolderTree,
 	firstImage,
 	inFolder,
@@ -186,5 +188,151 @@ describe('adjacentPosts', () => {
 		expect(adjacentPosts(posts, 'c').newer).toBeNull();
 		expect(adjacentPosts(posts, 'a').older).toBeNull();
 		expect(adjacentPosts(posts, 'nope')).toEqual({ older: null, newer: null });
+	});
+});
+
+describe('mergeServerPosts', () => {
+	const make = (slug: string, date: string, extra: Partial<Post> = {}): Post => ({
+		slug,
+		title: slug,
+		date,
+		category: '개발기',
+		summary: slug,
+		body: slug,
+		...extra,
+	});
+	const server = (slug: string, extra: Partial<import('./posts').ServerPost> = {}) => ({
+		slug,
+		title: `${slug} (서버)`,
+		date: '2026-09-29',
+		category: '읽을거리',
+		summary: '',
+		body: '서버 본문',
+		deleted: false,
+		...extra,
+	});
+
+	it('같은 주소는 서버 글이 대신하고, 고정 여부는 저장소 글을 따른다. 요약이 없으면 본문 앞부분', () => {
+		const merged = mergeServerPosts([make('a', '2026-09-01', { pinned: true })], [server('a')]);
+		expect(merged).toEqual([
+			{
+				slug: 'a',
+				title: 'a (서버)',
+				date: '2026-09-29',
+				category: '읽을거리',
+				summary: '서버 본문',
+				body: '서버 본문',
+				pinned: true,
+			},
+		]);
+	});
+
+	it('지운 표시는 목록에서 빼고, 서버에만 있는 글은 더해 날짜 순으로', () => {
+		const merged = mergeServerPosts(
+			[make('a', '2026-09-01'), make('b', '2026-09-02')],
+			[server('a', { deleted: true }), server('new', { date: '2026-09-30' })]
+		);
+		expect(merged.map((post) => post.slug)).toEqual(['new', 'b']);
+	});
+});
+
+describe('mergeAdminPosts (관리자 목록)', () => {
+	const content = (title: string, date = '2026-09-29') => ({
+		title,
+		date,
+		category: '개발기',
+		summary: '',
+		body: `${title} 본문`,
+	});
+	const repo: Post = {
+		slug: 'repo',
+		title: '저장소 글',
+		date: '2026-09-01',
+		category: '개발기',
+		summary: '',
+		body: '원본',
+		pinned: true,
+	};
+	const admin = (slug: string, extra: Partial<import('./posts').AdminPost>) => ({
+		slug,
+		published: null,
+		publishedAt: null,
+		draft: null,
+		draftUpdatedAt: null,
+		deleted: false,
+		revisions: 0,
+		...extra,
+	});
+	const TODAY = '2026-09-30';
+
+	it('임시 저장이 있으면 그 내용을 보이고 상태를 단다', () => {
+		const merged = mergeAdminPosts(
+			[repo],
+			[
+				admin('repo', { draft: content('저장소 글 고치는 중') }),
+				admin('new', { draft: content('새 글') }),
+				admin('pub', { published: content('게시한 글'), draft: content('게시한 글 고치는 중') }),
+				admin('same', { published: content('그대로') }),
+			],
+			TODAY
+		);
+		const bySlug = Object.fromEntries(merged.map((post) => [post.slug, post]));
+		expect(bySlug.repo).toMatchObject({
+			title: '저장소 글 고치는 중',
+			pinned: true,
+			status: { draftOnly: false, changed: true },
+		});
+		expect(bySlug.new).toMatchObject({ title: '새 글', status: { draftOnly: true, changed: false, scheduled: null } });
+		expect(bySlug.pub).toMatchObject({ title: '게시한 글 고치는 중', status: { draftOnly: false, changed: true } });
+		expect(bySlug.same.status).toEqual({ draftOnly: false, changed: false, scheduled: null });
+	});
+
+	it('날짜가 오늘보다 뒤인 게시 글은 예약, 지운 표시는 뺀다', () => {
+		const merged = mergeAdminPosts(
+			[repo],
+			[admin('later', { published: content('예약 글', '2026-10-03') }), admin('repo', { deleted: true })],
+			TODAY
+		);
+		expect(merged.map((post) => [post.slug, post.status?.scheduled])).toEqual([['later', '2026-10-03']]);
+	});
+});
+
+describe('검색 조건', () => {
+	const make = (slug: string, body: string, extra: Partial<Post> = {}): Post => ({
+		slug,
+		title: slug,
+		date: '2026-09-29',
+		category: '개발기',
+		summary: '',
+		body,
+		...extra,
+	});
+	const posts = [
+		make('check', '- [ ] 할 일'),
+		make('table', '| a | b |\n| --- | :-: |\n| 1 | 2 |'),
+		make('image', '![설명](./images/a.jpg)'),
+		make('code', '```ts\nconst a = 1;\n```'),
+		make('file', '[보고서.pdf](http://api/files/abc "첨부 파일 · 2 KB")'),
+		make('link', '[그냥 링크](https://example.com) | 표 아님 |'),
+		make('pin', '본문', { pinned: true }),
+		make('draft', '본문', { status: { draftOnly: true, changed: false, scheduled: null } }),
+		make('later', '본문', { status: { draftOnly: false, changed: false, scheduled: '2026-10-03' } }),
+	];
+	it.each([
+		['checklist', ['check']],
+		['table', ['table']],
+		['image', ['image']],
+		['code', ['code']],
+		['attachment', ['file']],
+		['pinned', ['pin']],
+		['draft', ['draft']],
+		['scheduled', ['later']],
+	] as const)('%s', (filter, slugs) => {
+		expect(filterPosts(posts, ALL_CATEGORY, '', filter).map((post) => post.slug)).toEqual(slugs);
+	});
+
+	it('검색어와 함께 쓴다', () => {
+		expect(filterPosts(posts, ALL_CATEGORY, '할 일', 'checklist').map((post) => post.slug)).toEqual(['check']);
+		expect(filterPosts(posts, ALL_CATEGORY, '없는 말', 'checklist')).toEqual([]);
 	});
 });

@@ -14,6 +14,18 @@ export interface Post {
 	body: string;
 	/** 목록 맨 위에 고정 (머리말 pinned: true, 방문자가 바꿀 수 있다) */
 	pinned?: boolean;
+	/** 관리자에게만: 게시 상태 */
+	status?: PostStatus;
+}
+
+/** 관리자가 보는 게시 상태 */
+export interface PostStatus {
+	/** 게시한 적 없는 글 (임시 저장만 있다) */
+	draftOnly: boolean;
+	/** 게시한 글에 게시하지 않은 편집이 있다 */
+	changed: boolean;
+	/** 게시했지만 날짜가 아직 안 됐다 (예약): 그 날짜 */
+	scheduled: string | null;
 }
 
 export const ALL_CATEGORY = '모든 글';
@@ -59,6 +71,102 @@ export function toPost(slug: string, source: string): Post | null {
 		body: body.trim(),
 		...(meta.pinned === 'true' && { pinned: true }),
 	};
+}
+
+/** API의 글 (관리자가 쓰거나 고친 글, 또는 저장소 글을 지운 표시) */
+export interface ServerPost {
+	slug: string;
+	title: string;
+	date: string;
+	category: string;
+	summary: string;
+	body: string;
+	deleted: boolean;
+}
+
+/**
+ * 저장소의 Markdown 글 위에 서버의 글을 겹친다.
+ * 같은 주소면 서버 글이 대신하고(고정 여부는 저장소 글을 따른다), 지운 표시면 목록에서 뺀다. 서버에만 있는 글은 더한다.
+ */
+export function mergeServerPosts(posts: Post[], server: ServerPost[]): Post[] {
+	const bySlug = new Map(posts.map((post) => [post.slug, post]));
+	for (const item of server) {
+		if (item.deleted) {
+			bySlug.delete(item.slug);
+			continue;
+		}
+		const original = bySlug.get(item.slug);
+		bySlug.set(item.slug, {
+			slug: item.slug,
+			title: item.title,
+			date: item.date,
+			category: item.category,
+			summary: item.summary || excerpt(item.body),
+			body: item.body,
+			...(original?.pinned && { pinned: true }),
+		});
+	}
+	return sortPosts([...bySlug.values()]);
+}
+
+/** 글 내용 (게시한 내용, 임시 저장, 버전이 같은 모양) */
+export interface PostContent {
+	title: string;
+	/** YYYY-MM-DD */
+	date: string;
+	category: string;
+	summary: string;
+	body: string;
+}
+
+/** API가 관리자에게 주는 글: 게시한 내용과 임시 저장을 따로 */
+export interface AdminPost {
+	slug: string;
+	published: PostContent | null;
+	publishedAt: string | null;
+	draft: PostContent | null;
+	draftUpdatedAt: string | null;
+	deleted: boolean;
+	/** 남은 버전 수 */
+	revisions: number;
+}
+
+const toListPost = (slug: string, content: PostContent, pinned: boolean | undefined, status: PostStatus): Post => ({
+	slug,
+	title: content.title,
+	date: content.date,
+	category: content.category,
+	summary: content.summary || excerpt(content.body),
+	body: content.body,
+	...(pinned && { pinned: true }),
+	status,
+});
+
+/**
+ * 관리자가 보는 목록: 저장소 글 위에 서버 글을 겹치되, 임시 저장이 있으면 그 내용을 보여 준다 (고치던 그대로 이어 쓴다).
+ * 게시 상태(임시 저장만 있음, 게시하지 않은 편집, 예약)를 함께 단다. today: 서울 기준 YYYY-MM-DD
+ */
+export function mergeAdminPosts(posts: Post[], server: AdminPost[], today: string): Post[] {
+	const bySlug = new Map(posts.map((post) => [post.slug, post]));
+	const original = new Map(bySlug);
+	for (const item of server) {
+		if (item.deleted) {
+			bySlug.delete(item.slug);
+			continue;
+		}
+		const content = item.draft ?? item.published;
+		if (!content) continue;
+		const fromRepo = original.get(item.slug);
+		bySlug.set(
+			item.slug,
+			toListPost(item.slug, content, fromRepo?.pinned, {
+				draftOnly: !item.published && !fromRepo,
+				changed: item.draft !== null && (item.published !== null || fromRepo !== undefined),
+				scheduled: item.published && item.published.date > today ? item.published.date : null,
+			})
+		);
+	}
+	return sortPosts([...bySlug.values()]);
 }
 
 /** 최신 글이 위로. 같은 날이면 제목 순 */
@@ -124,6 +232,9 @@ export function buildFolderTree(posts: Post[], customFolders: string[] = []): Fo
 	return sort(root);
 }
 
+/** 폴더 경로를 "개발기 › MacFolio"처럼 */
+export const folderLabelOf = (path: string) => path.split('/').join(' › ');
+
 /** 경로의 마지막 이름 (예: 개발기/MacFolio → MacFolio) */
 export const folderName = (path: string) => path.split('/').at(-1) ?? path;
 
@@ -133,11 +244,88 @@ export function firstImage(body: string): string | null {
 }
 
 /** 폴더(하위 폴더 포함)와 검색어로 거른다. 검색은 제목·본문에서 대소문자 구분 없이 */
-export function filterPosts(posts: Post[], category: string, query: string): Post[] {
+/** 검색 조건 (macOS 메모의 검색 칸 메뉴: 체크리스트가 있는 메모 등) */
+export type PostFilter = 'pinned' | 'checklist' | 'table' | 'image' | 'code' | 'attachment' | 'draft' | 'scheduled';
+
+export const POST_FILTERS: {
+	id: PostFilter;
+	/** 메뉴의 이름 */
+	label: string;
+	/** 검색 칸에 붙는 짧은 이름 */
+	chip: string;
+	icon: string;
+	/** 관리자에게만 (게시 상태) */
+	adminOnly?: boolean;
+	test: (post: Post) => boolean;
+}[] = [
+	{
+		id: 'pinned',
+		label: '고정된 메모',
+		chip: '고정',
+		icon: 'fa-solid fa-thumbtack',
+		test: (post) => Boolean(post.pinned),
+	},
+	{
+		id: 'checklist',
+		label: '체크리스트가 있는 메모',
+		chip: '체크리스트',
+		icon: 'fa-solid fa-list-check',
+		test: (post) => /^\s*[-*+] \[[ xX]\]/m.test(post.body),
+	},
+	{
+		id: 'table',
+		label: '표가 있는 메모',
+		chip: '표',
+		icon: 'fa-solid fa-table',
+		test: (post) => /^\s*\|(?:\s*:?-+:?\s*\|)+\s*$/m.test(post.body),
+	},
+	{
+		id: 'image',
+		label: '이미지가 있는 메모',
+		chip: '이미지',
+		icon: 'fa-regular fa-image',
+		test: (post) => /!\[[^\]]*\]\(/.test(post.body),
+	},
+	{
+		id: 'code',
+		label: '코드가 있는 메모',
+		chip: '코드',
+		icon: 'fa-solid fa-code',
+		test: (post) => /^\s*```/m.test(post.body),
+	},
+	{
+		id: 'attachment',
+		label: '첨부 파일이 있는 메모',
+		chip: '첨부 파일',
+		icon: 'fa-solid fa-paperclip',
+		test: (post) => /\]\([^)\s]+ "첨부 파일/.test(post.body),
+	},
+	{
+		id: 'draft',
+		label: '게시하지 않은 메모',
+		chip: '게시 안 함',
+		icon: 'fa-regular fa-pen-to-square',
+		adminOnly: true,
+		test: (post) => Boolean(post.status?.draftOnly || post.status?.changed),
+	},
+	{
+		id: 'scheduled',
+		label: '예약된 메모',
+		chip: '예약',
+		icon: 'fa-regular fa-clock',
+		adminOnly: true,
+		test: (post) => Boolean(post.status?.scheduled),
+	},
+];
+
+export function filterPosts(posts: Post[], category: string, query: string, filter: PostFilter | null = null): Post[] {
 	const q = query.trim().toLowerCase();
+	const condition = POST_FILTERS.find((item) => item.id === filter);
 	return posts.filter(
 		(post) =>
-			inFolder(post, category) && (!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q))
+			inFolder(post, category) &&
+			(!condition || condition.test(post)) &&
+			(!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q))
 	);
 }
 

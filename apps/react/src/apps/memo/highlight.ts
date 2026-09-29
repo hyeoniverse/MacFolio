@@ -44,3 +44,9 @@ export function rehypeHighlightCode() {
 		});
 	};
 }
+
+/** 편집기용: 코드를 강조한 트리. 모르는 언어면 null */
+export function highlightTree(language: string | undefined, code: string) {
+	if (!language || !lowlight.registered(language)) return null;
+	return lowlight.highlight(language, code);
+}

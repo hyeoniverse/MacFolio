@@ -20,6 +20,14 @@ test.describe('메모 (블로그)', () => {
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(firstTitle);
 	});
 
+	test('본문 위 도구 막대: 목록/갤러리 단추와 검색 칸 사이에 간격이 있다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const toolbar = memo.locator('.memo-reader-toolbar');
+		const toggle = await toolbar.getByRole('button', { name: '갤러리로 보기' }).boundingBox();
+		const search = await toolbar.locator('.memo-search').boundingBox();
+		expect(search!.x - (toggle!.x + toggle!.width)).toBeGreaterThanOrEqual(8);
+	});
+
 	test('글을 고르면 Markdown 본문(제목, 표, 코드)이 렌더링된다', async ({ page }) => {
 		const memo = await openMemo(page);
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
@@ -251,5 +259,17 @@ test.describe('메모 (블로그)', () => {
 
 		await memo.locator('.memo-item').first().click({ button: 'right' });
 		await expect(page.getByRole('menu')).toHaveCount(0);
+	});
+
+	test('본문 이미지에 올리면 내려받기 단추가 보이고, 누르면 파일로 받는다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
+		const frame = memo.locator('.memo-markdown .memo-figure-frame').first();
+		await frame.hover();
+		const button = frame.getByRole('button', { name: '이미지 내려받기' });
+		await expect(button).toBeVisible();
+		const download = page.waitForEvent('download');
+		await button.click();
+		expect((await download).suggestedFilename()).toMatch(/\.(jpg|png|webp)$/);
 	});
 });
