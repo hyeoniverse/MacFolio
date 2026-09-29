@@ -46,6 +46,15 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(calendar).toBeHidden();
 		await expect.poll(() => api.posts[0]?.date).toBe('2026-08-15');
 
+		// 제목을 누르면 월을, 한 번 더 누르면 연도를 한 번에 고른다
+		await memo.getByRole('button', { name: /^날짜 .*, 바꾸기$/ }).click();
+		await calendar.getByRole('button', { name: '2026년 8월, 월 고르기' }).click();
+		await calendar.getByRole('button', { name: '2026년, 연도 고르기' }).click();
+		await calendar.getByRole('group', { name: '연도' }).getByRole('button', { name: '2023년' }).click();
+		await calendar.getByRole('group', { name: '월' }).getByRole('button', { name: '2023년 3월' }).click();
+		await calendar.getByRole('gridcell', { name: '2023년 3월 1일' }).click();
+		await expect.poll(() => api.posts[0]?.date).toBe('2023-03-01');
+
 		// 폴더: 메뉴에서 고른다
 		await memo.getByRole('button', { name: /^폴더 .*, 바꾸기$/ }).click();
 		await page.getByRole('menuitemcheckbox', { name: '읽을거리' }).click();
