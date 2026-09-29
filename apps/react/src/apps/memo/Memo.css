@@ -163,6 +163,26 @@
 	display: none;
 }
 
+/* 좁은 창의 목록 위: 검색 칸과 정렬 단추 */
+.memo-compact-tools {
+	align-items: center;
+	gap: 2px;
+	margin: 8px 8px 8px 0;
+}
+
+.memo-compact-tools .memo-search {
+	flex: 1;
+	margin: 0 0 0 12px;
+}
+
+/* 메뉴의 묶음 이름 (정렬 기준, 순서) */
+.memo-menu-heading {
+	padding: 4px 9px 2px;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	font-weight: 600;
+}
+
 /* 고정 단추: 고정되어 있으면 강조 색 */
 .memo-pin.on {
 	color: var(--memo-accent) !important;
@@ -1010,10 +1030,6 @@
 
 	.memo .compact-only {
 		display: flex;
-	}
-
-	.memo-search.compact-only {
-		margin-top: 8px;
 	}
 
 	.memo-reader .memo-pin.compact-only {

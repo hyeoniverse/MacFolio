@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
+import ContextMenu from './ContextMenu';
+import { DEFAULT_ORDER, ORDER_LABELS, type Arrangement, type SortKey, type SortOrder } from '../arrange';
 
 export type View = 'list' | 'gallery';
 
@@ -59,3 +61,74 @@ export const ToolbarLead: React.FC<{ sidebarOpen: boolean; onToggleSidebar: () =
 			<SidebarToggle open={false} onToggle={onToggleSidebar} />
 		</>
 	);
+
+/**
+ * 정렬과 그룹화 (macOS 메모의 '정렬 기준', '날짜별로 그룹화'). 누르면 단추 아래에 메뉴가 열린다.
+ * 날짜별 묶기는 날짜로 정렬할 때만 켤 수 있다.
+ */
+export const SortMenu: React.FC<{
+	arrangement: Arrangement;
+	onChange: (arrangement: Arrangement) => void;
+	className?: string;
+}> = ({ arrangement, onChange, className = '' }) => {
+	const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
+	const close = useCallback(() => setAnchor(null), []);
+	const { sort, order, groupByDate } = arrangement;
+	// 정렬 기준을 바꾸면 그 기준의 기본 순서로 (날짜는 최신 순, 제목은 가나다 순)
+	const sortItem = (key: SortKey, label: string) => ({
+		label,
+		checked: sort === key,
+		onSelect: () => onChange({ ...arrangement, sort: key, order: sort === key ? order : DEFAULT_ORDER[key] }),
+	});
+	const orderItem = (value: SortOrder) => ({
+		label: ORDER_LABELS[sort][value],
+		checked: order === value,
+		onSelect: () => onChange({ ...arrangement, order: value }),
+	});
+
+	return (
+		<>
+			<button
+				type="button"
+				className={`memo-tool memo-sort ${className}`}
+				aria-label="정렬과 그룹화"
+				title="정렬과 그룹화"
+				aria-haspopup="menu"
+				aria-expanded={anchor !== null}
+				// 메뉴가 열려 있을 때 이 단추를 누르면, 바깥 누르기로 닫힌 뒤 다시 열리지 않게 한다
+				onPointerDown={(event) => event.stopPropagation()}
+				onClick={(event) => {
+					if (anchor) return close();
+					const rect = event.currentTarget.getBoundingClientRect();
+					setAnchor({ x: rect.left, y: rect.bottom + 6 });
+				}}
+			>
+				<i className="fa-solid fa-arrow-down-wide-short" aria-hidden="true" />
+			</button>
+			{anchor && (
+				<ContextMenu
+					label="정렬과 그룹화"
+					anchor={anchor}
+					onClose={close}
+					items={[
+						{ heading: '정렬 기준' },
+						sortItem('date', '날짜'),
+						sortItem('title', '제목'),
+						'separator',
+						{ heading: '순서' },
+						orderItem(sort === 'date' ? 'desc' : 'asc'),
+						orderItem(sort === 'date' ? 'asc' : 'desc'),
+						'separator',
+						{
+							label: '날짜별로 그룹화',
+							checked: groupByDate && sort === 'date',
+							disabled: sort !== 'date',
+							hint: sort === 'date' ? undefined : '날짜로 정렬할 때만 묶을 수 있습니다',
+							onSelect: () => onChange({ ...arrangement, groupByDate: !groupByDate }),
+						},
+					]}
+				/>
+			)}
+		</>
+	);
+};
