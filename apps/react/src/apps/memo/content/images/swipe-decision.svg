@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>손가락 움직임을 제어 센터 쓸기로 판단하는 과정</title>
+  <rect width="640" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">이 손가락은 제어 센터 쓸기인가?</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker></defs>
+  <g font-size="13">
+    <rect x="32" y="70" width="170" height="54" rx="10" fill="#f3f4f6"/>
+    <text x="48" y="93" fill="#1f2937" font-weight="600">누른 곳 확인</text>
+    <text x="48" y="112" fill="#6b7280" font-size="11">막대·입력 칸·스크롤 남음?</text>
+    <path d="M202 97 H236" stroke="#6b7280" stroke-width="1.6" marker-end="url(#a)"/>
+    <rect x="240" y="70" width="170" height="54" rx="10" fill="#f3f4f6"/>
+    <text x="256" y="93" fill="#1f2937" font-weight="600">8px 움직일 때까지</text>
+    <text x="256" y="112" fill="#6b7280" font-size="11">누르기일 수 있으니 보류</text>
+    <path d="M410 97 H444" stroke="#6b7280" stroke-width="1.6" marker-end="url(#a)"/>
+    <rect x="448" y="70" width="160" height="54" rx="10" fill="#f3f4f6"/>
+    <text x="464" y="93" fill="#1f2937" font-weight="600">세로 + 정한 방향?</text>
+    <text x="464" y="112" fill="#6b7280" font-size="11">|dy| &gt; |dx|</text>
+    <path d="M528 124 V168" stroke="#646cff" stroke-width="1.6" marker-end="url(#a)"/>
+    <text x="536" y="152" fill="#3f46c7" font-size="12">예</text>
+    <rect x="344" y="172" width="264" height="84" rx="10" fill="#eef0ff" stroke="#646cff"/>
+    <text x="360" y="196" fill="#3f46c7" font-weight="600">쓸기로 잡는다</text>
+    <text x="360" y="216" fill="#3f46c7" font-size="12">touchmove에서 preventDefault()로</text>
+    <text x="360" y="234" fill="#3f46c7" font-size="12">브라우저 스크롤을 막고, 패널이</text>
+    <text x="360" y="250" fill="#3f46c7" font-size="12">손가락을 따라 움직인다</text>
+    <path d="M448 110 C 330 140, 250 150, 200 176" stroke="#9ca3af" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+    <text x="250" y="150" fill="#6b7280" font-size="12">아니오</text>
+    <rect x="32" y="180" width="200" height="54" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+    <text x="48" y="203" fill="#1f2937" font-weight="600">놓아준다</text>
+    <text x="48" y="222" fill="#6b7280" font-size="11">가로 넘기기·스크롤은 그대로</text>
+  </g>
+  <text x="32" y="290" font-size="13" fill="#4b5563">손을 떼면 60px 넘게 쓸었을 때만 열리거나 닫히고, 쓸고 난 직후의 click은 버린다</text>
+</svg>

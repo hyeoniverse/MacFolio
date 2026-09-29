@@ -644,6 +644,55 @@
 	padding: 0 2rem 3rem;
 }
 
+/* 본문 아래 이전 글·다음 글: 두 칸, 다음 글은 오른쪽 정렬 */
+.memo-post-nav {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	margin-top: 2.5rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--memo-border);
+}
+
+.memo-post-nav button {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+	padding: 10px 12px;
+	border: 1px solid var(--memo-border);
+	border-radius: 10px;
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-post-nav button:hover {
+	background-color: var(--memo-search-bg);
+}
+
+.memo-post-nav .newer {
+	grid-column: 2;
+	align-items: flex-end;
+	text-align: right;
+}
+
+.memo-post-nav span {
+	color: var(--memo-muted);
+	font-size: 11px;
+}
+
+.memo-post-nav strong {
+	overflow: hidden;
+	max-width: 100%;
+	font-size: 13px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 /* 글을 바꾸면 본문이 살짝 떠오르며 나타난다 */
 .memo-reader-body {
 	animation: rise-in var(--duration) var(--ease-out);

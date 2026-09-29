@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>iPhone 13의 화면 높이 844와 뷰포트 높이 664</title>
+  <rect width="640" height="400" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">devices['iPhone 13']의 두 높이</text>
+  <!-- 휴대폰: 1px = 0.38 -->
+  <rect x="60" y="64" width="160" height="320" rx="26" fill="#f3f4f6" stroke="#9ca3af" stroke-width="2"/>
+  <rect x="68" y="72" width="144" height="36" rx="10" fill="#e5e7eb"/>
+  <text x="140" y="95" font-size="11" fill="#6b7280" text-anchor="middle">주소창</text>
+  <rect x="68" y="108" width="144" height="232" fill="#eef0ff" stroke="#646cff" stroke-width="2"/>
+  <text x="140" y="228" font-size="13" fill="#3f46c7" text-anchor="middle" font-weight="600">뷰포트</text>
+  <rect x="68" y="340" width="144" height="36" rx="10" fill="#e5e7eb"/>
+  <text x="140" y="362" font-size="11" fill="#6b7280" text-anchor="middle">도구 막대</text>
+  <g font-size="14">
+    <path d="M240 72 V376" stroke="#9ca3af" stroke-width="2"/><path d="M234 72 H246 M234 376 H246" stroke="#9ca3af" stroke-width="2"/>
+    <text x="256" y="200" fill="#1f2937" font-weight="600">screen: 390 × 844</text>
+    <text x="256" y="220" fill="#6b7280" font-size="12">화면 전체</text>
+    <path d="M226 108 V340" stroke="#646cff" stroke-width="2"/>
+    <text x="256" y="268" fill="#3f46c7" font-weight="600">viewport: 390 × 664</text>
+    <text x="256" y="288" fill="#6b7280" font-size="12">페이지가 실제로 쓰는 영역. 좌표는 여기 기준</text>
+  </g>
+  <text x="256" y="340" font-size="12" fill="#9ca3af">좌표를 외우지 말고 page.viewportSize()에서 읽는다</text>
+</svg>
