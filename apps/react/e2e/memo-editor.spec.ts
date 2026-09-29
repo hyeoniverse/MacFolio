@@ -27,7 +27,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		expect(api.posts).toEqual([]);
 
 		await title.fill('CRA에서 Vite로 옮기기 (고침)');
-		await expect(memo.getByRole('status').filter({ hasText: '저장됨' })).toBeVisible();
+		await expect(memo.getByRole('status').filter({ hasText: '임시 저장됨' })).toBeVisible();
 		expect(api.posts).toEqual([
 			expect.objectContaining({ slug: 'cra-to-vite', title: 'CRA에서 Vite로 옮기기 (고침)' }),
 		]);
@@ -68,7 +68,7 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		const title = memo.getByRole('textbox', { name: '제목' });
 		await expect(title).toBeFocused();
-		await expect(memo.getByRole('status').filter({ hasText: '제목과 본문을 쓰면 저장됩니다.' })).toBeVisible();
+		await expect(memo.getByRole('status').filter({ hasText: '제목과 본문을 쓰면 임시 저장됩니다.' })).toBeVisible();
 
 		// 제목만 쓰면 저장하지 않고 이유를 보여 준다
 		await page.keyboard.type('새로 쓴 글');
@@ -448,6 +448,8 @@ test.describe('바로 고치기 (관리자)', () => {
 			},
 			{ slug: 'cra-to-vite', title: '', date: '2026-09-28', category: '기타', summary: '', body: '', deleted: true },
 		];
+		// 게시한 내용으로 둔다
+		api.posts[0].published = { ...api.posts[0] };
 		const memo = await openMemo(page, api);
 		await expect(memo.locator('.memo-item').first()).toContainText('서버에만 있는 글');
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);

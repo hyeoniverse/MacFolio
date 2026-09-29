@@ -14,6 +14,18 @@ export interface Post {
 	body: string;
 	/** 목록 맨 위에 고정 (머리말 pinned: true, 방문자가 바꿀 수 있다) */
 	pinned?: boolean;
+	/** 관리자에게만: 게시 상태 */
+	status?: PostStatus;
+}
+
+/** 관리자가 보는 게시 상태 */
+export interface PostStatus {
+	/** 게시한 적 없는 글 (임시 저장만 있다) */
+	draftOnly: boolean;
+	/** 게시한 글에 게시하지 않은 편집이 있다 */
+	changed: boolean;
+	/** 게시했지만 날짜가 아직 안 됐다 (예약): 그 날짜 */
+	scheduled: string | null;
 }
 
 export const ALL_CATEGORY = '모든 글';
@@ -93,6 +105,66 @@ export function mergeServerPosts(posts: Post[], server: ServerPost[]): Post[] {
 			body: item.body,
 			...(original?.pinned && { pinned: true }),
 		});
+	}
+	return sortPosts([...bySlug.values()]);
+}
+
+/** 글 내용 (게시한 내용, 임시 저장, 버전이 같은 모양) */
+export interface PostContent {
+	title: string;
+	/** YYYY-MM-DD */
+	date: string;
+	category: string;
+	summary: string;
+	body: string;
+}
+
+/** API가 관리자에게 주는 글: 게시한 내용과 임시 저장을 따로 */
+export interface AdminPost {
+	slug: string;
+	published: PostContent | null;
+	publishedAt: string | null;
+	draft: PostContent | null;
+	draftUpdatedAt: string | null;
+	deleted: boolean;
+	/** 남은 버전 수 */
+	revisions: number;
+}
+
+const toListPost = (slug: string, content: PostContent, pinned: boolean | undefined, status: PostStatus): Post => ({
+	slug,
+	title: content.title,
+	date: content.date,
+	category: content.category,
+	summary: content.summary || excerpt(content.body),
+	body: content.body,
+	...(pinned && { pinned: true }),
+	status,
+});
+
+/**
+ * 관리자가 보는 목록: 저장소 글 위에 서버 글을 겹치되, 임시 저장이 있으면 그 내용을 보여 준다 (고치던 그대로 이어 쓴다).
+ * 게시 상태(임시 저장만 있음, 게시하지 않은 편집, 예약)를 함께 단다. today: 서울 기준 YYYY-MM-DD
+ */
+export function mergeAdminPosts(posts: Post[], server: AdminPost[], today: string): Post[] {
+	const bySlug = new Map(posts.map((post) => [post.slug, post]));
+	const original = new Map(bySlug);
+	for (const item of server) {
+		if (item.deleted) {
+			bySlug.delete(item.slug);
+			continue;
+		}
+		const content = item.draft ?? item.published;
+		if (!content) continue;
+		const fromRepo = original.get(item.slug);
+		bySlug.set(
+			item.slug,
+			toListPost(item.slug, content, fromRepo?.pinned, {
+				draftOnly: !item.published && !fromRepo,
+				changed: item.draft !== null && (item.published !== null || fromRepo !== undefined),
+				scheduled: item.published && item.published.date > today ? item.published.date : null,
+			})
+		);
 	}
 	return sortPosts([...bySlug.values()]);
 }
