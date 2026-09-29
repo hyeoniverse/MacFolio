@@ -1,0 +1,8 @@
+# 저장소 루트를 context로 빌드하므로 경로는 루트 기준이다. api에 필요 없는 것은 보내지 않는다
+**/node_modules
+**/dist
+**/.turbo
+**/.env
+apps/react
+apps/api/src/generated
+.git
