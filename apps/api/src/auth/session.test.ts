@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hashToken, randomToken, safeEqual, sameGithubLogin } from './session.js';
+import { hashToken, randomToken, safeEqual } from './session.js';
 
 describe('session', () => {
 	it('토큰은 매번 다르고 URL에 쓸 수 있다', () => {
@@ -20,10 +20,5 @@ describe('session', () => {
 		expect(safeEqual('state', 'longer-state')).toBe(false);
 		expect(safeEqual(undefined, 'state')).toBe(false);
 		expect(safeEqual('', '')).toBe(false);
-	});
-
-	it('GitHub 계정 이름은 대소문자 무시', () => {
-		expect(sameGithubLogin('Hyeoniverse', 'hyeoniverse')).toBe(true);
-		expect(sameGithubLogin('someone', 'hyeoniverse')).toBe(false);
 	});
 });
