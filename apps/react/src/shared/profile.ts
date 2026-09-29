@@ -39,9 +39,16 @@ export interface ProjectPoint {
 	body: string;
 }
 
+/**
+ * 프로젝트 페이지 모양. 프로젝트 성격에 맞춰 첫 화면과 기능 소개, 섹션 순서가 다르다.
+ * editorial 신문(뉴스레터), playful 알록달록 카드(할 일), minimal 단계(명함), game 게임 화면, terminal 터미널(학습 기록)
+ */
+export type ProjectLook = 'editorial' | 'playful' | 'minimal' | 'game' | 'terminal';
+
 export interface Project {
 	id: string;
 	name: string;
+	look: ProjectLook;
 	/** 페이지 첫머리의 큰 제목 */
 	tagline: string;
 	/** 한 줄 소개 */
@@ -76,8 +83,16 @@ export interface Project {
 	demo?: string;
 	/** 앱 아이콘 (public/imgs/projects/{id}/icon.png). 없으면 기본 모양을 쓴다 */
 	icon?: string;
+	/** 글자 로고 (public/imgs/projects/{id}/logo.png) */
+	logo?: string;
 	/** 화면 캡처 (public/imgs/projects/{id}/screenshot.jpg) */
 	image: string;
+	/** 게임 조작법 */
+	controls?: { keys: string[]; label: string }[];
+	/** 첫 화면 터미널에 보일 줄. '$ '로 시작하면 명령 */
+	terminal?: string[];
+	/** 커밋 컨벤션 (타입, 설명) */
+	conventions?: { type: string; description: string }[];
 }
 
 const projectImage = (id: string, file: string) => `/imgs/projects/${id}/${file}`;
@@ -90,6 +105,7 @@ export const PROJECTS: Project[] = [
 	{
 		id: 'newpick',
 		name: 'NewPick 뉴픽',
+		look: 'editorial',
 		tagline: '아침 뉴스, 요약해서 한 통에.',
 		description: '관심사에 맞춰 AI가 요약한 뉴스를 매일 아침 메일로 보내 주는 맞춤형 뉴스레터 서비스',
 		context: '프로그래머스 데브코스 팀 프로젝트 (2인)',
@@ -154,11 +170,13 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/Devcourse-NewPick/front',
 		demo: 'https://newpick-tan.vercel.app',
 		icon: projectImage('newpick', 'icon.png'),
+		logo: projectImage('newpick', 'logo.png'),
 		image: projectImage('newpick', 'screenshot.jpg'),
 	},
 	{
 		id: 'whattodo',
 		name: 'WTD (What To Do)',
+		look: 'playful',
 		tagline: '할 일은 끌어서. 루틴은 알아서.',
 		description: '할 일과 세부 할 일을 끌어서 정리하고, 매일 반복되는 일은 루틴으로 관리하는 할 일 관리 웹 앱',
 		context: '프로그래머스 데브코스 팀 프로젝트 (4인)',
@@ -224,6 +242,7 @@ export const PROJECTS: Project[] = [
 	{
 		id: 'qru',
 		name: 'QRU 큐알유',
+		look: 'minimal',
 		tagline: 'QR 한 장에 담은 나.',
 		description: '내 정보를 담은 QR 디지털 명함을 만들어 공유하고, 공개된 명함을 셔플로 찾아보는 웹 앱',
 		context: '개인 프로젝트',
@@ -298,6 +317,12 @@ export const PROJECTS: Project[] = [
 	{
 		id: 'sproutfarm',
 		name: 'SproutFarm 새싹 농장',
+		look: 'game',
+		controls: [
+			{ keys: ['↑', '↓', '←', '→'], label: '움직이기' },
+			{ keys: ['Shift'], label: '달리기' },
+			{ keys: ['Space'], label: '대화 넘기기, 울타리에 넣기, 잠자기' },
+		],
 		tagline: '자정까지, 스무 마리.',
 		description: '도망친 동물 20마리를 자정 전에 울타리로 데려오는 탑다운 2D 픽셀 캐주얼 게임',
 		context: '개인 프로젝트 (PC 전용)',
@@ -363,6 +388,28 @@ export const PROJECTS: Project[] = [
 	{
 		id: 'devcourse',
 		name: 'DevCourse FullStack',
+		look: 'terminal',
+		terminal: [
+			'$ git clone https://github.com/hyeoniverse/DevCourse-FullStack',
+			'# README.md 수강 목록',
+			'Week 01 · 24.08.12 · 오리엔테이션(OT) 안내사항 ✓',
+			'Week 01 · 24.08.13 · 포트폴리오 / 협업 환경 구성 (2) ✓',
+			'Week 02 · 24.08.20 · 웹 서비스의 이해 (1) ✓',
+			'$ git commit -m "practice: Express 기본 라우팅 실습"',
+		],
+		conventions: [
+			{ type: 'feat', description: '새로운 기능 추가' },
+			{ type: 'fix', description: '버그 수정' },
+			{ type: 'docs', description: '문서 (README, 주석)' },
+			{ type: 'style', description: '코드 스타일' },
+			{ type: 'refactor', description: '리팩토링' },
+			{ type: 'test', description: '테스트 코드' },
+			{ type: 'chore', description: '설정과 기타 작업' },
+			{ type: 'perf', description: '성능 최적화' },
+			{ type: 'practice', description: '실습 코드' },
+			{ type: 'example', description: '예제 코드' },
+			{ type: 'project', description: '프로젝트 관련' },
+		],
 		tagline: '배운 것은 전부, 커밋으로.',
 		description: '타입스크립트로 함께하는 웹 풀 사이클 개발(React, Node.js) 과정의 강의 노트와 실습 기록',
 		context: '프로그래머스 데브코스 4기 학습 기록',
