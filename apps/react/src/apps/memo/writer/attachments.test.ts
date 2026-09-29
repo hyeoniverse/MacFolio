@@ -18,7 +18,15 @@ describe('첨부 파일', () => {
 });
 
 describe('표 편집 규칙', () => {
-	const table = { header: false, rows: 2, cols: 3, align: 'left' as const };
+	const table = {
+		header: false,
+		rows: 2,
+		cols: 3,
+		align: 'left' as const,
+		selectedRows: 1,
+		selectedCols: 1,
+		selecting: null,
+	};
 
 	it('머리글 행은 지우지 않고, 그 위에 행을 넣지 않는다', () => {
 		expect(canRunTableOp({ ...table, header: true }, 'deleteRow')).toBe(false);
@@ -31,5 +39,12 @@ describe('표 편집 규칙', () => {
 		expect(canRunTableOp({ ...table, rows: 1 }, 'deleteRow')).toBe(false);
 		expect(canRunTableOp({ ...table, cols: 1 }, 'deleteCol')).toBe(false);
 		expect(canRunTableOp({ ...table, rows: 1, cols: 1 }, 'deleteTable')).toBe(true);
+	});
+
+	it('행·열을 여러 개 고르면 남는 것이 있어야 지운다', () => {
+		expect(canRunTableOp({ ...table, cols: 3, selectedCols: 2 }, 'deleteCol')).toBe(true);
+		expect(canRunTableOp({ ...table, cols: 3, selectedCols: 3 }, 'deleteCol')).toBe(false);
+		expect(canRunTableOp({ ...table, rows: 3, selectedRows: 2 }, 'deleteRow')).toBe(true);
+		expect(canRunTableOp({ ...table, rows: 3, selectedRows: 3 }, 'deleteRow')).toBe(false);
 	});
 });

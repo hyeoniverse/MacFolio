@@ -4,8 +4,10 @@ import type { Ctx } from '@milkdown/kit/ctx';
 import { editorViewCtx } from '@milkdown/kit/core';
 import { addRowAfterCommand, addRowBeforeCommand } from '@milkdown/kit/preset/gfm';
 import type { Node } from '@milkdown/kit/prose/model';
-import { TextSelection, type EditorState } from '@milkdown/kit/prose/state';
+import { NodeSelection, TextSelection, type EditorState } from '@milkdown/kit/prose/state';
+import { GapCursor } from '@milkdown/kit/prose/gapcursor';
 import {
+	CellSelection,
 	addColumnAfter,
 	addColumnBefore,
 	deleteColumn,
@@ -25,13 +27,17 @@ import { canRunTableOp } from './tableRules';
 export function tableStateOf(state: EditorState): TableState | null {
 	if (!isInTable(state)) return null;
 	const rect = selectedRect(state);
-	const cell = state.selection.$from.node(-1);
+	const cell = rect.table.nodeAt(rect.map.map[rect.top * rect.map.width + rect.left]);
 	const align = cell?.attrs.alignment;
+	const cells = state.selection instanceof CellSelection ? state.selection : null;
 	return {
 		header: rect.top === 0,
 		rows: rect.map.height - 1,
 		cols: rect.map.width,
 		align: align === 'center' || align === 'right' ? align : 'left',
+		selectedRows: rect.bottom - rect.top,
+		selectedCols: rect.right - rect.left,
+		selecting: cells?.isColSelection() ? 'col' : cells?.isRowSelection() ? 'row' : null,
 	};
 }
 
@@ -62,6 +68,18 @@ export function runTableOp(ctx: Ctx, op: TableOp) {
 		case 'deleteTable':
 			deleteTable(state, dispatch);
 			break;
+		case 'selectRow':
+		case 'selectCol': {
+			// 지금 칸이 있는 행·열 전체를 고른다 (Backspace로 칸을 비우거나, 손잡이 메뉴로 지운다)
+			const rect = selectedRect(state);
+			const $cell = state.doc.resolve(rect.tableStart + rect.map.map[rect.top * rect.map.width + rect.left]);
+			dispatch(
+				state.tr.setSelection(
+					op === 'selectRow' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
+				)
+			);
+			break;
+		}
 		default:
 			// 정렬은 칸 하나가 아니라 그 열 전체에 (Markdown 표의 정렬은 열 단위)
 			alignColumn(view, op);
@@ -81,6 +99,42 @@ function alignColumn(view: EditorView, align: TableAlign) {
 	view.dispatch(tr);
 }
 
+/** 글자를 쓸 수 없는 블록 (Backspace 한 번에 지우지 않고 먼저 고른다) */
+const SOLID_BLOCKS = ['table', 'image_block'];
+
+/**
+ * 표·이미지 바로 뒤 문단의 맨 앞에서 Backspace: 그 블록을 고른다 (한 번 더 누르면 지워진다).
+ * 편집기 기본 동작은 빈 문단만 지우는데, 글 끝의 빈 문단은 늘 다시 생겨서 표를 지울 길이 없었다.
+ */
+function selectBlockBefore(view: EditorView) {
+	const { selection } = view.state;
+	if (!(selection instanceof TextSelection) || !selection.empty) return false;
+	const { $from } = selection;
+	if ($from.parentOffset !== 0 || $from.depth < 1) return false;
+	const $block = view.state.doc.resolve($from.before());
+	const before = $block.nodeBefore;
+	if (!before || !SOLID_BLOCKS.includes(before.type.name)) return false;
+	view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, $block.pos - before.nodeSize)));
+	return true;
+}
+
+/**
+ * 표의 첫 행에서 ↑, 마지막 행에서 ↓: 표 앞뒤에 글을 쓸 문단이 없으면 틈 커서를 둔다 (거기서 글을 쓰거나 Backspace로 표를 지운다)
+ */
+function gapAroundTable(view: EditorView, direction: -1 | 1) {
+	const { state } = view;
+	if (!isInTable(state) || !state.selection.empty) return false;
+	const rect = selectedRect(state);
+	if (direction === -1 ? rect.top !== 0 : rect.bottom !== rect.map.height) return false;
+	const table = findTable(state.selection.$from);
+	if (!table) return false;
+	const $gap = state.doc.resolve(direction === -1 ? table.pos : table.pos + table.node.nodeSize);
+	const neighbor = direction === -1 ? $gap.nodeBefore : $gap.nodeAfter;
+	if (neighbor?.isTextblock) return false;
+	view.dispatch(state.tr.setSelection(new GapCursor($gap)).scrollIntoView());
+	return true;
+}
+
 /** 표 안의 (줄, 칸) 칸 첫 글자로 커서를 옮긴다 */
 function moveToCell(view: EditorView, tableNode: Node, tableStart: number, row: number, col: number) {
 	const map = TableMap.get(tableNode);
@@ -96,7 +150,11 @@ function moveToCell(view: EditorView, tableNode: Node, tableStart: number, row: 
  * - ⌘Enter: 표 밖으로 (편집기 기본)
  */
 export function handleTableKey(ctx: Ctx, view: EditorView, event: KeyboardEvent): boolean {
-	if (event.isComposing || event.metaKey || event.ctrlKey || event.altKey || !isInTable(view.state)) return false;
+	if (event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return false;
+	if (event.key === 'Backspace' && selectBlockBefore(view)) return true;
+	if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && gapAroundTable(view, event.key === 'ArrowUp' ? -1 : 1))
+		return true;
+	if (!isInTable(view.state)) return false;
 	const isEnter = event.key === 'Enter' && !event.shiftKey;
 	const isTab = event.key === 'Tab' && !event.shiftKey;
 	if (!isEnter && !isTab) return false;

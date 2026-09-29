@@ -6,7 +6,12 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 export const keepFocus = (event: React.MouseEvent | React.PointerEvent) => event.preventDefault();
 
 /** 단추 아래에 여는 작은 창. 바깥을 누르거나 Esc를 누르면 닫힌다 */
-export function usePopover(fallback?: React.RefObject<HTMLElement | null>, keepOpenInside?: string) {
+export function usePopover(
+	fallback?: React.RefObject<HTMLElement | null>,
+	keepOpenInside?: string,
+	/** below: 단추 아래 가운데, right: 단추 오른쪽 위 (표 손잡이 메뉴) */
+	placement: 'below' | 'right' = 'below'
+) {
 	const [open, setOpen] = useState(false);
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	const panelRef = useRef<HTMLDivElement>(null);
@@ -18,11 +23,15 @@ export function usePopover(fallback?: React.RefObject<HTMLElement | null>, keepO
 		if (!open || !anchor) return;
 		const rect = anchor.getBoundingClientRect();
 		const width = panelRef.current?.offsetWidth ?? 240;
-		setPosition({
-			left: Math.max(8, Math.min(rect.left + rect.width / 2 - width / 2, window.innerWidth - width - 8)),
-			top: rect.bottom + 8,
-		});
-	}, [open, fallback]);
+		setPosition(
+			placement === 'right'
+				? { left: Math.min(rect.right + 6, window.innerWidth - width - 8), top: rect.top }
+				: {
+						left: Math.max(8, Math.min(rect.left + rect.width / 2 - width / 2, window.innerWidth - width - 8)),
+						top: rect.bottom + 8,
+					}
+		);
+	}, [open, fallback, placement]);
 
 	useEffect(() => {
 		if (!open) return;
