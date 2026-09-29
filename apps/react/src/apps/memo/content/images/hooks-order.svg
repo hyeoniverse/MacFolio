@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>조기 반환으로 렌더링마다 hook 개수가 달라지는 모습</title>
+  <rect width="640" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">렌더링마다 hook을 부르는 순서</text>
+  <g font-size="14">
+    <text x="32" y="84" font-weight="600" fill="#1f2937">창이 열려 있을 때</text>
+    <rect x="32" y="98" width="170" height="36" rx="8" fill="#eef0ff"/><text x="48" y="121" fill="#3f46c7">1. useEffect</text>
+    <rect x="32" y="142" width="170" height="36" rx="8" fill="#eef0ff"/><text x="48" y="165" fill="#3f46c7">2. useEffect</text>
+    <text x="360" y="84" font-weight="600" fill="#1f2937">창을 닫은 뒤 (isRunning = false)</text>
+    <rect x="360" y="98" width="170" height="36" rx="8" fill="#eef0ff"/><text x="376" y="121" fill="#3f46c7">1. useEffect</text>
+    <rect x="360" y="142" width="170" height="36" rx="8" fill="#fff1f1" stroke="#f87171" stroke-dasharray="5 4"/><text x="376" y="165" fill="#dc2626">return null ← 여기서 끝</text>
+    <path d="M214 160 H346" stroke="#9ca3af" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="222" y="152" font-size="12" fill="#6b7280">두 번째 hook이 사라짐</text>
+  </g>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#9ca3af"/></marker></defs>
+  <text x="32" y="222" font-size="14" fill="#4b5563">React는 hook을 부른 순서로 상태를 찾는다. 개수가 바뀌면 에러를 던지고,</text>
+  <text x="32" y="244" font-size="14" fill="#4b5563">에러 경계가 없으면 데스크톱 전체가 멈춘다.</text>
+  <text x="32" y="280" font-size="12" fill="#9ca3af">고친 뒤: 조기 반환을 모든 hook 아래로 옮기고, 앱마다 에러 경계를 둔다</text>
+</svg>

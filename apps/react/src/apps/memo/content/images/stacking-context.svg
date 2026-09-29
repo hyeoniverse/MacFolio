@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>sticky 도구 막대가 쌓임 맥락을 만들어 버튼이 끌기 영역 아래로 깔리는 모습</title>
+  <rect width="640" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">z-index는 같은 쌓임 맥락 안에서만 겨룬다</text>
+  <g font-size="13">
+    <!-- 창 -->
+    <rect x="32" y="66" width="576" height="200" rx="12" fill="#f9fafb" stroke="#d1d5db"/>
+    <text x="48" y="88" fill="#6b7280">창 (쌓임 맥락)</text>
+    <!-- 끌기 영역 -->
+    <rect x="48" y="100" width="544" height="44" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+    <text x="64" y="127" fill="#92400e" font-weight="600">끌기 영역  z-index 3</text>
+    <!-- 도구 막대 -->
+    <rect x="48" y="156" width="544" height="96" rx="8" fill="#eef0ff" stroke="#646cff" stroke-dasharray="6 4"/>
+    <text x="64" y="178" fill="#3f46c7" font-weight="600">도구 막대 (position: sticky → 새 쌓임 맥락, 창 안에서는 z-index 없음)</text>
+    <rect x="64" y="192" width="220" height="44" rx="8" fill="#ffffff" stroke="#646cff"/>
+    <text x="80" y="219" fill="#3f46c7">버튼  z-index 4</text>
+    <text x="300" y="212" fill="#6b7280">4는 도구 막대 안에서만의 순서다.</text>
+    <text x="300" y="230" fill="#6b7280">밖에서는 도구 막대 전체가 3 아래에 깔린다</text>
+  </g>
+  <text x="32" y="296" font-size="14" fill="#4b5563">고친 뒤: 도구 막대는 붙이지 않고, 그 아래 목록만 스크롤한다 (쌓임 맥락이 생기지 않는다)</text>
+</svg>

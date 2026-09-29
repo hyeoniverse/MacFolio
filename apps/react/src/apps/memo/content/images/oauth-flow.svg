@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>GitHub OAuth 관리자 로그인 흐름</title>
+  <rect width="640" height="420" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">관리자 로그인 흐름</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker></defs>
+  <g font-size="13" text-anchor="middle" font-weight="600">
+    <rect x="42" y="64" width="136" height="34" rx="8" fill="#f3f4f6"/><text x="110" y="86" fill="#1f2937">브라우저</text>
+    <rect x="252" y="64" width="136" height="34" rx="8" fill="#eef0ff"/><text x="320" y="86" fill="#3f46c7">MacFolio API</text>
+    <rect x="462" y="64" width="136" height="34" rx="8" fill="#1f2937"/><text x="530" y="86" fill="#ffffff">GitHub</text>
+  </g>
+  <g stroke="#e5e7eb" stroke-width="2"><path d="M110 98 V400"/><path d="M320 98 V400"/><path d="M530 98 V400"/></g>
+  <g font-size="12" fill="#374151" stroke-width="1.6">
+    <path d="M110 128 H316" stroke="#6b7280" marker-end="url(#a)"/><text x="120" y="122">1. /auth/github</text>
+    <path d="M320 164 H114" stroke="#6b7280" marker-end="url(#a)"/><text x="130" y="158">state 쿠키 + GitHub로 보냄</text>
+    <path d="M110 200 H526" stroke="#6b7280" marker-end="url(#a)"/><text x="340" y="194">2. GitHub에서 로그인</text>
+    <path d="M530 236 H324" stroke="#6b7280" marker-end="url(#a)"/><text x="340" y="230">3. 콜백 ?code&amp;state</text>
+    <text x="330" y="256" fill="#b91c1c">state가 쿠키와 다르면 400</text>
+    <path d="M320 282 H526" stroke="#6b7280" marker-end="url(#a)"/><text x="340" y="276">4. code + secret → 토큰 → 사용자</text>
+    <text x="330" y="304" fill="#3f46c7">숫자 ID가 관리자인지 확인</text>
+    <path d="M320 336 H114" stroke="#646cff" marker-end="url(#a)"/><text x="126" y="330" fill="#3f46c7">5. 세션 쿠키 (httpOnly)</text>
+    <text x="126" y="356" fill="#6b7280">DB에는 토큰의 해시만</text>
+    <path d="M110 384 H316" stroke="#6b7280" marker-end="url(#a)"/><text x="120" y="378">6. /auth/me → 관리자</text>
+  </g>
+</svg>

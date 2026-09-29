@@ -329,6 +329,18 @@
 		border-top: none;
 	}
 
+	/* 데스크톱의 좁은 창: 도구 막대가 없으니 탭 막대가 제목 표시줄 자리에 온다. 신호등 버튼 자리를 비운다 */
+	.container:not(.mobile) .safari-tabs {
+		align-items: center;
+		min-height: 52px;
+		padding-left: 84px;
+	}
+
+	/* 탭은 끌기 영역(z-index 3)보다 위에 둬야 눌린다. 탭 사이 빈 곳은 그대로 창을 끈다 */
+	.container:not(.mobile) .safari-tab {
+		z-index: 4;
+	}
+
 	.safari-tab {
 		flex: none;
 		min-width: 0;

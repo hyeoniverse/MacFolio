@@ -7,6 +7,8 @@ summary: 따로 배포한 새싹 농장 게임을 이 데스크톱의 앱으로 
 
 예전에 Unity로 만든 탑다운 게임 SproutFarm(새싹 농장)은 WebGL로 빌드해 Vercel에 따로 배포해 두었다. Safari 포트폴리오에서 링크로만 보내기보다, 이 데스크톱 안에서 바로 해 볼 수 있게 앱으로 넣었다.
 
+![데스크톱 안에서 연 새싹 농장 앱](./images/sproutfarm-window.jpg '새싹 농장 앱. 배포한 게임을 창 안에 그대로 띄우고, PLAY를 누를 때 게임을 불러온다')
+
 ## 넣어도 되는지 먼저 확인
 
 다른 사이트를 iframe에 넣으려면 그 사이트가 막지 않아야 한다. 응답 헤더에 `X-Frame-Options`나 CSP의 `frame-ancestors`가 있으면 브라우저가 띄우지 않는다.
