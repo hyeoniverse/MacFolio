@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { env } from '@/shared/config/env';
 import { captionParts } from '../caption';
 import { baseName, uploadAndInsert } from './attachments';
@@ -43,59 +43,70 @@ const Details = ({
 	submit: string;
 	onSubmit: () => void;
 	onBack?: () => void;
-}) => (
-	<form
-		className="memo-image-details"
-		onSubmit={(event) => {
-			event.preventDefault();
-			onSubmit();
-		}}
-	>
-		<img className="memo-image-preview" src={preview} alt="" />
-		<label>
-			<span>설명</span>
-			<input
-				aria-label="이미지 설명"
-				placeholder="무엇이 보이는지 (화면 읽기 프로그램용)"
-				value={alt}
-				autoFocus
-				onChange={(e) => onAlt(e.target.value)}
-			/>
-		</label>
-		<label>
-			<span>캡션</span>
-			<input
-				aria-label="캡션"
-				placeholder="이미지 아래에 보일 글 (비워도 된다)"
-				value={caption}
-				onChange={(e) => onCaption(e.target.value)}
-			/>
-		</label>
-		{caption && captionParts(caption).some((part) => part.href) && (
-			<p className="memo-image-credit">
-				{captionParts(caption).map((part, index) =>
-					part.href ? (
-						<a key={index} href={part.href} target="_blank" rel="noopener noreferrer">
-							{part.text}
-						</a>
-					) : (
-						<span key={index}>{part.text}</span>
-					)
-				)}
-			</p>
-		)}
-		<div className="memo-image-actions">
-			{onBack && (
-				<button type="button" className="memo-image-back" onClick={onBack}>
-					다시 고르기
-				</button>
+}) => {
+	const id = useId();
+	return (
+		<form
+			className="memo-image-details"
+			onSubmit={(event) => {
+				event.preventDefault();
+				onSubmit();
+			}}
+		>
+			<img className="memo-image-preview" src={preview} alt="" />
+			<label>
+				<span>설명</span>
+				<input
+					aria-label="이미지 설명"
+					aria-describedby={`${id}-alt`}
+					placeholder="이미지에 보이는 내용"
+					value={alt}
+					autoFocus
+					onChange={(e) => onAlt(e.target.value)}
+				/>
+				<small id={`${id}-alt`} className="memo-field-hint">
+					화면 읽기 프로그램이 이미지 대신 읽어 주는 글입니다.
+				</small>
+			</label>
+			<label>
+				<span>캡션</span>
+				<input
+					aria-label="캡션"
+					aria-describedby={`${id}-caption`}
+					placeholder="이미지 아래에 보일 글"
+					value={caption}
+					onChange={(e) => onCaption(e.target.value)}
+				/>
+				<small id={`${id}-caption`} className="memo-field-hint">
+					비워 두어도 됩니다.
+				</small>
+			</label>
+			{caption && captionParts(caption).some((part) => part.href) && (
+				<p className="memo-image-credit">
+					{captionParts(caption).map((part, index) =>
+						part.href ? (
+							<a key={index} href={part.href} target="_blank" rel="noopener noreferrer">
+								{part.text}
+							</a>
+						) : (
+							<span key={index}>{part.text}</span>
+						)
+					)}
+				</p>
 			)}
-			<button type="submit" className="memo-image-submit">
-				{submit}
-			</button>
-		</div>
-	</form>
-);
+			<div className="memo-image-actions">
+				{onBack && (
+					<button type="button" className="memo-image-back" onClick={onBack}>
+						다시 고르기
+					</button>
+				)}
+				<button type="submit" className="memo-image-submit">
+					{submit}
+				</button>
+			</div>
+		</form>
+	);
+};
 
 /** 내 파일: 고르면 미리 보고 설명을 쓴 뒤 올린다 */
 const FileTab = ({ onDone }: { onDone: () => void }) => {
@@ -124,7 +135,7 @@ const FileTab = ({ onDone }: { onDone: () => void }) => {
 		<label className="memo-image-drop">
 			<i className="fa-regular fa-image" aria-hidden="true" />
 			<strong>파일에서 고르기…</strong>
-			<span>PNG·JPEG·GIF·WebP, 10MB까지. 본문에 붙여넣거나 끌어다 놓아도 된다</span>
+			<span>PNG·JPEG·GIF·WebP 파일을 10MB까지 올릴 수 있습니다. 본문에 붙여넣거나 끌어다 놓아도 됩니다.</span>
 			<input
 				type="file"
 				accept={IMAGE_TYPES}
@@ -192,6 +203,7 @@ const StockTab = ({
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 	const [picked, setPicked] = useState<StockPhoto | null>(null);
+	const hintId = useId();
 	const [alt, setAlt] = useState('');
 	const [caption, setCaption] = useState('');
 
@@ -251,7 +263,8 @@ const StockTab = ({
 			>
 				<input
 					aria-label={`${PROVIDER_LABEL[provider]}에서 찾기`}
-					placeholder="찾을 사진 (영어가 잘 찾아진다)"
+					aria-describedby={`${hintId}-search`}
+					placeholder="찾을 사진"
 					value={query}
 					autoFocus
 					onChange={(e) => setQuery(e.target.value)}
@@ -260,6 +273,9 @@ const StockTab = ({
 					찾기
 				</button>
 			</form>
+			<small id={`${hintId}-search`} className="memo-field-hint">
+				영어로 검색하면 더 많은 사진을 찾을 수 있습니다.
+			</small>
 			{error && (
 				<p className="memo-image-note problem" role="alert">
 					{error}

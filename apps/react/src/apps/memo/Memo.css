@@ -1366,6 +1366,13 @@
 	border-color: #edbb4d;
 }
 
+/* 입력칸 아래 안내 */
+.memo-field-hint {
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	line-height: 1.4;
+}
+
 .memo-image-credit {
 	color: var(--color-text-secondary);
 	font-size: 11px;
