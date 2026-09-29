@@ -1130,9 +1130,31 @@
 	padding: 0 2px;
 }
 
-.memo-calendar-head strong {
+.memo-calendar-head .memo-calendar-title {
+	display: inline-flex;
 	flex: 1;
+	align-items: center;
+	gap: 5px;
+	width: auto;
+	margin-right: auto;
+	padding: 0 6px;
+	color: var(--color-popover-text);
 	font-size: 13px;
+	font-weight: 700;
+	text-align: left;
+}
+
+.memo-calendar-title i {
+	color: var(--color-text-secondary);
+	font-size: 9px;
+}
+
+.memo-calendar-head .memo-calendar-title:disabled {
+	cursor: default;
+}
+
+.memo-calendar-head .memo-calendar-title:disabled:hover {
+	background: none;
 }
 
 .memo-calendar button {
@@ -1174,15 +1196,31 @@
 	font-variant-numeric: tabular-nums;
 }
 
+.memo-calendar-picks {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 4px;
+	text-align: center;
+}
+
+.memo-calendar-picks button {
+	height: 40px;
+	border-radius: 8px;
+	font-variant-numeric: tabular-nums;
+}
+
+.memo-calendar-picks button:hover,
 .memo-calendar-grid button:hover {
 	background-color: color-mix(in srgb, #edbb4d 25%, transparent);
 }
 
+.memo-calendar-picks button.today,
 .memo-calendar-grid button.today {
 	color: #c78b00;
 	font-weight: 700;
 }
 
+.memo-calendar-picks button.selected,
 .memo-calendar-grid button.selected {
 	background-color: #edbb4d;
 	color: #2b2100;
