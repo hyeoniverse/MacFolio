@@ -320,14 +320,19 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		// 캡션 고치기: 누르면 입력칸, Enter로 저장
 		const caption = figure.locator('.memo-caption');
+		const input = figure.getByRole('textbox', { name: '캡션' });
+		// 평소에는 캡션만 보이고 입력칸은 숨어 있다
+		await expect(input).toBeHidden();
 		const before = (await caption.textContent())!;
 		await caption.click();
-		const input = figure.getByRole('textbox', { name: '캡션' });
+		// 누르면 캡션 자리가 입력칸으로 바뀐다 (둘이 함께 보이지 않는다)
 		await expect(input).toBeFocused();
+		await expect(caption).toBeHidden();
 		await expect(input).toHaveValue(before);
 		await input.fill('고친 캡션');
 		await page.keyboard.press('Enter');
 		await expect(caption).toHaveText('고친 캡션');
+		await expect(input).toBeHidden();
 		await expect.poll(() => api.posts[0]?.body ?? '').toContain('"고친 캡션")');
 
 		// Esc는 취소
