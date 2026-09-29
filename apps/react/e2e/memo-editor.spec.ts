@@ -451,7 +451,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		// 게시한 내용으로 둔다
 		api.posts[0].published = { ...api.posts[0] };
 		const memo = await openMemo(page, api);
-		await expect(memo.locator('.memo-item').first()).toContainText('서버에만 있는 글');
+		// 서버에만 있는 글도 목록에 있고, 열면 게시한 내용이 보인다
+		await memo.locator('.memo-item', { hasText: '서버에만 있는 글' }).click();
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
 		await expect(memo.getByRole('heading', { level: 1 })).toHaveText('서버에만 있는 글');
 		// 코드 블록의 복사 단추
