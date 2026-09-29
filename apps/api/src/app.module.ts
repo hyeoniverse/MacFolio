@@ -9,6 +9,7 @@ import { MemoModule } from './memo/memo.module.js';
 import { CommentsModule } from './comments/comments.module.js';
 import { PostsModule } from './posts/posts.module.js';
 import { FilesModule } from './files/files.module.js';
+import { ImagesModule } from './images/images.module.js';
 
 @Module({
 	imports: [
@@ -28,6 +29,7 @@ import { FilesModule } from './files/files.module.js';
 		CommentsModule,
 		PostsModule,
 		FilesModule,
+		ImagesModule,
 	],
 })
 export class AppModule {}

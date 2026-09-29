@@ -21,6 +21,11 @@ export interface AppConfig {
 	 * 배포에서는 반드시 정한다. 로컬·테스트는 기본값
 	 */
 	ipHashSecret: string;
+	/** 글에 넣을 사진 찾기 (키가 없으면 그 서비스만 꺼진다) */
+	stockPhotos: {
+		unsplashAccessKey?: string;
+		pexelsApiKey?: string;
+	};
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -71,6 +76,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		trustProxy: Number(env.TRUST_PROXY ?? 0) || 0,
 		commentRateLimit: Number(env.COMMENT_RATE_LIMIT ?? 5) || 5,
 		ipHashSecret,
+		stockPhotos: {
+			unsplashAccessKey: env.UNSPLASH_ACCESS_KEY || undefined,
+			pexelsApiKey: env.PEXELS_API_KEY || undefined,
+		},
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
 			githubClientSecret: env.GITHUB_CLIENT_SECRET || undefined,
