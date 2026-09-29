@@ -74,3 +74,18 @@ model Post {
   /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
   updatedBy String
 }
+
+/// 글에 넣은 이미지와 첨부 파일. 배포 환경마다 디스크가 다를 수 있어서 DB에 바로 둔다 (한 파일 10MB까지)
+model Upload {
+  /// 무작위 (주소를 짐작할 수 없게)
+  id        String   @id
+  /// 올린 파일 이름 (내려받을 때 이 이름으로)
+  name      String
+  /// MIME 형식. 이미지(PNG·JPEG·GIF·WebP)는 파일 앞부분으로 확인한 값
+  type      String
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now())
+  /// 올린 관리자 (GitHub 계정 이름)
+  createdBy String
+}
