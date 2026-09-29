@@ -11,6 +11,7 @@ import {
 	filterPosts,
 	firstImage,
 	folderName,
+	mergeServerPosts,
 	formatPostDate,
 	resolveImageSrc,
 	type FolderNode,
@@ -42,6 +43,8 @@ import { notify } from '@/desktop/notifications/notificationStore';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
 import Comments from './comments/Comments';
+import PostEditor from './components/PostEditor';
+import { deletePost, fetchServerPosts, savePost, type PostDraft } from './postsApi';
 import '@/apps/memo/Memo.css';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
@@ -148,15 +151,28 @@ const Memo: React.FC = () => {
 		setPaneState(next);
 	};
 
+	// 저장소의 Markdown 글을 먼저 보여 주고, 서버의 글(관리자가 쓰거나 고친 글)을 겹친다
 	useEffect(() => {
+		let cancelled = false;
 		getPostRepository()
 			.list()
-			.then((list) => {
+			.then(async (list) => {
+				if (cancelled) return;
 				setPosts(list);
 				setStatus('ready');
+				const server = await fetchServerPosts(env.apiUrl);
+				if (!cancelled && server.length > 0) setPosts(mergeServerPosts(list, server));
 			})
 			.catch(() => setStatus('error'));
+		return () => {
+			cancelled = true;
+		};
 	}, []);
+
+	/** 글쓰기·편집 중: 고치는 글의 주소, 새 글이면 null. 아무것도 안 쓰면 undefined */
+	const [editingState, setEditing] = useState<string | null | undefined>(undefined);
+	// 관리자가 아니게 되면(로그아웃) 편집 화면을 보여 주지 않는다
+	const editing = canEdit ? editingState : undefined;
 
 	// 예전에 방문자 브라우저에 저장된 정리 내용은 지우고, 서버의 정리 내용을 읽는다
 	useEffect(() => {
@@ -375,6 +391,55 @@ const Memo: React.FC = () => {
 		</li>
 	);
 
+	/** 저장하면 목록에 바로 반영하고 그 글을 연다. 문제가 있으면 이유를 돌려준다 */
+	const saveDraft = async (draft: PostDraft) => {
+		const result = await savePost(env.apiUrl, editing ?? null, draft);
+		if (!result.ok) return result.errors;
+		setPosts((list) => mergeServerPosts(list, [result.post]));
+		setSelectedSlug(result.post.slug);
+		setQuery('');
+		setEditing(undefined);
+		notify({ app: 'memo', title: editing ? '메모를 고쳤습니다' : '새 메모를 올렸습니다', body: result.post.title });
+		return null;
+	};
+
+	const removePost = async (post: Post) => {
+		if (!window.confirm(`'${post.title}' 메모를 지울까요?`)) return;
+		if (!(await deletePost(env.apiUrl, post.slug))) {
+			notify({ app: 'memo', title: '지우지 못함', body: '관리자 로그인이 끝났거나 서버에 연결할 수 없습니다.' });
+			return;
+		}
+		setPosts((list) => list.filter((item) => item.slug !== post.slug));
+		setEditing(undefined);
+	};
+
+	/** 관리자 도구: 새 메모, 편집 (본문 위) */
+	const authorTools = (className: string) =>
+		canEdit && (
+			<>
+				<button
+					type="button"
+					className={`memo-tool ${className}`}
+					aria-label="새 메모"
+					title="새 메모"
+					onClick={() => setEditing(null)}
+				>
+					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+				</button>
+				{selected && (
+					<button
+						type="button"
+						className={`memo-tool ${className}`}
+						aria-label="메모 편집"
+						title="메모 편집"
+						onClick={() => setEditing(selected.slug)}
+					>
+						<i className="fa-solid fa-pencil" aria-hidden="true" />
+					</button>
+				)}
+			</>
+		);
+
 	/** 본문의 고정 단추 */
 	const pinButton = (className: string) =>
 		canEdit &&
@@ -521,7 +586,13 @@ const Memo: React.FC = () => {
 									</button>
 								</>
 							)}
+							{canEdit && (
+								<span className="memo-admin-chip" title="관리자로 로그인했습니다">
+									<i className="fa-solid fa-key" aria-hidden="true" /> 관리자
+								</span>
+							)}
 							<span className="memo-toolbar-spacer" />
+							{authorTools('')}
 							{pinButton('')}
 							{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
 							{sortMenu()}
@@ -533,9 +604,40 @@ const Memo: React.FC = () => {
 								<button type="button" className="memo-back" onClick={() => setPane('list')}>
 									<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
 								</button>
+								{authorTools('compact-only')}
 								{pinButton('compact-only')}
 							</div>
-							{selected && (
+							{editing !== undefined && (
+								<PostEditor
+									key={editing ?? 'new'}
+									initial={
+										editing && selected
+											? {
+													title: selected.title,
+													date: selected.date,
+													category: selected.category,
+													summary: selected.summary,
+													body: selected.body,
+												}
+											: null
+									}
+									folders={folderPaths}
+									defaultFolder={category === ALL_CATEGORY ? (folderPaths.at(-1) ?? '기타') : category}
+									renderMarkdown={(body) => (
+										<ReactMarkdown
+											remarkPlugins={[remarkGfm]}
+											rehypePlugins={REHYPE_PLUGINS}
+											components={MARKDOWN_COMPONENTS}
+										>
+											{body}
+										</ReactMarkdown>
+									)}
+									onSave={saveDraft}
+									onCancel={() => setEditing(undefined)}
+									onDelete={editing && selected ? () => void removePost(selected) : undefined}
+								/>
+							)}
+							{editing === undefined && selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
 								<div key={selected.slug} className="memo-reader-body">
 									<p className="memo-reader-date">
@@ -590,6 +692,20 @@ const Memo: React.FC = () => {
 									label: menuPost.pinned ? '메모 고정 해제' : '메모 고정',
 									icon: 'fa-solid fa-thumbtack',
 									onSelect: () => togglePin(menuPost),
+								},
+								{
+									label: '메모 편집',
+									icon: 'fa-solid fa-pencil',
+									onSelect: () => {
+										setSelectedSlug(menuPost.slug);
+										setEditing(menuPost.slug);
+									},
+								},
+								'separator',
+								{
+									label: '메모 삭제',
+									icon: 'fa-regular fa-trash-can',
+									onSelect: () => void removePost(menuPost),
 								},
 							]}
 						/>

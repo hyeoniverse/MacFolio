@@ -61,6 +61,42 @@ export function toPost(slug: string, source: string): Post | null {
 	};
 }
 
+/** API의 글 (관리자가 쓰거나 고친 글, 또는 저장소 글을 지운 표시) */
+export interface ServerPost {
+	slug: string;
+	title: string;
+	date: string;
+	category: string;
+	summary: string;
+	body: string;
+	deleted: boolean;
+}
+
+/**
+ * 저장소의 Markdown 글 위에 서버의 글을 겹친다.
+ * 같은 주소면 서버 글이 대신하고(고정 여부는 저장소 글을 따른다), 지운 표시면 목록에서 뺀다. 서버에만 있는 글은 더한다.
+ */
+export function mergeServerPosts(posts: Post[], server: ServerPost[]): Post[] {
+	const bySlug = new Map(posts.map((post) => [post.slug, post]));
+	for (const item of server) {
+		if (item.deleted) {
+			bySlug.delete(item.slug);
+			continue;
+		}
+		const original = bySlug.get(item.slug);
+		bySlug.set(item.slug, {
+			slug: item.slug,
+			title: item.title,
+			date: item.date,
+			category: item.category,
+			summary: item.summary || excerpt(item.body),
+			body: item.body,
+			...(original?.pinned && { pinned: true }),
+		});
+	}
+	return sortPosts([...bySlug.values()]);
+}
+
 /** 최신 글이 위로. 같은 날이면 제목 순 */
 export function sortPosts(posts: Post[]): Post[] {
 	return [...posts].sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
@@ -123,6 +159,9 @@ export function buildFolderTree(posts: Post[], customFolders: string[] = []): Fo
 		nodes.sort((a, b) => a.name.localeCompare(b.name)).map((node) => ({ ...node, children: sort(node.children) }));
 	return sort(root);
 }
+
+/** 폴더 경로를 "개발기 › MacFolio"처럼 */
+export const folderLabelOf = (path: string) => path.split('/').join(' › ');
 
 /** 경로의 마지막 이름 (예: 개발기/MacFolio → MacFolio) */
 export const folderName = (path: string) => path.split('/').at(-1) ?? path;

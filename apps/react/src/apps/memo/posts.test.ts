@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	adjacentPosts,
+	mergeServerPosts,
 	buildFolderTree,
 	firstImage,
 	inFolder,
@@ -186,5 +187,50 @@ describe('adjacentPosts', () => {
 		expect(adjacentPosts(posts, 'c').newer).toBeNull();
 		expect(adjacentPosts(posts, 'a').older).toBeNull();
 		expect(adjacentPosts(posts, 'nope')).toEqual({ older: null, newer: null });
+	});
+});
+
+describe('mergeServerPosts', () => {
+	const make = (slug: string, date: string, extra: Partial<Post> = {}): Post => ({
+		slug,
+		title: slug,
+		date,
+		category: '개발기',
+		summary: slug,
+		body: slug,
+		...extra,
+	});
+	const server = (slug: string, extra: Partial<import('./posts').ServerPost> = {}) => ({
+		slug,
+		title: `${slug} (서버)`,
+		date: '2026-09-29',
+		category: '읽을거리',
+		summary: '',
+		body: '서버 본문',
+		deleted: false,
+		...extra,
+	});
+
+	it('같은 주소는 서버 글이 대신하고, 고정 여부는 저장소 글을 따른다. 요약이 없으면 본문 앞부분', () => {
+		const merged = mergeServerPosts([make('a', '2026-09-01', { pinned: true })], [server('a')]);
+		expect(merged).toEqual([
+			{
+				slug: 'a',
+				title: 'a (서버)',
+				date: '2026-09-29',
+				category: '읽을거리',
+				summary: '서버 본문',
+				body: '서버 본문',
+				pinned: true,
+			},
+		]);
+	});
+
+	it('지운 표시는 목록에서 빼고, 서버에만 있는 글은 더해 날짜 순으로', () => {
+		const merged = mergeServerPosts(
+			[make('a', '2026-09-01'), make('b', '2026-09-02')],
+			[server('a', { deleted: true }), server('new', { date: '2026-09-30' })]
+		);
+		expect(merged.map((post) => post.slug)).toEqual(['new', 'b']);
 	});
 });
