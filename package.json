@@ -4,6 +4,8 @@
 	"packageManager": "pnpm@10.34.5",
 	"scripts": {
 		"dev": "turbo run dev --filter=@macfolio/react",
+		"dev:api": "turbo run dev --filter=@macfolio/api",
+		"dev:all": "turbo run dev --filter=@macfolio/react --filter=@macfolio/api",
 		"build": "turbo run build",
 		"typecheck": "turbo run typecheck",
 		"test": "turbo run test",
