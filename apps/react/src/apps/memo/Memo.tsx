@@ -11,10 +11,12 @@ import {
 	filterPosts,
 	firstImage,
 	folderName,
+	mergeAdminPosts,
 	mergeServerPosts,
 	formatPostDate,
 	resolveImageSrc,
 	type FolderNode,
+	type AdminPost,
 	type Post,
 	type ServerPost,
 } from './posts';
@@ -45,9 +47,12 @@ import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
 import CodeBlock from './components/CodeBlock';
 import Comments from './comments/Comments';
-import PostWriter from './writer/PostWriter';
+import PostWriter, { type PostWriterHandle } from './writer/PostWriter';
 import FormatTools from './writer/FormatTools';
-import { deletePost, fetchServerPosts } from './postsApi';
+import RevisionsPanel from './components/RevisionsPanel';
+import { keepFocus, usePopover } from './writer/popover';
+import { deletePost, fetchAdminPosts, fetchServerPosts } from './postsApi';
+import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
@@ -122,7 +127,12 @@ const CardPreview: React.FC<{ post: Post }> = ({ post }) => {
  * 방문자는 읽기만 하고, 글쓰기는 관리자 로그인(#9) 이후에 붙인다.
  */
 const Memo: React.FC = () => {
-	const [posts, setPosts] = useState<Post[]>([]);
+	/** 저장소의 Markdown 글 */
+	const [repoPosts, setRepoPosts] = useState<Post[]>([]);
+	/** 방문자용 서버 글 (게시한 글, 지운·예약 표시) */
+	const [publicPosts, setPublicPosts] = useState<ServerPost[]>([]);
+	/** 관리자용 서버 글 (게시한 내용과 임시 저장). 관리자로 로그인했을 때만 읽는다 */
+	const [adminPosts, setAdminPosts] = useState<AdminPost[] | null>(null);
 	const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 	const [category, setCategory] = useState(ALL_CATEGORY);
 	const [query, setQuery] = useState('');
@@ -142,11 +152,19 @@ const Memo: React.FC = () => {
 	};
 	// 날짜 묶음(오늘, 어제 …)의 기준. 창을 연 날로 고정한다
 	const today = useMemo(() => new Date(), []);
+	const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 	/** 갤러리에서 카드를 눌러 글을 연 상태 */
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
 	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
 	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 단추를 보이지 않는다 (admin.ts)
 	const canEdit = useCanEditMemo();
+	/** 관리자 목록을 읽었으면 편집기로 본다 (읽기 전에는 게시한 내용으로 읽기만) */
+	const editing = canEdit && adminPosts !== null;
+	// 관리자는 임시 저장까지 보이고, 방문자는 게시한 글만 본다
+	const posts = useMemo(
+		() => (editing ? mergeAdminPosts(repoPosts, adminPosts, todayIso) : mergeServerPosts(repoPosts, publicPosts)),
+		[editing, repoPosts, adminPosts, publicPosts, todayIso]
+	);
 	const shellRef = useRef<HTMLDivElement>(null);
 	const { compact, narrow } = useShellSize(shellRef);
 	// 한 칸씩 볼 때는 폴더가 따로 한 화면이라 닫지 않는다
@@ -172,16 +190,28 @@ const Memo: React.FC = () => {
 			.list()
 			.then(async (list) => {
 				if (cancelled) return;
-				setPosts(list);
+				setRepoPosts(list);
 				setStatus('ready');
 				const server = await fetchServerPosts(env.apiUrl);
-				if (!cancelled && server.length > 0) setPosts(mergeServerPosts(list, server));
+				if (!cancelled && server.length > 0) setPublicPosts(server);
 			})
 			.catch(() => setStatus('error'));
 		return () => {
 			cancelled = true;
 		};
 	}, []);
+
+	// 관리자로 로그인하면 임시 저장까지 읽는다
+	useEffect(() => {
+		if (!canEdit) return;
+		let cancelled = false;
+		fetchAdminPosts(env.apiUrl).then((loaded) => {
+			if (!cancelled && loaded) setAdminPosts(loaded);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [canEdit]);
 
 	/** 새 메모를 쓰는 중이면 그 번호 (아직 한 번도 저장하지 않은 메모). 관리자가 아니면 쓰지 않는다 */
 	const [newDraftState, setNewDraft] = useState<number | null>(null);
@@ -370,7 +400,10 @@ const Memo: React.FC = () => {
 					setPane('reader');
 				}}
 			>
-				<strong>{post.title}</strong>
+				<strong>
+					{post.title}
+					{statusBadge(post)}
+				</strong>
 				<span className="memo-item-meta">
 					<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
 				</span>
@@ -408,15 +441,37 @@ const Memo: React.FC = () => {
 		</li>
 	);
 
-	/** 편집기가 저장할 때마다: 목록에 반영하고, 새 메모였으면 그 글을 고른다 */
-	const onWriterSaved = (post: ServerPost) => {
-		setPosts((list) => mergeServerPosts(list, [post]));
+	const upsertAdminPost = (post: AdminPost) =>
+		setAdminPosts((list) => [...(list ?? []).filter((item) => item.slug !== post.slug), post]);
+
+	/** 편집기가 임시 저장·게시할 때마다: 목록에 반영하고, 새 메모였으면 그 글을 고른다 */
+	const onWriterSaved = (post: AdminPost) => {
+		upsertAdminPost(post);
 		if (newDraft !== null) {
 			setWriterKeys((keys) => ({ ...keys, [post.slug]: `new-${newDraft}` }));
 			setSelectedSlug(post.slug);
 			setNewDraft(null);
 		}
 	};
+
+	/** 편집기를 새로 그린다 (변경 사항을 버렸을 때) */
+	const remountWriter = (slug: string) => setWriterKeys((keys) => ({ ...keys, [slug]: `${slug}-${Date.now()}` }));
+
+	/** 변경 사항을 버렸다: 게시한 내용(없으면 저장소 원본)으로. 둘 다 없던 새 메모는 사라진다 */
+	const onWriterDiscarded = (slug: string, post: AdminPost | null) => {
+		if (post) upsertAdminPost(post);
+		else setAdminPosts((list) => (list ?? []).filter((item) => item.slug !== slug));
+		remountWriter(slug);
+	};
+
+	const writerRef = useRef<PostWriterHandle>(null);
+	const {
+		open: revisionsOpen,
+		setOpen: setRevisionsOpen,
+		buttonRef: revisionsButton,
+		panelRef: revisionsPanel,
+		position: revisionsPosition,
+	} = usePopover();
 
 	const startNewDraft = () => {
 		setQuery('');
@@ -430,8 +485,29 @@ const Memo: React.FC = () => {
 			notify({ app: 'memo', title: '지우지 못함', body: '관리자 로그인이 끝났거나 서버에 연결할 수 없습니다.' });
 			return;
 		}
-		setPosts((list) => list.filter((item) => item.slug !== post.slug));
+		upsertAdminPost({
+			slug: post.slug,
+			published: null,
+			publishedAt: null,
+			draft: null,
+			draftUpdatedAt: null,
+			deleted: true,
+			revisions: 0,
+		});
 	};
+
+	/** 게시 상태 표시 (관리자 목록): 게시한 적 없음, 게시하지 않은 편집, 예약 */
+	const statusBadge = (post: Post) =>
+		post.status &&
+		(post.status.draftOnly ? (
+			<span className="memo-status-badge draft">임시 저장</span>
+		) : post.status.scheduled ? (
+			<span className="memo-status-badge scheduled" title={`${formatPostDate(post.status.scheduled)}에 공개`}>
+				예약
+			</span>
+		) : post.status.changed ? (
+			<span className="memo-status-dot" role="img" aria-label="게시하지 않은 변경" title="게시하지 않은 변경" />
+		) : null);
 
 	/** 관리자 도구: 새 메모, 지우기 (고치기는 본문에서 바로 한다) */
 	const authorTools = (className: string) =>
@@ -450,6 +526,21 @@ const Memo: React.FC = () => {
 				<span className={`memo-format-tools ${className}`}>
 					<FormatTools />
 				</span>
+				{editing && selected && newDraft === null && className === '' && (
+					<button
+						ref={revisionsButton}
+						type="button"
+						className={`memo-tool ${revisionsOpen ? 'on' : ''}`}
+						aria-label="버전 기록"
+						title="버전 기록"
+						aria-haspopup="dialog"
+						aria-expanded={revisionsOpen}
+						onPointerDown={keepFocus}
+						onClick={() => setRevisionsOpen((value) => !value)}
+					>
+						<i className="fa-solid fa-clock-rotate-left" aria-hidden="true" />
+					</button>
+				)}
 				{selected && newDraft === null && (
 					<button
 						type="button"
@@ -661,14 +752,22 @@ const Memo: React.FC = () => {
 								{authorTools('compact-only')}
 								{pinButton('compact-only')}
 							</div>
-							{canEdit && (newDraft !== null || selected) && (
+							{editing && (newDraft !== null || selected) && (
 								// 관리자: 따로 편집 단추 없이 바로 고친다 (macOS 메모처럼)
 								<div
 									key={newDraft !== null ? `new-${newDraft}` : (writerKeys[selected!.slug] ?? selected!.slug)}
 									className="memo-reader-body"
 								>
 									<PostWriter
+										ref={writerRef}
 										post={newDraft !== null ? null : selected}
+										hasPublished={
+											newDraft === null &&
+											Boolean(selected) &&
+											(repoPosts.some((item) => item.slug === selected!.slug) ||
+												Boolean(adminPosts?.find((item) => item.slug === selected!.slug)?.published))
+										}
+										onDiscarded={onWriterDiscarded}
 										folders={folderPaths}
 										defaultFolder={category === ALL_CATEGORY ? (folderPaths.at(-1) ?? '기타') : category}
 										onSaved={onWriterSaved}
@@ -682,10 +781,10 @@ const Memo: React.FC = () => {
 											</ReactMarkdown>
 										)}
 									/>
-									{newDraft === null && selected && postFooter(selected)}
+									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
 								</div>
 							)}
-							{!canEdit && selected && (
+							{!editing && selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
 								<div key={selected.slug} className="memo-reader-body">
 									<p className="memo-reader-date">
@@ -708,6 +807,38 @@ const Memo: React.FC = () => {
 						</div>
 					</article>
 
+					{revisionsOpen &&
+						editing &&
+						selected &&
+						createPortal(
+							<div
+								ref={revisionsPanel}
+								className="memo-format-panel memo-format-panel-wide"
+								role="dialog"
+								aria-label="버전 기록"
+								style={revisionsPosition}
+							>
+								<RevisionsPanel
+									key={selected.slug}
+									slug={selected.slug}
+									original={repoPosts.find((item) => item.slug === selected.slug) ?? null}
+									renderMarkdown={(body) => (
+										<ReactMarkdown
+											remarkPlugins={[remarkGfm]}
+											rehypePlugins={REHYPE_PLUGINS}
+											components={MARKDOWN_COMPONENTS}
+										>
+											{body}
+										</ReactMarkdown>
+									)}
+									onRestore={(content) => {
+										writerRef.current?.replaceContent(content);
+										setRevisionsOpen(false);
+									}}
+								/>
+							</div>,
+							document.body
+						)}
 					{noteMenu && menuPost && (
 						<ContextMenu
 							label={`${menuPost.title} 메뉴`}

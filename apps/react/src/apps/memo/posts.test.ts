@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	adjacentPosts,
+	mergeAdminPosts,
 	mergeServerPosts,
 	buildFolderTree,
 	firstImage,
@@ -232,5 +233,66 @@ describe('mergeServerPosts', () => {
 			[server('a', { deleted: true }), server('new', { date: '2026-09-30' })]
 		);
 		expect(merged.map((post) => post.slug)).toEqual(['new', 'b']);
+	});
+});
+
+describe('mergeAdminPosts (관리자 목록)', () => {
+	const content = (title: string, date = '2026-09-29') => ({
+		title,
+		date,
+		category: '개발기',
+		summary: '',
+		body: `${title} 본문`,
+	});
+	const repo: Post = {
+		slug: 'repo',
+		title: '저장소 글',
+		date: '2026-09-01',
+		category: '개발기',
+		summary: '',
+		body: '원본',
+		pinned: true,
+	};
+	const admin = (slug: string, extra: Partial<import('./posts').AdminPost>) => ({
+		slug,
+		published: null,
+		publishedAt: null,
+		draft: null,
+		draftUpdatedAt: null,
+		deleted: false,
+		revisions: 0,
+		...extra,
+	});
+	const TODAY = '2026-09-30';
+
+	it('임시 저장이 있으면 그 내용을 보이고 상태를 단다', () => {
+		const merged = mergeAdminPosts(
+			[repo],
+			[
+				admin('repo', { draft: content('저장소 글 고치는 중') }),
+				admin('new', { draft: content('새 글') }),
+				admin('pub', { published: content('게시한 글'), draft: content('게시한 글 고치는 중') }),
+				admin('same', { published: content('그대로') }),
+			],
+			TODAY
+		);
+		const bySlug = Object.fromEntries(merged.map((post) => [post.slug, post]));
+		expect(bySlug.repo).toMatchObject({
+			title: '저장소 글 고치는 중',
+			pinned: true,
+			status: { draftOnly: false, changed: true },
+		});
+		expect(bySlug.new).toMatchObject({ title: '새 글', status: { draftOnly: true, changed: false, scheduled: null } });
+		expect(bySlug.pub).toMatchObject({ title: '게시한 글 고치는 중', status: { draftOnly: false, changed: true } });
+		expect(bySlug.same.status).toEqual({ draftOnly: false, changed: false, scheduled: null });
+	});
+
+	it('날짜가 오늘보다 뒤인 게시 글은 예약, 지운 표시는 뺀다', () => {
+		const merged = mergeAdminPosts(
+			[repo],
+			[admin('later', { published: content('예약 글', '2026-10-03') }), admin('repo', { deleted: true })],
+			TODAY
+		);
+		expect(merged.map((post) => [post.slug, post.status?.scheduled])).toEqual([['later', '2026-10-03']]);
 	});
 });

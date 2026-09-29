@@ -44,14 +44,24 @@ function readMultipartFile(body: Buffer) {
 	};
 }
 
-export interface FakePost {
-	slug: string;
+export interface FakeContent {
 	title: string;
 	date: string;
 	category: string;
 	summary: string;
 	body: string;
+}
+
+/**
+ * 가짜 서버의 글. title…body는 마지막으로 저장한 내용(임시 저장이 있으면 그것, 없으면 게시한 내용)이라
+ * 테스트에서 '방금 저장된 것'을 바로 읽을 수 있다. published·draft는 실제 서버처럼 따로 둔다.
+ */
+export interface FakePost extends FakeContent {
+	slug: string;
 	deleted: boolean;
+	published?: FakeContent | null;
+	draft?: FakeContent | null;
+	revisions?: (FakeContent & { id: number; createdAt: string; createdBy: string })[];
 }
 
 export interface FakeComment {
@@ -199,34 +209,118 @@ export async function fakeApi(
 			return route.fulfill({ status: 200, headers: cors(origin), json: { results, hasMore: page < 2 } });
 		}
 
-		// 글: 누구나 읽고, 로그인했을 때만 쓰고 고치고 지운다
-		const postPath = path.match(/^\/posts(?:\/([\w-]+))?$/);
+		// 글: 누구나 게시한 글을 읽고, 로그인했을 때만 임시 저장·게시·버리기·지우기 (apps/api와 같은 규칙)
+		const postPath = path.match(/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions)(?:\/(\d+))?)?$/);
 		if (postPath) {
-			const slug = postPath[1];
-			if (request.method() === 'GET' && !slug)
-				return route.fulfill({ status: 200, headers: cors(origin), json: state.posts });
+			const [, slug, action, revisionId] = postPath;
+			const method = request.method();
+			const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+			const find = (key: string) => state.posts.find((post) => post.slug === key);
+			const pick = ({ title, date, category, summary, body }: FakeContent): FakeContent => ({
+				title,
+				date,
+				category,
+				summary,
+				body,
+			});
+			const adminView = (post: FakePost) => ({
+				slug: post.slug,
+				published: post.published ?? null,
+				publishedAt: post.published ? '2026-09-29T00:00:00.000Z' : null,
+				draft: post.draft ?? null,
+				draftUpdatedAt: post.draft ? '2026-09-29T00:00:00.000Z' : null,
+				deleted: post.deleted,
+				revisions: post.revisions?.length ?? 0,
+			});
+			const ok = (json: unknown, status = 200) => route.fulfill({ status, headers: cors(origin), json });
+
+			if (!slug && method === 'GET') {
+				// 방문자: 게시한 글 중 날짜가 된 것, 지운·예약 글은 가리는 표시로
+				const visible = state.posts
+					.filter((post) => post.deleted || post.published)
+					.map((post) =>
+						post.deleted || post.published!.date > today
+							? { slug: post.slug, title: '', date: '', category: '', summary: '', body: '', deleted: true }
+							: { slug: post.slug, ...pick(post.published!), deleted: false }
+					);
+				return ok(visible);
+			}
 			if (!state.signedIn) return route.fulfill(unauthorized);
+			if (slug === 'admin' && !action && method === 'GET') return ok(state.posts.map(adminView));
+
 			const upsert = (post: FakePost) => {
 				state.posts = [...state.posts.filter((item) => item.slug !== post.slug), post];
 				return post;
 			};
-			if (request.method() === 'DELETE' && slug) {
-				const existing = state.posts.find((post) => post.slug === slug);
+			if (method === 'DELETE' && slug && !action) {
+				const existing = find(slug);
 				upsert({
 					...(existing ?? { slug, title: '', date: '2026-09-29', category: '기타', summary: '', body: '' }),
+					draft: null,
 					deleted: true,
 				});
 				return route.fulfill({ status: 204, headers: cors(origin) });
 			}
-			const input = request.postDataJSON() as Omit<FakePost, 'slug' | 'deleted'>;
+			if (action === 'revisions') {
+				const revisions = [...(find(slug!)?.revisions ?? [])].reverse();
+				if (!revisionId)
+					return ok(
+						revisions.map(({ id, title, date, createdAt, createdBy }) => ({ id, title, date, createdAt, createdBy }))
+					);
+				const revision = revisions.find((item) => item.id === Number(revisionId));
+				return revision
+					? ok(revision)
+					: route.fulfill({ status: 404, headers: cors(origin), json: { statusCode: 404 } });
+			}
+			if (action === 'draft' && method === 'DELETE') {
+				const existing = find(slug!);
+				if (!existing)
+					return route.fulfill({
+						status: 404,
+						headers: cors(origin),
+						json: { statusCode: 404, message: '글이 없습니다.' },
+					});
+				if (!existing.published) {
+					state.posts = state.posts.filter((item) => item.slug !== slug);
+					return route.fulfill({ status: 200, headers: cors(origin), body: '' });
+				}
+				return ok(adminView(upsert({ ...existing, ...existing.published, draft: null })));
+			}
+
+			const input = pick(request.postDataJSON() as FakeContent);
 			if (!input.title?.trim())
 				return route.fulfill({
 					status: 400,
 					headers: cors(origin),
 					json: { statusCode: 400, message: ['제목을 입력해주세요.'] },
 				});
-			const post = upsert({ ...input, slug: slug ?? `${input.date}-fake${nextId++}`, deleted: false });
-			return route.fulfill({ status: slug ? 200 : 201, headers: cors(origin), json: post });
+			if (action === 'publish') {
+				const existing = find(slug!);
+				const revisions = [
+					...(existing?.revisions ?? []),
+					{
+						...input,
+						id: nextId++,
+						createdAt: new Date(Date.now() + nextId * 60_000).toISOString(),
+						createdBy: 'hyeoniverse',
+					},
+				];
+				return ok(
+					adminView(upsert({ slug: slug!, ...input, deleted: false, published: input, draft: null, revisions }))
+				);
+			}
+			// 임시 저장: 새 글(POST /posts)이면 주소를 만든다
+			const key = slug ?? `${input.date}-fake${nextId++}`;
+			const existing = find(key);
+			const post = upsert({
+				slug: key,
+				...input,
+				deleted: false,
+				published: existing?.published ?? null,
+				draft: input,
+				revisions: existing?.revisions ?? [],
+			});
+			return ok(adminView(post), slug ? 200 : 201);
 		}
 
 		// 댓글: 글마다 읽고 쓰고, 비밀번호(관리자는 없이)로 지운다
