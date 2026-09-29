@@ -244,11 +244,88 @@ export function firstImage(body: string): string | null {
 }
 
 /** 폴더(하위 폴더 포함)와 검색어로 거른다. 검색은 제목·본문에서 대소문자 구분 없이 */
-export function filterPosts(posts: Post[], category: string, query: string): Post[] {
+/** 검색 조건 (macOS 메모의 검색 칸 메뉴: 체크리스트가 있는 메모 등) */
+export type PostFilter = 'pinned' | 'checklist' | 'table' | 'image' | 'code' | 'attachment' | 'draft' | 'scheduled';
+
+export const POST_FILTERS: {
+	id: PostFilter;
+	/** 메뉴의 이름 */
+	label: string;
+	/** 검색 칸에 붙는 짧은 이름 */
+	chip: string;
+	icon: string;
+	/** 관리자에게만 (게시 상태) */
+	adminOnly?: boolean;
+	test: (post: Post) => boolean;
+}[] = [
+	{
+		id: 'pinned',
+		label: '고정된 메모',
+		chip: '고정',
+		icon: 'fa-solid fa-thumbtack',
+		test: (post) => Boolean(post.pinned),
+	},
+	{
+		id: 'checklist',
+		label: '체크리스트가 있는 메모',
+		chip: '체크리스트',
+		icon: 'fa-solid fa-list-check',
+		test: (post) => /^\s*[-*+] \[[ xX]\]/m.test(post.body),
+	},
+	{
+		id: 'table',
+		label: '표가 있는 메모',
+		chip: '표',
+		icon: 'fa-solid fa-table',
+		test: (post) => /^\s*\|(?:\s*:?-+:?\s*\|)+\s*$/m.test(post.body),
+	},
+	{
+		id: 'image',
+		label: '이미지가 있는 메모',
+		chip: '이미지',
+		icon: 'fa-regular fa-image',
+		test: (post) => /!\[[^\]]*\]\(/.test(post.body),
+	},
+	{
+		id: 'code',
+		label: '코드가 있는 메모',
+		chip: '코드',
+		icon: 'fa-solid fa-code',
+		test: (post) => /^\s*```/m.test(post.body),
+	},
+	{
+		id: 'attachment',
+		label: '첨부 파일이 있는 메모',
+		chip: '첨부 파일',
+		icon: 'fa-solid fa-paperclip',
+		test: (post) => /\]\([^)\s]+ "첨부 파일/.test(post.body),
+	},
+	{
+		id: 'draft',
+		label: '게시하지 않은 메모',
+		chip: '게시 안 함',
+		icon: 'fa-regular fa-pen-to-square',
+		adminOnly: true,
+		test: (post) => Boolean(post.status?.draftOnly || post.status?.changed),
+	},
+	{
+		id: 'scheduled',
+		label: '예약된 메모',
+		chip: '예약',
+		icon: 'fa-regular fa-clock',
+		adminOnly: true,
+		test: (post) => Boolean(post.status?.scheduled),
+	},
+];
+
+export function filterPosts(posts: Post[], category: string, query: string, filter: PostFilter | null = null): Post[] {
 	const q = query.trim().toLowerCase();
+	const condition = POST_FILTERS.find((item) => item.id === filter);
 	return posts.filter(
 		(post) =>
-			inFolder(post, category) && (!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q))
+			inFolder(post, category) &&
+			(!condition || condition.test(post)) &&
+			(!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q))
 	);
 }
 

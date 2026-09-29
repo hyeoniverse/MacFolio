@@ -296,3 +296,43 @@ describe('mergeAdminPosts (관리자 목록)', () => {
 		expect(merged.map((post) => [post.slug, post.status?.scheduled])).toEqual([['later', '2026-10-03']]);
 	});
 });
+
+describe('검색 조건', () => {
+	const make = (slug: string, body: string, extra: Partial<Post> = {}): Post => ({
+		slug,
+		title: slug,
+		date: '2026-09-29',
+		category: '개발기',
+		summary: '',
+		body,
+		...extra,
+	});
+	const posts = [
+		make('check', '- [ ] 할 일'),
+		make('table', '| a | b |\n| --- | :-: |\n| 1 | 2 |'),
+		make('image', '![설명](./images/a.jpg)'),
+		make('code', '```ts\nconst a = 1;\n```'),
+		make('file', '[보고서.pdf](http://api/files/abc "첨부 파일 · 2 KB")'),
+		make('link', '[그냥 링크](https://example.com) | 표 아님 |'),
+		make('pin', '본문', { pinned: true }),
+		make('draft', '본문', { status: { draftOnly: true, changed: false, scheduled: null } }),
+		make('later', '본문', { status: { draftOnly: false, changed: false, scheduled: '2026-10-03' } }),
+	];
+	it.each([
+		['checklist', ['check']],
+		['table', ['table']],
+		['image', ['image']],
+		['code', ['code']],
+		['attachment', ['file']],
+		['pinned', ['pin']],
+		['draft', ['draft']],
+		['scheduled', ['later']],
+	] as const)('%s', (filter, slugs) => {
+		expect(filterPosts(posts, ALL_CATEGORY, '', filter).map((post) => post.slug)).toEqual(slugs);
+	});
+
+	it('검색어와 함께 쓴다', () => {
+		expect(filterPosts(posts, ALL_CATEGORY, '할 일', 'checklist').map((post) => post.slug)).toEqual(['check']);
+		expect(filterPosts(posts, ALL_CATEGORY, '없는 말', 'checklist')).toEqual([]);
+	});
+});

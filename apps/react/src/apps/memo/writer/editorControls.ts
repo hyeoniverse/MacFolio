@@ -2,6 +2,7 @@
 // 편집기는 커서 자리의 서식과 명령 실행 함수를 알리고, 도구 막대는 그걸 보고 그리고 누른다.
 import { useSyncExternalStore } from 'react';
 import { createStore } from '@/shared/lib/createStore';
+import type { FindOptions } from '../find';
 
 /** 문단 모양 (macOS 메모의 서식 이름) */
 export type BlockStyle = 'title' | 'heading' | 'subheading' | 'body' | 'mono';
@@ -63,6 +64,10 @@ export type FormatAction =
 	| { type: 'image'; src: string; alt: string; title?: string }
 	/** 고른 이미지의 설명·캡션 바꾸기 */
 	| { type: 'imageAttrs'; alt: string; title: string }
+	/** 글 안에서 찾기 (index: 지금 몇 번째, -1이면 아직 고르지 않음) */
+	| { type: 'find'; query: string; options: FindOptions; index: number }
+	| { type: 'findClear' }
+	| { type: 'replace'; replacement: string; all: boolean }
 	/** 첨부 파일: 파일 이름을 글자로 한 링크 */
 	| { type: 'attachment'; href: string; name: string; size: number };
 
@@ -90,11 +95,14 @@ export const editorControls = createStore<{
 	run: ((action: FormatAction) => void) | null;
 	/** 올리고 있는 파일 수 */
 	uploading: number;
+	/** 글 안에서 찾은 결과 (찾기 막대가 닫혀 있으면 null) */
+	find: { count: number; index: number } | null;
 }>({
 	state: EMPTY_FORMAT,
 	tableBox: null,
 	run: null,
 	uploading: 0,
+	find: null,
 });
 
 export function useEditorControls() {

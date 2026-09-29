@@ -17,6 +17,7 @@ import { highlightTree } from '../highlight';
 import { uploadAndInsert } from './attachments';
 import { handleTableKey } from './tableCommands';
 import TableHandles from './TableHandles';
+import { findPlugin } from './findPlugin';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
 import { CONTENT_IMAGES } from '../contentImages';
@@ -245,6 +246,7 @@ const Inner = ({ markdown, onChange }: Props) => {
 				.use(cursor)
 				.use(publishFormat)
 				.use(activeTable)
+				.use(findPlugin)
 				.use(codeHighlight),
 		[]
 	);
@@ -258,7 +260,7 @@ const Inner = ({ markdown, onChange }: Props) => {
 		editorControls.setState({
 			run: (action) => getRef.current()?.action((ctx) => runFormat(ctx, action)),
 		});
-		return () => editorControls.setState({ run: null, state: EMPTY_FORMAT, tableBox: null });
+		return () => editorControls.setState({ run: null, state: EMPTY_FORMAT, tableBox: null, find: null });
 	}, []);
 
 	return (
