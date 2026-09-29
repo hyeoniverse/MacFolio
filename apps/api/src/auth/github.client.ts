@@ -1,6 +1,9 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 
 export interface GithubUser {
+	/** 바뀌지 않는 숫자 ID */
+	id: number;
+	/** 계정 이름 (바꿀 수 있다) */
 	login: string;
 	avatarUrl: string;
 }
@@ -45,7 +48,7 @@ export class GithubClient {
 			throw new ServiceUnavailableException('GitHub에 연결할 수 없습니다.');
 		});
 		if (!response.ok) return null;
-		const body = (await response.json()) as { login: string; avatar_url: string };
-		return { login: body.login, avatarUrl: body.avatar_url };
+		const body = (await response.json()) as { id: number; login: string; avatar_url: string };
+		return { id: body.id, login: body.login, avatarUrl: body.avatar_url };
 	}
 }

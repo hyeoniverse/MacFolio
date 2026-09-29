@@ -12,13 +12,20 @@ process.env.DATABASE_URL ??= 'postgresql://macfolio:macfolio@localhost:5432/macf
 process.env.CORS_ORIGINS = 'http://localhost:5173';
 process.env.GITHUB_CLIENT_ID = 'test-client-id';
 process.env.GITHUB_CLIENT_SECRET = 'test-client-secret';
-process.env.ADMIN_GITHUB_LOGIN = 'hyeoniverse';
+process.env.ADMIN_GITHUB_ID = '68999618';
+// 이 파일은 로그인을 여러 번 하므로 요청 제한을 넉넉히 (제한은 throttle.e2e.test.ts에서 확인)
+process.env.AUTH_RATE_LIMIT = '1000';
 
 /** GitHub 대신: 인가 코드마다 정해 둔 계정으로 로그인된다 */
-const ACCOUNTS: Record<string, string> = { 'admin-code': 'hyeoniverse', 'visitor-code': 'someone' };
+const ACCOUNTS: Record<string, { id: number; login: string }> = {
+	'admin-code': { id: 68999618, login: 'hyeoniverse' },
+	'visitor-code': { id: 1, login: 'someone' },
+	// 관리자가 이름을 바꾼 뒤 옛 이름을 가져간 다른 사람
+	'impostor-code': { id: 2, login: 'hyeoniverse' },
+};
 const fakeGithub: Partial<GithubClient> = {
 	exchangeCode: async ({ code }) => (ACCOUNTS[code] ? `token-${code}` : null),
-	getUser: async (token) => ({ login: ACCOUNTS[token.replace('token-', '')], avatarUrl: '' }),
+	getUser: async (token) => ({ ...ACCOUNTS[token.replace('token-', '')], avatarUrl: '' }),
 };
 
 /** set-cookie 헤더에서 쿠키 하나 */
@@ -92,9 +99,11 @@ describe('관리자 로그인 (e2e)', () => {
 	});
 
 	it('관리자가 아닌 계정: 세션 없이 denied로 돌아간다', async () => {
-		const callback = await signIn('visitor-code');
-		expect(callback.headers.location).toBe('http://localhost:5173/?admin=denied');
-		expect(cookieFrom(callback, 'macfolio_session')).toBeUndefined();
+		for (const code of ['visitor-code', 'impostor-code']) {
+			const callback = await signIn(code);
+			expect(callback.headers.location).toBe('http://localhost:5173/?admin=denied');
+			expect(cookieFrom(callback, 'macfolio_session')).toBeUndefined();
+		}
 		expect(await prisma.adminSession.count()).toBe(0);
 	});
 

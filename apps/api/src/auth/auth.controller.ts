@@ -18,8 +18,10 @@ import {
 	ApiOkResponse,
 	ApiProperty,
 	ApiTags,
+	ApiTooManyRequestsResponse,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import type { CookieOptions, Request, Response } from 'express';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { AdminGuard, CurrentAdmin } from './admin.guard.js';
@@ -57,6 +59,8 @@ export class AuthController {
 	}
 
 	@Get('github')
+	@UseGuards(ThrottlerGuard)
+	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 시도했다' })
 	@ApiFoundResponse({ description: 'GitHub 로그인 화면으로 보낸다' })
 	github(@Res() response: Response) {
 		if (!this.auth.enabled) throw new ServiceUnavailableException('관리자 로그인이 설정되지 않았습니다.');
@@ -67,6 +71,8 @@ export class AuthController {
 	}
 
 	@Get('github/callback')
+	@UseGuards(ThrottlerGuard)
+	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 시도했다' })
 	@ApiFoundResponse({ description: '프론트엔드로 돌아간다 (?admin=signed-in | denied | cancelled)' })
 	async callback(
 		@Req() request: Request,
