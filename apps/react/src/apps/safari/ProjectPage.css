@@ -16,6 +16,8 @@
 	min-height: 100%;
 	background-color: var(--sp-bg);
 	color: var(--sp-text);
+	/* 한글 제목이 낱말 중간에서 끊기지 않게 */
+	word-break: keep-all;
 	letter-spacing: -0.01em;
 	animation: rise-in var(--duration) var(--ease-out);
 }
@@ -112,6 +114,9 @@
 
 .sp-pill {
 	padding: 10px 22px;
+	border: none;
+	font: inherit;
+	cursor: pointer;
 	border-radius: 980px;
 	background-color: var(--sp-accent);
 	color: #ffffff !important;
@@ -713,83 +718,86 @@
 	font-size: 15px;
 }
 
-/* ═══ game: 게임 화면 (SproutFarm) ═══ */
+/* ═══ game: 게임 화면 (SproutFarm) ═══
+ * 게임에 쓴 Sprout Lands 에셋처럼 연둣빛 풀밭과 나무 팻말 색 */
 .sp[data-look='game'] {
-	--sp-pixel: #2b1d4a;
-	--sp-accent: #4f8a2c;
-	--sp-alt: #eef6e4;
-	--sp-grad: linear-gradient(90deg, #ffcc4d, #ff8a5b);
-	/* 밤하늘에 별 몇 개 */
-	--sp-dark-bg:
-		radial-gradient(1.5px 1.5px at 12% 20%, #fff, transparent),
-		radial-gradient(1.5px 1.5px at 38% 62%, #fff, transparent), radial-gradient(2px 2px at 64% 18%, #fff, transparent),
-		radial-gradient(1.5px 1.5px at 86% 48%, #fff, transparent),
-		radial-gradient(1.5px 1.5px at 22% 86%, #fff, transparent), #1b2438;
-	--sp-hero-bg: linear-gradient(180deg, #2b1d4a 0%, #6b3a73 38%, #d9687a 70%, #f6a96b 100%);
+	--sp-wood: #8b5a3c;
+	--sp-wood-dark: #5e3b25;
+	--sp-paper: #f6e8c8;
+	--sp-accent: #6a9a3a;
+	--sp-alt: #f3f8e8;
+	--sp-hero-bg: linear-gradient(180deg, #d9efb4 0%, #b5dc85 100%);
+	--sp-hero-text: #4a3222;
+	--sp-hero-muted: #6b5038;
+	--sp-tile-bg: #fbf4e2;
+	--sp-tile-line: #d8bb86;
+	--sp-dark-bg: #2d4a2a;
 }
 
 :root[data-theme='dark'] .sp[data-look='game'] {
-	--sp-accent: #9ad36a;
-	--sp-alt: #152013;
+	--sp-accent: #a5d46e;
+	--sp-alt: #141c12;
+	--sp-hero-bg: linear-gradient(180deg, #243a1e 0%, #1a2b16 100%);
+	--sp-hero-text: #f6e8c8;
+	--sp-hero-muted: #cdbb98;
+	--sp-tile-bg: #221d15;
+	--sp-tile-line: #5e4a2e;
+	--sp-dark-bg: #1d2e1b;
 }
 
 .sp[data-look='game'] .sp-hero {
-	color: #ffffff;
+	color: var(--sp-hero-text);
 }
 
-.sp[data-look='game'] :is(.sp-eyebrow, .sp-pill, .sp-facts strong, kbd, .sp-meta) {
-	font-family: var(--sp-mono);
-}
-
+/* 이름표: 나무 팻말 */
 .sp[data-look='game'] .sp-eyebrow {
-	color: #ffcc4d;
+	display: inline-block;
+	padding: 4px 14px;
+	border: 3px solid var(--sp-wood);
+	border-radius: 8px;
+	background-color: var(--sp-paper);
+	color: var(--sp-wood-dark);
 	font-size: 15px;
-	letter-spacing: 0.08em;
 }
 
 .sp[data-look='game'] h1 {
-	text-shadow: 4px 4px 0 var(--sp-pixel);
+	margin-top: 14px;
 }
 
 .sp[data-look='game'] .sp-lead {
-	color: rgba(255, 255, 255, 0.85);
+	color: var(--sp-hero-muted);
 }
 
 .sp[data-look='game'] .sp-app-icon {
-	width: 112px;
-	height: 112px;
+	width: 104px;
+	height: 104px;
 	padding: 0;
-	border: 4px solid var(--sp-pixel);
-	border-radius: 0;
-	box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+	border: 4px solid var(--sp-wood);
+	border-radius: 16px;
+	box-shadow: 0 5px 0 var(--sp-wood-dark);
 	image-rendering: pixelated;
-	animation: sp-bob 1.2s steps(2) infinite;
-}
-
-@keyframes sp-bob {
-	50% {
-		transform: translateY(-6px);
-	}
 }
 
 .sp[data-look='game'] .sp-pill {
-	border-radius: 0;
-	background-color: #ffcc4d;
-	box-shadow:
-		0 4px 0 #b8860b,
-		0 0 0 3px var(--sp-pixel);
-	color: var(--sp-pixel) !important;
-	font-weight: 700;
+	border-radius: 10px;
+	background-color: var(--sp-wood);
+	box-shadow: 0 4px 0 var(--sp-wood-dark);
+	color: var(--sp-paper) !important;
+	font-weight: 600;
+}
+
+.sp[data-look='game'] .sp-pill:hover {
+	filter: brightness(1.08);
 }
 
 .sp[data-look='game'] .sp-hero .sp-link {
-	color: #ffffff;
+	color: var(--sp-hero-text);
 }
 
 .sp[data-look='game'] .sp-shot {
-	border: 6px solid var(--sp-pixel);
+	border: 6px solid var(--sp-wood);
 	border-bottom: none;
-	border-radius: 0;
+	border-radius: 16px 16px 0 0;
 	box-shadow: none;
 }
 
@@ -797,35 +805,37 @@
 	image-rendering: pixelated;
 }
 
-/* 숫자: 게임 화면의 상태 표시(HUD)처럼 */
+/* 숫자: 나무 바탕 위의 종이 팻말 */
 .sp[data-look='game'] .sp-band {
-	background-color: var(--sp-pixel);
+	background-color: var(--sp-wood);
 }
 
 .sp[data-look='game'] .sp-meta {
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--sp-paper);
 }
 
 .sp[data-look='game'] .sp-facts li {
 	padding: 18px 12px;
-	border: 3px solid #ffcc4d;
-	background-color: rgba(0, 0, 0, 0.2);
+	border: 3px solid var(--sp-wood-dark);
+	border-radius: 12px;
+	background-color: var(--sp-paper);
 }
 
 .sp[data-look='game'] .sp-facts strong {
 	background: none;
-	color: #ffcc4d;
+	color: var(--sp-wood-dark);
 	font-size: clamp(24px, 4cqi, 36px);
 }
 
 .sp[data-look='game'] .sp-facts span {
-	color: rgba(255, 255, 255, 0.75);
+	color: #7a5a3e;
 }
 
-.sp[data-look='game'] .sp-tiles li {
-	border: 3px solid var(--sp-accent);
-	border-radius: 0;
-	box-shadow: 6px 6px 0 rgba(79, 138, 44, 0.3);
+.sp[data-look='game'] :is(.sp-tiles li, .sp-controls li) {
+	border: 3px solid var(--sp-tile-line);
+	border-radius: 16px;
+	background-color: var(--sp-tile-bg);
+	box-shadow: none;
 }
 
 /* 조작법: 키보드 키 모양 */

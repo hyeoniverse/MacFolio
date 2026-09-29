@@ -323,7 +323,7 @@ export const PROJECTS: Project[] = [
 			{ keys: ['Shift'], label: '달리기' },
 			{ keys: ['Space'], label: '대화 넘기기, 울타리에 넣기, 잠자기' },
 		],
-		tagline: '자정까지, 스무 마리.',
+		tagline: '달아난 동물들을 다시 울타리 안으로.',
 		description: '도망친 동물 20마리를 자정 전에 울타리로 데려오는 탑다운 2D 픽셀 캐주얼 게임',
 		context: '개인 프로젝트 (PC 전용)',
 		period: '2024.06.10 – 2024.06.24',

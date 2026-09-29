@@ -11,8 +11,10 @@ import { PROFILE } from '@/shared/profile';
 const MOBILE_DOCK: AppName[] = ['safari', 'messages', 'mail', 'music'];
 
 // 창이 있거나 동작(링크·공유)이 있는 앱만 보여준다. 아직 화면이 없는 앱은 눌러도 아무 일이 없기 때문이다.
+// 데스크톱 전용 앱(키보드 게임 등)도 뺀다.
 const launchable = (name: AppName) =>
-	WINDOW_APPS.some((app) => app.name === name) || APP_MANIFEST[name].action !== undefined;
+	!APP_MANIFEST[name].desktopOnly &&
+	(WINDOW_APPS.some((app) => app.name === name) || APP_MANIFEST[name].action !== undefined);
 
 const GRID_APPS = APP_NAMES.filter((name) => launchable(name) && !MOBILE_DOCK.includes(name));
 

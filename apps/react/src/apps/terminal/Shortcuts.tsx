@@ -8,7 +8,10 @@ import { useOpenEffects } from './useOpenEffects';
 import '@/apps/terminal/Shortcuts.css';
 
 /** 단축어로 열 수 있는 앱 (터미널의 open과 같다) */
-const OPENABLE_APPS = APP_NAMES.filter((name) => !['share', 'bin', 'terminal'].includes(name)).map((name) => ({
+// 단축어는 휴대폰 화면이라 데스크톱 전용 앱은 뺀다
+const OPENABLE_APPS = APP_NAMES.filter(
+	(name) => !['share', 'bin', 'terminal'].includes(name) && !APP_MANIFEST[name].desktopOnly
+).map((name) => ({
 	name,
 	label: APP_MANIFEST[name].label,
 }));

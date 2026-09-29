@@ -1,5 +1,8 @@
 import React from 'react';
 import type { Project, ProjectLook } from '@/shared/profile';
+import { APP_MANIFEST, type AppName } from '@/apps/manifest';
+import { useAppState } from '@/desktop/AppStateContext';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import '@/apps/safari/ProjectPage.css';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
@@ -33,7 +36,7 @@ const FEATURE_COPY: Record<ProjectLook, [string, string]> = {
 	editorial: ['주요 기능.', '오늘 아침 받아 볼 것들.'],
 	playful: ['주요 기능.', '할 일 목록이 가벼워지는 방법.'],
 	minimal: ['주요 기능.', '명함 한 장이 오가는 순서.'],
-	game: ['이렇게 놀아요.', '자정이 오기 전에.'],
+	game: ['주요 기능.', '한 판의 흐름과 규칙.'],
 	terminal: ['주요 기능.', '무엇을 어떻게 남겼나.'],
 };
 
@@ -56,18 +59,39 @@ const Section: React.FC<{ label: string; className?: string; inner?: string; chi
 	</section>
 );
 
-const Links: React.FC<{ project: Project }> = ({ project }) => (
-	<div className="sp-links">
-		{project.demo && (
-			<a className="sp-pill" href={project.demo} {...external}>
-				데모 보기
+/** 이 사이트 안에서 바로 실행할 수 있는 프로젝트 (앱으로 들어 있는 것) */
+const PLAYABLE: Partial<Record<string, AppName>> = { sproutfarm: 'sproutfarm' };
+
+const Links: React.FC<{ project: Project }> = ({ project }) => {
+	const { openApp } = useAppState();
+	const isMobile = useIsMobile();
+	const app = PLAYABLE[project.id];
+	const playable = app && !(isMobile && APP_MANIFEST[app].desktopOnly);
+
+	return (
+		<div className="sp-links">
+			{playable && (
+				<button type="button" className="sp-pill" onClick={() => openApp(app)}>
+					여기서 플레이
+				</button>
+			)}
+			{project.demo && (
+				<a className={playable ? 'sp-link' : 'sp-pill'} href={project.demo} {...external}>
+					{playable ? (
+						<>
+							새 탭에서 열기 <i className="fa-solid fa-chevron-right" aria-hidden="true" />
+						</>
+					) : (
+						'데모 보기'
+					)}
+				</a>
+			)}
+			<a className="sp-link" href={project.url} {...external}>
+				GitHub에서 보기 <i className="fa-solid fa-chevron-right" aria-hidden="true" />
 			</a>
-		)}
-		<a className="sp-link" href={project.url} {...external}>
-			GitHub에서 보기 <i className="fa-solid fa-chevron-right" aria-hidden="true" />
-		</a>
-	</div>
-);
+		</div>
+	);
+};
 
 const Facts: React.FC<{ project: Project }> = ({ project }) => (
 	<ul className="sp-facts">
@@ -231,7 +255,7 @@ const renderSection = (name: SectionName, project: Project) => {
 			return (
 				project.controls && (
 					<Section key={name} label="조작법" className="sp-alt">
-						<Headline title="조작법." sub="키보드 하나면 충분해요." />
+						<Headline title="조작법." sub="방향키, Shift, Space." />
 						<ul className="sp-controls">
 							{project.controls.map((control) => (
 								<li key={control.label}>
