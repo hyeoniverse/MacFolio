@@ -55,3 +55,22 @@ model PostComment {
 
   @@index([postSlug, createdAt])
 }
+
+/// 관리자가 쓰거나 고친 블로그 글. 저장소의 Markdown 글과 주소(slug)가 같으면 이 글이 그 글을 대신한다.
+/// Markdown 글을 지우면 deleted로 남겨 둔다 (파일은 그대로 있어서, 표시가 없으면 다시 보인다)
+model Post {
+  slug      String   @id
+  title     String
+  /// YYYY-MM-DD
+  date      String
+  /// 폴더 경로 (예: 개발기/MacFolio)
+  category  String
+  summary   String   @default("")
+  /// Markdown 본문
+  body      String
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
+  updatedBy String
+}

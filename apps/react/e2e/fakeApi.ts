@@ -15,6 +15,18 @@ export interface FakeApiState {
 	saves: number;
 	/** 글마다 댓글 (가짜 서버는 비밀번호를 그대로 들고 있다) */
 	comments: Record<string, FakeComment[]>;
+	/** 관리자가 쓰거나 고친 글, 지운 표시 */
+	posts: FakePost[];
+}
+
+export interface FakePost {
+	slug: string;
+	title: string;
+	date: string;
+	category: string;
+	summary: string;
+	body: string;
+	deleted: boolean;
 }
 
 export interface FakeComment {
@@ -46,6 +58,7 @@ export async function fakeApi(
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		saves: 0,
 		comments: {},
+		posts: [],
 	};
 	let nextId = 1;
 	const cors = (origin: string) => ({
@@ -89,6 +102,36 @@ export async function fakeApi(
 			state.saves += 1;
 			return route.fulfill({ status: 200, headers: cors(origin), json: state.organization });
 		}
+		// 글: 누구나 읽고, 로그인했을 때만 쓰고 고치고 지운다
+		const postPath = path.match(/^\/posts(?:\/([\w-]+))?$/);
+		if (postPath) {
+			const slug = postPath[1];
+			if (request.method() === 'GET' && !slug)
+				return route.fulfill({ status: 200, headers: cors(origin), json: state.posts });
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const upsert = (post: FakePost) => {
+				state.posts = [...state.posts.filter((item) => item.slug !== post.slug), post];
+				return post;
+			};
+			if (request.method() === 'DELETE' && slug) {
+				const existing = state.posts.find((post) => post.slug === slug);
+				upsert({
+					...(existing ?? { slug, title: '', date: '2026-09-29', category: '기타', summary: '', body: '' }),
+					deleted: true,
+				});
+				return route.fulfill({ status: 204, headers: cors(origin) });
+			}
+			const input = request.postDataJSON() as Omit<FakePost, 'slug' | 'deleted'>;
+			if (!input.title?.trim())
+				return route.fulfill({
+					status: 400,
+					headers: cors(origin),
+					json: { statusCode: 400, message: ['제목을 입력해주세요.'] },
+				});
+			const post = upsert({ ...input, slug: slug ?? `${input.date}-fake${nextId++}`, deleted: false });
+			return route.fulfill({ status: slug ? 200 : 201, headers: cors(origin), json: post });
+		}
+
 		// 댓글: 글마다 읽고 쓰고, 비밀번호(관리자는 없이)로 지운다
 		const list = path.match(/^\/posts\/([\w-]+)\/comments$/);
 		if (list) {
