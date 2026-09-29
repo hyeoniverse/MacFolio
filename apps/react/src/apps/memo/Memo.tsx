@@ -43,6 +43,7 @@ import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
+import CodeBlock from './components/CodeBlock';
 import Comments from './comments/Comments';
 import PostWriter from './writer/PostWriter';
 import FormatTools from './writer/FormatTools';
@@ -63,6 +64,7 @@ const MARKDOWN_COMPONENTS: Components = {
 			{children}
 		</a>
 	),
+	pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
 	img: ({ src, alt, title }) => (
 		<MarkdownImage src={typeof src === 'string' ? src : undefined} alt={alt} title={title} />
 	),

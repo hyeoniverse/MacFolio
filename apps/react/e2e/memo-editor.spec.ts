@@ -138,7 +138,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await panel.getByRole('menuitem', { name: '이미지 넣기…' }).click();
 		const imageForm = page.getByRole('dialog', { name: '이미지 넣기' });
-		await expect(imageForm.getByRole('button', { name: '파일에서 고르기…' })).toBeFocused();
+		await expect(imageForm.getByRole('tab', { name: '내 파일' })).toHaveAttribute('aria-selected', 'true');
 		await page.keyboard.press('Escape');
 		await expect(imageForm).toBeHidden();
 
@@ -149,13 +149,15 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.locator('.ProseMirror table')).toBeVisible();
 		await expect.poll(() => api.posts[0]?.body).toContain('| ');
 
-		// 이미지: 주소와 설명을 넣는다
+		// 이미지: 주소를 넣으면 미리 보고 설명과 캡션을 쓴다
 		await memo.getByRole('button', { name: '이미지', exact: true }).click();
-		await imageForm.getByRole('textbox', { name: '이미지 주소' }).fill('https://example.com/a.png');
+		await imageForm.getByRole('tab', { name: '주소' }).click();
+		await imageForm.getByRole('textbox', { name: '이미지 주소' }).fill('https://images.test/a.png');
 		await imageForm.getByRole('textbox', { name: '이미지 설명' }).fill('예시 그림');
+		await imageForm.getByRole('textbox', { name: '캡션' }).fill('예시 캡션');
 		await imageForm.getByRole('button', { name: '넣기' }).click();
 		await expect(imageForm).toBeHidden();
-		await expect.poll(() => api.posts[0]?.body).toContain('![예시 그림](https://example.com/a.png)');
+		await expect.poll(() => api.posts[0]?.body).toContain('![예시 그림](https://images.test/a.png "예시 캡션")');
 	});
 
 	test('표: Tab·Enter로 칸을 옮기며 행을 늘리고, 표 편집 메뉴로 열 추가·정렬·삭제한다', async ({ page }) => {
@@ -235,7 +237,11 @@ test.describe('바로 고치기 (관리자)', () => {
 		await page.keyboard.type('파일 시험');
 		await page.keyboard.press('Enter');
 		await page.keyboard.type('본문');
-		const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
+		// 1×1 PNG (미리 보기에 실제로 그려지는 그림)
+		const png = Buffer.from(
+			'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+			'base64'
+		);
 
 		// 이미지 넣기 → 파일에서 고르기
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
@@ -244,11 +250,38 @@ test.describe('바로 고치기 (관리자)', () => {
 		await imageForm
 			.getByLabel('이미지 파일')
 			.setInputFiles({ name: '스크린샷.png', mimeType: 'image/png', buffer: png });
+		// 고르면 바로 넣지 않고 미리 보기와 설명(파일 이름으로 채워 둔다)·캡션을 쓴다
+		await expect(imageForm.locator('.memo-image-preview')).toBeVisible();
+		const alt = imageForm.getByRole('textbox', { name: '이미지 설명' });
+		await expect(alt).toHaveValue('스크린샷');
+		await alt.fill('편집기 화면');
+		await imageForm.getByRole('textbox', { name: '캡션' }).fill('캡션 한 줄');
+		await imageForm.getByRole('button', { name: '올려서 넣기' }).click();
 		await expect(imageForm).toBeHidden();
-		await expect(memo.locator('.ProseMirror .memo-figure img')).toHaveAttribute('src', /^http:\/\/api\.test\/files\//);
-		await expect.poll(() => api.posts[0]?.body).toMatch(/!\[스크린샷\]\(http:\/\/api\.test\/files\/fakeupload\d+\)/);
+		const figure = memo.locator('.ProseMirror > .memo-figure');
+		await expect(figure.locator('img')).toHaveAttribute('src', /^http:\/\/api\.test\/files\//);
+		await expect(figure.locator('.memo-caption')).toHaveText('캡션 한 줄');
+		await expect
+			.poll(() => api.posts[0]?.body)
+			.toMatch(/본문\n\n!\[편집기 화면\]\(http:\/\/api\.test\/files\/fakeupload\d+ "캡션 한 줄"\)\n$/);
 
-		// 파일 첨부: 이름을 글자로 한 링크, 제목에 크기 (이미지 뒤 새 문단에)
+		// 이미지 뒤로 바로 이어 쓴다 (앞 문단으로 가지 않는다)
+		await page.keyboard.type('이미지 다음 줄');
+		await expect.poll(() => api.posts[0]?.body).toMatch(/"캡션 한 줄"\)\n\n이미지 다음 줄\n$/);
+
+		// 이미지를 고르면 이미지 단추로 설명·캡션을 고친다
+		await figure.locator('img').click();
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '이미지 편집…' }).click();
+		const imageEdit = page.getByRole('dialog', { name: '이미지 편집' });
+		await expect(imageEdit.getByRole('textbox', { name: '이미지 설명' })).toHaveValue('편집기 화면');
+		await imageEdit.getByRole('textbox', { name: '캡션' }).fill('고친 캡션');
+		await imageEdit.getByRole('button', { name: '적용' }).click();
+		await expect(figure.locator('.memo-caption')).toHaveText('고친 캡션');
+		await expect.poll(() => api.posts[0]?.body).toContain('"고친 캡션")');
+
+		// 파일 첨부: 이름을 글자로 한 링크, 제목에 크기 (글 끝 새 문단에)
+		await memo.locator('.ProseMirror p', { hasText: '이미지 다음 줄' }).click();
 		await page.keyboard.press('End');
 		await page.keyboard.press('Enter');
 		await memo
@@ -274,7 +307,113 @@ test.describe('바로 고치기 (관리자)', () => {
 			[...png]
 		);
 		await expect(memo.locator('.ProseMirror .memo-figure img')).toHaveCount(2);
+		await expect.poll(() => api.posts[0]?.body).toMatch(/!\[붙여넣기\]\(http:\/\/api\.test\/files\/fakeupload\d+\)/);
 		expect(api.uploads.map((upload) => upload.name)).toEqual(['스크린샷.png', '보고서.pdf', '붙여넣기.png']);
+	});
+
+	test('Unsplash에서 찾아 넣으면 설명과 출처 캡션이 채워지고, Unsplash에 알린다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('사진 시험');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('본문');
+		await page.keyboard.press('Enter');
+
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '이미지 넣기…' }).click();
+		const imageForm = page.getByRole('dialog', { name: '이미지 넣기' });
+		// 키가 없는 서비스는 무엇을 채워야 하는지 알려 준다
+		await imageForm.getByRole('tab', { name: 'Pexels' }).click();
+		await expect(imageForm).toContainText('PEXELS_API_KEY');
+
+		await imageForm.getByRole('tab', { name: 'Unsplash' }).click();
+		await imageForm
+			.getByRole('searchbox', { name: 'Unsplash에서 찾기' })
+			.or(imageForm.getByRole('textbox', { name: 'Unsplash에서 찾기' }))
+			.fill('고양이');
+		await imageForm.getByRole('button', { name: '찾기' }).click();
+		const grid = imageForm.getByRole('list', { name: '찾은 사진' });
+		await expect(grid.getByRole('listitem')).toHaveCount(2);
+		await imageForm.getByRole('button', { name: '더 보기' }).click();
+		await expect(grid.getByRole('listitem')).toHaveCount(4);
+		await expect(imageForm.getByRole('button', { name: '더 보기' })).toHaveCount(0);
+		expect(api.stock.searches).toEqual(['unsplash 고양이 1', 'unsplash 고양이 2']);
+
+		await grid.getByRole('listitem', { name: '고양이 사진 1, 사진가1' }).first().click();
+		await expect(imageForm.getByRole('textbox', { name: '이미지 설명' })).toHaveValue('고양이 사진 1');
+		await expect(imageForm.getByRole('link', { name: '사진가1' })).toBeVisible();
+		await imageForm.getByRole('button', { name: '넣기' }).click();
+
+		const figure = memo.locator('.ProseMirror > .memo-figure');
+		await expect(figure.locator('img')).toHaveAttribute('src', 'https://images.test/p1n1.jpg');
+		await expect(figure.locator('.memo-caption').getByRole('link', { name: 'Unsplash' })).toBeVisible();
+		// Markdown으로 쓸 때 캡션의 [와 &는 \\로 이스케이프된다 (다시 읽으면 같은 캡션)
+		await expect
+			.poll(() => api.posts[0]?.body.replace(/\\(?=[[&])/g, ''))
+			.toContain(
+				'![고양이 사진 1](https://images.test/p1n1.jpg "사진: [사진가1](https://unsplash.com/@p1?utm_source=macfolio&utm_medium=referral), [Unsplash](https://unsplash.com/?utm_source=macfolio&utm_medium=referral)")'
+			);
+		expect(api.stock.downloads).toEqual(['p1n1']);
+	});
+
+	test('표 손잡이: 지금 열 위·행 왼쪽의 손잡이로 그 열·행을 고친다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('손잡이 시험');
+		await page.keyboard.press('Enter');
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
+		const table = memo.locator('.ProseMirror table');
+		// 커서가 있는 표는 칸 선이, 지금 칸은 옅은 배경이 보인다
+		await expect(table).toHaveClass(/memo-table-active/);
+		await expect(table.locator('.memo-cell-current')).toHaveCount(1);
+
+		const colHandle = memo.getByRole('button', { name: '이 열 편집' });
+		const rowHandle = memo.getByRole('button', { name: '이 행 편집' });
+		const cell = await table.locator('th').first().boundingBox();
+		const handle = await colHandle.boundingBox();
+		// 열 손잡이는 지금 칸 위 가운데
+		expect(Math.abs(handle!.x + handle!.width / 2 - (cell!.x + cell!.width / 2))).toBeLessThan(2);
+
+		await colHandle.click();
+		const colMenu = page.getByRole('dialog', { name: '열 편집' });
+		await expect(colMenu.getByRole('menuitem', { name: '행 삭제' })).toHaveCount(0);
+		await colMenu.getByRole('menuitem', { name: '오른쪽에 열 추가' }).click();
+		await expect(table.locator('tr').first().locator('th')).toHaveCount(4);
+		await page.keyboard.press('Escape');
+
+		await table.locator('td').first().click();
+		await rowHandle.click();
+		const rowMenu = page.getByRole('dialog', { name: '행 편집' });
+		await expect(rowMenu.getByRole('button', { name: '가운데 정렬' })).toHaveCount(0);
+		await rowMenu.getByRole('menuitem', { name: '아래에 행 추가' }).click();
+		await expect(table.locator('tr')).toHaveCount(4);
+		await rowMenu.getByRole('menuitem', { name: '행 삭제' }).click();
+		await expect(table.locator('tr')).toHaveCount(3);
+
+		// 표 밖으로 나가면 손잡이가 사라진다
+		await memo.locator('.ProseMirror p').last().click();
+		await expect(colHandle).toHaveCount(0);
+		await expect(table).not.toHaveClass(/memo-table-active/);
+		void api;
+	});
+
+	test('편집기의 코드 블록에도 읽기 화면과 같은 복사 단추가 있다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
+		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+		const block = memo.locator('.ProseMirror .memo-code').first();
+		const copy = block.getByRole('button', { name: '코드 복사' });
+		await copy.click();
+		await expect(copy).toHaveText('복사됨');
+		expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+			(await block.locator('code').textContent())!
+		);
+		// 복사해도 글은 바뀌지 않는다
+		expect(api.posts).toEqual([]);
 	});
 
 	test('휴지통 단추나 우클릭으로 지우면 목록에서 사라진다', async ({ page }) => {
@@ -304,7 +443,7 @@ test.describe('바로 고치기 (관리자)', () => {
 				date: '2026-09-30',
 				category: '개발기/MacFolio',
 				summary: '',
-				body: '본문\n\n[보고서.pdf](http://api.test/files/fakeupload000001 "첨부 파일 · 2 KB")',
+				body: '본문\n\n[보고서.pdf](http://api.test/files/fakeupload000001 "첨부 파일 · 2 KB")\n\n```ts\nconst answer = 42;\n```',
 				deleted: false,
 			},
 			{ slug: 'cra-to-vite', title: '', date: '2026-09-28', category: '기타', summary: '', body: '', deleted: true },
@@ -313,6 +452,12 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.locator('.memo-item').first()).toContainText('서버에만 있는 글');
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
 		await expect(memo.getByRole('heading', { level: 1 })).toHaveText('서버에만 있는 글');
+		// 코드 블록의 복사 단추
+		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+		const copy = memo.locator('.memo-markdown').getByRole('button', { name: '코드 복사' });
+		await copy.click();
+		await expect(copy).toHaveText('복사됨');
+		expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('const answer = 42;');
 		// 첨부 파일은 편집 화면과 같은 모양의 링크
 		await expect(memo.locator(".memo-markdown a[title^='첨부 파일']")).toHaveText('보고서.pdf');
 		await expect(memo.getByRole('textbox', { name: '제목' })).toHaveCount(0);

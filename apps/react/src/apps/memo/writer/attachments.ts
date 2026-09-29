@@ -63,7 +63,7 @@ export async function uploadFile(apiUrl: string, file: File): Promise<Uploaded> 
  */
 export async function uploadAndInsert(
 	files: File[],
-	{ alt, asImage = false }: { alt?: string; asImage?: boolean } = {}
+	{ alt, title, asImage = false }: { alt?: string; title?: string; asImage?: boolean } = {}
 ) {
 	const bump = (delta: number) =>
 		editorControls.setState((state) => ({ ...state, uploading: state.uploading + delta }));
@@ -73,7 +73,7 @@ export async function uploadAndInsert(
 			const uploaded = await uploadFile(env.apiUrl, file);
 			const run = editorControls.getState().run;
 			if (!run) continue;
-			if (uploaded.image) run({ type: 'image', src: uploaded.url, alt: alt || baseName(uploaded.name) });
+			if (uploaded.image) run({ type: 'image', src: uploaded.url, alt: alt || baseName(uploaded.name), title });
 			else if (asImage) throw new Error(`${file.name}: 이미지(PNG·JPEG·GIF·WebP)만 넣을 수 있습니다.`);
 			else run({ type: 'attachment', href: uploaded.url, name: uploaded.name, size: uploaded.size });
 		} catch (error) {

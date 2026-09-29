@@ -3,21 +3,25 @@ import { defaultValueCtx, Editor, editorViewOptionsCtx, remarkStringifyOptionsCt
 import { clipboard } from '@milkdown/kit/plugin/clipboard';
 import { history } from '@milkdown/kit/plugin/history';
 import { listener, listenerCtx } from '@milkdown/kit/plugin/listener';
-import { commonmark, imageSchema } from '@milkdown/kit/preset/commonmark';
+import { commonmark } from '@milkdown/kit/preset/commonmark';
 import { gfm } from '@milkdown/kit/preset/gfm';
 import type { Node } from '@milkdown/kit/prose/model';
 import { Plugin, TextSelection } from '@milkdown/kit/prose/state';
-import { Decoration, DecorationSet } from '@milkdown/kit/prose/view';
-import { $prose, $view } from '@milkdown/kit/utils';
+import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/view';
+import { isInTable } from '@milkdown/kit/prose/tables';
+import { trailing } from '@milkdown/kit/plugin/trailing';
+import { $prose } from '@milkdown/kit/utils';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
 import { uploadAndInsert } from './attachments';
 import { handleTableKey } from './tableCommands';
+import TableHandles from './TableHandles';
+import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
 import { CONTENT_IMAGES } from '../contentImages';
-import { editorControls, EMPTY_FORMAT } from './editorControls';
+import { editorControls, EMPTY_FORMAT, type Box } from './editorControls';
 import { formatStateOf, runFormat } from './formatCommands';
-import { fromEditorMarkdown, toEditorMarkdown } from './markdownImages';
+import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
 
 interface Props {
 	/** 처음 본문 (Markdown) */
@@ -30,12 +34,39 @@ interface Props {
 /** 체크 항목의 네모(왼쪽 여백)를 눌렀는지 */
 const CHECKBOX_HIT_PX = 26;
 
-/** 커서 자리의 서식을 도구 막대에 알린다 (글이나 커서가 바뀔 때마다) */
+/** 편집기 기준으로 잰 위치 */
+const boxOf = (el: Element, origin: DOMRect): Box => {
+	const rect = el.getBoundingClientRect();
+	return { left: rect.left - origin.left, top: rect.top - origin.top, width: rect.width, height: rect.height };
+};
+
+/** 커서가 있는 표와 칸의 위치 (표 손잡이용) */
+function tableBoxOf(view: EditorView) {
+	if (!isInTable(view.state)) return null;
+	const root = view.dom.closest('.memo-inline-editor');
+	const { node } = view.domAtPos(view.state.selection.from);
+	const cell = (node instanceof Element ? node : node.parentElement)?.closest('td, th');
+	const table = cell?.closest('table');
+	if (!root || !cell || !table) return null;
+	const origin = root.getBoundingClientRect();
+	return { table: boxOf(table, origin), cell: boxOf(cell, origin) };
+}
+
+const publish = (view: EditorView) =>
+	editorControls.setState((current) => ({
+		...current,
+		state: formatStateOf(view.state),
+		tableBox: tableBoxOf(view),
+	}));
+
+/** 커서 자리의 서식(과 표 위치)을 도구 막대에 알린다 (글이나 커서가 바뀔 때, 창 크기가 바뀔 때) */
 const publishFormat = $prose(
 	() =>
 		new Plugin({
 			view: (view) => {
-				editorControls.setState({ state: formatStateOf(view.state) });
+				publish(view);
+				const onResize = () => publish(view);
+				window.addEventListener('resize', onResize);
 				return {
 					update: (next, prev) => {
 						if (
@@ -43,42 +74,40 @@ const publishFormat = $prose(
 							!next.state.selection.eq(prev.selection) ||
 							next.state.storedMarks !== prev.storedMarks
 						)
-							editorControls.setState({ state: formatStateOf(next.state) });
+							publish(next);
 					},
+					destroy: () => window.removeEventListener('resize', onResize),
 				};
 			},
 		})
 );
 
-/**
- * 이미지는 읽기 화면(MarkdownImage)과 같은 모양으로: 가운데 정렬한 그림과 아래 캡션("…" 제목).
- */
-const imageView = $view(imageSchema.node, () => (initial) => {
-	const dom = document.createElement('span');
-	dom.className = 'memo-figure';
-	const img = document.createElement('img');
-	const caption = document.createElement('span');
-	caption.className = 'memo-caption';
-	const render = (node: Node) => {
-		img.src = node.attrs.src;
-		img.alt = node.attrs.alt;
-		caption.textContent = node.attrs.title;
-		caption.hidden = !node.attrs.title;
-	};
-	render(initial);
-	dom.append(img, caption);
-	return {
-		dom,
-		update: (node) => {
-			if (node.type !== initial.type) return false;
-			render(node);
-			return true;
-		},
-		selectNode: () => dom.classList.add('selected'),
-		deselectNode: () => dom.classList.remove('selected'),
-		ignoreMutation: () => true,
-	};
-});
+/** 커서가 있는 표에는 칸 선을, 지금 칸에는 옅은 배경을 (읽기 화면에는 없는 편집용 표시) */
+const activeTable = $prose(
+	() =>
+		new Plugin({
+			props: {
+				decorations: (state) => {
+					const { $from } = state.selection;
+					const decorations: Decoration[] = [];
+					for (let depth = $from.depth; depth > 0; depth--) {
+						const name = $from.node(depth).type.name;
+						if (name === 'table_cell' || name === 'table_header')
+							decorations.push(
+								Decoration.node($from.before(depth), $from.after(depth), { class: 'memo-cell-current' })
+							);
+						if (name === 'table') {
+							decorations.push(
+								Decoration.node($from.before(depth), $from.after(depth), { class: 'memo-table-active' })
+							);
+							break;
+						}
+					}
+					return decorations.length ? DecorationSet.create(state.doc, decorations) : null;
+				},
+			},
+		})
+);
 
 /** 코드 블록 문법 강조 (읽기 화면과 같은 lowlight, 같은 색). 글이 바뀔 때마다 다시 칠한다 */
 function highlightDecorations(doc: Node) {
@@ -171,7 +200,7 @@ const Inner = ({ markdown, onChange }: Props) => {
 						},
 					}));
 					ctx.get(listenerCtx).markdownUpdated((_ctx, next, prev) => {
-						if (next !== prev) onChangeRef.current(fromEditorMarkdown(next, CONTENT_IMAGES));
+						if (next !== prev) onChangeRef.current(plainTableAlign(fromEditorMarkdown(next, CONTENT_IMAGES)));
 					});
 				})
 				.use(commonmark)
@@ -179,8 +208,15 @@ const Inner = ({ markdown, onChange }: Props) => {
 				.use(history)
 				.use(clipboard)
 				.use(listener)
+				.use(imageBlockRemark)
+				.use(imageBlockSchema)
+				.use(imageBlockView)
+				.use(inlineImageView)
+				.use(codeBlockView)
+				// 글 끝이 이미지·표·코드여도 그 아래에 이어 쓸 빈 문단을 둔다
+				.use(trailing)
 				.use(publishFormat)
-				.use(imageView)
+				.use(activeTable)
 				.use(codeHighlight),
 		[]
 	);
@@ -194,10 +230,15 @@ const Inner = ({ markdown, onChange }: Props) => {
 		editorControls.setState({
 			run: (action) => getRef.current()?.action((ctx) => runFormat(ctx, action)),
 		});
-		return () => editorControls.setState({ run: null, state: EMPTY_FORMAT });
+		return () => editorControls.setState({ run: null, state: EMPTY_FORMAT, tableBox: null });
 	}, []);
 
-	return <Milkdown />;
+	return (
+		<>
+			<Milkdown />
+			<TableHandles />
+		</>
+	);
 };
 
 /**

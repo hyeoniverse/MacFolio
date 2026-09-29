@@ -21,12 +21,21 @@ export type TableAlign = 'left' | 'center' | 'right';
 export type TableOp =
 	'rowBefore' | 'rowAfter' | 'colBefore' | 'colAfter' | 'deleteRow' | 'deleteCol' | 'deleteTable' | TableAlign;
 
+/** 고른 이미지 */
+export interface ImageState {
+	src: string;
+	alt: string;
+	/** 캡션 */
+	title: string;
+}
+
 export interface FormatState {
 	block: BlockStyle;
 	/** 커서가 있는 목록 */
 	list: 'bullet' | 'ordered' | 'task' | null;
 	quote: boolean;
 	table: TableState | null;
+	image: ImageState | null;
 	marks: { strong: boolean; emphasis: boolean; strike: boolean; code: boolean };
 }
 
@@ -37,7 +46,9 @@ export type FormatAction =
 	| { type: 'quote' }
 	| { type: 'table' }
 	| { type: 'tableOp'; op: TableOp }
-	| { type: 'image'; src: string; alt: string }
+	| { type: 'image'; src: string; alt: string; title?: string }
+	/** 고른 이미지의 설명·캡션 바꾸기 */
+	| { type: 'imageAttrs'; alt: string; title: string }
 	/** 첨부 파일: 파일 이름을 글자로 한 링크 */
 	| { type: 'attachment'; href: string; name: string; size: number };
 
@@ -46,16 +57,28 @@ export const EMPTY_FORMAT: FormatState = {
 	list: null,
 	quote: false,
 	table: null,
+	image: null,
 	marks: { strong: false, emphasis: false, strike: false, code: false },
 };
 
+/** 편집기(.memo-inline-editor) 기준 위치 */
+export interface Box {
+	left: number;
+	top: number;
+	width: number;
+	height: number;
+}
+
 export const editorControls = createStore<{
 	state: FormatState;
+	/** 커서가 있는 표와 칸의 위치 (표 손잡이를 그린다) */
+	tableBox: { table: Box; cell: Box } | null;
 	run: ((action: FormatAction) => void) | null;
 	/** 올리고 있는 파일 수 */
 	uploading: number;
 }>({
 	state: EMPTY_FORMAT,
+	tableBox: null,
 	run: null,
 	uploading: 0,
 });
