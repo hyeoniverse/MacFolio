@@ -67,18 +67,39 @@ test.describe('Safari', () => {
 		await expect(safari.getByRole('tab', { name: '시작 페이지' })).toHaveCount(0);
 	});
 
-	test('좁은 창에서는 탭 막대가 제목 표시줄 자리에 오고, 신호등 버튼을 피해 탭을 누를 수 있다', async ({ page }) => {
+	test('좁은 창에서도 주소창이 그대로 있고, 탭 막대는 그 아래에 같은 모양으로 있다', async ({ page }) => {
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
+		const tabBar = safari.getByRole('tablist', { name: '프로젝트 탭' });
+		const wideRadius = await tabBar.evaluate((el) => getComputedStyle(el).borderRadius);
 		await safari.evaluate((element) => (element.style.width = '560px'));
 
-		// 첫 탭이 신호등 버튼과 겹치지 않는다
-		const lights = (await safari.locator('.traffic-lights').boundingBox())!;
-		const firstTab = (await safari.getByRole('tab').first().boundingBox())!;
-		expect(firstTab.x).toBeGreaterThan(lights.x + lights.width);
+		const address = safari.locator('.safari-address');
+		await expect(address).toBeVisible();
+		await expect(safari.getByRole('button', { name: '이전 탭' })).toBeVisible();
+		// 탭 막대는 주소창 아래, 넓을 때와 같은 둥근 막대
+		expect((await tabBar.boundingBox())!.y).toBeGreaterThan((await address.boundingBox())!.y);
+		expect(await tabBar.evaluate((el) => getComputedStyle(el).borderRadius)).toBe(wideRadius);
 
 		await safari.getByRole('tab', { name: /QRU/ }).click();
 		await expect(safari.getByRole('tab', { name: /QRU/ })).toHaveAttribute('aria-selected', 'true');
+	});
+
+	test('닫기 단추: 좁은 창에서도 지금 탭과 올린 탭에 보이고, 제목과 겹치지 않는다', async ({ page }) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		await safari.evaluate((element) => (element.style.width = '560px'));
+		const close = safari.getByRole('button', { name: 'NewPick 뉴픽 탭 닫기' });
+		await expect(close).toBeVisible();
+		const title = safari.getByRole('tab', { name: /NewPick/ }).locator('span');
+		const closeBox = (await close.boundingBox())!;
+		const titleBox = (await title.boundingBox())!;
+		expect(closeBox.x + closeBox.width).toBeLessThanOrEqual(titleBox.x);
+		// 다른 탭은 올렸을 때만
+		const other = safari.getByRole('button', { name: /QRU .*탭 닫기/ });
+		await expect(other).not.toBeVisible();
+		await safari.getByRole('tab', { name: /QRU/ }).hover();
+		await expect(other).toBeVisible();
 	});
 
 	test('탭 폭: 지금 탭은 넉넉해 제목이 다 보이고, 다른 탭은 짧게 줄어든다. 탭을 바꾸면 폭이 옮겨 간다', async ({
