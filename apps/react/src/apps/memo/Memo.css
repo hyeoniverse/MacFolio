@@ -795,184 +795,178 @@
 	}
 }
 
-/* 글쓰기·편집 */
-.memo-editor {
+/* 관리자가 보는 글: 따로 편집 단추 없이 바로 고친다 (writer/PostWriter.tsx) */
+.memo-writer-meta {
 	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	padding-top: 0.5rem;
-	animation: rise-in var(--duration) var(--ease-out);
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	margin-bottom: 0.5rem;
+	color: var(--memo-muted);
+	font-size: 12px;
 }
 
-.memo-editor input,
-.memo-editor select,
-.memo-editor textarea {
-	min-width: 0;
-	border: 1px solid var(--memo-border);
-	border-radius: 8px;
-	background-color: transparent;
+/* 날짜·폴더: 글자처럼 보이다가 올리면 누를 수 있다는 표시 */
+.memo-meta-button {
+	padding: 1px 6px;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-meta-button:hover,
+.memo-meta-button[aria-expanded='true'] {
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+}
+
+.memo-writer-status {
+	margin-left: 8px;
+	font-size: 11px;
+}
+
+.memo-writer-status.problem {
+	color: #e5484d;
+}
+
+.memo-writer-title {
+	display: block;
+	width: 100%;
+	margin-bottom: 1.25rem;
+	padding: 0;
+	border: none;
+	background: none;
 	color: var(--memo-text);
 	font: inherit;
+	font-size: 1.6rem;
+	font-weight: 700;
+	line-height: 1.3;
 	outline: none;
-	transition:
-		border-color var(--duration-fast) var(--ease-out),
-		box-shadow var(--duration-fast) var(--ease-out);
+	resize: none;
+	field-sizing: content;
 }
 
-.memo-editor :is(input, select, textarea):focus {
-	border-color: var(--memo-accent);
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--memo-accent) 25%, transparent);
+.memo-writer-title::placeholder {
+	color: var(--memo-muted);
+	opacity: 0.6;
 }
 
-/* 폴더 고르기: macOS 팝업 단추처럼 오른쪽에 위아래 화살표 */
-.memo-editor select {
-	appearance: none;
-	padding-right: 30px;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M2 6l3-3 3 3M2 10l3 3 3-3' fill='none' stroke='%238e8e93' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-	background-position: right 10px center;
-	background-repeat: no-repeat;
-	background-size: 9px 14px;
+.memo-inline-editor .ProseMirror {
+	min-height: 240px;
+	outline: none;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+/* 본문이 비었을 때 안내 */
+.memo-inline-editor .ProseMirror:has(> p:only-child > br:only-child)::before {
+	position: absolute;
+	color: var(--memo-muted);
+	opacity: 0.6;
+	pointer-events: none;
+	content: '본문을 쓰세요';
+}
+
+.memo-inline-editor .ProseMirror img {
+	max-width: 100%;
+	border-radius: 0.6em;
+}
+
+/* 달력 (body에 그려서 메모 변수 대신 값을 직접 쓴다) */
+.memo-calendar {
+	position: fixed;
+	z-index: 10000;
+	width: 248px;
+	padding: 10px;
+	border-radius: 12px;
+	background-color: var(--color-popover-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.15),
+		0 10px 30px rgba(0, 0, 0, 0.2);
+	color: var(--color-popover-text);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-size: 12px;
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top left;
+}
+
+.memo-calendar-head {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	margin-bottom: 6px;
+	padding: 0 2px;
+}
+
+.memo-calendar-head strong {
+	flex: 1;
+	font-size: 13px;
+}
+
+.memo-calendar button {
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
 	cursor: pointer;
 }
 
-/* 날짜: 칸은 다른 입력과 같게. 브라우저가 그리는 달력은 화면 모드와 강조 색만 따르게 한다 */
-.memo-editor :is(select, input[type='date']) {
-	color-scheme: light;
-	accent-color: var(--memo-accent);
+.memo-calendar-head button {
+	width: 26px;
+	height: 26px;
+	border-radius: 6px;
+	color: var(--color-text-secondary);
 }
 
-:root[data-theme='dark'] .memo-editor :is(select, input[type='date']) {
-	color-scheme: dark;
+.memo-calendar-head button:hover,
+.memo-calendar-today:hover {
+	background-color: var(--color-control-bg, rgba(127, 127, 127, 0.15));
 }
 
-.memo-editor input[type='date'] {
-	cursor: text;
+.memo-calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 2px;
+	text-align: center;
+}
+
+.memo-calendar-weekday {
+	padding: 4px 0;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+}
+
+.memo-calendar-grid button {
+	height: 30px;
+	border-radius: 50%;
 	font-variant-numeric: tabular-nums;
 }
 
-.memo-editor input[type='date']::-webkit-calendar-picker-indicator {
-	opacity: 0.5;
-	cursor: pointer;
-	transition: opacity var(--duration-fast) var(--ease-out);
+.memo-calendar-grid button:hover {
+	background-color: color-mix(in srgb, #edbb4d 25%, transparent);
 }
 
-.memo-editor input[type='date']::-webkit-calendar-picker-indicator:hover {
-	opacity: 0.9;
-}
-
-.memo-editor input[type='date']::-webkit-datetime-edit-fields-wrapper {
-	padding: 0;
-}
-
-/* 비우거나 규칙을 어겨 저장이 막힌 칸 */
-.memo-editor :is(input, select, textarea)[aria-invalid='true'] {
-	border-color: #e5484d;
-	box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.15);
-}
-
-.memo-editor .memo-editor-title {
-	padding: 4px 2px;
-	border-width: 0 0 1px;
-	border-radius: 0;
-	box-shadow: none;
-	font-size: 1.6rem;
+.memo-calendar-grid button.today {
+	color: #c78b00;
 	font-weight: 700;
 }
 
-/* 제목은 밑줄만: 초점이 가거나 막혀도 테두리 상자 대신 밑줄 색만 바뀐다 */
-.memo-editor .memo-editor-title:is(:focus, [aria-invalid='true']) {
-	box-shadow: none;
+.memo-calendar-grid button.selected {
+	background-color: #edbb4d;
+	color: #2b2100;
+	font-weight: 700;
 }
 
-.memo-editor-field-hint {
-	grid-column: 1 / -1;
-	margin-top: -4px;
-	padding-left: 36px;
-	color: var(--memo-muted);
-	font-size: 11px;
-}
-
-.memo-editor-meta {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	gap: 8px 12px;
-	font-size: 12px;
-}
-
-.memo-editor-meta label {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	color: var(--memo-muted);
-}
-
-.memo-editor-meta label.wide {
-	grid-column: 1 / -1;
-}
-
-.memo-editor-meta input,
-.memo-editor-meta select {
-	flex: 1;
-	padding: 6px 9px;
-	font-size: 13px;
-}
-
-.memo-editor-tabs {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	border-bottom: 1px solid var(--memo-border);
-}
-
-.memo-editor-tabs button {
-	margin-bottom: -1px;
-	padding: 6px 10px;
-	border: none;
-	border-bottom: 2px solid transparent;
-	background: none;
-	color: var(--memo-muted);
-	font: inherit;
-	font-size: 13px;
-	cursor: pointer;
-}
-
-.memo-editor-tabs button[aria-pressed='true'] {
-	border-bottom-color: var(--memo-accent);
-	color: var(--memo-text);
+.memo-calendar-today {
+	width: 100%;
+	margin-top: 6px;
+	padding: 5px 0;
+	border-radius: 6px;
 	font-weight: 600;
-}
-
-.memo-editor-hint {
-	margin-left: auto;
-	color: var(--memo-muted);
-	font-size: 11px;
-}
-
-.memo-editor .memo-editor-body {
-	min-height: 320px;
-	padding: 12px 14px;
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 13px;
-	line-height: 1.7;
-	resize: vertical;
-}
-
-.memo-editor-preview {
-	min-height: 320px;
-	padding: 4px 2px;
-}
-
-.memo-editor-errors {
-	color: #e5484d;
-	font-size: 12px;
-	list-style: none;
-}
-
-.memo-editor-actions {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding-bottom: 1rem;
 }
 
 /* 글 아래 댓글 (메모·메시지 앱 톤: 프로필 동그라미, 얇은 구분선, 둥근 입력 카드) */
