@@ -151,9 +151,15 @@
 	flex: 1;
 }
 
-/* 검색 칸은 늘 도구 막대 오른쪽 끝 (목록 보기: 본문 위, 갤러리: 갤러리 위) */
+/* 검색 칸은 늘 도구 막대 오른쪽 끝 (목록 보기: 본문 위, 갤러리: 갤러리 위).
+   본문 위 도구 막대는 gap 대신 항목의 margin-left로 간격을 주므로(아래 .memo-reader-toolbar) 왼쪽 여백은 지우지 않는다 */
 .memo-toolbar .memo-search {
-	margin: 0;
+	margin-block: 0;
+	margin-right: 0;
+}
+
+.memo-toolbar:not(.memo-reader-toolbar) .memo-search {
+	margin-left: 0;
 }
 
 /* 좁은 창에서만 보이는 것 (목록 위 검색 칸, 본문 위 고정 단추) */
