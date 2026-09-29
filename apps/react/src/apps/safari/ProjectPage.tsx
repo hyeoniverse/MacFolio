@@ -1,8 +1,7 @@
 import React from 'react';
 import type { Project, ProjectLook } from '@/shared/profile';
-import { APP_MANIFEST, type AppName } from '@/apps/manifest';
+import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/AppStateContext';
-import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import '@/apps/safari/ProjectPage.css';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
@@ -64,14 +63,13 @@ const PLAYABLE: Partial<Record<string, AppName>> = { sproutfarm: 'sproutfarm' };
 
 const Links: React.FC<{ project: Project }> = ({ project }) => {
 	const { openApp } = useAppState();
-	const isMobile = useIsMobile();
 	const app = PLAYABLE[project.id];
-	const playable = app && !(isMobile && APP_MANIFEST[app].desktopOnly);
+	const playable = Boolean(app);
 
 	return (
 		<div className="sp-links">
 			{playable && (
-				<button type="button" className="sp-pill" onClick={() => openApp(app)}>
+				<button type="button" className="sp-pill" onClick={() => app && openApp(app)}>
 					여기서 플레이
 				</button>
 			)}
