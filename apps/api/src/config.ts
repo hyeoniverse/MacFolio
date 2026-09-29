@@ -5,6 +5,19 @@ export interface AppConfig {
 	databaseUrl: string;
 	/** 요청을 허용할 프론트엔드 주소 */
 	corsOrigins: string[];
+	/** 로그인을 마치고 돌아갈 프론트엔드 주소 */
+	frontendUrl: string;
+	/** 이 API의 바깥 주소 (OAuth 콜백 주소를 만든다) */
+	apiUrl: string;
+	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
+	auth: {
+		githubClientId?: string;
+		githubClientSecret?: string;
+		/** 관리자로 인정할 GitHub 계정 */
+		adminGithubLogin: string;
+		/** 쿠키를 https에서만 보낸다 (배포) */
+		secureCookies: boolean;
+	};
 }
 
 /** 의존성 주입 토큰 */
@@ -22,5 +35,17 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		.map((origin) => origin.trim())
 		.filter(Boolean);
 
-	return { port, databaseUrl, corsOrigins };
+	return {
+		port,
+		databaseUrl,
+		corsOrigins,
+		frontendUrl: env.FRONTEND_URL ?? corsOrigins[0] ?? 'http://localhost:5173',
+		apiUrl: (env.API_URL ?? `http://localhost:${port}`).replace(/\/$/, ''),
+		auth: {
+			githubClientId: env.GITHUB_CLIENT_ID || undefined,
+			githubClientSecret: env.GITHUB_CLIENT_SECRET || undefined,
+			adminGithubLogin: env.ADMIN_GITHUB_LOGIN ?? 'hyeoniverse',
+			secureCookies: env.NODE_ENV === 'production',
+		},
+	};
 }

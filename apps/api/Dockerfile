@@ -20,6 +20,9 @@ WORKDIR /app
 COPY --from=build /out/node_modules ./node_modules
 COPY --from=build /out/package.json ./
 COPY --from=build /repo/apps/api/dist ./dist
+# 시작할 때 마이그레이션을 적용한다 (Prisma CLI, 스키마, 마이그레이션 파일)
+COPY --from=build /repo/apps/api/prisma ./prisma
+COPY --from=build /repo/apps/api/prisma.config.ts ./
 USER node
 EXPOSE 4000
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node dist/main.js"]
