@@ -1,0 +1,164 @@
+/* iOS 홈 화면 */
+.mobile-home {
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	inset: 0;
+	height: 100dvh;
+	padding: calc(var(--mobile-statusbar-height) + 8px) 20px calc(env(safe-area-inset-bottom) + 24px);
+	background: var(--wallpaper-mobile) center / cover no-repeat;
+	color: #fff;
+	-webkit-user-select: none;
+	user-select: none;
+	transition:
+		transform var(--duration-slow) var(--ease-out),
+		filter var(--duration-slow) var(--ease-out);
+}
+
+/* 앱이 열려 있으면 홈 화면이 살짝 뒤로 물러난다. 앱이 닫히기 시작하면(closing) 바로 돌아온다 */
+.App:has(.container.mobile:not(.closing)) .mobile-home {
+	transform: scale(0.92);
+	filter: brightness(0.7);
+}
+
+/* 홈 화면 위젯 공통: iOS처럼 가장자리를 아이콘 줄(4열 격자 안의 60px 아이콘)에 맞추고, 안쪽 여백을 같게 */
+.mobile-home {
+	--home-icon: 60px;
+	--widget-inset: calc((100% / 4 - var(--home-icon)) / 2);
+	--widget-padding: 16px;
+}
+
+.mobile-widget,
+.mobile-music-widget {
+	margin-inline: var(--widget-inset);
+}
+
+/* 소개 위젯 */
+.mobile-widget {
+	padding: var(--widget-padding);
+	border-radius: 22px;
+	background-color: rgba(255, 255, 255, 0.22);
+	backdrop-filter: blur(24px) saturate(160%);
+	-webkit-backdrop-filter: blur(24px) saturate(160%);
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+	text-align: left;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.mobile-widget h1 {
+	font-size: 26px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.mobile-widget p {
+	margin-top: 4px;
+	font-size: 14px;
+	opacity: 0.95;
+}
+
+.mobile-widget .mobile-widget-eyebrow {
+	margin: 0 0 2px;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	opacity: 0.8;
+}
+
+.mobile-widget .mobile-widget-meta {
+	margin-top: 10px;
+	font-size: 12px;
+	opacity: 0.85;
+}
+
+/* 음악 위젯 */
+.mobile-music-widget {
+	flex: none;
+	margin-top: 14px;
+	padding: var(--widget-padding);
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* 앱 격자: 4열 */
+.mobile-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	align-content: start;
+	row-gap: 22px;
+	flex: 1;
+	min-height: 0;
+	margin-top: 24px;
+	overflow-y: auto;
+}
+
+.mobile-app {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.mobile-app img {
+	width: var(--home-icon);
+	height: var(--home-icon);
+	object-fit: cover;
+	border-radius: 14px;
+	transition: transform 0.15s ease;
+}
+
+.mobile-app img.square {
+	border-radius: 0;
+}
+
+.mobile-app:active img {
+	transform: scale(0.9);
+	filter: brightness(0.8);
+}
+
+.mobile-app span {
+	overflow: hidden;
+	max-width: 100%;
+	font-size: 12px;
+	text-overflow: ellipsis;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+	white-space: nowrap;
+}
+
+/* 아래 Dock */
+.mobile-dock {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	flex: none;
+	padding: 14px 8px;
+	border-radius: 30px;
+	background-color: rgba(255, 255, 255, 0.25);
+	backdrop-filter: blur(24px) saturate(160%);
+	-webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+
+/* 가로로 눕힌 휴대폰: 위젯을 숨기고 한 줄에 더 많이 놓는다 */
+@media (orientation: landscape) {
+	.mobile-widget,
+	.mobile-music-widget {
+		display: none;
+	}
+
+	.mobile-grid {
+		grid-template-columns: repeat(6, 1fr);
+		margin-top: 0;
+	}
+
+	.mobile-dock {
+		align-self: center;
+		width: min(100%, 420px);
+	}
+}

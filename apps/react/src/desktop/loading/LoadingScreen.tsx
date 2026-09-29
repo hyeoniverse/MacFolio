@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '@/desktop/loading/LoadingScreen.css';
 import { env } from '@/shared/config/env';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
 interface LoadingScreenProps {
 	onLoadingComplete: () => void;
@@ -9,10 +10,17 @@ interface LoadingScreenProps {
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	const [progress, setProgress] = useState(0);
+	const startLabel = `${useIsMobile() ? '탭' : '클릭'}하여 로딩을 시작하세요`;
 	const isInteractedRef = useRef(false);
 	const mp3Url = env.sfxUrl;
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	// 로딩 화면이 화면을 덮었으니 배경화면을 보여도 된다 (index.html의 booting)
+	useEffect(() => {
+		document.documentElement.classList.remove('booting');
+	}, []);
 
 	useEffect(() => {
 		const startLoading = () => {
@@ -31,8 +39,15 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 							audioRef.current?.pause();
 							// 렌더링 사이클이 끝난 후 onLoadingComplete 호출 및 커스텀 이벤트 디스패치
 							setTimeout(() => {
-								onLoadingComplete();
 								window.dispatchEvent(new Event('startMusic'));
+								// 검은 화면이 서서히 걷히며 데스크톱이 나타난다
+								const fade = containerRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
+									duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450,
+									easing: 'ease-out',
+									fill: 'forwards',
+								});
+								if (fade) fade.onfinish = onLoadingComplete;
+								else onLoadingComplete();
 							}, 0);
 							return 100;
 						}
@@ -52,13 +67,13 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	}, [mp3Url, onLoadingComplete]);
 
 	return (
-		<div className="loading-container">
+		<div ref={containerRef} className="loading-container">
 			<i className="fa-brands fa-apple loading-icon" />
 			{!isInteractedRef.current ? (
-				<p className="loading-text">클릭하여 로딩을 시작하세요</p>
+				<p className="loading-text">{startLabel}</p>
 			) : (
 				<p className="loading-text" style={{ visibility: 'hidden' }}>
-					클릭하여 로딩을 시작하세요
+					{startLabel}
 				</p>
 			)}
 			<div className="progress-bar-container">

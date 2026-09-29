@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import DockItem from '@/desktop/dock/DockItem';
 import '@/desktop/dock/Dock.css';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useLaunchApp } from '@/desktop/useLaunchApp';
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import '@/desktop/dock/Toast.css';
 import { env } from '@/shared/config/env';
 import { APP_MANIFEST, DOCK_APPS, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
@@ -14,45 +11,13 @@ const imgUrl = env.imageUrl;
 const iconOf = (appName: AppName) => `${imgUrl}/${APP_MANIFEST[appName].icon}`;
 
 const Dock: React.FC = () => {
-	const { apps, openApp, maximizeApp, bringAppToFront } = useAppState();
+	const { launch: handleAppOpen, isActive } = useLaunchApp();
 	const [isLaunchpadOpen, setIsLaunchpadOpen] = useState(false); // 모달 상태 관리
-	const [isSharing, setIsSharing] = useState(false); // share 앱의 인디케이터 상태 관리
 
 	// Dock에 다 들어가지 않는 앱은 Launchpad로 보낸다 (아이콘 하나당 100px, 양옆 여백 300px)
 	const { width } = useViewport();
 	const maxItems = Math.floor((width - 300) / 100);
 	const hiddenItems: AppName[] = DOCK_APPS.length > maxItems ? DOCK_APPS.slice(maxItems) : [];
-
-	const isShareApp = (appName: AppName) => APP_MANIFEST[appName].action?.type === 'share';
-
-	const handleAppOpen = (appName: AppName) => {
-		const appState = apps[appName];
-		const action = APP_MANIFEST[appName].action;
-
-		bringAppToFront(appName);
-
-		if (action?.type === 'link') {
-			// 외부 페이지로 새 탭에서 이동
-			window.open(action.url, '_blank');
-			return;
-		}
-
-		if (action?.type === 'share') {
-			// share 앱 클릭 시 Toast 메시지 표시
-			navigator.clipboard.writeText(window.location.href);
-			setIsSharing(true); // Toast 표시 시 인디케이터 활성화
-
-			toast.info('링크가 복사되었습니다!', {
-				className: 'custom-toast', // 커스텀 클래스 적용
-				progressClassName: 'custom-toast-progress', // 커스텀 클래스 적용
-				onClose: () => setIsSharing(false), // Toast가 닫힐 때 인디케이터 비활성화
-			});
-		} else if (appState.isRunning) {
-			maximizeApp(appName);
-		} else {
-			openApp(appName);
-		}
-	};
 
 	const handleLaunchpadClick = () => {
 		if (hiddenItems.length > 0) {
@@ -74,26 +39,8 @@ const Dock: React.FC = () => {
 		}
 	};
 
-	// Launchpad 내에서의 share 앱 상태를 따로 관리 (Launchpad 안에서는 인디케이터 표시 안 함)
-	const getLaunchpadAppState = (appName: AppName) => {
-		if (isShareApp(appName)) {
-			return isSharing; // share 앱의 경우 인디케이터는 isSharing 상태에 따름
-		}
-		return apps[appName].isRunning; // Launchpad 내에서도 앱이 실행 중이면 인디케이터 유지
-	};
-
 	return (
 		<div>
-			<ToastContainer
-				position="top-right"
-				autoClose={1200}
-				hideProgressBar={true}
-				newestOnTop={false}
-				closeOnClick
-				pauseOnFocusLoss
-				draggable
-				pauseOnHover
-			/>
 			<div className="dock">
 				<div className="dock-left">
 					{DOCK_APPS.map(
@@ -103,8 +50,7 @@ const Dock: React.FC = () => {
 									key={appName}
 									label={appName}
 									icon={iconOf(appName)}
-									// share 앱에만 isSharing 적용
-									isActive={isShareApp(appName) ? isSharing : apps[appName].isRunning}
+									isActive={isActive(appName)}
 									isHidden={hiddenItems.includes(appName)}
 									onClick={() => handleAppOpen(appName)}
 									disableRadius={APP_MANIFEST[appName].squareIcon}
@@ -142,7 +88,7 @@ const Dock: React.FC = () => {
 									key={hiddenItem}
 									label={hiddenItem}
 									icon={iconOf(hiddenItem)}
-									isActive={getLaunchpadAppState(hiddenItem)} // Launchpad 내 숨겨진 앱의 인디케이터만 표시
+									isActive={isActive(hiddenItem)}
 									isHidden={false}
 									onClick={() => handleAppOpen(hiddenItem)}
 									disableRadius={APP_MANIFEST[hiddenItem].squareIcon}

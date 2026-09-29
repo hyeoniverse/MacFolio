@@ -15,6 +15,9 @@
 }
 
 .settings-nav-item {
+	transition:
+		background-color var(--duration-fast) var(--ease-out),
+		color var(--duration-fast) var(--ease-out);
 	display: flex;
 	align-items: center;
 	gap: 0.6rem;
@@ -43,6 +46,8 @@
 }
 
 .settings-panel {
+	/* 항목을 바꾸면 살짝 떠오르며 나타난다 */
+	animation: rise-in var(--duration) var(--ease-out);
 	flex: 1;
 	padding: 1.25rem 1.5rem;
 	overflow-y: auto;
@@ -112,9 +117,54 @@
 }
 
 /* 배경화면 선택 */
+.wallpaper-group + .wallpaper-group {
+	margin-top: 1.5rem;
+}
+
+.wallpaper-group h3 {
+	color: var(--color-text-strong);
+	font-size: 0.95rem;
+}
+
+.wallpaper-group .settings-hint {
+	margin: 0.2rem 0 0.75rem;
+}
+
 .wallpaper-thumbnail {
 	width: 8rem;
 	height: 5rem;
-	background-position: center;
-	background-size: cover;
+	object-fit: cover;
+	transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+/* iOS 배경화면은 세로 */
+.wallpaper-thumbnail.portrait {
+	width: 4.2rem;
+	height: 8.6rem;
+	border-radius: 0.8rem;
+}
+
+/* ─── 좁은 창: 항목을 위쪽 탭으로 ─── */
+.settings-shell {
+	container-type: inline-size;
+	height: 100%;
+}
+
+@container (max-width: 520px) {
+	.settings {
+		flex-direction: column;
+	}
+
+	.settings-sidebar {
+		flex-direction: row;
+		width: 100%;
+		border-right: none;
+		border-bottom: 1px solid var(--color-divider);
+	}
+
+	.settings-nav-item {
+		flex: 1;
+		justify-content: center;
+		font-size: 15px;
+	}
 }

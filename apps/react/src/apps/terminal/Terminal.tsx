@@ -2,7 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/AppStateContext';
 import { APP_MANIFEST, APP_NAMES } from '@/apps/manifest';
-import { complete, formatDate, runCommand, type CommandContext, type Line } from './commands';
+import { complete, formatDate, runCommand, toBlocks, type Block, type CommandContext, type Line } from './commands';
+import { useOpenEffects } from './useOpenEffects';
+import Shortcuts from './Shortcuts';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import '@/apps/terminal/Terminal.css';
 
 interface Entry {
@@ -42,27 +45,6 @@ const Value: React.FC<{ value: string; href?: string }> = ({ value, href }) =>
 	) : (
 		<>{value}</>
 	);
-
-type Block =
-	| { type: 'pairs'; lines: Extract<Line, { kind: 'pair' }>[] }
-	| { type: 'items'; lines: Extract<Line, { kind: 'item' }>[] }
-	| { type: 'line'; line: Line };
-
-/** 연속된 pair·item 줄을 묶는다. 한 묶음은 한 격자로 그려서 칸이 맞는다 */
-function toBlocks(lines: Line[]): Block[] {
-	const blocks: Block[] = [];
-	for (const line of lines) {
-		const last = blocks.at(-1);
-		if (line.kind === 'pair') {
-			if (last?.type === 'pairs') last.lines.push(line);
-			else blocks.push({ type: 'pairs', lines: [line] });
-		} else if (line.kind === 'item') {
-			if (last?.type === 'items') last.lines.push(line);
-			else blocks.push({ type: 'items', lines: [line] });
-		} else blocks.push({ type: 'line', line });
-	}
-	return blocks;
-}
 
 const BlockView: React.FC<{ block: Block }> = ({ block }) => {
 	if (block.type === 'pairs') {
@@ -133,8 +115,9 @@ function useTerminalSize(ref: React.RefObject<HTMLDivElement | null>) {
 }
 
 /** 터미널: 명령어로 자기소개. 명령 처리는 commands.ts의 순수 함수가 한다. */
-const Terminal: React.FC = () => {
-	const { openApp, bringAppToFront, closeApp } = useAppState();
+const DesktopTerminal: React.FC = () => {
+	const { closeApp } = useAppState();
+	const runOpenEffects = useOpenEffects();
 	const [entries, setEntries] = useState<Entry[]>(() => [welcome()]);
 	const [input, setInput] = useState('');
 	const [history, setHistory] = useState<string[]>([]);
@@ -163,16 +146,8 @@ const Terminal: React.FC = () => {
 		for (const effect of effects) {
 			if (effect.type === 'clear') setEntries([]);
 			if (effect.type === 'close') closeApp('terminal');
-			if (effect.type === 'open-url') window.open(effect.url, '_blank', 'noopener');
-			if (effect.type === 'open-app') {
-				const action = APP_MANIFEST[effect.app].action;
-				if (action?.type === 'link') window.open(action.url, '_blank', 'noopener');
-				else {
-					openApp(effect.app);
-					bringAppToFront(effect.app);
-				}
-			}
 		}
+		runOpenEffects(effects);
 	};
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -260,5 +235,8 @@ const Terminal: React.FC = () => {
 		</AppWindow>
 	);
 };
+
+/** 휴대폰에서는 명령어를 치는 대신 같은 명령을 눌러서 실행하는 '단축어'로 보여준다 */
+const Terminal: React.FC = () => (useIsMobile() ? <Shortcuts /> : <DesktopTerminal />);
 
 export default Terminal;

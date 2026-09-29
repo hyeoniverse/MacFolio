@@ -1,0 +1,180 @@
+/* 알림 배너 (macOS 알림 센터, iOS 배너) */
+.notifications {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	position: fixed;
+	z-index: 9000;
+	pointer-events: none;
+}
+
+/* macOS: 메뉴 막대 아래 오른쪽 */
+.notifications.macos {
+	top: 34px;
+	right: 12px;
+	width: 344px;
+}
+
+/* iOS: 상태 표시줄 아래 가운데 (상태 표시줄보다 위에 뜬다) */
+.notifications.ios {
+	top: calc(env(safe-area-inset-top) + 8px);
+	right: 8px;
+	left: 8px;
+	z-index: 2200;
+}
+
+.notification {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	position: relative;
+	padding: 11px 14px 11px 11px;
+	border-radius: 18px;
+	background-color: rgba(246, 246, 248, 0.78);
+	backdrop-filter: blur(30px) saturate(180%);
+	-webkit-backdrop-filter: blur(30px) saturate(180%);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.12),
+		0 10px 30px rgba(0, 0, 0, 0.18);
+	color: #1d1d1f;
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	text-align: left;
+	pointer-events: auto;
+	animation: notification-in-mac 0.4s var(--ease-spring);
+}
+
+:root[data-theme='dark'] .notification {
+	background-color: rgba(44, 44, 46, 0.78);
+	box-shadow:
+		0 0 0 0.5px rgba(255, 255, 255, 0.12),
+		0 10px 30px rgba(0, 0, 0, 0.4);
+	color: #f5f5f7;
+}
+
+.notifications.ios .notification {
+	border-radius: 24px;
+	cursor: pointer;
+	touch-action: none;
+	animation-name: notification-in-ios;
+}
+
+/* macOS는 오른쪽에서 밀려 들어오고, iOS는 위에서 내려온다 */
+@keyframes notification-in-mac {
+	from {
+		opacity: 0;
+		transform: translateX(calc(100% + 24px));
+	}
+}
+
+@keyframes notification-in-ios {
+	from {
+		opacity: 0;
+		transform: translateY(-120%);
+	}
+}
+
+.notification.leaving {
+	animation: notification-out-mac 0.25s var(--ease-in) forwards;
+}
+
+.notifications.ios .notification.leaving {
+	animation-name: notification-out-ios;
+}
+
+@keyframes notification-out-mac {
+	to {
+		opacity: 0;
+		transform: translateX(calc(100% + 24px));
+	}
+}
+
+@keyframes notification-out-ios {
+	to {
+		opacity: 0;
+		transform: translateY(-120%);
+	}
+}
+
+.notification-icon {
+	flex: none;
+	width: 38px;
+	height: 38px;
+	border-radius: 9px;
+}
+
+.notification-text {
+	flex: 1;
+	min-width: 0;
+}
+
+.notification-head {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+}
+
+.notification-head strong {
+	flex: 1;
+	overflow: hidden;
+	font-size: 13px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.notification-head time {
+	flex: none;
+	font-size: 11px;
+	opacity: 0.55;
+}
+
+.notification-text p {
+	margin-top: 1px;
+	font-size: 13px;
+	opacity: 0.85;
+}
+
+.notifications.ios .notification-head strong,
+.notifications.ios .notification-text p {
+	font-size: 15px;
+}
+
+/* macOS: 마우스를 올리면 왼쪽 위 모서리에 닫기 단추 */
+.notification-close {
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: -6px;
+	left: -6px;
+	width: 20px;
+	height: 20px;
+	border: none;
+	border-radius: 50%;
+	background-color: rgba(246, 246, 248, 0.95);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.2),
+		0 1px 4px rgba(0, 0, 0, 0.2);
+	color: #6e6e73;
+	font-size: 10px;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+:root[data-theme='dark'] .notification-close {
+	background-color: rgba(58, 58, 60, 0.95);
+	color: #d1d1d6;
+}
+
+.notification:hover .notification-close,
+.notification-close:focus-visible {
+	opacity: 1;
+}
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}

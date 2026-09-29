@@ -1,121 +1,356 @@
-/* 색상 변수: 라이트 값은 기존 색 그대로, 다크 값은 styles/theme.css의 다크 톤에 맞춤 */
+/* Safari: 프로젝트마다 탭이 열린 브라우저 */
 [data-app='safari'] {
-	--safari-button-bg: #000000;
-	--safari-button-hover: #333333;
-	--safari-button-text: #ffffff;
-	--safari-card-bg: rgba(255, 255, 255, 0.8);
+	--safari-bg: #ffffff;
+	--safari-toolbar-bg: #f6f6f6;
+	--safari-tabbar-bg: #dedede;
+	--safari-tab-hover: rgba(0, 0, 0, 0.05);
+	--safari-border: rgba(0, 0, 0, 0.1);
+	--safari-divider: rgba(0, 0, 0, 0.16);
+	--safari-address-bg: rgba(0, 0, 0, 0.06);
+	--safari-text: #1d1d1f;
+	--safari-muted: #6e6e73;
+	--safari-card-bg: #f5f5f7;
+	--safari-chip-bg: #ffffff;
+	--safari-accent: #0071e3;
 }
 
 :root[data-theme='dark'] [data-app='safari'] {
-	--safari-button-bg: #f5f5f7;
-	--safari-button-hover: #d1d1d6;
-	--safari-button-text: #000000;
-	--safari-card-bg: rgba(44, 44, 46, 0.85);
+	--safari-bg: #1c1c1e;
+	--safari-toolbar-bg: #2c2c2e;
+	--safari-tabbar-bg: #1f1f21;
+	--safari-tab-hover: rgba(255, 255, 255, 0.06);
+	--safari-border: rgba(255, 255, 255, 0.12);
+	--safari-divider: rgba(255, 255, 255, 0.16);
+	--safari-address-bg: rgba(255, 255, 255, 0.1);
+	--safari-text: #f5f5f7;
+	--safari-muted: #98989d;
+	--safari-card-bg: #2c2c2e;
+	--safari-chip-bg: #3a3a3c;
+	--safari-accent: #2997ff;
 }
 
-/* Safari: 프로젝트 카드 (desktop/window/Window.css에서 이동) */
-.projects {
-	display: flex;
-	gap: 2rem;
-	justify-content: center;
-	flex-wrap: wrap;
-	margin: 2rem;
+[data-app='safari'].container {
+	background-color: var(--safari-bg);
 }
 
-.project {
+.safari {
 	display: flex;
-	align-items: flex-start;
-	justify-content: flex-start;
 	flex-direction: column;
-	padding: 1rem;
-	width: 300px;
-	height: 400px;
-	/* Set a fixed height for the entire project box */
-	background-color: var(--safari-card-bg);
-	transition: transform 0.3s ease;
-	backdrop-filter: blur(10px);
-	border-radius: 15px;
-	box-sizing: border-box;
+	height: 100%;
+	background-color: var(--safari-bg);
+	color: var(--safari-text);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	text-align: left;
+	container-type: inline-size;
 }
 
-.project:hover {
-	transform: translateY(-10px);
+.safari a {
+	color: inherit;
+	text-decoration: none;
 }
 
-.img-container {
+/* ─── 도구 막대 (신호등 버튼과 같은 높이) ─── */
+.safari-toolbar {
 	display: flex;
+	flex: none;
+	align-items: center;
+	gap: 6px;
+	height: 52px;
+	padding: 0 12px;
+	background-color: var(--safari-toolbar-bg);
+}
+
+.safari-lights-space {
+	width: 64px;
+}
+
+/* 도구 막대의 단추는 통합형 창의 끌기 영역(z-index 3)보다 위 */
+.safari-tool {
+	display: grid;
+	position: relative;
+	z-index: 4;
+	place-items: center;
+	width: 30px;
+	height: 28px;
+	border: none;
+	border-radius: 7px;
+	background: none;
+	color: var(--safari-muted) !important;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.safari-tool:hover:not(:disabled) {
+	background-color: var(--safari-address-bg);
+}
+
+.safari-tool:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.safari-address {
+	display: flex;
+	position: relative;
+	z-index: 4;
+	flex: 1;
 	align-items: center;
 	justify-content: center;
-	margin-bottom: 15px;
+	gap: 7px;
+	max-width: 520px;
+	height: 32px;
+	margin: 0 auto;
+	padding: 0 12px;
+	border-radius: 10px;
+	background-color: var(--safari-address-bg);
+	font-size: 13px;
+}
+
+.safari-address span {
 	overflow: hidden;
-	width: 100%;
-	height: 150px;
-	/* Set a fixed height for the image container */
-	border-radius: 15px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-.img-container img {
-	width: 100%;
-	height: 100%;
-	transition: transform 0.5s ease;
-	object-fit: cover;
-	border-radius: 15px;
+.safari-address i {
+	color: var(--safari-muted);
+	font-size: 10px;
 }
 
-.project:hover .img-container img {
-	transform: scale(1.05);
+.safari-address:hover {
+	box-shadow: inset 0 0 0 1px var(--safari-border);
 }
 
-.project h2,
-.project span {
+.safari-address.placeholder {
+	color: var(--safari-muted);
+}
+
+.safari-address.placeholder:hover {
+	box-shadow: none;
+}
+
+/* ─── 탭 막대 (macOS Safari의 '분리된' 탭 모양) ───
+ * 탭은 막대 높이를 꽉 채우는 같은 너비의 칸이고, 사이에 가는 세로선이 있다.
+ * 고른 탭은 도구 막대와 같은 색으로 이어지고, 양옆 세로선이 사라진다. */
+.safari-tabs {
+	display: flex;
 	flex: none;
-	/* Remove flex-grow behavior */
-	margin-bottom: 0.5rem;
-	padding: 0 0.5rem 0 0.5rem;
-	width: 100%;
-	/* Ensure the text takes up the full width */
-	height: 2rem;
-	/* Set a fixed height */
-	line-height: 2rem;
-	/* Center text vertically */
-	text-align: left;
+	position: relative;
+	height: 30px;
+	overflow-x: auto;
+	border-top: 1px solid var(--safari-border);
+	border-bottom: 1px solid var(--safari-border);
+	background-color: var(--safari-tabbar-bg);
+	scrollbar-width: none;
 }
 
-.project button {
-	margin-top: auto;
-	/* Push the button to the bottom */
-	padding: 0.8rem 2rem;
+.safari-tab {
+	display: flex;
+	flex: 1 1 0;
+	position: relative;
+	min-width: 96px;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+/* 탭 사이 세로선 */
+.safari-tab + .safari-tab::before {
+	position: absolute;
+	top: 7px;
+	bottom: 7px;
+	left: 0;
+	width: 1px;
+	background-color: var(--safari-divider);
+	content: '';
+}
+
+.safari-tab.active::before,
+.safari-tab.active + .safari-tab::before {
+	opacity: 0;
+}
+
+.safari-tab:hover:not(.active) {
+	background-color: var(--safari-tab-hover);
+}
+
+.safari-tab.active {
+	background-color: var(--safari-toolbar-bg);
+}
+
+.safari-tab-button {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-width: 0;
+	padding: 0 24px;
 	border: none;
-	width: 100%;
-	background-color: var(--safari-button-bg);
-	font-size: 1em;
-	color: var(--safari-button-text);
-	transition: background-color 0.3s ease;
-	cursor: pointer;
-	border-radius: 25px;
+	background: none;
+	color: var(--safari-muted);
+	font: inherit;
+	font-size: 12px;
+	cursor: default;
 }
 
-.project button:hover {
-	background-color: var(--safari-button-hover);
+.safari-tab.active .safari-tab-button {
+	color: var(--safari-text);
 }
 
-/* 소개 헤더 (index.css의 전역 header 규칙에서 이동) */
-[data-app='safari'] header {
-	margin-top: 5rem;
-	margin-bottom: 3rem;
+.safari-tab-button span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-[data-app='safari'] header h1 {
+/* 닫기 단추: 탭 왼쪽, 올렸을 때만 */
+.safari-tab-close {
+	display: grid;
+	position: absolute;
+	top: 50%;
+	left: 6px;
+	z-index: 1;
+	place-items: center;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	border: none;
+	border-radius: 4px;
+	background: none;
+	color: var(--safari-muted);
+	font-size: 10px;
+	opacity: 0;
+	transform: translateY(-50%);
+	cursor: default;
+}
+
+.safari-tab:hover .safari-tab-close,
+.safari-tab-close:focus-visible {
+	opacity: 1;
+}
+
+.safari-tab-close:hover {
+	background-color: var(--safari-address-bg);
+	color: var(--safari-text);
+}
+
+.safari-favicon {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	border-radius: 4px;
+	object-fit: contain;
+}
+
+/* 아이콘이 없을 때의 기본 모양 */
+.safari-favicon.fallback,
+.safari-start-icon.fallback {
+	display: grid;
+	place-items: center;
+	background-color: var(--safari-address-bg);
+	color: var(--safari-muted);
+}
+
+.safari-favicon.fallback {
+	font-size: 9px;
+}
+
+/* ─── 시작 페이지 (새 탭) ─── */
+.safari-start {
+	max-width: 720px;
+	margin: 0 auto;
+	padding: 56px 32px;
+	animation: rise-in var(--duration) var(--ease-out);
+}
+
+.safari-start h2 {
 	margin-bottom: 20px;
-	font-size: 3em;
+	font-size: 20px;
+	font-weight: 700;
 }
 
-[data-app='safari'] header p {
-	font-size: 1.2em;
-	line-height: 1.5;
-	color: #555;
+.safari-start ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+	gap: 20px 12px;
+	list-style: none;
 }
 
-:root[data-theme='dark'] [data-app='safari'] header p {
-	color: var(--color-text-secondary);
+.safari-start button {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	padding: 8px 4px;
+	border: none;
+	border-radius: 12px;
+	background: none;
+	color: var(--safari-text);
+	font: inherit;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.safari-start button:hover {
+	background-color: var(--safari-address-bg);
+}
+
+.safari-start-icon {
+	width: 64px;
+	height: 64px;
+	padding: 8px;
+	border-radius: 14px;
+	background-color: #ffffff;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	object-fit: contain;
+}
+
+.safari-start-icon.fallback {
+	font-size: 24px;
+}
+
+/* ─── 페이지 ─── */
+.safari-page {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+/* ─── 좁은 창 (모바일): 도구 막대 대신 탭을 옆으로 넘긴다 ─── */
+@container (max-width: 600px) {
+	.safari-toolbar {
+		display: none;
+	}
+
+	.safari-tabs {
+		gap: 6px;
+		height: auto;
+		padding: 8px 12px;
+		border-top: none;
+	}
+
+	.safari-tab {
+		flex: none;
+		min-width: 0;
+		border-radius: 999px;
+	}
+
+	.safari-tab::before {
+		display: none;
+	}
+
+	.safari-tab.active {
+		background-color: var(--safari-address-bg);
+	}
+
+	.safari-tab-button {
+		height: 32px;
+		padding: 0 12px;
+		font-size: 13px;
+	}
+
+	/* 휴대폰에는 올리기가 없으므로 닫기 단추를 두지 않는다 */
+	.safari-tab-close {
+		display: none;
+	}
 }
