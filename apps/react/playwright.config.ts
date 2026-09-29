@@ -20,7 +20,7 @@ export default defineConfig({
 	projects: [
 		{
 			name: 'desktop-chromium',
-			// Dock 아이콘 11개가 모두 보이는 폭 (maxItems = (폭 - 300) / 100)
+			// Dock 아이콘 12개가 모두 보이는 폭 (maxItems = (폭 - 300) / 100)
 			use: { ...devices['Desktop Chrome'], viewport: { width: 1600, height: 1000 } },
 			testIgnore: /mobile(-motion)?\.spec\.ts/,
 		},
