@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import ContextMenu from './ContextMenu';
-import { DEFAULT_ORDER, ORDER_LABELS, type Arrangement, type SortKey, type SortOrder } from '../arrange';
+import { sortMenuItems } from './sortMenuItems';
+import type { Arrangement } from '../arrange';
 
 export type View = 'list' | 'gallery';
 
@@ -73,18 +74,6 @@ export const SortMenu: React.FC<{
 }> = ({ arrangement, onChange, className = '' }) => {
 	const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
 	const close = useCallback(() => setAnchor(null), []);
-	const { sort, order, groupByDate } = arrangement;
-	// 정렬 기준을 바꾸면 그 기준의 기본 순서로 (날짜는 최신 순, 제목은 가나다 순)
-	const sortItem = (key: SortKey, label: string) => ({
-		label,
-		checked: sort === key,
-		onSelect: () => onChange({ ...arrangement, sort: key, order: sort === key ? order : DEFAULT_ORDER[key] }),
-	});
-	const orderItem = (value: SortOrder) => ({
-		label: ORDER_LABELS[sort][value],
-		checked: order === value,
-		onSelect: () => onChange({ ...arrangement, order: value }),
-	});
 
 	return (
 		<>
@@ -110,23 +99,7 @@ export const SortMenu: React.FC<{
 					label="정렬과 그룹화"
 					anchor={anchor}
 					onClose={close}
-					items={[
-						{ heading: '정렬 기준' },
-						sortItem('date', '날짜'),
-						sortItem('title', '제목'),
-						'separator',
-						{ heading: '순서' },
-						orderItem(sort === 'date' ? 'desc' : 'asc'),
-						orderItem(sort === 'date' ? 'asc' : 'desc'),
-						'separator',
-						{
-							label: '날짜별로 그룹화',
-							checked: groupByDate && sort === 'date',
-							disabled: sort !== 'date',
-							hint: sort === 'date' ? undefined : '날짜로 정렬할 때만 묶을 수 있습니다',
-							onSelect: () => onChange({ ...arrangement, groupByDate: !groupByDate }),
-						},
-					]}
+					items={sortMenuItems(arrangement, onChange)}
 				/>
 			)}
 		</>
