@@ -796,11 +796,13 @@
 }
 
 /* 관리자가 보는 글: 따로 편집 단추 없이 바로 고친다 (writer/PostWriter.tsx) */
+/* 읽기 화면의 '날짜 · 폴더' 줄과 같은 자리·크기 (저장 상태는 오른쪽 끝에 따로 둬서 가운데를 밀지 않는다) */
 .memo-writer-meta {
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
+	gap: 0.3em;
 	margin-bottom: 0.5rem;
 	color: var(--memo-muted);
 	font-size: 12px;
@@ -808,7 +810,8 @@
 
 /* 날짜·폴더: 글자처럼 보이다가 올리면 누를 수 있다는 표시 */
 .memo-meta-button {
-	padding: 1px 6px;
+	margin: 0 -3px;
+	padding: 0 3px;
 	border: none;
 	border-radius: 6px;
 	background: none;
@@ -825,7 +828,8 @@
 }
 
 .memo-writer-status {
-	margin-left: 8px;
+	position: absolute;
+	right: 0;
 	font-size: 11px;
 }
 
@@ -1049,7 +1053,7 @@
 	outline: none;
 }
 
-.memo-format-image button {
+.memo-format-image button[type='submit'] {
 	align-self: flex-end;
 	padding: 5px 14px;
 	border-radius: 999px;
@@ -1060,6 +1064,120 @@
 
 .memo-format-image button:disabled {
 	opacity: 0.45;
+}
+
+/* 파일에서 고르기 (이미지 올리기) */
+.memo-format-image .memo-format-pick {
+	padding: 8px 10px;
+	border-radius: 8px;
+	background-color: color-mix(in srgb, #edbb4d 28%, transparent);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.memo-format-image .memo-format-pick:hover {
+	background-color: color-mix(in srgb, #edbb4d 42%, transparent);
+}
+
+.memo-format-or {
+	margin-top: 2px;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+}
+
+.memo-format-uploading {
+	margin-left: 4px;
+	color: var(--memo-muted);
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+/* 표 편집 메뉴 */
+.memo-format-icon {
+	position: absolute;
+	left: 9px;
+	top: 50%;
+	width: 12px;
+	font-size: 11px;
+	text-align: center;
+	translate: 0 -50%;
+	opacity: 0.7;
+}
+
+.memo-format-styles button:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.memo-format-styles button:disabled:hover {
+	background: none;
+}
+
+.memo-format-styles button.danger {
+	color: #e5484d;
+}
+
+/* 편집기의 표: 고른 칸, 열 너비 조절 손잡이 */
+.memo-inline-editor .selectedCell {
+	background-color: color-mix(in srgb, #edbb4d 22%, transparent);
+}
+
+.memo-inline-editor .column-resize-handle {
+	position: absolute;
+	top: 0;
+	right: -2px;
+	bottom: 0;
+	width: 4px;
+	background-color: #edbb4d;
+	pointer-events: none;
+}
+
+.memo-inline-editor td,
+.memo-inline-editor th {
+	position: relative;
+}
+
+.memo-inline-editor.resize-cursor,
+.memo-inline-editor .resize-cursor {
+	cursor: col-resize;
+}
+
+/* 이미지 문단: 편집기가 커서 자리로 넣는 빈 요소가 이미지 위아래에 빈 줄을 만들지 않게 (읽기 화면과 같은 높이) */
+.memo-inline-editor p:has(> .memo-figure) > :is(.ProseMirror-separator, .ProseMirror-trailingBreak) {
+	display: none;
+}
+
+/* 편집기에서 고른 이미지 */
+.memo-inline-editor .memo-figure.selected img {
+	outline: 2px solid #edbb4d;
+	outline-offset: 2px;
+}
+
+/* 첨부 파일 링크 (읽기·편집 화면 같은 모양). 링크 제목 '첨부 파일 · 크기'로 알아본다 */
+.memo-markdown a[title^='첨부 파일'] {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	max-width: 100%;
+	padding: 3px 10px;
+	border: 1px solid var(--memo-border);
+	border-radius: 8px;
+	background-color: var(--memo-code-bg);
+	color: var(--memo-text);
+	font-size: 13px;
+	text-decoration: none;
+	overflow-wrap: anywhere;
+}
+
+.memo-markdown a[title^='첨부 파일']::before {
+	color: var(--memo-muted);
+	font-family: 'Font Awesome 6 Free';
+	font-weight: 900;
+	content: '\f0c6' / '';
+}
+
+.memo-markdown a[title^='첨부 파일']:hover {
+	border-color: var(--memo-accent);
 }
 
 /* 편집기 안의 체크 항목: 왼쪽 네모를 누르면 체크 */
@@ -1093,15 +1211,35 @@
 	text-decoration: line-through;
 }
 
-/* 읽기 화면의 체크 항목 (remark-gfm) */
-.memo-markdown .contains-task-list {
-	padding-left: 0.2em;
+/* 읽기 화면의 체크 항목 (remark-gfm): 편집기와 같은 동그라미 */
+.memo-markdown .task-list-item {
+	position: relative;
+	padding-left: 26px;
 	list-style: none;
 }
 
 .memo-markdown .task-list-item input {
-	margin-right: 8px;
-	accent-color: #edbb4d;
+	position: absolute;
+	top: 0.35em;
+	left: 2px;
+	width: 15px;
+	height: 15px;
+	margin: 0;
+	border: 1.5px solid var(--memo-muted);
+	border-radius: 50%;
+	appearance: none;
+}
+
+.memo-markdown .task-list-item input:checked {
+	border-color: #edbb4d;
+	background: #edbb4d
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+		center / 12px no-repeat;
+}
+
+.memo-markdown .task-list-item:has(> input:checked) {
+	color: var(--memo-muted);
+	text-decoration: line-through;
 }
 
 /* 달력 (body에 그려서 메모 변수 대신 값을 직접 쓴다) */
@@ -1491,7 +1629,9 @@
 	line-height: 1.75;
 }
 
-.memo-markdown > * + * {
+/* 문단 사이 간격. 편집기(.ProseMirror)도 같은 규칙을 써서 읽기 화면과 똑같이 보이게 한다 */
+.memo-markdown > * + *,
+.memo-markdown :where(.ProseMirror) > * + * {
 	margin-top: 0.9em;
 }
 

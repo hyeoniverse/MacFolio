@@ -138,7 +138,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await panel.getByRole('menuitem', { name: '이미지 넣기…' }).click();
 		const imageForm = page.getByRole('dialog', { name: '이미지 넣기' });
-		await expect(imageForm.getByRole('textbox', { name: '이미지 주소' })).toBeFocused();
+		await expect(imageForm.getByRole('button', { name: '파일에서 고르기…' })).toBeFocused();
 		await page.keyboard.press('Escape');
 		await expect(imageForm).toBeHidden();
 
@@ -156,6 +156,125 @@ test.describe('바로 고치기 (관리자)', () => {
 		await imageForm.getByRole('button', { name: '넣기' }).click();
 		await expect(imageForm).toBeHidden();
 		await expect.poll(() => api.posts[0]?.body).toContain('![예시 그림](https://example.com/a.png)');
+	});
+
+	test('표: Tab·Enter로 칸을 옮기며 행을 늘리고, 표 편집 메뉴로 열 추가·정렬·삭제한다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('표 시험');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('위 문단');
+
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		const panel = page.getByRole('dialog', { name: '서식' });
+		await panel.getByRole('menuitem', { name: '표 넣기' }).click();
+		const table = memo.locator('.ProseMirror table');
+		await expect(table.locator('tr')).toHaveCount(3);
+
+		// 머리글에서 Tab으로 옆 칸, 마지막 행에서 Enter를 누르면 행이 늘어난다
+		await page.keyboard.type('이름');
+		await page.keyboard.press('Tab');
+		await page.keyboard.type('값');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('하나');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('둘');
+		await page.keyboard.press('Enter');
+		await expect(table.locator('tr')).toHaveCount(4);
+		await page.keyboard.type('셋');
+
+		// 표 안에서 가가 메뉴는 '표 편집…'
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await panel.getByRole('menuitem', { name: '표 편집…' }).click();
+		const tableMenu = page.getByRole('dialog', { name: '표 편집' });
+		// 커서가 있는 열(값) 오른쪽에 열을 넣고, 새 열로 가서 지운다
+		await tableMenu.getByRole('menuitem', { name: '오른쪽에 열 추가' }).click();
+		await expect(table.locator('tr').first().locator('th')).toHaveCount(4);
+		await table.locator('th').nth(2).click();
+		await tableMenu.getByRole('menuitem', { name: '열 삭제' }).click();
+		await expect(table.locator('tr').first().locator('th')).toHaveCount(3);
+		// 정렬은 열 전체에
+		await table.locator('th', { hasText: '값' }).click();
+		await tableMenu.getByRole('button', { name: '가운데 정렬' }).click();
+		await expect(tableMenu.getByRole('button', { name: '가운데 정렬' })).toHaveAttribute('aria-pressed', 'true');
+		// 마지막 행 아래에 행을 넣고, 넣은 행을 지운다
+		await table.locator('td', { hasText: '셋' }).click();
+		await tableMenu.getByRole('menuitem', { name: '아래에 행 추가' }).click();
+		await expect(table.locator('tr')).toHaveCount(5);
+		await table.locator('tr').last().locator('td').first().click();
+		await tableMenu.getByRole('menuitem', { name: '행 삭제' }).click();
+		await expect(table.locator('tr')).toHaveCount(4);
+		await page.keyboard.press('Escape');
+
+		// Enter는 같은 열의 아래 칸으로: 값 아래에 하나·둘·셋
+		await expect
+			.poll(() => api.posts[0]?.body)
+			.toMatch(
+				/\| 이름 +\| +값 +\| +\|\n\| :?-+ \| :-+: \| :?-+ \|\n\| +\| +하나 +\| +\|\n\| +\| +둘 +\| +\|\n\| +\| +셋 +\| +\|\n/
+			);
+
+		// 머리글 행은 지울 수 없다
+		await table.locator('th').first().click();
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await panel.getByRole('menuitem', { name: '표 편집…' }).click();
+		await expect(tableMenu.getByRole('menuitem', { name: '행 삭제' })).toBeDisabled();
+		await expect(tableMenu.getByRole('menuitem', { name: '위에 행 추가' })).toBeDisabled();
+
+		// 표 삭제
+		await tableMenu.getByRole('menuitem', { name: '표 삭제' }).click();
+		await expect(tableMenu).toBeHidden();
+		await expect(table).toHaveCount(0);
+		await expect.poll(() => api.posts[0]?.body).not.toContain('|');
+	});
+
+	test('이미지를 파일에서 골라 올리고, 파일을 첨부하고, 붙여넣은 이미지도 올린다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('파일 시험');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('본문');
+		const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
+
+		// 이미지 넣기 → 파일에서 고르기
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '이미지 넣기…' }).click();
+		const imageForm = page.getByRole('dialog', { name: '이미지 넣기' });
+		await imageForm
+			.getByLabel('이미지 파일')
+			.setInputFiles({ name: '스크린샷.png', mimeType: 'image/png', buffer: png });
+		await expect(imageForm).toBeHidden();
+		await expect(memo.locator('.ProseMirror .memo-figure img')).toHaveAttribute('src', /^http:\/\/api\.test\/files\//);
+		await expect.poll(() => api.posts[0]?.body).toMatch(/!\[스크린샷\]\(http:\/\/api\.test\/files\/fakeupload\d+\)/);
+
+		// 파일 첨부: 이름을 글자로 한 링크, 제목에 크기 (이미지 뒤 새 문단에)
+		await page.keyboard.press('End');
+		await page.keyboard.press('Enter');
+		await memo
+			.getByLabel('첨부할 파일')
+			.first()
+			.setInputFiles({
+				name: '보고서.pdf',
+				mimeType: 'application/pdf',
+				buffer: Buffer.alloc(2048, 1),
+			});
+		await expect(memo.locator(".ProseMirror a[title^='첨부 파일']")).toHaveText('보고서.pdf');
+		await expect
+			.poll(() => api.posts[0]?.body)
+			.toMatch(/\[보고서\.pdf\]\(http:\/\/api\.test\/files\/fakeupload\d+ "첨부 파일 · 2 KB"\)/);
+
+		// 스크린샷을 붙여넣으면 올려서 그 자리에 넣는다
+		await memo.locator('.ProseMirror').evaluate(
+			(editor, bytes) => {
+				const data = new DataTransfer();
+				data.items.add(new File([new Uint8Array(bytes)], '붙여넣기.png', { type: 'image/png' }));
+				editor.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }));
+			},
+			[...png]
+		);
+		await expect(memo.locator('.ProseMirror .memo-figure img')).toHaveCount(2);
+		expect(api.uploads.map((upload) => upload.name)).toEqual(['스크린샷.png', '보고서.pdf', '붙여넣기.png']);
 	});
 
 	test('휴지통 단추나 우클릭으로 지우면 목록에서 사라진다', async ({ page }) => {
@@ -185,7 +304,7 @@ test.describe('바로 고치기 (관리자)', () => {
 				date: '2026-09-30',
 				category: '개발기/MacFolio',
 				summary: '',
-				body: '본문',
+				body: '본문\n\n[보고서.pdf](http://api.test/files/fakeupload000001 "첨부 파일 · 2 KB")',
 				deleted: false,
 			},
 			{ slug: 'cra-to-vite', title: '', date: '2026-09-28', category: '기타', summary: '', body: '', deleted: true },
@@ -194,6 +313,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.locator('.memo-item').first()).toContainText('서버에만 있는 글');
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
 		await expect(memo.getByRole('heading', { level: 1 })).toHaveText('서버에만 있는 글');
+		// 첨부 파일은 편집 화면과 같은 모양의 링크
+		await expect(memo.locator(".memo-markdown a[title^='첨부 파일']")).toHaveText('보고서.pdf');
 		await expect(memo.getByRole('textbox', { name: '제목' })).toHaveCount(0);
 		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
 		await expect(memo.getByRole('button', { name: '새 메모', exact: true })).toHaveCount(0);

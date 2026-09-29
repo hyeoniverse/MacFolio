@@ -17,6 +17,29 @@ export interface FakeApiState {
 	comments: Record<string, FakeComment[]>;
 	/** 관리자가 쓰거나 고친 글, 지운 표시 */
 	posts: FakePost[];
+	/** 올린 이미지·첨부 파일 */
+	uploads: FakeUpload[];
+}
+
+export interface FakeUpload {
+	id: string;
+	name: string;
+	type: string;
+	image: boolean;
+	data: Buffer;
+}
+
+/** multipart 요청에서 파일 하나를 꺼낸다 (가짜 서버용으로 단순하게) */
+function readMultipartFile(body: Buffer) {
+	const boundary = body.subarray(0, body.indexOf('\r\n')).toString('latin1');
+	const headerEnd = body.indexOf('\r\n\r\n');
+	const headers = body.subarray(0, headerEnd).toString('utf8');
+	const end = body.indexOf(`\r\n${boundary}`, headerEnd);
+	return {
+		name: headers.match(/filename="([^"]*)"/)?.[1] ?? 'file',
+		type: headers.match(/Content-Type: (\S+)/i)?.[1] ?? 'application/octet-stream',
+		data: body.subarray(headerEnd + 4, end),
+	};
 }
 
 export interface FakePost {
@@ -59,6 +82,7 @@ export async function fakeApi(
 		saves: 0,
 		comments: {},
 		posts: [],
+		uploads: [],
 	};
 	let nextId = 1;
 	const cors = (origin: string) => ({
@@ -102,6 +126,32 @@ export async function fakeApi(
 			state.saves += 1;
 			return route.fulfill({ status: 200, headers: cors(origin), json: state.organization });
 		}
+		// 파일: 관리자만 올리고, 누구나 받는다. 이미지는 PNG 첫 바이트로 알아본다
+		if (path === '/files' && request.method() === 'POST') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const file = readMultipartFile(request.postDataBuffer()!);
+			const image = file.data.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+			const upload: FakeUpload = { id: `fakeupload${String(nextId++).padStart(6, '0')}`, ...file, image };
+			if (image) upload.type = 'image/png';
+			state.uploads.push(upload);
+			const { data, ...view } = upload;
+			return route.fulfill({
+				status: 201,
+				headers: cors(origin),
+				json: { ...view, size: data.length, path: `/files/${upload.id}` },
+			});
+		}
+		const filePath = path.match(/^\/files\/([\w-]+)$/);
+		if (filePath) {
+			const upload = state.uploads.find((item) => item.id === filePath[1]);
+			if (!upload) return route.fulfill({ status: 404, headers: cors(origin) });
+			return route.fulfill({
+				status: 200,
+				headers: { ...cors(origin), 'Content-Type': upload.type },
+				body: upload.data,
+			});
+		}
+
 		// 글: 누구나 읽고, 로그인했을 때만 쓰고 고치고 지운다
 		const postPath = path.match(/^\/posts(?:\/([\w-]+))?$/);
 		if (postPath) {
