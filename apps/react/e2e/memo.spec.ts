@@ -260,4 +260,16 @@ test.describe('메모 (블로그)', () => {
 		await memo.locator('.memo-item').first().click({ button: 'right' });
 		await expect(page.getByRole('menu')).toHaveCount(0);
 	});
+
+	test('본문 이미지에 올리면 내려받기 단추가 보이고, 누르면 파일로 받는다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
+		const frame = memo.locator('.memo-markdown .memo-figure-frame').first();
+		await frame.hover();
+		const button = frame.getByRole('button', { name: '이미지 내려받기' });
+		await expect(button).toBeVisible();
+		const download = page.waitForEvent('download');
+		await button.click();
+		expect((await download).suggestedFilename()).toMatch(/\.(jpg|png|webp)$/);
+	});
 });

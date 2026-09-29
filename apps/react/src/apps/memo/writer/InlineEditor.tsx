@@ -10,7 +10,7 @@ import { Plugin, TextSelection } from '@milkdown/kit/prose/state';
 import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/view';
 import { isInTable } from '@milkdown/kit/prose/tables';
 import { trailing } from '@milkdown/kit/plugin/trailing';
-import { cursor } from '@milkdown/kit/plugin/cursor';
+import { cursor, dropIndicatorConfig } from '@milkdown/kit/plugin/cursor';
 import { $prose } from '@milkdown/kit/utils';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
@@ -136,6 +136,21 @@ const activeTable = $prose(
 		})
 );
 
+/**
+ * 끌어다 놓을 자리 표시를 body로 옮긴다. 표시는 position: fixed인데, 메모 창은 컨테이너 쿼리를 써서
+ * 그 안의 fixed가 창 기준이 되어 엉뚱한 자리에 그려진다
+ */
+const dropIndicatorToBody = $prose(
+	() =>
+		new Plugin({
+			view: (view) => {
+				const indicator = view.dom.parentNode?.querySelector('.milkdown-drop-indicator');
+				if (indicator) document.body.append(indicator);
+				return {};
+			},
+		})
+);
+
 /** 코드 블록 문법 강조 (읽기 화면과 같은 lowlight, 같은 색). 글이 바뀔 때마다 다시 칠한다 */
 function highlightDecorations(doc: Node) {
 	const decorations: Decoration[] = [];
@@ -193,6 +208,8 @@ const Inner = ({ markdown, onChange }: Props) => {
 					ctx.set(rootCtx, root);
 					// 저장소 글의 상대 경로 이미지도 편집기 안에서 보이게 한다
 					ctx.set(defaultValueCtx, toEditorMarkdown(markdown, CONTENT_IMAGES));
+					// 끌어다 놓을 자리 표시: 굵게 (색은 Memo.css의 .milkdown-drop-indicator)
+					ctx.update(dropIndicatorConfig.key, (config) => ({ ...config, width: 3 }));
 					// 목록 기호는 지금 글들처럼 '-'로 쓴다
 					ctx.update(remarkStringifyOptionsCtx, (options) => ({ ...options, bullet: '-' as const }));
 					// 체크 항목: 네모를 누르면 체크를 켜고 끈다
@@ -244,6 +261,7 @@ const Inner = ({ markdown, onChange }: Props) => {
 				.use(trailing)
 				// 표·이미지 앞뒤처럼 글자를 쓸 수 없는 자리에도 커서를 둘 수 있게 (틈 커서). 거기서 Backspace로 표를 지운다
 				.use(cursor)
+				.use(dropIndicatorToBody)
 				.use(publishFormat)
 				.use(activeTable)
 				.use(findPlugin)

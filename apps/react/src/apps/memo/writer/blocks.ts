@@ -2,10 +2,11 @@
 // 둘 다 읽기 화면(MarkdownImage, CodeBlock)과 같은 DOM 구조로 그린다.
 import { codeBlockSchema, imageSchema } from '@milkdown/kit/preset/commonmark';
 import type { Node } from '@milkdown/kit/prose/model';
-import type { ViewMutationRecord } from '@milkdown/kit/prose/view';
+import type { EditorView, ViewMutationRecord } from '@milkdown/kit/prose/view';
 import { $nodeSchema, $remark, $view } from '@milkdown/kit/utils';
 import { visit } from 'unist-util-visit';
 import { captionParts } from '../caption';
+import { downloadImage } from '../download';
 
 /** 이 파일에서 쓰는 Markdown 트리(mdast)의 모양 */
 interface MdNode {
@@ -97,37 +98,125 @@ function renderCaption(caption: HTMLElement, title: string) {
 	caption.hidden = !title;
 }
 
-/** 이미지(블록·글줄 안) 모양: 읽기 화면처럼 가운데 그림 + 아래 캡션 */
-const figureView = (initial: Node) => {
+/** 이미지 내려받기 단추 (읽기 화면과 같은 자리·모양) */
+function downloadButton(getNode: () => Node) {
+	const button = document.createElement('button');
+	button.type = 'button';
+	button.className = 'memo-figure-download';
+	button.contentEditable = 'false';
+	button.setAttribute('aria-label', '이미지 내려받기');
+	button.title = '이미지 내려받기';
+	button.innerHTML = '<i class="fa-solid fa-arrow-down" aria-hidden="true"></i>';
+	button.addEventListener('mousedown', (event) => event.preventDefault());
+	button.addEventListener('click', () => {
+		const node = getNode();
+		void downloadImage(node.attrs.src, node.attrs.alt);
+	});
+	return button;
+}
+
+/**
+ * 이미지(블록·글줄 안) 모양: 읽기 화면처럼 가운데 그림 + 아래 캡션, 그림 오른쪽 위에 내려받기 단추.
+ * 캡션을 누르면 그 자리에서 고친다 (비어 있으면 '캡션 추가'). Enter나 초점을 옮기면 저장, Esc는 취소
+ */
+const figureView = (initial: Node, view: EditorView, getPos: () => number | undefined) => {
+	let current = initial;
 	const dom = document.createElement('span');
 	dom.className = 'memo-figure';
+	const frame = document.createElement('span');
+	frame.className = 'memo-figure-frame';
 	const img = document.createElement('img');
+	frame.append(
+		img,
+		downloadButton(() => current)
+	);
 	const caption = document.createElement('span');
 	caption.className = 'memo-caption';
+	const input = document.createElement('input');
+	input.className = 'memo-caption-input';
+	input.setAttribute('aria-label', '캡션');
+	input.placeholder = '캡션 ([글자](주소)로 링크)';
+	input.hidden = true;
+
 	const render = (node: Node) => {
 		img.src = node.attrs.src;
 		img.alt = node.attrs.alt;
 		renderCaption(caption, node.attrs.title);
+		caption.hidden = false;
+		caption.classList.toggle('empty', !node.attrs.title);
+		if (!node.attrs.title) caption.textContent = '캡션 추가';
 	};
+
+	const startEdit = () => {
+		input.value = current.attrs.title;
+		caption.hidden = true;
+		input.hidden = false;
+		input.focus();
+		input.select();
+	};
+	let editing = false;
+	const finish = (save: boolean) => {
+		if (input.hidden) return;
+		input.hidden = true;
+		// 저장하면 곧바로 update가 불려 새 캡션을 그리도록 먼저 편집을 끝낸다
+		editing = false;
+		const pos = getPos();
+		const title = input.value.trim();
+		if (save && pos !== undefined && title !== current.attrs.title)
+			view.dispatch(view.state.tr.setNodeMarkup(pos, undefined, { ...current.attrs, title }));
+		else render(current);
+	};
+	caption.addEventListener('mousedown', (event) => {
+		// 캡션의 링크는 눌러서 연다
+		if ((event.target as Element).closest('a')) return;
+		event.preventDefault();
+		editing = true;
+		startEdit();
+	});
+	input.addEventListener('keydown', (event) => {
+		if (event.isComposing) return;
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			finish(true);
+			view.focus();
+		} else if (event.key === 'Escape') {
+			event.preventDefault();
+			finish(false);
+			view.focus();
+		}
+	});
+	input.addEventListener('blur', () => finish(true));
+
 	render(initial);
-	dom.append(img, caption);
+	dom.append(frame, caption, input);
 	return {
 		dom,
 		update: (node: Node) => {
 			if (node.type !== initial.type) return false;
-			render(node);
+			current = node;
+			if (!editing) render(node);
 			return true;
 		},
 		selectNode: () => dom.classList.add('selected'),
 		deselectNode: () => dom.classList.remove('selected'),
 		ignoreMutation: () => true,
-		// 캡션의 링크는 눌러서 열 수 있게 (편집기가 가로채지 않게)
-		stopEvent: (event: Event) => event.type === 'click' && (event.target as Element).closest('a') !== null,
+		// 캡션 입력칸·내려받기 단추·캡션 링크는 편집기가 가로채지 않게
+		stopEvent: (event: Event) => {
+			const target = event.target as Element;
+			return Boolean(
+				target.closest?.('.memo-caption-input, .memo-figure-download') ||
+				(event.type === 'click' && target.closest?.('.memo-caption a')) ||
+				(event.type === 'mousedown' && target.closest?.('.memo-caption'))
+			);
+		},
 	};
 };
 
-export const imageBlockView = $view(imageBlockSchema.node, () => (node) => figureView(node));
-export const inlineImageView = $view(imageSchema.node, () => (node) => figureView(node));
+export const imageBlockView = $view(
+	imageBlockSchema.node,
+	() => (node, view, getPos) => figureView(node, view, getPos)
+);
+export const inlineImageView = $view(imageSchema.node, () => (node, view, getPos) => figureView(node, view, getPos));
 
 /** 복사 단추를 누르면 코드를 클립보드에 넣고 잠깐 '복사됨'을 보여 준다 (읽기 화면과 같이) */
 export function copyCodeButton(getText: () => string) {
