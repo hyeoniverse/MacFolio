@@ -1,6 +1,28 @@
 import { test, expect, enterDesktop, dockItem, appWindow, zIndexOf } from './fixtures';
 
 test.describe('데스크톱', () => {
+	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
+		// 스크립트를 늦게 받게 해서 로딩 화면이 뜨기 전의 모습을 본다
+		let release = () => {};
+		const held = new Promise<void>((resolve) => (release = resolve));
+		await page.route(/\.js$/, async (route) => {
+			await held;
+			await route.continue();
+		});
+		// 모듈 스크립트는 DOMContentLoaded를 막으므로 HTML을 다 읽은 시점까지만 기다린다
+		await page.goto('/', { waitUntil: 'commit' });
+		await page.waitForFunction(() => document.readyState !== 'loading');
+		const body = await page.evaluate(() => {
+			const style = getComputedStyle(document.body);
+			return { image: style.backgroundImage, color: style.backgroundColor };
+		});
+		expect(body).toEqual({ image: 'none', color: 'rgb(0, 0, 0)' });
+
+		release();
+		await expect(page.locator('.loading-container')).toBeVisible();
+		await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('booting'))).toBe(false);
+	});
+
 	test('로딩 화면을 넘기면 Dock과 시작 앱이 보인다', async ({ page }) => {
 		await enterDesktop(page);
 
@@ -8,7 +30,6 @@ test.describe('데스크톱', () => {
 		await expect(dockItem(page, 'launchpad')).toBeVisible();
 		await expect(dockItem(page, 'bin')).toBeVisible();
 		await expect(appWindow(page, 'safari')).toBeVisible();
-		await expect(appWindow(page, 'music')).toBeVisible();
 	});
 
 	test('Dock에서 앱을 열고 닫고 다시 열 수 있다', async ({ page }) => {
@@ -77,6 +98,7 @@ test.describe('데스크톱', () => {
 	test('Music 창을 닫아도 앱이 멈추지 않고 다시 열 수 있다', async ({ page }) => {
 		await enterDesktop(page);
 		const music = appWindow(page, 'music');
+		await dockItem(page, 'music').click();
 		await expect(music).toBeVisible();
 
 		await music.getByRole('button', { name: '닫기' }).click();
@@ -87,24 +109,19 @@ test.describe('데스크톱', () => {
 		await expect(music).toBeVisible();
 	});
 
-	test('Notion은 새 탭으로 외부 페이지를 연다', async ({ page, context }) => {
-		// 외부 사이트에 실제로 접속하지 않는다
-		await context.route(/notion\.site/, (route) => route.fulfill({ status: 200, body: 'notion' }));
-		await enterDesktop(page);
-
-		const popupPromise = page.waitForEvent('popup');
-		await dockItem(page, 'notion').click();
-		const popup = await popupPromise;
-		await popup.waitForURL(/notion\.site/);
-	});
-
 	test('Share는 현재 주소를 복사하고 알림을 띄운다', async ({ page, context }) => {
 		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 		await enterDesktop(page);
 
 		await dockItem(page, 'share').click();
-		await expect(page.getByText('링크가 복사되었습니다!')).toBeVisible();
+		const notice = page.getByRole('status').filter({ hasText: '링크가 복사되었습니다!' });
+		await expect(notice).toBeVisible();
 		expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(page.url());
+
+		// macOS 알림처럼 마우스를 올리면 닫기 단추가 보인다
+		await notice.hover();
+		await notice.getByRole('button', { name: '알림 닫기' }).click();
+		await expect(notice).toBeHidden();
 	});
 });
 

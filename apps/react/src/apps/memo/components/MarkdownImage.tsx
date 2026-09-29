@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { resolveImageSrc } from '../posts';
 import { CONTENT_IMAGES } from '../contentImages';
 
@@ -38,7 +39,10 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 	);
 };
 
-/** 이미지 크게 보기. 바깥을 클릭하거나 Esc를 누르면 닫힌다. */
+/**
+ * 이미지 크게 보기. 바깥을 클릭하거나 Esc를 누르면 닫힌다.
+ * body에 그린다: 메모 레이아웃이 컨테이너 쿼리를 쓰면 그 안의 position: fixed가 창 기준이 되기 때문이다.
+ */
 const Lightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({ src, alt, onClose }) => {
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -48,10 +52,11 @@ const Lightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [onClose]);
 
-	return (
-		<span className="memo-lightbox" role="dialog" aria-modal="true" aria-label={alt || '이미지'} onClick={onClose}>
+	return createPortal(
+		<div className="memo-lightbox" role="dialog" aria-modal="true" aria-label={alt || '이미지'} onClick={onClose}>
 			<img src={src} alt={alt} />
-		</span>
+		</div>,
+		document.body
 	);
 };
 

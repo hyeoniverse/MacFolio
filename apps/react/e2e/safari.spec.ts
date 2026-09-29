@@ -1,0 +1,69 @@
+import { test, expect, enterDesktop, appWindow } from './fixtures';
+
+test.describe('Safari', () => {
+	test('프로젝트마다 탭이 있고, 탭을 고르면 그 프로젝트 소개와 주소가 바뀐다', async ({ page }) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		await expect(safari).toBeVisible();
+
+		const tabs = safari.getByRole('tab');
+		await expect(tabs).toHaveCount(5);
+		await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
+		const panel = safari.getByRole('tabpanel');
+		await expect(panel.getByRole('article', { name: 'NewPick 뉴픽' })).toBeVisible();
+		// 팀 프로젝트는 진행 과정과 맡은 일을 보여준다
+		await expect(panel.getByRole('region', { name: '진행 과정' })).toBeVisible();
+
+		await safari.getByRole('tab', { name: /QRU/ }).click();
+		const qru = panel.getByRole('article', { name: 'QRU 큐알유' });
+		await expect(qru).toBeVisible();
+		await expect(qru.getByRole('heading', { level: 1 })).toHaveText('QR 한 장에 담은 나.');
+		for (const name of ['주요 기능', '만든 방식', '맡은 일', '다음 단계', '기술 사양']) {
+			await expect(panel.getByRole('region', { name })).toBeVisible();
+		}
+		// 주소창은 데모 주소를 보여주고, 누르면 새 탭에서 연다
+		const address = safari.locator('.safari-address');
+		await expect(address).toHaveText('qryou-app.web.app');
+		await expect(address).toHaveAttribute('target', '_blank');
+		await expect(panel.getByRole('link', { name: 'GitHub에서 보기' }).first()).toHaveAttribute(
+			'href',
+			'https://github.com/hyeoniverse/QRU'
+		);
+
+		// 이전·다음 탭
+		await safari.getByRole('button', { name: '다음 탭' }).click();
+		await expect(panel.getByRole('article', { name: 'SproutFarm 새싹 농장' })).toBeVisible();
+		await safari.getByRole('button', { name: '이전 탭' }).click();
+		await expect(panel.getByRole('article', { name: 'QRU 큐알유' })).toBeVisible();
+	});
+
+	test('데모가 없는 프로젝트는 주소창에 저장소 주소를 보여준다', async ({ page }) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		await safari.getByRole('tab', { name: /DevCourse/ }).click();
+		await expect(safari.locator('.safari-address')).toHaveText('github.com/hyeoniverse/DevCourse-FullStack');
+		await expect(safari.getByRole('link', { name: '데모 보기' })).toHaveCount(0);
+		await expect(safari.getByRole('button', { name: '다음 탭' })).toBeDisabled();
+	});
+
+	test('탭을 닫고, 새 탭의 즐겨찾기에서 다시 연다', async ({ page }) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		const tabs = safari.getByRole('tab');
+
+		// 고른 탭을 닫으면 오른쪽 탭으로 넘어간다
+		await safari.getByRole('tab', { name: /NewPick/ }).hover();
+		await safari.getByRole('button', { name: 'NewPick 뉴픽 탭 닫기' }).click();
+		await expect(tabs).toHaveCount(4);
+		await expect(safari.getByRole('tab', { name: /WTD/ })).toHaveAttribute('aria-selected', 'true');
+
+		// 새 탭은 시작 페이지. 즐겨찾기에서 고르면 그 탭이 프로젝트로 바뀐다
+		await safari.getByRole('button', { name: '새 탭' }).click();
+		await expect(safari.getByRole('tab', { name: '시작 페이지' })).toHaveAttribute('aria-selected', 'true');
+		const start = safari.getByRole('region', { name: '시작 페이지' });
+		await start.getByRole('button', { name: /NewPick/ }).click();
+		await expect(tabs).toHaveCount(5);
+		await expect(safari.getByRole('tab', { name: /NewPick/ })).toHaveAttribute('aria-selected', 'true');
+		await expect(safari.getByRole('tab', { name: '시작 페이지' })).toHaveCount(0);
+	});
+});

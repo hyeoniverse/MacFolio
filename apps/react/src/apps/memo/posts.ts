@@ -12,6 +12,8 @@ export interface Post {
 	summary: string;
 	/** Markdown 본문 (머리말 제외) */
 	body: string;
+	/** 목록 맨 위에 고정 (머리말 pinned: true, 방문자가 바꿀 수 있다) */
+	pinned?: boolean;
 }
 
 export const ALL_CATEGORY = '모든 글';
@@ -55,6 +57,7 @@ export function toPost(slug: string, source: string): Post | null {
 		category: meta.category || '기타',
 		summary: meta.summary || excerpt(body),
 		body: body.trim(),
+		...(meta.pinned === 'true' && { pinned: true }),
 	};
 }
 
@@ -63,23 +66,67 @@ export function sortPosts(posts: Post[]): Post[] {
 	return [...posts].sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
 }
 
-/** 카테고리 목록: '모든 글'이 맨 앞, 나머지는 가나다순, 글 수 포함 */
-export function listCategories(posts: Post[]): { name: string; count: number }[] {
-	const counts = new Map<string, number>();
-	for (const post of posts) counts.set(post.category, (counts.get(post.category) ?? 0) + 1);
-	return [
-		{ name: ALL_CATEGORY, count: posts.length },
-		...[...counts].sort(([a], [b]) => a.localeCompare(b)).map(([name, count]) => ({ name, count })),
-	];
+/** 폴더 트리의 한 폴더. category의 '/'로 하위 폴더를 만든다 (예: 개발기/MacFolio) */
+export interface FolderNode {
+	name: string;
+	/** 전체 경로 (예: 개발기/MacFolio) */
+	path: string;
+	/** 하위 폴더의 글까지 센 수 */
+	count: number;
+	children: FolderNode[];
+	/** 방문자가 만든 폴더 (이 브라우저에만 있다) */
+	custom?: boolean;
 }
 
-/** 카테고리와 검색어로 거른다. 검색은 제목·본문에서 대소문자 구분 없이 */
+/** 글이 그 폴더(또는 하위 폴더)에 있는지 */
+export function inFolder(post: Post, path: string): boolean {
+	return path === ALL_CATEGORY || post.category === path || post.category.startsWith(`${path}/`);
+}
+
+/**
+ * 글의 category와 방문자가 만든 폴더(글 0개)로 폴더 트리를 만든다. 같은 층은 가나다순.
+ * 방문자가 만든 폴더는 custom으로 표시한다.
+ */
+export function buildFolderTree(posts: Post[], customFolders: string[] = []): FolderNode[] {
+	const root: FolderNode[] = [];
+	const add = (category: string, counted: boolean) => {
+		const parts = category
+			.split('/')
+			.map((part) => part.trim())
+			.filter(Boolean);
+		let level = root;
+		parts.forEach((name, index) => {
+			const path = parts.slice(0, index + 1).join('/');
+			let node = level.find((n) => n.name === name);
+			if (!node) {
+				node = { name, path, count: 0, children: [], ...(customFolders.includes(path) && { custom: true }) };
+				level.push(node);
+			}
+			if (counted) node.count += 1;
+			level = node.children;
+		});
+	};
+	posts.forEach((post) => add(post.category, true));
+	customFolders.forEach((path) => add(path, false));
+	const sort = (nodes: FolderNode[]): FolderNode[] =>
+		nodes.sort((a, b) => a.name.localeCompare(b.name)).map((node) => ({ ...node, children: sort(node.children) }));
+	return sort(root);
+}
+
+/** 경로의 마지막 이름 (예: 개발기/MacFolio → MacFolio) */
+export const folderName = (path: string) => path.split('/').at(-1) ?? path;
+
+/** 본문의 첫 이미지 주소 (갤러리 미리보기용). 없으면 null */
+export function firstImage(body: string): string | null {
+	return /!\[[^\]]*\]\(\s*([^)\s]+)/.exec(body)?.[1] ?? null;
+}
+
+/** 폴더(하위 폴더 포함)와 검색어로 거른다. 검색은 제목·본문에서 대소문자 구분 없이 */
 export function filterPosts(posts: Post[], category: string, query: string): Post[] {
 	const q = query.trim().toLowerCase();
 	return posts.filter(
 		(post) =>
-			(category === ALL_CATEGORY || post.category === category) &&
-			(!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q))
+			inFolder(post, category) && (!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q))
 	);
 }
 

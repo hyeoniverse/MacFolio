@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" class="booting">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="/favicon.ico" />
@@ -9,6 +9,13 @@
 		<link rel="apple-touch-icon" href="/logo192.png" />
 		<link rel="manifest" href="/manifest.json" />
 		<title>김정현의 Mac</title>
+		<style>
+			/* 로딩 화면이 뜨기 전(스크립트를 받는 동안)에는 배경화면 대신 검은 화면 (LoadingScreen이 booting을 뗀다) */
+			html.booting,
+			html.booting body {
+				background: #000 !important;
+			}
+		</style>
 		<script>
 			// 첫 화면이 그려지기 전에 테마를 적용해 깜빡임을 막는다 (shared/settings/settingsStore.ts와 같은 키)
 			try {

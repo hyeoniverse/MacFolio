@@ -46,12 +46,17 @@ test.describe('Settings', () => {
 	test('배경화면을 바꾸면 바로 적용되고 유지된다', async ({ page }) => {
 		const settings = await openSettings(page);
 		await settings.getByRole('button', { name: '배경화면' }).click();
-		await settings.getByRole('radio', { name: '바다' }).click();
+		await settings.getByRole('radiogroup', { name: 'macOS 배경화면' }).getByRole('radio', { name: 'Sonoma' }).click();
 
 		const background = () => page.evaluate(() => getComputedStyle(document.body).backgroundImage);
-		await expect.poll(background).toContain('linear-gradient');
+		await expect.poll(background).toContain('sonoma-light.jpg');
+
+		// 다크 모드에서는 어두운 버전
+		await settings.getByRole('button', { name: '화면 모드' }).click();
+		await settings.getByRole('radio', { name: '다크' }).click();
+		await expect.poll(background).toContain('sonoma-dark.jpg');
 
 		await page.reload();
-		await expect.poll(background).toContain('linear-gradient');
+		await expect.poll(background).toContain('sonoma-dark.jpg');
 	});
 });

@@ -18,22 +18,18 @@
 	border-radius: 0.8rem;
 }
 
-/* 창 애니메이션 */
-@keyframes minimize {
-	0% {
-		transform: scale(1);
-		opacity: 1;
-	}
-
-	100% {
-		transform: scale(0);
-		opacity: 0;
-	}
+/* 전체 화면 전환: 위치·크기가 부드럽게 바뀐다 (Window.tsx의 FRAME_MS) */
+.container.frame-animating {
+	transition:
+		left 0.3s var(--ease-out),
+		top 0.3s var(--ease-out),
+		width 0.3s var(--ease-out),
+		height 0.3s var(--ease-out);
 }
 
-.container.minimizing {
-	animation: minimize 0.5s forwards;
-	transform-origin: bottom center;
+/* 닫히는 중에는 누를 수 없다 */
+.container.closing {
+	pointer-events: none;
 }
 
 .resize-handle {
@@ -249,4 +245,102 @@
 	height: 100%;
 	overflow: hidden;
 	border-radius: inherit;
+}
+
+/* ─── 모바일: 앱이 화면을 가득 채운다 ─── */
+.container.mobile {
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	inset: 0;
+	height: 100dvh;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	/* 위쪽은 모바일 상태 표시줄 자리 (desktop/mobile/MobileShell.css) */
+	padding-top: var(--mobile-statusbar-height);
+	overflow: hidden;
+}
+
+.container.mobile .content {
+	flex: 1;
+	min-height: 0;
+	height: auto;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	border-radius: 0;
+}
+
+.container.mobile.unified .content {
+	overflow: hidden;
+}
+
+.mobile-navbar {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	flex: none;
+	height: 44px;
+	padding: 0 8px;
+	border-bottom: 1px solid var(--color-window-border);
+	background-color: var(--color-titlebar-bg);
+}
+
+.mobile-navbar .title {
+	overflow: hidden;
+	max-width: 60vw;
+	font-size: 16px;
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mobile-navbar-home {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	justify-self: start;
+	padding: 8px 6px;
+	border: none;
+	background: none;
+	color: var(--color-accent);
+	font: inherit;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.mobile-navbar-home i {
+	font-size: 18px;
+}
+
+/* 홈 인디케이터: 누르거나 쓸어 올리면 홈으로 */
+.home-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 100%;
+	height: calc(22px + env(safe-area-inset-bottom));
+	padding-bottom: env(safe-area-inset-bottom);
+	border: none;
+	background-color: var(--color-window-bg);
+	cursor: pointer;
+	touch-action: none;
+}
+
+.home-indicator span {
+	width: 134px;
+	height: 5px;
+	border-radius: 3px;
+	background-color: var(--color-text);
+	opacity: 0.85;
+}
+
+/* iOS처럼 제목 막대 색이 상태 표시줄 아래까지 이어진다 (앱별 창 배경보다 우선) */
+.container.mobile[data-app] {
+	background-color: var(--color-titlebar-bg);
+}
+
+.container.mobile:not(.unified) .content {
+	background-color: var(--color-window-bg);
 }

@@ -91,4 +91,107 @@ test.describe('메모 (블로그)', () => {
 		await openMemo(page);
 		expect(await page.evaluate(() => localStorage.getItem('macfolio:memos'))).toBeNull();
 	});
+
+	test('사이드바를 여닫을 수 있다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await expect(folders.getByRole('button', { name: /모든 글/ })).toBeVisible();
+
+		await memo.getByRole('button', { name: '사이드바 가리기' }).click();
+		await expect(folders.getByRole('button', { name: /모든 글/ })).toBeHidden();
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+
+		await memo.getByRole('button', { name: '사이드바 보기' }).click();
+		await expect(folders.getByRole('button', { name: /모든 글/ })).toBeVisible();
+	});
+
+	test('하위 폴더를 접고 펼치고, 상위 폴더를 고르면 하위 폴더의 글도 보인다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		const child = folders.getByRole('button', { name: /^MacFolio/ });
+		await expect(child).toBeVisible();
+
+		await folders.getByRole('button', { name: /^개발기/ }).click();
+		await expect(memo.locator('.memo-item')).not.toHaveCount(0);
+
+		await folders.getByRole('button', { name: '하위 폴더 접기 (개발기)' }).click();
+		await expect(child).toBeHidden();
+		await folders.getByRole('button', { name: '하위 폴더 펼치기 (개발기)' }).click();
+		await expect(child).toBeVisible();
+	});
+
+	test('갤러리로 보기: 글을 카드로 보여주고, 카드를 누르면 글이 열리고 갤러리로 돌아온다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await memo.getByRole('button', { name: '갤러리로 보기' }).first().click();
+
+		const gallery = memo.getByRole('region', { name: '갤러리' });
+		await expect(gallery).toBeVisible();
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeHidden();
+		const cards = gallery.locator('.memo-card');
+		await expect(cards).not.toHaveCount(0);
+
+		await cards.filter({ hasText: 'CRA에서 Vite로 옮기기' }).click();
+		await expect(memo.getByRole('article', { name: 'CRA에서 Vite로 옮기기' })).toBeVisible();
+		await expect(gallery).toBeHidden();
+
+		await memo.locator('.memo-gallery-back').click();
+		await expect(gallery).toBeVisible();
+
+		await gallery.getByRole('button', { name: '목록으로 보기' }).click();
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+	});
+
+	test('검색 칸은 목록·갤러리 어디서든 도구 막대 오른쪽 끝에 있다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		const windowBox = (await memo.boundingBox())!;
+		const right = async () => {
+			const box = (await search.boundingBox())!;
+			return Math.round(windowBox.x + windowBox.width - (box.x + box.width));
+		};
+		const inList = await right();
+		await memo.getByRole('button', { name: '갤러리로 보기' }).first().click();
+		expect(await right()).toBe(inList);
+		expect((await search.boundingBox())!.y - windowBox.y).toBeLessThan(52);
+	});
+
+	test('코드 블록은 문법 강조가 된다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await memo.locator('.memo-item', { hasText: '테스트를 붙이자' }).click();
+		const code = memo.getByRole('article').locator('pre code').first();
+		await expect(code).toHaveClass(/hljs/);
+		await expect(code.locator('.hljs-keyword').first()).toBeVisible();
+	});
+
+	test('목록 위에 폴더 이름과 메모 수가 보인다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const heading = memo.getByRole('region', { name: '글 목록' }).locator('.memo-toolbar-heading');
+		await expect(heading).toContainText('모든 글');
+		await expect(heading).toContainText('2개의 메모');
+	});
+
+	test('방문자는 편집할 수 없다 (편집은 관리자만, #9)', async ({ page }) => {
+		// 예전에 방문자 브라우저에 저장된 정리 내용은 지운다
+		await page.goto('/');
+		await page.evaluate(() =>
+			localStorage.setItem(
+				'macfolio:memo:organization',
+				JSON.stringify({ folders: ['몰래 만든 폴더'], posts: {}, moves: [], pins: {} })
+			)
+		);
+		const memo = await openMemo(page);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+
+		await expect(folders.getByRole('button', { name: /^몰래 만든 폴더/ })).toHaveCount(0);
+		expect(await page.evaluate(() => localStorage.getItem('macfolio:memo:organization'))).toBeNull();
+
+		await expect(memo.getByRole('button', { name: '새로운 폴더' })).toHaveCount(0);
+		await folders.getByRole('button', { name: /^개발기/ }).hover();
+		await expect(folders.getByRole('button', { name: /폴더 동작/ })).toHaveCount(0);
+		await expect(memo.getByRole('button', { name: /메모 고정/ })).toHaveCount(0);
+		await expect(folders.getByRole('button', { name: /^개발기/ })).toHaveAttribute('draggable', 'false');
+
+		await memo.locator('.memo-item').first().click({ button: 'right' });
+		await expect(page.getByRole('menu')).toHaveCount(0);
+	});
 });

@@ -20,8 +20,11 @@ const darkQuery = () => window.matchMedia('(prefers-color-scheme: dark)');
 /** 설정을 문서에 반영한다: <html data-theme>, 배경화면 CSS 변수 */
 function apply(settings: Settings) {
 	const root = document.documentElement;
-	root.dataset.theme = resolveTheme(settings.theme, darkQuery().matches);
-	root.style.setProperty('--wallpaper', wallpaperCss(settings.wallpaper));
+	const theme = resolveTheme(settings.theme, darkQuery().matches);
+	root.dataset.theme = theme;
+	const wallpaper = wallpaperCss(settings, theme);
+	root.style.setProperty('--wallpaper', wallpaper.desktop);
+	root.style.setProperty('--wallpaper-mobile', wallpaper.mobile);
 }
 
 /** 앱 시작 시 한 번 호출한다. 설정이 바뀌거나 시스템 테마가 바뀌면 다시 반영한다. */
