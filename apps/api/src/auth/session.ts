@@ -22,6 +22,3 @@ export function safeEqual(a: string | undefined, b: string | undefined): boolean
 	const right = Buffer.from(b);
 	return left.length === right.length && timingSafeEqual(left, right);
 }
-
-/** GitHub 계정 이름은 대소문자를 가리지 않는다 */
-export const sameGithubLogin = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();

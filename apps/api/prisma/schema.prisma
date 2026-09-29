@@ -15,6 +15,9 @@ model AdminSession {
   id          String   @id @default(cuid())
   /// 토큰의 SHA-256 (hex)
   tokenHash   String   @unique
+  /// GitHub 숫자 ID (바뀌지 않는다). 관리자 확인은 이 값으로 한다
+  githubId    Int
+  /// 로그인할 때의 계정 이름 (보여 주기용)
   githubLogin String
   createdAt   DateTime @default(now())
   expiresAt   DateTime
