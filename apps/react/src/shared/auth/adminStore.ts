@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react';
 import { createStore } from '@/shared/lib/createStore';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
+import { saveAppsBeforeLeaving } from '@/desktop/appsBeforeLeaving';
 import { checkAdmin, readLoginResult, type AdminState, type LoginResult } from '@/shared/auth/admin';
 
 /**
@@ -31,7 +32,11 @@ const REDIRECT_DELAY_MS = 600;
 export function signIn() {
 	if (!env.apiUrl) return;
 	loginFlowStore.setState({ redirecting: true });
-	setTimeout(() => window.location.assign(`${env.apiUrl}/auth/github`), REDIRECT_DELAY_MS);
+	setTimeout(() => {
+		// 돌아왔을 때 켜 두었던 앱이 그대로 있게
+		saveAppsBeforeLeaving();
+		window.location.assign(`${env.apiUrl}/auth/github`);
+	}, REDIRECT_DELAY_MS);
 }
 
 /** GitHub에서 막 돌아왔는지 (그러면 로딩 화면을 건너뛴다) */

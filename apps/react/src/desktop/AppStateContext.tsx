@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
 import { bringToFront, minimizeAll } from '@/desktop/appStack';
 import { isMobileViewport } from '@/desktop/layout';
+import { takeAppsSavedBeforeLeaving, trackApps } from '@/desktop/appsBeforeLeaving';
 
 export type AppState = {
 	isRunning: boolean;
@@ -57,9 +58,16 @@ export const useAppState = () => {
 
 // Context provider component
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [apps, setApps] = useState<Record<AppName, AppState>>(() =>
-		createInitialAppStates(isMobileViewport({ width: window.innerWidth, height: window.innerHeight }))
-	);
+	const [apps, setApps] = useState<Record<AppName, AppState>>(() => {
+		const mobile = isMobileViewport({ width: window.innerWidth, height: window.innerHeight });
+		const initial = createInitialAppStates(mobile);
+		// 로그인하러 떠났다 돌아왔으면 켜 두었던 앱을 그대로
+		return takeAppsSavedBeforeLeaving(mobile, initial) ?? initial;
+	});
+
+	useEffect(() => {
+		trackApps(isMobileViewport({ width: window.innerWidth, height: window.innerHeight }), apps);
+	}, [apps]);
 
 	// 화면 밖 창을 되돌리는 처리는 창이 렌더링될 때 한다 (desktop/window/geometry.ts의 clampRect)
 	const bringAppToFront = useCallback((appName: AppName) => {
@@ -105,16 +113,12 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 		}));
 	}, []);
 
+	// 여는 앱은 늘 맨 앞에 (Apple 메뉴의 시스템 설정처럼 다른 창이 떠 있을 때 열어도 뒤에 숨지 않게)
 	const openApp = useCallback((appName: AppName) => {
-		setApps((prevState) => ({
-			...prevState,
-			[appName]: {
-				...prevState[appName],
-				isRunning: true,
-				isMinimized: false,
-				hasOpened: true,
-			},
-		}));
+		setApps((prevState) => {
+			const fronted = bringToFront(prevState, appName);
+			return { ...fronted, [appName]: { ...fronted[appName], isRunning: true, hasOpened: true } };
+		});
 	}, []);
 
 	const maximizeApp = useCallback((appName: AppName) => {
