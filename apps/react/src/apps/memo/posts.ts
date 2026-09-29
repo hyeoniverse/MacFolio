@@ -66,6 +66,17 @@ export function sortPosts(posts: Post[]): Post[] {
 	return [...posts].sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
 }
 
+/**
+ * 날짜 순으로 바로 옆의 글: 이전 글은 더 오래된 글, 다음 글은 더 최근 글 (블로그의 흔한 관례).
+ * 같은 날이면 목록과 같은 순서(제목 순)를 따른다. 목록을 어떻게 정렬해 보고 있든 날짜로 잇는다.
+ */
+export function adjacentPosts(posts: Post[], slug: string): { older: Post | null; newer: Post | null } {
+	const ordered = sortPosts(posts);
+	const index = ordered.findIndex((post) => post.slug === slug);
+	if (index === -1) return { older: null, newer: null };
+	return { older: ordered[index + 1] ?? null, newer: ordered[index - 1] ?? null };
+}
+
 /** 폴더 트리의 한 폴더. category의 '/'로 하위 폴더를 만든다 (예: 개발기/MacFolio) */
 export interface FolderNode {
 	name: string;

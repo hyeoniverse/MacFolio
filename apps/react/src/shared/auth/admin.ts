@@ -28,12 +28,30 @@ export function readLoginResult(href: string): { result: LoginResult | null; cle
 	return { result: RESULTS.includes(value as LoginResult) ? (value as LoginResult) : null, cleanHref: url.toString() };
 }
 
-/** 로그인 결과 알림 문구 */
-export const LOGIN_MESSAGES: Record<LoginResult, { title: string; body: string }> = {
-	'signed-in': { title: '관리자로 로그인함', body: 'GitHub 계정으로 로그인했습니다.' },
-	denied: { title: '로그인할 수 없음', body: '관리자 계정(GitHub)만 로그인할 수 있습니다.' },
-	cancelled: { title: '로그인 취소됨', body: 'GitHub 로그인을 취소했습니다.' },
-};
+/**
+ * GitHub에서 돌아온 뒤 보여 줄 결과. 주소의 결과(result)보다 서버에 물어본 실제 상태를 믿는다
+ * (signed-in으로 돌아왔어도 쿠키가 막혔으면 로그인되지 않은 것이다).
+ */
+export function loginOutcome(
+	result: LoginResult,
+	state: AdminState
+): { tone: 'success' | 'fail'; title: string; body: string } {
+	if (state.status === 'signed-in' && state.login)
+		return {
+			tone: 'success',
+			title: '로그인했습니다',
+			body: `${state.login}(으)로 로그인했습니다. 관리자 기능을 쓸 수 있습니다.`,
+		};
+	if (result === 'denied')
+		return { tone: 'fail', title: '로그인할 수 없습니다', body: '관리자 GitHub 계정만 로그인할 수 있습니다.' };
+	if (result === 'cancelled')
+		return { tone: 'fail', title: '로그인을 취소했습니다', body: 'GitHub 로그인을 마치지 않았습니다.' };
+	return {
+		tone: 'fail',
+		title: '로그인을 확인하지 못했습니다',
+		body: '관리자 서버에 연결할 수 없거나 브라우저가 로그인 쿠키를 막았습니다. 잠시 뒤 다시 시도해 주세요.',
+	};
+}
 
 /** 계정 사진 (GitHub 공개 프로필 사진) */
 export const avatarUrl = (login: string) => `https://github.com/${encodeURIComponent(login)}.png?size=120`;
