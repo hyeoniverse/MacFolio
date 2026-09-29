@@ -144,12 +144,23 @@
 	scrollbar-width: none;
 }
 
+/*
+ * 탭 폭: 모두 같은 몫(flex-grow 1)에서 시작하고, 지금 탭만 몫을 크게(3) 가져 제목이 넉넉히 보인다.
+ * 다른 탭은 짧게 줄어 아이콘과 제목 앞부분만. 탭을 바꾸면 몫이 옮겨 가며 폭이 부드럽게 바뀐다.
+ */
 .safari-tab {
 	display: flex;
 	flex: 1 1 0;
 	position: relative;
-	min-width: 96px;
-	transition: background-color var(--duration-fast) var(--ease-out);
+	min-width: 44px;
+	transition:
+		flex-grow 0.38s cubic-bezier(0.32, 0.72, 0, 1),
+		background-color 0.25s var(--ease-out),
+		box-shadow 0.25s var(--ease-out);
+}
+
+.safari-tab.active {
+	flex-grow: 3;
 }
 
 /* 탭 사이 세로선 */
@@ -183,7 +194,7 @@
 	justify-content: center;
 	gap: 6px;
 	min-width: 0;
-	padding: 0 24px;
+	padding: 0 12px;
 	border: none;
 	background: none;
 	color: var(--safari-muted);
@@ -194,6 +205,15 @@
 
 .safari-tab.active .safari-tab-button {
 	color: var(--safari-text);
+	/* 지금 탭은 닫기 단추 자리를 비운다 */
+	padding-left: 26px;
+}
+
+/* 제목은 탭 폭이 바뀌는 동안 살짝 흐려졌다 다시 또렷해진다 */
+.safari-tab-button span {
+	transition:
+		opacity 0.25s var(--ease-out),
+		color 0.25s var(--ease-out);
 }
 
 .safari-tab-button span {
@@ -322,18 +342,20 @@
 		display: none;
 	}
 
+	/* 좁은 창: 탭은 둥근 막대 안에 나란히. 지금 탭은 떠 있는 알약, 나머지는 사이 선으로 나뉜다 (macOS Safari의 좁은 탭) */
 	.safari-tabs {
-		gap: 6px;
-		height: auto;
-		padding: 8px 12px;
-		border-top: none;
+		height: 38px;
+		margin: 6px 12px 8px;
+		padding: 3px;
+		border: none;
+		border-radius: 999px;
+		background-color: var(--safari-address-bg);
 	}
 
 	/* 데스크톱의 좁은 창: 도구 막대가 없으니 탭 막대가 제목 표시줄 자리에 온다. 신호등 버튼 자리를 비운다 */
 	.container:not(.mobile) .safari-tabs {
-		align-items: center;
-		min-height: 52px;
-		padding-left: 84px;
+		margin-top: 10px;
+		margin-left: 84px;
 	}
 
 	/* 탭은 끌기 영역(z-index 3)보다 위에 둬야 눌린다. 탭 사이 빈 곳은 그대로 창을 끈다 */
@@ -342,23 +364,40 @@
 	}
 
 	.safari-tab {
-		flex: none;
-		min-width: 0;
+		min-width: 40px;
 		border-radius: 999px;
 	}
 
-	.safari-tab::before {
-		display: none;
+	/* 좁으면 지금 탭의 몫을 조금 줄여 다른 탭의 제목 앞부분이 더 보이게 */
+	.safari-tab.active {
+		flex-grow: 2.4;
+	}
+
+	.safari-tab + .safari-tab::before {
+		top: 9px;
+		bottom: 9px;
+	}
+
+	.safari-tab:hover:not(.active) {
+		background-color: transparent;
 	}
 
 	.safari-tab.active {
-		background-color: var(--safari-address-bg);
+		background-color: var(--safari-bg);
+		box-shadow:
+			0 0 0 0.5px var(--safari-border),
+			0 1px 4px rgba(0, 0, 0, 0.14);
 	}
 
-	.safari-tab-button {
-		height: 32px;
-		padding: 0 12px;
+	.safari-tab-button,
+	.safari-tab.active .safari-tab-button {
+		padding: 0 10px;
 		font-size: 13px;
+	}
+
+	/* 짧은 탭은 제목이 흐리게, 지금 탭은 또렷하게 */
+	.safari-tab:not(.active) .safari-tab-button span {
+		opacity: 0.85;
 	}
 
 	/* 휴대폰에는 올리기가 없으므로 닫기 단추를 두지 않는다 */

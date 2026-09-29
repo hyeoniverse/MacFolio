@@ -80,4 +80,28 @@ test.describe('Safari', () => {
 		await safari.getByRole('tab', { name: /QRU/ }).click();
 		await expect(safari.getByRole('tab', { name: /QRU/ })).toHaveAttribute('aria-selected', 'true');
 	});
+
+	test('탭 폭: 지금 탭은 넉넉해 제목이 다 보이고, 다른 탭은 짧게 줄어든다. 탭을 바꾸면 폭이 옮겨 간다', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		await safari.evaluate((element) => (element.style.width = '560px'));
+		const width = (name: RegExp) =>
+			safari.getByRole('tab', { name }).evaluate((el) => el.parentElement!.getBoundingClientRect().width);
+		const fullyShown = (name: RegExp) =>
+			safari
+				.getByRole('tab', { name })
+				.locator('span')
+				.evaluate((el) => el.scrollWidth <= el.clientWidth);
+
+		await expect.poll(() => width(/NewPick/)).toBeGreaterThan(2 * (await width(/QRU/)));
+		expect(await fullyShown(/NewPick/)).toBe(true);
+
+		await safari.getByRole('tab', { name: /QRU/ }).click();
+		await expect.poll(() => width(/QRU/)).toBeGreaterThan(2 * (await width(/NewPick/)));
+		expect(await fullyShown(/QRU/)).toBe(true);
+		// 탭 막대는 넘치지 않는다 (가로로 밀지 않아도 모든 탭이 보인다)
+		expect(await safari.locator('.safari-tabs').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+	});
 });
