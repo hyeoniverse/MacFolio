@@ -15,3 +15,11 @@ export function fromEditorMarkdown(markdown: string, images: Record<string, stri
 		back.has(url) ? `${head}${back.get(url)}` : match
 	);
 }
+
+/**
+ * 표의 왼쪽 정렬 표시(:---)를 정렬 없음(----)으로. 편집기는 모든 열을 왼쪽 정렬로 쓰는데,
+ * 왼쪽 정렬은 정렬 없음과 똑같이 보이고, 원래 글들처럼 ---로 두는 편이 읽기 쉽다 (목록 미리 보기에 :가 남지 않는다)
+ */
+export function plainTableAlign(markdown: string): string {
+	return markdown.replace(/^\|(?: *:?-+:? *\|)+ *$/gm, (row) => row.replace(/:(-+)(?=[ |])/g, '-$1'));
+}

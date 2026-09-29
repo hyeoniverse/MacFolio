@@ -3,10 +3,10 @@ import type { Ctx } from '@milkdown/kit/ctx';
 import { editorViewCtx } from '@milkdown/kit/core';
 import { lift } from '@milkdown/kit/prose/commands';
 import type { Node } from '@milkdown/kit/prose/model';
-import { TextSelection, type EditorState } from '@milkdown/kit/prose/state';
+import { NodeSelection, TextSelection, type EditorState } from '@milkdown/kit/prose/state';
+import type { EditorView } from '@milkdown/kit/prose/view';
 import {
 	createCodeBlockCommand,
-	insertImageCommand,
 	liftListItemCommand,
 	toggleEmphasisCommand,
 	toggleInlineCodeCommand,
@@ -27,7 +27,12 @@ import { blockOfHeading, EMPTY_FORMAT, HEADING_LEVEL, type FormatAction, type Fo
 export function formatStateOf(state: EditorState): FormatState {
 	const { $from, from, to, empty } = state.selection;
 	const parent = $from.parent;
-	const result: FormatState = { ...EMPTY_FORMAT, table: tableStateOf(state), marks: { ...EMPTY_FORMAT.marks } };
+	const result: FormatState = {
+		...EMPTY_FORMAT,
+		table: tableStateOf(state),
+		image: imageStateOf(state),
+		marks: { ...EMPTY_FORMAT.marks },
+	};
 	if (parent.type.name === 'heading') result.block = blockOfHeading(parent.attrs.level as number);
 	else if (parent.type.name === 'code_block') result.block = 'mono';
 
@@ -77,6 +82,28 @@ const leaveList = (ctx: Ctx) => {
 		if (!callCommand(liftListItemCommand.key)(ctx)) break;
 	}
 };
+
+const IMAGE_NODES = ['image', 'image_block'];
+
+/** 이미지를 골랐으면 그 속성 */
+function imageStateOf(state: EditorState) {
+	const { selection } = state;
+	if (!(selection instanceof NodeSelection) || !IMAGE_NODES.includes(selection.node.type.name)) return null;
+	const { src, alt, title } = selection.node.attrs as { src: string; alt: string; title: string };
+	return { src, alt, title };
+}
+
+/** 이미지를 블록으로 넣는다. 빈 문단에 있으면 그 문단 자리에, 글 가운데면 문단을 나눠 그 사이에 */
+function insertImage(view: EditorView, attrs: { src: string; alt: string; title: string }) {
+	const { state } = view;
+	const node = state.schema.nodes.image_block.create(attrs);
+	const { $from } = state.selection;
+	const tr = state.tr;
+	if ($from.parent.type.name === 'paragraph' && $from.parent.content.size === 0 && $from.depth > 0)
+		tr.replaceWith($from.before(), $from.after(), node);
+	else tr.replaceSelectionWith(node);
+	view.dispatch(tr.scrollIntoView());
+}
 
 /** 커서 앞에 끝나는 표의 수 */
 const tablesBefore = (doc: Node, pos: number) => {
@@ -158,8 +185,20 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			runTableOp(ctx, action.op);
 			break;
 		case 'image':
-			callCommand(insertImageCommand.key, { src: action.src, alt: action.alt })(ctx);
+			insertImage(view, { src: action.src, alt: action.alt, title: action.title ?? '' });
 			break;
+		case 'imageAttrs': {
+			const { selection } = view.state;
+			if (selection instanceof NodeSelection && IMAGE_NODES.includes(selection.node.type.name)) {
+				const tr = view.state.tr.setNodeMarkup(selection.from, undefined, {
+					...selection.node.attrs,
+					alt: action.alt,
+					title: action.title,
+				});
+				view.dispatch(tr.setSelection(NodeSelection.create(tr.doc, selection.from)));
+			}
+			break;
+		}
 		case 'attachment': {
 			// 파일 이름 글자에 링크를 건다. 제목(title)으로 첨부 파일임을 표시해 읽기·편집 화면이 같은 모양으로 그린다
 			const { state } = view;

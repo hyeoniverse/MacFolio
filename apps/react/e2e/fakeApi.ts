@@ -19,6 +19,8 @@ export interface FakeApiState {
 	posts: FakePost[];
 	/** 올린 이미지·첨부 파일 */
 	uploads: FakeUpload[];
+	/** 사진 찾기: 켜진 서비스, 받은 검색어, Unsplash에 알린 사진 */
+	stock: { providers: { unsplash: boolean; pexels: boolean }; searches: string[]; downloads: string[] };
 }
 
 export interface FakeUpload {
@@ -83,6 +85,7 @@ export async function fakeApi(
 		comments: {},
 		posts: [],
 		uploads: [],
+		stock: { providers: { unsplash: true, pexels: false }, searches: [], downloads: [] },
 	};
 	let nextId = 1;
 	const cors = (origin: string) => ({
@@ -95,6 +98,16 @@ export async function fakeApi(
 		window.__MACFOLIO_API_URL__ = url;
 	}, FAKE_API);
 	await page.route('https://github.com/*.png*', (route) => route.fulfill({ status: 404 }));
+	// 사진 찾기 결과의 그림 (1×1 PNG)
+	await page.route('https://images.test/**', (route) =>
+		route.fulfill({
+			contentType: 'image/png',
+			body: Buffer.from(
+				'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+				'base64'
+			),
+		})
+	);
 	await page.route(`${FAKE_API}/**`, async (route) => {
 		const request = route.request();
 		const origin = (await request.headerValue('origin')) ?? 'http://localhost:4173';
@@ -150,6 +163,40 @@ export async function fakeApi(
 				headers: { ...cors(origin), 'Content-Type': upload.type },
 				body: upload.data,
 			});
+		}
+
+		// 사진 찾기 (관리자만). 한 쪽에 두 장, 두 쪽까지
+		if (path.startsWith('/images/')) {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			if (path === '/images/providers')
+				return route.fulfill({ status: 200, headers: cors(origin), json: state.stock.providers });
+			const download = path.match(/^\/images\/unsplash\/([\w-]+)\/download$/);
+			if (download) {
+				state.stock.downloads.push(download[1]);
+				return route.fulfill({ status: 204, headers: cors(origin) });
+			}
+			const params = new URL(request.url()).searchParams;
+			const provider = params.get('provider') as 'unsplash' | 'pexels';
+			const q = params.get('q') ?? '';
+			const page = Number(params.get('page') ?? 1);
+			state.stock.searches.push(`${provider} ${q} ${page}`);
+			const results = [1, 2].map((n) => {
+				const id = `p${page}n${n}`;
+				return {
+					provider,
+					id,
+					thumb: `https://images.test/${id}-s.jpg`,
+					url: `https://images.test/${id}.jpg`,
+					width: 400,
+					height: 300,
+					alt: `${q} 사진 ${n}`,
+					author: `사진가${n}`,
+					authorUrl: `https://unsplash.com/@p${n}?utm_source=macfolio&utm_medium=referral`,
+					pageUrl: `https://unsplash.com/photos/${id}`,
+					color: '#88aacc',
+				};
+			});
+			return route.fulfill({ status: 200, headers: cors(origin), json: { results, hasMore: page < 2 } });
 		}
 
 		// 글: 누구나 읽고, 로그인했을 때만 쓰고 고치고 지운다

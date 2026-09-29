@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from './calendar';
-import { fromEditorMarkdown, toEditorMarkdown } from './markdownImages';
+import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
+import { captionParts } from '../caption';
 
 describe('이미지 경로', () => {
 	const images = { 'images/a.jpg': '/assets/a-123.jpg' };
@@ -36,5 +37,32 @@ describe('달력', () => {
 		expect(parseIso('2026-09-05')).toEqual({ year: 2026, month: 8, day: 5 });
 		expect(parseIso('어제')).toBeNull();
 		expect(formatIso('2026-09-05')).toBe('2026. 9. 5.');
+	});
+});
+
+describe('표 정렬 표시', () => {
+	it('왼쪽 정렬은 정렬 없음으로, 가운데·오른쪽은 그대로', () => {
+		const table = '| 이름 | 값 | 비고 |\n| :- | :-: | --: |\n| a | b | c |\n';
+		expect(plainTableAlign(table)).toBe('| 이름 | 값 | 비고 |\n| -- | :-: | --: |\n| a | b | c |\n');
+	});
+
+	it('표가 아닌 줄의 :-는 건드리지 않는다', () => {
+		expect(plainTableAlign('시간 :-) 좋다\n| a :- b |\n')).toBe('시간 :-) 좋다\n| a :- b |\n');
+	});
+});
+
+describe('캡션 링크', () => {
+	it('[글자](https 주소)만 링크로 나눈다', () => {
+		expect(captionParts('사진: [Jane](https://unsplash.com/@jane), [Unsplash](https://unsplash.com)')).toEqual([
+			{ text: '사진: ' },
+			{ text: 'Jane', href: 'https://unsplash.com/@jane' },
+			{ text: ', ' },
+			{ text: 'Unsplash', href: 'https://unsplash.com' },
+		]);
+		// 스크립트 주소나 괄호만 있는 글은 링크가 아니다
+		expect(captionParts('[x](javascript:alert(1)) 그냥 [괄호]')).toEqual([
+			{ text: '[x](javascript:alert(1)) 그냥 [괄호]' },
+		]);
+		expect(captionParts('')).toEqual([]);
 	});
 });

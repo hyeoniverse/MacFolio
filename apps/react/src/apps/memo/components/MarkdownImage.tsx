@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { resolveImageSrc } from '../posts';
 import { CONTENT_IMAGES } from '../contentImages';
+import { captionParts } from '../caption';
 
 interface Props {
 	src?: string;
@@ -11,7 +12,7 @@ interface Props {
 
 /**
  * 본문 이미지. 글 파일 기준 상대 경로를 빌드된 주소로 바꾸고, 본문 폭에 맞춰 보여준다.
- * `![설명](경로 "캡션")`의 캡션은 이미지 아래에 보여주고, 클릭하면 크게 본다.
+ * `![설명](경로 "캡션")`의 캡션은 이미지 아래에 보여주고(캡션 안의 [글자](주소)는 링크), 클릭하면 크게 본다.
  * react-markdown은 이미지를 <p> 안에 넣으므로 <figure> 대신 <span>으로 감싼다.
  */
 const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
@@ -33,7 +34,19 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 			>
 				<img src={resolved} alt={alt} loading="lazy" decoding="async" />
 			</button>
-			{title && <span className="memo-caption">{title}</span>}
+			{title && (
+				<span className="memo-caption">
+					{captionParts(title).map((part, index) =>
+						part.href ? (
+							<a key={index} href={part.href} target="_blank" rel="noopener noreferrer">
+								{part.text}
+							</a>
+						) : (
+							<React.Fragment key={index}>{part.text}</React.Fragment>
+						)
+					)}
+				</span>
+			)}
 			{zoomed && <Lightbox src={resolved} alt={alt} onClose={() => setZoomed(false)} />}
 		</span>
 	);
