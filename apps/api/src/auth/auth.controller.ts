@@ -21,7 +21,7 @@ import {
 	ApiTooManyRequestsResponse,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import type { CookieOptions, Request, Response } from 'express';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { AdminGuard, CurrentAdmin } from './admin.guard.js';
@@ -60,6 +60,7 @@ export class AuthController {
 
 	@Get('github')
 	@UseGuards(ThrottlerGuard)
+	@SkipThrottle({ comment: true })
 	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 시도했다' })
 	@ApiFoundResponse({ description: 'GitHub 로그인 화면으로 보낸다' })
 	github(@Res() response: Response) {
@@ -72,6 +73,7 @@ export class AuthController {
 
 	@Get('github/callback')
 	@UseGuards(ThrottlerGuard)
+	@SkipThrottle({ comment: true })
 	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 시도했다' })
 	@ApiFoundResponse({ description: '프론트엔드로 돌아간다 (?admin=signed-in | denied | cancelled)' })
 	async callback(
