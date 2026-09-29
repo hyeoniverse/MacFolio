@@ -9,3 +9,15 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+/// 관리자 로그인 세션. 쿠키에는 무작위 토큰을, DB에는 그 해시만 둔다 (DB가 새어도 세션을 가로챌 수 없다)
+model AdminSession {
+  id          String   @id @default(cuid())
+  /// 토큰의 SHA-256 (hex)
+  tokenHash   String   @unique
+  githubLogin String
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@index([expiresAt])
+}

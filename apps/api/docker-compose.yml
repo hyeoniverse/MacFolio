@@ -22,6 +22,10 @@ services:
     build:
       context: ../..
       dockerfile: apps/api/Dockerfile
+    # .env가 있으면 GitHub OAuth 값 등을 읽는다. 아래 environment가 우선한다 (DB 주소는 컨테이너 안의 db)
+    env_file:
+      - path: .env
+        required: false
     environment:
       PORT: 4000
       DATABASE_URL: postgresql://macfolio:macfolio@db:5432/macfolio
