@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
 import VolumeModal from '@/apps/music/MusicPlayerVolume'; // VolumeModal 가져오기
+import AppleMenu from '@/desktop/status-bar/AppleMenu';
 import '@/desktop/status-bar/StatusBar.css';
 
 const StatusBar: React.FC = () => {
@@ -39,7 +40,7 @@ const StatusBar: React.FC = () => {
 	return (
 		<div className="macos-statusbar">
 			<div className="left-section">
-				<span className="apple-logo"></span>
+				<AppleMenu />
 				<span className="menu-item">Finder</span>
 				<span className="menu-item">File</span>
 				<span className="menu-item">Edit</span>
