@@ -12,6 +12,7 @@ import {
 	setPinned,
 	splitPinned,
 	validateFolderName,
+	normalizeOrganization,
 } from './organize';
 import type { Post } from './posts';
 
@@ -135,5 +136,20 @@ describe('메모 고정', () => {
 	it('고정을 바꾸지 않은 글은 그대로 둔다', () => {
 		const list = [post('a', 'x')];
 		expect(organizePosts(list, EMPTY_ORGANIZATION)[0]).toBe(list[0]);
+	});
+});
+
+describe('normalizeOrganization', () => {
+	it('API가 돌려준 값을 정리 내용으로, 모양이 다른 필드는 비운다', () => {
+		expect(
+			normalizeOrganization({
+				folders: ['읽을거리', 3],
+				posts: { a: '읽을거리' },
+				moves: [{ from: 'x', to: 'y' }, { from: 'x' }],
+				pins: [],
+				updatedAt: '2026-09-29',
+			})
+		).toEqual({ folders: ['읽을거리'], posts: { a: '읽을거리' }, moves: [{ from: 'x', to: 'y' }], pins: {} });
+		expect(normalizeOrganization(null)).toEqual(EMPTY_ORGANIZATION);
 	});
 });
