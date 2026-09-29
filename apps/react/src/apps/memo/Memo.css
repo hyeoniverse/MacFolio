@@ -1843,25 +1843,24 @@
 	opacity: 1;
 }
 
-/* 고른 테두리 가장자리 가운데의 점 */
-.memo-table-selection-dot {
+/* 고른 범위의 대각선 꼭짓점: 끌어서 범위를 늘리고 줄인다 */
+.memo-inline-editor > .memo-table-corner {
 	position: absolute;
-	width: 10px;
-	height: 10px;
+	z-index: 4;
+	width: 12px;
+	height: 12px;
+	margin: -6px 0 0 -6px;
+	border: 2px solid #fff;
 	border-radius: 50%;
 	background-color: #edbb4d;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	cursor: nwse-resize;
+	touch-action: none;
+	transition: transform var(--duration-fast) var(--ease-out);
 }
 
-.memo-table-selection-dot.col {
-	top: 50%;
-	left: -6px;
-	translate: 0 -50%;
-}
-
-.memo-table-selection-dot.row {
-	top: -6px;
-	left: 50%;
-	translate: -50% 0;
+.memo-inline-editor > .memo-table-corner:hover {
+	transform: scale(1.25);
 }
 
 .memo-table-handle.dragging {

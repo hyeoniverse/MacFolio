@@ -118,6 +118,8 @@ const TableHandles = () => {
 	const [drag, setDrag] = useState<Drag | null>(null);
 	/** 방금 끌었으면 이어지는 click은 메뉴를 열지 않는다 */
 	const dragged = useRef(false);
+	/** 꼭짓점을 끄는 중이면 고정된 맞은편 칸 [행, 열] */
+	const resizing = useRef<[number, number] | null>(null);
 	const table = state.table;
 	if (!table || !tableBox || !run) return null;
 
@@ -187,7 +189,7 @@ const TableHandles = () => {
 	const selection = tableBox.selection;
 	return (
 		<>
-			{table.selecting && selection && (
+			{selection && (
 				<span
 					className={`memo-table-selection ${drag?.moved ? 'dragging' : ''}`}
 					aria-hidden="true"
@@ -202,10 +204,45 @@ const TableHandles = () => {
 								: `translateY(${drag.offset}px)`
 							: undefined,
 					}}
-				>
-					<span className={`memo-table-selection-dot ${table.selecting}`} />
-				</span>
+				/>
 			)}
+			{/* 고른 범위의 대각선 꼭짓점: 끌면 맞은편 꼭짓점을 기준으로 범위를 늘리고 줄인다 */}
+			{selection &&
+				!drag &&
+				(['start', 'end'] as const).map((corner) => (
+					<span
+						key={corner}
+						role="button"
+						tabIndex={-1}
+						aria-label={corner === 'start' ? '고른 범위 왼쪽 위 끌기' : '고른 범위 오른쪽 아래 끌기'}
+						className={`memo-table-corner ${corner}`}
+						style={{
+							left: corner === 'start' ? selection.left : selection.left + selection.width,
+							top: corner === 'start' ? selection.top : selection.top + selection.height,
+						}}
+						onPointerDown={(event) => {
+							keepFocus(event);
+							event.currentTarget.setPointerCapture(event.pointerId);
+							const last: [number, number] = [table.row + table.selectedRows - 1, table.col + table.selectedCols - 1];
+							resizing.current = corner === 'start' ? last : [table.row, table.col];
+						}}
+						onPointerMove={(event) => {
+							const anchor = resizing.current;
+							if (!anchor) return;
+							const cell = document
+								.elementsFromPoint(event.clientX, event.clientY)
+								.find((el) => el.matches('.ProseMirror table.memo-table-active :is(td, th)')) as
+								HTMLTableCellElement | undefined;
+							if (!cell) return;
+							const row = (cell.parentElement as HTMLTableRowElement).rowIndex;
+							run({ type: 'tableSelect', anchor, head: [row, cell.cellIndex] });
+						}}
+						onPointerUp={() => {
+							resizing.current = null;
+						}}
+						onMouseDown={keepFocus}
+					/>
+				))}
 			{drag?.line != null && (
 				<span
 					className={`memo-table-drop ${drag.kind}`}
