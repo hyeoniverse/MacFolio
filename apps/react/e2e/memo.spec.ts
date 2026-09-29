@@ -167,7 +167,10 @@ test.describe('메모 (블로그)', () => {
 		const memo = await openMemo(page);
 		const heading = memo.getByRole('region', { name: '글 목록' }).locator('.memo-toolbar-heading');
 		await expect(heading).toContainText('모든 글');
-		await expect(heading).toContainText('2개의 메모');
+		// 글은 계속 늘어나므로 목록에 보이는 글 수와 맞는지 본다
+		const count = await memo.locator('.memo-item').count();
+		expect(count).toBeGreaterThan(0);
+		await expect(heading).toContainText(`${count}개의 메모`);
 	});
 
 	test('방문자는 편집할 수 없다 (편집은 관리자만, #9)', async ({ page }) => {
