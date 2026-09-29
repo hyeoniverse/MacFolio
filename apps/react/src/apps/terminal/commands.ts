@@ -146,8 +146,10 @@ export const COMMANDS: Record<string, Command> = {
 			return output([
 				heading(project.name),
 				pair('소개', project.description),
-				pair('출처', project.project),
-				pair('언어', project.language),
+				pair('구분', project.context),
+				...(project.role ? [pair('역할', project.role)] : []),
+				pair('기술', project.stack.join(', ')),
+				...(project.demo ? [pair('데모', project.demo, project.demo)] : []),
 				pair('저장소', project.url, project.url),
 			]);
 		},

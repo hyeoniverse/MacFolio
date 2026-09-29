@@ -29,59 +29,82 @@ export const SITE_STACK = [
 
 export interface Project {
 	id: string;
-	project: string;
 	name: string;
+	/** 한 줄 소개 */
 	description: string;
+	/** 어떤 프로젝트인지 (팀·과정 등) */
+	context: string;
+	/** 맡은 일 (팀 프로젝트) */
+	role?: string;
+	stack: string[];
+	/** GitHub의 주 언어 */
 	language: string;
-	languageColor?: string;
+	/** GitHub 저장소 */
 	url: string;
+	/** 실제로 써 볼 수 있는 주소 */
+	demo?: string;
+	/** 화면 캡처 (public/imgs/projects) */
+	image: string;
 }
 
-/** GitHub 앱의 고정 저장소, 터미널의 projects 명령이 함께 쓴다 */
+/**
+ * 프로젝트. GitHub 프로필에 고정한 저장소와 같은 순서다 (apps/github/githubProfile.ts의 PINNED_REPOS).
+ * Safari(포트폴리오), 터미널 projects, 단축어가 함께 쓴다.
+ */
 export const PROJECTS: Project[] = [
 	{
-		id: '1',
-		project: '서울여자대학교 소프트웨어융합학과 졸업 프로젝트',
-		name: 'PurrFectDay.',
-		description: '꾸미기 게임과 투두리스트를 결합한 iOS 앱',
-		language: 'Swift',
-		languageColor: '#F05138',
-		url: 'https://github.com/PurrFectDay/PurrFectDay.',
+		id: 'newpick',
+		name: 'NewPick 뉴픽',
+		description: '관심사에 맞춰 AI가 요약한 뉴스를 매일 아침 메일로 보내 주는 맞춤형 뉴스레터 서비스',
+		context: '프로그래머스 데브코스 팀 프로젝트 (2인)',
+		role: '기획, 유저 인증, API 연동',
+		stack: ['Next.js', 'TypeScript', 'Zustand', 'React Query', 'styled-components', 'OpenAI API'],
+		language: 'TypeScript',
+		url: 'https://github.com/Devcourse-NewPick/front',
+		demo: 'https://newpick-tan.vercel.app',
+		image: '/imgs/projects/newpick.jpg',
 	},
 	{
-		id: '2',
-		project: '서울여자대학교 컴퓨터그래픽스 기말 프로젝트',
-		name: 'Sprout Farm',
-		description: 'Unity를 이용한 미니 게임',
-		language: 'C#',
-		languageColor: '#178600',
+		id: 'whattodo',
+		name: 'WTD (What To Do)',
+		description: '할 일과 세부 할 일을 끌어서 정리하고, 매일 반복되는 일은 루틴으로 관리하는 할 일 관리 웹 앱',
+		context: '프로그래머스 데브코스 팀 프로젝트',
+		stack: ['React', 'styled-components', 'Tailwind CSS', 'react-beautiful-dnd', 'Node.js', 'Express'],
+		language: 'JavaScript',
+		url: 'https://github.com/Devcourse-WhatToDo/todo-front',
+		demo: 'https://what-to-do-chi.vercel.app/',
+		image: '/imgs/projects/whattodo.jpg',
+	},
+	{
+		id: 'qru',
+		name: 'QRU 큐알유',
+		description: '내 정보를 담은 QR 디지털 명함을 만들어 공유하고, 공개된 명함을 셔플로 찾아보는 웹 앱',
+		context: '개인 프로젝트',
+		stack: ['React', 'TypeScript', 'Redux Toolkit', 'React Query', 'styled-components', 'Firebase'],
+		language: 'TypeScript',
+		url: 'https://github.com/hyeoniverse/QRU',
+		demo: 'https://qryou-app.web.app',
+		image: '/imgs/projects/qru.jpg',
+	},
+	{
+		id: 'sproutfarm',
+		name: 'SproutFarm 새싹 농장',
+		description: '도망친 동물 20마리를 자정 전에 울타리로 데려오는 탑다운 2D 픽셀 캐주얼 게임',
+		context: '개인 프로젝트 (PC 전용)',
+		stack: ['Unity 6', 'C#', 'WebGL', 'Vercel'],
+		language: 'JavaScript',
 		url: 'https://github.com/hyeoniverse/SproutFarm',
+		demo: 'https://sprout-farm-beta.vercel.app',
+		image: '/imgs/projects/sproutfarm.jpg',
 	},
 	{
-		id: '3',
-		project: 'ICT 멘토링 공모전',
-		name: 'VOA',
-		description: '동상 수상 - AI를 활용한 시각장애인을 위한 키오스크 프로그램',
-		language: 'Python',
-		languageColor: '#3572A5',
-		url: 'https://github.com/2023-ICT-Kiosks/VOA',
-	},
-	{
-		id: '4',
-		project: '2023-GDSC-SWU',
-		name: 'ChatBuddy',
-		description: 'ChatGPT를 활용한 심리 상담 Android 앱',
-		language: 'Java',
-		languageColor: '#B07219',
-		url: 'https://github.com/GDG-SWU/2023-ChatBuddy-SolutionChallenge',
-	},
-	{
-		id: '5',
-		project: '서울여자대학교 정보보호학과 졸업 프로젝트',
-		name: 'Chaseye',
-		description: 'AI(Mediapipe)와 시스템 분석을 이용한 부정행위 감지 프로그램',
-		language: 'Python',
-		languageColor: '#3572A5',
-		url: 'https://github.com/hyeoniverse/BOSWU',
+		id: 'devcourse',
+		name: 'DevCourse FullStack',
+		description: '타입스크립트로 함께하는 웹 풀 사이클 개발(React, Node.js) 과정의 강의 노트와 실습 기록',
+		context: '프로그래머스 데브코스 4기 학습 기록',
+		stack: ['TypeScript', 'React', 'Node.js', 'Express', 'MySQL'],
+		language: 'JavaScript',
+		url: 'https://github.com/hyeoniverse/DevCourse-FullStack',
+		image: '/imgs/projects/devcourse.jpg',
 	},
 ];
