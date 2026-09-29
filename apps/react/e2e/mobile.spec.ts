@@ -13,6 +13,26 @@ async function enterHome(page: Page) {
 const homeApp = (page: Page, label: string) =>
 	page.locator('.mobile-home').getByRole('button', { name: label, exact: true });
 
+/** 마우스로 세로로 쓴다 */
+async function swipe(page: Page, x: number, fromY: number, toY: number) {
+	await page.mouse.move(x, fromY);
+	await page.mouse.down();
+	await page.mouse.move(x, toY, { steps: 8 });
+	await page.mouse.up();
+}
+
+/** 손가락으로 세로로 쓴다 (Chromium DevTools 프로토콜로 실제 터치 이벤트를 보낸다) */
+async function fingerSwipe(page: Page, x: number, fromY: number, toY: number) {
+	const cdp = await page.context().newCDPSession(page);
+	await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: fromY }] });
+	for (let i = 1; i <= 8; i++) {
+		const y = fromY + ((toY - fromY) * i) / 8;
+		await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y }] });
+	}
+	await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+	await cdp.detach();
+}
+
 test.describe('모바일', () => {
 	test('데스크톱 대신 iOS 홈 화면이 보이고, 처음에는 열린 앱이 없다', async ({ page }) => {
 		await enterHome(page);
@@ -191,6 +211,65 @@ test.describe('모바일', () => {
 		await page.mouse.move(200, 250, { steps: 6 });
 		await page.mouse.up();
 		await expect(controlCenter).toBeVisible();
+	});
+
+	test('화면 어디서든 아래로 쓸면 제어 센터가 열리고, 타일 위에서 위로 쓸어도 닫힌다', async ({ page }) => {
+		await enterHome(page);
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+		const { height } = page.viewportSize()!;
+
+		// 홈 화면 가운데(앱 아이콘 위)에서 아래로
+		await swipe(page, 200, height / 2, height / 2 + 250);
+		await expect(controlCenter).toBeVisible();
+
+		// 연락하기 타일 위에서 위로 쓸면 닫히고, 타일은 눌리지 않는다
+		const tile = (await controlCenter.getByRole('button', { name: /연락하기/ }).boundingBox())!;
+		await swipe(page, tile.x + tile.width / 2, tile.y + tile.height / 2, tile.y - 200);
+		await expect(controlCenter).toBeHidden();
+		await expect(appWindow(page, 'mail')).toBeHidden();
+	});
+
+	test('앱 안에서도 아래로 쓸면 열리고, 내용을 내려 둔 곳에서는 스크롤이 먼저다', async ({ page }) => {
+		await enterHome(page);
+		await homeApp(page, 'Safari').tap();
+		const safari = appWindow(page, 'safari');
+		await expect(safari).toBeVisible();
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+		const { height } = page.viewportSize()!;
+
+		// 페이지 맨 위: 아래로 쓸면 제어 센터
+		await swipe(page, 200, height / 2, height / 2 + 250);
+		await expect(controlCenter).toBeVisible();
+		await swipe(page, 200, height - 150, 150);
+		await expect(controlCenter).toBeHidden();
+
+		// 내용을 내려 둔 상태: 아래로 쓸어도 제어 센터가 열리지 않는다 (위로 스크롤할 차례)
+		await safari.locator('.safari-page').evaluate((element) => (element.scrollTop = 600));
+		await swipe(page, 200, height / 2, height / 2 + 250);
+		await expect(controlCenter).toBeHidden();
+	});
+
+	test('음량 막대를 위로 끌면 음량만 바뀌고 제어 센터는 닫히지 않는다', async ({ page }) => {
+		await enterHome(page);
+		await page.getByRole('button', { name: '제어 센터 열기' }).tap();
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+		const slider = controlCenter.getByRole('slider', { name: '음량' });
+		const box = (await slider.boundingBox())!;
+
+		await swipe(page, box.x + box.width / 2, box.y + box.height - 5, box.y + 5);
+		await expect(controlCenter).toBeVisible();
+		await expect(slider).toHaveAttribute('aria-valuenow', /^(9\d|100)$/);
+	});
+
+	test('손가락으로 쓸어도 열고 닫힌다 (터치 이벤트)', async ({ page }) => {
+		await enterHome(page);
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+		const { height } = page.viewportSize()!;
+
+		await fingerSwipe(page, 200, height / 2, height / 2 + 250);
+		await expect(controlCenter).toBeVisible();
+		await fingerSwipe(page, 200, height - 150, 150);
+		await expect(controlCenter).toBeHidden();
 	});
 
 	test('제어 센터에서 다크 모드를 바꾸고 앱을 연다', async ({ page }) => {
