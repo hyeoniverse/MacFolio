@@ -28,12 +28,11 @@ sproutfarm: {
 	label: '새싹 농장',
 	icon: 'projects/sproutfarm/icon.png',
 	inDock: true,
-	desktopOnly: true,
 	windowSize: { width: 960, height: 569 },
 },
 ```
 
-키보드로 하는 PC 게임이라 `desktopOnly`를 새로 만들어 모바일 홈 화면과 단축어에서는 뺐다.
+처음에는 키보드로 하는 PC 게임이라 `desktopOnly`라는 표시를 새로 만들어 모바일 홈 화면과 단축어에서는 뺐다. 그 뒤 게임에 모바일 모드가 생겨서 표시를 지우고 휴대폰에서도 열게 했다. 이 표시를 쓰는 앱이 새싹 농장 하나뿐이어서 표시 자체도 없앴다.
 
 ## iframe 안을 눌러도 창이 앞으로 오지 않았다
 
