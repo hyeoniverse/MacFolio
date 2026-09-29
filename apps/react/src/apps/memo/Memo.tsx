@@ -38,6 +38,7 @@ import {
 } from './organize';
 import FolderSidebar, { type DragItem } from './components/FolderSidebar';
 import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
+import { sortMenuItems } from './components/sortMenuItems';
 import { groupPosts, loadArrangement, saveArrangement, sortBy, type Arrangement } from './arrange';
 import ContextMenu from './components/ContextMenu';
 import { CONTENT_IMAGES } from './contentImages';
@@ -149,6 +150,10 @@ const Memo: React.FC = () => {
 	const [filter, setFilter] = useState<PostFilter | null>(null);
 	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
 	const [findSlug, setFindSlug] = useState<string | null>(null);
+	/** 검색 칸에 초점이 있는지, 도구를 모은 ••• 메뉴 (검색하는 동안 다른 도구를 접고 검색 칸을 넓힌다) */
+	const [searchFocused, setSearchFocused] = useState(false);
+	const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
+	const searching = searchFocused || moreMenu !== null;
 	const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 	// 좁은 창에서는 한 칸씩 보여준다 (iOS 메모처럼 폴더 → 목록 → 본문). 넓은 창에서는 쓰지 않는다.
 	const [pane, setPaneState] = useState<Pane>('list');
@@ -698,6 +703,7 @@ const Memo: React.FC = () => {
 			onFilter={setFilter}
 			admin={editing}
 			onFind={openFind}
+			onFocusChange={setSearchFocused}
 		/>
 	);
 	const sortMenu = () => <SortMenu arrangement={arrangement} onChange={setArrangement} />;
@@ -801,7 +807,7 @@ const Memo: React.FC = () => {
 					)}
 
 					<article className="memo-reader" aria-label={selected ? selected.title : '글'}>
-						<div className="memo-toolbar memo-reader-toolbar">
+						<div className={`memo-toolbar memo-reader-toolbar ${searching ? 'searching' : ''}`}>
 							{galleryNoteOpen && (
 								<>
 									<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
@@ -822,11 +828,36 @@ const Memo: React.FC = () => {
 								</span>
 							)}
 							<span className="memo-toolbar-spacer" />
-							{authorTools('')}
-							{pinButton('')}
-							{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
-							{sortMenu()}
-							<ViewSwitch view={view} onChange={changeView} />
+							{/* 검색하는 동안 도구는 접히고(••• 메뉴로 모인다) 검색 칸이 왼쪽으로 넓어진다 */}
+							<span className="memo-toolbar-tools" inert={searching || undefined}>
+								<span className="memo-toolbar-tools-inner">
+									{authorTools('')}
+									{pinButton('')}
+									{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
+									{sortMenu()}
+									<ViewSwitch view={view} onChange={changeView} />
+								</span>
+							</span>
+							<button
+								type="button"
+								className="memo-tool memo-toolbar-more"
+								aria-label="도구 더 보기"
+								title="도구 더 보기"
+								aria-haspopup="menu"
+								aria-expanded={moreMenu !== null}
+								tabIndex={searching ? undefined : -1}
+								// 검색 칸의 초점을 빼앗지 않는다 (누르는 순간 검색 칸이 접히지 않게)
+								onPointerDown={(event) => {
+									event.preventDefault();
+									event.stopPropagation();
+								}}
+								onClick={(event) => {
+									const rect = event.currentTarget.getBoundingClientRect();
+									setMoreMenu(moreMenu ? null : { x: rect.left, y: rect.bottom + 6 });
+								}}
+							>
+								<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+							</button>
 							{search}
 						</div>
 						{findSlug !== null && findSlug === selected?.slug && (
@@ -928,6 +959,38 @@ const Memo: React.FC = () => {
 							</div>,
 							document.body
 						)}
+					{moreMenu && (
+						<ContextMenu
+							label="도구 더 보기"
+							anchor={moreMenu}
+							onClose={() => setMoreMenu(null)}
+							items={[
+								...(canEdit
+									? [{ label: '새 메모', icon: 'fa-regular fa-pen-to-square', onSelect: startNewDraft }]
+									: []),
+								...(canEdit && selected
+									? [
+											{
+												label: selected.pinned ? '메모 고정 해제' : '메모 고정',
+												icon: 'fa-solid fa-thumbtack',
+												onSelect: () => togglePin(selected),
+											},
+											{
+												label: '메모 삭제',
+												icon: 'fa-regular fa-trash-can',
+												onSelect: () => void removePost(selected),
+											},
+											'separator' as const,
+										]
+									: []),
+								...sortMenuItems(arrangement, setArrangement),
+								'separator',
+								{ heading: '보기' },
+								{ label: '목록으로 보기', checked: view === 'list', onSelect: () => changeView('list') },
+								{ label: '갤러리로 보기', checked: view === 'gallery', onSelect: () => changeView('gallery') },
+							]}
+						/>
+					)}
 					{noteMenu && menuPost && (
 						<ContextMenu
 							label={`${menuPost.title} 메뉴`}

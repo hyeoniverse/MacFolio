@@ -13,6 +13,7 @@ const SearchField = ({
 	onFilter,
 	admin,
 	onFind,
+	onFocusChange,
 	className = '',
 }: {
 	query: string;
@@ -23,6 +24,8 @@ const SearchField = ({
 	admin: boolean;
 	/** 이 메모에서 찾기 (열린 글이 없으면 없다) */
 	onFind: (() => void) | null;
+	/** 검색 칸에 초점이 들어오고 나갈 때 (도구 막대가 검색 칸을 넓힌다) */
+	onFocusChange?: (focused: boolean) => void;
 	className?: string;
 }) => {
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
@@ -59,8 +62,11 @@ const SearchField = ({
 				aria-label="글 검색"
 				value={query}
 				onChange={(event) => onQuery(event.target.value)}
+				onFocus={() => onFocusChange?.(true)}
+				onBlur={() => onFocusChange?.(false)}
 				onKeyDown={(event) => {
 					if (event.key === 'Backspace' && !query && filter) onFilter(null);
+					if (event.key === 'Escape') event.currentTarget.blur();
 				}}
 			/>
 			{menu && (

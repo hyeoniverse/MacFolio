@@ -37,6 +37,48 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(memo.locator('.memo-search-chip:visible')).toHaveCount(0);
 	});
 
+	test('검색 칸에 초점이 가면 도구가 ••• 로 접히고 검색 칸이 왼쪽으로 넓어진다', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page);
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' }).click();
+		const toolbar = memo.locator('.memo-reader-toolbar');
+		const search = toolbar.getByRole('searchbox', { name: '글 검색' });
+		const before = (await search.boundingBox())!;
+		const more = toolbar.getByRole('button', { name: '도구 더 보기' });
+		await expect(toolbar.getByRole('button', { name: '정렬과 그룹화' })).toBeVisible();
+
+		await search.focus();
+		await expect(toolbar).toHaveClass(/searching/);
+		// 오른쪽 끝은 그대로, 왼쪽으로 넓어진다
+		await expect.poll(async () => (await search.boundingBox())!.x).toBeLessThan(before.x - 100);
+		await page.waitForTimeout(400);
+		const after = (await search.boundingBox())!;
+		expect(Math.abs(after.x + after.width - (before.x + before.width))).toBeLessThan(2);
+		// 도구는 폭 0으로 접히고 누를 수 없다 (inert)
+		const tools = toolbar.locator('.memo-toolbar-tools');
+		await expect(tools).toHaveAttribute('inert', '');
+		expect((await tools.boundingBox())!.width).toBeLessThan(2);
+
+		// ••• 에 도구가 모여 있다. 눌러도 검색 칸은 접히지 않는다
+		await more.click();
+		const menu = page.getByRole('menu', { name: '도구 더 보기' });
+		await expect(menu.getByRole('menuitem', { name: '새 메모' })).toBeVisible();
+		await expect(toolbar).toHaveClass(/searching/);
+		await menu.getByRole('menuitemcheckbox', { name: '갤러리로 보기' }).click();
+		await expect(memo.getByRole('region', { name: '갤러리' })).toBeVisible();
+	});
+
+	test('검색 칸에서 나오면 도구가 다시 펼쳐진다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const toolbar = memo.locator('.memo-reader-toolbar');
+		const search = toolbar.getByRole('searchbox', { name: '글 검색' });
+		await search.focus();
+		await expect(toolbar).toHaveClass(/searching/);
+		await page.keyboard.press('Escape');
+		await expect(toolbar).not.toHaveClass(/searching/);
+		await expect(toolbar.getByRole('button', { name: '정렬과 그룹화' })).toBeVisible();
+	});
+
 	test('읽기 화면: ⌘F로 찾기 막대를 열고, 찾은 곳을 옮겨 다니고, 옵션을 바꾼다', async ({ page }) => {
 		const memo = await openMemo(page);
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' }).click();
