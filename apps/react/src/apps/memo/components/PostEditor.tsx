@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { folderLabelOf } from '../posts';
 import type { PostDraft } from '../postsApi';
+import { POST_LIMITS, validateDraft, type DraftField } from '../postRules';
 
 interface Props {
 	/** 고치는 글이면 처음 값, 새 글이면 null */
@@ -24,7 +25,8 @@ const today = () => {
 
 /**
  * 관리자의 글쓰기·편집. 본문은 Markdown으로 쓰고 미리 보기로 확인한다. ⌘S(Ctrl+S)로 저장.
- * 저장하면 서버가 규칙을 다시 확인하고, 어긴 규칙은 모두 보여 준다.
+ * 필수 항목(제목·날짜·폴더·본문)을 비우면 저장 요청을 보내지 않고 그 칸을 알려 준다.
+ * 서버와 DB도 같은 규칙으로 다시 막고, 서버가 거절한 이유도 보여 준다.
  */
 const PostEditor: React.FC<Props> = ({
 	initial,
@@ -40,8 +42,11 @@ const PostEditor: React.FC<Props> = ({
 	);
 	const [preview, setPreview] = useState(false);
 	const [errors, setErrors] = useState<string[]>([]);
+	/** 저장하려다 막힌 칸 */
+	const [invalid, setInvalid] = useState<Partial<Record<DraftField, string>>>({});
 	const [saving, setSaving] = useState(false);
 	const titleRef = useRef<HTMLInputElement>(null);
+	const formRef = useRef<HTMLFormElement>(null);
 	const options = folders.includes(draft.category) ? folders : [draft.category, ...folders];
 
 	useEffect(() => {
@@ -49,20 +54,34 @@ const PostEditor: React.FC<Props> = ({
 	}, []);
 
 	const update =
-		(field: keyof PostDraft) =>
-		(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+		(field: DraftField) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
 			setDraft((prev) => ({ ...prev, [field]: event.target.value }));
+			// 고치면 그 칸의 표시를 지운다
+			setInvalid(({ [field]: _fixed, ...rest }) => rest);
+		};
 
 	const save = async () => {
 		if (saving) return;
+		const problems = validateDraft(draft);
+		if (Object.keys(problems).length > 0) {
+			setInvalid(problems);
+			setErrors(Object.values(problems));
+			// 첫 번째로 막힌 칸으로 옮겨 간다 (본문이면 쓰기 탭으로)
+			const first = Object.keys(problems)[0] as DraftField;
+			if (first === 'body') setPreview(false);
+			requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus());
+			return;
+		}
 		setSaving(true);
-		const problems = await onSave(draft);
+		const rejected = await onSave(draft);
 		setSaving(false);
-		setErrors(problems ?? []);
+		setErrors(rejected ?? []);
 	};
 
 	return (
 		<form
+			ref={formRef}
+			noValidate
 			className="memo-editor"
 			aria-label={initial ? '메모 편집' : '새 메모'}
 			onSubmit={(event) => {
@@ -79,20 +98,39 @@ const PostEditor: React.FC<Props> = ({
 		>
 			<input
 				ref={titleRef}
+				name="title"
 				className="memo-editor-title"
 				aria-label="제목"
+				aria-required="true"
+				aria-invalid={Boolean(invalid.title)}
 				placeholder="제목"
+				maxLength={POST_LIMITS.title}
 				value={draft.title}
 				onChange={update('title')}
 			/>
 			<div className="memo-editor-meta">
 				<label>
 					<span>날짜</span>
-					<input type="date" aria-label="날짜" value={draft.date} onChange={update('date')} />
+					<input
+						type="date"
+						name="date"
+						aria-label="날짜"
+						aria-required="true"
+						aria-invalid={Boolean(invalid.date)}
+						value={draft.date}
+						onChange={update('date')}
+					/>
 				</label>
 				<label>
 					<span>폴더</span>
-					<select aria-label="폴더" value={draft.category} onChange={update('category')}>
+					<select
+						name="category"
+						aria-label="폴더"
+						aria-required="true"
+						aria-invalid={Boolean(invalid.category)}
+						value={draft.category}
+						onChange={update('category')}
+					>
 						{options.map((folder) => (
 							<option key={folder} value={folder}>
 								{folderLabelOf(folder)}
@@ -103,12 +141,19 @@ const PostEditor: React.FC<Props> = ({
 				<label className="wide">
 					<span>요약</span>
 					<input
+						name="summary"
 						aria-label="요약"
-						placeholder="목록에 보일 한 줄 (비우면 본문 앞부분)"
+						aria-invalid={Boolean(invalid.summary)}
+						aria-describedby="memo-editor-summary-hint"
+						placeholder="목록에 보일 한 줄 요약"
+						maxLength={POST_LIMITS.summary}
 						value={draft.summary}
 						onChange={update('summary')}
 					/>
 				</label>
+				<p id="memo-editor-summary-hint" className="memo-editor-field-hint">
+					요약은 선택 사항입니다. 비워 두면 본문의 앞부분이 목록에 보입니다.
+				</p>
 			</div>
 
 			<div className="memo-editor-tabs" role="group" aria-label="쓰기와 미리 보기">
@@ -126,7 +171,10 @@ const PostEditor: React.FC<Props> = ({
 				</div>
 			) : (
 				<textarea
+					name="body"
 					className="memo-editor-body"
+					aria-required="true"
+					aria-invalid={Boolean(invalid.body)}
 					aria-label="본문"
 					placeholder={'## 소제목\n\n본문을 Markdown으로 씁니다. 이미지는 ![설명](주소)'}
 					value={draft.body}
