@@ -1,8 +1,23 @@
 import { useEffect, useState } from 'react';
 import { env } from '@/shared/config/env';
 import { useAdmin } from '@/shared/auth/adminStore';
-import { displayName, OWNER_NAME, validateMessageInput } from '@/apps/messages/conversations';
+import { avatarUrl } from '@/shared/auth/admin';
+import { PROFILE } from '@/shared/profile';
+import { displayName, LIMITS, monogram, OWNER_NAME, validateMessageInput } from '@/apps/messages/conversations';
 import { createComment, deleteComment, formatCommentTime, listComments, type Comment } from './commentsApi';
+
+/** 작성자(관리자)의 GitHub 계정 */
+const OWNER_LOGIN = PROFILE.github.split('/').at(-1) ?? '';
+
+/** 프로필 동그라미: 작성자는 GitHub 사진, 방문자는 이름 첫 글자 */
+const CommentAvatar = ({ name, owner }: { name: string; owner: boolean }) =>
+	owner ? (
+		<img className="memo-comment-avatar" src={avatarUrl(OWNER_LOGIN)} alt="" />
+	) : (
+		<span className="memo-comment-avatar" aria-hidden="true">
+			{monogram(name)}
+		</span>
+	);
 
 /** 댓글 하나. 지우기는 방문자는 비밀번호를 물어 보고, 관리자는 바로 */
 const CommentItem = ({
@@ -26,47 +41,53 @@ const CommentItem = ({
 
 	return (
 		<li className={`memo-comment ${comment.isAdmin ? 'owner' : ''}`}>
-			<div className="memo-comment-head">
-				<strong>{comment.isAdmin ? OWNER_NAME : displayName(comment.name, comment.ipPrefix ?? undefined)}</strong>
-				{comment.isAdmin && <span className="memo-comment-badge">작성자</span>}
-				<time dateTime={comment.createdAt}>{formatCommentTime(comment.createdAt)}</time>
-				<button
-					type="button"
-					className="memo-comment-delete"
-					aria-label={`${comment.name}의 댓글 삭제`}
-					onClick={() => (isAdmin ? void remove() : setAsking((value) => !value))}
-				>
-					삭제
-				</button>
-			</div>
-			<p className="memo-comment-body">{comment.body}</p>
-			{asking && !isAdmin && (
-				<form
-					className="memo-comment-confirm"
-					onSubmit={(event) => {
-						event.preventDefault();
-						void remove();
-					}}
-				>
-					<input
-						type="password"
-						aria-label="댓글 비밀번호"
-						placeholder="비밀번호"
-						value={password}
-						autoFocus
-						onChange={(event) => setPassword(event.target.value)}
-					/>
-					<button type="submit">삭제</button>
-					<button type="button" onClick={() => setAsking(false)}>
-						취소
+			<CommentAvatar name={comment.name} owner={comment.isAdmin} />
+			<div className="memo-comment-main">
+				<div className="memo-comment-head">
+					<strong>{comment.isAdmin ? OWNER_NAME : displayName(comment.name, comment.ipPrefix ?? undefined)}</strong>
+					{comment.isAdmin && <span className="memo-comment-badge">작성자</span>}
+					<time dateTime={comment.createdAt}>{formatCommentTime(comment.createdAt)}</time>
+					<button
+						type="button"
+						className="memo-comment-delete"
+						aria-label={`${comment.name}의 댓글 삭제`}
+						title="삭제"
+						onClick={() => (isAdmin ? void remove() : setAsking((value) => !value))}
+					>
+						<i className="fa-regular fa-trash-can" aria-hidden="true" />
 					</button>
-				</form>
-			)}
-			{error && (
-				<p className="memo-comment-error" role="alert">
-					{error}
-				</p>
-			)}
+				</div>
+				<p className="memo-comment-body">{comment.body}</p>
+				{asking && !isAdmin && (
+					<form
+						className="memo-comment-confirm"
+						onSubmit={(event) => {
+							event.preventDefault();
+							void remove();
+						}}
+					>
+						<input
+							type="password"
+							aria-label="댓글 비밀번호"
+							placeholder="쓸 때 넣은 비밀번호"
+							value={password}
+							autoFocus
+							onChange={(event) => setPassword(event.target.value)}
+						/>
+						<button type="button" className="memo-comment-button" onClick={() => setAsking(false)}>
+							취소
+						</button>
+						<button type="submit" className="memo-comment-button danger">
+							삭제
+						</button>
+					</form>
+				)}
+				{error && (
+					<p className="memo-comment-error" role="alert">
+						{error}
+					</p>
+				)}
+			</div>
 		</li>
 	);
 };
@@ -131,7 +152,9 @@ const Comments = ({ slug }: { slug: string }) => {
 				댓글 <span>{comments?.length ?? ''}</span>
 			</h2>
 			{failed && <p className="memo-comments-note">댓글을 불러오지 못했습니다.</p>}
-			{comments && comments.length === 0 && !failed && <p className="memo-comments-note">첫 댓글을 남겨 주세요.</p>}
+			{comments && comments.length === 0 && !failed && (
+				<p className="memo-comments-note">아직 댓글이 없어요. 첫 댓글을 남겨 주세요.</p>
+			)}
 			{comments && comments.length > 0 && (
 				<ul className="memo-comment-list">
 					{comments.map((comment) => (
@@ -154,9 +177,12 @@ const Comments = ({ slug }: { slug: string }) => {
 				}}
 			>
 				{isAdmin ? (
-					<p className="memo-comments-note">
-						<strong>{OWNER_NAME}</strong>(작성자)으로 씁니다
-					</p>
+					<div className="memo-comment-as">
+						<CommentAvatar name={OWNER_NAME} owner />
+						<span>
+							<strong>{OWNER_NAME}</strong>(작성자)으로 씁니다.
+						</span>
+					</div>
 				) : (
 					<div className="memo-comment-fields">
 						<input
@@ -168,7 +194,7 @@ const Comments = ({ slug }: { slug: string }) => {
 						<input
 							type="password"
 							aria-label="비밀번호"
-							placeholder="비밀번호 (삭제할 때 필요)"
+							placeholder="비밀번호 (지울 때 필요)"
 							value={password}
 							onChange={(event) => setPassword(event.target.value)}
 						/>
@@ -178,6 +204,7 @@ const Comments = ({ slug }: { slug: string }) => {
 					aria-label="댓글 내용"
 					placeholder="댓글을 남겨 주세요"
 					rows={3}
+					maxLength={LIMITS.text.max}
 					value={body}
 					onChange={(event) => setBody(event.target.value)}
 				/>
@@ -188,9 +215,14 @@ const Comments = ({ slug }: { slug: string }) => {
 						))}
 					</ul>
 				)}
-				<button type="submit" className="memo-comment-submit" disabled={sending}>
-					{sending ? '등록 중…' : '등록'}
-				</button>
+				<div className="memo-comment-footer">
+					<span className="memo-comment-count">
+						{body.length}/{LIMITS.text.max}
+					</span>
+					<button type="submit" className="memo-comment-button primary" disabled={sending}>
+						{sending ? '등록 중…' : '등록'}
+					</button>
+				</div>
 			</form>
 		</section>
 	);

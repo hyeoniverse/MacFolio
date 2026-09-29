@@ -588,8 +588,26 @@
 	text-align: left;
 }
 
-.memo-list li + li .memo-item:not(.active) {
-	box-shadow: 0 -1px 0 0 var(--memo-border);
+/* 메모 사이 구분선: 둥근 모서리를 따라 휘지 않도록 항목과 따로 곧은 선만 그린다 (좌우를 모서리만큼 들인다).
+   고른 메모나 마우스를 올린 메모의 위아래 선은 감춘다 (macOS 메모처럼) */
+.memo-list li + li {
+	position: relative;
+}
+
+.memo-list li + li::before {
+	position: absolute;
+	top: 0;
+	right: 0.75rem;
+	left: 0.75rem;
+	height: 1px;
+	background-color: var(--memo-border);
+	pointer-events: none;
+	content: '';
+}
+
+.memo-list li:has(.memo-item.active, .memo-item:hover)::before,
+.memo-list li:has(.memo-item.active, .memo-item:hover) + li::before {
+	opacity: 0;
 }
 
 .memo-item:hover {
@@ -693,7 +711,7 @@
 	white-space: nowrap;
 }
 
-/* 글 아래 댓글 */
+/* 글 아래 댓글 (메모·메시지 앱 톤: 프로필 동그라미, 얇은 구분선, 둥근 입력 카드) */
 .memo-comments {
 	margin-top: 2rem;
 	padding-top: 1.25rem;
@@ -702,43 +720,66 @@
 }
 
 .memo-comments h2 {
-	margin-bottom: 0.75rem;
+	margin-bottom: 0.5rem;
 	color: var(--memo-text);
 	font-size: 15px;
 }
 
 .memo-comments h2 span {
+	margin-left: 2px;
 	color: var(--memo-muted);
 	font-weight: 500;
 }
 
 .memo-comments-note {
+	margin-bottom: 1rem;
 	color: var(--memo-muted);
 }
 
 .memo-comment-list {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	margin-bottom: 1rem;
+	margin-bottom: 1.25rem;
 	list-style: none;
 }
 
 .memo-comment {
-	padding: 10px 12px;
-	border-radius: 10px;
-	background-color: var(--memo-search-bg);
+	display: flex;
+	gap: 10px;
+	padding: 12px 0;
 }
 
-.memo-comment.owner {
-	box-shadow: inset 3px 0 0 var(--memo-accent);
+.memo-comment + .memo-comment {
+	border-top: 1px solid var(--memo-border);
+}
+
+.memo-comment-avatar {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: linear-gradient(180deg, #b8bcc6, #8e929c);
+	color: #ffffff;
+	font-size: 13px;
+	font-weight: 600;
+	object-fit: cover;
+}
+
+.memo-comment-main {
+	flex: 1;
+	min-width: 0;
 }
 
 .memo-comment-head {
 	display: flex;
-	align-items: baseline;
-	gap: 8px;
+	align-items: center;
+	gap: 6px;
+	min-height: 20px;
 	color: var(--memo-text);
+}
+
+.memo-comment-head strong {
+	font-size: 13px;
 }
 
 .memo-comment-head time {
@@ -747,46 +788,94 @@
 }
 
 .memo-comment-badge {
-	padding: 1px 6px;
+	padding: 1px 7px;
 	border-radius: 999px;
-	background-color: var(--memo-accent);
-	color: #ffffff;
+	background-color: color-mix(in srgb, var(--memo-accent) 25%, transparent);
+	color: var(--memo-text);
 	font-size: 10px;
 	font-weight: 600;
 }
 
+/* 지우기: 올렸을 때만 보인다 (터치 기기는 늘) */
 .memo-comment-delete {
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
 	margin-left: auto;
 	border: none;
+	border-radius: 6px;
 	background: none;
 	color: var(--memo-muted);
-	font: inherit;
-	font-size: 11px;
+	font-size: 12px;
+	opacity: 0;
 	cursor: pointer;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.memo-comment:hover .memo-comment-delete,
+.memo-comment-delete:focus-visible {
+	opacity: 1;
+}
+
+@media (hover: none) {
+	.memo-comment-delete {
+		opacity: 1;
+	}
 }
 
 .memo-comment-delete:hover {
+	background-color: var(--memo-search-bg);
 	color: #e5484d;
 }
 
 .memo-comment-body {
-	margin-top: 4px;
+	margin-top: 2px;
 	color: var(--memo-body);
 	line-height: 1.6;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 }
 
-.memo-comment-confirm,
-.memo-comment-fields {
+.memo-comment-confirm {
 	display: flex;
 	gap: 6px;
 	margin-top: 8px;
 }
 
+/* 쓰기: 둥근 카드 하나 */
 .memo-comment-form {
 	display: flex;
 	flex-direction: column;
+	gap: 8px;
+	padding: 12px;
+	border: 1px solid var(--memo-border);
+	border-radius: 14px;
+	transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-comment-form:focus-within {
+	border-color: color-mix(in srgb, var(--memo-accent) 70%, var(--memo-border));
+}
+
+.memo-comment-as {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--memo-muted);
+}
+
+.memo-comment-as .memo-comment-avatar {
+	width: 24px;
+	height: 24px;
+}
+
+.memo-comment-as strong {
+	color: var(--memo-text);
+}
+
+.memo-comment-fields {
+	display: flex;
 	gap: 8px;
 }
 
@@ -795,36 +884,57 @@
 	flex: 1;
 	min-width: 0;
 	padding: 7px 10px;
-	border: 1px solid var(--memo-border);
-	border-radius: 8px;
-	background: none;
-	color: var(--memo-text);
-	font: inherit;
-	resize: vertical;
-}
-
-.memo-comment-confirm button,
-.memo-comment-submit {
-	padding: 6px 14px;
 	border: none;
 	border-radius: 8px;
-	background-color: var(--memo-accent);
-	color: #ffffff;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
 	font: inherit;
+	outline: none;
+}
+
+.memo-comments textarea {
+	padding: 4px 2px;
+	background: none;
+	line-height: 1.6;
+	resize: none;
+}
+
+.memo-comment-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.memo-comment-count {
+	color: var(--memo-muted);
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+}
+
+.memo-comment-button {
+	padding: 5px 14px;
+	border: none;
+	border-radius: 999px;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+	font: inherit;
+	font-weight: 600;
 	cursor: pointer;
 }
 
-.memo-comment-confirm button[type='button'] {
-	background-color: var(--memo-search-bg);
-	color: var(--memo-text);
+.memo-comment-button.primary {
+	background-color: var(--memo-accent);
+	color: #2b2100;
 }
 
-.memo-comment-submit {
-	align-self: flex-end;
+.memo-comment-button.danger {
+	background-color: #e5484d;
+	color: #ffffff;
 }
 
-.memo-comment-submit:disabled {
-	opacity: 0.6;
+.memo-comment-button:disabled {
+	opacity: 0.45;
+	cursor: default;
 }
 
 .memo-comment-error {
