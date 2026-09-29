@@ -64,6 +64,8 @@ export type FormatAction =
 	| { type: 'quote' }
 	| { type: 'table' }
 	| { type: 'tableOp'; op: TableOp }
+	/** 칸 범위 고르기 [행, 열] (고른 테두리의 꼭짓점 점을 끌 때) */
+	| { type: 'tableSelect'; anchor: [number, number]; head: [number, number] }
 	/** 고른 행·열을 끌어서 옮기기 */
 	| { type: 'tableMove'; kind: 'row' | 'col'; from: number; to: number }
 	| { type: 'image'; src: string; alt: string; title?: string }

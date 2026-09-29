@@ -511,6 +511,53 @@ test.describe('바로 고치기 (관리자)', () => {
 			.toMatch(/\| h +\| i +\| g +\|\n\| -+ \| -+ \| -+ \|\n\| b +\| c +\| a +\|\n\| e +\| f +\| d +\|/);
 	});
 
+	test('표: 고른 범위의 대각선 꼭짓점을 끌어 범위를 늘리고 줄인다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('범위');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('위 문단');
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
+		for (const text of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']) {
+			await page.keyboard.type(text);
+			if (text !== 'i') await page.keyboard.press('Tab');
+		}
+		const table = memo.locator('.ProseMirror table');
+		await table.locator('td', { hasText: 'e' }).click();
+		await memo.getByRole('button', { name: '이 열 편집' }).click();
+		await page.keyboard.press('Escape');
+		await expect(table.locator('.selectedCell')).toHaveCount(3);
+
+		const dragTo = async (corner: string, text: string) => {
+			const dot = (await memo.getByRole('button', { name: corner }).boundingBox())!;
+			const cell = (await table.locator('td, th', { hasText: new RegExp(`^${text}$`) }).boundingBox())!;
+			await page.mouse.move(dot.x + dot.width / 2, dot.y + dot.height / 2);
+			await page.mouse.down();
+			await page.mouse.move(cell.x + cell.width / 2, cell.y + cell.height / 2, { steps: 6 });
+			await page.mouse.up();
+		};
+		// 꼭짓점은 고른 범위의 왼쪽 위와 오른쪽 아래에 있다
+		const outline = (await memo.locator('.memo-table-selection').boundingBox())!;
+		const end = (await memo.getByRole('button', { name: '고른 범위 오른쪽 아래 끌기' }).boundingBox())!;
+		expect(Math.abs(end.x + end.width / 2 - (outline.x + outline.width))).toBeLessThan(2);
+		expect(Math.abs(end.y + end.height / 2 - (outline.y + outline.height))).toBeLessThan(2);
+
+		// 오른쪽 아래를 i까지: b~i (2열 × 3행)
+		await dragTo('고른 범위 오른쪽 아래 끌기', 'i');
+		await expect(table.locator('.selectedCell')).toHaveCount(6);
+		// 왼쪽 위를 a까지: 표 전체
+		await dragTo('고른 범위 왼쪽 위 끌기', 'a');
+		await expect(table.locator('.selectedCell')).toHaveCount(9);
+		// 다시 오른쪽 아래를 e까지 줄이면 a~e (2 × 2)
+		await dragTo('고른 범위 오른쪽 아래 끌기', 'e');
+		await expect(table.locator('.selectedCell')).toHaveCount(4);
+		// Backspace로 고른 칸을 비운다
+		await page.keyboard.press('Backspace');
+		await expect(table.locator('tr').first().locator('th')).toHaveText(['', '', 'c']);
+	});
+
 	test('표 앞뒤에 커서를 두고, 뒤에서 Backspace를 두 번 누르면 표가 지워진다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);

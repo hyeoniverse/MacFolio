@@ -79,6 +79,23 @@ function moveRowAcrossHeader(view: EditorView, from: number, to: number) {
 	view.dispatch(tr.setSelection(CellSelection.rowSelection($cell)));
 }
 
+/** 칸 범위를 고른다: anchor 칸에서 head 칸까지 [행, 열] */
+export function selectCells(view: EditorView, anchor: [number, number], head: [number, number]) {
+	const table = findTable(view.state.selection.$from);
+	if (!table) return;
+	const map = TableMap.get(table.node);
+	const clamp = ([row, col]: [number, number]) => [
+		Math.max(0, Math.min(row, map.height - 1)),
+		Math.max(0, Math.min(col, map.width - 1)),
+	];
+	const pos = (cell: [number, number]) => {
+		const [row, col] = clamp(cell);
+		return table.start + map.map[row * map.width + col];
+	};
+	const selection = CellSelection.create(view.state.doc, pos(anchor), pos(head));
+	if (!selection.eq(view.state.selection)) view.dispatch(view.state.tr.setSelection(selection));
+}
+
 export function runTableOp(ctx: Ctx, op: TableOp) {
 	const view = ctx.get(editorViewCtx);
 	const table = tableStateOf(view.state);
