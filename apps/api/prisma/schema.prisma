@@ -35,3 +35,23 @@ model MemoOrganization {
   /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
   updatedBy String
 }
+
+/// 블로그 글의 댓글. 방문자는 이름·비밀번호로 쓰고 같은 비밀번호로 지운다. 관리자는 김정현으로 쓰고 무엇이든 지운다
+model PostComment {
+  id           String   @id @default(cuid())
+  /// 글 주소 (Markdown 파일 이름)
+  postSlug     String
+  name         String
+  body         String
+  /// 관리자가 쓴 댓글 (이름은 김정현, 비밀번호 없음)
+  isAdmin      Boolean  @default(false)
+  /// 비밀번호의 scrypt 해시 (관리자 댓글은 없음)
+  passwordHash String?
+  /// 화면에 보이는 IP 앞 두 자리 (예: 211.234). 원문은 저장하지 않는다
+  ipPrefix     String?
+  /// IP를 비밀 키로 HMAC한 값 (같은 사람이 쓴 댓글을 묶어 볼 때만)
+  ipHash       String
+  createdAt    DateTime @default(now())
+
+  @@index([postSlug, createdAt])
+}

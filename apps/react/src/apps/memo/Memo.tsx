@@ -41,6 +41,7 @@ import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
+import Comments from './comments/Comments';
 import '@/apps/memo/Memo.css';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
@@ -573,6 +574,7 @@ const Memo: React.FC = () => {
 											)}
 										</nav>
 									)}
+									<Comments slug={selected.slug} />
 								</div>
 							)}
 						</div>
