@@ -21,13 +21,11 @@ import {
 	canMoveFolder,
 	discardVisitorOrganization,
 	EMPTY_ORGANIZATION,
-	loadOrganization,
 	moveFolder,
 	movePost,
 	organizePosts,
 	removeFolder,
 	renameFolder,
-	saveOrganization,
 	setPinned,
 	splitPinned,
 	type Organization,
@@ -38,6 +36,9 @@ import { groupPosts, loadArrangement, saveArrangement, sortBy, type Arrangement 
 import ContextMenu from './components/ContextMenu';
 import { CONTENT_IMAGES } from './contentImages';
 import { useCanEditMemo } from './admin';
+import { fetchOrganization, saveOrganization } from './organizationApi';
+import { env } from '@/shared/config/env';
+import { notify } from '@/desktop/notifications/notificationStore';
 import { getPostRepository } from './repository';
 import MarkdownImage from './components/MarkdownImage';
 import '@/apps/memo/Memo.css';
@@ -132,9 +133,10 @@ const Memo: React.FC = () => {
 	const canEdit = useCanEditMemo();
 	const shellRef = useRef<HTMLDivElement>(null);
 	const compact = useCompact(shellRef);
-	const [organization, setOrganization] = useState<Organization>(() =>
-		canEdit ? loadOrganization() : EMPTY_ORGANIZATION
-	);
+	// 관리자가 정리한 내용 (API). 방문자도 같은 정리 내용으로 본다
+	const [organization, setOrganization] = useState<Organization>(EMPTY_ORGANIZATION);
+	/** 관리자가 방금 바꿔서 아직 저장하지 않았는지 */
+	const unsaved = useRef(false);
 	/** 메모 우클릭 메뉴 */
 	const [noteMenu, setNoteMenu] = useState<{ slug: string; x: number; y: number } | null>(null);
 	/** 끌고 있는 글이나 폴더 */
@@ -155,10 +157,37 @@ const Memo: React.FC = () => {
 			.catch(() => setStatus('error'));
 	}, []);
 
+	// 예전에 방문자 브라우저에 저장된 정리 내용은 지우고, 서버의 정리 내용을 읽는다
 	useEffect(() => {
-		if (canEdit) saveOrganization(organization);
-		else discardVisitorOrganization();
+		discardVisitorOrganization();
+		let cancelled = false;
+		fetchOrganization(env.apiUrl).then((loaded) => {
+			if (!cancelled && !unsaved.current) setOrganization(loaded);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
+	// 관리자가 바꾸면 바로 서버에 저장한다 (편집은 폴더 만들기·옮기기·고정처럼 한 번씩 누르는 동작이라 모아 보낼 필요가 없다).
+	// 연달아 바꾸면 요청이 뒤바뀌어 도착하지 않도록 차례로 보낸다. 실패하면 알리고 서버 내용으로 되돌린다
+	const saveQueue = useRef<Promise<void>>(Promise.resolve());
+	useEffect(() => {
+		if (!unsaved.current || !canEdit) return;
+		unsaved.current = false;
+		const snapshot = organization;
+		saveQueue.current = saveQueue.current.then(async () => {
+			if (await saveOrganization(env.apiUrl, snapshot)) return;
+			notify({ app: 'memo', title: '저장하지 못함', body: '메모 정리를 저장하지 못했습니다. 다시 로그인해 주세요.' });
+			setOrganization(await fetchOrganization(env.apiUrl));
+		});
 	}, [canEdit, organization]);
+
+	/** 관리자의 편집: 화면에 바로 반영하고 서버에 저장한다 */
+	const edit = (update: (prev: Organization) => Organization) => {
+		unsaved.current = true;
+		setOrganization(update);
+	};
 
 	// 정리 내용을 겹친 글 (category가 지금 있는 폴더)
 	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
@@ -213,10 +242,10 @@ const Memo: React.FC = () => {
 
 	const drop = (target: string) => {
 		if (!dragging) return;
-		if (dragging.type === 'post') setOrganization((prev) => movePost(prev, dragging.id, target));
+		if (dragging.type === 'post') edit((prev) => movePost(prev, dragging.id, target));
 		else {
 			const parent = target === ALL_CATEGORY ? '' : target;
-			setOrganization((prev) => moveFolder(prev, dragging.id, parent, folderPaths));
+			edit((prev) => moveFolder(prev, dragging.id, parent, folderPaths));
 			// 고른 폴더를 옮겼으면 새 경로를 따라간다
 			const moved = `${parent ? `${parent}/` : ''}${dragging.id.split('/').at(-1)}`;
 			if (category === dragging.id || category.startsWith(`${dragging.id}/`)) {
@@ -245,7 +274,7 @@ const Memo: React.FC = () => {
 		setGalleryNoteOpen(false);
 	};
 
-	const togglePin = (post: Post) => setOrganization((prev) => setPinned(prev, post.slug, !post.pinned));
+	const togglePin = (post: Post) => edit((prev) => setPinned(prev, post.slug, !post.pinned));
 	const openNoteMenu = (slug: string) =>
 		canEdit
 			? (event: React.MouseEvent) => {
@@ -417,11 +446,11 @@ const Memo: React.FC = () => {
 						current={category}
 						onSelect={selectFolder}
 						onAddFolder={(parent, name) => {
-							setOrganization((prev) => addFolder(prev, parent, name));
+							edit((prev) => addFolder(prev, parent, name));
 							selectFolder(parent ? `${parent}/${name}` : name);
 						}}
 						onRenameFolder={(path, name) => {
-							setOrganization((prev) => renameFolder(prev, path, name));
+							edit((prev) => renameFolder(prev, path, name));
 							// 고른 폴더(또는 그 안)의 이름이 바뀌면 새 경로를 따라간다
 							if (category === path || category.startsWith(`${path}/`)) {
 								const renamed = [...path.split('/').slice(0, -1), name].join('/');
@@ -429,7 +458,7 @@ const Memo: React.FC = () => {
 							}
 						}}
 						onRemoveFolder={(path) => {
-							setOrganization((prev) => removeFolder(prev, path));
+							edit((prev) => removeFolder(prev, path));
 							if (category === path || category.startsWith(`${path}/`)) selectFolder(ALL_CATEGORY);
 						}}
 						dragging={dragging}
