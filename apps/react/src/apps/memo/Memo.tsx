@@ -32,7 +32,8 @@ import {
 	type Organization,
 } from './organize';
 import FolderSidebar, { type DragItem } from './components/FolderSidebar';
-import { ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
+import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
+import { groupPosts, loadArrangement, saveArrangement, sortBy, type Arrangement } from './arrange';
 import ContextMenu from './components/ContextMenu';
 import { CONTENT_IMAGES } from './contentImages';
 import { useCanEditMemo } from './admin';
@@ -115,6 +116,14 @@ const Memo: React.FC = () => {
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [view, setView] = useState<View>('list');
+	/** 정렬과 날짜별 묶기. 보기 설정이라 방문자도 바꾸고, 이 브라우저에 저장한다 (arrange.ts) */
+	const [arrangement, setArrangementState] = useState<Arrangement>(loadArrangement);
+	const setArrangement = (next: Arrangement) => {
+		setArrangementState(next);
+		saveArrangement(next);
+	};
+	// 날짜 묶음(오늘, 어제 …)의 기준. 창을 연 날로 고정한다
+	const today = useMemo(() => new Date(), []);
 	/** 갤러리에서 카드를 눌러 글을 연 상태 */
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
 	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
@@ -153,7 +162,10 @@ const Memo: React.FC = () => {
 	// 정리 내용을 겹친 글 (category가 지금 있는 폴더)
 	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
 	const folders = useMemo(() => buildFolderTree(organized, organization.folders), [organized, organization.folders]);
-	const visible = useMemo(() => filterPosts(organized, category, query), [organized, category, query]);
+	const visible = useMemo(
+		() => sortBy(filterPosts(organized, category, query), arrangement),
+		[organized, category, query, arrangement]
+	);
 	// 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다)
 	const folderPaths = useMemo(() => {
 		const paths: string[] = [];
@@ -165,8 +177,9 @@ const Memo: React.FC = () => {
 		walk(folders);
 		return paths;
 	}, [folders]);
-	// 고른 글이 목록에 없으면(카테고리·검색으로 걸러지면) 목록의 첫 글을 보여준다
-	const selected = visible.find((post) => post.slug === selectedSlug) ?? visible[0] ?? null;
+	const { pinned: pinnedPosts, others: otherPosts } = splitPinned(visible);
+	// 고른 글이 목록에 없으면(카테고리·검색으로 걸러지면) 목록 맨 위의 글(고정된 글 먼저)을 보여준다
+	const selected = visible.find((post) => post.slug === selectedSlug) ?? pinnedPosts[0] ?? otherPosts[0] ?? null;
 	const toggleSidebar = () => setSidebarOpen((open) => !open);
 
 	const selectFolder = (path: string) => {
@@ -218,7 +231,6 @@ const Memo: React.FC = () => {
 		setGalleryNoteOpen(false);
 	};
 
-	const { pinned: pinnedPosts, others: otherPosts } = splitPinned(visible);
 	const togglePin = (post: Post) => setOrganization((prev) => setPinned(prev, post.slug, !post.pinned));
 	const openNoteMenu = (slug: string) =>
 		canEdit
@@ -229,26 +241,45 @@ const Memo: React.FC = () => {
 			: undefined;
 	const menuPost = noteMenu ? organized.find((post) => post.slug === noteMenu.slug) : undefined;
 
-	/** 고정된 메모를 먼저, 그다음 나머지. 고정된 메모가 있을 때만 묶음 이름을 단다 */
-	const sections = (render: (post: Post) => React.ReactNode, pinnedTitle: string, className: string) =>
-		pinnedPosts.length > 0 ? (
+	/**
+	 * 고정된 메모를 먼저, 그다음 나머지. 날짜별로 묶으면 나머지를 오늘·어제·지난 7일… 묶음으로 나눈다.
+	 * 묶지 않을 때는 고정된 메모가 있을 때만 '메모' 묶음 이름을 단다.
+	 */
+	const sections = (render: (post: Post) => React.ReactNode, pinnedTitle: string, className: string) => {
+		const groups = groupPosts(otherPosts, arrangement, today);
+		const grouped = groups.some((group) => group.title !== null);
+		return (
 			<>
-				<h3 className="memo-section-title">
-					<i className="fa-solid fa-thumbtack" aria-hidden="true" /> {pinnedTitle}
-				</h3>
-				<ul className={className} aria-label={pinnedTitle}>
-					{pinnedPosts.map(render)}
-				</ul>
-				{otherPosts.length > 0 && (
+				{pinnedPosts.length > 0 && (
 					<>
-						<h3 className="memo-section-title">메모</h3>
-						<ul className={className}>{otherPosts.map(render)}</ul>
+						<h3 className="memo-section-title">
+							<i className="fa-solid fa-thumbtack" aria-hidden="true" /> {pinnedTitle}
+						</h3>
+						<ul className={className} aria-label={pinnedTitle}>
+							{pinnedPosts.map(render)}
+						</ul>
+					</>
+				)}
+				{grouped ? (
+					groups.map((group) => (
+						<React.Fragment key={group.title}>
+							<h3 className="memo-section-title">{group.title}</h3>
+							<ul className={className} aria-label={group.title ?? undefined}>
+								{group.posts.map(render)}
+							</ul>
+						</React.Fragment>
+					))
+				) : (
+					<>
+						{pinnedPosts.length > 0 && otherPosts.length > 0 && <h3 className="memo-section-title">메모</h3>}
+						{(pinnedPosts.length === 0 || otherPosts.length > 0) && (
+							<ul className={className}>{otherPosts.map(render)}</ul>
+						)}
 					</>
 				)}
 			</>
-		) : (
-			<ul className={className}>{otherPosts.map(render)}</ul>
 		);
+	};
 
 	const listItem = (post: Post) => (
 		<li key={post.slug}>
@@ -338,9 +369,15 @@ const Memo: React.FC = () => {
 			/>
 		</label>
 	);
-	// 검색 칸은 늘 창 오른쪽 위(도구 막대 끝)에 있다. 좁은 창에서는 도구 막대가 없으므로 목록 위에 둔다
+	const sortMenu = () => <SortMenu arrangement={arrangement} onChange={setArrangement} />;
+	// 검색 칸은 늘 창 오른쪽 위(도구 막대 끝)에 있다. 좁은 창에서는 도구 막대가 없으므로 목록 위에 정렬 단추와 함께 둔다
 	const search = searchBox();
-	const compactSearch = searchBox('compact-only');
+	const compactTools = (
+		<div className="memo-compact-tools compact-only">
+			{searchBox()}
+			{sortMenu()}
+		</div>
+	);
 
 	return (
 		<AppWindow title="메모" appName="memo" chrome="unified">
@@ -399,7 +436,7 @@ const Memo: React.FC = () => {
 							<button type="button" className="memo-back" onClick={() => setPane('folders')}>
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
 							</button>
-							{compactSearch}
+							{compactTools}
 							{sections(listItem, '고정됨', 'memo-items')}
 							{empty}
 						</div>
@@ -414,6 +451,7 @@ const Memo: React.FC = () => {
 									<h2>{folderName(category)}</h2>
 									<p>{visible.length}개의 메모</p>
 								</div>
+								{sortMenu()}
 								<ViewSwitch view={view} onChange={changeView} />
 								{search}
 							</div>
@@ -441,7 +479,8 @@ const Memo: React.FC = () => {
 							)}
 							<span className="memo-toolbar-spacer" />
 							{pinButton('')}
-							{/* 보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
+							{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
+							{sortMenu()}
 							<ViewSwitch view={view} onChange={changeView} />
 							{search}
 						</div>
