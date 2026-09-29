@@ -1,98 +1,142 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
-import { PROFILE, PROJECTS, type Project } from '@/shared/profile';
+import { PROJECTS, type Project } from '@/shared/profile';
 import '@/apps/safari/Safari.css';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
-/** 프로젝트 카드: 화면 캡처, 구분, 이름, 소개, 기술, 데모·GitHub */
-const ProjectCard: React.FC<{ project: Project }> = ({ project }) => (
-	<li className="safari-project">
-		<a
-			className="safari-project-image"
-			href={project.demo ?? project.url}
-			{...external}
-			tabIndex={-1}
-			aria-hidden="true"
-		>
-			<img src={project.image} alt="" loading="lazy" />
-		</a>
-		<div className="safari-project-body">
-			<p className="safari-project-context">{project.context}</p>
-			<h2>{project.name}</h2>
-			<p className="safari-project-description">{project.description}</p>
-			{project.role && (
-				<p className="safari-project-role">
-					<strong>맡은 일</strong> {project.role}
-				</p>
-			)}
-			<ul className="safari-stack" aria-label="기술">
-				{project.stack.map((tech) => (
-					<li key={tech}>{tech}</li>
-				))}
-			</ul>
-			<div className="safari-project-actions">
+/** 주소창에 보일 주소 (데모가 있으면 데모, 없으면 저장소) */
+const addressOf = (project: Project) => project.demo ?? project.url;
+const displayAddress = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+/** 탭 안의 페이지: 프로젝트 소개 */
+const ProjectPage: React.FC<{ project: Project }> = ({ project }) => (
+	<article className="safari-page-content" aria-label={project.name}>
+		<header className="safari-page-hero">
+			<p className="safari-page-context">{project.context}</p>
+			<h1>{project.name}</h1>
+			<p className="safari-page-description">{project.description}</p>
+			<div className="safari-page-actions">
 				{project.demo && (
 					<a className="safari-button primary" href={project.demo} {...external}>
-						<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" /> 데모
+						<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" /> 데모 열기
 					</a>
 				)}
 				<a className="safari-button" href={project.url} {...external}>
-					<i className="fa-brands fa-github" aria-hidden="true" /> GitHub
+					<i className="fa-brands fa-github" aria-hidden="true" /> GitHub 저장소
 				</a>
 			</div>
-		</div>
-	</li>
-);
+		</header>
 
-/**
- * Safari: 포트폴리오 페이지. macOS Safari처럼 위쪽에 도구 막대(주소창)가 있고, 아래에 소개와 프로젝트.
- * 프로젝트는 GitHub에 고정한 저장소와 같다 (shared/profile.ts).
- */
-const Safari: React.FC = () => (
-	<AppWindow title="Safari" appName="safari" chrome="unified">
-		<div className="safari">
-			{/* 도구 막대 (보여 주기용). 신호등 버튼 자리를 비우고 주소창을 가운데에 */}
-			<div className="safari-toolbar" aria-hidden="true">
-				<span className="safari-lights-space" />
-				<i className="fa-solid fa-chevron-left" />
-				<i className="fa-solid fa-chevron-right" />
-				<div className="safari-address">
-					<i className="fa-solid fa-lock" />
-					{PROFILE.name} · 포트폴리오
-				</div>
-				<i className="fa-solid fa-arrow-up-from-bracket" />
-			</div>
+		<figure className="safari-page-shot">
+			<img src={project.image} alt={`${project.name} 화면`} />
+		</figure>
 
-			<div className="safari-page">
-				<header className="safari-hero">
-					<p className="safari-eyebrow">Portfolio</p>
-					<h1>{PROFILE.name}의 포트폴리오</h1>
-					<p className="safari-role">{PROFILE.role}</p>
-					<p className="safari-intro">
-						React · Next.js로 인터랙티브한 UI를 만들고, 화면에 필요한 API와 데이터 구조까지 직접 설계합니다.
-					</p>
-					<div className="safari-hero-links">
-						<a className="safari-button" href={PROFILE.github} {...external}>
-							<i className="fa-brands fa-github" aria-hidden="true" /> GitHub
-						</a>
-						<a className="safari-button" href={`mailto:${PROFILE.email}`}>
-							<i className="fa-solid fa-envelope" aria-hidden="true" /> {PROFILE.email}
-						</a>
-					</div>
-				</header>
+		<div className="safari-page-sections">
+			<section className="safari-page-card" aria-label="주요 기능">
+				<h2>주요 기능</h2>
+				<ul className="safari-features">
+					{project.features.map((feature) => (
+						<li key={feature}>
+							<i className="fa-solid fa-circle-check" aria-hidden="true" />
+							{feature}
+						</li>
+					))}
+				</ul>
+			</section>
 
-				<section aria-label="프로젝트">
-					<h2 className="safari-section-title">프로젝트</h2>
-					<ul className="safari-projects">
-						{PROJECTS.map((project) => (
-							<ProjectCard key={project.id} project={project} />
+			<div className="safari-page-side">
+				{project.role && (
+					<section className="safari-page-card" aria-label="맡은 일">
+						<h2>맡은 일</h2>
+						<p>{project.role}</p>
+					</section>
+				)}
+				<section className="safari-page-card" aria-label="기술 스택">
+					<h2>기술 스택</h2>
+					<ul className="safari-stack">
+						{project.stack.map((tech) => (
+							<li key={tech}>{tech}</li>
 						))}
 					</ul>
 				</section>
 			</div>
 		</div>
-	</AppWindow>
+	</article>
 );
+
+/**
+ * Safari: 프로젝트마다 탭이 하나씩 열린 브라우저. 탭을 고르면 그 프로젝트를 소개하는 페이지가 보인다.
+ * 주소창을 누르면 실제 데모(없으면 저장소)를 새 탭에서 연다. 프로젝트는 GitHub 고정 저장소와 같다 (shared/profile.ts).
+ */
+const Safari: React.FC = () => {
+	const [activeId, setActiveId] = useState(PROJECTS[0].id);
+	const index = Math.max(
+		0,
+		PROJECTS.findIndex((project) => project.id === activeId)
+	);
+	const active = PROJECTS[index];
+	const go = (offset: number) => setActiveId(PROJECTS[index + offset].id);
+
+	return (
+		<AppWindow title="Safari" appName="safari" chrome="unified">
+			<div className="safari">
+				{/* 도구 막대: 신호등 버튼 자리, 이전·다음 탭, 주소창, 새 탭에서 열기 */}
+				<div className="safari-toolbar">
+					<span className="safari-lights-space" aria-hidden="true" />
+					<button
+						type="button"
+						className="safari-tool"
+						aria-label="이전 탭"
+						disabled={index === 0}
+						onClick={() => go(-1)}
+					>
+						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
+					</button>
+					<button
+						type="button"
+						className="safari-tool"
+						aria-label="다음 탭"
+						disabled={index === PROJECTS.length - 1}
+						onClick={() => go(1)}
+					>
+						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
+					</button>
+					<a className="safari-address" href={addressOf(active)} {...external} title="새 탭에서 열기">
+						<i className="fa-solid fa-lock" aria-hidden="true" />
+						<span>{displayAddress(addressOf(active))}</span>
+					</a>
+					<a className="safari-tool" href={addressOf(active)} {...external} aria-label="새 탭에서 열기">
+						<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
+					</a>
+				</div>
+
+				{/* 탭 막대: 프로젝트마다 탭 하나 */}
+				<div className="safari-tabs" role="tablist" aria-label="프로젝트 탭">
+					{PROJECTS.map((project) => (
+						<button
+							key={project.id}
+							type="button"
+							role="tab"
+							id={`safari-tab-${project.id}`}
+							aria-selected={project.id === active.id}
+							aria-controls="safari-tabpanel"
+							className={`safari-tab ${project.id === active.id ? 'active' : ''}`}
+							onClick={() => setActiveId(project.id)}
+						>
+							<img src={project.image} alt="" className="safari-favicon" />
+							<span>{project.name}</span>
+						</button>
+					))}
+				</div>
+
+				<div className="safari-page" role="tabpanel" id="safari-tabpanel" aria-labelledby={`safari-tab-${active.id}`}>
+					{/* 탭을 바꾸면 페이지를 새로 그려 나타나는 애니메이션이 다시 돈다 */}
+					<ProjectPage key={active.id} project={active} />
+				</div>
+			</div>
+		</AppWindow>
+	);
+};
 
 export default Safari;
