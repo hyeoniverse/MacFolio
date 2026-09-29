@@ -13,6 +13,18 @@ export interface FakeApiState {
 	};
 	/** 받은 PUT 요청 수 */
 	saves: number;
+	/** 글마다 댓글 (가짜 서버는 비밀번호를 그대로 들고 있다) */
+	comments: Record<string, FakeComment[]>;
+}
+
+export interface FakeComment {
+	id: string;
+	name: string;
+	ipPrefix: string | null;
+	isAdmin: boolean;
+	body: string;
+	createdAt: string;
+	password?: string;
 }
 
 /**
@@ -33,11 +45,13 @@ export async function fakeApi(
 		signedIn,
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		saves: 0,
+		comments: {},
 	};
+	let nextId = 1;
 	const cors = (origin: string) => ({
 		'Access-Control-Allow-Origin': origin,
 		'Access-Control-Allow-Credentials': 'true',
-		'Access-Control-Allow-Methods': 'GET, PUT, POST',
+		'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE',
 		'Access-Control-Allow-Headers': 'Content-Type',
 	});
 	await page.addInitScript((url) => {
@@ -74,6 +88,48 @@ export async function fakeApi(
 			state.organization = request.postDataJSON();
 			state.saves += 1;
 			return route.fulfill({ status: 200, headers: cors(origin), json: state.organization });
+		}
+		// 댓글: 글마다 읽고 쓰고, 비밀번호(관리자는 없이)로 지운다
+		const list = path.match(/^\/posts\/([\w-]+)\/comments$/);
+		if (list) {
+			const comments = (state.comments[list[1]] ??= []);
+			const view = ({ password: _password, ...comment }: FakeComment) => comment;
+			if (request.method() === 'GET')
+				return route.fulfill({ status: 200, headers: cors(origin), json: comments.map(view) });
+			const input = request.postDataJSON() as { name?: string; password?: string; body?: string };
+			const comment: FakeComment = state.signedIn
+				? {
+						id: `c${nextId++}`,
+						name: '김정현',
+						ipPrefix: null,
+						isAdmin: true,
+						body: input.body ?? '',
+						createdAt: new Date().toISOString(),
+					}
+				: {
+						id: `c${nextId++}`,
+						name: input.name ?? '',
+						ipPrefix: '127.0',
+						isAdmin: false,
+						body: input.body ?? '',
+						createdAt: new Date().toISOString(),
+						password: input.password,
+					};
+			comments.push(comment);
+			return route.fulfill({ status: 201, headers: cors(origin), json: view(comment) });
+		}
+		const one = path.match(/^\/comments\/(\w+)$/);
+		if (one && request.method() === 'DELETE') {
+			const { password } = (request.postDataJSON() ?? {}) as { password?: string };
+			for (const comments of Object.values(state.comments)) {
+				const index = comments.findIndex((comment) => comment.id === one[1]);
+				if (index === -1) continue;
+				if (!state.signedIn && comments[index].password !== password)
+					return route.fulfill({ status: 403, headers: cors(origin), json: { statusCode: 403 } });
+				comments.splice(index, 1);
+				return route.fulfill({ status: 204, headers: cors(origin) });
+			}
+			return route.fulfill({ status: 404, headers: cors(origin), json: { statusCode: 404 } });
 		}
 		return route.fulfill({ status: 404 });
 	});
