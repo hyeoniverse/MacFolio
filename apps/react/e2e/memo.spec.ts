@@ -163,6 +163,45 @@ test.describe('메모 (블로그)', () => {
 		await expect(code.locator('.hljs-keyword').first()).toBeVisible();
 	});
 
+	test('정렬 기준·순서와 날짜별 그룹화를 바꾸고, 다시 열어도 그대로다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const list = memo.getByRole('region', { name: '글 목록' });
+		const titles = () => list.locator('.memo-item strong').allTextContents();
+		const openSortMenu = async () => {
+			await memo.getByRole('button', { name: '정렬과 그룹화' }).click();
+			return page.getByRole('menu', { name: '정렬과 그룹화' });
+		};
+
+		// 처음에는 날짜 최신 순, 날짜별로 묶여 있다
+		await expect(list.locator('.memo-section-title').first()).toBeVisible();
+		let menu = await openSortMenu();
+		await expect(menu.getByRole('menuitemcheckbox', { name: '날짜', exact: true })).toHaveAttribute(
+			'aria-checked',
+			'true'
+		);
+		await menu.getByRole('menuitemcheckbox', { name: '날짜별로 그룹화' }).click();
+		await expect(list.locator('.memo-section-title')).toHaveCount(0);
+
+		// 제목 가나다 순
+		menu = await openSortMenu();
+		await menu.getByRole('menuitemcheckbox', { name: '제목', exact: true }).click();
+		const byTitle = await titles();
+		expect(byTitle).toEqual([...byTitle].sort((a, b) => a.localeCompare(b, 'ko')));
+
+		// 제목으로 정렬하면 날짜별 묶기는 끌 수 없고, 역순으로 바꿀 수 있다
+		menu = await openSortMenu();
+		await expect(menu.getByRole('menuitemcheckbox', { name: '날짜별로 그룹화' })).toBeDisabled();
+		await menu.getByRole('menuitemcheckbox', { name: '역순' }).click();
+		await expect.poll(titles).toEqual([...byTitle].reverse());
+
+		// 이 브라우저에 저장되어 다시 열어도 그대로
+		await page.reload();
+		const again = await openMemo(page);
+		await expect
+			.poll(() => again.getByRole('region', { name: '글 목록' }).locator('.memo-item strong').allTextContents())
+			.toEqual([...byTitle].reverse());
+	});
+
 	test('목록 위에 폴더 이름과 메모 수가 보인다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const heading = memo.getByRole('region', { name: '글 목록' }).locator('.memo-toolbar-heading');
