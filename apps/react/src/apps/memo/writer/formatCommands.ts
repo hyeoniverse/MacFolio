@@ -20,6 +20,7 @@ import {
 import { insertTableCommand, toggleStrikethroughCommand } from '@milkdown/kit/preset/gfm';
 import { callCommand } from '@milkdown/kit/utils';
 import { runTableOp, tableStateOf } from './tableCommands';
+import { clearFind, replaceFind, setFind } from './findPlugin';
 import { attachmentTitle } from './attachments';
 import { blockOfHeading, EMPTY_FORMAT, HEADING_LEVEL, type FormatAction, type FormatState } from './editorControls';
 
@@ -136,6 +137,10 @@ function insertTable(ctx: Ctx) {
 /** 도구 막대의 명령을 실행한다. 이미 그 서식이면 푼다 (macOS 메모처럼 누를 때마다 켜고 끈다) */
 export function runFormat(ctx: Ctx, action: FormatAction) {
 	const view = ctx.get(editorViewCtx);
+	// 찾기·대치는 찾기 칸에 초점을 둔 채로 한다 (편집기로 초점을 옮기지 않는다)
+	if (action.type === 'find') return setFind(view, action.query, action.options, action.index);
+	if (action.type === 'findClear') return clearFind(view);
+	if (action.type === 'replace') return replaceFind(view, action.replacement, action.all);
 	const current = formatStateOf(view.state);
 
 	switch (action.type) {

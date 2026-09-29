@@ -18,6 +18,7 @@ import {
 	type FolderNode,
 	type AdminPost,
 	type Post,
+	type PostFilter,
 	type ServerPost,
 } from './posts';
 import {
@@ -40,6 +41,8 @@ import { groupPosts, loadArrangement, saveArrangement, sortBy, type Arrangement 
 import ContextMenu from './components/ContextMenu';
 import { CONTENT_IMAGES } from './contentImages';
 import { useCanEditMemo } from './admin';
+import { useAppState } from '@/desktop/AppStateContext';
+import { foregroundApp } from '@/desktop/appStack';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
@@ -50,6 +53,8 @@ import Comments from './comments/Comments';
 import PostWriter, { type PostWriterHandle } from './writer/PostWriter';
 import FormatTools from './writer/FormatTools';
 import RevisionsPanel from './components/RevisionsPanel';
+import SearchField from './components/SearchField';
+import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/popover';
 import { deletePost, fetchAdminPosts, fetchServerPosts } from './postsApi';
 import { createPortal } from 'react-dom';
@@ -136,6 +141,10 @@ const Memo: React.FC = () => {
 	const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 	const [category, setCategory] = useState(ALL_CATEGORY);
 	const [query, setQuery] = useState('');
+	/** 검색 조건 (체크리스트가 있는 메모 등) */
+	const [filter, setFilter] = useState<PostFilter | null>(null);
+	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
+	const [findSlug, setFindSlug] = useState<string | null>(null);
 	const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 	// 좁은 창에서는 한 칸씩 보여준다 (iOS 메모처럼 폴더 → 목록 → 본문). 넓은 창에서는 쓰지 않는다.
 	const [pane, setPaneState] = useState<Pane>('list');
@@ -158,6 +167,7 @@ const Memo: React.FC = () => {
 	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
 	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 단추를 보이지 않는다 (admin.ts)
 	const canEdit = useCanEditMemo();
+	const { apps } = useAppState();
 	/** 관리자 목록을 읽었으면 편집기로 본다 (읽기 전에는 게시한 내용으로 읽기만) */
 	const editing = canEdit && adminPosts !== null;
 	// 관리자는 임시 저장까지 보이고, 방문자는 게시한 글만 본다
@@ -255,8 +265,17 @@ const Memo: React.FC = () => {
 	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
 	const folders = useMemo(() => buildFolderTree(organized, organization.folders), [organized, organization.folders]);
 	const visible = useMemo(
-		() => sortBy(filterPosts(organized, category, query), arrangement),
-		[organized, category, query, arrangement]
+		() =>
+			sortBy(
+				filterPosts(
+					organized,
+					category,
+					query,
+					editing ? filter : filter === 'draft' || filter === 'scheduled' ? null : filter
+				),
+				arrangement
+			),
+		[organized, category, query, filter, editing, arrangement]
 	);
 	// 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다)
 	const folderPaths = useMemo(() => {
@@ -605,22 +624,36 @@ const Memo: React.FC = () => {
 			{status === 'loading' && <p className="memo-empty">불러오는 중…</p>}
 			{status === 'error' && <p className="memo-empty">글을 불러오지 못했습니다.</p>}
 			{status === 'ready' && visible.length === 0 && (
-				<p className="memo-empty">{query ? '검색 결과가 없습니다.' : '메모 없음'}</p>
+				<p className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</p>
 			)}
 		</>
 	);
 
+	const openFind = selected ? () => setFindSlug(selected.slug) : null;
+	const findTarget = selected?.slug ?? null;
+	const memoInFront = foregroundApp(apps) === 'memo';
+	// ⌘F: 메모가 맨 앞 창이면 열린 글 안에서 찾기 (브라우저의 페이지 찾기 대신)
+	useEffect(() => {
+		if (!memoInFront || !findTarget) return;
+		const onKeyDown = (event: KeyboardEvent) => {
+			if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'f') {
+				event.preventDefault();
+				setFindSlug(findTarget);
+			}
+		};
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [memoInFront, findTarget]);
 	const searchBox = (className = '') => (
-		<label className={`memo-search ${className}`}>
-			<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-			<input
-				type="search"
-				placeholder="검색"
-				aria-label="글 검색"
-				value={query}
-				onChange={(event) => setQuery(event.target.value)}
-			/>
-		</label>
+		<SearchField
+			className={className}
+			query={query}
+			onQuery={setQuery}
+			filter={filter}
+			onFilter={setFilter}
+			admin={editing}
+			onFind={openFind}
+		/>
 	);
 	const sortMenu = () => <SortMenu arrangement={arrangement} onChange={setArrangement} />;
 	// 검색 칸은 늘 창 오른쪽 위(도구 막대 끝)에 있다. 좁은 창에서는 도구 막대가 없으므로 목록 위에 정렬 단추와 함께 둔다
@@ -744,6 +777,9 @@ const Memo: React.FC = () => {
 							<ViewSwitch view={view} onChange={changeView} />
 							{search}
 						</div>
+						{findSlug !== null && findSlug === selected?.slug && (
+							<FindBar key={findSlug} editing={editing} readerRoot={readerScroll} onClose={() => setFindSlug(null)} />
+						)}
 						<div ref={readerScroll} className="memo-scroll">
 							<div className="memo-reader-compact-bar">
 								<button type="button" className="memo-back" onClick={() => setPane('list')}>
