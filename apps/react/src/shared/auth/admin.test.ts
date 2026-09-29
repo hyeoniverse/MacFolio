@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { avatarUrl, checkAdmin, readLoginResult } from './admin';
+import { avatarUrl, checkAdmin, loginOutcome, readLoginResult } from './admin';
 
 describe('readLoginResult', () => {
 	it('결과를 읽고 주소에서 뺀다 (다른 쿼리는 둔다)', () => {
@@ -47,5 +47,25 @@ describe('checkAdmin', () => {
 describe('avatarUrl', () => {
 	it('GitHub 프로필 사진', () => {
 		expect(avatarUrl('hyeoniverse')).toBe('https://github.com/hyeoniverse.png?size=120');
+	});
+});
+
+describe('loginOutcome', () => {
+	const signedIn = { status: 'signed-in' as const, login: 'hyeoniverse' };
+	const signedOut = { status: 'signed-out' as const, login: null };
+
+	it('서버가 로그인했다고 하면 성공', () => {
+		expect(loginOutcome('signed-in', signedIn)).toMatchObject({ tone: 'success', title: '로그인했습니다' });
+		expect(loginOutcome('signed-in', signedIn).body).toContain('hyeoniverse');
+	});
+
+	it('관리자가 아니거나 취소했으면 그 이유를 알린다', () => {
+		expect(loginOutcome('denied', signedOut)).toMatchObject({ tone: 'fail', title: '로그인할 수 없습니다' });
+		expect(loginOutcome('cancelled', signedOut)).toMatchObject({ tone: 'fail', title: '로그인을 취소했습니다' });
+	});
+
+	it('주소는 성공인데 서버가 모른다고 하면 실패로 알린다 (쿠키가 막힌 경우)', () => {
+		expect(loginOutcome('signed-in', signedOut)).toMatchObject({ tone: 'fail', title: '로그인을 확인하지 못했습니다' });
+		expect(loginOutcome('signed-in', { status: 'offline', login: null }).tone).toBe('fail');
 	});
 });

@@ -66,4 +66,18 @@ test.describe('Safari', () => {
 		await expect(safari.getByRole('tab', { name: /NewPick/ })).toHaveAttribute('aria-selected', 'true');
 		await expect(safari.getByRole('tab', { name: '시작 페이지' })).toHaveCount(0);
 	});
+
+	test('좁은 창에서는 탭 막대가 제목 표시줄 자리에 오고, 신호등 버튼을 피해 탭을 누를 수 있다', async ({ page }) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		await safari.evaluate((element) => (element.style.width = '560px'));
+
+		// 첫 탭이 신호등 버튼과 겹치지 않는다
+		const lights = (await safari.locator('.traffic-lights').boundingBox())!;
+		const firstTab = (await safari.getByRole('tab').first().boundingBox())!;
+		expect(firstTab.x).toBeGreaterThan(lights.x + lights.width);
+
+		await safari.getByRole('tab', { name: /QRU/ }).click();
+		await expect(safari.getByRole('tab', { name: /QRU/ })).toHaveAttribute('aria-selected', 'true');
+	});
 });

@@ -202,6 +202,22 @@ test.describe('메모 (블로그)', () => {
 			.toEqual([...byTitle].reverse());
 	});
 
+	test('본문 아래의 이전 글·다음 글로 날짜 순으로 옮겨 다닌다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const titles = await memo.getByRole('region', { name: '글 목록' }).locator('.memo-item strong').allTextContents();
+		const article = memo.getByRole('article');
+		const nav = article.getByRole('navigation', { name: '이전 글, 다음 글' });
+
+		// 처음 열린 글은 가장 최근 글: 다음 글은 없고 이전 글만 있다
+		await expect(article).toHaveAccessibleName(titles[0]);
+		await expect(nav.getByRole('button', { name: /다음 글/ })).toHaveCount(0);
+
+		await nav.getByRole('button', { name: /이전 글/ }).click();
+		await expect(article).toHaveAccessibleName(titles[1]);
+		await nav.getByRole('button', { name: /다음 글/ }).click();
+		await expect(article).toHaveAccessibleName(titles[0]);
+	});
+
 	test('목록 위에 폴더 이름과 메모 수가 보인다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const heading = memo.getByRole('region', { name: '글 목록' }).locator('.memo-toolbar-heading');

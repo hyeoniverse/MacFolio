@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react';
 import { createStore } from '@/shared/lib/createStore';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
-import { checkAdmin, LOGIN_MESSAGES, readLoginResult, type AdminState } from '@/shared/auth/admin';
+import { checkAdmin, readLoginResult, type AdminState, type LoginResult } from '@/shared/auth/admin';
 
 /**
  * 관리자 로그인 상태. 세션은 API가 httpOnly 쿠키로 들고 있어서 브라우저 코드는 토큰을 보지 못한다.
@@ -14,9 +14,33 @@ export async function refreshAdmin() {
 	adminStore.setState(await checkAdmin(env.apiUrl));
 }
 
+/**
+ * 로그인하러 다녀오는 흐름 (LoginFlow가 그린다).
+ * - redirecting: GitHub로 가는 중 (페이지가 갑자기 바뀌지 않게 잠깐 안내를 보여 준다)
+ * - result: GitHub에서 돌아온 결과. 확인을 누를 때까지 결과 창을 보여 준다
+ */
+export const loginFlowStore = createStore<{ redirecting: boolean; result: LoginResult | null }>({
+	redirecting: false,
+	result: null,
+});
+
+/** 안내를 보여 준 뒤 GitHub로 떠나기까지 */
+const REDIRECT_DELAY_MS = 600;
+
 /** GitHub 로그인으로 간다 (API가 GitHub에 보냈다가 이 사이트로 돌려보낸다) */
 export function signIn() {
-	if (env.apiUrl) window.location.assign(`${env.apiUrl}/auth/github`);
+	if (!env.apiUrl) return;
+	loginFlowStore.setState({ redirecting: true });
+	setTimeout(() => window.location.assign(`${env.apiUrl}/auth/github`), REDIRECT_DELAY_MS);
+}
+
+/** GitHub에서 막 돌아왔는지 (그러면 로딩 화면을 건너뛴다) */
+export const returnedFromLogin = () => loginFlowStore.getState().result !== null;
+
+export const dismissLoginResult = () => loginFlowStore.setState({ result: null });
+
+export function useLoginFlow() {
+	return useSyncExternalStore(loginFlowStore.subscribe, loginFlowStore.getState);
 }
 
 export async function signOut() {
@@ -28,12 +52,17 @@ export async function signOut() {
 	}
 }
 
-/** 앱 시작 시 한 번: GitHub에서 돌아왔으면 결과를 알리고, 로그인했는지 확인한다 */
+/**
+ * 앱 시작 시 한 번 (화면을 그리기 전에): GitHub에서 돌아왔으면 결과를 기억하고 주소에서 지운 뒤, 로그인했는지 확인한다.
+ * 결과를 읽는 부분은 첫 await 전이라 화면을 그리기 전에 끝난다.
+ */
 export async function initAdmin() {
 	const { result, cleanHref } = readLoginResult(window.location.href);
-	if (result) window.history.replaceState(window.history.state, '', cleanHref);
+	if (result) {
+		window.history.replaceState(window.history.state, '', cleanHref);
+		loginFlowStore.setState({ result });
+	}
 	await refreshAdmin();
-	if (result) notify({ app: 'passwords', ...LOGIN_MESSAGES[result] });
 }
 
 export function useAdmin(): AdminState {

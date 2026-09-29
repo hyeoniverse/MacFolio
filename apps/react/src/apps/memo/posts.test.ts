@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	adjacentPosts,
 	buildFolderTree,
 	firstImage,
 	inFolder,
@@ -159,5 +160,31 @@ describe('firstImage', () => {
 	it('본문의 첫 이미지 주소를 찾는다', () => {
 		expect(firstImage('글\n\n![설명](./images/a.png "캡션")\n![b](b.png)')).toBe('./images/a.png');
 		expect(firstImage('이미지 없음')).toBeNull();
+	});
+});
+
+describe('adjacentPosts', () => {
+	const make = (slug: string, date: string): Post => ({
+		slug,
+		title: slug,
+		date,
+		category: '기타',
+		summary: '',
+		body: '',
+	});
+	const posts = [make('b', '2026-09-28'), make('c', '2026-09-29'), make('a', '2026-09-01'), make('d', '2026-09-29')];
+
+	it('이전 글은 더 오래된 글, 다음 글은 더 최근 글', () => {
+		expect(adjacentPosts(posts, 'b')).toEqual({ older: posts[2], newer: posts[3] });
+	});
+
+	it('같은 날이면 제목 순으로 잇는다', () => {
+		expect(adjacentPosts(posts, 'd')).toEqual({ older: posts[0], newer: posts[1] });
+	});
+
+	it('맨 끝 글에는 한쪽이 없고, 없는 글이면 둘 다 없다', () => {
+		expect(adjacentPosts(posts, 'c').newer).toBeNull();
+		expect(adjacentPosts(posts, 'a').older).toBeNull();
+		expect(adjacentPosts(posts, 'nope')).toEqual({ older: null, newer: null });
 	});
 });

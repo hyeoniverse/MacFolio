@@ -7,7 +7,7 @@ const API = 'http://api.test';
  * 가짜 API. 실제 서버처럼 /auth/github는 로그인을 마친 뒤 사이트로 돌려보내고(?admin=signed-in),
  * 그 뒤로 /auth/me는 관리자를 알려 준다. 쿠키 대신 테스트 안의 변수로 로그인 상태를 기억한다.
  */
-async function fakeApi(page: Page) {
+async function fakeApi(page: Page, { admin = true } = {}) {
 	const state = { signedIn: false };
 	const cors = (origin: string) => ({
 		'Access-Control-Allow-Origin': origin,
@@ -29,8 +29,10 @@ async function fakeApi(page: Page) {
 			);
 		}
 		if (path === '/auth/github') {
-			state.signedIn = true;
-			return route.fulfill({ status: 302, headers: { Location: 'http://localhost:4173/?admin=signed-in' } });
+			// 관리자 계정이면 세션이 생기고, 아니면 denied로 돌아온다
+			state.signedIn = admin;
+			const result = admin ? 'signed-in' : 'denied';
+			return route.fulfill({ status: 302, headers: { Location: `http://localhost:4173/?admin=${result}` } });
 		}
 		if (path === '/auth/logout') {
 			state.signedIn = false;
@@ -39,13 +41,6 @@ async function fakeApi(page: Page) {
 		return route.fulfill({ status: 404 });
 	});
 	return state;
-}
-
-/** 로딩 화면을 넘긴다 (GitHub에서 돌아오면 사이트를 새로 불러오므로 다시 나온다) */
-async function passLoading(page: Page) {
-	const loading = page.locator('.loading-container');
-	await loading.click();
-	await expect(loading).toBeHidden({ timeout: 20_000 });
 }
 
 const appleMenu = (page: Page) => page.getByRole('menu', { name: 'Apple 메뉴' });
@@ -57,12 +52,17 @@ test.describe('관리자 로그인', () => {
 
 		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
 		await appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' }).click();
+		// 떠나기 전에 GitHub로 간다고 알린다
+		await expect(page.getByRole('status', { name: 'GitHub로 이동하는 중' })).toBeVisible();
 
-		// GitHub에 다녀와 사이트로 돌아온다. 결과는 알림으로 알리고 주소에서는 지운다
-		await page.waitForURL(/admin=signed-in/);
-		await passLoading(page);
-		await expect(page.getByRole('status').filter({ hasText: '관리자로 로그인함' })).toBeVisible();
+		// GitHub에 다녀오면 로딩 화면 없이 바로 결과 창이 뜬다. 결과는 주소에서 지운다
+		const result = page.getByRole('alertdialog', { name: '로그인했습니다' });
+		await expect(result).toBeVisible();
+		await expect(result).toContainText('hyeoniverse(으)로 로그인했습니다');
+		await expect(page.locator('.loading-container')).toHaveCount(0);
 		await expect(page).toHaveURL('http://localhost:4173/');
+		await result.getByRole('button', { name: '확인' }).click();
+		await expect(result).toBeHidden();
 
 		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
 		await expect(appleMenu(page)).toContainText('hyeoniverse(으)로 로그인됨');
@@ -78,6 +78,22 @@ test.describe('관리자 로그인', () => {
 		await account.getByRole('button', { name: '로그아웃' }).click();
 		await expect(account).toContainText('로그인하지 않음');
 		await expect(account.getByRole('button', { name: /GitHub로 로그인/ })).toBeEnabled();
+	});
+
+	test('관리자가 아닌 계정이면 로그인할 수 없다고 알린다', async ({ page }) => {
+		await fakeApi(page, { admin: false });
+		await enterDesktop(page);
+		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
+		await appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' }).click();
+
+		const result = page.getByRole('alertdialog', { name: '로그인할 수 없습니다' });
+		await expect(result).toBeVisible();
+		await expect(result).toContainText('관리자 GitHub 계정만');
+		// Esc로도 닫힌다
+		await page.keyboard.press('Escape');
+		await expect(result).toBeHidden();
+		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
+		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeEnabled();
 	});
 
 	test('관리자 서버가 없으면 로그인 단추가 꺼져 있다', async ({ page }) => {

@@ -5,6 +5,7 @@ import { rehypeHighlightCode } from './highlight';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import {
+	adjacentPosts,
 	ALL_CATEGORY,
 	buildFolderTree,
 	filterPosts,
@@ -180,6 +181,19 @@ const Memo: React.FC = () => {
 	const { pinned: pinnedPosts, others: otherPosts } = splitPinned(visible);
 	// 고른 글이 목록에 없으면(카테고리·검색으로 걸러지면) 목록 맨 위의 글(고정된 글 먼저)을 보여준다
 	const selected = visible.find((post) => post.slug === selectedSlug) ?? pinnedPosts[0] ?? otherPosts[0] ?? null;
+	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
+	const { older, newer } = selected
+		? adjacentPosts(filterPosts(organized, category, ''), selected.slug)
+		: { older: null, newer: null };
+	const readerScroll = useRef<HTMLDivElement>(null);
+	// 다른 글을 열면 본문 맨 위부터
+	useEffect(() => {
+		readerScroll.current?.scrollTo?.({ top: 0 });
+	}, [selected?.slug]);
+	const openAdjacent = (post: Post) => {
+		setQuery('');
+		setSelectedSlug(post.slug);
+	};
 	const toggleSidebar = () => setSidebarOpen((open) => !open);
 
 	const selectFolder = (path: string) => {
@@ -484,7 +498,7 @@ const Memo: React.FC = () => {
 							<ViewSwitch view={view} onChange={changeView} />
 							{search}
 						</div>
-						<div className="memo-scroll">
+						<div ref={readerScroll} className="memo-scroll">
 							<div className="memo-reader-compact-bar">
 								<button type="button" className="memo-back" onClick={() => setPane('list')}>
 									<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
@@ -508,6 +522,28 @@ const Memo: React.FC = () => {
 											{selected.body}
 										</ReactMarkdown>
 									</div>
+									{(older || newer) && (
+										<nav className="memo-post-nav" aria-label="이전 글, 다음 글">
+											{older ? (
+												<button type="button" className="older" onClick={() => openAdjacent(older)}>
+													<span>
+														<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 이전 글
+													</span>
+													<strong>{older.title}</strong>
+												</button>
+											) : (
+												<span />
+											)}
+											{newer && (
+												<button type="button" className="newer" onClick={() => openAdjacent(newer)}>
+													<span>
+														다음 글 <i className="fa-solid fa-chevron-right" aria-hidden="true" />
+													</span>
+													<strong>{newer.title}</strong>
+												</button>
+											)}
+										</nav>
+									)}
 								</div>
 							)}
 						</div>
