@@ -1,4 +1,5 @@
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -17,6 +18,8 @@ import { APP_CONFIG, type AppConfig } from './config.js';
 export function configureApp(app: INestApplication) {
 	const config = app.get<AppConfig>(APP_CONFIG);
 
+	// 프록시 뒤에서 실제 IP를 읽는다 (요청 제한). 0이면 X-Forwarded-For를 믿지 않는다
+	(app as NestExpressApplication).set('trust proxy', config.trustProxy);
 	app.use(helmet());
 	app.enableCors({ origin: config.corsOrigins, credentials: true });
 	app.use(cookieParser());

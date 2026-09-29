@@ -4,17 +4,19 @@ import { loadConfig } from './config.js';
 describe('loadConfig', () => {
 	const DATABASE_URL = 'postgresql://u:p@localhost:5432/db';
 
-	it('기본값: 포트 4000, 로컬 프론트엔드만 허용, 관리자는 hyeoniverse', () => {
+	it('기본값: 포트 4000, 로컬 프론트엔드만 허용, 관리자는 hyeoniverse(ID), 프록시는 믿지 않음', () => {
 		expect(loadConfig({ DATABASE_URL })).toEqual({
 			port: 4000,
 			databaseUrl: DATABASE_URL,
 			corsOrigins: ['http://localhost:5173'],
 			frontendUrl: 'http://localhost:5173',
 			apiUrl: 'http://localhost:4000',
+			trustProxy: 0,
 			auth: {
 				githubClientId: undefined,
 				githubClientSecret: undefined,
-				adminGithubLogin: 'hyeoniverse',
+				adminGithubId: 68999618,
+				loginRateLimit: 10,
 				secureCookies: false,
 			},
 		});
@@ -30,6 +32,11 @@ describe('loadConfig', () => {
 		const config = loadConfig({ DATABASE_URL, NODE_ENV: 'production', API_URL: 'https://api.example.com/' });
 		expect(config.auth.secureCookies).toBe(true);
 		expect(config.apiUrl).toBe('https://api.example.com');
+	});
+
+	it('관리자 ID는 숫자여야 한다', () => {
+		expect(loadConfig({ DATABASE_URL, ADMIN_GITHUB_ID: '42' }).auth.adminGithubId).toBe(42);
+		expect(() => loadConfig({ DATABASE_URL, ADMIN_GITHUB_ID: 'hyeoniverse' })).toThrow(/ADMIN_GITHUB_ID/);
 	});
 
 	it('DATABASE_URL이 없거나 포트가 잘못되면 시작하지 않는다', () => {

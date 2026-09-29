@@ -1,8 +1,8 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { GithubClient } from './github.client.js';
-import { hashToken, randomToken, sameGithubLogin, SESSION_TTL_MS } from './session.js';
+import { hashToken, randomToken, SESSION_TTL_MS } from './session.js';
 
 export interface AdminIdentity {
 	/** GitHub 계정 */
@@ -10,11 +10,14 @@ export interface AdminIdentity {
 }
 
 /**
- * 관리자 로그인. GitHub로 로그인한 계정이 ADMIN_GITHUB_LOGIN과 같을 때만 세션을 만든다.
+ * 관리자 로그인. GitHub로 로그인한 계정의 숫자 ID가 ADMIN_GITHUB_ID와 같을 때만 세션을 만든다.
+ * 계정 이름이 아니라 ID로 비교한다: 이름은 바꿀 수 있고, 바꾼 옛 이름은 다른 사람이 가져갈 수 있다.
  * 비밀번호를 보관하지 않는다. 세션 토큰은 쿠키에만 있고 DB에는 해시만 있다.
  */
 @Injectable()
 export class AuthService {
+	private readonly logger = new Logger(AuthService.name);
+
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly github: GithubClient,
@@ -45,7 +48,7 @@ export class AuthService {
 	 * 관리자면 새 세션 토큰을, 관리자가 아닌 계정이면 null을 돌려준다.
 	 */
 	async signIn(code: string, now = new Date()): Promise<{ token: string; login: string } | null> {
-		const { githubClientId, githubClientSecret, adminGithubLogin } = this.config.auth;
+		const { githubClientId, githubClientSecret, adminGithubId } = this.config.auth;
 		const accessToken = await this.github.exchangeCode({
 			clientId: githubClientId ?? '',
 			clientSecret: githubClientSecret ?? '',
@@ -54,7 +57,11 @@ export class AuthService {
 		});
 		const user = accessToken ? await this.github.getUser(accessToken) : null;
 		if (!user) throw new UnauthorizedException('GitHub 로그인에 실패했습니다.');
-		if (!sameGithubLogin(user.login, adminGithubLogin)) return null;
+		if (user.id !== adminGithubId) {
+			// 관리자가 아닌 계정의 시도는 기록만 하고 돌려보낸다 (GitHub 계정 이름과 ID는 공개 정보다)
+			this.logger.warn(`관리자가 아닌 GitHub 계정의 로그인 시도: ${user.login} (${user.id})`);
+			return null;
+		}
 
 		// 만료된 세션은 새로 로그인할 때 치운다
 		await this.prisma.adminSession.deleteMany({ where: { expiresAt: { lte: now } } });
@@ -62,6 +69,7 @@ export class AuthService {
 		await this.prisma.adminSession.create({
 			data: {
 				tokenHash: hashToken(token),
+				githubId: user.id,
 				githubLogin: user.login,
 				expiresAt: new Date(now.getTime() + SESSION_TTL_MS),
 			},
@@ -73,7 +81,8 @@ export class AuthService {
 	async findAdmin(token: string | undefined, now = new Date()): Promise<AdminIdentity | null> {
 		if (!token) return null;
 		const session = await this.prisma.adminSession.findUnique({ where: { tokenHash: hashToken(token) } });
-		if (!session || session.expiresAt <= now) return null;
+		// 관리자 ID를 바꾸면(ADMIN_GITHUB_ID) 이전 관리자의 세션은 더는 통하지 않는다
+		if (!session || session.expiresAt <= now || session.githubId !== this.config.auth.adminGithubId) return null;
 		return { login: session.githubLogin };
 	}
 
