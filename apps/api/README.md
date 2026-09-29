@@ -10,6 +10,8 @@ pnpm db:up                    # PostgreSQL (Docker)
 pnpm dev                      # http://localhost:4000, 문서는 /docs
 ```
 
+저장소 루트에서는 `pnpm dev:api`(API만), `pnpm dev:all`(프론트엔드 5173 + API 4000). 루트의 `pnpm dev`는 프론트엔드만 띄운다.
+
 api까지 컨테이너로 띄우려면 `docker compose up --build`.
 
 ## 테스트
