@@ -341,6 +341,10 @@ test.describe('바로 고치기 (관리자)', () => {
 		expect(api.stock.searches).toEqual(['unsplash 고양이 1', 'unsplash 고양이 2']);
 
 		await grid.getByRole('listitem', { name: '고양이 사진 1, 사진가1' }).first().click();
+		// 설명 칸의 안내는 입력칸 아래에 따로
+		await expect(imageForm.getByRole('textbox', { name: '이미지 설명' })).toHaveAccessibleDescription(
+			'화면 읽기 프로그램이 이미지 대신 읽어 주는 글입니다.'
+		);
 		await expect(imageForm.getByRole('textbox', { name: '이미지 설명' })).toHaveValue('고양이 사진 1');
 		await expect(imageForm.getByRole('link', { name: '사진가1' })).toBeVisible();
 		await imageForm.getByRole('button', { name: '넣기' }).click();
@@ -355,6 +359,23 @@ test.describe('바로 고치기 (관리자)', () => {
 				'![고양이 사진 1](https://images.test/p1n1.jpg "사진: [사진가1](https://unsplash.com/@p1?utm_source=macfolio&utm_medium=referral), [Unsplash](https://unsplash.com/?utm_source=macfolio&utm_medium=referral)")'
 			);
 		expect(api.stock.downloads).toEqual(['p1n1']);
+	});
+
+	test('Unsplash·Pexels 검색 칸: 영어 검색 안내는 입력칸 아래 안내 문장으로', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.stock.providers.pexels = true;
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('검색 안내');
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '이미지 넣기…' }).click();
+		const imageForm = page.getByRole('dialog', { name: '이미지 넣기' });
+		for (const provider of ['Unsplash', 'Pexels']) {
+			await imageForm.getByRole('tab', { name: provider }).click();
+			const search = imageForm.getByRole('textbox', { name: `${provider}에서 찾기` });
+			await expect(search).toHaveAttribute('placeholder', '찾을 사진');
+			await expect(search).toHaveAccessibleDescription('영어로 검색하면 더 많은 사진을 찾을 수 있습니다.');
+		}
 	});
 
 	test('표 손잡이: 지금 열 위·행 왼쪽의 손잡이로 그 열·행을 고친다', async ({ page }) => {
