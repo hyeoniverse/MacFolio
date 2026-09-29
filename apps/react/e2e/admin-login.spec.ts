@@ -1,4 +1,4 @@
-import { test, expect, enterDesktop, appWindow } from './fixtures';
+import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
 
@@ -8,6 +8,9 @@ test.describe('관리자 로그인', () => {
 	test('Apple 메뉴에서 GitHub로 로그인하고, 설정에서 계정을 보고, 로그아웃한다', async ({ page }) => {
 		await fakeApi(page);
 		await enterDesktop(page);
+		// 켜 둔 앱은 로그인하고 돌아와도 그대로 있다
+		await dockItem(page, 'memo').click();
+		await expect(appWindow(page, 'memo')).toBeVisible();
 
 		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
 		await appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' }).click();
@@ -22,6 +25,7 @@ test.describe('관리자 로그인', () => {
 		await expect(page).toHaveURL('http://localhost:4173/');
 		await result.getByRole('button', { name: '확인' }).click();
 		await expect(result).toBeHidden();
+		await expect(appWindow(page, 'memo')).toBeVisible();
 
 		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
 		await expect(appleMenu(page)).toContainText('hyeoniverse(으)로 로그인됨');
