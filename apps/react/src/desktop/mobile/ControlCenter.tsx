@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMusic } from '@/apps/music/MusicContext';
 import type { AppName } from '@/apps/manifest';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
-import { PULL_OPEN_PX } from '@/desktop/mobile/MobileStatusBar';
+import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
+import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { IOS_WALLPAPERS } from '@/shared/settings/settings';
 import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
 import { PROFILE } from '@/shared/profile';
@@ -10,7 +11,7 @@ import { PROFILE } from '@/shared/profile';
 interface Props {
 	/** 열려 있는지 */
 	open: boolean;
-	/** 상태 표시줄을 끌어내리는 중인 거리. 끄는 동안 패널이 손가락을 따라 내려온다 */
+	/** 아래로 쓸어 여는 중인 거리. 끄는 동안 패널이 손가락을 따라 내려온다 */
 	pull: number | null;
 	onClose: () => void;
 	onLaunch: (app: AppName) => void;
@@ -57,13 +58,14 @@ const VolumeSlider = () => {
 const TRANSITION_MS = 250;
 
 /**
- * iOS 제어 센터. 상태 표시줄을 끌어내리면 열리고, 빈 곳을 누르거나 위로 쓸어 올리면 닫힌다.
+ * iOS 제어 센터. 화면 어디서든 아래로 쓸면 열리고, 빈 곳을 누르거나 어디서든 위로 쓸어 올리면 닫힌다.
  */
 const ControlCenter = (props: Props) => (props.open || props.pull !== null ? <Panel {...props} /> : null);
 
 const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 	const settings = useSettings();
-	const startY = useRef<number | null>(null);
+	/** 위로 쓸어 닫는 중인 거리 */
+	const [lift, setLift] = useState<number | null>(null);
 	// 처음 그릴 때는 닫힌 모양으로 그렸다가 다음 프레임에 열어야 transition이 적용된다
 	const [entered, setEntered] = useState(false);
 	const [leaving, setLeaving] = useState(false);
@@ -81,6 +83,18 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 
 	const close = () => setLeaving(true);
 
+	// 타일 위에서 시작해도 위로 쓸면 닫힌다 (음량 막대처럼 스스로 끄는 것은 빼고). 패널이 손가락을 따라 올라간다
+	useVerticalSwipe({
+		enabled: open && !leaving,
+		direction: 'up',
+		onMove: setLift,
+		onEnd: (distance) => {
+			setLift(null);
+			if (distance >= PULL_OPEN_PX) setLeaving(true);
+		},
+		onCancel: () => setLift(null),
+	});
+
 	const isDark = document.documentElement.dataset.theme === 'dark';
 	const nextWallpaper = () => {
 		// 제어 센터는 모바일에만 있으므로 홈 화면(iOS) 배경화면을 바꾼다
@@ -92,25 +106,26 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 		onLaunch(app);
 	};
 
-	// 끌어내리는 중에는 끈 만큼만 보인다
-	const pulled = Math.min(1, (pull ?? 0) / (PULL_OPEN_PX * 4));
-	const progress = leaving ? 0 : pull !== null ? pulled : open && entered ? 1 : 0;
+	// 쓰는 중에는 쓴 만큼만 보인다
+	const travel = (distance: number) => Math.min(1, distance / (PULL_OPEN_PX * 4));
+	const progress = leaving
+		? 0
+		: pull !== null
+			? travel(pull)
+			: lift !== null
+				? 1 - travel(lift)
+				: open && entered
+					? 1
+					: 0;
+	const dragging = pull !== null || lift !== null;
 
 	return (
 		<div
-			className={`control-center ${pull !== null ? 'dragging' : ''}`}
+			className={`control-center ${dragging ? 'dragging' : ''}`}
 			role="dialog"
 			aria-modal="true"
 			aria-label="제어 센터"
 			style={{ ['--cc-progress' as string]: progress }}
-			onPointerDown={(event) => {
-				startY.current = event.clientY;
-			}}
-			onPointerUp={(event) => {
-				const start = startY.current;
-				startY.current = null;
-				if (start !== null && start - event.clientY >= PULL_OPEN_PX) close();
-			}}
 			onClick={(event) => {
 				// 타일 사이의 빈 곳을 누르면 닫는다
 				if (event.target === event.currentTarget || (event.target as Element).classList.contains('cc-grid')) close();
