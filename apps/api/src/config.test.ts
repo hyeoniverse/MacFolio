@@ -12,6 +12,8 @@ describe('loadConfig', () => {
 			frontendUrl: 'http://localhost:5173',
 			apiUrl: 'http://localhost:4000',
 			trustProxy: 0,
+			commentRateLimit: 5,
+			ipHashSecret: 'macfolio-dev-ip-hash-secret',
 			auth: {
 				githubClientId: undefined,
 				githubClientSecret: undefined,
@@ -29,9 +31,19 @@ describe('loadConfig', () => {
 	});
 
 	it('배포에서는 쿠키를 https로만', () => {
-		const config = loadConfig({ DATABASE_URL, NODE_ENV: 'production', API_URL: 'https://api.example.com/' });
+		const config = loadConfig({
+			DATABASE_URL,
+			NODE_ENV: 'production',
+			API_URL: 'https://api.example.com/',
+			IP_HASH_SECRET: 'x',
+		});
 		expect(config.auth.secureCookies).toBe(true);
 		expect(config.apiUrl).toBe('https://api.example.com');
+	});
+
+	it('배포에서는 IP 해시 키가 꼭 있어야 한다', () => {
+		expect(() => loadConfig({ DATABASE_URL, NODE_ENV: 'production' })).toThrow(/IP_HASH_SECRET/);
+		expect(loadConfig({ DATABASE_URL, NODE_ENV: 'production', IP_HASH_SECRET: 's3cret' }).ipHashSecret).toBe('s3cret');
 	});
 
 	it('관리자 ID는 숫자여야 한다', () => {

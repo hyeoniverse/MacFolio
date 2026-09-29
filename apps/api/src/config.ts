@@ -14,6 +14,13 @@ export interface AppConfig {
 	 * 없으면 0: 헤더를 믿지 않는다 (누구나 헤더를 꾸며 제한을 피할 수 있으므로)
 	 */
 	trustProxy: number;
+	/** 댓글 쓰기·지우기를 IP마다 1분에 몇 번까지 받을지 */
+	commentRateLimit: number;
+	/**
+	 * IP를 그대로 저장하지 않고 이 키로 HMAC해 둔다 (같은 사람이 쓴 글을 묶어 볼 때만 쓴다).
+	 * 배포에서는 반드시 정한다. 로컬·테스트는 기본값
+	 */
+	ipHashSecret: string;
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -52,6 +59,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 	if (!Number.isInteger(adminGithubId) || adminGithubId <= 0)
 		throw new Error(`ADMIN_GITHUB_ID가 올바르지 않습니다: ${env.ADMIN_GITHUB_ID}`);
 
+	const ipHashSecret = env.IP_HASH_SECRET || (env.NODE_ENV === 'production' ? '' : 'macfolio-dev-ip-hash-secret');
+	if (!ipHashSecret) throw new Error('IP_HASH_SECRET이 없습니다. 배포에서는 긴 무작위 값을 넣어 주세요.');
+
 	return {
 		port,
 		databaseUrl,
@@ -59,6 +69,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		frontendUrl: env.FRONTEND_URL ?? corsOrigins[0] ?? 'http://localhost:5173',
 		apiUrl: (env.API_URL ?? `http://localhost:${port}`).replace(/\/$/, ''),
 		trustProxy: Number(env.TRUST_PROXY ?? 0) || 0,
+		commentRateLimit: Number(env.COMMENT_RATE_LIMIT ?? 5) || 5,
+		ipHashSecret,
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
 			githubClientSecret: env.GITHUB_CLIENT_SECRET || undefined,

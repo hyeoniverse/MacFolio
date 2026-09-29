@@ -693,6 +693,146 @@
 	white-space: nowrap;
 }
 
+/* 글 아래 댓글 */
+.memo-comments {
+	margin-top: 2rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--memo-border);
+	font-size: 13px;
+}
+
+.memo-comments h2 {
+	margin-bottom: 0.75rem;
+	color: var(--memo-text);
+	font-size: 15px;
+}
+
+.memo-comments h2 span {
+	color: var(--memo-muted);
+	font-weight: 500;
+}
+
+.memo-comments-note {
+	color: var(--memo-muted);
+}
+
+.memo-comment-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-bottom: 1rem;
+	list-style: none;
+}
+
+.memo-comment {
+	padding: 10px 12px;
+	border-radius: 10px;
+	background-color: var(--memo-search-bg);
+}
+
+.memo-comment.owner {
+	box-shadow: inset 3px 0 0 var(--memo-accent);
+}
+
+.memo-comment-head {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	color: var(--memo-text);
+}
+
+.memo-comment-head time {
+	color: var(--memo-muted);
+	font-size: 11px;
+}
+
+.memo-comment-badge {
+	padding: 1px 6px;
+	border-radius: 999px;
+	background-color: var(--memo-accent);
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 600;
+}
+
+.memo-comment-delete {
+	margin-left: auto;
+	border: none;
+	background: none;
+	color: var(--memo-muted);
+	font: inherit;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+.memo-comment-delete:hover {
+	color: #e5484d;
+}
+
+.memo-comment-body {
+	margin-top: 4px;
+	color: var(--memo-body);
+	line-height: 1.6;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.memo-comment-confirm,
+.memo-comment-fields {
+	display: flex;
+	gap: 6px;
+	margin-top: 8px;
+}
+
+.memo-comment-form {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.memo-comments input,
+.memo-comments textarea {
+	flex: 1;
+	min-width: 0;
+	padding: 7px 10px;
+	border: 1px solid var(--memo-border);
+	border-radius: 8px;
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	resize: vertical;
+}
+
+.memo-comment-confirm button,
+.memo-comment-submit {
+	padding: 6px 14px;
+	border: none;
+	border-radius: 8px;
+	background-color: var(--memo-accent);
+	color: #ffffff;
+	font: inherit;
+	cursor: pointer;
+}
+
+.memo-comment-confirm button[type='button'] {
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+}
+
+.memo-comment-submit {
+	align-self: flex-end;
+}
+
+.memo-comment-submit:disabled {
+	opacity: 0.6;
+}
+
+.memo-comment-error {
+	color: #e5484d;
+	font-size: 12px;
+	list-style: none;
+}
+
 /* 글을 바꾸면 본문이 살짝 떠오르며 나타난다 */
 .memo-reader-body {
 	animation: rise-in var(--duration) var(--ease-out);
