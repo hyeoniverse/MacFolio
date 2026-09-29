@@ -3,3 +3,5 @@ pnpm-lock.yaml
 **/.turbo
 **/playwright-report
 **/test-results
+# Prisma가 만드는 코드
+apps/api/src/generated

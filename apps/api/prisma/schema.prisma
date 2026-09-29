@@ -1,0 +1,11 @@
+// MacFolio API 데이터 모델. 모델은 기능을 붙일 때마다 더한다 (#9: 관리자, 게시물·폴더, 피드백).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
