@@ -14,6 +14,21 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # API e2e 테스트용 PostgreSQL (apps/api/docker-compose.yml과 같은 계정)
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: macfolio
+          POSTGRES_PASSWORD: macfolio
+          POSTGRES_DB: macfolio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U macfolio"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
     steps:
       - uses: actions/checkout@v4
 
@@ -48,6 +63,11 @@ jobs:
 
       - name: 빌드
         run: pnpm build
+
+      - name: API e2e 테스트
+        run: pnpm --filter @macfolio/api test:e2e
+        env:
+          DATABASE_URL: postgresql://macfolio:macfolio@localhost:5432/macfolio
 
       - name: Playwright 브라우저 설치
         run: pnpm --filter @macfolio/react exec playwright install --with-deps chromium
