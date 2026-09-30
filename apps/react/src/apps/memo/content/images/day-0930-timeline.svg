@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>9월 30일 작업 흐름</title>
+  <rect width="640" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">9월 30일</text>
+  <text x="120" y="44" font-size="12" fill="#6b7280">커밋 33개 · 새 블로그 글 3편</text>
+
+  <!-- 시간 축 -->
+  <g font-size="11" fill="#9ca3af" text-anchor="middle">
+    <text x="48" y="266">0시</text><text x="184" y="266">6시</text><text x="320" y="266">12시</text><text x="456" y="266">18시</text><text x="592" y="266">24시</text>
+  </g>
+  <g stroke="#e5e7eb" stroke-width="1"><path d="M48 72 V250"/><path d="M184 72 V250"/><path d="M320 72 V250"/><path d="M456 72 V250"/><path d="M592 72 V250"/></g>
+
+  <!-- 새벽: 편집기 (0~4시) -->
+  <rect x="48" y="80" width="93" height="150" rx="8" fill="#fdf3dc" stroke="#ebb94c"/>
+  <g font-size="11" fill="#7a5a12">
+    <text x="56" y="100" font-weight="700" font-size="12">편집기</text>
+    <text x="56" y="120">서식 도구 막대</text>
+    <text x="56" y="136">이미지·첨부</text>
+    <text x="56" y="152">사진 찾기</text>
+    <text x="56" y="168">임시 저장·버전</text>
+    <text x="56" y="184">표 손잡이</text>
+    <text x="56" y="200">찾기·대치</text>
+    <text x="56" y="216">Safari 탭</text>
+  </g>
+
+  <!-- 밤: 배포와 문서 (21~24시) -->
+  <rect x="524" y="80" width="68" height="70" rx="8" fill="#eef0ff" stroke="#c7cbff"/>
+  <g font-size="11" fill="#3f46c7">
+    <text x="532" y="100" font-weight="700" font-size="12">배포</text>
+    <text x="532" y="118">Oracle VM</text>
+    <text x="532" y="134">Tunnel</text>
+  </g>
+  <rect x="524" y="160" width="68" height="70" rx="8" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <g font-size="11" fill="#047857">
+    <text x="532" y="180" font-weight="700" font-size="12">문서</text>
+    <text x="532" y="198">README</text>
+    <text x="532" y="214">스크린샷</text>
+  </g>
+
+</svg>
