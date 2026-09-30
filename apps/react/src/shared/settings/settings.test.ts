@@ -10,10 +10,11 @@ import {
 
 describe('parseSettings', () => {
 	it('올바른 값은 그대로 읽는다', () => {
-		expect(parseSettings({ theme: 'dark', wallpaper: 'sonoma', mobileWallpaper: 'earth' })).toEqual({
+		expect(parseSettings({ theme: 'dark', wallpaper: 'sonoma', mobileWallpaper: 'earth', clickSound: false })).toEqual({
 			theme: 'dark',
 			wallpaper: 'sonoma',
 			mobileWallpaper: 'earth',
+			clickSound: false,
 		});
 	});
 
@@ -25,6 +26,12 @@ describe('parseSettings', () => {
 		expect(parseSettings(null)).toEqual(DEFAULT_SETTINGS);
 		expect(parseSettings('oops')).toEqual(DEFAULT_SETTINGS);
 		expect(parseSettings({ theme: 'purple', wallpaper: 'nope' })).toEqual(DEFAULT_SETTINGS);
+	});
+
+	it('클릭 소리는 켜고 끈 값만 읽고, 없거나 깨졌으면 켠다', () => {
+		expect(parseSettings({ clickSound: false }).clickSound).toBe(false);
+		expect(parseSettings({ clickSound: 'no' }).clickSound).toBe(true);
+		expect(parseSettings({}).clickSound).toBe(true);
 	});
 
 	it('일부만 있으면 나머지를 기본값으로 채운다', () => {

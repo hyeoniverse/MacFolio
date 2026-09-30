@@ -1,4 +1,4 @@
-// 사용자 설정(화면 모드, 배경화면). React와 DOM에 의존하지 않는 순수 코드만 둔다.
+// 사용자 설정(화면 모드, 배경화면, 소리). React와 DOM에 의존하지 않는 순수 코드만 둔다.
 
 export type ThemePreference = 'light' | 'dark' | 'system';
 export type ResolvedTheme = 'light' | 'dark';
@@ -43,9 +43,16 @@ export interface Settings {
 	wallpaper: WallpaperId;
 	/** 모바일(iOS) 홈 화면 배경화면 */
 	mobileWallpaper: MobileWallpaperId;
+	/** 누르고 뗄 때 딸깍 소리 */
+	clickSound: boolean;
 }
 
-export const DEFAULT_SETTINGS: Settings = { theme: 'system', wallpaper: 'sierra', mobileWallpaper: 'sky' };
+export const DEFAULT_SETTINGS: Settings = {
+	theme: 'system',
+	wallpaper: 'sierra',
+	mobileWallpaper: 'sky',
+	clickSound: true,
+};
 
 const THEMES: readonly ThemePreference[] = ['light', 'dark', 'system'];
 
@@ -61,6 +68,7 @@ export function parseSettings(raw: unknown): Settings {
 		mobileWallpaper: IOS_WALLPAPERS.some((wallpaper) => wallpaper.id === value.mobileWallpaper)
 			? (value.mobileWallpaper as MobileWallpaperId)
 			: DEFAULT_SETTINGS.mobileWallpaper,
+		clickSound: typeof value.clickSound === 'boolean' ? value.clickSound : DEFAULT_SETTINGS.clickSound,
 	};
 }
 
