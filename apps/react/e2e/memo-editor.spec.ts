@@ -746,3 +746,35 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.getByTitle('관리자로 로그인했습니다')).toHaveCount(0);
 	});
 });
+
+test.describe('한국어 사이의 굵게', () => {
+	const post = '글 한 편 추가했더니';
+
+	test('문장부호로 끝난 굵게 뒤에 조사가 붙어도 읽기 화면에서 굵게 보인다', async ({ page }) => {
+		const api = await fakeApi(page);
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: post }).click();
+		const body = memo.locator('.memo-markdown');
+		await expect(body.locator('strong', { hasText: '취소(cancelled)' })).toBeVisible();
+		await expect(body).not.toContainText('**');
+	});
+
+	test('편집기에서도 굵게 보이고, 고쳐 저장해도 원래 Markdown 그대로다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: post }).click();
+		const editor = memo.locator('.ProseMirror');
+		await expect(editor.locator('strong', { hasText: '취소(cancelled)' })).toBeVisible();
+		await expect(editor).not.toContainText('**');
+
+		// 굵게가 있는 문단 끝에 이어 쓴다
+		await editor.locator('p', { hasText: '취소(cancelled)' }).click();
+		await page.keyboard.press('End');
+		await page.keyboard.type(' 끝.');
+		await expect.poll(() => api.posts[0]?.body).toContain('끝.');
+		const saved = api.posts[0].body;
+		expect(saved).toContain('이번엔 실패가 아니라 **취소(cancelled)**가 떴다.');
+		// 굵게 앞뒤의 글자를 문자 참조(&#x…;)로 바꿔 저장하지 않는다
+		expect(saved).not.toMatch(/&#x/);
+	});
+});
