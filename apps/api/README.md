@@ -27,4 +27,8 @@ pnpm test:e2e                 # e2e (pnpm db:up 필요)
 - `src/config.ts`: 환경 변수 검사. 잘못되면 시작하지 않는다
 - `src/common/http-error.filter.ts`: 모든 에러를 `{ statusCode, error, message, path, timestamp }`로. 예상하지 못한 에러는 내용을 감춘다
 - `prisma/schema.prisma`: 데이터 모델. 클라이언트는 `src/generated/prisma`에 만든다 (커밋하지 않음)
-- `Dockerfile`: 멀티 스테이지, arm64 배포 서버(Oracle Ampere)에서도 빌드된다
+- `Dockerfile`: 멀티 스테이지, amd64·arm64 모두 빌드된다 (지금 배포 서버는 Oracle E2.1.Micro, amd64)
+
+## 배포
+
+Oracle Cloud VM에서 docker compose(db + api + cloudflared)로 띄운다. 순서와 환경 변수, 문제 해결은 [docs/deployment.md](../../docs/deployment.md).
