@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>마지막 걸음에서 dragover가 오지 않을 때</title>
+  <rect width="640" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">마지막 걸음에서 dragover가 오지 않으면</text>
+
+  <!-- 시간 축 -->
+  <path d="M40 206 H600" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="600" y="228" font-size="11" fill="#9ca3af" text-anchor="end">시간 →</text>
+
+  <!-- 걸음 11: 문단 안 -->
+  <g font-size="11" text-anchor="middle">
+    <rect x="52" y="76" width="120" height="30" rx="7" fill="#eef0ff"/><text x="112" y="95" fill="#3f46c7" font-weight="600">걸음 11 · 문단 위</text>
+    <rect x="72" y="136" width="80" height="24" rx="6" fill="#dcfce7"/><text x="112" y="152" fill="#15803d">dragover</text>
+    <text x="112" y="186" fill="#6b7280">선을 그린다</text>
+  </g>
+
+  <!-- 걸음 12: 소제목으로 넘어감 -->
+  <g font-size="11" text-anchor="middle">
+    <rect x="228" y="76" width="170" height="30" rx="7" fill="#eef0ff"/><text x="313" y="95" fill="#3f46c7" font-weight="600">걸음 12 · 소제목으로 넘어감</text>
+    <rect x="228" y="136" width="80" height="24" rx="6" fill="#f3f4f6"/><text x="268" y="152" fill="#374151">dragenter</text>
+    <rect x="318" y="136" width="80" height="24" rx="6" fill="#fee2e2"/><text x="358" y="152" fill="#b91c1c">dragleave</text>
+    <text x="313" y="186" fill="#b91c1c">숨기기 예약 (30ms 뒤)</text>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.4" stroke-dasharray="4 3" fill="none">
+    <path d="M358 194 V206"/>
+  </g>
+
+  <!-- 30ms 뒤 -->
+  <g font-size="11" text-anchor="middle">
+    <path d="M358 214 H470" stroke="#b91c1c" stroke-width="1.6"/>
+    <text x="414" y="232" fill="#b91c1c">30ms 동안 dragover 없음</text>
+    <rect x="470" y="136" width="110" height="24" rx="6" fill="#fef3c7"/><text x="525" y="152" fill="#92400e">선이 사라진다</text>
+    <text x="525" y="186" fill="#6b7280">테스트가 잴 때는 없다</text>
+  </g>
+
+  <text x="32" y="276" font-size="12" fill="#374151">고친 뒤: 제자리에서 1px 더 움직여 dragover를 한 번 더 보낸다 → 예약한 숨기기가 취소된다</text>
+</svg>
