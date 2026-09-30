@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown, { type Components, type Options } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { REMARK_PLUGINS } from './markdownPlugins';
 import { rehypeHighlightCode } from './highlight';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
@@ -893,7 +893,7 @@ const Memo: React.FC = () => {
 										onSaved={onWriterSaved}
 										renderMarkdown={(body) => (
 											<ReactMarkdown
-												remarkPlugins={[remarkGfm]}
+												remarkPlugins={REMARK_PLUGINS}
 												rehypePlugins={REHYPE_PLUGINS}
 												components={MARKDOWN_COMPONENTS}
 											>
@@ -914,7 +914,7 @@ const Memo: React.FC = () => {
 									<h1>{selected.title}</h1>
 									<div className="memo-markdown">
 										<ReactMarkdown
-											remarkPlugins={[remarkGfm]}
+											remarkPlugins={REMARK_PLUGINS}
 											rehypePlugins={REHYPE_PLUGINS}
 											components={MARKDOWN_COMPONENTS}
 										>
@@ -944,7 +944,7 @@ const Memo: React.FC = () => {
 									original={repoPosts.find((item) => item.slug === selected.slug) ?? null}
 									renderMarkdown={(body) => (
 										<ReactMarkdown
-											remarkPlugins={[remarkGfm]}
+											remarkPlugins={REMARK_PLUGINS}
 											rehypePlugins={REHYPE_PLUGINS}
 											components={MARKDOWN_COMPONENTS}
 										>

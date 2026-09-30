@@ -11,7 +11,8 @@ import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/
 import { isInTable } from '@milkdown/kit/prose/tables';
 import { trailing } from '@milkdown/kit/plugin/trailing';
 import { cursor, dropIndicatorConfig } from '@milkdown/kit/plugin/cursor';
-import { $prose } from '@milkdown/kit/utils';
+import { $prose, $remark } from '@milkdown/kit/utils';
+import remarkCjkFriendly from 'remark-cjk-friendly';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
 import { uploadAndInsert } from './attachments';
@@ -195,6 +196,9 @@ const codeHighlight = $prose(
 /** 붙여넣거나 끌어다 놓은 파일 (글자가 함께 있으면 글자를 붙여넣는다: 표 계산 앱은 표 그림도 함께 복사한다) */
 const filesOf = (data: DataTransfer | null) => (data && !data.getData('text/plain') ? Array.from(data.files) : []);
 
+/** 읽기 화면(Memo.tsx)과 같게: 한국어 사이의 `**굵게**`가 문장부호 뒤에서도 끝나게 한다 */
+const cjkFriendly = $remark('cjkFriendly', () => remarkCjkFriendly);
+
 const Inner = ({ markdown, onChange }: Props) => {
 	const onChangeRef = useRef(onChange);
 	useEffect(() => {
@@ -249,6 +253,7 @@ const Inner = ({ markdown, onChange }: Props) => {
 				})
 				.use(commonmark)
 				.use(gfm)
+				.use(cjkFriendly)
 				.use(history)
 				.use(clipboard)
 				.use(listener)
