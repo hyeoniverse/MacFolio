@@ -181,6 +181,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 
 ## 문서
 
+- [작업 규칙](CONTRIBUTING.md): 브랜치, 커밋, 이슈, PR
 - [배포](docs/deployment.md): Cloudflare Workers, Oracle VM, Cloudflare Tunnel, GitHub OAuth
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
