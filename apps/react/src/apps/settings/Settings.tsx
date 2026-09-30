@@ -12,12 +12,13 @@ import {
 import AdminAccount from '@/shared/auth/AdminAccount';
 import '@/apps/settings/Settings.css';
 
-type Section = 'account' | 'appearance' | 'wallpaper';
+type Section = 'account' | 'appearance' | 'wallpaper' | 'sound';
 
 const SECTIONS: { id: Section; label: string; icon: string }[] = [
 	{ id: 'account', label: '계정', icon: 'fa-solid fa-circle-user' },
 	{ id: 'appearance', label: '화면 모드', icon: 'fa-solid fa-circle-half-stroke' },
 	{ id: 'wallpaper', label: '배경화면', icon: 'fa-solid fa-image' },
+	{ id: 'sound', label: '사운드', icon: 'fa-solid fa-volume-high' },
 ];
 
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
@@ -137,6 +138,24 @@ const Settings: React.FC = () => {
 										settingsStore.setState({ mobileWallpaper: id as (typeof IOS_WALLPAPERS)[number]['id'] })
 									}
 								/>
+							</>
+						)}
+
+						{section === 'sound' && (
+							<>
+								<h2>사운드</h2>
+								<label className="settings-toggle">
+									<span>
+										<strong>클릭 소리</strong>
+										<span className="settings-hint">마우스를 누르고 뗄 때 딸깍 소리를 냅니다.</span>
+									</span>
+									<input
+										type="checkbox"
+										role="switch"
+										checked={settings.clickSound}
+										onChange={(event) => settingsStore.setState({ clickSound: event.target.checked })}
+									/>
+								</label>
 							</>
 						)}
 					</section>
