@@ -92,6 +92,18 @@ BRANCH=my-branch TITLE='Update stuff' BASE_SHA=<첫 커밋> HEAD_SHA=… bash co
 
 이슈 템플릿도 지금 이슈들의 모양(목적 · 작업 체크리스트 · 완료 기준 · 선행)을 그대로 옮겼다. PR 템플릿은 무엇을·왜 / 관련 이슈 / 확인한 것 세 칸이다. "확인한 것"에는 format·lint·test와 함께 **테스트·블로그 글·문서를 같이 고쳤는지**를 넣었다. 기능을 만들면 막혔던 곳을 그때 글로 남기는 것도 규칙으로 둔 것이다.
 
-## 남은 것
+## 머지 버튼까지 막기
 
-지금은 검사가 실패해도 머지 버튼은 눌린다. 저장소 설정에서 `main`의 필수 검사로 `check`와 `conventions`를 걸면, 둘 다 통과해야만 머지된다.
+검사만으로는 반쪽이었다. CI가 빨갛게 떠도 GitHub는 결과를 보여 줄 뿐, **Merge 버튼은 그대로 눌린다.** 급할 때 "나중에 고치지" 하고 누르면 규칙은 다시 문서로 돌아간다.
+
+그래서 저장소 설정의 **Rulesets**로 `main`에 규칙을 걸었다.
+
+1. Settings → Rules → Rulesets → New branch ruleset
+2. Enforcement status: **Active**, 대상: **Include default branch** (`main`)
+3. **Require status checks to pass**에 `check`와 `conventions`를 넣는다
+
+이제 두 검사가 모두 초록이어야 머지할 수 있다. 검사가 도는 중이거나 실패하면 Merge 버튼이 막히고 "Required statuses must pass before merging"이 뜬다.
+
+- 예전의 브랜치 보호 규칙(Branch protection rules) 대신 Rulesets를 썼다. 규칙을 켜고 끄기(Active/Disabled)가 쉽고, 여러 브랜치에 같은 규칙을 이름 붙여 걸 수 있다
+- **Require a pull request before merging**에 승인 수는 걸지 않았다. 혼자 하는 저장소에서는 내 PR을 내가 승인할 수 없어서, 걸면 아무것도 머지하지 못한다
+- 검사 이름은 워크플로 파일의 **job 이름**(`check`, `conventions`)이다. job 이름을 바꾸면 규칙의 검사 이름도 같이 바꿔야 한다. 안 그러면 이미 사라진 검사를 영영 기다린다
