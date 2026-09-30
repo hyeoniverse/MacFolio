@@ -348,11 +348,20 @@ test.describe('바로 고치기 (관리자)', () => {
 		expect((await download).suggestedFilename()).toMatch(/\.(jpg|png|webp)$/);
 
 		// 이미지를 끌면 놓을 자리에 선이 보인다
+		// 이미지를 다 불러온 뒤(크기가 정해진 뒤) 창 맨 위로 올려, 이미지와 놓을 자리(아래 소제목)가 모두 창 안에 오게 한다.
+		// 놓을 자리가 창 밖이면 편집기를 벗어난 것으로 보고 표시를 숨긴다
+		await expect
+			.poll(() => figure.locator('img').evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0))
+			.toBe(true);
+		await figure.evaluate((element) => element.scrollIntoView({ block: 'start' }));
 		const img = (await figure.locator('img').boundingBox())!;
 		const target = (await memo.locator('.ProseMirror > h2').first().boundingBox())!;
 		await page.mouse.move(img.x + img.width / 2, img.y + img.height / 2);
 		await page.mouse.down();
 		await page.mouse.move(target.x + 40, target.y + 2, { steps: 12 });
+		// 마지막 걸음이 요소 경계를 넘으면 Chromium은 dragenter·dragleave만 보내고 dragover는 보내지 않는다.
+		// 실제 브라우저처럼 제자리에서 dragover가 한 번 더 오게 조금 더 움직인다 (없으면 30ms 뒤 표시가 숨는다)
+		await page.mouse.move(target.x + 41, target.y + 3);
 		const indicator = page.locator('body > .milkdown-drop-indicator');
 		await expect(indicator).toBeVisible();
 		const line = (await indicator.boundingBox())!;
