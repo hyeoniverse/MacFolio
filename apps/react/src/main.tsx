@@ -5,8 +5,10 @@ import './index.css';
 import App from './App';
 import { initSettings } from '@/shared/settings/settingsStore';
 import { initAdmin } from '@/shared/auth/adminStore';
+import { initClickSound } from '@/shared/sound/clickSound';
 
 initSettings();
+initClickSound();
 // GitHub에서 돌아왔으면 결과를 알리고, 관리자로 로그인했는지 확인한다
 void initAdmin();
 

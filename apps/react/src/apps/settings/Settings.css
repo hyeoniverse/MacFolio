@@ -168,3 +168,65 @@
 		font-size: 15px;
 	}
 }
+
+/* 사운드: 켜고 끄는 스위치 (macOS 설정의 토글 모양) */
+.settings-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--color-divider);
+	border-radius: 10px;
+	background: var(--color-control-bg);
+	cursor: pointer;
+}
+
+.settings-toggle strong {
+	display: block;
+	font-weight: 500;
+}
+
+.settings-toggle .settings-hint {
+	display: block;
+	margin-top: 0.25rem;
+}
+
+.settings-toggle input {
+	appearance: none;
+	flex: none;
+	position: relative;
+	width: 38px;
+	height: 22px;
+	margin: 0;
+	border-radius: 999px;
+	background: var(--color-selected-bg);
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.settings-toggle input::after {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #ffffff;
+	box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+	transition: transform 0.2s;
+}
+
+.settings-toggle input:checked {
+	background: var(--color-accent);
+}
+
+.settings-toggle input:checked::after {
+	transform: translateX(16px);
+}
+
+.settings-toggle input:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
