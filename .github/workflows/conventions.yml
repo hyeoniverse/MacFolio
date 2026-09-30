@@ -1,0 +1,57 @@
+name: conventions
+
+# 브랜치 이름, PR 제목, 커밋 메시지가 CONTRIBUTING.md의 규칙을 따르는지 본다
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+concurrency:
+  group: conventions-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  conventions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 브랜치, PR 제목, 커밋 메시지 확인
+        env:
+          # 제목·브랜치 이름은 누구나 정할 수 있는 값이라 스크립트에 바로 넣지 않고 환경 변수로 넘긴다
+          BRANCH: ${{ github.head_ref }}
+          TITLE: ${{ github.event.pull_request.title }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          types='feat|fix|docs|refactor|test|style|perf|chore|ci'
+          message="^($types)(\([a-z0-9-]+\))?!?: .+"
+          branch="^($types)/[a-z0-9][a-z0-9-]*$"
+          failed=0
+
+          if [[ ! "$BRANCH" =~ $branch ]]; then
+            echo "::error::브랜치 이름이 규칙과 다릅니다: '$BRANCH' (예: feat/post-comments)"
+            failed=1
+          fi
+
+          if [[ ! "$TITLE" =~ $message ]]; then
+            echo "::error::PR 제목이 규칙과 다릅니다: '$TITLE' (예: feat: 이미지 내려받기 단추)"
+            failed=1
+          fi
+
+          while IFS= read -r line; do
+            sha="${line%% *}"
+            subject="${line#* }"
+            if [[ ! "$subject" =~ $message ]]; then
+              echo "::error::커밋 메시지가 규칙과 다릅니다: ${sha:0:7} '$subject' (예: fix(api): 예약한 글이 날짜 전에 보이던 문제)"
+              failed=1
+            fi
+          done < <(git log --no-merges --format='%H %s' "$BASE_SHA..$HEAD_SHA")
+
+          if [[ $failed -ne 0 ]]; then
+            echo "규칙: CONTRIBUTING.md"
+            exit 1
+          fi
+          echo "브랜치, PR 제목, 커밋 메시지 모두 규칙에 맞습니다."
