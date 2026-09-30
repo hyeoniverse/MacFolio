@@ -175,6 +175,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 
 - PR과 main push마다 포맷 → 린트 → 타입 체크 → 단위 테스트 → 빌드 → API e2e(PostgreSQL 서비스 컨테이너) → 브라우저 E2E를 차례로 돌립니다. 실패하면 Playwright 리포트를 올립니다
 - `conventions`: 브랜치 이름, PR 제목, 커밋 메시지가 [작업 규칙](CONTRIBUTING.md)을 따르는지 확인합니다
+- `main`의 Ruleset이 `check`와 `conventions`를 필수 검사로 걸어 두어, 둘 다 통과해야 머지됩니다([설정 방법](CONTRIBUTING.md#저장소-설정))
 
 ## 구조
 
@@ -273,7 +274,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 
 ## 문서
 
-- [작업 규칙](CONTRIBUTING.md): 브랜치, 커밋, 이슈, PR
+- [작업 규칙](CONTRIBUTING.md): 브랜치, 커밋, 이슈, PR, 저장소 설정(필수 검사)
 - [배포](docs/deployment.md): Cloudflare Workers, Oracle VM, Cloudflare Tunnel, GitHub OAuth
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
