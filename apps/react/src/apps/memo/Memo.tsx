@@ -23,7 +23,6 @@ import {
 	type PostFilter,
 	type ServerPost,
 	RECENTLY_DELETED,
-	RECENTLY_DELETED_DAYS,
 	daysUntilPurge,
 	recentlyDeletedPosts,
 	TAG_PREFIX,
@@ -72,7 +71,6 @@ import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
-import Button from '@/shared/ui/button/Button';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
 const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
@@ -698,13 +696,24 @@ const Memo: React.FC = () => {
 						icon="fa-solid fa-clock-rotate-left"
 					/>
 				)}
+				{/* 최근 삭제된 메모: 본문은 평소 읽기 화면 그대로 두고, 되살리기·영구 삭제는 도구 막대에 (macOS 메모처럼) */}
 				{selected && inTrash && (
-					<IconButton
-						className={className}
-						label="메모 영구 삭제"
-						onClick={() => void purgeDeleted(selected)}
-						icon="fa-regular fa-trash-can"
-					/>
+					<>
+						<IconButton
+							className={`memo-restore ${className}`}
+							label="되살리기"
+							onClick={() => void restoreDeleted(selected)}
+							icon="fa-solid fa-rotate-left"
+						>
+							되살리기
+						</IconButton>
+						<IconButton
+							className={className}
+							label="메모 영구 삭제"
+							onClick={() => void purgeDeleted(selected)}
+							icon="fa-regular fa-trash-can"
+						/>
+					</>
 				)}
 				{selected && !inTrash && newDraft === null && (
 					<IconButton
@@ -902,12 +911,6 @@ const Memo: React.FC = () => {
 									{leavingDraft && newDraftItem(leavingDraft.key, leavingDraft.preview, true)}
 								</ul>
 							)}
-							{inTrash && (
-								<p className="memo-trash-banner">
-									지운 메모는 {RECENTLY_DELETED_DAYS}일 동안 여기에 있다가 영구히 지워집니다.
-									<span className="memo-trash-drag-hint"> 폴더로 끌어 놓으면 되살아납니다.</span>
-								</p>
-							)}
 							{sections(listItem, '고정됨', 'memo-items')}
 							{empty}
 						</div>
@@ -1040,36 +1043,21 @@ const Memo: React.FC = () => {
 							{(!editing || inTrash || (newDraft === null && selected?.locked)) && selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다. 최근 삭제된 항목의 글과 잠긴 메모는 관리자에게도 읽기 화면
 								<div key={selected.slug} className="memo-reader-body">
-									{selected.deletedAt ? (
-										<div className="memo-trash-note" role="note">
-											<i className="fa-regular fa-trash-can" aria-hidden="true" />
-											<p>
-												<strong>최근 삭제된 메모</strong>
-												{daysUntilPurge(selected.deletedAt, today)}일 뒤에 영구히 지워집니다. 고치려면 먼저 되살리세요.
-											</p>
-											<Button
-												tone="primary"
-												icon="fa-solid fa-rotate-left"
-												onClick={() => void restoreDeleted(selected)}
-											>
-												되살리기
-											</Button>
-										</div>
-									) : (
-										editing && (
-											// 도구 막대는 편집 도구로 꽉 차서, 잠금은 메뉴로 걸고 여기서 푼다
-											<p className="memo-locked-note">
-												<i className="fa-solid fa-lock" aria-hidden="true" /> 잠긴 메모입니다.
-												<button type="button" onClick={() => toggleLock(selected)}>
-													잠금 풀기
-												</button>
-											</p>
-										)
-									)}
+									{/* 날짜는 늘 맨 위 (잠금 안내는 그 아래) */}
 									<p className="memo-reader-date">
 										<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> ·{' '}
 										{folderLabel(selected.category)}
+										{selected.deletedAt && ` · ${daysUntilPurge(selected.deletedAt, today)}일 뒤 삭제`}
 									</p>
+									{editing && !selected.deletedAt && (
+										// 도구 막대는 편집 도구로 꽉 차서, 잠금은 메뉴로 걸고 여기서 푼다
+										<p className="memo-locked-note">
+											<i className="fa-solid fa-lock" aria-hidden="true" /> 잠긴 메모입니다.
+											<button type="button" onClick={() => toggleLock(selected)}>
+												잠금 풀기
+											</button>
+										</p>
+									)}
 									<h1>{selected.title}</h1>
 									<div className="memo-markdown">
 										<ReactMarkdown

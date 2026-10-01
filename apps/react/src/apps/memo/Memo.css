@@ -169,47 +169,7 @@
 	margin: 0 0 0 12px;
 }
 
-/* 최근 삭제된 메모: 본문 위 안내 띠와 되살리기 */
-.memo-trash-note {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin-bottom: 1.25rem;
-	padding: 10px 12px 10px 14px;
-	border-radius: 12px;
-	background-color: var(--memo-search-bg);
-	color: var(--memo-muted);
-	font-size: 12px;
-	line-height: 1.5;
-}
-
-.memo-trash-note > i {
-	font-size: 16px;
-}
-
-.memo-trash-note p {
-	flex: 1;
-	margin: 0;
-}
-
-.memo-trash-note strong {
-	display: block;
-	color: var(--memo-text);
-	font-size: 13px;
-}
-
-.memo-trash-note .ui-button {
-	flex: none;
-}
-
-/* 최근 삭제된 항목의 목록 위 안내, 줄마다 남은 날 */
-.memo-trash-banner {
-	margin: 4px 20px 8px;
-	color: var(--memo-muted);
-	font-size: 11px;
-	line-height: 1.5;
-}
-
+/* 최근 삭제된 항목: 줄마다 남은 날 */
 .memo-item-purge::before {
 	content: '·';
 	margin: 0 4px;
@@ -1156,7 +1116,7 @@
 	cursor: default;
 }
 
-/* 편집 칸이 좁으면 저장 상태·단추를 날짜 줄 위의 따로 한 줄로 (날짜·폴더를 가리지 않게) */
+/* 편집 칸이 좁으면 저장 상태·단추를 날짜 줄 아래 따로 한 줄로 (날짜·폴더를 가리지 않게, 날짜는 늘 맨 위) */
 .memo-writer {
 	container-type: inline-size;
 }
@@ -1168,10 +1128,9 @@
 
 	.memo-writer-actions {
 		position: static;
-		order: -1;
 		justify-content: flex-end;
 		width: 100%;
-		margin-bottom: 4px;
+		margin-top: 4px;
 	}
 
 	/* 휴대폰: 날짜·폴더는 왼쪽, 저장 상태·게시는 같은 줄 오른쪽 (넘치면 다음 줄 오른쪽) */
@@ -1180,7 +1139,6 @@
 	}
 
 	.container.mobile .memo-writer-actions {
-		order: 0;
 		width: auto;
 		margin: 0 0 0 auto;
 	}
@@ -2875,11 +2833,6 @@
 
 	.memo .compact-only {
 		display: flex;
-	}
-
-	/* 한 칸씩 볼 때는 폴더가 옆에 없어서 끌어 놓을 수 없다 */
-	.memo-trash-drag-hint {
-		display: none;
 	}
 
 	/* 본문 위 한 줄: 서식·삭제·고정은 왼쪽, 공유는 오른쪽 끝 (iOS 메모처럼). 단추 크기를 맞춘다 */
