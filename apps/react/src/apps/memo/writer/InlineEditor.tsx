@@ -16,7 +16,7 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
 import { uploadAndInsert } from './attachments';
-import { handleTableKey } from './tableCommands';
+import { gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
 import TableHandles from './TableHandles';
 import { findPlugin } from './findPlugin';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
@@ -111,6 +111,11 @@ const publishFormat = $prose(
 );
 
 /** 커서가 있는 표에는 칸 선을, 지금 칸에는 옅은 배경을 (읽기 화면에는 없는 편집용 표시) */
+/** 고른 칸을 손잡이로 골랐는지 기억한다 (끌어 고르면 손잡이를 숨긴다) */
+const handleSelection = $prose(() => tableHandleSelection);
+/** 틈 커서에서 글을 쓰면 그 자리에 새 문단 */
+const gapText = $prose(() => gapTyping);
+
 const activeTable = $prose(
 	() =>
 		new Plugin({
@@ -269,6 +274,8 @@ const Inner = ({ markdown, onChange }: Props) => {
 				.use(dropIndicatorToBody)
 				.use(publishFormat)
 				.use(activeTable)
+				.use(handleSelection)
+				.use(gapText)
 				.use(findPlugin)
 				.use(codeHighlight),
 		[]

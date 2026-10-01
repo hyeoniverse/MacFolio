@@ -21,8 +21,10 @@ export interface TableState {
 	/** 고른 행·열 수 (커서만 있으면 1) */
 	selectedRows: number;
 	selectedCols: number;
-	/** 행 전체나 열 전체를 골랐는지 */
+	/** 손잡이로 행 전체나 열 전체를 골랐는지 */
 	selecting: 'row' | 'col' | null;
+	/** 칸을 마우스로 끌어 골랐는지 (손잡이·테두리 없이 고른 칸만 보인다) */
+	dragged: boolean;
 }
 
 export type TableAlign = 'left' | 'center' | 'right';

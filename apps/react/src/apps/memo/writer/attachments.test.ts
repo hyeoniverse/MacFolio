@@ -28,6 +28,7 @@ describe('표 편집 규칙', () => {
 		selectedRows: 1,
 		selectedCols: 1,
 		selecting: null,
+		dragged: false,
 	};
 
 	it('머리글 행은 지우지 않고, 그 위에 행을 넣지 않는다', () => {
