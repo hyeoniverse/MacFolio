@@ -22,6 +22,14 @@ describe('떠 있는 창의 자리', () => {
 		expect(placeBelow({ ...anchor, left: 900, right: 940 }, size, {}, view).left).toBe(1000 - 200 - EDGE);
 	});
 
+	it('기준 아래: 아래로 넘치고 위에 자리가 있으면 기준 위에 둔다', () => {
+		const low = { ...anchor, top: 700, bottom: 740 };
+		expect(placeBelow(low, size, { gap: 8 }, view).top).toBe(700 - 8 - 300);
+		// 위에도 자리가 없으면 그대로 아래
+		const middle = { ...anchor, top: 200, bottom: 600 };
+		expect(placeBelow(middle, size, {}, view).top).toBe(606);
+	});
+
 	it('기준 오른쪽: 위를 맞추고, 오른쪽으로 넘치면 안쪽으로', () => {
 		expect(placeRight(anchor, size, {}, view)).toEqual({ left: 146, top: 50 });
 		expect(placeRight({ ...anchor, right: 900 }, size, {}, view).left).toBe(1000 - 200 - EDGE);

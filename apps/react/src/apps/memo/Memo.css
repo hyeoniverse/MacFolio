@@ -288,16 +288,41 @@
 	text-decoration: underline;
 }
 
-/* 사이드바의 태그 묶음 (macOS 메모처럼 폴더 아래에 알약) */
+/* 사이드바의 태그 묶음 (macOS 메모처럼 폴더 아래) */
 .memo-tag-browser {
 	padding: 12px 12px 14px;
 }
 
-.memo-tag-browser h3 {
+.memo-tag-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 	margin: 0 0 8px 4px;
+}
+
+.memo-tag-browser h3 {
+	margin: 0;
 	color: var(--memo-muted);
 	font-size: 11px;
 	font-weight: 700;
+}
+
+/* 선택된 태그 중 모두/일부 포함 (강조 색 글자 단추) */
+.memo .memo-tag-match {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: #b07a06;
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+:root[data-theme='dark'] .memo .memo-tag-match {
+	color: var(--memo-accent);
 }
 
 .memo-tag-browser ul {
@@ -307,22 +332,35 @@
 	list-style: none;
 }
 
-.memo-tag-chip {
-	padding: 2px 9px;
-	border: none;
-	border-radius: 999px;
+/* 칩: 미선택은 회색, 포함은 강조 색으로 채움, 제외는 강조 색 테두리와 취소선 */
+.memo .memo-tag-chip {
+	padding: 3px 9px;
+	border: 1.5px solid transparent;
+	border-radius: 8px;
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font-size: 12px;
+	cursor: pointer;
 }
 
-.memo-tag-chip:hover {
+.memo .memo-tag-chip:hover {
 	background-color: var(--memo-hover);
 }
 
-.memo-tag-chip.active {
+.memo .memo-tag-chip.include {
 	background-color: var(--memo-accent);
 	color: var(--memo-on-accent);
+}
+
+.memo .memo-tag-chip.exclude {
+	border-color: var(--memo-accent);
+	background-color: transparent;
+	color: #b07a06;
+	text-decoration: line-through;
+}
+
+:root[data-theme='dark'] .memo .memo-tag-chip.exclude {
+	color: var(--memo-accent);
 }
 
 .memo-section-title {
@@ -3026,6 +3064,115 @@
 	.container.mobile .memo-writer-actions :is(.memo-writer-publish, .memo-writer-discard) {
 		padding: 4px 12px;
 		font-size: 13px;
+	}
+}
+
+/* 휴대폰 본문 (iOS 메모처럼): 떠 있는 단추들. 휴대폰의 한 칸 보기에서만 보인다 */
+.memo-phone-top,
+.memo-phone-bottom {
+	display: none;
+}
+
+@container (max-width: 700px) {
+	.container.mobile .memo-reader {
+		position: relative;
+	}
+
+	/* 본문 위 도구 줄 대신 떠 있는 단추를 쓴다 */
+	.container.mobile .memo-reader-compact-bar {
+		display: none;
+	}
+
+	/* 오른쪽 위: 공유, ••• (뒤로 가기 동그란 단추와 같은 높이) */
+	.container.mobile .memo-phone-top {
+		display: flex;
+		align-items: center;
+		gap: 2px;
+		position: absolute;
+		top: 6px;
+		right: 16px;
+		z-index: 5;
+		height: 44px;
+		padding: 0 6px;
+		border-radius: 999px;
+		background-color: var(--memo-bg);
+		box-shadow:
+			0 0 0 0.5px rgba(0, 0, 0, 0.06),
+			0 4px 14px rgba(0, 0, 0, 0.12);
+	}
+
+	.container.mobile .memo-phone-top .ui-icon-button {
+		min-width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		color: var(--memo-text);
+		font-size: 19px;
+	}
+
+	/* 떠 있는 단추 아래부터 본문, 아래 도구에 가리지 않게 여백 */
+	.container.mobile .memo-reader .memo-scroll {
+		padding-top: 60px;
+		padding-bottom: 96px;
+	}
+
+	.container.mobile .memo-reader > .memo-find {
+		margin-top: 56px;
+	}
+
+	/* 아래: 왼쪽에 서식 알약, 오른쪽에 새 메모 */
+	.container.mobile .memo-phone-bottom {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		position: absolute;
+		left: 16px;
+		right: 16px;
+		bottom: 12px;
+		z-index: 5;
+		pointer-events: none;
+	}
+
+	.container.mobile .memo-phone-bottom > * {
+		pointer-events: auto;
+	}
+
+	.container.mobile .memo-phone-format {
+		display: inline-flex;
+		gap: 4px;
+		height: 50px;
+		padding: 0 10px;
+		border-radius: 999px;
+		background-color: var(--memo-bg);
+		box-shadow:
+			0 0 0 0.5px rgba(0, 0, 0, 0.06),
+			0 4px 14px rgba(0, 0, 0, 0.12);
+	}
+
+	.container.mobile .memo-phone-format .ui-icon-button {
+		min-width: 40px;
+		height: 40px;
+		color: var(--memo-text);
+		font-size: 18px;
+	}
+
+	.container.mobile .memo-phone-format .memo-format-quick {
+		display: inline-flex;
+	}
+
+	.container.mobile .memo-phone-format .memo-format-button {
+		font-size: 15px;
+	}
+
+	.container.mobile .memo-phone-compose {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background-color: var(--memo-bg);
+		box-shadow:
+			0 0 0 0.5px rgba(0, 0, 0, 0.06),
+			0 4px 14px rgba(0, 0, 0, 0.12);
+		color: var(--memo-text);
+		font-size: 20px;
 	}
 }
 

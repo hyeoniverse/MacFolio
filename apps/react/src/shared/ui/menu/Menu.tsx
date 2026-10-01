@@ -22,6 +22,8 @@ export type MenuItem =
 	| { heading: string }
 	/** 안내 한 줄 (예: "○○(으)로 로그인됨") */
 	| { note: string }
+	/** 아이콘 위·글자 아래 단추를 가로로 늘어놓은 한 줄 (iOS 메뉴 맨 위의 고정·잠그기처럼) */
+	| { row: { label: string; icon: string; onSelect: () => void; disabled?: boolean }[] }
 	| 'separator';
 
 interface Props {
@@ -35,6 +37,8 @@ interface Props {
 	trigger?: React.RefObject<Element | null>;
 	/** 열자마자 첫 항목에 초점 (키보드로 바로 고르게). 검색 칸처럼 초점을 지켜야 하는 곳에서 열면 끈다 */
 	autoFocus?: boolean;
+	/** 모양을 덧붙일 이름 (예: 휴대폰에서 iOS처럼 크게) */
+	className?: string;
 }
 
 const isAction = (item: MenuItem): item is Extract<MenuItem, { onSelect: () => void }> =>
@@ -44,7 +48,7 @@ const isAction = (item: MenuItem): item is Extract<MenuItem, { onSelect: () => v
  * macOS 메뉴 (우클릭, ••• 단추, Apple 메뉴). 창에 잘리지 않게 body에 그리고, 연 자리에 둔다.
  * 바깥을 누르거나 Esc를 누르면 닫히고, ↑·↓·Home·End로 항목을 옮겨 다닌다.
  */
-const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFocus = false }) => {
+const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFocus = false, className }) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const [position, setPosition] = useState({ left: anchor.x, top: anchor.y });
 	useDismiss(true, onClose, trigger ? [ref, trigger] : [ref]);
@@ -83,7 +87,7 @@ const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFoc
 	return createPortal(
 		<div
 			ref={ref}
-			className="ui-menu"
+			className={['ui-menu', className].filter(Boolean).join(' ')}
 			role="menu"
 			aria-label={label}
 			style={{ left: position.left, top: position.top }}
@@ -96,6 +100,27 @@ const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFoc
 						<p key={`heading-${item.heading}`} className="ui-menu-heading" role="presentation">
 							{item.heading}
 						</p>
+					);
+				if ('row' in item)
+					return (
+						<div key={`row-${index}`} className="ui-menu-row" role="group">
+							{item.row.map((action) => (
+								<button
+									key={action.label}
+									type="button"
+									className="ui-menu-row-item"
+									role="menuitem"
+									disabled={action.disabled}
+									onClick={() => {
+										onClose();
+										action.onSelect();
+									}}
+								>
+									<i className={action.icon} aria-hidden="true" />
+									{action.label}
+								</button>
+							))}
+						</div>
 					);
 				if ('note' in item)
 					return (
