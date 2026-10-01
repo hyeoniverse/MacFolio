@@ -618,7 +618,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(table.locator('tr').first().locator('th')).toHaveText(['', '', 'c']);
 	});
 
-	test('표: 칸을 끌어 고르면 고른 칸만 보이고, 행·열 전체를 비운 뒤 한 번 더 지우면 그 행·열이 지워진다', async ({
+	test('표: 칸을 끌어 고르면 고른 범위의 테두리만 보이고, 행·열 전체를 비운 뒤 한 번 더 지우면 그 행·열이 지워진다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: true });
@@ -643,13 +643,18 @@ test.describe('바로 고치기 (관리자)', () => {
 			await page.mouse.up();
 		};
 
-		// 가운데 열(b·e·h)을 끌어 고른다: 손잡이·테두리·꼭짓점 없이 고른 칸만
+		// 가운데 열(b·e·h)을 끌어 고른다: 행·열 손잡이 없이 고른 범위의 테두리와 꼭짓점만 (macOS 메모처럼)
 		await dragCells('b', 'h');
 		await expect(table.locator('.selectedCell')).toHaveCount(3);
 		await expect(memo.getByRole('button', { name: '이 열 편집' })).toHaveCount(0);
 		await expect(memo.getByRole('button', { name: '이 행 편집' })).toHaveCount(0);
-		await expect(memo.locator('.memo-table-selection')).toHaveCount(0);
-		await expect(memo.getByRole('button', { name: '고른 범위 오른쪽 아래 끌기' })).toHaveCount(0);
+		await expect(memo.locator('.memo-table-selection')).toBeVisible();
+		const outline = (await memo.locator('.memo-table-selection').boundingBox())!;
+		const b = (await table.locator('th', { hasText: /^b$/ }).boundingBox())!;
+		const h = (await table.locator('td', { hasText: /^h$/ }).boundingBox())!;
+		expect(Math.abs(outline.x - b.x)).toBeLessThan(2);
+		expect(Math.abs(outline.y + outline.height - (h.y + h.height))).toBeLessThan(2);
+		await expect(memo.getByRole('button', { name: '고른 범위 오른쪽 아래 끌기' })).toBeVisible();
 
 		// 글이 있으면 먼저 비우고, 다 빈 뒤 한 번 더 누르면 열을 지운다
 		await page.keyboard.press('Backspace');
@@ -727,7 +732,38 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(editor.locator('> p').first()).toHaveText('위 문단.');
 	});
 
-	test('표 앞뒤에 커서를 두고, 뒤에서 Backspace를 두 번 누르면 표가 지워진다', async ({ page }) => {
+	test('표 양옆을 누르면 그쪽에 커서가 서고, 거기서 Backspace·Delete로 표를 지운다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('표 옆 누르기');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('위 문단');
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
+		await page.keyboard.type('a');
+		const editor = memo.locator('.ProseMirror');
+		const table = editor.locator('table');
+		const gap = editor.locator('.ProseMirror-gapcursor');
+		const box = (await table.boundingBox())!;
+
+		// 표 오른쪽 여백을 누르면 표 오른쪽에 커서 (표가 편집기 폭을 다 써서 여백은 편집기 밖이다)
+		await page.mouse.click(box.x + box.width + 12, box.y + box.height / 2);
+		await expect(gap).toHaveCount(1);
+		await expect(gap).toHaveCSS('display', 'block');
+		expect(Math.abs((await gap.boundingBox())!.x - (box.x + box.width))).toBeLessThan(2);
+		await page.keyboard.type('뒤');
+		await expect(table.locator('xpath=following-sibling::p[1]')).toHaveText('뒤');
+
+		// 표 왼쪽 여백을 누르면 표 왼쪽에 커서, 거기서 Delete 한 번이면 표가 지워진다
+		await page.mouse.click(box.x - 12, box.y + 10);
+		await expect(gap).toHaveCount(1);
+		expect(Math.abs((await gap.boundingBox())!.x - box.x)).toBeLessThan(2);
+		await page.keyboard.press('Delete');
+		await expect(table).toHaveCount(0);
+	});
+
+	test('표 앞뒤에 커서를 두고, 뒤에서 Backspace를 한 번 누르면 표가 지워진다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
@@ -748,12 +784,10 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(editor.locator('> p').first()).toBeVisible();
 		expect(await editor.evaluate((el) => el.firstElementChild?.nextElementSibling?.tagName)).toBe('TABLE');
 
-		// 표 뒤 문단 맨 앞에서 Backspace: 한 번은 표를 고르고, 한 번 더 누르면 지운다
+		// 표 뒤 문단 맨 앞에서 Backspace 한 번: 표가 지워진다
 		await editor.locator('> p').last().click();
 		// 편집기가 클릭한 자리를 읽을 때까지 (사람은 누르고 바로 키를 치지 않는다)
 		await page.waitForTimeout(100);
-		await page.keyboard.press('Backspace');
-		await expect(editor.locator('table.ProseMirror-selectednode')).toHaveCount(1);
 		await page.keyboard.press('Backspace');
 		await expect(editor.locator('table')).toHaveCount(0);
 		await expect.poll(() => api.posts[0]?.body).not.toContain('|');

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { newSlug, parsePostInput, SLUG, type PostInput } from './rules.js';
@@ -146,9 +146,20 @@ export class PostsService {
 		return toAdmin(row);
 	}
 
+	/**
+	 * 잠근 글이면 409. 잠금은 메모 정리 내용(MemoOrganization.locks)에 있다.
+	 * 화면에서도 막지만, 요청은 직접 보낼 수 있으므로 고치고 지우기 전에 여기서 한 번 더 막는다.
+	 */
+	private async checkUnlocked(slug: string) {
+		const row = await this.prisma.memoOrganization.findUnique({ where: { id: 1 } });
+		const locks = (row?.data as { locks?: Record<string, boolean> } | undefined)?.locks;
+		if (locks?.[slug]) throw new ConflictException('잠긴 메모입니다. 잠금을 풀고 고치세요.');
+	}
+
 	/** 임시 저장 (자동 저장). 서버에 없던 저장소 글이면 임시 저장만 가진 행을 만든다 */
 	async saveDraft(slug: string, input: unknown, admin: string): Promise<AdminPost> {
 		this.checkSlug(slug);
+		await this.checkUnlocked(slug);
 		const value = this.parse(input);
 		const data = { ...draftFields(value), deleted: false, deletedAt: null, updatedBy: admin };
 		const row = await this.prisma.post.upsert({
@@ -166,6 +177,7 @@ export class PostsService {
 	 */
 	async publish(slug: string, input: unknown, admin: string): Promise<AdminPost> {
 		this.checkSlug(slug);
+		await this.checkUnlocked(slug);
 		const value = this.parse(input);
 		const published = { ...value, publishedAt: new Date() };
 		const row = await this.prisma.$transaction(async (tx) => {
@@ -194,6 +206,7 @@ export class PostsService {
 	 */
 	async discardDraft(slug: string): Promise<AdminPost | null> {
 		this.checkSlug(slug);
+		await this.checkUnlocked(slug);
 		const row = await this.prisma.post.findUnique({ where: { slug } });
 		if (!row) throw new NotFoundException('글이 없습니다.');
 		if (row.title === null && !row.deleted) {
@@ -209,6 +222,7 @@ export class PostsService {
 	 */
 	async remove(slug: string, admin: string) {
 		this.checkSlug(slug);
+		await this.checkUnlocked(slug);
 		const data = { deleted: true, deletedAt: new Date(), updatedBy: admin };
 		await this.prisma.post.upsert({ where: { slug }, create: { slug, ...data }, update: data });
 	}
