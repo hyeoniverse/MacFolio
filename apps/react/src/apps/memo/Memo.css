@@ -1085,22 +1085,23 @@
 	cursor: pointer;
 }
 
-.memo-writer-discard {
+/* 글자색은 .memo button(color: inherit)보다 앞서도록 .memo-writer-actions를 붙인다 */
+.memo-writer-actions .memo-writer-discard {
 	background: none;
 	color: var(--memo-muted);
 }
 
-.memo-writer-discard:hover:not(:disabled) {
+.memo-writer-actions .memo-writer-discard:hover:not(:disabled) {
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 }
 
-.memo-writer-publish {
+.memo-writer-actions .memo-writer-publish {
 	background-color: #edbb4d;
 	color: #2b2100;
 }
 
-.memo-writer-publish:disabled {
+.memo-writer-actions .memo-writer-publish:disabled {
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
 	cursor: default;
