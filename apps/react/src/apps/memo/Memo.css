@@ -1706,41 +1706,9 @@
 	text-decoration: underline;
 }
 
-/* 코드 블록 복사 단추 (읽기·편집 화면 같은 모양). 올리면 보이고, 터치 기기에서는 늘 보인다 */
+/* 코드 블록: 오른쪽 위에 복사 단추 (.memo-overlay-button) */
 .memo-code {
 	position: relative;
-}
-
-.memo-code-copy {
-	position: absolute;
-	top: 6px;
-	right: 6px;
-	padding: 3px 8px;
-	border: none;
-	border-radius: 6px;
-	background-color: color-mix(in srgb, var(--memo-body) 10%, var(--memo-code-bg));
-	color: var(--memo-muted);
-	font: inherit;
-	font-size: 11px;
-	line-height: 1.4;
-	cursor: pointer;
-	opacity: 0;
-	transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-.memo-code:hover .memo-code-copy,
-.memo-code-copy:focus-visible {
-	opacity: 1;
-}
-
-.memo-code-copy:hover {
-	color: var(--memo-text);
-}
-
-@media (hover: none) {
-	.memo-code-copy {
-		opacity: 1;
-	}
 }
 
 /* 편집기의 표: 커서가 있는 표는 칸 선과 지금 칸을 보여 준다 (자리를 차지하지 않는 그림자로 그려 읽기 화면과 크기가 같다) */
@@ -3041,7 +3009,12 @@
 	position: relative;
 }
 
-.memo-figure-download {
+/*
+ * 블록 위에 뜨는 단추: 코드 복사·이미지 내려받기 (읽기·편집 화면 같은 모양).
+ * 코드 위든 사진 위든 보이게 어두운 반투명 바탕. 블록에 올리면 보이고, 터치 기기에서는 늘 보인다.
+ * (.memo button이 색을 덮지 않게 .memo를 붙인다)
+ */
+.memo .memo-overlay-button {
 	display: grid;
 	position: absolute;
 	top: 8px;
@@ -3050,8 +3023,8 @@
 	height: 28px;
 	padding: 0;
 	border: none;
-	border-radius: 50%;
-	background-color: rgba(0, 0, 0, 0.55);
+	border-radius: 8px;
+	background-color: rgba(28, 28, 30, 0.55);
 	color: #fff;
 	font-size: 12px;
 	cursor: pointer;
@@ -3063,17 +3036,18 @@
 		background-color var(--duration-fast) var(--ease-out);
 }
 
-.memo-figure-frame:hover .memo-figure-download,
-.memo-figure-download:focus-visible {
+.memo-code:hover .memo-overlay-button,
+.memo-figure-frame:hover .memo-overlay-button,
+.memo .memo-overlay-button:focus-visible {
 	opacity: 1;
 }
 
-.memo-figure-download:hover {
-	background-color: rgba(0, 0, 0, 0.75);
+.memo .memo-overlay-button:hover {
+	background-color: rgba(28, 28, 30, 0.75);
 }
 
 @media (hover: none) {
-	.memo-figure-download {
+	.memo .memo-overlay-button {
 		opacity: 1;
 	}
 }
