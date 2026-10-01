@@ -1,4 +1,4 @@
-import type { MenuItem } from './ContextMenu';
+import type { MenuItem } from '@/shared/ui/menu/Menu';
 import { DEFAULT_ORDER, ORDER_LABELS, type Arrangement, type SortKey, type SortOrder } from '../arrange';
 
 /** 정렬과 그룹화 메뉴 항목 (정렬 단추와, 검색 중 도구를 모은 ••• 메뉴가 함께 쓴다) */

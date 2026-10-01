@@ -2,7 +2,7 @@ import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
 
-const appleMenu = (page: Page) => page.getByRole('menu', { name: 'Apple 메뉴' });
+const appleMenu = (page: Page) => page.getByRole('menu', { name: 'Apple 메뉴', exact: true });
 
 test.describe('관리자 로그인', () => {
 	test('Apple 메뉴에서 GitHub로 로그인하고, 설정에서 계정을 보고, 로그아웃한다', async ({ page }) => {
@@ -12,7 +12,7 @@ test.describe('관리자 로그인', () => {
 		await dockItem(page, 'memo').click();
 		await expect(appWindow(page, 'memo')).toBeVisible();
 
-		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' }).click();
 		// 떠나기 전에 GitHub로 간다고 알린다
 		await expect(page.getByRole('status', { name: 'GitHub로 이동하는 중' })).toBeVisible();
@@ -27,7 +27,7 @@ test.describe('관리자 로그인', () => {
 		await expect(result).toBeHidden();
 		await expect(appWindow(page, 'memo')).toBeVisible();
 
-		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await expect(appleMenu(page)).toContainText('hyeoniverse(으)로 로그인됨');
 
 		// 시스템 설정 → 계정
@@ -46,7 +46,7 @@ test.describe('관리자 로그인', () => {
 	test('관리자가 아닌 계정이면 로그인할 수 없다고 알린다', async ({ page }) => {
 		await fakeApi(page, { admin: false });
 		await enterDesktop(page);
-		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' }).click();
 
 		const result = page.getByRole('alertdialog', { name: '로그인할 수 없습니다' });
@@ -55,19 +55,19 @@ test.describe('관리자 로그인', () => {
 		// Esc로도 닫힌다
 		await page.keyboard.press('Escape');
 		await expect(result).toBeHidden();
-		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeEnabled();
 	});
 
 	test('관리자 서버가 없으면 로그인 단추가 꺼져 있다', async ({ page }) => {
 		await enterDesktop(page);
-		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeDisabled();
 		// 바깥을 누르면 닫힌다
 		await page.mouse.click(800, 500);
 		await expect(appleMenu(page)).toBeHidden();
 
-		await page.getByRole('button', { name: 'Apple 메뉴' }).click();
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await appleMenu(page).getByRole('menuitem', { name: '시스템 설정…' }).click();
 		const settings = appWindow(page, 'settings');
 		await settings.getByRole('button', { name: '계정' }).click();

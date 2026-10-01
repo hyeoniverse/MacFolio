@@ -96,7 +96,7 @@ test.describe('팝업', () => {
 		await messages.getByRole('textbox', { name: '메시지' }).fill('팝업 확인용');
 		await messages.getByRole('textbox', { name: '메시지' }).press('Enter');
 		await messages.locator('.messages-bubble', { hasText: '팝업 확인용' }).click({ button: 'right' });
-		await messages.getByRole('menuitem', { name: '삭제…' }).click();
+		await page.getByRole('menu', { name: '메시지 메뉴' }).getByRole('menuitem', { name: '삭제…' }).click();
 		const dialog = page.getByRole('dialog', { name: '메시지 삭제' });
 		await expect(dialog).toBeVisible();
 		return dialog;

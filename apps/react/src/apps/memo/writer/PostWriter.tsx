@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import ContextMenu from '../components/ContextMenu';
+import Menu from '@/shared/ui/menu/Menu';
 import { folderLabelOf, formatPostDate, type AdminPost, type Post } from '../posts';
 import { discardDraft, publishPost, saveDraft, type PostDraft } from '../postsApi';
 import { validateDraft } from '../postRules';
@@ -82,7 +82,7 @@ const FolderPicker = ({
 				{folderLabelOf(value)}
 			</button>
 			{anchor && (
-				<ContextMenu
+				<Menu
 					label="폴더 고르기"
 					anchor={anchor}
 					onClose={close}
