@@ -14,6 +14,9 @@ import {
 	resolveImageSrc,
 	sortPosts,
 	toPost,
+	daysUntilPurge,
+	recentlyDeletedPosts,
+	type AdminPost,
 	type Post,
 } from './posts';
 
@@ -334,5 +337,45 @@ describe('검색 조건', () => {
 	it('검색어와 함께 쓴다', () => {
 		expect(filterPosts(posts, ALL_CATEGORY, '할 일', 'checklist').map((post) => post.slug)).toEqual(['check']);
 		expect(filterPosts(posts, ALL_CATEGORY, '없는 말', 'checklist')).toEqual([]);
+	});
+});
+
+describe('recentlyDeletedPosts', () => {
+	const repo = [post('repo', '2026-09-01', '개발기', '저장소 글')];
+	const content = { title: '서버 글', date: '2026-09-30', category: '개발기', summary: '', body: '본문' };
+	const admin = (slug: string, deletedAt: string | null, draft = content): AdminPost => ({
+		slug,
+		published: null,
+		publishedAt: null,
+		draft: slug === 'repo' ? null : draft,
+		draftUpdatedAt: null,
+		deleted: true,
+		deletedAt,
+		revisions: 0,
+	});
+	const now = new Date('2026-10-31T00:00:00Z');
+
+	it('30일이 안 된 지운 글만, 최근에 지운 글이 위로. 저장소 글은 파일 내용으로', () => {
+		const list = recentlyDeletedPosts(
+			repo,
+			[
+				admin('repo', '2026-10-20T00:00:00Z'),
+				admin('server', '2026-10-30T00:00:00Z'),
+				admin('old', '2026-09-30T00:00:00Z'),
+				admin('purged', null),
+			],
+			now
+		);
+		expect(list.map((item) => [item.slug, item.title])).toEqual([
+			['server', '서버 글'],
+			['repo', '저장소 글'],
+		]);
+		expect(list[0].deletedAt).toBe('2026-10-30T00:00:00Z');
+	});
+
+	it('남은 날: 지운 날은 30, 하루 지날 때마다 하나씩, 마지막 날은 1', () => {
+		expect(daysUntilPurge('2026-10-31T00:00:00Z', now)).toBe(30);
+		expect(daysUntilPurge('2026-10-21T00:00:00Z', now)).toBe(20);
+		expect(daysUntilPurge('2026-10-01T12:00:00Z', now)).toBe(1);
 	});
 });

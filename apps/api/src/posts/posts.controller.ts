@@ -103,11 +103,31 @@ export class PostsController {
 		return this.posts.revision(slug, id);
 	}
 
+	@Post(':slug/restore')
+	@HttpCode(200)
+	@UseGuards(AdminGuard)
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiOkResponse({ description: '되살렸다. 서버에 내용이 없던 저장소 글이면 null (파일이 다시 보인다)' })
+	@ApiNotFoundResponse({ description: "'최근 삭제된 항목'에 없다" })
+	restore(@Param('slug') slug: string) {
+		return this.posts.restore(slug);
+	}
+
+	@Delete(':slug/permanent')
+	@HttpCode(204)
+	@UseGuards(AdminGuard)
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiNoContentResponse({ description: '영구히 지웠다 (내용·버전을 지우고, 저장소 글을 가리는 표시만 남긴다)' })
+	@ApiNotFoundResponse({ description: "'최근 삭제된 항목'에 없다" })
+	async purge(@Param('slug') slug: string, @CurrentAdmin() admin: AdminIdentity) {
+		await this.posts.purge(slug, admin.login);
+	}
+
 	@Delete(':slug')
 	@HttpCode(204)
 	@UseGuards(AdminGuard)
 	@ApiCookieAuth(SESSION_COOKIE)
-	@ApiNoContentResponse({ description: '지웠다' })
+	@ApiNoContentResponse({ description: "지웠다 ('최근 삭제된 항목'으로, 30일 동안 되살릴 수 있다)" })
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
 	async remove(@Param('slug') slug: string, @CurrentAdmin() admin: AdminIdentity) {
 		await this.posts.remove(slug, admin.login);

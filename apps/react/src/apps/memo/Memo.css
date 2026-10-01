@@ -169,6 +169,52 @@
 	margin: 0 0 0 12px;
 }
 
+/* 최근 삭제된 메모: 본문 위 안내 띠와 되살리기 */
+.memo-trash-note {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 1.25rem;
+	padding: 10px 12px 10px 14px;
+	border-radius: 12px;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-muted);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.memo-trash-note > i {
+	font-size: 16px;
+}
+
+.memo-trash-note p {
+	flex: 1;
+	margin: 0;
+}
+
+.memo-trash-note strong {
+	display: block;
+	color: var(--memo-text);
+	font-size: 13px;
+}
+
+.memo-trash-note .ui-button {
+	flex: none;
+}
+
+/* 최근 삭제된 항목의 목록 위 안내, 줄마다 남은 날 */
+.memo-trash-banner {
+	margin: 4px 20px 8px;
+	color: var(--memo-muted);
+	font-size: 11px;
+	line-height: 1.5;
+}
+
+.memo-item-purge::before {
+	content: '·';
+	margin: 0 4px;
+}
+
 /* 잠긴 메모: 목록 제목 앞의 자물쇠, 본문 위 안내 */
 .memo-item-lock {
 	margin-right: 4px;
@@ -2763,6 +2809,11 @@
 
 	.memo .compact-only {
 		display: flex;
+	}
+
+	/* 한 칸씩 볼 때는 폴더가 옆에 없어서 끌어 놓을 수 없다 */
+	.memo-trash-drag-hint {
+		display: none;
 	}
 
 	.memo-reader :is(.memo-pin, .memo-share).compact-only {
