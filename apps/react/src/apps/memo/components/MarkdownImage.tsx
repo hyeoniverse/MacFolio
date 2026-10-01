@@ -38,7 +38,7 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 				</button>
 				<button
 					type="button"
-					className="memo-figure-download"
+					className="memo-overlay-button memo-figure-download"
 					aria-label="이미지 내려받기"
 					title="이미지 내려받기"
 					onClick={() => void downloadImage(resolved, alt)}

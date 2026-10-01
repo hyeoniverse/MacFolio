@@ -102,7 +102,7 @@ function renderCaption(caption: HTMLElement, title: string) {
 function downloadButton(getNode: () => Node) {
 	const button = document.createElement('button');
 	button.type = 'button';
-	button.className = 'memo-figure-download';
+	button.className = 'memo-overlay-button memo-figure-download';
 	button.contentEditable = 'false';
 	button.setAttribute('aria-label', '이미지 내려받기');
 	button.title = '이미지 내려받기';
@@ -132,11 +132,22 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 	);
 	const caption = document.createElement('span');
 	caption.className = 'memo-caption';
-	const input = document.createElement('input');
+	// 긴 캡션도 다 보이게 줄을 바꾸는 입력칸 (캡션은 한 줄이라 Enter는 줄바꿈 대신 저장)
+	const input = document.createElement('textarea');
 	input.className = 'memo-caption-input';
+	input.rows = 1;
 	input.setAttribute('aria-label', '캡션');
 	input.placeholder = '캡션 ([글자](주소)로 링크)';
 	input.hidden = true;
+	const fit = () => {
+		input.style.height = 'auto';
+		input.style.height = `${input.scrollHeight + 2}px`;
+	};
+	input.addEventListener('input', () => {
+		// 붙여 넣은 줄바꿈은 띄어쓰기로
+		if (/\n/.test(input.value)) input.value = input.value.replace(/\s*\n\s*/g, ' ');
+		fit();
+	});
 
 	const render = (node: Node) => {
 		img.src = node.attrs.src;
@@ -151,8 +162,10 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 		input.value = current.attrs.title;
 		caption.hidden = true;
 		input.hidden = false;
+		fit();
 		input.focus();
-		input.select();
+		// 글 끝에 커서 (전부 골라 두면 글자 하나에 캡션이 통째로 지워진다)
+		input.setSelectionRange(input.value.length, input.value.length);
 	};
 	let editing = false;
 	const finish = (save: boolean) => {
@@ -218,21 +231,29 @@ export const imageBlockView = $view(
 );
 export const inlineImageView = $view(imageSchema.node, () => (node, view, getPos) => figureView(node, view, getPos));
 
-/** 복사 단추를 누르면 코드를 클립보드에 넣고 잠깐 '복사됨'을 보여 준다 (읽기 화면과 같이) */
+/** 복사 단추를 누르면 코드를 클립보드에 넣고 잠깐 체크 표시를 보여 준다 (읽기 화면과 같이) */
 export function copyCodeButton(getText: () => string) {
 	const button = document.createElement('button');
 	button.type = 'button';
-	button.className = 'memo-code-copy';
+	button.className = 'memo-overlay-button memo-code-copy';
 	button.contentEditable = 'false';
 	button.setAttribute('aria-label', '코드 복사');
-	button.textContent = '복사';
+	const icon = document.createElement('i');
+	icon.setAttribute('aria-hidden', 'true');
+	const show = (copied: boolean) => {
+		icon.className = copied ? 'fa-solid fa-check' : 'fa-regular fa-copy';
+		button.title = copied ? '복사됨' : '코드 복사';
+		button.toggleAttribute('data-copied', copied);
+	};
+	show(false);
+	button.append(icon);
 	let timer: number | undefined;
 	button.addEventListener('mousedown', (event) => event.preventDefault());
 	button.addEventListener('click', () => {
 		void navigator.clipboard?.writeText(getText());
-		button.textContent = '복사됨';
+		show(true);
 		window.clearTimeout(timer);
-		timer = window.setTimeout(() => (button.textContent = '복사'), 1500);
+		timer = window.setTimeout(() => show(false), 1500);
 	});
 	return button;
 }
