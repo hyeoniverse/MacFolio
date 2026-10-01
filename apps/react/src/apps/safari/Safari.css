@@ -370,11 +370,6 @@
 	.safari-tab {
 		min-width: 48px;
 	}
-
-	/* 공유 단추는 주소창을 눌러도 되니 좁을 때는 뺀다 */
-	.safari-toolbar .safari-share {
-		display: none;
-	}
 }
 
 /* ─── 휴대폰: 신호등 버튼이 없으니 그 자리를 비우지 않는다. 올리기가 없으니 닫기는 지금 탭에만 ─── */

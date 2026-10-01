@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
+import { appAddresses, linkedApp, syncAddressBar } from '@/shared/lib/appLink';
 import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
 import { bringToFront, minimizeAll } from '@/desktop/appStack';
 import { isMobileViewport } from '@/desktop/layout';
@@ -35,14 +36,20 @@ interface AppContextType {
 	goHome: () => void;
 }
 
-/** 처음 상태. 모바일은 홈 화면에서 시작하므로 처음부터 실행되는 앱이 없다. */
-const createInitialAppStates = (mobile: boolean) =>
-	Object.fromEntries(
+/**
+ * 처음 상태. 모바일은 홈 화면에서 시작하므로 처음부터 실행되는 앱이 없다.
+ * 앱 항목 주소(/memo/<글>, /safari/<프로젝트>)로 들어오면 그 앱을 맨 앞에 열어 둔다 (항목은 그 앱이 연다).
+ */
+const createInitialAppStates = (mobile: boolean) => {
+	const linked = linkedApp();
+	return Object.fromEntries(
 		APP_NAMES.map((name) => {
+			if (name === linked) return [name, { isRunning: true, isMinimized: false, zIndex: 2, hasOpened: true }];
 			const running = !mobile && (APP_MANIFEST[name].runningAtStart ?? false);
 			return [name, { isRunning: running, isMinimized: false, zIndex: 1, hasOpened: running }];
 		})
 	) as Record<AppName, AppState>;
+};
 
 // Create context
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -67,6 +74,20 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 
 	useEffect(() => {
 		trackApps(isMobileViewport({ width: window.innerWidth, height: window.innerHeight }), apps);
+	}, [apps]);
+
+	// 주소 막대: 맨 앞 창이 가리키는 항목 (메모의 글, Safari의 프로젝트). 창이 없거나 주소가 없는 앱이면 사이트 주소
+	useEffect(() => {
+		const front = () => {
+			let top: AppName | null = null;
+			for (const name of APP_NAMES) {
+				const state = apps[name];
+				if (state.isRunning && !state.isMinimized && (!top || state.zIndex > apps[top].zIndex)) top = name;
+			}
+			return top;
+		};
+		syncAddressBar(front());
+		return appAddresses.subscribe(() => syncAddressBar(front()));
 	}, [apps]);
 
 	// 화면 밖 창을 되돌리는 처리는 창이 렌더링될 때 한다 (desktop/window/geometry.ts의 clampRect)

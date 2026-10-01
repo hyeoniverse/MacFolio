@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>글 주소로 들어와서 그 글이 열리기까지</title>
+  <rect width="640" height="400" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">/memo/cra-to-vite 로 들어오면</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#9ca3af"/></marker></defs>
+
+  <g font-size="12">
+    <!-- 1 Cloudflare -->
+    <rect x="32" y="70" width="270" height="56" rx="10" fill="#fff7e6" stroke="#edbb4d"/>
+    <text x="48" y="93" font-weight="700" fill="#92400e">Cloudflare (정적 파일)</text>
+    <text x="48" y="113" fill="#374151">그런 파일은 없다 → index.html (SPA 설정)</text>
+
+    <!-- 2 appLink -->
+    <rect x="32" y="150" width="270" height="56" rx="10" fill="#eef0ff" stroke="#c7cbff"/>
+    <text x="48" y="173" font-weight="700" fill="#3f46c7">appLink.ts (페이지를 연 순간)</text>
+    <text x="48" y="193" fill="#374151">경로를 읽어 둔다 → { app: memo, id: cra-to-vite }</text>
+
+    <!-- 3 AppState -->
+    <rect x="32" y="230" width="270" height="56" rx="10" fill="#eef0ff" stroke="#c7cbff"/>
+    <text x="48" y="253" font-weight="700" fill="#3f46c7">앱 상태의 처음 값</text>
+    <text x="48" y="273" fill="#374151">메모 앱을 맨 앞에 연 채로 시작</text>
+
+    <!-- 4 Memo -->
+    <rect x="32" y="310" width="270" height="56" rx="10" fill="#dcfce7" stroke="#86efac"/>
+    <text x="48" y="333" font-weight="700" fill="#15803d">메모 앱</text>
+    <text x="48" y="353" fill="#374151">고른 글 = cra-to-vite, 좁은 화면은 본문부터</text>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)">
+    <path d="M167 126 V148"/><path d="M167 206 V228"/><path d="M167 286 V308"/>
+  </g>
+
+  <!-- 오른쪽: 주소 막대 -->
+  <g font-size="12">
+    <text x="340" y="90" font-weight="700" fill="#1f2937" font-size="14">쓰는 동안: 주소 막대</text>
+    <rect x="340" y="104" width="268" height="34" rx="17" fill="#f3f4f6"/>
+    <text x="358" y="126" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">/memo/cra-to-vite</text>
+
+    <text x="340" y="168" fill="#374151">· 앱마다 지금 보여 주는 항목을 알린다</text>
+    <text x="340" y="190" fill="#374151">· 맨 앞 창의 항목으로 replaceState</text>
+    <text x="340" y="212" fill="#374151">· 직접 고르기 전에는 사이트 주소 그대로</text>
+    <text x="340" y="234" fill="#374151">· 창을 닫으면 다음 창의 주소로</text>
+
+    <text x="340" y="276" font-weight="700" fill="#1f2937" font-size="14">공유 단추</text>
+    <text x="340" y="300" fill="#374151">· 휴대폰: 공유 시트 (navigator.share)</text>
+    <text x="340" y="322" fill="#374151">· 그 밖: 주소를 복사하고 알림</text>
+  </g>
+</svg>
