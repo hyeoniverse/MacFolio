@@ -673,8 +673,8 @@ const Memo: React.FC = () => {
 	const authorTools = (className: string) =>
 		canEdit && (
 			<>
-				{/* 사이드바가 열려 있으면 새 메모는 사이드바 위쪽에 (좁은 창의 한 칸 보기에서는 여기) */}
-				{(!sidebarOpen || className === 'compact-only') && (
+				{/* 사이드바가 열려 있으면 새 메모는 사이드바 위쪽에 (한 칸씩 보일 때는 목록 위 검색 칸 옆) */}
+				{!sidebarOpen && className === '' && (
 					<IconButton
 						className={className}
 						label="새 메모"
@@ -823,6 +823,14 @@ const Memo: React.FC = () => {
 		<div className="memo-compact-tools compact-only">
 			{searchBox()}
 			{sortMenu()}
+			{canEdit && (
+				<IconButton
+					className="memo-compact-new"
+					label="새 메모"
+					onClick={startNewDraft}
+					icon="fa-regular fa-pen-to-square"
+				/>
+			)}
 		</div>
 	);
 
