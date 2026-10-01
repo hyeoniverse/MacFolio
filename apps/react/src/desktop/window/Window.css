@@ -313,6 +313,57 @@
 	font-size: 18px;
 }
 
+/* 떠 있는 제목 막대 (iOS 메모 본문): 막대는 비우고 뒤로 가기만 동그란 단추로, 본문이 그 아래까지 올라간다 */
+.container.mobile.nav-floating[data-app] {
+	background-color: var(--color-window-bg);
+}
+
+.mobile-navbar.floating {
+	display: flex;
+	position: absolute;
+	top: var(--mobile-statusbar-height);
+	left: 0;
+	right: 0;
+	z-index: 6;
+	height: auto;
+	padding: 6px 16px;
+	border-bottom: none;
+	background: none;
+	pointer-events: none;
+}
+
+.mobile-navbar.floating .title {
+	display: none;
+}
+
+.mobile-navbar.floating .mobile-navbar-home {
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border-radius: 50%;
+	background-color: var(--color-window-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.06),
+		0 4px 14px rgba(0, 0, 0, 0.12);
+	color: var(--color-text);
+	pointer-events: auto;
+}
+
+.mobile-navbar.floating .mobile-navbar-home i {
+	font-size: 20px;
+}
+
+/* 글자는 화면 읽기 프로그램에만 */
+.mobile-navbar.floating .mobile-navbar-back-label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
 /* 홈 인디케이터: 누르거나 쓸어 올리면 홈으로 */
 .home-indicator {
 	display: flex;

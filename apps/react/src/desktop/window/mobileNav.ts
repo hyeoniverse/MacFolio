@@ -7,6 +7,8 @@ export interface MobileNav {
 	onBack?: () => void;
 	/** 제목. 빈 문자열이면 제목을 숨긴다 (본문에 큰 제목이 있을 때) */
 	title?: string;
+	/** iOS 메모 본문처럼 제목 막대 없이 뒤로 가기만 동그란 단추로 띄운다 (본문이 화면 위까지 올라간다) */
+	floating?: boolean;
 }
 
 /** AppWindow(모바일)가 제공한다. 데스크톱에서는 null */

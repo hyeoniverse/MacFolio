@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
-import { ALL_CATEGORY, RECENTLY_DELETED, TAG_PREFIX, type FolderNode } from '../posts';
+import { ALL_CATEGORY, RECENTLY_DELETED, type FolderNode } from '../posts';
+import { cycleTag, toggleAllTags, type TagSelection } from '../tagFilter';
 import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
 const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
@@ -37,6 +38,9 @@ interface Props {
 	onEmptyTrash?: () => void;
 	/** 본문에 쓴 #태그와 글 수 (tags.ts). 있으면 폴더 아래에 태그 묶음이 보인다 */
 	tags?: { name: string; count: number }[];
+	/** 고른 태그 (태그마다 미선택 → 포함 → 제외), 바꾸기 */
+	tagSelection?: TagSelection;
+	onTagsChange?: (next: TagSelection) => void;
 }
 
 /** 폴더에 끌어 놓기. 놓을 수 있는 폴더에 올리면 강조한다 */
@@ -296,6 +300,8 @@ const FolderSidebar: React.FC<Props> = (props) => {
 	const trashDrop = useDropTarget(RECENTLY_DELETED, props);
 	/** 최근 삭제된 항목의 메뉴를 연 자리 (null이면 닫힘) */
 	const [trashMenuAt, setTrashMenuAt] = useState<{ x: number; y: number } | null>(null);
+	/** '선택된 태그 중 모두/일부 포함' 메뉴를 연 자리 */
+	const [matchMenuAt, setMatchMenuAt] = useState<{ x: number; y: number } | null>(null);
 
 	const toggleFolder = (path: string) =>
 		setCollapsed((prev) => {
@@ -458,21 +464,68 @@ const FolderSidebar: React.FC<Props> = (props) => {
 						</li>
 					)}
 				</ul>
-				{/* 태그: macOS 메모처럼 폴더 아래에 알약으로. 누르면 그 태그의 글만 */}
-				{props.tags && props.tags.length > 0 && (
+				{/* 태그: macOS 메모처럼 폴더 아래에. 누를 때마다 미선택 → 포함(채운 칩) → 제외(테두리·취소선) */}
+				{props.tags && props.tags.length > 0 && props.tagSelection && props.onTagsChange && (
 					<section className="memo-tag-browser" aria-label="태그">
-						<h3>태그</h3>
+						<div className="memo-tag-head">
+							<h3>태그</h3>
+							{/* 태그를 둘 이상 고르면: 모두 포함(그리고)인지 일부 포함(또는)인지 */}
+							{Object.keys(props.tagSelection.tags).length >= 2 && (
+								<button
+									type="button"
+									className="memo-tag-match"
+									aria-haspopup="menu"
+									aria-expanded={matchMenuAt !== null}
+									onClick={(event) => {
+										const rect = event.currentTarget.getBoundingClientRect();
+										setMatchMenuAt(matchMenuAt ? null : { x: rect.left, y: rect.bottom + 4 });
+									}}
+								>
+									선택된 태그 중 {props.tagSelection.match === 'all' ? '모두' : '일부'} 포함
+									<i className="fa-solid fa-sort" aria-hidden="true" />
+								</button>
+							)}
+							{matchMenuAt && (
+								<Menu
+									label="태그 일치 방식"
+									anchor={matchMenuAt}
+									onClose={() => setMatchMenuAt(null)}
+									items={(['all', 'any'] as const).map((match) => ({
+										label: `선택된 태그 중 ${match === 'all' ? '모두' : '일부'} 포함`,
+										checked: props.tagSelection!.match === match,
+										onSelect: () => props.onTagsChange!({ ...props.tagSelection!, match }),
+									}))}
+								/>
+							)}
+						</div>
 						<ul>
+							<li>
+								<button
+									type="button"
+									className={`memo-tag-chip ${props.tagSelection.all ? 'include' : ''}`}
+									aria-pressed={props.tagSelection.all}
+									onClick={() => props.onTagsChange!(toggleAllTags(props.tagSelection!))}
+								>
+									모든 태그
+								</button>
+							</li>
 							{props.tags.map((tag) => {
-								const path = TAG_PREFIX + tag.name;
+								const state = props.tagSelection!.tags[tag.name];
 								return (
 									<li key={tag.name}>
 										<button
 											type="button"
-											className={`memo-tag-chip ${current === path ? 'active' : ''}`}
-											aria-current={current === path || undefined}
-											title={`${tag.count}개의 메모`}
-											onClick={() => onSelect(current === path ? ALL_CATEGORY : path)}
+											className={`memo-tag-chip ${state ?? ''}`}
+											aria-pressed={state === 'include'}
+											data-state={state ?? 'none'}
+											title={
+												state === 'include'
+													? '이 태그가 있는 메모 (한 번 더 누르면 제외)'
+													: state === 'exclude'
+														? '이 태그가 있는 메모는 뺍니다 (한 번 더 누르면 풀림)'
+														: `${tag.count}개의 메모`
+											}
+											onClick={() => props.onTagsChange!(cycleTag(props.tagSelection!, tag.name))}
 										>
 											#{tag.name}
 										</button>

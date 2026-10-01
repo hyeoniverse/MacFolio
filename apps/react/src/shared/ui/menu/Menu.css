@@ -72,3 +72,72 @@
 	color: var(--color-text-secondary);
 	font-size: 12px;
 }
+
+/* 아이콘 위·글자 아래 단추 한 줄 (iOS 메뉴 맨 위) */
+.ui-menu-row {
+	display: grid;
+	grid-auto-columns: 1fr;
+	grid-auto-flow: column;
+	gap: 4px;
+	padding: 4px 2px 6px;
+	border-bottom: 1px solid var(--color-divider);
+	margin-bottom: 4px;
+}
+
+.ui-menu-row-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+	padding: 8px 4px;
+	border: none;
+	border-radius: 8px;
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.ui-menu-row-item i {
+	font-size: 18px;
+}
+
+.ui-menu-row-item:hover:not(:disabled),
+.ui-menu-row-item:focus-visible {
+	outline: none;
+	background-color: var(--color-selected-bg);
+}
+
+.ui-menu-row-item:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+/* 휴대폰: iOS 메뉴처럼 크고 둥글게 */
+.ui-menu.touch {
+	min-width: 250px;
+	padding: 10px;
+	border-radius: 22px;
+	font-size: 16px;
+}
+
+.ui-menu.touch .ui-menu-item {
+	gap: 14px;
+	padding: 11px 12px;
+	border-radius: 10px;
+}
+
+.ui-menu.touch .ui-menu-item i {
+	width: 20px;
+	font-size: 17px;
+}
+
+.ui-menu.touch .ui-menu-item:hover:not(:disabled) {
+	background-color: var(--color-selected-bg);
+	color: inherit;
+}
+
+.ui-menu-item.destructive {
+	color: var(--color-danger, #e5484d);
+}

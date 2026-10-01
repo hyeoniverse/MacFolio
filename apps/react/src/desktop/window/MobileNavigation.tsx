@@ -6,7 +6,7 @@ import { MobileNavContext, type MobileNav } from '@/desktop/window/mobileNav';
  * iOS처럼 뒤로 가기 버튼은 화면마다 하나만 있다: 앱의 첫 화면은 "홈", 한 단계 들어가면 앱이 정한 버튼.
  * 데스크톱에서는 아무 일도 하지 않는다.
  */
-function MobileNavigation({ backLabel, onBack, title }: MobileNav) {
+function MobileNavigation({ backLabel, onBack, title, floating }: MobileNav) {
 	const setNav = useContext(MobileNavContext);
 	// onBack은 렌더링마다 새로 만들어지므로 ref로 최신 값을 부른다 (의존성에 넣으면 무한히 다시 건다)
 	const handler = useRef(onBack);
@@ -17,9 +17,9 @@ function MobileNavigation({ backLabel, onBack, title }: MobileNav) {
 
 	useEffect(() => {
 		if (!setNav) return;
-		setNav({ backLabel, title, onBack: backLabel === undefined ? undefined : () => handler.current?.() });
+		setNav({ backLabel, title, floating, onBack: backLabel === undefined ? undefined : () => handler.current?.() });
 		return () => setNav(null);
-	}, [setNav, backLabel, title]);
+	}, [setNav, backLabel, title, floating]);
 
 	return null;
 }

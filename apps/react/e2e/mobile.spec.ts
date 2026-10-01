@@ -140,7 +140,7 @@ test.describe('모바일', () => {
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
 	});
 
-	test('관리자는 목록 위에서 새 메모를, 폴더 화면에서 새로운 폴더를 만들고, 본문 위 도구는 한 줄이다', async ({
+	test('관리자 본문은 iOS 메모처럼 떠 있는 단추를 쓰고, 목록 위에서 새 메모·폴더 화면에서 새로운 폴더를 만든다', async ({
 		page,
 	}) => {
 		await fakeApi(page, { signedIn: true });
@@ -148,18 +148,23 @@ test.describe('모바일', () => {
 		await homeApp(page, '메모').tap();
 		const memo = appWindow(page, 'memo');
 
-		// 본문 위: 서식·삭제·고정·공유가 한 줄 (새 메모는 목록 위로 옮겼다)
+		// 본문: 제목 막대 대신 왼쪽 위 동그란 뒤로 가기, 오른쪽 위 공유·••• 알약, 아래 서식 알약과 새 메모
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
-		const bar = memo.locator('.memo-reader-compact-bar');
-		await expect(bar.getByRole('button', { name: '새 메모' })).toHaveCount(0);
-		const middles = await bar.locator('.ui-icon-button:visible').evaluateAll((buttons) =>
-			buttons.map((button) => {
-				const box = button.getBoundingClientRect();
-				return Math.round(box.top + box.height / 2);
-			})
-		);
-		expect(middles.length).toBeGreaterThanOrEqual(4);
-		expect(new Set(middles).size).toBe(1);
+		await expect(memo.locator('.mobile-navbar.floating .mobile-navbar-home')).toBeVisible();
+		const top = memo.locator('.memo-phone-top');
+		await expect(top.getByRole('button', { name: '링크 공유' })).toBeVisible();
+		const bottom = memo.locator('.memo-phone-bottom');
+		// 서식 단추는 편집기를 불러온 뒤에 생긴다
+		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '체크리스트' })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
+
+		// ••• 메뉴: 맨 위에 고정·잠그기, 그 아래 찾기·삭제
+		await top.getByRole('button', { name: '메모 동작' }).tap();
+		const menu = page.getByRole('menu', { name: '메모 동작' });
+		await expect(menu.getByRole('menuitem')).toHaveText(['메모 고정', '잠그기', '메모에서 찾기', '삭제']);
+		await menu.getByRole('menuitem', { name: '메모에서 찾기' }).tap();
+		await expect(memo.getByRole('search', { name: '메모에서 찾기' })).toBeVisible();
 
 		// 목록 위 검색 칸 옆의 새 메모 → 빈 편집기
 		await memo.locator('.mobile-navbar-home').tap();
