@@ -12,6 +12,7 @@ import {
 	type StockPhoto,
 	type StockProvider,
 } from './stockApi';
+import Button from '@/shared/ui/button/Button';
 
 /** 이미지로 고를 수 있는 형식 (API가 바로 보여 주는 형식과 같다) */
 const IMAGE_TYPES = 'image/png,image/jpeg,image/gif,image/webp';
@@ -100,9 +101,9 @@ const Details = ({
 						다시 고르기
 					</button>
 				)}
-				<button type="submit" className="memo-image-submit">
+				<Button tone="primary" type="submit" className="memo-image-submit">
 					{submit}
-				</button>
+				</Button>
 			</div>
 		</form>
 	);

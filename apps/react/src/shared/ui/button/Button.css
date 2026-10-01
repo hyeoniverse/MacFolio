@@ -1,0 +1,37 @@
+/*
+ * 글자가 있는 단추 (shared/ui/button/Button.tsx). components 층 (styles/layers.css).
+ *
+ * 앱이 [data-app] 등에 정하는 변수
+ *   --ui-button-bg·--ui-button-color: 보통 단추      --ui-button-radius·--ui-button-padding: 모양
+ *   --ui-accent·--ui-on-accent: primary 단추          --ui-danger: danger 단추
+ */
+@layer components {
+	.ui-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		padding: var(--ui-button-padding, 5px 14px);
+		border: none;
+		border-radius: var(--ui-button-radius, 8px);
+		background-color: var(--ui-button-bg, var(--color-selected-bg));
+		color: var(--ui-button-color, inherit);
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.ui-button.primary {
+		background-color: var(--ui-accent, var(--color-accent));
+		color: var(--ui-on-accent, var(--color-on-accent));
+	}
+
+	.ui-button.danger {
+		background-color: var(--ui-danger, #e5484d);
+		color: #ffffff;
+	}
+
+	.ui-button:disabled {
+		opacity: 0.45;
+		cursor: default;
+	}
+}
