@@ -3,6 +3,7 @@ import AppWindow from '@/desktop/window/Window';
 import { PROJECTS, type Project } from '@/shared/profile';
 import ProjectPage, { Favicon } from '@/apps/safari/ProjectPage';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
+import ShareIcon from '@/shared/ui/ShareIcon';
 import '@/apps/safari/Safari.css';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
@@ -145,7 +146,7 @@ const Safari: React.FC = () => {
 							title="링크 공유"
 							onClick={() => void shareLink({ app: 'safari', id: active.id }, active.name)}
 						>
-							<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
+							<ShareIcon />
 						</button>
 					)}
 					<button type="button" className="safari-tool" aria-label="새 탭" onClick={newTab}>

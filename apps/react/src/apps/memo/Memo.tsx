@@ -60,6 +60,7 @@ import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/popover';
 import { deletePost, fetchAdminPosts, fetchServerPosts, type PostDraft } from './postsApi';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
+import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 
@@ -690,7 +691,7 @@ const Memo: React.FC = () => {
 				title="링크 공유"
 				onClick={() => void shareLink({ app: 'memo', id: selected.slug }, selected.title)}
 			>
-				<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
+				<ShareIcon />
 			</button>
 		);
 
@@ -1017,7 +1018,7 @@ const Memo: React.FC = () => {
 									? [
 											{
 												label: '링크 공유',
-												icon: 'fa-solid fa-arrow-up-from-bracket',
+												icon: <ShareIcon />,
 												onSelect: () => void shareLink({ app: 'memo', id: selected.slug }, selected.title),
 											},
 											'separator' as const,

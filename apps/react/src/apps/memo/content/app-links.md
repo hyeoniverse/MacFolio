@@ -99,6 +99,8 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 }
 ```
 
+아이콘은 iOS·macOS의 공유 모양(위가 트인 둥근 네모에서 화살표가 올라오는 모양)으로 했다. Font Awesome 무료 아이콘에는 이 모양이 없다. 비슷한 `arrow-up-from-bracket`은 아래가 받침대 모양이라, SVG로 직접 그려 공용 컴포넌트(`ShareIcon`)로 두었다. 글자 크기(`1em`)와 글자색(`currentColor`)을 따라서 도구 막대, ••• 메뉴, Safari 어디에 두어도 옆의 아이콘과 크기·색이 맞는다.
+
 데스크톱 Chrome·Safari에도 `navigator.share`가 있다. 하지만 마우스로 쓰는 화면에서는 운영체제 공유 창보다 "복사됨" 알림이 빠르다. 그래서 손가락으로 쓰는 화면(`pointer: coarse`)에서만 공유 시트를 연다. 공유 시트를 그냥 닫으면(`AbortError`) 아무것도 하지 않는다.
 
 ![메모의 공유 단추와 알림](./images/app-links-memo-share.jpg '도구 막대의 공유 단추를 누르면 macOS 알림처럼 "링크 복사됨"')
