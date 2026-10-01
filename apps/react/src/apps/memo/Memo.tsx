@@ -23,6 +23,7 @@ import {
 	type PostFilter,
 	type ServerPost,
 	RECENTLY_DELETED,
+	RECENTLY_DELETED_DAYS,
 	daysUntilPurge,
 	recentlyDeletedPosts,
 	TAG_PREFIX,
@@ -908,6 +909,12 @@ const Memo: React.FC = () => {
 									{newDraft !== null && newDraftItem(newDraft, newPreview, false)}
 									{leavingDraft && newDraftItem(leavingDraft.key, leavingDraft.preview, true)}
 								</ul>
+							)}
+							{inTrash && (
+								<p className="memo-trash-banner">
+									지운 메모는 {RECENTLY_DELETED_DAYS}일 동안 여기에 있다가 영구히 지워집니다.
+									<span className="memo-trash-drag-hint"> 폴더로 끌어 놓으면 되살아납니다.</span>
+								</p>
 							)}
 							{sections(listItem, '고정됨', 'memo-items')}
 							{empty}
