@@ -5,6 +5,7 @@ import Menu from '@/shared/ui/menu/Menu';
 import DeleteDialog from './DeleteDialog';
 import { buildTimeline, displayName, LIMITS, type InputErrors, type Message, type Thread } from '../conversations';
 import type { DeleteResult } from '../repository';
+import IconButton from '@/shared/ui/button/IconButton';
 
 interface Props {
 	/** null이면 새 피드백을 남기는 화면 */
@@ -87,18 +88,14 @@ const ChatView: React.FC<Props> = ({
 		>
 			{/* 창 왼쪽 위에 떠 있는 버튼: 뒤로 가기(좁은 창에서만), 새 피드백 */}
 			<div className="messages-chat-toolbar">
-				<button type="button" className="messages-round-button messages-back" aria-label="대화 목록" onClick={onBack}>
-					<i className="fa-solid fa-chevron-left" aria-hidden="true" />
-				</button>
-				<button
-					type="button"
-					className="messages-round-button"
-					aria-label="새 피드백"
-					title="새 피드백"
-					onClick={onCompose}
-				>
-					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-				</button>
+				<IconButton
+					variant="float"
+					className="messages-back"
+					label="대화 목록"
+					onClick={onBack}
+					icon="fa-solid fa-chevron-left"
+				/>
+				<IconButton variant="float" label="새 피드백" onClick={onCompose} icon="fa-regular fa-pen-to-square" />
 			</div>
 
 			{thread ? (

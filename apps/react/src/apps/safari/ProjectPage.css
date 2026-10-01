@@ -119,10 +119,14 @@
 	cursor: pointer;
 	border-radius: 980px;
 	background-color: var(--sp-accent);
-	color: #ffffff !important;
 	transition:
 		filter var(--duration-fast) var(--ease-out),
 		transform var(--duration-fast) var(--ease-out);
+}
+
+/* 글자색은 위의 `.sp a`보다 앞서야 한다 */
+.sp .sp-pill {
+	color: #ffffff;
 }
 
 .sp-pill:hover {
@@ -135,7 +139,7 @@
 }
 
 .sp-link:hover {
-	text-decoration: underline !important;
+	text-decoration: underline;
 }
 
 .sp-shot {
@@ -782,7 +786,7 @@
 	border-radius: 10px;
 	background-color: var(--sp-wood);
 	box-shadow: 0 4px 0 var(--sp-wood-dark);
-	color: var(--sp-paper) !important;
+	color: var(--sp-paper);
 	font-weight: 600;
 }
 

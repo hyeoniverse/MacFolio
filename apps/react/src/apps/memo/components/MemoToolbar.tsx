@@ -2,17 +2,16 @@ import React, { useCallback, useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
 import { sortMenuItems } from './sortMenuItems';
 import type { Arrangement } from '../arrange';
+import IconButton from '@/shared/ui/button/IconButton';
 
 export type View = 'list' | 'gallery';
 
 /** 사이드바 여닫기 (SF Symbols의 sidebar.left 모양) */
 export const SidebarToggle: React.FC<{ open: boolean; onToggle: () => void }> = ({ open, onToggle }) => (
-	<button
-		type="button"
-		className="memo-tool memo-sidebar-toggle"
-		aria-label={open ? '사이드바 가리기' : '사이드바 보기'}
+	<IconButton
+		className="memo-sidebar-toggle"
+		label={open ? '사이드바 가리기' : '사이드바 보기'}
 		aria-expanded={open}
-		title={open ? '사이드바 가리기' : '사이드바 보기'}
 		onClick={onToggle}
 	>
 		<svg viewBox="0 0 20 16" aria-hidden="true">
@@ -21,7 +20,7 @@ export const SidebarToggle: React.FC<{ open: boolean; onToggle: () => void }> = 
 			<line x1="3.2" y1="5" x2="5.3" y2="5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
 			<line x1="3.2" y1="7.5" x2="5.3" y2="7.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
 		</svg>
-	</button>
+	</IconButton>
 );
 
 /** 목록으로 보기 / 갤러리로 보기 */
@@ -77,11 +76,9 @@ export const SortMenu: React.FC<{
 
 	return (
 		<>
-			<button
-				type="button"
-				className={`memo-tool memo-sort ${className}`}
-				aria-label="정렬과 그룹화"
-				title="정렬과 그룹화"
+			<IconButton
+				className={`memo-sort ${className}`}
+				label="정렬과 그룹화"
 				aria-haspopup="menu"
 				aria-expanded={anchor !== null}
 				// 메뉴가 열려 있을 때 이 단추를 누르면, 바깥 누르기로 닫힌 뒤 다시 열리지 않게 한다
@@ -91,9 +88,8 @@ export const SortMenu: React.FC<{
 					const rect = event.currentTarget.getBoundingClientRect();
 					setAnchor({ x: rect.left, y: rect.bottom + 6 });
 				}}
-			>
-				<i className="fa-solid fa-arrow-down-wide-short" aria-hidden="true" />
-			</button>
+				icon="fa-solid fa-arrow-down-wide-short"
+			/>
 			{anchor && (
 				<Menu label="정렬과 그룹화" anchor={anchor} onClose={close} items={sortMenuItems(arrangement, onChange)} />
 			)}

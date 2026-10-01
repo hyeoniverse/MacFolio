@@ -6,6 +6,7 @@ import ComposeView from './components/ComposeView';
 import { formatMailDate, INBOX } from './contact';
 import { getMailSender } from './sender';
 import '@/apps/mail/Mail.css';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /** 이름의 첫 글자 아바타 */
 const Monogram: React.FC<{ name: string; size?: number }> = ({ name, size = 36 }) => (
@@ -72,15 +73,7 @@ const Mail: React.FC = () => {
 								<h2>받은 편지함</h2>
 								<p>메일 {INBOX.length}통</p>
 							</div>
-							<button
-								type="button"
-								className="mail-round-button"
-								aria-label="새로운 메시지"
-								title="새로운 메시지"
-								onClick={compose}
-							>
-								<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-							</button>
+							<IconButton variant="float" label="새로운 메시지" onClick={compose} icon="fa-regular fa-pen-to-square" />
 						</header>
 						<ul>
 							{INBOX.map((mail) => (
