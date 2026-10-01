@@ -179,7 +179,7 @@
 	line-height: 1.5;
 }
 
-/* 최근 삭제된 메모: 본문 위 안내 상자. 아이콘은 첫 줄(제목)의 가운데에 맞추고, 단추는 문구 아래 한 줄로 */
+/* 최근 삭제된 메모: 본문 위 안내 상자. 아이콘은 첫 줄(제목)의 가운데에 맞추고, 단추는 문구 아래 한 줄에 오른쪽으로 */
 .memo-trash-note {
 	--title-line: 20px;
 	display: flex;
@@ -224,6 +224,7 @@
 .memo-trash-note-actions {
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: flex-end;
 	gap: 8px;
 	margin-top: 10px;
 }
