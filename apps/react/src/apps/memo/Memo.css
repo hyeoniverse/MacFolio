@@ -2770,9 +2770,14 @@
 		display: flex;
 	}
 
-	.memo-reader .memo-pin.compact-only {
+	.memo-reader :is(.memo-pin, .memo-share).compact-only {
 		margin-top: 0.75rem;
 		font-size: 17px;
+	}
+
+	/* 공유는 본문 위 줄의 오른쪽 끝 (iOS 메모처럼) */
+	.memo-reader .memo-share.compact-only {
+		margin-left: auto;
 	}
 
 	.memo-reader .memo-scroll {
