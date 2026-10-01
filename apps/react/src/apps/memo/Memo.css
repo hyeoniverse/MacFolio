@@ -172,9 +172,65 @@
 /* 최근 삭제된 항목의 목록 위 안내, 줄마다 남은 날 */
 .memo-trash-banner {
 	margin: 4px 20px 8px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--memo-border);
 	color: var(--memo-muted);
 	font-size: 11px;
 	line-height: 1.5;
+}
+
+/* 최근 삭제된 메모: 본문 위 안내 상자. 아이콘은 첫 줄(제목)의 가운데에 맞추고, 단추는 문구 아래 한 줄로 */
+.memo-trash-note {
+	--title-line: 20px;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 1.25rem;
+	padding: 12px 14px;
+	border-radius: 12px;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-muted);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.memo-trash-note > i {
+	flex: none;
+	font-size: 16px;
+	line-height: var(--title-line);
+}
+
+.memo-trash-note > div {
+	flex: 1;
+	min-width: 0;
+}
+
+.memo-trash-note strong {
+	display: block;
+	color: var(--memo-text);
+	font-size: 13px;
+	line-height: var(--title-line);
+}
+
+.memo-trash-note p {
+	margin: 2px 0 0;
+}
+
+.memo-trash-note .memo-trash-note-hint {
+	font-size: 11px;
+	opacity: 0.85;
+}
+
+.memo-trash-note-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+/* 회색 상자 위라 기본 단추는 창 바탕색으로 (상자와 같은 회색이면 글자만 떠 보인다) */
+.memo-trash-note-actions .ui-button:not(.danger) {
+	--ui-button-bg: var(--memo-bg);
 }
 
 .memo-item-purge::before {
@@ -537,6 +593,11 @@
 .memo-folder-row:has(.memo-folder.active) .memo-folder-more {
 	background-color: rgba(255, 255, 255, 0.35);
 	color: var(--memo-on-accent);
+}
+
+/* ••• 단추가 보이는 동안은 이름이 그 앞에서 줄여진다 (긴 이름이 단추 밑에 깔리지 않게) */
+.memo-folder-row:is(:hover, .menu-open, :focus-within):has(.memo-folder-more) .memo-folder-name {
+	margin-right: 38px;
 }
 
 /* 메뉴를 연 폴더는 테두리로 표시 */
