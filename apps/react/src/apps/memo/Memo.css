@@ -169,7 +169,14 @@
 	margin: 0 0 0 12px;
 }
 
-/* 최근 삭제된 항목: 줄마다 남은 날 */
+/* 최근 삭제된 항목의 목록 위 안내, 줄마다 남은 날 */
+.memo-trash-banner {
+	margin: 4px 20px 8px;
+	color: var(--memo-muted);
+	font-size: 11px;
+	line-height: 1.5;
+}
+
 .memo-item-purge::before {
 	content: '·';
 	margin: 0 4px;
@@ -2835,6 +2842,11 @@
 
 	.memo .compact-only {
 		display: flex;
+	}
+
+	/* 한 칸씩 볼 때는 폴더가 옆에 없어서 끌어 놓을 수 없다 */
+	.memo-trash-drag-hint {
+		display: none;
 	}
 
 	/* 본문 위 한 줄: 서식·삭제·고정은 왼쪽, 공유는 오른쪽 끝 (iOS 메모처럼). 단추 크기를 맞춘다 */
