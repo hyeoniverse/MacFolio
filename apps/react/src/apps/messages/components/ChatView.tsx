@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Avatar from './Avatar';
 import Composer from './Composer';
-import ContextMenu from './ContextMenu';
+import Menu from '@/shared/ui/menu/Menu';
 import DeleteDialog from './DeleteDialog';
 import { buildTimeline, displayName, LIMITS, type InputErrors, type Message, type Thread } from '../conversations';
 import type { DeleteResult } from '../repository';
@@ -77,8 +77,7 @@ const ChatView: React.FC<Props> = ({
 	const openMenu = (event: React.MouseEvent, message: Message) => {
 		if (message.fromOwner) return;
 		event.preventDefault();
-		const box = (event.currentTarget.closest('.messages-chat') as HTMLElement).getBoundingClientRect();
-		setMenu({ x: event.clientX - box.left, y: event.clientY - box.top, messageId: message.id });
+		setMenu({ x: event.clientX, y: event.clientY, messageId: message.id });
 	};
 
 	return (
@@ -191,9 +190,10 @@ const ChatView: React.FC<Props> = ({
 			</Composer>
 
 			{menu && (
-				<ContextMenu
-					x={menu.x}
-					y={menu.y}
+				<Menu
+					label="메시지 메뉴"
+					anchor={menu}
+					autoFocus
 					onClose={() => setMenu(null)}
 					items={[{ label: '삭제…', destructive: true, onSelect: () => setDeleting(menu.messageId) }]}
 				/>

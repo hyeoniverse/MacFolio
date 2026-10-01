@@ -40,7 +40,7 @@ import FolderSidebar, { type DragItem } from './components/FolderSidebar';
 import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
 import { sortMenuItems } from './components/sortMenuItems';
 import { groupPosts, loadArrangement, saveArrangement, sortBy, type Arrangement } from './arrange';
-import ContextMenu from './components/ContextMenu';
+import Menu from '@/shared/ui/menu/Menu';
 import { CONTENT_IMAGES } from './contentImages';
 import { useCanEditMemo } from './admin';
 import { useAppState } from '@/desktop/AppStateContext';
@@ -991,7 +991,7 @@ const Memo: React.FC = () => {
 							document.body
 						)}
 					{moreMenu && (
-						<ContextMenu
+						<Menu
 							label="도구 더 보기"
 							anchor={moreMenu}
 							onClose={() => setMoreMenu(null)}
@@ -1033,7 +1033,7 @@ const Memo: React.FC = () => {
 						/>
 					)}
 					{noteMenu && menuPost && (
-						<ContextMenu
+						<Menu
 							label={`${menuPost.title} 메뉴`}
 							anchor={noteMenu}
 							onClose={() => setNoteMenu(null)}

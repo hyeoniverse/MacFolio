@@ -57,59 +57,6 @@
 	background-color: var(--color-selected-bg);
 }
 
-/* macOS 메뉴: 로고 바로 아래에 펼쳐진다 */
-.apple-menu-list {
-	display: flex;
-	flex-direction: column;
-	/* body에 그리고 로고 아래(style의 left, top)에 둔다 */
-	position: fixed;
-	z-index: 10000;
-	min-width: 220px;
-	padding: 5px;
-	border-radius: 10px;
-	background-color: var(--color-popover-bg);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.15),
-		0 10px 30px rgba(0, 0, 0, 0.2);
-	color: var(--color-popover-text);
-	font-size: 13px;
-	animation: pop-in var(--duration-fast) var(--ease-out);
-	transform-origin: top left;
-}
-
-.apple-menu-list button {
-	padding: 4px 10px;
-	border: none;
-	border-radius: 5px;
-	background: none;
-	color: inherit;
-	font: inherit;
-	text-align: left;
-	cursor: pointer;
-}
-
-.apple-menu-list button:hover:not(:disabled) {
-	background-color: var(--color-accent);
-	color: var(--color-on-accent);
-}
-
-.apple-menu-list button:disabled {
-	opacity: 0.4;
-	cursor: default;
-}
-
-.apple-menu-list hr {
-	margin: 4px 10px;
-	border: none;
-	border-top: 1px solid var(--color-divider);
-}
-
-.apple-menu-note {
-	padding: 4px 10px 2px;
-	color: var(--color-text-secondary);
-	font-size: 12px;
-}
-
 .macos-statusbar .right-section .menu-item {
 	color: var(--color-menubar-text);
 }
