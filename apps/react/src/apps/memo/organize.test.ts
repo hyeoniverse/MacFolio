@@ -149,7 +149,13 @@ describe('normalizeOrganization', () => {
 				pins: [],
 				updatedAt: '2026-09-29',
 			})
-		).toEqual({ folders: ['읽을거리'], posts: { a: '읽을거리' }, moves: [{ from: 'x', to: 'y' }], pins: {} });
+		).toEqual({
+			folders: ['읽을거리'],
+			posts: { a: '읽을거리' },
+			moves: [{ from: 'x', to: 'y' }],
+			pins: {},
+			locks: {},
+		});
 		expect(normalizeOrganization(null)).toEqual(EMPTY_ORGANIZATION);
 	});
 });

@@ -51,6 +51,7 @@ describe('블로그 글 (e2e)', () => {
 
 	beforeEach(async () => {
 		await prisma.post.deleteMany();
+		await prisma.memoOrganization.deleteMany();
 	});
 
 	const admin = (method: 'get' | 'post' | 'put' | 'delete', path: string) =>
@@ -194,6 +195,22 @@ describe('블로그 글 (e2e)', () => {
 
 		await admin('post', '/posts/cra-to-vite/publish').send(POST).expect(200);
 		expect((await request(server()).get('/posts')).body[0]).toMatchObject({ deleted: false });
+	});
+
+	it('잠근 글은 임시 저장·게시·버리기·지우기를 409로 막고, 잠금을 풀면 다시 된다', async () => {
+		const created = await admin('post', '/posts').send(POST).expect(201);
+		const slug = created.body.slug as string;
+		await admin('put', '/memo/organization')
+			.send({ folders: [], posts: {}, moves: [], pins: {}, locks: { [slug]: true } })
+			.expect(200);
+		await admin('put', `/posts/${slug}/draft`).send(POST).expect(409);
+		await admin('post', `/posts/${slug}/publish`).send(POST).expect(409);
+		await admin('delete', `/posts/${slug}/draft`).expect(409);
+		await admin('delete', `/posts/${slug}`).expect(409);
+		await admin('put', '/memo/organization')
+			.send({ folders: [], posts: {}, moves: [], pins: {}, locks: {} })
+			.expect(200);
+		await admin('post', `/posts/${slug}/publish`).send(POST).expect(200);
 	});
 
 	it('규칙을 어기면 관리자라도 400 (임시 저장도 같은 규칙)', async () => {
