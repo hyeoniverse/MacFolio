@@ -19,7 +19,7 @@ test.describe('애니메이션', () => {
 
 		await dockItem(page, 'github').click();
 		await expect(github).toBeVisible();
-		await github.getByRole('button', { name: '닫기' }).click();
+		await github.getByRole('button', { name: '닫기', exact: true }).click();
 		await expect(github).toBeHidden();
 	});
 

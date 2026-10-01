@@ -1,0 +1,74 @@
+/*
+ * macOS 메뉴 (shared/ui/menu/Menu.tsx). body에 그려서 앱 창의 색 변수(--memo-* 등)가 닿지 않으므로
+ * 전역 색(--color-popover-*, --color-accent)만 쓴다.
+ */
+.ui-menu {
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	z-index: 10000;
+	min-width: 180px;
+	padding: 5px;
+	border-radius: 12px;
+	background-color: var(--color-popover-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.15),
+		0 10px 30px rgba(0, 0, 0, 0.2);
+	color: var(--color-popover-text);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-size: 13px;
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top left;
+}
+
+.ui-menu-item {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	padding: 5px 9px;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.ui-menu-item i {
+	width: 14px;
+	font-size: 12px;
+	text-align: center;
+	opacity: 0.8;
+}
+
+.ui-menu-item:hover:not(:disabled),
+.ui-menu-item:focus-visible {
+	outline: none;
+	background-color: var(--color-accent);
+	color: var(--color-on-accent);
+}
+
+.ui-menu-item:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.ui-menu-separator {
+	margin: 4px 8px;
+	border: none;
+	border-top: 1px solid var(--color-divider);
+}
+
+.ui-menu-heading {
+	padding: 4px 9px 2px;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.ui-menu-note {
+	padding: 4px 9px 2px;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}

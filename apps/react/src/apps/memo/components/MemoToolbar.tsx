@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import ContextMenu from './ContextMenu';
+import Menu from '@/shared/ui/menu/Menu';
 import { sortMenuItems } from './sortMenuItems';
 import type { Arrangement } from '../arrange';
 
@@ -95,12 +95,7 @@ export const SortMenu: React.FC<{
 				<i className="fa-solid fa-arrow-down-wide-short" aria-hidden="true" />
 			</button>
 			{anchor && (
-				<ContextMenu
-					label="정렬과 그룹화"
-					anchor={anchor}
-					onClose={close}
-					items={sortMenuItems(arrangement, onChange)}
-				/>
+				<Menu label="정렬과 그룹화" anchor={anchor} onClose={close} items={sortMenuItems(arrangement, onChange)} />
 			)}
 		</>
 	);

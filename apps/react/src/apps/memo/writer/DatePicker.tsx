@@ -1,5 +1,7 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { placeBelow } from '@/shared/ui/popover/placement';
+import { useDismiss } from '@/shared/ui/popover/useDismiss';
 import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from './calendar';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -42,24 +44,11 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 	useLayoutEffect(() => {
 		if (!open || !buttonRef.current) return;
 		const rect = buttonRef.current.getBoundingClientRect();
-		const width = panelRef.current?.offsetWidth ?? 248;
-		setPosition({ left: Math.min(rect.left, window.innerWidth - width - 8), top: rect.bottom + 6 });
+		const size = { width: panelRef.current?.offsetWidth ?? 248, height: panelRef.current?.offsetHeight ?? 0 };
+		setPosition(placeBelow(rect, size));
 	}, [open]);
 
-	useEffect(() => {
-		if (!open) return;
-		const close = (event: Event) => {
-			const inside =
-				panelRef.current?.contains(event.target as Node) || buttonRef.current?.contains(event.target as Node);
-			if (event instanceof KeyboardEvent ? event.key === 'Escape' : !inside) setOpen(false);
-		};
-		document.addEventListener('pointerdown', close);
-		document.addEventListener('keydown', close);
-		return () => {
-			document.removeEventListener('pointerdown', close);
-			document.removeEventListener('keydown', close);
-		};
-	}, [open]);
+	useDismiss(open, () => setOpen(false), [panelRef, buttonRef]);
 
 	const pick = (iso: string) => {
 		onChange(iso);
