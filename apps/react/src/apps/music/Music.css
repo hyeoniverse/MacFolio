@@ -49,13 +49,16 @@
 	grid-template-columns: 220px 1fr 260px;
 }
 
-.music button {
-	border: none;
-	background: none;
-	color: inherit;
-	font: inherit;
-	cursor: pointer;
-	-webkit-tap-highlight-color: transparent;
+/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
+@layer reset {
+	.music button {
+		border: none;
+		background: none;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+	}
 }
 
 .music ul,

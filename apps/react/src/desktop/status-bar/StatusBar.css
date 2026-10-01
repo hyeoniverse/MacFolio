@@ -134,45 +134,6 @@
 	cursor: pointer;
 }
 
-.volume-modal-overlay {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 1000;
-	background-color: var(--color-overlay);
-}
-
-.volume-modal {
-	padding: 20px;
-	width: 300px;
-	background: white;
-	text-align: center;
-	border-radius: 10px;
-}
-
-.volume-slider {
-	margin: 20px 0;
-	width: 100%;
-}
-
-.close-button {
-	padding: 8px 16px;
-	border: none;
-	background-color: var(--color-accent);
-	color: white;
-	cursor: pointer;
-	border-radius: 4px;
-}
-
-.close-button:hover {
-	background-color: var(--color-accent-hover);
-}
-
 /* 작은 화면에서 대응 */
 @media (max-width: 600px) {
 	.macos-statusbar {
