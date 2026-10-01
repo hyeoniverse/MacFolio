@@ -190,7 +190,7 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			runTableOp(ctx, action.op);
 			break;
 		case 'tableSelect':
-			selectCells(view, action.anchor, action.head);
+			selectCells(view, action.anchor, action.head, action.byHandle ?? true);
 			break;
 		case 'tableMove':
 			moveTablePart(view, action.kind, action.from, action.to);

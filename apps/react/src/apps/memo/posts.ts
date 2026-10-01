@@ -14,6 +14,8 @@ export interface Post {
 	body: string;
 	/** 목록 맨 위에 고정 (머리말 pinned: true, 방문자가 바꿀 수 있다) */
 	pinned?: boolean;
+	/** 잠김 (관리자가 잠그면 고치거나 지울 수 없다, organize.ts의 locks) */
+	locked?: boolean;
 	/** 관리자에게만: 게시 상태 */
 	status?: PostStatus;
 	/** 관리자에게만: '최근 삭제된 항목'의 글이면 지운 때 (ISO) */

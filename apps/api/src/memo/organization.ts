@@ -10,15 +10,17 @@ export interface Organization {
 	moves: { from: string; to: string }[];
 	/** 고정을 바꾼 글: slug → 고정 여부 */
 	pins: Record<string, boolean>;
+	/** 잠근 글: slug → true (잠그면 고치거나 지울 수 없다) */
+	locks: Record<string, boolean>;
 }
 
-export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {} };
+export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {} };
 
 export const FOLDER_NAME_MAX = 30;
 /** 폴더는 3단까지 */
 export const MAX_FOLDER_DEPTH = 3;
 /** 한 번에 저장할 수 있는 항목 수 (이상한 요청으로 DB가 커지지 않게) */
-export const LIMITS = { folders: 200, posts: 500, moves: 200, pins: 500 } as const;
+export const LIMITS = { folders: 200, posts: 500, moves: 200, pins: 500, locks: 500 } as const;
 
 const SLUG = /^[\w-]{1,100}$/;
 
@@ -39,12 +41,12 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 /**
  * 요청 본문을 검사해 정리 내용으로 바꾼다. 문제가 있으면 모든 이유를 모아 돌려준다.
- * 모르는 필드는 버린다.
+ * 모르는 필드는 버린다. locks는 나중에 생겨서, 없으면 빈 값으로 본다.
  */
 export function parseOrganization(input: unknown): { value: Organization } | { errors: string[] } {
 	const errors: string[] = [];
 	if (!isRecord(input)) return { errors: ['정리 내용은 객체여야 합니다'] };
-	const { folders, posts, moves, pins } = input;
+	const { folders, posts, moves, pins, locks = {} } = input;
 
 	if (!Array.isArray(folders)) errors.push('folders는 배열이어야 합니다');
 	else {
@@ -90,6 +92,16 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 		}
 	}
 
+	if (!isRecord(locks)) errors.push('locks는 객체여야 합니다');
+	else {
+		const entries = Object.entries(locks);
+		if (entries.length > LIMITS.locks) errors.push(`잠금은 ${LIMITS.locks}개까지입니다`);
+		for (const [slug, locked] of entries) {
+			if (!SLUG.test(slug)) errors.push(`글 주소가 올바르지 않습니다: ${slug}`);
+			if (typeof locked !== 'boolean') errors.push(`잠금 여부는 true/false여야 합니다: ${slug}`);
+		}
+	}
+
 	if (errors.length > 0) return { errors };
 	return {
 		value: {
@@ -97,6 +109,7 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 			posts: posts as Record<string, string>,
 			moves: (moves as { from: string; to: string }[]).map(({ from, to }) => ({ from, to })),
 			pins: pins as Record<string, boolean>,
+			locks: locks as Record<string, boolean>,
 		},
 	};
 }
