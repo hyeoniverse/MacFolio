@@ -1116,7 +1116,7 @@
 	cursor: default;
 }
 
-/* 편집 칸이 좁으면 저장 상태·단추를 날짜 줄 아래 따로 한 줄로 (날짜·폴더를 가리지 않게, 날짜는 늘 맨 위) */
+/* 편집 칸이 좁으면 저장 상태·단추를 날짜 줄 위의 따로 한 줄로 (날짜·폴더를 가리지 않게) */
 .memo-writer {
 	container-type: inline-size;
 }
@@ -1128,9 +1128,10 @@
 
 	.memo-writer-actions {
 		position: static;
+		order: -1;
 		justify-content: flex-end;
 		width: 100%;
-		margin-top: 4px;
+		margin-bottom: 4px;
 	}
 
 	/* 휴대폰: 날짜·폴더는 왼쪽, 저장 상태·게시는 같은 줄 오른쪽 (넘치면 다음 줄 오른쪽) */
@@ -1139,6 +1140,7 @@
 	}
 
 	.container.mobile .memo-writer-actions {
+		order: 0;
 		width: auto;
 		margin: 0 0 0 auto;
 	}

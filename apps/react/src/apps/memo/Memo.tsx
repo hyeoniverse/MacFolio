@@ -700,13 +700,11 @@ const Memo: React.FC = () => {
 				{selected && inTrash && (
 					<>
 						<IconButton
-							className={`memo-restore ${className}`}
+							className={className}
 							label="되살리기"
 							onClick={() => void restoreDeleted(selected)}
 							icon="fa-solid fa-rotate-left"
-						>
-							되살리기
-						</IconButton>
+						/>
 						<IconButton
 							className={className}
 							label="메모 영구 삭제"
