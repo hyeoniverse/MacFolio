@@ -5,6 +5,7 @@ import { avatarUrl } from '@/shared/auth/admin';
 import { PROFILE } from '@/shared/profile';
 import { displayName, LIMITS, monogram, OWNER_NAME, validateMessageInput } from '@/apps/messages/conversations';
 import { createComment, deleteComment, formatCommentTime, listComments, type Comment } from './commentsApi';
+import Button from '@/shared/ui/button/Button';
 
 /** 작성자(관리자)의 GitHub 계정 */
 const OWNER_LOGIN = PROFILE.github.split('/').at(-1) ?? '';
@@ -74,12 +75,10 @@ const CommentItem = ({
 							autoFocus
 							onChange={(event) => setPassword(event.target.value)}
 						/>
-						<button type="button" className="memo-comment-button" onClick={() => setAsking(false)}>
-							취소
-						</button>
-						<button type="submit" className="memo-comment-button danger">
+						<Button onClick={() => setAsking(false)}>취소</Button>
+						<Button tone="danger" type="submit">
 							삭제
-						</button>
+						</Button>
 					</form>
 				)}
 				{error && (
@@ -219,9 +218,9 @@ const Comments = ({ slug }: { slug: string }) => {
 					<span className="memo-comment-count">
 						{body.length}/{LIMITS.text.max}
 					</span>
-					<button type="submit" className="memo-comment-button primary" disabled={sending}>
+					<Button tone="primary" type="submit" disabled={sending}>
 						{sending ? '등록 중…' : '등록'}
-					</button>
+					</Button>
 				</div>
 			</form>
 		</section>

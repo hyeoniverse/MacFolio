@@ -67,17 +67,12 @@
 	color: #34c759;
 }
 
+/* 확인 단추 (shared/ui/button/Button, primary): 카드 폭에 맞춘다 */
 .login-flow-button {
 	width: 100%;
 	margin-top: 8px;
 	padding: 6px 0;
-	border: none;
-	border-radius: 8px;
-	background-color: var(--color-accent);
-	color: var(--color-on-accent);
-	font: inherit;
 	font-size: 13px;
-	cursor: pointer;
 }
 
 .login-flow-spinner {

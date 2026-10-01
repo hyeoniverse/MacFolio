@@ -41,11 +41,14 @@
 	--messages-error: #ff6961;
 }
 
-/* 떠 있는 원형 단추(새 메시지, 뒤로 가기)의 색 (shared/ui/button/IconButton) */
+/* 공통 단추의 색: 떠 있는 원형 단추(새 메시지, 뒤로 가기)와 글자 단추 (shared/ui/button) */
 [data-app='messages'] {
 	--ui-float-bg: var(--messages-float-bg);
 	--ui-float-shadow: var(--messages-float-shadow);
 	--ui-float-color: var(--messages-text);
+	--ui-button-bg: var(--messages-search-bg);
+	--ui-button-color: var(--messages-text);
+	--ui-danger: var(--messages-error);
 }
 
 [data-app='messages'].container {
@@ -566,21 +569,7 @@
 	display: flex;
 	justify-content: flex-end;
 	gap: 8px;
-}
-
-.messages-delete-actions button {
-	padding: 4px 14px;
-	border: none;
-	border-radius: 8px;
-	background-color: var(--messages-search-bg);
-	color: var(--messages-text);
-	font: inherit;
-	cursor: pointer;
-}
-
-.messages-delete-actions button.destructive {
-	background-color: var(--messages-error);
-	color: #ffffff;
+	--ui-button-padding: 4px 14px;
 }
 
 /* 대화를 바꾸면 살짝 나타나고, 말풍선은 꼬리 쪽에서 톡 튀어나온다 */

@@ -7,6 +7,7 @@ import { formatMailDate, INBOX } from './contact';
 import { getMailSender } from './sender';
 import '@/apps/mail/Mail.css';
 import IconButton from '@/shared/ui/button/IconButton';
+import Button from '@/shared/ui/button/Button';
 
 /** 이름의 첫 글자 아바타 */
 const Monogram: React.FC<{ name: string; size?: number }> = ({ name, size = 36 }) => (
@@ -118,9 +119,9 @@ const Mail: React.FC = () => {
 								</header>
 								<h1>{selected.subject}</h1>
 								<p className="mail-reader-body">{selected.body}</p>
-								<button type="button" className="mail-button primary" onClick={compose}>
+								<Button tone="primary" onClick={compose}>
 									<i className="fa-solid fa-reply" aria-hidden="true" /> {PROFILE.name}에게 답장
-								</button>
+								</Button>
 							</article>
 						) : (
 							<p className="mail-empty">선택된 메시지 없음</p>

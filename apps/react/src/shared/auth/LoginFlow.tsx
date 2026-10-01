@@ -3,6 +3,7 @@ import { env } from '@/shared/config/env';
 import { avatarUrl, loginOutcome } from '@/shared/auth/admin';
 import { dismissLoginResult, useAdmin, useLoginFlow } from '@/shared/auth/adminStore';
 import '@/shared/auth/LoginFlow.css';
+import Button from '@/shared/ui/button/Button';
 
 /**
  * 로그인하러 다녀오는 흐름을 화면에 보여 준다.
@@ -53,9 +54,9 @@ const LoginFlow = () => {
 					{outcome.title}
 				</strong>
 				<p>{outcome.body}</p>
-				<button ref={confirmRef} type="button" className="login-flow-button" onClick={dismissLoginResult}>
+				<Button ref={confirmRef} tone="primary" className="login-flow-button" onClick={dismissLoginResult}>
 					확인
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

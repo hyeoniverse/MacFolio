@@ -33,12 +33,17 @@
 	--memo-danger: #ff6961;
 }
 
-/* 공통 단추(shared/ui/button)의 색: 도구 막대 단추는 흐린 글자색, 켜지면 노란 바탕 */
+/* 공통 단추(shared/ui/button)의 색: 도구 막대 단추는 흐린 글자색, 켜지면 노란 바탕. 글자 단추는 알약 모양 */
 [data-app='memo'] {
 	--ui-tool-color: var(--memo-muted);
 	--ui-tool-hover: var(--memo-hover);
 	--ui-tool-on-bg: color-mix(in srgb, var(--memo-accent) 28%, transparent);
 	--ui-tool-on-color: var(--memo-text);
+	--ui-button-radius: 999px;
+	--ui-button-bg: var(--memo-search-bg);
+	--ui-button-color: var(--memo-text);
+	--ui-accent: var(--memo-accent);
+	--ui-on-accent: #2b2100;
 }
 
 [data-app='memo'].container {
@@ -1258,12 +1263,22 @@
 	transform-origin: top center;
 }
 
-.memo-format-panel button {
-	border: none;
-	background: none;
-	color: inherit;
-	font: inherit;
-	cursor: pointer;
+/* 창 안 단추의 기본값. reset 층이라 공통 단추(components 층)가 이긴다 (styles/layers.css) */
+@layer reset {
+	.memo-format-panel button {
+		border: none;
+		background: none;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+	}
+}
+
+/* 창은 body에 그려서 메모 앱의 색 변수가 닿지 않는다. 글자 단추의 색을 여기서 다시 정한다 */
+.memo-format-panel {
+	--ui-button-radius: 999px;
+	--ui-accent: #edbb4d;
+	--ui-on-accent: #2b2100;
 }
 
 .memo-format-marks {
@@ -1526,7 +1541,11 @@
 	gap: 6px;
 }
 
-.memo-format-panel .memo-image-submit,
+.memo-format-panel .memo-image-submit {
+	font-size: 13px;
+	font-weight: 600;
+}
+
 .memo-format-panel .memo-stock-search button {
 	padding: 5px 14px;
 	border-radius: 999px;
@@ -2319,30 +2338,8 @@
 	font-variant-numeric: tabular-nums;
 }
 
-.memo-comment-button {
-	padding: 5px 14px;
-	border: none;
-	border-radius: 999px;
-	background-color: var(--memo-search-bg);
-	color: var(--memo-text);
-	font: inherit;
+.memo-comments .ui-button {
 	font-weight: 600;
-	cursor: pointer;
-}
-
-.memo-comment-button.primary {
-	background-color: var(--memo-accent);
-	color: #2b2100;
-}
-
-.memo-comment-button.danger {
-	background-color: #e5484d;
-	color: #ffffff;
-}
-
-.memo-comment-button:disabled {
-	opacity: 0.45;
-	cursor: default;
 }
 
 .memo-comment-error {
