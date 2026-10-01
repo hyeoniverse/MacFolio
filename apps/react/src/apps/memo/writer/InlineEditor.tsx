@@ -16,7 +16,7 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
 import { uploadAndInsert } from './attachments';
-import { gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
+import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
 import TableHandles from './TableHandles';
 import { findPlugin } from './findPlugin';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
@@ -115,6 +115,7 @@ const publishFormat = $prose(
 const handleSelection = $prose(() => tableHandleSelection);
 /** 틈 커서에서 글을 쓰면 그 자리에 새 문단 */
 const gapText = $prose(() => gapTyping);
+const gapClickPlugin = $prose(() => gapClick);
 
 const activeTable = $prose(
 	() =>
@@ -276,6 +277,7 @@ const Inner = ({ markdown, onChange }: Props) => {
 				.use(activeTable)
 				.use(handleSelection)
 				.use(gapText)
+				.use(gapClickPlugin)
 				.use(findPlugin)
 				.use(codeHighlight),
 		[]

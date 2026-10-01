@@ -122,8 +122,9 @@ const TableHandles = () => {
 	/** 꼭짓점을 끄는 중이면 고정된 맞은편 칸 [행, 열] */
 	const resizing = useRef<[number, number] | null>(null);
 	const table = state.table;
-	// 칸을 끌어 골랐으면 손잡이·테두리 없이 고른 칸 표시만 (손잡이는 손잡이로 고를 때만)
-	if (!table || !tableBox || !run || table.dragged) return null;
+	if (!table || !tableBox || !run) return null;
+	// 칸을 끌어 골랐으면 고른 범위의 테두리와 꼭짓점만 (행·열 손잡이는 손잡이로 고를 때만)
+	const handles = !table.dragged;
 
 	const onRun = (op: TableOp, close: boolean) => {
 		run({ type: 'tableOp', op });
@@ -237,7 +238,8 @@ const TableHandles = () => {
 								HTMLTableCellElement | undefined;
 							if (!cell) return;
 							const row = (cell.parentElement as HTMLTableRowElement).rowIndex;
-							run({ type: 'tableSelect', anchor, head: [row, cell.cellIndex] });
+							// 꼭짓점으로 범위를 바꿔도 처음 고른 방법은 그대로 (끌어 골랐으면 손잡이를 띄우지 않는다)
+							run({ type: 'tableSelect', anchor, head: [row, cell.cellIndex], byHandle: handles });
 						}}
 						onPointerUp={() => {
 							resizing.current = null;
@@ -256,89 +258,93 @@ const TableHandles = () => {
 					}
 				/>
 			)}
-			<button
-				ref={colButton}
-				type="button"
-				className={`memo-table-handle col ${colOn ? 'on' : ''} ${drag?.kind === 'col' && drag.moved ? 'dragging' : ''}`}
-				aria-label="이 열 편집"
-				title={colOn ? '끌어서 열 옮기기, 눌러서 메뉴' : '이 열 편집'}
-				aria-haspopup="menu"
-				aria-expanded={colOpen}
-				// 평소에는 작은 알약, 열을 고르면 열 폭만큼 펼쳐진 막대(⌄)가 고른 테두리 위에 붙는다
-				style={{
-					left: colOn ? span.left : span.left + span.width / 2 - LONG / 2,
-					top: colOn ? tableBox.table.top - BAR : tableBox.table.top - SHORT - GAP,
-					width: colOn ? span.width : LONG,
-					height: colOn ? BAR : SHORT,
-					transform: drag?.kind === 'col' ? `translateX(${drag.offset}px)` : undefined,
-				}}
-				onPointerDown={startDrag('col')}
-				onPointerMove={moveDrag}
-				onPointerUp={endDrag}
-				onPointerCancel={() => setDrag(null)}
-				onTransitionEnd={(event) => event.propertyName === 'width' && setSettled((n) => n + 1)}
-				onMouseDown={keepFocus}
-				onClick={open('col')}
-			>
-				<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-				<i className="fa-solid fa-chevron-down memo-table-handle-chevron" aria-hidden="true" />
-			</button>
-			<button
-				ref={rowButton}
-				type="button"
-				className={`memo-table-handle row ${rowOn ? 'on' : ''} ${drag?.kind === 'row' && drag.moved ? 'dragging' : ''}`}
-				aria-label="이 행 편집"
-				title={rowOn ? '끌어서 행 옮기기, 눌러서 메뉴' : '이 행 편집'}
-				aria-haspopup="menu"
-				aria-expanded={rowOpen}
-				style={{
-					left: rowOn ? tableBox.table.left - BAR : tableBox.table.left - SHORT - GAP,
-					top: rowOn ? span.top : span.top + span.height / 2 - LONG / 2,
-					width: rowOn ? BAR : SHORT,
-					height: rowOn ? span.height : LONG,
-					transform: drag?.kind === 'row' ? `translateY(${drag.offset}px)` : undefined,
-				}}
-				onPointerDown={startDrag('row')}
-				onPointerMove={moveDrag}
-				onPointerUp={endDrag}
-				onPointerCancel={() => setDrag(null)}
-				onTransitionEnd={(event) => event.propertyName === 'height' && setSettled((n) => n + 1)}
-				onMouseDown={keepFocus}
-				onClick={open('row')}
-			>
-				<i className="fa-solid fa-ellipsis-vertical" aria-hidden="true" />
-				<i className="fa-solid fa-chevron-right memo-table-handle-chevron" aria-hidden="true" />
-			</button>
-			{colOpen &&
-				!drag &&
-				createPortal(
-					<div
-						ref={colPanel}
-						className="memo-format-panel memo-handle-panel"
-						role="dialog"
-						aria-label="열 편집"
-						style={colPosition}
+			{handles && (
+				<>
+					<button
+						ref={colButton}
+						type="button"
+						className={`memo-table-handle col ${colOn ? 'on' : ''} ${drag?.kind === 'col' && drag.moved ? 'dragging' : ''}`}
+						aria-label="이 열 편집"
+						title={colOn ? '끌어서 열 옮기기, 눌러서 메뉴' : '이 열 편집'}
+						aria-haspopup="menu"
+						aria-expanded={colOpen}
+						// 평소에는 작은 알약, 열을 고르면 열 폭만큼 펼쳐진 막대(⌄)가 고른 테두리 위에 붙는다
+						style={{
+							left: colOn ? span.left : span.left + span.width / 2 - LONG / 2,
+							top: colOn ? tableBox.table.top - BAR : tableBox.table.top - SHORT - GAP,
+							width: colOn ? span.width : LONG,
+							height: colOn ? BAR : SHORT,
+							transform: drag?.kind === 'col' ? `translateX(${drag.offset}px)` : undefined,
+						}}
+						onPointerDown={startDrag('col')}
+						onPointerMove={moveDrag}
+						onPointerUp={endDrag}
+						onPointerCancel={() => setDrag(null)}
+						onTransitionEnd={(event) => event.propertyName === 'width' && setSettled((n) => n + 1)}
 						onMouseDown={keepFocus}
+						onClick={open('col')}
 					>
-						<HandleMenu table={table} kind="col" onRun={onRun} />
-					</div>,
-					document.body
-				)}
-			{rowOpen &&
-				!drag &&
-				createPortal(
-					<div
-						ref={rowPanel}
-						className="memo-format-panel memo-handle-panel"
-						role="dialog"
-						aria-label="행 편집"
-						style={rowPosition}
+						<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+						<i className="fa-solid fa-chevron-down memo-table-handle-chevron" aria-hidden="true" />
+					</button>
+					<button
+						ref={rowButton}
+						type="button"
+						className={`memo-table-handle row ${rowOn ? 'on' : ''} ${drag?.kind === 'row' && drag.moved ? 'dragging' : ''}`}
+						aria-label="이 행 편집"
+						title={rowOn ? '끌어서 행 옮기기, 눌러서 메뉴' : '이 행 편집'}
+						aria-haspopup="menu"
+						aria-expanded={rowOpen}
+						style={{
+							left: rowOn ? tableBox.table.left - BAR : tableBox.table.left - SHORT - GAP,
+							top: rowOn ? span.top : span.top + span.height / 2 - LONG / 2,
+							width: rowOn ? BAR : SHORT,
+							height: rowOn ? span.height : LONG,
+							transform: drag?.kind === 'row' ? `translateY(${drag.offset}px)` : undefined,
+						}}
+						onPointerDown={startDrag('row')}
+						onPointerMove={moveDrag}
+						onPointerUp={endDrag}
+						onPointerCancel={() => setDrag(null)}
+						onTransitionEnd={(event) => event.propertyName === 'height' && setSettled((n) => n + 1)}
 						onMouseDown={keepFocus}
+						onClick={open('row')}
 					>
-						<HandleMenu table={table} kind="row" onRun={onRun} />
-					</div>,
-					document.body
-				)}
+						<i className="fa-solid fa-ellipsis-vertical" aria-hidden="true" />
+						<i className="fa-solid fa-chevron-right memo-table-handle-chevron" aria-hidden="true" />
+					</button>
+					{colOpen &&
+						!drag &&
+						createPortal(
+							<div
+								ref={colPanel}
+								className="memo-format-panel memo-handle-panel"
+								role="dialog"
+								aria-label="열 편집"
+								style={colPosition}
+								onMouseDown={keepFocus}
+							>
+								<HandleMenu table={table} kind="col" onRun={onRun} />
+							</div>,
+							document.body
+						)}
+					{rowOpen &&
+						!drag &&
+						createPortal(
+							<div
+								ref={rowPanel}
+								className="memo-format-panel memo-handle-panel"
+								role="dialog"
+								aria-label="행 편집"
+								style={rowPosition}
+								onMouseDown={keepFocus}
+							>
+								<HandleMenu table={table} kind="row" onRun={onRun} />
+							</div>,
+							document.body
+						)}
+				</>
+			)}
 		</>
 	);
 };

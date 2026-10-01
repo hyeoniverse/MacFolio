@@ -88,6 +88,56 @@ export const gapTyping = new Plugin({
 	},
 });
 
+/** (x, y)가 표 양옆이면 그쪽 틈 커서 자리 (표 앞·뒤), 아니면 null */
+function gapBesideTableAt(view: EditorView, x: number, y: number) {
+	let gap: number | null = null;
+	view.state.doc.forEach((node, offset) => {
+		if (gap !== null || node.type.name !== 'table') return;
+		const dom = view.nodeDOM(offset);
+		if (!(dom instanceof HTMLElement)) return;
+		const rect = dom.getBoundingClientRect();
+		if (y < rect.top || y > rect.bottom) return;
+		if (x >= rect.right) gap = offset + node.nodeSize;
+		else if (x <= rect.left) gap = offset;
+	});
+	return gap;
+}
+
+function placeGap(view: EditorView, pos: number) {
+	view.dispatch(view.state.tr.setSelection(new GapCursor(view.state.doc.resolve(pos))));
+	view.focus();
+}
+
+/**
+ * 표 양옆을 누르면 그쪽에 틈 커서를 둔다 (←·→로 가는 자리와 같다).
+ * 표 옆은 문단이 아니라서, 누르면 편집기가 가까운 칸이나 문단으로 커서를 옮겨 버렸다.
+ * 표가 편집기 폭을 다 쓰면 표 옆은 편집기 밖(본문의 여백)이라, 여백을 누른 것도 본다.
+ */
+export const gapClick = new Plugin({
+	props: {
+		handleClick: (view, _pos, event) => {
+			const gap = gapBesideTableAt(view, event.clientX, event.clientY);
+			if (gap === null) return false;
+			placeGap(view, gap);
+			return true;
+		},
+	},
+	view: (view) => {
+		const area = view.dom.closest('.memo-scroll') ?? view.dom.parentElement;
+		const onDown = (event: Event) => {
+			const mouse = event as MouseEvent;
+			if (mouse.button !== 0 || view.dom.contains(mouse.target as globalThis.Node)) return;
+			const gap = gapBesideTableAt(view, mouse.clientX, mouse.clientY);
+			if (gap === null) return;
+			// 여백을 눌러 편집기의 초점이 빠지지 않게
+			mouse.preventDefault();
+			placeGap(view, gap);
+		};
+		area?.addEventListener('mousedown', onDown);
+		return { destroy: () => area?.removeEventListener('mousedown', onDown) };
+	},
+});
+
 /** 손잡이로 고르는 변경이라고 표시한다 */
 const byHandle = (tr: Transaction) => tr.setMeta(handleSelectionKey, true);
 
@@ -147,8 +197,8 @@ function moveRowAcrossHeader(view: EditorView, from: number, to: number) {
 	view.dispatch(byHandle(tr.setSelection(CellSelection.rowSelection($cell))));
 }
 
-/** 칸 범위를 고른다: anchor 칸에서 head 칸까지 [행, 열] */
-export function selectCells(view: EditorView, anchor: [number, number], head: [number, number]) {
+/** 칸 범위를 고른다: anchor 칸에서 head 칸까지 [행, 열]. viaHandle이 false면 끌어 고른 범위로 남긴다 */
+export function selectCells(view: EditorView, anchor: [number, number], head: [number, number], viaHandle = true) {
 	const table = findTable(view.state.selection.$from);
 	if (!table) return;
 	const map = TableMap.get(table.node);
@@ -161,7 +211,9 @@ export function selectCells(view: EditorView, anchor: [number, number], head: [n
 		return table.start + map.map[row * map.width + col];
 	};
 	const selection = CellSelection.create(view.state.doc, pos(anchor), pos(head));
-	if (!selection.eq(view.state.selection)) view.dispatch(byHandle(view.state.tr.setSelection(selection)));
+	if (selection.eq(view.state.selection)) return;
+	const tr = view.state.tr.setSelection(selection);
+	view.dispatch(viaHandle ? byHandle(tr) : tr.setMeta(handleSelectionKey, false));
 }
 
 export function runTableOp(ctx: Ctx, op: TableOp) {
@@ -224,27 +276,47 @@ function alignColumn(view: EditorView, align: TableAlign) {
 	view.dispatch(tr);
 }
 
-/** 글자를 쓸 수 없는 블록 (Backspace 한 번에 지우지 않고 먼저 고른다) */
-const SOLID_BLOCKS = ['table', 'image_block'];
-
 /**
- * 표·이미지 바로 뒤 문단의 맨 앞에서 Backspace: 그 블록을 고른다 (한 번 더 누르면 지워진다).
+ * 표·이미지 바로 뒤 문단의 맨 앞에서 Backspace (표 뒤 틈 커서에서도):
+ * - 표는 바로 지운다
+ * - 이미지는 먼저 고른다 (한 번 더 누르면 지워진다. 이미지는 고른 모양이 보여서 무엇을 지울지 알 수 있다)
  * 편집기 기본 동작은 빈 문단만 지우는데, 글 끝의 빈 문단은 늘 다시 생겨서 표를 지울 길이 없었다.
  */
-function selectBlockBefore(view: EditorView) {
-	const { selection } = view.state;
-	if (!(selection instanceof TextSelection) || !selection.empty) return false;
-	const { $from } = selection;
-	if ($from.parentOffset !== 0 || $from.depth < 1) return false;
-	const $block = view.state.doc.resolve($from.before());
+function removeBlockBefore(view: EditorView) {
+	const { state } = view;
+	const { selection } = state;
+	let $block;
+	if (selection instanceof GapCursor) $block = selection.$from;
+	else if (selection instanceof TextSelection && selection.empty) {
+		const { $from } = selection;
+		if ($from.parentOffset !== 0 || $from.depth < 1) return false;
+		$block = state.doc.resolve($from.before());
+	} else return false;
 	const before = $block.nodeBefore;
-	if (!before || !SOLID_BLOCKS.includes(before.type.name)) return false;
-	view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, $block.pos - before.nodeSize)));
+	if (!before) return false;
+	const start = $block.pos - before.nodeSize;
+	if (before.type.name === 'table') {
+		view.dispatch(state.tr.delete(start, $block.pos).scrollIntoView());
+		return true;
+	}
+	if (before.type.name !== 'image_block') return false;
+	view.dispatch(state.tr.setSelection(NodeSelection.create(state.doc, start)));
+	return true;
+}
+
+/** 표 앞 틈 커서에서 Delete: 표를 지운다 */
+function removeTableAfter(view: EditorView) {
+	const { state } = view;
+	const { selection } = state;
+	if (!(selection instanceof GapCursor)) return false;
+	const after = selection.$from.nodeAfter;
+	if (after?.type.name !== 'table') return false;
+	view.dispatch(state.tr.delete(selection.from, selection.from + after.nodeSize).scrollIntoView());
 	return true;
 }
 
 /**
- * 표의 첫 행에서 ↑, 마지막 행에서 ↓: 표 앞뒤에 글을 쓸 문단이 없으면 틈 커서를 둔다 (거기서 글을 쓰거나 Backspace로 표를 지운다)
+ * 표의 첫 행에서 ↑, 마지막 행에서 ↓: 표 앞뒤에 글을 쓸 문단이 없으면 틈 커서를 둔다 (거기서 글을 쓰거나 Backspace·Delete로 표를 지운다)
  */
 function gapAroundTable(view: EditorView, direction: -1 | 1) {
 	const { state } = view;
@@ -290,7 +362,7 @@ function deleteEmptyLines(view: EditorView) {
  * - 첫 칸 맨 앞에서 ← → 표 앞, 마지막 칸 맨 끝에서 → → 표 뒤
  * - 표 바로 뒤 문단의 맨 앞에서 ← → 표 뒤, 표 바로 앞 문단의 맨 끝에서 → → 표 앞
  * - 표 옆에서 한 번 더 누르면 그쪽으로 (표 안의 칸이나 옆 문단)
- * 거기서 글을 쓰면 표 앞뒤에 새 문단이 생기고, 표 뒤에서 Backspace를 누르면 표를 고른다.
+ * 거기서 글을 쓰면 표 앞뒤에 새 문단이 생기고, 표 뒤에서 Backspace(표 앞에서 Delete)를 누르면 표를 지운다.
  */
 function gapBesideTable(view: EditorView, direction: -1 | 1) {
 	const { state } = view;
@@ -345,7 +417,8 @@ function moveToCell(view: EditorView, tableNode: Node, tableStart: number, row: 
  */
 export function handleTableKey(ctx: Ctx, view: EditorView, event: KeyboardEvent): boolean {
 	if (event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return false;
-	if (event.key === 'Backspace' && selectBlockBefore(view)) return true;
+	if (event.key === 'Backspace' && removeBlockBefore(view)) return true;
+	if (event.key === 'Delete' && removeTableAfter(view)) return true;
 	if ((event.key === 'Backspace' || event.key === 'Delete') && deleteEmptyLines(view)) return true;
 	if (
 		(event.key === 'ArrowLeft' || event.key === 'ArrowRight') &&
