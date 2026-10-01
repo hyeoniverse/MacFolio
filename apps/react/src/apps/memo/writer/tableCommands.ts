@@ -3,8 +3,16 @@
 import type { Ctx } from '@milkdown/kit/ctx';
 import { editorViewCtx } from '@milkdown/kit/core';
 import { addRowAfterCommand, addRowBeforeCommand } from '@milkdown/kit/preset/gfm';
-import type { Node } from '@milkdown/kit/prose/model';
-import { NodeSelection, TextSelection, type EditorState } from '@milkdown/kit/prose/state';
+import { Fragment, Slice, type Node } from '@milkdown/kit/prose/model';
+import {
+	NodeSelection,
+	Plugin,
+	PluginKey,
+	Selection,
+	TextSelection,
+	type EditorState,
+	type Transaction,
+} from '@milkdown/kit/prose/state';
 import { GapCursor } from '@milkdown/kit/prose/gapcursor';
 import {
 	CellSelection,
@@ -25,6 +33,64 @@ import { callCommand } from '@milkdown/kit/utils';
 import type { TableAlign, TableOp, TableState } from './editorControls';
 import { canRunTableOp } from './tableRules';
 
+/**
+ * 고른 칸이 손잡이(손잡이 누르기, 꼭짓점 끌기, 행·열 옮기기)로 고른 것인지 기억한다.
+ * 칸을 마우스로 끌어 고르면 손잡이와 테두리 없이 고른 칸만 보여 준다.
+ */
+const handleSelectionKey = new PluginKey<boolean>('memoTableHandleSelection');
+
+export const tableHandleSelection = new Plugin<boolean>({
+	key: handleSelectionKey,
+	state: {
+		init: () => false,
+		apply: (tr, current) => {
+			const meta = tr.getMeta(handleSelectionKey) as boolean | undefined;
+			if (meta !== undefined) return meta;
+			return tr.selectionSet ? false : current;
+		},
+	},
+});
+
+/** 틈 커서 자리에 빈 문단을 넣고 그 안에 커서를 둔다 (넣을 수 없는 자리면 null) */
+function paragraphAtGap(state: EditorState) {
+	const { $from } = state.selection;
+	const wrapping = $from.parent.contentMatchAt($from.index()).findWrapping(state.schema.nodes.text);
+	if (!wrapping) return null;
+	let fragment = Fragment.empty;
+	for (let i = wrapping.length - 1; i >= 0; i--) fragment = Fragment.from(wrapping[i].createAndFill(null, fragment));
+	const tr = state.tr.replace($from.pos, $from.pos, new Slice(fragment, 0, 0));
+	return tr.setSelection(TextSelection.near(tr.doc.resolve($from.pos + 1)));
+}
+
+/**
+ * 틈 커서(표 옆 등)에서 글을 쓰면 그 자리에 새 문단을 만들어 쓴다.
+ * prosemirror-gapcursor는 한글 조합 입력에만 이렇게 해서, 옆에 문단이 있는 자리에서는 친 글자가 사라졌다.
+ */
+export const gapTyping = new Plugin({
+	props: {
+		handleTextInput: (view, _from, _to, text) => {
+			if (!(view.state.selection instanceof GapCursor)) return false;
+			const tr = paragraphAtGap(view.state);
+			if (!tr) return false;
+			view.dispatch(tr.insertText(text).scrollIntoView());
+			return true;
+		},
+		handleDOMEvents: {
+			// 조합 입력·붙여 넣지 않은 글자 입력: 문단만 만들고 글자는 브라우저가 그 안에 넣게 둔다
+			beforeinput: (view, event) => {
+				if (!(view.state.selection instanceof GapCursor) || !event.inputType.startsWith('insert')) return false;
+				if (event.inputType === 'insertParagraph' || event.inputType === 'insertFromPaste') return false;
+				const tr = paragraphAtGap(view.state);
+				if (tr) view.dispatch(tr);
+				return false;
+			},
+		},
+	},
+});
+
+/** 손잡이로 고르는 변경이라고 표시한다 */
+const byHandle = (tr: Transaction) => tr.setMeta(handleSelectionKey, true);
+
 /** 커서가 있는 표의 모양 (표 밖이면 null) */
 export function tableStateOf(state: EditorState): TableState | null {
 	if (!isInTable(state)) return null;
@@ -32,6 +98,7 @@ export function tableStateOf(state: EditorState): TableState | null {
 	const cell = rect.table.nodeAt(rect.map.map[rect.top * rect.map.width + rect.left]);
 	const align = cell?.attrs.alignment;
 	const cells = state.selection instanceof CellSelection ? state.selection : null;
+	const dragged = Boolean(cells) && !handleSelectionKey.getState(state);
 	return {
 		header: rect.top === 0,
 		row: rect.top,
@@ -41,7 +108,8 @@ export function tableStateOf(state: EditorState): TableState | null {
 		align: align === 'center' || align === 'right' ? align : 'left',
 		selectedRows: rect.bottom - rect.top,
 		selectedCols: rect.right - rect.left,
-		selecting: cells?.isColSelection() ? 'col' : cells?.isRowSelection() ? 'row' : null,
+		selecting: dragged ? null : cells?.isColSelection() ? 'col' : cells?.isRowSelection() ? 'row' : null,
+		dragged,
 	};
 }
 
@@ -54,7 +122,7 @@ export function moveTablePart(view: EditorView, kind: 'row' | 'col', from: numbe
 	if (kind === 'row' && (from === 0 || to === 0)) return moveRowAcrossHeader(view, from, to);
 	const pos = view.state.selection.from;
 	const command = kind === 'row' ? moveTableRow({ from, to, pos }) : moveTableColumn({ from, to, pos });
-	command(view.state, view.dispatch);
+	command(view.state, (tr) => view.dispatch(byHandle(tr)));
 }
 
 function moveRowAcrossHeader(view: EditorView, from: number, to: number) {
@@ -76,7 +144,7 @@ function moveRowAcrossHeader(view: EditorView, from: number, to: number) {
 	// 옮긴 행을 계속 고른 채로
 	const map = TableMap.get(next);
 	const $cell = tr.doc.resolve(table.pos + 1 + map.map[to * map.width]);
-	view.dispatch(tr.setSelection(CellSelection.rowSelection($cell)));
+	view.dispatch(byHandle(tr.setSelection(CellSelection.rowSelection($cell))));
 }
 
 /** 칸 범위를 고른다: anchor 칸에서 head 칸까지 [행, 열] */
@@ -93,7 +161,7 @@ export function selectCells(view: EditorView, anchor: [number, number], head: [n
 		return table.start + map.map[row * map.width + col];
 	};
 	const selection = CellSelection.create(view.state.doc, pos(anchor), pos(head));
-	if (!selection.eq(view.state.selection)) view.dispatch(view.state.tr.setSelection(selection));
+	if (!selection.eq(view.state.selection)) view.dispatch(byHandle(view.state.tr.setSelection(selection)));
 }
 
 export function runTableOp(ctx: Ctx, op: TableOp) {
@@ -129,8 +197,10 @@ export function runTableOp(ctx: Ctx, op: TableOp) {
 			const rect = selectedRect(state);
 			const $cell = state.doc.resolve(rect.tableStart + rect.map.map[rect.top * rect.map.width + rect.left]);
 			dispatch(
-				state.tr.setSelection(
-					op === 'selectRow' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
+				byHandle(
+					state.tr.setSelection(
+						op === 'selectRow' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
+					)
 				)
 			);
 			break;
@@ -190,6 +260,73 @@ function gapAroundTable(view: EditorView, direction: -1 | 1) {
 	return true;
 }
 
+/**
+ * 행·열 전체를 고르고 Backspace·Delete: 고른 칸에 글이 있으면 먼저 비우고(편집기 기본), 다 빈 칸이면 그 행·열을 지운다.
+ * 표 전체를 골랐으면 표를 지운다. Markdown 표라 머리글 행과 마지막 본문 행은 남긴다.
+ */
+function deleteEmptyLines(view: EditorView) {
+	const { selection } = view.state;
+	if (!(selection instanceof CellSelection)) return false;
+	const cols = selection.isColSelection();
+	const rows = selection.isRowSelection();
+	if (!cols && !rows) return false;
+	let empty = true;
+	selection.forEachCell((cell) => {
+		if (cell.textContent || cell.firstChild?.childCount) empty = false;
+	});
+	if (!empty) return false;
+	const { state, dispatch } = view;
+	if (cols && rows) return deleteTable(state, dispatch);
+	const table = tableStateOf(state);
+	if (!table) return false;
+	const op: TableOp = cols ? 'deleteCol' : 'deleteRow';
+	// 지울 수 없는 행(머리글, 마지막 본문 행)이면 아무것도 하지 않는다 (이미 빈 칸이다)
+	if (!canRunTableOp(table, op)) return true;
+	return cols ? deleteColumn(state, dispatch) : deleteRow(state, dispatch);
+}
+
+/**
+ * ←·→로 표 양옆에 커서를 둔다 (macOS 메모처럼). 표 앞은 표 왼쪽, 표 뒤는 표 오른쪽에 세로 커서로 보인다.
+ * - 첫 칸 맨 앞에서 ← → 표 앞, 마지막 칸 맨 끝에서 → → 표 뒤
+ * - 표 바로 뒤 문단의 맨 앞에서 ← → 표 뒤, 표 바로 앞 문단의 맨 끝에서 → → 표 앞
+ * - 표 옆에서 한 번 더 누르면 그쪽으로 (표 안의 칸이나 옆 문단)
+ * 거기서 글을 쓰면 표 앞뒤에 새 문단이 생기고, 표 뒤에서 Backspace를 누르면 표를 고른다.
+ */
+function gapBesideTable(view: EditorView, direction: -1 | 1) {
+	const { state } = view;
+	const { selection } = state;
+	const isTable = (node: Node | null | undefined) => node?.type.name === 'table';
+	const gapAt = (pos: number) => {
+		view.dispatch(state.tr.setSelection(new GapCursor(state.doc.resolve(pos))).scrollIntoView());
+		return true;
+	};
+	// 표 옆의 틈 커서에서: 누른 쪽의 가장 가까운 글자 자리로
+	if (selection instanceof GapCursor) {
+		const { $from } = selection;
+		if (!isTable($from.nodeBefore) && !isTable($from.nodeAfter)) return false;
+		const next = Selection.findFrom($from, direction, true);
+		if (next) view.dispatch(state.tr.setSelection(next).scrollIntoView());
+		return true;
+	}
+	if (!(selection instanceof TextSelection) || !selection.empty) return false;
+	const { $from } = selection;
+	const atEdge = direction === -1 ? $from.parentOffset === 0 : $from.parentOffset === $from.parent.content.size;
+	if (!atEdge) return false;
+	if (isInTable(state)) {
+		const rect = selectedRect(state);
+		const first = rect.top === 0 && rect.left === 0;
+		const last = rect.bottom === rect.map.height && rect.right === rect.map.width;
+		const table = findTable($from);
+		if (!table || (direction === -1 ? !first : !last)) return false;
+		return gapAt(direction === -1 ? table.pos : table.pos + table.node.nodeSize);
+	}
+	// 표 바로 옆 문단의 끝에서 표 쪽으로
+	if ($from.depth < 1) return false;
+	const $block = state.doc.resolve(direction === -1 ? $from.before() : $from.after());
+	if (!isTable(direction === -1 ? $block.nodeBefore : $block.nodeAfter)) return false;
+	return gapAt($block.pos);
+}
+
 /** 표 안의 (줄, 칸) 칸 첫 글자로 커서를 옮긴다 */
 function moveToCell(view: EditorView, tableNode: Node, tableStart: number, row: number, col: number) {
 	const map = TableMap.get(tableNode);
@@ -203,10 +340,18 @@ function moveToCell(view: EditorView, tableNode: Node, tableStart: number, row: 
  * - Enter: 아래 칸으로. 마지막 줄이면 줄을 하나 넣는다 (Markdown 칸 안에서는 줄을 바꿀 수 없다)
  * - Tab: 마지막 칸에서 누르면 줄을 넣고 새 줄 첫 칸으로 (그 밖의 Tab·Shift+Tab은 편집기가 칸을 옮긴다)
  * - ⌘Enter: 표 밖으로 (편집기 기본)
+ * - Backspace·Delete: 행·열 전체를 골랐고 칸이 다 비었으면 그 행·열을 지운다
+ * - ←·→: 표 양옆에 틈 커서 (gapBesideTable)
  */
 export function handleTableKey(ctx: Ctx, view: EditorView, event: KeyboardEvent): boolean {
 	if (event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return false;
 	if (event.key === 'Backspace' && selectBlockBefore(view)) return true;
+	if ((event.key === 'Backspace' || event.key === 'Delete') && deleteEmptyLines(view)) return true;
+	if (
+		(event.key === 'ArrowLeft' || event.key === 'ArrowRight') &&
+		gapBesideTable(view, event.key === 'ArrowLeft' ? -1 : 1)
+	)
+		return true;
 	if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && gapAroundTable(view, event.key === 'ArrowUp' ? -1 : 1))
 		return true;
 	if (!isInTable(view.state)) return false;

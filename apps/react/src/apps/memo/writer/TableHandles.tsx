@@ -96,6 +96,7 @@ const HandleMenu = ({
  * 표 손잡이 (macOS 메모처럼): 커서가 표 안에 있으면 지금 열 위와 지금 행 왼쪽에 작은 둥근 손잡이가 생긴다.
  * 누르면 그 열·행 전체를 고르고(노란 테두리) 메뉴가 열린다. 고른 채로 Backspace를 누르면 칸을 비운다.
  * 행·열 전체를 고른 뒤 손잡이를 끌면 그 행·열을 옮긴다 (첫 행으로 옮기면 그 행이 머리글이 된다).
+ * 칸을 마우스로 끌어 고르면 손잡이를 숨기고 고른 칸만 보여 준다.
  */
 const TableHandles = () => {
 	const { state, tableBox, run } = useEditorControls();
@@ -121,7 +122,8 @@ const TableHandles = () => {
 	/** 꼭짓점을 끄는 중이면 고정된 맞은편 칸 [행, 열] */
 	const resizing = useRef<[number, number] | null>(null);
 	const table = state.table;
-	if (!table || !tableBox || !run) return null;
+	// 칸을 끌어 골랐으면 손잡이·테두리 없이 고른 칸 표시만 (손잡이는 손잡이로 고를 때만)
+	if (!table || !tableBox || !run || table.dragged) return null;
 
 	const onRun = (op: TableOp, close: boolean) => {
 		run({ type: 'tableOp', op });
