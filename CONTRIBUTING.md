@@ -104,7 +104,31 @@ test: 글 순서에 기대지 않게 E2E 고침
 
 ### 머지
 
-- CI(`check`, `conventions`)가 통과해야 머지한다
+- CI(`check`, `conventions`)가 통과해야 머지한다. `main`의 Ruleset이 두 검사를 필수로 걸어 두어, 통과하기 전에는 Merge 버튼이 막힌다
 - **Merge commit**으로 머지한다. 브랜치의 커밋이 그대로 main에 남는다
 - 머지한 브랜치는 지운다 (PR 페이지의 Delete branch)
 - 아직 손볼 게 남았으면 draft로 열어 두고, 다 되면 Ready for review로 바꾼다
+
+## 저장소 설정
+
+저장소를 새로 만들거나 옮겼을 때 GitHub 설정에서 한 번 해 둔다.
+
+### `main` 보호 (Ruleset)
+
+CI가 실패해도 Merge 버튼이 눌리지 않게, `main`에 필수 검사를 건다.
+
+1. 저장소 → **Settings** → **Rules** → **Rulesets** → **New ruleset** → **New branch ruleset**
+2. **Ruleset name**: `main 보호` 처럼 알아볼 이름
+3. **Enforcement status**: **Active**
+4. **Target branches** → **Add target** → **Include default branch**
+5. **Require status checks to pass**를 켜고 **Add checks**에서 `check`와 `conventions`를 더한다
+6. **Create**
+
+- 검사 이름은 워크플로의 job 이름이다 (`.github/workflows/ci.yml`의 `check`, `conventions.yml`의 `conventions`). job 이름을 바꾸면 여기 검사 이름도 바꾼다. 안 바꾸면 사라진 검사를 기다리느라 아무 PR도 머지되지 않는다
+- 검사는 PR에서 한 번 돌아야 목록에 나타난다. 목록에 없으면 아무 PR이나 열어 CI를 돌린 뒤 다시 찾는다
+- **Require a pull request before merging**에 승인 수(required approvals)는 걸지 않는다. 혼자 하는 저장소에서는 내 PR을 내가 승인할 수 없어 머지가 막힌다
+- 같은 Ruleset에서 **Block force pushes**를 켜 두면 `main`의 기록을 덮어쓰는 push도 막는다
+
+### 머지한 브랜치 지우기
+
+Settings → General → Pull Requests의 **Automatically delete head branches**를 켜면 머지한 브랜치가 저절로 지워진다.
