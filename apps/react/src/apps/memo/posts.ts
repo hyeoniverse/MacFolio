@@ -37,6 +37,10 @@ export const ALL_CATEGORY = '모든 글';
 export const RECENTLY_DELETED = '\u0000recently-deleted';
 /** 지운 글을 최근 삭제된 항목에 두는 날 수 (서버의 RECENTLY_DELETED_DAYS와 같다) */
 export const RECENTLY_DELETED_DAYS = 30;
+/** 태그로 보기: 경로 자리에 이 앞붙이 + 태그 이름 (폴더 이름과 겹치지 않게 경로에 쓸 수 없는 글자로 시작한다) */
+export const TAG_PREFIX = '\u0000tag:';
+/** 태그로 보는 중이면 그 태그 이름 */
+export const tagOfCategory = (path: string) => (path.startsWith(TAG_PREFIX) ? path.slice(TAG_PREFIX.length) : null);
 
 /**
  * 머리말을 읽는다. 지원하는 형식은 한 줄짜리 `key: value`뿐이다.
@@ -273,7 +277,11 @@ export const folderLabelOf = (path: string) => path.split('/').join(' › ');
 
 /** 경로의 마지막 이름 (예: 개발기/MacFolio → MacFolio) */
 export const folderName = (path: string) =>
-	path === RECENTLY_DELETED ? '최근 삭제된 항목' : (path.split('/').at(-1) ?? path);
+	path === RECENTLY_DELETED
+		? '최근 삭제된 항목'
+		: path.startsWith(TAG_PREFIX)
+			? `#${path.slice(TAG_PREFIX.length)}`
+			: (path.split('/').at(-1) ?? path);
 
 /** 본문의 첫 이미지 주소 (갤러리 미리보기용). 없으면 null */
 export function firstImage(body: string): string | null {
