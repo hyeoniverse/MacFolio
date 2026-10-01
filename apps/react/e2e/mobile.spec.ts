@@ -1,4 +1,5 @@
 import { test, expect, appWindow } from './fixtures';
+import { fakeApi } from './fakeApi';
 import type { Page } from '@playwright/test';
 
 /** 로딩 화면을 탭해 넘기고 홈 화면에 들어간다. */
@@ -137,6 +138,40 @@ test.describe('모바일', () => {
 
 		await memo.getByRole('button', { name: /^개발기/ }).tap();
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+	});
+
+	test('관리자는 목록 위에서 새 메모를, 폴더 화면에서 새로운 폴더를 만들고, 본문 위 도구는 한 줄이다', async ({
+		page,
+	}) => {
+		await fakeApi(page, { signedIn: true });
+		await enterHome(page);
+		await homeApp(page, '메모').tap();
+		const memo = appWindow(page, 'memo');
+
+		// 본문 위: 서식·삭제·고정·공유가 한 줄 (새 메모는 목록 위로 옮겼다)
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
+		const bar = memo.locator('.memo-reader-compact-bar');
+		await expect(bar.getByRole('button', { name: '새 메모' })).toHaveCount(0);
+		const middles = await bar.locator('.ui-icon-button:visible').evaluateAll((buttons) =>
+			buttons.map((button) => {
+				const box = button.getBoundingClientRect();
+				return Math.round(box.top + box.height / 2);
+			})
+		);
+		expect(middles.length).toBeGreaterThanOrEqual(4);
+		expect(new Set(middles).size).toBe(1);
+
+		// 목록 위 검색 칸 옆의 새 메모 → 빈 편집기
+		await memo.locator('.mobile-navbar-home').tap();
+		await memo.getByRole('region', { name: '글 목록' }).getByRole('button', { name: '새 메모' }).tap();
+		await expect(memo.getByRole('textbox', { name: '제목' })).toBeVisible();
+
+		// 폴더 화면의 새로운 폴더
+		await memo.locator('.mobile-navbar-home').tap();
+		await memo.locator('.mobile-navbar-home').tap();
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await folders.getByRole('button', { name: '새로운 폴더' }).tap();
+		await expect(folders.getByRole('textbox', { name: '새로운 폴더 이름' })).toBeVisible();
 	});
 
 	test('메일은 목록과 읽기·쓰기를 한 화면씩 보여준다', async ({ page }) => {
