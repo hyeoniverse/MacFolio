@@ -3,6 +3,7 @@ import { PROFILE } from '@/shared/profile';
 import { avatarUrl, type AdminStatus } from '@/shared/auth/admin';
 import { refreshAdmin, signIn, signOut, useAdmin } from '@/shared/auth/adminStore';
 import '@/shared/auth/AdminAccount.css';
+import Button from '@/shared/ui/button/Button';
 
 /** 관리자로 인정하는 GitHub 계정 (프로필 주소의 마지막 부분) */
 const ADMIN_LOGIN = PROFILE.github.split('/').at(-1) ?? '';
@@ -42,26 +43,13 @@ const AdminAccount = () => {
 			</div>
 
 			<div className="admin-account-actions">
-				{signedIn && (
-					<button type="button" className="admin-account-button" onClick={() => void signOut()}>
-						로그아웃
-					</button>
-				)}
+				{signedIn && <Button onClick={() => void signOut()}>로그아웃</Button>}
 				{(status === 'signed-out' || status === 'disabled') && (
-					<button
-						type="button"
-						className="admin-account-button primary"
-						disabled={status === 'disabled'}
-						onClick={signIn}
-					>
+					<Button tone="primary" disabled={status === 'disabled'} onClick={signIn}>
 						<i className="fa-brands fa-github" aria-hidden="true" /> GitHub로 로그인
-					</button>
+					</Button>
 				)}
-				{status === 'offline' && (
-					<button type="button" className="admin-account-button" onClick={() => void refreshAdmin()}>
-						다시 확인
-					</button>
-				)}
+				{status === 'offline' && <Button onClick={() => void refreshAdmin()}>다시 확인</Button>}
 			</div>
 
 			<dl className="admin-account-details">

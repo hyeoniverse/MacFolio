@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '@/shared/ui/Modal';
 import type { DeleteResult } from '../repository';
+import Button from '@/shared/ui/button/Button';
 
 interface Props {
 	onClose: () => void;
@@ -38,12 +39,10 @@ const DeleteDialog: React.FC<Props> = ({ onClose, onDelete }) => {
 					</p>
 				)}
 				<div className="messages-delete-actions">
-					<button type="button" onClick={onClose}>
-						취소
-					</button>
-					<button type="submit" className="destructive">
+					<Button onClick={onClose}>취소</Button>
+					<Button tone="danger" type="submit">
 						삭제
-					</button>
+					</Button>
 				</div>
 			</form>
 		</Modal>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { PROFILE } from '@/shared/profile';
 import { LIMITS, validateContact, type ContactErrors, type ContactInput } from '../contact';
 import type { SendResult } from '../sender';
+import Button from '@/shared/ui/button/Button';
 
 interface Props {
 	onSend: (input: ContactInput) => Promise<SendResult>;
@@ -53,12 +54,10 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel }) => {
 			<header className="mail-compose-toolbar">
 				<strong>새로운 메시지</strong>
 				<div>
-					<button type="button" className="mail-button" onClick={onCancel}>
-						취소
-					</button>
-					<button type="submit" className="mail-button primary" disabled={sending}>
+					<Button onClick={onCancel}>취소</Button>
+					<Button tone="primary" type="submit" disabled={sending}>
 						<i className="fa-solid fa-paper-plane" aria-hidden="true" /> 보내기
-					</button>
+					</Button>
 				</div>
 			</header>
 
@@ -139,21 +138,19 @@ const SentView: React.FC<{ handedOff: boolean; onDone: () => void }> = ({ handed
 					<h2>메일 앱에서 보내기를 눌러 주세요</h2>
 					<p>작성한 내용을 담아 메일 앱을 열었어요. 메일 앱이 열리지 않았다면 주소를 복사해서 보내 주세요.</p>
 					<div className="mail-sent-actions">
-						<button type="button" className="mail-button" onClick={copy}>
-							{copied ? '복사했어요' : `${PROFILE.email} 복사`}
-						</button>
-						<button type="button" className="mail-button primary" onClick={onDone}>
+						<Button onClick={copy}>{copied ? '복사했어요' : `${PROFILE.email} 복사`}</Button>
+						<Button tone="primary" onClick={onDone}>
 							확인
-						</button>
+						</Button>
 					</div>
 				</>
 			) : (
 				<>
 					<h2>메일을 보냈어요</h2>
 					<p>확인하고 답장드릴게요. 감사합니다!</p>
-					<button type="button" className="mail-button primary" onClick={onDone}>
+					<Button tone="primary" onClick={onDone}>
 						확인
-					</button>
+					</Button>
 				</>
 			)}
 		</section>

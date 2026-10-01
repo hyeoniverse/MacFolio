@@ -32,10 +32,13 @@
 	--mail-error: #ff6961;
 }
 
-/* 떠 있는 원형 단추(새로운 메시지)의 색 (shared/ui/button/IconButton) */
+/* 공통 단추의 색: 떠 있는 원형 단추(새로운 메시지)와 글자 단추 (shared/ui/button) */
 [data-app='mail'] {
 	--ui-float-bg: var(--mail-float-bg);
 	--ui-float-shadow: var(--mail-float-shadow);
+	--ui-button-bg: var(--mail-float-bg);
+	--ui-accent: var(--mail-accent);
+	--ui-on-accent: #ffffff;
 }
 
 [data-app='mail'].container {
@@ -272,26 +275,14 @@
 	font-size: 15px;
 }
 
-.mail-button {
-	/* 통합형 창의 위쪽 52px(창 끌기 영역)보다 위에 있어야 눌린다 */
+/* 글자 단추 (shared/ui/button/Button): 떠 있는 그림자, 창 끌기 영역(위쪽 52px)보다 위 */
+.mail .ui-button {
 	position: relative;
 	z-index: 4;
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 5px 14px;
-	border: none;
-	border-radius: 8px;
-	background-color: var(--mail-float-bg);
 	box-shadow: var(--mail-float-shadow);
 }
 
-.mail-button.primary {
-	background-color: var(--mail-accent);
-	color: #ffffff;
-}
-
-.mail-button:disabled {
+.mail .ui-button:disabled {
 	opacity: 0.6;
 }
 
