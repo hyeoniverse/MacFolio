@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ContextMenu from './ContextMenu';
+import Menu from '@/shared/ui/menu/Menu';
 import { ALL_CATEGORY, type FolderNode } from '../posts';
 import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
@@ -216,7 +216,7 @@ const FolderRow: React.FC<RowProps> = (props) => {
 						</button>
 					)}
 					{menuAt && (
-						<ContextMenu
+						<Menu
 							label={`${node.name} 폴더 메뉴`}
 							anchor={menuAt}
 							onClose={() => setMenuAt(null)}
