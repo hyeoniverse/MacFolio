@@ -246,6 +246,61 @@
 }
 
 /* 고정된 메모 / 메모 묶음 이름 */
+/* 본문의 #태그 (읽기 화면은 누르면 그 태그의 글만, 편집기는 칠하기만) */
+.memo-tag {
+	color: #b07a06;
+	font-weight: 600;
+}
+
+:root[data-theme='dark'] .memo-tag {
+	color: var(--memo-accent);
+}
+
+.memo-markdown .memo-tag {
+	cursor: pointer;
+}
+
+.memo-markdown .memo-tag:hover {
+	text-decoration: underline;
+}
+
+/* 사이드바의 태그 묶음 (macOS 메모처럼 폴더 아래에 알약) */
+.memo-tag-browser {
+	padding: 12px 12px 14px;
+}
+
+.memo-tag-browser h3 {
+	margin: 0 0 8px 4px;
+	color: var(--memo-muted);
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.memo-tag-browser ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	list-style: none;
+}
+
+.memo-tag-chip {
+	padding: 2px 9px;
+	border: none;
+	border-radius: 999px;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+	font-size: 12px;
+}
+
+.memo-tag-chip:hover {
+	background-color: var(--memo-hover);
+}
+
+.memo-tag-chip.active {
+	background-color: var(--memo-accent);
+	color: var(--memo-on-accent);
+}
+
 .memo-section-title {
 	display: flex;
 	align-items: center;
