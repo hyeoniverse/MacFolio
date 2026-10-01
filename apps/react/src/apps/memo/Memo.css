@@ -3071,22 +3071,36 @@
 	display: block;
 }
 
+/* 캡션 입력칸: 캡션과 같은 자리·글자 크기로, 긴 캡션은 줄을 바꿔 다 보인다 (높이는 글에 맞춰 늘어난다) */
 .memo-caption-input {
 	display: block;
-	width: 100%;
-	/* 캡션과 같은 자리·글자 크기로 바뀌어 들어선다 */
+	box-sizing: border-box;
+	width: min(100%, 560px);
 	margin: 0.5em auto 0;
-	padding: 1px 8px;
-	border: none;
-	border-radius: 6px;
-	background-color: var(--memo-search-bg);
+	padding: 5px 10px;
+	border: 1px solid var(--memo-border);
+	border-radius: 8px;
+	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font: inherit;
 	font-size: 12px;
-	line-height: 1.75;
+	line-height: 1.6;
 	text-align: center;
+	resize: none;
+	overflow: hidden;
 	outline: none;
-	box-shadow: 0 0 0 2px color-mix(in srgb, var(--memo-accent) 55%, transparent);
+	transition:
+		border-color var(--duration-fast) var(--ease-out),
+		box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.memo-caption-input:focus {
+	border-color: var(--memo-accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--memo-accent) 22%, transparent);
+}
+
+.memo-caption-input::placeholder {
+	color: var(--memo-muted);
 }
 
 /* 캡션과 입력칸은 번갈아 하나만 (display를 준 요소는 hidden 속성만으로는 숨지 않는다) */
