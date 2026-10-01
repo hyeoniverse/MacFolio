@@ -1718,6 +1718,18 @@
 }
 
 /*
+ * 칸·블록을 고르면(표 칸을 끌어 고르기, Backspace로 표 고르기) 편집기가 ProseMirror-hideselection을 붙인다.
+ * 브라우저의 파란 글자 선택을 감추는 이 규칙도 prosemirror-view의 기본 CSS에만 있어서 여기 적는다.
+ */
+.memo-inline-editor .ProseMirror-hideselection *::selection {
+	background: transparent;
+}
+
+.memo-inline-editor .ProseMirror-hideselection {
+	caret-color: transparent;
+}
+
+/*
  * 틈 커서 (표·이미지 앞뒤처럼 글자를 쓸 수 없는 자리). prosemirror-gapcursor의 기본 CSS를 불러오지 않아
  * 자리는 생겨도 보이지 않았다. 기본 모양(그 자리 위의 깜빡이는 가로줄)을 여기서 그린다. 색은 글자색 (다크 모드)
  */
