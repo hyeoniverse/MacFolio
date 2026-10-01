@@ -846,22 +846,89 @@ test.describe('바로 고치기 (관리자)', () => {
 		expect(api.posts).toEqual([]);
 	});
 
-	test('휴지통 단추나 우클릭으로 지우면 목록에서 사라진다', async ({ page }) => {
+	test('지우면 묻지 않고 최근 삭제된 항목으로 가고, 거기서 되살리거나 영구히 지운다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		page.on('dialog', (dialog) => dialog.accept());
 
+		// 휴지통 단추와 우클릭 메뉴로 지운다 (묻지 않는다: 30일 동안 되살릴 수 있다)
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
 		await memo.getByRole('button', { name: '메모 삭제', exact: true }).first().click();
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
-
 		await memo.locator('.memo-item', { hasText: '테스트를 붙이자 보인 버그들' }).click({ button: 'right' });
 		await page.getByRole('menuitem', { name: '메모 삭제' }).click();
 		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toHaveCount(0);
-		expect(api.posts.map((post) => [post.slug, post.deleted])).toEqual([
-			['cra-to-vite', true],
-			['bugs-found-by-tests', true],
+		expect(api.posts.map((post) => [post.slug, post.deleted, Boolean(post.deletedAt)])).toEqual([
+			['cra-to-vite', true, true],
+			['bugs-found-by-tests', true, true],
 		]);
+
+		// 폴더 목록 맨 아래의 최근 삭제된 항목: 최근에 지운 글이 위로, 남은 날이 보인다
+		const trash = memo.getByRole('navigation', { name: '카테고리' }).getByRole('button', { name: /최근 삭제된 항목/ });
+		await expect(trash).toContainText('2');
+		await trash.click();
+		const items = memo.locator('.memo-item');
+		await expect(items).toHaveCount(2);
+		await expect(items.first()).toContainText('테스트를 붙이자 보인 버그들');
+		await expect(items.first()).toContainText('30일 남음');
+		// 고칠 수 없는 읽기 화면: 위의 안내 띠에 되살리기, 도구 막대의 휴지통은 영구 삭제
+		await items.first().click();
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+		const note = memo.getByRole('note');
+		await expect(note).toContainText('30일 뒤에 영구히 지워집니다');
+		await expect(memo.getByRole('button', { name: '메모 영구 삭제' }).first()).toBeVisible();
+
+		// 되살리면 모든 글로 돌아가 그 글을 연다
+		await note.getByRole('button', { name: '되살리기' }).click();
+		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toHaveClass(/active/);
+		await expect(trash).toContainText('1');
+
+		// 최근 삭제된 항목에서 새 메모를 쓰면 모든 글로 나가서 쓴다 (새 메모가 들어갈 폴더가 아니다)
+		await trash.click();
+		await memo.getByRole('button', { name: '새 메모' }).first().click();
+		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('모든 글');
+		await expect(memo.getByRole('button', { name: /^폴더 .*, 바꾸기$/ })).toHaveAccessibleName(
+			'폴더 개발기 › MacFolio › 회고, 바꾸기'
+		);
+
+		// 영구 삭제는 되돌릴 수 없어서 묻는다. 마지막 하나라 최근 삭제된 항목도 사라진다
+		await trash.click();
+		await items.first().click({ button: 'right' });
+		page.once('dialog', (dialog) => dialog.accept());
+		await page.getByRole('menuitem', { name: '영구 삭제' }).click();
+		await expect(trash).toHaveCount(0);
+		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('모든 글');
+		expect(api.posts.find((post) => post.slug === 'cra-to-vite')).toMatchObject({ deleted: true, deletedAt: null });
+	});
+
+	test('글을 최근 삭제된 항목에 끌어 놓으면 지우고, 지운 글을 폴더에 끌어 놓으면 그 폴더로 되살린다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		const trash = folders.getByRole('button', { name: /최근 삭제된 항목/ });
+
+		// 비어 있으면 숨어 있다가, 글을 끄는 동안 놓을 자리로 보인다
+		await expect(trash).toHaveCount(0);
+		// 놓을 자리가 끄는 동안에만 생겨서 dragTo 대신 마우스로 끈다
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).hover();
+		await page.mouse.down();
+		await folders.getByRole('button', { name: /^모든 글/ }).hover();
+		await trash.hover();
+		await page.mouse.up();
+		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
+		await expect(trash).toContainText('1');
+		expect(api.posts.find((post) => post.slug === 'cra-to-vite')).toMatchObject({ deleted: true });
+
+		// 지운 글을 '회고' 폴더에 놓으면 되살아나 그 폴더에 들어간다
+		await trash.click();
+		await memo
+			.locator('.memo-item', { hasText: 'CRA에서 Vite로' })
+			.dragTo(folders.getByRole('button', { name: /^회고/ }));
+		await expect(trash).toHaveCount(0);
+		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('회고');
+		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveClass(/active/);
+		await expect.poll(() => api.organization.posts['cra-to-vite']).toBe('개발기/MacFolio/회고');
 	});
 
 	test('방문자는 서버의 글을 보지만 고칠 수 없다', async ({ page }) => {

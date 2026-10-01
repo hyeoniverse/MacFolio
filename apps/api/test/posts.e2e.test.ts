@@ -5,7 +5,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
 import { GithubClient } from '../src/auth/github.client.js';
-import { MAX_REVISIONS } from '../src/posts/posts.service.js';
+import { MAX_REVISIONS, RECENTLY_DELETED_DAYS } from '../src/posts/posts.service.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 
 process.env.DATABASE_URL ??= 'postgresql://macfolio:macfolio@localhost:5432/macfolio';
@@ -191,10 +191,53 @@ describe('블로그 글 (e2e)', () => {
 		await admin('delete', '/posts/cra-to-vite').expect(204);
 		const list = await request(server()).get('/posts').expect(200);
 		expect(list.body).toEqual([expect.objectContaining({ slug: 'cra-to-vite', deleted: true })]);
-		expect((await admin('get', '/posts/admin')).body[0]).toMatchObject({ deleted: true, draft: null });
+		// 최근 삭제된 항목: 지운 때가 있고, 되살릴 수 있게 임시 저장은 그대로
+		expect((await admin('get', '/posts/admin')).body[0]).toMatchObject({
+			deleted: true,
+			deletedAt: expect.any(String),
+			draft: POST,
+		});
 
 		await admin('post', '/posts/cra-to-vite/publish').send(POST).expect(200);
 		expect((await request(server()).get('/posts')).body[0]).toMatchObject({ deleted: false });
+	});
+
+	it('최근 삭제된 항목에서 되살리면 지우기 전 그대로, 영구히 지우면 내용과 버전이 사라진다', async () => {
+		const created = await admin('post', '/posts').send(POST).expect(201);
+		const slug = created.body.slug as string;
+		await admin('post', `/posts/${slug}/publish`).send(POST).expect(200);
+		await admin('delete', `/posts/${slug}`).expect(204);
+
+		// 되살리기: 게시한 내용·버전이 그대로, 방문자에게 다시 보인다
+		const restored = await admin('post', `/posts/${slug}/restore`).expect(200);
+		expect(restored.body).toMatchObject({ deleted: false, deletedAt: null, published: POST, revisions: 1 });
+		expect((await request(server()).get('/posts')).body[0]).toMatchObject({ slug, deleted: false });
+		// 최근 삭제된 항목에 없는 글은 되살리거나 영구히 지울 수 없다
+		await admin('post', `/posts/${slug}/restore`).expect(404);
+		await admin('delete', `/posts/${slug}/permanent`).expect(404);
+
+		// 영구히 지우기: 가리는 표시만 남는다 (최근 삭제된 항목에도 없다)
+		await admin('delete', `/posts/${slug}`).expect(204);
+		await admin('delete', `/posts/${slug}/permanent`).expect(204);
+		const [row] = (await admin('get', '/posts/admin')).body;
+		expect(row).toMatchObject({ deleted: true, deletedAt: null, published: null, draft: null, revisions: 0 });
+		await admin('post', `/posts/${slug}/restore`).expect(404);
+	});
+
+	it('서버에 내용이 없는 저장소 글은 되살리면 표시가 지워진다 (파일이 다시 보인다)', async () => {
+		await admin('delete', '/posts/cra-to-vite').expect(204);
+		const restored = await admin('post', '/posts/cra-to-vite/restore').expect(200);
+		expect(restored.body).toEqual({});
+		expect((await admin('get', '/posts/admin')).body).toEqual([]);
+	});
+
+	it(`지운 지 ${RECENTLY_DELETED_DAYS}일이 지나면 영구히 지운다`, async () => {
+		const created = await admin('post', '/posts').send(POST).expect(201);
+		const slug = created.body.slug as string;
+		await admin('delete', `/posts/${slug}`).expect(204);
+		const old = new Date(Date.now() - (RECENTLY_DELETED_DAYS + 1) * 24 * 60 * 60 * 1000);
+		await prisma.post.update({ where: { slug }, data: { deletedAt: old } });
+		expect((await admin('get', '/posts/admin')).body[0]).toMatchObject({ deleted: true, deletedAt: null, draft: null });
 	});
 
 	it('잠근 글은 임시 저장·게시·버리기·지우기를 409로 막고, 잠금을 풀면 다시 된다', async () => {

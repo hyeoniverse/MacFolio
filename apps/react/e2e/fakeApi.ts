@@ -60,6 +60,8 @@ export interface FakeContent {
 export interface FakePost extends FakeContent {
 	slug: string;
 	deleted: boolean;
+	/** 지운 때 (최근 삭제된 항목). 없는데 deleted면 영구히 지운 것 */
+	deletedAt?: string | null;
 	published?: FakeContent | null;
 	draft?: FakeContent | null;
 	revisions?: (FakeContent & { id: number; createdAt: string; createdBy: string })[];
@@ -211,7 +213,9 @@ export async function fakeApi(
 		}
 
 		// 글: 누구나 게시한 글을 읽고, 로그인했을 때만 임시 저장·게시·버리기·지우기 (apps/api와 같은 규칙)
-		const postPath = path.match(/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions)(?:\/(\d+))?)?$/);
+		const postPath = path.match(
+			/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions|restore|permanent)(?:\/(\d+))?)?$/
+		);
 		if (postPath) {
 			const [, slug, action, revisionId] = postPath;
 			const method = request.method();
@@ -231,6 +235,7 @@ export async function fakeApi(
 				draft: post.draft ?? null,
 				draftUpdatedAt: post.draft ? '2026-09-29T00:00:00.000Z' : null,
 				deleted: post.deleted,
+				deletedAt: post.deletedAt ?? null,
 				revisions: post.revisions?.length ?? 0,
 			});
 			const ok = (json: unknown, status = 200) => route.fulfill({ status, headers: cors(origin), json });
@@ -254,13 +259,29 @@ export async function fakeApi(
 				return post;
 			};
 			if (method === 'DELETE' && slug && !action) {
+				// 최근 삭제된 항목으로: 내용·임시 저장은 그대로 (되살릴 수 있게)
 				const existing = find(slug);
 				upsert({
 					...(existing ?? { slug, title: '', date: '2026-09-29', category: '기타', summary: '', body: '' }),
-					draft: null,
 					deleted: true,
+					deletedAt: new Date().toISOString(),
 				});
 				return route.fulfill({ status: 204, headers: cors(origin) });
+			}
+			if (action === 'restore' || action === 'permanent') {
+				const existing = find(slug!);
+				if (!existing?.deleted || !existing.deletedAt)
+					return route.fulfill({ status: 404, headers: cors(origin), json: { statusCode: 404 } });
+				if (action === 'permanent') {
+					upsert({ ...existing, published: null, draft: null, revisions: [], deletedAt: null });
+					return route.fulfill({ status: 204, headers: cors(origin) });
+				}
+				// 서버에 내용이 없던 저장소 글이면 표시를 지운다 (파일이 다시 보인다)
+				if (!existing.published && !existing.draft) {
+					state.posts = state.posts.filter((item) => item.slug !== slug);
+					return route.fulfill({ status: 200, headers: cors(origin), body: '' });
+				}
+				return ok(adminView(upsert({ ...existing, deleted: false, deletedAt: null })));
 			}
 			if (action === 'revisions') {
 				const revisions = [...(find(slug!)?.revisions ?? [])].reverse();

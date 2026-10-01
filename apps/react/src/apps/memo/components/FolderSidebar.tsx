@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
-import { ALL_CATEGORY, type FolderNode } from '../posts';
+import { ALL_CATEGORY, RECENTLY_DELETED, type FolderNode } from '../posts';
 import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
 const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
@@ -8,7 +8,8 @@ import { SidebarToggle } from './MemoToolbar';
 import IconButton from '@/shared/ui/button/IconButton';
 
 /** 끌고 있는 것: 글(slug) 또는 폴더(경로) */
-export type DragItem = { type: 'post'; id: string } | { type: 'folder'; id: string };
+/** 끄는 것: 글, 폴더, 최근 삭제된 항목의 글 (폴더에 놓으면 되살린다) */
+export type DragItem = { type: 'post' | 'folder' | 'deleted'; id: string };
 
 interface Props {
 	/** 관리자만 편집(새로운 폴더, ••• 메뉴, 끌어 옮기기)할 수 있다 */
@@ -30,6 +31,8 @@ interface Props {
 	/** 끌고 있는 것을 target 폴더에 놓을 수 있는지 (ALL_CATEGORY = 맨 위) */
 	canDrop: (target: string) => boolean;
 	onDrop: (target: string) => void;
+	/** '최근 삭제된 항목'의 글 수 (관리자). 1개 이상일 때만 폴더 목록 맨 아래에 보인다 */
+	recentlyDeleted?: number;
 }
 
 /** 폴더에 끌어 놓기. 놓을 수 있는 폴더에 올리면 강조한다 */
@@ -286,6 +289,7 @@ const FolderSidebar: React.FC<Props> = (props) => {
 	/** 새 폴더를 만드는 중인 부모 ('' = 맨 위, null = 만드는 중 아님) */
 	const [addingUnder, setAddingUnder] = useState<string | null>(null);
 	const rootDrop = useDropTarget(ALL_CATEGORY, props);
+	const trashDrop = useDropTarget(RECENTLY_DELETED, props);
 
 	const toggleFolder = (path: string) =>
 		setCollapsed((prev) => {
@@ -385,6 +389,29 @@ const FolderSidebar: React.FC<Props> = (props) => {
 						/>
 					))}
 					{addingUnder === '' && newFolderInput}
+					{/* 최근 삭제된 항목: macOS 메모처럼 폴더 목록 맨 아래. 글을 끌어 놓으면 지운다 (폴더는 놓을 수 없다) */}
+					{/* 비어 있으면 숨기되, 글을 끄는 동안에는 놓을 자리로 보인다 */}
+					{((props.recentlyDeleted ?? 0) > 0 || props.dragging?.type === 'post') && (
+						<li>
+							<div
+								className={`memo-folder-row ${trashDrop.active ? 'drop-target' : ''}`}
+								style={{ ['--depth' as string]: 0 }}
+								{...trashDrop.handlers}
+							>
+								<span className="memo-disclosure" aria-hidden="true" />
+								<button
+									type="button"
+									className={`memo-folder ${current === RECENTLY_DELETED ? 'active' : ''}`}
+									aria-current={current === RECENTLY_DELETED || undefined}
+									onClick={() => onSelect(RECENTLY_DELETED)}
+								>
+									<i className="fa-regular fa-trash-can memo-folder-icon" aria-hidden="true" />
+									<span className="memo-folder-name">최근 삭제된 항목</span>
+									{(props.recentlyDeleted ?? 0) > 0 && <span className="memo-count">{props.recentlyDeleted}</span>}
+								</button>
+							</div>
+						</li>
+					)}
 				</ul>
 			</div>
 		</nav>

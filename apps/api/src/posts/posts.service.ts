@@ -17,6 +17,8 @@ export interface AdminPost {
 	draft: PostInput | null;
 	draftUpdatedAt: string | null;
 	deleted: boolean;
+	/** 지운 때. 있으면 '최근 삭제된 항목'에 있다 (RECENTLY_DELETED_DAYS일 동안) */
+	deletedAt: string | null;
 	revisions: number;
 }
 
@@ -30,6 +32,9 @@ export interface RevisionSummary {
 
 /** 글마다 남기는 버전 수 */
 export const MAX_REVISIONS = 50;
+
+/** 지운 글을 '최근 삭제된 항목'에 두는 날 수 (macOS 메모처럼). 지나면 영구히 지운다 */
+export const RECENTLY_DELETED_DAYS = 30;
 
 const EMPTY: PostInput = { title: '', date: '', category: '', summary: '', body: '' };
 
@@ -58,6 +63,7 @@ const toAdmin = (row: Row): AdminPost => ({
 	draft: draftOf(row),
 	draftUpdatedAt: row.draftUpdatedAt?.toISOString() ?? null,
 	deleted: row.deleted,
+	deletedAt: row.deletedAt?.toISOString() ?? null,
 	revisions: row._count.revisions,
 });
 
@@ -78,6 +84,8 @@ const NO_DRAFT = {
 	draftBody: null,
 	draftUpdatedAt: null,
 };
+
+const NO_PUBLISHED = { title: null, date: null, category: null, summary: null, body: null, publishedAt: null };
 
 const WITH_COUNT = { _count: { select: { revisions: true } } } as const;
 
@@ -123,6 +131,7 @@ export class PostsService {
 	}
 
 	async listAdmin(): Promise<AdminPost[]> {
+		await this.purgeExpired();
 		const rows = await this.prisma.post.findMany({ include: WITH_COUNT, orderBy: { slug: 'asc' } });
 		return rows.map(toAdmin);
 	}
@@ -152,7 +161,7 @@ export class PostsService {
 		this.checkSlug(slug);
 		await this.checkUnlocked(slug);
 		const value = this.parse(input);
-		const data = { ...draftFields(value), deleted: false, updatedBy: admin };
+		const data = { ...draftFields(value), deleted: false, deletedAt: null, updatedBy: admin };
 		const row = await this.prisma.post.upsert({
 			where: { slug },
 			create: { slug, ...data },
@@ -175,7 +184,7 @@ export class PostsService {
 			await tx.post.upsert({
 				where: { slug },
 				create: { slug, ...published, updatedBy: admin },
-				update: { ...published, ...NO_DRAFT, deleted: false, updatedBy: admin },
+				update: { ...published, ...NO_DRAFT, deleted: false, deletedAt: null, updatedBy: admin },
 			});
 			await tx.postRevision.create({ data: { postSlug: slug, ...value, createdBy: admin } });
 			// 오래된 버전은 지운다
@@ -207,12 +216,59 @@ export class PostsService {
 		return toAdmin(await this.prisma.post.update({ where: { slug }, data: NO_DRAFT, include: WITH_COUNT }));
 	}
 
-	/** 글을 지운다. 저장소 글은 파일이 남아 있으므로 지운 표시로 남긴다 (버전은 남겨 둔다) */
+	/**
+	 * 글을 지운다: '최근 삭제된 항목'으로 옮긴다 (내용·임시 저장·버전은 그대로 두어 되살릴 수 있다).
+	 * 저장소 글은 파일이 남아 있으므로 지운 표시로 가린다
+	 */
 	async remove(slug: string, admin: string) {
 		this.checkSlug(slug);
 		await this.checkUnlocked(slug);
-		const data = { deleted: true, ...NO_DRAFT, updatedBy: admin };
+		const data = { deleted: true, deletedAt: new Date(), updatedBy: admin };
 		await this.prisma.post.upsert({ where: { slug }, create: { slug, ...data }, update: data });
+	}
+
+	/** '최근 삭제된 항목'의 글을 되살린다. 서버에 내용이 없던 저장소 글이면 표시를 지워 파일이 다시 보이게 한다 */
+	async restore(slug: string): Promise<AdminPost | null> {
+		this.checkSlug(slug);
+		const row = await this.prisma.post.findUnique({ where: { slug } });
+		if (!row?.deleted || !row.deletedAt) throw new NotFoundException('최근 삭제된 항목에 없는 글입니다.');
+		if (row.title === null && row.draftTitle === null) {
+			await this.prisma.post.delete({ where: { slug } });
+			return null;
+		}
+		const restored = await this.prisma.post.update({
+			where: { slug },
+			data: { deleted: false, deletedAt: null },
+			include: WITH_COUNT,
+		});
+		return toAdmin(restored);
+	}
+
+	/**
+	 * '최근 삭제된 항목'에서 영구히 지운다. 내용·임시 저장·버전을 지우고,
+	 * 저장소에 같은 주소의 파일이 있을 수 있으므로 가리는 표시(deleted)만 남긴다
+	 */
+	async purge(slug: string, admin: string) {
+		this.checkSlug(slug);
+		const row = await this.prisma.post.findUnique({ where: { slug } });
+		if (!row?.deleted || !row.deletedAt) throw new NotFoundException('최근 삭제된 항목에 없는 글입니다.');
+		await this.prisma.$transaction([
+			this.prisma.postRevision.deleteMany({ where: { postSlug: slug } }),
+			this.prisma.post.update({
+				where: { slug },
+				data: { ...NO_PUBLISHED, ...NO_DRAFT, deletedAt: null, updatedBy: admin },
+			}),
+		]);
+	}
+
+	/** 지운 지 RECENTLY_DELETED_DAYS일이 지난 글은 영구히 지운다 (관리자 목록을 읽을 때 같이 정리한다) */
+	private async purgeExpired(now = new Date()) {
+		const before = new Date(now.getTime() - RECENTLY_DELETED_DAYS * 24 * 60 * 60 * 1000);
+		const expired = await this.prisma.post.findMany({
+			where: { deleted: true, deletedAt: { lt: before } },
+			select: { slug: true, updatedBy: true },
+		});
+		for (const { slug, updatedBy } of expired) await this.purge(slug, updatedBy);
 	}
 
 	async revisions(slug: string): Promise<RevisionSummary[]> {
