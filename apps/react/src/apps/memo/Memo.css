@@ -1173,6 +1173,17 @@
 		width: 100%;
 		margin-bottom: 4px;
 	}
+
+	/* 휴대폰: 날짜·폴더는 왼쪽, 저장 상태·게시는 같은 줄 오른쪽 (넘치면 다음 줄 오른쪽) */
+	.container.mobile .memo-writer-meta {
+		justify-content: flex-start;
+	}
+
+	.container.mobile .memo-writer-actions {
+		order: 0;
+		width: auto;
+		margin: 0 0 0 auto;
+	}
 }
 
 /* 관리자 목록의 게시 상태 */
@@ -2871,14 +2882,59 @@
 		display: none;
 	}
 
-	.memo-reader :is(.memo-pin, .memo-share).compact-only {
-		margin-top: 0.75rem;
+	/* 본문 위 한 줄: 서식·삭제·고정은 왼쪽, 공유는 오른쪽 끝 (iOS 메모처럼). 단추 크기를 맞춘다 */
+	.memo-reader-compact-bar {
+		justify-content: flex-start;
+		gap: 4px;
+		margin: 0.5rem 0 0.75rem;
+	}
+
+	.memo-reader-compact-bar > .ui-icon-button.compact-only {
+		min-width: 36px;
+		height: 34px;
 		font-size: 17px;
 	}
 
-	/* 공유는 본문 위 줄의 오른쪽 끝 (iOS 메모처럼) */
+	.memo-reader-compact-bar .memo-format-button {
+		height: 30px;
+		font-size: 14px;
+	}
+
 	.memo-reader .memo-share.compact-only {
 		margin-left: auto;
+	}
+
+	/* 목록 위: 검색 칸, 정렬, 새 메모 (관리자) */
+	.memo-compact-tools .memo-compact-new {
+		font-size: 17px;
+	}
+
+	/* 폴더 화면: 관리자에게는 오른쪽 위에 새로운 폴더 (신호등 자리·여닫기는 없다) */
+	.memo .memo-sidebar-bar:has(.memo-new-folder-button) {
+		display: flex;
+		height: auto;
+		padding: 8px 12px 0;
+	}
+
+	.memo .memo-sidebar-bar :is(.memo-lights-space, .memo-sidebar-toggle, .memo-new-note-button) {
+		display: none;
+	}
+
+	.memo .memo-sidebar-bar .memo-new-folder-button {
+		margin-left: auto;
+		font-size: 17px;
+	}
+
+	/* 좁은 본문의 표: 낱말 가운데서 줄을 바꾸지 않고, 넘치면 옆으로 민다.
+	   읽기 화면만 (편집기 안은 .memo-writer가 가장 가까운 컨테이너라 넓은 창에서도 여기에 걸린다) */
+	.memo-reader-body > .memo-markdown table {
+		display: block;
+		overflow-x: auto;
+	}
+
+	.memo-reader-body > .memo-markdown :is(th, td) {
+		min-width: 7.5em;
+		word-break: keep-all;
 	}
 
 	.memo-reader .memo-scroll {
@@ -2934,6 +2990,17 @@
 	.container.mobile .memo-folder-scroll {
 		padding-top: 12px;
 	}
+
+	/* 게시 단추는 손가락으로 누를 만한 크기로 */
+	.container.mobile .memo-writer-actions :is(.memo-writer-publish, .memo-writer-discard) {
+		padding: 4px 12px;
+		font-size: 13px;
+	}
+}
+
+/* 휴대폰의 폴더 화면: 회색이 홈 인디케이터 아래까지 이어진다 (인디케이터는 메모 칸 밖이라 @container 밖에 둔다) */
+.container.mobile[data-app='memo']:has(.memo.pane-folders) .home-indicator {
+	background-color: var(--memo-sidebar-bg);
 }
 
 /* ─── 코드 문법 강조 (highlight.js 토큰, GitHub 색) ─── */
