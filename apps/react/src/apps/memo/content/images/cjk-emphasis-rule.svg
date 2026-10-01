@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>닫는 **의 앞뒤 글자</title>
+  <rect width="640" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">닫는 ** 는 앞뒤 글자로 정해진다</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">앞이 문장부호이면, 뒤는 공백이나 문장부호여야 닫는다 (CommonMark)</text>
+
+  <!-- 머리글 -->
+  <g font-size="11" fill="#9ca3af" text-anchor="middle">
+    <text x="296" y="100">앞</text>
+    <text x="350" y="100">구분자</text>
+    <text x="404" y="100">뒤</text>
+  </g>
+
+  <!-- 1. 영어 -->
+  <g>
+    <text x="32" y="138" font-size="13" fill="#374151" font-weight="600">영어</text>
+    <text x="84" y="138" font-size="13" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">**done (really)** now</text>
+    <rect x="276" y="118" width="40" height="30" rx="7" fill="#f3f4f6"/><text x="296" y="138" font-size="14" text-anchor="middle" fill="#374151" font-family="ui-monospace, Menlo, monospace">)</text>
+    <rect x="330" y="118" width="40" height="30" rx="7" fill="#eef0ff"/><text x="350" y="138" font-size="14" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, Menlo, monospace">**</text>
+    <rect x="384" y="118" width="40" height="30" rx="7" fill="#f3f4f6"/><text x="404" y="138" font-size="11" text-anchor="middle" fill="#374151">공백</text>
+    <rect x="450" y="118" width="158" height="30" rx="7" fill="#dcfce7"/><text x="529" y="138" font-size="12" text-anchor="middle" fill="#15803d">닫는다 → 굵게</text>
+  </g>
+
+  <!-- 2. 한국어, CommonMark -->
+  <g>
+    <text x="32" y="192" font-size="13" fill="#374151" font-weight="600">한국어</text>
+    <text x="84" y="192" font-size="13" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">**취소(cancelled)**가</text>
+    <rect x="276" y="172" width="40" height="30" rx="7" fill="#f3f4f6"/><text x="296" y="192" font-size="14" text-anchor="middle" fill="#374151" font-family="ui-monospace, Menlo, monospace">)</text>
+    <rect x="330" y="172" width="40" height="30" rx="7" fill="#eef0ff"/><text x="350" y="192" font-size="14" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, Menlo, monospace">**</text>
+    <rect x="384" y="172" width="40" height="30" rx="7" fill="#fee2e2"/><text x="404" y="192" font-size="14" text-anchor="middle" fill="#b91c1c">가</text>
+    <rect x="450" y="172" width="158" height="30" rx="7" fill="#fee2e2"/><text x="529" y="192" font-size="12" text-anchor="middle" fill="#b91c1c">못 닫는다 → ** 그대로</text>
+  </g>
+
+  <!-- 3. 한국어, cjk-friendly -->
+  <g>
+    <text x="32" y="246" font-size="13" fill="#374151" font-weight="600">고친 뒤</text>
+    <text x="84" y="246" font-size="13" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">**취소(cancelled)**가</text>
+    <rect x="276" y="226" width="40" height="30" rx="7" fill="#f3f4f6"/><text x="296" y="246" font-size="14" text-anchor="middle" fill="#374151" font-family="ui-monospace, Menlo, monospace">)</text>
+    <rect x="330" y="226" width="40" height="30" rx="7" fill="#eef0ff"/><text x="350" y="246" font-size="14" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, Menlo, monospace">**</text>
+    <rect x="384" y="226" width="40" height="30" rx="7" fill="#dcfce7"/><text x="404" y="246" font-size="14" text-anchor="middle" fill="#15803d">가</text>
+    <rect x="450" y="226" width="158" height="30" rx="7" fill="#dcfce7"/><text x="529" y="246" font-size="12" text-anchor="middle" fill="#15803d">닫는다 → 굵게</text>
+  </g>
+
+  <path d="M32 280 H608" stroke="#e5e7eb" stroke-width="1.5"/>
+  <text x="32" y="306" font-size="12" fill="#374151">remark-cjk-friendly: 옆이 한중일 글자이면 문장부호 조건을 풀어 닫게 한다. 영어 글은 그대로</text>
+</svg>
