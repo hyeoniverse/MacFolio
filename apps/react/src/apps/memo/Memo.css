@@ -2828,6 +2828,8 @@
 
 /* ─── 좁은 창: 폴더 → 목록 → 본문을 한 칸씩 (iOS 메모처럼) ─── */
 .memo-shell {
+	/* 경고창(AlertDialog)이 메모 창 한가운데에 뜨도록 위치 기준 */
+	position: relative;
 	container-type: inline-size;
 	height: 100%;
 }
