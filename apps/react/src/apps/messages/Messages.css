@@ -465,37 +465,6 @@
 	color: var(--messages-meta);
 }
 
-/* 오른쪽 클릭 메뉴 */
-.messages-context-menu {
-	position: absolute;
-	z-index: 100;
-	min-width: 150px;
-	padding: 5px;
-	border: 0.5px solid rgba(0, 0, 0, 0.15);
-	border-radius: 10px;
-	background-color: var(--messages-menu-bg);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-	backdrop-filter: blur(20px);
-	list-style: none;
-}
-
-.messages-context-menu button {
-	width: 100%;
-	padding: 4px 10px;
-	border: none;
-	border-radius: 5px;
-	background: none;
-	color: var(--messages-text) !important;
-	text-align: left;
-}
-
-.messages-context-menu button:hover,
-.messages-context-menu button:focus-visible {
-	background-color: #0a84ff;
-	color: #ffffff !important;
-	outline: none;
-}
-
 /* ─── 입력 ─── */
 .messages-composer {
 	display: flex;

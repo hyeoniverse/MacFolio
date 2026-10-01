@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ContextMenu from './ContextMenu';
+import Menu from '@/shared/ui/menu/Menu';
 import { POST_FILTERS, type PostFilter } from '../posts';
 
 /**
@@ -70,7 +70,7 @@ const SearchField = ({
 				}}
 			/>
 			{menu && (
-				<ContextMenu
+				<Menu
 					label="검색 조건"
 					anchor={menu}
 					onClose={() => setMenu(null)}

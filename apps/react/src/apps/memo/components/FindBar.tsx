@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ContextMenu from './ContextMenu';
+import Menu from '@/shared/ui/menu/Menu';
 import {
 	DEFAULT_FIND_OPTIONS,
 	findInBlocks,
@@ -248,7 +248,7 @@ const FindBar = ({
 				</div>
 			)}
 			{menu && (
-				<ContextMenu
+				<Menu
 					label="찾기 옵션"
 					anchor={menu}
 					onClose={() => setMenu(null)}
