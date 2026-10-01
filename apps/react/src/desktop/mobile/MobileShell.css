@@ -394,16 +394,6 @@
 	background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* 화면에는 보이지 않고 스크린 리더만 읽는 이름 */
-.visually-hidden {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-	clip-path: inset(50%);
-	white-space: nowrap;
-}
-
 /* ─── 앱 화면 틀과 앱 전환기 카드 (MobileAppFrame) ─── */
 .mobile-app-frame {
 	--card-scale: 0.62;
