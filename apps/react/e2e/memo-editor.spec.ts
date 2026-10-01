@@ -870,15 +870,14 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(items).toHaveCount(2);
 		await expect(items.first()).toContainText('테스트를 붙이자 보인 버그들');
 		await expect(items.first()).toContainText('30일 남음');
-		// 고칠 수 없는 읽기 화면: 위의 안내 띠에 되살리기, 도구 막대의 휴지통은 영구 삭제
+		// 고칠 수 없는 읽기 화면: 날짜 줄에 남은 날, 도구 막대에 되살리기·영구 삭제
 		await items.first().click();
 		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
-		const note = memo.getByRole('note');
-		await expect(note).toContainText('30일 뒤에 영구히 지워집니다');
+		await expect(memo.locator('.memo-reader-date')).toContainText('30일 뒤 삭제');
 		await expect(memo.getByRole('button', { name: '메모 영구 삭제' }).first()).toBeVisible();
 
 		// 되살리면 모든 글로 돌아가 그 글을 연다
-		await note.getByRole('button', { name: '되살리기' }).click();
+		await memo.getByRole('button', { name: '되살리기', exact: true }).first().click();
 		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toHaveClass(/active/);
 		await expect(trash).toContainText('1');
 
