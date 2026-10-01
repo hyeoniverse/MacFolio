@@ -1240,17 +1240,6 @@
 		width: 100%;
 		margin-bottom: 4px;
 	}
-
-	/* 휴대폰: 날짜·폴더는 왼쪽, 저장 상태·게시는 같은 줄 오른쪽 (넘치면 다음 줄 오른쪽) */
-	.container.mobile .memo-writer-meta {
-		justify-content: flex-start;
-	}
-
-	.container.mobile .memo-writer-actions {
-		order: 0;
-		width: auto;
-		margin: 0 0 0 auto;
-	}
 }
 
 /* 관리자 목록의 게시 상태 */
