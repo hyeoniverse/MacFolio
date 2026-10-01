@@ -21,6 +21,9 @@ import {
 	type Post,
 	type PostFilter,
 	type ServerPost,
+	RECENTLY_DELETED,
+	daysUntilPurge,
+	recentlyDeletedPosts,
 } from './posts';
 import {
 	addFolder,
@@ -58,7 +61,7 @@ import RevisionsPanel from './components/RevisionsPanel';
 import SearchField from './components/SearchField';
 import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/popover';
-import { deletePost, fetchAdminPosts, fetchServerPosts, type PostDraft } from './postsApi';
+import { deletePost, fetchAdminPosts, fetchServerPosts, purgePost, restorePost, type PostDraft } from './postsApi';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
 import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
@@ -282,18 +285,26 @@ const Memo: React.FC = () => {
 	// 정리 내용을 겹친 글 (category가 지금 있는 폴더)
 	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
 	const folders = useMemo(() => buildFolderTree(organized, organization.folders), [organized, organization.folders]);
+	/** 최근 삭제된 항목 (관리자): 30일 동안 되살리거나 영구히 지울 수 있다 */
+	const inTrash = category === RECENTLY_DELETED;
+	const trash = useMemo(
+		() => (editing && adminPosts ? recentlyDeletedPosts(repoPosts, adminPosts, today) : []),
+		[editing, adminPosts, repoPosts, today]
+	);
 	const visible = useMemo(
 		() =>
-			sortBy(
-				filterPosts(
-					organized,
-					category,
-					query,
-					editing ? filter : filter === 'draft' || filter === 'scheduled' ? null : filter
-				),
-				arrangement
-			),
-		[organized, category, query, filter, editing, arrangement]
+			inTrash
+				? filterPosts(trash, ALL_CATEGORY, query)
+				: sortBy(
+						filterPosts(
+							organized,
+							category,
+							query,
+							editing ? filter : filter === 'draft' || filter === 'scheduled' ? null : filter
+						),
+						arrangement
+					),
+		[inTrash, trash, organized, category, query, filter, editing, arrangement]
 	);
 	// 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다)
 	const folderPaths = useMemo(() => {
@@ -310,13 +321,14 @@ const Memo: React.FC = () => {
 	// 고른 글이 목록에 없으면(카테고리·검색으로 걸러지면) 목록 맨 위의 글(고정된 글 먼저)을 보여준다
 	const selected = visible.find((post) => post.slug === selectedSlug) ?? pinnedPosts[0] ?? otherPosts[0] ?? null;
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
-	const { older, newer } = selected
-		? adjacentPosts(filterPosts(organized, category, ''), selected.slug)
-		: { older: null, newer: null };
+	const { older, newer } =
+		selected && !inTrash
+			? adjacentPosts(filterPosts(organized, category, ''), selected.slug)
+			: { older: null, newer: null };
 	// 주소 막대에 지금 글의 주소를 둔다 (새로 고침하거나 주소를 복사해도 그 글로). 게시하지 않은 글은 주소가 없다.
 	// 글을 다 읽어 오기 전에는 그대로 둔다 (글 주소로 들어온 그 글이 아직 없을 수 있다)
 	// 주소로 들어왔거나 직접 글을 고른 뒤부터 (처음 보이는 글로 사이트 주소를 덮지 않게)
-	const address = selectedSlug !== null && selected && !selected.status?.draftOnly ? selected.slug : null;
+	const address = selectedSlug !== null && selected && !inTrash && !selected.status?.draftOnly ? selected.slug : null;
 	useEffect(() => {
 		if (status === 'ready') setAppAddress('memo', address);
 	}, [status, address]);
@@ -365,7 +377,7 @@ const Memo: React.FC = () => {
 
 	/** 글 목록·갤러리 카드를 끌 때 */
 	const dragPost = (slug: string) =>
-		canEdit
+		canEdit && !inTrash
 			? {
 					draggable: true,
 					onDragStart: (event: React.DragEvent) => {
@@ -390,13 +402,15 @@ const Memo: React.FC = () => {
 					setNoteMenu({ slug, x: event.clientX, y: event.clientY });
 				}
 			: undefined;
-	const menuPost = noteMenu ? organized.find((post) => post.slug === noteMenu.slug) : undefined;
+	const menuPost = noteMenu ? (inTrash ? trash : organized).find((post) => post.slug === noteMenu.slug) : undefined;
 
 	/**
 	 * 고정된 메모를 먼저, 그다음 나머지. 날짜별로 묶으면 나머지를 오늘·어제·지난 7일… 묶음으로 나눈다.
 	 * 묶지 않을 때는 고정된 메모가 있을 때만 '메모' 묶음 이름을 단다.
 	 */
 	const sections = (render: (post: Post) => React.ReactNode, pinnedTitle: string, className: string) => {
+		// 최근 삭제된 항목은 묶지 않고 최근에 지운 순서대로
+		if (inTrash) return <ul className={className}>{visible.map(render)}</ul>;
 		const groups = groupPosts(otherPosts, arrangement, today);
 		const grouped = groups.some((group) => group.title !== null);
 		return (
@@ -455,6 +469,7 @@ const Memo: React.FC = () => {
 				</span>
 				<span className="memo-item-folder">
 					<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
+					{post.deletedAt && <> · {daysUntilPurge(post.deletedAt, today)}일 뒤 영구 삭제</>}
 				</span>
 			</button>
 		</li>
@@ -557,21 +572,52 @@ const Memo: React.FC = () => {
 		</li>
 	);
 
+	const failed = (title: string) =>
+		notify({ app: 'memo', title, body: '관리자 로그인이 끝났거나 서버에 연결할 수 없습니다.' });
+
+	/** 지우기: 묻지 않고 '최근 삭제된 항목'으로 옮긴다 (30일 동안 되살릴 수 있다, macOS 메모처럼) */
 	const removePost = async (post: Post) => {
-		if (!window.confirm(`'${post.title}' 메모를 지울까요?`)) return;
-		if (!(await deletePost(env.apiUrl, post.slug))) {
-			notify({ app: 'memo', title: '지우지 못함', body: '관리자 로그인이 끝났거나 서버에 연결할 수 없습니다.' });
-			return;
-		}
+		if (!(await deletePost(env.apiUrl, post.slug))) return failed('지우지 못함');
+		const current = adminPosts?.find((item) => item.slug === post.slug);
 		upsertAdminPost({
 			slug: post.slug,
-			published: null,
-			publishedAt: null,
-			draft: null,
-			draftUpdatedAt: null,
+			published: current?.published ?? null,
+			publishedAt: current?.publishedAt ?? null,
+			draft: current?.draft ?? null,
+			draftUpdatedAt: current?.draftUpdatedAt ?? null,
 			deleted: true,
-			revisions: 0,
+			deletedAt: new Date().toISOString(),
+			revisions: current?.revisions ?? 0,
 		});
+	};
+
+	/** 최근 삭제된 항목에서 되살린다. 원래 폴더의 글 목록으로 돌아가 그 글을 연다 */
+	const restoreDeleted = async (post: Post) => {
+		const result = await restorePost(env.apiUrl, post.slug);
+		if (!result.ok) return failed('되살리지 못함');
+		if (result.post) upsertAdminPost(result.post);
+		else setAdminPosts((list) => (list ?? []).filter((item) => item.slug !== post.slug));
+		setSelectedSlug(post.slug);
+		selectFolder(ALL_CATEGORY);
+	};
+
+	/** 최근 삭제된 항목에서 영구히 지운다 (되돌릴 수 없어서 묻는다) */
+	const purgeDeleted = async (post: Post) => {
+		if (!window.confirm(`'${post.title}' 메모를 영구히 지울까요? 되돌릴 수 없습니다.`)) return;
+		if (!(await purgePost(env.apiUrl, post.slug))) return failed('영구히 지우지 못함');
+		// 마지막 하나였으면 최근 삭제된 항목이 사라지므로 모든 글로
+		if (trash.length <= 1) selectFolder(ALL_CATEGORY);
+		const current = adminPosts?.find((item) => item.slug === post.slug);
+		if (current)
+			upsertAdminPost({
+				...current,
+				published: null,
+				publishedAt: null,
+				draft: null,
+				draftUpdatedAt: null,
+				deletedAt: null,
+				revisions: 0,
+			});
 	};
 
 	/** 게시 상태 표시 (관리자 목록): 게시한 적 없음, 게시하지 않은 편집, 예약 */
@@ -604,7 +650,7 @@ const Memo: React.FC = () => {
 				<span className={`memo-format-tools ${className}`}>
 					<FormatTools />
 				</span>
-				{editing && selected && newDraft === null && className === '' && (
+				{editing && selected && !inTrash && newDraft === null && className === '' && (
 					<IconButton
 						ref={revisionsButton}
 						on={revisionsOpen}
@@ -616,7 +662,7 @@ const Memo: React.FC = () => {
 						icon="fa-solid fa-clock-rotate-left"
 					/>
 				)}
-				{selected && newDraft === null && (
+				{selected && !inTrash && newDraft === null && (
 					<IconButton
 						className={className}
 						label="메모 삭제"
@@ -659,7 +705,8 @@ const Memo: React.FC = () => {
 	/** 본문의 고정 단추 */
 	const pinButton = (className: string) =>
 		canEdit &&
-		selected && (
+		selected &&
+		!inTrash && (
 			<IconButton
 				className={`memo-pin ${className}`}
 				on={selected.pinned}
@@ -776,6 +823,7 @@ const Memo: React.FC = () => {
 						onDragFolder={setDragging}
 						canDrop={canDrop}
 						onDrop={drop}
+						recentlyDeleted={trash.length}
 					/>
 
 					<section className="memo-list" aria-label="글 목록">
@@ -883,7 +931,7 @@ const Memo: React.FC = () => {
 								{pinButton('compact-only')}
 								{shareButton('compact-only')}
 							</div>
-							{editing && (newDraft !== null || selected) && (
+							{editing && !inTrash && (newDraft !== null || selected) && (
 								// 관리자: 따로 편집 단추 없이 바로 고친다 (macOS 메모처럼)
 								<div
 									key={newDraft !== null ? `new-${newDraft}` : (writerKeys[selected!.slug] ?? selected!.slug)}
@@ -916,9 +964,24 @@ const Memo: React.FC = () => {
 									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
 								</div>
 							)}
-							{!editing && selected && (
-								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
+							{(!editing || inTrash) && selected && (
+								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다. 최근 삭제된 항목의 글은 관리자에게도 읽기 화면
 								<div key={selected.slug} className="memo-reader-body">
+									{selected.deletedAt && (
+										<div className="memo-trash-note">
+											<p>
+												최근 삭제된 메모입니다. {daysUntilPurge(selected.deletedAt, today)}일 뒤에 영구히 지워집니다.
+											</p>
+											<span>
+												<button type="button" onClick={() => void restoreDeleted(selected)}>
+													되살리기
+												</button>
+												<button type="button" className="danger" onClick={() => void purgeDeleted(selected)}>
+													영구 삭제
+												</button>
+											</span>
+										</div>
+									)}
 									<p className="memo-reader-date">
 										<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> ·{' '}
 										{folderLabel(selected.category)}
@@ -933,7 +996,7 @@ const Memo: React.FC = () => {
 											{selected.body}
 										</ReactMarkdown>
 									</div>
-									{postFooter(selected)}
+									{!inTrash && postFooter(selected)}
 								</div>
 							)}
 						</div>
@@ -980,7 +1043,23 @@ const Memo: React.FC = () => {
 								...(canEdit
 									? [{ label: '새 메모', icon: 'fa-regular fa-pen-to-square', onSelect: startNewDraft }]
 									: []),
-								...(canEdit && selected
+								...(canEdit && selected && inTrash
+									? [
+											{
+												label: '되살리기',
+												icon: 'fa-solid fa-rotate-left',
+												onSelect: () => void restoreDeleted(selected),
+											},
+											{
+												label: '영구 삭제',
+												icon: 'fa-regular fa-trash-can',
+												destructive: true,
+												onSelect: () => void purgeDeleted(selected),
+											},
+											'separator' as const,
+										]
+									: []),
+								...(canEdit && selected && !inTrash
 									? [
 											{
 												label: selected.pinned ? '메모 고정 해제' : '메모 고정',
@@ -995,7 +1074,7 @@ const Memo: React.FC = () => {
 											'separator' as const,
 										]
 									: []),
-								...(selected && !selected.status?.draftOnly
+								...(selected && !inTrash && !selected.status?.draftOnly
 									? [
 											{
 												label: '링크 공유',
@@ -1018,19 +1097,36 @@ const Memo: React.FC = () => {
 							label={`${menuPost.title} 메뉴`}
 							anchor={noteMenu}
 							onClose={() => setNoteMenu(null)}
-							items={[
-								{
-									label: menuPost.pinned ? '메모 고정 해제' : '메모 고정',
-									icon: 'fa-solid fa-thumbtack',
-									onSelect: () => togglePin(menuPost),
-								},
-								'separator',
-								{
-									label: '메모 삭제',
-									icon: 'fa-regular fa-trash-can',
-									onSelect: () => void removePost(menuPost),
-								},
-							]}
+							items={
+								menuPost.deletedAt
+									? [
+											{
+												label: '되살리기',
+												icon: 'fa-solid fa-rotate-left',
+												onSelect: () => void restoreDeleted(menuPost),
+											},
+											'separator',
+											{
+												label: '영구 삭제',
+												icon: 'fa-regular fa-trash-can',
+												destructive: true,
+												onSelect: () => void purgeDeleted(menuPost),
+											},
+										]
+									: [
+											{
+												label: menuPost.pinned ? '메모 고정 해제' : '메모 고정',
+												icon: 'fa-solid fa-thumbtack',
+												onSelect: () => togglePin(menuPost),
+											},
+											'separator',
+											{
+												label: '메모 삭제',
+												icon: 'fa-regular fa-trash-can',
+												onSelect: () => void removePost(menuPost),
+											},
+										]
+							}
 						/>
 					)}
 				</div>

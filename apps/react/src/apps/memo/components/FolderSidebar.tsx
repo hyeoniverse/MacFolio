@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
-import { ALL_CATEGORY, type FolderNode } from '../posts';
+import { ALL_CATEGORY, RECENTLY_DELETED, type FolderNode } from '../posts';
 import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
 const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
@@ -30,6 +30,8 @@ interface Props {
 	/** 끌고 있는 것을 target 폴더에 놓을 수 있는지 (ALL_CATEGORY = 맨 위) */
 	canDrop: (target: string) => boolean;
 	onDrop: (target: string) => void;
+	/** '최근 삭제된 항목'의 글 수 (관리자). 1개 이상일 때만 폴더 목록 맨 아래에 보인다 */
+	recentlyDeleted?: number;
 }
 
 /** 폴더에 끌어 놓기. 놓을 수 있는 폴더에 올리면 강조한다 */
@@ -385,6 +387,24 @@ const FolderSidebar: React.FC<Props> = (props) => {
 						/>
 					))}
 					{addingUnder === '' && newFolderInput}
+					{/* 최근 삭제된 항목: macOS 메모처럼 폴더 목록 맨 아래 (끌어 놓거나 이름을 바꿀 수 없다) */}
+					{(props.recentlyDeleted ?? 0) > 0 && (
+						<li>
+							<div className="memo-folder-row" style={{ ['--depth' as string]: 0 }}>
+								<span className="memo-disclosure" aria-hidden="true" />
+								<button
+									type="button"
+									className={`memo-folder ${current === RECENTLY_DELETED ? 'active' : ''}`}
+									aria-current={current === RECENTLY_DELETED || undefined}
+									onClick={() => onSelect(RECENTLY_DELETED)}
+								>
+									<i className="fa-regular fa-trash-can memo-folder-icon" aria-hidden="true" />
+									<span className="memo-folder-name">최근 삭제된 항목</span>
+									<span className="memo-count">{props.recentlyDeleted}</span>
+								</button>
+							</div>
+						</li>
+					)}
 				</ul>
 			</div>
 		</nav>

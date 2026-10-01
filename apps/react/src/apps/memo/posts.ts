@@ -16,6 +16,8 @@ export interface Post {
 	pinned?: boolean;
 	/** 관리자에게만: 게시 상태 */
 	status?: PostStatus;
+	/** 관리자에게만: '최근 삭제된 항목'의 글이면 지운 때 (ISO) */
+	deletedAt?: string;
 }
 
 /** 관리자가 보는 게시 상태 */
@@ -29,6 +31,10 @@ export interface PostStatus {
 }
 
 export const ALL_CATEGORY = '모든 글';
+/** '최근 삭제된 항목' (폴더 목록의 맨 아래). 폴더 이름과 겹치지 않게 경로에 쓸 수 없는 글자로 시작한다 */
+export const RECENTLY_DELETED = '\u0000recently-deleted';
+/** 지운 글을 최근 삭제된 항목에 두는 날 수 (서버의 RECENTLY_DELETED_DAYS와 같다) */
+export const RECENTLY_DELETED_DAYS = 30;
 
 /**
  * 머리말을 읽는다. 지원하는 형식은 한 줄짜리 `key: value`뿐이다.
@@ -127,6 +133,8 @@ export interface AdminPost {
 	draft: PostContent | null;
 	draftUpdatedAt: string | null;
 	deleted: boolean;
+	/** 지운 때. 있으면 '최근 삭제된 항목'에 있다 (30일 동안 되살릴 수 있다) */
+	deletedAt?: string | null;
 	/** 남은 버전 수 */
 	revisions: number;
 }
@@ -168,6 +176,32 @@ export function mergeAdminPosts(posts: Post[], server: AdminPost[], today: strin
 	}
 	return sortPosts([...bySlug.values()]);
 }
+
+/**
+ * '최근 삭제된 항목'의 글: 서버에 지운 때가 있고 아직 RECENTLY_DELETED_DAYS일이 안 된 글. 최근에 지운 글이 위로.
+ * 내용은 임시 저장 → 게시한 내용 → 저장소 글 순으로 (지우기 전 관리자가 보던 그대로)
+ */
+export function recentlyDeletedPosts(repo: Post[], server: AdminPost[], now: Date): Post[] {
+	const repoBySlug = new Map(repo.map((post) => [post.slug, post]));
+	const limit = RECENTLY_DELETED_DAYS * 24 * 60 * 60 * 1000;
+	return server
+		.filter((item) => item.deleted && item.deletedAt && now.getTime() - Date.parse(item.deletedAt) < limit)
+		.flatMap((item) => {
+			const content = item.draft ?? item.published;
+			const base = content ? toListPost(item.slug, content, false, NO_STATUS) : repoBySlug.get(item.slug);
+			return base ? [{ ...base, pinned: false, status: undefined, deletedAt: item.deletedAt! }] : [];
+		})
+		.sort((a, b) => b.deletedAt!.localeCompare(a.deletedAt!));
+}
+
+/** 영구히 지울 때까지 남은 날 (지운 날은 30일 남음, 하루 지날 때마다 하나씩 준다. 마지막 날은 1) */
+export function daysUntilPurge(deletedAt: string, now: Date): number {
+	// 창을 연 뒤에 지운 글은 now보다 뒤에 지웠으므로 0일로 본다
+	const elapsed = Math.max(0, Math.floor((now.getTime() - Date.parse(deletedAt)) / (24 * 60 * 60 * 1000)));
+	return Math.max(1, RECENTLY_DELETED_DAYS - elapsed);
+}
+
+const NO_STATUS: PostStatus = { draftOnly: false, changed: false, scheduled: null };
 
 /** 최신 글이 위로. 같은 날이면 제목 순 */
 export function sortPosts(posts: Post[]): Post[] {
@@ -236,7 +270,8 @@ export function buildFolderTree(posts: Post[], customFolders: string[] = []): Fo
 export const folderLabelOf = (path: string) => path.split('/').join(' › ');
 
 /** 경로의 마지막 이름 (예: 개발기/MacFolio → MacFolio) */
-export const folderName = (path: string) => path.split('/').at(-1) ?? path;
+export const folderName = (path: string) =>
+	path === RECENTLY_DELETED ? '최근 삭제된 항목' : (path.split('/').at(-1) ?? path);
 
 /** 본문의 첫 이미지 주소 (갤러리 미리보기용). 없으면 null */
 export function firstImage(body: string): string | null {
