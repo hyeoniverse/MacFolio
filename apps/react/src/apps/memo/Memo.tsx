@@ -552,6 +552,8 @@ const Memo: React.FC = () => {
 	} = usePopover();
 
 	const startNewDraft = () => {
+		// 최근 삭제된 항목에서는 새 메모가 들어갈 자리가 없으므로 모든 글로
+		if (inTrash) setCategory(ALL_CATEGORY);
 		setQuery('');
 		setNewDraft(Date.now());
 		setNewPreview(null);
@@ -770,8 +772,8 @@ const Memo: React.FC = () => {
 		</>
 	);
 
-	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글이면 마지막 폴더) */
-	const newFolder = category === ALL_CATEGORY ? (folderPaths.at(-1) ?? '기타') : category;
+	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글·최근 삭제된 항목이면 마지막 폴더) */
+	const newFolder = category === ALL_CATEGORY || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
 	const openFind = selected ? () => setFindSlug(selected.slug) : null;
 	const findTarget = selected?.slug ?? null;
 	const memoInFront = foregroundApp(apps) === 'memo';
@@ -870,7 +872,8 @@ const Memo: React.FC = () => {
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
 							</button>
 							{compactTools}
-							{(newDraft !== null || leavingDraft) && (
+							{/* 쓰던 새 메모는 최근 삭제된 항목에서는 숨긴다 (모든 글로 돌아가면 다시 보인다) */}
+							{!inTrash && (newDraft !== null || leavingDraft) && (
 								<ul className="memo-items memo-new-items" aria-label="새 메모">
 									{newDraft !== null && newDraftItem(newDraft, newPreview, false)}
 									{leavingDraft && newDraftItem(leavingDraft.key, leavingDraft.preview, true)}

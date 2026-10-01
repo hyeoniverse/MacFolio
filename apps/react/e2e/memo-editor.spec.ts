@@ -882,6 +882,14 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toHaveClass(/active/);
 		await expect(trash).toContainText('1');
 
+		// 최근 삭제된 항목에서 새 메모를 쓰면 모든 글로 나가서 쓴다 (새 메모가 들어갈 폴더가 아니다)
+		await trash.click();
+		await memo.getByRole('button', { name: '새 메모' }).first().click();
+		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('모든 글');
+		await expect(memo.getByRole('button', { name: /^폴더 .*, 바꾸기$/ })).toHaveAccessibleName(
+			'폴더 개발기 › MacFolio › 회고, 바꾸기'
+		);
+
 		// 영구 삭제는 되돌릴 수 없어서 묻는다. 마지막 하나라 최근 삭제된 항목도 사라진다
 		await trash.click();
 		await items.first().click({ button: 'right' });
