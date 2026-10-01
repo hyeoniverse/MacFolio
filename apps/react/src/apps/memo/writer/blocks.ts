@@ -102,7 +102,7 @@ function renderCaption(caption: HTMLElement, title: string) {
 function downloadButton(getNode: () => Node) {
 	const button = document.createElement('button');
 	button.type = 'button';
-	button.className = 'memo-figure-download';
+	button.className = 'memo-overlay-button memo-figure-download';
 	button.contentEditable = 'false';
 	button.setAttribute('aria-label', '이미지 내려받기');
 	button.title = '이미지 내려받기';
@@ -218,21 +218,29 @@ export const imageBlockView = $view(
 );
 export const inlineImageView = $view(imageSchema.node, () => (node, view, getPos) => figureView(node, view, getPos));
 
-/** 복사 단추를 누르면 코드를 클립보드에 넣고 잠깐 '복사됨'을 보여 준다 (읽기 화면과 같이) */
+/** 복사 단추를 누르면 코드를 클립보드에 넣고 잠깐 체크 표시를 보여 준다 (읽기 화면과 같이) */
 export function copyCodeButton(getText: () => string) {
 	const button = document.createElement('button');
 	button.type = 'button';
-	button.className = 'memo-code-copy';
+	button.className = 'memo-overlay-button memo-code-copy';
 	button.contentEditable = 'false';
 	button.setAttribute('aria-label', '코드 복사');
-	button.textContent = '복사';
+	const icon = document.createElement('i');
+	icon.setAttribute('aria-hidden', 'true');
+	const show = (copied: boolean) => {
+		icon.className = copied ? 'fa-solid fa-check' : 'fa-regular fa-copy';
+		button.title = copied ? '복사됨' : '코드 복사';
+		button.toggleAttribute('data-copied', copied);
+	};
+	show(false);
+	button.append(icon);
 	let timer: number | undefined;
 	button.addEventListener('mousedown', (event) => event.preventDefault());
 	button.addEventListener('click', () => {
 		void navigator.clipboard?.writeText(getText());
-		button.textContent = '복사됨';
+		show(true);
 		window.clearTimeout(timer);
-		timer = window.setTimeout(() => (button.textContent = '복사'), 1500);
+		timer = window.setTimeout(() => show(false), 1500);
 	});
 	return button;
 }

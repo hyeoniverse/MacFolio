@@ -657,8 +657,18 @@ test.describe('바로 고치기 (관리자)', () => {
 		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 		const block = memo.locator('.ProseMirror .memo-code').first();
 		const copy = block.getByRole('button', { name: '코드 복사' });
+		// 이미지 내려받기 단추와 같은 모양 (크기·모서리·바탕·글자색)
+		const look = (el: Element) => {
+			const style = getComputedStyle(el);
+			const rect = el.getBoundingClientRect();
+			return [rect.width, rect.height, style.borderRadius, style.backgroundColor, style.color];
+		};
+		const download = memo.locator('.ProseMirror .memo-figure').first().getByRole('button', { name: '이미지 내려받기' });
+		expect(await copy.evaluate(look)).toEqual(await download.evaluate(look));
 		await copy.click();
-		await expect(copy).toHaveText('복사됨');
+		// 누르면 잠깐 체크 표시로 바뀐다
+		await expect(copy).toHaveAttribute('title', '복사됨');
+		await expect(copy.locator('i')).toHaveClass(/fa-check/);
 		expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
 			(await block.locator('code').textContent())!
 		);
@@ -736,7 +746,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 		const copy = memo.locator('.memo-markdown').getByRole('button', { name: '코드 복사' });
 		await copy.click();
-		await expect(copy).toHaveText('복사됨');
+		await expect(copy).toHaveAttribute('title', '복사됨');
 		expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('const answer = 42;');
 		// 첨부 파일은 편집 화면과 같은 모양의 링크
 		await expect(memo.locator(".memo-markdown a[title^='첨부 파일']")).toHaveText('보고서.pdf');
