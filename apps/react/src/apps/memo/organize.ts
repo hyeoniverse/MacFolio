@@ -20,9 +20,11 @@ export interface Organization {
 	moves: { from: string; to: string }[];
 	/** 고정을 바꾼 글: slug → 고정 여부 (머리말의 pinned보다 우선) */
 	pins: Record<string, boolean>;
+	/** 잠근 글: slug → true. 잠그면 고치거나 지울 수 없다 (실수로 바꾸지 않게) */
+	locks: Record<string, boolean>;
 }
 
-export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {} };
+export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {} };
 
 const lastName = (path: string) => path.split('/').at(-1) ?? path;
 const parentOf = (path: string) => path.split('/').slice(0, -1).join('/');
@@ -45,20 +47,29 @@ export function validateFolderName(name: string, siblings: string[]): string | n
 	return null;
 }
 
-/** 정리 내용을 적용한 글 (category가 지금 있는 폴더로, pinned가 방문자가 고른 값으로 바뀐다) */
+/** 정리 내용을 적용한 글 (category가 지금 있는 폴더로, pinned·locked가 관리자가 고른 값으로 바뀐다) */
 export function organizePosts(posts: Post[], organization: Organization): Post[] {
 	return posts.map((post) => {
 		const moved = organization.posts[post.slug];
 		const category =
 			moved ?? organization.moves.reduce((path, move) => rebase(path, move.from, move.to), post.category);
 		const pinned = organization.pins[post.slug] ?? post.pinned ?? false;
-		return category === post.category && pinned === (post.pinned ?? false) ? post : { ...post, category, pinned };
+		const locked = organization.locks[post.slug] ?? false;
+		return category === post.category && pinned === (post.pinned ?? false) && locked === Boolean(post.locked)
+			? post
+			: { ...post, category, pinned, locked };
 	});
 }
 
 /** 글을 고정하거나 고정을 푼다 */
 export function setPinned(organization: Organization, slug: string, pinned: boolean): Organization {
 	return { ...organization, pins: { ...organization.pins, [slug]: pinned } };
+}
+
+/** 글을 잠그거나 잠금을 푼다 (푼 글은 목록에서 지운다) */
+export function setLocked(organization: Organization, slug: string, locked: boolean): Organization {
+	const { [slug]: _, ...rest } = organization.locks;
+	return { ...organization, locks: locked ? { ...rest, [slug]: true } : rest };
 }
 
 /** 고정된 글과 나머지로 나눈다 (각각 원래 순서 유지) */
@@ -112,6 +123,7 @@ function relocate(organization: Organization, from: string, to: string): Organiz
 		posts: Object.fromEntries(Object.entries(organization.posts).map(([slug, path]) => [slug, rebase(path, from, to)])),
 		moves: [...organization.moves, { from, to }],
 		pins: organization.pins,
+		locks: organization.locks,
 	};
 }
 
@@ -146,6 +158,7 @@ export function normalizeOrganization(raw: unknown): Organization {
 			? value.moves.filter((move) => move && typeof move.from === 'string' && typeof move.to === 'string')
 			: [],
 		pins: isRecord(value.pins) ? (value.pins as Record<string, boolean>) : {},
+		locks: isRecord(value.locks) ? (value.locks as Record<string, boolean>) : {},
 	};
 }
 

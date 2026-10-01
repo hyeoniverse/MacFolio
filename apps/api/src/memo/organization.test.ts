@@ -28,6 +28,7 @@ describe('parseOrganization', () => {
 				posts: { 'cra-to-vite': '읽을거리' },
 				moves: [{ from: '개발기/MacFolio', to: '읽을거리/MacFolio' }],
 				pins: { 'read-only-memo': true },
+				locks: {},
 			},
 		});
 		expect(parseOrganization(EMPTY_ORGANIZATION)).toEqual({ value: EMPTY_ORGANIZATION });
@@ -48,6 +49,17 @@ describe('parseOrganization', () => {
 			'폴더 경로는 문자열이어야 합니다',
 			'고정 여부는 true/false여야 합니다: cra-to-vite',
 		]);
+	});
+
+	it('잠금: 없으면 빈 값, 있으면 slug → true/false', () => {
+		const { locks: _, ...old } = EMPTY_ORGANIZATION;
+		expect(parseOrganization(old)).toEqual({ value: EMPTY_ORGANIZATION });
+		expect(parseOrganization({ ...EMPTY_ORGANIZATION, locks: { 'cra-to-vite': true } })).toEqual({
+			value: { ...EMPTY_ORGANIZATION, locks: { 'cra-to-vite': true } },
+		});
+		expect(parseOrganization({ ...EMPTY_ORGANIZATION, locks: { 'cra-to-vite': 1 } })).toEqual({
+			errors: ['잠금 여부는 true/false여야 합니다: cra-to-vite'],
+		});
 	});
 
 	it('모양이 다르면 거절', () => {

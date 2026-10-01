@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { EMPTY_ORGANIZATION } from './organize';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 
-const ORGANIZATION = { folders: ['읽을거리'], posts: { a: '읽을거리' }, moves: [], pins: { a: true } };
+const ORGANIZATION = { folders: ['읽을거리'], posts: { a: '읽을거리' }, moves: [], pins: { a: true }, locks: {} };
 const respond = (status: number, body?: unknown) =>
 	vi.fn(
 		async () => new Response(body === undefined ? null : JSON.stringify(body), { status })

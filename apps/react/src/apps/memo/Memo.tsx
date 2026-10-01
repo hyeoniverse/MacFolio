@@ -32,6 +32,7 @@ import {
 	organizePosts,
 	removeFolder,
 	renameFolder,
+	setLocked,
 	setPinned,
 	splitPinned,
 	type Organization,
@@ -383,6 +384,8 @@ const Memo: React.FC = () => {
 	};
 
 	const togglePin = (post: Post) => edit((prev) => setPinned(prev, post.slug, !post.pinned));
+	/** 잠그면 고치거나 지울 수 없다 (실수로 바꾸지 않게). 다시 눌러 풀면 바로 고칠 수 있다 */
+	const toggleLock = (post: Post) => edit((prev) => setLocked(prev, post.slug, !post.locked));
 	const openNoteMenu = (slug: string) =>
 		canEdit
 			? (event: React.MouseEvent) => {
@@ -447,6 +450,7 @@ const Memo: React.FC = () => {
 				}}
 			>
 				<strong>
+					{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
 					{post.title}
 					{statusBadge(post)}
 				</strong>
@@ -604,7 +608,7 @@ const Memo: React.FC = () => {
 				<span className={`memo-format-tools ${className}`}>
 					<FormatTools />
 				</span>
-				{editing && selected && newDraft === null && className === '' && (
+				{editing && selected && !selected.locked && newDraft === null && className === '' && (
 					<IconButton
 						ref={revisionsButton}
 						on={revisionsOpen}
@@ -620,6 +624,8 @@ const Memo: React.FC = () => {
 					<IconButton
 						className={className}
 						label="메모 삭제"
+						title={selected.locked ? '잠긴 메모는 지울 수 없습니다' : undefined}
+						disabled={selected.locked}
 						onClick={() => void removePost(selected)}
 						icon="fa-regular fa-trash-can"
 					/>
@@ -883,7 +889,7 @@ const Memo: React.FC = () => {
 								{pinButton('compact-only')}
 								{shareButton('compact-only')}
 							</div>
-							{editing && (newDraft !== null || selected) && (
+							{editing && (newDraft !== null || (selected && !selected.locked)) && (
 								// 관리자: 따로 편집 단추 없이 바로 고친다 (macOS 메모처럼)
 								<div
 									key={newDraft !== null ? `new-${newDraft}` : (writerKeys[selected!.slug] ?? selected!.slug)}
@@ -916,9 +922,18 @@ const Memo: React.FC = () => {
 									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
 								</div>
 							)}
-							{!editing && selected && (
-								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다
+							{(!editing || (newDraft === null && selected?.locked)) && selected && (
+								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다. 잠긴 메모는 관리자에게도 읽기 화면으로
 								<div key={selected.slug} className="memo-reader-body">
+									{editing && (
+										// 도구 막대는 편집 도구로 꽉 차서, 잠금은 메뉴로 걸고 여기서 푼다
+										<p className="memo-locked-note">
+											<i className="fa-solid fa-lock" aria-hidden="true" /> 잠긴 메모입니다.
+											<button type="button" onClick={() => toggleLock(selected)}>
+												잠금 풀기
+											</button>
+										</p>
+									)}
 									<p className="memo-reader-date">
 										<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> ·{' '}
 										{folderLabel(selected.category)}
@@ -988,8 +1003,15 @@ const Memo: React.FC = () => {
 												onSelect: () => togglePin(selected),
 											},
 											{
+												label: selected.locked ? '메모 잠금 해제' : '메모 잠그기',
+												icon: selected.locked ? 'fa-solid fa-lock-open' : 'fa-solid fa-lock',
+												onSelect: () => toggleLock(selected),
+											},
+											{
 												label: '메모 삭제',
 												icon: 'fa-regular fa-trash-can',
+												disabled: selected.locked,
+												hint: selected.locked ? '잠긴 메모는 지울 수 없습니다' : undefined,
 												onSelect: () => void removePost(selected),
 											},
 											'separator' as const,
@@ -1024,10 +1046,17 @@ const Memo: React.FC = () => {
 									icon: 'fa-solid fa-thumbtack',
 									onSelect: () => togglePin(menuPost),
 								},
+								{
+									label: menuPost.locked ? '메모 잠금 해제' : '메모 잠그기',
+									icon: menuPost.locked ? 'fa-solid fa-lock-open' : 'fa-solid fa-lock',
+									onSelect: () => toggleLock(menuPost),
+								},
 								'separator',
 								{
 									label: '메모 삭제',
 									icon: 'fa-regular fa-trash-can',
+									disabled: menuPost.locked,
+									hint: menuPost.locked ? '잠긴 메모는 지울 수 없습니다' : undefined,
 									onSelect: () => void removePost(menuPost),
 								},
 							]}
