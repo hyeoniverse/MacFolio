@@ -869,14 +869,16 @@ test.describe('바로 고치기 (관리자)', () => {
 		const items = memo.locator('.memo-item');
 		await expect(items).toHaveCount(2);
 		await expect(items.first()).toContainText('테스트를 붙이자 보인 버그들');
-		await expect(items.first()).toContainText('30일 뒤 영구 삭제');
-		// 고칠 수 없는 읽기 화면에 되살리기·영구 삭제
+		await expect(items.first()).toContainText('30일 남음');
+		// 고칠 수 없는 읽기 화면: 위의 안내 띠에 되살리기, 도구 막대의 휴지통은 영구 삭제
 		await items.first().click();
 		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
-		await expect(memo.getByText('최근 삭제된 메모입니다. 30일 뒤에 영구히 지워집니다.')).toBeVisible();
+		const note = memo.getByRole('note');
+		await expect(note).toContainText('30일 뒤에 영구히 지워집니다');
+		await expect(memo.getByRole('button', { name: '메모 영구 삭제' }).first()).toBeVisible();
 
 		// 되살리면 모든 글로 돌아가 그 글을 연다
-		await memo.getByRole('button', { name: '되살리기' }).click();
+		await note.getByRole('button', { name: '되살리기' }).click();
 		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toHaveClass(/active/);
 		await expect(trash).toContainText('1');
 
@@ -888,6 +890,37 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(trash).toHaveCount(0);
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('모든 글');
 		expect(api.posts.find((post) => post.slug === 'cra-to-vite')).toMatchObject({ deleted: true, deletedAt: null });
+	});
+
+	test('글을 최근 삭제된 항목에 끌어 놓으면 지우고, 지운 글을 폴더에 끌어 놓으면 그 폴더로 되살린다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		const trash = folders.getByRole('button', { name: /최근 삭제된 항목/ });
+
+		// 비어 있으면 숨어 있다가, 글을 끄는 동안 놓을 자리로 보인다
+		await expect(trash).toHaveCount(0);
+		// 놓을 자리가 끄는 동안에만 생겨서 dragTo 대신 마우스로 끈다
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).hover();
+		await page.mouse.down();
+		await folders.getByRole('button', { name: /^모든 글/ }).hover();
+		await trash.hover();
+		await page.mouse.up();
+		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
+		await expect(trash).toContainText('1');
+		expect(api.posts.find((post) => post.slug === 'cra-to-vite')).toMatchObject({ deleted: true });
+
+		// 지운 글을 '회고' 폴더에 놓으면 되살아나 그 폴더에 들어간다
+		await trash.click();
+		await memo
+			.locator('.memo-item', { hasText: 'CRA에서 Vite로' })
+			.dragTo(folders.getByRole('button', { name: /^회고/ }));
+		await expect(trash).toHaveCount(0);
+		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('회고');
+		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveClass(/active/);
+		await expect.poll(() => api.organization.posts['cra-to-vite']).toBe('개발기/MacFolio/회고');
 	});
 
 	test('방문자는 서버의 글을 보지만 고칠 수 없다', async ({ page }) => {

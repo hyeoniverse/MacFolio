@@ -22,6 +22,7 @@ import {
 	type PostFilter,
 	type ServerPost,
 	RECENTLY_DELETED,
+	RECENTLY_DELETED_DAYS,
 	daysUntilPurge,
 	recentlyDeletedPosts,
 } from './posts';
@@ -68,6 +69,7 @@ import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
+import Button from '@/shared/ui/button/Button';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
 const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
@@ -352,9 +354,14 @@ const Memo: React.FC = () => {
 		setPane('list');
 	};
 
-	// 끌어 놓기: 글은 다른 폴더로, 폴더는 다른 폴더 안(모든 글이면 맨 위)으로
+	// 끌어 놓기: 글은 다른 폴더로(최근 삭제된 항목에 놓으면 지우기), 지운 글은 폴더에 놓으면 되살리기,
+	// 폴더는 다른 폴더 안(모든 글이면 맨 위)으로
 	const canDrop = (target: string) => {
 		if (!dragging) return false;
+		if (dragging.type === 'deleted') return target !== RECENTLY_DELETED;
+		if (target === RECENTLY_DELETED) {
+			return dragging.type === 'post' && !organized.find((post) => post.slug === dragging.id)?.locked;
+		}
 		if (dragging.type === 'post') {
 			return target !== ALL_CATEGORY && organized.find((post) => post.slug === dragging.id)?.category !== target;
 		}
@@ -363,7 +370,13 @@ const Memo: React.FC = () => {
 
 	const drop = (target: string) => {
 		if (!dragging) return;
-		if (dragging.type === 'post') edit((prev) => movePost(prev, dragging.id, target));
+		if (dragging.type === 'deleted') {
+			const post = trash.find((item) => item.slug === dragging.id);
+			if (post) void restoreDeleted(post, target);
+		} else if (target === RECENTLY_DELETED) {
+			const post = organized.find((item) => item.slug === dragging.id);
+			if (post) void removePost(post);
+		} else if (dragging.type === 'post') edit((prev) => movePost(prev, dragging.id, target));
 		else {
 			const parent = target === ALL_CATEGORY ? '' : target;
 			edit((prev) => moveFolder(prev, dragging.id, parent, folderPaths));
@@ -376,15 +389,15 @@ const Memo: React.FC = () => {
 		setDragging(null);
 	};
 
-	/** 글 목록·갤러리 카드를 끌 때 */
+	/** 글 목록·갤러리 카드를 끌 때 (최근 삭제된 항목의 글은 폴더에 놓아 되살린다) */
 	const dragPost = (slug: string) =>
-		canEdit && !inTrash
+		canEdit
 			? {
 					draggable: true,
 					onDragStart: (event: React.DragEvent) => {
 						event.dataTransfer.effectAllowed = 'move';
 						event.dataTransfer.setData('text/plain', slug);
-						setDragging({ type: 'post', id: slug });
+						setDragging({ type: inTrash ? 'deleted' : 'post', id: slug });
 					},
 					onDragEnd: () => setDragging(null),
 				}
@@ -473,7 +486,7 @@ const Memo: React.FC = () => {
 				</span>
 				<span className="memo-item-folder">
 					<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
-					{post.deletedAt && <> · {daysUntilPurge(post.deletedAt, today)}일 뒤 영구 삭제</>}
+					{post.deletedAt && <span className="memo-item-purge">{daysUntilPurge(post.deletedAt, today)}일 남음</span>}
 				</span>
 			</button>
 		</li>
@@ -595,14 +608,17 @@ const Memo: React.FC = () => {
 		});
 	};
 
-	/** 최근 삭제된 항목에서 되살린다. 원래 폴더의 글 목록으로 돌아가 그 글을 연다 */
-	const restoreDeleted = async (post: Post) => {
+	/**
+	 * 최근 삭제된 항목에서 되살린다. 폴더에 끌어 놓았으면 그 폴더로 옮기고 그 폴더를, 아니면 모든 글을 열어 그 글을 보여준다
+	 */
+	const restoreDeleted = async (post: Post, folder = ALL_CATEGORY) => {
 		const result = await restorePost(env.apiUrl, post.slug);
 		if (!result.ok) return failed('되살리지 못함');
 		if (result.post) upsertAdminPost(result.post);
 		else setAdminPosts((list) => (list ?? []).filter((item) => item.slug !== post.slug));
+		if (folder !== ALL_CATEGORY && folder !== post.category) edit((prev) => movePost(prev, post.slug, folder));
 		setSelectedSlug(post.slug);
-		selectFolder(ALL_CATEGORY);
+		selectFolder(folder);
 	};
 
 	/** 최근 삭제된 항목에서 영구히 지운다 (되돌릴 수 없어서 묻는다) */
@@ -664,6 +680,14 @@ const Memo: React.FC = () => {
 						onPointerDown={keepFocus}
 						onClick={() => setRevisionsOpen((value) => !value)}
 						icon="fa-solid fa-clock-rotate-left"
+					/>
+				)}
+				{selected && inTrash && (
+					<IconButton
+						className={className}
+						label="메모 영구 삭제"
+						onClick={() => void purgeDeleted(selected)}
+						icon="fa-regular fa-trash-can"
 					/>
 				)}
 				{selected && !inTrash && newDraft === null && (
@@ -775,7 +799,8 @@ const Memo: React.FC = () => {
 			onFocusChange={setSearchFocused}
 		/>
 	);
-	const sortMenu = () => <SortMenu arrangement={arrangement} onChange={setArrangement} />;
+	// 최근 삭제된 항목은 늘 최근에 지운 순서라 정렬 단추가 없다
+	const sortMenu = () => !inTrash && <SortMenu arrangement={arrangement} onChange={setArrangement} />;
 	// 검색 칸은 늘 창 오른쪽 위(도구 막대 끝)에 있다. 좁은 창에서는 도구 막대가 없으므로 목록 위에 정렬 단추와 함께 둔다
 	const search = searchBox();
 	const compactTools = (
@@ -850,6 +875,12 @@ const Memo: React.FC = () => {
 									{newDraft !== null && newDraftItem(newDraft, newPreview, false)}
 									{leavingDraft && newDraftItem(leavingDraft.key, leavingDraft.preview, true)}
 								</ul>
+							)}
+							{inTrash && (
+								<p className="memo-trash-banner">
+									지운 메모는 {RECENTLY_DELETED_DAYS}일 동안 여기에 있다가 영구히 지워집니다.
+									<span className="memo-trash-drag-hint"> 폴더로 끌어 놓으면 되살아납니다.</span>
+								</p>
 							)}
 							{sections(listItem, '고정됨', 'memo-items')}
 							{empty}
@@ -974,18 +1005,19 @@ const Memo: React.FC = () => {
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다. 최근 삭제된 항목의 글과 잠긴 메모는 관리자에게도 읽기 화면
 								<div key={selected.slug} className="memo-reader-body">
 									{selected.deletedAt ? (
-										<div className="memo-trash-note">
+										<div className="memo-trash-note" role="note">
+											<i className="fa-regular fa-trash-can" aria-hidden="true" />
 											<p>
-												최근 삭제된 메모입니다. {daysUntilPurge(selected.deletedAt, today)}일 뒤에 영구히 지워집니다.
+												<strong>최근 삭제된 메모</strong>
+												{daysUntilPurge(selected.deletedAt, today)}일 뒤에 영구히 지워집니다. 고치려면 먼저 되살리세요.
 											</p>
-											<span>
-												<button type="button" onClick={() => void restoreDeleted(selected)}>
-													되살리기
-												</button>
-												<button type="button" className="danger" onClick={() => void purgeDeleted(selected)}>
-													영구 삭제
-												</button>
-											</span>
+											<Button
+												tone="primary"
+												icon="fa-solid fa-rotate-left"
+												onClick={() => void restoreDeleted(selected)}
+											>
+												되살리기
+											</Button>
 										</div>
 									) : (
 										editing && (
