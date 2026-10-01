@@ -4,8 +4,8 @@ import { createPortal } from 'react-dom';
 export type MenuItem =
 	| {
 			label: string;
-			/** 아이콘 클래스. checked가 있으면 대신 체크 표시 자리를 쓴다 */
-			icon?: string;
+			/** 아이콘: Font Awesome 클래스나 그린 아이콘(SVG). checked가 있으면 대신 체크 표시 자리를 쓴다 */
+			icon?: string | React.ReactElement;
 			onSelect: () => void;
 			disabled?: boolean;
 			hint?: string;
@@ -86,7 +86,14 @@ const ContextMenu: React.FC<{
 							item.onSelect();
 						}}
 					>
-						<i className={checkable ? (item.checked ? 'fa-solid fa-check' : '') : item.icon} aria-hidden="true" />
+						{!checkable && item.icon && typeof item.icon !== 'string' ? (
+							<i aria-hidden="true">{item.icon}</i>
+						) : (
+							<i
+								className={checkable ? (item.checked ? 'fa-solid fa-check' : '') : (item.icon as string | undefined)}
+								aria-hidden="true"
+							/>
+						)}
 						{item.label}
 					</button>
 				);
