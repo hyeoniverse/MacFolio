@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom/client';
+import './styles/layers.css';
 import './styles/theme.css';
 import './styles/motion.css';
 import './index.css';

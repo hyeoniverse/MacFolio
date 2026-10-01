@@ -28,11 +28,14 @@
 	font-size: 14px;
 }
 
-.shortcuts button {
-	font: inherit;
-	color: inherit;
-	cursor: pointer;
-	-webkit-tap-highlight-color: transparent;
+/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
+@layer reset {
+	.shortcuts button {
+		font: inherit;
+		color: inherit;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+	}
 }
 
 /* 타일: 2열 */
@@ -79,17 +82,6 @@
 }
 
 /* 결과 화면 */
-.shortcut-back {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	margin-bottom: 6px;
-	padding: 6px 0;
-	border: none;
-	background: none;
-	color: var(--color-accent) !important;
-	font-size: 16px !important;
-}
 
 .shortcut-command {
 	margin: 0 4px 16px;

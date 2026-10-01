@@ -44,9 +44,12 @@
 	container-type: inline-size;
 }
 
-.safari a {
-	color: inherit;
-	text-decoration: none;
+/* 링크의 기본값 (reset 층: 단추·링크마다 클래스로 적은 색이 이긴다) */
+@layer reset {
+	.safari a {
+		color: inherit;
+		text-decoration: none;
+	}
 }
 
 /* ─── 도구 막대 (신호등 버튼과 같은 높이) ─── */
