@@ -16,7 +16,7 @@ test.describe('앱 항목 주소와 공유', () => {
 		expect(pathOf(page.url())).not.toBe('/memo/cra-to-vite');
 
 		// 창을 닫으면 사이트 주소로
-		await memo.getByRole('button', { name: '닫기' }).click();
+		await memo.getByRole('button', { name: '닫기', exact: true }).click();
 		await expect.poll(() => pathOf(page.url())).toBe('/');
 	});
 

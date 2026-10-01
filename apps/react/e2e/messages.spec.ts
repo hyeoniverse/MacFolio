@@ -38,7 +38,7 @@ test.describe('메시지 (감상·의견·피드백)', () => {
 
 		// 주인 글은 오른쪽 클릭 메뉴가 없다
 		await messages.locator('.messages-bubble').first().click({ button: 'right' });
-		await expect(messages.getByRole('menu')).toHaveCount(0);
+		await expect(page.getByRole('menu', { name: '메시지 메뉴' })).toHaveCount(0);
 
 		await post(messages, '민수', '반가워요!');
 		await expect(messages.locator('.messages-bubble-row.right')).toHaveText(/반가워요!/);
@@ -111,7 +111,10 @@ test.describe('메시지 (감상·의견·피드백)', () => {
 		await post(messages, '민수', '남길 메시지');
 
 		await messages.locator('.messages-bubble', { hasText: '지울 메시지' }).click({ button: 'right' });
-		await messages.getByRole('menuitem', { name: '삭제…' }).click();
+		// 메뉴는 창에 잘리지 않게 body에 그린다 (공통 메뉴)
+		const menu = page.getByRole('menu', { name: '메시지 메뉴' });
+		await expect(menu.getByRole('menuitem', { name: '삭제…' })).toBeFocused();
+		await menu.getByRole('menuitem', { name: '삭제…' }).click();
 
 		await page.getByLabel('삭제 비밀번호').fill('wrong');
 		await page.getByRole('button', { name: '삭제', exact: true }).click();

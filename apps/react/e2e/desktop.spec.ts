@@ -39,7 +39,7 @@ test.describe('데스크톱', () => {
 		await dockItem(page, 'memo').click();
 		await expect(memo).toBeVisible();
 
-		await memo.getByRole('button', { name: '닫기' }).click();
+		await memo.getByRole('button', { name: '닫기', exact: true }).click();
 		await expect(memo).toBeHidden();
 
 		await dockItem(page, 'memo').click();
@@ -101,7 +101,7 @@ test.describe('데스크톱', () => {
 		await dockItem(page, 'music').click();
 		await expect(music).toBeVisible();
 
-		await music.getByRole('button', { name: '닫기' }).click();
+		await music.getByRole('button', { name: '닫기', exact: true }).click();
 		await expect(music).toBeHidden();
 		await expect(page.locator('.dock')).toBeVisible();
 

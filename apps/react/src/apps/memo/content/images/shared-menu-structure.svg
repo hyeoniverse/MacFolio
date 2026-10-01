@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>메뉴·팝오버 다섯 벌이 쓰는 공통 부품</title>
+  <rect width="640" height="380" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">다섯 벌 → 공통 부품 셋</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#9ca3af"/></marker></defs>
+
+  <!-- 공통 부품 -->
+  <g font-size="12">
+    <rect x="32" y="70" width="176" height="74" rx="12" fill="#eef0ff" stroke="#c7cbff"/>
+    <text x="48" y="94" font-weight="700" fill="#3f46c7" font-family="ui-monospace, Menlo, monospace">placement.ts</text>
+    <text x="48" y="114" fill="#374151">자리 잡기 (순수 함수)</text>
+    <text x="48" y="132" fill="#6b7280" font-size="11">한 점 · 아래 · 오른쪽, 화면 안으로</text>
+
+    <rect x="232" y="70" width="176" height="74" rx="12" fill="#eef0ff" stroke="#c7cbff"/>
+    <text x="248" y="94" font-weight="700" fill="#3f46c7" font-family="ui-monospace, Menlo, monospace">useDismiss</text>
+    <text x="248" y="114" fill="#374151">바깥 누름 · Esc로 닫기</text>
+    <text x="248" y="132" fill="#6b7280" font-size="11">여는 단추는 안쪽으로 친다</text>
+
+    <rect x="432" y="70" width="176" height="74" rx="12" fill="#fff7e6" stroke="#f3d48a"/>
+    <text x="448" y="94" font-weight="700" fill="#92400e" font-family="ui-monospace, Menlo, monospace">Menu</text>
+    <text x="448" y="114" fill="#374151">macOS 메뉴 (body에 그림)</text>
+    <text x="448" y="132" fill="#6b7280" font-size="11">항목·묶음·안내·구분선, ↑↓</text>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.4" fill="none" marker-end="url(#a)">
+    <path d="M208 98 C 300 60, 360 60, 430 92"/>
+    <path d="M408 110 H430"/>
+  </g>
+
+  <!-- 쓰는 곳 -->
+  <g font-size="12">
+    <text x="32" y="186" font-weight="700" fill="#1f2937" font-size="14">쓰는 곳</text>
+
+    <rect x="432" y="200" width="176" height="150" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+    <text x="448" y="222" font-weight="700" fill="#374151">Menu로</text>
+    <text x="448" y="244" fill="#374151">· 메모 우클릭·정렬·•••</text>
+    <text x="448" y="264" fill="#374151">· 메모 검색 조건·찾기 옵션</text>
+    <text x="448" y="284" fill="#374151">· 메모 폴더 고르기</text>
+    <text x="448" y="304" fill="#374151">· Apple 메뉴</text>
+    <text x="448" y="324" fill="#374151">· 메시지 우클릭</text>
+
+    <rect x="32" y="200" width="376" height="150" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+    <text x="48" y="222" font-weight="700" fill="#374151">placement + useDismiss로 (메뉴가 아닌 작은 창)</text>
+    <text x="48" y="244" fill="#374151">· 메모 서식 창·표 손잡이 메뉴 (usePopover)</text>
+    <text x="48" y="264" fill="#374151">· 날짜 고르기 달력 (DatePicker)</text>
+    <text x="48" y="294" fill="#6b7280" font-size="11">창 안의 내용(서식 단추, 달력)은 그대로 두고</text>
+    <text x="48" y="312" fill="#6b7280" font-size="11">닫기와 자리 잡기만 공통 부품으로 바꿨다</text>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.4" fill="none" marker-end="url(#a)">
+    <path d="M520 144 V198"/>
+    <path d="M120 144 V198"/><path d="M320 144 V198"/>
+  </g>
+</svg>
