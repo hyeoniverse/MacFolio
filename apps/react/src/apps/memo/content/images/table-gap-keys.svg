@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>←·→로 표 옆을 지나는 순서</title>
+  <rect width="640" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">→ 를 누를 때 커서가 서는 자리</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">← 는 같은 길을 거꾸로 간다. 표 옆에서 한 번씩 멈춘다</text>
+
+  <!-- 위 문단 -->
+  <text x="132" y="112" font-size="14" fill="#374151">위 문단</text>
+  <circle cx="190" cy="107" r="11" fill="#edbb4d"/><text x="190" y="111" font-size="11" text-anchor="middle" fill="#2b2100" font-weight="700">1</text>
+
+  <!-- 표 -->
+  <g>
+    <rect x="132" y="132" width="376" height="120" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+    <path d="M132 172 H508 M132 212 H508" stroke="#e5e7eb"/>
+    <path d="M257 132 V252 M383 132 V252" stroke="#e5e7eb"/>
+    <g font-size="13" fill="#374151">
+      <text x="148" y="157" font-weight="600">a</text><text x="273" y="157" font-weight="600">b</text><text x="399" y="157" font-weight="600">c</text>
+      <text x="148" y="197">d</text><text x="273" y="197">e</text><text x="399" y="197">f</text>
+      <text x="148" y="237">g</text><text x="273" y="237">h</text><text x="399" y="237">i</text>
+    </g>
+  </g>
+
+  <!-- 표 왼쪽 -->
+  <path d="M124 142 V162" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="104" cy="152" r="11" fill="#edbb4d"/><text x="104" y="156" font-size="11" text-anchor="middle" fill="#2b2100" font-weight="700">2</text>
+  <text x="40" y="156" font-size="11" fill="#6b7280">표 왼쪽</text>
+
+  <!-- 첫 칸 -->
+  <circle cx="170" cy="152" r="11" fill="#edbb4d"/><text x="170" y="156" font-size="11" text-anchor="middle" fill="#2b2100" font-weight="700">3</text>
+
+  <!-- 마지막 칸 -->
+  <circle cx="420" cy="232" r="11" fill="#edbb4d"/><text x="420" y="236" font-size="11" text-anchor="middle" fill="#2b2100" font-weight="700">4</text>
+  <text x="440" y="236" font-size="10" fill="#9ca3af">…칸을 지나</text>
+
+  <!-- 표 오른쪽 -->
+  <path d="M516 222 V242" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="536" cy="232" r="11" fill="#edbb4d"/><text x="536" y="236" font-size="11" text-anchor="middle" fill="#2b2100" font-weight="700">5</text>
+  <text x="554" y="236" font-size="11" fill="#6b7280">표 오른쪽</text>
+
+  <!-- 아래 문단 -->
+  <text x="132" y="284" font-size="14" fill="#374151">아래 문단</text>
+  <circle cx="118" cy="279" r="11" fill="#edbb4d"/><text x="118" y="283" font-size="11" text-anchor="middle" fill="#2b2100" font-weight="700">6</text>
+
+  <text x="32" y="314" font-size="12" fill="#374151">표 옆(2·5)에서 글을 치면 그 자리에 새 문단이 생긴다</text>
+</svg>
