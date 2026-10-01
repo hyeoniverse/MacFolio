@@ -5,6 +5,7 @@ import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } f
 
 const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
 import { SidebarToggle } from './MemoToolbar';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /** 끌고 있는 것: 글(slug) 또는 폴더(경로) */
 export type DragItem = { type: 'post'; id: string } | { type: 'folder'; id: string };
@@ -321,21 +322,17 @@ const FolderSidebar: React.FC<Props> = (props) => {
 				<span className="memo-lights-space" aria-hidden="true" />
 				<SidebarToggle open onToggle={onToggle} />
 				{props.canEdit && props.onNewNote && (
-					<button
-						type="button"
-						className="memo-tool memo-new-note-button"
-						aria-label="새 메모"
-						title="새 메모"
+					<IconButton
+						className="memo-new-note-button"
+						label="새 메모"
 						onClick={props.onNewNote}
-					>
-						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-					</button>
+						icon="fa-regular fa-pen-to-square"
+					/>
 				)}
 				{props.canEdit && (
-					<button
-						type="button"
-						className="memo-tool memo-new-folder-button"
-						aria-label="새로운 폴더"
+					<IconButton
+						className="memo-new-folder-button"
+						label="새로운 폴더"
 						disabled={!canAddFolder(parentOfNew)}
 						title={
 							!canAddFolder(parentOfNew)
@@ -345,9 +342,8 @@ const FolderSidebar: React.FC<Props> = (props) => {
 									: '새로운 폴더'
 						}
 						onClick={() => setAddingUnder(parentOfNew)}
-					>
-						<i className="fa-solid fa-folder-plus" aria-hidden="true" />
-					</button>
+						icon="fa-solid fa-folder-plus"
+					/>
 				)}
 			</div>
 

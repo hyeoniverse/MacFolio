@@ -1,8 +1,15 @@
-/* 기본 스타일 초기화 */
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+/* 기본 스타일 초기화. reset 층이라 공통 컴포넌트(components 층)의 여백이 이긴다 (styles/layers.css) */
+@layer reset {
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	a {
+		color: inherit; /* 부모 요소의 색상 상속 */
+		text-decoration: none; /* 링크 밑줄 제거 */
+	}
 }
 
 @font-face {
@@ -23,11 +30,6 @@ html {
 	background-position: center;
 	background-size: cover;
 	font-family: -apple-system, MacSystemFont, Arial, sans-serif;
-}
-
-a {
-	color: inherit; /* 부모 요소의 색상 상속 */
-	text-decoration: none; /* 링크 밑줄 제거 */
 }
 
 /* 화면에는 보이지 않고 스크린 리더만 읽는 이름 */

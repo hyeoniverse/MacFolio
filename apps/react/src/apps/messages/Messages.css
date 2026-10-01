@@ -41,6 +41,13 @@
 	--messages-error: #ff6961;
 }
 
+/* 떠 있는 원형 단추(새 메시지, 뒤로 가기)의 색 (shared/ui/button/IconButton) */
+[data-app='messages'] {
+	--ui-float-bg: var(--messages-float-bg);
+	--ui-float-shadow: var(--messages-float-shadow);
+	--ui-float-color: var(--messages-text);
+}
+
 [data-app='messages'].container {
 	border-color: transparent;
 	background-color: var(--messages-window-bg);
@@ -66,20 +73,6 @@
 		color: inherit;
 		cursor: pointer;
 	}
-}
-
-/* 떠 있는 원형 버튼 (새 메시지, 뒤로 가기) */
-.messages-round-button {
-	display: grid;
-	place-items: center;
-	width: 34px;
-	height: 34px;
-	border: none;
-	border-radius: 50%;
-	background-color: var(--messages-float-bg);
-	box-shadow: var(--messages-float-shadow);
-	color: var(--messages-text) !important;
-	font-size: 15px !important;
 }
 
 .messages-avatar {
@@ -174,13 +167,13 @@
 	border: none;
 	border-radius: 14px;
 	background: none;
-	color: var(--messages-meta) !important;
-	font-size: 12px !important;
+	color: var(--messages-meta);
+	font-size: 12px;
 }
 
 .messages-pinned-item.selected {
 	background-color: var(--messages-selected-bg);
-	color: var(--messages-text) !important;
+	color: var(--messages-text);
 }
 
 /* 대화 목록: 글자 시작점부터 들여 쓴 구분선 */
@@ -285,7 +278,7 @@
 
 /* 넓은 창에서는 목록이 옆에 있으므로 뒤로 가기가 필요 없다 */
 .messages-back {
-	display: none !important;
+	display: none;
 }
 
 .messages-chat-header {
@@ -326,8 +319,8 @@
 	border-radius: 16px;
 	background-color: var(--messages-float-bg);
 	box-shadow: var(--messages-float-shadow);
-	color: var(--messages-text) !important;
-	font-size: 13px !important;
+	color: var(--messages-text);
+	font-size: 13px;
 }
 
 .messages-chat-subtitle {
@@ -532,8 +525,8 @@
 	border: none;
 	border-radius: 50%;
 	background-color: var(--messages-sent);
-	color: #ffffff !important;
-	font-size: 13px !important;
+	color: #ffffff;
+	font-size: 13px;
 }
 
 .messages-send[hidden] {
@@ -625,11 +618,11 @@
 
 	.messages-back,
 	.messages-compose-compact {
-		display: grid !important;
+		display: grid;
 	}
 
 	/* 목록 화면에서는 신호등 버튼 옆에 새 메시지 버튼 */
-	.messages-chat-toolbar .messages-round-button:not(.messages-back) {
+	.messages-chat-toolbar .ui-icon-button:not(.messages-back) {
 		display: none;
 	}
 

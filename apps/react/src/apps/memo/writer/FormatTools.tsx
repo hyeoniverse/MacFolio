@@ -5,6 +5,7 @@ import ImagePanel from './ImagePanel';
 import { useEditorControls, type BlockStyle, type FormatAction } from './editorControls';
 import { keepFocus, usePopover } from './popover';
 import TableMenu from './TableMenu';
+import IconButton from '@/shared/ui/button/IconButton';
 
 const STYLES: { block: BlockStyle; label: string }[] = [
 	{ block: 'title', label: '제목' },
@@ -56,66 +57,58 @@ const FormatTools = () => {
 
 	return (
 		<>
-			<button
+			<IconButton
 				ref={formatButton}
-				type="button"
-				className={`memo-tool memo-format-button ${formatOpen ? 'on' : ''}`}
-				aria-label="서식"
-				title="서식"
+				className="memo-format-button"
+				on={formatOpen}
+				label="서식"
 				aria-haspopup="dialog"
 				aria-expanded={formatOpen}
 				{...quick}
 				onClick={() => setFormatOpen((value) => !value)}
 			>
 				가가
-			</button>
-			<button
-				type="button"
-				className={`memo-tool memo-format-quick ${state.list === 'task' ? 'on' : ''}`}
-				aria-label="체크리스트"
-				title="체크리스트"
+			</IconButton>
+			<IconButton
+				className="memo-format-quick"
+				on={state.list === 'task'}
+				label="체크리스트"
 				aria-pressed={state.list === 'task'}
 				{...quick}
 				onClick={() => act({ type: 'list', list: 'task' })}
-			>
-				<i className="fa-solid fa-list-check" aria-hidden="true" />
-			</button>
-			<button
+				icon="fa-solid fa-list-check"
+			/>
+			<IconButton
 				ref={tableButton}
-				type="button"
-				className={`memo-tool memo-format-quick ${table ? 'on' : ''}`}
-				aria-label={table ? '표 편집' : '표'}
+				className="memo-format-quick"
+				on={table !== null}
+				label={table ? '표 편집' : '표'}
 				title={table ? '표 편집' : '표 넣기'}
 				aria-haspopup={table ? 'dialog' : undefined}
 				aria-expanded={table ? tableOpen : undefined}
 				{...quick}
 				onClick={() => (table ? setTableOpen((value) => !value) : act({ type: 'table' }))}
-			>
-				<i className="fa-solid fa-table" aria-hidden="true" />
-			</button>
-			<button
+				icon="fa-solid fa-table"
+			/>
+			<IconButton
 				ref={imageButton}
-				type="button"
-				className={`memo-tool memo-format-quick ${state.image ? 'on' : ''}`}
-				aria-label={state.image ? '이미지 편집' : '이미지'}
+				className="memo-format-quick"
+				on={state.image !== null}
+				label={state.image ? '이미지 편집' : '이미지'}
 				title={state.image ? '고른 이미지의 설명·캡션 고치기' : '이미지 넣기'}
 				aria-haspopup="dialog"
 				aria-expanded={imageOpen}
 				{...quick}
 				onClick={() => setImageOpen((value) => !value)}
-			>
-				<i className="fa-regular fa-image" aria-hidden="true" />
-			</button>
-			<button
-				type="button"
-				className="memo-tool memo-format-quick"
-				aria-label="파일 첨부"
-				title="파일 첨부"
+				icon="fa-regular fa-image"
+			/>
+			<IconButton
+				className="memo-format-quick"
+				label="파일 첨부"
 				{...quick}
 				onClick={attach}
-			>
-				<i className="fa-solid fa-paperclip" aria-hidden="true" />
-			</button>
+				icon="fa-solid fa-paperclip"
+			/>
 			<input
 				ref={attachInput}
 				type="file"
