@@ -14,6 +14,12 @@
 	--safari-accent: #0071e3;
 }
 
+/* 공통 단추(shared/ui/button)의 색 */
+[data-app='safari'] {
+	--ui-tool-color: var(--safari-muted);
+	--ui-tool-hover: var(--safari-address-bg);
+}
+
 :root[data-theme='dark'] [data-app='safari'] {
 	--safari-bg: #1c1c1e;
 	--safari-toolbar-bg: #2c2c2e;
@@ -67,29 +73,9 @@
 	width: 64px;
 }
 
-/* 도구 막대의 단추는 통합형 창의 끌기 영역(z-index 3)보다 위 */
-.safari-tool {
-	display: grid;
-	position: relative;
-	z-index: 4;
-	place-items: center;
-	width: 30px;
-	height: 28px;
-	border: none;
-	border-radius: 7px;
-	background: none;
-	color: var(--safari-muted) !important;
+/* 도구 막대 단추 (shared/ui/button/IconButton). 아이콘은 메모보다 조금 크다 */
+.safari-toolbar .ui-icon-button {
 	font-size: 14px;
-	cursor: pointer;
-}
-
-.safari-tool:hover:not(:disabled) {
-	background-color: var(--safari-address-bg);
-}
-
-.safari-tool:disabled {
-	opacity: 0.35;
-	cursor: default;
 }
 
 .safari-address {

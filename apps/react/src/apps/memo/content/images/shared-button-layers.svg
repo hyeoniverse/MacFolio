@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>CSS 층 셋: reset, components, 층 밖</title>
+  <rect width="640" height="420" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">위에 있을수록 이긴다 (선택자 점수와 상관없이)</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">층 순서는 styles/layers.css 한 줄:  @layer reset, components;</text>
+
+  <!-- 층 밖 -->
+  <rect x="32" y="88" width="576" height="88" rx="12" fill="#dcfce7" stroke="#86efac"/>
+  <text x="48" y="112" font-size="14" font-weight="700" fill="#15803d">층 밖: 앱의 CSS</text>
+  <text x="48" y="134" font-size="12" fill="#166534" font-family="ui-monospace, Menlo, monospace">.memo-format-button { padding: 0 8px }</text>
+  <text x="48" y="154" font-size="12" fill="#166534" font-family="ui-monospace, Menlo, monospace">[data-app='memo'] { --ui-tool-color: var(--memo-muted) }</text>
+  <text x="400" y="134" font-size="11" fill="#15803d">앱마다 크기·색을 바꾼다</text>
+  <text x="400" y="152" font-size="11" fill="#15803d">점수 싸움 없이 늘 이긴다</text>
+
+  <!-- components -->
+  <rect x="32" y="190" width="576" height="88" rx="12" fill="#eef0ff" stroke="#c7cbff"/>
+  <text x="48" y="214" font-size="14" font-weight="700" fill="#3f46c7">@layer components: 공통 컴포넌트</text>
+  <text x="48" y="236" font-size="12" fill="#3730a3" font-family="ui-monospace, Menlo, monospace">.ui-icon-button.tool { padding: 0 7px; color: var(--ui-tool-color) }</text>
+  <text x="48" y="256" font-size="12" fill="#3730a3" font-family="ui-monospace, Menlo, monospace">.ui-icon-button.tool.on { background-color: var(--ui-tool-on-bg) }</text>
+
+  <!-- reset -->
+  <rect x="32" y="292" width="576" height="100" rx="12" fill="#f9fafb" stroke="#e5e7eb"/>
+  <text x="48" y="316" font-size="14" font-weight="700" fill="#374151">@layer reset: 기본값</text>
+  <text x="48" y="338" font-size="12" fill="#4b5563" font-family="ui-monospace, Menlo, monospace">.memo button { color: inherit }   .gh a { color: var(--gh-link) }</text>
+  <text x="48" y="358" font-size="12" fill="#b91c1c" font-family="ui-monospace, Menlo, monospace">* { padding: 0 }   a { color: inherit }</text>
+  <text x="330" y="358" font-size="11" fill="#b91c1c">← 이번에 index.css에서 옮겨 왔다</text>
+  <text x="48" y="378" font-size="11" fill="#6b7280">층 밖에 두면 (0,0,0)짜리 *도 components 층의 여백을 이긴다</text>
+</svg>

@@ -191,15 +191,15 @@
 	align-items: center;
 	gap: 6px;
 	padding: 6px 18px;
-	border-radius: 8px !important;
-	background-color: var(--music-selected) !important;
-	color: var(--music-accent) !important;
-	font-weight: 600 !important;
+	border-radius: 8px;
+	background-color: var(--music-selected);
+	color: var(--music-accent);
+	font-weight: 600;
 }
 
 .music-pill.primary {
-	background-color: var(--music-accent) !important;
-	color: #fff !important;
+	background-color: var(--music-accent);
+	color: #fff;
 }
 
 /* 곡 목록 */
@@ -214,12 +214,12 @@
 	text-align: left;
 }
 
-.music-tracks li:nth-child(odd) .music-track {
+.music-tracks li:where(:nth-child(odd)) .music-track {
 	background-color: var(--music-hover);
 }
 
-.music-track:hover {
-	background-color: var(--music-selected) !important;
+.music-tracks .music-track:hover {
+	background-color: var(--music-selected);
 }
 
 .music-track.current strong {
@@ -419,11 +419,11 @@
 }
 
 .music-toggle {
-	color: var(--music-muted) !important;
+	color: var(--music-muted);
 }
 
 .music-toggle.on {
-	color: var(--music-accent) !important;
+	color: var(--music-accent);
 }
 
 .music-repeat-one {
@@ -523,11 +523,11 @@
 }
 
 .music-now-playing .music-toggle {
-	color: rgba(255, 255, 255, 0.55) !important;
+	color: rgba(255, 255, 255, 0.55);
 }
 
 .music-now-playing .music-toggle.on {
-	color: #fff !important;
+	color: #fff;
 }
 
 .music-now-playing .volume-bar {
@@ -652,7 +652,7 @@
 		font-size: 15px;
 	}
 
-	.music-tracks li:nth-child(odd) .music-track {
+	.music-tracks li:where(:nth-child(odd)) .music-track {
 		background: none;
 	}
 

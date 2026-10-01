@@ -55,7 +55,7 @@
 	padding: 14px;
 	border: none;
 	border-radius: 20px;
-	color: #fff !important;
+	color: #fff;
 	text-align: left;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 	transition: transform 0.15s ease;
@@ -139,7 +139,7 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--color-accent) !important;
+	color: var(--color-accent);
 }
 
 a.shortcut-row {

@@ -5,6 +5,7 @@ import ProjectPage, { Favicon } from '@/apps/safari/ProjectPage';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
 import ShareIcon from '@/shared/ui/ShareIcon';
 import '@/apps/safari/Safari.css';
+import IconButton from '@/shared/ui/button/IconButton';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -108,24 +109,13 @@ const Safari: React.FC = () => {
 				{/* 도구 막대: 신호등 버튼 자리, 이전·다음 탭, 주소창, 새 탭에서 열기, 새 탭 */}
 				<div className="safari-toolbar">
 					<span className="safari-lights-space" aria-hidden="true" />
-					<button
-						type="button"
-						className="safari-tool"
-						aria-label="이전 탭"
-						disabled={index === 0}
-						onClick={() => go(-1)}
-					>
-						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
-					</button>
-					<button
-						type="button"
-						className="safari-tool"
-						aria-label="다음 탭"
+					<IconButton label="이전 탭" disabled={index === 0} onClick={() => go(-1)} icon="fa-solid fa-chevron-left" />
+					<IconButton
+						label="다음 탭"
 						disabled={index === tabs.length - 1}
 						onClick={() => go(1)}
-					>
-						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
-					</button>
+						icon="fa-solid fa-chevron-right"
+					/>
 					{active ? (
 						<a className="safari-address" href={addressOf(active)} {...external} title="새 탭에서 열기">
 							<i className="fa-solid fa-lock" aria-hidden="true" />
@@ -139,19 +129,15 @@ const Safari: React.FC = () => {
 					)}
 					{/* 공유: 이 프로젝트 페이지(MacFolio 안의 주소)를 보낸다. 데모·저장소는 주소창을 눌러 연다 */}
 					{active && (
-						<button
-							type="button"
-							className="safari-tool safari-share"
-							aria-label="링크 공유"
-							title="링크 공유"
+						<IconButton
+							className="safari-share"
+							label="링크 공유"
 							onClick={() => void shareLink({ app: 'safari', id: active.id }, active.name)}
 						>
 							<ShareIcon />
-						</button>
+						</IconButton>
 					)}
-					<button type="button" className="safari-tool" aria-label="새 탭" onClick={newTab}>
-						<i className="fa-solid fa-plus" aria-hidden="true" />
-					</button>
+					<IconButton label="새 탭" onClick={newTab} icon="fa-solid fa-plus" />
 				</div>
 
 				{/* 탭 막대: 프로젝트마다 탭 하나. 지금 탭은 넉넉하게, 나머지는 짧게 나눠 갖는다. 올리면 닫기 단추가 보인다 */}
