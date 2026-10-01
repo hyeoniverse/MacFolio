@@ -17,6 +17,7 @@ const ORGANIZATION_EXAMPLE = {
 	posts: { 'cra-to-vite': '읽을거리' },
 	moves: [{ from: '개발기/MacFolio', to: '읽을거리/MacFolio' }],
 	pins: { 'read-only-memo': true },
+	locks: { 'cra-to-vite': true },
 };
 
 /**

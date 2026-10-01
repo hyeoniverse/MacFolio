@@ -10,6 +10,7 @@ export interface FakeApiState {
 		posts: Record<string, string>;
 		moves: { from: string; to: string }[];
 		pins: Record<string, boolean>;
+		locks?: Record<string, boolean>;
 	};
 	/** 받은 PUT 요청 수 */
 	saves: number;
