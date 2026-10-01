@@ -127,3 +127,21 @@ export async function deletePost(apiUrl: string, slug: string, fetchImpl: typeof
 		return false;
 	}
 }
+
+/** '최근 삭제된 항목'의 글을 되살린다. 서버에 내용이 없던 저장소 글이면 post: null (파일이 다시 보인다) */
+export async function restorePost(
+	apiUrl: string,
+	slug: string,
+	fetchImpl: typeof fetch = fetch
+): Promise<{ ok: true; post: AdminPost | null } | { ok: false; errors: string[] }> {
+	const result = await send(fetchImpl, postUrl(apiUrl, slug, '/restore'), 'POST');
+	if (!result.ok) return result;
+	const post = result.body as AdminPost | null;
+	return { ok: true, post: post && 'slug' in post ? post : null };
+}
+
+/** '최근 삭제된 항목'에서 영구히 지운다 (되돌릴 수 없다) */
+export async function purgePost(apiUrl: string, slug: string, fetchImpl: typeof fetch = fetch): Promise<boolean> {
+	const result = await send(fetchImpl, postUrl(apiUrl, slug, '/permanent'), 'DELETE');
+	return result.ok;
+}
