@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown, { type Components, type Options } from 'react-markdown';
 import { REMARK_PLUGINS } from './markdownPlugins';
+import { collectTags, sameTag, tagsOf } from './tags';
 import { rehypeHighlightCode } from './highlight';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
@@ -25,6 +26,8 @@ import {
 	RECENTLY_DELETED_DAYS,
 	daysUntilPurge,
 	recentlyDeletedPosts,
+	TAG_PREFIX,
+	tagOfCategory,
 } from './posts';
 import {
 	addFolder,
@@ -294,20 +297,33 @@ const Memo: React.FC = () => {
 		() => (editing && adminPosts ? recentlyDeletedPosts(repoPosts, adminPosts, today) : []),
 		[editing, adminPosts, repoPosts, today]
 	);
+	/** 본문의 #태그 (사이드바의 태그 묶음, 태그로 보기) */
+	const tags = useMemo(() => collectTags(organized), [organized]);
+	const tag = tagOfCategory(category);
+	/** 태그로 볼 때는 그 태그가 있는 글, 아니면 폴더의 글 */
+	const inCategory = useMemo(
+		() =>
+			tag
+				? filterPosts(organized, ALL_CATEGORY, '').filter((post) =>
+						tagsOf(post.body).some((name) => sameTag(name, tag))
+					)
+				: filterPosts(organized, category, ''),
+		[organized, category, tag]
+	);
 	const visible = useMemo(
 		() =>
 			inTrash
 				? filterPosts(trash, ALL_CATEGORY, query)
 				: sortBy(
 						filterPosts(
-							organized,
-							category,
+							inCategory,
+							ALL_CATEGORY,
 							query,
 							editing ? filter : filter === 'draft' || filter === 'scheduled' ? null : filter
 						),
 						arrangement
 					),
-		[inTrash, trash, organized, category, query, filter, editing, arrangement]
+		[inTrash, trash, inCategory, query, filter, editing, arrangement]
 	);
 	// 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다)
 	const folderPaths = useMemo(() => {
@@ -325,9 +341,7 @@ const Memo: React.FC = () => {
 	const selected = visible.find((post) => post.slug === selectedSlug) ?? pinnedPosts[0] ?? otherPosts[0] ?? null;
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
-		selected && !inTrash
-			? adjacentPosts(filterPosts(organized, category, ''), selected.slug)
-			: { older: null, newer: null };
+		selected && !inTrash ? adjacentPosts(inCategory, selected.slug) : { older: null, newer: null };
 	// 주소 막대에 지금 글의 주소를 둔다 (새로 고침하거나 주소를 복사해도 그 글로). 게시하지 않은 글은 주소가 없다.
 	// 글을 다 읽어 오기 전에는 그대로 둔다 (글 주소로 들어온 그 글이 아직 없을 수 있다)
 	// 주소로 들어왔거나 직접 글을 고른 뒤부터 (처음 보이는 글로 사이트 주소를 덮지 않게)
@@ -772,8 +786,8 @@ const Memo: React.FC = () => {
 		</>
 	);
 
-	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글·최근 삭제된 항목이면 마지막 폴더) */
-	const newFolder = category === ALL_CATEGORY || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
+	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글·태그·최근 삭제된 항목이면 마지막 폴더) */
+	const newFolder = category === ALL_CATEGORY || tag || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
 	const openFind = selected ? () => setFindSlug(selected.slug) : null;
 	const findTarget = selected?.slug ?? null;
 	const memoInFront = foregroundApp(apps) === 'memo';
@@ -857,6 +871,7 @@ const Memo: React.FC = () => {
 						canDrop={canDrop}
 						onDrop={drop}
 						recentlyDeleted={trash.length}
+						tags={tags}
 					/>
 
 					<section className="memo-list" aria-label="글 목록">
@@ -910,7 +925,17 @@ const Memo: React.FC = () => {
 						</section>
 					)}
 
-					<article className="memo-reader" aria-label={selected ? selected.title : '글'}>
+					<article
+						className="memo-reader"
+						aria-label={selected ? selected.title : '글'}
+						onClick={(event) => {
+							// 읽기 화면의 #태그를 누르면 그 태그의 글만 (편집기 안에서는 커서만 옮긴다)
+							const target = (event.target as Element).closest('.memo-tag');
+							if (!target || target.closest('.ProseMirror')) return;
+							const name = target.getAttribute('data-tag');
+							if (name) selectFolder(TAG_PREFIX + name);
+						}}
+					>
 						<div className={`memo-toolbar memo-reader-toolbar ${searching ? 'searching' : ''}`}>
 							{galleryNoteOpen && (
 								<>

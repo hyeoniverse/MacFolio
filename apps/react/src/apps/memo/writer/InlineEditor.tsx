@@ -17,6 +17,7 @@ import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
 import { uploadAndInsert } from './attachments';
 import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
+import { tagsInText } from '../tags';
 import TableHandles from './TableHandles';
 import { findPlugin } from './findPlugin';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
@@ -184,6 +185,35 @@ function highlightDecorations(doc: Node) {
 	return DecorationSet.create(doc, decorations);
 }
 
+/** 본문의 #태그를 읽기 화면처럼 칠한다 (코드 블록·인라인 코드·링크 안은 빼고, tags.ts의 규칙) */
+function tagDecorations(doc: Node) {
+	const decorations: Decoration[] = [];
+	doc.descendants((node, pos) => {
+		if (node.type.name === 'code_block') return false;
+		if (!node.isText || !node.text) return true;
+		if (node.marks.some((mark) => mark.type.name === 'inlineCode' || mark.type.name === 'link')) return false;
+		for (const { start, end } of tagsInText(node.text))
+			decorations.push(Decoration.inline(pos + start, pos + end, { class: 'memo-tag' }));
+		return false;
+	});
+	return DecorationSet.create(doc, decorations);
+}
+
+const tagHighlight = $prose(
+	() =>
+		new Plugin<DecorationSet>({
+			state: {
+				init: (_config, state) => tagDecorations(state.doc),
+				apply: (tr, old) => (tr.docChanged ? tagDecorations(tr.doc) : old),
+			},
+			props: {
+				decorations(state) {
+					return this.getState(state);
+				},
+			},
+		})
+);
+
 const codeHighlight = $prose(
 	() =>
 		new Plugin<DecorationSet>({
@@ -279,7 +309,8 @@ const Inner = ({ markdown, onChange }: Props) => {
 				.use(gapText)
 				.use(gapClickPlugin)
 				.use(findPlugin)
-				.use(codeHighlight),
+				.use(codeHighlight)
+				.use(tagHighlight),
 		[]
 	);
 

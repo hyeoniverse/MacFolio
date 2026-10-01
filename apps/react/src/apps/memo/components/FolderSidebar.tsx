@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
-import { ALL_CATEGORY, RECENTLY_DELETED, type FolderNode } from '../posts';
+import { ALL_CATEGORY, RECENTLY_DELETED, TAG_PREFIX, type FolderNode } from '../posts';
 import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
 const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
@@ -33,6 +33,8 @@ interface Props {
 	onDrop: (target: string) => void;
 	/** '최근 삭제된 항목'의 글 수 (관리자). 1개 이상일 때만 폴더 목록 맨 아래에 보인다 */
 	recentlyDeleted?: number;
+	/** 본문에 쓴 #태그와 글 수 (tags.ts). 있으면 폴더 아래에 태그 묶음이 보인다 */
+	tags?: { name: string; count: number }[];
 }
 
 /** 폴더에 끌어 놓기. 놓을 수 있는 폴더에 올리면 강조한다 */
@@ -413,6 +415,30 @@ const FolderSidebar: React.FC<Props> = (props) => {
 						</li>
 					)}
 				</ul>
+				{/* 태그: macOS 메모처럼 폴더 아래에 알약으로. 누르면 그 태그의 글만 */}
+				{props.tags && props.tags.length > 0 && (
+					<section className="memo-tag-browser" aria-label="태그">
+						<h3>태그</h3>
+						<ul>
+							{props.tags.map((tag) => {
+								const path = TAG_PREFIX + tag.name;
+								return (
+									<li key={tag.name}>
+										<button
+											type="button"
+											className={`memo-tag-chip ${current === path ? 'active' : ''}`}
+											aria-current={current === path || undefined}
+											title={`${tag.count}개의 메모`}
+											onClick={() => onSelect(current === path ? ALL_CATEGORY : path)}
+										>
+											#{tag.name}
+										</button>
+									</li>
+								);
+							})}
+						</ul>
+					</section>
+				)}
 			</div>
 		</nav>
 	);
