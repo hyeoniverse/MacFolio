@@ -877,6 +877,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(note).toContainText('30일 뒤에 영구히 삭제됩니다');
 		await expect(note.getByRole('button', { name: '즉시 삭제' })).toBeVisible();
 		await expect(memo.getByRole('button', { name: '메모 즉시 삭제' }).first()).toBeVisible();
+		await expect(memo.locator('.memo-reader-toolbar').getByRole('button', { name: '되돌려 놓기' })).toBeVisible();
 
 		// 되돌려 놓으면 모든 글로 돌아가 그 글을 연다
 		await note.getByRole('button', { name: '되돌려 놓기' }).click();
@@ -894,8 +895,16 @@ test.describe('바로 고치기 (관리자)', () => {
 		// 즉시 삭제는 되돌릴 수 없어서 묻는다. 마지막 하나라 최근 삭제된 항목도 사라진다
 		await trash.click();
 		await items.first().click({ button: 'right' });
-		page.once('dialog', (dialog) => dialog.accept());
 		await page.getByRole('menuitem', { name: '즉시 삭제' }).click();
+		// 메모 창 안의 경고창: 취소하면 그대로, 삭제를 눌러야 지운다
+		const alert = memo.getByRole('alertdialog', { name: '1개의 메모를 영구적으로 삭제하겠습니까?' });
+		await expect(alert).toContainText('이 동작은 취소할 수 없습니다.');
+		await alert.getByRole('button', { name: '취소' }).click();
+		await expect(alert).toHaveCount(0);
+		await expect(items).toHaveCount(1);
+		await items.first().click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '즉시 삭제' }).click();
+		await alert.getByRole('button', { name: '삭제' }).click();
 		await expect(trash).toHaveCount(0);
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('모든 글');
 		expect(api.posts.find((post) => post.slug === 'cra-to-vite')).toMatchObject({ deleted: true, deletedAt: null });
@@ -914,8 +923,11 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		await trash.click();
 		await folders.getByRole('button', { name: '휴지통 동작' }).click();
-		page.once('dialog', (dialog) => dialog.accept());
 		await page.getByRole('menu', { name: '휴지통 메뉴' }).getByRole('menuitem', { name: '휴지통 비우기' }).click();
+		await memo
+			.getByRole('alertdialog', { name: '2개의 메모를 영구적으로 삭제하겠습니까?' })
+			.getByRole('button', { name: '삭제' })
+			.click();
 		await expect(trash).toHaveCount(0);
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('모든 글');
 		expect(

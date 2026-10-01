@@ -73,6 +73,7 @@ import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
+import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
 const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
@@ -652,9 +653,16 @@ const Memo: React.FC = () => {
 			});
 	};
 
+	/** 앱 안 경고창으로 묻는다 (메모 창 한가운데). 확인하면 true */
+	const [purgeAlert, setPurgeAlert] = useState<{ title: string; resolve: (ok: boolean) => void } | null>(null);
+	const askPurge = (count: number) =>
+		new Promise<boolean>((resolve) =>
+			setPurgeAlert({ title: `${count}개의 메모를 영구적으로 삭제하겠습니까?`, resolve })
+		);
+
 	/** 최근 삭제된 항목에서 즉시 삭제한다 (되돌릴 수 없어서 묻는다) */
 	const purgeDeleted = async (post: Post) => {
-		if (!window.confirm(`'${post.title}' 메모를 즉시 삭제할까요? 되돌릴 수 없습니다.`)) return;
+		if (!(await askPurge(1))) return;
 		if (!(await purgePost(env.apiUrl, post.slug))) return failed('즉시 삭제하지 못함');
 		// 마지막 하나였으면 최근 삭제된 항목이 사라지므로 모든 글로
 		if (trash.length <= 1) selectFolder(ALL_CATEGORY);
@@ -664,7 +672,7 @@ const Memo: React.FC = () => {
 	/** 휴지통 비우기: 최근 삭제된 항목의 메모를 모두 즉시 삭제한다 */
 	const emptyTrash = async () => {
 		if (trash.length === 0) return;
-		if (!window.confirm(`최근 삭제된 메모 ${trash.length}개를 모두 즉시 삭제할까요? 되돌릴 수 없습니다.`)) return;
+		if (!(await askPurge(trash.length))) return;
 		const results = await Promise.all(
 			trash.map(async (post) => ({ slug: post.slug, ok: await purgePost(env.apiUrl, post.slug) }))
 		);
@@ -715,14 +723,22 @@ const Memo: React.FC = () => {
 						icon="fa-solid fa-clock-rotate-left"
 					/>
 				)}
-				{/* 최근 삭제된 메모: 휴지통 단추는 즉시 삭제 (되돌려 놓기는 본문 위 안내 상자에) */}
+				{/* 최근 삭제된 메모: 되돌려 놓기·즉시 삭제 아이콘 (본문 위 안내 상자에도 같은 단추) */}
 				{selected && inTrash && (
-					<IconButton
-						className={className}
-						label="메모 즉시 삭제"
-						onClick={() => void purgeDeleted(selected)}
-						icon="fa-regular fa-trash-can"
-					/>
+					<>
+						<IconButton
+							className={className}
+							label="되돌려 놓기"
+							onClick={() => void restoreDeleted(selected)}
+							icon="fa-solid fa-rotate-left"
+						/>
+						<IconButton
+							className={className}
+							label="메모 즉시 삭제"
+							onClick={() => void purgeDeleted(selected)}
+							icon="fa-regular fa-trash-can"
+						/>
+					</>
 				)}
 				{selected && !inTrash && newDraft === null && (
 					<IconButton
@@ -863,6 +879,21 @@ const Memo: React.FC = () => {
 						: {})}
 			/>
 			<div ref={shellRef} className="memo-shell">
+				{purgeAlert && (
+					<AlertDialog
+						title={purgeAlert.title}
+						message="이 동작은 취소할 수 없습니다."
+						confirmLabel="삭제"
+						onConfirm={() => {
+							purgeAlert.resolve(true);
+							setPurgeAlert(null);
+						}}
+						onCancel={() => {
+							purgeAlert.resolve(false);
+							setPurgeAlert(null);
+						}}
+					/>
+				)}
 				<div
 					className={`memo pane-${pane} view-${view} ${galleryNoteOpen ? 'gallery-note' : ''} ${sidebarOpen ? '' : 'sidebar-closed'}`}
 					data-nav={nav}
