@@ -59,10 +59,13 @@
 	text-align: left;
 }
 
-.messages button {
-	font: inherit;
-	color: inherit;
-	cursor: pointer;
+/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
+@layer reset {
+	.messages button {
+		font: inherit;
+		color: inherit;
+		cursor: pointer;
+	}
 }
 
 /* 떠 있는 원형 버튼 (새 메시지, 뒤로 가기) */
