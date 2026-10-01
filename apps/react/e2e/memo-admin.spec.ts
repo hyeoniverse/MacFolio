@@ -178,6 +178,37 @@ test.describe('메모 편집 (관리자)', () => {
 		await expect.poll(() => api.organization.pins).toEqual({ 'bugs-found-by-tests': false });
 	});
 
+	test('메모를 잠그면 고치거나 지울 수 없고, 잠금을 풀면 다시 고친다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		const title = '테스트를 붙이자 보인 버그들';
+		const item = memo.locator('.memo-item', { hasText: title });
+		await item.click();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+
+		// 우클릭 메뉴로 잠근다: 편집기 대신 읽기 화면, 목록에 자물쇠, 지우기는 꺼진다
+		await item.click({ button: 'right' });
+		await page
+			.getByRole('menu', { name: `${title} 메뉴` })
+			.getByRole('menuitem', { name: '메모 잠그기' })
+			.click();
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+		await expect(memo.getByText('잠긴 메모입니다.')).toBeVisible();
+		await expect(item.getByRole('img', { name: '잠김' })).toBeVisible();
+		await expect(memo.getByRole('button', { name: '메모 삭제', exact: true }).first()).toBeDisabled();
+		await expect.poll(() => api.organization.locks).toEqual({ 'bugs-found-by-tests': true });
+		await item.click({ button: 'right' });
+		const menu = page.getByRole('menu', { name: `${title} 메뉴` });
+		await expect(menu.getByRole('menuitem', { name: '메모 삭제' })).toBeDisabled();
+		await page.keyboard.press('Escape');
+
+		// 본문 위의 '잠금 풀기'로 풀면 다시 편집기
+		await memo.getByRole('button', { name: '잠금 풀기' }).click();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+		await expect(item.getByRole('img', { name: '잠김' })).toHaveCount(0);
+		await expect.poll(() => api.organization.locks).toEqual({});
+	});
+
 	test('방문자도 관리자가 정리한 대로 보지만, 편집할 수는 없다', async ({ page }) => {
 		await fakeApi(page, {
 			signedIn: false,
