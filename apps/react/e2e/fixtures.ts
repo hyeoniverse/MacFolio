@@ -25,9 +25,9 @@ export const test = base.extend<{ pageErrors: Error[]; noApi: void }>({
 
 export { expect };
 
-/** 로딩 화면을 클릭해 넘기고 데스크톱에 들어간다. */
-export async function enterDesktop(page: Page) {
-	await page.goto('/');
+/** 로딩 화면을 클릭해 넘기고 데스크톱에 들어간다. path로 앱 항목 주소(/memo/<글> 등)를 열 수 있다 */
+export async function enterDesktop(page: Page, path = '/') {
+	await page.goto(path);
 	const loading = page.locator('.loading-container');
 	await loading.click();
 	// 로딩은 약 3초(진행 막대 + 걷히기). 전체 테스트를 병렬로 돌려 CPU가 바쁘면 더 걸리므로 넉넉히 기다린다

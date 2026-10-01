@@ -2,8 +2,8 @@ import { test, expect, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
 
 /** 로딩 화면을 탭해 넘기고 홈 화면에 들어간다. */
-async function enterHome(page: Page) {
-	await page.goto('/');
+async function enterHome(page: Page, path = '/') {
+	await page.goto(path);
 	const loading = page.locator('.loading-container');
 	await expect(loading).toContainText('탭하여');
 	await loading.tap();
@@ -52,6 +52,15 @@ test.describe('모바일', () => {
 		// 터미널은 모바일에서 '단축어'로 보인다
 		await expect(homeApp(page, '터미널')).toHaveCount(0);
 		await expect(homeApp(page, '단축어')).toBeVisible();
+	});
+
+	test('글 주소로 들어오면 홈 화면 대신 메모 앱이 그 글의 본문으로 열린다', async ({ page }) => {
+		await enterHome(page, '/memo/cra-to-vite');
+		const memo = page.locator('[data-app="memo"]');
+		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText('CRA에서 Vite로 옮기기');
+		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toBeInViewport();
+		// 휴대폰에서도 공유 단추가 있다 (공유 시트를 연다)
+		await expect(memo.getByRole('button', { name: '링크 공유' }).first()).toBeVisible();
 	});
 
 	test('새싹 농장은 휴대폰에서도 화면을 가득 채워 게임을 띄운다', async ({ page }) => {

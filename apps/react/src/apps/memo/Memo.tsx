@@ -59,6 +59,8 @@ import SearchField from './components/SearchField';
 import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/popover';
 import { deletePost, fetchAdminPosts, fetchServerPosts, type PostDraft } from './postsApi';
+import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
+import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 
@@ -154,9 +156,11 @@ const Memo: React.FC = () => {
 	const [searchFocused, setSearchFocused] = useState(false);
 	const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
 	const searching = searchFocused || moreMenu !== null;
-	const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+	// 글 주소(/memo/<글>)로 들어왔으면 그 글부터 (shared/lib/appLink.ts)
+	const [selectedSlug, setSelectedSlug] = useState<string | null>(() => linkedId('memo'));
 	// 좁은 창에서는 한 칸씩 보여준다 (iOS 메모처럼 폴더 → 목록 → 본문). 넓은 창에서는 쓰지 않는다.
-	const [pane, setPaneState] = useState<Pane>('list');
+	// 글 주소로 들어왔으면 본문부터
+	const [pane, setPaneState] = useState<Pane>(() => (linkedId('memo') ? 'reader' : 'list'));
 	// 넘어간 방향. 앞으로 가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다 (처음에는 애니메이션 없음)
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
 	/** 사용자가 사이드바를 직접 열거나 닫았으면 그 값, 아니면 창 폭으로 정한다 */
@@ -308,6 +312,15 @@ const Memo: React.FC = () => {
 	const { older, newer } = selected
 		? adjacentPosts(filterPosts(organized, category, ''), selected.slug)
 		: { older: null, newer: null };
+	// 주소 막대에 지금 글의 주소를 둔다 (새로 고침하거나 주소를 복사해도 그 글로). 게시하지 않은 글은 주소가 없다.
+	// 글을 다 읽어 오기 전에는 그대로 둔다 (글 주소로 들어온 그 글이 아직 없을 수 있다)
+	// 주소로 들어왔거나 직접 글을 고른 뒤부터 (처음 보이는 글로 사이트 주소를 덮지 않게)
+	const address = selectedSlug !== null && selected && !selected.status?.draftOnly ? selected.slug : null;
+	useEffect(() => {
+		if (status === 'ready') setAppAddress('memo', address);
+	}, [status, address]);
+	// 메모 앱을 닫으면 주소가 없다
+	useEffect(() => () => setAppAddress('memo', null), []);
 	const readerScroll = useRef<HTMLDivElement>(null);
 	// 다른 글을 열면 본문 맨 위부터
 	useEffect(() => {
@@ -667,6 +680,21 @@ const Memo: React.FC = () => {
 			</button>
 		);
 
+	/** 글 공유: 휴대폰은 공유 시트, 그 밖에는 링크 복사 (게시하지 않은 글은 주소가 없어 빼고) */
+	const shareButton = (className: string) =>
+		selected &&
+		!selected.status?.draftOnly && (
+			<button
+				type="button"
+				className={`memo-tool memo-share ${className}`}
+				aria-label="링크 공유"
+				title="링크 공유"
+				onClick={() => void shareLink({ app: 'memo', id: selected.slug }, selected.title)}
+			>
+				<ShareIcon />
+			</button>
+		);
+
 	const empty = (
 		<>
 			{status === 'loading' && <p className="memo-empty">불러오는 중…</p>}
@@ -833,6 +861,8 @@ const Memo: React.FC = () => {
 								<span className="memo-toolbar-tools-inner">
 									{authorTools('')}
 									{pinButton('')}
+									{/* 편집 중에는 서식 도구로 도구 막대가 꽉 차서 공유는 ••• 메뉴에만 */}
+									{!editing && shareButton('')}
 									{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
 									{sortMenu()}
 									<ViewSwitch view={view} onChange={changeView} />
@@ -870,6 +900,7 @@ const Memo: React.FC = () => {
 								</button>
 								{authorTools('compact-only')}
 								{pinButton('compact-only')}
+								{shareButton('compact-only')}
 							</div>
 							{editing && (newDraft !== null || selected) && (
 								// 관리자: 따로 편집 단추 없이 바로 고친다 (macOS 메모처럼)
@@ -979,6 +1010,16 @@ const Memo: React.FC = () => {
 												label: '메모 삭제',
 												icon: 'fa-regular fa-trash-can',
 												onSelect: () => void removePost(selected),
+											},
+											'separator' as const,
+										]
+									: []),
+								...(selected && !selected.status?.draftOnly
+									? [
+											{
+												label: '링크 공유',
+												icon: <ShareIcon />,
+												onSelect: () => void shareLink({ app: 'memo', id: selected.slug }, selected.title),
 											},
 											'separator' as const,
 										]
