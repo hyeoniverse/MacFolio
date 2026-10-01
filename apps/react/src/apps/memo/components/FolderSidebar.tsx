@@ -33,6 +33,8 @@ interface Props {
 	onDrop: (target: string) => void;
 	/** '최근 삭제된 항목'의 글 수 (관리자). 1개 이상일 때만 폴더 목록 맨 아래에 보인다 */
 	recentlyDeleted?: number;
+	/** 휴지통 비우기 (최근 삭제된 항목의 ••• 메뉴) */
+	onEmptyTrash?: () => void;
 	/** 본문에 쓴 #태그와 글 수 (tags.ts). 있으면 폴더 아래에 태그 묶음이 보인다 */
 	tags?: { name: string; count: number }[];
 }
@@ -292,6 +294,8 @@ const FolderSidebar: React.FC<Props> = (props) => {
 	const [addingUnder, setAddingUnder] = useState<string | null>(null);
 	const rootDrop = useDropTarget(ALL_CATEGORY, props);
 	const trashDrop = useDropTarget(RECENTLY_DELETED, props);
+	/** 최근 삭제된 항목의 메뉴를 연 자리 (null이면 닫힘) */
+	const [trashMenuAt, setTrashMenuAt] = useState<{ x: number; y: number } | null>(null);
 
 	const toggleFolder = (path: string) =>
 		setCollapsed((prev) => {
@@ -396,8 +400,16 @@ const FolderSidebar: React.FC<Props> = (props) => {
 					{((props.recentlyDeleted ?? 0) > 0 || props.dragging?.type === 'post') && (
 						<li>
 							<div
-								className={`memo-folder-row ${trashDrop.active ? 'drop-target' : ''}`}
+								className={`memo-folder-row ${trashDrop.active ? 'drop-target' : ''} ${trashMenuAt ? 'menu-open' : ''}`}
 								style={{ ['--depth' as string]: 0 }}
+								onContextMenu={
+									props.canEdit && props.onEmptyTrash
+										? (event) => {
+												event.preventDefault();
+												setTrashMenuAt({ x: event.clientX, y: event.clientY });
+											}
+										: undefined
+								}
 								{...trashDrop.handlers}
 							>
 								<span className="memo-disclosure" aria-hidden="true" />
@@ -411,6 +423,37 @@ const FolderSidebar: React.FC<Props> = (props) => {
 									<span className="memo-folder-name">최근 삭제된 항목</span>
 									{(props.recentlyDeleted ?? 0) > 0 && <span className="memo-count">{props.recentlyDeleted}</span>}
 								</button>
+								{props.canEdit && props.onEmptyTrash && (
+									<button
+										type="button"
+										className="memo-folder-more"
+										aria-label="휴지통 동작"
+										aria-haspopup="menu"
+										aria-expanded={trashMenuAt !== null}
+										onClick={(event) => {
+											const rect = event.currentTarget.getBoundingClientRect();
+											setTrashMenuAt(trashMenuAt ? null : { x: rect.left, y: rect.bottom + 4 });
+										}}
+									>
+										<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+									</button>
+								)}
+								{trashMenuAt && props.onEmptyTrash && (
+									<Menu
+										label="휴지통 메뉴"
+										anchor={trashMenuAt}
+										onClose={() => setTrashMenuAt(null)}
+										items={[
+											{
+												label: '휴지통 비우기',
+												icon: 'fa-regular fa-trash-can',
+												destructive: true,
+												disabled: (props.recentlyDeleted ?? 0) === 0,
+												onSelect: props.onEmptyTrash,
+											},
+										]}
+									/>
+								)}
 							</div>
 						</li>
 					)}

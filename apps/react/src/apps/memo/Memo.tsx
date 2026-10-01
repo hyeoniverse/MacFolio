@@ -72,6 +72,7 @@ import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
+import Button from '@/shared/ui/button/Button';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
 const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
@@ -628,7 +629,7 @@ const Memo: React.FC = () => {
 	 */
 	const restoreDeleted = async (post: Post, folder = ALL_CATEGORY) => {
 		const result = await restorePost(env.apiUrl, post.slug);
-		if (!result.ok) return failed('되살리지 못함');
+		if (!result.ok) return failed('되돌려 놓지 못함');
 		if (result.post) upsertAdminPost(result.post);
 		else setAdminPosts((list) => (list ?? []).filter((item) => item.slug !== post.slug));
 		if (folder !== ALL_CATEGORY && folder !== post.category) edit((prev) => movePost(prev, post.slug, folder));
@@ -636,13 +637,9 @@ const Memo: React.FC = () => {
 		selectFolder(folder);
 	};
 
-	/** 최근 삭제된 항목에서 영구히 지운다 (되돌릴 수 없어서 묻는다) */
-	const purgeDeleted = async (post: Post) => {
-		if (!window.confirm(`'${post.title}' 메모를 영구히 지울까요? 되돌릴 수 없습니다.`)) return;
-		if (!(await purgePost(env.apiUrl, post.slug))) return failed('영구히 지우지 못함');
-		// 마지막 하나였으면 최근 삭제된 항목이 사라지므로 모든 글로
-		if (trash.length <= 1) selectFolder(ALL_CATEGORY);
-		const current = adminPosts?.find((item) => item.slug === post.slug);
+	/** 영구히 지운 글: 내용 없이 가리는 표시만 남는다 (서버와 같게) */
+	const markPurged = (slug: string) => {
+		const current = adminPosts?.find((item) => item.slug === slug);
 		if (current)
 			upsertAdminPost({
 				...current,
@@ -653,6 +650,27 @@ const Memo: React.FC = () => {
 				deletedAt: null,
 				revisions: 0,
 			});
+	};
+
+	/** 최근 삭제된 항목에서 즉시 삭제한다 (되돌릴 수 없어서 묻는다) */
+	const purgeDeleted = async (post: Post) => {
+		if (!window.confirm(`'${post.title}' 메모를 즉시 삭제할까요? 되돌릴 수 없습니다.`)) return;
+		if (!(await purgePost(env.apiUrl, post.slug))) return failed('즉시 삭제하지 못함');
+		// 마지막 하나였으면 최근 삭제된 항목이 사라지므로 모든 글로
+		if (trash.length <= 1) selectFolder(ALL_CATEGORY);
+		markPurged(post.slug);
+	};
+
+	/** 휴지통 비우기: 최근 삭제된 항목의 메모를 모두 즉시 삭제한다 */
+	const emptyTrash = async () => {
+		if (trash.length === 0) return;
+		if (!window.confirm(`최근 삭제된 메모 ${trash.length}개를 모두 즉시 삭제할까요? 되돌릴 수 없습니다.`)) return;
+		const results = await Promise.all(
+			trash.map(async (post) => ({ slug: post.slug, ok: await purgePost(env.apiUrl, post.slug) }))
+		);
+		results.filter((result) => result.ok).forEach((result) => markPurged(result.slug));
+		if (results.some((result) => !result.ok)) failed('휴지통을 다 비우지 못함');
+		else if (inTrash) selectFolder(ALL_CATEGORY);
 	};
 
 	/** 게시 상태 표시 (관리자 목록): 게시한 적 없음, 게시하지 않은 편집, 예약 */
@@ -697,22 +715,14 @@ const Memo: React.FC = () => {
 						icon="fa-solid fa-clock-rotate-left"
 					/>
 				)}
-				{/* 최근 삭제된 메모: 본문은 평소 읽기 화면 그대로 두고, 되살리기·영구 삭제는 도구 막대에 (macOS 메모처럼) */}
+				{/* 최근 삭제된 메모: 휴지통 단추는 즉시 삭제 (되돌려 놓기는 본문 위 안내 상자에) */}
 				{selected && inTrash && (
-					<>
-						<IconButton
-							className={className}
-							label="되살리기"
-							onClick={() => void restoreDeleted(selected)}
-							icon="fa-solid fa-rotate-left"
-						/>
-						<IconButton
-							className={className}
-							label="메모 영구 삭제"
-							onClick={() => void purgeDeleted(selected)}
-							icon="fa-regular fa-trash-can"
-						/>
-					</>
+					<IconButton
+						className={className}
+						label="메모 즉시 삭제"
+						onClick={() => void purgeDeleted(selected)}
+						icon="fa-regular fa-trash-can"
+					/>
 				)}
 				{selected && !inTrash && newDraft === null && (
 					<IconButton
@@ -887,6 +897,7 @@ const Memo: React.FC = () => {
 						canDrop={canDrop}
 						onDrop={drop}
 						recentlyDeleted={trash.length}
+						onEmptyTrash={() => void emptyTrash()}
 						tags={tags}
 					/>
 
@@ -1048,12 +1059,39 @@ const Memo: React.FC = () => {
 							{(!editing || inTrash || (newDraft === null && selected?.locked)) && selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다. 최근 삭제된 항목의 글과 잠긴 메모는 관리자에게도 읽기 화면
 								<div key={selected.slug} className="memo-reader-body">
-									{/* 날짜는 늘 맨 위 (잠금 안내는 그 아래) */}
+									{/* 날짜는 늘 맨 위 (최근 삭제·잠금 안내는 그 아래) */}
 									<p className="memo-reader-date">
 										<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> ·{' '}
 										{folderLabel(selected.category)}
-										{selected.deletedAt && ` · ${daysUntilPurge(selected.deletedAt, today)}일 뒤 삭제`}
 									</p>
+									{selected.deletedAt && (
+										// Finder의 휴지통 안내처럼: 왜 고칠 수 없는지, 어떻게 쓰는지, 그 아래 단추
+										<div className="memo-trash-note" role="note">
+											<i className="fa-regular fa-trash-can" aria-hidden="true" />
+											<div>
+												<strong>최근 삭제된 메모</strong>
+												<p>
+													{daysUntilPurge(selected.deletedAt, today)}일 뒤에 영구히 삭제됩니다. 원본 항목이 휴지통에
+													있기 때문에 수정할 수 없습니다.
+												</p>
+												<p className="memo-trash-note-hint">
+													이 항목을 사용하려면 휴지통 밖으로 드래그하거나 복구하십시오.
+												</p>
+												<div className="memo-trash-note-actions">
+													<Button icon="fa-solid fa-rotate-left" onClick={() => void restoreDeleted(selected)}>
+														되돌려 놓기
+													</Button>
+													<Button
+														tone="danger"
+														icon="fa-regular fa-trash-can"
+														onClick={() => void purgeDeleted(selected)}
+													>
+														즉시 삭제
+													</Button>
+												</div>
+											</div>
+										</div>
+									)}
 									{editing && !selected.deletedAt && (
 										// 도구 막대는 편집 도구로 꽉 차서, 잠금은 메뉴로 걸고 여기서 푼다
 										<p className="memo-locked-note">
@@ -1123,12 +1161,12 @@ const Memo: React.FC = () => {
 								...(canEdit && selected && inTrash
 									? [
 											{
-												label: '되살리기',
+												label: '되돌려 놓기',
 												icon: 'fa-solid fa-rotate-left',
 												onSelect: () => void restoreDeleted(selected),
 											},
 											{
-												label: '영구 삭제',
+												label: '즉시 삭제',
 												icon: 'fa-regular fa-trash-can',
 												destructive: true,
 												onSelect: () => void purgeDeleted(selected),
@@ -1185,13 +1223,13 @@ const Memo: React.FC = () => {
 								menuPost.deletedAt
 									? [
 											{
-												label: '되살리기',
+												label: '되돌려 놓기',
 												icon: 'fa-solid fa-rotate-left',
 												onSelect: () => void restoreDeleted(menuPost),
 											},
 											'separator',
 											{
-												label: '영구 삭제',
+												label: '즉시 삭제',
 												icon: 'fa-regular fa-trash-can',
 												destructive: true,
 												onSelect: () => void purgeDeleted(menuPost),
