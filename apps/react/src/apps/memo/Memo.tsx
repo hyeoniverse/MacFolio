@@ -63,6 +63,7 @@ import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
 import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
 const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
@@ -592,45 +593,36 @@ const Memo: React.FC = () => {
 			<>
 				{/* 사이드바가 열려 있으면 새 메모는 사이드바 위쪽에 (좁은 창의 한 칸 보기에서는 여기) */}
 				{(!sidebarOpen || className === 'compact-only') && (
-					<button
-						type="button"
-						className={`memo-tool ${className}`}
-						aria-label="새 메모"
-						title="새 메모"
+					<IconButton
+						className={className}
+						label="새 메모"
 						onClick={startNewDraft}
-					>
-						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-					</button>
+						icon="fa-regular fa-pen-to-square"
+					/>
 				)}
 				{/* 본문 서식 (편집기가 열려 있을 때만) */}
 				<span className={`memo-format-tools ${className}`}>
 					<FormatTools />
 				</span>
 				{editing && selected && newDraft === null && className === '' && (
-					<button
+					<IconButton
 						ref={revisionsButton}
-						type="button"
-						className={`memo-tool ${revisionsOpen ? 'on' : ''}`}
-						aria-label="버전 기록"
-						title="버전 기록"
+						on={revisionsOpen}
+						label="버전 기록"
 						aria-haspopup="dialog"
 						aria-expanded={revisionsOpen}
 						onPointerDown={keepFocus}
 						onClick={() => setRevisionsOpen((value) => !value)}
-					>
-						<i className="fa-solid fa-clock-rotate-left" aria-hidden="true" />
-					</button>
+						icon="fa-solid fa-clock-rotate-left"
+					/>
 				)}
 				{selected && newDraft === null && (
-					<button
-						type="button"
-						className={`memo-tool ${className}`}
-						aria-label="메모 삭제"
-						title="메모 삭제"
+					<IconButton
+						className={className}
+						label="메모 삭제"
 						onClick={() => void removePost(selected)}
-					>
-						<i className="fa-regular fa-trash-can" aria-hidden="true" />
-					</button>
+						icon="fa-regular fa-trash-can"
+					/>
 				)}
 			</>
 		);
@@ -668,31 +660,27 @@ const Memo: React.FC = () => {
 	const pinButton = (className: string) =>
 		canEdit &&
 		selected && (
-			<button
-				type="button"
-				className={`memo-tool memo-pin ${selected.pinned ? 'on' : ''} ${className}`}
-				aria-label={selected.pinned ? '메모 고정 해제' : '메모 고정'}
+			<IconButton
+				className={`memo-pin ${className}`}
+				on={selected.pinned}
+				label={selected.pinned ? '메모 고정 해제' : '메모 고정'}
 				aria-pressed={Boolean(selected.pinned)}
-				title={selected.pinned ? '메모 고정 해제' : '메모 고정'}
 				onClick={() => togglePin(selected)}
-			>
-				<i className="fa-solid fa-thumbtack" aria-hidden="true" />
-			</button>
+				icon="fa-solid fa-thumbtack"
+			/>
 		);
 
 	/** 글 공유: 휴대폰은 공유 시트, 그 밖에는 링크 복사 (게시하지 않은 글은 주소가 없어 빼고) */
 	const shareButton = (className: string) =>
 		selected &&
 		!selected.status?.draftOnly && (
-			<button
-				type="button"
-				className={`memo-tool memo-share ${className}`}
-				aria-label="링크 공유"
-				title="링크 공유"
+			<IconButton
+				className={`memo-share ${className}`}
+				label="링크 공유"
 				onClick={() => void shareLink({ app: 'memo', id: selected.slug }, selected.title)}
 			>
 				<ShareIcon />
-			</button>
+			</IconButton>
 		);
 
 	const empty = (
@@ -840,13 +828,9 @@ const Memo: React.FC = () => {
 								<>
 									<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 									{/* 갤러리에서 연 글은 갤러리로 돌아간다 */}
-									<button
-										type="button"
-										className="memo-tool memo-gallery-back"
-										onClick={() => setGalleryNoteOpen(false)}
-									>
+									<IconButton className="memo-gallery-back" onClick={() => setGalleryNoteOpen(false)}>
 										<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
-									</button>
+									</IconButton>
 								</>
 							)}
 							{canEdit && (
@@ -868,11 +852,9 @@ const Memo: React.FC = () => {
 									<ViewSwitch view={view} onChange={changeView} />
 								</span>
 							</span>
-							<button
-								type="button"
-								className="memo-tool memo-toolbar-more"
-								aria-label="도구 더 보기"
-								title="도구 더 보기"
+							<IconButton
+								className="memo-toolbar-more"
+								label="도구 더 보기"
 								aria-haspopup="menu"
 								aria-expanded={moreMenu !== null}
 								tabIndex={searching ? undefined : -1}
@@ -885,9 +867,8 @@ const Memo: React.FC = () => {
 									const rect = event.currentTarget.getBoundingClientRect();
 									setMoreMenu(moreMenu ? null : { x: rect.left, y: rect.bottom + 6 });
 								}}
-							>
-								<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-							</button>
+								icon="fa-solid fa-ellipsis"
+							/>
 							{search}
 						</div>
 						{findSlug !== null && findSlug === selected?.slug && (

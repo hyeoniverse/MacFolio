@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Avatar from './Avatar';
 import { displayName, formatListTime, type Thread } from '../conversations';
+import IconButton from '@/shared/ui/button/IconButton';
 
 interface Props {
 	threads: Thread[];
@@ -21,15 +22,13 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) 
 		<aside className="messages-sidebar" aria-label="대화 목록">
 			{/* 신호등 버튼 자리. 좁은 창에서는 새 피드백 버튼이 여기로 온다 */}
 			<div className="messages-sidebar-top">
-				<button
-					type="button"
-					className="messages-round-button messages-compose-compact"
-					aria-label="새 피드백"
-					title="새 피드백"
+				<IconButton
+					variant="float"
+					className="messages-compose-compact"
+					label="새 피드백"
 					onClick={onCompose}
-				>
-					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-				</button>
+					icon="fa-regular fa-pen-to-square"
+				/>
 			</div>
 
 			<label className="messages-search">

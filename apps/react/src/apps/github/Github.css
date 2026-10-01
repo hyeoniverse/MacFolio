@@ -37,12 +37,15 @@
 	text-align: left;
 }
 
-.gh a {
-	color: var(--gh-link);
-}
+/* 링크 기본값: reset 층이라 탭·단추(.gh-tab, .gh-button)에 적은 색·밑줄이 이긴다 (styles/layers.css) */
+@layer reset {
+	.gh a {
+		color: var(--gh-link);
+	}
 
-.gh a:hover {
-	text-decoration: underline;
+	.gh a:hover {
+		text-decoration: underline;
+	}
 }
 
 /* 위쪽: 로고, 이름, 탭 */
@@ -77,8 +80,8 @@
 	gap: 8px;
 	padding: 8px 10px;
 	border-bottom: 2px solid transparent;
-	color: var(--gh-text) !important;
-	text-decoration: none !important;
+	color: var(--gh-text);
+	text-decoration: none;
 }
 
 .gh-tab i {
@@ -145,10 +148,10 @@
 	border: 1px solid var(--gh-border);
 	border-radius: 6px;
 	background-color: var(--gh-button-bg);
-	color: var(--gh-text) !important;
+	color: var(--gh-text);
 	font-weight: 500;
 	text-align: center;
-	text-decoration: none !important;
+	text-decoration: none;
 }
 
 .gh-follow {
@@ -286,11 +289,11 @@
 	gap: 6px;
 	padding: 6px 12px;
 	border-radius: 4px;
-	color: #ffffff !important;
+	color: #ffffff;
 	font-size: 12px;
 	font-weight: 700;
 	letter-spacing: 0.06em;
-	text-decoration: none !important;
+	text-decoration: none;
 	text-transform: uppercase;
 }
 
@@ -365,7 +368,7 @@
 }
 
 .gh-repo-meta a {
-	color: var(--gh-muted) !important;
+	color: var(--gh-muted);
 }
 
 .gh-language-dot {

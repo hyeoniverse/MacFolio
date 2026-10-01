@@ -1,0 +1,58 @@
+/*
+ * 아이콘 단추 (shared/ui/button/IconButton.tsx).
+ * components 층: reset 층(앱 루트의 `button { color: inherit }`)은 이기고, 앱의 층 밖 규칙에는 진다.
+ *
+ * 색은 앱이 [data-app]에 정한다.
+ *   --ui-tool-color: 아이콘 색          --ui-tool-hover: 올렸을 때 배경
+ *   --ui-tool-on-bg: 켜졌을 때 배경      --ui-tool-on-color: 켜졌을 때 아이콘 색
+ *   --ui-float-bg·--ui-float-shadow·--ui-float-color: 떠 있는 단추
+ */
+@layer components {
+	.ui-icon-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 5px;
+		/* 통합형 창의 끌기 영역(z-index 3)보다 위 */
+		position: relative;
+		z-index: 4;
+		border: none;
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.ui-icon-button.tool {
+		min-width: 30px;
+		height: 28px;
+		padding: 0 7px;
+		border-radius: 7px;
+		background: none;
+		color: var(--ui-tool-color, var(--color-text-secondary));
+	}
+
+	/* :where로 점수를 .on과 같게 둔다. 켜진 단추에 올려도 켜진 색이 이긴다 (뒤에 있어서) */
+	.ui-icon-button.tool:hover:where(:not(:disabled)) {
+		background-color: var(--ui-tool-hover, var(--color-selected-bg));
+	}
+
+	.ui-icon-button.tool.on {
+		background-color: var(--ui-tool-on-bg, var(--color-selected-bg));
+		color: var(--ui-tool-on-color, var(--color-text));
+	}
+
+	.ui-icon-button:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+
+	.ui-icon-button.float {
+		width: 34px;
+		height: 34px;
+		padding: 0;
+		border-radius: 50%;
+		background-color: var(--ui-float-bg);
+		box-shadow: var(--ui-float-shadow);
+		color: var(--ui-float-color, inherit);
+		font-size: 15px;
+	}
+}

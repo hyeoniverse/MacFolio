@@ -33,6 +33,14 @@
 	--memo-danger: #ff6961;
 }
 
+/* 공통 단추(shared/ui/button)의 색: 도구 막대 단추는 흐린 글자색, 켜지면 노란 바탕 */
+[data-app='memo'] {
+	--ui-tool-color: var(--memo-muted);
+	--ui-tool-hover: var(--memo-hover);
+	--ui-tool-on-bg: color-mix(in srgb, var(--memo-accent) 28%, transparent);
+	--ui-tool-on-color: var(--memo-text);
+}
+
 [data-app='memo'].container {
 	border-color: transparent;
 	background-color: var(--memo-bg);
@@ -92,32 +100,6 @@
 	width: 58px;
 }
 
-/* 도구 막대의 버튼. 통합형 창의 끌기 영역(z-index 3)보다 위에 있어야 눌린다 */
-.memo-tool {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 5px;
-	position: relative;
-	z-index: 4;
-	min-width: 30px;
-	height: 28px;
-	padding: 0 7px;
-	border: none;
-	border-radius: 7px;
-	background: none;
-	color: var(--memo-muted) !important;
-}
-
-.memo-tool:hover:not(:disabled) {
-	background-color: var(--memo-hover);
-}
-
-.memo-tool:disabled {
-	opacity: 0.35;
-	cursor: default !important;
-}
-
 .memo-sidebar-toggle svg {
 	width: 19px;
 	height: 15px;
@@ -140,13 +122,13 @@
 	border: none;
 	border-radius: 6px;
 	background: none;
-	color: var(--memo-muted) !important;
+	color: var(--memo-muted);
 	font-size: 12px;
 }
 
 .memo-view-switch button[aria-pressed='true'] {
 	background-color: var(--memo-bg);
-	color: var(--memo-text) !important;
+	color: var(--memo-text);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
@@ -180,11 +162,6 @@
 .memo-compact-tools .memo-search {
 	flex: 1;
 	margin: 0 0 0 12px;
-}
-
-/* 고정 단추: 고정되어 있으면 강조 색 */
-.memo-pin.on {
-	color: var(--memo-accent) !important;
 }
 
 .memo-pin i {
@@ -358,7 +335,7 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--memo-muted) !important;
+	color: var(--memo-muted);
 	font-size: 8px;
 }
 
@@ -399,7 +376,7 @@
 
 .memo-folder.active {
 	background-color: var(--memo-accent);
-	color: var(--memo-on-accent) !important;
+	color: var(--memo-on-accent);
 }
 
 .memo-folder.active i,
@@ -448,7 +425,7 @@
 	border: none;
 	border-radius: 50%;
 	background-color: var(--memo-search-bg);
-	color: var(--memo-text) !important;
+	color: var(--memo-text);
 	font-size: 10px;
 }
 
@@ -460,7 +437,7 @@
 
 .memo-folder-row:has(.memo-folder.active) .memo-folder-more {
 	background-color: rgba(255, 255, 255, 0.35);
-	color: var(--memo-on-accent) !important;
+	color: var(--memo-on-accent);
 }
 
 /* 메뉴를 연 폴더는 테두리로 표시 */
@@ -784,7 +761,7 @@
 
 .memo-item.active {
 	background-color: var(--memo-accent);
-	color: var(--memo-on-accent) !important;
+	color: var(--memo-on-accent);
 }
 
 .memo-item strong {
@@ -1248,25 +1225,19 @@
 }
 
 .memo-format-button {
-	width: auto !important;
+	width: auto;
 	flex-shrink: 0;
-	padding: 0 8px !important;
+	padding: 0 8px;
 	white-space: nowrap;
 	font-size: 13px;
 	font-weight: 600;
 	letter-spacing: -0.02em;
 }
 
-.memo-tool.on,
-.memo-format-button.on {
-	background-color: color-mix(in srgb, var(--memo-accent) 28%, transparent) !important;
-	color: var(--memo-text) !important;
-}
-
 /* 좁으면 빠른 단추는 숨기고 가가 메뉴에 모은다 */
 @container (max-width: 560px) {
 	.memo-format-quick {
-		display: none !important;
+		display: none;
 	}
 }
 
@@ -1868,12 +1839,12 @@
 
 .memo-table-drop.col {
 	width: 3px;
-	margin-left: -1.5px !important;
+	margin-left: -1.5px;
 }
 
 .memo-table-drop.row {
 	height: 3px;
-	margin-top: -1.5px !important;
+	margin-top: -1.5px;
 }
 
 .memo-inline-editor .memo-table-active .selectedCell {
@@ -1888,8 +1859,8 @@
 }
 
 .memo-handle-menu button {
-	padding-left: 12px !important;
-	font-size: 14px !important;
+	padding-left: 12px;
+	font-size: 14px;
 }
 
 /* 편집기의 표: 고른 칸, 열 너비 조절 손잡이 */
@@ -2508,7 +2479,7 @@
 	padding: 0;
 	border: none;
 	background: none;
-	cursor: zoom-in !important;
+	cursor: zoom-in;
 }
 
 .memo-figure img {
@@ -2705,7 +2676,7 @@
 	border: none;
 	background: none;
 	color: #b8860b;
-	font-size: 15px !important;
+	font-size: 15px;
 }
 
 :root[data-theme='dark'] [data-app='memo'] .memo-back {
@@ -2724,7 +2695,7 @@
 	.memo .memo-toolbar,
 	.memo .memo-sidebar-bar,
 	.memo .memo-gallery {
-		display: none !important;
+		display: none;
 	}
 
 	/* 사이드바는 떠 있는 패널 대신 한 화면 전체 */
@@ -2967,9 +2938,9 @@
 }
 
 .memo-toolbar-more {
-	min-width: 0 !important;
+	min-width: 0;
 	max-width: 0;
-	padding: 0 !important;
+	padding: 0;
 	overflow: hidden;
 	opacity: 0;
 	transition:
@@ -3122,7 +3093,7 @@
 /* 끌어다 놓을 자리 (이미지·문단을 끌 때). body에 그린다 */
 .milkdown-drop-indicator {
 	z-index: 10000;
-	margin: 0 !important;
+	margin: 0;
 	border-radius: 2px;
 	background-color: #edbb4d;
 	box-shadow: 0 0 0 2px color-mix(in srgb, #edbb4d 30%, transparent);

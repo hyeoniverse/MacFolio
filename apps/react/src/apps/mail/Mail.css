@@ -32,6 +32,12 @@
 	--mail-error: #ff6961;
 }
 
+/* 떠 있는 원형 단추(새로운 메시지)의 색 (shared/ui/button/IconButton) */
+[data-app='mail'] {
+	--ui-float-bg: var(--mail-float-bg);
+	--ui-float-shadow: var(--mail-float-shadow);
+}
+
 [data-app='mail'].container {
 	border-color: transparent;
 	background-color: var(--mail-window-bg);
@@ -136,20 +142,6 @@
 	font-size: 11px;
 }
 
-.mail-round-button {
-	position: relative;
-	z-index: 4;
-	display: grid;
-	place-items: center;
-	width: 34px;
-	height: 34px;
-	border: none;
-	border-radius: 50%;
-	background-color: var(--mail-float-bg);
-	box-shadow: var(--mail-float-shadow);
-	font-size: 15px !important;
-}
-
 .mail-list ul {
 	padding: 0 6px;
 }
@@ -167,7 +159,7 @@
 
 .mail-item.selected {
 	background-color: var(--mail-selected-bg);
-	color: var(--mail-selected-text) !important;
+	color: var(--mail-selected-text);
 }
 
 .mail-unread {
@@ -296,7 +288,7 @@
 
 .mail-button.primary {
 	background-color: var(--mail-accent);
-	color: #ffffff !important;
+	color: #ffffff;
 }
 
 .mail-button:disabled {
@@ -433,8 +425,8 @@
 	padding: 4px 0;
 	border: none;
 	background: none;
-	color: var(--mail-accent) !important;
-	font-size: 15px !important;
+	color: var(--mail-accent);
+	font-size: 15px;
 }
 
 /* 좁은 창: 메일상자 패널을 숨긴다 */
@@ -511,7 +503,7 @@
 
 /* 모바일에서는 뒤로 가기가 제목 막대에 있고 신호등 버튼도 없다 */
 .container.mobile .mail-back {
-	display: none !important;
+	display: none;
 }
 
 @container (max-width: 720px) {
