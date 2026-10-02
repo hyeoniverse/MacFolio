@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useAppState } from '@/desktop/AppStateContext';
 import AppWindow from '@/desktop/window/Window';
+import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Sidebar from './components/Sidebar';
 import ChatView from './components/ChatView';
@@ -12,6 +14,7 @@ import '@/apps/messages/Messages.css';
  */
 const Messages: React.FC = () => {
 	const conversations = useConversations();
+	const { quitApp } = useAppState();
 	const { selectedThread, isComposing } = conversations;
 	// 좁은 창에서 넘어간 방향 (처음에는 애니메이션 없음)
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
@@ -35,28 +38,42 @@ const Messages: React.FC = () => {
 				floating
 				{...(conversations.isChatOpen ? { backLabel: '메시지', onBack: back(conversations.back) } : {})}
 			/>
-			<div className={`messages ${conversations.isChatOpen ? 'chat-open' : ''}`} data-nav={nav}>
-				<Sidebar
-					threads={conversations.threads}
-					selectedId={conversations.selectedId}
-					onSelect={forward(conversations.select)}
-					onCompose={forward(conversations.compose)}
-				/>
-				{(isComposing || selectedThread) && (
-					<ChatView
-						key={isComposing ? NEW_THREAD : selectedThread!.id}
-						thread={isComposing ? null : selectedThread}
-						messages={conversations.messages}
-						myName={conversations.myName}
-						focusRequest={conversations.focusRequest}
-						onBack={back(conversations.back)}
-						onCancelNew={back(conversations.cancelNewThread)}
+			{conversations.status !== 'error' && (
+				<div className={`messages ${conversations.isChatOpen ? 'chat-open' : ''}`} data-nav={nav}>
+					<Sidebar
+						threads={conversations.threads}
+						selectedId={conversations.selectedId}
+						onSelect={forward(conversations.select)}
 						onCompose={forward(conversations.compose)}
-						onSend={conversations.send}
-						onRemove={conversations.remove}
+						loading={conversations.status === 'loading'}
 					/>
-				)}
-			</div>
+					{(isComposing || selectedThread) && (
+						<ChatView
+							key={isComposing ? NEW_THREAD : selectedThread!.id}
+							thread={isComposing ? null : selectedThread}
+							messages={conversations.messages}
+							myName={conversations.myName}
+							focusRequest={conversations.focusRequest}
+							onBack={back(conversations.back)}
+							onCancelNew={back(conversations.cancelNewThread)}
+							onCompose={forward(conversations.compose)}
+							onSend={conversations.send}
+							onRemove={conversations.remove}
+						/>
+					)}
+				</div>
+			)}
+			{/* 서버에 닿지 못하면 불러오지도 남기지도 못하므로 앱을 열지 않는다. 확인하면 앱을 끈다 (휴대폰은 홈으로) */}
+			{conversations.status === 'error' && (
+				<AlertDialog
+					title="메시지를 열 수 없습니다"
+					message="지금 서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요."
+					confirmLabel="확인"
+					cancelLabel={null}
+					onConfirm={() => quitApp('messages')}
+					onCancel={() => quitApp('messages')}
+				/>
+			)}
 		</AppWindow>
 	);
 };

@@ -9,7 +9,8 @@ export interface AlertDialogProps {
 	message?: string;
 	/** 확인 단추 글자 (예: '삭제') */
 	confirmLabel: string;
-	cancelLabel?: string;
+	/** 취소 단추 글자. null이면 확인 단추 하나만 둔다 (알리기만 하는 경고창). Esc·바깥 누르기는 그래도 onCancel */
+	cancelLabel?: string | null;
 	onConfirm: () => void;
 	onCancel: () => void;
 }
@@ -43,7 +44,7 @@ const AlertDialog = ({ title, message, confirmLabel, cancelLabel = '취소', onC
 				<h3>{title}</h3>
 				{message && <p>{message}</p>}
 				<div className="ui-alert-actions">
-					<Button onClick={onCancel}>{cancelLabel}</Button>
+					{cancelLabel !== null && <Button onClick={onCancel}>{cancelLabel}</Button>}
 					<Button ref={confirmButton} tone="primary" onClick={onConfirm}>
 						{confirmLabel}
 					</Button>

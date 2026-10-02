@@ -49,6 +49,11 @@
 		margin-top: 8px;
 	}
 
+	/* 확인 단추 하나만 있을 때는 가로를 다 쓴다 */
+	.ui-alert-actions:has(> :only-child) {
+		grid-template-columns: 1fr;
+	}
+
 	.ui-alert-actions .ui-button {
 		--ui-button-padding: 9px 14px;
 		--ui-button-radius: 999px;
