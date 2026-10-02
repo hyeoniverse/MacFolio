@@ -21,6 +21,7 @@ import {
 	buildFolderTree,
 	filterPosts,
 	firstImage,
+	folderLabelOf,
 	folderName,
 	mergeAdminPosts,
 	mergeServerPosts,
@@ -158,6 +159,29 @@ const CardPreview: React.FC<{ post: Post }> = ({ post }) => {
  * 또는 갤러리(카드)로 보여준다. 폴더는 글의 category('/'로 하위 폴더)에서 만들고, 방문자도 폴더를 만들 수 있다.
  * 방문자는 읽기만 하고, 글쓰기는 관리자 로그인(#9) 이후에 붙인다.
  */
+/** 휴대폰 메모 선택의 '이동': 고른 메모들을 옮길 폴더 */
+const FolderPickMenu: React.FC<{
+	anchor: { x: number; y: number };
+	paths: string[];
+	onClose: () => void;
+	onPick: (path: string) => void;
+}> = ({ anchor, paths, onClose, onPick }) => (
+	<Menu
+		label="옮길 폴더"
+		className="touch"
+		anchor={anchor}
+		onClose={onClose}
+		items={[
+			{ heading: '옮길 폴더' },
+			...paths.map((path) => ({
+				label: folderLabelOf(path),
+				icon: 'fa-regular fa-folder',
+				onSelect: () => onPick(path),
+			})),
+		]}
+	/>
+);
+
 const Memo: React.FC = () => {
 	/** 저장소의 Markdown 글 */
 	const [repoPosts, setRepoPosts] = useState<Post[]>([]);
@@ -176,6 +200,10 @@ const Memo: React.FC = () => {
 	const phone = useIsMobile();
 	/** 휴대폰 본문의 ••• 메뉴를 연 자리 */
 	const [phoneMenu, setPhoneMenu] = useState<{ x: number; y: number } | null>(null);
+	/** 휴대폰 목록의 ••• 메뉴, 메모 선택(고른 메모들, null = 고르는 중 아님)과 그때의 이동 메뉴 */
+	const [listMenu, setListMenu] = useState<{ x: number; y: number } | null>(null);
+	const [picked, setPicked] = useState<Set<string> | null>(null);
+	const [pickMoveMenu, setPickMoveMenu] = useState<{ x: number; y: number } | null>(null);
 	/** 검색 칸에 초점이 있는지, 도구를 모은 ••• 메뉴 (검색하는 동안 다른 도구를 접고 검색 칸을 넓힌다) */
 	const [searchFocused, setSearchFocused] = useState(false);
 	const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
@@ -391,6 +419,7 @@ const Memo: React.FC = () => {
 		if (path !== TAG_VIEW) setTagSelection((current) => ({ ...EMPTY_TAG_SELECTION, match: current.match }));
 		setCategory(path);
 		setGalleryNoteOpen(false);
+		setPicked(null);
 		setPane('list');
 	};
 
@@ -417,16 +446,31 @@ const Memo: React.FC = () => {
 			const post = organized.find((item) => item.slug === dragging.id);
 			if (post) void removePost(post);
 		} else if (dragging.type === 'post') edit((prev) => movePost(prev, dragging.id, target));
-		else {
-			const parent = target === ALL_CATEGORY ? '' : target;
-			edit((prev) => moveFolder(prev, dragging.id, parent, folderPaths));
-			// 고른 폴더를 옮겼으면 새 경로를 따라간다
-			const moved = `${parent ? `${parent}/` : ''}${dragging.id.split('/').at(-1)}`;
-			if (category === dragging.id || category.startsWith(`${dragging.id}/`)) {
-				setCategory(moved + category.slice(dragging.id.length));
-			}
-		}
+		else moveFolderTo(dragging.id, target);
 		setDragging(null);
+	};
+
+	/** 폴더를 target 폴더 안(모든 글이면 맨 위)으로 옮긴다. 고른 폴더를 옮겼으면 새 경로를 따라간다 */
+	const moveFolderTo = (path: string, target: string) => {
+		const parent = target === ALL_CATEGORY ? '' : target;
+		edit((prev) => moveFolder(prev, path, parent, folderPaths));
+		const moved = `${parent ? `${parent}/` : ''}${path.split('/').at(-1)}`;
+		if (category === path || category.startsWith(`${path}/`)) setCategory(moved + category.slice(path.length));
+	};
+
+	/** 메모 선택: 누를 때마다 넣고 뺀다 */
+	const togglePicked = (slug: string) =>
+		setPicked((current) => {
+			const next = new Set(current);
+			if (next.has(slug)) next.delete(slug);
+			else next.add(slug);
+			return next;
+		});
+	const pickedPosts = picked ? organized.filter((post) => picked.has(post.slug)) : [];
+	/** 고른 메모들을 한 폴더로 옮기고 고르기를 끝낸다 */
+	const movePicked = (path: string) => {
+		edit((prev) => pickedPosts.reduce((next, post) => movePost(next, post.slug, path), prev));
+		setPicked(null);
 	};
 
 	/** 글 목록·갤러리 카드를 끌 때 (최근 삭제된 항목의 글은 폴더에 놓아 되살린다) */
@@ -506,16 +550,24 @@ const Memo: React.FC = () => {
 		<li key={post.slug}>
 			<button
 				type="button"
-				className={`memo-item ${selected?.slug === post.slug && newDraft === null ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
+				className={`memo-item ${selected?.slug === post.slug && newDraft === null ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''} ${picked ? 'picking' : ''}`}
 				{...dragPost(post.slug)}
 				aria-current={(selected?.slug === post.slug && newDraft === null) || undefined}
+				aria-pressed={picked ? picked.has(post.slug) : undefined}
 				onContextMenu={openNoteMenu(post.slug)}
 				onClick={() => {
+					if (picked) return togglePicked(post.slug);
 					setSelectedSlug(post.slug);
 					leaveNewDraft();
 					setPane('reader');
 				}}
 			>
+				{picked && (
+					<i
+						className={`memo-pick ${picked.has(post.slug) ? 'fa-solid fa-circle-check on' : 'fa-regular fa-circle'}`}
+						aria-hidden="true"
+					/>
+				)}
 				<strong>
 					{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
 					{post.title}
@@ -539,12 +591,22 @@ const Memo: React.FC = () => {
 				className={`memo-card ${dragging?.id === post.slug ? 'dragging' : ''}`}
 				{...dragPost(post.slug)}
 				onContextMenu={openNoteMenu(post.slug)}
+				aria-pressed={picked ? picked.has(post.slug) : undefined}
 				onClick={() => {
+					if (picked) return togglePicked(post.slug);
 					setSelectedSlug(post.slug);
 					leaveNewDraft();
-					setGalleryNoteOpen(true);
+					// 한 칸씩 볼 때(휴대폰 목록의 갤러리)는 본문 칸으로 넘어간다
+					if (compact) setPane('reader');
+					else setGalleryNoteOpen(true);
 				}}
 			>
+				{picked && (
+					<i
+						className={`memo-pick ${picked.has(post.slug) ? 'fa-solid fa-circle-check on' : 'fa-regular fa-circle'}`}
+						aria-hidden="true"
+					/>
+				)}
 				<span className="memo-card-frame">
 					<CardPreview post={post} />
 					{post.pinned && (
@@ -903,7 +965,14 @@ const Memo: React.FC = () => {
 				{...(compact && pane === 'reader'
 					? { backLabel: categoryName, onBack: () => setPane('list'), floating: true }
 					: compact && pane === 'list'
-						? { backLabel: '폴더', onBack: () => setPane('folders'), floating: true }
+						? {
+								backLabel: '폴더',
+								onBack: () => {
+									setPicked(null);
+									setPane('folders');
+								},
+								floating: true,
+							}
 						: compact && pane === 'folders'
 							? { floating: true }
 							: {})}
@@ -953,6 +1022,7 @@ const Memo: React.FC = () => {
 							edit((prev) => removeFolder(prev, path));
 							if (category === path || category.startsWith(`${path}/`)) selectFolder(ALL_CATEGORY);
 						}}
+						onMoveFolder={moveFolderTo}
 						dragging={dragging}
 						onDragFolder={setDragging}
 						canDrop={canDrop}
@@ -998,24 +1068,122 @@ const Memo: React.FC = () => {
 									<span className="memo-trash-drag-hint"> 폴더로 끌어 놓으면 되살아납니다.</span>
 								</p>
 							)}
-							{sections(listItem, '고정됨', 'memo-items')}
+							{/* 휴대폰에서 갤러리로 보면 목록 칸에 카드로 (넓은 창의 갤러리 칸은 한 칸씩 볼 때 숨는다) */}
+							{phone && compact && view === 'gallery'
+								? sections(card, '고정된 메모', 'memo-cards')
+								: sections(listItem, '고정됨', 'memo-items')}
 							{empty}
 						</div>
 						{/* 휴대폰: 정렬은 오른쪽 위, 검색 알약과 새 메모는 아래에 뜬다 (넘기는 칸 밖에 두어 늘 제자리) */}
 						{phone && compact && (
 							<>
-								{!inTrash && <div className="memo-phone-list-top">{sortMenu()}</div>}
-								<div className="memo-phone-bottom memo-list-bottom">
-									{searchBox('memo-phone-search-field')}
-									{canEdit && (
-										<IconButton
-											className="memo-phone-compose"
-											label="새 메모"
-											onClick={startNewDraft}
-											icon="fa-regular fa-pen-to-square"
-										/>
+								<div className="memo-phone-list-top">
+									{picked ? (
+										<button type="button" className="memo-phone-pill" onClick={() => setPicked(null)}>
+											완료
+										</button>
+									) : (
+										<>
+											{sortMenu()}
+											<IconButton
+												className="memo-phone-list-more"
+												label="목록 동작"
+												aria-haspopup="menu"
+												aria-expanded={listMenu !== null}
+												onClick={(event) => {
+													const rect = event.currentTarget.getBoundingClientRect();
+													setListMenu(listMenu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
+												}}
+												icon="fa-solid fa-ellipsis"
+											/>
+										</>
 									)}
 								</div>
+								<div className="memo-phone-bottom memo-list-bottom">
+									{picked ? (
+										<>
+											<button
+												type="button"
+												className="memo-phone-pill"
+												disabled={pickedPosts.length === 0}
+												onClick={(event) => {
+													const rect = event.currentTarget.getBoundingClientRect();
+													setPickMoveMenu({ x: rect.left, y: rect.top - 8 });
+												}}
+											>
+												이동
+											</button>
+											<span className="memo-pick-count" role="status">
+												{pickedPosts.length > 0 ? `${pickedPosts.length}개 선택됨` : '메모 선택'}
+											</span>
+											<button
+												type="button"
+												className="memo-phone-pill destructive"
+												disabled={pickedPosts.every((post) => post.locked)}
+												onClick={() => {
+													pickedPosts.filter((post) => !post.locked).forEach((post) => void removePost(post));
+													setPicked(null);
+												}}
+											>
+												삭제
+											</button>
+										</>
+									) : (
+										<>
+											{searchBox('memo-phone-search-field')}
+											{canEdit && (
+												<IconButton
+													className="memo-phone-compose"
+													label="새 메모"
+													onClick={startNewDraft}
+													icon="fa-regular fa-pen-to-square"
+												/>
+											)}
+										</>
+									)}
+								</div>
+								{/* 휴대폰 목록의 ••• 메뉴 (iOS 메모처럼): 갤러리로 보기, 메모 선택, 첨부 파일 보기 */}
+								{listMenu && (
+									<Menu
+										label="목록 동작"
+										className="touch"
+										anchor={{ x: listMenu.x, y: listMenu.y }}
+										onClose={() => setListMenu(null)}
+										items={[
+											view === 'gallery'
+												? { label: '목록으로 보기', icon: 'fa-solid fa-list-ul', onSelect: () => changeView('list') }
+												: {
+														label: '갤러리로 보기',
+														icon: 'fa-solid fa-table-cells-large',
+														onSelect: () => changeView('gallery'),
+													},
+											'separator',
+											...(canEdit && !inTrash
+												? [
+														{
+															label: '메모 선택',
+															icon: 'fa-regular fa-circle-check',
+															onSelect: () => setPicked(new Set()),
+														},
+													]
+												: []),
+											{
+												label: '첨부 파일 보기',
+												icon: 'fa-solid fa-paperclip',
+												onSelect: () => setFilter('attachment'),
+											},
+										]}
+									/>
+								)}
+								{/* 고른 메모들을 옮길 폴더 */}
+								{pickMoveMenu && (
+									<FolderPickMenu
+										anchor={pickMoveMenu}
+										paths={folderPaths}
+										onClose={() => setPickMoveMenu(null)}
+										onPick={movePicked}
+									/>
+								)}
 							</>
 						)}
 					</section>

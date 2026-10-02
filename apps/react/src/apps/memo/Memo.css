@@ -3259,7 +3259,8 @@
 
 /* 휴대폰의 폴더·목록 화면 (iOS 메모처럼): 떠 있는 단추, 큰 제목, 회색 바탕 위 흰 카드 묶음, 아래 검색 알약 */
 .memo-phone-title,
-.memo-folder-group-toggle {
+.memo-folder-group-toggle,
+.memo-folders-edit {
 	display: none;
 }
 
@@ -3525,13 +3526,15 @@
 	}
 
 	.container.mobile .memo-phone-list-top {
+		display: flex;
+		gap: 10px;
 		position: absolute;
 		top: 6px;
 		right: 16px;
 		z-index: 5;
 	}
 
-	.container.mobile .memo-phone-list-top .memo-sort {
+	.container.mobile .memo-phone-list-top :is(.memo-sort, .memo-phone-list-more) {
 		width: 44px;
 		height: 44px;
 		border-radius: 50%;
@@ -3557,6 +3560,139 @@
 
 	.container.mobile .memo-list-bottom .memo-search-options {
 		font-size: 17px;
+	}
+
+	/* 글자 알약 단추 (완료, 메모 선택의 이동·삭제, 폴더 편집) */
+	.container.mobile :is(.memo-phone-pill, .memo-folders-edit) {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		height: 44px;
+		padding: 0 18px;
+		border: none;
+		border-radius: 999px;
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
+		color: var(--memo-text);
+		font: inherit;
+		font-size: 17px;
+		font-weight: 600;
+	}
+
+	.container.mobile .memo-phone-pill.destructive {
+		color: #e5484d;
+	}
+
+	.container.mobile .memo-phone-pill:disabled {
+		color: var(--memo-muted);
+	}
+
+	.container.mobile .memo-list-bottom .memo-phone-pill {
+		height: 50px;
+	}
+
+	.container.mobile .memo-pick-count {
+		display: flex;
+		flex: 1;
+		align-items: center;
+		justify-content: center;
+		height: 50px;
+		margin: 0 12px;
+		border-radius: 999px;
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
+		color: var(--memo-muted);
+		font-size: 15px;
+	}
+
+	/* 메모 선택: 줄 왼쪽에 동그라미 */
+	.container.mobile .memo-item.picking {
+		position: relative;
+		padding-left: 52px;
+	}
+
+	.container.mobile .memo-pick {
+		position: absolute;
+		top: 50%;
+		left: 16px;
+		color: var(--memo-muted);
+		font-size: 22px;
+		translate: 0 -50%;
+	}
+
+	.container.mobile .memo-pick.on {
+		color: var(--memo-accent);
+	}
+
+	.container.mobile .memo-card {
+		position: relative;
+	}
+
+	.container.mobile .memo-card .memo-pick {
+		top: 10px;
+		left: 10px;
+		z-index: 1;
+		translate: none;
+	}
+
+	/* 휴대폰 목록의 갤러리: 두 줄 카드 */
+	.container.mobile .memo-list .memo-cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 18px 14px;
+		padding: 0;
+	}
+
+	/* 폴더 편집 (iOS 메모): 오른쪽 위 '편집' ↔ ✓, 폴더마다 노란 ••• , 고칠 수 없는 줄은 흐리게 */
+	.container.mobile .memo .memo-sidebar-bar:has(.memo-new-folder-button) {
+		gap: 10px;
+	}
+
+	.container.mobile .memo-folders-edit.done {
+		width: 44px;
+		padding: 0;
+		font-size: 19px;
+	}
+
+	.container.mobile .memo-folder-more {
+		display: none;
+	}
+
+	.container.mobile .memo-folders.editing .memo-folder-more {
+		display: grid;
+		flex: none;
+		opacity: 1;
+		position: static;
+		width: 30px;
+		height: 30px;
+		margin-right: 14px;
+		border: 2px solid var(--memo-accent);
+		background: none;
+		color: #b07a06;
+		font-size: 13px;
+	}
+
+	:root[data-theme='dark'] .container.mobile .memo-folders.editing .memo-folder-more {
+		color: var(--memo-accent);
+	}
+
+	.container.mobile .memo-folders.editing .memo-folder:is(:disabled) {
+		opacity: 0.4;
+	}
+
+	.container.mobile .memo-folders.editing .memo-folder::after,
+	.container.mobile .memo-folders.editing .memo-folder .memo-count {
+		display: none;
+	}
+
+	.container.mobile .memo-folders.editing .memo-folder-row.menu-open .memo-folder {
+		outline: none;
+		box-shadow: none;
+	}
+
+	.container.mobile .memo-folders.editing .memo-folder-row .memo-folder-name {
+		margin-right: 0;
 	}
 
 	/* 폴더 화면 아래의 검색 알약 (누르면 모든 글에서 찾는다) */
