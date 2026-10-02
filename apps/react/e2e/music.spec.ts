@@ -63,4 +63,28 @@ test.describe('음악', () => {
 		await bar.getByRole('button', { name: '다음 곡' }).click();
 		await expect(bar).toContainText('Itsumo Nando Demo');
 	});
+
+	test('좁은 창에서는 제목이 신호등 단추 아래에 있고, 곡 목록에서 보관함으로 돌아온다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'music').click();
+		const music = appWindow(page, 'music');
+		await music.evaluate((el) => {
+			(el as HTMLElement).style.width = '380px';
+			(el as HTMLElement).style.height = '640px';
+		});
+		const lights = await music.locator('.traffic-lights').boundingBox();
+		const title = await music.getByRole('heading', { name: '보관함' }).boundingBox();
+		expect(title!.y).toBeGreaterThanOrEqual(lights!.y + lights!.height);
+
+		await music
+			.getByRole('button', { name: /지브리/ })
+			.first()
+			.click();
+		const back = music.getByRole('button', { name: '보관함', exact: true });
+		await expect(back).toBeVisible();
+		const backBox = await back.boundingBox();
+		expect(backBox!.y).toBeGreaterThanOrEqual(lights!.y + lights!.height);
+		await back.click();
+		await expect(music.getByRole('heading', { name: '보관함' })).toBeVisible();
+	});
 });

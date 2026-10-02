@@ -69,7 +69,9 @@
 	background-color: var(--safari-toolbar-bg);
 }
 
+/* 신호등 단추 자리. 창이 좁아져도 줄어들지 않는다 (줄어들면 뒤로·앞으로 단추가 신호등 아래로 들어간다) */
 .safari-lights-space {
+	flex: none;
 	width: 64px;
 }
 
@@ -86,6 +88,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: 7px;
+	min-width: 0;
 	max-width: 520px;
 	height: 32px;
 	margin: 0 auto;
