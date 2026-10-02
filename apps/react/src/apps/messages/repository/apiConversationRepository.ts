@@ -10,7 +10,7 @@ async function failure(response: Response): Promise<Error> {
 	if (response.status === 429) return new Error('잠시 뒤에 다시 써 주세요.');
 	const body = (await response.json().catch(() => ({}))) as { message?: string | string[] };
 	const message = Array.isArray(body.message) ? body.message[0] : body.message;
-	return new Error(message ?? '보내지 못했습니다. 잠시 뒤 다시 시도해 주세요.');
+	return new Error(message ?? '서버에서 처리하지 못했습니다. 잠시 뒤 다시 시도해 주세요.');
 }
 
 /** 서버에 닿지 못했을 때 (주소가 없거나, 서버가 꺼졌거나, 네트워크가 끊김) */
