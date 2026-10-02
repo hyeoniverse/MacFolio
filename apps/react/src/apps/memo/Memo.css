@@ -3147,13 +3147,6 @@
 		max-width: calc(100% - 68px - 76px);
 	}
 
-	/* 뒤로 가기 단추까지 닿을 만큼 길면 저장 상태 글자를 줄인다 (단추는 줄이지 않는다) */
-	.container.mobile .memo-reader .memo-writer-status {
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
 	/* 옆의 공유·••• 알약과 같은 모양: 채운 단추 대신 알약 안의 글자 단추 */
 	.container.mobile .memo-reader .memo-writer-actions {
 		gap: 2px;
@@ -3180,17 +3173,27 @@
 		color: var(--memo-muted);
 	}
 
-	.container.mobile .memo-reader .memo-writer-actions > .memo-writer-discard {
-		color: var(--memo-muted);
-		font-weight: 400;
-	}
-
+	/* 알약에는 단추만 둔다 (글을 넣으면 알약이 길어져 좁은 화면에 맞지 않는다).
+	   저장 상태 글은 화면 읽기 프로그램에만 알리고, 변경 사항 버리기는 되돌리기 아이콘으로 */
 	.container.mobile .memo-reader .memo-writer-status {
-		font-size: 13px;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 
-	.container.mobile .memo-reader .memo-writer-status:not(:empty) {
-		padding-left: 8px;
+	.container.mobile .memo-reader .memo-writer-actions > .memo-writer-discard {
+		width: 40px;
+		padding: 0;
+		font-size: 0;
+	}
+
+	.container.mobile .memo-reader .memo-writer-actions > .memo-writer-discard::before {
+		font: var(--fa-font-solid);
+		font-size: 17px;
+		content: '\f2ea';
 	}
 
 	.container.mobile .memo-reader > .memo-find {
@@ -3463,7 +3466,7 @@
 		background-color: var(--phone-card-bg);
 	}
 
-	.container.mobile .memo-list .memo-phone-title + .memo-compact-tools + .memo-items,
+	.container.mobile .memo-list .memo-phone-title + .memo-items,
 	.container.mobile .memo-list .memo-trash-banner + .memo-items {
 		margin-top: 4px;
 	}
@@ -3516,53 +3519,19 @@
 		margin: 0 4px 12px;
 	}
 
-	/* 검색 알약과 새 메모는 아래에, 정렬은 오른쪽 위에 떠 있다 (목록을 넘겨도 제자리) */
+	/* 목록 맨 위의 검색 줄 대신, 넘기는 칸 밖에 떠 있는 단추들을 쓴다 (Memo.tsx의 memo-phone-list-top·memo-list-bottom) */
 	.container.mobile .memo .memo-compact-tools {
-		display: contents;
+		display: none;
 	}
 
-	.container.mobile .memo-compact-tools .memo-search,
-	.container.mobile .memo-phone-search {
-		position: absolute;
-		left: 16px;
-		right: 78px;
-		bottom: 12px;
-		z-index: 5;
-		height: 50px;
-		margin: 0;
-		padding: 0 18px;
-		background-color: var(--phone-card-bg);
-		box-shadow: var(--phone-float-shadow);
-		font-size: 17px;
-	}
-
-	.container.mobile .memo-compact-tools:not(:has(.memo-compact-new)) .memo-search {
-		right: 16px;
-	}
-
-	.container.mobile .memo-compact-tools .memo-search-options {
-		font-size: 17px;
-	}
-
-	.container.mobile .memo-compact-tools .memo-compact-new {
-		position: absolute;
-		right: 16px;
-		bottom: 12px;
-		z-index: 5;
-		width: 50px;
-		height: 50px;
-		border-radius: 50%;
-		background-color: var(--phone-card-bg);
-		box-shadow: var(--phone-float-shadow);
-		color: var(--memo-text);
-		font-size: 20px;
-	}
-
-	.container.mobile .memo-compact-tools .memo-sort {
+	.container.mobile .memo-phone-list-top {
 		position: absolute;
 		top: 6px;
 		right: 16px;
 		z-index: 5;
+	}
+
+	.container.mobile .memo-phone-list-top .memo-sort {
 		width: 44px;
 		height: 44px;
 		border-radius: 50%;
@@ -3572,14 +3541,35 @@
 		font-size: 18px;
 	}
 
+	.container.mobile .memo-list-bottom .memo-search {
+		flex: 1;
+		height: 50px;
+		margin: 0 12px 0 0;
+		padding: 0 18px;
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
+		font-size: 17px;
+	}
+
+	.container.mobile .memo-list-bottom:not(:has(.memo-phone-compose)) .memo-search {
+		margin-right: 0;
+	}
+
+	.container.mobile .memo-list-bottom .memo-search-options {
+		font-size: 17px;
+	}
+
 	/* 폴더 화면 아래의 검색 알약 (누르면 모든 글에서 찾는다) */
 	.container.mobile .memo-phone-search {
 		display: flex;
-		position: static;
 		flex: 1;
 		align-items: center;
 		gap: 10px;
+		height: 50px;
 		margin-right: 12px;
+		padding: 0 18px;
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
 		border: none;
 		border-radius: 999px;
 		color: var(--memo-muted);
