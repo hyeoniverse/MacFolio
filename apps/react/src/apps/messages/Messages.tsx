@@ -47,7 +47,7 @@ const Messages: React.FC = () => {
 						key={isComposing ? NEW_THREAD : selectedThread!.id}
 						thread={isComposing ? null : selectedThread}
 						messages={conversations.messages}
-						identity={conversations.identity}
+						myName={conversations.myName}
 						focusRequest={conversations.focusRequest}
 						onBack={back(conversations.back)}
 						onCancelNew={back(conversations.cancelNewThread)}
