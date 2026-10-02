@@ -22,16 +22,20 @@ const RepoText: React.FC<{ repo: RepoCard }> = ({ repo }) => (
 
 /**
  * 시스템 설정 → GitHub (관리자만): GitHub 앱의 Pinned에 보일 저장소를 고르고 순서를 정한다.
- * 순서는 ≡ 손잡이를 끌어서 바꾼다. 고를 수 있는 저장소는 내 공개 저장소와 공개로 속한 조직의 저장소이고, 그 밖의 저장소는 owner/이름으로 더한다.
- * 바꿀 때마다 바로 저장한다 (macOS 설정처럼 저장 단추가 없다).
+ * 평소에는 고른 목록만 보이고, 편집을 누르면 빼기(−)·순서(≡ 끌기)·더하기(＋, owner/이름)가 나타난다.
+ * 편집 중에 바꾼 것은 완료를 누를 때 한 번에 저장한다 (저장할 때마다 서버가 GitHub에서 새로 받으므로 요청을 아낀다).
+ * 취소하거나 다른 항목으로 넘어가면 바꾼 것은 버린다.
  */
 const GithubShowcase: React.FC = () => {
 	const { data } = useGithub();
 	const login = data.profile.login;
 	const [status, setStatus] = useState<Status>('loading');
+	/** 저장된 목록 */
 	const [selected, setSelected] = useState<string[]>([]);
+	/** 편집 중인 목록 (null이면 편집 중이 아니다) */
+	const [draft, setDraft] = useState<string[] | null>(null);
 	const [repos, setRepos] = useState<RepoCard[]>([]);
-	const [saving, setSaving] = useState(false);
+	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [input, setInput] = useState('');
 
@@ -58,25 +62,36 @@ const GithubShowcase: React.FC = () => {
 		void load();
 	};
 
-	/** 고른 목록을 바꾸고 저장한다. 실패하면 되돌리고 이유를 알린다 */
-	const save = async (next: string[]) => {
-		const before = selected;
-		setSelected(next);
-		setSaving(true);
+	const editing = draft !== null;
+	const list = draft ?? selected;
+	const card = (name: string) => repos.find((repo) => sameRepo(repo.fullName, name));
+	const isChosen = (name: string) => list.some((item) => sameRepo(item, name));
+	const full = list.length >= MAX_SHOWCASE;
+
+	const startEditing = () => {
+		setDraft(selected);
+		setInput('');
+	};
+
+	/** 완료: 바뀐 것이 있으면 한 번에 저장한다. 실패하면 편집 중인 채로 이유를 알린다 */
+	const finish = async () => {
+		if (!draft) return;
+		if (draft.length === selected.length && draft.every((name, index) => name === selected[index])) {
+			setDraft(null);
+			return;
+		}
+		setBusy(true);
 		try {
-			setSelected(await saveShowcase(next));
+			setSelected(await saveShowcase(draft));
+			setDraft(null);
 		} catch (cause) {
-			setSelected(before);
 			setError(cause instanceof Error ? cause.message : '저장하지 못했습니다.');
 		} finally {
-			setSaving(false);
+			setBusy(false);
 		}
 	};
 
-	const card = (name: string) => repos.find((repo) => sameRepo(repo.fullName, name));
-	const isSelected = (name: string) => selected.some((item) => sameRepo(item, name));
-	const full = selected.length >= MAX_SHOWCASE;
-
+	/** owner/이름으로 더한다 (GitHub에 있는 공개 저장소인지 서버에 묻는다. 저장은 완료할 때) */
 	const addByName = async (event: React.FormEvent) => {
 		event.preventDefault();
 		const name = input.trim();
@@ -84,20 +99,20 @@ const GithubShowcase: React.FC = () => {
 			setError('저장소는 owner/이름으로 적어 주세요. 예: hyeoniverse/MacFolio');
 			return;
 		}
-		if (isSelected(name)) {
+		if (isChosen(name)) {
 			setError('이미 고른 저장소입니다.');
 			return;
 		}
-		setSaving(true);
+		setBusy(true);
 		try {
 			const found = card(name) ?? (await lookupRepo(name));
-			if (!card(found.fullName)) setRepos((list) => [found, ...list]);
+			if (!card(found.fullName)) setRepos((current) => [found, ...current]);
+			setDraft((current) => [...(current ?? []), found.fullName]);
 			setInput('');
-			await save([...selected, found.fullName]);
 		} catch (cause) {
 			setError(cause instanceof Error ? cause.message : '저장소를 찾지 못했습니다.');
 		} finally {
-			setSaving(false);
+			setBusy(false);
 		}
 	};
 
@@ -118,49 +133,73 @@ const GithubShowcase: React.FC = () => {
 			{status === 'ready' && (
 				<>
 					<section className="showcase-group" aria-label="보일 저장소">
-						<h3>
-							보일 저장소{' '}
-							<span className="showcase-count">
-								{selected.length}/{MAX_SHOWCASE}
+						<div className="showcase-head">
+							<h3>
+								보일 저장소{' '}
+								<span className="showcase-count">
+									{list.length}/{MAX_SHOWCASE}
+								</span>
+							</h3>
+							<span className="showcase-head-actions">
+								{editing ? (
+									<>
+										<Button disabled={busy} onClick={() => setDraft(null)}>
+											취소
+										</Button>
+										<Button tone="primary" disabled={busy} onClick={() => void finish()}>
+											완료
+										</Button>
+									</>
+								) : (
+									<Button onClick={startEditing}>편집</Button>
+								)}
 							</span>
-						</h3>
-						{selected.length === 0 ? (
-							<p className="settings-hint">고른 저장소가 없어서 GitHub 앱에 Pinned가 보이지 않습니다.</p>
+						</div>
+						{list.length === 0 ? (
+							<p className="settings-hint">
+								{editing
+									? '아래 목록에서 ＋를 누르거나 owner/이름으로 더해 주세요.'
+									: '고른 저장소가 없어서 GitHub 앱에 Pinned가 보이지 않습니다.'}
+							</p>
 						) : (
-							<ol className="showcase-list">
-								{selected.map((name, index) => {
+							<ol className={`showcase-list ${editing ? 'editing' : ''}`}>
+								{list.map((name, index) => {
 									const repo = card(name);
 									return (
 										<li key={name} className="showcase-row">
 											{repo ? <RepoText repo={repo} /> : <span className="showcase-text">{name}</span>}
-											<span className="showcase-actions">
-												<IconButton
-													icon="fa-solid fa-minus"
-													className="showcase-remove"
-													label={`${name} 빼기`}
-													disabled={saving}
-													onClick={() => void save(selected.filter((item) => item !== name))}
-												/>
-											</span>
-											{/* ≡ 손잡이 (메모 폴더 편집과 같다): 끌거나 ↑·↓ 키로 순서를 바꾼다 */}
-											<button
-												type="button"
-												className="showcase-handle"
-												aria-label={`순서 바꾸기 (${name})`}
-												title="끌거나 ↑·↓ 키로 순서를 바꿉니다"
-												disabled={saving || selected.length < 2}
-												onPointerDown={(event) =>
-													startPointerReorder(event, (from, to) => void save(move(selected, from, to - from)))
-												}
-												onKeyDown={(event) => {
-													const delta = reorderKeyDelta(event.key);
-													if (!delta) return;
-													event.preventDefault();
-													void save(move(selected, index, delta));
-												}}
-											>
-												<i className="fa-solid fa-bars" aria-hidden="true" />
-											</button>
+											{editing && (
+												<>
+													<span className="showcase-actions">
+														<IconButton
+															icon="fa-solid fa-minus"
+															className="showcase-remove"
+															label={`${name} 빼기`}
+															disabled={busy}
+															onClick={() => setDraft(list.filter((item) => item !== name))}
+														/>
+													</span>
+													{/* ≡ 손잡이 (메모 폴더 편집과 같다): 끌거나 ↑·↓ 키로 순서를 바꾼다 */}
+													<button
+														type="button"
+														className="showcase-handle"
+														aria-label={`순서 바꾸기 (${name})`}
+														title="끌거나 ↑·↓ 키로 순서를 바꿉니다"
+														disabled={busy || list.length < 2}
+														onPointerDown={(event) =>
+															startPointerReorder(event, (from, to) => setDraft(move(list, from, to - from)))
+														}
+														onKeyDown={(event) => {
+															const delta = reorderKeyDelta(event.key);
+															if (!delta) return;
+															event.preventDefault();
+															setDraft(move(list, index, delta));
+														}}
+													>
+														<i className="fa-solid fa-bars" aria-hidden="true" />
+													</button>
+												</>
+											)}
 										</li>
 									);
 								})}
@@ -168,53 +207,56 @@ const GithubShowcase: React.FC = () => {
 						)}
 					</section>
 
-					<form className="showcase-lookup" onSubmit={(event) => void addByName(event)}>
-						<input
-							aria-label="저장소 이름 (owner/이름)"
-							placeholder="owner/저장소 이름으로 더하기"
-							value={input}
-							disabled={saving || full}
-							onChange={(event) => setInput(event.target.value)}
-						/>
-						<Button type="submit" disabled={saving || full || !input.trim()}>
-							더하기
-						</Button>
-					</form>
-					{full && <p className="settings-hint">{MAX_SHOWCASE}개를 모두 골랐습니다. 하나를 빼면 더할 수 있습니다.</p>}
+					{editing && (
+						<>
+							<form className="showcase-lookup" onSubmit={(event) => void addByName(event)}>
+								<input
+									aria-label="저장소 이름 (owner/이름)"
+									placeholder="owner/저장소 이름으로 더하기"
+									value={input}
+									disabled={busy || full}
+									onChange={(event) => setInput(event.target.value)}
+								/>
+								<Button type="submit" disabled={busy || full || !input.trim()}>
+									더하기
+								</Button>
+							</form>
+							{full && (
+								<p className="settings-hint">{MAX_SHOWCASE}개를 모두 골랐습니다. 하나를 빼면 더할 수 있습니다.</p>
+							)}
 
-					{groupByOwner(repos, login).map((group) => (
-						<section key={group.owner} className="showcase-group" aria-label={`${group.owner}의 저장소`}>
-							<h3>
-								{group.owner}
-								{sameRepo(group.owner, login) ? ' (내 계정)' : ''}
-							</h3>
-							<ul className="showcase-list">
-								{group.repos.map((repo) => {
-									const chosen = isSelected(repo.fullName);
-									return (
-										<li key={repo.fullName} className="showcase-row">
-											<RepoText repo={repo} />
-											<span className="showcase-actions">
-												{chosen ? (
-													// Font Awesome의 display가 앞서지 않게 바깥 칸에서 가운데 맞춘다
-													<span className="showcase-chosen" role="img" aria-label={`${repo.fullName} 고름`}>
-														<i className="fa-solid fa-check" aria-hidden="true" />
-													</span>
-												) : (
-													<IconButton
-														icon="fa-solid fa-plus"
-														label={`${repo.fullName} 더하기`}
-														disabled={saving || full}
-														onClick={() => void save([...selected, repo.fullName])}
-													/>
-												)}
-											</span>
-										</li>
-									);
-								})}
-							</ul>
-						</section>
-					))}
+							{groupByOwner(repos, login).map((group) => (
+								<section key={group.owner} className="showcase-group" aria-label={`${group.owner}의 저장소`}>
+									<h3>
+										{group.owner}
+										{sameRepo(group.owner, login) ? ' (내 계정)' : ''}
+									</h3>
+									<ul className="showcase-list">
+										{group.repos.map((repo) => (
+											<li key={repo.fullName} className="showcase-row">
+												<RepoText repo={repo} />
+												<span className="showcase-actions">
+													{isChosen(repo.fullName) ? (
+														// Font Awesome의 display가 앞서지 않게 바깥 칸에서 가운데 맞춘다
+														<span className="showcase-chosen" role="img" aria-label={`${repo.fullName} 고름`}>
+															<i className="fa-solid fa-check" aria-hidden="true" />
+														</span>
+													) : (
+														<IconButton
+															icon="fa-solid fa-plus"
+															label={`${repo.fullName} 더하기`}
+															disabled={busy || full}
+															onClick={() => setDraft([...list, repo.fullName])}
+														/>
+													)}
+												</span>
+											</li>
+										))}
+									</ul>
+								</section>
+							))}
+						</>
+					)}
 				</>
 			)}
 
