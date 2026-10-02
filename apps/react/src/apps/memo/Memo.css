@@ -3102,10 +3102,56 @@
 		font-size: 19px;
 	}
 
-	/* 떠 있는 단추 아래부터 본문, 아래 도구에 가리지 않게 여백 */
+	/* 떠 있는 단추 바로 아래부터 본문, 아래 도구에 가리지 않게 여백 */
 	.container.mobile .memo-reader .memo-scroll {
-		padding-top: 60px;
+		padding-top: 58px;
 		padding-bottom: 96px;
+	}
+
+	/* 날짜·폴더 줄은 가운데 그대로, 휴대폰에서 읽기 좋은 크기로 */
+	.container.mobile .memo-reader :is(.memo-reader-date, .memo-writer-meta) {
+		font-size: 14px;
+	}
+
+	/* 저장 상태·게시는 날짜 줄 위의 따로 한 줄 대신, 떠 있는 단추 줄의 오른쪽 알약 왼쪽에 띄운다.
+	   날짜 줄(position: static)을 건너 .memo-reader에 맞춰 두어 본문을 넘겨도 제자리에 있다 */
+	.container.mobile .memo-reader .memo-writer-meta {
+		position: static;
+	}
+
+	.container.mobile .memo-reader .memo-writer-actions {
+		position: absolute;
+		top: 6px;
+		right: 118px;
+		z-index: 5;
+		width: auto;
+		height: 44px;
+		max-width: calc(100% - 68px - 118px);
+		margin: 0;
+		padding: 0 8px;
+		border-radius: 999px;
+		background-color: var(--memo-bg);
+		box-shadow:
+			0 0 0 0.5px rgba(0, 0, 0, 0.06),
+			0 4px 14px rgba(0, 0, 0, 0.12);
+	}
+
+	/* 오른쪽 알약에 •••만 있을 때 (공유가 없는 새 메모) */
+	.container.mobile .memo-reader:not(:has(.memo-phone-top > :nth-child(2))) .memo-writer-actions {
+		right: 76px;
+		max-width: calc(100% - 68px - 76px);
+	}
+
+	/* 뒤로 가기 단추까지 닿을 만큼 길면 저장 상태 글자를 줄인다 (단추는 줄이지 않는다) */
+	.container.mobile .memo-reader .memo-writer-status {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		font-size: 12px;
+	}
+
+	.container.mobile .memo-reader .memo-writer-actions > button {
+		flex-shrink: 0;
 	}
 
 	.container.mobile .memo-reader > .memo-find {
