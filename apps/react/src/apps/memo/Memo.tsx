@@ -1001,6 +1001,23 @@ const Memo: React.FC = () => {
 							{sections(listItem, '고정됨', 'memo-items')}
 							{empty}
 						</div>
+						{/* 휴대폰: 정렬은 오른쪽 위, 검색 알약과 새 메모는 아래에 뜬다 (넘기는 칸 밖에 두어 늘 제자리) */}
+						{phone && compact && (
+							<>
+								{!inTrash && <div className="memo-phone-list-top">{sortMenu()}</div>}
+								<div className="memo-phone-bottom memo-list-bottom">
+									{searchBox('memo-phone-search-field')}
+									{canEdit && (
+										<IconButton
+											className="memo-phone-compose"
+											label="새 메모"
+											onClick={startNewDraft}
+											icon="fa-regular fa-pen-to-square"
+										/>
+									)}
+								</div>
+							</>
+						)}
 					</section>
 
 					{/* 갤러리는 갤러리로 볼 때만 그린다 (목록과 검색 칸·안내 문구가 겹치지 않게) */}
@@ -1434,7 +1451,7 @@ const Memo: React.FC = () => {
 							onClick={() => {
 								selectFolder(ALL_CATEGORY);
 								requestAnimationFrame(() =>
-									shellRef.current?.querySelector<HTMLInputElement>('.memo-list .memo-search input')?.focus()
+									shellRef.current?.querySelector<HTMLInputElement>('.memo-list-bottom .memo-search input')?.focus()
 								);
 							}}
 						>
