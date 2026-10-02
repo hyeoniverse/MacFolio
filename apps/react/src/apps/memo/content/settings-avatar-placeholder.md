@@ -1,0 +1,39 @@
+---
+title: 프로필 사진이 늦게 올 때 비어 보이지 않게 - 시스템 설정의 계정
+date: 2026-10-02
+category: 개발기/MacFolio
+summary: 시스템 설정의 계정 화면은 GitHub 프로필 사진을 github.com에서 받는데, 늦게 올 때는 사진 자리가 통째로 비어 이름이 왼쪽으로 붙어 보였다. 받는 동안 회색 사람 아이콘을 두고, 다 받으면 그 위에 사진을 띄운다. 사이드바의 ›도 줄 오른쪽 끝으로 옮겼다.
+---
+
+시스템 설정의 계정 화면은 관리자로 로그인하면 GitHub 프로필 사진(`https://github.com/<아이디>.png`)을 보여 준다. 이 사진은 github.com에서 받아서 가끔 몇 초씩 걸린다. 그동안 사진 자리에는 아무것도 없었다. `<img>`는 받기 전에는 아무것도 그리지 않아서, 56px 자리가 뻥 뚫려 보였다.
+
+![데스크톱 전후](./images/settings-avatar-desktop.jpg '전: 사진 자리가 비어 있음 / 후: 받는 동안 회색 사람 아이콘')
+
+## 받는 동안 보이는 자리
+
+로그인하지 않았을 때 쓰던 회색 동그라미와 사람 아이콘이 이미 있었다. 이것을 사진 아래에 깔고, 사진은 다 받은 뒤에 위로 띄운다.
+
+```tsx
+<span className="github-avatar" data-loaded={loaded || undefined}>
+	<i className="fa-solid fa-user" aria-hidden="true" />
+	<img src={avatarUrl(login)} alt="" onLoad={() => setLoaded(true)} />
+</span>
+```
+
+사진은 처음에 투명하고, `onLoad`가 오면 살짝 나타난다. 받지 못하면(GitHub가 막히거나 아이디가 바뀌면) 깨진 이미지 표시 대신 사람 아이콘이 그대로 남는다.
+
+캐시에 있던 사진은 React가 그리기 전에 이미 다 받아서 `load` 이벤트를 놓칠 수 있다. 그래서 처음 그린 직후에 `complete`와 `naturalWidth`를 한 번 본다.
+
+아이콘 크기는 동그라미 크기를 따라 `0.42em`으로 둔다. 동그라미의 `font-size`만 정하면 56px(설정)이든 64px(로그인 결과 창)이든 같은 비율이다. 로그인 결과 창도 같은 사진을 쓰므로 같은 부품(`GitHubAvatar`)으로 바꿨다.
+
+## 사이드바의 ›
+
+![휴대폰 전후](./images/settings-avatar-mobile.jpg '설정 목록의 ›와 계정 화면의 사진 자리')
+
+데스크톱 사이드바의 ›는 항목 이름 바로 뒤에 붙어 있었다. 사실 이 ›는 휴대폰 목록에만 보이도록 `display: none`을 줬는데, Font Awesome의 `.fa-solid { display: inline-block }`이 나중에 읽혀서 데스크톱에도 보이고 있었다. 우선순위가 같은 클래스 하나끼리라 나중 것이 이긴 것이다.
+
+macOS 설정처럼 ›를 줄 오른쪽 끝에 붙였다(`margin-left: auto`). 아이콘 칸에 준 너비(`1rem`)도 ›에는 쓰지 않는다. 그 너비 안에서 글자가 왼쪽에 붙어 끝에서 몇 px 떨어져 보였기 때문이다. 창이 좁아 항목이 위쪽 탭이 될 때는 ›를 숨긴다.
+
+E2E 시험에서 항목마다 ›의 오른쪽 끝과 줄의 안쪽 오른쪽 끝이 같은지, 사진을 붙잡아 두는 동안 사람 아이콘이 보이고 놓으면 사진이 나타나는지 확인한다.
+
+#MacFolio
