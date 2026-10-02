@@ -199,27 +199,11 @@
 	background-color: #00ca4e;
 }
 
-/* 앱 에러 안내 (AppErrorBoundary) */
+/* 앱 에러 경고창 (AppErrorBoundary). 앱 창이 아니라 화면 전체를 덮고 그 한가운데에 뜬다 (알림 위, 로그인 아래) */
 .app-error {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	z-index: 1000;
-	padding: 1.5rem 2rem;
-	border-radius: 0.8rem;
-	background-color: var(--color-popover-bg);
-	color: var(--color-popover-text);
-	box-shadow: var(--shadow-popover);
-	text-align: center;
-	transform: translate(-50%, -50%);
-}
-
-.app-error button {
-	margin-top: 1rem;
-	padding: 0.4rem 1rem;
-	border-radius: 0.4rem;
-	background-color: var(--color-accent);
-	color: var(--color-on-accent);
+	position: fixed;
+	inset: 0;
+	z-index: 15000;
 }
 
 /* 통합형 창 (chrome="unified"): 제목 표시줄 없이 신호등 버튼이 내용 위에 떠 있다 */
