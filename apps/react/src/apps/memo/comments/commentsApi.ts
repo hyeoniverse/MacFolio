@@ -8,6 +8,8 @@ export interface Comment {
 	isAdmin: boolean;
 	body: string;
 	createdAt: string;
+	/** 이 브라우저가 쓴 댓글 (지울 수 있다) */
+	mine: boolean;
 }
 
 export type CreateResult = { ok: true; comment: Comment } | { ok: false; errors: string[] };
@@ -31,11 +33,11 @@ export async function listComments(apiUrl: string, slug: string, fetchImpl: type
 	}
 }
 
-/** 댓글을 쓴다. 관리자로 로그인했으면 서버가 김정현으로 쓴다 (이름·비밀번호는 무시) */
+/** 댓글을 쓴다. 이름은 서버가 정한다 (방문자는 쿠키로 정한 이름, 관리자는 김정현) */
 export async function createComment(
 	apiUrl: string,
 	slug: string,
-	input: { name?: string; password?: string; body: string },
+	input: { body: string },
 	fetchImpl: typeof fetch = fetch
 ): Promise<CreateResult> {
 	try {
@@ -52,19 +54,16 @@ export async function createComment(
 	}
 }
 
-/** 댓글을 지운다 (방문자는 비밀번호, 관리자는 없이) */
+/** 댓글을 지운다 (방문자는 이 브라우저에서 쓴 것만, 관리자는 무엇이든) */
 export async function deleteComment(
 	apiUrl: string,
 	id: string,
-	password: string | null,
 	fetchImpl: typeof fetch = fetch
 ): Promise<DeleteResult> {
 	try {
 		const response = await fetchImpl(`${apiUrl}/comments/${encodeURIComponent(id)}`, {
 			method: 'DELETE',
 			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(password === null ? {} : { password }),
 		});
 		if (response.ok) return 'ok';
 		if (response.status === 403) return 'forbidden';

@@ -55,7 +55,7 @@ const Mail: React.FC = () => {
 	return (
 		<AppWindow title="메일" appName="mail" chrome="unified">
 			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
-			<MobileNavigation {...(detailOpen ? { backLabel: '받은 편지함', onBack: backToList } : {})} />
+			<MobileNavigation floating {...(detailOpen ? { backLabel: '받은 편지함', onBack: backToList } : {})} />
 			<div className="mail-shell">
 				<div className={`mail ${detailOpen ? 'detail-open' : ''}`} data-nav={nav}>
 					<aside className="mail-sidebar" aria-label="메일상자">
@@ -71,7 +71,7 @@ const Mail: React.FC = () => {
 					<section className="mail-list" aria-label="받은 편지함">
 						<header className="mail-list-toolbar">
 							<div>
-								<h2>받은 편지함</h2>
+								<h2 className="phone-title">받은 편지함</h2>
 								<p>메일 {INBOX.length}통</p>
 							</div>
 							<IconButton variant="float" label="새로운 메시지" onClick={compose} icon="fa-regular fa-pen-to-square" />
@@ -128,6 +128,12 @@ const Mail: React.FC = () => {
 						)}
 					</section>
 				</div>
+				{/* 휴대폰: 목록 아래 오른쪽에 떠 있는 새로운 메시지 (iOS 메일처럼). 넘기는 목록 밖에 둔다 */}
+				{!detailOpen && (
+					<button type="button" className="mail-phone-compose phone-float" aria-label="새로운 메시지" onClick={compose}>
+						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+					</button>
+				)}
 			</div>
 		</AppWindow>
 	);

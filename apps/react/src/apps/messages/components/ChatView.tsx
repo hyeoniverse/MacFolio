@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Avatar from './Avatar';
 import Composer from './Composer';
 import Menu from '@/shared/ui/menu/Menu';
-import DeleteDialog from './DeleteDialog';
-import { buildTimeline, displayName, LIMITS, type InputErrors, type Message, type Thread } from '../conversations';
+import AlertDialog from '@/shared/ui/dialog/AlertDialog';
+import { useAdmin } from '@/shared/auth/adminStore';
+import { buildTimeline, displayName, type Message, type Thread } from '../conversations';
 import type { DeleteResult } from '../repository';
 import IconButton from '@/shared/ui/button/IconButton';
 
@@ -11,20 +12,16 @@ interface Props {
 	/** null이면 새 피드백을 남기는 화면 */
 	thread: Thread | null;
 	messages: Message[];
-	identity: {
-		nickname: string;
-		password: string;
-		setNickname: (value: string) => void;
-		setPassword: (value: string) => void;
-	};
+	/** 이 브라우저의 이름 (예: 🦊 날쌘 여우). 이름·비밀번호는 받지 않는다 */
+	myName: string | null;
 	focusRequest: number;
 	/** 좁은 창에서 대화 목록으로 돌아가기 */
 	onBack: () => void;
 	/** 새 피드백을 그만두기 */
 	onCancelNew: () => void;
 	onCompose: () => void;
-	onSend: (text: string) => Promise<InputErrors>;
-	onRemove: (messageId: string, password: string) => Promise<DeleteResult>;
+	onSend: (text: string) => Promise<{ text?: string }>;
+	onRemove: (messageId: string) => Promise<DeleteResult>;
 }
 
 /** "오늘 오전 10:36"에서 날짜 부분만 굵게 (메시지 앱과 같은 모양) */
@@ -37,8 +34,9 @@ const TimeLabel: React.FC<{ label: string }> = ({ label }) => {
 	);
 };
 
+/** 이름 알약 아래 설명. 주인의 안내 글은 설명 없이 이름만 */
 const subtitleOf = (thread: Thread) => {
-	if (thread.pinned) return '안내 · 누구나 답글을 달 수 있어요';
+	if (thread.pinned) return null;
 	if (thread.mine) return '내가 남긴 피드백';
 	return `${thread.title}님의 피드백`;
 };
@@ -46,7 +44,7 @@ const subtitleOf = (thread: Thread) => {
 const ChatView: React.FC<Props> = ({
 	thread,
 	messages,
-	identity,
+	myName,
 	focusRequest,
 	onBack,
 	onCancelNew,
@@ -56,7 +54,9 @@ const ChatView: React.FC<Props> = ({
 }) => {
 	const [menu, setMenu] = useState<{ x: number; y: number; messageId: string } | null>(null);
 	const [deleting, setDeleting] = useState<string | null>(null);
-	const [errors, setErrors] = useState<InputErrors>({});
+	/** 관리자는 무엇이든, 방문자는 이 브라우저에서 쓴 글만 지운다 (서버가 다시 확인한다) */
+	const isAdmin = useAdmin().status === 'signed-in';
+	const canDelete = (message: Message) => !message.fromOwner && (message.mine || isAdmin);
 	const listEnd = useRef<HTMLDivElement>(null);
 	const timeline = buildTimeline(messages, { now: new Date() });
 
@@ -76,7 +76,7 @@ const ChatView: React.FC<Props> = ({
 	}, [thread, onCancelNew]);
 
 	const openMenu = (event: React.MouseEvent, message: Message) => {
-		if (message.fromOwner) return;
+		if (!canDelete(message)) return;
 		event.preventDefault();
 		setMenu({ x: event.clientX, y: event.clientY, messageId: message.id });
 	};
@@ -106,7 +106,7 @@ const ChatView: React.FC<Props> = ({
 						{thread.mine && <span className="messages-me-badge">나</span>}
 						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
 					</span>
-					<span className="messages-chat-subtitle">{subtitleOf(thread)}</span>
+					{subtitleOf(thread) && <span className="messages-chat-subtitle">{subtitleOf(thread)}</span>}
 				</header>
 			) : (
 				<header className="messages-chat-header">
@@ -136,7 +136,7 @@ const ChatView: React.FC<Props> = ({
 								<span className="messages-sender">{displayName(item.message.nickname, item.message.ipPrefix)}</span>
 							)}
 							<p className="messages-bubble">{item.message.text}</p>
-							{!item.message.fromOwner && (
+							{canDelete(item.message) && (
 								<button
 									type="button"
 									className="messages-bubble-action"
@@ -157,33 +157,16 @@ const ChatView: React.FC<Props> = ({
 				key={focusRequest}
 				placeholder={thread ? '답글' : '감상, 의견, 피드백'}
 				autoFocus={focusRequest > 0}
-				error={errors.nickname ?? errors.password}
 				onSend={async (text) => {
 					const result = await onSend(text);
-					setErrors(result);
-					// 이름·비밀번호 오류는 위에서 보여주고, 입력한 메시지는 지우지 않는다
-					return { sent: Object.keys(result).length === 0, error: result.text };
+					return { sent: !result.text, error: result.text };
 				}}
 			>
-				<div className="messages-identity">
-					<input
-						aria-label="이름"
-						placeholder="이름"
-						maxLength={LIMITS.nickname.max}
-						value={identity.nickname}
-						aria-invalid={!!errors.nickname}
-						onChange={(event) => identity.setNickname(event.target.value)}
-					/>
-					<input
-						type="password"
-						aria-label="비밀번호"
-						placeholder="비밀번호 (삭제할 때 필요)"
-						maxLength={LIMITS.password.max}
-						value={identity.password}
-						aria-invalid={!!errors.password}
-						onChange={(event) => identity.setPassword(event.target.value)}
-					/>
-				</div>
+				{myName && (
+					<p className="messages-as">
+						<strong>{myName}</strong> 이름으로 남겨요
+					</p>
+				)}
 			</Composer>
 
 			{menu && (
@@ -196,7 +179,16 @@ const ChatView: React.FC<Props> = ({
 				/>
 			)}
 			{deleting && (
-				<DeleteDialog onClose={() => setDeleting(null)} onDelete={(password) => onRemove(deleting, password)} />
+				<AlertDialog
+					title="메시지를 삭제할까요?"
+					message="삭제한 메시지는 되돌릴 수 없습니다."
+					confirmLabel="삭제"
+					onCancel={() => setDeleting(null)}
+					onConfirm={() => {
+						void onRemove(deleting);
+						setDeleting(null);
+					}}
+				/>
 			)}
 		</section>
 	);

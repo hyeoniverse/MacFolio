@@ -32,6 +32,7 @@ const Messages: React.FC = () => {
 		<AppWindow title="메시지" appName="messages" chrome="unified">
 			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
 			<MobileNavigation
+				floating
 				{...(conversations.isChatOpen ? { backLabel: '메시지', onBack: back(conversations.back) } : {})}
 			/>
 			<div className={`messages ${conversations.isChatOpen ? 'chat-open' : ''}`} data-nav={nav}>
@@ -46,7 +47,7 @@ const Messages: React.FC = () => {
 						key={isComposing ? NEW_THREAD : selectedThread!.id}
 						thread={isComposing ? null : selectedThread}
 						messages={conversations.messages}
-						identity={conversations.identity}
+						myName={conversations.myName}
 						focusRequest={conversations.focusRequest}
 						onBack={back(conversations.back)}
 						onCancelNew={back(conversations.cancelNewThread)}

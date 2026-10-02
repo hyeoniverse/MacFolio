@@ -45,8 +45,24 @@ export const PLAYLISTS: Playlist[] = [
 	{ id: 'anime', name: '애니메이션 OST', description: '추억의 애니메이션 음악', trackIds: ['t6', 't7', 't2'] },
 ];
 
+/** 곡을 앨범이나 아티스트로 묶는다 (보관함의 앨범·아티스트). 재생 목록처럼 재생할 수 있다. 처음 나온 순서대로 */
+export function groupTracks(tracks: Track[], by: 'album' | 'artist'): Playlist[] {
+	const groups = new Map<string, Track[]>();
+	for (const t of tracks) groups.set(t[by], [...(groups.get(t[by]) ?? []), t]);
+	return [...groups].map(([name, members]) => ({
+		id: `${by}:${name}`,
+		name,
+		description: by === 'album' ? [...new Set(members.map((t) => t.artist))].join(', ') : `${members.length}곡`,
+		trackIds: members.map((t) => t.id),
+	}));
+}
+
+export const ALBUMS = groupTracks(TRACKS, 'album');
+export const ARTISTS = groupTracks(TRACKS, 'artist');
+
 export const findTrack = (id: string) => TRACKS.find((t) => t.id === id)!;
-export const findPlaylist = (id: string) => PLAYLISTS.find((p) => p.id === id) ?? PLAYLISTS[0];
+export const findPlaylist = (id: string) =>
+	[...PLAYLISTS, ...ALBUMS, ...ARTISTS].find((p) => p.id === id) ?? PLAYLISTS[0];
 
 export type RepeatMode = 'off' | 'all' | 'one';
 

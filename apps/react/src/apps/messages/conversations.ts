@@ -1,7 +1,8 @@
 // 메시지 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 감상·의견·피드백을 남기는 공간이다. 쓰기 버튼으로 남긴 피드백 하나가 목록의 항목 하나가 되고,
 // 누구나 어느 피드백에나 답글을 달 수 있다. 맨 위에는 사이트 주인(김정현)의 안내가 고정된다.
-// 사람은 서버에서는 IP(해시), 로컬에서는 브라우저 id로 구분한다.
+// 사람은 브라우저로 구분한다: 서버는 방문자 쿠키, 서버가 없을 때는 localStorage의 브라우저 id.
+// 이름도 그 값으로 정한다 (예: 🦊 날쌘 여우). 이름·비밀번호를 따로 받지 않는다.
 
 export const OWNER_NAME = '김정현';
 
@@ -40,36 +41,90 @@ export interface Message {
 }
 
 export interface MessageInput {
-	nickname: string;
-	password: string;
 	text: string;
 }
 
 export const LIMITS = {
-	nickname: { min: 1, max: 20 },
 	text: { min: 1, max: 500 },
-	password: { min: 4, max: 20 },
 } as const;
 
 export type InputErrors = Partial<Record<keyof MessageInput, string>>;
 
-/** 입력을 다듬고 검증한다. 서버(#9)도 같은 규칙을 쓴다. */
+/** 입력을 다듬고 검증한다. 서버(apps/api/src/comments/rules.ts)도 같은 규칙을 쓴다. */
 export function validateMessageInput(input: MessageInput): { value: MessageInput; errors: InputErrors } {
-	const value = { nickname: input.nickname.trim(), password: input.password, text: input.text.trim() };
+	const value = { text: input.text.trim() };
 	const errors: InputErrors = {};
-
-	if (value.nickname.length < LIMITS.nickname.min) errors.nickname = '이름을 입력해주세요.';
-	else if (value.nickname.length > LIMITS.nickname.max)
-		errors.nickname = `이름은 ${LIMITS.nickname.max}자까지 입력할 수 있습니다.`;
-	else if (value.nickname === OWNER_NAME) errors.nickname = '다른 이름을 입력해주세요.';
-
-	if (value.password.length < LIMITS.password.min || value.password.length > LIMITS.password.max)
-		errors.password = `비밀번호는 ${LIMITS.password.min}~${LIMITS.password.max}자로 입력해주세요.`;
-
 	if (value.text.length < LIMITS.text.min) errors.text = '내용을 입력해주세요.';
 	else if (value.text.length > LIMITS.text.max) errors.text = `내용은 ${LIMITS.text.max}자까지 입력할 수 있습니다.`;
-
 	return { value, errors };
+}
+
+// 이름 재료. 서버(apps/api/src/visitors/visitor.ts)와 같은 목록이다 (서버 없이 쓸 때 여기서 정한다)
+export const ADJECTIVES = [
+	'날쌘',
+	'느긋한',
+	'반짝이는',
+	'수줍은',
+	'용감한',
+	'졸린',
+	'다정한',
+	'엉뚱한',
+	'씩씩한',
+	'조용한',
+	'명랑한',
+	'차분한',
+	'호기심 많은',
+	'꼼꼼한',
+	'부지런한',
+	'상냥한',
+	'당당한',
+	'산뜻한',
+	'포근한',
+	'재빠른',
+	'느릿한',
+	'똑똑한',
+	'수다스러운',
+	'신난',
+	'늠름한',
+	'귀여운',
+	'든든한',
+	'말랑한',
+	'새침한',
+	'배고픈',
+] as const;
+
+export const ANIMALS = [
+	['🦊', '여우'],
+	['🐻', '곰'],
+	['🐰', '토끼'],
+	['🐼', '판다'],
+	['🐱', '고양이'],
+	['🐶', '강아지'],
+	['🦉', '부엉이'],
+	['🐧', '펭귄'],
+	['🐢', '거북이'],
+	['🦔', '고슴도치'],
+	['🐨', '코알라'],
+	['🐳', '고래'],
+	['🐬', '돌고래'],
+	['🦦', '수달'],
+	['🐹', '햄스터'],
+	['🐿️', '다람쥐'],
+	['🦁', '사자'],
+	['🐯', '호랑이'],
+	['🐸', '개구리'],
+	['🦄', '유니콘'],
+	['🐙', '문어'],
+	['🦥', '나무늘보'],
+	['🐥', '병아리'],
+	['🦒', '기린'],
+] as const;
+
+/** 16진수 해시(16자 이상)에서 이름을 정한다: "🦊 날쌘 여우". 같은 해시면 늘 같은 이름 */
+export function visitorName(hexHash: string): string {
+	const adjective = ADJECTIVES[parseInt(hexHash.slice(0, 8), 16) % ADJECTIVES.length];
+	const [emoji, animal] = ANIMALS[parseInt(hexHash.slice(8, 16), 16) % ANIMALS.length];
+	return `${emoji} ${adjective} ${animal}`;
 }
 
 /** 화면에 보여줄 이름. IP 앞 두 자리가 있으면 붙인다: "민수(211.234)" */
@@ -222,9 +277,11 @@ export function formatListTime(date: Date, now: Date, timeZone?: string): string
 
 /**
  * 아바타에 보여줄 글자 (macOS 연락처와 같은 방식).
- * 두 글자 이하는 통째로("엄마"), 그보다 길면 첫 글자("김정현" → "김")
+ * 방문자 이름은 앞의 동물 이모지("🦊 날쌘 여우" → "🦊"), 두 글자 이하는 통째로("엄마"), 그보다 길면 첫 글자("김정현" → "김")
  */
 export function monogram(name: string): string {
+	const first = name.trim().split(' ')[0];
+	if (ANIMALS.some(([emoji]) => emoji === first)) return first;
 	const chars = Array.from(name.trim());
 	return chars.length <= 2 ? chars.join('') : chars[0];
 }

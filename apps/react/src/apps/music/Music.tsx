@@ -1,7 +1,19 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
-import { findPlaylist, findTrack, formatTime, formatTotal, PLAYLISTS, type Playlist } from './library';
+import Menu from '@/shared/ui/menu/Menu';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import {
+	ALBUMS,
+	ALL_SONGS,
+	ARTISTS,
+	findPlaylist,
+	findTrack,
+	formatTime,
+	formatTotal,
+	PLAYLISTS,
+	type Playlist,
+} from './library';
 import { useMusic } from './MusicContext';
 import SeekBar from './SeekBar';
 import VolumeBar from './VolumeBar';
@@ -106,6 +118,43 @@ const UpNext: React.FC = () => {
 	);
 };
 
+/** 휴대폰 보관함의 목록 화면 (iOS 음악의 플레이리스트·아티스트·앨범) */
+type PhoneList = 'playlists' | 'artists' | 'albums';
+
+const PHONE_LISTS: { id: PhoneList | 'songs'; label: string; icon: string }[] = [
+	{ id: 'playlists', label: '플레이리스트', icon: 'fa-solid fa-list-ul' },
+	{ id: 'artists', label: '아티스트', icon: 'fa-solid fa-microphone-lines' },
+	{ id: 'albums', label: '앨범', icon: 'fa-solid fa-record-vinyl' },
+	{ id: 'songs', label: '노래', icon: 'fa-solid fa-music' },
+];
+
+const PHONE_LIST_TITLES: Record<PhoneList, string> = { playlists: '플레이리스트', artists: '아티스트', albums: '앨범' };
+
+/** 플레이리스트 화면의 보기와 정렬 (iOS 음악의 정렬 메뉴) */
+interface PlaylistArrangement {
+	layout: 'grid' | 'list';
+	sort: 'kind' | 'title';
+}
+
+/** 표지 한 장을 고른 줄 (목록·격자 모두). 누르면 그 목록으로 */
+const CollectionItem: React.FC<{
+	collection: Playlist;
+	layout: 'grid' | 'list';
+	round?: boolean;
+	onOpen: () => void;
+}> = ({ collection, layout, round = false, onOpen }) => (
+	<li>
+		<button type="button" className={`music-collection ${layout} ${round ? 'round' : ''}`} onClick={onOpen}>
+			<Cover playlist={collection} className="small" />
+			<span className="music-collection-text">
+				<strong>{collection.name}</strong>
+				<small>{collection.description}</small>
+			</span>
+			{layout === 'list' && <i className="fa-solid fa-chevron-right music-chevron" aria-hidden="true"></i>}
+		</button>
+	</li>
+);
+
 /** 모바일: 화면을 덮는 '지금 재생 중'. 닫기는 제목 막대의 버튼 하나로 한다 */
 const NowPlayingSheet: React.FC = () => {
 	const { track, isPlaying } = useMusic();
@@ -140,36 +189,124 @@ const NowPlayingSheet: React.FC = () => {
 const Music: React.FC = () => {
 	const music = useMusic();
 	const { track, isPlaying, playlistId: playingId, durations, playFrom, togglePlayPause, next } = music;
+	const phone = useIsMobile();
 	const [selectedId, setSelectedId] = useState(playingId);
-	/** 좁은 창에서 보이는 화면 */
-	const [view, setView] = useState<'library' | 'playlist'>('library');
+	/** 좁은 창에서 보이는 화면. 휴대폰은 보관함과 곡 목록 사이에 플레이리스트·아티스트·앨범 목록이 있다 */
+	const [view, setView] = useState<'library' | PhoneList | 'playlist'>('library');
+	/** 곡 목록을 연 화면 (뒤로 가면 돌아갈 곳) */
+	const [openedFrom, setOpenedFrom] = useState<'library' | PhoneList>('library');
+	const [arrangement, setArrangement] = useState<PlaylistArrangement>({ layout: 'list', sort: 'kind' });
+	const [sortMenu, setSortMenu] = useState<{ x: number; y: number } | null>(null);
+	const sortButton = useRef<HTMLButtonElement>(null);
 	const [nowPlayingOpen, setNowPlayingOpen] = useState(false);
 	const [upNextOpen, setUpNextOpen] = useState(false);
 	const playlist = findPlaylist(selectedId);
 	const tracks = playlist.trackIds.map(findTrack);
 	const total = formatTotal(tracks.map((t) => durations[t.id]));
+	const listView = view === 'playlists' || view === 'artists' || view === 'albums' ? view : null;
 
 	const openPlaylist = (id: string) => {
 		setSelectedId(id);
+		setOpenedFrom(listView ?? 'library');
 		setView('playlist');
 	};
 
+	// 플레이리스트 화면: 모든 노래는 보관함의 '노래'로 따로 연다
+	const userPlaylists = PLAYLISTS.filter((item) => item.id !== ALL_SONGS);
+	const sortedPlaylists =
+		arrangement.sort === 'title'
+			? [...userPlaylists].sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+			: userPlaylists;
+	/** 보관함 맨 위의 표지: 지금 재생 중인 목록 */
+	const featured = findPlaylist(playingId);
+
+	const phoneLibrary = (
+		<>
+			<button type="button" className="music-featured" onClick={() => openPlaylist(featured.id)}>
+				<Cover playlist={featured} />
+				<strong>{featured.name}</strong>
+			</button>
+			<ul className="music-phone-lists">
+				{PHONE_LISTS.map((item) => (
+					<li key={item.id}>
+						<button
+							type="button"
+							className="music-phone-list-link"
+							onClick={() => (item.id === 'songs' ? openPlaylist(ALL_SONGS) : setView(item.id))}
+						>
+							<i className={item.icon} aria-hidden="true"></i>
+							<span>{item.label}</span>
+							<i className="fa-solid fa-chevron-right music-chevron" aria-hidden="true"></i>
+						</button>
+					</li>
+				))}
+			</ul>
+		</>
+	);
+
+	const phoneCollections = listView && (
+		<>
+			<h2 className="music-large-title phone-title">{PHONE_LIST_TITLES[listView]}</h2>
+			{listView === 'playlists' ? (
+				<ul className={`music-collections ${arrangement.layout}`}>
+					{sortedPlaylists.map((item) => (
+						<CollectionItem
+							key={item.id}
+							collection={item}
+							layout={arrangement.layout}
+							onOpen={() => openPlaylist(item.id)}
+						/>
+					))}
+				</ul>
+			) : (
+				<ul className={`music-collections ${listView === 'albums' ? 'grid' : 'list'}`}>
+					{(listView === 'albums' ? ALBUMS : ARTISTS).map((item) => (
+						<CollectionItem
+							key={item.id}
+							collection={item}
+							layout={listView === 'albums' ? 'grid' : 'list'}
+							round={listView === 'artists'}
+							onOpen={() => openPlaylist(item.id)}
+						/>
+					))}
+				</ul>
+			)}
+		</>
+	);
+
 	return (
 		<AppWindow title="음악" appName="music" chrome="unified">
+			{/* 지금 재생 중 시트는 제목 막대 아래에 열리므로, 시트가 열려 있을 때는 막대를 띄우지 않는다 (닫기 단추) */}
 			<MobileNavigation
+				floating={!nowPlayingOpen}
 				{...(nowPlayingOpen
 					? { backLabel: '닫기', onBack: () => setNowPlayingOpen(false), title: '지금 재생 중' }
 					: view === 'playlist'
-						? { backLabel: '보관함', onBack: () => setView('library'), title: '' }
-						: { title: '' })}
+						? {
+								backLabel: openedFrom === 'library' ? '보관함' : PHONE_LIST_TITLES[openedFrom],
+								onBack: () => setView(openedFrom),
+								title: '',
+							}
+						: listView
+							? { backLabel: '보관함', onBack: () => setView('library'), title: '' }
+							: { title: '' })}
 			/>
 			<div className="music-shell">
-				<div className={`music view-${view} ${upNextOpen ? 'up-next-open' : ''}`}>
-					<nav className="music-sidebar" aria-label="보관함">
+				<div
+					className={`music view-${view === 'playlist' ? 'playlist' : 'library'} ${upNextOpen ? 'up-next-open' : ''}`}
+				>
+					<nav className="music-sidebar" aria-label={listView ? PHONE_LIST_TITLES[listView] : '보관함'}>
 						<div className="music-sidebar-top" />
-						<h2 className="music-large-title">보관함</h2>
+						{phone && listView ? (
+							phoneCollections
+						) : (
+							<>
+								<h2 className="music-large-title phone-title">보관함</h2>
+								{phone && phoneLibrary}
+							</>
+						)}
 						<p className="music-sidebar-heading">재생 목록</p>
-						<ul>
+						<ul className="music-playlists">
 							{PLAYLISTS.map((item) => (
 								<li key={item.id}>
 									<button
@@ -203,13 +340,15 @@ const Music: React.FC = () => {
 									</button>
 									<button
 										type="button"
-										className="music-pill"
+										className="music-pill music-pill-shuffle"
+										aria-label="셔플"
 										onClick={() => {
 											if (!music.shuffle) music.toggleShuffle();
 											playFrom(playlist.id);
 										}}
 									>
-										<i className="fa-solid fa-shuffle" aria-hidden="true"></i> 셔플
+										<i className="fa-solid fa-shuffle" aria-hidden="true"></i>{' '}
+										<span className="music-pill-label">셔플</span>
 									</button>
 								</div>
 							</div>
@@ -242,6 +381,47 @@ const Music: React.FC = () => {
 							})}
 						</ol>
 					</section>
+
+					{/* 플레이리스트 화면 오른쪽 위의 보기·정렬 (넘기는 칸 밖에 띄운다) */}
+					{phone && view === 'playlists' && (
+						<div className="music-phone-top">
+							<button
+								ref={sortButton}
+								type="button"
+								aria-label="정렬"
+								aria-haspopup="menu"
+								aria-expanded={sortMenu !== null}
+								onClick={(event) => {
+									const rect = event.currentTarget.getBoundingClientRect();
+									setSortMenu(sortMenu ? null : { x: rect.right - 240, y: rect.bottom + 8 });
+								}}
+							>
+								<i className="fa-solid fa-arrow-down-wide-short" aria-hidden="true"></i>
+							</button>
+						</div>
+					)}
+					{sortMenu && (
+						<Menu
+							label="정렬"
+							className="touch"
+							anchor={sortMenu}
+							trigger={sortButton}
+							onClose={() => setSortMenu(null)}
+							items={[
+								...(['grid', 'list'] as const).map((layout) => ({
+									label: layout === 'grid' ? '격자' : '목록',
+									checked: arrangement.layout === layout,
+									onSelect: () => setArrangement((current) => ({ ...current, layout })),
+								})),
+								'separator',
+								...(['title', 'kind'] as const).map((sort) => ({
+									label: sort === 'title' ? '제목' : '플레이리스트 종류',
+									checked: arrangement.sort === sort,
+									onSelect: () => setArrangement((current) => ({ ...current, sort })),
+								})),
+							]}
+						/>
+					)}
 
 					{upNextOpen && <UpNext />}
 
