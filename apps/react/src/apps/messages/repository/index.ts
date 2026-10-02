@@ -8,7 +8,7 @@ export { PINNED_THREAD_ID } from './pinned';
 
 const VISITOR_KEY = 'macfolio:messages:visitor';
 
-/** 서버가 없을 때 사람을 구분하는 브라우저 id. 서버는 방문자 쿠키로 구분한다. */
+/** 로컬 저장소에서 사람을 구분하는 브라우저 id. 서버는 방문자 쿠키로 구분한다. */
 function visitorId(): string {
 	try {
 		const saved = localStorage.getItem(VISITOR_KEY);
@@ -34,13 +34,14 @@ function removeLegacyData() {
 
 let repository: ConversationRepository | null = null;
 
-/** 서버 주소가 있으면 서버에, 없으면 이 브라우저(localStorage)에 저장한다 */
+/** VITE_MESSAGES_STORE=local이면 이 브라우저(localStorage)에, 아니면 서버에 저장한다 (env.messagesStore) */
 export function getConversationRepository(): ConversationRepository {
 	if (!repository) {
 		removeLegacyData();
-		repository = env.apiUrl
-			? createApiConversationRepository(env.apiUrl)
-			: createLocalConversationRepository(visitorId());
+		repository =
+			env.messagesStore === 'local'
+				? createLocalConversationRepository(visitorId())
+				: createApiConversationRepository(env.apiUrl);
 	}
 	return repository;
 }

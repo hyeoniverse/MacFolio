@@ -2,11 +2,13 @@ import { test as base, expect, type Page } from '@playwright/test';
 
 /** 페이지에서 처리되지 않은 에러가 나면 테스트를 실패시킨다. */
 export const test = base.extend<{ pageErrors: Error[]; noApi: void }>({
-	// 관리자 API가 없는 상태로 시작한다 (로컬 .env.local의 VITE_API_URL과 상관없이). 가짜 API는 테스트에서 따로 넣는다
+	// 관리자 API가 없는 상태로 시작한다 (로컬 .env.local의 VITE_API_URL과 상관없이). 가짜 API는 테스트에서 따로 넣는다.
+	// 메시지는 브라우저 저장소를 쓴다 (VITE_MESSAGES_STORE=local). 서버 저장은 fakeApi나 storeMessagesOnServer로 켠다
 	noApi: [
 		async ({ page }, use) => {
 			await page.addInitScript(() => {
 				window.__MACFOLIO_API_URL__ = '';
+				window.__MACFOLIO_MESSAGES_STORE__ = 'local';
 			});
 			await use();
 		},
@@ -24,6 +26,13 @@ export const test = base.extend<{ pageErrors: Error[]; noApi: void }>({
 });
 
 export { expect };
+
+/** 메시지를 서버에 저장하게 한다 (배포 기본값). 서버 주소가 없으면 메시지 앱이 열리지 않는다 */
+export async function storeMessagesOnServer(page: Page) {
+	await page.addInitScript(() => {
+		window.__MACFOLIO_MESSAGES_STORE__ = 'server';
+	});
+}
 
 /** 로딩 화면을 클릭해 넘기고 데스크톱에 들어간다. path로 앱 항목 주소(/memo/<글> 등)를 열 수 있다 */
 export async function enterDesktop(page: Page, path = '/') {

@@ -206,6 +206,12 @@ pnpm dev          # 프론트엔드만: http://localhost:5173
 
 설정 없이 바로 뜹니다. API가 없으면 로그인과 편집만 꺼지고, 블로그는 저장소의 Markdown으로 보입니다.
 
+메시지 앱은 서버에 저장해서, API가 없으면 "메시지를 열 수 없습니다"를 띄우고 열리지 않습니다. API 없이 메시지 화면을 보려면 이 브라우저에만 저장하게 합니다.
+
+```bash
+echo 'VITE_MESSAGES_STORE=local' >> apps/react/.env.local
+```
+
 API까지 띄우려면 Docker가 필요합니다.
 
 ```bash
