@@ -1,15 +1,27 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown, { type Components, type Options } from 'react-markdown';
 import { REMARK_PLUGINS } from './markdownPlugins';
+import { collectTags, tagsOf } from './tags';
+import {
+	EMPTY_TAG_SELECTION,
+	isTagSelectionActive,
+	matchesTags,
+	onlyTag,
+	tagSelectionNote,
+	tagSelectionTitle,
+	type TagSelection,
+} from './tagFilter';
 import { rehypeHighlightCode } from './highlight';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import {
 	adjacentPosts,
 	ALL_CATEGORY,
 	buildFolderTree,
 	filterPosts,
 	firstImage,
+	folderLabelOf,
 	folderName,
 	mergeAdminPosts,
 	mergeServerPosts,
@@ -25,6 +37,7 @@ import {
 	RECENTLY_DELETED_DAYS,
 	daysUntilPurge,
 	recentlyDeletedPosts,
+	TAG_VIEW,
 } from './posts';
 import {
 	addFolder,
@@ -70,6 +83,7 @@ import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
+import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
 const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
@@ -145,6 +159,29 @@ const CardPreview: React.FC<{ post: Post }> = ({ post }) => {
  * 또는 갤러리(카드)로 보여준다. 폴더는 글의 category('/'로 하위 폴더)에서 만들고, 방문자도 폴더를 만들 수 있다.
  * 방문자는 읽기만 하고, 글쓰기는 관리자 로그인(#9) 이후에 붙인다.
  */
+/** 휴대폰 메모 선택의 '이동': 고른 메모들을 옮길 폴더 */
+const FolderPickMenu: React.FC<{
+	anchor: { x: number; y: number };
+	paths: string[];
+	onClose: () => void;
+	onPick: (path: string) => void;
+}> = ({ anchor, paths, onClose, onPick }) => (
+	<Menu
+		label="옮길 폴더"
+		className="touch"
+		anchor={anchor}
+		onClose={onClose}
+		items={[
+			{ heading: '옮길 폴더' },
+			...paths.map((path) => ({
+				label: folderLabelOf(path),
+				icon: 'fa-regular fa-folder',
+				onSelect: () => onPick(path),
+			})),
+		]}
+	/>
+);
+
 const Memo: React.FC = () => {
 	/** 저장소의 Markdown 글 */
 	const [repoPosts, setRepoPosts] = useState<Post[]>([]);
@@ -159,6 +196,14 @@ const Memo: React.FC = () => {
 	const [filter, setFilter] = useState<PostFilter | null>(null);
 	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
 	const [findSlug, setFindSlug] = useState<string | null>(null);
+	/** 휴대폰(모바일 셸) 안인지: 본문을 iOS 메모처럼 떠 있는 단추로 그린다 */
+	const phone = useIsMobile();
+	/** 휴대폰 본문의 ••• 메뉴를 연 자리 */
+	const [phoneMenu, setPhoneMenu] = useState<{ x: number; y: number } | null>(null);
+	/** 휴대폰 목록의 ••• 메뉴, 메모 선택(고른 메모들, null = 고르는 중 아님)과 그때의 이동 메뉴 */
+	const [listMenu, setListMenu] = useState<{ x: number; y: number } | null>(null);
+	const [picked, setPicked] = useState<Set<string> | null>(null);
+	const [pickMoveMenu, setPickMoveMenu] = useState<{ x: number; y: number } | null>(null);
 	/** 검색 칸에 초점이 있는지, 도구를 모은 ••• 메뉴 (검색하는 동안 다른 도구를 접고 검색 칸을 넓힌다) */
 	const [searchFocused, setSearchFocused] = useState(false);
 	const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
@@ -294,20 +339,35 @@ const Memo: React.FC = () => {
 		() => (editing && adminPosts ? recentlyDeletedPosts(repoPosts, adminPosts, today) : []),
 		[editing, adminPosts, repoPosts, today]
 	);
+	/** 본문의 #태그 (사이드바의 태그 묶음, 태그로 보기) */
+	const tags = useMemo(() => collectTags(organized), [organized]);
+	/** 사이드바에서 고른 태그 (태그마다 미선택 → 포함 → 제외) */
+	const [tagSelection, setTagSelection] = useState<TagSelection>(EMPTY_TAG_SELECTION);
+	const inTags = category === TAG_VIEW;
+	/** 태그로 볼 때는 고른 태그에 맞는 글, 아니면 폴더의 글 */
+	const inCategory = useMemo(
+		() =>
+			inTags
+				? filterPosts(organized, ALL_CATEGORY, '').filter((post) => matchesTags(tagsOf(post.body), tagSelection))
+				: filterPosts(organized, category, ''),
+		[organized, category, inTags, tagSelection]
+	);
+	/** 목록 위 제목: 폴더 이름, 또는 #태그 / N개의 태그 / 모든 태그 */
+	const categoryName = inTags ? tagSelectionTitle(tagSelection) : folderName(category);
 	const visible = useMemo(
 		() =>
 			inTrash
 				? filterPosts(trash, ALL_CATEGORY, query)
 				: sortBy(
 						filterPosts(
-							organized,
-							category,
+							inCategory,
+							ALL_CATEGORY,
 							query,
 							editing ? filter : filter === 'draft' || filter === 'scheduled' ? null : filter
 						),
 						arrangement
 					),
-		[inTrash, trash, organized, category, query, filter, editing, arrangement]
+		[inTrash, trash, inCategory, query, filter, editing, arrangement]
 	);
 	// 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다)
 	const folderPaths = useMemo(() => {
@@ -325,9 +385,7 @@ const Memo: React.FC = () => {
 	const selected = visible.find((post) => post.slug === selectedSlug) ?? pinnedPosts[0] ?? otherPosts[0] ?? null;
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
-		selected && !inTrash
-			? adjacentPosts(filterPosts(organized, category, ''), selected.slug)
-			: { older: null, newer: null };
+		selected && !inTrash ? adjacentPosts(inCategory, selected.slug) : { older: null, newer: null };
 	// 주소 막대에 지금 글의 주소를 둔다 (새로 고침하거나 주소를 복사해도 그 글로). 게시하지 않은 글은 주소가 없다.
 	// 글을 다 읽어 오기 전에는 그대로 둔다 (글 주소로 들어온 그 글이 아직 없을 수 있다)
 	// 주소로 들어왔거나 직접 글을 고른 뒤부터 (처음 보이는 글로 사이트 주소를 덮지 않게)
@@ -348,9 +406,20 @@ const Memo: React.FC = () => {
 	};
 	const toggleSidebar = () => setSidebarChoice(!sidebarOpen);
 
+	/** 태그를 고르면 태그로 보기, 다 풀면 모든 글로 */
+	const changeTags = (next: TagSelection) => {
+		setTagSelection(next);
+		setCategory(isTagSelectionActive(next) ? TAG_VIEW : ALL_CATEGORY);
+		setGalleryNoteOpen(false);
+		setPane('list');
+	};
+
 	const selectFolder = (path: string) => {
+		// 폴더를 고르면 태그 고르기는 풀린다 (모두/일부 포함은 그대로)
+		if (path !== TAG_VIEW) setTagSelection((current) => ({ ...EMPTY_TAG_SELECTION, match: current.match }));
 		setCategory(path);
 		setGalleryNoteOpen(false);
+		setPicked(null);
 		setPane('list');
 	};
 
@@ -377,16 +446,31 @@ const Memo: React.FC = () => {
 			const post = organized.find((item) => item.slug === dragging.id);
 			if (post) void removePost(post);
 		} else if (dragging.type === 'post') edit((prev) => movePost(prev, dragging.id, target));
-		else {
-			const parent = target === ALL_CATEGORY ? '' : target;
-			edit((prev) => moveFolder(prev, dragging.id, parent, folderPaths));
-			// 고른 폴더를 옮겼으면 새 경로를 따라간다
-			const moved = `${parent ? `${parent}/` : ''}${dragging.id.split('/').at(-1)}`;
-			if (category === dragging.id || category.startsWith(`${dragging.id}/`)) {
-				setCategory(moved + category.slice(dragging.id.length));
-			}
-		}
+		else moveFolderTo(dragging.id, target);
 		setDragging(null);
+	};
+
+	/** 폴더를 target 폴더 안(모든 글이면 맨 위)으로 옮긴다. 고른 폴더를 옮겼으면 새 경로를 따라간다 */
+	const moveFolderTo = (path: string, target: string) => {
+		const parent = target === ALL_CATEGORY ? '' : target;
+		edit((prev) => moveFolder(prev, path, parent, folderPaths));
+		const moved = `${parent ? `${parent}/` : ''}${path.split('/').at(-1)}`;
+		if (category === path || category.startsWith(`${path}/`)) setCategory(moved + category.slice(path.length));
+	};
+
+	/** 메모 선택: 누를 때마다 넣고 뺀다 */
+	const togglePicked = (slug: string) =>
+		setPicked((current) => {
+			const next = new Set(current);
+			if (next.has(slug)) next.delete(slug);
+			else next.add(slug);
+			return next;
+		});
+	const pickedPosts = picked ? organized.filter((post) => picked.has(post.slug)) : [];
+	/** 고른 메모들을 한 폴더로 옮기고 고르기를 끝낸다 */
+	const movePicked = (path: string) => {
+		edit((prev) => pickedPosts.reduce((next, post) => movePost(next, post.slug, path), prev));
+		setPicked(null);
 	};
 
 	/** 글 목록·갤러리 카드를 끌 때 (최근 삭제된 항목의 글은 폴더에 놓아 되살린다) */
@@ -466,16 +550,24 @@ const Memo: React.FC = () => {
 		<li key={post.slug}>
 			<button
 				type="button"
-				className={`memo-item ${selected?.slug === post.slug && newDraft === null ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''}`}
+				className={`memo-item ${selected?.slug === post.slug && newDraft === null ? 'active' : ''} ${dragging?.id === post.slug ? 'dragging' : ''} ${picked ? 'picking' : ''}`}
 				{...dragPost(post.slug)}
 				aria-current={(selected?.slug === post.slug && newDraft === null) || undefined}
+				aria-pressed={picked ? picked.has(post.slug) : undefined}
 				onContextMenu={openNoteMenu(post.slug)}
 				onClick={() => {
+					if (picked) return togglePicked(post.slug);
 					setSelectedSlug(post.slug);
 					leaveNewDraft();
 					setPane('reader');
 				}}
 			>
+				{picked && (
+					<i
+						className={`memo-pick ${picked.has(post.slug) ? 'fa-solid fa-circle-check on' : 'fa-regular fa-circle'}`}
+						aria-hidden="true"
+					/>
+				)}
 				<strong>
 					{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
 					{post.title}
@@ -499,12 +591,22 @@ const Memo: React.FC = () => {
 				className={`memo-card ${dragging?.id === post.slug ? 'dragging' : ''}`}
 				{...dragPost(post.slug)}
 				onContextMenu={openNoteMenu(post.slug)}
+				aria-pressed={picked ? picked.has(post.slug) : undefined}
 				onClick={() => {
+					if (picked) return togglePicked(post.slug);
 					setSelectedSlug(post.slug);
 					leaveNewDraft();
-					setGalleryNoteOpen(true);
+					// 한 칸씩 볼 때(휴대폰 목록의 갤러리)는 본문 칸으로 넘어간다
+					if (compact) setPane('reader');
+					else setGalleryNoteOpen(true);
 				}}
 			>
+				{picked && (
+					<i
+						className={`memo-pick ${picked.has(post.slug) ? 'fa-solid fa-circle-check on' : 'fa-regular fa-circle'}`}
+						aria-hidden="true"
+					/>
+				)}
 				<span className="memo-card-frame">
 					<CardPreview post={post} />
 					{post.pinned && (
@@ -615,7 +717,7 @@ const Memo: React.FC = () => {
 	 */
 	const restoreDeleted = async (post: Post, folder = ALL_CATEGORY) => {
 		const result = await restorePost(env.apiUrl, post.slug);
-		if (!result.ok) return failed('되살리지 못함');
+		if (!result.ok) return failed('되돌려 놓지 못함');
 		if (result.post) upsertAdminPost(result.post);
 		else setAdminPosts((list) => (list ?? []).filter((item) => item.slug !== post.slug));
 		if (folder !== ALL_CATEGORY && folder !== post.category) edit((prev) => movePost(prev, post.slug, folder));
@@ -623,13 +725,9 @@ const Memo: React.FC = () => {
 		selectFolder(folder);
 	};
 
-	/** 최근 삭제된 항목에서 영구히 지운다 (되돌릴 수 없어서 묻는다) */
-	const purgeDeleted = async (post: Post) => {
-		if (!window.confirm(`'${post.title}' 메모를 영구히 지울까요? 되돌릴 수 없습니다.`)) return;
-		if (!(await purgePost(env.apiUrl, post.slug))) return failed('영구히 지우지 못함');
-		// 마지막 하나였으면 최근 삭제된 항목이 사라지므로 모든 글로
-		if (trash.length <= 1) selectFolder(ALL_CATEGORY);
-		const current = adminPosts?.find((item) => item.slug === post.slug);
+	/** 영구히 지운 글: 내용 없이 가리는 표시만 남는다 (서버와 같게) */
+	const markPurged = (slug: string) => {
+		const current = adminPosts?.find((item) => item.slug === slug);
 		if (current)
 			upsertAdminPost({
 				...current,
@@ -640,6 +738,34 @@ const Memo: React.FC = () => {
 				deletedAt: null,
 				revisions: 0,
 			});
+	};
+
+	/** 앱 안 경고창으로 묻는다 (메모 창 한가운데). 확인하면 true */
+	const [purgeAlert, setPurgeAlert] = useState<{ title: string; resolve: (ok: boolean) => void } | null>(null);
+	const askPurge = (count: number) =>
+		new Promise<boolean>((resolve) =>
+			setPurgeAlert({ title: `${count}개의 메모를 영구적으로 삭제하겠습니까?`, resolve })
+		);
+
+	/** 최근 삭제된 항목에서 즉시 삭제한다 (되돌릴 수 없어서 묻는다) */
+	const purgeDeleted = async (post: Post) => {
+		if (!(await askPurge(1))) return;
+		if (!(await purgePost(env.apiUrl, post.slug))) return failed('즉시 삭제하지 못함');
+		// 마지막 하나였으면 최근 삭제된 항목이 사라지므로 모든 글로
+		if (trash.length <= 1) selectFolder(ALL_CATEGORY);
+		markPurged(post.slug);
+	};
+
+	/** 휴지통 비우기: 최근 삭제된 항목의 메모를 모두 즉시 삭제한다 */
+	const emptyTrash = async () => {
+		if (trash.length === 0) return;
+		if (!(await askPurge(trash.length))) return;
+		const results = await Promise.all(
+			trash.map(async (post) => ({ slug: post.slug, ok: await purgePost(env.apiUrl, post.slug) }))
+		);
+		results.filter((result) => result.ok).forEach((result) => markPurged(result.slug));
+		if (results.some((result) => !result.ok)) failed('휴지통을 다 비우지 못함');
+		else if (inTrash) selectFolder(ALL_CATEGORY);
 	};
 
 	/** 게시 상태 표시 (관리자 목록): 게시한 적 없음, 게시하지 않은 편집, 예약 */
@@ -659,8 +785,8 @@ const Memo: React.FC = () => {
 	const authorTools = (className: string) =>
 		canEdit && (
 			<>
-				{/* 사이드바가 열려 있으면 새 메모는 사이드바 위쪽에 (좁은 창의 한 칸 보기에서는 여기) */}
-				{(!sidebarOpen || className === 'compact-only') && (
+				{/* 사이드바가 열려 있으면 새 메모는 사이드바 위쪽에 (한 칸씩 보일 때는 목록 위 검색 칸 옆) */}
+				{!sidebarOpen && className === '' && (
 					<IconButton
 						className={className}
 						label="새 메모"
@@ -684,13 +810,22 @@ const Memo: React.FC = () => {
 						icon="fa-solid fa-clock-rotate-left"
 					/>
 				)}
+				{/* 최근 삭제된 메모: 되돌려 놓기·즉시 삭제 아이콘 (본문 위 안내 상자에도 같은 단추) */}
 				{selected && inTrash && (
-					<IconButton
-						className={className}
-						label="메모 영구 삭제"
-						onClick={() => void purgeDeleted(selected)}
-						icon="fa-regular fa-trash-can"
-					/>
+					<>
+						<IconButton
+							className={className}
+							label="되돌려 놓기"
+							onClick={() => void restoreDeleted(selected)}
+							icon="fa-solid fa-rotate-left"
+						/>
+						<IconButton
+							className={className}
+							label="메모 즉시 삭제"
+							onClick={() => void purgeDeleted(selected)}
+							icon="fa-regular fa-trash-can"
+						/>
+					</>
 				)}
 				{selected && !inTrash && newDraft === null && (
 					<IconButton
@@ -762,6 +897,9 @@ const Memo: React.FC = () => {
 			</IconButton>
 		);
 
+	/** 편집기를 보이는 중인지 (관리자, 최근 삭제·잠금이 아닌 글이나 새 메모) */
+	const writing = editing && !inTrash && (newDraft !== null || (selected !== null && !selected.locked));
+
 	const empty = (
 		<>
 			{status === 'loading' && <p className="memo-empty">불러오는 중…</p>}
@@ -772,8 +910,8 @@ const Memo: React.FC = () => {
 		</>
 	);
 
-	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글·최근 삭제된 항목이면 마지막 폴더) */
-	const newFolder = category === ALL_CATEGORY || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
+	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글·태그·최근 삭제된 항목이면 마지막 폴더) */
+	const newFolder = category === ALL_CATEGORY || inTags || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
 	const openFind = selected ? () => setFindSlug(selected.slug) : null;
 	const findTarget = selected?.slug ?? null;
 	const memoInFront = foregroundApp(apps) === 'memo';
@@ -809,6 +947,14 @@ const Memo: React.FC = () => {
 		<div className="memo-compact-tools compact-only">
 			{searchBox()}
 			{sortMenu()}
+			{canEdit && (
+				<IconButton
+					className="memo-compact-new"
+					label="새 메모"
+					onClick={startNewDraft}
+					icon="fa-regular fa-pen-to-square"
+				/>
+			)}
 		</div>
 	);
 
@@ -817,12 +963,36 @@ const Memo: React.FC = () => {
 			{/* 모바일 제목 막대의 뒤로 가기를 메모 안의 이동에도 쓴다 (한 칸씩 보일 때만: 본문 → 목록 → 폴더 → 홈) */}
 			<MobileNavigation
 				{...(compact && pane === 'reader'
-					? { backLabel: folderName(category), onBack: () => setPane('list') }
+					? { backLabel: categoryName, onBack: () => setPane('list'), floating: true }
 					: compact && pane === 'list'
-						? { backLabel: '폴더', onBack: () => setPane('folders') }
-						: {})}
+						? {
+								backLabel: '폴더',
+								onBack: () => {
+									setPicked(null);
+									setPane('folders');
+								},
+								floating: true,
+							}
+						: compact && pane === 'folders'
+							? { floating: true }
+							: {})}
 			/>
 			<div ref={shellRef} className="memo-shell">
+				{purgeAlert && (
+					<AlertDialog
+						title={purgeAlert.title}
+						message="이 동작은 취소할 수 없습니다."
+						confirmLabel="삭제"
+						onConfirm={() => {
+							purgeAlert.resolve(true);
+							setPurgeAlert(null);
+						}}
+						onCancel={() => {
+							purgeAlert.resolve(false);
+							setPurgeAlert(null);
+						}}
+					/>
+				)}
 				<div
 					className={`memo pane-${pane} view-${view} ${galleryNoteOpen ? 'gallery-note' : ''} ${sidebarOpen ? '' : 'sidebar-closed'}`}
 					data-nav={nav}
@@ -852,25 +1022,35 @@ const Memo: React.FC = () => {
 							edit((prev) => removeFolder(prev, path));
 							if (category === path || category.startsWith(`${path}/`)) selectFolder(ALL_CATEGORY);
 						}}
+						onMoveFolder={moveFolderTo}
 						dragging={dragging}
 						onDragFolder={setDragging}
 						canDrop={canDrop}
 						onDrop={drop}
 						recentlyDeleted={trash.length}
+						onEmptyTrash={() => void emptyTrash()}
+						tags={tags}
+						tagSelection={tagSelection}
+						onTagsChange={changeTags}
 					/>
 
 					<section className="memo-list" aria-label="글 목록">
 						<div className="memo-toolbar">
 							<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 							<div className="memo-toolbar-heading">
-								<h2>{folderName(category)}</h2>
-								<p>{visible.length}개의 메모</p>
+								<h2>{categoryName}</h2>
+								<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
 							</div>
 						</div>
 						<div className="memo-scroll">
 							<button type="button" className="memo-back" onClick={() => setPane('folders')}>
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
 							</button>
+							{/* 휴대폰: iOS 메모처럼 목록 위에 큰 제목 (도구 막대의 제목은 좁은 창에서 숨는다) */}
+							<div className="memo-phone-title">
+								<h2>{categoryName}</h2>
+								<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
+							</div>
 							{compactTools}
 							{/* 쓰던 새 메모는 최근 삭제된 항목에서는 숨긴다 (모든 글로 돌아가면 다시 보인다) */}
 							{!inTrash && (newDraft !== null || leavingDraft) && (
@@ -879,15 +1059,133 @@ const Memo: React.FC = () => {
 									{leavingDraft && newDraftItem(leavingDraft.key, leavingDraft.preview, true)}
 								</ul>
 							)}
+							{inTags && tagSelectionNote(tagSelection) && (
+								<p className="memo-trash-banner">{tagSelectionNote(tagSelection)}</p>
+							)}
 							{inTrash && (
 								<p className="memo-trash-banner">
 									지운 메모는 {RECENTLY_DELETED_DAYS}일 동안 여기에 있다가 영구히 지워집니다.
 									<span className="memo-trash-drag-hint"> 폴더로 끌어 놓으면 되살아납니다.</span>
 								</p>
 							)}
-							{sections(listItem, '고정됨', 'memo-items')}
+							{/* 휴대폰에서 갤러리로 보면 목록 칸에 카드로 (넓은 창의 갤러리 칸은 한 칸씩 볼 때 숨는다) */}
+							{phone && compact && view === 'gallery'
+								? sections(card, '고정된 메모', 'memo-cards')
+								: sections(listItem, '고정됨', 'memo-items')}
 							{empty}
 						</div>
+						{/* 휴대폰: 정렬은 오른쪽 위, 검색 알약과 새 메모는 아래에 뜬다 (넘기는 칸 밖에 두어 늘 제자리) */}
+						{phone && compact && (
+							<>
+								<div className="memo-phone-list-top">
+									{picked ? (
+										<button type="button" className="memo-phone-pill" onClick={() => setPicked(null)}>
+											완료
+										</button>
+									) : (
+										<>
+											{sortMenu()}
+											<IconButton
+												className="memo-phone-list-more"
+												label="목록 동작"
+												aria-haspopup="menu"
+												aria-expanded={listMenu !== null}
+												onClick={(event) => {
+													const rect = event.currentTarget.getBoundingClientRect();
+													setListMenu(listMenu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
+												}}
+												icon="fa-solid fa-ellipsis"
+											/>
+										</>
+									)}
+								</div>
+								<div className="memo-phone-bottom memo-list-bottom">
+									{picked ? (
+										<>
+											<button
+												type="button"
+												className="memo-phone-pill"
+												disabled={pickedPosts.length === 0}
+												onClick={(event) => {
+													const rect = event.currentTarget.getBoundingClientRect();
+													setPickMoveMenu({ x: rect.left, y: rect.top - 8 });
+												}}
+											>
+												이동
+											</button>
+											<span className="memo-pick-count" role="status">
+												{pickedPosts.length > 0 ? `${pickedPosts.length}개 선택됨` : '메모 선택'}
+											</span>
+											<button
+												type="button"
+												className="memo-phone-pill destructive"
+												disabled={pickedPosts.every((post) => post.locked)}
+												onClick={() => {
+													pickedPosts.filter((post) => !post.locked).forEach((post) => void removePost(post));
+													setPicked(null);
+												}}
+											>
+												삭제
+											</button>
+										</>
+									) : (
+										<>
+											{searchBox('memo-phone-search-field')}
+											{canEdit && (
+												<IconButton
+													className="memo-phone-compose"
+													label="새 메모"
+													onClick={startNewDraft}
+													icon="fa-regular fa-pen-to-square"
+												/>
+											)}
+										</>
+									)}
+								</div>
+								{/* 휴대폰 목록의 ••• 메뉴 (iOS 메모처럼): 갤러리로 보기, 메모 선택, 첨부 파일 보기 */}
+								{listMenu && (
+									<Menu
+										label="목록 동작"
+										className="touch"
+										anchor={{ x: listMenu.x, y: listMenu.y }}
+										onClose={() => setListMenu(null)}
+										items={[
+											view === 'gallery'
+												? { label: '목록으로 보기', icon: 'fa-solid fa-list-ul', onSelect: () => changeView('list') }
+												: {
+														label: '갤러리로 보기',
+														icon: 'fa-solid fa-table-cells-large',
+														onSelect: () => changeView('gallery'),
+													},
+											'separator',
+											...(canEdit && !inTrash
+												? [
+														{
+															label: '메모 선택',
+															icon: 'fa-regular fa-circle-check',
+															onSelect: () => setPicked(new Set()),
+														},
+													]
+												: []),
+											{
+												label: '첨부 파일 보기',
+												icon: 'fa-solid fa-paperclip',
+												onSelect: () => setFilter('attachment'),
+											},
+										]}
+									/>
+								)}
+								{/* 고른 메모들을 옮길 폴더 */}
+								{pickMoveMenu && (
+									<FolderPickMenu
+										anchor={pickMoveMenu}
+										paths={folderPaths}
+										onClose={() => setPickMoveMenu(null)}
+										onPick={movePicked}
+									/>
+								)}
+							</>
+						)}
 					</section>
 
 					{/* 갤러리는 갤러리로 볼 때만 그린다 (목록과 검색 칸·안내 문구가 겹치지 않게) */}
@@ -896,8 +1194,8 @@ const Memo: React.FC = () => {
 							<div className="memo-toolbar">
 								<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 								<div className="memo-toolbar-heading">
-									<h2>{folderName(category)}</h2>
-									<p>{visible.length}개의 메모</p>
+									<h2>{categoryName}</h2>
+									<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
 								</div>
 								{sortMenu()}
 								<ViewSwitch view={view} onChange={changeView} />
@@ -910,14 +1208,24 @@ const Memo: React.FC = () => {
 						</section>
 					)}
 
-					<article className="memo-reader" aria-label={selected ? selected.title : '글'}>
+					<article
+						className="memo-reader"
+						aria-label={selected ? selected.title : '글'}
+						onClick={(event) => {
+							// 읽기 화면의 #태그를 누르면 그 태그의 글만 (편집기 안에서는 커서만 옮긴다)
+							const target = (event.target as Element).closest('.memo-tag');
+							if (!target || target.closest('.ProseMirror')) return;
+							const name = target.getAttribute('data-tag');
+							if (name) changeTags(onlyTag(tagSelection, name));
+						}}
+					>
 						<div className={`memo-toolbar memo-reader-toolbar ${searching ? 'searching' : ''}`}>
 							{galleryNoteOpen && (
 								<>
 									<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 									{/* 갤러리에서 연 글은 갤러리로 돌아간다 */}
 									<IconButton className="memo-gallery-back" onClick={() => setGalleryNoteOpen(false)}>
-										<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
+										<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {categoryName}
 									</IconButton>
 								</>
 							)}
@@ -962,16 +1270,111 @@ const Memo: React.FC = () => {
 						{findSlug !== null && findSlug === selected?.slug && (
 							<FindBar key={findSlug} editing={editing} readerRoot={readerScroll} onClose={() => setFindSlug(null)} />
 						)}
+						{/* 휴대폰: 오른쪽 위에 공유·••• 알약, 아래에 서식 알약과 새 메모 (iOS 메모 본문처럼) */}
+						{phone && compact && selected && (
+							<div className="memo-phone-top">
+								{newDraft === null && !inTrash && shareButton('')}
+								<IconButton
+									label="메모 동작"
+									aria-haspopup="menu"
+									aria-expanded={phoneMenu !== null}
+									onClick={(event) => {
+										const rect = event.currentTarget.getBoundingClientRect();
+										setPhoneMenu(phoneMenu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
+									}}
+									icon="fa-solid fa-ellipsis"
+								/>
+							</div>
+						)}
+						{phone && compact && canEdit && (
+							<div className="memo-phone-bottom">
+								{writing ? (
+									<span className="memo-format-tools memo-phone-format">
+										<FormatTools />
+									</span>
+								) : (
+									<span />
+								)}
+								<IconButton
+									className="memo-phone-compose"
+									label="새 메모"
+									onClick={startNewDraft}
+									icon="fa-regular fa-pen-to-square"
+								/>
+							</div>
+						)}
+						{/* 휴대폰 본문의 ••• 메뉴: 맨 위에 고정·잠그기, 그 아래 찾기·삭제 (iOS 메모처럼) */}
+						{phoneMenu && selected && (
+							<Menu
+								label="메모 동작"
+								className="touch"
+								anchor={phoneMenu}
+								onClose={() => setPhoneMenu(null)}
+								items={
+									canEdit && inTrash
+										? [
+												{
+													label: '되돌려 놓기',
+													icon: 'fa-solid fa-rotate-left',
+													onSelect: () => void restoreDeleted(selected),
+												},
+												{
+													label: '즉시 삭제',
+													icon: 'fa-regular fa-trash-can',
+													destructive: true,
+													onSelect: () => void purgeDeleted(selected),
+												},
+											]
+										: [
+												...(canEdit && newDraft === null
+													? [
+															{
+																row: [
+																	{
+																		label: selected.pinned ? '고정 해제' : '메모 고정',
+																		icon: 'fa-solid fa-thumbtack',
+																		onSelect: () => togglePin(selected),
+																	},
+																	{
+																		label: selected.locked ? '잠금 해제' : '잠그기',
+																		icon: selected.locked ? 'fa-solid fa-lock-open' : 'fa-solid fa-lock',
+																		onSelect: () => toggleLock(selected),
+																	},
+																],
+															},
+														]
+													: []),
+												{
+													label: '메모에서 찾기',
+													icon: 'fa-solid fa-magnifying-glass',
+													onSelect: () => setFindSlug(selected.slug),
+												},
+												...(canEdit && newDraft === null
+													? [
+															{
+																label: '삭제',
+																icon: 'fa-regular fa-trash-can',
+																destructive: true,
+																disabled: selected.locked,
+																hint: selected.locked ? '잠긴 메모는 지울 수 없습니다' : undefined,
+																onSelect: () => void removePost(selected),
+															},
+														]
+													: []),
+											]
+								}
+							/>
+						)}
 						<div ref={readerScroll} className="memo-scroll">
 							<div className="memo-reader-compact-bar">
 								<button type="button" className="memo-back" onClick={() => setPane('list')}>
-									<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {folderName(category)}
+									<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {categoryName}
 								</button>
 								{authorTools('compact-only')}
 								{pinButton('compact-only')}
 								{shareButton('compact-only')}
 							</div>
-							{editing && !inTrash && (newDraft !== null || (selected && !selected.locked)) && (
+							{writing && (
 								// 관리자: 따로 편집 단추 없이 바로 고친다 (macOS 메모처럼)
 								<div
 									key={newDraft !== null ? `new-${newDraft}` : (writerKeys[selected!.slug] ?? selected!.slug)}
@@ -1007,36 +1410,48 @@ const Memo: React.FC = () => {
 							{(!editing || inTrash || (newDraft === null && selected?.locked)) && selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다. 최근 삭제된 항목의 글과 잠긴 메모는 관리자에게도 읽기 화면
 								<div key={selected.slug} className="memo-reader-body">
-									{selected.deletedAt ? (
-										<div className="memo-trash-note" role="note">
-											<i className="fa-regular fa-trash-can" aria-hidden="true" />
-											<p>
-												<strong>최근 삭제된 메모</strong>
-												{daysUntilPurge(selected.deletedAt, today)}일 뒤에 영구히 지워집니다. 고치려면 먼저 되살리세요.
-											</p>
-											<Button
-												tone="primary"
-												icon="fa-solid fa-rotate-left"
-												onClick={() => void restoreDeleted(selected)}
-											>
-												되살리기
-											</Button>
-										</div>
-									) : (
-										editing && (
-											// 도구 막대는 편집 도구로 꽉 차서, 잠금은 메뉴로 걸고 여기서 푼다
-											<p className="memo-locked-note">
-												<i className="fa-solid fa-lock" aria-hidden="true" /> 잠긴 메모입니다.
-												<button type="button" onClick={() => toggleLock(selected)}>
-													잠금 풀기
-												</button>
-											</p>
-										)
-									)}
+									{/* 날짜는 늘 맨 위 (최근 삭제·잠금 안내는 그 아래) */}
 									<p className="memo-reader-date">
 										<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> ·{' '}
 										{folderLabel(selected.category)}
 									</p>
+									{selected.deletedAt && (
+										// Finder의 휴지통 안내처럼: 왜 고칠 수 없는지, 어떻게 쓰는지, 그 아래 단추
+										<div className="memo-trash-note" role="note">
+											<i className="fa-regular fa-trash-can" aria-hidden="true" />
+											<div>
+												<strong>최근 삭제된 메모</strong>
+												<p>
+													{daysUntilPurge(selected.deletedAt, today)}일 뒤에 영구히 삭제됩니다. 원본 항목이 휴지통에
+													있기 때문에 수정할 수 없습니다.
+												</p>
+												<p className="memo-trash-note-hint">
+													이 항목을 사용하려면 휴지통 밖으로 드래그하거나 복구하십시오.
+												</p>
+												<div className="memo-trash-note-actions">
+													<Button icon="fa-solid fa-rotate-left" onClick={() => void restoreDeleted(selected)}>
+														되돌려 놓기
+													</Button>
+													<Button
+														tone="danger"
+														icon="fa-regular fa-trash-can"
+														onClick={() => void purgeDeleted(selected)}
+													>
+														즉시 삭제
+													</Button>
+												</div>
+											</div>
+										</div>
+									)}
+									{editing && !selected.deletedAt && (
+										// 도구 막대는 편집 도구로 꽉 차서, 잠금은 메뉴로 걸고 여기서 푼다
+										<p className="memo-locked-note">
+											<i className="fa-solid fa-lock" aria-hidden="true" /> 잠긴 메모입니다.
+											<button type="button" onClick={() => toggleLock(selected)}>
+												잠금 풀기
+											</button>
+										</p>
+									)}
 									<h1>{selected.title}</h1>
 									<div className="memo-markdown">
 										<ReactMarkdown
@@ -1097,12 +1512,12 @@ const Memo: React.FC = () => {
 								...(canEdit && selected && inTrash
 									? [
 											{
-												label: '되살리기',
+												label: '되돌려 놓기',
 												icon: 'fa-solid fa-rotate-left',
 												onSelect: () => void restoreDeleted(selected),
 											},
 											{
-												label: '영구 삭제',
+												label: '즉시 삭제',
 												icon: 'fa-regular fa-trash-can',
 												destructive: true,
 												onSelect: () => void purgeDeleted(selected),
@@ -1159,13 +1574,13 @@ const Memo: React.FC = () => {
 								menuPost.deletedAt
 									? [
 											{
-												label: '되살리기',
+												label: '되돌려 놓기',
 												icon: 'fa-solid fa-rotate-left',
 												onSelect: () => void restoreDeleted(menuPost),
 											},
 											'separator',
 											{
-												label: '영구 삭제',
+												label: '즉시 삭제',
 												icon: 'fa-regular fa-trash-can',
 												destructive: true,
 												onSelect: () => void purgeDeleted(menuPost),
@@ -1195,6 +1610,32 @@ const Memo: React.FC = () => {
 						/>
 					)}
 				</div>
+				{/* 휴대폰 폴더 화면 아래: iOS 메모처럼 검색 알약(누르면 모든 글에서 찾기)과 새 메모 */}
+				{phone && compact && pane === 'folders' && (
+					<div className="memo-phone-bottom memo-folders-bottom">
+						<button
+							type="button"
+							className="memo-phone-search"
+							onClick={() => {
+								selectFolder(ALL_CATEGORY);
+								requestAnimationFrame(() =>
+									shellRef.current?.querySelector<HTMLInputElement>('.memo-list-bottom .memo-search input')?.focus()
+								);
+							}}
+						>
+							<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+							검색
+						</button>
+						{canEdit && (
+							<IconButton
+								className="memo-phone-compose"
+								label="새 메모"
+								onClick={startNewDraft}
+								icon="fa-regular fa-pen-to-square"
+							/>
+						)}
+					</div>
+				)}
 			</div>
 		</AppWindow>
 	);

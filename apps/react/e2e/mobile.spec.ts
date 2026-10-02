@@ -1,4 +1,5 @@
 import { test, expect, appWindow } from './fixtures';
+import { fakeApi } from './fakeApi';
 import type { Page } from '@playwright/test';
 
 /** 로딩 화면을 탭해 넘기고 홈 화면에 들어간다. */
@@ -137,6 +138,132 @@ test.describe('모바일', () => {
 
 		await memo.getByRole('button', { name: /^개발기/ }).tap();
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+	});
+
+	test('관리자 본문은 iOS 메모처럼 떠 있는 단추를 쓰고, 목록 위에서 새 메모·폴더 화면에서 새로운 폴더를 만든다', async ({
+		page,
+	}) => {
+		await fakeApi(page, { signedIn: true });
+		await enterHome(page);
+		await homeApp(page, '메모').tap();
+		const memo = appWindow(page, 'memo');
+
+		// 본문: 제목 막대 대신 왼쪽 위 동그란 뒤로 가기, 오른쪽 위 공유·••• 알약, 아래 서식 알약과 새 메모
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
+		await expect(memo.locator('.mobile-navbar.floating .mobile-navbar-home')).toBeVisible();
+		const top = memo.locator('.memo-phone-top');
+		await expect(top.getByRole('button', { name: '링크 공유' })).toBeVisible();
+		const bottom = memo.locator('.memo-phone-bottom');
+		// 서식 단추는 편집기를 불러온 뒤에 생긴다
+		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '체크리스트' })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
+
+		// ••• 메뉴: 맨 위에 고정·잠그기, 그 아래 찾기·삭제
+		await top.getByRole('button', { name: '메모 동작' }).tap();
+		const menu = page.getByRole('menu', { name: '메모 동작' });
+		await expect(menu.getByRole('menuitem')).toHaveText(['메모 고정', '잠그기', '메모에서 찾기', '삭제']);
+		await menu.getByRole('menuitem', { name: '메모에서 찾기' }).tap();
+		await expect(memo.getByRole('search', { name: '메모에서 찾기' })).toBeVisible();
+
+		// 목록 위 검색 칸 옆의 새 메모 → 빈 편집기
+		await memo.locator('.mobile-navbar-home').tap();
+		await memo.getByRole('region', { name: '글 목록' }).getByRole('button', { name: '새 메모' }).tap();
+		await expect(memo.getByRole('textbox', { name: '제목' })).toBeVisible();
+
+		// 폴더 화면의 새로운 폴더
+		await memo.locator('.mobile-navbar-home').tap();
+		await memo.locator('.mobile-navbar-home').tap();
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await folders.getByRole('button', { name: '새로운 폴더' }).tap();
+		await expect(folders.getByRole('textbox', { name: '새로운 폴더 이름' })).toBeVisible();
+	});
+
+	test('목록·폴더 화면은 iOS 메모처럼 큰 제목과 카드 묶음, 떠 있는 단추, 아래 검색 알약을 쓴다', async ({ page }) => {
+		await fakeApi(page, { signedIn: false });
+		await enterHome(page);
+		await homeApp(page, '메모').tap();
+		const memo = appWindow(page, 'memo');
+		const list = memo.getByRole('region', { name: '글 목록' });
+
+		// 목록: 제목 막대 대신 떠 있는 뒤로 가기, 큰 제목과 메모 수, 아래에 검색 알약
+		await expect(memo.locator('.mobile-navbar.floating .mobile-navbar-home')).toBeVisible();
+		await expect(list.getByRole('heading', { name: '모든 글' })).toBeVisible();
+		await expect(list.locator('.memo-phone-title p')).toHaveText(/\d+개의 메모/);
+		const search = list.getByRole('searchbox', { name: '글 검색' });
+		const searchBox = await search.boundingBox();
+		const listBox = await list.boundingBox();
+		expect(searchBox!.y + searchBox!.height).toBeGreaterThan(listBox!.y + listBox!.height - 80);
+
+		// 폴더: 큰 제목, '블로그' 묶음을 접고 펼친다
+		await memo.locator('.mobile-navbar-home').tap();
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await expect(folders.locator('.memo-phone-title')).toHaveText('폴더');
+		const allPosts = folders.getByRole('button', { name: /^모든 글/ });
+		await expect(allPosts).toBeVisible();
+		await folders.getByRole('button', { name: '블로그 접기' }).tap();
+		await expect(allPosts).toBeHidden();
+		await folders.getByRole('button', { name: '블로그 펼치기' }).tap();
+		await expect(allPosts).toBeVisible();
+
+		// 방문자에게는 편집이 없다
+		await expect(folders.getByRole('button', { name: '폴더 편집' })).toHaveCount(0);
+
+		// 폴더 화면 아래의 검색 알약: 모든 글로 가서 검색 칸에 커서
+		await memo.locator('.memo-folders-bottom').getByRole('button', { name: '검색' }).tap();
+		await expect(search).toBeFocused();
+		await expect(list.getByRole('heading', { name: '모든 글' })).toBeVisible();
+	});
+
+	test('관리자는 목록 •••에서 갤러리·메모 선택·첨부 파일을, 폴더 화면의 편집에서 폴더 메뉴를 쓴다', async ({
+		page,
+	}) => {
+		await fakeApi(page, { signedIn: true });
+		await enterHome(page);
+		await homeApp(page, '메모').tap();
+		const memo = appWindow(page, 'memo');
+		const list = memo.getByRole('region', { name: '글 목록' });
+		await expect(list.locator('.memo-item').first()).toBeVisible();
+
+		// ••• 메뉴: 갤러리로 보기 ↔ 목록으로 보기
+		await list.getByRole('button', { name: '목록 동작' }).tap();
+		const listMenu = page.getByRole('menu', { name: '목록 동작' });
+		await expect(listMenu.getByRole('menuitem')).toHaveText(['갤러리로 보기', '메모 선택', '첨부 파일 보기']);
+		await listMenu.getByRole('menuitem', { name: '갤러리로 보기' }).tap();
+		await expect(list.locator('.memo-card').first()).toBeVisible();
+		await list.getByRole('button', { name: '목록 동작' }).tap();
+		await page.getByRole('menuitem', { name: '목록으로 보기' }).tap();
+		await expect(list.locator('.memo-item').first()).toBeVisible();
+
+		// 메모 선택: 누르면 고르고, 완료로 끝낸다 (고르는 동안은 본문으로 넘어가지 않는다)
+		await list.getByRole('button', { name: '목록 동작' }).tap();
+		await page.getByRole('menuitem', { name: '메모 선택' }).tap();
+		const first = list.locator('.memo-item').first();
+		await first.tap();
+		await expect(first).toHaveAttribute('aria-pressed', 'true');
+		await expect(list.getByRole('status').filter({ hasText: '1개 선택됨' })).toBeVisible();
+		await expect(list.getByRole('button', { name: '이동' })).toBeEnabled();
+		await list.getByRole('button', { name: '완료' }).tap();
+		await expect(first).not.toHaveAttribute('aria-pressed');
+
+		// 첨부 파일 보기: 검색 칸에 '첨부 파일' 조건이 붙는다
+		await list.getByRole('button', { name: '목록 동작' }).tap();
+		await page.getByRole('menuitem', { name: '첨부 파일 보기' }).tap();
+		await expect(list.locator('.memo-list-bottom .memo-search-chip')).toContainText('첨부 파일');
+
+		// 폴더 화면의 편집: 폴더마다 ••• (폴더 추가·이 폴더 이동·이름 변경·삭제), ✓로 끝낸다
+		await memo.locator('.mobile-navbar-home').tap();
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await folders.getByRole('button', { name: '폴더 편집' }).tap();
+		await expect(folders.getByRole('button', { name: /^모든 글/ })).toBeDisabled();
+		await folders.getByRole('button', { name: '폴더 동작 (MacFolio)' }).tap();
+		const folderMenu = page.getByRole('menu', { name: 'MacFolio 폴더 메뉴' });
+		await expect(folderMenu.getByRole('menuitem')).toHaveText(['폴더 추가', '이 폴더 이동', '이름 변경', '삭제']);
+		await folderMenu.getByRole('menuitem', { name: '이 폴더 이동' }).tap();
+		await expect(page.getByRole('menu', { name: 'MacFolio 폴더를 옮길 곳' })).toBeVisible();
+		await page.keyboard.press('Escape');
+		await folders.getByRole('button', { name: '편집 완료' }).tap();
+		await expect(folders.getByRole('button', { name: /^모든 글/ })).toBeEnabled();
 	});
 
 	test('메일은 목록과 읽기·쓰기를 한 화면씩 보여준다', async ({ page }) => {
