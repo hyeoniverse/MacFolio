@@ -1,6 +1,6 @@
 import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
 import type { Page } from '@playwright/test';
-import { FAKE_SIGNED_IN_AT, fakeApi } from './fakeApi';
+import { FAKE_API, FAKE_EXPIRES_AT, FAKE_SIGNED_IN_AT, fakeApi } from './fakeApi';
 
 const appleMenu = (page: Page) => page.getByRole('menu', { name: 'Apple 메뉴', exact: true });
 
@@ -38,12 +38,16 @@ test.describe('관리자 로그인', () => {
 		await expect(account).toContainText('hyeoniverse');
 		await expect(account).toContainText('GitHub로 로그인됨');
 		// 로그인한 때 (서버가 알려 준 세션 시작 시각)
-		await expect(account.locator('time')).toHaveAttribute('datetime', FAKE_SIGNED_IN_AT);
+		await expect(account.locator('time').first()).toHaveAttribute('datetime', FAKE_SIGNED_IN_AT);
 		await expect(account).toContainText('2026년 10월 2일');
+		// 세션이 끝나는 때
+		await expect(account.locator('time').last()).toHaveAttribute('datetime', FAKE_EXPIRES_AT);
+		await expect(account).toContainText('세션 만료');
 
 		await account.getByRole('button', { name: '로그아웃' }).click();
 		await expect(account).toContainText('로그인하지 않음');
 		await expect(account).not.toContainText('로그인 시각');
+		await expect(account).not.toContainText('세션 만료');
 		await expect(account.getByRole('button', { name: /GitHub로 로그인/ })).toBeEnabled();
 	});
 
@@ -72,6 +76,39 @@ test.describe('관리자 로그인', () => {
 		release();
 		await expect(avatar).toHaveAttribute('data-loaded', 'true');
 		await expect(avatar.locator('img')).toHaveCSS('opacity', '1');
+	});
+
+	test('세션 만료 시각이 지나면 다시 확인해 로그아웃된 화면으로 바뀐다', async ({ page }) => {
+		const state = await fakeApi(page, { signedIn: true });
+		// 처음 물었을 때부터 8초 뒤에 끝나는 세션. 끝나면 서버는 더는 관리자로 보지 않는다
+		let expiresAt: string | null = null;
+		await page.route(`${FAKE_API}/auth/me`, (route) => {
+			expiresAt ??= new Date(Date.now() + 8000).toISOString();
+			return state.signedIn && Date.now() < Date.parse(expiresAt)
+				? route.fulfill({
+						headers: {
+							'Access-Control-Allow-Origin': 'http://localhost:4173',
+							'Access-Control-Allow-Credentials': 'true',
+						},
+						json: { login: 'hyeoniverse', signedInAt: FAKE_SIGNED_IN_AT, expiresAt },
+					})
+				: route.fulfill({
+						status: 401,
+						headers: {
+							'Access-Control-Allow-Origin': 'http://localhost:4173',
+							'Access-Control-Allow-Credentials': 'true',
+						},
+						json: { statusCode: 401 },
+					});
+		});
+		await enterDesktop(page);
+		await dockItem(page, 'settings').click();
+		const account = appWindow(page, 'settings').getByRole('region', { name: '관리자 계정' });
+		await expect(account).toContainText('GitHub로 로그인됨');
+		await expect(account).toContainText('세션 만료');
+
+		await expect(account).toContainText('로그인하지 않음', { timeout: 15_000 });
+		await expect(account).not.toContainText('세션 만료');
 	});
 
 	test('관리자가 아닌 계정이면 로그인할 수 없다고 알린다', async ({ page }) => {

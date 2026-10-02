@@ -12,8 +12,10 @@ export interface AdminState {
 	status: AdminStatus;
 	/** 로그인한 GitHub 계정 */
 	login: string | null;
-	/** 이 세션으로 로그인한 때. 로그인 시각을 알려 주지 않는 예전 서버면 없다 */
+	/** 이 세션으로 로그인한 때. 알려 주지 않는 예전 서버면 없다 */
 	signedInAt?: Date;
+	/** 이 세션이 끝나는 때. 알려 주지 않는 예전 서버면 없다 */
+	expiresAt?: Date;
 }
 
 /** GitHub에서 돌아올 때 주소에 붙는 결과 (?admin=…) */
@@ -59,13 +61,19 @@ export function loginOutcome(
 export const avatarUrl = (login: string) => `https://github.com/${encodeURIComponent(login)}.png?size=120`;
 
 /**
- * 로그인 시각 (예: 2026년 10월 2일 오후 7:03), 보는 사람의 시간대로.
+ * 로그인·세션 만료 시각 (예: 2026년 10월 2일 오후 7:03), 보는 사람의 시간대로.
  * Intl의 한국어 출력('오후'와 'PM')은 ICU 버전마다 달라서 직접 조립한다 (메시지 앱과 같다).
  */
-export function formatSignedInAt(date: Date): string {
+export function formatSessionTime(date: Date): string {
 	const hour = date.getHours();
 	const minute = String(date.getMinutes()).padStart(2, '0');
 	return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${hour < 12 ? '오전' : '오후'} ${hour % 12 || 12}:${minute}`;
+}
+
+/** ISO 8601 문자열 → Date. 없거나 잘못된 값이면 null */
+function toDate(value: string | undefined): Date | null {
+	const date = value ? new Date(value) : null;
+	return date && !Number.isNaN(date.getTime()) ? date : null;
 }
 
 /** /auth/me 응답으로 상태를 정한다 */
@@ -75,11 +83,13 @@ export async function checkAdmin(apiUrl: string, fetchImpl: typeof fetch = fetch
 		const response = await fetchImpl(`${apiUrl}/auth/me`, { credentials: 'include' });
 		if (response.status === 401) return { status: 'signed-out', login: null };
 		if (!response.ok) return { status: 'offline', login: null };
-		const { login, signedInAt } = (await response.json()) as { login: string; signedInAt?: string };
-		const at = signedInAt ? new Date(signedInAt) : null;
-		return at && !Number.isNaN(at.getTime())
-			? { status: 'signed-in', login, signedInAt: at }
-			: { status: 'signed-in', login };
+		const body = (await response.json()) as { login: string; signedInAt?: string; expiresAt?: string };
+		const state: AdminState = { status: 'signed-in', login: body.login };
+		const signedInAt = toDate(body.signedInAt);
+		const expiresAt = toDate(body.expiresAt);
+		if (signedInAt) state.signedInAt = signedInAt;
+		if (expiresAt) state.expiresAt = expiresAt;
+		return state;
 	} catch {
 		return { status: 'offline', login: null };
 	}
