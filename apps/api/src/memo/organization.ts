@@ -12,15 +12,17 @@ export interface Organization {
 	pins: Record<string, boolean>;
 	/** 잠근 글: slug → true (잠그면 고치거나 지울 수 없다) */
 	locks: Record<string, boolean>;
+	/** 폴더 순서: 폴더 경로를 보일 순서대로. 같은 층끼리 이 순서를 따르고, 없는 폴더는 뒤에 가나다순 */
+	order: string[];
 }
 
-export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {} };
+export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {}, order: [] };
 
 export const FOLDER_NAME_MAX = 30;
 /** 폴더는 3단까지 */
 export const MAX_FOLDER_DEPTH = 3;
 /** 한 번에 저장할 수 있는 항목 수 (이상한 요청으로 DB가 커지지 않게) */
-export const LIMITS = { folders: 200, posts: 500, moves: 200, pins: 500, locks: 500 } as const;
+export const LIMITS = { folders: 200, posts: 500, moves: 200, pins: 500, locks: 500, order: 300 } as const;
 
 const SLUG = /^[\w-]{1,100}$/;
 
@@ -41,12 +43,12 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 /**
  * 요청 본문을 검사해 정리 내용으로 바꾼다. 문제가 있으면 모든 이유를 모아 돌려준다.
- * 모르는 필드는 버린다. locks는 나중에 생겨서, 없으면 빈 값으로 본다.
+ * 모르는 필드는 버린다. locks·order는 나중에 생겨서, 없으면 빈 값으로 본다.
  */
 export function parseOrganization(input: unknown): { value: Organization } | { errors: string[] } {
 	const errors: string[] = [];
 	if (!isRecord(input)) return { errors: ['정리 내용은 객체여야 합니다'] };
-	const { folders, posts, moves, pins, locks = {} } = input;
+	const { folders, posts, moves, pins, locks = {}, order = [] } = input;
 
 	if (!Array.isArray(folders)) errors.push('folders는 배열이어야 합니다');
 	else {
@@ -102,6 +104,16 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 		}
 	}
 
+	if (!Array.isArray(order)) errors.push('order는 배열이어야 합니다');
+	else {
+		if (order.length > LIMITS.order) errors.push(`폴더 순서는 ${LIMITS.order}개까지입니다`);
+		order.forEach((path) => {
+			const error = folderPathError(path);
+			if (error) errors.push(error);
+		});
+		if (new Set(order).size !== order.length) errors.push('폴더 순서에 같은 폴더가 두 번 있습니다');
+	}
+
 	if (errors.length > 0) return { errors };
 	return {
 		value: {
@@ -110,6 +122,7 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 			moves: (moves as { from: string; to: string }[]).map(({ from, to }) => ({ from, to })),
 			pins: pins as Record<string, boolean>,
 			locks: locks as Record<string, boolean>,
+			order: order as string[],
 		},
 	};
 }
