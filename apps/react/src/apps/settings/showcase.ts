@@ -4,7 +4,7 @@ import type { RepoCard } from '@/apps/github/githubProfile';
 /** 같은 저장소인지 (GitHub 이름은 대소문자를 가리지 않는다) */
 export const sameRepo = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
-/** index번째를 delta만큼 옮긴 새 목록 (끝을 넘으면 그대로) */
+/** index번째를 delta칸 옮긴 새 목록 (끝을 넘으면 그대로). ≡ 끌기는 놓은 자리 - 원래 자리만큼 */
 export function move<T>(list: readonly T[], index: number, delta: number): T[] {
 	const target = index + delta;
 	if (index < 0 || index >= list.length || target < 0 || target >= list.length) return [...list];
