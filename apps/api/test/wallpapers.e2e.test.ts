@@ -119,6 +119,24 @@ describe('배경화면 (e2e)', () => {
 		expect(await prisma.upload.count()).toBe(0);
 	});
 
+	it('관리자는 이름을 바꾼다. 빈 이름은 400, 관리자가 아니면 401', async () => {
+		const created = await upload({ kind: 'mac' }).expect(201);
+		const path = `/wallpapers/${created.body.id}`;
+		await request(server()).patch(path).send({ name: '바다' }).expect(401);
+		await request(server()).patch(path).set('Cookie', adminCookie).send({ name: '   ' }).expect(400);
+		const renamed = await request(server())
+			.patch(path)
+			.set('Cookie', adminCookie)
+			.send({ name: '  제주 바다  ' })
+			.expect(200);
+		expect(renamed.body).toMatchObject({ id: created.body.id, name: '제주 바다', image: created.body.image });
+		await request(server())
+			.patch('/wallpapers/aaaaaaaaaaaaaaaa')
+			.set('Cookie', adminCookie)
+			.send({ name: 'x' })
+			.expect(404);
+	});
+
 	it('지우면 목록에서 빠지고 이미지 두 장도 함께 지운다', async () => {
 		const created = await upload({ kind: 'mac' }).expect(201);
 		expect(await prisma.upload.count()).toBe(2);

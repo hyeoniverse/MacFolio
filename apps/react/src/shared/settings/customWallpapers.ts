@@ -163,6 +163,34 @@ export async function addCustomWallpaper(
 	return added;
 }
 
+/** 관리자: 이름을 바꾼다. 실패하면 이유를 담은 Error */
+export async function renameCustomWallpaper(
+	wallpaper: CustomWallpaper,
+	name: string,
+	apiUrl = env.apiUrl
+): Promise<CustomWallpaper> {
+	let response: Response;
+	try {
+		response = await fetch(`${apiUrl}/wallpapers/${encodeURIComponent(wallpaper.serverId)}`, {
+			method: 'PATCH',
+			body: JSON.stringify({ name }),
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+		});
+	} catch {
+		throw new Error('서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
+	}
+	if (response.status === 401) throw new Error('관리자 로그인이 끝났습니다. 다시 로그인해 주세요.');
+	if (response.status === 400) throw new Error('이름을 입력해 주세요.');
+	if (!response.ok) throw new Error('이름을 바꾸지 못했습니다.');
+	const renamed = toCustom(apiUrl, (await response.json()) as ServerWallpaper);
+	customWallpaperStore.setState((state) => ({
+		...state,
+		list: state.list.map((w) => (w.id === renamed.id ? renamed : w)),
+	}));
+	return renamed;
+}
+
 /** 관리자: 지운다. 지금 고른 배경화면이면 기본값으로 돌린다 */
 export async function removeCustomWallpaper(wallpaper: CustomWallpaper, apiUrl = env.apiUrl): Promise<void> {
 	let response: Response;

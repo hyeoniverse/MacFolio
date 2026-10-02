@@ -113,6 +113,37 @@ test.describe('모바일', () => {
 		await expect(page.locator('.mobile-home')).toBeVisible();
 	});
 
+	test('관리자는 더한 배경화면을 길게 눌러 메뉴를 열고, 휴대폰에서는 ×가 늘 보인다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.wallpapers.push({
+			id: 'wallpaper0000001',
+			kind: 'ios',
+			name: '새벽',
+			image: '/files/a',
+			thumbnail: '/files/b',
+		});
+		await enterHome(page);
+		await homeApp(page, '시스템 설정').tap();
+		const settings = appWindow(page, 'settings');
+		await settings.getByRole('button', { name: '배경화면' }).tap();
+		await expect(settings.getByRole('button', { name: '새벽 배경화면 삭제' })).toBeVisible();
+		await expect(settings.getByRole('button', { name: '새벽 배경화면 삭제' })).toHaveCSS('opacity', '1');
+
+		const tile = settings.getByRole('radio', { name: '새벽' });
+		await tile.scrollIntoViewIfNeeded();
+		const box = (await tile.boundingBox())!;
+		await tile.dispatchEvent('pointerdown', {
+			pointerType: 'touch',
+			clientX: box.x + box.width / 2,
+			clientY: box.y + box.height / 2,
+		});
+		await expect(page.getByRole('menu', { name: '배경화면 메뉴' })).toBeVisible();
+		await tile.dispatchEvent('pointerup', { pointerType: 'touch' });
+		// 메뉴를 연 손가락을 뗀 것은 고르기가 아니다
+		await tile.dispatchEvent('click');
+		await expect(tile).not.toBeChecked();
+	});
+
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {
 		await enterHome(page);
 		for (const label of ['Safari', 'GitHub', '메모', '메일', '메시지', '시스템 설정', '단축어', '음악']) {

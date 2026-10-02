@@ -103,6 +103,63 @@ test.describe('관리자가 더한 배경화면', () => {
 		await expect.poll(() => desktopWallpaper(page)).toContain('/imgs/wallpapers/highsierra.jpg');
 	});
 
+	test('관리자는 오른쪽 클릭 메뉴로 이름을 바꾸고, 긴 이름은 칸 폭에서 자른다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openWallpapers(page);
+		const mac = settings.getByRole('radiogroup', { name: 'macOS 배경화면' });
+		await settings.getByLabel('macOS 배경화면 파일').setInputFiles({
+			name: 'IMG_4021.jpg',
+			mimeType: 'image/jpeg',
+			buffer: await samplePhoto(page),
+		});
+		await mac.getByRole('radio', { name: 'IMG_4021' }).click({ button: 'right' });
+		await page.getByRole('menu', { name: '배경화면 메뉴' }).getByRole('menuitem', { name: '이름 바꾸기…' }).click();
+		const dialog = page.getByRole('dialog', { name: '배경화면 이름 바꾸기' });
+		const input = dialog.getByRole('textbox', { name: '배경화면 이름' });
+		await expect(input).toHaveValue('IMG_4021');
+		await input.fill('   ');
+		await expect(dialog.getByRole('button', { name: '저장' })).toBeDisabled();
+		const long = '제주 바다 위로 해가 지는 저녁 무렵의 노을 사진';
+		await input.fill(long);
+		await input.press('Enter');
+		await expect(dialog).toBeHidden();
+		const renamed = mac.getByRole('radio', { name: long });
+		await expect(renamed).toBeVisible();
+		expect(api.wallpapers[0].name).toBe(long);
+		// 이름은 한 줄로, 썸네일 폭을 넘지 않는다 (다 보려면 마우스를 올린다)
+		const name = renamed.locator('.wallpaper-name');
+		await expect(name).toHaveAttribute('title', long);
+		const [nameBox, thumbBox] = await Promise.all([name.boundingBox(), renamed.locator('img').boundingBox()]);
+		expect(nameBox!.width).toBeLessThanOrEqual(thumbBox!.width);
+		expect(nameBox!.height).toBeLessThan(30);
+	});
+
+	test('사진 추가… 칸은 더한 배경화면 앞에 있고, ×는 왼쪽 위에 있다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.wallpapers.push({
+			id: 'wallpaper0000001',
+			kind: 'mac',
+			name: '노을',
+			image: '/files/a',
+			thumbnail: '/files/b',
+		});
+		await enterDesktop(page);
+		const settings = await openWallpapers(page);
+		const grid = settings.getByRole('radiogroup', { name: 'macOS 배경화면' });
+		const add = grid.getByRole('button', { name: 'macOS 배경화면 추가' });
+		await expect(add).toContainText('사진 추가…');
+		const tile = grid.getByRole('radio', { name: '노을' });
+		const [addBox, tileBox, removeBox] = await Promise.all([
+			add.boundingBox(),
+			tile.boundingBox(),
+			settings.getByRole('button', { name: '노을 배경화면 삭제' }).boundingBox(),
+		]);
+		expect(addBox!.x).toBeLessThan(tileBox!.x);
+		expect(removeBox!.x).toBeLessThan(tileBox!.x + 10);
+		expect(removeBox!.y).toBeLessThan(tileBox!.y + 10);
+	});
+
 	test('골라 둔 배경화면이 서버에서 지워졌으면 다음에 열 때 기본 배경화면으로 돌아간다', async ({ page }) => {
 		await fakeApi(page);
 		await page.addInitScript(() =>
