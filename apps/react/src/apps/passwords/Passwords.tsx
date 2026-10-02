@@ -1,4 +1,5 @@
 import AppWindow from '@/desktop/window/Window';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import AdminAccount from '@/shared/auth/AdminAccount';
 import '@/apps/passwords/Passwords.css';
 
@@ -8,7 +9,10 @@ import '@/apps/passwords/Passwords.css';
  */
 const Passwords = () => (
 	<AppWindow title="암호" appName="passwords">
+		<MobileNavigation floating />
 		<div className="passwords">
+			{/* 휴대폰: iOS 암호 앱처럼 큰 제목 */}
+			<h1 className="passwords-phone-title phone-title">암호</h1>
 			<h2 className="passwords-heading">
 				<i className="fa-solid fa-key" aria-hidden="true" /> MacFolio 관리자
 			</h2>

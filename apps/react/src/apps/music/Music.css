@@ -695,3 +695,52 @@
 		height: 40px;
 	}
 }
+
+/* ─── 휴대폰 (메모와 같은 모양) ───
+   떠 있는 뒤로 가기, 큰 제목, 회색 바탕 위 흰 카드 목록. 미니 플레이어는 아래의 흰 알약 */
+@container (max-width: 640px) {
+	.container.mobile :is(.music-sidebar, .music-main) {
+		background-color: var(--phone-page-bg);
+	}
+
+	.container.mobile .music-sidebar {
+		padding: 60px 16px 24px;
+	}
+
+	.container.mobile .music-large-title {
+		margin: 0 4px 16px;
+	}
+
+	.container.mobile .music-sidebar ul,
+	.container.mobile .music-tracks {
+		overflow: hidden;
+		border-radius: 14px;
+		background-color: var(--phone-card-bg);
+	}
+
+	.container.mobile .music-playlist-link {
+		padding: 10px 14px;
+	}
+
+	.container.mobile .music-sidebar li + li .music-playlist-link,
+	.container.mobile .music-tracks li + li .music-track {
+		box-shadow: inset 0 0.5px 0 var(--phone-separator);
+	}
+
+	.container.mobile .music-main {
+		padding-top: 60px;
+	}
+
+	.container.mobile .music-header {
+		margin-bottom: 16px;
+	}
+
+	.container.mobile .music-track {
+		padding: 10px 14px 10px 8px;
+	}
+
+	.container.mobile .music-player-bar {
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
+	}
+}

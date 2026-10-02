@@ -156,7 +156,9 @@ const Music: React.FC = () => {
 
 	return (
 		<AppWindow title="음악" appName="music" chrome="unified">
+			{/* 지금 재생 중 시트는 제목 막대 아래에 열리므로, 시트가 열려 있을 때는 막대를 띄우지 않는다 (닫기 단추) */}
 			<MobileNavigation
+				floating={!nowPlayingOpen}
 				{...(nowPlayingOpen
 					? { backLabel: '닫기', onBack: () => setNowPlayingOpen(false), title: '지금 재생 중' }
 					: view === 'playlist'
