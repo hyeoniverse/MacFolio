@@ -3093,7 +3093,7 @@
 		height: 44px;
 		padding: 0 6px;
 		border-radius: 999px;
-		background-color: var(--memo-bg);
+		background-color: var(--phone-card-bg);
 		box-shadow:
 			0 0 0 0.5px rgba(0, 0, 0, 0.06),
 			0 4px 14px rgba(0, 0, 0, 0.12);
@@ -3135,7 +3135,7 @@
 		margin: 0;
 		padding: 0 8px;
 		border-radius: 999px;
-		background-color: var(--memo-bg);
+		background-color: var(--phone-card-bg);
 		box-shadow:
 			0 0 0 0.5px rgba(0, 0, 0, 0.06),
 			0 4px 14px rgba(0, 0, 0, 0.12);
@@ -3223,7 +3223,7 @@
 		height: 50px;
 		padding: 0 10px;
 		border-radius: 999px;
-		background-color: var(--memo-bg);
+		background-color: var(--phone-card-bg);
 		box-shadow:
 			0 0 0 0.5px rgba(0, 0, 0, 0.06),
 			0 4px 14px rgba(0, 0, 0, 0.12);
@@ -3248,7 +3248,7 @@
 		width: 50px;
 		height: 50px;
 		border-radius: 50%;
-		background-color: var(--memo-bg);
+		background-color: var(--phone-card-bg);
 		box-shadow:
 			0 0 0 0.5px rgba(0, 0, 0, 0.06),
 			0 4px 14px rgba(0, 0, 0, 0.12);
