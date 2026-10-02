@@ -1,6 +1,6 @@
 import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
 import type { Page } from '@playwright/test';
-import { fakeApi } from './fakeApi';
+import { FAKE_SIGNED_IN_AT, fakeApi } from './fakeApi';
 
 const appleMenu = (page: Page) => page.getByRole('menu', { name: 'Apple 메뉴', exact: true });
 
@@ -37,9 +37,13 @@ test.describe('관리자 로그인', () => {
 		const account = settings.getByRole('region', { name: '관리자 계정' });
 		await expect(account).toContainText('hyeoniverse');
 		await expect(account).toContainText('GitHub로 로그인됨');
+		// 로그인한 때 (서버가 알려 준 세션 시작 시각)
+		await expect(account.locator('time')).toHaveAttribute('datetime', FAKE_SIGNED_IN_AT);
+		await expect(account).toContainText('2026년 10월 2일');
 
 		await account.getByRole('button', { name: '로그아웃' }).click();
 		await expect(account).toContainText('로그인하지 않음');
+		await expect(account).not.toContainText('로그인 시각');
 		await expect(account.getByRole('button', { name: /GitHub로 로그인/ })).toBeEnabled();
 	});
 

@@ -89,7 +89,9 @@ describe('관리자 로그인 (e2e)', () => {
 
 		const me = await request(app.getHttpServer()).get('/auth/me').set('Cookie', `macfolio_session=${token}`);
 		expect(me.status).toBe(200);
-		expect(me.body).toEqual({ login: 'hyeoniverse' });
+		expect(me.body).toEqual({ login: 'hyeoniverse', signedInAt: expect.any(String) });
+		// 로그인한 때는 방금 (세션을 만든 때)
+		expect(Math.abs(Date.parse(me.body.signedInAt) - Date.now())).toBeLessThan(60_000);
 
 		// DB에는 토큰이 아니라 해시만
 		const rows = await prisma.adminSession.findMany();
