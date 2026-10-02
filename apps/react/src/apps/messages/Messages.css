@@ -265,9 +265,8 @@
 	font-weight: 400;
 }
 
-/* 아이콘과 안내 한 줄은 휴대폰의 빈 화면에서만 */
-.messages-empty-icon,
-.messages-empty-hint {
+/* 아이콘과 안내 한 줄은 휴대폰의 빈 화면에서만 (Font Awesome의 display보다 앞서도록 부모를 함께 쓴다) */
+.messages-empty :is(.messages-empty-icon, .messages-empty-hint) {
 	display: none;
 }
 
