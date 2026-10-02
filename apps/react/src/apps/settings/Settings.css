@@ -45,6 +45,14 @@
 	color: var(--color-on-accent);
 }
 
+/* 줄 끝의 ›: 아이콘 칸 너비(1rem)를 쓰지 않고 오른쪽 끝에 붙인다.
+   .settings-nav-item을 붙여 Font Awesome의 display(inline-block)보다 앞서게 한다 */
+.settings-nav-item > .settings-nav-chevron {
+	width: auto;
+	margin-left: auto;
+	font-size: 11px;
+}
+
 .settings-panel {
 	/* 항목을 바꾸면 살짝 떠오르며 나타난다 */
 	animation: rise-in var(--duration) var(--ease-out);
@@ -167,6 +175,11 @@
 		justify-content: center;
 		font-size: 15px;
 	}
+
+	/* 좁은 창은 위쪽 탭이라 › 없이 */
+	.settings-nav-item > .settings-nav-chevron {
+		display: none;
+	}
 }
 
 /* 사운드: 켜고 끄는 스위치 (macOS 설정의 토글 모양) */
@@ -233,8 +246,7 @@
 
 /* ─── 휴대폰 (iOS 설정처럼, 메모와 같은 모양) ───
    큰 제목 '설정'과 흰 카드 목록. 항목을 누르면 그 화면으로 넘어가고, 떠 있는 뒤로 가기로 돌아온다 */
-.settings-phone-title,
-.settings-nav-chevron {
+.settings-phone-title {
 	display: none;
 }
 

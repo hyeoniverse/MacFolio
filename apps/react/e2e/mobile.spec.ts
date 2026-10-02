@@ -313,6 +313,11 @@ test.describe('모바일', () => {
 		await enterHome(page);
 		await homeApp(page, '시스템 설정').tap();
 		const settings = appWindow(page, 'settings');
+		// 줄 끝의 ›는 카드 오른쪽 안쪽 여백(16px)에 붙는다
+		const row = settings.getByRole('button', { name: '화면 모드' });
+		const rowBox = (await row.boundingBox())!;
+		const chevronBox = (await row.locator('.settings-nav-chevron').boundingBox())!;
+		expect(rowBox.x + rowBox.width - (chevronBox.x + chevronBox.width)).toBeCloseTo(16, 0);
 		await settings.getByRole('button', { name: '화면 모드' }).tap();
 		await expect(settings.getByRole('radiogroup', { name: '화면 모드' })).toBeVisible();
 		await expect(settings.getByRole('navigation', { name: '설정 항목' })).toBeHidden();
