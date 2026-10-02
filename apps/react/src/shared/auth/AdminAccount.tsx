@@ -1,6 +1,6 @@
 import { env } from '@/shared/config/env';
 import { PROFILE } from '@/shared/profile';
-import type { AdminStatus } from '@/shared/auth/admin';
+import { formatSignedInAt, type AdminStatus } from '@/shared/auth/admin';
 import GitHubAvatar from '@/shared/auth/GitHubAvatar';
 import { refreshAdmin, signIn, signOut, useAdmin } from '@/shared/auth/adminStore';
 import '@/shared/auth/AdminAccount.css';
@@ -22,7 +22,7 @@ const STATUS_TEXT: Record<AdminStatus, string> = {
  * 설정(계정)과 암호 앱이 함께 쓴다.
  */
 const AdminAccount = () => {
-	const { status, login } = useAdmin();
+	const { status, login, signedInAt } = useAdmin();
 	const signedIn = status === 'signed-in' && login;
 
 	return (
@@ -62,6 +62,14 @@ const AdminAccount = () => {
 					<dt>로그인</dt>
 					<dd>GitHub {ADMIN_LOGIN} 계정만</dd>
 				</div>
+				{signedIn && signedInAt && (
+					<div>
+						<dt>로그인 시각</dt>
+						<dd>
+							<time dateTime={signedInAt.toISOString()}>{formatSignedInAt(signedInAt)}</time>
+						</dd>
+					</div>
+				)}
 				<div>
 					<dt>세션</dt>
 					<dd>12시간</dd>
