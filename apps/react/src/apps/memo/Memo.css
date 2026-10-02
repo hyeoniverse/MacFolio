@@ -321,6 +321,10 @@
 	cursor: pointer;
 }
 
+.memo .memo-tag-match .fa-chevron-down {
+	font-size: 8px;
+}
+
 :root[data-theme='dark'] .memo .memo-tag-match {
 	color: var(--memo-accent);
 }
