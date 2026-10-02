@@ -242,10 +242,10 @@ export function inFolder(post: Post, path: string): boolean {
 }
 
 /**
- * 글의 category와 방문자가 만든 폴더(글 0개)로 폴더 트리를 만든다. 같은 층은 가나다순.
- * 방문자가 만든 폴더는 custom으로 표시한다.
+ * 글의 category와 방문자가 만든 폴더(글 0개)로 폴더 트리를 만든다.
+ * 같은 층은 order(관리자가 정한 순서)를 따르고, 거기 없는 폴더는 그 뒤에 가나다순. 방문자가 만든 폴더는 custom으로 표시한다.
  */
-export function buildFolderTree(posts: Post[], customFolders: string[] = []): FolderNode[] {
+export function buildFolderTree(posts: Post[], customFolders: string[] = [], order: string[] = []): FolderNode[] {
 	const root: FolderNode[] = [];
 	const add = (category: string, counted: boolean) => {
 		const parts = category
@@ -266,8 +266,14 @@ export function buildFolderTree(posts: Post[], customFolders: string[] = []): Fo
 	};
 	posts.forEach((post) => add(post.category, true));
 	customFolders.forEach((path) => add(path, false));
+	const rank = (path: string) => {
+		const index = order.indexOf(path);
+		return index === -1 ? Infinity : index;
+	};
 	const sort = (nodes: FolderNode[]): FolderNode[] =>
-		nodes.sort((a, b) => a.name.localeCompare(b.name)).map((node) => ({ ...node, children: sort(node.children) }));
+		nodes
+			.sort((a, b) => rank(a.path) - rank(b.path) || a.name.localeCompare(b.name))
+			.map((node) => ({ ...node, children: sort(node.children) }));
 	return sort(root);
 }
 

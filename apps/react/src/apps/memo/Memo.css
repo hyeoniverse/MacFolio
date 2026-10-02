@@ -3691,6 +3691,41 @@
 		box-shadow: none;
 	}
 
+	/* ≡ 손잡이: 끌어서 같은 층 순서를 바꾼다 (손가락으로 끄는 동안 화면이 넘어가지 않게) */
+	.container.mobile .memo-folder-handle {
+		display: grid;
+		flex: none;
+		place-items: center;
+		width: 40px;
+		height: 100%;
+		margin-right: 6px;
+		padding: 0;
+		border: none;
+		border-left: 0.5px solid var(--memo-border);
+		background: none;
+		color: var(--memo-muted);
+		font-size: 17px;
+		cursor: grab;
+		touch-action: none;
+	}
+
+	.container.mobile .memo-folders.editing li {
+		position: relative;
+		transition: transform var(--duration-fast) var(--ease-out);
+	}
+
+	/* 잡은 폴더는 손가락을 바로 따라오고, 위에 떠 보이게 */
+	.container.mobile .memo-folders.editing li.reordering {
+		z-index: 2;
+		background-color: var(--phone-card-bg);
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+		transition: none;
+	}
+
+	.container.mobile .memo-folders.editing .memo-folder-more {
+		margin-right: 8px;
+	}
+
 	.container.mobile .memo-folders.editing .memo-folder-row .memo-folder-name {
 		margin-right: 0;
 	}

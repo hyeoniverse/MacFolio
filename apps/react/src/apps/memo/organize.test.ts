@@ -8,6 +8,7 @@ import {
 	movePost,
 	organizePosts,
 	removeFolder,
+	reorderFolders,
 	renameFolder,
 	setPinned,
 	splitPinned,
@@ -155,7 +156,18 @@ describe('normalizeOrganization', () => {
 			moves: [{ from: 'x', to: 'y' }],
 			pins: {},
 			locks: {},
+			order: [],
 		});
 		expect(normalizeOrganization(null)).toEqual(EMPTY_ORGANIZATION);
+	});
+
+	it('폴더 순서: 같은 층만 새 순서로 바꾸고, 이름을 바꾸거나 옮기거나 지우면 순서도 따라간다', () => {
+		let org = reorderFolders({ ...EMPTY_ORGANIZATION, order: ['회고', '개발기/MacFolio'] }, ['디자인', '회고']);
+		expect(org.order).toEqual(['개발기/MacFolio', '디자인', '회고']);
+		org = renameFolder(org, '개발기', '작업기');
+		expect(org.order).toEqual(['작업기/MacFolio', '디자인', '회고']);
+		org = removeFolder({ ...org, folders: ['디자인'] }, '디자인');
+		expect(org.order).toEqual(['작업기/MacFolio', '회고']);
+		expect(normalizeOrganization({ ...EMPTY_ORGANIZATION, order: ['회고', 3] }).order).toEqual(['회고']);
 	});
 });
