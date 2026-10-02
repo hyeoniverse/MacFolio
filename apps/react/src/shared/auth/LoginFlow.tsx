@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { env } from '@/shared/config/env';
-import { avatarUrl, loginOutcome } from '@/shared/auth/admin';
+import { loginOutcome } from '@/shared/auth/admin';
+import GitHubAvatar from '@/shared/auth/GitHubAvatar';
 import { dismissLoginResult, useAdmin, useLoginFlow } from '@/shared/auth/adminStore';
 import '@/shared/auth/LoginFlow.css';
 import Button from '@/shared/ui/button/Button';
@@ -45,7 +46,7 @@ const LoginFlow = () => {
 		<div className="login-flow" onClick={(event) => event.target === event.currentTarget && dismissLoginResult()}>
 			<div className="login-flow-card" role="alertdialog" aria-modal="true" aria-label={outcome.title}>
 				{outcome.tone === 'success' && admin.login ? (
-					<img className="login-flow-avatar" src={avatarUrl(admin.login)} alt="" />
+					<GitHubAvatar className="login-flow-avatar" login={admin.login} />
 				) : (
 					<img className="login-flow-icon" src={`${env.imageUrl}/passwords.svg`} alt="" />
 				)}

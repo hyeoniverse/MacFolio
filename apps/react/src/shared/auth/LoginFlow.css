@@ -56,7 +56,7 @@
 
 .login-flow-avatar {
 	border-radius: 50%;
-	object-fit: cover;
+	font-size: 64px;
 }
 
 .login-flow-icon {

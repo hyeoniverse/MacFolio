@@ -15,6 +15,21 @@ async function openSettings(page: Page) {
 }
 
 test.describe('Settings', () => {
+	test('사이드바 항목의 ›는 줄 오른쪽 끝에 붙는다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'settings').click();
+		const items = appWindow(page, 'settings').locator('.settings-nav-item');
+		await expect(items).toHaveCount(4);
+		const gaps = await items.evaluateAll((rows) =>
+			rows.map((row) => {
+				const chevron = row.querySelector('.settings-nav-chevron')!.getBoundingClientRect();
+				const right = row.getBoundingClientRect().right - parseFloat(getComputedStyle(row).paddingRight);
+				return Math.abs(Math.round(right - chevron.right));
+			})
+		);
+		expect(gaps).toEqual([0, 0, 0, 0]);
+	});
+
 	test('처음 열면 계정이 보인다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'settings').click();
