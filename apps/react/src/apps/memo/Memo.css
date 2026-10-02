@@ -3254,9 +3254,353 @@
 	}
 }
 
-/* 휴대폰의 폴더 화면: 회색이 홈 인디케이터 아래까지 이어진다 (인디케이터는 메모 칸 밖이라 @container 밖에 둔다) */
-.container.mobile[data-app='memo']:has(.memo.pane-folders) .home-indicator {
-	background-color: var(--memo-sidebar-bg);
+/* 휴대폰의 폴더·목록 화면 (iOS 메모처럼): 떠 있는 단추, 큰 제목, 회색 바탕 위 흰 카드 묶음, 아래 검색 알약 */
+.memo-phone-title,
+.memo-folder-group-toggle {
+	display: none;
+}
+
+[data-app='memo'] {
+	--phone-page-bg: var(--memo-sidebar-bg);
+	--phone-card-bg: var(--memo-bg);
+	--phone-float-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme='dark'] [data-app='memo'] {
+	--phone-page-bg: var(--memo-bg);
+	--phone-card-bg: #2c2c2e;
+}
+
+@container (max-width: 700px) {
+	.container.mobile .memo :is(.memo-folders, .memo-list) {
+		position: relative;
+		background-color: var(--phone-page-bg);
+	}
+
+	/* 큰 제목: 폴더 화면은 '폴더', 목록은 폴더 이름과 메모 수 */
+	.container.mobile .memo-phone-title {
+		display: block;
+		margin: 0 4px 16px;
+		color: var(--memo-text);
+		font-size: 30px;
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	.container.mobile .memo-phone-title h2 {
+		overflow: hidden;
+		font-size: inherit;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.container.mobile .memo-phone-title p {
+		margin-top: 2px;
+		color: var(--memo-muted);
+		font-size: 15px;
+		font-weight: 400;
+	}
+
+	/* ── 폴더 화면 ── */
+	.container.mobile .memo-folder-scroll {
+		padding: 60px 16px 96px;
+	}
+
+	/* 새로운 폴더 (관리자): 오른쪽 위의 동그란 단추 */
+	.container.mobile .memo .memo-sidebar-bar:has(.memo-new-folder-button) {
+		position: absolute;
+		top: 6px;
+		right: 16px;
+		z-index: 5;
+		padding: 0;
+	}
+
+	.container.mobile .memo .memo-sidebar-bar .memo-new-folder-button {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
+		color: var(--memo-text);
+		font-size: 19px;
+	}
+
+	/* 묶음 이름('블로그')과 오른쪽의 접기 단추 */
+	.container.mobile .memo-folder-group-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin: 0 4px 8px;
+	}
+
+	.container.mobile .memo-folders .memo-folder-group-head h2,
+	.container.mobile .memo-tag-head h3 {
+		margin: 0;
+		color: var(--memo-text);
+		font-size: 20px;
+		font-weight: 700;
+		letter-spacing: 0;
+	}
+
+	.container.mobile .memo-folder-group-toggle {
+		display: grid;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		margin-right: -8px;
+		padding: 0;
+		border: none;
+		background: none;
+		color: #b07a06;
+		font-size: 16px;
+	}
+
+	:root[data-theme='dark'] .container.mobile .memo-folder-group-toggle {
+		color: var(--memo-accent);
+	}
+
+	.container.mobile .memo-folder-group-toggle i {
+		transform: rotate(-90deg);
+		transition: transform var(--duration-fast) var(--ease-out);
+	}
+
+	.container.mobile .memo-folder-group-toggle.open i {
+		transform: none;
+	}
+
+	/* 폴더 카드: 줄마다 아이콘·이름·수·› , 줄 사이 선은 이름부터 */
+	.container.mobile .memo-folder-scroll > ul {
+		overflow: hidden;
+		border-radius: 14px;
+		background-color: var(--phone-card-bg);
+	}
+
+	.container.mobile .memo-folder-row {
+		height: 52px;
+		margin: 0;
+		padding-left: calc(var(--depth, 0) * 20px + 6px);
+		border-radius: 0;
+	}
+
+	.container.mobile .memo-folder-scroll li + li > .memo-folder-row::before,
+	.container.mobile .memo-folder-scroll li > ul > li:first-child > .memo-folder-row::before {
+		position: absolute;
+		top: 0;
+		right: 16px;
+		left: calc(var(--depth, 0) * 20px + 66px);
+		height: 0.5px;
+		background-color: var(--memo-border);
+		pointer-events: none;
+		content: '';
+	}
+
+	.container.mobile .memo-disclosure {
+		width: 18px;
+		font-size: 11px;
+	}
+
+	.container.mobile .memo-folder {
+		gap: 12px;
+		padding: 0 16px 0 4px;
+		border-radius: 0;
+		font-size: 17px;
+	}
+
+	.container.mobile .memo-folder .memo-folder-icon {
+		width: 26px;
+		font-size: 21px;
+	}
+
+	.container.mobile .memo-folder .memo-count {
+		font-size: 16px;
+	}
+
+	/* 한 칸씩 보므로 고른 폴더를 칠하지 않고, 줄 끝에 › */
+	.container.mobile .memo-folder.active {
+		background: none;
+		color: var(--memo-text);
+	}
+
+	.container.mobile .memo-folder.active i {
+		color: var(--memo-accent);
+	}
+
+	.container.mobile .memo-folder.active .memo-count {
+		color: var(--memo-muted);
+	}
+
+	.container.mobile .memo-folder::after {
+		margin-left: 2px;
+		color: var(--memo-muted);
+		font: var(--fa-font-solid);
+		font-size: 13px;
+		content: '\f054';
+	}
+
+	.container.mobile .memo-tag-browser {
+		margin-top: 28px;
+		padding: 0 4px;
+	}
+
+	/* ── 목록 화면 ── */
+	.container.mobile .memo-list .memo-scroll {
+		padding: 60px 16px 96px;
+	}
+
+	.container.mobile .memo-list .memo-section-title {
+		margin: 22px 4px 8px;
+		color: var(--memo-text);
+		font-size: 20px;
+	}
+
+	.container.mobile .memo-list .memo-section-title i {
+		display: none;
+	}
+
+	.container.mobile .memo-list .memo-items {
+		overflow: hidden;
+		border-radius: 14px;
+		background-color: var(--phone-card-bg);
+	}
+
+	.container.mobile .memo-list .memo-phone-title + .memo-compact-tools + .memo-items,
+	.container.mobile .memo-list .memo-trash-banner + .memo-items {
+		margin-top: 4px;
+	}
+
+	.container.mobile .memo-item {
+		gap: 2px;
+		padding: 12px 16px;
+		border-radius: 0;
+	}
+
+	.container.mobile .memo-item strong {
+		font-size: 17px;
+	}
+
+	.container.mobile .memo-item-meta {
+		font-size: 15px;
+		-webkit-line-clamp: 1;
+	}
+
+	.container.mobile .memo-item-meta time {
+		color: inherit;
+	}
+
+	.container.mobile .memo-item-folder {
+		font-size: 15px;
+	}
+
+	/* 한 칸씩 보므로 고른 메모를 칠하지 않는다. 줄 사이 선은 늘 보인다 */
+	.container.mobile .memo-item:is(.active, :hover) {
+		background: none;
+		color: var(--memo-text);
+	}
+
+	.container.mobile .memo-item.active :is(.memo-item-meta, .memo-item-meta time, .memo-item-folder) {
+		color: var(--memo-muted);
+	}
+
+	.container.mobile .memo-list li + li::before {
+		right: 16px;
+		left: 16px;
+		height: 0.5px;
+	}
+
+	.container.mobile .memo-list li:has(.memo-item.active, .memo-item:hover)::before,
+	.container.mobile .memo-list li:has(.memo-item.active, .memo-item:hover) + li::before {
+		opacity: 1;
+	}
+
+	.container.mobile .memo-list .memo-trash-banner {
+		margin: 0 4px 12px;
+	}
+
+	/* 검색 알약과 새 메모는 아래에, 정렬은 오른쪽 위에 떠 있다 (목록을 넘겨도 제자리) */
+	.container.mobile .memo .memo-compact-tools {
+		display: contents;
+	}
+
+	.container.mobile .memo-compact-tools .memo-search,
+	.container.mobile .memo-phone-search {
+		position: absolute;
+		left: 16px;
+		right: 78px;
+		bottom: 12px;
+		z-index: 5;
+		height: 50px;
+		margin: 0;
+		padding: 0 18px;
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
+		font-size: 17px;
+	}
+
+	.container.mobile .memo-compact-tools:not(:has(.memo-compact-new)) .memo-search {
+		right: 16px;
+	}
+
+	.container.mobile .memo-compact-tools .memo-search-options {
+		font-size: 17px;
+	}
+
+	.container.mobile .memo-compact-tools .memo-compact-new {
+		position: absolute;
+		right: 16px;
+		bottom: 12px;
+		z-index: 5;
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
+		color: var(--memo-text);
+		font-size: 20px;
+	}
+
+	.container.mobile .memo-compact-tools .memo-sort {
+		position: absolute;
+		top: 6px;
+		right: 16px;
+		z-index: 5;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
+		color: var(--memo-text);
+		font-size: 18px;
+	}
+
+	/* 폴더 화면 아래의 검색 알약 (누르면 모든 글에서 찾는다) */
+	.container.mobile .memo-phone-search {
+		display: flex;
+		position: static;
+		flex: 1;
+		align-items: center;
+		gap: 10px;
+		margin-right: 12px;
+		border: none;
+		border-radius: 999px;
+		color: var(--memo-muted);
+		font: inherit;
+		font-size: 17px;
+		text-align: left;
+	}
+
+	.container.mobile .memo-phone-search i {
+		color: var(--memo-text);
+	}
+
+	.container.mobile .memo-folders-bottom:not(:has(.memo-phone-compose)) .memo-phone-search {
+		margin-right: 0;
+	}
+}
+
+/* 휴대폰의 폴더·목록 화면: 회색이 상태 막대 뒤와 홈 인디케이터 아래까지 이어진다 (둘 다 메모 칸 밖이라 @container 밖에 둔다) */
+.container.mobile[data-app='memo']:has(.memo.pane-folders, .memo.pane-list),
+.container.mobile[data-app='memo']:has(.memo.pane-folders, .memo.pane-list) .home-indicator {
+	background-color: var(--phone-page-bg);
 }
 
 /* ─── 코드 문법 강조 (highlight.js 토큰, GitHub 색) ─── */
