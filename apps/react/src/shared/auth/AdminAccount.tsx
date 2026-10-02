@@ -1,6 +1,7 @@
 import { env } from '@/shared/config/env';
 import { PROFILE } from '@/shared/profile';
-import { avatarUrl, type AdminStatus } from '@/shared/auth/admin';
+import type { AdminStatus } from '@/shared/auth/admin';
+import GitHubAvatar from '@/shared/auth/GitHubAvatar';
 import { refreshAdmin, signIn, signOut, useAdmin } from '@/shared/auth/adminStore';
 import '@/shared/auth/AdminAccount.css';
 import Button from '@/shared/ui/button/Button';
@@ -28,7 +29,7 @@ const AdminAccount = () => {
 		<section className="admin-account" aria-label="관리자 계정">
 			<div className="admin-account-head">
 				{signedIn ? (
-					<img className="admin-account-avatar" src={avatarUrl(login)} alt="" />
+					<GitHubAvatar className="admin-account-avatar" login={login} />
 				) : (
 					<span className="admin-account-avatar placeholder" aria-hidden="true">
 						<i className="fa-solid fa-user" />

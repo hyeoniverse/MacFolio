@@ -1,0 +1,29 @@
+/* GitHub 프로필 사진 (GitHubAvatar.tsx). 받는 동안은 아래의 회색 사람 아이콘이 보인다 */
+.github-avatar {
+	display: grid;
+	place-items: center;
+	position: relative;
+	flex: none;
+	overflow: hidden;
+	border-radius: 50%;
+	background: linear-gradient(#b8b8be, #8e8e93);
+	color: #ffffff;
+}
+
+.github-avatar > i {
+	font-size: 0.42em;
+}
+
+.github-avatar > img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.github-avatar[data-loaded] > img {
+	opacity: 1;
+}

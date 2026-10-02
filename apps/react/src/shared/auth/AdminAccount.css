@@ -23,7 +23,8 @@
 	width: 56px;
 	height: 56px;
 	border-radius: 50%;
-	object-fit: cover;
+	/* GitHubAvatar의 사람 아이콘 크기 (0.42em) */
+	font-size: 57px;
 }
 
 .admin-account-avatar.placeholder {
