@@ -11,8 +11,17 @@ import { checkAdmin, readLoginResult, type AdminState, type LoginResult } from '
  */
 export const adminStore = createStore<AdminState>({ status: env.apiUrl ? 'checking' : 'disabled', login: null });
 
+let expiryTimer: ReturnType<typeof setTimeout> | undefined;
+
 export async function refreshAdmin() {
-	adminStore.setState(await checkAdmin(env.apiUrl));
+	const state = await checkAdmin(env.apiUrl);
+	adminStore.setState(state);
+	// 세션이 끝나면 다시 물어서 로그아웃된 화면으로 바꾼다 (켜 둔 채로 만료 시각이 지나도 로그인한 것처럼 보이지 않게)
+	clearTimeout(expiryTimer);
+	const left = state.expiresAt ? state.expiresAt.getTime() - Date.now() : null;
+	// setTimeout은 약 24.8일(2^31 ms)을 넘기면 바로 불린다. 세션은 12시간이라 넘지 않지만 막아 둔다
+	if (left !== null && left < 2 ** 31 - 1)
+		expiryTimer = setTimeout(() => void refreshAdmin(), Math.max(0, left) + 1000);
 }
 
 /**
@@ -52,6 +61,7 @@ export async function signOut() {
 	try {
 		await fetch(`${env.apiUrl}/auth/logout`, { method: 'POST', credentials: 'include' });
 	} finally {
+		clearTimeout(expiryTimer);
 		adminStore.setState({ status: 'signed-out', login: null });
 		notify({ app: 'passwords', title: '로그아웃함', body: '관리자 로그인을 마쳤습니다.' });
 	}

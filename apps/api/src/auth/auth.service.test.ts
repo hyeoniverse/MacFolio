@@ -97,7 +97,7 @@ describe('AuthService', () => {
 		await expect(auth.signIn('bad', now)).rejects.toBeInstanceOf(UnauthorizedException);
 	});
 
-	it('세션 토큰으로 관리자와 로그인한 때를 찾고, 만료되거나 로그아웃하면 못 찾는다', async () => {
+	it('세션 토큰으로 관리자와 로그인한 때·끝나는 때를 찾고, 만료되거나 로그아웃하면 못 찾는다', async () => {
 		const auth = new AuthService(
 			fakePrisma(rows),
 			fakeGithub({ id: ADMIN_ID, login: 'hyeoniverse', avatarUrl: '' }),
@@ -105,7 +105,11 @@ describe('AuthService', () => {
 		);
 		const { token } = (await auth.signIn('good', now))!;
 
-		await expect(auth.findAdmin(token, now)).resolves.toEqual({ login: 'hyeoniverse', signedInAt: now });
+		await expect(auth.findAdmin(token, now)).resolves.toEqual({
+			login: 'hyeoniverse',
+			signedInAt: now,
+			expiresAt: new Date(now.getTime() + 12 * 60 * 60 * 1000),
+		});
 		await expect(auth.findAdmin('guess', now)).resolves.toBeNull();
 		await expect(auth.findAdmin(undefined, now)).resolves.toBeNull();
 		await expect(auth.findAdmin(token, new Date(now.getTime() + 13 * 60 * 60 * 1000))).resolves.toBeNull();
