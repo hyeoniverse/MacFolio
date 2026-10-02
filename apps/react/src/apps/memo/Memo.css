@@ -321,8 +321,13 @@
 	cursor: pointer;
 }
 
-.memo .memo-tag-match .fa-chevron-down {
-	font-size: 8px;
+/* 위아래 chevron 한 쌍 (macOS 팝업 단추처럼) */
+.memo-tag-match-chevrons {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 1px;
+	font-size: 6px;
+	line-height: 1;
 }
 
 :root[data-theme='dark'] .memo .memo-tag-match {
