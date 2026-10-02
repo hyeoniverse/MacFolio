@@ -514,23 +514,22 @@
 }
 
 .container.mobile .mail-list {
-	padding: 60px 16px 96px;
+	padding: var(--phone-top) 16px 96px;
 	background-color: var(--phone-page-bg);
 }
 
 .container.mobile .mail-list-toolbar {
-	padding: 0 4px 16px;
+	display: block;
+	padding: 0 0 16px;
 }
 
 .container.mobile .mail-list-toolbar h2 {
+	margin-bottom: 4px;
 	color: var(--mail-text);
-	font-size: 30px;
-	font-weight: 700;
-	line-height: 1.2;
 }
 
 .container.mobile .mail-list-toolbar p {
-	margin-top: 2px;
+	margin: 0 4px;
 	font-size: 15px;
 }
 

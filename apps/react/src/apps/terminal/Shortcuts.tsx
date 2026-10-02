@@ -135,7 +135,7 @@ const Shortcuts: React.FC = () => {
 			<div key={stack.length} className="shortcuts" data-nav={nav}>
 				{page ? (
 					<section className="shortcut-result" aria-label={page.title}>
-						<h1>{page.title}</h1>
+						<h1 className="phone-title">{page.title}</h1>
 						<p className="shortcut-command">
 							<span aria-hidden="true">$</span> {page.command}
 						</p>
@@ -145,7 +145,7 @@ const Shortcuts: React.FC = () => {
 					</section>
 				) : (
 					<section aria-label="모든 단축어">
-						<h1>단축어</h1>
+						<h1 className="phone-title">단축어</h1>
 						<p className="shortcuts-intro">터미널 명령어를 눌러서 실행해 보세요.</p>
 						<ul className="shortcut-grid">
 							{SHORTCUTS.map((shortcut) => (

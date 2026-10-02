@@ -71,7 +71,7 @@ const Mail: React.FC = () => {
 					<section className="mail-list" aria-label="받은 편지함">
 						<header className="mail-list-toolbar">
 							<div>
-								<h2>받은 편지함</h2>
+								<h2 className="phone-title">받은 편지함</h2>
 								<p>메일 {INBOX.length}통</p>
 							</div>
 							<IconButton variant="float" label="새로운 메시지" onClick={compose} icon="fa-regular fa-pen-to-square" />

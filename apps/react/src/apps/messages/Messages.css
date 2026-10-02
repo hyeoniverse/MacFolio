@@ -653,12 +653,12 @@
 }
 
 .container.mobile .messages-sidebar {
-	padding: 60px 16px 96px;
+	padding: var(--phone-top) 16px 96px;
 	background-color: var(--phone-page-bg);
 }
 
 .container.mobile .messages-phone-title {
-	display: block;
+	display: flex;
 }
 
 /* 위의 검색 칸과 쓰기 단추 대신 아래에 떠 있는 것을 쓴다 */
