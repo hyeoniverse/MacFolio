@@ -903,8 +903,10 @@ const Memo: React.FC = () => {
 				{...(compact && pane === 'reader'
 					? { backLabel: categoryName, onBack: () => setPane('list'), floating: true }
 					: compact && pane === 'list'
-						? { backLabel: '폴더', onBack: () => setPane('folders') }
-						: {})}
+						? { backLabel: '폴더', onBack: () => setPane('folders'), floating: true }
+						: compact && pane === 'folders'
+							? { floating: true }
+							: {})}
 			/>
 			<div ref={shellRef} className="memo-shell">
 				{purgeAlert && (
@@ -974,6 +976,11 @@ const Memo: React.FC = () => {
 							<button type="button" className="memo-back" onClick={() => setPane('folders')}>
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
 							</button>
+							{/* 휴대폰: iOS 메모처럼 목록 위에 큰 제목 (도구 막대의 제목은 좁은 창에서 숨는다) */}
+							<div className="memo-phone-title">
+								<h2>{categoryName}</h2>
+								<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
+							</div>
 							{compactTools}
 							{/* 쓰던 새 메모는 최근 삭제된 항목에서는 숨긴다 (모든 글로 돌아가면 다시 보인다) */}
 							{!inTrash && (newDraft !== null || leavingDraft) && (
@@ -1418,6 +1425,32 @@ const Memo: React.FC = () => {
 						/>
 					)}
 				</div>
+				{/* 휴대폰 폴더 화면 아래: iOS 메모처럼 검색 알약(누르면 모든 글에서 찾기)과 새 메모 */}
+				{phone && compact && pane === 'folders' && (
+					<div className="memo-phone-bottom memo-folders-bottom">
+						<button
+							type="button"
+							className="memo-phone-search"
+							onClick={() => {
+								selectFolder(ALL_CATEGORY);
+								requestAnimationFrame(() =>
+									shellRef.current?.querySelector<HTMLInputElement>('.memo-list .memo-search input')?.focus()
+								);
+							}}
+						>
+							<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+							검색
+						</button>
+						{canEdit && (
+							<IconButton
+								className="memo-phone-compose"
+								label="새 메모"
+								onClick={startNewDraft}
+								icon="fa-regular fa-pen-to-square"
+							/>
+						)}
+					</div>
+				)}
 			</div>
 		</AppWindow>
 	);

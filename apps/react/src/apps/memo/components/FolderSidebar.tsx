@@ -302,6 +302,8 @@ const FolderSidebar: React.FC<Props> = (props) => {
 	const [trashMenuAt, setTrashMenuAt] = useState<{ x: number; y: number } | null>(null);
 	/** '선택된 태그 중 모두/일부 포함' 메뉴를 연 자리 */
 	const [matchMenuAt, setMatchMenuAt] = useState<{ x: number; y: number } | null>(null);
+	/** 휴대폰에서 '블로그' 묶음 접기 (iOS 메모의 'iCloud' 옆 화살표) */
+	const [blogOpen, setBlogOpen] = useState(true);
 
 	const toggleFolder = (path: string) =>
 		setCollapsed((prev) => {
@@ -364,8 +366,23 @@ const FolderSidebar: React.FC<Props> = (props) => {
 			</div>
 
 			<div className="memo-folder-scroll">
-				<h2>블로그</h2>
-				<ul>
+				{/* 휴대폰: iOS 메모처럼 큰 제목, 묶음 이름 옆에 접기 단추 */}
+				<p className="memo-phone-title" aria-hidden="true">
+					폴더
+				</p>
+				<div className="memo-folder-group-head">
+					<h2>블로그</h2>
+					<button
+						type="button"
+						className={`memo-folder-group-toggle ${blogOpen ? 'open' : ''}`}
+						aria-label={`블로그 ${blogOpen ? '접기' : '펼치기'}`}
+						aria-expanded={blogOpen}
+						onClick={() => setBlogOpen(!blogOpen)}
+					>
+						<i className="fa-solid fa-chevron-down" aria-hidden="true" />
+					</button>
+				</div>
+				<ul hidden={!blogOpen}>
 					<li>
 						{/* 모든 글: 폴더를 여기에 놓으면 맨 위로 옮겨 간다 */}
 						<div

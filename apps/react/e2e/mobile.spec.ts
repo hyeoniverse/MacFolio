@@ -179,6 +179,39 @@ test.describe('모바일', () => {
 		await expect(folders.getByRole('textbox', { name: '새로운 폴더 이름' })).toBeVisible();
 	});
 
+	test('목록·폴더 화면은 iOS 메모처럼 큰 제목과 카드 묶음, 떠 있는 단추, 아래 검색 알약을 쓴다', async ({ page }) => {
+		await fakeApi(page, { signedIn: false });
+		await enterHome(page);
+		await homeApp(page, '메모').tap();
+		const memo = appWindow(page, 'memo');
+		const list = memo.getByRole('region', { name: '글 목록' });
+
+		// 목록: 제목 막대 대신 떠 있는 뒤로 가기, 큰 제목과 메모 수, 아래에 검색 알약
+		await expect(memo.locator('.mobile-navbar.floating .mobile-navbar-home')).toBeVisible();
+		await expect(list.getByRole('heading', { name: '모든 글' })).toBeVisible();
+		await expect(list.locator('.memo-phone-title p')).toHaveText(/\d+개의 메모/);
+		const search = list.getByRole('searchbox', { name: '글 검색' });
+		const searchBox = await search.boundingBox();
+		const listBox = await list.boundingBox();
+		expect(searchBox!.y + searchBox!.height).toBeGreaterThan(listBox!.y + listBox!.height - 80);
+
+		// 폴더: 큰 제목, '블로그' 묶음을 접고 펼친다
+		await memo.locator('.mobile-navbar-home').tap();
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await expect(folders.locator('.memo-phone-title')).toHaveText('폴더');
+		const allPosts = folders.getByRole('button', { name: /^모든 글/ });
+		await expect(allPosts).toBeVisible();
+		await folders.getByRole('button', { name: '블로그 접기' }).tap();
+		await expect(allPosts).toBeHidden();
+		await folders.getByRole('button', { name: '블로그 펼치기' }).tap();
+		await expect(allPosts).toBeVisible();
+
+		// 폴더 화면 아래의 검색 알약: 모든 글로 가서 검색 칸에 커서
+		await memo.locator('.memo-folders-bottom').getByRole('button', { name: '검색' }).tap();
+		await expect(search).toBeFocused();
+		await expect(list.getByRole('heading', { name: '모든 글' })).toBeVisible();
+	});
+
 	test('메일은 목록과 읽기·쓰기를 한 화면씩 보여준다', async ({ page }) => {
 		await enterHome(page);
 		await homeApp(page, '메일').tap();
