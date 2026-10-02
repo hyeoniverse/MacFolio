@@ -9,16 +9,23 @@ import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointe
 
 type Status = 'loading' | 'ready' | 'error';
 
-/** 저장소 한 줄의 이름과 설명 */
-const RepoText: React.FC<{ repo: RepoCard }> = ({ repo }) => (
-	<span className="showcase-text">
-		<strong>
-			<span className="showcase-owner">{repo.owner}/</span>
-			{repo.name}
-		</strong>
-		{repo.description && <span className="showcase-description">{repo.description}</span>}
-	</span>
-);
+/** 저장소 한 줄: 책 아이콘, 이름, 그 아래 owner · 설명 */
+const RepoText: React.FC<{ repo?: RepoCard; name: string }> = ({ repo, name }) => {
+	const [owner, repoName] = (repo?.fullName ?? name).split('/');
+	return (
+		<span className="showcase-text">
+			<i className="fa-solid fa-book-bookmark showcase-icon" aria-hidden="true" />
+			<span className="showcase-lines">
+				{/* 스크린 리더와 시험은 owner/이름 한 덩어리로 읽는다 */}
+				<strong aria-label={`${owner}/${repoName}`}>{repoName}</strong>
+				<span className="showcase-meta">
+					{owner}
+					{repo?.description && ` · ${repo.description}`}
+				</span>
+			</span>
+		</span>
+	);
+};
 
 /**
  * 시스템 설정 → GitHub (관리자만): GitHub 앱의 Pinned에 보일 저장소를 고르고 순서를 정한다.
@@ -143,15 +150,27 @@ const GithubShowcase: React.FC = () => {
 							<span className="showcase-head-actions">
 								{editing ? (
 									<>
-										<Button disabled={busy} onClick={() => setDraft(null)}>
+										<button
+											type="button"
+											className="showcase-text-button"
+											disabled={busy}
+											onClick={() => setDraft(null)}
+										>
 											취소
-										</Button>
-										<Button tone="primary" disabled={busy} onClick={() => void finish()}>
+										</button>
+										<button
+											type="button"
+											className="showcase-text-button strong"
+											disabled={busy}
+											onClick={() => void finish()}
+										>
 											완료
-										</Button>
+										</button>
 									</>
 								) : (
-									<Button onClick={startEditing}>편집</Button>
+									<button type="button" className="showcase-text-button" onClick={startEditing}>
+										편집
+									</button>
 								)}
 							</span>
 						</div>
@@ -167,12 +186,12 @@ const GithubShowcase: React.FC = () => {
 									const repo = card(name);
 									return (
 										<li key={name} className="showcase-row">
-											{repo ? <RepoText repo={repo} /> : <span className="showcase-text">{name}</span>}
+											<RepoText repo={repo} name={name} />
 											{editing && (
 												<>
 													<span className="showcase-actions">
 														<IconButton
-															icon="fa-solid fa-minus"
+															icon="fa-solid fa-circle-minus"
 															className="showcase-remove"
 															label={`${name} 빼기`}
 															disabled={busy}
@@ -234,16 +253,17 @@ const GithubShowcase: React.FC = () => {
 									<ul className="showcase-list">
 										{group.repos.map((repo) => (
 											<li key={repo.fullName} className="showcase-row">
-												<RepoText repo={repo} />
+												<RepoText repo={repo} name={repo.fullName} />
 												<span className="showcase-actions">
 													{isChosen(repo.fullName) ? (
 														// Font Awesome의 display가 앞서지 않게 바깥 칸에서 가운데 맞춘다
 														<span className="showcase-chosen" role="img" aria-label={`${repo.fullName} 고름`}>
-															<i className="fa-solid fa-check" aria-hidden="true" />
+															<i className="fa-solid fa-circle-check" aria-hidden="true" />
 														</span>
 													) : (
 														<IconButton
-															icon="fa-solid fa-plus"
+															icon="fa-solid fa-circle-plus"
+															className="showcase-add"
 															label={`${repo.fullName} 더하기`}
 															disabled={busy || full}
 															onClick={() => setDraft([...list, repo.fullName])}

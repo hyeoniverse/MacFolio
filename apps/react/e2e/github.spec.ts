@@ -103,11 +103,11 @@ test.describe('시스템 설정 → GitHub (관리자)', () => {
 		await page.mouse.down();
 		await page.mouse.move(from.x + from.width / 2, to.y + 4, { steps: 8 });
 		await page.mouse.up();
-		await expect(chosen.getByRole('listitem').first()).toContainText('hyeoniverse/beta');
+		await expect(chosen.getByRole('listitem').first().locator('strong')).toHaveText('beta');
 
 		// 키보드: 손잡이에서 ↓로 한 칸 내린다
 		await chosen.getByRole('button', { name: '순서 바꾸기 (hyeoniverse/beta)' }).press('ArrowDown');
-		await expect(chosen.getByRole('listitem').nth(1)).toContainText('hyeoniverse/beta');
+		await expect(chosen.getByRole('listitem').nth(1).locator('strong')).toHaveText('beta');
 
 		// 빼기. 하나만 남으면 손잡이는 꺼진다
 		await chosen.getByRole('button', { name: 'hyeoniverse/alpha 빼기' }).click();
@@ -117,7 +117,7 @@ test.describe('시스템 설정 → GitHub (관리자)', () => {
 		// 목록에 없는 다른 계정의 저장소는 이름으로 (GitHub에 적힌 대소문자로)
 		await settings.getByLabel('저장소 이름 (owner/이름)').fill('someone/delta');
 		await settings.getByRole('button', { name: '더하기', exact: true }).click();
-		await expect(chosen).toContainText('someone/Delta');
+		await expect(chosen.getByLabel('someone/Delta', { exact: true })).toBeVisible();
 
 		// 여기까지는 저장하지 않았다. 완료를 누르면 한 번에 저장한다
 		expect(api.github.saves).toBe(0);
