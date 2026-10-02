@@ -37,8 +37,9 @@ const TimeLabel: React.FC<{ label: string }> = ({ label }) => {
 	);
 };
 
+/** 이름 알약 아래 설명. 주인의 안내 글은 설명 없이 이름만 */
 const subtitleOf = (thread: Thread) => {
-	if (thread.pinned) return '안내 · 누구나 답글을 달 수 있어요';
+	if (thread.pinned) return null;
 	if (thread.mine) return '내가 남긴 피드백';
 	return `${thread.title}님의 피드백`;
 };
@@ -106,7 +107,7 @@ const ChatView: React.FC<Props> = ({
 						{thread.mine && <span className="messages-me-badge">나</span>}
 						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
 					</span>
-					<span className="messages-chat-subtitle">{subtitleOf(thread)}</span>
+					{subtitleOf(thread) && <span className="messages-chat-subtitle">{subtitleOf(thread)}</span>}
 				</header>
 			) : (
 				<header className="messages-chat-header">
