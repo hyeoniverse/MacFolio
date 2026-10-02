@@ -1,0 +1,47 @@
+---
+title: GitHub 앱을 진짜 GitHub로 - 프로필·README·고른 저장소
+date: 2026-10-02
+category: 개발기/MacFolio
+summary: GitHub 앱의 팔로워 수, README, 고정 저장소는 손으로 옮겨 적은 값이었다. 이제 API 서버가 GitHub에서 받아 30분(토큰이 있으면 10분) 동안 들고 있다가 내준다. README는 실제 Markdown을 그리되 배지는 앱의 Contact 단추로 바꾸고, 보일 저장소는 관리자가 시스템 설정에서 고른다.
+---
+
+GitHub 앱의 프로필(팔로워·팔로잉·소개), 프로필 README, Pinned 저장소는 모두 코드에 적어 둔 값이었다. 방문자마다 GitHub API를 부르면 요청 제한에 걸릴까 봐 고정해 둔 것이다. 그래서 README를 고치거나 팔로워가 늘어도 앱은 그대로였다.
+
+![GitHub 앱 전후](./images/github-live-profile-app.jpg '위: 손으로 옮겨 적은 화면 / 아래: 서버가 받은 README를 그린 화면')
+
+## 서버가 받아 들고 있다
+
+API 서버에 `/github/profile`을 더했다. 관리자 계정의 프로필, 프로필 README, 고른 저장소를 GitHub에서 받아 한 번에 내준다.
+
+- **요청 제한**: 토큰 없이 GitHub API를 부르면 서버 IP 하나로 시간당 60번까지다. 한 번 새로 받는 데 계정·README·내 저장소 목록·목록에 없는 저장소 몇 개로 대여섯 번이 들어서, 받은 값을 30분 동안 들고 있는다. `GITHUB_TOKEN`을 넣으면 시간당 5,000번이라 10분마다 받는다.
+- **동시에 여럿이 물어도 한 번만**: 들고 있는 값이 오래되었을 때 방문자 여럿이 같이 열어도, 진행 중인 요청 하나를 함께 기다린다.
+- **GitHub가 멈추면**: 새로 받지 못하면 마지막으로 받은 값을 그대로 준다. 서버에 아예 닿지 않으면 앱은 코드에 넣어 둔 스냅샷을 보여 준다. 스냅샷을 먼저 그리고 서버 값이 오면 바꾸므로 빈 화면이 보이지 않는다.
+- **계정은 숫자 ID로**: 관리자 로그인과 같은 `ADMIN_GITHUB_ID`로 계정을 찾는다. 계정 이름을 바꿔도 같은 사람이다.
+
+## README는 진짜 Markdown으로
+
+프로필 README에는 Markdown과 HTML(가운데 정렬 `div`, 표, `<picture>`)이 섞여 있다. `react-markdown`에 `rehype-raw`로 HTML을 살리고, `rehype-sanitize`로 거른다. `rehype-sanitize`의 기본 규칙이 GitHub의 규칙이라 GitHub에서 보이는 것만 보이고 스크립트나 이벤트 속성은 그리지 않는다.
+
+그 뒤에 직접 만든 rehype 플러그인이 몇 가지를 바꾼다.
+
+- **상대 주소**: `./profile/stats-light.svg`는 프로필 저장소의 파일로 풀어 준다.
+- **`<picture>`**: 브라우저는 `prefers-color-scheme`으로 OS 설정만 본다. 앱에는 따로 화면 모드 설정이 있으므로, 그 값에 맞는 그림 하나로 바꾼다.
+- **shields.io 배지**: `img.shields.io/badge/Gmail-EA4335?logo=gmail` 주소에서 글자·색·로고를 읽어, 원래 앱에 있던 Contact 단추 모양으로 바꾼다. 배지 그림보다 단추가 더 앱에 어울린다.
+- **capsule-render 배너**: 주소의 `text`, `desc`, `color`로 CSS 배너를 만든다. 바깥 이미지 서비스가 느리거나 멈춰도 배너는 깨지지 않는다.
+
+README를 GitHub에서 고치면, 서버가 다시 받는 대로 앱에도 보인다.
+
+## 보일 저장소 고르기
+
+![시스템 설정의 GitHub](./images/github-live-profile-settings.jpg '관리자로 로그인했을 때만 보이는 항목')
+
+GitHub의 Pinned는 GraphQL API로만 읽을 수 있고 토큰이 필요하다. 그래서 Pinned를 따라가지 않고, 시스템 설정에 관리자만 보이는 **GitHub** 항목을 두었다.
+
+- 내 공개 저장소와, 공개로 속한 조직의 저장소를 목록으로 보여 준다. ＋를 누르면 더하고, ⌃⌄로 순서를 바꾸고, −로 뺀다. 바꿀 때마다 바로 저장한다.
+- 조직 소속을 비공개로 해 두면 그 조직의 저장소는 목록에 나오지 않는다. 그럴 때는 `owner/이름`으로 적어서 더한다. 서버가 GitHub에 있는 공개 저장소인지 확인하고, GitHub에 적힌 대소문자로 저장한다.
+- GitHub의 Pinned처럼 6개까지 고를 수 있다.
+- 저장하면 서버가 들고 있던 값을 버리고 다음 요청에서 새로 받는다. 새로 받지 못하면 이전 값을 준다.
+
+고른 목록은 DB에 "owner/이름"만 저장한다. 설명·별·언어는 GitHub에서 받으므로, 저장소 설명을 고쳐도 따로 손댈 것이 없다.
+
+#MacFolio

@@ -418,6 +418,138 @@
 	outline-offset: 2px;
 }
 
+/* GitHub (관리자): GitHub 앱의 Pinned에 보일 저장소 */
+.showcase {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-width: 560px;
+}
+
+.showcase .settings-hint {
+	margin-top: 0;
+}
+
+.showcase-group h3 {
+	margin-bottom: 0.5rem;
+	color: var(--color-text-strong);
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+.showcase-count {
+	color: var(--color-text-secondary);
+	font-weight: 400;
+}
+
+.showcase-list {
+	overflow: hidden;
+	border: 1px solid var(--color-divider);
+	border-radius: 10px;
+	background-color: var(--color-control-bg);
+	list-style: none;
+}
+
+.showcase-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-height: 44px;
+	padding: 6px 8px 6px 12px;
+}
+
+.showcase-row + .showcase-row {
+	border-top: 1px solid var(--color-divider);
+}
+
+.showcase-text {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-width: 0;
+	font-size: 13px;
+}
+
+.showcase-text strong {
+	overflow: hidden;
+	color: var(--color-text);
+	font-weight: 500;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.showcase-owner {
+	color: var(--color-text-secondary);
+	font-weight: 400;
+}
+
+.showcase-description {
+	overflow: hidden;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.showcase-actions {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: 2px;
+}
+
+.showcase-actions .ui-icon-button {
+	width: 28px;
+	height: 28px;
+	font-size: 12px;
+}
+
+.showcase-remove {
+	color: #ff3b30;
+}
+
+.showcase-chosen {
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	color: var(--color-accent);
+	font-size: 13px;
+}
+
+.showcase-lookup {
+	display: flex;
+	gap: 8px;
+}
+
+.showcase-lookup input {
+	flex: 1;
+	min-width: 0;
+	padding: 6px 10px;
+	border: 1px solid var(--color-divider);
+	border-radius: 7px;
+	background-color: var(--color-control-bg);
+	color: var(--color-text);
+	font-size: 13px;
+}
+
+.showcase-lookup input:focus {
+	border-color: var(--color-accent);
+	outline: none;
+}
+
+.showcase-lookup .ui-button {
+	border: 1px solid var(--color-divider);
+	font-size: 13px;
+}
+
+.showcase-error {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 8px;
+}
+
 /* ─── 휴대폰 (iOS 설정처럼, 메모와 같은 모양) ───
    큰 제목 '설정'과 흰 카드 목록. 항목을 누르면 그 화면으로 넘어가고, 떠 있는 뒤로 가기로 돌아온다 */
 .settings-phone-title {
@@ -503,6 +635,35 @@
 
 .container.mobile .settings-nav-item:nth-of-type(4) > i:first-child {
 	background-color: #ff2d55;
+}
+
+/* GitHub (관리자만) */
+.container.mobile .settings-nav-item:nth-of-type(5) > i:first-child {
+	background-color: #24292f;
+}
+
+/* 휴대폰: 저장소 목록은 흰 카드 */
+.container.mobile .showcase-list {
+	border: none;
+	border-radius: 14px;
+	background-color: var(--phone-card-bg);
+}
+
+.container.mobile .showcase-row {
+	min-height: 52px;
+	padding: 8px 10px 8px 16px;
+}
+
+.container.mobile .showcase-text {
+	font-size: 15px;
+}
+
+.container.mobile .showcase-lookup input {
+	padding: 10px 12px;
+	border: none;
+	border-radius: 10px;
+	background-color: var(--phone-card-bg);
+	font-size: 15px;
 }
 
 /* 한 화면씩 보므로 고른 항목을 칠하지 않고, 줄 끝에 › */

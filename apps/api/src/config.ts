@@ -26,6 +26,11 @@ export interface AppConfig {
 		unsplashAccessKey?: string;
 		pexelsApiKey?: string;
 	};
+	/**
+	 * GitHub 앱이 보여 줄 프로필·README·저장소를 GitHub API에서 받을 때 쓰는 토큰 (없어도 된다).
+	 * 없으면 이 서버 IP로 시간당 60번까지라, 받은 값을 오래 들고 있는다
+	 */
+	githubToken?: string;
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -80,6 +85,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			unsplashAccessKey: env.UNSPLASH_ACCESS_KEY || undefined,
 			pexelsApiKey: env.PEXELS_API_KEY || undefined,
 		},
+		githubToken: env.GITHUB_TOKEN || undefined,
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
 			githubClientSecret: env.GITHUB_CLIENT_SECRET || undefined,

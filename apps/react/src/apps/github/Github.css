@@ -202,7 +202,7 @@
 	color: var(--gh-muted);
 }
 
-/* capsule-render의 soft 배너를 CSS로 (외부 이미지가 멈춰도 깨지지 않게) */
+/* capsule-render의 soft 배너를 CSS로 (외부 이미지가 멈춰도 깨지지 않게). 색은 README의 주소에서 읽어 style로 준다 */
 .gh-banner {
 	display: flex;
 	flex-direction: column;
@@ -211,7 +211,6 @@
 	gap: 6px;
 	height: 150px;
 	border-radius: 14px;
-	background: linear-gradient(90deg, #a8004e 0%, #d40063 50%, #f74d96 100%);
 	color: #ffffff;
 	text-align: center;
 }
@@ -227,66 +226,98 @@
 	opacity: 0.9;
 }
 
-.gh-readme h2 {
-	margin: 24px 0 12px;
-	padding-bottom: 6px;
+.gh-readme-body {
+	overflow-wrap: break-word;
+}
+
+/* README 본문 (GitHub의 Markdown 모양) */
+.gh-readme-body > :first-child {
+	margin-top: 0;
+}
+
+.gh-readme-body p,
+.gh-readme-body ul,
+.gh-readme-body ol,
+.gh-readme-body table {
+	margin-bottom: 16px;
+}
+
+.gh-readme-body h1,
+.gh-readme-body h2 {
+	margin: 24px 0 16px;
+	padding-bottom: 0.3em;
 	border-bottom: 1px solid var(--gh-border);
-	font-size: 20px;
+	font-weight: 600;
+	line-height: 1.25;
+}
+
+.gh-readme-body h1 {
+	font-size: 2em;
+}
+
+.gh-readme-body h2 {
+	font-size: 1.5em;
+}
+
+.gh-readme-body h3 {
+	margin: 24px 0 16px;
+	font-size: 1.25em;
 	font-weight: 600;
 }
 
-.gh-about {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
+.gh-readme-body ul,
+.gh-readme-body ol {
 	padding-left: 2em;
 }
 
-.gh-now {
-	margin-top: 16px;
+.gh-readme-body ul {
+	list-style: disc;
+}
+
+.gh-readme-body ol {
+	list-style: decimal;
+}
+
+.gh-readme-body li + li {
+	margin-top: 0.25em;
+}
+
+.gh-readme-body table {
+	display: block;
+	width: max-content;
+	max-width: 100%;
+	overflow: auto;
 	border-collapse: collapse;
 }
 
-.gh-now td,
-.gh-now th {
+.gh-readme-body td,
+.gh-readme-body th {
 	padding: 6px 13px;
 	border: 1px solid var(--gh-border);
 	text-align: left;
 	vertical-align: top;
 }
 
-.gh-now tr:nth-child(2n) {
+.gh-readme-body tr:nth-child(2n) {
 	background-color: var(--gh-header-bg);
 }
 
-.gh-center {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 8px;
-	text-align: center;
-}
-
-.gh-stack {
+.gh-readme-body img {
 	max-width: 100%;
 	height: auto;
+	vertical-align: middle;
 }
 
-.gh-muted {
-	flex-basis: 100%;
+.gh-readme-body sub {
 	color: var(--gh-muted);
-	font-size: 12px;
 }
 
-.gh-stats img {
-	width: min(100%, 360px);
-	height: auto;
-}
-
-.gh-contact a {
+/* shields.io 배지를 바꾼 단추 */
+.gh-contact-button {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
+	margin: 2px 0;
 	padding: 6px 12px;
 	border-radius: 4px;
 	color: #ffffff;
@@ -295,6 +326,13 @@
 	letter-spacing: 0.06em;
 	text-decoration: none;
 	text-transform: uppercase;
+	vertical-align: middle;
+}
+
+.gh-readme-body .gh-contact-button,
+.gh-readme-body .gh-contact-button:hover {
+	color: #ffffff;
+	text-decoration: none;
 }
 
 /* 고정 저장소 */

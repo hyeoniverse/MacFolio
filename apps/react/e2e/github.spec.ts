@@ -1,0 +1,174 @@
+import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
+import type { Page } from '@playwright/test';
+import { fakeApi } from './fakeApi';
+
+const pinnedNames = (page: Page) =>
+	appWindow(page, 'github').getByRole('region', { name: 'Pinned' }).locator('.gh-repo-name').allInnerTexts();
+
+async function openGithubSettings(page: Page) {
+	await dockItem(page, 'settings').click();
+	const settings = appWindow(page, 'settings');
+	await settings.getByRole('button', { name: 'GitHub', exact: true }).click();
+	return settings;
+}
+
+test.describe('GitHub 앱', () => {
+	test('서버가 GitHub에서 받은 프로필·README·고른 저장소를 보여 준다', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+		const profile = github.getByRole('complementary', { name: '프로필' });
+		await expect(profile).toContainText('서버에서 받은 소개');
+		await expect(profile).toContainText('42 followers');
+		await expect(profile).toContainText('8 following');
+		await expect(github.getByRole('link', { name: /Repositories/ })).toContainText('30');
+
+		// README: 실제 내용을 그린다. 배너는 CSS 배너, 배지는 Contact 단추, 상대 주소는 프로필 저장소로
+		const readme = github.getByRole('article', { name: 'README' });
+		await expect(readme.getByRole('img', { name: 'Test Banner' })).toHaveClass('gh-banner');
+		await expect(readme.getByRole('heading', { name: '소개' })).toBeVisible();
+		await expect(readme.getByRole('listitem')).toHaveCount(2);
+		const mail = readme.getByRole('link', { name: 'Mail' });
+		await expect(mail).toHaveClass('gh-contact-button');
+		await expect(mail).toHaveAttribute('href', 'mailto:someone@example.com');
+		await expect(mail).toHaveCSS('background-color', 'rgb(10, 132, 255)');
+		await expect(readme.getByRole('link', { name: 'Site' })).toHaveAttribute('target', '_blank');
+		await expect(readme.getByRole('img', { name: 'Test Card' })).toHaveAttribute(
+			'src',
+			'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/profile/card-light.svg'
+		);
+
+		// 고른 순서대로 Pinned. 다른 계정의 저장소는 owner/를 붙인다
+		expect(await pinnedNames(page)).toEqual(['alpha', 'test-org/gamma']);
+	});
+
+	test('화면 모드를 다크로 바꾸면 README의 어두운 그림을 쓴다', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await dockItem(page, 'settings').click();
+		const settings = appWindow(page, 'settings');
+		await settings.getByRole('button', { name: '화면 모드' }).click();
+		await settings.getByRole('radio', { name: '다크' }).click();
+		await dockItem(page, 'github').click();
+		await expect(
+			appWindow(page, 'github').getByRole('article', { name: 'README' }).getByRole('img', { name: 'Test Card' })
+		).toHaveAttribute('src', /card-dark\.svg$/);
+	});
+
+	test('서버에 닿지 않으면 넣어 둔 스냅샷을 보여 준다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+		const readme = github.getByRole('article', { name: 'README' });
+		await expect(readme.locator('.gh-banner')).toBeVisible();
+		await expect(readme.locator('.gh-contact-button')).toHaveCount(3);
+		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo')).toHaveCount(5);
+	});
+
+	test('방문자의 시스템 설정에는 GitHub 항목이 없다', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await dockItem(page, 'settings').click();
+		const settings = appWindow(page, 'settings');
+		await expect(settings.getByRole('button', { name: '사운드' })).toBeVisible();
+		await expect(settings.getByRole('button', { name: 'GitHub', exact: true })).toHaveCount(0);
+	});
+});
+
+test.describe('시스템 설정 → GitHub (관리자)', () => {
+	test('저장소를 더하고, 순서를 바꾸고, 빼면 바로 저장되어 GitHub 앱에 보인다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openGithubSettings(page);
+		const chosen = settings.getByRole('region', { name: '보일 저장소' });
+		await expect(chosen).toContainText('2/6');
+		await expect(chosen.getByRole('listitem')).toHaveCount(2);
+
+		// 내 계정 저장소 목록에서 더한다 (고른 저장소는 체크 표시)
+		const mine = settings.getByRole('region', { name: 'hyeoniverse의 저장소' });
+		await expect(mine.getByRole('img', { name: 'hyeoniverse/alpha 고름' })).toBeVisible();
+		await mine.getByRole('button', { name: 'hyeoniverse/beta 더하기' }).click();
+		await expect(chosen).toContainText('3/6');
+		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/alpha', 'test-org/gamma', 'hyeoniverse/beta']);
+
+		// 순서 바꾸기, 빼기
+		await chosen.getByRole('button', { name: 'hyeoniverse/beta 위로' }).click();
+		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/alpha', 'hyeoniverse/beta', 'test-org/gamma']);
+		await chosen.getByRole('button', { name: 'hyeoniverse/alpha 빼기' }).click();
+		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/beta', 'test-org/gamma']);
+		await expect(chosen.getByRole('button', { name: 'hyeoniverse/beta 위로' })).toBeDisabled();
+
+		// 목록에 없는 다른 계정의 저장소는 이름으로 (대소문자는 GitHub에 적힌 대로 저장된다)
+		await settings.getByLabel('저장소 이름 (owner/이름)').fill('someone/delta');
+		await settings.getByRole('button', { name: '더하기', exact: true }).click();
+		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/beta', 'test-org/gamma', 'someone/Delta']);
+		await expect(chosen).toContainText('someone/Delta');
+
+		await dockItem(page, 'github').click();
+		await expect.poll(() => pinnedNames(page)).toEqual(['beta', 'test-org/gamma', 'someone/Delta']);
+	});
+
+	test('잘못된 이름이나 없는 저장소는 알리고 저장하지 않는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openGithubSettings(page);
+		const input = settings.getByLabel('저장소 이름 (owner/이름)');
+		const alert = settings.getByRole('alertdialog', { name: '저장소를 바꾸지 못했습니다' });
+
+		await input.fill('no-slash');
+		await settings.getByRole('button', { name: '더하기', exact: true }).click();
+		await expect(alert).toContainText('owner/이름으로 적어 주세요');
+		await alert.getByRole('button', { name: '확인' }).click();
+
+		await input.fill('someone/nothing');
+		await settings.getByRole('button', { name: '더하기', exact: true }).click();
+		await expect(alert).toContainText('공개 저장소를 찾을 수 없습니다');
+		await alert.getByRole('button', { name: '확인' }).click();
+		expect(api.github.saves).toBe(0);
+	});
+
+	test('6개를 고르면 더 더할 수 없다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.github.repos.push(
+			...['one', 'two', 'three', 'four'].map((name) => ({
+				fullName: `hyeoniverse/${name}`,
+				owner: 'hyeoniverse',
+				name,
+				description: null,
+				url: `https://github.com/hyeoniverse/${name}`,
+				homepage: null,
+				language: null,
+				stars: 0,
+				forks: 0,
+				fork: false,
+				listed: true,
+			}))
+		);
+		api.github.showcase = [
+			'hyeoniverse/alpha',
+			'test-org/gamma',
+			'hyeoniverse/one',
+			'hyeoniverse/two',
+			'hyeoniverse/three',
+			'hyeoniverse/four',
+		];
+		await enterDesktop(page);
+		const settings = await openGithubSettings(page);
+		await expect(settings.getByRole('region', { name: '보일 저장소' })).toContainText('6/6');
+		await expect(settings.getByRole('button', { name: 'hyeoniverse/beta 더하기' })).toBeDisabled();
+		await expect(settings.getByLabel('저장소 이름 (owner/이름)')).toBeDisabled();
+	});
+
+	test('로그아웃하면 GitHub 항목이 사라지고 계정으로 돌아간다', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openGithubSettings(page);
+		await expect(settings.getByRole('region', { name: '보일 저장소' })).toBeVisible();
+
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
+		await page.getByRole('menuitem', { name: '로그아웃' }).click();
+		await expect(settings.getByRole('button', { name: 'GitHub', exact: true })).toHaveCount(0);
+		await expect(settings.getByRole('region', { name: '관리자 계정' })).toContainText('로그인하지 않음');
+	});
+});
