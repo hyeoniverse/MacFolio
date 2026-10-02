@@ -127,7 +127,8 @@ test.describe('모바일', () => {
 		await settings.getByRole('button', { name: '배경화면' }).tap();
 		// 휴대폰에는 iOS 배경화면만, 더한 배경화면도 함께 (모두 보기 없이 격자)
 		await expect(settings.getByRole('radiogroup', { name: 'macOS 배경화면' })).toHaveCount(0);
-		await expect(settings.getByRole('radiogroup', { name: 'iOS 배경화면' }).getByRole('radio')).toHaveCount(7);
+		await expect(settings.getByRole('radiogroup', { name: 'iOS 배경화면' }).getByRole('radio')).toHaveCount(6);
+		await expect(settings.getByRole('radiogroup', { name: '추가한 배경화면' }).getByRole('radio')).toHaveCount(1);
 		await expect(settings.getByRole('button', { name: /모두 보기/ })).toHaveCount(0);
 		await expect(settings.getByRole('button', { name: '새벽 배경화면 삭제' })).toBeVisible();
 		await expect(settings.getByRole('button', { name: '새벽 배경화면 삭제' })).toHaveCSS('opacity', '1');
