@@ -8,7 +8,9 @@ const repo = (fullName: string) => {
 };
 
 describe('move', () => {
-	it('위아래로 한 칸 옮기고, 끝을 넘으면 그대로', () => {
+	it('위아래로 옮기고, 끝을 넘으면 그대로', () => {
+		expect(move(['a', 'b', 'c', 'd'], 3, -3)).toEqual(['d', 'a', 'b', 'c']);
+		expect(move(['a', 'b', 'c', 'd'], 0, 2)).toEqual(['b', 'c', 'a', 'd']);
 		expect(move(['a', 'b', 'c'], 1, -1)).toEqual(['b', 'a', 'c']);
 		expect(move(['a', 'b', 'c'], 1, 1)).toEqual(['a', 'c', 'b']);
 		expect(move(['a', 'b', 'c'], 0, -1)).toEqual(['a', 'b', 'c']);

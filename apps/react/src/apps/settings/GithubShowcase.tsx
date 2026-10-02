@@ -5,6 +5,7 @@ import { groupByOwner, move, sameRepo } from '@/apps/settings/showcase';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
+import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 
 type Status = 'loading' | 'ready' | 'error';
 
@@ -21,7 +22,7 @@ const RepoText: React.FC<{ repo: RepoCard }> = ({ repo }) => (
 
 /**
  * 시스템 설정 → GitHub (관리자만): GitHub 앱의 Pinned에 보일 저장소를 고르고 순서를 정한다.
- * 고를 수 있는 저장소는 내 공개 저장소와 공개로 속한 조직의 저장소이고, 그 밖의 저장소는 owner/이름으로 더한다.
+ * 순서는 ≡ 손잡이를 끌어서 바꾼다. 고를 수 있는 저장소는 내 공개 저장소와 공개로 속한 조직의 저장소이고, 그 밖의 저장소는 owner/이름으로 더한다.
  * 바꿀 때마다 바로 저장한다 (macOS 설정처럼 저장 단추가 없다).
  */
 const GithubShowcase: React.FC = () => {
@@ -134,18 +135,6 @@ const GithubShowcase: React.FC = () => {
 											{repo ? <RepoText repo={repo} /> : <span className="showcase-text">{name}</span>}
 											<span className="showcase-actions">
 												<IconButton
-													icon="fa-solid fa-chevron-up"
-													label={`${name} 위로`}
-													disabled={saving || index === 0}
-													onClick={() => void save(move(selected, index, -1))}
-												/>
-												<IconButton
-													icon="fa-solid fa-chevron-down"
-													label={`${name} 아래로`}
-													disabled={saving || index === selected.length - 1}
-													onClick={() => void save(move(selected, index, 1))}
-												/>
-												<IconButton
 													icon="fa-solid fa-minus"
 													className="showcase-remove"
 													label={`${name} 빼기`}
@@ -153,6 +142,25 @@ const GithubShowcase: React.FC = () => {
 													onClick={() => void save(selected.filter((item) => item !== name))}
 												/>
 											</span>
+											{/* ≡ 손잡이 (메모 폴더 편집과 같다): 끌거나 ↑·↓ 키로 순서를 바꾼다 */}
+											<button
+												type="button"
+												className="showcase-handle"
+												aria-label={`순서 바꾸기 (${name})`}
+												title="끌거나 ↑·↓ 키로 순서를 바꿉니다"
+												disabled={saving || selected.length < 2}
+												onPointerDown={(event) =>
+													startPointerReorder(event, (from, to) => void save(move(selected, from, to - from)))
+												}
+												onKeyDown={(event) => {
+													const delta = reorderKeyDelta(event.key);
+													if (!delta) return;
+													event.preventDefault();
+													void save(move(selected, index, delta));
+												}}
+											>
+												<i className="fa-solid fa-bars" aria-hidden="true" />
+											</button>
 										</li>
 									);
 								})}
