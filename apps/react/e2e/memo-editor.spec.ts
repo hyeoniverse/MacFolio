@@ -68,7 +68,8 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		const title = memo.getByRole('textbox', { name: '제목' });
 		await expect(title).toBeFocused();
-		await expect(memo.getByRole('status').filter({ hasText: '제목과 본문을 쓰면 임시 저장됩니다.' })).toBeVisible();
+		// 빈 새 메모에는 저장 상태 글이 없다 (쓰기 시작하면 이유나 저장 상태를 보여 준다)
+		await expect(memo.locator('.memo-writer-status')).toHaveText('');
 
 		// 제목만 쓰면 저장하지 않고 이유를 보여 준다
 		await page.keyboard.type('새로 쓴 글');
