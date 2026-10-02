@@ -77,6 +77,8 @@
 	margin-top: 1rem;
 	color: var(--color-text-secondary);
 	font-size: 0.8rem;
+	/* 한국어 문장이 낱말 중간(있습니/다)에서 꺾이지 않게 */
+	word-break: keep-all;
 }
 
 /* 화면 모드 선택 */

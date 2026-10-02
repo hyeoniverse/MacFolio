@@ -88,10 +88,67 @@ const RenameDialog = ({
 };
 
 /**
- * 지금 화면(데스크톱이면 macOS, 휴대폰이면 iOS)의 배경화면. 기본 배경화면 뒤에 관리자가 더한 배경화면이 이어진다.
+ * 배경화면 한 묶음 (제목, 설명, 썸네일 줄). 데스크톱에서는 처음에 가로로 넘기는 한 줄(간략히 보기)이고,
+ * 제목 오른쪽의 '모두 보기(n)'를 누르면 그 자리에서 여러 줄로 펼친다. 휴대폰은 처음부터 격자다.
+ * 한 줄일 때는 고른 배경화면이 보이게 가로로 넘겨 둔다 (처음 열 때, 목록이 늘었을 때).
+ */
+const WallpaperRow = ({
+	label,
+	hint,
+	count,
+	children,
+}: {
+	label: string;
+	hint: string;
+	/** 모두 보기(n)의 n */
+	count: number;
+	children: React.ReactNode;
+}) => {
+	const phone = useIsMobile();
+	const [expanded, setExpanded] = useState(false);
+	const collapsed = !phone && !expanded;
+	const grid = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const row = grid.current;
+		const chosen = row?.querySelector<HTMLElement>('[aria-checked="true"]');
+		if (!row || !chosen || !collapsed) return;
+		const left = chosen.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft;
+		row.scrollLeft = Math.max(0, left - (row.clientWidth - chosen.offsetWidth) / 2);
+	}, [collapsed, count]);
+
+	return (
+		<section className="wallpaper-group">
+			<div className="wallpaper-group-head">
+				<h3>{label}</h3>
+				{!phone && count > 0 && (
+					<button
+						type="button"
+						className="wallpaper-toggle"
+						aria-expanded={expanded}
+						onClick={() => setExpanded((open) => !open)}
+					>
+						{expanded ? '간략히 보기' : `모두 보기(${count})`}
+					</button>
+				)}
+			</div>
+			<p className="settings-hint">{hint}</p>
+			<div
+				ref={grid}
+				className={`settings-options wallpaper-grid ${collapsed ? 'collapsed' : ''}`}
+				role="radiogroup"
+				aria-label={label.endsWith('배경화면') ? label : `${label} 배경화면`}
+			>
+				{children}
+			</div>
+		</section>
+	);
+};
+
+/**
+ * 지금 화면(데스크톱이면 macOS, 휴대폰이면 iOS)의 배경화면. 위에 관리자가 더한 배경화면, 아래에 기본 배경화면을 따로 둔다.
  * 더한 배경화면은 데스크톱·휴대폰 어디서나 고르고, 썸네일은 그 화면 비율로 가운데를 잘라 보여 준다.
  * 기본 배경화면의 썸네일은 지금 화면 모드의 버전이다.
- * 데스크톱에서는 처음에 가로로 넘기는 한 줄(간략히 보기)이고, '모두 보기(n)'를 누르면 그 자리에서 여러 줄로 펼친다.
  * 관리자에게만 '사진 추가…' 칸과, 더한 배경화면의 지우기(×)·메뉴(이름 바꾸기, 삭제)가 보인다 (macOS 설정의 '사용자의 사진'처럼).
  * 메뉴는 오른쪽 클릭, 휴대폰에서는 길게 눌러 연다. 기본 배경화면은 지울 수 없다.
  */
@@ -100,10 +157,6 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 	const portrait = kind === 'ios';
 	const isAdmin = useAdmin().status === 'signed-in';
 	const custom = useCustomWallpapers().list;
-	const phone = useIsMobile();
-	const [expanded, setExpanded] = useState(false);
-	const collapsed = !phone && !expanded;
-	const total = wallpapers.length + custom.length;
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [adding, setAdding] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -111,21 +164,10 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 	const [renaming, setRenaming] = useState<CustomWallpaper | null>(null);
 	const [removing, setRemoving] = useState<CustomWallpaper | null>(null);
 	const longPress = useRef<{ timer: number; fired: boolean } | null>(null);
-	const grid = useRef<HTMLDivElement>(null);
-	const customCount = custom.length;
 
 	useEffect(() => {
 		void loadCustomWallpapers();
 	}, []);
-
-	// 한 줄일 때는 고른 배경화면이 보이게 가로로 넘겨 둔다 (처음 열 때, 목록이 늘었을 때)
-	useEffect(() => {
-		const row = grid.current;
-		const chosen = row?.querySelector<HTMLElement>('[aria-checked="true"]');
-		if (!row || !chosen || !collapsed) return;
-		const left = chosen.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft;
-		row.scrollLeft = Math.max(0, left - (row.clientWidth - chosen.offsetWidth) / 2);
-	}, [collapsed, customCount]);
 
 	const run = async (action: () => Promise<unknown>, fallback: string) => {
 		try {
@@ -172,27 +214,68 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 			: {};
 
 	return (
-		<section className="wallpaper-group">
-			<div className="wallpaper-group-head">
-				<h3>{label}</h3>
-				{!phone && (
-					<button
-						type="button"
-						className="wallpaper-toggle"
-						aria-expanded={expanded}
-						onClick={() => setExpanded((open) => !open)}
-					>
-						{expanded ? '간략히 보기' : `모두 보기(${total})`}
-					</button>
-				)}
-			</div>
-			<p className="settings-hint">{hint}</p>
-			<div
-				ref={grid}
-				className={`settings-options wallpaper-grid ${collapsed ? 'collapsed' : ''}`}
-				role="radiogroup"
-				aria-label={`${label} 배경화면`}
-			>
+		<>
+			{/* 관리자가 더한 배경화면 (macOS 설정의 '사용자의 사진'처럼 기본 배경화면과 따로). 방문자에게는 있을 때만 */}
+			{(isAdmin || custom.length > 0) && (
+				<WallpaperRow
+					label="추가한 배경화면"
+					hint="관리자가 올린 사진입니다. 데스크톱과 휴대폰 어디서나 고를 수 있습니다."
+					count={custom.length}
+				>
+					{isAdmin && (
+						<button
+							type="button"
+							className="wallpaper-option wallpaper-add"
+							aria-label={`${label} 배경화면 추가`}
+							disabled={adding}
+							onClick={() => fileInput.current?.click()}
+						>
+							<span className={thumbnailClass}>
+								<span className="wallpaper-add-icon" aria-hidden="true">
+									<i className={adding ? 'fa-solid fa-spinner fa-spin' : 'fa-regular fa-image'} />
+									{!adding && <i className="fa-solid fa-circle-plus wallpaper-add-plus" />}
+								</span>
+								<span className="wallpaper-add-label">{adding ? '올리는 중…' : '사진 추가…'}</span>
+							</span>
+						</button>
+					)}
+					{custom.map((wallpaper) => (
+						<div key={wallpaper.id} className="wallpaper-custom">
+							<button
+								type="button"
+								role="radio"
+								aria-checked={selected === wallpaper.id}
+								className={`wallpaper-option ${selected === wallpaper.id ? 'selected' : ''}`}
+								onClick={() => {
+									// 길게 눌러 메뉴를 연 손가락을 떼는 것은 고르기가 아니다
+									if (longPress.current?.fired) {
+										longPress.current = null;
+										return;
+									}
+									chooseWallpaper(kind, wallpaper.id, wallpaper.image);
+								}}
+								{...menuHandlers(wallpaper)}
+							>
+								<img className={thumbnailClass} src={wallpaper.thumbnail} alt="" loading="lazy" />
+								<span className="wallpaper-name" title={wallpaper.name}>
+									{wallpaper.name}
+								</span>
+							</button>
+							{isAdmin && (
+								<button
+									type="button"
+									className="wallpaper-remove"
+									aria-label={`${wallpaper.name} 배경화면 삭제`}
+									onClick={() => setRemoving(wallpaper)}
+								>
+									<i className="fa-solid fa-xmark" aria-hidden="true" />
+								</button>
+							)}
+						</div>
+					))}
+				</WallpaperRow>
+			)}
+			<WallpaperRow label={label} hint={hint} count={wallpapers.length}>
 				{wallpapers.map((wallpaper) => (
 					<button
 						key={wallpaper.id}
@@ -206,58 +289,7 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 						<span className="wallpaper-name">{wallpaper.name}</span>
 					</button>
 				))}
-				{isAdmin && (
-					<button
-						type="button"
-						className="wallpaper-option wallpaper-add"
-						aria-label={`${label} 배경화면 추가`}
-						disabled={adding}
-						onClick={() => fileInput.current?.click()}
-					>
-						<span className={thumbnailClass}>
-							<span className="wallpaper-add-icon" aria-hidden="true">
-								<i className={adding ? 'fa-solid fa-spinner fa-spin' : 'fa-regular fa-image'} />
-								{!adding && <i className="fa-solid fa-circle-plus wallpaper-add-plus" />}
-							</span>
-							<span className="wallpaper-add-label">{adding ? '올리는 중…' : '사진 추가…'}</span>
-						</span>
-					</button>
-				)}
-				{custom.map((wallpaper) => (
-					<div key={wallpaper.id} className="wallpaper-custom">
-						<button
-							type="button"
-							role="radio"
-							aria-checked={selected === wallpaper.id}
-							className={`wallpaper-option ${selected === wallpaper.id ? 'selected' : ''}`}
-							onClick={() => {
-								// 길게 눌러 메뉴를 연 손가락을 떼는 것은 고르기가 아니다
-								if (longPress.current?.fired) {
-									longPress.current = null;
-									return;
-								}
-								chooseWallpaper(kind, wallpaper.id, wallpaper.image);
-							}}
-							{...menuHandlers(wallpaper)}
-						>
-							<img className={thumbnailClass} src={wallpaper.thumbnail} alt="" loading="lazy" />
-							<span className="wallpaper-name" title={wallpaper.name}>
-								{wallpaper.name}
-							</span>
-						</button>
-						{isAdmin && (
-							<button
-								type="button"
-								className="wallpaper-remove"
-								aria-label={`${wallpaper.name} 배경화면 삭제`}
-								onClick={() => setRemoving(wallpaper)}
-							>
-								<i className="fa-solid fa-xmark" aria-hidden="true" />
-							</button>
-						)}
-					</div>
-				))}
-			</div>
+			</WallpaperRow>
 			<input
 				ref={fileInput}
 				type="file"
@@ -322,7 +354,7 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 					onCancel={() => setError(null)}
 				/>
 			)}
-		</section>
+		</>
 	);
 };
 
