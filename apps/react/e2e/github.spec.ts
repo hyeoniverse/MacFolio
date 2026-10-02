@@ -77,20 +77,23 @@ test.describe('GitHub 앱', () => {
 });
 
 test.describe('시스템 설정 → GitHub (관리자)', () => {
-	test('저장소를 더하고, ≡로 순서를 바꾸고, 빼면 바로 저장되어 GitHub 앱에 보인다', async ({ page }) => {
+	test('편집에서 더하고, ≡로 순서를 바꾸고, 빼면 완료할 때 한 번에 저장되어 GitHub 앱에 보인다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		await enterDesktop(page);
 		const settings = await openGithubSettings(page);
 		const chosen = settings.getByRole('region', { name: '보일 저장소' });
 		await expect(chosen).toContainText('2/6');
 		await expect(chosen.getByRole('listitem')).toHaveCount(2);
+		// 평소에는 고른 목록만: 빼기·손잡이·더하기는 편집을 눌러야 나온다
+		await expect(chosen.getByRole('button', { name: 'hyeoniverse/alpha 빼기' })).toHaveCount(0);
+		await expect(settings.getByLabel('저장소 이름 (owner/이름)')).toHaveCount(0);
+		await chosen.getByRole('button', { name: '편집' }).click();
 
 		// 내 계정 저장소 목록에서 더한다 (고른 저장소는 체크 표시)
 		const mine = settings.getByRole('region', { name: 'hyeoniverse의 저장소' });
 		await expect(mine.getByRole('img', { name: 'hyeoniverse/alpha 고름' })).toBeVisible();
 		await mine.getByRole('button', { name: 'hyeoniverse/beta 더하기' }).click();
 		await expect(chosen).toContainText('3/6');
-		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/alpha', 'test-org/gamma', 'hyeoniverse/beta']);
 
 		// ≡ 손잡이를 끌어서 순서 바꾸기 (메모 폴더 편집과 같다): beta를 맨 위로
 		const handle = chosen.getByRole('button', { name: '순서 바꾸기 (hyeoniverse/beta)' });
@@ -100,34 +103,60 @@ test.describe('시스템 설정 → GitHub (관리자)', () => {
 		await page.mouse.down();
 		await page.mouse.move(from.x + from.width / 2, to.y + 4, { steps: 8 });
 		await page.mouse.up();
-		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/beta', 'hyeoniverse/alpha', 'test-org/gamma']);
 		await expect(chosen.getByRole('listitem').first()).toContainText('hyeoniverse/beta');
 
 		// 키보드: 손잡이에서 ↓로 한 칸 내린다
 		await chosen.getByRole('button', { name: '순서 바꾸기 (hyeoniverse/beta)' }).press('ArrowDown');
-		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/alpha', 'hyeoniverse/beta', 'test-org/gamma']);
+		await expect(chosen.getByRole('listitem').nth(1)).toContainText('hyeoniverse/beta');
 
 		// 빼기. 하나만 남으면 손잡이는 꺼진다
 		await chosen.getByRole('button', { name: 'hyeoniverse/alpha 빼기' }).click();
-		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/beta', 'test-org/gamma']);
 		await chosen.getByRole('button', { name: 'test-org/gamma 빼기' }).click();
-		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/beta']);
 		await expect(chosen.getByRole('button', { name: '순서 바꾸기 (hyeoniverse/beta)' })).toBeDisabled();
 
-		// 목록에 없는 다른 계정의 저장소는 이름으로 (대소문자는 GitHub에 적힌 대로 저장된다)
+		// 목록에 없는 다른 계정의 저장소는 이름으로 (GitHub에 적힌 대소문자로)
 		await settings.getByLabel('저장소 이름 (owner/이름)').fill('someone/delta');
 		await settings.getByRole('button', { name: '더하기', exact: true }).click();
-		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/beta', 'someone/Delta']);
 		await expect(chosen).toContainText('someone/Delta');
+
+		// 여기까지는 저장하지 않았다. 완료를 누르면 한 번에 저장한다
+		expect(api.github.saves).toBe(0);
+		await chosen.getByRole('button', { name: '완료' }).click();
+		await expect.poll(() => api.github.showcase).toEqual(['hyeoniverse/beta', 'someone/Delta']);
+		expect(api.github.saves).toBe(1);
+		await expect(chosen.getByRole('button', { name: '편집' })).toBeVisible();
+		await expect(chosen.getByRole('button', { name: 'hyeoniverse/beta 빼기' })).toHaveCount(0);
 
 		await dockItem(page, 'github').click();
 		await expect.poll(() => pinnedNames(page)).toEqual(['beta', 'someone/Delta']);
 	});
 
-	test('잘못된 이름이나 없는 저장소는 알리고 저장하지 않는다', async ({ page }) => {
+	test('편집을 취소하면 바꾼 것을 버리고, 바꾼 것 없이 완료하면 저장하지 않는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		await enterDesktop(page);
 		const settings = await openGithubSettings(page);
+		const chosen = settings.getByRole('region', { name: '보일 저장소' });
+
+		await chosen.getByRole('button', { name: '편집' }).click();
+		await chosen.getByRole('button', { name: 'hyeoniverse/alpha 빼기' }).click();
+		await expect(chosen).toContainText('1/6');
+		await chosen.getByRole('button', { name: '취소' }).click();
+		await expect(chosen).toContainText('2/6');
+		await expect(chosen.getByRole('listitem')).toHaveCount(2);
+
+		await chosen.getByRole('button', { name: '편집' }).click();
+		await chosen.getByRole('button', { name: '완료' }).click();
+		await expect(chosen.getByRole('button', { name: '편집' })).toBeVisible();
+		expect(api.github.saves).toBe(0);
+		expect(api.github.showcase).toEqual(['hyeoniverse/alpha', 'test-org/gamma']);
+	});
+
+	test('잘못된 이름이나 없는 저장소는 알리고 더하지 않는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openGithubSettings(page);
+		const chosen = settings.getByRole('region', { name: '보일 저장소' });
+		await chosen.getByRole('button', { name: '편집' }).click();
 		const input = settings.getByLabel('저장소 이름 (owner/이름)');
 		const alert = settings.getByRole('alertdialog', { name: '저장소를 바꾸지 못했습니다' });
 
@@ -140,6 +169,7 @@ test.describe('시스템 설정 → GitHub (관리자)', () => {
 		await settings.getByRole('button', { name: '더하기', exact: true }).click();
 		await expect(alert).toContainText('공개 저장소를 찾을 수 없습니다');
 		await alert.getByRole('button', { name: '확인' }).click();
+		await expect(chosen).toContainText('2/6');
 		expect(api.github.saves).toBe(0);
 	});
 
@@ -170,7 +200,9 @@ test.describe('시스템 설정 → GitHub (관리자)', () => {
 		];
 		await enterDesktop(page);
 		const settings = await openGithubSettings(page);
-		await expect(settings.getByRole('region', { name: '보일 저장소' })).toContainText('6/6');
+		const chosen = settings.getByRole('region', { name: '보일 저장소' });
+		await expect(chosen).toContainText('6/6');
+		await chosen.getByRole('button', { name: '편집' }).click();
 		await expect(settings.getByRole('button', { name: 'hyeoniverse/beta 더하기' })).toBeDisabled();
 		await expect(settings.getByLabel('저장소 이름 (owner/이름)')).toBeDisabled();
 	});
