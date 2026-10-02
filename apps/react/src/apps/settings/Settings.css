@@ -253,14 +253,14 @@
 	gap: 0;
 	width: 100%;
 	height: 100%;
-	padding: 60px 16px 24px;
+	padding: var(--phone-top) 16px 24px;
 	border: none;
 	background-color: var(--phone-page-bg);
 	overflow-y: auto;
 }
 
 .container.mobile .settings-phone-title {
-	display: block;
+	display: flex;
 }
 
 .container.mobile .settings-nav-item {
@@ -333,16 +333,9 @@
 }
 
 .container.mobile .settings-panel {
-	padding: 60px 16px 24px;
+	padding: var(--phone-top) 16px 24px;
 	background-color: var(--phone-page-bg);
 	animation: nav-forward var(--duration) var(--ease-out);
-}
-
-.container.mobile .settings-panel h2 {
-	margin: 0 4px 16px;
-	font-size: 30px;
-	font-weight: 700;
-	line-height: 1.2;
 }
 
 .container.mobile .settings-toggle {

@@ -328,9 +328,19 @@
 	--phone-separator: rgba(255, 255, 255, 0.12);
 }
 
-/* 큰 제목 (iOS의 Large Title): 제목과 그 아래 작은 설명 */
+/* 큰 제목 (iOS의 Large Title): 떠 있는 뒤로 가기와 같은 줄, 그 오른쪽에 둔다.
+   화면은 위 여백을 --phone-top(뒤로 가기의 위 여백)만 두고, 제목 줄의 높이를 뒤로 가기(44px)에 맞춘다.
+   뒤로 가기는 왼쪽 16~60px, 화면의 옆 여백이 16px이라 제목은 그 안에서 56px 띄운다 */
+.container.mobile[data-app] {
+	--phone-top: 6px;
+}
+
 .container.mobile .phone-title {
-	margin: 0 4px 16px;
+	display: flex;
+	align-items: center;
+	min-height: 44px;
+	margin: 0 0 12px;
+	padding-left: 56px;
 	color: var(--color-text-strong);
 	font-size: 30px;
 	font-weight: 700;
@@ -338,7 +348,7 @@
 }
 
 .container.mobile .phone-title-sub {
-	margin: -12px 4px 16px;
+	margin: -8px 4px 16px;
 	color: var(--color-text-secondary);
 	font-size: 15px;
 }
@@ -360,7 +370,7 @@
 
 /* 떠 있는 제목 막대 (iOS 메모 본문): 막대는 비우고 뒤로 가기만 동그란 단추로, 본문이 그 아래까지 올라간다.
    목록 화면처럼 회색 바탕이면 상태 막대 뒤와 홈 인디케이터 아래도 회색으로 잇는다.
-   흰 바탕인 읽기 화면(메모 본문, 메일 읽기, 메시지 대화)은 흰색 그대로 */
+   흰 바탕인 읽기 화면(메모 본문, 메일 읽기, 메시지 대화)과 음악(iOS 음악은 흰 바탕)은 흰색 그대로 */
 .container.mobile.nav-floating[data-app],
 .container.mobile.nav-floating[data-app] .home-indicator {
 	background-color: var(--phone-page-bg);
@@ -369,12 +379,14 @@
 .container.mobile.nav-floating:is(
 		[data-app='memo']:has(.memo.pane-reader),
 		[data-app='mail']:has(.mail.detail-open),
-		[data-app='messages']:has(.messages.chat-open)
+		[data-app='messages']:has(.messages.chat-open),
+		[data-app='music']
 	),
 .container.mobile.nav-floating:is(
 		[data-app='memo']:has(.memo.pane-reader),
 		[data-app='mail']:has(.mail.detail-open),
-		[data-app='messages']:has(.messages.chat-open)
+		[data-app='messages']:has(.messages.chat-open),
+		[data-app='music']
 	)
 	.home-indicator {
 	background-color: var(--color-window-bg);

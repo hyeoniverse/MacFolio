@@ -100,14 +100,14 @@ const Settings: React.FC = () => {
 					<section key={section} className="settings-panel">
 						{section === 'account' && (
 							<>
-								<h2>계정</h2>
+								<h2 className="phone-title">계정</h2>
 								<AdminAccount />
 							</>
 						)}
 
 						{section === 'appearance' && (
 							<>
-								<h2>화면 모드</h2>
+								<h2 className="phone-title">화면 모드</h2>
 								<div className="settings-options" role="radiogroup" aria-label="화면 모드">
 									{THEME_OPTIONS.map((option) => (
 										<button
@@ -129,7 +129,7 @@ const Settings: React.FC = () => {
 
 						{section === 'wallpaper' && (
 							<>
-								<h2>배경화면</h2>
+								<h2 className="phone-title">배경화면</h2>
 								<WallpaperGroup
 									label="macOS"
 									hint="데스크톱 배경화면. 다크 모드에서는 어두운 버전으로 바뀝니다."
@@ -152,7 +152,7 @@ const Settings: React.FC = () => {
 
 						{section === 'sound' && (
 							<>
-								<h2>사운드</h2>
+								<h2 className="phone-title">사운드</h2>
 								<label className="settings-toggle">
 									<span>
 										<strong>클릭 소리</strong>

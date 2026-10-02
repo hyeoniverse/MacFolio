@@ -204,6 +204,6 @@ a.shortcut-row {
 
 /* ─── 휴대폰 (메모와 같은 모양): 떠 있는 뒤로 가기 아래부터, 회색 바탕 ─── */
 .container.mobile .shortcuts {
-	padding-top: 60px;
+	padding-top: var(--phone-top);
 	background-color: var(--phone-page-bg);
 }
