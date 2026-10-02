@@ -266,6 +266,35 @@ test.describe('모바일', () => {
 		await expect(folders.getByRole('button', { name: /^모든 글/ })).toBeEnabled();
 	});
 
+	test('폴더 편집의 ≡ 손잡이로 같은 층 폴더 순서를 바꾸고, 정리 내용에 저장한다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true, organization: { folders: ['디자인', '읽을거리'] } });
+		await enterHome(page);
+		await homeApp(page, '메모').tap();
+		const memo = appWindow(page, 'memo');
+		await memo.locator('.mobile-navbar-home').tap();
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		const topNames = () =>
+			folders.locator('.memo-folder-scroll > ul > li[data-folder-path] > .memo-folder-row .memo-folder-name');
+		await expect(topNames()).toHaveText(['개발기', '디자인', '읽을거리']);
+
+		await folders.getByRole('button', { name: '폴더 편집' }).tap();
+		// 끌기: '읽을거리'를 맨 위로
+		const handle = folders.getByRole('button', { name: '순서 바꾸기 (읽을거리)' });
+		const target = folders.getByRole('button', { name: '순서 바꾸기 (개발기)' });
+		const from = (await handle.boundingBox())!;
+		const to = (await target.boundingBox())!;
+		await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(from.x + from.width / 2, to.y + 4, { steps: 8 });
+		await page.mouse.up();
+		await expect(topNames()).toHaveText(['읽을거리', '개발기', '디자인']);
+		await expect.poll(() => api.organization.order).toEqual(['읽을거리', '개발기', '디자인']);
+
+		// 키보드: ↓로 한 칸 내린다
+		await folders.getByRole('button', { name: '순서 바꾸기 (읽을거리)' }).press('ArrowDown');
+		await expect(topNames()).toHaveText(['개발기', '읽을거리', '디자인']);
+	});
+
 	test('메일은 목록과 읽기·쓰기를 한 화면씩 보여준다', async ({ page }) => {
 		await enterHome(page);
 		await homeApp(page, '메일').tap();

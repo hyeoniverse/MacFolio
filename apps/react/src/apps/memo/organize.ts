@@ -22,9 +22,11 @@ export interface Organization {
 	pins: Record<string, boolean>;
 	/** 잠근 글: slug → true. 잠그면 고치거나 지울 수 없다 (실수로 바꾸지 않게) */
 	locks: Record<string, boolean>;
+	/** 폴더 순서: 폴더 경로를 보일 순서대로. 같은 층끼리 이 순서를 따르고, 없는 폴더는 뒤에 가나다순 */
+	order: string[];
 }
 
-export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {} };
+export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {}, order: [] };
 
 const lastName = (path: string) => path.split('/').at(-1) ?? path;
 const parentOf = (path: string) => path.split('/').slice(0, -1).join('/');
@@ -124,6 +126,7 @@ function relocate(organization: Organization, from: string, to: string): Organiz
 		moves: [...organization.moves, { from, to }],
 		pins: organization.pins,
 		locks: organization.locks,
+		order: [...new Set(organization.order.map((path) => rebase(path, from, to)))],
 	};
 }
 
@@ -143,7 +146,16 @@ export function removeFolder(organization: Organization, path: string): Organiza
 	return {
 		...organization,
 		folders: organization.folders.filter((folder) => folder !== path && !folder.startsWith(`${path}/`)),
+		order: organization.order.filter((folder) => folder !== path && !folder.startsWith(`${path}/`)),
 	};
+}
+
+/**
+ * 같은 층 폴더의 순서를 바꾼다. siblings는 그 층의 폴더 경로를 새 순서대로 모두 담는다.
+ * 다른 층의 순서는 그대로 두고, 이 층의 경로만 새 순서로 바꿔 넣는다.
+ */
+export function reorderFolders(organization: Organization, siblings: string[]): Organization {
+	return { ...organization, order: [...organization.order.filter((path) => !siblings.includes(path)), ...siblings] };
 }
 
 /** API가 돌려준 값을 정리 내용으로 (모양이 다른 필드는 비운다) */
@@ -159,6 +171,7 @@ export function normalizeOrganization(raw: unknown): Organization {
 			: [],
 		pins: isRecord(value.pins) ? (value.pins as Record<string, boolean>) : {},
 		locks: isRecord(value.locks) ? (value.locks as Record<string, boolean>) : {},
+		order: Array.isArray(value.order) ? value.order.filter((path) => typeof path === 'string') : [],
 	};
 }
 

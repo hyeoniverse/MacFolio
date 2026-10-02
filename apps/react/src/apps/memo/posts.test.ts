@@ -158,6 +158,15 @@ describe('폴더', () => {
 		expect(개발기.children.map((child) => child.name)).toEqual(['MacFolio', '읽을거리']);
 	});
 
+	it('같은 층은 정한 순서를 따르고, 순서에 없는 폴더는 뒤에 가나다순', () => {
+		const tree = buildFolderTree(posts, ['개발기/읽을거리', '새 폴더', '디자인'], ['새 폴더', '개발기/읽을거리']);
+		expect(tree.map((node) => node.name)).toEqual(['새 폴더', '개발기', '디자인', '회고']);
+		expect(tree.find((node) => node.name === '개발기')!.children.map((child) => child.name)).toEqual([
+			'읽을거리',
+			'MacFolio',
+		]);
+	});
+
 	it('상위 폴더를 고르면 하위 폴더의 글도 보인다', () => {
 		expect(inFolder(posts[0], '개발기')).toBe(true);
 		expect(inFolder(posts[0], '개발')).toBe(false);
