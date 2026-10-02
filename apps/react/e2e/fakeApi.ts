@@ -1,6 +1,10 @@
 import type { Page } from '@playwright/test';
 
 export const FAKE_API = 'http://api.test';
+/** 가짜 API가 알려 주는 로그인 시각 (한국 시각 2026년 10월 2일 오후 7:03) */
+export const FAKE_SIGNED_IN_AT = '2026-10-02T10:03:00.000Z';
+/** 가짜 API가 알려 주는 세션 만료 시각. 시험 중에 만료되지 않게 먼 뒤로 둔다 (한국 시각 2099년 10월 3일 오전 7:03) */
+export const FAKE_EXPIRES_AT = '2099-10-02T22:03:00.000Z';
 
 export interface FakeApiState {
 	signedIn: boolean;
@@ -185,7 +189,13 @@ export async function fakeApi(
 
 		if (path === '/auth/me') {
 			return route.fulfill(
-				state.signedIn ? { status: 200, headers: cors(origin), json: { login: 'hyeoniverse' } } : unauthorized
+				state.signedIn
+					? {
+							status: 200,
+							headers: cors(origin),
+							json: { login: 'hyeoniverse', signedInAt: FAKE_SIGNED_IN_AT, expiresAt: FAKE_EXPIRES_AT },
+						}
+					: unauthorized
 			);
 		}
 		if (path === '/auth/github') {

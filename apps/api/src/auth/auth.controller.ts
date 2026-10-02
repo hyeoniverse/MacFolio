@@ -28,9 +28,15 @@ import { AdminGuard, CurrentAdmin } from './admin.guard.js';
 import { type AdminIdentity, AuthService } from './auth.service.js';
 import { safeEqual, SESSION_COOKIE, SESSION_TTL_MS, STATE_COOKIE, STATE_TTL_MS, randomToken } from './session.js';
 
-export class AdminResponse implements AdminIdentity {
+export class AdminResponse {
 	@ApiProperty({ example: 'hyeoniverse' })
 	login!: string;
+
+	@ApiProperty({ example: '2026-10-02T10:03:00.000Z', description: '이 세션으로 로그인한 때 (ISO 8601)' })
+	signedInAt!: string;
+
+	@ApiProperty({ example: '2026-10-02T22:03:00.000Z', description: '이 세션이 끝나는 때 (ISO 8601)' })
+	expiresAt!: string;
 }
 
 /**
@@ -101,7 +107,11 @@ export class AuthController {
 	@ApiOkResponse({ type: AdminResponse })
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
 	me(@CurrentAdmin() admin: AdminIdentity): AdminResponse {
-		return admin;
+		return {
+			login: admin.login,
+			signedInAt: admin.signedInAt.toISOString(),
+			expiresAt: admin.expiresAt.toISOString(),
+		};
 	}
 
 	@Post('logout')

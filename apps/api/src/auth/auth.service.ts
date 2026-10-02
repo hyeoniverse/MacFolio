@@ -7,6 +7,10 @@ import { hashToken, randomToken, SESSION_TTL_MS } from './session.js';
 export interface AdminIdentity {
 	/** GitHub 계정 */
 	login: string;
+	/** 이 세션으로 로그인한 때 */
+	signedInAt: Date;
+	/** 이 세션이 끝나는 때 (다시 로그인해야 한다) */
+	expiresAt: Date;
 }
 
 /**
@@ -71,6 +75,7 @@ export class AuthService {
 				tokenHash: hashToken(token),
 				githubId: user.id,
 				githubLogin: user.login,
+				createdAt: now,
 				expiresAt: new Date(now.getTime() + SESSION_TTL_MS),
 			},
 		});
@@ -83,7 +88,7 @@ export class AuthService {
 		const session = await this.prisma.adminSession.findUnique({ where: { tokenHash: hashToken(token) } });
 		// 관리자 ID를 바꾸면(ADMIN_GITHUB_ID) 이전 관리자의 세션은 더는 통하지 않는다
 		if (!session || session.expiresAt <= now || session.githubId !== this.config.auth.adminGithubId) return null;
-		return { login: session.githubLogin };
+		return { login: session.githubLogin, signedInAt: session.createdAt, expiresAt: session.expiresAt };
 	}
 
 	/** 세션을 지운다. 쿠키를 훔쳐 갔어도 로그아웃하면 더는 쓸 수 없다 */
