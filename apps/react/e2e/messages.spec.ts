@@ -237,16 +237,24 @@ test.describe('메시지 서버에 닿지 못할 때', () => {
 		await expect(messages.getByRole('alertdialog', { name: '메시지를 열 수 없습니다' })).toBeVisible();
 	});
 
-	test('열어 둔 뒤에 서버가 끊기면 보내기 에러만 보인다', async ({ page }) => {
+	test('열어 둔 뒤에 서버가 끊기면 보내기 실패만 경고창으로 알리고, 쓴 글은 남는다', async ({ page }) => {
 		await fakeApi(page);
 		const messages = await openMessages(page);
 		await expect(transcript(messages)).toContainText('안녕하세요, 김정현입니다');
 
 		await page.route(`${FAKE_API}/messages/**`, (route) => route.abort());
 		await textbox(messages).fill('끊긴 뒤에 보내요');
+		const box = await textbox(messages).boundingBox();
 		await textbox(messages).press('Enter');
-		await expect(messages).toContainText('서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
-		await expect(messages.getByRole('alertdialog')).toHaveCount(0);
+		const alert = messages.getByRole('alertdialog', { name: '메시지를 보내지 못했습니다' });
+		await expect(alert).toContainText('서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
+		// 에러 줄이 생기며 입력창이 밀리지 않는다
+		expect(await textbox(messages).boundingBox()).toEqual(box);
+		await alert.getByRole('button', { name: '확인' }).click();
+		await expect(alert).toBeHidden();
 		await expect(textbox(messages)).toHaveValue('끊긴 뒤에 보내요');
+		await expect(textbox(messages)).toBeFocused();
+		// 앱은 닫히지 않는다
+		await expect(transcript(messages)).toContainText('안녕하세요, 김정현입니다');
 	});
 });
