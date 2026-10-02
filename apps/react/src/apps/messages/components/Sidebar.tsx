@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Avatar from './Avatar';
 import { displayName, formatListTime, type Thread } from '../conversations';
 import IconButton from '@/shared/ui/button/IconButton';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
 interface Props {
 	threads: Thread[];
@@ -12,6 +13,8 @@ interface Props {
 
 const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) => {
 	const [query, setQuery] = useState('');
+	/** 휴대폰은 iOS 메시지 크기의 아바타 */
+	const phone = useIsMobile();
 	const now = new Date();
 	const pinned = threads.filter((t) => t.pinned);
 	const matches = (thread: Thread) =>
@@ -60,7 +63,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) 
 									aria-current={selectedId === thread.id || undefined}
 									onClick={() => onSelect(thread.id)}
 								>
-									<Avatar name={thread.title} size={66} />
+									<Avatar name={thread.title} size={phone ? 76 : 66} />
 									<span>{thread.title}</span>
 								</button>
 							</li>
@@ -77,7 +80,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) 
 								aria-current={selectedId === thread.id || undefined}
 								onClick={() => onSelect(thread.id)}
 							>
-								<Avatar name={thread.title} />
+								<Avatar name={thread.title} size={phone ? 52 : 40} />
 								<span className="messages-thread-text">
 									<span className="messages-thread-top">
 										<strong>
@@ -87,6 +90,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) 
 										{thread.lastMessage && (
 											<time dateTime={thread.lastMessage.createdAt}>
 												{formatListTime(new Date(thread.lastMessage.createdAt), now)}
+												<i className="fa-solid fa-chevron-right messages-thread-chevron" aria-hidden="true" />
 											</time>
 										)}
 									</span>
