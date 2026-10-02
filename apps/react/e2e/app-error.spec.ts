@@ -9,7 +9,7 @@ test.describe('앱 코드를 못 불러올 때', () => {
 		await enterDesktop(page);
 
 		await dockItem(page, 'memo').click();
-		const alert = page.getByRole('alertdialog', { name: '새 버전이 있어요' });
+		const alert = page.getByRole('alertdialog', { name: '새 버전이 있습니다' });
 		await expect(alert).toBeVisible();
 		await expect(alert).toContainText('메모 앱을 열려면 페이지를 새로고침해 주세요.');
 		await expect(alert.getByRole('button', { name: '새로고침' })).toBeFocused();
@@ -22,7 +22,7 @@ test.describe('앱 코드를 못 불러올 때', () => {
 		await page.route(MEMO_CHUNK, (route) => route.abort());
 		await enterDesktop(page);
 		await dockItem(page, 'memo').click();
-		const alert = page.getByRole('alertdialog', { name: '새 버전이 있어요' });
+		const alert = page.getByRole('alertdialog', { name: '새 버전이 있습니다' });
 		await expect(alert).toBeVisible();
 
 		await page.unroute(MEMO_CHUNK);
