@@ -63,7 +63,15 @@ describe('메모 정리 내용 (e2e)', () => {
 
 	it('처음에는 빈 정리 내용, 누구나 읽는다', async () => {
 		const response = await request(app.getHttpServer()).get('/memo/organization').expect(200);
-		expect(response.body).toEqual({ folders: [], posts: {}, moves: [], pins: {}, locks: {}, updatedAt: null });
+		expect(response.body).toEqual({
+			folders: [],
+			posts: {},
+			moves: [],
+			pins: {},
+			locks: {},
+			order: [],
+			updatedAt: null,
+		});
 	});
 
 	it('관리자가 아니면 바꿀 수 없다 (401)', async () => {
