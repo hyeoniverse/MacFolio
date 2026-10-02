@@ -1,0 +1,177 @@
+import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { APP_CONFIG, type AppConfig } from '../config.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import type { AdminIdentity } from '../auth/auth.service.js';
+import type { Visitor } from '../visitors/visitors.service.js';
+import { publicAuthorId } from '../visitors/visitor.js';
+import { hashIp, maskIp, OWNER_NAME, parseBody } from '../comments/rules.js';
+
+/** 사이트 주인의 고정 안내. 안내 글은 프론트엔드에 있고, 여기에는 거기 단 답글만 있다 (threadId가 빈 글) */
+export const PINNED_THREAD_ID = 'owner';
+
+/** 말풍선 하나 (apps/react/src/apps/messages/conversations.ts의 Message와 같은 모양) */
+export interface MessageView {
+	id: string;
+	threadId: string;
+	text: string;
+	createdAt: string;
+	/** 같은 사람의 말풍선을 묶는 값 (저장한 해시를 그대로 내보내지 않는다) */
+	authorId: string;
+	nickname: string;
+	ipPrefix?: string;
+	fromOwner: boolean;
+	mine: boolean;
+}
+
+/** 목록의 항목 하나 (Thread와 같은 모양) */
+export interface ThreadView {
+	id: string;
+	title: string;
+	ipPrefix?: string;
+	createdAt: string;
+	pinned?: boolean;
+	mine: boolean;
+	summary?: string;
+	lastMessage?: { text: string; createdAt: string };
+}
+
+interface MessageRow {
+	id: string;
+	threadId: string | null;
+	name: string;
+	body: string;
+	isAdmin: boolean;
+	visitorHash: string;
+	ipPrefix: string | null;
+	createdAt: Date;
+}
+
+const toMessage = (row: MessageRow, visitor: Visitor | null): MessageView => ({
+	id: row.id,
+	threadId: row.threadId ?? PINNED_THREAD_ID,
+	text: row.body,
+	createdAt: row.createdAt.toISOString(),
+	authorId: row.isAdmin ? 'owner' : publicAuthorId(row.visitorHash),
+	nickname: row.name,
+	...(row.ipPrefix ? { ipPrefix: row.ipPrefix } : {}),
+	fromOwner: row.isAdmin,
+	mine: !!visitor && row.visitorHash === visitor.hash,
+});
+
+const last = (rows: MessageRow[]) =>
+	rows.at(-1) && { text: rows.at(-1)!.body, createdAt: rows.at(-1)!.createdAt.toISOString() };
+
+/**
+ * 메시지 앱: 쓰기 단추로 남긴 피드백 하나가 목록의 항목 하나가 되고, 누구나 어느 피드백(과 주인 안내)에나 답글을 단다.
+ * 방문자는 쿠키로 정한 이름으로 쓰고 같은 브라우저에서 쓴 글만 지운다. 관리자는 김정현으로 쓰고 무엇이든 지운다.
+ */
+@Injectable()
+export class MessagesService {
+	constructor(
+		private readonly prisma: PrismaService,
+		@Inject(APP_CONFIG) private readonly config: AppConfig
+	) {}
+
+	/** 주인 안내(답글이 있으면 마지막 활동과 함께) + 방문자가 남긴 피드백 */
+	async listThreads(visitor: Visitor | null): Promise<ThreadView[]> {
+		const [threads, ownerReplies] = await Promise.all([
+			this.prisma.messageThread.findMany({
+				orderBy: { createdAt: 'asc' },
+				include: { messages: { orderBy: { createdAt: 'asc' } } },
+			}),
+			this.prisma.guestMessage.findMany({ where: { threadId: null }, orderBy: { createdAt: 'asc' } }),
+		]);
+		const pinned: ThreadView = {
+			id: PINNED_THREAD_ID,
+			title: OWNER_NAME,
+			createdAt: '2026-09-28T00:00:00.000Z',
+			pinned: true,
+			mine: false,
+			...(ownerReplies.length > 0 ? { lastMessage: last(ownerReplies) } : {}),
+		};
+		return [
+			pinned,
+			...threads.map((thread) => ({
+				id: thread.id,
+				title: thread.title,
+				...(thread.messages[0]?.ipPrefix ? { ipPrefix: thread.messages[0].ipPrefix } : {}),
+				createdAt: thread.createdAt.toISOString(),
+				mine: !!visitor && thread.visitorHash === visitor.hash,
+				...(thread.messages[0] ? { summary: thread.messages[0].body, lastMessage: last(thread.messages) } : {}),
+			})),
+		];
+	}
+
+	async listMessages(threadId: string, visitor: Visitor | null): Promise<MessageView[]> {
+		if (threadId !== PINNED_THREAD_ID && !(await this.prisma.messageThread.findUnique({ where: { id: threadId } })))
+			throw new NotFoundException('피드백이 없습니다.');
+		const rows = await this.prisma.guestMessage.findMany({
+			where: { threadId: threadId === PINNED_THREAD_ID ? null : threadId },
+			orderBy: { createdAt: 'asc' },
+		});
+		return rows.map((row) => toMessage(row, visitor));
+	}
+
+	private author(ip: string, visitor: Visitor, admin: AdminIdentity | null) {
+		return {
+			name: admin ? OWNER_NAME : visitor.name,
+			isAdmin: !!admin,
+			visitorHash: visitor.hash,
+			ipPrefix: admin ? null : maskIp(ip),
+			ipHash: hashIp(ip, this.config.ipHashSecret),
+		};
+	}
+
+	/** 새 피드백 (쓰기 단추). 목록에 항목이 하나 생긴다 */
+	async createThread(input: unknown, ip: string, visitor: Visitor, admin: AdminIdentity | null) {
+		const parsed = parseBody(input);
+		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		const author = this.author(ip, visitor, admin);
+		const thread = await this.prisma.messageThread.create({
+			data: {
+				title: author.name,
+				visitorHash: visitor.hash,
+				messages: { create: { ...author, body: parsed.value.body } },
+			},
+			include: { messages: true },
+		});
+		const message = toMessage(thread.messages[0], visitor);
+		return {
+			thread: {
+				id: thread.id,
+				title: thread.title,
+				...(message.ipPrefix ? { ipPrefix: message.ipPrefix } : {}),
+				createdAt: thread.createdAt.toISOString(),
+				mine: true,
+				summary: message.text,
+				lastMessage: { text: message.text, createdAt: message.createdAt },
+			} satisfies ThreadView,
+			message,
+		};
+	}
+
+	/** 피드백(이나 주인 안내)에 답글을 단다. 항목은 생기지 않는다 */
+	async post(threadId: string, input: unknown, ip: string, visitor: Visitor, admin: AdminIdentity | null) {
+		const parsed = parseBody(input);
+		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		if (threadId !== PINNED_THREAD_ID && !(await this.prisma.messageThread.findUnique({ where: { id: threadId } })))
+			throw new NotFoundException('삭제된 피드백입니다.');
+		const row = await this.prisma.guestMessage.create({
+			data: {
+				...this.author(ip, visitor, admin),
+				threadId: threadId === PINNED_THREAD_ID ? null : threadId,
+				body: parsed.value.body,
+			},
+		});
+		return toMessage(row, visitor);
+	}
+
+	/** 말풍선을 지운다. 관리자는 무엇이든, 방문자는 같은 브라우저에서 쓴 것만 */
+	async remove(id: string, visitor: Visitor | null, admin: AdminIdentity | null) {
+		const row = await this.prisma.guestMessage.findUnique({ where: { id } });
+		if (!row) throw new NotFoundException('메시지가 없습니다.');
+		if (!admin && (!visitor || row.visitorHash !== visitor.hash))
+			throw new ForbiddenException('이 브라우저에서 쓴 메시지만 지울 수 있습니다.');
+		await this.prisma.guestMessage.delete({ where: { id } });
+	}
+}

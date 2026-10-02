@@ -25,7 +25,7 @@ describe('댓글 요청 제한 (e2e)', () => {
 	});
 
 	it('IP마다 1분에 정한 횟수를 넘으면 429, 읽기는 막지 않는다', async () => {
-		const comment = { name: '민수', password: '1234', body: '도배' };
+		const comment = { body: '도배' };
 		await request(app.getHttpServer()).post('/posts/cra-to-vite/comments').send(comment).expect(201);
 		await request(app.getHttpServer()).post('/posts/cra-to-vite/comments').send(comment).expect(201);
 		const blocked = await request(app.getHttpServer()).post('/posts/cra-to-vite/comments').send(comment).expect(429);
