@@ -3109,7 +3109,7 @@
 
 	/* 떠 있는 단추 바로 아래부터 본문, 아래 도구에 가리지 않게 여백 */
 	.container.mobile .memo-reader .memo-scroll {
-		padding-top: 58px;
+		padding-top: 64px;
 		padding-bottom: 96px;
 	}
 
@@ -3152,11 +3152,45 @@
 		min-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		font-size: 12px;
+	}
+
+	/* 옆의 공유·••• 알약과 같은 모양: 채운 단추 대신 알약 안의 글자 단추 */
+	.container.mobile .memo-reader .memo-writer-actions {
+		gap: 2px;
+		padding: 0 6px;
 	}
 
 	.container.mobile .memo-reader .memo-writer-actions > button {
 		flex-shrink: 0;
+		height: 40px;
+		padding: 0 10px;
+		border-radius: 999px;
+		background: none;
+		color: var(--memo-text);
+		font-size: 16px;
+		font-weight: 600;
+	}
+
+	.container.mobile .memo-reader .memo-writer-actions > button:active:not(:disabled) {
+		background-color: var(--memo-search-bg);
+	}
+
+	.container.mobile .memo-reader .memo-writer-actions > button:disabled {
+		background: none;
+		color: var(--memo-muted);
+	}
+
+	.container.mobile .memo-reader .memo-writer-actions > .memo-writer-discard {
+		color: var(--memo-muted);
+		font-weight: 400;
+	}
+
+	.container.mobile .memo-reader .memo-writer-status {
+		font-size: 13px;
+	}
+
+	.container.mobile .memo-reader .memo-writer-status:not(:empty) {
+		padding-left: 8px;
 	}
 
 	.container.mobile .memo-reader > .memo-find {
