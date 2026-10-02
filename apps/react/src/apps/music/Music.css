@@ -696,51 +696,294 @@
 	}
 }
 
-/* ─── 휴대폰 (메모와 같은 모양) ───
-   떠 있는 뒤로 가기, 큰 제목, 회색 바탕 위 흰 카드 목록. 미니 플레이어는 아래의 흰 알약 */
+/* ─── 휴대폰 (iOS 음악처럼) ───
+   흰 바탕. 보관함은 큰 제목(뒤로 가기 줄), 지금 재생 중인 목록의 표지, 빨간 아이콘 줄(플레이리스트·아티스트·앨범·노래).
+   목록 화면은 표지 줄이나 격자, 곡 목록은 큰 표지와 [셔플][재생]. 미니 플레이어는 아래의 떠 있는 알약 */
+.music-featured,
+.music-phone-lists,
+.music-collections,
+.music-phone-top {
+	display: none;
+}
+
 @container (max-width: 640px) {
 	.container.mobile :is(.music-sidebar, .music-main) {
-		background-color: var(--phone-page-bg);
+		background-color: var(--music-bg);
 	}
 
 	.container.mobile .music-sidebar {
-		padding: 60px 16px 24px;
+		padding: var(--phone-top) 16px 24px;
+	}
+
+	/* 넓은 창의 재생 목록 대신 iOS 음악의 보관함 */
+	.container.mobile .music-sidebar .music-playlists {
+		display: none;
 	}
 
 	.container.mobile .music-large-title {
-		margin: 0 4px 16px;
+		color: var(--music-text);
 	}
 
-	.container.mobile .music-sidebar ul,
-	.container.mobile .music-tracks {
+	.container.mobile .music-featured {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+		margin: 4px 0 20px;
+		font-size: 17px;
+		font-weight: 600;
+	}
+
+	.container.mobile .music-featured .music-cover {
+		width: min(56vw, 220px);
+	}
+
+	.container.mobile :is(.music-phone-lists, .music-collections.list) {
+		display: block;
+	}
+
+	/* 줄 사이 선은 글자가 시작하는 곳부터 */
+	.container.mobile :is(.music-phone-lists, .music-collections.list) li + li button::before {
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: var(--separator-left);
+		height: 0.5px;
+		background-color: var(--music-separator);
+		content: '';
+	}
+
+	.container.mobile .music-phone-list-link {
+		--separator-left: 42px;
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		position: relative;
+		width: 100%;
+		padding: 13px 4px;
+		font-size: 20px;
+		text-align: left;
+	}
+
+	.container.mobile .music-phone-list-link > i:first-child {
+		width: 22px;
+		color: var(--music-accent);
+		font-size: 19px;
+		text-align: center;
+	}
+
+	.container.mobile .music-chevron {
+		margin-left: auto;
+		color: var(--music-muted);
+		font-size: 14px;
+	}
+
+	/* 플레이리스트·아티스트·앨범 */
+	.container.mobile .music-collections.grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px 16px;
+	}
+
+	.container.mobile .music-collection {
+		--separator-left: 76px;
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		position: relative;
+		width: 100%;
+		padding: 8px 0;
+		text-align: left;
+	}
+
+	.container.mobile .music-collection .music-cover {
+		display: grid;
+		width: 62px;
+		border-radius: 6px;
+		box-shadow: none;
+	}
+
+	.container.mobile .music-collection.round .music-cover {
+		border-radius: 50%;
+	}
+
+	.container.mobile .music-collection-text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	.container.mobile .music-collection-text :is(strong, small) {
 		overflow: hidden;
-		border-radius: 14px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.container.mobile .music-collection-text strong {
+		font-size: 17px;
+		font-weight: 400;
+	}
+
+	.container.mobile .music-collection-text small {
+		color: var(--music-muted);
+		font-size: 14px;
+	}
+
+	.container.mobile .music-collection.grid {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 8px;
+		padding: 0;
+	}
+
+	.container.mobile .music-collection.grid .music-cover {
+		width: 100%;
+		border-radius: 8px;
+	}
+
+	.container.mobile .music-collection.grid strong {
+		font-size: 15px;
+	}
+
+	/* 플레이리스트 화면 오른쪽 위: 보기·정렬 */
+	.container.mobile .music-phone-top {
+		display: flex;
+		position: absolute;
+		top: var(--phone-top);
+		right: 16px;
+		z-index: 5;
+		border-radius: 22px;
 		background-color: var(--phone-card-bg);
+		box-shadow: var(--phone-float-shadow);
 	}
 
-	.container.mobile .music-playlist-link {
-		padding: 10px 14px;
+	.container.mobile .music-phone-top button {
+		width: 44px;
+		height: 44px;
+		color: var(--music-text);
+		font-size: 18px;
 	}
 
-	.container.mobile .music-sidebar li + li .music-playlist-link,
-	.container.mobile .music-tracks li + li .music-track {
-		box-shadow: inset 0 0.5px 0 var(--phone-separator);
-	}
-
+	/* 곡 목록: 뒤로 가기 아래부터 큰 표지, [셔플][재생] */
 	.container.mobile .music-main {
 		padding-top: 60px;
 	}
 
 	.container.mobile .music-header {
+		gap: 14px;
 		margin-bottom: 16px;
 	}
 
+	.container.mobile .music-header h1 {
+		font-size: 22px;
+	}
+
+	.container.mobile .music-header p {
+		font-size: 15px;
+	}
+
+	.container.mobile .music-header .music-meta {
+		font-size: 13px;
+	}
+
+	.container.mobile .music-header-actions {
+		align-items: center;
+		margin-top: 16px;
+	}
+
+	.container.mobile .music-pill {
+		height: 50px;
+		border-radius: 25px;
+		background-color: var(--music-selected);
+		color: var(--music-accent);
+		font-size: 17px;
+	}
+
+	.container.mobile .music-pill-shuffle {
+		flex: none;
+		order: -1;
+		width: 50px;
+		padding: 0;
+	}
+
+	.container.mobile .music-pill-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	/* 곡 줄: 표지·제목·가수·길이. 재생 중인 곡은 표지 위에 막대 */
 	.container.mobile .music-track {
-		padding: 10px 14px 10px 8px;
+		grid-template-columns: 48px minmax(0, 1fr) auto;
+		gap: 14px;
+		position: relative;
+		padding: 7px 0;
+		border-radius: 0;
+	}
+
+	/* 손가락으로 누른 뒤 남는 hover 색을 칠하지 않는다 */
+	.container.mobile .music-tracks .music-track:hover {
+		background: none;
+	}
+
+	.container.mobile .music-tracks li + li .music-track {
+		box-shadow:
+			inset 62px 0.5px 0 var(--music-bg),
+			inset 0 0.5px 0 var(--music-separator);
+	}
+
+	.container.mobile .music-track img {
+		width: 48px;
+		height: 48px;
+		border-radius: 5px;
+	}
+
+	.container.mobile .music-track-number {
+		display: none;
+	}
+
+	.container.mobile .music-track.current .music-track-number {
+		display: grid;
+		position: absolute;
+		left: 0;
+		width: 48px;
+		height: 48px;
+		place-items: center;
+		border-radius: 5px;
+		background-color: rgba(0, 0, 0, 0.35);
+		color: #ffffff;
+	}
+
+	.container.mobile .music-track.current .music-bars {
+		color: #ffffff;
+	}
+
+	.container.mobile .music-track-title strong {
+		font-size: 16px;
+		font-weight: 400;
+	}
+
+	.container.mobile .music-track-title small {
+		font-size: 14px;
+	}
+
+	.container.mobile .music-track-time {
+		font-size: 14px;
 	}
 
 	.container.mobile .music-player-bar {
+		margin: 0 12px 8px;
+		padding: 6px 8px 6px 6px;
+		border-radius: 28px;
 		background-color: var(--phone-card-bg);
 		box-shadow: var(--phone-float-shadow);
+	}
+
+	.container.mobile .music-now img {
+		border-radius: 50%;
 	}
 }
