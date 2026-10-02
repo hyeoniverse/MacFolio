@@ -83,6 +83,20 @@
 	display: none;
 }
 
+/* 좁은 데스크톱 창에서 곡 목록 → 보관함 (메일의 받은 편지함 단추와 같은 모양) */
+.music-back {
+	display: none;
+	align-items: center;
+	gap: 6px;
+	margin: 0 0 12px;
+	padding: 4px 0;
+	border: none;
+	background: none;
+	color: var(--music-accent);
+	font-size: 15px;
+	cursor: pointer;
+}
+
 .music-sidebar-heading {
 	margin: 8px 8px 4px;
 	color: var(--music-muted);
@@ -572,8 +586,9 @@
 		animation: nav-forward var(--duration) var(--ease-out);
 	}
 
+	/* 위쪽은 신호등 단추(닫기·최소화·확대) 줄 높이만큼 비운다. 휴대폰은 아래에서 --phone-top으로 덮어쓴다 */
 	.music-sidebar {
-		padding: 0 16px 16px;
+		padding: 44px 16px 16px;
 		border: none;
 		background-color: var(--music-bg);
 	}
@@ -615,8 +630,13 @@
 		box-shadow: none;
 	}
 
+	/* 위쪽은 신호등 단추 줄 높이만큼 비우고, 그 아래에 뒤로 가기 */
 	.music-main {
-		padding: 16px 16px 24px;
+		padding: 44px 16px 24px;
+	}
+
+	.music-back {
+		display: flex;
 	}
 
 	.music-header {
@@ -868,6 +888,10 @@
 	/* 곡 목록: 뒤로 가기 아래부터 큰 표지, [셔플][재생] */
 	.container.mobile .music-main {
 		padding-top: 60px;
+	}
+
+	.container.mobile .music-back {
+		display: none;
 	}
 
 	.container.mobile .music-header {
