@@ -9,15 +9,14 @@ export interface SendResult {
 interface Props {
 	/** 보내기. 보내지 못했으면 sent: false와 (있다면) 이유를 돌려준다 */
 	onSend: (text: string) => Promise<SendResult>;
-	/** 입력창 위에 붙는 추가 입력 (새 대화의 이름·비밀번호) */
+	/** 입력창 위에 붙는 한 줄 (이 브라우저의 이름) */
 	children?: React.ReactNode;
-	error?: string;
 	autoFocus?: boolean;
 	placeholder?: string;
 }
 
 /** macOS 메시지 앱의 떠 있는 알약 입력창. Enter로 보내고 Shift+Enter로 줄을 바꾼다. */
-const Composer: React.FC<Props> = ({ onSend, children, error: externalError, autoFocus, placeholder = '메시지' }) => {
+const Composer: React.FC<Props> = ({ onSend, children, autoFocus, placeholder = '메시지' }) => {
 	const [text, setText] = useState('');
 	const [error, setError] = useState<string>();
 	const [sending, setSending] = useState(false);
@@ -35,7 +34,7 @@ const Composer: React.FC<Props> = ({ onSend, children, error: externalError, aut
 		}
 	};
 
-	const shownError = error ?? externalError;
+	const shownError = error;
 	const canSend = text.trim().length > 0 && !sending;
 
 	return (

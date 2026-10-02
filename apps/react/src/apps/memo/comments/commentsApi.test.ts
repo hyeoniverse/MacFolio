@@ -7,11 +7,12 @@ const respond = (status: number, body?: unknown) =>
 	) as unknown as typeof fetch;
 const COMMENT = {
 	id: 'c1',
-	name: '민수',
+	name: '🦊 날쌘 여우',
 	ipPrefix: '211.234',
 	isAdmin: false,
 	body: '잘 봤어요',
 	createdAt: '2026-09-29T05:05:00.000Z',
+	mine: true,
 };
 
 describe('listComments', () => {
@@ -44,9 +45,12 @@ describe('createComment', () => {
 
 describe('deleteComment', () => {
 	it('응답 상태를 결과로', async () => {
-		await expect(deleteComment('http://api', 'c1', '1234', respond(204))).resolves.toBe('ok');
-		await expect(deleteComment('http://api', 'c1', '0000', respond(403))).resolves.toBe('forbidden');
-		await expect(deleteComment('http://api', 'c1', null, respond(404))).resolves.toBe('not-found');
+		const fetchImpl = respond(204);
+		await expect(deleteComment('http://api', 'c1', fetchImpl)).resolves.toBe('ok');
+		// 본문 없이 쿠키(credentials)로만 누구인지 알린다
+		expect(fetchImpl).toHaveBeenCalledWith('http://api/comments/c1', { method: 'DELETE', credentials: 'include' });
+		await expect(deleteComment('http://api', 'c1', respond(403))).resolves.toBe('forbidden');
+		await expect(deleteComment('http://api', 'c1', respond(404))).resolves.toBe('not-found');
 	});
 });
 
