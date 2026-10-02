@@ -266,6 +266,36 @@ test.describe('모바일', () => {
 		await expect(folders.getByRole('button', { name: /^모든 글/ })).toBeEnabled();
 	});
 
+	test('목록형 앱은 메모처럼 떠 있는 뒤로 가기와 큰 제목을 쓴다', async ({ page }) => {
+		await enterHome(page);
+		for (const [label, appName, title] of [
+			['메일', 'mail', '받은 편지함'],
+			['메시지', 'messages', '메시지'],
+			['음악', 'music', '보관함'],
+			['시스템 설정', 'settings', '설정'],
+			['암호', 'passwords', '암호'],
+			['단축어', 'terminal', '단축어'],
+		] as const) {
+			await homeApp(page, label).tap();
+			const app = appWindow(page, appName);
+			await expect(app.locator('.mobile-navbar.floating .mobile-navbar-home')).toBeVisible();
+			await expect(app.getByRole('heading', { name: title, exact: true })).toBeVisible();
+			await app.getByRole('button', { name: '홈 화면으로' }).tap();
+			await expect(app).toBeHidden();
+		}
+	});
+
+	test('시스템 설정: 항목 목록에서 누르면 그 화면으로, 떠 있는 뒤로 가기로 목록에 돌아온다', async ({ page }) => {
+		await enterHome(page);
+		await homeApp(page, '시스템 설정').tap();
+		const settings = appWindow(page, 'settings');
+		await settings.getByRole('button', { name: '화면 모드' }).tap();
+		await expect(settings.getByRole('radiogroup', { name: '화면 모드' })).toBeVisible();
+		await expect(settings.getByRole('navigation', { name: '설정 항목' })).toBeHidden();
+		await settings.locator('.mobile-navbar-home').tap();
+		await expect(settings.getByRole('navigation', { name: '설정 항목' })).toBeVisible();
+	});
+
 	test('메일은 목록과 읽기·쓰기를 한 화면씩 보여준다', async ({ page }) => {
 		await enterHome(page);
 		await homeApp(page, '메일').tap();
