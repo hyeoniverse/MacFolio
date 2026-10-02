@@ -482,7 +482,10 @@ const FolderSidebar: React.FC<Props> = (props) => {
 									}}
 								>
 									선택된 태그 중 {props.tagSelection.match === 'all' ? '모두' : '일부'} 포함
-									<i className="fa-solid fa-chevron-down" aria-hidden="true" />
+									<span className="memo-tag-match-chevrons" aria-hidden="true">
+										<i className="fa-solid fa-chevron-up" />
+										<i className="fa-solid fa-chevron-down" />
+									</span>
 								</button>
 							)}
 							{matchMenuAt && (
