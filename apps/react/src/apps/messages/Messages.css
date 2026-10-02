@@ -640,21 +640,38 @@
 	min-height: 0;
 }
 
-/* ─── 휴대폰 (iOS 메시지처럼, 메모와 같은 모양) ───
-   떠 있는 뒤로 가기, 큰 제목, 회색 바탕 위 흰 카드 목록, 아래에 떠 있는 검색 알약과 새 피드백 */
+/* ─── 휴대폰 (iOS 메시지처럼) ───
+   흰 바탕. 떠 있는 뒤로 가기 옆의 큰 제목, 고정 대화의 큰 아바타, 줄 끝에 ›가 붙은 대화 목록,
+   아래에 떠 있는 검색 알약과 새 피드백 */
 .messages-phone-title,
-.messages-phone-bottom {
+.messages-phone-bottom,
+.messages-thread-chevron {
 	display: none;
 }
 
 .container.mobile .messages {
 	position: relative;
-	background-color: var(--phone-page-bg);
+	background-color: var(--messages-window-bg);
 }
 
 .container.mobile .messages-sidebar {
 	padding: var(--phone-top) 16px 96px;
-	background-color: var(--phone-page-bg);
+	background-color: var(--messages-window-bg);
+}
+
+/* 고정 대화: 고른 것을 칠하지 않고 아바타만 크게 */
+.container.mobile .messages-pinned {
+	gap: 20px;
+	padding: 4px 0 16px;
+}
+
+.container.mobile .messages-pinned-item,
+.container.mobile .messages-pinned-item.selected {
+	gap: 8px;
+	padding: 0;
+	background: none;
+	color: var(--messages-text);
+	font-size: 13px;
 }
 
 .container.mobile .messages-phone-title {
@@ -668,25 +685,34 @@
 }
 
 .container.mobile .messages-threads {
-	overflow: hidden;
 	padding: 0;
-	border-radius: 14px;
-	background-color: var(--phone-card-bg);
 }
 
-/* 줄 사이 선은 이름부터 오른쪽 끝 앞까지, 고른 대화 옆에서도 늘 보인다 */
+/* 줄 사이 선은 이름부터 오른쪽 끝까지, 고른 대화 옆에서도 늘 보인다 */
 .container.mobile .messages-threads li + li .messages-thread::before,
 .container.mobile .messages-threads li:has(.selected) + li .messages-thread::before {
 	display: block;
-	left: 66px;
-	right: 14px;
+	left: 64px;
+	right: 0;
 	height: 0.5px;
 	background-color: var(--phone-separator);
 }
 
 .container.mobile .messages-thread {
-	padding: 12px 14px;
+	align-items: flex-start;
+	padding: 10px 0;
 	border-radius: 0;
+}
+
+.container.mobile .messages-thread-top time {
+	font-size: 15px;
+}
+
+.container.mobile .messages-thread-chevron {
+	display: inline;
+	margin-left: 6px;
+	color: var(--messages-meta);
+	font-size: 12px;
 }
 
 /* 한 화면씩 보므로 고른 대화를 칠하지 않는다 */
@@ -700,15 +726,16 @@
 }
 
 .container.mobile .messages-thread strong {
-	font-size: 16px;
+	font-size: 17px;
 }
 
 .container.mobile .messages-thread-preview {
-	font-size: 14px;
+	font-size: 15px;
 }
 
 .container.mobile .messages-empty {
-	padding: 20px 16px;
+	padding: 32px 16px;
+	font-size: 15px;
 	text-align: center;
 }
 
@@ -747,6 +774,84 @@
 	background-color: var(--messages-window-bg);
 }
 
+/* 이름 알약은 떠 있는 단추 줄 가운데, 그 아래 설명은 단추를 비켜 화면 폭을 다 쓴다 */
 .container.mobile .messages-chat-header {
-	padding-top: 8px;
+	padding: 8px 16px;
+}
+
+/* 대화 머리와 시간·보낸 이: 넓은 창의 11px는 휴대폰에서 작다 */
+.container.mobile .messages-name-pill {
+	padding: 6px 14px;
+	font-size: 15px;
+}
+
+.container.mobile :is(.messages-chat-subtitle, .messages-time, .messages-sender, .messages-receipt) {
+	font-size: 13px;
+}
+
+.container.mobile .messages-chat-subtitle {
+	margin-top: 6px;
+	text-align: center;
+}
+
+/* 새 피드백의 취소: 떠 있는 뒤로 가기와 같은 줄, 같은 높이의 알약 */
+.container.mobile .messages-cancel {
+	top: var(--phone-top);
+	right: 16px;
+	height: 44px;
+	padding: 0 18px;
+	border-radius: 22px;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+	font-size: 16px;
+}
+
+/* 말풍선과 입력: iOS 크기. 입력 칸은 16px보다 작으면 iOS가 누를 때 화면을 확대한다 */
+.container.mobile .messages-bubble {
+	font-size: 16px;
+}
+
+.container.mobile .messages-composer {
+	padding: 6px 12px 10px;
+}
+
+/* 이름·비밀번호: 입력 알약 위의 둥근 카드 하나에 두 줄 (iOS 입력 묶음처럼) */
+.container.mobile .messages-identity {
+	flex-direction: column;
+	gap: 0;
+	padding: 0;
+	overflow: hidden;
+	border-radius: 14px;
+	background-color: var(--messages-received);
+}
+
+.container.mobile .messages-identity input {
+	padding: 10px 14px;
+	border: none;
+	font-size: 16px;
+}
+
+.container.mobile .messages-identity input + input {
+	border-top: 0.5px solid var(--phone-separator);
+}
+
+.container.mobile .messages-identity input[aria-invalid='true'] {
+	box-shadow: inset 0 -2px 0 var(--messages-error);
+}
+
+.container.mobile .messages-field {
+	min-height: 44px;
+	padding: 4px 4px 4px 16px;
+	border-radius: 22px;
+}
+
+.container.mobile .messages-field textarea {
+	padding: 8px 0;
+	font-size: 16px;
+}
+
+.container.mobile .messages-send {
+	width: 36px;
+	height: 36px;
+	font-size: 16px;
 }
