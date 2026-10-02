@@ -29,6 +29,7 @@ describe('parseOrganization', () => {
 				moves: [{ from: '개발기/MacFolio', to: '읽을거리/MacFolio' }],
 				pins: { 'read-only-memo': true },
 				locks: {},
+				order: [],
 			},
 		});
 		expect(parseOrganization(EMPTY_ORGANIZATION)).toEqual({ value: EMPTY_ORGANIZATION });
@@ -59,6 +60,17 @@ describe('parseOrganization', () => {
 		});
 		expect(parseOrganization({ ...EMPTY_ORGANIZATION, locks: { 'cra-to-vite': 1 } })).toEqual({
 			errors: ['잠금 여부는 true/false여야 합니다: cra-to-vite'],
+		});
+	});
+
+	it('폴더 순서: 없으면 빈 값, 있으면 폴더 경로 배열 (겹치거나 규칙에 어긋나면 거절)', () => {
+		const { order: _, ...old } = EMPTY_ORGANIZATION;
+		expect(parseOrganization(old)).toEqual({ value: EMPTY_ORGANIZATION });
+		expect(parseOrganization({ ...EMPTY_ORGANIZATION, order: ['회고', '개발기/MacFolio'] })).toEqual({
+			value: { ...EMPTY_ORGANIZATION, order: ['회고', '개발기/MacFolio'] },
+		});
+		expect(parseOrganization({ ...EMPTY_ORGANIZATION, order: ['회고', '회고', 'a/b/c/d'] })).toEqual({
+			errors: ['폴더는 3단까지입니다: a/b/c/d', '폴더 순서에 같은 폴더가 두 번 있습니다'],
 		});
 	});
 
