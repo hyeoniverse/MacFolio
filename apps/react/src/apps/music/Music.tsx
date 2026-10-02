@@ -326,6 +326,11 @@ const Music: React.FC = () => {
 					</nav>
 
 					<section key={selectedId} className="music-main" aria-label={playlist.name}>
+						{/* 좁은 데스크톱 창의 뒤로 가기 (휴대폰은 떠 있는 뒤로 가기를 쓴다). 넓은 창에서는 보이지 않는다 */}
+						<button type="button" className="music-back" onClick={() => setView(openedFrom)}>
+							<i className="fa-solid fa-chevron-left" aria-hidden="true" />{' '}
+							{openedFrom === 'library' ? '보관함' : PHONE_LIST_TITLES[openedFrom]}
+						</button>
 						<header className="music-header">
 							<Cover playlist={playlist} />
 							<div>
