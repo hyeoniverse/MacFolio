@@ -278,8 +278,20 @@ test.describe('모바일', () => {
 		] as const) {
 			await homeApp(page, label).tap();
 			const app = appWindow(page, appName);
-			await expect(app.locator('.mobile-navbar.floating .mobile-navbar-home')).toBeVisible();
-			await expect(app.getByRole('heading', { name: title, exact: true })).toBeVisible();
+			const back = app.locator('.mobile-navbar.floating .mobile-navbar-home');
+			const heading = app.getByRole('heading', { name: title, exact: true });
+			await expect(back).toBeVisible();
+			await expect(heading).toBeVisible();
+			// 큰 제목은 뒤로 가기와 같은 줄, 그 오른쪽
+			const [backBox, titleBox] = [await back.boundingBox(), await heading.boundingBox()];
+			const middle = (box: typeof backBox) => box!.y + box!.height / 2;
+			expect(Math.abs(middle(titleBox) - middle(backBox))).toBeLessThan(4);
+			const textLeft = await heading.evaluate((element) => {
+				const range = document.createRange();
+				range.selectNodeContents(element);
+				return range.getBoundingClientRect().left;
+			});
+			expect(textLeft).toBeGreaterThan(backBox!.x + backBox!.width);
 			await app.getByRole('button', { name: '홈 화면으로' }).tap();
 			await expect(app).toBeHidden();
 		}
@@ -340,15 +352,17 @@ test.describe('모바일', () => {
 		await expect(list).toBeVisible();
 	});
 
-	test('음악: 보관함 → 재생 목록 → 곡을 누르면 재생되고, 미니 플레이어로 지금 재생 중을 연다', async ({ page }) => {
+	test('음악: 보관함 → 플레이리스트 → 곡을 누르면 재생되고, 미니 플레이어로 지금 재생 중을 연다', async ({ page }) => {
 		await enterHome(page);
 		await homeApp(page, '음악').tap();
 		const music = appWindow(page, 'music');
 		await expect(music.getByRole('heading', { name: '보관함' })).toBeVisible();
 
+		await music.getByRole('button', { name: '플레이리스트', exact: true }).tap();
+		await expect(music.getByRole('heading', { name: '플레이리스트' })).toBeVisible();
 		await music.getByRole('button', { name: /잔잔한 피아노/ }).tap();
 		await expect(music.getByRole('heading', { name: '잔잔한 피아노' })).toBeVisible();
-		await expect(music.locator('.mobile-navbar-home')).toHaveText('보관함');
+		await expect(music.locator('.mobile-navbar-home')).toHaveText('플레이리스트');
 
 		await music.locator('.music-track', { hasText: 'River Flows in You' }).tap();
 		await expect(music.locator('.music-track[aria-current]')).toContainText('River Flows in You');
@@ -363,6 +377,41 @@ test.describe('모바일', () => {
 		// 닫기는 제목 막대의 버튼 하나
 		await music.locator('.mobile-navbar-home').tap();
 		await expect(sheet).toBeHidden();
+
+		// 플레이리스트로 돌아오고, 보관함 맨 위에는 지금 재생 중인 목록의 표지
+		await music.locator('.mobile-navbar-home').tap();
+		await expect(music.getByRole('heading', { name: '플레이리스트' })).toBeVisible();
+		await music.locator('.mobile-navbar-home').tap();
+		await expect(music.locator('.music-featured')).toHaveText('잔잔한 피아노');
+	});
+
+	test('음악: 플레이리스트는 격자·목록과 제목순으로 보고, 앨범·아티스트는 곡을 묶어 보여 준다', async ({ page }) => {
+		await enterHome(page);
+		await homeApp(page, '음악').tap();
+		const music = appWindow(page, 'music');
+		const names = music.locator('.music-collection strong');
+
+		await music.getByRole('button', { name: '플레이리스트', exact: true }).tap();
+		await expect(names).toHaveText(['지브리', '잔잔한 피아노', '애니메이션 OST']);
+		await music.getByRole('button', { name: '정렬' }).tap();
+		await page.getByRole('menuitemcheckbox', { name: '제목' }).tap();
+		await expect(names).toHaveText(['애니메이션 OST', '잔잔한 피아노', '지브리']);
+		await music.getByRole('button', { name: '정렬' }).tap();
+		await page.getByRole('menuitemcheckbox', { name: '격자' }).tap();
+		await expect(music.locator('.music-collections.grid .music-collection')).toHaveCount(3);
+
+		await music.locator('.mobile-navbar-home').tap();
+		await music.getByRole('button', { name: '앨범', exact: true }).tap();
+		await music.getByRole('button', { name: /^Spirited Away/ }).tap();
+		await expect(music.getByRole('heading', { name: 'Spirited Away' })).toBeVisible();
+		await expect(music.locator('.music-track')).toHaveCount(2);
+		await expect(music.locator('.mobile-navbar-home')).toHaveText('앨범');
+
+		await music.locator('.mobile-navbar-home').tap();
+		await music.locator('.mobile-navbar-home').tap();
+		await music.getByRole('button', { name: '아티스트', exact: true }).tap();
+		await music.getByRole('button', { name: /^Yiruma/ }).tap();
+		await expect(music.locator('.music-track')).toHaveText([/Kiss the Rain/, /River Flows in You/]);
 	});
 
 	test('홈 화면의 음악 위젯: 빈 곳을 누르면 음악 앱이 열리고, 재생 위치 막대는 앱을 열지 않는다', async ({ page }) => {
@@ -610,6 +659,7 @@ test.describe('모바일', () => {
 		await enterHome(page);
 		await homeApp(page, '음악').tap();
 		const music = appWindow(page, 'music');
+		await music.getByRole('button', { name: '플레이리스트', exact: true }).tap();
 		await music.getByRole('button', { name: /지브리/ }).tap();
 		await music.locator('.music-track').first().tap();
 		const widgetPlay = () =>

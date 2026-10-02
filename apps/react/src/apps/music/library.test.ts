@@ -4,6 +4,7 @@ import {
 	findPlaylist,
 	formatTime,
 	formatTotal,
+	groupTracks,
 	nextPosition,
 	nextRepeatMode,
 	PLAYLISTS,
@@ -23,6 +24,23 @@ describe('보관함', () => {
 
 	it('없는 재생 목록은 모든 노래로 대신한다', () => {
 		expect(findPlaylist('없음').id).toBe('all');
+	});
+
+	it('앨범·아티스트는 곡을 처음 나온 순서대로 묶고, 재생 목록처럼 찾는다', () => {
+		const tracks = [
+			{ ...TRACKS[0], id: 'a', album: '봄', artist: '가수1' },
+			{ ...TRACKS[0], id: 'b', album: '여름', artist: '가수2' },
+			{ ...TRACKS[0], id: 'c', album: '봄', artist: '가수2' },
+		];
+		expect(groupTracks(tracks, 'album')).toEqual([
+			{ id: 'album:봄', name: '봄', description: '가수1, 가수2', trackIds: ['a', 'c'] },
+			{ id: 'album:여름', name: '여름', description: '가수2', trackIds: ['b'] },
+		]);
+		expect(groupTracks(tracks, 'artist').map((artist) => [artist.name, artist.description])).toEqual([
+			['가수1', '1곡'],
+			['가수2', '2곡'],
+		]);
+		expect(findPlaylist(`album:${TRACKS[0].album}`).name).toBe(TRACKS[0].album);
 	});
 });
 
