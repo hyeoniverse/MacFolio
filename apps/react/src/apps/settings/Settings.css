@@ -152,6 +152,59 @@
 	border-radius: 0.8rem;
 }
 
+/* 관리자가 더한 배경화면: 관리자에게는 오른쪽 위에 지우기(×) */
+.wallpaper-custom {
+	position: relative;
+}
+
+.wallpaper-remove {
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: -6px;
+	right: -6px;
+	width: 22px;
+	height: 22px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--color-popover-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.2),
+		0 1px 4px rgba(0, 0, 0, 0.2);
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	cursor: pointer;
+}
+
+/* 데스크톱에서는 올렸을 때만 (휴대폰은 늘 보인다) */
+@media (hover: hover) {
+	.wallpaper-remove {
+		opacity: 0;
+		transition: opacity var(--duration-fast) var(--ease-out);
+	}
+
+	.wallpaper-custom:hover .wallpaper-remove,
+	.wallpaper-remove:focus-visible {
+		opacity: 1;
+	}
+}
+
+/* 더하기 칸: 썸네일 자리에 + */
+.wallpaper-add .wallpaper-thumbnail {
+	display: grid;
+	place-items: center;
+	border: 2px dashed var(--color-divider);
+	box-shadow: none;
+	background-color: var(--color-control-bg);
+	color: var(--color-text-secondary);
+	font-size: 1.2rem;
+}
+
+.wallpaper-add:disabled {
+	cursor: progress;
+}
+
 /* ─── 좁은 창: 항목을 위쪽 탭으로 ─── */
 .settings-shell {
 	container-type: inline-size;

@@ -112,7 +112,10 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 	const nextWallpaper = () => {
 		// 제어 센터는 모바일에만 있으므로 홈 화면(iOS) 배경화면을 바꾼다
 		const index = IOS_WALLPAPERS.findIndex((wallpaper) => wallpaper.id === settings.mobileWallpaper);
-		settingsStore.setState({ mobileWallpaper: IOS_WALLPAPERS[(index + 1) % IOS_WALLPAPERS.length].id });
+		settingsStore.setState({
+			mobileWallpaper: IOS_WALLPAPERS[(index + 1) % IOS_WALLPAPERS.length].id,
+			mobileWallpaperImage: null,
+		});
 	};
 	const launch = (app: AppName) => {
 		close();

@@ -26,8 +26,40 @@ export interface FakeApiState {
 	posts: FakePost[];
 	/** 올린 이미지·첨부 파일 */
 	uploads: FakeUpload[];
+	/** 관리자가 더한 배경화면 (이미지는 uploads에 있다) */
+	wallpapers: FakeWallpaper[];
 	/** 사진 찾기: 켜진 서비스, 받은 검색어, Unsplash에 알린 사진 */
 	stock: { providers: { unsplash: boolean; pexels: boolean }; searches: string[]; downloads: string[] };
+}
+
+export interface FakeWallpaper {
+	id: string;
+	kind: 'mac' | 'ios';
+	name: string;
+	image: string;
+	thumbnail: string;
+}
+
+/** multipart 본문을 칸마다 나눈다 (글자 칸은 value, 파일 칸은 filename·type·data) */
+function readMultipart(body: Buffer) {
+	const boundary = body.subarray(0, body.indexOf('\r\n')).toString('latin1');
+	const parts: { field: string; filename?: string; type?: string; data: Buffer }[] = [];
+	let start = 0;
+	while ((start = body.indexOf(boundary, start)) !== -1) {
+		const headerStart = start + boundary.length + 2;
+		const headerEnd = body.indexOf('\r\n\r\n', headerStart);
+		if (headerEnd === -1) break;
+		const end = body.indexOf(`\r\n${boundary}`, headerEnd);
+		const headers = body.subarray(headerStart, headerEnd).toString('utf8');
+		parts.push({
+			field: headers.match(/name="([^"]*)"/)?.[1] ?? '',
+			filename: headers.match(/filename="([^"]*)"/)?.[1],
+			type: headers.match(/Content-Type: (\S+)/i)?.[1],
+			data: body.subarray(headerEnd + 4, end),
+		});
+		start = end;
+	}
+	return parts;
 }
 
 export interface FakeUpload {
@@ -119,6 +151,7 @@ export async function fakeApi(
 		messages: [],
 		posts: [],
 		uploads: [],
+		wallpapers: [],
 		stock: { providers: { unsplash: true, pexels: false }, searches: [], downloads: [] },
 	};
 	let nextId = 1;
@@ -188,6 +221,48 @@ export async function fakeApi(
 				headers: cors(origin),
 				json: { ...view, size: data.length, path: `/files/${upload.id}` },
 			});
+		}
+		// 배경화면: 누구나 목록을 보고, 관리자만 더하고 지운다
+		if (path === '/wallpapers' && request.method() === 'GET') {
+			return route.fulfill({ status: 200, headers: cors(origin), json: state.wallpapers });
+		}
+		if (path === '/wallpapers' && request.method() === 'POST') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const parts = readMultipart(request.postDataBuffer()!);
+			const field = (name: string) => parts.find((part) => part.field === name);
+			const kind = field('kind')?.data.toString('utf8');
+			const image = field('image');
+			const thumbnail = field('thumbnail');
+			if ((kind !== 'mac' && kind !== 'ios') || !image || !thumbnail) {
+				return route.fulfill({ status: 400, headers: cors(origin), json: { statusCode: 400 } });
+			}
+			const save = (part: typeof image) => {
+				const upload: FakeUpload = {
+					id: `fakeupload${String(nextId++).padStart(6, '0')}`,
+					name: part.filename ?? 'file',
+					type: part.type ?? 'image/jpeg',
+					image: true,
+					data: Buffer.from(part.data),
+				};
+				state.uploads.push(upload);
+				return `/files/${upload.id}`;
+			};
+			const wallpaper: FakeWallpaper = {
+				id: `fakewall${String(nextId++).padStart(8, '0')}`,
+				kind,
+				name: field('name')?.data.toString('utf8') || 'wallpaper',
+				image: save(image),
+				thumbnail: save(thumbnail),
+			};
+			state.wallpapers.push(wallpaper);
+			return route.fulfill({ status: 201, headers: cors(origin), json: wallpaper });
+		}
+		const wallpaperPath = path.match(/^\/wallpapers\/([\w-]+)$/);
+		if (wallpaperPath && request.method() === 'DELETE') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const before = state.wallpapers.length;
+			state.wallpapers = state.wallpapers.filter((w) => w.id !== wallpaperPath[1]);
+			return route.fulfill({ status: before === state.wallpapers.length ? 404 : 204, headers: cors(origin) });
 		}
 		const filePath = path.match(/^\/files\/([\w-]+)$/);
 		if (filePath) {

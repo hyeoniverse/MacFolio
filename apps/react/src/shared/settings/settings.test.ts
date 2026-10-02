@@ -14,8 +14,25 @@ describe('parseSettings', () => {
 			theme: 'dark',
 			wallpaper: 'sonoma',
 			mobileWallpaper: 'earth',
+			wallpaperImage: null,
+			mobileWallpaperImage: null,
 			clickSound: false,
 		});
+	});
+
+	it('관리자가 더한 배경화면은 이미지 주소가 함께 있을 때만 읽는다', () => {
+		const image = 'https://api.test/files/abcdefghijklmnop';
+		expect(parseSettings({ wallpaper: 'custom:abc', wallpaperImage: image })).toMatchObject({
+			wallpaper: 'custom:abc',
+			wallpaperImage: image,
+		});
+		// 주소가 없거나, CSS를 깰 수 있는 글자가 있으면 기본값
+		expect(parseSettings({ wallpaper: 'custom:abc' }).wallpaper).toBe(DEFAULT_SETTINGS.wallpaper);
+		expect(parseSettings({ mobileWallpaper: 'custom:abc', mobileWallpaperImage: "https://x/a.jpg') ;" })).toMatchObject(
+			{ mobileWallpaper: DEFAULT_SETTINGS.mobileWallpaper, mobileWallpaperImage: null }
+		);
+		// 기본 배경화면에 남은 주소는 버린다
+		expect(parseSettings({ wallpaper: 'sonoma', wallpaperImage: image }).wallpaperImage).toBeNull();
 	});
 
 	it('예전 배경화면(그라데이션) id는 기본값으로 바꾼다', () => {
@@ -59,6 +76,13 @@ describe('wallpaperCss', () => {
 			mobile: "url('/imgs/wallpapers/ios-kaleidoscope-light.jpg')",
 		});
 		expect(wallpaperCss(settings, 'dark').desktop).toContain('sonoma-dark.jpg');
+	});
+
+	it('더한 배경화면은 화면 모드와 상관없이 그 이미지 한 장', () => {
+		const image = 'https://api.test/files/abcdefghijklmnop';
+		const settings = { ...DEFAULT_SETTINGS, mobileWallpaper: 'custom:abc', mobileWallpaperImage: image } as const;
+		expect(wallpaperCss(settings, 'light').mobile).toBe(`url('${image}')`);
+		expect(wallpaperCss(settings, 'dark').mobile).toBe(`url('${image}')`);
 	});
 
 	it('어두운 버전이 없으면 같은 이미지를 쓴다', () => {
