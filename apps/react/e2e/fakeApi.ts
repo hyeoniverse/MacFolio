@@ -17,6 +17,11 @@ export interface FakeApiState {
 	saves: number;
 	/** 글마다 댓글 (가짜 서버는 비밀번호를 그대로 들고 있다) */
 	comments: Record<string, FakeComment[]>;
+	/** 이 브라우저(방문자 쿠키)의 이름. 서버처럼 첫 요청에 정해진다 */
+	visitorName: string;
+	/** 메시지 앱: 방문자가 남긴 피드백과 말풍선 (주인 안내에 단 답글은 threadId 'owner') */
+	messageThreads: { id: string; title: string; createdAt: string; mine: boolean }[];
+	messages: FakeMessage[];
 	/** 관리자가 쓰거나 고친 글, 지운 표시 */
 	posts: FakePost[];
 	/** 올린 이미지·첨부 파일 */
@@ -75,7 +80,19 @@ export interface FakeComment {
 	isAdmin: boolean;
 	body: string;
 	createdAt: string;
-	password?: string;
+	/** 이 브라우저가 쓴 댓글 */
+	mine: boolean;
+}
+
+export interface FakeMessage {
+	id: string;
+	threadId: string;
+	text: string;
+	createdAt: string;
+	authorId: string;
+	nickname: string;
+	fromOwner: boolean;
+	mine: boolean;
 }
 
 /**
@@ -97,6 +114,9 @@ export async function fakeApi(
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		saves: 0,
 		comments: {},
+		visitorName: '🦊 날쌘 여우',
+		messageThreads: [],
+		messages: [],
 		posts: [],
 		uploads: [],
 		stock: { providers: { unsplash: true, pexels: false }, searches: [], downloads: [] },
@@ -346,47 +366,95 @@ export async function fakeApi(
 			return ok(adminView(post), slug ? 200 : 201);
 		}
 
-		// 댓글: 글마다 읽고 쓰고, 비밀번호(관리자는 없이)로 지운다
+		const json = (body: unknown, status = 200) => route.fulfill({ status, headers: cors(origin), json: body });
+		const forbidden = () => json({ statusCode: 403 }, 403);
+		const notFound = () => json({ statusCode: 404 }, 404);
+		/** 서버처럼: 관리자는 김정현, 방문자는 쿠키로 정한 이름 */
+		const author = () =>
+			state.signedIn
+				? { name: '김정현', isAdmin: true, ipPrefix: null }
+				: { name: state.visitorName, isAdmin: false, ipPrefix: '127.0' };
+
+		if (path === '/visitor') return json({ name: state.visitorName });
+
+		// 댓글: 글마다 읽고 쓰고, 이 브라우저에서 쓴 것(관리자는 무엇이든)을 지운다
 		const list = path.match(/^\/posts\/([\w-]+)\/comments$/);
 		if (list) {
 			const comments = (state.comments[list[1]] ??= []);
-			const view = ({ password: _password, ...comment }: FakeComment) => comment;
-			if (request.method() === 'GET')
-				return route.fulfill({ status: 200, headers: cors(origin), json: comments.map(view) });
-			const input = request.postDataJSON() as { name?: string; password?: string; body?: string };
-			const comment: FakeComment = state.signedIn
-				? {
-						id: `c${nextId++}`,
-						name: '김정현',
-						ipPrefix: null,
-						isAdmin: true,
-						body: input.body ?? '',
-						createdAt: new Date().toISOString(),
-					}
-				: {
-						id: `c${nextId++}`,
-						name: input.name ?? '',
-						ipPrefix: '127.0',
-						isAdmin: false,
-						body: input.body ?? '',
-						createdAt: new Date().toISOString(),
-						password: input.password,
-					};
+			if (request.method() === 'GET') return json(comments);
+			const input = request.postDataJSON() as { body?: string };
+			const comment: FakeComment = {
+				id: `c${nextId++}`,
+				...author(),
+				body: input.body ?? '',
+				createdAt: new Date().toISOString(),
+				mine: true,
+			};
 			comments.push(comment);
-			return route.fulfill({ status: 201, headers: cors(origin), json: view(comment) });
+			return json(comment, 201);
 		}
 		const one = path.match(/^\/comments\/(\w+)$/);
 		if (one && request.method() === 'DELETE') {
-			const { password } = (request.postDataJSON() ?? {}) as { password?: string };
 			for (const comments of Object.values(state.comments)) {
 				const index = comments.findIndex((comment) => comment.id === one[1]);
 				if (index === -1) continue;
-				if (!state.signedIn && comments[index].password !== password)
-					return route.fulfill({ status: 403, headers: cors(origin), json: { statusCode: 403 } });
+				if (!state.signedIn && !comments[index].mine) return forbidden();
 				comments.splice(index, 1);
 				return route.fulfill({ status: 204, headers: cors(origin) });
 			}
-			return route.fulfill({ status: 404, headers: cors(origin), json: { statusCode: 404 } });
+			return notFound();
+		}
+
+		// 메시지 앱: 주인 안내(owner)와 피드백. 안내 글은 프론트엔드에 있고, 여기에는 답글만 있다
+		const newMessage = (threadId: string, text: string): FakeMessage => {
+			const { name, isAdmin } = author();
+			return {
+				id: `m${nextId++}`,
+				threadId,
+				text,
+				createdAt: new Date().toISOString(),
+				authorId: isAdmin ? 'owner' : 'me',
+				nickname: name,
+				fromOwner: isAdmin,
+				mine: true,
+			};
+		};
+		const threadView = (thread: FakeApiState['messageThreads'][number]) => {
+			const own = state.messages.filter((m) => m.threadId === thread.id);
+			const last = own.at(-1);
+			return {
+				...thread,
+				summary: own[0]?.text,
+				...(last ? { lastMessage: { text: last.text, createdAt: last.createdAt } } : {}),
+			};
+		};
+		if (path === '/messages/threads') {
+			if (request.method() === 'GET') {
+				const pinned = threadView({ id: 'owner', title: '김정현', createdAt: '2026-09-28T00:00:00.000Z', mine: false });
+				return json([{ ...pinned, summary: undefined, pinned: true }, ...state.messageThreads.map(threadView)]);
+			}
+			const { body } = request.postDataJSON() as { body: string };
+			const thread = { id: `t${nextId++}`, title: author().name, createdAt: new Date().toISOString(), mine: true };
+			const message = newMessage(thread.id, body.trim());
+			state.messageThreads.push(thread);
+			state.messages.push(message);
+			return json({ thread: threadView(thread), message }, 201);
+		}
+		const thread = path.match(/^\/messages\/threads\/(\w+)$/);
+		if (thread) {
+			if (thread[1] !== 'owner' && !state.messageThreads.some((t) => t.id === thread[1])) return notFound();
+			if (request.method() === 'GET') return json(state.messages.filter((m) => m.threadId === thread[1]));
+			const message = newMessage(thread[1], (request.postDataJSON() as { body: string }).body.trim());
+			state.messages.push(message);
+			return json(message, 201);
+		}
+		const message = path.match(/^\/messages\/(\w+)$/);
+		if (message && request.method() === 'DELETE') {
+			const index = state.messages.findIndex((m) => m.id === message[1]);
+			if (index === -1) return notFound();
+			if (!state.signedIn && !state.messages[index].mine) return forbidden();
+			state.messages.splice(index, 1);
+			return route.fulfill({ status: 204, headers: cors(origin) });
 		}
 		return route.fulfill({ status: 404 });
 	});

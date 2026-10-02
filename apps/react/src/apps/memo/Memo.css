@@ -2470,8 +2470,14 @@
 
 .memo-comment-confirm {
 	display: flex;
+	align-items: center;
 	gap: 6px;
 	margin-top: 8px;
+	color: var(--memo-muted);
+}
+
+.memo-comment-confirm span {
+	margin-right: auto;
 }
 
 /* 쓰기: 둥근 카드 하나 */
@@ -2503,11 +2509,6 @@
 
 .memo-comment-as strong {
 	color: var(--memo-text);
-}
-
-.memo-comment-fields {
-	display: flex;
-	gap: 8px;
 }
 
 .memo-comments input,
@@ -3093,7 +3094,7 @@
 		height: 44px;
 		padding: 0 6px;
 		border-radius: 999px;
-		background-color: var(--memo-bg);
+		background-color: var(--phone-card-bg);
 		box-shadow:
 			0 0 0 0.5px rgba(0, 0, 0, 0.06),
 			0 4px 14px rgba(0, 0, 0, 0.12);
@@ -3135,7 +3136,7 @@
 		margin: 0;
 		padding: 0 8px;
 		border-radius: 999px;
-		background-color: var(--memo-bg);
+		background-color: var(--phone-card-bg);
 		box-shadow:
 			0 0 0 0.5px rgba(0, 0, 0, 0.06),
 			0 4px 14px rgba(0, 0, 0, 0.12);
@@ -3223,7 +3224,7 @@
 		height: 50px;
 		padding: 0 10px;
 		border-radius: 999px;
-		background-color: var(--memo-bg);
+		background-color: var(--phone-card-bg);
 		box-shadow:
 			0 0 0 0.5px rgba(0, 0, 0, 0.06),
 			0 4px 14px rgba(0, 0, 0, 0.12);
@@ -3248,7 +3249,7 @@
 		width: 50px;
 		height: 50px;
 		border-radius: 50%;
-		background-color: var(--memo-bg);
+		background-color: var(--phone-card-bg);
 		box-shadow:
 			0 0 0 0.5px rgba(0, 0, 0, 0.06),
 			0 4px 14px rgba(0, 0, 0, 0.12);

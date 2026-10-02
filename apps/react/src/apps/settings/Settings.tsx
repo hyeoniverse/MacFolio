@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
 import {
 	IOS_WALLPAPERS,
@@ -68,22 +69,30 @@ const WallpaperGroup: React.FC<{
 const Settings: React.FC = () => {
 	const settings = useSettings();
 	const [section, setSection] = useState<Section>('account');
+	/** 휴대폰: iOS 설정처럼 항목 목록 → 누르면 그 항목 화면 (넓은 창에서는 쓰지 않는다) */
+	const [phoneOpen, setPhoneOpen] = useState(false);
 
 	return (
 		<AppWindow title="시스템 설정" appName="settings">
+			<MobileNavigation floating {...(phoneOpen ? { backLabel: '설정', onBack: () => setPhoneOpen(false) } : {})} />
 			<div className="settings-shell">
-				<div className="settings">
+				<div className={`settings ${phoneOpen ? 'phone-open' : ''}`}>
 					<nav className="settings-sidebar" aria-label="설정 항목">
+						<h2 className="settings-phone-title phone-title">설정</h2>
 						{SECTIONS.map((item) => (
 							<button
 								key={item.id}
 								type="button"
 								className={`settings-nav-item ${section === item.id ? 'active' : ''}`}
 								aria-current={section === item.id ? 'page' : undefined}
-								onClick={() => setSection(item.id)}
+								onClick={() => {
+									setSection(item.id);
+									setPhoneOpen(true);
+								}}
 							>
 								<i className={item.icon} aria-hidden="true" />
 								{item.label}
+								<i className="fa-solid fa-chevron-right settings-nav-chevron" aria-hidden="true" />
 							</button>
 						))}
 					</nav>
@@ -91,14 +100,14 @@ const Settings: React.FC = () => {
 					<section key={section} className="settings-panel">
 						{section === 'account' && (
 							<>
-								<h2>계정</h2>
+								<h2 className="phone-title">계정</h2>
 								<AdminAccount />
 							</>
 						)}
 
 						{section === 'appearance' && (
 							<>
-								<h2>화면 모드</h2>
+								<h2 className="phone-title">화면 모드</h2>
 								<div className="settings-options" role="radiogroup" aria-label="화면 모드">
 									{THEME_OPTIONS.map((option) => (
 										<button
@@ -120,7 +129,7 @@ const Settings: React.FC = () => {
 
 						{section === 'wallpaper' && (
 							<>
-								<h2>배경화면</h2>
+								<h2 className="phone-title">배경화면</h2>
 								<WallpaperGroup
 									label="macOS"
 									hint="데스크톱 배경화면. 다크 모드에서는 어두운 버전으로 바뀝니다."
@@ -143,7 +152,7 @@ const Settings: React.FC = () => {
 
 						{section === 'sound' && (
 							<>
-								<h2>사운드</h2>
+								<h2 className="phone-title">사운드</h2>
 								<label className="settings-toggle">
 									<span>
 										<strong>클릭 소리</strong>

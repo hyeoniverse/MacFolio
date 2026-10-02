@@ -261,6 +261,15 @@
 	text-align: center;
 }
 
+.messages-empty strong {
+	font-weight: 400;
+}
+
+/* 아이콘과 안내 한 줄은 휴대폰의 빈 화면에서만 (Font Awesome의 display보다 앞서도록 부모를 함께 쓴다) */
+.messages-empty :is(.messages-empty-icon, .messages-empty-hint) {
+	display: none;
+}
+
 /* ─── 대화 ─── */
 .messages-chat {
 	display: flex;
@@ -469,27 +478,16 @@
 	padding: 6px 14px 10px;
 }
 
-.messages-identity {
-	display: flex;
-	gap: 8px;
-	padding: 0 4px;
+/* 입력창 위: 이 브라우저의 이름 (이름·비밀번호는 받지 않는다) */
+.messages-as {
+	padding: 0 6px;
+	color: var(--messages-meta);
+	font-size: 11px;
 }
 
-.messages-identity input {
-	flex: 1;
-	min-width: 0;
-	padding: 4px 2px;
-	border: none;
-	border-bottom: 1px solid var(--messages-separator);
-	background: none;
+.messages-as strong {
 	color: var(--messages-text);
-	font: inherit;
-	font-size: 12px;
-	outline: none;
-}
-
-.messages-identity input:focus {
-	border-bottom-color: var(--messages-meta);
+	font-weight: 600;
 }
 
 /* 떠 있는 알약 입력창 */
@@ -544,32 +542,6 @@
 	padding: 0 6px;
 	color: var(--messages-error);
 	font-size: 12px;
-}
-
-/* 삭제 팝업 */
-.messages-delete-form {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	max-width: 20rem;
-	font-size: 13px;
-	text-align: left;
-}
-
-.messages-delete-form input {
-	padding: 6px 10px;
-	border: 1px solid var(--messages-separator);
-	border-radius: 8px;
-	background-color: var(--messages-window-bg);
-	color: var(--messages-text);
-	font: inherit;
-}
-
-.messages-delete-actions {
-	display: flex;
-	justify-content: flex-end;
-	gap: 8px;
-	--ui-button-padding: 4px 14px;
 }
 
 /* 대화를 바꾸면 살짝 나타나고, 말풍선은 꼬리 쪽에서 톡 튀어나온다 */
@@ -638,4 +610,237 @@
 
 .container.mobile .messages-sidebar-top {
 	min-height: 0;
+}
+
+/* ─── 휴대폰 (iOS 메시지처럼) ───
+   흰 바탕. 떠 있는 뒤로 가기 옆의 큰 제목, 고정 대화의 큰 아바타, 줄 끝에 ›가 붙은 대화 목록,
+   아래에 떠 있는 검색 알약과 새 피드백 */
+.messages-phone-title,
+.messages-phone-bottom,
+.messages-thread-chevron {
+	display: none;
+}
+
+.container.mobile .messages {
+	position: relative;
+	background-color: var(--messages-window-bg);
+}
+
+.container.mobile .messages-sidebar {
+	padding: var(--phone-top) 16px 96px;
+	background-color: var(--messages-window-bg);
+}
+
+/* 고정 대화: 고른 것을 칠하지 않고 아바타만 크게 */
+.container.mobile .messages-pinned {
+	gap: 20px;
+	padding: 4px 0 16px;
+}
+
+.container.mobile .messages-pinned-item,
+.container.mobile .messages-pinned-item.selected {
+	gap: 8px;
+	padding: 0;
+	background: none;
+	color: var(--messages-text);
+	font-size: 13px;
+}
+
+.container.mobile .messages-phone-title {
+	display: flex;
+}
+
+/* 위의 검색 칸과 쓰기 단추 대신 아래에 떠 있는 것을 쓴다 */
+.container.mobile .messages-sidebar > .messages-search,
+.container.mobile .messages-sidebar-top {
+	display: none;
+}
+
+.container.mobile .messages-threads {
+	padding: 0;
+}
+
+/* 줄 사이 선은 이름부터 오른쪽 끝까지, 고른 대화 옆에서도 늘 보인다 */
+.container.mobile .messages-threads li + li .messages-thread::before,
+.container.mobile .messages-threads li:has(.selected) + li .messages-thread::before {
+	display: block;
+	left: 64px;
+	right: 0;
+	height: 0.5px;
+	background-color: var(--phone-separator);
+}
+
+.container.mobile .messages-thread {
+	align-items: flex-start;
+	padding: 10px 0;
+	border-radius: 0;
+}
+
+.container.mobile .messages-thread-top time {
+	font-size: 15px;
+}
+
+.container.mobile .messages-thread-chevron {
+	display: inline;
+	margin-left: 6px;
+	color: var(--messages-meta);
+	font-size: 12px;
+}
+
+/* 한 화면씩 보므로 고른 대화를 칠하지 않는다 */
+.container.mobile .messages-thread.selected {
+	background: none;
+	color: inherit;
+}
+
+.container.mobile .messages-thread.selected :is(time, .messages-thread-preview) {
+	color: var(--messages-meta);
+}
+
+.container.mobile .messages-thread strong {
+	font-size: 17px;
+}
+
+.container.mobile .messages-thread-preview {
+	font-size: 15px;
+}
+
+/* 빈 목록: 고정 대화(큰 아바타)와 떨어진 가운데에 아이콘·제목·안내 (iOS의 빈 화면처럼) */
+.container.mobile .messages-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin-top: 56px;
+	padding: 0 24px;
+	font-size: 15px;
+}
+
+.container.mobile .messages-empty-icon {
+	display: block;
+	margin-bottom: 6px;
+	color: var(--messages-meta);
+	font-size: 40px;
+	opacity: 0.6;
+}
+
+.container.mobile .messages-empty strong {
+	color: var(--messages-text);
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.container.mobile .messages-empty-hint {
+	display: block;
+	line-height: 1.4;
+}
+
+.container.mobile .messages.chat-open .messages-phone-bottom {
+	display: none;
+}
+
+.container.mobile .messages:not(.chat-open) .messages-phone-bottom {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	position: absolute;
+	right: 16px;
+	bottom: 12px;
+	left: 16px;
+	z-index: 5;
+}
+
+.container.mobile .messages-phone-search {
+	flex: 1;
+	height: 50px;
+	margin: 0;
+	padding: 0 18px;
+	border-radius: 999px;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+	font-size: 17px;
+}
+
+.container.mobile .messages-phone-search input {
+	font-size: 17px;
+}
+
+/* 대화: 떠 있는 뒤로 가기와 같은 높이에 상대 이름 */
+.container.mobile .messages-chat {
+	background-color: var(--messages-window-bg);
+}
+
+/* 이름 알약은 떠 있는 단추 줄 가운데, 그 아래 설명은 단추를 비켜 화면 폭을 다 쓴다 */
+.container.mobile .messages-chat-header {
+	gap: 10px;
+	padding: 8px 16px 12px;
+}
+
+/* 새 피드백: 이름 알약을 떠 있는 단추 줄(위 6~50px) 가운데에 맞추고, 설명은 그 줄 아래로 띄운다 */
+.container.mobile .messages-chat-header:has(.messages-cancel) {
+	padding-top: 12px;
+}
+
+.container.mobile .messages-chat-header:has(.messages-cancel) .messages-chat-subtitle {
+	margin-top: 12px;
+}
+
+/* 대화 머리와 시간·보낸 이: 넓은 창의 11px는 휴대폰에서 작다 */
+.container.mobile .messages-name-pill {
+	padding: 6px 14px;
+	font-size: 15px;
+}
+
+.container.mobile :is(.messages-chat-subtitle, .messages-time, .messages-sender, .messages-receipt) {
+	font-size: 13px;
+}
+
+.container.mobile .messages-chat-subtitle {
+	line-height: 1.4;
+	text-align: center;
+}
+
+/* 새 피드백의 취소: 떠 있는 뒤로 가기와 같은 줄, 같은 높이의 알약 */
+.container.mobile .messages-cancel {
+	top: var(--phone-top);
+	right: 16px;
+	height: 44px;
+	padding: 0 18px;
+	border-radius: 22px;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+	font-size: 16px;
+}
+
+/* 말풍선과 입력: iOS 크기. 입력 칸은 16px보다 작으면 iOS가 누를 때 화면을 확대한다 */
+.container.mobile .messages-bubble {
+	font-size: 16px;
+}
+
+.container.mobile .messages-composer {
+	gap: 10px;
+	padding: 8px 12px 10px;
+}
+
+/* 이름 한 줄: 입력 알약 위, 알약 글자와 같은 안쪽 여백에서 시작 */
+.container.mobile .messages-as {
+	padding: 0 16px;
+	font-size: 13px;
+}
+
+.container.mobile .messages-field {
+	min-height: 44px;
+	padding: 4px 4px 4px 16px;
+	border-radius: 22px;
+}
+
+.container.mobile .messages-field textarea {
+	padding: 8px 0;
+	font-size: 16px;
+}
+
+.container.mobile .messages-send {
+	width: 36px;
+	height: 36px;
+	font-size: 16px;
 }

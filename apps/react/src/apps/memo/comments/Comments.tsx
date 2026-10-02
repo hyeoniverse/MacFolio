@@ -4,6 +4,7 @@ import { useAdmin } from '@/shared/auth/adminStore';
 import { avatarUrl } from '@/shared/auth/admin';
 import { PROFILE } from '@/shared/profile';
 import { displayName, LIMITS, monogram, OWNER_NAME, validateMessageInput } from '@/apps/messages/conversations';
+import { fetchVisitorName } from '@/shared/lib/visitor';
 import { createComment, deleteComment, formatCommentTime, listComments, type Comment } from './commentsApi';
 import Button from '@/shared/ui/button/Button';
 
@@ -20,7 +21,7 @@ const CommentAvatar = ({ name, owner }: { name: string; owner: boolean }) =>
 		</span>
 	);
 
-/** 댓글 하나. 지우기는 방문자는 비밀번호를 물어 보고, 관리자는 바로 */
+/** 댓글 하나. 지우기는 이 브라우저에서 쓴 댓글(관리자는 모든 댓글)에만 있고, 한 번 더 물어본다 */
 const CommentItem = ({
 	comment,
 	isAdmin,
@@ -31,13 +32,17 @@ const CommentItem = ({
 	onDeleted: () => void;
 }) => {
 	const [asking, setAsking] = useState(false);
-	const [password, setPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);
+	const canDelete = isAdmin || comment.mine;
 
 	const remove = async () => {
-		const result = await deleteComment(env.apiUrl, comment.id, isAdmin ? null : password);
+		const result = await deleteComment(env.apiUrl, comment.id);
 		if (result === 'ok' || result === 'not-found') return onDeleted();
-		setError(result === 'forbidden' ? '비밀번호가 맞지 않습니다.' : '지우지 못했습니다. 잠시 뒤 다시 시도해 주세요.');
+		setError(
+			result === 'forbidden'
+				? '이 브라우저에서 쓴 댓글만 지울 수 있습니다.'
+				: '지우지 못했습니다. 잠시 뒤 다시 시도해 주세요.'
+		);
 	};
 
 	return (
@@ -48,38 +53,27 @@ const CommentItem = ({
 					<strong>{comment.isAdmin ? OWNER_NAME : displayName(comment.name, comment.ipPrefix ?? undefined)}</strong>
 					{comment.isAdmin && <span className="memo-comment-badge">작성자</span>}
 					<time dateTime={comment.createdAt}>{formatCommentTime(comment.createdAt)}</time>
-					<button
-						type="button"
-						className="memo-comment-delete"
-						aria-label={`${comment.name}의 댓글 삭제`}
-						title="삭제"
-						onClick={() => (isAdmin ? void remove() : setAsking((value) => !value))}
-					>
-						<i className="fa-regular fa-trash-can" aria-hidden="true" />
-					</button>
+					{canDelete && (
+						<button
+							type="button"
+							className="memo-comment-delete"
+							aria-label={`${comment.name}의 댓글 삭제`}
+							title="삭제"
+							onClick={() => setAsking((value) => !value)}
+						>
+							<i className="fa-regular fa-trash-can" aria-hidden="true" />
+						</button>
+					)}
 				</div>
 				<p className="memo-comment-body">{comment.body}</p>
-				{asking && !isAdmin && (
-					<form
-						className="memo-comment-confirm"
-						onSubmit={(event) => {
-							event.preventDefault();
-							void remove();
-						}}
-					>
-						<input
-							type="password"
-							aria-label="댓글 비밀번호"
-							placeholder="쓸 때 넣은 비밀번호"
-							value={password}
-							autoFocus
-							onChange={(event) => setPassword(event.target.value)}
-						/>
+				{asking && (
+					<div className="memo-comment-confirm" role="group" aria-label="댓글 삭제 확인">
+						<span>이 댓글을 지울까요?</span>
 						<Button onClick={() => setAsking(false)}>취소</Button>
-						<Button tone="danger" type="submit">
+						<Button tone="danger" onClick={() => void remove()}>
 							삭제
 						</Button>
-					</form>
+					</div>
 				)}
 				{error && (
 					<p className="memo-comment-error" role="alert">
@@ -92,16 +86,16 @@ const CommentItem = ({
 };
 
 /**
- * 글 아래 댓글. 방문자는 이름·비밀번호로 쓰고 같은 비밀번호로 지운다 (메시지 앱과 같은 규칙).
- * 관리자로 로그인했으면 김정현으로 쓰고 무엇이든 지운다. 서버가 규칙과 권한을 다시 확인한다.
+ * 글 아래 댓글. 방문자는 이름·비밀번호 없이, 서버가 방문자 쿠키로 정한 이름(메시지 앱과 같은 이름)으로 쓴다.
+ * 이 브라우저에서 쓴 댓글만 지운다. 관리자로 로그인했으면 김정현으로 쓰고 무엇이든 지운다. 서버가 권한을 다시 확인한다.
  */
 const Comments = ({ slug }: { slug: string }) => {
 	const admin = useAdmin();
 	const isAdmin = admin.status === 'signed-in';
 	const [comments, setComments] = useState<Comment[] | null>(null);
 	const [failed, setFailed] = useState(false);
-	const [name, setName] = useState('');
-	const [password, setPassword] = useState('');
+	/** 이 브라우저의 이름 (예: 🦊 날쌘 여우) */
+	const [name, setName] = useState<string | null>(null);
 	const [body, setBody] = useState('');
 	const [errors, setErrors] = useState<string[]>([]);
 	const [sending, setSending] = useState(false);
@@ -114,6 +108,7 @@ const Comments = ({ slug }: { slug: string }) => {
 			setComments(list ?? []);
 			setFailed(list === null);
 		});
+		fetchVisitorName(env.apiUrl).then((visitor) => !cancelled && setName(visitor));
 		return () => {
 			cancelled = true;
 		};
@@ -129,19 +124,17 @@ const Comments = ({ slug }: { slug: string }) => {
 	}
 
 	const submit = async () => {
-		// 방문자 입력은 메시지 앱과 같은 규칙으로 먼저 확인한다
-		if (!isAdmin) {
-			const { errors: invalid } = validateMessageInput({ nickname: name, password, text: body });
-			const messages = Object.values(invalid);
-			if (messages.length > 0) return setErrors(messages);
-		} else if (!body.trim()) return setErrors(['내용을 입력해주세요.']);
+		// 메시지 앱과 같은 규칙으로 먼저 확인한다
+		const { errors: invalid } = validateMessageInput({ text: body });
+		if (invalid.text) return setErrors([invalid.text]);
 
 		setSending(true);
-		const result = await createComment(env.apiUrl, slug, isAdmin ? { body } : { name, password, body });
+		const result = await createComment(env.apiUrl, slug, { body });
 		setSending(false);
 		if (!result.ok) return setErrors(result.errors);
 		setErrors([]);
 		setBody('');
+		if (!result.comment.isAdmin) setName(result.comment.name);
 		setComments((list) => [...(list ?? []), result.comment]);
 	};
 
@@ -183,21 +176,13 @@ const Comments = ({ slug }: { slug: string }) => {
 						</span>
 					</div>
 				) : (
-					<div className="memo-comment-fields">
-						<input
-							aria-label="이름"
-							placeholder="이름"
-							value={name}
-							onChange={(event) => setName(event.target.value)}
-						/>
-						<input
-							type="password"
-							aria-label="비밀번호"
-							placeholder="비밀번호 (지울 때 필요)"
-							value={password}
-							onChange={(event) => setPassword(event.target.value)}
-						/>
-					</div>
+					name && (
+						<div className="memo-comment-as">
+							<span>
+								<strong>{name}</strong> 이름으로 씁니다.
+							</span>
+						</div>
+					)
 				)}
 				<textarea
 					aria-label="댓글 내용"

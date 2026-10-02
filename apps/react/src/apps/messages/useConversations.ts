@@ -2,17 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { sortThreads, validateMessageInput, type InputErrors, type Message, type Thread } from './conversations';
 import { getConversationRepository, PINNED_THREAD_ID, type DeleteResult } from './repository';
 
-/** 이름은 다음 방문에도 채워 두고, 비밀번호는 저장하지 않는다 */
-const NICKNAME_KEY = 'macfolio:messages:nickname';
-
-function loadNickname(): string {
-	try {
-		return localStorage.getItem(NICKNAME_KEY) ?? '';
-	} catch {
-		return '';
-	}
-}
-
 /** 새 피드백을 남기는 화면 (쓰기 버튼) */
 export const NEW_THREAD = 'new';
 
@@ -22,8 +11,8 @@ export function useConversations() {
 	const [selectedId, setSelectedId] = useState<string>(PINNED_THREAD_ID);
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-	const [nickname, setNickname] = useState(loadNickname);
-	const [password, setPassword] = useState('');
+	/** 이 브라우저의 이름 (저장소가 정한다: 예 🦊 날쌘 여우). 모르면 null */
+	const [myName, setMyName] = useState<string | null>(null);
 	/** 좁은 창에서 목록 대신 대화를 보여주는지 (넓은 창에서는 둘 다 보인다) */
 	const [isChatOpen, setChatOpen] = useState(false);
 	/** 쓰기 버튼을 누를 때마다 입력창에 커서를 둔다 */
@@ -45,7 +34,8 @@ export function useConversations() {
 
 	useEffect(() => {
 		void refreshThreads();
-	}, [refreshThreads]);
+		repository.myName().then(setMyName, () => setMyName(null));
+	}, [refreshThreads, repository]);
 
 	useEffect(() => {
 		if (selectedId === NEW_THREAD) return;
@@ -74,33 +64,34 @@ export function useConversations() {
 	/** 좁은 창에서 대화 목록으로 돌아간다 */
 	const back = useCallback(() => setChatOpen(false), []);
 
-	/** 새 피드백을 남기거나, 보고 있는 항목에 답글을 단다. 실패하면 필드별 이유를 돌려준다 */
+	/** 새 피드백을 남기거나, 보고 있는 항목에 답글을 단다. 실패하면 이유를 돌려준다 */
 	const send = useCallback(
 		async (text: string): Promise<InputErrors> => {
-			const { value, errors } = validateMessageInput({ nickname, password, text });
+			const { value, errors } = validateMessageInput({ text });
 			if (Object.keys(errors).length > 0) return errors;
-			if (selectedId === NEW_THREAD) {
-				const { thread } = await repository.createThread(value);
-				setSelectedId(thread.id);
-			} else {
-				const result = await repository.postMessage(selectedId, value);
-				if (result === 'not-found') return { text: '삭제된 피드백입니다.' };
-				setMessages((prev) => [...prev, result]);
-			}
 			try {
-				localStorage.setItem(NICKNAME_KEY, value.nickname);
-			} catch {
-				// 저장하지 못해도 이번 방문 동안은 유지된다
+				if (selectedId === NEW_THREAD) {
+					const { thread, message } = await repository.createThread(value);
+					if (!message.fromOwner) setMyName(message.nickname);
+					setSelectedId(thread.id);
+				} else {
+					const result = await repository.postMessage(selectedId, value);
+					if (result === 'not-found') return { text: '삭제된 피드백입니다.' };
+					if (!result.fromOwner) setMyName(result.nickname);
+					setMessages((prev) => [...prev, result]);
+				}
+			} catch (error) {
+				return { text: error instanceof Error ? error.message : '보내지 못했습니다.' };
 			}
 			await refreshThreads();
 			return {};
 		},
-		[nickname, password, repository, selectedId, refreshThreads]
+		[repository, selectedId, refreshThreads]
 	);
 
 	const remove = useCallback(
-		async (messageId: string, deletePassword: string): Promise<DeleteResult> => {
-			const result = await repository.removeMessage(messageId, deletePassword);
+		async (messageId: string): Promise<DeleteResult> => {
+			const result = await repository.removeMessage(messageId);
 			if (result === 'deleted') {
 				setMessages((prev) => prev.filter((m) => m.id !== messageId));
 				await refreshThreads();
@@ -121,7 +112,7 @@ export function useConversations() {
 		isChatOpen,
 		focusRequest,
 		isComposing: selectedId === NEW_THREAD,
-		identity: { nickname, password, setNickname, setPassword },
+		myName,
 		select,
 		back,
 		compose,

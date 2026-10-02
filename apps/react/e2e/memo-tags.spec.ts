@@ -33,8 +33,11 @@ test.describe('태그', () => {
 		// 글이 많은 태그가 앞. 코드 안의 색, 이슈 번호는 태그가 아니다 (저장소 글의 태그도 함께 있다)
 		const browser = memo.getByRole('navigation', { name: '카테고리' }).getByRole('region', { name: '태그' });
 		await expect(browser.getByRole('button').first()).toHaveText('모든 태그');
-		await expect(browser.getByRole('button').nth(1)).toHaveText('#리팩터링');
+		// 저장소 글의 태그(#MacFolio 등)는 글이 늘면 순서가 바뀌므로, 이 시험의 두 태그끼리만 비교한다
 		await expect(browser.getByRole('button', { name: '#CSS' })).toBeVisible();
+		const chips = await browser.getByRole('button').allTextContents();
+		expect(chips.indexOf('#리팩터링')).toBeGreaterThan(0);
+		expect(chips.indexOf('#리팩터링')).toBeLessThan(chips.indexOf('#CSS'));
 		await expect(browser.getByRole('button', { name: /^#(14|edbb4d)$/ })).toHaveCount(0);
 
 		// 태그를 누르면 그 태그의 글만, 제목은 #태그, 목록 위에 안내

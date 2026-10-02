@@ -7,9 +7,11 @@ import {
 	LIMITS,
 	maskIp,
 	monogram,
-	OWNER_NAME,
 	sortThreads,
 	validateMessageInput,
+	visitorName,
+	ADJECTIVES,
+	ANIMALS,
 	type Message,
 	type Thread,
 } from './conversations';
@@ -29,30 +31,28 @@ const msg = (id: string, createdAt: string, authorId = 'a', extra: Partial<Messa
 });
 
 describe('validateMessageInput', () => {
-	it('앞뒤 공백을 지우고 통과시킨다 (비밀번호는 그대로)', () => {
-		const { value, errors } = validateMessageInput({ nickname: ' 민수 ', password: ' 1234 ', text: ' 안녕하세요 ' });
+	it('앞뒤 공백을 지우고 통과시킨다', () => {
+		const { value, errors } = validateMessageInput({ text: ' 안녕하세요 ' });
 		expect(errors).toEqual({});
-		expect(value).toEqual({ nickname: '민수', password: ' 1234 ', text: '안녕하세요' });
+		expect(value).toEqual({ text: '안녕하세요' });
 	});
 
-	it('비어 있거나 길이를 넘으면 필드별로 알려준다', () => {
-		expect(Object.keys(validateMessageInput({ nickname: '', password: '', text: ' ' }).errors).sort()).toEqual([
-			'nickname',
-			'password',
-			'text',
-		]);
-		const { errors } = validateMessageInput({
-			nickname: 'a'.repeat(LIMITS.nickname.max + 1),
-			password: 'a'.repeat(LIMITS.password.max + 1),
-			text: 'a'.repeat(LIMITS.text.max + 1),
-		});
-		expect(errors.nickname).toContain('20자');
-		expect(errors.text).toContain('500자');
-		expect(errors.password).toBeDefined();
+	it('비어 있거나 길이를 넘으면 알려준다', () => {
+		expect(validateMessageInput({ text: ' ' }).errors.text).toBe('내용을 입력해주세요.');
+		expect(validateMessageInput({ text: 'a'.repeat(LIMITS.text.max + 1) }).errors.text).toContain('500자');
 	});
+});
 
-	it('사이트 주인 이름은 쓸 수 없다', () => {
-		expect(validateMessageInput({ nickname: OWNER_NAME, password: '1234', text: 'hi' }).errors.nickname).toBeDefined();
+describe('visitorName', () => {
+	it('같은 해시면 같은 이름, "이모지 꾸밈말 동물" 모양이고 서버와 같은 목록을 쓴다', () => {
+		expect(visitorName('0'.repeat(16))).toBe(`${ANIMALS[0][0]} ${ADJECTIVES[0]} ${ANIMALS[0][1]}`);
+		expect(visitorName('0123456789abcdef')).toBe(visitorName('0123456789abcdef'));
+		const names = new Set(
+			Array.from({ length: 200 }, (_, i) => visitorName((i * 2654435761).toString(16).padStart(16, '7')))
+		);
+		expect(names.size).toBeGreaterThan(50);
+		expect(ADJECTIVES).toHaveLength(30);
+		expect(ANIMALS).toHaveLength(24);
 	});
 });
 
@@ -176,6 +176,9 @@ describe('formatListTime', () => {
 describe('monogram', () => {
 	it('두 글자 이하는 통째로, 그보다 길면 첫 글자', () => {
 		expect(monogram('엄마')).toBe('엄마');
+		// 방문자 이름은 앞의 동물 이모지 (변형 선택자가 붙은 것도 통째로)
+		expect(monogram('🦊 날쌘 여우')).toBe('🦊');
+		expect(monogram('🐿️ 졸린 다람쥐')).toBe('🐿️');
 		expect(monogram('김정현')).toBe('김');
 		expect(monogram(' Alex ')).toBe('A');
 	});
