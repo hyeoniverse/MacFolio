@@ -261,6 +261,16 @@
 	text-align: center;
 }
 
+.messages-empty strong {
+	font-weight: 400;
+}
+
+/* 아이콘과 안내 한 줄은 휴대폰의 빈 화면에서만 */
+.messages-empty-icon,
+.messages-empty-hint {
+	display: none;
+}
+
 /* ─── 대화 ─── */
 .messages-chat {
 	display: flex;
@@ -733,10 +743,34 @@
 	font-size: 15px;
 }
 
+/* 빈 목록: 고정 대화(큰 아바타)와 떨어진 가운데에 아이콘·제목·안내 (iOS의 빈 화면처럼) */
 .container.mobile .messages-empty {
-	padding: 32px 16px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin-top: 56px;
+	padding: 0 24px;
 	font-size: 15px;
-	text-align: center;
+}
+
+.container.mobile .messages-empty-icon {
+	display: block;
+	margin-bottom: 6px;
+	color: var(--messages-meta);
+	font-size: 40px;
+	opacity: 0.6;
+}
+
+.container.mobile .messages-empty strong {
+	color: var(--messages-text);
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.container.mobile .messages-empty-hint {
+	display: block;
+	line-height: 1.4;
 }
 
 .container.mobile .messages.chat-open .messages-phone-bottom {
