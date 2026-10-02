@@ -810,7 +810,17 @@
 
 /* 이름 알약은 떠 있는 단추 줄 가운데, 그 아래 설명은 단추를 비켜 화면 폭을 다 쓴다 */
 .container.mobile .messages-chat-header {
-	padding: 8px 16px;
+	gap: 10px;
+	padding: 8px 16px 12px;
+}
+
+/* 새 피드백: 이름 알약을 떠 있는 단추 줄(위 6~50px) 가운데에 맞추고, 설명은 그 줄 아래로 띄운다 */
+.container.mobile .messages-chat-header:has(.messages-cancel) {
+	padding-top: 12px;
+}
+
+.container.mobile .messages-chat-header:has(.messages-cancel) .messages-chat-subtitle {
+	margin-top: 12px;
 }
 
 /* 대화 머리와 시간·보낸 이: 넓은 창의 11px는 휴대폰에서 작다 */
@@ -824,7 +834,7 @@
 }
 
 .container.mobile .messages-chat-subtitle {
-	margin-top: 6px;
+	line-height: 1.4;
 	text-align: center;
 }
 
@@ -846,21 +856,23 @@
 }
 
 .container.mobile .messages-composer {
-	padding: 6px 12px 10px;
+	gap: 10px;
+	padding: 8px 12px 10px;
 }
 
-/* 이름·비밀번호: 입력 알약 위의 둥근 카드 하나에 두 줄 (iOS 입력 묶음처럼) */
+/* 이름·비밀번호: 아래 입력 알약과 같은 바탕·그림자의 둥근 카드 하나에 두 줄 */
 .container.mobile .messages-identity {
 	flex-direction: column;
 	gap: 0;
-	padding: 0;
+	padding: 0 16px;
 	overflow: hidden;
-	border-radius: 14px;
-	background-color: var(--messages-received);
+	border-radius: 22px;
+	background-color: var(--messages-float-bg);
+	box-shadow: var(--messages-float-shadow);
 }
 
 .container.mobile .messages-identity input {
-	padding: 10px 14px;
+	padding: 12px 0;
 	border: none;
 	font-size: 16px;
 }
