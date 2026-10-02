@@ -75,6 +75,16 @@ export class WallpapersService {
 		return view(row);
 	}
 
+	/** 이름을 바꾼다 (다듬은 이름이 비면 400) */
+	async rename(id: string, name: unknown): Promise<WallpaperView> {
+		if (!UPLOAD_ID.test(id)) throw new NotFoundException('배경화면이 없습니다.');
+		const cleaned = cleanWallpaperName(name);
+		if (!cleaned) throw new BadRequestException('이름을 입력해 주세요.');
+		const found = await this.prisma.wallpaper.findUnique({ where: { id }, select: { id: true } });
+		if (!found) throw new NotFoundException('배경화면이 없습니다.');
+		return view(await this.prisma.wallpaper.update({ where: { id }, data: { name: cleaned } }));
+	}
+
 	/** 배경화면과 그 이미지 두 장을 함께 지운다 */
 	async remove(id: string): Promise<void> {
 		if (!UPLOAD_ID.test(id)) throw new NotFoundException('배경화면이 없습니다.');

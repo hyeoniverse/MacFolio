@@ -5,6 +5,7 @@ import {
 	Get,
 	HttpCode,
 	Param,
+	Patch,
 	Post,
 	UploadedFiles,
 	UseGuards,
@@ -84,6 +85,18 @@ export class WallpapersController {
 			{ kind: body?.kind, name: body?.name, image: files?.image?.[0], thumbnail: files?.thumbnail?.[0] },
 			admin.login
 		);
+	}
+
+	@Patch(':id')
+	@UseGuards(AdminGuard)
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiBody({ schema: { type: 'object', required: ['name'], properties: { name: { type: 'string', maxLength: 40 } } } })
+	@ApiOkResponse({ description: '이름을 바꾼 배경화면' })
+	@ApiBadRequestResponse({ description: '이름이 비었다' })
+	@ApiNotFoundResponse({ description: '배경화면이 없다' })
+	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
+	rename(@Param('id') id: string, @Body() body: { name?: unknown }) {
+		return this.wallpapers.rename(id, body?.name);
 	}
 
 	@Delete(':id')

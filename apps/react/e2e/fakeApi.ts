@@ -158,7 +158,7 @@ export async function fakeApi(
 	const cors = (origin: string) => ({
 		'Access-Control-Allow-Origin': origin,
 		'Access-Control-Allow-Credentials': 'true',
-		'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE',
+		'Access-Control-Allow-Methods': 'GET, PUT, POST, PATCH, DELETE',
 		'Access-Control-Allow-Headers': 'Content-Type',
 	});
 	await page.addInitScript((url) => {
@@ -258,6 +258,15 @@ export async function fakeApi(
 			return route.fulfill({ status: 201, headers: cors(origin), json: wallpaper });
 		}
 		const wallpaperPath = path.match(/^\/wallpapers\/([\w-]+)$/);
+		if (wallpaperPath && request.method() === 'PATCH') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const wallpaper = state.wallpapers.find((w) => w.id === wallpaperPath[1]);
+			if (!wallpaper) return route.fulfill({ status: 404, headers: cors(origin) });
+			const name = String(request.postDataJSON()?.name ?? '').trim();
+			if (!name) return route.fulfill({ status: 400, headers: cors(origin), json: { statusCode: 400 } });
+			wallpaper.name = name;
+			return route.fulfill({ status: 200, headers: cors(origin), json: wallpaper });
+		}
 		if (wallpaperPath && request.method() === 'DELETE') {
 			if (!state.signedIn) return route.fulfill(unauthorized);
 			const before = state.wallpapers.length;
