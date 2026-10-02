@@ -2,11 +2,10 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { IncomingFile } from '../files/files.service.js';
 import { cleanFileName, newUploadId, sniffImage, UPLOAD_ID } from '../files/rules.js';
-import { cleanWallpaperName, isWallpaperKind, type WallpaperKind } from './rules.js';
+import { cleanWallpaperName } from './rules.js';
 
 export interface WallpaperView {
 	id: string;
-	kind: WallpaperKind;
 	name: string;
 	/** API 주소 기준 경로 (/files/:id) */
 	image: string;
@@ -15,17 +14,15 @@ export interface WallpaperView {
 }
 
 export interface WallpaperInput {
-	kind?: unknown;
 	name?: unknown;
 	image?: IncomingFile;
 	thumbnail?: IncomingFile;
 }
 
-type Row = { id: string; kind: string; name: string; imageId: string; thumbId: string; createdAt: Date };
+type Row = { id: string; name: string; imageId: string; thumbId: string; createdAt: Date };
 
 const view = (row: Row): WallpaperView => ({
 	id: row.id,
-	kind: row.kind as WallpaperKind,
 	name: row.name,
 	image: `/files/${row.imageId}`,
 	thumbnail: `/files/${row.thumbId}`,
@@ -43,7 +40,6 @@ export class WallpapersService {
 	}
 
 	async create(input: WallpaperInput, admin: string): Promise<WallpaperView> {
-		if (!isWallpaperKind(input.kind)) throw new BadRequestException('묶음은 mac 또는 ios입니다.');
 		const { image, thumbnail } = input;
 		if (!image || !thumbnail) throw new BadRequestException('배경화면과 썸네일 이미지가 모두 필요합니다.');
 		const imageType = sniffImage(image.buffer);
@@ -69,7 +65,7 @@ export class WallpapersService {
 			upload(imageId, image, imageType, fileName),
 			upload(thumbId, thumbnail, thumbType, `thumb-${fileName}`),
 			this.prisma.wallpaper.create({
-				data: { id: newUploadId(), kind: input.kind, name, imageId, thumbId, createdBy: admin },
+				data: { id: newUploadId(), name, imageId, thumbId, createdBy: admin },
 			}),
 		]);
 		return view(row);

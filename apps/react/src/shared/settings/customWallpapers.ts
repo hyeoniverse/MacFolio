@@ -1,4 +1,5 @@
-// 관리자가 더한 배경화면 (apps/api의 /wallpapers). 누구나 목록을 받고, 관리자만 올리고 지운다.
+// 관리자가 더한 배경화면 (apps/api의 /wallpapers). 누구나 목록을 받고, 관리자만 올리고 이름을 바꾸고 지운다.
+// 기본 배경화면은 화면 모드마다(macOS·iOS) 따로지만, 더한 배경화면은 데스크톱·휴대폰 어디서나 고른다.
 import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
 import { createStore } from '@/shared/lib/createStore';
@@ -11,13 +12,13 @@ import {
 	type Settings,
 } from '@/shared/settings/settings';
 
+/** 어느 화면의 배경화면인지 (mac: 데스크톱, ios: 휴대폰 홈 화면) */
 export type WallpaperKind = 'mac' | 'ios';
 
 export interface CustomWallpaper {
 	/** 설정에 저장하는 id (custom:서버 id) */
 	id: CustomWallpaperId;
 	serverId: string;
-	kind: WallpaperKind;
 	name: string;
 	/** 전체 주소 (API 주소 + /files/:id) */
 	image: string;
@@ -34,7 +35,6 @@ export const customWallpaperStore = createStore<State>({ status: 'idle', list: [
 
 interface ServerWallpaper {
 	id: string;
-	kind: WallpaperKind;
 	name: string;
 	image: string;
 	thumbnail: string;
@@ -43,7 +43,6 @@ interface ServerWallpaper {
 const toCustom = (apiUrl: string, row: ServerWallpaper): CustomWallpaper => ({
 	id: `custom:${row.id}`,
 	serverId: row.id,
-	kind: row.kind,
 	name: row.name,
 	image: `${apiUrl}${row.image}`,
 	thumbnail: `${apiUrl}${row.thumbnail}`,
@@ -131,11 +130,7 @@ async function shrink(file: Blob, max: number, quality: number): Promise<Blob> {
 const baseName = (name: string) => name.replace(/\.[^.]+$/, '') || name;
 
 /** 관리자: 사진을 줄여서 올리고 목록 끝에 더한다. 실패하면 이유를 담은 Error */
-export async function addCustomWallpaper(
-	kind: WallpaperKind,
-	file: File,
-	apiUrl = env.apiUrl
-): Promise<CustomWallpaper> {
+export async function addCustomWallpaper(file: File, apiUrl = env.apiUrl): Promise<CustomWallpaper> {
 	if (!file.type.startsWith('image/')) throw new Error('이미지 파일만 배경화면으로 쓸 수 있습니다.');
 	let image: Blob;
 	let thumbnail: Blob;
@@ -145,7 +140,6 @@ export async function addCustomWallpaper(
 		throw new Error('이 이미지를 읽지 못했습니다.');
 	}
 	const form = new FormData();
-	form.append('kind', kind);
 	form.append('name', baseName(file.name));
 	form.append('image', image, `${baseName(file.name)}.jpg`);
 	form.append('thumbnail', thumbnail, `${baseName(file.name)}-thumb.jpg`);

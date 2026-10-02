@@ -34,7 +34,6 @@ export interface FakeApiState {
 
 export interface FakeWallpaper {
 	id: string;
-	kind: 'mac' | 'ios';
 	name: string;
 	image: string;
 	thumbnail: string;
@@ -230,10 +229,9 @@ export async function fakeApi(
 			if (!state.signedIn) return route.fulfill(unauthorized);
 			const parts = readMultipart(request.postDataBuffer()!);
 			const field = (name: string) => parts.find((part) => part.field === name);
-			const kind = field('kind')?.data.toString('utf8');
 			const image = field('image');
 			const thumbnail = field('thumbnail');
-			if ((kind !== 'mac' && kind !== 'ios') || !image || !thumbnail) {
+			if (!image || !thumbnail) {
 				return route.fulfill({ status: 400, headers: cors(origin), json: { statusCode: 400 } });
 			}
 			const save = (part: typeof image) => {
@@ -249,7 +247,6 @@ export async function fakeApi(
 			};
 			const wallpaper: FakeWallpaper = {
 				id: `fakewall${String(nextId++).padStart(8, '0')}`,
-				kind,
 				name: field('name')?.data.toString('utf8') || 'wallpaper',
 				image: save(image),
 				thumbnail: save(thumbnail),

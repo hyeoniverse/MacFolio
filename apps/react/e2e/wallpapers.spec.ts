@@ -46,7 +46,7 @@ test.describe('관리자가 더한 배경화면', () => {
 			buffer: await samplePhoto(page),
 		});
 		await expect(mac.getByRole('radio', { name: '노을' })).toBeChecked();
-		expect(api.wallpapers).toMatchObject([{ kind: 'mac', name: '노을' }]);
+		expect(api.wallpapers).toMatchObject([{ name: '노을' }]);
 		await expect.poll(() => desktopWallpaper(page)).toContain(`${FAKE_API}/files/`);
 		// 브라우저에서 줄여서 보낸다: 원본·썸네일 모두 JPEG, 썸네일이 더 작다
 		const [image, thumbnail] = api.uploads;
@@ -58,23 +58,20 @@ test.describe('관리자가 더한 배경화면', () => {
 		await expect.poll(() => desktopWallpaper(page)).toContain(`${FAKE_API}/files/`);
 	});
 
-	test('방문자는 더한 배경화면을 고를 수 있지만, + 칸과 지우기는 없다', async ({ page }) => {
+	test('방문자는 더한 배경화면을 고를 수 있지만, 사진 추가 칸과 지우기는 없다', async ({ page }) => {
 		const api = await fakeApi(page);
 		api.wallpapers.push({
 			id: 'wallpaper0000001',
-			kind: 'ios',
 			name: '바다',
 			image: '/files/missing-image-01',
 			thumbnail: '/files/missing-thumb-01',
 		});
 		await enterDesktop(page);
 		const settings = await openWallpapers(page);
-		const ios = settings.getByRole('radiogroup', { name: 'iOS 배경화면' });
+		const ios = settings.getByRole('radiogroup', { name: 'macOS 배경화면' });
 		await ios.getByRole('radio', { name: '바다' }).click();
 		await expect(ios.getByRole('radio', { name: '바다' })).toBeChecked();
-		await expect
-			.poll(() => page.evaluate(() => document.documentElement.style.getPropertyValue('--wallpaper-mobile')))
-			.toBe(`url('${FAKE_API}/files/missing-image-01')`);
+		await expect.poll(() => desktopWallpaper(page)).toBe(`url('${FAKE_API}/files/missing-image-01')`);
 
 		await expect(settings.getByRole('button', { name: /배경화면 추가/ })).toHaveCount(0);
 		await expect(settings.getByRole('button', { name: /배경화면 삭제/ })).toHaveCount(0);
@@ -139,7 +136,6 @@ test.describe('관리자가 더한 배경화면', () => {
 		const api = await fakeApi(page, { signedIn: true });
 		api.wallpapers.push({
 			id: 'wallpaper0000001',
-			kind: 'mac',
 			name: '노을',
 			image: '/files/a',
 			thumbnail: '/files/b',
@@ -158,6 +154,38 @@ test.describe('관리자가 더한 배경화면', () => {
 		expect(addBox!.x).toBeLessThan(tileBox!.x);
 		expect(removeBox!.x).toBeLessThan(tileBox!.x + 10);
 		expect(removeBox!.y).toBeLessThan(tileBox!.y + 10);
+	});
+
+	test('데스크톱에는 macOS 배경화면만 보이고, 처음에는 가로 한 줄이며 모두 보기로 펼친다', async ({ page }) => {
+		const api = await fakeApi(page);
+		for (const n of [1, 2, 3, 4]) {
+			api.wallpapers.push({
+				id: `wallpaper000000${n}`,
+				name: `사진 ${n}`,
+				image: `/files/a${n}`,
+				thumbnail: `/files/b${n}`,
+			});
+		}
+		await enterDesktop(page);
+		const settings = await openWallpapers(page);
+		await expect(settings.getByRole('radiogroup', { name: 'iOS 배경화면' })).toHaveCount(0);
+		const grid = settings.getByRole('radiogroup', { name: 'macOS 배경화면' });
+		const radios = grid.getByRole('radio');
+		await expect(radios).toHaveCount(10);
+
+		// 간략히 보기: 모두 한 줄 (같은 높이), 넘치는 것은 가로로 넘긴다
+		const tops = async () =>
+			new Set(await radios.evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().top))));
+		expect((await tops()).size).toBe(1);
+		expect(await grid.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+
+		// 한 줄에서는 고른 배경화면(기본: High Sierra)이 보이는 자리에서 시작한다
+		await expect(grid.getByRole('radio', { name: 'High Sierra' })).toBeInViewport();
+		const toggle = settings.getByRole('button', { name: '모두 보기(10)' });
+		await toggle.click();
+		expect((await tops()).size).toBeGreaterThan(1);
+		await settings.getByRole('button', { name: '간략히 보기' }).click();
+		expect((await tops()).size).toBe(1);
 	});
 
 	test('골라 둔 배경화면이 서버에서 지워졌으면 다음에 열 때 기본 배경화면으로 돌아간다', async ({ page }) => {

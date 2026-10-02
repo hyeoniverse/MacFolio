@@ -5,6 +5,7 @@ import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
 import { IOS_WALLPAPERS, MAC_WALLPAPERS, type ThemePreference } from '@/shared/settings/settings';
 import WallpaperGroup from '@/apps/settings/WallpaperGroup';
 import AdminAccount from '@/shared/auth/AdminAccount';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import '@/apps/settings/Settings.css';
 
 type Section = 'account' | 'appearance' | 'wallpaper' | 'sound';
@@ -24,6 +25,7 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
 
 const Settings: React.FC = () => {
 	const settings = useSettings();
+	const isMobile = useIsMobile();
 	const [section, setSection] = useState<Section>('account');
 	/** 휴대폰: iOS 설정처럼 항목 목록 → 누르면 그 항목 화면 (넓은 창에서는 쓰지 않는다) */
 	const [phoneOpen, setPhoneOpen] = useState(false);
@@ -86,20 +88,24 @@ const Settings: React.FC = () => {
 						{section === 'wallpaper' && (
 							<>
 								<h2 className="phone-title">배경화면</h2>
-								<WallpaperGroup
-									kind="mac"
-									label="macOS"
-									hint="데스크톱 배경화면. 다크 모드에서는 어두운 버전으로 바뀝니다."
-									wallpapers={MAC_WALLPAPERS}
-									selected={settings.wallpaper}
-								/>
-								<WallpaperGroup
-									kind="ios"
-									label="iOS"
-									hint="휴대폰 홈 화면 배경화면."
-									wallpapers={IOS_WALLPAPERS}
-									selected={settings.mobileWallpaper}
-								/>
+								{/* 화면마다 자기 배경화면만 (데스크톱은 macOS, 휴대폰은 iOS). 더한 배경화면은 양쪽에 다 보인다 */}
+								{isMobile ? (
+									<WallpaperGroup
+										kind="ios"
+										label="iOS"
+										hint="휴대폰 홈 화면 배경화면."
+										wallpapers={IOS_WALLPAPERS}
+										selected={settings.mobileWallpaper}
+									/>
+								) : (
+									<WallpaperGroup
+										kind="mac"
+										label="macOS"
+										hint="데스크톱 배경화면. 기본 배경화면은 다크 모드에서 어두운 버전으로 바뀝니다."
+										wallpapers={MAC_WALLPAPERS}
+										selected={settings.wallpaper}
+									/>
+								)}
 							</>
 						)}
 
