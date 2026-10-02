@@ -66,8 +66,10 @@ const AppErrorAlert = ({ appName, error, onRetry }: AlertProps) => {
 	return (
 		<div className="app-error" data-app-error={appName}>
 			<AlertDialog
-				title={chunk ? '새 버전이 있어요' : `${label} 앱에서 문제가 발생했습니다`}
-				message={chunk ? `${label} 앱을 열려면 페이지를 새로고침해 주세요.` : '계속 그러면 페이지를 새로고침해 주세요.'}
+				title={chunk ? '새 버전이 있습니다' : `${label} 앱에서 문제가 발생했습니다`}
+				message={
+					chunk ? `${label} 앱을 열려면 페이지를 새로고침해 주세요.` : '문제가 계속되면 페이지를 새로고침해 주세요.'
+				}
 				cancelLabel="닫기"
 				confirmLabel={chunk ? '새로고침' : '다시 열기'}
 				onCancel={() => quitApp(appName)}
