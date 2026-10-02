@@ -29,6 +29,8 @@ interface Props {
 	onRemoveFolder: (path: string) => void;
 	/** 폴더를 target 폴더 안으로 옮긴다 (ALL_CATEGORY = 맨 위). 휴대폰 편집의 '이 폴더 이동' */
 	onMoveFolder?: (path: string, target: string) => void;
+	/** 같은 층 폴더의 순서를 바꾼다 (그 층의 경로를 새 순서대로). 휴대폰 편집의 ≡ 손잡이 */
+	onReorderFolders?: (siblings: string[]) => void;
 	dragging: DragItem | null;
 	onDragFolder: (item: DragItem | null) => void;
 	/** 끌고 있는 것을 target 폴더에 놓을 수 있는지 (ALL_CATEGORY = 맨 위) */
@@ -144,6 +146,9 @@ type RowProps = Omit<Props, 'open' | 'onToggle' | 'folders' | 'total' | 'onAddFo
 	editing?: boolean;
 	/** 모든 폴더 경로 ('이 폴더 이동'의 갈 곳) */
 	movePaths?: string[];
+	/** ≡ 손잡이: 끌기 시작 (포인터), ↑·↓ 키로 한 칸씩 */
+	onReorderStart?: (event: React.PointerEvent<HTMLButtonElement>) => void;
+	onReorderStep?: (path: string, delta: number) => void;
 };
 
 /** 폴더 한 줄: 펼침 단추 + 폴더 + (마우스를 올리면) ••• 메뉴. 끌어서 다른 폴더로 옮긴다 */
@@ -168,7 +173,7 @@ const FolderRow: React.FC<RowProps> = (props) => {
 			: '블로그 글의 폴더는 지울 수 없어요';
 
 	return (
-		<li>
+		<li data-folder-path={node.path}>
 			{renaming ? (
 				<FolderNameInput
 					depth={depth}
@@ -238,6 +243,23 @@ const FolderRow: React.FC<RowProps> = (props) => {
 							}}
 						>
 							<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+						</button>
+					)}
+					{props.editing && props.onReorderStart && (
+						<button
+							type="button"
+							className="memo-folder-handle"
+							aria-label={`순서 바꾸기 (${node.name})`}
+							title="끌거나 ↑·↓ 키로 순서를 바꿉니다"
+							onPointerDown={props.onReorderStart}
+							onKeyDown={(event) => {
+								const delta = event.key === 'ArrowUp' ? -1 : event.key === 'ArrowDown' ? 1 : 0;
+								if (!delta) return;
+								event.preventDefault();
+								props.onReorderStep?.(node.path, delta);
+							}}
+						>
+							<i className="fa-solid fa-bars" aria-hidden="true" />
 						</button>
 					)}
 					{menuAt && (
@@ -367,6 +389,68 @@ const FolderSidebar: React.FC<Props> = (props) => {
 		});
 	walkPaths(folders);
 
+	/** 같은 층 폴더 경로 (지금 보이는 순서) */
+	const siblingsOf = (path: string) => {
+		const parent = path.split('/').slice(0, -1).join('/');
+		return (parent ? (findNode(folders, parent)?.children ?? []) : folders).map((node) => node.path);
+	};
+	/** ↑·↓ 키: 한 칸씩 */
+	const reorderStep = (path: string, delta: number) => {
+		const siblings = siblingsOf(path);
+		const from = siblings.indexOf(path);
+		const to = from + delta;
+		if (from === -1 || to < 0 || to >= siblings.length) return;
+		const next = [...siblings];
+		[next[from], next[to]] = [next[to], next[from]];
+		props.onReorderFolders?.(next);
+	};
+	/**
+	 * ≡ 끌기 (iOS 메모처럼): 잡은 폴더는 손가락을 따라 움직이고, 지나간 폴더는 그 자리만큼 비켜 준다.
+	 * 놓으면 같은 층의 새 순서를 저장한다. 다른 층으로는 옮기지 않는다 ('이 폴더 이동'이나 끌어 놓기)
+	 */
+	const reorderStart = (event: React.PointerEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		const li = event.currentTarget.closest('li');
+		const list = li?.parentElement;
+		if (!li || !list) return;
+		const items = [...list.children].filter(
+			(el): el is HTMLElement => el instanceof HTMLElement && !!el.dataset.folderPath
+		);
+		const rects = items.map((el) => el.getBoundingClientRect());
+		const from = items.indexOf(li);
+		const height = rects[from].height;
+		const startY = event.clientY;
+		let to = from;
+		li.classList.add('reordering');
+		const move = (moveEvent: PointerEvent) => {
+			const dy = moveEvent.clientY - startY;
+			const center = rects[from].top + height / 2 + dy;
+			const found = rects.findIndex((rect) => center < rect.top + rect.height / 2);
+			to = found === -1 ? rects.length - 1 : found > from ? found - 1 : found;
+			li.style.transform = `translateY(${dy}px)`;
+			items.forEach((el, index) => {
+				if (index === from) return;
+				const shift =
+					from < to && index > from && index <= to ? -height : from > to && index >= to && index < from ? height : 0;
+				el.style.transform = shift ? `translateY(${shift}px)` : '';
+			});
+		};
+		const end = () => {
+			window.removeEventListener('pointermove', move);
+			window.removeEventListener('pointerup', end);
+			window.removeEventListener('pointercancel', end);
+			li.classList.remove('reordering');
+			items.forEach((el) => (el.style.transform = ''));
+			if (to === from) return;
+			const next = items.map((el) => el.dataset.folderPath as string);
+			next.splice(to, 0, ...next.splice(from, 1));
+			props.onReorderFolders?.(next);
+		};
+		window.addEventListener('pointermove', move);
+		window.addEventListener('pointerup', end);
+		window.addEventListener('pointercancel', end);
+	};
+
 	const toggleFolder = (path: string) =>
 		setCollapsed((prev) => {
 			const next = new Set(prev);
@@ -491,6 +575,8 @@ const FolderSidebar: React.FC<Props> = (props) => {
 							newFolderInput={newFolderInput}
 							editing={editing}
 							movePaths={movePaths}
+							onReorderStart={props.onReorderFolders ? reorderStart : undefined}
+							onReorderStep={reorderStep}
 						/>
 					))}
 					{addingUnder === '' && newFolderInput}
