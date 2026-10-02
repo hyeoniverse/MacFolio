@@ -33,7 +33,8 @@ import { MAX_UPLOAD_BYTES } from '../files/rules.js';
 import { WallpapersService } from './wallpapers.service.js';
 
 /**
- * 관리자가 더한 배경화면 (시스템 설정 → 배경화면). 누구나 목록을 보고, 관리자만 올리고 지운다.
+ * 관리자가 더한 배경화면 (시스템 설정 → 배경화면). 데스크톱·휴대폰 어디서나 고른다.
+ * 누구나 목록을 보고, 관리자만 올리고 이름을 바꾸고 지운다.
  * 이미지는 브라우저에서 줄여서(원본·썸네일) 보낸다.
  */
 @ApiTags('wallpapers')
@@ -63,9 +64,8 @@ export class WallpapersController {
 	@ApiBody({
 		schema: {
 			type: 'object',
-			required: ['kind', 'image', 'thumbnail'],
+			required: ['image', 'thumbnail'],
 			properties: {
-				kind: { type: 'string', enum: ['mac', 'ios'] },
 				name: { type: 'string', maxLength: 40, description: '비우면 파일 이름' },
 				image: { type: 'string', format: 'binary' },
 				thumbnail: { type: 'string', format: 'binary' },
@@ -73,16 +73,16 @@ export class WallpapersController {
 		},
 	})
 	@ApiCreatedResponse({ description: '더한 배경화면' })
-	@ApiBadRequestResponse({ description: '묶음이 틀렸거나 이미지가 없거나 이미지가 아니다' })
+	@ApiBadRequestResponse({ description: '이미지가 없거나 이미지가 아니다' })
 	@ApiPayloadTooLargeResponse({ description: '이미지 한 장이 10MB를 넘는다' })
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
 	create(
 		@UploadedFiles() files: { image?: IncomingFile[]; thumbnail?: IncomingFile[] } | undefined,
-		@Body() body: { kind?: unknown; name?: unknown },
+		@Body() body: { name?: unknown },
 		@CurrentAdmin() admin: AdminIdentity
 	) {
 		return this.wallpapers.create(
-			{ kind: body?.kind, name: body?.name, image: files?.image?.[0], thumbnail: files?.thumbnail?.[0] },
+			{ name: body?.name, image: files?.image?.[0], thumbnail: files?.thumbnail?.[0] },
 			admin.login
 		);
 	}

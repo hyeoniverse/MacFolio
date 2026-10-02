@@ -1,11 +1,5 @@
 // 배경화면 규칙 (DB CHECK 제약과 같다)
 
-export const WALLPAPER_KINDS = ['mac', 'ios'] as const;
-export type WallpaperKind = (typeof WALLPAPER_KINDS)[number];
-
-export const isWallpaperKind = (value: unknown): value is WallpaperKind =>
-	WALLPAPER_KINDS.includes(value as WallpaperKind);
-
 export const NAME_MAX = 40;
 
 /** 이름 다듬기: 확장자와 제어 문자를 빼고 앞뒤 공백을 지운 뒤 40자까지. 비면 null */

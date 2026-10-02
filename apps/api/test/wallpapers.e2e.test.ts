@@ -60,9 +60,8 @@ describe('배경화면 (e2e)', () => {
 		await app?.close();
 	});
 
-	const upload = (fields: { kind?: string; name?: string } = {}, cookie = adminCookie) => {
+	const upload = (fields: { name?: string } = {}, cookie = adminCookie) => {
 		const req = request(server()).post('/wallpapers').set('Cookie', cookie);
-		if (fields.kind !== undefined) req.field('kind', fields.kind);
 		if (fields.name !== undefined) req.field('name', fields.name);
 		return req
 			.attach('image', JPEG, { filename: '제주 바다.jpg', contentType: 'image/jpeg' })
@@ -75,14 +74,15 @@ describe('배경화면 (e2e)', () => {
 	});
 
 	it('관리자가 아니면 올리거나 지울 수 없다 (401)', async () => {
-		await upload({ kind: 'mac' }, '').expect(401);
+		await upload({}, '').expect(401);
 		await request(server()).delete('/wallpapers/aaaaaaaaaaaaaaaa').expect(401);
 		expect(await prisma.wallpaper.count()).toBe(0);
 	});
 
 	it('관리자가 올리면 목록에 생기고, 원본·썸네일을 /files로 받는다. 이름이 없으면 파일 이름', async () => {
-		const created = await upload({ kind: 'mac' }).expect(201);
-		expect(created.body).toMatchObject({ kind: 'mac', name: '제주 바다' });
+		const created = await upload().expect(201);
+		expect(created.body).toMatchObject({ name: '제주 바다' });
+		expect(created.body).not.toHaveProperty('kind');
 		expect(created.body.image).toMatch(/^\/files\/[\w-]{16}$/);
 		expect(created.body.thumbnail).toMatch(/^\/files\/[\w-]{16}$/);
 
@@ -91,27 +91,16 @@ describe('배경화면 (e2e)', () => {
 		const thumb = await request(server()).get(created.body.thumbnail).expect(200);
 		expect(thumb.headers['content-type']).toBe('image/png');
 
-		await upload({ kind: 'ios', name: '  노을  ' }).expect(201);
+		await upload({ name: '  노을  ' }).expect(201);
 		const list = await request(server()).get('/wallpapers').expect(200);
-		expect(list.body.map((w: { kind: string; name: string }) => [w.kind, w.name])).toEqual([
-			['mac', '제주 바다'],
-			['ios', '노을'],
-		]);
+		expect(list.body.map((w: { name: string }) => w.name)).toEqual(['제주 바다', '노을']);
 	});
 
-	it('묶음이 틀리거나, 이미지가 빠졌거나, 이미지가 아니면 400', async () => {
-		await upload({ kind: 'android' }).expect(400);
-		await upload({}).expect(400);
+	it('이미지가 빠졌거나 이미지가 아니면 400', async () => {
+		await request(server()).post('/wallpapers').set('Cookie', adminCookie).attach('image', JPEG, 'a.jpg').expect(400);
 		await request(server())
 			.post('/wallpapers')
 			.set('Cookie', adminCookie)
-			.field('kind', 'mac')
-			.attach('image', JPEG, 'a.jpg')
-			.expect(400);
-		await request(server())
-			.post('/wallpapers')
-			.set('Cookie', adminCookie)
-			.field('kind', 'mac')
 			.attach('image', Buffer.from('<svg/>'), 'a.svg')
 			.attach('thumbnail', PNG, 'b.png')
 			.expect(400);
@@ -120,7 +109,7 @@ describe('배경화면 (e2e)', () => {
 	});
 
 	it('관리자는 이름을 바꾼다. 빈 이름은 400, 관리자가 아니면 401', async () => {
-		const created = await upload({ kind: 'mac' }).expect(201);
+		const created = await upload().expect(201);
 		const path = `/wallpapers/${created.body.id}`;
 		await request(server()).patch(path).send({ name: '바다' }).expect(401);
 		await request(server()).patch(path).set('Cookie', adminCookie).send({ name: '   ' }).expect(400);
@@ -138,7 +127,7 @@ describe('배경화면 (e2e)', () => {
 	});
 
 	it('지우면 목록에서 빠지고 이미지 두 장도 함께 지운다', async () => {
-		const created = await upload({ kind: 'mac' }).expect(201);
+		const created = await upload().expect(201);
 		expect(await prisma.upload.count()).toBe(2);
 		await request(server()).delete(`/wallpapers/${created.body.id}`).set('Cookie', adminCookie).expect(204);
 		expect((await request(server()).get('/wallpapers').expect(200)).body).toEqual([]);

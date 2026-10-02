@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAdmin } from '@/shared/auth/adminStore';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { wallpaperUrl, type ResolvedTheme, type Wallpaper } from '@/shared/settings/settings';
 import {
 	addCustomWallpaper,
@@ -87,8 +88,10 @@ const RenameDialog = ({
 };
 
 /**
- * 배경화면 한 묶음 (macOS, iOS). 기본 배경화면 뒤에 관리자가 더한 배경화면이 이어진다.
- * 기본 배경화면의 썸네일은 지금 화면 모드의 버전이고, 더한 배경화면은 한 장이다.
+ * 지금 화면(데스크톱이면 macOS, 휴대폰이면 iOS)의 배경화면. 기본 배경화면 뒤에 관리자가 더한 배경화면이 이어진다.
+ * 더한 배경화면은 데스크톱·휴대폰 어디서나 고르고, 썸네일은 그 화면 비율로 가운데를 잘라 보여 준다.
+ * 기본 배경화면의 썸네일은 지금 화면 모드의 버전이다.
+ * 데스크톱에서는 처음에 가로로 넘기는 한 줄(간략히 보기)이고, '모두 보기(n)'를 누르면 그 자리에서 여러 줄로 펼친다.
  * 관리자에게만 '사진 추가…' 칸과, 더한 배경화면의 지우기(×)·메뉴(이름 바꾸기, 삭제)가 보인다 (macOS 설정의 '사용자의 사진'처럼).
  * 메뉴는 오른쪽 클릭, 휴대폰에서는 길게 눌러 연다. 기본 배경화면은 지울 수 없다.
  */
@@ -96,7 +99,11 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 	const theme = (document.documentElement.dataset.theme ?? 'light') as ResolvedTheme;
 	const portrait = kind === 'ios';
 	const isAdmin = useAdmin().status === 'signed-in';
-	const custom = useCustomWallpapers().list.filter((wallpaper) => wallpaper.kind === kind);
+	const custom = useCustomWallpapers().list;
+	const phone = useIsMobile();
+	const [expanded, setExpanded] = useState(false);
+	const collapsed = !phone && !expanded;
+	const total = wallpapers.length + custom.length;
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [adding, setAdding] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -104,10 +111,21 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 	const [renaming, setRenaming] = useState<CustomWallpaper | null>(null);
 	const [removing, setRemoving] = useState<CustomWallpaper | null>(null);
 	const longPress = useRef<{ timer: number; fired: boolean } | null>(null);
+	const grid = useRef<HTMLDivElement>(null);
+	const customCount = custom.length;
 
 	useEffect(() => {
 		void loadCustomWallpapers();
 	}, []);
+
+	// 한 줄일 때는 고른 배경화면이 보이게 가로로 넘겨 둔다 (처음 열 때, 목록이 늘었을 때)
+	useEffect(() => {
+		const row = grid.current;
+		const chosen = row?.querySelector<HTMLElement>('[aria-checked="true"]');
+		if (!row || !chosen || !collapsed) return;
+		const left = chosen.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft;
+		row.scrollLeft = Math.max(0, left - (row.clientWidth - chosen.offsetWidth) / 2);
+	}, [collapsed, customCount]);
 
 	const run = async (action: () => Promise<unknown>, fallback: string) => {
 		try {
@@ -120,7 +138,7 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 	const add = async (file: File) => {
 		setAdding(true);
 		await run(async () => {
-			const added = await addCustomWallpaper(kind, file);
+			const added = await addCustomWallpaper(file);
 			chooseWallpaper(kind, added.id, added.image);
 		}, '배경화면을 올리지 못했습니다.');
 		setAdding(false);
@@ -155,9 +173,26 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 
 	return (
 		<section className="wallpaper-group">
-			<h3>{label}</h3>
+			<div className="wallpaper-group-head">
+				<h3>{label}</h3>
+				{!phone && (
+					<button
+						type="button"
+						className="wallpaper-toggle"
+						aria-expanded={expanded}
+						onClick={() => setExpanded((open) => !open)}
+					>
+						{expanded ? '간략히 보기' : `모두 보기(${total})`}
+					</button>
+				)}
+			</div>
 			<p className="settings-hint">{hint}</p>
-			<div className="settings-options wallpaper-grid" role="radiogroup" aria-label={`${label} 배경화면`}>
+			<div
+				ref={grid}
+				className={`settings-options wallpaper-grid ${collapsed ? 'collapsed' : ''}`}
+				role="radiogroup"
+				aria-label={`${label} 배경화면`}
+			>
 				{wallpapers.map((wallpaper) => (
 					<button
 						key={wallpaper.id}

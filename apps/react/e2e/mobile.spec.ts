@@ -117,7 +117,6 @@ test.describe('모바일', () => {
 		const api = await fakeApi(page, { signedIn: true });
 		api.wallpapers.push({
 			id: 'wallpaper0000001',
-			kind: 'ios',
 			name: '새벽',
 			image: '/files/a',
 			thumbnail: '/files/b',
@@ -126,6 +125,10 @@ test.describe('모바일', () => {
 		await homeApp(page, '시스템 설정').tap();
 		const settings = appWindow(page, 'settings');
 		await settings.getByRole('button', { name: '배경화면' }).tap();
+		// 휴대폰에는 iOS 배경화면만, 더한 배경화면도 함께 (모두 보기 없이 격자)
+		await expect(settings.getByRole('radiogroup', { name: 'macOS 배경화면' })).toHaveCount(0);
+		await expect(settings.getByRole('radiogroup', { name: 'iOS 배경화면' }).getByRole('radio')).toHaveCount(7);
+		await expect(settings.getByRole('button', { name: /모두 보기/ })).toHaveCount(0);
 		await expect(settings.getByRole('button', { name: '새벽 배경화면 삭제' })).toBeVisible();
 		await expect(settings.getByRole('button', { name: '새벽 배경화면 삭제' })).toHaveCSS('opacity', '1');
 
