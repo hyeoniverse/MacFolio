@@ -188,6 +188,13 @@ test.describe('관리자가 더한 배경화면', () => {
 		expect(await builtIn.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
 		// 한 줄에서는 고른 배경화면(기본: High Sierra)이 보이는 자리에서 시작한다
 		await expect(builtIn.getByRole('radio', { name: 'High Sierra' })).toBeInViewport();
+		// 첫 칸이 잘리지 않는다 (처음부터 왼쪽 끝)
+		expect(await builtIn.evaluate((el) => el.scrollLeft)).toBe(0);
+		const [rowBox, firstBox] = await Promise.all([
+			builtIn.boundingBox(),
+			builtIn.getByRole('radio', { name: 'High Sierra' }).boundingBox(),
+		]);
+		expect(firstBox!.x).toBeGreaterThanOrEqual(rowBox!.x);
 
 		await settings.getByRole('button', { name: '모두 보기(6)' }).click();
 		expect(await rows(builtIn)).toBeGreaterThan(1);
