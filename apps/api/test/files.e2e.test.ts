@@ -49,6 +49,8 @@ describe('이미지·첨부 파일 (e2e)', () => {
 	});
 
 	beforeEach(async () => {
+		// 배경화면이 Upload를 가리키므로 먼저 지운다
+		await prisma.wallpaper.deleteMany();
 		await prisma.upload.deleteMany();
 	});
 

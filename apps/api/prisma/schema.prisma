@@ -121,6 +121,29 @@ model Upload {
   createdAt DateTime @default(now())
   /// 올린 관리자 (GitHub 계정 이름)
   createdBy String
+
+  /// 배경화면의 원본·썸네일이면 그 배경화면 (지울 때 함께 지운다)
+  wallpaperImage Wallpaper? @relation("WallpaperImage")
+  wallpaperThumb Wallpaper? @relation("WallpaperThumb")
+}
+
+/// 관리자가 올린 배경화면 (시스템 설정 → 배경화면). 기본 배경화면은 프론트엔드에 있고, 여기에는 더한 것만 둔다.
+/// 데스크톱과 휴대폰 어디서나 고를 수 있다 (화면 비율이 다르면 가운데 기준으로 잘린다).
+/// 이미지는 Upload에 두고 /files/:id로 내려준다. 화면 모드와 상관없이 한 장이다
+model Wallpaper {
+  /// 무작위 (Upload id와 같은 모양)
+  id        String   @id
+  /// 썸네일 아래에 보이는 이름
+  name      String
+  imageId   String   @unique
+  image     Upload   @relation("WallpaperImage", fields: [imageId], references: [id])
+  thumbId   String   @unique
+  thumb     Upload   @relation("WallpaperThumb", fields: [thumbId], references: [id])
+  createdAt DateTime @default(now())
+  /// 올린 관리자 (GitHub 계정 이름)
+  createdBy String
+
+  @@index([createdAt])
 }
 
 /// 메시지 앱의 피드백 하나 (쓰기 단추로 남긴 것). 목록의 항목 하나가 된다.

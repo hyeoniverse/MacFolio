@@ -36,13 +36,28 @@ export const IOS_WALLPAPERS = [
 
 export type WallpaperId = (typeof MAC_WALLPAPERS)[number]['id'];
 export type MobileWallpaperId = (typeof IOS_WALLPAPERS)[number]['id'];
+/** 관리자가 더한 배경화면 (서버의 /wallpapers). 기본 배경화면과 겹치지 않게 앞에 custom:을 붙인다 */
+export type CustomWallpaperId = `custom:${string}`;
+
+export const isCustomWallpaperId = (id: unknown): id is CustomWallpaperId =>
+	typeof id === 'string' && /^custom:[\w-]{1,64}$/.test(id);
+
+/** CSS url('…')에 그대로 넣어도 되는 이미지 주소 (따옴표·괄호·공백이 없는 http(s)) */
+export const isSafeImageUrl = (url: unknown): url is string =>
+	typeof url === 'string' && /^https?:\/\/[^\s'"()\\]+$/.test(url);
 
 export interface Settings {
 	theme: ThemePreference;
 	/** 데스크톱(macOS) 배경화면 */
-	wallpaper: WallpaperId;
+	wallpaper: WallpaperId | CustomWallpaperId;
 	/** 모바일(iOS) 홈 화면 배경화면 */
-	mobileWallpaper: MobileWallpaperId;
+	mobileWallpaper: MobileWallpaperId | CustomWallpaperId;
+	/**
+	 * 더한 배경화면을 골랐을 때 그 이미지 주소. 다음에 열 때 서버에 목록을 묻기 전에도 바로 그린다.
+	 * 기본 배경화면이면 null
+	 */
+	wallpaperImage: string | null;
+	mobileWallpaperImage: string | null;
 	/** 누르고 뗄 때 딸깍 소리 */
 	clickSound: boolean;
 }
@@ -51,23 +66,41 @@ export const DEFAULT_SETTINGS: Settings = {
 	theme: 'system',
 	wallpaper: 'sierra',
 	mobileWallpaper: 'sky',
+	wallpaperImage: null,
+	mobileWallpaperImage: null,
 	clickSound: true,
 };
 
 const THEMES: readonly ThemePreference[] = ['light', 'dark', 'system'];
 
+function pickWallpaper<Id extends string>(
+	list: readonly { id: Id }[],
+	id: unknown,
+	image: unknown,
+	fallback: Id
+): { id: Id | CustomWallpaperId; image: string | null } {
+	if (isCustomWallpaperId(id) && isSafeImageUrl(image)) return { id, image };
+	if (list.some((wallpaper) => wallpaper.id === id)) return { id: id as Id, image: null };
+	return { id: fallback, image: null };
+}
+
 /** 저장된 값이 깨졌거나 예전 형식이어도 안전한 설정을 돌려준다. */
 export function parseSettings(raw: unknown): Settings {
 	const value = (typeof raw === 'object' && raw !== null ? raw : {}) as Partial<Record<keyof Settings, unknown>>;
+	// 더한 배경화면은 이미지 주소가 함께 있어야 그린다. 예전 배경화면(그라데이션)처럼 없는 id는 기본값으로
+	const desktop = pickWallpaper(MAC_WALLPAPERS, value.wallpaper, value.wallpaperImage, DEFAULT_SETTINGS.wallpaper);
+	const mobile = pickWallpaper(
+		IOS_WALLPAPERS,
+		value.mobileWallpaper,
+		value.mobileWallpaperImage,
+		DEFAULT_SETTINGS.mobileWallpaper
+	);
 	return {
 		theme: THEMES.includes(value.theme as ThemePreference) ? (value.theme as ThemePreference) : DEFAULT_SETTINGS.theme,
-		// 예전 배경화면(그라데이션)처럼 없는 id는 기본값으로
-		wallpaper: MAC_WALLPAPERS.some((wallpaper) => wallpaper.id === value.wallpaper)
-			? (value.wallpaper as WallpaperId)
-			: DEFAULT_SETTINGS.wallpaper,
-		mobileWallpaper: IOS_WALLPAPERS.some((wallpaper) => wallpaper.id === value.mobileWallpaper)
-			? (value.mobileWallpaper as MobileWallpaperId)
-			: DEFAULT_SETTINGS.mobileWallpaper,
+		wallpaper: desktop.id,
+		mobileWallpaper: mobile.id,
+		wallpaperImage: desktop.image,
+		mobileWallpaperImage: mobile.image,
 		clickSound: typeof value.clickSound === 'boolean' ? value.clickSound : DEFAULT_SETTINGS.clickSound,
 	};
 }
@@ -87,10 +120,13 @@ export function wallpaperUrl(wallpaper: Wallpaper, theme: ResolvedTheme, thumbna
 const findWallpaper = <W extends Wallpaper>(list: readonly W[], id: string): W =>
 	list.find((w) => w.id === id) ?? list[0];
 
-/** 설정과 화면 모드로 CSS 배경 값을 만든다 (데스크톱, 모바일) */
+const cssFor = (list: readonly Wallpaper[], id: string, image: string | null, theme: ResolvedTheme) =>
+	`url('${isCustomWallpaperId(id) && isSafeImageUrl(image) ? image : wallpaperUrl(findWallpaper(list, id), theme)}')`;
+
+/** 설정과 화면 모드로 CSS 배경 값을 만든다 (데스크톱, 모바일). 더한 배경화면은 화면 모드와 상관없이 한 장 */
 export function wallpaperCss(settings: Settings, theme: ResolvedTheme): { desktop: string; mobile: string } {
 	return {
-		desktop: `url('${wallpaperUrl(findWallpaper(MAC_WALLPAPERS, settings.wallpaper), theme)}')`,
-		mobile: `url('${wallpaperUrl(findWallpaper(IOS_WALLPAPERS, settings.mobileWallpaper), theme)}')`,
+		desktop: cssFor(MAC_WALLPAPERS, settings.wallpaper, settings.wallpaperImage, theme),
+		mobile: cssFor(IOS_WALLPAPERS, settings.mobileWallpaper, settings.mobileWallpaperImage, theme),
 	};
 }

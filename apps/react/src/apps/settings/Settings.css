@@ -77,6 +77,8 @@
 	margin-top: 1rem;
 	color: var(--color-text-secondary);
 	font-size: 0.8rem;
+	/* 한국어 문장이 낱말 중간(있습니/다)에서 꺾이지 않게 */
+	word-break: keep-all;
 }
 
 /* 화면 모드 선택 */
@@ -94,17 +96,27 @@
 	cursor: pointer;
 }
 
-.theme-preview,
-.wallpaper-thumbnail {
+.theme-preview {
 	display: block;
 	border: 3px solid transparent;
 	border-radius: 0.5rem;
 	box-shadow: 0 0 0 1px var(--color-divider);
 }
 
-.theme-option.selected .theme-preview,
-.wallpaper-option.selected .wallpaper-thumbnail {
+.theme-option.selected .theme-preview {
 	border-color: var(--color-accent);
+}
+
+/* 배경화면 썸네일: 테두리 없이 사진만 (macOS 설정처럼). 고르면 조금 떨어진 파란 고리 */
+.wallpaper-thumbnail {
+	display: block;
+	border-radius: 0.5rem;
+	outline: 3px solid transparent;
+	outline-offset: 2px;
+}
+
+.wallpaper-option.selected .wallpaper-thumbnail {
+	outline-color: var(--color-accent);
 }
 
 .theme-preview {
@@ -134,6 +146,42 @@
 	font-size: 0.95rem;
 }
 
+/* 묶음 제목 줄: 오른쪽 끝에 '모두 보기(n)' / '간략히 보기' (데스크톱) */
+.wallpaper-group-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.wallpaper-toggle {
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-text-secondary);
+	font-size: 0.85rem;
+	cursor: pointer;
+}
+
+.wallpaper-toggle:hover {
+	color: var(--color-text);
+}
+
+/* 간략히 보기: 한 줄로 두고 가로로 넘긴다. 왼쪽 위로 걸친 ×와 고른 테두리가 잘리지 않게 안쪽 여백을 둔다 */
+.wallpaper-grid.collapsed {
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	margin: -8px;
+	padding: 8px;
+	scroll-snap-type: x proximity;
+	scrollbar-width: thin;
+}
+
+.wallpaper-grid.collapsed > * {
+	flex: none;
+	scroll-snap-align: start;
+}
+
 .wallpaper-group .settings-hint {
 	margin: 0.2rem 0 0.75rem;
 }
@@ -142,7 +190,7 @@
 	width: 8rem;
 	height: 5rem;
 	object-fit: cover;
-	transition: border-color var(--duration-fast) var(--ease-out);
+	transition: outline-color var(--duration-fast) var(--ease-out);
 }
 
 /* iOS 배경화면은 세로 */
@@ -150,6 +198,130 @@
 	width: 4.2rem;
 	height: 8.6rem;
 	border-radius: 0.8rem;
+}
+
+/* 썸네일 아래 이름: 썸네일 폭에서 자르고 (…), 다 보려면 마우스를 올린다 (title) */
+.wallpaper-name {
+	max-width: 8rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.wallpaper-thumbnail.portrait + .wallpaper-name {
+	max-width: 4.6rem;
+}
+
+/* 관리자가 더한 배경화면 (macOS 설정의 '사용자의 사진'처럼). 서버에서 받는 동안 썸네일 자리를 회색으로 */
+.wallpaper-custom {
+	position: relative;
+}
+
+.wallpaper-custom .wallpaper-thumbnail {
+	background-color: var(--color-sidebar-bg);
+}
+
+/* 지우기(×): 왼쪽 위 모서리에 걸친 어두운 동그라미.
+   테두리는 바탕과 같은 색이라 썸네일을 동그랗게 파낸 것처럼 보인다 (macOS 설정처럼) */
+.wallpaper-remove {
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: -7px;
+	left: -7px;
+	z-index: 1;
+	width: 22px;
+	height: 22px;
+	padding: 0;
+	border: 2.5px solid var(--wallpaper-page-bg, var(--color-window-bg));
+	border-radius: 50%;
+	background-color: #5a5a5e;
+	color: #ffffff;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+/* 누르는 자리는 보이는 동그라미보다 넓게 (손가락 44px) */
+.wallpaper-remove::before {
+	position: absolute;
+	inset: -11px;
+	content: '';
+}
+
+/* 데스크톱에서는 올렸을 때만 (휴대폰은 늘 보인다) */
+@media (hover: hover) {
+	.wallpaper-remove {
+		opacity: 0;
+		transition: opacity var(--duration-fast) var(--ease-out);
+	}
+
+	.wallpaper-custom:hover .wallpaper-remove,
+	.wallpaper-remove:focus-visible {
+		opacity: 1;
+	}
+}
+
+/* 사진 추가… 칸: 회색으로 채운 썸네일 자리 안에 사진 아이콘(+)과 글자 */
+.wallpaper-add .wallpaper-thumbnail {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	background-color: var(--color-sidebar-bg);
+	box-shadow: none;
+	color: var(--color-text-secondary);
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.wallpaper-add:hover:not(:disabled) .wallpaper-thumbnail {
+	background-color: var(--color-divider);
+}
+
+.wallpaper-add-icon {
+	position: relative;
+	font-size: 1.5rem;
+	line-height: 1;
+}
+
+.wallpaper-add-plus {
+	position: absolute;
+	right: -0.45em;
+	bottom: -0.25em;
+	border-radius: 50%;
+	background-color: var(--color-sidebar-bg);
+	font-size: 0.6em;
+}
+
+.wallpaper-add-label {
+	padding: 0 0.4rem;
+	font-size: 0.75rem;
+	line-height: 1.3;
+	text-align: center;
+	/* 세로 칸(iOS)에서 '사진 / 추가…'로 낱말 사이에서만 꺾인다 */
+	word-break: keep-all;
+}
+
+.wallpaper-add:disabled {
+	cursor: progress;
+}
+
+/* 이름 바꾸기 창의 입력 칸 */
+.wallpaper-rename input {
+	width: 100%;
+	padding: 7px 10px;
+	border: 1px solid var(--color-divider);
+	border-radius: 8px;
+	background-color: var(--color-control-bg);
+	color: var(--color-text);
+	/* 16px보다 작으면 iOS Safari가 확대한다 */
+	font: inherit;
+	font-size: 16px;
+}
+
+.wallpaper-rename input:focus {
+	border-color: var(--color-accent);
+	outline: none;
 }
 
 /* ─── 좁은 창: 항목을 위쪽 탭으로 ─── */
@@ -354,4 +526,46 @@
 	border: none;
 	border-radius: 14px;
 	background-color: var(--phone-card-bg);
+}
+
+/* 휴대폰: × 테두리도 회색 바탕 색으로 */
+.container.mobile .settings-panel {
+	--wallpaper-page-bg: var(--phone-page-bg);
+}
+
+/* 휴대폰: 바탕이 회색이라 사진 추가… 칸과 받는 중인 썸네일은 흰 카드 색으로 */
+.container.mobile .wallpaper-add .wallpaper-thumbnail,
+.container.mobile .wallpaper-custom .wallpaper-thumbnail,
+.container.mobile .wallpaper-add-plus {
+	background-color: var(--phone-card-bg);
+}
+
+/* 휴대폰: 썸네일을 화면 폭에 맞춰 세 칸으로 크게 (iOS 홈 화면 비율) */
+.container.mobile .wallpaper-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 18px 12px;
+}
+
+.container.mobile .wallpaper-option {
+	min-width: 0;
+}
+
+.container.mobile .wallpaper-thumbnail.portrait {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 9 / 19.5;
+	border-radius: 1rem;
+}
+
+.container.mobile .wallpaper-thumbnail.portrait + .wallpaper-name {
+	max-width: 100%;
+}
+
+.container.mobile .wallpaper-add-icon {
+	font-size: 2rem;
+}
+
+.container.mobile .wallpaper-add-label {
+	font-size: 0.85rem;
 }
