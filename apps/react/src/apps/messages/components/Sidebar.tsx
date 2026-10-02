@@ -9,9 +9,11 @@ interface Props {
 	selectedId: string;
 	onSelect: (id: string) => void;
 	onCompose: () => void;
+	/** 목록을 불러오는 중. 빈 목록 안내를 아직 보이지 않는다 */
+	loading?: boolean;
 }
 
-const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) => {
+const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, loading = false }) => {
 	const [query, setQuery] = useState('');
 	/** 휴대폰은 iOS 메시지 크기의 아바타 */
 	const phone = useIsMobile();
@@ -99,7 +101,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose }) 
 							</button>
 						</li>
 					))}
-					{others.length === 0 && (
+					{others.length === 0 && !loading && (
 						<li className="messages-empty">
 							<i
 								className={`messages-empty-icon fa-regular ${query ? 'fa-face-meh' : 'fa-comments'}`}

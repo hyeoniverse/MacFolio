@@ -1,5 +1,5 @@
-import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
-import { fakeApi } from './fakeApi';
+import { test, expect, enterDesktop, dockItem, appWindow, storeMessagesOnServer } from './fixtures';
+import { fakeApi, FAKE_API } from './fakeApi';
 import type { Locator, Page } from '@playwright/test';
 
 async function openMessages(page: Page) {
@@ -214,5 +214,47 @@ test.describe('메시지 (감상·의견·피드백)', () => {
 		await page.getByRole('alertdialog').getByRole('button', { name: '삭제', exact: true }).click();
 		await expect(transcript(messages)).not.toContainText('디자인이 예뻐요');
 		expect(api.messages.map((m) => m.text)).toEqual(['반가워요!']);
+	});
+});
+
+test.describe('메시지 서버에 닿지 못할 때', () => {
+	test('서버 주소가 없으면 앱을 열지 않고 알린다. 확인하면 앱을 끈다', async ({ page }) => {
+		await storeMessagesOnServer(page);
+		const messages = await openMessages(page);
+		const alert = messages.getByRole('alertdialog', { name: '메시지를 열 수 없습니다' });
+		await expect(alert).toContainText('지금 서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
+		await expect(alert.getByRole('button')).toHaveText(['확인']);
+		await expect(alert.getByRole('button', { name: '확인' })).toBeFocused();
+
+		await alert.getByRole('button', { name: '확인' }).click();
+		await expect(messages).toBeHidden();
+	});
+
+	test('서버가 응답하지 않으면 앱을 열지 않는다', async ({ page }) => {
+		await fakeApi(page);
+		await page.route(`${FAKE_API}/messages/**`, (route) => route.abort());
+		const messages = await openMessages(page);
+		await expect(messages.getByRole('alertdialog', { name: '메시지를 열 수 없습니다' })).toBeVisible();
+	});
+
+	test('열어 둔 뒤에 서버가 끊기면 보내기 실패만 경고창으로 알리고, 쓴 글은 남는다', async ({ page }) => {
+		await fakeApi(page);
+		const messages = await openMessages(page);
+		await expect(transcript(messages)).toContainText('안녕하세요, 김정현입니다');
+
+		await page.route(`${FAKE_API}/messages/**`, (route) => route.abort());
+		await textbox(messages).fill('끊긴 뒤에 보내요');
+		const box = await textbox(messages).boundingBox();
+		await textbox(messages).press('Enter');
+		const alert = messages.getByRole('alertdialog', { name: '메시지를 보내지 못했습니다' });
+		await expect(alert).toContainText('서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
+		// 에러 줄이 생기며 입력창이 밀리지 않는다
+		expect(await textbox(messages).boundingBox()).toEqual(box);
+		await alert.getByRole('button', { name: '확인' }).click();
+		await expect(alert).toBeHidden();
+		await expect(textbox(messages)).toHaveValue('끊긴 뒤에 보내요');
+		await expect(textbox(messages)).toBeFocused();
+		// 앱은 닫히지 않는다
+		await expect(transcript(messages)).toContainText('안녕하세요, 김정현입니다');
 	});
 });
