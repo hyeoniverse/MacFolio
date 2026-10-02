@@ -96,17 +96,27 @@
 	cursor: pointer;
 }
 
-.theme-preview,
-.wallpaper-thumbnail {
+.theme-preview {
 	display: block;
 	border: 3px solid transparent;
 	border-radius: 0.5rem;
 	box-shadow: 0 0 0 1px var(--color-divider);
 }
 
-.theme-option.selected .theme-preview,
-.wallpaper-option.selected .wallpaper-thumbnail {
+.theme-option.selected .theme-preview {
 	border-color: var(--color-accent);
+}
+
+/* 배경화면 썸네일: 테두리 없이 사진만 (macOS 설정처럼). 고르면 조금 떨어진 파란 고리 */
+.wallpaper-thumbnail {
+	display: block;
+	border-radius: 0.5rem;
+	outline: 3px solid transparent;
+	outline-offset: 2px;
+}
+
+.wallpaper-option.selected .wallpaper-thumbnail {
+	outline-color: var(--color-accent);
 }
 
 .theme-preview {
@@ -180,7 +190,7 @@
 	width: 8rem;
 	height: 5rem;
 	object-fit: cover;
-	transition: border-color var(--duration-fast) var(--ease-out);
+	transition: outline-color var(--duration-fast) var(--ease-out);
 }
 
 /* iOS 배경화면은 세로 */
@@ -528,4 +538,34 @@
 .container.mobile .wallpaper-custom .wallpaper-thumbnail,
 .container.mobile .wallpaper-add-plus {
 	background-color: var(--phone-card-bg);
+}
+
+/* 휴대폰: 썸네일을 화면 폭에 맞춰 세 칸으로 크게 (iOS 홈 화면 비율) */
+.container.mobile .wallpaper-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 18px 12px;
+}
+
+.container.mobile .wallpaper-option {
+	min-width: 0;
+}
+
+.container.mobile .wallpaper-thumbnail.portrait {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 9 / 19.5;
+	border-radius: 1rem;
+}
+
+.container.mobile .wallpaper-thumbnail.portrait + .wallpaper-name {
+	max-width: 100%;
+}
+
+.container.mobile .wallpaper-add-icon {
+	font-size: 2rem;
+}
+
+.container.mobile .wallpaper-add-label {
+	font-size: 0.85rem;
 }
