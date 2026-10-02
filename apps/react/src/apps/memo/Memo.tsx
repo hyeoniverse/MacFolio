@@ -48,6 +48,7 @@ import {
 	movePost,
 	organizePosts,
 	removeFolder,
+	reorderFolders,
 	renameFolder,
 	setLocked,
 	setPinned,
@@ -332,7 +333,10 @@ const Memo: React.FC = () => {
 
 	// 정리 내용을 겹친 글 (category가 지금 있는 폴더)
 	const organized = useMemo(() => organizePosts(posts, organization), [posts, organization]);
-	const folders = useMemo(() => buildFolderTree(organized, organization.folders), [organized, organization.folders]);
+	const folders = useMemo(
+		() => buildFolderTree(organized, organization.folders, organization.order),
+		[organized, organization.folders, organization.order]
+	);
 	/** 최근 삭제된 항목 (관리자): 30일 동안 되살리거나 영구히 지울 수 있다 */
 	const inTrash = category === RECENTLY_DELETED;
 	const trash = useMemo(
@@ -1023,6 +1027,7 @@ const Memo: React.FC = () => {
 							if (category === path || category.startsWith(`${path}/`)) selectFolder(ALL_CATEGORY);
 						}}
 						onMoveFolder={moveFolderTo}
+						onReorderFolders={(siblings) => edit((prev) => reorderFolders(prev, siblings))}
 						dragging={dragging}
 						onDragFolder={setDragging}
 						canDrop={canDrop}
