@@ -37,6 +37,8 @@ export const ALL_CATEGORY = '모든 글';
 export const RECENTLY_DELETED = '\u0000recently-deleted';
 /** 지운 글을 최근 삭제된 항목에 두는 날 수 (서버의 RECENTLY_DELETED_DAYS와 같다) */
 export const RECENTLY_DELETED_DAYS = 30;
+/** 태그로 보기: 경로 자리에 둔다 (고른 태그는 tagFilter.ts). 폴더 이름과 겹치지 않게 경로에 쓸 수 없는 글자로 시작한다 */
+export const TAG_VIEW = '\u0000tags';
 
 /**
  * 머리말을 읽는다. 지원하는 형식은 한 줄짜리 `key: value`뿐이다.
@@ -59,7 +61,8 @@ export function excerpt(body: string, length = 80): string {
 		.replace(/```[\s\S]*?```/g, ' ')
 		.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
 		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-		.replace(/^#+\s*/gm, '')
+		// 제목 표시(# 뒤에 공백)만 걷는다. 줄 처음의 #태그는 남긴다
+		.replace(/^#{1,6}(\s+|$)/gm, '')
 		.replace(/[*_`>|-]/g, ' ')
 		.replace(/\s+/g, ' ')
 		.trim();
@@ -273,7 +276,7 @@ export const folderLabelOf = (path: string) => path.split('/').join(' › ');
 
 /** 경로의 마지막 이름 (예: 개발기/MacFolio → MacFolio) */
 export const folderName = (path: string) =>
-	path === RECENTLY_DELETED ? '최근 삭제된 항목' : (path.split('/').at(-1) ?? path);
+	path === RECENTLY_DELETED ? '최근 삭제된 항목' : path === TAG_VIEW ? '태그' : (path.split('/').at(-1) ?? path);
 
 /** 본문의 첫 이미지 주소 (갤러리 미리보기용). 없으면 null */
 export function firstImage(body: string): string | null {

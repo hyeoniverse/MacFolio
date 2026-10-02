@@ -36,7 +36,7 @@ export function placeAtPoint(point: Point, size: Size, view: Size = viewport()):
 
 /**
  * 기준 아래에 둔다. align: start는 왼쪽 끝을 맞추고, center는 가운데를 맞춘다.
- * 가로로만 당긴다 (아래로 넘치면 창 안에서 스크롤한다).
+ * 가로로는 화면 안쪽으로 당기고, 아래로 넘치는데 위에 자리가 있으면 기준 위에 둔다.
  */
 export function placeBelow(
 	anchor: AnchorRect,
@@ -45,7 +45,11 @@ export function placeBelow(
 	view: Size = viewport()
 ): Point {
 	const left = align === 'center' ? anchor.left + anchor.width / 2 - size.width / 2 : anchor.left;
-	return { left: clamp(left, EDGE, view.width - size.width - EDGE), top: anchor.bottom + gap };
+	// 아래에 자리가 없고 위에는 있으면 위로 연다 (휴대폰 아래 도구 막대의 단추처럼)
+	const below = anchor.bottom + gap;
+	const above = anchor.top - gap - size.height;
+	const top = below + size.height > view.height - EDGE && above >= EDGE ? above : below;
+	return { left: clamp(left, EDGE, view.width - size.width - EDGE), top };
 }
 
 /** 기준 오른쪽에 위를 맞춰 둔다 (표 손잡이 메뉴). 오른쪽으로 넘치면 안쪽으로 */

@@ -58,6 +58,10 @@ describe('excerpt', () => {
 		expect(text).toBe('제목 굵게 링크 코드 끝');
 		expect(excerpt('가'.repeat(100), 10)).toBe(`${'가'.repeat(10)}…`);
 	});
+
+	it('줄 처음의 #태그는 제목 표시가 아니라서 남긴다', () => {
+		expect(excerpt('#리팩터링 #디자인\n## 소제목')).toBe('#리팩터링 #디자인 소제목');
+	});
 });
 
 describe('toPost', () => {

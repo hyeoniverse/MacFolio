@@ -260,7 +260,7 @@ const PostWriter = ({
 						: status.kind === 'invalid' || status.kind === 'error'
 							? status.message
 							: !post
-								? '제목과 본문을 쓰면 임시 저장됩니다.'
+								? ''
 								: unpublished
 									? post.status?.draftOnly
 										? '게시하지 않은 글'

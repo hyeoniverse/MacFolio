@@ -18,4 +18,13 @@ describe('REMARK_PLUGINS', () => {
 		expect(render('a **b** c')).toBe('<p>a <strong>b</strong> c</p>');
 		expect(render('~~old~~ new')).toBe('<p><del>old</del> new</p>');
 	});
+
+	it('#태그는 누를 수 있는 태그로, 코드·링크 안은 그대로', () => {
+		expect(render('오늘 #리팩터링 했다')).toBe(
+			'<p>오늘 <span class="memo-tag" data-tag="리팩터링">#리팩터링</span> 했다</p>'
+		);
+		expect(render('`#코드` [#링크](https://a.b) #14')).toBe(
+			'<p><code>#코드</code> <a href="https://a.b">#링크</a> #14</p>'
+		);
+	});
 });

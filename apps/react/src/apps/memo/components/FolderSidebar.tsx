@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
-import { ALL_CATEGORY, RECENTLY_DELETED, type FolderNode } from '../posts';
-import { canAddFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
+import { ALL_CATEGORY, folderLabelOf, RECENTLY_DELETED, type FolderNode } from '../posts';
+import { cycleTag, toggleAllTags, type TagSelection } from '../tagFilter';
+import { canAddFolder, canMoveFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
 const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
 import { SidebarToggle } from './MemoToolbar';
@@ -26,6 +27,8 @@ interface Props {
 	onNewNote?: () => void;
 	onRenameFolder: (path: string, name: string) => void;
 	onRemoveFolder: (path: string) => void;
+	/** 폴더를 target 폴더 안으로 옮긴다 (ALL_CATEGORY = 맨 위). 휴대폰 편집의 '이 폴더 이동' */
+	onMoveFolder?: (path: string, target: string) => void;
 	dragging: DragItem | null;
 	onDragFolder: (item: DragItem | null) => void;
 	/** 끌고 있는 것을 target 폴더에 놓을 수 있는지 (ALL_CATEGORY = 맨 위) */
@@ -33,6 +36,13 @@ interface Props {
 	onDrop: (target: string) => void;
 	/** '최근 삭제된 항목'의 글 수 (관리자). 1개 이상일 때만 폴더 목록 맨 아래에 보인다 */
 	recentlyDeleted?: number;
+	/** 휴지통 비우기 (최근 삭제된 항목의 ••• 메뉴) */
+	onEmptyTrash?: () => void;
+	/** 본문에 쓴 #태그와 글 수 (tags.ts). 있으면 폴더 아래에 태그 묶음이 보인다 */
+	tags?: { name: string; count: number }[];
+	/** 고른 태그 (태그마다 미선택 → 포함 → 제외), 바꾸기 */
+	tagSelection?: TagSelection;
+	onTagsChange?: (next: TagSelection) => void;
 }
 
 /** 폴더에 끌어 놓기. 놓을 수 있는 폴더에 올리면 강조한다 */
@@ -130,6 +140,10 @@ type RowProps = Omit<Props, 'open' | 'onToggle' | 'folders' | 'total' | 'onAddFo
 	addingUnder: string | null;
 	onStartAdding: (parent: string) => void;
 	newFolderInput: React.ReactNode;
+	/** 휴대폰 폴더 화면의 편집: 줄을 눌러도 열지 않고, ••• 단추로 폴더 추가·이동·이름 변경·삭제 */
+	editing?: boolean;
+	/** 모든 폴더 경로 ('이 폴더 이동'의 갈 곳) */
+	movePaths?: string[];
 };
 
 /** 폴더 한 줄: 펼침 단추 + 폴더 + (마우스를 올리면) ••• 메뉴. 끌어서 다른 폴더로 옮긴다 */
@@ -139,12 +153,19 @@ const FolderRow: React.FC<RowProps> = (props) => {
 	const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null);
 	const menuOpen = menuAt !== null;
 	const [renaming, setRenaming] = useState(false);
+	/** '이 폴더 이동'에서 고를 갈 곳 메뉴를 연 자리 */
+	const [moveAt, setMoveAt] = useState<{ x: number; y: number } | null>(null);
 	const open = !collapsed.has(node.path) || addingUnder === node.path;
 	const drop = useDropTarget(node.path, props);
 	const hasChildren = node.children.length > 0;
 	const beingDragged = props.dragging?.type === 'folder' && props.dragging.id === node.path;
 	const siblingNames = (props.siblings ?? []).filter((name) => name !== node.name);
 	const removable = Boolean(node.custom) && node.count === 0;
+	const removeHint = removable
+		? undefined
+		: node.custom
+			? '메모가 있는 폴더는 지울 수 없어요'
+			: '블로그 글의 폴더는 지울 수 없어요';
 
 	return (
 		<li>
@@ -198,7 +219,7 @@ const FolderRow: React.FC<RowProps> = (props) => {
 							props.onDragFolder({ type: 'folder', id: node.path });
 						}}
 						onDragEnd={() => props.onDragFolder(null)}
-						onClick={() => onSelect(node.path)}
+						onClick={() => !props.editing && onSelect(node.path)}
 					>
 						<FolderIcon />
 						<span className="memo-folder-name">{node.name}</span>
@@ -224,27 +245,67 @@ const FolderRow: React.FC<RowProps> = (props) => {
 							label={`${node.name} 폴더 메뉴`}
 							anchor={menuAt}
 							onClose={() => setMenuAt(null)}
+							className={props.editing ? 'touch' : undefined}
+							items={
+								props.editing
+									? [
+											{
+												label: '폴더 추가',
+												icon: 'fa-solid fa-folder-plus',
+												onSelect: () => props.onStartAdding(node.path),
+												disabled: !canAddFolder(node.path),
+												hint: canAddFolder(node.path) ? undefined : DEPTH_LIMIT_HINT,
+											},
+											{
+												label: '이 폴더 이동',
+												icon: 'fa-regular fa-folder',
+												onSelect: () => setMoveAt(menuAt),
+											},
+											{ label: '이름 변경', icon: 'fa-solid fa-pen', onSelect: () => setRenaming(true) },
+											{
+												label: '삭제',
+												icon: 'fa-regular fa-trash-can',
+												destructive: true,
+												onSelect: () => props.onRemoveFolder(node.path),
+												disabled: !removable,
+												hint: removeHint,
+											},
+										]
+									: [
+											{ label: '폴더 이름 변경', icon: 'fa-solid fa-pen', onSelect: () => setRenaming(true) },
+											{
+												label: '폴더 삭제',
+												icon: 'fa-regular fa-trash-can',
+												onSelect: () => props.onRemoveFolder(node.path),
+												disabled: !removable,
+												hint: removeHint,
+											},
+											'separator',
+											{
+												label: '새로운 폴더',
+												icon: 'fa-solid fa-folder-plus',
+												onSelect: () => props.onStartAdding(node.path),
+												disabled: !canAddFolder(node.path),
+												hint: canAddFolder(node.path) ? undefined : DEPTH_LIMIT_HINT,
+											},
+										]
+							}
+						/>
+					)}
+					{moveAt && props.onMoveFolder && (
+						<Menu
+							label={`${node.name} 폴더를 옮길 곳`}
+							className="touch"
+							anchor={moveAt}
+							onClose={() => setMoveAt(null)}
 							items={[
-								{ label: '폴더 이름 변경', icon: 'fa-solid fa-pen', onSelect: () => setRenaming(true) },
-								{
-									label: '폴더 삭제',
-									icon: 'fa-regular fa-trash-can',
-									onSelect: () => props.onRemoveFolder(node.path),
-									disabled: !removable,
-									hint: removable
-										? undefined
-										: node.custom
-											? '메모가 있는 폴더는 지울 수 없어요'
-											: '블로그 글의 폴더는 지울 수 없어요',
-								},
-								'separator',
-								{
-									label: '새로운 폴더',
-									icon: 'fa-solid fa-folder-plus',
-									onSelect: () => props.onStartAdding(node.path),
-									disabled: !canAddFolder(node.path),
-									hint: canAddFolder(node.path) ? undefined : DEPTH_LIMIT_HINT,
-								},
+								{ heading: '옮길 곳' },
+								...[ALL_CATEGORY, ...(props.movePaths ?? [])].map((target) => ({
+									label: target === ALL_CATEGORY ? '맨 위' : folderLabelOf(target),
+									icon: target === ALL_CATEGORY ? 'fa-solid fa-arrow-up' : 'fa-regular fa-folder',
+									disabled: !canMoveFolder(node.path, target === ALL_CATEGORY ? '' : target, props.movePaths),
+									onSelect: () => props.onMoveFolder?.(node.path, target),
+								})),
 							]}
 						/>
 					)}
@@ -290,6 +351,21 @@ const FolderSidebar: React.FC<Props> = (props) => {
 	const [addingUnder, setAddingUnder] = useState<string | null>(null);
 	const rootDrop = useDropTarget(ALL_CATEGORY, props);
 	const trashDrop = useDropTarget(RECENTLY_DELETED, props);
+	/** 최근 삭제된 항목의 메뉴를 연 자리 (null이면 닫힘) */
+	const [trashMenuAt, setTrashMenuAt] = useState<{ x: number; y: number } | null>(null);
+	/** '선택된 태그 중 모두/일부 포함' 메뉴를 연 자리 */
+	const [matchMenuAt, setMatchMenuAt] = useState<{ x: number; y: number } | null>(null);
+	/** 휴대폰에서 '블로그' 묶음 접기 (iOS 메모의 'iCloud' 옆 화살표) */
+	const [blogOpen, setBlogOpen] = useState(true);
+	/** 휴대폰 폴더 화면의 편집 (iOS 메모의 '편집' → ✓) */
+	const [editing, setEditing] = useState(false);
+	const movePaths: string[] = [];
+	const walkPaths = (nodes: FolderNode[]) =>
+		nodes.forEach((node) => {
+			movePaths.push(node.path);
+			walkPaths(node.children);
+		});
+	walkPaths(folders);
 
 	const toggleFolder = (path: string) =>
 		setCollapsed((prev) => {
@@ -320,7 +396,7 @@ const FolderSidebar: React.FC<Props> = (props) => {
 		);
 
 	return (
-		<nav className="memo-folders" aria-label="카테고리" inert={!open}>
+		<nav className={`memo-folders ${editing ? 'editing' : ''}`} aria-label="카테고리" inert={!open}>
 			{/* 신호등 버튼 바로 옆에 여닫기 (접었을 때와 같은 자리), 오른쪽 끝에 새로운 폴더 */}
 			<div className="memo-sidebar-bar">
 				<span className="memo-lights-space" aria-hidden="true" />
@@ -349,11 +425,37 @@ const FolderSidebar: React.FC<Props> = (props) => {
 						icon="fa-solid fa-folder-plus"
 					/>
 				)}
+				{props.canEdit && (
+					<button
+						type="button"
+						className={`memo-folders-edit ${editing ? 'done' : ''}`}
+						aria-label={editing ? '편집 완료' : '폴더 편집'}
+						aria-pressed={editing}
+						onClick={() => setEditing(!editing)}
+					>
+						{editing ? <i className="fa-solid fa-check" aria-hidden="true" /> : '편집'}
+					</button>
+				)}
 			</div>
 
 			<div className="memo-folder-scroll">
-				<h2>블로그</h2>
-				<ul>
+				{/* 휴대폰: iOS 메모처럼 큰 제목, 묶음 이름 옆에 접기 단추 */}
+				<p className="memo-phone-title" aria-hidden="true">
+					폴더
+				</p>
+				<div className="memo-folder-group-head">
+					<h2>블로그</h2>
+					<button
+						type="button"
+						className={`memo-folder-group-toggle ${blogOpen ? 'open' : ''}`}
+						aria-label={`블로그 ${blogOpen ? '접기' : '펼치기'}`}
+						aria-expanded={blogOpen}
+						onClick={() => setBlogOpen(!blogOpen)}
+					>
+						<i className="fa-solid fa-chevron-down" aria-hidden="true" />
+					</button>
+				</div>
+				<ul hidden={!blogOpen}>
 					<li>
 						{/* 모든 글: 폴더를 여기에 놓으면 맨 위로 옮겨 간다 */}
 						<div
@@ -366,6 +468,7 @@ const FolderSidebar: React.FC<Props> = (props) => {
 								type="button"
 								className={`memo-folder ${current === ALL_CATEGORY ? 'active' : ''}`}
 								aria-current={current === ALL_CATEGORY || undefined}
+								disabled={editing}
 								onClick={() => onSelect(ALL_CATEGORY)}
 							>
 								<FolderIcon />
@@ -386,6 +489,8 @@ const FolderSidebar: React.FC<Props> = (props) => {
 							addingUnder={addingUnder}
 							onStartAdding={setAddingUnder}
 							newFolderInput={newFolderInput}
+							editing={editing}
+							movePaths={movePaths}
 						/>
 					))}
 					{addingUnder === '' && newFolderInput}
@@ -394,8 +499,16 @@ const FolderSidebar: React.FC<Props> = (props) => {
 					{((props.recentlyDeleted ?? 0) > 0 || props.dragging?.type === 'post') && (
 						<li>
 							<div
-								className={`memo-folder-row ${trashDrop.active ? 'drop-target' : ''}`}
+								className={`memo-folder-row ${trashDrop.active ? 'drop-target' : ''} ${trashMenuAt ? 'menu-open' : ''}`}
 								style={{ ['--depth' as string]: 0 }}
+								onContextMenu={
+									props.canEdit && props.onEmptyTrash
+										? (event) => {
+												event.preventDefault();
+												setTrashMenuAt({ x: event.clientX, y: event.clientY });
+											}
+										: undefined
+								}
 								{...trashDrop.handlers}
 							>
 								<span className="memo-disclosure" aria-hidden="true" />
@@ -403,16 +516,122 @@ const FolderSidebar: React.FC<Props> = (props) => {
 									type="button"
 									className={`memo-folder ${current === RECENTLY_DELETED ? 'active' : ''}`}
 									aria-current={current === RECENTLY_DELETED || undefined}
+									disabled={editing}
 									onClick={() => onSelect(RECENTLY_DELETED)}
 								>
 									<i className="fa-regular fa-trash-can memo-folder-icon" aria-hidden="true" />
 									<span className="memo-folder-name">최근 삭제된 항목</span>
 									{(props.recentlyDeleted ?? 0) > 0 && <span className="memo-count">{props.recentlyDeleted}</span>}
 								</button>
+								{props.canEdit && props.onEmptyTrash && (
+									<button
+										type="button"
+										className="memo-folder-more"
+										aria-label="휴지통 동작"
+										aria-haspopup="menu"
+										aria-expanded={trashMenuAt !== null}
+										onClick={(event) => {
+											const rect = event.currentTarget.getBoundingClientRect();
+											setTrashMenuAt(trashMenuAt ? null : { x: rect.left, y: rect.bottom + 4 });
+										}}
+									>
+										<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+									</button>
+								)}
+								{trashMenuAt && props.onEmptyTrash && (
+									<Menu
+										label="휴지통 메뉴"
+										anchor={trashMenuAt}
+										onClose={() => setTrashMenuAt(null)}
+										items={[
+											{
+												label: '휴지통 비우기',
+												icon: 'fa-regular fa-trash-can',
+												destructive: true,
+												disabled: (props.recentlyDeleted ?? 0) === 0,
+												onSelect: props.onEmptyTrash,
+											},
+										]}
+									/>
+								)}
 							</div>
 						</li>
 					)}
 				</ul>
+				{/* 태그: macOS 메모처럼 폴더 아래에. 누를 때마다 미선택 → 포함(채운 칩) → 제외(테두리·취소선) */}
+				{props.tags && props.tags.length > 0 && props.tagSelection && props.onTagsChange && (
+					<section className="memo-tag-browser" aria-label="태그">
+						<div className="memo-tag-head">
+							<h3>태그</h3>
+							{/* 태그를 둘 이상 고르면: 모두 포함(그리고)인지 일부 포함(또는)인지 */}
+							{Object.keys(props.tagSelection.tags).length >= 2 && (
+								<button
+									type="button"
+									className="memo-tag-match"
+									aria-haspopup="menu"
+									aria-expanded={matchMenuAt !== null}
+									onClick={(event) => {
+										const rect = event.currentTarget.getBoundingClientRect();
+										setMatchMenuAt(matchMenuAt ? null : { x: rect.left, y: rect.bottom + 4 });
+									}}
+								>
+									선택된 태그 중 {props.tagSelection.match === 'all' ? '모두' : '일부'} 포함
+									<span className="memo-tag-match-chevrons" aria-hidden="true">
+										<i className="fa-solid fa-chevron-up" />
+										<i className="fa-solid fa-chevron-down" />
+									</span>
+								</button>
+							)}
+							{matchMenuAt && (
+								<Menu
+									label="태그 일치 방식"
+									anchor={matchMenuAt}
+									onClose={() => setMatchMenuAt(null)}
+									items={(['all', 'any'] as const).map((match) => ({
+										label: `선택된 태그 중 ${match === 'all' ? '모두' : '일부'} 포함`,
+										checked: props.tagSelection!.match === match,
+										onSelect: () => props.onTagsChange!({ ...props.tagSelection!, match }),
+									}))}
+								/>
+							)}
+						</div>
+						<ul>
+							<li>
+								<button
+									type="button"
+									className={`memo-tag-chip ${props.tagSelection.all ? 'include' : ''}`}
+									aria-pressed={props.tagSelection.all}
+									onClick={() => props.onTagsChange!(toggleAllTags(props.tagSelection!))}
+								>
+									모든 태그
+								</button>
+							</li>
+							{props.tags.map((tag) => {
+								const state = props.tagSelection!.tags[tag.name];
+								return (
+									<li key={tag.name}>
+										<button
+											type="button"
+											className={`memo-tag-chip ${state ?? ''}`}
+											aria-pressed={state === 'include'}
+											data-state={state ?? 'none'}
+											title={
+												state === 'include'
+													? '이 태그가 있는 메모 (한 번 더 누르면 제외)'
+													: state === 'exclude'
+														? '이 태그가 있는 메모는 뺍니다 (한 번 더 누르면 풀림)'
+														: `${tag.count}개의 메모`
+											}
+											onClick={() => props.onTagsChange!(cycleTag(props.tagSelection!, tag.name))}
+										>
+											#{tag.name}
+										</button>
+									</li>
+								);
+							})}
+						</ul>
+					</section>
+				)}
 			</div>
 		</nav>
 	);
