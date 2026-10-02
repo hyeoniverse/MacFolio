@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import { LIMITS } from '../conversations';
 
 export interface SendResult {
@@ -15,15 +16,20 @@ interface Props {
 	placeholder?: string;
 }
 
-/** macOS 메시지 앱의 떠 있는 알약 입력창. Enter로 보내고 Shift+Enter로 줄을 바꾼다. */
+/**
+ * macOS 메시지 앱의 떠 있는 알약 입력창. Enter로 보내고 Shift+Enter로 줄을 바꾼다.
+ * 보내지 못하면 입력창 아래 줄 대신 경고창으로 알린다 (에러 줄이 생기며 화면이 밀리지 않게). 쓴 글은 그대로 남는다.
+ */
 const Composer: React.FC<Props> = ({ onSend, children, autoFocus, placeholder = '메시지' }) => {
 	const [text, setText] = useState('');
 	const [error, setError] = useState<string>();
 	const [sending, setSending] = useState(false);
+	const textarea = useRef<HTMLTextAreaElement>(null);
 
 	const submit = async (event?: React.FormEvent) => {
 		event?.preventDefault();
-		if (sending) return;
+		// 빈 글은 보내기 단추도 없으므로 Enter도 무시한다
+		if (sending || !text.trim()) return;
 		setSending(true);
 		try {
 			const result = await onSend(text);
@@ -34,7 +40,10 @@ const Composer: React.FC<Props> = ({ onSend, children, autoFocus, placeholder = 
 		}
 	};
 
-	const shownError = error;
+	const closeError = () => {
+		setError(undefined);
+		textarea.current?.focus();
+	};
 	const canSend = text.trim().length > 0 && !sending;
 
 	return (
@@ -42,17 +51,14 @@ const Composer: React.FC<Props> = ({ onSend, children, autoFocus, placeholder = 
 			{children}
 			<div className="messages-field">
 				<textarea
+					ref={textarea}
 					aria-label="메시지"
 					placeholder={placeholder}
 					rows={1}
 					maxLength={LIMITS.text.max}
 					value={text}
 					autoFocus={autoFocus}
-					aria-invalid={!!shownError}
-					onChange={(event) => {
-						setText(event.target.value);
-						setError(undefined);
-					}}
+					onChange={(event) => setText(event.target.value)}
 					onKeyDown={(event) => {
 						// 한글 조합 중 Enter는 글자 확정이므로 보내지 않는다
 						if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
@@ -66,10 +72,15 @@ const Composer: React.FC<Props> = ({ onSend, children, autoFocus, placeholder = 
 					<i className="fa-solid fa-arrow-up" aria-hidden="true" />
 				</button>
 			</div>
-			{shownError && (
-				<p className="messages-error" role="alert">
-					{shownError}
-				</p>
+			{error && (
+				<AlertDialog
+					title="메시지를 보내지 못했습니다"
+					message={error}
+					confirmLabel="확인"
+					cancelLabel={null}
+					onConfirm={closeError}
+					onCancel={closeError}
+				/>
 			)}
 		</form>
 	);

@@ -1,4 +1,4 @@
-import { test, expect, appWindow } from './fixtures';
+import { test, expect, appWindow, storeMessagesOnServer } from './fixtures';
 import { fakeApi } from './fakeApi';
 import type { Page } from '@playwright/test';
 
@@ -99,6 +99,18 @@ test.describe('모바일', () => {
 		await expect(settings).toBeVisible();
 		await settings.getByRole('button', { name: '홈', exact: true }).tap();
 		await expect(settings).toBeHidden();
+	});
+
+	test('메시지 서버에 닿지 못하면 메시지를 열지 않고, 확인하면 홈 화면으로 돌아온다', async ({ page }) => {
+		await storeMessagesOnServer(page);
+		await enterHome(page);
+		await homeApp(page, '메시지').tap();
+		const alert = appWindow(page, 'messages').getByRole('alertdialog', { name: '메시지를 열 수 없습니다' });
+		await expect(alert).toBeVisible();
+
+		await alert.getByRole('button', { name: '확인' }).tap();
+		await expect(appWindow(page, 'messages')).toBeHidden();
+		await expect(page.locator('.mobile-home')).toBeVisible();
 	});
 
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {

@@ -10,6 +10,7 @@ export function useConversations() {
 	const [threads, setThreads] = useState<Thread[]>([]);
 	const [selectedId, setSelectedId] = useState<string>(PINNED_THREAD_ID);
 	const [messages, setMessages] = useState<Message[]>([]);
+	/** 처음 불러오기의 결과. error면 앱을 열 수 없다 (열어 둔 뒤의 실패는 보내기 에러로만 보인다) */
 	const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 	/** 이 브라우저의 이름 (저장소가 정한다: 예 🦊 날쌘 여우). 모르면 null */
 	const [myName, setMyName] = useState<string | null>(null);
@@ -28,7 +29,7 @@ export function useConversations() {
 					setThreads(sortThreads(list));
 					setStatus('ready');
 				})
-				.catch(() => setStatus('error')),
+				.catch(() => setStatus((prev) => (prev === 'loading' ? 'error' : prev))),
 		[repository]
 	);
 
@@ -40,7 +41,10 @@ export function useConversations() {
 	useEffect(() => {
 		if (selectedId === NEW_THREAD) return;
 		let cancelled = false;
-		repository.listMessages(selectedId).then((list) => !cancelled && setMessages(list));
+		repository.listMessages(selectedId).then(
+			(list) => !cancelled && setMessages(list),
+			() => {} // 서버가 잠깐 끊기면 보던 말풍선을 그대로 둔다
+		);
 		return () => {
 			cancelled = true;
 		};

@@ -534,16 +534,6 @@
 	display: none;
 }
 
-.messages-composer [aria-invalid='true'] {
-	border-bottom-color: var(--messages-error);
-}
-
-.messages-error {
-	padding: 0 6px;
-	color: var(--messages-error);
-	font-size: 12px;
-}
-
 /* 대화를 바꾸면 살짝 나타나고, 말풍선은 꼬리 쪽에서 톡 튀어나온다 */
 .messages-chat {
 	animation: fade-in var(--duration-fast) var(--ease-out);

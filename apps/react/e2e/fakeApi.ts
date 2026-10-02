@@ -130,6 +130,7 @@ export async function fakeApi(
 	});
 	await page.addInitScript((url) => {
 		window.__MACFOLIO_API_URL__ = url;
+		window.__MACFOLIO_MESSAGES_STORE__ = 'server';
 	}, FAKE_API);
 	await page.route('https://github.com/*.png*', (route) => route.fulfill({ status: 404 }));
 	// 사진 찾기 결과의 그림 (1×1 PNG)
