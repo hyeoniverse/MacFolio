@@ -639,3 +639,114 @@
 .container.mobile .messages-sidebar-top {
 	min-height: 0;
 }
+
+/* ─── 휴대폰 (iOS 메시지처럼, 메모와 같은 모양) ───
+   떠 있는 뒤로 가기, 큰 제목, 회색 바탕 위 흰 카드 목록, 아래에 떠 있는 검색 알약과 새 피드백 */
+.messages-phone-title,
+.messages-phone-bottom {
+	display: none;
+}
+
+.container.mobile .messages {
+	position: relative;
+	background-color: var(--phone-page-bg);
+}
+
+.container.mobile .messages-sidebar {
+	padding: 60px 16px 96px;
+	background-color: var(--phone-page-bg);
+}
+
+.container.mobile .messages-phone-title {
+	display: block;
+}
+
+/* 위의 검색 칸과 쓰기 단추 대신 아래에 떠 있는 것을 쓴다 */
+.container.mobile .messages-sidebar > .messages-search,
+.container.mobile .messages-sidebar-top {
+	display: none;
+}
+
+.container.mobile .messages-threads {
+	overflow: hidden;
+	padding: 0;
+	border-radius: 14px;
+	background-color: var(--phone-card-bg);
+}
+
+/* 줄 사이 선은 이름부터 오른쪽 끝 앞까지, 고른 대화 옆에서도 늘 보인다 */
+.container.mobile .messages-threads li + li .messages-thread::before,
+.container.mobile .messages-threads li:has(.selected) + li .messages-thread::before {
+	display: block;
+	left: 66px;
+	right: 14px;
+	height: 0.5px;
+	background-color: var(--phone-separator);
+}
+
+.container.mobile .messages-thread {
+	padding: 12px 14px;
+	border-radius: 0;
+}
+
+/* 한 화면씩 보므로 고른 대화를 칠하지 않는다 */
+.container.mobile .messages-thread.selected {
+	background: none;
+	color: inherit;
+}
+
+.container.mobile .messages-thread.selected :is(time, .messages-thread-preview) {
+	color: var(--messages-meta);
+}
+
+.container.mobile .messages-thread strong {
+	font-size: 16px;
+}
+
+.container.mobile .messages-thread-preview {
+	font-size: 14px;
+}
+
+.container.mobile .messages-empty {
+	padding: 20px 16px;
+	text-align: center;
+}
+
+.container.mobile .messages.chat-open .messages-phone-bottom {
+	display: none;
+}
+
+.container.mobile .messages:not(.chat-open) .messages-phone-bottom {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	position: absolute;
+	right: 16px;
+	bottom: 12px;
+	left: 16px;
+	z-index: 5;
+}
+
+.container.mobile .messages-phone-search {
+	flex: 1;
+	height: 50px;
+	margin: 0;
+	padding: 0 18px;
+	border-radius: 999px;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+	font-size: 17px;
+}
+
+.container.mobile .messages-phone-search input {
+	font-size: 17px;
+}
+
+/* 대화: 떠 있는 뒤로 가기와 같은 높이에 상대 이름 */
+.container.mobile .messages-chat {
+	background-color: var(--messages-window-bg);
+}
+
+.container.mobile .messages-chat-header {
+	padding-top: 8px;
+}
