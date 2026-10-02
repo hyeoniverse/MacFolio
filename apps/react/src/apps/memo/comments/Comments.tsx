@@ -178,7 +178,6 @@ const Comments = ({ slug }: { slug: string }) => {
 				) : (
 					name && (
 						<div className="memo-comment-as">
-							<CommentAvatar name={name} owner={false} />
 							<span>
 								<strong>{name}</strong> 이름으로 씁니다.
 							</span>
