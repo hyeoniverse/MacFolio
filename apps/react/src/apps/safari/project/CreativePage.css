@@ -1,0 +1,909 @@
+/* HYEONIVERSE: 그 사이트처럼 큰 세리프와 마젠타, 다크 모드는 그 사이트의 어두운 바탕. 왼쪽은 붙어 있고 오른쪽만 내려간다 */
+.sp[data-look='creative'] {
+	--cr-bg: #f6f5f3;
+	--cr-ink: #1c1b1a;
+	--cr-muted: #6b665f;
+	--cr-line: #dcd8d1;
+	--sp-accent: #d40063;
+	/* 금속 질감(화면 테와 차례 표시만): 크롬은 위아래로 빛이 갈리는 은색, 테는 비스듬히 빛이 도는 은색 */
+	--cr-sheen: conic-gradient(from 210deg, #f6f7f9, #a9aeb6, #ffffff, #8a9099, #e8eaee, #9ea3ab, #f6f7f9);
+	background-color: var(--cr-bg);
+	color: var(--cr-ink);
+}
+
+:root[data-theme='dark'] .sp[data-look='creative'] {
+	--cr-bg: #1c1b1a;
+	--cr-ink: #f3efe6;
+	--cr-muted: #a8a39b;
+	--cr-line: #3a3836;
+	--sp-accent: #f74d96;
+	--cr-sheen: conic-gradient(from 210deg, #5b6068, #2a2c31, #b9bec6, #34373d, #8b9099, #2f3237, #5b6068);
+}
+
+.cr {
+	display: grid;
+	grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.4fr);
+	gap: 48px;
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 0 40px;
+	text-align: left;
+}
+
+.cr :is(h1, h2, h3, .cr-no, .cr-facts strong, dt, .cr-foot p) {
+	font-family: var(--sp-serif);
+}
+
+/* 왼쪽: 화면에 붙어 있다 */
+/* 아이콘과 몽이는 늘 보인다. 장을 읽기 시작하면(data-reading) 소개 글과 링크를 접어 차례까지 한 화면에 들어오게 한다 */
+.cr-side {
+	position: sticky;
+	top: 0;
+	align-self: start;
+	padding: 48px 0;
+}
+
+.cr-side h1 {
+	transition: font-size 0.4s var(--ease-out);
+}
+
+.cr-side :is(.cr-lead, .cr-links) {
+	max-height: 260px;
+	overflow: hidden;
+	transition:
+		max-height 0.45s var(--ease-out),
+		opacity 0.3s,
+		margin 0.45s var(--ease-out);
+}
+
+/* 왼쪽 칸이 붙어 있는 넓은 창에서만 접는다 (좁은 창에서는 위에서 아래로 그냥 흐른다) */
+@container (min-width: 761px) {
+	.cr-side[data-reading] :is(.cr-lead, .cr-links) {
+		max-height: 0;
+		margin-top: 0;
+		opacity: 0;
+	}
+
+	.cr-side[data-reading] h1 {
+		font-size: clamp(24px, 3cqi, 32px);
+	}
+}
+
+.cr-icon {
+	width: 52px;
+	height: 52px;
+	border-radius: 13px;
+	box-shadow: 0 8px 24px rgba(212, 0, 99, 0.35);
+}
+
+.cr-name {
+	margin-top: 20px;
+	color: var(--cr-muted);
+	font-size: 12px;
+	letter-spacing: 0.28em;
+	text-transform: uppercase;
+}
+
+.cr-side h1 {
+	margin-top: 10px;
+	font-size: clamp(30px, 4.4cqi, 46px);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1.12;
+}
+
+.cr-lead {
+	margin-top: 16px;
+	color: var(--cr-muted);
+	font-size: 15px;
+	line-height: 1.65;
+}
+
+.cr-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 22px;
+	margin-top: 22px;
+	font-size: 15px;
+}
+
+.cr-index {
+	margin-top: 36px;
+	border-top: 1px solid var(--cr-line);
+}
+
+.cr-index ol {
+	list-style: none;
+}
+
+.cr-index button {
+	display: flex;
+	gap: 14px;
+	width: 100%;
+	padding: 12px 0;
+	border: none;
+	border-bottom: 1px solid var(--cr-line);
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	font-size: 15px;
+	text-align: left;
+	cursor: pointer;
+	transition: color var(--duration-fast) var(--ease-out);
+}
+
+.cr-index button:hover {
+	color: var(--sp-accent);
+}
+
+.cr-index button[aria-current] {
+	color: var(--sp-accent);
+	font-weight: 700;
+}
+
+.cr-index span {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 12px;
+	line-height: 22px;
+}
+
+/* 장을 읽은 만큼 차례 아래 줄이 강조색으로 찬다 (--read는 스크립트가 정한다) */
+.cr-index button {
+	position: relative;
+}
+
+.cr-index button::before {
+	content: '';
+	position: absolute;
+	bottom: -1px;
+	left: 0;
+	width: calc(var(--read, 0) * 100%);
+	height: 2px;
+	background-color: var(--sp-accent);
+}
+
+/* 몽이를 누르면 하트가 퐁퐁 솟고, 몽이는 한 번 뛴다 */
+.cr-mascot {
+	cursor: pointer;
+}
+
+.cr-mascot[data-hop] img[data-on='true'] {
+	animation: cr-hop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@keyframes cr-hop {
+	40% {
+		translate: 0 -14px;
+	}
+}
+
+.cr-heart {
+	position: absolute;
+	z-index: 2;
+	top: 30%;
+	left: 50%;
+	color: var(--sp-accent);
+	font-size: 16px;
+	pointer-events: none;
+	animation: cr-heart 1.05s ease-out forwards;
+}
+
+@keyframes cr-heart {
+	from {
+		opacity: 1;
+		transform: translate(-50%, 0) scale(0.4);
+	}
+
+	to {
+		opacity: 0;
+		transform: translate(calc(-50% + var(--dx) * 1px), -90px) scale(1.2) rotate(calc(var(--dx) * 0.4deg));
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cr-mascot[data-hop] img[data-on='true'],
+	.cr-heart {
+		animation: none;
+		display: none;
+	}
+}
+
+/* 몽이: 바닥 그림자 위에서 장에 따라 표정을 바꾼다 (표정 그림을 겹쳐 두고 하나만 보인다) */
+.cr-mascot {
+	display: grid;
+	position: absolute;
+	/* 뛰거나 표정이 바뀔 때 머리가 화면 위로 잘리지 않게 넉넉히 내려 둔다 */
+	top: 26px;
+	right: 0;
+	justify-items: center;
+	width: 140px;
+	margin: 0;
+	padding-bottom: 12px;
+}
+
+.cr-mascot::after {
+	position: absolute;
+	bottom: 0;
+	width: 120px;
+	height: 22px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, rgba(0, 0, 0, 0.18), transparent);
+	content: '';
+}
+
+.cr-mascot img {
+	grid-area: 1 / 1;
+	position: relative;
+	z-index: 1;
+	align-self: end;
+	height: 112px;
+	opacity: 0;
+	transform: translateY(6px) scale(0.96);
+	transition:
+		opacity 0.25s var(--ease-out),
+		transform 0.35s var(--ease-out);
+}
+
+.cr-mascot img[src*='star'] {
+	margin-inline: -60px;
+}
+
+.cr-mascot img[data-on='true'] {
+	opacity: 1;
+	transform: none;
+}
+
+.cr-mascot[data-mood='happy'] img[data-on='true'] {
+	animation: cr-boing 0.6s var(--ease-out);
+}
+
+@keyframes cr-boing {
+	30% {
+		transform: translateY(-14px) scale(1.04, 0.96);
+	}
+
+	60% {
+		transform: translateY(0) scale(0.97, 1.03);
+	}
+}
+
+/* 오른쪽: 장을 넘기며 내려간다 */
+.cr-main {
+	padding: 48px 0 0;
+}
+
+/* 화면은 금속 테 안에 */
+.cr-shot {
+	overflow: hidden;
+	padding: 6px;
+	border-radius: 10px;
+	background: var(--cr-sheen);
+	box-shadow:
+		0 1px 0 rgba(255, 255, 255, 0.8) inset,
+		0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+.cr-shot img {
+	border-radius: 5px;
+}
+
+.cr-shot img {
+	display: block;
+	width: 100%;
+}
+
+.cr-facts {
+	padding: 28px 0;
+	border-bottom: 1px solid var(--cr-line);
+}
+
+.cr-facts > p {
+	color: var(--cr-muted);
+	font-size: 13px;
+}
+
+.cr-facts ul {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+	margin-top: 14px;
+	list-style: none;
+}
+
+.cr-facts li {
+	display: flex;
+	flex-direction: column;
+}
+
+.cr-facts strong {
+	color: var(--sp-accent);
+	font-size: 34px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.cr-facts span {
+	color: var(--cr-muted);
+	font-size: 13px;
+}
+
+.cr-chapter {
+	padding: 56px 0;
+	border-bottom: 1px solid var(--cr-line);
+	scroll-margin-top: 16px;
+}
+
+.cr-no {
+	color: var(--sp-accent);
+	font-size: 56px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.cr-chapter h2 {
+	margin: 8px 0 28px;
+	font-size: clamp(26px, 3.6cqi, 36px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.cr-features {
+	list-style: none;
+}
+
+.cr-features li {
+	padding: 22px 0 30px;
+	border-top: 1px solid var(--cr-line);
+}
+
+.cr-feature-text {
+	display: grid;
+	grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+	gap: 24px;
+}
+
+/* 기능마다 붙는 실제 화면 */
+.cr-feature-media {
+	margin-top: 18px;
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 14px;
+	background-color: var(--cr-line);
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+.cr-feature-media > img,
+.cr-feature-media > video {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 라이트·다크 밀대: 손잡이 오른쪽은 다크 그림이 덮는다 */
+.cr-compare {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+	user-select: none;
+}
+
+.cr-compare img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+}
+
+.cr-compare-dark {
+	clip-path: inset(0 0 0 var(--split));
+}
+
+.cr-compare-handle {
+	display: grid;
+	position: absolute;
+	top: 50%;
+	left: var(--split);
+	z-index: 1;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #ffffff;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+	color: var(--sp-accent);
+	pointer-events: none;
+	translate: -50% -50%;
+}
+
+/* 손잡이를 지나는 세로줄 */
+.cr-compare::after {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--split);
+	width: 2px;
+	background-color: #ffffff;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+	content: '';
+	pointer-events: none;
+	translate: -50% 0;
+}
+
+.cr-compare-tag {
+	position: absolute;
+	bottom: 12px;
+	z-index: 1;
+	padding: 3px 10px;
+	border-radius: 999px;
+	background-color: rgba(0, 0, 0, 0.55);
+	color: #ffffff;
+	font-size: 12px;
+	font-weight: 700;
+	pointer-events: none;
+}
+
+.cr-compare-tag.light {
+	left: 12px;
+}
+
+.cr-compare-tag.dark {
+	right: 12px;
+}
+
+.cr-compare input {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	opacity: 0;
+	cursor: ew-resize;
+}
+
+.cr-compare:has(input:focus-visible) .cr-compare-handle {
+	outline: 3px solid var(--sp-accent);
+	outline-offset: 2px;
+}
+
+/* 레이아웃 고르기: 위의 단추를 누르면 그림이 겹쳐 바뀐다 */
+.cr-variants-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 10px;
+	background-color: var(--cr-bg);
+	border-bottom: 1px solid var(--cr-line);
+}
+
+.cr-variants-tabs button {
+	padding: 5px 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 999px;
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	font-size: 13px;
+	cursor: pointer;
+	transition:
+		background-color 0.2s,
+		color 0.2s,
+		border-color 0.2s;
+}
+
+.cr-variants-tabs button:hover {
+	border-color: var(--sp-accent);
+}
+
+.cr-variants-tabs button[aria-pressed='true'] {
+	border-color: var(--sp-accent);
+	background-color: var(--sp-accent);
+	color: #ffffff;
+}
+
+.cr-variants-view {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+}
+
+.cr-variants-view img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+	opacity: 0;
+	scale: 1.04;
+	transition:
+		opacity 0.45s ease-out,
+		scale 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.cr-variants-view img[data-on='true'] {
+	opacity: 1;
+	scale: 1;
+}
+
+/* 전후 막대: 앞(회색)은 가득, 뒤(강조색)는 화면에 들어오면 앞 길이에서 --r 비율로 줄어든다 */
+.cr-bars {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-bottom: 32px;
+	list-style: none;
+}
+
+.cr-bars li {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 4px 12px;
+	align-items: center;
+}
+
+.cr-bars-label {
+	grid-column: 1 / -1;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.cr-bars-track {
+	height: 10px;
+	overflow: hidden;
+	border-radius: 5px;
+}
+
+.cr-bars-track i {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+}
+
+.cr-bars-track.before i {
+	background-color: var(--cr-line);
+}
+
+.cr-bars-track.after i {
+	width: 100%;
+	background-color: var(--sp-accent);
+	transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+}
+
+.cr-bars[data-shown] .cr-bars-track.after i {
+	width: calc(var(--r) * 100%);
+}
+
+.cr-bars-value {
+	color: var(--cr-muted);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	white-space: nowrap;
+}
+
+.cr-bars-value.after {
+	color: var(--sp-accent);
+	font-weight: 700;
+}
+
+.cr-bars-value em {
+	margin-left: 8px;
+	padding: 1px 6px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--sp-accent) 14%, transparent);
+	font-style: normal;
+}
+
+/* 토큰 세 층: 포개져 있다가 장을 읽어 내려가면(--read) 펼쳐지고, 층 사이에 참조 화살표가 나타난다 */
+.cr-layers {
+	display: flex;
+	flex-direction: column;
+	gap: 26px;
+	margin-bottom: 36px;
+	list-style: none;
+}
+
+.cr-layers li {
+	position: relative;
+	z-index: calc(3 - var(--i));
+	padding: 16px 18px;
+	border: 1px solid var(--cr-line);
+	border-left: 4px solid var(--sp-accent);
+	border-radius: 12px;
+	background-color: var(--cr-bg);
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+	/* 접혀 있을 때는 위 카드 바로 뒤에 10px씩 어긋나 숨는다 */
+	transform: translateY(calc((1 - var(--s)) * var(--i) * (-100% - 26px + 10px)))
+		scale(calc(1 - (1 - var(--s)) * var(--i) * 0.04));
+}
+
+.cr-layers li + li::before {
+	position: absolute;
+	top: -24px;
+	left: 24px;
+	color: var(--sp-accent);
+	content: '↑ 참조';
+	font-family: var(--sp-mono);
+	font-size: 12px;
+	opacity: var(--s);
+}
+
+.cr-layers-name {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.cr-layers code {
+	display: block;
+	margin-top: 6px;
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	overflow-wrap: anywhere;
+}
+
+.cr-layers p {
+	margin-top: 6px;
+	color: var(--cr-muted);
+	font-size: 13px;
+}
+
+/* 장 글 묶음 위의 작은 화면 */
+.cr-point-shot {
+	margin-bottom: 12px;
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 10px;
+}
+
+.cr-point-shot img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cr-bars-track.after i {
+		width: calc(var(--r) * 100%);
+		transition: none;
+	}
+
+	.cr-variants-view img {
+		transition: none;
+	}
+}
+
+.cr-features h3 {
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.cr-features p,
+.cr-build p {
+	color: var(--cr-muted);
+	font-size: 15px;
+	line-height: 1.65;
+}
+
+.cr-build {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 28px 32px;
+}
+
+.cr-build article {
+	padding-left: 18px;
+	border-left: 2px solid var(--sp-accent);
+}
+
+.cr-build h3 {
+	margin-bottom: 8px;
+	font-size: 19px;
+	font-weight: 700;
+}
+
+/* 더 들려줄 장: 첫머리 글, 숫자 한 줄, 그림 */
+.cr-chapter-lead {
+	max-width: 46em;
+	margin: -12px 0 28px;
+	font-size: 17px;
+	line-height: 1.7;
+}
+
+.cr-chapter-facts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	gap: 16px;
+	margin-bottom: 32px;
+	padding: 20px 0;
+	border-block: 1px solid var(--cr-line);
+	list-style: none;
+}
+
+.cr-chapter-facts li {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.cr-chapter-facts strong {
+	color: var(--sp-accent);
+	font-family: var(--sp-serif);
+	font-size: 34px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.cr-chapter-facts li > span {
+	color: var(--cr-muted);
+	font-size: 13px;
+}
+
+.cr-figure {
+	margin-top: 36px;
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 14px;
+}
+
+/* 그림이 늦게 불러와져도 아래 장이 밀리지 않게 자리를 미리 잡는다 (차례를 눌러 내려가는 동안 목적지가 움직이지 않게) */
+.cr-figure img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top;
+}
+
+.cr-figure figcaption {
+	padding: 8px 12px;
+	color: var(--cr-muted);
+	font-size: 12px;
+}
+
+/* 진행 과정: 장을 읽는 만큼(--read) 세로줄이 위에서부터 차오른다 */
+.cr-timeline {
+	position: relative;
+	margin-bottom: 40px;
+	padding-left: 28px;
+	list-style: none;
+}
+
+.cr-timeline::before,
+.cr-timeline::after {
+	position: absolute;
+	top: 8px;
+	bottom: 8px;
+	left: 5px;
+	width: 2px;
+	content: '';
+}
+
+.cr-timeline::before {
+	background-color: var(--cr-line);
+}
+
+.cr-timeline::after {
+	background-color: var(--sp-accent);
+	transform: scaleY(clamp(0, calc(var(--read, 0) * 1.8), 1));
+	transform-origin: top;
+}
+
+.cr-timeline li {
+	position: relative;
+	display: grid;
+	grid-template-columns: 64px minmax(0, 1fr);
+	gap: 12px;
+	padding: 10px 0;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.cr-timeline li::before {
+	position: absolute;
+	top: 16px;
+	left: -28px;
+	z-index: 1;
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--sp-accent);
+	border-radius: 50%;
+	background-color: var(--cr-bg);
+	content: '';
+}
+
+.cr-timeline time {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 14px;
+	line-height: 1.7;
+}
+
+.cr-role {
+	color: var(--cr-muted);
+	font-size: 15px;
+}
+
+.cr-roles {
+	margin-top: 16px;
+	list-style: none;
+	font-size: 20px;
+	line-height: 1.5;
+}
+
+.cr-roles li {
+	padding: 10px 0;
+	border-top: 1px solid var(--cr-line);
+}
+
+.cr-specs div {
+	display: grid;
+	grid-template-columns: 180px minmax(0, 1fr);
+	gap: 16px;
+	padding: 16px 0;
+	border-top: 1px solid var(--cr-line);
+}
+
+.cr-specs dt {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.cr-specs dd {
+	color: var(--cr-muted);
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+.cr-foot {
+	padding: 56px 0 72px;
+}
+
+.cr-foot p {
+	font-size: clamp(24px, 4cqi, 36px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+@container (max-width: 760px) {
+	.cr {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
+		padding: 0 20px;
+	}
+
+	.cr-side {
+		position: relative;
+		padding-bottom: 8px;
+	}
+
+	.cr-feature-text,
+	.cr-build,
+	.cr-specs div,
+	.cr-facts ul {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 8px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cr-mascot img {
+		transition: none;
+	}
+
+	.cr-mascot[data-mood='happy'] img[data-on='true'] {
+		animation: none;
+	}
+}

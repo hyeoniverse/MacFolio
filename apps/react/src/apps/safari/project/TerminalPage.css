@@ -1,0 +1,457 @@
+/* DevCourse: GitHub 다크 터미널. 창 테두리 없이 페이지 전체가 터미널 화면이고, 명령과 결과가 이어진다 */
+.sp[data-look='terminal'] {
+	--tm-bg: #0d1117;
+	--tm-line: #30363d;
+	--tm-text: #e6edf3;
+	--tm-muted: #9da7b3;
+	--tm-out: #d4dbe3;
+	--tm-sans: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+	--tm-green: #3fb950;
+	--tm-blue: #79c0ff;
+	--tm-string: #a5d6ff;
+	--tm-purple: #d2a8ff;
+	--tm-red: #ff7b72;
+	--sp-accent: #3fb950;
+	min-height: 100%;
+	background-color: var(--tm-bg);
+}
+
+.tm {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 36px 32px 64px;
+	color: var(--tm-text);
+	font-family: var(--sp-mono);
+	font-size: 14px;
+	line-height: 1.75;
+	text-align: left;
+}
+
+/* 명령마다 사이를 넉넉히, 옅은 줄로 나눈다 */
+.tm-block + .tm-block {
+	margin-top: 26px;
+	padding-top: 22px;
+	border-top: 1px dashed #21262d;
+}
+
+.tm-prompt {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 8px;
+	margin-bottom: 10px;
+}
+
+.tm-user {
+	color: var(--tm-green);
+}
+
+.tm-path {
+	color: var(--tm-blue);
+}
+
+.tm-dollar {
+	color: var(--tm-muted);
+}
+
+.tm-prompt code {
+	color: var(--tm-text);
+	font-family: inherit;
+}
+
+/* 결과의 문장은 본문 글꼴로 */
+.tm-out {
+	color: var(--tm-out);
+	font-family: var(--tm-sans);
+	font-size: 15.5px;
+	line-height: 1.7;
+}
+
+.tm-heading {
+	color: var(--tm-purple);
+	font-weight: 700;
+}
+
+.tm-block h1,
+.tm-title {
+	margin: 6px 0 8px;
+	color: var(--tm-text);
+	font-family: var(--tm-sans);
+	font-size: clamp(26px, 4.4cqi, 40px);
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+}
+
+.tm-pairs div {
+	display: grid;
+	grid-template-columns: 180px minmax(0, 1fr);
+	gap: 12px;
+	padding: 3px 0;
+}
+
+.tm-pairs dt {
+	color: var(--tm-blue);
+}
+
+.tm-pairs dd {
+	color: var(--tm-text);
+	font-family: var(--tm-sans);
+	font-size: 15px;
+}
+
+/* 주차별 기록 */
+.tm-weeks {
+	list-style: none;
+}
+
+.tm-weeks li {
+	display: grid;
+	grid-template-columns: 130px minmax(0, 1fr);
+	gap: 14px;
+	padding: 7px 0;
+}
+
+.tm-week {
+	color: var(--tm-green);
+	font-weight: 700;
+}
+
+.tm-weeks li > span:last-child {
+	color: var(--tm-out);
+	font-family: var(--tm-sans);
+	font-size: 15px;
+}
+
+.tm-ls,
+.tm-types,
+.tm-list {
+	list-style: none;
+}
+
+.tm-ls li {
+	padding: 10px 0 10px 14px;
+	border-left: 2px solid #30363d;
+}
+
+.tm-ls li + li {
+	margin-top: 8px;
+}
+
+.tm-dir {
+	color: var(--tm-blue);
+	font-weight: 700;
+}
+
+.tm-ls p {
+	margin-top: 4px;
+	color: var(--tm-out);
+	font-family: var(--tm-sans);
+	font-size: 15px;
+	line-height: 1.65;
+}
+
+.tm-types {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 2px 18px;
+}
+
+.tm-types li {
+	display: flex;
+	gap: 10px;
+}
+
+.tm-types code {
+	min-width: 72px;
+	color: var(--tm-green);
+	font-family: inherit;
+}
+
+.tm-types span {
+	color: var(--tm-out);
+	font-family: var(--tm-sans);
+	font-size: 14.5px;
+}
+
+.tm-md + .tm-md {
+	margin-top: 8px;
+}
+
+.tm-list li {
+	color: var(--tm-out);
+	font-family: var(--tm-sans);
+	font-size: 15px;
+	line-height: 1.9;
+}
+
+.tm-list li::before {
+	color: var(--tm-green);
+	content: '✓ ';
+}
+
+.tm-json {
+	margin: 0;
+	color: var(--tm-text);
+	font-family: inherit;
+	white-space: pre-wrap;
+}
+
+.tm-key {
+	color: var(--tm-blue);
+}
+
+.tm-string {
+	color: var(--tm-string);
+}
+
+.tm-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 24px;
+	margin: 4px 0 8px;
+}
+
+.tm .tm-links .sp-link {
+	color: var(--tm-blue);
+}
+
+.tm-links .sp-pill {
+	border-radius: 6px;
+	background-color: #238636;
+}
+
+.tm-cursor {
+	display: inline-block;
+	min-width: 1ch;
+	background-color: var(--tm-muted);
+	color: var(--tm-bg);
+	animation: tm-blink 1s step-end infinite;
+}
+
+.tm-line[data-focused='true'] .tm-cursor {
+	background-color: var(--tm-green);
+}
+
+/* 깜빡일 때 커서 칸의 글자는 그대로 보이게 바탕만 끈다 */
+@keyframes tm-blink {
+	50% {
+		background-color: transparent;
+		color: var(--tm-text);
+	}
+}
+
+.tm-jump {
+	display: block;
+	margin-top: 14px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--tm-muted);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.tm-jump:hover {
+	color: var(--tm-green);
+}
+
+/* ─── 직접 쳐 보기 ─── */
+.tm-shell {
+	cursor: text;
+}
+
+.tm-comment {
+	margin-bottom: 14px;
+	color: var(--tm-muted);
+}
+
+.tm-entry {
+	margin-bottom: 18px;
+}
+
+.tm-error {
+	color: var(--tm-red);
+}
+
+.tm-hint {
+	color: var(--tm-text);
+	font-weight: 700;
+}
+
+.tm-help ul,
+.tm-history,
+.tm-names {
+	list-style: none;
+}
+
+.tm-help .tm-comment {
+	margin: 4px 0 2px;
+}
+
+.tm-help ul + .tm-comment {
+	margin-top: 14px;
+}
+
+.tm-help li {
+	display: grid;
+	grid-template-columns: 200px minmax(0, 1fr);
+	gap: 12px;
+}
+
+.tm-help span {
+	color: var(--tm-out);
+	font-family: var(--tm-sans);
+}
+
+.tm-help button,
+.tm-names button,
+.tm-chips button {
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--tm-blue);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.tm-help button:hover,
+.tm-names button:hover:not(:disabled) {
+	text-decoration: underline;
+}
+
+/* ls: 이름을 여러 단으로. 폴더는 파랑, 파일은 흰색. 누르면 들어가거나 읽는다 */
+.tm-names {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	gap: 2px 18px;
+}
+
+.tm-names .tm-name {
+	color: var(--tm-text);
+}
+
+.tm-names button:disabled {
+	cursor: default;
+}
+
+/* cat·tree: 파일 내용은 고정폭 그대로, 긴 줄은 접는다 */
+.tm-file {
+	max-height: 520px;
+	overflow: auto;
+	padding: 10px 14px;
+	border: 1px solid var(--tm-line);
+	border-radius: 6px;
+	background-color: #010409;
+	color: var(--tm-out);
+	font: inherit;
+	font-size: 13px;
+	line-height: 1.65;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.tm-muted {
+	color: var(--tm-muted);
+}
+
+.tm-history {
+	counter-reset: history;
+}
+
+.tm-history li::before {
+	display: inline-block;
+	width: 3ch;
+	margin-right: 1ch;
+	color: var(--tm-muted);
+	content: counter(history);
+	counter-increment: history;
+	text-align: right;
+}
+
+/* 입력칸은 글자 폭만큼만, 그 뒤에 깜빡이는 커서 */
+.tm-input .tm-prompt {
+	align-items: center;
+	margin-bottom: 0;
+}
+
+.tm-line {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+	white-space: pre;
+}
+
+/* 진짜 입력칸은 글 위에 겹쳐 투명하게: 누른 자리로 커서가 가고, 보이는 글자와 커서는 아래 span이 그린다 */
+.tm-line input {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	padding: 0;
+	border: none;
+	outline: none;
+	background: none;
+	color: transparent;
+	font: inherit;
+	caret-color: transparent;
+}
+
+.tm-line input::selection {
+	background-color: rgba(121, 192, 255, 0.35);
+	color: transparent;
+}
+
+.tm-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 18px;
+	scroll-margin-bottom: 24px;
+}
+
+.tm-chips button {
+	padding: 4px 12px;
+	border: 1px solid var(--tm-line);
+	border-radius: 999px;
+	background-color: #161b22;
+	color: var(--tm-text);
+	font-size: 13px;
+	transition:
+		border-color var(--duration-fast) var(--ease-out),
+		color var(--duration-fast) var(--ease-out);
+}
+
+.tm-chips button:hover:not(:disabled) {
+	border-color: var(--tm-green);
+	color: var(--tm-green);
+}
+
+.tm-chips button:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tm-cursor {
+		animation: none;
+	}
+}
+
+@container (max-width: 600px) {
+	.tm {
+		padding: 16px 14px 32px;
+		font-size: 13px;
+	}
+
+	.tm-help li {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
+	}
+
+	.tm-pairs div,
+	.tm-weeks li {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
+	}
+}

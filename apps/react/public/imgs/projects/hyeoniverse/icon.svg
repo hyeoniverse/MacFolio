@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7338f"/>
+      <stop offset="0.55" stop-color="#d40063"/>
+      <stop offset="1" stop-color="#a1004b"/>
+    </linearGradient>
+    <linearGradient id="star" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f1e4ea"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="0.3" cy="0.12" r="0.8">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.32"/>
+      <stop offset="0.6" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#5c002a" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#shine)"/>
+  <rect x="0" y="496" width="512" height="16" fill="#6e0033" opacity="0.35"/>
+  <g filter="url(#shadow)">
+    <path d="M256 106 C262 200 312 250 406 256 C312 262 262 312 256 406 C250 312 200 262 106 256 C200 250 250 200 256 106 Z" fill="url(#star)"/>
+    <circle cx="359" cy="150" r="21" fill="#1c1b1a"/>
+  </g>
+</svg>
