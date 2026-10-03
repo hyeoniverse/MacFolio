@@ -1,48 +1,86 @@
-// QRU (디지털 명함): 명함 앞뒤. 앞면(소개)과 뒷면(기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 화면) → 묻고 답하기(만든 방식, 스크롤하면 위에서부터 차례로 펼쳐진다) → 맡은 일과 다음 단계
+// QRU (디지털 명함): 명함 앞뒤. 앞면(소개)과 뒷면(기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 화면) → 묻고 답하기(만든 방식) → 맡은 일과 다음 단계.
+// 순서와 묻고 답하기는 스크롤에 맞춰 위에서부터 차례로 펼쳐지고, 다시 올리면 아래부터 접힌다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { Facts, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CardPage.css';
 
-/** 한 칸씩 펼쳐지는 사이 간격 (ms) */
-const STEP = 260;
+/** 한 칸씩 펼치거나 접는 사이 간격 (ms). 빠르게 스크롤해도 한꺼번에가 아니라 차례로 */
+const STEP = 220;
+/** 칸의 머리가 화면 위에서 이 비율만큼 내려온 선을 지나면 펼친다 (읽는 눈높이쯤) */
+const LINE = 0.6;
+
+/** 가장 가까운 스크롤 상자 (없으면 창) */
+function scrollParent(node: HTMLElement): HTMLElement | null {
+	for (let el = node.parentElement; el; el = el.parentElement) {
+		const { overflowY } = getComputedStyle(el);
+		if (overflowY === 'auto' || overflowY === 'scroll') return el;
+	}
+	return null;
+}
 
 /**
- * 묻고 답하기: 스크롤해서 각 칸이 화면 아래쪽 1/3을 지나면, 위 칸부터 차례로 하나씩 펼쳐진다.
- * 여러 칸이 한꺼번에 화면에 들어와도 동시에 열리지 않고 간격을 두고 이어서 열린다. 누르면 접고 펼 수 있다
+ * 스크롤에 맞춰 위 칸부터 차례로 펼치고, 다시 올리면 아래 칸부터 차례로 접는다.
+ * 칸의 머리(`[data-index]`)가 기준선 위로 올라온 만큼이 목표이고, 지금 펼친 수를 한 칸씩 그 목표로 옮긴다.
+ * 펼친 수를 돌려준다
  */
+function useScrollUnfold(list: React.RefObject<HTMLElement | null>, count: number) {
+	const supported = typeof window !== 'undefined' && 'requestAnimationFrame' in window;
+	const [target, setTarget] = useState(supported ? 0 : count);
+	const [opened, setOpened] = useState(supported ? 0 : count);
+
+	useEffect(() => {
+		const root = list.current;
+		if (!root || !supported) return;
+		const scroller = scrollParent(root);
+		const source = scroller ?? window;
+		let frame = 0;
+		const measure = () => {
+			frame = 0;
+			const view = scroller?.getBoundingClientRect();
+			const line = view ? view.top + view.height * LINE : window.innerHeight * LINE;
+			const heads = root.querySelectorAll<HTMLElement>('[data-index]');
+			let reached = 0;
+			for (const head of heads) {
+				if (head.getBoundingClientRect().top > line) break;
+				reached += 1;
+			}
+			setTarget(reached);
+		};
+		const onScroll = () => {
+			if (!frame) frame = requestAnimationFrame(measure);
+		};
+		measure();
+		source.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onScroll);
+		return () => {
+			source.removeEventListener('scroll', onScroll);
+			window.removeEventListener('resize', onScroll);
+			cancelAnimationFrame(frame);
+		};
+	}, [list, supported]);
+
+	useEffect(() => {
+		if (opened === target) return;
+		const timer = window.setTimeout(() => setOpened((now) => now + Math.sign(target - now)), STEP);
+		return () => window.clearTimeout(timer);
+	}, [opened, target]);
+
+	return opened;
+}
+
+/** 묻고 답하기: 스크롤에 맞춰 펼치고 접는다. 누르면 그 칸만 직접 접고 펼 수 있다(그 칸을 스크롤이 다시 지나면 스크롤을 따른다) */
 const Answers: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 	const list = useRef<HTMLDivElement>(null);
-	const supported = typeof IntersectionObserver !== 'undefined';
-	// 화면에 들어온(또는 이미 지나간) 칸
-	const [reached, setReached] = useState<boolean[]>(() => points.map(() => !supported));
-	// 앞에서부터 몇 칸이 펼쳐졌나
-	const [opened, setOpened] = useState(supported ? 0 : points.length);
-	// 누른 칸은 그 뜻을 따른다
+	const opened = useScrollUnfold(list, points.length);
 	const [toggled, setToggled] = useState<Record<number, boolean>>({});
-
-	useEffect(() => {
-		const items = list.current?.querySelectorAll<HTMLElement>('.qc-answer');
-		if (!items || !supported) return;
-		const observer = new IntersectionObserver(
-			(entries) => {
-				const seen = entries
-					.filter((entry) => entry.isIntersecting || entry.boundingClientRect.bottom < (entry.rootBounds?.top ?? 0))
-					.map((entry) => Number((entry.target as HTMLElement).dataset.index));
-				if (seen.length) setReached((prev) => prev.map((value, i) => value || seen.includes(i)));
-			},
-			{ rootMargin: '0px 0px -33% 0px' }
-		);
-		items.forEach((item) => observer.observe(item));
-		return () => observer.disconnect();
-	}, [supported]);
-
-	// 다음 칸이 화면에 들어와 있으면 조금 뒤에 연다 (한 번에 한 칸씩)
-	useEffect(() => {
-		if (opened >= points.length || !reached[opened]) return;
-		const timer = window.setTimeout(() => setOpened((count) => count + 1), opened === 0 ? 0 : STEP);
-		return () => window.clearTimeout(timer);
-	}, [opened, reached, points.length]);
+	const [lastOpened, setLastOpened] = useState(opened);
+	// 스크롤이 지나간 칸은 누른 뜻을 잊는다
+	if (lastOpened !== opened) {
+		setLastOpened(opened);
+		const [from, to] = [Math.min(lastOpened, opened), Math.max(lastOpened, opened)];
+		setToggled((prev) => Object.fromEntries(Object.entries(prev).filter(([i]) => Number(i) < from || Number(i) >= to)));
+	}
 
 	return (
 		<div ref={list}>
@@ -60,6 +98,25 @@ const Answers: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 				);
 			})}
 		</div>
+	);
+};
+
+/** 명함 한 장이 오가는 순서: 단계마다 번호와 제목은 늘 보이고, 스크롤에 맞춰 설명이 차례로 펼쳐지며 다음 단계로 선이 이어진다 */
+const Steps: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
+	const list = useRef<HTMLOListElement>(null);
+	const opened = useScrollUnfold(list, points.length);
+	return (
+		<ol className="qc-steps" ref={list}>
+			{points.map((point, i) => (
+				<li key={point.title} data-index={i} data-open={i < opened}>
+					<span className="qc-step">{i + 1}</span>
+					<h3>{point.title}</h3>
+					<div className="qc-step-body">
+						<p>{point.body}</p>
+					</div>
+				</li>
+			))}
+		</ol>
 	);
 };
 
@@ -98,15 +155,7 @@ const CardPage: React.FC<{ project: Project }> = ({ project }) => (
 		<section className="qc-journey" aria-label="주요 기능">
 			<h2 className="qc-title">명함 한 장이 오가는 순서</h2>
 			<div className="qc-journey-body">
-				<ol className="qc-steps">
-					{project.highlights.map((point, i) => (
-						<li key={point.title}>
-							<span className="qc-step">{i + 1}</span>
-							<h3>{point.title}</h3>
-							<p>{point.body}</p>
-						</li>
-					))}
-				</ol>
+				<Steps points={project.highlights} />
 				<Shot project={project} className="qc-shot" />
 			</div>
 		</section>

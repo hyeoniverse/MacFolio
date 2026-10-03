@@ -83,15 +83,23 @@ test.describe('Safari', () => {
 		expect(new Set(columns.map((box) => Math.round(box!.y))).size).toBe(1);
 		await expect(panel.getByRole('region', { name: '주요 기능' })).toContainText('할 일');
 
-		// 명함: 만든 방식은 묻고 답하기. 스크롤해서 화면에 들어오면 위 칸부터 차례로 펼쳐지고, 누르면 접힌다
+		// 명함: 순서와 묻고 답하기는 스크롤해서 칸의 머리가 화면 60% 선을 지나면 위 칸부터 차례로 펼쳐지고, 다시 올리면 접힌다. 누르면 그 칸만 접힌다
 		await open(/QRU/);
 		const answers = panel.getByRole('region', { name: '만든 방식' }).getByRole('button');
+		const steps = panel.getByRole('region', { name: '주요 기능' }).locator('li');
 		await expect(answers.first()).toHaveAttribute('aria-expanded', 'false');
+		await expect(steps.last()).toHaveAttribute('data-open', 'false');
+		await steps.last().scrollIntoViewIfNeeded();
+		await expect(steps.first()).toHaveAttribute('data-open', 'true');
+		await expect(steps.last()).toHaveAttribute('data-open', 'true');
 		await answers.last().scrollIntoViewIfNeeded();
 		await expect(answers.first()).toHaveAttribute('aria-expanded', 'true');
 		await expect(answers.last()).toHaveAttribute('aria-expanded', 'true');
 		await answers.last().click();
 		await expect(answers.last()).toHaveAttribute('aria-expanded', 'false');
+		await panel.evaluate((el) => (el.scrollTop = 0));
+		await expect(answers.first()).toHaveAttribute('aria-expanded', 'false');
+		await expect(steps.first()).toHaveAttribute('data-open', 'false');
 
 		// 게임: PRESS START를 누르면 HUD와 퀘스트로 내려간다. 조작법과 크레딧
 		await open(/SproutFarm/);
