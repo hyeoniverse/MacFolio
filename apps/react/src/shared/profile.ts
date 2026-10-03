@@ -41,6 +41,12 @@ export interface ProjectPoint {
 	detail?: string;
 	/** 곁들일 그림 (public/imgs/projects/{id}/…) */
 	image?: string;
+	/** 같은 화면의 다크 테마 그림: 있으면 밀대로 라이트와 나눠 비교한다 */
+	imageDark?: string;
+	/** 그림 대신 보여 줄 짧은 영상 (화면에 보일 때만 재생) */
+	video?: string;
+	/** 골라 바꿔 보는 그림들 (예: 레이아웃 여섯 가지) */
+	variants?: { label: string; image: string }[];
 }
 
 /** 주요 기능과 만든 방식 말고 더 들려줄 이야기 한 장 (예: 관리자 화면, 디자인 시스템, 성능) */
@@ -51,8 +57,12 @@ export interface ProjectChapter {
 	/** 이 장에서 내세울 숫자 */
 	facts?: ProjectFact[];
 	points: ProjectPoint[];
-	/** 장 끝에 둘 그림 (public/imgs/projects/{id}/…) */
-	image?: { src: string; alt: string };
+	/** 장 끝에 둘 그림 (public/imgs/projects/{id}/…). dark가 있으면 밀대로 라이트와 나눠 비교한다 */
+	image?: { src: string; alt: string; dark?: string };
+	/** 전후 비교: 화면에 들어오면 막대가 전에서 후로 줄어든다 */
+	compare?: { label: string; before: number; after: number; unit: string }[];
+	/** 겹친 층: 스크롤하면 위에서부터 펼쳐진다 (예: 디자인 토큰 세 층) */
+	layers?: { name: string; code: string; note: string }[];
 	/** 데이터베이스 구조: 문서(테이블) 경로, 누가 읽는지, 필드, 한 줄 설명. parent가 있으면 그 문서의 하위 문서 */
 	schema?: { path: string; access: string; fields: string[]; note: string; parent?: string; locked?: boolean }[];
 }
@@ -777,28 +787,41 @@ export const PROJECTS: Project[] = [
 			{
 				title: '스크롤에 반응하는 첫 화면',
 				body: '무한 스크롤 루프, 마우스 패럴랙스, 글자마다 그려지는 외곽선, Three.js 토러스와 커피잔이 스크롤과 마우스를 따라 움직입니다.',
+				image: projectImage('hyeoniverse', 'shots/home-light.jpg'),
+				imageDark: projectImage('hyeoniverse', 'shots/home-dark.jpg'),
 			},
 			{
 				title: '여섯 가지 작업물 레이아웃',
 				body: 'Flow, Grid, Cylinder, Fullscreen, Cinematic, Split 중 하나를 관리자 설정이나 ?layout= 주소로 골라 바꿔 끼웁니다.',
+				variants: ['Flow', 'Grid', 'Cylinder', 'Fullscreen', 'Cinematic', 'Split'].map((label) => ({
+					label,
+					image: projectImage('hyeoniverse', `shots/works-${label.toLowerCase()}.jpg`),
+				})),
 			},
 			{
 				title: '글과 시리즈',
 				body: 'SSR과 ISR로 글을 보여 주고, 시리즈와 배너, 여섯 가지 목록 모양, 마크다운 게스트 댓글이나 giscus를 고릅니다.',
+				image: projectImage('hyeoniverse', 'shots/posts.jpg'),
 			},
 			{
 				title: '스크롤을 시간축으로',
 				body: 'About 페이지는 스크롤 위치를 진행도로 바꿔 14개 패널의 장면을 이어서 넘깁니다. 가로 스크롤 영역이 휠을 가져갈 때만 부드러운 스크롤이 물러나, 휠 한 번에 페이지가 세로로 98px 밀리던 것을 0으로 만들었습니다.',
+				video: projectImage('hyeoniverse', 'shots/about-tour.mp4'),
 			},
 		],
 		chapters: [
 			{
 				title: '관리자와 CMS',
 				lead: '글과 작업물을 쓰고, 고치고, 발행하는 일을 모두 관리자 화면에서 합니다. 사이트 문구와 화면 배치도 코드 배포 없이 바꿉니다.',
+				image: {
+					src: projectImage('hyeoniverse', 'shots/admin-settings.jpg'),
+					alt: '사이트 문구와 SEO를 코드 배포 없이 고치는 관리자 설정 화면',
+				},
 				points: [
 					{
 						title: '하나의 편집기',
 						body: 'Plate.js 편집기에서 마크다운과 리치 텍스트를 오가며 씁니다. 투표·탭·캘린더 블록을 더했고, 미리보기는 실제 게시 화면과 같은 컴포넌트로 그립니다.',
+						image: projectImage('hyeoniverse', 'shots/editor.jpg'),
 					},
 					{
 						title: '자동 저장과 리비전',
@@ -823,6 +846,7 @@ export const PROJECTS: Project[] = [
 					{
 						title: '대시보드와 알림',
 						body: '조회수·좋아요·방문자·댓글의 추세를 대시보드에서 보고, 댓글과 신고, 새 기기 로그인 같은 알림을 한 화면에서 처리합니다.',
+						image: projectImage('hyeoniverse', 'shots/admin-traffic.jpg'),
 					},
 					{
 						title: 'SEO 점검과 AI 요약',
@@ -832,6 +856,28 @@ export const PROJECTS: Project[] = [
 			},
 			{
 				title: '디자인 시스템',
+				layers: [
+					{
+						name: 'Raw',
+						code: '--color-accent-700: oklch(55.2% 0.225 4.81);',
+						note: '테마와 상관없는 색 눈금 하나',
+					},
+					{
+						name: 'Semantic',
+						code: '--bg-accent-solid: light-dark(var(--color-accent-700), var(--color-accent-500));',
+						note: '역할 이름. 라이트와 다크에서 다른 눈금을 고른다',
+					},
+					{
+						name: 'Component',
+						code: '.selected { background: var(--bg-accent-solid); }',
+						note: '관리자 표의 선택 표시는 색이 아니라 역할만 가리킨다',
+					},
+				],
+				image: {
+					src: projectImage('hyeoniverse', 'shots/design-light.jpg'),
+					dark: projectImage('hyeoniverse', 'shots/design-dark.jpg'),
+					alt: '토큰과 원칙을 공개하는 /design-system 페이지',
+				},
 				lead: '규칙과 그 이유를 따로 적고, 규칙에서 벗어나면 시험과 린트가 잡습니다.',
 				facts: [
 					{ value: '3층', label: 'Raw · Semantic · Component' },
@@ -874,21 +920,28 @@ export const PROJECTS: Project[] = [
 					{ value: '100점', label: 'SEO' },
 					{ value: '0.7초', label: 'LCP' },
 				],
+				compare: [
+					{ label: '프로필 LCP', before: 9.7, after: 2.7, unit: '초' },
+					{ label: '글 목록 LCP', before: 7.8, after: 2.9, unit: '초' },
+					{ label: '관리자 글 목록 LCP', before: 2.1, after: 1.45, unit: '초' },
+					{ label: '홈 다운로드', before: 4.8, after: 1.0, unit: 'MB' },
+					{ label: '편집기 입력 지연 (상위 10%)', before: 120, after: 72, unit: 'ms' },
+				],
 				points: [
 					{
-						title: '프로필 LCP 9.7초 → 2.7초',
+						title: '이미 그린 페이지를 다시 만들지 않게',
 						body: '모바일에서 화면 너비에 묶인 key 때문에 이미 그린 페이지를 다시 만들고 있었습니다. 경계를 실제로 넘을 때만 바뀌는 key로 고쳤습니다.',
 					},
 					{
-						title: '편집기 입력 지연 120ms → 72ms',
+						title: '입력할 때마다 하던 전체 재계산 없애기',
 						body: '태그 칩의 :has(:hover)가 입력할 때마다 페이지 전체 스타일을 다시 계산하게 했습니다. 속성으로 바꿔 재계산을 10회에서 0회로 줄였습니다.',
 					},
 					{
-						title: '글 목록 LCP 7.8초 → 2.9초',
+						title: '배너를 서버 HTML에',
 						body: 'LCP 요소인 배너가 서버 HTML에 없었고, 데이터를 받은 뒤에도 투명하게 가려져 있었습니다. 두 원인을 각각 고쳤습니다.',
 					},
 					{
-						title: '홈 다운로드 4.8MB → 1.0MB',
+						title: '표시 크기에 맞춘 이미지',
 						body: '확장자만 WebP인 3673px JPEG가 3D 반사 이미지로 쓰이고 있었습니다. 실제 표시 크기에 맞춰 다시 만들었습니다.',
 					},
 				],
