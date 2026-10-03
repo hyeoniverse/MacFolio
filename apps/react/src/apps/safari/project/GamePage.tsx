@@ -72,7 +72,7 @@ const DECOR: [string, number][] = [
 ];
 
 /**
- * 페이지를 내려가는 만큼 하루가 흐른다: 아침(타이틀) → 낮(하루) → 노을(개발 일지 가운데) → 해 질 녘(인벤토리) → 밤(크레딧).
+ * 페이지를 내려가는 만큼 하루가 흐른다: 아침(타이틀) → 낮(하루) → 노을(개발 일지 가운데) → 붉은 저녁(개발 일지 끝) → 해 질 녘(인벤토리) → 밤(크레딧).
  * anchor는 그 시간이 되는 자리(구역과 그 구역 안의 비율), sky는 바탕색, light는 풀밭 그림 위에 얹는 빛(마지막 값은 진하기)
  */
 type DayStop = { anchor: [string, number]; sky: number[]; dark: number[]; light: number[] };
@@ -80,7 +80,8 @@ const DAY: DayStop[] = [
 	{ anchor: ['.gm-title', 0.3], sky: [253, 240, 214], dark: [40, 38, 28], light: [255, 214, 150, 0.12] },
 	{ anchor: ['.gm-day', 0.5], sky: [232, 243, 211], dark: [24, 33, 15], light: [255, 255, 255, 0] },
 	{ anchor: ['.gm-map', 0.5], sky: [248, 196, 150], dark: [62, 36, 26], light: [255, 130, 50, 0.26] },
-	{ anchor: ['.gm-inventory', 0.5], sky: [118, 92, 150], dark: [42, 30, 62], light: [80, 50, 150, 0.4] },
+	{ anchor: ['.gm-map', 0.92], sky: [214, 136, 140], dark: [58, 30, 40], light: [210, 90, 120, 0.3] },
+	{ anchor: ['.gm-inventory', 0.5], sky: [92, 78, 128], dark: [36, 28, 58], light: [70, 50, 140, 0.42] },
 	{ anchor: ['.gm-credits', 0.2], sky: [22, 30, 60], dark: [14, 21, 48], light: [10, 20, 70, 0.55] },
 ];
 
