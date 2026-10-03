@@ -205,7 +205,8 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 		let frame = 0;
 		let last = 0;
 		let at: number | null = null;
-		let facing = 1;
+		// 바라보는 쪽: 시트의 줄 (0 아래·1 위·2 왼쪽·3 오른쪽). 멈추면 앞모습
+		let facing = 0;
 
 		/** 화면 가운데 높이와 같은 길 위의 거리 (길은 아래로만 내려가니 높이로 찾는다) */
 		const goal = () => {
@@ -231,7 +232,8 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 			const point = line.getPointAtLength(length);
 			const x = area.left - base.left + (point.x / 100) * area.width;
 			const y = area.top - base.top + (point.y / (stages * 100)) * area.height;
-			walker.style.transform = `translate(${x - 72}px, ${y - 96}px) scaleX(${facing})`;
+			walker.style.transform = `translate(${x - 72}px, ${y - 96}px)`;
+			walker.style.backgroundPositionY = `${-facing * 144}px`;
 		};
 
 		const step = (time: number) => {
@@ -246,13 +248,19 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 			const reach = (HERO_SPEED * elapsed) / 1000 / target.unit;
 			if (Math.abs(left) <= reach) {
 				at = target.length;
+				facing = 0;
 				walker.dataset.walking = 'false';
 				last = 0;
 			} else {
-				const before = line.getPointAtLength(at).x;
+				const before = line.getPointAtLength(at);
 				at += Math.sign(left) * reach;
-				const after = line.getPointAtLength(at).x;
-				if (Math.abs(after - before) > 0.01) facing = after < before ? -1 : 1;
+				const after = line.getPointAtLength(at);
+				// 화면에서 더 많이 움직인 쪽을 바라본다 (길 단위는 가로·세로 배율이 다르다)
+				const area = line.ownerSVGElement?.getBoundingClientRect();
+				const dx = ((after.x - before.x) / 100) * (area?.width ?? 0);
+				const dy = (after.y - before.y) * target.unit;
+				if (Math.abs(dx) > Math.abs(dy)) facing = dx < 0 ? 2 : 3;
+				else if (dy !== 0) facing = dy < 0 ? 1 : 0;
 				walker.dataset.walking = 'true';
 				frame = requestAnimationFrame(step);
 			}

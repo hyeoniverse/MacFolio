@@ -581,7 +581,8 @@
 	image-rendering: auto;
 }
 
-.gm-day p {
+/* 공통 .sp li > p(회색)보다 세게 */
+.gm-day li > p {
 	margin-top: 10px;
 	padding: 2px 6px;
 	border: solid transparent;
@@ -652,7 +653,8 @@
 	z-index: 2;
 	width: 144px;
 	height: 144px;
-	background: url('/imgs/projects/sproutfarm/sprites/char-walk.png') 0 0 / 576px 144px;
+	/* 걷는 방향마다 한 줄씩(아래·위·왼쪽·오른쪽) 있는 캐릭터 시트. 줄은 스크립트가 고른다 */
+	background: url('/imgs/projects/sproutfarm/sprites/char-sheet.png') 0 0 / 576px 576px;
 	transform: translate(0, -96px);
 }
 
