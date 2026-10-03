@@ -83,6 +83,8 @@ export interface Project {
 	demo?: string;
 	/** 앱 아이콘 (public/imgs/projects/{id}/icon.png). 없으면 기본 모양을 쓴다 */
 	icon?: string;
+	/** 주요 기능 위에 둘 그림 (public/imgs/projects/{id}/scene.png) */
+	art?: string;
 	/** 글자 로고 (public/imgs/projects/{id}/logo.png) */
 	logo?: string;
 	/** 화면 캡처 (public/imgs/projects/{id}/screenshot.jpg) */
@@ -383,6 +385,7 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/hyeoniverse/SproutFarm',
 		demo: 'https://sprout-farm-beta.vercel.app',
 		icon: projectImage('sproutfarm', 'icon.png'),
+		art: projectImage('sproutfarm', 'scene.png'),
 		image: projectImage('sproutfarm', 'screenshot.jpg'),
 	},
 	{

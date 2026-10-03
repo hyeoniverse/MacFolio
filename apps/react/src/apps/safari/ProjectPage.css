@@ -242,6 +242,21 @@
 }
 
 /* 기본 기능 타일 */
+/* 주요 기능 위의 그림 (프로젝트에 art가 있을 때) */
+.sp-art {
+	margin: 0 0 24px;
+}
+
+.sp-art img {
+	display: block;
+	/* 원본이 256px 그림이라 그보다 크게 키우지 않는다 */
+	width: min(100%, 256px);
+	aspect-ratio: 1;
+	margin-inline: auto;
+	border-radius: 16px;
+	object-fit: cover;
+}
+
 .sp-tiles {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -840,6 +855,12 @@
 	border-radius: 16px;
 	background-color: var(--sp-tile-bg);
 	box-shadow: none;
+}
+
+.sp[data-look='game'] .sp-art img {
+	border: 4px solid var(--sp-wood);
+	box-shadow: 0 5px 0 var(--sp-wood-dark);
+	image-rendering: pixelated;
 }
 
 /* 조작법: 키보드 키 모양 */
