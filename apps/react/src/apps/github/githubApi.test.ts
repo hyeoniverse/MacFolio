@@ -18,9 +18,9 @@ const SERVER = {
 	readme: '# 안녕하세요',
 	readmeBaseUrl: 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/',
 	repos: [
-		{ ...GITHUB_SNAPSHOT.repos[2], stars: 3 },
-		{ ...GITHUB_SNAPSHOT.repos[3], url: 'javascript:alert(1)' },
-		{ ...GITHUB_SNAPSHOT.repos[4], homepage: 'data:text/html,x' },
+		{ ...GITHUB_SNAPSHOT.repos[3], stars: 3 },
+		{ ...GITHUB_SNAPSHOT.repos[4], url: 'javascript:alert(1)' },
+		{ ...GITHUB_SNAPSHOT.repos[5], homepage: 'data:text/html,x' },
 	],
 };
 
