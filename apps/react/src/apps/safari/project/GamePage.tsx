@@ -50,26 +50,29 @@ const ITEM_ICONS: Record<string, string> = {
 const FALLBACK_ICONS = Object.values(ITEM_ICONS);
 const SLOTS = 12;
 
-/** 지도 풀밭에 흩어 둘 것들: 이름과 원래 픽셀 폭 (세 배로 키운다) */
-const DECOR: [string, number][] = [
-	['tree', 24],
-	['tree-apple', 24],
-	['tree-tall', 14],
-	['bush', 16],
-	['berry-bush', 16],
-	['rock', 16],
-	['rock-big', 16],
-	['pebble', 10],
-	['stump', 10],
-	['log', 16],
-	['mushrooms', 13],
-	['mushrooms-purple', 28],
-	['flower-yellow', 9],
-	['flower-rose', 11],
-	['flower-small', 9],
-	['flower-blue', 11],
-	['sprout', 8],
+/**
+ * 지도 풀밭에 흩어 둘 것들: 이름, 원래 픽셀 폭(세 배로 키운다), 뽑힐 몫.
+ * 바위는 빼고 나무와 꽃을 많이 심는다
+ */
+const DECOR: [string, number, number][] = [
+	['tree', 24, 3],
+	['tree-apple', 24, 3],
+	['tree-tall', 14, 3],
+	['bush', 16, 2],
+	['berry-bush', 16, 2],
+	['flower-yellow', 9, 3],
+	['flower-rose', 11, 3],
+	['flower-small', 9, 3],
+	['flower-blue', 11, 3],
+	['sprout', 8, 2],
+	['mushrooms', 13, 1],
+	['mushrooms-purple', 28, 1],
+	['stump', 10, 1],
+	['log', 16, 1],
 ];
+const DECOR_POOL = DECOR.flatMap(([name, width, share]) => Array.from({ length: share }, () => [name, width] as const));
+/** 연못이 놓인 칸 (짝·홀로 정해진 빈 풀밭 쪽, 그 칸에는 다른 것을 심지 않는다) */
+const POND_STAGE = 1;
 
 /**
  * 페이지를 내려가는 만큼 하루가 흐른다: 아침(타이틀) → 낮(하루) → 노을(개발 일지 가운데) → 붉은 저녁(개발 일지 끝) → 해 질 녘(인벤토리) → 밤(크레딧).
@@ -125,16 +128,28 @@ function seeded(seed: number) {
 
 type Decor = { name: string; width: number; x: number; y: number };
 
-/** 칸마다 표지판 반대편 빈 풀밭에 서너 개씩, 자리와 크기를 불규칙하게 */
+/** 칸마다 표지판 반대편 빈 풀밭에 일고여덟 개씩, 자리와 크기를 불규칙하게 (연못 칸은 비워 둔다) */
 function scatter(count: number) {
 	const random = seeded(count * 7919 + 17);
 	const items: Decor[] = [];
 	for (let i = 0; i < count; i++) {
 		// 짝수 칸은 표지판이 왼쪽이라 오른쪽이 비고, 홀수 칸은 그 반대
-		const [from, to] = i % 2 === 0 ? [76, 94] : [6, 24];
-		const many = 3 + Math.floor(random() * 2);
+		const [from, to] = i % 2 === 0 ? [74, 96] : [4, 26];
+		if (i === POND_STAGE) {
+			// 연못(칸 가운데부터 아래)은 비우고, 그 위 둑에만 작은 꽃을 몇 송이
+			for (const name of ['flower-yellow', 'flower-small', 'flower-blue']) {
+				items.push({
+					name,
+					width: 9,
+					x: from + random() * (to - from),
+					y: ((i + 0.12 + random() * 0.26) / count) * 100,
+				});
+			}
+			continue;
+		}
+		const many = 7 + Math.floor(random() * 3);
 		for (let k = 0; k < many; k++) {
-			const [name, width] = DECOR[Math.floor(random() * DECOR.length)];
+			const [name, width] = DECOR_POOL[Math.floor(random() * DECOR_POOL.length)];
 			items.push({
 				name,
 				width,
