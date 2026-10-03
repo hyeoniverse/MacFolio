@@ -369,7 +369,7 @@ export const PROJECTS: Project[] = [
 			{ keys: ['Shift'], label: '달리기' },
 			{ keys: ['Space'], label: '대화 넘기기, 울타리에 넣기, 잠자기' },
 		],
-		tagline: '들판은 끝없이, 시간은 자정까지.',
+		tagline: '농장에 작은 소동이 생겼어요. 얼른 잡아주세요!',
 		description: '도망친 동물 20마리를 자정 전에 울타리로 데려오는 탑다운 2D 픽셀 캐주얼 게임',
 		context: '개인 프로젝트 (PC 전용)',
 		period: '2024.06.10 – 2024.06.24',
