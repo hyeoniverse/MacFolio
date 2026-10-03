@@ -280,14 +280,14 @@
 	transform: rotate(45deg);
 }
 
-/* 높이를 0fr → 1fr로 바꿔 내용 길이만큼 부드럽게 열린다 */
+/* 높이를 0fr → 1fr로 바꿔 내용 길이만큼 부드럽게 열리고, 글은 살짝 내려오며 나타난다 */
 .qc-answer-body {
 	display: grid;
 	grid-template-rows: 0fr;
 	opacity: 0;
 	transition:
-		grid-template-rows var(--duration-slow) var(--ease-out),
-		opacity var(--duration-slow) var(--ease-out);
+		grid-template-rows 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 420ms ease-out;
 }
 
 .qc-answer[data-open='true'] .qc-answer-body {
@@ -300,10 +300,22 @@
 	color: var(--qc-muted);
 	font-size: 15px;
 	line-height: 1.65;
+	transform: translateY(-8px);
+	transition:
+		transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		padding 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .qc-answer[data-open='true'] .qc-answer-body p {
 	padding-bottom: 18px;
+	transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.qc-answer-body,
+	.qc-answer-body p {
+		transition: none;
+	}
 }
 
 /* 맡은 일과 다음 단계 */
