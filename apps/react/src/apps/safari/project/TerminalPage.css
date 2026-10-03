@@ -222,16 +222,21 @@
 
 .tm-cursor {
 	display: inline-block;
-	width: 9px;
-	height: 18px;
-	vertical-align: text-bottom;
-	background-color: var(--tm-text);
-	animation: tm-blink 1s steps(2, start) infinite;
+	min-width: 1ch;
+	background-color: var(--tm-muted);
+	color: var(--tm-bg);
+	animation: tm-blink 1s step-end infinite;
 }
 
+.tm-line[data-focused='true'] .tm-cursor {
+	background-color: var(--tm-green);
+}
+
+/* 깜빡일 때 커서 칸의 글자는 그대로 보이게 바탕만 끈다 */
 @keyframes tm-blink {
-	to {
-		visibility: hidden;
+	50% {
+		background-color: transparent;
+		color: var(--tm-text);
 	}
 }
 
@@ -325,19 +330,30 @@
 	margin-bottom: 0;
 }
 
-.tm-input input {
-	min-width: 1ch;
+.tm-line {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+	white-space: pre;
+}
+
+/* 진짜 입력칸은 글 위에 겹쳐 투명하게: 누른 자리로 커서가 가고, 보이는 글자와 커서는 아래 span이 그린다 */
+.tm-line input {
+	position: absolute;
+	inset: 0;
+	width: 100%;
 	padding: 0;
 	border: none;
 	outline: none;
 	background: none;
-	color: var(--tm-text);
+	color: transparent;
 	font: inherit;
 	caret-color: transparent;
 }
 
-.tm-input input:focus + .tm-cursor {
-	background-color: var(--tm-green);
+.tm-line input::selection {
+	background-color: rgba(121, 192, 255, 0.35);
+	color: transparent;
 }
 
 .tm-chips {

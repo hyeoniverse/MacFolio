@@ -171,7 +171,15 @@ type Entry = { id: number; input: string; past: string[] };
 
 const Shell: React.FC<{ project: Project }> = ({ project }) => {
 	const [entries, setEntries] = useState<Entry[]>([]);
-	const [value, setValue] = useState('');
+	const [value, setText] = useState('');
+	// 커서가 서 있는 글자 자리, 입력칸에 커서가 있는지
+	const [caret, setCaret] = useState(0);
+	const [focused, setFocused] = useState(false);
+	/** 글을 통째로 바꿀 때(이전 명령, Tab, 칩)는 커서를 끝으로 */
+	const setValue = (text: string) => {
+		setText(text);
+		setCaret(text.length);
+	};
 	const [history, setHistory] = useState<string[]>([]);
 	// 위·아래 화살표로 고르고 있는 이전 명령 (없으면 null)
 	const [cursor, setCursor] = useState<number | null>(null);
@@ -310,22 +318,32 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 				}}
 			>
 				<Prompt>
-					<input
-						ref={input}
-						value={value}
-						onChange={(event) => {
-							setValue(event.target.value);
-							setCursor(null);
-						}}
-						onKeyDown={onKeyDown}
-						aria-label="명령 입력"
-						autoComplete="off"
-						autoCapitalize="off"
-						spellCheck={false}
-						readOnly={typing}
-						size={Math.max(1, value.length + 1)}
-					/>
-					<span className="tm-cursor" aria-hidden="true" />
+					{/* 글은 커서 앞·커서 칸·뒤로 나눠 그리고, 진짜 입력칸은 그 위에 투명하게 덮는다 (커서가 글자 사이를 따라간다) */}
+					<span className="tm-line" data-focused={focused}>
+						<span aria-hidden="true">{value.slice(0, Math.min(caret, value.length))}</span>
+						<span className="tm-cursor" aria-hidden="true">
+							{value[caret] ?? ' '}
+						</span>
+						<span aria-hidden="true">{value.slice(caret + 1)}</span>
+						<input
+							ref={input}
+							value={value}
+							onChange={(event) => {
+								setText(event.target.value);
+								setCaret(event.target.selectionStart ?? event.target.value.length);
+								setCursor(null);
+							}}
+							onSelect={(event) => setCaret(event.currentTarget.selectionStart ?? value.length)}
+							onFocus={() => setFocused(true)}
+							onBlur={() => setFocused(false)}
+							onKeyDown={onKeyDown}
+							aria-label="명령 입력"
+							autoComplete="off"
+							autoCapitalize="off"
+							spellCheck={false}
+							readOnly={typing}
+						/>
+					</span>
 				</Prompt>
 			</form>
 			<div className="tm-chips" ref={end}>
