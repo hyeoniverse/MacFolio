@@ -25,6 +25,8 @@ test.describe('새싹 농장', () => {
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
 		await safari.getByRole('tab', { name: /SproutFarm/ }).click();
+		// 첫 화면에는 앱 아이콘 대신 게임 장면 그림, 탭에는 앱 아이콘
+		await expect(safari.getByRole('img', { name: 'SproutFarm 새싹 농장 그림' })).toHaveAttribute('src', /scene\.png$/);
 		await safari.getByRole('button', { name: '여기서 플레이' }).first().click();
 		await expect(appWindow(page, 'sproutfarm')).toBeVisible();
 	});
