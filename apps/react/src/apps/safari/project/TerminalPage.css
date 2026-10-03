@@ -1,4 +1,4 @@
-/* DevCourse: GitHub 다크 터미널. 창 하나에 명령과 결과가 이어진다 */
+/* DevCourse: GitHub 다크 터미널. 창 테두리 없이 페이지 전체가 터미널 화면이고, 명령과 결과가 이어진다 */
 .sp[data-look='terminal'] {
 	--tm-bg: #0d1117;
 	--tm-line: #30363d;
@@ -10,67 +10,21 @@
 	--tm-blue: #79c0ff;
 	--tm-string: #a5d6ff;
 	--tm-purple: #d2a8ff;
+	--tm-red: #ff7b72;
 	--sp-accent: #3fb950;
-	background-color: #e8ecf0;
-}
-
-:root[data-theme='dark'] .sp[data-look='terminal'] {
-	background-color: #010409;
+	min-height: 100%;
+	background-color: var(--tm-bg);
 }
 
 .tm {
-	max-width: 960px;
+	max-width: 900px;
 	margin: 0 auto;
-	padding: 40px 32px 56px;
-	text-align: left;
-}
-
-.tm-window {
-	overflow: hidden;
-	border: 1px solid var(--tm-line);
-	border-radius: 12px;
-	background-color: var(--tm-bg);
-	box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+	padding: 36px 32px 64px;
 	color: var(--tm-text);
 	font-family: var(--sp-mono);
 	font-size: 14px;
 	line-height: 1.75;
-}
-
-.tm-bar {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 10px 14px;
-	border-bottom: 1px solid var(--tm-line);
-	background-color: #161b22;
-}
-
-.tm-bar span {
-	width: 12px;
-	height: 12px;
-	border-radius: 50%;
-	background-color: #ff5f57;
-}
-
-.tm-bar span:nth-child(2) {
-	background-color: #febc2e;
-}
-
-.tm-bar span:nth-child(3) {
-	background-color: #28c840;
-}
-
-.tm-bar p {
-	flex: 1;
-	margin-right: 52px;
-	color: var(--tm-muted);
-	font-size: 12px;
-	text-align: center;
-}
-
-.tm-screen {
-	padding: 24px 28px 28px;
+	text-align: left;
 }
 
 /* 명령마다 사이를 넉넉히, 옅은 줄로 나눈다 */
@@ -117,7 +71,8 @@
 	font-weight: 700;
 }
 
-.tm-block h1 {
+.tm-block h1,
+.tm-title {
 	margin: 6px 0 8px;
 	color: var(--tm-text);
 	font-family: var(--tm-sans);
@@ -280,6 +235,141 @@
 	}
 }
 
+.tm-jump {
+	display: block;
+	margin-top: 14px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--tm-muted);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.tm-jump:hover {
+	color: var(--tm-green);
+}
+
+/* ─── 직접 쳐 보기 ─── */
+.tm-shell {
+	cursor: text;
+}
+
+.tm-comment {
+	margin-bottom: 14px;
+	color: var(--tm-muted);
+}
+
+.tm-entry {
+	margin-bottom: 18px;
+}
+
+.tm-error {
+	color: var(--tm-red);
+}
+
+.tm-hint {
+	color: var(--tm-text);
+	font-weight: 700;
+}
+
+.tm-help,
+.tm-history {
+	list-style: none;
+}
+
+.tm-help li {
+	display: grid;
+	grid-template-columns: 200px minmax(0, 1fr);
+	gap: 12px;
+}
+
+.tm-help span {
+	color: var(--tm-out);
+	font-family: var(--tm-sans);
+}
+
+.tm-help button,
+.tm-chips button {
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--tm-blue);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.tm-help button:hover {
+	text-decoration: underline;
+}
+
+.tm-history {
+	counter-reset: history;
+}
+
+.tm-history li::before {
+	display: inline-block;
+	width: 3ch;
+	margin-right: 1ch;
+	color: var(--tm-muted);
+	content: counter(history);
+	counter-increment: history;
+	text-align: right;
+}
+
+/* 입력칸은 글자 폭만큼만, 그 뒤에 깜빡이는 커서 */
+.tm-input .tm-prompt {
+	align-items: center;
+	margin-bottom: 0;
+}
+
+.tm-input input {
+	min-width: 1ch;
+	padding: 0;
+	border: none;
+	outline: none;
+	background: none;
+	color: var(--tm-text);
+	font: inherit;
+	caret-color: transparent;
+}
+
+.tm-input input:focus + .tm-cursor {
+	background-color: var(--tm-green);
+}
+
+.tm-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 18px;
+	scroll-margin-bottom: 24px;
+}
+
+.tm-chips button {
+	padding: 4px 12px;
+	border: 1px solid var(--tm-line);
+	border-radius: 999px;
+	background-color: #161b22;
+	color: var(--tm-text);
+	font-size: 13px;
+	transition:
+		border-color var(--duration-fast) var(--ease-out),
+		color var(--duration-fast) var(--ease-out);
+}
+
+.tm-chips button:hover:not(:disabled) {
+	border-color: var(--tm-green);
+	color: var(--tm-green);
+}
+
+.tm-chips button:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.tm-cursor {
 		animation: none;
@@ -288,15 +378,13 @@
 
 @container (max-width: 600px) {
 	.tm {
-		padding: 16px 12px 32px;
-	}
-
-	.tm-screen {
-		padding: 14px;
-	}
-
-	.tm-window {
+		padding: 16px 14px 32px;
 		font-size: 13px;
+	}
+
+	.tm-help li {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
 	}
 
 	.tm-pairs div,
