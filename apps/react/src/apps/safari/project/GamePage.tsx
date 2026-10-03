@@ -103,6 +103,10 @@ function dayAt(index: number, t: number, dark: boolean) {
 
 /** 개발 일지 주인공의 걸음 속도 (화면 px/초) */
 const HERO_SPEED = 150;
+/** 멀리 떨어지면 남은 거리(px)에 이 배수를 곱한 속도로 따라간다 (1초에 남은 거리의 몇 배) */
+const HERO_CATCH_UP = 1.6;
+/** 목표에서 화면 높이의 이 비율보다 멀면 그만큼 거리로 당겨 온다 (화면 가운데에서 가장자리 조금 밖) */
+const HERO_EDGE = 0.6;
 
 /** 소 걸음: 한 칸을 보여 주는 시간과 그동안 나가는 거리 (게임보다 조금 느긋하게) */
 const COW_FRAME_MS = 130;
@@ -256,7 +260,7 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 	}, []);
 
 	// 스크롤하면 주인공이 흙길을 따라 걷는다: 목표는 화면 가운데 높이와 같은 길 위의 점이고,
-	// 주인공은 그 점까지 일정한 걸음 속도로 길을 따라 걸어간다(스크롤에 바로 붙으면 순간이동처럼 빠르다)
+	// 주인공은 그 점까지 길을 따라 걸어간다(스크롤에 바로 붙으면 순간이동처럼 빠르다). 멀어지면 빨리 따라오고, 화면 밖으로 멀리 벗어나지는 않는다
 	useEffect(() => {
 		const box = road.current;
 		const line = path.current;
@@ -307,9 +311,14 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 			const elapsed = last ? Math.min(time - last, 50) : 16;
 			last = time;
 			if (at === null || still) at = target.length;
+			// 빠르게 스크롤해 화면 밖으로 멀어졌으면, 먼저 화면 가장자리 바로 바깥까지 옮겨 둔다(오래 사라져 있지 않게)
+			const viewHeight = scroller?.clientHeight ?? window.innerHeight;
+			const edge = (viewHeight * HERO_EDGE) / target.unit;
+			if (Math.abs(target.length - at) > edge) at = target.length - Math.sign(target.length - at) * edge;
 			const left = target.length - at;
-			// 길 1단위가 화면에서 몇 px인지로 걸음 속도를 길 위의 거리로 바꾼다
-			const reach = (HERO_SPEED * elapsed) / 1000 / target.unit;
+			// 멀수록 빨리 따라간다(뛰어온다). 길 1단위가 화면에서 몇 px인지로 걸음 속도를 길 위의 거리로 바꾼다
+			const speed = Math.max(HERO_SPEED, Math.abs(left) * target.unit * HERO_CATCH_UP);
+			const reach = (speed * elapsed) / 1000 / target.unit;
 			if (Math.abs(left) <= reach) {
 				at = target.length;
 				facing = 0;
