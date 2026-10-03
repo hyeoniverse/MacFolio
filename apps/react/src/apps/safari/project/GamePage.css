@@ -131,11 +131,34 @@
 }
 
 .gm-press {
-	margin-top: 28px;
+	display: block;
+	margin: 24px auto 0;
+	padding: 8px 18px;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: #fff8e6;
 	font-family: var(--sp-mono);
-	font-size: 13px;
+	font-size: 14px;
 	letter-spacing: 0.3em;
+	cursor: pointer;
 	animation: gm-blink 1.2s steps(2, start) infinite;
+}
+
+.gm-press:hover,
+.gm-press:focus-visible {
+	background-color: rgba(255, 248, 230, 0.14);
+	animation: none;
+}
+
+/* START를 누른 순간: 화면이 한 번 하얗게 번쩍인다 */
+.gm[data-started='true'] .gm-title::after {
+	background: rgba(255, 248, 230, 0.85);
+	transition: background 120ms linear;
+}
+
+.gm-hud {
+	scroll-margin-top: 0;
 }
 
 @keyframes gm-blink {

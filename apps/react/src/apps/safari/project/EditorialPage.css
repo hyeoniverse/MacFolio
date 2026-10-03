@@ -14,7 +14,7 @@
 	--np-ink: #ece8df;
 	--np-muted: #a8a29a;
 	--np-rule: #ece8df;
-	--sp-accent: #9d8cff;
+	--sp-accent: #6d5bff;
 }
 
 .np {
@@ -49,8 +49,9 @@
 	margin: 20px auto 16px;
 }
 
+/* 다크 모드: 뉴픽 파랑을 밝게 (뒤집으면 분홍이 된다) */
 :root[data-theme='dark'] .np-logo {
-	filter: invert(1) hue-rotate(180deg);
+	filter: brightness(1.9) saturate(0.9);
 }
 
 .np-title {
@@ -112,10 +113,11 @@
 	font-size: 15px;
 }
 
-.np-links .sp-pill {
-	border-radius: 0;
-	background-color: var(--np-ink);
-	color: var(--np-paper);
+.sp .np-links .sp-pill {
+	border-radius: 4px;
+	background-color: var(--sp-accent);
+	color: #ffffff;
+	font-weight: 700;
 }
 
 .np-shot {
