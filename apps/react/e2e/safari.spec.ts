@@ -7,7 +7,7 @@ test.describe('Safari', () => {
 		await expect(safari).toBeVisible();
 
 		const tabs = safari.getByRole('tab');
-		await expect(tabs).toHaveCount(5);
+		await expect(tabs).toHaveCount(6);
 		await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
 		const panel = safari.getByRole('tabpanel');
 		await expect(panel.getByRole('article', { name: 'NewPick 뉴픽' })).toBeVisible();
@@ -37,6 +37,16 @@ test.describe('Safari', () => {
 		await expect(panel.getByRole('article', { name: 'QRU 큐알유' })).toBeVisible();
 	});
 
+	test('이 사이트(MacFolio)도 프로젝트 탭으로 있다', async ({ page }) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		await safari.getByRole('tab', { name: /MacFolio/ }).click();
+		const macfolio = safari.getByRole('tabpanel').getByRole('article', { name: 'MacFolio' });
+		await expect(macfolio.getByRole('heading', { level: 1 })).toHaveText('포트폴리오를, 데스크톱으로.');
+		await expect(macfolio.getByRole('region', { name: '기술 사양' })).toContainText('NestJS');
+		await expect(safari.locator('.safari-address')).toHaveText('macfolio.hyeoniverse.com');
+	});
+
 	test('데모가 없는 프로젝트는 주소창에 저장소 주소를 보여준다', async ({ page }) => {
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
@@ -54,7 +64,7 @@ test.describe('Safari', () => {
 		// 고른 탭을 닫으면 오른쪽 탭으로 넘어간다
 		await safari.getByRole('tab', { name: /NewPick/ }).hover();
 		await safari.getByRole('button', { name: 'NewPick 뉴픽 탭 닫기' }).click();
-		await expect(tabs).toHaveCount(4);
+		await expect(tabs).toHaveCount(5);
 		await expect(safari.getByRole('tab', { name: /WTD/ })).toHaveAttribute('aria-selected', 'true');
 
 		// 새 탭은 시작 페이지. 즐겨찾기에서 고르면 그 탭이 프로젝트로 바뀐다
@@ -62,7 +72,7 @@ test.describe('Safari', () => {
 		await expect(safari.getByRole('tab', { name: '시작 페이지' })).toHaveAttribute('aria-selected', 'true');
 		const start = safari.getByRole('region', { name: '시작 페이지' });
 		await start.getByRole('button', { name: /NewPick/ }).click();
-		await expect(tabs).toHaveCount(5);
+		await expect(tabs).toHaveCount(6);
 		await expect(safari.getByRole('tab', { name: /NewPick/ })).toHaveAttribute('aria-selected', 'true');
 		await expect(safari.getByRole('tab', { name: '시작 페이지' })).toHaveCount(0);
 	});
