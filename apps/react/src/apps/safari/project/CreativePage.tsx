@@ -24,12 +24,25 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	const [hearts, setHearts] = useState<{ id: number; dx: number }[]>([]);
 	const heartId = useRef(0);
 	const index = useRef<HTMLElement>(null);
+	const side = useRef<HTMLDivElement>(null);
 	const root = useReveal<HTMLDivElement>();
 	const pet = () => {
 		const burst = Array.from({ length: 6 }, (_, i) => ({ id: (heartId.current += 1), dx: (i - 2.5) * 22 }));
 		setHearts((now) => [...now, ...burst]);
 		window.setTimeout(() => setHearts((now) => now.filter((heart) => !burst.includes(heart))), 1100);
 	};
+
+	// 왼쪽 칸이 화면보다 길면 아래(차례·진행 막대)가 가려진다. 그때는 함께 스크롤되다가 아랫변이 화면 아래에 닿으면 멈춘다
+	useEffect(() => {
+		const column = side.current;
+		if (!column) return;
+		return onScrollFrame(column, (scroller) => {
+			const view = viewOf(scroller);
+			// 좁은 창에서는 붙어 있지 않으므로 건드리지 않는다
+			const sticky = getComputedStyle(column).position === 'sticky';
+			column.style.top = sticky ? `${Math.min(0, view.height - column.offsetHeight)}px` : '';
+		});
+	}, []);
 
 	// 차례마다 그 장을 얼마나 읽었는지(화면 가운데가 장의 어디쯤인지) 막대로 채운다
 	useEffect(() => {
@@ -77,7 +90,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 
 	return (
 		<div className="cr" ref={root}>
-			<div className="cr-side">
+			<div className="cr-side" ref={side}>
 				<Favicon project={project} className="cr-icon" />
 				<p className="cr-name">{project.name}</p>
 				<h1>{project.tagline}</h1>

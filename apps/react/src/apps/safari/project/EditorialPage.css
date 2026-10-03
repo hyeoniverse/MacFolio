@@ -303,9 +303,31 @@
 	}
 }
 
+/* 주요 기능 제목 줄 오른쪽: 오려 둔 기사 수 (없으면 오리는 법) */
+.np-section-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 4px 16px;
+}
+
+.np-section-row h2 {
+	font-size: inherit;
+}
+
 .np-scrap {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--np-muted);
+	font-family: var(--sp-sans, inherit);
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.np-scrap i {
 	color: var(--sp-accent);
-	font-weight: 600;
 }
 
 /* 속보 띠: 제호 아래에서 기사 제목이 끝없이 흘러간다. 마우스를 올리면 멈춘다 */
@@ -321,6 +343,8 @@
 }
 
 .np-ticker strong {
+	position: relative;
+	z-index: 1;
 	flex: none;
 	padding: 6px 12px;
 	background-color: var(--sp-accent);
@@ -329,9 +353,16 @@
 	letter-spacing: 0.1em;
 }
 
+/* 흐르는 글은 이 창 안에서만 보인다 (속보 라벨 위로 지나가지 않게) */
+.np-ticker-window {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+}
+
 .np-ticker-track {
 	display: flex;
-	flex: none;
+	width: max-content;
 	animation: np-ticker 32s linear infinite;
 }
 
