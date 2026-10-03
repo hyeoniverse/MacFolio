@@ -83,7 +83,7 @@ export interface Project {
 	demo?: string;
 	/** 앱 아이콘 (public/imgs/projects/{id}/icon.png). 없으면 기본 모양을 쓴다 */
 	icon?: string;
-	/** 첫 화면에 크게 둘 그림 (public/imgs/projects/{id}/scene.png). 없으면 앱 아이콘 */
+	/** 주요 기능 위에 둘 그림 (public/imgs/projects/{id}/scene.png) */
 	art?: string;
 	/** 글자 로고 (public/imgs/projects/{id}/logo.png) */
 	logo?: string;
