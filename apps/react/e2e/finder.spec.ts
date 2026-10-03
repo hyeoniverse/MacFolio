@@ -29,6 +29,12 @@ test.describe('Finder', () => {
 		await expect(doc.getByRole('heading', { level: 1 })).toContainText('MacFolio');
 		await expect(finder.getByRole('heading', { level: 1, name: 'README.md' })).toBeVisible();
 
+		// 목록은 본문 안으로 들여 쓰고, 하위 목록은 한 단계 더 들여 쓴다
+		const box = async (selector: string) => (await doc.locator(selector).first().boundingBox())!;
+		const [body, list, nested] = [await box('p'), await box('ul > li'), await box('ul ul > li')];
+		expect(list.x).toBeGreaterThan(body.x);
+		expect(nested.x).toBeGreaterThan(list.x);
+
 		// 다른 문서 링크는 Finder에서 열고, 뒤로 가면 돌아온다
 		await doc.getByRole('link', { name: 'docs/backend-design.md' }).first().click();
 		const design = finder.getByRole('article', { name: 'docs/backend-design.md' });

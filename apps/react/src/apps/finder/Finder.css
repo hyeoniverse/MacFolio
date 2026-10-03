@@ -416,6 +416,45 @@
 	margin: 0 0 1em;
 }
 
+/* 목록: 앱 전체의 초기화(padding: 0) 때문에 글머리표가 본문 밖으로 나가고 하위 목록이 들여 써지지 않으므로 GitHub처럼 되돌린다 */
+.finder-doc :is(ul, ol) {
+	padding-left: 2em;
+}
+
+.finder-doc ul {
+	list-style: disc;
+}
+
+.finder-doc ol {
+	list-style: decimal;
+}
+
+.finder-doc :is(ul, ol) ul {
+	list-style: circle;
+}
+
+.finder-doc :is(ul, ol) :is(ul, ol) {
+	margin: 0.25em 0 0;
+}
+
+.finder-doc li + li {
+	margin-top: 0.25em;
+}
+
+.finder-doc li > p {
+	margin: 0;
+}
+
+/* 체크리스트(- [ ])는 글머리표 대신 체크 상자 */
+.finder-doc li.task-list-item {
+	list-style: none;
+}
+
+.finder-doc li.task-list-item input {
+	margin: 0 0.4em 0 -1.4em;
+	vertical-align: middle;
+}
+
 .finder-doc a {
 	color: var(--finder-selected);
 	text-decoration: none;
