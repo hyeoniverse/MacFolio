@@ -176,10 +176,12 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 		};
 		place();
 		target.addEventListener('scroll', onScroll, { passive: true });
-		window.addEventListener('resize', onScroll);
+		// 그림이 늦게 불러와져 길의 높이가 바뀌면 자리를 다시 잡는다
+		const resized = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => place());
+		resized?.observe(box);
 		return () => {
 			target.removeEventListener('scroll', onScroll);
-			window.removeEventListener('resize', onScroll);
+			resized?.disconnect();
 			cancelAnimationFrame(frame);
 			window.clearTimeout(idle);
 		};

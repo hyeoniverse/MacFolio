@@ -7,7 +7,15 @@
 	--sp-accent: #d40063;
 	/* 금속 질감: 크롬은 위아래로 빛이 갈리는 은색, 테두리는 비스듬히 빛이 도는 은색 */
 	--cr-chrome: linear-gradient(180deg, #fdfdfd 0%, #c9ccd2 38%, #8d929b 50%, #d9dce1 64%, #f4f5f7 100%);
-	--cr-chrome-text: linear-gradient(180deg, #23252a 0%, #7a818b 38%, #eef0f3 49%, #5d636c 53%, #2a2d32 78%, #9097a1 100%);
+	--cr-chrome-text: linear-gradient(
+		180deg,
+		#23252a 0%,
+		#7a818b 38%,
+		#eef0f3 49%,
+		#5d636c 53%,
+		#2a2d32 78%,
+		#9097a1 100%
+	);
 	--cr-sheen: conic-gradient(from 210deg, #f6f7f9, #a9aeb6, #ffffff, #8a9099, #e8eaee, #9ea3ab, #f6f7f9);
 	background-color: var(--cr-bg);
 	color: var(--cr-ink);
@@ -20,7 +28,15 @@
 	--cr-line: #3a3836;
 	--sp-accent: #f74d96;
 	--cr-chrome: linear-gradient(180deg, #8a8f98 0%, #4b4f57 38%, #24262b 50%, #5d626b 64%, #a3a8b0 100%);
-	--cr-chrome-text: linear-gradient(180deg, #ffffff 0%, #b9bec6 38%, #5a5f68 49%, #f2f4f7 54%, #a4a9b2 80%, #e2e5ea 100%);
+	--cr-chrome-text: linear-gradient(
+		180deg,
+		#ffffff 0%,
+		#b9bec6 38%,
+		#5a5f68 49%,
+		#f2f4f7 54%,
+		#a4a9b2 80%,
+		#e2e5ea 100%
+	);
 	--cr-sheen: conic-gradient(from 210deg, #5b6068, #2a2c31, #b9bec6, #34373d, #8b9099, #2f3237, #5b6068);
 }
 
@@ -145,17 +161,20 @@
 /* 몽이: 금속 받침 위에서 장에 따라 표정을 바꾼다 (표정 그림을 겹쳐 두고 하나만 보인다) */
 .cr-mascot {
 	display: grid;
-	position: relative;
+	position: absolute;
+	top: 8px;
+	right: 0;
 	justify-items: center;
-	margin-top: 28px;
-	padding-bottom: 14px;
+	width: 140px;
+	margin: 0;
+	padding-bottom: 12px;
 }
 
 .cr-mascot::after {
 	position: absolute;
 	bottom: 0;
-	width: 150px;
-	height: 26px;
+	width: 120px;
+	height: 22px;
 	border-radius: 50%;
 	background: var(--cr-sheen);
 	box-shadow:
@@ -169,7 +188,7 @@
 	position: relative;
 	z-index: 1;
 	align-self: end;
-	height: 150px;
+	height: 112px;
 	opacity: 0;
 	transform: translateY(6px) scale(0.96);
 	transition:
@@ -178,7 +197,6 @@
 }
 
 .cr-mascot img[src*='star'] {
-	height: 150px;
 	margin-inline: -60px;
 }
 
@@ -380,7 +398,7 @@
 	}
 
 	.cr-side {
-		position: static;
+		position: relative;
 		padding-bottom: 8px;
 	}
 
