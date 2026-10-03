@@ -354,11 +354,334 @@
 }
 
 .cr-features li {
+	padding: 22px 0 30px;
+	border-top: 1px solid var(--cr-line);
+}
+
+.cr-feature-text {
 	display: grid;
 	grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
 	gap: 24px;
-	padding: 18px 0;
-	border-top: 1px solid var(--cr-line);
+}
+
+/* 기능마다 붙는 실제 화면 */
+.cr-feature-media {
+	margin-top: 18px;
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 14px;
+	background-color: var(--cr-line);
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+.cr-feature-media > img,
+.cr-feature-media > video {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 라이트·다크 밀대: 손잡이 오른쪽은 다크 그림이 덮는다 */
+.cr-compare {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+	user-select: none;
+}
+
+.cr-compare img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+}
+
+.cr-compare-dark {
+	clip-path: inset(0 0 0 var(--split));
+}
+
+.cr-compare-handle {
+	display: grid;
+	position: absolute;
+	top: 50%;
+	left: var(--split);
+	z-index: 1;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #ffffff;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+	color: var(--sp-accent);
+	pointer-events: none;
+	translate: -50% -50%;
+}
+
+/* 손잡이를 지나는 세로줄 */
+.cr-compare::after {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--split);
+	width: 2px;
+	background-color: #ffffff;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+	content: '';
+	pointer-events: none;
+	translate: -50% 0;
+}
+
+.cr-compare-tag {
+	position: absolute;
+	bottom: 12px;
+	z-index: 1;
+	padding: 3px 10px;
+	border-radius: 999px;
+	background-color: rgba(0, 0, 0, 0.55);
+	color: #ffffff;
+	font-size: 12px;
+	font-weight: 700;
+	pointer-events: none;
+}
+
+.cr-compare-tag.light {
+	left: 12px;
+}
+
+.cr-compare-tag.dark {
+	right: 12px;
+}
+
+.cr-compare input {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	opacity: 0;
+	cursor: ew-resize;
+}
+
+.cr-compare:has(input:focus-visible) .cr-compare-handle {
+	outline: 3px solid var(--sp-accent);
+	outline-offset: 2px;
+}
+
+/* 레이아웃 고르기: 위의 단추를 누르면 그림이 겹쳐 바뀐다 */
+.cr-variants-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 10px;
+	background-color: var(--cr-bg);
+	border-bottom: 1px solid var(--cr-line);
+}
+
+.cr-variants-tabs button {
+	padding: 5px 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 999px;
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	font-size: 13px;
+	cursor: pointer;
+	transition:
+		background-color 0.2s,
+		color 0.2s,
+		border-color 0.2s;
+}
+
+.cr-variants-tabs button:hover {
+	border-color: var(--sp-accent);
+}
+
+.cr-variants-tabs button[aria-pressed='true'] {
+	border-color: var(--sp-accent);
+	background-color: var(--sp-accent);
+	color: #ffffff;
+}
+
+.cr-variants-view {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+}
+
+.cr-variants-view img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+	opacity: 0;
+	scale: 1.04;
+	transition:
+		opacity 0.45s ease-out,
+		scale 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.cr-variants-view img[data-on='true'] {
+	opacity: 1;
+	scale: 1;
+}
+
+/* 전후 막대: 앞(회색)은 가득, 뒤(강조색)는 화면에 들어오면 앞 길이에서 --r 비율로 줄어든다 */
+.cr-bars {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-bottom: 32px;
+	list-style: none;
+}
+
+.cr-bars li {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 4px 12px;
+	align-items: center;
+}
+
+.cr-bars-label {
+	grid-column: 1 / -1;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.cr-bars-track {
+	height: 10px;
+	overflow: hidden;
+	border-radius: 5px;
+}
+
+.cr-bars-track i {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+}
+
+.cr-bars-track.before i {
+	background-color: var(--cr-line);
+}
+
+.cr-bars-track.after i {
+	width: 100%;
+	background-color: var(--sp-accent);
+	transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+}
+
+.cr-bars[data-shown] .cr-bars-track.after i {
+	width: calc(var(--r) * 100%);
+}
+
+.cr-bars-value {
+	color: var(--cr-muted);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	white-space: nowrap;
+}
+
+.cr-bars-value.after {
+	color: var(--sp-accent);
+	font-weight: 700;
+}
+
+.cr-bars-value em {
+	margin-left: 8px;
+	padding: 1px 6px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--sp-accent) 14%, transparent);
+	font-style: normal;
+}
+
+/* 토큰 세 층: 포개져 있다가 장을 읽어 내려가면(--read) 펼쳐지고, 층 사이에 참조 화살표가 나타난다 */
+.cr-layers {
+	display: flex;
+	flex-direction: column;
+	gap: 26px;
+	margin-bottom: 36px;
+	list-style: none;
+}
+
+.cr-layers li {
+	position: relative;
+	z-index: calc(3 - var(--i));
+	padding: 16px 18px;
+	border: 1px solid var(--cr-line);
+	border-left: 4px solid var(--sp-accent);
+	border-radius: 12px;
+	background-color: var(--cr-bg);
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+	/* 접혀 있을 때는 위 카드 바로 뒤에 10px씩 어긋나 숨는다 */
+	transform: translateY(calc((1 - var(--s)) * var(--i) * (-100% - 26px + 10px)))
+		scale(calc(1 - (1 - var(--s)) * var(--i) * 0.04));
+}
+
+.cr-layers li + li::before {
+	position: absolute;
+	top: -24px;
+	left: 24px;
+	color: var(--sp-accent);
+	content: '↑ 참조';
+	font-family: var(--sp-mono);
+	font-size: 12px;
+	opacity: var(--s);
+}
+
+.cr-layers-name {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.cr-layers code {
+	display: block;
+	margin-top: 6px;
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	overflow-wrap: anywhere;
+}
+
+.cr-layers p {
+	margin-top: 6px;
+	color: var(--cr-muted);
+	font-size: 13px;
+}
+
+/* 장 글 묶음 위의 작은 화면 */
+.cr-point-shot {
+	margin-bottom: 12px;
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 10px;
+}
+
+.cr-point-shot img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cr-bars-track.after i {
+		width: calc(var(--r) * 100%);
+		transition: none;
+	}
+
+	.cr-variants-view img {
+		transition: none;
+	}
 }
 
 .cr-features h3 {
@@ -438,6 +761,12 @@
 .cr-figure img {
 	display: block;
 	width: 100%;
+}
+
+.cr-figure figcaption {
+	padding: 8px 12px;
+	color: var(--cr-muted);
+	font-size: 12px;
 }
 
 /* 진행 과정: 장을 읽는 만큼(--read) 세로줄이 위에서부터 차오른다 */
@@ -556,7 +885,7 @@
 		padding-bottom: 8px;
 	}
 
-	.cr-features li,
+	.cr-feature-text,
 	.cr-build,
 	.cr-specs div,
 	.cr-facts ul {

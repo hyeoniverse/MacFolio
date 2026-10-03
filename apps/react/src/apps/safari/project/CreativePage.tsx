@@ -5,6 +5,7 @@ import type { Project, ProjectChapter, ProjectFact } from '@/shared/profile';
 import { FactValue, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
+import { Bars, Compare, FeatureMedia, Layers } from '@/apps/safari/project/CreativeParts';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
 /** 진행 과정이 있으면 만든 방식을 그 장에 품질 장치로 함께 싣는다 */
@@ -39,7 +40,7 @@ const ChapterFacts: React.FC<{ facts: ProjectFact[] }> = ({ facts }) => (
 	</ul>
 );
 
-/** 더 들려줄 장 하나: 첫머리, 숫자, 글 묶음, 그림 */
+/** 더 들려줄 장 하나: 첫머리, 숫자, 펼쳐지는 층, 전후 막대, 글 묶음(그림이 있으면 위에), 장 끝 그림(다크가 있으면 밀대) */
 const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, no }) => (
 	<section className="cr-chapter" aria-label={chapter.title}>
 		<p className="cr-no">{no}</p>
@@ -50,9 +51,16 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 			</p>
 		)}
 		{chapter.facts && <ChapterFacts facts={chapter.facts} />}
+		{chapter.layers && <Layers layers={chapter.layers} />}
+		{chapter.compare && <Bars rows={chapter.compare} />}
 		<div className="cr-build">
 			{chapter.points.map((point, i) => (
 				<article key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+					{point.image && (
+						<figure className="cr-point-shot">
+							<img src={point.image} alt={`${point.title} 화면`} loading="lazy" />
+						</figure>
+					)}
 					<h3>{point.title}</h3>
 					<p>{point.body}</p>
 				</article>
@@ -60,7 +68,12 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 		</div>
 		{chapter.image && (
 			<figure className="cr-figure" data-reveal="">
-				<img src={chapter.image.src} alt={chapter.image.alt} loading="lazy" />
+				{chapter.image.dark ? (
+					<Compare light={chapter.image.src} dark={chapter.image.dark} alt={chapter.image.alt} />
+				) : (
+					<img src={chapter.image.src} alt={chapter.image.alt} loading="lazy" />
+				)}
+				<figcaption>{chapter.image.alt}</figcaption>
 			</figure>
 		)}
 	</section>
@@ -201,9 +214,16 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					<h2>주요 기능</h2>
 					<ol className="cr-features">
 						{project.highlights.map((point, i) => (
-							<li key={point.title} data-reveal="left" style={{ '--d': i } as React.CSSProperties}>
-								<h3>{point.title}</h3>
-								<p>{point.body}</p>
+							<li key={point.title} style={{ '--d': i } as React.CSSProperties}>
+								<div className="cr-feature-text" data-reveal="left">
+									<h3>{point.title}</h3>
+									<p>{point.body}</p>
+								</div>
+								{(point.image || point.video || point.variants) && (
+									<figure className="cr-feature-media" data-reveal="zoom">
+										<FeatureMedia point={point} />
+									</figure>
+								)}
 							</li>
 						))}
 					</ol>
