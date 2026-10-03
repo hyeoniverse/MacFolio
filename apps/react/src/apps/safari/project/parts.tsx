@@ -3,6 +3,7 @@ import React from 'react';
 import type { Project } from '@/shared/profile';
 import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/AppStateContext';
+import { splitNumber, useCountUp } from '@/apps/safari/project/reveal';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -54,11 +55,28 @@ export const Links: React.FC<{ project: Project; className?: string }> = ({ proj
 };
 
 /** 큰 숫자와 설명 */
+/** 숫자 하나: 화면에 들어오면 세어 올라간다 (숫자가 없는 값은 그대로) */
+const FactValue: React.FC<{ text: string }> = ({ text }) => {
+	const parts = splitNumber(text);
+	const { ref, value } = useCountUp(parts?.value ?? 0);
+	if (!parts) return <strong>{text}</strong>;
+	return (
+		<strong ref={ref}>
+			<span className="visually-hidden">{text}</span>
+			<span aria-hidden="true">
+				{parts.before}
+				{value}
+				{parts.after}
+			</span>
+		</strong>
+	);
+};
+
 export const Facts: React.FC<{ project: Project; className?: string }> = ({ project, className = 'sp-facts' }) => (
 	<ul className={className}>
 		{project.facts.map((fact) => (
 			<li key={fact.label}>
-				<strong>{fact.value}</strong>
+				<FactValue text={fact.value} />
 				<span>{fact.label}</span>
 			</li>
 		))}

@@ -5,6 +5,7 @@ import type { Project, ProjectPoint } from '@/shared/profile';
 import { Facts, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CardPage.css';
 import { scrollParent } from '@/apps/safari/project/scroll';
+import { useReveal } from '@/apps/safari/project/reveal';
 
 /** 한 칸씩 펼치거나 접는 사이 간격 (ms). 빠르게 스크롤해도 한꺼번에가 아니라 차례로 */
 const STEP = 220;
@@ -112,84 +113,111 @@ const Steps: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 	);
 };
 
-const CardPage: React.FC<{ project: Project }> = ({ project }) => (
-	<div className="qc">
-		<header className="qc-hero">
-			<div className="qc-cards">
-				<div className="qc-card qc-front">
-					<Favicon project={project} className="qc-icon" />
-					<p className="qc-name">{project.name}</p>
-					<h1>{project.tagline}</h1>
-					<p className="qc-lead">{project.description}</p>
-					<p className="qc-serial" aria-hidden="true">
-						{project.context}
-					</p>
+/**
+ * 명함을 손에 든 것처럼: 마우스를 올리면 그쪽으로 기울고, 빛이 마우스를 따라 비친다. 마우스를 떼면 제자리로 돌아온다
+ */
+const tilt = {
+	onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
+		if (event.pointerType !== 'mouse') return;
+		const card = event.currentTarget;
+		const box = card.getBoundingClientRect();
+		const x = (event.clientX - box.left) / box.width;
+		const y = (event.clientY - box.top) / box.height;
+		card.style.setProperty('--rx', `${((0.5 - y) * 12).toFixed(2)}deg`);
+		card.style.setProperty('--ry', `${((x - 0.5) * 14).toFixed(2)}deg`);
+		card.style.setProperty('--gx', `${(x * 100).toFixed(1)}%`);
+		card.style.setProperty('--gy', `${(y * 100).toFixed(1)}%`);
+		card.dataset.tilt = '';
+	},
+	onPointerLeave: (event: React.PointerEvent<HTMLElement>) => {
+		const card = event.currentTarget;
+		card.style.removeProperty('--rx');
+		card.style.removeProperty('--ry');
+		delete card.dataset.tilt;
+	},
+};
+
+const CardPage: React.FC<{ project: Project }> = ({ project }) => {
+	const root = useReveal<HTMLDivElement>();
+	return (
+		<div className="qc" ref={root}>
+			<header className="qc-hero">
+				<div className="qc-cards">
+					<div className="qc-card qc-front" {...tilt}>
+						<Favicon project={project} className="qc-icon" />
+						<p className="qc-name">{project.name}</p>
+						<h1>{project.tagline}</h1>
+						<p className="qc-lead">{project.description}</p>
+						<p className="qc-serial" aria-hidden="true">
+							{project.context}
+						</p>
+					</div>
+					<section className="qc-card qc-back" aria-label="기술 사양" {...tilt}>
+						<h2>기술 사양</h2>
+						<dl>
+							{project.specs.map((spec) => (
+								<div key={spec.label}>
+									<dt>{spec.label}</dt>
+									<dd>{spec.value}</dd>
+								</div>
+							))}
+						</dl>
+					</section>
 				</div>
-				<section className="qc-card qc-back" aria-label="기술 사양">
-					<h2>기술 사양</h2>
-					<dl>
-						{project.specs.map((spec) => (
-							<div key={spec.label}>
-								<dt>{spec.label}</dt>
-								<dd>{spec.value}</dd>
-							</div>
-						))}
-					</dl>
-				</section>
-			</div>
-			<Links project={project} className="qc-links" />
-		</header>
+				<Links project={project} className="qc-links" />
+			</header>
 
-		<section className="qc-facts" aria-label="한눈에 보기">
-			<Facts project={project} />
-		</section>
-
-		<section className="qc-journey" aria-label="주요 기능">
-			<h2 className="qc-title">명함 한 장이 오가는 순서</h2>
-			<div className="qc-journey-body">
-				<Steps points={project.highlights} />
-				<Shot project={project} className="qc-shot" />
-			</div>
-		</section>
-
-		<section className="qc-faq" aria-label="만든 방식">
-			<h2 className="qc-title">어떻게 만들었나요?</h2>
-			<Answers points={project.build} />
-		</section>
-
-		<div className="qc-lists">
-			<section aria-label="맡은 일">
-				<h2 className="qc-title">맡은 일</h2>
-				{project.role && <p className="qc-role">{project.role}</p>}
-				<ul>
-					{project.contributions.map((item) => (
-						<li key={item}>
-							<i className="fa-solid fa-circle-check" aria-hidden="true" />
-							{item}
-						</li>
-					))}
-				</ul>
+			<section className="qc-facts" aria-label="한눈에 보기" data-reveal="">
+				<Facts project={project} />
 			</section>
-			{project.next && (
-				<section aria-label="다음 단계">
-					<h2 className="qc-title">다음 단계</h2>
-					<ul className="next">
-						{project.next.map((item) => (
+
+			<section className="qc-journey" aria-label="주요 기능">
+				<h2 className="qc-title">명함 한 장이 오가는 순서</h2>
+				<div className="qc-journey-body">
+					<Steps points={project.highlights} />
+					<Shot project={project} className="qc-shot" />
+				</div>
+			</section>
+
+			<section className="qc-faq" aria-label="만든 방식">
+				<h2 className="qc-title">어떻게 만들었나요?</h2>
+				<Answers points={project.build} />
+			</section>
+
+			<div className="qc-lists">
+				<section aria-label="맡은 일" data-reveal="left">
+					<h2 className="qc-title">맡은 일</h2>
+					{project.role && <p className="qc-role">{project.role}</p>}
+					<ul>
+						{project.contributions.map((item) => (
 							<li key={item}>
-								<i className="fa-regular fa-circle" aria-hidden="true" />
+								<i className="fa-solid fa-circle-check" aria-hidden="true" />
 								{item}
 							</li>
 						))}
 					</ul>
 				</section>
-			)}
-		</div>
+				{project.next && (
+					<section aria-label="다음 단계" data-reveal="left" style={{ '--d': 2 } as React.CSSProperties}>
+						<h2 className="qc-title">다음 단계</h2>
+						<ul className="next">
+							{project.next.map((item) => (
+								<li key={item}>
+									<i className="fa-regular fa-circle" aria-hidden="true" />
+									{item}
+								</li>
+							))}
+						</ul>
+					</section>
+				)}
+			</div>
 
-		<footer className="qc-foot">
-			<p>{project.tagline}</p>
-			<Links project={project} className="qc-links" />
-		</footer>
-	</div>
-);
+			<footer className="qc-foot" data-reveal="">
+				<p>{project.tagline}</p>
+				<Links project={project} className="qc-links" />
+			</footer>
+		</div>
+	);
+};
 
 export default CardPage;

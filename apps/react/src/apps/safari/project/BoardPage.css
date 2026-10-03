@@ -228,6 +228,134 @@
 	opacity: 1;
 }
 
+.kb-card.done h3 + p {
+	margin-top: 6px;
+	opacity: 0.75;
+}
+
+/* 옮길 수 있는 카드: 잡고 끌거나, 오른쪽 위 화살표로 다음 열에 */
+.kb-card {
+	position: relative;
+	cursor: grab;
+}
+
+.kb-card:active {
+	cursor: grabbing;
+}
+
+.kb-text {
+	min-width: 0;
+	padding-right: 18px;
+}
+
+.kb-move {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	display: grid;
+	place-items: center;
+	width: 26px;
+	height: 26px;
+	border: 2px solid var(--kb-ink);
+	border-radius: 8px;
+	background-color: var(--kb-card);
+	color: var(--kb-ink);
+	font-size: 12px;
+	cursor: pointer;
+	opacity: 0;
+	transition:
+		opacity 0.15s,
+		transform 0.15s;
+}
+
+.kb-card:hover .kb-move,
+.kb-move:focus-visible {
+	opacity: 1;
+}
+
+.kb-move:hover {
+	background-color: var(--tone);
+	color: #ffffff;
+	transform: translateX(2px);
+}
+
+/* 카드를 끌고 있을 때 놓을 수 있는 열 */
+.kb-col {
+	transition:
+		box-shadow 0.2s,
+		background-color 0.2s;
+}
+
+.kb-col[data-over] {
+	background-color: color-mix(in srgb, var(--tone) 14%, var(--kb-col));
+	box-shadow: inset 0 0 0 2px var(--tone);
+}
+
+/* 카드 수가 바뀌면 숫자가 톡 튄다 */
+.kb-count {
+	animation: kb-pop 0.35s ease-out;
+}
+
+@keyframes kb-pop {
+	50% {
+		transform: scale(1.5);
+		opacity: 1;
+	}
+}
+
+.kb-hint {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 14px;
+	margin-top: 28px;
+	opacity: 0.7;
+	font-size: 14px;
+}
+
+.kb-hint + .kb-board {
+	margin-top: 12px;
+}
+
+.kb-reset {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 12px;
+	border: 2px solid var(--kb-ink);
+	border-radius: 999px;
+	background-color: var(--kb-card);
+	box-shadow: 2px 2px 0 var(--kb-ink);
+	color: var(--kb-ink);
+	font: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+/* 카드가 떨어져 붙은 뒤에는 끈으로 매단 듯 살짝 흔들린다 */
+.kb-card[data-shown] {
+	animation: kb-settle 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+	animation-delay: calc(var(--d, 0) * 90ms + 0.35s);
+}
+
+@keyframes kb-settle {
+	from {
+		rotate: -2deg;
+	}
+
+	to {
+		rotate: 0deg;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.kb-count,
+	.kb-card[data-shown] {
+		animation: none;
+	}
+}
+
 /* 섹션 제목 */
 .kb-title {
 	margin-bottom: 14px;
