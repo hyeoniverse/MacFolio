@@ -529,7 +529,7 @@ export const PROJECTS: Project[] = [
 		language: 'TypeScript',
 		url: 'https://github.com/hyeoniverse/web-portfolio-hyeoniverse',
 		demo: 'https://www.hyeoniverse.com',
-		icon: projectImage('hyeoniverse', 'icon.png'),
+		icon: projectImage('hyeoniverse', 'icon.svg'),
 		image: projectImage('hyeoniverse', 'screenshot.jpg'),
 	},
 	{

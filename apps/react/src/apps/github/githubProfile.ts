@@ -1,5 +1,5 @@
 // GitHub 앱에 보여 줄 프로필·README·저장소. 값은 API 서버가 GitHub에서 받아 둔 것(/github/profile)을 쓰고,
-// 서버가 없거나 닿지 않을 때는 아래 스냅샷을 보여 준다. 스냅샷의 고정 저장소는 따로 적지 않고 프로젝트 목록(PROJECTS)에서 만든다.
+// 서버가 없거나 닿지 않을 때는 아래 스냅샷을 보여 준다. 스냅샷의 고정 저장소는 따로 적지 않고 프로젝트 목록(PROJECTS)의 앞 6개로 만든다.
 import { PROJECTS, type Project } from '@/shared/profile';
 
 export interface GithubProfile {
@@ -37,6 +37,9 @@ export interface GithubData {
 	readmeBaseUrl: string;
 	repos: RepoCard[];
 }
+
+/** GitHub처럼 고정 저장소는 6개까지. 프로젝트 목록의 앞에서부터 고른다 */
+export const MAX_PINNED = 6;
 
 /** 프로젝트를 고정 저장소 카드로. 설명은 프로젝트 소개 한 줄, 홈페이지는 데모 주소 */
 export const projectRepo = (project: Project): RepoCard => {
@@ -164,7 +167,7 @@ export const GITHUB_SNAPSHOT: GithubData = {
 	},
 	readme: README_SNAPSHOT,
 	readmeBaseUrl: 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/',
-	repos: PROJECTS.map(projectRepo),
+	repos: PROJECTS.slice(0, MAX_PINNED).map(projectRepo),
 };
 
 /** GitHub 언어 색 (github-linguist) */

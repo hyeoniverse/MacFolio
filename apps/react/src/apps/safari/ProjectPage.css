@@ -1191,3 +1191,360 @@
 .sp[data-look='creative'] .sp-facts strong {
 	color: var(--sp-accent);
 }
+
+/* ═══ 만든 방식·기술 사양: 모양마다 다르게 ═══
+ * 기본(product)은 Apple의 어두운 띠와 기술 사양 표. 나머지는 첫 화면과 같은 재료로 다시 그린다 */
+.sp-points,
+.sp-specs {
+	counter-reset: item;
+}
+
+.sp-points li,
+.sp-specs div {
+	counter-increment: item;
+}
+
+/* editorial: 신문. 만든 방식은 종이 위의 칼럼, 기술 사양은 두 단 안내란 */
+.sp[data-look='editorial'] .sp-dark {
+	background: var(--sp-hero-bg);
+	color: var(--sp-text);
+}
+
+.sp[data-look='editorial'] .sp-dark .sp-headline span,
+.sp[data-look='editorial'] .sp-points p {
+	color: var(--sp-muted);
+}
+
+.sp[data-look='editorial'] .sp-points li {
+	border-top: 3px double var(--sp-text);
+}
+
+.sp[data-look='editorial'] .sp-points li::before {
+	display: block;
+	margin-bottom: 8px;
+	color: var(--sp-accent);
+	font-family: var(--sp-serif);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	content: 'NO. ' counter(item, decimal-leading-zero);
+}
+
+.sp[data-look='editorial'] .sp-specs-title {
+	border-bottom: 3px double var(--sp-text);
+	font-family: var(--sp-serif);
+}
+
+.sp[data-look='editorial'] .sp-specs {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: 40px;
+}
+
+.sp[data-look='editorial'] .sp-specs div {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 4px;
+	border-bottom-color: var(--sp-text);
+}
+
+.sp[data-look='editorial'] .sp-specs dt {
+	font-size: 12px;
+	letter-spacing: 0.14em;
+}
+
+.sp[data-look='editorial'] .sp-specs dd {
+	color: var(--sp-text);
+	font-family: var(--sp-serif);
+	font-size: 18px;
+}
+
+/* playful: 할 일 카드. 만든 방식은 붙임쪽지, 기술 사양은 색 칩 */
+.sp[data-look='playful'] .sp-dark {
+	background: var(--sp-alt);
+	color: var(--sp-text);
+}
+
+.sp[data-look='playful'] .sp-dark .sp-headline span {
+	color: var(--sp-muted);
+}
+
+.sp[data-look='playful'] .sp-points li {
+	padding: 24px;
+	border: 3px solid var(--sp-ink);
+	border-radius: 18px;
+	background-color: #ffffff;
+	box-shadow: 5px 5px 0 var(--sp-ink);
+	color: #1d1d1f;
+	transform: rotate(-0.8deg);
+}
+
+.sp[data-look='playful'] .sp-points li:nth-child(2n) {
+	transform: rotate(0.8deg);
+}
+
+.sp[data-look='playful'] .sp-points p {
+	color: #3a3a3c;
+}
+
+.sp[data-look='playful'] .sp-specs-title {
+	border-bottom: none;
+}
+
+.sp[data-look='playful'] .sp-specs {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 18px;
+}
+
+.sp[data-look='playful'] .sp-specs div {
+	--card: #ffd6d7;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 6px;
+	padding: 18px 20px;
+	border: 3px solid var(--sp-ink);
+	border-radius: 16px;
+	background-color: var(--card);
+	box-shadow: 4px 4px 0 var(--sp-ink);
+	color: #1d1d1f;
+}
+
+.sp[data-look='playful'] .sp-specs div:nth-child(4n + 2) {
+	--card: #fff1a8;
+}
+
+.sp[data-look='playful'] .sp-specs div:nth-child(4n + 3) {
+	--card: #cfe6ff;
+}
+
+.sp[data-look='playful'] .sp-specs div:nth-child(4n + 4) {
+	--card: #d6f5cf;
+}
+
+.sp[data-look='playful'] .sp-specs dt {
+	font-size: 13px;
+}
+
+.sp[data-look='playful'] .sp-specs dd {
+	color: #3a3a3c;
+	font-size: 16px;
+}
+
+/* minimal: 명함. 만든 방식은 번호 원, 기술 사양은 명함 한 장 */
+.sp[data-look='minimal'] .sp-points li {
+	padding-top: 0;
+	padding-left: 60px;
+	position: relative;
+	border-top: none;
+}
+
+.sp[data-look='minimal'] .sp-points li::before {
+	display: grid;
+	position: absolute;
+	top: -6px;
+	left: 0;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border: 2px solid #5fd3c7;
+	border-radius: 50%;
+	color: #5fd3c7;
+	font-weight: 700;
+	content: counter(item);
+}
+
+.sp[data-look='minimal'] .sp-specs-title {
+	border-bottom: none;
+	text-align: center;
+}
+
+.sp[data-look='minimal'] .sp-specs {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 8px 32px;
+	border: 1px solid var(--sp-line);
+	border-radius: 22px;
+	background-color: var(--sp-bg);
+	box-shadow: 0 24px 50px rgba(35, 137, 125, 0.16);
+}
+
+.sp[data-look='minimal'] .sp-specs div {
+	grid-template-columns: 130px minmax(0, 1fr);
+	border-bottom-style: dashed;
+}
+
+.sp[data-look='minimal'] .sp-specs div:last-child {
+	border-bottom: none;
+}
+
+.sp[data-look='minimal'] .sp-specs dt {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 14px;
+}
+
+/* game: 나무 팻말과 아이템 칸 */
+.sp[data-look='game'] .sp-points li {
+	padding: 20px 22px;
+	border: 3px solid var(--sp-wood);
+	border-radius: 10px;
+	background-color: rgba(0, 0, 0, 0.18);
+	box-shadow: 0 4px 0 var(--sp-wood-dark);
+}
+
+.sp[data-look='game'] .sp-specs-title {
+	border-bottom: none;
+	color: var(--sp-wood-dark);
+}
+
+:root[data-theme='dark'] .sp[data-look='game'] .sp-specs-title {
+	color: var(--sp-paper);
+}
+
+.sp[data-look='game'] .sp-specs {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+	gap: 14px;
+}
+
+.sp[data-look='game'] .sp-specs div {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 6px;
+	padding: 16px 18px;
+	border: 3px solid var(--sp-tile-line);
+	border-radius: 8px;
+	background-color: var(--sp-tile-bg);
+	box-shadow: 0 4px 0 var(--sp-tile-line);
+}
+
+.sp[data-look='game'] .sp-specs dt {
+	color: var(--sp-accent);
+	font-size: 13px;
+	letter-spacing: 0.06em;
+}
+
+/* terminal: 만든 방식은 주석, 기술 사양은 설정 파일 */
+.sp[data-look='terminal'] .sp-points h3 {
+	font-family: var(--sp-mono);
+	font-size: 18px;
+}
+
+.sp[data-look='terminal'] .sp-points h3::before {
+	color: #8b949e;
+	content: '// ';
+}
+
+.sp[data-look='terminal'] .sp-specs-title {
+	border-bottom: none;
+	font-family: var(--sp-mono);
+	font-size: clamp(22px, 3.4cqi, 30px);
+}
+
+.sp[data-look='terminal'] .sp-specs-title::before {
+	color: var(--sp-accent);
+	content: '$ cat ';
+}
+
+.sp[data-look='terminal'] .sp-specs {
+	padding: 20px 24px;
+	border: 1px solid #30363d;
+	border-radius: 12px;
+	background-color: #0d1117;
+	font-family: var(--sp-mono);
+	font-size: 14px;
+}
+
+.sp[data-look='terminal'] .sp-specs div {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 10px;
+	padding: 4px 0;
+	border-bottom: none;
+}
+
+.sp[data-look='terminal'] .sp-specs div::before {
+	color: #484f58;
+	content: counter(item, decimal-leading-zero);
+}
+
+.sp[data-look='terminal'] .sp-specs dt {
+	color: #79c0ff;
+	font-weight: 400;
+}
+
+.sp[data-look='terminal'] .sp-specs dt::after {
+	color: #8b949e;
+	content: ':';
+}
+
+.sp[data-look='terminal'] .sp-specs dd {
+	color: #a5d6ff;
+}
+
+/* creative: 큰 번호와 세리프 */
+.sp[data-look='creative'] .sp-dark {
+	background: var(--sp-hero-bg);
+}
+
+.sp[data-look='creative'] .sp-points li {
+	padding: 0 0 0 22px;
+	border-top: none;
+	border-left: 1px solid #3a3836;
+}
+
+.sp[data-look='creative'] .sp-points li::before {
+	display: block;
+	margin-bottom: 10px;
+	color: #f74d96;
+	font-family: var(--sp-serif);
+	font-size: 34px;
+	font-weight: 700;
+	line-height: 1;
+	content: counter(item, decimal-leading-zero);
+}
+
+.sp[data-look='creative'] .sp-specs-title {
+	border-bottom: 2px solid var(--sp-accent);
+	font-family: var(--sp-serif);
+}
+
+.sp[data-look='creative'] .sp-specs div {
+	grid-template-columns: 56px 220px minmax(0, 1fr);
+	align-items: baseline;
+	padding: 26px 0;
+}
+
+.sp[data-look='creative'] .sp-specs div::before {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 14px;
+	content: counter(item, decimal-leading-zero);
+}
+
+.sp[data-look='creative'] .sp-specs dt {
+	font-family: var(--sp-serif);
+	font-size: 22px;
+	font-weight: 700;
+}
+
+@container (max-width: 600px) {
+	.sp[data-look='editorial'] .sp-specs,
+	.sp[data-look='playful'] .sp-specs {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.sp[data-look='minimal'] .sp-specs {
+		padding: 4px 20px;
+	}
+
+	.sp[data-look='minimal'] .sp-specs div {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.sp[data-look='creative'] .sp-specs div {
+		grid-template-columns: 40px minmax(0, 1fr);
+	}
+
+	.sp[data-look='creative'] .sp-specs dd {
+		grid-column: 2;
+	}
+}
