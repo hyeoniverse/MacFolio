@@ -56,7 +56,7 @@ export const Links: React.FC<{ project: Project; className?: string }> = ({ proj
 
 /** 큰 숫자와 설명 */
 /** 숫자 하나: 화면에 들어오면 세어 올라간다 (숫자가 없는 값은 그대로) */
-const FactValue: React.FC<{ text: string }> = ({ text }) => {
+export const FactValue: React.FC<{ text: string }> = ({ text }) => {
 	const parts = splitNumber(text);
 	const { ref, value } = useCountUp(parts?.value ?? 0);
 	if (!parts) return <strong>{text}</strong>;

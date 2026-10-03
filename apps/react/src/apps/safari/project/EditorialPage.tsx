@@ -1,4 +1,4 @@
-// NewPick (뉴스레터): 신문 1면. 제호 → 속보 띠 → 머리기사와 옆 단(숫자, 진행 과정) → 기사 네 꼭지 → 두 단 해설 → 아래 칸(맡은 일, 기술 사양)
+// NewPick (뉴스레터): 신문 1면. 제호 → 속보 띠 → 머리기사와 옆 단(숫자, 진행 과정) → 기사 꼭지 → 두 단 해설 → 기획 기사(장마다) → 아래 칸(맡은 일, 기술 사양)
 // 기사는 화면에 들어오면 잉크가 번지듯 나타나고, 가위 단추로 오려 두면 제호 옆 스크랩 수가 는다
 import React, { useState } from 'react';
 import type { Project } from '@/shared/profile';
@@ -139,6 +139,25 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 					))}
 				</div>
 			</section>
+
+			{project.chapters?.map((chapter) => (
+				<section key={chapter.title} className="np-feature" aria-label={chapter.title}>
+					<h2 className="np-section">기획 · {chapter.title}</h2>
+					{chapter.lead && (
+						<p className="np-feature-dek" data-reveal="ink">
+							{chapter.lead}
+						</p>
+					)}
+					<ol>
+						{chapter.points.map((point, i) => (
+							<li key={point.title} data-reveal="ink" style={{ '--d': i % 2 } as React.CSSProperties}>
+								<h3>{point.title}</h3>
+								<p>{point.body}</p>
+							</li>
+						))}
+					</ol>
+				</section>
+			))}
 
 			<div className="np-bottom">
 				<section className="np-byline" aria-label="맡은 일" data-reveal="">
