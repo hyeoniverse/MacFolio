@@ -129,19 +129,41 @@ test.describe('Safari', () => {
 			panel.getByRole('navigation', { name: '차례' }).getByRole('button', { name: /기술 사양/ })
 		).toHaveAttribute('aria-current', 'step');
 
-		// 터미널: 명령과 결과
+		// 터미널: 처음에는 소개와 help만 있고, 내용은 명령을 쳐야 나온다. 저장소도 ls·cd·cat으로 돌아본다
 		await open(/DevCourse/);
-		await expect(panel.getByRole('region', { name: '기술 사양' })).toContainText('cat stack.json');
-		await expect(panel.getByRole('region', { name: '커밋 컨벤션' })).toContainText('practice');
-		// 맨 아래 프롬프트에서 직접 명령을 친다: Tab으로 채우기, 없는 명령, clear
 		const shell = panel.getByRole('region', { name: '직접 쳐 보기' });
 		const prompt = shell.getByRole('textbox', { name: '명령 입력' });
+		await expect(panel.getByRole('region', { name: '기술 사양' })).toHaveCount(0);
+		await expect(shell.locator('.tm-entry')).toHaveCount(1);
+		await expect(shell.locator('.tm-entry')).toContainText('cat stack.json');
+		await prompt.fill('cat stack.json');
+		await prompt.press('Enter');
+		await expect(panel.getByRole('region', { name: '기술 사양' })).toContainText('Express');
+		await prompt.fill('git types');
+		await prompt.press('Enter');
+		await expect(panel.getByRole('region', { name: '커밋 컨벤션' })).toContainText('practice');
+		// Tab으로 채우기
 		await prompt.fill('who');
 		await prompt.press('Tab');
 		await expect(prompt).toHaveValue('whoami');
 		await prompt.press('Enter');
-		await expect(shell.locator('.tm-entry')).toHaveCount(1);
-		await expect(shell.locator('.tm-entry')).toContainText('커밋 컨벤션 설계');
+		await expect(panel.getByRole('region', { name: '맡은 일' })).toContainText('커밋 컨벤션 설계');
+		// 저장소: 폴더로 들어가 그날 노트를 읽는다 (프롬프트에 지금 폴더)
+		await prompt.fill('cd Week02/03');
+		await prompt.press('Enter');
+		await expect(shell.locator('.tm-entry').last()).toContainText('Readme.md');
+		await expect(shell.locator('form .tm-path')).toHaveText('~/DevCourse-FullStack/Week02/03');
+		await prompt.fill('cat Re');
+		await prompt.press('Tab');
+		await expect(prompt).toHaveValue('cat Readme.md');
+		await prompt.press('Enter');
+		await expect(shell.locator('.tm-entry').last()).toContainText('CSS의 이해');
+		// 목록의 이름을 누르면 그 명령이 쳐진다
+		await prompt.fill('cd ..');
+		await prompt.press('Enter');
+		await shell.locator('.tm-entry').last().getByRole('button', { name: '01/' }).click();
+		await expect(shell.locator('form .tm-path')).toHaveText('~/DevCourse-FullStack/Week02/01');
+		// 없는 명령, 이전 명령, clear
 		await prompt.fill('nope');
 		await prompt.press('Enter');
 		await expect(shell).toContainText('command not found: nope');
