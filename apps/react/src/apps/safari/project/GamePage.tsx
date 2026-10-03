@@ -649,7 +649,8 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 				)}
 				<p className="gm-the-end">THE END</p>
 				<EmoteFace emote={['loving', 2]} className="gm-bow" />
-				<p className="gm-end">{project.tagline}</p>
+				{/* 타이틀의 "농장에 작은 소동이 생겼어요"에 답하는 마무리 인사 */}
+				<p className="gm-end">오늘도 농장은 평화로워요. 도와줘서 고마워요!</p>
 				<Links project={project} className="gm-links" />
 				<div className="gm-parade" aria-hidden="true">
 					<span className="gm-walker gm-parade-hero" />
