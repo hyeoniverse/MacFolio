@@ -20,9 +20,6 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 			<header className="np-masthead">
 				<p className="np-topline">
 					<span>{project.context}</span>
-					<span className="np-scrap" aria-live="polite">
-						<i className="fa-solid fa-scissors" aria-hidden="true" /> 스크랩 {clipped.length}
-					</span>
 					{project.period && <span>{project.period}</span>}
 				</p>
 				{project.logo ? (
@@ -37,17 +34,19 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 				</p>
 				<div className="np-ticker" aria-hidden="true">
 					<strong>속보</strong>
-					<div className="np-ticker-track">
-						{[0, 1].map((copy) => (
-							<span key={copy}>
-								{headlines.map((title) => (
-									<React.Fragment key={title}>
-										{title}
-										<i>◆</i>
-									</React.Fragment>
-								))}
-							</span>
-						))}
+					<div className="np-ticker-window">
+						<div className="np-ticker-track">
+							{[0, 1].map((copy) => (
+								<span key={copy}>
+									{headlines.map((title) => (
+										<React.Fragment key={title}>
+											{title}
+											<i>◆</i>
+										</React.Fragment>
+									))}
+								</span>
+							))}
+						</div>
 					</div>
 				</div>
 			</header>
@@ -94,7 +93,14 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 			</div>
 
 			<section className="np-articles" aria-label="주요 기능">
-				<h2 className="np-section">주요 기능</h2>
+				<div className="np-section np-section-row">
+					<h2>주요 기능</h2>
+					{/* 기사를 가위로 오려 두면 여기 모인다 */}
+					<p className="np-scrap" aria-live="polite">
+						<i className="fa-solid fa-scissors" aria-hidden="true" />
+						{clipped.length > 0 ? `오려 둔 기사 ${clipped.length}개` : '기사에 마우스를 올려 가위로 오려 두세요'}
+					</p>
+				</div>
 				<ol>
 					{project.highlights.map((point, i) => {
 						const on = clipped.includes(point.title);

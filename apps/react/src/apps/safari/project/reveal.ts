@@ -15,9 +15,14 @@ export function useReveal<T extends HTMLElement>() {
 		if (!root || typeof IntersectionObserver === 'undefined') return;
 		const observer = new IntersectionObserver(
 			(entries) => {
-				for (const entry of entries) entry.target.toggleAttribute('data-shown', entry.isIntersecting);
+				// 나타날 때는 12% 넘게 보일 때, 사라질 때는 다 벗어났을 때. 숨은 요소는 조금 내려가 있어서
+				// 같은 기준을 쓰면 경계에서 나타났다 사라졌다를 되풀이하며 떤다
+				for (const entry of entries) {
+					if (entry.intersectionRatio >= 0.12) entry.target.setAttribute('data-shown', '');
+					else if (!entry.isIntersecting) entry.target.removeAttribute('data-shown');
+				}
 			},
-			{ root: scrollParent(root), rootMargin: '-6% 0px -8% 0px', threshold: 0.12 }
+			{ root: scrollParent(root), threshold: [0, 0.12] }
 		);
 		const watch = (scope: ParentNode) =>
 			scope.querySelectorAll('[data-reveal]').forEach((node) => observer.observe(node));
