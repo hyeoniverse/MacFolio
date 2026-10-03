@@ -26,7 +26,10 @@
 
 .gm {
 	position: relative;
+	/* 바탕은 스크롤에 따라 아침 → 노을 → 밤 (--gm-sky는 스크립트가 정한다) */
+	background-color: var(--gm-sky, var(--gm-bg));
 	text-align: left;
+	transition: background-color 0.4s linear;
 }
 
 /* 고양이 발 커서: 마우스로 움직일 때만 진짜 커서를 감추고 이것을 띄운다 */
@@ -95,8 +98,13 @@
 	height: 32px;
 }
 
+.gm :is(.gm-quests, .gm-day, .gm-inventory) > h2 {
+	color: var(--gm-sky-ink, var(--gm-ink));
+	transition: color 0.4s linear;
+}
+
 :root[data-theme='dark'] .gm :is(.gm-quests, .gm-day, .gm-inventory) > h2 {
-	color: #f3e1bb;
+	color: var(--gm-sky-ink, #f3e1bb);
 }
 
 /* ─── 타이틀 화면: 풀밭 위의 집과 나무, 걸어 다니는 동물 ─── */
@@ -108,7 +116,10 @@
 	overflow: hidden;
 	/* 아래쪽은 동물이 지나가는 풀밭 길 (상자 뒤로 숨지 않게 비워 둔다) */
 	padding: 56px 32px 136px;
-	background: url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px;
+	/* 풀밭 위에 그 시간의 빛(--gm-light)을 얹는다 */
+	background:
+		linear-gradient(var(--gm-light, transparent), var(--gm-light, transparent)),
+		url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px;
 	text-align: center;
 }
 
@@ -599,7 +610,9 @@
 	margin-top: 56px;
 	padding: 40px 32px 48px;
 	/* 풀 조각을 불규칙하게 섞어 만든 넓은 풀밭 (한 번 반복하는 데 1152px) */
-	background: url('/imgs/projects/sproutfarm/sprites/map/grass-field.png') 0 0 / 1152px 1152px;
+	background:
+		linear-gradient(var(--gm-light, transparent), var(--gm-light, transparent)),
+		url('/imgs/projects/sproutfarm/sprites/map/grass-field.png') 0 0 / 1152px 1152px;
 }
 
 .gm-map-title {
@@ -1179,6 +1192,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.gm,
+	.gm :is(.gm-quests, .gm-day, .gm-inventory) > h2 {
+		transition: none;
+	}
+
 	.gm-press,
 	.gm-walker,
 	.gm-runner,
