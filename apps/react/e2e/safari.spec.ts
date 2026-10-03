@@ -100,6 +100,11 @@ test.describe('Safari', () => {
 		await expect(panel.getByRole('region', { name: '한눈에 보기' })).toBeInViewport();
 		await expect(panel.getByRole('region', { name: '조작법' })).toContainText('Shift');
 		await expect(panel.getByRole('region', { name: '맡은 일' })).toContainText('CREDITS');
+		// 인벤토리: 칸을 누르면 그 아이템(기술 사양) 설명이 보인다
+		const inventory = panel.getByRole('region', { name: '기술 사양' });
+		await inventory.getByRole('button', { name: '배포' }).click();
+		await expect(inventory.getByRole('button', { name: '배포' })).toHaveAttribute('aria-pressed', 'true');
+		await expect(inventory.locator('.gm-item')).toContainText('Vercel');
 
 		// 포트폴리오: 차례를 누르면 그 장으로 간다
 		await open(/HYEONIVERSE/);
@@ -108,6 +113,9 @@ test.describe('Safari', () => {
 			.getByRole('button', { name: /기술 사양/ })
 			.click();
 		await expect(panel.getByRole('region', { name: '기술 사양' })).toBeInViewport();
+		await expect(
+			panel.getByRole('navigation', { name: '차례' }).getByRole('button', { name: /기술 사양/ })
+		).toHaveAttribute('aria-current', 'step');
 
 		// 터미널: 명령과 결과
 		await open(/DevCourse/);
@@ -203,4 +211,24 @@ test.describe('Safari', () => {
 		// 탭 막대는 넘치지 않는다 (가로로 밀지 않아도 모든 탭이 보인다)
 		expect(await safari.locator('.safari-tabs').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
 	});
+});
+
+test('게임 페이지: 스크롤하면 주인공이 개발 일지의 길을 따라 내려간다', async ({ page }) => {
+	await enterDesktop(page);
+	const safari = appWindow(page, 'safari');
+	await safari.getByRole('tab', { name: /SproutFarm/ }).click();
+	const map = safari.getByRole('tabpanel').getByRole('region', { name: '만든 방식' });
+	const hero = map.locator('.gm-hero');
+	const heroY = async () => (await hero.boundingBox())!.y - (await map.boundingBox())!.y;
+	const scrollTo = (fraction: number) =>
+		map.evaluate((el, f) => {
+			const scroller = el.closest('.safari-page')!;
+			const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+			scroller.scrollTop = top + el.scrollHeight * f - scroller.clientHeight / 2;
+		}, fraction);
+	await scrollTo(0.2);
+	await expect.poll(heroY).toBeGreaterThan(0);
+	const before = await heroY();
+	await scrollTo(0.7);
+	await expect.poll(heroY).toBeGreaterThan(before + 200);
 });
