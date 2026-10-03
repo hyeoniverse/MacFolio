@@ -66,6 +66,23 @@ test.describe('GitHub 앱', () => {
 		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo')).toHaveCount(5);
 	});
 
+	test('고정 저장소 카드는 설명 길이와 상관없이 크기가 같고, 언어 줄은 카드 아래에 붙는다', async ({ page }) => {
+		// 스냅샷: 설명이 없는 카드, 한 줄, 아주 긴 설명이 섞여 있다
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const cards = appWindow(page, 'github').getByRole('region', { name: 'Pinned' }).locator('.gh-repo');
+		await expect(cards).toHaveCount(5);
+		const boxes = await cards.evaluateAll((elements) =>
+			elements.map((element) => {
+				const card = element.getBoundingClientRect();
+				const meta = element.querySelector('.gh-repo-meta')!.getBoundingClientRect();
+				return { height: Math.round(card.height), metaGap: Math.round(card.bottom - meta.bottom) };
+			})
+		);
+		expect(new Set(boxes.map((box) => box.height)).size).toBe(1);
+		expect(new Set(boxes.map((box) => box.metaGap)).size).toBe(1);
+	});
+
 	test('방문자의 시스템 설정에는 GitHub 항목이 없다', async ({ page }) => {
 		await fakeApi(page);
 		await enterDesktop(page);
