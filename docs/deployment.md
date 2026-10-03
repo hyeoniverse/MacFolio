@@ -6,7 +6,7 @@
 
 | 무엇       | 주소                                        | 어디에                       | 배포                             |
 | ---------- | ------------------------------------------- | ---------------------------- | -------------------------------- |
-| 프론트엔드 | `https://macfolio.hyeoniverse.com`          | Cloudflare Workers 정적 자산 | main에 머지하면 자동             |
+| 프론트엔드 | `https://macfolio.hyeoniverse.com`          | Cloudflare Workers 정적 자산 | main에 머지하면 GitHub Actions가 |
 | API        | `https://macfolio-api.hyeoniverse.com`      | Oracle VM, docker compose    | 서버에서 `git pull` 후 다시 빌드 |
 | API 문서   | `https://macfolio-api.hyeoniverse.com/docs` | Swagger                      |                                  |
 
@@ -24,17 +24,31 @@
 
 ## 1. 프론트엔드 (Cloudflare Workers)
 
-설정은 루트의 `wrangler.jsonc`에 있다. Worker 스크립트 없이 `apps/react/dist`를 정적 파일로 서빙하고, 없는 경로는 `index.html`로 보낸다(SPA). main에 머지하면 Cloudflare가 빌드해서 배포한다.
+설정은 루트의 `wrangler.jsonc`에 있다. Worker 스크립트 없이 `apps/react/dist`를 정적 파일로 서빙하고, 없는 경로는 `index.html`로 보낸다(SPA).
+
+빌드와 배포는 GitHub Actions(`.github/workflows/ci.yml`)가 한다. Cloudflare의 빌드 서버(Workers Builds)는 쓰지 않는다.
+
+- **main**: 시험(`check`)이 통과하면 `deploy` 작업이 `wrangler deploy`로 실제 사이트에 올린다. 시험이 실패한 커밋은 배포되지 않는다.
+- **PR**: `preview` 작업이 `wrangler versions upload --preview-alias <브랜치>`로 미리보기 버전을 올리고, 주소를 PR 댓글 하나에 적는다(새 커밋을 올리면 같은 댓글을 고친다). 실제 사이트는 바뀌지 않는다.
+
+### 처음 한 번: 토큰과 Git 연결
+
+1. Cloudflare 대시보드 → 오른쪽 위 프로필 → **My Profile → API Tokens → Create Token**
+   - **Edit Cloudflare Workers** 템플릿을 고른다
+   - Account Resources: 내 계정, Zone Resources: All zones from an account (또는 hyeoniverse.com)
+   - 만든 토큰은 한 번만 보이니 바로 복사한다
+2. 계정 ID: Workers & Pages 화면 오른쪽의 **Account ID**를 복사한다
+3. GitHub 저장소 → Settings → Secrets and variables → **Actions → New repository secret**
+   - `CLOUDFLARE_API_TOKEN` = 1의 토큰
+   - `CLOUDFLARE_ACCOUNT_ID` = 2의 계정 ID
+4. GitHub Actions 배포가 한 번 성공한 것을 확인한 뒤, Cloudflare의 Git 연결을 끊는다. 두 곳에서 같이 배포하지 않게 하기 위해서다.
+   - Workers & Pages → `macfolio` → Settings → **Build** → Git repository → **Disconnect**
 
 ### API 주소 넣기
 
-`VITE_API_URL`은 **빌드할 때** 코드에 들어간다. 런타임 변수가 아니다.
+`VITE_API_URL`은 **빌드할 때** 코드에 들어간다. 런타임 변수가 아니다. 값은 `ci.yml` 맨 위의 `env`에 있다(`https://macfolio-api.hyeoniverse.com`, 끝에 `/` 없이). 바꾸려면 그 줄을 고쳐 main에 머지한다.
 
-1. Cloudflare 대시보드 → Workers & Pages → `macfolio` → Settings → **Build** → Variables and secrets
-2. `VITE_API_URL` = `https://macfolio-api.hyeoniverse.com` (끝에 `/` 없이)
-3. Deployments → 최근 배포의 ⋯ → **Retry build** (또는 main에 push)
-
-Settings 바로 아래에 있는 Variables and Secrets는 Worker가 **실행될 때** 읽는 값이라, 여기에 넣으면 빌드에 들어가지 않는다. 값이 비어 있으면 로그인 버튼이 꺼지고 "관리자 서버가 아직 연결되지 않았습니다"가 뜬다.
+Cloudflare 대시보드의 Variables and Secrets는 Worker가 **실행될 때** 읽는 값이라, 여기에 넣어도 빌드에 들어가지 않는다. 값이 비어 있으면 로그인 버튼이 꺼지고 "관리자 서버가 아직 연결되지 않았습니다"가 뜬다.
 
 `VITE_MESSAGES_STORE`는 배포에 넣지 않는다(비워 둔다). 비어 있으면 메시지 앱이 서버에 저장하고, 서버에 닿지 못하면 "메시지를 열 수 없습니다" 경고창을 띄운 뒤 앱을 끈다. `local`은 서버 없이 화면을 확인하는 개발용 값이라, 배포에 넣으면 방문자마다 자기 브라우저에만 글이 남는다.
 
