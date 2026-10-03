@@ -55,7 +55,7 @@ describe('GitHub 앱 (e2e)', () => {
 	beforeEach(async () => {
 		await prisma.githubShowcase.deleteMany();
 		// 시험마다 GitHub에서 새로 받게 한다
-		(app.get(GithubService) as unknown as { cache: unknown }).cache = null;
+		app.get(GithubService).clearCache();
 	});
 
 	afterAll(async () => {
@@ -137,8 +137,21 @@ describe('GitHub 앱 (e2e)', () => {
 		api.state.down = true;
 		try {
 			await request(server()).get('/github/profile').expect(502);
+			await request(server()).get('/github/activity').expect(502);
 		} finally {
 			api.state.down = false;
 		}
+	});
+
+	it('누구나 기여 달력과 최근 공개 활동을 받는다', async () => {
+		const response = await request(server()).get('/github/activity').expect(200);
+		expect(response.body.contributions.total).toBe(15);
+		expect(response.body.contributions.days).toHaveLength(3);
+		expect(response.body.events.map((item: { kind: string }) => item.kind)).toEqual(['push', 'pull']);
+		expect(response.body.events[1]).toMatchObject({
+			action: 'merged',
+			number: 86,
+			url: 'https://github.com/hyeoniverse/MacFolio/pull/86',
+		});
 	});
 });

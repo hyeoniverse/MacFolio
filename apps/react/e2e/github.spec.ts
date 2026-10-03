@@ -83,6 +83,58 @@ test.describe('GitHub 앱', () => {
 		expect(new Set(boxes.map((box) => box.metaGap)).size).toBe(1);
 	});
 
+	test('Pinned 아래에 지난 1년의 기여 달력과 최근 활동을 달마다 보여 준다', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+
+		const graph = github.getByRole('region', { name: 'Contributions' });
+		await expect(graph.getByRole('heading')).toHaveText('1,234 contributions in the last year');
+		// 53주 × 7일 = 371칸 (범례 5칸은 따로)
+		await expect(graph.locator('.gh-graph .gh-day')).toHaveCount(371);
+		await expect(graph.locator('.gh-day[data-date="2026-10-03"]')).toHaveAttribute(
+			'title',
+			/contributions? on October 3$/
+		);
+		// 첫 주는 일요일부터, 가장 최근 주가 오른쪽 끝
+		const box = (date: string) => graph.locator(`.gh-day[data-date="${date}"]`).boundingBox();
+		const [sunday, saturday, last] = await Promise.all([box('2025-09-28'), box('2025-10-04'), box('2026-10-03')]);
+		expect(sunday!.x).toBe(saturday!.x);
+		expect(saturday!.y).toBeGreaterThan(sunday!.y);
+		expect(last!.x).toBeGreaterThan(saturday!.x);
+		// 달 이름: 첫 주(9월 28일~10월 4일)에 10월 1일이 있어 Oct부터, 9월은 다음 해 9월에만
+		await expect(graph.locator('.gh-graph-month:not([hidden])').first()).toHaveText('Oct');
+		// 위의 Pinned보다 아래
+		const pinned = await github.getByRole('region', { name: 'Pinned' }).boundingBox();
+		expect((await graph.boundingBox())!.y).toBeGreaterThan(pinned!.y);
+
+		const history = github.getByRole('region', { name: 'Contribution activity' });
+		await expect(history.getByRole('heading', { level: 3 })).toHaveText(['October 2026', 'September 2026']);
+		const items = history.locator('li');
+		// 같은 날 같은 브랜치의 푸시 두 번은 한 줄로 (커밋 3 + 2)
+		await expect(items).toHaveCount(3);
+		await expect(items.nth(0)).toContainText('Pushed 5 commits to hyeoniverse/alpha');
+		await expect(items.nth(1)).toContainText('Merged pull request hyeoniverse/alpha#7');
+		await expect(items.nth(1)).toContainText('기능 더하기');
+		await expect(items.nth(1).getByRole('link', { name: 'hyeoniverse/alpha#7' })).toHaveAttribute(
+			'href',
+			'https://github.com/hyeoniverse/alpha/pull/7'
+		);
+		await expect(items.nth(2)).toContainText('Created repository hyeoniverse/beta');
+	});
+
+	test('GitHub 활동을 받지 못하면 달력과 활동은 숨기고 나머지는 그대로', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.github.activity = null;
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+		await expect(github.getByRole('complementary', { name: '프로필' })).toContainText('서버에서 받은 소개');
+		await expect(github.getByRole('region', { name: 'Contributions' })).toHaveCount(0);
+		await expect(github.getByRole('region', { name: 'Contribution activity' })).toHaveCount(0);
+	});
+
 	test('방문자의 시스템 설정에는 GitHub 항목이 없다', async ({ page }) => {
 		await fakeApi(page);
 		await enterDesktop(page);
