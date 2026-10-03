@@ -10,6 +10,9 @@ export const APP_NAMES = [
 	'memo',
 	'github',
 	'mail',
+	'newpick',
+	'whattodo',
+	'qru',
 	'sproutfarm',
 	'share',
 	'terminal',
@@ -27,6 +30,8 @@ export interface AppManifest {
 	icon: string;
 	/** Dock 왼쪽 영역에 표시할지 여부. bin은 오른쪽에 따로 표시한다. */
 	inDock: boolean;
+	/** Dock에 고정하지 않고 Launchpad에 늘 두는 앱 (실행 중에는 Dock에도 나타난다) */
+	inLaunchpad?: boolean;
 	/** 처음 화면에 들어왔을 때 실행 중인 상태로 시작할지 여부 */
 	runningAtStart?: boolean;
 	/** Dock 아이콘의 둥근 모서리를 없앨지 여부 */
@@ -48,6 +53,29 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	memo: { label: '메모', icon: 'memo.png', inDock: true, windowSize: { width: 900, height: 600 } },
 	github: { label: 'GitHub', icon: 'github.png', inDock: true },
 	mail: { label: '메일', icon: 'mail.png', inDock: true, windowSize: { width: 900, height: 560 } },
+	// 배포한 프로젝트 사이트를 창 안에 띄운다 (apps/project/ProjectApp.tsx). Safari의 프로젝트 페이지에서도 연다.
+	// Dock이 넘치지 않게 고정하지 않고 Launchpad에 둔다 (실행 중에는 Dock에 나타난다)
+	newpick: {
+		label: 'NewPick',
+		icon: 'projects/newpick/app-icon.png',
+		inDock: false,
+		inLaunchpad: true,
+		windowSize: { width: 1080, height: 700 },
+	},
+	whattodo: {
+		label: 'WTD',
+		icon: 'projects/whattodo/app-icon.png',
+		inDock: false,
+		inLaunchpad: true,
+		windowSize: { width: 1080, height: 700 },
+	},
+	qru: {
+		label: 'QRU',
+		icon: 'projects/qru/app-icon.png',
+		inDock: false,
+		inLaunchpad: true,
+		windowSize: { width: 1080, height: 700 },
+	},
 	// 배포한 게임을 창 안에 띄운다. 게임에 모바일 모드가 생겨 휴대폰에서도 연다. 창은 게임 화면(16:9) + 제목 막대
 	sproutfarm: {
 		label: '새싹 농장',
@@ -72,3 +100,6 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 
 /** Dock 왼쪽 영역에 표시할 앱 (APP_NAMES 순서) */
 export const DOCK_APPS = APP_NAMES.filter((name) => APP_MANIFEST[name].inDock);
+
+/** Launchpad에 늘 있는 앱 (APP_NAMES 순서) */
+export const LAUNCHPAD_APPS = APP_NAMES.filter((name) => APP_MANIFEST[name].inLaunchpad);
