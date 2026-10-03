@@ -1,13 +1,45 @@
-// HYEONIVERSE (포트폴리오): 왼쪽에 제목과 차례가 붙어 있고, 오른쪽만 장(01 기능, 02 만든 방식, 03 맡은 일, 04 기술 사양)을 넘기며 내려간다
-import React, { useRef } from 'react';
+// HYEONIVERSE (포트폴리오): 왼쪽에 제목과 차례가 붙어 있고, 오른쪽만 장(01 기능, 02 만든 방식, 03 맡은 일, 04 기술 사양)을 넘기며 내려간다.
+// 왼쪽 아래에는 그 사이트의 마스코트 몽이가 금속 받침 위에 서서, 지금 읽는 장에 따라 표정을 바꾼다
+import React, { useEffect, useRef, useState } from 'react';
 import type { Project } from '@/shared/profile';
 import { Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 
 const CHAPTERS = ['주요 기능', '만든 방식', '맡은 일', '기술 사양'] as const;
 
+const BUNNY = '/imgs/projects/hyeoniverse/bunny';
+/** 장마다 몽이의 표정: 처음, 01~04, 끝 (마우스를 올리면 웃는다) */
+const MOODS = ['normal', 'wave', 'star', 'happy', 'surprised', 'sleep'] as const;
+type Mood = (typeof MOODS)[number];
+const moodOf = (chapter: number): Mood => MOODS[Math.min(chapter + 1, MOODS.length - 1)];
+
 const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	const main = useRef<HTMLDivElement>(null);
+	// -1은 장에 들어가기 전, CHAPTERS.length는 끝(맺음말)
+	const [chapter, setChapter] = useState(-1);
+	const [petted, setPetted] = useState(false);
+
+	// 화면 가운데를 지나는 장이 지금 읽는 장
+	useEffect(() => {
+		const root = main.current;
+		if (!root || typeof IntersectionObserver === 'undefined') return;
+		const parts = [...root.querySelectorAll<HTMLElement>('.cr-chapter, .cr-foot')];
+		const seen = new Set<number>();
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					const index = parts.indexOf(entry.target as HTMLElement);
+					if (entry.isIntersecting) seen.add(index);
+					else seen.delete(index);
+				}
+				setChapter(seen.size ? Math.max(...seen) : -1);
+			},
+			{ rootMargin: '-45% 0px -45% 0px' }
+		);
+		parts.forEach((part) => observer.observe(part));
+		return () => observer.disconnect();
+	}, []);
+	const mood: Mood = petted ? 'happy' : moodOf(chapter);
 	const open = (index: number) => {
 		const chapters = main.current?.querySelectorAll<HTMLElement>('.cr-chapter');
 		chapters?.[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -26,7 +58,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					<ol>
 						{CHAPTERS.map((title, i) => (
 							<li key={title}>
-								<button type="button" onClick={() => open(i)}>
+								<button type="button" onClick={() => open(i)} aria-current={chapter === i ? 'step' : undefined}>
 									<span>{number(i)}</span>
 									{title}
 								</button>
@@ -34,6 +66,17 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 						))}
 					</ol>
 				</nav>
+				<figure
+					className="cr-mascot"
+					aria-hidden="true"
+					data-mood={mood}
+					onPointerEnter={() => setPetted(true)}
+					onPointerLeave={() => setPetted(false)}
+				>
+					{MOODS.map((name) => (
+						<img key={name} src={`${BUNNY}/${name}-front.webp`} alt="" data-on={name === mood} />
+					))}
+				</figure>
 			</div>
 
 			<div className="cr-main" ref={main}>

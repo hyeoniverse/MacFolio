@@ -5,6 +5,10 @@
 	--cr-muted: #6b665f;
 	--cr-line: #dcd8d1;
 	--sp-accent: #d40063;
+	/* 금속 질감: 크롬은 위아래로 빛이 갈리는 은색, 테두리는 비스듬히 빛이 도는 은색 */
+	--cr-chrome: linear-gradient(180deg, #fdfdfd 0%, #c9ccd2 38%, #8d929b 50%, #d9dce1 64%, #f4f5f7 100%);
+	--cr-chrome-text: linear-gradient(180deg, #23252a 0%, #7a818b 38%, #eef0f3 49%, #5d636c 53%, #2a2d32 78%, #9097a1 100%);
+	--cr-sheen: conic-gradient(from 210deg, #f6f7f9, #a9aeb6, #ffffff, #8a9099, #e8eaee, #9ea3ab, #f6f7f9);
 	background-color: var(--cr-bg);
 	color: var(--cr-ink);
 }
@@ -15,6 +19,9 @@
 	--cr-muted: #a8a39b;
 	--cr-line: #3a3836;
 	--sp-accent: #f74d96;
+	--cr-chrome: linear-gradient(180deg, #8a8f98 0%, #4b4f57 38%, #24262b 50%, #5d626b 64%, #a3a8b0 100%);
+	--cr-chrome-text: linear-gradient(180deg, #ffffff 0%, #b9bec6 38%, #5a5f68 49%, #f2f4f7 54%, #a4a9b2 80%, #e2e5ea 100%);
+	--cr-sheen: conic-gradient(from 210deg, #5b6068, #2a2c31, #b9bec6, #34373d, #8b9099, #2f3237, #5b6068);
 }
 
 .cr {
@@ -42,8 +49,12 @@
 .cr-icon {
 	width: 52px;
 	height: 52px;
-	border-radius: 13px;
-	box-shadow: 0 8px 24px rgba(212, 0, 99, 0.35);
+	padding: 3px;
+	border-radius: 15px;
+	background: var(--cr-sheen);
+	box-shadow:
+		0 1px 0 rgba(255, 255, 255, 0.7) inset,
+		0 8px 24px rgba(212, 0, 99, 0.3);
 }
 
 .cr-name {
@@ -107,6 +118,23 @@
 	color: var(--sp-accent);
 }
 
+.cr-index button[aria-current] {
+	color: var(--sp-accent);
+	font-weight: 700;
+}
+
+/* 지금 읽는 장 표시: 작은 금속 막대 */
+.cr-index button[aria-current]::after {
+	align-self: center;
+	width: 28px;
+	height: 6px;
+	margin-left: auto;
+	border-radius: 3px;
+	background: var(--cr-chrome);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	content: '';
+}
+
 .cr-index span {
 	color: var(--sp-accent);
 	font-family: var(--sp-mono);
@@ -114,15 +142,83 @@
 	line-height: 22px;
 }
 
+/* 몽이: 금속 받침 위에서 장에 따라 표정을 바꾼다 (표정 그림을 겹쳐 두고 하나만 보인다) */
+.cr-mascot {
+	display: grid;
+	position: relative;
+	justify-items: center;
+	margin-top: 28px;
+	padding-bottom: 14px;
+}
+
+.cr-mascot::after {
+	position: absolute;
+	bottom: 0;
+	width: 150px;
+	height: 26px;
+	border-radius: 50%;
+	background: var(--cr-sheen);
+	box-shadow:
+		0 2px 0 rgba(255, 255, 255, 0.6) inset,
+		0 10px 18px rgba(0, 0, 0, 0.22);
+	content: '';
+}
+
+.cr-mascot img {
+	grid-area: 1 / 1;
+	position: relative;
+	z-index: 1;
+	align-self: end;
+	height: 150px;
+	opacity: 0;
+	transform: translateY(6px) scale(0.96);
+	transition:
+		opacity 0.25s var(--ease-out),
+		transform 0.35s var(--ease-out);
+}
+
+.cr-mascot img[src*='star'] {
+	height: 150px;
+	margin-inline: -60px;
+}
+
+.cr-mascot img[data-on='true'] {
+	opacity: 1;
+	transform: none;
+}
+
+.cr-mascot[data-mood='happy'] img[data-on='true'] {
+	animation: cr-boing 0.6s var(--ease-out);
+}
+
+@keyframes cr-boing {
+	30% {
+		transform: translateY(-14px) scale(1.04, 0.96);
+	}
+
+	60% {
+		transform: translateY(0) scale(0.97, 1.03);
+	}
+}
+
 /* 오른쪽: 장을 넘기며 내려간다 */
 .cr-main {
 	padding: 48px 0 0;
 }
 
+/* 화면은 금속 테 안에 */
 .cr-shot {
 	overflow: hidden;
-	border: 1px solid var(--cr-line);
-	border-radius: 4px;
+	padding: 6px;
+	border-radius: 10px;
+	background: var(--cr-sheen);
+	box-shadow:
+		0 1px 0 rgba(255, 255, 255, 0.8) inset,
+		0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+.cr-shot img {
+	border-radius: 5px;
 }
 
 .cr-shot img {
@@ -172,7 +268,10 @@
 }
 
 .cr-no {
-	color: var(--sp-accent);
+	width: max-content;
+	background: var(--cr-chrome-text);
+	background-clip: text;
+	color: transparent;
 	font-size: 56px;
 	font-weight: 700;
 	line-height: 1;
@@ -291,5 +390,15 @@
 	.cr-facts ul {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 8px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cr-mascot img {
+		transition: none;
+	}
+
+	.cr-mascot[data-mood='happy'] img[data-on='true'] {
+		animation: none;
 	}
 }
