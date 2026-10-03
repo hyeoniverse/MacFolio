@@ -482,3 +482,202 @@
 		grid-template-columns: 1fr;
 	}
 }
+
+/* ─── 기여 달력 (잔디) ─── */
+[data-app='github'] {
+	--gh-day-0: #eff2f5;
+	--gh-day-1: #aceebb;
+	--gh-day-2: #4ac26b;
+	--gh-day-3: #2da44e;
+	--gh-day-4: #116329;
+}
+
+:root[data-theme='dark'] [data-app='github'] {
+	--gh-day-0: #151b23;
+	--gh-day-1: #033a16;
+	--gh-day-2: #196c2e;
+	--gh-day-3: #2ea043;
+	--gh-day-4: #56d364;
+}
+
+.gh-contributions,
+.gh-activity {
+	margin-top: 24px;
+}
+
+.gh-contributions h2,
+.gh-activity h2 {
+	margin-bottom: 8px;
+	font-size: 16px;
+	font-weight: 400;
+}
+
+.gh-graph-box {
+	padding: 12px 16px 10px;
+	border: 1px solid var(--gh-border);
+	border-radius: 6px;
+}
+
+.gh-graph-scroll {
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
+.gh-graph {
+	--cell: 10px;
+	display: grid;
+	grid-template-columns: 28px repeat(var(--weeks), var(--cell));
+	grid-template-rows: 15px repeat(7, var(--cell));
+	gap: 3px;
+	width: max-content;
+	color: var(--gh-text);
+	font-size: 12px;
+	line-height: 1;
+}
+
+.gh-graph-month {
+	grid-row: 1;
+	white-space: nowrap;
+}
+
+.gh-graph-weekday {
+	grid-column: 1;
+	align-self: center;
+}
+
+.gh-day {
+	display: block;
+	width: var(--cell, 10px);
+	height: var(--cell, 10px);
+	border-radius: 2px;
+	outline: 1px solid rgba(27, 31, 35, 0.06);
+	outline-offset: -1px;
+	background-color: var(--gh-day-0);
+}
+
+.gh-day[data-level='1'] {
+	background-color: var(--gh-day-1);
+}
+
+.gh-day[data-level='2'] {
+	background-color: var(--gh-day-2);
+}
+
+.gh-day[data-level='3'] {
+	background-color: var(--gh-day-3);
+}
+
+.gh-day[data-level='4'] {
+	background-color: var(--gh-day-4);
+}
+
+.gh-graph-legend {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 3px;
+	margin-top: 8px;
+	color: var(--gh-muted);
+	font-size: 12px;
+}
+
+.gh-graph-legend .gh-day {
+	margin: 0 1px;
+}
+
+/* ─── 활동 기록 ─── */
+.gh-activity-month h3 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 16px 0 4px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.gh-activity-month h3::after {
+	flex: 1;
+	height: 1px;
+	background-color: var(--gh-border);
+	content: '';
+}
+
+.gh-activity ol {
+	list-style: none;
+}
+
+.gh-activity li {
+	display: grid;
+	grid-template-columns: 32px minmax(0, 1fr) auto;
+	gap: 8px;
+	align-items: start;
+	position: relative;
+	padding: 8px 0;
+}
+
+/* 아이콘을 잇는 세로줄 */
+.gh-activity li::before {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 15px;
+	width: 2px;
+	background-color: var(--gh-border);
+	content: '';
+}
+
+.gh-activity-icon {
+	display: grid;
+	position: relative;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--gh-border);
+	border-radius: 50%;
+	background-color: var(--gh-header-bg);
+	color: var(--gh-muted);
+	font-size: 13px;
+}
+
+.gh-activity-body {
+	min-width: 0;
+	padding-top: 5px;
+}
+
+.gh-activity-body p {
+	overflow-wrap: anywhere;
+}
+
+.gh-activity-ref {
+	margin-left: 6px;
+	padding: 0 6px;
+	border-radius: 6px;
+	background-color: var(--gh-counter-bg);
+	color: var(--gh-muted);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 12px;
+}
+
+.gh-activity-detail {
+	overflow: hidden;
+	color: var(--gh-muted);
+	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.gh-activity time {
+	padding-top: 5px;
+	color: var(--gh-muted);
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+/* 합친 PR은 GitHub처럼 보라색 */
+.gh-activity-icon[data-action='merged'] {
+	color: #8250df;
+}
+
+:root[data-theme='dark'] .gh-activity-icon[data-action='merged'] {
+	color: #ab7df8;
+}

@@ -68,6 +68,26 @@ export class GithubApiClient {
 		return this.json<Json>(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`);
 	}
 
+	/** 공개 활동 (GitHub가 최근 90일, 300개까지 준다. 첫 100개만 받는다) */
+	async userEvents(login: string) {
+		return (await this.json<Json[]>(`/users/${encodeURIComponent(login)}/events/public?per_page=100`)) ?? [];
+	}
+
+	/**
+	 * 기여 달력 (프로필 화면의 잔디). API에는 토큰 없이 읽는 길이 없어 github.com의 HTML 조각을 받는다.
+	 * 읽기는 activity.ts의 parseContributions가 한다. 없는 계정이면 null
+	 */
+	async contributionsHtml(login: string): Promise<string | null> {
+		const response = await fetch(`https://github.com/users/${encodeURIComponent(login)}/contributions`, {
+			headers: { Accept: 'text/html', 'User-Agent': 'macfolio-api' },
+		}).catch(() => {
+			throw new BadGatewayException('GitHub에 연결할 수 없습니다.');
+		});
+		if (response.status === 404) return null;
+		if (!response.ok) throw new BadGatewayException(`GitHub가 요청을 거절했습니다 (${response.status}).`);
+		return response.text();
+	}
+
 	/** 프로필 README (계정 이름과 같은 저장소의 README.md). 없으면 null */
 	async profileReadme(login: string): Promise<string | null> {
 		const name = encodeURIComponent(login);

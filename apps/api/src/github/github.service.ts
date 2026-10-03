@@ -1,6 +1,7 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { parseContributions, toActivities, type ActivityItem, type Contributions } from './activity.js';
 import { GithubApiClient } from './github-api.client.js';
 import {
 	DEFAULT_SHOWCASE,
@@ -28,15 +29,68 @@ export interface ProfileResponse {
 	fetchedAt: string;
 }
 
+export interface ActivityResponse {
+	/** 기여 달력. 읽지 못했으면 null */
+	contributions: Contributions | null;
+	/** 최근 공개 활동 (최근 것부터) */
+	events: ActivityItem[];
+	fetchedAt: string;
+}
+
+/** 받은 값을 한동안 들고 있다. 동시에 여럿이 물어도 한 번만 받고, 새로 받지 못하면 마지막 값을 준다 */
+class Cached<T> {
+	private entry: { value: T; at: number } | null = null;
+	private inflight: Promise<T> | null = null;
+
+	/** 들고 있는 값 (오래되었어도) */
+	peek(): T | null {
+		return this.entry?.value ?? null;
+	}
+
+	/** 들고 있는 값을 버린다 (시험) */
+	clear() {
+		this.entry = null;
+	}
+
+	/** 다음에 물을 때 새로 받게 한다 */
+	expire() {
+		if (this.entry) this.entry.at = Number.NEGATIVE_INFINITY;
+	}
+
+	get(now: number, ttlMs: number, fetch: () => Promise<T>): Promise<T> {
+		if (this.entry && now - this.entry.at < ttlMs) return Promise.resolve(this.entry.value);
+		this.inflight ??= fetch()
+			.then((value) => {
+				this.entry = { value, at: now };
+				return value;
+			})
+			.catch((error: unknown) => {
+				// 새로 받지 못하면 오래된 값이라도 준다 (GitHub 장애·요청 제한)
+				if (this.entry) return this.entry.value;
+				throw error;
+			})
+			.finally(() => {
+				this.inflight = null;
+			});
+		return this.inflight;
+	}
+}
+
 /**
- * GitHub 앱에 보여 줄 관리자의 GitHub 프로필·README·저장소.
+ * GitHub 앱에 보여 줄 관리자의 GitHub 프로필·README·저장소와 활동.
  * 방문자마다 GitHub에 묻지 않도록 받은 값을 한동안 들고 있다 (토큰이 없으면 서버 IP로 시간당 60번까지).
  * GitHub에 닿지 못하면 마지막으로 받은 값을 그대로 준다.
  */
 @Injectable()
 export class GithubService {
-	private cache: { value: ProfileResponse; at: number } | null = null;
-	private inflight: Promise<ProfileResponse> | null = null;
+	private readonly profileCache = new Cached<ProfileResponse>();
+	private readonly activityCache = new Cached<ActivityResponse>();
+
+	/** 들고 있는 값을 모두 버린다 (시험마다 GitHub에서 새로 받게) */
+	clearCache() {
+		this.profileCache.clear();
+		this.activityCache.clear();
+	}
 
 	constructor(
 		private readonly prisma: PrismaService,
@@ -92,22 +146,34 @@ export class GithubService {
 	}
 
 	/** GitHub 앱이 그릴 값. 들고 있는 값이 오래되었으면 새로 받는다 (동시에 여럿이 물어도 한 번만) */
-	async profile(now = Date.now()): Promise<ProfileResponse> {
-		if (this.cache && now - this.cache.at < this.ttlMs) return this.cache.value;
-		this.inflight ??= this.fetchProfile(now)
-			.then((value) => {
-				this.cache = { value, at: now };
-				return value;
-			})
-			.catch((error: unknown) => {
-				// 새로 받지 못하면 오래된 값이라도 준다 (GitHub 장애·요청 제한)
-				if (this.cache) return this.cache.value;
-				throw error;
-			})
-			.finally(() => {
-				this.inflight = null;
-			});
-		return this.inflight;
+	profile(now = Date.now()): Promise<ProfileResponse> {
+		return this.profileCache.get(now, this.ttlMs, () => this.fetchProfile(now));
+	}
+
+	/**
+	 * 기여 달력과 최근 공개 활동. 둘 중 하나만 받지 못하면 그 부분은 이전 값을 쓰고,
+	 * 둘 다 받지 못하면 마지막으로 받은 값을 준다
+	 */
+	activity(now = Date.now()): Promise<ActivityResponse> {
+		return this.activityCache.get(now, this.ttlMs, async () => {
+			const login = this.profileCache.peek()?.profile.login ?? (await this.login()).login;
+			const [html, events] = await Promise.allSettled([
+				this.github.contributionsHtml(login),
+				this.github.userEvents(login),
+			]);
+			if (html.status === 'rejected' && events.status === 'rejected') throw html.reason;
+			const previous = this.activityCache.peek();
+			return {
+				contributions:
+					html.status === 'fulfilled'
+						? html.value
+							? parseContributions(html.value)
+							: null
+						: (previous?.contributions ?? null),
+				events: events.status === 'fulfilled' ? toActivities(events.value) : (previous?.events ?? []),
+				fetchedAt: new Date(now).toISOString(),
+			};
+		});
 	}
 
 	/** 고를 수 있는 저장소 (관리자): 내 공개 저장소, 공개로 속한 조직의 저장소, 이미 고른 저장소 */
@@ -153,7 +219,7 @@ export class GithubService {
 			update: { repos, updatedBy: admin },
 		});
 		// 다음에 물을 때 새로 받는다 (GitHub에 닿지 못하면 이전 값을 준다)
-		if (this.cache) this.cache.at = Number.NEGATIVE_INFINITY;
+		this.profileCache.expire();
 		return { repos };
 	}
 }
