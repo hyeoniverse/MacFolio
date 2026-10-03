@@ -1,4 +1,4 @@
-/* MacFolio: 스크롤하면 커지는 노트북, 데스크톱·휴대폰 나란히, 요청이 지나는 길 */
+/* MacFolio: 스크롤하면 커지는 노트북, 화면 크기 시뮬레이터, 요청이 지나는 길, 화면에 들어오면 나타나는 요소들 */
 
 /* ─── 첫 화면: 멈춰 선 무대 위에서 노트북이 커진다 ─── */
 .sp-hero.pd-hero {
@@ -25,31 +25,42 @@
 	transform: translateY(calc(var(--p) * -120px));
 }
 
-/* 처음에는 제목 아래 작게, 끝에는 무대 가운데에 크게 */
+/* 처음에는 제목 아래 작게, 끝에는 무대 가운데에 크게 (아래에 한 줄 들어갈 자리를 남긴다) */
 .pd-laptop.pd-hero-device {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	width: min(880px, 82%);
-	transform: translate(-50%, -50%) translateY(calc((1 - var(--p)) * var(--view) * 0.38 - var(--p) * 30px))
-		scale(calc(0.6 + var(--p) * 0.42));
+	transform: translate(-50%, -50%) translateY(calc((1 - var(--p)) * var(--view) * 0.38 - var(--p) * 64px))
+		scale(calc(0.6 + var(--p) * 0.36));
 	transform-origin: 50% 50%;
 	will-change: transform;
 }
 
+/* 끝에 나오는 한 줄: 크게, 진하게, 뒷말은 강조색 그라데이션 */
 .pd-caption {
+	--c: clamp(0, (var(--p) - 0.7) * 3.4, 1);
 	position: absolute;
 	right: 0;
-	bottom: 28px;
+	bottom: clamp(14px, 3vh, 28px);
 	left: 0;
-	color: var(--sp-muted);
-	font-size: clamp(19px, 3cqi, 28px);
-	font-weight: 700;
-	letter-spacing: -0.01em;
-	opacity: clamp(0, (var(--p) - 0.75) * 5, 1);
+	color: var(--sp-text);
+	font-size: clamp(26px, 4.6cqi, 46px);
+	font-weight: 800;
+	letter-spacing: -0.025em;
+	line-height: 1.15;
+	opacity: var(--c);
+	transform: translateY(calc((1 - var(--c)) * 28px));
 }
 
-/* ─── 노트북과 휴대폰 틀 ─── */
+.pd-caption strong {
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+/* ─── 노트북 틀 ─── */
 .pd-laptop {
 	position: relative;
 }
@@ -67,8 +78,7 @@
 		0 24px 60px rgba(0, 0, 0, 0.22);
 }
 
-.pd-screen img,
-.pd-phone-screen img {
+.pd-screen img {
 	position: absolute;
 	inset: 0;
 	width: 100%;
@@ -100,28 +110,138 @@
 	background-color: #a3a5ab;
 }
 
-.pd-phone {
-	padding: 7px;
-	border-radius: 34px;
-	background-color: #1d1d1f;
-	box-shadow:
-		0 0 0 1px #3a3a3c,
-		0 24px 50px rgba(0, 0, 0, 0.22);
+/* ─── 화면에 들어오면 나타나고, 벗어나면 사라진다 ─── */
+.pd [data-reveal] {
+	opacity: 0;
+	transform: translateY(36px) scale(0.98);
+	transition:
+		opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+		transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+	transition-delay: calc(var(--d, 0) * 90ms);
 }
 
-.pd-phone-screen {
+.pd [data-reveal][data-shown] {
+	opacity: 1;
+	transform: none;
+}
+
+/* 숫자 띠는 숫자가 하나씩 올라온다 */
+.pd-band .sp-facts li {
+	opacity: 0;
+	transform: translateY(24px);
+	transition:
+		opacity 0.6s ease-out,
+		transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.pd-band .sp-facts li:nth-child(2) {
+	transition-delay: 0.12s;
+}
+
+.pd-band .sp-facts li:nth-child(3) {
+	transition-delay: 0.24s;
+}
+
+.pd-band[data-shown] .sp-facts li {
+	opacity: 1;
+	transform: none;
+}
+
+/* ─── 제목: 스크롤에 맞춰 낱말이 하나씩 밝아진다 ─── */
+.pd .sp-headline .pd-word {
+	--w: clamp(0, var(--p, 1) * (var(--n) + 3) - var(--i), 1);
+	display: inline-block;
+	color: inherit;
+	opacity: calc(0.12 + var(--w) * 0.88);
+	transform: translateY(calc((1 - var(--w)) * 0.3em));
+	filter: blur(calc((1 - var(--w)) * 3px));
+}
+
+.pd .sp-headline .pd-word.sub {
+	color: var(--sp-muted);
+}
+
+.pd .sp-dark .sp-headline .pd-word.sub {
+	color: var(--sp-dark-muted);
+}
+
+/* ─── 주요 기능: 타일마다 아이콘과 크게 깔린 그림 ─── */
+.pd-tiles li {
+	--tone: #0071e3;
 	position: relative;
-	aspect-ratio: 585 / 1266;
 	overflow: hidden;
-	border-radius: 27px;
-	background-color: #000000;
 }
 
-/* ─── 데스크톱·휴대폰 나란히 ─── */
+.pd-tiles li[data-tone='1'] {
+	--tone: #f0a020;
+}
+
+.pd-tiles li[data-tone='2'] {
+	--tone: #30b85a;
+}
+
+.pd-tiles li[data-tone='3'] {
+	--tone: #a24bf5;
+}
+
+.pd-tiles li > :not(.pd-tile-mark) {
+	position: relative;
+}
+
+.pd-tile-icon {
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	margin-bottom: 18px;
+	border-radius: 14px;
+	background: linear-gradient(135deg, var(--tone), color-mix(in srgb, var(--tone) 55%, #ffffff));
+	box-shadow: 0 10px 22px color-mix(in srgb, var(--tone) 35%, transparent);
+	color: #ffffff;
+	font-size: 21px;
+}
+
+.pd-tile-mark {
+	position: absolute;
+	right: -14px;
+	bottom: -30px;
+	color: var(--tone);
+	font-size: 150px;
+	opacity: 0.08;
+	transform: rotate(-12deg);
+	transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+	pointer-events: none;
+}
+
+.pd-tiles li[data-shown] {
+	transition:
+		opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+		transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+		box-shadow 0.3s ease-out;
+}
+
+.pd-tiles li[data-shown]:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 18px 40px color-mix(in srgb, var(--tone) 18%, transparent);
+}
+
+.pd-tiles li:hover .pd-tile-mark {
+	transform: rotate(-4deg) scale(1.08);
+}
+
+/* ─── 어디서 열어도: 화면 크기 시뮬레이터 ─── */
+.pd-sim-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+
 .pd-switch {
 	display: inline-flex;
 	gap: 4px;
-	margin-bottom: 36px;
 	padding: 4px;
 	border-radius: 980px;
 	background-color: var(--sp-alt);
@@ -154,31 +274,284 @@
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
-.pd-pair {
+.pd-sim-play {
 	display: grid;
-	grid-template-columns: minmax(0, 3.4fr) minmax(0, 1fr);
-	gap: clamp(20px, 4cqi, 40px);
-	align-items: end;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--sp-alt);
+	color: var(--sp-text);
+	font-size: 14px;
+	cursor: pointer;
 }
 
-/* 겹쳐 둔 화면은 고른 것만 서서히 나타난다 */
-.pd-screen img,
-.pd-phone-screen img {
+/* 무대: 기기는 같은 바닥선에 서고, 아래에 지금 폭을 재는 자가 있다 */
+.pd-sim {
+	--ease: cubic-bezier(0.65, 0, 0.35, 1);
+	--zoom: 1;
+	container-type: inline-size;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	aspect-ratio: 16 / 10;
+	padding-bottom: 11cqi;
+	border-radius: 28px;
+	background:
+		radial-gradient(60% 55% at 50% 45%, color-mix(in srgb, var(--sp-accent) 12%, transparent), transparent 70%),
+		var(--sp-alt);
+	overflow: hidden;
+}
+
+.pd-sim-device {
+	--bz: 10px;
+	--br: 14px;
+	position: relative;
+	width: calc(var(--share) * var(--zoom) * 100cqi);
+	height: calc(var(--share) * var(--zoom) * 100cqi * var(--ratio));
+	border: var(--bz) solid #1d1d1f;
+	border-radius: var(--br);
+	background-color: #000000;
+	box-shadow:
+		0 0 0 1px #3a3a3c,
+		0 30px 60px rgba(0, 0, 0, 0.25);
+	transition:
+		width 0.9s var(--ease),
+		height 0.9s var(--ease),
+		border-width 0.9s var(--ease),
+		border-radius 0.9s var(--ease);
+}
+
+.pd-sim[data-kind='laptop'] .pd-sim-device {
+	--br: 14px 14px 4px 4px;
+}
+
+.pd-sim[data-kind='tablet'] .pd-sim-device {
+	--bz: 12px;
+	--br: 26px;
+}
+
+.pd-sim[data-kind='phone'] .pd-sim-device {
+	--bz: 7px;
+	--br: 30px;
+}
+
+.pd-sim-screen {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	border-radius: calc(var(--br) - var(--bz));
+	transition: border-radius 0.9s var(--ease);
+}
+
+.pd-sim-screen img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
 	opacity: 0;
-	transition: opacity 0.45s var(--ease-out);
+	transition: opacity 0.45s ease-out;
 }
 
-.pd-screen img.active,
-.pd-phone-screen img.active,
-.pd-hero-device .pd-screen img {
+/* 틀이 모양을 반쯤 바꾼 뒤에 새 화면이 나타난다 */
+.pd-sim-screen img.active {
 	opacity: 1;
+	transition-delay: 0.35s;
 }
 
-.pd-pair-note {
-	margin-top: 28px;
+/* 휴대폰은 위에 다이내믹 아일랜드 */
+.pd-sim-device::before {
+	content: '';
+	position: absolute;
+	z-index: 1;
+	top: 6px;
+	left: 50%;
+	width: 30%;
+	height: 4.5%;
+	transform: translateX(-50%);
+	border-radius: 20px;
+	background-color: #000000;
+	opacity: 0;
+	transition: opacity 0.3s;
+}
+
+.pd-sim[data-kind='phone'] .pd-sim-device::before {
+	opacity: 1;
+	transition-delay: 0.6s;
+}
+
+/* 모니터 받침대와 노트북 바닥: 그 기기일 때만 */
+.pd-sim-stand,
+.pd-sim-base {
+	position: absolute;
+	top: calc(100% + var(--bz));
+	left: 50%;
+	opacity: 0;
+	transform: translateX(-50%);
+	transition: opacity 0.4s;
+}
+
+.pd-sim-stand {
+	width: 14%;
+	height: 7cqi;
+	background: linear-gradient(90deg, #b9bbc1, #e2e3e7 45%, #a7a9af);
+	clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+}
+
+.pd-sim-stand::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: -40%;
+	width: 180%;
+	height: 0.9cqi;
+	border-radius: 4px;
+	background: #c7c9ce;
+}
+
+.pd-sim-base {
+	width: calc(100% + var(--bz) * 2 + 12%);
+	height: 1.6cqi;
+	border-radius: 2px 2px 12px 12px;
+	background: linear-gradient(#e3e4e8, #b7b9bf 60%, #8e9096);
+}
+
+.pd-sim[data-kind='monitor'] .pd-sim-stand,
+.pd-sim[data-kind='laptop'] .pd-sim-base {
+	opacity: 1;
+	transition-delay: 0.6s;
+}
+
+/* 폭을 재는 자: 기기 폭을 따라 늘고 줄며, 숫자가 굴러간다 */
+.pd-sim-ruler {
+	position: absolute;
+	bottom: 2.4cqi;
+	left: 50%;
+	display: grid;
+	place-items: center;
+	width: calc(var(--share) * var(--zoom) * 100cqi);
+	height: 22px;
+	transform: translateX(-50%);
+	border-inline: 2px solid var(--sp-accent);
+	transition: width 0.9s var(--ease);
+}
+
+.pd-sim-ruler::before {
+	content: '';
+	position: absolute;
+	right: 0;
+	left: 0;
+	top: 50%;
+	height: 1px;
+	background-color: var(--sp-accent);
+	opacity: 0.6;
+}
+
+.pd-sim-ruler span {
+	position: relative;
+	padding: 2px 10px;
+	border-radius: 999px;
+	background-color: var(--sp-accent);
+	color: #ffffff;
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* 단계: 영상의 챕터처럼, 지금 칸은 아래 막대가 찬다 */
+.pd-sim-steps {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 10px;
+	margin-top: 16px;
+	list-style: none;
+}
+
+.pd-sim-steps button {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	width: 100%;
+	padding: 12px 14px 14px;
+	overflow: hidden;
+	border: none;
+	border-radius: 14px;
+	background-color: var(--sp-alt);
 	color: var(--sp-muted);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		background-color 0.3s,
+		color 0.3s;
+}
+
+.pd-sim-steps strong {
 	font-size: 15px;
-	text-align: center;
+}
+
+.pd-sim-steps span {
+	font-family: var(--sp-mono);
+	font-size: 12px;
+}
+
+.pd-sim-steps button[aria-current] {
+	background-color: var(--sp-bg);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+	color: var(--sp-text);
+}
+
+.pd-sim-steps button::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 0;
+	height: 3px;
+	background-color: var(--sp-accent);
+}
+
+.pd-sim-steps button[aria-current]::after {
+	width: 100%;
+}
+
+.pd-sim-steps button[data-running]::after {
+	animation: pd-step var(--step) linear forwards;
+}
+
+@keyframes pd-step {
+	from {
+		width: 0;
+	}
+
+	to {
+		width: 100%;
+	}
+}
+
+.pd-sim-note {
+	min-height: 3.2em;
+	margin-top: 18px;
+	color: var(--sp-muted);
+	font-size: 16px;
+	line-height: 1.6;
+	animation: pd-note 0.5s ease-out;
+}
+
+.pd-sim-note strong {
+	color: var(--sp-text);
+}
+
+@keyframes pd-note {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
 }
 
 /* ─── 요청이 지나는 길 ─── */
@@ -255,7 +628,7 @@
 	text-align: center;
 }
 
-/* ─── 좁은 창이나 움직임 줄이기: 멈춰 선 무대 없이 다 보인 상태로 ─── */
+/* ─── 좁은 창: 멈춰 선 무대 없이, 시뮬레이터는 세로로 넉넉하게 ─── */
 @container (max-width: 600px) {
 	.sp-hero.pd-hero {
 		height: auto;
@@ -287,29 +660,47 @@
 		display: none;
 	}
 
-	.pd-switch button span {
-		display: none;
-	}
-
-	.pd-pair {
-		grid-template-columns: minmax(0, 1fr) minmax(0, 0.42fr);
-	}
-
 	.pd-screen {
 		border-width: 6px 6px 9px;
 		border-radius: 12px 12px 4px 4px;
 	}
 
-	.pd-phone {
-		padding: 4px;
+	.pd-switch button span {
+		display: none;
+	}
+
+	.pd-sim {
+		aspect-ratio: 1;
+		padding-bottom: 16cqi;
 		border-radius: 20px;
 	}
 
-	.pd-phone-screen {
-		border-radius: 16px;
+	.pd-sim[data-kind='monitor'] {
+		--zoom: 1.08;
+	}
+
+	.pd-sim[data-kind='laptop'] {
+		--zoom: 1.22;
+	}
+
+	.pd-sim[data-kind='tablet'] {
+		--zoom: 1.5;
+	}
+
+	.pd-sim[data-kind='phone'] {
+		--zoom: 1.65;
+	}
+
+	.pd-sim-device {
+		--bz: 6px;
+	}
+
+	.pd-sim-steps {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
+/* ─── 움직임 줄이기: 멈춘 그대로 다 보인다 ─── */
 @media (prefers-reduced-motion: reduce) {
 	.sp-hero.pd-hero {
 		height: auto;
@@ -344,8 +735,25 @@
 		--p: 1 !important;
 	}
 
-	.pd-screen img,
-	.pd-phone-screen img {
+	.pd .sp-headline .pd-word {
+		--w: 1;
+	}
+
+	.pd [data-reveal],
+	.pd-band .sp-facts li {
+		opacity: 1;
+		transform: none;
 		transition: none;
+	}
+
+	.pd-sim-device,
+	.pd-sim-screen,
+	.pd-sim-screen img,
+	.pd-sim-ruler {
+		transition: none;
+	}
+
+	.pd-sim-steps button[data-running]::after {
+		animation: none;
 	}
 }
