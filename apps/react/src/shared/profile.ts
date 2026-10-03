@@ -37,6 +37,8 @@ export interface ProjectFact {
 export interface ProjectPoint {
 	title: string;
 	body: string;
+	/** 곁들일 그림 (public/imgs/projects/{id}/…) */
+	image?: string;
 }
 
 /**
@@ -76,6 +78,10 @@ export interface Project {
 	usage?: ProjectPoint[];
 	/** 폴더 구조 (저장소 README의 트리) */
 	structure?: string;
+	/** 화면 모음 (차례대로 넘겨 본다) */
+	gallery?: { src: string; caption: string }[];
+	/** 빌려 쓴 에셋·글꼴 출처 */
+	credits?: string[];
 	/** 기술 사양: 분류별 기술 */
 	specs: { label: string; value: string }[];
 	/** 기술 이름만 (터미널 등 짧게 보여줄 때) */
@@ -387,24 +393,29 @@ export const PROJECTS: Project[] = [
 			},
 			{
 				title: '노을, 그리고 밤',
+				image: projectImage('sproutfarm', 'tech/daynight.jpg'),
 				body: '시간이 흐르면 화면이 노을빛을 지나 어두워지고, 체력이 떨어지면 나침반이 집을 가리킵니다.',
 			},
 		],
 		build: [
 			{
 				title: '무한 맵',
+				image: projectImage('sproutfarm', 'tech/infinite.jpg'),
 				body: '20×20칸 타일맵 4개가 플레이어를 따라다닙니다. 경계를 넘으면 가장 먼 덩어리를 진행 방향으로 40칸 옮겨 붙입니다.',
 			},
 			{
 				title: '절차적 지형',
+				image: projectImage('sproutfarm', 'tech/zones.jpg'),
 				body: '플레이어 주위를 12칸 구역으로 나눠 구역 위치로 풍경을 정하고, 24칸 간격으로 구불구불한 흙길을 냅니다.',
 			},
 			{
 				title: 'A* 동물 AI',
+				image: projectImage('sproutfarm', 'tech/escape.jpg'),
 				body: 'A* 길찾기로 장애물을 피해 도망치고 따라옵니다. 흩어질 자리는 플레이어가 실제로 걸어갈 수 있는 곳만 고릅니다.',
 			},
 			{
 				title: '조작할 수 없는 랭킹',
+				image: projectImage('sproutfarm', 'shots/result.jpg'),
 				body: '서버리스 함수가 점수가 아닌 기록을 받아 범위를 자르고 직접 점수를 계산해 Redis에 저장합니다.',
 			},
 		],
@@ -424,6 +435,17 @@ export const PROJECTS: Project[] = [
 		demo: 'https://sprout-farm-beta.vercel.app',
 		icon: projectImage('sproutfarm', 'icon.png'),
 		art: projectImage('sproutfarm', 'scene.png'),
+		credits: ['그래픽 — Sprout Lands Asset Pack (Cup Nooble)', '한글 픽셀 글꼴 — Galmuri11 (quiple, SIL OFL)'],
+		gallery: [
+			{ src: projectImage('sproutfarm', 'shots/intro.jpg'), caption: '시작 — 동물들이 달아났다' },
+			{ src: projectImage('sproutfarm', 'shots/farm.jpg'), caption: '오전 9시, 농장에서' },
+			{ src: projectImage('sproutfarm', 'shots/field.jpg'), caption: '들판으로 나가 동물 찾기' },
+			{ src: projectImage('sproutfarm', 'shots/path.jpg'), caption: '흙길에서는 더 빠르게' },
+			{ src: projectImage('sproutfarm', 'shots/pond.jpg'), caption: '연못가' },
+			{ src: projectImage('sproutfarm', 'shots/evening.jpg'), caption: '노을이 지면' },
+			{ src: projectImage('sproutfarm', 'shots/night.jpg'), caption: '밤, 자정까지' },
+			{ src: projectImage('sproutfarm', 'shots/result.jpg'), caption: '결과와 랭킹' },
+		],
 		image: projectImage('sproutfarm', 'screenshot.jpg'),
 	},
 	{
