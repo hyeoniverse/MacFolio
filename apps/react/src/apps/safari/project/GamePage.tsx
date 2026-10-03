@@ -70,6 +70,35 @@ const DECOR: [string, number][] = [
 	['sprout', 8],
 ];
 
+/**
+ * 페이지를 내려가는 만큼 하루가 흐른다: 아침(타이틀) → 낮(하루) → 노을(개발 일지 가운데) → 해 질 녘(인벤토리) → 밤(크레딧).
+ * anchor는 그 시간이 되는 자리(구역과 그 구역 안의 비율), sky는 바탕색, light는 풀밭 그림 위에 얹는 빛(마지막 값은 진하기)
+ */
+type DayStop = { anchor: [string, number]; sky: number[]; dark: number[]; light: number[] };
+const DAY: DayStop[] = [
+	{ anchor: ['.gm-title', 0.3], sky: [253, 240, 214], dark: [40, 38, 28], light: [255, 214, 150, 0.12] },
+	{ anchor: ['.gm-day', 0.5], sky: [232, 243, 211], dark: [24, 33, 15], light: [255, 255, 255, 0] },
+	{ anchor: ['.gm-map', 0.5], sky: [248, 196, 150], dark: [62, 36, 26], light: [255, 130, 50, 0.26] },
+	{ anchor: ['.gm-inventory', 0.5], sky: [118, 92, 150], dark: [42, 30, 62], light: [80, 50, 150, 0.4] },
+	{ anchor: ['.gm-credits', 0.2], sky: [22, 30, 60], dark: [14, 21, 48], light: [10, 20, 70, 0.55] },
+];
+
+/** 하루 색: 앞뒤 두 때 사이에서 t만큼 섞는다 */
+function dayAt(index: number, t: number, dark: boolean) {
+	const a = DAY[index];
+	const b = DAY[Math.min(index + 1, DAY.length - 1)];
+	const mix = (x: number[], y: number[]) => x.map((v, i) => v + (y[i] - v) * Math.min(Math.max(t, 0), 1));
+	const sky = mix(dark ? a.dark : a.sky, dark ? b.dark : b.sky).map(Math.round);
+	const light = mix(a.light, b.light);
+	// 바탕이 어두우면 제목 글자를 밝게
+	const luminance = (0.299 * sky[0] + 0.587 * sky[1] + 0.114 * sky[2]) / 255;
+	return {
+		sky: `rgb(${sky.join(' ')})`,
+		ink: luminance < 0.5 ? '#f3e1bb' : '#4a3222',
+		light: `rgb(${light.slice(0, 3).map(Math.round).join(' ')} / ${light[3].toFixed(3)})`,
+	};
+}
+
 /** 개발 일지 주인공의 걸음 속도 (화면 px/초) */
 const HERO_SPEED = 150;
 
@@ -172,6 +201,48 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 		return () => {
 			scene.removeEventListener('load', sort, true);
 			resized?.disconnect();
+		};
+	}, []);
+
+	// 하루의 흐름: 화면 가운데가 페이지의 어디쯤인지로 바탕색과 풀밭의 빛을 정한다
+	useEffect(() => {
+		const page = root.current;
+		if (!page) return;
+		const scroller = scrollParent(page);
+		const source = scroller ?? window;
+		let frame = 0;
+		const paint = () => {
+			frame = 0;
+			const view = scroller?.getBoundingClientRect();
+			const center = view ? view.top + view.height / 2 : window.innerHeight / 2;
+			// 때마다 그 자리가 지금 화면의 어디쯤인지
+			const marks = DAY.map(({ anchor: [selector, ratio] }) => {
+				const box = page.querySelector(selector)?.getBoundingClientRect();
+				return box ? box.top + box.height * ratio : Number.NaN;
+			});
+			if (marks.some(Number.isNaN)) return;
+			let index = marks.findIndex((mark) => mark > center) - 1;
+			if (index < 0) index = marks[0] > center ? 0 : DAY.length - 1;
+			const from = marks[index];
+			const to = marks[Math.min(index + 1, marks.length - 1)];
+			const t = to === from ? 0 : (center - from) / (to - from);
+			const day = dayAt(index, Math.min(Math.max(t, 0), 1), document.documentElement.dataset.theme === 'dark');
+			page.style.setProperty('--gm-sky', day.sky);
+			page.style.setProperty('--gm-sky-ink', day.ink);
+			page.style.setProperty('--gm-light', day.light);
+		};
+		const onScroll = () => {
+			if (!frame) frame = requestAnimationFrame(paint);
+		};
+		paint();
+		source.addEventListener('scroll', onScroll, { passive: true });
+		// 테마를 바꾸면 다시 칠한다
+		const themed = new MutationObserver(paint);
+		themed.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+		return () => {
+			source.removeEventListener('scroll', onScroll);
+			themed.disconnect();
+			cancelAnimationFrame(frame);
 		};
 	}, []);
 
