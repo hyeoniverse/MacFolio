@@ -1139,3 +1139,55 @@
 		padding-bottom: 48px;
 	}
 }
+
+/* ═══ creative: 어두운 첫 화면에 큰 세리프 제목 (HYEONIVERSE) ═══ */
+.sp[data-look='creative'] {
+	--sp-hero-bg: #1c1b1a;
+	--sp-accent: #d40063;
+	--sp-grad: linear-gradient(90deg, #d40063, #f74d96);
+}
+
+:root[data-theme='dark'] .sp[data-look='creative'] {
+	--sp-accent: #f74d96;
+}
+
+.sp[data-look='creative'] .sp-hero {
+	padding-bottom: 72px;
+	color: #f3efe6;
+}
+
+.sp[data-look='creative'] .sp-eyebrow {
+	color: #a8a39b;
+	font-size: 13px;
+	font-weight: 500;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+}
+
+.sp[data-look='creative'] :is(.sp-hero h1, .sp-headline) {
+	font-family: var(--sp-serif);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+}
+
+.sp[data-look='creative'] .sp-lead {
+	color: #a8a39b;
+}
+
+.sp[data-look='creative'] .sp-app-icon {
+	padding: 0;
+	background-color: transparent;
+	box-shadow: 0 8px 24px rgba(212, 0, 99, 0.35);
+}
+
+.sp[data-look='creative'] .sp-hero .sp-link {
+	color: #f74d96;
+}
+
+.sp[data-look='creative'] .sp-shot img {
+	border: 1px solid #3a3836;
+}
+
+.sp[data-look='creative'] .sp-facts strong {
+	color: var(--sp-accent);
+}

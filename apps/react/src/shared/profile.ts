@@ -42,9 +42,9 @@ export interface ProjectPoint {
 /**
  * 프로젝트 페이지 모양. 프로젝트 성격에 맞춰 첫 화면과 기능 소개, 섹션 순서가 다르다.
  * editorial 신문(뉴스레터), playful 알록달록 카드(할 일), minimal 단계(명함), game 게임 화면, terminal 터미널(학습 기록),
- * product Apple 제품 페이지 그대로(이 사이트)
+ * product Apple 제품 페이지 그대로(이 사이트), creative 어두운 첫 화면과 세리프 제목(포트폴리오)
  */
-export type ProjectLook = 'editorial' | 'playful' | 'minimal' | 'game' | 'terminal' | 'product';
+export type ProjectLook = 'editorial' | 'playful' | 'minimal' | 'game' | 'terminal' | 'product' | 'creative';
 
 export interface Project {
 	id: string;
@@ -458,9 +458,79 @@ export const PROJECTS: Project[] = [
 		stack: ['React', 'TypeScript', 'Vite', 'NestJS', 'PostgreSQL', 'Cloudflare'],
 		language: 'TypeScript',
 		url: 'https://github.com/hyeoniverse/MacFolio',
-		demo: 'https://macfolio.hyeoniverse.com',
 		icon: projectImage('macfolio', 'icon.svg'),
 		image: projectImage('macfolio', 'screenshot.jpg'),
+	},
+	{
+		id: 'hyeoniverse',
+		name: 'HYEONIVERSE',
+		look: 'creative',
+		tagline: '작업물과 글을, 움직이는 화면으로.',
+		description:
+			'작업물과 글을 보여 주는 공개 화면부터, 그 글을 직접 쓰고 고치는 관리자 화면까지 한 저장소에 담은 개인 포트폴리오',
+		context: '개인 프로젝트 (Next.js 풀스택)',
+		role: '기획·디자인, 프론트엔드, Supabase 설계, 관리자 화면',
+		facts: [
+			{ value: '98점', label: 'Lighthouse 성능 (LCP 1.9초)' },
+			{ value: '6가지', label: '작업물 레이아웃' },
+			{ value: '4단계', label: 'RLS 역할 권한' },
+		],
+		highlights: [
+			{
+				title: '스크롤에 반응하는 첫 화면',
+				body: '무한 스크롤 루프, 마우스 패럴랙스, 글자마다 그려지는 외곽선, Three.js 토러스와 커피잔이 스크롤과 마우스를 따라 움직입니다.',
+			},
+			{
+				title: '여섯 가지 작업물 레이아웃',
+				body: 'Flow, Grid, Cylinder, Fullscreen, Cinematic, Split 중 하나를 관리자 설정이나 ?layout= 주소로 골라 바꿔 끼웁니다.',
+			},
+			{
+				title: '글과 시리즈',
+				body: 'SSR과 ISR로 글을 보여 주고, 시리즈와 배너, 여섯 가지 목록 모양, 마크다운 게스트 댓글이나 giscus를 고릅니다.',
+			},
+			{
+				title: '직접 쓰는 관리자 화면',
+				body: 'Plate.js 편집기에서 다이어그램·코드 플레이그라운드·수식 블록을 쓰고, AI 번역·요약, 리비전 기록, 멤버 초대를 관리합니다.',
+			},
+		],
+		build: [
+			{
+				title: '3층 디자인 토큰',
+				body: 'Raw → Semantic → Component 토큰에 역할 토큰을 더하고, 색은 모두 OKLCH로 정했습니다. stylelint 규칙으로 토큰 밖의 값을 막습니다.',
+			},
+			{
+				title: 'DB가 지키는 권한',
+				body: 'Supabase RLS로 owner·admin·author·visitor 네 단계를 나누고, API는 요청마다 역할을 다시 확인합니다.',
+			},
+			{
+				title: '로그인 보호',
+				body: 'API 쓰기 요청은 Origin을 대조해 맞지 않으면 거절하고, 로그인은 5회 실패하면 잠그며 처음 보는 기기는 메일로 승인받습니다.',
+			},
+			{
+				title: '성능 60점에서 98점으로',
+				body: '무거운 편집기와 댓글을 필요할 때 불러오고 패키지 가져오기를 줄여, LCP를 7.3초에서 1.9초로 낮췄습니다.',
+			},
+		],
+		contributions: [
+			'기획과 화면 디자인, 디자인 시스템',
+			'인터랙션과 3D 화면',
+			'Supabase 테이블·RLS·Storage 설계',
+			'관리자 화면과 편집기',
+		],
+		specs: [
+			{ label: '프레임워크', value: 'Next.js 16 (App Router), React 19, TypeScript' },
+			{ label: '스타일', value: 'CSS Modules, 3층 CSS 변수 토큰' },
+			{ label: '애니메이션 · 3D', value: 'Framer Motion, GSAP, Lenis, Three.js (React Three Fiber)' },
+			{ label: '백엔드', value: 'Supabase (PostgreSQL, Auth, Storage, RLS)' },
+			{ label: '편집기', value: 'Plate.js, React Flow, Sandpack, CodeMirror 6, KaTeX' },
+			{ label: '시험 · 배포', value: 'Vitest, Playwright, Vercel' },
+		],
+		stack: ['Next.js', 'React', 'TypeScript', 'Supabase', 'GSAP', 'Three.js'],
+		language: 'TypeScript',
+		url: 'https://github.com/hyeoniverse/web-portfolio-hyeoniverse',
+		demo: 'https://www.hyeoniverse.com',
+		icon: projectImage('hyeoniverse', 'icon.png'),
+		image: projectImage('hyeoniverse', 'screenshot.jpg'),
 	},
 	{
 		id: 'devcourse',

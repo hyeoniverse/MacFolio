@@ -9,7 +9,7 @@ describe('GITHUB_SNAPSHOT', () => {
 		expect(macfolio).toMatchObject({
 			fullName: 'hyeoniverse/MacFolio',
 			owner: 'hyeoniverse',
-			homepage: 'https://macfolio.hyeoniverse.com',
+			homepage: null,
 			language: 'TypeScript',
 		});
 	});
