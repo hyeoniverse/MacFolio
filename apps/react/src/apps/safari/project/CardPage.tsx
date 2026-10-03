@@ -1,13 +1,13 @@
 // QRU (디지털 명함): 그 앱의 민트→분홍 바탕과 두툼한 그림자를 그대로 쓴다.
 // 명함 앞뒤(앞면은 앱 첫 화면의 기울어진 로고 카드, 뒷면은 기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 앱 화면) →
-// 더 들려줄 장(데이터, 번호 직접 넣어 보기) → 묻고 답하기(만든 방식) → 화면 모음 → 맡은 일과 다음 단계.
+// 더 들려줄 장(데이터베이스 구조와 글) → 묻고 답하기(만든 방식) → 화면 모음 → 맡은 일.
 // 순서와 묻고 답하기는 스크롤에 맞춰 위에서부터 차례로 펼쳐지고, 다시 올리면 아래부터 접힌다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectChapter, ProjectPoint } from '@/shared/profile';
 import { FactValue, Facts, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CardPage.css';
 import { scrollParent } from '@/apps/safari/project/scroll';
-import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
+import { useReveal } from '@/apps/safari/project/reveal';
 
 /** 한 칸씩 펼치거나 접는 사이 간격 (ms). 빠르게 스크롤해도 한꺼번에가 아니라 차례로 */
 const STEP = 220;
@@ -17,24 +17,6 @@ const LINE = 0.6;
 /** 앱 로고: 3×3 칸 가운데 청록으로 채운 다섯 칸 (앱의 LogoCard와 같은 자리) */
 const LOGO_FILLED = [false, true, true, false, true, true, false, false, true];
 
-/** 그 앱의 일련번호 글자: 헷갈리는 I, L, O, U를 뺀 32자 (Crockford Base32) */
-const SERIAL_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-const SERIAL_LENGTH = 10;
-const groupSerial = (chars: string) => `${chars.slice(0, 5)}-${chars.slice(5)}`;
-const randomSerial = () => {
-	const bytes = crypto.getRandomValues(new Uint8Array(SERIAL_LENGTH));
-	return groupSerial(Array.from(bytes, (byte) => SERIAL_ALPHABET[byte % SERIAL_ALPHABET.length]).join(''));
-};
-/** 사람이 옮겨 적은 번호를 저장된 꼴로 (앱의 normalizeSerial과 같다). 10자리가 아니면 빈 문자열 */
-const normalizeSerial = (value: string) => {
-	const cleaned = value
-		.toUpperCase()
-		.replace(/O/g, '0')
-		.replace(/[IL]/g, '1')
-		.replace(/[^0-9A-Z]/g, '');
-	return cleaned.length === SERIAL_LENGTH ? groupSerial(cleaned) : '';
-};
-/** 그 앱 README의 예시 명함 번호 */
 const SAMPLE_SERIAL = '7K3FM-9P2XR';
 
 /**
@@ -198,75 +180,63 @@ const tilt = {
 	},
 };
 
-/** 일련번호: 누르면 새 번호를 뽑는다. 글자가 잠깐 굴러가다 멈추는 슬롯처럼 */
-const Serial: React.FC = () => {
-	const [serial, setSerial] = useState(SAMPLE_SERIAL);
-	const [rolling, setRolling] = useState(false);
-	const timer = useRef(0);
-	useEffect(() => () => window.clearInterval(timer.current), []);
+/** 일련번호: 앱 명함 보기의 번호 칩 (그 앱 README의 예시 번호) */
+const Serial: React.FC = () => (
+	<p className="qc-serial">
+		<span>일련번호</span>
+		<code>{SAMPLE_SERIAL}</code>
+	</p>
+);
 
-	const roll = () => {
-		const next = randomSerial();
-		if (prefersReducedMotion()) {
-			setSerial(next);
-			return;
-		}
-		window.clearInterval(timer.current);
-		setRolling(true);
-		let tick = 0;
-		// 앞 글자부터 하나씩 자리를 잡는다
-		timer.current = window.setInterval(() => {
-			tick += 1;
-			const fixed = Math.floor(tick / 2);
-			const chars = next
-				.replace('-', '')
-				.split('')
-				.map((char, i) => (i < fixed ? char : SERIAL_ALPHABET[Math.floor(Math.random() * SERIAL_ALPHABET.length)]));
-			setSerial(groupSerial(chars.join('')));
-			if (fixed >= SERIAL_LENGTH) {
-				window.clearInterval(timer.current);
-				setRolling(false);
-			}
-		}, 34);
-	};
+type SchemaDoc = NonNullable<ProjectChapter['schema']>[number];
 
+/** 문서 하나: 경로와 누가 읽는지, 필드 칩(문서가 나타나면 하나씩 놓인다), 한 줄 설명. 하위 문서는 안에 이어 그린다 */
+const SchemaDoc: React.FC<{ doc: SchemaDoc; docs: SchemaDoc[] }> = ({ doc, docs }) => {
+	const children = docs.filter((item) => item.parent === doc.path);
 	return (
-		<p className="qc-serial">
-			<span>일련번호</span>
-			<code data-rolling={rolling || undefined}>{serial}</code>
-			<button type="button" onClick={roll} aria-label="새 일련번호 뽑기">
-				<i className="fa-solid fa-shuffle" aria-hidden="true" />
-			</button>
-		</p>
+		<article className="qc-doc" data-child={doc.parent ? '' : undefined} data-reveal={doc.parent ? undefined : ''}>
+			<header>
+				<code>{doc.path}</code>
+				<span className="qc-access" data-locked={doc.locked || undefined}>
+					{doc.locked && <i className="fa-solid fa-lock" aria-hidden="true" />}
+					{doc.access}
+				</span>
+			</header>
+			<ul aria-label={`${doc.path} 필드`}>
+				{doc.fields.map((field, i) => (
+					<li key={field} style={{ '--i': i } as React.CSSProperties}>
+						{field}
+					</li>
+				))}
+			</ul>
+			<p>{doc.note}</p>
+			{children.length > 0 && (
+				<div className="qc-doc-children">
+					<p>하위 문서: 같은 명함에 딸려 있지만 읽을 수 있는 사람이 다릅니다</p>
+					<div>
+						{children.map((child) => (
+							<SchemaDoc key={child.path} doc={child} docs={docs} />
+						))}
+					</div>
+				</div>
+			)}
+		</article>
 	);
 };
 
-/** 옮겨 적은 번호를 넣어 보면, 앱처럼 소문자·붙임표·헷갈리는 글자를 고쳐 같은 번호로 찾는다 */
-const SerialTry: React.FC = () => {
-	const [typed, setTyped] = useState('7k3fm 9p2xr');
-	const found = normalizeSerial(typed);
-	return (
-		<div className="qc-try" data-reveal="">
-			<label htmlFor="qc-try-input">번호를 옮겨 적듯 넣어 보세요</label>
-			<div className="qc-try-row">
-				<input
-					id="qc-try-input"
-					value={typed}
-					onChange={(event) => setTyped(event.target.value)}
-					spellCheck={false}
-					autoComplete="off"
-				/>
-				<i className="fa-solid fa-arrow-right" aria-hidden="true" />
-				<output htmlFor="qc-try-input" data-found={Boolean(found)} aria-live="polite">
-					{found || '10자리가 되면 찾아요'}
-				</output>
-			</div>
-		</div>
-	);
-};
+/** 데이터베이스 구조: 최상위 문서부터, 하위 문서는 그 안에 */
+const Schema: React.FC<{ docs: SchemaDoc[] }> = ({ docs }) => (
+	<div className="qc-schema" aria-label="데이터베이스 구조" role="group">
+		{docs
+			.filter((doc) => !doc.parent)
+			.map((doc) => (
+				<SchemaDoc key={doc.path} doc={doc} docs={docs} />
+			))}
+	</div>
+);
 
 /** 더 들려줄 장: 첫머리, 숫자 칩, 두툼한 타일, 그림 */
-const Chapter: React.FC<{ chapter: ProjectChapter; first: boolean }> = ({ chapter, first }) => (
+const Chapter: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
 	<section className="qc-chapter" aria-label={chapter.title}>
 		<h2 className="qc-title">{chapter.title}</h2>
 		{chapter.lead && (
@@ -284,7 +254,7 @@ const Chapter: React.FC<{ chapter: ProjectChapter; first: boolean }> = ({ chapte
 				))}
 			</ul>
 		)}
-		{first && <SerialTry />}
+		{chapter.schema && <Schema docs={chapter.schema} />}
 		<div className="qc-tiles">
 			{chapter.points.map((point, i) => (
 				<article key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
@@ -366,8 +336,8 @@ const CardPage: React.FC<{ project: Project }> = ({ project }) => {
 				<Journey project={project} />
 			</section>
 
-			{project.chapters?.map((chapter, i) => (
-				<Chapter key={chapter.title} chapter={chapter} first={i === 0} />
+			{project.chapters?.map((chapter) => (
+				<Chapter key={chapter.title} chapter={chapter} />
 			))}
 
 			<section className="qc-faq" aria-label="만든 방식">
@@ -390,19 +360,6 @@ const CardPage: React.FC<{ project: Project }> = ({ project }) => {
 						))}
 					</ul>
 				</section>
-				{project.next && (
-					<section aria-label="다음 단계" data-reveal="left" style={{ '--d': 2 } as React.CSSProperties}>
-						<h2 className="qc-title">다음 단계</h2>
-						<ul className="next">
-							{project.next.map((item) => (
-								<li key={item}>
-									<i className="fa-regular fa-circle" aria-hidden="true" />
-									{item}
-								</li>
-							))}
-						</ul>
-					</section>
-				)}
 			</div>
 
 			<footer className="qc-foot" data-reveal="">
