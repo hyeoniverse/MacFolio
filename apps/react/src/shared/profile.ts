@@ -557,7 +557,7 @@ export const PROJECTS: Project[] = [
 			},
 		],
 		gallery: [
-			{ src: projectImage('qru', 'screens/home.jpg'), caption: '첫 화면: 기울어진 로고 카드' },
+			{ src: projectImage('qru', 'screens/home.jpg'), caption: '첫 화면' },
 			{ src: projectImage('qru', 'screens/card.jpg'), caption: '명함 보기' },
 			{ src: projectImage('qru', 'screens/card-dark.jpg'), caption: '다크 테마' },
 			{ src: projectImage('qru', 'screens/shuffle.jpg'), caption: '명함 찾기' },
