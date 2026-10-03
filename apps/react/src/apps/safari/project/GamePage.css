@@ -433,9 +433,39 @@
 	background: url('/imgs/projects/sproutfarm/sprites/portrait-frame.png') 0 0 / 96px 96px no-repeat;
 }
 
-.gm-face {
+/* 표정: 32칸 그림을 두 배로, 칸 수(--frames)만큼 넘긴다 */
+.gm-emote {
+	display: inline-block;
+	width: 64px;
+	height: 64px;
+	background-repeat: no-repeat;
+	background-size: auto 64px;
+	animation: gm-emote calc(var(--frames) * 0.18s) steps(var(--frames)) infinite;
+}
+
+.gm-emote.small {
 	width: 48px;
 	height: 48px;
+	background-size: auto 48px;
+	animation-name: gm-emote-small;
+	vertical-align: middle;
+}
+
+.gm-bow {
+	display: block;
+	margin: 28px auto 0;
+}
+
+@keyframes gm-emote {
+	to {
+		background-position-x: calc(var(--frames) * -64px);
+	}
+}
+
+@keyframes gm-emote-small {
+	to {
+		background-position-x: calc(var(--frames) * -48px);
+	}
 }
 
 .gm-bubble {
@@ -954,6 +984,7 @@
 	.gm-walker,
 	.gm-runner,
 	.gm-paw,
+	.gm-emote,
 	.gm-hero[data-walking='true'] {
 		animation: none;
 	}
