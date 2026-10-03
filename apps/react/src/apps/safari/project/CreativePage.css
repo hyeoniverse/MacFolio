@@ -6,7 +6,6 @@
 	--cr-line: #dcd8d1;
 	--sp-accent: #d40063;
 	/* 금속 질감(화면 테와 차례 표시만): 크롬은 위아래로 빛이 갈리는 은색, 테는 비스듬히 빛이 도는 은색 */
-	--cr-chrome: linear-gradient(180deg, #fdfdfd 0%, #c9ccd2 38%, #8d929b 50%, #d9dce1 64%, #f4f5f7 100%);
 	--cr-sheen: conic-gradient(from 210deg, #f6f7f9, #a9aeb6, #ffffff, #8a9099, #e8eaee, #9ea3ab, #f6f7f9);
 	background-color: var(--cr-bg);
 	color: var(--cr-ink);
@@ -18,7 +17,6 @@
 	--cr-muted: #a8a39b;
 	--cr-line: #3a3836;
 	--sp-accent: #f74d96;
-	--cr-chrome: linear-gradient(180deg, #8a8f98 0%, #4b4f57 38%, #24262b 50%, #5d626b 64%, #a3a8b0 100%);
 	--cr-sheen: conic-gradient(from 210deg, #5b6068, #2a2c31, #b9bec6, #34373d, #8b9099, #2f3237, #5b6068);
 }
 
@@ -37,11 +35,38 @@
 }
 
 /* 왼쪽: 화면에 붙어 있다 */
+/* 아이콘과 몽이는 늘 보인다. 장을 읽기 시작하면(data-reading) 소개 글과 링크를 접어 차례까지 한 화면에 들어오게 한다 */
 .cr-side {
 	position: sticky;
 	top: 0;
 	align-self: start;
 	padding: 48px 0;
+}
+
+.cr-side h1 {
+	transition: font-size 0.4s var(--ease-out);
+}
+
+.cr-side :is(.cr-lead, .cr-links) {
+	max-height: 260px;
+	overflow: hidden;
+	transition:
+		max-height 0.45s var(--ease-out),
+		opacity 0.3s,
+		margin 0.45s var(--ease-out);
+}
+
+/* 왼쪽 칸이 붙어 있는 넓은 창에서만 접는다 (좁은 창에서는 위에서 아래로 그냥 흐른다) */
+@container (min-width: 761px) {
+	.cr-side[data-reading] :is(.cr-lead, .cr-links) {
+		max-height: 0;
+		margin-top: 0;
+		opacity: 0;
+	}
+
+	.cr-side[data-reading] h1 {
+		font-size: clamp(24px, 3cqi, 32px);
+	}
 }
 
 .cr-icon {
@@ -117,18 +142,6 @@
 	font-weight: 700;
 }
 
-/* 지금 읽는 장 표시: 작은 금속 막대 */
-.cr-index button[aria-current]::after {
-	align-self: center;
-	width: 28px;
-	height: 6px;
-	margin-left: auto;
-	border-radius: 3px;
-	background: var(--cr-chrome);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-	content: '';
-}
-
 .cr-index span {
 	color: var(--sp-accent);
 	font-family: var(--sp-mono);
@@ -201,7 +214,8 @@
 .cr-mascot {
 	display: grid;
 	position: absolute;
-	top: 8px;
+	/* 뛰거나 표정이 바뀔 때 머리가 화면 위로 잘리지 않게 넉넉히 내려 둔다 */
+	top: 26px;
 	right: 0;
 	justify-items: center;
 	width: 140px;
