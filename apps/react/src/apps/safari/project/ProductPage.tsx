@@ -2,7 +2,7 @@
 // 스크롤하면 커지는 노트북 → 숫자 띠 → 기능 타일 → 화면 크기를 바꿔 보는 시뮬레이터 → 어두운 만든 방식(구조 그림) → 맡은 일 → 기술 사양 표
 // 첫 화면 밖의 요소는 화면에 들어오면 나타나고 벗어나면 사라진다(data-reveal). 제목은 스크롤에 맞춰 낱말마다 밝아진다
 import React, { useEffect, useId, useRef, useState } from 'react';
-import type { Project } from '@/shared/profile';
+import type { Project, ProjectPoint } from '@/shared/profile';
 import { Facts, Favicon, Links } from '@/apps/safari/project/parts';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 import { prefersReducedMotion as reducedMotion, useReveal } from '@/apps/safari/project/reveal';
@@ -59,7 +59,133 @@ const SIZES = [
 ] as const;
 
 /** 주요 기능 타일의 아이콘 (순서대로) */
-const TILE_ICONS = ['fa-solid fa-display', 'fa-solid fa-note-sticky', 'fa-solid fa-comments', 'fa-solid fa-link'];
+/** 주요 특징 카드 한 장이 머무는 시간 (ms). 이만큼 지나면 다음 카드로 넘어간다 */
+const HIGHLIGHT_MS = 5000;
+
+/**
+ * 주요 특징: Apple 제품 페이지의 '주요 특징 살펴보기'처럼 큰 카드가 옆으로 이어지고 다음 카드가 살짝 보인다.
+ * 화면에 들어와 있는 동안 저절로 넘어가며 아래 점이 차오르고(마지막 카드에서 멈춤), 재생·일시 정지 단추와 점으로 직접 고른다.
+ * 손으로 옆으로 넘기면 저절로 넘기기를 멈춘다
+ */
+const Highlights: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
+	const track = useRef<HTMLUListElement>(null);
+	const [current, setCurrent] = useState(0);
+	const [playing, setPlaying] = useState(() => !reducedMotion());
+	const [visible, setVisible] = useState(false);
+	const last = points.length - 1;
+
+	// 카드를 고르면 그 카드가 왼쪽 여백에 맞춰 오도록 띠를 옮긴다
+	const go = (index: number) => {
+		const list = track.current;
+		const item = list?.children[index] as HTMLElement | undefined;
+		if (!list || !item) return;
+		const left = item.offsetLeft - parseFloat(getComputedStyle(list).paddingLeft);
+		list.scrollTo({ left, behavior: reducedMotion() ? 'auto' : 'smooth' });
+		setCurrent(index);
+	};
+
+	// 화면에 반 넘게 보일 때만 저절로 넘긴다
+	useEffect(() => {
+		const list = track.current;
+		if (!list || typeof IntersectionObserver === 'undefined') return;
+		const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+			root: scrollParent(list),
+			threshold: 0.5,
+		});
+		observer.observe(list);
+		return () => observer.disconnect();
+	}, []);
+
+	useEffect(() => {
+		if (!playing || !visible) return;
+		const timer = window.setTimeout(() => {
+			if (current >= last) setPlaying(false);
+			else go(current + 1);
+		}, HIGHLIGHT_MS);
+		return () => window.clearTimeout(timer);
+	}, [playing, visible, current, last]);
+
+	// 손으로 넘기면 가장 가까운 카드가 지금 카드
+	const onScroll = () => {
+		const list = track.current;
+		if (!list) return;
+		const items = [...list.children] as HTMLElement[];
+		const start = list.scrollLeft + parseFloat(getComputedStyle(list).paddingLeft);
+		const nearest = items.reduce(
+			(best, item, i) => (Math.abs(item.offsetLeft - start) < Math.abs(items[best].offsetLeft - start) ? i : best),
+			0
+		);
+		if (nearest !== current) setCurrent(nearest);
+	};
+
+	const toggle = () => {
+		// 끝까지 본 뒤 재생을 누르면 처음부터
+		if (!playing && current >= last) go(0);
+		setPlaying((now) => !now);
+	};
+
+	return (
+		<div className="pd-hl" data-playing={(playing && visible) || undefined}>
+			<ul
+				className="pd-hl-track"
+				ref={track}
+				onScroll={onScroll}
+				onPointerDown={() => setPlaying(false)}
+				onWheel={(event) => {
+					if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) setPlaying(false);
+				}}
+			>
+				{points.map((point, i) => (
+					<li key={point.title} className="pd-hl-card" data-on={i === current}>
+						<div className="pd-hl-caption">
+							<h3>{point.title}</h3>
+							<p>{point.body}</p>
+						</div>
+						{point.image && (
+							<figure className="pd-hl-media">
+								<img src={point.image} alt={`${point.title} 화면`} loading="lazy" />
+							</figure>
+						)}
+					</li>
+				))}
+			</ul>
+			<div className="pd-hl-controls">
+				<div className="pd-hl-dots" role="group" aria-label="주요 특징 고르기">
+					{points.map((point, i) => (
+						<button
+							key={point.title}
+							type="button"
+							aria-label={`${point.title} 보기`}
+							aria-current={i === current || undefined}
+							onClick={() => {
+								setPlaying(false);
+								go(i);
+							}}
+						>
+							{/* 지금 카드의 점은 길어지고, 머무는 시간만큼 차오른다 */}
+							{i === current && (
+								<span key={`${current}-${playing}`} style={{ '--ms': `${HIGHLIGHT_MS}ms` } as React.CSSProperties} />
+							)}
+						</button>
+					))}
+				</div>
+				<button
+					type="button"
+					className="pd-hl-play"
+					aria-label={playing ? '일시 정지' : current >= last ? '처음부터 다시 재생' : '재생'}
+					onClick={toggle}
+				>
+					<i
+						className={
+							playing ? 'fa-solid fa-pause' : current >= last ? 'fa-solid fa-rotate-right' : 'fa-solid fa-play'
+						}
+						aria-hidden="true"
+					/>
+				</button>
+			</div>
+		</div>
+	);
+};
 
 /**
  * 구조 그림의 상자. step은 스크롤에 따라 켜지는 순서, icon은 Font Awesome 글자(brand면 브랜드 글꼴),
@@ -447,25 +573,8 @@ const ProductPage: React.FC<{ project: Project }> = ({ project }) => {
 			<section className="sp-section" aria-label="주요 기능">
 				<div className="sp-inner">
 					<Headline title="주요 기능." sub="지금 보고 있는 이 화면." />
-					<ul className="sp-tiles pd-tiles">
-						{project.highlights.map((point, i) => (
-							<li
-								key={point.title}
-								// 개수가 홀수면 첫 타일을 넓게 해 빈칸을 없앤다
-								className={i === 0 && project.highlights.length % 2 === 1 ? 'wide' : undefined}
-								data-reveal=""
-								style={{ '--d': i % 2 } as React.CSSProperties}
-							>
-								<span className="pd-tile-icon" aria-hidden="true">
-									<i className={TILE_ICONS[i % TILE_ICONS.length]} />
-								</span>
-								<h3>{point.title}</h3>
-								<p>{point.body}</p>
-								<i className={`pd-tile-mark ${TILE_ICONS[i % TILE_ICONS.length]}`} aria-hidden="true" />
-							</li>
-						))}
-					</ul>
 				</div>
+				<Highlights points={project.highlights} />
 			</section>
 
 			<Simulator />
