@@ -1,13 +1,13 @@
 ---
-title: 프로젝트 목록은 한 곳에 - MacFolio를 프로젝트로 더하며
+title: 프로젝트 목록은 한 곳에 - MacFolio와 HYEONIVERSE를 프로젝트로 더하며
 date: 2026-10-03
 category: 개발기/MacFolio
-summary: 이 사이트(MacFolio)를 프로젝트로 넣으려다 보니, 프로젝트 목록이 GitHub 앱에만 따로 적혀 있었다. GitHub 앱의 스냅샷이 Safari·Finder와 같은 목록을 읽게 바꾸고, MacFolio는 그 목록에 한 번만 더했다.
+summary: 이 사이트(MacFolio)를 프로젝트로 넣으려다 보니, 프로젝트 목록이 GitHub 앱에만 따로 적혀 있었다. GitHub 앱의 스냅샷이 Safari·Finder와 같은 목록을 읽게 바꾸고, MacFolio와 포트폴리오 사이트(HYEONIVERSE)는 그 목록에 한 번씩만 더했다.
 ---
 
 GitHub 앱의 고정 저장소에 MacFolio를 넣었더니, Safari 탭에도 Finder의 프로젝트 폴더에도 MacFolio가 없었다. 같은 프로젝트 이야기인데 한쪽에만 생긴 것이다.
 
-![Safari와 GitHub 앱](./images/projects-one-list.jpg '왼쪽: Safari의 MacFolio 페이지 / 오른쪽: 같은 목록에서 만든 GitHub 앱의 고정 저장소')
+![Safari와 GitHub 앱](./images/projects-one-list.jpg '왼쪽: Safari의 HYEONIVERSE 페이지 / 오른쪽: 같은 목록에서 만든 GitHub 앱의 고정 저장소')
 
 ## 목록이 두 개였다
 
@@ -21,8 +21,13 @@ GitHub 앱의 고정 저장소에 MacFolio를 넣었더니, Safari 탭에도 Fin
 
 서버가 GitHub에서 받아 보여 주는 고정 저장소는 관리자가 시스템 설정에서 고른다. 이것은 화면 코드가 아니라 서버 DB에 저장되는 값이라 `PROJECTS`와 묶지 않았다. 묶으면 배포 없이 저장소를 바꾸는 기능이 사라진다. 스냅샷은 서버를 못 쓸 때의 대비책이니 코드 안의 목록을 따르고, 실제 화면은 관리자가 고른 값을 따른다.
 
-## MacFolio 페이지
+## 두 프로젝트의 페이지
 
-Safari의 프로젝트 페이지는 프로젝트마다 모양(look)이 다르다. 뉴스레터는 신문, 게임은 게임 화면처럼 꾸몄다. MacFolio는 macOS를 흉내 낸 사이트라서, 따로 꾸미지 않은 Apple 제품 페이지 모양(`product`)을 그대로 쓴다. 아이콘은 노을 진 바탕화면 위에 창 하나와 Dock을 올린 그림으로 새로 그렸다.
+Safari의 프로젝트 페이지는 프로젝트마다 모양(look)이 다르다. 뉴스레터는 신문, 게임은 게임 화면처럼 꾸몄다.
 
-페이지에는 이 사이트의 기술 사양과 함께 서버 쪽 이야기(GitHub OAuth 관리자 로그인, 포트를 열지 않는 Cloudflare Tunnel, 시험을 통과해야 배포)를 실었다. 자세한 내용은 [MacFolio 백엔드 한 장으로 보기](/memo/backend-design)에 있다.
+- **MacFolio**: macOS를 흉내 낸 사이트라서, 따로 꾸미지 않은 Apple 제품 페이지 모양(`product`)을 그대로 쓴다. 아이콘은 노을 진 바탕화면 위에 창 하나와 Dock을 올린 그림으로 새로 그렸다. 지금 보고 있는 화면이 곧 데모라서 "데모 보기" 단추는 두지 않고, 주소창에는 저장소 주소가 보인다. 서버 쪽 이야기는 [MacFolio 백엔드 한 장으로 보기](/memo/backend-design)에 있다.
+- **HYEONIVERSE**: Next.js와 Supabase로 만든 포트폴리오 사이트다. 그 사이트의 첫 화면처럼 어두운 바탕에 세리프 제목을 쓰는 모양(`creative`)을 새로 만들고, 색은 사이트의 마젠타(#d40063)를 따랐다.
+
+## 탭이 일곱 개가 되자
+
+프로젝트가 일곱 개가 되니 좁은 Safari 창에서 지금 탭의 제목까지 잘렸다. 탭 폭은 몫(flex-grow)으로 나누는데, 탭 수가 늘면 지금 탭이 많이 가져가도 모자랐다. 그래서 지금 탭은 제목 길이보다 작아지지 않게(`min-width: max-content`) 하고, 나머지 탭이 그만큼 더 줄어들게 했다.
