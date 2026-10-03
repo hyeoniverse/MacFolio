@@ -36,8 +36,6 @@ const DECOR: [string, number][] = [
 	['tree-tall', 14],
 	['bush', 16],
 	['berry-bush', 16],
-	['bush-long', 28],
-	['hedge', 30],
 	['rock', 16],
 	['rock-big', 16],
 	['pebble', 10],
@@ -114,6 +112,7 @@ function roadPath(count: number) {
 
 const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useRef<HTMLDivElement>(null);
+	const title = useRef<HTMLElement>(null);
 	const hud = useRef<HTMLElement>(null);
 	const road = useRef<HTMLDivElement>(null);
 	const path = useRef<SVGPathElement>(null);
@@ -123,6 +122,28 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 	const [picked, setPicked] = useState(0);
 	const stages = project.build.length;
 	const decor = React.useMemo(() => scatter(stages), [stages]);
+
+	// 타이틀 화면의 앞뒤: 발끝(아래 끝)이 더 위에 있는 것이 뒤로 간다. 동물은 옆으로만 걸으니 발끝 높이가 그대로다
+	useEffect(() => {
+		const scene = title.current;
+		if (!scene) return;
+		const sort = () => {
+			const top = scene.getBoundingClientRect().top;
+			for (const item of scene.children) {
+				if (item instanceof HTMLElement)
+					item.style.zIndex = String(Math.round(item.getBoundingClientRect().bottom - top));
+			}
+		};
+		sort();
+		// 그림이 늦게 불러와지면 높이가 바뀐다
+		scene.addEventListener('load', sort, true);
+		const resized = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(sort);
+		resized?.observe(scene);
+		return () => {
+			scene.removeEventListener('load', sort, true);
+			resized?.disconnect();
+		};
+	}, []);
 
 	// 스크롤하면 주인공이 흙길을 따라 걷는다: 화면 가운데 높이와 같은 길 위의 점에 선다
 	useEffect(() => {
@@ -237,7 +258,7 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 	return (
 		<div className="gm" ref={root} data-started={started}>
 			<span className="gm-paw" ref={paw} aria-hidden="true" />
-			<header className="gm-title">
+			<header className="gm-title" ref={title}>
 				<Sprite name="chicken-house" className="gm-house" />
 				<Sprite name="tree" className="gm-tree a" />
 				<Sprite name="fruit-tree" className="gm-tree b" />
