@@ -58,8 +58,16 @@ const Section: React.FC<{ label: string; className?: string; inner?: string; chi
 	</section>
 );
 
-/** 이 사이트 안에서 바로 실행할 수 있는 프로젝트 (앱으로 들어 있는 것) */
-const PLAYABLE: Partial<Record<string, AppName>> = { sproutfarm: 'sproutfarm' };
+/** 이 사이트 안에서 바로 실행할 수 있는 프로젝트 (배포한 사이트를 창으로 띄우는 앱, apps/project) */
+const PLAYABLE: Partial<Record<string, AppName>> = {
+	newpick: 'newpick',
+	whattodo: 'whattodo',
+	qru: 'qru',
+	sproutfarm: 'sproutfarm',
+};
+
+/** 게임은 '플레이', 나머지는 '열기' */
+const playLabel = (id: string) => (id === 'sproutfarm' ? '여기서 플레이' : '여기서 열기');
 
 const Links: React.FC<{ project: Project }> = ({ project }) => {
 	const { openApp } = useAppState();
@@ -70,7 +78,7 @@ const Links: React.FC<{ project: Project }> = ({ project }) => {
 		<div className="sp-links">
 			{playable && (
 				<button type="button" className="sp-pill" onClick={() => app && openApp(app)}>
-					여기서 플레이
+					{playLabel(project.id)}
 				</button>
 			)}
 			{project.demo && (
