@@ -1,12 +1,12 @@
 // QRU (디지털 명함): 그 앱의 민트→분홍 바탕과 두툼한 그림자를 그대로 쓴다.
-// 명함 앞뒤(앞면은 앱 첫 화면의 기울어진 로고 카드, 뒷면은 기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 앱 화면) →
+// 명함 앞뒤(앞면은 앱 로고 카드, 뒷면은 기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 앱 화면) →
 // 더 들려줄 장(데이터베이스 구조와 글) → 묻고 답하기(만든 방식) → 화면 모음 → 맡은 일.
 // 순서와 묻고 답하기는 스크롤에 맞춰 위에서부터 차례로 펼쳐지고, 다시 올리면 아래부터 접힌다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectChapter, ProjectPoint } from '@/shared/profile';
 import { FactValue, Facts, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CardPage.css';
-import { scrollParent } from '@/apps/safari/project/scroll';
+import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 import { useReveal } from '@/apps/safari/project/reveal';
 
 /** 한 칸씩 펼치거나 접는 사이 간격 (ms). 빠르게 스크롤해도 한꺼번에가 아니라 차례로 */
@@ -16,8 +16,6 @@ const LINE = 0.6;
 
 /** 앱 로고: 3×3 칸 가운데 청록으로 채운 다섯 칸 (앱의 LogoCard와 같은 자리) */
 const LOGO_FILLED = [false, true, true, false, true, true, false, false, true];
-
-const SAMPLE_SERIAL = '7K3FM-9P2XR';
 
 /**
  * 스크롤에 맞춰 위 칸부터 차례로 펼치고, 다시 올리면 아래 칸부터 차례로 접는다.
@@ -157,7 +155,7 @@ const Journey: React.FC<{ project: Project }> = ({ project }) => {
 };
 
 /**
- * 명함을 손에 든 것처럼: 마우스를 올리면 그쪽으로 기울고, 빛이 마우스를 따라 비친다. 마우스를 떼면 제자리로 돌아온다
+ * 명함을 손에 든 것처럼: 마우스를 올리면 그쪽으로 아주 살짝 기울고, 빛이 마우스를 따라 비친다. 마우스를 떼면 제자리로 돌아온다
  */
 const tilt = {
 	onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
@@ -166,8 +164,8 @@ const tilt = {
 		const box = card.getBoundingClientRect();
 		const x = (event.clientX - box.left) / box.width;
 		const y = (event.clientY - box.top) / box.height;
-		card.style.setProperty('--rx', `${((0.5 - y) * 12).toFixed(2)}deg`);
-		card.style.setProperty('--ry', `${((x - 0.5) * 14).toFixed(2)}deg`);
+		card.style.setProperty('--rx', `${((0.5 - y) * 4).toFixed(2)}deg`);
+		card.style.setProperty('--ry', `${((x - 0.5) * 5).toFixed(2)}deg`);
 		card.style.setProperty('--gx', `${(x * 100).toFixed(1)}%`);
 		card.style.setProperty('--gy', `${(y * 100).toFixed(1)}%`);
 		card.dataset.tilt = '';
@@ -179,14 +177,6 @@ const tilt = {
 		delete card.dataset.tilt;
 	},
 };
-
-/** 일련번호: 앱 명함 보기의 번호 칩 (그 앱 README의 예시 번호) */
-const Serial: React.FC = () => (
-	<p className="qc-serial">
-		<span>일련번호</span>
-		<code>{SAMPLE_SERIAL}</code>
-	</p>
-);
 
 type SchemaDoc = NonNullable<ProjectChapter['schema']>[number];
 
@@ -271,22 +261,64 @@ const Chapter: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
 	</section>
 );
 
-/** 화면 모음: 옆으로 넘겨 보는 띠. 지금 가운데 온 장이 커진다 */
-const Gallery: React.FC<{ shots: NonNullable<Project['gallery']> }> = ({ shots }) => (
-	<section className="qc-gallery" aria-label="화면 모음">
-		<h2 className="qc-title">화면 모음</h2>
-		<ul>
-			{shots.map((shot, i) => (
-				<li key={shot.src} data-reveal="" style={{ '--d': i } as React.CSSProperties}>
-					<figure>
-						<img src={shot.src} alt={shot.caption} loading="lazy" />
-						<figcaption>{shot.caption}</figcaption>
-					</figure>
-				</li>
-			))}
-		</ul>
-	</section>
-);
+/**
+ * 화면 모음: 이 구역에 들어오면 화면에 고정되고, 세로로 스크롤하는 만큼 띠가 옆으로 넘어간다.
+ * 띠의 끝까지 넘어가야 다음 구역으로 내려간다. 좁은 창과 움직임 줄이기에서는 고정하지 않고 손으로 옆으로 넘긴다
+ */
+const Gallery: React.FC<{ shots: NonNullable<Project['gallery']> }> = ({ shots }) => {
+	const track = useRef<HTMLElement>(null);
+	const strip = useRef<HTMLUListElement>(null);
+	useEffect(() => {
+		const node = track.current;
+		const list = strip.current;
+		const frame = list?.parentElement;
+		if (!node || !list || !frame) return;
+		const measure = (scroller: HTMLElement | null) => {
+			const view = viewOf(scroller);
+			// 띠가 창보다 넘치는 만큼이 옆으로 갈 거리이고, 고정된 동안 그만큼 세로로 스크롤한다
+			const pad = getComputedStyle(frame);
+			const inner = frame.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
+			const overflow = Math.max(0, list.scrollWidth - inner);
+			node.style.setProperty('--view', `${view.height}px`);
+			node.style.setProperty('--overflow', `${overflow}px`);
+			const box = node.getBoundingClientRect();
+			const run = box.height - view.height;
+			const pinned = getComputedStyle(list).getPropertyValue('--pin').trim() === '1';
+			const progress = pinned && run > 0 ? Math.min(1, Math.max(0, (view.top - box.top) / run)) : 0;
+			node.style.setProperty('--p', progress.toFixed(4));
+			list.style.setProperty('--x', `${(-progress * overflow).toFixed(1)}px`);
+		};
+		const stop = onScrollFrame(node, measure);
+		// 화면 그림이 늦게 불러와져 띠 폭이 바뀌면 다시 잰다
+		const resized = new ResizeObserver(() => measure(scrollParent(node)));
+		resized.observe(list);
+		return () => {
+			stop();
+			resized.disconnect();
+		};
+	}, []);
+
+	return (
+		<section className="qc-gallery" aria-label="화면 모음" ref={track}>
+			<div className="qc-gallery-sticky">
+				<h2 className="qc-title">화면 모음</h2>
+				<div className="qc-gallery-window">
+					<ul ref={strip}>
+						{shots.map((shot) => (
+							<li key={shot.src}>
+								<figure>
+									<img src={shot.src} alt={shot.caption} loading="lazy" />
+									<figcaption>{shot.caption}</figcaption>
+								</figure>
+							</li>
+						))}
+					</ul>
+				</div>
+				<span className="qc-gallery-bar" aria-hidden="true" />
+			</div>
+		</section>
+	);
+};
 
 const CardPage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
@@ -309,7 +341,6 @@ const CardPage: React.FC<{ project: Project }> = ({ project }) => {
 						<p className="qc-name">{project.name}</p>
 						<h1>{project.tagline}</h1>
 						<p className="qc-lead">{project.description}</p>
-						<Serial />
 					</div>
 					<section className="qc-card qc-back" aria-label="기술 사양" {...tilt}>
 						<h2>기술 사양</h2>

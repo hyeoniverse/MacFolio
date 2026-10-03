@@ -54,7 +54,7 @@
 	align-items: stretch;
 }
 
-/* 앱 첫 화면의 로고 카드처럼 비스듬히 누워 있다가, 마우스를 올리면 펴지며 그쪽으로 기운다 (--rx·--ry는 스크립트가 정한다) */
+/* 반듯하게 놓여 있다가, 마우스를 올리면 그쪽으로 아주 살짝 기운다 (--rx·--ry는 스크립트가 정한다) */
 .qc-card {
 	position: relative;
 	display: flex;
@@ -70,16 +70,11 @@
 		box-shadow 0.3s;
 }
 
-.qc-front {
-	--lay: rotateX(12deg) rotateY(-12deg);
-}
-
-.qc-back {
-	--lay: rotateX(12deg) rotateY(10deg) translateY(14px);
+.qc-card {
+	--lay: rotate(0deg);
 }
 
 .qc-card[data-tilt] {
-	--lay: rotate(0deg);
 	box-shadow: var(--qc-shadow-up);
 	transition:
 		transform 0.12s linear,
@@ -196,31 +191,6 @@
 	color: var(--qc-muted);
 	font-size: 15px;
 	line-height: 1.6;
-}
-
-/* 일련번호 칩 (앱 명함 보기의 번호 칩) */
-.qc-serial {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	margin-top: auto;
-	padding-top: 22px;
-	font-size: 12px;
-}
-
-.qc-serial span {
-	color: var(--qc-muted);
-}
-
-.qc-serial code {
-	padding: 4px 12px;
-	border-radius: 999px;
-	background-color: color-mix(in srgb, var(--qc-cell) 70%, transparent);
-	box-shadow: inset 2px -2px 4px rgba(0, 0, 0, 0.1);
-	color: var(--qc-ink);
-	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 13px;
-	letter-spacing: 0.06em;
 }
 
 /* 뒷면: 기술 사양 */
@@ -821,26 +791,41 @@
 	transform: none;
 }
 
-/* ───────── 화면 모음: 옆으로 넘기는 띠 ───────── */
+/* ───────── 화면 모음: 고정된 채 세로 스크롤만큼 띠가 옆으로 넘어간다 ───────── */
 .qc-gallery {
+	/* 고정된 동안 내려갈 길이 = 화면 높이 + 띠가 넘치는 만큼 */
+	height: calc(var(--view, 100vh) + var(--overflow, 0px));
 	margin-top: 72px;
 }
 
+.qc-gallery-sticky {
+	display: flex;
+	position: sticky;
+	top: 0;
+	flex-direction: column;
+	justify-content: center;
+	height: var(--view, 100vh);
+}
+
+.qc-gallery-window {
+	margin: 0 -32px;
+	padding: 8px 32px 28px;
+	overflow: hidden;
+}
+
 .qc-gallery ul {
+	/* 스크립트가 고정 여부를 읽는다 */
+	--pin: 1;
 	display: flex;
 	gap: 22px;
-	margin: 0 -32px;
-	padding: 8px 32px 36px;
-	overflow-x: auto;
+	width: max-content;
 	list-style: none;
-	scroll-padding-inline: 32px;
-	scroll-snap-type: x mandatory;
-	scrollbar-width: none;
+	transform: translateX(var(--x, 0px));
+	will-change: transform;
 }
 
 .qc-gallery li {
 	flex: none;
-	scroll-snap-align: start;
 }
 
 .qc-gallery figure {
@@ -863,7 +848,7 @@
 .qc-gallery img {
 	display: block;
 	width: auto;
-	height: clamp(200px, 32cqi, 320px);
+	height: clamp(200px, min(34cqi, calc(var(--view, 100vh) * 0.5)), 360px);
 }
 
 .qc-gallery figcaption {
@@ -871,6 +856,16 @@
 	color: var(--qc-muted);
 	font-size: 13px;
 	font-weight: 700;
+}
+
+/* 얼마나 넘겼는지: 아래 가는 막대가 차오른다 */
+.qc-gallery-bar {
+	display: block;
+	height: 4px;
+	border-radius: 2px;
+	background:
+		linear-gradient(var(--qc-teal), var(--qc-teal)) 0 0 / calc(var(--p, 0) * 100%) 100% no-repeat,
+		color-mix(in srgb, var(--qc-teal) 18%, transparent);
 }
 
 /* ───────── 맡은 일 ───────── */
@@ -948,11 +943,6 @@
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.qc-front,
-	.qc-back {
-		--lay: rotate(0deg);
-	}
-
 	.qc-logo {
 		width: 64px;
 	}
@@ -969,14 +959,60 @@
 		top: 0;
 	}
 
-	.qc-gallery ul {
+	.qc-gallery {
+		height: auto;
+	}
+
+	.qc-gallery-sticky {
+		position: static;
+		height: auto;
+	}
+
+	.qc-gallery-window {
 		margin: 0 -20px;
 		padding-inline: 20px;
-		scroll-padding-inline: 20px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+	}
+
+	.qc-gallery ul {
+		--pin: 0;
+		transform: none;
+	}
+
+	.qc-gallery li {
+		scroll-snap-align: start;
+	}
+
+	.qc-gallery-bar {
+		display: none;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.qc-gallery {
+		height: auto;
+	}
+
+	.qc-gallery-sticky {
+		position: static;
+		height: auto;
+	}
+
+	.qc-gallery-window {
+		overflow-x: auto;
+	}
+
+	.qc-gallery ul {
+		--pin: 0;
+		transform: none;
+	}
+
+	.qc-gallery-bar {
+		display: none;
+	}
+
 	.qc-doc li {
 		opacity: 1;
 		scale: 1;
