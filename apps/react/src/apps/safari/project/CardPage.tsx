@@ -1,8 +1,41 @@
-// QRU (디지털 명함): 명함 앞뒤. 앞면(소개)과 뒷면(기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 화면) → 묻고 답하기(만든 방식) → 맡은 일과 다음 단계
-import React from 'react';
-import type { Project } from '@/shared/profile';
+// QRU (디지털 명함): 명함 앞뒤. 앞면(소개)과 뒷면(기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 화면) → 묻고 답하기(만든 방식, 스크롤하면 펼쳐진다) → 맡은 일과 다음 단계
+import React, { useEffect, useRef, useState } from 'react';
+import type { Project, ProjectPoint } from '@/shared/profile';
 import { Facts, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CardPage.css';
+
+/** 묻고 답하기 한 칸: 스크롤해서 화면 아래쪽 3/4 안으로 들어오면 펼쳐진다. 누르면 접고 펼 수도 있다 */
+const Answer: React.FC<{ point: ProjectPoint }> = ({ point }) => {
+	const ref = useRef<HTMLDivElement>(null);
+	// IntersectionObserver가 없으면 처음부터 펼친다
+	const [open, setOpen] = useState(() => typeof IntersectionObserver === 'undefined');
+
+	useEffect(() => {
+		const element = ref.current;
+		if (!element || typeof IntersectionObserver === 'undefined') return;
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (!entry.isIntersecting) return;
+				setOpen(true);
+				observer.disconnect();
+			},
+			{ rootMargin: '0px 0px -25% 0px' }
+		);
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, []);
+
+	return (
+		<div ref={ref} className="qc-answer" data-open={open}>
+			<button type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+				{point.title}
+			</button>
+			<div className="qc-answer-body">
+				<p>{point.body}</p>
+			</div>
+		</div>
+	);
+};
 
 const CardPage: React.FC<{ project: Project }> = ({ project }) => (
 	<div className="qc">
@@ -54,11 +87,8 @@ const CardPage: React.FC<{ project: Project }> = ({ project }) => (
 
 		<section className="qc-faq" aria-label="만든 방식">
 			<h2 className="qc-title">어떻게 만들었나요?</h2>
-			{project.build.map((point, i) => (
-				<details key={point.title} open={i === 0}>
-					<summary>{point.title}</summary>
-					<p>{point.body}</p>
-				</details>
+			{project.build.map((point) => (
+				<Answer key={point.title} point={point} />
 			))}
 		</section>
 

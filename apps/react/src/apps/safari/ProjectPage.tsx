@@ -1,5 +1,7 @@
 import React from 'react';
 import type { Project, ProjectLook } from '@/shared/profile';
+// 공통 값을 먼저 읽어야 페이지마다의 CSS가 그 위에 덮인다
+import '@/apps/safari/ProjectPage.css';
 import ProductPage from '@/apps/safari/project/ProductPage';
 import EditorialPage from '@/apps/safari/project/EditorialPage';
 import BoardPage from '@/apps/safari/project/BoardPage';
@@ -7,7 +9,6 @@ import CardPage from '@/apps/safari/project/CardPage';
 import GamePage from '@/apps/safari/project/GamePage';
 import TerminalPage from '@/apps/safari/project/TerminalPage';
 import CreativePage from '@/apps/safari/project/CreativePage';
-import '@/apps/safari/ProjectPage.css';
 
 export { Favicon } from '@/apps/safari/project/parts';
 

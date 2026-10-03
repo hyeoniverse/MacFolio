@@ -1,4 +1,4 @@
-// WTD (할 일 관리): 칸반 보드. 머리(소개와 숫자) → 할 일·진행 중·완료 세 열에 기능·만든 방식·맡은 일 카드 → 라벨(기술 사양)
+// WTD (할 일 관리): 칸반 보드. 머리(소개와 숫자) → 할 일·진행 중·완료 세 열(기능·만든 방식·맡은 일) → 쓰는 법 두 줄 → 날짜별 스프린트 → 폴더 구조 → 라벨(기술 사양)
 import React from 'react';
 import type { Project } from '@/shared/profile';
 import { Facts, Favicon, Links, Shot } from '@/apps/safari/project/parts';
@@ -65,6 +65,43 @@ const BoardPage: React.FC<{ project: Project }> = ({ project }) => (
 				))}
 			</Column>
 		</div>
+
+		{project.usage && (
+			<section className="kb-usage" aria-label="쓰는 법">
+				<h2 className="kb-title">쓰는 법</h2>
+				<div className="kb-lanes">
+					{project.usage.map((lane, i) => (
+						<div key={lane.title} className="kb-lane" data-tone={i === 0 ? 'todo' : 'done'}>
+							<h3>{lane.title}</h3>
+							<p>{lane.body}</p>
+						</div>
+					))}
+				</div>
+			</section>
+		)}
+
+		{project.timeline && (
+			<section className="kb-sprint" aria-label="진행 과정">
+				<h2 className="kb-title">
+					스프린트 <span>{project.period}</span>
+				</h2>
+				<ol>
+					{project.timeline.map((step, i) => (
+						<li key={step.date} style={{ '--i': i } as React.CSSProperties}>
+							<time>{step.date}</time>
+							<span>{step.label}</span>
+						</li>
+					))}
+				</ol>
+			</section>
+		)}
+
+		{project.structure && (
+			<section className="kb-tree" aria-label="폴더 구조">
+				<h2 className="kb-title">폴더 구조</h2>
+				<pre>{project.structure}</pre>
+			</section>
+		)}
 
 		<section className="kb-labels" aria-label="기술 사양">
 			<h2>기술 사양</h2>

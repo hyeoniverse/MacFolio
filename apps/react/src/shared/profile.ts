@@ -72,6 +72,10 @@ export interface Project {
 	timeline?: { date: string; label: string }[];
 	/** 앞으로 할 일 */
 	next?: string[];
+	/** 쓰는 법: 상황마다 (예: 가입 없이, 로그인하면) */
+	usage?: ProjectPoint[];
+	/** 폴더 구조 (저장소 README의 트리) */
+	structure?: string;
 	/** 기술 사양: 분류별 기술 */
 	specs: { label: string; value: string }[];
 	/** 기술 이름만 (터미널 등 짧게 보여줄 때) */
@@ -185,6 +189,7 @@ export const PROJECTS: Project[] = [
 		description: '할 일과 세부 할 일을 끌어서 정리하고, 매일 반복되는 일은 루틴으로 관리하는 할 일 관리 웹 앱',
 		context: '프로그래머스 데브코스 팀 프로젝트 (4인)',
 		role: '백엔드 연동, 드래그 앤 드롭',
+		period: '2024.10.05 – 2024.10.19',
 		facts: [
 			{ value: '4명', label: '팀 프로젝트' },
 			{ value: '2단계', label: '할 일과 세부 할 일' },
@@ -228,6 +233,37 @@ export const PROJECTS: Project[] = [
 			'react-beautiful-dnd로 Task·SubTask 순서 바꾸기와 드래그 경험 다듬기',
 			'README 작성',
 		],
+		timeline: [
+			{ date: '10.05', label: '기획과 첫 커밋' },
+			{ date: '10.10', label: '공통 컴포넌트, 할 일 화면' },
+			{ date: '10.14', label: '할 일 서랍과 카드' },
+			{ date: '10.15', label: '할 일·세부 할 일 끌어서 옮기기' },
+			{ date: '10.16', label: 'Google 로그인, 로컬 저장' },
+			{ date: '10.17', label: '할 일 API 연동, 비회원 할 일 옮기기' },
+			{ date: '10.18', label: '루틴, 만료된 로그인 처리, 정리' },
+			{ date: '10.19', label: '마무리와 배포' },
+		],
+		usage: [
+			{
+				title: '가입 없이',
+				body: '브라우저 로컬 스토리지에 저장합니다. 할 일과 세부 할 일을 만들고, 고치고, 끌어서 순서를 바꾸는 기본 기능을 바로 씁니다.',
+			},
+			{
+				title: '로그인하면',
+				body: 'Google로 로그인하면 서버에 저장하고, 비회원일 때 만든 할 일을 계정으로 옮깁니다. 매일 반복되는 일은 루틴으로 등록합니다.',
+			},
+		],
+		structure: [
+			'src/',
+			'├── api/api.js            백엔드 통신',
+			'├── components/',
+			'│   ├── Auth/LoginForm.jsx',
+			'│   ├── Common/           Button, InputField, Modal, Drawer',
+			'│   └── Task/             TaskCard, TaskDashboard, TaskDrawer',
+			'├── contexts/             TaskContext, RoutineContext',
+			'├── pages/TaskPage.jsx',
+			'└── App.jsx',
+		].join('\n'),
 		specs: [
 			{ label: '프론트엔드', value: 'React, JavaScript' },
 			{ label: '스타일', value: 'Tailwind CSS' },

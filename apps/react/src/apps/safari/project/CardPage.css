@@ -115,6 +115,11 @@
 	color: var(--qc-muted);
 }
 
+/* 다크 모드의 밝은 청록 단추에는 어두운 글씨 */
+:root[data-theme='dark'] .sp .qc-links .sp-pill {
+	color: #0b1514;
+}
+
 .qc-links {
 	display: flex;
 	flex-wrap: wrap;
@@ -239,45 +244,66 @@
 	width: 100%;
 }
 
-/* 묻고 답하기 */
+/* 묻고 답하기: 스크롤하면 하나씩 펼쳐진다 */
 .qc-faq {
 	margin-top: 48px;
 }
 
-.qc-faq details {
+.qc-answer {
 	border-bottom: 1px solid var(--qc-line);
 }
 
-.qc-faq summary {
+.qc-answer button {
 	display: flex;
 	justify-content: space-between;
+	width: 100%;
 	padding: 18px 0;
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
 	font-size: 17px;
 	font-weight: 700;
+	text-align: left;
 	cursor: pointer;
-	list-style: none;
 }
 
-.qc-faq summary::-webkit-details-marker {
-	display: none;
-}
-
-.qc-faq summary::after {
+.qc-answer button::after {
 	color: var(--sp-accent);
 	content: '+';
 	font-size: 22px;
 	line-height: 1;
+	transition: transform var(--duration) var(--ease-out);
 }
 
-.qc-faq details[open] summary::after {
-	content: '−';
+.qc-answer[data-open='true'] button::after {
+	transform: rotate(45deg);
 }
 
-.qc-faq p {
-	padding-bottom: 18px;
+/* 높이를 0fr → 1fr로 바꿔 내용 길이만큼 부드럽게 열린다 */
+.qc-answer-body {
+	display: grid;
+	grid-template-rows: 0fr;
+	opacity: 0;
+	transition:
+		grid-template-rows var(--duration-slow) var(--ease-out),
+		opacity var(--duration-slow) var(--ease-out);
+}
+
+.qc-answer[data-open='true'] .qc-answer-body {
+	grid-template-rows: 1fr;
+	opacity: 1;
+}
+
+.qc-answer-body p {
+	overflow: hidden;
 	color: var(--qc-muted);
 	font-size: 15px;
 	line-height: 1.65;
+}
+
+.qc-answer[data-open='true'] .qc-answer-body p {
+	padding-bottom: 18px;
 }
 
 /* 맡은 일과 다음 단계 */
