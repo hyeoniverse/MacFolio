@@ -1185,15 +1185,15 @@
 	height: 96px;
 	/* 밤의 풀밭: 남색 그늘을 덮고, 윗줄에만 달빛이 살짝 닿는다 */
 	background:
-		linear-gradient(rgb(170 190 255 / 0.18), transparent 14px),
-		linear-gradient(rgb(12 20 58 / 0.62), rgb(8 12 36 / 0.74)),
+		linear-gradient(rgb(200 215 255 / 0.22), transparent 16px),
+		linear-gradient(rgb(20 34 80 / 0.34), rgb(14 22 56 / 0.46)),
 		url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px;
-	box-shadow: 0 -24px 40px rgb(8 12 36 / 0.5);
+	box-shadow: 0 -20px 36px rgb(8 12 36 / 0.3);
 }
 
 /* 밤길을 걷는 주인공과 병아리도 어둡게, 달빛 쪽(위)으로 옅은 테 */
 .gm-parade .gm-walker {
-	filter: brightness(0.62) saturate(0.7) drop-shadow(0 -1px 0 rgb(190 205 255 / 0.35));
+	filter: brightness(0.85) saturate(0.85) drop-shadow(0 -1px 0 rgb(200 215 255 / 0.4));
 }
 
 /* 반딧불이: 풀밭 위에 작은 빛이 천천히 깜빡인다 */
@@ -1349,4 +1349,10 @@
 	.gm-stage {
 		width: 100%;
 	}
+}
+
+/* 끝까지 스크롤해 튕길 때 탭 화면의 흰 바탕이 드러나지 않게: 튕기지 않고, 위는 아침·아래는 밤 색을 깔아 둔다 */
+.safari-page:has(> .sp[data-look='game']) {
+	overscroll-behavior-y: none;
+	background: linear-gradient(#fdf0d6 50%, #121c2a 50%);
 }
