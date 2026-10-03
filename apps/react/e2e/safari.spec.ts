@@ -61,6 +61,54 @@ test.describe('Safari', () => {
 		);
 	});
 
+	test('프로젝트마다 페이지 짜임이 다르다: 신문 1면, 칸반 보드, 명함, 게임 화면, 차례와 장, 터미널', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		const panel = safari.getByRole('tabpanel');
+		const open = (name: RegExp) => safari.getByRole('tab', { name }).click();
+
+		// 신문: 머리기사 옆 단에 숫자와 진행 과정
+		await expect(panel.getByRole('region', { name: '머리기사' })).toBeVisible();
+		const lead = await panel.getByRole('region', { name: '머리기사' }).boundingBox();
+		const side = await panel.getByRole('region', { name: '진행 과정' }).boundingBox();
+		expect(side!.x).toBeGreaterThan(lead!.x + lead!.width / 2);
+
+		// 칸반: 기능·만든 방식·맡은 일이 한 줄에 나란한 세 열
+		await open(/WTD/);
+		const columns = await Promise.all(
+			['주요 기능', '만든 방식', '맡은 일'].map((name) => panel.getByRole('region', { name }).boundingBox())
+		);
+		expect(new Set(columns.map((box) => Math.round(box!.y))).size).toBe(1);
+		await expect(panel.getByRole('region', { name: '주요 기능' })).toContainText('할 일');
+
+		// 명함: 만든 방식은 펼쳐 보는 묻고 답하기
+		await open(/QRU/);
+		const faq = panel.getByRole('region', { name: '만든 방식' }).locator('details');
+		await expect(faq.first()).toHaveAttribute('open', '');
+		await faq.nth(1).locator('summary').click();
+		await expect(faq.nth(1)).toHaveAttribute('open', '');
+
+		// 게임: 조작법과 크레딧
+		await open(/SproutFarm/);
+		await expect(panel.getByRole('region', { name: '조작법' })).toContainText('Shift');
+		await expect(panel.getByRole('region', { name: '맡은 일' })).toContainText('CREDITS');
+
+		// 포트폴리오: 차례를 누르면 그 장으로 간다
+		await open(/HYEONIVERSE/);
+		await panel
+			.getByRole('navigation', { name: '차례' })
+			.getByRole('button', { name: /기술 사양/ })
+			.click();
+		await expect(panel.getByRole('region', { name: '기술 사양' })).toBeInViewport();
+
+		// 터미널: 명령과 결과
+		await open(/DevCourse/);
+		await expect(panel.getByRole('region', { name: '기술 사양' })).toContainText('cat stack.json');
+		await expect(panel.getByRole('region', { name: '커밋 컨벤션' })).toContainText('practice');
+	});
+
 	test('데모가 없는 프로젝트는 주소창에 저장소 주소를 보여준다', async ({ page }) => {
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
