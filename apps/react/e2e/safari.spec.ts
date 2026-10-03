@@ -129,6 +129,23 @@ test.describe('Safari', () => {
 		await open(/DevCourse/);
 		await expect(panel.getByRole('region', { name: '기술 사양' })).toContainText('cat stack.json');
 		await expect(panel.getByRole('region', { name: '커밋 컨벤션' })).toContainText('practice');
+		// 맨 아래 프롬프트에서 직접 명령을 친다: Tab으로 채우기, 없는 명령, clear
+		const shell = panel.getByRole('region', { name: '직접 쳐 보기' });
+		const prompt = shell.getByRole('textbox', { name: '명령 입력' });
+		await prompt.fill('who');
+		await prompt.press('Tab');
+		await expect(prompt).toHaveValue('whoami');
+		await prompt.press('Enter');
+		await expect(shell.locator('.tm-entry')).toHaveCount(1);
+		await expect(shell.locator('.tm-entry')).toContainText('커밋 컨벤션 설계');
+		await prompt.fill('nope');
+		await prompt.press('Enter');
+		await expect(shell).toContainText('command not found: nope');
+		await prompt.press('ArrowUp');
+		await expect(prompt).toHaveValue('nope');
+		await prompt.fill('clear');
+		await prompt.press('Enter');
+		await expect(shell.locator('.tm-entry')).toHaveCount(0);
 	});
 
 	test('데모가 없는 프로젝트는 주소창에 저장소 주소를 보여준다', async ({ page }) => {
