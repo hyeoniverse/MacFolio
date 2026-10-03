@@ -151,6 +151,17 @@ const Laptop: React.FC<{ children: React.ReactNode; className?: string }> = ({ c
 /** 첫 화면: 제목 아래 작게 보이던 노트북이 스크롤하면 화면을 채운다 */
 const Hero: React.FC<{ project: Project }> = ({ project }) => {
 	const ref = useScrollProgress<HTMLElement>((box, view) => (view.top - box.top) / (box.height - view.height));
+	const group = useRef<HTMLDivElement>(null);
+	// 노트북과 한 줄이 끝에 화면 높이 안에 다 들어오도록 줄일 비율 (창이 낮으면 아래 한 줄이 잘렸다)
+	useEffect(() => {
+		const hero = ref.current;
+		const node = group.current;
+		if (!hero || !node) return;
+		return onScrollFrame(hero, (scroller) => {
+			const fit = Math.min(0.9, (viewOf(scroller).height - 48) / Math.max(1, node.offsetHeight));
+			hero.style.setProperty('--fit', fit.toFixed(3));
+		});
+	}, [ref]);
 	return (
 		<section className="sp-hero pd-hero" ref={ref}>
 			<div className="pd-stage">
@@ -162,7 +173,7 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 					<Links project={project} />
 				</div>
 				{/* 노트북과 한 줄이 한 덩어리로 올라오며 커진다. 한 줄은 노트북이 자리를 잡을 때쯤 나타난다 */}
-				<div className="pd-hero-group">
+				<div className="pd-hero-group" ref={group}>
 					<Laptop className="pd-hero-device">
 						<img src={`${VIEWS_DIR}/memo-laptop.jpg`} alt={`${project.name} 화면`} />
 					</Laptop>
