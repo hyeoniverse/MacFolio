@@ -1,0 +1,351 @@
+/* MacFolio: 스크롤하면 커지는 노트북, 데스크톱·휴대폰 나란히, 요청이 지나는 길 */
+
+/* ─── 첫 화면: 멈춰 선 무대 위에서 노트북이 커진다 ─── */
+.sp-hero.pd-hero {
+	--p: 0;
+	--view: 640px;
+	position: relative;
+	height: calc(var(--view) * 2.2);
+	padding: 0;
+}
+
+.pd-stage {
+	position: sticky;
+	top: 0;
+	height: var(--view);
+	overflow: hidden;
+}
+
+.pd-copy {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 56px 32px 0;
+	opacity: clamp(0, 1 - var(--p) * 3, 1);
+	transform: translateY(calc(var(--p) * -120px));
+}
+
+/* 처음에는 제목 아래 작게, 끝에는 무대 가운데에 크게 */
+.pd-laptop.pd-hero-device {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: min(880px, 82%);
+	transform: translate(-50%, -50%) translateY(calc((1 - var(--p)) * var(--view) * 0.38 - var(--p) * 30px))
+		scale(calc(0.6 + var(--p) * 0.42));
+	transform-origin: 50% 50%;
+	will-change: transform;
+}
+
+.pd-caption {
+	position: absolute;
+	right: 0;
+	bottom: 28px;
+	left: 0;
+	color: var(--sp-muted);
+	font-size: clamp(19px, 3cqi, 28px);
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	opacity: clamp(0, (var(--p) - 0.75) * 5, 1);
+}
+
+/* ─── 노트북과 휴대폰 틀 ─── */
+.pd-laptop {
+	position: relative;
+}
+
+.pd-screen {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+	border: 10px solid #1d1d1f;
+	border-bottom-width: 14px;
+	border-radius: 18px 18px 6px 6px;
+	background-color: #000000;
+	box-shadow:
+		0 0 0 1px #3a3a3c,
+		0 24px 60px rgba(0, 0, 0, 0.22);
+}
+
+.pd-screen img,
+.pd-phone-screen img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 받침: 화면보다 조금 넓고 가운데가 살짝 파인 알루미늄 */
+.pd-base {
+	position: relative;
+	width: 112%;
+	height: 14px;
+	margin-left: -6%;
+	border-radius: 2px 2px 14px 14px;
+	background: linear-gradient(#e3e4e8, #b7b9bf 60%, #8e9096);
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.pd-base::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 16%;
+	height: 5px;
+	transform: translateX(-50%);
+	border-radius: 0 0 8px 8px;
+	background-color: #a3a5ab;
+}
+
+.pd-phone {
+	padding: 7px;
+	border-radius: 34px;
+	background-color: #1d1d1f;
+	box-shadow:
+		0 0 0 1px #3a3a3c,
+		0 24px 50px rgba(0, 0, 0, 0.22);
+}
+
+.pd-phone-screen {
+	position: relative;
+	aspect-ratio: 585 / 1266;
+	overflow: hidden;
+	border-radius: 27px;
+	background-color: #000000;
+}
+
+/* ─── 데스크톱·휴대폰 나란히 ─── */
+.pd-switch {
+	display: inline-flex;
+	gap: 4px;
+	margin-bottom: 36px;
+	padding: 4px;
+	border-radius: 980px;
+	background-color: var(--sp-alt);
+}
+
+.pd-switch button {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	padding: 8px 18px;
+	border: none;
+	border-radius: 980px;
+	background: none;
+	color: var(--sp-text);
+	font: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.pd-switch button span {
+	color: var(--sp-muted);
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.pd-switch button[aria-pressed='true'] {
+	background-color: var(--sp-bg);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.pd-pair {
+	display: grid;
+	grid-template-columns: minmax(0, 3.4fr) minmax(0, 1fr);
+	gap: clamp(20px, 4cqi, 40px);
+	align-items: end;
+}
+
+/* 겹쳐 둔 화면은 고른 것만 서서히 나타난다 */
+.pd-screen img,
+.pd-phone-screen img {
+	opacity: 0;
+	transition: opacity 0.45s var(--ease-out);
+}
+
+.pd-screen img.active,
+.pd-phone-screen img.active,
+.pd-hero-device .pd-screen img {
+	opacity: 1;
+}
+
+.pd-pair-note {
+	margin-top: 28px;
+	color: var(--sp-muted);
+	font-size: 15px;
+	text-align: center;
+}
+
+/* ─── 요청이 지나는 길 ─── */
+.pd-arch {
+	--p: 0;
+	margin-bottom: 64px;
+}
+
+.pd-arch-scroll {
+	overflow-x: auto;
+}
+
+.pd-arch svg {
+	display: block;
+	width: 100%;
+	min-width: 620px;
+	height: auto;
+	font-family: inherit;
+}
+
+/* 단계마다 0→1: 앞 단계가 끝나면 다음이 시작된다 */
+.pd-node,
+.pd-edge {
+	--s: clamp(0, var(--p) * var(--n) - var(--i), 1);
+}
+
+.pd-node rect {
+	fill: rgba(255, 255, 255, calc(0.04 + var(--s) * 0.06));
+	stroke: rgba(255, 255, 255, calc(0.18 + var(--s) * 0.5));
+	stroke-width: 1;
+}
+
+.pd-node text {
+	fill: var(--sp-dark-text);
+	font-size: 15px;
+	font-weight: 600;
+	text-anchor: middle;
+	opacity: calc(0.3 + var(--s) * 0.7);
+}
+
+/* 사람이 보는 화면과 데이터가 머무는 곳은 강조색 */
+.pd-node-browser rect,
+.pd-node-db rect {
+	stroke: color-mix(in srgb, #2997ff calc(var(--s) * 100%), rgba(255, 255, 255, 0.18));
+}
+
+.pd-edge > path {
+	fill: none;
+	stroke: #2997ff;
+	stroke-width: 2;
+	stroke-dasharray: 1;
+	stroke-dashoffset: calc(1 - var(--s));
+	stroke-linecap: round;
+}
+
+/* 화살촉은 선이 거의 다 그려졌을 때 */
+.pd-edge marker path {
+	fill: #2997ff;
+	stroke: none;
+	opacity: clamp(0, (var(--s) - 0.85) * 7, 1);
+}
+
+.pd-edge text {
+	fill: var(--sp-dark-muted);
+	font-size: 13px;
+	text-anchor: middle;
+	opacity: var(--s);
+}
+
+.pd-arch figcaption {
+	margin-top: 16px;
+	color: var(--sp-dark-muted);
+	font-size: 15px;
+	text-align: center;
+}
+
+/* ─── 좁은 창이나 움직임 줄이기: 멈춰 선 무대 없이 다 보인 상태로 ─── */
+@container (max-width: 600px) {
+	.sp-hero.pd-hero {
+		height: auto;
+		padding-bottom: 8px;
+	}
+
+	.pd-stage {
+		position: static;
+		height: auto;
+		overflow: visible;
+	}
+
+	.pd-copy {
+		padding: 40px 20px 0;
+		opacity: 1;
+		transform: none;
+	}
+
+	.pd-laptop.pd-hero-device {
+		position: relative;
+		top: auto;
+		left: auto;
+		width: auto;
+		margin: 36px 20px 0;
+		transform: none;
+	}
+
+	.pd-caption {
+		display: none;
+	}
+
+	.pd-switch button span {
+		display: none;
+	}
+
+	.pd-pair {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 0.42fr);
+	}
+
+	.pd-screen {
+		border-width: 6px 6px 9px;
+		border-radius: 12px 12px 4px 4px;
+	}
+
+	.pd-phone {
+		padding: 4px;
+		border-radius: 20px;
+	}
+
+	.pd-phone-screen {
+		border-radius: 16px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sp-hero.pd-hero {
+		height: auto;
+		padding-bottom: 8px;
+	}
+
+	.pd-stage {
+		position: static;
+		height: auto;
+		overflow: visible;
+	}
+
+	.pd-copy {
+		opacity: 1;
+		transform: none;
+	}
+
+	.pd-laptop.pd-hero-device {
+		position: relative;
+		top: auto;
+		left: auto;
+		width: min(880px, 90%);
+		margin: 48px auto 0;
+		transform: none;
+	}
+
+	.pd-caption {
+		display: none;
+	}
+
+	.pd-arch {
+		--p: 1 !important;
+	}
+
+	.pd-screen img,
+	.pd-phone-screen img {
+		transition: none;
+	}
+}
