@@ -26,10 +26,10 @@
 
 .gm {
 	position: relative;
-	/* 바탕은 스크롤에 따라 아침 → 노을 → 밤 (--gm-sky는 스크립트가 정한다) */
+	/* 바탕은 스크롤에 따라 아침 → 노을 → 밤 (--gm-sky는 스크립트가 정한다).
+	   스크롤마다 바로 칠한다. 바탕에만 늦게 따라오는 전환을 두면 같은 색을 쓰는 지도·크레딧 가장자리와 어긋나 경계가 진해진다 */
 	background-color: var(--gm-sky, var(--gm-bg));
 	text-align: left;
-	transition: background-color 0.4s linear;
 }
 
 /* 고양이 발 커서: 마우스로 움직일 때만 진짜 커서를 감추고 이것을 띄운다 */
@@ -624,11 +624,11 @@
 	background: linear-gradient(
 		var(--gm-sky, var(--gm-bg)),
 		transparent 32px,
-		transparent calc(100% - 96px),
+		transparent calc(100% - 220px),
+		color-mix(in srgb, var(--gm-sky, var(--gm-bg)) 45%, transparent) calc(100% - 110px),
 		var(--gm-sky, var(--gm-bg))
 	);
 	pointer-events: none;
-	transition: background 0.4s linear;
 }
 
 .gm-map-title {
@@ -848,7 +848,8 @@
 .gm-inventory {
 	max-width: 1040px;
 	margin: 0 auto;
-	padding: 72px 32px 0;
+	/* 위쪽 여백은 저녁에서 해 질 녘으로 하늘이 넘어가는 다리 */
+	padding: 180px 32px 0;
 }
 
 /* 나무 상자 같은 가방: 왼쪽은 칸, 오른쪽은 고른 아이템 설명 */
@@ -961,9 +962,18 @@
 .gm-credits {
 	position: relative;
 	overflow: hidden;
-	padding: 200px 32px 150px;
-	/* 위는 지금의 하늘에서 시작해 밤으로 짙어진다 */
-	background: linear-gradient(180deg, transparent 0, #0e1530 220px, #1a2340 55%, #1d2e1b 100%);
+	padding: 320px 32px 150px;
+	/* 위는 지금의 하늘에서 시작해 천천히 밤으로 짙어진다 */
+	background: linear-gradient(
+		180deg,
+		transparent 0,
+		rgb(14 21 48 / 0.2) 90px,
+		rgb(14 21 48 / 0.55) 190px,
+		rgb(14 21 48 / 0.85) 280px,
+		#0e1530 360px,
+		#1a2340 60%,
+		#121c2a 100%
+	);
 	color: #f6e8c8;
 	text-align: center;
 }
@@ -978,8 +988,8 @@
 	position: absolute;
 	inset: 0 0 40%;
 	/* 별은 하늘이 어두워진 다음부터 */
-	-webkit-mask-image: linear-gradient(transparent 120px, #000 260px);
-	mask-image: linear-gradient(transparent 120px, #000 260px);
+	-webkit-mask-image: linear-gradient(transparent 200px, #000 380px);
+	mask-image: linear-gradient(transparent 200px, #000 380px);
 	background-image:
 		radial-gradient(2px 2px at 20px 30px, #fff6d8 50%, transparent 51%),
 		radial-gradient(2px 2px at 90px 80px, #fff6d8 50%, transparent 51%),
@@ -1004,7 +1014,7 @@
 
 .gm-moon {
 	position: absolute;
-	top: 176px;
+	top: 260px;
 	right: 10%;
 	width: 48px;
 	height: 48px;
@@ -1173,8 +1183,50 @@
 	bottom: 0;
 	left: 0;
 	height: 96px;
-	background: url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px;
-	box-shadow: inset 0 10px 0 rgba(0, 0, 0, 0.18);
+	/* 밤의 풀밭: 남색 그늘을 덮고, 윗줄에만 달빛이 살짝 닿는다 */
+	background:
+		linear-gradient(rgb(170 190 255 / 0.18), transparent 14px),
+		linear-gradient(rgb(12 20 58 / 0.62), rgb(8 12 36 / 0.74)),
+		url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px;
+	box-shadow: 0 -24px 40px rgb(8 12 36 / 0.5);
+}
+
+/* 밤길을 걷는 주인공과 병아리도 어둡게, 달빛 쪽(위)으로 옅은 테 */
+.gm-parade .gm-walker {
+	filter: brightness(0.62) saturate(0.7) drop-shadow(0 -1px 0 rgb(190 205 255 / 0.35));
+}
+
+/* 반딧불이: 풀밭 위에 작은 빛이 천천히 깜빡인다 */
+.gm-parade::before,
+.gm-parade::after {
+	content: '';
+	position: absolute;
+	inset: -40px 0 30px;
+	background-image:
+		radial-gradient(3px 3px at 12% 40%, #fff3a8 40%, rgb(255 236 140 / 0.35) 60%, transparent 100%),
+		radial-gradient(3px 3px at 37% 18%, #fff3a8 40%, rgb(255 236 140 / 0.35) 60%, transparent 100%),
+		radial-gradient(3px 3px at 64% 52%, #fff3a8 40%, rgb(255 236 140 / 0.35) 60%, transparent 100%),
+		radial-gradient(3px 3px at 88% 26%, #fff3a8 40%, rgb(255 236 140 / 0.35) 60%, transparent 100%);
+	filter: drop-shadow(0 0 4px #ffe98a);
+	pointer-events: none;
+	animation: gm-firefly 3.2s ease-in-out infinite alternate;
+}
+
+.gm-parade::after {
+	background-position: 140px 22px;
+	animation-delay: -1.6s;
+}
+
+@keyframes gm-firefly {
+	from {
+		opacity: 0.2;
+		transform: translateY(4px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(-6px);
+	}
 }
 
 .gm-parade-hero {
@@ -1221,6 +1273,8 @@
 	.gm-runner,
 	.gm-paw,
 	.gm-sky::after,
+	.gm-parade::before,
+	.gm-parade::after,
 	.gm-emote,
 	.gm-hero[data-walking='true'] {
 		animation: none;
