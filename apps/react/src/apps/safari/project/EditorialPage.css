@@ -234,6 +234,135 @@
 	line-height: 1.6;
 }
 
+/* 오려 두기: 가위 단추를 누르면 기사 둘레에 점선이 생기고 살짝 들린다 */
+.np-articles li {
+	position: relative;
+	padding-bottom: 40px;
+	transition:
+		opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+		transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+		filter 0.7s ease-out,
+		outline-color 0.3s,
+		box-shadow 0.3s;
+	outline: 2px dashed transparent;
+	outline-offset: 6px;
+}
+
+.np-articles li[data-clipped][data-shown] {
+	outline-color: var(--sp-accent);
+	transform: rotate(-1.2deg) translateY(-4px);
+	box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+	background-color: var(--np-paper);
+}
+
+.np-clip {
+	position: absolute;
+	bottom: 6px;
+	left: 16px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	border: 1px dashed color-mix(in srgb, var(--np-ink) 40%, transparent);
+	border-radius: 999px;
+	background: none;
+	color: var(--np-muted);
+	font: inherit;
+	font-size: 12px;
+	cursor: pointer;
+	opacity: 0;
+	transition:
+		opacity 0.2s,
+		color 0.2s,
+		border-color 0.2s;
+}
+
+.np-articles li:first-child .np-clip {
+	left: 0;
+}
+
+.np-articles li:hover .np-clip,
+.np-clip:focus-visible,
+.np-clip[aria-pressed='true'] {
+	opacity: 1;
+}
+
+.np-clip:hover,
+.np-clip[aria-pressed='true'] {
+	border-color: var(--sp-accent);
+	color: var(--sp-accent);
+}
+
+.np-clip:hover i {
+	animation: np-snip 0.4s ease-in-out 2;
+}
+
+@keyframes np-snip {
+	50% {
+		transform: rotate(-25deg);
+	}
+}
+
+.np-scrap {
+	color: var(--sp-accent);
+	font-weight: 600;
+}
+
+/* 속보 띠: 제호 아래에서 기사 제목이 끝없이 흘러간다. 마우스를 올리면 멈춘다 */
+.np-ticker {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 10px;
+	overflow: hidden;
+	border-block: 1px solid var(--np-rule);
+	font-size: 13px;
+	white-space: nowrap;
+}
+
+.np-ticker strong {
+	flex: none;
+	padding: 6px 12px;
+	background-color: var(--sp-accent);
+	color: #ffffff;
+	font-family: inherit;
+	letter-spacing: 0.1em;
+}
+
+.np-ticker-track {
+	display: flex;
+	flex: none;
+	animation: np-ticker 32s linear infinite;
+}
+
+.np-ticker:hover .np-ticker-track {
+	animation-play-state: paused;
+}
+
+.np-ticker-track span {
+	padding-right: 28px;
+}
+
+.np-ticker-track i {
+	margin: 0 14px;
+	color: var(--sp-accent);
+	font-style: normal;
+	font-size: 9px;
+	vertical-align: middle;
+}
+
+@keyframes np-ticker {
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.np-ticker-track {
+		animation: none;
+	}
+}
+
 /* 해설: 두 단 본문, 첫 글자를 크게 */
 .np-column {
 	padding: 28px 0;

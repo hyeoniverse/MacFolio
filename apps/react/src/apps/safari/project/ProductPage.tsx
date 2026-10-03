@@ -5,11 +5,10 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import type { Project } from '@/shared/profile';
 import { Facts, Favicon, Links } from '@/apps/safari/project/parts';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
+import { prefersReducedMotion as reducedMotion, useReveal } from '@/apps/safari/project/reveal';
 import './ProductPage.css';
 
 const VIEWS_DIR = '/imgs/projects/macfolio/views';
-
-const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 /** 시뮬레이터에서 고를 앱 */
 const APPS = [
@@ -108,27 +107,6 @@ function useScrollProgress<T extends HTMLElement>(
 			node.style.setProperty('--view', `${view.height}px`);
 			node.style.setProperty('--p', clamp(measureRef.current(node.getBoundingClientRect(), view)).toFixed(4));
 		});
-	}, []);
-	return ref;
-}
-
-/**
- * 페이지 안의 [data-reveal] 요소가 화면(스크롤 상자)에 들어오면 data-shown을 붙이고, 벗어나면 뗀다.
- * 나타나고 사라지는 모양은 CSS가 정한다
- */
-function useReveal<T extends HTMLElement>() {
-	const ref = useRef<T>(null);
-	useEffect(() => {
-		const root = ref.current;
-		if (!root) return;
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) entry.target.toggleAttribute('data-shown', entry.isIntersecting);
-			},
-			{ root: scrollParent(root), rootMargin: '-6% 0px -8% 0px', threshold: 0.12 }
-		);
-		root.querySelectorAll('[data-reveal]').forEach((node) => observer.observe(node));
-		return () => observer.disconnect();
 	}, []);
 	return ref;
 }

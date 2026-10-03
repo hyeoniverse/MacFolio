@@ -444,3 +444,46 @@
 		gap: 4px;
 	}
 }
+
+/* ─── 화면에 들어오면 나타나고, 벗어나면 사라진다 (project/reveal.ts의 useReveal이 data-shown을 붙였다 뗀다) ─── */
+.sp [data-reveal] {
+	opacity: 0;
+	transform: var(--reveal-from, translateY(36px) scale(0.98));
+	filter: var(--reveal-filter, none);
+	transition:
+		opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+		transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+		filter 0.7s ease-out;
+	transition-delay: calc(var(--d, 0) * 90ms);
+}
+
+.sp [data-reveal][data-shown] {
+	opacity: 1;
+	transform: none;
+	filter: none;
+}
+
+/* 잉크가 번지듯 흐림이 걷힌다 (신문) */
+.sp [data-reveal='ink'] {
+	--reveal-from: translateY(10px);
+	--reveal-filter: blur(6px);
+}
+
+/* 위에서 떨어져 붙는다 (칸반 카드) */
+.sp [data-reveal='drop'] {
+	--reveal-from: translateY(-36px) rotate(-3deg);
+}
+
+/* 왼쪽에서 밀려 들어온다 */
+.sp [data-reveal='left'] {
+	--reveal-from: translateX(-40px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sp [data-reveal] {
+		opacity: 1;
+		transform: none;
+		filter: none;
+		transition: none;
+	}
+}

@@ -110,22 +110,7 @@
 	background-color: #a3a5ab;
 }
 
-/* ─── 화면에 들어오면 나타나고, 벗어나면 사라진다 ─── */
-.pd [data-reveal] {
-	opacity: 0;
-	transform: translateY(36px) scale(0.98);
-	transition:
-		opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
-		transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-	transition-delay: calc(var(--d, 0) * 90ms);
-}
-
-.pd [data-reveal][data-shown] {
-	opacity: 1;
-	transform: none;
-}
-
-/* 숫자 띠는 숫자가 하나씩 올라온다 */
+/* ─── 화면에 들어오면 나타나는 모양은 ProjectPage.css의 [data-reveal]. 숫자 띠는 숫자가 하나씩 올라온다 */
 .pd-band .sp-facts li {
 	opacity: 0;
 	transform: translateY(24px);
@@ -739,7 +724,6 @@
 		--w: 1;
 	}
 
-	.pd [data-reveal],
 	.pd-band .sp-facts li {
 		opacity: 1;
 		transform: none;

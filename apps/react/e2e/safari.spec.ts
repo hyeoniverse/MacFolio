@@ -302,3 +302,40 @@ test('게임 페이지: 스크롤하면 주인공이 개발 일지의 길을 따
 	await scrollTo(0.7);
 	await expect.poll(heroY).toBeGreaterThan(before + 200);
 });
+
+test('칸반(WTD): 카드를 다음 열로 옮기면 열의 카드 수가 바뀌고, 처음대로 되돌린다', async ({ page }) => {
+	await enterDesktop(page);
+	const safari = appWindow(page, 'safari');
+	await safari.getByRole('tab', { name: /WTD/ }).click();
+	const panel = safari.getByRole('tabpanel');
+	const todo = panel.getByRole('region', { name: '주요 기능' });
+	const doing = panel.getByRole('region', { name: '만든 방식' });
+	const count = (column: typeof todo) => column.locator('.kb-count').textContent();
+	const before = { todo: Number(await count(todo)), doing: Number(await count(doing)) };
+
+	const card = todo.locator('.kb-card').first();
+	const title = (await card.locator('h3').textContent())!;
+	await card.hover();
+	await card.getByRole('button', { name: `${title}: 진행 중(으)로 옮기기` }).click();
+	await expect(doing.locator('.kb-card h3', { hasText: title })).toBeVisible();
+	await expect(todo.locator('.kb-count')).toHaveText(String(before.todo - 1));
+	await expect(doing.locator('.kb-count')).toHaveText(String(before.doing + 1));
+
+	await panel.getByRole('button', { name: '처음대로' }).click();
+	await expect(todo.locator('.kb-card h3', { hasText: title })).toBeVisible();
+	await expect(panel.getByRole('button', { name: '처음대로' })).toHaveCount(0);
+});
+
+test('신문(NewPick): 기사를 오려 두면 제호 옆 스크랩 수가 늘고, 다시 누르면 준다', async ({ page }) => {
+	await enterDesktop(page);
+	const safari = appWindow(page, 'safari');
+	const panel = safari.getByRole('tabpanel');
+	const articles = panel.getByRole('region', { name: '주요 기능' });
+	const clip = articles.getByRole('button', { name: /오려 두기$/ }).first();
+	await clip.focus();
+	await clip.click();
+	await expect(clip).toHaveAttribute('aria-pressed', 'true');
+	await expect(panel.locator('.np-scrap')).toContainText('스크랩 1');
+	await clip.click();
+	await expect(panel.locator('.np-scrap')).toContainText('스크랩 0');
+});
