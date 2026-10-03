@@ -331,25 +331,19 @@ test('칸반(WTD): 카드를 다음 열로 옮기면 열의 카드 수가 바뀌
 	await expect(panel.getByRole('button', { name: '처음대로' })).toHaveCount(0);
 });
 
-test('신문(NewPick): 기사 꼭지를 펼치면 그 줄 아래에 자세한 설명과 실제 화면이 나오고, 다른 꼭지를 펼치면 바뀐다', async ({
+test('신문(NewPick): 주요 기능은 머리 사진 기사, 사진 기사, 단신으로 짠 지면이고 사진에는 실제 화면 설명이 붙는다', async ({
 	page,
 }) => {
 	await enterDesktop(page);
 	const safari = appWindow(page, 'safari');
 	const panel = safari.getByRole('tabpanel');
 	const articles = panel.getByRole('region', { name: '주요 기능' });
-	const more = articles.getByRole('button', { name: '기사 펼쳐 읽기' });
-	await more.first().click();
-	const detail = articles.locator('#np-article-detail');
-	await expect(detail).toContainText('자세히 · AI 뉴스 요약');
-	await expect(detail.getByRole('img', { name: 'AI 뉴스 요약 화면' })).toBeVisible();
-	// 첫 줄의 세 꼭지 다음, 둘째 줄 꼭지 앞에 놓인다
-	const top = async (locator: typeof detail) => (await locator.boundingBox())!.y;
-	expect(await top(detail)).toBeGreaterThan(await top(articles.getByRole('heading', { name: '매일 아침 메일로' })));
-	expect(await top(detail)).toBeLessThan(await top(articles.getByRole('heading', { name: '나에게 맞춘 추천' })));
-	// 펼친 꼭지의 단추는 "접기"가 되므로, 남은 첫 "기사 펼쳐 읽기"가 둘째 꼭지다
-	await articles.getByRole('button', { name: '기사 펼쳐 읽기' }).first().click();
-	await expect(detail).toContainText('자세히 · 카테고리별 뉴스');
-	await articles.getByRole('button', { name: '접기' }).click();
-	await expect(detail).toHaveCount(0);
+	// 펼치는 단추 없이 처음부터 다 보인다
+	await expect(articles.getByRole('button')).toHaveCount(0);
+	const lead = articles.locator('.np-story-lead');
+	await expect(lead.getByRole('heading', { name: 'AI 뉴스 요약' })).toBeVisible();
+	await expect(lead.getByRole('img', { name: 'AI 뉴스 요약 화면' })).toBeVisible();
+	await expect(lead).toContainText('▲ 실제 서비스 화면');
+	await expect(articles.locator('.np-stories article')).toHaveCount(3);
+	await expect(articles.getByRole('complementary', { name: '단신' })).toContainText('가입 전에 체험');
 });

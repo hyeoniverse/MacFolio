@@ -1,72 +1,68 @@
 // NewPick (뉴스레터): 신문 1면. 제호 → 속보 띠 → 머리기사와 옆 단(숫자, 진행 과정) → 기사 꼭지 → 두 단 해설 → 기획 기사(장마다) → 아래 칸(맡은 일, 기술 사양)
-// 기사는 화면에 들어오면 잉크가 번지듯 나타나고, 기사 꼭지를 펼치면 그 줄 아래에 자세한 설명과 실제 서비스 화면이 이어진다
-import React, { useRef, useState } from 'react';
+// 기사는 화면에 들어오면 잉크가 번지듯 나타난다. 주요 기능은 머리 사진 기사, 사진 기사, 단신으로 짠 지면
+import React from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { Facts, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/EditorialPage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
 
+/** 사진 기사의 사진과 그 아래 설명 */
+const Photo: React.FC<{ point: ProjectPoint }> = ({ point }) =>
+	point.image ? (
+		<figure className="np-photo">
+			<img src={point.image} alt={`${point.title} 화면`} loading="lazy" />
+			<figcaption>▲ 실제 서비스 화면 · {point.title}</figcaption>
+		</figure>
+	) : null;
+
 /**
- * 기사 꼭지: 신문처럼 단으로 나뉘어 있고, "기사 펼쳐 읽기"를 누르면 그 꼭지가 있는 줄 바로 아래에
- * 자세한 설명과 실제 서비스 화면이 한 단 너비로 펼쳐진다. 한 번에 한 꼭지만 펼친다
+ * 기사 꼭지: 신문 지면처럼 처음부터 다 펼쳐 둔다. 첫 꼭지는 머리 사진 기사(큰 제목, 본문, 사진),
+ * 사진이 있는 꼭지는 단을 나눈 사진 기사, 사진이 없는 꼭지는 단신 상자에 모은다. 사진에는 실제 서비스 화면이라는 설명을 단다
  */
 const Articles: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
-	const list = useRef<HTMLOListElement>(null);
-	const [open, setOpen] = useState<number | null>(null);
-	// 한 줄의 단 수: 펼친 기사를 그 줄 끝 다음에 끼우려고, 누를 때 지금 격자에서 센다
-	const [columns, setColumns] = useState(3);
-	const toggle = (i: number) => {
-		const grid = list.current && getComputedStyle(list.current).gridTemplateColumns;
-		setColumns(grid ? grid.split(' ').length : 3);
-		setOpen((now) => (now === i ? null : i));
-	};
-	const rowEnd = open === null ? -1 : Math.min(points.length - 1, Math.floor(open / columns) * columns + columns - 1);
-	const opened = open === null ? null : points[open];
+	const [lead, ...rest] = points;
+	const photos = rest.filter((point) => point.image);
+	const briefs = rest.filter((point) => !point.image);
 
 	return (
 		<section className="np-articles" aria-label="주요 기능">
 			<h2 className="np-section">주요 기능</h2>
-			<ol ref={list}>
-				{points.map((point, i) => (
-					<React.Fragment key={point.title}>
-						<li
-							data-reveal="ink"
-							data-row-start={i % 3 === 0 || undefined}
-							data-open={open === i || undefined}
-							style={{ '--d': i % 4 } as React.CSSProperties}
-						>
+			{lead && (
+				<article className="np-story-lead" data-reveal="ink">
+					<div>
+						<p className="np-kicker">머리 기사</p>
+						<h3>{lead.title}</h3>
+						<p className="np-story-dek">{lead.body}</p>
+						{lead.detail && <p className="np-story-body">{lead.detail}</p>}
+					</div>
+					<Photo point={lead} />
+				</article>
+			)}
+			{photos.length > 0 && (
+				<div className="np-stories">
+					{photos.map((point, i) => (
+						<article key={point.title} data-reveal="ink" style={{ '--d': i } as React.CSSProperties}>
+							<Photo point={point} />
 							<h3>{point.title}</h3>
-							<p>{point.body}</p>
-							{(point.detail || point.image) && (
-								<button
-									type="button"
-									className="np-more"
-									aria-expanded={open === i}
-									aria-controls="np-article-detail"
-									onClick={() => toggle(i)}
-								>
-									{open === i ? '접기' : '기사 펼쳐 읽기'}
-									<i className="fa-solid fa-chevron-down" aria-hidden="true" />
-								</button>
-							)}
-						</li>
-						{i === rowEnd && opened && (
-							<li className="np-detail" id="np-article-detail" key={`detail:${opened.title}`}>
-								<div className="np-detail-text">
-									<p className="np-kicker">자세히 · {opened.title}</p>
-									<p>{opened.detail ?? opened.body}</p>
-								</div>
-								{opened.image && (
-									<figure>
-										<img src={opened.image} alt={`${opened.title} 화면`} />
-										<figcaption>▲ 실제 서비스 화면</figcaption>
-									</figure>
-								)}
-							</li>
-						)}
-					</React.Fragment>
-				))}
-			</ol>
+							<p className="np-story-dek">{point.body}</p>
+							{point.detail && <p className="np-story-body">{point.detail}</p>}
+						</article>
+					))}
+				</div>
+			)}
+			{briefs.length > 0 && (
+				<aside className="np-briefs" aria-label="단신" data-reveal="ink">
+					<p className="np-briefs-title">단신</p>
+					{briefs.map((point) => (
+						<article key={point.title}>
+							<h3>{point.title}</h3>
+							<p>
+								{point.body} {point.detail}
+							</p>
+						</article>
+					))}
+				</aside>
+			)}
 		</section>
 	);
 };

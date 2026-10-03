@@ -758,9 +758,13 @@
 	border-radius: 14px;
 }
 
+/* 그림이 늦게 불러와져도 아래 장이 밀리지 않게 자리를 미리 잡는다 (차례를 눌러 내려가는 동안 목적지가 움직이지 않게) */
 .cr-figure img {
 	display: block;
 	width: 100%;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top;
 }
 
 .cr-figure figcaption {
