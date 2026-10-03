@@ -3,11 +3,11 @@
 	// Cloudflare 대시보드에 연결된 Worker 이름과 같아야 한다
 	"name": "macfolio",
 	"compatibility_date": "2026-09-27",
-	// 배포 전에 빌드를 실행한다 (대시보드의 빌드 명령 설정과 무관하게 dist를 만든다)
+	// 배포 전에 빌드를 실행한다. GitHub Actions(.github/workflows/ci.yml)의 wrangler deploy·versions upload가 이 명령으로 dist를 만든다
 	"build": {
 		"command": "npx turbo run build --filter=@macfolio/react",
 	},
-	// main 외 브랜치에서 `wrangler preview`로 미리보기 URL을 만들 때 필요하다 (비어 있어도 됨)
+	// PR 미리보기(`wrangler versions upload --preview-alias`)에 필요하다 (비어 있어도 됨)
 	"previews": {},
 	// Worker 스크립트 없이 Vite 빌드 결과(apps/react/dist)만 정적 파일로 서빙한다
 	"assets": {
