@@ -4,20 +4,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { Facts, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CardPage.css';
+import { scrollParent } from '@/apps/safari/project/scroll';
 
 /** 한 칸씩 펼치거나 접는 사이 간격 (ms). 빠르게 스크롤해도 한꺼번에가 아니라 차례로 */
 const STEP = 220;
 /** 칸의 머리가 화면 위에서 이 비율만큼 내려온 선을 지나면 펼친다 (읽는 눈높이쯤) */
 const LINE = 0.6;
-
-/** 가장 가까운 스크롤 상자 (없으면 창) */
-function scrollParent(node: HTMLElement): HTMLElement | null {
-	for (let el = node.parentElement; el; el = el.parentElement) {
-		const { overflowY } = getComputedStyle(el);
-		if (overflowY === 'auto' || overflowY === 'scroll') return el;
-	}
-	return null;
-}
 
 /**
  * 스크롤에 맞춰 위 칸부터 차례로 펼치고, 다시 올리면 아래 칸부터 차례로 접는다.

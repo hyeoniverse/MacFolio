@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PROFILE, type Project } from '@/shared/profile';
 import { Favicon, Links } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/GamePage.css';
+import { scrollParent } from '@/apps/safari/project/scroll';
 
 const SPRITES = '/imgs/projects/sproutfarm/sprites';
 
@@ -139,15 +140,6 @@ function scatter(count: number) {
 	}
 	// 아래에 있는 것이 앞에 오도록
 	return items.sort((a, b) => a.y - b.y);
-}
-
-/** 가장 가까운 스크롤 상자 (없으면 창) */
-function scrollParent(node: HTMLElement): HTMLElement | null {
-	for (let el = node.parentElement; el; el = el.parentElement) {
-		const { overflowY } = getComputedStyle(el);
-		if (overflowY === 'auto' || overflowY === 'scroll') return el;
-	}
-	return null;
 }
 
 const itemIcon = (label: string, i: number) => ITEM_ICONS[label] ?? FALLBACK_ICONS[i % FALLBACK_ICONS.length];
