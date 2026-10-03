@@ -123,11 +123,7 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 			<div className="sp-hero-main">
 				{look !== 'editorial' && (
 					<div className="sp-hero-art">
-						{project.art ? (
-							<img src={project.art} alt={`${project.name} 그림`} className="sp-app-icon" />
-						) : (
-							<Favicon project={project} className="sp-app-icon" />
-						)}
+						<Favicon project={project} className="sp-app-icon" />
 					</div>
 				)}
 				<div className="sp-hero-copy">
@@ -232,6 +228,11 @@ const Features: React.FC<{ project: Project }> = ({ project }) => {
 	return (
 		<Section label="주요 기능">
 			<Headline title={title} sub={sub} />
+			{project.art && (
+				<figure className="sp-art">
+					<img src={project.art} alt={`${project.name} 장면`} />
+				</figure>
+			)}
 			{list}
 		</Section>
 	);
