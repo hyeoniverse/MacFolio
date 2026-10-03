@@ -40,9 +40,9 @@ export interface ProjectPoint {
 }
 
 /**
- * 프로젝트 페이지 모양. 프로젝트 성격에 맞춰 첫 화면과 기능 소개, 섹션 순서가 다르다.
- * editorial 신문(뉴스레터), playful 알록달록 카드(할 일), minimal 단계(명함), game 게임 화면, terminal 터미널(학습 기록),
- * product Apple 제품 페이지 그대로(이 사이트), creative 어두운 첫 화면과 세리프 제목(포트폴리오)
+ * 프로젝트 페이지 모양. 모양마다 페이지의 짜임과 읽는 순서가 다르다 (apps/safari/project/).
+ * editorial 신문 1면(뉴스레터), playful 칸반 보드(할 일), minimal 명함 앞뒤와 단계(명함), game 타이틀 화면부터 크레딧까지(게임),
+ * terminal 명령과 결과가 이어지는 터미널(학습 기록), product Apple 제품 페이지(이 사이트), creative 붙어 있는 차례와 장(포트폴리오)
  */
 export type ProjectLook = 'editorial' | 'playful' | 'minimal' | 'game' | 'terminal' | 'product' | 'creative';
 

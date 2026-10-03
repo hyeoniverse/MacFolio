@@ -1,0 +1,347 @@
+/* NewPick: 신문 1면. 종이 색, 세리프, 굵은 괘선, 여러 단 */
+.sp[data-look='editorial'] {
+	--np-paper: #faf8f3;
+	--np-ink: #1d1d1f;
+	--np-muted: #57534e;
+	--np-rule: #1d1d1f;
+	--sp-accent: #3a1cf5;
+	background-color: var(--np-paper);
+	color: var(--np-ink);
+}
+
+:root[data-theme='dark'] .sp[data-look='editorial'] {
+	--np-paper: #121110;
+	--np-ink: #ece8df;
+	--np-muted: #a8a29a;
+	--np-rule: #ece8df;
+	--sp-accent: #9d8cff;
+}
+
+.np {
+	max-width: 980px;
+	margin: 0 auto;
+	padding: 24px 32px 0;
+	text-align: left;
+}
+
+.np :is(h1, h2, h3, .np-title, dd, .np-facts strong, .np-foot p) {
+	font-family: var(--sp-serif);
+}
+
+/* 제호 */
+.np-masthead {
+	text-align: center;
+}
+
+.np-topline {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--np-rule);
+	color: var(--np-muted);
+	font-size: 12px;
+}
+
+.np-logo {
+	display: block;
+	max-width: min(360px, 80%);
+	margin: 20px auto 16px;
+}
+
+:root[data-theme='dark'] .np-logo {
+	filter: invert(1) hue-rotate(180deg);
+}
+
+.np-title {
+	display: block;
+	margin: 16px 0;
+	font-size: clamp(36px, 7cqi, 64px);
+	font-weight: 800;
+	letter-spacing: -0.02em;
+}
+
+.np-rule {
+	display: flex;
+	justify-content: space-between;
+	padding: 6px 0;
+	border-block: 3px double var(--np-rule);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+/* 머리기사와 옆 단 */
+.np-front {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+	gap: 32px;
+	padding: 28px 0;
+	border-bottom: 1px solid var(--np-rule);
+}
+
+.np-kicker {
+	color: var(--sp-accent);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+}
+
+.np-lead h1 {
+	margin-top: 6px;
+	font-size: clamp(32px, 5.4cqi, 52px);
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+}
+
+.np-dek {
+	margin-top: 14px;
+	color: var(--np-muted);
+	font-size: 18px;
+	line-height: 1.55;
+}
+
+.np-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 24px;
+	margin-top: 20px;
+	font-size: 15px;
+}
+
+.np-links .sp-pill {
+	border-radius: 0;
+	background-color: var(--np-ink);
+	color: var(--np-paper);
+}
+
+.np-shot {
+	margin-top: 24px;
+	border: 1px solid var(--np-rule);
+}
+
+.np-shot img {
+	display: block;
+	width: 100%;
+	filter: grayscale(0.15);
+}
+
+.np-caption {
+	margin-top: 6px;
+	color: var(--np-muted);
+	font-size: 12px;
+}
+
+.np-side {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	padding-left: 24px;
+	border-left: 1px solid var(--np-rule);
+}
+
+.np-box h2 {
+	padding-bottom: 6px;
+	border-bottom: 2px solid var(--np-rule);
+	font-size: 17px;
+}
+
+.np-facts {
+	list-style: none;
+}
+
+.np-facts li {
+	display: flex;
+	flex-direction: column;
+	padding: 12px 0;
+	border-bottom: 1px solid color-mix(in srgb, var(--np-rule) 25%, transparent);
+}
+
+.np-facts strong {
+	color: var(--sp-accent);
+	font-size: 30px;
+	line-height: 1.15;
+}
+
+.np-facts span {
+	color: var(--np-muted);
+	font-size: 13px;
+}
+
+.np-timeline {
+	list-style: none;
+}
+
+.np-timeline li {
+	display: grid;
+	grid-template-columns: 52px minmax(0, 1fr);
+	gap: 10px;
+	padding: 8px 0;
+	border-bottom: 1px dotted color-mix(in srgb, var(--np-rule) 40%, transparent);
+	font-size: 14px;
+}
+
+.np-timeline time {
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+/* 섹션 제목: 괘선 위의 작은 머리 */
+.np-section {
+	margin-bottom: 14px;
+	padding-top: 8px;
+	border-top: 3px solid var(--np-rule);
+	font-size: 20px;
+	font-weight: 800;
+}
+
+/* 기사 네 꼭지: 세로 괘선으로 나뉜 단 */
+.np-articles {
+	padding: 28px 0;
+	border-bottom: 1px solid var(--np-rule);
+}
+
+.np-articles ol {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	list-style: none;
+}
+
+.np-articles li {
+	padding: 0 16px;
+	border-left: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
+}
+
+.np-articles li:first-child {
+	padding-left: 0;
+	border-left: none;
+}
+
+.np-articles h3 {
+	font-size: 19px;
+	line-height: 1.25;
+}
+
+.np-articles p {
+	margin-top: 8px;
+	color: var(--np-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+/* 해설: 두 단 본문, 첫 글자를 크게 */
+.np-column {
+	padding: 28px 0;
+	border-bottom: 1px solid var(--np-rule);
+}
+
+.np-body {
+	column-count: 2;
+	column-gap: 32px;
+	column-rule: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
+	font-size: 15px;
+	line-height: 1.75;
+}
+
+.np-body p {
+	margin-bottom: 12px;
+	break-inside: avoid;
+}
+
+.np-body p:first-child::first-letter {
+	float: left;
+	margin: 4px 8px 0 0;
+	color: var(--sp-accent);
+	font-family: var(--sp-serif);
+	font-size: 54px;
+	font-weight: 800;
+	line-height: 0.85;
+}
+
+/* 아래 칸: 맡은 일과 기술 사양 안내란 */
+.np-bottom {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+	gap: 32px;
+	padding: 28px 0;
+}
+
+.np-role {
+	font-weight: 700;
+}
+
+.np-byline ul {
+	margin-top: 8px;
+	padding-left: 1.2em;
+	color: var(--np-muted);
+	font-size: 14px;
+	line-height: 1.8;
+}
+
+.np-classified dl {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	border: 2px solid var(--np-rule);
+}
+
+.np-classified div {
+	padding: 10px 12px;
+	border-right: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
+	border-bottom: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
+}
+
+.np-classified dt {
+	color: var(--np-muted);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+}
+
+.np-classified dd {
+	font-size: 16px;
+}
+
+.np-foot {
+	padding: 36px 0 56px;
+	border-top: 3px double var(--np-rule);
+	text-align: center;
+}
+
+.np-foot p {
+	font-size: clamp(24px, 4cqi, 34px);
+	font-weight: 800;
+}
+
+.np-foot .np-links {
+	justify-content: center;
+}
+
+@container (max-width: 600px) {
+	.np {
+		padding: 16px 20px 0;
+	}
+
+	.np-front,
+	.np-bottom,
+	.np-classified dl {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.np-side {
+		padding-left: 0;
+		border-left: none;
+	}
+
+	.np-body {
+		column-count: 1;
+	}
+
+	.np-articles li {
+		padding: 12px 0;
+		border-left: none;
+		border-top: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
+	}
+}
