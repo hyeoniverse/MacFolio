@@ -147,7 +147,8 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 	const stages = project.build.length;
 	const decor = React.useMemo(() => scatter(stages), [stages]);
 
-	// 타이틀 화면의 앞뒤: 발끝(아래 끝)이 더 위에 있는 것이 뒤로 간다. 동물은 옆으로만 걸으니 발끝 높이가 그대로다
+	// 타이틀 화면의 앞뒤: 발끝이 더 위에 있는 것이 뒤로 간다. 발끝은 상자 아래 끝에서 그림 아래의 투명한 여백(data-foot)을 뺀 곳이다.
+	// 동물은 옆으로만 걸으니 발끝 높이가 그대로다
 	useEffect(() => {
 		const scene = title.current;
 		if (!scene) return;
@@ -155,7 +156,9 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 			const top = scene.getBoundingClientRect().top;
 			for (const item of scene.children) {
 				if (item instanceof HTMLElement)
-					item.style.zIndex = String(Math.round(item.getBoundingClientRect().bottom - top));
+					item.style.zIndex = String(
+						Math.round(item.getBoundingClientRect().bottom - top - Number(item.dataset.foot ?? 0))
+					);
 			}
 		};
 		sort();
@@ -308,7 +311,8 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 				<Sprite name="flower-blue" className="gm-flower b" />
 				<Sprite name="mushroom" className="gm-flower c" />
 				<Sprite name="bush" className="gm-flower d" />
-				<span className="gm-walker gm-cow" aria-hidden="true" />
+				{/* 소 그림은 발 아래로 원본 8px(화면 24px)이 비어 있다 */}
+				<span className="gm-walker gm-cow" aria-hidden="true" data-foot={24} />
 				<span className="gm-walker gm-chick a" aria-hidden="true" />
 				<span className="gm-walker gm-chick b" aria-hidden="true" />
 
