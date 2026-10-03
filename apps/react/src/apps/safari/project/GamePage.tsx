@@ -52,7 +52,7 @@ const SLOTS = 12;
 
 /**
  * 지도 풀밭에 흩어 둘 것들: 이름, 원래 픽셀 폭(세 배로 키운다), 뽑힐 몫.
- * 바위는 빼고 나무와 꽃을 많이 심는다
+ * 나무와 꽃을 가장 많이, 돌과 버섯(빨간 버섯)은 조금씩
  */
 const DECOR: [string, number, number][] = [
 	['tree', 24, 3],
@@ -66,7 +66,10 @@ const DECOR: [string, number, number][] = [
 	['flower-blue', 11, 3],
 	['sprout', 8, 2],
 	['mushrooms', 13, 1],
-	['mushrooms-purple', 28, 1],
+	['mushroom-red', 16, 1],
+	['rock', 16, 1],
+	['rock-big', 16, 1],
+	['pebble', 10, 1],
 	['stump', 10, 1],
 	['log', 16, 1],
 ];
