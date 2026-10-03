@@ -1,6 +1,22 @@
 import { test, expect, enterDesktop, dockItem, appWindow, zIndexOf } from './fixtures';
 
 test.describe('데스크톱', () => {
+	test('메뉴 막대의 시간이 바뀌어도 옆의 아이콘은 움직이지 않는다', async ({ page }) => {
+		// 가장 짧은 시간(1:11 AM)과 가장 긴 시간(12:00 PM). 시계는 1초마다 Date를 다시 읽는다
+		await page.clock.setFixedTime(new Date(2026, 9, 3, 1, 11));
+		await enterDesktop(page);
+		const bar = page.locator('.macos-statusbar');
+		const clock = bar.locator('.time-display-now');
+		const wifi = bar.locator('.fa-wifi');
+		await expect(clock).toHaveText('1:11 AM');
+		const before = (await wifi.boundingBox())!;
+
+		await page.clock.setFixedTime(new Date(2026, 9, 3, 12, 0));
+		await expect(clock).toHaveText('12:00 PM');
+		const after = (await wifi.boundingBox())!;
+		expect(after.x).toBe(before.x);
+	});
+
 	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
 		// 스크립트를 늦게 받게 해서 로딩 화면이 뜨기 전의 모습을 본다
 		let release = () => {};
