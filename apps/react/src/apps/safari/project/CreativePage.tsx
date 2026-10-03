@@ -1,5 +1,5 @@
 // HYEONIVERSE (포트폴리오): 왼쪽에 제목과 차례가 붙어 있고, 오른쪽만 장(01 기능, 02 만든 방식, 03 맡은 일, 04 기술 사양)을 넘기며 내려간다.
-// 왼쪽 아래에는 그 사이트의 마스코트 몽이가 금속 받침 위에 서서, 지금 읽는 장에 따라 표정을 바꾼다
+// 왼쪽 위에는 그 사이트의 마스코트 몽이가 서서, 지금 읽는 장에 따라 표정을 바꾼다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project } from '@/shared/profile';
 import { Favicon, Links, Shot } from '@/apps/safari/project/parts';
