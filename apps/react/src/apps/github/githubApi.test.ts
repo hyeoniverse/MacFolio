@@ -22,7 +22,7 @@ const SERVER = {
 	repos: [
 		{ ...snapshotRepo('QRU'), stars: 3 },
 		{ ...snapshotRepo('SproutFarm'), url: 'javascript:alert(1)' },
-		{ ...snapshotRepo('DevCourse-FullStack'), homepage: 'data:text/html,x' },
+		{ ...snapshotRepo('MacFolio'), homepage: 'data:text/html,x' },
 	],
 };
 
@@ -30,7 +30,7 @@ describe('toGithubData', () => {
 	it('서버 값을 받되, http(s)가 아닌 주소는 버린다 (링크로 그리므로)', () => {
 		const data = toGithubData(SERVER)!;
 		expect(data.profile).toMatchObject({ followers: 7, following: 9, publicRepos: 21, website: null });
-		expect(data.repos.map((repo) => repo.fullName)).toEqual(['hyeoniverse/QRU', 'hyeoniverse/DevCourse-FullStack']);
+		expect(data.repos.map((repo) => repo.fullName)).toEqual(['hyeoniverse/QRU', 'hyeoniverse/MacFolio']);
 		expect(data.repos[1].homepage).toBeNull();
 		expect(data.readme).toBe('# 안녕하세요');
 	});

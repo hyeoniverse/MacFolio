@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { PROJECTS } from '@/shared/profile';
-import { GITHUB_SNAPSHOT } from './githubProfile';
+import { GITHUB_SNAPSHOT, MAX_PINNED } from './githubProfile';
 
 describe('GITHUB_SNAPSHOT', () => {
-	it('고정 저장소는 프로젝트 목록에서 같은 순서로 만든다', () => {
-		expect(GITHUB_SNAPSHOT.repos.map((repo) => repo.url)).toEqual(PROJECTS.map((project) => project.url));
+	it('고정 저장소는 프로젝트 목록의 앞 6개를 같은 순서로 쓴다 (GitHub처럼 6개까지)', () => {
+		expect(PROJECTS.length).toBeGreaterThan(MAX_PINNED);
+		expect(GITHUB_SNAPSHOT.repos.map((repo) => repo.url)).toEqual(
+			PROJECTS.slice(0, MAX_PINNED).map((project) => project.url)
+		);
 		const macfolio = GITHUB_SNAPSHOT.repos.find((repo) => repo.name === 'MacFolio');
 		expect(macfolio).toMatchObject({
 			fullName: 'hyeoniverse/MacFolio',
