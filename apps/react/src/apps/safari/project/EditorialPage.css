@@ -200,30 +200,10 @@
 	font-weight: 800;
 }
 
-/* 기사 꼭지: 세로 괘선으로 나뉜 단 */
+/* 기사 꼭지: 머리 사진 기사, 단을 나눈 사진 기사, 단신 상자로 짠 지면 */
 .np-articles {
 	padding: 28px 0;
 	border-bottom: 1px solid var(--np-rule);
-}
-
-.np-articles ol {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	row-gap: 28px;
-	list-style: none;
-}
-
-.np-articles li {
-	display: flex;
-	flex-direction: column;
-	padding: 0 16px;
-	border-left: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
-}
-
-/* 줄마다 첫 기사는 괘선 없이 */
-.np-articles li[data-row-start] {
-	padding-left: 0;
-	border-left: none;
 }
 
 .np-articles h3 {
@@ -231,69 +211,46 @@
 	line-height: 1.25;
 }
 
-.np-articles p {
+.np-story-dek {
 	margin-top: 8px;
-	color: var(--np-muted);
+	color: var(--np-ink);
 	font-size: 14px;
+	font-weight: 600;
 	line-height: 1.6;
 }
 
-/* 기사 펼쳐 읽기: 꼭지 아래 작은 단추. 펼친 꼭지는 제목 아래 강조색 줄 */
-.np-more {
-	display: inline-flex;
-	align-self: flex-start;
-	align-items: center;
-	gap: 6px;
-	margin-top: auto;
-	padding: 10px 0 0;
-	border: none;
-	background: none;
-	color: var(--sp-accent);
-	font: inherit;
-	font-size: 13px;
-	font-weight: 700;
-	cursor: pointer;
+.np-story-body {
+	margin-top: 8px;
+	color: var(--np-muted);
+	font-size: 14px;
+	line-height: 1.7;
 }
 
-.np-more:hover {
-	text-decoration: underline;
-	text-underline-offset: 3px;
-}
-
-.np-more i {
-	font-size: 11px;
-	transition: transform 0.3s var(--ease-out);
-}
-
-.np-more[aria-expanded='true'] i {
-	transform: rotate(180deg);
-}
-
-.np-articles li[data-open] h3 {
-	text-decoration: underline 2px var(--sp-accent);
-	text-underline-offset: 4px;
-}
-
-/* 펼친 기사: 그 줄 바로 아래에 한 단 너비로, 왼쪽 글과 오른쪽 실제 화면. 위에서 아래로 펼쳐진다 */
-.np-articles .np-detail {
+/* 머리 사진 기사: 왼쪽 큰 제목과 본문(첫 글자 크게), 오른쪽 사진 */
+.np-story-lead {
 	display: grid;
-	grid-column: 1 / -1;
 	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-	gap: 24px;
-	padding: 20px 0;
-	border-block: 2px solid var(--np-rule);
-	border-left: none;
-	animation: np-unfold 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+	gap: 28px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
 }
 
-.np-detail-text p:last-child {
-	color: var(--np-ink);
-	font-family: var(--sp-serif);
+.np-story-lead h3 {
+	margin-top: 4px;
+	font-size: clamp(26px, 4cqi, 36px);
+	line-height: 1.15;
+}
+
+.np-story-lead .np-story-dek {
 	font-size: 16px;
-	line-height: 1.75;
 }
 
-.np-detail-text p:last-child::first-letter {
+.np-story-lead .np-story-body {
+	font-family: var(--sp-serif);
+	font-size: 15px;
+}
+
+.np-story-lead .np-story-body::first-letter {
 	float: left;
 	margin: 4px 8px 0 0;
 	color: var(--sp-accent);
@@ -302,42 +259,87 @@
 	line-height: 0.85;
 }
 
-.np-detail figure {
-	align-self: start;
+/* 사진 기사: 세로 괘선으로 나뉜 단마다 사진이 위에 */
+.np-stories {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	padding: 24px 0;
+	border-bottom: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
 }
 
-.np-detail img {
+.np-stories article {
+	padding: 0 16px;
+	border-left: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
+}
+
+.np-stories article:first-child {
+	padding-left: 0;
+	border-left: none;
+}
+
+.np-stories article:last-child {
+	padding-right: 0;
+}
+
+.np-stories .np-photo {
+	margin-bottom: 12px;
+}
+
+/* 사진: 신문 사진처럼 살짝 바랜 색, 아래 작은 설명 */
+.np-photo img {
 	display: block;
 	width: 100%;
-	max-height: 360px;
+	max-height: 240px;
 	object-fit: cover;
 	object-position: top;
 	border: 1px solid var(--np-rule);
-	filter: grayscale(0.15) contrast(1.02);
+	filter: grayscale(0.2) contrast(1.02);
+	transition: filter 0.4s;
 }
 
-.np-detail figcaption {
+.np-story-lead .np-photo img {
+	max-height: 340px;
+}
+
+.np-photo:hover img {
+	filter: none;
+}
+
+.np-photo figcaption {
 	margin-top: 6px;
 	color: var(--np-muted);
 	font-size: 12px;
 }
 
-@keyframes np-unfold {
-	from {
-		opacity: 0;
-		clip-path: inset(0 0 100% 0);
-	}
-
-	to {
-		opacity: 1;
-		clip-path: inset(0 0 0 0);
-	}
+/* 단신: 이중 괘선 상자에 짧은 기사 둘 */
+.np-briefs {
+	display: grid;
+	grid-template-columns: auto repeat(2, minmax(0, 1fr));
+	gap: 0 20px;
+	margin-top: 20px;
+	padding: 14px 16px;
+	border: 3px double var(--np-rule);
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.np-articles .np-detail {
-		animation: none;
-	}
+.np-briefs-title {
+	writing-mode: vertical-rl;
+	padding-right: 12px;
+	border-right: 1px solid var(--np-rule);
+	font-family: var(--sp-serif);
+	font-size: 15px;
+	font-weight: 800;
+	letter-spacing: 0.3em;
+}
+
+.np-briefs h3 {
+	font-size: 16px;
+}
+
+.np-briefs p {
+	margin-top: 6px;
+	color: var(--np-muted);
+	font-size: 13px;
+	line-height: 1.65;
 }
 
 /* 속보 띠: 제호 아래에서 기사 제목이 끝없이 흘러간다. 마우스를 올리면 멈춘다 */
@@ -561,19 +563,32 @@
 		column-count: 1;
 	}
 
-	.np-articles ol,
-	.np-feature ol {
+	.np-feature ol,
+	.np-story-lead,
+	.np-stories {
 		grid-template-columns: minmax(0, 1fr);
 		row-gap: 0;
 	}
 
-	.np-articles .np-detail {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.np-articles li {
-		padding: 12px 0;
+	.np-stories article {
+		padding: 16px 0;
 		border-left: none;
 		border-top: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
+	}
+
+	.np-stories article:first-child {
+		border-top: none;
+	}
+
+	.np-briefs {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 12px;
+	}
+
+	.np-briefs-title {
+		writing-mode: horizontal-tb;
+		padding: 0 0 6px;
+		border-right: none;
+		border-bottom: 1px solid var(--np-rule);
 	}
 }
