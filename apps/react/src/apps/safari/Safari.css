@@ -154,6 +154,8 @@
 
 .safari-tab.active {
 	flex-grow: 2.6;
+	/* 탭이 많아 몫이 모자라도 지금 탭의 제목은 다 보이게 */
+	min-width: max-content;
 	background-color: var(--safari-bg);
 	box-shadow:
 		0 0 0 0.5px var(--safari-border),

@@ -29,6 +29,7 @@ const ORDER: Record<ProjectLook, SectionName[]> = {
 	game: ['facts', 'controls', 'features', 'build', 'role', 'specs'],
 	terminal: ['facts', 'features', 'conventions', 'build', 'role', 'specs'],
 	product: ['facts', 'features', 'build', 'role', 'specs'],
+	creative: ['facts', 'features', 'build', 'role', 'specs'],
 };
 
 /** 주요 기능 섹션의 제목 (굵은 제목, 흐린 덧붙임) */
@@ -39,6 +40,7 @@ const FEATURE_COPY: Record<ProjectLook, [string, string]> = {
 	game: ['주요 기능.', '한 판의 흐름과 규칙.'],
 	terminal: ['주요 기능.', '무엇을 어떻게 남겼나.'],
 	product: ['주요 기능.', '지금 보고 있는 이 화면.'],
+	creative: ['주요 기능.', '보여 주는 화면과 쓰는 화면.'],
 };
 
 /** 섹션 제목: 굵은 제목 뒤에 흐린 글씨로 한 줄 덧붙인다 (Apple 홈페이지 방식) */

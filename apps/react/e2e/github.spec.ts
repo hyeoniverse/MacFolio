@@ -70,6 +70,7 @@ test.describe('GitHub 앱', () => {
 			'QRU',
 			'SproutFarm',
 			'MacFolio',
+			'web-portfolio-hyeoniverse',
 			'DevCourse-FullStack',
 		]);
 	});
@@ -79,7 +80,7 @@ test.describe('GitHub 앱', () => {
 		await enterDesktop(page);
 		await dockItem(page, 'github').click();
 		const cards = appWindow(page, 'github').getByRole('region', { name: 'Pinned' }).locator('.gh-repo');
-		await expect(cards).toHaveCount(6);
+		await expect(cards).toHaveCount(7);
 		const boxes = await cards.evaluateAll((elements) =>
 			elements.map((element) => {
 				const card = element.getBoundingClientRect();
