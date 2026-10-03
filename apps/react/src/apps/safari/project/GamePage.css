@@ -187,9 +187,10 @@
 	width: 96px;
 	height: 96px;
 	background-image: url('/imgs/projects/sproutfarm/sprites/cow-walk.png');
-	background-size: 192px 96px;
+	/* 시트의 달리는 두 칸 사이에 선 칸을 끼워 네 칸 걸음으로 (두 칸만 번갈면 깜빡이는 것처럼 보인다) */
+	background-size: 384px 96px;
 	animation:
-		gm-cow-frames 0.24s steps(2) infinite,
+		gm-cow-frames 0.56s steps(4) infinite,
 		gm-cross 20s linear infinite;
 }
 
@@ -221,7 +222,7 @@
 
 @keyframes gm-cow-frames {
 	to {
-		background-position-x: -192px;
+		background-position-x: -384px;
 	}
 }
 
