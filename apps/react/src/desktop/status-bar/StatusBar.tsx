@@ -70,7 +70,16 @@ const StatusBar: React.FC = () => {
 				<span className="menu-item">
 					<i className="fas fa-battery-three-quarters"></i>
 				</span>
-				<span className="menu-item time-display">{time}</span>
+				{/* 시간 칸은 가장 넓은 시간(12:00 AM·PM)만큼 늘 차지한다. 시간이 바뀌어도 왼쪽 아이콘이 움찔하지 않게 */}
+				<span className="menu-item time-display">
+					<span className="time-display-reserve" aria-hidden="true">
+						12:00 AM
+					</span>
+					<span className="time-display-reserve" aria-hidden="true">
+						12:00 PM
+					</span>
+					<span className="time-display-now">{time}</span>
+				</span>
 			</div>
 
 			{/* 볼륨 모달 */}
