@@ -716,18 +716,22 @@ export const PROJECTS: Project[] = [
 			{
 				title: '진짜 같은 데스크톱',
 				body: 'Dock에서 앱을 열고, 창을 끌어 옮기고 크기를 바꿉니다. 휴대폰으로 열면 iOS 홈 화면이 됩니다.',
+				image: projectImage('macfolio', 'views/desktop.jpg'),
 			},
 			{
 				title: '메모 앱이 곧 블로그',
 				body: '폴더와 갤러리 보기, 검색으로 글을 읽습니다. 관리자가 로그인하면 글이 그대로 편집기가 됩니다.',
+				image: projectImage('macfolio', 'views/memo-laptop.jpg'),
 			},
 			{
 				title: '가입 없이 남기는 글',
 				body: '메시지 앱의 방명록과 블로그 댓글은 계정 없이 쓰고, 내가 쓴 글만 지울 수 있습니다.',
+				image: projectImage('macfolio', 'views/messages-laptop.jpg'),
 			},
 			{
 				title: '주소가 있는 화면',
 				body: '/memo/글, /safari/프로젝트처럼 글과 프로젝트마다 주소가 있어, 링크로 들어오면 그 화면으로 열립니다.',
+				image: projectImage('macfolio', 'views/safari-laptop.jpg'),
 			},
 		],
 		build: [

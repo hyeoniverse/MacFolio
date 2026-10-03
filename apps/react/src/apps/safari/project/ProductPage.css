@@ -150,36 +150,189 @@
 	color: var(--sp-dark-muted);
 }
 
-/* ─── 주요 기능: 타일마다 단색 아이콘, 구석에 아주 옅게 깔린 같은 그림 ─── */
-.pd-tiles li {
-	position: relative;
+/* ─── 주요 기능: Apple의 '주요 특징 살펴보기'. 큰 카드가 옆으로 이어지고 다음 카드가 살짝 보인다 ─── */
+.pd-hl {
+	/* 카드 왼쪽 끝을 위 제목(본문 폭 880px)의 왼쪽 끝과 맞춘다 */
+	--gutter: max(32px, calc((100% - 880px) / 2 + 32px));
+	margin-top: 8px;
+}
+
+.pd-hl-track {
+	display: flex;
+	gap: 20px;
+	padding: 8px var(--gutter) 24px;
+	overflow-x: auto;
+	list-style: none;
+	scroll-padding-inline: var(--gutter);
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+}
+
+.pd-hl-track::-webkit-scrollbar {
+	display: none;
+}
+
+.pd-hl-card {
+	display: flex;
+	flex: 0 0 min(84%, 820px);
+	flex-direction: column;
 	overflow: hidden;
+	border-radius: 28px;
+	background-color: var(--sp-alt);
+	scroll-snap-align: start;
 }
 
-.pd-tiles li > :not(.pd-tile-mark) {
-	position: relative;
+.pd-hl-caption {
+	padding: 40px 44px 28px;
 }
 
-.pd-tile-icon {
-	display: block;
-	margin-bottom: 16px;
-	color: var(--sp-accent);
-	font-size: 26px;
+.pd-hl-caption h3 {
+	font-size: clamp(22px, 3cqi, 28px);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
 }
 
-.pd-tile-mark {
-	position: absolute;
-	right: -10px;
-	bottom: -24px;
-	color: var(--sp-text);
-	font-size: 130px;
-	opacity: 0.035;
+.pd-hl-caption p {
+	max-width: 36em;
+	margin-top: 10px;
+	color: var(--sp-muted);
+	font-size: 17px;
+	line-height: 1.5;
+}
+
+/* 화면: 카드 아래쪽에 걸쳐 놓이고, 지금 카드가 되면 살짝 떠오른다 */
+.pd-hl-media {
+	margin: auto 44px 0;
+	overflow: hidden;
+	border-radius: 14px 14px 0 0;
+	box-shadow: 0 -2px 30px rgba(0, 0, 0, 0.12);
+	transform: translateY(18px);
 	transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-	pointer-events: none;
 }
 
-.pd-tiles li:hover .pd-tile-mark {
-	transform: scale(1.06);
+.pd-hl-card[data-on='true'] .pd-hl-media {
+	transform: none;
+}
+
+.pd-hl-media img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9.5;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 아래 가운데: 점 묶음(알약 바탕)과 둥근 재생 단추 */
+.pd-hl-controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	margin-top: 8px;
+}
+
+.pd-hl-dots {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	height: 56px;
+	padding: 0 24px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--sp-text) 8%, transparent);
+	backdrop-filter: blur(12px);
+}
+
+.pd-hl-dots button {
+	position: relative;
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	overflow: hidden;
+	border: none;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--sp-text) 42%, transparent);
+	cursor: pointer;
+	transition:
+		width 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+		background-color 0.3s;
+}
+
+.pd-hl-dots button:hover {
+	background-color: color-mix(in srgb, var(--sp-text) 70%, transparent);
+}
+
+/* 지금 카드: 길어진 알약. 재생 중이면 머무는 시간만큼 안이 차오르고, 멈추면 꽉 찬다 */
+.pd-hl-dots button[aria-current] {
+	width: 48px;
+	background-color: color-mix(in srgb, var(--sp-text) 24%, transparent);
+}
+
+.pd-hl-dots span {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-color: var(--sp-text);
+	transform-origin: left;
+}
+
+.pd-hl[data-playing] .pd-hl-dots span {
+	animation: pd-hl-fill var(--ms) linear both;
+}
+
+@keyframes pd-hl-fill {
+	from {
+		transform: scaleX(0);
+	}
+}
+
+.pd-hl-play {
+	display: grid;
+	place-items: center;
+	width: 56px;
+	height: 56px;
+	border: none;
+	border-radius: 50%;
+	background-color: color-mix(in srgb, var(--sp-text) 8%, transparent);
+	backdrop-filter: blur(12px);
+	color: var(--sp-text);
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.pd-hl-play:hover {
+	background-color: color-mix(in srgb, var(--sp-text) 14%, transparent);
+}
+
+@container (max-width: 600px) {
+	.pd-hl {
+		--gutter: 20px;
+	}
+
+	.pd-hl-card {
+		flex-basis: 88%;
+		border-radius: 22px;
+	}
+
+	.pd-hl-caption {
+		padding: 28px 24px 20px;
+	}
+
+	.pd-hl-caption p {
+		font-size: 15px;
+	}
+
+	.pd-hl-media {
+		margin-inline: 20px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pd-hl-media {
+		transform: none;
+		transition: none;
+	}
 }
 
 /* ─── 어디서 열어도: 화면 크기 시뮬레이터. 구역을 지나는 동안 화면에 고정되고, 스크롤한 만큼 크기가 바뀐다 ─── */
