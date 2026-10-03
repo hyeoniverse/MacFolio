@@ -1,53 +1,68 @@
-/* QRU: 차분한 청록, 명함 두 장, 왼쪽 줄로 잇는 단계 */
+/* QRU: 그 앱처럼 민트→분홍 바탕, 청록 로고 칸, 두툼한(뉴모피즘) 그림자. 다크 모드는 앱의 어두운 청회색→자줏빛 바탕 */
 .sp[data-look='minimal'] {
-	--qc-bg: #f4f8f7;
-	--qc-card: #ffffff;
-	--qc-ink: #10302c;
-	--qc-muted: #5b6e6b;
-	--qc-line: #d5e3e0;
-	--sp-accent: #23897d;
-	background-color: var(--qc-bg);
+	--qc-surface: #fafafa;
+	--qc-ink: #213c48;
+	--qc-muted: #5c7a88;
+	--qc-line: rgba(33, 60, 72, 0.12);
+	--qc-cell: #e0f7fa;
+	/* 청록: 큰 장식(로고 칸, 선)은 앱의 주색, 글자와 단추는 대비가 넉넉한 짙은 청록 */
+	--qc-teal: #4db6ac;
+	--qc-deep: #00867d;
+	--qc-pink: #ffa0c0;
+	--qc-shadow: -12px 14px 22px rgba(33, 60, 72, 0.16), inset 4px -4px 8px rgba(33, 60, 72, 0.06);
+	--qc-shadow-up: -16px 22px 30px rgba(33, 60, 72, 0.22), inset 4px -4px 8px rgba(33, 60, 72, 0.06);
+	--sp-accent: #00867d;
+	background: linear-gradient(135deg, #a8edea, #fed6e3);
 	color: var(--qc-ink);
 }
 
 :root[data-theme='dark'] .sp[data-look='minimal'] {
-	--qc-bg: #0b1514;
-	--qc-card: #12211f;
-	--qc-ink: #e6f2f0;
-	--qc-muted: #93aaa6;
-	--qc-line: #24403c;
-	--sp-accent: #5fd3c7;
+	--qc-surface: #2b2b2b;
+	--qc-ink: #e8e8e8;
+	--qc-muted: #9aa5aa;
+	--qc-line: rgba(255, 255, 255, 0.1);
+	--qc-cell: #3a5663;
+	--qc-pink: #cf6679;
+	--qc-shadow: -12px 14px 22px rgba(0, 0, 0, 0.35), inset 4px -4px 8px rgba(0, 0, 0, 0.2);
+	--qc-shadow-up: -16px 22px 30px rgba(0, 0, 0, 0.45), inset 4px -4px 8px rgba(0, 0, 0, 0.2);
+	--sp-accent: #4db6ac;
+	background: linear-gradient(135deg, #3a5663, #65474c);
+}
+
+/* 끝까지 당겨도 바탕색이 이어지게 */
+.safari-page:has(> .sp[data-look='minimal']) {
+	background: linear-gradient(#a8edea 50%, #fed6e3 50%);
+}
+
+:root[data-theme='dark'] .safari-page:has(> .sp[data-look='minimal']) {
+	background: linear-gradient(#3a5663 50%, #65474c 50%);
 }
 
 .qc {
-	max-width: 960px;
+	max-width: 980px;
 	margin: 0 auto;
-	padding: 48px 32px 0;
+	padding: 56px 32px 0;
 	text-align: left;
 }
 
-/* 명함 앞뒤 */
+/* ───────── 명함 앞뒤 ───────── */
 .qc-cards {
 	display: grid;
-	perspective: 1100px;
-	grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-	gap: 24px;
+	perspective: 1200px;
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+	gap: 32px;
 	align-items: stretch;
 }
 
-.qc-card {
-	display: flex;
-	flex-direction: column;
-	padding: 28px;
-	border: 1px solid var(--qc-line);
-	border-radius: 20px;
-	background-color: var(--qc-card);
-	box-shadow: 0 24px 50px rgba(16, 48, 44, 0.12);
-}
-
-/* 명함은 살짝 비스듬히 놓여 있다가, 마우스를 올리면 그쪽으로 기운다 (--rx·--ry는 스크립트가 정한다) */
+/* 앱 첫 화면의 로고 카드처럼 비스듬히 누워 있다가, 마우스를 올리면 펴지며 그쪽으로 기운다 (--rx·--ry는 스크립트가 정한다) */
 .qc-card {
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: 30px;
+	border-radius: clamp(18px, 3cqi, 28px);
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
 	transform: var(--lay) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
 	transform-style: preserve-3d;
 	transition:
@@ -55,91 +70,208 @@
 		box-shadow 0.3s;
 }
 
+.qc-front {
+	--lay: rotateX(12deg) rotateY(-12deg);
+}
+
+.qc-back {
+	--lay: rotateX(12deg) rotateY(10deg) translateY(14px);
+}
+
 .qc-card[data-tilt] {
+	--lay: rotate(0deg);
+	box-shadow: var(--qc-shadow-up);
 	transition:
-		transform 0.08s linear,
+		transform 0.12s linear,
 		box-shadow 0.3s;
-	box-shadow: 0 34px 60px rgba(16, 48, 44, 0.2);
 }
 
 /* 빛: 마우스가 있는 곳이 밝다 */
 .qc-card::after {
-	content: '';
 	position: absolute;
 	inset: 0;
 	border-radius: inherit;
-	background: radial-gradient(circle at var(--gx, 50%) var(--gy, 0%), rgba(255, 255, 255, 0.45), transparent 55%);
-	opacity: 0;
-	transition: opacity 0.3s;
-	pointer-events: none;
+	background: radial-gradient(circle at var(--gx, 50%) var(--gy, 0%), rgba(255, 255, 255, 0.55), transparent 55%);
+	content: '';
 	mix-blend-mode: soft-light;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s;
 }
 
 .qc-card[data-tilt]::after {
 	opacity: 1;
 }
 
-.qc-front {
-	--lay: rotate(-1.2deg);
+/* 앱 로고: 3×3 칸. 처음에 한 칸씩 튀어 오르며 놓이고, 카드에 마우스를 올리면 채운 칸이 물결처럼 들린다 */
+.qc-brand {
+	display: flex;
+	align-items: center;
+	gap: 18px;
 }
 
-.qc-back {
-	--lay: rotate(1.2deg) translateY(12px);
+.qc-logo {
+	display: grid;
+	flex: none;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6%;
+	width: 84px;
+	aspect-ratio: 1;
 }
 
-.qc-icon {
-	width: 56px;
-	height: 56px;
-	border-radius: 14px;
-	object-fit: contain;
+.qc-logo i {
+	border-radius: 30%;
+	background-color: var(--qc-cell);
+	box-shadow:
+		0 4px 10px rgba(0, 0, 0, 0.18),
+		inset 3px -3px 6px rgba(0, 0, 0, 0.22);
+	animation: qc-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	animation-delay: calc(var(--i) * 70ms + 150ms);
+	transition: translate 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.qc-logo i[data-filled] {
+	background-color: var(--qc-teal);
+	box-shadow:
+		0 4px 10px rgba(0, 0, 0, 0.35),
+		inset 3px -3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.qc-card:hover .qc-logo i[data-filled] {
+	translate: 0 -4px;
+	transition-delay: calc(var(--i) * 45ms);
+}
+
+@keyframes qc-pop {
+	from {
+		opacity: 0;
+		scale: 0.2;
+	}
+
+	to {
+		opacity: 1;
+		scale: 1;
+	}
+}
+
+.qc-word {
+	display: flex;
+	flex-direction: column;
+	line-height: 1;
+}
+
+.qc-word strong {
+	color: var(--qc-teal);
+	font-size: clamp(40px, 6cqi, 58px);
+	font-weight: 900;
+	letter-spacing: 0.02em;
+	text-shadow: -2px 3px 4px rgba(0, 0, 0, 0.22);
+}
+
+.qc-word span {
+	margin-top: 6px;
+	color: var(--qc-muted);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
 }
 
 .qc-name {
-	margin-top: 16px;
+	margin-top: 22px;
 	color: var(--sp-accent);
+	font-size: 14px;
 	font-weight: 700;
 }
 
 .qc-front h1 {
 	margin-top: 4px;
-	font-size: clamp(28px, 4.4cqi, 42px);
+	font-size: clamp(26px, 4cqi, 38px);
 	font-weight: 800;
 	letter-spacing: -0.02em;
-	line-height: 1.15;
+	line-height: 1.18;
 }
 
 .qc-lead {
-	margin-top: 12px;
+	margin-top: 10px;
 	color: var(--qc-muted);
 	font-size: 15px;
 	line-height: 1.6;
 }
 
+/* 일련번호 칩과 셔플 단추 (앱 명함 보기의 번호 칩, 셔플 화면의 둥근 단추) */
 .qc-serial {
+	display: flex;
+	align-items: center;
+	gap: 10px;
 	margin-top: auto;
-	padding-top: 20px;
-	color: var(--qc-muted);
-	font-family: var(--sp-mono);
+	padding-top: 22px;
 	font-size: 12px;
-	letter-spacing: 0.08em;
 }
 
-.qc-back h2 {
-	padding-bottom: 10px;
-	border-bottom: 1px solid var(--qc-line);
-	color: var(--sp-accent);
-	font-family: var(--sp-mono);
+.qc-serial span {
+	color: var(--qc-muted);
+}
+
+.qc-serial code {
+	padding: 4px 12px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--qc-cell) 70%, transparent);
+	box-shadow: inset 2px -2px 4px rgba(0, 0, 0, 0.1);
+	color: var(--qc-ink);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 	font-size: 13px;
-	letter-spacing: 0.12em;
+	letter-spacing: 0.06em;
+	transition: color 0.2s;
+}
+
+.qc-serial code[data-rolling] {
+	color: var(--sp-accent);
+}
+
+.qc-serial button {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--qc-deep);
+	box-shadow:
+		-3px 4px 8px rgba(0, 0, 0, 0.3),
+		inset 2px -2px 4px rgba(0, 0, 0, 0.25);
+	color: #ffffff;
+	cursor: pointer;
+	transition:
+		rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+		scale 0.2s;
+}
+
+.qc-serial button:hover {
+	rotate: 180deg;
+}
+
+.qc-serial button:active {
+	scale: 0.9;
+}
+
+/* 뒷면: 기술 사양 */
+.qc-back h2 {
+	padding-bottom: 12px;
+	border-bottom: 2px solid var(--qc-teal);
+	color: var(--sp-accent);
+	font-size: 14px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
 }
 
 .qc-back div {
 	display: grid;
-	grid-template-columns: 96px minmax(0, 1fr);
+	grid-template-columns: 92px minmax(0, 1fr);
 	gap: 10px;
-	padding: 9px 0;
+	padding: 10px 0;
 	border-bottom: 1px dashed var(--qc-line);
 	font-size: 13px;
+	line-height: 1.5;
 }
 
 .qc-back div:last-child {
@@ -147,32 +279,55 @@
 }
 
 .qc-back dt {
-	color: var(--qc-muted);
+	color: var(--sp-accent);
+	font-weight: 700;
 }
 
-/* 다크 모드의 밝은 청록 단추에는 어두운 글씨 */
-:root[data-theme='dark'] .sp .qc-links .sp-pill {
-	color: #0b1514;
-}
-
+/* 앱의 알약 단추: 짙은 청록에 두툼한 그림자 */
 .qc-links {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 12px 24px;
-	margin-top: 36px;
+	margin-top: 44px;
 }
 
-/* 숫자 한 줄 */
+.sp .qc-links .sp-pill {
+	background-color: var(--qc-deep);
+	box-shadow:
+		-4px 6px 12px rgba(0, 0, 0, 0.22),
+		inset 2px -3px 6px rgba(0, 0, 0, 0.2);
+	color: #ffffff;
+	transition:
+		translate 0.2s,
+		box-shadow 0.2s;
+}
+
+.sp .qc-links .sp-pill:hover {
+	translate: 0 -2px;
+	box-shadow:
+		-6px 10px 16px rgba(0, 0, 0, 0.26),
+		inset 2px -3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* ───────── 숫자 한 줄 ───────── */
 .qc-facts {
-	margin-top: 40px;
-	padding: 20px 0;
-	border-block: 1px solid var(--qc-line);
+	margin-top: 48px;
+	padding: 22px 26px;
+	border-radius: 22px;
+	background-color: color-mix(in srgb, var(--qc-surface) 82%, transparent);
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-facts > p {
+	color: var(--qc-muted);
+	font-size: 13px;
 }
 
 .qc-facts ul {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-top: 10px;
 	list-style: none;
 }
 
@@ -190,11 +345,11 @@
 
 .qc-facts strong {
 	color: var(--sp-accent);
-	font-size: 28px;
-	font-weight: 800;
+	font-size: 30px;
+	font-weight: 900;
 }
 
-.qc-facts span {
+.qc-facts li > span {
 	color: var(--qc-muted);
 	font-size: 13px;
 }
@@ -206,14 +361,14 @@
 	letter-spacing: -0.02em;
 }
 
-/* 단계: 왼쪽 줄과 번호, 오른쪽에 붙어 따라오는 화면 */
+/* ───────── 명함이 오가는 순서: 왼쪽 단계, 오른쪽에 따라오는 앱 창 ───────── */
 .qc-journey {
-	margin-top: 64px;
+	margin-top: 72px;
 }
 
 .qc-journey-body {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
 	gap: 40px;
 	align-items: start;
 }
@@ -224,16 +379,17 @@
 
 .qc-steps li {
 	position: relative;
-	padding: 0 0 28px 56px;
+	padding: 0 0 30px 58px;
 }
 
 .qc-steps li:not(:last-child)::before {
 	position: absolute;
-	top: 40px;
+	top: 42px;
 	bottom: 0;
-	left: 19px;
-	width: 2px;
-	background-color: var(--qc-line);
+	left: 20px;
+	width: 3px;
+	border-radius: 2px;
+	background-color: var(--qc-teal);
 	content: '';
 	transform: scaleY(0);
 	transform-origin: top;
@@ -245,48 +401,46 @@
 	transform: none;
 }
 
+/* 번호는 로고 칸 모양: 아직이면 옅은 칸, 닿으면 청록 칸이 튀어 오른다 */
 .qc-step {
 	display: grid;
 	position: absolute;
 	top: 0;
 	left: 0;
 	place-items: center;
-	width: 40px;
-	height: 40px;
-	border: 2px solid var(--sp-accent);
-	border-radius: 50%;
-	background-color: var(--qc-bg);
-	color: var(--sp-accent);
-	font-weight: 700;
-}
-
-.qc-steps h3 {
-	padding-top: 8px;
-	font-size: 18px;
-	font-weight: 700;
-}
-
-.qc-step,
-.qc-steps h3 {
-	transition:
-		color 320ms ease-out,
-		background-color 320ms ease-out;
-}
-
-/* 아직 닿지 않은 단계는 번호와 제목만 흐리게 */
-.qc-steps li[data-open='false'] .qc-step {
-	border-color: var(--qc-line);
+	width: 42px;
+	height: 42px;
+	border-radius: 30%;
+	background-color: var(--qc-cell);
+	box-shadow:
+		0 4px 10px rgba(0, 0, 0, 0.15),
+		inset 3px -3px 6px rgba(0, 0, 0, 0.18);
 	color: var(--qc-muted);
+	font-weight: 800;
+	transition:
+		background-color 320ms ease-out,
+		color 320ms ease-out,
+		scale 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.qc-steps li[data-open='true'] .qc-step {
+	background-color: var(--qc-teal);
+	box-shadow:
+		0 4px 10px rgba(0, 0, 0, 0.3),
+		inset 3px -3px 6px rgba(0, 0, 0, 0.28);
+	color: #ffffff;
+	scale: 1.08;
+}
+
+.qc-steps h3 {
+	padding-top: 9px;
+	font-size: 18px;
+	font-weight: 800;
+	transition: color 320ms ease-out;
 }
 
 .qc-steps li[data-open='false'] h3 {
 	color: var(--qc-muted);
-}
-
-/* 펼쳐진 단계의 번호는 채운다 */
-.qc-steps li[data-open='true'] .qc-step {
-	background-color: var(--sp-accent);
-	color: #ffffff;
 }
 
 .qc-step-body {
@@ -311,13 +465,96 @@
 	line-height: 1.6;
 }
 
+/* 앱 창: 단계가 바뀌면 화면이 겹쳐 바뀌고, 아래 이름표가 튀어 오른다 */
+.qc-screen {
+	position: sticky;
+	top: 24px;
+	overflow: hidden;
+	border-radius: 18px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow-up);
+}
+
+.qc-screen-bar {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 10px 14px;
+	border-bottom: 1px solid var(--qc-line);
+}
+
+.qc-screen-bar i {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: var(--qc-line);
+}
+
+.qc-screen-bar span {
+	flex: 1;
+	margin-left: 8px;
+	padding: 3px 12px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--qc-cell) 60%, transparent);
+	color: var(--qc-muted);
+	font-size: 11px;
+	text-align: center;
+}
+
+.qc-screen-view {
+	position: relative;
+	aspect-ratio: 16 / 11;
+	overflow: hidden;
+}
+
+.qc-screen-view img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+	opacity: 0;
+	scale: 1.04;
+	transition:
+		opacity 0.5s ease-out,
+		scale 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.qc-screen-view img[data-on='true'] {
+	opacity: 1;
+	scale: 1;
+}
+
+.qc-screen figcaption {
+	position: absolute;
+	bottom: 14px;
+	left: 50%;
+	padding: 6px 16px;
+	border-radius: 999px;
+	background-color: var(--qc-deep);
+	box-shadow: -3px 5px 10px rgba(0, 0, 0, 0.25);
+	color: #ffffff;
+	font-size: 13px;
+	font-weight: 700;
+	white-space: nowrap;
+	translate: -50% 0;
+	animation: qc-tag 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes qc-tag {
+	from {
+		opacity: 0;
+		transform: translateY(12px) scale(0.9);
+	}
+}
+
 .qc-shot {
 	position: sticky;
 	top: 24px;
 	overflow: hidden;
-	border: 1px solid var(--qc-line);
 	border-radius: 16px;
-	box-shadow: 0 20px 40px rgba(16, 48, 44, 0.14);
+	box-shadow: var(--qc-shadow);
 }
 
 .qc-shot img {
@@ -325,13 +562,193 @@
 	width: 100%;
 }
 
-/* 묻고 답하기: 스크롤하면 하나씩 펼쳐진다 */
+/* ───────── 더 들려줄 장 ───────── */
+.qc-chapter {
+	margin-top: 72px;
+}
+
+.qc-chapter-lead {
+	max-width: 44em;
+	margin: -8px 0 22px;
+	color: var(--qc-muted);
+	font-size: 16px;
+	line-height: 1.7;
+}
+
+.qc-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px;
+	margin-bottom: 24px;
+	list-style: none;
+}
+
+.qc-chips li {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	padding: 10px 18px;
+	border-radius: 999px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-chips strong {
+	color: var(--sp-accent);
+	font-size: 20px;
+	font-weight: 900;
+}
+
+.qc-chips li > span {
+	color: var(--qc-muted);
+	font-size: 13px;
+}
+
+/* 번호 넣어 보기: 앱 입력란처럼 안으로 파인 칸 */
+.qc-try {
+	margin-bottom: 28px;
+	padding: 20px 22px;
+	border-radius: 22px;
+	background-color: color-mix(in srgb, var(--qc-surface) 82%, transparent);
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-try label {
+	color: var(--qc-muted);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.qc-try-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	margin-top: 10px;
+}
+
+.qc-try input {
+	flex: 1 1 200px;
+	min-width: 0;
+	padding: 10px 16px;
+	border: 2px solid transparent;
+	border-radius: 999px;
+	outline: none;
+	background-color: color-mix(in srgb, var(--qc-cell) 55%, var(--qc-surface));
+	box-shadow: inset 3px -3px 6px rgba(0, 0, 0, 0.12);
+	color: var(--qc-ink);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 15px;
+	transition: border-color 0.2s;
+}
+
+.qc-try input:focus-visible {
+	border-color: var(--qc-teal);
+}
+
+.qc-try i {
+	color: var(--qc-teal);
+}
+
+.qc-try output {
+	padding: 8px 16px;
+	border-radius: 999px;
+	color: var(--qc-muted);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 15px;
+	transition:
+		background-color 0.25s,
+		color 0.25s;
+}
+
+.qc-try output[data-found='true'] {
+	background-color: var(--qc-deep);
+	color: #ffffff;
+	animation: qc-tag 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.qc-try output[data-found='false'] {
+	font-family: inherit;
+	font-size: 13px;
+}
+
+.qc-tiles {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+}
+
+.qc-tiles article {
+	padding: 22px;
+	border-radius: 20px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+}
+
+/* 나타날 때(투명도·transform)는 차례로 늦게, 마우스에 들릴 때(translate·그림자)는 바로 */
+.sp .qc-tiles article[data-reveal] {
+	transition:
+		opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+		transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+		translate 0.25s ease-out,
+		box-shadow 0.25s;
+	transition-delay: calc(var(--d, 0) * 90ms), calc(var(--d, 0) * 90ms), 0s, 0s;
+}
+
+.qc-tiles article:hover {
+	translate: 0 -4px;
+	box-shadow: var(--qc-shadow-up);
+}
+
+.qc-tiles h3 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 17px;
+	font-weight: 800;
+}
+
+/* 제목 앞의 작은 로고 칸 */
+.qc-tiles h3::before {
+	flex: none;
+	width: 12px;
+	height: 12px;
+	border-radius: 30%;
+	background-color: var(--qc-teal);
+	box-shadow: inset 1px -1px 2px rgba(0, 0, 0, 0.3);
+	content: '';
+}
+
+.qc-tiles p {
+	margin-top: 8px;
+	color: var(--qc-muted);
+	font-size: 14px;
+	line-height: 1.65;
+}
+
+.qc-figure {
+	margin-top: 28px;
+	overflow: hidden;
+	border-radius: 20px;
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-figure img {
+	display: block;
+	width: 100%;
+}
+
+/* ───────── 묻고 답하기: 스크롤하면 하나씩 펼쳐진다 ───────── */
 .qc-faq {
-	margin-top: 48px;
+	margin-top: 72px;
 }
 
 .qc-answer {
-	border-bottom: 1px solid var(--qc-line);
+	margin-bottom: 12px;
+	padding: 0 22px;
+	border-radius: 18px;
+	background-color: color-mix(in srgb, var(--qc-surface) 86%, transparent);
+	box-shadow: var(--qc-shadow);
 }
 
 .qc-answer button {
@@ -344,15 +761,15 @@
 	color: inherit;
 	font: inherit;
 	font-size: 17px;
-	font-weight: 700;
+	font-weight: 800;
 	text-align: left;
 	cursor: pointer;
 }
 
 .qc-answer button::after {
-	color: var(--sp-accent);
+	color: var(--qc-teal);
 	content: '+';
-	font-size: 22px;
+	font-size: 24px;
 	line-height: 1;
 	transition: transform var(--duration) var(--ease-out);
 }
@@ -392,27 +809,71 @@
 	transform: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.qc-answer-body,
-	.qc-answer-body p,
-	.qc-step-body,
-	.qc-steps li::before {
-		transition: none;
-	}
+/* ───────── 화면 모음: 옆으로 넘기는 띠 ───────── */
+.qc-gallery {
+	margin-top: 72px;
 }
 
-/* 맡은 일과 다음 단계 */
+.qc-gallery ul {
+	display: flex;
+	gap: 22px;
+	margin: 0 -32px;
+	padding: 8px 32px 36px;
+	overflow-x: auto;
+	list-style: none;
+	scroll-padding-inline: 32px;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+}
+
+.qc-gallery li {
+	flex: none;
+	scroll-snap-align: start;
+}
+
+.qc-gallery figure {
+	overflow: hidden;
+	border-radius: 18px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+	transition:
+		translate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+		rotate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+		box-shadow 0.3s;
+}
+
+.qc-gallery li:hover figure {
+	translate: 0 -6px;
+	rotate: -1deg;
+	box-shadow: var(--qc-shadow-up);
+}
+
+.qc-gallery img {
+	display: block;
+	width: auto;
+	height: clamp(200px, 32cqi, 320px);
+}
+
+.qc-gallery figcaption {
+	padding: 10px 16px;
+	color: var(--qc-muted);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+/* ───────── 맡은 일과 다음 단계 ───────── */
 .qc-lists {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 32px;
-	margin-top: 56px;
+	gap: 28px;
+	margin-top: 40px;
 }
 
 .qc-lists section {
-	padding: 24px;
-	border-radius: 18px;
-	background-color: var(--qc-card);
+	padding: 26px;
+	border-radius: 22px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
 }
 
 .qc-role {
@@ -437,21 +898,28 @@
 
 .qc-lists i {
 	margin-top: 3px;
-	color: var(--sp-accent);
+	color: var(--qc-teal);
 }
 
 .qc-lists .next i {
-	color: var(--qc-muted);
+	color: var(--qc-pink);
 }
 
 .qc-foot {
-	margin-top: 64px;
-	padding: 40px 0 56px;
-	border-top: 1px solid var(--qc-line);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 72px;
+	padding: 40px 0 64px;
 	text-align: center;
 }
 
+.qc-logo.small {
+	width: 52px;
+}
+
 .qc-foot p {
+	margin-top: 18px;
 	font-size: clamp(22px, 3.6cqi, 30px);
 	font-weight: 800;
 }
@@ -469,13 +937,18 @@
 	.qc-cards,
 	.qc-journey-body,
 	.qc-lists,
+	.qc-tiles,
 	.qc-facts ul {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.qc-front,
 	.qc-back {
-		transform: none;
+		--lay: rotate(0deg);
+	}
+
+	.qc-logo {
+		width: 64px;
 	}
 
 	.qc-facts li {
@@ -483,8 +956,17 @@
 		border-left: none;
 	}
 
+	/* 좁으면 따라오지 않고 단계 아래에 놓인다 (이름표는 창 안에 남도록 relative) */
+	.qc-screen,
 	.qc-shot {
-		position: static;
+		position: relative;
+		top: 0;
+	}
+
+	.qc-gallery ul {
+		margin: 0 -20px;
+		padding-inline: 20px;
+		scroll-padding-inline: 20px;
 	}
 }
 
@@ -497,5 +979,20 @@
 
 	.qc-card::after {
 		display: none;
+	}
+
+	.qc-logo i,
+	.qc-screen figcaption,
+	.qc-try output[data-found='true'] {
+		animation: none;
+	}
+
+	.qc-answer-body,
+	.qc-answer-body p,
+	.qc-step-body,
+	.qc-steps li::before,
+	.qc-screen-view img,
+	.sp .qc-tiles article[data-reveal] {
+		transition: none;
 	}
 }
