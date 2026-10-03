@@ -345,6 +345,8 @@
 .gh-pinned ul {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
+	/* 모든 카드를 가장 높은 카드에 맞춘다 (줄마다 높이가 달라지지 않게) */
+	grid-auto-rows: 1fr;
 	gap: 16px;
 	list-style: none;
 }
@@ -392,9 +394,19 @@
 }
 
 .gh-repo-description {
-	flex: 1;
+	/* 긴 설명은 세 줄까지 (카드 높이가 설명 하나 때문에 모두 커지지 않게) */
+	display: -webkit-box;
+	overflow: hidden;
 	color: var(--gh-muted);
 	font-size: 12px;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+}
+
+/* 언어·별·데모 줄은 설명이 짧거나 없어도 카드 아래에 */
+.gh-repo-meta {
+	margin-top: auto;
 }
 
 .gh-repo-meta {
