@@ -108,6 +108,10 @@ test.describe('Safari', () => {
 		await expect(panel.getByRole('region', { name: '한눈에 보기' })).toBeInViewport();
 		await expect(panel.getByRole('region', { name: '조작법' })).toContainText('Shift');
 		await expect(panel.getByRole('region', { name: '맡은 일' })).toContainText('CREDITS');
+		// 크레딧에 에셋 출처와 링크
+		await expect(
+			panel.getByRole('region', { name: '맡은 일' }).getByRole('link', { name: 'Sprout Lands Asset Pack' })
+		).toHaveAttribute('href', 'https://cupnooble.itch.io/sprout-lands-asset-pack');
 		// 인벤토리: 칸을 누르면 그 아이템(기술 사양) 설명이 보인다
 		const inventory = panel.getByRole('region', { name: '기술 사양' });
 		await inventory.getByRole('button', { name: '배포' }).click();

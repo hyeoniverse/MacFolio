@@ -540,11 +540,26 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 					))}
 				</ul>
 				{project.credits && (
-					<ul className="gm-asset-credits">
-						{project.credits.map((item) => (
-							<li key={item}>{item}</li>
+					<dl className="gm-asset-credits">
+						{project.credits.map((credit) => (
+							<div key={credit.name}>
+								<dt>{credit.role}</dt>
+								<dd>
+									<p className="gm-asset-name">
+										{credit.href ? (
+											<a href={credit.href} target="_blank" rel="noreferrer">
+												{credit.name}
+											</a>
+										) : (
+											credit.name
+										)}{' '}
+										<span>by {credit.by}</span>
+									</p>
+									{credit.note && <p className="gm-asset-note">{credit.note}</p>}
+								</dd>
+							</div>
 						))}
-					</ul>
+					</dl>
 				)}
 				<EmoteFace emote={['loving', 2]} className="gm-bow" />
 				<p className="gm-end">{project.tagline}</p>

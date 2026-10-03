@@ -80,8 +80,8 @@ export interface Project {
 	structure?: string;
 	/** 화면 모음 (차례대로 넘겨 본다) */
 	gallery?: { src: string; caption: string }[];
-	/** 빌려 쓴 에셋·글꼴 출처 */
-	credits?: string[];
+	/** 빌려 쓴 에셋·글꼴 출처: 맡은 부분, 이름, 만든 사람, 주소, 한 줄 설명 */
+	credits?: { role: string; name: string; by: string; href?: string; note?: string }[];
 	/** 기술 사양: 분류별 기술 */
 	specs: { label: string; value: string }[];
 	/** 기술 이름만 (터미널 등 짧게 보여줄 때) */
@@ -435,7 +435,22 @@ export const PROJECTS: Project[] = [
 		demo: 'https://sprout-farm-beta.vercel.app',
 		icon: projectImage('sproutfarm', 'icon.png'),
 		art: projectImage('sproutfarm', 'scene.png'),
-		credits: ['그래픽 — Sprout Lands Asset Pack (Cup Nooble)', '한글 픽셀 글꼴 — Galmuri11 (quiple, SIL OFL)'],
+		credits: [
+			{
+				role: 'ART',
+				name: 'Sprout Lands Asset Pack',
+				by: 'Cup Nooble',
+				href: 'https://cupnooble.itch.io/sprout-lands-asset-pack',
+				note: '풀밭과 흙길, 집과 나무, 소·병아리·주인공, 아이템, 대화창, 표정, 고양이 발 커서까지 게임과 이 페이지의 픽셀 그림은 모두 이 팩에서 가져왔습니다.',
+			},
+			{
+				role: 'FONT',
+				name: 'Galmuri11',
+				by: 'quiple',
+				href: 'https://github.com/quiple/galmuri',
+				note: '게임 안의 한글 픽셀 글꼴 (SIL Open Font License)',
+			},
+		],
 		gallery: [
 			{ src: projectImage('sproutfarm', 'shots/intro.jpg'), caption: '시작 — 동물들이 달아났다' },
 			{ src: projectImage('sproutfarm', 'shots/farm.jpg'), caption: '오전 9시, 농장에서' },
