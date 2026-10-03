@@ -185,6 +185,7 @@ chmod 600 .env api.env
 | `FRONTEND_URL`                          |        | 로그인 후 돌아갈 주소 (기본: `CORS_ORIGINS`의 첫 주소)                                        |
 | `ADMIN_GITHUB_ID`                       |        | 관리자 GitHub 숫자 ID (기본 68999618)                                                         |
 | `UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY` |        | 편집기의 사진 찾기. 없으면 그 서비스만 꺼진다                                                 |
+| `GITHUB_TOKEN`                          |        | GitHub 앱의 프로필·저장소를 받을 토큰. 없으면 시간당 60번 제한이라 30분마다 새로 받는다       |
 
 `NODE_ENV=production`은 Dockerfile에 들어 있다. 그래서 쿠키에 `Secure`가 붙고, http로는 로그인이 되지 않는다. 전체 목록은 `apps/api/.env.example`에 있다.
 
