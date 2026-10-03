@@ -28,7 +28,7 @@ const SIZES = [
 		id: 'monitor',
 		name: '모니터',
 		px: 1920,
-		share: 0.86,
+		share: 0.92,
 		ratio: 1080 / 1920,
 		note: '넓은 화면에서는 창을 여러 개 띄워 두고 Dock에서 앱을 엽니다. 창은 끌어서 옮기고 모서리를 잡아 크기를 바꿉니다.',
 	},
@@ -36,7 +36,7 @@ const SIZES = [
 		id: 'laptop',
 		name: '노트북',
 		px: 1440,
-		share: 0.72,
+		share: 0.8,
 		ratio: 900 / 1440,
 		note: '같은 데스크톱입니다. 메뉴 막대와 Dock은 그대로이고, 창은 화면 안에 들어오는 크기로 열립니다.',
 	},
@@ -44,7 +44,7 @@ const SIZES = [
 		id: 'tablet',
 		name: '태블릿',
 		px: 820,
-		share: 0.34,
+		share: 0.42,
 		ratio: 1180 / 820,
 		note: '768px부터는 아직 데스크톱입니다. 화면이 좁으면 창이 화면 폭에 맞춰 열려 잘리지 않습니다.',
 	},
@@ -52,37 +52,40 @@ const SIZES = [
 		id: 'phone',
 		name: '휴대폰',
 		px: 390,
-		share: 0.21,
+		share: 0.27,
 		ratio: 844 / 390,
 		note: '767px 이하에서는 iOS 홈 화면이 되고, 앱은 화면을 가득 채웁니다. 가로로 눕혀 높이가 499px 이하인 휴대폰도 같습니다.',
 	},
 ] as const;
 
-/** 시뮬레이터가 다음 크기로 넘어가는 간격 */
-const SIM_STEP_MS = 3800;
-
 /** 주요 기능 타일의 아이콘 (순서대로) */
 const TILE_ICONS = ['fa-solid fa-display', 'fa-solid fa-note-sticky', 'fa-solid fa-comments', 'fa-solid fa-link'];
 
-/** 구조 그림의 상자. step은 스크롤에 따라 켜지는 순서 */
+/**
+ * 구조 그림의 상자. step은 스크롤에 따라 켜지는 순서, icon은 Font Awesome 글자(brand면 브랜드 글꼴),
+ * shape은 모양(브라우저 창, 데이터베이스 원통, 나머지는 둥근 상자)
+ */
 const NODES = [
-	{ id: 'browser', label: '브라우저', x: 90, y: 190, w: 130, step: 0 },
-	{ id: 'workers', label: 'Cloudflare Workers', x: 330, y: 80, w: 170, step: 2 },
-	{ id: 'tunnel', label: 'Cloudflare Tunnel', x: 330, y: 240, w: 150, step: 4 },
-	{ id: 'api', label: 'NestJS · Oracle VM', x: 570, y: 240, w: 160, step: 6 },
-	{ id: 'db', label: 'PostgreSQL', x: 570, y: 336, w: 130, step: 7 },
-	{ id: 'github', label: 'GitHub OAuth·API', x: 770, y: 240, w: 150, step: 7 },
-	{ id: 'actions', label: 'GitHub Actions', x: 640, y: 80, w: 150, step: 8 },
+	{ id: 'browser', label: '브라우저', x: 90, y: 200, w: 140, step: 0, icon: '\uf0ac', shape: 'window' },
+	{ id: 'workers', label: 'Cloudflare Workers', x: 330, y: 80, w: 190, step: 2, icon: '\ue07d', brand: true },
+	{ id: 'tunnel', label: 'Cloudflare Tunnel', x: 330, y: 250, w: 180, step: 4, icon: '\uf3ed' },
+	{ id: 'api', label: 'NestJS · Oracle VM', x: 575, y: 250, w: 180, step: 6, icon: '\uf233' },
+	{ id: 'db', label: 'PostgreSQL', x: 575, y: 380, w: 140, step: 7, icon: '\uf1c0', shape: 'cylinder' },
+	{ id: 'github', label: 'GitHub OAuth·API', x: 780, y: 250, w: 150, step: 7, icon: '\uf09b', brand: true },
+	{ id: 'actions', label: 'GitHub Actions', x: 650, y: 80, w: 170, step: 8, icon: '\uf085' },
 ] as const;
+
+/** 상자 높이의 절반 */
+const NODE_HALF = 32;
 
 /** 구조 그림의 선. 앞 상자가 켜진 다음 그려진다 */
 const EDGES = [
-	{ d: 'M155 180 C 205 180 200 80 245 80', label: '화면', lx: 178, ly: 118, step: 1 },
-	{ d: 'M155 200 C 205 200 205 240 255 240', label: 'API · 세션 쿠키', lx: 205, ly: 270, step: 3 },
-	{ d: 'M405 240 L 490 240', label: '포트 없이', lx: 447, ly: 230, step: 5 },
-	{ d: 'M570 262 L 570 314', label: 'Prisma', lx: 590, ly: 293, step: 6.5 },
-	{ d: 'M650 240 L 695 240', label: '캐시', lx: 672, ly: 230, step: 6.5 },
-	{ d: 'M565 80 L 415 80', label: '시험을 통과한 커밋만 배포', lx: 490, ly: 66, step: 9 },
+	{ d: 'M160 186 C 215 186 205 80 235 80', label: '화면', lx: 182, ly: 120, step: 1 },
+	{ d: 'M160 214 C 205 214 205 250 240 250', label: 'API · 세션 쿠키', lx: 200, ly: 282, step: 3 },
+	{ d: 'M420 250 L 485 250', label: '포트 없이', lx: 452, ly: 238, step: 5 },
+	{ d: 'M575 282 L 575 342', label: 'Prisma', lx: 597, ly: 318, step: 6.5 },
+	{ d: 'M665 250 L 705 250', label: '캐시', lx: 685, ly: 238, step: 6.5 },
+	{ d: 'M565 80 L 425 80', label: '시험을 통과한 커밋만 배포', lx: 495, ly: 66, step: 9 },
 ] as const;
 
 /** 모든 단계가 다 켜지는 데 필요한 칸 수 */
@@ -158,12 +161,15 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 					<p className="sp-lead">{project.description}</p>
 					<Links project={project} />
 				</div>
-				<Laptop className="pd-hero-device">
-					<img src={`${VIEWS_DIR}/memo-laptop.jpg`} alt={`${project.name} 화면`} />
-				</Laptop>
-				<p className="pd-caption" aria-hidden="true">
-					브라우저 안에, <strong>Mac 하나.</strong>
-				</p>
+				{/* 노트북과 한 줄이 한 덩어리로 올라오며 커진다. 한 줄은 노트북이 자리를 잡을 때쯤 나타난다 */}
+				<div className="pd-hero-group">
+					<Laptop className="pd-hero-device">
+						<img src={`${VIEWS_DIR}/memo-laptop.jpg`} alt={`${project.name} 화면`} />
+					</Laptop>
+					<p className="pd-caption" aria-hidden="true">
+						브라우저 안에, <strong>Mac 하나.</strong>
+					</p>
+				</div>
 			</div>
 		</section>
 	);
@@ -196,208 +202,218 @@ function useRollingNumber(target: number, duration = 700) {
 
 /**
  * 어디서 열어도: 브라우저 크기를 바꿔 보는 시뮬레이터.
- * 화면에 보이는 동안 모니터 → 노트북 → 태블릿 → 휴대폰을 영상처럼 차례로 돌고, 기기 틀이 모양을 바꾸며 그 크기에서 찍은 화면이 나타난다
+ * 이 구역에 들어오면 화면에 고정된 채로, 스크롤하는 만큼 모니터 → 노트북 → 태블릿 → 휴대폰으로 넘어간다.
+ * 기기 틀이 모양을 바꾸며 그 크기에서 찍은 화면이 나타난다. 좁은 창이나 움직임 줄이기에서는 고정하지 않고 눌러서 고른다
  */
 const Simulator: React.FC = () => {
 	const [app, setApp] = useState<AppId>('memo');
 	const [index, setIndex] = useState(0);
-	const [playing, setPlaying] = useState(() => !reducedMotion());
-	const [visible, setVisible] = useState(false);
-	const stage = useRef<HTMLDivElement>(null);
+	const track = useRef<HTMLDivElement>(null);
+	const sticky = useRef<HTMLDivElement>(null);
 	const size = SIZES[index];
 	const appInfo = APPS.find((item) => item.id === app) ?? APPS[0];
 	const px = useRollingNumber(size.px);
+	const pinned = () => !!sticky.current && getComputedStyle(sticky.current).position === 'sticky';
 
-	// 화면에 보일 때만 돈다
+	// 고정되어 있을 때는 지나온 만큼이 지금 크기다
 	useEffect(() => {
-		const node = stage.current;
+		const node = track.current;
 		if (!node) return;
-		const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
-			root: scrollParent(node),
-			threshold: 0.4,
+		return onScrollFrame(node, (scroller) => {
+			const view = viewOf(scroller);
+			node.style.setProperty('--view', `${view.height}px`);
+			if (!pinned()) return;
+			const box = node.getBoundingClientRect();
+			const p = clamp((view.top - box.top) / Math.max(1, box.height - view.height));
+			node.style.setProperty('--sp', p.toFixed(4));
+			setIndex(Math.min(SIZES.length - 1, Math.floor(p * SIZES.length)));
 		});
-		observer.observe(node);
-		return () => observer.disconnect();
 	}, []);
 
-	useEffect(() => {
-		if (!playing || !visible) return;
-		const timer = window.setTimeout(() => setIndex((i) => (i + 1) % SIZES.length), SIM_STEP_MS);
-		return () => window.clearTimeout(timer);
-	}, [playing, visible, index]);
+	/** 단계를 누르면: 고정된 동안에는 그 단계 자리로 스크롤하고, 아니면 바로 바꾼다 */
+	const choose = (i: number) => {
+		const node = track.current;
+		const scroller = node && scrollParent(node);
+		if (!node || !pinned() || !scroller) {
+			setIndex(i);
+			return;
+		}
+		const view = viewOf(scroller);
+		const box = node.getBoundingClientRect();
+		const span = box.height - view.height;
+		scroller.scrollTo({
+			top: scroller.scrollTop + box.top - view.top + ((i + 0.5) / SIZES.length) * span,
+			behavior: 'smooth',
+		});
+	};
 
-	const running = playing && visible;
 	return (
 		<section className="sp-section pd-devices" aria-label="어디서 열어도">
-			<div className="sp-inner">
-				<Headline title="어디서 열어도." sub="화면 크기에 따라 데스크톱이 되고, 휴대폰이 됩니다." />
-				<div className="pd-sim-bar" data-reveal="">
-					<div className="pd-switch" role="group" aria-label="보여 줄 앱">
-						{APPS.map((item) => (
-							<button key={item.id} type="button" aria-pressed={item.id === app} onClick={() => setApp(item.id)}>
-								{item.name}
-								<span>{item.note}</span>
-							</button>
-						))}
-					</div>
-					<button
-						type="button"
-						className="pd-sim-play"
-						aria-label={playing ? '일시 정지' : '재생'}
-						onClick={() => setPlaying((value) => !value)}
-					>
-						<i className={playing ? 'fa-solid fa-pause' : 'fa-solid fa-play'} aria-hidden="true" />
-					</button>
-				</div>
-
-				<div
-					className="pd-sim"
-					ref={stage}
-					data-reveal=""
-					data-kind={size.id}
-					style={{ '--share': size.share, '--ratio': size.ratio } as React.CSSProperties}
-				>
-					<div className="pd-sim-device">
-						<div className="pd-sim-screen">
-							{SIZES.map((item) => (
-								<img
-									key={item.id}
-									src={`${VIEWS_DIR}/${app}-${item.id}.jpg`}
-									alt={item.id === size.id ? `${item.name}에서 연 ${appInfo.name}` : ''}
-									aria-hidden={item.id === size.id ? undefined : true}
-									className={item.id === size.id ? 'active' : undefined}
-									loading="lazy"
-								/>
-							))}
+			<div className="pd-sim-track" ref={track}>
+				<div className="pd-sim-sticky" ref={sticky}>
+					<div className="pd-sim-layout">
+						<div className="pd-sim-copy">
+							<Headline title="어디서 열어도." sub="화면 크기에 따라 데스크톱이 되고, 휴대폰이 됩니다." />
+							<div className="pd-switch" role="group" aria-label="보여 줄 앱">
+								{APPS.map((item) => (
+									<button key={item.id} type="button" aria-pressed={item.id === app} onClick={() => setApp(item.id)}>
+										{item.name}
+										<span>{item.note}</span>
+									</button>
+								))}
+							</div>
+							<ol className="pd-sim-steps">
+								{SIZES.map((item, i) => (
+									<li key={item.id}>
+										<button
+											type="button"
+											aria-current={i === index ? 'step' : undefined}
+											onClick={() => choose(i)}
+											style={{ '--i': i } as React.CSSProperties}
+										>
+											<strong>{item.name}</strong>
+											<span>{item.px}px</span>
+										</button>
+									</li>
+								))}
+							</ol>
+							<p className="pd-sim-note" aria-live="polite" key={size.id}>
+								<strong>
+									{size.name} · {size.px}px
+								</strong>{' '}
+								{size.note}
+							</p>
 						</div>
-						<span className="pd-sim-stand" aria-hidden="true" />
-						<span className="pd-sim-base" aria-hidden="true" />
-					</div>
-					<div className="pd-sim-ruler" aria-hidden="true">
-						<span>{px.toLocaleString('en-US')}px</span>
+
+						<div
+							className="pd-sim"
+							data-kind={size.id}
+							style={{ '--share': size.share, '--ratio': size.ratio } as React.CSSProperties}
+						>
+							<div className="pd-sim-device">
+								<div className="pd-sim-screen">
+									{SIZES.map((item) => (
+										<img
+											key={item.id}
+											src={`${VIEWS_DIR}/${app}-${item.id}.jpg`}
+											alt={item.id === size.id ? `${item.name}에서 연 ${appInfo.name}` : ''}
+											aria-hidden={item.id === size.id ? undefined : true}
+											className={item.id === size.id ? 'active' : undefined}
+											loading="lazy"
+										/>
+									))}
+								</div>
+								<span className="pd-sim-stand" aria-hidden="true" />
+								<span className="pd-sim-base" aria-hidden="true" />
+							</div>
+							<div className="pd-sim-ruler" aria-hidden="true">
+								<span>{px.toLocaleString('en-US')}px</span>
+							</div>
+						</div>
 					</div>
 				</div>
-
-				<ol className="pd-sim-steps" data-reveal="">
-					{SIZES.map((item, i) => (
-						<li key={item.id}>
-							<button
-								type="button"
-								aria-current={i === index ? 'step' : undefined}
-								onClick={() => setIndex(i)}
-								// 진행 막대는 지금 칸에서만, 돌고 있을 때만 찬다
-								data-running={i === index && running ? '' : undefined}
-								style={{ '--step': `${SIM_STEP_MS}ms` } as React.CSSProperties}
-							>
-								<strong>{item.name}</strong>
-								<span>{item.px}px</span>
-							</button>
-						</li>
-					))}
-				</ol>
-				<p className="pd-sim-note" aria-live="polite" key={size.id}>
-					<strong>
-						{size.name} · {size.px}px
-					</strong>{' '}
-					{size.note}
-				</p>
 			</div>
 		</section>
 	);
 };
 
-/** 구조 그림이 그려지는 데 걸리는 시간 */
-const ARCH_PLAY_MS = 2600;
+/** 상자 모양: 브라우저는 위에 점 세 개가 있는 창, 데이터베이스는 원통, 나머지는 둥근 상자 */
+const NodeShape: React.FC<{ node: (typeof NODES)[number] }> = ({ node }) => {
+	const left = node.x - node.w / 2;
+	const top = node.y - NODE_HALF;
+	const shape = 'shape' in node ? node.shape : undefined;
+	if (shape === 'cylinder') {
+		const r = 9;
+		const h = NODE_HALF * 2;
+		return (
+			<>
+				<path
+					className="pd-node-body"
+					d={`M${left} ${top + r} a${node.w / 2} ${r} 0 0 1 ${node.w} 0 v${h - r * 2} a${node.w / 2} ${r} 0 0 1 ${-node.w} 0 z`}
+				/>
+				<path className="pd-node-line" d={`M${left} ${top + r} a${node.w / 2} ${r} 0 0 0 ${node.w} 0`} />
+			</>
+		);
+	}
+	return (
+		<>
+			<rect className="pd-node-body" x={left} y={top} width={node.w} height={NODE_HALF * 2} rx={12} />
+			{shape === 'window' && (
+				<>
+					<path className="pd-node-line" d={`M${left} ${top + 14} h${node.w}`} />
+					{[0, 1, 2].map((i) => (
+						<circle key={i} className="pd-node-dot" cx={left + 12 + i * 9} cy={top + 7} r={2.5} />
+					))}
+				</>
+			)}
+		</>
+	);
+};
 
 /**
- * 구조 그림은 거의 다(85%) 화면에 들어온 다음에 처음부터 그려지고, 화면에서 거의 벗어나면 지워진다.
- * 스크롤 위치에 바로 묶으면 그림이 다 보이기 전에 지나가 버려서, 다 보일 때 시간에 맞춰 그린다
+ * 만든 방식: 요청이 지나는 길. 그림이 화면에 고정된 채로, 스크롤하는 만큼 상자가 차례로 켜지고 화살표가 이어진다.
+ * 움직임 줄이기에서는 고정하지 않고 다 그려진 채로 둔다
  */
-function useArchPlayback() {
-	const ref = useRef<HTMLElement>(null);
-	useEffect(() => {
-		const node = ref.current;
-		if (!node) return;
-		let frame = 0;
-		let progress = 0;
-		const set = (value: number) => {
-			progress = value;
-			node.style.setProperty('--p', value.toFixed(4));
-		};
-		const play = () => {
-			cancelAnimationFrame(frame);
-			if (reducedMotion()) return set(1);
-			const start = performance.now() - progress * ARCH_PLAY_MS;
-			frame = requestAnimationFrame(function tick(now) {
-				set(clamp((now - start) / ARCH_PLAY_MS));
-				if (progress < 1) frame = requestAnimationFrame(tick);
-			});
-		};
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				if (entry.intersectionRatio >= 0.85) play();
-				else if (entry.intersectionRatio < 0.15) {
-					cancelAnimationFrame(frame);
-					set(0);
-				}
-			},
-			{ root: scrollParent(node), threshold: [0, 0.15, 0.85, 1] }
-		);
-		observer.observe(node);
-		return () => {
-			observer.disconnect();
-			cancelAnimationFrame(frame);
-		};
-	}, []);
-	return ref;
-}
-
-/** 만든 방식: 요청이 지나는 길. 그림이 다 보이면 상자가 차례로 켜지고 선이 그려진다 */
 const Architecture: React.FC = () => {
-	const ref = useArchPlayback();
+	const ref = useScrollProgress<HTMLDivElement>((box, view) => {
+		// 고정된 동안(트랙을 지나는 동안) 앞뒤 조금씩은 여유로 두고 그 사이에 다 그린다
+		const p = (view.top - box.top) / Math.max(1, box.height - view.height);
+		return (p - 0.08) / 0.8;
+	});
 	const id = useId().replace(/:/g, '');
 	const step = (n: number) => ({ '--i': n, '--n': ARCH_STEPS }) as React.CSSProperties;
 	return (
-		<figure className="pd-arch" ref={ref} data-reveal="">
-			<div className="pd-arch-scroll">
-				<svg viewBox="0 0 860 380" role="img" aria-labelledby={`${id}-title`}>
-					<title id={`${id}-title`}>
-						브라우저는 화면을 Cloudflare Workers에서 받고, API는 Cloudflare Tunnel을 지나 Oracle VM의 NestJS 서버로
-						갑니다. 서버는 Prisma로 PostgreSQL을 쓰고 GitHub 응답을 캐시합니다. GitHub Actions는 시험을 통과한 커밋만
-						Workers에 배포합니다.
-					</title>
-					{EDGES.map((edge, i) => (
-						<g key={edge.label} className="pd-edge" style={step(edge.step)}>
-							{/* 화살촉은 선마다 따로 둬야 그 선의 진행도를 따라 나타난다 */}
-							<marker
-								id={`${id}-arrow-${i}`}
-								viewBox="0 0 10 10"
-								refX="8"
-								refY="5"
-								markerWidth="7"
-								markerHeight="7"
-								orient="auto"
-							>
-								<path d="M0 0 L10 5 L0 10 z" />
-							</marker>
-							<path d={edge.d} pathLength={1} markerEnd={`url(#${id}-arrow-${i})`} />
-							<text x={edge.lx} y={edge.ly}>
-								{edge.label}
-							</text>
-						</g>
-					))}
-					{NODES.map((node) => (
-						<g key={node.id} className={`pd-node pd-node-${node.id}`} style={step(node.step)}>
-							<rect x={node.x - node.w / 2} y={node.y - 22} width={node.w} height={44} rx={12} />
-							<text x={node.x} y={node.y + 5}>
-								{node.label}
-							</text>
-						</g>
-					))}
-				</svg>
+		<div className="pd-arch-track" ref={ref}>
+			<div className="pd-arch-sticky">
+				<figure className="pd-arch">
+					<div className="pd-arch-scroll">
+						<svg viewBox="0 0 870 430" role="img" aria-labelledby={`${id}-title`}>
+							<title id={`${id}-title`}>
+								브라우저는 화면을 Cloudflare Workers에서 받고, API는 Cloudflare Tunnel을 지나 Oracle VM의 NestJS 서버로
+								갑니다. 서버는 Prisma로 PostgreSQL을 쓰고 GitHub 응답을 캐시합니다. GitHub Actions는 시험을 통과한
+								커밋만 Workers에 배포합니다.
+							</title>
+							{EDGES.map((edge, i) => (
+								<g key={edge.label} className="pd-edge" style={step(edge.step)}>
+									{/* 화살촉은 선마다 따로 둬야 그 선의 진행도를 따라 나타난다 */}
+									<marker
+										id={`${id}-arrow-${i}`}
+										viewBox="0 0 10 10"
+										refX="8"
+										refY="5"
+										markerWidth="7"
+										markerHeight="7"
+										orient="auto"
+									>
+										<path d="M0 0 L10 5 L0 10 z" />
+									</marker>
+									<path d={edge.d} pathLength={1} markerEnd={`url(#${id}-arrow-${i})`} />
+									<text x={edge.lx} y={edge.ly}>
+										{edge.label}
+									</text>
+								</g>
+							))}
+							{NODES.map((node) => (
+								<g key={node.id} className={`pd-node pd-node-${node.id}`} style={step(node.step)}>
+									<NodeShape node={node} />
+									<text
+										className={'brand' in node ? 'pd-node-icon brand' : 'pd-node-icon'}
+										x={node.x}
+										y={node.y + ('shape' in node && node.shape !== 'cylinder' ? 4 : -2)}
+									>
+										{node.icon}
+									</text>
+									<text className="pd-node-label" x={node.x} y={node.y + 22}>
+										{node.label}
+									</text>
+								</g>
+							))}
+						</svg>
+					</div>
+					<figcaption>요청이 지나는 길. 바깥에 열린 서버 포트는 하나도 없습니다.</figcaption>
+				</figure>
 			</div>
-			<figcaption>요청이 지나는 길. 바깥에 열린 서버 포트는 하나도 없습니다.</figcaption>
-		</figure>
+		</div>
 	);
 };
 
@@ -427,7 +443,6 @@ const ProductPage: React.FC<{ project: Project }> = ({ project }) => {
 								// 개수가 홀수면 첫 타일을 넓게 해 빈칸을 없앤다
 								className={i === 0 && project.highlights.length % 2 === 1 ? 'wide' : undefined}
 								data-reveal=""
-								data-tone={i % 4}
 								style={{ '--d': i % 2 } as React.CSSProperties}
 							>
 								<span className="pd-tile-icon" aria-hidden="true">
