@@ -106,7 +106,8 @@
 	place-items: center;
 	min-height: 540px;
 	overflow: hidden;
-	padding: 56px 32px;
+	/* 아래쪽은 동물이 지나가는 풀밭 길 (상자 뒤로 숨지 않게 비워 둔다) */
+	padding: 56px 32px 136px;
 	background: url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px;
 	text-align: center;
 }
@@ -174,6 +175,7 @@
 /* 걷는 동물: 스프라이트 시트의 칸을 차례로 넘기며 가로질러 간다 */
 .gm-walker {
 	position: absolute;
+	z-index: 2;
 	background-repeat: no-repeat;
 	image-rendering: pixelated;
 	pointer-events: none;
@@ -187,8 +189,8 @@
 	background-image: url('/imgs/projects/sproutfarm/sprites/cow-walk.png');
 	background-size: 192px 96px;
 	animation:
-		gm-cow-frames 0.5s steps(2) infinite,
-		gm-cross 26s linear infinite;
+		gm-cow-frames 0.24s steps(2) infinite,
+		gm-cross 20s linear infinite;
 }
 
 .gm-chick {
@@ -202,7 +204,7 @@
 }
 
 .gm-chick.a {
-	bottom: 100px;
+	bottom: 70px;
 	left: -60px;
 	animation-delay:
 		0s,
@@ -210,7 +212,7 @@
 }
 
 .gm-chick.b {
-	bottom: 60px;
+	bottom: 30px;
 	left: -60px;
 	animation-delay:
 		0s,
@@ -960,7 +962,7 @@
 @container (max-width: 600px) {
 	.gm-title {
 		min-height: 460px;
-		padding: 40px 16px;
+		padding: 40px 16px 120px;
 	}
 
 	.gm-house,
