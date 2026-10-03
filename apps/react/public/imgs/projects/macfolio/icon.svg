@@ -22,6 +22,10 @@
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
       <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
+    <radialGradient id="shade" cx="0.78" cy="0.85" r="0.65">
+      <stop offset="0" stop-color="#a893c4" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#a893c4" stop-opacity="0"/>
+    </radialGradient>
     <filter id="shadow" x="-25%" y="-25%" width="150%" height="160%">
       <feDropShadow dx="0" dy="5" stdDeviation="4.5" flood-color="#2a1442" flood-opacity="0.5"/>
     </filter>
@@ -38,15 +42,9 @@
     <path d="M64 42 C56 35 42 33 33 41 C22 51 23 72 31 87 C37 99 45 107 54 105 C58 104 60 102 64 102 C68 102 70 104 74 105 C83 107 91 99 97 87 C105 72 106 51 95 41 C86 33 72 35 64 42 Z" fill="url(#apple)"/>
   </g>
   <g clip-path="url(#body)">
-    <!-- 사과 안의 창: 제목 막대와 줄 -->
-    <rect x="22" y="52" width="84" height="12" fill="#3a2b52" opacity="0.9"/>
-    <circle cx="44" cy="58" r="2.6" fill="#ff5f57"/>
-    <circle cx="52" cy="58" r="2.6" fill="#febc2e"/>
-    <circle cx="60" cy="58" r="2.6" fill="#28c840"/>
-    <rect x="40" y="72" width="44" height="4" rx="2" fill="#b9aec9"/>
-    <rect x="40" y="80" width="34" height="4" rx="2" fill="#b9aec9"/>
-    <rect x="40" y="88" width="40" height="4" rx="2" fill="#b9aec9"/>
-    <ellipse cx="50" cy="48" rx="22" ry="16" fill="url(#gloss)" opacity="0.7"/>
+    <!-- 오른쪽 아래를 살짝 어둡게 해 둥근 몸통을 살린다 -->
+    <rect x="20" y="30" width="90" height="80" fill="url(#shade)"/>
+    <ellipse cx="48" cy="54" rx="16" ry="22" fill="url(#gloss)" opacity="0.9"/>
   </g>
   <path d="M64 42 C56 35 42 33 33 41 C22 51 23 72 31 87 C37 99 45 107 54 105 C58 104 60 102 64 102 C68 102 70 104 74 105 C83 107 91 99 97 87 C105 72 106 51 95 41 C86 33 72 35 64 42 Z" fill="none" stroke="#ffffff" stroke-opacity="0.8" stroke-width="1"/>
 </svg>
