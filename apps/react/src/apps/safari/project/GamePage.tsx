@@ -13,8 +13,28 @@ const Sprite: React.FC<{ name: string; className: string }> = ({ name, className
 	<img className={`gm-sprite ${className}`} src={`${SPRITES}/${name}.png`} alt="" aria-hidden="true" />
 );
 
-/** 퀘스트마다 말을 거는 얼굴 (차례대로 돌려 쓴다) */
-const QUEST_FACES = ['items/cow', 'items/fruit', 'items/grass', 'items/clock'];
+/** 게임 대화창의 표정(Teemo 이모트): 이름과 칸 수. 퀘스트마다 다른 표정을 차례대로 돌려 쓴다 */
+type Emote = [name: string, frames: number];
+const QUEST_EMOTES: Emote[] = [
+	['hooray', 2],
+	['blink', 4],
+	['ears', 5],
+	['sleeping', 2],
+];
+
+/** 한 칸씩 넘기며 움직이는 표정 */
+const EmoteFace: React.FC<{ emote: Emote; className?: string }> = ({ emote: [name, frames], className = '' }) => (
+	<span
+		className={`gm-emote ${className}`}
+		aria-hidden="true"
+		style={
+			{
+				backgroundImage: `url(${SPRITES}/emotes/${name}.png)`,
+				'--frames': frames,
+			} as React.CSSProperties
+		}
+	/>
+);
 
 /** 인벤토리 칸의 아이템 그림: 기술 사양 이름에 맞춰 고르고, 없으면 차례대로 */
 const ITEM_ICONS: Record<string, string> = {
@@ -22,7 +42,7 @@ const ITEM_ICONS: Record<string, string> = {
 	렌더링: 'items/painting',
 	맵: 'items/seeds',
 	AI: 'items/egg',
-	'입력 · UI': 'catpaw',
+	'입력 · UI': 'items/gamepad',
 	배포: 'items/chest',
 	서버: 'items/milk',
 };
@@ -310,7 +330,7 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 						{project.highlights.map((point, i) => (
 							<li key={point.title} className="gm-dialog">
 								<span className="gm-portrait" aria-hidden="true">
-									<img className="gm-face" src={`${SPRITES}/${QUEST_FACES[i % QUEST_FACES.length]}.png`} alt="" />
+									<EmoteFace emote={QUEST_EMOTES[i % QUEST_EMOTES.length]} />
 								</span>
 								<div className="gm-bubble">
 									<h3>{point.title}</h3>
@@ -397,7 +417,7 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 						))}
 					</ol>
 					<p className="gm-goal">
-						<img src={`${SPRITES}/star.png`} alt="" aria-hidden="true" /> CLEAR
+						<EmoteFace emote={['sunglasses', 2]} className="small" /> CLEAR
 					</p>
 				</div>
 			</section>
@@ -465,6 +485,7 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 						))}
 					</ul>
 				)}
+				<EmoteFace emote={['loving', 2]} className="gm-bow" />
 				<p className="gm-end">{project.tagline}</p>
 				<Links project={project} className="gm-links" />
 			</section>
