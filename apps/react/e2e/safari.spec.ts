@@ -83,7 +83,7 @@ test.describe('Safari', () => {
 		expect(new Set(columns.map((box) => Math.round(box!.y))).size).toBe(1);
 		await expect(panel.getByRole('region', { name: '주요 기능' })).toContainText('할 일');
 
-		// 명함: 만든 방식은 묻고 답하기. 스크롤해서 화면에 들어오면 저절로 펼쳐지고, 누르면 접힌다
+		// 명함: 만든 방식은 묻고 답하기. 스크롤해서 화면에 들어오면 위 칸부터 차례로 펼쳐지고, 누르면 접힌다
 		await open(/QRU/);
 		const answers = panel.getByRole('region', { name: '만든 방식' }).getByRole('button');
 		await expect(answers.first()).toHaveAttribute('aria-expanded', 'false');
