@@ -55,7 +55,7 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 		inDock: true,
 		windowSize: { width: 960, height: 569 },
 	},
-	share: { label: '공유', icon: 'share.png', inDock: true, action: { type: 'share' } },
+	share: { label: '공유', icon: 'share.svg', inDock: true, action: { type: 'share' } },
 	// 휴대폰 키보드로 명령어를 치기는 불편해서, 모바일에서는 같은 명령을 눌러서 실행하는 '단축어'로 보여준다
 	terminal: {
 		label: '터미널',
