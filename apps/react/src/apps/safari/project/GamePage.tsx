@@ -70,6 +70,10 @@ const DECOR: [string, number][] = [
 	['sprout', 8],
 ];
 
+/** 소 걸음: 한 칸을 보여 주는 시간과 그동안 나가는 거리 (게임보다 조금 느긋하게) */
+const COW_FRAME_MS = 130;
+const COW_STEP = 6;
+
 /** 늘 같은 자리에 놓이도록 씨앗이 정해진 난수 */
 function seeded(seed: number) {
 	let a = seed;
@@ -163,6 +167,22 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 			scene.removeEventListener('load', sort, true);
 			resized?.disconnect();
 		};
+	}, []);
+
+	// 소는 그림이 바뀔 때만 몸도 한 걸음(원본 2px, 화면 6px) 나간다. 매끄럽게 밀면 제자리걸음하며 미끄러지는 것처럼 보인다
+	useEffect(() => {
+		const cow = title.current?.querySelector<HTMLElement>('.gm-cow');
+		if (!cow || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+		let x = 160;
+		let frame = 0;
+		const timer = window.setInterval(() => {
+			const width = cow.parentElement?.clientWidth ?? 0;
+			frame = 1 - frame;
+			x = x > width + 100 ? 0 : x + COW_STEP;
+			cow.style.backgroundPositionX = `${-frame * 96}px`;
+			cow.style.transform = `translateX(${x}px)`;
+		}, COW_FRAME_MS);
+		return () => window.clearInterval(timer);
 	}, []);
 
 	// 스크롤하면 주인공이 흙길을 따라 걷는다: 화면 가운데 높이와 같은 길 위의 점에 선다
