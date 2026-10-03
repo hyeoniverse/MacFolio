@@ -607,12 +607,28 @@
 
 /* ─── 개발 일지: 풀밭 위 흙길을 따라 내려가는 지도 ─── */
 .gm-map {
+	position: relative;
 	margin-top: 56px;
 	padding: 40px 32px 48px;
 	/* 풀 조각을 불규칙하게 섞어 만든 넓은 풀밭 (한 번 반복하는 데 1152px) */
 	background:
 		linear-gradient(var(--gm-light, transparent), var(--gm-light, transparent)),
 		url('/imgs/projects/sproutfarm/sprites/map/grass-field.png') 0 0 / 1152px 1152px;
+}
+
+/* 풀밭의 위아래 끝은 바탕 하늘로 스며들게 (선이 딱 끊기지 않게) */
+.gm-map::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		var(--gm-sky, var(--gm-bg)),
+		transparent 32px,
+		transparent calc(100% - 96px),
+		var(--gm-sky, var(--gm-bg))
+	);
+	pointer-events: none;
+	transition: background 0.4s linear;
 }
 
 .gm-map-title {
@@ -945,9 +961,9 @@
 .gm-credits {
 	position: relative;
 	overflow: hidden;
-	margin-top: 56px;
-	padding: 72px 32px 150px;
-	background: linear-gradient(180deg, #0e1530 0%, #1a2340 45%, #1d2e1b 100%);
+	padding: 200px 32px 150px;
+	/* 위는 지금의 하늘에서 시작해 밤으로 짙어진다 */
+	background: linear-gradient(180deg, transparent 0, #0e1530 220px, #1a2340 55%, #1d2e1b 100%);
 	color: #f6e8c8;
 	text-align: center;
 }
@@ -961,6 +977,9 @@
 .gm-sky::after {
 	position: absolute;
 	inset: 0 0 40%;
+	/* 별은 하늘이 어두워진 다음부터 */
+	-webkit-mask-image: linear-gradient(transparent 120px, #000 260px);
+	mask-image: linear-gradient(transparent 120px, #000 260px);
 	background-image:
 		radial-gradient(2px 2px at 20px 30px, #fff6d8 50%, transparent 51%),
 		radial-gradient(2px 2px at 90px 80px, #fff6d8 50%, transparent 51%),
@@ -985,7 +1004,7 @@
 
 .gm-moon {
 	position: absolute;
-	top: 36px;
+	top: 176px;
 	right: 10%;
 	width: 48px;
 	height: 48px;
