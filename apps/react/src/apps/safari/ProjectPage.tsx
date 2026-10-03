@@ -228,6 +228,11 @@ const Features: React.FC<{ project: Project }> = ({ project }) => {
 	return (
 		<Section label="주요 기능">
 			<Headline title={title} sub={sub} />
+			{project.art && (
+				<figure className="sp-art">
+					<img src={project.art} alt={`${project.name} 장면`} />
+				</figure>
+			)}
 			{list}
 		</Section>
 	);
