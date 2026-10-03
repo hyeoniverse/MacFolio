@@ -1,7 +1,7 @@
 ---
 title: Markdown 블로그에 글쓰기 붙이기
 date: 2026-09-29
-category: 개발기/MacFolio
+category: 개발기/MacFolio/백엔드
 summary: 저장소의 Markdown 글은 그대로 두고, 관리자가 쓰거나 고친 글만 서버에 둔다. 편집 단추 없이 메모 앱처럼 보이는 그대로 고치고 알아서 저장한다.
 ---
 
