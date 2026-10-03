@@ -168,7 +168,7 @@
 	line-height: 1.15;
 }
 
-.np-facts span {
+.np-facts li > span {
 	color: var(--np-muted);
 	font-size: 13px;
 }
@@ -208,7 +208,8 @@
 
 .np-articles ol {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	row-gap: 28px;
 	list-style: none;
 }
 
@@ -217,7 +218,8 @@
 	border-left: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
 }
 
-.np-articles li:first-child {
+/* 줄마다 첫 기사는 괘선 없이 */
+.np-articles li:nth-child(3n + 1) {
 	padding-left: 0;
 	border-left: none;
 }
@@ -277,7 +279,7 @@
 		border-color 0.2s;
 }
 
-.np-articles li:first-child .np-clip {
+.np-articles li:nth-child(3n + 1) .np-clip {
 	left: 0;
 }
 
@@ -423,6 +425,56 @@
 	line-height: 0.85;
 }
 
+/* 기획 기사: 장마다 머리, 리드, 번호 붙은 두 단 기사 */
+.np-feature {
+	padding: 28px 0;
+	border-bottom: 1px solid var(--np-rule);
+}
+
+.np-feature-dek {
+	max-width: 44em;
+	margin-bottom: 20px;
+	font-family: var(--sp-serif);
+	font-size: 18px;
+	font-style: italic;
+	line-height: 1.6;
+}
+
+.np-feature ol {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px 32px;
+	counter-reset: feature;
+	list-style: none;
+}
+
+.np-feature li {
+	padding-top: 12px;
+	border-top: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
+	counter-increment: feature;
+}
+
+.np-feature h3 {
+	font-size: 18px;
+	line-height: 1.3;
+}
+
+.np-feature h3::before {
+	margin-right: 8px;
+	color: var(--sp-accent);
+	content: counter(feature, decimal-leading-zero);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	vertical-align: 2px;
+}
+
+.np-feature p {
+	margin-top: 6px;
+	color: var(--np-muted);
+	font-size: 14px;
+	line-height: 1.65;
+}
+
 /* 아래 칸: 맡은 일과 기술 사양 안내란 */
 .np-bottom {
 	display: grid;
@@ -499,6 +551,12 @@
 
 	.np-body {
 		column-count: 1;
+	}
+
+	.np-articles ol,
+	.np-feature ol {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 0;
 	}
 
 	.np-articles li {

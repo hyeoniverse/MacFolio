@@ -391,6 +391,113 @@
 	font-weight: 700;
 }
 
+/* 더 들려줄 장: 첫머리 글, 숫자 한 줄, 그림 */
+.cr-chapter-lead {
+	max-width: 46em;
+	margin: -12px 0 28px;
+	font-size: 17px;
+	line-height: 1.7;
+}
+
+.cr-chapter-facts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	gap: 16px;
+	margin-bottom: 32px;
+	padding: 20px 0;
+	border-block: 1px solid var(--cr-line);
+	list-style: none;
+}
+
+.cr-chapter-facts li {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.cr-chapter-facts strong {
+	color: var(--sp-accent);
+	font-family: var(--sp-serif);
+	font-size: 34px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.cr-chapter-facts li > span {
+	color: var(--cr-muted);
+	font-size: 13px;
+}
+
+.cr-figure {
+	margin-top: 36px;
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 14px;
+}
+
+.cr-figure img {
+	display: block;
+	width: 100%;
+}
+
+/* 진행 과정: 장을 읽는 만큼(--read) 세로줄이 위에서부터 차오른다 */
+.cr-timeline {
+	position: relative;
+	margin-bottom: 40px;
+	padding-left: 28px;
+	list-style: none;
+}
+
+.cr-timeline::before,
+.cr-timeline::after {
+	position: absolute;
+	top: 8px;
+	bottom: 8px;
+	left: 5px;
+	width: 2px;
+	content: '';
+}
+
+.cr-timeline::before {
+	background-color: var(--cr-line);
+}
+
+.cr-timeline::after {
+	background-color: var(--sp-accent);
+	transform: scaleY(clamp(0, calc(var(--read, 0) * 1.8), 1));
+	transform-origin: top;
+}
+
+.cr-timeline li {
+	position: relative;
+	display: grid;
+	grid-template-columns: 64px minmax(0, 1fr);
+	gap: 12px;
+	padding: 10px 0;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.cr-timeline li::before {
+	position: absolute;
+	top: 16px;
+	left: -28px;
+	z-index: 1;
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--sp-accent);
+	border-radius: 50%;
+	background-color: var(--cr-bg);
+	content: '';
+}
+
+.cr-timeline time {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 14px;
+	line-height: 1.7;
+}
+
 .cr-role {
 	color: var(--cr-muted);
 	font-size: 15px;

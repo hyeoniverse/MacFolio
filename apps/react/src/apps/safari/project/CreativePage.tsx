@@ -1,23 +1,78 @@
-// HYEONIVERSE (포트폴리오): 왼쪽에 제목과 차례가 붙어 있고, 오른쪽만 장(01 기능, 02 만든 방식, 03 맡은 일, 04 기술 사양)을 넘기며 내려간다.
+// HYEONIVERSE (포트폴리오): 왼쪽에 제목과 차례가 붙어 있고, 오른쪽만 장(기능, 더 들려줄 장들, 진행 과정 또는 만든 방식, 맡은 일, 기술 사양)을 넘기며 내려간다.
 // 왼쪽 위에는 그 사이트의 마스코트 몽이가 서서, 지금 읽는 장에 따라 표정을 바꾼다
 import React, { useEffect, useRef, useState } from 'react';
-import type { Project } from '@/shared/profile';
-import { Favicon, Links, Shot } from '@/apps/safari/project/parts';
+import type { Project, ProjectChapter, ProjectFact } from '@/shared/profile';
+import { FactValue, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
-import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
+import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
-const CHAPTERS = ['주요 기능', '만든 방식', '맡은 일', '기술 사양'] as const;
+/** 진행 과정이 있으면 만든 방식을 그 장에 품질 장치로 함께 싣는다 */
+const buildTitle = (project: Project) => (project.timeline ? '진행 과정과 품질' : '만든 방식');
+
+/** 차례: 주요 기능 → 더 들려줄 장들 → 진행 과정(만든 방식) → 맡은 일 → 기술 사양 */
+const chaptersOf = (project: Project) => [
+	'주요 기능',
+	...(project.chapters ?? []).map((chapter) => chapter.title),
+	buildTitle(project),
+	'맡은 일',
+	'기술 사양',
+];
 
 const BUNNY = '/imgs/projects/hyeoniverse/bunny';
-/** 장마다 몽이의 표정: 처음, 01~04, 끝 (마우스를 올리면 웃는다) */
 const MOODS = ['normal', 'wave', 'star', 'happy', 'surprised', 'sleep'] as const;
 type Mood = (typeof MOODS)[number];
-const moodOf = (chapter: number): Mood => MOODS[Math.min(chapter + 1, MOODS.length - 1)];
+/** 장마다 몽이의 표정: 들어가기 전엔 그냥, 장마다 손 흔들기·별·웃음·놀람을 돌아가며, 끝에선 잔다 (마우스를 올리면 웃는다) */
+const READING: Mood[] = ['wave', 'star', 'happy', 'surprised'];
+const moodOf = (chapter: number, total: number): Mood =>
+	chapter < 0 ? 'normal' : chapter >= total ? 'sleep' : READING[chapter % READING.length];
+
+/** 장 안의 숫자 한 줄 */
+const ChapterFacts: React.FC<{ facts: ProjectFact[] }> = ({ facts }) => (
+	<ul className="cr-chapter-facts" data-reveal="">
+		{facts.map((fact) => (
+			<li key={fact.label}>
+				<FactValue text={fact.value} />
+				<span>{fact.label}</span>
+			</li>
+		))}
+	</ul>
+);
+
+/** 더 들려줄 장 하나: 첫머리, 숫자, 글 묶음, 그림 */
+const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, no }) => (
+	<section className="cr-chapter" aria-label={chapter.title}>
+		<p className="cr-no">{no}</p>
+		<h2>{chapter.title}</h2>
+		{chapter.lead && (
+			<p className="cr-chapter-lead" data-reveal="">
+				{chapter.lead}
+			</p>
+		)}
+		{chapter.facts && <ChapterFacts facts={chapter.facts} />}
+		<div className="cr-build">
+			{chapter.points.map((point, i) => (
+				<article key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+					<h3>{point.title}</h3>
+					<p>{point.body}</p>
+				</article>
+			))}
+		</div>
+		{chapter.image && (
+			<figure className="cr-figure" data-reveal="">
+				<img src={chapter.image.src} alt={chapter.image.alt} loading="lazy" />
+			</figure>
+		)}
+	</section>
+);
 
 const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	const main = useRef<HTMLDivElement>(null);
-	// -1은 장에 들어가기 전, CHAPTERS.length는 끝(맺음말)
+	const titles = chaptersOf(project);
+	const extra = project.chapters ?? [];
+	// 장 번호: 주요 기능이 01, 더 들려줄 장이 그다음, 그 뒤로 진행 과정·맡은 일·기술 사양
+	const after = extra.length + 1;
+	// -1은 장에 들어가기 전, titles.length는 끝(맺음말)
 	const [chapter, setChapter] = useState(-1);
 	const [petted, setPetted] = useState(false);
 	// 몽이를 누르면 하트가 퐁퐁 (하트마다 id와 날아갈 방향)
@@ -42,8 +97,9 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 			const buttons = nav.querySelectorAll<HTMLElement>('button');
 			body.querySelectorAll<HTMLElement>('.cr-chapter').forEach((chapterNode, i) => {
 				const box = chapterNode.getBoundingClientRect();
-				const read = Math.min(1, Math.max(0, (middle - box.top) / box.height));
-				buttons[i]?.style.setProperty('--read', read.toFixed(3));
+				const read = Math.min(1, Math.max(0, (middle - box.top) / box.height)).toFixed(3);
+				buttons[i]?.style.setProperty('--read', read);
+				chapterNode.style.setProperty('--read', read);
 			});
 		});
 	}, []);
@@ -63,12 +119,13 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 				}
 				setChapter(seen.size ? Math.max(...seen) : -1);
 			},
-			{ rootMargin: '-45% 0px -45% 0px' }
+			// 기준은 페이지를 스크롤하는 칸의 가운데 (창이 작아도 칸 안에서 잰다)
+			{ root: scrollParent(root), rootMargin: '-45% 0px -45% 0px' }
 		);
 		parts.forEach((part) => observer.observe(part));
 		return () => observer.disconnect();
 	}, []);
-	const mood: Mood = petted ? 'happy' : moodOf(chapter);
+	const mood: Mood = petted ? 'happy' : moodOf(chapter, titles.length);
 	const open = (index: number) => {
 		const chapters = main.current?.querySelectorAll<HTMLElement>('.cr-chapter');
 		chapters?.[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -85,9 +142,16 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 				<Links project={project} className="cr-links" />
 				<nav className="cr-index" aria-label="차례" ref={index}>
 					<ol>
-						{CHAPTERS.map((title, i) => (
+						{titles.map((title, i) => (
 							<li key={title}>
-								<button type="button" onClick={() => open(i)} aria-current={chapter === i ? 'step' : undefined}>
+								{/* 맺음말까지 내려와도 차례에서는 마지막 장을 읽는 중으로 둔다 */}
+								<button
+									type="button"
+									onClick={() => open(i)}
+									aria-current={
+										chapter === i || (i === titles.length - 1 && chapter >= titles.length) ? 'step' : undefined
+									}
+								>
 									<span>{number(i)}</span>
 									{title}
 								</button>
@@ -145,9 +209,23 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					</ol>
 				</section>
 
-				<section className="cr-chapter" aria-label="만든 방식">
-					<p className="cr-no">{number(1)}</p>
-					<h2>만든 방식</h2>
+				{extra.map((item, i) => (
+					<Chapter key={item.title} chapter={item} no={number(i + 1)} />
+				))}
+
+				<section className="cr-chapter" aria-label={buildTitle(project)}>
+					<p className="cr-no">{number(after)}</p>
+					<h2>{buildTitle(project)}</h2>
+					{project.timeline && (
+						<ol className="cr-timeline">
+							{project.timeline.map((step, i) => (
+								<li key={step.date} data-reveal="left" style={{ '--d': i % 4 } as React.CSSProperties}>
+									<time>{step.date}</time>
+									<span>{step.label}</span>
+								</li>
+							))}
+						</ol>
+					)}
 					<div className="cr-build">
 						{project.build.map((point, i) => (
 							<article key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
@@ -159,7 +237,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 				</section>
 
 				<section className="cr-chapter" aria-label="맡은 일">
-					<p className="cr-no">{number(2)}</p>
+					<p className="cr-no">{number(after + 1)}</p>
 					<h2>맡은 일</h2>
 					{project.role && <p className="cr-role">{project.role}</p>}
 					<ul className="cr-roles">
@@ -172,7 +250,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 				</section>
 
 				<section className="cr-chapter" aria-label="기술 사양">
-					<p className="cr-no">{number(3)}</p>
+					<p className="cr-no">{number(after + 2)}</p>
 					<h2>기술 사양</h2>
 					<dl className="cr-specs">
 						{project.specs.map((spec, i) => (

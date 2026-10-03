@@ -1,4 +1,4 @@
-// WTD (할 일 관리): 칸반 보드. 머리(소개와 숫자) → 할 일·진행 중·완료 세 열(기능·만든 방식·맡은 일) → 쓰는 법 두 줄 → 날짜별 스프린트 → 폴더 구조 → 라벨(기술 사양)
+// WTD (할 일 관리): 칸반 보드. 머리(소개와 숫자) → 할 일·진행 중·완료 세 열(기능·만든 방식·맡은 일) → 쓰는 법 두 줄 → 에픽(장마다 붙임쪽지) → 날짜별 스프린트 → 폴더 구조 → 라벨(기술 사양)
 import React, { useState } from 'react';
 import type { Project } from '@/shared/profile';
 import { Facts, Favicon, Links, Shot } from '@/apps/safari/project/parts';
@@ -161,6 +161,27 @@ const BoardPage: React.FC<{ project: Project }> = ({ project }) => {
 					</div>
 				</section>
 			)}
+
+			{project.chapters?.map((chapter) => (
+				<section key={chapter.title} className="kb-epic" aria-label={chapter.title}>
+					<h2 className="kb-title">
+						에픽 <span className="kb-epic-name">{chapter.title}</span>
+					</h2>
+					{chapter.lead && (
+						<p className="kb-epic-lead" data-reveal="">
+							{chapter.lead}
+						</p>
+					)}
+					<ul className="kb-notes">
+						{chapter.points.map((point, i) => (
+							<li key={point.title} data-reveal="drop" style={{ '--d': i % 3, '--n': i } as React.CSSProperties}>
+								<h3>{point.title}</h3>
+								<p>{point.body}</p>
+							</li>
+						))}
+					</ul>
+				</section>
+			))}
 
 			{project.timeline && (
 				<section className="kb-sprint" aria-label="진행 과정" data-reveal="">
