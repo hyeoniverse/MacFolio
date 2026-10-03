@@ -63,14 +63,19 @@ test.describe('GitHub 앱', () => {
 		const readme = github.getByRole('article', { name: 'README' });
 		await expect(readme.locator('.gh-banner')).toBeVisible();
 		await expect(readme.locator('.gh-contact-button')).toHaveCount(3);
-		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo')).toHaveCount(6);
-		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo-name').first()).toHaveText(
-			'MacFolio'
-		);
+		// 고정 저장소는 Safari와 같은 프로젝트 목록에서 만든다
+		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo-name')).toHaveText([
+			'Devcourse-NewPick/front',
+			'Devcourse-WhatToDo/todo-front',
+			'QRU',
+			'SproutFarm',
+			'MacFolio',
+			'DevCourse-FullStack',
+		]);
 	});
 
 	test('고정 저장소 카드는 설명 길이와 상관없이 크기가 같고, 언어 줄은 카드 아래에 붙는다', async ({ page }) => {
-		// 스냅샷: 설명이 없는 카드, 한 줄, 아주 긴 설명이 섞여 있다
+		// 스냅샷: 한 줄, 두 줄이 넘는 설명이 섞여 있다
 		await enterDesktop(page);
 		await dockItem(page, 'github').click();
 		const cards = appWindow(page, 'github').getByRole('region', { name: 'Pinned' }).locator('.gh-repo');

@@ -1,5 +1,6 @@
 // GitHub 앱에 보여 줄 프로필·README·저장소. 값은 API 서버가 GitHub에서 받아 둔 것(/github/profile)을 쓰고,
-// 서버가 없거나 닿지 않을 때는 아래 스냅샷(2026-10-03에 옮겨 적음)을 보여 준다.
+// 서버가 없거나 닿지 않을 때는 아래 스냅샷을 보여 준다. 스냅샷의 고정 저장소는 따로 적지 않고 프로젝트 목록(PROJECTS)에서 만든다.
+import { PROJECTS, type Project } from '@/shared/profile';
 
 export interface GithubProfile {
 	login: string;
@@ -37,20 +38,21 @@ export interface GithubData {
 	repos: RepoCard[];
 }
 
-const repo = (fullName: string, rest: Partial<RepoCard> = {}): RepoCard => {
+/** 프로젝트를 고정 저장소 카드로. 설명은 프로젝트 소개 한 줄, 홈페이지는 데모 주소 */
+export const projectRepo = (project: Project): RepoCard => {
+	const fullName = project.url.replace('https://github.com/', '');
 	const [owner, name] = fullName.split('/');
 	return {
 		fullName,
 		owner,
 		name,
-		description: null,
-		url: `https://github.com/${fullName}`,
-		homepage: null,
-		language: 'JavaScript',
+		description: project.description,
+		url: project.url,
+		homepage: project.demo ?? null,
+		language: project.language,
 		stars: 0,
 		forks: 0,
 		fork: false,
-		...rest,
 	};
 };
 
@@ -146,7 +148,7 @@ const README_SNAPSHOT = `<div align="center">
 </div>
 `;
 
-/** 서버에 닿지 않을 때 보여 줄 값 (https://github.com/hyeoniverse, 2026-10-02) */
+/** 서버에 닿지 않을 때 보여 줄 값. 프로필은 https://github.com/hyeoniverse를 2026-10-03에 옮겨 적었다 */
 export const GITHUB_SNAPSHOT: GithubData = {
 	profile: {
 		login: 'hyeoniverse',
@@ -162,24 +164,7 @@ export const GITHUB_SNAPSHOT: GithubData = {
 	},
 	readme: README_SNAPSHOT,
 	readmeBaseUrl: 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/',
-	repos: [
-		repo('hyeoniverse/MacFolio', { language: 'TypeScript' }),
-		repo('Devcourse-NewPick/front', {
-			description: 'A code repository designed to show the best GitHub has to offer.',
-			homepage: 'https://newpick-tan.vercel.app/',
-			language: 'TypeScript',
-		}),
-		repo('Devcourse-WhatToDo/todo-front', { forks: 1 }),
-		repo('hyeoniverse/QRU', {
-			description:
-				'QRU는 “QR” + “Who Are You”를 결합한 말로, 사용자가 자신의 정보를 입력하여 QR 코드를 생성하고 이를 통해 디지털 명함을 공유할 수 있는 웹 애플리케이션입니다.',
-			language: 'TypeScript',
-		}),
-		repo('hyeoniverse/SproutFarm', { homepage: 'https://sprout-farm-beta.vercel.app/' }),
-		repo('hyeoniverse/DevCourse-FullStack', {
-			description: '타입스크립트로 함께하는 웹 풀 사이클 개발(React, Node.js) 4기_5회차',
-		}),
-	],
+	repos: PROJECTS.map(projectRepo),
 };
 
 /** GitHub 언어 색 (github-linguist) */

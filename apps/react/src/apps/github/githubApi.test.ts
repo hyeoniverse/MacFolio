@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { githubStore, loadGithub, toGithubData } from './githubApi';
 import { GITHUB_SNAPSHOT } from './githubProfile';
 
+const snapshotRepo = (name: string) => GITHUB_SNAPSHOT.repos.find((repo) => repo.name === name)!;
+
 const SERVER = {
 	profile: {
 		login: 'hyeoniverse',
@@ -18,9 +20,9 @@ const SERVER = {
 	readme: '# 안녕하세요',
 	readmeBaseUrl: 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/',
 	repos: [
-		{ ...GITHUB_SNAPSHOT.repos[3], stars: 3 },
-		{ ...GITHUB_SNAPSHOT.repos[4], url: 'javascript:alert(1)' },
-		{ ...GITHUB_SNAPSHOT.repos[5], homepage: 'data:text/html,x' },
+		{ ...snapshotRepo('QRU'), stars: 3 },
+		{ ...snapshotRepo('SproutFarm'), url: 'javascript:alert(1)' },
+		{ ...snapshotRepo('DevCourse-FullStack'), homepage: 'data:text/html,x' },
 	],
 };
 
