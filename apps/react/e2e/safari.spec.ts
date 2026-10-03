@@ -46,6 +46,20 @@ test.describe('Safari', () => {
 		await expect(macfolio.getByRole('region', { name: '기술 사양' })).toContainText('NestJS');
 		await expect(safari.locator('.safari-address')).toHaveText('github.com/hyeoniverse/MacFolio');
 		await expect(macfolio.getByRole('link', { name: '데모 보기' })).toHaveCount(0);
+
+		// 같은 앱을 데스크톱과 휴대폰에서 나란히: 앱을 고르면 두 화면이 함께 바뀐다
+		const devices = macfolio.getByRole('region', { name: '어디서 열어도' });
+		await expect(devices.getByRole('img', { name: '데스크톱에서 연 메모' })).toBeVisible();
+		await devices.getByRole('button', { name: /메시지/ }).click();
+		await expect(devices.getByRole('button', { name: /메시지/ })).toHaveAttribute('aria-pressed', 'true');
+		await expect(devices.getByRole('img', { name: '데스크톱에서 연 메시지' })).toBeVisible();
+		await expect(devices.getByRole('img', { name: '휴대폰에서 연 메시지' })).toBeVisible();
+		await expect(devices.getByRole('img', { name: '데스크톱에서 연 메모' })).toHaveCount(0);
+
+		// 만든 방식에는 요청이 지나는 길을 그린 그림이 있다
+		await expect(
+			macfolio.getByRole('region', { name: '만든 방식' }).getByRole('img', { name: /Cloudflare Tunnel/ })
+		).toBeVisible();
 	});
 
 	test('포트폴리오(HYEONIVERSE) 탭은 데모 주소를 보여준다', async ({ page }) => {
