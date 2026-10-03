@@ -279,9 +279,18 @@
 	font-weight: 700;
 }
 
-.tm-help,
-.tm-history {
+.tm-help ul,
+.tm-history,
+.tm-names {
 	list-style: none;
+}
+
+.tm-help .tm-comment {
+	margin: 4px 0 2px;
+}
+
+.tm-help ul + .tm-comment {
+	margin-top: 14px;
 }
 
 .tm-help li {
@@ -296,6 +305,7 @@
 }
 
 .tm-help button,
+.tm-names button,
 .tm-chips button {
 	padding: 0;
 	border: none;
@@ -306,8 +316,44 @@
 	cursor: pointer;
 }
 
-.tm-help button:hover {
+.tm-help button:hover,
+.tm-names button:hover:not(:disabled) {
 	text-decoration: underline;
+}
+
+/* ls: 이름을 여러 단으로. 폴더는 파랑, 파일은 흰색. 누르면 들어가거나 읽는다 */
+.tm-names {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	gap: 2px 18px;
+}
+
+.tm-names .tm-name {
+	color: var(--tm-text);
+}
+
+.tm-names button:disabled {
+	cursor: default;
+}
+
+/* cat·tree: 파일 내용은 고정폭 그대로, 긴 줄은 접는다 */
+.tm-file {
+	max-height: 520px;
+	overflow: auto;
+	padding: 10px 14px;
+	border: 1px solid var(--tm-line);
+	border-radius: 6px;
+	background-color: #010409;
+	color: var(--tm-out);
+	font: inherit;
+	font-size: 13px;
+	line-height: 1.65;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.tm-muted {
+	color: var(--tm-muted);
 }
 
 .tm-history {

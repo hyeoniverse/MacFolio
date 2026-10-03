@@ -1,15 +1,35 @@
-// DevCourse (학습 기록): 페이지 전체가 터미널 화면 하나(창 테두리 없이). 위에는 미리 쳐 둔 명령과 결과로 소개, 숫자, 주차별 기록,
-// 실습 프로젝트, 컨벤션, 만든 방식, 맡은 일, 기술 사양이 나오고, 맨 아래 프롬프트에서는 직접 명령을 쳐 볼 수 있다.
+// DevCourse (학습 기록): 페이지 전체가 터미널 화면 하나(창 테두리 없이). 소개 아래에는 프롬프트만 있고,
+// 숫자·주차별 기록·실습 프로젝트·컨벤션·만든 방식·맡은 일·기술 사양은 명령을 쳐야 나온다.
+// 실제 저장소(DevCourse-FullStack)도 ls·cd·tree·cat으로 돌아볼 수 있다: 날짜별 강의 노트와 실습 코드는 페이지에 없는 내용이다.
 // 명령은 고정폭 글꼴, 결과의 한글 문장은 읽기 쉬운 본문 글꼴로 쓴다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project } from '@/shared/profile';
 import { Links } from '@/apps/safari/project/parts';
+import {
+	completePath,
+	entries as listDir,
+	isDir,
+	loadRepo,
+	nodeAt,
+	resolve,
+	treeLines,
+	type RepoDir,
+} from '@/apps/safari/project/terminalRepo';
 import '@/apps/safari/project/TerminalPage.css';
 
-const Prompt: React.FC<{ command?: string; children?: React.ReactNode }> = ({ command, children }) => (
+/** 저장소 이름 (프롬프트의 맨 위 폴더) */
+const REPO = 'DevCourse-FullStack';
+
+/** 프롬프트 한 줄. path는 저장소 안의 폴더, home이면 저장소 밖(~) */
+const Prompt: React.FC<{ command?: string; path?: string[]; home?: boolean; children?: React.ReactNode }> = ({
+	command,
+	path = [],
+	home = false,
+	children,
+}) => (
 	<p className="tm-prompt">
 		<span className="tm-user">hyeoniverse@devcourse</span>
-		<span className="tm-path">~</span>
+		<span className="tm-path">{home ? '~' : ['~', REPO, ...path].join('/')}</span>
 		<span className="tm-dollar">$</span> {command !== undefined ? <code>{command}</code> : children}
 	</p>
 );
@@ -118,75 +138,238 @@ const Stack: React.FC<{ project: Project }> = ({ project }) => (
 
 /* ─── 직접 치는 명령 ─── */
 
-type Command = {
-	/** 프롬프트에 보이는 대표 이름 */
+/** 페이지 내용을 보여 주는 명령: 결과 구역의 이름(보조 기술·시험이 찾는 이름)과 함께 */
+type PageCommand = {
 	name: string;
-	/** 같은 뜻으로 받아 주는 다른 이름 */
 	aliases: string[];
 	help: string;
-	run?: React.FC<{ project: Project }>;
+	label: string;
+	run: React.FC<{ project: Project }>;
 };
 
-const COMMANDS: Command[] = [
-	{ name: 'help', aliases: ['?', 'man'], help: '쓸 수 있는 명령' },
-	{ name: 'cat ABOUT.md', aliases: ['about', 'cat about'], help: '이 저장소 소개', run: About },
-	{ name: 'stat .', aliases: ['stat', 'info'], help: '기간과 숫자', run: Stat },
-	{ name: 'git log --by-week', aliases: ['git log', 'log', 'weeks'], help: '주차별 기록', run: Weeks },
+const PAGE_COMMANDS: PageCommand[] = [
+	{ name: 'cat ABOUT.md', aliases: ['about'], help: '이 저장소 소개', label: '소개', run: About },
+	{ name: 'stat .', aliases: ['stat', 'info'], help: '기간과 숫자', label: '한눈에 보기', run: Stat },
 	{
-		name: 'ls Projects/',
-		aliases: ['ls', 'ls projects', 'projects'],
+		name: 'git log --by-week',
+		aliases: ['git log', 'log', 'weeks'],
+		help: '주차별 기록',
+		label: '진행 과정',
+		run: Weeks,
+	},
+	{
+		name: 'projects',
+		aliases: ['ls projects --long'],
 		help: '직접 만든 실습 프로젝트',
+		label: '주요 기능',
 		run: ProjectsList,
 	},
-	{ name: 'git types', aliases: ['types', 'conventions', 'commits'], help: '커밋 타입 컨벤션', run: Types },
-	{ name: 'cat BUILD.md', aliases: ['build', 'cat build'], help: '만든 방식', run: Build },
-	{ name: 'whoami', aliases: ['me', 'whoami --contributions'], help: '맡은 일', run: Contributions },
-	{ name: 'cat stack.json', aliases: ['stack', 'cat stack'], help: '기술 사양', run: Stack },
-	{ name: 'open', aliases: ['open github', 'github'], help: '저장소 열기 링크' },
-	{ name: 'date', aliases: [], help: '지금 시각' },
-	{ name: 'history', aliases: [], help: '친 명령 목록' },
-	{ name: 'clear', aliases: ['cls'], help: '화면 지우기' },
+	{ name: 'git types', aliases: ['types', 'conventions'], help: '커밋 타입 컨벤션', label: '커밋 컨벤션', run: Types },
+	{ name: 'cat BUILD.md', aliases: ['build'], help: '만든 방식', label: '만든 방식', run: Build },
+	{ name: 'whoami', aliases: ['me'], help: '맡은 일', label: '맡은 일', run: Contributions },
+	{ name: 'cat stack.json', aliases: ['stack'], help: '기술 사양', label: '기술 사양', run: Stack },
 ];
 
-/** 대소문자와 끝의 / 를 가리지 않고, 빈칸은 하나로 */
-const normalize = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ').replace(/\/$/, '');
+/** 저장소를 돌아보는 명령과 그 밖의 명령 (help에 보이는 순서) */
+const SHELL_COMMANDS: { name: string; help: string }[] = [
+	{ name: 'ls', help: '폴더 안 보기 (ls Week02)' },
+	{ name: 'cd', help: '폴더로 들어가기 (cd Week02/03, cd ..)' },
+	{ name: 'tree', help: '폴더 구조를 두 단계까지' },
+	{ name: 'cat', help: '파일 읽기 (cat Readme.md)' },
+	{ name: 'pwd', help: '지금 폴더' },
+	{ name: 'open', help: '저장소 링크' },
+	{ name: 'history', help: '친 명령 목록' },
+	{ name: 'clear', help: '화면 지우기 (Ctrl+L)' },
+];
 
-const find = (input: string) => {
-	const key = normalize(input);
-	return COMMANDS.find((command) => [command.name, ...command.aliases].some((name) => normalize(name) === key));
+/** 맨 위 폴더에만 보이는, 페이지 내용을 담은 파일 */
+const PAGE_FILES: Record<string, string> = {
+	'ABOUT.md': 'cat ABOUT.md',
+	'BUILD.md': 'cat BUILD.md',
+	'stack.json': 'cat stack.json',
 };
 
-/** 앞부분이 맞는 첫 명령 이름 (Tab으로 채우기) */
-const complete = (input: string) => {
+/** 대소문자와 빈칸 수를 가리지 않는다 */
+const normalize = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ');
+
+const findPage = (input: string) => {
 	const key = normalize(input);
-	if (!key) return input;
-	return COMMANDS.find((command) => normalize(command.name).startsWith(key))?.name ?? input;
+	return PAGE_COMMANDS.find((command) => [command.name, ...command.aliases].some((name) => normalize(name) === key));
 };
 
-/** 칩으로 보여 주는 자주 쓰는 명령 */
-const SUGGESTED = ['help', 'ls Projects/', 'git log --by-week', 'whoami', 'cat stack.json', 'clear'];
+const COMMAND_NAMES = [...PAGE_COMMANDS.map((command) => command.name), 'help', ...SHELL_COMMANDS.map((c) => c.name)];
 
-/** 친 명령 하나: 그때까지의 명령 목록을 함께 둔다(history 결과) */
-type Entry = { id: number; input: string; past: string[] };
+/** 칩으로 보여 주는 첫걸음 */
+const SUGGESTED = ['help', 'stat .', 'projects', 'ls', 'cd Week02', 'cat Readme.md', 'whoami', 'cat stack.json'];
+
+/** 명령 하나의 결과 */
+type Output =
+	| { kind: 'page'; command: PageCommand }
+	| { kind: 'help' }
+	| { kind: 'list'; path: string[]; items: { name: string; dir: boolean }[] }
+	| { kind: 'tree'; lines: string[] }
+	| { kind: 'file'; name: string; text: string | null }
+	| { kind: 'text'; text: string }
+	| { kind: 'error'; text: string }
+	| { kind: 'links' }
+	| { kind: 'history'; past: string[] }
+	| { kind: 'none' };
+
+/** 친 명령 하나: 친 자리(cwd)와 결과 */
+type Entry = { id: number; input: string; cwd: string[]; output: Output };
+
+/** 저장소가 필요 없는 명령의 결과 */
+function runSimple(text: string, cwd: string[], past: string[]): Output | null {
+	const page = findPage(text);
+	if (page) return { kind: 'page', command: page };
+	const [name] = normalize(text).split(' ');
+	if (name === 'help' || name === '?' || name === 'man') return { kind: 'help' };
+	if (name === 'open') return { kind: 'links' };
+	if (name === 'pwd') return { kind: 'text', text: ['~', REPO, ...cwd].join('/') };
+	if (name === 'history') return { kind: 'history', past };
+	if (name === 'date') return { kind: 'text', text: new Date().toLocaleString('ko-KR') };
+	if (name === 'sudo') return { kind: 'error', text: '이 터미널에서는 sudo를 쓸 수 없습니다' };
+	return null;
+}
+
+/** 저장소를 돌아보는 명령의 결과와 옮겨 간 폴더 */
+function runRepo(repo: RepoDir, text: string, cwd: string[]): { output: Output; cwd: string[] } {
+	const [name, ...rest] = text.trim().split(/\s+/);
+	const arg = rest.join(' ');
+	const command = name.toLowerCase();
+	const where = arg ? resolve(repo, cwd, arg) : cwd;
+	const missing = { kind: 'error', text: `${command}: ${arg}: 그런 파일이나 폴더가 없습니다` } as const;
+	const listOf = (path: string[]): Output => {
+		const dir = nodeAt(repo, path);
+		const items = isDir(dir) ? listDir(dir) : [];
+		// 맨 위에는 페이지 내용을 담은 파일도 보인다
+		const extra = path.length === 0 ? Object.keys(PAGE_FILES).map((file) => ({ name: file, dir: false })) : [];
+		return { kind: 'list', path, items: [...items, ...extra] };
+	};
+	switch (command) {
+		case 'ls': {
+			if (!where) return { output: missing, cwd };
+			const node = nodeAt(repo, where);
+			if (!isDir(node)) return { output: { kind: 'text', text: where[where.length - 1] }, cwd };
+			return { output: listOf(where), cwd };
+		}
+		case 'cd': {
+			const next = arg ? where : [];
+			if (!next) return { output: missing, cwd };
+			if (!isDir(nodeAt(repo, next))) return { output: { kind: 'error', text: `cd: ${arg}: 폴더가 아닙니다` }, cwd };
+			// 들어간 폴더의 내용을 바로 보여 준다 (cd 하고 ls 한 것처럼)
+			return { output: listOf(next), cwd: next };
+		}
+		case 'tree': {
+			if (!where) return { output: missing, cwd };
+			const node = nodeAt(repo, where);
+			if (!isDir(node)) return { output: missing, cwd };
+			return { output: { kind: 'tree', lines: ['.', ...treeLines(node, 2)] }, cwd };
+		}
+		case 'cat':
+		case 'head':
+		case 'less': {
+			if (!arg) return { output: { kind: 'error', text: `${command}: 읽을 파일 이름을 넣어 주세요` }, cwd };
+			if (!where) return { output: missing, cwd };
+			const node = nodeAt(repo, where);
+			if (isDir(node)) return { output: { kind: 'error', text: `${command}: ${arg}: 폴더입니다` }, cwd };
+			return { output: { kind: 'file', name: where[where.length - 1], text: node ?? null }, cwd };
+		}
+		default:
+			return { output: { kind: 'error', text: `zsh: command not found: ${name}` }, cwd };
+	}
+}
+
+/** 글 파일: 마크다운 제목 줄은 색을 달리한다 */
+const FileView: React.FC<{ name: string; text: string | null }> = ({ name, text }) =>
+	text === null ? (
+		<p className="tm-muted">{name}: 그림 같은 파일이라 여기서는 열지 않습니다</p>
+	) : (
+		<pre className="tm-file">
+			{text.split('\n').map((line, i) => (
+				<span key={i} className={/^#{1,6} /.test(line) ? 'tm-heading' : undefined}>
+					{line}
+					{'\n'}
+				</span>
+			))}
+		</pre>
+	);
 
 const Shell: React.FC<{ project: Project }> = ({ project }) => {
-	const [entries, setEntries] = useState<Entry[]>([]);
+	const [entries, setEntries] = useState<Entry[]>(() => [{ id: 0, input: 'help', cwd: [], output: { kind: 'help' } }]);
+	const [cwd, setCwd] = useState<string[]>([]);
+	const [repo, setRepo] = useState<RepoDir | null>(null);
+	const [failed, setFailed] = useState(false);
 	const [value, setText] = useState('');
+	const [history, setHistory] = useState<string[]>([]);
+	// 위·아래 화살표로 고르고 있는 이전 명령 (없으면 null)
+	const [cursor, setCursor] = useState<number | null>(null);
+	const [typing, setTyping] = useState(false);
 	// 커서가 서 있는 글자 자리, 입력칸에 커서가 있는지
 	const [caret, setCaret] = useState(0);
 	const [focused, setFocused] = useState(false);
+	const input = useRef<HTMLInputElement>(null);
+	const end = useRef<HTMLDivElement>(null);
+	const nextId = useRef(1);
+	// 저장소를 기다리는 동안 친 명령 (불러오면 이어서 실행)
+	const waiting = useRef<{ text: string; past: string[] }[]>([]);
+
 	/** 글을 통째로 바꿀 때(이전 명령, Tab, 칩)는 커서를 끝으로 */
 	const setValue = (text: string) => {
 		setText(text);
 		setCaret(text.length);
 	};
-	const [history, setHistory] = useState<string[]>([]);
-	// 위·아래 화살표로 고르고 있는 이전 명령 (없으면 null)
-	const [cursor, setCursor] = useState<number | null>(null);
-	const [typing, setTyping] = useState(false);
-	const input = useRef<HTMLInputElement>(null);
-	const end = useRef<HTMLDivElement>(null);
-	const nextId = useRef(0);
+
+	// 저장소는 페이지를 열면 바로 받아 둔다
+	useEffect(() => {
+		let alive = true;
+		loadRepo()
+			.then((data) => alive && setRepo(data))
+			.catch(() => alive && setFailed(true));
+		return () => {
+			alive = false;
+		};
+	}, []);
+
+	const push = (input: string, at: string[], output: Output) => {
+		nextId.current += 1;
+		setEntries((prev) => [...prev, { id: nextId.current, input, cwd: at, output }]);
+	};
+
+	const execute = (text: string, past: string[], data: RepoDir | null) => {
+		const simple = runSimple(text, cwd, past);
+		if (simple) return push(text, cwd, simple);
+		if (!data) {
+			if (failed) return push(text, cwd, { kind: 'error', text: '저장소를 불러오지 못했습니다' });
+			waiting.current.push({ text, past });
+			return push(text, cwd, { kind: 'text', text: '저장소를 불러오는 중…' });
+		}
+		const result = runRepo(data, text, cwd);
+		push(text, cwd, result.output);
+		setCwd(result.cwd);
+	};
+
+	// 저장소를 기다리던 명령은 불러온 뒤 다시 실행한다
+	useEffect(() => {
+		if (!repo || waiting.current.length === 0) return;
+		const queued = waiting.current;
+		waiting.current = [];
+		setEntries((prev) =>
+			prev.filter((entry) => !(entry.output.kind === 'text' && entry.output.text === '저장소를 불러오는 중…'))
+		);
+		let at = cwd;
+		for (const { text } of queued) {
+			const result = runRepo(repo, text, at);
+			nextId.current += 1;
+			const id = nextId.current;
+			const from = at;
+			setEntries((prev) => [...prev, { id, input: text, cwd: from, output: result.output }]);
+			at = result.cwd;
+		}
+		setCwd(at);
+		// cwd는 기다리던 명령을 친 자리라 다시 돌리지 않는다
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [repo]);
 
 	const run = (raw: string) => {
 		const text = raw.trim();
@@ -195,24 +378,23 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 		if (!text) return;
 		const past = [...history, text];
 		setHistory(past);
-		if (find(text)?.name === 'clear') {
+		if (['clear', 'cls'].includes(normalize(text))) {
 			setEntries([]);
 			return;
 		}
-		nextId.current += 1;
-		setEntries((prev) => [...prev, { id: nextId.current, input: text, past }]);
+		execute(text, past, repo);
 	};
 
 	// 새 결과가 나오면 프롬프트가 보이게 내린다
 	useEffect(() => {
-		if (entries.length) end.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+		if (entries.length > 1) end.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 	}, [entries]);
 
-	// 칩을 누르면 한 글자씩 쳐서 실행한다
+	// 칩·목록을 누르면 한 글자씩 쳐서 실행한다
 	const type = (text: string) => {
 		if (typing) return;
 		setTyping(true);
-		input.current?.focus();
+		input.current?.focus({ preventScroll: true });
 		let i = 0;
 		const timer = window.setInterval(() => {
 			i += 1;
@@ -222,14 +404,27 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 				window.setTimeout(() => {
 					run(text);
 					setTyping(false);
-				}, 160);
+				}, 140);
 			}
-		}, 45);
+		}, 35);
+	};
+
+	/** Tab: 첫 낱말은 명령, 그 뒤는 저장소 경로를 채운다 */
+	const fill = (text: string) => {
+		const space = text.indexOf(' ');
+		if (space < 0) {
+			const key = text.toLowerCase();
+			const match = COMMAND_NAMES.find((name) => name.toLowerCase().startsWith(key));
+			return match ?? text;
+		}
+		if (!repo) return text;
+		const command = text.slice(0, space + 1);
+		return command + completePath(repo, cwd, text.slice(space + 1).trimStart());
 	};
 
 	const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Tab') {
-			const filled = complete(value);
+			const filled = fill(value);
 			if (filled !== value) {
 				event.preventDefault();
 				setValue(filled);
@@ -250,38 +445,79 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 		}
 	};
 
-	const output = ({ input: text, past }: Entry) => {
-		const command = find(text);
-		if (!command) {
-			return (
-				<p className="tm-error">
-					zsh: command not found: {text.split(' ')[0]} — <span className="tm-hint">help</span>를 쳐 보세요
-				</p>
-			);
-		}
-		if (command.run) return <command.run project={project} />;
-		switch (command.name) {
+	/** 목록의 이름: 폴더는 들어가고 파일은 읽는다 (컴포넌트로 두면 다시 그릴 때마다 단추가 갈려 누른 것이 사라진다) */
+	const item = (name: string, dir: boolean, path: string[]) => {
+		const page = path.length === 0 ? PAGE_FILES[name] : undefined;
+		const relative = [...path.slice(cwd.length), name].join('/');
+		const command = page ?? (dir ? `cd ${relative}` : `cat ${relative}`);
+		return (
+			<button type="button" className={dir ? 'tm-dir' : 'tm-name'} onClick={() => type(command)} disabled={typing}>
+				{name}
+				{dir ? '/' : ''}
+			</button>
+		);
+	};
+
+	const output = (entry: Entry) => {
+		const out = entry.output;
+		switch (out.kind) {
+			case 'page':
+				return <out.command.run project={project} />;
 			case 'help':
 				return (
-					<ul className="tm-help">
-						{COMMANDS.map((item) => (
-							<li key={item.name}>
-								<button type="button" onClick={() => type(item.name)} disabled={typing}>
-									{item.name}
-								</button>
-								<span>{item.help}</span>
-							</li>
+					<div className="tm-help">
+						<p className="tm-comment"># 이 과정에서 한 일</p>
+						<ul>
+							{PAGE_COMMANDS.map((item) => (
+								<li key={item.name}>
+									<button type="button" onClick={() => type(item.name)} disabled={typing}>
+										{item.name}
+									</button>
+									<span>{item.help}</span>
+								</li>
+							))}
+						</ul>
+						<p className="tm-comment"># 저장소 돌아보기: 날짜별 강의 노트와 실습 코드</p>
+						<ul>
+							{SHELL_COMMANDS.map((item) => (
+								<li key={item.name}>
+									<button type="button" onClick={() => type(item.name)} disabled={typing}>
+										{item.name}
+									</button>
+									<span>{item.help}</span>
+								</li>
+							))}
+						</ul>
+					</div>
+				);
+			case 'list':
+				return out.items.length ? (
+					<ul className="tm-names">
+						{out.items.map((each) => (
+							<li key={each.name}>{item(each.name, each.dir, out.path)}</li>
 						))}
 					</ul>
+				) : (
+					<p className="tm-muted">(비어 있음)</p>
 				);
-			case 'open':
+			case 'tree':
+				return <pre className="tm-file">{out.lines.join('\n')}</pre>;
+			case 'file':
+				return <FileView name={out.name} text={out.text} />;
+			case 'text':
+				return <p className="tm-out">{out.text}</p>;
+			case 'error':
+				return (
+					<p className="tm-error">
+						{out.text} — <span className="tm-hint">help</span>를 쳐 보세요
+					</p>
+				);
+			case 'links':
 				return <Links project={project} className="tm-links" />;
-			case 'date':
-				return <p className="tm-out">{new Date().toLocaleString('ko-KR')}</p>;
 			case 'history':
 				return (
 					<ol className="tm-history">
-						{past.map((item, i) => (
+						{out.past.map((item, i) => (
 							<li key={i}>{item}</li>
 						))}
 					</ol>
@@ -301,14 +537,20 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 				input.current?.focus();
 			}}
 		>
-			<p className="tm-comment"># 직접 쳐 보세요. Tab으로 채우고, ↑↓로 이전 명령을 불러옵니다</p>
 			<div className="tm-entries" aria-live="polite">
-				{entries.map((entry) => (
-					<div key={entry.id} className="tm-entry">
-						<Prompt command={entry.input} />
-						{output(entry)}
-					</div>
-				))}
+				{entries.map((entry) =>
+					entry.output.kind === 'page' ? (
+						<section key={entry.id} className="tm-entry" aria-label={entry.output.command.label}>
+							<Prompt command={entry.input} path={entry.cwd} />
+							{output(entry)}
+						</section>
+					) : (
+						<div key={entry.id} className="tm-entry">
+							<Prompt command={entry.input} path={entry.cwd} />
+							{output(entry)}
+						</div>
+					)
+				)}
 			</div>
 			<form
 				className="tm-input"
@@ -317,7 +559,7 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 					run(value);
 				}}
 			>
-				<Prompt>
+				<Prompt path={cwd}>
 					{/* 글은 커서 앞·커서 칸·뒤로 나눠 그리고, 진짜 입력칸은 그 위에 투명하게 덮는다 (커서가 글자 사이를 따라간다) */}
 					<span className="tm-line" data-focused={focused}>
 						<span aria-hidden="true">{value.slice(0, Math.min(caret, value.length))}</span>
@@ -357,19 +599,12 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 	);
 };
 
-/** 맨 아래 프롬프트로 내려가 입력칸에 커서를 둔다 */
-const focusShell = (event: React.MouseEvent<HTMLElement>) => {
-	const field = event.currentTarget.closest('.tm')?.querySelector<HTMLInputElement>('.tm-input input');
-	field?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-	field?.focus({ preventScroll: true });
-};
-
 const TerminalPage: React.FC<{ project: Project }> = ({ project }) => (
 	<div className="tm">
 		<header className="tm-block">
 			{project.terminal?.map((line) =>
 				line.startsWith('$ ') ? (
-					<Prompt key={line} command={line.slice(2)} />
+					<Prompt key={line} command={line.slice(2)} home={line.startsWith('$ git clone')} />
 				) : (
 					<p key={line} className="tm-out">
 						{line}
@@ -380,54 +615,10 @@ const TerminalPage: React.FC<{ project: Project }> = ({ project }) => (
 			<p className="tm-heading"># {project.name}</p>
 			<h1>{project.tagline}</h1>
 			<p className="tm-out">{project.description}</p>
-			<button type="button" className="tm-jump" onClick={focusShell}>
-				# 맨 아래 프롬프트에서 직접 명령을 쳐 볼 수 있습니다 ↓
-			</button>
+			<p className="tm-comment">
+				# 아래에 명령을 쳐서 둘러보세요. 저장소의 날짜별 강의 노트와 실습 코드도 열어 볼 수 있습니다
+			</p>
 		</header>
-
-		<section className="tm-block" aria-label="한눈에 보기">
-			<Prompt command="stat ." />
-			<Stat project={project} />
-		</section>
-
-		{project.timeline && (
-			<section className="tm-block" aria-label="진행 과정">
-				<Prompt command="git log --by-week" />
-				<Weeks project={project} />
-			</section>
-		)}
-
-		<section className="tm-block" aria-label="주요 기능">
-			<Prompt command="ls Projects/" />
-			<ProjectsList project={project} />
-		</section>
-
-		{project.conventions && (
-			<section className="tm-block" aria-label="커밋 컨벤션">
-				<Prompt command="git types" />
-				<Types project={project} />
-			</section>
-		)}
-
-		<section className="tm-block" aria-label="만든 방식">
-			<Prompt command="cat BUILD.md" />
-			<Build project={project} />
-		</section>
-
-		<section className="tm-block" aria-label="맡은 일">
-			<Prompt command="whoami" />
-			<Contributions project={project} />
-		</section>
-
-		<section className="tm-block" aria-label="기술 사양">
-			<Prompt command="cat stack.json" />
-			<Stack project={project} />
-		</section>
-
-		<section className="tm-block" aria-label="링크">
-			<Prompt command="open" />
-			<Links project={project} className="tm-links" />
-		</section>
 
 		<Shell project={project} />
 	</div>
