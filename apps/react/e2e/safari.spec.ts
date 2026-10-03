@@ -48,10 +48,9 @@ test.describe('Safari', () => {
 		await expect(macfolio.getByRole('link', { name: '데모 보기' })).toHaveCount(0);
 
 		// 같은 앱을 데스크톱과 휴대폰에서 나란히: 앱을 고르면 두 화면이 함께 바뀐다
-		// 화면 크기 시뮬레이터: 시험은 움직임 줄이기라 저절로 넘어가지 않고 모니터에서 멈춰 있다
+		// 화면 크기 시뮬레이터: 시험은 움직임 줄이기라 화면에 고정되지 않고, 단계를 눌러 고른다
 		const devices = macfolio.getByRole('region', { name: '어디서 열어도' });
 		await expect(devices.getByRole('img', { name: '모니터에서 연 메모' })).toBeVisible();
-		await expect(devices.getByRole('button', { name: '재생' })).toBeVisible();
 		await devices.getByRole('button', { name: /메시지/ }).click();
 		await expect(devices.getByRole('button', { name: /메시지/ })).toHaveAttribute('aria-pressed', 'true');
 		await expect(devices.getByRole('img', { name: '모니터에서 연 메시지' })).toBeVisible();
@@ -326,7 +325,9 @@ test('칸반(WTD): 카드를 다음 열로 옮기면 열의 카드 수가 바뀌
 	await expect(panel.getByRole('button', { name: '처음대로' })).toHaveCount(0);
 });
 
-test('신문(NewPick): 기사를 오려 두면 제호 옆 스크랩 수가 늘고, 다시 누르면 준다', async ({ page }) => {
+test('신문(NewPick): 기사를 오려 두면 주요 기능 제목 옆에 오려 둔 기사 수가 늘고, 다시 누르면 오리는 법으로 돌아간다', async ({
+	page,
+}) => {
 	await enterDesktop(page);
 	const safari = appWindow(page, 'safari');
 	const panel = safari.getByRole('tabpanel');
@@ -335,7 +336,7 @@ test('신문(NewPick): 기사를 오려 두면 제호 옆 스크랩 수가 늘�
 	await clip.focus();
 	await clip.click();
 	await expect(clip).toHaveAttribute('aria-pressed', 'true');
-	await expect(panel.locator('.np-scrap')).toContainText('스크랩 1');
+	await expect(articles.locator('.np-scrap')).toHaveText('오려 둔 기사 1개');
 	await clip.click();
-	await expect(panel.locator('.np-scrap')).toContainText('스크랩 0');
+	await expect(articles.locator('.np-scrap')).toContainText('가위로 오려 두세요');
 });

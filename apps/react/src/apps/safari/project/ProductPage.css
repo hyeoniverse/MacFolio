@@ -25,32 +25,31 @@
 	transform: translateY(calc(var(--p) * -120px));
 }
 
-/* 처음에는 제목 아래 작게, 끝에는 무대 가운데에 크게 (아래에 한 줄 들어갈 자리를 남긴다) */
-.pd-laptop.pd-hero-device {
+/* 처음에는 제목 아래 작게, 끝에는 무대 가운데에 크게. 노트북과 아래 한 줄이 한 덩어리로 움직인다 */
+.pd-hero-group {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	width: min(880px, 82%);
-	transform: translate(-50%, -50%) translateY(calc((1 - var(--p)) * var(--view) * 0.38 - var(--p) * 64px))
-		scale(calc(0.6 + var(--p) * 0.36));
+	width: min(820px, 80%);
+	transform: translate(-50%, -50%) translateY(calc((1 - var(--p)) * var(--view) * 0.42))
+		scale(calc(0.6 + var(--p) * 0.3));
 	transform-origin: 50% 50%;
 	will-change: transform;
 }
 
-/* 끝에 나오는 한 줄: 크게, 진하게, 뒷말은 강조색 그라데이션 */
+/* 한 줄: 노트북이 거의 다 올라왔을 때 아래에서 떠오르며 흐림이 걷힌다 */
 .pd-caption {
-	--c: clamp(0, (var(--p) - 0.7) * 3.4, 1);
-	position: absolute;
-	right: 0;
-	bottom: clamp(14px, 3vh, 28px);
-	left: 0;
+	--c: clamp(0, (var(--p) - 0.55) * 3, 1);
+	margin-top: 34px;
 	color: var(--sp-text);
-	font-size: clamp(26px, 4.6cqi, 46px);
+	font-size: clamp(30px, 5.2cqi, 52px);
 	font-weight: 800;
 	letter-spacing: -0.025em;
 	line-height: 1.15;
+	text-align: center;
 	opacity: var(--c);
-	transform: translateY(calc((1 - var(--c)) * 28px));
+	transform: translateY(calc((1 - var(--c)) * 40px));
+	filter: blur(calc((1 - var(--c)) * 8px));
 }
 
 .pd-caption strong {
@@ -150,23 +149,10 @@
 	color: var(--sp-dark-muted);
 }
 
-/* ─── 주요 기능: 타일마다 아이콘과 크게 깔린 그림 ─── */
+/* ─── 주요 기능: 타일마다 단색 아이콘, 구석에 아주 옅게 깔린 같은 그림 ─── */
 .pd-tiles li {
-	--tone: #0071e3;
 	position: relative;
 	overflow: hidden;
-}
-
-.pd-tiles li[data-tone='1'] {
-	--tone: #f0a020;
-}
-
-.pd-tiles li[data-tone='2'] {
-	--tone: #30b85a;
-}
-
-.pd-tiles li[data-tone='3'] {
-	--tone: #a24bf5;
 }
 
 .pd-tiles li > :not(.pd-tile-mark) {
@@ -174,54 +160,60 @@
 }
 
 .pd-tile-icon {
-	display: grid;
-	place-items: center;
-	width: 48px;
-	height: 48px;
-	margin-bottom: 18px;
-	border-radius: 14px;
-	background: linear-gradient(135deg, var(--tone), color-mix(in srgb, var(--tone) 55%, #ffffff));
-	box-shadow: 0 10px 22px color-mix(in srgb, var(--tone) 35%, transparent);
-	color: #ffffff;
-	font-size: 21px;
+	display: block;
+	margin-bottom: 16px;
+	color: var(--sp-accent);
+	font-size: 26px;
 }
 
 .pd-tile-mark {
 	position: absolute;
-	right: -14px;
-	bottom: -30px;
-	color: var(--tone);
-	font-size: 150px;
-	opacity: 0.08;
-	transform: rotate(-12deg);
-	transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+	right: -10px;
+	bottom: -24px;
+	color: var(--sp-text);
+	font-size: 130px;
+	opacity: 0.035;
+	transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
 	pointer-events: none;
 }
 
-.pd-tiles li[data-shown] {
-	transition:
-		opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
-		transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
-		box-shadow 0.3s ease-out;
-}
-
-.pd-tiles li[data-shown]:hover {
-	transform: translateY(-4px);
-	box-shadow: 0 18px 40px color-mix(in srgb, var(--tone) 18%, transparent);
-}
-
 .pd-tiles li:hover .pd-tile-mark {
-	transform: rotate(-4deg) scale(1.08);
+	transform: scale(1.06);
 }
 
-/* ─── 어디서 열어도: 화면 크기 시뮬레이터 ─── */
-.pd-sim-bar {
+/* ─── 어디서 열어도: 화면 크기 시뮬레이터. 구역을 지나는 동안 화면에 고정되고, 스크롤한 만큼 크기가 바뀐다 ─── */
+.pd-devices.sp-section {
+	padding: 0;
+}
+
+.pd-sim-track {
+	--sp: 0;
+	height: calc(var(--view, 700px) * 3.4);
+}
+
+.pd-sim-sticky {
+	position: sticky;
+	top: 0;
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	margin-bottom: 20px;
+	height: var(--view, 700px);
+	overflow: hidden;
+}
+
+.pd-sim-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+	gap: 40px;
+	align-items: center;
+	width: 100%;
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 0 32px;
+}
+
+.pd-sim-copy .sp-headline {
+	margin-bottom: 24px;
+	font-size: clamp(26px, 3.6cqi, 38px);
 }
 
 .pd-switch {
@@ -236,7 +228,7 @@
 	display: flex;
 	align-items: baseline;
 	gap: 6px;
-	padding: 8px 18px;
+	padding: 8px 16px;
 	border: none;
 	border-radius: 980px;
 	background: none;
@@ -259,19 +251,6 @@
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
-.pd-sim-play {
-	display: grid;
-	place-items: center;
-	width: 40px;
-	height: 40px;
-	border: none;
-	border-radius: 50%;
-	background-color: var(--sp-alt);
-	color: var(--sp-text);
-	font-size: 14px;
-	cursor: pointer;
-}
-
 /* 무대: 기기는 같은 바닥선에 서고, 아래에 지금 폭을 재는 자가 있다 */
 .pd-sim {
 	--ease: cubic-bezier(0.65, 0, 0.35, 1);
@@ -281,8 +260,8 @@
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
-	aspect-ratio: 16 / 10;
-	padding-bottom: 11cqi;
+	aspect-ratio: 5 / 4;
+	padding-bottom: 12%;
 	border-radius: 28px;
 	background:
 		radial-gradient(60% 55% at 50% 45%, color-mix(in srgb, var(--sp-accent) 12%, transparent), transparent 70%),
@@ -447,12 +426,12 @@
 	font-variant-numeric: tabular-nums;
 }
 
-/* 단계: 영상의 챕터처럼, 지금 칸은 아래 막대가 찬다 */
+/* 단계: 영상의 챕터처럼, 지나온 만큼 아래 막대가 찬다 (--sp는 구역을 지나온 비율) */
 .pd-sim-steps {
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 10px;
-	margin-top: 16px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
+	margin-top: 20px;
 	list-style: none;
 }
 
@@ -462,7 +441,7 @@
 	flex-direction: column;
 	gap: 2px;
 	width: 100%;
-	padding: 12px 14px 14px;
+	padding: 10px 14px 12px;
 	overflow: hidden;
 	border: none;
 	border-radius: 14px;
@@ -496,34 +475,16 @@
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	width: 0;
+	width: calc(clamp(0, var(--sp) * 4 - var(--i), 1) * 100%);
 	height: 3px;
 	background-color: var(--sp-accent);
 }
 
-.pd-sim-steps button[aria-current]::after {
-	width: 100%;
-}
-
-.pd-sim-steps button[data-running]::after {
-	animation: pd-step var(--step) linear forwards;
-}
-
-@keyframes pd-step {
-	from {
-		width: 0;
-	}
-
-	to {
-		width: 100%;
-	}
-}
-
 .pd-sim-note {
-	min-height: 3.2em;
+	min-height: 4.8em;
 	margin-top: 18px;
 	color: var(--sp-muted);
-	font-size: 16px;
+	font-size: 15px;
 	line-height: 1.6;
 	animation: pd-note 0.5s ease-out;
 }
@@ -539,10 +500,23 @@
 	}
 }
 
-/* ─── 요청이 지나는 길 ─── */
-.pd-arch {
+/* ─── 요청이 지나는 길: 트랙을 지나는 동안 그림이 화면에 고정되고, 스크롤한 만큼 그려진다 ─── */
+.pd-arch-track {
 	--p: 0;
-	margin-bottom: 64px;
+	height: calc(var(--view, 700px) * 2.4);
+	margin-bottom: 48px;
+}
+
+.pd-arch-sticky {
+	position: sticky;
+	top: 0;
+	display: flex;
+	align-items: center;
+	height: var(--view, 700px);
+}
+
+.pd-arch {
+	width: 100%;
 }
 
 .pd-arch-scroll {
@@ -563,23 +537,49 @@
 	--s: clamp(0, var(--p) * var(--n) - var(--i), 1);
 }
 
-.pd-node rect {
-	fill: rgba(255, 255, 255, calc(0.04 + var(--s) * 0.06));
-	stroke: rgba(255, 255, 255, calc(0.18 + var(--s) * 0.5));
+.pd-node-body {
+	fill: rgba(255, 255, 255, calc(0.03 + var(--s) * 0.07));
+	stroke: rgba(255, 255, 255, calc(0.16 + var(--s) * 0.5));
 	stroke-width: 1;
 }
 
+.pd-node-line {
+	fill: none;
+	stroke: rgba(255, 255, 255, calc(0.12 + var(--s) * 0.35));
+	stroke-width: 1;
+}
+
+.pd-node-dot {
+	fill: rgba(255, 255, 255, calc(0.2 + var(--s) * 0.5));
+}
+
 .pd-node text {
-	fill: var(--sp-dark-text);
-	font-size: 15px;
-	font-weight: 600;
 	text-anchor: middle;
-	opacity: calc(0.3 + var(--s) * 0.7);
+	opacity: calc(0.28 + var(--s) * 0.72);
+}
+
+.pd-node-label {
+	fill: var(--sp-dark-text);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+/* 아이콘은 Font Awesome 글자 (브랜드는 브랜드 글꼴) */
+.pd-node-icon {
+	fill: color-mix(in srgb, #2997ff calc(var(--s) * 100%), #8e8e93);
+	font-family: 'Font Awesome 6 Free';
+	font-size: 18px;
+	font-weight: 900;
+}
+
+.pd-node-icon.brand {
+	font-family: 'Font Awesome 6 Brands';
+	font-weight: 400;
 }
 
 /* 사람이 보는 화면과 데이터가 머무는 곳은 강조색 */
-.pd-node-browser rect,
-.pd-node-db rect {
+.pd-node-browser .pd-node-body,
+.pd-node-db .pd-node-body {
 	stroke: color-mix(in srgb, #2997ff calc(var(--s) * 100%), rgba(255, 255, 255, 0.18));
 }
 
@@ -632,7 +632,7 @@
 		transform: none;
 	}
 
-	.pd-laptop.pd-hero-device {
+	.pd-hero-group {
 		position: relative;
 		top: auto;
 		left: auto;
@@ -642,7 +642,9 @@
 	}
 
 	.pd-caption {
-		display: none;
+		--c: 1;
+		margin-top: 20px;
+		font-size: 26px;
 	}
 
 	.pd-screen {
@@ -654,34 +656,46 @@
 		display: none;
 	}
 
+	.pd-sim-track {
+		height: auto;
+	}
+
+	.pd-sim-sticky {
+		position: static;
+		height: auto;
+		padding: 56px 0;
+	}
+
+	.pd-sim-layout {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 24px;
+		padding: 0 20px;
+	}
+
 	.pd-sim {
-		aspect-ratio: 1;
-		padding-bottom: 16cqi;
+		aspect-ratio: 4 / 5;
+		padding-bottom: 16%;
 		border-radius: 20px;
 	}
 
 	.pd-sim[data-kind='monitor'] {
-		--zoom: 1.08;
+		--zoom: 1.05;
 	}
 
 	.pd-sim[data-kind='laptop'] {
-		--zoom: 1.22;
+		--zoom: 1.15;
 	}
 
 	.pd-sim[data-kind='tablet'] {
-		--zoom: 1.5;
+		--zoom: 1.4;
 	}
 
 	.pd-sim[data-kind='phone'] {
-		--zoom: 1.65;
+		--zoom: 1.5;
 	}
 
 	.pd-sim-device {
 		--bz: 6px;
-	}
-
-	.pd-sim-steps {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
@@ -703,7 +717,7 @@
 		transform: none;
 	}
 
-	.pd-laptop.pd-hero-device {
+	.pd-hero-group {
 		position: relative;
 		top: auto;
 		left: auto;
@@ -713,11 +727,31 @@
 	}
 
 	.pd-caption {
-		display: none;
+		--c: 1;
 	}
 
-	.pd-arch {
+	.pd-arch-track {
 		--p: 1 !important;
+		height: auto;
+	}
+
+	.pd-arch-sticky {
+		position: static;
+		height: auto;
+	}
+
+	.pd-sim-track {
+		height: auto;
+	}
+
+	.pd-sim-sticky {
+		position: static;
+		height: auto;
+		padding: 80px 0;
+	}
+
+	.pd-sim-steps button[aria-current]::after {
+		width: 100%;
 	}
 
 	.pd .sp-headline .pd-word {
@@ -735,9 +769,5 @@
 	.pd-sim-screen img,
 	.pd-sim-ruler {
 		transition: none;
-	}
-
-	.pd-sim-steps button[data-running]::after {
-		animation: none;
 	}
 }
