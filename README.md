@@ -112,6 +112,8 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 
 ### 백엔드
 
+구성도, 요청 흐름, 데이터 모델, 설계 결정 표는 [docs/backend-design.md](docs/backend-design.md)에 정리했습니다.
+
 **NestJS**
 
 - **왜:** 정적 사이트만으로는 관리자를 가릴 수 없고, 처음 쓰던 Firebase는 규칙이 열려 있어 누구나 비밀번호를 평문으로 읽을 수 있었습니다. 검증을 서버에서 하는 API가 필요했습니다. Hono·Cloudflare Workers도 검토했지만 국내 채용 공고에 자주 나오고, 모듈·가드·파이프 구조가 Spring과 닮아 설계가 잘 드러나는 NestJS를 골랐습니다
@@ -178,6 +180,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 
 - PR과 main push마다 포맷 → 린트 → 타입 체크 → 단위 테스트 → 빌드 → API e2e(PostgreSQL 서비스 컨테이너) → 브라우저 E2E를 차례로 돌립니다. 실패하면 Playwright 리포트를 올립니다
 - `conventions`: 브랜치 이름, PR 제목, 커밋 메시지가 [작업 규칙](CONTRIBUTING.md)을 따르는지 확인합니다
+- main에 들어온 커밋은 `check`를 통과해야 `deploy`가 Cloudflare Workers에 올립니다. 같은 저장소의 PR은 `preview`가 미리보기 주소를 PR에 남깁니다
 - `main`의 Ruleset이 `check`와 `conventions`를 필수 검사로 걸어 두어, 둘 다 통과해야 머지됩니다([설정 방법](CONTRIBUTING.md#저장소-설정))
 
 ## 구조
@@ -190,7 +193,7 @@ apps/
     src/desktop/          창 관리, Dock, 메뉴 막대, 모바일 셸
     e2e/                  Playwright
   api/                    NestJS API (관리자 로그인, 글, 댓글, 이미지, 메모 정리)
-docs/                     배포, 마이그레이션 기록
+docs/                     백엔드 설계, 배포, 마이그레이션 기록
 wrangler.jsonc            Cloudflare Workers 설정
 ```
 
@@ -262,7 +265,7 @@ pinned: true # 목록 맨 위에 고정 (선택)
 
 | 무엇       | 어디에                                               | 어떻게                           |
 | ---------- | ---------------------------------------------------- | -------------------------------- |
-| 프론트엔드 | Cloudflare Workers                                   | main에 머지하면 자동             |
+| 프론트엔드 | Cloudflare Workers                                   | main에 머지하면 GitHub Actions가 |
 | API        | Oracle Cloud Always Free VM (Docker Compose)         | 서버에서 `git pull` 후 다시 빌드 |
 | HTTPS      | Cloudflare Tunnel (서버는 SSH 말고 포트를 열지 않음) |                                  |
 
@@ -284,6 +287,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 ## 문서
 
 - [작업 규칙](CONTRIBUTING.md): 브랜치, 커밋, 이슈, PR, 저장소 설정(필수 검사)
+- [백엔드 설계](docs/backend-design.md): 구성도, 요청 흐름, 데이터 모델, 설계 결정
 - [배포](docs/deployment.md): Cloudflare Workers, Oracle VM, Cloudflare Tunnel, GitHub OAuth
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
