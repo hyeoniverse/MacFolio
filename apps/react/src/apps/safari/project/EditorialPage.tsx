@@ -1,17 +1,78 @@
 // NewPick (뉴스레터): 신문 1면. 제호 → 속보 띠 → 머리기사와 옆 단(숫자, 진행 과정) → 기사 꼭지 → 두 단 해설 → 기획 기사(장마다) → 아래 칸(맡은 일, 기술 사양)
-// 기사는 화면에 들어오면 잉크가 번지듯 나타나고, 가위 단추로 오려 두면 제호 옆 스크랩 수가 는다
-import React, { useState } from 'react';
-import type { Project } from '@/shared/profile';
+// 기사는 화면에 들어오면 잉크가 번지듯 나타나고, 기사 꼭지를 펼치면 그 줄 아래에 자세한 설명과 실제 서비스 화면이 이어진다
+import React, { useRef, useState } from 'react';
+import type { Project, ProjectPoint } from '@/shared/profile';
 import { Facts, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/EditorialPage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
 
+/**
+ * 기사 꼭지: 신문처럼 단으로 나뉘어 있고, "기사 펼쳐 읽기"를 누르면 그 꼭지가 있는 줄 바로 아래에
+ * 자세한 설명과 실제 서비스 화면이 한 단 너비로 펼쳐진다. 한 번에 한 꼭지만 펼친다
+ */
+const Articles: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
+	const list = useRef<HTMLOListElement>(null);
+	const [open, setOpen] = useState<number | null>(null);
+	// 한 줄의 단 수: 펼친 기사를 그 줄 끝 다음에 끼우려고, 누를 때 지금 격자에서 센다
+	const [columns, setColumns] = useState(3);
+	const toggle = (i: number) => {
+		const grid = list.current && getComputedStyle(list.current).gridTemplateColumns;
+		setColumns(grid ? grid.split(' ').length : 3);
+		setOpen((now) => (now === i ? null : i));
+	};
+	const rowEnd = open === null ? -1 : Math.min(points.length - 1, Math.floor(open / columns) * columns + columns - 1);
+	const opened = open === null ? null : points[open];
+
+	return (
+		<section className="np-articles" aria-label="주요 기능">
+			<h2 className="np-section">주요 기능</h2>
+			<ol ref={list}>
+				{points.map((point, i) => (
+					<React.Fragment key={point.title}>
+						<li
+							data-reveal="ink"
+							data-row-start={i % 3 === 0 || undefined}
+							data-open={open === i || undefined}
+							style={{ '--d': i % 4 } as React.CSSProperties}
+						>
+							<h3>{point.title}</h3>
+							<p>{point.body}</p>
+							{(point.detail || point.image) && (
+								<button
+									type="button"
+									className="np-more"
+									aria-expanded={open === i}
+									aria-controls="np-article-detail"
+									onClick={() => toggle(i)}
+								>
+									{open === i ? '접기' : '기사 펼쳐 읽기'}
+									<i className="fa-solid fa-chevron-down" aria-hidden="true" />
+								</button>
+							)}
+						</li>
+						{i === rowEnd && opened && (
+							<li className="np-detail" id="np-article-detail" key={`detail:${opened.title}`}>
+								<div className="np-detail-text">
+									<p className="np-kicker">자세히 · {opened.title}</p>
+									<p>{opened.detail ?? opened.body}</p>
+								</div>
+								{opened.image && (
+									<figure>
+										<img src={opened.image} alt={`${opened.title} 화면`} />
+										<figcaption>▲ 실제 서비스 화면</figcaption>
+									</figure>
+								)}
+							</li>
+						)}
+					</React.Fragment>
+				))}
+			</ol>
+		</section>
+	);
+};
+
 const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
-	// 오려 둔 기사 제목
-	const [clipped, setClipped] = useState<string[]>([]);
-	const toggleClip = (title: string) =>
-		setClipped((list) => (list.includes(title) ? list.filter((item) => item !== title) : [...list, title]));
 	// 속보 띠: 기능과 만든 방식의 제목이 흘러간다 (끊김 없이 돌도록 두 번 잇는다)
 	const headlines = [...project.highlights, ...project.build].map((point) => point.title);
 
@@ -92,42 +153,7 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 				</div>
 			</div>
 
-			<section className="np-articles" aria-label="주요 기능">
-				<div className="np-section np-section-row">
-					<h2>주요 기능</h2>
-					{/* 기사를 가위로 오려 두면 여기 모인다 */}
-					<p className="np-scrap" aria-live="polite">
-						<i className="fa-solid fa-scissors" aria-hidden="true" />
-						{clipped.length > 0 ? `오려 둔 기사 ${clipped.length}개` : '기사에 마우스를 올려 가위로 오려 두세요'}
-					</p>
-				</div>
-				<ol>
-					{project.highlights.map((point, i) => {
-						const on = clipped.includes(point.title);
-						return (
-							<li
-								key={point.title}
-								data-reveal="ink"
-								data-clipped={on || undefined}
-								style={{ '--d': i % 4 } as React.CSSProperties}
-							>
-								<h3>{point.title}</h3>
-								<p>{point.body}</p>
-								<button
-									type="button"
-									className="np-clip"
-									aria-pressed={on}
-									aria-label={`${point.title} 오려 두기`}
-									onClick={() => toggleClip(point.title)}
-								>
-									<i className="fa-solid fa-scissors" aria-hidden="true" />
-									{on ? '오려 둠' : '오려 두기'}
-								</button>
-							</li>
-						);
-					})}
-				</ol>
-			</section>
+			<Articles points={project.highlights} />
 
 			<section className="np-column" aria-label="만든 방식">
 				<h2 className="np-section">해설 · 만든 방식</h2>

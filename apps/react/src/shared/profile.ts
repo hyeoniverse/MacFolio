@@ -37,6 +37,8 @@ export interface ProjectFact {
 export interface ProjectPoint {
 	title: string;
 	body: string;
+	/** 펼쳐 읽을 때 더 보여 줄 설명 */
+	detail?: string;
 	/** 곁들일 그림 (public/imgs/projects/{id}/…) */
 	image?: string;
 }
@@ -148,26 +150,42 @@ export const PROJECTS: Project[] = [
 			{
 				title: 'AI 뉴스 요약',
 				body: '최신 뉴스를 모은 뒤 OpenAI API로 핵심만 추려 읽기 좋은 뉴스레터로 만듭니다.',
+				detail:
+					'요약과 발송은 백엔드가 맡고, 프론트는 요약된 뉴스레터를 목록과 상세 화면에 보여 줍니다. 상세 화면에는 본문과 함께 요약에 쓴 원문 뉴스, 인기·최신 뉴스레터, 이전·다음 글, 북마크와 링크 복사가 붙습니다.',
+				image: projectImage('newpick', 'shots/summary.jpg'),
 			},
 			{
 				title: '카테고리별 뉴스',
 				body: '관심 있는 분야를 고르면 그 분야의 뉴스만 모아서 볼 수 있습니다.',
+				detail:
+					'IT, 정치, 경제, 사회, 생활, 세계 여섯 분야와 전체로 나눕니다. 목록은 끝에 닿으면 다음 묶음을 불러오고, 최신순·북마크순·조회수순으로 정렬하며, 분야를 바꾸면 최신순으로 돌아갑니다.',
+				image: projectImage('newpick', 'shots/categories.jpg'),
 			},
 			{
 				title: '매일 아침 메일로',
 				body: '구독한 사람에게 매일 오전 8시, 요약한 뉴스레터를 메일로 보냅니다.',
+				detail:
+					'구독을 시작하면 내일부터 보내 준다는 안내가 뜨고, 다음 날 아침부터 메일이 옵니다. 마이페이지의 내 뉴스레터 탭에서는 오전 8시를 기준으로 그날 받은 뉴스레터를 분야별로 다시 봅니다.',
+				image: projectImage('newpick', 'shots/mail.jpg'),
 			},
 			{
 				title: '나에게 맞춘 추천',
 				body: '구독한 카테고리에 맞춰 뉴스레터를 추천하고, 구독과 취소도 직접 관리합니다.',
+				detail:
+					'마이페이지 설정 탭에서 관심 분야를 고르고 약관에 동의하면 구독이 시작됩니다. 해지를 누르면 관련 정보가 모두 지워진다는 확인 창을 한 번 더 띄우고, 구독하지 않은 사람이 기사에서 구독 단추를 누르면 이 탭으로 데려갑니다.',
+				image: projectImage('newpick', 'shots/subscribe.jpg'),
 			},
 			{
 				title: '가입 전에 체험',
 				body: '로그인하지 않아도 관심사 하나를 고르면 그 자리에서 AI 뉴스레터를 만들어 모달로 보여 줍니다.',
+				detail:
+					'어제 날짜의 뉴스로 요약을 요청합니다. AI가 돌려준 HTML에서 코드 블록 표시를 걷어 내고, DOMPurify로 위험한 태그를 거른 뒤에 화면에 그립니다.',
 			},
 			{
 				title: '요약에 쓴 원문까지',
 				body: '뉴스레터 아래에 요약에 쓴 원문 기사를 출처와 날짜가 적힌 카드로 붙이고, 누르면 새 탭에서 엽니다.',
+				detail:
+					'원문 주소로 미리보기 정보(제목, 그림, 출처)를 받아 카드로 그립니다. 카드 컴포넌트는 필요할 때 불러와 첫 화면을 가볍게 둡니다.',
 			},
 		],
 		build: [
