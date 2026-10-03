@@ -21,7 +21,11 @@ const RepoCard: React.FC<{ repo: Repo; login: string }> = ({ repo, login }) => (
 			</a>
 			<span className="gh-badge">Public</span>
 		</div>
-		{repo.description && <p className="gh-repo-description">{repo.description}</p>}
+		{repo.description && (
+			<p className="gh-repo-description" title={repo.description}>
+				{repo.description}
+			</p>
+		)}
 		<div className="gh-repo-meta">
 			{repo.language && (
 				<span>
