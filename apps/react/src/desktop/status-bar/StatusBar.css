@@ -102,3 +102,21 @@
 		font-size: 0.7rem;
 	}
 }
+
+/* 시계: 숫자 너비를 같게(tabular-nums) 하고, 가장 넓은 시간 글자를 보이지 않게 같은 칸에 겹쳐 칸 너비를 고정한다.
+   글자는 칸 오른쪽에 붙인다 (macOS 메뉴 막대) */
+.macos-statusbar .time-display {
+	display: inline-grid;
+	justify-items: end;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.time-display-reserve,
+.time-display-now {
+	grid-area: 1 / 1;
+}
+
+.time-display-reserve {
+	visibility: hidden;
+}
