@@ -58,134 +58,39 @@ const SIZES = [
 	},
 ] as const;
 
+/** 고정된 시뮬레이터가 스크롤로 넘기는 장면 수: 앱마다 모든 크기 */
+const STEPS = APPS.length * SIZES.length;
+
 /** 주요 기능 타일의 아이콘 (순서대로) */
-/** 주요 특징 카드 한 장이 머무는 시간 (ms). 이만큼 지나면 다음 카드로 넘어간다 */
-const HIGHLIGHT_MS = 5000;
-
 /**
- * 주요 특징: Apple 제품 페이지의 '주요 특징 살펴보기'처럼 큰 카드가 옆으로 이어지고 다음 카드가 살짝 보인다.
- * 화면에 들어와 있는 동안 저절로 넘어가며 아래 점이 차오르고(마지막 카드에서 멈춤), 재생·일시 정지 단추와 점으로 직접 고른다.
- * 손으로 옆으로 넘기면 저절로 넘기기를 멈춘다
+ * 주요 기능: Apple 페이지의 벤토 그리드처럼 크기가 다른 타일을 모자이크로 채운다.
+ * 큰 타일 둘(검은 타일, 밝은 타일)과 작은 타일 둘이 엇갈리고, 타일마다 한 줄 제목과 설명, 아래로 걸친 실제 화면.
+ * 화면에 들어오면 타일이 차례로 떠오르고, 마우스를 올리면 화면이 살짝 커진다
  */
-const Highlights: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
-	const track = useRef<HTMLUListElement>(null);
-	const [current, setCurrent] = useState(0);
-	const [playing, setPlaying] = useState(() => !reducedMotion());
-	const [visible, setVisible] = useState(false);
-	const last = points.length - 1;
-
-	// 카드를 고르면 그 카드가 왼쪽 여백에 맞춰 오도록 띠를 옮긴다
-	const go = (index: number) => {
-		const list = track.current;
-		const item = list?.children[index] as HTMLElement | undefined;
-		if (!list || !item) return;
-		const left = item.offsetLeft - parseFloat(getComputedStyle(list).paddingLeft);
-		list.scrollTo({ left, behavior: reducedMotion() ? 'auto' : 'smooth' });
-		setCurrent(index);
-	};
-
-	// 화면에 반 넘게 보일 때만 저절로 넘긴다
-	useEffect(() => {
-		const list = track.current;
-		if (!list || typeof IntersectionObserver === 'undefined') return;
-		const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
-			root: scrollParent(list),
-			threshold: 0.5,
-		});
-		observer.observe(list);
-		return () => observer.disconnect();
-	}, []);
-
-	useEffect(() => {
-		if (!playing || !visible) return;
-		const timer = window.setTimeout(() => {
-			if (current >= last) setPlaying(false);
-			else go(current + 1);
-		}, HIGHLIGHT_MS);
-		return () => window.clearTimeout(timer);
-	}, [playing, visible, current, last]);
-
-	// 손으로 넘기면 가장 가까운 카드가 지금 카드
-	const onScroll = () => {
-		const list = track.current;
-		if (!list) return;
-		const items = [...list.children] as HTMLElement[];
-		const start = list.scrollLeft + parseFloat(getComputedStyle(list).paddingLeft);
-		const nearest = items.reduce(
-			(best, item, i) => (Math.abs(item.offsetLeft - start) < Math.abs(items[best].offsetLeft - start) ? i : best),
-			0
-		);
-		if (nearest !== current) setCurrent(nearest);
-	};
-
-	const toggle = () => {
-		// 끝까지 본 뒤 재생을 누르면 처음부터
-		if (!playing && current >= last) go(0);
-		setPlaying((now) => !now);
-	};
-
-	return (
-		<div className="pd-hl" data-playing={(playing && visible) || undefined}>
-			<ul
-				className="pd-hl-track"
-				ref={track}
-				onScroll={onScroll}
-				onPointerDown={() => setPlaying(false)}
-				onWheel={(event) => {
-					if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) setPlaying(false);
-				}}
+const Bento: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
+	<ul className="pd-bento">
+		{points.map((point, i) => (
+			<li
+				key={point.title}
+				className="pd-bento-tile"
+				data-size={i === 0 || i === 3 ? 'large' : 'small'}
+				data-tone={i === 0 ? 'dark' : undefined}
+				data-reveal=""
+				style={{ '--d': i % 2 } as React.CSSProperties}
 			>
-				{points.map((point, i) => (
-					<li key={point.title} className="pd-hl-card" data-on={i === current}>
-						<div className="pd-hl-caption">
-							<h3>{point.title}</h3>
-							<p>{point.body}</p>
-						</div>
-						{point.image && (
-							<figure className="pd-hl-media">
-								<img src={point.image} alt={`${point.title} 화면`} loading="lazy" />
-							</figure>
-						)}
-					</li>
-				))}
-			</ul>
-			<div className="pd-hl-controls">
-				<div className="pd-hl-dots" role="group" aria-label="주요 특징 고르기">
-					{points.map((point, i) => (
-						<button
-							key={point.title}
-							type="button"
-							aria-label={`${point.title} 보기`}
-							aria-current={i === current || undefined}
-							onClick={() => {
-								setPlaying(false);
-								go(i);
-							}}
-						>
-							{/* 지금 카드의 점은 길어지고, 머무는 시간만큼 차오른다 */}
-							{i === current && (
-								<span key={`${current}-${playing}`} style={{ '--ms': `${HIGHLIGHT_MS}ms` } as React.CSSProperties} />
-							)}
-						</button>
-					))}
+				<div className="pd-bento-text">
+					<h3>{point.title}</h3>
+					<p>{point.body}</p>
 				</div>
-				<button
-					type="button"
-					className="pd-hl-play"
-					aria-label={playing ? '일시 정지' : current >= last ? '처음부터 다시 재생' : '재생'}
-					onClick={toggle}
-				>
-					<i
-						className={
-							playing ? 'fa-solid fa-pause' : current >= last ? 'fa-solid fa-rotate-right' : 'fa-solid fa-play'
-						}
-						aria-hidden="true"
-					/>
-				</button>
-			</div>
-		</div>
-	);
-};
+				{point.image && (
+					<figure className="pd-bento-media">
+						<img src={point.image} alt={`${point.title} 화면`} loading="lazy" />
+					</figure>
+				)}
+			</li>
+		))}
+	</ul>
+);
 
 /**
  * 구조 그림의 상자. step은 스크롤에 따라 켜지는 순서, icon은 Font Awesome 글자(brand면 브랜드 글꼴),
@@ -283,9 +188,24 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 		const hero = ref.current;
 		const node = group.current;
 		if (!hero || !node) return;
+		const copy = hero.querySelector<HTMLElement>('.pd-copy');
+		const laptop = node.querySelector<HTMLElement>('.pd-hero-device');
+		const caption = node.querySelector<HTMLElement>('.pd-caption');
 		return onScrollFrame(hero, (scroller) => {
-			const fit = Math.min(0.9, (viewOf(scroller).height - 48) / Math.max(1, node.offsetHeight));
+			const view = viewOf(scroller).height;
+			// 끝에 노트북과 한 줄 아래로도 숨 쉴 자리(160px)를 남긴다
+			const fit = Math.min(0.9, (view - 160) / Math.max(1, node.offsetHeight));
 			hero.style.setProperty('--fit', fit.toFixed(3));
+			// 처음 자리: 제목·링크 아래로 24px 떨어져서 시작한다 (창이 낮아도 GitHub 링크를 가리지 않게)
+			const copyBottom = copy ? copy.offsetTop + copy.offsetHeight : 0;
+			const startHeight = node.offsetHeight * fit * 0.66;
+			const start = Math.max(view * 0.42, copyBottom + 24 - view / 2 + startHeight / 2 + view * 0.04);
+			hero.style.setProperty('--start', `${start.toFixed(1)}px`);
+			// 한 줄이 노트북 화면 가운데에서 튀어나오도록, 화면 가운데까지의 거리
+			if (laptop && caption) {
+				const rise = laptop.offsetHeight / 2 + caption.offsetTop - laptop.offsetHeight + caption.offsetHeight / 2;
+				node.style.setProperty('--rise', `${rise.toFixed(1)}px`);
+			}
 		});
 	}, [ref]);
 	return (
@@ -298,7 +218,7 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 					<p className="sp-lead">{project.description}</p>
 					<Links project={project} />
 				</div>
-				{/* 노트북과 한 줄이 한 덩어리로 올라오며 커진다. 한 줄은 노트북이 자리를 잡을 때쯤 나타난다 */}
+				{/* 노트북과 한 줄이 한 덩어리로 올라오며 커진다. 한 줄은 노트북이 자리를 잡을 때쯤 화면 속에서 튀어나온다 */}
 				<div className="pd-hero-group" ref={group}>
 					<Laptop className="pd-hero-device">
 						<img src={`${VIEWS_DIR}/memo-laptop.jpg`} alt={`${project.name} 화면`} />
@@ -339,7 +259,7 @@ function useRollingNumber(target: number, duration = 700) {
 
 /**
  * 어디서 열어도: 브라우저 크기를 바꿔 보는 시뮬레이터.
- * 이 구역에 들어오면 화면에 고정된 채로, 스크롤하는 만큼 모니터 → 노트북 → 태블릿 → 휴대폰으로 넘어간다.
+ * 이 구역에 들어오면 화면에 고정된 채로, 스크롤하는 만큼 모니터 → 노트북 → 태블릿 → 휴대폰으로 넘어가고, 휴대폰까지 보면 다음 앱(메시지, Safari)으로 이어진다.
  * 기기 틀이 모양을 바꾸며 그 크기에서 찍은 화면이 나타난다. 좁은 창이나 움직임 줄이기에서는 고정하지 않고 눌러서 고른다
  */
 const Simulator: React.FC = () => {
@@ -352,34 +272,41 @@ const Simulator: React.FC = () => {
 	const px = useRollingNumber(size.px);
 	const pinned = () => !!sticky.current && getComputedStyle(sticky.current).position === 'sticky';
 
-	// 고정되어 있을 때는 지나온 만큼이 지금 크기다
+	// 고정되어 있을 때는 지나온 만큼이 지금 앱과 크기다: 메모의 모니터 → … → 휴대폰, 이어서 메시지, Safari 차례로
 	useEffect(() => {
 		const node = track.current;
 		if (!node) return;
+		node.style.setProperty('--steps', String(STEPS));
 		return onScrollFrame(node, (scroller) => {
 			const view = viewOf(scroller);
 			node.style.setProperty('--view', `${view.height}px`);
 			if (!pinned()) return;
 			const box = node.getBoundingClientRect();
 			const p = clamp((view.top - box.top) / Math.max(1, box.height - view.height));
-			node.style.setProperty('--sp', p.toFixed(4));
-			setIndex(Math.min(SIZES.length - 1, Math.floor(p * SIZES.length)));
+			const step = Math.min(STEPS - 1, Math.floor(p * STEPS));
+			const appIndex = Math.floor(step / SIZES.length);
+			// 단계 막대는 지금 앱 안에서 지나온 만큼 찬다
+			node.style.setProperty('--sp', clamp(p * APPS.length - appIndex).toFixed(4));
+			setApp(APPS[appIndex].id);
+			setIndex(step % SIZES.length);
 		});
 	}, []);
 
-	/** 단계를 누르면: 고정된 동안에는 그 단계 자리로 스크롤하고, 아니면 바로 바꾼다 */
-	const choose = (i: number) => {
+	/** 앱과 단계를 고르면: 고정된 동안에는 그 자리로 스크롤하고, 아니면 바로 바꾼다 */
+	const choose = (appId: AppId, i: number) => {
 		const node = track.current;
 		const scroller = node && scrollParent(node);
 		if (!node || !pinned() || !scroller) {
+			setApp(appId);
 			setIndex(i);
 			return;
 		}
+		const step = APPS.findIndex((item) => item.id === appId) * SIZES.length + i;
 		const view = viewOf(scroller);
 		const box = node.getBoundingClientRect();
 		const span = box.height - view.height;
 		scroller.scrollTo({
-			top: scroller.scrollTop + box.top - view.top + ((i + 0.5) / SIZES.length) * span,
+			top: scroller.scrollTop + box.top - view.top + ((step + 0.5) / STEPS) * span,
 			behavior: 'smooth',
 		});
 	};
@@ -393,7 +320,7 @@ const Simulator: React.FC = () => {
 							<Headline title="어디서 열어도." sub="화면 크기에 따라 데스크톱이 되고, 휴대폰이 됩니다." />
 							<div className="pd-switch" role="group" aria-label="보여 줄 앱">
 								{APPS.map((item) => (
-									<button key={item.id} type="button" aria-pressed={item.id === app} onClick={() => setApp(item.id)}>
+									<button key={item.id} type="button" aria-pressed={item.id === app} onClick={() => choose(item.id, 0)}>
 										{item.name}
 										<span>{item.note}</span>
 									</button>
@@ -405,7 +332,7 @@ const Simulator: React.FC = () => {
 										<button
 											type="button"
 											aria-current={i === index ? 'step' : undefined}
-											onClick={() => choose(i)}
+											onClick={() => choose(app, i)}
 											style={{ '--i': i } as React.CSSProperties}
 										>
 											<strong>{item.name}</strong>
@@ -573,8 +500,8 @@ const ProductPage: React.FC<{ project: Project }> = ({ project }) => {
 			<section className="sp-section" aria-label="주요 기능">
 				<div className="sp-inner">
 					<Headline title="주요 기능." sub="지금 보고 있는 이 화면." />
+					<Bento points={project.highlights} />
 				</div>
-				<Highlights points={project.highlights} />
 			</section>
 
 			<Simulator />
