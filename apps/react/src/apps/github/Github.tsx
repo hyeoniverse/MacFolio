@@ -5,6 +5,8 @@ import { useSettings } from '@/shared/settings/settingsStore';
 import { resolveTheme } from '@/shared/settings/settings';
 import { LANGUAGE_COLORS, type RepoCard as Repo } from '@/apps/github/githubProfile';
 import { loadGithub, useGithub } from '@/apps/github/githubApi';
+import { loadActivity, useActivity } from '@/apps/github/githubActivity';
+import { ActivityHistory, ContributionGraph } from '@/apps/github/GithubActivity';
 import GithubReadme from '@/apps/github/GithubReadme';
 import '@/apps/github/Github.css';
 
@@ -57,7 +59,8 @@ const RepoCard: React.FC<{ repo: Repo; login: string }> = ({ repo, login }) => (
 
 /**
  * GitHub: 관리자의 GitHub 프로필을 GitHub 화면처럼 보여준다.
- * 왼쪽에 프로필, 오른쪽에 프로필 README와 고른 저장소(시스템 설정 → GitHub에서 고른다).
+ * 왼쪽에 프로필, 오른쪽에 프로필 README와 고른 저장소(시스템 설정 → GitHub에서 고른다),
+ * 그 아래에 기여 달력과 최근 공개 활동 (서버에 닿을 때만).
  * 값은 API 서버가 GitHub에서 받아 둔 것이고, 서버에 닿지 않으면 넣어 둔 스냅샷을 보여 준다.
  */
 const Github: React.FC = () => {
@@ -66,9 +69,11 @@ const Github: React.FC = () => {
 	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
 	const { source, data } = useGithub();
 	const { profile, repos } = data;
+	const activity = useActivity();
 
 	useEffect(() => {
 		void loadGithub();
+		void loadActivity();
 	}, []);
 
 	return (
@@ -156,6 +161,9 @@ const Github: React.FC = () => {
 									</ul>
 								</section>
 							)}
+
+							{activity?.contributions && <ContributionGraph contributions={activity.contributions} />}
+							{activity && activity.events.length > 0 && <ActivityHistory events={activity.events} />}
 						</main>
 					</div>
 				</div>

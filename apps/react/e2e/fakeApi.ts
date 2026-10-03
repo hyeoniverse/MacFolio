@@ -42,8 +42,60 @@ export interface FakeApiState {
 		repos: (FakeRepo & { listed: boolean })[];
 		/** 받은 PUT /github/showcase 수 */
 		saves: number;
+		/** GET /github/activity가 줄 값. null이면 502 (GitHub에 닿지 못함) */
+		activity: { contributions: { total: number; days: FakeDay[] } | null; events: FakeActivity[] } | null;
 	};
 }
+
+export interface FakeDay {
+	date: string;
+	count: number;
+	level: number;
+}
+
+export interface FakeActivity {
+	id: string;
+	kind: string;
+	repo: string;
+	createdAt: string;
+	url: string;
+	action: string | null;
+	ref: string | null;
+	refType: string | null;
+	number: number | null;
+	title: string | null;
+	commits: number | null;
+}
+
+/** 2025-09-28(일)부터 2026-10-03(토)까지 53주. 날짜마다 정해진 기여 수 (같은 값이 나오게) */
+export function fakeContributionDays(): FakeDay[] {
+	const days: FakeDay[] = [];
+	for (let time = Date.UTC(2025, 8, 28); time <= Date.UTC(2026, 9, 3); time += 86_400_000) {
+		const index = days.length;
+		const count = index % 7 === 0 ? 0 : (index * 7) % 13;
+		days.push({
+			date: new Date(time).toISOString().slice(0, 10),
+			count,
+			level: count === 0 ? 0 : Math.min(4, Math.ceil(count / 3)),
+		});
+	}
+	return days;
+}
+
+export const fakeActivity = (over: Partial<FakeActivity>): FakeActivity => ({
+	id: '1',
+	kind: 'push',
+	repo: 'hyeoniverse/alpha',
+	createdAt: '2026-10-03T10:00:00Z',
+	url: 'https://github.com/hyeoniverse/alpha/commits/main',
+	action: null,
+	ref: 'main',
+	refType: null,
+	number: null,
+	title: '마지막 커밋',
+	commits: 3,
+	...over,
+});
 
 export interface FakeRepo {
 	fullName: string;
@@ -235,6 +287,35 @@ export async function fakeApi(
 				{ ...fakeRepo('someone/Delta', { language: 'Python' }), listed: false },
 			],
 			saves: 0,
+			activity: {
+				contributions: { total: 1234, days: fakeContributionDays() },
+				events: [
+					fakeActivity({ id: '5' }),
+					fakeActivity({ id: '4', createdAt: '2026-10-03T08:00:00Z', commits: 2 }),
+					fakeActivity({
+						id: '3',
+						kind: 'pull',
+						createdAt: '2026-10-02T09:00:00Z',
+						url: 'https://github.com/hyeoniverse/alpha/pull/7',
+						action: 'merged',
+						ref: null,
+						number: 7,
+						title: '기능 더하기',
+						commits: null,
+					}),
+					fakeActivity({
+						id: '2',
+						kind: 'create',
+						repo: 'hyeoniverse/beta',
+						createdAt: '2026-09-20T09:00:00Z',
+						url: 'https://github.com/hyeoniverse/beta',
+						refType: 'repository',
+						ref: null,
+						title: null,
+						commits: null,
+					}),
+				],
+			},
 		},
 	};
 	let nextId = 1;
@@ -338,6 +419,14 @@ export async function fakeApi(
 					repos: cards(state.github.showcase),
 					fetchedAt: new Date().toISOString(),
 				},
+			});
+		}
+		if (path === '/github/activity') {
+			if (!state.github.activity)
+				return route.fulfill({ status: 502, headers: cors(origin), json: { message: 'GitHub에 연결할 수 없습니다.' } });
+			return route.fulfill({
+				headers: cors(origin),
+				json: { ...state.github.activity, fetchedAt: new Date().toISOString() },
 			});
 		}
 		if (path === '/github/candidates') {
