@@ -5,10 +5,12 @@ import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
 import { IOS_WALLPAPERS, MAC_WALLPAPERS, type ThemePreference } from '@/shared/settings/settings';
 import WallpaperGroup from '@/apps/settings/WallpaperGroup';
 import AdminAccount from '@/shared/auth/AdminAccount';
+import { useAdmin } from '@/shared/auth/adminStore';
+import GithubShowcase from '@/apps/settings/GithubShowcase';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import '@/apps/settings/Settings.css';
 
-type Section = 'account' | 'appearance' | 'wallpaper' | 'sound';
+type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'github';
 
 const SECTIONS: { id: Section; label: string; icon: string }[] = [
 	{ id: 'account', label: '계정', icon: 'fa-solid fa-circle-user' },
@@ -16,6 +18,9 @@ const SECTIONS: { id: Section; label: string; icon: string }[] = [
 	{ id: 'wallpaper', label: '배경화면', icon: 'fa-solid fa-image' },
 	{ id: 'sound', label: '사운드', icon: 'fa-solid fa-volume-high' },
 ];
+
+/** 관리자로 로그인했을 때만 보이는 항목 */
+const ADMIN_SECTIONS: typeof SECTIONS = [{ id: 'github', label: 'GitHub', icon: 'fa-brands fa-github' }];
 
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
 	{ value: 'light', label: '라이트' },
@@ -26,7 +31,11 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
 const Settings: React.FC = () => {
 	const settings = useSettings();
 	const isMobile = useIsMobile();
-	const [section, setSection] = useState<Section>('account');
+	const admin = useAdmin().status === 'signed-in';
+	const sections = admin ? [...SECTIONS, ...ADMIN_SECTIONS] : SECTIONS;
+	const [chosen, setSection] = useState<Section>('account');
+	// 로그아웃하면 관리자 항목은 사라지고 계정으로 돌아간다
+	const section = sections.some((item) => item.id === chosen) ? chosen : 'account';
 	/** 휴대폰: iOS 설정처럼 항목 목록 → 누르면 그 항목 화면 (넓은 창에서는 쓰지 않는다) */
 	const [phoneOpen, setPhoneOpen] = useState(false);
 
@@ -37,7 +46,7 @@ const Settings: React.FC = () => {
 				<div className={`settings ${phoneOpen ? 'phone-open' : ''}`}>
 					<nav className="settings-sidebar" aria-label="설정 항목">
 						<h2 className="settings-phone-title phone-title">설정</h2>
-						{SECTIONS.map((item) => (
+						{sections.map((item) => (
 							<button
 								key={item.id}
 								type="button"
@@ -106,6 +115,13 @@ const Settings: React.FC = () => {
 										selected={settings.wallpaper}
 									/>
 								)}
+							</>
+						)}
+
+						{section === 'github' && (
+							<>
+								<h2 className="phone-title">GitHub</h2>
+								<GithubShowcase />
 							</>
 						)}
 

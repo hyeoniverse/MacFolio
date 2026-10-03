@@ -1,119 +1,209 @@
-// GitHub 앱에 보여 줄 프로필. https://github.com/hyeoniverse (2026-09-28 기준)을 옮겨 적었다.
-// 방문자마다 GitHub API를 부르지 않도록(요청 제한) 고정 데이터로 두고, 통계 카드만 프로필 저장소가 매일 새로 만든 이미지를 쓴다.
+// GitHub 앱에 보여 줄 프로필·README·저장소. 값은 API 서버가 GitHub에서 받아 둔 것(/github/profile)을 쓰고,
+// 서버가 없거나 닿지 않을 때는 아래 스냅샷(2026-10-02에 옮겨 적음)을 보여 준다.
 
-export const GITHUB_PROFILE = {
-	login: 'hyeoniverse',
-	name: 'KIMJEONGHYEON',
-	url: 'https://github.com/hyeoniverse',
-	avatar: 'https://avatars.githubusercontent.com/u/68999618?v=4',
-	bio: '🧑‍💻 Frontend Focused FullStack Developer | React & Next.js enthusiast :: 프론트엔드 집중 풀스택 개발자, React와 Next.js를 좋아합니다.',
-	location: 'Seoul',
-	website: 'https://www.hyeoniverse.com/',
-	followers: 3,
-	following: 4,
-	repositories: 15,
-} as const;
+export interface GithubProfile {
+	login: string;
+	name: string | null;
+	avatarUrl: string;
+	bio: string | null;
+	location: string | null;
+	website: string | null;
+	url: string;
+	followers: number;
+	following: number;
+	publicRepos: number;
+}
 
-/** 프로필 README (hyeoniverse/hyeoniverse) */
-export const README = {
-	banner: { title: 'Hyeoniverse', subtitle: 'Frontend Focused Fullstack Developer' },
-	about: [
-		{ emoji: '🎨', title: 'Frontend', text: 'React · Next.js · TypeScript로 인터랙티브한 UI 구축' },
-		{ emoji: '⚙️', title: 'Backend', text: '화면에 필요한 API와 데이터 구조는 Node.js · MySQL · Supabase로 직접 설계' },
-		{
-			emoji: '✨',
-			title: 'Interaction',
-			text: 'GSAP · Framer Motion · Three.js로 스크롤과 마우스에 반응하는 경험 실험 중',
-		},
-		{ emoji: '🤖', title: 'AI', text: 'AI API를 서비스 안에 자연스럽게 녹여내는 방법에 관심' },
-		{ emoji: '🚀', title: 'Principle', text: '성능과 접근성은 옵션이 아니라 설계 단계의 기본' },
-	],
-	now: [
-		{ emoji: '🔭', label: 'Building', text: 'Next.js · Supabase로 만드는 개인 포트폴리오 & 블로그' },
-		{ emoji: '🌱', label: 'Learning', text: '디자인 시스템 · 웹 성능 최적화 · AI 서비스 통합' },
-		{ emoji: '💬', label: 'Ask me about', text: 'React · Next.js · TypeScript · 인터랙션 애니메이션' },
-		{ emoji: '📍', label: 'Based in', text: 'Seoul, South Korea 🇰🇷' },
-	],
-	/** skillicons.dev에서 받아 둔 아이콘 (public/imgs/github/skills.svg) */
-	stackImage: '/imgs/github/skills.svg',
-	stackAlt: 'React, Next.js, TypeScript, JavaScript, TailwindCSS, Node.js, Express, MySQL, Supabase, Firebase',
-	stackSummary: 'React · Next.js · TypeScript · TailwindCSS · Zustand | Node.js · Express · MySQL · Supabase',
-	contact: [
-		{ label: 'Gmail', icon: 'fa-solid fa-envelope', color: '#EA4335', href: 'mailto:hyeoniverse.dev@gmail.com' },
-		{ label: 'Portfolio', icon: 'fa-solid fa-globe', color: '#D40063', href: 'https://www.hyeoniverse.com/' },
-		{ label: 'solved.ac', icon: 'fa-solid fa-code', color: '#17CE3A', href: 'https://solved.ac/hyeoniverse' },
-	],
-} as const;
-
-/** 프로필 저장소의 GitHub Actions가 매일 새로 만드는 통계 카드 */
-const STATS_BASE = 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/main/profile';
-export const statsCard = (name: 'stats' | 'top-langs', theme: 'light' | 'dark') => `${STATS_BASE}/${name}-${theme}.svg`;
-
-export interface PinnedRepo {
+export interface RepoCard {
+	/** owner/이름 */
+	fullName: string;
 	owner: string;
 	name: string;
 	description: string | null;
 	url: string;
-	homepage?: string;
-	language: string;
+	homepage: string | null;
+	language: string | null;
 	stars: number;
 	forks: number;
+	fork: boolean;
 }
 
-/** GitHub 언어 색 */
+export interface GithubData {
+	profile: GithubProfile;
+	/** 프로필 README (Markdown·HTML). 없으면 null */
+	readme: string | null;
+	/** README 안의 상대 주소(./profile/stats-light.svg)를 풀 기준 주소 */
+	readmeBaseUrl: string;
+	repos: RepoCard[];
+}
+
+const repo = (fullName: string, rest: Partial<RepoCard> = {}): RepoCard => {
+	const [owner, name] = fullName.split('/');
+	return {
+		fullName,
+		owner,
+		name,
+		description: null,
+		url: `https://github.com/${fullName}`,
+		homepage: null,
+		language: 'JavaScript',
+		stars: 0,
+		forks: 0,
+		fork: false,
+		...rest,
+	};
+};
+
+/** 프로필 README (hyeoniverse/hyeoniverse의 README.md) */
+const README_SNAPSHOT = `<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=soft&color=0:A8004E,50:D40063,100:F74D96&height=180&text=Hyeoniverse&fontSize=56&fontColor=ffffff&fontAlignY=42&desc=Frontend%20Focused%20Fullstack%20Developer&descSize=18&descAlignY=68&animation=fadeIn" width="100%" alt="Hyeoniverse">
+</div>
+
+<br>
+
+## 👋 About Me
+
+- 🎨 **Frontend** — React · Next.js · TypeScript로 인터랙티브한 UI 구축
+- ⚙️ **Backend** — 화면에 필요한 API와 데이터 구조는 Node.js · MySQL · Supabase로 직접 설계
+- ✨ **Interaction** — GSAP · Framer Motion · Three.js로 스크롤과 마우스에 반응하는 경험 실험 중
+- 🤖 **AI** — AI API를 서비스 안에 자연스럽게 녹여내는 방법에 관심
+- 🚀 **Principle** — 성능과 접근성은 옵션이 아니라 설계 단계의 기본
+
+<br>
+
+<table>
+  <tr>
+    <td>🔭</td>
+    <td><strong>Building</strong></td>
+    <td>Next.js · Supabase로 만드는 개인 포트폴리오 &amp; 블로그</td>
+  </tr>
+  <tr>
+    <td>🌱</td>
+    <td><strong>Learning</strong></td>
+    <td>디자인 시스템 · 웹 성능 최적화 · AI 서비스 통합</td>
+  </tr>
+  <tr>
+    <td>💬</td>
+    <td><strong>Ask me about</strong></td>
+    <td>React · Next.js · TypeScript · 인터랙션 애니메이션</td>
+  </tr>
+  <tr>
+    <td>📍</td>
+    <td><strong>Based in</strong></td>
+    <td>Seoul, South Korea 🇰🇷</td>
+  </tr>
+</table>
+
+<br>
+
+## 🛠 Tech Stack
+
+<div align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=react,nextjs,ts,js,tailwind,nodejs,express,mysql,supabase,firebase&perline=10" alt="React, Next.js, TypeScript, JavaScript, TailwindCSS, Node.js, Express, MySQL, Supabase, Firebase">
+  </a>
+  <br><br>
+  <sub>React · Next.js · TypeScript · TailwindCSS · Zustand &nbsp;|&nbsp; Node.js · Express · MySQL · Supabase</sub>
+</div>
+
+<br>
+
+## 📊 GitHub Stats
+
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./profile/stats-dark.svg">
+    <img src="./profile/stats-light.svg" width="49%" alt="GitHub Stats">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./profile/top-langs-dark.svg">
+    <img src="./profile/top-langs-light.svg" width="41%" alt="Top Languages">
+  </picture>
+  <br><br>
+  <img src="https://komarev.com/ghpvc/?username=hyeoniverse&color=D40063&style=flat-square&label=Profile+Views" alt="Profile Views">
+</div>
+
+<br>
+
+## 📬 Contact
+
+<div align="center">
+  <a href="mailto:hyeoniverse.dev@gmail.com">
+    <img src="https://img.shields.io/badge/Gmail-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Gmail">
+  </a>&nbsp;
+  <a href="https://www.hyeoniverse.com/">
+    <img src="https://img.shields.io/badge/Portfolio-D40063?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Portfolio">
+  </a>&nbsp;
+  <a href="https://solved.ac/hyeoniverse">
+    <img src="https://img.shields.io/badge/solved.ac-17CE3A?style=for-the-badge&logo=baekjoon&logoColor=white" alt="solved.ac">
+  </a>
+</div>
+
+<br>
+
+<div align="center">
+  <sub>Thanks for stopping by ✨</sub>
+</div>
+`;
+
+/** 서버에 닿지 않을 때 보여 줄 값 (https://github.com/hyeoniverse, 2026-10-02) */
+export const GITHUB_SNAPSHOT: GithubData = {
+	profile: {
+		login: 'hyeoniverse',
+		name: 'KIMJEONGHYEON',
+		avatarUrl: 'https://avatars.githubusercontent.com/u/68999618?v=4',
+		bio: '🧑‍💻 Frontend Focused FullStack Developer | React & Next.js enthusiast :: 프론트엔드 집중 풀스택 개발자, React와 Next.js를 좋아합니다.',
+		location: 'Seoul',
+		website: 'https://www.hyeoniverse.com/',
+		url: 'https://github.com/hyeoniverse',
+		followers: 3,
+		following: 4,
+		publicRepos: 15,
+	},
+	readme: README_SNAPSHOT,
+	readmeBaseUrl: 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/',
+	repos: [
+		repo('Devcourse-NewPick/front', {
+			description: 'A code repository designed to show the best GitHub has to offer.',
+			homepage: 'https://newpick-tan.vercel.app/',
+			language: 'TypeScript',
+		}),
+		repo('Devcourse-WhatToDo/todo-front', { forks: 1 }),
+		repo('hyeoniverse/QRU', {
+			description:
+				'QRU는 “QR” + “Who Are You”를 결합한 말로, 사용자가 자신의 정보를 입력하여 QR 코드를 생성하고 이를 통해 디지털 명함을 공유할 수 있는 웹 애플리케이션입니다.',
+			language: 'TypeScript',
+		}),
+		repo('hyeoniverse/SproutFarm', { homepage: 'https://sprout-farm-beta.vercel.app/' }),
+		repo('hyeoniverse/DevCourse-FullStack', {
+			description: '타입스크립트로 함께하는 웹 풀 사이클 개발(React, Node.js) 4기_5회차',
+		}),
+	],
+};
+
+/** GitHub 언어 색 (github-linguist) */
 export const LANGUAGE_COLORS: Record<string, string> = {
 	TypeScript: '#3178c6',
 	JavaScript: '#f1e05a',
+	HTML: '#e34c26',
+	CSS: '#663399',
+	SCSS: '#c6538c',
+	Python: '#3572A5',
+	Java: '#b07219',
+	Kotlin: '#A97BFF',
+	Swift: '#F05138',
+	Go: '#00ADD8',
+	Rust: '#dea584',
+	C: '#555555',
+	'C++': '#f34b7d',
+	'C#': '#178600',
+	Ruby: '#701516',
+	PHP: '#4F5D95',
+	Dart: '#00B4AB',
+	Shell: '#89e051',
+	Vue: '#41b883',
+	Svelte: '#ff3e00',
+	Astro: '#ff5a03',
+	MDX: '#fcb32c',
+	'Jupyter Notebook': '#DA5B0B',
 };
-
-/** 프로필에 고정한 저장소 (GitHub 순서) */
-export const PINNED_REPOS: PinnedRepo[] = [
-	{
-		owner: 'Devcourse-NewPick',
-		name: 'front',
-		description: 'A code repository designed to show the best GitHub has to offer.',
-		url: 'https://github.com/Devcourse-NewPick/front',
-		homepage: 'https://newpick-tan.vercel.app',
-		language: 'TypeScript',
-		stars: 0,
-		forks: 0,
-	},
-	{
-		owner: 'Devcourse-WhatToDo',
-		name: 'todo-front',
-		description: null,
-		url: 'https://github.com/Devcourse-WhatToDo/todo-front',
-		language: 'JavaScript',
-		stars: 0,
-		forks: 1,
-	},
-	{
-		owner: 'hyeoniverse',
-		name: 'QRU',
-		description:
-			'QRU는 “QR” + “Who Are You”를 결합한 말로, 사용자가 자신의 정보를 입력하여 QR 코드를 생성하고 이를 통해 디지털 명함을 공유할 수 있는 웹 애플리케이션입니다.',
-		url: 'https://github.com/hyeoniverse/QRU',
-		language: 'TypeScript',
-		stars: 0,
-		forks: 0,
-	},
-	{
-		owner: 'hyeoniverse',
-		name: 'SproutFarm',
-		description: null,
-		url: 'https://github.com/hyeoniverse/SproutFarm',
-		homepage: 'https://sprout-farm-beta.vercel.app',
-		language: 'JavaScript',
-		stars: 0,
-		forks: 0,
-	},
-	{
-		owner: 'hyeoniverse',
-		name: 'DevCourse-FullStack',
-		description: '타입스크립트로 함께하는 웹 풀 사이클 개발(React, Node.js) 4기_5회차',
-		url: 'https://github.com/hyeoniverse/DevCourse-FullStack',
-		language: 'JavaScript',
-		stars: 0,
-		forks: 0,
-	},
-];

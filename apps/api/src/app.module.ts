@@ -13,6 +13,7 @@ import { PostsModule } from './posts/posts.module.js';
 import { FilesModule } from './files/files.module.js';
 import { ImagesModule } from './images/images.module.js';
 import { WallpapersModule } from './wallpapers/wallpapers.module.js';
+import { GithubModule } from './github/github.module.js';
 
 @Module({
 	imports: [
@@ -36,6 +37,7 @@ import { WallpapersModule } from './wallpapers/wallpapers.module.js';
 		FilesModule,
 		ImagesModule,
 		WallpapersModule,
+		GithubModule,
 	],
 })
 export class AppModule {}

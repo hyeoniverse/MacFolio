@@ -34,7 +34,75 @@ export interface FakeApiState {
 	wallpapers: FakeWallpaper[];
 	/** 사진 찾기: 켜진 서비스, 받은 검색어, Unsplash에 알린 사진 */
 	stock: { providers: { unsplash: boolean; pexels: boolean }; searches: string[]; downloads: string[] };
+	/** GitHub 앱: 프로필, README, 보일 저장소, GitHub에 있는 저장소 (listed: 고를 수 있는 목록에 나온다) */
+	github: {
+		followers: number;
+		readme: string;
+		showcase: string[];
+		repos: (FakeRepo & { listed: boolean })[];
+		/** 받은 PUT /github/showcase 수 */
+		saves: number;
+	};
 }
+
+export interface FakeRepo {
+	fullName: string;
+	owner: string;
+	name: string;
+	description: string | null;
+	url: string;
+	homepage: string | null;
+	language: string | null;
+	stars: number;
+	forks: number;
+	fork: boolean;
+}
+
+export const fakeRepo = (fullName: string, rest: Partial<FakeRepo> = {}): FakeRepo => {
+	const [owner, name] = fullName.split('/');
+	return {
+		fullName,
+		owner,
+		name,
+		description: `${name} 저장소`,
+		url: `https://github.com/${fullName}`,
+		homepage: null,
+		language: 'TypeScript',
+		stars: 0,
+		forks: 0,
+		fork: false,
+		...rest,
+	};
+};
+
+/** 가짜 GitHub 프로필 README: 배너, 목록, 화면 모드마다 다른 그림, 배지 */
+export const FAKE_README = `<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=soft&color=0:0A84FF,100:5E5CE6&text=Test%20Banner&desc=Live%20README" width="100%" alt="Test Banner">
+</div>
+
+## 소개
+
+- **첫째** — 서버에서 받은 README
+- **둘째** — 고치면 바로 보인다
+
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./profile/card-dark.svg">
+    <img src="./profile/card-light.svg" width="49%" alt="Test Card">
+  </picture>
+</div>
+
+## 연락
+
+<div align="center">
+  <a href="mailto:someone@example.com">
+    <img src="https://img.shields.io/badge/Mail-0A84FF?style=for-the-badge&logo=gmail&logoColor=white" alt="Mail">
+  </a>&nbsp;
+  <a href="https://example.com/">
+    <img src="https://img.shields.io/badge/Site-5E5CE6?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Site">
+  </a>
+</div>
+`;
 
 export interface FakeWallpaper {
 	id: string;
@@ -156,6 +224,18 @@ export async function fakeApi(
 		uploads: [],
 		wallpapers: [],
 		stock: { providers: { unsplash: true, pexels: false }, searches: [], downloads: [] },
+		github: {
+			followers: 42,
+			readme: FAKE_README,
+			showcase: ['hyeoniverse/alpha', 'test-org/gamma'],
+			repos: [
+				{ ...fakeRepo('hyeoniverse/alpha', { stars: 5, homepage: 'https://alpha.example.com/' }), listed: true },
+				{ ...fakeRepo('hyeoniverse/beta', { language: 'JavaScript' }), listed: true },
+				{ ...fakeRepo('test-org/gamma', { forks: 2 }), listed: true },
+				{ ...fakeRepo('someone/Delta', { language: 'Python' }), listed: false },
+			],
+			saves: 0,
+		},
 	};
 	let nextId = 1;
 	const cors = (origin: string) => ({
@@ -230,6 +310,78 @@ export async function fakeApi(
 				headers: cors(origin),
 				json: { ...view, size: data.length, path: `/files/${upload.id}` },
 			});
+		}
+		// GitHub 앱: 누구나 프로필을 받고, 관리자만 보일 저장소를 고른다
+		const cards = (names: string[]) =>
+			names
+				.map((name) => state.github.repos.find((repo) => repo.fullName.toLowerCase() === name.toLowerCase()))
+				.filter((repo) => repo !== undefined)
+				.map(({ listed: _listed, ...repo }) => repo);
+		if (path === '/github/profile') {
+			return route.fulfill({
+				headers: cors(origin),
+				json: {
+					profile: {
+						login: 'hyeoniverse',
+						name: 'Test Name',
+						avatarUrl: 'https://avatars.githubusercontent.com/u/1',
+						bio: '서버에서 받은 소개',
+						location: 'Test City',
+						website: 'https://example.com/',
+						url: 'https://github.com/hyeoniverse',
+						followers: state.github.followers,
+						following: 8,
+						publicRepos: 30,
+					},
+					readme: state.github.readme,
+					readmeBaseUrl: 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/',
+					repos: cards(state.github.showcase),
+					fetchedAt: new Date().toISOString(),
+				},
+			});
+		}
+		if (path === '/github/candidates') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const listed = state.github.repos.filter((repo) => repo.listed).map((repo) => repo.fullName);
+			const extra = state.github.showcase.filter(
+				(name) => !listed.some((other) => other.toLowerCase() === name.toLowerCase())
+			);
+			return route.fulfill({
+				headers: cors(origin),
+				json: { selected: state.github.showcase, repos: cards([...extra, ...listed]) },
+			});
+		}
+		const repoPath = path.match(/^\/github\/repos\/([^/]+)\/([^/]+)$/);
+		if (repoPath) {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const [found] = cards([`${decodeURIComponent(repoPath[1])}/${decodeURIComponent(repoPath[2])}`]);
+			return found
+				? route.fulfill({ headers: cors(origin), json: found })
+				: route.fulfill({
+						status: 404,
+						headers: cors(origin),
+						json: { statusCode: 404, message: '공개 저장소를 찾을 수 없습니다.' },
+					});
+		}
+		if (path === '/github/showcase' && request.method() === 'PUT') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const repos = (request.postDataJSON()?.repos ?? []) as string[];
+			if (repos.length > 6)
+				return route.fulfill({
+					status: 400,
+					headers: cors(origin),
+					json: { statusCode: 400, message: ['저장소는 6개까지 고를 수 있습니다.'] },
+				});
+			const saved = cards(repos).map((repo) => repo.fullName);
+			if (saved.length !== repos.length)
+				return route.fulfill({
+					status: 404,
+					headers: cors(origin),
+					json: { statusCode: 404, message: '공개 저장소를 찾을 수 없습니다.' },
+				});
+			state.github.showcase = saved;
+			state.github.saves += 1;
+			return route.fulfill({ headers: cors(origin), json: { repos: saved } });
 		}
 		// 배경화면: 누구나 목록을 보고, 관리자만 더하고 지운다
 		if (path === '/wallpapers' && request.method() === 'GET') {

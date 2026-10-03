@@ -177,3 +177,14 @@ model GuestMessage {
 
   @@index([threadId, createdAt])
 }
+
+/// GitHub 앱의 Pinned에 보일 저장소 (시스템 설정 → GitHub). 한 행만 쓴다 (id = 1). 관리자만 바꾼다.
+/// 저장소 정보(설명·별·언어)는 여기 두지 않고 GitHub에서 받는다. 행이 없으면 기본 목록(github/showcase.ts)을 쓴다
+model GithubShowcase {
+  id        Int      @id @default(1)
+  /// "owner/이름" 목록 (보이는 순서)
+  repos     Json
+  updatedAt DateTime @updatedAt
+  /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
+  updatedBy String
+}
