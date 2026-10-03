@@ -1,4 +1,5 @@
-// DevCourse (학습 기록): 페이지 전체가 터미널 창 하나. 명령을 하나씩 치면 그 결과로 소개, 숫자, 기능, 컨벤션, 만든 방식, 맡은 일, 기술 사양이 나온다
+// DevCourse (학습 기록): 페이지 전체가 터미널 창 하나. 명령을 하나씩 치면 그 결과로 소개, 숫자, 주차별 기록, 실습 프로젝트, 컨벤션, 만든 방식, 맡은 일, 기술 사양이 나온다.
+// 명령은 고정폭 글꼴, 결과의 한글 문장은 읽기 쉬운 본문 글꼴로 쓴다
 import React from 'react';
 import type { Project } from '@/shared/profile';
 import { Links } from '@/apps/safari/project/parts';
@@ -63,14 +64,27 @@ const TerminalPage: React.FC<{ project: Project }> = ({ project }) => (
 					</dl>
 				</section>
 
+				{project.timeline && (
+					<section className="tm-block" aria-label="진행 과정">
+						<Prompt command="git log --reverse --format='%s' --by-week" />
+						<ol className="tm-weeks">
+							{project.timeline.map((step) => (
+								<li key={step.date}>
+									<span className="tm-week">{step.date}</span>
+									<span>{step.label}</span>
+								</li>
+							))}
+						</ol>
+					</section>
+				)}
+
 				<section className="tm-block" aria-label="주요 기능">
-					<Prompt command="ls -l highlights/" />
+					<Prompt command="ls Projects/" />
 					<ul className="tm-ls">
 						{project.highlights.map((point) => (
 							<li key={point.title}>
-								<span className="tm-perm">drwxr-xr-x</span>
 								<span className="tm-dir">{slug(point.title)}/</span>
-								<span className="tm-comment"># {point.body}</span>
+								<p>{point.body}</p>
 							</li>
 						))}
 					</ul>
