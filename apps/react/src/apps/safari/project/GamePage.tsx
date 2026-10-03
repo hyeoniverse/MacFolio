@@ -70,6 +70,9 @@ const DECOR: [string, number][] = [
 	['sprout', 8],
 ];
 
+/** 개발 일지 주인공의 걸음 속도 (화면 px/초) */
+const HERO_SPEED = 150;
+
 /** 소 걸음: 한 칸을 보여 주는 시간과 그동안 나가는 거리 (게임보다 조금 느긋하게) */
 const COW_FRAME_MS = 130;
 const COW_STEP = 6;
@@ -188,66 +191,92 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 		return () => window.clearInterval(timer);
 	}, []);
 
-	// 스크롤하면 주인공이 흙길을 따라 걷는다: 화면 가운데 높이와 같은 길 위의 점에 선다
+	// 스크롤하면 주인공이 흙길을 따라 걷는다: 목표는 화면 가운데 높이와 같은 길 위의 점이고,
+	// 주인공은 그 점까지 일정한 걸음 속도로 길을 따라 걸어간다(스크롤에 바로 붙으면 순간이동처럼 빠르다)
 	useEffect(() => {
 		const box = road.current;
 		const line = path.current;
 		const walker = hero.current;
 		if (!box || !line || !walker || typeof line.getPointAtLength !== 'function') return;
 		const scroller = scrollParent(box);
-		const target = scroller ?? window;
+		const source = scroller ?? window;
 		const total = line.getTotalLength();
+		const still = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 		let frame = 0;
-		let idle = 0;
-		let lastX: number | null = null;
+		let last = 0;
+		let at: number | null = null;
+		let facing = 1;
 
-		const place = () => {
-			frame = 0;
-			const svg = line.ownerSVGElement;
-			if (!svg) return;
-			const area = svg.getBoundingClientRect();
-			if (area.height === 0) return;
+		/** 화면 가운데 높이와 같은 길 위의 거리 (길은 아래로만 내려가니 높이로 찾는다) */
+		const goal = () => {
+			const area = line.ownerSVGElement?.getBoundingClientRect();
+			if (!area || area.height === 0) return null;
 			const view = scroller?.getBoundingClientRect();
 			const center = view ? view.top + view.height / 2 : window.innerHeight / 2;
-			const goal = Math.min(Math.max((center - area.top) / area.height, 0), 1) * stages * 100;
-			// 길은 아래로만 내려가니 높이로 길 위의 거리를 찾는다
+			const y = Math.min(Math.max((center - area.top) / area.height, 0), 1) * stages * 100;
 			let low = 0;
 			let high = total;
 			for (let i = 0; i < 18; i++) {
 				const mid = (low + high) / 2;
-				if (line.getPointAtLength(mid).y < goal) low = mid;
+				if (line.getPointAtLength(mid).y < y) low = mid;
 				else high = mid;
 			}
-			const point = line.getPointAtLength(low);
+			return { length: low, unit: area.height / (stages * 100) };
+		};
+
+		const draw = (length: number) => {
+			const area = line.ownerSVGElement?.getBoundingClientRect();
+			if (!area) return;
 			const base = box.getBoundingClientRect();
+			const point = line.getPointAtLength(length);
 			const x = area.left - base.left + (point.x / 100) * area.width;
 			const y = area.top - base.top + (point.y / (stages * 100)) * area.height;
-			const facing =
-				lastX !== null && x < lastX - 0.5
-					? -1
-					: lastX !== null && x > lastX + 0.5
-						? 1
-						: Number(walker.dataset.facing ?? 1);
-			lastX = x;
-			walker.dataset.facing = String(facing);
 			walker.style.transform = `translate(${x - 72}px, ${y - 96}px) scaleX(${facing})`;
 		};
-		const onScroll = () => {
-			walker.dataset.walking = 'true';
-			window.clearTimeout(idle);
-			idle = window.setTimeout(() => (walker.dataset.walking = 'false'), 180);
-			if (!frame) frame = requestAnimationFrame(place);
+
+		const step = (time: number) => {
+			frame = 0;
+			const target = goal();
+			if (!target) return;
+			const elapsed = last ? Math.min(time - last, 50) : 16;
+			last = time;
+			if (at === null || still) at = target.length;
+			const left = target.length - at;
+			// 길 1단위가 화면에서 몇 px인지로 걸음 속도를 길 위의 거리로 바꾼다
+			const reach = (HERO_SPEED * elapsed) / 1000 / target.unit;
+			if (Math.abs(left) <= reach) {
+				at = target.length;
+				walker.dataset.walking = 'false';
+				last = 0;
+			} else {
+				const before = line.getPointAtLength(at).x;
+				at += Math.sign(left) * reach;
+				const after = line.getPointAtLength(at).x;
+				if (Math.abs(after - before) > 0.01) facing = after < before ? -1 : 1;
+				walker.dataset.walking = 'true';
+				frame = requestAnimationFrame(step);
+			}
+			draw(at);
 		};
-		place();
-		target.addEventListener('scroll', onScroll, { passive: true });
+		const wake = () => {
+			if (!frame) frame = requestAnimationFrame(step);
+		};
+		// 처음과 길 높이가 바뀔 때는 걷지 않고 바로 그 자리에 선다
+		const jump = () => {
+			const target = goal();
+			if (!target) return;
+			at = target.length;
+			draw(at);
+		};
+		jump();
+		source.addEventListener('scroll', wake, { passive: true });
 		// 그림이 늦게 불러와져 길의 높이가 바뀌면 자리를 다시 잡는다
-		const resized = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => place());
+		const resized = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(jump);
 		resized?.observe(box);
 		return () => {
-			target.removeEventListener('scroll', onScroll);
+			source.removeEventListener('scroll', wake);
 			resized?.disconnect();
 			cancelAnimationFrame(frame);
-			window.clearTimeout(idle);
 		};
 	}, [stages]);
 
