@@ -2,58 +2,51 @@
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ffc2a6"/>
-      <stop offset="0.4" stop-color="#ec7fa2"/>
+      <stop offset="0.45" stop-color="#ec7fa2"/>
       <stop offset="1" stop-color="#5b3f91"/>
-    </linearGradient>
-    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6a4a85"/>
-      <stop offset="1" stop-color="#211833"/>
-    </linearGradient>
-    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#e3dcec"/>
-    </linearGradient>
-    <linearGradient id="dock" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.75"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0.4"/>
     </linearGradient>
     <radialGradient id="shine" cx="0.3" cy="0.08" r="0.75">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
       <stop offset="0.6" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
-    <filter id="shadow" x="-25%" y="-25%" width="150%" height="170%">
-      <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#1e1030" flood-opacity="0.5"/>
+    <linearGradient id="apple" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.6" stop-color="#f1ebf6"/>
+      <stop offset="1" stop-color="#d6cbe4"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#2fae5c"/>
+      <stop offset="1" stop-color="#8fe39b"/>
+    </linearGradient>
+    <radialGradient id="gloss" cx="0.32" cy="0.25" r="0.45">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4.5" flood-color="#2a1442" flood-opacity="0.5"/>
     </filter>
-    <filter id="soft" x="-25%" y="-50%" width="150%" height="250%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1e1030" flood-opacity="0.4"/>
-    </filter>
+    <clipPath id="body">
+      <path d="M64 42 C56 35 42 33 33 41 C22 51 23 72 31 87 C37 99 45 107 54 105 C58 104 60 102 64 102 C68 102 70 104 74 105 C83 107 91 99 97 87 C105 72 106 51 95 41 C86 33 72 35 64 42 Z"/>
+    </clipPath>
   </defs>
   <rect width="128" height="128" fill="url(#sky)"/>
-  <path d="M0 86 L26 62 L40 72 L62 48 L84 70 L98 60 L128 84 V128 H0 Z" fill="url(#hill)"/>
-  <path d="M0 86 L26 62 L40 72 L62 48 L84 70 L98 60 L128 84" fill="none" stroke="#f7c6d6" stroke-width="1.2" opacity="0.55"/>
-  <path d="M62 48 L70 56 L64 54 L58 58 L55 55 Z M26 62 L31 67 L25 66 L21 67 Z" fill="#f6d2dc" opacity="0.85"/>
   <rect width="128" height="128" fill="url(#shine)"/>
-  <rect width="128" height="9" fill="#ffffff" opacity="0.78"/>
-  <rect y="9" width="128" height="1" fill="#000000" opacity="0.08"/>
+  <rect y="122" width="128" height="6" fill="#120a20" opacity="0.28"/>
   <g filter="url(#shadow)">
-    <rect x="22" y="22" width="84" height="56" rx="7" fill="url(#glass)"/>
+    <path d="M64 42 C64 34 66 28 71 23" fill="none" stroke="#6b4a3a" stroke-width="4" stroke-linecap="round"/>
+    <path d="M67 32 C70 19 84 15 93 19 C89 31 78 36 67 32 Z" fill="url(#leaf)"/>
+    <path d="M64 42 C56 35 42 33 33 41 C22 51 23 72 31 87 C37 99 45 107 54 105 C58 104 60 102 64 102 C68 102 70 104 74 105 C83 107 91 99 97 87 C105 72 106 51 95 41 C86 33 72 35 64 42 Z" fill="url(#apple)"/>
   </g>
-  <rect x="22.5" y="22.5" width="83" height="55" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity="0.9"/>
-  <circle cx="31" cy="30" r="2.6" fill="#ff5f57"/>
-  <circle cx="39" cy="30" r="2.6" fill="#febc2e"/>
-  <circle cx="47" cy="30" r="2.6" fill="#28c840"/>
-  <rect x="30" y="41" width="40" height="5" rx="2.5" fill="#3a2b52"/>
-  <rect x="30" y="51" width="64" height="4" rx="2" fill="#b9aec9"/>
-  <rect x="30" y="59" width="52" height="4" rx="2" fill="#b9aec9"/>
-  <rect x="30" y="67" width="58" height="4" rx="2" fill="#b9aec9"/>
-  <g filter="url(#shadow)">
-    <rect x="26" y="96" width="76" height="20" rx="7" fill="url(#dock)"/>
+  <g clip-path="url(#body)">
+    <!-- 사과 안의 창: 제목 막대와 줄 -->
+    <rect x="22" y="52" width="84" height="12" fill="#3a2b52" opacity="0.9"/>
+    <circle cx="44" cy="58" r="2.6" fill="#ff5f57"/>
+    <circle cx="52" cy="58" r="2.6" fill="#febc2e"/>
+    <circle cx="60" cy="58" r="2.6" fill="#28c840"/>
+    <rect x="40" y="72" width="44" height="4" rx="2" fill="#b9aec9"/>
+    <rect x="40" y="80" width="34" height="4" rx="2" fill="#b9aec9"/>
+    <rect x="40" y="88" width="40" height="4" rx="2" fill="#b9aec9"/>
+    <ellipse cx="50" cy="48" rx="22" ry="16" fill="url(#gloss)" opacity="0.7"/>
   </g>
-  <g filter="url(#soft)">
-    <rect x="32" y="100" width="12" height="12" rx="3" fill="#2f8cff"/>
-    <rect x="49" y="100" width="12" height="12" rx="3" fill="#ffcf3d"/>
-    <rect x="66" y="100" width="12" height="12" rx="3" fill="#34c759"/>
-    <rect x="83" y="100" width="12" height="12" rx="3" fill="#ff5b6e"/>
-  </g>
-  <rect y="122" width="128" height="6" fill="#120a20" opacity="0.3"/>
+  <path d="M64 42 C56 35 42 33 33 41 C22 51 23 72 31 87 C37 99 45 107 54 105 C58 104 60 102 64 102 C68 102 70 104 74 105 C83 107 91 99 97 87 C105 72 106 51 95 41 C86 33 72 35 64 42 Z" fill="none" stroke="#ffffff" stroke-opacity="0.8" stroke-width="1"/>
 </svg>
