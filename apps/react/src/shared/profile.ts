@@ -458,7 +458,7 @@ export const PROJECTS: Project[] = [
 		stack: ['React', 'TypeScript', 'Vite', 'NestJS', 'PostgreSQL', 'Cloudflare'],
 		language: 'TypeScript',
 		url: 'https://github.com/hyeoniverse/MacFolio',
-		icon: projectImage('macfolio', 'icon.svg'),
+		icon: projectImage('macfolio', 'icon.png'),
 		image: projectImage('macfolio', 'screenshot.jpg'),
 	},
 	{
