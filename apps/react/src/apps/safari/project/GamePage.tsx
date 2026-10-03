@@ -2,7 +2,7 @@
 // → 흙길을 따라가는 개발 일지 지도(만든 방식) → 인벤토리(기술 사양) → 크레딧(맡은 일).
 // 그림은 게임에 쓴 Sprout Lands 에셋에서 필요한 조각만 잘라 쓴다 (public/imgs/projects/sproutfarm/sprites)
 import React, { useEffect, useRef, useState } from 'react';
-import type { Project } from '@/shared/profile';
+import { PROFILE, type Project } from '@/shared/profile';
 import { Favicon, Links } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/GamePage.css';
 
@@ -530,40 +530,68 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 				</ul>
 			</section>
 
+			{/* 엔딩 크레딧: 별이 뜬 밤 들판, 맡은 일은 점선으로 이름까지, 빌려 쓴 에셋은 나무 표지판, 맨 아래로 동물들이 지나간다 */}
 			<section className="gm-credits" aria-label="맡은 일">
-				<h2>CREDITS</h2>
+				<span className="gm-sky" aria-hidden="true" />
+				<span className="gm-moon" aria-hidden="true" />
+				<h2>
+					<img src={`${SPRITES}/star.png`} alt="" aria-hidden="true" />
+					CREDITS
+					<img src={`${SPRITES}/star.png`} alt="" aria-hidden="true" />
+				</h2>
 				<p className="gm-credit-role">{project.context}</p>
 				{project.period && <p className="gm-credit-role">{project.period}</p>}
-				<ul>
+				<dl className="gm-staff">
 					{project.contributions.map((item) => (
-						<li key={item}>{item}</li>
+						<div key={item}>
+							<dt>{item}</dt>
+							<dd>{PROFILE.name}</dd>
+						</div>
 					))}
-				</ul>
+				</dl>
 				{project.credits && (
-					<dl className="gm-asset-credits">
-						{project.credits.map((credit) => (
-							<div key={credit.name}>
-								<dt>{credit.role}</dt>
-								<dd>
-									<p className="gm-asset-name">
-										{credit.href ? (
-											<a href={credit.href} target="_blank" rel="noreferrer">
-												{credit.name}
-											</a>
+					<>
+						<p className="gm-thanks">SPECIAL THANKS</p>
+						<dl className="gm-asset-credits">
+							{project.credits.map((credit) => (
+								<div key={credit.name} className="gm-credit-card">
+									<span className="gm-credit-icon" aria-hidden="true">
+										{credit.role === 'FONT' ? (
+											<span className="gm-glyph">가</span>
 										) : (
-											credit.name
-										)}{' '}
-										<span>by {credit.by}</span>
-									</p>
-									{credit.note && <p className="gm-asset-note">{credit.note}</p>}
-								</dd>
-							</div>
-						))}
-					</dl>
+											<img src={`${SPRITES}/fruit-tree.png`} alt="" />
+										)}
+									</span>
+									<div>
+										<dt>{credit.role}</dt>
+										<dd>
+											<p className="gm-asset-name">
+												{credit.href ? (
+													<a href={credit.href} target="_blank" rel="noreferrer">
+														{credit.name}
+													</a>
+												) : (
+													credit.name
+												)}{' '}
+												<span>by {credit.by}</span>
+											</p>
+											{credit.note && <p className="gm-asset-note">{credit.note}</p>}
+										</dd>
+									</div>
+								</div>
+							))}
+						</dl>
+					</>
 				)}
+				<p className="gm-the-end">THE END</p>
 				<EmoteFace emote={['loving', 2]} className="gm-bow" />
 				<p className="gm-end">{project.tagline}</p>
 				<Links project={project} className="gm-links" />
+				<div className="gm-parade" aria-hidden="true">
+					<span className="gm-walker gm-parade-hero" />
+					<span className="gm-walker gm-chick gm-parade-chick a" />
+					<span className="gm-walker gm-chick gm-parade-chick b" />
+				</div>
 			</section>
 		</div>
 	);
