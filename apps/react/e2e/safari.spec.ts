@@ -18,9 +18,15 @@ test.describe('Safari', () => {
 		const qru = panel.getByRole('article', { name: 'QRU 큐알유' });
 		await expect(qru).toBeVisible();
 		await expect(qru.getByRole('heading', { level: 1 })).toHaveText('QR 한 장에 담은 나.');
-		for (const name of ['주요 기능', '만든 방식', '맡은 일', '다음 단계', '기술 사양']) {
+		for (const name of ['주요 기능', '만든 방식', '맡은 일', '기술 사양']) {
 			await expect(panel.getByRole('region', { name })).toBeVisible();
 		}
+		// 다음 단계(앞으로 할 일)는 어느 페이지에도 두지 않는다
+		await expect(panel.getByRole('region', { name: '다음 단계' })).toHaveCount(0);
+		// 데이터 장에는 데이터베이스 구조가 문서마다 필드와 함께 그려진다
+		const schema = panel.getByRole('group', { name: '데이터베이스 구조' });
+		await expect(schema.getByRole('list', { name: 'serials/{번호} 필드' })).toContainText('cardId');
+		await expect(schema).toContainText('소유자만');
 		// 주소창은 데모 주소를 보여주고, 누르면 새 탭에서 연다
 		const address = safari.locator('.safari-address');
 		await expect(address).toHaveText('qryou-app.web.app');

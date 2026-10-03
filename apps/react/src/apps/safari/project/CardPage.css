@@ -198,7 +198,7 @@
 	line-height: 1.6;
 }
 
-/* 일련번호 칩과 셔플 단추 (앱 명함 보기의 번호 칩, 셔플 화면의 둥근 단추) */
+/* 일련번호 칩 (앱 명함 보기의 번호 칩) */
 .qc-serial {
 	display: flex;
 	align-items: center;
@@ -221,37 +221,6 @@
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 	font-size: 13px;
 	letter-spacing: 0.06em;
-	transition: color 0.2s;
-}
-
-.qc-serial code[data-rolling] {
-	color: var(--sp-accent);
-}
-
-.qc-serial button {
-	display: grid;
-	place-items: center;
-	width: 34px;
-	height: 34px;
-	border: none;
-	border-radius: 50%;
-	background-color: var(--qc-deep);
-	box-shadow:
-		-3px 4px 8px rgba(0, 0, 0, 0.3),
-		inset 2px -2px 4px rgba(0, 0, 0, 0.25);
-	color: #ffffff;
-	cursor: pointer;
-	transition:
-		rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-		scale 0.2s;
-}
-
-.qc-serial button:hover {
-	rotate: 180deg;
-}
-
-.qc-serial button:active {
-	scale: 0.9;
 }
 
 /* 뒷면: 기술 사양 */
@@ -604,72 +573,115 @@
 	font-size: 13px;
 }
 
-/* 번호 넣어 보기: 앱 입력란처럼 안으로 파인 칸 */
-.qc-try {
+/* 데이터베이스 구조: 문서마다 경로와 읽을 수 있는 사람, 필드 칩. 하위 문서는 왼쪽 줄로 이어 안에 그린다 */
+.qc-schema {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
 	margin-bottom: 28px;
+}
+
+.qc-doc {
 	padding: 20px 22px;
-	border-radius: 22px;
-	background-color: color-mix(in srgb, var(--qc-surface) 82%, transparent);
+	border: 2px solid color-mix(in srgb, var(--qc-teal) 55%, transparent);
+	border-radius: 20px;
+	background-color: var(--qc-surface);
 	box-shadow: var(--qc-shadow);
 }
 
-.qc-try label {
-	color: var(--qc-muted);
-	font-size: 13px;
-	font-weight: 700;
+.qc-doc[data-child] {
+	border-color: var(--qc-line);
+	box-shadow: none;
 }
 
-.qc-try-row {
+.qc-doc header {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 12px;
-	margin-top: 10px;
+	justify-content: space-between;
+	gap: 8px;
 }
 
-.qc-try input {
-	flex: 1 1 200px;
-	min-width: 0;
-	padding: 10px 16px;
-	border: 2px solid transparent;
-	border-radius: 999px;
-	outline: none;
-	background-color: color-mix(in srgb, var(--qc-cell) 55%, var(--qc-surface));
-	box-shadow: inset 3px -3px 6px rgba(0, 0, 0, 0.12);
-	color: var(--qc-ink);
+.qc-doc code {
+	color: var(--sp-accent);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 15px;
-	transition: border-color 0.2s;
+	font-size: 17px;
+	font-weight: 800;
 }
 
-.qc-try input:focus-visible {
-	border-color: var(--qc-teal);
-}
-
-.qc-try i {
-	color: var(--qc-teal);
-}
-
-.qc-try output {
-	padding: 8px 16px;
+.qc-access {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 3px 12px;
 	border-radius: 999px;
-	color: var(--qc-muted);
+	background-color: color-mix(in srgb, var(--qc-teal) 18%, transparent);
+	color: var(--sp-accent);
+	font-size: 12px;
+	font-weight: 800;
+}
+
+.qc-access[data-locked] {
+	background-color: color-mix(in srgb, var(--qc-pink) 28%, transparent);
+	color: #b4235a;
+}
+
+:root[data-theme='dark'] .qc-access[data-locked] {
+	color: #ffb3c8;
+}
+
+.qc-doc ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 12px;
+	list-style: none;
+}
+
+/* 필드 칩: 문서가 화면에 들어오면 하나씩 톡 놓인다 */
+.qc-doc li {
+	padding: 4px 12px;
+	border-radius: 10px;
+	background-color: color-mix(in srgb, var(--qc-cell) 70%, var(--qc-surface));
+	box-shadow: inset 2px -2px 4px rgba(0, 0, 0, 0.08);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 15px;
-	transition:
-		background-color 0.25s,
-		color 0.25s;
-}
-
-.qc-try output[data-found='true'] {
-	background-color: var(--qc-deep);
-	color: #ffffff;
-	animation: qc-tag 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.qc-try output[data-found='false'] {
-	font-family: inherit;
 	font-size: 13px;
+	opacity: 0;
+	scale: 0.7;
+	transition:
+		opacity 0.3s ease-out,
+		scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition-delay: calc(var(--i) * 60ms + 200ms);
+}
+
+.qc-doc[data-shown] li {
+	opacity: 1;
+	scale: 1;
+}
+
+.qc-doc > p,
+.qc-doc-children > p {
+	margin-top: 12px;
+	color: var(--qc-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.qc-doc-children {
+	margin-top: 18px;
+	padding-left: 18px;
+	border-left: 3px solid color-mix(in srgb, var(--qc-teal) 45%, transparent);
+}
+
+.qc-doc-children > p {
+	margin: 0 0 12px;
+	font-weight: 700;
+}
+
+.qc-doc-children > div {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
 }
 
 .qc-tiles {
@@ -861,11 +873,8 @@
 	font-weight: 700;
 }
 
-/* ───────── 맡은 일과 다음 단계 ───────── */
+/* ───────── 맡은 일 ───────── */
 .qc-lists {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 28px;
 	margin-top: 40px;
 }
 
@@ -883,9 +892,9 @@
 }
 
 .qc-lists ul {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px 28px;
 	list-style: none;
 	font-size: 15px;
 	line-height: 1.5;
@@ -899,10 +908,6 @@
 .qc-lists i {
 	margin-top: 3px;
 	color: var(--qc-teal);
-}
-
-.qc-lists .next i {
-	color: var(--qc-pink);
 }
 
 .qc-foot {
@@ -936,8 +941,9 @@
 
 	.qc-cards,
 	.qc-journey-body,
-	.qc-lists,
+	.qc-lists ul,
 	.qc-tiles,
+	.qc-doc-children > div,
 	.qc-facts ul {
 		grid-template-columns: minmax(0, 1fr);
 	}
@@ -971,6 +977,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.qc-doc li {
+		opacity: 1;
+		scale: 1;
+	}
+
 	.qc-card,
 	.qc-card[data-tilt] {
 		transform: var(--lay);
@@ -982,8 +993,7 @@
 	}
 
 	.qc-logo i,
-	.qc-screen figcaption,
-	.qc-try output[data-found='true'] {
+	.qc-screen figcaption {
 		animation: none;
 	}
 
@@ -992,6 +1002,7 @@
 	.qc-step-body,
 	.qc-steps li::before,
 	.qc-screen-view img,
+	.qc-doc li,
 	.sp .qc-tiles article[data-reveal] {
 		transition: none;
 	}

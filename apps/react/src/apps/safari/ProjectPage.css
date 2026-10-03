@@ -320,7 +320,7 @@
 	line-height: 1.45;
 }
 
-/* 맡은 일, 다음 단계: 왼쪽 제목, 오른쪽 목록 */
+/* 맡은 일: 왼쪽 제목, 오른쪽 목록 */
 .sp-split {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);

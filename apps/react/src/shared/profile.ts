@@ -53,6 +53,8 @@ export interface ProjectChapter {
 	points: ProjectPoint[];
 	/** 장 끝에 둘 그림 (public/imgs/projects/{id}/…) */
 	image?: { src: string; alt: string };
+	/** 데이터베이스 구조: 문서(테이블) 경로, 누가 읽는지, 필드, 한 줄 설명. parent가 있으면 그 문서의 하위 문서 */
+	schema?: { path: string; access: string; fields: string[]; note: string; parent?: string; locked?: boolean }[];
 }
 
 /**
@@ -88,8 +90,6 @@ export interface Project {
 	contributions: string[];
 	/** 진행 과정 (날짜, 한 일) */
 	timeline?: { date: string; label: string }[];
-	/** 앞으로 할 일 */
-	next?: string[];
 	/** 쓰는 법: 상황마다 (예: 가입 없이, 로그인하면) */
 	usage?: ProjectPoint[];
 	/** 폴더 구조 (저장소 README의 트리) */
@@ -458,7 +458,7 @@ export const PROJECTS: Project[] = [
 			},
 			{
 				title: '주소, QR, 일련번호',
-				body: '명함마다 고유 주소와 QR 코드(PNG 저장), 옮겨 적기 쉬운 일련번호가 나옵니다. 번호를 눌러 복사하고, 헤더 돋보기에 번호를 넣으면 그 명함으로 갑니다.',
+				body: '명함마다 고유 주소와 QR 코드(PNG 저장), 일련번호가 나옵니다. 번호를 눌러 복사하고, 헤더 돋보기에 번호를 넣으면 그 명함으로 갑니다.',
 				image: projectImage('qru', 'screens/card.jpg'),
 			},
 			{
@@ -501,10 +501,6 @@ export const PROJECTS: Project[] = [
 				],
 				points: [
 					{
-						title: '옮겨 적기 쉬운 번호',
-						body: '헷갈리는 I, L, O, U를 뺀 32자로 10자리 번호를 만듭니다. 소문자로 적거나 붙임표를 빼도, O를 0으로 I와 L을 1로 바꿔 같은 번호로 찾습니다.',
-					},
-					{
 						title: '목록을 열지 않는 길잡이',
 						body: '보안 규칙은 질의에 담긴 값을 볼 수 없어 번호로 거르는 목록 조회를 열 수 없습니다. 번호 자체를 문서 id로 하는 길잡이 문서를 두고, 한 번 읽어 명함으로 찾아갑니다.',
 					},
@@ -529,10 +525,35 @@ export const PROJECTS: Project[] = [
 						body: '수정 규칙이 만든 시각, 번호, 소유자가 이전 값과 같은지 검사합니다. 그래서 이미 건넨 주소와 QR, 번호가 바뀌지 않고, 삭제하면 사진과 길잡이도 함께 지웁니다.',
 					},
 				],
-				image: {
-					src: projectImage('qru', 'screens/data-model.jpg'),
-					alt: '명함 한 장이 cards, private, photo, serials 네 문서로 나뉘어 저장되는 모습',
-				},
+				schema: [
+					{
+						path: 'cards/{id}',
+						access: '누구나 읽기',
+						fields: ['serialNumber', 'uid', 'createdAt', 'entries[]', 'search{}', 'inShuffle', 'hasPhoto'],
+						note: '"공개"로 고른 항목만 들어갑니다. 비공개 항목은 숨기는 게 아니라 아예 저장하지 않습니다.',
+					},
+					{
+						path: 'private/card',
+						parent: 'cards/{id}',
+						access: '소유자만',
+						locked: true,
+						fields: ['values{}', 'isPublic{}'],
+						note: '수정 화면을 채울 입력 원본입니다.',
+					},
+					{
+						path: 'photo/data',
+						parent: 'cards/{id}',
+						access: '누구나 읽기',
+						fields: ['uid', 'dataUrl'],
+						note: '셔플이 후보를 한꺼번에 읽을 때 사진이 딸려 오지 않게 떼어 둡니다.',
+					},
+					{
+						path: 'serials/{번호}',
+						access: '번호로 한 번 읽기',
+						fields: ['collection', 'cardId', 'uid'],
+						note: '일련번호 자체가 문서 id입니다. 목록 조회는 막혀 있고, 번호를 알아야 한 번 읽을 수 있습니다.',
+					},
+				],
 			},
 		],
 		gallery: [
@@ -547,11 +568,6 @@ export const PROJECTS: Project[] = [
 			'프론트엔드 전체',
 			'Firebase 인증·Firestore·Hosting 연동과 보안 규칙',
 			'배포 자동화',
-		],
-		next: [
-			'비회원 명함의 수명: 만료 시각을 두고 지울지 정하기',
-			'App Check나 서버 검증으로 비회원 명함 대량 생성 막기',
-			'cards와 guestCards 컬렉션 하나로 합치기',
 		],
 		specs: [
 			{ label: '프론트엔드', value: 'React 18, TypeScript, Vite, React Router v7' },
