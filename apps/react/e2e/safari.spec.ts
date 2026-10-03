@@ -48,13 +48,18 @@ test.describe('Safari', () => {
 		await expect(macfolio.getByRole('link', { name: '데모 보기' })).toHaveCount(0);
 
 		// 같은 앱을 데스크톱과 휴대폰에서 나란히: 앱을 고르면 두 화면이 함께 바뀐다
+		// 화면 크기 시뮬레이터: 시험은 움직임 줄이기라 저절로 넘어가지 않고 모니터에서 멈춰 있다
 		const devices = macfolio.getByRole('region', { name: '어디서 열어도' });
-		await expect(devices.getByRole('img', { name: '데스크톱에서 연 메모' })).toBeVisible();
+		await expect(devices.getByRole('img', { name: '모니터에서 연 메모' })).toBeVisible();
+		await expect(devices.getByRole('button', { name: '재생' })).toBeVisible();
 		await devices.getByRole('button', { name: /메시지/ }).click();
 		await expect(devices.getByRole('button', { name: /메시지/ })).toHaveAttribute('aria-pressed', 'true');
-		await expect(devices.getByRole('img', { name: '데스크톱에서 연 메시지' })).toBeVisible();
+		await expect(devices.getByRole('img', { name: '모니터에서 연 메시지' })).toBeVisible();
+		await devices.getByRole('button', { name: /휴대폰/ }).click();
+		await expect(devices.getByRole('button', { name: /휴대폰/ })).toHaveAttribute('aria-current', 'step');
 		await expect(devices.getByRole('img', { name: '휴대폰에서 연 메시지' })).toBeVisible();
-		await expect(devices.getByRole('img', { name: '데스크톱에서 연 메모' })).toHaveCount(0);
+		await expect(devices.getByRole('img', { name: '모니터에서 연 메시지' })).toHaveCount(0);
+		await expect(devices).toContainText('767px 이하에서는 iOS 홈 화면');
 
 		// 만든 방식에는 요청이 지나는 길을 그린 그림이 있다
 		await expect(

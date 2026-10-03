@@ -1,21 +1,69 @@
 // MacFolio: Apple 제품 페이지 흐름 그대로.
-// 스크롤하면 커지는 노트북 → 숫자 띠 → 기능 타일 → 데스크톱·휴대폰 나란히 → 어두운 만든 방식(구조 그림) → 맡은 일 → 기술 사양 표
+// 스크롤하면 커지는 노트북 → 숫자 띠 → 기능 타일 → 화면 크기를 바꿔 보는 시뮬레이터 → 어두운 만든 방식(구조 그림) → 맡은 일 → 기술 사양 표
+// 첫 화면 밖의 요소는 화면에 들어오면 나타나고 벗어나면 사라진다(data-reveal). 제목은 스크롤에 맞춰 낱말마다 밝아진다
 import React, { useEffect, useId, useRef, useState } from 'react';
 import type { Project } from '@/shared/profile';
 import { Facts, Favicon, Links } from '@/apps/safari/project/parts';
-import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
+import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 import './ProductPage.css';
 
 const VIEWS_DIR = '/imgs/projects/macfolio/views';
 
-/** 데스크톱과 휴대폰에서 나란히 보여 줄 앱 */
-const VIEWS = [
+const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+/** 시뮬레이터에서 고를 앱 */
+const APPS = [
 	{ id: 'memo', name: '메모', note: '블로그' },
 	{ id: 'messages', name: '메시지', note: '방명록' },
 	{ id: 'safari', name: 'Safari', note: '프로젝트' },
 ] as const;
 
-type ViewId = (typeof VIEWS)[number]['id'];
+type AppId = (typeof APPS)[number]['id'];
+
+/**
+ * 시뮬레이터가 차례로 보여 주는 화면 크기. 그림은 그 크기의 실제 브라우저로 찍었다 (views/{앱}-{크기}.jpg).
+ * share는 무대 폭에서 기기가 차지하는 비율, ratio는 화면의 세로/가로
+ */
+const SIZES = [
+	{
+		id: 'monitor',
+		name: '모니터',
+		px: 1920,
+		share: 0.86,
+		ratio: 1080 / 1920,
+		note: '넓은 화면에서는 창을 여러 개 띄워 두고 Dock에서 앱을 엽니다. 창은 끌어서 옮기고 모서리를 잡아 크기를 바꿉니다.',
+	},
+	{
+		id: 'laptop',
+		name: '노트북',
+		px: 1440,
+		share: 0.72,
+		ratio: 900 / 1440,
+		note: '같은 데스크톱입니다. 메뉴 막대와 Dock은 그대로이고, 창은 화면 안에 들어오는 크기로 열립니다.',
+	},
+	{
+		id: 'tablet',
+		name: '태블릿',
+		px: 820,
+		share: 0.34,
+		ratio: 1180 / 820,
+		note: '768px부터는 아직 데스크톱입니다. 화면이 좁으면 창이 화면 폭에 맞춰 열려 잘리지 않습니다.',
+	},
+	{
+		id: 'phone',
+		name: '휴대폰',
+		px: 390,
+		share: 0.21,
+		ratio: 844 / 390,
+		note: '767px 이하에서는 iOS 홈 화면이 되고, 앱은 화면을 가득 채웁니다. 가로로 눕혀 높이가 499px 이하인 휴대폰도 같습니다.',
+	},
+] as const;
+
+/** 시뮬레이터가 다음 크기로 넘어가는 간격 */
+const SIM_STEP_MS = 3800;
+
+/** 주요 기능 타일의 아이콘 (순서대로) */
+const TILE_ICONS = ['fa-solid fa-display', 'fa-solid fa-note-sticky', 'fa-solid fa-comments', 'fa-solid fa-link'];
 
 /** 구조 그림의 상자. step은 스크롤에 따라 켜지는 순서 */
 const NODES = [
@@ -64,14 +112,54 @@ function useScrollProgress<T extends HTMLElement>(
 	return ref;
 }
 
-const Headline: React.FC<{ title: string; sub?: string }> = ({ title, sub }) => (
-	<h2 className="sp-headline">
-		{title}
-		{sub && <span> {sub}</span>}
-	</h2>
-);
+/**
+ * 페이지 안의 [data-reveal] 요소가 화면(스크롤 상자)에 들어오면 data-shown을 붙이고, 벗어나면 뗀다.
+ * 나타나고 사라지는 모양은 CSS가 정한다
+ */
+function useReveal<T extends HTMLElement>() {
+	const ref = useRef<T>(null);
+	useEffect(() => {
+		const root = ref.current;
+		if (!root) return;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) entry.target.toggleAttribute('data-shown', entry.isIntersecting);
+			},
+			{ root: scrollParent(root), rootMargin: '-6% 0px -8% 0px', threshold: 0.12 }
+		);
+		root.querySelectorAll('[data-reveal]').forEach((node) => observer.observe(node));
+		return () => observer.disconnect();
+	}, []);
+	return ref;
+}
 
-/** 화면 한 장을 담는 노트북 (이미지가 여러 장이면 겹쳐 두고 active만 보인다) */
+/** 섹션 제목: 스크롤에 맞춰 낱말이 하나씩 밝아지고, 올리면 다시 흐려진다 */
+const Headline: React.FC<{ title: string; sub?: string }> = ({ title, sub }) => {
+	const ref = useScrollProgress<HTMLHeadingElement>(
+		(box, view) => (view.top + view.height * 0.92 - box.top) / (view.height * 0.4)
+	);
+	const words = [
+		...title.split(' ').map((word) => ({ word, sub: false })),
+		...(sub ?? '')
+			.split(' ')
+			.filter(Boolean)
+			.map((word) => ({ word, sub: true })),
+	];
+	return (
+		<h2 className="sp-headline pd-scrub" ref={ref} style={{ '--n': words.length } as React.CSSProperties}>
+			{words.map(({ word, sub: muted }, i) => (
+				<React.Fragment key={i}>
+					{i > 0 && ' '}
+					<span className={muted ? 'pd-word sub' : 'pd-word'} style={{ '--i': i } as React.CSSProperties}>
+						{word}
+					</span>
+				</React.Fragment>
+			))}
+		</h2>
+	);
+};
+
+/** 화면 한 장을 담는 노트북 */
 const Laptop: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
 	<div className={`pd-laptop${className ? ` ${className}` : ''}`}>
 		<div className="pd-screen">{children}</div>
@@ -93,65 +181,206 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 					<Links project={project} />
 				</div>
 				<Laptop className="pd-hero-device">
-					<img src={project.image} alt={`${project.name} 화면`} />
+					<img src={`${VIEWS_DIR}/memo-laptop.jpg`} alt={`${project.name} 화면`} />
 				</Laptop>
 				<p className="pd-caption" aria-hidden="true">
-					브라우저 안에, Mac 하나.
+					브라우저 안에, <strong>Mac 하나.</strong>
 				</p>
 			</div>
 		</section>
 	);
 };
 
-/** 같은 앱을 데스크톱과 휴대폰에서 나란히 */
-const Devices: React.FC = () => {
-	const [active, setActive] = useState<ViewId>('memo');
-	const current = VIEWS.find((view) => view.id === active) ?? VIEWS[0];
-	const shots = (kind: 'desktop' | 'mobile') =>
-		VIEWS.map((view) => (
-			<img
-				key={view.id}
-				src={`${VIEWS_DIR}/${view.id}-${kind}.jpg`}
-				alt={view.id === active ? `${kind === 'desktop' ? '데스크톱' : '휴대폰'}에서 연 ${view.name}` : ''}
-				aria-hidden={view.id === active ? undefined : true}
-				className={view.id === active ? 'active' : undefined}
-				loading="lazy"
-			/>
-		));
+/** 숫자가 목표값까지 굴러간다 (창 크기를 끌어 바꾸는 것처럼) */
+function useRollingNumber(target: number, duration = 700) {
+	const [value, setValue] = useState(target);
+	const from = useRef(target);
+	useEffect(() => {
+		if (reducedMotion()) {
+			from.current = target;
+			setValue(target);
+			return;
+		}
+		const start = performance.now();
+		const begin = from.current;
+		let frame = requestAnimationFrame(function tick(now) {
+			const t = Math.min(1, (now - start) / duration);
+			const eased = 1 - (1 - t) ** 3;
+			const next = Math.round(begin + (target - begin) * eased);
+			from.current = next;
+			setValue(next);
+			if (t < 1) frame = requestAnimationFrame(tick);
+		});
+		return () => cancelAnimationFrame(frame);
+	}, [target, duration]);
+	return value;
+}
+
+/**
+ * 어디서 열어도: 브라우저 크기를 바꿔 보는 시뮬레이터.
+ * 화면에 보이는 동안 모니터 → 노트북 → 태블릿 → 휴대폰을 영상처럼 차례로 돌고, 기기 틀이 모양을 바꾸며 그 크기에서 찍은 화면이 나타난다
+ */
+const Simulator: React.FC = () => {
+	const [app, setApp] = useState<AppId>('memo');
+	const [index, setIndex] = useState(0);
+	const [playing, setPlaying] = useState(() => !reducedMotion());
+	const [visible, setVisible] = useState(false);
+	const stage = useRef<HTMLDivElement>(null);
+	const size = SIZES[index];
+	const appInfo = APPS.find((item) => item.id === app) ?? APPS[0];
+	const px = useRollingNumber(size.px);
+
+	// 화면에 보일 때만 돈다
+	useEffect(() => {
+		const node = stage.current;
+		if (!node) return;
+		const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+			root: scrollParent(node),
+			threshold: 0.4,
+		});
+		observer.observe(node);
+		return () => observer.disconnect();
+	}, []);
+
+	useEffect(() => {
+		if (!playing || !visible) return;
+		const timer = window.setTimeout(() => setIndex((i) => (i + 1) % SIZES.length), SIM_STEP_MS);
+		return () => window.clearTimeout(timer);
+	}, [playing, visible, index]);
+
+	const running = playing && visible;
 	return (
 		<section className="sp-section pd-devices" aria-label="어디서 열어도">
 			<div className="sp-inner">
-				<Headline title="어디서 열어도." sub="큰 화면에서는 창으로, 휴대폰에서는 앱 하나가 화면 가득." />
-				<div className="pd-switch" role="group" aria-label="보여 줄 앱">
-					{VIEWS.map((view) => (
-						<button key={view.id} type="button" aria-pressed={view.id === active} onClick={() => setActive(view.id)}>
-							{view.name}
-							<span>{view.note}</span>
-						</button>
-					))}
+				<Headline title="어디서 열어도." sub="화면 크기에 따라 데스크톱이 되고, 휴대폰이 됩니다." />
+				<div className="pd-sim-bar" data-reveal="">
+					<div className="pd-switch" role="group" aria-label="보여 줄 앱">
+						{APPS.map((item) => (
+							<button key={item.id} type="button" aria-pressed={item.id === app} onClick={() => setApp(item.id)}>
+								{item.name}
+								<span>{item.note}</span>
+							</button>
+						))}
+					</div>
+					<button
+						type="button"
+						className="pd-sim-play"
+						aria-label={playing ? '일시 정지' : '재생'}
+						onClick={() => setPlaying((value) => !value)}
+					>
+						<i className={playing ? 'fa-solid fa-pause' : 'fa-solid fa-play'} aria-hidden="true" />
+					</button>
 				</div>
-				<div className="pd-pair">
-					<Laptop>{shots('desktop')}</Laptop>
-					<div className="pd-phone">
-						<div className="pd-phone-screen">{shots('mobile')}</div>
+
+				<div
+					className="pd-sim"
+					ref={stage}
+					data-reveal=""
+					data-kind={size.id}
+					style={{ '--share': size.share, '--ratio': size.ratio } as React.CSSProperties}
+				>
+					<div className="pd-sim-device">
+						<div className="pd-sim-screen">
+							{SIZES.map((item) => (
+								<img
+									key={item.id}
+									src={`${VIEWS_DIR}/${app}-${item.id}.jpg`}
+									alt={item.id === size.id ? `${item.name}에서 연 ${appInfo.name}` : ''}
+									aria-hidden={item.id === size.id ? undefined : true}
+									className={item.id === size.id ? 'active' : undefined}
+									loading="lazy"
+								/>
+							))}
+						</div>
+						<span className="pd-sim-stand" aria-hidden="true" />
+						<span className="pd-sim-base" aria-hidden="true" />
+					</div>
+					<div className="pd-sim-ruler" aria-hidden="true">
+						<span>{px.toLocaleString('en-US')}px</span>
 					</div>
 				</div>
-				<p className="pd-pair-note" aria-live="polite">
-					{current.name} 앱은 {current.note}가 됩니다.
+
+				<ol className="pd-sim-steps" data-reveal="">
+					{SIZES.map((item, i) => (
+						<li key={item.id}>
+							<button
+								type="button"
+								aria-current={i === index ? 'step' : undefined}
+								onClick={() => setIndex(i)}
+								// 진행 막대는 지금 칸에서만, 돌고 있을 때만 찬다
+								data-running={i === index && running ? '' : undefined}
+								style={{ '--step': `${SIM_STEP_MS}ms` } as React.CSSProperties}
+							>
+								<strong>{item.name}</strong>
+								<span>{item.px}px</span>
+							</button>
+						</li>
+					))}
+				</ol>
+				<p className="pd-sim-note" aria-live="polite" key={size.id}>
+					<strong>
+						{size.name} · {size.px}px
+					</strong>{' '}
+					{size.note}
 				</p>
 			</div>
 		</section>
 	);
 };
 
-/** 만든 방식: 요청이 지나는 길. 스크롤하면 상자가 차례로 켜지고 선이 그려진다 */
+/** 구조 그림이 그려지는 데 걸리는 시간 */
+const ARCH_PLAY_MS = 2600;
+
+/**
+ * 구조 그림은 거의 다(85%) 화면에 들어온 다음에 처음부터 그려지고, 화면에서 거의 벗어나면 지워진다.
+ * 스크롤 위치에 바로 묶으면 그림이 다 보이기 전에 지나가 버려서, 다 보일 때 시간에 맞춰 그린다
+ */
+function useArchPlayback() {
+	const ref = useRef<HTMLElement>(null);
+	useEffect(() => {
+		const node = ref.current;
+		if (!node) return;
+		let frame = 0;
+		let progress = 0;
+		const set = (value: number) => {
+			progress = value;
+			node.style.setProperty('--p', value.toFixed(4));
+		};
+		const play = () => {
+			cancelAnimationFrame(frame);
+			if (reducedMotion()) return set(1);
+			const start = performance.now() - progress * ARCH_PLAY_MS;
+			frame = requestAnimationFrame(function tick(now) {
+				set(clamp((now - start) / ARCH_PLAY_MS));
+				if (progress < 1) frame = requestAnimationFrame(tick);
+			});
+		};
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.intersectionRatio >= 0.85) play();
+				else if (entry.intersectionRatio < 0.15) {
+					cancelAnimationFrame(frame);
+					set(0);
+				}
+			},
+			{ root: scrollParent(node), threshold: [0, 0.15, 0.85, 1] }
+		);
+		observer.observe(node);
+		return () => {
+			observer.disconnect();
+			cancelAnimationFrame(frame);
+		};
+	}, []);
+	return ref;
+}
+
+/** 만든 방식: 요청이 지나는 길. 그림이 다 보이면 상자가 차례로 켜지고 선이 그려진다 */
 const Architecture: React.FC = () => {
-	// 그림 윗변이 화면 아래쪽에 들어오면 시작해, 아랫변까지 다 보이면 끝난다
-	const ref = useScrollProgress<HTMLElement>((box, view) => (view.top + view.height * 0.9 - box.top) / box.height);
+	const ref = useArchPlayback();
 	const id = useId().replace(/:/g, '');
 	const step = (n: number) => ({ '--i': n, '--n': ARCH_STEPS }) as React.CSSProperties;
 	return (
-		<figure className="pd-arch" ref={ref}>
+		<figure className="pd-arch" ref={ref} data-reveal="">
 			<div className="pd-arch-scroll">
 				<svg viewBox="0 0 860 380" role="img" aria-labelledby={`${id}-title`}>
 					<title id={`${id}-title`}>
@@ -194,85 +423,100 @@ const Architecture: React.FC = () => {
 	);
 };
 
-const ProductPage: React.FC<{ project: Project }> = ({ project }) => (
-	<>
-		<Hero project={project} />
+const ProductPage: React.FC<{ project: Project }> = ({ project }) => {
+	const ref = useReveal<HTMLDivElement>();
+	return (
+		<div className="pd" ref={ref}>
+			<Hero project={project} />
 
-		<section className="sp-band" aria-label="한눈에 보기">
-			<div className="sp-inner">
-				<p className="sp-meta">
-					{project.context}
-					{project.period && ` · ${project.period}`}
-				</p>
-				<Facts project={project} />
-			</div>
-		</section>
+			<section className="sp-band" aria-label="한눈에 보기">
+				<div className="sp-inner pd-band" data-reveal="">
+					<p className="sp-meta">
+						{project.context}
+						{project.period && ` · ${project.period}`}
+					</p>
+					<Facts project={project} />
+				</div>
+			</section>
 
-		<section className="sp-section" aria-label="주요 기능">
-			<div className="sp-inner">
-				<Headline title="주요 기능." sub="지금 보고 있는 이 화면." />
-				<ul className="sp-tiles">
-					{project.highlights.map((point, i) => (
-						// 개수가 홀수면 첫 타일을 넓게 해 빈칸을 없앤다
-						<li key={point.title} className={i === 0 && project.highlights.length % 2 === 1 ? 'wide' : undefined}>
-							<h3>{point.title}</h3>
-							<p>{point.body}</p>
-						</li>
-					))}
-				</ul>
-			</div>
-		</section>
+			<section className="sp-section" aria-label="주요 기능">
+				<div className="sp-inner">
+					<Headline title="주요 기능." sub="지금 보고 있는 이 화면." />
+					<ul className="sp-tiles pd-tiles">
+						{project.highlights.map((point, i) => (
+							<li
+								key={point.title}
+								// 개수가 홀수면 첫 타일을 넓게 해 빈칸을 없앤다
+								className={i === 0 && project.highlights.length % 2 === 1 ? 'wide' : undefined}
+								data-reveal=""
+								data-tone={i % 4}
+								style={{ '--d': i % 2 } as React.CSSProperties}
+							>
+								<span className="pd-tile-icon" aria-hidden="true">
+									<i className={TILE_ICONS[i % TILE_ICONS.length]} />
+								</span>
+								<h3>{point.title}</h3>
+								<p>{point.body}</p>
+								<i className={`pd-tile-mark ${TILE_ICONS[i % TILE_ICONS.length]}`} aria-hidden="true" />
+							</li>
+						))}
+					</ul>
+				</div>
+			</section>
 
-		<Devices />
+			<Simulator />
 
-		<section className="sp-section sp-dark" aria-label="만든 방식">
-			<div className="sp-inner">
-				<Headline title="만든 방식." sub="보이지 않는 곳에서 신경 쓴 것들." />
-				<Architecture />
-				<ul className="sp-points">
-					{project.build.map((point) => (
-						<li key={point.title}>
-							<h3>{point.title}</h3>
-							<p>{point.body}</p>
-						</li>
-					))}
-				</ul>
-			</div>
-		</section>
+			<section className="sp-section sp-dark" aria-label="만든 방식">
+				<div className="sp-inner">
+					<Headline title="만든 방식." sub="보이지 않는 곳에서 신경 쓴 것들." />
+					<Architecture />
+					<ul className="sp-points">
+						{project.build.map((point, i) => (
+							<li key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+								<h3>{point.title}</h3>
+								<p>{point.body}</p>
+							</li>
+						))}
+					</ul>
+				</div>
+			</section>
 
-		<section className="sp-section sp-alt" aria-label="맡은 일">
-			<div className="sp-inner sp-split">
-				<Headline title="맡은 일." sub={project.role} />
-				<ul className="sp-checks">
-					{project.contributions.map((item) => (
-						<li key={item}>
-							<i className="fa-solid fa-circle-check" aria-hidden="true" />
-							{item}
-						</li>
-					))}
-				</ul>
-			</div>
-		</section>
+			<section className="sp-section sp-alt" aria-label="맡은 일">
+				<div className="sp-inner sp-split">
+					<Headline title="맡은 일." sub={project.role} />
+					<ul className="sp-checks">
+						{project.contributions.map((item, i) => (
+							<li key={item} data-reveal="" style={{ '--d': i } as React.CSSProperties}>
+								<i className="fa-solid fa-circle-check" aria-hidden="true" />
+								{item}
+							</li>
+						))}
+					</ul>
+				</div>
+			</section>
 
-		<section className="sp-section" aria-label="기술 사양">
-			<div className="sp-inner">
-				<h2 className="sp-specs-title">기술 사양</h2>
-				<dl className="sp-specs">
-					{project.specs.map((spec) => (
-						<div key={spec.label}>
-							<dt>{spec.label}</dt>
-							<dd>{spec.value}</dd>
-						</div>
-					))}
-				</dl>
-			</div>
-		</section>
+			<section className="sp-section" aria-label="기술 사양">
+				<div className="sp-inner">
+					<h2 className="sp-specs-title" data-reveal="">
+						기술 사양
+					</h2>
+					<dl className="sp-specs">
+						{project.specs.map((spec) => (
+							<div key={spec.label} data-reveal="">
+								<dt>{spec.label}</dt>
+								<dd>{spec.value}</dd>
+							</div>
+						))}
+					</dl>
+				</div>
+			</section>
 
-		<footer className="sp-cta">
-			<p>{project.tagline}</p>
-			<Links project={project} />
-		</footer>
-	</>
-);
+			<footer className="sp-cta" data-reveal="">
+				<p>{project.tagline}</p>
+				<Links project={project} />
+			</footer>
+		</div>
+	);
+};
 
 export default ProductPage;
