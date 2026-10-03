@@ -63,7 +63,10 @@ test.describe('GitHub 앱', () => {
 		const readme = github.getByRole('article', { name: 'README' });
 		await expect(readme.locator('.gh-banner')).toBeVisible();
 		await expect(readme.locator('.gh-contact-button')).toHaveCount(3);
-		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo')).toHaveCount(5);
+		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo')).toHaveCount(6);
+		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo-name').first()).toHaveText(
+			'MacFolio'
+		);
 	});
 
 	test('고정 저장소 카드는 설명 길이와 상관없이 크기가 같고, 언어 줄은 카드 아래에 붙는다', async ({ page }) => {
@@ -71,7 +74,7 @@ test.describe('GitHub 앱', () => {
 		await enterDesktop(page);
 		await dockItem(page, 'github').click();
 		const cards = appWindow(page, 'github').getByRole('region', { name: 'Pinned' }).locator('.gh-repo');
-		await expect(cards).toHaveCount(5);
+		await expect(cards).toHaveCount(6);
 		const boxes = await cards.evaluateAll((elements) =>
 			elements.map((element) => {
 				const card = element.getBoundingClientRect();

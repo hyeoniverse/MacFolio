@@ -1,5 +1,5 @@
 // GitHub 앱에 보여 줄 프로필·README·저장소. 값은 API 서버가 GitHub에서 받아 둔 것(/github/profile)을 쓰고,
-// 서버가 없거나 닿지 않을 때는 아래 스냅샷(2026-10-02에 옮겨 적음)을 보여 준다.
+// 서버가 없거나 닿지 않을 때는 아래 스냅샷(2026-10-03에 옮겨 적음)을 보여 준다.
 
 export interface GithubProfile {
 	login: string;
@@ -163,6 +163,7 @@ export const GITHUB_SNAPSHOT: GithubData = {
 	readme: README_SNAPSHOT,
 	readmeBaseUrl: 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/',
 	repos: [
+		repo('hyeoniverse/MacFolio', { language: 'TypeScript' }),
 		repo('Devcourse-NewPick/front', {
 			description: 'A code repository designed to show the best GitHub has to offer.',
 			homepage: 'https://newpick-tan.vercel.app/',
