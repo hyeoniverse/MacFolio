@@ -123,7 +123,11 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 			<div className="sp-hero-main">
 				{look !== 'editorial' && (
 					<div className="sp-hero-art">
-						<Favicon project={project} className="sp-app-icon" />
+						{project.art ? (
+							<img src={project.art} alt={`${project.name} 그림`} className="sp-app-icon" />
+						) : (
+							<Favicon project={project} className="sp-app-icon" />
+						)}
 					</div>
 				)}
 				<div className="sp-hero-copy">
