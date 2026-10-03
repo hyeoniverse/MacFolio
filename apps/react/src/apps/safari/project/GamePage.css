@@ -276,6 +276,10 @@
 	line-height: 1.15;
 }
 
+.gm-title-body h1 span {
+	display: inline-block;
+}
+
 .gm-lead {
 	margin-top: 10px;
 	color: var(--gm-muted);

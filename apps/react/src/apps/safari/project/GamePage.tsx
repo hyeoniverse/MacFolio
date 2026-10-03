@@ -275,7 +275,14 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 				<div className="gm-title-body">
 					<Favicon project={project} className="gm-icon" />
 					<p className="gm-sign">{project.name}</p>
-					<h1>{project.tagline}</h1>
+					<h1>
+						{/* 문장마다 한 덩어리로 줄을 바꾼다 */}
+						{project.tagline.split(/(?<=[.!?])\s+/).map((sentence) => (
+							<React.Fragment key={sentence}>
+								<span>{sentence}</span>{' '}
+							</React.Fragment>
+						))}
+					</h1>
 					<p className="gm-lead">{project.description}</p>
 					<Links project={project} className="gm-links" />
 					<button type="button" className="gm-press" onClick={start} aria-label="시작: 퀘스트로 내려가기">
