@@ -200,6 +200,14 @@
 	width: 2px;
 	background-color: var(--qc-line);
 	content: '';
+	transform: scaleY(0);
+	transform-origin: top;
+	transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 펼쳐진 단계에서 다음 단계로 선이 이어진다 */
+.qc-steps li[data-open='true']:not(:last-child)::before {
+	transform: none;
 }
 
 .qc-step {
@@ -223,8 +231,46 @@
 	font-weight: 700;
 }
 
+.qc-step,
+.qc-steps h3 {
+	transition:
+		color 320ms ease-out,
+		background-color 320ms ease-out;
+}
+
+/* 아직 닿지 않은 단계는 번호와 제목만 흐리게 */
+.qc-steps li[data-open='false'] .qc-step {
+	border-color: var(--qc-line);
+	color: var(--qc-muted);
+}
+
+.qc-steps li[data-open='false'] h3 {
+	color: var(--qc-muted);
+}
+
+/* 펼쳐진 단계의 번호는 채운다 */
+.qc-steps li[data-open='true'] .qc-step {
+	background-color: var(--sp-accent);
+	color: #ffffff;
+}
+
+.qc-step-body {
+	display: grid;
+	grid-template-rows: 0fr;
+	opacity: 0;
+	transition:
+		grid-template-rows 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 420ms ease-out;
+}
+
+.qc-steps li[data-open='true'] .qc-step-body {
+	grid-template-rows: 1fr;
+	opacity: 1;
+}
+
 .qc-steps p {
-	margin-top: 6px;
+	overflow: hidden;
+	padding-top: 6px;
 	color: var(--qc-muted);
 	font-size: 15px;
 	line-height: 1.6;
@@ -313,7 +359,9 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.qc-answer-body,
-	.qc-answer-body p {
+	.qc-answer-body p,
+	.qc-step-body,
+	.qc-steps li::before {
 		transition: none;
 	}
 }
