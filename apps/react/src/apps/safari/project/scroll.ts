@@ -17,7 +17,7 @@ export function viewOf(scroller: HTMLElement | null): { top: number; height: num
 }
 
 /**
- * 스크롤하거나 크기가 바뀔 때마다(한 프레임에 한 번) update를 부른다. 처음에도 한 번 부른다.
+ * 스크롤하거나 크기(창, 스크롤 상자)가 바뀔 때마다(한 프레임에 한 번) update를 부른다. 처음에도 한 번 부른다.
  * 정리 함수를 돌려준다
  */
 export function onScrollFrame(node: HTMLElement, update: (scroller: HTMLElement | null) => void): () => void {
@@ -34,9 +34,13 @@ export function onScrollFrame(node: HTMLElement, update: (scroller: HTMLElement 
 	run();
 	source.addEventListener('scroll', schedule, { passive: true });
 	window.addEventListener('resize', schedule);
+	// Safari 창을 끌어 크기를 바꾸면 창(window)은 그대로라 resize가 오지 않는다. 스크롤 상자의 크기를 직접 지켜본다
+	const resized = typeof ResizeObserver === 'undefined' || !scroller ? null : new ResizeObserver(schedule);
+	resized?.observe(scroller!);
 	return () => {
 		source.removeEventListener('scroll', schedule);
 		window.removeEventListener('resize', schedule);
+		resized?.disconnect();
 		cancelAnimationFrame(frame);
 	};
 }
