@@ -13,7 +13,7 @@ summary: 로그인 없는 블로그 댓글을 붙이면서 비밀번호도 IP도
 
 ## 비밀번호: 해시만
 
-비밀번호는 scrypt로 해시해서 둔다. 댓글마다 새 salt를 쓰므로 같은 비밀번호라도 저장된 값이 다르다. 지울 때는 받은 비밀번호를 같은 salt로 해시해 비교하고, 비교는 걸린 시간으로 내용을 짐작할 수 없게 `timingSafeEqual`로 한다.
+비밀번호는 Scrypt로 해시해서 둔다. 댓글마다 새 salt를 쓰므로 같은 비밀번호라도 저장된 값이 다르다. 지울 때는 받은 비밀번호를 같은 salt로 해시해 비교하고, 비교는 걸린 시간으로 내용을 짐작할 수 없게 `timingSafeEqual`로 한다.
 
 ```ts
 // scrypt$<salt>$<hash>
@@ -22,7 +22,7 @@ const hash = await scrypt(password, salt, 32);
 return `scrypt$${salt.toString('base64')}$${hash.toString('base64')}`;
 ```
 
-Bcrypt 대신 scrypt를 고른 것은 Node에 들어 있어서 네이티브 패키지를 따로 빌드할 필요가 없기 때문이다. 둘 다 일부러 느리게 만든 해시라, DB가 새어 나가도 비밀번호를 하나씩 맞혀 보기가 어렵다.
+Bcrypt 대신 Scrypt를 고른 것은 Node에 들어 있어서 네이티브 패키지를 따로 빌드할 필요가 없기 때문이다. 둘 다 일부러 느리게 만든 해시라, DB가 새어 나가도 비밀번호를 하나씩 맞혀 보기가 어렵다.
 
 ## IP: 앞 두 자리와 해시만
 
