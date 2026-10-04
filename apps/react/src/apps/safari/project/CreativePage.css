@@ -1068,8 +1068,10 @@
 }
 
 .cr-shots .cr-zoom img {
-	aspect-ratio: auto;
-	max-height: 260px;
+	/* 자리를 미리 잡아 둔다: 그림이 늦게 불러와져도 아래 내용이 밀리지 않게 (그림은 잘리지 않고 칸 안에 들어간다) */
+	aspect-ratio: 16 / 10;
+	background-color: var(--cr-bg);
+	object-fit: contain;
 }
 
 .cr-shots li > span {
@@ -1102,8 +1104,9 @@
 
 /* 장 글 묶음의 그림은 원래 비율대로 (가로로 긴 도구 막대 그림이 잘리지 않게), 너무 길면 위쪽만 */
 .cr-point-shot .cr-zoom img {
-	aspect-ratio: auto;
-	max-height: 320px;
+	aspect-ratio: 16 / 10;
+	background-color: var(--cr-bg);
+	object-fit: contain;
 }
 
 .cr-zoom:hover img {

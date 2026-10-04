@@ -585,6 +585,8 @@ const moveClip = (clips: Clips, from: number, to: number): Clips => {
 /** 표본 하나의 길이 (초) */
 const SAMPLE_SEC = 0.1;
 const HISTORY = 50;
+/** 클립을 끌기 시작하려고 길게 누르는 시간 (ms) */
+const LONG_PRESS_MS = 400;
 type Clips = number[][];
 
 /** 구간 [a, b)를 지운 클립들 (빈 클립은 빠진다) */
@@ -629,7 +631,7 @@ const insertAt = (clips: Clips, i: number, piece: number[]): Clips => {
 
 /**
  * 녹음 파형 편집기: 실제 Fish 음성을 클립으로 다룬다. 누르면 커서, 끌면 구간. 잘라내기·복사·붙여넣기·지우기·선택만 남기기·나누기,
- * 되돌리기 50단계. 클립 번호 손잡이를 끌면 순서가 바뀌고, 재생하면 편집한 순서 그대로 소리가 난다.
+ * 되돌리기 50단계. 클립을 길게 눌러 끌면 순서가 바뀌고, 재생하면 편집한 순서 그대로 소리가 난다.
  * 단축키는 편집기에 초점이 있을 때 받는다 (Space 재생, ⌘/Ctrl+X C V B Z, Delete, Esc, ←→)
  */
 const Wave: React.FC = () => {
@@ -642,6 +644,9 @@ const Wave: React.FC = () => {
 	const [playhead, setPlayhead] = useState<number | null>(null);
 	// 끌고 있는 클립: 몇 번째인지, 놓일 순서, 손잡이가 움직인 거리(px), 놓일 자리 선의 위치(px)
 	const [drag, setDrag] = useState<{ from: number; to: number; dx: number; line: number } | null>(null);
+	// 길게 누르는 중인 클립 (손을 떼거나 움직이면 풀린다)
+	const [pressing, setPressing] = useState<number | null>(null);
+	const press = useRef<{ x: number; timer: number } | null>(null);
 	const track = useRef<HTMLDivElement>(null);
 	const anchor = useRef<number | null>(null);
 	const frame = useRef(0);
@@ -670,6 +675,30 @@ const Wave: React.FC = () => {
 		if (slot < 0) slot = nodes.length;
 		const edge = slot < nodes.length ? nodes[slot].getBoundingClientRect().left - 2 : box.right;
 		return { to: slot > from ? slot - 1 : slot, line: edge - box.left };
+	};
+	const cancelPress = () => {
+		if (press.current) window.clearTimeout(press.current.timer);
+		press.current = null;
+		setPressing(null);
+	};
+	/** 클립 끌기: 창 전체에서 움직임을 받아, 클립이 손을 따라오고 놓은 자리로 옮긴다 */
+	const startDrag = (n: number, startX: number) => {
+		let latest = { from: n, dx: 0, ...dropAt(startX, n) };
+		setDrag(latest);
+		const move = (next: PointerEvent) => {
+			latest = { from: n, dx: next.clientX - startX, ...dropAt(next.clientX, n) };
+			setDrag(latest);
+		};
+		const up = () => {
+			window.removeEventListener('pointermove', move);
+			window.removeEventListener('pointerup', up);
+			window.removeEventListener('pointercancel', up);
+			if (latest.to !== latest.from) commit(moveClip(clips, latest.from, latest.to));
+			setDrag(null);
+		};
+		window.addEventListener('pointermove', move);
+		window.addEventListener('pointerup', up);
+		window.addEventListener('pointercancel', up);
 	};
 	const indexAt = (clientX: number) => {
 		const box = track.current?.getBoundingClientRect();
@@ -832,8 +861,26 @@ const Wave: React.FC = () => {
 					anchor.current = at;
 					setCursor(at);
 					setSpan(null);
+					// 클립을 길게 누르고 있으면(움직이지 않고) 그 클립을 끌어 순서를 바꾼다
+					const clip = (event.target as HTMLElement).closest<HTMLElement>('.cd-clip');
+					if (clip && clips.length > 1) {
+						const n = Number(clip.dataset.index);
+						const x = event.clientX;
+						setPressing(n);
+						press.current = {
+							x,
+							timer: window.setTimeout(() => {
+								press.current = null;
+								setPressing(null);
+								anchor.current = null;
+								setSpan(null);
+								startDrag(n, x);
+							}, LONG_PRESS_MS),
+						};
+					}
 				}}
 				onPointerMove={(event) => {
+					if (press.current && Math.abs(event.clientX - press.current.x) > 5) cancelPress();
 					if (anchor.current === null) return;
 					const at = indexAt(event.clientX);
 					const a = Math.min(anchor.current, at);
@@ -841,6 +888,7 @@ const Wave: React.FC = () => {
 					setSpan(b - a > 0 ? [a, b] : null);
 				}}
 				onPointerUp={() => {
+					cancelPress();
 					anchor.current = null;
 				}}
 			>
@@ -856,37 +904,11 @@ const Wave: React.FC = () => {
 									'--dx': drag?.from === n ? `${drag.dx}px` : '0px',
 								} as React.CSSProperties
 							}
+							data-index={n}
 							data-dragging={drag?.from === n || undefined}
+							data-pressing={pressing === n || undefined}
 						>
-							<span
-								className="cd-clip-no"
-								title="끌어서 순서 바꾸기"
-								onPointerDown={(event) => {
-									event.stopPropagation();
-									event.preventDefault();
-									if (clips.length < 2) return;
-									const startX = event.clientX;
-									let latest = { from: n, dx: 0, ...dropAt(startX, n) };
-									setDrag(latest);
-									// 손잡이를 잡은 뒤로는 창 전체에서 움직임을 받는다 (클립이 손잡이째 움직여도 놓치지 않게)
-									const move = (next: PointerEvent) => {
-										latest = { from: n, dx: next.clientX - startX, ...dropAt(next.clientX, n) };
-										setDrag(latest);
-									};
-									const up = () => {
-										window.removeEventListener('pointermove', move);
-										window.removeEventListener('pointerup', up);
-										window.removeEventListener('pointercancel', up);
-										if (latest.to !== latest.from) commit(moveClip(clips, latest.from, latest.to));
-										setDrag(null);
-									};
-									window.addEventListener('pointermove', move);
-									window.addEventListener('pointerup', up);
-									window.addEventListener('pointercancel', up);
-								}}
-							>
-								<i className="fa-solid fa-grip-vertical" /> {n + 1}
-							</span>
+							<span className="cd-clip-no">{n + 1}</span>
 							{clip.map((sample, i) => (
 								<i
 									key={i}
@@ -917,7 +939,8 @@ const Wave: React.FC = () => {
 				</span>
 			</p>
 			<p className="cd-hint">
-				실제 Fish 음성입니다. 구간을 골라 지우거나 나눈 뒤, 클립 번호 손잡이를 끌어 순서를 바꾸고 재생해 보세요
+				실제 Fish 음성입니다. 구간을 골라 지우거나 나눈 뒤, 클립을 길게 눌러 끌면 순서가 바뀝니다. 재생하면 편집한
+				순서대로 들립니다
 			</p>
 		</div>
 	);
