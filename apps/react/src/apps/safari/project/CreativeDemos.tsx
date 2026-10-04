@@ -8,6 +8,13 @@ import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import { env } from '@/shared/config/env';
 import '@/apps/safari/project/CreativeDemos.css';
 
+/** 데모가 지금 무엇을 하는지 페이지(몽이)에 알리는 이벤트: busy 만드는 중, done 끝, error 실패, play 재생 */
+export const DEMO_EVENT = 'cr-demo';
+export type DemoKind = NonNullable<ProjectPoint['demo']>;
+export type DemoState = 'busy' | 'done' | 'error' | 'play';
+const cheer = (kind: DemoKind, state: DemoState) =>
+	window.dispatchEvent(new CustomEvent(DEMO_EVENT, { detail: { kind, state } }));
+
 /** 화면(페이지를 스크롤하는 칸)에 ratio만큼 들어와 있는지 */
 const useInView = <T extends HTMLElement>(ratio = 0.5) => {
 	const ref = useRef<T>(null);
@@ -384,6 +391,7 @@ const Voice: React.FC = () => {
 			google: blocked.includes('google') ? 'skip' : first === 'google' ? 'trying' : 'idle',
 			edge: blocked.includes('edge') ? 'skip' : first === 'edge' ? 'trying' : 'idle',
 		});
+		cheer('voice', 'busy');
 		try {
 			const response = await fetch(`${api}/speech`, {
 				method: 'POST',
@@ -402,6 +410,7 @@ const Voice: React.FC = () => {
 				const reason = Array.isArray(data.message) ? data.message[0] : data.message;
 				reveal(data.attempts ?? [], () => {
 					setRunning(false);
+					cheer('voice', 'error');
 					setMessage(reason ?? '음성을 만들지 못했습니다.');
 					if (!data.attempts) setStates({ fish: 'idle', google: 'idle', edge: 'idle' });
 				});
@@ -413,6 +422,7 @@ const Voice: React.FC = () => {
 			const provider = data.provider;
 			reveal(data.attempts ?? [], () => {
 				setRunning(false);
+				cheer('voice', 'done');
 				setMade({ provider, text });
 				const el = player();
 				el.src = objectUrl.current!;
@@ -420,6 +430,7 @@ const Voice: React.FC = () => {
 			});
 		} catch {
 			setRunning(false);
+			cheer('voice', 'error');
 			setStates({ fish: 'idle', google: 'idle', edge: 'idle' });
 			setMessage('서버에 닿지 못했습니다. 잠시 뒤 다시 해 보세요.');
 		}
@@ -793,6 +804,7 @@ const Wave: React.FC = () => {
 			const audio = (context.current ??= new AudioContext());
 			void audio.resume();
 			setPlayhead(from);
+			cheer('wave', 'play');
 			void loadSample(audio).then((buffer) => {
 				// 편집한 순서대로 원래 녹음의 조각들을 이어 틀어 준다
 				let at = audio.currentTime + 0.05;
@@ -1057,7 +1069,7 @@ type Quota = { remaining: number; perIp: number; total: number };
  * 실제 AI를 부르는 데모가 함께 쓰는 서버 호출. 처음에 남은 횟수를 받아 두고, 보낼 때마다 고친다.
  * 실패하면 화면에 그대로 보일 문장을 돌려준다 (서버가 쓴 이유가 있으면 그것을)
  */
-const useLiveDemo = <T,>(path: string, what: string) => {
+const useLiveDemo = <T,>(path: 'translate' | 'summary' | 'cover', what: string) => {
 	const api = env.apiUrl;
 	const [quota, setQuota] = useState<Quota | null>(null);
 	useEffect(() => {
@@ -1072,7 +1084,11 @@ const useLiveDemo = <T,>(path: string, what: string) => {
 
 	const send = useCallback(
 		async (body: object): Promise<{ data: T; error?: undefined } | { data?: undefined; error: string }> => {
-			if (!api) return { error: `이 화면에는 ${what} 서버가 연결되어 있지 않습니다.` };
+			if (!api) {
+				cheer(path, 'error');
+				return { error: `이 화면에는 ${what} 서버가 연결되어 있지 않습니다.` };
+			}
+			cheer(path, 'busy');
 			try {
 				const response = await fetch(`${api}/${path}`, {
 					method: 'POST',
@@ -1088,10 +1104,13 @@ const useLiveDemo = <T,>(path: string, what: string) => {
 				if (remaining !== null) setQuota((now) => (now ? { ...now, remaining } : now));
 				if (!response.ok) {
 					const reason = Array.isArray(data.message) ? data.message[0] : data.message;
+					cheer(path, 'error');
 					return { error: reason ?? `${what}지 못했습니다.` };
 				}
+				cheer(path, 'done');
 				return { data };
 			} catch {
+				cheer(path, 'error');
 				return { error: '서버에 닿지 못했습니다. 잠시 뒤 다시 해 보세요.' };
 			}
 		},
