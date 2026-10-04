@@ -187,56 +187,30 @@
 	visibility: hidden;
 }
 
-.cd-caption .cd-cue {
-	grid-area: 1 / 1;
-	opacity: 0;
-	animation: cd-cue calc(var(--ms) * var(--len)) linear calc(var(--ms) * var(--s0)) paused;
-}
-
-.cd-caption .cd-cue:only-child {
-	opacity: 1;
-	animation: none;
-}
-
-@keyframes cd-cue {
-	from,
-	99% {
-		opacity: 1;
-	}
-	to {
-		opacity: 0;
-	}
-}
-
+/* 지금 문장만 보이고, 읽은 낱말이 진해진다 (진행은 스크립트가 음성의 재생 위치로 정한다) */
 .cd-caption .cd-cue span {
 	color: var(--cr-muted);
-	animation: cd-read 0.2s linear calc(var(--ms) * var(--at)) both paused;
+	transition: color 0.2s linear;
 }
 
-.cd-caption[data-playing] .cd-cue,
-.cd-caption[data-playing] span {
-	animation-play-state: running;
+.cd-caption .cd-cue span[data-read] {
+	color: var(--cr-ink);
 }
 
 .cd-caption em {
 	color: var(--cr-muted);
 }
 
-@keyframes cd-read {
-	to {
-		color: var(--cr-ink);
-	}
-}
-
 .cd-slides-bar {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	align-items: center;
 	gap: 8px;
 }
 
 .cd-slides-bar button {
 	display: inline-flex;
+	flex: none;
 	align-items: center;
 	gap: 5px;
 	padding: 4px 10px;
@@ -252,8 +226,13 @@
 }
 
 .cd-slides-source {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
 	color: var(--cr-muted);
 	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .cd-slides-count {
@@ -264,7 +243,7 @@
 
 .cd-slides-strip {
 	display: grid;
-	grid-template-columns: repeat(7, minmax(0, 1fr));
+	grid-template-columns: repeat(8, minmax(0, 1fr));
 	gap: 6px;
 	margin: 0;
 	padding: 0;
@@ -1437,23 +1416,6 @@
 
 	.cd-slide {
 		width: 72%;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	/* 애니메이션이 모두 꺼지므로 자막은 문장을 바꿔 가며 보이지 않고 대본 전체를 그대로 둔다 */
-	.cd-caption {
-		display: block;
-		height: auto;
-		min-height: 4.5em;
-	}
-
-	.cd-caption .cd-cue {
-		opacity: 1;
-	}
-
-	.cd-caption .cd-cue span {
-		color: var(--cr-ink);
 	}
 }
 

@@ -1,6 +1,6 @@
 // HYEONIVERSE의 더 들려줄 장마다 다른 짜임 (Apple 제품 페이지처럼 큰 제목·넉넉한 여백·둥근 타일).
 // showcase: 묶음마다 큰 칸과 작은 칸 / stage: 데모마다 큰 무대 / bento: 글과 데모가 좌우로 엇갈린 줄
-// dashboard: 계기판 숫자, 겹친 화면, 옆으로 넘기는 카드 / gauges: 점수 고리 / shield: 겹겹이 쌓인 방어
+// dashboard: 계기판 숫자, 겹친 화면, 옆으로 넘기는 카드 / gauges: 점수 고리 / shield: 바깥부터 차례로 선 방어 카드
 // palette: 읽는 항목에 따라 바뀌는 붙은 화면
 import React, { useEffect, useRef, useState } from 'react';
 import type { ProjectChapter, ProjectFact, ProjectPoint } from '@/shared/profile';
@@ -256,18 +256,15 @@ const Numbered: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
 	</ol>
 );
 
-/** shield: 요청이 들어와 DB까지 가는 동안 지나는 방어를 바깥부터 차례로 쌓는다 */
+/** shield (보안과 데이터): 요청이 들어와 DB에 닿기까지 지나는 방어를 바깥부터 차례로, 큰 아이콘이 위에 선 카드 격자로 */
 const Shield: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
 	<ol className="cr-shield">
 		{points.map((point, i) => (
-			<li key={point.title} data-reveal="left" style={{ '--d': i, '--depth': i } as React.CSSProperties}>
-				<span className="cr-shield-icon" aria-hidden="true">
-					<i className={`fa-solid ${point.icon ?? 'fa-shield-halved'}`} />
-				</span>
-				<div>
-					<h3>{point.title}</h3>
-					<p>{point.body}</p>
-				</div>
+			<li key={point.title} className="cr-tile" data-reveal="" style={{ '--d': i % 3 } as React.CSSProperties}>
+				<i className={`cr-tile-icon fa-solid ${point.icon ?? 'fa-shield-halved'}`} aria-hidden="true" />
+				<p className="cr-eyebrow">{i === points.length - 1 ? '가장 안쪽' : `${i + 1}겹`}</p>
+				<h3>{point.title}</h3>
+				<p>{point.body}</p>
 			</li>
 		))}
 	</ol>
@@ -309,7 +306,6 @@ const Tiles: React.FC<{ points: ProjectPoint[]; fallback?: ProjectChapter['image
 			<ol className="cr-spot-list" ref={list}>
 				{points.map((point, i) => (
 					<li key={point.title} data-active={i === active || undefined}>
-						{point.icon && <i className={`cr-tile-icon fa-solid ${point.icon}`} aria-hidden="true" />}
 						<h3>{point.title}</h3>
 						<p>{point.body}</p>
 						<div className="cr-spot-inline">
@@ -339,6 +335,8 @@ const Tiles: React.FC<{ points: ProjectPoint[]; fallback?: ProjectChapter['image
 /** 장의 글 묶음: 장 모양(look)마다 다른 짜임, 정하지 않았으면 두 칸 글 묶음 */
 export const ChapterPoints: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => {
 	const { points, look } = chapter;
+	// 그림 한 장으로 말하는 장(구조도)은 글 묶음이 없다
+	if (!points.length) return null;
 	if (look === 'showcase') return <Showcase points={points} />;
 	if (look === 'stage') return <Stage points={points} />;
 	if (look === 'bento') return <Bento points={points} />;

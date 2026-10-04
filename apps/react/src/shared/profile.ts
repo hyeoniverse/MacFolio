@@ -847,6 +847,20 @@ export const PROJECTS: Project[] = [
 		],
 		chapters: [
 			{
+				title: '한눈에 보는 구조',
+				lead: '방문자와 관리자·저자는 모두 Next.js 16 App Router 한 곳으로 들어옵니다. 데이터와 권한은 Supabase(PostgreSQL과 행 단위 보안)가 맡고, 번역·요약과 메일·분석은 바깥 공급자에게 맡기되 하나가 실패하면 다음으로 넘어갑니다.',
+				facts: [
+					{ value: '113개', label: 'API 라우트' },
+					{ value: '4단계', label: '권한 (DB 규칙)' },
+					{ value: '816개', label: '단위 테스트' },
+				],
+				points: [],
+				image: {
+					src: projectImage('hyeoniverse', 'architecture.jpg'),
+					alt: '구조도: 방문자·관리자 → Next.js 16 App Router → Supabase, 번역·요약, 메일·분석. 아래에 PR마다 거치는 품질 관리',
+				},
+			},
+			{
 				title: '관리자와 CMS',
 				look: 'showcase',
 				lead: '글과 작업물을 쓰고, 고치고, 발행하고, 지우는 일을 모두 관리자 화면에서 합니다. 글 한 편이 쓰여 발행되고 휴지통을 거쳐 사라지기까지의 길을 따라, 사이트 문구와 권한까지 코드 배포 없이 바꿉니다.',
