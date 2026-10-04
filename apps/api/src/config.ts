@@ -31,6 +31,40 @@ export interface AppConfig {
 	 * 없으면 이 서버 IP로 시간당 60번까지라, 받은 값을 오래 들고 있는다
 	 */
 	githubToken?: string;
+	/**
+	 * 음성 만들기 데모 (Fish → Google → Edge). 키가 없는 공급자는 건너뛴다 (Edge는 키가 필요 없다).
+	 * 비용을 막으려고 IP마다, 사이트 전체로 하루에 만들 수 있는 횟수를 정한다
+	 */
+	speech: {
+		fishAudioApiKey?: string;
+		googleTtsApiKey?: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
+	/** 번역 데모 (DeepL → Google). 키 이름은 HYEONIVERSE와 같다. 하루 상한은 음성과 같은 방식 */
+	translate: {
+		deeplApiKey?: string;
+		googleTranslateApiKey?: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
+	/** AI 요약 데모 (Gemini가 한국어·영어 요약을 함께 만든다) */
+	summary: {
+		geminiApiKey?: string;
+		/** 기본은 늘 최신 Flash를 가리키는 별칭. 고정하고 싶으면 GEMINI_MODEL로 정한다 (내려간 모델이면 응답이 권하는 모델로 한 번 다시 묻는다) */
+		geminiModel: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
+	/** AI 커버 데모 (Cloudflare Workers AI → Hugging Face, 둘 다 FLUX). 무료 한도 안에서 쓰도록 상한을 아주 낮게 둔다 */
+	cover: {
+		/** Cloudflare 계정 ID와 Workers AI 권한만 준 API 토큰: 둘 다 있어야 Cloudflare로 그린다 */
+		cloudflareAccountId?: string;
+		cloudflareAiToken?: string;
+		huggingfaceApiKey?: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -86,6 +120,31 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			pexelsApiKey: env.PEXELS_API_KEY || undefined,
 		},
 		githubToken: env.GITHUB_TOKEN || undefined,
+		speech: {
+			fishAudioApiKey: env.FISH_AUDIO_API_KEY || undefined,
+			googleTtsApiKey: env.GOOGLE_TTS_API_KEY || undefined,
+			perIpPerDay: Number(env.SPEECH_PER_IP_PER_DAY ?? 3) || 3,
+			totalPerDay: Number(env.SPEECH_TOTAL_PER_DAY ?? 50) || 50,
+		},
+		translate: {
+			deeplApiKey: env.DEEPL_API_KEY || undefined,
+			googleTranslateApiKey: env.GOOGLE_TRANSLATE_API_KEY || undefined,
+			perIpPerDay: Number(env.TRANSLATE_PER_IP_PER_DAY ?? 3) || 3,
+			totalPerDay: Number(env.TRANSLATE_TOTAL_PER_DAY ?? 50) || 50,
+		},
+		summary: {
+			geminiApiKey: env.GEMINI_API_KEY || undefined,
+			geminiModel: env.GEMINI_MODEL || 'gemini-flash-latest',
+			perIpPerDay: Number(env.SUMMARY_PER_IP_PER_DAY ?? 3) || 3,
+			totalPerDay: Number(env.SUMMARY_TOTAL_PER_DAY ?? 50) || 50,
+		},
+		cover: {
+			cloudflareAccountId: env.CLOUDFLARE_ACCOUNT_ID || undefined,
+			cloudflareAiToken: env.CLOUDFLARE_AI_TOKEN || undefined,
+			huggingfaceApiKey: env.HUGGINGFACE_API_KEY || undefined,
+			perIpPerDay: Number(env.COVER_PER_IP_PER_DAY ?? 1) || 1,
+			totalPerDay: Number(env.COVER_TOTAL_PER_DAY ?? 5) || 5,
+		},
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
 			githubClientSecret: env.GITHUB_CLIENT_SECRET || undefined,

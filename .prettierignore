@@ -5,3 +5,5 @@ pnpm-lock.yaml
 **/test-results
 # Prisma가 만드는 코드
 apps/api/src/generated
+# 스크립트가 만드는 데이터 (scripts/devcourse-repo.mjs)
+apps/react/public/imgs/projects/devcourse/repo.json
