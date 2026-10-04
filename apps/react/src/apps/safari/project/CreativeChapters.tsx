@@ -8,6 +8,7 @@ import { FactValue } from '@/apps/safari/project/parts';
 import { Clip, ZoomImage } from '@/apps/safari/project/CreativeParts';
 import { Demo } from '@/apps/safari/project/CreativeDemos';
 import { scrollParent } from '@/apps/safari/project/scroll';
+import { Architecture } from '@/apps/safari/project/CreativeArchitecture';
 import '@/apps/safari/project/CreativeChapters.css';
 
 /** 실제 화면 여러 장: 영상(.mp4)은 넓게 두고 화면에 보일 때만 돌리고, 그림은 눌러 크게 본다 */
@@ -335,7 +336,7 @@ const Tiles: React.FC<{ points: ProjectPoint[]; fallback?: ProjectChapter['image
 /** 장의 글 묶음: 장 모양(look)마다 다른 짜임, 정하지 않았으면 두 칸 글 묶음 */
 export const ChapterPoints: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => {
 	const { points, look } = chapter;
-	// 그림 한 장으로 말하는 장(구조도)은 글 묶음이 없다
+	if (look === 'architecture') return <Architecture />;
 	if (!points.length) return null;
 	if (look === 'showcase') return <Showcase points={points} />;
 	if (look === 'stage') return <Stage points={points} />;

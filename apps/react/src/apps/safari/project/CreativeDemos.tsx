@@ -1679,10 +1679,10 @@ const textOnAccent = (theme: ThemeSwatch, mode: 'light' | 'dark') => {
 	return found ?? (contrast('#ffffff', theme.accent) >= contrast('#000000', theme.accent) ? '#ffffff' : '#000000');
 };
 
-/** 홈의 3D 토러스 재질: 색 프리셋과 상관없이 라이트·다크 두 벌뿐 */
+/** 홈의 3D 토러스: 색 프리셋과 상관없이 라이트·다크 두 벌뿐이라, 실제 홈 캡처에서 오려 낸 그림을 모드마다 쓴다 (돌리지 않는다) */
 const TORUS = {
-	light: { color: '#e8ecf2', glow: '#3b6fc0' },
-	dark: { color: '#c0c8d8', glow: '#2a4a8a' },
+	light: '/imgs/projects/hyeoniverse/torus-light.webp',
+	dark: '/imgs/projects/hyeoniverse/torus-dark.webp',
 };
 /** 프리셋이 혼자 넘어가는 간격 (ms), 몇 번 넘어갈 때마다 모드도 바꾸는지 */
 const CYCLE_MS = 2200;
@@ -1731,8 +1731,6 @@ export const Themes: React.FC<{ palette: ThemeSwatch[] }> = ({ palette }) => {
 						'--t-accent': theme.accent,
 						'--t-on': onAccent,
 						'--t-accent-text': accentText,
-						'--torus': torus.color,
-						'--torus-glow': torus.glow,
 					} as React.CSSProperties
 				}
 				aria-label={`${theme.name} 테마 ${mode === 'light' ? '라이트' : '다크'} 미리보기`}
@@ -1755,7 +1753,7 @@ export const Themes: React.FC<{ palette: ThemeSwatch[] }> = ({ palette }) => {
 						</p>
 						<span className="cd-site-button">작업물 보기</span>
 					</div>
-					<span className="cd-torus" />
+					<img className="cd-torus" src={torus} alt="" />
 				</div>
 				<div className="cd-site-cards">
 					{['웹', '모바일 앱', '게임'].map((tag) => (
