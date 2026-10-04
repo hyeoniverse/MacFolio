@@ -984,6 +984,65 @@
 	max-width: 46em;
 }
 
+/* 실제 화면 줄: 데모 아래에 작은 화면들, 영상은 두 칸 */
+.cr-shots {
+	margin-top: 14px;
+}
+
+.cr-shots > p {
+	margin: 0 0 8px;
+	color: var(--cr-muted);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+}
+
+.cr-shots ul {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cr-shots ul:not(:has([data-video])) {
+	grid-template-columns: none;
+	grid-auto-columns: minmax(0, 1fr);
+	grid-auto-flow: column;
+}
+
+.cr-shots li[data-video] {
+	grid-column: span 2;
+}
+
+.cr-shots li > :first-child {
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 8px;
+}
+
+.cr-shots video {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1280 / 714;
+	background-color: var(--cr-line);
+	object-fit: cover;
+}
+
+.cr-shots .cr-zoom img {
+	aspect-ratio: auto;
+	max-height: 260px;
+}
+
+.cr-shots li > span {
+	display: block;
+	margin-top: 5px;
+	color: var(--cr-muted);
+	font-size: 12px;
+	line-height: 1.4;
+}
+
 /* 눌러서 크게 보기: 그림 위에 마우스를 올리면 돋보기가 뜨고 그림이 살짝 커진다 */
 .cr-zoom {
 	display: block;
@@ -1161,7 +1220,7 @@
 .cr-figure img {
 	display: block;
 	width: 100%;
-	aspect-ratio: 16 / 10;
+	aspect-ratio: auto;
 	object-fit: cover;
 	object-position: top;
 }
@@ -1274,6 +1333,14 @@
 	font-size: clamp(24px, 4cqi, 36px);
 	font-weight: 700;
 	letter-spacing: -0.02em;
+}
+
+@container (max-width: 760px) {
+	.cr-shots ul,
+	.cr-shots ul:not(:has([data-video])) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-flow: row;
+	}
 }
 
 @container (max-width: 760px) {

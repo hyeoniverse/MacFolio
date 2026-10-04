@@ -209,7 +209,7 @@ export const ZoomImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) 
 };
 
 /** 화면에 보일 때만 도는 짧은 영상 (소리 없음, 움직임 줄이기면 멈춘 첫 화면) */
-const Clip: React.FC<{ src: string; label: string }> = ({ src, label }) => {
+export const Clip: React.FC<{ src: string; label: string }> = ({ src, label }) => {
 	const video = useRef<HTMLVideoElement>(null);
 	useEffect(() => {
 		const node = video.current;

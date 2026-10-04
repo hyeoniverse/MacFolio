@@ -51,6 +51,8 @@ export interface ProjectPoint {
 	variants?: { label: string; note: string }[];
 	/** 그림 대신 직접 만져 보는 데모 (슬라이드 갤러리, 음성 만들기, 파형 편집, 문서 변환, 번역, AI 요약) */
 	demo?: 'slides' | 'voice' | 'wave' | 'convert' | 'translate' | 'summary';
+	/** 데모 아래나 글 옆에 붙일 실제 화면 여러 장 (.mp4는 화면에 보일 때만 도는 영상) */
+	shots?: { src: string; alt: string }[];
 }
 
 /** 테마 하나를 이루는 다섯 색 (강조색, 라이트·다크의 바탕과 글자) */
@@ -881,11 +883,13 @@ export const PROJECTS: Project[] = [
 					},
 					{
 						title: '글과 작업물 잇기',
-						body: '글과 작업물, 작업물과 시리즈를 다대다로 잇습니다. 어느 쪽에서 더해도 양쪽 상세 화면에 함께 보입니다.',
+						body: '작업물에는 관련 글과 시리즈를, 글에는 관련 프로젝트를 검색해 붙입니다. 미발행 항목은 Draft로 표시되고, 고른 칩은 끌어서 순서를 바꾸며 공개 상세의 정보 칸에 그대로 나옵니다.',
+						image: projectImage('hyeoniverse', 'cms/relations.jpg'),
 					},
 					{
 						title: 'SEO 점검',
-						body: '편집기 아래에서 제목·주소·요약·커버·카테고리·태그 여섯 가지를 점검해 점수로 보여 주고, 모자란 항목은 그 칸으로 바로 데려갑니다.',
+						body: '편집기 오른쪽 아래의 SEO 점검 알약이 제목·슬러그·요약(30자 이상)·커버·카테고리·태그 여섯 가지를 세어 5/6처럼 보여 줍니다. 펼쳐서 모자란 항목을 누르면 그 칸으로 데려가 깜빡여 줍니다.',
+						image: projectImage('hyeoniverse', 'cms/seo.jpg'),
 					},
 				],
 			},
@@ -900,23 +904,62 @@ export const PROJECTS: Project[] = [
 				points: [
 					{
 						title: '발표처럼 넘어가는 갤러리',
-						body: '가운데 한 장이 크고 양옆이 원근으로 기운 갤러리입니다. 화면에 절반 넘게 들어오면 첫 장부터 읽기 시작해, 음성이 끝나면 다음 장으로 넘어갑니다. 음성 파일이 있으면 그 파일을, 대본만 있으면 방문자 브라우저의 음성 합성을 쓰고, 둘 다 없으면 4초 보여 주고 넘깁니다. 화면 밖으로 나가면 멈췄다가 돌아오면 이어 읽습니다.',
+						body: '가운데 한 장이 크고 양옆이 원근으로 기운 갤러리입니다. 화면에 절반 넘게 들어오면 첫 장부터 읽기 시작해, 음성이 끝나면 다음 장으로 넘어갑니다. 음성 파일이 있으면 그 파일을, 대본만 있으면 방문자 브라우저의 음성 합성을 쓰고, 둘 다 없으면 4초 보여 주고 넘깁니다. 화면 밖으로 나가면 멈췄다가 돌아오면 이어 읽고, 브라우저가 소리를 막으면 음성과 함께 볼지 먼저 묻습니다.',
 						demo: 'slides',
+						shots: [
+							{
+								src: projectImage('hyeoniverse', 'cms/gallery-play.mp4'),
+								alt: '재생 중: 음성에 맞춰 자막이 바뀌고 진행 막대가 찬다',
+							},
+							{ src: projectImage('hyeoniverse', 'cms/gallery.jpg'), alt: '자막을 켠 작업물 상세의 갤러리' },
+						],
 					},
 					{
 						title: '대본을 목소리로',
 						body: '장마다 대본을 Fish Audio, Google, Edge 가운데 고른 목소리로 만들고, 실패하면 남은 공급자의 같은 성별 목소리로 넘어갑니다. 영어 대본은 한국어 목소리인 Fish를 건너뜁니다. 읽기 사전으로 RLS를 "알엘에스"로 읽히고, 대본 안의 [표기|읽을 말]로 그 자리만 따로 정하며, 자막에는 표기가 그대로 남습니다. 만드는 동안에는 대본과 목소리, 이미지 순서가 잠깁니다.',
 						demo: 'voice',
+						shots: [
+							{
+								src: projectImage('hyeoniverse', 'cms/narration.jpg'),
+								alt: '갤러리 음성 편집기: 왼쪽 슬라이드, 오른쪽 대본, 아래 썸네일 줄',
+							},
+							{
+								src: projectImage('hyeoniverse', 'cms/narration-preview.mp4'),
+								alt: '미리 듣기: 재생을 따라 대본이 가사처럼 채워진다',
+							},
+							{ src: projectImage('hyeoniverse', 'cms/lexicon.jpg'), alt: '읽기 사전: 표기와 읽을 말 짝' },
+						],
 					},
 					{
 						title: '녹음하고 파형으로 다듬기',
-						body: '편집 화면에서 마이크로 바로 녹음해 24kHz WAV로 만듭니다. 파형을 끌어 구간을 고르고 잘라내기·복사·붙여넣기·지우기·나누기를 하며, 되돌리기는 50단계까지 됩니다. 단축키는 편집기 어디서나 받고, 복사한 조각은 다른 장의 녹음에도 붙여 넣습니다.',
+						body: '편집 화면에서 마이크로 바로 녹음해 24kHz WAV로 만듭니다. 파형을 끌어 구간을 고르고 나누기·잘라내기·복사·붙여넣기·지우기·선택만 남기기·앞뒤 무음 자르기로 다듬으며, 되돌리기는 50단계까지 됩니다. 클립은 끌어서 순서를 바꾸고, 복사한 조각은 다른 장의 녹음에도 붙여 넣습니다. 완료하면 그 장의 음성이 됩니다(최대 6분).',
 						demo: 'wave',
+						shots: [
+							{
+								src: projectImage('hyeoniverse', 'cms/recording-split.mp4'),
+								alt: '녹음 → 파형에서 구간 선택 → 나누기',
+							},
+							{
+								src: projectImage('hyeoniverse', 'cms/recording.jpg'),
+								alt: '녹음 파형 편집기: 클립 세 개로 나눈 녹음',
+							},
+						],
 					},
 					{
 						title: 'PDF·PPTX를 슬라이드로',
 						body: '갤러리에 PDF나 PPTX를 끌어 놓으면 브라우저 안에서 쪽마다 JPEG로 그려 올립니다. PDF는 pdf.js로 그리고, PPTX는 HTML로 그린 뒤 그림으로 굳히며, 발표자 노트는 장마다 음성 대본으로 들어갑니다. 파일이 남의 서버로 나가지 않도록 변환은 서버에서 하지 않습니다.',
 						demo: 'convert',
+						shots: [
+							{
+								src: projectImage('hyeoniverse', 'cms/pptx-import.mp4'),
+								alt: 'PPTX를 떨어뜨리면 장마다 그려져 썸네일로 들어온다',
+							},
+							{ src: projectImage('hyeoniverse', 'cms/pptx-progress.jpg'), alt: '갤러리 제목 줄의 "n/N쪽 그리는 중"' },
+							{
+								src: projectImage('hyeoniverse', 'cms/pptx-done.jpg'),
+								alt: '끝난 뒤: 발표자 노트가 대본으로 들어간 장',
+							},
+						],
 					},
 				],
 			},
@@ -931,8 +974,19 @@ export const PROJECTS: Project[] = [
 				points: [
 					{
 						title: '편집 언어를 바꾸면 번역',
-						body: '편집기에서 KO와 EN을 오갈 때 반대쪽 칸이 비어 있으면 제목·설명·본문과 갤러리 대본까지 번역해 채웁니다. 기본은 DeepL이고, 설정에서 대체 순서를 켜면 앞 공급자가 못 한 항목만 다음 공급자에게 넘깁니다. 다시 번역 단추로 전체를 새로 받을 수도 있습니다.',
+						body: '편집기에서 EN으로 바꾸면, 원문이 있고 영어 칸이 모두 비어 있을 때 제목·부제목·설명·본문과 갤러리 대본까지 한 번에 채웁니다. 영어 칸이 일부 차 있으면 재번역 단추에서 범위를 골라 다시 받고, 번역은 폼에만 들어와 저장해야 남습니다. 공급자는 설정 › 서비스에서 기능마다 기본과 대체 순서를 정하고(번역 기본은 DeepL), 같은 원인으로 거듭 실패한 공급자는 잠시 꺼 둡니다.',
 						demo: 'translate',
+						shots: [
+							{
+								src: projectImage('hyeoniverse', 'cms/translate-run.mp4'),
+								alt: 'EN으로 바꾸고 재번역 › 전체: "번역 중…" 띠가 뜬 뒤 영어 칸이 채워진다',
+							},
+							{ src: projectImage('hyeoniverse', 'cms/translate.jpg'), alt: '영어 칸이 채워진 편집기' },
+							{
+								src: projectImage('hyeoniverse', 'cms/services.jpg'),
+								alt: '설정 › 서비스: 기능마다 공급자와 대체 순서',
+							},
+						],
 					},
 					{
 						title: '발행하면 붙는 AI 요약',
@@ -941,7 +995,8 @@ export const PROJECTS: Project[] = [
 					},
 					{
 						title: '방문자가 누른 번역은 남긴다',
-						body: '공개 화면에서 보고 있는 언어의 본문이 없으면 번역 단추가 뜨고, 그 결과를 DB의 그 언어 칸에 저장해 다음 방문자는 기다리지 않습니다. 댓글 번역은 화면에만 두고 저장하지 않습니다.',
+						body: '공개 화면에서 보고 있는 언어의 본문이 없으면 번역 배너가 뜨고, 그 결과를 DB의 그 언어 칸에 저장해 다음 방문자는 기다리지 않습니다. 댓글 번역은 화면에만 두고 저장하지 않습니다.',
+						image: projectImage('hyeoniverse', 'cms/translate-banner.jpg'),
 					},
 				],
 			},
@@ -953,6 +1008,10 @@ export const PROJECTS: Project[] = [
 					{ value: '5색', label: '테마 하나 (강조 · 바탕 · 글자)' },
 					{ value: '2가지', label: '모드 (라이트 · 다크)' },
 				],
+				image: {
+					src: projectImage('hyeoniverse', 'cms/home-presets.jpg'),
+					alt: '같은 홈을 Arctic · Rosewood · Meadow로 바꿔 본 모습 (위는 라이트, 아래는 다크)',
+				},
 				palette: [
 					{
 						name: 'Default',
@@ -1106,15 +1165,21 @@ export const PROJECTS: Project[] = [
 					},
 					{
 						title: '색상환 순서의 프리셋',
-						body: '기본 마젠타 다음부터 빨강·주황·초록·파랑·보라 순으로 놓고, 색이 거의 없는 Slate를 맨 뒤에 둡니다. 직접 만든 테마도 프리셋으로 저장해 둡니다.',
+						body: '기본 마젠타 다음부터 빨강·주황·초록·파랑·보라 순으로 놓고, 색이 거의 없는 Slate를 맨 뒤에 둡니다. 강조색끼리는 ΔE 20 이상 떨어뜨려 비슷해 보이지 않게 했고, 지금 고른 다섯 색은 +로 내 프리셋에 저장합니다.',
+						image: projectImage('hyeoniverse', 'cms/theme-presets.jpg'),
 					},
 					{
 						title: '대비 점검',
-						body: '설정 화면에서 바탕과 글자, 강조색의 대비를 바로 계산해 보여 줍니다. 프리셋은 모두 대비 기준을 넘도록 맞추고, 서로 겹쳐 보이던 강조색은 바꿨습니다.',
+						body: '색을 고르면 라이트와 다크에서 본문·흐린 글자·강조 링크·강조색 그래픽·버튼 글자의 대비와 링크↔본문 색 차이를 바로 세어 표로 보여 줍니다. 강조색이 글자로 쓰일 때 사이트가 명도만 옮겨 4.5:1을 맞춘 값은 "자동 보정"으로 표시됩니다.',
+						image: projectImage('hyeoniverse', 'cms/theme-contrast.jpg'),
 					},
 					{
 						title: '색상환 추천과 이미지에서 뽑기',
-						body: '색상환을 끌어 기준 색을 바꾸면 어울리는 강조색 후보를 규칙마다 하나씩 추천하고, 올린 이미지에서 색을 뽑아 테마를 만듭니다.',
+						body: '색상환에서 유사색·보색·분할 보색·삼각·단색 규칙으로 후보를 뽑거나, 이미지를 올려 그 안의 색 여섯을 뽑아 후보로 만듭니다. 이미지는 브라우저 안에서만 읽고 서버에 올리지 않습니다.',
+						shots: [
+							{ src: projectImage('hyeoniverse', 'cms/theme-wheel.jpg'), alt: '색상환 추천' },
+							{ src: projectImage('hyeoniverse', 'cms/theme-image.jpg'), alt: '이미지에서 색 뽑기' },
+						],
 					},
 					{
 						title: '로고와 3D도 함께',
