@@ -7,7 +7,7 @@ import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
 import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project/CreativeParts';
 import { ChapterFacts, ChapterPoints } from '@/apps/safari/project/CreativeChapters';
-import { Themes } from '@/apps/safari/project/CreativeDemos';
+import { DEMO_EVENT, Themes, type DemoKind, type DemoState } from '@/apps/safari/project/CreativeDemos';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
 /** 진행 과정이 있으면 만든 방식을 그 장에 품질 장치로 함께 싣는다 */
@@ -30,15 +30,25 @@ const READING: Mood[] = ['wave', 'star', 'happy', 'surprised'];
 const moodOf = (chapter: number, total: number): Mood =>
 	chapter < 0 ? 'normal' : chapter >= total ? 'sleep' : READING[chapter % READING.length];
 
-/** 몽이가 장마다 옮겨 가는 자리: 오른쪽·왼쪽 아래, 오른쪽·왼쪽 가운데, 오른쪽 위를 돌아가며 (좁은 창은 아래 두 곳만) */
-type Spot = 'hero' | 'br' | 'bl' | 'rm' | 'lm' | 'tr' | 'end';
-const SPOTS: Spot[] = ['br', 'bl', 'rm', 'lm', 'tr', 'bl', 'br', 'lm'];
-const spotOf = (chapter: number, total: number, narrow: boolean): Spot => {
-	if (chapter >= total) return 'end';
-	const spot = SPOTS[Math.max(0, chapter) % SPOTS.length];
-	if (!narrow) return spot;
-	return spot === 'bl' || spot === 'lm' ? 'bl' : 'br';
+/** 몽이가 데모 곁에 갔을 때 건네는 말 */
+const HINTS: Record<DemoKind, string> = {
+	slides: '음성과 함께 넘겨 보세요',
+	voice: '글을 고치고 진짜로 읽혀 보세요',
+	wave: '파형을 끌어 골라 잘라 보세요',
+	convert: 'PPTX와 PDF를 바꿔 보세요',
+	translate: 'EN을 누르면 진짜로 번역해요',
+	summary: '발행하면 진짜로 요약해요',
+	cover: '제목을 넣고 그려 보세요',
 };
+/** 데모가 돌 때 몽이의 반응: 만드는 중엔 기다리고, 끝나면 반짝, 실패하면 놀란다 */
+const REACTIONS: Record<DemoState, { mood: Mood; text: (kind: DemoKind) => string }> = {
+	busy: { mood: 'normal', text: (kind) => (kind === 'cover' ? '그리는 중… 조금 걸려요' : '만드는 중… 잠깐만요') },
+	done: { mood: 'star', text: (kind) => (kind === 'voice' ? '됐어요! 들어 보세요' : '됐어요!') },
+	error: { mood: 'surprised', text: () => '앗, 안 됐어요. 아래 이유를 보세요' },
+	play: { mood: 'happy', text: () => '편집한 순서대로 들려요' },
+};
+/** 데모 곁에서 말을 건네는 시간 (ms) */
+const HINT_MS = 4000;
 /** 몽이 그림 크기 (px): 몸 폭 140, 높이 124. 내용 옆 여백이 좁으면 줄인다 */
 const BUDDY_W = 140;
 const BUDDY_H = 124;
@@ -86,10 +96,32 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	// 몽이(화면 위에 떠 있다)와, 첫머리에서 몽이가 서는 자리
 	const buddy = useRef<HTMLElement>(null);
 	const slot = useRef<HTMLDivElement>(null);
-	const reading = useRef(chapter);
+	// 몽이가 곁에 있는 데모, 막 건넨 말, 데모가 돌 때의 반응
+	const [guide, setGuide] = useState<DemoKind | null>(null);
+	const [hint, setHint] = useState<DemoKind | null>(null);
+	const [reaction, setReaction] = useState<{ mood: Mood; text: string } | null>(null);
+	const guiding = useRef<string | null>(null);
 	useEffect(() => {
-		reading.current = chapter;
-	}, [chapter]);
+		if (!hint) return;
+		const timer = window.setTimeout(() => setHint(null), HINT_MS);
+		return () => window.clearTimeout(timer);
+	}, [hint]);
+	// 데모가 알리는 일(만드는 중, 끝, 실패, 재생)에 반응한다. 만드는 중은 끝날 때까지 이어진다
+	useEffect(() => {
+		let timer = 0;
+		const onDemo = (event: Event) => {
+			const { kind, state } = (event as CustomEvent<{ kind: DemoKind; state: DemoState }>).detail;
+			window.clearTimeout(timer);
+			setHint(null);
+			setReaction({ mood: REACTIONS[state].mood, text: REACTIONS[state].text(kind) });
+			if (state !== 'busy') timer = window.setTimeout(() => setReaction(null), HINT_MS);
+		};
+		window.addEventListener(DEMO_EVENT, onDemo);
+		return () => {
+			window.removeEventListener(DEMO_EVENT, onDemo);
+			window.clearTimeout(timer);
+		};
+	}, []);
 	const pet = () => {
 		const burst = Array.from({ length: 6 }, (_, i) => ({ id: (heartId.current += 1), dx: (i - 2.5) * 22 }));
 		setHearts((now) => [...now, ...burst]);
@@ -97,12 +129,14 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	};
 
 	// 장마다 그 장을 얼마나 읽었는지(화면 가운데가 장의 어디쯤인지)를 --read로 (진행 과정 세로줄이 차오른다)
-	// 몽이 자리도 여기서 정한다: 첫머리 자리가 화면에 보이면 그 자리에 붙어 함께 스크롤되고, 지나가면 장마다 정한 가장자리로 뛰어간다
+	// 몽이 자리도 여기서 정한다: 첫머리 자리가 화면에 보이면 그 자리에 붙어 함께 스크롤되고, 지나가면 화면에 가장 크게 보이는
+	// 데모 곁(내용 칸 오른쪽 가장자리, 데모 머리 높이)에 서서 함께 움직인다. 보이는 데모가 없으면 오른쪽 아래에서 쉰다
 	useEffect(() => {
 		const body = main.current;
 		const page = root.current;
 		if (!body || !page) return;
-		return onScrollFrame(body, (scroller) => {
+		let settle = 0;
+		const stop = onScrollFrame(body, (scroller) => {
 			const view = viewOf(scroller);
 			const middle = view.top + view.height / 2;
 			body.querySelectorAll<HTMLElement>('.cr-chapter').forEach((chapterNode) => {
@@ -120,36 +154,55 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 			const scale = narrow ? 0.5 : Math.min(1, Math.max(0.6, (side - 12) / BUDDY_W));
 			const w = BUDDY_W * scale;
 			const h = BUDDY_H * scale;
-			let spot: Spot;
+			// 화면에 보이는 높이가 가장 큰 데모 (화면의 3분의 1 이상 보이거나 데모가 통째로 보일 때)
+			let target: HTMLElement | null = null;
+			let best = 0;
+			body.querySelectorAll<HTMLElement>('.cr-point-demo[data-demo]').forEach((node) => {
+				const box = node.getBoundingClientRect();
+				const shown = Math.min(box.bottom, view.top + view.height) - Math.max(box.top, view.top);
+				if (shown > best && (shown > view.height / 3 || shown >= box.height - 1)) {
+					best = shown;
+					target = node;
+				}
+			});
+			let key: string;
 			let x: number;
 			let y: number;
 			if (seat.bottom > view.top + 40) {
-				spot = 'hero';
+				key = 'hero';
 				x = seat.left - frame.left + (seat.width - BUDDY_W) / 2;
 				y = seat.top - view.top;
+			} else if (target) {
+				const box = (target as HTMLElement).getBoundingClientRect();
+				key = `demo:${(target as HTMLElement).dataset.demo}`;
+				// 내용 칸 오른쪽 가장자리에 걸쳐 서서(몸은 옆 여백에) 데모 머리 높이를 따라간다. 데모 글을 가리지 않게
+				x = narrow ? width - w * 0.55 : width - side - w * 0.3;
+				y = Math.min(Math.max(box.top - view.top - h * 0.2, 8), view.height - h - 8);
 			} else {
-				spot = spotOf(reading.current, titles.length, narrow);
-				// 좁은 창은 옆 여백이 없어, 가장자리 밖으로 몸 반쯤 내밀고 엿보게 둔다 (내용을 덜 가린다)
-				const right = narrow ? width - w * 0.55 : width - w - 20;
-				const left = narrow ? -w * 0.45 : 20;
-				const bottom = view.height - h - 16;
-				const mid = view.height * 0.42;
-				[x, y] = {
-					br: [right, bottom],
-					bl: [left, bottom],
-					rm: [right, mid],
-					lm: [left, mid],
-					tr: [right, 24],
-					end: [(width - w) / 2, bottom],
-					hero: [0, 0],
-				}[spot];
+				key = 'rest';
+				x = narrow ? width - w * 0.55 : width - w - 20;
+				y = view.height - h - 16;
 			}
-			figure.dataset.spot = spot;
+			// 자리를 바꿀 때만 통통 튀며 건너가고, 같은 자리에 있는 동안은 데모와 함께 스크롤된다
+			if (key !== guiding.current) {
+				guiding.current = key;
+				figure.dataset.moving = '';
+				window.clearTimeout(settle);
+				settle = window.setTimeout(() => delete figure.dataset.moving, 900);
+				const kind = key.startsWith('demo:') ? (key.slice(5) as DemoKind) : null;
+				setGuide(kind);
+				setHint(kind);
+			}
+			figure.dataset.spot = key === 'hero' ? 'hero' : key === 'rest' ? 'rest' : 'demo';
 			figure.style.setProperty('--x', `${Math.round(x)}px`);
 			figure.style.setProperty('--y', `${Math.round(y)}px`);
-			figure.style.setProperty('--s', spot === 'hero' ? '1' : scale.toFixed(3));
+			figure.style.setProperty('--s', key === 'hero' ? '1' : scale.toFixed(3));
 		});
-	}, [root, titles.length, chapter]);
+		return () => {
+			stop();
+			window.clearTimeout(settle);
+		};
+	}, [root]);
 
 	// 화면 가운데를 지나는 장이 지금 읽는 장
 	useEffect(() => {
@@ -172,7 +225,8 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 		parts.forEach((part) => observer.observe(part));
 		return () => observer.disconnect();
 	}, []);
-	const mood: Mood = petted ? 'happy' : moodOf(chapter, titles.length);
+	const mood: Mood = petted ? 'happy' : (reaction?.mood ?? (guide ? 'wave' : moodOf(chapter, titles.length)));
+	const bubble = reaction?.text ?? (hint ? HINTS[hint] : null);
 	const number = (index: number) => String(index + 1).padStart(2, '0');
 
 	return (
@@ -182,7 +236,6 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 				<figure
 					ref={buddy}
 					className="cr-mascot"
-					aria-hidden="true"
 					data-mood={mood}
 					data-spot="hero"
 					onPointerEnter={() => setPetted(true)}
@@ -193,6 +246,11 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					{MOODS.map((name) => (
 						<img key={name} src={`${BUNNY}/${name}-front.webp`} alt="" data-on={name === mood} />
 					))}
+					{bubble && (
+						<span className="cr-bubble" key={bubble} role="status">
+							{bubble}
+						</span>
+					)}
 					{hearts.map((heart) => (
 						<i
 							key={heart.id}

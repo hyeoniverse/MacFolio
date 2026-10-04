@@ -200,6 +200,9 @@ test.describe('Safari', () => {
 			'DeepL 실패(사용 한도에 닿았습니다) → Google로 번역했습니다'
 		);
 		await expect(translate).toContainText('오늘 2번 남음');
+		// 몽이는 번역 데모 곁에 와 있고, 번역이 끝나면 말풍선으로 알린다
+		await expect(panel.locator('.cr-mascot')).toHaveAttribute('data-spot', 'demo');
+		await expect(panel.locator('.cr-bubble')).toHaveText('됐어요!');
 		expect(translated).toEqual([
 			{
 				texts: [

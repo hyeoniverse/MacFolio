@@ -31,7 +31,7 @@ export const Shots: React.FC<{ shots: NonNullable<ProjectPoint['shots']> }> = ({
 const PointMedia: React.FC<{ point: ProjectPoint }> = ({ point }) => {
 	if (point.demo)
 		return (
-			<div className="cr-point-demo">
+			<div className="cr-point-demo" data-demo={point.demo}>
 				<Demo kind={point.demo} />
 				{point.shots && <Shots shots={point.shots} />}
 			</div>

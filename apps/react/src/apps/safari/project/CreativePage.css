@@ -153,16 +153,66 @@
 	left: 0;
 	justify-items: center;
 	/* 자리(--x, --y)와 크기(--s)는 스크립트가 정한다. 첫머리에서는 스크롤을 그대로 따라가고, 장 사이를 옮길 때만 통통 튀며 건너간다 */
+	/* 크기를 못 박아 둔다: 표정 그림마다 크기가 달라 마우스를 올리면 칸이 바뀌어 들어왔다 나갔다를 되풀이하며 깜빡였다 */
+	width: 140px;
+	height: 136px;
 	transform: translate(var(--x, -999px), var(--y, 0)) scale(var(--s, 1));
 	transform-origin: top left;
-	transition: transform 0.9s cubic-bezier(0.5, -0.35, 0.3, 1.35);
 	width: 140px;
 	margin: 0;
 	padding-bottom: 12px;
 }
 
-.cr-mascot[data-spot='hero'] {
-	transition: none;
+/* 자리를 바꿀 때만 통통 튀며 건너간다 (그 밖에는 데모와 함께 스크롤된다) */
+.cr-mascot[data-moving] {
+	transition: transform 0.85s cubic-bezier(0.5, -0.35, 0.3, 1.35);
+}
+
+/* 그림과 그림자는 마우스를 받지 않는다 (몸이 뛰거나 표정이 바뀌어도 올린 자리가 그대로) */
+.cr-mascot img,
+.cr-mascot::after {
+	pointer-events: none;
+}
+
+/* 말풍선: 몽이 머리 위에서 데모를 거든다. 몽이가 작아져도 글자는 같은 크기로 (--s로 나눈다) */
+.cr-bubble {
+	position: absolute;
+	z-index: 3;
+	right: 30%;
+	bottom: calc(100% - 6px / var(--s, 1));
+	padding: calc(7px / var(--s, 1)) calc(12px / var(--s, 1));
+	border-radius: calc(14px / var(--s, 1));
+	background-color: var(--cr-ink);
+	color: var(--cr-bg);
+	font-size: calc(13px / var(--s, 1));
+	font-weight: 600;
+	white-space: nowrap;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+	pointer-events: none;
+	animation: cr-bubble 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
+	transform-origin: right bottom;
+}
+
+.cr-bubble::after {
+	content: '';
+	position: absolute;
+	right: calc(18px / var(--s, 1));
+	bottom: calc(-5px / var(--s, 1));
+	border: calc(6px / var(--s, 1)) solid transparent;
+	border-top-color: var(--cr-ink);
+	border-bottom-width: 0;
+}
+
+@keyframes cr-bubble {
+	from {
+		opacity: 0;
+		scale: 0.6;
+	}
+}
+
+/* 첫머리에서는 말풍선을 띄우지 않는다 */
+.cr-mascot[data-spot='hero'] .cr-bubble {
+	display: none;
 }
 
 .cr-mascot::after {
@@ -1376,8 +1426,13 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.cr-mascot,
+	.cr-mascot[data-moving],
 	.cr-mascot img {
 		transition: none;
+	}
+
+	.cr-bubble {
+		animation: none;
 	}
 
 	.cr-mascot[data-mood='happy'] img[data-on='true'] {
