@@ -323,7 +323,7 @@ export const Comments: React.FC = () => {
 			<p className="cm-result" role="status">
 				{device === 'same'
 					? '같은 브라우저: 저장해 둔 식별자(SHA-256)로 비밀번호 없이 고치고 지웁니다'
-					: '다른 기기: 쓸 때 정한 비밀번호(bcrypt)로 확인한 뒤에만 고치고 지웁니다'}
+					: '다른 기기: 쓸 때 정한 비밀번호(Bcrypt)로 확인한 뒤에만 고치고 지웁니다'}
 			</p>
 		</div>
 	);
