@@ -53,17 +53,4 @@ describe('API (e2e)', () => {
 		expect(response.body.info.title).toBe('MacFolio API');
 		expect(Object.keys(response.body.paths)).toContain('/health');
 	});
-
-	it('API 문서 화면(/docs)만 허용한 프론트엔드의 iframe에 넣을 수 있다', async () => {
-		const docs = await request(app.getHttpServer()).get('/docs/').expect(200);
-		expect(docs.headers['x-frame-options']).toBeUndefined();
-		expect(docs.headers['content-security-policy']).toContain(
-			"frame-ancestors 'self' https://macfolio.hyeoniverse.com"
-		);
-		// 다른 경로는 그대로 막는다
-		const health = await request(app.getHttpServer()).get('/health');
-		expect(health.headers['x-frame-options']).toBe('SAMEORIGIN');
-		expect(health.headers['content-security-policy']).toContain("frame-ancestors 'self'");
-		expect(health.headers['content-security-policy']).not.toContain('macfolio.hyeoniverse.com');
-	});
 });

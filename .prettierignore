@@ -7,3 +7,5 @@ pnpm-lock.yaml
 apps/api/src/generated
 # 스크립트가 만드는 데이터 (scripts/devcourse-repo.mjs)
 apps/react/public/imgs/projects/devcourse/repo.json
+# API 코드에서 만든 문서 (pnpm --filter @macfolio/api openapi)
+apps/react/src/apps/apidocs/openapi.json
