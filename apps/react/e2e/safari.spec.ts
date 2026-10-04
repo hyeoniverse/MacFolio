@@ -191,6 +191,13 @@ test.describe('Safari', () => {
 		await expect(slides.locator('.cd-ask')).toHaveCount(0);
 		await slides.getByRole('button', { name: '2장으로' }).click();
 		await expect(slides.locator('.cd-slides-source')).toContainText('Fish TTS 음성 파일 · 발표 2쪽');
+		// 일시정지하면 진행이 멈추고, 자막을 꺼도 자막 자리 높이는 그대로다
+		await slides.getByRole('button', { name: '일시정지' }).click();
+		await expect(slides.locator('.cd-slides-progress')).not.toHaveAttribute('data-playing');
+		await slides.getByRole('button', { name: '재생' }).click();
+		const captionHeight = await slides.locator('.cd-caption').evaluate((el) => el.getBoundingClientRect().height);
+		await slides.getByRole('button', { name: /자막/ }).click();
+		expect(await slides.locator('.cd-caption').evaluate((el) => el.getBoundingClientRect().height)).toBe(captionHeight);
 		// 번역: 한국어 칸을 고치고 EN으로 바꾸면, 세 칸을 서버로 보내 비어 있던 영어 칸을 채운다. 대신 번역한 공급자와 남은 횟수
 		const translate = panel.locator('.cd-translate');
 		await translate.getByRole('textbox', { name: '부제 (한국어)' }).fill('혼자 설계하고 운영하는 포트폴리오 사이트');

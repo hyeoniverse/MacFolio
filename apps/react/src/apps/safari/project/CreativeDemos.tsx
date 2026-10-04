@@ -89,18 +89,21 @@ const Slides: React.FC = () => {
 	const [current, setCurrent] = useState(0);
 	const [mode, setMode] = useState<SlideMode>('ask');
 	const [captions, setCaptions] = useState(true);
+	// 일시정지: 음성·진행 막대·자막이 그 자리에서 멈추고, 다시 누르면 이어서
+	const [paused, setPaused] = useState(false);
 	// 같은 장을 다시 읽을 때도 진행 막대와 음성이 처음부터 돌게 바꾸는 번호
 	const [run, setRun] = useState(0);
 	const drag = useRef<number | null>(null);
 	const audio = useRef<HTMLAudioElement | null>(null);
 	const lastRun = useRef(-1);
 	const slide = SLIDES[current];
-	const playing = inView && (mode === 'sound' || mode === 'silent');
+	const playing = inView && !paused && (mode === 'sound' || mode === 'silent');
 	// 소리와 함께일 때 음성 파일·브라우저 음성이 있는 장은 음성이 끝나야 넘어간다 (막대는 어림 시간)
 	const voiced = mode === 'sound' && (!!slide.audio || (!!slide.script && canSpeak()));
 	const go = (index: number) => {
 		setCurrent(Math.max(0, Math.min(SLIDES.length - 1, index)));
 		setRun((n) => n + 1);
+		setPaused(false);
 	};
 	const ended = () => {
 		if (current === SLIDES.length - 1) setMode('stopped');
@@ -122,11 +125,11 @@ const Slides: React.FC = () => {
 				lastRun.current = run;
 			}
 			el.onended = () => endedRef.current();
-			if (inView) void el.play().catch(() => setMode('silent'));
+			if (inView && !paused) void el.play().catch(() => setMode('silent'));
 			else el.pause();
 			return () => el.pause();
 		}
-		if (slide.script && canSpeak() && inView) {
+		if (slide.script && canSpeak() && inView && !paused) {
 			const speech = new SpeechSynthesisUtterance(slide.script);
 			speech.lang = 'ko-KR';
 			speech.onend = () => endedRef.current();
@@ -137,7 +140,7 @@ const Slides: React.FC = () => {
 				window.speechSynthesis.cancel();
 			};
 		}
-	}, [mode, slide, run, inView]);
+	}, [mode, slide, run, inView, paused]);
 	useEffect(
 		() => () => {
 			audio.current?.pause();
@@ -171,6 +174,10 @@ const Slides: React.FC = () => {
 				aria-roledescription="슬라이드 갤러리"
 				aria-label={`${current + 1} / ${SLIDES.length}장`}
 				onKeyDown={(event) => {
+					if (event.key === ' ' && mode !== 'ask') {
+						event.preventDefault();
+						setPaused(!paused);
+					}
 					if (event.key === 'ArrowRight') go(current + 1);
 					if (event.key === 'ArrowLeft') go(current - 1);
 				}}
@@ -218,31 +225,50 @@ const Slides: React.FC = () => {
 					</div>
 				)}
 			</div>
-			{captions && (
-				<p className="cd-caption" key={`c${run}-${current}`} data-playing={playing || undefined}>
-					{slide.script ? (
-						cues.map((cue) => (
-							<span
-								key={cue.start}
-								className="cd-cue"
-								style={{ '--s0': cue.start, '--len': cue.length } as React.CSSProperties}
-							>
-								{cue.words.map((word, i) => (
-									<span
-										key={i}
-										style={{ '--at': cue.start + (i / cue.words.length) * cue.length } as React.CSSProperties}
-									>
-										{word}{' '}
-									</span>
-								))}
-							</span>
-						))
-					) : slide.audio ? null : (
-						<em>대본이 없는 장은 4초 보여 주고 넘어갑니다</em>
-					)}
-				</p>
-			)}
+			{/* 자막을 꺼도 자리는 그대로 둔다 (켜고 끌 때 아래가 움직이지 않게) */}
+			<p
+				className="cd-caption"
+				key={`c${run}-${current}`}
+				data-playing={playing || undefined}
+				data-off={!captions || undefined}
+				aria-hidden={!captions || undefined}
+			>
+				{slide.script ? (
+					cues.map((cue) => (
+						<span
+							key={cue.start}
+							className="cd-cue"
+							style={{ '--s0': cue.start, '--len': cue.length } as React.CSSProperties}
+						>
+							{cue.words.map((word, i) => (
+								<span
+									key={i}
+									style={{ '--at': cue.start + (i / cue.words.length) * cue.length } as React.CSSProperties}
+								>
+									{word}{' '}
+								</span>
+							))}
+						</span>
+					))
+				) : slide.audio ? null : (
+					<em>대본이 없는 장은 4초 보여 주고 넘어갑니다</em>
+				)}
+			</p>
 			<div className="cd-slides-bar">
+				<button
+					type="button"
+					aria-label={paused ? '재생' : '일시정지'}
+					title={paused ? '재생 (Space)' : '일시정지 (Space)'}
+					disabled={mode === 'ask'}
+					onClick={() => {
+						if (mode === 'stopped') {
+							setMode('silent');
+							go(0);
+						} else setPaused(!paused);
+					}}
+				>
+					<i className={`fa-solid ${paused || mode === 'stopped' ? 'fa-play' : 'fa-pause'}`} />
+				</button>
 				<button
 					type="button"
 					aria-pressed={mode === 'sound'}
