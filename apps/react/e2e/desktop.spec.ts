@@ -7,7 +7,8 @@ test.describe('데스크톱', () => {
 		await enterDesktop(page);
 		const bar = page.locator('.macos-statusbar');
 		const clock = bar.locator('.time-display-now');
-		const wifi = bar.locator('.fa-wifi');
+		// 시계 바로 옆(배터리 왼쪽)의 Wi-Fi 자리: 서버 상태 단추
+		const wifi = bar.getByRole('button', { name: /^서버 상태/ });
 		await expect(clock).toHaveText('1:11 AM');
 		const before = (await wifi.boundingBox())!;
 

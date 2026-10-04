@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
 import VolumeModal from '@/apps/music/MusicPlayerVolume'; // VolumeModal 가져오기
 import AppleMenu from '@/desktop/status-bar/AppleMenu';
+import ServerMenu from '@/desktop/status-bar/ServerMenu';
 import '@/desktop/status-bar/StatusBar.css';
 
 const StatusBar: React.FC = () => {
@@ -64,9 +65,8 @@ const StatusBar: React.FC = () => {
 					<span>{getVolumeIcon()}</span>
 				</div>
 
-				<span className="menu-item">
-					<i className="fas fa-wifi"></i>
-				</span>
+				{/* Wi-Fi 자리: 이 사이트 서버(API)의 상태 */}
+				<ServerMenu />
 				<span className="menu-item">
 					<i className="fas fa-battery-three-quarters"></i>
 				</span>

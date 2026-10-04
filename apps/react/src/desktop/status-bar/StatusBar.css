@@ -120,3 +120,21 @@
 .time-display-reserve {
 	visibility: hidden;
 }
+
+/* Wi-Fi 자리의 서버 상태 단추 (Apple 메뉴 단추와 같은 모양) */
+.macos-statusbar .server-menu-button {
+	display: grid;
+	place-items: center;
+	height: 1.25rem;
+	padding: 0 0.4rem;
+	border: none;
+	border-radius: 0.3rem;
+	background: none;
+	color: var(--color-menubar-text);
+	font-size: 0.85rem;
+	cursor: pointer;
+}
+
+.macos-statusbar .server-menu-button.open {
+	background-color: var(--color-selected-bg);
+}
