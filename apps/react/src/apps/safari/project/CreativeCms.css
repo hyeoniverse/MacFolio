@@ -240,6 +240,7 @@
 }
 
 .cm-life-cron {
+	min-height: 3em;
 	margin: 10px 0 0;
 	color: var(--sp-accent);
 	font-size: 12px;
@@ -601,4 +602,185 @@
 
 .cm-roles-table td span {
 	color: var(--cr-muted);
+}
+
+/* 이모지 키친: 위아래 이모지 줄에서 하나씩 고르면 가운데에 섞인 그림 */
+.cm-kitchen {
+	display: grid;
+	gap: 10px;
+}
+
+.cm-kitchen-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.cm-kitchen-row button {
+	width: 34px;
+	height: 34px;
+	border: 1px solid transparent;
+	border-radius: 10px;
+	background: none;
+	font-size: 20px;
+	line-height: 1;
+}
+
+.cm-kitchen-row button[aria-pressed='true'] {
+	border-color: var(--sp-accent);
+	background-color: color-mix(in srgb, var(--sp-accent) 12%, transparent);
+}
+
+.cm-kitchen-mix {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	justify-content: center;
+	padding: 8px 0;
+	font-size: 34px;
+}
+
+.cm-kitchen-mix > i {
+	color: var(--cr-muted);
+	font-size: 14px;
+}
+
+.cm-kitchen-mix figure {
+	display: grid;
+	place-items: center;
+	width: 96px;
+	height: 96px;
+	margin: 0;
+	border-radius: 20px;
+	background-color: color-mix(in srgb, var(--sp-accent) 8%, var(--cr-bg));
+}
+
+.cm-kitchen-mix img {
+	width: 84px;
+	height: 84px;
+	animation: cm-pop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.cm-kitchen-mix em {
+	padding: 6px;
+	color: var(--cr-muted);
+	font-size: 11px;
+	text-align: center;
+}
+
+@keyframes cm-pop {
+	from {
+		transform: scale(0.6);
+		opacity: 0;
+	}
+}
+
+/* 공급자 고르기: 차례대로 선 공급자 줄, 사용량 막대, 위아래·실패 단추 */
+.cm-providers {
+	display: grid;
+	gap: 12px;
+	font-size: 13px;
+}
+
+.cm-providers-list {
+	display: grid;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cm-providers-list li {
+	display: grid;
+	grid-template-columns: 52px minmax(0, 1fr) auto;
+	gap: 10px;
+	align-items: center;
+	padding: 10px 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 12px;
+	background-color: var(--cr-bg);
+	transition: opacity 0.25s;
+}
+
+.cm-providers-list li[data-idle] {
+	opacity: 0.45;
+}
+
+.cm-providers-list li[data-off] {
+	border-style: dashed;
+}
+
+.cm-providers-list li[data-off] b {
+	color: var(--cr-muted);
+	text-decoration: line-through;
+}
+
+.cm-providers-rank {
+	color: var(--sp-accent);
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.cm-providers-name {
+	display: grid;
+	gap: 3px;
+	min-width: 0;
+}
+
+.cm-providers-name small {
+	overflow: hidden;
+	color: var(--cr-muted);
+	font-size: 11px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.cm-providers-bar {
+	display: block;
+	height: 4px;
+	overflow: hidden;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--cr-ink) 10%, transparent);
+}
+
+.cm-providers-bar > i {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+	background-color: #0a8f4b;
+}
+
+.cm-providers-bar[data-high] > i {
+	background-color: #d98a00;
+}
+
+.cm-providers-tools {
+	display: flex;
+	gap: 4px;
+}
+
+.cm-providers-tools button {
+	min-width: 28px;
+	height: 28px;
+	padding: 0 6px;
+	border: 1px solid var(--cr-line);
+	border-radius: 8px;
+	background: none;
+	color: var(--cr-ink);
+	font-size: 11px;
+}
+
+.cm-providers-tools button:disabled {
+	opacity: 0.35;
+}
+
+.cm-providers-fail {
+	min-width: 64px !important;
+	font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cm-kitchen-mix img {
+		animation: none;
+	}
 }

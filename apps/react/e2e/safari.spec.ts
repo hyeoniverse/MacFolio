@@ -186,7 +186,13 @@ test.describe('Safari', () => {
 		await expect(writing.getByRole('status')).toContainText('409 Conflict');
 		const access = panel.getByRole('region', { name: '권한과 설정', exact: true });
 		await access.getByRole('button', { name: '모르는 사람' }).click();
-		await expect(access.getByRole('status')).toContainText('계정을 지웁니다');
+		await expect(access.locator('.cm-invite').getByRole('status')).toContainText('계정을 지웁니다');
+		// AI 공급자: 기본(DeepL)이 세 번 실패하면 꺼지고, 요청은 다음 공급자가 받는다
+		const providers = panel.locator('.cm-providers');
+		for (let i = 0; i < 3; i++) await providers.getByRole('button', { name: /^실패/ }).first().click();
+		await expect(providers.locator('li').first()).toHaveAttribute('data-off');
+		await providers.getByRole('button', { name: '요청 보내기' }).click();
+		await expect(providers.getByRole('status')).toContainText('DeepL 꺼짐 → Google Translate로 처리했습니다');
 		// 테마: 프리셋을 고르면 미리보기 이름이 바뀌고, 다크로 바꿀 수 있다
 		const themes = panel.getByRole('region', { name: '테마' }).locator('.cd-themes');
 		await themes.getByRole('button', { name: 'Forest' }).click();

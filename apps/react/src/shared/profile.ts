@@ -63,7 +63,9 @@ export interface ProjectPoint {
 		| 'comments'
 		| 'mailbox'
 		| 'invite'
-		| 'roles';
+		| 'roles'
+		| 'kitchen'
+		| 'providers';
 	/** 데모 아래나 글 옆에 붙일 실제 화면 여러 장 (.mp4는 화면에 보일 때만 도는 영상) */
 	shots?: { src: string; alt: string }[];
 	/** 카드에 붙일 아이콘 (Font Awesome 이름, 예: fa-lock) */
@@ -948,6 +950,12 @@ export const PROJECTS: Project[] = [
 						demo: 'mailbox',
 					},
 					{
+						title: '이모지 키친',
+						group: '소통',
+						body: '설정 › 라이브러리 › 커스텀 이모지의 "조합" 창에서 Google Gboard의 이모지 키친처럼 두 이모지를 섞은 그림을 골라 커스텀 이모지로 들입니다. 이모지 619개와 섞을 수 있는 짝은 빌드 때 meta.json과, 짝마다 3바이트로 줄인 pairs.bin(약 430KB)으로 만들어 두고, 그림 주소는 날짜와 두 코드포인트로 그때그때 만듭니다. 가져올 때는 gstatic 그림을 받아 128px WebP로 우리 저장소에 올려, 바깥 주소가 바뀌어도 글과 댓글 속 이모지가 깨지지 않습니다.',
+						demo: 'kitchen',
+					},
+					{
 						title: 'GitHub 로그인과 초대',
 						group: '권한과 설정',
 						body: '멤버는 GitHub OAuth로 로그인하지만, OAuth는 누구인지만 알려 줍니다. 들여보낼지는 서버의 /auth/callback이 정합니다: 소유자 메일(OWNER_EMAIL)인지, 이미 역할이 있는지, 초대 행이 있는지 차례로 보고, 아니면 그 계정을 지웁니다. 역할은 사용자가 고칠 수 없는 app_metadata에 두고, 초대는 메일을 키로 미리 적어 두었다가 로그인하면 소비합니다.',
@@ -1074,6 +1082,11 @@ export const PROJECTS: Project[] = [
 						title: 'AI로 커버 그리기',
 						body: '커버 선택창의 AI 생성 탭에서 제목·태그·요약으로 만든 프롬프트 제안을 고르거나 직접 써서, 열 가지 스타일 가운데 하나로 그립니다. NanoBanana(Gemini)와 Hugging Face FLUX 가운데 기본 공급자를 고르고, 실패하면 대체 순서대로 넘어가며, 같은 원인으로 거듭 실패한 공급자는 잠시 꺼 둡니다. 만든 그림은 저장소에 올라가 바로 커버가 되고, 이전 커버는 이력에서 되돌립니다.',
 						demo: 'cover',
+					},
+					{
+						title: '공급자 고르기와 대체, 사용량',
+						body: '설정 › 서비스에서 기능마다 쓸 AI를 고릅니다: 번역은 DeepL · Google · Gemini · Claude, 요약은 Gemini · OpenAI · Claude, 커버는 NanoBanana · Hugging Face, 음성은 Fish · Google TTS · Edge. 대체를 켜면 기본이 실패할 때 정해 둔 순서대로 다음 공급자로 넘어갑니다. 쓴 양은 공급자마다 이번 달 글자 수·바이트로 세어 무료 한도(Google 번역 50만 자, Google TTS 100만 바이트 가운데 앱 상한 80만)와 견주고, 키 오류·한도·결제 문제로 3번(일시 오류는 5번) 거듭 실패한 공급자는 스스로 꺼서 "AI 상태·사용량"에 이유와 함께 보여 줍니다.',
+						demo: 'providers',
 					},
 					{
 						title: '방문자가 누른 번역은 남긴다',
