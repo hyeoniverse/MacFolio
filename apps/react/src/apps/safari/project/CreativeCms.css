@@ -514,3 +514,91 @@
 		transition: none;
 	}
 }
+
+/* 누가 무엇을: 역할을 고르면 그 칸이 강조되고, 할 수 있는 줄만 진하게 */
+.cm-roles {
+	display: grid;
+	gap: 12px;
+	font-size: 13px;
+}
+
+.cm-roles-table {
+	width: 100%;
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 14px;
+	background-color: var(--cr-bg);
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+.cm-roles-table th,
+.cm-roles-table td {
+	padding: 9px 10px;
+	border-bottom: 1px solid var(--cr-line);
+	font-family: inherit;
+	font-weight: 600;
+	text-align: center;
+	transition:
+		background-color 0.25s,
+		opacity 0.25s;
+}
+
+.cm-roles-table tr:last-child > * {
+	border-bottom: none;
+}
+
+.cm-roles-table thead th {
+	background-color: color-mix(in srgb, var(--cr-ink) 5%, var(--cr-bg));
+	color: var(--cr-muted);
+	font-size: 12px;
+}
+
+.cm-roles-table thead th:first-child,
+.cm-roles-table tbody th {
+	text-align: left;
+}
+
+.cm-roles-table [data-on] {
+	background-color: color-mix(in srgb, var(--sp-accent) 9%, var(--cr-bg));
+}
+
+.cm-roles-table thead th[data-on] {
+	color: var(--sp-accent);
+}
+
+/* 고른 역할로 할 수 없는 줄은 옅게 */
+.cm-roles-table tbody tr:not([data-ok]) {
+	opacity: 0.5;
+}
+
+.cm-roles-table tbody tr[data-picked] > * {
+	background-color: color-mix(in srgb, var(--sp-accent) 16%, var(--cr-bg));
+}
+
+.cm-roles-table tbody th button {
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	font-weight: 500;
+	text-align: left;
+	cursor: pointer;
+}
+
+.cm-roles-table tbody th button:hover {
+	color: var(--sp-accent);
+}
+
+.cm-dot {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: var(--sp-accent);
+}
+
+.cm-roles-table td span {
+	color: var(--cr-muted);
+}
