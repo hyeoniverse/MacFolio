@@ -158,10 +158,16 @@ test.describe('Safari', () => {
 		await expect(themes.locator('.cd-themes-name')).toHaveText('Forest');
 		await themes.getByRole('button', { name: /다크/ }).click();
 		await expect(themes.getByRole('img', { name: 'Forest 테마 다크 미리보기' })).toBeVisible();
+		// 발표 갤러리: 소리를 낼지 먼저 묻고, 고르면 물음이 사라진다
+		const slides = panel.locator('.cd-slides');
+		await slides.getByRole('button', { name: '음성 없이 보기' }).click();
+		await expect(slides.locator('.cd-ask')).toHaveCount(0);
+		await slides.getByRole('button', { name: '2장으로' }).click();
+		await expect(slides.locator('.cd-slides-source')).toContainText('브라우저 음성');
 		// 번역: EN으로 바꾸면 비어 있던 영어 칸이 채워진다
 		const translate = panel.locator('.cd-translate');
 		await translate.getByRole('button', { name: 'EN' }).click();
-		await expect(translate).toContainText('Kiosk for Everyone');
+		await expect(translate).toContainText('A portfolio site designed');
 		// 파형: 나누면 클립이 둘이 되고, 되돌리면 하나로 돌아온다
 		const wave = panel.getByLabel('녹음 파형 편집기');
 		await wave.locator('.cd-wave-track').click({ position: { x: 120, y: 40 } });

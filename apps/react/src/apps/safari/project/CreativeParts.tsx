@@ -100,42 +100,52 @@ export const Compare: React.FC<{ light: string; dark: string; alt: string }> = (
 };
 
 /**
- * 스크롤 장면: 이 그림이 화면 아래에서 위로 지나가는 동안, 그 사이트를 위에서 아래로 내려가며 찍은 화면들이
- * 스크롤한 만큼 차례로 넘어간다 (오른쪽 스크롤 막대도 함께 내려간다). 그 사이트의 첫 화면이 스크롤에 반응하는 모습
+ * 스크롤 장면: 페이지를 내려가며 찍은 화면 여러 장. 그림이 화면 가운데에 붙어 있는 동안(트랙을 지나는 동안)
+ * 스크롤한 만큼 다음 화면으로 넘어가고, 다 넘어가면 다시 흘러간다. 오른쪽 막대가 지금 어디쯤인지 보여 준다
  */
-const ScrollFrames: React.FC<{ frames: string[]; title: string }> = ({ frames, title }) => {
+export const ScrollFrames: React.FC<{ frames: string[]; title: string }> = ({ frames, title }) => {
+	const track = useRef<HTMLDivElement>(null);
 	const box = useRef<HTMLDivElement>(null);
 	useEffect(() => {
-		const node = box.current;
-		if (!node) return;
+		const node = track.current;
+		const frame = box.current;
+		if (!node || !frame) return;
 		if (prefersReducedMotion()) {
-			node.style.setProperty('--p', '0');
+			frame.style.setProperty('--p', '0');
 			return;
 		}
 		return onScrollFrame(node, (scroller) => {
 			const view = viewOf(scroller);
-			const top = node.getBoundingClientRect().top;
-			// 그림 위끝이 화면 85% 선에서 15% 선까지 올라가는 동안 0 → 1
-			const p = Math.min(1, Math.max(0, (view.top + view.height * 0.85 - top) / (view.height * 0.7)));
-			node.style.setProperty('--p', p.toFixed(4));
+			const height = frame.offsetHeight;
+			// 그림은 화면 가운데에 붙고(화면보다 크면 위를 넘친다), 트랙은 그림 높이 + 장마다 화면 절반만큼 길다
+			const stick = Math.round((view.height - height) / 2);
+			const travel = Math.round(view.height * 0.5 * (frames.length - 1));
+			node.style.setProperty('--stick', `${stick}px`);
+			node.style.height = `${height + travel}px`;
+			const p = Math.min(1, Math.max(0, (view.top + stick - node.getBoundingClientRect().top) / travel));
+			frame.style.setProperty('--p', p.toFixed(4));
 			const at = p * (frames.length - 1);
-			node.querySelectorAll<HTMLElement>('img').forEach((img, i) => {
+			frame.querySelectorAll<HTMLElement>('img').forEach((img, i) => {
 				img.style.opacity = String(Math.max(0, 1 - Math.abs(at - i)));
 				img.style.transform = `translateY(${((i - at) * 8).toFixed(2)}%)`;
 			});
 		});
 	}, [frames.length]);
 	return (
-		<div className="cr-scrollframes" ref={box}>
-			{frames.map((src, i) => (
-				<img key={src} src={src} alt={i === 0 ? `${title}: 스크롤하며 넘어가는 화면` : ''} loading="lazy" />
-			))}
-			<span className="cr-scrollframes-bar" aria-hidden="true">
-				<i />
-			</span>
-			<span className="cr-scrollframes-hint" aria-hidden="true">
-				<i className="fa-solid fa-computer-mouse" /> 스크롤하면 화면이 따라 움직입니다
-			</span>
+		<div className="cr-scrolltrack" ref={track}>
+			<figure className="cr-feature-media cr-scrollstick">
+				<div className="cr-scrollframes" ref={box}>
+					{frames.map((src, i) => (
+						<img key={src} src={src} alt={i === 0 ? `${title}: 스크롤하며 넘어가는 화면` : ''} />
+					))}
+					<span className="cr-scrollframes-bar" aria-hidden="true">
+						<i />
+					</span>
+					<span className="cr-scrollframes-hint" aria-hidden="true">
+						<i className="fa-solid fa-computer-mouse" /> 스크롤하면 화면이 따라 움직입니다
+					</span>
+				</div>
+			</figure>
 		</div>
 	);
 };
@@ -229,13 +239,6 @@ export const Clip: React.FC<{ src: string; label: string }> = ({ src, label }) =
 
 /** 기능 하나에 붙는 화면: 영상, 레이아웃 고르기, 라이트·다크 밀대, 그림 중 하나 */
 export const FeatureMedia: React.FC<{ point: ProjectPoint }> = ({ point }) => {
-	if (point.scrollFrames)
-		return (
-			<>
-				<ScrollFrames frames={point.scrollFrames} title={point.title} />
-				{point.image && point.imageDark && <Compare light={point.image} dark={point.imageDark} alt={point.title} />}
-			</>
-		);
 	if (point.video) return <Clip src={point.video} label={`${point.title} 화면 녹화`} />;
 	if (point.variants) return <Layouts variants={point.variants} />;
 	if (point.image && point.imageDark) return <Compare light={point.image} dark={point.imageDark} alt={point.title} />;

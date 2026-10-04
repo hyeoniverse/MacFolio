@@ -22,9 +22,10 @@
 
 .cr {
 	display: grid;
-	grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.4fr);
-	gap: 48px;
-	max-width: 1100px;
+	/* 왼쪽 차례는 좁게 붙여 두고, 오른쪽 내용에 폭을 몰아준다 */
+	grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+	gap: 56px;
+	max-width: 1320px;
 	margin: 0 auto;
 	padding: 0 40px;
 	text-align: left;
@@ -65,7 +66,7 @@
 	}
 
 	.cr-side[data-reading] h1 {
-		font-size: clamp(24px, 3cqi, 32px);
+		font-size: clamp(22px, 2.4cqi, 28px);
 	}
 }
 
@@ -86,7 +87,7 @@
 
 .cr-side h1 {
 	margin-top: 10px;
-	font-size: clamp(30px, 4.4cqi, 46px);
+	font-size: clamp(26px, 3.2cqi, 38px);
 	font-weight: 700;
 	letter-spacing: -0.03em;
 	line-height: 1.12;
@@ -567,6 +568,18 @@
 	50% {
 		transform: translateY(3px);
 	}
+}
+
+/* 스크롤 장면의 트랙: 그림이 화면 가운데(--stick)에 붙어 있는 동안 장면이 넘어간다 */
+.cr-scrolltrack {
+	position: relative;
+	margin-top: 18px;
+}
+
+.cr-scrollstick {
+	position: sticky;
+	top: var(--stick, 0px);
+	margin-top: 0;
 }
 
 /* 레이아웃 여섯 가지: 레이아웃마다 실제로 어떻게 움직이는지 작은 도식으로 (CSS로만 그린다) */
