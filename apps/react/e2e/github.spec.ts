@@ -63,15 +63,23 @@ test.describe('GitHub 앱', () => {
 		const readme = github.getByRole('article', { name: 'README' });
 		await expect(readme.locator('.gh-banner')).toBeVisible();
 		await expect(readme.locator('.gh-contact-button')).toHaveCount(3);
-		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo')).toHaveCount(5);
+		// 고정 저장소는 Safari와 같은 프로젝트 목록(중요도 순)의 앞 6개 (GitHub처럼 6개까지)
+		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo-name')).toHaveText([
+			'web-portfolio-hyeoniverse',
+			'MacFolio',
+			'Devcourse-NewPick/front',
+			'QRU',
+			'Devcourse-WhatToDo/todo-front',
+			'SproutFarm',
+		]);
 	});
 
 	test('고정 저장소 카드는 설명 길이와 상관없이 크기가 같고, 언어 줄은 카드 아래에 붙는다', async ({ page }) => {
-		// 스냅샷: 설명이 없는 카드, 한 줄, 아주 긴 설명이 섞여 있다
+		// 스냅샷: 한 줄, 두 줄이 넘는 설명이 섞여 있다
 		await enterDesktop(page);
 		await dockItem(page, 'github').click();
 		const cards = appWindow(page, 'github').getByRole('region', { name: 'Pinned' }).locator('.gh-repo');
-		await expect(cards).toHaveCount(5);
+		await expect(cards).toHaveCount(6);
 		const boxes = await cards.evaluateAll((elements) =>
 			elements.map((element) => {
 				const card = element.getBoundingClientRect();

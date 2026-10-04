@@ -16,6 +16,18 @@ describe('loadConfig', () => {
 			ipHashSecret: 'macfolio-dev-ip-hash-secret',
 			// 사진 찾기 키가 없으면 그 서비스만 꺼진다
 			stockPhotos: { unsplashAccessKey: undefined, pexelsApiKey: undefined },
+			// 음성 만들기: 키가 없으면 Edge만, 하루 IP마다 3번·전체 50번
+			speech: { fishAudioApiKey: undefined, googleTtsApiKey: undefined, perIpPerDay: 3, totalPerDay: 50 },
+			// 번역·요약·커버: 키가 없으면 그 공급자만 실패, 하루 IP마다 3번·전체 50번 (커버는 10번)
+			translate: { deeplApiKey: undefined, googleTranslateApiKey: undefined, perIpPerDay: 3, totalPerDay: 50 },
+			summary: { geminiApiKey: undefined, geminiModel: 'gemini-flash-latest', perIpPerDay: 3, totalPerDay: 50 },
+			cover: {
+				cloudflareAccountId: undefined,
+				cloudflareAiToken: undefined,
+				huggingfaceApiKey: undefined,
+				perIpPerDay: 1,
+				totalPerDay: 5,
+			},
 			auth: {
 				githubClientId: undefined,
 				githubClientSecret: undefined,
