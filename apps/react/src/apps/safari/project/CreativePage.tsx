@@ -1,11 +1,11 @@
 // HYEONIVERSE (포트폴리오): 왼쪽에 제목과 차례가 붙어 있고, 오른쪽만 장(기능, 더 들려줄 장들, 진행 과정 또는 만든 방식, 맡은 일, 기술 사양)을 넘기며 내려간다.
 // 왼쪽 위에는 그 사이트의 마스코트 몽이가 서서, 지금 읽는 장에 따라 표정을 바꾼다
 import React, { useEffect, useRef, useState } from 'react';
-import type { Project, ProjectChapter, ProjectFact } from '@/shared/profile';
+import type { Project, ProjectChapter, ProjectFact, ProjectPoint } from '@/shared/profile';
 import { FactValue, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
-import { Bars, Compare, FeatureMedia, ZoomImage } from '@/apps/safari/project/CreativeParts';
+import { Bars, Clip, Compare, FeatureMedia, ZoomImage } from '@/apps/safari/project/CreativeParts';
 import { Demo, Themes } from '@/apps/safari/project/CreativeDemos';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
@@ -41,6 +41,25 @@ const ChapterFacts: React.FC<{ facts: ProjectFact[] }> = ({ facts }) => (
 	</ul>
 );
 
+/** 실제 화면 여러 장: 영상(.mp4)은 넓게 두고 화면에 보일 때만 돌리고, 그림은 눌러 크게 본다 */
+const Shots: React.FC<{ shots: NonNullable<ProjectPoint['shots']> }> = ({ shots }) => (
+	<div className="cr-shots">
+		<p>실제 화면</p>
+		<ul>
+			{shots.map((shot) => (
+				<li key={shot.src} data-video={shot.src.endsWith('.mp4') || undefined}>
+					{shot.src.endsWith('.mp4') ? (
+						<Clip src={shot.src} label={shot.alt} />
+					) : (
+						<ZoomImage src={shot.src} alt={shot.alt} />
+					)}
+					<span>{shot.alt}</span>
+				</li>
+			))}
+		</ul>
+	</div>
+);
+
 /** 더 들려줄 장 하나: 첫머리, 숫자, 테마 미리보기, 전후 막대, 글 묶음(그림이나 데모가 있으면 옆에), 장 끝 그림(다크가 있으면 밀대) */
 const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, no }) => (
 	<section className="cr-chapter" aria-label={chapter.title}>
@@ -59,13 +78,18 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 				<article
 					key={point.title}
 					data-reveal=""
-					data-wide={point.image || point.demo ? '' : undefined}
-					data-demo={point.demo ? '' : undefined}
+					data-wide={point.image || point.demo || point.shots ? '' : undefined}
+					data-demo={point.demo || point.shots ? '' : undefined}
 					style={{ '--d': i % 2 } as React.CSSProperties}
 				>
 					{point.demo ? (
 						<div className="cr-point-demo">
 							<Demo kind={point.demo} />
+							{point.shots && <Shots shots={point.shots} />}
+						</div>
+					) : point.shots ? (
+						<div className="cr-point-demo">
+							<Shots shots={point.shots} />
 						</div>
 					) : (
 						point.image && (
@@ -86,7 +110,7 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 				{chapter.image.dark ? (
 					<Compare light={chapter.image.src} dark={chapter.image.dark} alt={chapter.image.alt} />
 				) : (
-					<img src={chapter.image.src} alt={chapter.image.alt} loading="lazy" />
+					<img src={chapter.image.src} alt={chapter.image.alt} />
 				)}
 				<figcaption>{chapter.image.alt}</figcaption>
 			</figure>
