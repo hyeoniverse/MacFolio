@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from 'react';
-import { APP_NAMES, type AppName } from '@/apps/manifest';
+import { APP_NAMES, PROJECT_APPS, type AppName } from '@/apps/manifest';
 
 import Safari from '@/apps/safari/Safari';
 import Music from '@/apps/music/Music';
@@ -8,7 +8,7 @@ import Mail from '@/apps/mail/Mail';
 import Settings from '@/apps/settings/Settings';
 import Messages from '@/apps/messages/Messages';
 import Terminal from '@/apps/terminal/Terminal';
-import SproutFarm from '@/apps/sproutfarm/SproutFarm';
+import ProjectApp from '@/apps/project/ProjectApp';
 import Passwords from '@/apps/passwords/Passwords';
 
 // Markdown 렌더러가 무거워서 메모(블로그)는 처음 열 때 불러온다
@@ -27,9 +27,15 @@ const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
 	settings: Settings,
 	messages: Messages,
 	terminal: Terminal,
-	sproutfarm: SproutFarm,
 	passwords: Passwords,
 };
+
+/** 프로젝트 앱: 데모 사이트를 창 안에 띄운다 (shared/profile.ts의 PROJECTS에서) */
+for (const { id } of PROJECT_APPS) {
+	const Component = () => <ProjectApp id={id} />;
+	Component.displayName = `ProjectApp(${id})`;
+	APP_COMPONENTS[id as AppName] = Component;
+}
 
 /** 데스크톱에 렌더링할 앱 (APP_NAMES 순서) */
 export const WINDOW_APPS = APP_NAMES.flatMap((name) => {

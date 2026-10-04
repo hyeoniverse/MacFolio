@@ -151,7 +151,8 @@ test.describe('좁은 화면', () => {
 
 		await dockItem(page, 'launchpad').click();
 		const launchpad = page.locator('.launchpad-modal');
-		await expect(launchpad.locator('.dock-item')).toHaveCount(6);
+		// 들어가지 않은 6개 + Dock에 고정하지 않은 프로젝트 앱 4개 (HYEONIVERSE, NewPick, QRU, WTD)
+		await expect(launchpad.locator('.dock-item')).toHaveCount(10);
 
 		// 뒤쪽 6개(github부터)가 Launchpad로 간다
 		await launchpad.getByRole('button', { name: 'github', exact: true }).click();
