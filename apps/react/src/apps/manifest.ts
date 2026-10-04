@@ -16,6 +16,7 @@ const BUILTIN_APP_NAMES = [
 	'terminal',
 	'settings',
 	'passwords',
+	'apidocs',
 	'bin',
 ] as const;
 
@@ -98,6 +99,14 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 	settings: { label: '시스템 설정', icon: 'settings.png', inDock: true },
 	// 관리자 로그인 (iOS 암호 앱 모양). 데스크톱에서는 Apple 메뉴와 시스템 설정에서 같은 일을 하므로 Dock에 두지 않는다
 	passwords: { label: '암호', icon: 'passwords.svg', inDock: false, windowSize: { width: 560, height: 520 } },
+	// 서버(API)의 Swagger 문서를 창 안에 띄운다. 메뉴 막대의 서버 상태에서 열고, Dock에는 고정하지 않는다
+	apidocs: {
+		label: 'API 문서',
+		icon: 'apidocs.svg',
+		inDock: false,
+		inLaunchpad: true,
+		windowSize: { width: 980, height: 640 },
+	},
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false },
 };
 

@@ -351,6 +351,13 @@ export async function fakeApi(
 		// JSON을 보내는 PUT은 브라우저가 먼저 OPTIONS로 묻는다 (CORS)
 		if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors(origin) });
 
+		// API 문서 (Swagger 화면 대신 간단한 쪽)
+		if (path === '/docs' || path.startsWith('/docs/'))
+			return route.fulfill({
+				status: 200,
+				contentType: 'text/html; charset=utf-8',
+				body: '<h2>MacFolio API 문서</h2>',
+			});
 		// 서버 상태 (메뉴 막대의 Wi-Fi 자리): ok, DB가 안 됨(503), 꺼짐(연결 실패)
 		if (path === '/health') {
 			if (state.health === 'down') return route.abort('connectionrefused');

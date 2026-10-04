@@ -1,0 +1,28 @@
+/* API 문서 앱 (ApiDocs.tsx): 서버가 없을 때의 안내 */
+.apidocs-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	height: 100%;
+	background-color: var(--color-window-bg, #ffffff);
+	color: var(--color-text-secondary, #6e6e73);
+	font-size: 13px;
+	text-align: center;
+}
+
+.apidocs-empty img {
+	width: 64px;
+	height: 64px;
+	margin-bottom: 8px;
+}
+
+.apidocs-empty p {
+	margin: 0;
+}
+
+.apidocs-hint {
+	font-size: 12px;
+	opacity: 0.8;
+}

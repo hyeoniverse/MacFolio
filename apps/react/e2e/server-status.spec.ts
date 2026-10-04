@@ -1,4 +1,4 @@
-import { test, expect, enterDesktop } from './fixtures';
+import { test, expect, enterDesktop, appWindow, openFromDock } from './fixtures';
 import { fakeApi } from './fakeApi';
 
 test.describe('메뉴 막대의 서버 상태 (Wi-Fi 자리)', () => {
@@ -15,6 +15,30 @@ test.describe('메뉴 막대의 서버 상태 (Wi-Fi 자리)', () => {
 		await expect(menu).toContainText(/응답 \d+ms · (방금|\d+초 전) 확인/);
 		await expect(menu).toContainText('api.test');
 		await expect(menu.getByRole('menuitem', { name: 'API 문서 열기' })).toBeVisible();
+		// 상태 줄은 누를 수 있는 항목이 아니라 정보 줄이다
+		await expect(menu.getByRole('menuitem', { name: /MacFolio API/ })).toHaveCount(0);
+	});
+
+	test("'API 문서 열기'는 새 탭이 아니라 사이트 안의 'API 문서' 앱으로 연다", async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await page.getByRole('button', { name: /^서버 상태: 정상/ }).click();
+		const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
+		await page.getByRole('menu', { name: '서버 상태' }).getByRole('menuitem', { name: 'API 문서 열기' }).click();
+
+		const window = appWindow(page, 'apidocs');
+		await expect(window).toBeVisible();
+		await expect(window.locator('iframe')).toHaveAttribute('src', 'http://api.test/docs');
+		await expect(window.frameLocator('iframe').getByRole('heading', { name: 'MacFolio API 문서' })).toBeVisible();
+		expect(await popup).toBeNull();
+	});
+
+	test("서버 주소가 없으면 'API 문서' 앱은 연결된 서버가 없다고 알린다", async ({ page }) => {
+		await enterDesktop(page);
+		await openFromDock(page, 'apidocs');
+		const window = appWindow(page, 'apidocs');
+		await expect(window).toContainText('연결된 서버가 없습니다.');
+		await expect(window.locator('iframe')).toHaveCount(0);
 	});
 
 	test('DB가 안 되거나 서버가 꺼지면 바로 알 수 있다', async ({ page }) => {
