@@ -45,8 +45,8 @@ export interface ProjectPoint {
 	imageDark?: string;
 	/** 그림 대신 보여 줄 짧은 영상 (화면에 보일 때만 재생) */
 	video?: string;
-	/** 골라 바꿔 보는 그림들 (예: 레이아웃 여섯 가지) */
-	variants?: { label: string; image: string }[];
+	/** 갈래 여러 개 (예: 레이아웃 여섯 가지): 이름과 한 줄 설명. 그림이 없으면 갈래마다 움직이는 도식으로 그린다 */
+	variants?: { label: string; note: string }[];
 }
 
 /** 주요 기능과 만든 방식 말고 더 들려줄 이야기 한 장 (예: 관리자 화면, 디자인 시스템, 성능) */
@@ -797,10 +797,14 @@ export const PROJECTS: Project[] = [
 			{
 				title: '여섯 가지 작업물 레이아웃',
 				body: 'Flow, Grid, Cylinder, Fullscreen, Cinematic, Split 중 하나를 관리자 설정이나 ?layout= 주소로 골라 바꿔 끼웁니다.',
-				variants: ['Flow', 'Grid', 'Cylinder', 'Fullscreen', 'Cinematic', 'Split'].map((label) => ({
-					label,
-					image: projectImage('hyeoniverse', `shots/works-${label.toLowerCase()}.jpg`),
-				})),
+				variants: [
+					{ label: 'Flow', note: '가로로 끝없이 흐르는 갤러리. 마우스를 따라 기울어진다' },
+					{ label: 'Grid', note: '크기가 다른 칸을 12칸 격자에 채운 벤토' },
+					{ label: 'Cylinder', note: 'Three.js 원통에 작업물을 감아 돌린다' },
+					{ label: 'Fullscreen', note: '화면 가득 배경이 겹쳐 바뀌고, 네 귀퉁이에 시계·FPS HUD' },
+					{ label: 'Cinematic', note: '층마다 다른 속도로 움직이는 패럴랙스 영화' },
+					{ label: 'Split', note: '왼쪽 정보는 멈추고 오른쪽 작업물만 스크롤' },
+				],
 			},
 			{
 				title: '글과 시리즈',
@@ -816,45 +820,55 @@ export const PROJECTS: Project[] = [
 		chapters: [
 			{
 				title: '관리자와 CMS',
-				lead: '글과 작업물을 쓰고, 고치고, 발행하는 일을 모두 관리자 화면에서 합니다. 사이트 문구와 화면 배치도 코드 배포 없이 바꿉니다.',
-				image: {
-					src: projectImage('hyeoniverse', 'shots/admin-settings.jpg'),
-					alt: '사이트 문구와 SEO를 코드 배포 없이 고치는 관리자 설정 화면',
-				},
+				lead: '글과 작업물을 쓰고, 고치고, 발행하고, 지우는 일을 모두 관리자 화면에서 합니다. 글 한 편이 쓰여 발행되고 휴지통을 거쳐 사라지기까지의 길을 따라, 사이트 문구와 권한까지 코드 배포 없이 바꿉니다.',
 				points: [
 					{
 						title: '하나의 편집기',
-						body: 'Plate.js 편집기에서 마크다운과 리치 텍스트를 오가며 씁니다. 투표·탭·캘린더 블록을 더했고, 미리보기는 실제 게시 화면과 같은 컴포넌트로 그립니다.',
-						image: projectImage('hyeoniverse', 'shots/editor.jpg'),
+						body: 'Plate.js 편집기에서 마크다운과 리치 텍스트를 오가며 씁니다. 제목·목록·표·코드·각주·콜아웃과 글자색, 형광을 쓰고, 오디오·파일 첨부까지 두 형식 사이에서 그대로 옮겨집니다. 투표·탭·캘린더 블록은 직접 만들어 더했고, 미리보기는 실제 게시 화면과 같은 컴포넌트로 그려 보이는 그대로 발행됩니다.',
+						image: projectImage('hyeoniverse', 'shots/cms-editor.jpg'),
 					},
 					{
-						title: '자동 저장과 리비전',
-						body: '입력할 때마다 브라우저에 초안을 저장해 다시 들어오면 조용히 복원하고, 서버에는 리비전을 따로 쌓습니다. 발행하지 않고 나가도 미발행 초안으로 남깁니다.',
+						title: '요소마다 떠 있는 도구 막대',
+						body: '노션처럼 고친 그 자리에서 꾸밉니다. 글자를 고르면 문단 모양·굵게·색·배경을 바꾸는 막대가, 이미지를 고르면 인라인·블록·플로트 배치와 정렬, 캡션, 교체를 하는 막대가 그 요소 위에 뜹니다.',
+						image: projectImage('hyeoniverse', 'shots/cms-toolbar.jpg'),
 					},
 					{
-						title: '두 사람이 같은 글을 고쳐도',
-						body: '글마다 버전을 두고, 저장할 때 불러온 버전과 다르면 409로 돌려보냅니다. 한쪽이 다른 쪽의 수정을 모르고 덮어쓰지 않습니다.',
+						title: '세 겹 자동 저장과 버전 확인',
+						body: '입력하는 즉시 브라우저에 초안을 두고, 3초 동안 입력이 없으면 서버에 리비전을 쌓고, 페이지를 떠날 때는 sendBeacon으로 마지막 변경을 보냅니다. 저장할 때는 불러온 버전과 지금 버전을 비교해, 다른 화면이 먼저 저장했으면 409로 돌려보내 덮어쓰지 않습니다.',
+						image: projectImage('hyeoniverse', 'shots/cms-autosave.jpg'),
 					},
 					{
-						title: '예약 발행과 휴지통',
-						body: '예약 발행은 DB 안의 pg_cron이 매분 처리합니다. 지운 글은 휴지통에 30일, 인기 글 다섯 개는 90일 남았다가 영구 삭제됩니다.',
+						title: '글 한 편의 일생',
+						body: '초안은 예약하면 DB 안의 pg_cron이 매분 확인해 그 시각에 발행하고, 발행된 글은 저장할 때마다 버전이 오릅니다. 지운 글은 휴지통에서 복구할 수 있고, 30일(인기 글 다섯 개는 90일)이 지나면 매일 도는 정리 작업이 영구 삭제합니다. 글과 작업물이 중심인 테이블 25개 위에서 돕니다.',
+						image: projectImage('hyeoniverse', 'shots/cms-lifecycle.jpg'),
+					},
+					{
+						title: '목록에서 한 번에',
+						body: '글 목록에서 여러 개를 골라 한 번에 발행하거나 지우고, 상태 칩을 누르면 그 자리에서 발행과 미발행이 바뀝니다. 필터·검색 줄은 스크롤해도 위에 붙어 있고, 행마다 공개 페이지 바로가기와 .md 내보내기가 있습니다. 작업물은 행 번호를 눌러 새 순서를 적으면 바로 옮겨집니다.',
+						image: projectImage('hyeoniverse', 'shots/cms-posts.jpg'),
+					},
+					{
+						title: '누가 무엇을 할 수 있나',
+						body: '소유자·관리자·저자·방문자 네 단계로 나눠, 저자는 자기 글만, 관리자는 모든 글과 댓글 중재까지, 사이트 설정과 저자 초대는 소유자만 합니다. 소유자가 이메일로 초대하고, 초대받지 않은 계정은 GitHub 로그인 직후 지웁니다.',
+						image: projectImage('hyeoniverse', 'shots/cms-roles.jpg'),
+					},
+					{
+						title: '대시보드와 알림',
+						body: '누적 조회수·좋아요·방문자·댓글과 일별 조회 추세, 유입 경로를 대시보드에서 보고, 예약 발행 대기 글도 확인합니다. 댓글·신고·새 기기 로그인 같은 알림은 한 화면의 탭에서 처리합니다.',
+						image: projectImage('hyeoniverse', 'shots/admin-traffic.jpg'),
+					},
+					{
+						title: '코드 배포 없이 사이트 설정',
+						body: '사이트 제목과 소개, SEO 메타데이터, 테마 색, 외부 서비스 키를 설정 다섯 탭에서 고칩니다. 비우면 안 되는 값은 화면·API·DB 세 곳에서 막고, About 페이지는 실제 페이지 위에서 글자를 눌러 바로 고칩니다.',
+						image: projectImage('hyeoniverse', 'shots/admin-settings.jpg'),
 					},
 					{
 						title: '글과 작업물 잇기',
 						body: '글과 작업물, 작업물과 시리즈를 다대다로 잇습니다. 어느 쪽에서 더해도 양쪽 상세 화면에 함께 보입니다.',
 					},
 					{
-						title: '멤버와 초대',
-						body: 'GitHub OAuth로 로그인하고, 소유자가 이메일로 편집자와 저자를 초대합니다. 초대받지 않은 계정은 로그인 직후 지웁니다.',
-					},
-					{
-						title: '대시보드와 알림',
-						body: '조회수·좋아요·방문자·댓글의 추세를 대시보드에서 보고, 댓글과 신고, 새 기기 로그인 같은 알림을 한 화면에서 처리합니다.',
-						image: projectImage('hyeoniverse', 'shots/admin-traffic.jpg'),
-					},
-					{
 						title: 'SEO 점검과 AI 요약',
-						body: '편집기 아래에서 제목·주소·요약·커버·카테고리·태그 여섯 가지를 점검하고, 발행할 때 AI가 요약을 만들고 번역합니다.',
+						body: '편집기 아래에서 제목·주소·요약·커버·카테고리·태그 여섯 가지를 점검해 점수로 보여 주고, 발행할 때 AI가 요약을 만들고 번역합니다.',
 					},
 				],
 			},

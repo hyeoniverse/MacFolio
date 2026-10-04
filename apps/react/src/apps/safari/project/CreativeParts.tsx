@@ -33,33 +33,71 @@ export const Compare: React.FC<{ light: string; dark: string; alt: string }> = (
 	);
 };
 
-/** 골라 바꿔 보는 그림: 단추를 누르면 그 그림으로 겹쳐 바뀐다 */
-const Variants: React.FC<{ variants: NonNullable<ProjectPoint['variants']>; title: string }> = ({
-	variants,
-	title,
-}) => {
-	const [current, setCurrent] = useState(0);
+/** 레이아웃 도식마다 그리는 조각 수 (카드, 층, 배경 등) */
+const LAYOUT_PARTS: Record<string, number> = { flow: 10, grid: 6, cylinder: 8, fullscreen: 3, cinematic: 3, split: 8 };
+
+/**
+ * 갈래 여러 개를 작은 움직이는 도식으로: 레이아웃마다 실제로 어떻게 움직이는지(가로로 흐름, 벤토 칸, 도는 원통,
+ * 겹쳐 바뀌는 배경과 HUD, 층마다 다른 속도, 멈춘 왼쪽과 흐르는 오른쪽)를 CSS로만 그린다
+ */
+const Layouts: React.FC<{ variants: NonNullable<ProjectPoint['variants']> }> = ({ variants }) => (
+	<ul className="cr-layouts">
+		{variants.map((variant, i) => {
+			const kind = variant.label.toLowerCase();
+			return (
+				<li key={variant.label} style={{ '--d': i % 3 } as React.CSSProperties}>
+					<div className="cr-lay" data-kind={kind} aria-hidden="true">
+						{kind === 'split' && <b />}
+						<span className="cr-lay-stage">
+							{Array.from({ length: LAYOUT_PARTS[kind] ?? 4 }, (_, part) => (
+								<i key={part} style={{ '--i': part } as React.CSSProperties} />
+							))}
+						</span>
+						{kind === 'fullscreen' &&
+							['LOC', 'TIME', 'FPS', 'WORKS'].map((corner) => (
+								<em key={corner} data-corner={corner}>
+									{corner}
+								</em>
+							))}
+					</div>
+					<strong>{variant.label}</strong>
+					<span>{variant.note}</span>
+				</li>
+			);
+		})}
+	</ul>
+);
+
+/** 눌러서 크게 보는 그림: 작게 보이던 관리자 화면 캡처를 화면 가득 펼쳐 본다 (바깥을 누르거나 Esc로 닫는다) */
+export const ZoomImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+	const dialog = useRef<HTMLDialogElement>(null);
 	return (
-		<div className="cr-variants">
-			<div className="cr-variants-tabs" role="group" aria-label={`${title} 고르기`}>
-				{variants.map((variant, i) => (
-					<button key={variant.label} type="button" aria-pressed={i === current} onClick={() => setCurrent(i)}>
-						{variant.label}
-					</button>
-				))}
-			</div>
-			<div className="cr-variants-view">
-				{variants.map((variant, i) => (
-					<img
-						key={variant.label}
-						src={variant.image}
-						alt={`${title}: ${variant.label}`}
-						data-on={i === current}
-						loading="lazy"
-					/>
-				))}
-			</div>
-		</div>
+		<>
+			<button
+				type="button"
+				className="cr-zoom"
+				onClick={() => dialog.current?.showModal()}
+				aria-label={`${alt} 크게 보기`}
+			>
+				<img src={src} alt={alt} loading="lazy" />
+				<span className="cr-zoom-hint" aria-hidden="true">
+					<i className="fa-solid fa-magnifying-glass-plus" />
+				</span>
+			</button>
+			<dialog
+				ref={dialog}
+				className="cr-zoom-dialog"
+				aria-label={alt}
+				onClick={(event) => {
+					if (event.target === event.currentTarget) dialog.current?.close();
+				}}
+			>
+				<img src={src} alt={alt} />
+				<button type="button" onClick={() => dialog.current?.close()} aria-label="닫기">
+					<i className="fa-solid fa-xmark" aria-hidden="true" />
+				</button>
+			</dialog>
+		</>
 	);
 };
 
@@ -85,7 +123,7 @@ const Clip: React.FC<{ src: string; label: string }> = ({ src, label }) => {
 /** 기능 하나에 붙는 화면: 영상, 레이아웃 고르기, 라이트·다크 밀대, 그림 중 하나 */
 export const FeatureMedia: React.FC<{ point: ProjectPoint }> = ({ point }) => {
 	if (point.video) return <Clip src={point.video} label={`${point.title} 화면 녹화`} />;
-	if (point.variants) return <Variants variants={point.variants} title={point.title} />;
+	if (point.variants) return <Layouts variants={point.variants} />;
 	if (point.image && point.imageDark) return <Compare light={point.image} dark={point.imageDark} alt={point.title} />;
 	if (point.image) return <img src={point.image} alt={`${point.title} 화면`} loading="lazy" />;
 	return null;
