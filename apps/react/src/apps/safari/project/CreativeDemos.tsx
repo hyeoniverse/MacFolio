@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { ProjectPoint, ThemeSwatch } from '@/shared/profile';
 import { scrollParent } from '@/apps/safari/project/scroll';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
+import { env } from '@/shared/config/env';
 import '@/apps/safari/project/CreativeDemos.css';
 
 /** 화면(페이지를 스크롤하는 칸)에 ratio만큼 들어와 있는지 */
@@ -280,61 +281,67 @@ const Slides: React.FC = () => {
 	);
 };
 
-type Provider = 'Fish' | 'Google' | 'Edge';
+type Provider = 'fish' | 'google' | 'edge';
 type ProviderState = 'idle' | 'trying' | 'fail' | 'ok' | 'skip';
-const PROVIDERS: Provider[] = ['Fish', 'Google', 'Edge'];
+const PROVIDERS: Provider[] = ['fish', 'google', 'edge'];
+const PROVIDER_NAME: Record<Provider, string> = { fish: 'Fish', google: 'Google', edge: 'Edge' };
 
-/**
- * 대본: HYEONIVERSE 발표 1장 대본의 앞 두 문장. 표기(자막에 보이는 말)와 읽을 말, 그 읽기를 정한 곳.
- * 'Hyeoniverse → 허니버스'는 그 사이트 읽기 사전에 실제로 있는 짝이다
- */
-const SCRIPTS = {
-	ko: [
-		{ text: "지금 보시는 프로젝트는 제가 직접 기획하고 설계해서 운영하고 있는 '" },
-		{ text: 'Hyeoniverse', say: '허니버스', by: '사전' },
-		{ text: "'입니다. 단순히 포트폴리오를 보여주는 웹사이트를 만드는 것을 목표로 하지 않았습니다." },
-	],
-	en: [
-		{ text: "The project you are looking at is '" },
-		{ text: 'Hyeoniverse', say: 'Hyeon-iverse', by: '사전' },
-		{
-			text: "', which I planned, designed and run myself. It was never meant to be just a website that shows a portfolio.",
-		},
-	],
-} as const satisfies Record<'ko' | 'en', { text: string; say?: string; by?: string }[]>;
-
-/** Fish로 만든 실제 음성 (그 사이트 갤러리가 트는 파일에서 이 두 문장만 잘라 냈다) */
+/** 파형 편집기가 다루는 실제 Fish 음성 (그 사이트 갤러리가 트는 파일에서 두 문장만 잘라 냈다) */
 const FISH_SAMPLE = '/imgs/projects/hyeoniverse/gallery/voice-sample.mp3';
 const clock = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
 
+/** 음성 만들기: 한 번에 읽는 글자 수 (서버도 같은 값으로 막는다) */
+const MAX_SPEECH_CHARS = 80;
+const SPEECH_DEFAULT = {
+	ko: '지금 들으시는 목소리는 방금 이 글로 만든 음성입니다.',
+	en: 'The voice you hear was generated from this text just now.',
+};
+type Attempt = { provider: Provider; state: 'ok' | 'fail' | 'skip'; reason?: string };
+
 /**
- * 음성 만들기: 고른 공급자부터 차례로 시도하고, 막아 둔 곳은 실패로 넘어간다. Fish로 만들면 실제 음성 파일을 틀고
- * 재생을 따라 자막이 가사처럼 채워진다. 세 곳 모두 실패하면 그 사이트처럼 방문자 브라우저의 음성 합성이 대본을 읽는다
+ * 음성 만들기: 쓴 글을 MacFolio API가 Fish → Google → Edge 차례로 실제 음성으로 만든다.
+ * 공급자를 눌러 막아 두면 그 공급자를 건너뛰어, 실패하면 다음으로 넘어가는 대체 순서를 실제로 볼 수 있다.
+ * 비용 때문에 80자까지, IP마다 하루 3번(사이트 전체 50번)
  */
 const Voice: React.FC = () => {
 	const [lang, setLang] = useState<'ko' | 'en'>('ko');
+	const [text, setText] = useState(SPEECH_DEFAULT.ko);
 	const [blocked, setBlocked] = useState<Provider[]>([]);
-	const [states, setStates] = useState<Record<Provider, ProviderState>>({ Fish: 'idle', Google: 'idle', Edge: 'idle' });
+	const [states, setStates] = useState<Record<Provider, ProviderState>>({ fish: 'idle', google: 'idle', edge: 'idle' });
+	const [reasons, setReasons] = useState<Partial<Record<Provider, string>>>({});
 	const [running, setRunning] = useState(false);
-	const [made, setMade] = useState<Provider | 'none' | null>(null);
+	const [made, setMade] = useState<{ provider: Provider; text: string } | null>(null);
+	const [message, setMessage] = useState<string | null>(null);
+	const [quota, setQuota] = useState<{ remaining: number; perIp: number; total: number } | null>(null);
 	const [time, setTime] = useState(0);
 	const [length, setLength] = useState(0);
 	const [playing, setPlaying] = useState(false);
-	const timers = useRef<number[]>([]);
 	const audio = useRef<HTMLAudioElement | null>(null);
+	const objectUrl = useRef<string | null>(null);
+	const timers = useRef<number[]>([]);
+	const api = env.apiUrl;
+
+	useEffect(() => {
+		if (!api) return;
+		const controller = new AbortController();
+		fetch(`${api}/speech`, { signal: controller.signal })
+			.then((response) => (response.ok ? response.json() : null))
+			.then((data) => data && setQuota(data))
+			.catch(() => undefined);
+		return () => controller.abort();
+	}, [api]);
 	useEffect(
 		() => () => {
 			timers.current.forEach((timer) => window.clearTimeout(timer));
 			audio.current?.pause();
-			if (canSpeak()) window.speechSynthesis.cancel();
+			if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
 		},
 		[]
 	);
 
 	const player = () => {
 		if (audio.current) return audio.current;
-		const el = new Audio(FISH_SAMPLE);
-		el.preload = 'auto';
+		const el = new Audio();
 		el.ontimeupdate = () => setTime(el.currentTime);
 		el.onloadedmetadata = () => setLength(el.duration);
 		el.onplay = () => setPlaying(true);
@@ -343,76 +350,94 @@ const Voice: React.FC = () => {
 		audio.current = el;
 		return el;
 	};
-	const stopSound = () => {
-		audio.current?.pause();
-		if (canSpeak()) window.speechSynthesis.cancel();
-		setTime(0);
+
+	/** 서버가 알려 준 시도 결과를 한 공급자씩 차례로 보여 준다 */
+	const reveal = (attempts: Attempt[], done: () => void) => {
+		attempts.forEach((attempt, i) => {
+			timers.current.push(
+				window.setTimeout(() => {
+					setStates((now) => ({ ...now, [attempt.provider]: attempt.state }));
+					if (attempt.reason) setReasons((now) => ({ ...now, [attempt.provider]: attempt.reason }));
+					if (i === attempts.length - 1) done();
+				}, i * 350)
+			);
+		});
+		if (!attempts.length) done();
 	};
-	const reset = () => {
-		timers.current.forEach((timer) => window.clearTimeout(timer));
-		stopSound();
-		setStates({ Fish: 'idle', Google: 'idle', Edge: 'idle' });
-		setMade(null);
-		setRunning(false);
-	};
-	const script = SCRIPTS[lang];
-	const caption = script.map((part) => part.text).join('');
-	const spoken = script.map((part) => ('say' in part ? part.say : part.text)).join('');
-	const make = () => {
-		reset();
-		setRunning(true);
-		// 누른 순간에 미리 준비해 두면, 만들기가 끝난 뒤 바로 틀 수 있다 (브라우저의 자동 재생 제한)
-		if (lang === 'ko' && !blocked.includes('Fish')) player().load();
-		const next: Record<Provider, ProviderState> = { Fish: 'idle', Google: 'idle', Edge: 'idle' };
-		let at = 0;
-		const step = (fn: () => void, wait: number) => {
-			at += wait;
-			timers.current.push(window.setTimeout(fn, at));
-		};
-		let done: Provider | null = null;
-		for (const provider of PROVIDERS) {
-			if (done) break;
-			if (lang === 'en' && provider === 'Fish') {
-				next.Fish = 'skip';
-				step(() => setStates({ ...next }), 200);
-				continue;
-			}
-			const fails = blocked.includes(provider);
-			step(() => setStates((now) => ({ ...now, [provider]: 'trying' })), 250);
-			next[provider] = fails ? 'fail' : 'ok';
-			const snapshot = { ...next };
-			step(() => setStates(snapshot), 750);
-			if (!fails) done = provider;
+
+	const make = async () => {
+		if (!api) {
+			setMessage('이 화면에는 음성을 만들 서버가 연결되어 있지 않습니다.');
+			return;
 		}
-		step(() => {
-			setRunning(false);
-			setMade(done ?? 'none');
-			if (done === 'Fish') {
-				const el = player();
-				el.currentTime = 0;
-				void el.play().catch(() => undefined);
-			} else if (!done && canSpeak()) {
-				const speech = new SpeechSynthesisUtterance(spoken);
-				speech.lang = lang === 'ko' ? 'ko-KR' : 'en-US';
-				window.speechSynthesis.cancel();
-				window.speechSynthesis.speak(speech);
+		timers.current.forEach((timer) => window.clearTimeout(timer));
+		audio.current?.pause();
+		setRunning(true);
+		setMade(null);
+		setMessage(null);
+		setReasons({});
+		setTime(0);
+		const first = PROVIDERS.find((provider) => !blocked.includes(provider));
+		setStates({
+			fish: blocked.includes('fish') ? 'skip' : first === 'fish' ? 'trying' : 'idle',
+			google: blocked.includes('google') ? 'skip' : first === 'google' ? 'trying' : 'idle',
+			edge: blocked.includes('edge') ? 'skip' : first === 'edge' ? 'trying' : 'idle',
+		});
+		try {
+			const response = await fetch(`${api}/speech`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ text, lang, skip: blocked }),
+			});
+			const data = (await response.json().catch(() => ({}))) as {
+				provider?: Provider;
+				attempts?: Attempt[];
+				audio?: string;
+				remaining?: number;
+				message?: string | string[];
+			};
+			if (typeof data.remaining === 'number') setQuota((now) => (now ? { ...now, remaining: data.remaining! } : now));
+			if (!response.ok || !data.audio || !data.provider) {
+				const reason = Array.isArray(data.message) ? data.message[0] : data.message;
+				reveal(data.attempts ?? [], () => {
+					setRunning(false);
+					setMessage(reason ?? '음성을 만들지 못했습니다.');
+					if (!data.attempts) setStates({ fish: 'idle', google: 'idle', edge: 'idle' });
+				});
+				return;
 			}
-		}, 300);
+			const bytes = Uint8Array.from(atob(data.audio), (c) => c.charCodeAt(0));
+			if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
+			objectUrl.current = URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }));
+			const provider = data.provider;
+			reveal(data.attempts ?? [], () => {
+				setRunning(false);
+				setMade({ provider, text });
+				const el = player();
+				el.src = objectUrl.current!;
+				void el.play().catch(() => undefined);
+			});
+		} catch {
+			setRunning(false);
+			setStates({ fish: 'idle', google: 'idle', edge: 'idle' });
+			setMessage('서버에 닿지 못했습니다. 잠시 뒤 다시 해 보세요.');
+		}
 	};
-	const first = lang === 'en' ? 'Google' : 'Fish';
-	// 가사처럼: 재생한 비율만큼 자막 글자를 진하게
-	const read = made === 'Fish' && length ? Math.round((time / length) * caption.length) : 0;
-	const result =
-		made === null
-			? '공급자를 눌러 막아 두고 돌려 보세요. 막힌 곳은 건너뜁니다'
-			: made === 'none'
-				? '세 곳 모두 실패 · 음성 파일 없이 방문자 브라우저의 음성 합성이 대본을 읽습니다'
-				: `narration-01.mp3 · ${made}로 만들었습니다${made !== first ? ` (${first}가 ${lang === 'en' ? '영어라 건너뜀' : '실패해 넘어감'})` : ''}`;
+
+	const read = made && length ? Math.round((time / length) * made.text.length) : 0;
+	const left = quota?.remaining;
+	const status = message
+		? message
+		: made
+			? `${PROVIDER_NAME[made.provider]}로 만들었습니다${made.provider !== 'fish' && !blocked.includes('fish') ? ' (앞 공급자가 실패해 넘어감)' : ''}`
+			: running
+				? '만드는 중'
+				: '글을 고치고 만들어 보세요';
 
 	return (
 		<div className="cd-voice">
 			<div className="cd-voice-head">
-				<div className="cd-seg" role="group" aria-label="편집 언어">
+				<div className="cd-seg" role="group" aria-label="대본 언어">
 					{(['ko', 'en'] as const).map((value) => (
 						<button
 							key={value}
@@ -421,7 +446,7 @@ const Voice: React.FC = () => {
 							disabled={running}
 							onClick={() => {
 								setLang(value);
-								reset();
+								setText(SPEECH_DEFAULT[value]);
 							}}
 						>
 							{value.toUpperCase()}
@@ -430,46 +455,31 @@ const Voice: React.FC = () => {
 				</div>
 				<p>
 					<i className="fa-solid fa-circle-info" />
-					대체 순서 시연입니다. 여기서 음성을 새로 만들지는 않고, 막아 둔 공급자는 실패로 처리해 다음 공급자로 넘깁니다.
-					Fish에서 끝나면 그 사이트가 Fish로 실제 만든 이 대본의 음성을 들려 드립니다.
+					실제로 음성을 만듭니다. {MAX_SPEECH_CHARS}자까지, 하루 {quota?.perIp ?? 3}번(사이트 전체 {quota?.total ?? 50}
+					번) 만들 수 있습니다. 공급자를 눌러 막아 두면, 실패했을 때 다음 공급자로 넘어가는 대체 순서를 볼 수 있습니다.
 				</p>
 			</div>
-			<dl className="cd-voice-script" data-locked={running || undefined}>
-				<div>
-					<dt>
-						대본
-						{running && (
-							<span className="cd-lock">
-								<i className="fa-solid fa-lock" /> 잠금
-							</span>
-						)}
-					</dt>
-					<dd>
-						{made === 'Fish' ? (
-							<span className="cd-lyric" aria-label={caption}>
-								<b>{caption.slice(0, read)}</b>
-								{caption.slice(read)}
-							</span>
-						) : (
-							caption
-						)}
-					</dd>
-				</div>
-				<div>
-					<dt>읽는 말</dt>
-					<dd>
-						{script.map((part, i) =>
-							'say' in part ? (
-								<mark key={i} title="읽기 사전">
-									{part.say}
-								</mark>
-							) : (
-								part.text
-							)
-						)}
-					</dd>
-				</div>
-			</dl>
+			<label className="cd-voice-input">
+				<span>대본</span>
+				<textarea
+					value={text}
+					maxLength={MAX_SPEECH_CHARS}
+					rows={2}
+					disabled={running}
+					onChange={(event) => setText(event.target.value)}
+				/>
+				<small>
+					{[...text].length}/{MAX_SPEECH_CHARS}
+				</small>
+			</label>
+			{made && (
+				<p className="cd-voice-lyric" aria-label={made.text}>
+					<span className="cd-lyric">
+						<b>{made.text.slice(0, read)}</b>
+						{made.text.slice(read)}
+					</span>
+				</p>
+			)}
 			<ol className="cd-voice-chain" aria-label="공급자 차례 (눌러서 막아 보기)">
 				{PROVIDERS.map((provider) => (
 					<li key={provider}>
@@ -479,31 +489,30 @@ const Voice: React.FC = () => {
 							data-blocked={blocked.includes(provider) || undefined}
 							disabled={running}
 							aria-pressed={blocked.includes(provider)}
+							title={reasons[provider]}
 							onClick={() =>
 								setBlocked((now) =>
 									now.includes(provider) ? now.filter((name) => name !== provider) : [...now, provider]
 								)
 							}
 						>
-							<strong>{provider}</strong>
+							<strong>{PROVIDER_NAME[provider]}</strong>
 							<small>
-								{states[provider] === 'skip'
-									? '영어는 건너뜀'
-									: states[provider] === 'trying'
-										? '만드는 중'
-										: states[provider] === 'ok'
-											? '완료'
-											: states[provider] === 'fail'
-												? '실패'
-												: blocked.includes(provider)
-													? '막힘'
-													: '대기'}
+								{states[provider] === 'trying'
+									? '만드는 중'
+									: states[provider] === 'ok'
+										? '완료'
+										: states[provider] === 'fail'
+											? `실패 · ${reasons[provider] ?? ''}`
+											: states[provider] === 'skip' || blocked.includes(provider)
+												? '막아 둠'
+												: '대기'}
 							</small>
 						</button>
 					</li>
 				))}
 			</ol>
-			{made === 'Fish' && (
+			{made && (
 				<div className="cd-player">
 					<button
 						type="button"
@@ -536,16 +545,12 @@ const Voice: React.FC = () => {
 				</div>
 			)}
 			<div className="cd-voice-foot">
-				<button type="button" className="cd-primary" onClick={make} disabled={running}>
-					<i className="fa-solid fa-wand-magic-sparkles" /> 대체 순서 돌려 보기
+				<button type="button" className="cd-primary" onClick={make} disabled={running || !text.trim() || left === 0}>
+					<i className="fa-solid fa-wand-magic-sparkles" /> 음성 만들기
 				</button>
-				<p role="status">{result}</p>
+				<p role="status">{status}</p>
+				{typeof left === 'number' && <span className="cd-chip">오늘 {left}번 남음</span>}
 			</div>
-			{made !== null && made !== 'Fish' && made !== 'none' && (
-				<p className="cd-hint">
-					이 데모에는 Fish로 만든 실제 음성 파일만 있어, {made} 결과는 소리 없이 결과만 보여 드립니다.
-				</p>
-			)}
 		</div>
 	);
 };

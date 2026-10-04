@@ -187,19 +187,21 @@ EOF
 chmod 600 .env api.env
 ```
 
-| 변수                                    | 필수   | 설명                                                                                          |
-| --------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                          | ✓      | compose.yml에서 `db` 서비스 주소로 넣는다                                                     |
-| `CORS_ORIGINS`                          | ✓      | 요청을 받을 프론트엔드 주소. 한 글자라도 다르면(끝의 `/`, `www`) CORS 에러                    |
-| `API_URL`                               | ✓      | 이 API의 바깥 주소. OAuth 콜백 주소를 여기서 만든다                                           |
-| `GITHUB_CLIENT_ID`                      | 로그인 | 비우면 로그인만 503, 나머지 API는 동작한다                                                    |
-| `GITHUB_CLIENT_SECRET`                  | 로그인 |                                                                                               |
-| `IP_HASH_SECRET`                        | ✓      | 댓글 작성자 IP를 HMAC하는 키. production에서 없으면 서버가 뜨지 않는다                        |
-| `TRUST_PROXY`                           |        | 앞에 둔 프록시 수. Tunnel만 거치면 `1`. `X-Forwarded-For`에서 실제 IP를 읽어 요청 제한에 쓴다 |
-| `FRONTEND_URL`                          |        | 로그인 후 돌아갈 주소 (기본: `CORS_ORIGINS`의 첫 주소)                                        |
-| `ADMIN_GITHUB_ID`                       |        | 관리자 GitHub 숫자 ID (기본 68999618)                                                         |
-| `UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY` |        | 편집기의 사진 찾기. 없으면 그 서비스만 꺼진다                                                 |
-| `GITHUB_TOKEN`                          |        | GitHub 앱의 프로필·저장소를 받을 토큰. 없으면 시간당 60번 제한이라 30분마다 새로 받는다       |
+| 변수                                            | 필수   | 설명                                                                                                              |
+| ----------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                  | ✓      | compose.yml에서 `db` 서비스 주소로 넣는다                                                                         |
+| `CORS_ORIGINS`                                  | ✓      | 요청을 받을 프론트엔드 주소. 한 글자라도 다르면(끝의 `/`, `www`) CORS 에러                                        |
+| `API_URL`                                       | ✓      | 이 API의 바깥 주소. OAuth 콜백 주소를 여기서 만든다                                                               |
+| `GITHUB_CLIENT_ID`                              | 로그인 | 비우면 로그인만 503, 나머지 API는 동작한다                                                                        |
+| `GITHUB_CLIENT_SECRET`                          | 로그인 |                                                                                                                   |
+| `IP_HASH_SECRET`                                | ✓      | 댓글 작성자 IP를 HMAC하는 키. production에서 없으면 서버가 뜨지 않는다                                            |
+| `TRUST_PROXY`                                   |        | 앞에 둔 프록시 수. Tunnel만 거치면 `1`. `X-Forwarded-For`에서 실제 IP를 읽어 요청 제한에 쓴다                     |
+| `FRONTEND_URL`                                  |        | 로그인 후 돌아갈 주소 (기본: `CORS_ORIGINS`의 첫 주소)                                                            |
+| `ADMIN_GITHUB_ID`                               |        | 관리자 GitHub 숫자 ID (기본 68999618)                                                                             |
+| `UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY`         |        | 편집기의 사진 찾기. 없으면 그 서비스만 꺼진다                                                                     |
+| `GITHUB_TOKEN`                                  |        | GitHub 앱의 프로필·저장소를 받을 토큰. 없으면 시간당 60번 제한이라 30분마다 새로 받는다                           |
+| `FISH_AUDIO_API_KEY`, `GOOGLE_TTS_API_KEY`      |        | Safari HYEONIVERSE 페이지의 음성 만들기 (Fish → Google → Edge). 없으면 그 공급자만 건너뛴다 (Edge는 키 없이 된다) |
+| `SPEECH_PER_IP_PER_DAY`, `SPEECH_TOTAL_PER_DAY` |        | 음성 만들기 하루 상한. 기본 IP마다 3번, 사이트 전체 50번 (서버 메모리로 센다)                                     |
 
 `NODE_ENV=production`은 Dockerfile에 들어 있다. 그래서 쿠키에 `Secure`가 붙고, http로는 로그인이 되지 않는다. 전체 목록은 `apps/api/.env.example`에 있다.
 
