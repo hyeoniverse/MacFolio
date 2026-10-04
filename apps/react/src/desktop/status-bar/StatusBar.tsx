@@ -64,8 +64,8 @@ const StatusBar: React.FC = () => {
 
 				{/* Wi-Fi 자리: 이 사이트 서버(API)의 상태 */}
 				<ServerMenu />
-				<span className="menu-item">
-					<i className="fas fa-battery-three-quarters"></i>
+				<span className="statusbar-icon">
+					<i className="fas fa-battery-three-quarters" aria-hidden="true" />
 				</span>
 				{/* 시간 칸은 가장 넓은 시간(12:00 AM·PM)만큼 늘 차지한다. 시간이 바뀌어도 왼쪽 아이콘이 움찔하지 않게 */}
 				<span className="menu-item time-display">

@@ -33,6 +33,15 @@
 	align-items: center;
 }
 
+/* 오른쪽 영역: 항목 사이 간격은 gap 하나로만 (항목마다 margin을 따로 주지 않는다) */
+.macos-statusbar .right-section {
+	gap: 0.55rem;
+}
+
+.macos-statusbar .right-section > .menu-item {
+	margin: 0;
+}
+
 .macos-statusbar .menu-item {
 	flex-shrink: 0;
 	margin: 0 0.5rem;
@@ -74,11 +83,13 @@
 .menu-item-player {
 	display: flex;
 	align-items: center;
+	/* 재생 단추끼리는 한 묶음이라 조금 더 붙인다 */
 	gap: 0.15rem;
-	margin-right: 0.5rem;
 }
 
 /* 메뉴 막대의 아이콘 단추 (재생·음량): 모두 같은 칸, 같은 글자 크기, 줄 높이 1이라 아이콘의 세로 자리가 같다 */
+/* 단추가 아닌 아이콘 (배터리)도 같은 칸 */
+.macos-statusbar .statusbar-icon,
 .macos-statusbar .statusbar-icon-button {
 	display: grid;
 	flex: none;
@@ -124,6 +135,11 @@
 		margin-right: 1rem;
 	}
 
+	.macos-statusbar .right-section {
+		gap: 0.35rem;
+	}
+
+	.macos-statusbar .statusbar-icon,
 	.macos-statusbar .statusbar-icon-button {
 		width: 1.1rem;
 		font-size: 0.7rem;
@@ -152,20 +168,7 @@
 	visibility: hidden;
 }
 
-/* Wi-Fi 자리의 서버 상태 단추 (Apple 메뉴 단추와 같은 모양) */
+/* Wi-Fi 자리의 서버 상태 단추: 막대 아이콘이라 글자 아이콘보다 조금 크게 */
 .macos-statusbar .server-menu-button {
-	display: grid;
-	place-items: center;
-	height: 1.25rem;
-	padding: 0 0.4rem;
-	border: none;
-	border-radius: 0.3rem;
-	background: none;
-	color: var(--color-menubar-text);
 	font-size: 0.85rem;
-	cursor: pointer;
-}
-
-.macos-statusbar .server-menu-button.open {
-	background-color: var(--color-selected-bg);
 }

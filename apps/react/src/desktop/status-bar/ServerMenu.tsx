@@ -50,11 +50,11 @@ const ServerMenu = () => {
 		: [{ heading: '서버' }, { note: '연결된 서버가 없습니다 (VITE_API_URL)' }];
 
 	return (
-		<span className="menu-item server-menu">
+		<span className="server-menu">
 			<button
 				ref={button}
 				type="button"
-				className={`server-menu-button ${anchor ? 'open' : ''}`}
+				className={`statusbar-icon-button server-menu-button ${anchor ? 'open' : ''}`}
 				aria-label={`서버 상태: ${label}${status.latency !== null ? `, 응답 ${status.latency}ms` : ''}`}
 				title={`서버: ${label}`}
 				aria-haspopup="menu"

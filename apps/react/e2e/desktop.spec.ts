@@ -80,6 +80,16 @@ test.describe('데스크톱', () => {
 		expect(new Set(icons).size).toBe(1);
 	});
 
+	test('메뉴 막대 오른쪽 항목(음악·서버 상태·배터리·시계) 사이 간격이 모두 같다', async ({ page }) => {
+		await enterDesktop(page);
+		const gaps = await page.locator('.macos-statusbar .right-section').evaluate((section) => {
+			const items = [...section.children].map((child) => child.getBoundingClientRect());
+			return items.slice(1).map((rect, index) => Math.round(rect.left - items[index].right));
+		});
+		expect(gaps.length).toBeGreaterThanOrEqual(3);
+		expect(new Set(gaps).size).toBe(1);
+	});
+
 	test('메뉴 막대 글자는 보통 굵기이고, 맨 앞 앱 이름만 굵다', async ({ page }) => {
 		await enterDesktop(page);
 		const bar = page.locator('.macos-statusbar');
