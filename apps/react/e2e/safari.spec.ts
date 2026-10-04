@@ -152,6 +152,23 @@ test.describe('Safari', () => {
 		await expect(
 			panel.getByRole('navigation', { name: '차례' }).getByRole('button', { name: /기술 사양/ })
 		).toHaveAttribute('aria-current', 'step');
+		// 테마: 프리셋을 고르면 미리보기 이름이 바뀌고, 다크로 바꿀 수 있다
+		const themes = panel.getByRole('region', { name: '테마' });
+		await themes.getByRole('button', { name: 'Forest' }).click();
+		await expect(themes.locator('.cd-themes-name')).toHaveText('Forest');
+		await themes.getByRole('button', { name: /다크/ }).click();
+		await expect(themes.getByRole('img', { name: 'Forest 테마 다크 미리보기' })).toBeVisible();
+		// 번역: EN으로 바꾸면 비어 있던 영어 칸이 채워진다
+		const translate = panel.locator('.cd-translate');
+		await translate.getByRole('button', { name: 'EN' }).click();
+		await expect(translate).toContainText('Kiosk for Everyone');
+		// 파형: 나누면 클립이 둘이 되고, 되돌리면 하나로 돌아온다
+		const wave = panel.getByLabel('녹음 파형 편집기');
+		await wave.locator('.cd-wave-track').click({ position: { x: 120, y: 40 } });
+		await wave.getByRole('button', { name: '나누기' }).click();
+		await expect(wave.locator('.cd-clip')).toHaveCount(2);
+		await wave.getByRole('button', { name: '되돌리기' }).click();
+		await expect(wave.locator('.cd-clip')).toHaveCount(1);
 
 		// 터미널: 처음에는 소개와 help만 있고, 내용은 명령을 쳐야 나온다. 저장소도 ls·cd·cat으로 돌아본다
 		await open(/DevCourse/);

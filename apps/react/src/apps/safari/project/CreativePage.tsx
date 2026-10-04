@@ -5,7 +5,8 @@ import type { Project, ProjectChapter, ProjectFact } from '@/shared/profile';
 import { FactValue, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
-import { Bars, Compare, FeatureMedia, Layers, ZoomImage } from '@/apps/safari/project/CreativeParts';
+import { Bars, Compare, FeatureMedia, ZoomImage } from '@/apps/safari/project/CreativeParts';
+import { Demo, Themes } from '@/apps/safari/project/CreativeDemos';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
 /** 진행 과정이 있으면 만든 방식을 그 장에 품질 장치로 함께 싣는다 */
@@ -40,7 +41,7 @@ const ChapterFacts: React.FC<{ facts: ProjectFact[] }> = ({ facts }) => (
 	</ul>
 );
 
-/** 더 들려줄 장 하나: 첫머리, 숫자, 펼쳐지는 층, 전후 막대, 글 묶음(그림이 있으면 위에), 장 끝 그림(다크가 있으면 밀대) */
+/** 더 들려줄 장 하나: 첫머리, 숫자, 테마 미리보기, 전후 막대, 글 묶음(그림이나 데모가 있으면 옆에), 장 끝 그림(다크가 있으면 밀대) */
 const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, no }) => (
 	<section className="cr-chapter" aria-label={chapter.title}>
 		<p className="cr-no">{no}</p>
@@ -51,20 +52,27 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 			</p>
 		)}
 		{chapter.facts && <ChapterFacts facts={chapter.facts} />}
-		{chapter.layers && <Layers layers={chapter.layers} />}
+		{chapter.palette && <Themes palette={chapter.palette} />}
 		{chapter.compare && <Bars rows={chapter.compare} />}
 		<div className="cr-build">
 			{chapter.points.map((point, i) => (
 				<article
 					key={point.title}
 					data-reveal=""
-					data-wide={point.image ? '' : undefined}
+					data-wide={point.image || point.demo ? '' : undefined}
+					data-demo={point.demo ? '' : undefined}
 					style={{ '--d': i % 2 } as React.CSSProperties}
 				>
-					{point.image && (
-						<figure className="cr-point-shot">
-							<ZoomImage src={point.image} alt={`${point.title} 화면`} />
-						</figure>
+					{point.demo ? (
+						<div className="cr-point-demo">
+							<Demo kind={point.demo} />
+						</div>
+					) : (
+						point.image && (
+							<figure className="cr-point-shot">
+								<ZoomImage src={point.image} alt={`${point.title} 화면`} />
+							</figure>
+						)
 					)}
 					<div>
 						<h3>{point.title}</h3>

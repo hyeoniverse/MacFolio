@@ -271,37 +271,3 @@ export const Bars: React.FC<{ rows: NonNullable<ProjectChapter['compare']> }> = 
 		})}
 	</ul>
 );
-
-/**
- * 겹친 층: 처음엔 카드 세 장이 포개져 있다가, 층 묶음이 화면 아래에서 가운데쯤 올라오는 동안(--s 0→1)
- * 위에서부터 펼쳐지며 참조 화살표가 이어진다. 다시 올리면 포개진다
- */
-export const Layers: React.FC<{ layers: NonNullable<ProjectChapter['layers']> }> = ({ layers }) => {
-	const list = useRef<HTMLOListElement>(null);
-	useEffect(() => {
-		const node = list.current;
-		if (!node) return;
-		// 움직임 줄이기면 처음부터 펼쳐 둔다
-		if (prefersReducedMotion()) {
-			node.style.setProperty('--s', '1');
-			return;
-		}
-		return onScrollFrame(node, (scroller) => {
-			const view = viewOf(scroller);
-			const top = node.getBoundingClientRect().top;
-			const spread = (view.top + view.height * 0.8 - top) / (view.height * 0.35);
-			node.style.setProperty('--s', Math.min(1, Math.max(0, spread)).toFixed(3));
-		});
-	}, []);
-	return (
-		<ol className="cr-layers" aria-label="토큰 층" ref={list}>
-			{layers.map((layer, i) => (
-				<li key={layer.name} style={{ '--i': i } as React.CSSProperties}>
-					<span className="cr-layers-name">{layer.name}</span>
-					<code>{layer.code}</code>
-					<p>{layer.note}</p>
-				</li>
-			))}
-		</ol>
-	);
-};

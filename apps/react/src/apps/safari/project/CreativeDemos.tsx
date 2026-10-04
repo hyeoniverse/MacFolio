@@ -1,0 +1,1104 @@
+// HYEONIVERSE 페이지에서 직접 만져 보는 데모: 그 사이트의 관리자 기능(슬라이드 갤러리와 음성, TTS, 파형 편집,
+// PDF·PPTX 변환, 자동 번역, AI 요약)과 테마 프리셋을 같은 규칙으로 흉내 낸다. 소리는 내지 않는다
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import type { ProjectPoint, ThemeSwatch } from '@/shared/profile';
+import { scrollParent } from '@/apps/safari/project/scroll';
+import { prefersReducedMotion } from '@/apps/safari/project/reveal';
+import '@/apps/safari/project/CreativeDemos.css';
+
+/** 화면(페이지를 스크롤하는 칸)에 ratio만큼 들어와 있는지 */
+const useInView = <T extends HTMLElement>(ratio = 0.5) => {
+	const ref = useRef<T>(null);
+	// 관찰할 수 없는 곳(시험 환경 등)에서는 늘 보이는 것으로 둔다
+	const [inView, setInView] = useState(() => typeof IntersectionObserver === 'undefined');
+	useEffect(() => {
+		const node = ref.current;
+		if (!node || typeof IntersectionObserver === 'undefined') return;
+		const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+			root: scrollParent(node),
+			threshold: ratio,
+		});
+		observer.observe(node);
+		return () => observer.disconnect();
+	}, [ratio]);
+	return [ref, inView] as const;
+};
+
+const GALLERY = '/imgs/projects/hyeoniverse/gallery';
+
+/** 갤러리 데모의 장: 모두의 키오스크 발표 자료와, 장마다 무엇으로 읽는지 */
+const SLIDES = [
+	{ voice: '녹음 파일', script: '키오스크는 인건비와 접촉을 줄였지만, 단계가 복잡해 누군가에게는 벽이 됩니다.' },
+	{ voice: 'Fish TTS', script: '키오스크가 어려운 사람이라면 누구나, 특히 중장년층과 그 가족을 위해 만들었습니다.' },
+	{ voice: 'Google TTS', script: '매장과 포장을 고르고, 메뉴와 옵션을 담아 결제한 뒤 영수증까지 이어집니다.' },
+	{ voice: '브라우저 음성', script: '메뉴 화면은 컬렉션 뷰로 그리고, 장바구니와 결제 단추를 아래에 둡니다.' },
+	{ voice: 'Fish TTS', script: '옵션은 데이터 한 곳에서 관리해, 70개 메뉴의 옵션 화면을 하나로 처리했습니다.' },
+	{ voice: 'Edge TTS', script: '장바구니에서는 담은 메뉴를 고치거나 한꺼번에 비웁니다.' },
+	{ voice: '대본 없음', script: '' },
+].map((slide, i) => ({ ...slide, src: `${GALLERY}/kiosk-${i + 1}.jpg` }));
+
+/** 대본 없는 장을 보여 주는 시간, 대본 한 글자를 읽는 시간 (ms) */
+const SILENT_SLIDE_MS = 4000;
+const MS_PER_CHAR = 85;
+const slideMs = (script: string) => (script ? Math.max(3200, script.length * MS_PER_CHAR) : SILENT_SLIDE_MS);
+
+/**
+ * 발표처럼 넘어가는 갤러리: 가운데 장이 크고 양옆은 원근으로 기운다. 화면에 절반 넘게 들어오면 읽기 시작해
+ * 한 장을 다 읽으면 다음 장으로, 마지막 장이 끝나면 멈춘다. 끌기·←→·옆 장 누르기로 넘긴다
+ */
+const Slides: React.FC = () => {
+	const [stage, inView] = useInView<HTMLDivElement>(0.5);
+	const [current, setCurrent] = useState(0);
+	const [voice, setVoice] = useState(() => !prefersReducedMotion());
+	const [captions, setCaptions] = useState(true);
+	// 같은 장을 다시 읽을 때도 진행 막대가 처음부터 돌게 바꾸는 번호
+	const [run, setRun] = useState(0);
+	const drag = useRef<number | null>(null);
+	const slide = SLIDES[current];
+	const playing = voice && inView;
+	const go = (index: number) => {
+		setCurrent(Math.max(0, Math.min(SLIDES.length - 1, index)));
+		setRun((n) => n + 1);
+	};
+	const ended = () => {
+		if (current === SLIDES.length - 1) setVoice(false);
+		else go(current + 1);
+	};
+	const words = slide.script.split(' ');
+	const ms = slideMs(slide.script);
+
+	return (
+		<div className="cd-slides" style={{ '--ms': `${ms}ms` } as React.CSSProperties}>
+			<div
+				className="cd-slides-stage"
+				ref={stage}
+				tabIndex={0}
+				role="group"
+				aria-roledescription="슬라이드 갤러리"
+				aria-label={`${current + 1} / ${SLIDES.length}장`}
+				onKeyDown={(event) => {
+					if (event.key === 'ArrowRight') go(current + 1);
+					if (event.key === 'ArrowLeft') go(current - 1);
+				}}
+				onPointerDown={(event) => {
+					drag.current = event.clientX;
+				}}
+				onPointerUp={(event) => {
+					if (drag.current === null) return;
+					const dx = event.clientX - drag.current;
+					drag.current = null;
+					if (Math.abs(dx) > 40) go(current + (dx < 0 ? 1 : -1));
+				}}
+			>
+				{SLIDES.map((item, i) => {
+					const d = i - current;
+					return (
+						<button
+							key={item.src}
+							type="button"
+							className="cd-slide"
+							data-far={Math.abs(d) > 2 || undefined}
+							aria-hidden={d !== 0}
+							tabIndex={-1}
+							style={
+								{
+									'--d': Math.max(-2, Math.min(2, d)),
+									'--a': Math.min(2, Math.abs(d)),
+									'--r': Math.max(-1, Math.min(1, d)),
+								} as React.CSSProperties
+							}
+							onClick={() => d !== 0 && go(i)}
+						>
+							<img src={item.src} alt={d === 0 ? `${i + 1}장` : ''} loading="lazy" draggable={false} />
+						</button>
+					);
+				})}
+			</div>
+			{captions && (
+				<p className="cd-caption" key={`c${run}-${current}`} data-playing={playing || undefined}>
+					{slide.script ? (
+						words.map((word, i) => (
+							<span key={i} style={{ '--at': i / words.length } as React.CSSProperties}>
+								{word}{' '}
+							</span>
+						))
+					) : (
+						<em>대본이 없는 장은 4초 보여 주고 넘어갑니다</em>
+					)}
+				</p>
+			)}
+			<div className="cd-slides-bar">
+				<button
+					type="button"
+					aria-pressed={voice}
+					onClick={() => {
+						if (!voice && current === SLIDES.length - 1) go(0);
+						setVoice(!voice);
+					}}
+				>
+					<i className={`fa-solid ${voice ? 'fa-volume-high' : 'fa-volume-xmark'}`} /> 음성
+				</button>
+				<button type="button" aria-pressed={captions} onClick={() => setCaptions(!captions)}>
+					<i className="fa-solid fa-closed-captioning" /> 자막
+				</button>
+				<span className="cd-slides-source">
+					<i className="fa-solid fa-wave-square" /> {slide.voice}
+					{slide.voice === '브라우저 음성' && ' (대본만 있는 장)'}
+				</span>
+				<span className="cd-slides-count">
+					{current + 1} / {SLIDES.length}
+				</span>
+			</div>
+			<ol className="cd-slides-strip">
+				{SLIDES.map((item, i) => (
+					<li key={item.src}>
+						<button
+							type="button"
+							aria-label={`${i + 1}장으로`}
+							aria-current={i === current || undefined}
+							onClick={() => go(i)}
+						>
+							<img src={item.src} alt="" loading="lazy" />
+							{i === current && (
+								<i
+									key={run}
+									className="cd-slides-progress"
+									data-playing={playing || undefined}
+									onAnimationEnd={ended}
+								/>
+							)}
+						</button>
+					</li>
+				))}
+			</ol>
+		</div>
+	);
+};
+
+type Provider = 'Fish' | 'Google' | 'Edge';
+type ProviderState = 'idle' | 'trying' | 'fail' | 'ok' | 'skip';
+const PROVIDERS: Provider[] = ['Fish', 'Google', 'Edge'];
+
+/** 대본 한 줄: 표기(자막에 보이는 말)와 읽을 말, 그리고 그 읽기를 정한 곳(사전 또는 그 자리 지정) */
+const SCRIPTS = {
+	ko: [
+		{ text: 'RLS', say: '알엘에스', by: '사전' },
+		{ text: ' 정책이 ' },
+		{ text: 'DB', say: '디비', by: '[DB|디비]' },
+		{ text: '에서 권한을 판정합니다.' },
+	],
+	en: [{ text: 'RLS', say: 'R L S', by: '사전' }, { text: ' policies decide who can read each row.' }],
+} as const satisfies Record<'ko' | 'en', { text: string; say?: string; by?: string }[]>;
+
+/** 음성 만들기: 고른 공급자부터 차례로 시도하고, 막아 둔 곳은 실패로 넘어간다. 모두 실패하면 브라우저 음성이 읽는다 */
+const Voice: React.FC = () => {
+	const [lang, setLang] = useState<'ko' | 'en'>('ko');
+	const [blocked, setBlocked] = useState<Provider[]>(['Fish']);
+	const [states, setStates] = useState<Record<Provider, ProviderState>>({ Fish: 'idle', Google: 'idle', Edge: 'idle' });
+	const [running, setRunning] = useState(false);
+	const [result, setResult] = useState<string | null>(null);
+	const timers = useRef<number[]>([]);
+	useEffect(() => () => timers.current.forEach((timer) => window.clearTimeout(timer)), []);
+
+	const reset = () => {
+		timers.current.forEach((timer) => window.clearTimeout(timer));
+		setStates({ Fish: 'idle', Google: 'idle', Edge: 'idle' });
+		setResult(null);
+		setRunning(false);
+	};
+	const make = () => {
+		reset();
+		setRunning(true);
+		const next: Record<Provider, ProviderState> = { Fish: 'idle', Google: 'idle', Edge: 'idle' };
+		let at = 0;
+		const step = (fn: () => void, wait: number) => {
+			at += wait;
+			timers.current.push(window.setTimeout(fn, at));
+		};
+		let made: Provider | null = null;
+		for (const provider of PROVIDERS) {
+			if (made) break;
+			if (lang === 'en' && provider === 'Fish') {
+				next.Fish = 'skip';
+				step(() => setStates({ ...next }), 200);
+				continue;
+			}
+			const fails = blocked.includes(provider);
+			step(() => setStates((now) => ({ ...now, [provider]: 'trying' })), 250);
+			next[provider] = fails ? 'fail' : 'ok';
+			const snapshot = { ...next };
+			step(() => setStates(snapshot), 750);
+			if (!fails) made = provider;
+		}
+		const first = lang === 'en' ? 'Google' : 'Fish';
+		step(() => {
+			setRunning(false);
+			setResult(
+				made
+					? `narration-02.mp3 · ${made}로 만들었습니다${made !== first ? ` (${first}가 실패해 넘어감)` : ''}`
+					: '세 곳 모두 실패 · 음성 파일 없이 방문자 브라우저의 음성 합성이 대본을 읽습니다'
+			);
+		}, 300);
+	};
+	const script = SCRIPTS[lang];
+
+	return (
+		<div className="cd-voice">
+			<div className="cd-seg" role="group" aria-label="편집 언어">
+				{(['ko', 'en'] as const).map((value) => (
+					<button
+						key={value}
+						type="button"
+						aria-pressed={lang === value}
+						disabled={running}
+						onClick={() => {
+							setLang(value);
+							reset();
+						}}
+					>
+						{value.toUpperCase()}
+					</button>
+				))}
+			</div>
+			<dl className="cd-voice-script" data-locked={running || undefined}>
+				<div>
+					<dt>
+						대본
+						{running && (
+							<span className="cd-lock">
+								<i className="fa-solid fa-lock" /> 잠금
+							</span>
+						)}
+					</dt>
+					<dd>
+						{script.map((part, i) =>
+							'by' in part && part.by.startsWith('[') ? <code key={i}>{part.by}</code> : part.text
+						)}
+					</dd>
+				</div>
+				<div>
+					<dt>자막</dt>
+					<dd>{script.map((part) => part.text).join('')}</dd>
+				</div>
+				<div>
+					<dt>읽는 말</dt>
+					<dd>
+						{script.map((part, i) =>
+							'say' in part ? (
+								<mark key={i} title={part.by === '사전' ? '읽기 사전' : '그 자리만 지정'}>
+									{part.say}
+								</mark>
+							) : (
+								part.text
+							)
+						)}
+					</dd>
+				</div>
+			</dl>
+			<ol className="cd-voice-chain" aria-label="공급자 차례 (눌러서 막아 보기)">
+				{PROVIDERS.map((provider) => (
+					<li key={provider}>
+						<button
+							type="button"
+							data-state={states[provider]}
+							data-blocked={blocked.includes(provider) || undefined}
+							disabled={running}
+							aria-pressed={blocked.includes(provider)}
+							onClick={() =>
+								setBlocked((now) =>
+									now.includes(provider) ? now.filter((name) => name !== provider) : [...now, provider]
+								)
+							}
+						>
+							<strong>{provider}</strong>
+							<small>
+								{states[provider] === 'skip'
+									? '영어는 건너뜀'
+									: states[provider] === 'trying'
+										? '만드는 중'
+										: states[provider] === 'ok'
+											? '완료'
+											: states[provider] === 'fail'
+												? '실패'
+												: blocked.includes(provider)
+													? '막힘'
+													: '대기'}
+							</small>
+						</button>
+					</li>
+				))}
+			</ol>
+			<div className="cd-voice-foot">
+				<button type="button" className="cd-primary" onClick={make} disabled={running}>
+					<i className="fa-solid fa-wand-magic-sparkles" /> 음성 만들기
+				</button>
+				<p role="status">{result ?? '공급자를 눌러 막아 두고 만들어 보세요'}</p>
+			</div>
+		</div>
+	);
+};
+
+/** 파형 데모의 녹음: 말소리처럼 커졌다 작아지는 진폭 (0~1) */
+const SAMPLES = Array.from({ length: 90 }, (_, i) => {
+	const word = Math.abs(Math.sin(i / 4.3)) * 0.75 + Math.abs(Math.sin(i * 1.7)) * 0.25;
+	const pause = i % 30 > 25 ? 0.12 : 1;
+	return Math.max(0.06, word * pause);
+});
+/** 표본 하나의 길이 (초) */
+const SAMPLE_SEC = 0.1;
+const HISTORY = 50;
+type Clips = number[][];
+
+/** 구간 [a, b)를 지운 클립들 (빈 클립은 빠진다) */
+const deleteSpan = (clips: Clips, a: number, b: number): Clips => {
+	let at = 0;
+	const out: Clips = [];
+	for (const clip of clips) {
+		const keep = clip.filter((_, i) => at + i < a || at + i >= b);
+		at += clip.length;
+		if (keep.length) out.push(keep);
+	}
+	return out;
+};
+
+/** 위치 i에서 클립을 둘로 나눈다 (클립 경계면 그대로) */
+const splitAt = (clips: Clips, i: number): Clips => {
+	let at = 0;
+	return clips.flatMap((clip) => {
+		const start = at;
+		at += clip.length;
+		return i > start && i < at ? [clip.slice(0, i - start), clip.slice(i - start)] : [clip];
+	});
+};
+
+/** 위치 i에 조각을 새 클립으로 끼운다 */
+const insertAt = (clips: Clips, i: number, piece: number[]): Clips => {
+	const split = splitAt(clips, i);
+	let at = 0;
+	const out: Clips = [];
+	let placed = false;
+	for (const clip of split) {
+		if (!placed && at >= i) {
+			out.push(piece);
+			placed = true;
+		}
+		out.push(clip);
+		at += clip.length;
+	}
+	if (!placed) out.push(piece);
+	return out;
+};
+
+/**
+ * 녹음 파형 편집기: 누르면 커서, 끌면 구간. 잘라내기·복사·붙여넣기·지우기·선택만 남기기·나누기, 되돌리기 50단계.
+ * 단축키는 편집기에 초점이 있을 때 받는다 (Space 재생, ⌘/Ctrl+X C V B Z, Delete, Esc, ←→)
+ */
+const Wave: React.FC = () => {
+	const [clips, setClips] = useState<Clips>(() => [SAMPLES.map((_, i) => i)]);
+	const [past, setPast] = useState<Clips[]>([]);
+	const [future, setFuture] = useState<Clips[]>([]);
+	const [cursor, setCursor] = useState(0);
+	const [span, setSpan] = useState<[number, number] | null>(null);
+	const [clipboard, setClipboard] = useState<number[] | null>(null);
+	const [playhead, setPlayhead] = useState<number | null>(null);
+	const track = useRef<HTMLDivElement>(null);
+	const anchor = useRef<number | null>(null);
+	const frame = useRef(0);
+	const flat = clips.flat();
+	const total = flat.length;
+
+	const commit = (next: Clips) => {
+		setPast((now) => [...now, clips].slice(-HISTORY));
+		setFuture([]);
+		setClips(next);
+	};
+	const indexAt = (clientX: number) => {
+		const box = track.current?.getBoundingClientRect();
+		if (!box) return 0;
+		return Math.round(Math.max(0, Math.min(1, (clientX - box.left) / box.width)) * total);
+	};
+	const stop = useCallback(() => {
+		cancelAnimationFrame(frame.current);
+		setPlayhead(null);
+	}, []);
+	useEffect(() => stop, [stop]);
+
+	const actions = {
+		cut: () => {
+			if (!span) return;
+			setClipboard(flat.slice(...span));
+			commit(deleteSpan(clips, ...span));
+			setCursor(span[0]);
+			setSpan(null);
+		},
+		copy: () => span && setClipboard(flat.slice(...span)),
+		paste: () => {
+			if (!clipboard) return;
+			const at = span ? span[0] : cursor;
+			commit(insertAt(span ? deleteSpan(clips, ...span) : clips, at, clipboard));
+			setCursor(at + clipboard.length);
+			setSpan(null);
+		},
+		remove: () => {
+			if (!span) return;
+			commit(deleteSpan(clips, ...span));
+			setCursor(span[0]);
+			setSpan(null);
+		},
+		keep: () => {
+			if (!span) return;
+			commit([flat.slice(...span)]);
+			setCursor(0);
+			setSpan(null);
+		},
+		split: () => commit(span ? splitAt(splitAt(clips, span[0]), span[1]) : splitAt(clips, cursor)),
+		undo: () => {
+			const previous = past.at(-1);
+			if (!previous) return;
+			setPast(past.slice(0, -1));
+			setFuture([clips, ...future]);
+			setClips(previous);
+			setSpan(null);
+			setCursor((at) => Math.min(at, previous.flat().length));
+		},
+		redo: () => {
+			const [next, ...rest] = future;
+			if (!next) return;
+			setFuture(rest);
+			setPast([...past, clips].slice(-HISTORY));
+			setClips(next);
+			setSpan(null);
+			setCursor((at) => Math.min(at, next.flat().length));
+		},
+		play: () => {
+			if (playhead !== null) return stop();
+			const from = span ? span[0] : cursor >= total ? 0 : cursor;
+			const to = span ? span[1] : total;
+			const start = performance.now();
+			const tick = (now: number) => {
+				const at = from + (now - start) / 1000 / SAMPLE_SEC;
+				if (at >= to) return stop();
+				setPlayhead(at);
+				frame.current = requestAnimationFrame(tick);
+			};
+			frame.current = requestAnimationFrame(tick);
+		},
+	};
+
+	const onKey = (event: React.KeyboardEvent) => {
+		const mod = event.metaKey || event.ctrlKey;
+		const key = event.key.toLowerCase();
+		const run = (action: () => void) => {
+			event.preventDefault();
+			action();
+		};
+		if (event.key === ' ') run(actions.play);
+		else if (mod && key === 'x') run(actions.cut);
+		else if (mod && key === 'c') run(actions.copy);
+		else if (mod && key === 'v') run(actions.paste);
+		else if (mod && key === 'b') run(actions.split);
+		else if (mod && key === 'z') run(event.shiftKey ? actions.redo : actions.undo);
+		else if (mod && key === 'y') run(actions.redo);
+		else if (event.key === 'Delete' || event.key === 'Backspace') run(actions.remove);
+		else if (event.key === 'Escape') run(() => setSpan(null));
+		else if (event.key === 'ArrowLeft') run(() => setCursor((at) => Math.max(0, at - 1)));
+		else if (event.key === 'ArrowRight') run(() => setCursor((at) => Math.min(total, at + 1)));
+	};
+
+	const tools: { label: string; icon: string; keys: string; run: keyof typeof actions; off: boolean }[] = [
+		{ label: '재생', icon: playhead !== null ? 'fa-pause' : 'fa-play', keys: 'Space', run: 'play', off: false },
+		{ label: '잘라내기', icon: 'fa-scissors', keys: '⌘X', run: 'cut', off: !span },
+		{ label: '복사', icon: 'fa-copy', keys: '⌘C', run: 'copy', off: !span },
+		{ label: '붙여넣기', icon: 'fa-paste', keys: '⌘V', run: 'paste', off: !clipboard },
+		{ label: '지우기', icon: 'fa-trash-can', keys: 'Delete', run: 'remove', off: !span },
+		{ label: '선택만 남기기', icon: 'fa-crop-simple', keys: '', run: 'keep', off: !span },
+		{ label: '나누기', icon: 'fa-table-columns', keys: '⌘B', run: 'split', off: false },
+		{ label: '되돌리기', icon: 'fa-rotate-left', keys: '⌘Z', run: 'undo', off: !past.length },
+		{ label: '다시 하기', icon: 'fa-rotate-right', keys: '⇧⌘Z', run: 'redo', off: !future.length },
+	];
+	const pct = (at: number) => `${(at / Math.max(1, total)) * 100}%`;
+	// 클립마다 녹음 전체에서 시작하는 위치
+	const starts = clips.map((_, n) => clips.slice(0, n).reduce((sum, clip) => sum + clip.length, 0));
+
+	return (
+		<div className="cd-wave" tabIndex={0} onKeyDown={onKey} aria-label="녹음 파형 편집기">
+			<div className="cd-wave-tools" role="toolbar" aria-label="편집 도구">
+				{tools.map((tool) => (
+					<button
+						key={tool.label}
+						type="button"
+						disabled={tool.off}
+						title={tool.keys ? `${tool.label} (${tool.keys})` : tool.label}
+						aria-label={tool.label}
+						onClick={() => actions[tool.run]()}
+					>
+						<i className={`fa-solid ${tool.icon}`} />
+					</button>
+				))}
+			</div>
+			<div
+				className="cd-wave-track"
+				ref={track}
+				onPointerDown={(event) => {
+					event.currentTarget.setPointerCapture(event.pointerId);
+					const at = indexAt(event.clientX);
+					anchor.current = at;
+					setCursor(at);
+					setSpan(null);
+				}}
+				onPointerMove={(event) => {
+					if (anchor.current === null) return;
+					const at = indexAt(event.clientX);
+					const a = Math.min(anchor.current, at);
+					const b = Math.max(anchor.current, at);
+					setSpan(b - a > 0 ? [a, b] : null);
+				}}
+				onPointerUp={() => {
+					anchor.current = null;
+				}}
+			>
+				{clips.map((clip, n) => {
+					const start = starts[n];
+					return (
+						<div key={`${n}-${start}`} className="cd-clip" style={{ flexGrow: clip.length }}>
+							<span className="cd-clip-no">{n + 1}</span>
+							{clip.map((sample, i) => (
+								<i
+									key={i}
+									style={{ '--h': SAMPLES[sample] } as React.CSSProperties}
+									data-on={(span && start + i >= span[0] && start + i < span[1]) || undefined}
+								/>
+							))}
+						</div>
+					);
+				})}
+				{total === 0 && <p className="cd-wave-empty">모두 지웠습니다. 되돌리기로 살려 보세요</p>}
+				{span && <span className="cd-wave-span" style={{ left: pct(span[0]), width: pct(span[1] - span[0]) }} />}
+				<span className="cd-wave-cursor" style={{ left: pct(cursor) }} />
+				{playhead !== null && <span className="cd-wave-head" style={{ left: pct(playhead) }} />}
+			</div>
+			<p className="cd-wave-meta">
+				<span>
+					{(total * SAMPLE_SEC).toFixed(1)}초 · 클립 {clips.length}개
+				</span>
+				<span>
+					{span
+						? `${((span[1] - span[0]) * SAMPLE_SEC).toFixed(1)}초 고름`
+						: `커서 ${(cursor * SAMPLE_SEC).toFixed(1)}초`}
+				</span>
+				<span>
+					되돌리기 {past.length}/{HISTORY}
+				</span>
+			</p>
+		</div>
+	);
+};
+
+/** 변환 데모의 단계: 읽기 → 장마다 그리기 → 올리기 → 끝 */
+type Phase = 'idle' | 'read' | 'draw' | 'upload' | 'done';
+
+/** PDF·PPTX를 장마다 그림으로: 화면에 들어오면 한 번 돌고, 파일 종류를 바꾸거나 다시 누르면 처음부터 */
+const Convert: React.FC = () => {
+	const [box, inView] = useInView<HTMLDivElement>(0.4);
+	const [kind, setKind] = useState<'pptx' | 'pdf'>('pptx');
+	// 움직임 줄이기면 처음부터 다 그린 상태로 둔다
+	const [phase, setPhase] = useState<Phase>(() => (prefersReducedMotion() ? 'done' : 'idle'));
+	const [drawn, setDrawn] = useState(() => (prefersReducedMotion() ? SLIDES.length : 0));
+	const timers = useRef<number[]>([]);
+	const started = useRef(false);
+	const total = SLIDES.length;
+
+	const start = useCallback(() => {
+		timers.current.forEach((timer) => window.clearTimeout(timer));
+		timers.current = [];
+		const later = (fn: () => void, at: number) => timers.current.push(window.setTimeout(fn, at));
+		setDrawn(0);
+		setPhase('read');
+		later(() => setPhase('draw'), 700);
+		for (let i = 1; i <= total; i += 1) later(() => setDrawn(i), 700 + i * 360);
+		later(() => setPhase('upload'), 900 + total * 360);
+		later(() => setPhase('done'), 1700 + total * 360);
+	}, [total]);
+	useEffect(() => () => timers.current.forEach((timer) => window.clearTimeout(timer)), []);
+	useEffect(() => {
+		if (!inView || started.current || prefersReducedMotion()) return;
+		started.current = true;
+		start();
+	}, [inView, start]);
+
+	const label = {
+		idle: '파일을 끌어 놓으면 여기서 펼칩니다',
+		read: '읽는 중',
+		draw: `그리는 중 ${drawn}/${total}`,
+		upload: '올리는 중',
+		done: `갤러리에 ${total}장을 올렸습니다${kind === 'pptx' ? ' · 발표자 노트 7개를 대본으로' : ''}`,
+	}[phase];
+
+	return (
+		<div className="cd-convert" ref={box}>
+			<div className="cd-convert-head">
+				<div className="cd-seg" role="group" aria-label="파일 종류">
+					{(['pptx', 'pdf'] as const).map((value) => (
+						<button
+							key={value}
+							type="button"
+							aria-pressed={kind === value}
+							onClick={() => {
+								setKind(value);
+								start();
+							}}
+						>
+							{value.toUpperCase()}
+						</button>
+					))}
+				</div>
+				<p className="cd-file">
+					<i className={`fa-solid ${kind === 'pptx' ? 'fa-file-powerpoint' : 'fa-file-pdf'}`} />
+					모두의 키오스크.{kind}
+				</p>
+				<button type="button" className="cd-ghost" onClick={start} aria-label="다시 변환">
+					<i className="fa-solid fa-rotate-right" />
+				</button>
+			</div>
+			<p className="cd-convert-status" role="status" data-phase={phase}>
+				{phase !== 'done' && phase !== 'idle' && <i className="cd-spin" />}
+				{label}
+			</p>
+			<ol className="cd-convert-grid">
+				{SLIDES.map((slide, i) => (
+					<li key={slide.src} data-drawn={i < drawn || undefined}>
+						<img src={slide.src} alt="" loading="lazy" />
+						<span className="cd-convert-no">{String(i + 1).padStart(2, '0')}.jpg</span>
+						{kind === 'pptx' && i < drawn && slide.script && (
+							<span className="cd-convert-note">
+								<i className="fa-solid fa-note-sticky" /> 노트 → 대본
+							</span>
+						)}
+					</li>
+				))}
+			</ol>
+		</div>
+	);
+};
+
+/** 번역 데모의 칸: 모두의 키오스크 작업물의 실제 한국어·영어 제목과 부제 */
+const FIELDS = [
+	{ label: '제목', ko: '모두의 키오스크', en: 'Kiosk for Everyone' },
+	{
+		label: '부제',
+		ko: '키오스크가 낯선 사람이 카페 주문을 미리 연습해 보는 iOS 키오스크 시뮬레이터',
+		en: 'An iOS kiosk simulator where people unfamiliar with kiosks can practice ordering at a café',
+	},
+	{
+		label: '갤러리 대본 2',
+		ko: '키오스크가 어려운 사람이라면 누구나, 특히 중장년층과 그 가족을 위해 만들었습니다.',
+		en: 'We built it for anyone who finds kiosks hard, especially middle-aged and older people and their families.',
+	},
+];
+
+/** 편집 언어를 EN으로 바꾸면 비어 있는 칸을 번역해 채운다. 다시 번역은 전체를 새로, 비우기로 처음 상태로 */
+const Translate: React.FC = () => {
+	const [lang, setLang] = useState<'ko' | 'en'>('ko');
+	const [filled, setFilled] = useState(false);
+	const [busy, setBusy] = useState(false);
+	const [run, setRun] = useState(0);
+	const timer = useRef(0);
+	useEffect(() => () => window.clearTimeout(timer.current), []);
+	const translate = () => {
+		setBusy(true);
+		window.clearTimeout(timer.current);
+		timer.current = window.setTimeout(() => {
+			setBusy(false);
+			setFilled(true);
+			setRun((n) => n + 1);
+		}, 1200);
+	};
+	const switchTo = (value: 'ko' | 'en') => {
+		setLang(value);
+		if (value === 'en' && !filled && !busy) translate();
+	};
+
+	return (
+		<div className="cd-translate">
+			<div className="cd-translate-head">
+				<div className="cd-seg" role="group" aria-label="편집 언어">
+					{(['ko', 'en'] as const).map((value) => (
+						<button key={value} type="button" aria-pressed={lang === value} onClick={() => switchTo(value)}>
+							{value.toUpperCase()}
+						</button>
+					))}
+				</div>
+				<span className="cd-chip">
+					<i className="fa-solid fa-language" /> DeepL
+				</span>
+				{lang === 'en' && (
+					<>
+						<button type="button" className="cd-ghost" onClick={translate} disabled={busy}>
+							다시 번역
+						</button>
+						<button
+							type="button"
+							className="cd-ghost"
+							disabled={busy || !filled}
+							onClick={() => {
+								setFilled(false);
+								setLang('ko');
+							}}
+						>
+							EN 비우기
+						</button>
+					</>
+				)}
+			</div>
+			<dl className="cd-fields">
+				{FIELDS.map((field, i) => (
+					<div key={field.label}>
+						<dt>{field.label}</dt>
+						<dd data-busy={(lang === 'en' && busy) || undefined}>
+							{lang === 'ko' ? (
+								field.ko
+							) : busy ? (
+								<span className="cd-shimmer" />
+							) : filled ? (
+								<span className="cd-typed" key={run} style={{ '--i': i } as React.CSSProperties}>
+									{field.en}
+								</span>
+							) : (
+								<em>비어 있음</em>
+							)}
+						</dd>
+					</div>
+				))}
+			</dl>
+			<p className="cd-hint" role="status">
+				{lang === 'ko'
+					? 'EN을 눌러 보세요. 비어 있는 영어 칸을 번역해 채웁니다'
+					: busy
+						? 'DeepL로 번역하는 중'
+						: '번역한 값은 그대로 고쳐 쓸 수 있습니다'}
+			</p>
+		</div>
+	);
+};
+
+const SUMMARY = {
+	ko: '키오스크 앞에서 망설이는 사람이 매장에 가기 전에 카페 주문을 연습해 보는 iOS 시뮬레이터입니다. 여러 카페 키오스크의 공통 흐름을 모아 3인 팀이 만들었고, 약 70개 메뉴의 옵션을 데이터 한 곳에서 관리합니다.',
+	en: 'An iOS simulator that lets people who hesitate at kiosks practice ordering at a café before visiting a store. A team of three built it from the common flow of several café kiosks, managing options for about 70 menus in one place.',
+};
+
+/** AI 요약 상자: 발행하면 만드는 중이 보였다가 두 언어 요약이 붙는다. 머리를 누르면 접고 펼친다 */
+const Summary: React.FC = () => {
+	const [lang, setLang] = useState<'ko' | 'en'>('ko');
+	const [open, setOpen] = useState(true);
+	const [busy, setBusy] = useState(false);
+	const timer = useRef(0);
+	useEffect(() => () => window.clearTimeout(timer.current), []);
+
+	return (
+		<div className="cd-summary">
+			<div className="cd-translate-head">
+				<button
+					type="button"
+					className="cd-primary"
+					disabled={busy}
+					onClick={() => {
+						setBusy(true);
+						setOpen(true);
+						timer.current = window.setTimeout(() => setBusy(false), 1600);
+					}}
+				>
+					<i className="fa-solid fa-paper-plane" /> 발행
+				</button>
+				<span className="cd-chip">Gemini</span>
+				<div className="cd-seg" role="group" aria-label="보는 언어">
+					{(['ko', 'en'] as const).map((value) => (
+						<button key={value} type="button" aria-pressed={lang === value} onClick={() => setLang(value)}>
+							{value.toUpperCase()}
+						</button>
+					))}
+				</div>
+			</div>
+			<div className="cd-summary-box" data-open={open || undefined}>
+				<button type="button" className="cd-summary-head" aria-expanded={open} onClick={() => setOpen(!open)}>
+					<span>
+						<i className="fa-solid fa-wand-magic-sparkles" /> AI 요약
+					</span>
+					<i className="fa-solid fa-chevron-down" />
+				</button>
+				<div className="cd-summary-body">
+					<div>
+						{busy ? (
+							<p className="cd-dots">
+								<i />
+								<i />
+								<i /> 요약을 만드는 중
+							</p>
+						) : (
+							<p key={lang} className="cd-typed">
+								{SUMMARY[lang]}
+							</p>
+						)}
+					</div>
+				</div>
+			</div>
+			<p className="cd-hint">예시: 모두의 키오스크 작업물에 붙는 요약</p>
+		</div>
+	);
+};
+
+/** 장 글 묶음에 붙는 데모 */
+export const Demo: React.FC<{ kind: NonNullable<ProjectPoint['demo']> }> = ({ kind }) => {
+	if (kind === 'slides') return <Slides />;
+	if (kind === 'voice') return <Voice />;
+	if (kind === 'wave') return <Wave />;
+	if (kind === 'convert') return <Convert />;
+	if (kind === 'translate') return <Translate />;
+	return <Summary />;
+};
+
+/** "#rrggbb" → 0~1 sRGB */
+const rgbOf = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+const toLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const fromLinear = (c: number) => (c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055);
+const hexOf = (rgb: number[]) =>
+	`#${rgb
+		.map((c) =>
+			Math.round(Math.min(1, Math.max(0, c)) * 255)
+				.toString(16)
+				.padStart(2, '0')
+		)
+		.join('')}`;
+
+/** 상대 휘도 (WCAG) */
+const luminance = (hex: string) => {
+	const [r, g, b] = rgbOf(hex).map(toLinear);
+	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+/** 두 색의 대비 (1~21) */
+const contrast = (a: string, b: string) => {
+	const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+	return (x + 0.05) / (y + 0.05);
+};
+const grade = (ratio: number) => (ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : ratio >= 3 ? '큰 글자 AA' : '부족');
+/** 글자 최소 대비 (WCAG AA 본문) */
+const MIN_TEXT_CONTRAST = 4.5;
+
+/** sRGB ↔ OKLab (명도만 옮기고 색상·채도는 두려고) */
+const toOklab = (hex: string) => {
+	const [r, g, b] = rgbOf(hex).map(toLinear);
+	const [l, m, s] = [
+		0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b,
+		0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b,
+		0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b,
+	].map(Math.cbrt);
+	return [
+		0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+		1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+		0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+	];
+};
+/** OKLab → sRGB (0~1, 색역 밖이면 0~1을 벗어난다) */
+const fromOklab = ([L, a, b]: number[]) => {
+	const [l, m, s] = [
+		L + 0.3963377774 * a + 0.2158037573 * b,
+		L - 0.1055613458 * a - 0.0638541728 * b,
+		L - 0.0894841775 * a - 1.291485548 * b,
+	].map((v) => v ** 3);
+	return [
+		4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+		-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+		-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+	].map(fromLinear);
+};
+const inGamut = (rgb: number[]) => rgb.every((c) => c >= -0.0005 && c <= 1.0005);
+
+/** 강조 글자: 바탕 위 대비가 모자라면 그 사이트처럼 OKLCH 명도만 바탕 반대쪽으로 옮긴다 (색역 밖이면 채도를 줄여 안으로) */
+const readableAccent = (accent: string, bg: string) => {
+	if (contrast(accent, bg) >= MIN_TEXT_CONTRAST) return accent;
+	const [L, a, b] = toOklab(accent);
+	const step = contrast(bg, '#000000') < contrast(bg, '#ffffff') ? 0.01 : -0.01;
+	for (let l = L + step; l > 0 && l < 1; l += step) {
+		let k = 1;
+		while (k > 0 && !inGamut(fromOklab([l, a * k, b * k]))) k -= 0.02;
+		const hex = hexOf(fromOklab([l, a * Math.max(0, k), b * Math.max(0, k)]));
+		if (contrast(hex, bg) >= MIN_TEXT_CONTRAST) return hex;
+	}
+	return step > 0 ? '#ffffff' : '#000000';
+};
+
+/** 강조색 면 위 글자: 그 모드의 바탕 → 글자 → 반대 모드의 바탕·글자 순으로 대비 4.5가 되는 첫 색 */
+const textOnAccent = (theme: ThemeSwatch, mode: 'light' | 'dark') => {
+	const own = mode === 'light' ? [theme.lightBg, theme.lightText] : [theme.darkBg, theme.darkText];
+	const other = mode === 'light' ? [theme.darkBg, theme.darkText] : [theme.lightBg, theme.lightText];
+	const found = [...own, ...other].find((color) => contrast(color, theme.accent) >= MIN_TEXT_CONTRAST);
+	return found ?? (contrast('#ffffff', theme.accent) >= contrast('#000000', theme.accent) ? '#ffffff' : '#000000');
+};
+
+/** 홈의 3D 토러스 재질: 색 프리셋과 상관없이 라이트·다크 두 벌뿐 */
+const TORUS = {
+	light: { color: '#e8ecf2', glow: '#3b6fc0' },
+	dark: { color: '#c0c8d8', glow: '#2a4a8a' },
+};
+/** 프리셋이 혼자 넘어가는 간격 (ms), 몇 번 넘어갈 때마다 모드도 바꾸는지 */
+const CYCLE_MS = 2200;
+const FLIP_EVERY = 4;
+
+/**
+ * 테마 미리보기: 프리셋을 고르거나 라이트·다크를 바꾸면 작은 홈 화면의 색이 그 테마로 바뀐다.
+ * 화면에 보이는 동안 프리셋이 혼자 넘어가고, 한 번이라도 직접 고르면 멈춘다
+ */
+export const Themes: React.FC<{ palette: ThemeSwatch[] }> = ({ palette }) => {
+	const [box, inView] = useInView<HTMLDivElement>(0.4);
+	const [index, setIndex] = useState(0);
+	const [mode, setMode] = useState<'light' | 'dark'>('light');
+	const [touched, setTouched] = useState(false);
+	const ticks = useRef(0);
+
+	useEffect(() => {
+		if (!inView || touched || prefersReducedMotion()) return;
+		const timer = window.setInterval(() => {
+			ticks.current += 1;
+			setIndex((now) => (now + 1) % palette.length);
+			if (ticks.current % FLIP_EVERY === 0) setMode((now) => (now === 'light' ? 'dark' : 'light'));
+		}, CYCLE_MS);
+		return () => window.clearInterval(timer);
+	}, [inView, touched, palette.length]);
+
+	const theme = palette[index];
+	const bg = mode === 'light' ? theme.lightBg : theme.darkBg;
+	const text = mode === 'light' ? theme.lightText : theme.darkText;
+	const onAccent = textOnAccent(theme, mode);
+	const accentText = readableAccent(theme.accent, bg);
+	const body = contrast(text, bg);
+	const accent = contrast(accentText, bg);
+	const button = contrast(onAccent, theme.accent);
+	const torus = TORUS[mode];
+
+	return (
+		<div className="cd-themes" ref={box} data-reveal="">
+			<div
+				className="cd-site"
+				data-mode={mode}
+				style={
+					{
+						'--t-bg': bg,
+						'--t-text': text,
+						'--t-accent': theme.accent,
+						'--t-on': onAccent,
+						'--t-accent-text': accentText,
+						'--torus': torus.color,
+						'--torus-glow': torus.glow,
+					} as React.CSSProperties
+				}
+				aria-label={`${theme.name} 테마 ${mode === 'light' ? '라이트' : '다크'} 미리보기`}
+				role="img"
+			>
+				<div className="cd-site-bar">
+					<b>HYEONIVERSE</b>
+					<span>Works</span>
+					<span>Posts</span>
+					<span>About</span>
+					<i className={`fa-solid ${mode === 'light' ? 'fa-sun' : 'fa-moon'}`} />
+				</div>
+				<div className="cd-site-hero">
+					<div>
+						<small>Portfolio</small>
+						<p>
+							작업물과 글을,
+							<br />
+							움직이는 화면으로.
+						</p>
+						<span className="cd-site-button">작업물 보기</span>
+					</div>
+					<span className="cd-torus" />
+				</div>
+				<div className="cd-site-cards">
+					{['웹', '모바일 앱', '게임'].map((tag) => (
+						<div key={tag}>
+							<span className="cd-site-thumb" />
+							<em>{tag}</em>
+							<span className="cd-site-line" />
+							<span className="cd-site-line short" />
+						</div>
+					))}
+				</div>
+			</div>
+			<div className="cd-themes-side">
+				<div className="cd-themes-top">
+					<p className="cd-themes-name">{theme.name}</p>
+					<div className="cd-seg" role="group" aria-label="모드">
+						{(['light', 'dark'] as const).map((value) => (
+							<button
+								key={value}
+								type="button"
+								aria-pressed={mode === value}
+								onClick={() => {
+									setTouched(true);
+									setMode(value);
+								}}
+							>
+								<i className={`fa-solid ${value === 'light' ? 'fa-sun' : 'fa-moon'}`} />{' '}
+								{value === 'light' ? '라이트' : '다크'}
+							</button>
+						))}
+					</div>
+				</div>
+				<ul className="cd-swatches" aria-label="테마 프리셋">
+					{palette.map((swatch, i) => (
+						<li key={swatch.name}>
+							<button
+								type="button"
+								aria-pressed={i === index}
+								title={swatch.name}
+								aria-label={swatch.name}
+								onClick={() => {
+									setTouched(true);
+									setIndex(i);
+								}}
+								style={
+									{
+										'--s-accent': swatch.accent,
+										'--s-bg': mode === 'light' ? swatch.lightBg : swatch.darkBg,
+									} as React.CSSProperties
+								}
+							/>
+						</li>
+					))}
+				</ul>
+				<dl className="cd-themes-five">
+					{(
+						[
+							['강조', theme.accent],
+							['라이트 바탕', theme.lightBg],
+							['라이트 글자', theme.lightText],
+							['다크 바탕', theme.darkBg],
+							['다크 글자', theme.darkText],
+						] as const
+					).map(([label, color]) => (
+						<div key={label}>
+							<dt>
+								<i style={{ backgroundColor: color }} />
+								{label}
+							</dt>
+							<dd>{color}</dd>
+						</div>
+					))}
+				</dl>
+				<ul className="cd-contrast" aria-label="대비 점검">
+					<li data-grade={grade(body)}>
+						본문 <b>{body.toFixed(1)}:1</b> <span>{grade(body)}</span>
+					</li>
+					<li data-grade={grade(accent)}>
+						강조 글자 <b>{accent.toFixed(1)}:1</b>
+						{accentText !== theme.accent && <small>명도 보정 {accentText}</small>}
+						<span>{grade(accent)}</span>
+					</li>
+					<li data-grade={grade(button)}>
+						강조 면 위 글자 <b>{button.toFixed(1)}:1</b> <span>{grade(button)}</span>
+					</li>
+				</ul>
+				<p className="cd-hint">토러스는 프리셋을 바꿔도 그대로이고, 라이트·다크에서만 재질이 바뀝니다</p>
+			</div>
+		</div>
+	);
+};
