@@ -36,11 +36,14 @@ export const PROJECT_APPS = PROJECTS.filter((project): project is Project & { ap
 export const projectAppName = (id: string): ProjectAppName | null =>
 	PROJECT_APPS.some((project) => project.id === id) ? (id as ProjectAppName) : null;
 
-/** 모든 앱. 프로젝트 앱은 메일 다음에 PROJECTS 순서로 */
+/**
+ * 모든 앱. 프로젝트 앱은 시스템 설정 다음에 PROJECTS 순서로 둔다. Dock은 화면 폭에 들어가지 않는 뒤쪽 앱을
+ * Launchpad로 보내므로, 창이 좁으면 공유·터미널·시스템 설정 대신 프로젝트 앱이 먼저 Launchpad로 간다
+ */
 export const APP_NAMES: AppName[] = [
-	...BUILTIN_APP_NAMES.slice(0, BUILTIN_APP_NAMES.indexOf('mail') + 1),
+	...BUILTIN_APP_NAMES.slice(0, BUILTIN_APP_NAMES.indexOf('settings') + 1),
 	...PROJECT_APPS.map((project) => project.id as ProjectAppName),
-	...BUILTIN_APP_NAMES.slice(BUILTIN_APP_NAMES.indexOf('mail') + 1),
+	...BUILTIN_APP_NAMES.slice(BUILTIN_APP_NAMES.indexOf('settings') + 1),
 ];
 
 export interface AppManifest {
@@ -97,7 +100,7 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 
 /**
  * 앱마다의 정보. 프로젝트 앱은 배포한 사이트를 창 안에 띄운다 (apps/project/ProjectApp.tsx). Safari의 프로젝트 페이지에서도 연다.
- * Dock이 넘치지 않게 따로 정하지 않으면 고정하지 않고 Launchpad에 둔다 (실행 중에는 Dock에 나타난다)
+ * Dock에 고정한다 (화면 폭에 다 들어가지 않으면 뒤쪽 앱은 Launchpad로 간다). app.inDock이 false면 Launchpad에 두고 실행 중에만 Dock에 나타난다
  */
 export const APP_MANIFEST = {
 	...BUILTIN_MANIFEST,
@@ -107,8 +110,8 @@ export const APP_MANIFEST = {
 			{
 				label: app.label,
 				icon: app.icon,
-				inDock: Boolean(app.inDock),
-				inLaunchpad: !app.inDock,
+				inDock: app.inDock !== false,
+				inLaunchpad: app.inDock === false,
 				windowSize: app.windowSize,
 			} satisfies AppManifest,
 		])

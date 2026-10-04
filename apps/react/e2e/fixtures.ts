@@ -45,6 +45,13 @@ export async function enterDesktop(page: Page, path = '/') {
 
 export const dockItem = (page: Page, name: string) => page.locator('.dock').getByRole('button', { name, exact: true });
 
+/** Dock에서 앱을 연다. 화면 폭에 다 들어가지 않아 Launchpad로 간 앱이면 Launchpad에서 */
+export async function openFromDock(page: Page, name: string) {
+	if (await dockItem(page, name).count()) return dockItem(page, name).click();
+	await dockItem(page, 'launchpad').click();
+	await page.locator('.launchpad-modal').getByRole('button', { name, exact: true }).click();
+}
+
 export const appWindow = (page: Page, name: string) => page.locator(`[data-app="${name}"]`);
 
 export async function zIndexOf(page: Page, name: string) {

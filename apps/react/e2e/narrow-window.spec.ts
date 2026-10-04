@@ -1,4 +1,4 @@
-import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
+import { test, expect, enterDesktop, openFromDock, appWindow } from './fixtures';
 
 // 창을 좁히면 앱이 휴대폰 모양으로 바뀌는데, 데스크톱에는 왼쪽 위에 신호등 단추(닫기·최소화·확대)가 그대로 있다.
 // 그 아래로 제목이나 단추가 들어가 가려지지 않는지 창 폭마다 확인한다.
@@ -8,7 +8,7 @@ const WIDTHS = [700, 560, 460, 380, 320];
 for (const app of APPS) {
 	test(`좁은 창: ${app}의 제목·단추가 신호등 단추에 가려지지 않는다`, async ({ page }) => {
 		await enterDesktop(page);
-		await dockItem(page, app).click();
+		await openFromDock(page, app);
 		const win = appWindow(page, app);
 		await expect(win).toBeVisible();
 		for (const width of WIDTHS) {

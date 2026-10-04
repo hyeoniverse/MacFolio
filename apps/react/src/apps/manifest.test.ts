@@ -18,8 +18,9 @@ describe('프로젝트 앱은 PROJECTS에서 만든다', () => {
 		expect(projectAppName('devcourse')).toBeNull();
 	});
 
-	it('Dock에 고정한 새싹 농장 말고는 Launchpad에 둔다', () => {
-		expect(APP_MANIFEST[projectAppName('sproutfarm')!]).toMatchObject({ inDock: true, inLaunchpad: false });
-		expect(APP_MANIFEST[projectAppName('newpick')!]).toMatchObject({ inDock: false, inLaunchpad: true });
+	it('프로젝트 앱은 모두 Dock에 고정한다', () => {
+		for (const { id } of PROJECT_APPS) {
+			expect(APP_MANIFEST[projectAppName(id)!]).toMatchObject({ inDock: true, inLaunchpad: false });
+		}
 	});
 });
