@@ -56,9 +56,8 @@ export interface AppConfig {
 		perIpPerDay: number;
 		totalPerDay: number;
 	};
-	/** AI 커버 데모 (NanoBanana → Hugging Face FLUX). 그림은 비싸서 사이트 전체 상한을 낮게 둔다 */
+	/** AI 커버 데모 (Hugging Face FLUX). 그림은 무료 한도가 작아 상한을 아주 낮게 둔다 */
 	cover: {
-		nanobananaApiKey?: string;
 		huggingfaceApiKey?: string;
 		perIpPerDay: number;
 		totalPerDay: number;
@@ -137,10 +136,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			totalPerDay: Number(env.SUMMARY_TOTAL_PER_DAY ?? 50) || 50,
 		},
 		cover: {
-			nanobananaApiKey: env.NANOBANANA_API_KEY || undefined,
 			huggingfaceApiKey: env.HUGGINGFACE_API_KEY || undefined,
-			perIpPerDay: Number(env.COVER_PER_IP_PER_DAY ?? 3) || 3,
-			totalPerDay: Number(env.COVER_TOTAL_PER_DAY ?? 10) || 10,
+			perIpPerDay: Number(env.COVER_PER_IP_PER_DAY ?? 1) || 1,
+			totalPerDay: Number(env.COVER_TOTAL_PER_DAY ?? 5) || 5,
 		},
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,

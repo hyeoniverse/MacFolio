@@ -1466,9 +1466,6 @@ const COVER_STYLES = [
 	{ key: 'watercolor', label: 'Watercolor' },
 	{ key: '3d-render', label: '3D' },
 ] as const;
-type CoverProvider = 'nanobanana' | 'huggingface';
-const COVER_PROVIDERS: CoverProvider[] = ['nanobanana', 'huggingface'];
-const COVER_NAME: Record<CoverProvider, string> = { nanobanana: 'NanoBanana', huggingface: 'Hugging Face' };
 /** 제목 글자 수 (서버도 같은 값으로 막는다) */
 const MAX_COVER_CHARS = 60;
 
@@ -1481,69 +1478,44 @@ const seededGradient = (seed: string) => {
 };
 
 /**
- * AI 커버: 제목을 쓰고 그리면, MacFolio API가 NanoBanana(실패하면 Hugging Face FLUX)로 16:9 커버를 실제로 그린다.
- * 공급자를 눌러 막아 두면 대체 순서를 볼 수 있다. 그림은 비싸서 IP마다 하루 3번, 사이트 전체 10번
+ * AI 커버: 제목을 쓰고 그리면, MacFolio API가 Hugging Face FLUX로 16:9 커버를 실제로 그린다.
+ * 그림은 무료 한도가 작아 IP마다 하루 1번, 사이트 전체 5번
  */
 const Cover: React.FC = () => {
 	const [title, setTitle] = useState('혼자 설계하고 운영하는 포트폴리오');
 	const [style, setStyle] = useState<(typeof COVER_STYLES)[number]['key']>('abstract');
-	const [blocked, setBlocked] = useState<CoverProvider[]>([]);
-	const [states, setStates] = useState<Record<CoverProvider, ProviderState>>({
-		nanobanana: 'idle',
-		huggingface: 'idle',
-	});
-	const [reasons, setReasons] = useState<Partial<Record<CoverProvider, string>>>({});
 	const [busy, setBusy] = useState(false);
-	const [made, setMade] = useState<{ src: string; provider: CoverProvider; title: string } | null>(null);
+	const [made, setMade] = useState<{ src: string; title: string } | null>(null);
 	const [message, setMessage] = useState<string | null>(null);
-	const { quota, send } = useLiveDemo<{
-		provider: CoverProvider;
-		attempts?: { provider: CoverProvider; state: 'ok' | 'fail' | 'skip'; reason?: string }[];
-		image: string;
-		mime: string;
-	}>('cover', '그리');
+	const { quota, send } = useLiveDemo<{ image: string; mime: string }>('cover', '그리');
 	const left = quota?.remaining;
 
 	const draw = async () => {
 		setBusy(true);
 		setMessage(null);
-		setReasons({});
-		const first = COVER_PROVIDERS.find((provider) => !blocked.includes(provider));
-		setStates({
-			nanobanana: blocked.includes('nanobanana') ? 'skip' : first === 'nanobanana' ? 'trying' : 'idle',
-			huggingface: blocked.includes('huggingface') ? 'skip' : first === 'huggingface' ? 'trying' : 'idle',
-		});
-		const { data, error } = await send({ title, style, skip: blocked });
+		const { data, error } = await send({ title, style });
 		setBusy(false);
-		const next: Record<CoverProvider, ProviderState> = { nanobanana: 'idle', huggingface: 'idle' };
-		const why: Partial<Record<CoverProvider, string>> = {};
-		for (const attempt of data?.attempts ?? []) {
-			next[attempt.provider] = attempt.state;
-			if (attempt.reason) why[attempt.provider] = attempt.reason;
-		}
-		setStates(next);
-		setReasons(why);
 		if (!data?.image) {
 			setMessage(error ?? '커버를 그리지 못했습니다.');
 			return;
 		}
-		setMade({ src: `data:${data.mime || 'image/jpeg'};base64,${data.image}`, provider: data.provider, title });
+		setMade({ src: `data:${data.mime || 'image/jpeg'};base64,${data.image}`, title });
 	};
 
 	const status = message
 		? message
 		: busy
-			? '그리는 중 (1분 가까이 걸릴 수 있습니다)'
+			? '그리는 중 (수십 초 걸릴 수 있습니다)'
 			: made
-				? `${COVER_NAME[made.provider]}로 그렸습니다${made.provider !== 'nanobanana' && !blocked.includes('nanobanana') ? ' (앞 공급자가 실패해 넘어감)' : ''}`
+				? 'Hugging Face FLUX로 그렸습니다'
 				: '제목을 고치고 그려 보세요';
 
 	return (
 		<div className="cd-cover">
 			<p className="cd-live-info">
 				<i className="fa-solid fa-circle-info" />
-				실제로 그립니다. 그림은 비싸서 하루 {quota?.perIp ?? 3}번(사이트 전체 {quota?.total ?? 10}번)만 그릴 수
-				있습니다. 공급자를 눌러 막아 두면, 실패했을 때 다음 공급자로 넘어가는 대체 순서를 볼 수 있습니다.
+				실제로 그립니다. 그림은 무료 한도가 작아 하루 {quota?.perIp ?? 1}번(사이트 전체 {quota?.total ?? 5}번)만 그릴 수
+				있습니다.
 			</p>
 			<label className="cd-voice-input">
 				<span>제목</span>
@@ -1571,6 +1543,9 @@ const Cover: React.FC = () => {
 						</button>
 					))}
 				</div>
+				<span className="cd-chip">
+					<i className="fa-solid fa-image" /> Hugging Face FLUX
+				</span>
 			</div>
 			{/* 16:9 자리를 늘 잡아 두고 그림만 바꾼다. 그리기 전에는 제목으로 고른 그라데이션 (HYEONIVERSE의 빈 커버) */}
 			<figure
@@ -1585,51 +1560,19 @@ const Cover: React.FC = () => {
 				)}
 				{busy && <span className="cd-shimmer" aria-hidden />}
 			</figure>
-			<ol className="cd-voice-chain" data-count={2} aria-label="공급자 차례 (눌러서 막아 보기)">
-				{COVER_PROVIDERS.map((provider) => (
-					<li key={provider}>
-						<button
-							type="button"
-							data-state={states[provider]}
-							data-blocked={blocked.includes(provider) || undefined}
-							disabled={busy}
-							aria-pressed={blocked.includes(provider)}
-							title={reasons[provider]}
-							onClick={() =>
-								setBlocked((now) =>
-									now.includes(provider) ? now.filter((name) => name !== provider) : [...now, provider]
-								)
-							}
-						>
-							<strong>{COVER_NAME[provider]}</strong>
-							<small>
-								{states[provider] === 'trying'
-									? '그리는 중'
-									: states[provider] === 'ok'
-										? '완료'
-										: states[provider] === 'fail'
-											? `실패 · ${reasons[provider] ?? ''}`
-											: states[provider] === 'skip' || blocked.includes(provider)
-												? '막아 둠'
-												: '대기'}
-							</small>
-						</button>
-					</li>
-				))}
-			</ol>
 			<div className="cd-voice-foot">
 				<button
 					type="button"
 					className="cd-primary"
 					onClick={() => void draw()}
-					disabled={busy || !title.trim() || left === 0 || blocked.length === COVER_PROVIDERS.length}
+					disabled={busy || !title.trim() || left === 0}
 				>
 					<i className="fa-solid fa-wand-magic-sparkles" /> 커버 그리기
 				</button>
 				<p role="status" title={status}>
 					{status}
 				</p>
-				<QuotaChip quota={quota} fallback={3} />
+				<QuotaChip quota={quota} fallback={1} />
 			</div>
 		</div>
 	);
