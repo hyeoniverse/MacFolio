@@ -20,8 +20,8 @@ const Dock: React.FC = () => {
 	const overflow: AppName[] = DOCK_APPS.length > maxItems ? DOCK_APPS.slice(maxItems) : [];
 	// Launchpad: Dock에 들어가지 않은 앱 + Dock에 고정하지 않은 앱 (manifest.ts의 inLaunchpad)
 	const hiddenItems: AppName[] = [...overflow, ...LAUNCHPAD_APPS];
-	// macOS처럼 고정하지 않은 앱도 실행 중에는 Dock 끝에 나타난다
-	const runningExtras = LAUNCHPAD_APPS.filter((name) => isActive(name));
+	// macOS처럼 Dock에 보이지 않는 앱(넘쳐 Launchpad로 간 앱, 고정하지 않은 앱)도 실행 중에는 Dock 끝에 나타난다
+	const runningExtras = hiddenItems.filter((name) => isActive(name));
 
 	const handleLaunchpadClick = () => setIsLaunchpadOpen(!isLaunchpadOpen);
 

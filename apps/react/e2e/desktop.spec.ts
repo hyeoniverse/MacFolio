@@ -125,7 +125,8 @@ test.describe('데스크톱', () => {
 	test('로딩 화면을 넘기면 Dock과 시작 앱이 보인다', async ({ page }) => {
 		await enterDesktop(page);
 
-		await expect(page.locator('.dock-left .dock-item')).toHaveCount(12);
+		// (1600 - 300) / 100 = 13개: 내장 앱 11개 + 프로젝트 앱 앞의 둘 (나머지는 Launchpad)
+		await expect(page.locator('.dock-left .dock-item')).toHaveCount(13);
 		await expect(dockItem(page, 'launchpad')).toBeVisible();
 		await expect(dockItem(page, 'bin')).toBeVisible();
 		await expect(appWindow(page, 'safari')).toBeVisible();
@@ -234,10 +235,10 @@ test.describe('좁은 화면', () => {
 
 		await dockItem(page, 'launchpad').click();
 		const launchpad = page.locator('.launchpad-modal');
-		// 들어가지 않은 6개 + Dock에 고정하지 않은 프로젝트 앱 4개 (HYEONIVERSE, NewPick, QRU, WTD)
+		// 고정한 16개 가운데 들어가지 않은 뒤쪽 10개 (github부터, 프로젝트 앱 다섯 개 포함)
 		await expect(launchpad.locator('.dock-item')).toHaveCount(10);
 
-		// 뒤쪽 6개(github부터)가 Launchpad로 간다
+		// 뒤쪽 앱(github부터)이 Launchpad로 간다
 		await launchpad.getByRole('button', { name: 'github', exact: true }).click();
 		await expect(appWindow(page, 'github')).toBeVisible();
 	});

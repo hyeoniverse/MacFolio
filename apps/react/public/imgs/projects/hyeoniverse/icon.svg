@@ -21,7 +21,7 @@
   <rect width="512" height="512" fill="url(#shine)"/>
   <rect x="0" y="496" width="512" height="16" fill="#6e0033" opacity="0.35"/>
   <g filter="url(#shadow)">
-    <path d="M256 106 C262 200 312 250 406 256 C312 262 262 312 256 406 C250 312 200 262 106 256 C200 250 250 200 256 106 Z" fill="url(#star)"/>
-    <circle cx="359" cy="150" r="21" fill="#1c1b1a"/>
+    <path d="M255.5 112 A143.5 143.5 0 0 0 399 255.5 A143.5 143.5 0 0 0 255.5 399 A143.5 143.5 0 0 0 112 255.5 A143.5 143.5 0 0 0 255.5 112 Z" fill="url(#star)"/>
+    <circle cx="358.5" cy="149.5" r="21" fill="#17151b"/>
   </g>
 </svg>

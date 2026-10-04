@@ -120,7 +120,7 @@ export interface ProjectAppInfo {
 	label: string;
 	/** 아이콘 (env.imageUrl 기준 경로, 예: projects/newpick/app-icon.png) */
 	icon: string;
-	/** Dock에 고정할지. 아니면 Launchpad에 두고 실행 중에만 Dock에 나타난다 */
+	/** Dock에 고정하지 않으려면 false (Launchpad에 두고 실행 중에만 Dock에 나타난다). 기본은 고정 */
 	inDock?: boolean;
 	/** 게임이면 "여기서 플레이", 아니면 "여기서 열기" */
 	play?: boolean;
@@ -860,7 +860,7 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/hyeoniverse/web-portfolio-hyeoniverse',
 		demo: 'https://www.hyeoniverse.com',
 		icon: projectImage('hyeoniverse', 'icon.svg'),
-		app: { label: 'HYEONIVERSE', icon: 'projects/hyeoniverse/icon.svg', windowSize: { width: 1080, height: 700 } },
+		app: { label: 'HYEONIVERSE', icon: 'projects/hyeoniverse/app-icon.png', windowSize: { width: 1080, height: 700 } },
 		image: projectImage('hyeoniverse', 'screenshot.jpg'),
 	},
 	{
@@ -1470,7 +1470,6 @@ export const PROJECTS: Project[] = [
 		app: {
 			label: '새싹 농장',
 			icon: 'projects/sproutfarm/icon.png',
-			inDock: true,
 			play: true,
 			tone: 'dark',
 			// 게임 화면(16:9) + 제목 막대
