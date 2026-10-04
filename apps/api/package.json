@@ -12,6 +12,7 @@
 		"typecheck": "prisma generate && tsc --noEmit",
 		"lint": "eslint .",
 		"test": "prisma generate && vitest run --project unit",
+		"openapi": "prisma generate && vitest run --project unit src/openapi.test.ts --update",
 		"test:e2e": "prisma generate && prisma migrate deploy && vitest run --project e2e",
 		"db:up": "docker compose up -d db",
 		"db:migrate": "prisma migrate dev"

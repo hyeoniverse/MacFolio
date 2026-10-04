@@ -1,0 +1,1695 @@
+{
+	"openapi": "3.0.0",
+	"paths": {
+		"/health": {
+			"get": {
+				"operationId": "HealthController_check",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HealthResponse"
+								}
+							}
+						}
+					},
+					"503": {
+						"description": "DB에 연결할 수 없다"
+					}
+				},
+				"tags": [
+					"health"
+				]
+			}
+		},
+		"/auth/github": {
+			"get": {
+				"operationId": "AuthController_github",
+				"parameters": [],
+				"responses": {
+					"302": {
+						"description": "GitHub 로그인 화면으로 보낸다"
+					},
+					"429": {
+						"description": "짧은 시간에 너무 많이 시도했다"
+					}
+				},
+				"tags": [
+					"auth"
+				]
+			}
+		},
+		"/auth/github/callback": {
+			"get": {
+				"operationId": "AuthController_callback",
+				"parameters": [
+					{
+						"name": "code",
+						"required": true,
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "state",
+						"required": true,
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "error",
+						"required": true,
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"302": {
+						"description": "프론트엔드로 돌아간다 (?admin=signed-in | denied | cancelled)"
+					},
+					"429": {
+						"description": "짧은 시간에 너무 많이 시도했다"
+					}
+				},
+				"tags": [
+					"auth"
+				]
+			}
+		},
+		"/auth/me": {
+			"get": {
+				"operationId": "AuthController_me",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AdminResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"auth"
+				]
+			}
+		},
+		"/auth/logout": {
+			"post": {
+				"operationId": "AuthController_logout",
+				"parameters": [],
+				"responses": {
+					"204": {
+						"description": "세션을 지웠다 (로그인하지 않았어도 204)"
+					}
+				},
+				"tags": [
+					"auth"
+				]
+			}
+		},
+		"/memo/organization": {
+			"get": {
+				"operationId": "MemoController_getOrganization",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "정리 내용과 마지막으로 바꾼 시각",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"folders": [
+											"읽을거리"
+										],
+										"posts": {
+											"cra-to-vite": "읽을거리"
+										},
+										"moves": [
+											{
+												"from": "개발기/MacFolio",
+												"to": "읽을거리/MacFolio"
+											}
+										],
+										"pins": {
+											"read-only-memo": true
+										},
+										"locks": {
+											"cra-to-vite": true
+										},
+										"updatedAt": null
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"memo"
+				]
+			},
+			"put": {
+				"operationId": "MemoController_saveOrganization",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"folders": [
+										"읽을거리"
+									],
+									"posts": {
+										"cra-to-vite": "읽을거리"
+									},
+									"moves": [
+										{
+											"from": "개발기/MacFolio",
+											"to": "읽을거리/MacFolio"
+										}
+									],
+									"pins": {
+										"read-only-memo": true
+									},
+									"locks": {
+										"cra-to-vite": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "저장한 정리 내용"
+					},
+					"400": {
+						"description": "규칙을 어겼다 (4단 폴더, 잘못된 이름 등). message에 이유를 모두 담는다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"memo"
+				]
+			}
+		},
+		"/visitor": {
+			"get": {
+				"operationId": "VisitorsController_me",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "이 브라우저의 이름",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"name": "🦊 날쌘 여우"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"visitor"
+				]
+			}
+		},
+		"/posts/{slug}/comments": {
+			"get": {
+				"operationId": "CommentsController_list",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "댓글 (오래된 것부터). mine: 이 브라우저가 쓴 댓글. 방문자·IP 해시는 담지 않는다"
+					}
+				},
+				"tags": [
+					"comments"
+				]
+			},
+			"post": {
+				"operationId": "CommentsController_create",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"body": "잘 봤어요!"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "쓴 댓글. 처음 쓰는 브라우저에는 방문자 쿠키를 준다"
+					},
+					"400": {
+						"description": "입력 규칙을 어겼다 (내용 1~500자)"
+					},
+					"429": {
+						"description": "짧은 시간에 너무 많이 썼다"
+					}
+				},
+				"tags": [
+					"comments"
+				]
+			}
+		},
+		"/comments/{id}": {
+			"delete": {
+				"operationId": "CommentsController_remove",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "지웠다"
+					},
+					"403": {
+						"description": "다른 브라우저에서 쓴 댓글이다"
+					},
+					"404": {
+						"description": "댓글이 없다"
+					}
+				},
+				"tags": [
+					"comments"
+				]
+			}
+		},
+		"/messages/threads": {
+			"get": {
+				"operationId": "MessagesController_listThreads",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "주인 안내(id: owner) + 방문자가 남긴 피드백. mine: 이 브라우저가 남긴 것"
+					}
+				},
+				"tags": [
+					"messages"
+				]
+			},
+			"post": {
+				"operationId": "MessagesController_createThread",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"body": "디자인이 깔끔해요"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "새 피드백과 그 첫 말풍선"
+					},
+					"400": {
+						"description": "내용이 비었거나 500자를 넘는다"
+					},
+					"429": {
+						"description": "짧은 시간에 너무 많이 썼다"
+					}
+				},
+				"tags": [
+					"messages"
+				]
+			}
+		},
+		"/messages/threads/{id}": {
+			"get": {
+				"operationId": "MessagesController_listMessages",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "피드백의 말풍선 (오래된 것부터). owner는 주인 안내에 단 답글"
+					},
+					"404": {
+						"description": "피드백이 없다"
+					}
+				},
+				"tags": [
+					"messages"
+				]
+			},
+			"post": {
+				"operationId": "MessagesController_post",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"body": "저도 그래요"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "단 답글"
+					},
+					"404": {
+						"description": "피드백이 없다"
+					}
+				},
+				"tags": [
+					"messages"
+				]
+			}
+		},
+		"/messages/{id}": {
+			"delete": {
+				"operationId": "MessagesController_remove",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "지웠다"
+					},
+					"403": {
+						"description": "다른 브라우저에서 쓴 메시지다"
+					},
+					"404": {
+						"description": "메시지가 없다"
+					}
+				},
+				"tags": [
+					"messages"
+				]
+			}
+		},
+		"/posts": {
+			"get": {
+				"operationId": "PostsController_list",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "게시한 글 중 날짜가 된 것과, 저장소 글을 가릴 표시(지운 글·예약 글)"
+					}
+				},
+				"tags": [
+					"posts"
+				]
+			},
+			"post": {
+				"operationId": "PostsController_create",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"title": "새 글",
+									"date": "2026-09-29",
+									"category": "개발기/MacFolio",
+									"summary": "목록에 보일 한 줄",
+									"body": "## 제목\n\n본문 (Markdown)"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"400": {
+						"description": "입력 규칙을 어겼다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/admin": {
+			"get": {
+				"operationId": "PostsController_listAdmin",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "모든 글: 게시한 내용, 임시 저장, 버전 수"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/draft": {
+			"put": {
+				"operationId": "PostsController_saveDraft",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"title": "새 글",
+									"date": "2026-09-29",
+									"category": "개발기/MacFolio",
+									"summary": "목록에 보일 한 줄",
+									"body": "## 제목\n\n본문 (Markdown)"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "임시 저장했다 (방문자에게는 아직 보이지 않는다)"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			},
+			"delete": {
+				"operationId": "PostsController_discardDraft",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "임시 저장을 버렸다. 게시한 적 없는 글이면 null (글이 사라진다)"
+					},
+					"404": {
+						"description": "글이 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/publish": {
+			"post": {
+				"operationId": "PostsController_publish",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"title": "새 글",
+									"date": "2026-09-29",
+									"category": "개발기/MacFolio",
+									"summary": "목록에 보일 한 줄",
+									"body": "## 제목\n\n본문 (Markdown)"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "게시했다 (날짜가 미래면 그날부터 보인다). 버전이 하나 늘어난다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/revisions": {
+			"get": {
+				"operationId": "PostsController_revisions",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "게시한 버전들 (최근 것부터)"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/revisions/{id}": {
+			"get": {
+				"operationId": "PostsController_revision",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "number"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "버전 하나의 내용"
+					},
+					"404": {
+						"description": "버전이 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/restore": {
+			"post": {
+				"operationId": "PostsController_restore",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "되살렸다. 서버에 내용이 없던 저장소 글이면 null (파일이 다시 보인다)"
+					},
+					"404": {
+						"description": "'최근 삭제된 항목'에 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/permanent": {
+			"delete": {
+				"operationId": "PostsController_purge",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "영구히 지웠다 (내용·버전을 지우고, 저장소 글을 가리는 표시만 남긴다)"
+					},
+					"404": {
+						"description": "'최근 삭제된 항목'에 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}": {
+			"delete": {
+				"operationId": "PostsController_remove",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "지웠다 ('최근 삭제된 항목'으로, 30일 동안 되살릴 수 있다)"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/files": {
+			"post": {
+				"operationId": "FilesController_upload",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"file": {
+										"type": "string",
+										"format": "binary"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "올린 파일 (주소는 /files/:id)"
+					},
+					"400": {
+						"description": "파일이 없다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"413": {
+						"description": "10MB를 넘는다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"files"
+				]
+			}
+		},
+		"/files/{id}": {
+			"get": {
+				"operationId": "FilesController_download",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "파일. 이미지는 바로 보이고, 나머지는 내려받는다"
+					},
+					"404": {
+						"description": "파일이 없다"
+					}
+				},
+				"tags": [
+					"files"
+				]
+			}
+		},
+		"/images/providers": {
+			"get": {
+				"operationId": "ImagesController_providers",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "서비스마다 키가 있어서 쓸 수 있는지",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"unsplash": true,
+										"pexels": false
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"images"
+				]
+			}
+		},
+		"/images/search": {
+			"get": {
+				"operationId": "ImagesController_search",
+				"parameters": [
+					{
+						"name": "page",
+						"required": false,
+						"in": "query",
+						"description": "1~50",
+						"schema": {}
+					},
+					{
+						"name": "q",
+						"required": true,
+						"in": "query",
+						"description": "검색어 (1~100자)",
+						"schema": {}
+					},
+					{
+						"name": "provider",
+						"required": true,
+						"in": "query",
+						"schema": {
+							"enum": [
+								"unsplash",
+								"pexels"
+							],
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "사진 (한 쪽 18장)과 다음 쪽이 있는지"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"502": {
+						"description": "사진 서비스가 응답하지 않았다"
+					},
+					"503": {
+						"description": "그 서비스의 키가 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"images"
+				]
+			}
+		},
+		"/images/unsplash/{id}/download": {
+			"post": {
+				"operationId": "ImagesController_trackUnsplashDownload",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Unsplash에 사진을 썼다고 알렸다 (가이드라인)"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"images"
+				]
+			}
+		},
+		"/wallpapers": {
+			"get": {
+				"operationId": "WallpapersController_list",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "더한 배경화면 (올린 순서). 이미지 주소는 /files/:id"
+					}
+				},
+				"tags": [
+					"wallpapers"
+				]
+			},
+			"post": {
+				"operationId": "WallpapersController_create",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"required": [
+									"image",
+									"thumbnail"
+								],
+								"properties": {
+									"name": {
+										"type": "string",
+										"maxLength": 40,
+										"description": "비우면 파일 이름"
+									},
+									"image": {
+										"type": "string",
+										"format": "binary"
+									},
+									"thumbnail": {
+										"type": "string",
+										"format": "binary"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "더한 배경화면"
+					},
+					"400": {
+						"description": "이미지가 없거나 이미지가 아니다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"413": {
+						"description": "이미지 한 장이 10MB를 넘는다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"wallpapers"
+				]
+			}
+		},
+		"/wallpapers/{id}": {
+			"patch": {
+				"operationId": "WallpapersController_rename",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": [
+									"name"
+								],
+								"properties": {
+									"name": {
+										"type": "string",
+										"maxLength": 40
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "이름을 바꾼 배경화면"
+					},
+					"400": {
+						"description": "이름이 비었다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"404": {
+						"description": "배경화면이 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"wallpapers"
+				]
+			},
+			"delete": {
+				"operationId": "WallpapersController_remove",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "지웠다 (이미지 두 장도 함께)"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"404": {
+						"description": "배경화면이 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"wallpapers"
+				]
+			}
+		},
+		"/github/profile": {
+			"get": {
+				"operationId": "GithubController_profile",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "프로필, README(Markdown), 고른 저장소. 서버가 한동안 들고 있다가 새로 받는다"
+					},
+					"502": {
+						"description": "GitHub에 닿지 못했고 들고 있는 값도 없다"
+					}
+				},
+				"tags": [
+					"github"
+				]
+			}
+		},
+		"/github/activity": {
+			"get": {
+				"operationId": "GithubController_activity",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "기여 달력(지난 1년)과 최근 공개 활동. 서버가 한동안 들고 있다가 새로 받는다"
+					},
+					"502": {
+						"description": "GitHub에 닿지 못했고 들고 있는 값도 없다"
+					}
+				},
+				"tags": [
+					"github"
+				]
+			}
+		},
+		"/github/candidates": {
+			"get": {
+				"operationId": "GithubController_candidates",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "고른 저장소 이름과, 고를 수 있는 저장소 (내 저장소 → 조직 저장소)"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"github"
+				]
+			}
+		},
+		"/github/repos/{owner}/{name}": {
+			"get": {
+				"operationId": "GithubController_lookup",
+				"parameters": [
+					{
+						"name": "owner",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "name",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "저장소 카드 (직접 입력한 저장소 확인)"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"404": {
+						"description": "없거나 비공개인 저장소"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"github"
+				]
+			}
+		},
+		"/github/showcase": {
+			"put": {
+				"operationId": "GithubController_saveShowcase",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"repos": [
+										"hyeoniverse/MacFolio",
+										"Devcourse-NewPick/front"
+									]
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "저장한 목록 (GitHub에 적힌 이름으로)"
+					},
+					"400": {
+						"description": "이름이 잘못되었거나, 같은 저장소가 두 번 있거나, 6개를 넘는다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"404": {
+						"description": "새로 더한 저장소가 GitHub에 없거나 비공개다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"github"
+				]
+			}
+		},
+		"/speech": {
+			"get": {
+				"operationId": "SpeechController_status",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "이 IP가 오늘 더 만들 수 있는 횟수와 상한",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"remaining": 3,
+										"perIp": 3,
+										"total": 50
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"speech"
+				]
+			},
+			"post": {
+				"operationId": "SpeechController_synthesize",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"text": "안녕하세요, 방금 만든 목소리입니다.",
+									"lang": "ko",
+									"skip": [
+										"fish"
+									]
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "만든 MP3(base64)와 만든 공급자, 공급자마다 시도한 결과, 남은 횟수",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"provider": "google",
+										"attempts": [
+											{
+												"provider": "fish",
+												"state": "skip",
+												"reason": "막아 둠"
+											},
+											{
+												"provider": "google",
+												"state": "ok"
+											}
+										],
+										"audio": "//uQx…",
+										"remaining": 2
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "글이 비었거나 80자를 넘거나, 읽지 않는 내용이다"
+					},
+					"429": {
+						"description": "오늘 만들 수 있는 횟수를 다 썼다"
+					},
+					"502": {
+						"description": "세 공급자 모두 만들지 못했다 (쓴 횟수는 돌려준다)"
+					}
+				},
+				"tags": [
+					"speech"
+				]
+			}
+		},
+		"/translate": {
+			"get": {
+				"operationId": "TranslateController_status",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "이 IP가 오늘 더 번역할 수 있는 횟수와 상한",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"remaining": 3,
+										"perIp": 3,
+										"total": 50
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"translate"
+				]
+			},
+			"post": {
+				"operationId": "TranslateController_translate",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"texts": [
+										"혼자 설계하고 운영하는 포트폴리오 사이트",
+										"개인 포트폴리오입니다."
+									],
+									"from": "ko",
+									"to": "en",
+									"skip": []
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "칸마다 번역한 글(보낸 차례 그대로)과 번역한 공급자, 공급자마다 시도한 결과, 남은 횟수",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"provider": "google",
+										"attempts": [
+											{
+												"provider": "deepl",
+												"state": "fail",
+												"reason": "사용 한도에 닿았습니다"
+											},
+											{
+												"provider": "google",
+												"state": "ok"
+											}
+										],
+										"texts": [
+											"A portfolio site designed and operated solo",
+											"A personal portfolio."
+										],
+										"remaining": 2
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "칸이 비었거나 3칸·200자를 넘거나, 번역하지 않는 내용이다"
+					},
+					"429": {
+						"description": "오늘 번역할 수 있는 횟수를 다 썼다"
+					},
+					"502": {
+						"description": "두 공급자 모두 번역하지 못했다 (쓴 횟수는 돌려준다)"
+					}
+				},
+				"tags": [
+					"translate"
+				]
+			}
+		},
+		"/summary": {
+			"get": {
+				"operationId": "SummaryController_status",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "이 IP가 오늘 더 요약할 수 있는 횟수와 상한",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"remaining": 3,
+										"perIp": 3,
+										"total": 50
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"summary"
+				]
+			},
+			"post": {
+				"operationId": "SummaryController_summarize",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"text": "흩어져 있던 프로젝트와 글을 한 곳에서 보여 주는 개인 포트폴리오입니다."
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "두 언어 요약과 만든 공급자, 남은 횟수",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"provider": "gemini",
+										"ko": "프로젝트와 글을 한 곳에 모은 개인 포트폴리오입니다.",
+										"en": "A personal portfolio that gathers projects and writing in one place.",
+										"remaining": 2
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "글이 비었거나 800자를 넘거나, 요약하지 않는 내용이다"
+					},
+					"429": {
+						"description": "오늘 요약할 수 있는 횟수를 다 썼다"
+					},
+					"502": {
+						"description": "Gemini가 요약하지 못했다 (쓴 횟수는 돌려준다)"
+					}
+				},
+				"tags": [
+					"summary"
+				]
+			}
+		},
+		"/cover": {
+			"get": {
+				"operationId": "CoverController_status",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "이 IP가 오늘 더 그릴 수 있는 횟수와 상한",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"remaining": 1,
+										"perIp": 1,
+										"total": 5
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"cover"
+				]
+			},
+			"post": {
+				"operationId": "CoverController_generate",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"title": "혼자 만드는 포트폴리오",
+									"style": "watercolor",
+									"skip": []
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "그린 그림(base64)과 종류, 그린 공급자, 공급자마다 시도한 결과, 남은 횟수",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"provider": "huggingface",
+										"attempts": [
+											{
+												"provider": "cloudflare",
+												"state": "fail",
+												"reason": "사용 한도에 닿았습니다"
+											},
+											{
+												"provider": "huggingface",
+												"state": "ok"
+											}
+										],
+										"image": "/9j/4AAQ…",
+										"mime": "image/jpeg",
+										"remaining": 0
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "제목이 비었거나 60자를 넘거나, 그리지 않는 내용이다"
+					},
+					"429": {
+						"description": "오늘 그릴 수 있는 횟수를 다 썼다"
+					},
+					"502": {
+						"description": "두 공급자 모두 그리지 못했다 (쓴 횟수는 돌려준다)"
+					}
+				},
+				"tags": [
+					"cover"
+				]
+			}
+		}
+	},
+	"info": {
+		"title": "MacFolio API",
+		"description": "메시지(피드백), 블로그(관리자 편집), 메일",
+		"version": "0.1.0",
+		"contact": {}
+	},
+	"tags": [],
+	"servers": [],
+	"components": {
+		"securitySchemes": {
+			"cookie": {
+				"type": "apiKey",
+				"in": "cookie",
+				"name": "macfolio_session"
+			}
+		},
+		"schemas": {
+			"HealthResponse": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"type": "string",
+						"example": "ok"
+					},
+					"database": {
+						"type": "string",
+						"example": "up",
+						"description": "DB에 쿼리가 되는지"
+					}
+				},
+				"required": [
+					"status",
+					"database"
+				]
+			},
+			"AdminResponse": {
+				"type": "object",
+				"properties": {
+					"login": {
+						"type": "string",
+						"example": "hyeoniverse"
+					},
+					"signedInAt": {
+						"type": "string",
+						"example": "2026-10-02T10:03:00.000Z",
+						"description": "이 세션으로 로그인한 때 (ISO 8601)"
+					},
+					"expiresAt": {
+						"type": "string",
+						"example": "2026-10-02T22:03:00.000Z",
+						"description": "이 세션이 끝나는 때 (ISO 8601)"
+					}
+				},
+				"required": [
+					"login",
+					"signedInAt",
+					"expiresAt"
+				]
+			}
+		}
+	}
+}
