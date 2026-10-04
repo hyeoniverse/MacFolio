@@ -5,7 +5,7 @@ import type { Project, ProjectChapter, ProjectFact } from '@/shared/profile';
 import { FactValue, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
-import { Bars, Compare, FeatureMedia, Layers } from '@/apps/safari/project/CreativeParts';
+import { Bars, Compare, FeatureMedia, Layers, ZoomImage } from '@/apps/safari/project/CreativeParts';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
 /** 진행 과정이 있으면 만든 방식을 그 장에 품질 장치로 함께 싣는다 */
@@ -55,14 +55,21 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 		{chapter.compare && <Bars rows={chapter.compare} />}
 		<div className="cr-build">
 			{chapter.points.map((point, i) => (
-				<article key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+				<article
+					key={point.title}
+					data-reveal=""
+					data-wide={point.image ? '' : undefined}
+					style={{ '--d': i % 2 } as React.CSSProperties}
+				>
 					{point.image && (
 						<figure className="cr-point-shot">
-							<img src={point.image} alt={`${point.title} 화면`} loading="lazy" />
+							<ZoomImage src={point.image} alt={`${point.title} 화면`} />
 						</figure>
 					)}
-					<h3>{point.title}</h3>
-					<p>{point.body}</p>
+					<div>
+						<h3>{point.title}</h3>
+						<p>{point.body}</p>
+					</div>
 				</article>
 			))}
 		</div>
