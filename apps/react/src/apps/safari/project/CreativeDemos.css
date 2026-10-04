@@ -360,6 +360,72 @@
 	font-size: 11px;
 }
 
+.cd-lyric {
+	color: var(--cr-muted);
+}
+
+.cd-lyric b {
+	color: var(--cr-ink);
+	font-weight: inherit;
+	background: linear-gradient(transparent 62%, color-mix(in srgb, var(--sp-accent) 22%, transparent) 62%);
+}
+
+/* 만든 음성 듣기: 재생 단추, 끌 수 있는 재생 막대, 시간 */
+.cd-player {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 999px;
+	background-color: var(--cr-bg);
+}
+
+.cd-player button {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--sp-accent);
+	color: #ffffff !important;
+}
+
+.cd-player input {
+	flex: 1;
+	height: 4px;
+	border-radius: 2px;
+	background: linear-gradient(90deg, var(--sp-accent) var(--fill), var(--cr-line) var(--fill));
+	accent-color: var(--sp-accent);
+	appearance: none;
+	cursor: pointer;
+}
+
+.cd-player input::-webkit-slider-thumb {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: var(--sp-accent);
+	appearance: none;
+}
+
+.cd-player input::-moz-range-thumb {
+	width: 12px;
+	height: 12px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--sp-accent);
+}
+
+.cd-player span {
+	flex: none;
+	color: var(--cr-muted);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
 .cd-voice-chain {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
