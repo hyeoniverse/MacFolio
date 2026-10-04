@@ -2,28 +2,56 @@
 title: API 문서를 사이트 안의 앱으로
 date: 2026-10-05
 category: 개발기/MacFolio
-summary: 서버 메뉴의 'API 문서 열기'가 새 탭 대신 사이트 안의 'API 문서' 앱을 연다. 서버는 /docs만 사이트의 iframe에 넣을 수 있게 허용했다. 김에 Wi-Fi 아이콘을 다시 그리고, 누를 수 없는 상태 줄은 파랗게 바뀌지 않게 했다.
+summary: 서버 메뉴의 'API 문서 열기'가 새 탭 대신 사이트 안의 'API 문서' 앱을 연다. 서버의 Swagger 화면을 띄우지 않고, API 코드에서 뽑은 openapi.json을 Scalar로 그린다. 김에 Wi-Fi 아이콘을 다시 그리고, 누를 수 없는 상태 줄은 파랗게 바뀌지 않게 했다.
 ---
 
-메뉴 막대의 서버 상태 메뉴에는 'API 문서 열기'가 있다. 처음에는 서버의 Swagger 화면(`/docs`)을 새 탭으로 열었는데, macOS처럼 꾸민 사이트에서 갑자기 다른 탭으로 넘어가는 게 어색했다. 그래서 프로젝트 앱이 데모 사이트를 창 안에 띄우듯, API 문서도 **사이트 안의 앱**으로 열게 했다.
+메뉴 막대의 서버 상태 메뉴에는 'API 문서 열기'가 있다. 처음에는 서버의 Swagger 화면(`/docs`)을 새 탭으로 열었는데, macOS처럼 꾸민 사이트에서 갑자기 다른 탭으로 넘어가는 게 어색했다. 그래서 API 문서도 **사이트 안의 앱**으로 열게 했다.
 
-## 서버가 iframe을 막고 있었다
+## 처음 방법: 서버의 /docs를 iframe으로
 
-서버는 helmet으로 보안 헤더를 붙인다. 그중 두 개가 다른 사이트의 iframe에 들어가는 것을 막는다.
+프로젝트 앱이 데모 사이트를 창 안에 띄우듯 `/docs`를 iframe에 넣으려 했다. 서버는 helmet이 붙이는 `X-Frame-Options: SAMEORIGIN`과 CSP `frame-ancestors 'self'`로 다른 주소의 iframe에 들어가는 것을 막는다. 그래서 `/docs` 아래에서만 이 둘을 풀고 사이트 주소를 허용했다.
 
-- `X-Frame-Options: SAMEORIGIN`
-- `Content-Security-Policy`의 `frame-ancestors 'self'`
+동작은 했지만 걸리는 게 있었다.
 
-사이트(`macfolio.hyeoniverse.com`)와 API(`macfolio-api.hyeoniverse.com`)는 주소가 달라서 그대로는 빈 창만 뜬다. 헤더를 통째로 끄지 않고, `/docs` 아래에서만 두 헤더를 고쳤다.
+- 서버가 꺼지면 문서도 빈 창이 된다. 서버 상태를 보여 주는 메뉴에서 여는 문서인데, 정작 서버가 아플 때는 볼 수 없다
+- 서버의 보안 헤더에 예외를 하나 만들어야 한다
+- 생김새가 Swagger 기본 모양이라 사이트와 어울리지 않는다
 
-- `X-Frame-Options`는 지운다 (값으로 특정 주소를 허용할 수 없다)
-- `frame-ancestors`에는 CORS에 이미 등록한 프론트엔드 주소만 더한다
+## 지금 방법: openapi.json을 사이트에서 그린다
 
-허용할 주소를 따로 두지 않고 CORS 설정을 그대로 쓰니, 사이트 주소가 바뀌어도 한 곳만 고치면 된다. API 테스트는 `/docs`가 사이트 주소를 허용하는지와, `/health` 같은 다른 경로는 여전히 `SAMEORIGIN`인지를 함께 확인한다.
+문서를 서버에서 받지 않고, **API 코드에서 뽑은 `openapi.json`을 사이트에 넣어 두고** 그리기로 했다.
 
-## iframe 창을 공통으로
+1. API의 `createOpenApiDocument(app)`가 서버의 `/docs`와 같은 문서를 만든다
+2. 단위 테스트 `openapi.test.ts`가 이 문서를 `apps/react/src/apps/apidocs/openapi.json`과 비교한다. Vitest의 `toMatchFileSnapshot`이라, 컨트롤러나 DTO를 바꾸고 파일을 다시 만들지 않으면 CI가 실패한다. 다시 만드는 명령은 `pnpm --filter @macfolio/api openapi`
+3. 'API 문서' 앱이 이 파일을 Scalar로 그린다
 
-프로젝트 앱에 있던 'iframe + 불러오는 중 화면 + 오래 걸리면 새 탭 링크 + iframe을 누르면 창을 앞으로' 코드를 `WebFrame`으로 꺼냈다. 프로젝트 앱과 새 'API 문서' 앱이 함께 쓴다. 'API 문서' 앱은 Dock에는 두지 않고 Launchpad와 서버 메뉴에서 연다. 서버 주소(`VITE_API_URL`)가 없으면 iframe 대신 '연결된 서버가 없습니다.'를 보여 준다.
+문서를 만드는 데 DB는 필요 없다. `PrismaService`는 처음 쿼리할 때 연결하므로, 앱 모듈만 만들고 문서를 뽑은 뒤 닫는다. 그래서 DB 없이 도는 단위 테스트에 넣을 수 있었다.
+
+서버의 보안 헤더 예외는 되돌렸다. 서버의 `/docs`는 그대로 두어 새 탭으로 여는 용도로 남는다.
+
+### 직접 불러 보기
+
+Scalar의 'Test Request'는 문서 안에서 서버로 요청을 보낸다. 이 사이트는 이미 CORS에 등록된 주소라 다른 앱과 같은 방식으로 서버를 부를 수 있다. 관리자 API는 세션 쿠키로 확인하므로 `customFetch`에서 `credentials: 'include'`를 붙였다. 요청이 Scalar의 프록시를 거치지 않고 서버로 바로 가게 프록시 주소는 두지 않았다. 사용 통계, AI 채팅, MCP, 외부 글꼴처럼 바깥으로 나가는 기능은 모두 껐다. 서버 주소(`VITE_API_URL`)가 없으면 요청 단추만 숨기고 문서는 그대로 보여 준다.
+
+## Scalar를 사이트에서 떼어 놓았다
+
+처음에는 Scalar를 사이트 안의 컴포넌트로 그렸다. 화면에 띄우자마자 주소 막대가 `/#description/introduction`으로 바뀌었다. Scalar는 지금 보는 곳을 주소의 `#`에 적고, 목차를 누르면 `pushState`로 방문 기록을 쌓는다. 끄는 설정은 없었다.
+
+이 사이트의 주소 막대는 **맨 앞 창만** 바꾼다. 여러 앱이 저마다 주소를 쓰면 서로 덮기 때문에 바꾸는 곳을 한 군데(`syncAddressBar`)로 모아 두었다. 또 Scalar의 CSS는 `body`에도 규칙을 걸고, 사이트 창의 `text-align: center`를 물려받아 글이 모두 가운데로 몰렸다.
+
+그래서 Scalar를 **따로 된 페이지**(`api-docs.html`, Vite의 두 번째 시작점)에 두고, 'API 문서' 앱은 그 페이지를 iframe으로 띄운다. 프로젝트 앱이 쓰던 iframe 틀(불러오는 중 화면, iframe을 누르면 창을 앞으로)을 `WebFrame`으로 꺼내 둘이 함께 쓴다.
+
+- 주소의 `#`은 iframe 안의 주소만 바뀐다. 사이트 주소는 그대로다
+- CSS는 그 페이지 안에만 걸린다. 무거운 Scalar(Vue 포함)도 창을 열 때만 받는다
+- 같은 사이트 주소라서 문서 페이지가 사이트의 `<html data-theme>`을 지켜보고 다크 모드를 따라간다
+
+iframe 안에서 쌓은 방문 기록은 사이트의 뒤로 가기에 섞인다. 이 사이트에서 뒤로 가기는 "사이트 밖으로"여야 해서, 문서 페이지 안에서만 `pushState`를 `replaceState`로 바꿨다. 화면 테스트는 목차를 눌러도 사이트 주소와 `history.length`가 그대로인지 확인한다.
+
+## 창 틀이 밀려 올라갔다
+
+'Test Request'를 누르자 창의 제목 막대가 위로 잘렸다. 창 틀(`.container`)이 10px 스크롤되어 있었다. 창 틀은 `overflow: hidden`인데, hidden은 사용자가 스크롤할 수 없을 뿐 **코드나 브라우저는 스크롤할 수 있다**. iframe 안에서 포커스가 옮겨 가자 브라우저가 그 요소를 보이게 하려고 바깥의 창 틀까지 밀었다.
+
+`overflow: clip`으로 바꿨다. clip은 스크롤 영역을 만들지 않아서 아무도 밀 수 없다. 모든 창이 같은 틀을 쓰므로 함께 고쳐졌다.
 
 ## 누를 수 없는 줄이 파랗게 바뀌었다
 
