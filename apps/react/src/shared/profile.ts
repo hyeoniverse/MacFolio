@@ -312,8 +312,8 @@ export const PROJECTS: Project[] = [
 		language: 'TypeScript',
 		url: 'https://github.com/Devcourse-NewPick/front',
 		demo: 'https://newpick-tan.vercel.app',
-		icon: projectImage('newpick', 'icon.png'),
-		logo: projectImage('newpick', 'logo.png'),
+		icon: projectImage('newpick', 'icon.svg'),
+		logo: projectImage('newpick', 'logo.svg'),
 		image: projectImage('newpick', 'screenshot.jpg'),
 	},
 	{
