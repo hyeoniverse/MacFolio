@@ -348,9 +348,9 @@ export const PROJECTS: Project[] = [
 			{
 				title: '발표 갤러리와 음성',
 				look: 'stage',
-				lead: '작업물마다 발표 자료를 슬라이드 갤러리로 올리고, 장마다 목소리를 입혀 발표처럼 넘어가게 합니다. 자료를 그림으로 바꾸는 일부터 대본, 음성, 녹음 다듬기까지 편집 화면 안에서 끝납니다.',
+				lead: '작업물마다 발표 자료를 슬라이드 갤러리로 올리고, 장마다 음성을 붙여 발표처럼 넘어가게 합니다. 자료를 그림으로 바꾸고 녹음을 다듬는 일까지 편집 화면 안에서 끝나며, 대본을 AI 목소리로 만드는 일은 아래 AI 장에서 직접 들어 볼 수 있습니다.',
 				facts: [
-					{ value: '3곳', label: 'TTS (Fish · Google · Edge)' },
+					{ value: 'PDF · PPTX', label: '브라우저 안에서 슬라이드로' },
 					{ value: '24kHz', label: '마이크 녹음 (모노 WAV)' },
 					{ value: '50단계', label: '녹음 편집 되돌리기' },
 				],
@@ -365,22 +365,6 @@ export const PROJECTS: Project[] = [
 								alt: '재생 중: 음성에 맞춰 자막이 바뀌고 진행 막대가 찬다',
 							},
 							{ src: projectImage('hyeoniverse', 'cms/gallery.jpg'), alt: '자막을 켠 작업물 상세의 갤러리' },
-						],
-					},
-					{
-						title: '대본을 목소리로',
-						body: '장마다 대본을 Fish Audio, Google, Edge 가운데 고른 목소리로 만들고, 실패하면 남은 공급자의 같은 성별 목소리로 넘어갑니다. 영어 대본은 한국어 목소리인 Fish를 건너뜁니다. 읽기 사전으로 Hyeoniverse를 "허니버스"로 읽히고, 대본 안의 [표기|읽을 말]로 그 자리만 따로 정하며, 자막에는 표기가 그대로 남습니다. 만드는 동안에는 대본과 목소리, 이미지 순서가 잠깁니다. 이 페이지에서는 MacFolio 서버가 같은 차례로 실제 음성을 만들어 들려 줍니다 (80자까지, 하루 3번).',
-						demo: 'voice',
-						shots: [
-							{
-								src: projectImage('hyeoniverse', 'cms/narration.jpg'),
-								alt: '갤러리 음성 편집기: 왼쪽 슬라이드, 오른쪽 대본, 아래 썸네일 줄',
-							},
-							{
-								src: projectImage('hyeoniverse', 'cms/narration-preview.mp4'),
-								alt: '미리 듣기: 재생을 따라 대본이 가사처럼 채워진다',
-							},
-							{ src: projectImage('hyeoniverse', 'cms/lexicon.jpg'), alt: '읽기 사전: 표기와 읽을 말 짝' },
 						],
 					},
 					{
@@ -413,13 +397,13 @@ export const PROJECTS: Project[] = [
 				],
 			},
 			{
-				title: 'AI 번역 · 요약 · 커버',
+				title: 'AI 번역 · 요약 · 커버 · 음성',
 				look: 'bento',
-				lead: '글과 작업물은 한국어와 영어 칸을 따로 둡니다. 한쪽만 써도 나머지는 번역이 채우고, 발행하면 두 언어의 요약이 붙고, 커버가 비어 있으면 사진을 찾아 채웁니다.',
+				lead: '글과 작업물은 한국어와 영어 칸을 따로 둡니다. 한쪽만 써도 나머지는 번역이 채우고, 발행하면 두 언어의 요약이 붙고, 커버가 비어 있으면 사진을 찾거나 그리며, 갤러리 대본은 목소리로 읽힙니다. 공급자는 기능마다 고르고, 실패하면 다음 공급자로 넘어갑니다.',
 				facts: [
 					{ value: '4곳', label: '번역 (DeepL · Google · Gemini · Claude)' },
-					{ value: 'KO · EN', label: '언어마다 따로 두는 칸' },
 					{ value: '2–3문장', label: '언어마다 AI 요약' },
+					{ value: '3곳', label: '음성 (Fish · Google · Edge)' },
 				],
 				points: [
 					{
@@ -452,6 +436,22 @@ export const PROJECTS: Project[] = [
 						title: 'AI로 커버 그리기',
 						body: '커버 선택창의 AI 생성 탭에서 제목·태그·요약으로 만든 프롬프트 제안을 고르거나 직접 써서, 열 가지 스타일 가운데 하나로 그립니다. NanoBanana(Gemini)와 Hugging Face FLUX 가운데 기본 공급자를 고르고, 실패하면 대체 순서대로 넘어가며, 같은 원인으로 거듭 실패한 공급자는 잠시 꺼 둡니다. 만든 그림은 저장소에 올라가 바로 커버가 되고, 이전 커버는 이력에서 되돌립니다.',
 						demo: 'cover',
+					},
+					{
+						title: '대본을 AI 목소리로',
+						body: '장마다 대본을 Fish Audio, Google, Edge 가운데 고른 목소리로 만들고, 실패하면 남은 공급자의 같은 성별 목소리로 넘어갑니다. 영어 대본은 한국어 목소리인 Fish를 건너뜁니다. 읽기 사전으로 Hyeoniverse를 "허니버스"로 읽히고, 대본 안의 [표기|읽을 말]로 그 자리만 따로 정하며, 자막에는 표기가 그대로 남습니다. 만드는 동안에는 대본과 목소리, 이미지 순서가 잠깁니다. 이 페이지에서는 MacFolio 서버가 같은 차례로 실제 음성을 만들어 들려 줍니다 (80자까지, 하루 3번).',
+						demo: 'voice',
+						shots: [
+							{
+								src: projectImage('hyeoniverse', 'cms/narration.jpg'),
+								alt: '갤러리 음성 편집기: 왼쪽 슬라이드, 오른쪽 대본, 아래 썸네일 줄',
+							},
+							{
+								src: projectImage('hyeoniverse', 'cms/narration-preview.mp4'),
+								alt: '미리 듣기: 재생을 따라 대본이 가사처럼 채워진다',
+							},
+							{ src: projectImage('hyeoniverse', 'cms/lexicon.jpg'), alt: '읽기 사전: 표기와 읽을 말 짝' },
+						],
 					},
 					{
 						title: '공급자 고르기와 대체, 사용량',
