@@ -49,4 +49,28 @@ test.describe('메뉴 막대의 서버 상태 (Wi-Fi 자리)', () => {
 		await button.click();
 		await expect(page.getByRole('menu', { name: '서버 상태' })).toContainText('연결된 서버가 없습니다');
 	});
+
+	test('메뉴는 화면 오른쪽 끝에서도 잘리지 않는다 (열고 나서 내용이 길어져도)', async ({ page }) => {
+		const api = await fakeApi(page);
+		await enterDesktop(page);
+		await expect(page.getByRole('button', { name: /^서버 상태: 정상/ })).toBeVisible();
+		// 연 순간 다시 확인해서 '정상' → '서버에 연결할 수 없음'으로 길어진다
+		api.health = 'down';
+		await page.getByRole('button', { name: /^서버 상태/ }).click();
+		const menu = page.getByRole('menu', { name: '서버 상태' });
+		await expect(menu).toContainText('서버에 연결할 수 없음');
+		const viewport = page.viewportSize()!;
+		await expect
+			.poll(async () => {
+				const box = (await menu.boundingBox())!;
+				return box.x + box.width <= viewport.width - 8 && box.x >= 8;
+			})
+			.toBe(true);
+		// 글자가 메뉴 안에서 잘리지 않는다
+		expect(
+			await menu.evaluate((el) =>
+				[...el.querySelectorAll('*')].every((child) => child.scrollWidth <= child.clientWidth + 1)
+			)
+		).toBe(true);
+	});
 });

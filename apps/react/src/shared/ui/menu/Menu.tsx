@@ -53,13 +53,23 @@ const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFoc
 	const [position, setPosition] = useState({ left: anchor.x, top: anchor.y });
 	useDismiss(true, onClose, trigger ? [ref, trigger] : [ref]);
 
-	// 그려진 크기를 재서 화면 밖으로 넘치지 않게 한다 (그리기 전에 옮겨 깜빡이지 않는다)
+	// 그려진 크기를 재서 화면 밖으로 넘치지 않게 한다 (그리기 전에 옮겨 깜빡이지 않는다).
+	// 크기는 offsetWidth로 잰다: 나타나는 애니메이션(scale) 중에 getBoundingClientRect로 재면 작게 재져 끝이 잘린다.
+	// 연 뒤에 내용이 바뀌어 커지면(서버 상태를 다시 확인하는 등) 다시 당긴다
 	useLayoutEffect(() => {
 		const menu = ref.current;
 		if (!menu) return;
-		const { width, height } = menu.getBoundingClientRect();
-		setPosition(placeAtPoint({ left: anchor.x, top: anchor.y }, { width, height }));
+		const place = () => {
+			// offsetWidth는 소수점을 반올림하므로(252.25 → 252) 1px 올려 잡아 끝이 넘치지 않게 한다
+			const width = menu.offsetWidth + 1;
+			const height = menu.offsetHeight + 1;
+			setPosition(placeAtPoint({ left: anchor.x, top: anchor.y }, { width, height }));
+		};
+		place();
 		if (autoFocus) menu.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
+		const resize = new ResizeObserver(place);
+		resize.observe(menu);
+		return () => resize.disconnect();
 	}, [anchor.x, anchor.y, autoFocus]);
 
 	const moveFocus = (event: React.KeyboardEvent) => {
