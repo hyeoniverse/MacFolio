@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { test, expect, enterDesktop, dockItem, appWindow, zIndexOf } from './fixtures';
 
 test.describe('데스크톱', () => {
@@ -125,8 +126,9 @@ test.describe('데스크톱', () => {
 	test('로딩 화면을 넘기면 Dock과 시작 앱이 보인다', async ({ page }) => {
 		await enterDesktop(page);
 
-		// (1600 - 300) / 100 = 13개: 내장 앱 11개 + 프로젝트 앱 앞의 둘 (나머지는 Launchpad)
-		await expect(page.locator('.dock-left .dock-item')).toHaveCount(13);
+		// 1600px 창에는 고정한 앱 16개(내장 앱 11개 + 프로젝트 앱 다섯)가 다 들어간다. 그 뒤에 Launchpad와 휴지통
+		await expect(page.locator('.dock .dock-item')).toHaveCount(18);
+		await expect(dockItem(page, 'sproutfarm')).toBeVisible();
 		await expect(dockItem(page, 'launchpad')).toBeVisible();
 		await expect(dockItem(page, 'bin')).toBeVisible();
 		await expect(appWindow(page, 'safari')).toBeVisible();
@@ -225,21 +227,39 @@ test.describe('데스크톱', () => {
 	});
 });
 
+/** Dock이 화면 안에 있고, 칸(앱·Launchpad·구분선·휴지통)이 서로 겹치지 않는다 */
+async function expectDockFits(page: Page) {
+	const viewport = page.viewportSize()!;
+	const boxes = await page
+		.locator('.dock > *')
+		.evaluateAll((items) =>
+			items.map((item) => item.getBoundingClientRect()).map(({ left, right }) => ({ left, right }))
+		);
+	expect(boxes[0].left).toBeGreaterThanOrEqual(0);
+	expect(boxes.at(-1)!.right).toBeLessThanOrEqual(viewport.width);
+	for (let i = 1; i < boxes.length; i++) expect(boxes[i].left).toBeGreaterThanOrEqual(boxes[i - 1].right);
+}
+
 test.describe('좁은 화면', () => {
 	test.use({ viewport: { width: 900, height: 800 } });
 
 	test('Dock에 다 들어가지 않는 앱은 Launchpad에 모인다', async ({ page }) => {
 		await enterDesktop(page);
-		// (900 - 300) / 100 = 6개만 Dock에 표시
-		await expect(page.locator('.dock-left .dock-item')).toHaveCount(6);
+		// 900px 창에는 앱 8칸 (Launchpad·휴지통 칸은 따로): 고정한 16개 가운데 앞의 8개
+		await expect(page.locator('.dock .dock-item')).toHaveCount(10);
+		await expectDockFits(page);
 
 		await dockItem(page, 'launchpad').click();
 		const launchpad = page.locator('.launchpad-modal');
-		// 고정한 16개 가운데 들어가지 않은 뒤쪽 10개 (github부터, 프로젝트 앱 다섯 개 포함) + Launchpad에만 있는 'API 문서'
-		await expect(launchpad.locator('.dock-item')).toHaveCount(11);
+		// 들어가지 않은 뒤쪽 8개 (share부터, 프로젝트 앱 다섯 개 포함) + Launchpad에만 있는 'API 문서'
+		await expect(launchpad.locator('.dock-item')).toHaveCount(9);
 
-		// 뒤쪽 앱(github부터)이 Launchpad로 간다
-		await launchpad.getByRole('button', { name: 'github', exact: true }).click();
-		await expect(appWindow(page, 'github')).toBeVisible();
+		// Launchpad의 앱을 열면 Dock 끝에 나타나고, 그 칸만큼 고정 앱 하나가 Launchpad로 간다 (Launchpad 칸과 겹치지 않는다)
+		await launchpad.getByRole('button', { name: 'terminal', exact: true }).click();
+		await expect(appWindow(page, 'terminal')).toBeVisible();
+		await expect(dockItem(page, 'terminal')).toBeVisible();
+		await expect(dockItem(page, 'mail')).toHaveCount(0);
+		await expect(page.locator('.dock .dock-item')).toHaveCount(10);
+		await expectDockFits(page);
 	});
 });
