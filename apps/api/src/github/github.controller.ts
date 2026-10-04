@@ -16,7 +16,7 @@ import { GithubService } from './github.service.js';
 import { MAX_SHOWCASE } from './showcase.js';
 
 /**
- * GitHub 앱에 보여 줄 관리자의 GitHub 프로필·README·저장소.
+ * GitHub 앱에 보여 줄 관리자의 GitHub 프로필·README·저장소·활동.
  * 누구나 읽고, 관리자만 보일 저장소를 고른다 (시스템 설정 → GitHub).
  */
 @ApiTags('github')
@@ -29,6 +29,13 @@ export class GithubController {
 	@ApiBadGatewayResponse({ description: 'GitHub에 닿지 못했고 들고 있는 값도 없다' })
 	profile() {
 		return this.github.profile();
+	}
+
+	@Get('activity')
+	@ApiOkResponse({ description: '기여 달력(지난 1년)과 최근 공개 활동. 서버가 한동안 들고 있다가 새로 받는다' })
+	@ApiBadGatewayResponse({ description: 'GitHub에 닿지 못했고 들고 있는 값도 없다' })
+	activity() {
+		return this.github.activity();
 	}
 
 	@Get('candidates')
