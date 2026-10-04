@@ -11,7 +11,7 @@ import type { Request } from 'express';
 import { CoverService } from './cover.service.js';
 
 /**
- * AI 커버 데모 (Safari의 HYEONIVERSE 페이지). 제목으로 NanoBanana → Hugging Face 차례로 16:9 커버를 그린다.
+ * AI 커버 데모 (Safari의 HYEONIVERSE 페이지). 제목으로 Hugging Face FLUX가 16:9 커버를 그린다.
  * IP마다 하루 COVER_PER_IP_PER_DAY번, 사이트 전체 하루 COVER_TOTAL_PER_DAY번까지
  */
 @ApiTags('cover')
@@ -22,7 +22,7 @@ export class CoverController {
 	@Get()
 	@ApiOkResponse({
 		description: '이 IP가 오늘 더 그릴 수 있는 횟수와 상한',
-		schema: { example: { remaining: 3, perIp: 3, total: 10 } },
+		schema: { example: { remaining: 1, perIp: 1, total: 5 } },
 	})
 	status(@Req() request: Request) {
 		return this.service.status(request.ip ?? '');
@@ -36,13 +36,10 @@ export class CoverController {
 		schema: {
 			example: {
 				provider: 'huggingface',
-				attempts: [
-					{ provider: 'nanobanana', state: 'skip', reason: '막아 둠' },
-					{ provider: 'huggingface', state: 'ok' },
-				],
+				attempts: [{ provider: 'huggingface', state: 'ok' }],
 				image: '/9j/4AAQ…',
 				mime: 'image/jpeg',
-				remaining: 2,
+				remaining: 0,
 			},
 		},
 	})
