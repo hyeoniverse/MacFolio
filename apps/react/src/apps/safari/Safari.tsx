@@ -3,6 +3,7 @@ import AppWindow from '@/desktop/window/Window';
 import { PROJECTS, type Project } from '@/shared/profile';
 import ProjectPage, { Favicon } from '@/apps/safari/ProjectPage';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
+import { useOpenRequest } from '@/shared/lib/openRequest';
 import ShareIcon from '@/shared/ui/ShareIcon';
 import '@/apps/safari/Safari.css';
 import IconButton from '@/shared/ui/button/IconButton';
@@ -87,6 +88,13 @@ const Safari: React.FC = () => {
 		setTabs(tabs.includes(id) ? tabs.filter((tab) => tab !== START) : tabs.map((tab) => (tab === START ? id : tab)));
 		choose(id);
 	};
+
+	// Finder에서 프로젝트를 열면 그 탭으로 간다. 닫아 둔 탭이면 다시 연다 (shared/lib/openRequest.ts)
+	useOpenRequest('safari', (id) => {
+		if (!findProject(id)) return;
+		setTabs((current) => (current.includes(id) ? current : [...current.filter((tab) => tab !== START), id]));
+		choose(id);
+	});
 
 	const closeTab = (id: TabId) => {
 		const rest = tabs.filter((tab) => tab !== id);

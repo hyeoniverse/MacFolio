@@ -45,9 +45,11 @@ test.describe('모바일', () => {
 		await expect(page.locator('.music-player')).toHaveCount(0);
 
 		await expect(page.getByRole('navigation', { name: 'Dock' }).getByRole('button')).toHaveCount(4);
-		// 화면이 없는 앱(Finder, 사진, 휴지통)은 홈 화면에 두지 않는다
-		await expect(homeApp(page, 'Finder')).toHaveCount(0);
+		// 화면이 없는 앱(사진, 휴지통)은 홈 화면에 두지 않는다
 		await expect(homeApp(page, '휴지통')).toHaveCount(0);
+		// Finder는 iOS처럼 '파일'로 보인다
+		await expect(homeApp(page, 'Finder')).toHaveCount(0);
+		await expect(homeApp(page, '파일')).toBeVisible();
 		// 새싹 농장은 모바일 모드가 있어 휴대폰에서도 연다
 		await expect(homeApp(page, '새싹 농장')).toBeVisible();
 		// 터미널은 모바일에서 '단축어'로 보인다
