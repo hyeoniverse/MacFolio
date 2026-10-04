@@ -49,8 +49,8 @@ export interface ProjectPoint {
 	video?: string;
 	/** 갈래 여러 개 (예: 레이아웃 여섯 가지): 이름과 한 줄 설명. 그림이 없으면 갈래마다 움직이는 도식으로 그린다 */
 	variants?: { label: string; note: string }[];
-	/** 그림 대신 직접 만져 보는 데모 (슬라이드 갤러리, 음성 만들기, 파형 편집, 문서 변환, 번역, AI 요약) */
-	demo?: 'slides' | 'voice' | 'wave' | 'convert' | 'translate' | 'summary';
+	/** 그림 대신 직접 만져 보는 데모 (슬라이드 갤러리, 음성 만들기, 파형 편집, 문서 변환, 번역, AI 요약, AI 커버) */
+	demo?: 'slides' | 'voice' | 'wave' | 'convert' | 'translate' | 'summary' | 'cover';
 	/** 데모 아래나 글 옆에 붙일 실제 화면 여러 장 (.mp4는 화면에 보일 때만 도는 영상) */
 	shots?: { src: string; alt: string }[];
 	/** 카드에 붙일 아이콘 (Font Awesome 이름, 예: fa-lock) */
@@ -1007,6 +1007,7 @@ export const PROJECTS: Project[] = [
 					{
 						title: 'AI로 커버 그리기',
 						body: '커버 선택창의 AI 생성 탭에서 제목·태그·요약으로 만든 프롬프트 제안을 고르거나 직접 써서, 열 가지 스타일 가운데 하나로 그립니다. NanoBanana(Gemini)와 Hugging Face FLUX 가운데 기본 공급자를 고르고, 실패하면 대체 순서대로 넘어가며, 같은 원인으로 거듭 실패한 공급자는 잠시 꺼 둡니다. 만든 그림은 저장소에 올라가 바로 커버가 되고, 이전 커버는 이력에서 되돌립니다.',
+						demo: 'cover',
 					},
 					{
 						title: '방문자가 누른 번역은 남긴다',

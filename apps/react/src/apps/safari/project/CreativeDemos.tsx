@@ -1,5 +1,6 @@
 // HYEONIVERSE 페이지에서 직접 만져 보는 데모: 그 사이트의 관리자 기능(슬라이드 갤러리와 음성, TTS, 파형 편집,
-// PDF·PPTX 변환, 자동 번역, AI 요약)과 테마 프리셋을 같은 규칙으로 흉내 낸다. 소리는 내지 않는다
+// PDF·PPTX 변환, 자동 번역, AI 요약, AI 커버)과 테마 프리셋을 같은 규칙으로 흉내 낸다.
+// 음성 만들기·번역·요약·커버는 MacFolio API를 거쳐 실제 AI 서비스를 부른다 (하루 상한이 있다)
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { ProjectPoint, ThemeSwatch } from '@/shared/profile';
 import { scrollParent } from '@/apps/safari/project/scroll';
@@ -1045,46 +1046,131 @@ const Convert: React.FC = () => {
 	);
 };
 
-/** 번역 데모의 칸: HYEONIVERSE 작업물의 실제 한국어·영어 부제와 설명 */
+/** 실제 AI를 부르는 데모(번역, 요약, 커버)의 하루 남은 횟수 */
+type Quota = { remaining: number; perIp: number; total: number };
+
+/**
+ * 실제 AI를 부르는 데모가 함께 쓰는 서버 호출. 처음에 남은 횟수를 받아 두고, 보낼 때마다 고친다.
+ * 실패하면 화면에 그대로 보일 문장을 돌려준다 (서버가 쓴 이유가 있으면 그것을)
+ */
+const useLiveDemo = <T,>(path: string, what: string) => {
+	const api = env.apiUrl;
+	const [quota, setQuota] = useState<Quota | null>(null);
+	useEffect(() => {
+		if (!api) return;
+		const controller = new AbortController();
+		fetch(`${api}/${path}`, { signal: controller.signal })
+			.then((response) => (response.ok ? response.json() : null))
+			.then((data) => data && setQuota(data))
+			.catch(() => undefined);
+		return () => controller.abort();
+	}, [api, path]);
+
+	const send = useCallback(
+		async (body: object): Promise<{ data: T; error?: undefined } | { data?: undefined; error: string }> => {
+			if (!api) return { error: `이 화면에는 ${what} 서버가 연결되어 있지 않습니다.` };
+			try {
+				const response = await fetch(`${api}/${path}`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body),
+				});
+				const data = (await response.json().catch(() => ({}))) as T & {
+					remaining?: number;
+					message?: string | string[];
+				};
+				// 다 썼으면(429) 남은 횟수가 실려 오지 않을 수 있다
+				const remaining = typeof data.remaining === 'number' ? data.remaining : response.status === 429 ? 0 : null;
+				if (remaining !== null) setQuota((now) => (now ? { ...now, remaining } : now));
+				if (!response.ok) {
+					const reason = Array.isArray(data.message) ? data.message[0] : data.message;
+					return { error: reason ?? `${what}지 못했습니다.` };
+				}
+				return { data };
+			} catch {
+				return { error: '서버에 닿지 못했습니다. 잠시 뒤 다시 해 보세요.' };
+			}
+		},
+		[api, path, what]
+	);
+	return { quota, send };
+};
+
+/** 남은 횟수 칩: 받기 전에는 하루 상한을 */
+const QuotaChip: React.FC<{ quota: Quota | null; fallback: number }> = ({ quota, fallback }) => (
+	<span className="cd-chip">{quota ? `오늘 ${quota.remaining}번 남음` : `하루 ${fallback}번`}</span>
+);
+
+/** 번역 데모의 칸: HYEONIVERSE 작업물의 실제 한국어 부제와 설명. 고칠 수 있다 */
 const FIELDS = [
-	{
-		label: '부제',
-		ko: '디자인 시스템부터 관리자 CMS 까지 혼자 설계하고 운영하는 포트폴리오 사이트',
-		en: 'A portfolio site designed, built and operated solo, from the design system to the admin CMS',
-	},
+	{ label: '부제', ko: '디자인 시스템부터 관리자 CMS 까지 혼자 설계하고 운영하는 포트폴리오 사이트' },
 	{
 		label: '설명',
 		ko: '흩어져 있던 프로젝트와 글을 한 곳에서 보여 주고 계속 갱신하기 위해 만든 개인 포트폴리오입니다.',
-		en: 'A personal portfolio that gathers scattered projects and writing in one place and keeps them current.',
 	},
-	{
-		label: '갤러리 대본 4',
-		ko: '방문자가 보는 사이트와, 그 사이트를 운영하는 관리자 CMS를 함께 만들었습니다.',
-		en: 'I built the site visitors see together with the admin CMS that runs it.',
-	},
+	{ label: '갤러리 대본 4', ko: '방문자가 보는 사이트와, 그 사이트를 운영하는 관리자 CMS를 함께 만들었습니다.' },
 ];
+/** 세 칸을 합친 글자 수 상한 (서버도 같은 값으로 막는다) */
+const MAX_TRANSLATE_CHARS = 200;
+type TranslateProvider = 'deepl' | 'google';
+const TRANSLATE_NAME: Record<TranslateProvider, string> = { deepl: 'DeepL', google: 'Google' };
 
-/** 편집 언어를 EN으로 바꾸면 비어 있는 칸을 번역해 채운다. 다시 번역은 전체를 새로, 비우기로 처음 상태로 */
+/**
+ * 번역: 한국어 칸을 고치고 EN을 누르면, MacFolio API가 DeepL(실패하면 Google)로 세 칸을 한 번에 실제로 번역한다.
+ * 비용 때문에 세 칸 합쳐 200자까지, IP마다 하루 3번(사이트 전체 50번). 상태가 바뀌어도 칸 크기는 그대로다
+ */
 const Translate: React.FC = () => {
 	const [lang, setLang] = useState<'ko' | 'en'>('ko');
-	const [filled, setFilled] = useState(false);
+	const [ko, setKo] = useState(() => FIELDS.map((field) => field.ko));
+	const [made, setMade] = useState<{ texts: string[]; provider: TranslateProvider; note?: string } | null>(null);
 	const [busy, setBusy] = useState(false);
+	const [message, setMessage] = useState<string | null>(null);
 	const [run, setRun] = useState(0);
-	const timer = useRef(0);
-	useEffect(() => () => window.clearTimeout(timer.current), []);
-	const translate = () => {
+	const { quota, send } = useLiveDemo<{
+		provider: TranslateProvider;
+		attempts?: { provider: TranslateProvider; state: string; reason?: string }[];
+		texts: string[];
+	}>('translate', '번역하');
+	const used = [...ko.join('')].length;
+	const left = quota?.remaining;
+
+	const translate = async () => {
+		setLang('en');
+		if (ko.some((text) => !text.trim())) {
+			setMessage('비어 있는 한국어 칸이 있습니다.');
+			return;
+		}
 		setBusy(true);
-		window.clearTimeout(timer.current);
-		timer.current = window.setTimeout(() => {
-			setBusy(false);
-			setFilled(true);
-			setRun((n) => n + 1);
-		}, 1200);
+		setMessage(null);
+		const { data, error } = await send({ texts: ko, from: 'ko', to: 'en' });
+		setBusy(false);
+		if (!data || !Array.isArray(data.texts)) {
+			setMessage(error ?? '번역하지 못했습니다.');
+			return;
+		}
+		// 앞 공급자가 실패해 넘어왔으면 그 이유를 함께 보여 준다
+		const failed = data.attempts?.find((attempt) => attempt.state === 'fail');
+		setMade({
+			texts: data.texts,
+			provider: data.provider,
+			note: failed ? `${TRANSLATE_NAME[failed.provider]} 실패(${failed.reason ?? ''}) → ` : undefined,
+		});
+		setRun((n) => n + 1);
 	};
 	const switchTo = (value: 'ko' | 'en') => {
 		setLang(value);
-		if (value === 'en' && !filled && !busy) translate();
+		if (value === 'en' && !made && !busy && !message) void translate();
 	};
+
+	const status = message
+		? message
+		: lang === 'ko'
+			? '한국어 칸을 고치고 EN을 눌러 보세요. 비어 있는 영어 칸을 번역해 채웁니다'
+			: busy
+				? 'DeepL로 번역하는 중'
+				: made
+					? `${made.note ?? ''}${TRANSLATE_NAME[made.provider]}로 번역했습니다`
+					: '다시 번역을 눌러 보세요';
 
 	return (
 		<div className="cd-translate">
@@ -1096,40 +1182,50 @@ const Translate: React.FC = () => {
 						</button>
 					))}
 				</div>
+				<button
+					type="button"
+					className="cd-ghost"
+					onClick={() => void translate()}
+					disabled={busy || !used || used > MAX_TRANSLATE_CHARS || left === 0}
+				>
+					다시 번역
+				</button>
 				<span className="cd-chip">
-					<i className="fa-solid fa-language" /> DeepL
+					<i className="fa-solid fa-language" /> {made ? TRANSLATE_NAME[made.provider] : 'DeepL → Google'}
 				</span>
-				{lang === 'en' && (
-					<>
-						<button type="button" className="cd-ghost" onClick={translate} disabled={busy}>
-							다시 번역
-						</button>
-						<button
-							type="button"
-							className="cd-ghost"
-							disabled={busy || !filled}
-							onClick={() => {
-								setFilled(false);
-								setLang('ko');
-							}}
-						>
-							EN 비우기
-						</button>
-					</>
-				)}
+				<QuotaChip quota={quota} fallback={3} />
 			</div>
+			<p className="cd-live-info">
+				<i className="fa-solid fa-circle-info" />
+				실제로 번역합니다. 세 칸 합쳐 {MAX_TRANSLATE_CHARS}자까지, 하루 {quota?.perIp ?? 3}번(사이트 전체{' '}
+				{quota?.total ?? 50}번) 번역할 수 있습니다.
+			</p>
 			<dl className="cd-fields">
 				{FIELDS.map((field, i) => (
 					<div key={field.label}>
 						<dt>{field.label}</dt>
+						{/* 두 줄 자리를 늘 잡아 두고 내용만 바꾼다 (상태에 따라 아래가 밀리지 않게) */}
 						<dd data-busy={(lang === 'en' && busy) || undefined}>
 							{lang === 'ko' ? (
-								field.ko
+								<textarea
+									aria-label={`${field.label} (한국어)`}
+									value={ko[i]}
+									rows={2}
+									disabled={busy}
+									onChange={(event) => {
+										const next = [...ko];
+										next[i] = event.target.value;
+										setKo(next);
+										// 원문이 바뀌면 옛 번역은 맞지 않으므로 비운다
+										setMade(null);
+										setMessage(null);
+									}}
+								/>
 							) : busy ? (
 								<span className="cd-shimmer" />
-							) : filled ? (
+							) : made ? (
 								<span className="cd-typed" key={run} style={{ '--i': i } as React.CSSProperties}>
-									{field.en}
+									{made.texts[i]}
 								</span>
 							) : (
 								<em>비어 있음</em>
@@ -1138,29 +1234,50 @@ const Translate: React.FC = () => {
 					</div>
 				))}
 			</dl>
-			<p className="cd-hint" role="status">
-				{lang === 'ko'
-					? 'EN을 눌러 보세요. 비어 있는 영어 칸을 번역해 채웁니다'
-					: busy
-						? 'DeepL로 번역하는 중'
-						: '번역한 값은 그대로 고쳐 쓸 수 있습니다'}
-			</p>
+			<div className="cd-live-foot">
+				<p className="cd-hint" role="status" data-error={(message && !busy) || undefined}>
+					{status}
+				</p>
+				<small data-over={used > MAX_TRANSLATE_CHARS || undefined}>
+					{used}/{MAX_TRANSLATE_CHARS}
+				</small>
+			</div>
 		</div>
 	);
 };
 
-const SUMMARY = {
-	ko: '흩어져 있던 프로젝트와 글을 한 곳에서 보여 주고 계속 갱신하기 위해 만든 개인 포트폴리오입니다. 공개 페이지와 디자인 시스템, 글 편집기와 관리자 CMS까지 한 사람이 설계하고 운영합니다.',
-	en: 'A personal portfolio that gathers scattered projects and writing in one place and keeps them current. Public pages, the design system, the editor and the admin CMS are all designed and operated by one person.',
-};
+/** 요약할 글: HYEONIVERSE 작업물의 실제 설명 (고치거나 붙여 넣을 수 있다) */
+const SUMMARY_SOURCE =
+	'작업물과 글을 보여 주는 공개 화면부터, 그 글을 직접 쓰고 고치는 관리자 화면까지 한 저장소에 담은 개인 포트폴리오입니다. 흩어져 있던 프로젝트와 글을 한 곳에서 보여 주고 계속 갱신하기 위해 만들었습니다. 공개 페이지와 디자인 시스템, 글 편집기와 관리자 CMS까지 한 사람이 설계하고 운영합니다. 글과 작업물은 한국어와 영어 칸을 따로 두고, 한쪽만 써도 나머지는 번역이 채웁니다.';
+/** 한 번에 요약하는 글자 수 (서버도 같은 값으로 막는다) */
+const MAX_SUMMARY_CHARS = 800;
 
-/** AI 요약 상자: 발행하면 만드는 중이 보였다가 두 언어 요약이 붙는다. 머리를 누르면 접고 펼친다 */
+/**
+ * AI 요약: 글을 고치거나 붙여 넣고 발행하면, MacFolio API가 Gemini로 한국어·영어 요약을 실제로 만든다.
+ * 머리를 누르면 접고 펼친다. 비용 때문에 800자까지, IP마다 하루 3번(사이트 전체 50번)
+ */
 const Summary: React.FC = () => {
+	const [text, setText] = useState(SUMMARY_SOURCE);
 	const [lang, setLang] = useState<'ko' | 'en'>('ko');
 	const [open, setOpen] = useState(true);
 	const [busy, setBusy] = useState(false);
-	const timer = useRef(0);
-	useEffect(() => () => window.clearTimeout(timer.current), []);
+	const [made, setMade] = useState<{ ko: string; en: string } | null>(null);
+	const [message, setMessage] = useState<string | null>(null);
+	const { quota, send } = useLiveDemo<{ ko: string; en: string }>('summary', '요약하');
+	const left = quota?.remaining;
+
+	const publish = async () => {
+		setBusy(true);
+		setOpen(true);
+		setMessage(null);
+		const { data, error } = await send({ text });
+		setBusy(false);
+		if (!data?.ko || !data.en) {
+			setMessage(error ?? '요약을 만들지 못했습니다.');
+			return;
+		}
+		setMade({ ko: data.ko, en: data.en });
+	};
 
 	return (
 		<div className="cd-summary">
@@ -1168,12 +1285,8 @@ const Summary: React.FC = () => {
 				<button
 					type="button"
 					className="cd-primary"
-					disabled={busy}
-					onClick={() => {
-						setBusy(true);
-						setOpen(true);
-						timer.current = window.setTimeout(() => setBusy(false), 1600);
-					}}
+					disabled={busy || !text.trim() || left === 0}
+					onClick={() => void publish()}
 				>
 					<i className="fa-solid fa-paper-plane" /> 발행
 				</button>
@@ -1185,7 +1298,26 @@ const Summary: React.FC = () => {
 						</button>
 					))}
 				</div>
+				<QuotaChip quota={quota} fallback={3} />
 			</div>
+			<p className="cd-live-info">
+				<i className="fa-solid fa-circle-info" />
+				실제로 요약합니다. 글을 고치거나 붙여 넣고 발행해 보세요. {MAX_SUMMARY_CHARS}자까지, 하루 {quota?.perIp ?? 3}
+				번(사이트 전체 {quota?.total ?? 50}번) 만들 수 있습니다.
+			</p>
+			<label className="cd-voice-input">
+				<span>본문</span>
+				<textarea
+					value={text}
+					maxLength={MAX_SUMMARY_CHARS}
+					rows={4}
+					disabled={busy}
+					onChange={(event) => setText(event.target.value)}
+				/>
+				<small>
+					{[...text].length}/{MAX_SUMMARY_CHARS}
+				</small>
+			</label>
 			<div className="cd-summary-box" data-open={open || undefined}>
 				<button type="button" className="cd-summary-head" aria-expanded={open} onClick={() => setOpen(!open)}>
 					<span>
@@ -1195,21 +1327,206 @@ const Summary: React.FC = () => {
 				</button>
 				<div className="cd-summary-body">
 					<div>
-						{busy ? (
-							<p className="cd-dots">
-								<i />
-								<i />
-								<i /> 요약을 만드는 중
-							</p>
-						) : (
-							<p key={lang} className="cd-typed">
-								{SUMMARY[lang]}
-							</p>
-						)}
+						{/* 세 줄 자리를 늘 잡아 두고 내용만 바꾼다 */}
+						<div className="cd-summary-text" data-empty={(!made && !busy) || undefined}>
+							{busy ? (
+								<p className="cd-dots">
+									<i />
+									<i />
+									<i /> 요약을 만드는 중
+								</p>
+							) : made ? (
+								<p key={`${lang}-${made.ko}`} className="cd-typed">
+									{made[lang]}
+								</p>
+							) : (
+								<p>발행하면 여기에 한국어·영어 요약이 붙습니다</p>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>
-			<p className="cd-hint">예시: HYEONIVERSE 작업물의 설명으로 만든 요약</p>
+			<div className="cd-live-foot">
+				<p className="cd-hint" role="status" data-error={(message && !busy) || undefined}>
+					{message ?? (made ? 'Gemini로 만든 요약입니다. KO·EN으로 바꿔 보세요' : '예시: HYEONIVERSE 작업물의 설명')}
+				</p>
+			</div>
+		</div>
+	);
+};
+
+/** 커버 데모의 스타일: HYEONIVERSE 커버 선택창의 열 가지 가운데 넷 */
+const COVER_STYLES = [
+	{ key: 'abstract', label: 'Abstract' },
+	{ key: 'minimal', label: 'Minimal' },
+	{ key: 'watercolor', label: 'Watercolor' },
+	{ key: '3d-render', label: '3D' },
+] as const;
+type CoverProvider = 'nanobanana' | 'huggingface';
+const COVER_PROVIDERS: CoverProvider[] = ['nanobanana', 'huggingface'];
+const COVER_NAME: Record<CoverProvider, string> = { nanobanana: 'NanoBanana', huggingface: 'Hugging Face' };
+/** 제목 글자 수 (서버도 같은 값으로 막는다) */
+const MAX_COVER_CHARS = 60;
+
+/** 커버가 없을 때의 바탕 (HYEONIVERSE처럼 제목으로 고른 그라데이션: 같은 제목은 늘 같은 색) */
+const seededGradient = (seed: string) => {
+	let hash = 0;
+	for (const char of seed) hash = (Math.imul(hash, 31) + char.charCodeAt(0)) | 0;
+	const hue = Math.abs(hash) % 360;
+	return `linear-gradient(135deg, oklch(62% 0.14 ${hue}), oklch(38% 0.1 ${(hue + 70) % 360}))`;
+};
+
+/**
+ * AI 커버: 제목을 쓰고 그리면, MacFolio API가 NanoBanana(실패하면 Hugging Face FLUX)로 16:9 커버를 실제로 그린다.
+ * 공급자를 눌러 막아 두면 대체 순서를 볼 수 있다. 그림은 비싸서 IP마다 하루 3번, 사이트 전체 10번
+ */
+const Cover: React.FC = () => {
+	const [title, setTitle] = useState('혼자 설계하고 운영하는 포트폴리오');
+	const [style, setStyle] = useState<(typeof COVER_STYLES)[number]['key']>('abstract');
+	const [blocked, setBlocked] = useState<CoverProvider[]>([]);
+	const [states, setStates] = useState<Record<CoverProvider, ProviderState>>({
+		nanobanana: 'idle',
+		huggingface: 'idle',
+	});
+	const [reasons, setReasons] = useState<Partial<Record<CoverProvider, string>>>({});
+	const [busy, setBusy] = useState(false);
+	const [made, setMade] = useState<{ src: string; provider: CoverProvider; title: string } | null>(null);
+	const [message, setMessage] = useState<string | null>(null);
+	const { quota, send } = useLiveDemo<{
+		provider: CoverProvider;
+		attempts?: { provider: CoverProvider; state: 'ok' | 'fail' | 'skip'; reason?: string }[];
+		image: string;
+		mime: string;
+	}>('cover', '그리');
+	const left = quota?.remaining;
+
+	const draw = async () => {
+		setBusy(true);
+		setMessage(null);
+		setReasons({});
+		const first = COVER_PROVIDERS.find((provider) => !blocked.includes(provider));
+		setStates({
+			nanobanana: blocked.includes('nanobanana') ? 'skip' : first === 'nanobanana' ? 'trying' : 'idle',
+			huggingface: blocked.includes('huggingface') ? 'skip' : first === 'huggingface' ? 'trying' : 'idle',
+		});
+		const { data, error } = await send({ title, style, skip: blocked });
+		setBusy(false);
+		const next: Record<CoverProvider, ProviderState> = { nanobanana: 'idle', huggingface: 'idle' };
+		const why: Partial<Record<CoverProvider, string>> = {};
+		for (const attempt of data?.attempts ?? []) {
+			next[attempt.provider] = attempt.state;
+			if (attempt.reason) why[attempt.provider] = attempt.reason;
+		}
+		setStates(next);
+		setReasons(why);
+		if (!data?.image) {
+			setMessage(error ?? '커버를 그리지 못했습니다.');
+			return;
+		}
+		setMade({ src: `data:${data.mime || 'image/jpeg'};base64,${data.image}`, provider: data.provider, title });
+	};
+
+	const status = message
+		? message
+		: busy
+			? '그리는 중 (1분 가까이 걸릴 수 있습니다)'
+			: made
+				? `${COVER_NAME[made.provider]}로 그렸습니다${made.provider !== 'nanobanana' && !blocked.includes('nanobanana') ? ' (앞 공급자가 실패해 넘어감)' : ''}`
+				: '제목을 고치고 그려 보세요';
+
+	return (
+		<div className="cd-cover">
+			<p className="cd-live-info">
+				<i className="fa-solid fa-circle-info" />
+				실제로 그립니다. 그림은 비싸서 하루 {quota?.perIp ?? 3}번(사이트 전체 {quota?.total ?? 10}번)만 그릴 수
+				있습니다. 공급자를 눌러 막아 두면, 실패했을 때 다음 공급자로 넘어가는 대체 순서를 볼 수 있습니다.
+			</p>
+			<label className="cd-voice-input">
+				<span>제목</span>
+				<input
+					value={title}
+					maxLength={MAX_COVER_CHARS}
+					disabled={busy}
+					onChange={(event) => setTitle(event.target.value)}
+				/>
+				<small>
+					{[...title].length}/{MAX_COVER_CHARS}
+				</small>
+			</label>
+			<div className="cd-translate-head">
+				<div className="cd-seg" role="group" aria-label="스타일">
+					{COVER_STYLES.map((option) => (
+						<button
+							key={option.key}
+							type="button"
+							aria-pressed={style === option.key}
+							disabled={busy}
+							onClick={() => setStyle(option.key)}
+						>
+							{option.label}
+						</button>
+					))}
+				</div>
+			</div>
+			{/* 16:9 자리를 늘 잡아 두고 그림만 바꾼다. 그리기 전에는 제목으로 고른 그라데이션 (HYEONIVERSE의 빈 커버) */}
+			<figure
+				className="cd-cover-frame"
+				data-busy={busy || undefined}
+				style={{ backgroundImage: seededGradient(made?.title ?? title) }}
+			>
+				{made ? (
+					<img src={made.src} alt={`"${made.title}" 제목으로 그린 커버`} />
+				) : (
+					<figcaption>{title.trim() || '제목'}</figcaption>
+				)}
+				{busy && <span className="cd-shimmer" aria-hidden />}
+			</figure>
+			<ol className="cd-voice-chain" data-count={2} aria-label="공급자 차례 (눌러서 막아 보기)">
+				{COVER_PROVIDERS.map((provider) => (
+					<li key={provider}>
+						<button
+							type="button"
+							data-state={states[provider]}
+							data-blocked={blocked.includes(provider) || undefined}
+							disabled={busy}
+							aria-pressed={blocked.includes(provider)}
+							title={reasons[provider]}
+							onClick={() =>
+								setBlocked((now) =>
+									now.includes(provider) ? now.filter((name) => name !== provider) : [...now, provider]
+								)
+							}
+						>
+							<strong>{COVER_NAME[provider]}</strong>
+							<small>
+								{states[provider] === 'trying'
+									? '그리는 중'
+									: states[provider] === 'ok'
+										? '완료'
+										: states[provider] === 'fail'
+											? `실패 · ${reasons[provider] ?? ''}`
+											: states[provider] === 'skip' || blocked.includes(provider)
+												? '막아 둠'
+												: '대기'}
+							</small>
+						</button>
+					</li>
+				))}
+			</ol>
+			<div className="cd-voice-foot">
+				<button
+					type="button"
+					className="cd-primary"
+					onClick={() => void draw()}
+					disabled={busy || !title.trim() || left === 0 || blocked.length === COVER_PROVIDERS.length}
+				>
+					<i className="fa-solid fa-wand-magic-sparkles" /> 커버 그리기
+				</button>
+				<p role="status" title={status}>
+					{status}
+				</p>
+				<QuotaChip quota={quota} fallback={3} />
+			</div>
 		</div>
 	);
 };
@@ -1221,6 +1538,7 @@ export const Demo: React.FC<{ kind: NonNullable<ProjectPoint['demo']> }> = ({ ki
 	if (kind === 'wave') return <Wave />;
 	if (kind === 'convert') return <Convert />;
 	if (kind === 'translate') return <Translate />;
+	if (kind === 'cover') return <Cover />;
 	return <Summary />;
 };
 

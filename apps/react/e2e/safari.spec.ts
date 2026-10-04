@@ -1,4 +1,5 @@
 import { test, expect, enterDesktop, appWindow } from './fixtures';
+import { FAKE_API, fakeApi } from './fakeApi';
 
 test.describe('Safari', () => {
 	test('프로젝트마다 탭이 있고, 탭을 고르면 그 프로젝트 소개와 주소가 바뀐다', async ({ page }) => {
@@ -88,6 +89,35 @@ test.describe('Safari', () => {
 	test('프로젝트마다 페이지 짜임이 다르다: 신문 1면, 칸반 보드, 명함, 게임 화면, 차례와 장, 터미널', async ({
 		page,
 	}) => {
+		// 번역 데모는 API를 거쳐 실제로 번역한다. 바깥 서비스를 부르지 않게 가짜 번역을 돌려준다
+		await fakeApi(page);
+		const translated: unknown[] = [];
+		await page.route(`${FAKE_API}/translate`, (route) => {
+			const request = route.request();
+			const headers = {
+				'Access-Control-Allow-Origin': 'http://localhost:4173',
+				'Access-Control-Allow-Headers': 'Content-Type',
+			};
+			if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
+			if (request.method() === 'GET') return route.fulfill({ headers, json: { remaining: 3, perIp: 3, total: 50 } });
+			translated.push(request.postDataJSON());
+			return route.fulfill({
+				headers,
+				json: {
+					provider: 'google',
+					attempts: [
+						{ provider: 'deepl', state: 'fail', reason: '사용 한도에 닿았습니다' },
+						{ provider: 'google', state: 'ok' },
+					],
+					texts: [
+						'A portfolio site designed, built and operated solo',
+						'A personal portfolio that gathers projects and writing in one place.',
+						'I built the site visitors see together with the admin CMS that runs it.',
+					],
+					remaining: 2,
+				},
+			});
+		});
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
 		const panel = safari.getByRole('tabpanel');
@@ -164,10 +194,26 @@ test.describe('Safari', () => {
 		await expect(slides.locator('.cd-ask')).toHaveCount(0);
 		await slides.getByRole('button', { name: '2장으로' }).click();
 		await expect(slides.locator('.cd-slides-source')).toContainText('Fish TTS 음성 파일 · 발표 2쪽');
-		// 번역: EN으로 바꾸면 비어 있던 영어 칸이 채워진다
+		// 번역: 한국어 칸을 고치고 EN으로 바꾸면, 세 칸을 서버로 보내 비어 있던 영어 칸을 채운다. 대신 번역한 공급자와 남은 횟수
 		const translate = panel.locator('.cd-translate');
+		await translate.getByRole('textbox', { name: '부제 (한국어)' }).fill('혼자 설계하고 운영하는 포트폴리오 사이트');
 		await translate.getByRole('button', { name: 'EN' }).click();
 		await expect(translate).toContainText('A portfolio site designed');
+		await expect(translate.getByRole('status')).toContainText(
+			'DeepL 실패(사용 한도에 닿았습니다) → Google로 번역했습니다'
+		);
+		await expect(translate).toContainText('오늘 2번 남음');
+		expect(translated).toEqual([
+			{
+				texts: [
+					'혼자 설계하고 운영하는 포트폴리오 사이트',
+					expect.stringContaining('개인 포트폴리오'),
+					expect.stringContaining('관리자 CMS'),
+				],
+				from: 'ko',
+				to: 'en',
+			},
+		]);
 		// 파형: 나누면 클립이 둘이 되고, 되돌리면 하나로 돌아온다
 		const wave = panel.getByLabel('녹음 파형 편집기', { exact: true });
 		await wave.locator('.cd-wave-track').click({ position: { x: 120, y: 40 } });

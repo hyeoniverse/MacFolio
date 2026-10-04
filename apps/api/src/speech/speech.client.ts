@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
+import { ProviderFailure, refuse } from '../common/demo.js';
 import type { SpeechLang, SpeechProvider } from './rules.js';
+
+export { ProviderFailure } from '../common/demo.js';
 
 /**
  * 공급자마다 MP3를 받아 온다. 테스트에서는 이 클래스를 가짜로 바꿔 바깥에 요청하지 않는다.
@@ -16,16 +19,6 @@ const GOOGLE_VOICE: Record<SpeechLang, [string, string]> = {
 };
 const EDGE_VOICE: Record<SpeechLang, string> = { ko: 'ko-KR-SunHiNeural', en: 'en-US-AvaNeural' };
 
-/** 공급자가 거절한 이유 (화면에 그대로 보인다: 키·주소는 담지 않는다) */
-export class ProviderFailure extends Error {}
-
-const refuse = async (response: Response) => {
-	if (response.status === 401 || response.status === 403) return new ProviderFailure('키가 거절되었습니다');
-	if (response.status === 402) return new ProviderFailure('사용 한도에 닿았습니다');
-	if (response.status === 429) return new ProviderFailure('요청이 너무 많습니다');
-	return new ProviderFailure(`응답 ${response.status}`);
-};
-
 @Injectable()
 export class SpeechClient {
 	async fish(key: string, text: string, lang: SpeechLang): Promise<Buffer> {
@@ -35,7 +28,7 @@ export class SpeechClient {
 			body: JSON.stringify({ text, format: 'mp3', mp3_bitrate: 128, reference_id: FISH_VOICE[lang] }),
 			signal: AbortSignal.timeout(20_000),
 		});
-		if (!response.ok) throw await refuse(response);
+		if (!response.ok) throw refuse(response);
 		return Buffer.from(await response.arrayBuffer());
 	}
 
@@ -51,7 +44,7 @@ export class SpeechClient {
 			}),
 			signal: AbortSignal.timeout(20_000),
 		});
-		if (!response.ok) throw await refuse(response);
+		if (!response.ok) throw refuse(response);
 		const json = (await response.json().catch(() => null)) as { audioContent?: string } | null;
 		if (!json?.audioContent) throw new ProviderFailure('빈 응답');
 		return Buffer.from(json.audioContent, 'base64');

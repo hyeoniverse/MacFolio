@@ -4,7 +4,8 @@
 .cd-wave,
 .cd-convert,
 .cd-translate,
-.cd-summary {
+.cd-summary,
+.cd-cover {
 	display: grid;
 	gap: 12px;
 	padding: 16px;
@@ -21,6 +22,7 @@
 .cd-convert button,
 .cd-translate button,
 .cd-summary button,
+.cd-cover button,
 .cd-themes button {
 	font: inherit;
 	color: inherit;
@@ -318,7 +320,8 @@
 	gap: 8px 12px;
 }
 
-.cd-voice-head p {
+.cd-voice-head p,
+.cd-live-info {
 	flex: 1;
 	min-width: 16em;
 	margin: 0;
@@ -327,7 +330,8 @@
 	line-height: 1.5;
 }
 
-.cd-voice-head i {
+.cd-voice-head i,
+.cd-live-info i {
 	margin-right: 4px;
 	color: var(--sp-accent);
 }
@@ -352,7 +356,8 @@
 	font-variant-numeric: tabular-nums;
 }
 
-.cd-voice-input textarea {
+.cd-voice-input textarea,
+.cd-voice-input input {
 	width: 100%;
 	padding: 0;
 	border: none;
@@ -364,7 +369,8 @@
 	resize: none;
 }
 
-.cd-voice-input textarea:focus {
+.cd-voice-input textarea:focus,
+.cd-voice-input input:focus {
 	outline: none;
 }
 
@@ -525,6 +531,10 @@
 	margin: 0;
 	padding: 0;
 	list-style: none;
+}
+
+.cd-voice-chain[data-count='2'] {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .cd-voice-chain li {
@@ -768,6 +778,11 @@
 	gap: 8px;
 }
 
+/* 남은 횟수는 머리 오른쪽 끝에 (앞 칩의 글이 바뀌어도 자리를 지킨다) */
+.cd-translate-head > .cd-chip:last-child {
+	margin-left: auto;
+}
+
 .cd-file {
 	display: inline-flex;
 	flex: 1;
@@ -902,9 +917,59 @@
 }
 
 .cd-fields dd {
-	min-height: 1.5em;
+	/* 두 줄 자리를 늘 잡아 둔다: 고치는 칸, 번역 중, 번역한 글이 같은 높이 */
+	min-height: 3em;
 	margin: 0;
 	font-size: 14px;
+	line-height: 1.5;
+}
+
+.cd-fields textarea {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	resize: none;
+}
+
+.cd-fields textarea:focus {
+	outline: none;
+}
+
+.cd-fields > div:focus-within {
+	border-color: var(--sp-accent);
+}
+
+/* 실제 AI 데모의 안내 한 줄과, 상태·글자 수 줄 */
+.cd-live-info {
+	margin: 0;
+}
+
+.cd-live-foot {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.cd-live-foot p {
+	flex: 1;
+	/* 실패 이유가 길어도 두 줄 자리 안에서 (아래가 밀리지 않게) */
+	min-height: 3em;
+	line-height: 1.5;
+}
+
+.cd-live-foot small {
+	color: var(--cr-muted);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+.cd-live-foot small[data-over],
+.cd-hint[data-error] {
+	color: #d64545;
 }
 
 .cd-fields em {
@@ -995,6 +1060,53 @@
 	color: var(--cr-muted);
 	font-size: 14px;
 	line-height: 1.7;
+}
+
+/* 요약 자리: 세 줄을 늘 잡아 두고, 만들기 전 안내는 작게 */
+.cd-summary-text {
+	min-height: calc(14px * 1.7 * 3 + 16px);
+}
+
+.cd-summary-text[data-empty] p {
+	font-size: 12px;
+}
+
+/* AI 커버: 16:9 자리를 늘 잡아 두고, 그리기 전에는 제목으로 고른 그라데이션 위에 제목을 얹는다 */
+.cd-cover-frame {
+	display: grid;
+	position: relative;
+	place-items: center;
+	overflow: hidden;
+	aspect-ratio: 16 / 9;
+	margin: 0;
+	border-radius: 8px;
+	background-size: cover;
+}
+
+.cd-cover-frame img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.cd-cover-frame figcaption {
+	max-width: 80%;
+	color: #ffffff;
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.3;
+	text-align: center;
+	text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+	overflow-wrap: anywhere;
+}
+
+.cd-cover-frame .cd-shimmer {
+	position: absolute;
+	inset: 0;
+	height: auto;
+	border-radius: 0;
 }
 
 .cd-dots i {

@@ -18,6 +18,10 @@ describe('loadConfig', () => {
 			stockPhotos: { unsplashAccessKey: undefined, pexelsApiKey: undefined },
 			// 음성 만들기: 키가 없으면 Edge만, 하루 IP마다 3번·전체 50번
 			speech: { fishAudioApiKey: undefined, googleTtsApiKey: undefined, perIpPerDay: 3, totalPerDay: 50 },
+			// 번역·요약·커버: 키가 없으면 그 공급자만 실패, 하루 IP마다 3번·전체 50번 (커버는 10번)
+			translate: { deeplApiKey: undefined, googleTranslateApiKey: undefined, perIpPerDay: 3, totalPerDay: 50 },
+			summary: { geminiApiKey: undefined, geminiModel: 'gemini-2.0-flash', perIpPerDay: 3, totalPerDay: 50 },
+			cover: { nanobananaApiKey: undefined, huggingfaceApiKey: undefined, perIpPerDay: 3, totalPerDay: 10 },
 			auth: {
 				githubClientId: undefined,
 				githubClientSecret: undefined,

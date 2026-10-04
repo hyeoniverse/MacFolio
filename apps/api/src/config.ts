@@ -41,6 +41,28 @@ export interface AppConfig {
 		perIpPerDay: number;
 		totalPerDay: number;
 	};
+	/** 번역 데모 (DeepL → Google). 키 이름은 HYEONIVERSE와 같다. 하루 상한은 음성과 같은 방식 */
+	translate: {
+		deeplApiKey?: string;
+		googleTranslateApiKey?: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
+	/** AI 요약 데모 (Gemini가 한국어·영어 요약을 함께 만든다) */
+	summary: {
+		geminiApiKey?: string;
+		/** HYEONIVERSE와 같은 모델이 기본. 모델이 내려가면 GEMINI_MODEL로 바꾼다 */
+		geminiModel: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
+	/** AI 커버 데모 (NanoBanana → Hugging Face FLUX). 그림은 비싸서 사이트 전체 상한을 낮게 둔다 */
+	cover: {
+		nanobananaApiKey?: string;
+		huggingfaceApiKey?: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -101,6 +123,24 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			googleTtsApiKey: env.GOOGLE_TTS_API_KEY || undefined,
 			perIpPerDay: Number(env.SPEECH_PER_IP_PER_DAY ?? 3) || 3,
 			totalPerDay: Number(env.SPEECH_TOTAL_PER_DAY ?? 50) || 50,
+		},
+		translate: {
+			deeplApiKey: env.DEEPL_API_KEY || undefined,
+			googleTranslateApiKey: env.GOOGLE_TRANSLATE_API_KEY || undefined,
+			perIpPerDay: Number(env.TRANSLATE_PER_IP_PER_DAY ?? 3) || 3,
+			totalPerDay: Number(env.TRANSLATE_TOTAL_PER_DAY ?? 50) || 50,
+		},
+		summary: {
+			geminiApiKey: env.GEMINI_API_KEY || undefined,
+			geminiModel: env.GEMINI_MODEL || 'gemini-2.0-flash',
+			perIpPerDay: Number(env.SUMMARY_PER_IP_PER_DAY ?? 3) || 3,
+			totalPerDay: Number(env.SUMMARY_TOTAL_PER_DAY ?? 50) || 50,
+		},
+		cover: {
+			nanobananaApiKey: env.NANOBANANA_API_KEY || undefined,
+			huggingfaceApiKey: env.HUGGINGFACE_API_KEY || undefined,
+			perIpPerDay: Number(env.COVER_PER_IP_PER_DAY ?? 3) || 3,
+			totalPerDay: Number(env.COVER_TOTAL_PER_DAY ?? 10) || 10,
 		},
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
