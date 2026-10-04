@@ -2,7 +2,7 @@
 title: 프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기
 date: 2026-10-03
 category: 개발기/MacFolio
-summary: 새싹 농장만 앱 창에서 바로 해 볼 수 있었다. HYEONIVERSE, NewPick, WTD, QRU도 배포한 사이트를 창 안에 띄우는 앱으로 만들었다. 다섯 앱이 한 컴포넌트를 쓰고, 앱 목록은 프로젝트 목록에서 만들며, Dock이 넘치지 않게 Launchpad에 두되 실행 중에는 Dock에 나타나게 했다.
+summary: 새싹 농장만 앱 창에서 바로 해 볼 수 있었다. HYEONIVERSE, NewPick, WTD, QRU도 배포한 사이트를 창 안에 띄우는 앱으로 만들었다. 다섯 앱이 한 컴포넌트를 쓰고, 앱 목록은 프로젝트 목록에서 만들며, 모두 Dock에 고정한다.
 ---
 
 포트폴리오 프로젝트 중 배포한 사이트가 있는 것은 다섯이다. HYEONIVERSE, NewPick, QRU, WTD, 새싹 농장. 그런데 이 사이트 안에서 바로 써 볼 수 있는 것은 새싹 농장 게임뿐이었다. 나머지는 Safari 프로젝트 페이지에서 "새 탭에서 열기"를 눌러 사이트 밖으로 나가야 했다.
@@ -19,7 +19,7 @@ summary: 새싹 농장만 앱 창에서 바로 해 볼 수 있었다. HYEONIVERS
 export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" />;
 ```
 
-그런데 주소, 이름, 아이콘은 이미 프로젝트 정보(`shared/profile.ts`의 `PROJECTS`)에 있고, Safari 탭·Finder·터미널·GitHub 앱도 모두 그 목록을 읽는다. 앱 목록만 따로 적어 두면 프로젝트를 더할 때 빠뜨리기 쉽다. 그래서 프로젝트에 `app` 칸(Dock·Launchpad에 보일 이름, 아이콘, 창 크기, 게임인지)을 두고, 앱 목록(`apps/manifest.ts`)이 데모 주소와 `app`이 있는 프로젝트를 읽어 앱을 만든다. 새 프로젝트를 배포하면 그 프로젝트에 `app`만 적으면 Launchpad, 터미널 `open`, Safari의 "여기서 열기"에 한꺼번에 나온다.
+그런데 주소, 이름, 아이콘은 이미 프로젝트 정보(`shared/profile.ts`의 `PROJECTS`)에 있고, Safari 탭·Finder·터미널·GitHub 앱도 모두 그 목록을 읽는다. 앱 목록만 따로 적어 두면 프로젝트를 더할 때 빠뜨리기 쉽다. 그래서 프로젝트에 `app` 칸(Dock·Launchpad에 보일 이름, 아이콘, 창 크기, 게임인지)을 두고, 앱 목록(`apps/manifest.ts`)이 데모 주소와 `app`이 있는 프로젝트를 읽어 앱을 만든다. 새 프로젝트를 배포하면 그 프로젝트에 `app`만 적으면 Dock, 터미널 `open`, Safari의 "여기서 열기"에 한꺼번에 나온다.
 
 앱 이름은 타입으로 정해 둔 목록(`'safari' | 'memo' | …`)이었다. 프로젝트 앱 이름은 실행할 때 정해지므로, 프로젝트 id 문자열에 표시를 붙인 타입(`ProjectAppName`)으로 두었다. 내장 앱 이름은 그대로 오타를 잡고, 프로젝트 앱은 `projectAppName(id)`를 거쳐야만 앱 이름이 된다. 이 사이트 자체인 MacFolio와 데모가 없는 DevCourse는 앱이 아니다.
 
@@ -29,13 +29,17 @@ export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" /
 - **불러오는 중 화면**: 사이트가 뜨기 전에는 프로젝트 아이콘과 "불러오는 중"을 보여 준다. 게임은 검은 바탕, 웹 서비스는 흰 바탕이다.
 - **열리지 않을 때**: 사이트가 다른 사이트 안에 들어가는 것을 막아 두었으면(`X-Frame-Options`), iframe에는 빈 화면만 남는다. 바깥에서는 그 이유를 알 수 없어서, 8초가 지나도 다 불러오지 못하면 "새 탭에서 열기" 링크를 띄운다.
 
-## Dock이 넘치지 않게
+## Dock에 고정하기
 
-앱이 넷 늘면 Dock 아이콘이 16개가 된다. 이 사이트의 Dock은 화면 폭에 들어가지 않는 앱을 Launchpad로 보낸다. 1440px 화면이면 새싹 농장, 공유, 터미널, 시스템 설정까지 Launchpad로 밀려난다.
+앱이 다섯 늘면 Dock 아이콘이 16개가 된다. 이 사이트의 Dock은 화면 폭에 들어가지 않는 앱을 Launchpad로 보낸다(아이콘 하나에 100px, 양옆 여백 300px).
 
-그래서 macOS처럼 했다. 새 앱은 Dock에 고정하지 않고 Launchpad에 둔다(`inLaunchpad`, 새싹 농장만 원래대로 Dock에 있다). 실행하면 그동안만 Dock 끝에 아이콘과 실행 중 점이 나타나고, 닫으면 사라진다. Safari 프로젝트 페이지에는 "여기서 열기" 단추를 두고, 데모 링크는 "새 탭에서 열기"로 옆에 둔다. 게임인 새싹 농장만 "여기서 플레이"다.
+처음에는 macOS의 "Dock에 유지하지 않은 앱"처럼, 새 앱은 Dock에 고정하지 않고 Launchpad에 두었다가 실행하는 동안만 Dock 끝에 나타나게 했다. 그런데 프로젝트 앱은 이 사이트에서 보여 주고 싶은 것들이라, 눈에 띄는 Dock에 두는 편이 낫다고 보았다. 그래서 `PROJECTS`에서 앱이 된 프로젝트는 기본으로 Dock에 고정한다. 굳이 빼고 싶은 프로젝트만 `app.inDock`을 `false`로 둔다.
 
-![Launchpad 전후](./images/project-apps-launchpad.jpg '위: 전 (Dock에 다 들어가지 않은 앱만) / 아래: 후 (프로젝트 앱이 늘 있다)')
+처음에는 프로젝트 앱을 메일 다음에 두었더니, 1600px 창에서도 공유·터미널·시스템 설정이 Launchpad로 밀려나 시험 스무 개가 깨졌다. Dock에서 시스템 설정을 열던 시험들이다. 사람도 마찬가지로 늘 쓰는 앱이 사라지면 헤맨다. 그래서 프로젝트 앱은 시스템 설정 다음에 두어, 창이 좁으면 프로젝트 앱이 먼저 Launchpad로 가게 했다. 1600px이면 HYEONIVERSE와 NewPick까지 Dock에 있고, 1920px이면 다섯 개가 모두 들어간다. 그리고 고정하지 않은 앱뿐 아니라 넘쳐서 Launchpad로 간 앱도, 실행 중이면 Dock 끝에 아이콘과 실행 중 점이 나타나게 했다. Launchpad에서 QRU를 열면 QRU가 Dock 끝에 보이고, 닫으면 사라진다.
+
+Safari 프로젝트 페이지에는 "여기서 열기" 단추를 두고, 데모 링크는 "새 탭에서 열기"로 옆에 둔다. 게임인 새싹 농장만 "여기서 플레이"다.
+
+![Dock에 고정한 프로젝트 앱](./images/project-apps-launchpad.jpg '위: 1920px 창 (다섯 개가 모두 Dock에) / 아래: 1600px 창 (HYEONIVERSE와 NewPick까지, 나머지는 Launchpad)')
 
 ## 아이콘에 타일 깔기
 
@@ -45,4 +49,4 @@ export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" /
 - **가장자리 빛과 그늘**: 맨 위 몇 줄은 더 밝게, 맨 아래 띠는 조금 어둡게 해서 타일이 볼록해 보이게 했다.
 - **로고 그림자**: 로고를 살짝 위로 올리고, 그 아래에 번진 그림자를 깔았다.
 
-Safari 탭은 원래 로고를 그대로 쓴다. HYEONIVERSE는 프로젝트 아이콘(`icon.svg`)에 이미 그라데이션과 그림자를 넣어 두어서 앱 아이콘도 그대로 쓴다.
+Safari 탭은 원래 로고를 그대로 쓴다. HYEONIVERSE는 프로젝트 아이콘(`icon.svg`)에 이미 그라데이션과 그림자를 넣어 두었는데, Dock에서 보니 별이 뭉툭하고 흐렸다. 별을 눈대중으로 그린 곡선이었기 때문이다. 그 사이트의 로고 그림을 재 보니 별의 네 변은 바깥 네 귀퉁이를 중심으로 한 반지름 143.5px의 사분원이고, 점은 (358.5, 149.5)에 반지름 21px이었다. 그 치수대로 호(`A`) 네 개로 다시 그리고, Dock에는 다른 앱처럼 512px PNG(`app-icon.png`)를 쓴다. Dock 아이콘은 마우스를 올리면 커지는데, SVG를 그대로 두면 커질 때 흐려 보였다.
