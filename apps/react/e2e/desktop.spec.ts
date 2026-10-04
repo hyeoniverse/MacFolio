@@ -235,8 +235,8 @@ test.describe('좁은 화면', () => {
 
 		await dockItem(page, 'launchpad').click();
 		const launchpad = page.locator('.launchpad-modal');
-		// 고정한 16개 가운데 들어가지 않은 뒤쪽 10개 (github부터, 프로젝트 앱 다섯 개 포함)
-		await expect(launchpad.locator('.dock-item')).toHaveCount(10);
+		// 고정한 16개 가운데 들어가지 않은 뒤쪽 10개 (github부터, 프로젝트 앱 다섯 개 포함) + Launchpad에만 있는 'API 문서'
+		await expect(launchpad.locator('.dock-item')).toHaveCount(11);
 
 		// 뒤쪽 앱(github부터)이 Launchpad로 간다
 		await launchpad.getByRole('button', { name: 'github', exact: true }).click();
