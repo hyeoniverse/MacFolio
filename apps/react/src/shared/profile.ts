@@ -62,7 +62,8 @@ export interface ProjectPoint {
 		| 'lifecycle'
 		| 'comments'
 		| 'mailbox'
-		| 'invite';
+		| 'invite'
+		| 'roles';
 	/** 데모 아래나 글 옆에 붙일 실제 화면 여러 장 (.mp4는 화면에 보일 때만 도는 영상) */
 	shots?: { src: string; alt: string }[];
 	/** 카드에 붙일 아이콘 (Font Awesome 이름, 예: fa-lock) */
@@ -955,8 +956,8 @@ export const PROJECTS: Project[] = [
 					{
 						title: '누가 무엇을 할 수 있나',
 						group: '권한과 설정',
-						body: '소유자·관리자·저자·방문자 네 단계로 나눠, 저자는 자기 글만, 관리자는 모든 글과 댓글 중재까지, 사이트 설정과 저자 초대는 소유자만 합니다. 소유자가 이메일로 초대하고, 초대받지 않은 계정은 GitHub 로그인 직후 지웁니다.',
-						image: projectImage('hyeoniverse', 'shots/cms-roles.jpg'),
+						body: '소유자·관리자·저자·방문자 네 단계로 나눠, 저자는 자기 글만, 관리자는 모든 글과 댓글 중재까지, 사이트 설정과 저자 초대는 소유자만 합니다. 판정은 API 코드가 아니라 DB의 RLS 정책 29개가 하고, 역할은 사용자가 고칠 수 없는 JWT의 app_metadata에서 읽습니다. 그래서 API 하나가 확인을 빠뜨려도 DB가 마지막에 막습니다.',
+						demo: 'roles',
 					},
 					{
 						title: '코드 배포 없이 사이트 설정',
