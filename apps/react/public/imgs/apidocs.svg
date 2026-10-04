@@ -1,36 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-	<!-- API 문서 앱: 파란 바탕에 흰 문서 한 장. 문서에는 엔드포인트 목록 (메서드 색 알약 + 경로 줄) -->
+	<!-- API 문서 앱: 밝은 바탕에 'API'와 그 아래 엔드포인트 목록 (메서드 색 알약 + 경로 줄) -->
 	<defs>
 		<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-			<stop offset="0" stop-color="#5ab0ff"/>
-			<stop offset="1" stop-color="#1765e0"/>
-		</linearGradient>
-		<linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
 			<stop offset="0" stop-color="#ffffff"/>
-			<stop offset="1" stop-color="#eef2f8"/>
+			<stop offset="1" stop-color="#e6eefb"/>
 		</linearGradient>
-		<filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-			<feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0b3a8a" flood-opacity="0.35"/>
-		</filter>
 	</defs>
 	<!-- 칸을 꽉 채운다 (둥근 모서리는 Dock·Launchpad가 깎는다, 다른 아이콘과 같게) -->
 	<rect width="1024" height="1024" fill="url(#bg)"/>
-	<!-- 문서 -->
-	<g transform="translate(512 512) scale(1.1) translate(-512 -512)">
-	<rect x="212" y="168" width="600" height="688" rx="56" fill="url(#paper)" filter="url(#shadow)"/>
-	<!-- 제목 줄 -->
-	<rect x="282" y="248" width="300" height="44" rx="22" fill="#1d2a3f"/>
-	<rect x="282" y="316" width="200" height="26" rx="13" fill="#b8c2d3"/>
-	<!-- 엔드포인트: GET · POST · PATCH · DELETE -->
+	<text x="512" y="448" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif" font-size="260" font-weight="600" letter-spacing="6" fill="#1f6fe5">API</text>
+	<!-- 엔드포인트: GET · POST · DELETE -->
 	<g>
-		<rect x="282" y="402" width="132" height="64" rx="32" fill="#30c158"/>
-		<rect x="440" y="421" width="302" height="26" rx="13" fill="#c7cfdc"/>
-		<rect x="282" y="502" width="132" height="64" rx="32" fill="#0a84ff"/>
-		<rect x="440" y="521" width="250" height="26" rx="13" fill="#c7cfdc"/>
-		<rect x="282" y="602" width="132" height="64" rx="32" fill="#ff9f0a"/>
-		<rect x="440" y="621" width="282" height="26" rx="13" fill="#c7cfdc"/>
-		<rect x="282" y="702" width="132" height="64" rx="32" fill="#ff453a"/>
-		<rect x="440" y="721" width="214" height="26" rx="13" fill="#c7cfdc"/>
-	</g>
+		<rect x="250" y="548" width="112" height="48" rx="24" fill="#34c759"/>
+		<rect x="390" y="561" width="384" height="22" rx="11" fill="#c9d4e6"/>
+		<rect x="250" y="636" width="112" height="48" rx="24" fill="#0a84ff"/>
+		<rect x="390" y="649" width="300" height="22" rx="11" fill="#c9d4e6"/>
+		<rect x="250" y="724" width="112" height="48" rx="24" fill="#ff9f0a"/>
+		<rect x="390" y="737" width="344" height="22" rx="11" fill="#c9d4e6"/>
 	</g>
 </svg>
