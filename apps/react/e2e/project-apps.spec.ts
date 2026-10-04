@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 /** 실제 사이트 대신 가짜 페이지를 돌려준다 (테스트가 바깥 사이트에 기대지 않게) */
 async function fakeSites(page: Page) {
 	for (const [host, text] of [
+		['https://www.hyeoniverse.com', 'HYEONIVERSE 첫 화면'],
 		['https://newpick-tan.vercel.app', 'NewPick 첫 화면'],
 		['https://what-to-do-chi.vercel.app', 'WTD 첫 화면'],
 		['https://qryou-app.web.app', 'QRU 첫 화면'],
@@ -39,7 +40,9 @@ test.describe('프로젝트 앱', () => {
 		await fakeSites(page);
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
+		// 앱 목록은 PROJECTS에서 만든다: 데모가 있고 app을 둔 프로젝트는 모두 "여기서 열기"가 있다
 		for (const [tab, app, title] of [
+			[/HYEONIVERSE/, 'hyeoniverse', 'HYEONIVERSE'],
 			[/WTD/, 'whattodo', 'WTD (What To Do)'],
 			[/QRU/, 'qru', 'QRU 큐알유'],
 		] as const) {

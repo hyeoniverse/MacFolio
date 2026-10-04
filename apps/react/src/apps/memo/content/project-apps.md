@@ -2,23 +2,26 @@
 title: 프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기
 date: 2026-10-03
 category: 개발기/MacFolio
-summary: 새싹 농장만 앱 창에서 바로 해 볼 수 있었다. NewPick, WTD, QRU도 배포한 사이트를 창 안에 띄우는 앱으로 만들었다. 네 앱이 한 컴포넌트를 쓰고, Dock이 넘치지 않게 Launchpad에 두되 실행 중에는 Dock에 나타나게 했다.
+summary: 새싹 농장만 앱 창에서 바로 해 볼 수 있었다. HYEONIVERSE, NewPick, WTD, QRU도 배포한 사이트를 창 안에 띄우는 앱으로 만들었다. 다섯 앱이 한 컴포넌트를 쓰고, 앱 목록은 프로젝트 목록에서 만들며, Dock이 넘치지 않게 Launchpad에 두되 실행 중에는 Dock에 나타나게 했다.
 ---
 
-포트폴리오 프로젝트 중 배포한 사이트가 있는 것은 넷이다. NewPick, WTD, QRU, 새싹 농장. 그런데 이 사이트 안에서 바로 써 볼 수 있는 것은 새싹 농장 게임뿐이었다. 나머지는 Safari 프로젝트 페이지에서 "새 탭에서 열기"를 눌러 사이트 밖으로 나가야 했다.
+포트폴리오 프로젝트 중 배포한 사이트가 있는 것은 다섯이다. HYEONIVERSE, NewPick, QRU, WTD, 새싹 농장. 그런데 이 사이트 안에서 바로 써 볼 수 있는 것은 새싹 농장 게임뿐이었다. 나머지는 Safari 프로젝트 페이지에서 "새 탭에서 열기"를 눌러 사이트 밖으로 나가야 했다.
 
 ![프로젝트 앱 창](./images/project-apps.jpg '배포한 사이트를 창 안에 띄운다. 실행 중이면 Dock 끝에 아이콘이 나타난다')
 
-## 한 컴포넌트로 네 앱
+## 한 컴포넌트로 다섯 앱
 
 새싹 농장 앱은 배포한 게임 주소를 iframe으로 띄우는 창이었다. 다른 프로젝트도 하는 일은 같다. 그래서 이 창을 `ProjectApp`으로 일반화하고, 프로젝트 id만 넘기게 했다.
 
+처음에는 앱마다 한 줄씩 적었다.
+
 ```tsx
 export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" />;
-const SproutFarm = () => <ProjectApp appName="sproutfarm" projectId="sproutfarm" tone="dark" />;
 ```
 
-주소, 이름, 아이콘은 이미 프로젝트 정보(`shared/profile.ts`)에 있다. 새 프로젝트를 배포하면 앱 목록에 한 줄을 더하는 것으로 끝난다.
+그런데 주소, 이름, 아이콘은 이미 프로젝트 정보(`shared/profile.ts`의 `PROJECTS`)에 있고, Safari 탭·Finder·터미널·GitHub 앱도 모두 그 목록을 읽는다. 앱 목록만 따로 적어 두면 프로젝트를 더할 때 빠뜨리기 쉽다. 그래서 프로젝트에 `app` 칸(Dock·Launchpad에 보일 이름, 아이콘, 창 크기, 게임인지)을 두고, 앱 목록(`apps/manifest.ts`)이 데모 주소와 `app`이 있는 프로젝트를 읽어 앱을 만든다. 새 프로젝트를 배포하면 그 프로젝트에 `app`만 적으면 Launchpad, 터미널 `open`, Safari의 "여기서 열기"에 한꺼번에 나온다.
+
+앱 이름은 타입으로 정해 둔 목록(`'safari' | 'memo' | …`)이었다. 프로젝트 앱 이름은 실행할 때 정해지므로, 프로젝트 id 문자열에 표시를 붙인 타입(`ProjectAppName`)으로 두었다. 내장 앱 이름은 그대로 오타를 잡고, 프로젝트 앱은 `projectAppName(id)`를 거쳐야만 앱 이름이 된다. 이 사이트 자체인 MacFolio와 데모가 없는 DevCourse는 앱이 아니다.
 
 `ProjectApp`이 맡는 일은 셋이다.
 
@@ -28,9 +31,9 @@ const SproutFarm = () => <ProjectApp appName="sproutfarm" projectId="sproutfarm"
 
 ## Dock이 넘치지 않게
 
-앱이 셋 늘면 Dock 아이콘이 15개가 된다. 이 사이트의 Dock은 화면 폭에 들어가지 않는 앱을 Launchpad로 보낸다. 1440px 화면이면 새싹 농장, 공유, 터미널, 시스템 설정까지 Launchpad로 밀려난다.
+앱이 넷 늘면 Dock 아이콘이 16개가 된다. 이 사이트의 Dock은 화면 폭에 들어가지 않는 앱을 Launchpad로 보낸다. 1440px 화면이면 새싹 농장, 공유, 터미널, 시스템 설정까지 Launchpad로 밀려난다.
 
-그래서 macOS처럼 했다. 새 앱은 Dock에 고정하지 않고 Launchpad에 둔다(`inLaunchpad`). 실행하면 그동안만 Dock 끝에 아이콘과 실행 중 점이 나타나고, 닫으면 사라진다. Safari 프로젝트 페이지에는 "여기서 열기" 단추를 두었다. 게임인 새싹 농장만 "여기서 플레이"다.
+그래서 macOS처럼 했다. 새 앱은 Dock에 고정하지 않고 Launchpad에 둔다(`inLaunchpad`, 새싹 농장만 원래대로 Dock에 있다). 실행하면 그동안만 Dock 끝에 아이콘과 실행 중 점이 나타나고, 닫으면 사라진다. Safari 프로젝트 페이지에는 "여기서 열기" 단추를 두고, 데모 링크는 "새 탭에서 열기"로 옆에 둔다. 게임인 새싹 농장만 "여기서 플레이"다.
 
 ![Launchpad 전후](./images/project-apps-launchpad.jpg '위: 전 (Dock에 다 들어가지 않은 앱만) / 아래: 후 (프로젝트 앱이 늘 있다)')
 
@@ -42,4 +45,4 @@ const SproutFarm = () => <ProjectApp appName="sproutfarm" projectId="sproutfarm"
 - **가장자리 빛과 그늘**: 맨 위 몇 줄은 더 밝게, 맨 아래 띠는 조금 어둡게 해서 타일이 볼록해 보이게 했다.
 - **로고 그림자**: 로고를 살짝 위로 올리고, 그 아래에 번진 그림자를 깔았다.
 
-Safari 탭은 원래 로고를 그대로 쓴다.
+Safari 탭은 원래 로고를 그대로 쓴다. HYEONIVERSE는 프로젝트 아이콘(`icon.svg`)에 이미 그라데이션과 그림자를 넣어 두어서 앱 아이콘도 그대로 쓴다.
