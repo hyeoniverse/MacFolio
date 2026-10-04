@@ -204,7 +204,7 @@ chmod 600 .env api.env
 | `SPEECH_PER_IP_PER_DAY`, `SPEECH_TOTAL_PER_DAY`       |        | 음성 만들기 하루 상한. 기본 IP마다 3번, 사이트 전체 50번 (서버 메모리로 센다)                                     |
 | `DEEPL_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`           |        | 번역 데모 (DeepL → Google). HYEONIVERSE와 같은 키. 없으면 그 공급자만 건너뛴다                                    |
 | `GEMINI_API_KEY`                                      |        | AI 요약 데모 (Gemini가 한국어·영어 요약). 없으면 요약이 502                                                       |
-| `GEMINI_MODEL`                                        |        | 요약 모델 (기본 `gemini-2.0-flash`, HYEONIVERSE와 같다). 모델이 내려가면 바꾼다                                   |
+| `GEMINI_MODEL`                                        |        | 요약 모델 (기본 `gemini-flash-latest`, 늘 최신 Flash). 내려간 모델이면 응답이 권하는 모델로 한 번 다시 묻는다     |
 | `NANOBANANA_API_KEY`, `HUGGINGFACE_API_KEY`           |        | AI 커버 데모 (NanoBanana → Hugging Face FLUX). 없으면 그 공급자만 건너뛴다                                        |
 | `TRANSLATE_PER_IP_PER_DAY`, `TRANSLATE_TOTAL_PER_DAY` |        | 번역 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                 |
 | `SUMMARY_PER_IP_PER_DAY`, `SUMMARY_TOTAL_PER_DAY`     |        | 요약 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                 |

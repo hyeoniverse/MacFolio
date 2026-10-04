@@ -44,3 +44,10 @@ export function readSummary(raw: string | undefined) {
 	if (!ko || !en) throw new ProviderFailure('빈 응답');
 	return { ko, en };
 }
+
+/**
+ * 내려간 모델로 물었을 때 Gemini가 돌려주는 404 본문에서 대신 쓰라고 권하는 모델 이름을 꺼낸다
+ * (예: "This model models/gemini-2.0-flash is no longer available. Please update your code to use models/gemini-…-flash …")
+ */
+export const suggestedModel = (body: string): string | null =>
+	/no longer available[\s\S]*?use (?:models\/)?(gemini-[\w.-]+)/i.exec(body)?.[1] ?? null;

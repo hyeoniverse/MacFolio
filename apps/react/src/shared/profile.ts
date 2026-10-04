@@ -880,14 +880,24 @@ export const PROJECTS: Project[] = [
 						image: projectImage('hyeoniverse', 'shots/cms-roles.jpg'),
 					},
 					{
-						title: '대시보드와 알림',
-						icon: 'fa-chart-line',
-						body: '누적 조회수와 최근 7일 증감, 일별 조회 추세, 인기 글을 대시보드에서 보고, 예약 발행 대기 글도 확인합니다. 댓글·신고·새 기기 로그인·방문 급증 같은 알림은 한 화면의 탭에서 처리합니다.',
+						title: '대시보드',
+						body: '관리자 첫 화면은 운영 현황 한 장입니다. 빠른 작업(새 글·새 프로젝트·설정·신고·알림, 대기 중인 신고와 안 읽은 알림 수는 배지로) 아래로 최근 24시간 서비스 호출과 실패 수, 총 조회수와 지난 7일 대비 변화, 발행·초안 수가 놓입니다. 일별 조회수는 기간을 골라 곡선으로 보고, 달력에서 날짜를 누르면 그날의 순위와 많이 본 글이 열립니다.',
+						image: projectImage('hyeoniverse', 'cms/dashboard.jpg'),
+					},
+					{
+						title: '알림과 댓글',
+						body: '새 댓글·답글·신고·권한 요청·새 기기 로그인·방문 급증과 AI 공급자 실패·메일 발송 실패·예약 작업 오류 같은 시스템 알림을 전체·댓글·시스템·신고 네 탭에서 받습니다. 처리가 필요한 것은 따로 묶이고, 알림을 눌러 넘어간 항목은 잠시 깜빡여 어디로 왔는지 알려 줍니다. 댓글은 글과 작업물을 한 표에 모아 지우거나 되살립니다.',
+						image: projectImage('hyeoniverse', 'cms/notifications.jpg'),
 					},
 					{
 						title: '코드 배포 없이 사이트 설정',
 						body: '사이트 제목과 소개, SEO 메타데이터, 테마 색, 외부 서비스 키를 설정 다섯 탭에서 고칩니다. 비우면 안 되는 값은 화면·API·DB 세 곳에서 막고, About 페이지는 실제 페이지 위에서 글자를 눌러 바로 고칩니다.',
 						image: projectImage('hyeoniverse', 'shots/admin-settings.jpg'),
+					},
+					{
+						title: '서비스 호출 기록',
+						body: 'AI 번역·요약·TTS·커버, 이미지 검색, 메일, GitHub API, 예약 작업의 성공과 실패를 새것부터 남깁니다. 위에는 공급자마다 성공·실패 수와 마지막 실패 원인(키 없음·한도·결제·서버 오류)이, 아래에는 기록 줄이 있어 어느 키가 만료됐는지 바로 보입니다.',
+						image: projectImage('hyeoniverse', 'cms/service-log.jpg'),
 					},
 					{
 						title: '글과 작업물 잇기',
@@ -1031,8 +1041,16 @@ export const PROJECTS: Project[] = [
 						body: '기간을 바꿔 가며 방문·신규·재방문 비율·방문당 조회·걸러 낸 봇 수를 직전 같은 기간과 비교해 봅니다. 그 아래로 일별 방문 추이, 유입 채널과 기기, 국가별 방문과 랜딩 페이지, 기간 안의 인기 글, 요일×시각 히트맵, UTM 캠페인이 이어집니다.',
 						shots: [
 							{
-								src: projectImage('hyeoniverse', 'shots/admin-traffic.jpg'),
-								alt: '실제 트래픽 페이지 (30일): 요약, 일별 방문, 유입 경로, 기기, 국가, 랜딩',
+								src: projectImage('hyeoniverse', 'cms/traffic.jpg'),
+								alt: '트래픽 (30일): 방문 요약, 일별 방문, 유입 경로, 기기',
+							},
+							{
+								src: projectImage('hyeoniverse', 'cms/traffic-ip-utm.jpg'),
+								alt: 'IP 분석: 가린 IP별 방문 일수와 내 IP 지정',
+							},
+							{
+								src: projectImage('hyeoniverse', 'cms/dashboard-daily.jpg'),
+								alt: '대시보드 일별 조회수: 날짜를 눌러 그날 분석',
 							},
 						],
 					},
