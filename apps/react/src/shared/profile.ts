@@ -85,7 +85,7 @@ export interface ProjectChapter {
 	 * 장 모양 (글 묶음의 짜임): showcase 항목을 고르면 큰 화면이 바뀜, stage 데모마다 큰 무대, bento 크기가 다른 타일,
 	 * dashboard 숫자 타일과 큰 화면, gauges 점수 고리와 번호 목록, shield 겹겹이 쌓인 방어, palette 작은 타일. 없으면 두 칸 글 묶음
 	 */
-	look?: 'showcase' | 'stage' | 'bento' | 'dashboard' | 'gauges' | 'shield' | 'palette';
+	look?: 'showcase' | 'stage' | 'bento' | 'dashboard' | 'gauges' | 'shield' | 'palette' | 'architecture';
 	/** 테마 프리셋: 고르면 미리보기 화면의 색이 그 테마로 바뀐다 */
 	palette?: ThemeSwatch[];
 	/** 데이터베이스 구조: 문서(테이블) 경로, 누가 읽는지, 필드, 한 줄 설명. parent가 있으면 그 문서의 하위 문서 */
@@ -848,6 +848,7 @@ export const PROJECTS: Project[] = [
 		chapters: [
 			{
 				title: '한눈에 보는 구조',
+				look: 'architecture',
 				lead: '방문자와 관리자·저자는 모두 Next.js 16 App Router 한 곳으로 들어옵니다. 데이터와 권한은 Supabase(PostgreSQL과 행 단위 보안)가 맡고, 번역·요약과 메일·분석은 바깥 공급자에게 맡기되 하나가 실패하면 다음으로 넘어갑니다.',
 				facts: [
 					{ value: '113개', label: 'API 라우트' },
@@ -855,10 +856,6 @@ export const PROJECTS: Project[] = [
 					{ value: '816개', label: '단위 테스트' },
 				],
 				points: [],
-				image: {
-					src: projectImage('hyeoniverse', 'architecture.jpg'),
-					alt: '구조도: 방문자·관리자 → Next.js 16 App Router → Supabase, 번역·요약, 메일·분석. 아래에 PR마다 거치는 품질 관리',
-				},
 			},
 			{
 				title: '관리자와 CMS',
