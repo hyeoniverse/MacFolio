@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { githubStore, loadGithub, toGithubData } from './githubApi';
 import { GITHUB_SNAPSHOT } from './githubProfile';
 
+const snapshotRepo = (name: string) => GITHUB_SNAPSHOT.repos.find((repo) => repo.name === name)!;
+
 const SERVER = {
 	profile: {
 		login: 'hyeoniverse',
@@ -18,9 +20,9 @@ const SERVER = {
 	readme: '# 안녕하세요',
 	readmeBaseUrl: 'https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/',
 	repos: [
-		{ ...GITHUB_SNAPSHOT.repos[2], stars: 3 },
-		{ ...GITHUB_SNAPSHOT.repos[3], url: 'javascript:alert(1)' },
-		{ ...GITHUB_SNAPSHOT.repos[4], homepage: 'data:text/html,x' },
+		{ ...snapshotRepo('QRU'), stars: 3 },
+		{ ...snapshotRepo('SproutFarm'), url: 'javascript:alert(1)' },
+		{ ...snapshotRepo('MacFolio'), homepage: 'data:text/html,x' },
 	],
 };
 
@@ -28,7 +30,7 @@ describe('toGithubData', () => {
 	it('서버 값을 받되, http(s)가 아닌 주소는 버린다 (링크로 그리므로)', () => {
 		const data = toGithubData(SERVER)!;
 		expect(data.profile).toMatchObject({ followers: 7, following: 9, publicRepos: 21, website: null });
-		expect(data.repos.map((repo) => repo.fullName)).toEqual(['hyeoniverse/QRU', 'hyeoniverse/DevCourse-FullStack']);
+		expect(data.repos.map((repo) => repo.fullName)).toEqual(['hyeoniverse/QRU', 'hyeoniverse/MacFolio']);
 		expect(data.repos[1].homepage).toBeNull();
 		expect(data.readme).toBe('# 안녕하세요');
 	});

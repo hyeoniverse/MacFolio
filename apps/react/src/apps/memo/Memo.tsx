@@ -79,6 +79,7 @@ import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/popover';
 import { deletePost, fetchAdminPosts, fetchServerPosts, purgePost, restorePost, type PostDraft } from './postsApi';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
+import { useOpenRequest } from '@/shared/lib/openRequest';
 import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
@@ -426,6 +427,18 @@ const Memo: React.FC = () => {
 		setPicked(null);
 		setPane('list');
 	};
+
+	// Finder에서 글을 열면 모든 글에서 그 글을 본문으로 연다 (shared/lib/openRequest.ts)
+	useOpenRequest('memo', (slug) => {
+		setTagSelection((current) => ({ ...EMPTY_TAG_SELECTION, match: current.match }));
+		setCategory(ALL_CATEGORY);
+		setQuery('');
+		setFilter(null);
+		setGalleryNoteOpen(false);
+		setPicked(null);
+		setSelectedSlug(slug);
+		setPane('reader');
+	});
 
 	// 끌어 놓기: 글은 다른 폴더로(최근 삭제된 항목에 놓으면 지우기), 지운 글은 폴더에 놓으면 되살리기,
 	// 폴더는 다른 폴더 안(모든 글이면 맨 위)으로

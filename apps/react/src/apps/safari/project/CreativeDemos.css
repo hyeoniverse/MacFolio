@@ -1,0 +1,1433 @@
+/* HYEONIVERSE 데모: 관리자 기능을 흉내 낸 작은 화면들. 바탕·글자·선은 페이지 색(--cr-*)을, 강조는 --sp-accent를 쓴다 */
+.cd-slides,
+.cd-voice,
+.cd-wave,
+.cd-convert,
+.cd-translate,
+.cd-summary,
+.cd-cover {
+	display: grid;
+	gap: 12px;
+	padding: 16px;
+	border: 1px solid var(--cr-line);
+	border-radius: 12px;
+	background-color: color-mix(in srgb, var(--cr-ink) 3%, var(--cr-bg));
+	font-size: 13px;
+	text-align: left;
+}
+
+.cd-slides button,
+.cd-voice button,
+.cd-wave button,
+.cd-convert button,
+.cd-translate button,
+.cd-summary button,
+.cd-cover button,
+.cd-themes button {
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+}
+
+.cd-hint {
+	margin: 0;
+	color: var(--cr-muted);
+	font-size: 12px;
+}
+
+/* 두세 갈래 고르기 (KO/EN, 라이트/다크): 그리드 안에서도 늘어나지 않고 글자 폭만큼 */
+.cd-seg {
+	display: inline-flex;
+	justify-self: start;
+	width: max-content;
+	padding: 2px;
+	border-radius: 8px;
+	background-color: color-mix(in srgb, var(--cr-ink) 8%, transparent);
+}
+
+.cd-seg button {
+	padding: 4px 10px;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.cd-seg button[aria-pressed='true'] {
+	background-color: var(--cr-bg);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.cd-seg button:disabled {
+	cursor: default;
+	opacity: 0.5;
+}
+
+.cd-primary {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 7px 14px;
+	border: none;
+	border-radius: 8px;
+	background-color: var(--sp-accent);
+	color: #ffffff !important;
+	font-weight: 600;
+}
+
+.cd-primary:disabled {
+	cursor: default;
+	opacity: 0.55;
+}
+
+.cd-ghost {
+	padding: 5px 10px;
+	border: 1px solid var(--cr-line);
+	border-radius: 8px;
+	background: none;
+	font-size: 12px;
+}
+
+.cd-ghost:disabled {
+	cursor: default;
+	opacity: 0.45;
+}
+
+.cd-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 3px 9px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--sp-accent) 12%, transparent);
+	color: var(--sp-accent);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+/* 갤러리: 가운데 장이 크고 양옆은 원근으로 기운다 */
+.cd-slides-stage {
+	position: relative;
+	aspect-ratio: 16 / 7;
+	overflow: hidden;
+	border-radius: 8px;
+	outline-offset: 2px;
+	perspective: 1100px;
+	touch-action: pan-y;
+	user-select: none;
+}
+
+.cd-slide {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 58%;
+	padding: 0;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+	opacity: calc(1 - var(--a) * 0.25);
+	transform: translate(-50%, -50%) translateX(calc(var(--d) * 46%)) rotateY(calc(var(--r) * -38deg))
+		scale(calc(1 - var(--a) * 0.14));
+	z-index: calc(10 - var(--a));
+	transition:
+		transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+		opacity 0.6s;
+}
+
+.cd-slide[data-far] {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.cd-slide img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	border-radius: 6px;
+	object-fit: cover;
+	pointer-events: none;
+}
+
+/* 소리를 낼지 먼저 묻는다 (브라우저가 소리 자동 재생을 막으므로) */
+.cd-ask {
+	display: flex;
+	position: absolute;
+	inset: 0;
+	z-index: 20;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-content: center;
+	gap: 8px;
+	background-color: rgba(0, 0, 0, 0.35);
+	backdrop-filter: blur(2px);
+}
+
+.cd-ask .cd-ghost {
+	border-color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(0, 0, 0, 0.35);
+	color: #ffffff !important;
+	font-size: 13px;
+}
+
+/* 자막: 읽는 만큼 낱말이 진해진다 */
+/* 자막 자리는 늘 세 줄: 문장 길이나 켜고 끄는 것에 따라 아래가 움직이지 않는다 */
+.cd-caption {
+	display: grid;
+	height: 4.5em;
+	margin: 0;
+	overflow: hidden;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.cd-caption[data-off] {
+	visibility: hidden;
+}
+
+/* 지금 문장만 보이고, 읽은 낱말이 진해진다 (진행은 스크립트가 음성의 재생 위치로 정한다) */
+.cd-caption .cd-cue span {
+	color: var(--cr-muted);
+	transition: color 0.2s linear;
+}
+
+.cd-caption .cd-cue span[data-read] {
+	/* 읽은 낱말은 강조색으로 (검정과 회색은 잘 갈리지 않았다) */
+	color: var(--sp-accent);
+}
+
+.cd-caption em {
+	color: var(--cr-muted);
+}
+
+.cd-slides-bar {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.cd-slides-bar button {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 10px;
+	border: 1px solid var(--cr-line);
+	border-radius: 999px;
+	background: none;
+	font-size: 12px;
+}
+
+.cd-slides-bar button[aria-pressed='true'] {
+	border-color: var(--sp-accent);
+	color: var(--sp-accent);
+}
+
+.cd-slides-source {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	color: var(--cr-muted);
+	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.cd-slides-count {
+	margin-left: auto;
+	color: var(--cr-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.cd-slides-strip {
+	display: grid;
+	grid-template-columns: repeat(8, minmax(0, 1fr));
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cd-slides-strip button {
+	display: block;
+	position: relative;
+	width: 100%;
+	padding: 0;
+	overflow: hidden;
+	border: 2px solid transparent;
+	border-radius: 5px;
+	background: none;
+	opacity: 0.6;
+}
+
+.cd-slides-strip button[aria-current] {
+	border-color: var(--sp-accent);
+	opacity: 1;
+}
+
+.cd-slides-strip img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+}
+
+/* 지금 장을 읽는 동안 차오르는 막대 (다 차면 다음 장) */
+.cd-slides-progress {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 3px;
+	background-color: var(--sp-accent);
+	transform: scaleX(0);
+	transform-origin: left;
+	animation: cd-fill var(--ms) linear forwards paused;
+}
+
+.cd-slides-progress[data-playing] {
+	animation-play-state: running;
+}
+
+@keyframes cd-fill {
+	to {
+		transform: scaleX(1);
+	}
+}
+
+/* 음성 만들기 */
+.cd-voice-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 12px;
+}
+
+.cd-voice-head p,
+.cd-live-info {
+	flex: 1;
+	min-width: 16em;
+	margin: 0;
+	color: var(--cr-muted);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.cd-voice-head i,
+.cd-live-info i {
+	margin-right: 4px;
+	color: var(--sp-accent);
+}
+
+.cd-voice-input {
+	display: grid;
+	gap: 4px;
+	padding: 10px 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 8px;
+	background-color: var(--cr-bg);
+}
+
+.cd-voice-input span,
+.cd-voice-input small {
+	color: var(--cr-muted);
+	font-size: 12px;
+}
+
+.cd-voice-input small {
+	justify-self: end;
+	font-variant-numeric: tabular-nums;
+}
+
+.cd-voice-input textarea,
+.cd-voice-input input {
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	font-size: 14px;
+	line-height: 1.5;
+	resize: none;
+}
+
+.cd-voice-input textarea:focus,
+.cd-voice-input input:focus {
+	outline: none;
+}
+
+.cd-voice-input:focus-within {
+	border-color: var(--sp-accent);
+}
+
+.cd-voice-lyric {
+	/* 두 줄 자리를 늘 잡아 둔다 */
+	min-height: 3em;
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.cd-voice-lyric[data-empty] .cd-lyric {
+	font-size: 12px;
+}
+
+.cd-player[data-empty] {
+	opacity: 0.45;
+}
+
+.cd-player button:disabled,
+.cd-player input:disabled {
+	cursor: default;
+}
+
+/* 공급자 칸과 아래 상태 글은 한 줄로 (길어지면 말줄임) */
+.cd-voice-chain small,
+.cd-voice-foot p {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.cd-voice-script {
+	display: grid;
+	gap: 6px;
+	margin: 0;
+	padding: 10px 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 8px;
+	background-color: var(--cr-bg);
+}
+
+.cd-voice-script > div {
+	display: grid;
+	grid-template-columns: 64px minmax(0, 1fr);
+	gap: 8px;
+}
+
+.cd-voice-script dt {
+	color: var(--cr-muted);
+	font-size: 12px;
+}
+
+.cd-voice-script dd {
+	margin: 0;
+}
+
+.cd-voice-script code {
+	padding: 0 3px;
+	border-radius: 4px;
+	background-color: color-mix(in srgb, var(--sp-accent) 12%, transparent);
+	color: var(--sp-accent);
+	font-family: ui-monospace, monospace;
+	font-size: 12px;
+}
+
+.cd-voice-script mark {
+	padding: 0 2px;
+	border-radius: 3px;
+	background-color: color-mix(in srgb, var(--sp-accent) 18%, transparent);
+	color: inherit;
+}
+
+.cd-voice-script[data-locked] dd {
+	opacity: 0.55;
+}
+
+.cd-lock {
+	display: block;
+	color: var(--sp-accent);
+	font-size: 11px;
+}
+
+.cd-lyric {
+	color: var(--cr-muted);
+}
+
+.cd-lyric b {
+	color: var(--cr-ink);
+	font-weight: inherit;
+	background: linear-gradient(transparent 62%, color-mix(in srgb, var(--sp-accent) 22%, transparent) 62%);
+}
+
+/* 만든 음성 듣기: 재생 단추, 끌 수 있는 재생 막대, 시간 */
+.cd-player {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 999px;
+	background-color: var(--cr-bg);
+}
+
+.cd-player button {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--sp-accent);
+	color: #ffffff !important;
+}
+
+.cd-player input {
+	flex: 1;
+	height: 4px;
+	border-radius: 2px;
+	background: linear-gradient(90deg, var(--sp-accent) var(--fill), var(--cr-line) var(--fill));
+	accent-color: var(--sp-accent);
+	appearance: none;
+	cursor: pointer;
+}
+
+.cd-player input::-webkit-slider-thumb {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: var(--sp-accent);
+	appearance: none;
+}
+
+.cd-player input::-moz-range-thumb {
+	width: 12px;
+	height: 12px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--sp-accent);
+}
+
+.cd-player span {
+	flex: none;
+	color: var(--cr-muted);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+.cd-voice-chain {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 18px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cd-voice-chain[data-count='2'] {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cd-voice-chain li {
+	position: relative;
+}
+
+.cd-voice-chain li + li::before {
+	position: absolute;
+	top: 50%;
+	left: -14px;
+	color: var(--cr-muted);
+	content: '→';
+	transform: translateY(-50%);
+}
+
+.cd-voice-chain button {
+	display: grid;
+	width: 100%;
+	padding: 8px;
+	border: 1px solid var(--cr-line);
+	border-radius: 8px;
+	background-color: var(--cr-bg);
+	text-align: center;
+	transition:
+		border-color 0.2s,
+		background-color 0.2s;
+}
+
+.cd-voice-chain button[data-blocked] {
+	border-style: dashed;
+}
+
+.cd-voice-chain small {
+	color: var(--cr-muted);
+	font-size: 11px;
+}
+
+.cd-voice-chain button[data-state='trying'] {
+	border-color: var(--sp-accent);
+	animation: cd-pulse 0.7s ease-in-out infinite alternate;
+}
+
+.cd-voice-chain button[data-state='ok'] {
+	border-color: #2e9d5b;
+	background-color: color-mix(in srgb, #2e9d5b 12%, var(--cr-bg));
+}
+
+.cd-voice-chain button[data-state='fail'] {
+	border-color: #d64545;
+	background-color: color-mix(in srgb, #d64545 10%, var(--cr-bg));
+}
+
+.cd-voice-chain button[data-state='skip'] {
+	opacity: 0.45;
+}
+
+@keyframes cd-pulse {
+	to {
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--sp-accent) 25%, transparent);
+	}
+}
+
+.cd-voice-foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+}
+
+.cd-voice-foot p {
+	flex: 1;
+	min-width: 12em;
+	margin: 0;
+	color: var(--cr-muted);
+	font-size: 12px;
+}
+
+/* 파형 편집기 */
+.cd-wave {
+	outline-offset: 2px;
+}
+
+.cd-wave-tools {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.cd-wave-tools button {
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 30px;
+	border: 1px solid var(--cr-line);
+	border-radius: 7px;
+	background-color: var(--cr-bg);
+}
+
+.cd-wave-tools button:disabled {
+	cursor: default;
+	opacity: 0.35;
+}
+
+.cd-wave-track {
+	display: flex;
+	position: relative;
+	gap: 3px;
+	height: 92px;
+	cursor: text;
+	touch-action: none;
+	user-select: none;
+}
+
+.cd-clip {
+	display: flex;
+	position: relative;
+	flex-basis: 0;
+	align-items: center;
+	gap: 1px;
+	min-width: 0;
+	padding: 16px 3px 4px;
+	border-radius: 6px;
+	background-color: color-mix(in srgb, var(--sp-accent) 9%, var(--cr-bg));
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sp-accent) 30%, transparent);
+}
+
+.cd-clip i {
+	flex: 1;
+	min-width: 1px;
+	height: calc(var(--h) * 100%);
+	border-radius: 1px;
+	background-color: color-mix(in srgb, var(--sp-accent) 70%, var(--cr-ink));
+}
+
+.cd-clip i[data-on] {
+	background-color: var(--sp-accent);
+}
+
+.cd-clip {
+	transform: translateX(var(--dx, 0px));
+}
+
+.cd-clip[data-dragging] {
+	z-index: 2;
+	opacity: 0.75;
+	box-shadow:
+		inset 0 0 0 1px var(--sp-accent),
+		0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 클립 위 번호 띠: 여기를 길게 눌러 클립을 끈다 (파형 쪽은 구간 고르기) */
+.cd-clip::before {
+	content: '';
+	position: absolute;
+	inset: 0 0 auto;
+	height: 16px;
+	border-radius: 6px 6px 0 0;
+	background-color: color-mix(in srgb, var(--sp-accent) 14%, transparent);
+	cursor: grab;
+}
+
+/* 클립 번호 */
+.cd-clip-no {
+	position: absolute;
+	top: 1px;
+	left: 5px;
+	color: var(--cr-muted);
+	font-size: 10px;
+	font-weight: 700;
+	pointer-events: none;
+}
+
+/* 길게 누르는 동안 살짝 들리고, 끄는 동안은 손을 따라온다 */
+.cd-clip {
+	transition:
+		scale 0.4s ease,
+		box-shadow 0.4s ease;
+}
+
+.cd-clip[data-pressing] {
+	scale: 0.97;
+	box-shadow:
+		inset 0 0 0 2px var(--sp-accent),
+		0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.cd-clip[data-dragging] {
+	cursor: grabbing;
+	transition: none;
+}
+
+.cd-wave-drop {
+	position: absolute;
+	top: -4px;
+	bottom: -4px;
+	width: 3px;
+	margin-left: -1px;
+	border-radius: 2px;
+	background-color: var(--sp-accent);
+	pointer-events: none;
+}
+
+.cd-wave-span {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	background-color: color-mix(in srgb, var(--sp-accent) 18%, transparent);
+	box-shadow:
+		inset 2px 0 var(--sp-accent),
+		inset -2px 0 var(--sp-accent);
+	pointer-events: none;
+}
+
+.cd-wave-cursor,
+.cd-wave-head {
+	position: absolute;
+	top: -3px;
+	bottom: -3px;
+	width: 2px;
+	margin-left: -1px;
+	background-color: var(--cr-ink);
+	pointer-events: none;
+}
+
+.cd-wave-head {
+	background-color: #2e9d5b;
+}
+
+.cd-wave-empty {
+	align-self: center;
+	margin: 0 auto;
+	color: var(--cr-muted);
+}
+
+.cd-wave-meta {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 8px;
+	margin: 0;
+	color: var(--cr-muted);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* 문서 변환 */
+.cd-convert-head,
+.cd-translate-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+/* 남은 횟수는 머리 오른쪽 끝에 (앞 칩의 글이 바뀌어도 자리를 지킨다) */
+.cd-translate-head > .cd-chip:last-child {
+	margin-left: auto;
+}
+
+.cd-file {
+	display: inline-flex;
+	flex: 1;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	font-weight: 600;
+}
+
+.cd-file i {
+	color: var(--sp-accent);
+	font-size: 16px;
+}
+
+.cd-convert-status {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	color: var(--cr-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.cd-convert-status[data-phase='done'] {
+	color: #2e9d5b;
+}
+
+.cd-spin {
+	width: 12px;
+	height: 12px;
+	border: 2px solid color-mix(in srgb, var(--sp-accent) 25%, transparent);
+	border-top-color: var(--sp-accent);
+	border-radius: 50%;
+	animation: cd-turn 0.8s linear infinite;
+}
+
+@keyframes cd-turn {
+	to {
+		transform: rotate(1turn);
+	}
+}
+
+.cd-convert-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cd-convert-grid li {
+	position: relative;
+	overflow: hidden;
+	border-radius: 6px;
+	background: linear-gradient(
+		100deg,
+		color-mix(in srgb, var(--cr-ink) 6%, transparent) 30%,
+		color-mix(in srgb, var(--cr-ink) 12%, transparent) 50%,
+		color-mix(in srgb, var(--cr-ink) 6%, transparent) 70%
+	);
+	background-size: 300% 100%;
+	animation: cd-shine 1.4s linear infinite;
+}
+
+.cd-convert-grid li[data-drawn] {
+	animation: none;
+}
+
+.cd-convert-grid img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	opacity: 0;
+	transform: scale(0.94);
+	transition:
+		opacity 0.35s,
+		transform 0.35s;
+}
+
+.cd-convert-grid li[data-drawn] img {
+	opacity: 1;
+	transform: none;
+}
+
+.cd-convert-no,
+.cd-convert-note {
+	position: absolute;
+	padding: 1px 5px;
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, 0.6);
+	color: #ffffff;
+	font-size: 10px;
+}
+
+.cd-convert-no {
+	top: 4px;
+	left: 4px;
+}
+
+.cd-convert-note {
+	right: 4px;
+	bottom: 4px;
+	background-color: var(--sp-accent);
+}
+
+@keyframes cd-shine {
+	to {
+		background-position: -150% 0;
+	}
+}
+
+/* 번역 */
+.cd-fields {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+}
+
+.cd-fields > div {
+	padding: 8px 10px;
+	border: 1px solid var(--cr-line);
+	border-radius: 8px;
+	background-color: var(--cr-bg);
+}
+
+.cd-fields dt {
+	margin-bottom: 2px;
+	color: var(--cr-muted);
+	font-size: 11px;
+}
+
+.cd-fields dd {
+	/* 두 줄 자리를 늘 잡아 둔다: 고치는 칸, 번역 중, 번역한 글이 같은 높이 */
+	min-height: 3em;
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.cd-fields textarea {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	resize: none;
+}
+
+.cd-fields textarea:focus {
+	outline: none;
+}
+
+.cd-fields > div:focus-within {
+	border-color: var(--sp-accent);
+}
+
+/* 실제 AI 데모의 안내 한 줄과, 상태·글자 수 줄 */
+.cd-live-info {
+	margin: 0;
+}
+
+.cd-live-foot {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.cd-live-foot p {
+	flex: 1;
+	/* 실패 이유가 길어도 두 줄 자리 안에서 (아래가 밀리지 않게) */
+	min-height: 3em;
+	line-height: 1.5;
+}
+
+.cd-live-foot small {
+	color: var(--cr-muted);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+.cd-live-foot small[data-over],
+.cd-hint[data-error] {
+	color: #d64545;
+}
+
+.cd-fields em {
+	color: var(--cr-muted);
+}
+
+.cd-shimmer {
+	display: block;
+	height: 1.1em;
+	border-radius: 4px;
+	background: linear-gradient(
+		100deg,
+		color-mix(in srgb, var(--sp-accent) 10%, transparent) 30%,
+		color-mix(in srgb, var(--sp-accent) 28%, transparent) 50%,
+		color-mix(in srgb, var(--sp-accent) 10%, transparent) 70%
+	);
+	background-size: 300% 100%;
+	animation: cd-shine 1.2s linear infinite;
+}
+
+/* 새로 채운 글: 왼쪽부터 드러난다 */
+.cd-typed {
+	display: inline-block;
+	animation: cd-type 0.7s ease-out calc(var(--i, 0) * 0.15s) both;
+}
+
+@keyframes cd-type {
+	from {
+		clip-path: inset(0 100% 0 0);
+	}
+	to {
+		clip-path: inset(0 0 0 0);
+	}
+}
+
+/* AI 요약 상자 (그 사이트의 접고 펼치는 상자) */
+.cd-summary-box {
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 18px;
+	background-color: var(--cr-bg);
+}
+
+.cd-summary-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	padding: 10px 18px;
+	border: none;
+	background: none;
+	color: var(--cr-muted) !important;
+	font-size: 12px !important;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+}
+
+.cd-summary-head:hover {
+	background-color: color-mix(in srgb, var(--cr-ink) 5%, transparent);
+}
+
+.cd-summary-head .fa-chevron-down {
+	transition: transform 0.2s;
+}
+
+.cd-summary-box[data-open] .fa-chevron-down {
+	transform: rotate(180deg);
+}
+
+.cd-summary-body {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.25s ease;
+}
+
+.cd-summary-box[data-open] .cd-summary-body {
+	grid-template-rows: 1fr;
+}
+
+.cd-summary-body > div {
+	min-height: 0;
+	overflow: hidden;
+}
+
+.cd-summary-body p {
+	margin: 0;
+	padding: 0 18px 16px;
+	color: var(--cr-muted);
+	font-size: 14px;
+	line-height: 1.7;
+}
+
+/* 요약 자리: 세 줄을 늘 잡아 두고, 만들기 전 안내는 작게 */
+.cd-summary-text {
+	min-height: calc(14px * 1.7 * 3 + 16px);
+}
+
+.cd-summary-text[data-empty] p {
+	font-size: 12px;
+}
+
+/* AI 커버: 16:9 자리를 늘 잡아 두고, 그리기 전에는 제목으로 고른 그라데이션 위에 제목을 얹는다 */
+.cd-cover-frame {
+	display: grid;
+	position: relative;
+	place-items: center;
+	overflow: hidden;
+	aspect-ratio: 16 / 9;
+	margin: 0;
+	border-radius: 8px;
+	background-size: cover;
+}
+
+.cd-cover-frame img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.cd-cover-frame figcaption {
+	max-width: 80%;
+	color: #ffffff;
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.3;
+	text-align: center;
+	text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+	overflow-wrap: anywhere;
+}
+
+.cd-cover-frame .cd-shimmer {
+	position: absolute;
+	inset: 0;
+	height: auto;
+	border-radius: 0;
+}
+
+.cd-dots i {
+	display: inline-block;
+	width: 5px;
+	height: 5px;
+	margin-right: 3px;
+	border-radius: 50%;
+	background-color: var(--sp-accent);
+	animation: cd-dot 0.9s ease-in-out infinite alternate;
+}
+
+.cd-dots i:nth-child(2) {
+	animation-delay: 0.15s;
+}
+
+.cd-dots i:nth-child(3) {
+	animation-delay: 0.3s;
+}
+
+@keyframes cd-dot {
+	to {
+		opacity: 0.2;
+		transform: translateY(-3px);
+	}
+}
+
+/* 테마: 왼쪽은 작은 홈 화면, 오른쪽은 프리셋과 다섯 색, 대비 */
+.cd-themes {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+	gap: 20px;
+	align-items: start;
+	margin-bottom: 32px;
+}
+
+.cd-site {
+	--t-muted: color-mix(in srgb, var(--t-text) 60%, var(--t-bg));
+	--t-line: color-mix(in srgb, var(--t-text) 14%, var(--t-bg));
+	display: grid;
+	gap: 14px;
+	padding: 14px 16px 18px;
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 12px;
+	background-color: var(--t-bg);
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+	color: var(--t-text);
+	transition:
+		background-color 0.5s,
+		color 0.5s;
+}
+
+.cd-site * {
+	transition:
+		background-color 0.5s,
+		color 0.5s,
+		border-color 0.5s;
+}
+
+.cd-site-bar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid var(--t-line);
+	font-size: 11px;
+}
+
+.cd-site-bar b {
+	margin-right: auto;
+	color: var(--t-accent-text);
+	font-size: 12px;
+	letter-spacing: 0.08em;
+}
+
+.cd-site-bar span {
+	color: var(--t-muted);
+}
+
+.cd-site-hero {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+}
+
+.cd-site-hero small {
+	color: var(--t-accent-text);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.cd-site-hero p {
+	margin: 4px 0 10px;
+	font-family: Georgia, 'Times New Roman', serif;
+	font-size: clamp(17px, 2.6cqi, 24px);
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.cd-site-button {
+	display: inline-block;
+	padding: 6px 12px;
+	border-radius: 999px;
+	background-color: var(--t-accent);
+	color: var(--t-on);
+	font-size: 11px;
+	font-weight: 700;
+}
+
+/* 토러스: 테마와 상관없이 라이트·다크 그림만 바뀐다 (실제 홈의 3D 고리를 오려 낸 그림) */
+.cd-torus {
+	flex: none;
+	width: 96px;
+	height: auto;
+}
+
+.cd-site-cards {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 8px;
+}
+
+.cd-site-cards > div {
+	display: grid;
+	gap: 5px;
+	padding: 6px;
+	border: 1px solid var(--t-line);
+	border-radius: 8px;
+}
+
+.cd-site-thumb {
+	aspect-ratio: 4 / 3;
+	border-radius: 5px;
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--t-accent) 70%, var(--t-bg)),
+		color-mix(in srgb, var(--t-accent) 20%, var(--t-bg))
+	);
+}
+
+.cd-site-cards em {
+	justify-self: start;
+	padding: 1px 6px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--t-accent) 16%, transparent);
+	color: var(--t-accent-text);
+	font-size: 10px;
+	font-style: normal;
+	font-weight: 700;
+}
+
+.cd-site-line {
+	height: 5px;
+	border-radius: 3px;
+	background-color: var(--t-line);
+}
+
+.cd-site-line.short {
+	width: 60%;
+}
+
+.cd-themes-side {
+	display: grid;
+	min-width: 0;
+	gap: 14px;
+}
+
+.cd-themes-top {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+}
+
+.cd-themes-name {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.cd-swatches {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(26px, 1fr));
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cd-swatches button {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1;
+	padding: 0;
+	border: 1px solid var(--cr-line);
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--s-accent) 50%, var(--s-bg) 50%);
+	transition: transform 0.2s;
+}
+
+.cd-swatches button:hover {
+	transform: scale(1.12);
+}
+
+.cd-swatches button[aria-pressed='true'] {
+	box-shadow:
+		0 0 0 2px var(--cr-bg),
+		0 0 0 4px var(--cr-ink);
+}
+
+.cd-themes-five {
+	display: grid;
+	gap: 4px;
+	margin: 0;
+}
+
+.cd-themes-five > div {
+	display: flex;
+	justify-content: space-between;
+	font-size: 12px;
+}
+
+.cd-themes-five dt {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--cr-muted);
+}
+
+.cd-themes-five dt i {
+	width: 12px;
+	height: 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 3px;
+	transition: background-color 0.5s;
+}
+
+.cd-themes-five dd {
+	margin: 0;
+	font-family: ui-monospace, monospace;
+}
+
+.cd-contrast {
+	display: grid;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cd-contrast li {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+}
+
+.cd-contrast small {
+	color: var(--cr-muted);
+	font-family: ui-monospace, monospace;
+	font-size: 11px;
+}
+
+.cd-contrast b {
+	font-variant-numeric: tabular-nums;
+}
+
+.cd-contrast span {
+	margin-left: auto;
+	padding: 1px 7px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, #2e9d5b 15%, transparent);
+	color: #2e9d5b;
+	font-weight: 700;
+}
+
+.cd-contrast li[data-grade='큰 글자 AA'] span {
+	background-color: color-mix(in srgb, #c98a12 15%, transparent);
+	color: #c98a12;
+}
+
+.cd-contrast li[data-grade='부족'] span {
+	background-color: color-mix(in srgb, #d64545 15%, transparent);
+	color: #d64545;
+}
+
+@container (max-width: 760px) {
+	.cd-themes {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.cd-convert-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.cd-slides-stage {
+		aspect-ratio: 16 / 9;
+	}
+
+	.cd-slide {
+		width: 72%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cd-slide,
+	.cd-site,
+	.cd-site * {
+		transition: none;
+	}
+
+	.cd-spin,
+	.cd-convert-grid li,
+	.cd-shimmer,
+	.cd-dots i {
+		animation: none;
+	}
+
+	.cd-typed {
+		animation: none;
+	}
+}

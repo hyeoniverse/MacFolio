@@ -45,7 +45,14 @@ export interface AppManifest {
 }
 
 export const APP_MANIFEST: Record<AppName, AppManifest> = {
-	finder: { label: 'Finder', icon: 'finder.png', inDock: true, runningAtStart: true },
+	// 사이트의 문서·프로젝트·블로그 글·앱을 파일처럼 둘러본다. 휴대폰에서는 iOS처럼 '파일'
+	finder: {
+		label: 'Finder',
+		icon: 'finder.png',
+		inDock: true,
+		mobile: { label: '파일', icon: 'finder.png' },
+		windowSize: { width: 820, height: 520 },
+	},
 	music: { label: '음악', icon: 'music.png', inDock: true, windowSize: { width: 960, height: 600 } },
 	safari: { label: 'Safari', icon: 'safari.png', inDock: true, runningAtStart: true },
 	photos: { label: '사진', icon: 'photos.png', inDock: true },

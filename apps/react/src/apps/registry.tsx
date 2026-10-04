@@ -14,9 +14,12 @@ import Passwords from '@/apps/passwords/Passwords';
 
 // Markdown 렌더러가 무거워서 메모(블로그)는 처음 열 때 불러온다
 const Memo = lazy(() => import('@/apps/memo/Memo'));
+// Finder는 저장소 문서를 묶어 두어서 처음 열 때 불러온다. 이 목록(WINDOW_APPS)을 Finder가 다시 읽으므로 지연 로딩이어야 한다
+const Finder = lazy(() => import('@/apps/finder/Finder'));
 
 /** 창으로 열리는 앱의 컴포넌트. 여기 없는 앱은 Dock 아이콘만 있다. */
 const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
+	finder: Finder,
 	music: Music,
 	safari: Safari,
 	memo: Memo,

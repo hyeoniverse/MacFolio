@@ -93,7 +93,7 @@
 	height: 32px;
 	margin: 0 auto;
 	padding: 0 12px;
-	border-radius: 10px;
+	border-radius: 999px;
 	background-color: var(--safari-address-bg);
 	font-size: 13px;
 }
@@ -154,6 +154,8 @@
 
 .safari-tab.active {
 	flex-grow: 2.6;
+	/* 탭이 많아 몫이 모자라도 지금 탭의 제목은 다 보이게 */
+	min-width: max-content;
 	background-color: var(--safari-bg);
 	box-shadow:
 		0 0 0 0.5px var(--safari-border),
@@ -349,6 +351,9 @@
 .safari-page {
 	flex: 1;
 	min-height: 0;
+	/* 옆으로는 스크롤하지 않는다 (페이지 가장자리의 몽이·하트 같은 장식이 옆 스크롤을 만들지 않게).
+	   스크롤 상자 자신에 거는 것이라 안쪽 sticky는 그대로 붙는다 */
+	overflow-x: hidden;
 	overflow-y: auto;
 }
 

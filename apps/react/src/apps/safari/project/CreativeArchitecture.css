@@ -1,0 +1,157 @@
+/* HYEONIVERSE 구조도: 트랙을 지나는 동안 그림이 화면에 고정되고, 스크롤한 만큼 상자가 켜지고 선이 그려진다 */
+.cr-arch-track {
+	--p: 0;
+	height: calc(var(--view, 700px) * 2);
+}
+
+.cr-arch-sticky {
+	position: sticky;
+	top: 0;
+	display: flex;
+	align-items: center;
+	height: var(--view, 700px);
+}
+
+.cr-arch {
+	width: 100%;
+	margin: 0;
+	padding: 32px 28px 24px;
+	border-radius: 28px;
+	background-color: var(--cr-tile, color-mix(in srgb, var(--cr-ink) 4%, var(--cr-bg)));
+}
+
+.cr-arch-scroll {
+	overflow-x: auto;
+}
+
+.cr-arch svg {
+	display: block;
+	width: 100%;
+	min-width: 640px;
+	height: auto;
+	font-family: inherit;
+}
+
+/* 단계마다 0→1: 앞 단계가 끝나면 다음이 시작된다 */
+.cr-node,
+.cr-edge {
+	--s: clamp(0, var(--p) * var(--n) - var(--i), 1);
+}
+
+.cr-node-body {
+	fill: color-mix(in srgb, var(--cr-bg) calc(40% + var(--s) * 60%), transparent);
+	stroke: color-mix(in srgb, var(--cr-ink) calc(10% + var(--s) * 18%), transparent);
+	stroke-width: 1;
+}
+
+.cr-node[data-main] .cr-node-body {
+	stroke: color-mix(
+		in srgb,
+		var(--sp-accent) calc(var(--s) * 100%),
+		color-mix(in srgb, var(--cr-ink) 12%, transparent)
+	);
+	stroke-width: 1.5;
+}
+
+.cr-node-line {
+	fill: none;
+	stroke: color-mix(in srgb, var(--cr-ink) calc(8% + var(--s) * 14%), transparent);
+	stroke-width: 1;
+}
+
+.cr-node-dot {
+	fill: color-mix(in srgb, var(--cr-ink) calc(15% + var(--s) * 20%), transparent);
+}
+
+.cr-node text {
+	text-anchor: middle;
+	opacity: calc(0.25 + var(--s) * 0.75);
+}
+
+.cr-node-label {
+	fill: var(--cr-ink);
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.cr-node-sub {
+	fill: var(--cr-muted);
+	font-size: 11.5px;
+}
+
+/* 아이콘은 Font Awesome 글자 (브랜드는 브랜드 글꼴) */
+.cr-node-icon {
+	fill: color-mix(in srgb, var(--sp-accent) calc(var(--s) * 100%), var(--cr-muted));
+	font-family: 'Font Awesome 6 Free';
+	font-size: 18px;
+	font-weight: 900;
+}
+
+.cr-node-icon.brand {
+	font-family: 'Font Awesome 6 Brands';
+	font-weight: 400;
+}
+
+.cr-edge > path {
+	fill: none;
+	stroke: var(--sp-accent);
+	stroke-width: 2;
+	stroke-dasharray: 1;
+	stroke-dashoffset: calc(1 - var(--s));
+	stroke-linecap: round;
+}
+
+/* 요청이 아닌 곁가지(배포, DB가 직접 보내는 메일)는 옅게 */
+.cr-edge[data-side] > path {
+	stroke: color-mix(in srgb, var(--sp-accent) 55%, var(--cr-muted));
+}
+
+/* 화살촉은 선이 거의 다 그려졌을 때 */
+.cr-edge marker path {
+	fill: var(--sp-accent);
+	stroke: none;
+	opacity: clamp(0, (var(--s) - 0.85) * 7, 1);
+}
+
+.cr-edge text {
+	fill: var(--cr-muted);
+	font-size: 12.5px;
+	text-anchor: middle;
+	opacity: var(--s);
+}
+
+.cr-arch figcaption {
+	margin-top: 14px;
+	color: var(--cr-muted);
+	font-size: 14px;
+	text-align: center;
+}
+
+/* 좁은 창과 움직임 줄이기: 고정하지 않고 다 그려진 채로 */
+@container (max-width: 760px) {
+	.cr-arch-track {
+		--p: 1 !important;
+		height: auto;
+	}
+
+	.cr-arch-sticky {
+		position: static;
+		height: auto;
+	}
+
+	.cr-arch {
+		padding: 20px 14px 16px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cr-arch-track {
+		--p: 1 !important;
+		height: auto;
+	}
+
+	.cr-arch-sticky {
+		position: static;
+		height: auto;
+	}
+}
