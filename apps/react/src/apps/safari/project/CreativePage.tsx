@@ -1,12 +1,13 @@
 // HYEONIVERSE (포트폴리오): 왼쪽에 제목과 차례가 붙어 있고, 오른쪽만 장(기능, 더 들려줄 장들, 진행 과정 또는 만든 방식, 맡은 일, 기술 사양)을 넘기며 내려간다.
 // 왼쪽 위에는 그 사이트의 마스코트 몽이가 서서, 지금 읽는 장에 따라 표정을 바꾼다
 import React, { useEffect, useRef, useState } from 'react';
-import type { Project, ProjectChapter, ProjectFact, ProjectPoint } from '@/shared/profile';
-import { FactValue, Favicon, Links, Shot } from '@/apps/safari/project/parts';
+import type { Project, ProjectChapter } from '@/shared/profile';
+import { Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
-import { Bars, Clip, Compare, FeatureMedia, ScrollFrames, ZoomImage } from '@/apps/safari/project/CreativeParts';
-import { Demo, Themes } from '@/apps/safari/project/CreativeDemos';
+import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project/CreativeParts';
+import { ChapterFacts, ChapterPoints } from '@/apps/safari/project/CreativeChapters';
+import { Themes } from '@/apps/safari/project/CreativeDemos';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
 /** 진행 과정이 있으면 만든 방식을 그 장에 품질 장치로 함께 싣는다 */
@@ -29,40 +30,9 @@ const READING: Mood[] = ['wave', 'star', 'happy', 'surprised'];
 const moodOf = (chapter: number, total: number): Mood =>
 	chapter < 0 ? 'normal' : chapter >= total ? 'sleep' : READING[chapter % READING.length];
 
-/** 장 안의 숫자 한 줄 */
-const ChapterFacts: React.FC<{ facts: ProjectFact[] }> = ({ facts }) => (
-	<ul className="cr-chapter-facts" data-reveal="">
-		{facts.map((fact) => (
-			<li key={fact.label}>
-				<FactValue text={fact.value} />
-				<span>{fact.label}</span>
-			</li>
-		))}
-	</ul>
-);
-
-/** 실제 화면 여러 장: 영상(.mp4)은 넓게 두고 화면에 보일 때만 돌리고, 그림은 눌러 크게 본다 */
-const Shots: React.FC<{ shots: NonNullable<ProjectPoint['shots']> }> = ({ shots }) => (
-	<div className="cr-shots">
-		<p>실제 화면</p>
-		<ul>
-			{shots.map((shot) => (
-				<li key={shot.src} data-video={shot.src.endsWith('.mp4') || undefined}>
-					{shot.src.endsWith('.mp4') ? (
-						<Clip src={shot.src} label={shot.alt} />
-					) : (
-						<ZoomImage src={shot.src} alt={shot.alt} />
-					)}
-					<span>{shot.alt}</span>
-				</li>
-			))}
-		</ul>
-	</div>
-);
-
-/** 더 들려줄 장 하나: 첫머리, 숫자, 테마 미리보기, 전후 막대, 글 묶음(그림이나 데모가 있으면 옆에), 장 끝 그림(다크가 있으면 밀대) */
+/** 더 들려줄 장 하나: 첫머리, 숫자, 테마 미리보기, 전후 막대, 장 모양(look)마다 다른 글 묶음, 장 끝 그림(다크가 있으면 밀대) */
 const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, no }) => (
-	<section className="cr-chapter" aria-label={chapter.title}>
+	<section className="cr-chapter" aria-label={chapter.title} data-look={chapter.look}>
 		<p className="cr-no">{no}</p>
 		<h2>{chapter.title}</h2>
 		{chapter.lead && (
@@ -70,41 +40,10 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 				{chapter.lead}
 			</p>
 		)}
-		{chapter.facts && <ChapterFacts facts={chapter.facts} />}
+		{chapter.facts && <ChapterFacts facts={chapter.facts} look={chapter.look} />}
 		{chapter.palette && <Themes palette={chapter.palette} />}
 		{chapter.compare && <Bars rows={chapter.compare} />}
-		<div className="cr-build">
-			{chapter.points.map((point, i) => (
-				<article
-					key={point.title}
-					data-reveal=""
-					data-wide={point.image || point.demo || point.shots ? '' : undefined}
-					data-demo={point.demo || point.shots ? '' : undefined}
-					style={{ '--d': i % 2 } as React.CSSProperties}
-				>
-					{point.demo ? (
-						<div className="cr-point-demo">
-							<Demo kind={point.demo} />
-							{point.shots && <Shots shots={point.shots} />}
-						</div>
-					) : point.shots ? (
-						<div className="cr-point-demo">
-							<Shots shots={point.shots} />
-						</div>
-					) : (
-						point.image && (
-							<figure className="cr-point-shot">
-								<ZoomImage src={point.image} alt={`${point.title} 화면`} />
-							</figure>
-						)
-					)}
-					<div>
-						<h3>{point.title}</h3>
-						<p>{point.body}</p>
-					</div>
-				</article>
-			))}
-		</div>
+		<ChapterPoints chapter={chapter} />
 		{chapter.image && (
 			<figure className="cr-figure" data-reveal="">
 				{chapter.image.dark ? (
@@ -131,6 +70,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	const [hearts, setHearts] = useState<{ id: number; dx: number }[]>([]);
 	const heartId = useRef(0);
 	const index = useRef<HTMLElement>(null);
+	const mini = useRef<HTMLElement>(null);
 	const root = useReveal<HTMLDivElement>();
 	const pet = () => {
 		const burst = Array.from({ length: 6 }, (_, i) => ({ id: (heartId.current += 1), dx: (i - 2.5) * 22 }));
@@ -179,6 +119,13 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 		parts.forEach((part) => observer.observe(part));
 		return () => observer.disconnect();
 	}, []);
+	// 좁은 창의 가로 차례 줄: 지금 읽는 장 칩이 줄 가운데쯤 오게 옆으로 민다
+	useEffect(() => {
+		const bar = mini.current;
+		const item = bar?.querySelector<HTMLElement>('[aria-current]');
+		if (!bar || !item) return;
+		bar.scrollLeft = item.offsetLeft - (bar.clientWidth - item.offsetWidth) / 2;
+	}, [chapter]);
 	// 차례가 길어 칸 안에서 스크롤될 때, 지금 읽는 장이 차례 칸 밖으로 나가 있으면 보이는 곳으로 당긴다
 	useEffect(() => {
 		const nav = index.current;
@@ -246,6 +193,20 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 			</div>
 
 			<div className="cr-main" ref={main}>
+				{/* 좁은 창에서는 왼쪽 차례가 위로 지나가 버리므로, 내용 위에 붙는 가로 차례 줄로 지금 장을 늘 보여 준다 */}
+				<nav className="cr-mininav" aria-label="지금 읽는 장" ref={mini}>
+					{titles.map((title, i) => (
+						<button
+							key={title}
+							type="button"
+							onClick={() => open(i)}
+							aria-current={chapter === i || (i === titles.length - 1 && chapter >= titles.length) ? 'step' : undefined}
+						>
+							<span>{number(i)}</span>
+							{title}
+						</button>
+					))}
+				</nav>
 				<Shot project={project} className="cr-shot" />
 
 				<section className="cr-facts" aria-label="한눈에 보기" data-reveal="">

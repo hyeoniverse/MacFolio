@@ -1,0 +1,454 @@
+/* HYEONIVERSE 장마다 다른 짜임: Apple 제품 페이지처럼 테두리 없는 둥근 타일, 넉넉한 안쪽 여백, 큰 제목 */
+.cr-chapter {
+	--cr-tile: color-mix(in srgb, var(--cr-ink) 4%, var(--cr-bg));
+}
+
+.cr-tile {
+	min-width: 0;
+	padding: 28px;
+	border-radius: 24px;
+	background-color: var(--cr-tile);
+}
+
+.cr-tile h3 {
+	font-size: 22px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	line-height: 1.25;
+}
+
+.cr-tile p {
+	margin-top: 8px;
+	color: var(--cr-muted);
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+.cr-tile-icon {
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	margin-bottom: 16px;
+	border-radius: 12px;
+	background-color: color-mix(in srgb, var(--sp-accent) 12%, transparent);
+	color: var(--sp-accent);
+	font-size: 17px;
+}
+
+.cr-eyebrow {
+	margin-bottom: 6px;
+	color: var(--sp-accent);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+}
+
+/* 타일 안 데모는 타일 위에 그대로 놓는다 (데모의 테두리·바탕은 지운다) */
+.cr-tile .cr-point-demo {
+	margin-top: 20px;
+}
+
+.cr-tile .cr-point-demo > :first-child:not(.cr-shots) {
+	border: none;
+	background-color: var(--cr-bg);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cr-tile .cr-point-shot {
+	margin-top: 20px;
+	border: none;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* showcase (관리자와 CMS): 왼쪽 목록에서 고르면 오른쪽 큰 화면이 바뀐다 */
+.cr-showcase {
+	display: grid;
+	grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+	gap: 28px;
+	align-items: start;
+	padding: 24px;
+	border-radius: 28px;
+	background-color: var(--cr-tile);
+}
+
+.cr-showcase-list {
+	display: grid;
+	gap: 2px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cr-showcase-list button {
+	display: flex;
+	gap: 12px;
+	align-items: baseline;
+	width: 100%;
+	padding: 12px 14px;
+	border: none;
+	border-radius: 14px;
+	background: none;
+	color: var(--cr-muted);
+	font: inherit;
+	font-size: 16px;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		background-color 0.25s,
+		color 0.25s;
+}
+
+.cr-showcase-list button:hover {
+	color: var(--cr-ink);
+}
+
+.cr-showcase-no {
+	color: var(--cr-muted);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+.cr-showcase-list li[data-active] button {
+	background-color: var(--cr-bg);
+	color: var(--cr-ink);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.cr-showcase-list li[data-active] .cr-showcase-no {
+	color: var(--sp-accent);
+}
+
+/* 고른 항목만 설명이 펼쳐진다 */
+.cr-showcase-body {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.35s ease;
+}
+
+.cr-showcase-list li[data-active] .cr-showcase-body {
+	grid-template-rows: 1fr;
+}
+
+.cr-showcase-body p {
+	min-height: 0;
+	overflow: hidden;
+	padding: 0 14px 0 40px;
+	color: var(--cr-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.cr-showcase-list li[data-active] .cr-showcase-body p {
+	padding-top: 8px;
+	padding-bottom: 12px;
+}
+
+/* 큰 화면: 그림들을 겹쳐 두고 고른 것만 보인다 (자리는 늘 같다) */
+.cr-showcase-stage {
+	display: grid;
+	position: sticky;
+	top: 24px;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+	border-radius: 18px;
+	background-color: var(--cr-bg);
+	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+
+.cr-showcase-stage figure {
+	grid-area: 1 / 1;
+	margin: 0;
+	opacity: 0;
+	transform: scale(1.02);
+	transition:
+		opacity 0.45s ease,
+		transform 0.6s ease;
+	pointer-events: none;
+}
+
+.cr-showcase-stage figure[data-active] {
+	opacity: 1;
+	transform: none;
+	pointer-events: auto;
+}
+
+.cr-showcase-stage .cr-zoom img {
+	height: 100%;
+	aspect-ratio: 16 / 10;
+	background-color: var(--cr-bg);
+	object-fit: contain;
+}
+
+.cr-showcase-empty {
+	grid-area: 1 / 1;
+	place-self: center;
+	color: var(--cr-muted);
+}
+
+/* stage (발표 갤러리와 음성): 데모마다 큰 무대 */
+.cr-stage {
+	display: grid;
+	gap: 20px;
+}
+
+.cr-stage .cr-tile {
+	padding: 36px;
+}
+
+.cr-stage header {
+	max-width: 40em;
+}
+
+.cr-stage header h3 {
+	font-size: clamp(24px, 3cqi, 32px);
+}
+
+/* bento (AI 번역·요약·커버): 데모·그림 타일은 반씩, 글 타일은 작게 */
+.cr-bento {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.cr-bento .cr-tile[data-size='image'] .cr-zoom img {
+	aspect-ratio: 16 / 10;
+}
+
+/* dashboard (트래픽 분석): 숫자 타일, 큰 화면, 아이콘 카드 */
+.cr-chapter-facts[data-look='dashboard'] {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+	padding: 0;
+	border: none;
+}
+
+.cr-chapter-facts[data-look='dashboard'] li {
+	padding: 24px;
+	border-radius: 20px;
+	background-color: var(--cr-tile);
+}
+
+.cr-dashboard {
+	display: grid;
+	gap: 16px;
+}
+
+.cr-dashboard-hero header {
+	max-width: 44em;
+}
+
+.cr-dashboard-hero .cr-shots > p {
+	display: none;
+}
+
+.cr-dashboard-cards {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.cr-dashboard-cards .cr-tile {
+	padding: 24px;
+}
+
+.cr-dashboard-cards h3 {
+	font-size: 18px;
+}
+
+.cr-dashboard-cards p {
+	font-size: 14px;
+}
+
+/* gauges (성능): Lighthouse 같은 점수 고리 */
+.cr-gauges {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	gap: 16px;
+	margin: 0 0 28px;
+	padding: 0;
+	list-style: none;
+}
+
+.cr-gauges li {
+	display: grid;
+	justify-items: center;
+	gap: 10px;
+	padding: 24px 12px;
+	border-radius: 20px;
+	background-color: var(--cr-tile);
+	text-align: center;
+}
+
+.cr-gauges li > span:last-child {
+	color: var(--cr-muted);
+	font-size: 13px;
+}
+
+.cr-gauge {
+	display: grid;
+	place-items: center;
+	width: 96px;
+	aspect-ratio: 1;
+	border-radius: 50%;
+	font-size: 26px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+.cr-gauge[data-score] {
+	background:
+		radial-gradient(closest-side, var(--cr-tile) 82%, transparent 83%),
+		conic-gradient(#0cce6b calc(var(--score) * 1%), color-mix(in srgb, #0cce6b 18%, transparent) 0);
+	color: #0a8f4b;
+}
+
+:root[data-theme='dark'] .cr-gauge[data-score] {
+	color: #3ddc84;
+}
+
+.cr-gauge:not([data-score]) {
+	border: 6px solid color-mix(in srgb, var(--sp-accent) 25%, transparent);
+	color: var(--sp-accent);
+	font-size: 22px;
+}
+
+.cr-numbered {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+	margin: 28px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cr-numbered li {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 18px;
+	padding: 24px;
+	border-radius: 20px;
+	background-color: var(--cr-tile);
+}
+
+.cr-numbered-no {
+	color: var(--sp-accent);
+	font-family: var(--sp-serif);
+	font-size: 44px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.cr-numbered h3 {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.cr-numbered p {
+	margin-top: 6px;
+	color: var(--cr-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+/* shield (보안과 데이터): 바깥 방어부터 DB까지, 안으로 갈수록 한 칸씩 들어가고 진해진다 */
+.cr-shield {
+	display: grid;
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cr-shield li {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 18px;
+	align-items: start;
+	margin-left: calc(var(--depth) * 18px);
+	padding: 22px 24px;
+	border-radius: 20px;
+	background-color: color-mix(in srgb, var(--sp-accent) calc(3% + var(--depth) * 2.5%), var(--cr-bg));
+}
+
+.cr-shield-icon {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background-color: var(--cr-bg);
+	color: var(--sp-accent);
+	font-size: 18px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cr-shield h3 {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.cr-shield p {
+	margin-top: 6px;
+	color: var(--cr-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+/* palette (테마): 아이콘이 붙은 작은 타일 세 줄 */
+.cr-tiles {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.cr-tiles .cr-tile {
+	padding: 24px;
+}
+
+.cr-tiles h3 {
+	font-size: 18px;
+}
+
+.cr-tiles p {
+	font-size: 14px;
+}
+
+.cr-tiles .cr-point-demo,
+.cr-tiles .cr-point-shot {
+	margin-top: 16px;
+}
+
+/* 좁은 창: 모두 한 줄로 */
+@container (max-width: 760px) {
+	.cr-showcase,
+	.cr-bento,
+	.cr-dashboard-cards,
+	.cr-numbered,
+	.cr-tiles,
+	.cr-chapter-facts[data-look='dashboard'] {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.cr-showcase {
+		padding: 16px;
+	}
+
+	/* 큰 화면을 목록 위로 올린다 */
+	.cr-showcase-stage {
+		position: relative;
+		top: 0;
+		order: -1;
+	}
+
+	.cr-tile,
+	.cr-stage .cr-tile {
+		padding: 22px;
+	}
+
+	.cr-shield li {
+		margin-left: calc(var(--depth) * 8px);
+	}
+}

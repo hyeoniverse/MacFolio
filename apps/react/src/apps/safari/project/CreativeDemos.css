@@ -373,9 +373,32 @@
 }
 
 .cd-voice-lyric {
+	/* 두 줄 자리를 늘 잡아 둔다 */
+	min-height: 3em;
 	margin: 0;
 	font-size: 14px;
 	line-height: 1.5;
+}
+
+.cd-voice-lyric[data-empty] .cd-lyric {
+	font-size: 12px;
+}
+
+.cd-player[data-empty] {
+	opacity: 0.45;
+}
+
+.cd-player button:disabled,
+.cd-player input:disabled {
+	cursor: default;
+}
+
+/* 공급자 칸과 아래 상태 글은 한 줄로 (길어지면 말줄임) */
+.cd-voice-chain small,
+.cd-voice-foot p {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .cd-voice-script {

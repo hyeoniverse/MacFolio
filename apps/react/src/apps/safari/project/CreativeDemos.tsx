@@ -472,14 +472,19 @@ const Voice: React.FC = () => {
 					{[...text].length}/{MAX_SPEECH_CHARS}
 				</small>
 			</label>
-			{made && (
-				<p className="cd-voice-lyric" aria-label={made.text}>
-					<span className="cd-lyric">
-						<b>{made.text.slice(0, read)}</b>
-						{made.text.slice(read)}
-					</span>
-				</p>
-			)}
+			{/* 자리는 늘 잡아 두고 내용만 바꾼다 (상태에 따라 아래가 밀리지 않게) */}
+			<p className="cd-voice-lyric" aria-label={made?.text} data-empty={!made || undefined}>
+				<span className="cd-lyric">
+					{made ? (
+						<>
+							<b>{made.text.slice(0, read)}</b>
+							{made.text.slice(read)}
+						</>
+					) : (
+						'만든 음성을 틀면 여기서 대본이 읽는 만큼 채워집니다'
+					)}
+				</span>
+			</p>
 			<ol className="cd-voice-chain" aria-label="공급자 차례 (눌러서 막아 보기)">
 				{PROVIDERS.map((provider) => (
 					<li key={provider}>
@@ -512,44 +517,46 @@ const Voice: React.FC = () => {
 					</li>
 				))}
 			</ol>
-			{made && (
-				<div className="cd-player">
-					<button
-						type="button"
-						aria-label={playing ? '일시정지' : '재생'}
-						onClick={() => {
-							const el = player();
-							if (el.paused) void el.play().catch(() => undefined);
-							else el.pause();
-						}}
-					>
-						<i className={`fa-solid ${playing ? 'fa-pause' : 'fa-play'}`} />
-					</button>
-					<input
-						type="range"
-						aria-label="재생 위치"
-						min={0}
-						max={length || 1}
-						step={0.05}
-						value={time}
-						onChange={(event) => {
-							const el = player();
-							el.currentTime = Number(event.target.value);
-							setTime(el.currentTime);
-						}}
-						style={{ '--fill': `${length ? (time / length) * 100 : 0}%` } as React.CSSProperties}
-					/>
-					<span>
-						{clock(time)} / {clock(length)}
-					</span>
-				</div>
-			)}
+			<div className="cd-player" data-empty={!made || undefined}>
+				<button
+					type="button"
+					disabled={!made}
+					aria-label={playing ? '일시정지' : '재생'}
+					onClick={() => {
+						const el = player();
+						if (el.paused) void el.play().catch(() => undefined);
+						else el.pause();
+					}}
+				>
+					<i className={`fa-solid ${playing ? 'fa-pause' : 'fa-play'}`} />
+				</button>
+				<input
+					type="range"
+					aria-label="재생 위치"
+					disabled={!made}
+					min={0}
+					max={length || 1}
+					step={0.05}
+					value={time}
+					onChange={(event) => {
+						const el = player();
+						el.currentTime = Number(event.target.value);
+						setTime(el.currentTime);
+					}}
+					style={{ '--fill': `${length ? (time / length) * 100 : 0}%` } as React.CSSProperties}
+				/>
+				<span>
+					{clock(time)} / {clock(length)}
+				</span>
+			</div>
 			<div className="cd-voice-foot">
 				<button type="button" className="cd-primary" onClick={make} disabled={running || !text.trim() || left === 0}>
 					<i className="fa-solid fa-wand-magic-sparkles" /> 음성 만들기
 				</button>
 				<p role="status">{status}</p>
-				{typeof left === 'number' && <span className="cd-chip">오늘 {left}번 남음</span>}
+				<span className="cd-chip">
+					{typeof left === 'number' ? `오늘 ${left}번 남음` : `하루 ${quota?.perIp ?? 3}번`}
+				</span>
 			</div>
 		</div>
 	);

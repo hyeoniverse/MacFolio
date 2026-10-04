@@ -1423,3 +1423,55 @@
 		animation: none;
 	}
 }
+
+/* 좁은 창의 가로 차례 줄: 내용 위에 붙어 지금 읽는 장을 늘 보여 준다 (넓은 창에서는 왼쪽 차례가 그 일을 한다) */
+.cr-mininav {
+	display: none;
+}
+
+@container (max-width: 760px) {
+	.cr-mininav {
+		display: flex;
+		position: sticky;
+		top: 0;
+		z-index: 5;
+		gap: 6px;
+		margin: 0 -20px 8px;
+		padding: 10px 20px;
+		overflow-x: auto;
+		background-color: color-mix(in srgb, var(--cr-bg) 86%, transparent);
+		-webkit-backdrop-filter: saturate(180%) blur(16px);
+		backdrop-filter: saturate(180%) blur(16px);
+		border-bottom: 1px solid var(--cr-line);
+		scroll-behavior: smooth;
+		scrollbar-width: none;
+	}
+
+	.cr-mininav::-webkit-scrollbar {
+		display: none;
+	}
+
+	.cr-mininav button {
+		flex: none;
+		padding: 6px 12px;
+		border: 1px solid var(--cr-line);
+		border-radius: 999px;
+		background: none;
+		color: var(--cr-muted);
+		font: inherit;
+		font-size: 13px;
+		white-space: nowrap;
+		cursor: pointer;
+	}
+
+	.cr-mininav button span {
+		margin-right: 6px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.cr-mininav button[aria-current] {
+		border-color: var(--cr-ink);
+		background-color: var(--cr-ink);
+		color: var(--cr-bg);
+	}
+}
