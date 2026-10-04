@@ -22,9 +22,9 @@
 
 	overflow: hidden;
 	position: absolute;
-	top: 2rem;
-	right: 8.5rem;
 	z-index: 5;
+	/* left·top은 음량 아이콘 아래 가운데 (MusicPlayerVolume.tsx). 창 폭의 절반만큼 왼쪽으로 */
+	translate: -50% 0;
 
 	width: 2rem;
 	height: 6rem;
