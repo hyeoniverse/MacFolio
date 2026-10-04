@@ -53,6 +53,8 @@ export interface ProjectPoint {
 	demo?: 'slides' | 'voice' | 'wave' | 'convert' | 'translate' | 'summary';
 	/** 데모 아래나 글 옆에 붙일 실제 화면 여러 장 (.mp4는 화면에 보일 때만 도는 영상) */
 	shots?: { src: string; alt: string }[];
+	/** 카드에 붙일 아이콘 (Font Awesome 이름, 예: fa-lock) */
+	icon?: string;
 }
 
 /** 테마 하나를 이루는 다섯 색 (강조색, 라이트·다크의 바탕과 글자) */
@@ -77,6 +79,11 @@ export interface ProjectChapter {
 	image?: { src: string; alt: string; dark?: string };
 	/** 전후 비교: 화면에 들어오면 막대가 전에서 후로 줄어든다 */
 	compare?: { label: string; before: number; after: number; unit: string }[];
+	/**
+	 * 장 모양 (글 묶음의 짜임): showcase 항목을 고르면 큰 화면이 바뀜, stage 데모마다 큰 무대, bento 크기가 다른 타일,
+	 * dashboard 숫자 타일과 큰 화면, gauges 점수 고리와 번호 목록, shield 겹겹이 쌓인 방어, palette 작은 타일. 없으면 두 칸 글 묶음
+	 */
+	look?: 'showcase' | 'stage' | 'bento' | 'dashboard' | 'gauges' | 'shield' | 'palette';
 	/** 테마 프리셋: 고르면 미리보기 화면의 색이 그 테마로 바뀐다 */
 	palette?: ThemeSwatch[];
 	/** 데이터베이스 구조: 문서(테이블) 경로, 누가 읽는지, 필드, 한 줄 설명. parent가 있으면 그 문서의 하위 문서 */
@@ -839,6 +846,7 @@ export const PROJECTS: Project[] = [
 		chapters: [
 			{
 				title: '관리자와 CMS',
+				look: 'showcase',
 				lead: '글과 작업물을 쓰고, 고치고, 발행하고, 지우는 일을 모두 관리자 화면에서 합니다. 글 한 편이 쓰여 발행되고 휴지통을 거쳐 사라지기까지의 길을 따라, 사이트 문구와 권한까지 코드 배포 없이 바꿉니다.',
 				points: [
 					{
@@ -894,6 +902,7 @@ export const PROJECTS: Project[] = [
 			},
 			{
 				title: '발표 갤러리와 음성',
+				look: 'stage',
 				lead: '작업물마다 발표 자료를 슬라이드 갤러리로 올리고, 장마다 목소리를 입혀 발표처럼 넘어가게 합니다. 자료를 그림으로 바꾸는 일부터 대본, 음성, 녹음 다듬기까지 편집 화면 안에서 끝납니다.',
 				facts: [
 					{ value: '3곳', label: 'TTS (Fish · Google · Edge)' },
@@ -964,6 +973,7 @@ export const PROJECTS: Project[] = [
 			},
 			{
 				title: 'AI 번역 · 요약 · 커버',
+				look: 'bento',
 				lead: '글과 작업물은 한국어와 영어 칸을 따로 둡니다. 한쪽만 써도 나머지는 번역이 채우고, 발행하면 두 언어의 요약이 붙고, 커버가 비어 있으면 사진을 찾아 채웁니다.',
 				facts: [
 					{ value: '4곳', label: '번역 (DeepL · Google · Gemini · Claude)' },
@@ -1010,6 +1020,7 @@ export const PROJECTS: Project[] = [
 			},
 			{
 				title: '트래픽 분석',
+				look: 'dashboard',
 				lead: '방문과 조회를 외부 분석 도구에만 맡기지 않고 직접 모아, 관리자의 트래픽 페이지에서 어디서 와서 무엇을 봤는지 봅니다. 방문자 쿠키 없이 IP와 날짜로만 세고, 90일이 지나면 IP를 지웁니다.',
 				facts: [
 					{ value: '4가지', label: '기간 (7 · 14 · 30 · 90일)' },
@@ -1029,32 +1040,39 @@ export const PROJECTS: Project[] = [
 					},
 					{
 						title: '하루 한 번, 랜딩 한 번',
+						icon: 'fa-calendar-day',
 						body: '페이지를 처음 열 때 한 번만 방문을 보내고, 서버는 (IP, 날짜)를 유일 키로 하루 한 행만 남겨 그날 처음 들어온 페이지를 랜딩으로 삼습니다. 로그인한 관리자와 "내 IP"로 지정한 주소는 세지 않고, 글·작업물 조회수도 한국 시간 기준 하루 한 번만 오르도록 DB 함수 한 번에 처리합니다.',
 					},
 					{
 						title: '봇은 버리지 않고 따로',
+						icon: 'fa-robot',
 						body: '외부 라이브러리 없이 User-Agent에서 기기 종류·OS·브라우저·모델을 뽑고, 봇으로 보이는 방문은 버리지 않고 봇 표시를 붙여 따로 남깁니다. 집계에서는 빼되 몇 건을 뺐는지는 요약에 보여 줍니다.',
 					},
 					{
 						title: '유입 채널 여섯 갈래',
+						icon: 'fa-route',
 						body: 'Referer 호스트를 검색·소셜·커뮤니티·개발·직접·기타로 나누고, 채널마다 상위 호스트 8개까지 펼쳐 봅니다. 자기 도메인에서 넘어온 것은 직접으로 셉니다. UTM 링크 생성기로 만든 캠페인 링크는 조합마다 묶여 보입니다.',
 					},
 					{
 						title: 'IP는 가리고, 90일 뒤엔 지운다',
+						icon: 'fa-user-secret',
 						body: '관리자 화면에도 a.b.x.x처럼 가린 IP와 HMAC 키만 내려가고, 원문 IP는 응답에 실리지 않습니다. 매일 새벽 DB 안의 pg_cron이 90일 지난 방문과 조회 기록의 IP를 익명화하고, 집계에 쓰는 칸은 남깁니다.',
 					},
 					{
 						title: '방문 급증 알림',
+						icon: 'fa-bell',
 						body: '오늘 방문이 15건을 넘으면서 직전 7일 평균의 3배를 넘으면, 관리자 알림에 "방문 급증"을 하루 한 번 남깁니다.',
 					},
 					{
 						title: '대시보드의 조회 추세',
+						icon: 'fa-chart-line',
 						body: '차트 라이브러리 없이 SVG로 그린 일별 조회 차트를 선과 달력으로 바꿔 보고, 날짜를 누르면 그날 많이 본 글이 나옵니다. 기록을 시작한 날부터 빈 날은 0으로 채워 최대 730일까지 봅니다.',
 					},
 				],
 			},
 			{
 				title: '테마',
+				look: 'palette',
 				lead: '사이트의 색은 코드가 아니라 관리자 설정에서 고릅니다. 아래에서 프리셋을 누르거나 라이트·다크를 바꿔 보면, 같은 화면에서 무엇이 바뀌고 무엇이 남는지 보입니다.',
 				facts: [
 					{ value: '18개', label: '테마 프리셋' },
@@ -1214,20 +1232,24 @@ export const PROJECTS: Project[] = [
 				points: [
 					{
 						title: '다섯 색이 한 테마',
+						icon: 'fa-palette',
 						body: '강조색과 라이트·다크 각각의 바탕색·글자색, 다섯 값으로 테마 하나가 정해집니다. 회색 단계와 강조색 면 위의 글자색은 이 다섯 값에서 계산해 고릅니다.',
 					},
 					{
 						title: '색상환 순서의 프리셋',
+						icon: 'fa-swatchbook',
 						body: '기본 마젠타 다음부터 빨강·주황·초록·파랑·보라 순으로 놓고, 색이 거의 없는 Slate를 맨 뒤에 둡니다. 강조색끼리는 ΔE 20 이상 떨어뜨려 비슷해 보이지 않게 했고, 지금 고른 다섯 색은 +로 내 프리셋에 저장합니다.',
 						image: projectImage('hyeoniverse', 'cms/theme-presets.jpg'),
 					},
 					{
 						title: '대비 점검',
+						icon: 'fa-circle-half-stroke',
 						body: '색을 고르면 라이트와 다크에서 본문·흐린 글자·강조 링크·강조색 그래픽·버튼 글자의 대비와 링크↔본문 색 차이를 바로 세어 표로 보여 줍니다. 강조색이 글자로 쓰일 때 사이트가 명도만 옮겨 4.5:1을 맞춘 값은 "자동 보정"으로 표시됩니다.',
 						image: projectImage('hyeoniverse', 'cms/theme-contrast.jpg'),
 					},
 					{
 						title: '색상환 추천과 이미지에서 뽑기',
+						icon: 'fa-eye-dropper',
 						body: '색상환에서 유사색·보색·분할 보색·삼각·단색 규칙으로 후보를 뽑거나, 이미지를 올려 그 안의 색 여섯을 뽑아 후보로 만듭니다. 이미지는 브라우저 안에서만 읽고 서버에 올리지 않습니다.',
 						shots: [
 							{ src: projectImage('hyeoniverse', 'cms/theme-wheel.jpg'), alt: '색상환 추천' },
@@ -1236,16 +1258,19 @@ export const PROJECTS: Project[] = [
 					},
 					{
 						title: '로고와 3D도 함께',
+						icon: 'fa-cube',
 						body: '그림 로고는 테마 색으로 칠할 수 있고, giscus 댓글도 모드마다 테마를 따로 정합니다. 홈의 3D 토러스는 색 프리셋을 따르지 않고 라이트·다크 두 벌의 재질만 오갑니다.',
 					},
 					{
 						title: '시스템 설정을 따르는 모드',
+						icon: 'fa-desktop',
 						body: '모드는 라이트와 다크 두 가지이고, 방문자가 고른 적이 없으면 운영체제 설정을 따릅니다.',
 					},
 				],
 			},
 			{
 				title: '성능',
+				look: 'gauges',
 				lead: '느린 화면을 감으로 고치지 않고, 원인을 나눠 잰 뒤 같은 조건에서 다시 쟀습니다. 운영 사이트를 데스크톱 Lighthouse로 세 번 잰 중앙값입니다.',
 				facts: [
 					{ value: '97점', label: '성능' },
@@ -1281,27 +1306,33 @@ export const PROJECTS: Project[] = [
 			},
 			{
 				title: '보안과 데이터',
+				look: 'shield',
 				lead: '권한은 API 코드만 믿지 않고 DB가 마지막에 확인합니다. 지운 데이터는 되돌릴 수 있고, 동시 저장은 충돌로 알아챕니다.',
 				points: [
 					{
-						title: 'DB가 판정하는 권한',
-						body: '서버 검사가 빠진 요청으로 비공개 글이 보인 일을 겪은 뒤, 역할을 읽는 RLS 정책으로 판정을 옮겼습니다. 소유자·관리자·저자·방문자 네 단계입니다.',
-					},
-					{
-						title: '역할은 고칠 수 없는 곳에',
-						body: '역할은 사용자가 고칠 수 있는 user_metadata가 아니라 서버만 쓰는 app_metadata에 둡니다. 정책 하나가 잘못 적혀 익명에게 열린 테이블이 생긴 뒤로는 익명 쓰기 권한 자체를 회수했습니다.',
-					},
-					{
 						title: '로그인 보호',
+						icon: 'fa-right-to-bracket',
 						body: 'API 쓰기 요청은 Origin을 대조해 맞지 않으면 거절합니다. 로그인은 5회 실패하면 15분 잠그고, 처음 보는 기기는 메일로 승인받습니다.',
 					},
 					{
-						title: '정기 작업은 DB 안에서',
-						body: '예약 발행과 휴지통 정리는 인터넷에 열린 cron API 대신 DB 안의 pg_cron이 돌리고, 실패하면 관리자 알림을 남깁니다.',
+						title: '댓글 정제',
+						icon: 'fa-filter',
+						body: '댓글 마크다운은 태그와 속성을 화이트리스트로 거르고, 이미지는 외부 주소만 받습니다. 이모지 반응은 IP 원문이 아니라 해시만 저장합니다.',
 					},
 					{
-						title: '댓글 정제',
-						body: '댓글 마크다운은 태그와 속성을 화이트리스트로 거르고, 이미지는 외부 주소만 받습니다. 이모지 반응은 IP 원문이 아니라 해시만 저장합니다.',
+						title: '역할은 고칠 수 없는 곳에',
+						icon: 'fa-id-badge',
+						body: '역할은 사용자가 고칠 수 있는 user_metadata가 아니라 서버만 쓰는 app_metadata에 둡니다. 정책 하나가 잘못 적혀 익명에게 열린 테이블이 생긴 뒤로는 익명 쓰기 권한 자체를 회수했습니다.',
+					},
+					{
+						title: 'DB가 판정하는 권한',
+						icon: 'fa-database',
+						body: '서버 검사가 빠진 요청으로 비공개 글이 보인 일을 겪은 뒤, 역할을 읽는 RLS 정책으로 판정을 옮겼습니다. 소유자·관리자·저자·방문자 네 단계입니다.',
+					},
+					{
+						title: '정기 작업은 DB 안에서',
+						icon: 'fa-clock',
+						body: '예약 발행과 휴지통 정리는 인터넷에 열린 cron API 대신 DB 안의 pg_cron이 돌리고, 실패하면 관리자 알림을 남깁니다.',
 					},
 				],
 			},

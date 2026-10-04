@@ -145,12 +145,12 @@ test.describe('Safari', () => {
 		// 포트폴리오: 차례를 누르면 그 장으로 간다
 		await open(/HYEONIVERSE/);
 		await panel
-			.getByRole('navigation', { name: '차례' })
+			.getByRole('navigation', { name: '차례', exact: true })
 			.getByRole('button', { name: /기술 사양/ })
 			.click();
 		await expect(panel.getByRole('region', { name: '기술 사양' })).toBeInViewport();
 		await expect(
-			panel.getByRole('navigation', { name: '차례' }).getByRole('button', { name: /기술 사양/ })
+			panel.getByRole('navigation', { name: '차례', exact: true }).getByRole('button', { name: /기술 사양/ })
 		).toHaveAttribute('aria-current', 'step');
 		// 테마: 프리셋을 고르면 미리보기 이름이 바뀌고, 다크로 바꿀 수 있다
 		const themes = panel.getByRole('region', { name: '테마' });
