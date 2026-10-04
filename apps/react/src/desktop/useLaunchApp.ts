@@ -38,7 +38,10 @@ export function useLaunchApp() {
 
 	/** 실행 중 표시(점). 공유 앱은 알림이 떠 있는 동안 켠다. */
 	const isActive = (appName: AppName) =>
-		APP_MANIFEST[appName].action?.type === 'share' ? isSharing : apps[appName].isRunning;
+		APP_MANIFEST[appName].action?.type === 'share'
+			? isSharing
+			: // Finder처럼 끌 수 없는 앱은 창이 없어도 늘 켜짐
+				APP_MANIFEST[appName].alwaysRunning === true || apps[appName].isRunning;
 
 	return { launch, isActive };
 }
