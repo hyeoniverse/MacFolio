@@ -29,6 +29,8 @@ export interface AppManifest {
 	inDock: boolean;
 	/** 처음 화면에 들어왔을 때 실행 중인 상태로 시작할지 여부 */
 	runningAtStart?: boolean;
+	/** 끌 수 없는 앱 (macOS의 Finder): 창을 닫아도 Dock의 켜짐 표시가 남는다 */
+	alwaysRunning?: boolean;
 	/** Dock 아이콘의 둥근 모서리를 없앨지 여부 */
 	squareIcon?: boolean;
 	/** 처음 열 때 창 크기. 없으면 화면 크기에 맞춘 기본값 (desktop/window/geometry.ts) */
@@ -45,6 +47,7 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 		label: 'Finder',
 		icon: 'finder.png',
 		inDock: true,
+		alwaysRunning: true,
 		mobile: { label: '파일', icon: 'finder.png' },
 		windowSize: { width: 820, height: 520 },
 	},

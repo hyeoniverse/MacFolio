@@ -44,6 +44,24 @@ test.describe('데스크톱', () => {
 		await expect(popup).toBeHidden();
 	});
 
+	test('Finder는 끌 수 없는 앱이라 Dock의 켜짐 표시가 늘 있다 (창을 열고 닫아도)', async ({ page }) => {
+		await enterDesktop(page);
+		const finder = dockItem(page, 'finder');
+		const dot = finder.locator('.active-indicator');
+		await expect(dot).toHaveCount(1);
+		await finder.click();
+		const window = appWindow(page, 'finder');
+		await expect(window).toBeVisible();
+		await window.locator('.traffic-lights').getByRole('button', { name: '닫기' }).click();
+		await expect(window).toBeHidden();
+		await expect(dot).toHaveCount(1);
+		// 다른 앱은 닫으면 표시가 사라진다
+		const memo = dockItem(page, 'memo');
+		await memo.click();
+		await appWindow(page, 'memo').locator('.traffic-lights').getByRole('button', { name: '닫기' }).click();
+		await expect(memo.locator('.active-indicator')).toHaveCount(0);
+	});
+
 	test('메뉴 막대 글자는 보통 굵기이고, 맨 앞 앱 이름만 굵다', async ({ page }) => {
 		await enterDesktop(page);
 		const bar = page.locator('.macos-statusbar');
