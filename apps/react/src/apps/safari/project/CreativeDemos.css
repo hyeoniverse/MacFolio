@@ -194,7 +194,8 @@
 }
 
 .cd-caption .cd-cue span[data-read] {
-	color: var(--cr-ink);
+	/* 읽은 낱말은 강조색으로 (검정과 회색은 잘 갈리지 않았다) */
+	color: var(--sp-accent);
 }
 
 .cd-caption em {
