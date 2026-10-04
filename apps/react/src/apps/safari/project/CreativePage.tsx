@@ -176,11 +176,11 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 				const box = (target as HTMLElement).getBoundingClientRect();
 				key = `demo:${(target as HTMLElement).dataset.demo}`;
 				// 내용 칸 오른쪽 가장자리에 걸쳐 서서(몸은 옆 여백에) 데모 머리 높이를 따라간다. 데모 글을 가리지 않게
-				x = narrow ? width - w * 0.55 : width - side - w * 0.3;
+				x = narrow ? width - w - 6 : Math.min(width - side - w * 0.3, width - w - 6);
 				y = Math.min(Math.max(box.top - view.top - h * 0.2, 8), view.height - h - 8);
 			} else {
 				key = 'rest';
-				x = narrow ? width - w * 0.55 : width - w - 20;
+				x = width - w - (narrow ? 6 : 20);
 				y = view.height - h - 16;
 			}
 			// 자리를 바꿀 때만 통통 튀며 건너가고, 같은 자리에 있는 동안은 데모와 함께 스크롤된다

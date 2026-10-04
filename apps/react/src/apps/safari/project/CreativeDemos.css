@@ -173,12 +173,18 @@
 }
 
 /* 자막: 읽는 만큼 낱말이 진해진다 */
+/* 자막 자리는 늘 세 줄: 문장 길이나 켜고 끄는 것에 따라 아래가 움직이지 않는다 */
 .cd-caption {
 	display: grid;
-	min-height: 3em;
+	height: 4.5em;
 	margin: 0;
+	overflow: hidden;
 	font-size: 14px;
 	line-height: 1.5;
+}
+
+.cd-caption[data-off] {
+	visibility: hidden;
 }
 
 .cd-caption .cd-cue {
@@ -1438,6 +1444,8 @@
 	/* 애니메이션이 모두 꺼지므로 자막은 문장을 바꿔 가며 보이지 않고 대본 전체를 그대로 둔다 */
 	.cd-caption {
 		display: block;
+		height: auto;
+		min-height: 4.5em;
 	}
 
 	.cd-caption .cd-cue {
