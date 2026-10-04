@@ -93,7 +93,7 @@
 	height: 32px;
 	margin: 0 auto;
 	padding: 0 12px;
-	border-radius: 10px;
+	border-radius: 999px;
 	background-color: var(--safari-address-bg);
 	font-size: 13px;
 }
