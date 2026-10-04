@@ -600,6 +600,8 @@ const SAMPLE_SEC = 0.1;
 const HISTORY = 50;
 /** 클립을 끌기 시작하려고 길게 누르는 시간 (ms) */
 const LONG_PRESS_MS = 400;
+/** 클립 위쪽 번호 띠의 높이 (px): 여기를 길게 눌러야 클립을 끈다 */
+const CLIP_BAND = 18;
 type Clips = number[][];
 
 /** 구간 [a, b)를 지운 클립들 (빈 클립은 빠진다) */
@@ -644,7 +646,7 @@ const insertAt = (clips: Clips, i: number, piece: number[]): Clips => {
 
 /**
  * 녹음 파형 편집기: 실제 Fish 음성을 클립으로 다룬다. 누르면 커서, 끌면 구간. 잘라내기·복사·붙여넣기·지우기·선택만 남기기·나누기,
- * 되돌리기 50단계. 클립을 길게 눌러 끌면 순서가 바뀌고, 재생하면 편집한 순서 그대로 소리가 난다.
+ * 되돌리기 50단계. 클립 위 번호 띠를 길게 눌러 끌면 순서가 바뀌고, 재생하면 편집한 순서 그대로 소리가 난다.
  * 단축키는 편집기에 초점이 있을 때 받는다 (Space 재생, ⌘/Ctrl+X C V B Z, Delete, Esc, ←→)
  */
 const Wave: React.FC = () => {
@@ -874,9 +876,11 @@ const Wave: React.FC = () => {
 					anchor.current = at;
 					setCursor(at);
 					setSpan(null);
-					// 클립을 길게 누르고 있으면(움직이지 않고) 그 클립을 끌어 순서를 바꾼다
+					// 클립 위쪽 번호 띠를 길게 누르고 있으면(움직이지 않고) 그 클립을 끌어 순서를 바꾼다.
+					// 파형 쪽은 늘 구간 고르기다 (누른 채 잠깐 멈췄다 끌어도 구간이 골라지게)
 					const clip = (event.target as HTMLElement).closest<HTMLElement>('.cd-clip');
-					if (clip && clips.length > 1) {
+					const onBand = clip && event.clientY - clip.getBoundingClientRect().top < CLIP_BAND;
+					if (clip && onBand && clips.length > 1) {
 						const n = Number(clip.dataset.index);
 						const x = event.clientX;
 						setPressing(n);
@@ -952,8 +956,8 @@ const Wave: React.FC = () => {
 				</span>
 			</p>
 			<p className="cd-hint">
-				실제 Fish 음성입니다. 구간을 골라 지우거나 나눈 뒤, 클립을 길게 눌러 끌면 순서가 바뀝니다. 재생하면 편집한
-				순서대로 들립니다
+				실제 Fish 음성입니다. 파형을 끌어 구간을 고르고 자르거나 나눈 뒤, 클립 위 번호 띠를 길게 눌러 끌면 순서가
+				바뀝니다. 재생하면 편집한 순서대로 들립니다
 			</p>
 		</div>
 	);

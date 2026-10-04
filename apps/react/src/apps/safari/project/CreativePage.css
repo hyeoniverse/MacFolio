@@ -29,6 +29,8 @@
 .cr {
 	/* 내용 폭은 1080px까지, 좁으면 양옆 24px (padding의 %는 띠 폭 기준) */
 	--cr-pad: max(24px, calc((100% - 1080px) / 2));
+	/* 좁은 창에서 가장자리 밖으로 내민 몽이 때문에 옆 스크롤이 생기지 않게 (clip은 sticky를 깨지 않는다) */
+	overflow-x: clip;
 	text-align: left;
 }
 
@@ -36,127 +38,12 @@
 	font-family: var(--sp-serif);
 }
 
-/* 로컬 내비: 늘 위에 붙어 있고, 뒤 내용이 흐리게 비친다. 왼쪽 이름, 가운데 차례, 오른쪽 데모 단추 */
-.cr-localnav {
+/* 몽이가 떠 있는 층: 스크롤하는 칸 맨 위에 붙어 있고 높이가 없어 내용을 밀지 않는다 */
+.cr-buddy {
 	position: sticky;
 	top: 0;
-	z-index: 10;
-	border-bottom: 1px solid var(--cr-line);
-	background-color: color-mix(in srgb, var(--cr-bg) 80%, transparent);
-	-webkit-backdrop-filter: saturate(180%) blur(20px);
-	backdrop-filter: saturate(180%) blur(20px);
-}
-
-.cr-localnav-inner {
-	display: flex;
-	gap: 20px;
-	align-items: center;
-	max-width: 1200px;
-	height: 52px;
-	margin: 0 auto;
-	padding: 0 24px;
-}
-
-.cr-localnav-title {
-	display: flex;
-	flex: none;
-	gap: 8px;
-	align-items: center;
-	padding: 0;
-	border: none;
-	background: none;
-	color: var(--cr-ink);
-	font: inherit;
-	font-family: var(--sp-serif);
-	font-size: 19px;
-	font-weight: 700;
-	letter-spacing: -0.01em;
-	cursor: pointer;
-}
-
-.cr-localnav-icon {
-	width: 24px;
-	height: 24px;
-	border-radius: 6px;
-}
-
-/* 차례: 창보다 길면 옆으로 밀린다 (지금 장은 스크립트가 가운데로 당긴다) */
-.cr-localnav ol {
-	display: flex;
-	flex: 1 1 auto;
-	gap: 2px;
-	min-width: 0;
-	height: 100%;
-	margin: 0;
-	padding: 0;
-	overflow-x: auto;
-	list-style: none;
-	scrollbar-width: none;
-	mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent);
-}
-
-.cr-localnav ol::-webkit-scrollbar {
-	display: none;
-}
-
-.cr-localnav li {
-	flex: none;
-}
-
-/* 차례가 남으면 오른쪽으로 붙이고, 넘치면 처음부터 옆으로 밀린다 (justify-content: flex-end는 넘칠 때 앞이 잘린다) */
-.cr-localnav li:first-child {
-	margin-left: auto;
-}
-
-.cr-localnav ol button {
-	position: relative;
-	height: 100%;
-	padding: 0 10px;
-	border: none;
-	background: none;
-	color: var(--cr-muted);
-	font: inherit;
-	font-size: 13px;
-	white-space: nowrap;
-	cursor: pointer;
-	transition: color var(--duration-fast) var(--ease-out);
-}
-
-.cr-localnav ol button:hover {
-	color: var(--cr-ink);
-}
-
-.cr-localnav ol button[aria-current] {
-	color: var(--cr-ink);
-	font-weight: 600;
-}
-
-/* 장을 읽은 만큼 차례 밑줄이 강조색으로 찬다 (--read는 스크립트가 정한다) */
-.cr-localnav ol button::after {
-	content: '';
-	position: absolute;
-	bottom: -1px;
-	left: 10px;
-	width: calc((100% - 20px) * var(--read, 0));
-	height: 2px;
-	background-color: var(--sp-accent);
-	opacity: 0;
-	transition: opacity 0.2s;
-}
-
-.cr-localnav ol button[aria-current]::after {
-	opacity: 1;
-}
-
-.sp .cr-localnav-cta {
-	flex: none;
-	padding: 5px 14px;
-	border-radius: 999px;
-	background-color: var(--sp-accent);
-	color: #fff;
-	font-size: 13px;
-	font-weight: 600;
-	text-decoration: none;
+	z-index: 20;
+	height: 0;
 }
 
 /* 첫머리: 가운데 정렬, 몽이 아래로 큰 제목과 소개, 링크 */
@@ -164,8 +51,14 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 56px var(--cr-pad) 48px;
+	padding: 40px var(--cr-pad) 48px;
 	text-align: center;
+}
+
+/* 첫머리에서 몽이가 서는 자리 (몽이 몸 높이만큼 비워 둔다) */
+.cr-hero-seat {
+	width: 140px;
+	height: 136px;
 }
 
 .cr-name {
@@ -255,11 +148,21 @@
 /* 몽이: 바닥 그림자 위에서 장에 따라 표정을 바꾼다 (표정 그림을 겹쳐 두고 하나만 보인다) */
 .cr-mascot {
 	display: grid;
-	position: relative;
+	position: absolute;
+	top: 0;
+	left: 0;
 	justify-items: center;
+	/* 자리(--x, --y)와 크기(--s)는 스크립트가 정한다. 첫머리에서는 스크롤을 그대로 따라가고, 장 사이를 옮길 때만 통통 튀며 건너간다 */
+	transform: translate(var(--x, -999px), var(--y, 0)) scale(var(--s, 1));
+	transform-origin: top left;
+	transition: transform 0.9s cubic-bezier(0.5, -0.35, 0.3, 1.35);
 	width: 140px;
 	margin: 0;
 	padding-bottom: 12px;
+}
+
+.cr-mascot[data-spot='hero'] {
+	transition: none;
 }
 
 .cr-mascot::after {
@@ -374,7 +277,7 @@
 /* 장: 띠가 번갈아 바탕을 바꾸고, 띠 위 타일은 떠 보이는 색으로 */
 .cr-chapter {
 	padding: 112px var(--cr-pad);
-	scroll-margin-top: 52px;
+	scroll-margin-top: 0;
 }
 
 .cr-chapter:nth-of-type(even) {
@@ -1432,22 +1335,6 @@
 		--cr-pad: 20px;
 	}
 
-	/* 좁은 창: 내비는 이름과 차례만, 차례는 옆으로 밀어 본다 */
-	.cr-localnav-inner {
-		gap: 8px;
-		height: 48px;
-		padding: 0 12px 0 20px;
-	}
-
-	.cr-localnav-title {
-		font-size: 16px;
-	}
-
-	.cr-localnav-icon,
-	.cr-localnav-cta {
-		display: none;
-	}
-
 	.cr-hero {
 		padding-top: 36px;
 	}
@@ -1458,7 +1345,6 @@
 
 	.cr-chapter {
 		padding: 72px var(--cr-pad);
-		scroll-margin-top: 48px;
 	}
 
 	.cr-chapter h2 {
@@ -1489,6 +1375,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.cr-mascot,
 	.cr-mascot img {
 		transition: none;
 	}

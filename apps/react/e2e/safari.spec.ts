@@ -172,16 +172,13 @@ test.describe('Safari', () => {
 		await expect(inventory.getByRole('button', { name: '배포' })).toHaveAttribute('aria-pressed', 'true');
 		await expect(inventory.locator('.gm-item')).toContainText('Vercel');
 
-		// 포트폴리오: 차례를 누르면 그 장으로 간다
+		// 포트폴리오: 몽이는 첫머리에 서 있다가, 장으로 내려가면 화면 가장자리로 옮겨 가 늘 보인다
 		await open(/HYEONIVERSE/);
-		await panel
-			.getByRole('navigation', { name: '차례', exact: true })
-			.getByRole('button', { name: /기술 사양/ })
-			.click();
-		await expect(panel.getByRole('region', { name: '기술 사양' })).toBeInViewport();
-		await expect(
-			panel.getByRole('navigation', { name: '차례', exact: true }).getByRole('button', { name: /기술 사양/ })
-		).toHaveAttribute('aria-current', 'step');
+		const buddy = panel.locator('.cr-mascot');
+		await expect(buddy).toHaveAttribute('data-spot', 'hero');
+		await panel.getByRole('region', { name: '기술 사양' }).scrollIntoViewIfNeeded();
+		await expect(buddy).not.toHaveAttribute('data-spot', 'hero');
+		await expect(buddy).toBeInViewport();
 		// 테마: 프리셋을 고르면 미리보기 이름이 바뀌고, 다크로 바꿀 수 있다
 		const themes = panel.getByRole('region', { name: '테마' });
 		await themes.getByRole('button', { name: 'Forest' }).click();
@@ -221,6 +218,16 @@ test.describe('Safari', () => {
 		await expect(wave.locator('.cd-clip')).toHaveCount(2);
 		await wave.getByRole('button', { name: '되돌리기' }).click();
 		await expect(wave.locator('.cd-clip')).toHaveCount(1);
+		// 클립이 둘이어도, 파형을 누른 채 잠깐 멈췄다 끌면 (클립 옮기기가 아니라) 구간이 골라진다
+		await wave.getByRole('button', { name: '다시 하기' }).click();
+		await expect(wave.locator('.cd-clip')).toHaveCount(2);
+		const waveBox = (await wave.locator('.cd-wave-track').boundingBox())!;
+		await page.mouse.move(waveBox.x + 200, waveBox.y + 40);
+		await page.mouse.down();
+		await page.waitForTimeout(600);
+		await page.mouse.move(waveBox.x + 400, waveBox.y + 40, { steps: 10 });
+		await page.mouse.up();
+		await expect(wave.getByRole('button', { name: '잘라내기' })).toBeEnabled();
 
 		// 터미널: 처음에는 소개와 help만 있고, 내용은 명령을 쳐야 나온다. 저장소도 ls·cd·cat으로 돌아본다
 		await open(/DevCourse/);

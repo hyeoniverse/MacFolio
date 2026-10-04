@@ -1,8 +1,8 @@
-// HYEONIVERSE (포트폴리오): Apple 제품 페이지처럼 위에 늘 붙은 로컬 내비(차례)와 가운데 정렬된 큰 첫머리,
-// 그 아래로 화면 폭을 다 쓰는 띠(장)가 번갈아 바탕을 바꾸며 내려간다. 첫머리의 마스코트 몽이는 지금 읽는 장에 따라 표정을 바꾼다
+// HYEONIVERSE (포트폴리오): Apple 제품 페이지처럼 가운데 정렬된 큰 첫머리 아래로, 화면 폭을 다 쓰는 띠(장)가 번갈아 바탕을 바꾸며 내려간다.
+// 그 사이트의 마스코트 몽이는 첫머리에 서 있다가, 내려가면 화면 가장자리로 뛰어가 장마다 자리와 표정을 바꾸며 늘 따라다닌다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectChapter } from '@/shared/profile';
-import { Favicon, Links, Shot } from '@/apps/safari/project/parts';
+import { Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
 import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project/CreativeParts';
@@ -29,6 +29,19 @@ type Mood = (typeof MOODS)[number];
 const READING: Mood[] = ['wave', 'star', 'happy', 'surprised'];
 const moodOf = (chapter: number, total: number): Mood =>
 	chapter < 0 ? 'normal' : chapter >= total ? 'sleep' : READING[chapter % READING.length];
+
+/** 몽이가 장마다 옮겨 가는 자리: 오른쪽·왼쪽 아래, 오른쪽·왼쪽 가운데, 오른쪽 위를 돌아가며 (좁은 창은 아래 두 곳만) */
+type Spot = 'hero' | 'br' | 'bl' | 'rm' | 'lm' | 'tr' | 'end';
+const SPOTS: Spot[] = ['br', 'bl', 'rm', 'lm', 'tr', 'bl', 'br', 'lm'];
+const spotOf = (chapter: number, total: number, narrow: boolean): Spot => {
+	if (chapter >= total) return 'end';
+	const spot = SPOTS[Math.max(0, chapter) % SPOTS.length];
+	if (!narrow) return spot;
+	return spot === 'bl' || spot === 'lm' ? 'bl' : 'br';
+};
+/** 몽이 그림 크기 (px): 몸 폭 140, 높이 124. 내용 옆 여백이 좁으면 줄인다 */
+const BUDDY_W = 140;
+const BUDDY_H = 124;
 
 /** 더 들려줄 장 하나: 첫머리, 숫자, 테마 미리보기, 전후 막대, 장 모양(look)마다 다른 글 묶음, 장 끝 그림(다크가 있으면 밀대) */
 const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, no }) => (
@@ -69,33 +82,74 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	// 몽이를 누르면 하트가 퐁퐁 (하트마다 id와 날아갈 방향)
 	const [hearts, setHearts] = useState<{ id: number; dx: number }[]>([]);
 	const heartId = useRef(0);
-	const index = useRef<HTMLOListElement>(null);
 	const root = useReveal<HTMLDivElement>();
+	// 몽이(화면 위에 떠 있다)와, 첫머리에서 몽이가 서는 자리
+	const buddy = useRef<HTMLElement>(null);
+	const slot = useRef<HTMLDivElement>(null);
+	const reading = useRef(chapter);
+	useEffect(() => {
+		reading.current = chapter;
+	}, [chapter]);
 	const pet = () => {
 		const burst = Array.from({ length: 6 }, (_, i) => ({ id: (heartId.current += 1), dx: (i - 2.5) * 22 }));
 		setHearts((now) => [...now, ...burst]);
 		window.setTimeout(() => setHearts((now) => now.filter((heart) => !burst.includes(heart))), 1100);
 	};
 
-	// 차례마다 그 장을 얼마나 읽었는지(화면 가운데가 장의 어디쯤인지) 막대로 채운다
+	// 장마다 그 장을 얼마나 읽었는지(화면 가운데가 장의 어디쯤인지)를 --read로 (진행 과정 세로줄이 차오른다)
+	// 몽이 자리도 여기서 정한다: 첫머리 자리가 화면에 보이면 그 자리에 붙어 함께 스크롤되고, 지나가면 장마다 정한 가장자리로 뛰어간다
 	useEffect(() => {
 		const body = main.current;
-		const nav = index.current;
-		if (!body || !nav) return;
+		const page = root.current;
+		if (!body || !page) return;
 		return onScrollFrame(body, (scroller) => {
 			const view = viewOf(scroller);
-			// 왼쪽 칸은 스크롤하는 칸 높이 안에 들어가야 차례 아래가 가려지지 않는다
-			body.parentElement?.style.setProperty('--view', `${Math.round(view.height)}px`);
 			const middle = view.top + view.height / 2;
-			const buttons = nav.querySelectorAll<HTMLElement>('button');
-			body.querySelectorAll<HTMLElement>('.cr-chapter').forEach((chapterNode, i) => {
+			body.querySelectorAll<HTMLElement>('.cr-chapter').forEach((chapterNode) => {
 				const box = chapterNode.getBoundingClientRect();
-				const read = Math.min(1, Math.max(0, (middle - box.top) / box.height)).toFixed(3);
-				buttons[i]?.style.setProperty('--read', read);
-				chapterNode.style.setProperty('--read', read);
+				chapterNode.style.setProperty('--read', Math.min(1, Math.max(0, (middle - box.top) / box.height)).toFixed(3));
 			});
+			const figure = buddy.current;
+			const seat = slot.current?.getBoundingClientRect();
+			if (!figure || !seat) return;
+			const frame = page.getBoundingClientRect();
+			const width = frame.width;
+			const narrow = width <= 760;
+			// 내용(가운데 1080px) 옆 여백에 맞춰 크기를 정한다
+			const side = Math.max(24, (width - 1080) / 2);
+			const scale = narrow ? 0.5 : Math.min(1, Math.max(0.6, (side - 12) / BUDDY_W));
+			const w = BUDDY_W * scale;
+			const h = BUDDY_H * scale;
+			let spot: Spot;
+			let x: number;
+			let y: number;
+			if (seat.bottom > view.top + 40) {
+				spot = 'hero';
+				x = seat.left - frame.left + (seat.width - BUDDY_W) / 2;
+				y = seat.top - view.top;
+			} else {
+				spot = spotOf(reading.current, titles.length, narrow);
+				// 좁은 창은 옆 여백이 없어, 가장자리 밖으로 몸 반쯤 내밀고 엿보게 둔다 (내용을 덜 가린다)
+				const right = narrow ? width - w * 0.55 : width - w - 20;
+				const left = narrow ? -w * 0.45 : 20;
+				const bottom = view.height - h - 16;
+				const mid = view.height * 0.42;
+				[x, y] = {
+					br: [right, bottom],
+					bl: [left, bottom],
+					rm: [right, mid],
+					lm: [left, mid],
+					tr: [right, 24],
+					end: [(width - w) / 2, bottom],
+					hero: [0, 0],
+				}[spot];
+			}
+			figure.dataset.spot = spot;
+			figure.style.setProperty('--x', `${Math.round(x)}px`);
+			figure.style.setProperty('--y', `${Math.round(y)}px`);
+			figure.style.setProperty('--s', spot === 'hero' ? '1' : scale.toFixed(3));
 		});
-	}, []);
+	}, [root, titles.length, chapter]);
 
 	// 화면 가운데를 지나는 장이 지금 읽는 장
 	useEffect(() => {
@@ -118,63 +172,19 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 		parts.forEach((part) => observer.observe(part));
 		return () => observer.disconnect();
 	}, []);
-	// 차례 줄이 창보다 길면, 지금 읽는 장이 줄 가운데쯤 오게 옆으로 민다
-	useEffect(() => {
-		const bar = index.current;
-		const item = bar?.querySelector<HTMLElement>('[aria-current]');
-		if (!bar || !item) return;
-		const left = item.offsetLeft - bar.offsetLeft - (bar.clientWidth - item.offsetWidth) / 2;
-		bar.scrollTo({ left, behavior: 'smooth' });
-	}, [chapter]);
 	const mood: Mood = petted ? 'happy' : moodOf(chapter, titles.length);
-	const open = (index: number) => {
-		const chapters = main.current?.querySelectorAll<HTMLElement>('.cr-chapter');
-		chapters?.[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-	};
 	const number = (index: number) => String(index + 1).padStart(2, '0');
 
 	return (
 		<div className="cr" ref={root} data-reading={chapter >= 0 || undefined}>
-			{/* Apple 제품 페이지의 로컬 내비: 늘 위에 붙어 있고, 지금 읽는 장이 강조되며 읽은 만큼 밑줄이 찬다 */}
-			<nav className="cr-localnav" aria-label="차례">
-				<div className="cr-localnav-inner">
-					<button
-						type="button"
-						className="cr-localnav-title"
-						onClick={() => main.current?.closest('.cr')?.scrollIntoView({ behavior: 'smooth' })}
-					>
-						<Favicon project={project} className="cr-localnav-icon" />
-						{project.name}
-					</button>
-					<ol ref={index}>
-						{titles.map((title, i) => (
-							<li key={title}>
-								{/* 맺음말까지 내려와도 차례에서는 마지막 장을 읽는 중으로 둔다 */}
-								<button
-									type="button"
-									onClick={() => open(i)}
-									aria-current={
-										chapter === i || (i === titles.length - 1 && chapter >= titles.length) ? 'step' : undefined
-									}
-								>
-									{title}
-								</button>
-							</li>
-						))}
-					</ol>
-					{project.demo && (
-						<a className="cr-localnav-cta" href={project.demo} target="_blank" rel="noreferrer">
-							데모 보기
-						</a>
-					)}
-				</div>
-			</nav>
-
-			<header className="cr-hero">
+			{/* 몽이: 스크롤하는 칸 맨 위에 붙은 높이 0인 층 위에 떠서, 스크립트가 정한 자리(--x, --y)로 옮겨 다닌다 */}
+			<div className="cr-buddy">
 				<figure
+					ref={buddy}
 					className="cr-mascot"
 					aria-hidden="true"
 					data-mood={mood}
+					data-spot="hero"
 					onPointerEnter={() => setPetted(true)}
 					onPointerLeave={() => setPetted(false)}
 					onClick={pet}
@@ -191,6 +201,11 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 						/>
 					))}
 				</figure>
+			</div>
+
+			<header className="cr-hero">
+				{/* 첫머리에서 몽이가 서는 자리 (몽이는 위 층에 떠 있다) */}
+				<div className="cr-hero-seat" ref={slot} />
 				<p className="cr-name">{project.name}</p>
 				<h1>{project.tagline}</h1>
 				<p className="cr-lead">{project.description}</p>
