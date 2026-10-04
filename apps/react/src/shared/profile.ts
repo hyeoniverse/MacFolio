@@ -43,6 +43,8 @@ export interface ProjectPoint {
 	image?: string;
 	/** 같은 화면의 다크 테마 그림: 있으면 밀대로 라이트와 나눠 비교한다 */
 	imageDark?: string;
+	/** 스크롤 장면: 페이지를 스크롤하는 만큼 차례로 넘어가는 화면들 (위에서 아래로 내려가며 찍은 캡처) */
+	scrollFrames?: string[];
 	/** 그림 대신 보여 줄 짧은 영상 (화면에 보일 때만 재생) */
 	video?: string;
 	/** 갈래 여러 개 (예: 레이아웃 여섯 가지): 이름과 한 줄 설명. 그림이 없으면 갈래마다 움직이는 도식으로 그린다 */
@@ -791,6 +793,9 @@ export const PROJECTS: Project[] = [
 			{
 				title: '스크롤에 반응하는 첫 화면',
 				body: '무한 스크롤 루프, 마우스 패럴랙스, 글자마다 그려지는 외곽선, Three.js 토러스와 커피잔이 스크롤과 마우스를 따라 움직입니다.',
+				scrollFrames: ['scroll-1', 'scroll-2', 'scroll-3'].map((name) =>
+					projectImage('hyeoniverse', `shots/${name}.jpg`)
+				),
 				image: projectImage('hyeoniverse', 'shots/home-light.jpg'),
 				imageDark: projectImage('hyeoniverse', 'shots/home-dark.jpg'),
 			},
@@ -813,7 +818,7 @@ export const PROJECTS: Project[] = [
 			},
 			{
 				title: '스크롤을 시간축으로',
-				body: 'About 페이지는 스크롤 위치를 진행도로 바꿔 14개 패널의 장면을 이어서 넘깁니다. 가로 스크롤 영역이 휠을 가져갈 때만 부드러운 스크롤이 물러나, 휠 한 번에 페이지가 세로로 98px 밀리던 것을 0으로 만들었습니다.',
+				body: 'About 페이지는 스크롤을 영상의 재생 막대처럼 써서, 제작 과정을 담은 14개 패널의 장면이 스크롤하는 만큼 이어서 넘어갑니다. 가로로 넘기는 영역에서도 휠이 세로 스크롤과 엉키지 않아, 보고 있던 자리를 잃지 않습니다.',
 				video: projectImage('hyeoniverse', 'shots/about-tour.mp4'),
 			},
 		],

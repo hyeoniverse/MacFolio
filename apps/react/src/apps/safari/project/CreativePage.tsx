@@ -226,7 +226,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 									<h3>{point.title}</h3>
 									<p>{point.body}</p>
 								</div>
-								{(point.image || point.video || point.variants) && (
+								{(point.image || point.video || point.variants || point.scrollFrames) && (
 									<figure className="cr-feature-media" data-reveal="zoom">
 										<FeatureMedia point={point} />
 									</figure>
