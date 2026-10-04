@@ -5,11 +5,11 @@ import { DailyQuota, DemoInputError, failureLine, tryInOrder } from '../common/d
 import { CoverClient } from './cover.client.js';
 import { COVER_PROVIDERS, coverPrompt, parseCoverRequest } from './rules.js';
 
-const NAMES = { huggingface: 'Hugging Face' };
+const NAMES = { cloudflare: 'Cloudflare', huggingface: 'Hugging Face' };
 
 /**
  * AI 커버 데모 (HYEONIVERSE 커버 선택창의 AI 생성을 실제로). 누구나 쓰지만 하루 상한이 있고, 그림은 비싸서 전체 상한이 낮다.
- * 그리지 못하면 쓴 횟수를 돌려준다. 그림은 저장하지 않는다
+ * Cloudflare가 실패하면 Hugging Face로 넘어가고, 모두 실패하면 쓴 횟수를 돌려준다. 그림은 저장하지 않는다
  */
 @Injectable()
 export class CoverService {
@@ -47,7 +47,8 @@ export class CoverService {
 			);
 		}
 
-		const keys = { huggingface: this.config.cover.huggingfaceApiKey };
+		const { cloudflareAccountId, cloudflareAiToken, huggingfaceApiKey } = this.config.cover;
+		const keys = { cloudflareAccountId, cloudflareAiToken, huggingface: huggingfaceApiKey };
 		const prompt = coverPrompt(request);
 		const { attempts, provider, value } = await tryInOrder(
 			COVER_PROVIDERS,
@@ -68,7 +69,7 @@ export class CoverService {
 		this.quota.refund(key);
 		throw new HttpException(
 			{
-				message: `그리지 못했습니다 (${failureLine(attempts, NAMES)}).`,
+				message: `두 곳 모두 그리지 못했습니다 (${failureLine(attempts, NAMES)}).`,
 				attempts,
 				remaining: this.quota.remaining(key),
 			},

@@ -1,8 +1,11 @@
 // AI 커버 데모의 규칙: 받을 제목과 스타일, 공급자 차례, 그릴 말. 바깥 호출 없이 시험할 수 있게 여기에 모은다.
 import { demoText, pickProviders } from '../common/demo.js';
 
-/** 공급자: Hugging Face FLUX 하나 (HYEONIVERSE는 NanoBanana를 먼저 쓰지만, 무료 한도가 없어 데모에서는 뺐다) */
-export const COVER_PROVIDERS = ['huggingface'] as const;
+/**
+ * 공급자 차례: 매일 무료 할당이 다시 채워지는 Cloudflare Workers AI(FLUX.1 schnell) → 실패하면 Hugging Face FLUX.
+ * HYEONIVERSE는 NanoBanana를 먼저 쓰지만, 무료 한도가 없어 데모에서는 뺐다
+ */
+export const COVER_PROVIDERS = ['cloudflare', 'huggingface'] as const;
 export type CoverProvider = (typeof COVER_PROVIDERS)[number];
 
 /** 제목 글자 수 상한 */
