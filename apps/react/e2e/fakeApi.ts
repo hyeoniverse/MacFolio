@@ -8,6 +8,8 @@ export const FAKE_EXPIRES_AT = '2099-10-02T22:03:00.000Z';
 
 export interface FakeApiState {
 	signedIn: boolean;
+	/** /health가 돌려줄 상태 */
+	health: 'ok' | 'database' | 'down';
 	/** 서버에 저장된 메모 정리 내용 */
 	organization: {
 		folders: string[];
@@ -266,6 +268,7 @@ export async function fakeApi(
 ): Promise<FakeApiState> {
 	const state: FakeApiState = {
 		signedIn,
+		health: 'ok',
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		saves: 0,
 		comments: {},
@@ -348,6 +351,17 @@ export async function fakeApi(
 		// JSON을 보내는 PUT은 브라우저가 먼저 OPTIONS로 묻는다 (CORS)
 		if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors(origin) });
 
+		// 서버 상태 (메뉴 막대의 Wi-Fi 자리): ok, DB가 안 됨(503), 꺼짐(연결 실패)
+		if (path === '/health') {
+			if (state.health === 'down') return route.abort('connectionrefused');
+			if (state.health === 'database')
+				return route.fulfill({
+					status: 503,
+					headers: cors(origin),
+					json: { statusCode: 503, message: 'DB에 연결할 수 없습니다.' },
+				});
+			return route.fulfill({ status: 200, headers: cors(origin), json: { status: 'ok', database: 'up' } });
+		}
 		if (path === '/auth/me') {
 			return route.fulfill(
 				state.signedIn

@@ -7,7 +7,8 @@ test.describe('데스크톱', () => {
 		await enterDesktop(page);
 		const bar = page.locator('.macos-statusbar');
 		const clock = bar.locator('.time-display-now');
-		const wifi = bar.locator('.fa-wifi');
+		// 시계 바로 옆(배터리 왼쪽)의 Wi-Fi 자리: 서버 상태 단추
+		const wifi = bar.getByRole('button', { name: /^서버 상태/ });
 		await expect(clock).toHaveText('1:11 AM');
 		const before = (await wifi.boundingBox())!;
 
@@ -15,6 +16,88 @@ test.describe('데스크톱', () => {
 		await expect(clock).toHaveText('12:00 PM');
 		const after = (await wifi.boundingBox())!;
 		expect(after.x).toBe(before.x);
+	});
+
+	test('메뉴 막대의 음량 단추를 누르면 음량 창이 그 바로 아래 가운데에 열리고, 바깥을 누르거나 Esc로 닫힌다', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		const button = page.locator('.macos-statusbar').getByRole('button', { name: /^음량 \d+%$/ });
+		const buttonBox = (await button.boundingBox())!;
+		await button.click();
+		await expect(button).toHaveAttribute('aria-expanded', 'true');
+		const popup = page.getByRole('dialog', { name: '음량' });
+		await expect(popup.getByRole('slider', { name: '음량' })).toBeAttached();
+		const box = (await popup.boundingBox())!;
+		expect(Math.abs(box.x + box.width / 2 - (buttonBox.x + buttonBox.width / 2))).toBeLessThan(2);
+		expect(box.y).toBeGreaterThan(buttonBox.y + buttonBox.height);
+		expect(box.y - (buttonBox.y + buttonBox.height)).toBeLessThan(12);
+
+		// 음량을 바꾸면 단추 이름도 바뀐다
+		await popup.getByRole('slider', { name: '음량' }).fill('0.3');
+		await expect(page.locator('.macos-statusbar').getByRole('button', { name: '음량 30%' })).toBeVisible();
+
+		await page.keyboard.press('Escape');
+		await expect(popup).toBeHidden();
+		await button.click();
+		await page.mouse.click(800, 500);
+		await expect(popup).toBeHidden();
+	});
+
+	test('Finder는 끌 수 없는 앱이라 Dock의 켜짐 표시가 늘 있다 (창을 열고 닫아도)', async ({ page }) => {
+		await enterDesktop(page);
+		const finder = dockItem(page, 'finder');
+		const dot = finder.locator('.active-indicator');
+		await expect(dot).toHaveCount(1);
+		await finder.click();
+		const window = appWindow(page, 'finder');
+		await expect(window).toBeVisible();
+		await window.locator('.traffic-lights').getByRole('button', { name: '닫기' }).click();
+		await expect(window).toBeHidden();
+		await expect(dot).toHaveCount(1);
+		// 다른 앱은 닫으면 표시가 사라진다
+		const memo = dockItem(page, 'memo');
+		await memo.click();
+		await appWindow(page, 'memo').locator('.traffic-lights').getByRole('button', { name: '닫기' }).click();
+		await expect(memo.locator('.active-indicator')).toHaveCount(0);
+	});
+
+	test('메뉴 막대의 이전·재생·다음·음량 단추는 같은 크기로 한 줄에 나란히 선다', async ({ page }) => {
+		await enterDesktop(page);
+		const player = page.locator('.macos-statusbar').getByRole('group', { name: '음악' });
+		const buttons = player.getByRole('button');
+		await expect(buttons).toHaveCount(4);
+		await expect(player.getByRole('button', { name: '이전 곡' })).toBeVisible();
+		await expect(player.getByRole('button', { name: /^(재생|일시정지)$/ })).toBeVisible();
+		await expect(player.getByRole('button', { name: '다음 곡' })).toBeVisible();
+		// 아이콘의 위·높이가 모두 같다
+		const icons = await player.locator('i').evaluateAll((list) =>
+			list.map((icon) => {
+				const rect = icon.getBoundingClientRect();
+				return `${rect.top.toFixed(1)}/${rect.height.toFixed(1)}`;
+			})
+		);
+		expect(new Set(icons).size).toBe(1);
+	});
+
+	test('메뉴 막대 오른쪽 항목(음악·서버 상태·배터리·시계) 사이 간격이 모두 같다', async ({ page }) => {
+		await enterDesktop(page);
+		const gaps = await page.locator('.macos-statusbar .right-section').evaluate((section) => {
+			const items = [...section.children].map((child) => child.getBoundingClientRect());
+			return items.slice(1).map((rect, index) => Math.round(rect.left - items[index].right));
+		});
+		expect(gaps.length).toBeGreaterThanOrEqual(3);
+		expect(new Set(gaps).size).toBe(1);
+	});
+
+	test('메뉴 막대 글자는 보통 굵기이고, 맨 앞 앱 이름만 굵다', async ({ page }) => {
+		await enterDesktop(page);
+		const bar = page.locator('.macos-statusbar');
+		const weight = (text: string) =>
+			bar.getByText(text, { exact: true }).evaluate((el) => getComputedStyle(el).fontWeight);
+		expect(await weight('Finder')).toBe('700');
+		expect(await weight('File')).toBe('400');
+		expect(await bar.locator('.time-display-now').evaluate((el) => getComputedStyle(el).fontWeight)).toBe('400');
 	});
 
 	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
