@@ -67,7 +67,8 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 		{chapter.palette && <Themes palette={chapter.palette} />}
 		{chapter.compare && <Bars rows={chapter.compare} />}
 		<ChapterPoints chapter={chapter} />
-		{chapter.image && (
+		{/* 테마 장은 장 그림을 항목 화면(붙은 화면)으로 쓰므로 끝에 따로 두지 않는다 */}
+		{chapter.image && chapter.look !== 'palette' && (
 			<figure className="cr-figure" data-reveal="">
 				{chapter.image.dark ? (
 					<Compare light={chapter.image.src} dark={chapter.image.dark} alt={chapter.image.alt} />
