@@ -27,30 +27,31 @@ const useInView = <T extends HTMLElement>(ratio = 0.5) => {
 const GALLERY = '/imgs/projects/hyeoniverse/gallery';
 
 /**
- * 갤러리 데모의 장: HYEONIVERSE 발표 자료(19쪽 가운데 7장)와, 장마다 무엇으로 읽는지.
- * 1장은 그 사이트가 실제로 트는 TTS 음성 파일, 2~6장은 대본만 있어 방문자 브라우저의 음성 합성이 읽고, 7장은 대본이 없다
+ * 갤러리 데모의 장: HYEONIVERSE 발표 자료(19쪽) 가운데 8장과, 그 사이트 갤러리가 실제로 트는 Fish TTS 음성.
+ * 1장은 대본까지 실제 그대로, 나머지 음성이 있는 장은 대본을 아직 옮기지 않아 자막 없이 음성만 나온다. 12장은 대본이 없다
  */
-const SLIDE_DATA: { script: string; audio?: string; ms?: number }[] = [
+const SLIDE_DATA: { page: number; script: string; audio?: boolean; ms?: number }[] = [
 	{
+		page: 1,
 		script:
 			"지금 보시는 프로젝트는 제가 직접 기획하고 설계해서 운영하고 있는 'Hyeoniverse'입니다. 단순히 포트폴리오를 보여주는 웹사이트를 만드는 것을 목표로 하지 않았습니다. 실제 서비스라고 생각하고, 공개된 사이트뿐만 아니라 콘텐츠를 관리할 수 있는 CMS와 데이터베이스, 권한, 보안, 테스트, 배포까지 직접 구성했습니다. 기술 스택은 Next.js, React, TypeScript를 중심으로 Supabase와 Vercel을 사용했습니다.",
-		audio: `${GALLERY}/narration-1.mp3`,
+		audio: true,
 		ms: 26267,
 	},
-	{
-		script:
-			'이 프로젝트로 보여 드리고 싶은 것은 세 가지입니다. 원인을 재서 고치고, 실수해도 막히게 만들고, 누구나 쓸 수 있게 만드는 것입니다.',
-	},
-	{ script: '숫자로 보면 성능 점수 97점, 첫 화면 표시 0.7초, 두 개 언어와 네 단계 권한을 갖춘 사이트입니다.' },
-	{ script: '방문자가 보는 사이트와, 그 사이트를 운영하는 관리자 CMS를 함께 만들었습니다.' },
-	{
-		script:
-			'첫 번째 사례는 방문할 때마다 통째로 다시 만들어지던 프로필 페이지입니다. 원인을 찾아 LCP를 9.7초에서 2.7초로 줄였습니다.',
-	},
-	{ script: '고친 뒤에는 같은 조건에서 다시 재서, 입력 지연과 로딩이 얼마나 줄었는지 확인했습니다.' },
-	{ script: '' },
+	{ page: 2, script: '', audio: true, ms: 41220 },
+	{ page: 3, script: '', audio: true, ms: 40100 },
+	{ page: 4, script: '', audio: true, ms: 35660 },
+	{ page: 5, script: '', audio: true, ms: 76640 },
+	{ page: 8, script: '', audio: true, ms: 38060 },
+	{ page: 11, script: '', audio: true, ms: 39110 },
+	{ page: 12, script: '' },
 ];
-const SLIDES = SLIDE_DATA.map((slide, i) => ({ ...slide, src: `${GALLERY}/hyeoniverse-${i + 1}.jpg` }));
+const SLIDES = SLIDE_DATA.map(({ page, audio, ...slide }) => ({
+	...slide,
+	page,
+	src: `${GALLERY}/slide-${String(page).padStart(2, '0')}.jpg`,
+	audio: audio ? `${GALLERY}/narration-${page}.mp3` : undefined,
+}));
 
 /** 대본 없는 장을 보여 주는 시간, 대본 한 글자를 읽는 시간 (ms) */
 const SILENT_SLIDE_MS = 4000;
@@ -60,7 +61,11 @@ const slideMs = (slide: (typeof SLIDES)[number]) =>
 const canSpeak = () => typeof window !== 'undefined' && 'speechSynthesis' in window;
 /** 그 장을 무엇으로 읽는지 */
 const sourceOf = (slide: (typeof SLIDES)[number]) =>
-	slide.audio ? 'Fish TTS 음성 파일' : slide.script ? '브라우저 음성 (대본만 있는 장)' : '대본 없음 · 4초 뒤 넘김';
+	slide.audio
+		? `Fish TTS 음성 파일 · 발표 ${slide.page}쪽`
+		: slide.script
+			? '브라우저 음성 (대본만 있는 장)'
+			: '대본 없음 · 4초 뒤 넘김';
 
 /** ask: 소리를 낼지 묻는 중, sound: 소리와 함께, silent: 소리 없이 자막만, stopped: 끝까지 보고 멈춤 */
 type SlideMode = 'ask' | 'sound' | 'silent' | 'stopped';
@@ -223,7 +228,7 @@ const Slides: React.FC = () => {
 								))}
 							</span>
 						))
-					) : (
+					) : slide.audio ? null : (
 						<em>대본이 없는 장은 4초 보여 주고 넘어갑니다</em>
 					)}
 				</p>
@@ -538,12 +543,38 @@ const Voice: React.FC = () => {
 	);
 };
 
-/** 파형 데모의 녹음: 말소리처럼 커졌다 작아지는 진폭 (0~1) */
-const SAMPLES = Array.from({ length: 90 }, (_, i) => {
-	const word = Math.abs(Math.sin(i / 4.3)) * 0.75 + Math.abs(Math.sin(i * 1.7)) * 0.25;
-	const pause = i % 30 > 25 ? 0.12 : 1;
-	return Math.max(0.06, word * pause);
-});
+/** 파형 데모의 녹음: 실제 Fish 음성(FISH_SAMPLE, 9.5초)을 0.1초마다 잰 세기 (0~1) */
+const SAMPLES = [
+	0.04, 0.12, 0.8, 0.96, 0.85, 0.57, 0.72, 0.6, 0.56, 0.73, 0.62, 0.32, 0.58, 0.65, 0.4, 0.21, 0.57, 0.75, 0.16, 0.35,
+	0.54, 0.64, 0.08, 0.48, 0.96, 0.32, 0.54, 0.58, 0.35, 0.8, 0.52, 0.87, 0.51, 0.75, 0.49, 0.62, 0.65, 0.44, 0.37, 0.52,
+	0.52, 0.11, 0.62, 0.58, 0.63, 0.12, 0.58, 0.35, 0.29, 0.23, 0.04, 0.46, 0.57, 0.55, 0.67, 0.32, 0.37, 0.45, 0.39,
+	0.79, 0.72, 0.71, 0.63, 0.41, 1.0, 0.6, 0.56, 0.52, 0.65, 0.16, 0.56, 0.67, 0.34, 0.71, 0.38, 0.4, 0.58, 0.56, 0.5,
+	0.23, 0.69, 0.39, 0.04, 0.83, 0.74, 0.57, 0.41, 0.44, 0.43, 0.08, 0.34, 0.22, 0.3, 0.04, 0.04,
+];
+
+/** 편집기가 트는 실제 음성: 처음 재생할 때 한 번만 받아 풀어 둔다 */
+let sampleBuffer: Promise<AudioBuffer> | null = null;
+const loadSample = (context: AudioContext) =>
+	(sampleBuffer ??= fetch(FISH_SAMPLE)
+		.then((response) => response.arrayBuffer())
+		.then((data) => context.decodeAudioData(data)));
+
+/** 이어 붙은 조각들: 원래 녹음에서 연속인 칸끼리 묶는다 ([시작 칸, 칸 수]) */
+const runsOf = (bins: number[]) =>
+	bins.reduce<[number, number][]>((runs, bin) => {
+		const last = runs.at(-1);
+		if (last && last[0] + last[1] === bin) last[1] += 1;
+		else runs.push([bin, 1]);
+		return runs;
+	}, []);
+
+/** 클립 하나를 다른 자리로 옮긴다 (to는 옮긴 뒤 놓일 순서) */
+const moveClip = (clips: Clips, from: number, to: number): Clips => {
+	const next = [...clips];
+	const [clip] = next.splice(from, 1);
+	next.splice(to, 0, clip);
+	return next;
+};
 /** 표본 하나의 길이 (초) */
 const SAMPLE_SEC = 0.1;
 const HISTORY = 50;
@@ -590,7 +621,8 @@ const insertAt = (clips: Clips, i: number, piece: number[]): Clips => {
 };
 
 /**
- * 녹음 파형 편집기: 누르면 커서, 끌면 구간. 잘라내기·복사·붙여넣기·지우기·선택만 남기기·나누기, 되돌리기 50단계.
+ * 녹음 파형 편집기: 실제 Fish 음성을 클립으로 다룬다. 누르면 커서, 끌면 구간. 잘라내기·복사·붙여넣기·지우기·선택만 남기기·나누기,
+ * 되돌리기 50단계. 클립 번호 손잡이를 끌면 순서가 바뀌고, 재생하면 편집한 순서 그대로 소리가 난다.
  * 단축키는 편집기에 초점이 있을 때 받는다 (Space 재생, ⌘/Ctrl+X C V B Z, Delete, Esc, ←→)
  */
 const Wave: React.FC = () => {
@@ -601,16 +633,36 @@ const Wave: React.FC = () => {
 	const [span, setSpan] = useState<[number, number] | null>(null);
 	const [clipboard, setClipboard] = useState<number[] | null>(null);
 	const [playhead, setPlayhead] = useState<number | null>(null);
+	// 끌고 있는 클립: 몇 번째인지, 놓일 순서, 손잡이가 움직인 거리(px), 놓일 자리 선의 위치(px)
+	const [drag, setDrag] = useState<{ from: number; to: number; dx: number; line: number } | null>(null);
 	const track = useRef<HTMLDivElement>(null);
 	const anchor = useRef<number | null>(null);
 	const frame = useRef(0);
+	const context = useRef<AudioContext | null>(null);
+	const sources = useRef<AudioBufferSourceNode[]>([]);
 	const flat = clips.flat();
 	const total = flat.length;
 
 	const commit = (next: Clips) => {
+		stop();
 		setPast((now) => [...now, clips].slice(-HISTORY));
 		setFuture([]);
 		setClips(next);
+	};
+	/** 손잡이 x 위치에서 놓일 순서와 그 자리 선 (클립 가운데를 지나면 그 뒤로) */
+	const dropAt = (clientX: number, from: number) => {
+		const box = track.current?.getBoundingClientRect();
+		const nodes = [...(track.current?.querySelectorAll<HTMLElement>('.cd-clip') ?? [])];
+		if (!box || !nodes.length) return { to: from, line: 0 };
+		// 끌고 있는 클립은 손을 따라 움직이므로 자리 셈에서 뺀다
+		let slot = nodes.findIndex((node, i) => {
+			if (i === from) return false;
+			const rect = node.getBoundingClientRect();
+			return clientX < rect.left + rect.width / 2;
+		});
+		if (slot < 0) slot = nodes.length;
+		const edge = slot < nodes.length ? nodes[slot].getBoundingClientRect().left - 2 : box.right;
+		return { to: slot > from ? slot - 1 : slot, line: edge - box.left };
 	};
 	const indexAt = (clientX: number) => {
 		const box = track.current?.getBoundingClientRect();
@@ -619,9 +671,20 @@ const Wave: React.FC = () => {
 	};
 	const stop = useCallback(() => {
 		cancelAnimationFrame(frame.current);
+		sources.current.forEach((source) => {
+			source.onended = null;
+			source.stop();
+		});
+		sources.current = [];
 		setPlayhead(null);
 	}, []);
-	useEffect(() => stop, [stop]);
+	useEffect(
+		() => () => {
+			stop();
+			void context.current?.close();
+		},
+		[stop]
+	);
 
 	const actions = {
 		cut: () => {
@@ -674,14 +737,31 @@ const Wave: React.FC = () => {
 			if (playhead !== null) return stop();
 			const from = span ? span[0] : cursor >= total ? 0 : cursor;
 			const to = span ? span[1] : total;
-			const start = performance.now();
-			const tick = (now: number) => {
-				const at = from + (now - start) / 1000 / SAMPLE_SEC;
-				if (at >= to) return stop();
-				setPlayhead(at);
+			if (to <= from) return;
+			if (typeof AudioContext === 'undefined') return;
+			const audio = (context.current ??= new AudioContext());
+			void audio.resume();
+			setPlayhead(from);
+			void loadSample(audio).then((buffer) => {
+				// 편집한 순서대로 원래 녹음의 조각들을 이어 틀어 준다
+				let at = audio.currentTime + 0.05;
+				const begin = at;
+				sources.current = runsOf(flat.slice(from, to)).map(([bin, count]) => {
+					const source = audio.createBufferSource();
+					source.buffer = buffer;
+					source.connect(audio.destination);
+					source.start(at, bin * SAMPLE_SEC, count * SAMPLE_SEC);
+					at += count * SAMPLE_SEC;
+					return source;
+				});
+				const last = sources.current.at(-1);
+				if (last) last.onended = () => stop();
+				const tick = () => {
+					setPlayhead(from + Math.max(0, audio.currentTime - begin) / SAMPLE_SEC);
+					frame.current = requestAnimationFrame(tick);
+				};
 				frame.current = requestAnimationFrame(tick);
-			};
-			frame.current = requestAnimationFrame(tick);
+			});
 		},
 	};
 
@@ -760,8 +840,46 @@ const Wave: React.FC = () => {
 				{clips.map((clip, n) => {
 					const start = starts[n];
 					return (
-						<div key={`${n}-${start}`} className="cd-clip" style={{ flexGrow: clip.length }}>
-							<span className="cd-clip-no">{n + 1}</span>
+						<div
+							key={`${n}-${start}`}
+							className="cd-clip"
+							style={
+								{
+									flexGrow: clip.length,
+									'--dx': drag?.from === n ? `${drag.dx}px` : '0px',
+								} as React.CSSProperties
+							}
+							data-dragging={drag?.from === n || undefined}
+						>
+							<span
+								className="cd-clip-no"
+								title="끌어서 순서 바꾸기"
+								onPointerDown={(event) => {
+									event.stopPropagation();
+									event.preventDefault();
+									if (clips.length < 2) return;
+									const startX = event.clientX;
+									let latest = { from: n, dx: 0, ...dropAt(startX, n) };
+									setDrag(latest);
+									// 손잡이를 잡은 뒤로는 창 전체에서 움직임을 받는다 (클립이 손잡이째 움직여도 놓치지 않게)
+									const move = (next: PointerEvent) => {
+										latest = { from: n, dx: next.clientX - startX, ...dropAt(next.clientX, n) };
+										setDrag(latest);
+									};
+									const up = () => {
+										window.removeEventListener('pointermove', move);
+										window.removeEventListener('pointerup', up);
+										window.removeEventListener('pointercancel', up);
+										if (latest.to !== latest.from) commit(moveClip(clips, latest.from, latest.to));
+										setDrag(null);
+									};
+									window.addEventListener('pointermove', move);
+									window.addEventListener('pointerup', up);
+									window.addEventListener('pointercancel', up);
+								}}
+							>
+								<i className="fa-solid fa-grip-vertical" /> {n + 1}
+							</span>
 							{clip.map((sample, i) => (
 								<i
 									key={i}
@@ -776,6 +894,7 @@ const Wave: React.FC = () => {
 				{span && <span className="cd-wave-span" style={{ left: pct(span[0]), width: pct(span[1] - span[0]) }} />}
 				<span className="cd-wave-cursor" style={{ left: pct(cursor) }} />
 				{playhead !== null && <span className="cd-wave-head" style={{ left: pct(playhead) }} />}
+				{drag && drag.to !== drag.from && <span className="cd-wave-drop" style={{ left: drag.line }} />}
 			</div>
 			<p className="cd-wave-meta">
 				<span>
@@ -789,6 +908,9 @@ const Wave: React.FC = () => {
 				<span>
 					되돌리기 {past.length}/{HISTORY}
 				</span>
+			</p>
+			<p className="cd-hint">
+				실제 Fish 음성입니다. 구간을 골라 지우거나 나눈 뒤, 클립 번호 손잡이를 끌어 순서를 바꾸고 재생해 보세요
 			</p>
 		</div>
 	);
@@ -831,7 +953,7 @@ const Convert: React.FC = () => {
 		read: '읽는 중',
 		draw: `그리는 중 ${drawn}/${total}`,
 		upload: '올리는 중',
-		done: `갤러리에 ${total}장을 올렸습니다${kind === 'pptx' ? ` · 발표자 노트 ${SLIDES.filter((item) => item.script).length}개를 대본으로` : ''}`,
+		done: `갤러리에 ${total}장을 올렸습니다${kind === 'pptx' ? ` · 발표자 노트 ${SLIDES.filter((item) => item.script || item.audio).length}개를 대본으로` : ''}`,
 	}[phase];
 
 	return (
@@ -869,7 +991,7 @@ const Convert: React.FC = () => {
 					<li key={slide.src} data-drawn={i < drawn || undefined}>
 						<img src={slide.src} alt="" loading="lazy" />
 						<span className="cd-convert-no">{String(i + 1).padStart(2, '0')}.jpg</span>
-						{kind === 'pptx' && i < drawn && slide.script && (
+						{kind === 'pptx' && i < drawn && (slide.script || slide.audio) && (
 							<span className="cd-convert-note">
 								<i className="fa-solid fa-note-sticky" /> 노트 → 대본
 							</span>

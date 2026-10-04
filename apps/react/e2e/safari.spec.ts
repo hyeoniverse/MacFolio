@@ -163,13 +163,13 @@ test.describe('Safari', () => {
 		await slides.getByRole('button', { name: '음성 없이 보기' }).click();
 		await expect(slides.locator('.cd-ask')).toHaveCount(0);
 		await slides.getByRole('button', { name: '2장으로' }).click();
-		await expect(slides.locator('.cd-slides-source')).toContainText('브라우저 음성');
+		await expect(slides.locator('.cd-slides-source')).toContainText('Fish TTS 음성 파일 · 발표 2쪽');
 		// 번역: EN으로 바꾸면 비어 있던 영어 칸이 채워진다
 		const translate = panel.locator('.cd-translate');
 		await translate.getByRole('button', { name: 'EN' }).click();
 		await expect(translate).toContainText('A portfolio site designed');
 		// 파형: 나누면 클립이 둘이 되고, 되돌리면 하나로 돌아온다
-		const wave = panel.getByLabel('녹음 파형 편집기');
+		const wave = panel.getByLabel('녹음 파형 편집기', { exact: true });
 		await wave.locator('.cd-wave-track').click({ position: { x: 120, y: 40 } });
 		await wave.getByRole('button', { name: '나누기' }).click();
 		await expect(wave.locator('.cd-clip')).toHaveCount(2);
