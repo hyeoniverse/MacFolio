@@ -85,7 +85,7 @@ flowchart LR
 
 API 문서는 Swagger로 자동으로 만듭니다: https://macfolio-api.hyeoniverse.com/docs
 
-사이트의 'API 문서' 앱은 같은 문서를 `openapi.json`으로 뽑아 사이트 안에서 그립니다 (Scalar, 서버가 꺼져 있어도 보인다). 코드와 어긋나면 `src/openapi.test.ts`가 실패합니다.
+사이트의 'API 문서' 앱은 같은 문서를 `openapi.json`으로 뽑아 사이트 안에서 그립니다 (Scalar, 서버가 꺼져 있어도 보입니다). 컨트롤러나 DTO를 바꾸면 `pnpm --filter @macfolio/api openapi`로 이 파일을 다시 만들어 함께 커밋합니다. 빠뜨리면 `apps/api/src/openapi.test.ts`가 실패합니다.
 
 ## 관리자 로그인
 
