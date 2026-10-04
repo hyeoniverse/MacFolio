@@ -71,21 +71,46 @@
 }
 
 .cr-showcase-name {
-	display: flex;
-	gap: 14px;
-	align-items: baseline;
-	margin: 0 0 8px;
-	font-size: clamp(24px, 3cqi, 32px);
-	font-weight: 700;
-	letter-spacing: -0.02em;
+	margin: 0 0 12px;
 }
 
-.cr-showcase-name span {
-	color: var(--sp-accent);
-	font-family: var(--sp-mono);
-	font-size: 13px;
+.cr-showcase-name h3 {
+	font-size: clamp(28px, 3.6cqi, 40px);
 	font-weight: 700;
-	letter-spacing: 0.08em;
+	letter-spacing: -0.025em;
+	line-height: 1.1;
+}
+
+.cr-showcase-name p {
+	margin-top: 6px;
+	color: var(--cr-muted);
+	font-size: clamp(15px, 1.6cqi, 18px);
+}
+
+/* 칸에 마우스를 올리면 살짝 떠오른다 */
+.cr-showcase .cr-tile {
+	transition:
+		transform 0.35s var(--ease-out),
+		box-shadow 0.35s var(--ease-out);
+}
+
+.cr-showcase .cr-tile:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* 직접 만져 보는 도식이 들어간 칸 */
+.cr-showcase-live {
+	margin: 0 0 18px;
+	padding: 16px;
+	border-radius: 14px;
+	background-color: var(--cr-bg);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.cr-showcase-lead .cr-showcase-live {
+	margin: 0;
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
 }
 
 .cr-showcase h4 {
@@ -114,7 +139,7 @@
 	padding: 20px 20px 20px 36px;
 }
 
-.cr-showcase-lead[data-flip] > figure {
+.cr-showcase-lead[data-flip] > :first-child {
 	order: 2;
 }
 
@@ -659,7 +684,7 @@
 		padding: 16px 16px 24px;
 	}
 
-	.cr-showcase-lead[data-flip] > figure,
+	.cr-showcase-lead[data-flip] > :first-child,
 	.cr-split-row[data-flip] > header {
 		order: 0;
 	}

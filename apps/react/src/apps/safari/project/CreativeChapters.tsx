@@ -94,40 +94,48 @@ const groupsOf = (points: ProjectPoint[]) =>
 		return groups;
 	}, []);
 
-/** 항목의 화면 칸: 그림이 없으면 같은 자리를 아이콘으로 채워 칸 높이를 맞춘다 */
-const ShotSlot: React.FC<{ point: ProjectPoint; className: string }> = ({ point, className }) => (
-	<figure className={className} data-icon={point.image ? undefined : ''}>
-		{point.image ? (
-			<ZoomImage src={point.image} alt={`${point.title} 화면`} />
-		) : (
-			<i className={`fa-solid ${point.icon ?? 'fa-table-columns'}`} aria-hidden="true" />
-		)}
-	</figure>
-);
+/** 항목의 화면 칸: 데모가 있으면 직접 만져 보는 도식, 그림이 있으면 그림, 둘 다 없으면 같은 자리를 아이콘으로 채운다 */
+const ShotSlot: React.FC<{ point: ProjectPoint; className: string }> = ({ point, className }) =>
+	point.demo ? (
+		<div className="cr-showcase-live" data-demo={point.demo}>
+			<Demo kind={point.demo} />
+		</div>
+	) : (
+		<figure className={className} data-icon={point.image ? undefined : ''}>
+			{point.image ? (
+				<ZoomImage src={point.image} alt={`${point.title} 화면`} />
+			) : (
+				<i className={`fa-solid ${point.icon ?? 'fa-table-columns'}`} aria-hidden="true" />
+			)}
+		</figure>
+	);
+
+/** 묶음마다 이름 아래 붙는 한 줄 */
+const GROUP_NOTES: Record<string, string> = {
+	쓰기: '쓰던 글이 사라지지 않는 편집기',
+	'발행과 정리': '초안에서 영구 삭제까지, 사람이 챙기지 않아도',
+	운영: '혼자서도 한눈에 보는 사이트의 상태',
+	소통: '가입 없는 댓글과, 꼭 필요한 때만 가는 메일',
+	'권한과 설정': '누가 들어오고 무엇을 바꿀 수 있는지',
+};
 
 /**
- * showcase (관리자와 CMS): 항목을 묶음(쓰기, 발행과 정리, 운영, 권한과 설정)으로 나누고, 묶음마다 첫 항목은 화면을 크게
+ * showcase (관리자와 CMS): 항목을 묶음(쓰기, 발행과 정리, 운영, 소통, 권한과 설정)으로 나누고, 묶음마다 첫 항목은 화면(또는 만져 보는 도식)을 크게
  * 글 옆에 둔 큰 칸, 나머지는 화면이 위에 붙은 작은 칸으로 짠다. 묶음마다 큰 칸의 좌우를 바꾼다. 누를 필요 없이 다 보인다
  */
 const Showcase: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 	const groups = groupsOf(points);
-	// 묶음마다 첫 항목의 번호 (1부터)
-	const firsts = groups.map((_, g) => 1 + groups.slice(0, g).reduce((sum, group) => sum + group.points.length, 0));
 	return (
 		<div className="cr-showcase">
 			{groups.map((group, g) => {
 				const [lead, ...rest] = group.points;
-				const first = firsts[g];
-				const no = first + rest.length;
 				return (
 					<section key={group.name || g} className="cr-showcase-group" aria-label={group.name || undefined}>
 						{group.name && (
-							<h3 className="cr-showcase-name" data-reveal="">
-								<span>
-									{String(first).padStart(2, '0')}–{String(no).padStart(2, '0')}
-								</span>
-								{group.name}
-							</h3>
+							<header className="cr-showcase-name" data-reveal="">
+								<h3>{group.name}</h3>
+								{GROUP_NOTES[group.name] && <p>{GROUP_NOTES[group.name]}</p>}
+							</header>
 						)}
 						<article className="cr-tile cr-showcase-lead" data-flip={g % 2 === 1 || undefined} data-reveal="">
 							<ShotSlot point={lead} className="cr-showcase-shot" />

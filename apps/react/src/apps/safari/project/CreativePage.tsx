@@ -39,6 +39,11 @@ const HINTS: Record<DemoKind, string> = {
 	translate: 'EN을 누르면 진짜로 번역해요',
 	summary: '발행하면 진짜로 요약해요',
 	cover: '제목을 넣고 그려 보세요',
+	autosave: '글을 고치고 3초 기다려 보세요',
+	lifecycle: '단추로 글의 일생을 넘겨 보세요',
+	comments: '반응을 누르고 지워 보세요',
+	mailbox: '메일을 눌러 열어 보세요',
+	invite: '누가 들어올 수 있는지 골라 보세요',
 };
 /** 데모가 돌 때 몽이의 반응: 만드는 중엔 기다리고, 끝나면 반짝, 실패하면 놀란다 */
 const REACTIONS: Record<DemoState, { mood: Mood; text: (kind: DemoKind) => string }> = {
@@ -158,7 +163,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 			// 화면에 보이는 높이가 가장 큰 데모 (화면의 3분의 1 이상 보이거나 데모가 통째로 보일 때)
 			let target: HTMLElement | null = null;
 			let best = 0;
-			body.querySelectorAll<HTMLElement>('.cr-point-demo[data-demo]').forEach((node) => {
+			body.querySelectorAll<HTMLElement>('.cr-point-demo[data-demo], .cr-showcase-live[data-demo]').forEach((node) => {
 				const box = node.getBoundingClientRect();
 				const shown = Math.min(box.bottom, view.top + view.height) - Math.max(box.top, view.top);
 				if (shown > best && (shown > view.height / 3 || shown >= box.height - 1)) {

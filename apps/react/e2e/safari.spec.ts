@@ -179,6 +179,14 @@ test.describe('Safari', () => {
 		await panel.getByRole('region', { name: '기술 사양' }).scrollIntoViewIfNeeded();
 		await expect(buddy).not.toHaveAttribute('data-spot', 'hero');
 		await expect(buddy).toBeInViewport();
+		// 관리자와 CMS: 다른 화면이 먼저 저장했으면 409로 막고, 초대받지 않은 GitHub 계정은 들이지 않는다
+		const writing = panel.getByRole('region', { name: '쓰기', exact: true });
+		await writing.getByLabel(/다른/).check();
+		await writing.getByRole('button', { name: '저장', exact: true }).click();
+		await expect(writing.getByRole('status')).toContainText('409 Conflict');
+		const access = panel.getByRole('region', { name: '권한과 설정', exact: true });
+		await access.getByRole('button', { name: '모르는 사람' }).click();
+		await expect(access.getByRole('status')).toContainText('계정을 지웁니다');
 		// 테마: 프리셋을 고르면 미리보기 이름이 바뀌고, 다크로 바꿀 수 있다
 		const themes = panel.getByRole('region', { name: '테마' }).locator('.cd-themes');
 		await themes.getByRole('button', { name: 'Forest' }).click();
