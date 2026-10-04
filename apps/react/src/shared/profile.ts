@@ -50,7 +50,19 @@ export interface ProjectPoint {
 	/** 갈래 여러 개 (예: 레이아웃 여섯 가지): 이름과 한 줄 설명. 그림이 없으면 갈래마다 움직이는 도식으로 그린다 */
 	variants?: { label: string; note: string }[];
 	/** 그림 대신 직접 만져 보는 데모 (슬라이드 갤러리, 음성 만들기, 파형 편집, 문서 변환, 번역, AI 요약, AI 커버) */
-	demo?: 'slides' | 'voice' | 'wave' | 'convert' | 'translate' | 'summary' | 'cover';
+	demo?:
+		| 'slides'
+		| 'voice'
+		| 'wave'
+		| 'convert'
+		| 'translate'
+		| 'summary'
+		| 'cover'
+		| 'autosave'
+		| 'lifecycle'
+		| 'comments'
+		| 'mailbox'
+		| 'invite';
 	/** 데모 아래나 글 옆에 붙일 실제 화면 여러 장 (.mp4는 화면에 보일 때만 도는 영상) */
 	shots?: { src: string; alt: string }[];
 	/** 카드에 붙일 아이콘 (Font Awesome 이름, 예: fa-lock) */
@@ -863,6 +875,12 @@ export const PROJECTS: Project[] = [
 				lead: '글과 작업물을 쓰고, 고치고, 발행하고, 지우는 일을 모두 관리자 화면에서 합니다. 글 한 편이 쓰여 발행되고 휴지통을 거쳐 사라지기까지의 길을 따라, 사이트 문구와 권한까지 코드 배포 없이 바꿉니다.',
 				points: [
 					{
+						title: '세 겹 자동 저장과 버전 확인',
+						group: '쓰기',
+						body: '입력하는 즉시 브라우저에 초안을 두고, 3초 동안 입력이 없으면 서버에 리비전을 쌓고, 페이지를 떠날 때는 sendBeacon으로 마지막 변경을 보냅니다. 저장할 때는 불러온 버전과 지금 버전을 비교해, 다른 화면이 먼저 저장했으면 409로 돌려보내 덮어쓰지 않습니다.',
+						demo: 'autosave',
+					},
+					{
 						title: '하나의 편집기',
 						group: '쓰기',
 						body: 'Plate.js 편집기에서 마크다운과 리치 텍스트를 오가며 씁니다. 제목·목록·표·코드·각주·콜아웃과 글자색, 형광을 쓰고, 오디오·파일 첨부까지 두 형식 사이에서 그대로 옮겨집니다. 투표·탭·캘린더 블록은 직접 만들어 더했고, 미리보기는 실제 게시 화면과 같은 컴포넌트로 그려 보이는 그대로 발행됩니다.',
@@ -875,16 +893,10 @@ export const PROJECTS: Project[] = [
 						image: projectImage('hyeoniverse', 'shots/cms-toolbar.jpg'),
 					},
 					{
-						title: '세 겹 자동 저장과 버전 확인',
-						group: '쓰기',
-						body: '입력하는 즉시 브라우저에 초안을 두고, 3초 동안 입력이 없으면 서버에 리비전을 쌓고, 페이지를 떠날 때는 sendBeacon으로 마지막 변경을 보냅니다. 저장할 때는 불러온 버전과 지금 버전을 비교해, 다른 화면이 먼저 저장했으면 409로 돌려보내 덮어쓰지 않습니다.',
-						image: projectImage('hyeoniverse', 'shots/cms-autosave.jpg'),
-					},
-					{
 						title: '글 한 편의 일생',
 						group: '발행과 정리',
 						body: '초안은 예약하면 DB 안의 pg_cron이 매분 확인해 그 시각에 발행하고, 발행된 글은 저장할 때마다 버전이 오릅니다. 지운 글은 휴지통에서 복구할 수 있고, 30일(인기 글 다섯 개는 90일)이 지나면 매일 도는 정리 작업이 영구 삭제합니다. 글과 작업물이 중심인 테이블 25개 위에서 돕니다.',
-						image: projectImage('hyeoniverse', 'shots/cms-lifecycle.jpg'),
+						demo: 'lifecycle',
 					},
 					{
 						title: '목록에서 한 번에',
@@ -911,9 +923,9 @@ export const PROJECTS: Project[] = [
 						image: projectImage('hyeoniverse', 'cms/dashboard.jpg'),
 					},
 					{
-						title: '알림과 댓글',
+						title: '알림',
 						group: '운영',
-						body: '새 댓글·답글·신고·권한 요청·새 기기 로그인·방문 급증과 AI 공급자 실패·메일 발송 실패·예약 작업 오류 같은 시스템 알림을 전체·댓글·시스템·신고 네 탭에서 받습니다. 처리가 필요한 것은 따로 묶이고, 알림을 눌러 넘어간 항목은 잠시 깜빡여 어디로 왔는지 알려 줍니다. 댓글은 글과 작업물을 한 표에 모아 지우거나 되살립니다.',
+						body: '새 댓글·답글·신고·권한 요청·새 기기 로그인·방문 급증과 AI 공급자 실패·메일 발송 실패·예약 작업 오류 같은 시스템 알림을 전체·댓글·시스템·신고 네 탭에서 받습니다. 처리가 필요한 것은 따로 묶이고, 알림을 눌러 넘어간 항목은 잠시 깜빡여 어디로 왔는지 알려 줍니다.',
 						image: projectImage('hyeoniverse', 'cms/notifications.jpg'),
 					},
 					{
@@ -921,6 +933,24 @@ export const PROJECTS: Project[] = [
 						group: '운영',
 						body: 'AI 번역·요약·TTS·커버, 이미지 검색, 메일, GitHub API, 예약 작업의 성공과 실패를 새것부터 남깁니다. 위에는 공급자마다 성공·실패 수와 마지막 실패 원인(키 없음·한도·결제·서버 오류)이, 아래에는 기록 줄이 있어 어느 키가 만료됐는지 바로 보입니다.',
 						image: projectImage('hyeoniverse', 'cms/service-log.jpg'),
+					},
+					{
+						title: '로그인 없이 다는 댓글',
+						group: '소통',
+						body: '방문자는 가입 없이 대댓글까지 답니다. 닉네임은 이모지와 이름을 섞어 고르고, 본문은 마크다운을 DOMPurify로 걸러 그리며, 이모지 반응은 giscus처럼 여덟 가지입니다. 고치고 지우는 권한은 두 길로 확인합니다: 같은 브라우저는 저장해 둔 식별자(SHA-256)로 자동, 다른 기기에서는 쓸 때 정한 비밀번호(bcrypt)로. 지운 댓글은 원문을 보존해 관리자가 되살릴 수 있고, 설정에서 giscus로 바꿀 수도 있습니다.',
+						demo: 'comments',
+					},
+					{
+						title: '메일 (Resend)',
+						group: '소통',
+						body: '답글 알림(메일을 적어 둔 사람에게만), 작성자 초대, 새 기기 로그인 확인(24시간 링크), 예약 발행과 휴지통 정리 결과를 Resend로 보냅니다. 예약 발행 알림만은 Next.js가 아니라 DB가 pg_net으로 직접 보내고, 키가 없으면 메일만 건너뛰고 DB 작업은 그대로 합니다. 보내지 못하면 관리자 알림에 남습니다.',
+						demo: 'mailbox',
+					},
+					{
+						title: 'GitHub 로그인과 초대',
+						group: '권한과 설정',
+						body: '멤버는 GitHub OAuth로 로그인하지만, OAuth는 누구인지만 알려 줍니다. 들여보낼지는 서버의 /auth/callback이 정합니다: 소유자 메일(OWNER_EMAIL)인지, 이미 역할이 있는지, 초대 행이 있는지 차례로 보고, 아니면 그 계정을 지웁니다. 역할은 사용자가 고칠 수 없는 app_metadata에 두고, 초대는 메일을 키로 미리 적어 두었다가 로그인하면 소비합니다.',
+						demo: 'invite',
 					},
 					{
 						title: '누가 무엇을 할 수 있나',

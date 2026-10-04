@@ -7,6 +7,7 @@ import { scrollParent } from '@/apps/safari/project/scroll';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import { env } from '@/shared/config/env';
 import '@/apps/safari/project/CreativeDemos.css';
+import { Autosave, Comments, Invite, Lifecycle, Mailbox } from '@/apps/safari/project/CreativeCms';
 
 /** 데모가 지금 무엇을 하는지 페이지(몽이)에 알리는 이벤트: busy 만드는 중, done 끝, error 실패, play 재생 */
 export const DEMO_EVENT = 'cr-demo';
@@ -1592,6 +1593,11 @@ const Cover: React.FC = () => {
 
 /** 장 글 묶음에 붙는 데모 */
 export const Demo: React.FC<{ kind: NonNullable<ProjectPoint['demo']> }> = ({ kind }) => {
+	if (kind === 'autosave') return <Autosave />;
+	if (kind === 'lifecycle') return <Lifecycle />;
+	if (kind === 'comments') return <Comments />;
+	if (kind === 'mailbox') return <Mailbox />;
+	if (kind === 'invite') return <Invite />;
 	if (kind === 'slides') return <Slides />;
 	if (kind === 'voice') return <Voice />;
 	if (kind === 'wave') return <Wave />;

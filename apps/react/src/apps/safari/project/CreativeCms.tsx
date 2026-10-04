@@ -1,0 +1,495 @@
+// HYEONIVERSE 관리자와 CMS 장의 직접 만져 보는 도식들: 그림 대신 그 규칙대로 움직이는 작은 화면.
+// 세 겹 자동 저장과 버전 확인, 글 한 편의 일생, 로그인 없는 댓글, 메일함, GitHub 로그인과 초대
+import React, { useEffect, useRef, useState } from 'react';
+import '@/apps/safari/project/CreativeCms.css';
+
+/** 자동 저장이 서버에 수정본을 남기기까지 기다리는 시간 (그 사이트와 같다) */
+const IDLE_MS = 3000;
+
+type Lane = 'local' | 'server' | 'beacon';
+const LANES: { key: Lane; when: string; what: string; note: string }[] = [
+	{ key: 'local', when: '즉시', what: '브라우저 저장소', note: '새로고침 · 탭 종료 대비' },
+	{ key: 'server', when: '3초 입력 없음', what: '서버 수정본', note: 'revisions · 되돌리기용' },
+	{ key: 'beacon', when: '페이지 이탈', what: 'sendBeacon', note: '마지막 변경 전송' },
+];
+
+/**
+ * 세 겹 자동 저장과 버전 확인: 글을 고치면 브라우저 저장이 바로 켜지고, 3초 손을 떼면 서버 수정본이 쌓이고,
+ * 떠나기를 누르면 마지막 변경을 보낸다. 저장할 때는 열 때 받은 버전과 서버 버전을 비교해, 다른 화면이 먼저 저장했으면 409
+ */
+export const Autosave: React.FC = () => {
+	const [text, setText] = useState('자동 저장은 세 겹으로 일어납니다.');
+	const [flash, setFlash] = useState<Record<Lane, number>>({ local: 0, server: 0, beacon: 0 });
+	const [waiting, setWaiting] = useState(false);
+	const [revisions, setRevisions] = useState(3);
+	const [opened, setOpened] = useState(7);
+	const [server, setServer] = useState(7);
+	const [other, setOther] = useState(false);
+	const [result, setResult] = useState<'ok' | 'conflict' | null>(null);
+	const idle = useRef(0);
+	useEffect(() => () => window.clearTimeout(idle.current), []);
+	const light = (lane: Lane) => setFlash((now) => ({ ...now, [lane]: now[lane] + 1 }));
+
+	const type = (value: string) => {
+		setText(value);
+		setResult(null);
+		light('local');
+		setWaiting(true);
+		window.clearTimeout(idle.current);
+		idle.current = window.setTimeout(() => {
+			setWaiting(false);
+			setRevisions((n) => n + 1);
+			light('server');
+		}, IDLE_MS);
+	};
+	const save = () => {
+		// 다른 화면이 먼저 저장했다면 서버 버전이 이미 하나 올라가 있다
+		const current = other ? server + 1 : server;
+		if (other) setServer(current);
+		if (current !== opened) {
+			setResult('conflict');
+			return;
+		}
+		setServer(current + 1);
+		setOpened(current + 1);
+		setResult('ok');
+	};
+	const reopen = () => {
+		setOpened(server);
+		setOther(false);
+		setResult(null);
+	};
+
+	return (
+		<div className="cm-save">
+			<label className="cm-save-editor">
+				<span>편집기</span>
+				<textarea value={text} rows={2} onChange={(event) => type(event.target.value)} />
+			</label>
+			<ol className="cm-lanes">
+				{LANES.map((lane) => (
+					<li
+						key={lane.key}
+						data-waiting={(lane.key === 'server' && waiting) || undefined}
+						data-count={flash[lane.key] > 0 || undefined}
+					>
+						<span className="cm-lane-when">{lane.when}</span>
+						<span className="cm-lane-box" key={flash[lane.key]} data-flash={flash[lane.key] > 0 || undefined}>
+							<strong>{lane.what}</strong>
+							<small>
+								{lane.key === 'server' ? `${lane.note} · ${revisions}개` : lane.note}
+								{lane.key === 'server' && waiting && ' · 손을 떼면 3초 뒤'}
+							</small>
+							{lane.key === 'server' && <i className="cm-lane-timer" aria-hidden="true" key={text} />}
+						</span>
+					</li>
+				))}
+			</ol>
+			<div className="cm-save-version">
+				<p>
+					열 때 받은 버전 <b>v{opened}</b> · 서버 버전 <b>v{other && result !== 'conflict' ? server + 1 : server}</b>
+				</p>
+				<label className="cm-check">
+					<input type="checkbox" checked={other} onChange={(event) => setOther(event.target.checked)} /> 다른 화면에서
+					먼저 저장
+				</label>
+				<div className="cm-row">
+					<button type="button" className="cd-primary" onClick={save}>
+						저장
+					</button>
+					<button type="button" className="cd-ghost" onClick={() => light('beacon')}>
+						페이지 떠나기
+					</button>
+					{result === 'conflict' && (
+						<button type="button" className="cd-ghost" onClick={reopen}>
+							새로 받기
+						</button>
+					)}
+				</div>
+				<p className="cm-result" data-kind={result ?? undefined} role="status">
+					{result === 'ok'
+						? `버전이 같아 저장했습니다 · v${opened}`
+						: result === 'conflict'
+							? '409 Conflict · 다른 화면이 먼저 저장해 덮어쓰지 않았습니다'
+							: '글을 고쳐 보고, 다른 화면에서 먼저 저장한 뒤 저장해 보세요'}
+				</p>
+			</div>
+		</div>
+	);
+};
+
+type Stage = 'draft' | 'scheduled' | 'published' | 'trash' | 'purged';
+const STAGES: { key: Stage; label: string }[] = [
+	{ key: 'draft', label: '초안' },
+	{ key: 'scheduled', label: '예약' },
+	{ key: 'published', label: '발행' },
+	{ key: 'trash', label: '휴지통' },
+	{ key: 'purged', label: '영구 삭제' },
+];
+
+/**
+ * 글 한 편의 일생: 초안을 예약하면 DB 안의 pg_cron이 매분 확인해 발행하고, 저장마다 버전이 오르고, 지우면 휴지통에서
+ * 30일(인기 글은 90일) 뒤 매일 03:00 정리 작업이 영구 삭제한다. 단추로 넘기며 칼럼 값이 바뀌는 모습을 본다
+ */
+export const Lifecycle: React.FC = () => {
+	const [stage, setStage] = useState<Stage>('draft');
+	const [version, setVersion] = useState(1);
+	const [popular, setPopular] = useState(false);
+	const [cron, setCron] = useState<string | null>(null);
+	const timer = useRef(0);
+	useEffect(() => () => window.clearTimeout(timer.current), []);
+	const runCron = (label: string, next: Stage) => {
+		setCron(label);
+		timer.current = window.setTimeout(() => {
+			setCron(null);
+			setStage(next);
+		}, 1400);
+	};
+	const at = STAGES.findIndex((item) => item.key === stage);
+	const days = popular ? 90 : 30;
+	const columns: [string, string][] = [
+		['published', String(stage === 'published')],
+		['scheduled_at', stage === 'scheduled' ? "'오늘 09:00'" : 'null'],
+		['version', stage === 'purged' ? '—' : String(version)],
+		['deleted_at', stage === 'trash' ? "'방금'" : 'null'],
+		['purge_after', stage === 'trash' ? `'${days}일 뒤'` : 'null'],
+	];
+
+	return (
+		<div className="cm-life">
+			<ol className="cm-life-track">
+				{STAGES.map((item, i) => (
+					<li key={item.key} data-done={i < at || undefined} data-now={i === at || undefined}>
+						<span>{item.label}</span>
+					</li>
+				))}
+			</ol>
+			<div className="cm-life-card" data-stage={stage}>
+				<p className="cm-life-title">{stage === 'purged' ? '사라진 글' : '혼자 운영하는 서비스의 설계'}</p>
+				<dl>
+					{columns.map(([name, value]) => (
+						<div key={name}>
+							<dt>{name}</dt>
+							<dd key={value}>{value}</dd>
+						</div>
+					))}
+				</dl>
+				{cron && (
+					<p className="cm-life-cron" role="status">
+						<i className="fa-solid fa-clock" /> {cron}
+					</p>
+				)}
+			</div>
+			<div className="cm-row">
+				{stage === 'draft' && (
+					<>
+						<button type="button" className="cd-primary" onClick={() => setStage('scheduled')}>
+							예약하기
+						</button>
+						<button type="button" className="cd-ghost" onClick={() => setStage('published')}>
+							바로 발행
+						</button>
+					</>
+				)}
+				{stage === 'scheduled' && (
+					<button
+						type="button"
+						className="cd-primary"
+						disabled={!!cron}
+						onClick={() => runCron('pg_cron이 매분 확인 · 예약 시각이 지나 발행합니다', 'published')}
+					>
+						예약 시각 지나기
+					</button>
+				)}
+				{stage === 'published' && (
+					<>
+						<button type="button" className="cd-primary" onClick={() => setVersion((n) => n + 1)}>
+							고쳐 저장 (버전 +1)
+						</button>
+						<button type="button" className="cd-ghost" onClick={() => setStage('trash')}>
+							지우기
+						</button>
+					</>
+				)}
+				{stage === 'trash' && (
+					<>
+						<button type="button" className="cd-ghost" disabled={!!cron} onClick={() => setStage('published')}>
+							복구
+						</button>
+						<button
+							type="button"
+							className="cd-primary"
+							disabled={!!cron}
+							onClick={() => runCron(`${days}일이 지나 매일 03:00 정리 작업이 지웁니다`, 'purged')}
+						>
+							{days}일 지나기
+						</button>
+						<label className="cm-check">
+							<input type="checkbox" checked={popular} onChange={(event) => setPopular(event.target.checked)} /> 인기 글
+							(90일 보관)
+						</label>
+					</>
+				)}
+				{stage === 'purged' && (
+					<button
+						type="button"
+						className="cd-ghost"
+						onClick={() => {
+							setStage('draft');
+							setVersion(1);
+						}}
+					>
+						처음부터
+					</button>
+				)}
+			</div>
+		</div>
+	);
+};
+
+const NICKNAMES = ['🦊 여우', '🐳 고래', '🦉 부엉이', '🐢 거북이', '🦦 수달', '🐧 펭귄', '🦔 고슴도치'];
+const REACTIONS = ['👍', '👎', '😄', '🎉', '😕', '❤️', '🚀', '👀'];
+
+/**
+ * 로그인 없는 댓글: 닉네임을 섞어 고르고, 이모지 반응 8종을 누르고, 지우면 내용을 보존한 채 가려졌다가 관리자가 되살린다.
+ * 같은 브라우저는 저장된 식별자로 자동 인증, 다른 기기에서는 비밀번호로 인증한다
+ */
+export const Comments: React.FC = () => {
+	const [nick, setNick] = useState(0);
+	const [counts, setCounts] = useState<Record<string, number>>({ '👍': 3, '🎉': 1, '❤️': 2 });
+	const [mine, setMine] = useState<string[]>([]);
+	const [deleted, setDeleted] = useState(false);
+	const [device, setDevice] = useState<'same' | 'other'>('same');
+	const react = (emoji: string) => {
+		const on = mine.includes(emoji);
+		setMine((now) => (on ? now.filter((item) => item !== emoji) : [...now, emoji]));
+		setCounts((now) => ({ ...now, [emoji]: (now[emoji] ?? 0) + (on ? -1 : 1) }));
+	};
+
+	return (
+		<div className="cm-comments">
+			<article className="cm-comment" data-deleted={deleted || undefined}>
+				<header>
+					<b>{NICKNAMES[nick]}</b>
+					<button
+						type="button"
+						className="cm-shuffle"
+						aria-label="닉네임 섞기"
+						disabled={deleted}
+						onClick={() => setNick((n) => (n + 1 + Math.floor(Math.random() * 5)) % NICKNAMES.length)}
+					>
+						<i className="fa-solid fa-shuffle" />
+					</button>
+					<small>방금</small>
+				</header>
+				<p>
+					{deleted ? (
+						<em>삭제된 댓글입니다 · 원문은 관리자만 볼 수 있게 보존</em>
+					) : (
+						<>
+							<b>마크다운</b>도 됩니다. 스크립트는 <code>DOMPurify</code>가 걸러 냅니다.
+						</>
+					)}
+				</p>
+				<ul className="cm-reactions">
+					{REACTIONS.map((emoji) => (
+						<li key={emoji}>
+							<button type="button" aria-pressed={mine.includes(emoji)} disabled={deleted} onClick={() => react(emoji)}>
+								{emoji} {counts[emoji] ? <span>{counts[emoji]}</span> : null}
+							</button>
+						</li>
+					))}
+				</ul>
+			</article>
+			<div className="cm-row">
+				<div className="cd-seg" role="group" aria-label="어디서 고치나">
+					<button type="button" aria-pressed={device === 'same'} onClick={() => setDevice('same')}>
+						같은 브라우저
+					</button>
+					<button type="button" aria-pressed={device === 'other'} onClick={() => setDevice('other')}>
+						다른 기기
+					</button>
+				</div>
+				{deleted ? (
+					<button type="button" className="cd-ghost" onClick={() => setDeleted(false)}>
+						<i className="fa-solid fa-rotate-left" /> 관리자: 되살리기
+					</button>
+				) : (
+					<button type="button" className="cd-ghost" onClick={() => setDeleted(true)}>
+						지우기
+					</button>
+				)}
+			</div>
+			<p className="cm-result" role="status">
+				{device === 'same'
+					? '같은 브라우저: 저장해 둔 식별자(SHA-256)로 비밀번호 없이 고치고 지웁니다'
+					: '다른 기기: 쓸 때 정한 비밀번호(bcrypt)로 확인한 뒤에만 고치고 지웁니다'}
+			</p>
+		</div>
+	);
+};
+
+const MAILS = [
+	{
+		icon: 'fa-reply',
+		from: '답글 알림',
+		title: '남긴 댓글에 답글이 달렸습니다',
+		body: '댓글을 쓸 때 메일을 적어 둔 사람에게만 보냅니다.',
+	},
+	{
+		icon: 'fa-user-plus',
+		from: '작성자 초대',
+		title: 'HYEONIVERSE 저자로 초대되었습니다',
+		body: '이 메일 주소로 GitHub 로그인을 하면 역할이 붙습니다.',
+	},
+	{
+		icon: 'fa-laptop',
+		from: '새 기기 확인',
+		title: '처음 보는 기기에서 로그인했습니다',
+		body: '24시간 안에 링크를 눌러야 그 기기에서 들어올 수 있습니다.',
+	},
+	{
+		icon: 'fa-clock',
+		from: '예약 발행',
+		title: '예약한 글 1편을 발행했습니다',
+		body: 'Next.js가 아니라 DB(pg_net)가 Resend로 직접 보냅니다.',
+	},
+];
+
+/** 메일함: 사이트가 Resend로 보내는 메일 네 가지가 화면에 들어오면 하나씩 도착하고, 누르면 내용을 펼친다 */
+export const Mailbox: React.FC = () => {
+	const box = useRef<HTMLDivElement>(null);
+	const [arrived, setArrived] = useState(0);
+	const [open, setOpen] = useState<number | null>(null);
+	useEffect(() => {
+		const node = box.current;
+		if (!node || typeof IntersectionObserver === 'undefined') {
+			setArrived(MAILS.length);
+			return;
+		}
+		let timer = 0;
+		const observer = new IntersectionObserver(([entry]) => {
+			if (!entry.isIntersecting) return;
+			observer.disconnect();
+			const next = (n: number) => {
+				setArrived(n);
+				if (n < MAILS.length) timer = window.setTimeout(() => next(n + 1), 600);
+			};
+			next(1);
+		});
+		observer.observe(node);
+		return () => {
+			observer.disconnect();
+			window.clearTimeout(timer);
+		};
+	}, []);
+
+	return (
+		<div className="cm-mail" ref={box}>
+			<p className="cm-mail-head">
+				<i className="fa-solid fa-inbox" /> 받은편지함 <span>{arrived}</span>
+			</p>
+			<ul>
+				{MAILS.map((mail, i) => (
+					<li key={mail.from} data-in={i < arrived || undefined} data-open={open === i || undefined}>
+						<button type="button" onClick={() => setOpen(open === i ? null : i)} disabled={i >= arrived}>
+							<i className={`fa-solid ${mail.icon}`} aria-hidden="true" />
+							<span>
+								<small>{mail.from}</small>
+								<b>{mail.title}</b>
+							</span>
+						</button>
+						<p>{mail.body}</p>
+					</li>
+				))}
+			</ul>
+		</div>
+	);
+};
+
+type Who = 'invited' | 'stranger' | 'owner';
+const PEOPLE: { key: Who; label: string; email: string }[] = [
+	{ key: 'invited', label: '초대받은 사람', email: 'writer@example.com' },
+	{ key: 'stranger', label: '모르는 사람', email: 'someone@example.com' },
+	{ key: 'owner', label: '소유자', email: 'owner@example.com' },
+];
+const GATES = ['OWNER_EMAIL인가', '이미 역할이 있나', '초대 행이 있나'];
+/** 사람마다 세 관문의 결과 */
+const PASSES: Record<Who, boolean[]> = {
+	owner: [true, false, false],
+	invited: [false, false, true],
+	stranger: [false, false, false],
+};
+
+/**
+ * GitHub 로그인과 초대: OAuth는 누구인지만 알려 주고, 들여보낼지는 서버의 /auth/callback이 정한다.
+ * 소유자 메일인지, 이미 역할이 있는지, 초대 행이 있는지 차례로 보고, 하나도 아니면 그 계정을 지운다
+ */
+export const Invite: React.FC = () => {
+	const [who, setWho] = useState<Who | null>(null);
+	const [step, setStep] = useState(0);
+	const timer = useRef(0);
+	useEffect(() => () => window.clearTimeout(timer.current), []);
+	const login = (key: Who) => {
+		setWho(key);
+		setStep(0);
+		window.clearTimeout(timer.current);
+		const passes = PASSES[key];
+		const stop = passes.indexOf(true);
+		const last = stop < 0 ? GATES.length : stop + 1;
+		const next = (n: number) => {
+			setStep(n);
+			if (n < last) timer.current = window.setTimeout(() => next(n + 1), 550);
+		};
+		timer.current = window.setTimeout(() => next(1), 300);
+	};
+	const passes = who ? PASSES[who] : [];
+	const stop = passes.indexOf(true);
+	const last = stop < 0 ? GATES.length : stop + 1;
+	const done = who !== null && step >= last;
+	const allowed = done && stop >= 0;
+
+	return (
+		<div className="cm-invite">
+			<p className="cm-invite-step">
+				<i className="fa-brands fa-github" /> GitHub로 로그인할 사람
+			</p>
+			<div className="cm-row">
+				{PEOPLE.map((person) => (
+					<button
+						key={person.key}
+						type="button"
+						className="cd-ghost"
+						aria-pressed={who === person.key}
+						onClick={() => login(person.key)}
+					>
+						{person.label}
+					</button>
+				))}
+			</div>
+			<ol className="cm-gates">
+				{GATES.map((gate, i) => (
+					<li
+						key={gate}
+						data-state={!who || i >= step ? undefined : passes[i] ? 'pass' : 'fail'}
+						data-skip={(who !== null && done && i >= last) || undefined}
+					>
+						<span>{gate}</span>
+						<b>{!who || i >= step ? '' : passes[i] ? '예' : '아니오'}</b>
+					</li>
+				))}
+			</ol>
+			<p className="cm-result" data-kind={done ? (allowed ? 'ok' : 'conflict') : undefined} role="status">
+				{!who
+					? '로그인할 사람을 골라 보세요. /auth/callback이 세 가지를 차례로 봅니다'
+					: !done
+						? `${PEOPLE.find((person) => person.key === who)?.email} 확인 중`
+						: allowed
+							? who === 'owner'
+								? '들어옵니다 · 소유자 역할을 app_metadata에 한 번 못박습니다'
+								: '들어옵니다 · 초대에 적힌 역할을 붙이고 초대를 소비(consumed_at)합니다'
+							: '들여보내지 않습니다 · 로그아웃하고 그 계정을 지웁니다'}
+			</p>
+		</div>
+	);
+};
