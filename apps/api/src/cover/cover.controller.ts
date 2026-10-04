@@ -11,7 +11,7 @@ import type { Request } from 'express';
 import { CoverService } from './cover.service.js';
 
 /**
- * AI 커버 데모 (Safari의 HYEONIVERSE 페이지). 제목으로 Hugging Face FLUX가 16:9 커버를 그린다.
+ * AI 커버 데모 (Safari의 HYEONIVERSE 페이지). 제목으로 Cloudflare Workers AI → Hugging Face 차례로 FLUX 커버를 그린다.
  * IP마다 하루 COVER_PER_IP_PER_DAY번, 사이트 전체 하루 COVER_TOTAL_PER_DAY번까지
  */
 @ApiTags('cover')
@@ -36,7 +36,10 @@ export class CoverController {
 		schema: {
 			example: {
 				provider: 'huggingface',
-				attempts: [{ provider: 'huggingface', state: 'ok' }],
+				attempts: [
+					{ provider: 'cloudflare', state: 'fail', reason: '사용 한도에 닿았습니다' },
+					{ provider: 'huggingface', state: 'ok' },
+				],
 				image: '/9j/4AAQ…',
 				mime: 'image/jpeg',
 				remaining: 0,

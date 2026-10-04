@@ -205,12 +205,13 @@ chmod 600 .env api.env
 | `DEEPL_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`           |        | 번역 데모 (DeepL → Google). HYEONIVERSE와 같은 키. 없으면 그 공급자만 건너뛴다                                    |
 | `GEMINI_API_KEY`                                      |        | AI 요약 데모 (Gemini가 한국어·영어 요약). 없으면 요약이 502                                                       |
 | `GEMINI_MODEL`                                        |        | 요약 모델 (기본 `gemini-flash-latest`, 늘 최신 Flash). 내려간 모델이면 응답이 권하는 모델로 한 번 다시 묻는다     |
-| `HUGGINGFACE_API_KEY`                                 |        | AI 커버 데모 (Hugging Face FLUX). 없으면 커버가 502                                                               |
+| `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_AI_TOKEN`        |        | AI 커버 데모의 첫 공급자 (Cloudflare Workers AI FLUX, 매일 무료 할당). 토큰에는 Workers AI 권한만 준다            |
+| `HUGGINGFACE_API_KEY`                                 |        | AI 커버 데모의 두 번째 공급자 (Hugging Face FLUX). 둘 다 없으면 커버가 502                                        |
 | `TRANSLATE_PER_IP_PER_DAY`, `TRANSLATE_TOTAL_PER_DAY` |        | 번역 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                 |
 | `SUMMARY_PER_IP_PER_DAY`, `SUMMARY_TOTAL_PER_DAY`     |        | 요약 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                 |
 | `COVER_PER_IP_PER_DAY`, `COVER_TOTAL_PER_DAY`         |        | 커버 하루 상한. 기본 IP마다 1번, 사이트 전체 5번 (무료 한도가 작다)                                               |
 
-데모 상한은 데모마다 따로, 서버 메모리로 센다 (다시 띄우면 처음부터). 공급자가 모두 실패하면 쓴 횟수를 돌려준다. 커버는 Cloudflare Tunnel의 100초 안에 끝나게 Hugging Face를 80초에서 끊는다.
+데모 상한은 데모마다 따로, 서버 메모리로 센다 (다시 띄우면 처음부터). 공급자가 모두 실패하면 쓴 횟수를 돌려준다. 커버는 두 공급자를 이어 시도해도 Cloudflare Tunnel의 100초 안에 끝나게 각각 45초에서 끊는다.
 
 `NODE_ENV=production`은 Dockerfile에 들어 있다. 그래서 쿠키에 `Secure`가 붙고, http로는 로그인이 되지 않는다. 전체 목록은 `apps/api/.env.example`에 있다.
 

@@ -1466,6 +1466,8 @@ const COVER_STYLES = [
 	{ key: 'watercolor', label: 'Watercolor' },
 	{ key: '3d-render', label: '3D' },
 ] as const;
+type CoverProvider = 'cloudflare' | 'huggingface';
+const COVER_NAME: Record<CoverProvider, string> = { cloudflare: 'Cloudflare', huggingface: 'Hugging Face' };
 /** 제목 글자 수 (서버도 같은 값으로 막는다) */
 const MAX_COVER_CHARS = 60;
 
@@ -1478,16 +1480,21 @@ const seededGradient = (seed: string) => {
 };
 
 /**
- * AI 커버: 제목을 쓰고 그리면, MacFolio API가 Hugging Face FLUX로 16:9 커버를 실제로 그린다.
- * 그림은 무료 한도가 작아 IP마다 하루 1번, 사이트 전체 5번
+ * AI 커버: 제목을 쓰고 그리면, MacFolio API가 Cloudflare Workers AI(실패하면 Hugging Face)의 FLUX로 커버를 실제로 그린다.
+ * 무료 할당 안에서 쓰도록 IP마다 하루 1번, 사이트 전체 5번
  */
 const Cover: React.FC = () => {
 	const [title, setTitle] = useState('혼자 설계하고 운영하는 포트폴리오');
 	const [style, setStyle] = useState<(typeof COVER_STYLES)[number]['key']>('abstract');
 	const [busy, setBusy] = useState(false);
-	const [made, setMade] = useState<{ src: string; title: string } | null>(null);
+	const [made, setMade] = useState<{ src: string; title: string; note: string } | null>(null);
 	const [message, setMessage] = useState<string | null>(null);
-	const { quota, send } = useLiveDemo<{ image: string; mime: string }>('cover', '그리');
+	const { quota, send } = useLiveDemo<{
+		provider: CoverProvider;
+		attempts?: { provider: CoverProvider; state: string; reason?: string }[];
+		image: string;
+		mime: string;
+	}>('cover', '그리');
 	const left = quota?.remaining;
 
 	const draw = async () => {
@@ -1499,7 +1506,12 @@ const Cover: React.FC = () => {
 			setMessage(error ?? '커버를 그리지 못했습니다.');
 			return;
 		}
-		setMade({ src: `data:${data.mime || 'image/jpeg'};base64,${data.image}`, title });
+		// 앞 공급자가 실패해 넘어왔으면 그 이유를 함께 보여 준다
+		const failed = data.attempts?.find((attempt) => attempt.state === 'fail');
+		const note = failed
+			? `${COVER_NAME[failed.provider]} 실패(${failed.reason ?? ''}) → ${COVER_NAME[data.provider]}로 그렸습니다`
+			: `${COVER_NAME[data.provider] ?? 'FLUX'}로 그렸습니다`;
+		setMade({ src: `data:${data.mime || 'image/jpeg'};base64,${data.image}`, title, note });
 	};
 
 	const status = message
@@ -1507,7 +1519,7 @@ const Cover: React.FC = () => {
 		: busy
 			? '그리는 중 (수십 초 걸릴 수 있습니다)'
 			: made
-				? 'Hugging Face FLUX로 그렸습니다'
+				? made.note
 				: '제목을 고치고 그려 보세요';
 
 	return (
@@ -1544,7 +1556,7 @@ const Cover: React.FC = () => {
 					))}
 				</div>
 				<span className="cd-chip">
-					<i className="fa-solid fa-image" /> Hugging Face FLUX
+					<i className="fa-solid fa-image" /> Cloudflare → Hugging Face
 				</span>
 			</div>
 			{/* 16:9 자리를 늘 잡아 두고 그림만 바꾼다. 그리기 전에는 제목으로 고른 그라데이션 (HYEONIVERSE의 빈 커버) */}

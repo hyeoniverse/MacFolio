@@ -56,8 +56,11 @@ export interface AppConfig {
 		perIpPerDay: number;
 		totalPerDay: number;
 	};
-	/** AI 커버 데모 (Hugging Face FLUX). 그림은 무료 한도가 작아 상한을 아주 낮게 둔다 */
+	/** AI 커버 데모 (Cloudflare Workers AI → Hugging Face, 둘 다 FLUX). 무료 한도 안에서 쓰도록 상한을 아주 낮게 둔다 */
 	cover: {
+		/** Cloudflare 계정 ID와 Workers AI 권한만 준 API 토큰: 둘 다 있어야 Cloudflare로 그린다 */
+		cloudflareAccountId?: string;
+		cloudflareAiToken?: string;
 		huggingfaceApiKey?: string;
 		perIpPerDay: number;
 		totalPerDay: number;
@@ -136,6 +139,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			totalPerDay: Number(env.SUMMARY_TOTAL_PER_DAY ?? 50) || 50,
 		},
 		cover: {
+			cloudflareAccountId: env.CLOUDFLARE_ACCOUNT_ID || undefined,
+			cloudflareAiToken: env.CLOUDFLARE_AI_TOKEN || undefined,
 			huggingfaceApiKey: env.HUGGINGFACE_API_KEY || undefined,
 			perIpPerDay: Number(env.COVER_PER_IP_PER_DAY ?? 1) || 1,
 			totalPerDay: Number(env.COVER_TOTAL_PER_DAY ?? 5) || 5,
