@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
-import VolumeModal from '@/apps/music/MusicPlayerVolume'; // VolumeModal 가져오기
 import AppleMenu from '@/desktop/status-bar/AppleMenu';
+import ServerMenu from '@/desktop/status-bar/ServerMenu';
+import VolumeMenu from '@/desktop/status-bar/VolumeMenu';
 import '@/desktop/status-bar/StatusBar.css';
 
 const StatusBar: React.FC = () => {
 	const [time, setTime] = useState<string>('');
-	const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // 모달 상태 관리
-	const { isPlaying, volume, togglePlayPause, next: playNextTrack, previous: playPreviousTrack } = useMusic(); // MusicContext에서 필요한 상태 및 함수 가져오기
+
+	const { isPlaying, togglePlayPause, next: playNextTrack, previous: playPreviousTrack } = useMusic(); // MusicContext에서 필요한 상태 및 함수 가져오기
 
 	useEffect(() => {
 		const updateTime = () => {
@@ -27,21 +28,12 @@ const StatusBar: React.FC = () => {
 		return () => clearInterval(intervalId);
 	}, []);
 
-	const getVolumeIcon = () => {
-		if (volume === 0) {
-			return <i className="fas fa-volume-off" onClick={() => setIsModalVisible(true)}></i>;
-		} else if (volume <= 0.5) {
-			return <i className="fas fa-volume-low" onClick={() => setIsModalVisible(true)}></i>;
-		} else {
-			return <i className="fas fa-volume-high" onClick={() => setIsModalVisible(true)}></i>;
-		}
-	};
-
 	return (
 		<div className="macos-statusbar">
 			<div className="left-section">
 				<AppleMenu />
-				<span className="menu-item">Finder</span>
+				{/* 맨 앞 앱 이름은 굵게 (macOS 메뉴 막대) */}
+				<span className="menu-item app-name">Finder</span>
 				<span className="menu-item">File</span>
 				<span className="menu-item">Edit</span>
 				<span className="menu-item">View</span>
@@ -51,24 +43,29 @@ const StatusBar: React.FC = () => {
 			</div>
 
 			<div className="right-section">
-				<div className="menu-item-player">
-					<span onClick={playPreviousTrack}>
-						<i className="fas fa-fast-backward"></i>
-					</span>
-					<span onClick={togglePlayPause}>
-						<i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
-					</span>
-					<span onClick={playNextTrack}>
-						<i className="fas fa-fast-forward"></i>
-					</span>
-					<span>{getVolumeIcon()}</span>
+				{/* 재생 단추와 음량 단추는 같은 모양(.statusbar-icon-button)이라 크기·세로 자리가 늘 같다 */}
+				<div className="menu-item-player" role="group" aria-label="음악">
+					<button type="button" className="statusbar-icon-button" aria-label="이전 곡" onClick={playPreviousTrack}>
+						<i className="fas fa-fast-backward" aria-hidden="true" />
+					</button>
+					<button
+						type="button"
+						className="statusbar-icon-button"
+						aria-label={isPlaying ? '일시정지' : '재생'}
+						onClick={togglePlayPause}
+					>
+						<i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true" />
+					</button>
+					<button type="button" className="statusbar-icon-button" aria-label="다음 곡" onClick={playNextTrack}>
+						<i className="fas fa-fast-forward" aria-hidden="true" />
+					</button>
+					<VolumeMenu />
 				</div>
 
-				<span className="menu-item">
-					<i className="fas fa-wifi"></i>
-				</span>
-				<span className="menu-item">
-					<i className="fas fa-battery-three-quarters"></i>
+				{/* Wi-Fi 자리: 이 사이트 서버(API)의 상태 */}
+				<ServerMenu />
+				<span className="statusbar-icon">
+					<i className="fas fa-battery-three-quarters" aria-hidden="true" />
 				</span>
 				{/* 시간 칸은 가장 넓은 시간(12:00 AM·PM)만큼 늘 차지한다. 시간이 바뀌어도 왼쪽 아이콘이 움찔하지 않게 */}
 				<span className="menu-item time-display">
@@ -81,9 +78,6 @@ const StatusBar: React.FC = () => {
 					<span className="time-display-now">{time}</span>
 				</span>
 			</div>
-
-			{/* 볼륨 모달 */}
-			<VolumeModal isVisible={isModalVisible} onClose={() => setIsModalVisible(false)} />
 		</div>
 	);
 };

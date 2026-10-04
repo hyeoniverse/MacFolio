@@ -13,6 +13,11 @@
 	height: 1.5rem;
 	background-color: var(--color-menubar-bg);
 	font-size: 0.8rem;
+	/* macOS 메뉴 막대: 메뉴와 시계는 보통 굵기, 맨 앞 앱 이름만 굵게 (.app-name) */
+	font-weight: 400;
+}
+
+.macos-statusbar .menu-item.app-name {
 	font-weight: 700;
 }
 
@@ -26,6 +31,15 @@
 .macos-statusbar .right-section {
 	display: flex;
 	align-items: center;
+}
+
+/* 오른쪽 영역: 항목 사이 간격은 gap 하나로만 (항목마다 margin을 따로 주지 않는다) */
+.macos-statusbar .right-section {
+	gap: 0.55rem;
+}
+
+.macos-statusbar .right-section > .menu-item {
+	margin: 0;
 }
 
 .macos-statusbar .menu-item {
@@ -67,18 +81,48 @@
 }
 
 .menu-item-player {
-	display: grid;
-	margin-right: 0.5rem;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
-	grid-gap: 0.5rem;
+	display: flex;
+	align-items: center;
+	/* 재생 단추끼리는 한 묶음이라 조금 더 붙인다 */
+	gap: 0.15rem;
 }
 
-.menu-item-player span {
-	display: flex;
-	flex-basis: 1rem; /* 버튼의 기본 크기 */
-	min-width: 1rem; /* 일정한 크기 유지 */
-	max-width: 1rem; /* 일정한 크기 유지 */
+/* 메뉴 막대의 아이콘 단추 (재생·음량): 모두 같은 칸, 같은 글자 크기, 줄 높이 1이라 아이콘의 세로 자리가 같다 */
+/* 단추가 아닌 아이콘 (배터리)도 같은 칸 */
+.macos-statusbar .statusbar-icon,
+.macos-statusbar .statusbar-icon-button {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 1.4rem;
+	height: 1.25rem;
+	padding: 0;
+	border: none;
+	border-radius: 0.3rem;
+	background: none;
+	color: var(--color-menubar-text);
+	font-size: 0.8rem;
+	line-height: 1;
 	cursor: pointer;
+}
+
+.macos-statusbar .statusbar-icon-button i {
+	margin: 0;
+	line-height: 1;
+}
+
+.macos-statusbar .statusbar-icon-button:hover,
+.macos-statusbar .statusbar-icon-button.open {
+	background-color: var(--color-selected-bg);
+}
+
+.macos-statusbar .statusbar-icon-button:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: -2px;
+}
+
+.volume-menu {
+	display: flex;
 }
 
 /* 작은 화면에서 대응 */
@@ -91,10 +135,13 @@
 		margin-right: 1rem;
 	}
 
-	.menu-item-player span {
-		flex-basis: 0.5rem;
-		min-width: 0.5rem; /* 작은 화면에서 크기 줄이기 */
-		max-width: 0.5rem;
+	.macos-statusbar .right-section {
+		gap: 0.35rem;
+	}
+
+	.macos-statusbar .statusbar-icon,
+	.macos-statusbar .statusbar-icon-button {
+		width: 1.1rem;
 		font-size: 0.7rem;
 	}
 
@@ -119,4 +166,9 @@
 
 .time-display-reserve {
 	visibility: hidden;
+}
+
+/* Wi-Fi 자리의 서버 상태 단추: 막대 아이콘이라 글자 아이콘보다 조금 크게 */
+.macos-statusbar .server-menu-button {
+	font-size: 0.85rem;
 }

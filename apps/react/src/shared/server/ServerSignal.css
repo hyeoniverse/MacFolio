@@ -1,0 +1,67 @@
+/* 서버 상태 막대 (메뉴 막대·휴대폰 상태 표시줄의 Wi-Fi 자리) */
+.server-signal {
+	width: 1.15em;
+	height: 0.95em;
+	overflow: visible;
+	vertical-align: -0.1em;
+}
+
+.server-signal path,
+.server-signal line {
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-width: 1.9;
+}
+
+.server-signal circle {
+	fill: currentColor;
+}
+
+/* 꺼진 막대는 흐리게 */
+.server-signal :is(path, circle):not(.on) {
+	opacity: 0.28;
+	transition: opacity 0.3s ease;
+}
+
+.server-signal .on {
+	opacity: 1;
+	transition: opacity 0.3s ease;
+}
+
+/* DB가 안 되면 남은 막대를 주황으로 */
+.server-signal.state-database .on {
+	color: #ff9f0a;
+	stroke: #ff9f0a;
+	fill: #ff9f0a;
+}
+
+.server-signal .slash {
+	stroke-width: 1.6;
+	opacity: 0.9;
+}
+
+/* 처음 확인하는 중: 아래에서 위로 차례로 깜빡인다 */
+.server-signal.state-checking path {
+	animation: server-signal-scan 1.2s ease-in-out infinite;
+}
+
+.server-signal.state-checking path:nth-of-type(2) {
+	animation-delay: 0.15s;
+}
+
+.server-signal.state-checking path:nth-of-type(3) {
+	animation-delay: 0.3s;
+}
+
+@keyframes server-signal-scan {
+	50% {
+		opacity: 0.9;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.server-signal.state-checking path {
+		animation: none;
+	}
+}
