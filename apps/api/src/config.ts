@@ -31,6 +31,16 @@ export interface AppConfig {
 	 * 없으면 이 서버 IP로 시간당 60번까지라, 받은 값을 오래 들고 있는다
 	 */
 	githubToken?: string;
+	/**
+	 * 음성 만들기 데모 (Fish → Google → Edge). 키가 없는 공급자는 건너뛴다 (Edge는 키가 필요 없다).
+	 * 비용을 막으려고 IP마다, 사이트 전체로 하루에 만들 수 있는 횟수를 정한다
+	 */
+	speech: {
+		fishAudioApiKey?: string;
+		googleTtsApiKey?: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -86,6 +96,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			pexelsApiKey: env.PEXELS_API_KEY || undefined,
 		},
 		githubToken: env.GITHUB_TOKEN || undefined,
+		speech: {
+			fishAudioApiKey: env.FISH_AUDIO_API_KEY || undefined,
+			googleTtsApiKey: env.GOOGLE_TTS_API_KEY || undefined,
+			perIpPerDay: Number(env.SPEECH_PER_IP_PER_DAY ?? 3) || 3,
+			totalPerDay: Number(env.SPEECH_TOTAL_PER_DAY ?? 50) || 50,
+		},
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
 			githubClientSecret: env.GITHUB_CLIENT_SECRET || undefined,

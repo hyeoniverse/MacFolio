@@ -332,6 +332,52 @@
 	color: var(--sp-accent);
 }
 
+.cd-voice-input {
+	display: grid;
+	gap: 4px;
+	padding: 10px 12px;
+	border: 1px solid var(--cr-line);
+	border-radius: 8px;
+	background-color: var(--cr-bg);
+}
+
+.cd-voice-input span,
+.cd-voice-input small {
+	color: var(--cr-muted);
+	font-size: 12px;
+}
+
+.cd-voice-input small {
+	justify-self: end;
+	font-variant-numeric: tabular-nums;
+}
+
+.cd-voice-input textarea {
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	font-size: 14px;
+	line-height: 1.5;
+	resize: none;
+}
+
+.cd-voice-input textarea:focus {
+	outline: none;
+}
+
+.cd-voice-input:focus-within {
+	border-color: var(--sp-accent);
+}
+
+.cd-voice-lyric {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
 .cd-voice-script {
 	display: grid;
 	gap: 6px;
