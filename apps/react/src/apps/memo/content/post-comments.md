@@ -22,7 +22,7 @@ const hash = await scrypt(password, salt, 32);
 return `scrypt$${salt.toString('base64')}$${hash.toString('base64')}`;
 ```
 
-bcrypt 대신 scrypt를 고른 것은 Node에 들어 있어서 네이티브 패키지를 따로 빌드할 필요가 없기 때문이다. 둘 다 일부러 느리게 만든 해시라, DB가 새어 나가도 비밀번호를 하나씩 맞혀 보기가 어렵다.
+Bcrypt 대신 scrypt를 고른 것은 Node에 들어 있어서 네이티브 패키지를 따로 빌드할 필요가 없기 때문이다. 둘 다 일부러 느리게 만든 해시라, DB가 새어 나가도 비밀번호를 하나씩 맞혀 보기가 어렵다.
 
 ## IP: 앞 두 자리와 해시만
 
