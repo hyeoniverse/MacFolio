@@ -6,7 +6,8 @@
 	border: 1px solid var(--color-window-border);
 	outline: none;
 	box-shadow: var(--shadow-window);
-	overflow: hidden;
+	/* hidden이 아니라 clip: hidden도 코드로는 스크롤된다. 창 안(iframe 등)에서 포커스가 옮겨 가면 브라우저가 창 틀을 밀어 올려 제목 막대가 잘렸다 */
+	overflow: clip;
 	position: absolute;
 
 	z-index: 1;
