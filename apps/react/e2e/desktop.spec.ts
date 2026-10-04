@@ -62,6 +62,24 @@ test.describe('데스크톱', () => {
 		await expect(memo.locator('.active-indicator')).toHaveCount(0);
 	});
 
+	test('메뉴 막대의 이전·재생·다음·음량 단추는 같은 크기로 한 줄에 나란히 선다', async ({ page }) => {
+		await enterDesktop(page);
+		const player = page.locator('.macos-statusbar').getByRole('group', { name: '음악' });
+		const buttons = player.getByRole('button');
+		await expect(buttons).toHaveCount(4);
+		await expect(player.getByRole('button', { name: '이전 곡' })).toBeVisible();
+		await expect(player.getByRole('button', { name: /^(재생|일시정지)$/ })).toBeVisible();
+		await expect(player.getByRole('button', { name: '다음 곡' })).toBeVisible();
+		// 아이콘의 위·높이가 모두 같다
+		const icons = await player.locator('i').evaluateAll((list) =>
+			list.map((icon) => {
+				const rect = icon.getBoundingClientRect();
+				return `${rect.top.toFixed(1)}/${rect.height.toFixed(1)}`;
+			})
+		);
+		expect(new Set(icons).size).toBe(1);
+	});
+
 	test('메뉴 막대 글자는 보통 굵기이고, 맨 앞 앱 이름만 굵다', async ({ page }) => {
 		await enterDesktop(page);
 		const bar = page.locator('.macos-statusbar');

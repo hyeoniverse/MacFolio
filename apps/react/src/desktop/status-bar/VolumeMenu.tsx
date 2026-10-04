@@ -39,7 +39,7 @@ const VolumeMenu = () => {
 			<button
 				ref={button}
 				type="button"
-				className={`volume-menu-button ${open ? 'open' : ''}`}
+				className={`statusbar-icon-button ${open ? 'open' : ''}`}
 				aria-label={`음량 ${Math.round(volume * 100)}%`}
 				aria-haspopup="dialog"
 				aria-expanded={open}

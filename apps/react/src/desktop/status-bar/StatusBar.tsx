@@ -43,16 +43,22 @@ const StatusBar: React.FC = () => {
 			</div>
 
 			<div className="right-section">
-				<div className="menu-item-player">
-					<span onClick={playPreviousTrack}>
-						<i className="fas fa-fast-backward"></i>
-					</span>
-					<span onClick={togglePlayPause}>
-						<i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
-					</span>
-					<span onClick={playNextTrack}>
-						<i className="fas fa-fast-forward"></i>
-					</span>
+				{/* 재생 단추와 음량 단추는 같은 모양(.statusbar-icon-button)이라 크기·세로 자리가 늘 같다 */}
+				<div className="menu-item-player" role="group" aria-label="음악">
+					<button type="button" className="statusbar-icon-button" aria-label="이전 곡" onClick={playPreviousTrack}>
+						<i className="fas fa-fast-backward" aria-hidden="true" />
+					</button>
+					<button
+						type="button"
+						className="statusbar-icon-button"
+						aria-label={isPlaying ? '일시정지' : '재생'}
+						onClick={togglePlayPause}
+					>
+						<i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true" />
+					</button>
+					<button type="button" className="statusbar-icon-button" aria-label="다음 곡" onClick={playNextTrack}>
+						<i className="fas fa-fast-forward" aria-hidden="true" />
+					</button>
 					<VolumeMenu />
 				</div>
 
