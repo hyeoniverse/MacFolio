@@ -16,24 +16,34 @@ async function fakeSites(page: Page) {
 }
 
 test.describe('프로젝트 앱', () => {
-	test('Launchpad에서 열면 배포한 사이트를 창 안에 띄우고, 실행 중에는 Dock에 나타난다', async ({ page }) => {
+	test('Dock에 고정되어 있고, 열면 배포한 사이트를 창 안에 띄운다', async ({ page }) => {
 		await fakeSites(page);
 		await enterDesktop(page);
-		// Dock에는 고정하지 않는다
-		await expect(dockItem(page, 'newpick')).toHaveCount(0);
+		// PROJECTS에서 앱이 된 프로젝트는 Dock에 고정된다
+		await expect(dockItem(page, 'newpick')).toBeVisible();
 
-		await dockItem(page, 'launchpad').click();
-		await page.locator('.launchpad-modal').getByRole('button', { name: 'newpick', exact: true }).click();
+		await dockItem(page, 'newpick').click();
 		const app = appWindow(page, 'newpick');
 		await expect(app.locator('iframe[title="NewPick 뉴픽"]')).toHaveAttribute('src', 'https://newpick-tan.vercel.app');
 		await expect(page.frameLocator('iframe[title="NewPick 뉴픽"]').getByRole('heading')).toHaveText('NewPick 첫 화면');
 		// 불러온 뒤에는 불러오는 중 화면이 사라진다
 		await expect(app.getByRole('status')).toHaveCount(0);
 
-		// 실행 중이면 Dock에 나타나고, 닫으면 사라진다
-		await expect(dockItem(page, 'newpick')).toBeVisible();
+		// 닫아도 고정된 아이콘은 Dock에 남는다
 		await app.getByRole('button', { name: '닫기', exact: true }).click();
-		await expect(dockItem(page, 'newpick')).toHaveCount(0);
+		await expect(app).toBeHidden();
+		await expect(dockItem(page, 'newpick')).toBeVisible();
+	});
+
+	test('Dock에 다 들어가지 않아 Launchpad로 간 앱도 실행 중에는 Dock 끝에 나타난다', async ({ page }) => {
+		await enterDesktop(page);
+		await fakeSites(page);
+		// 1600px 창에는 13개까지: 프로젝트 앱은 시스템 앱 뒤에 있어서 뒤쪽 셋(QRU, WTD, 새싹 농장)이 Launchpad로 간다
+		await expect(dockItem(page, 'qru')).toHaveCount(0);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'qru', exact: true }).click();
+		await expect(appWindow(page, 'qru')).toBeVisible();
+		await expect(dockItem(page, 'qru')).toBeVisible();
 	});
 
 	test('Safari 프로젝트 페이지의 "여기서 열기"로 그 앱을 연다', async ({ page }) => {
