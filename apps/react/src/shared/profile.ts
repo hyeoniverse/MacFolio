@@ -49,9 +49,21 @@ export interface ProjectPoint {
 	video?: string;
 	/** 갈래 여러 개 (예: 레이아웃 여섯 가지): 이름과 한 줄 설명. 그림이 없으면 갈래마다 움직이는 도식으로 그린다 */
 	variants?: { label: string; note: string }[];
+	/** 그림 대신 직접 만져 보는 데모 (슬라이드 갤러리, 음성 만들기, 파형 편집, 문서 변환, 번역, AI 요약) */
+	demo?: 'slides' | 'voice' | 'wave' | 'convert' | 'translate' | 'summary';
 }
 
-/** 주요 기능과 만든 방식 말고 더 들려줄 이야기 한 장 (예: 관리자 화면, 디자인 시스템, 성능) */
+/** 테마 하나를 이루는 다섯 색 (강조색, 라이트·다크의 바탕과 글자) */
+export interface ThemeSwatch {
+	name: string;
+	accent: string;
+	lightBg: string;
+	lightText: string;
+	darkBg: string;
+	darkText: string;
+}
+
+/** 주요 기능과 만든 방식 말고 더 들려줄 이야기 한 장 (예: 관리자 화면, 테마, 성능) */
 export interface ProjectChapter {
 	title: string;
 	/** 장 첫머리의 한두 문장 */
@@ -63,8 +75,8 @@ export interface ProjectChapter {
 	image?: { src: string; alt: string; dark?: string };
 	/** 전후 비교: 화면에 들어오면 막대가 전에서 후로 줄어든다 */
 	compare?: { label: string; before: number; after: number; unit: string }[];
-	/** 겹친 층: 스크롤하면 위에서부터 펼쳐진다 (예: 디자인 토큰 세 층) */
-	layers?: { name: string; code: string; note: string }[];
+	/** 테마 프리셋: 고르면 미리보기 화면의 색이 그 테마로 바뀐다 */
+	palette?: ThemeSwatch[];
 	/** 데이터베이스 구조: 문서(테이블) 경로, 누가 읽는지, 필드, 한 줄 설명. parent가 있으면 그 문서의 하위 문서 */
 	schema?: { path: string; access: string; fields: string[]; note: string; parent?: string; locked?: boolean }[];
 }
@@ -872,65 +884,119 @@ export const PROJECTS: Project[] = [
 						body: '글과 작업물, 작업물과 시리즈를 다대다로 잇습니다. 어느 쪽에서 더해도 양쪽 상세 화면에 함께 보입니다.',
 					},
 					{
-						title: 'SEO 점검과 AI 요약',
-						body: '편집기 아래에서 제목·주소·요약·커버·카테고리·태그 여섯 가지를 점검해 점수로 보여 주고, 발행할 때 AI가 요약을 만들고 번역합니다.',
+						title: 'SEO 점검',
+						body: '편집기 아래에서 제목·주소·요약·커버·카테고리·태그 여섯 가지를 점검해 점수로 보여 주고, 모자란 항목은 그 칸으로 바로 데려갑니다.',
 					},
 				],
 			},
 			{
-				title: '디자인 시스템',
-				layers: [
-					{
-						name: 'Raw',
-						code: '--color-accent-700: oklch(55.2% 0.225 4.81);',
-						note: '테마와 상관없는 색 눈금 하나',
-					},
-					{
-						name: 'Semantic',
-						code: '--bg-accent-solid: light-dark(var(--color-accent-700), var(--color-accent-500));',
-						note: '역할 이름. 라이트와 다크에서 다른 눈금을 고른다',
-					},
-					{
-						name: 'Component',
-						code: '.selected { background: var(--bg-accent-solid); }',
-						note: '관리자 표의 선택 표시는 색이 아니라 역할만 가리킨다',
-					},
-				],
-				image: {
-					src: projectImage('hyeoniverse', 'shots/design-light.jpg'),
-					dark: projectImage('hyeoniverse', 'shots/design-dark.jpg'),
-					alt: '토큰과 원칙을 공개하는 /design-system 페이지',
-				},
-				lead: '규칙과 그 이유를 따로 적고, 규칙에서 벗어나면 시험과 린트가 잡습니다.',
+				title: '발표 갤러리와 음성',
+				lead: '작업물마다 발표 자료를 슬라이드 갤러리로 올리고, 장마다 목소리를 입혀 발표처럼 넘어가게 합니다. 자료를 그림으로 바꾸는 일부터 대본, 음성, 녹음 다듬기까지 편집 화면 안에서 끝납니다.',
 				facts: [
-					{ value: '3층', label: 'Raw · Semantic · Component' },
-					{ value: '586개', label: '디자인 토큰' },
-					{ value: '33건', label: '결정 기록 (D1~D33)' },
+					{ value: '3곳', label: 'TTS (Fish · Google · Edge)' },
+					{ value: '24kHz', label: '마이크 녹음 (모노 WAV)' },
+					{ value: '50단계', label: '녹음 편집 되돌리기' },
 				],
 				points: [
 					{
-						title: '세 층 토큰',
-						body: 'Raw → Semantic → Component 세 층에 토큰을 둡니다. 토큰 표는 CSS에서 자동으로 만들고, 표가 어긋나면 시험이 실패합니다.',
+						title: '발표처럼 넘어가는 갤러리',
+						body: '가운데 한 장이 크고 양옆이 원근으로 기운 갤러리입니다. 화면에 절반 넘게 들어오면 첫 장부터 읽기 시작해, 음성이 끝나면 다음 장으로 넘어갑니다. 음성 파일이 있으면 그 파일을, 대본만 있으면 방문자 브라우저의 음성 합성을 쓰고, 둘 다 없으면 4초 보여 주고 넘깁니다. 화면 밖으로 나가면 멈췄다가 돌아오면 이어 읽습니다.',
+						demo: 'slides',
 					},
 					{
-						title: '결정을 번호로 남기기',
-						body: '규칙을 왜 그렇게 정했는지 D1부터 번호를 매겨 적습니다. 뒤집은 결정도 지우지 않고, 어느 결정으로 바뀌었는지 붙여 둡니다.',
+						title: '대본을 목소리로',
+						body: '장마다 대본을 Fish Audio, Google, Edge 가운데 고른 목소리로 만들고, 실패하면 남은 공급자의 같은 성별 목소리로 넘어갑니다. 영어 대본은 한국어 목소리인 Fish를 건너뜁니다. 읽기 사전으로 RLS를 "알엘에스"로 읽히고, 대본 안의 [표기|읽을 말]로 그 자리만 따로 정하며, 자막에는 표기가 그대로 남습니다. 만드는 동안에는 대본과 목소리, 이미지 순서가 잠깁니다.',
+						demo: 'voice',
 					},
 					{
-						title: 'Tailwind를 되돌림',
-						body: 'Tailwind를 들였다가 CSS Modules와 반반 섞이자 어느 쪽이 기준인지 흐려졌습니다. CSS Modules와 토큰 하나로 돌아왔습니다.',
+						title: '녹음하고 파형으로 다듬기',
+						body: '편집 화면에서 마이크로 바로 녹음해 24kHz WAV로 만듭니다. 파형을 끌어 구간을 고르고 잘라내기·복사·붙여넣기·지우기·나누기를 하며, 되돌리기는 50단계까지 됩니다. 단축키는 편집기 어디서나 받고, 복사한 조각은 다른 장의 녹음에도 붙여 넣습니다.',
+						demo: 'wave',
 					},
 					{
-						title: '조합 토큰을 없앰',
-						body: '여백 조합 토큰이 119개까지 늘었고 84개가 쓰이지 않았습니다. 조합 토큰을 없애고 눈금과 역할 토큰만 남겼습니다.',
+						title: 'PDF·PPTX를 슬라이드로',
+						body: '갤러리에 PDF나 PPTX를 끌어 놓으면 브라우저 안에서 쪽마다 JPEG로 그려 올립니다. PDF는 pdf.js로 그리고, PPTX는 HTML로 그린 뒤 그림으로 굳히며, 발표자 노트는 장마다 음성 대본으로 들어갑니다. 파일이 남의 서버로 나가지 않도록 변환은 서버에서 하지 않습니다.',
+						demo: 'convert',
+					},
+				],
+			},
+			{
+				title: '자동 번역과 AI 요약',
+				lead: '글과 작업물은 한국어와 영어 칸을 따로 둡니다. 한쪽만 써도 나머지는 번역이 채우고, 발행하면 두 언어의 요약이 붙습니다.',
+				facts: [
+					{ value: '4곳', label: '번역 (DeepL · Google · Gemini · Claude)' },
+					{ value: 'KO · EN', label: '언어마다 따로 두는 칸' },
+					{ value: '2–3문장', label: '언어마다 AI 요약' },
+				],
+				points: [
+					{
+						title: '편집 언어를 바꾸면 번역',
+						body: '편집기에서 KO와 EN을 오갈 때 반대쪽 칸이 비어 있으면 제목·설명·본문과 갤러리 대본까지 번역해 채웁니다. 기본은 DeepL이고, 설정에서 대체 순서를 켜면 앞 공급자가 못 한 항목만 다음 공급자에게 넘깁니다. 다시 번역 단추로 전체를 새로 받을 수도 있습니다.',
+						demo: 'translate',
 					},
 					{
-						title: 'OKLCH와 대비',
-						body: '모든 색을 OKLCH로 옮기고, 글자와 배경 조합은 WCAG 대비 기준으로 확인합니다. /design-system 페이지에 토큰과 색, 컴포넌트를 공개합니다.',
+						title: '발행하면 붙는 AI 요약',
+						body: '발행할 때 Gemini가 한국어와 영어 요약을 2–3문장씩 한 번에 만들고, 상세 페이지 위에 접고 펼치는 상자로 보여 줍니다. 상세 페이지의 언어 토글을 따르고, 그 언어 요약이 없으면 다른 언어 요약을 보여 줍니다. 공급자는 OpenAI나 Claude로 바꿀 수 있습니다.',
+						demo: 'summary',
 					},
 					{
-						title: '조용히 무효가 되는 값 잡기',
-						body: '정의되지 않은 토큰을 쓰면 선언 전체가 소리 없이 무효가 됩니다. 시험으로 훑어 13종 57곳을 찾아냈습니다.',
+						title: '방문자가 누른 번역은 남긴다',
+						body: '공개 화면에서 보고 있는 언어의 본문이 없으면 번역 단추가 뜨고, 그 결과를 DB의 그 언어 칸에 저장해 다음 방문자는 기다리지 않습니다. 댓글 번역은 화면에만 두고 저장하지 않습니다.',
+					},
+				],
+			},
+			{
+				title: '테마',
+				lead: '사이트의 색은 코드가 아니라 관리자 설정에서 고릅니다. 아래에서 프리셋을 누르거나 라이트·다크를 바꿔 보면, 같은 화면에서 무엇이 바뀌고 무엇이 남는지 보입니다.',
+				facts: [
+					{ value: '18개', label: '테마 프리셋' },
+					{ value: '5색', label: '테마 하나 (강조 · 바탕 · 글자)' },
+					{ value: '2가지', label: '모드 (라이트 · 다크)' },
+				],
+				palette: [
+					{ name: 'Default', accent: '#d40063', lightBg: '#f5f5f0', lightText: '#1a1a1a', darkBg: '#0a0a0a', darkText: '#f5f5f0' },
+					{ name: 'Ruby', accent: '#9d0208', lightBg: '#fbeaea', lightText: '#3b0a0a', darkBg: '#150404', darkText: '#efe4d6' },
+					{ name: 'Meadow', accent: '#bc4749', lightBg: '#f2e8cf', lightText: '#2a4e30', darkBg: '#141f12', darkText: '#a7c957' },
+					{ name: 'Coral', accent: '#fe5f55', lightBg: '#eef5db', lightText: '#3d2a1a', darkBg: '#1a130c', darkText: '#c7efcf' },
+					{ name: 'Azure', accent: '#fd6b1d', lightBg: '#efefd0', lightText: '#004e89', darkBg: '#0a1a2e', darkText: '#efefd0' },
+					{ name: 'Sand', accent: '#e0af9c', lightBg: '#efebce', lightText: '#263340', darkBg: '#18170e', darkText: '#e6eef2' },
+					{ name: 'Harvest', accent: '#ce965c', lightBg: '#fefae0', lightText: '#283618', darkBg: '#1a1e0e', darkText: '#fefae0' },
+					{ name: 'Honey', accent: '#fbc45d', lightBg: '#f7ede2', lightText: '#3d2e1e', darkBg: '#1c130e', darkText: '#f5cac3' },
+					{ name: 'Forest', accent: '#4d753d', lightBg: '#dad7cd', lightText: '#2b2c28', darkBg: '#1a2e1f', darkText: '#e3ded2' },
+					{ name: 'Rosewood', accent: '#57806d', lightBg: '#f8c7cc', lightText: '#0e0f19', darkBg: '#0e0f19', darkText: '#f4c7cc' },
+					{ name: 'Dusk', accent: '#6abaa3', lightBg: '#ffe5d4', lightText: '#3d2b33', darkBg: '#101c16', darkText: '#efc7c2' },
+					{ name: 'Arctic', accent: '#5aa7c3', lightBg: '#cae9ff', lightText: '#2a2320', darkBg: '#0c1e2e', darkText: '#f1ece4' },
+					{ name: 'Baltic', accent: '#1c5d99', lightBg: '#ffffff', lightText: '#222222', darkBg: '#222222', darkText: '#e6e4df' },
+					{ name: 'Sorbet', accent: '#7aabe9', lightBg: '#fcf5c7', lightText: '#3a2f2a', darkBg: '#0e1e2c', darkText: '#ffc09f' },
+					{ name: 'Twilight', accent: '#6d3fb0', lightBg: '#fbf3df', lightText: '#2b2630', darkBg: '#1b1330', darkText: '#f3d9a4' },
+					{ name: 'Tropica', accent: '#fa5ca4', lightBg: '#fce4d8', lightText: '#4a1530', darkBg: '#1a0a14', darkText: '#b5f8fe' },
+					{ name: 'Petal', accent: '#f8768d', lightBg: '#ffe5ec', lightText: '#2e2427', darkBg: '#1a0810', darkText: '#f4ebdf' },
+					{ name: 'Slate', accent: '#5c677d', lightBg: '#eef0f4', lightText: '#2a2521', darkBg: '#0e1118', darkText: '#e8e2d8' },
+				],
+				points: [
+					{
+						title: '다섯 색이 한 테마',
+						body: '강조색과 라이트·다크 각각의 바탕색·글자색, 다섯 값으로 테마 하나가 정해집니다. 회색 단계와 강조색 면 위의 글자색은 이 다섯 값에서 계산해 고릅니다.',
+					},
+					{
+						title: '색상환 순서의 프리셋',
+						body: '기본 마젠타 다음부터 빨강·주황·초록·파랑·보라 순으로 놓고, 색이 거의 없는 Slate를 맨 뒤에 둡니다. 직접 만든 테마도 프리셋으로 저장해 둡니다.',
+					},
+					{
+						title: '대비 점검',
+						body: '설정 화면에서 바탕과 글자, 강조색의 대비를 바로 계산해 보여 줍니다. 프리셋은 모두 대비 기준을 넘도록 맞추고, 서로 겹쳐 보이던 강조색은 바꿨습니다.',
+					},
+					{
+						title: '색상환 추천과 이미지에서 뽑기',
+						body: '색상환을 끌어 기준 색을 바꾸면 어울리는 강조색 후보를 규칙마다 하나씩 추천하고, 올린 이미지에서 색을 뽑아 테마를 만듭니다.',
+					},
+					{
+						title: '로고와 3D도 함께',
+						body: '그림 로고는 테마 색으로 칠할 수 있고, giscus 댓글도 모드마다 테마를 따로 정합니다. 홈의 3D 토러스는 색 프리셋을 따르지 않고 라이트·다크 두 벌의 재질만 오갑니다.',
+					},
+					{
+						title: '시스템 설정을 따르는 모드',
+						body: '모드는 라이트와 다크 두 가지이고, 방문자가 고른 적이 없으면 운영체제 설정을 따릅니다.',
 					},
 				],
 			},

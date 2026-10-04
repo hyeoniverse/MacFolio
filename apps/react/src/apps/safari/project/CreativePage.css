@@ -933,64 +933,11 @@
 	font-style: normal;
 }
 
-/* 토큰 세 층: 포개져 있다가 장을 읽어 내려가면(--read) 펼쳐지고, 층 사이에 참조 화살표가 나타난다 */
-.cr-layers {
-	display: flex;
-	flex-direction: column;
-	gap: 26px;
-	margin-bottom: 36px;
-	list-style: none;
-}
-
-.cr-layers li {
-	position: relative;
-	z-index: calc(3 - var(--i));
-	padding: 16px 18px;
-	border: 1px solid var(--cr-line);
-	border-left: 4px solid var(--sp-accent);
-	border-radius: 12px;
-	background-color: var(--cr-bg);
-	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-	/* 접혀 있을 때는 위 카드 바로 뒤에 10px씩 어긋나 숨는다 */
-	transform: translateY(calc((1 - var(--s)) * var(--i) * (-100% - 26px + 10px)))
-		scale(calc(1 - (1 - var(--s)) * var(--i) * 0.04));
-}
-
-.cr-layers li + li::before {
-	position: absolute;
-	top: -24px;
-	left: 24px;
-	color: var(--sp-accent);
-	content: '↑ 참조';
-	font-family: var(--sp-mono);
-	font-size: 12px;
-	opacity: var(--s);
-}
-
-.cr-layers-name {
-	color: var(--sp-accent);
-	font-family: var(--sp-mono);
-	font-size: 12px;
-	font-weight: 700;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-}
-
-.cr-layers code {
-	display: block;
-	margin-top: 6px;
-	font-family: var(--sp-mono);
-	font-size: 13px;
-	overflow-wrap: anywhere;
-}
-
-.cr-layers p {
-	margin-top: 6px;
-	color: var(--cr-muted);
-	font-size: 13px;
-}
-
 /* 장 글 묶음 위의 작은 화면 */
+.cr-point-demo {
+	min-width: 0;
+}
+
 .cr-point-shot {
 	overflow: hidden;
 	border: 1px solid var(--cr-line);
@@ -1013,13 +960,28 @@
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
 }
 
-.cr-build article[data-wide]:nth-child(even) .cr-point-shot {
+.cr-build article[data-wide]:nth-child(even) :is(.cr-point-shot, .cr-point-demo) {
 	order: 2;
 }
 
 .cr-build article[data-wide] > div {
 	padding-left: 18px;
 	border-left: 2px solid var(--sp-accent);
+}
+
+/* 데모가 붙은 글 묶음은 데모를 위에 넓게 두고 글을 그 아래에 */
+.cr-build article[data-demo],
+.cr-build article[data-demo]:nth-child(even) {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 16px;
+}
+
+.cr-build article[data-demo]:nth-child(even) .cr-point-demo {
+	order: 0;
+}
+
+.cr-build article[data-demo] > div:last-child {
+	max-width: 46em;
 }
 
 /* 눌러서 크게 보기: 그림 위에 마우스를 올리면 돋보기가 뜨고 그림이 살짝 커진다 */
@@ -1336,7 +1298,7 @@
 		gap: 8px;
 	}
 
-	.cr-build article[data-wide]:nth-child(even) .cr-point-shot {
+	.cr-build article[data-wide]:nth-child(even) :is(.cr-point-shot, .cr-point-demo) {
 		order: 0;
 	}
 
