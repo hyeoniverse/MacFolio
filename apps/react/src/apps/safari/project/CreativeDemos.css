@@ -147,19 +147,63 @@
 	pointer-events: none;
 }
 
+/* 소리를 낼지 먼저 묻는다 (브라우저가 소리 자동 재생을 막으므로) */
+.cd-ask {
+	display: flex;
+	position: absolute;
+	inset: 0;
+	z-index: 20;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-content: center;
+	gap: 8px;
+	background-color: rgba(0, 0, 0, 0.35);
+	backdrop-filter: blur(2px);
+}
+
+.cd-ask .cd-ghost {
+	border-color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(0, 0, 0, 0.35);
+	color: #ffffff !important;
+	font-size: 13px;
+}
+
 /* 자막: 읽는 만큼 낱말이 진해진다 */
 .cd-caption {
-	min-height: 2.6em;
+	display: grid;
+	min-height: 3em;
 	margin: 0;
 	font-size: 14px;
 	line-height: 1.5;
 }
 
-.cd-caption span {
+.cd-caption .cd-cue {
+	grid-area: 1 / 1;
+	opacity: 0;
+	animation: cd-cue calc(var(--ms) * var(--len)) linear calc(var(--ms) * var(--s0)) paused;
+}
+
+.cd-caption .cd-cue:only-child {
+	opacity: 1;
+	animation: none;
+}
+
+@keyframes cd-cue {
+	from,
+	99% {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+.cd-caption .cd-cue span {
 	color: var(--cr-muted);
 	animation: cd-read 0.2s linear calc(var(--ms) * var(--at)) both paused;
 }
 
+.cd-caption[data-playing] .cd-cue,
 .cd-caption[data-playing] span {
 	animation-play-state: running;
 }
@@ -1062,6 +1106,21 @@
 
 	.cd-slide {
 		width: 72%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	/* 애니메이션이 모두 꺼지므로 자막은 문장을 바꿔 가며 보이지 않고 대본 전체를 그대로 둔다 */
+	.cd-caption {
+		display: block;
+	}
+
+	.cd-caption .cd-cue {
+		opacity: 1;
+	}
+
+	.cd-caption .cd-cue span {
+		color: var(--cr-ink);
 	}
 }
 

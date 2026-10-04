@@ -26,46 +26,126 @@ const useInView = <T extends HTMLElement>(ratio = 0.5) => {
 
 const GALLERY = '/imgs/projects/hyeoniverse/gallery';
 
-/** 갤러리 데모의 장: 모두의 키오스크 발표 자료와, 장마다 무엇으로 읽는지 */
-const SLIDES = [
-	{ voice: '녹음 파일', script: '키오스크는 인건비와 접촉을 줄였지만, 단계가 복잡해 누군가에게는 벽이 됩니다.' },
-	{ voice: 'Fish TTS', script: '키오스크가 어려운 사람이라면 누구나, 특히 중장년층과 그 가족을 위해 만들었습니다.' },
-	{ voice: 'Google TTS', script: '매장과 포장을 고르고, 메뉴와 옵션을 담아 결제한 뒤 영수증까지 이어집니다.' },
-	{ voice: '브라우저 음성', script: '메뉴 화면은 컬렉션 뷰로 그리고, 장바구니와 결제 단추를 아래에 둡니다.' },
-	{ voice: 'Fish TTS', script: '옵션은 데이터 한 곳에서 관리해, 70개 메뉴의 옵션 화면을 하나로 처리했습니다.' },
-	{ voice: 'Edge TTS', script: '장바구니에서는 담은 메뉴를 고치거나 한꺼번에 비웁니다.' },
-	{ voice: '대본 없음', script: '' },
-].map((slide, i) => ({ ...slide, src: `${GALLERY}/kiosk-${i + 1}.jpg` }));
+/**
+ * 갤러리 데모의 장: HYEONIVERSE 발표 자료(19쪽 가운데 7장)와, 장마다 무엇으로 읽는지.
+ * 1장은 그 사이트가 실제로 트는 TTS 음성 파일, 2~6장은 대본만 있어 방문자 브라우저의 음성 합성이 읽고, 7장은 대본이 없다
+ */
+const SLIDE_DATA: { script: string; audio?: string; ms?: number }[] = [
+	{
+		script:
+			"지금 보시는 프로젝트는 제가 직접 기획하고 설계해서 운영하고 있는 'Hyeoniverse'입니다. 단순히 포트폴리오를 보여주는 웹사이트를 만드는 것을 목표로 하지 않았습니다. 실제 서비스라고 생각하고, 공개된 사이트뿐만 아니라 콘텐츠를 관리할 수 있는 CMS와 데이터베이스, 권한, 보안, 테스트, 배포까지 직접 구성했습니다. 기술 스택은 Next.js, React, TypeScript를 중심으로 Supabase와 Vercel을 사용했습니다.",
+		audio: `${GALLERY}/narration-1.mp3`,
+		ms: 26267,
+	},
+	{
+		script:
+			'이 프로젝트로 보여 드리고 싶은 것은 세 가지입니다. 원인을 재서 고치고, 실수해도 막히게 만들고, 누구나 쓸 수 있게 만드는 것입니다.',
+	},
+	{ script: '숫자로 보면 성능 점수 97점, 첫 화면 표시 0.7초, 두 개 언어와 네 단계 권한을 갖춘 사이트입니다.' },
+	{ script: '방문자가 보는 사이트와, 그 사이트를 운영하는 관리자 CMS를 함께 만들었습니다.' },
+	{
+		script:
+			'첫 번째 사례는 방문할 때마다 통째로 다시 만들어지던 프로필 페이지입니다. 원인을 찾아 LCP를 9.7초에서 2.7초로 줄였습니다.',
+	},
+	{ script: '고친 뒤에는 같은 조건에서 다시 재서, 입력 지연과 로딩이 얼마나 줄었는지 확인했습니다.' },
+	{ script: '' },
+];
+const SLIDES = SLIDE_DATA.map((slide, i) => ({ ...slide, src: `${GALLERY}/hyeoniverse-${i + 1}.jpg` }));
 
 /** 대본 없는 장을 보여 주는 시간, 대본 한 글자를 읽는 시간 (ms) */
 const SILENT_SLIDE_MS = 4000;
 const MS_PER_CHAR = 85;
-const slideMs = (script: string) => (script ? Math.max(3200, script.length * MS_PER_CHAR) : SILENT_SLIDE_MS);
+const slideMs = (slide: (typeof SLIDES)[number]) =>
+	slide.ms ?? (slide.script ? Math.max(3200, slide.script.length * MS_PER_CHAR) : SILENT_SLIDE_MS);
+const canSpeak = () => typeof window !== 'undefined' && 'speechSynthesis' in window;
+/** 그 장을 무엇으로 읽는지 */
+const sourceOf = (slide: (typeof SLIDES)[number]) =>
+	slide.audio ? 'Fish TTS 음성 파일' : slide.script ? '브라우저 음성 (대본만 있는 장)' : '대본 없음 · 4초 뒤 넘김';
+
+/** ask: 소리를 낼지 묻는 중, sound: 소리와 함께, silent: 소리 없이 자막만, stopped: 끝까지 보고 멈춤 */
+type SlideMode = 'ask' | 'sound' | 'silent' | 'stopped';
 
 /**
- * 발표처럼 넘어가는 갤러리: 가운데 장이 크고 양옆은 원근으로 기운다. 화면에 절반 넘게 들어오면 읽기 시작해
- * 한 장을 다 읽으면 다음 장으로, 마지막 장이 끝나면 멈춘다. 끌기·←→·옆 장 누르기로 넘긴다
+ * 발표처럼 넘어가는 갤러리: 가운데 장이 크고 양옆은 원근으로 기운다. 브라우저는 소리 자동 재생을 막으므로 그 사이트처럼
+ * "음성과 함께 보기 / 음성 없이 보기"를 먼저 묻는다. 화면에 절반 넘게 들어와 있는 동안 읽고, 한 장을 다 읽으면 다음 장으로,
+ * 마지막 장이 끝나면 멈춘다. 음성 파일 → 브라우저 음성 → 4초 순서로 읽는다. 끌기·←→·옆 장 누르기로 넘긴다
  */
 const Slides: React.FC = () => {
 	const [stage, inView] = useInView<HTMLDivElement>(0.5);
 	const [current, setCurrent] = useState(0);
-	const [voice, setVoice] = useState(() => !prefersReducedMotion());
+	const [mode, setMode] = useState<SlideMode>('ask');
 	const [captions, setCaptions] = useState(true);
-	// 같은 장을 다시 읽을 때도 진행 막대가 처음부터 돌게 바꾸는 번호
+	// 같은 장을 다시 읽을 때도 진행 막대와 음성이 처음부터 돌게 바꾸는 번호
 	const [run, setRun] = useState(0);
 	const drag = useRef<number | null>(null);
+	const audio = useRef<HTMLAudioElement | null>(null);
+	const lastRun = useRef(-1);
 	const slide = SLIDES[current];
-	const playing = voice && inView;
+	const playing = inView && (mode === 'sound' || mode === 'silent');
+	// 소리와 함께일 때 음성 파일·브라우저 음성이 있는 장은 음성이 끝나야 넘어간다 (막대는 어림 시간)
+	const voiced = mode === 'sound' && (!!slide.audio || (!!slide.script && canSpeak()));
 	const go = (index: number) => {
 		setCurrent(Math.max(0, Math.min(SLIDES.length - 1, index)));
 		setRun((n) => n + 1);
 	};
 	const ended = () => {
-		if (current === SLIDES.length - 1) setVoice(false);
+		if (current === SLIDES.length - 1) setMode('stopped');
 		else go(current + 1);
 	};
-	const words = slide.script.split(' ');
-	const ms = slideMs(slide.script);
+	const endedRef = useRef(ended);
+	useEffect(() => {
+		endedRef.current = ended;
+	});
+
+	// 소리 내기: 화면에 보이는 동안만. 장이 바뀌면 처음부터, 화면 밖에 나갔다 오면 음성 파일은 멈춘 자리부터
+	useEffect(() => {
+		if (mode !== 'sound') return;
+		if (slide.audio) {
+			const el = (audio.current ??= new Audio());
+			if (!el.src.endsWith(slide.audio)) el.src = slide.audio;
+			if (lastRun.current !== run) {
+				el.currentTime = 0;
+				lastRun.current = run;
+			}
+			el.onended = () => endedRef.current();
+			if (inView) void el.play().catch(() => setMode('silent'));
+			else el.pause();
+			return () => el.pause();
+		}
+		if (slide.script && canSpeak() && inView) {
+			const speech = new SpeechSynthesisUtterance(slide.script);
+			speech.lang = 'ko-KR';
+			speech.onend = () => endedRef.current();
+			window.speechSynthesis.cancel();
+			window.speechSynthesis.speak(speech);
+			return () => {
+				speech.onend = null;
+				window.speechSynthesis.cancel();
+			};
+		}
+	}, [mode, slide, run, inView]);
+	useEffect(
+		() => () => {
+			audio.current?.pause();
+			if (canSpeak()) window.speechSynthesis.cancel();
+		},
+		[]
+	);
+
+	// 자막은 문장 하나씩: 문장마다 글자 수 비율로 나온 시간(--s0)과 길이(--len)를 정하고, 그 안에서 낱말이 진해진다
+	const sentences = slide.script.split(/(?<=[.?!])\s+/).filter(Boolean);
+	const total = Math.max(1, sentences.join('').length);
+	let start = 0;
+	const cues = sentences.map((sentence) => {
+		const cue = { start, length: sentence.length / total, words: sentence.split(' ') };
+		start += cue.length;
+		return cue;
+	});
+	const ms = slideMs(slide);
+	const choose = (next: 'sound' | 'silent') => {
+		setMode(next);
+		go(current);
+	};
 
 	return (
 		<div className="cd-slides" style={{ '--ms': `${ms}ms` } as React.CSSProperties}>
@@ -113,13 +193,34 @@ const Slides: React.FC = () => {
 						</button>
 					);
 				})}
+				{mode === 'ask' && (
+					<div className="cd-ask" onPointerDown={(event) => event.stopPropagation()}>
+						<button type="button" className="cd-primary" onClick={() => choose('sound')}>
+							<i className="fa-solid fa-volume-high" /> 음성과 함께 보기
+						</button>
+						<button type="button" className="cd-ghost" onClick={() => choose('silent')}>
+							음성 없이 보기
+						</button>
+					</div>
+				)}
 			</div>
 			{captions && (
 				<p className="cd-caption" key={`c${run}-${current}`} data-playing={playing || undefined}>
 					{slide.script ? (
-						words.map((word, i) => (
-							<span key={i} style={{ '--at': i / words.length } as React.CSSProperties}>
-								{word}{' '}
+						cues.map((cue) => (
+							<span
+								key={cue.start}
+								className="cd-cue"
+								style={{ '--s0': cue.start, '--len': cue.length } as React.CSSProperties}
+							>
+								{cue.words.map((word, i) => (
+									<span
+										key={i}
+										style={{ '--at': cue.start + (i / cue.words.length) * cue.length } as React.CSSProperties}
+									>
+										{word}{' '}
+									</span>
+								))}
 							</span>
 						))
 					) : (
@@ -130,20 +231,19 @@ const Slides: React.FC = () => {
 			<div className="cd-slides-bar">
 				<button
 					type="button"
-					aria-pressed={voice}
+					aria-pressed={mode === 'sound'}
 					onClick={() => {
-						if (!voice && current === SLIDES.length - 1) go(0);
-						setVoice(!voice);
+						if (mode === 'stopped') go(0);
+						setMode(mode === 'sound' ? 'silent' : 'sound');
 					}}
 				>
-					<i className={`fa-solid ${voice ? 'fa-volume-high' : 'fa-volume-xmark'}`} /> 음성
+					<i className={`fa-solid ${mode === 'sound' ? 'fa-volume-high' : 'fa-volume-xmark'}`} /> 음성
 				</button>
 				<button type="button" aria-pressed={captions} onClick={() => setCaptions(!captions)}>
 					<i className="fa-solid fa-closed-captioning" /> 자막
 				</button>
 				<span className="cd-slides-source">
-					<i className="fa-solid fa-wave-square" /> {slide.voice}
-					{slide.voice === '브라우저 음성' && ' (대본만 있는 장)'}
+					<i className="fa-solid fa-wave-square" /> {sourceOf(slide)}
 				</span>
 				<span className="cd-slides-count">
 					{current + 1} / {SLIDES.length}
@@ -164,7 +264,7 @@ const Slides: React.FC = () => {
 									key={run}
 									className="cd-slides-progress"
 									data-playing={playing || undefined}
-									onAnimationEnd={ended}
+									onAnimationEnd={() => !voiced && ended()}
 								/>
 							)}
 						</button>
@@ -631,7 +731,7 @@ const Convert: React.FC = () => {
 		read: '읽는 중',
 		draw: `그리는 중 ${drawn}/${total}`,
 		upload: '올리는 중',
-		done: `갤러리에 ${total}장을 올렸습니다${kind === 'pptx' ? ' · 발표자 노트 7개를 대본으로' : ''}`,
+		done: `갤러리에 ${total}장을 올렸습니다${kind === 'pptx' ? ` · 발표자 노트 ${SLIDES.filter((item) => item.script).length}개를 대본으로` : ''}`,
 	}[phase];
 
 	return (
@@ -654,7 +754,7 @@ const Convert: React.FC = () => {
 				</div>
 				<p className="cd-file">
 					<i className={`fa-solid ${kind === 'pptx' ? 'fa-file-powerpoint' : 'fa-file-pdf'}`} />
-					모두의 키오스크.{kind}
+					hyeoniverse-portfolio.{kind}
 				</p>
 				<button type="button" className="cd-ghost" onClick={start} aria-label="다시 변환">
 					<i className="fa-solid fa-rotate-right" />
@@ -681,18 +781,22 @@ const Convert: React.FC = () => {
 	);
 };
 
-/** 번역 데모의 칸: 모두의 키오스크 작업물의 실제 한국어·영어 제목과 부제 */
+/** 번역 데모의 칸: HYEONIVERSE 작업물의 실제 한국어·영어 부제와 설명 */
 const FIELDS = [
-	{ label: '제목', ko: '모두의 키오스크', en: 'Kiosk for Everyone' },
 	{
 		label: '부제',
-		ko: '키오스크가 낯선 사람이 카페 주문을 미리 연습해 보는 iOS 키오스크 시뮬레이터',
-		en: 'An iOS kiosk simulator where people unfamiliar with kiosks can practice ordering at a café',
+		ko: '디자인 시스템부터 관리자 CMS 까지 혼자 설계하고 운영하는 포트폴리오 사이트',
+		en: 'A portfolio site designed, built and operated solo, from the design system to the admin CMS',
 	},
 	{
-		label: '갤러리 대본 2',
-		ko: '키오스크가 어려운 사람이라면 누구나, 특히 중장년층과 그 가족을 위해 만들었습니다.',
-		en: 'We built it for anyone who finds kiosks hard, especially middle-aged and older people and their families.',
+		label: '설명',
+		ko: '흩어져 있던 프로젝트와 글을 한 곳에서 보여 주고 계속 갱신하기 위해 만든 개인 포트폴리오입니다.',
+		en: 'A personal portfolio that gathers scattered projects and writing in one place and keeps them current.',
+	},
+	{
+		label: '갤러리 대본 4',
+		ko: '방문자가 보는 사이트와, 그 사이트를 운영하는 관리자 CMS를 함께 만들었습니다.',
+		en: 'I built the site visitors see together with the admin CMS that runs it.',
 	},
 ];
 
@@ -782,8 +886,8 @@ const Translate: React.FC = () => {
 };
 
 const SUMMARY = {
-	ko: '키오스크 앞에서 망설이는 사람이 매장에 가기 전에 카페 주문을 연습해 보는 iOS 시뮬레이터입니다. 여러 카페 키오스크의 공통 흐름을 모아 3인 팀이 만들었고, 약 70개 메뉴의 옵션을 데이터 한 곳에서 관리합니다.',
-	en: 'An iOS simulator that lets people who hesitate at kiosks practice ordering at a café before visiting a store. A team of three built it from the common flow of several café kiosks, managing options for about 70 menus in one place.',
+	ko: '흩어져 있던 프로젝트와 글을 한 곳에서 보여 주고 계속 갱신하기 위해 만든 개인 포트폴리오입니다. 공개 페이지와 디자인 시스템, 글 편집기와 관리자 CMS까지 한 사람이 설계하고 운영합니다.',
+	en: 'A personal portfolio that gathers scattered projects and writing in one place and keeps them current. Public pages, the design system, the editor and the admin CMS are all designed and operated by one person.',
 };
 
 /** AI 요약 상자: 발행하면 만드는 중이 보였다가 두 언어 요약이 붙는다. 머리를 누르면 접고 펼친다 */
@@ -841,7 +945,7 @@ const Summary: React.FC = () => {
 					</div>
 				</div>
 			</div>
-			<p className="cd-hint">예시: 모두의 키오스크 작업물에 붙는 요약</p>
+			<p className="cd-hint">예시: HYEONIVERSE 작업물의 설명으로 만든 요약</p>
 		</div>
 	);
 };

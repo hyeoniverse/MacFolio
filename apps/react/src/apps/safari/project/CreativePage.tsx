@@ -5,7 +5,7 @@ import type { Project, ProjectChapter, ProjectFact, ProjectPoint } from '@/share
 import { FactValue, Favicon, Links, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
-import { Bars, Clip, Compare, FeatureMedia, ZoomImage } from '@/apps/safari/project/CreativeParts';
+import { Bars, Clip, Compare, FeatureMedia, ScrollFrames, ZoomImage } from '@/apps/safari/project/CreativeParts';
 import { Demo, Themes } from '@/apps/safari/project/CreativeDemos';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
@@ -258,7 +258,8 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 									<h3>{point.title}</h3>
 									<p>{point.body}</p>
 								</div>
-								{(point.image || point.video || point.variants || point.scrollFrames) && (
+								{point.scrollFrames && <ScrollFrames frames={point.scrollFrames} title={point.title} />}
+								{(point.image || point.video || point.variants) && (
 									<figure className="cr-feature-media" data-reveal="zoom">
 										<FeatureMedia point={point} />
 									</figure>
