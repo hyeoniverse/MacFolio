@@ -1,17 +1,4 @@
-/* 상태 막대의 음량 조절 팝업 (MusicPlayerVolume.tsx) */
-.volume-modal-overlay {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 1000;
-	background-color: rgba(0, 0, 0, 0);
-}
-
+/* 메뉴 막대의 음량 창 (VolumeMenu.tsx) */
 .volume-container {
 	display: flex;
 
@@ -21,10 +8,9 @@
 	box-shadow: 0 0 0.8rem rgba(0, 0, 0, 0.6);
 
 	overflow: hidden;
-	position: absolute;
-	z-index: 5;
-	/* left·top은 음량 아이콘 아래 가운데 (MusicPlayerVolume.tsx). 창 폭의 절반만큼 왼쪽으로 */
-	translate: -50% 0;
+	/* body에 그리고 left·top은 음량 단추 아래 가운데 (VolumeMenu.tsx의 placeBelow) */
+	position: fixed;
+	z-index: 10000;
 
 	width: 2rem;
 	height: 6rem;

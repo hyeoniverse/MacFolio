@@ -18,17 +18,40 @@ test.describe('데스크톱', () => {
 		expect(after.x).toBe(before.x);
 	});
 
-	test('메뉴 막대의 음량 아이콘을 누르면 음량 창이 그 바로 아래 가운데에 열린다', async ({ page }) => {
+	test('메뉴 막대의 음량 단추를 누르면 음량 창이 그 바로 아래 가운데에 열리고, 바깥을 누르거나 Esc로 닫힌다', async ({
+		page,
+	}) => {
 		await enterDesktop(page);
-		const icon = page.locator('.macos-statusbar [class*="fa-volume"]');
-		const iconBox = (await icon.boundingBox())!;
-		await icon.click();
-		const popup = page.locator('.volume-container');
-		await expect(popup.getByRole('slider', { name: 'Volume Slider' })).toBeAttached();
+		const button = page.locator('.macos-statusbar').getByRole('button', { name: /^음량 \d+%$/ });
+		const buttonBox = (await button.boundingBox())!;
+		await button.click();
+		await expect(button).toHaveAttribute('aria-expanded', 'true');
+		const popup = page.getByRole('dialog', { name: '음량' });
+		await expect(popup.getByRole('slider', { name: '음량' })).toBeAttached();
 		const box = (await popup.boundingBox())!;
-		expect(Math.abs(box.x + box.width / 2 - (iconBox.x + iconBox.width / 2))).toBeLessThan(2);
-		expect(box.y).toBeGreaterThan(iconBox.y + iconBox.height);
-		expect(box.y - (iconBox.y + iconBox.height)).toBeLessThan(16);
+		expect(Math.abs(box.x + box.width / 2 - (buttonBox.x + buttonBox.width / 2))).toBeLessThan(2);
+		expect(box.y).toBeGreaterThan(buttonBox.y + buttonBox.height);
+		expect(box.y - (buttonBox.y + buttonBox.height)).toBeLessThan(12);
+
+		// 음량을 바꾸면 단추 이름도 바뀐다
+		await popup.getByRole('slider', { name: '음량' }).fill('0.3');
+		await expect(page.locator('.macos-statusbar').getByRole('button', { name: '음량 30%' })).toBeVisible();
+
+		await page.keyboard.press('Escape');
+		await expect(popup).toBeHidden();
+		await button.click();
+		await page.mouse.click(800, 500);
+		await expect(popup).toBeHidden();
+	});
+
+	test('메뉴 막대 글자는 보통 굵기이고, 맨 앞 앱 이름만 굵다', async ({ page }) => {
+		await enterDesktop(page);
+		const bar = page.locator('.macos-statusbar');
+		const weight = (text: string) =>
+			bar.getByText(text, { exact: true }).evaluate((el) => getComputedStyle(el).fontWeight);
+		expect(await weight('Finder')).toBe('700');
+		expect(await weight('File')).toBe('400');
+		expect(await bar.locator('.time-display-now').evaluate((el) => getComputedStyle(el).fontWeight)).toBe('400');
 	});
 
 	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
