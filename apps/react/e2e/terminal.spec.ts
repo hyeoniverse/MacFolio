@@ -24,7 +24,7 @@ test.describe('터미널', () => {
 		await expect(output).toContainText('김정현 (Kim Jeong Hyeon)');
 
 		// 프로젝트는 GitHub 고정 저장소와 같다 (shared/profile.ts)
-		await run('project 3');
+		await run('project 4');
 		await expect(output).toContainText('QRU 큐알유');
 		await expect(output.getByRole('link', { name: 'https://github.com/hyeoniverse/QRU' })).toHaveAttribute(
 			'target',

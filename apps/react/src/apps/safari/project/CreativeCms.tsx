@@ -634,31 +634,43 @@ export const Kitchen: React.FC = () => {
 };
 
 type Feature = 'translation' | 'summary' | 'cover' | 'tts';
-const FEATURES: { key: Feature; label: string; providers: string[] }[] = [
-	{ key: 'translation', label: '번역', providers: ['DeepL', 'Google Translate', 'Gemini', 'Claude'] },
-	{ key: 'summary', label: '요약', providers: ['Gemini', 'OpenAI', 'Claude'] },
-	{ key: 'cover', label: '커버', providers: ['NanoBanana', 'Hugging Face'] },
-	{ key: 'tts', label: '음성', providers: ['Fish Audio', 'Google Cloud TTS', 'Edge'] },
+/** cost: 요청 한 번에 쓰는 양 (번역은 글자, 음성은 바이트, 나머지는 번) */
+const FEATURES: { key: Feature; label: string; providers: string[]; cost: number }[] = [
+	{ key: 'translation', label: '번역', providers: ['DeepL', 'Google Translate', 'Gemini', 'Claude'], cost: 1_800 },
+	{ key: 'summary', label: '요약', providers: ['Gemini', 'OpenAI', 'Claude'], cost: 1 },
+	{ key: 'cover', label: '커버', providers: ['NanoBanana', 'Hugging Face'], cost: 1 },
+	{ key: 'tts', label: '음성', providers: ['Fish Audio', 'Google Cloud TTS', 'Edge'], cost: 24_000 },
 ];
-/** 이번 달 사용량과 한 달 무료 한도 (한도를 공식 문서로 아는 공급자만). 숫자는 예시 */
+/** 이번 달 사용량과 한 달 무료 한도 (한도를 공식 문서로 아는 공급자만). 처음 숫자는 예시 */
 const USAGE: Record<string, { used: number; limit?: number; unit: string }> = {
-	DeepL: { used: 182_000, limit: 500_000, unit: '자' },
+	DeepL: { used: 482_000, limit: 500_000, unit: '자' },
 	'Google Translate': { used: 61_000, limit: 500_000, unit: '자' },
 	Gemini: { used: 214, unit: '번' },
 	Claude: { used: 12, unit: '번' },
 	OpenAI: { used: 3, unit: '번' },
 	NanoBanana: { used: 18, unit: '번' },
 	'Hugging Face': { used: 9, unit: '번' },
-	'Fish Audio': { used: 41_200, unit: '자' },
-	'Google Cloud TTS': { used: 640_000, limit: 800_000, unit: '바이트' },
+	'Fish Audio': { used: 41_200, unit: '바이트' },
+	'Google Cloud TTS': { used: 760_000, limit: 800_000, unit: '바이트' },
 	Edge: { used: 31, unit: '번' },
 };
-/** 같은 원인으로 이만큼 이어 실패하면 그 공급자를 끈다 (키·한도·결제처럼 사람이 고쳐야 하는 원인) */
+/** 같은 원인으로 이만큼 이어 실패하면 그 공급자를 끈다: 키·한도·결제처럼 사람이 고쳐야 하는 원인은 3번, 저절로 풀릴 수 있는 원인은 5번 */
 const FATAL_LIMIT = 3;
+const TRANSIENT_LIMIT = 5;
+/** 요청 한 번이 실패할 확률과, 실패하면 그 원인 */
+const FAIL_RATE = 0.3;
+const FAILURES = [
+	{ reason: '시간 초과', fatal: false },
+	{ reason: '서버 오류(503)', fatal: false },
+	{ reason: '키 오류(401)', fatal: true },
+];
+type Streak = { fatal: number; transient: number };
+type Step = { name: string; outcome: string; ok?: boolean };
 
 /**
  * 공급자 고르기와 대체 차례, 사용량: 기능마다 기본 공급자와 대체 차례를 정하고, 이번 달 사용량을 무료 한도와 함께 본다.
- * 키·한도·결제 문제로 3번 이어 실패하면 그 공급자를 끄고, 요청은 다음 공급자로 넘어간다
+ * 요청을 보내면 공급자마다 그 사이트처럼 성공하거나 실패하고(한도를 넘으면 한도 초과), 성공하면 사용량이 오른다.
+ * 키·한도 문제로 3번(일시 오류는 5번) 이어 실패한 공급자는 꺼지고, 요청은 다음 공급자로 넘어간다
  */
 export const Providers: React.FC = () => {
 	const [feature, setFeature] = useState<Feature>('translation');
@@ -666,28 +678,72 @@ export const Providers: React.FC = () => {
 		() => Object.fromEntries(FEATURES.map((item) => [item.key, item.providers])) as Record<Feature, string[]>
 	);
 	const [fallback, setFallback] = useState(true);
-	const [fails, setFails] = useState<Record<string, number>>({});
-	const [result, setResult] = useState<string | null>(null);
+	const [usage, setUsage] = useState(USAGE);
+	const [streaks, setStreaks] = useState<Record<string, Streak>>({});
+	const [busy, setBusy] = useState(false);
+	const [trail, setTrail] = useState<Step[] | null>(null);
+	const timer = useRef<number>(undefined);
+	useEffect(() => () => window.clearTimeout(timer.current), []);
+	const current = FEATURES.find((item) => item.key === feature)!;
 	const order = orders[feature];
-	const off = (name: string) => (fails[name] ?? 0) >= FATAL_LIMIT;
+	const streakOf = (name: string) => streaks[name] ?? { fatal: 0, transient: 0 };
+	const off = (name: string) => streakOf(name).fatal >= FATAL_LIMIT || streakOf(name).transient >= TRANSIENT_LIMIT;
 	const move = (i: number, dir: number) => {
 		const next = [...order];
 		[next[i], next[i + dir]] = [next[i + dir], next[i]];
 		setOrders((now) => ({ ...now, [feature]: next }));
-		setResult(null);
+		setTrail(null);
 	};
+	const fail = (name: string, fatal: boolean) =>
+		setStreaks((now) => {
+			const streak = now[name] ?? { fatal: 0, transient: 0 };
+			return {
+				...now,
+				[name]: fatal ? { ...streak, fatal: streak.fatal + 1 } : { ...streak, transient: streak.transient + 1 },
+			};
+		});
+
+	// 차례대로 시도한다: 꺼진 공급자는 건너뛰고, 한도를 넘을 요청은 한도 초과로, 나머지는 확률로 성공하거나 실패한다
 	const send = () => {
-		const tried = fallback ? order : order.slice(0, 1);
-		const skipped = tried.filter(off);
-		const used = tried.find((name) => !off(name));
-		setResult(
-			used
-				? `${skipped.length ? `${skipped.join(' · ')} 꺼짐 → ` : ''}${used}로 처리했습니다`
-				: fallback
-					? '모든 공급자가 꺼져 있어 실패했습니다 · 관리자 알림에 남습니다'
-					: `${order[0]}이(가) 꺼져 있고 대체를 껐습니다 · 실패`
-		);
+		const steps: Step[] = [];
+		const nextStreaks = { ...streaks };
+		const nextUsage = { ...usage };
+		for (const name of fallback ? order : order.slice(0, 1)) {
+			const streak = nextStreaks[name] ?? { fatal: 0, transient: 0 };
+			if (streak.fatal >= FATAL_LIMIT || streak.transient >= TRANSIENT_LIMIT) {
+				steps.push({ name, outcome: '꺼짐' });
+				continue;
+			}
+			const meter = nextUsage[name];
+			const failure =
+				meter.limit && meter.used + current.cost > meter.limit
+					? { reason: '한도 초과', fatal: true }
+					: Math.random() < FAIL_RATE
+						? FAILURES[Math.floor(Math.random() * FAILURES.length)]
+						: null;
+			if (failure) {
+				nextStreaks[name] = failure.fatal
+					? { ...streak, fatal: streak.fatal + 1 }
+					: { ...streak, transient: streak.transient + 1 };
+				steps.push({ name, outcome: failure.reason });
+				continue;
+			}
+			nextStreaks[name] = { fatal: 0, transient: 0 };
+			nextUsage[name] = { ...meter, used: meter.used + current.cost };
+			steps.push({ name, outcome: `+${current.cost.toLocaleString()}${meter.unit}`, ok: true });
+			break;
+		}
+		setBusy(true);
+		setTrail(null);
+		window.clearTimeout(timer.current);
+		timer.current = window.setTimeout(() => {
+			setStreaks(nextStreaks);
+			setUsage(nextUsage);
+			setTrail(steps);
+			setBusy(false);
+		}, 500);
 	};
+	const handled = trail?.find((item) => item.ok);
 
 	return (
 		<div className="cm-providers">
@@ -700,7 +756,7 @@ export const Providers: React.FC = () => {
 							aria-pressed={feature === item.key}
 							onClick={() => {
 								setFeature(item.key);
-								setResult(null);
+								setTrail(null);
 							}}
 						>
 							{item.label}
@@ -714,19 +770,26 @@ export const Providers: React.FC = () => {
 			</div>
 			<ol className="cm-providers-list">
 				{order.map((name, i) => {
-					const usage = USAGE[name];
-					const ratio = usage.limit ? Math.min(1, usage.used / usage.limit) : null;
+					const meter = usage[name];
+					const ratio = meter.limit ? Math.min(1, meter.used / meter.limit) : null;
+					const streak = streakOf(name);
+					const step = trail?.find((item) => item.name === name);
 					return (
-						<li key={name} data-off={off(name) || undefined} data-idle={(!fallback && i > 0) || undefined}>
+						<li
+							key={name}
+							data-off={off(name) || undefined}
+							data-idle={(!fallback && i > 0) || undefined}
+							data-hit={step ? (step.ok ? 'ok' : 'fail') : undefined}
+						>
 							<span className="cm-providers-rank">{i === 0 ? '기본' : `대체 ${i}`}</span>
 							<div className="cm-providers-name">
 								<b>{name}</b>
 								<small>
 									{off(name)
-										? '꺼짐 · 한도에 닿아 이번 달은 쉽니다'
+										? `꺼짐 · ${streak.fatal >= FATAL_LIMIT ? '키·한도 문제로' : '일시 오류로'} 이어 실패했습니다`
 										: ratio !== null
-											? `이번 달 ${usage.used.toLocaleString()} / ${usage.limit!.toLocaleString()}${usage.unit}`
-											: `이번 달 ${usage.used.toLocaleString()}${usage.unit} · 무료 한도 미공개`}
+											? `이번 달 ${meter.used.toLocaleString()} / ${meter.limit!.toLocaleString()}${meter.unit}`
+											: `이번 달 ${meter.used.toLocaleString()}${meter.unit} · 무료 한도 미공개`}
 								</small>
 								{ratio !== null && (
 									<i className="cm-providers-bar" data-high={ratio > 0.75 || undefined}>
@@ -749,14 +812,12 @@ export const Providers: React.FC = () => {
 								<button
 									type="button"
 									className="cm-providers-fail"
+									aria-label={off(name) ? `${name} 다시 켜기` : `${name} 키 오류로 실패시키기`}
 									onClick={() =>
-										setFails((now) => ({
-											...now,
-											[name]: off(name) ? 0 : (now[name] ?? 0) + 1,
-										}))
+										off(name) ? setStreaks((now) => ({ ...now, [name]: { fatal: 0, transient: 0 } })) : fail(name, true)
 									}
 								>
-									{off(name) ? '다시 켜기' : `실패 ${fails[name] ?? 0}/${FATAL_LIMIT}`}
+									{off(name) ? '다시 켜기' : `실패 ${streak.fatal}/${FATAL_LIMIT}`}
 								</button>
 							</div>
 						</li>
@@ -764,16 +825,20 @@ export const Providers: React.FC = () => {
 				})}
 			</ol>
 			<div className="cm-row">
-				<button type="button" className="cd-primary" onClick={send}>
-					요청 보내기
+				<button type="button" className="cd-primary" onClick={send} disabled={busy}>
+					{busy ? '보내는 중…' : '요청 보내기'}
 				</button>
 			</div>
-			<p
-				className="cm-result"
-				role="status"
-				data-kind={result ? (result.includes('실패') ? 'conflict' : 'ok') : undefined}
-			>
-				{result ?? '차례를 바꾸거나 공급자를 실패시켜 끈 뒤, 요청을 보내 보세요'}
+			<p className="cm-result" role="status" data-kind={trail ? (handled ? 'ok' : 'conflict') : undefined}>
+				{trail
+					? `${trail.map((item) => `${item.name} ${item.outcome}`).join(' → ')}${
+							handled
+								? ` · ${handled.name}가 처리했습니다`
+								: fallback
+									? ' · 모든 공급자가 실패해 관리자 알림에 남습니다'
+									: ' · 대체를 꺼서 여기서 실패합니다'
+						}`
+					: '요청을 보내면 공급자마다 성공하거나 실패하고, 성공하면 사용량이 오릅니다'}
 			</p>
 		</div>
 	);

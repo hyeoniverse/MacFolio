@@ -11,6 +11,9 @@ test.describe('Safari', () => {
 		await expect(tabs).toHaveCount(7);
 		await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
 		const panel = safari.getByRole('tabpanel');
+		// 탭은 중요도 순: 개인 대표작(HYEONIVERSE)이 맨 앞
+		await expect(panel.getByRole('article', { name: 'HYEONIVERSE' })).toBeVisible();
+		await safari.getByRole('tab', { name: /NewPick/ }).click();
 		await expect(panel.getByRole('article', { name: 'NewPick 뉴픽' })).toBeVisible();
 		// 팀 프로젝트는 진행 과정과 맡은 일을 보여준다
 		await expect(panel.getByRole('region', { name: '진행 과정' })).toBeVisible();
@@ -39,7 +42,7 @@ test.describe('Safari', () => {
 
 		// 이전·다음 탭
 		await safari.getByRole('button', { name: '다음 탭' }).click();
-		await expect(panel.getByRole('article', { name: 'SproutFarm 새싹 농장' })).toBeVisible();
+		await expect(panel.getByRole('article', { name: 'WTD (What To Do)' })).toBeVisible();
 		await safari.getByRole('button', { name: '이전 탭' }).click();
 		await expect(panel.getByRole('article', { name: 'QRU 큐알유' })).toBeVisible();
 	});
@@ -124,6 +127,7 @@ test.describe('Safari', () => {
 		const open = (name: RegExp) => safari.getByRole('tab', { name }).click();
 
 		// 신문: 머리기사 옆 단에 숫자와 진행 과정
+		await open(/NewPick/);
 		await expect(panel.getByRole('region', { name: '머리기사' })).toBeVisible();
 		const lead = await panel.getByRole('region', { name: '머리기사' }).boundingBox();
 		const side = await panel.getByRole('region', { name: '진행 과정' }).boundingBox();
@@ -187,12 +191,17 @@ test.describe('Safari', () => {
 		const access = panel.getByRole('region', { name: '권한과 설정', exact: true });
 		await access.getByRole('button', { name: '모르는 사람' }).click();
 		await expect(access.locator('.cm-invite').getByRole('status')).toContainText('계정을 지웁니다');
-		// AI 공급자: 기본(DeepL)이 세 번 실패하면 꺼지고, 요청은 다음 공급자가 받는다
+		// AI 공급자: 기본(DeepL)이 키 오류로 세 번 실패하면 꺼지고, 요청은 다음 공급자가 받아 사용량이 오른다
+		// (요청마다 확률로 실패하는 부분은 시험에서 늘 성공하게 고정한다)
+		await page.evaluate(() => (Math.random = () => 0.99));
 		const providers = panel.locator('.cm-providers');
-		for (let i = 0; i < 3; i++) await providers.getByRole('button', { name: /^실패/ }).first().click();
+		for (let i = 0; i < 3; i++) await providers.getByRole('button', { name: 'DeepL 키 오류로 실패시키기' }).click();
 		await expect(providers.locator('li').first()).toHaveAttribute('data-off');
 		await providers.getByRole('button', { name: '요청 보내기' }).click();
-		await expect(providers.getByRole('status')).toContainText('DeepL 꺼짐 → Google Translate로 처리했습니다');
+		await expect(providers.getByRole('status')).toContainText(
+			'DeepL 꺼짐 → Google Translate +1,800자 · Google Translate가 처리했습니다'
+		);
+		await expect(providers).toContainText('이번 달 62,800 / 500,000자');
 		// 테마: 프리셋을 고르면 미리보기 이름이 바뀌고, 다크로 바꿀 수 있다
 		const themes = panel.getByRole('region', { name: '테마' }).locator('.cd-themes');
 		await themes.getByRole('button', { name: 'Forest' }).click();
@@ -315,18 +324,18 @@ test.describe('Safari', () => {
 		const tabs = safari.getByRole('tab');
 
 		// 고른 탭을 닫으면 오른쪽 탭으로 넘어간다
-		await safari.getByRole('tab', { name: /NewPick/ }).hover();
-		await safari.getByRole('button', { name: 'NewPick 뉴픽 탭 닫기' }).click();
+		await safari.getByRole('tab', { name: /HYEONIVERSE/ }).hover();
+		await safari.getByRole('button', { name: 'HYEONIVERSE 탭 닫기' }).click();
 		await expect(tabs).toHaveCount(6);
-		await expect(safari.getByRole('tab', { name: /WTD/ })).toHaveAttribute('aria-selected', 'true');
+		await expect(safari.getByRole('tab', { name: /MacFolio/ })).toHaveAttribute('aria-selected', 'true');
 
 		// 새 탭은 시작 페이지. 즐겨찾기에서 고르면 그 탭이 프로젝트로 바뀐다
 		await safari.getByRole('button', { name: '새 탭' }).click();
 		await expect(safari.getByRole('tab', { name: '시작 페이지' })).toHaveAttribute('aria-selected', 'true');
 		const start = safari.getByRole('region', { name: '시작 페이지' });
-		await start.getByRole('button', { name: /NewPick/ }).click();
+		await start.getByRole('button', { name: /HYEONIVERSE/ }).click();
 		await expect(tabs).toHaveCount(7);
-		await expect(safari.getByRole('tab', { name: /NewPick/ })).toHaveAttribute('aria-selected', 'true');
+		await expect(safari.getByRole('tab', { name: /HYEONIVERSE/ })).toHaveAttribute('aria-selected', 'true');
 		await expect(safari.getByRole('tab', { name: '시작 페이지' })).toHaveCount(0);
 	});
 
@@ -352,9 +361,9 @@ test.describe('Safari', () => {
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
 		await safari.evaluate((element) => (element.style.width = '560px'));
-		const close = safari.getByRole('button', { name: 'NewPick 뉴픽 탭 닫기' });
+		const close = safari.getByRole('button', { name: 'HYEONIVERSE 탭 닫기' });
 		await expect(close).toBeVisible();
-		const title = safari.getByRole('tab', { name: /NewPick/ }).locator('span');
+		const title = safari.getByRole('tab', { name: /HYEONIVERSE/ }).locator('span');
 		const closeBox = (await close.boundingBox())!;
 		const titleBox = (await title.boundingBox())!;
 		expect(closeBox.x + closeBox.width).toBeLessThanOrEqual(titleBox.x);
@@ -379,11 +388,11 @@ test.describe('Safari', () => {
 				.locator('span')
 				.evaluate((el) => el.scrollWidth <= el.clientWidth);
 
-		await expect.poll(() => width(/NewPick/)).toBeGreaterThan(2 * (await width(/QRU/)));
-		expect(await fullyShown(/NewPick/)).toBe(true);
+		await expect.poll(() => width(/HYEONIVERSE/)).toBeGreaterThan(2 * (await width(/QRU/)));
+		expect(await fullyShown(/HYEONIVERSE/)).toBe(true);
 
 		await safari.getByRole('tab', { name: /QRU/ }).click();
-		await expect.poll(() => width(/QRU/)).toBeGreaterThan(2 * (await width(/NewPick/)));
+		await expect.poll(() => width(/QRU/)).toBeGreaterThan(2 * (await width(/HYEONIVERSE/)));
 		expect(await fullyShown(/QRU/)).toBe(true);
 		// 탭 막대는 넘치지 않는다 (가로로 밀지 않아도 모든 탭이 보인다)
 		expect(await safari.locator('.safari-tabs').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
@@ -438,6 +447,7 @@ test('신문(NewPick): 주요 기능은 머리 사진 기사, 사진 기사, 단
 }) => {
 	await enterDesktop(page);
 	const safari = appWindow(page, 'safari');
+	await safari.getByRole('tab', { name: /NewPick/ }).click();
 	const panel = safari.getByRole('tabpanel');
 	const articles = panel.getByRole('region', { name: '주요 기능' });
 	// 펼치는 단추 없이 처음부터 다 보인다

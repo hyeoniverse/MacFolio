@@ -186,7 +186,9 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 				key = `demo:${(target as HTMLElement).dataset.demo}`;
 				// 내용 칸 오른쪽 가장자리에 걸쳐 서서(몸은 옆 여백에) 데모 머리 높이를 따라간다. 데모 글을 가리지 않게
 				x = narrow ? width - w - 6 : Math.min(width - side - w * 0.3, width - w - 6);
-				y = Math.min(Math.max(box.top - view.top - h * 0.2, 8), view.height - h - 8);
+				// 머리 위 말풍선이 화면 위로 잘리지 않게, 말풍선 높이만큼은 아래에 선다
+				const talk = (figure.querySelector('.cr-bubble') as HTMLElement | null)?.offsetHeight ?? 0;
+				y = Math.min(Math.max(box.top - view.top - h * 0.2, 8 + talk * scale), view.height - h - 8);
 			} else {
 				key = 'rest';
 				x = width - w - (narrow ? 6 : 20);
@@ -205,7 +207,10 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 			figure.dataset.spot = key === 'hero' ? 'hero' : key === 'rest' ? 'rest' : 'demo';
 			figure.style.setProperty('--x', `${Math.round(x)}px`);
 			figure.style.setProperty('--y', `${Math.round(y)}px`);
-			figure.style.setProperty('--s', key === 'hero' ? '1' : scale.toFixed(3));
+			const s = key === 'hero' ? 1 : scale;
+			figure.style.setProperty('--s', s.toFixed(3));
+			// 말풍선 오른쪽 끝은 몸의 70% 자리. 그 왼쪽으로 화면 끝까지 남은 폭 (몸 크기로 나눠 그대로 쓴다)
+			figure.style.setProperty('--room', `${Math.round(Math.min(320, x + BUDDY_W * 0.7 * s - 12) / s)}px`);
 		});
 		return () => {
 			stop();
@@ -236,6 +241,11 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	}, []);
 	const mood: Mood = petted ? 'happy' : (reaction?.mood ?? (guide ? 'wave' : moodOf(chapter, titles.length)));
 	const bubble = reaction?.text ?? (hint ? HINTS[hint] : null);
+	// 말풍선 글이 바뀌면 키가 달라질 수 있어, 몽이 자리를 한 번 다시 잰다
+	useEffect(() => {
+		const node = root.current;
+		if (node) (scrollParent(node) ?? window).dispatchEvent(new Event('scroll'));
+	}, [bubble, root]);
 	const number = (index: number) => String(index + 1).padStart(2, '0');
 
 	return (
@@ -247,6 +257,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					className="cr-mascot"
 					data-mood={mood}
 					data-spot="hero"
+					data-petted={petted || undefined}
 					onPointerEnter={() => setPetted(true)}
 					onPointerLeave={() => setPetted(false)}
 					onClick={pet}

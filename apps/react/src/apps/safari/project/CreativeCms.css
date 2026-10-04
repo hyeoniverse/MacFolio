@@ -679,6 +679,8 @@
 .cm-providers {
 	display: grid;
 	gap: 12px;
+	padding: 16px;
+	border-radius: 12px;
 	font-size: 13px;
 }
 
@@ -783,4 +785,18 @@
 	.cm-kitchen-mix img {
 		animation: none;
 	}
+}
+
+/* 방금 보낸 요청이 지나간 공급자: 처리했으면 초록, 실패했으면 빨강 테두리 */
+.cm-providers-list li[data-hit='ok'] {
+	border-color: #0a8f4b;
+}
+
+.cm-providers-list li[data-hit='fail'] {
+	border-color: #d64545;
+}
+
+/* 지나간 길이 두세 줄이 되어도 아래가 밀리지 않게 */
+.cm-providers .cm-result {
+	min-height: 4.5em;
 }
