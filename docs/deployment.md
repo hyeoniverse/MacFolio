@@ -304,12 +304,62 @@ docker compose logs --tail=100 tunnel
 
 ### 백업
 
+블로그 글·임시 저장·버전 기록·올린 이미지가 **모두 DB에만** 있다. `ops/backup.sh`를 cron으로 매일 돌려 서버와 서버 밖(Cloudflare R2)에 남긴다.
+
+- 서버: `~/backups`에 7일 (`KEEP_LOCAL_DAYS`)
+- 서버 밖: R2 버킷에 30일 (`KEEP_REMOTE_DAYS`)
+- 압축이 온전한지, 덤프가 끝까지 쓰였는지 검사한 뒤에만 남긴다. 실패하면 1로 끝나고 알림 주소(`BACKUP_PING_URL`)에 알린다
+
+#### 1. R2 버킷과 키 (Cloudflare 대시보드)
+
+1. **R2 → Create bucket**: `macfolio-backups` (위치 Automatic)
+2. **R2 → Manage API tokens → Create API token**: 권한 **Object Read & Write**, 버킷은 `macfolio-backups`만
+3. 나오는 **Access Key ID**, **Secret Access Key**, **S3 엔드포인트**(`https://<계정 ID>.r2.cloudflarestorage.com`)를 적어 둔다. 비밀 키는 이때만 보인다
+
+#### 2. 서버에 rclone과 설정
+
 ```bash
-docker compose exec -T db pg_dump -U macfolio macfolio > ~/backup-$(date +%F).sql
-scp -i ~/.ssh/oracle-macfolio.key ubuntu@<공인 IP>:~/backup-*.sql .   # Mac에서, 서버 밖에도 보관
+sudo apt-get install -y rclone
+cd ~/deploy
+cat > backup.env <<'EOF'
+BACKUP_REMOTE=r2:macfolio-backups
+RCLONE_CONFIG_R2_TYPE=s3
+RCLONE_CONFIG_R2_PROVIDER=Cloudflare
+RCLONE_CONFIG_R2_ACCESS_KEY_ID=<Access Key ID>
+RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=<Secret Access Key>
+RCLONE_CONFIG_R2_ENDPOINT=https://<계정 ID>.r2.cloudflarestorage.com
+RCLONE_CONFIG_R2_NO_CHECK_BUCKET=true
+# 선택: 백업이 멈추면 알려 줄 주소 (healthchecks.io에서 Check를 만들고 Ping URL을 넣는다. 하루 주기, 유예 1시간)
+# BACKUP_PING_URL=https://hc-ping.com/<uuid>
+EOF
+chmod 600 backup.env
 ```
 
-되살리기: `docker compose exec -T db psql -U macfolio macfolio < backup.sql`
+rclone 설정은 `RCLONE_CONFIG_R2_*` 환경 변수로 넣어서 `rclone config` 파일이 따로 없다. `backup.env`는 `ops/backup.sh`가 읽는다.
+
+#### 3. 한 번 돌려 보고 cron에 넣기
+
+```bash
+~/macfolio/ops/backup.sh            # "백업 완료", "올림: r2:…"가 나오면 된다
+crontab -e                          # 아래 한 줄 (서버 시간은 UTC: 03:30 UTC = 12:30 KST)
+30 3 * * * /home/ubuntu/macfolio/ops/backup.sh >> /home/ubuntu/deploy/backup.log 2>&1
+```
+
+#### 되살리기
+
+```bash
+# 실제 DB를 백업 내용으로 바꾼다 (확인을 받고, 그동안 api를 멈췄다가 다시 띄운다)
+~/macfolio/ops/restore.sh ~/backups/macfolio-2026-10-05T033000Z.sql.gz
+# R2에 있는 백업도 된다 (받아 와서 되살린다)
+~/macfolio/ops/restore.sh r2:macfolio-backups/macfolio-2026-10-05T033000Z.sql.gz
+
+# 실제 DB를 건드리지 않고 백업을 시험: 다른 DB에 되살려 본다
+DB_NAME=restoretest ~/macfolio/ops/restore.sh ~/backups/<파일>
+docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
+docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restoretest'
+```
+
+한 달에 한 번쯤 다른 DB에 되살려 보고 글 수를 맞춰 본다. 되살려 보지 않은 백업은 백업이 아니다.
 
 ### 비밀 값 바꾸기
 
@@ -348,5 +398,4 @@ Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Al
 [#10](https://github.com/hyeoniverse/MacFolio/issues/10)에서 이어서 한다.
 
 - main에 머지하면 GitHub Actions가 이미지를 빌드하고 서버에 배포 (지금은 서버에서 직접 `git pull`)
-- `pg_dump`를 cron으로 매일, 서버 밖에 보관
 - 외부 업타임 모니터링으로 `/health` 감시
