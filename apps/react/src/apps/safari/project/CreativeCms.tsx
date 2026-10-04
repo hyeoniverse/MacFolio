@@ -2,6 +2,7 @@
 // 세 겹 자동 저장과 버전 확인, 글 한 편의 일생, 로그인 없는 댓글, 메일함, GitHub 로그인과 초대
 import React, { useEffect, useRef, useState } from 'react';
 import '@/apps/safari/project/CreativeCms.css';
+import { KITCHEN_EMOJIS, KITCHEN_PAIRS } from '@/apps/safari/project/CreativeKitchenData';
 
 /** 자동 저장이 서버에 수정본을 남기기까지 기다리는 시간 (그 사이트와 같다) */
 const IDLE_MS = 3000;
@@ -174,11 +175,14 @@ export const Lifecycle: React.FC = () => {
 						</div>
 					))}
 				</dl>
-				{cron && (
-					<p className="cm-life-cron" role="status">
-						<i className="fa-solid fa-clock" /> {cron}
-					</p>
-				)}
+				{/* 정리 작업 문구 자리는 늘 잡아 두어, 문구가 떠도 카드 크기가 바뀌지 않는다 */}
+				<p className="cm-life-cron" role="status" data-on={cron ? '' : undefined}>
+					{cron && (
+						<>
+							<i className="fa-solid fa-clock" /> {cron}
+						</>
+					)}
+				</p>
 			</div>
 			<div className="cm-row">
 				{stage === 'draft' && (
@@ -577,6 +581,199 @@ export const Roles: React.FC = () => {
 						? `${name}: ${action.label} → 허용 · RLS가 auth.jwt()의 app_metadata.role을 보고 통과시킵니다`
 						: `${name}: ${action.label} → 거부 · API가 확인을 빠뜨려도 DB의 RLS 정책이 막습니다`
 					: '역할을 고르고, 해 볼 동작을 눌러 보세요. 역할은 사용자가 바꿀 수 없는 app_metadata에 있습니다'}
+			</p>
+		</div>
+	);
+};
+
+/** 조합 그림 주소 (그 사이트 lib/emojiKitchen과 같다): gstatic은 코드포인트 덩어리마다 u를 붙인다 */
+const kitchenUrl = ([date, left, right]: [string, string, string]) => {
+	const u = (code: string) => `u${code.split('-').join('-u')}`;
+	return `https://www.gstatic.com/android/keyboard/emojikitchen/${date}/${u(left)}/${u(left)}_${u(right)}.png`;
+};
+
+/**
+ * 이모지 키친: 이모지 두 개를 고르면 Google Gboard가 섞어 그린 그림이 나온다. 그 사이트는 조합 14만 7천 개를 가벼운
+ * 목록(meta.json + pairs.bin)으로 줄여 두고, 고른 조합을 커스텀 이모지로 가져와 글과 댓글에 쓴다
+ */
+export const Kitchen: React.FC = () => {
+	const [left, setLeft] = useState(KITCHEN_EMOJIS[0]);
+	const [right, setRight] = useState(KITCHEN_EMOJIS[3]);
+	const [broken, setBroken] = useState<string | null>(null);
+	const pair = KITCHEN_PAIRS[`${left}+${right}`] ?? KITCHEN_PAIRS[`${right}+${left}`];
+	const src = pair ? kitchenUrl(pair) : null;
+	const row = (value: string, set: (emoji: string) => void, label: string) => (
+		<div className="cm-kitchen-row" role="group" aria-label={label}>
+			{KITCHEN_EMOJIS.map((emoji) => (
+				<button key={emoji} type="button" aria-pressed={value === emoji} onClick={() => set(emoji)}>
+					{emoji}
+				</button>
+			))}
+		</div>
+	);
+
+	return (
+		<div className="cm-kitchen">
+			{row(left, setLeft, '첫 이모지')}
+			<div className="cm-kitchen-mix">
+				<span>{left}</span>
+				<i className="fa-solid fa-plus" aria-hidden="true" />
+				<span>{right}</span>
+				<i className="fa-solid fa-equals" aria-hidden="true" />
+				<figure>
+					{src && broken !== src ? (
+						<img key={src} src={src} alt={`${left}와 ${right}를 섞은 이모지`} onError={() => setBroken(src)} />
+					) : (
+						<em>{src ? '그림을 불러오지 못했습니다' : '이 둘은 조합이 없습니다'}</em>
+					)}
+				</figure>
+			</div>
+			{row(right, setRight, '둘째 이모지')}
+		</div>
+	);
+};
+
+type Feature = 'translation' | 'summary' | 'cover' | 'tts';
+const FEATURES: { key: Feature; label: string; providers: string[] }[] = [
+	{ key: 'translation', label: '번역', providers: ['DeepL', 'Google Translate', 'Gemini', 'Claude'] },
+	{ key: 'summary', label: '요약', providers: ['Gemini', 'OpenAI', 'Claude'] },
+	{ key: 'cover', label: '커버', providers: ['NanoBanana', 'Hugging Face'] },
+	{ key: 'tts', label: '음성', providers: ['Fish Audio', 'Google Cloud TTS', 'Edge'] },
+];
+/** 이번 달 사용량과 한 달 무료 한도 (한도를 공식 문서로 아는 공급자만). 숫자는 예시 */
+const USAGE: Record<string, { used: number; limit?: number; unit: string }> = {
+	DeepL: { used: 182_000, limit: 500_000, unit: '자' },
+	'Google Translate': { used: 61_000, limit: 500_000, unit: '자' },
+	Gemini: { used: 214, unit: '번' },
+	Claude: { used: 12, unit: '번' },
+	OpenAI: { used: 3, unit: '번' },
+	NanoBanana: { used: 18, unit: '번' },
+	'Hugging Face': { used: 9, unit: '번' },
+	'Fish Audio': { used: 41_200, unit: '자' },
+	'Google Cloud TTS': { used: 640_000, limit: 800_000, unit: '바이트' },
+	Edge: { used: 31, unit: '번' },
+};
+/** 같은 원인으로 이만큼 이어 실패하면 그 공급자를 끈다 (키·한도·결제처럼 사람이 고쳐야 하는 원인) */
+const FATAL_LIMIT = 3;
+
+/**
+ * 공급자 고르기와 대체 차례, 사용량: 기능마다 기본 공급자와 대체 차례를 정하고, 이번 달 사용량을 무료 한도와 함께 본다.
+ * 키·한도·결제 문제로 3번 이어 실패하면 그 공급자를 끄고, 요청은 다음 공급자로 넘어간다
+ */
+export const Providers: React.FC = () => {
+	const [feature, setFeature] = useState<Feature>('translation');
+	const [orders, setOrders] = useState<Record<Feature, string[]>>(
+		() => Object.fromEntries(FEATURES.map((item) => [item.key, item.providers])) as Record<Feature, string[]>
+	);
+	const [fallback, setFallback] = useState(true);
+	const [fails, setFails] = useState<Record<string, number>>({});
+	const [result, setResult] = useState<string | null>(null);
+	const order = orders[feature];
+	const off = (name: string) => (fails[name] ?? 0) >= FATAL_LIMIT;
+	const move = (i: number, dir: number) => {
+		const next = [...order];
+		[next[i], next[i + dir]] = [next[i + dir], next[i]];
+		setOrders((now) => ({ ...now, [feature]: next }));
+		setResult(null);
+	};
+	const send = () => {
+		const tried = fallback ? order : order.slice(0, 1);
+		const skipped = tried.filter(off);
+		const used = tried.find((name) => !off(name));
+		setResult(
+			used
+				? `${skipped.length ? `${skipped.join(' · ')} 꺼짐 → ` : ''}${used}로 처리했습니다`
+				: fallback
+					? '모든 공급자가 꺼져 있어 실패했습니다 · 관리자 알림에 남습니다'
+					: `${order[0]}이(가) 꺼져 있고 대체를 껐습니다 · 실패`
+		);
+	};
+
+	return (
+		<div className="cm-providers">
+			<div className="cm-row">
+				<div className="cd-seg" role="group" aria-label="기능">
+					{FEATURES.map((item) => (
+						<button
+							key={item.key}
+							type="button"
+							aria-pressed={feature === item.key}
+							onClick={() => {
+								setFeature(item.key);
+								setResult(null);
+							}}
+						>
+							{item.label}
+						</button>
+					))}
+				</div>
+				<label className="cm-check">
+					<input type="checkbox" checked={fallback} onChange={(event) => setFallback(event.target.checked)} /> 실패하면
+					다음 공급자로
+				</label>
+			</div>
+			<ol className="cm-providers-list">
+				{order.map((name, i) => {
+					const usage = USAGE[name];
+					const ratio = usage.limit ? Math.min(1, usage.used / usage.limit) : null;
+					return (
+						<li key={name} data-off={off(name) || undefined} data-idle={(!fallback && i > 0) || undefined}>
+							<span className="cm-providers-rank">{i === 0 ? '기본' : `대체 ${i}`}</span>
+							<div className="cm-providers-name">
+								<b>{name}</b>
+								<small>
+									{off(name)
+										? '꺼짐 · 한도에 닿아 이번 달은 쉽니다'
+										: ratio !== null
+											? `이번 달 ${usage.used.toLocaleString()} / ${usage.limit!.toLocaleString()}${usage.unit}`
+											: `이번 달 ${usage.used.toLocaleString()}${usage.unit} · 무료 한도 미공개`}
+								</small>
+								{ratio !== null && (
+									<i className="cm-providers-bar" data-high={ratio > 0.75 || undefined}>
+										<i style={{ width: `${ratio * 100}%` }} />
+									</i>
+								)}
+							</div>
+							<div className="cm-providers-tools">
+								<button type="button" aria-label={`${name} 위로`} disabled={i === 0} onClick={() => move(i, -1)}>
+									<i className="fa-solid fa-chevron-up" />
+								</button>
+								<button
+									type="button"
+									aria-label={`${name} 아래로`}
+									disabled={i === order.length - 1}
+									onClick={() => move(i, 1)}
+								>
+									<i className="fa-solid fa-chevron-down" />
+								</button>
+								<button
+									type="button"
+									className="cm-providers-fail"
+									onClick={() =>
+										setFails((now) => ({
+											...now,
+											[name]: off(name) ? 0 : (now[name] ?? 0) + 1,
+										}))
+									}
+								>
+									{off(name) ? '다시 켜기' : `실패 ${fails[name] ?? 0}/${FATAL_LIMIT}`}
+								</button>
+							</div>
+						</li>
+					);
+				})}
+			</ol>
+			<div className="cm-row">
+				<button type="button" className="cd-primary" onClick={send}>
+					요청 보내기
+				</button>
+			</div>
+			<p
+				className="cm-result"
+				role="status"
+				data-kind={result ? (result.includes('실패') ? 'conflict' : 'ok') : undefined}
+			>
+				{result ?? '차례를 바꾸거나 공급자를 실패시켜 끈 뒤, 요청을 보내 보세요'}
 			</p>
 		</div>
 	);

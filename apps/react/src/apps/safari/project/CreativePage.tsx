@@ -45,6 +45,8 @@ const HINTS: Record<DemoKind, string> = {
 	mailbox: '메일을 눌러 열어 보세요',
 	invite: '누가 들어올 수 있는지 골라 보세요',
 	roles: '역할을 바꿔 동작을 눌러 보세요',
+	kitchen: '이모지 두 개를 골라 섞어 보세요',
+	providers: '공급자를 실패시켜 보고 요청을 보내 보세요',
 };
 /** 데모가 돌 때 몽이의 반응: 만드는 중엔 기다리고, 끝나면 반짝, 실패하면 놀란다 */
 const REACTIONS: Record<DemoState, { mood: Mood; text: (kind: DemoKind) => string }> = {
