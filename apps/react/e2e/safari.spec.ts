@@ -191,6 +191,8 @@ test.describe('Safari', () => {
 		await expect(slides.locator('.cd-ask')).toHaveCount(0);
 		await slides.getByRole('button', { name: '2장으로' }).click();
 		await expect(slides.locator('.cd-slides-source')).toContainText('Fish TTS 음성 파일 · 발표 2쪽');
+		// 2장부터도 자막이 나온다: 그 장 대본의 첫 문장부터
+		await expect(slides.locator('.cd-caption')).toContainText('먼저 이 프로젝트에서 제가 가장 보여드리고 싶은 부분을');
 		// 일시정지하면 진행이 멈추고, 자막을 꺼도 자막 자리 높이는 그대로다
 		await slides.getByRole('button', { name: '일시정지' }).click();
 		await expect(slides.locator('.cd-slides-progress')).not.toHaveAttribute('data-playing');
