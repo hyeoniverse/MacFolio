@@ -39,7 +39,7 @@ export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" /
 
 Safari 프로젝트 페이지에는 "여기서 열기" 단추를 두고, 데모 링크는 "새 탭에서 열기"로 옆에 둔다. 게임인 새싹 농장만 "여기서 플레이"다.
 
-![Launchpad 전후](./images/project-apps-launchpad.jpg '위: 전 (Dock에 다 들어가지 않은 앱만) / 아래: 후 (프로젝트 앱이 늘 있다)')
+![Dock에 고정한 프로젝트 앱](./images/project-apps-launchpad.jpg '위: 1920px 창 (다섯 개가 모두 Dock에) / 아래: 1600px 창 (HYEONIVERSE와 NewPick까지, 나머지는 Launchpad)')
 
 ## 아이콘에 타일 깔기
 
