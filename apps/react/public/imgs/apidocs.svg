@@ -1,23 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+	<!-- API 문서 앱: 파란 바탕에 흰 문서 한 장. 문서에는 엔드포인트 목록 (메서드 색 알약 + 경로 줄) -->
 	<defs>
 		<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-			<stop offset="0" stop-color="#2b3a55"/>
-			<stop offset="1" stop-color="#0f5f63"/>
+			<stop offset="0" stop-color="#5ab0ff"/>
+			<stop offset="1" stop-color="#1765e0"/>
 		</linearGradient>
-		<linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
-			<stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
-			<stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+		<linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#ffffff"/>
+			<stop offset="1" stop-color="#eef2f8"/>
 		</linearGradient>
+		<filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+			<feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0b3a8a" flood-opacity="0.35"/>
+		</filter>
 	</defs>
 	<!-- 칸을 꽉 채운다 (둥근 모서리는 Dock·Launchpad가 깎는다, 다른 아이콘과 같게) -->
 	<rect width="1024" height="1024" fill="url(#bg)"/>
-	<rect width="1024" height="1024" fill="url(#shine)"/>
-	<!-- { } -->
-	<g transform="translate(512 512) scale(1.22) translate(-512 -512)">
-	<g fill="none" stroke="#ffffff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round">
-		<path d="M408 300c-58 0-84 24-84 74v74c0 38-20 58-62 64 42 6 62 26 62 64v74c0 50 26 74 84 74"/>
-		<path d="M616 300c58 0 84 24 84 74v74c0 38 20 58 62 64-42 6-62 26-62 64v74c0 50-26 74-84 74"/>
+	<!-- 문서 -->
+	<g transform="translate(512 512) scale(1.1) translate(-512 -512)">
+	<rect x="212" y="168" width="600" height="688" rx="56" fill="url(#paper)" filter="url(#shadow)"/>
+	<!-- 제목 줄 -->
+	<rect x="282" y="248" width="300" height="44" rx="22" fill="#1d2a3f"/>
+	<rect x="282" y="316" width="200" height="26" rx="13" fill="#b8c2d3"/>
+	<!-- 엔드포인트: GET · POST · PATCH · DELETE -->
+	<g>
+		<rect x="282" y="402" width="132" height="64" rx="32" fill="#30c158"/>
+		<rect x="440" y="421" width="302" height="26" rx="13" fill="#c7cfdc"/>
+		<rect x="282" y="502" width="132" height="64" rx="32" fill="#0a84ff"/>
+		<rect x="440" y="521" width="250" height="26" rx="13" fill="#c7cfdc"/>
+		<rect x="282" y="602" width="132" height="64" rx="32" fill="#ff9f0a"/>
+		<rect x="440" y="621" width="282" height="26" rx="13" fill="#c7cfdc"/>
+		<rect x="282" y="702" width="132" height="64" rx="32" fill="#ff453a"/>
+		<rect x="440" y="721" width="214" height="26" rx="13" fill="#c7cfdc"/>
 	</g>
-	<text x="512" y="560" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif" font-size="128" font-weight="700" fill="#7ee0d5" letter-spacing="4">API</text>
 	</g>
 </svg>
