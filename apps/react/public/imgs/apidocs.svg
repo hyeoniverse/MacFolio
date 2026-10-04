@@ -1,21 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-	<!-- API 문서 앱: 밝은 바탕에 'API'와 그 아래 엔드포인트 목록 (메서드 색 알약 + 경로 줄) -->
+	<!-- API 문서 앱: { API } -->
 	<defs>
 		<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
 			<stop offset="0" stop-color="#ffffff"/>
-			<stop offset="1" stop-color="#e6eefb"/>
+			<stop offset="1" stop-color="#e3ecfa"/>
 		</linearGradient>
 	</defs>
 	<!-- 칸을 꽉 채운다 (둥근 모서리는 Dock·Launchpad가 깎는다, 다른 아이콘과 같게) -->
 	<rect width="1024" height="1024" fill="url(#bg)"/>
-	<text x="512" y="448" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif" font-size="260" font-weight="600" letter-spacing="6" fill="#1f6fe5">API</text>
-	<!-- 엔드포인트: GET · POST · DELETE -->
-	<g>
-		<rect x="250" y="548" width="112" height="48" rx="24" fill="#34c759"/>
-		<rect x="390" y="561" width="384" height="22" rx="11" fill="#c9d4e6"/>
-		<rect x="250" y="636" width="112" height="48" rx="24" fill="#0a84ff"/>
-		<rect x="390" y="649" width="300" height="22" rx="11" fill="#c9d4e6"/>
-		<rect x="250" y="724" width="112" height="48" rx="24" fill="#ff9f0a"/>
-		<rect x="390" y="737" width="344" height="22" rx="11" fill="#c9d4e6"/>
+	<!-- { } : 처음 모양 그대로, 'API'가 들어갈 만큼 양옆으로 벌린다 -->
+	<g fill="none" stroke="#8fb6ee" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+		<path transform="translate(-108 0) translate(512 512) scale(1.12) translate(-512 -512)" d="M408 300c-58 0-84 24-84 74v74c0 38-20 58-62 64 42 6 62 26 62 64v74c0 50 26 74 84 74"/>
+		<path transform="translate(108 0) translate(512 512) scale(1.12) translate(-512 -512)" d="M616 300c58 0 84 24 84 74v74c0 38 20 58 62 64-42 6-62 26-62 64v74c0 50-26 74-84 74"/>
 	</g>
+	<text x="512" y="598" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif" font-size="240" font-weight="700" letter-spacing="0" fill="#2a7be8">API</text>
 </svg>
