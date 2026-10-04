@@ -30,7 +30,7 @@ describe('AI 요약', () => {
 			en: 'Summary: 글',
 			remaining: 0,
 		});
-		expect(called).toEqual([{ model: 'gemini-2.0-flash', text: '글' }]);
+		expect(called).toEqual([{ model: 'gemini-flash-latest', text: '글' }]);
 		await expect(service.summarize({ text: '글' }, '2.2.2.2')).rejects.toMatchObject({ status: 429 });
 	});
 

@@ -51,7 +51,7 @@ export interface AppConfig {
 	/** AI 요약 데모 (Gemini가 한국어·영어 요약을 함께 만든다) */
 	summary: {
 		geminiApiKey?: string;
-		/** HYEONIVERSE와 같은 모델이 기본. 모델이 내려가면 GEMINI_MODEL로 바꾼다 */
+		/** 기본은 늘 최신 Flash를 가리키는 별칭. 고정하고 싶으면 GEMINI_MODEL로 정한다 (내려간 모델이면 응답이 권하는 모델로 한 번 다시 묻는다) */
 		geminiModel: string;
 		perIpPerDay: number;
 		totalPerDay: number;
@@ -132,7 +132,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		},
 		summary: {
 			geminiApiKey: env.GEMINI_API_KEY || undefined,
-			geminiModel: env.GEMINI_MODEL || 'gemini-2.0-flash',
+			geminiModel: env.GEMINI_MODEL || 'gemini-flash-latest',
 			perIpPerDay: Number(env.SUMMARY_PER_IP_PER_DAY ?? 3) || 3,
 			totalPerDay: Number(env.SUMMARY_TOTAL_PER_DAY ?? 50) || 50,
 		},

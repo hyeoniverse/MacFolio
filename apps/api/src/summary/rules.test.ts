@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DemoInputError, ProviderFailure } from '../common/demo.js';
-import { MAX_SUMMARY_CHARS, parseSummaryRequest, readSummary, summaryPrompt } from './rules.js';
+import { MAX_SUMMARY_CHARS, parseSummaryRequest, readSummary, suggestedModel, summaryPrompt } from './rules.js';
 
 describe('요약 요청', () => {
 	it('줄바꿈은 남기고 800자까지 받는다', () => {
@@ -16,5 +16,14 @@ describe('요약 요청', () => {
 		expect(() => readSummary('{"ko":"요약"}')).toThrow(ProviderFailure);
 		expect(() => readSummary('not json')).toThrow('알아볼 수 없는 응답');
 		expect(() => readSummary(undefined)).toThrow(ProviderFailure);
+	});
+});
+
+describe('내려간 모델', () => {
+	it('404 본문에서 권하는 모델을 꺼낸다', () => {
+		const body =
+			'{ "error": { "code": 404, "message": "This model models/gemini-2.0-flash is no longer available. Please update your code to use models/gemini-3.0-flash for the latest features." } }';
+		expect(suggestedModel(body)).toBe('gemini-3.0-flash');
+		expect(suggestedModel('{"error":{"code":404,"message":"not found"}}')).toBeNull();
 	});
 });
