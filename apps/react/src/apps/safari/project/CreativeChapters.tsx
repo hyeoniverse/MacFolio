@@ -1,7 +1,7 @@
 // HYEONIVERSE의 더 들려줄 장마다 다른 짜임 (Apple 제품 페이지처럼 큰 제목·넉넉한 여백·둥근 타일).
-// showcase: 왼쪽 항목을 고르면 오른쪽 큰 화면이 바뀐다 / stage: 데모마다 큰 무대 / bento: 크기가 다른 타일
+// showcase: 모든 기능을 화면이 붙은 타일로 펼친다 / stage: 데모마다 큰 무대 / bento: 크기가 다른 타일
 // dashboard: 숫자 타일과 큰 화면 / gauges: 점수 고리 / shield: 겹겹이 쌓인 방어 / palette: 짧은 글 타일
-import React, { useState } from 'react';
+import React from 'react';
 import type { ProjectChapter, ProjectFact, ProjectPoint } from '@/shared/profile';
 import { FactValue } from '@/apps/safari/project/parts';
 import { Clip, ZoomImage } from '@/apps/safari/project/CreativeParts';
@@ -81,38 +81,26 @@ export const ChapterFacts: React.FC<{ facts: ProjectFact[]; look?: ProjectChapte
 	);
 };
 
-/** showcase: 왼쪽 항목을 누르면 펼쳐지고, 오른쪽 큰 화면이 그 항목의 화면으로 바뀐다 */
-const Showcase: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
-	const [active, setActive] = useState(0);
-	const shown = points[active];
-	return (
-		<div className="cr-showcase" data-reveal="">
-			<ol className="cr-showcase-list">
-				{points.map((point, i) => (
-					<li key={point.title} data-active={i === active || undefined}>
-						<button type="button" aria-expanded={i === active} onClick={() => setActive(i)}>
-							<span className="cr-showcase-no">{String(i + 1).padStart(2, '0')}</span>
-							{point.title}
-						</button>
-						<div className="cr-showcase-body">
-							<p>{point.body}</p>
-						</div>
-					</li>
-				))}
-			</ol>
-			<div className="cr-showcase-stage">
-				{points.map((point, i) =>
-					point.image ? (
-						<figure key={point.title} data-active={i === active || undefined} aria-hidden={i !== active}>
-							<ZoomImage src={point.image} alt={`${point.title} 화면`} />
-						</figure>
-					) : null
-				)}
-				{!shown.image && <p className="cr-showcase-empty">{shown.title}</p>}
-			</div>
-		</div>
-	);
-};
+/** showcase: 기능을 한눈에 훑도록 모든 항목을 화면과 글이 함께 붙은 타일로 펼쳐 둔다 (누를 필요 없이 다 보인다) */
+const Showcase: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
+	<ol className="cr-showcase">
+		{points.map((point, i) => (
+			<li key={point.title} className="cr-tile" data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+				{/* 화면이 없는 항목도 같은 자리를 아이콘으로 채워 타일 높이를 맞춘다 */}
+				<figure className="cr-showcase-shot" data-icon={point.image ? undefined : ''}>
+					{point.image ? (
+						<ZoomImage src={point.image} alt={`${point.title} 화면`} />
+					) : (
+						<i className={`fa-solid ${point.icon ?? 'fa-table-columns'}`} aria-hidden="true" />
+					)}
+				</figure>
+				<p className="cr-eyebrow">{String(i + 1).padStart(2, '0')}</p>
+				<h3>{point.title}</h3>
+				<p>{point.body}</p>
+			</li>
+		))}
+	</ol>
+);
 
 /** stage: 데모마다 큰 무대 타일. 작은 머리말, 큰 제목, 짧은 글 다음에 데모와 실제 화면 */
 const Stage: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (

@@ -1,5 +1,5 @@
-// HYEONIVERSE (포트폴리오): 왼쪽에 제목과 차례가 붙어 있고, 오른쪽만 장(기능, 더 들려줄 장들, 진행 과정 또는 만든 방식, 맡은 일, 기술 사양)을 넘기며 내려간다.
-// 왼쪽 위에는 그 사이트의 마스코트 몽이가 서서, 지금 읽는 장에 따라 표정을 바꾼다
+// HYEONIVERSE (포트폴리오): Apple 제품 페이지처럼 위에 늘 붙은 로컬 내비(차례)와 가운데 정렬된 큰 첫머리,
+// 그 아래로 화면 폭을 다 쓰는 띠(장)가 번갈아 바탕을 바꾸며 내려간다. 첫머리의 마스코트 몽이는 지금 읽는 장에 따라 표정을 바꾼다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectChapter } from '@/shared/profile';
 import { Favicon, Links, Shot } from '@/apps/safari/project/parts';
@@ -69,8 +69,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	// 몽이를 누르면 하트가 퐁퐁 (하트마다 id와 날아갈 방향)
 	const [hearts, setHearts] = useState<{ id: number; dx: number }[]>([]);
 	const heartId = useRef(0);
-	const index = useRef<HTMLElement>(null);
-	const mini = useRef<HTMLElement>(null);
+	const index = useRef<HTMLOListElement>(null);
 	const root = useReveal<HTMLDivElement>();
 	const pet = () => {
 		const burst = Array.from({ length: 6 }, (_, i) => ({ id: (heartId.current += 1), dx: (i - 2.5) * 22 }));
@@ -107,9 +106,9 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					const index = parts.indexOf(entry.target as HTMLElement);
-					if (entry.isIntersecting) seen.add(index);
-					else seen.delete(index);
+					const at = parts.indexOf(entry.target as HTMLElement);
+					if (entry.isIntersecting) seen.add(at);
+					else seen.delete(at);
 				}
 				setChapter(seen.size ? Math.max(...seen) : -1);
 			},
@@ -119,22 +118,13 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 		parts.forEach((part) => observer.observe(part));
 		return () => observer.disconnect();
 	}, []);
-	// 좁은 창의 가로 차례 줄: 지금 읽는 장 칩이 줄 가운데쯤 오게 옆으로 민다
+	// 차례 줄이 창보다 길면, 지금 읽는 장이 줄 가운데쯤 오게 옆으로 민다
 	useEffect(() => {
-		const bar = mini.current;
+		const bar = index.current;
 		const item = bar?.querySelector<HTMLElement>('[aria-current]');
 		if (!bar || !item) return;
-		bar.scrollLeft = item.offsetLeft - (bar.clientWidth - item.offsetWidth) / 2;
-	}, [chapter]);
-	// 차례가 길어 칸 안에서 스크롤될 때, 지금 읽는 장이 차례 칸 밖으로 나가 있으면 보이는 곳으로 당긴다
-	useEffect(() => {
-		const nav = index.current;
-		const item = nav?.querySelector<HTMLElement>('[aria-current]');
-		if (!nav || !item) return;
-		const top = item.offsetTop - nav.offsetTop;
-		if (top < nav.scrollTop) nav.scrollTop = top;
-		else if (top + item.offsetHeight > nav.scrollTop + nav.clientHeight)
-			nav.scrollTop = top + item.offsetHeight - nav.clientHeight;
+		const left = item.offsetLeft - bar.offsetLeft - (bar.clientWidth - item.offsetWidth) / 2;
+		bar.scrollTo({ left, behavior: 'smooth' });
 	}, [chapter]);
 	const mood: Mood = petted ? 'happy' : moodOf(chapter, titles.length);
 	const open = (index: number) => {
@@ -144,15 +134,19 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 	const number = (index: number) => String(index + 1).padStart(2, '0');
 
 	return (
-		<div className="cr" ref={root}>
-			<div className="cr-side" data-reading={chapter >= 0 || undefined}>
-				<Favicon project={project} className="cr-icon" />
-				<p className="cr-name">{project.name}</p>
-				<h1>{project.tagline}</h1>
-				<p className="cr-lead">{project.description}</p>
-				<Links project={project} className="cr-links" />
-				<nav className="cr-index" aria-label="차례" ref={index}>
-					<ol>
+		<div className="cr" ref={root} data-reading={chapter >= 0 || undefined}>
+			{/* Apple 제품 페이지의 로컬 내비: 늘 위에 붙어 있고, 지금 읽는 장이 강조되며 읽은 만큼 밑줄이 찬다 */}
+			<nav className="cr-localnav" aria-label="차례">
+				<div className="cr-localnav-inner">
+					<button
+						type="button"
+						className="cr-localnav-title"
+						onClick={() => main.current?.closest('.cr')?.scrollIntoView({ behavior: 'smooth' })}
+					>
+						<Favicon project={project} className="cr-localnav-icon" />
+						{project.name}
+					</button>
+					<ol ref={index}>
 						{titles.map((title, i) => (
 							<li key={title}>
 								{/* 맺음말까지 내려와도 차례에서는 마지막 장을 읽는 중으로 둔다 */}
@@ -163,13 +157,20 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 										chapter === i || (i === titles.length - 1 && chapter >= titles.length) ? 'step' : undefined
 									}
 								>
-									<span>{number(i)}</span>
 									{title}
 								</button>
 							</li>
 						))}
 					</ol>
-				</nav>
+					{project.demo && (
+						<a className="cr-localnav-cta" href={project.demo} target="_blank" rel="noreferrer">
+							데모 보기
+						</a>
+					)}
+				</div>
+			</nav>
+
+			<header className="cr-hero">
 				<figure
 					className="cr-mascot"
 					aria-hidden="true"
@@ -190,23 +191,13 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 						/>
 					))}
 				</figure>
-			</div>
+				<p className="cr-name">{project.name}</p>
+				<h1>{project.tagline}</h1>
+				<p className="cr-lead">{project.description}</p>
+				<Links project={project} className="cr-links" />
+			</header>
 
 			<div className="cr-main" ref={main}>
-				{/* 좁은 창에서는 왼쪽 차례가 위로 지나가 버리므로, 내용 위에 붙는 가로 차례 줄로 지금 장을 늘 보여 준다 */}
-				<nav className="cr-mininav" aria-label="지금 읽는 장" ref={mini}>
-					{titles.map((title, i) => (
-						<button
-							key={title}
-							type="button"
-							onClick={() => open(i)}
-							aria-current={chapter === i || (i === titles.length - 1 && chapter >= titles.length) ? 'step' : undefined}
-						>
-							<span>{number(i)}</span>
-							{title}
-						</button>
-					))}
-				</nav>
 				<Shot project={project} className="cr-shot" />
 
 				<section className="cr-facts" aria-label="한눈에 보기" data-reveal="">
