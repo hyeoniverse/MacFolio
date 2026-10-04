@@ -191,17 +191,20 @@ test.describe('Safari', () => {
 		const access = panel.getByRole('region', { name: '권한과 설정', exact: true });
 		await access.getByRole('button', { name: '모르는 사람' }).click();
 		await expect(access.locator('.cm-invite').getByRole('status')).toContainText('계정을 지웁니다');
-		// AI 공급자: 기본(DeepL)이 키 오류로 세 번 실패하면 꺼지고, 요청은 다음 공급자가 받아 사용량이 오른다
-		// (요청마다 확률로 실패하는 부분은 시험에서 늘 성공하게 고정한다)
+		// AI 공급자: 공급자마다 성향이 정해져 있고, 응답은 그 확률대로 온다 (시험에서는 확률 실패를 끈다)
+		// 성공하면 사용량이 오르고, 키가 없는 공급자는 건너뛰며, 다음 달로 넘기면 사용량이 0부터
 		await page.evaluate(() => (Math.random = () => 0.99));
 		const providers = panel.locator('.cm-providers');
-		for (let i = 0; i < 3; i++) await providers.getByRole('button', { name: 'DeepL 키 오류로 실패시키기' }).click();
-		await expect(providers.locator('li').first()).toHaveAttribute('data-off');
+		await providers.getByRole('button', { name: '요청 보내기' }).click();
+		await expect(providers.getByRole('status')).toContainText('DeepL +1,800자 · DeepL에서 처리했습니다');
+		await expect(providers).toContainText('이번 달 483,800 / 500,000자');
+		await providers.getByRole('button', { name: '커버' }).click();
 		await providers.getByRole('button', { name: '요청 보내기' }).click();
 		await expect(providers.getByRole('status')).toContainText(
-			'DeepL 꺼짐 → Google Translate +1,800자 · Google Translate가 처리했습니다'
+			'NanoBanana 키 없음 → Hugging Face +1번 · Hugging Face에서 처리했습니다'
 		);
-		await expect(providers).toContainText('이번 달 62,800 / 500,000자');
+		await providers.getByRole('button', { name: '11월로 넘기기' }).click();
+		await expect(providers).toContainText('이번 달 0번');
 		// 테마: 프리셋을 고르면 미리보기 이름이 바뀌고, 다크로 바꿀 수 있다
 		const themes = panel.getByRole('region', { name: '테마' }).locator('.cd-themes');
 		await themes.getByRole('button', { name: 'Forest' }).click();

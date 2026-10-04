@@ -730,11 +730,10 @@
 }
 
 .cm-providers-name small {
-	overflow: hidden;
+	min-height: 2.9em;
 	color: var(--cr-muted);
 	font-size: 11px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	line-height: 1.45;
 }
 
 .cm-providers-bar {
@@ -776,9 +775,25 @@
 	opacity: 0.35;
 }
 
-.cm-providers-fail {
+/* 꺼진 공급자만 누를 수 있다. 자리는 늘 잡아 둔다 */
+.cm-providers-revive {
 	min-width: 64px !important;
-	font-variant-numeric: tabular-nums;
+}
+
+.cm-providers-revive:disabled {
+	visibility: hidden;
+}
+
+/* 공급자 이름 옆 성향 (무료 한도 직전, 자주 불안정 …) */
+.cm-providers-name em {
+	margin-left: 4px;
+	padding: 1px 7px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--sp-accent) 10%, transparent);
+	color: var(--sp-accent);
+	font-size: 10.5px;
+	font-style: normal;
+	font-weight: 600;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -794,6 +809,11 @@
 
 .cm-providers-list li[data-hit='fail'] {
 	border-color: #d64545;
+}
+
+.cm-providers-list li[data-hit='skip'] {
+	border-color: color-mix(in srgb, var(--cr-ink) 35%, transparent);
+	border-style: dashed;
 }
 
 /* 지나간 길이 두세 줄이 되어도 아래가 밀리지 않게 */
