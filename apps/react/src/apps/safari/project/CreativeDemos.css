@@ -33,9 +33,11 @@
 	font-size: 12px;
 }
 
-/* 두세 갈래 고르기 (KO/EN, 라이트/다크) */
+/* 두세 갈래 고르기 (KO/EN, 라이트/다크): 그리드 안에서도 늘어나지 않고 글자 폭만큼 */
 .cd-seg {
 	display: inline-flex;
+	justify-self: start;
+	width: max-content;
 	padding: 2px;
 	border-radius: 8px;
 	background-color: color-mix(in srgb, var(--cr-ink) 8%, transparent);
@@ -309,6 +311,27 @@
 }
 
 /* 음성 만들기 */
+.cd-voice-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 12px;
+}
+
+.cd-voice-head p {
+	flex: 1;
+	min-width: 16em;
+	margin: 0;
+	color: var(--cr-muted);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.cd-voice-head i {
+	margin-right: 4px;
+	color: var(--sp-accent);
+}
+
 .cd-voice-script {
 	display: grid;
 	gap: 6px;

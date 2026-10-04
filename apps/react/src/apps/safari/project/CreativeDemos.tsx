@@ -404,28 +404,35 @@ const Voice: React.FC = () => {
 	const read = made === 'Fish' && length ? Math.round((time / length) * caption.length) : 0;
 	const result =
 		made === null
-			? '공급자를 눌러 막아 보고 음성을 만들어 보세요'
+			? '공급자를 눌러 막아 두고 돌려 보세요. 막힌 곳은 건너뜁니다'
 			: made === 'none'
 				? '세 곳 모두 실패 · 음성 파일 없이 방문자 브라우저의 음성 합성이 대본을 읽습니다'
 				: `narration-01.mp3 · ${made}로 만들었습니다${made !== first ? ` (${first}가 ${lang === 'en' ? '영어라 건너뜀' : '실패해 넘어감'})` : ''}`;
 
 	return (
 		<div className="cd-voice">
-			<div className="cd-seg" role="group" aria-label="편집 언어">
-				{(['ko', 'en'] as const).map((value) => (
-					<button
-						key={value}
-						type="button"
-						aria-pressed={lang === value}
-						disabled={running}
-						onClick={() => {
-							setLang(value);
-							reset();
-						}}
-					>
-						{value.toUpperCase()}
-					</button>
-				))}
+			<div className="cd-voice-head">
+				<div className="cd-seg" role="group" aria-label="편집 언어">
+					{(['ko', 'en'] as const).map((value) => (
+						<button
+							key={value}
+							type="button"
+							aria-pressed={lang === value}
+							disabled={running}
+							onClick={() => {
+								setLang(value);
+								reset();
+							}}
+						>
+							{value.toUpperCase()}
+						</button>
+					))}
+				</div>
+				<p>
+					<i className="fa-solid fa-circle-info" />
+					대체 순서 시연입니다. 여기서 음성을 새로 만들지는 않고, 막아 둔 공급자는 실패로 처리해 다음 공급자로 넘깁니다.
+					Fish에서 끝나면 그 사이트가 Fish로 실제 만든 이 대본의 음성을 들려 드립니다.
+				</p>
 			</div>
 			<dl className="cd-voice-script" data-locked={running || undefined}>
 				<div>
@@ -530,7 +537,7 @@ const Voice: React.FC = () => {
 			)}
 			<div className="cd-voice-foot">
 				<button type="button" className="cd-primary" onClick={make} disabled={running}>
-					<i className="fa-solid fa-wand-magic-sparkles" /> 음성 만들기
+					<i className="fa-solid fa-wand-magic-sparkles" /> 대체 순서 돌려 보기
 				</button>
 				<p role="status">{result}</p>
 			</div>

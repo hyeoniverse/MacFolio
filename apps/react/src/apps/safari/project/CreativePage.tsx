@@ -145,6 +145,8 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 		if (!body || !nav) return;
 		return onScrollFrame(body, (scroller) => {
 			const view = viewOf(scroller);
+			// 왼쪽 칸은 스크롤하는 칸 높이 안에 들어가야 차례 아래가 가려지지 않는다
+			body.parentElement?.style.setProperty('--view', `${Math.round(view.height)}px`);
 			const middle = view.top + view.height / 2;
 			const buttons = nav.querySelectorAll<HTMLElement>('button');
 			body.querySelectorAll<HTMLElement>('.cr-chapter').forEach((chapterNode, i) => {
@@ -177,6 +179,16 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 		parts.forEach((part) => observer.observe(part));
 		return () => observer.disconnect();
 	}, []);
+	// 차례가 길어 칸 안에서 스크롤될 때, 지금 읽는 장이 차례 칸 밖으로 나가 있으면 보이는 곳으로 당긴다
+	useEffect(() => {
+		const nav = index.current;
+		const item = nav?.querySelector<HTMLElement>('[aria-current]');
+		if (!nav || !item) return;
+		const top = item.offsetTop - nav.offsetTop;
+		if (top < nav.scrollTop) nav.scrollTop = top;
+		else if (top + item.offsetHeight > nav.scrollTop + nav.clientHeight)
+			nav.scrollTop = top + item.offsetHeight - nav.clientHeight;
+	}, [chapter]);
 	const mood: Mood = petted ? 'happy' : moodOf(chapter, titles.length);
 	const open = (index: number) => {
 		const chapters = main.current?.querySelectorAll<HTMLElement>('.cr-chapter');
