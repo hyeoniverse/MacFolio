@@ -4,7 +4,7 @@ import '@/desktop/dock/Dock.css';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 
 import { env } from '@/shared/config/env';
-import { APP_MANIFEST, DOCK_APPS, type AppName } from '@/apps/manifest';
+import { APP_MANIFEST, DOCK_APPS, LAUNCHPAD_APPS, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
 
 const imgUrl = env.imageUrl;
@@ -17,15 +17,13 @@ const Dock: React.FC = () => {
 	// Dock에 다 들어가지 않는 앱은 Launchpad로 보낸다 (아이콘 하나당 100px, 양옆 여백 300px)
 	const { width } = useViewport();
 	const maxItems = Math.floor((width - 300) / 100);
-	const hiddenItems: AppName[] = DOCK_APPS.length > maxItems ? DOCK_APPS.slice(maxItems) : [];
+	const overflow: AppName[] = DOCK_APPS.length > maxItems ? DOCK_APPS.slice(maxItems) : [];
+	// Launchpad: Dock에 들어가지 않은 앱 + Dock에 고정하지 않은 앱 (manifest.ts의 inLaunchpad)
+	const hiddenItems: AppName[] = [...overflow, ...LAUNCHPAD_APPS];
+	// macOS처럼 고정하지 않은 앱도 실행 중에는 Dock 끝에 나타난다
+	const runningExtras = LAUNCHPAD_APPS.filter((name) => isActive(name));
 
-	const handleLaunchpadClick = () => {
-		if (hiddenItems.length > 0) {
-			setIsLaunchpadOpen(!isLaunchpadOpen); // 숨겨진 앱이 있을 때만 Launchpad 모달 열고 닫기
-		} else {
-			setIsLaunchpadOpen(false); // 숨겨진 앱이 없으면 모달을 닫음
-		}
-	};
+	const handleLaunchpadClick = () => setIsLaunchpadOpen(!isLaunchpadOpen);
 
 	const closeLaunchpad = () => {
 		setIsLaunchpadOpen(false); // 모달 닫기
@@ -57,6 +55,16 @@ const Dock: React.FC = () => {
 								/>
 							)
 					)}
+					{runningExtras.map((appName) => (
+						<DockItem
+							key={appName}
+							label={appName}
+							icon={iconOf(appName)}
+							isActive
+							isHidden={false}
+							onClick={() => handleAppOpen(appName)}
+						/>
+					))}
 				</div>
 				<div className="dock-left-end">
 					<DockItem

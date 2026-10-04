@@ -83,7 +83,9 @@ test.describe('Safari', () => {
 		const portfolio = safari.getByRole('tabpanel').getByRole('article', { name: 'HYEONIVERSE' });
 		await expect(portfolio.getByRole('heading', { level: 1 })).toHaveText('작업물과 글을, 움직이는 화면으로.');
 		await expect(safari.locator('.safari-address')).toHaveText('www.hyeoniverse.com');
-		await expect(portfolio.getByRole('link', { name: '데모 보기' }).first()).toHaveAttribute(
+		// 데모를 창으로 띄우는 앱이 있어서, 여기서 열기와 새 탭에서 열기가 함께 있다
+		await expect(portfolio.getByRole('button', { name: '여기서 열기' }).first()).toBeVisible();
+		await expect(portfolio.getByRole('link', { name: '새 탭에서 열기' }).first()).toHaveAttribute(
 			'href',
 			'https://www.hyeoniverse.com'
 		);

@@ -1,7 +1,9 @@
 // 앱 목록의 단일 출처. React에 의존하지 않는 정보만 둔다.
-// 컴포넌트 연결은 registry.tsx에서 한다.
+// 컴포넌트 연결은 registry.tsx에서 한다. 프로젝트 앱은 shared/profile.ts의 PROJECTS에서 만든다.
+import { PROJECTS, type Project, type ProjectAppInfo } from '@/shared/profile';
 
-export const APP_NAMES = [
+/** 이 사이트에 들어 있는 앱 (프로젝트 앱은 아래에서 PROJECTS로 만든다) */
+const BUILTIN_APP_NAMES = [
 	'finder',
 	'music',
 	'safari',
@@ -10,7 +12,6 @@ export const APP_NAMES = [
 	'memo',
 	'github',
 	'mail',
-	'sproutfarm',
 	'share',
 	'terminal',
 	'settings',
@@ -18,7 +19,29 @@ export const APP_NAMES = [
 	'bin',
 ] as const;
 
-export type AppName = (typeof APP_NAMES)[number];
+export type BuiltinAppName = (typeof BUILTIN_APP_NAMES)[number];
+
+declare const projectApp: unique symbol;
+/** 프로젝트 앱의 이름 = 그 프로젝트의 id. 목록은 PROJECTS가 정하므로 문자열에 표시만 붙여 내장 앱과 구별한다 */
+export type ProjectAppName = string & { readonly [projectApp]: true };
+
+export type AppName = BuiltinAppName | ProjectAppName;
+
+/** 데모를 창으로 띄우는 프로젝트 (shared/profile.ts의 app, PROJECTS 순서) */
+export const PROJECT_APPS = PROJECTS.filter((project): project is Project & { app: ProjectAppInfo; demo: string } =>
+	Boolean(project.app && project.demo)
+);
+
+/** 프로젝트 id가 앱이면 그 앱 이름 */
+export const projectAppName = (id: string): ProjectAppName | null =>
+	PROJECT_APPS.some((project) => project.id === id) ? (id as ProjectAppName) : null;
+
+/** 모든 앱. 프로젝트 앱은 메일 다음에 PROJECTS 순서로 */
+export const APP_NAMES: AppName[] = [
+	...BUILTIN_APP_NAMES.slice(0, BUILTIN_APP_NAMES.indexOf('mail') + 1),
+	...PROJECT_APPS.map((project) => project.id as ProjectAppName),
+	...BUILTIN_APP_NAMES.slice(BUILTIN_APP_NAMES.indexOf('mail') + 1),
+];
 
 export interface AppManifest {
 	/** 화면에 보여줄 이름 (터미널 open 명령에서도 쓴다) */
@@ -27,6 +50,8 @@ export interface AppManifest {
 	icon: string;
 	/** Dock 왼쪽 영역에 표시할지 여부. bin은 오른쪽에 따로 표시한다. */
 	inDock: boolean;
+	/** Dock에 고정하지 않고 Launchpad에 늘 두는 앱 (실행 중에는 Dock에도 나타난다) */
+	inLaunchpad?: boolean;
 	/** 처음 화면에 들어왔을 때 실행 중인 상태로 시작할지 여부 */
 	runningAtStart?: boolean;
 	/** Dock 아이콘의 둥근 모서리를 없앨지 여부 */
@@ -39,7 +64,7 @@ export interface AppManifest {
 	action?: { type: 'link'; url: string } | { type: 'share' };
 }
 
-export const APP_MANIFEST: Record<AppName, AppManifest> = {
+const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 	// 사이트의 문서·프로젝트·블로그 글·앱을 파일처럼 둘러본다. 휴대폰에서는 iOS처럼 '파일'
 	finder: {
 		label: 'Finder',
@@ -55,13 +80,6 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	memo: { label: '메모', icon: 'memo.png', inDock: true, windowSize: { width: 900, height: 600 } },
 	github: { label: 'GitHub', icon: 'github.png', inDock: true },
 	mail: { label: '메일', icon: 'mail.png', inDock: true, windowSize: { width: 900, height: 560 } },
-	// 배포한 게임을 창 안에 띄운다. 게임에 모바일 모드가 생겨 휴대폰에서도 연다. 창은 게임 화면(16:9) + 제목 막대
-	sproutfarm: {
-		label: '새싹 농장',
-		icon: 'projects/sproutfarm/icon.png',
-		inDock: true,
-		windowSize: { width: 960, height: 569 },
-	},
 	share: { label: '공유', icon: 'share.svg', inDock: true, action: { type: 'share' } },
 	// 휴대폰 키보드로 명령어를 치기는 불편해서, 모바일에서는 같은 명령을 눌러서 실행하는 '단축어'로 보여준다
 	terminal: {
@@ -77,5 +95,28 @@ export const APP_MANIFEST: Record<AppName, AppManifest> = {
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false },
 };
 
+/**
+ * 앱마다의 정보. 프로젝트 앱은 배포한 사이트를 창 안에 띄운다 (apps/project/ProjectApp.tsx). Safari의 프로젝트 페이지에서도 연다.
+ * Dock이 넘치지 않게 따로 정하지 않으면 고정하지 않고 Launchpad에 둔다 (실행 중에는 Dock에 나타난다)
+ */
+export const APP_MANIFEST = {
+	...BUILTIN_MANIFEST,
+	...Object.fromEntries(
+		PROJECT_APPS.map(({ id, app }) => [
+			id,
+			{
+				label: app.label,
+				icon: app.icon,
+				inDock: Boolean(app.inDock),
+				inLaunchpad: !app.inDock,
+				windowSize: app.windowSize,
+			} satisfies AppManifest,
+		])
+	),
+} as Record<AppName, AppManifest>;
+
 /** Dock 왼쪽 영역에 표시할 앱 (APP_NAMES 순서) */
 export const DOCK_APPS = APP_NAMES.filter((name) => APP_MANIFEST[name].inDock);
+
+/** Launchpad에 늘 있는 앱 (APP_NAMES 순서) */
+export const LAUNCHPAD_APPS = APP_NAMES.filter((name) => APP_MANIFEST[name].inLaunchpad);

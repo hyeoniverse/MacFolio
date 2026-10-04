@@ -114,6 +114,22 @@ export interface ProjectChapter {
  */
 export type ProjectLook = 'editorial' | 'playful' | 'minimal' | 'game' | 'terminal' | 'product' | 'creative';
 
+/** 프로젝트 앱의 모양 (Project.app) */
+export interface ProjectAppInfo {
+	/** Dock·Launchpad에 보일 짧은 이름 */
+	label: string;
+	/** 아이콘 (env.imageUrl 기준 경로, 예: projects/newpick/app-icon.png) */
+	icon: string;
+	/** Dock에 고정할지. 아니면 Launchpad에 두고 실행 중에만 Dock에 나타난다 */
+	inDock?: boolean;
+	/** 게임이면 "여기서 플레이", 아니면 "여기서 열기" */
+	play?: boolean;
+	/** 사이트가 뜨기 전 창 바탕 (게임은 검은 화면) */
+	tone?: 'light' | 'dark';
+	/** 처음 열 때 창 크기 */
+	windowSize?: { width: number; height: number };
+}
+
 export interface Project {
 	id: string;
 	name: string;
@@ -160,6 +176,11 @@ export interface Project {
 	demo?: string;
 	/** 앱 아이콘 (public/imgs/projects/{id}/icon.png). 없으면 기본 모양을 쓴다 */
 	icon?: string;
+	/**
+	 * 이 사이트 안에서 데모를 창으로 띄우는 앱 (apps/project/ProjectApp.tsx). 있으면 앱 목록(apps/manifest.ts)에 이 id로
+	 * 들어가 Launchpad·터미널 open·Safari의 "여기서 열기"에 나온다. 데모 주소(demo)가 있어야 한다
+	 */
+	app?: ProjectAppInfo;
 	/** 주요 기능 위에 둘 그림 (public/imgs/projects/{id}/scene.png) */
 	art?: string;
 	/** 글자 로고 (public/imgs/projects/{id}/logo.png) */
@@ -839,6 +860,7 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/hyeoniverse/web-portfolio-hyeoniverse',
 		demo: 'https://www.hyeoniverse.com',
 		icon: projectImage('hyeoniverse', 'icon.svg'),
+		app: { label: 'HYEONIVERSE', icon: 'projects/hyeoniverse/icon.svg', windowSize: { width: 1080, height: 700 } },
 		image: projectImage('hyeoniverse', 'screenshot.jpg'),
 	},
 	{
@@ -1062,6 +1084,7 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/Devcourse-NewPick/front',
 		demo: 'https://newpick-tan.vercel.app',
 		icon: projectImage('newpick', 'icon.svg'),
+		app: { label: 'NewPick', icon: 'projects/newpick/app-icon.png', windowSize: { width: 1080, height: 700 } },
 		logo: projectImage('newpick', 'logo.svg'),
 		image: projectImage('newpick', 'screenshot.jpg'),
 	},
@@ -1215,6 +1238,7 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/hyeoniverse/QRU',
 		demo: 'https://qryou-app.web.app',
 		icon: projectImage('qru', 'icon.png'),
+		app: { label: 'QRU', icon: 'projects/qru/app-icon.png', windowSize: { width: 1080, height: 700 } },
 		image: projectImage('qru', 'screenshot.jpg'),
 	},
 	{
@@ -1366,6 +1390,7 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/Devcourse-WhatToDo/todo-front',
 		demo: 'https://what-to-do-chi.vercel.app/',
 		icon: projectImage('whattodo', 'icon.png'),
+		app: { label: 'WTD', icon: 'projects/whattodo/app-icon.png', windowSize: { width: 1080, height: 700 } },
 		image: projectImage('whattodo', 'screenshot.jpg'),
 	},
 	{
@@ -1442,6 +1467,15 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/hyeoniverse/SproutFarm',
 		demo: 'https://sprout-farm-beta.vercel.app',
 		icon: projectImage('sproutfarm', 'icon.png'),
+		app: {
+			label: '새싹 농장',
+			icon: 'projects/sproutfarm/icon.png',
+			inDock: true,
+			play: true,
+			tone: 'dark',
+			// 게임 화면(16:9) + 제목 막대
+			windowSize: { width: 960, height: 569 },
+		},
 		art: projectImage('sproutfarm', 'scene.png'),
 		credits: [
 			{
