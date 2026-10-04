@@ -685,6 +685,17 @@
 		0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* 클립 위 번호 띠: 여기를 길게 눌러 클립을 끈다 (파형 쪽은 구간 고르기) */
+.cd-clip::before {
+	content: '';
+	position: absolute;
+	inset: 0 0 auto;
+	height: 16px;
+	border-radius: 6px 6px 0 0;
+	background-color: color-mix(in srgb, var(--sp-accent) 14%, transparent);
+	cursor: grab;
+}
+
 /* 클립 번호 */
 .cd-clip-no {
 	position: absolute;
