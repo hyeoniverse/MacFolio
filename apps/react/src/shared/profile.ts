@@ -860,7 +860,7 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/hyeoniverse/web-portfolio-hyeoniverse',
 		demo: 'https://www.hyeoniverse.com',
 		icon: projectImage('hyeoniverse', 'icon.svg'),
-		app: { label: 'HYEONIVERSE', icon: 'projects/hyeoniverse/icon.svg', windowSize: { width: 1080, height: 700 } },
+		app: { label: 'HYEONIVERSE', icon: 'projects/hyeoniverse/app-icon.png', windowSize: { width: 1080, height: 700 } },
 		image: projectImage('hyeoniverse', 'screenshot.jpg'),
 	},
 	{
