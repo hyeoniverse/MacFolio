@@ -1,10 +1,14 @@
-/* HYEONIVERSE: 그 사이트처럼 큰 세리프와 마젠타, 다크 모드는 그 사이트의 어두운 바탕. 왼쪽은 붙어 있고 오른쪽만 내려간다 */
+/* HYEONIVERSE: 그 사이트처럼 큰 세리프와 마젠타, 다크 모드는 그 사이트의 어두운 바탕.
+   Apple 제품 페이지처럼 위에 붙은 로컬 내비, 가운데 정렬된 큰 첫머리, 화면 폭을 다 쓰는 띠가 번갈아 내려간다 */
 .sp[data-look='creative'] {
 	--cr-bg: #f6f5f3;
 	--cr-ink: #1c1b1a;
 	--cr-muted: #6b665f;
 	--cr-line: #dcd8d1;
 	--sp-accent: #d40063;
+	/* 띠가 바뀌는 바탕과, 그 띠 위에 뜨는 타일 */
+	--cr-band: #ecebe8;
+	--cr-raised: #ffffff;
 	/* 금속 질감(화면 테와 차례 표시만): 크롬은 위아래로 빛이 갈리는 은색, 테는 비스듬히 빛이 도는 은색 */
 	--cr-sheen: conic-gradient(from 210deg, #f6f7f9, #a9aeb6, #ffffff, #8a9099, #e8eaee, #9ea3ab, #f6f7f9);
 	background-color: var(--cr-bg);
@@ -17,176 +21,189 @@
 	--cr-muted: #a8a39b;
 	--cr-line: #3a3836;
 	--sp-accent: #f74d96;
+	--cr-band: #242321;
+	--cr-raised: #2e2c2a;
 	--cr-sheen: conic-gradient(from 210deg, #5b6068, #2a2c31, #b9bec6, #34373d, #8b9099, #2f3237, #5b6068);
 }
 
 .cr {
-	display: grid;
-	/* 왼쪽 차례는 좁게 붙여 두고, 오른쪽 내용에 폭을 몰아준다 */
-	grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-	gap: 56px;
-	max-width: 1320px;
-	margin: 0 auto;
-	padding: 0 40px;
+	/* 내용 폭은 1080px까지, 좁으면 양옆 24px (padding의 %는 띠 폭 기준) */
+	--cr-pad: max(24px, calc((100% - 1080px) / 2));
 	text-align: left;
 }
 
-.cr :is(h1, h2, h3, .cr-no, .cr-facts strong, dt, .cr-foot p) {
+.cr :is(h1, h2, h3, .cr-facts strong, dt, .cr-foot p) {
 	font-family: var(--sp-serif);
 }
 
-/* 왼쪽: 화면에 붙어 있다 */
-/* 아이콘과 몽이는 늘 보인다. 장을 읽기 시작하면(data-reading) 소개 글과 링크를 접어 차례까지 한 화면에 들어오게 한다 */
-.cr-side {
+/* 로컬 내비: 늘 위에 붙어 있고, 뒤 내용이 흐리게 비친다. 왼쪽 이름, 가운데 차례, 오른쪽 데모 단추 */
+.cr-localnav {
 	position: sticky;
 	top: 0;
-	align-self: start;
-	padding: 48px 0;
+	z-index: 10;
+	border-bottom: 1px solid var(--cr-line);
+	background-color: color-mix(in srgb, var(--cr-bg) 80%, transparent);
+	-webkit-backdrop-filter: saturate(180%) blur(20px);
+	backdrop-filter: saturate(180%) blur(20px);
 }
 
-.cr-side h1 {
-	transition: font-size 0.4s var(--ease-out);
-}
-
-.cr-side :is(.cr-lead, .cr-links) {
-	max-height: 260px;
-	overflow: hidden;
-	transition:
-		max-height 0.45s var(--ease-out),
-		opacity 0.3s,
-		margin 0.45s var(--ease-out);
-}
-
-/* 왼쪽 칸이 붙어 있는 넓은 창에서만 접는다 (좁은 창에서는 위에서 아래로 그냥 흐른다) */
-@container (min-width: 761px) {
-	/* 왼쪽 칸은 스크롤하는 칸 높이(--view) 안에 머물고, 차례가 길면 차례만 그 안에서 스크롤된다 */
-	.cr-side {
-		display: flex;
-		flex-direction: column;
-		max-height: var(--view, 100vh);
-		padding: 40px 0 20px;
-	}
-
-	.cr-side > * {
-		flex-shrink: 0;
-	}
-
-	.cr-side > .cr-index {
-		flex: 1 1 auto;
-		min-height: 120px;
-		overflow-y: auto;
-		overscroll-behavior: contain;
-		scrollbar-width: thin;
-	}
-
-	.cr-side[data-reading] .cr-index button {
-		padding: 9px 0;
-	}
-
-	.cr-side[data-reading] :is(.cr-lead, .cr-links) {
-		max-height: 0;
-		margin-top: 0;
-		opacity: 0;
-	}
-
-	.cr-side[data-reading] h1 {
-		font-size: clamp(22px, 2.4cqi, 28px);
-	}
-}
-
-.cr-icon {
-	width: 52px;
+.cr-localnav-inner {
+	display: flex;
+	gap: 20px;
+	align-items: center;
+	max-width: 1200px;
 	height: 52px;
-	border-radius: 13px;
-	box-shadow: 0 8px 24px rgba(212, 0, 99, 0.35);
+	margin: 0 auto;
+	padding: 0 24px;
+}
+
+.cr-localnav-title {
+	display: flex;
+	flex: none;
+	gap: 8px;
+	align-items: center;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--cr-ink);
+	font: inherit;
+	font-family: var(--sp-serif);
+	font-size: 19px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	cursor: pointer;
+}
+
+.cr-localnav-icon {
+	width: 24px;
+	height: 24px;
+	border-radius: 6px;
+}
+
+/* 차례: 창보다 길면 옆으로 밀린다 (지금 장은 스크립트가 가운데로 당긴다) */
+.cr-localnav ol {
+	display: flex;
+	flex: 1 1 auto;
+	gap: 2px;
+	min-width: 0;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow-x: auto;
+	list-style: none;
+	scrollbar-width: none;
+	mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+}
+
+.cr-localnav ol::-webkit-scrollbar {
+	display: none;
+}
+
+.cr-localnav li {
+	flex: none;
+}
+
+/* 차례가 남으면 오른쪽으로 붙이고, 넘치면 처음부터 옆으로 밀린다 (justify-content: flex-end는 넘칠 때 앞이 잘린다) */
+.cr-localnav li:first-child {
+	margin-left: auto;
+}
+
+.cr-localnav ol button {
+	position: relative;
+	height: 100%;
+	padding: 0 10px;
+	border: none;
+	background: none;
+	color: var(--cr-muted);
+	font: inherit;
+	font-size: 13px;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: color var(--duration-fast) var(--ease-out);
+}
+
+.cr-localnav ol button:hover {
+	color: var(--cr-ink);
+}
+
+.cr-localnav ol button[aria-current] {
+	color: var(--cr-ink);
+	font-weight: 600;
+}
+
+/* 장을 읽은 만큼 차례 밑줄이 강조색으로 찬다 (--read는 스크립트가 정한다) */
+.cr-localnav ol button::after {
+	content: '';
+	position: absolute;
+	bottom: -1px;
+	left: 10px;
+	width: calc((100% - 20px) * var(--read, 0));
+	height: 2px;
+	background-color: var(--sp-accent);
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.cr-localnav ol button[aria-current]::after {
+	opacity: 1;
+}
+
+.sp .cr-localnav-cta {
+	flex: none;
+	padding: 5px 14px;
+	border-radius: 999px;
+	background-color: var(--sp-accent);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+/* 첫머리: 가운데 정렬, 몽이 아래로 큰 제목과 소개, 링크 */
+.cr-hero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 56px var(--cr-pad) 48px;
+	text-align: center;
 }
 
 .cr-name {
-	margin-top: 20px;
-	color: var(--cr-muted);
-	font-size: 12px;
-	letter-spacing: 0.28em;
+	margin-top: 8px;
+	color: var(--sp-accent);
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.2em;
 	text-transform: uppercase;
 }
 
-.cr-side h1 {
-	margin-top: 10px;
-	font-size: clamp(26px, 3.2cqi, 38px);
+.cr-hero h1 {
+	max-width: 14em;
+	margin-top: 12px;
+	font-size: clamp(36px, 6.4cqi, 72px);
 	font-weight: 700;
-	letter-spacing: -0.03em;
-	line-height: 1.12;
+	letter-spacing: -0.035em;
+	line-height: 1.06;
+	text-wrap: balance;
 }
 
 .cr-lead {
-	margin-top: 16px;
+	max-width: 36em;
+	margin-top: 20px;
 	color: var(--cr-muted);
-	font-size: 15px;
-	line-height: 1.65;
+	font-size: clamp(16px, 1.7cqi, 20px);
+	line-height: 1.6;
+	text-wrap: pretty;
 }
 
 .cr-links {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
+	justify-content: center;
 	gap: 10px 22px;
-	margin-top: 22px;
-	font-size: 15px;
-}
-
-.cr-index {
-	margin-top: 36px;
-	border-top: 1px solid var(--cr-line);
-}
-
-.cr-index ol {
-	list-style: none;
-}
-
-.cr-index button {
-	display: flex;
-	gap: 14px;
-	width: 100%;
-	padding: 12px 0;
-	border: none;
-	border-bottom: 1px solid var(--cr-line);
-	background: none;
-	color: var(--cr-ink);
-	font: inherit;
-	font-size: 15px;
-	text-align: left;
-	cursor: pointer;
-	transition: color var(--duration-fast) var(--ease-out);
-}
-
-.cr-index button:hover {
-	color: var(--sp-accent);
-}
-
-.cr-index button[aria-current] {
-	color: var(--sp-accent);
-	font-weight: 700;
-}
-
-.cr-index span {
-	color: var(--sp-accent);
-	font-family: var(--sp-mono);
-	font-size: 12px;
-	line-height: 22px;
-}
-
-/* 장을 읽은 만큼 차례 아래 줄이 강조색으로 찬다 (--read는 스크립트가 정한다) */
-.cr-index button {
-	position: relative;
-}
-
-.cr-index button::before {
-	content: '';
-	position: absolute;
-	bottom: -1px;
-	left: 0;
-	width: calc(var(--read, 0) * 100%);
-	height: 2px;
-	background-color: var(--sp-accent);
+	margin-top: 26px;
+	font-size: 16px;
 }
 
 /* 몽이를 누르면 하트가 퐁퐁 솟고, 몽이는 한 번 뛴다 */
@@ -238,10 +255,7 @@
 /* 몽이: 바닥 그림자 위에서 장에 따라 표정을 바꾼다 (표정 그림을 겹쳐 두고 하나만 보인다) */
 .cr-mascot {
 	display: grid;
-	position: absolute;
-	/* 뛰거나 표정이 바뀔 때 머리가 화면 위로 잘리지 않게 넉넉히 내려 둔다 */
-	top: 26px;
-	right: 0;
+	position: relative;
 	justify-items: center;
 	width: 140px;
 	margin: 0;
@@ -294,84 +308,103 @@
 	}
 }
 
-/* 오른쪽: 장을 넘기며 내려간다 */
+/* 본문: 장마다 화면 폭을 다 쓰는 띠, 내용은 가운데 1080px 안에 */
 .cr-main {
-	padding: 48px 0 0;
+	padding: 0;
 }
 
 /* 화면은 금속 테 안에 */
 .cr-shot {
+	max-width: 1080px;
+	margin: 0 auto;
+	margin-inline: var(--cr-pad);
 	overflow: hidden;
 	padding: 6px;
-	border-radius: 10px;
+	border-radius: 14px;
 	background: var(--cr-sheen);
 	box-shadow:
 		0 1px 0 rgba(255, 255, 255, 0.8) inset,
-		0 18px 40px rgba(0, 0, 0, 0.18);
-}
-
-.cr-shot img {
-	border-radius: 5px;
+		0 30px 60px rgba(0, 0, 0, 0.18);
 }
 
 .cr-shot img {
 	display: block;
 	width: 100%;
+	border-radius: 9px;
 }
 
+/* 한눈에 보기: 큰 숫자 셋을 가운데 줄로 */
 .cr-facts {
-	padding: 28px 0;
-	border-bottom: 1px solid var(--cr-line);
+	padding: 72px var(--cr-pad) 96px;
+	text-align: center;
 }
 
 .cr-facts > p {
 	color: var(--cr-muted);
-	font-size: 13px;
+	font-size: 15px;
 }
 
 .cr-facts ul {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 16px;
-	margin-top: 14px;
+	gap: 24px;
+	margin-top: 28px;
 	list-style: none;
 }
 
 .cr-facts li {
 	display: flex;
 	flex-direction: column;
+	gap: 6px;
 }
 
 .cr-facts strong {
 	color: var(--sp-accent);
-	font-size: 34px;
+	font-size: clamp(36px, 5cqi, 56px);
 	font-weight: 700;
-	line-height: 1.1;
+	letter-spacing: -0.02em;
+	line-height: 1.05;
 }
 
 .cr-facts span {
 	color: var(--cr-muted);
-	font-size: 13px;
+	font-size: 14px;
 }
 
+/* 장: 띠가 번갈아 바탕을 바꾸고, 띠 위 타일은 떠 보이는 색으로 */
 .cr-chapter {
-	padding: 56px 0;
-	border-bottom: 1px solid var(--cr-line);
-	scroll-margin-top: 16px;
+	padding: 112px var(--cr-pad);
+	scroll-margin-top: 52px;
 }
 
+.cr-chapter:nth-of-type(even) {
+	--cr-tile: var(--cr-raised);
+	background-color: var(--cr-band);
+}
+
+/* 장 머리: 작은 번호, 큰 제목, 첫머리 글을 가운데에 */
 .cr-no {
 	color: var(--sp-accent);
-	font-size: 56px;
+	font-family: var(--sp-mono);
+	font-size: 14px;
 	font-weight: 700;
-	line-height: 1;
+	letter-spacing: 0.12em;
+	text-align: center;
 }
 
 .cr-chapter h2 {
-	margin: 8px 0 28px;
-	font-size: clamp(26px, 3.6cqi, 36px);
+	max-width: 16em;
+	margin: 10px auto 56px;
+	font-size: clamp(34px, 5.4cqi, 60px);
 	font-weight: 700;
-	letter-spacing: -0.02em;
+	letter-spacing: -0.03em;
+	line-height: 1.08;
+	text-align: center;
+	text-wrap: balance;
+}
+
+.cr-chapter h2:has(+ .cr-chapter-lead) {
+	margin-bottom: 20px;
 }
 
 .cr-features {
@@ -1214,26 +1247,30 @@
 
 /* 더 들려줄 장: 첫머리 글, 숫자 한 줄, 그림 */
 .cr-chapter-lead {
-	max-width: 46em;
-	margin: -12px 0 28px;
-	font-size: 17px;
-	line-height: 1.7;
+	max-width: 38em;
+	margin: 0 auto 56px;
+	color: var(--cr-muted);
+	font-size: clamp(17px, 1.8cqi, 21px);
+	line-height: 1.6;
+	text-align: center;
+	text-wrap: pretty;
 }
 
 .cr-chapter-facts {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 	gap: 16px;
-	margin-bottom: 32px;
-	padding: 20px 0;
-	border-block: 1px solid var(--cr-line);
+	margin-bottom: 56px;
+	padding: 0;
 	list-style: none;
+	text-align: center;
 }
 
 .cr-chapter-facts li {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	align-items: center;
+	gap: 4px;
 }
 
 .cr-chapter-facts strong {
@@ -1366,13 +1403,20 @@
 }
 
 .cr-foot {
-	padding: 56px 0 72px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 120px var(--cr-pad);
+	text-align: center;
 }
 
 .cr-foot p {
-	font-size: clamp(24px, 4cqi, 36px);
+	max-width: 16em;
+	font-size: clamp(30px, 5cqi, 52px);
 	font-weight: 700;
-	letter-spacing: -0.02em;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+	text-wrap: balance;
 }
 
 @container (max-width: 760px) {
@@ -1385,14 +1429,44 @@
 
 @container (max-width: 760px) {
 	.cr {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 0;
-		padding: 0 20px;
+		--cr-pad: 20px;
 	}
 
-	.cr-side {
-		position: relative;
-		padding-bottom: 8px;
+	/* 좁은 창: 내비는 이름과 차례만, 차례는 옆으로 밀어 본다 */
+	.cr-localnav-inner {
+		gap: 8px;
+		height: 48px;
+		padding: 0 12px 0 20px;
+	}
+
+	.cr-localnav-title {
+		font-size: 16px;
+	}
+
+	.cr-localnav-icon,
+	.cr-localnav-cta {
+		display: none;
+	}
+
+	.cr-hero {
+		padding-top: 36px;
+	}
+
+	.cr-facts {
+		padding: 48px var(--cr-pad) 64px;
+	}
+
+	.cr-chapter {
+		padding: 72px var(--cr-pad);
+		scroll-margin-top: 48px;
+	}
+
+	.cr-chapter h2 {
+		margin-bottom: 36px;
+	}
+
+	.cr-chapter-lead {
+		margin-bottom: 36px;
 	}
 
 	.cr-feature-text,
@@ -1421,57 +1495,5 @@
 
 	.cr-mascot[data-mood='happy'] img[data-on='true'] {
 		animation: none;
-	}
-}
-
-/* 좁은 창의 가로 차례 줄: 내용 위에 붙어 지금 읽는 장을 늘 보여 준다 (넓은 창에서는 왼쪽 차례가 그 일을 한다) */
-.cr-mininav {
-	display: none;
-}
-
-@container (max-width: 760px) {
-	.cr-mininav {
-		display: flex;
-		position: sticky;
-		top: 0;
-		z-index: 5;
-		gap: 6px;
-		margin: 0 -20px 8px;
-		padding: 10px 20px;
-		overflow-x: auto;
-		background-color: color-mix(in srgb, var(--cr-bg) 86%, transparent);
-		-webkit-backdrop-filter: saturate(180%) blur(16px);
-		backdrop-filter: saturate(180%) blur(16px);
-		border-bottom: 1px solid var(--cr-line);
-		scroll-behavior: smooth;
-		scrollbar-width: none;
-	}
-
-	.cr-mininav::-webkit-scrollbar {
-		display: none;
-	}
-
-	.cr-mininav button {
-		flex: none;
-		padding: 6px 12px;
-		border: 1px solid var(--cr-line);
-		border-radius: 999px;
-		background: none;
-		color: var(--cr-muted);
-		font: inherit;
-		font-size: 13px;
-		white-space: nowrap;
-		cursor: pointer;
-	}
-
-	.cr-mininav button span {
-		margin-right: 6px;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.cr-mininav button[aria-current] {
-		border-color: var(--cr-ink);
-		background-color: var(--cr-ink);
-		color: var(--cr-bg);
 	}
 }

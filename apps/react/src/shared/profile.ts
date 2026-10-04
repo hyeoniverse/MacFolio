@@ -881,6 +881,7 @@ export const PROJECTS: Project[] = [
 					},
 					{
 						title: '대시보드와 알림',
+						icon: 'fa-chart-line',
 						body: '누적 조회수와 최근 7일 증감, 일별 조회 추세, 인기 글을 대시보드에서 보고, 예약 발행 대기 글도 확인합니다. 댓글·신고·새 기기 로그인·방문 급증 같은 알림은 한 화면의 탭에서 처리합니다.',
 					},
 					{
@@ -943,10 +944,6 @@ export const PROJECTS: Project[] = [
 						body: '편집 화면에서 마이크로 바로 녹음해 24kHz WAV로 만듭니다. 파형을 끌어 구간을 고르고 나누기·잘라내기·복사·붙여넣기·지우기·선택만 남기기·앞뒤 무음 자르기로 다듬으며, 되돌리기는 50단계까지 됩니다. 클립은 끌어서 순서를 바꾸고, 복사한 조각은 다른 장의 녹음에도 붙여 넣습니다. 완료하면 그 장의 음성이 됩니다(최대 6분).',
 						demo: 'wave',
 						shots: [
-							{
-								src: projectImage('hyeoniverse', 'cms/recording-split.mp4'),
-								alt: '녹음 → 파형에서 구간 선택 → 나누기',
-							},
 							{
 								src: projectImage('hyeoniverse', 'cms/recording.jpg'),
 								alt: '녹음 파형 편집기: 클립 세 개로 나눈 녹음',
