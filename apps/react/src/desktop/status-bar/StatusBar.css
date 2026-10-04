@@ -13,6 +13,11 @@
 	height: 1.5rem;
 	background-color: var(--color-menubar-bg);
 	font-size: 0.8rem;
+	/* macOS 메뉴 막대: 메뉴와 시계는 보통 굵기, 맨 앞 앱 이름만 굵게 (.app-name) */
+	font-weight: 400;
+}
+
+.macos-statusbar .menu-item.app-name {
 	font-weight: 700;
 }
 
@@ -136,5 +141,25 @@
 }
 
 .macos-statusbar .server-menu-button.open {
+	background-color: var(--color-selected-bg);
+}
+
+/* 음량 단추 (VolumeMenu.tsx): 재생 단추들과 같은 칸, 열려 있으면 메뉴 단추처럼 칠한다 */
+.macos-statusbar .volume-menu-button {
+	display: grid;
+	place-items: center;
+	width: 1.4rem;
+	height: 1.25rem;
+	margin: 0 -0.2rem;
+	padding: 0;
+	border: none;
+	border-radius: 0.3rem;
+	background: none;
+	color: var(--color-menubar-text);
+	font-size: 0.8rem;
+	cursor: pointer;
+}
+
+.macos-statusbar .volume-menu-button.open {
 	background-color: var(--color-selected-bg);
 }

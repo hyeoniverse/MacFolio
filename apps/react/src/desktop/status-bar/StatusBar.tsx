@@ -2,21 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
-import VolumeModal from '@/apps/music/MusicPlayerVolume'; // VolumeModal 가져오기
 import AppleMenu from '@/desktop/status-bar/AppleMenu';
 import ServerMenu from '@/desktop/status-bar/ServerMenu';
+import VolumeMenu from '@/desktop/status-bar/VolumeMenu';
 import '@/desktop/status-bar/StatusBar.css';
 
 const StatusBar: React.FC = () => {
 	const [time, setTime] = useState<string>('');
-	/** 음량 창을 열 자리 (음량 아이콘 아래 가운데). 닫혀 있으면 null */
-	const [volumeAnchor, setVolumeAnchor] = useState<{ x: number; y: number } | null>(null);
-	// 음량 아이콘의 실제 자리를 재서 그 아래에 연다 (옆 아이콘의 폭이 바뀌어도 어긋나지 않게)
-	const openVolume = (event: React.MouseEvent<HTMLElement>) => {
-		const rect = event.currentTarget.getBoundingClientRect();
-		setVolumeAnchor({ x: rect.left + rect.width / 2, y: rect.bottom });
-	};
-	const { isPlaying, volume, togglePlayPause, next: playNextTrack, previous: playPreviousTrack } = useMusic(); // MusicContext에서 필요한 상태 및 함수 가져오기
+
+	const { isPlaying, togglePlayPause, next: playNextTrack, previous: playPreviousTrack } = useMusic(); // MusicContext에서 필요한 상태 및 함수 가져오기
 
 	useEffect(() => {
 		const updateTime = () => {
@@ -34,21 +28,12 @@ const StatusBar: React.FC = () => {
 		return () => clearInterval(intervalId);
 	}, []);
 
-	const getVolumeIcon = () => {
-		if (volume === 0) {
-			return <i className="fas fa-volume-off" onClick={openVolume}></i>;
-		} else if (volume <= 0.5) {
-			return <i className="fas fa-volume-low" onClick={openVolume}></i>;
-		} else {
-			return <i className="fas fa-volume-high" onClick={openVolume}></i>;
-		}
-	};
-
 	return (
 		<div className="macos-statusbar">
 			<div className="left-section">
 				<AppleMenu />
-				<span className="menu-item">Finder</span>
+				{/* 맨 앞 앱 이름은 굵게 (macOS 메뉴 막대) */}
+				<span className="menu-item app-name">Finder</span>
 				<span className="menu-item">File</span>
 				<span className="menu-item">Edit</span>
 				<span className="menu-item">View</span>
@@ -68,7 +53,7 @@ const StatusBar: React.FC = () => {
 					<span onClick={playNextTrack}>
 						<i className="fas fa-fast-forward"></i>
 					</span>
-					<span>{getVolumeIcon()}</span>
+					<VolumeMenu />
 				</div>
 
 				{/* Wi-Fi 자리: 이 사이트 서버(API)의 상태 */}
@@ -87,9 +72,6 @@ const StatusBar: React.FC = () => {
 					<span className="time-display-now">{time}</span>
 				</span>
 			</div>
-
-			{/* 볼륨 모달 */}
-			<VolumeModal anchor={volumeAnchor} onClose={() => setVolumeAnchor(null)} />
 		</div>
 	);
 };
