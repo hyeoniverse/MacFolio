@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import ServerSignal from '@/shared/server/ServerSignal';
+import { useServerStatus } from '@/shared/server/serverStatus';
 
 const formatClock = (date: Date) => `${date.getHours() % 12 || 12}:${String(date.getMinutes()).padStart(2, '0')}`;
 
@@ -31,7 +33,7 @@ const MobileStatusBar = ({ tone, onOpen }: Props) => {
 			</time>
 			<span className="mobile-statusbar-icons" aria-hidden="true">
 				<i className="fa-solid fa-signal"></i>
-				<i className="fa-solid fa-wifi"></i>
+				<MobileServerSignal />
 				<span className="mobile-battery">
 					<span></span>
 				</span>
@@ -41,3 +43,8 @@ const MobileStatusBar = ({ tone, onOpen }: Props) => {
 };
 
 export default MobileStatusBar;
+
+/** 휴대폰 상태 표시줄의 Wi-Fi 자리: 서버 상태 막대 */
+function MobileServerSignal() {
+	return <ServerSignal status={useServerStatus()} />;
+}
