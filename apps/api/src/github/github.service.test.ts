@@ -95,3 +95,57 @@ describe('GithubService', () => {
 		await expect(service.profile(2)).resolves.toBe(after);
 	});
 });
+
+describe('GithubService.activity', () => {
+	it('기여 달력과 보여 줄 활동만 최근 것부터 준다', async () => {
+		const { client } = fakeGithubApi();
+		const result = await new GithubService(fakePrisma(), client, config).activity(0);
+		expect(result.contributions).toEqual({
+			total: 15,
+			days: [
+				{ date: '2026-09-27', level: 0, count: 0 },
+				{ date: '2026-09-28', level: 2, count: 3 },
+				{ date: '2026-09-29', level: 4, count: 12 },
+			],
+		});
+		expect(result.events.map((item) => [item.kind, item.action])).toEqual([
+			['push', null],
+			['pull', 'merged'],
+		]);
+	});
+
+	it('프로필을 이미 받았으면 계정을 다시 묻지 않고, 받은 값은 프로필과 같은 시간 동안 들고 있다', async () => {
+		const { state, client } = fakeGithubApi();
+		const service = new GithubService(fakePrisma({ repos: [] }), client, config);
+		await service.profile(0);
+		const calls = state.calls;
+		await service.activity(0);
+		// 기여 달력, 이벤트
+		expect(state.calls).toBe(calls + 2);
+		await service.activity(29 * MINUTE);
+		expect(state.calls).toBe(calls + 2);
+		await service.activity(31 * MINUTE);
+		expect(state.calls).toBe(calls + 4);
+	});
+
+	it('기여 달력만 받지 못하면 그 부분은 이전 값을, 둘 다 받지 못하면 마지막 값을 준다', async () => {
+		const { state, client } = fakeGithubApi();
+		const service = new GithubService(fakePrisma(), client, config);
+		const first = await service.activity(0);
+
+		state.contributionsDown = true;
+		state.events = [];
+		const partial = await service.activity(31 * MINUTE);
+		expect(partial.contributions).toEqual(first.contributions);
+		expect(partial.events).toEqual([]);
+
+		state.down = true;
+		expect(await service.activity(62 * MINUTE)).toEqual(partial);
+	});
+
+	it('받은 값이 없는데 GitHub에 닿지 못하면 실패한다', async () => {
+		const { state, client } = fakeGithubApi();
+		state.down = true;
+		await expect(new GithubService(fakePrisma(), client, config).activity(0)).rejects.toThrow();
+	});
+});
