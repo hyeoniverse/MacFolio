@@ -183,636 +183,6 @@ const projectImage = (id: string, file: string) => `/imgs/projects/${id}/${file}
  */
 export const PROJECTS: Project[] = [
 	{
-		id: 'newpick',
-		name: 'NewPick 뉴픽',
-		look: 'editorial',
-		tagline: '아침 뉴스, 요약해서 한 통에.',
-		description: '관심사에 맞춰 AI가 요약한 뉴스를 매일 아침 메일로 보내 주는 맞춤형 뉴스레터 서비스',
-		context: '프로그래머스 데브코스 팀 프로젝트 (5인: 프론트엔드 2, 백엔드 3)',
-		role: '기획, 로그인과 인증, 구독·AI 체험·목록 API 연동',
-		period: '2024.12.26 – 2025.02.05',
-		facts: [
-			{ value: '6주', label: '기획부터 배포까지' },
-			{ value: '5명', label: '프론트엔드 2 · 백엔드 3' },
-			{ value: '오전 8시', label: '매일 뉴스레터 발송' },
-		],
-		highlights: [
-			{
-				title: 'AI 뉴스 요약',
-				body: '최신 뉴스를 모은 뒤 OpenAI API로 핵심만 추려 읽기 좋은 뉴스레터로 만듭니다.',
-				detail:
-					'요약과 발송은 백엔드가 맡고, 프론트는 요약된 뉴스레터를 목록과 상세 화면에 보여 줍니다. 상세 화면에는 본문과 함께 요약에 쓴 원문 뉴스, 인기·최신 뉴스레터, 이전·다음 글, 북마크와 링크 복사가 붙습니다.',
-				image: projectImage('newpick', 'shots/summary.jpg'),
-			},
-			{
-				title: '카테고리별 뉴스',
-				body: '관심 있는 분야를 고르면 그 분야의 뉴스만 모아서 볼 수 있습니다.',
-				detail:
-					'IT, 정치, 경제, 사회, 생활, 세계 여섯 분야와 전체로 나눕니다. 목록은 끝에 닿으면 다음 묶음을 불러오고, 최신순·북마크순·조회수순으로 정렬하며, 분야를 바꾸면 최신순으로 돌아갑니다.',
-				image: projectImage('newpick', 'shots/categories.jpg'),
-			},
-			{
-				title: '매일 아침 메일로',
-				body: '구독한 사람에게 매일 오전 8시, 요약한 뉴스레터를 메일로 보냅니다.',
-				detail:
-					'구독을 시작하면 내일부터 보내 준다는 안내가 뜨고, 다음 날 아침부터 메일이 옵니다. 마이페이지의 내 뉴스레터 탭에서는 오전 8시를 기준으로 그날 받은 뉴스레터를 분야별로 다시 봅니다.',
-				image: projectImage('newpick', 'shots/mail.jpg'),
-			},
-			{
-				title: '나에게 맞춘 추천',
-				body: '구독한 카테고리에 맞춰 뉴스레터를 추천하고, 구독과 취소도 직접 관리합니다.',
-				detail:
-					'마이페이지 설정 탭에서 관심 분야를 고르고 약관에 동의하면 구독이 시작됩니다. 해지를 누르면 관련 정보가 모두 지워진다는 확인 창을 한 번 더 띄우고, 구독하지 않은 사람이 기사에서 구독 단추를 누르면 이 탭으로 데려갑니다.',
-				image: projectImage('newpick', 'shots/subscribe.jpg'),
-			},
-			{
-				title: '가입 전에 체험',
-				body: '로그인하지 않아도 관심사 하나를 고르면 그 자리에서 AI 뉴스레터를 만들어 모달로 보여 줍니다.',
-				detail:
-					'어제 날짜의 뉴스로 요약을 요청합니다. AI가 돌려준 HTML에서 코드 블록 표시를 걷어 내고, DOMPurify로 위험한 태그를 거른 뒤에 화면에 그립니다.',
-			},
-			{
-				title: '요약에 쓴 원문까지',
-				body: '뉴스레터 아래에 요약에 쓴 원문 기사를 출처와 날짜가 적힌 카드로 붙이고, 누르면 새 탭에서 엽니다.',
-				detail:
-					'원문 주소로 미리보기 정보(제목, 그림, 출처)를 받아 카드로 그립니다. 카드 컴포넌트는 필요할 때 불러와 첫 화면을 가볍게 둡니다.',
-			},
-		],
-		build: [
-			{
-				title: 'Next.js App Router',
-				body: '페이지 성격에 따라 서버 렌더링과 클라이언트 렌더링을 나눴습니다. 마이페이지는 (protected) 경로 그룹으로 묶고, 그곳에서 로그아웃하면 홈으로 돌려보냅니다.',
-			},
-			{
-				title: '상태를 둘로 나눠서',
-				body: '서버에서 받아 오는 데이터는 React Query로, 화면 전체가 함께 쓰는 값은 Zustand로 관리했습니다.',
-			},
-			{
-				title: 'API 연동과 에러 처리',
-				body: '백엔드 API를 fetch 모듈로 모아 두고 화면과 연결했습니다. 배포 직전에는 Vercel에서 나온 오류를 잡으며 마무리했습니다.',
-			},
-		],
-		chapters: [
-			{
-				title: '로그인과 첫 화면',
-				lead: '새로고침해도 로그인이 풀리지 않고, 첫 화면이 깜빡이지 않게 하는 데 시간을 가장 많이 썼습니다.',
-				points: [
-					{
-						title: '팝업에서 리다이렉트로',
-						body: '처음에는 Google 로그인을 팝업 창과 postMessage로 처리했다가, 배포 직후 리다이렉트 방식으로 바꿨습니다. 돌아올 때 붙은 쿼리를 확인해 사용자 정보를 다시 받고, 주소에서는 지웁니다.',
-					},
-					{
-						title: '첫 화면 데이터는 서버에서',
-						body: '새로고침하면 로그인 상태가 초기화되고, 쿠키가 없으면 로딩이 끝나지 않았습니다. 로그인 사용자와 구독 상태, 오늘의 트렌드를 루트 레이아웃에서 서버가 먼저 받아 와 스토어에 넣는 구조로 정리했습니다.',
-					},
-					{
-						title: '만료된 토큰은 한 번 더',
-						body: '서버는 쿠키의 토큰으로 사용자를 조회하고, 만료됐으면 토큰을 갱신해 딱 한 번만 다시 시도합니다. 갱신에 실패하면 로그인하지 않은 상태로 그려, 끝없이 다시 묻지 않습니다.',
-					},
-					{
-						title: '다크 모드와 Hydration',
-						body: '테마는 브라우저에 저장해 새로고침해도 유지하고, 서버는 항상 라이트로 그려 첫 화면이 어긋나지 않게 했습니다. 링크 안의 버튼 같은 Hydration 오류를 다섯 번 따로 고쳤습니다.',
-					},
-				],
-			},
-			{
-				title: '읽고 구독하기',
-				points: [
-					{
-						title: '끝없이 이어지는 목록',
-						body: '카테고리 목록은 끝에 닿으면 다음 뉴스레터를 불러옵니다. 최신순, 북마크순, 조회수순으로 정렬하고, 카테고리를 바꾸면 최신순으로 돌아갑니다.',
-					},
-					{
-						title: '조회수',
-						body: '상세 페이지를 열면 조회수를 올리고, 목록 카드에도 조회수를 보여 줍니다.',
-					},
-					{
-						title: '구독 시작과 해지',
-						body: '설정 탭에서 관심사를 고르고 약관에 동의하면 구독이 시작됩니다. 해지를 누르면 관련 정보가 모두 지워진다는 확인 창을 한 번 더 띄웁니다.',
-					},
-					{
-						title: '구독으로 이어지는 단추',
-						body: '구독하지 않은 사람이 기사에서 구독 단추를 누르면 마이페이지의 설정 탭으로 바로 데려갑니다.',
-					},
-				],
-			},
-		],
-		contributions: [
-			'주제 선정과 기획, 기능 정의',
-			'Google 로그인(팝업 → 리다이렉트), 로그인 유지와 토큰 재발급',
-			'첫 화면 데이터를 서버에서 먼저 받아 오는 구조',
-			'구독 시작·해지 API와 확인 모달',
-			'AI 뉴스레터 체험과 원문 기사 카드',
-			'카테고리 목록의 무한 스크롤·정렬, 조회수',
-			'Skeleton·Toast·Modal 공통 컴포넌트와 다크 모드',
-			'About 페이지 아래쪽과 팀원 소개',
-		],
-		timeline: [
-			{ date: '12.26', label: '주제 선정과 기획' },
-			{ date: '12.28', label: '기능 정의, 와이어프레임, 디자인' },
-			{ date: '01.04', label: 'Next.js 초기 셋팅, 공통 컴포넌트' },
-			{ date: '01.08', label: 'UI 설계' },
-			{ date: '01.21', label: 'API 연동' },
-			{ date: '02.01', label: 'Vercel 배포와 에러 처리' },
-		],
-		specs: [
-			{ label: '프레임워크', value: 'Next.js (SSR · CSR), TypeScript' },
-			{ label: '상태 관리', value: 'Zustand, React Query' },
-			{ label: '스타일', value: 'styled-components' },
-			{ label: 'AI', value: 'OpenAI API' },
-			{ label: '배포', value: 'Vercel' },
-			{ label: '협업', value: 'GitHub, Notion' },
-		],
-		stack: ['Next.js', 'TypeScript', 'Zustand', 'React Query', 'styled-components', 'OpenAI API'],
-		language: 'TypeScript',
-		url: 'https://github.com/Devcourse-NewPick/front',
-		demo: 'https://newpick-tan.vercel.app',
-		icon: projectImage('newpick', 'icon.svg'),
-		logo: projectImage('newpick', 'logo.svg'),
-		image: projectImage('newpick', 'screenshot.jpg'),
-	},
-	{
-		id: 'whattodo',
-		name: 'WTD (What To Do)',
-		look: 'playful',
-		tagline: '할 일은 끌어서. 루틴은 알아서.',
-		description: '할 일과 세부 할 일을 끌어서 정리하고, 매일 반복되는 일은 루틴으로 관리하는 할 일 관리 웹 앱',
-		context: '프로그래머스 데브코스 팀 프로젝트 (4인)',
-		role: '프로젝트 뼈대, 상태 관리, 인증과 동기화, 루틴, 드래그 앤 드롭',
-		period: '2024.10.05 – 2024.10.19',
-		facts: [
-			{ value: '4명', label: '팀 프로젝트' },
-			{ value: '94개', label: '전체 114개 커밋 중 내 커밋' },
-			{ value: '0단계', label: '가입 없이 바로 쓰기' },
-		],
-		highlights: [
-			{
-				title: '할 일과 세부 할 일',
-				body: '할 일(Task) 안에 세부 할 일(SubTask)을 두고 추가·수정·삭제합니다. 체크한 할 일은 대시보드에 보입니다.',
-			},
-			{
-				title: '끌어서 순서 바꾸기',
-				body: '할 일 카드는 좌우로, 세부 할 일은 위아래로 끌어서 순서를 바꿉니다.',
-			},
-			{
-				title: '완료한 일은 보관함으로',
-				body: '끝낸 세부 할 일은 보관함에 들어가고, 토글을 열어 다시 볼 수 있습니다.',
-			},
-			{
-				title: '루틴',
-				body: '매일 반복되는 일을 루틴으로 등록하면 정한 요일과 시간에 상태가 초기화됩니다.',
-			},
-		],
-		build: [
-			{
-				title: '가입 없이도',
-				body: '로그인하지 않으면 브라우저 로컬 스토리지에 저장해 기본 기능을 쓰고, 로그인하면 서버에 저장하고 루틴을 씁니다. 저장 공간은 비회원과 회원별로 나눴습니다.',
-			},
-			{
-				title: '기능별로 나눈 모듈',
-				body: '할 일과 루틴 API를 taskApi와 routineApi로, 토큰과 저장 처리를 utils로 나누고, 상태는 Auth·Task·Routine 세 Context가 맡습니다.',
-			},
-			{
-				title: '화면 먼저, 서버는 뒤에',
-				body: '제목 수정, 체크, 삭제는 화면을 먼저 바꾸고, 로그인한 상태일 때만 서버에 보냅니다.',
-			},
-			{
-				title: '자연스러운 드래그',
-				body: 'react-beautiful-dnd로 Task와 SubTask를 각각 끌 수 있게 하고, 놓는 위치와 움직임을 다듬었습니다.',
-			},
-		],
-		chapters: [
-			{
-				title: '로그인과 동기화',
-				lead: '가입 없이 쓰던 할 일이 로그인한 뒤에도 그대로 남도록, 저장 공간과 옮기는 길을 따로 만들었습니다.',
-				points: [
-					{
-						title: '비회원 할 일을 한 번에 옮기기',
-						body: '로그인하면 비회원 목록을 /lists/bulk로 한 번에 보내고, 응답으로 받은 목록 id에 맞춰 세부 할 일을 /tasks/bulk로 보냅니다. 끝나면 로컬 데이터를 지우고 서버에서 다시 받아 옵니다.',
-					},
-					{
-						title: '저장 공간을 둘로',
-						body: '로컬 스토리지 키를 비회원은 guestTasks, 회원은 사용자마다 따로 둡니다. 로그아웃하면 이벤트를 보내 화면의 할 일을 비웁니다.',
-					},
-					{
-						title: '토큰 만료와 401',
-						body: 'Google 로그인에서 받은 토큰의 만료 시각을 읽어 지났으면 로그아웃합니다. 모든 API 함수는 같은 오류 처리를 거쳐, 401이면 다시 로그인하라는 확인 창을 띄웁니다.',
-					},
-				],
-			},
-			{
-				title: '루틴',
-				lead: '매일 반복하는 일은 정한 요일과 시간에 다시 할 일로 돌아옵니다.',
-				points: [
-					{
-						title: '요일과 시간 고르기',
-						body: '세부 할 일의 반복 아이콘을 누르면 시간과 월~일 요일 단추가 펼쳐집니다. 요일을 고르지 않으면 등록할 수 없고, 이미 루틴인 항목은 아이콘이 바뀌며 수정과 삭제가 나옵니다.',
-					},
-					{
-						title: '1분마다 상태 확인',
-						body: '로그인한 사용자는 다음 분이 시작될 때까지 기다린 뒤 60초마다 루틴을 조회해, 서버에 있는 완료 상태를 체크에 반영합니다. 처음엔 1초마다 시각을 검사하던 것을 바꿨습니다.',
-					},
-					{
-						title: '로그인 안내와 중복 막기',
-						body: '비회원이 루틴을 누르면 로그인 안내 모달을 띄웁니다. 같은 세부 할 일에 루틴을 두 번 등록하면 이미 등록된 루틴이라고 알립니다.',
-					},
-					{
-						title: '입력 검사와 삭제 확인',
-						body: '목록과 세부 할 일 제목은 15자까지 받습니다. 세부 할 일이 남은 목록을 지우면 몇 개가 함께 지워지는지 알리고 한 번 더 묻습니다.',
-					},
-				],
-			},
-		],
-		contributions: [
-			'프로젝트 뼈대와 화면 구성, 라우터',
-			'Task·Routine Context로 상태 관리',
-			'react-beautiful-dnd로 할 일·세부 할 일 끌어 옮기기',
-			'Google 로그인, 토큰 만료와 401 처리',
-			'비회원·회원 저장 공간 분리와 한꺼번에 옮기기',
-			'루틴 추가·수정·삭제와 1분 주기 상태 확인',
-			'입력 검사와 삭제 확인 창',
-			'README 작성',
-		],
-		timeline: [
-			{ date: '10.05', label: '기획과 첫 커밋' },
-			{ date: '10.10', label: '공통 컴포넌트, 할 일 화면' },
-			{ date: '10.14', label: '할 일 서랍과 카드' },
-			{ date: '10.15', label: '할 일·세부 할 일 끌어서 옮기기' },
-			{ date: '10.16', label: 'Google 로그인, 로컬 저장' },
-			{ date: '10.17', label: '할 일 API 연동, 비회원 할 일 옮기기' },
-			{ date: '10.18', label: '루틴, 만료된 로그인 처리, 정리' },
-			{ date: '10.19', label: '마무리와 배포' },
-		],
-		usage: [
-			{
-				title: '가입 없이',
-				body: '브라우저 로컬 스토리지에 저장합니다. 할 일과 세부 할 일을 만들고, 고치고, 끌어서 순서를 바꾸는 기본 기능을 바로 씁니다.',
-			},
-			{
-				title: '로그인하면',
-				body: 'Google로 로그인하면 서버에 저장하고, 비회원일 때 만든 할 일을 계정으로 옮깁니다. 매일 반복되는 일은 루틴으로 등록합니다.',
-			},
-		],
-		structure: [
-			'src/',
-			'├── api/',
-			'│   ├── taskApi.js        목록·할 일, 한꺼번에 옮기기',
-			'│   └── routineApi.js     루틴',
-			'├── components/',
-			'│   ├── Auth/LoginForm.jsx',
-			'│   ├── Common/           Button, InputCheck, InputField, Modal, Drawer',
-			'│   └── Task/             TaskCard, TaskDashboard, TaskDrawer',
-			'├── contexts/             AuthContext, TaskContext, RoutineContext',
-			'├── utils/                authHelpers, localStorageHelpers, validationHelpers',
-			'├── pages/TaskPage.jsx',
-			'└── App.js',
-		].join('\n'),
-		specs: [
-			{ label: '프론트엔드', value: 'React, JavaScript' },
-			{ label: '스타일', value: 'Tailwind CSS' },
-			{ label: '상태 관리', value: 'React Context API' },
-			{ label: '드래그 앤 드롭', value: 'react-beautiful-dnd' },
-			{ label: '백엔드 통신', value: 'Axios (Node.js · Express 서버)' },
-			{ label: '배포', value: 'Vercel' },
-		],
-		stack: ['React', 'Tailwind CSS', 'Context API', 'react-beautiful-dnd', 'Axios', 'Node.js', 'Express'],
-		language: 'JavaScript',
-		url: 'https://github.com/Devcourse-WhatToDo/todo-front',
-		demo: 'https://what-to-do-chi.vercel.app/',
-		icon: projectImage('whattodo', 'icon.png'),
-		image: projectImage('whattodo', 'screenshot.jpg'),
-	},
-	{
-		id: 'qru',
-		name: 'QRU 큐알유',
-		look: 'minimal',
-		tagline: 'QR 한 장에 담은 나.',
-		description: '내 정보를 담은 QR 디지털 명함을 만들어 공유하고, 공개된 명함을 셔플로 찾아보는 웹 앱',
-		context: '개인 프로젝트',
-		role: '기획·설계, 프론트엔드, Firebase 연동과 보안 규칙',
-		facts: [
-			{ value: '1인', label: '기획부터 배포까지' },
-			{ value: '5장', label: '셔플 한 번에 보는 명함' },
-			{ value: '0개', label: '외워야 할 비밀번호' },
-		],
-		highlights: [
-			{
-				title: '명함 만들기',
-				body: '왼쪽 목차를 따라 한 줄 소개, MBTI, 취미 등을 채우고 항목을 5개까지 더합니다. 항목마다 공개할지 고르고, 비공개 항목은 공개 문서에 아예 저장하지 않습니다.',
-				image: projectImage('qru', 'screens/create-modal.jpg'),
-			},
-			{
-				title: '사진 맞추기',
-				body: '원 안에서 사진의 위치와 크기를 직접 맞춥니다. 저장할 때는 긴 변 512px, 150KB 이하로 줄입니다.',
-				image: projectImage('qru', 'screens/photo-editor.jpg'),
-			},
-			{
-				title: '주소, QR, 일련번호',
-				body: '명함마다 고유 주소와 QR 코드(PNG 저장), 일련번호가 나옵니다. 번호를 눌러 복사하고, 헤더 돋보기에 번호를 넣으면 그 명함으로 갑니다.',
-				image: projectImage('qru', 'screens/card.jpg'),
-			},
-			{
-				title: '셔플로 찾기',
-				body: '공개된 명함에서 무작위로 다섯 장을 보여 줍니다. 성별·MBTI 같은 조건과 검색어로 좁히고, 방금 본 명함은 뒤로 미룹니다.',
-				image: projectImage('qru', 'screens/shuffle.jpg'),
-			},
-			{
-				title: '내 명함 관리',
-				body: '만든 명함을 번호, 만든 날짜, 셔플 노출 여부와 함께 모아 보고, 고치거나 지웁니다. 다크 테마에서도 같은 명함을 봅니다.',
-				image: projectImage('qru', 'screens/mypage.jpg'),
-			},
-		],
-		build: [
-			{
-				title: '가입 없이, 나중에 계정으로',
-				body: 'Firebase 익명 인증으로 로그인 없이 명함을 만들고, 나중에 Google 로그인하면 계정을 연결해 같은 명함을 그대로 옮깁니다.',
-			},
-			{
-				title: '규칙으로 지키는 데이터',
-				body: 'Firestore 보안 규칙에서 저장할 수 있는 필드를 hasOnly로 제한하고, 조회는 동등 조건만 써서 복합 색인 없이 돌아가게 했습니다.',
-			},
-			{
-				title: '검색엔진에는 안 보이게',
-				body: '명함·찾기·마이페이지는 noindex 헤더와 메타 태그로 검색 결과에 실리지 않고, 주소를 아는 사람만 봅니다.',
-			},
-			{
-				title: 'PR마다 미리보기',
-				body: 'GitHub Actions가 main을 Firebase Hosting에 배포하고, PR에는 미리보기 채널과 Playwright 스크린샷을 붙입니다.',
-			},
-		],
-		chapters: [
-			{
-				title: '서버 없이 지키는 데이터',
-				lead: '서버도 Cloud Functions도 없이, 브라우저가 Firestore에 직접 읽고 씁니다. 그래서 문서의 모양과 권한을 보안 규칙 하나가 모두 검사합니다.',
-				facts: [
-					{ value: '10자리', label: '일련번호 (32^10가지)' },
-					{ value: '0개', label: '복합 색인' },
-					{ value: '150KB', label: '사진 한 장의 상한' },
-				],
-				points: [
-					{
-						title: '목록을 열지 않는 길잡이',
-						body: '보안 규칙은 질의에 담긴 값을 볼 수 없어 번호로 거르는 목록 조회를 열 수 없습니다. 번호 자체를 문서 id로 하는 길잡이 문서를 두고, 한 번 읽어 명함으로 찾아갑니다.',
-					},
-					{
-						title: '복합 색인 0개',
-						body: '처음에는 범위 질의를 써서 필터가 하나 늘 때마다 필요한 색인이 두 배로 늘었습니다. "같음" 조건만 쓰도록 바꿔 단일 필드 색인으로 처리하고, 색인 파일을 통째로 지웠습니다.',
-					},
-					{
-						title: '보여 줄 값과 찾을 값',
-						body: 'Firestore는 배열 안의 필드로 거를 수 없습니다. 순서와 라벨을 담은 표시용 배열과 별도로, 공백을 지우고 소문자로 맞춘 검색용 맵을 한 번 더 저장합니다.',
-					},
-					{
-						title: '드롭다운은 값을, 색인은 라벨을',
-						body: '필터가 하나도 걸리지 않은 적이 있습니다. 색인에는 "여성"이 들어 있는데 드롭다운은 "female"을 보냈기 때문입니다. 선택지의 값을 라벨로 맞춰 고쳤습니다.',
-					},
-					{
-						title: '사진도 Firestore에',
-						body: 'Storage 없이 줄인 사진을 데이터 URL로 저장하고, 규칙도 같은 상한으로 막습니다. 셔플이 후보를 한꺼번에 읽을 때 사진이 딸려 오지 않게 하위 문서로 떼어 둡니다.',
-					},
-					{
-						title: '고쳐도 공유한 값은 그대로',
-						body: '수정 규칙이 만든 시각, 번호, 소유자가 이전 값과 같은지 검사합니다. 그래서 이미 건넨 주소와 QR, 번호가 바뀌지 않고, 삭제하면 사진과 길잡이도 함께 지웁니다.',
-					},
-				],
-				schema: [
-					{
-						path: 'cards/{id}',
-						access: '누구나 읽기',
-						fields: ['serialNumber', 'uid', 'createdAt', 'entries[]', 'search{}', 'inShuffle', 'hasPhoto'],
-						note: '"공개"로 고른 항목만 들어갑니다. 비공개 항목은 숨기는 게 아니라 아예 저장하지 않습니다.',
-					},
-					{
-						path: 'private/card',
-						parent: 'cards/{id}',
-						access: '소유자만',
-						locked: true,
-						fields: ['values{}', 'isPublic{}'],
-						note: '수정 화면을 채울 입력 원본입니다.',
-					},
-					{
-						path: 'photo/data',
-						parent: 'cards/{id}',
-						access: '누구나 읽기',
-						fields: ['uid', 'dataUrl'],
-						note: '셔플이 후보를 한꺼번에 읽을 때 사진이 딸려 오지 않게 떼어 둡니다.',
-					},
-					{
-						path: 'serials/{번호}',
-						access: '번호로 한 번 읽기',
-						fields: ['collection', 'cardId', 'uid'],
-						note: '일련번호 자체가 문서 id입니다. 목록 조회는 막혀 있고, 번호를 알아야 한 번 읽을 수 있습니다.',
-					},
-				],
-			},
-		],
-		gallery: [
-			{ src: projectImage('qru', 'screens/home.jpg'), caption: '첫 화면' },
-			{ src: projectImage('qru', 'screens/card.jpg'), caption: '명함 보기' },
-			{ src: projectImage('qru', 'screens/card-dark.jpg'), caption: '다크 테마' },
-			{ src: projectImage('qru', 'screens/shuffle.jpg'), caption: '명함 찾기' },
-			{ src: projectImage('qru', 'screens/mobile.jpg'), caption: '휴대폰에서' },
-		],
-		contributions: [
-			'서비스 기획과 데이터 구조 설계',
-			'프론트엔드 전체',
-			'Firebase 인증·Firestore·Hosting 연동과 보안 규칙',
-			'배포 자동화',
-		],
-		specs: [
-			{ label: '프론트엔드', value: 'React 18, TypeScript, Vite, React Router v7' },
-			{ label: '상태 관리', value: 'Redux Toolkit, React Query' },
-			{ label: '스타일', value: 'styled-components, 다크·라이트 테마, 반응형' },
-			{ label: '백엔드', value: 'Firebase Firestore, Authentication (Google, 익명)' },
-			{ label: 'QR', value: 'qrcode.react' },
-			{ label: '배포', value: 'Firebase Hosting, GitHub Actions, Playwright' },
-		],
-		stack: ['React', 'TypeScript', 'Redux Toolkit', 'React Query', 'styled-components', 'Firebase'],
-		language: 'TypeScript',
-		url: 'https://github.com/hyeoniverse/QRU',
-		demo: 'https://qryou-app.web.app',
-		icon: projectImage('qru', 'icon.png'),
-		image: projectImage('qru', 'screenshot.jpg'),
-	},
-	{
-		id: 'sproutfarm',
-		name: 'SproutFarm 새싹 농장',
-		look: 'game',
-		controls: [
-			{ keys: ['↑', '↓', '←', '→'], label: '움직이기' },
-			{ keys: ['Shift'], label: '달리기' },
-			{ keys: ['Space'], label: '대화 넘기기, 울타리에 넣기, 잠자기' },
-		],
-		tagline: '농장에 작은 소동이 생겼어요. 얼른 잡아주세요!',
-		description: '도망친 동물 20마리를 자정 전에 울타리로 데려오는 탑다운 2D 픽셀 캐주얼 게임',
-		context: '개인 프로젝트 (PC 전용)',
-		period: '2024.06.10 – 2024.06.24',
-		facts: [
-			{ value: '20마리', label: '자정 전에 데려올 동물' },
-			{ value: '약 18분', label: '한 판 (게임 1분 = 1.2초)' },
-			{ value: 'TOP 10', label: '서버에서 다시 계산하는 랭킹' },
-		],
-		highlights: [
-			{
-				title: '잡아서 울타리로',
-				body: '방향키로 움직이고 Shift로 달립니다. 도망친 동물을 잡으면 따라오고, Space로 울타리에 넣습니다.',
-			},
-			{
-				title: '체력과 시간',
-				body: '달릴수록 빨리 지치고, 열매를 먹거나 집에서 자면 회복합니다. 흙길에서는 덜 지치고 1.25배 빨라집니다.',
-			},
-			{
-				title: '끝없는 들판',
-				body: '숲, 바위밭, 꽃밭, 과수원, 연못, 빈터가 이어지는 들판. 같은 곳에 다시 가면 같은 풍경이 나옵니다.',
-			},
-			{
-				title: '노을, 그리고 밤',
-				image: projectImage('sproutfarm', 'tech/daynight.jpg'),
-				body: '시간이 흐르면 화면이 노을빛을 지나 어두워지고, 체력이 떨어지면 나침반이 집을 가리킵니다.',
-			},
-		],
-		build: [
-			{
-				title: '무한 맵',
-				image: projectImage('sproutfarm', 'tech/infinite.jpg'),
-				body: '20×20칸 타일맵 4개가 플레이어를 따라다닙니다. 경계를 넘으면 가장 먼 덩어리를 진행 방향으로 40칸 옮겨 붙입니다.',
-			},
-			{
-				title: '절차적 지형',
-				image: projectImage('sproutfarm', 'tech/zones.jpg'),
-				body: '플레이어 주위를 12칸 구역으로 나눠 구역 위치로 풍경을 정하고, 24칸 간격으로 구불구불한 흙길을 냅니다.',
-			},
-			{
-				title: 'A* 동물 AI',
-				image: projectImage('sproutfarm', 'tech/escape.jpg'),
-				body: 'A* 길찾기로 장애물을 피해 도망치고 따라옵니다. 흩어질 자리는 플레이어가 실제로 걸어갈 수 있는 곳만 고릅니다.',
-			},
-			{
-				title: '조작할 수 없는 랭킹',
-				image: projectImage('sproutfarm', 'shots/result.jpg'),
-				body: '서버리스 함수가 점수가 아닌 기록을 받아 범위를 자르고 직접 점수를 계산해 Redis에 저장합니다.',
-			},
-		],
-		contributions: ['게임 기획과 규칙, 점수 공식', 'Unity C# 스크립트 전체', 'WebGL 빌드와 Vercel 배포, 랭킹 서버'],
-		specs: [
-			{ label: '엔진', value: 'Unity 6, C#' },
-			{ label: '렌더링', value: 'URP 2D Renderer, Y축 기준 정렬' },
-			{ label: '맵', value: 'Tilemap, Rule Tile (47조각 블롭), 런타임 절차적 생성' },
-			{ label: 'AI', value: 'A* Pathfinding Project (Grid Graph)' },
-			{ label: '입력 · UI', value: 'Input System, uGUI, TextMeshPro' },
-			{ label: '배포', value: 'WebGL (Brotli 압축), Vercel' },
-			{ label: '서버', value: 'Vercel 서버리스 함수, Redis' },
-		],
-		stack: ['Unity 6', 'C#', 'WebGL', 'Vercel', 'Redis'],
-		language: 'JavaScript',
-		url: 'https://github.com/hyeoniverse/SproutFarm',
-		demo: 'https://sprout-farm-beta.vercel.app',
-		icon: projectImage('sproutfarm', 'icon.png'),
-		art: projectImage('sproutfarm', 'scene.png'),
-		credits: [
-			{
-				role: 'ART',
-				name: 'Sprout Lands Asset Pack',
-				by: 'Cup Nooble',
-				href: 'https://cupnooble.itch.io/sprout-lands-asset-pack',
-				note: '풀밭과 흙길, 집과 나무, 소·병아리·주인공, 아이템, 대화창, 표정, 고양이 발 커서까지 게임과 이 페이지의 픽셀 그림은 모두 이 팩에서 가져왔습니다.',
-			},
-			{
-				role: 'FONT',
-				name: 'Galmuri11',
-				by: 'quiple',
-				href: 'https://github.com/quiple/galmuri',
-				note: '게임 안의 한글 픽셀 글꼴 (SIL Open Font License)',
-			},
-		],
-		gallery: [
-			{ src: projectImage('sproutfarm', 'shots/intro.jpg'), caption: '시작 — 동물들이 달아났다' },
-			{ src: projectImage('sproutfarm', 'shots/farm.jpg'), caption: '오전 9시, 농장에서' },
-			{ src: projectImage('sproutfarm', 'shots/field.jpg'), caption: '들판으로 나가 동물 찾기' },
-			{ src: projectImage('sproutfarm', 'shots/path.jpg'), caption: '흙길에서는 더 빠르게' },
-			{ src: projectImage('sproutfarm', 'shots/pond.jpg'), caption: '연못가' },
-			{ src: projectImage('sproutfarm', 'shots/evening.jpg'), caption: '노을이 지면' },
-			{ src: projectImage('sproutfarm', 'shots/night.jpg'), caption: '밤, 자정까지' },
-			{ src: projectImage('sproutfarm', 'shots/result.jpg'), caption: '결과와 랭킹' },
-		],
-		image: projectImage('sproutfarm', 'screenshot.jpg'),
-	},
-	{
-		id: 'macfolio',
-		name: 'MacFolio',
-		look: 'product',
-		tagline: '포트폴리오를, 데스크톱으로.',
-		description:
-			'macOS 데스크톱을 웹으로 옮긴 포트폴리오. 메모 앱은 블로그, 메시지 앱은 방명록, Safari는 프로젝트 소개가 된다',
-		context: '개인 프로젝트 (프론트엔드와 백엔드)',
-		role: '기획·디자인, 프론트엔드, API 서버, 배포',
-		period: '2024.10.22 –',
-		facts: [
-			{ value: '1인', label: '화면부터 서버까지' },
-			{ value: '0원', label: '서버 운영비' },
-			{ value: '0개', label: '바깥에 연 서버 포트' },
-		],
-		highlights: [
-			{
-				title: '진짜 같은 데스크톱',
-				body: 'Dock에서 앱을 열고, 창을 끌어 옮기고 크기를 바꿉니다. 휴대폰으로 열면 iOS 홈 화면이 됩니다.',
-				image: projectImage('macfolio', 'views/desktop.jpg'),
-			},
-			{
-				title: '메모 앱이 곧 블로그',
-				body: '폴더와 갤러리 보기, 검색으로 글을 읽습니다. 관리자가 로그인하면 글이 그대로 편집기가 됩니다.',
-				image: projectImage('macfolio', 'views/memo-laptop.jpg'),
-			},
-			{
-				title: '가입 없이 남기는 글',
-				body: '메시지 앱의 방명록과 블로그 댓글은 계정 없이 쓰고, 내가 쓴 글만 지울 수 있습니다.',
-				image: projectImage('macfolio', 'views/messages-laptop.jpg'),
-			},
-			{
-				title: '주소가 있는 화면',
-				body: '/memo/글, /safari/프로젝트처럼 글과 프로젝트마다 주소가 있어, 링크로 들어오면 그 화면으로 열립니다.',
-				image: projectImage('macfolio', 'views/safari-laptop.jpg'),
-			},
-		],
-		build: [
-			{
-				title: '앱은 필요할 때 불러온다',
-				body: '앱마다 코드를 나눠 처음에는 데스크톱만 받고, 앱을 열 때 그 앱의 코드를 받습니다.',
-			},
-			{
-				title: '권한은 서버가',
-				body: 'GitHub OAuth로 관리자 한 명만 들여보내고, 세션은 DB에 해시로만 둡니다. 화면의 버튼과 상관없이 요청마다 서버가 확인합니다.',
-			},
-			{
-				title: '무료로 띄운 서버',
-				body: 'NestJS와 PostgreSQL을 Oracle Cloud 무료 VM에 올리고, Cloudflare Tunnel로 포트를 열지 않고 내보냅니다.',
-			},
-			{
-				title: '시험을 통과해야 배포',
-				body: 'Vitest, Playwright, 실제 DB로 도는 API e2e가 모든 PR에서 돌고, main에 들어온 커밋만 Cloudflare Workers에 배포됩니다.',
-			},
-		],
-		contributions: [
-			'기획과 화면 디자인',
-			'데스크톱·창·Dock과 앱들, 휴대폰 화면',
-			'NestJS API 서버와 DB 설계',
-			'GitHub Actions 시험·배포',
-		],
-		specs: [
-			{ label: '프론트엔드', value: 'React 19, TypeScript, Vite' },
-			{ label: '백엔드', value: 'NestJS, Prisma, PostgreSQL' },
-			{ label: '인증', value: 'GitHub OAuth, 세션 쿠키' },
-			{ label: '시험', value: 'Vitest, Playwright' },
-			{ label: '배포', value: 'Cloudflare Workers, Oracle Cloud VM, Cloudflare Tunnel' },
-			{ label: '구성', value: 'pnpm workspaces, Turborepo' },
-		],
-		stack: ['React', 'TypeScript', 'Vite', 'NestJS', 'PostgreSQL', 'Cloudflare'],
-		language: 'TypeScript',
-		url: 'https://github.com/hyeoniverse/MacFolio',
-		icon: projectImage('macfolio', 'icon.png'),
-		image: projectImage('macfolio', 'screenshot.jpg'),
-	},
-	{
 		id: 'hyeoniverse',
 		name: 'HYEONIVERSE',
 		look: 'creative',
@@ -1470,6 +840,636 @@ export const PROJECTS: Project[] = [
 		demo: 'https://www.hyeoniverse.com',
 		icon: projectImage('hyeoniverse', 'icon.svg'),
 		image: projectImage('hyeoniverse', 'screenshot.jpg'),
+	},
+	{
+		id: 'macfolio',
+		name: 'MacFolio',
+		look: 'product',
+		tagline: '포트폴리오를, 데스크톱으로.',
+		description:
+			'macOS 데스크톱을 웹으로 옮긴 포트폴리오. 메모 앱은 블로그, 메시지 앱은 방명록, Safari는 프로젝트 소개가 된다',
+		context: '개인 프로젝트 (프론트엔드와 백엔드)',
+		role: '기획·디자인, 프론트엔드, API 서버, 배포',
+		period: '2024.10.22 –',
+		facts: [
+			{ value: '1인', label: '화면부터 서버까지' },
+			{ value: '0원', label: '서버 운영비' },
+			{ value: '0개', label: '바깥에 연 서버 포트' },
+		],
+		highlights: [
+			{
+				title: '진짜 같은 데스크톱',
+				body: 'Dock에서 앱을 열고, 창을 끌어 옮기고 크기를 바꿉니다. 휴대폰으로 열면 iOS 홈 화면이 됩니다.',
+				image: projectImage('macfolio', 'views/desktop.jpg'),
+			},
+			{
+				title: '메모 앱이 곧 블로그',
+				body: '폴더와 갤러리 보기, 검색으로 글을 읽습니다. 관리자가 로그인하면 글이 그대로 편집기가 됩니다.',
+				image: projectImage('macfolio', 'views/memo-laptop.jpg'),
+			},
+			{
+				title: '가입 없이 남기는 글',
+				body: '메시지 앱의 방명록과 블로그 댓글은 계정 없이 쓰고, 내가 쓴 글만 지울 수 있습니다.',
+				image: projectImage('macfolio', 'views/messages-laptop.jpg'),
+			},
+			{
+				title: '주소가 있는 화면',
+				body: '/memo/글, /safari/프로젝트처럼 글과 프로젝트마다 주소가 있어, 링크로 들어오면 그 화면으로 열립니다.',
+				image: projectImage('macfolio', 'views/safari-laptop.jpg'),
+			},
+		],
+		build: [
+			{
+				title: '앱은 필요할 때 불러온다',
+				body: '앱마다 코드를 나눠 처음에는 데스크톱만 받고, 앱을 열 때 그 앱의 코드를 받습니다.',
+			},
+			{
+				title: '권한은 서버가',
+				body: 'GitHub OAuth로 관리자 한 명만 들여보내고, 세션은 DB에 해시로만 둡니다. 화면의 버튼과 상관없이 요청마다 서버가 확인합니다.',
+			},
+			{
+				title: '무료로 띄운 서버',
+				body: 'NestJS와 PostgreSQL을 Oracle Cloud 무료 VM에 올리고, Cloudflare Tunnel로 포트를 열지 않고 내보냅니다.',
+			},
+			{
+				title: '시험을 통과해야 배포',
+				body: 'Vitest, Playwright, 실제 DB로 도는 API e2e가 모든 PR에서 돌고, main에 들어온 커밋만 Cloudflare Workers에 배포됩니다.',
+			},
+		],
+		contributions: [
+			'기획과 화면 디자인',
+			'데스크톱·창·Dock과 앱들, 휴대폰 화면',
+			'NestJS API 서버와 DB 설계',
+			'GitHub Actions 시험·배포',
+		],
+		specs: [
+			{ label: '프론트엔드', value: 'React 19, TypeScript, Vite' },
+			{ label: '백엔드', value: 'NestJS, Prisma, PostgreSQL' },
+			{ label: '인증', value: 'GitHub OAuth, 세션 쿠키' },
+			{ label: '시험', value: 'Vitest, Playwright' },
+			{ label: '배포', value: 'Cloudflare Workers, Oracle Cloud VM, Cloudflare Tunnel' },
+			{ label: '구성', value: 'pnpm workspaces, Turborepo' },
+		],
+		stack: ['React', 'TypeScript', 'Vite', 'NestJS', 'PostgreSQL', 'Cloudflare'],
+		language: 'TypeScript',
+		url: 'https://github.com/hyeoniverse/MacFolio',
+		icon: projectImage('macfolio', 'icon.png'),
+		image: projectImage('macfolio', 'screenshot.jpg'),
+	},
+	{
+		id: 'newpick',
+		name: 'NewPick 뉴픽',
+		look: 'editorial',
+		tagline: '아침 뉴스, 요약해서 한 통에.',
+		description: '관심사에 맞춰 AI가 요약한 뉴스를 매일 아침 메일로 보내 주는 맞춤형 뉴스레터 서비스',
+		context: '프로그래머스 데브코스 팀 프로젝트 (5인: 프론트엔드 2, 백엔드 3)',
+		role: '기획, 로그인과 인증, 구독·AI 체험·목록 API 연동',
+		period: '2024.12.26 – 2025.02.05',
+		facts: [
+			{ value: '6주', label: '기획부터 배포까지' },
+			{ value: '5명', label: '프론트엔드 2 · 백엔드 3' },
+			{ value: '오전 8시', label: '매일 뉴스레터 발송' },
+		],
+		highlights: [
+			{
+				title: 'AI 뉴스 요약',
+				body: '최신 뉴스를 모은 뒤 OpenAI API로 핵심만 추려 읽기 좋은 뉴스레터로 만듭니다.',
+				detail:
+					'요약과 발송은 백엔드가 맡고, 프론트는 요약된 뉴스레터를 목록과 상세 화면에 보여 줍니다. 상세 화면에는 본문과 함께 요약에 쓴 원문 뉴스, 인기·최신 뉴스레터, 이전·다음 글, 북마크와 링크 복사가 붙습니다.',
+				image: projectImage('newpick', 'shots/summary.jpg'),
+			},
+			{
+				title: '카테고리별 뉴스',
+				body: '관심 있는 분야를 고르면 그 분야의 뉴스만 모아서 볼 수 있습니다.',
+				detail:
+					'IT, 정치, 경제, 사회, 생활, 세계 여섯 분야와 전체로 나눕니다. 목록은 끝에 닿으면 다음 묶음을 불러오고, 최신순·북마크순·조회수순으로 정렬하며, 분야를 바꾸면 최신순으로 돌아갑니다.',
+				image: projectImage('newpick', 'shots/categories.jpg'),
+			},
+			{
+				title: '매일 아침 메일로',
+				body: '구독한 사람에게 매일 오전 8시, 요약한 뉴스레터를 메일로 보냅니다.',
+				detail:
+					'구독을 시작하면 내일부터 보내 준다는 안내가 뜨고, 다음 날 아침부터 메일이 옵니다. 마이페이지의 내 뉴스레터 탭에서는 오전 8시를 기준으로 그날 받은 뉴스레터를 분야별로 다시 봅니다.',
+				image: projectImage('newpick', 'shots/mail.jpg'),
+			},
+			{
+				title: '나에게 맞춘 추천',
+				body: '구독한 카테고리에 맞춰 뉴스레터를 추천하고, 구독과 취소도 직접 관리합니다.',
+				detail:
+					'마이페이지 설정 탭에서 관심 분야를 고르고 약관에 동의하면 구독이 시작됩니다. 해지를 누르면 관련 정보가 모두 지워진다는 확인 창을 한 번 더 띄우고, 구독하지 않은 사람이 기사에서 구독 단추를 누르면 이 탭으로 데려갑니다.',
+				image: projectImage('newpick', 'shots/subscribe.jpg'),
+			},
+			{
+				title: '가입 전에 체험',
+				body: '로그인하지 않아도 관심사 하나를 고르면 그 자리에서 AI 뉴스레터를 만들어 모달로 보여 줍니다.',
+				detail:
+					'어제 날짜의 뉴스로 요약을 요청합니다. AI가 돌려준 HTML에서 코드 블록 표시를 걷어 내고, DOMPurify로 위험한 태그를 거른 뒤에 화면에 그립니다.',
+			},
+			{
+				title: '요약에 쓴 원문까지',
+				body: '뉴스레터 아래에 요약에 쓴 원문 기사를 출처와 날짜가 적힌 카드로 붙이고, 누르면 새 탭에서 엽니다.',
+				detail:
+					'원문 주소로 미리보기 정보(제목, 그림, 출처)를 받아 카드로 그립니다. 카드 컴포넌트는 필요할 때 불러와 첫 화면을 가볍게 둡니다.',
+			},
+		],
+		build: [
+			{
+				title: 'Next.js App Router',
+				body: '페이지 성격에 따라 서버 렌더링과 클라이언트 렌더링을 나눴습니다. 마이페이지는 (protected) 경로 그룹으로 묶고, 그곳에서 로그아웃하면 홈으로 돌려보냅니다.',
+			},
+			{
+				title: '상태를 둘로 나눠서',
+				body: '서버에서 받아 오는 데이터는 React Query로, 화면 전체가 함께 쓰는 값은 Zustand로 관리했습니다.',
+			},
+			{
+				title: 'API 연동과 에러 처리',
+				body: '백엔드 API를 fetch 모듈로 모아 두고 화면과 연결했습니다. 배포 직전에는 Vercel에서 나온 오류를 잡으며 마무리했습니다.',
+			},
+		],
+		chapters: [
+			{
+				title: '로그인과 첫 화면',
+				lead: '새로고침해도 로그인이 풀리지 않고, 첫 화면이 깜빡이지 않게 하는 데 시간을 가장 많이 썼습니다.',
+				points: [
+					{
+						title: '팝업에서 리다이렉트로',
+						body: '처음에는 Google 로그인을 팝업 창과 postMessage로 처리했다가, 배포 직후 리다이렉트 방식으로 바꿨습니다. 돌아올 때 붙은 쿼리를 확인해 사용자 정보를 다시 받고, 주소에서는 지웁니다.',
+					},
+					{
+						title: '첫 화면 데이터는 서버에서',
+						body: '새로고침하면 로그인 상태가 초기화되고, 쿠키가 없으면 로딩이 끝나지 않았습니다. 로그인 사용자와 구독 상태, 오늘의 트렌드를 루트 레이아웃에서 서버가 먼저 받아 와 스토어에 넣는 구조로 정리했습니다.',
+					},
+					{
+						title: '만료된 토큰은 한 번 더',
+						body: '서버는 쿠키의 토큰으로 사용자를 조회하고, 만료됐으면 토큰을 갱신해 딱 한 번만 다시 시도합니다. 갱신에 실패하면 로그인하지 않은 상태로 그려, 끝없이 다시 묻지 않습니다.',
+					},
+					{
+						title: '다크 모드와 Hydration',
+						body: '테마는 브라우저에 저장해 새로고침해도 유지하고, 서버는 항상 라이트로 그려 첫 화면이 어긋나지 않게 했습니다. 링크 안의 버튼 같은 Hydration 오류를 다섯 번 따로 고쳤습니다.',
+					},
+				],
+			},
+			{
+				title: '읽고 구독하기',
+				points: [
+					{
+						title: '끝없이 이어지는 목록',
+						body: '카테고리 목록은 끝에 닿으면 다음 뉴스레터를 불러옵니다. 최신순, 북마크순, 조회수순으로 정렬하고, 카테고리를 바꾸면 최신순으로 돌아갑니다.',
+					},
+					{
+						title: '조회수',
+						body: '상세 페이지를 열면 조회수를 올리고, 목록 카드에도 조회수를 보여 줍니다.',
+					},
+					{
+						title: '구독 시작과 해지',
+						body: '설정 탭에서 관심사를 고르고 약관에 동의하면 구독이 시작됩니다. 해지를 누르면 관련 정보가 모두 지워진다는 확인 창을 한 번 더 띄웁니다.',
+					},
+					{
+						title: '구독으로 이어지는 단추',
+						body: '구독하지 않은 사람이 기사에서 구독 단추를 누르면 마이페이지의 설정 탭으로 바로 데려갑니다.',
+					},
+				],
+			},
+		],
+		contributions: [
+			'주제 선정과 기획, 기능 정의',
+			'Google 로그인(팝업 → 리다이렉트), 로그인 유지와 토큰 재발급',
+			'첫 화면 데이터를 서버에서 먼저 받아 오는 구조',
+			'구독 시작·해지 API와 확인 모달',
+			'AI 뉴스레터 체험과 원문 기사 카드',
+			'카테고리 목록의 무한 스크롤·정렬, 조회수',
+			'Skeleton·Toast·Modal 공통 컴포넌트와 다크 모드',
+			'About 페이지 아래쪽과 팀원 소개',
+		],
+		timeline: [
+			{ date: '12.26', label: '주제 선정과 기획' },
+			{ date: '12.28', label: '기능 정의, 와이어프레임, 디자인' },
+			{ date: '01.04', label: 'Next.js 초기 셋팅, 공통 컴포넌트' },
+			{ date: '01.08', label: 'UI 설계' },
+			{ date: '01.21', label: 'API 연동' },
+			{ date: '02.01', label: 'Vercel 배포와 에러 처리' },
+		],
+		specs: [
+			{ label: '프레임워크', value: 'Next.js (SSR · CSR), TypeScript' },
+			{ label: '상태 관리', value: 'Zustand, React Query' },
+			{ label: '스타일', value: 'styled-components' },
+			{ label: 'AI', value: 'OpenAI API' },
+			{ label: '배포', value: 'Vercel' },
+			{ label: '협업', value: 'GitHub, Notion' },
+		],
+		stack: ['Next.js', 'TypeScript', 'Zustand', 'React Query', 'styled-components', 'OpenAI API'],
+		language: 'TypeScript',
+		url: 'https://github.com/Devcourse-NewPick/front',
+		demo: 'https://newpick-tan.vercel.app',
+		icon: projectImage('newpick', 'icon.svg'),
+		logo: projectImage('newpick', 'logo.svg'),
+		image: projectImage('newpick', 'screenshot.jpg'),
+	},
+	{
+		id: 'qru',
+		name: 'QRU 큐알유',
+		look: 'minimal',
+		tagline: 'QR 한 장에 담은 나.',
+		description: '내 정보를 담은 QR 디지털 명함을 만들어 공유하고, 공개된 명함을 셔플로 찾아보는 웹 앱',
+		context: '개인 프로젝트',
+		role: '기획·설계, 프론트엔드, Firebase 연동과 보안 규칙',
+		facts: [
+			{ value: '1인', label: '기획부터 배포까지' },
+			{ value: '5장', label: '셔플 한 번에 보는 명함' },
+			{ value: '0개', label: '외워야 할 비밀번호' },
+		],
+		highlights: [
+			{
+				title: '명함 만들기',
+				body: '왼쪽 목차를 따라 한 줄 소개, MBTI, 취미 등을 채우고 항목을 5개까지 더합니다. 항목마다 공개할지 고르고, 비공개 항목은 공개 문서에 아예 저장하지 않습니다.',
+				image: projectImage('qru', 'screens/create-modal.jpg'),
+			},
+			{
+				title: '사진 맞추기',
+				body: '원 안에서 사진의 위치와 크기를 직접 맞춥니다. 저장할 때는 긴 변 512px, 150KB 이하로 줄입니다.',
+				image: projectImage('qru', 'screens/photo-editor.jpg'),
+			},
+			{
+				title: '주소, QR, 일련번호',
+				body: '명함마다 고유 주소와 QR 코드(PNG 저장), 일련번호가 나옵니다. 번호를 눌러 복사하고, 헤더 돋보기에 번호를 넣으면 그 명함으로 갑니다.',
+				image: projectImage('qru', 'screens/card.jpg'),
+			},
+			{
+				title: '셔플로 찾기',
+				body: '공개된 명함에서 무작위로 다섯 장을 보여 줍니다. 성별·MBTI 같은 조건과 검색어로 좁히고, 방금 본 명함은 뒤로 미룹니다.',
+				image: projectImage('qru', 'screens/shuffle.jpg'),
+			},
+			{
+				title: '내 명함 관리',
+				body: '만든 명함을 번호, 만든 날짜, 셔플 노출 여부와 함께 모아 보고, 고치거나 지웁니다. 다크 테마에서도 같은 명함을 봅니다.',
+				image: projectImage('qru', 'screens/mypage.jpg'),
+			},
+		],
+		build: [
+			{
+				title: '가입 없이, 나중에 계정으로',
+				body: 'Firebase 익명 인증으로 로그인 없이 명함을 만들고, 나중에 Google 로그인하면 계정을 연결해 같은 명함을 그대로 옮깁니다.',
+			},
+			{
+				title: '규칙으로 지키는 데이터',
+				body: 'Firestore 보안 규칙에서 저장할 수 있는 필드를 hasOnly로 제한하고, 조회는 동등 조건만 써서 복합 색인 없이 돌아가게 했습니다.',
+			},
+			{
+				title: '검색엔진에는 안 보이게',
+				body: '명함·찾기·마이페이지는 noindex 헤더와 메타 태그로 검색 결과에 실리지 않고, 주소를 아는 사람만 봅니다.',
+			},
+			{
+				title: 'PR마다 미리보기',
+				body: 'GitHub Actions가 main을 Firebase Hosting에 배포하고, PR에는 미리보기 채널과 Playwright 스크린샷을 붙입니다.',
+			},
+		],
+		chapters: [
+			{
+				title: '서버 없이 지키는 데이터',
+				lead: '서버도 Cloud Functions도 없이, 브라우저가 Firestore에 직접 읽고 씁니다. 그래서 문서의 모양과 권한을 보안 규칙 하나가 모두 검사합니다.',
+				facts: [
+					{ value: '10자리', label: '일련번호 (32^10가지)' },
+					{ value: '0개', label: '복합 색인' },
+					{ value: '150KB', label: '사진 한 장의 상한' },
+				],
+				points: [
+					{
+						title: '목록을 열지 않는 길잡이',
+						body: '보안 규칙은 질의에 담긴 값을 볼 수 없어 번호로 거르는 목록 조회를 열 수 없습니다. 번호 자체를 문서 id로 하는 길잡이 문서를 두고, 한 번 읽어 명함으로 찾아갑니다.',
+					},
+					{
+						title: '복합 색인 0개',
+						body: '처음에는 범위 질의를 써서 필터가 하나 늘 때마다 필요한 색인이 두 배로 늘었습니다. "같음" 조건만 쓰도록 바꿔 단일 필드 색인으로 처리하고, 색인 파일을 통째로 지웠습니다.',
+					},
+					{
+						title: '보여 줄 값과 찾을 값',
+						body: 'Firestore는 배열 안의 필드로 거를 수 없습니다. 순서와 라벨을 담은 표시용 배열과 별도로, 공백을 지우고 소문자로 맞춘 검색용 맵을 한 번 더 저장합니다.',
+					},
+					{
+						title: '드롭다운은 값을, 색인은 라벨을',
+						body: '필터가 하나도 걸리지 않은 적이 있습니다. 색인에는 "여성"이 들어 있는데 드롭다운은 "female"을 보냈기 때문입니다. 선택지의 값을 라벨로 맞춰 고쳤습니다.',
+					},
+					{
+						title: '사진도 Firestore에',
+						body: 'Storage 없이 줄인 사진을 데이터 URL로 저장하고, 규칙도 같은 상한으로 막습니다. 셔플이 후보를 한꺼번에 읽을 때 사진이 딸려 오지 않게 하위 문서로 떼어 둡니다.',
+					},
+					{
+						title: '고쳐도 공유한 값은 그대로',
+						body: '수정 규칙이 만든 시각, 번호, 소유자가 이전 값과 같은지 검사합니다. 그래서 이미 건넨 주소와 QR, 번호가 바뀌지 않고, 삭제하면 사진과 길잡이도 함께 지웁니다.',
+					},
+				],
+				schema: [
+					{
+						path: 'cards/{id}',
+						access: '누구나 읽기',
+						fields: ['serialNumber', 'uid', 'createdAt', 'entries[]', 'search{}', 'inShuffle', 'hasPhoto'],
+						note: '"공개"로 고른 항목만 들어갑니다. 비공개 항목은 숨기는 게 아니라 아예 저장하지 않습니다.',
+					},
+					{
+						path: 'private/card',
+						parent: 'cards/{id}',
+						access: '소유자만',
+						locked: true,
+						fields: ['values{}', 'isPublic{}'],
+						note: '수정 화면을 채울 입력 원본입니다.',
+					},
+					{
+						path: 'photo/data',
+						parent: 'cards/{id}',
+						access: '누구나 읽기',
+						fields: ['uid', 'dataUrl'],
+						note: '셔플이 후보를 한꺼번에 읽을 때 사진이 딸려 오지 않게 떼어 둡니다.',
+					},
+					{
+						path: 'serials/{번호}',
+						access: '번호로 한 번 읽기',
+						fields: ['collection', 'cardId', 'uid'],
+						note: '일련번호 자체가 문서 id입니다. 목록 조회는 막혀 있고, 번호를 알아야 한 번 읽을 수 있습니다.',
+					},
+				],
+			},
+		],
+		gallery: [
+			{ src: projectImage('qru', 'screens/home.jpg'), caption: '첫 화면' },
+			{ src: projectImage('qru', 'screens/card.jpg'), caption: '명함 보기' },
+			{ src: projectImage('qru', 'screens/card-dark.jpg'), caption: '다크 테마' },
+			{ src: projectImage('qru', 'screens/shuffle.jpg'), caption: '명함 찾기' },
+			{ src: projectImage('qru', 'screens/mobile.jpg'), caption: '휴대폰에서' },
+		],
+		contributions: [
+			'서비스 기획과 데이터 구조 설계',
+			'프론트엔드 전체',
+			'Firebase 인증·Firestore·Hosting 연동과 보안 규칙',
+			'배포 자동화',
+		],
+		specs: [
+			{ label: '프론트엔드', value: 'React 18, TypeScript, Vite, React Router v7' },
+			{ label: '상태 관리', value: 'Redux Toolkit, React Query' },
+			{ label: '스타일', value: 'styled-components, 다크·라이트 테마, 반응형' },
+			{ label: '백엔드', value: 'Firebase Firestore, Authentication (Google, 익명)' },
+			{ label: 'QR', value: 'qrcode.react' },
+			{ label: '배포', value: 'Firebase Hosting, GitHub Actions, Playwright' },
+		],
+		stack: ['React', 'TypeScript', 'Redux Toolkit', 'React Query', 'styled-components', 'Firebase'],
+		language: 'TypeScript',
+		url: 'https://github.com/hyeoniverse/QRU',
+		demo: 'https://qryou-app.web.app',
+		icon: projectImage('qru', 'icon.png'),
+		image: projectImage('qru', 'screenshot.jpg'),
+	},
+	{
+		id: 'whattodo',
+		name: 'WTD (What To Do)',
+		look: 'playful',
+		tagline: '할 일은 끌어서. 루틴은 알아서.',
+		description: '할 일과 세부 할 일을 끌어서 정리하고, 매일 반복되는 일은 루틴으로 관리하는 할 일 관리 웹 앱',
+		context: '프로그래머스 데브코스 팀 프로젝트 (4인)',
+		role: '프로젝트 뼈대, 상태 관리, 인증과 동기화, 루틴, 드래그 앤 드롭',
+		period: '2024.10.05 – 2024.10.19',
+		facts: [
+			{ value: '4명', label: '팀 프로젝트' },
+			{ value: '94개', label: '전체 114개 커밋 중 내 커밋' },
+			{ value: '0단계', label: '가입 없이 바로 쓰기' },
+		],
+		highlights: [
+			{
+				title: '할 일과 세부 할 일',
+				body: '할 일(Task) 안에 세부 할 일(SubTask)을 두고 추가·수정·삭제합니다. 체크한 할 일은 대시보드에 보입니다.',
+			},
+			{
+				title: '끌어서 순서 바꾸기',
+				body: '할 일 카드는 좌우로, 세부 할 일은 위아래로 끌어서 순서를 바꿉니다.',
+			},
+			{
+				title: '완료한 일은 보관함으로',
+				body: '끝낸 세부 할 일은 보관함에 들어가고, 토글을 열어 다시 볼 수 있습니다.',
+			},
+			{
+				title: '루틴',
+				body: '매일 반복되는 일을 루틴으로 등록하면 정한 요일과 시간에 상태가 초기화됩니다.',
+			},
+		],
+		build: [
+			{
+				title: '가입 없이도',
+				body: '로그인하지 않으면 브라우저 로컬 스토리지에 저장해 기본 기능을 쓰고, 로그인하면 서버에 저장하고 루틴을 씁니다. 저장 공간은 비회원과 회원별로 나눴습니다.',
+			},
+			{
+				title: '기능별로 나눈 모듈',
+				body: '할 일과 루틴 API를 taskApi와 routineApi로, 토큰과 저장 처리를 utils로 나누고, 상태는 Auth·Task·Routine 세 Context가 맡습니다.',
+			},
+			{
+				title: '화면 먼저, 서버는 뒤에',
+				body: '제목 수정, 체크, 삭제는 화면을 먼저 바꾸고, 로그인한 상태일 때만 서버에 보냅니다.',
+			},
+			{
+				title: '자연스러운 드래그',
+				body: 'react-beautiful-dnd로 Task와 SubTask를 각각 끌 수 있게 하고, 놓는 위치와 움직임을 다듬었습니다.',
+			},
+		],
+		chapters: [
+			{
+				title: '로그인과 동기화',
+				lead: '가입 없이 쓰던 할 일이 로그인한 뒤에도 그대로 남도록, 저장 공간과 옮기는 길을 따로 만들었습니다.',
+				points: [
+					{
+						title: '비회원 할 일을 한 번에 옮기기',
+						body: '로그인하면 비회원 목록을 /lists/bulk로 한 번에 보내고, 응답으로 받은 목록 id에 맞춰 세부 할 일을 /tasks/bulk로 보냅니다. 끝나면 로컬 데이터를 지우고 서버에서 다시 받아 옵니다.',
+					},
+					{
+						title: '저장 공간을 둘로',
+						body: '로컬 스토리지 키를 비회원은 guestTasks, 회원은 사용자마다 따로 둡니다. 로그아웃하면 이벤트를 보내 화면의 할 일을 비웁니다.',
+					},
+					{
+						title: '토큰 만료와 401',
+						body: 'Google 로그인에서 받은 토큰의 만료 시각을 읽어 지났으면 로그아웃합니다. 모든 API 함수는 같은 오류 처리를 거쳐, 401이면 다시 로그인하라는 확인 창을 띄웁니다.',
+					},
+				],
+			},
+			{
+				title: '루틴',
+				lead: '매일 반복하는 일은 정한 요일과 시간에 다시 할 일로 돌아옵니다.',
+				points: [
+					{
+						title: '요일과 시간 고르기',
+						body: '세부 할 일의 반복 아이콘을 누르면 시간과 월~일 요일 단추가 펼쳐집니다. 요일을 고르지 않으면 등록할 수 없고, 이미 루틴인 항목은 아이콘이 바뀌며 수정과 삭제가 나옵니다.',
+					},
+					{
+						title: '1분마다 상태 확인',
+						body: '로그인한 사용자는 다음 분이 시작될 때까지 기다린 뒤 60초마다 루틴을 조회해, 서버에 있는 완료 상태를 체크에 반영합니다. 처음엔 1초마다 시각을 검사하던 것을 바꿨습니다.',
+					},
+					{
+						title: '로그인 안내와 중복 막기',
+						body: '비회원이 루틴을 누르면 로그인 안내 모달을 띄웁니다. 같은 세부 할 일에 루틴을 두 번 등록하면 이미 등록된 루틴이라고 알립니다.',
+					},
+					{
+						title: '입력 검사와 삭제 확인',
+						body: '목록과 세부 할 일 제목은 15자까지 받습니다. 세부 할 일이 남은 목록을 지우면 몇 개가 함께 지워지는지 알리고 한 번 더 묻습니다.',
+					},
+				],
+			},
+		],
+		contributions: [
+			'프로젝트 뼈대와 화면 구성, 라우터',
+			'Task·Routine Context로 상태 관리',
+			'react-beautiful-dnd로 할 일·세부 할 일 끌어 옮기기',
+			'Google 로그인, 토큰 만료와 401 처리',
+			'비회원·회원 저장 공간 분리와 한꺼번에 옮기기',
+			'루틴 추가·수정·삭제와 1분 주기 상태 확인',
+			'입력 검사와 삭제 확인 창',
+			'README 작성',
+		],
+		timeline: [
+			{ date: '10.05', label: '기획과 첫 커밋' },
+			{ date: '10.10', label: '공통 컴포넌트, 할 일 화면' },
+			{ date: '10.14', label: '할 일 서랍과 카드' },
+			{ date: '10.15', label: '할 일·세부 할 일 끌어서 옮기기' },
+			{ date: '10.16', label: 'Google 로그인, 로컬 저장' },
+			{ date: '10.17', label: '할 일 API 연동, 비회원 할 일 옮기기' },
+			{ date: '10.18', label: '루틴, 만료된 로그인 처리, 정리' },
+			{ date: '10.19', label: '마무리와 배포' },
+		],
+		usage: [
+			{
+				title: '가입 없이',
+				body: '브라우저 로컬 스토리지에 저장합니다. 할 일과 세부 할 일을 만들고, 고치고, 끌어서 순서를 바꾸는 기본 기능을 바로 씁니다.',
+			},
+			{
+				title: '로그인하면',
+				body: 'Google로 로그인하면 서버에 저장하고, 비회원일 때 만든 할 일을 계정으로 옮깁니다. 매일 반복되는 일은 루틴으로 등록합니다.',
+			},
+		],
+		structure: [
+			'src/',
+			'├── api/',
+			'│   ├── taskApi.js        목록·할 일, 한꺼번에 옮기기',
+			'│   └── routineApi.js     루틴',
+			'├── components/',
+			'│   ├── Auth/LoginForm.jsx',
+			'│   ├── Common/           Button, InputCheck, InputField, Modal, Drawer',
+			'│   └── Task/             TaskCard, TaskDashboard, TaskDrawer',
+			'├── contexts/             AuthContext, TaskContext, RoutineContext',
+			'├── utils/                authHelpers, localStorageHelpers, validationHelpers',
+			'├── pages/TaskPage.jsx',
+			'└── App.js',
+		].join('\n'),
+		specs: [
+			{ label: '프론트엔드', value: 'React, JavaScript' },
+			{ label: '스타일', value: 'Tailwind CSS' },
+			{ label: '상태 관리', value: 'React Context API' },
+			{ label: '드래그 앤 드롭', value: 'react-beautiful-dnd' },
+			{ label: '백엔드 통신', value: 'Axios (Node.js · Express 서버)' },
+			{ label: '배포', value: 'Vercel' },
+		],
+		stack: ['React', 'Tailwind CSS', 'Context API', 'react-beautiful-dnd', 'Axios', 'Node.js', 'Express'],
+		language: 'JavaScript',
+		url: 'https://github.com/Devcourse-WhatToDo/todo-front',
+		demo: 'https://what-to-do-chi.vercel.app/',
+		icon: projectImage('whattodo', 'icon.png'),
+		image: projectImage('whattodo', 'screenshot.jpg'),
+	},
+	{
+		id: 'sproutfarm',
+		name: 'SproutFarm 새싹 농장',
+		look: 'game',
+		controls: [
+			{ keys: ['↑', '↓', '←', '→'], label: '움직이기' },
+			{ keys: ['Shift'], label: '달리기' },
+			{ keys: ['Space'], label: '대화 넘기기, 울타리에 넣기, 잠자기' },
+		],
+		tagline: '농장에 작은 소동이 생겼어요. 얼른 잡아주세요!',
+		description: '도망친 동물 20마리를 자정 전에 울타리로 데려오는 탑다운 2D 픽셀 캐주얼 게임',
+		context: '개인 프로젝트 (PC 전용)',
+		period: '2024.06.10 – 2024.06.24',
+		facts: [
+			{ value: '20마리', label: '자정 전에 데려올 동물' },
+			{ value: '약 18분', label: '한 판 (게임 1분 = 1.2초)' },
+			{ value: 'TOP 10', label: '서버에서 다시 계산하는 랭킹' },
+		],
+		highlights: [
+			{
+				title: '잡아서 울타리로',
+				body: '방향키로 움직이고 Shift로 달립니다. 도망친 동물을 잡으면 따라오고, Space로 울타리에 넣습니다.',
+			},
+			{
+				title: '체력과 시간',
+				body: '달릴수록 빨리 지치고, 열매를 먹거나 집에서 자면 회복합니다. 흙길에서는 덜 지치고 1.25배 빨라집니다.',
+			},
+			{
+				title: '끝없는 들판',
+				body: '숲, 바위밭, 꽃밭, 과수원, 연못, 빈터가 이어지는 들판. 같은 곳에 다시 가면 같은 풍경이 나옵니다.',
+			},
+			{
+				title: '노을, 그리고 밤',
+				image: projectImage('sproutfarm', 'tech/daynight.jpg'),
+				body: '시간이 흐르면 화면이 노을빛을 지나 어두워지고, 체력이 떨어지면 나침반이 집을 가리킵니다.',
+			},
+		],
+		build: [
+			{
+				title: '무한 맵',
+				image: projectImage('sproutfarm', 'tech/infinite.jpg'),
+				body: '20×20칸 타일맵 4개가 플레이어를 따라다닙니다. 경계를 넘으면 가장 먼 덩어리를 진행 방향으로 40칸 옮겨 붙입니다.',
+			},
+			{
+				title: '절차적 지형',
+				image: projectImage('sproutfarm', 'tech/zones.jpg'),
+				body: '플레이어 주위를 12칸 구역으로 나눠 구역 위치로 풍경을 정하고, 24칸 간격으로 구불구불한 흙길을 냅니다.',
+			},
+			{
+				title: 'A* 동물 AI',
+				image: projectImage('sproutfarm', 'tech/escape.jpg'),
+				body: 'A* 길찾기로 장애물을 피해 도망치고 따라옵니다. 흩어질 자리는 플레이어가 실제로 걸어갈 수 있는 곳만 고릅니다.',
+			},
+			{
+				title: '조작할 수 없는 랭킹',
+				image: projectImage('sproutfarm', 'shots/result.jpg'),
+				body: '서버리스 함수가 점수가 아닌 기록을 받아 범위를 자르고 직접 점수를 계산해 Redis에 저장합니다.',
+			},
+		],
+		contributions: ['게임 기획과 규칙, 점수 공식', 'Unity C# 스크립트 전체', 'WebGL 빌드와 Vercel 배포, 랭킹 서버'],
+		specs: [
+			{ label: '엔진', value: 'Unity 6, C#' },
+			{ label: '렌더링', value: 'URP 2D Renderer, Y축 기준 정렬' },
+			{ label: '맵', value: 'Tilemap, Rule Tile (47조각 블롭), 런타임 절차적 생성' },
+			{ label: 'AI', value: 'A* Pathfinding Project (Grid Graph)' },
+			{ label: '입력 · UI', value: 'Input System, uGUI, TextMeshPro' },
+			{ label: '배포', value: 'WebGL (Brotli 압축), Vercel' },
+			{ label: '서버', value: 'Vercel 서버리스 함수, Redis' },
+		],
+		stack: ['Unity 6', 'C#', 'WebGL', 'Vercel', 'Redis'],
+		language: 'JavaScript',
+		url: 'https://github.com/hyeoniverse/SproutFarm',
+		demo: 'https://sprout-farm-beta.vercel.app',
+		icon: projectImage('sproutfarm', 'icon.png'),
+		art: projectImage('sproutfarm', 'scene.png'),
+		credits: [
+			{
+				role: 'ART',
+				name: 'Sprout Lands Asset Pack',
+				by: 'Cup Nooble',
+				href: 'https://cupnooble.itch.io/sprout-lands-asset-pack',
+				note: '풀밭과 흙길, 집과 나무, 소·병아리·주인공, 아이템, 대화창, 표정, 고양이 발 커서까지 게임과 이 페이지의 픽셀 그림은 모두 이 팩에서 가져왔습니다.',
+			},
+			{
+				role: 'FONT',
+				name: 'Galmuri11',
+				by: 'quiple',
+				href: 'https://github.com/quiple/galmuri',
+				note: '게임 안의 한글 픽셀 글꼴 (SIL Open Font License)',
+			},
+		],
+		gallery: [
+			{ src: projectImage('sproutfarm', 'shots/intro.jpg'), caption: '시작 — 동물들이 달아났다' },
+			{ src: projectImage('sproutfarm', 'shots/farm.jpg'), caption: '오전 9시, 농장에서' },
+			{ src: projectImage('sproutfarm', 'shots/field.jpg'), caption: '들판으로 나가 동물 찾기' },
+			{ src: projectImage('sproutfarm', 'shots/path.jpg'), caption: '흙길에서는 더 빠르게' },
+			{ src: projectImage('sproutfarm', 'shots/pond.jpg'), caption: '연못가' },
+			{ src: projectImage('sproutfarm', 'shots/evening.jpg'), caption: '노을이 지면' },
+			{ src: projectImage('sproutfarm', 'shots/night.jpg'), caption: '밤, 자정까지' },
+			{ src: projectImage('sproutfarm', 'shots/result.jpg'), caption: '결과와 랭킹' },
+		],
+		image: projectImage('sproutfarm', 'screenshot.jpg'),
 	},
 	{
 		id: 'devcourse',

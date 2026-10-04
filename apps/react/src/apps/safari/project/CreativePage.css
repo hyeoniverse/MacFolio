@@ -186,7 +186,10 @@
 	color: var(--cr-bg);
 	font-size: calc(13px / var(--s, 1));
 	font-weight: 600;
-	white-space: nowrap;
+	/* 왼쪽으로 남은 자리(--room, 스크립트가 잰다)를 넘으면 줄을 바꾼다 */
+	width: max-content;
+	max-width: var(--room, calc(320px / var(--s, 1)));
+	text-wrap: balance;
 	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 	pointer-events: none;
 	animation: cr-bubble 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
@@ -232,10 +235,8 @@
 	align-self: end;
 	height: 112px;
 	opacity: 0;
-	transform: translateY(6px) scale(0.96);
-	transition:
-		opacity 0.25s var(--ease-out),
-		transform 0.35s var(--ease-out);
+	/* 나가는 표정은 들어오는 표정이 다 보인 뒤에 사라진다. 둘이 함께 옅어지면 그 사이로 몸이 비쳐 깜빡여 보였다 */
+	transition: opacity 0.12s linear 0.12s;
 }
 
 .cr-mascot img[src*='star'] {
@@ -243,11 +244,13 @@
 }
 
 .cr-mascot img[data-on='true'] {
+	z-index: 2;
 	opacity: 1;
-	transform: none;
+	transition: opacity 0.12s linear;
 }
 
-.cr-mascot[data-mood='happy'] img[data-on='true'] {
+/* 데모가 끝나 기뻐할 때만 통통 튄다. 마우스를 올렸을 때는 표정만 바꾼다 (튀면 깜빡이는 것처럼 보였다) */
+.cr-mascot[data-mood='happy']:not([data-petted]) img[data-on='true'] {
 	animation: cr-boing 0.6s var(--ease-out);
 }
 
