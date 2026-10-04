@@ -55,6 +55,8 @@ export interface ProjectPoint {
 	shots?: { src: string; alt: string }[];
 	/** 카드에 붙일 아이콘 (Font Awesome 이름, 예: fa-lock) */
 	icon?: string;
+	/** 같은 장 안에서 묶는 이름 (예: 쓰기, 운영): 묶음마다 큰 칸 하나와 작은 칸들로 짠다 */
+	group?: string;
 }
 
 /** 테마 하나를 이루는 다섯 색 (강조색, 라이트·다크의 바탕과 글자) */
@@ -851,63 +853,75 @@ export const PROJECTS: Project[] = [
 				points: [
 					{
 						title: '하나의 편집기',
+						group: '쓰기',
 						body: 'Plate.js 편집기에서 마크다운과 리치 텍스트를 오가며 씁니다. 제목·목록·표·코드·각주·콜아웃과 글자색, 형광을 쓰고, 오디오·파일 첨부까지 두 형식 사이에서 그대로 옮겨집니다. 투표·탭·캘린더 블록은 직접 만들어 더했고, 미리보기는 실제 게시 화면과 같은 컴포넌트로 그려 보이는 그대로 발행됩니다.',
 						image: projectImage('hyeoniverse', 'shots/cms-editor.jpg'),
 					},
 					{
 						title: '요소마다 떠 있는 도구 막대',
+						group: '쓰기',
 						body: '노션처럼 고친 그 자리에서 꾸밉니다. 글자를 고르면 문단 모양·굵게·색·배경을 바꾸는 막대가, 이미지를 고르면 인라인·블록·플로트 배치와 정렬, 캡션, 교체를 하는 막대가 그 요소 위에 뜹니다.',
 						image: projectImage('hyeoniverse', 'shots/cms-toolbar.jpg'),
 					},
 					{
 						title: '세 겹 자동 저장과 버전 확인',
+						group: '쓰기',
 						body: '입력하는 즉시 브라우저에 초안을 두고, 3초 동안 입력이 없으면 서버에 리비전을 쌓고, 페이지를 떠날 때는 sendBeacon으로 마지막 변경을 보냅니다. 저장할 때는 불러온 버전과 지금 버전을 비교해, 다른 화면이 먼저 저장했으면 409로 돌려보내 덮어쓰지 않습니다.',
 						image: projectImage('hyeoniverse', 'shots/cms-autosave.jpg'),
 					},
 					{
 						title: '글 한 편의 일생',
+						group: '발행과 정리',
 						body: '초안은 예약하면 DB 안의 pg_cron이 매분 확인해 그 시각에 발행하고, 발행된 글은 저장할 때마다 버전이 오릅니다. 지운 글은 휴지통에서 복구할 수 있고, 30일(인기 글 다섯 개는 90일)이 지나면 매일 도는 정리 작업이 영구 삭제합니다. 글과 작업물이 중심인 테이블 25개 위에서 돕니다.',
 						image: projectImage('hyeoniverse', 'shots/cms-lifecycle.jpg'),
 					},
 					{
 						title: '목록에서 한 번에',
+						group: '발행과 정리',
 						body: '글 목록에서 여러 개를 골라 한 번에 발행하거나 지우고, 상태 칩을 누르면 그 자리에서 발행과 미발행이 바뀝니다. 필터·검색 줄은 스크롤해도 위에 붙어 있고, 행마다 공개 페이지 바로가기와 .md 내보내기가 있습니다. 작업물은 행 번호를 눌러 새 순서를 적으면 바로 옮겨집니다.',
 						image: projectImage('hyeoniverse', 'shots/cms-posts.jpg'),
 					},
 					{
-						title: '누가 무엇을 할 수 있나',
-						body: '소유자·관리자·저자·방문자 네 단계로 나눠, 저자는 자기 글만, 관리자는 모든 글과 댓글 중재까지, 사이트 설정과 저자 초대는 소유자만 합니다. 소유자가 이메일로 초대하고, 초대받지 않은 계정은 GitHub 로그인 직후 지웁니다.',
-						image: projectImage('hyeoniverse', 'shots/cms-roles.jpg'),
-					},
-					{
-						title: '대시보드',
-						body: '관리자 첫 화면은 운영 현황 한 장입니다. 빠른 작업(새 글·새 프로젝트·설정·신고·알림, 대기 중인 신고와 안 읽은 알림 수는 배지로) 아래로 최근 24시간 서비스 호출과 실패 수, 총 조회수와 지난 7일 대비 변화, 발행·초안 수가 놓입니다. 일별 조회수는 기간을 골라 곡선으로 보고, 달력에서 날짜를 누르면 그날의 순위와 많이 본 글이 열립니다.',
-						image: projectImage('hyeoniverse', 'cms/dashboard.jpg'),
-					},
-					{
-						title: '알림과 댓글',
-						body: '새 댓글·답글·신고·권한 요청·새 기기 로그인·방문 급증과 AI 공급자 실패·메일 발송 실패·예약 작업 오류 같은 시스템 알림을 전체·댓글·시스템·신고 네 탭에서 받습니다. 처리가 필요한 것은 따로 묶이고, 알림을 눌러 넘어간 항목은 잠시 깜빡여 어디로 왔는지 알려 줍니다. 댓글은 글과 작업물을 한 표에 모아 지우거나 되살립니다.',
-						image: projectImage('hyeoniverse', 'cms/notifications.jpg'),
-					},
-					{
-						title: '코드 배포 없이 사이트 설정',
-						body: '사이트 제목과 소개, SEO 메타데이터, 테마 색, 외부 서비스 키를 설정 다섯 탭에서 고칩니다. 비우면 안 되는 값은 화면·API·DB 세 곳에서 막고, About 페이지는 실제 페이지 위에서 글자를 눌러 바로 고칩니다.',
-						image: projectImage('hyeoniverse', 'shots/admin-settings.jpg'),
-					},
-					{
-						title: '서비스 호출 기록',
-						body: 'AI 번역·요약·TTS·커버, 이미지 검색, 메일, GitHub API, 예약 작업의 성공과 실패를 새것부터 남깁니다. 위에는 공급자마다 성공·실패 수와 마지막 실패 원인(키 없음·한도·결제·서버 오류)이, 아래에는 기록 줄이 있어 어느 키가 만료됐는지 바로 보입니다.',
-						image: projectImage('hyeoniverse', 'cms/service-log.jpg'),
-					},
-					{
 						title: '글과 작업물 잇기',
+						group: '발행과 정리',
 						body: '작업물에는 관련 글과 시리즈를, 글에는 관련 프로젝트를 검색해 붙입니다. 미발행 항목은 Draft로 표시되고, 고른 칩은 끌어서 순서를 바꾸며 공개 상세의 정보 칸에 그대로 나옵니다.',
 						image: projectImage('hyeoniverse', 'cms/relations.jpg'),
 					},
 					{
 						title: 'SEO 점검',
+						group: '발행과 정리',
 						body: '편집기 오른쪽 아래의 SEO 점검 알약이 제목·슬러그·요약(30자 이상)·커버·카테고리·태그 여섯 가지를 세어 5/6처럼 보여 줍니다. 펼쳐서 모자란 항목을 누르면 그 칸으로 데려가 깜빡여 줍니다.',
 						image: projectImage('hyeoniverse', 'cms/seo.jpg'),
+					},
+					{
+						title: '대시보드',
+						group: '운영',
+						body: '관리자 첫 화면은 운영 현황 한 장입니다. 빠른 작업(새 글·새 프로젝트·설정·신고·알림, 대기 중인 신고와 안 읽은 알림 수는 배지로) 아래로 최근 24시간 서비스 호출과 실패 수, 총 조회수와 지난 7일 대비 변화, 발행·초안 수가 놓입니다. 일별 조회수는 기간을 골라 곡선으로 보고, 달력에서 날짜를 누르면 그날의 순위와 많이 본 글이 열립니다.',
+						image: projectImage('hyeoniverse', 'cms/dashboard.jpg'),
+					},
+					{
+						title: '알림과 댓글',
+						group: '운영',
+						body: '새 댓글·답글·신고·권한 요청·새 기기 로그인·방문 급증과 AI 공급자 실패·메일 발송 실패·예약 작업 오류 같은 시스템 알림을 전체·댓글·시스템·신고 네 탭에서 받습니다. 처리가 필요한 것은 따로 묶이고, 알림을 눌러 넘어간 항목은 잠시 깜빡여 어디로 왔는지 알려 줍니다. 댓글은 글과 작업물을 한 표에 모아 지우거나 되살립니다.',
+						image: projectImage('hyeoniverse', 'cms/notifications.jpg'),
+					},
+					{
+						title: '서비스 호출 기록',
+						group: '운영',
+						body: 'AI 번역·요약·TTS·커버, 이미지 검색, 메일, GitHub API, 예약 작업의 성공과 실패를 새것부터 남깁니다. 위에는 공급자마다 성공·실패 수와 마지막 실패 원인(키 없음·한도·결제·서버 오류)이, 아래에는 기록 줄이 있어 어느 키가 만료됐는지 바로 보입니다.',
+						image: projectImage('hyeoniverse', 'cms/service-log.jpg'),
+					},
+					{
+						title: '누가 무엇을 할 수 있나',
+						group: '권한과 설정',
+						body: '소유자·관리자·저자·방문자 네 단계로 나눠, 저자는 자기 글만, 관리자는 모든 글과 댓글 중재까지, 사이트 설정과 저자 초대는 소유자만 합니다. 소유자가 이메일로 초대하고, 초대받지 않은 계정은 GitHub 로그인 직후 지웁니다.',
+						image: projectImage('hyeoniverse', 'shots/cms-roles.jpg'),
+					},
+					{
+						title: '코드 배포 없이 사이트 설정',
+						group: '권한과 설정',
+						body: '사이트 제목과 소개, SEO 메타데이터, 테마 색, 외부 서비스 키를 설정 다섯 탭에서 고칩니다. 비우면 안 되는 값은 화면·API·DB 세 곳에서 막고, About 페이지는 실제 페이지 위에서 글자를 눌러 바로 고칩니다.',
+						image: projectImage('hyeoniverse', 'shots/admin-settings.jpg'),
 					},
 				],
 			},

@@ -180,7 +180,7 @@ test.describe('Safari', () => {
 		await expect(buddy).not.toHaveAttribute('data-spot', 'hero');
 		await expect(buddy).toBeInViewport();
 		// 테마: 프리셋을 고르면 미리보기 이름이 바뀌고, 다크로 바꿀 수 있다
-		const themes = panel.getByRole('region', { name: '테마' });
+		const themes = panel.getByRole('region', { name: '테마' }).locator('.cd-themes');
 		await themes.getByRole('button', { name: 'Forest' }).click();
 		await expect(themes.locator('.cd-themes-name')).toHaveText('Forest');
 		await themes.getByRole('button', { name: /다크/ }).click();

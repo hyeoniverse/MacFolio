@@ -61,29 +61,108 @@
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-/* showcase (관리자와 CMS): 기능마다 화면이 붙은 타일을 두 줄로 모두 펼친다 */
+/* showcase (관리자와 CMS): 묶음 이름 아래 큰 칸 하나(화면과 글이 좌우로), 그 아래 작은 칸들 */
 .cr-showcase {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 20px;
-	margin: 0;
-	padding: 0;
-	list-style: none;
+	gap: 72px;
 }
 
-.cr-showcase .cr-tile {
+.cr-showcase-group {
+	display: grid;
+	gap: 16px;
+}
+
+.cr-showcase-name {
 	display: flex;
-	flex-direction: column;
-	padding: 20px 20px 28px;
+	gap: 14px;
+	align-items: baseline;
+	margin: 0 0 8px;
+	font-size: clamp(24px, 3cqi, 32px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 
-.cr-showcase .cr-tile > :not(figure) {
+.cr-showcase-name span {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+}
+
+.cr-showcase h4 {
+	font-family: var(--sp-serif);
+	font-size: 20px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	line-height: 1.3;
+}
+
+.cr-showcase .cr-tile p {
+	margin-top: 8px;
+}
+
+/* 큰 칸: 화면 7 : 글 5, 묶음마다 좌우를 바꾼다 */
+.cr-showcase-lead {
+	display: grid;
+	grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+	gap: 32px;
+	align-items: center;
+	padding: 20px 36px 20px 20px;
+}
+
+.cr-showcase-lead[data-flip] {
+	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+	padding: 20px 20px 20px 36px;
+}
+
+.cr-showcase-lead[data-flip] > figure {
+	order: 2;
+}
+
+.cr-showcase-lead h4 {
+	font-size: clamp(22px, 2.6cqi, 28px);
+}
+
+.cr-showcase-lead p {
+	font-size: 16px;
+}
+
+.cr-showcase-lead .cr-showcase-shot {
+	margin: 0;
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* 작은 칸: 둘이면 반씩, 셋이면 셋으로 */
+.cr-showcase-rest {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.cr-showcase-rest[data-count='3'] {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cr-showcase-rest[data-count='1'] {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.cr-showcase-rest[data-count='0'] {
+	display: none;
+}
+
+.cr-showcase-rest .cr-tile {
+	padding: 16px 16px 24px;
+}
+
+.cr-showcase-rest .cr-tile > :not(figure) {
 	padding-inline: 8px;
 }
 
 /* 화면 자리는 늘 16:10이라 그림이 늦게 와도 아래가 밀리지 않는다 */
 .cr-showcase-shot {
-	margin: 0 0 22px;
+	margin: 0 0 18px;
 	overflow: hidden;
 	border-radius: 14px;
 	background-color: var(--cr-bg);
@@ -127,61 +206,225 @@
 	font-size: clamp(24px, 3cqi, 32px);
 }
 
-/* bento (AI 번역·요약·커버): 데모·그림 타일은 반씩, 글 타일은 작게 */
-.cr-bento {
+/* bento (AI 번역·요약·커버): 글 4 : 데모 8의 큰 줄, 줄마다 좌우를 바꾸고 글은 줄 안에서 붙어 따라온다 */
+.cr-split {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 16px;
+	gap: 20px;
 }
 
-.cr-bento .cr-tile[data-size='image'] .cr-zoom img {
-	aspect-ratio: 16 / 10;
+.cr-split-row {
+	display: grid;
+	grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+	gap: 40px;
+	align-items: start;
+	padding: 40px;
+	border-radius: 28px;
+	background-color: var(--cr-tile);
 }
 
-/* dashboard (트래픽 분석): 숫자 타일, 큰 화면, 아이콘 카드 */
+.cr-split-row[data-flip] {
+	grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+}
+
+.cr-split-row[data-flip] > header {
+	order: 2;
+}
+
+.cr-split-row > header {
+	position: sticky;
+	top: 32px;
+}
+
+.cr-split-row h3 {
+	font-size: clamp(24px, 2.8cqi, 30px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+}
+
+.cr-split-row header > p:last-child {
+	margin-top: 12px;
+	color: var(--cr-muted);
+	font-size: 15px;
+	line-height: 1.65;
+}
+
+/* 화면만 있는 줄은 데모 줄보다 낮게: 글과 화면을 가운데로 맞춘다 */
+.cr-split-row[data-kind='image'] {
+	align-items: center;
+	background-color: transparent;
+	box-shadow: inset 0 0 0 1px var(--cr-line);
+}
+
+.cr-split-media .cr-point-demo > :first-child:not(.cr-shots) {
+	border: none;
+	background-color: var(--cr-bg);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cr-split-media .cr-point-shot {
+	margin: 0;
+	border: none;
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* dashboard (트래픽 분석): 어두운 계기판 숫자, 겹친 화면, 옆으로 넘기는 카드 */
 .cr-chapter-facts[data-look='dashboard'] {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 16px;
-	padding: 0;
+	gap: 0;
+	padding: 28px 8px;
 	border: none;
+	border-radius: 24px;
+	background:
+		radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--sp-accent) 28%, transparent), transparent 55%), #16151a;
+	color: #f4f1ec;
 }
 
-.cr-chapter-facts[data-look='dashboard'] li {
-	padding: 24px;
-	border-radius: 20px;
-	background-color: var(--cr-tile);
+.cr-chapter-facts[data-look='dashboard'] li + li {
+	border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cr-chapter-facts[data-look='dashboard'] strong {
+	color: #ff6fae;
+	font-size: clamp(36px, 5cqi, 52px);
+}
+
+.cr-chapter-facts[data-look='dashboard'] li > span {
+	color: rgba(244, 241, 236, 0.7);
 }
 
 .cr-dashboard {
 	display: grid;
-	gap: 16px;
+	gap: 40px;
 }
 
-.cr-dashboard-hero header {
+.cr-dashboard-head {
 	max-width: 44em;
+	margin: 0 auto;
+	text-align: center;
 }
 
-.cr-dashboard-hero .cr-shots > p {
+.cr-dashboard-head h3 {
+	font-size: clamp(24px, 3cqi, 32px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.cr-dashboard-head p {
+	margin-top: 10px;
+	color: var(--cr-muted);
+	font-size: 16px;
+	line-height: 1.65;
+}
+
+/* 겹친 화면: 큰 화면 하나에 작은 화면 둘이 양쪽 아래 모서리에 비스듬히 얹힌다 */
+.cr-collage {
+	display: grid;
+	position: relative;
+	padding: 0 8% 14%;
+}
+
+.cr-collage figure {
+	margin: 0;
+	overflow: hidden;
+	border-radius: 14px;
+	background-color: var(--cr-bg);
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+.cr-collage figure[data-at='1'],
+.cr-collage figure[data-at='2'] {
+	position: absolute;
+	bottom: 0;
+	width: 38%;
+	transition: transform 0.4s var(--ease-out);
+}
+
+.cr-collage figure[data-at='1'] {
+	left: 0;
+	transform: rotate(-3deg);
+}
+
+.cr-collage figure[data-at='2'] {
+	right: 0;
+	transform: rotate(3deg);
+}
+
+.cr-collage figure[data-at='1']:hover,
+.cr-collage figure[data-at='2']:hover {
+	z-index: 2;
+	transform: rotate(0) scale(1.04);
+}
+
+.cr-collage figcaption {
+	padding: 8px 12px;
+	color: var(--cr-muted);
+	font-size: 12px;
+}
+
+.cr-collage .cr-zoom img {
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 옆으로 넘기는 카드 */
+.cr-rail-wrap {
+	display: grid;
+	gap: 14px;
+}
+
+.cr-rail {
+	display: grid;
+	grid-auto-columns: minmax(260px, 30%);
+	grid-auto-flow: column;
+	gap: 16px;
+	margin: 0;
+	padding: 0 0 6px;
+	overflow-x: auto;
+	list-style: none;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+}
+
+.cr-rail::-webkit-scrollbar {
 	display: none;
 }
 
-.cr-dashboard-cards {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 16px;
+.cr-rail > li {
+	padding: 26px;
+	scroll-snap-align: start;
 }
 
-.cr-dashboard-cards .cr-tile {
-	padding: 24px;
+.cr-rail h3 {
+	font-size: 19px;
 }
 
-.cr-dashboard-cards h3 {
-	font-size: 18px;
-}
-
-.cr-dashboard-cards p {
+.cr-rail p {
 	font-size: 14px;
+}
+
+.cr-rail-nav {
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+}
+
+.cr-rail-nav button {
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--cr-tile);
+	color: var(--cr-ink);
+	cursor: pointer;
+}
+
+.cr-rail-nav button:hover {
+	background-color: color-mix(in srgb, var(--cr-ink) 10%, var(--cr-bg));
 }
 
 /* gauges (성능): Lighthouse 같은 점수 고리 */
@@ -319,39 +562,169 @@
 	line-height: 1.6;
 }
 
-/* palette (테마): 아이콘이 붙은 작은 타일 세 줄 */
-.cr-tiles {
+/* palette (테마): 왼쪽 글 목록, 오른쪽은 붙어 있는 화면. 지금 읽는 항목이 진해지고 화면이 그 항목으로 바뀐다 */
+.cr-spot {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 16px;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+	gap: 48px;
+	align-items: start;
 }
 
-.cr-tiles .cr-tile {
-	padding: 24px;
+.cr-spot-list {
+	display: grid;
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
 
-.cr-tiles h3 {
-	font-size: 18px;
+.cr-spot-list > li {
+	padding: 28px 0 28px 22px;
+	border-left: 2px solid var(--cr-line);
+	opacity: 0.4;
+	transition:
+		opacity 0.35s ease,
+		border-color 0.35s ease;
 }
 
-.cr-tiles p {
-	font-size: 14px;
+.cr-spot-list > li[data-active] {
+	border-left-color: var(--sp-accent);
+	opacity: 1;
 }
 
-.cr-tiles .cr-point-demo,
-.cr-tiles .cr-point-shot {
-	margin-top: 16px;
+.cr-spot-list h3 {
+	font-size: 22px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.cr-spot-list p {
+	margin-top: 8px;
+	color: var(--cr-muted);
+	font-size: 15px;
+	line-height: 1.65;
+}
+
+.cr-spot-list .cr-tile-icon {
+	margin-bottom: 12px;
+}
+
+/* 넓은 창에서는 항목 아래 화면을 숨기고 오른쪽 붙은 화면이 대신 보여 준다 */
+.cr-spot-inline {
+	display: none;
+}
+
+.cr-spot-stage {
+	display: grid;
+	position: sticky;
+	top: calc(50% - 180px);
+	overflow: hidden;
+	border-radius: 20px;
+	background-color: var(--cr-tile);
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
+	aspect-ratio: 16 / 11;
+}
+
+.cr-spot-stage figure {
+	display: grid;
+	grid-area: 1 / 1;
+	/* 화면이 둘이면 위아래로 나눠 둔다 */
+	grid-auto-rows: minmax(0, 1fr);
+	gap: 8px;
+	margin: 0;
+	padding: 8px;
+	opacity: 0;
+	transform: scale(1.03);
+	transition:
+		opacity 0.5s ease,
+		transform 0.7s var(--ease-out);
+}
+
+.cr-spot-stage figure[data-active] {
+	opacity: 1;
+	transform: none;
+}
+
+.cr-spot-stage img {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	border-radius: 12px;
+	background-color: var(--cr-bg);
+	object-fit: contain;
 }
 
 /* 좁은 창: 모두 한 줄로 */
 @container (max-width: 760px) {
-	.cr-showcase,
-	.cr-bento,
-	.cr-dashboard-cards,
+	.cr-showcase-lead,
+	.cr-showcase-lead[data-flip],
+	.cr-showcase-rest,
+	.cr-showcase-rest[data-count='3'],
+	.cr-split-row,
+	.cr-split-row[data-flip],
+	.cr-spot,
 	.cr-numbered,
-	.cr-tiles,
 	.cr-chapter-facts[data-look='dashboard'] {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.cr-showcase-lead,
+	.cr-showcase-lead[data-flip] {
+		padding: 16px 16px 24px;
+	}
+
+	.cr-showcase-lead[data-flip] > figure,
+	.cr-split-row[data-flip] > header {
+		order: 0;
+	}
+
+	.cr-split-row {
+		gap: 20px;
+		padding: 22px;
+	}
+
+	.cr-split-row > header {
+		position: static;
+	}
+
+	.cr-chapter-facts[data-look='dashboard'] li + li {
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		border-left: none;
+	}
+
+	.cr-chapter-facts[data-look='dashboard'] li {
+		padding: 12px 0;
+	}
+
+	.cr-collage {
+		gap: 12px;
+		padding: 0;
+	}
+
+	.cr-collage figure[data-at='1'],
+	.cr-collage figure[data-at='2'] {
+		position: static;
+		width: auto;
+		transform: none;
+	}
+
+	.cr-rail {
+		grid-auto-columns: 82%;
+	}
+
+	/* 좁은 창: 붙은 화면 대신 항목마다 화면을 글 아래에 */
+	.cr-spot-stage {
+		display: none;
+	}
+
+	.cr-spot-list > li {
+		opacity: 1;
+	}
+
+	.cr-spot-inline {
+		display: grid;
+		gap: 8px;
+		margin-top: 14px;
 	}
 
 	.cr-tile,
