@@ -18,6 +18,19 @@ test.describe('데스크톱', () => {
 		expect(after.x).toBe(before.x);
 	});
 
+	test('메뉴 막대의 음량 아이콘을 누르면 음량 창이 그 바로 아래 가운데에 열린다', async ({ page }) => {
+		await enterDesktop(page);
+		const icon = page.locator('.macos-statusbar [class*="fa-volume"]');
+		const iconBox = (await icon.boundingBox())!;
+		await icon.click();
+		const popup = page.locator('.volume-container');
+		await expect(popup.getByRole('slider', { name: 'Volume Slider' })).toBeAttached();
+		const box = (await popup.boundingBox())!;
+		expect(Math.abs(box.x + box.width / 2 - (iconBox.x + iconBox.width / 2))).toBeLessThan(2);
+		expect(box.y).toBeGreaterThan(iconBox.y + iconBox.height);
+		expect(box.y - (iconBox.y + iconBox.height)).toBeLessThan(16);
+	});
+
 	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
 		// 스크립트를 늦게 받게 해서 로딩 화면이 뜨기 전의 모습을 본다
 		let release = () => {};
