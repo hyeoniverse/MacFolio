@@ -6,7 +6,7 @@ export default mergeConfig(
 	defineConfig({
 		test: {
 			// e2e/*.spec.ts는 Playwright가 실행한다
-			include: ['src/**/*.test.ts'],
+			include: ['src/**/*.test.ts', 'worker/**/*.test.ts'],
 		},
 	})
 );
