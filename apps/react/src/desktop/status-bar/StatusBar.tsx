@@ -5,6 +5,7 @@ import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
 import { APP_MANIFEST } from '@/apps/manifest';
 import { useAppState } from '@/desktop/AppStateContext';
 import AppleMenu from '@/desktop/status-bar/AppleMenu';
+import MenuBarMenus from '@/desktop/status-bar/MenuBarMenus';
 import ServerMenu from '@/desktop/status-bar/ServerMenu';
 import VolumeMenu from '@/desktop/status-bar/VolumeMenu';
 import '@/desktop/status-bar/StatusBar.css';
@@ -40,12 +41,8 @@ const StatusBar: React.FC = () => {
 				<AppleMenu />
 				{/* 맨 앞 앱 이름은 굵게 (macOS 메뉴 막대) */}
 				<span className="menu-item app-name">{appName}</span>
-				<span className="menu-item">File</span>
-				<span className="menu-item">Edit</span>
-				<span className="menu-item">View</span>
-				<span className="menu-item">Go</span>
-				<span className="menu-item">Window</span>
-				<span className="menu-item">Help</span>
+				{/* 파일·편집·보기·이동·윈도우·도움말: 지금 쓰는 앱에 맞는 메뉴 (#96) */}
+				<MenuBarMenus />
 			</div>
 
 			<div className="right-section">

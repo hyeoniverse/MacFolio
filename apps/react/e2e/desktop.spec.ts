@@ -98,7 +98,9 @@ test.describe('데스크톱', () => {
 			bar.getByText(text, { exact: true }).evaluate((el) => getComputedStyle(el).fontWeight);
 		// 처음에는 Safari 창이 맨 앞이다
 		expect(await weight('Safari')).toBe('700');
-		expect(await weight('File')).toBe('400');
+		expect(
+			await bar.getByRole('button', { name: '파일', exact: true }).evaluate((el) => getComputedStyle(el).fontWeight)
+		).toBe('400');
 		expect(await bar.locator('.time-display-now').evaluate((el) => getComputedStyle(el).fontWeight)).toBe('400');
 	});
 
@@ -136,7 +138,8 @@ test.describe('데스크톱', () => {
 		await expect(appName).toHaveText('Finder');
 		await appWindow(page, 'safari').click({ position: { x: 200, y: 20 } });
 		await expect(appName).toHaveText('Safari');
-		await page.locator('.macos-statusbar').getByText('File', { exact: true }).click();
+		// 메뉴 막대의 빈 곳(시계)을 누르면 Finder. 파일·보기 같은 메뉴 제목은 지금 앱의 메뉴라 바뀌지 않는다 (menubar.spec.ts)
+		await page.locator('.macos-statusbar .time-display').click();
 		await expect(appName).toHaveText('Finder');
 		await dockItem(page, 'safari').click();
 		await expect(appName).toHaveText('Safari');
