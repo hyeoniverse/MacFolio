@@ -42,11 +42,14 @@ rclone 설정은 `rclone config` 파일 대신 `RCLONE_CONFIG_R2_*` 환경 변�
 
 ```bash
 set -a; source ~/deploy/backup.env; set +a
-rclone lsd r2:                  # macfolio-backups가 보이면 된다
-rclone size r2:macfolio-backups
+rclone size r2:macfolio-backups   # 처음에는 Total objects: 0
+echo test | rclone rcat r2:macfolio-backups/connection-test.txt   # 쓰기도 되는지
+rclone deletefile r2:macfolio-backups/connection-test.txt
 ```
 
 `AccessDenied`면 토큰 권한이나 범위, `no such host`면 엔드포인트 주소가 틀린 것이다. 여기서 문제를 찾으면 덤프·압축과 섞이지 않아 원인이 바로 보인다.
+
+처음에는 연결 확인으로 `rclone lsd r2:`(버킷 목록)를 적었다. 서버에서 돌려 보니 이것만 `403 AccessDenied`가 나고, 바로 다음의 `rclone size r2:macfolio-backups`는 0을 돌려줬다. 버킷 목록은 계정 전체를 보는 요청인데, 키를 이 버킷 하나에만 쓸 수 있게 만들었으니 거절되는 게 맞다. 실패가 아니라 2번에서 범위를 좁힌 것이 제대로 걸렸다는 뜻이었다. 그래서 확인은 버킷을 직접 가리키는 명령으로만 한다.
 
 ## 6. 한 번 돌려 보고, 크기를 본다
 
@@ -71,13 +74,21 @@ R2에는 청구되기 전에 멈추는 설정이 없다. 그래서 스크립트�
 백업이 있다는 것과 되살릴 수 있다는 것은 다르다. 실제 DB는 건드리지 않고 다른 이름의 DB에 되살려, 글 수가 실제 DB와 같은지 본다.
 
 ```bash
-DB_NAME=restoretest ~/macfolio/ops/restore.sh ~/backups/<파일>
+latest=$(ls -t ~/backups/macfolio-*.sql.gz | head -1)   # 가장 최근 백업
+DB_NAME=restoretest ~/macfolio/ops/restore.sh "$latest"
 docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
 docker compose exec -T db psql -U macfolio -d macfolio -c 'select count(*) from "Post"'
 docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restoretest'
 ```
 
 처음 한 번, 그리고 한 달에 한 번쯤 해 본다. R2에 있는 백업도 `r2:macfolio-backups/<파일>`처럼 넘기면 받아 와서 되살린다.
+
+서버에서 처음 해 본 결과는 이랬다.
+
+- 백업 파일 하나: 1007KB (글과 올린 이미지가 모두 들어 있는 DB를 gzip으로 묶은 크기). 30일치를 모아도 30MB 남짓이라 상한 8GB까지 한참 남는다
+- 다른 DB(`restoretest`)에 되살린 글 수 4개, 실제 DB도 4개
+
+한 번은 되살리기 명령에 `~/backups/<파일>`을 그대로 붙여 넣었다. bash는 `<`와 `>`를 입력·출력을 바꾸는 기호로 읽어서 문법 오류를 내고 아무것도 되살리지 않았고, 이어진 확인 명령들은 "그런 DB가 없다"로 실패했다. 그래서 문서의 명령은 파일 이름을 손으로 적지 않고 가장 최근 백업을 `ls -t`로 골라 넘기게 바꿨다.
 
 ## 정리
 

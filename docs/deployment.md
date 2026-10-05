@@ -384,11 +384,16 @@ chmod 600 backup.env
 
 ```bash
 set -a; source ~/deploy/backup.env; set +a
-rclone lsd r2:                      # macfolio-backups가 보이면 된다
-rclone size r2:macfolio-backups     # 처음에는 0
+rclone size r2:macfolio-backups     # 처음에는 Total objects: 0
+# 쓰기도 되는지: 시험 파일을 올리고, 보이는지 보고, 지운다
+echo test | rclone rcat r2:macfolio-backups/connection-test.txt
+rclone ls r2:macfolio-backups       # connection-test.txt
+rclone deletefile r2:macfolio-backups/connection-test.txt
 ```
 
-- `AccessDenied`: 토큰의 권한·버킷 범위를 확인한다
+- `rclone lsd r2:`(버킷 목록)는 쓰지 않는다. 토큰이 버킷 하나에만 권한이 있어서 계정의 버킷 목록은 늘 `403 AccessDenied`다 (키를 좁게 만든 것이 제대로 걸렸다는 뜻)
+- `Config file … not found` 안내는 설정을 환경 변수로 넣어서 나오는 것이라 상관없다
+- 버킷을 볼 때 `AccessDenied`: 토큰의 권한(Object Read & Write)·버킷 범위를 확인한다
 - `no such host`: 엔드포인트 주소를 확인한다
 
 #### 7. 한 번 돌려 보기
@@ -418,8 +423,10 @@ crontab -l                          # 들어갔는지
 
 ```bash
 cd ~/deploy
+# 가장 최근 백업 (파일 이름을 손으로 적지 않는다. <…>를 그대로 넣으면 bash가 기호로 읽어 아무것도 하지 않는다)
+latest=$(ls -t ~/backups/macfolio-*.sql.gz | head -1); echo "$latest"
 # 실제 DB를 건드리지 않고 다른 DB에 되살려 본다
-DB_NAME=restoretest ~/macfolio/ops/restore.sh ~/backups/<7에서 생긴 파일>
+DB_NAME=restoretest ~/macfolio/ops/restore.sh "$latest"
 # 글 수가 실제 DB와 같은지
 docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
 docker compose exec -T db psql -U macfolio -d macfolio -c 'select count(*) from "Post"'
