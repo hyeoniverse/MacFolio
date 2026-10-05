@@ -73,6 +73,14 @@ test: 글 순서에 기대지 않게 E2E 고침
 - 커밋하기 전에 `pnpm format:check`, `pnpm lint`, `pnpm test`를 돌린다
 - API의 컨트롤러나 DTO를 바꾸면 `pnpm --filter @macfolio/api openapi`로 `apps/react/src/apps/apidocs/openapi.json`을 다시 만들어 함께 커밋한다. 사이트의 'API 문서' 앱이 이 파일을 그린다. 빠뜨리면 `pnpm test`(`apps/api/src/openapi.test.ts`)가 실패한다
 
+### 마이그레이션
+
+API는 main에 머지되면 자동으로 배포되고, 새 버전이 건강하지 않으면 **이미지만** 이전 버전으로 되돌린다 (#100). 마이그레이션(DB 구조 변경)은 되돌리지 않는다. 그래서 마이그레이션은 **이전 버전의 코드도 그대로 돌 수 있게** 만든다.
+
+- 열·표 추가: 새 열은 비워 둘 수 있게(nullable)나 기본값을 두고 더한다. 옛 코드는 모르는 열을 무시한다
+- 이름 바꾸기·지우기: 한 번에 하지 않고 나눈다. ① 새 열을 더하고 코드가 둘 다 쓰게 → ② 다음 배포에서 옛 열을 지운다
+- 정말 DB까지 되돌려야 하면 배포 직전 백업(`~/backups`, `ops/deploy.sh`가 남긴다)을 `ops/restore.sh`로
+
 ## 블로그 글
 
 사이트의 메모 앱이 블로그다. 글은 `apps/react/src/apps/memo/content/*.md`, 이미지는 `content/images/`에 둔다.

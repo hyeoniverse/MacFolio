@@ -24,7 +24,7 @@ describe('API (e2e)', () => {
 
 	it('GET /health: 서버와 DB가 살아 있다', async () => {
 		const response = await request(app.getHttpServer()).get('/health').expect(200);
-		expect(response.body).toEqual({ status: 'ok', database: 'up' });
+		expect(response.body).toEqual({ status: 'ok', database: 'up', version: 'dev' });
 	});
 
 	it('없는 경로는 정해진 모양의 404', async () => {
