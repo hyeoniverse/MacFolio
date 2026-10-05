@@ -423,8 +423,10 @@ crontab -l                          # 들어갔는지
 
 ```bash
 cd ~/deploy
+# 가장 최근 백업 (파일 이름을 손으로 적지 않는다. <…>를 그대로 넣으면 bash가 기호로 읽어 아무것도 하지 않는다)
+latest=$(ls -t ~/backups/macfolio-*.sql.gz | head -1); echo "$latest"
 # 실제 DB를 건드리지 않고 다른 DB에 되살려 본다
-DB_NAME=restoretest ~/macfolio/ops/restore.sh ~/backups/<7에서 생긴 파일>
+DB_NAME=restoretest ~/macfolio/ops/restore.sh "$latest"
 # 글 수가 실제 DB와 같은지
 docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
 docker compose exec -T db psql -U macfolio -d macfolio -c 'select count(*) from "Post"'

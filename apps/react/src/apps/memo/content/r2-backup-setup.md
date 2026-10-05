@@ -74,7 +74,8 @@ R2에는 청구되기 전에 멈추는 설정이 없다. 그래서 스크립트�
 백업이 있다는 것과 되살릴 수 있다는 것은 다르다. 실제 DB는 건드리지 않고 다른 이름의 DB에 되살려, 글 수가 실제 DB와 같은지 본다.
 
 ```bash
-DB_NAME=restoretest ~/macfolio/ops/restore.sh ~/backups/<파일>
+latest=$(ls -t ~/backups/macfolio-*.sql.gz | head -1)   # 가장 최근 백업
+DB_NAME=restoretest ~/macfolio/ops/restore.sh "$latest"
 docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
 docker compose exec -T db psql -U macfolio -d macfolio -c 'select count(*) from "Post"'
 docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restoretest'
