@@ -32,6 +32,14 @@ interface AppContextType {
 
 	bringAppToFront: (appName: AppName) => void; // 앱을 맨 위로 올리는 함수
 
+	/**
+	 * 지금 쓰고 있는 앱 (메뉴 막대의 앱 이름). 맨 앞 창의 앱이고, 창이 없거나 창 밖(바탕화면·메뉴 막대·Dock)을
+	 * 누른 뒤에는 null (macOS에서 바탕화면을 누르면 Finder가 앞으로 오는 것처럼). 창 순서는 그대로 둔다
+	 */
+	activeApp: AppName | null;
+	/** 창 밖을 눌렀다. 창이나 앱을 다시 누르거나 열 때까지 activeApp은 null */
+	focusDesktop: () => void;
+
 	/** 실행 중인 앱을 모두 최소화한다. 모바일에서 홈 화면으로 돌아갈 때 쓴다. */
 	goHome: () => void;
 }
@@ -82,8 +90,14 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 		return appAddresses.subscribe(() => syncAddressBar(foregroundApp(apps)));
 	}, [apps]);
 
+	// 창 밖을 눌렀는지. 창을 누르거나 앱을 열면 다시 false
+	const [desktopFocused, setDesktopFocused] = useState(false);
+	const focusDesktop = useCallback(() => setDesktopFocused(true), []);
+	const activeApp = desktopFocused ? null : foregroundApp(apps);
+
 	// 화면 밖 창을 되돌리는 처리는 창이 렌더링될 때 한다 (desktop/window/geometry.ts의 clampRect)
 	const bringAppToFront = useCallback((appName: AppName) => {
+		setDesktopFocused(false);
 		setApps((prevState) => bringToFront(prevState, appName));
 	}, []);
 
@@ -128,6 +142,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 
 	// 여는 앱은 늘 맨 앞에 (Apple 메뉴의 시스템 설정처럼 다른 창이 떠 있을 때 열어도 뒤에 숨지 않게)
 	const openApp = useCallback((appName: AppName) => {
+		setDesktopFocused(false);
 		setApps((prevState) => {
 			const fronted = bringToFront(prevState, appName);
 			return { ...fronted, [appName]: { ...fronted[appName], isRunning: true, hasOpened: true } };
@@ -170,6 +185,8 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 				minimizeApp,
 				maximizeApp,
 				bringAppToFront,
+				activeApp,
+				focusDesktop,
 				goHome,
 			}}
 		>
