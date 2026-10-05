@@ -42,11 +42,14 @@ rclone 설정은 `rclone config` 파일 대신 `RCLONE_CONFIG_R2_*` 환경 변�
 
 ```bash
 set -a; source ~/deploy/backup.env; set +a
-rclone lsd r2:                  # macfolio-backups가 보이면 된다
-rclone size r2:macfolio-backups
+rclone size r2:macfolio-backups   # 처음에는 Total objects: 0
+echo test | rclone rcat r2:macfolio-backups/connection-test.txt   # 쓰기도 되는지
+rclone deletefile r2:macfolio-backups/connection-test.txt
 ```
 
 `AccessDenied`면 토큰 권한이나 범위, `no such host`면 엔드포인트 주소가 틀린 것이다. 여기서 문제를 찾으면 덤프·압축과 섞이지 않아 원인이 바로 보인다.
+
+처음에는 연결 확인으로 `rclone lsd r2:`(버킷 목록)를 적었다. 서버에서 돌려 보니 이것만 `403 AccessDenied`가 나고, 바로 다음의 `rclone size r2:macfolio-backups`는 0을 돌려줬다. 버킷 목록은 계정 전체를 보는 요청인데, 키를 이 버킷 하나에만 쓸 수 있게 만들었으니 거절되는 게 맞다. 실패가 아니라 2번에서 범위를 좁힌 것이 제대로 걸렸다는 뜻이었다. 그래서 확인은 버킷을 직접 가리키는 명령으로만 한다.
 
 ## 6. 한 번 돌려 보고, 크기를 본다
 
