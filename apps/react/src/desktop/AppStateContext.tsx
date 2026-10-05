@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import { appAddresses, linkedApp, syncAddressBar } from '@/shared/lib/appLink';
 import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
-import { bringToFront, minimizeAll } from '@/desktop/appStack';
+import { bringToFront, foregroundApp, minimizeAll } from '@/desktop/appStack';
 import { isMobileViewport } from '@/desktop/layout';
 import { takeAppsSavedBeforeLeaving, trackApps } from '@/desktop/appsBeforeLeaving';
 
@@ -78,16 +78,8 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 
 	// 주소 막대: 맨 앞 창이 가리키는 항목 (메모의 글, Safari의 프로젝트). 창이 없거나 주소가 없는 앱이면 사이트 주소
 	useEffect(() => {
-		const front = () => {
-			let top: AppName | null = null;
-			for (const name of APP_NAMES) {
-				const state = apps[name];
-				if (state.isRunning && !state.isMinimized && (!top || state.zIndex > apps[top].zIndex)) top = name;
-			}
-			return top;
-		};
-		syncAddressBar(front());
-		return appAddresses.subscribe(() => syncAddressBar(front()));
+		syncAddressBar(foregroundApp(apps));
+		return appAddresses.subscribe(() => syncAddressBar(foregroundApp(apps)));
 	}, [apps]);
 
 	// 화면 밖 창을 되돌리는 처리는 창이 렌더링될 때 한다 (desktop/window/geometry.ts의 clampRect)
