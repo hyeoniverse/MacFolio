@@ -6,6 +6,7 @@ describe('loadConfig', () => {
 
 	it('기본값: 포트 4000, 로컬 프론트엔드만 허용, 관리자는 hyeoniverse(ID), 프록시는 믿지 않음', () => {
 		expect(loadConfig({ DATABASE_URL })).toEqual({
+			version: 'dev',
 			port: 4000,
 			databaseUrl: DATABASE_URL,
 			corsOrigins: ['http://localhost:5173'],

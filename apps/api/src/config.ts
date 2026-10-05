@@ -1,6 +1,8 @@
 // 환경 변수를 읽어 검사한다. 잘못되었으면 서버를 띄우지 않고 바로 알린다.
 
 export interface AppConfig {
+	/** 이 서버의 버전: 배포 이미지를 만든 커밋 (Dockerfile의 APP_VERSION, 예: sha-1a2b3c4). 로컬은 dev */
+	version: string;
 	port: number;
 	databaseUrl: string;
 	/** 요청을 허용할 프론트엔드 주소 */
@@ -107,6 +109,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 	if (!ipHashSecret) throw new Error('IP_HASH_SECRET이 없습니다. 배포에서는 긴 무작위 값을 넣어 주세요.');
 
 	return {
+		version: env.APP_VERSION || 'dev',
 		port,
 		databaseUrl,
 		corsOrigins,
