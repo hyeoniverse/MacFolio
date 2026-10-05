@@ -266,11 +266,11 @@ docker compose config --quiet && echo OK
 
 ## 7. 실행과 확인
 
-API 이미지는 GitHub Actions가 만들어 GHCR(`ghcr.io/hyeoniverse/macfolio-api`)에 올려 둔다. 서버는 받기만 한다. 태그는 `sha-<커밋 7자리>`이고, GitHub 저장소 오른쪽의 **Packages → macfolio-api**에서 최근 태그를 본다.
+API 이미지는 GitHub Actions가 만들어 GHCR(`ghcr.io/hyeoniverse/macfolio-api`)에 올려 둔다. 서버는 받기만 한다. 태그는 `sha-` + 커밋 7자리(예: `sha-a38ac7e`)이고, GitHub 저장소 오른쪽의 **Packages → macfolio-api**에서 최근 태그를 본다. 아래 명령의 `sha-a38ac7e`는 예시이니 그 태그로 바꾼다 (`<…>` 같은 자리표시를 그대로 붙여 넣으면 bash가 `<`·`>`를 기호로 읽어 아무것도 하지 않는다).
 
 ```bash
 cd ~/deploy
-~/macfolio/ops/deploy.sh sha-<커밋 7자리>   # .env에 API_TAG를 쓰고 api(+db)를 띄워 healthy까지 기다린다
+~/macfolio/ops/deploy.sh sha-a38ac7e        # .env에 API_TAG를 쓰고 api(+db)를 띄워 healthy까지 기다린다
 docker compose up -d                        # tunnel까지
 docker compose logs -f api                  # 마이그레이션이 끝나고 "Nest application successfully started"
 ```
@@ -365,7 +365,7 @@ restrict,command="/home/ubuntu/macfolio/ops/deploy.sh" ssh-ed25519 AAAA… githu
 
 ```bash
 ssh -i ~/.ssh/macfolio-deploy ubuntu@<서버 주소> ls        # "배포 실패: 태그 모양이 아니다" → 다른 명령은 못 돈다
-ssh -i ~/.ssh/macfolio-deploy ubuntu@<서버 주소> sha-<지금 태그>   # "이미 이 버전이 떠 있다"
+ssh -i ~/.ssh/macfolio-deploy ubuntu@<서버 주소> sha-a38ac7e   # 지금 태그로. "이미 이 버전이 떠 있다"
 ```
 
 #### 4. 서버 호스트 키
@@ -584,7 +584,7 @@ Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Al
 | Actions가 `Connection timed out`                             | Oracle 보안 목록에서 22번이 특정 IP에만 열려 있다                                                                                         |
 | `deploy.sh`가 `pull` 중 `denied`·`unauthorized`              | GHCR 패키지가 비공개다. Package settings에서 Public으로                                                                                   |
 | "배포 실패, 되돌림"                                          | 새 이미지가 120초 안에 healthy가 되지 않았다. Actions 로그나 `~/deploy/deploy.log`의 api 로그 끝을 본다. 서버는 이전 버전으로 돌아가 있다 |
-| `API_TAG가 없다`                                             | `compose.yml`을 이미지로 바꾼 뒤 아직 배포하지 않았다. `~/macfolio/ops/deploy.sh sha-…`                                                   |
+| `API_TAG가 없다`                                             | `compose.yml`을 이미지로 바꾼 뒤 아직 배포하지 않았다. `~/macfolio/ops/deploy.sh sha-a38ac7e`(태그는 Packages에서)                        |
 | `name:: command not found` 등이 줄줄이                       | YAML을 파일이 아니라 터미널에 붙여 넣었다. `cat > compose.yml <<'EOF'`로 감싼다                                                           |
 | `--env-file: no such file or directory`                      | 파일이 그 경로에 없다. 서버의 `~/deploy`에서 실행했는지 확인                                                                              |
 | Tunnel이 HEALTHY가 안 됨                                     | `TUNNEL_TOKEN`이 틀렸거나 tunnel 컨테이너가 안 떴다. `docker compose logs tunnel`                                                         |

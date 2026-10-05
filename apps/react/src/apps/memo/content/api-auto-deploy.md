@@ -73,6 +73,21 @@ restrict,command="/home/ubuntu/macfolio/ops/deploy.sh" ssh-ed25519 AAAA… githu
 - **변수 이름에 한글이 붙었다.** `"$previous가 다시 떠 있다"`에서 bash가 `previous가`까지를 변수 이름으로 읽어 "unbound variable"로 죽었다. 한국어 앞의 변수는 모두 `${previous}`로 감쌌다
 - **받지 못했는데 되돌리려 했다.** 새 이미지를 받지 못하면 아무것도 바뀌지 않았는데도 "되돌리기"를 하다가, 이전 이미지까지 다시 받으려다 "되돌리기도 실패"를 냈다. 받지 못하면 `.env`만 되돌리고 끝나게, 서버에 있는 이미지는 받지 않게 바꿨다
 
+## 서버에서 처음 돌리자 백업에서 멈췄다
+
+로컬 시험을 다 통과했는데, 실제 서버에서 첫 배포를 하자 바로 멈췄다.
+
+```text
+배포 시작: 없음 → sha-a38ac7e
+error while interpolating services.api.image: required variable API_TAG is missing a value: …
+백업 실패: pg_dump
+배포 실패: 배포 직전 백업이 되지 않아 멈췄다
+```
+
+서버의 `compose.yml`은 태그가 없으면 멈추도록 `${API_TAG:?…}`로 썼다. 첫 배포에는 `.env`에 `API_TAG`가 아직 없다. 그런데 배포 직전 백업도 `docker compose exec db pg_dump`로 DB에 붙는다. compose는 서비스 하나만 써도 파일 전체를 읽으므로, api의 태그가 없다는 이유로 db 백업까지 거부됐다. 로컬 시험의 compose 파일은 `${API_TAG}`만 써서 이 경우를 만들지 못했다.
+
+스크립트가 부르는 compose가 늘 태그를 알게 했다. 바꾸기 전에는 지금 태그(첫 배포면 새 태그)를, 바꾼 뒤에는 새 태그를 환경 변수로 넘긴다(환경 변수가 `.env`보다 먼저다). 첫 배포에서 이미지를 받지 못하면 `.env`에 `API_TAG` 줄을 남기지 않는다. 이번에는 서버와 같은 `${API_TAG:?…}`를 쓴 compose 파일로 첫 배포, 첫 배포인데 받지 못하는 태그, 다음 배포, 되돌리기를 다시 시험했다.
+
 ## 끊기지 않게, 겹치지 않게
 
 CI는 같은 브랜치에 새 커밋이 오면 이전 실행을 취소한다. 배포 도중에 취소되면 SSH가 끊기고, 서버의 스크립트가 중간에 멈춰 `.env`와 컨테이너가 어긋날 수 있다. 스크립트가 끊김 신호(`HUP`)를 무시해서 끝까지 하게 했고, 다음 배포는 잠금에서 기다린다. 배포 워크플로 자체도 `cancel-in-progress: false`로 차례로 돈다.
