@@ -9,9 +9,13 @@
 	},
 	// PR 미리보기(`wrangler versions upload --preview-alias`)에 필요하다 (비어 있어도 됨)
 	"previews": {},
-	// Worker 스크립트 없이 Vite 빌드 결과(apps/react/dist)만 정적 파일로 서빙한다
+	// Vite 빌드 결과(apps/react/dist)를 정적 파일로 준다. 있는 파일은 Worker를 거치지 않는다.
+	// 없는 주소만 Worker(apps/react/worker)로 간다: 앱 주소(/memo/<글>)는 index.html, 옛 코드 파일(/assets/…)은 404.
+	// 예전에는 not_found_handling: single-page-application이라 없는 코드 파일에도 index.html이 200으로 갔다
+	"main": "./apps/react/worker/index.ts",
 	"assets": {
 		"directory": "./apps/react/dist",
-		"not_found_handling": "single-page-application",
+		"binding": "ASSETS",
+		"not_found_handling": "none",
 	},
 }
