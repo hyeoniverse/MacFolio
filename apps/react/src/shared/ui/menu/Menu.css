@@ -156,3 +156,8 @@
 .ui-menu-item.destructive {
 	color: var(--color-danger, #e5484d);
 }
+
+/* 메뉴 막대 메뉴는 열릴 때 메뉴 자체가 초점을 받는다 (키를 받으려고). 테두리는 그리지 않는다 */
+.ui-menu[data-app-menu]:focus {
+	outline: none;
+}
