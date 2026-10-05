@@ -308,19 +308,58 @@ docker compose logs --tail=100 tunnel
 
 - 서버: `~/backups`에 7일 (`KEEP_LOCAL_DAYS`)
 - 서버 밖: R2 버킷에 30일 (`KEEP_REMOTE_DAYS`)
+- 서버 밖 저장소 상한: 8GB (`MAX_REMOTE_GB`). 오늘 백업을 더하면 넘을 때는 올리지 않고 실패로 알린다 (서버에는 남는다). R2는 매달 10GB까지 무료이고, 넘으면 청구되기 전에 멈추는 설정이 없어서 스크립트가 먼저 멈춘다. 알림이 오면 `KEEP_REMOTE_DAYS`를 줄이거나 상한을 올린다 (넘은 만큼 1GB당 월 $0.015)
 - 압축이 온전한지, 덤프가 끝까지 쓰였는지 검사한 뒤에만 남긴다. 실패하면 1로 끝나고 알림 주소(`BACKUP_PING_URL`)에 알린다
 
-#### 1. R2 버킷과 키 (Cloudflare 대시보드)
+설정은 한 번만 하면 된다. 키 같은 비밀 값은 서버의 `~/deploy/backup.env`에만 넣는다 (저장소·채팅에 남기지 않는다). 대시보드 메뉴 이름은 바뀔 수 있으니 비슷한 이름을 찾는다.
 
-1. **R2 → Create bucket**: `macfolio-backups` (위치 Automatic)
-2. **R2 → Manage API tokens → Create API token**: 권한 **Object Read & Write**, 버킷은 `macfolio-backups`만
-3. 나오는 **Access Key ID**, **Secret Access Key**, **S3 엔드포인트**(`https://<계정 ID>.r2.cloudflarestorage.com`)를 적어 둔다. 비밀 키는 이때만 보인다
+#### 1. R2 버킷 (Cloudflare 대시보드)
 
-#### 2. 서버에 rclone과 설정
+1. **R2 Object Storage**로 간다. 처음이면 무료 플랜으로 사용을 신청한다 (결제 수단 등록을 요구할 수 있다. 한도 안이면 청구되지 않는다)
+2. **Create bucket**
+   - 이름: `macfolio-backups`
+   - 위치: Automatic
+   - 저장 클래스: **Standard** (Infrequent Access에는 무료 한도가 없다)
+3. 버킷 Settings에서 **Public access가 꺼져 있는지**(Disallowed, 기본값) 본다. 공개하지 않아야 다른 사람이 파일을 읽어 작업 수를 늘릴 수 없다
+
+#### 2. R2 API 토큰
+
+1. R2 첫 화면의 **Manage R2 API Tokens → Create API token**
+   - 이름: `macfolio-backup`
+   - 권한: **Object Read & Write**
+   - 버킷: **Apply to specific buckets only** → `macfolio-backups` (키가 새어도 이 버킷만)
+   - TTL: Forever
+2. 만들면 나오는 값 셋을 잠깐 적어 둔다. **비밀 키는 이 화면에서만 보인다**
+   - Access Key ID
+   - Secret Access Key
+   - S3 엔드포인트: `https://<계정 ID>.r2.cloudflarestorage.com`
+   - 함께 나오는 Token value는 쓰지 않는다
+
+#### 3. 알림 주소 (선택, 추천)
+
+cron은 실패해도 아무 말이 없다. 알림 주소를 넣으면 백업이 실패하거나, 상한에 걸리거나, 아예 돌지 않았을 때 메일이 온다.
+
+1. https://healthchecks.io 에 가입하고 **Add Check**
+   - 이름: `macfolio-backup`
+   - Schedule: Period **1 day**, Grace **1 hour**
+2. **Ping URL**(`https://hc-ping.com/<uuid>`)을 적어 둔다. 알림은 가입한 메일로 간다
+
+#### 4. 서버: 코드와 rclone
 
 ```bash
-sudo apt-get install -y rclone
+cd ~/macfolio && git pull           # ops/backup.sh, ops/restore.sh
+ls -l ops/backup.sh                 # 실행 권한(x)이 있는지
+
+# R2(provider=Cloudflare)는 rclone 1.59부터 된다. apt의 rclone은 Ubuntu 22.04에서 1.53이라 공식 설치 스크립트로 받는다
+curl -fsSL https://rclone.org/install.sh | sudo bash
+rclone version                      # v1.59 이상인지
+```
+
+#### 5. 서버: 설정 파일
+
+```bash
 cd ~/deploy
+ls                                  # compose.yml이 있는지 (없거나 이름이 다르면 아래에 COMPOSE_FILE=<경로>)
 cat > backup.env <<'EOF'
 BACKUP_REMOTE=r2:macfolio-backups
 RCLONE_CONFIG_R2_TYPE=s3
@@ -329,37 +368,78 @@ RCLONE_CONFIG_R2_ACCESS_KEY_ID=<Access Key ID>
 RCLONE_CONFIG_R2_SECRET_ACCESS_KEY=<Secret Access Key>
 RCLONE_CONFIG_R2_ENDPOINT=https://<계정 ID>.r2.cloudflarestorage.com
 RCLONE_CONFIG_R2_NO_CHECK_BUCKET=true
-# 선택: 백업이 멈추면 알려 줄 주소 (healthchecks.io에서 Check를 만들고 Ping URL을 넣는다. 하루 주기, 유예 1시간)
-# BACKUP_PING_URL=https://hc-ping.com/<uuid>
+# 3에서 만든 알림 주소
+BACKUP_PING_URL=https://hc-ping.com/<uuid>
+# 선택: 서버 밖 저장소 상한 (기본 8), 남길 날 수 (기본 서버 7, R2 30)
+# MAX_REMOTE_GB=8
+# KEEP_LOCAL_DAYS=7
+# KEEP_REMOTE_DAYS=30
 EOF
 chmod 600 backup.env
 ```
 
-rclone 설정은 `RCLONE_CONFIG_R2_*` 환경 변수로 넣어서 `rclone config` 파일이 따로 없다. `backup.env`는 `ops/backup.sh`가 읽는다.
+`<…>`는 2·3에서 적은 값으로 바꾼다 (`nano backup.env`). rclone 설정은 `RCLONE_CONFIG_R2_*` 환경 변수로 넣어서 `rclone config` 파일이 따로 없다. `backup.env`는 `ops/backup.sh`가 읽는다.
 
-#### 3. 한 번 돌려 보고 cron에 넣기
+#### 6. R2 연결 확인
 
 ```bash
-~/macfolio/ops/backup.sh            # "백업 완료", "올림: r2:…"가 나오면 된다
-crontab -e                          # 아래 한 줄 (서버 시간은 UTC: 03:30 UTC = 12:30 KST)
-30 3 * * * /home/ubuntu/macfolio/ops/backup.sh >> /home/ubuntu/deploy/backup.log 2>&1
+set -a; source ~/deploy/backup.env; set +a
+rclone lsd r2:                      # macfolio-backups가 보이면 된다
+rclone size r2:macfolio-backups     # 처음에는 0
 ```
 
-#### 되살리기
+- `AccessDenied`: 토큰의 권한·버킷 범위를 확인한다
+- `no such host`: 엔드포인트 주소를 확인한다
+
+#### 7. 한 번 돌려 보기
+
+```bash
+~/macfolio/ops/backup.sh
+# … 백업 완료: /home/ubuntu/backups/macfolio-…sql.gz (…)
+# … 올림: r2:macfolio-backups/macfolio-…sql.gz (저장소 …MB / 상한 8GB)
+```
+
+- `ls -lh ~/backups`: 파일 크기 × 30이 상한(8GB)보다 넉넉히 작은지
+- R2 대시보드의 버킷에 파일이 생겼는지
+- healthchecks.io의 Check가 up(초록)인지
+
+#### 8. 매일 돌게 하기 (cron)
+
+```bash
+date                                # 서버 시간대 (보통 UTC)
+crontab -e                          # 아래 한 줄 (03:30 UTC = 12:30 KST)
+30 3 * * * /home/ubuntu/macfolio/ops/backup.sh >> /home/ubuntu/deploy/backup.log 2>&1
+crontab -l                          # 들어갔는지
+```
+
+다음 날 `tail ~/deploy/backup.log`로 결과를 본다.
+
+#### 9. 되살리기 시험
+
+```bash
+cd ~/deploy
+# 실제 DB를 건드리지 않고 다른 DB에 되살려 본다
+DB_NAME=restoretest ~/macfolio/ops/restore.sh ~/backups/<7에서 생긴 파일>
+# 글 수가 실제 DB와 같은지
+docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
+docker compose exec -T db psql -U macfolio -d macfolio -c 'select count(*) from "Post"'
+docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restoretest'
+```
+
+한 달에 한 번쯤 이렇게 되살려 보고 글 수를 맞춰 본다. 되살려 보지 않은 백업은 백업이 아니다.
+
+#### 10. 사용량 알림 (선택)
+
+R2에는 청구 전에 멈추는 설정이 없다 (스크립트의 `MAX_REMOTE_GB`가 대신 멈춘다). Cloudflare 대시보드 **Notifications → Add**에서 사용량 기반 청구 알림(Usage Based Billing)을 걸어 두면 한 번 더 막는다.
+
+#### 되살리기 (실제로 필요할 때)
 
 ```bash
 # 실제 DB를 백업 내용으로 바꾼다 (확인을 받고, 그동안 api를 멈췄다가 다시 띄운다)
 ~/macfolio/ops/restore.sh ~/backups/macfolio-2026-10-05T033000Z.sql.gz
 # R2에 있는 백업도 된다 (받아 와서 되살린다)
 ~/macfolio/ops/restore.sh r2:macfolio-backups/macfolio-2026-10-05T033000Z.sql.gz
-
-# 실제 DB를 건드리지 않고 백업을 시험: 다른 DB에 되살려 본다
-DB_NAME=restoretest ~/macfolio/ops/restore.sh ~/backups/<파일>
-docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
-docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restoretest'
 ```
-
-한 달에 한 번쯤 다른 DB에 되살려 보고 글 수를 맞춰 본다. 되살려 보지 않은 백업은 백업이 아니다.
 
 ### 비밀 값 바꾸기
 
