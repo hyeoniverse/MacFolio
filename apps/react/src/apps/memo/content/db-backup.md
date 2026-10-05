@@ -43,4 +43,4 @@ R2 키는 저장소 밖의 `~/deploy/backup.env`에만 둔다. rclone 설정도 
 - 서버 밖으로 올리기가 실패하면 1로 끝나고, 서버 쪽 백업은 남는지 (rclone을 흉내 내서)
 - 저장소가 상한을 넘게 되면 올리지 않고 1로 끝나며 알림 주소의 `/fail`을 부르는지, 상한 값이 숫자가 아니면 멈추는지 (같은 방법으로)
 
-서버에 적용하는 순서(R2 버킷과 키, rclone, cron)는 `docs/deployment.md`의 '백업'에 적었다.
+서버에 적용하는 순서(R2 버킷과 키, rclone, cron)는 `docs/deployment.md`의 '백업'에, 단계마다의 까닭은 [R2에 DB 백업 걸기](/memo/r2-backup-setup)에 적었다.
