@@ -55,15 +55,17 @@ flock -w 600 9 || {
 
 current_tag() { grep -E '^API_TAG=' "$ENV_FILE" | tail -n 1 | cut -d= -f2- || true; }
 
-# .env의 API_TAG만 바꾼다. 다른 줄(비밀 값)은 그대로, 권한도 그대로
+# .env의 API_TAG만 바꾼다 (빈 값이면 줄을 지운다). 다른 줄(비밀 값)은 그대로, 권한도 그대로.
+# 이 스크립트가 부르는 docker compose도 같은 태그를 보게 환경 변수로도 둔다 (compose.yml이 ${API_TAG:?}로 태그를 요구한다)
 set_tag() {
 	local tmp="$ENV_FILE.tmp"
 	{
 		grep -vE '^API_TAG=' "$ENV_FILE" || true
-		echo "API_TAG=$1"
+		if [[ -n "$1" ]]; then echo "API_TAG=$1"; fi
 	} >"$tmp"
 	chmod --reference="$ENV_FILE" "$tmp" 2>/dev/null || chmod 600 "$tmp"
 	mv "$tmp" "$ENV_FILE"
+	export API_TAG="$1"
 }
 
 container() { docker compose ps -q "$API_SERVICE"; }
@@ -100,6 +102,9 @@ up() {
 
 previous="$(current_tag)"
 log "배포 시작: ${previous:-없음} → ${tag}"
+# 첫 배포는 .env에 API_TAG가 없어 compose.yml을 읽지 못한다 (백업도 docker compose로 DB에 붙는다).
+# 바꾸기 전에는 지금 태그로, 첫 배포면 새 태그로 compose에 알려 준다
+export API_TAG="${previous:-$tag}"
 
 if [[ "$tag" == "$previous" ]] && is_live "$tag"; then
 	log "이미 이 버전이 떠 있다: ${tag}"
@@ -125,8 +130,8 @@ if ((result == 0)); then
 fi
 
 if ((result == 3)); then
-	# 컨테이너는 그대로다. .env만 되돌린다
-	if [[ -n "$previous" ]]; then set_tag "$previous"; fi
+	# 컨테이너는 그대로다. .env만 되돌린다 (첫 배포였으면 API_TAG 줄을 지운다)
+	set_tag "$previous"
 	log "배포 실패: ${tag} 이미지를 받지 못해 아무것도 바꾸지 않았다 (지금 버전: ${previous:-없음}). 태그가 GHCR에 있는지, 패키지가 공개인지 본다"
 	exit 1
 fi
