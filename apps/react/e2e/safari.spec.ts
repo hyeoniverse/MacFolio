@@ -123,6 +123,20 @@ test.describe('Safari', () => {
 				},
 			});
 		});
+		// 요약 데모도 가짜 서버로: Groq가 기본 공급자
+		await page.route(`${FAKE_API}/summary`, (route) => {
+			const request = route.request();
+			const headers = {
+				'Access-Control-Allow-Origin': 'http://localhost:4173',
+				'Access-Control-Allow-Headers': 'Content-Type',
+			};
+			if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
+			if (request.method() === 'GET') return route.fulfill({ headers, json: { remaining: 3, perIp: 3, total: 50 } });
+			return route.fulfill({
+				headers,
+				json: { provider: 'groq', ko: '포트폴리오 요약입니다.', en: 'A portfolio summary.', remaining: 2 },
+			});
+		});
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
 		const panel = safari.getByRole('tabpanel');
@@ -251,6 +265,11 @@ test.describe('Safari', () => {
 				to: 'en',
 			},
 		]);
+		// 요약: 발행하면 서버가 만든 두 언어 요약과, 만든 공급자(Groq)를 보여 준다
+		const summary = panel.locator('.cd-summary');
+		await summary.getByRole('button', { name: /발행/ }).click();
+		await expect(summary).toContainText('포트폴리오 요약입니다.');
+		await expect(summary).toContainText('Groq로 만든 요약입니다');
 		// 파형: 나누면 클립이 둘이 되고, 되돌리면 하나로 돌아온다
 		const wave = panel.getByLabel('녹음 파형 편집기', { exact: true });
 		await wave.locator('.cd-wave-track').click({ position: { x: 120, y: 40 } });

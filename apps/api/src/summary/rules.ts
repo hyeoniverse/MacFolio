@@ -1,5 +1,10 @@
-// AI 요약 데모의 규칙: 받을 글과, Gemini에 보낼 말·받은 답 읽기. 바깥 호출 없이 시험할 수 있게 여기에 모은다.
+// AI 요약 데모의 규칙: 받을 글과, 공급자(Groq·Gemini)에 보낼 말·받은 답 읽기. 바깥 호출 없이 시험할 수 있게 여기에 모은다.
 import { demoText, ProviderFailure } from '../common/demo.js';
+
+/** 요약 공급자 순서: Groq가 기본, 실패하면 Gemini */
+export const SUMMARY_PROVIDERS = ['groq', 'gemini'] as const;
+export type SummaryProvider = (typeof SUMMARY_PROVIDERS)[number];
+export const SUMMARY_PROVIDER_NAMES: Record<SummaryProvider, string> = { groq: 'Groq', gemini: 'Gemini' };
 
 /** 한 번에 요약할 글자 수 상한 (데모라 짧게) */
 export const MAX_SUMMARY_CHARS = 800;
@@ -31,7 +36,7 @@ Rules:
 Text:
 ${text}`;
 
-/** Gemini가 돌려준 JSON 글에서 두 언어 요약을 꺼낸다. 하나라도 비었으면 실패 */
+/** 공급자가 돌려준 JSON 글에서 두 언어 요약을 꺼낸다. 하나라도 비었으면 실패 */
 export function readSummary(raw: string | undefined) {
 	let parsed: { ko?: unknown; en?: unknown };
 	try {
