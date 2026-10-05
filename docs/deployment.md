@@ -320,7 +320,9 @@ docker compose logs --tail=100 tunnel
 #### 2. 서버에 rclone과 설정
 
 ```bash
-sudo apt-get install -y rclone
+# R2(provider=Cloudflare)는 rclone 1.59부터 된다. apt의 rclone은 Ubuntu 22.04에서 1.53이라 공식 설치 스크립트로 받는다
+curl -fsSL https://rclone.org/install.sh | sudo bash
+rclone version                      # v1.59 이상인지
 cd ~/deploy
 cat > backup.env <<'EOF'
 BACKUP_REMOTE=r2:macfolio-backups
