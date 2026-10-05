@@ -110,8 +110,34 @@ test.describe('데스크톱', () => {
 
 		await dockItem(page, 'memo').click();
 		await expect(appName).toHaveText('메모');
+		// 창이 띄운 메뉴(화면 맨 위에 따로 그려진다)를 눌러도 그 앱으로 남는다
+		await appWindow(page, 'memo').getByRole('button', { name: '정렬과 그룹화' }).click();
+		await page
+			.getByRole('menu', { name: '정렬과 그룹화' })
+			.getByRole('menuitemcheckbox', { name: '제목', exact: true })
+			.click();
+		await expect(appName).toHaveText('메모');
 
 		// 뒤에 있던 앱을 Dock에서 누르면 그 앱이 맨 앞
+		await dockItem(page, 'safari').click();
+		await expect(appName).toHaveText('Safari');
+
+		// 창 밖(바탕화면, 메뉴 막대)을 누르면 Finder, 창을 다시 누르면 그 앱. 창 순서는 그대로
+		const desktop = await page.evaluate(() => {
+			for (let x = window.innerWidth - 20; x > 0; x -= 40)
+				for (let y = 60; y < window.innerHeight - 160; y += 40) {
+					const hit = document.elementFromPoint(x, y);
+					if (hit && !hit.closest('[data-app], .dock, .macos-statusbar')) return { x, y };
+				}
+			return null;
+		});
+		expect(desktop).not.toBeNull();
+		await page.mouse.click(desktop!.x, desktop!.y);
+		await expect(appName).toHaveText('Finder');
+		await appWindow(page, 'safari').click({ position: { x: 200, y: 20 } });
+		await expect(appName).toHaveText('Safari');
+		await page.locator('.macos-statusbar').getByText('File', { exact: true }).click();
+		await expect(appName).toHaveText('Finder');
 		await dockItem(page, 'safari').click();
 		await expect(appName).toHaveText('Safari');
 
