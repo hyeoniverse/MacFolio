@@ -308,6 +308,7 @@ docker compose logs --tail=100 tunnel
 
 - 서버: `~/backups`에 7일 (`KEEP_LOCAL_DAYS`)
 - 서버 밖: R2 버킷에 30일 (`KEEP_REMOTE_DAYS`)
+- 서버 밖 저장소 상한: 8GB (`MAX_REMOTE_GB`). 오늘 백업을 더하면 넘을 때는 올리지 않고 실패로 알린다 (서버에는 남는다). R2는 매달 10GB까지 무료이고, 넘으면 청구되기 전에 멈추는 설정이 없어서 스크립트가 먼저 멈춘다. 알림이 오면 `KEEP_REMOTE_DAYS`를 줄이거나 상한을 올린다 (넘은 만큼 1GB당 월 $0.015)
 - 압축이 온전한지, 덤프가 끝까지 쓰였는지 검사한 뒤에만 남긴다. 실패하면 1로 끝나고 알림 주소(`BACKUP_PING_URL`)에 알린다
 
 #### 1. R2 버킷과 키 (Cloudflare 대시보드)
