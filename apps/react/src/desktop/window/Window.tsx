@@ -9,6 +9,7 @@ import MobileAppFrame from '@/desktop/mobile/MobileAppFrame';
 import { switcherStore, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
 import { runningByRecency } from '@/desktop/appStack';
 import { animateClose, animateOpen } from '@/desktop/window/windowMotion';
+import { useWindowCommands } from '@/desktop/window/windowCommands';
 
 interface AppWindowProps {
 	title: string;
@@ -77,8 +78,6 @@ const AppWindow: React.FC<AppWindowProps> = ({
 		animateOpen(frameRef.current, { appName, mobile: isMobile });
 	}, [visible, appName, isMobile]);
 
-	if (!visible && cardIndex < 0) return null;
-
 	/** 애니메이션이 끝난 뒤 action을 실행한다 */
 	const leave = (toLauncher: boolean, action: () => void) => {
 		const element = frameRef.current;
@@ -96,6 +95,11 @@ const AppWindow: React.FC<AppWindowProps> = ({
 		setTimeout(() => element?.classList.remove('frame-animating'), FRAME_MS);
 		toggleMaximize();
 	};
+
+	// 메뉴 막대의 '윈도우 닫기'·'최소화'·'확대/축소' (desktop/window/windowCommands.ts)
+	useWindowCommands(appName, { close: handleClose, minimize: handleMinimize, toggleMaximize: handleToggleMaximize });
+
+	if (!visible && cardIndex < 0) return null;
 
 	// 모바일: 화면을 가득 채우고, 신호등 버튼 대신 홈 인디케이터로 홈 화면에 돌아간다
 	if (isMobile) {

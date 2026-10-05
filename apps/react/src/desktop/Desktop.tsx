@@ -34,7 +34,15 @@ const DesktopSurface = ({ children }: { children: React.ReactNode }) => {
 	const { focusDesktop } = useAppState();
 	return (
 		// 화면 전체를 덮는 바탕화면 판: 창이 없는 곳을 눌러도 여기에 닿는다
-		<div className="desktop-surface" style={{ width: '100%', height: '100%' }} onPointerDownCapture={focusDesktop}>
+		<div
+			className="desktop-surface"
+			style={{ width: '100%', height: '100%' }}
+			onPointerDownCapture={(event) => {
+				// 메뉴 막대의 파일·편집·보기… 제목과 그 메뉴는 지금 쓰는 앱의 것이라 바탕화면으로 바꾸지 않는다 (MenuBarMenus)
+				if ((event.target as Element).closest?.('[data-app-menu]')) return;
+				focusDesktop();
+			}}
+		>
 			{children}
 		</div>
 	);

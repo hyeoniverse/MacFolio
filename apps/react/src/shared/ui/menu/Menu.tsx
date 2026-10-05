@@ -41,6 +41,10 @@ interface Props {
 	autoFocus?: boolean;
 	/** 모양을 덧붙일 이름 (예: 휴대폰에서 iOS처럼 크게) */
 	className?: string;
+	/** ←·→를 누르면 부른다 (메뉴 막대에서 옆 메뉴로 넘어간다) */
+	onNavigate?: (direction: -1 | 1) => void;
+	/** 메뉴 막대의 앱 메뉴: 눌러도 지금 쓰는 앱이 바뀌지 않게 표시한다 (data-app-menu) */
+	appMenu?: boolean;
 }
 
 const isAction = (item: MenuItem): item is Extract<MenuItem, { onSelect: () => void }> =>
@@ -50,7 +54,17 @@ const isAction = (item: MenuItem): item is Extract<MenuItem, { onSelect: () => v
  * macOS 메뉴 (우클릭, ••• 단추, Apple 메뉴). 창에 잘리지 않게 body에 그리고, 연 자리에 둔다.
  * 바깥을 누르거나 Esc를 누르면 닫히고, ↑·↓·Home·End로 항목을 옮겨 다닌다.
  */
-const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFocus = false, className }) => {
+const Menu: React.FC<Props> = ({
+	label,
+	anchor,
+	items,
+	onClose,
+	trigger,
+	autoFocus = false,
+	className,
+	onNavigate,
+	appMenu = false,
+}) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const [position, setPosition] = useState({ left: anchor.x, top: anchor.y });
 	useDismiss(true, onClose, trigger ? [ref, trigger] : [ref]);
@@ -69,12 +83,19 @@ const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFoc
 		};
 		place();
 		if (autoFocus) menu.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
+		// 메뉴 막대 메뉴는 마우스로 열어도 메뉴가 키를 받는다 (←·→로 옆 메뉴, ↓로 첫 항목). 항목은 칠하지 않는다
+		else if (appMenu) menu.focus({ preventScroll: true });
 		const resize = new ResizeObserver(place);
 		resize.observe(menu);
 		return () => resize.disconnect();
-	}, [anchor.x, anchor.y, autoFocus]);
+	}, [anchor.x, anchor.y, autoFocus, appMenu]);
 
 	const moveFocus = (event: React.KeyboardEvent) => {
+		if (onNavigate && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+			event.preventDefault();
+			onNavigate(event.key === 'ArrowLeft' ? -1 : 1);
+			return;
+		}
 		const buttons = [...(ref.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? [])];
 		if (!buttons.length) return;
 		const at = buttons.indexOf(document.activeElement as HTMLButtonElement);
@@ -106,6 +127,8 @@ const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFoc
 			className={['ui-menu', className].filter(Boolean).join(' ')}
 			role="menu"
 			aria-label={label}
+			data-app-menu={appMenu || undefined}
+			tabIndex={appMenu ? -1 : undefined}
 			style={{ left: position.left, top: position.top }}
 			onKeyDown={moveFocus}
 		>
