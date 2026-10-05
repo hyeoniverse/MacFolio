@@ -52,6 +52,10 @@ export interface AppConfig {
 	};
 	/** AI 요약 데모 (Gemini가 한국어·영어 요약을 함께 만든다) */
 	summary: {
+		/** 기본 공급자. Groq(OpenAI 호환 API)로 먼저 요약하고, 실패하면 Gemini로 */
+		groqApiKey?: string;
+		/** Groq 모델 (기본 openai/gpt-oss-120b). Groq는 모델을 자주 내리므로 내려가면 GROQ_MODEL로 바꾼다 */
+		groqModel: string;
 		geminiApiKey?: string;
 		/** 기본은 늘 최신 Flash를 가리키는 별칭. 고정하고 싶으면 GEMINI_MODEL로 정한다 (내려간 모델이면 응답이 권하는 모델로 한 번 다시 묻는다) */
 		geminiModel: string;
@@ -136,6 +140,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			totalPerDay: Number(env.TRANSLATE_TOTAL_PER_DAY ?? 50) || 50,
 		},
 		summary: {
+			groqApiKey: env.GROQ_API_KEY || undefined,
+			groqModel: env.GROQ_MODEL || 'openai/gpt-oss-120b',
 			geminiApiKey: env.GEMINI_API_KEY || undefined,
 			geminiModel: env.GEMINI_MODEL || 'gemini-flash-latest',
 			perIpPerDay: Number(env.SUMMARY_PER_IP_PER_DAY ?? 3) || 3,

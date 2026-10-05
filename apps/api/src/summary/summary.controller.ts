@@ -11,7 +11,7 @@ import type { Request } from 'express';
 import { SummaryService } from './summary.service.js';
 
 /**
- * AI 요약 데모 (Safari의 HYEONIVERSE 페이지). 붙여 넣은 글을 Gemini가 한국어·영어로 한두 문장씩 요약한다.
+ * AI 요약 데모 (Safari의 HYEONIVERSE 페이지). 붙여 넣은 글을 Groq(실패하면 Gemini)가 한국어·영어로 한두 문장씩 요약한다.
  * IP마다 하루 SUMMARY_PER_IP_PER_DAY번, 사이트 전체 하루 SUMMARY_TOTAL_PER_DAY번까지
  */
 @ApiTags('summary')
@@ -32,10 +32,10 @@ export class SummaryController {
 	@HttpCode(200)
 	@ApiBody({ schema: { example: { text: '흩어져 있던 프로젝트와 글을 한 곳에서 보여 주는 개인 포트폴리오입니다.' } } })
 	@ApiOkResponse({
-		description: '두 언어 요약과 만든 공급자, 남은 횟수',
+		description: '두 언어 요약과 만든 공급자(groq | gemini), 남은 횟수',
 		schema: {
 			example: {
-				provider: 'gemini',
+				provider: 'groq',
 				ko: '프로젝트와 글을 한 곳에 모은 개인 포트폴리오입니다.',
 				en: 'A personal portfolio that gathers projects and writing in one place.',
 				remaining: 2,
@@ -44,7 +44,7 @@ export class SummaryController {
 	})
 	@ApiBadRequestResponse({ description: '글이 비었거나 800자를 넘거나, 요약하지 않는 내용이다' })
 	@ApiTooManyRequestsResponse({ description: '오늘 요약할 수 있는 횟수를 다 썼다' })
-	@ApiBadGatewayResponse({ description: 'Gemini가 요약하지 못했다 (쓴 횟수는 돌려준다)' })
+	@ApiBadGatewayResponse({ description: 'Groq와 Gemini 모두 요약하지 못했다 (쓴 횟수는 돌려준다)' })
 	summarize(@Body() body: unknown, @Req() request: Request) {
 		return this.service.summarize(body, request.ip ?? '');
 	}
