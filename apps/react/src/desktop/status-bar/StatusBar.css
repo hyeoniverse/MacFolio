@@ -71,6 +71,29 @@
 	background-color: var(--color-selected-bg);
 }
 
+/* 파일·편집·보기… 제목 (MenuBarMenus). 누르거나 열려 있으면 Apple 메뉴처럼 칠한다 */
+.macos-statusbar .menubar-menus {
+	display: flex;
+	align-items: center;
+	gap: 0.1rem;
+}
+
+.macos-statusbar .menubar-title {
+	flex-shrink: 0;
+	height: 1.25rem;
+	padding: 0 0.5rem;
+	border: none;
+	border-radius: 0.3rem;
+	background: none;
+	color: var(--color-menubar-text);
+	font: inherit;
+	cursor: default;
+}
+
+.macos-statusbar .menubar-title.open {
+	background-color: var(--color-selected-bg);
+}
+
 .macos-statusbar .right-section .menu-item {
 	color: var(--color-menubar-text);
 }
