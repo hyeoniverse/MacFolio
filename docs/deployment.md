@@ -335,69 +335,78 @@ docker compose ps api        # healthy인지
 
 ### 자동 배포 설정 (한 번)
 
-#### 1. 이미지 공개
+명령마다 **어디서** 치는지 먼저 본다. 줄 맨 앞이 `ubuntu@macfolio-vnic`이면 서버, `…@…MacBook…`이면 내 컴퓨터다. 이 설정은 2를 빼면 모두 **서버**에서 한다.
 
-이 설정이 들어간 커밋이 main에 머지되면 `api-image`가 첫 이미지를 GHCR에 올린다. 처음 만든 패키지는 비공개라 서버가 받으려면 로그인해야 한다. 저장소가 공개이고 이미지에 비밀 값이 없으니(`api.env`는 서버에만) 공개로 바꾼다.
+#### 1. 이미지와 첫 배포
 
-GitHub 프로필 → **Packages → macfolio-api → Package settings → Change visibility → Public**
-
-#### 2. 서버 `compose.yml`을 이미지로
-
-`api`의 `build:` 세 줄을 6단계의 `image:` 한 줄로 바꾼다. 그리고 첫 배포를 손으로 한 번 한다 (7단계). 이때부터 `.env`에 `API_TAG`가 생긴다.
-
-#### 3. 배포 전용 SSH 키
-
-내 컴퓨터에서 만든다. 이 키는 서버에서 **배포 스크립트 하나만** 돌릴 수 있게 묶는다.
+main에 API 변경이 머지되면 `api-image`가 이미지를 GHCR에 올린다. 이 저장소처럼 공개 저장소에 연결된 패키지는 처음부터 공개라 서버에서 로그인 없이 받는다. 로그인 없이 받히는지는 이렇게 본다 (200이면 공개).
 
 ```bash
-ssh-keygen -t ed25519 -N "" -C github-actions-deploy -f ~/.ssh/macfolio-deploy
-cat ~/.ssh/macfolio-deploy.pub
+tok=$(curl -s "https://ghcr.io/token?scope=repository:hyeoniverse/macfolio-api:pull" | sed -E 's/.*"token":"([^"]+)".*/\1/')
+curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer $tok" \
+  -H "Accept: application/vnd.oci.image.index.v1+json" https://ghcr.io/v2/hyeoniverse/macfolio-api/manifests/sha-a38ac7e
 ```
 
-서버의 `~/.ssh/authorized_keys` 맨 아래에, 공개 키 앞에 제한을 붙여 한 줄로 넣는다.
+401·403이면 GitHub 프로필 → **Packages → macfolio-api → Package settings → Change visibility → Public**.
 
-```
-restrict,command="/home/ubuntu/macfolio/ops/deploy.sh" ssh-ed25519 AAAA… github-actions-deploy
+그다음 서버 `compose.yml`의 api를 `image:`로 바꾸고 첫 배포를 손으로 한 번 한다 (6·7단계). 이때부터 `.env`에 `API_TAG`가 생긴다.
+
+#### 2. 배포 전용 열쇠 (서버에서 한 번에)
+
+GitHub Actions가 서버에 들어올 열쇠를 하나 만들되, 그 열쇠로는 **배포 스크립트 하나만** 돌게 묶는다. 열쇠는 서버에서 만들어 GitHub에 넣고 서버에서는 지운다 (내 컴퓨터와 서버 사이에 옮길 것이 없다).
+
+서버에서 아래를 통째로 붙여 넣는다. 고칠 곳은 없다. 여러 번 해도 된다: 늘 예전 배포 열쇠를 지우고 새로 만든다.
+
+```bash
+sed -i '/github-actions-deploy/d' ~/.ssh/authorized_keys
+rm -f ~/macfolio-deploy ~/macfolio-deploy.pub
+ssh-keygen -q -t ed25519 -N "" -C github-actions-deploy -f ~/macfolio-deploy
+echo "restrict,command=\"/home/ubuntu/macfolio/ops/deploy.sh\" $(cat ~/macfolio-deploy.pub)" >> ~/.ssh/authorized_keys
+echo "등록된 배포 열쇠 수: $(grep -c github-actions-deploy ~/.ssh/authorized_keys)"
+echo "===== DEPLOY_HOST ====="; curl -s ifconfig.me; echo
+echo "===== DEPLOY_KNOWN_HOSTS ====="; ssh-keyscan -t ed25519 localhost 2>/dev/null | sed "s/^localhost/$(curl -s ifconfig.me)/"
+echo "===== DEPLOY_SSH_KEY ====="; cat ~/macfolio-deploy
 ```
 
+- 첫 줄은 배포 열쇠 줄(끝이 `github-actions-deploy`)만 지운다. 평소 접속하는 열쇠는 다른 줄이라 남는다
 - `restrict`: 포트 포워딩, 터미널(pty) 등을 모두 막는다
-- `command=`: 이 키로 접속하면 무엇을 보내든 `ops/deploy.sh`만 돈다. 보낸 글자는 `SSH_ORIGINAL_COMMAND`로 넘어가고, 스크립트가 `sha-[0-9a-f]{7,40}` 모양만 받는다
+- `command=`: 이 열쇠로 접속하면 무엇을 보내든 `ops/deploy.sh`만 돈다. 보낸 글자는 `SSH_ORIGINAL_COMMAND`로 넘어가고, 스크립트가 `sha-[0-9a-f]{7,40}` 모양만 받는다
+- `DEPLOY_KNOWN_HOSTS`: 서버 자기 호스트 키를 서버에서 읽어 공인 IP를 붙인다. Actions가 가짜 서버에 붙지 않게 고정하는 값이다
 
-내 컴퓨터에서 확인한다.
+`등록된 배포 열쇠 수: 1`이 나와야 한다.
 
-```bash
-ssh -i ~/.ssh/macfolio-deploy ubuntu@<서버 주소> ls        # "배포 실패: 태그 모양이 아니다" → 다른 명령은 못 돈다
-ssh -i ~/.ssh/macfolio-deploy ubuntu@<서버 주소> sha-a38ac7e   # 지금 태그로. "이미 이 버전이 떠 있다"
+#### 3. GitHub Secrets
+
+저장소 → Settings → Secrets and variables → Actions → New repository secret (이미 있으면 연필 → Update)
+
+| 이름                 | 값                                                                       |
+| -------------------- | ------------------------------------------------------------------------ |
+| `DEPLOY_HOST`        | 2의 `DEPLOY_HOST` 아래 IP                                                |
+| `DEPLOY_KNOWN_HOSTS` | 2의 `DEPLOY_KNOWN_HOSTS` 아래 한 줄                                      |
+| `DEPLOY_SSH_KEY`     | 2의 `DEPLOY_SSH_KEY` 아래 전체 (`-----BEGIN`부터 `-----END … -----`까지) |
+| `DEPLOY_USER`        | (선택) 기본 `ubuntu`                                                     |
+
+넣었으면 서버의 열쇠 파일을 지운다: `rm ~/macfolio-deploy ~/macfolio-deploy.pub`. 열쇠를 새로 만들었으면 **`DEPLOY_SSH_KEY`도 새 값으로** 바꿔야 한다 (아니면 `Permission denied (publickey)`).
+
+`DEPLOY_HOST`가 없으면 `api-deploy`는 건너뛴다(이미지는 만든다). Oracle 보안 목록에서 22번이 내 IP에만 열려 있으면 Actions가 들어오지 못한다. 열쇠 인증만 쓰므로 22번은 모든 곳에 열어 둔다 (나중에 Cloudflare Tunnel SSH로 옮기면 닫는다, #100).
+
+#### 4. 확인
+
+[Actions → API 배포](https://github.com/hyeoniverse/MacFolio/actions/workflows/deploy-api.yml) → 오른쪽 위 **Run workflow** → tag에 지금 태그 (예: `sha-a38ac7e`) → Run. Actions 첫 화면(All workflows)에는 이 단추가 없다. 왼쪽 목록에서 **API 배포**를 눌러야 보인다.
+
+로그에 이렇게 나오면 연결이 끝난 것이다.
+
+```text
+서버에서 배포:      배포 시작: sha-a38ac7e → sha-a38ac7e
+                    이미 이 버전이 떠 있다: sha-a38ac7e
+바깥에서 버전 확인: 확인: {"status":"ok","database":"up","version":"sha-a38ac7e"}
 ```
 
-#### 4. 서버 호스트 키
+열쇠는 GitHub(Secrets)과 서버에만 있으므로 연결 확인은 Actions로 한다. 열쇠가 배포 명령 하나만 도는지(`ls` 같은 다른 명령은 "태그 모양이 아니다")는 스크립트가 태그 모양만 받는 것으로 막는다 (로컬에서 시험함).
 
-Actions가 가짜 서버에 붙지 않게 서버의 호스트 키를 고정한다.
+#### Secrets를 넣기 전에 머지한 API 변경
 
-```bash
-ssh-keyscan -t ed25519 <서버 주소>                       # 내 컴퓨터에서. 이 한 줄이 DEPLOY_KNOWN_HOSTS
-ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub         # 서버에서. 지문(SHA256:…)이 위 키와 같은지
-ssh-keygen -lf <(ssh-keyscan -t ed25519 <서버 주소> 2>/dev/null)   # 내 컴퓨터에서 같은 지문인지
-```
-
-#### 5. GitHub Secrets
-
-저장소 → Settings → Secrets and variables → Actions → New repository secret
-
-| 이름                 | 값                                          |
-| -------------------- | ------------------------------------------- |
-| `DEPLOY_HOST`        | 서버 공인 IP (또는 주소)                    |
-| `DEPLOY_SSH_KEY`     | `~/.ssh/macfolio-deploy`(개인 키) 내용 전체 |
-| `DEPLOY_KNOWN_HOSTS` | 4의 `ssh-keyscan` 한 줄                     |
-| `DEPLOY_USER`        | (선택) 기본 `ubuntu`                        |
-
-`DEPLOY_HOST`가 없으면 `api-deploy`는 건너뛴다(이미지는 만든다). 다 넣었으면 내 컴퓨터의 개인 키는 지워도 된다 (`rm ~/.ssh/macfolio-deploy`). 새로 만들려면 3부터 다시 한다.
-
-Oracle 보안 목록에서 22번이 내 IP에만 열려 있으면 Actions가 들어오지 못한다. 키 인증만 쓰므로 22번은 모든 곳에 열어 둔다 (나중에 Cloudflare Tunnel SSH로 옮기면 닫는다, #100).
-
-#### 6. 확인
-
-GitHub → Actions → **API 배포** → Run workflow → 지금 태그. "서버에서 배포"와 "바깥에서 버전 확인"이 통과하면 된다.
+Secrets가 없을 때 머지된 API 변경은 이미지만 만들고 서버 배포는 건너뛴다(Actions에 "DEPLOY_HOST가 없어 API 배포를 건너뜁니다"). 서버는 예전 버전으로 남는다. 그 커밋의 태그로 Run workflow를 한 번 하면 된다. 태그는 `sha-` + 머지 커밋 7자리이고, main의 최근 커밋은 `git log --oneline -1 origin/main`, 올라간 태그는 저장소 오른쪽 **Packages → macfolio-api**에서 본다.
 
 ### 로그와 상태
 
@@ -570,27 +579,29 @@ Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Al
 
 ## 문제 해결
 
-| 증상                                                         | 원인과 해결                                                                                                                               |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| "관리자 서버가 아직 연결되지 않았습니다", 로그인 버튼이 꺼짐 | 프론트 빌드에 `VITE_API_URL`이 없다. Cloudflare **Build** 변수에 넣고 다시 빌드한다 ([1](#1-프론트엔드-cloudflare-workers))               |
-| 메시지를 열면 "메시지를 열 수 없습니다"                      | 메시지 API에 닿지 못했다. `docker compose ps`, `logs api` 확인. 서버 없이 화면만 볼 때는 `VITE_MESSAGES_STORE=local`                      |
-| "관리자 서버에 연결할 수 없습니다"                           | API가 내려갔거나 CORS가 막혔다. `docker compose ps`, `logs api`, `CORS_ORIGINS` 확인                                                      |
-| `/auth/github`가 503                                         | `GITHUB_CLIENT_ID`/`SECRET`이 비었다                                                                                                      |
-| GitHub에서 `redirect_uri` 오류                               | OAuth App 콜백 주소와 `API_URL` + `/auth/github/callback`이 다르다                                                                        |
-| 돌아왔는데 "로그인할 수 없음"                                | 관리자 계정(ID 68999618)이 아닌 GitHub 계정으로 로그인했다                                                                                |
-| 돌아왔는데 로그인이 안 된 상태                               | 쿠키가 저장되지 않았다. https인지, API가 `hyeoniverse.com` 하위 도메인인지 확인                                                           |
-| api가 시작하자마자 꺼짐                                      | `IP_HASH_SECRET` 없음, DB 연결 실패 등. `docker compose logs api`의 첫 에러를 본다                                                        |
-| 빌드 중 멈추거나 `Killed`                                    | 메모리 부족. swap을 잡았는지 `free -h`로 확인                                                                                             |
-| Actions '서버에서 배포'가 `Permission denied (publickey)`    | `DEPLOY_SSH_KEY`가 서버 `authorized_keys`의 공개 키와 짝이 아니다. 키 앞뒤 줄(`-----BEGIN…`)까지 통째로 넣었는지                          |
-| Actions가 `Host key verification failed`                     | `DEPLOY_KNOWN_HOSTS`가 서버 호스트 키와 다르다. 서버를 새로 만들었으면 다시 `ssh-keyscan`                                                 |
-| Actions가 `Connection timed out`                             | Oracle 보안 목록에서 22번이 특정 IP에만 열려 있다                                                                                         |
-| `deploy.sh`가 `pull` 중 `denied`·`unauthorized`              | GHCR 패키지가 비공개다. Package settings에서 Public으로                                                                                   |
-| "배포 실패, 되돌림"                                          | 새 이미지가 120초 안에 healthy가 되지 않았다. Actions 로그나 `~/deploy/deploy.log`의 api 로그 끝을 본다. 서버는 이전 버전으로 돌아가 있다 |
-| `API_TAG가 없다`                                             | `compose.yml`을 이미지로 바꾼 뒤 아직 배포하지 않았다. `~/macfolio/ops/deploy.sh sha-a38ac7e`(태그는 Packages에서)                        |
-| `name:: command not found` 등이 줄줄이                       | YAML을 파일이 아니라 터미널에 붙여 넣었다. `cat > compose.yml <<'EOF'`로 감싼다                                                           |
-| `--env-file: no such file or directory`                      | 파일이 그 경로에 없다. 서버의 `~/deploy`에서 실행했는지 확인                                                                              |
-| Tunnel이 HEALTHY가 안 됨                                     | `TUNNEL_TOKEN`이 틀렸거나 tunnel 컨테이너가 안 떴다. `docker compose logs tunnel`                                                         |
-| 접속 메시지가 `x86_64`인데 A1을 만들려 했음                  | AMD shape로 만들어졌다. E2.1.Micro면 무료이니 그대로 쓰고, 다른 shape면 과금되니 지우고 다시 만든다                                       |
+| 증상                                                                 | 원인과 해결                                                                                                                                                                                      |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| "관리자 서버가 아직 연결되지 않았습니다", 로그인 버튼이 꺼짐         | 프론트 빌드에 `VITE_API_URL`이 없다. Cloudflare **Build** 변수에 넣고 다시 빌드한다 ([1](#1-프론트엔드-cloudflare-workers))                                                                      |
+| 메시지를 열면 "메시지를 열 수 없습니다"                              | 메시지 API에 닿지 못했다. `docker compose ps`, `logs api` 확인. 서버 없이 화면만 볼 때는 `VITE_MESSAGES_STORE=local`                                                                             |
+| "관리자 서버에 연결할 수 없습니다"                                   | API가 내려갔거나 CORS가 막혔다. `docker compose ps`, `logs api`, `CORS_ORIGINS` 확인                                                                                                             |
+| `/auth/github`가 503                                                 | `GITHUB_CLIENT_ID`/`SECRET`이 비었다                                                                                                                                                             |
+| GitHub에서 `redirect_uri` 오류                                       | OAuth App 콜백 주소와 `API_URL` + `/auth/github/callback`이 다르다                                                                                                                               |
+| 돌아왔는데 "로그인할 수 없음"                                        | 관리자 계정(ID 68999618)이 아닌 GitHub 계정으로 로그인했다                                                                                                                                       |
+| 돌아왔는데 로그인이 안 된 상태                                       | 쿠키가 저장되지 않았다. https인지, API가 `hyeoniverse.com` 하위 도메인인지 확인                                                                                                                  |
+| api가 시작하자마자 꺼짐                                              | `IP_HASH_SECRET` 없음, DB 연결 실패 등. `docker compose logs api`의 첫 에러를 본다                                                                                                               |
+| 빌드 중 멈추거나 `Killed`                                            | 메모리 부족. swap을 잡았는지 `free -h`로 확인                                                                                                                                                    |
+| Actions '서버에서 배포'가 `Permission denied (publickey)` (exit 255) | `DEPLOY_SSH_KEY`가 서버에 등록된 배포 열쇠와 짝이 아니다. 열쇠를 두 번 만들어 GitHub과 서버에 다른 열쇠가 들어간 경우가 많다. '자동 배포 설정' 2를 다시 하고 `DEPLOY_SSH_KEY`를 새 값으로 바꾼다 |
+| API 변경을 머지했는데 `/health`의 version이 그대로                   | Secrets를 넣기 전에 머지했거나 배포가 건너뛰어졌다. 그 커밋 태그로 Run workflow ('자동 배포 설정'의 마지막)                                                                                      |
+| 명령이 `No such file`·`Could not resolve hostname :`                 | 서버에서 칠 명령을 내 컴퓨터에서 쳤다. 줄 맨 앞이 `ubuntu@…`인지 본다                                                                                                                            |
+| Actions가 `Host key verification failed`                             | `DEPLOY_KNOWN_HOSTS`가 서버 호스트 키와 다르다. 서버를 새로 만들었으면 다시 `ssh-keyscan`                                                                                                        |
+| Actions가 `Connection timed out`                                     | Oracle 보안 목록에서 22번이 특정 IP에만 열려 있다                                                                                                                                                |
+| `deploy.sh`가 `pull` 중 `denied`·`unauthorized`                      | GHCR 패키지가 비공개다. Package settings에서 Public으로                                                                                                                                          |
+| "배포 실패, 되돌림"                                                  | 새 이미지가 120초 안에 healthy가 되지 않았다. Actions 로그나 `~/deploy/deploy.log`의 api 로그 끝을 본다. 서버는 이전 버전으로 돌아가 있다                                                        |
+| `API_TAG가 없다`                                                     | `compose.yml`을 이미지로 바꾼 뒤 아직 배포하지 않았다. `~/macfolio/ops/deploy.sh sha-a38ac7e`(태그는 Packages에서)                                                                               |
+| `name:: command not found` 등이 줄줄이                               | YAML을 파일이 아니라 터미널에 붙여 넣었다. `cat > compose.yml <<'EOF'`로 감싼다                                                                                                                  |
+| `--env-file: no such file or directory`                              | 파일이 그 경로에 없다. 서버의 `~/deploy`에서 실행했는지 확인                                                                                                                                     |
+| Tunnel이 HEALTHY가 안 됨                                             | `TUNNEL_TOKEN`이 틀렸거나 tunnel 컨테이너가 안 떴다. `docker compose logs tunnel`                                                                                                                |
+| 접속 메시지가 `x86_64`인데 A1을 만들려 했음                          | AMD shape로 만들어졌다. E2.1.Micro면 무료이니 그대로 쓰고, 다른 shape면 과금되니 지우고 다시 만든다                                                                                              |
 
 ## 남은 일
 
