@@ -312,6 +312,25 @@ docker build -f apps/api/Dockerfile --build-arg APP_VERSION=$tag -t ghcr.io/hyeo
 ~/macfolio/ops/deploy.sh $tag   # 서버에 그 태그의 이미지가 있으면 받지 않고 그대로 쓴다
 ```
 
+**환경 변수는 자동으로 바뀌지 않는다.** 자동 배포는 이미지(코드)만 바꾼다. 비밀 값은 서버에만 둔다 (GitHub와 서버 두 곳에 두지 않고, 배포 전용 키에 파일 쓰기 권한을 주지 않으려고).
+
+| 무엇                                            | 어디에                            | 바꾸면                                          |
+| ----------------------------------------------- | --------------------------------- | ----------------------------------------------- |
+| API 환경 변수 (OAuth, `CORS_ORIGINS`, AI 키 등) | 서버 `~/deploy/api.env`           | 아래 명령으로 직접 반영                         |
+| DB 비밀번호, 터널 토큰                          | 서버 `~/deploy/.env`              | 직접 반영. `API_TAG`는 `ops/deploy.sh`가 바꾼다 |
+| 백업 설정                                       | 서버 `~/deploy/backup.env`        | 다음 백업부터                                   |
+| 프론트엔드 `VITE_API_URL`                       | 저장소 `.github/workflows/ci.yml` | 머지하면 (빌드할 때 들어간다)                   |
+| `apps/api/.env`                                 | 내 컴퓨터                         | 로컬 개발용. 서버로 가지 않는다                 |
+
+```bash
+cd ~/deploy
+nano api.env                 # 값 수정
+docker compose up -d api     # 바뀐 설정을 보고 컨테이너만 새로 띄운다 (이미지는 그대로)
+docker compose ps api        # healthy인지
+```
+
+고쳐 두고 띄우지 않으면 다음 자동 배포 때 함께 반영된다. 언제가 될지 모르니 바로 띄운다.
+
 ### 자동 배포 설정 (한 번)
 
 #### 1. 이미지 공개
