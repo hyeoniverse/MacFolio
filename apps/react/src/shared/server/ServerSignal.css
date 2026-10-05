@@ -1,26 +1,30 @@
-/* 서버 상태 막대 (메뉴 막대·휴대폰 상태 표시줄의 Wi-Fi 자리) */
+/* 서버 상태 막대 (메뉴 막대·휴대폰 상태 표시줄의 Wi-Fi 자리). macOS Wi-Fi처럼 부채꼴 + 굵은 호 둘 */
 .server-signal {
-	width: 1.15em;
-	height: 0.95em;
+	width: 1.2em;
+	height: 0.9em;
 	overflow: visible;
-	vertical-align: -0.1em;
+	vertical-align: -0.05em;
 }
 
-.server-signal path,
-.server-signal line {
+/* 아래 부채꼴: 꼭짓점을 조금 둥글게 */
+.server-signal .wedge {
+	fill: currentColor;
+	stroke: currentColor;
+	stroke-linejoin: round;
+	stroke-width: 1.1;
+}
+
+.server-signal .arc,
+.server-signal .slash {
 	fill: none;
 	stroke: currentColor;
 	stroke-linecap: round;
-	stroke-width: 1.9;
-}
-
-.server-signal circle {
-	fill: currentColor;
+	stroke-width: 2.3;
 }
 
 /* 꺼진 막대는 흐리게 */
-.server-signal :is(path, circle):not(.on) {
-	opacity: 0.28;
+.server-signal path:not(.on) {
+	opacity: 0.25;
 	transition: opacity 0.3s ease;
 }
 
@@ -32,12 +36,10 @@
 /* DB가 안 되면 남은 막대를 주황으로 */
 .server-signal.state-database .on {
 	color: #ff9f0a;
-	stroke: #ff9f0a;
-	fill: #ff9f0a;
 }
 
 .server-signal .slash {
-	stroke-width: 1.6;
+	stroke-width: 1.7;
 	opacity: 0.9;
 }
 

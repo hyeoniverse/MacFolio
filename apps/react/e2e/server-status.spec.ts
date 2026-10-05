@@ -1,4 +1,4 @@
-import { test, expect, enterDesktop } from './fixtures';
+import { test, expect, enterDesktop, appWindow, openFromDock } from './fixtures';
 import { fakeApi } from './fakeApi';
 
 test.describe('메뉴 막대의 서버 상태 (Wi-Fi 자리)', () => {
@@ -15,6 +15,50 @@ test.describe('메뉴 막대의 서버 상태 (Wi-Fi 자리)', () => {
 		await expect(menu).toContainText(/응답 \d+ms · (방금|\d+초 전) 확인/);
 		await expect(menu).toContainText('api.test');
 		await expect(menu.getByRole('menuitem', { name: 'API 문서 열기' })).toBeVisible();
+		// 상태 줄은 누를 수 있는 항목이 아니라 정보 줄이다
+		await expect(menu.getByRole('menuitem', { name: /MacFolio API/ })).toHaveCount(0);
+	});
+
+	test("'API 문서 열기'는 새 탭이 아니라 사이트 안의 'API 문서' 앱으로 열고, 거기서 서버를 직접 불러 볼 수 있다", async ({
+		page,
+	}) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		const historyLength = await page.evaluate(() => history.length);
+		await page.getByRole('button', { name: /^서버 상태: 정상/ }).click();
+		const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
+		await page.getByRole('menu', { name: '서버 상태' }).getByRole('menuitem', { name: 'API 문서 열기' }).click();
+
+		// 서버의 /docs가 아니라 사이트의 문서 페이지 (API 코드에서 만든 openapi.json을 그린다)
+		const window = appWindow(page, 'apidocs');
+		await expect(window.locator('iframe')).toHaveAttribute('src', '/api-docs.html');
+		const docs = window.frameLocator('iframe');
+		await expect(docs.getByRole('heading', { name: 'MacFolio API' })).toBeVisible({ timeout: 15_000 });
+		expect(await popup).toBeNull();
+
+		// 목차를 눌러도 사이트 주소와 방문 기록은 그대로다 (주소 막대는 맨 앞 창만 바꾼다)
+		await docs.getByRole('link', { name: /\/health HTTP Method: GET/ }).click();
+		await expect(page).toHaveURL(/\/$/);
+		expect(await page.evaluate(() => history.length)).toBe(historyLength);
+
+		// Test Request: 서버로 바로 요청한다
+		await docs.getByRole('button', { name: 'Test Request (get /health)' }).click();
+		const request = page.waitForRequest('http://api.test/health');
+		await docs.getByRole('button', { name: /send/i }).first().click();
+		await request;
+		await expect(docs.getByText('200 OK')).toBeVisible();
+		// 창 틀은 밀려 올라가지 않는다 (제목 막대가 잘리지 않는다)
+		expect(await window.evaluate((el) => el.scrollTop)).toBe(0);
+	});
+
+	test("서버 주소가 없어도 'API 문서' 앱은 문서를 보여 주고, 요청 단추만 없다", async ({ page }) => {
+		await enterDesktop(page);
+		await openFromDock(page, 'apidocs');
+		const docs = appWindow(page, 'apidocs').frameLocator('iframe');
+		await expect(docs.getByRole('heading', { name: 'MacFolio API' })).toBeVisible({ timeout: 15_000 });
+		await docs.getByRole('link', { name: /\/health HTTP Method: GET/ }).click();
+		await expect(docs.getByRole('heading', { name: '/health' })).toBeVisible();
+		await expect(docs.getByRole('button', { name: /^Test Request/ })).toHaveCount(0);
 	});
 
 	test('DB가 안 되거나 서버가 꺼지면 바로 알 수 있다', async ({ page }) => {

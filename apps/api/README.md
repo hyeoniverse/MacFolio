@@ -19,7 +19,10 @@ api까지 컨테이너로 띄우려면 `docker compose up --build`.
 ```bash
 pnpm test                     # 단위 테스트 (DB 없이)
 pnpm test:e2e                 # e2e (pnpm db:up 필요)
+pnpm openapi                  # 사이트의 'API 문서' 앱이 쓰는 openapi.json 다시 만들기
 ```
+
+컨트롤러나 DTO를 바꾸면 `src/openapi.test.ts`가 실패한다. 사이트의 'API 문서' 앱은 서버의 `/docs` 대신 `apps/react/src/apps/apidocs/openapi.json`을 그리기 때문이다 (서버가 꺼져 있어도 보인다). `pnpm openapi`로 다시 만들어 함께 커밋한다.
 
 ## 구조
 

@@ -26,7 +26,15 @@ export function configureApp(app: INestApplication) {
 	app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
 	app.useGlobalFilters(new HttpErrorFilter());
 
-	const document = SwaggerModule.createDocument(
+	SwaggerModule.setup('docs', app, createOpenApiDocument(app));
+	return app;
+}
+
+/**
+ * API 문서(OpenAPI). 서버의 /docs와, 사이트의 'API 문서' 앱이 쓰는 openapi.json(openapi.test.ts가 만든다)이 같은 것을 쓴다
+ */
+export function createOpenApiDocument(app: INestApplication) {
+	return SwaggerModule.createDocument(
 		app,
 		new DocumentBuilder()
 			.setTitle('MacFolio API')
@@ -35,6 +43,4 @@ export function configureApp(app: INestApplication) {
 			.addCookieAuth(SESSION_COOKIE)
 			.build()
 	);
-	SwaggerModule.setup('docs', app, document);
-	return app;
 }

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useAppState } from '@/desktop/AppStateContext';
 import { env } from '@/shared/config/env';
 import ServerSignal from '@/shared/server/ServerSignal';
 import { checkServer, STATE_LABEL, useServerStatus } from '@/shared/server/serverStatus';
@@ -18,6 +19,7 @@ const ago = (time: number) => {
  */
 const ServerMenu = () => {
 	const status = useServerStatus();
+	const { openApp } = useAppState();
 	const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
 	const button = useRef<HTMLButtonElement>(null);
 	const label = STATE_LABEL[status.state];
@@ -32,20 +34,14 @@ const ServerMenu = () => {
 	const items: MenuItem[] = env.apiUrl
 		? [
 				{ heading: '서버' },
-				{
-					label: `MacFolio API · ${label}`,
-					icon: <ServerSignal status={status} />,
-					onSelect: () => void checkServer(),
-				},
+				// 지금 상태: 누를 수 없는 정보 줄 (다시 확인은 아래 '지금 확인')
+				{ info: `MacFolio API · ${label}`, icon: <ServerSignal status={status} /> },
 				...(detail ? [{ note: detail }] : []),
 				{ note: host },
 				'separator',
 				{ label: '지금 확인', icon: 'fa-solid fa-rotate-right', onSelect: () => void checkServer() },
-				{
-					label: 'API 문서 열기',
-					icon: 'fa-solid fa-book',
-					onSelect: () => window.open(`${env.apiUrl}/docs`, '_blank', 'noopener,noreferrer'),
-				},
+				// 새 탭이 아니라 사이트 안의 'API 문서' 앱으로 연다
+				{ label: 'API 문서 열기', icon: 'fa-solid fa-book', onSelect: () => openApp('apidocs') },
 			]
 		: [{ heading: '서버' }, { note: '연결된 서버가 없습니다 (VITE_API_URL)' }];
 

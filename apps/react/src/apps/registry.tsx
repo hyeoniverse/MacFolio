@@ -10,6 +10,7 @@ import Messages from '@/apps/messages/Messages';
 import Terminal from '@/apps/terminal/Terminal';
 import ProjectApp from '@/apps/project/ProjectApp';
 import Passwords from '@/apps/passwords/Passwords';
+import ApiDocs from '@/apps/apidocs/ApiDocs';
 
 // Markdown 렌더러가 무거워서 메모(블로그)는 처음 열 때 불러온다
 const Memo = lazy(() => import('@/apps/memo/Memo'));
@@ -28,6 +29,7 @@ const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
 	messages: Messages,
 	terminal: Terminal,
 	passwords: Passwords,
+	apidocs: ApiDocs,
 };
 
 /** 프로젝트 앱: 데모 사이트를 창 안에 띄운다 (shared/profile.ts의 PROJECTS에서) */
