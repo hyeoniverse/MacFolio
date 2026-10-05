@@ -17,8 +17,6 @@ export function useLaunchApp() {
 	const launch = (appName: AppName) => {
 		const action = APP_MANIFEST[appName].action;
 
-		bringAppToFront(appName);
-
 		if (action?.type === 'link') {
 			window.open(action.url, '_blank');
 			return;
@@ -32,6 +30,8 @@ export function useLaunchApp() {
 			return;
 		}
 
+		// 창을 여는 앱만 앞으로 (링크·공유는 창이 없어서 메뉴 막대는 Finder로 남는다)
+		bringAppToFront(appName);
 		if (apps[appName].isRunning) maximizeApp(appName);
 		else openApp(appName);
 	};
