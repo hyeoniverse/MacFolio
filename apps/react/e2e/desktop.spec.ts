@@ -96,9 +96,30 @@ test.describe('데스크톱', () => {
 		const bar = page.locator('.macos-statusbar');
 		const weight = (text: string) =>
 			bar.getByText(text, { exact: true }).evaluate((el) => getComputedStyle(el).fontWeight);
-		expect(await weight('Finder')).toBe('700');
+		// 처음에는 Safari 창이 맨 앞이다
+		expect(await weight('Safari')).toBe('700');
 		expect(await weight('File')).toBe('400');
 		expect(await bar.locator('.time-display-now').evaluate((el) => getComputedStyle(el).fontWeight)).toBe('400');
+	});
+
+	test('메뉴 막대의 앱 이름은 맨 앞 창의 앱이고, 보이는 창이 없으면 Finder', async ({ page }) => {
+		await enterDesktop(page);
+		const appName = page.locator('.macos-statusbar .app-name');
+		// 처음에는 Safari 창이 떠 있다
+		await expect(appName).toHaveText('Safari');
+
+		await dockItem(page, 'memo').click();
+		await expect(appName).toHaveText('메모');
+
+		// 뒤에 있던 앱을 Dock에서 누르면 그 앱이 맨 앞
+		await dockItem(page, 'safari').click();
+		await expect(appName).toHaveText('Safari');
+
+		// 맨 앞 창을 최소화하면 그다음 창, 모두 닫으면 Finder
+		await appWindow(page, 'safari').getByRole('button', { name: '최소화', exact: true }).click();
+		await expect(appName).toHaveText('메모');
+		await appWindow(page, 'memo').getByRole('button', { name: '닫기', exact: true }).click();
+		await expect(appName).toHaveText('Finder');
 	});
 
 	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
