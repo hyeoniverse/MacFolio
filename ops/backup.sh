@@ -11,6 +11,7 @@
 #   MAX_REMOTE_GB     서버 밖 저장소에 둘 최대 크기 (기본 8). 오늘 백업을 더하면 넘을 때는 올리지 않고 실패로 알린다
 #                     (R2 무료 한도 10GB에 닿기 전에 멈춰서 요금이 생기지 않게. R2에는 청구 전에 멈추는 설정이 없다)
 #   BACKUP_PING_URL   성공하면 이 주소를, 실패하면 주소/fail을 부른다 (healthchecks.io 등. 백업이 조용히 멈추지 않게)
+#   BACKUP_LOCAL_ONLY 1이면 서버에만 남기고 올리지도 알리지도 않는다 (배포 직전 백업: ops/deploy.sh. 매일 백업은 cron이 한다)
 set -euo pipefail
 
 DEPLOY_DIR="${DEPLOY_DIR:-$HOME/deploy}"
@@ -31,6 +32,10 @@ BACKUP_REMOTE="${BACKUP_REMOTE:-}"
 KEEP_REMOTE_DAYS="${KEEP_REMOTE_DAYS:-30}"
 MAX_REMOTE_GB="${MAX_REMOTE_GB:-8}"
 BACKUP_PING_URL="${BACKUP_PING_URL:-}"
+if [[ "${BACKUP_LOCAL_ONLY:-}" == 1 ]]; then
+	BACKUP_REMOTE=""
+	BACKUP_PING_URL=""
+fi
 
 log() { echo "$(date -u +%FT%TZ) $*"; }
 

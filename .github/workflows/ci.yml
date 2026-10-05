@@ -98,10 +98,82 @@ jobs:
             apps/react/test-results
           retention-days: 7
 
-  # main에 들어오면 시험(check)을 통과한 커밋만 실제 사이트에 배포한다
-  deploy:
-    needs: check
+  # API에 영향이 있는 파일이 바뀌었는지 (main push). 바뀌었으면 이미지를 만들어 서버에 배포한다 (#100)
+  api-changes:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      api: ${{ steps.diff.outputs.api }}
+      tag: ${{ steps.diff.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: diff
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          # 처음 push처럼 이전 커밋이 없으면 바뀐 것으로 친다
+          if ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            echo "api=true" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "$BEFORE" "$GITHUB_SHA" -- apps/api package.json pnpm-lock.yaml pnpm-workspace.yaml ops/deploy.sh; then
+            echo "api=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "api=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # API 이미지: 서버(1GB)에서 빌드하지 않고 여기서 만들어 GHCR에 올린다. 서버가 amd64라 amd64만
+  api-image:
+    needs: [check, api-changes]
+    if: needs.api-changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          platforms: linux/amd64
+          push: true
+          # /health의 version. 배포가 끝나면 바깥에서 이 값으로 새 버전이 떴는지 본다
+          build-args: APP_VERSION=${{ needs.api-changes.outputs.tag }}
+          tags: |
+            ghcr.io/hyeoniverse/macfolio-api:${{ needs.api-changes.outputs.tag }}
+            ghcr.io/hyeoniverse/macfolio-api:main
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # 서버에 배포 (DEPLOY_HOST가 없으면 건너뛴다). 실패하면 서버가 이전 버전으로 되돌리고, 프론트엔드도 배포하지 않는다
+  api-deploy:
+    needs: [api-changes, api-image]
+    uses: ./.github/workflows/deploy-api.yml
+    with:
+      tag: ${{ needs.api-changes.outputs.tag }}
+    secrets: inherit
+
+  # main에 들어오면 시험(check)을 통과한 커밋만 실제 사이트에 배포한다.
+  # API가 바뀐 커밋은 API 배포가 끝난 뒤에 (새 API를 쓰는 화면이 옛 API에 먼저 닿지 않게). API가 그대로면 api-deploy는 건너뛴다
+  # (이미지 빌드가 실패하면 api-deploy는 skipped가 되므로 api-image도 함께 본다)
+  deploy:
+    needs: [check, api-image, api-deploy]
+    if: >-
+      always() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      needs.check.result == 'success' &&
+      (needs.api-image.result == 'success' || needs.api-image.result == 'skipped') &&
+      (needs.api-deploy.result == 'success' || needs.api-deploy.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:

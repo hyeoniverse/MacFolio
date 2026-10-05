@@ -1659,11 +1659,17 @@
 						"type": "string",
 						"example": "up",
 						"description": "DB에 쿼리가 되는지"
+					},
+					"version": {
+						"type": "string",
+						"example": "sha-1a2b3c4",
+						"description": "배포한 커밋 (자동 배포가 새 버전이 떴는지 확인한다). 로컬은 dev"
 					}
 				},
 				"required": [
 					"status",
-					"database"
+					"database",
+					"version"
 				]
 			},
 			"AdminResponse": {
