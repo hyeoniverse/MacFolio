@@ -3,11 +3,11 @@ import { APP_CONFIG, type AppConfig } from '../config.js';
 import { hashIp } from '../comments/rules.js';
 import { DailyQuota, DemoInputError, failureLine, tryInOrder } from '../common/demo.js';
 import { SummaryClient } from './summary.client.js';
-import { parseSummaryRequest } from './rules.js';
+import { parseSummaryRequest, SUMMARY_PROVIDER_NAMES, SUMMARY_PROVIDERS } from './rules.js';
 
 /**
  * AI 요약 데모 (HYEONIVERSE가 발행할 때 붙이는 두 언어 요약을 실제로). 누구나 쓰지만 하루 상한이 있다.
- * 만들지 못하면 쓴 횟수를 돌려준다
+ * Groq로 먼저 만들고, 실패하면(키 없음, 한도, 모델 내려감 등) Gemini로 넘어간다. 모두 실패하면 쓴 횟수를 돌려준다
  */
 @Injectable()
 export class SummaryService {
@@ -45,11 +45,14 @@ export class SummaryService {
 			);
 		}
 
-		const { geminiApiKey, geminiModel } = this.config.summary;
+		const { groqApiKey, groqModel, geminiApiKey, geminiModel } = this.config.summary;
 		const { attempts, provider, value } = await tryInOrder(
-			['gemini'] as const,
+			SUMMARY_PROVIDERS,
 			[],
-			() => this.client.gemini(geminiApiKey, geminiModel, request.text),
+			(name) =>
+				name === 'groq'
+					? this.client.groq(groqApiKey, groqModel, request.text)
+					: this.client.gemini(geminiApiKey, geminiModel, request.text),
 			(message) => this.logger.warn(message)
 		);
 		if (provider && value) return { provider, ...value, remaining: this.quota.remaining(key) };
@@ -57,7 +60,7 @@ export class SummaryService {
 		this.quota.refund(key);
 		throw new HttpException(
 			{
-				message: `요약을 만들지 못했습니다 (${failureLine(attempts, { gemini: 'Gemini' })}).`,
+				message: `요약을 만들지 못했습니다 (${failureLine(attempts, SUMMARY_PROVIDER_NAMES)}).`,
 				attempts,
 				remaining: this.quota.remaining(key),
 			},

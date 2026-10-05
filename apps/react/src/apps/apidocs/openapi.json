@@ -1518,12 +1518,12 @@
 				},
 				"responses": {
 					"200": {
-						"description": "두 언어 요약과 만든 공급자, 남은 횟수",
+						"description": "두 언어 요약과 만든 공급자(groq | gemini), 남은 횟수",
 						"content": {
 							"application/json": {
 								"schema": {
 									"example": {
-										"provider": "gemini",
+										"provider": "groq",
 										"ko": "프로젝트와 글을 한 곳에 모은 개인 포트폴리오입니다.",
 										"en": "A personal portfolio that gathers projects and writing in one place.",
 										"remaining": 2
@@ -1539,7 +1539,7 @@
 						"description": "오늘 요약할 수 있는 횟수를 다 썼다"
 					},
 					"502": {
-						"description": "Gemini가 요약하지 못했다 (쓴 횟수는 돌려준다)"
+						"description": "Groq와 Gemini 모두 요약하지 못했다 (쓴 횟수는 돌려준다)"
 					}
 				},
 				"tags": [

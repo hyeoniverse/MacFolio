@@ -21,7 +21,14 @@ describe('loadConfig', () => {
 			speech: { fishAudioApiKey: undefined, googleTtsApiKey: undefined, perIpPerDay: 3, totalPerDay: 50 },
 			// 번역·요약·커버: 키가 없으면 그 공급자만 실패, 하루 IP마다 3번·전체 50번 (커버는 10번)
 			translate: { deeplApiKey: undefined, googleTranslateApiKey: undefined, perIpPerDay: 3, totalPerDay: 50 },
-			summary: { geminiApiKey: undefined, geminiModel: 'gemini-flash-latest', perIpPerDay: 3, totalPerDay: 50 },
+			summary: {
+				groqApiKey: undefined,
+				groqModel: 'openai/gpt-oss-120b',
+				geminiApiKey: undefined,
+				geminiModel: 'gemini-flash-latest',
+				perIpPerDay: 3,
+				totalPerDay: 50,
+			},
 			cover: {
 				cloudflareAccountId: undefined,
 				cloudflareAiToken: undefined,
