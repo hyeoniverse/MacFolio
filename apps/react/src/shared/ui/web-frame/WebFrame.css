@@ -1,23 +1,23 @@
-/* 배포한 프로젝트 사이트를 띄우는 창 (ProjectApp.tsx) */
-.project-app {
+/* 다른 페이지를 창 안에 띄우는 틀 (WebFrame.tsx): 프로젝트 앱, API 문서 앱 */
+.web-frame {
 	position: relative;
 	height: 100%;
 	background-color: #ffffff;
 }
 
-.project-app.dark {
+.web-frame.dark {
 	background-color: #000000;
 }
 
-.project-app iframe {
+.web-frame iframe {
 	display: block;
 	width: 100%;
 	height: 100%;
 	border: none;
 }
 
-/* 사이트가 뜨기 전: 가운데 프로젝트 아이콘과 이름 */
-.project-app-loading {
+/* 페이지가 뜨기 전: 가운데 아이콘과 이름 */
+.web-frame-loading {
 	display: flex;
 	position: absolute;
 	inset: 0;
@@ -30,31 +30,31 @@
 	font-size: 13px;
 }
 
-.project-app.dark .project-app-loading {
+.web-frame.dark .web-frame-loading {
 	color: #98989d;
 }
 
-.project-app-loading img {
+.web-frame-loading img {
 	width: 64px;
 	height: 64px;
 	border-radius: 15px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-	animation: project-app-pulse 1.4s ease-in-out infinite;
+	animation: web-frame-pulse 1.4s ease-in-out infinite;
 }
 
-.project-app-loading a {
+.web-frame-loading a {
 	color: #0a84ff;
 	text-decoration: none;
 }
 
-@keyframes project-app-pulse {
+@keyframes web-frame-pulse {
 	50% {
 		opacity: 0.55;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.project-app-loading img {
+	.web-frame-loading img {
 		animation: none;
 	}
 }

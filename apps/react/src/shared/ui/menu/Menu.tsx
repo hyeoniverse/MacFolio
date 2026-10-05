@@ -22,6 +22,8 @@ export type MenuItem =
 	| { heading: string }
 	/** 안내 한 줄 (예: "○○(으)로 로그인됨") */
 	| { note: string }
+	/** 누를 수 없는 정보 줄: 항목과 같은 글자·아이콘 칸이지만 올려도 칠하지 않는다 (예: Wi-Fi 메뉴의 지금 연결) */
+	| { info: string; icon?: string | React.ReactElement }
 	/** 아이콘 위·글자 아래 단추를 가로로 늘어놓은 한 줄 (iOS 메뉴 맨 위의 고정·잠그기처럼) */
 	| { row: { label: string; icon: string; onSelect: () => void; disabled?: boolean }[] }
 	| 'separator';
@@ -92,7 +94,11 @@ const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFoc
 	};
 
 	// 아이콘이나 체크가 있는 항목이 하나라도 있으면 모든 항목에 아이콘 자리를 두어 글자를 맞춘다
-	const iconColumn = items.some((item) => isAction(item) && (item.icon !== undefined || item.checked !== undefined));
+	const iconColumn = items.some(
+		(item) =>
+			(isAction(item) && (item.icon !== undefined || item.checked !== undefined)) ||
+			(typeof item === 'object' && 'info' in item && item.icon !== undefined)
+	);
 
 	return createPortal(
 		<div
@@ -131,6 +137,18 @@ const Menu: React.FC<Props> = ({ label, anchor, items, onClose, trigger, autoFoc
 								</button>
 							))}
 						</div>
+					);
+				if ('info' in item)
+					return (
+						<p key={`info-${index}`} className="ui-menu-info" role="presentation">
+							{iconColumn &&
+								(item.icon && typeof item.icon !== 'string' ? (
+									<i aria-hidden="true">{item.icon}</i>
+								) : (
+									<i className={item.icon} aria-hidden="true" />
+								))}
+							{item.info}
+						</p>
 					);
 				if ('note' in item)
 					return (

@@ -36,9 +36,10 @@ test.describe('프로젝트 앱', () => {
 	});
 
 	test('Dock에 다 들어가지 않아 Launchpad로 간 앱도 실행 중에는 Dock 끝에 나타난다', async ({ page }) => {
+		// 1280px 창에는 앱 13칸: 프로젝트 앱은 시스템 앱 뒤에 있어서 뉴픽 뒤의 셋(QRU, WTD, 새싹 농장)이 Launchpad로 간다
+		await page.setViewportSize({ width: 1280, height: 800 });
 		await enterDesktop(page);
 		await fakeSites(page);
-		// 1600px 창에는 13개까지: 프로젝트 앱은 시스템 앱 뒤에 있어서 뒤쪽 셋(QRU, WTD, 새싹 농장)이 Launchpad로 간다
 		await expect(dockItem(page, 'qru')).toHaveCount(0);
 		await dockItem(page, 'launchpad').click();
 		await page.locator('.launchpad-modal').getByRole('button', { name: 'qru', exact: true }).click();
