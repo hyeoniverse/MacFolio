@@ -84,6 +84,7 @@ import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
+import MarkdownLink from '@/apps/memo/components/MarkdownLink';
 import Button from '@/shared/ui/button/Button';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 
@@ -95,11 +96,11 @@ const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
  * react-markdown이 요소를 매번 다시 마운트해서 이미지 크게 보기 같은 상태가 사라진다.
  */
 const MARKDOWN_COMPONENTS: Components = {
-	// 외부 링크는 새 탭에서 연다
+	// 사이트 안의 글·프로젝트 링크는 사이트 안에서, 바깥 링크는 새 탭에서 연다 (MarkdownLink)
 	a: ({ href, title, children }) => (
-		<a href={href} title={title} target="_blank" rel="noopener noreferrer">
+		<MarkdownLink href={href} title={title}>
 			{children}
-		</a>
+		</MarkdownLink>
 	),
 	pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
 	img: ({ src, alt, title }) => (
