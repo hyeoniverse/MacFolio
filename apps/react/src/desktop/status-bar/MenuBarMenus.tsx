@@ -62,8 +62,7 @@ const MenuBarMenus = () => {
 	const current = open && menus[open.index] ? open : null;
 
 	return (
-		// data-app-menu: 눌러도 지금 쓰는 앱이 바뀌지 않는다 (Desktop.tsx의 바탕화면 판)
-		<div className="menubar-menus" ref={bar} role="group" aria-label="메뉴 막대" data-app-menu>
+		<div className="menubar-menus" ref={bar} role="group" aria-label="메뉴 막대">
 			{menus.map((menu, index) => (
 				<button
 					key={menu.title}

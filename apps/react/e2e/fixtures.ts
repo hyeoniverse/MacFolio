@@ -52,6 +52,20 @@ export async function openFromDock(page: Page, name: string) {
 	await page.locator('.launchpad-modal').getByRole('button', { name, exact: true }).click();
 }
 
+/** 창·Dock·메뉴 막대가 없는 바탕화면의 한 점 (누르면 Finder가 된다) */
+export async function desktopPoint(page: Page) {
+	const point = await page.evaluate(() => {
+		for (let x = window.innerWidth - 20; x > 0; x -= 40)
+			for (let y = 60; y < window.innerHeight - 160; y += 40) {
+				const hit = document.elementFromPoint(x, y);
+				if (hit && !hit.closest('[data-app], .dock, .macos-statusbar')) return { x, y };
+			}
+		return null;
+	});
+	expect(point).not.toBeNull();
+	return point!;
+}
+
 export const appWindow = (page: Page, name: string) => page.locator(`[data-app="${name}"]`);
 
 export async function zIndexOf(page: Page, name: string) {
