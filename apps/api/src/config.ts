@@ -5,7 +5,7 @@ export interface AppConfig {
 	version: string;
 	port: number;
 	databaseUrl: string;
-	/** 요청을 허용할 프론트엔드 주소 */
+	/** 요청을 허용할 프론트엔드 주소. *는 영문 소문자·숫자·- 한 덩어리 (PR 미리보기: https://*-macfolio.hyeoniverse.workers.dev) */
 	corsOrigins: string[];
 	/** 로그인을 마치고 돌아갈 프론트엔드 주소 */
 	frontendUrl: string;
@@ -117,7 +117,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		port,
 		databaseUrl,
 		corsOrigins,
-		frontendUrl: env.FRONTEND_URL ?? corsOrigins[0] ?? 'http://localhost:5173',
+		frontendUrl: env.FRONTEND_URL ?? corsOrigins.find((origin) => !origin.includes('*')) ?? 'http://localhost:5173',
 		apiUrl: (env.API_URL ?? `http://localhost:${port}`).replace(/\/$/, ''),
 		trustProxy: Number(env.TRUST_PROXY ?? 0) || 0,
 		commentRateLimit: Number(env.COMMENT_RATE_LIMIT ?? 5) || 5,
