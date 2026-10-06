@@ -1,3 +1,4 @@
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useEffect, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/AppStateContext';
@@ -132,6 +133,9 @@ const DesktopTerminal: React.FC = () => {
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ block: 'end' });
 	}, [entries]);
+
+	// 메뉴 막대의 터미널 메뉴 (#96). 입력 칸에서는 ⌃L로도 지운다
+	useAppMenus('terminal', [{ title: '편집', items: [{ label: '화면 지우기', onSelect: () => setEntries([]) }] }]);
 
 	const context = (): CommandContext => ({ history, now: new Date(), apps: OPENABLE_APPS });
 	const append = (entry: Omit<Entry, 'id'>) => setEntries((prev) => [...prev, { ...entry, id: nextId.current++ }]);

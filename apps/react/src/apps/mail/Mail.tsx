@@ -1,3 +1,4 @@
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
@@ -51,6 +52,22 @@ const Mail: React.FC = () => {
 		setDetailOpen(false);
 		setNav('back');
 	};
+
+	// 메뉴 막대의 메일 메뉴 (#96)
+	useAppMenus('mail', [
+		{
+			title: '파일',
+			items: [
+				{
+					label: '새로운 메시지',
+					icon: 'fa-regular fa-pen-to-square',
+					shortcut: { code: 'KeyN', alt: true },
+					onSelect: compose,
+				},
+			],
+		},
+		{ title: '이동', items: [{ label: '받은 편지함', onSelect: backToList }] },
+	]);
 
 	return (
 		<AppWindow title="메일" appName="mail" chrome="unified">
