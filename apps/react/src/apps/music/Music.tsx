@@ -15,6 +15,7 @@ import {
 	type Playlist,
 } from './library';
 import { useMusic } from './MusicContext';
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import SeekBar from './SeekBar';
 import VolumeBar from './VolumeBar';
 import '@/apps/music/Music.css';
@@ -186,9 +187,27 @@ const NowPlayingSheet: React.FC = () => {
  * 음악: 보관함·재생 목록·곡 목록과 재생 막대. macOS 음악 앱처럼 왼쪽에 재생 목록, 가운데에 곡 목록.
  * 좁은 창(모바일)에서는 보관함 → 재생 목록 순서로 한 화면씩 보이고, 아래 미니 플레이어를 누르면 '지금 재생 중'이 열린다.
  */
+/** 반복 방식의 이름 (메뉴 막대의 '제어' 메뉴) */
+const REPEAT_LABEL = { off: '끔', all: '전체', one: '한 곡' } as const;
+
 const Music: React.FC = () => {
 	const music = useMusic();
 	const { track, isPlaying, playlistId: playingId, durations, playFrom, togglePlayPause, next } = music;
+
+	// 메뉴 막대의 음악 '제어' 메뉴 (macOS 음악 앱처럼, #96)
+	useAppMenus('music', [
+		{
+			title: '제어',
+			items: [
+				{ label: isPlaying ? '일시정지' : '재생', onSelect: togglePlayPause },
+				{ label: '다음 곡', onSelect: next },
+				{ label: '이전 곡', onSelect: music.previous },
+				'separator',
+				{ label: '셔플', checked: music.shuffle, onSelect: music.toggleShuffle },
+				{ label: `반복: ${REPEAT_LABEL[music.repeat]}`, onSelect: music.cycleRepeat },
+			],
+		},
+	]);
 	const phone = useIsMobile();
 	const [selectedId, setSelectedId] = useState(playingId);
 	/** 좁은 창에서 보이는 화면. 휴대폰은 보관함과 곡 목록 사이에 플레이리스트·아티스트·앨범 목록이 있다 */
