@@ -122,17 +122,32 @@ const Safari: React.FC = () => {
 			],
 		},
 		{
-			title: '이동',
+			// macOS Safari처럼 프로젝트를 책갈피로: 고르면 그 탭을 연다 (닫았으면 다시 연다)
+			title: '책갈피',
+			items: PROJECTS.map((project) => ({
+				label: project.name,
+				checked: activeId === project.id,
+				onSelect: () => {
+					setTabs((current) =>
+						current.includes(project.id) ? current : [...current.filter((tab) => tab !== START), project.id]
+					);
+					choose(project.id);
+				},
+			})),
+		},
+		{
+			// 탭 넘기기는 macOS Safari처럼 윈도우 메뉴에
+			title: '윈도우',
 			items: [
 				{
-					label: '이전 탭',
+					label: '이전 탭 보기',
 					icon: 'fa-solid fa-chevron-left',
 					disabled: index === 0,
 					shortcut: { code: 'BracketLeft', alt: true, shift: true },
 					onSelect: () => go(-1),
 				},
 				{
-					label: '다음 탭',
+					label: '다음 탭 보기',
 					icon: 'fa-solid fa-chevron-right',
 					disabled: index >= tabs.length - 1,
 					shortcut: { code: 'BracketRight', alt: true, shift: true },

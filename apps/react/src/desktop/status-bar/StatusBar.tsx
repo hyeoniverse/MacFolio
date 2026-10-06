@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
-import { APP_MANIFEST } from '@/apps/manifest';
-import { useAppState } from '@/desktop/AppStateContext';
 import AppleMenu from '@/desktop/status-bar/AppleMenu';
 import MenuBarMenus from '@/desktop/status-bar/MenuBarMenus';
 import ServerMenu from '@/desktop/status-bar/ServerMenu';
@@ -12,10 +10,6 @@ import '@/desktop/status-bar/StatusBar.css';
 
 const StatusBar: React.FC = () => {
 	const [time, setTime] = useState<string>('');
-
-	// 지금 쓰고 있는 앱의 이름 (macOS 메뉴 막대). 창이 없거나 창 밖을 눌렀으면 Finder
-	const { activeApp } = useAppState();
-	const appName = APP_MANIFEST[activeApp ?? 'finder'].label;
 
 	const { isPlaying, togglePlayPause, next: playNextTrack, previous: playPreviousTrack } = useMusic(); // MusicContext에서 필요한 상태 및 함수 가져오기
 
@@ -39,9 +33,7 @@ const StatusBar: React.FC = () => {
 		<div className="macos-statusbar">
 			<div className="left-section">
 				<AppleMenu />
-				{/* 맨 앞 앱 이름은 굵게 (macOS 메뉴 막대) */}
-				<span className="menu-item app-name">{appName}</span>
-				{/* 파일·편집·보기·이동·윈도우·도움말: 지금 쓰는 앱에 맞는 메뉴 (#96) */}
+				{/* 굵은 앱 이름과 파일·편집·보기·이동·윈도우·도움말: 지금 쓰는 앱의 메뉴 (#96) */}
 				<MenuBarMenus />
 			</div>
 

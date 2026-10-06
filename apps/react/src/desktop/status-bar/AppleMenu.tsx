@@ -2,9 +2,11 @@ import { useRef, useState } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
 import { signIn, signOut, useAdmin } from '@/shared/auth/adminStore';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
+import { REPO_URL } from '@/apps/finder/repoDocs';
+import { settingsStore } from '@/shared/settings/settingsStore';
 
 /**
- * 메뉴 막대의 Apple 메뉴. 관리자 로그인·로그아웃과 시스템 설정을 연다.
+ * 메뉴 막대의 Apple 메뉴. 시스템 설정, 다크 모드, 사이트 바로가기(API 문서, 저장소), 관리자 로그인·로그아웃.
  * 메뉴는 공통 메뉴(shared/ui/menu)로 body에 그린다 (메뉴 막대는 넘치는 항목을 잘라 낸다).
  */
 const AppleMenu = () => {
@@ -13,8 +15,14 @@ const AppleMenu = () => {
 	const { openApp } = useAppState();
 	const { status, login } = useAdmin();
 
+	const dark = document.documentElement.dataset.theme === 'dark';
 	const items: MenuItem[] = [
 		{ label: '시스템 설정…', onSelect: () => openApp('settings') },
+		// 화면 모드는 앱이 아니라 시스템의 것이라 앱의 보기 메뉴가 아니라 여기에 둔다
+		{ label: '다크 모드', checked: dark, onSelect: () => settingsStore.setState({ theme: dark ? 'light' : 'dark' }) },
+		'separator',
+		{ label: 'API 문서', onSelect: () => openApp('apidocs') },
+		{ label: 'GitHub 저장소', onSelect: () => window.open(REPO_URL, '_blank', 'noopener,noreferrer') },
 		'separator',
 		...(status === 'signed-in'
 			? ([{ note: `${login}(으)로 로그인됨` }, { label: '로그아웃', onSelect: () => void signOut() }] as MenuItem[])
