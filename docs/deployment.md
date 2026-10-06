@@ -290,7 +290,7 @@ docker compose logs -f api                  # 마이그레이션이 끝나고 "N
 
 ### 업데이트 (자동 배포)
 
-`apps/api`(또는 의존성, `ops/deploy.sh`)가 바뀐 커밋이 main에 들어오면 GitHub Actions가 알아서 한다 (#100).
+main에 들어온 커밋이 **서버에 떠 있는 API**(`/health`의 version)와 비교해 `apps/api`(또는 의존성, `ops/deploy.sh`)가 다르면 GitHub Actions가 알아서 한다 (#100). 직전 push가 아니라 서버와 비교하므로, API를 바꾼 머지의 CI가 실패해 배포가 빠져도 다음 머지 때 함께 배포된다. 서버에 닿지 않으면 다르다고 보고 배포한다.
 
 ```
 check(시험) ─▶ api-image: 이미지 빌드(amd64) → GHCR (sha-<커밋>, main)
@@ -594,7 +594,7 @@ Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Al
 | api가 시작하자마자 꺼짐                                              | `IP_HASH_SECRET` 없음, DB 연결 실패 등. `docker compose logs api`의 첫 에러를 본다                                                                                                               |
 | 빌드 중 멈추거나 `Killed`                                            | 메모리 부족. swap을 잡았는지 `free -h`로 확인                                                                                                                                                    |
 | Actions '서버에서 배포'가 `Permission denied (publickey)` (exit 255) | `DEPLOY_SSH_KEY`가 서버에 등록된 배포 열쇠와 짝이 아니다. 열쇠를 두 번 만들어 GitHub과 서버에 다른 열쇠가 들어간 경우가 많다. '자동 배포 설정' 2를 다시 하고 `DEPLOY_SSH_KEY`를 새 값으로 바꾼다 |
-| API 변경을 머지했는데 `/health`의 version이 그대로                   | Secrets를 넣기 전에 머지했거나 배포가 건너뛰어졌다. 그 커밋 태그로 Run workflow ('자동 배포 설정'의 마지막)                                                                                      |
+| API 변경을 머지했는데 `/health`의 version이 그대로                   | Secrets를 넣기 전에 머지했거나 배포가 실패했다. 다음 머지 때 서버와 비교해 함께 배포된다. 바로 올리려면 이미지가 있는 커밋 태그로 Run workflow ('자동 배포 설정'의 마지막)                       |
 | 명령이 `No such file`·`Could not resolve hostname :`                 | 서버에서 칠 명령을 내 컴퓨터에서 쳤다. 줄 맨 앞이 `ubuntu@…`인지 본다                                                                                                                            |
 | Actions가 `Host key verification failed`                             | `DEPLOY_KNOWN_HOSTS`가 서버 호스트 키와 다르다. 서버를 새로 만들었으면 다시 `ssh-keyscan`                                                                                                        |
 | Actions가 `Connection timed out`                                     | Oracle 보안 목록에서 22번이 특정 IP에만 열려 있다                                                                                                                                                |
