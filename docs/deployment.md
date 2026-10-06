@@ -175,6 +175,8 @@ EOF
 
 ### `api.env` (API 환경 변수)
 
+서버의 API는 이 파일만 읽는다. 내 컴퓨터의 `apps/api/.env`는 로컬 개발용이라 배포와 상관없다. 배포용 값을 내 컴퓨터에 적어 둘 때는 `.env`가 아니라 `apps/api/.env.production`에 둔다(커밋되지 않고, 로컬 API도 읽지 않는다). 로컬 `.env`의 `CORS_ORIGINS`를 배포 값으로 바꾸면 로컬 사이트가 서버에 연결하지 못한다.
+
 ```bash
 cat > api.env <<EOF
 CORS_ORIGINS=https://macfolio.hyeoniverse.com,https://*-macfolio.hyeoniverse.workers.dev
