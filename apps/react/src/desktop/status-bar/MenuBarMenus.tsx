@@ -106,7 +106,11 @@ const MenuBarMenus = () => {
 						aria-expanded={current?.index === index}
 						// 키보드로 열면(detail 0) 첫 항목에 초점
 						onClick={(event) => (current?.index === index ? close() : openAt(index, event.detail === 0))}
-						onPointerEnter={() => current && current.index !== index && openAt(index, false)}
+						// 메뉴가 열린 채 다른 제목으로 마우스를 옮기면 넘어간다. 마우스가 실제로 움직였을 때만:
+						// 앱 메뉴가 늦게 등록돼 제목이 밀려도, 가만히 있는 마우스 아래로 들어온 제목은 열지 않는다
+						onPointerMove={(event) =>
+							(event.movementX || event.movementY) && current && current.index !== index && openAt(index, false)
+						}
 					>
 						{menu.title}
 					</button>
