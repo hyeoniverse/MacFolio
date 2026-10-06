@@ -8,8 +8,8 @@ export const FAKE_EXPIRES_AT = '2099-10-02T22:03:00.000Z';
 
 export interface FakeApiState {
 	signedIn: boolean;
-	/** /health가 돌려줄 상태 */
-	health: 'ok' | 'database' | 'down';
+	/** /health가 돌려줄 상태. blocked는 서버는 응답하지만 이 주소를 CORS로 허용하지 않는 경우 (PR 미리보기) */
+	health: 'ok' | 'database' | 'down' | 'blocked';
 	/** 서버에 저장된 메모 정리 내용 */
 	organization: {
 		folders: string[];
@@ -354,6 +354,14 @@ export async function fakeApi(
 		// 서버 상태 (메뉴 막대의 Wi-Fi 자리): ok, DB가 안 됨(503), 꺼짐(연결 실패)
 		if (path === '/health') {
 			if (state.health === 'down') return route.abort('connectionrefused');
+			// 다른 주소만 허용한다고 답한다: 브라우저가 응답을 읽지 못하게 막고, 응답을 읽지 않는 no-cors 요청만 닿는다.
+			// (CORS 헤더를 아예 빼면 Playwright가 알아서 붙여 줘서 막히지 않는다)
+			if (state.health === 'blocked')
+				return route.fulfill({
+					status: 200,
+					headers: { 'Access-Control-Allow-Origin': 'https://macfolio.hyeoniverse.com' },
+					json: { status: 'ok', database: 'up' },
+				});
 			if (state.health === 'database')
 				return route.fulfill({
 					status: 503,

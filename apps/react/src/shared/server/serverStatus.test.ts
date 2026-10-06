@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { barsOf, checkServer, classify, serverStore } from './serverStatus';
+import { barsOf, checkServer, STATE_LABEL, classify, serverStore } from './serverStatus';
 
 const result = (patch: Partial<Parameters<typeof classify>[0]> = {}) => ({
 	network: true,
@@ -47,6 +47,15 @@ describe('서버 상태', () => {
 		}) as unknown as typeof fetch;
 		await checkServer('http://api', down);
 		expect(serverStore.getState()).toMatchObject({ state: 'offline', latency: null });
+
+		// CORS로 막힌 주소(PR 미리보기 등): 보통 요청은 실패하지만 응답을 읽지 않는 요청(no-cors)은 닿는다
+		const blocked = vi.fn(async (_url: string, init?: RequestInit) => {
+			if (init?.mode === 'no-cors') return new Response(null, { status: 200 });
+			throw new TypeError('Failed to fetch');
+		}) as unknown as typeof fetch;
+		await checkServer('http://api', blocked);
+		expect(serverStore.getState()).toMatchObject({ state: 'blocked', latency: null });
+		expect(STATE_LABEL.blocked).toBe('이 주소에서는 쓸 수 없음');
 
 		await checkServer('');
 		expect(serverStore.getState().state).toBe('disabled');

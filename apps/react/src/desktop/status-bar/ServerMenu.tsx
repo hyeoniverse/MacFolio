@@ -37,6 +37,10 @@ const ServerMenu = () => {
 				// 지금 상태: 누를 수 없는 정보 줄 (다시 확인은 아래 '지금 확인')
 				{ info: `MacFolio API · ${label}`, icon: <ServerSignal status={status} /> },
 				...(detail ? [{ note: detail }] : []),
+				// 서버는 켜져 있는데 이 주소를 허용하지 않는 경우: 원인을 알려 준다 (PR 미리보기, 로컬 개발)
+				...(status.state === 'blocked'
+					? [{ note: `서버는 켜져 있지만 이 주소(${window.location.host})는 허용하지 않습니다` }]
+					: []),
 				{ note: host },
 				'separator',
 				{ label: '지금 확인', icon: 'fa-solid fa-rotate-right', onSelect: () => void checkServer() },

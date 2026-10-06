@@ -15,6 +15,8 @@ export type ServerState =
 	| 'database'
 	/** 서버에 닿지 않는다 (꺼졌거나 터널이 끊겼다) */
 	| 'offline'
+	/** 서버는 켜져 있지만 이 주소(PR 미리보기, 로컬 등)를 허용하지 않는다 (CORS) */
+	| 'blocked'
 	/** 이 기기가 인터넷에 연결되어 있지 않다 */
 	| 'no-network';
 
@@ -42,9 +44,11 @@ export function classify(result: {
 	status: number | null;
 	databaseDown: boolean;
 	latency: number;
+	/** 응답을 못 읽었을 때, 읽지 않고 보내 보는 요청(no-cors)은 닿았는지 */
+	reachable?: boolean;
 }): ServerState {
 	if (!result.network) return 'no-network';
-	if (result.status === null) return 'offline';
+	if (result.status === null) return result.reachable ? 'blocked' : 'offline';
 	if (result.status === 503 && result.databaseDown) return 'database';
 	if (result.status < 200 || result.status >= 300) return 'offline';
 	return result.latency > SLOW_MS ? 'slow' : 'online';
@@ -64,6 +68,7 @@ export const STATE_LABEL: Record<ServerState, string> = {
 	slow: '응답 느림',
 	database: 'DB 연결 안 됨',
 	offline: '서버에 연결할 수 없음',
+	blocked: '이 주소에서는 쓸 수 없음',
 	'no-network': '인터넷 연결 없음',
 };
 
@@ -85,6 +90,7 @@ export function checkServer(apiUrl = env.apiUrl, fetchImpl: typeof fetch = fetch
 		const started = performance.now();
 		let status: number | null;
 		let databaseDown = false;
+		let reachable = false;
 		try {
 			const response = await fetchImpl(`${apiUrl}/health`, {
 				cache: 'no-store',
@@ -97,10 +103,20 @@ export function checkServer(apiUrl = env.apiUrl, fetchImpl: typeof fetch = fetch
 			}
 		} catch {
 			status = null;
+			// 브라우저는 CORS로 막힌 응답과 끊긴 연결을 똑같은 오류로 알린다. 응답을 읽지 않는 요청(no-cors)을
+			// 한 번 더 보내서, 그것은 닿으면 서버는 켜져 있고 이 주소만 허용되지 않은 것으로 본다
+			reachable = await fetchImpl(`${apiUrl}/health`, {
+				mode: 'no-cors',
+				cache: 'no-store',
+				signal: AbortSignal.timeout(TIMEOUT_MS),
+			}).then(
+				() => true,
+				() => false
+			);
 		}
 		const latency = Math.round(performance.now() - started);
 		const network = typeof navigator === 'undefined' || navigator.onLine !== false;
-		const state = classify({ network, status, databaseDown, latency });
+		const state = classify({ network, status, databaseDown, latency, reachable });
 		serverStore.setState({
 			state,
 			latency: status === null ? null : latency,

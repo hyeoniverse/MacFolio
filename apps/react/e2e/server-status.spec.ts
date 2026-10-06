@@ -117,4 +117,19 @@ test.describe('메뉴 막대의 서버 상태 (Wi-Fi 자리)', () => {
 			)
 		).toBe(true);
 	});
+
+	test('서버는 켜져 있지만 이 주소를 허용하지 않으면(PR 미리보기) 꺼졌다고 하지 않고 원인을 알린다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page);
+		api.health = 'blocked';
+		await enterDesktop(page);
+		const button = page.getByRole('button', { name: '서버 상태: 이 주소에서는 쓸 수 없음' });
+		await expect(button).toBeVisible();
+		await expect(button.locator('.slash')).toHaveCount(0);
+		await button.click();
+		const menu = page.getByRole('menu', { name: '서버 상태' });
+		await expect(menu).toContainText('MacFolio API · 이 주소에서는 쓸 수 없음');
+		await expect(menu).toContainText('서버는 켜져 있지만 이 주소(localhost:4173)는 허용하지 않습니다');
+	});
 });
