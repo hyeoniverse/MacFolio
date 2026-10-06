@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { placeAtPoint } from '@/shared/ui/popover/placement';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
+import { ariaShortcut, formatShortcut, isMacPlatform, type Shortcut } from '@/shared/ui/menu/shortcut';
 import '@/shared/ui/menu/Menu.css';
 
 export type MenuItem =
@@ -17,6 +18,8 @@ export type MenuItem =
 			checked?: boolean;
 			/** 지우기처럼 되돌릴 수 없는 일 */
 			destructive?: boolean;
+			/** 단축키: 오른쪽에 보이고, 메뉴 막대 메뉴라면 누르면 실행된다 (shortcut.ts) */
+			shortcut?: Shortcut;
 	  }
 	/** 묶음 이름 (눌리지 않는다) */
 	| { heading: string }
@@ -66,6 +69,7 @@ const Menu: React.FC<Props> = ({
 	appMenu = false,
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
+	const mac = isMacPlatform();
 	const [position, setPosition] = useState({ left: anchor.x, top: anchor.y });
 	useDismiss(true, onClose, trigger ? [ref, trigger] : [ref]);
 
@@ -189,6 +193,7 @@ const Menu: React.FC<Props> = ({
 						aria-checked={checkable ? item.checked : undefined}
 						disabled={item.disabled}
 						title={item.hint}
+						aria-keyshortcuts={item.shortcut ? ariaShortcut(item.shortcut, mac) : undefined}
 						onClick={() => {
 							onClose();
 							item.onSelect();
@@ -204,6 +209,11 @@ const Menu: React.FC<Props> = ({
 								/>
 							))}
 						{item.label}
+						{item.shortcut && (
+							<span className="ui-menu-shortcut" aria-hidden="true">
+								{formatShortcut(item.shortcut, mac)}
+							</span>
+						)}
 					</button>
 				);
 			})}

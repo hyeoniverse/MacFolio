@@ -164,4 +164,61 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await controls.getByRole('menuitem', { name: '반복: 전체' }).click();
 		await expect(playbar.getByRole('button', { name: '한 곡 반복' })).toBeVisible();
 	});
+
+	test('단축키: 메뉴 옆에 보이고, 누르면 실행된다 (지금 쓰는 앱의 것만)', async ({ page }) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		const tabs = safari.getByRole('tab');
+
+		// 메뉴 오른쪽에 단축키 (맥은 ⌥T, 그 밖은 Alt+T)
+		const newTab = (await openMenu(page, '파일')).getByRole('menuitem', { name: /새로운 탭/ });
+		await expect(newTab).toHaveAttribute('aria-keyshortcuts', 'Alt+T');
+		await expect(newTab).toContainText(/⌥T|Alt\+T/);
+		await page.keyboard.press('Escape');
+
+		// ⌥T 새로운 탭, ⌥⇧] 다음 탭
+		const before = await tabs.count();
+		await page.keyboard.press('Alt+KeyT');
+		await expect(tabs).toHaveCount(before + 1);
+		await tabs.first().click();
+		await page.keyboard.press('Alt+Shift+BracketRight');
+		await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+
+		// ⌥M 최소화 (공통)
+		await page.keyboard.press('Alt+KeyM');
+		await expect(safari).toBeHidden();
+	});
+
+	test('단축키: 메모의 ⌘F는 글 안에서 찾기, ⌥2는 갤러리. 입력 칸에서는 ⌥ 단축키를 듣지 않는다', async ({ page }) => {
+		await enterDesktop(page, '/memo/cra-to-vite');
+		const memo = appWindow(page, 'memo');
+		await memo.getByRole('article').click();
+		await page.keyboard.press('ControlOrMeta+KeyF');
+		const find = memo.getByRole('search', { name: '메모에서 찾기' });
+		await expect(find).toBeVisible();
+
+		// 찾기 칸에 글자를 쓰는 중: ⌥2는 갤러리로 바꾸지 않는다 (맥에서 ⌥는 특수 문자를 쓴다)
+		await find.getByRole('textbox', { name: '찾기' }).focus();
+		await page.keyboard.press('Alt+Digit2');
+		await expect(memo.getByRole('region', { name: '갤러리' })).toHaveCount(0);
+
+		await memo.getByRole('article').click();
+		await page.keyboard.press('Alt+Digit2');
+		await expect(memo.getByRole('region', { name: '갤러리' })).toBeVisible();
+	});
+
+	test('단축키: Finder의 ⌥[ 뒤로, 다른 앱의 단축키는 듣지 않는다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'finder').click();
+		const finder = appWindow(page, 'finder');
+		await (await openMenu(page, '이동')).getByRole('menuitemcheckbox', { name: '블로그' }).click();
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('블로그');
+		await page.keyboard.press('Alt+BracketLeft');
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('문서');
+		// Finder가 앞이면 Safari의 ⌥T(새로운 탭)는 듣지 않는다
+		const tabs = appWindow(page, 'safari').getByRole('tab');
+		const before = await tabs.count();
+		await page.keyboard.press('Alt+KeyT');
+		await expect(tabs).toHaveCount(before);
+	});
 });
