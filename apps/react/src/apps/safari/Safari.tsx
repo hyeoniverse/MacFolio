@@ -117,18 +117,25 @@ const Safari: React.FC = () => {
 		{
 			title: '파일',
 			items: [
-				{ label: '새로운 탭', icon: 'fa-solid fa-plus', onSelect: newTab },
-				{ label: '탭 닫기', onSelect: () => closeTab(activeId) },
+				{ label: '새로운 탭', icon: 'fa-solid fa-plus', shortcut: { code: 'KeyT', alt: true }, onSelect: newTab },
+				{ label: '탭 닫기', shortcut: { code: 'KeyW', alt: true }, onSelect: () => closeTab(activeId) },
 			],
 		},
 		{
 			title: '이동',
 			items: [
-				{ label: '이전 탭', icon: 'fa-solid fa-chevron-left', disabled: index === 0, onSelect: () => go(-1) },
+				{
+					label: '이전 탭',
+					icon: 'fa-solid fa-chevron-left',
+					disabled: index === 0,
+					shortcut: { code: 'BracketLeft', alt: true, shift: true },
+					onSelect: () => go(-1),
+				},
 				{
 					label: '다음 탭',
 					icon: 'fa-solid fa-chevron-right',
 					disabled: index >= tabs.length - 1,
+					shortcut: { code: 'BracketRight', alt: true, shift: true },
 					onSelect: () => go(1),
 				},
 			],

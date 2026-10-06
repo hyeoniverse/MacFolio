@@ -62,8 +62,6 @@ import { groupPosts, loadArrangement, saveArrangement, sortBy, type Arrangement 
 import Menu from '@/shared/ui/menu/Menu';
 import { CONTENT_IMAGES } from './contentImages';
 import { useCanEditMemo } from './admin';
-import { useAppState } from '@/desktop/AppStateContext';
-import { foregroundApp } from '@/desktop/appStack';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
@@ -237,7 +235,6 @@ const Memo: React.FC = () => {
 	/** 방문자가 정리한 내용 (만든 폴더, 옮긴 글·폴더). 이 브라우저에 저장한다 */
 	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 단추를 보이지 않는다 (admin.ts)
 	const canEdit = useCanEditMemo();
-	const { apps } = useAppState();
 	/** 관리자 목록을 읽었으면 편집기로 본다 (읽기 전에는 게시한 내용으로 읽기만) */
 	const editing = canEdit && adminPosts !== null;
 	// 관리자는 임시 저장까지 보이고, 방문자는 게시한 글만 본다
@@ -938,7 +935,16 @@ const Memo: React.FC = () => {
 	useAppMenus('memo', [
 		{
 			title: '파일',
-			items: canEdit ? [{ label: '새로운 메모', icon: 'fa-regular fa-pen-to-square', onSelect: startNewDraft }] : [],
+			items: canEdit
+				? [
+						{
+							label: '새로운 메모',
+							icon: 'fa-regular fa-pen-to-square',
+							shortcut: { code: 'KeyN', alt: true },
+							onSelect: startNewDraft,
+						},
+					]
+				: [],
 		},
 		{
 			title: '편집',
@@ -947,6 +953,8 @@ const Memo: React.FC = () => {
 					label: '찾기…',
 					icon: 'fa-solid fa-magnifying-glass',
 					disabled: !openFind,
+					// 브라우저의 페이지 찾기 대신 열린 글 안에서 찾는다
+					shortcut: { code: 'KeyF', mod: true },
 					hint: openFind ? undefined : '글을 열면 그 글 안에서 찾습니다',
 					onSelect: () => openFind?.(),
 				},
@@ -955,28 +963,25 @@ const Memo: React.FC = () => {
 		{
 			title: '보기',
 			items: [
-				{ label: '목록으로 보기', checked: view === 'list', onSelect: () => changeView('list') },
-				{ label: '갤러리로 보기', checked: view === 'gallery', onSelect: () => changeView('gallery') },
+				{
+					label: '목록으로 보기',
+					checked: view === 'list',
+					shortcut: { code: 'Digit1', alt: true },
+					onSelect: () => changeView('list'),
+				},
+				{
+					label: '갤러리로 보기',
+					checked: view === 'gallery',
+					shortcut: { code: 'Digit2', alt: true },
+					onSelect: () => changeView('gallery'),
+				},
 				'separator',
 				{ label: '사이드바', checked: sidebarOpen, onSelect: toggleSidebar },
 				...(inTrash ? [] : (['separator', ...sortMenuItems(arrangement, setArrangement)] as MenuItem[])),
 			],
 		},
 	]);
-	const findTarget = selected?.slug ?? null;
-	const memoInFront = foregroundApp(apps) === 'memo';
-	// ⌘F: 메모가 맨 앞 창이면 열린 글 안에서 찾기 (브라우저의 페이지 찾기 대신)
-	useEffect(() => {
-		if (!memoInFront || !findTarget) return;
-		const onKeyDown = (event: KeyboardEvent) => {
-			if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'f') {
-				event.preventDefault();
-				setFindSlug(findTarget);
-			}
-		};
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [memoInFront, findTarget]);
+	// ⌘F(열린 글 안에서 찾기)는 메뉴 막대의 편집 → 찾기… 단축키로 한다 (desktop/status-bar/MenuBarMenus.tsx)
 	const searchBox = (className = '') => (
 		<SearchField
 			className={className}
