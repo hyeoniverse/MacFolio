@@ -43,7 +43,7 @@ interface Props {
 	className?: string;
 	/** ←·→를 누르면 부른다 (메뉴 막대에서 옆 메뉴로 넘어간다) */
 	onNavigate?: (direction: -1 | 1) => void;
-	/** 메뉴 막대의 앱 메뉴: 눌러도 지금 쓰는 앱이 바뀌지 않게 표시한다 (data-app-menu) */
+	/** 메뉴 막대의 앱 메뉴: 마우스로 열어도 메뉴가 키(←·→)를 받는다 (data-app-menu) */
 	appMenu?: boolean;
 }
 
