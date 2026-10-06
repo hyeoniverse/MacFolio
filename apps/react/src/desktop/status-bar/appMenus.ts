@@ -10,6 +10,8 @@ import type { MenuItem } from '@/shared/ui/menu/Menu';
 export interface AppMenu {
 	title: string;
 	items: MenuItem[];
+	/** 맨 앞의 굵은 앱 이름 메뉴 (메뉴 막대가 만든다) */
+	app?: boolean;
 }
 
 const menuStore = createStore<Partial<Record<AppName, AppMenu[]>>>({});

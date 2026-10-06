@@ -39,6 +39,8 @@ interface MusicContextType {
 	setVolume: (volume: number) => void;
 	toggleShuffle: () => void;
 	cycleRepeat: () => void;
+	/** 반복 방식을 바로 고른다 (메뉴 막대의 '제어') */
+	setRepeat: (mode: RepeatMode) => void;
 	stopAndReset: () => void;
 }
 
@@ -231,6 +233,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 				setVolume,
 				toggleShuffle,
 				cycleRepeat,
+				setRepeat,
 				stopAndReset,
 			}}
 		>

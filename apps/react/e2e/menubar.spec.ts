@@ -12,27 +12,30 @@ const openMenu = async (page: Page, name: string) => {
 };
 
 test.describe('메뉴 막대의 메뉴 (#96)', () => {
-	test('앱이 쓰지 않는 제목은 감춘다: 처음 앞에 있는 Safari는 편집이 없다', async ({ page }) => {
+	test('맨 앞은 굵은 앱 이름 메뉴, 그 뒤로 앱이 쓰는 제목만: 처음 앞에 있는 Safari', async ({ page }) => {
 		await enterDesktop(page);
-		await expect(bar(page).getByRole('button')).toHaveText(['파일', '보기', '이동', '윈도우', '도움말']);
+		await expect(bar(page).getByRole('button')).toHaveText(['Safari', '파일', '책갈피', '윈도우', '도움말']);
 	});
 
-	test('윈도우 메뉴: 열린 창 목록에서 고르면 그 창이 앞으로, 최소화하면 다음 창', async ({ page }) => {
+	test('윈도우 메뉴에는 이 앱의 창만: 다른 앱이 없다. 최소화하면 다음 창, 앱 이름 메뉴로 종료', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'memo').click();
 		await expect(appName(page)).toHaveText('메모');
 
-		let windows = await openMenu(page, '윈도우');
+		const windows = await openMenu(page, '윈도우');
 		// 메뉴 제목을 눌러도 지금 쓰는 앱은 그대로다
 		await expect(appName(page)).toHaveText('메모');
-		await expect(windows.getByRole('menuitemcheckbox', { name: '메모' })).toHaveAttribute('aria-checked', 'true');
-		await windows.getByRole('menuitemcheckbox', { name: 'Safari' }).click();
+		await expect(windows.getByRole('menuitem')).toHaveText([/^최소화/, /^확대\/축소/]);
+		await expect(windows.getByText('Safari')).toHaveCount(0);
+		await windows.getByRole('menuitem', { name: '최소화' }).click();
+		await expect(appWindow(page, 'memo')).toBeHidden();
 		await expect(appName(page)).toHaveText('Safari');
 
-		windows = await openMenu(page, '윈도우');
-		await windows.getByRole('menuitem', { name: '최소화' }).click();
+		const app = await openMenu(page, 'Safari');
+		await expect(app.getByRole('menuitem')).toHaveText([/Safari 가리기/, /Safari 종료/]);
+		await app.getByRole('menuitem', { name: /Safari 종료/ }).click();
 		await expect(appWindow(page, 'safari')).toBeHidden();
-		await expect(appName(page)).toHaveText('메모');
+		await expect(appName(page)).toHaveText('Finder');
 	});
 
 	test('파일 → 윈도우 닫기는 창의 닫기와 같다', async ({ page }) => {
@@ -43,25 +46,29 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await expect(appName(page)).toHaveText('Safari');
 	});
 
-	test('보기 → 다크 모드를 켜고 끈다', async ({ page }) => {
+	test('다크 모드는 앱의 보기가 아니라 Apple 메뉴에', async ({ page }) => {
 		await enterDesktop(page);
 		const html = page.locator('html');
 		const dark = (await html.getAttribute('data-theme')) === 'dark';
-		await (await openMenu(page, '보기')).getByRole('menuitemcheckbox', { name: '다크 모드' }).click();
+		const apple = page.getByRole('button', { name: 'Apple 메뉴', exact: true });
+		await apple.click();
+		await page.getByRole('menu', { name: 'Apple 메뉴' }).getByRole('menuitemcheckbox', { name: '다크 모드' }).click();
 		await expect(html).toHaveAttribute('data-theme', dark ? 'light' : 'dark');
-		const item = (await openMenu(page, '보기')).getByRole('menuitemcheckbox', { name: '다크 모드' });
-		await expect(item).toHaveAttribute('aria-checked', dark ? 'false' : 'true');
+		await apple.click();
+		await expect(
+			page.getByRole('menu', { name: 'Apple 메뉴' }).getByRole('menuitemcheckbox', { name: '다크 모드' })
+		).toHaveAttribute('aria-checked', dark ? 'false' : 'true');
 	});
 
 	test('메뉴가 열린 채 다른 제목에 올리면 넘어가고, ←·→로도 옮긴다', async ({ page }) => {
 		await enterDesktop(page);
 		await openMenu(page, '파일');
-		await title(page, '보기').hover();
-		await expect(menu(page, '보기')).toBeVisible();
+		await title(page, '책갈피').hover();
+		await expect(menu(page, '책갈피')).toBeVisible();
 		await expect(menu(page, '파일')).toHaveCount(0);
 
 		await page.keyboard.press('ArrowRight');
-		await expect(menu(page, '이동')).toBeVisible();
+		await expect(menu(page, '윈도우')).toBeVisible();
 		await page.keyboard.press('ArrowLeft');
 		await page.keyboard.press('ArrowLeft');
 		await expect(menu(page, '파일')).toBeVisible();
@@ -69,16 +76,16 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await expect(page.getByRole('menu')).toHaveCount(0);
 	});
 
-	test('바탕화면을 눌러 Finder가 되면 창 항목이 없는 Finder의 메뉴', async ({ page }) => {
+	test('바탕화면을 눌러 Finder가 되면 창 항목이 없는 Finder의 메뉴 (Finder는 종료할 수 없다)', async ({ page }) => {
 		await enterDesktop(page);
 		const desktop = await desktopPoint(page);
 		await page.mouse.click(desktop.x, desktop.y);
 		await expect(appName(page)).toHaveText('Finder');
-		// 창이 없으니 파일(윈도우 닫기)은 비고, 윈도우에는 열린 창 목록만
-		await expect(bar(page).getByRole('button')).toHaveText(['보기', '윈도우', '도움말']);
-		const windows = await openMenu(page, '윈도우');
-		await expect(windows.getByRole('menuitem', { name: '최소화' })).toHaveCount(0);
-		await expect(windows.getByRole('menuitemcheckbox', { name: 'Safari' })).toBeVisible();
+		// 창이 없으니 파일(윈도우 닫기)·윈도우(최소화)도 없다
+		await expect(bar(page).getByRole('button')).toHaveText(['Finder', '도움말']);
+		const finder = await openMenu(page, 'Finder');
+		await expect(finder.getByRole('menuitem', { name: /Finder 가리기/ })).toBeDisabled();
+		await expect(finder.getByRole('menuitem', { name: /종료/ })).toHaveCount(0);
 	});
 
 	test('주소가 있는 화면(메모의 글)이면 파일에 링크 복사, 도움말에서 API 문서', async ({ page }) => {
@@ -87,7 +94,9 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await expect((await openMenu(page, '파일')).getByRole('menuitem', { name: '링크 복사' })).toBeVisible();
 		await page.keyboard.press('Escape');
 
-		await (await openMenu(page, '도움말')).getByRole('menuitem', { name: 'API 문서' }).click();
+		// 사이트 바로가기(API 문서·GitHub 저장소)는 도움말이 아니라 Apple 메뉴에
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
+		await page.getByRole('menu', { name: 'Apple 메뉴' }).getByRole('menuitem', { name: 'API 문서' }).click();
 		await expect(appWindow(page, 'apidocs')).toBeVisible();
 		await expect(appName(page)).toHaveText('API 문서');
 	});
@@ -97,7 +106,7 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 	}) => {
 		await enterDesktop(page, '/memo/cra-to-vite');
 		const memo = appWindow(page, 'memo');
-		await expect(bar(page).getByRole('button')).toHaveText(['파일', '편집', '보기', '윈도우', '도움말']);
+		await expect(bar(page).getByRole('button')).toHaveText(['메모', '파일', '편집', '보기', '윈도우', '도움말']);
 		await expect((await openMenu(page, '파일')).getByRole('menuitem', { name: '새로운 메모' })).toHaveCount(0);
 		await page.keyboard.press('Escape');
 
@@ -114,16 +123,24 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		);
 	});
 
-	test('Safari: 이동 메뉴로 다음·이전 탭, 파일 메뉴로 새로운 탭', async ({ page }) => {
+	test('Safari: 윈도우 메뉴로 다음·이전 탭, 책갈피로 프로젝트, 파일 메뉴로 새로운 탭', async ({ page }) => {
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
 		const tabs = safari.getByRole('tab');
 		await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
-		await expect((await openMenu(page, '이동')).getByRole('menuitem', { name: '이전 탭' })).toBeDisabled();
-		await menu(page, '이동').getByRole('menuitem', { name: '다음 탭' }).click();
+		await expect((await openMenu(page, '윈도우')).getByRole('menuitem', { name: /이전 탭 보기/ })).toBeDisabled();
+		await menu(page, '윈도우')
+			.getByRole('menuitem', { name: /다음 탭 보기/ })
+			.click();
 		await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
-		await (await openMenu(page, '이동')).getByRole('menuitem', { name: '이전 탭' }).click();
+		await (await openMenu(page, '윈도우')).getByRole('menuitem', { name: /이전 탭 보기/ }).click();
 		await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
+
+		// 책갈피: 프로젝트를 고르면 그 탭 (지금 탭에 체크)
+		const bookmarks = await openMenu(page, '책갈피');
+		await expect(bookmarks.getByRole('menuitemcheckbox').first()).toHaveAttribute('aria-checked', 'true');
+		await bookmarks.getByRole('menuitemcheckbox', { name: /NewPick/ }).click();
+		await expect(safari.getByRole('tab', { name: /NewPick/ })).toHaveAttribute('aria-selected', 'true');
 
 		const before = await tabs.count();
 		await (await openMenu(page, '파일')).getByRole('menuitem', { name: '새로운 탭' }).click();
@@ -154,14 +171,15 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 	test('음악: 앱만의 제어 메뉴로 셔플과 반복을 바꾼다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'music').click();
-		await expect(bar(page).getByRole('button')).toHaveText(['파일', '보기', '제어', '윈도우', '도움말']);
+		await expect(bar(page).getByRole('button')).toHaveText(['음악', '파일', '제어', '윈도우', '도움말']);
 		await (await openMenu(page, '제어')).getByRole('menuitemcheckbox', { name: '셔플' }).click();
 		const playbar = appWindow(page, 'music').getByRole('contentinfo', { name: '재생 막대' });
 		await expect(playbar.getByRole('button', { name: '셔플' })).toHaveAttribute('aria-pressed', 'true');
 		const controls = await openMenu(page, '제어');
 		await expect(controls.getByRole('menuitemcheckbox', { name: '셔플' })).toHaveAttribute('aria-checked', 'true');
-		await expect(controls.getByRole('menuitem', { name: '반복: 전체' })).toBeVisible();
-		await controls.getByRole('menuitem', { name: '반복: 전체' }).click();
+		// 반복은 셋 중 하나를 고른다 (macOS 음악처럼)
+		await expect(controls.getByRole('menuitemcheckbox', { name: '전체 반복' })).toHaveAttribute('aria-checked', 'true');
+		await controls.getByRole('menuitemcheckbox', { name: '한 곡 반복' }).click();
 		await expect(playbar.getByRole('button', { name: '한 곡 반복' })).toBeVisible();
 	});
 
@@ -252,12 +270,13 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 
 	test('API 문서·프로젝트 앱(iframe 창): 새로 고침과 새 탭에서 열기', async ({ page }) => {
 		await enterDesktop(page);
-		await (await openMenu(page, '도움말')).getByRole('menuitem', { name: 'API 문서' }).click();
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
+		await page.getByRole('menu', { name: 'Apple 메뉴' }).getByRole('menuitem', { name: 'API 문서' }).click();
 		const docs = appWindow(page, 'apidocs');
 		await expect(docs.frameLocator('iframe').getByRole('heading', { name: 'MacFolio API' })).toBeVisible({
 			timeout: 15_000,
 		});
-		await expect(bar(page).getByRole('button')).toHaveText(['파일', '보기', '윈도우', '도움말']);
+		await expect(bar(page).getByRole('button')).toHaveText(['API 문서', '파일', '보기', '윈도우', '도움말']);
 
 		const popup = page.waitForEvent('popup');
 		await (await openMenu(page, '파일')).getByRole('menuitem', { name: '새 탭에서 열기' }).click();

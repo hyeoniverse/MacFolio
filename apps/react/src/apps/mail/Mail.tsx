@@ -66,7 +66,7 @@ const Mail: React.FC = () => {
 				},
 			],
 		},
-		{ title: '이동', items: [{ label: '받은 편지함', onSelect: backToList }] },
+		{ title: '사서함', items: [{ label: '받은 편지함', onSelect: backToList }] },
 	]);
 
 	return (

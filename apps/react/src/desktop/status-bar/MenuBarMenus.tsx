@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { APP_MANIFEST, APP_NAMES } from '@/apps/manifest';
+import { APP_MANIFEST } from '@/apps/manifest';
 import { REPO_URL } from '@/apps/finder/repoDocs';
 import { useAppState } from '@/desktop/AppStateContext';
 import { useRegisteredMenus } from '@/desktop/status-bar/appMenus';
@@ -7,7 +7,6 @@ import { buildMenuBar, findShortcutItem } from '@/desktop/status-bar/menuBar';
 import { isMacPlatform, isTypingTarget, matchesShortcut, usableWhileTyping } from '@/shared/ui/menu/shortcut';
 import { sendWindowCommand } from '@/desktop/window/windowCommands';
 import { appAddresses, LINKED_APPS, shareLink, type LinkedApp } from '@/shared/lib/appLink';
-import { settingsStore } from '@/shared/settings/settingsStore';
 import Menu from '@/shared/ui/menu/Menu';
 import KeyboardShortcuts from '@/desktop/status-bar/KeyboardShortcuts';
 
@@ -18,9 +17,10 @@ const openExternal = (url: string) => window.open(url, '_blank', 'noopener,noref
  * macOS처럼 메뉴가 열린 채 다른 제목에 마우스를 올리면 그 메뉴로 넘어가고, ←·→로 옆 메뉴로 간다.
  */
 const MenuBarMenus = () => {
-	const { apps, activeApp, openApp } = useAppState();
+	const { activeApp } = useAppState();
 	const registered = useRegisteredMenus();
-	const [open, setOpen] = useState<{ index: number; anchor: { x: number; y: number }; keyboard: boolean } | null>(null);
+	// 연 메뉴는 자리(번호)가 아니라 제목으로 기억한다. 앱이 메뉴를 등록하며 제목 순서가 바뀌어도 연 메뉴가 그대로다
+	const [open, setOpen] = useState<{ title: string; anchor: { x: number; y: number }; keyboard: boolean } | null>(null);
 	const [shortcutsOpen, setShortcutsOpen] = useState(false);
 	const closeShortcuts = useCallback(() => setShortcutsOpen(false), []);
 	const bar = useRef<HTMLDivElement>(null);
@@ -30,30 +30,21 @@ const MenuBarMenus = () => {
 	const label = APP_MANIFEST[app].label;
 	const linked = activeApp !== null && (LINKED_APPS as readonly string[]).includes(activeApp);
 	const address = linked ? appAddresses.getState()[activeApp as LinkedApp] : null;
-	const dark = document.documentElement.dataset.theme === 'dark';
-
 	const menus = buildMenuBar({
+		appLabel: label,
 		appMenus: registered[app] ?? [],
 		hasWindow: activeApp !== null,
-		dark,
+		canQuit: APP_MANIFEST[app].alwaysRunning !== true,
 		actions: {
 			copyLink: address ? () => void shareLink({ app: activeApp as LinkedApp, id: address }, label) : undefined,
 			closeWindow: () => activeApp && sendWindowCommand(activeApp, 'close'),
 			minimize: () => activeApp && sendWindowCommand(activeApp, 'minimize'),
 			toggleMaximize: () => activeApp && sendWindowCommand(activeApp, 'toggleMaximize'),
-			toggleDark: () => settingsStore.setState({ theme: dark ? 'light' : 'dark' }),
+			quit: () => activeApp && sendWindowCommand(activeApp, 'quit'),
 		},
-		windows: APP_NAMES.filter((name) => apps[name].isRunning).map((name) => ({
-			label: APP_MANIFEST[name].label,
-			active: name === activeApp,
-			onSelect: () => openApp(name),
-		})),
 		help: [
-			{ label: 'API 문서', icon: 'fa-solid fa-book', onSelect: () => openApp('apidocs') },
-			{ label: 'GitHub 저장소', icon: 'fa-brands fa-github', onSelect: () => openExternal(REPO_URL) },
-			{ label: '문제 알리기…', icon: 'fa-solid fa-bug', onSelect: () => openExternal(`${REPO_URL}/issues/new/choose`) },
-			'separator',
 			{ label: '키보드 단축키…', icon: 'fa-regular fa-keyboard', onSelect: () => setShortcutsOpen(true) },
+			{ label: '문제 알리기…', icon: 'fa-solid fa-bug', onSelect: () => openExternal(`${REPO_URL}/issues/new/choose`) },
 		],
 	});
 
@@ -84,11 +75,12 @@ const MenuBarMenus = () => {
 		const wrapped = (index + menus.length) % menus.length;
 		const rect = titles.current[wrapped]?.getBoundingClientRect();
 		if (!rect) return;
-		setOpen({ index: wrapped, anchor: { x: rect.left, y: rect.bottom + 3 }, keyboard });
+		setOpen({ title: menus[wrapped].title, anchor: { x: rect.left, y: rect.bottom + 3 }, keyboard });
 	};
 	const close = () => setOpen(null);
-	// 앱이 바뀌어 제목 수가 줄었으면 닫힌 것으로 본다
-	const current = open && menus[open.index] ? open : null;
+	// 앱이 바뀌어 그 제목이 없어졌으면 닫힌 것으로 본다
+	const openIndex = open ? menus.findIndex((menu) => menu.title === open.title) : -1;
+	const current = open && openIndex >= 0 ? { ...open, index: openIndex } : null;
 
 	return (
 		<div className="menubar-menus" ref={bar} role="group" aria-label="메뉴 막대">
@@ -99,7 +91,8 @@ const MenuBarMenus = () => {
 						titles.current[index] = element;
 					}}
 					type="button"
-					className={`menubar-title ${current?.index === index ? 'open' : ''}`}
+					// 맨 앞은 굵은 앱 이름 메뉴 (macOS의 앱 메뉴)
+					className={`menubar-title ${menu.app ? 'app-name' : ''} ${current?.index === index ? 'open' : ''}`}
 					aria-haspopup="menu"
 					aria-expanded={current?.index === index}
 					// 키보드로 열면(detail 0) 첫 항목에 초점

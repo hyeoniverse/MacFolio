@@ -17,7 +17,7 @@
 	font-weight: 400;
 }
 
-.macos-statusbar .menu-item.app-name {
+.macos-statusbar .app-name {
 	font-weight: 700;
 }
 
@@ -194,4 +194,9 @@
 /* Wi-Fi 자리의 서버 상태 단추: 막대 아이콘이라 글자 아이콘보다 조금 크게 */
 .macos-statusbar .server-menu-button {
 	font-size: 0.85rem;
+}
+
+/* 맨 앞의 앱 이름 메뉴는 굵게 (.menubar-title의 font: inherit보다 뒤에, 더 좁게) */
+.macos-statusbar .menubar-title.app-name {
+	font-weight: 700;
 }
