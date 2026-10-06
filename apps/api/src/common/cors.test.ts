@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { originMatcher } from './cors.js';
+import { localFrontendWarning, originMatcher } from './cors.js';
 
 describe('CORS 허용 주소', () => {
 	const allowed = originMatcher(['https://macfolio.hyeoniverse.com', 'https://*-macfolio.hyeoniverse.workers.dev']);
@@ -18,5 +18,18 @@ describe('CORS 허용 주소', () => {
 		expect(allowed('http://a-macfolio.hyeoniverse.workers.dev')).toBe(false);
 		expect(allowed('https://macfolio.hyeoniverse.workers.dev')).toBe(false);
 		expect(allowed(undefined)).toBe(false);
+	});
+});
+
+describe('로컬 프론트엔드를 허용하지 않을 때의 경고', () => {
+	it('개발 모드에서 로컬 프론트엔드가 빠지면 경고한다', () => {
+		expect(localFrontendWarning(['https://macfolio.hyeoniverse.com'], undefined)).toMatch(/http:\/\/localhost:5173/);
+		expect(localFrontendWarning(['https://macfolio.hyeoniverse.com'], 'development')).not.toBeNull();
+	});
+
+	it('로컬 프론트엔드가 있거나 배포 모드면 조용하다', () => {
+		expect(localFrontendWarning(['http://localhost:5173'], undefined)).toBeNull();
+		expect(localFrontendWarning(['http://localhost:5173', 'https://macfolio.hyeoniverse.com'], undefined)).toBeNull();
+		expect(localFrontendWarning(['https://macfolio.hyeoniverse.com'], 'production')).toBeNull();
 	});
 });
