@@ -3,6 +3,7 @@ import AppWindow from '@/desktop/window/Window';
 import { PROJECTS, type Project } from '@/shared/profile';
 import ProjectPage, { Favicon } from '@/apps/safari/ProjectPage';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { useOpenRequest } from '@/shared/lib/openRequest';
 import ShareIcon from '@/shared/ui/ShareIcon';
 import '@/apps/safari/Safari.css';
@@ -110,6 +111,29 @@ const Safari: React.FC = () => {
 			setActiveId(rest[Math.min(at, rest.length - 1)]);
 		}
 	};
+
+	// 메뉴 막대의 Safari 메뉴 (#96)
+	useAppMenus('safari', [
+		{
+			title: '파일',
+			items: [
+				{ label: '새로운 탭', icon: 'fa-solid fa-plus', onSelect: newTab },
+				{ label: '탭 닫기', onSelect: () => closeTab(activeId) },
+			],
+		},
+		{
+			title: '이동',
+			items: [
+				{ label: '이전 탭', icon: 'fa-solid fa-chevron-left', disabled: index === 0, onSelect: () => go(-1) },
+				{
+					label: '다음 탭',
+					icon: 'fa-solid fa-chevron-right',
+					disabled: index >= tabs.length - 1,
+					onSelect: () => go(1),
+				},
+			],
+		},
+	]);
 
 	return (
 		<AppWindow title="Safari" appName="safari" chrome="unified">
