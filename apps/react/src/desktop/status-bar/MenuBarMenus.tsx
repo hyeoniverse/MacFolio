@@ -71,8 +71,11 @@ const MenuBarMenus = () => {
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, []);
 
-	const openAt = (index: number, keyboard: boolean) => {
-		const wrapped = (index + menus.length) % menus.length;
+	// ←·→로 옮길 때는 항목이 없는 메뉴(이름만 보이는 앱 메뉴)를 건너뛴다
+	const openAt = (index: number, keyboard: boolean, direction: 1 | -1 = 1) => {
+		let wrapped = (index + menus.length) % menus.length;
+		for (let step = 0; step < menus.length && menus[wrapped].items.length === 0; step++)
+			wrapped = (wrapped + direction + menus.length) % menus.length;
 		const rect = titles.current[wrapped]?.getBoundingClientRect();
 		if (!rect) return;
 		setOpen({ title: menus[wrapped].title, anchor: { x: rect.left, y: rect.bottom + 3 }, keyboard });
@@ -84,24 +87,31 @@ const MenuBarMenus = () => {
 
 	return (
 		<div className="menubar-menus" ref={bar} role="group" aria-label="메뉴 막대">
-			{menus.map((menu, index) => (
-				<button
-					key={menu.title}
-					ref={(element) => {
-						titles.current[index] = element;
-					}}
-					type="button"
-					// 맨 앞은 굵은 앱 이름 메뉴 (macOS의 앱 메뉴)
-					className={`menubar-title ${menu.app ? 'app-name' : ''} ${current?.index === index ? 'open' : ''}`}
-					aria-haspopup="menu"
-					aria-expanded={current?.index === index}
-					// 키보드로 열면(detail 0) 첫 항목에 초점
-					onClick={(event) => (current?.index === index ? close() : openAt(index, event.detail === 0))}
-					onPointerEnter={() => current && current.index !== index && openAt(index, false)}
-				>
-					{menu.title}
-				</button>
-			))}
+			{menus.map((menu, index) =>
+				// 항목이 없는 앱 메뉴(바탕화면의 Finder)는 눌러도 열 것이 없어서 이름만 보인다
+				menu.app && menu.items.length === 0 ? (
+					<span key={menu.title} className="menubar-title app-name">
+						{menu.title}
+					</span>
+				) : (
+					<button
+						key={menu.title}
+						ref={(element) => {
+							titles.current[index] = element;
+						}}
+						type="button"
+						// 맨 앞은 굵은 앱 이름 메뉴 (macOS의 앱 메뉴)
+						className={`menubar-title ${menu.app ? 'app-name' : ''} ${current?.index === index ? 'open' : ''}`}
+						aria-haspopup="menu"
+						aria-expanded={current?.index === index}
+						// 키보드로 열면(detail 0) 첫 항목에 초점
+						onClick={(event) => (current?.index === index ? close() : openAt(index, event.detail === 0))}
+						onPointerEnter={() => current && current.index !== index && openAt(index, false)}
+					>
+						{menu.title}
+					</button>
+				)
+			)}
 			{shortcutsOpen && <KeyboardShortcuts appLabel={label} menus={menus} onClose={closeShortcuts} />}
 			{current && (
 				<Menu
@@ -112,7 +122,7 @@ const MenuBarMenus = () => {
 					trigger={bar}
 					onClose={close}
 					autoFocus={current.keyboard}
-					onNavigate={(direction) => openAt(current.index + direction, true)}
+					onNavigate={(direction) => openAt(current.index + direction, true, direction)}
 					className="menubar-menu"
 					appMenu
 				/>
