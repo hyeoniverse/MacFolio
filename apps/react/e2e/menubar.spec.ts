@@ -60,6 +60,16 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		).toHaveAttribute('aria-checked', dark ? 'false' : 'true');
 	});
 
+	test('메뉴가 열린 채 제목이 밀려 가만히 있는 마우스 아래로 다른 제목이 와도 넘어가지 않는다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'memo').click();
+		await openMenu(page, '윈도우');
+		// 앱 메뉴가 늦게 등록돼 제목이 밀릴 때 브라우저가 보내는 것: 움직임 없는 포인터 이벤트
+		await title(page, '편집').dispatchEvent('pointermove', { movementX: 0, movementY: 0, bubbles: true });
+		await expect(menu(page, '윈도우')).toBeVisible();
+		await expect(menu(page, '편집')).toHaveCount(0);
+	});
+
 	test('메뉴가 열린 채 다른 제목에 올리면 넘어가고, ←·→로도 옮긴다', async ({ page }) => {
 		await enterDesktop(page);
 		await openMenu(page, '파일');
