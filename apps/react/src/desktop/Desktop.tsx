@@ -38,9 +38,14 @@ const DesktopSurface = ({ children }: { children: React.ReactNode }) => {
 			className="desktop-surface"
 			style={{ width: '100%', height: '100%' }}
 			onPointerDownCapture={(event) => {
-				// 메뉴 막대와 거기서 연 메뉴·창(Apple 메뉴, 파일·보기…, 서버 상태, 음량)은 눌러도 지금 쓰는 앱이 그대로다.
+				// 메뉴 막대와 거기서 연 메뉴·창(Apple 메뉴, 파일·보기…, 서버 상태, 음량, 키보드 단축키)은 눌러도 지금 쓰는 앱이 그대로다.
 				// 메뉴는 body에 그려지므로(포털) .ui-menu로 본다. 창이 연 메뉴는 이어서 창이 자기 앱을 앞으로 한다
-				if ((event.target as Element).closest?.('.macos-statusbar, .ui-menu, .volume-container')) return;
+				if (
+					(event.target as Element).closest?.(
+						'.macos-statusbar, .ui-menu, .volume-container, .keyboard-shortcuts-overlay'
+					)
+				)
+					return;
 				focusDesktop();
 			}}
 		>

@@ -1,3 +1,4 @@
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
 import type { AppName } from '@/apps/manifest';
@@ -37,6 +38,27 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 		window.addEventListener('blur', onBlur);
 		return () => window.removeEventListener('blur', onBlur);
 	}, [appName, bringAppToFront]);
+
+	// 메뉴 막대 메뉴 (#96): 프로젝트 앱·API 문서가 함께 쓴다
+	const reload = () => {
+		setLoaded(false);
+		setSlow(false);
+		// 다른 주소의 페이지는 안에서 새로 고칠 수 없어서 주소를 다시 넣는다
+		if (frame.current) frame.current.src = src;
+	};
+	useAppMenus(appName, [
+		{
+			title: '파일',
+			items: [
+				{
+					label: '새 탭에서 열기',
+					icon: 'fa-solid fa-arrow-up-right-from-square',
+					onSelect: () => window.open(src, '_blank', 'noopener,noreferrer'),
+				},
+			],
+		},
+		{ title: '보기', items: [{ label: '새로 고침', shortcut: { code: 'KeyR', alt: true }, onSelect: reload }] },
+	]);
 
 	useEffect(() => {
 		if (loaded) return;

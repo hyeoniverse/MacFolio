@@ -221,4 +221,65 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await page.keyboard.press('Alt+KeyT');
 		await expect(tabs).toHaveCount(before);
 	});
+
+	test('메일·터미널·시스템 설정의 메뉴', async ({ page }) => {
+		await enterDesktop(page);
+		// 메일: ⌥N 새로운 메시지
+		await dockItem(page, 'mail').click();
+		const mail = appWindow(page, 'mail');
+		await expect(appName(page)).toHaveText('메일');
+		await page.keyboard.press('Alt+KeyN');
+		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeVisible();
+
+		// 터미널: 편집 → 화면 지우기
+		await dockItem(page, 'terminal').click();
+		const terminal = appWindow(page, 'terminal');
+		const output = terminal.getByRole('log', { name: '터미널 출력' });
+		await expect(output.locator('.terminal-line').first()).toBeVisible();
+		await (await openMenu(page, '편집')).getByRole('menuitem', { name: '화면 지우기' }).click();
+		await expect(output.locator('.terminal-line')).toHaveCount(0);
+
+		// 시스템 설정: 보기에서 항목 고르기
+		await dockItem(page, 'settings').click();
+		const settings = appWindow(page, 'settings');
+		await (await openMenu(page, '보기')).getByRole('menuitemcheckbox', { name: '배경화면' }).click();
+		await expect(settings.getByRole('button', { name: '배경화면' })).toHaveAttribute('aria-current', 'page');
+		await expect((await openMenu(page, '보기')).getByRole('menuitemcheckbox', { name: '배경화면' })).toHaveAttribute(
+			'aria-checked',
+			'true'
+		);
+	});
+
+	test('API 문서·프로젝트 앱(iframe 창): 새로 고침과 새 탭에서 열기', async ({ page }) => {
+		await enterDesktop(page);
+		await (await openMenu(page, '도움말')).getByRole('menuitem', { name: 'API 문서' }).click();
+		const docs = appWindow(page, 'apidocs');
+		await expect(docs.frameLocator('iframe').getByRole('heading', { name: 'MacFolio API' })).toBeVisible({
+			timeout: 15_000,
+		});
+		await expect(bar(page).getByRole('button')).toHaveText(['파일', '보기', '윈도우', '도움말']);
+
+		const popup = page.waitForEvent('popup');
+		await (await openMenu(page, '파일')).getByRole('menuitem', { name: '새 탭에서 열기' }).click();
+		expect((await popup).url()).toContain('/api-docs');
+
+		await page.keyboard.press('Alt+KeyR');
+		await expect(docs.frameLocator('iframe').getByRole('heading', { name: 'MacFolio API' })).toBeVisible({
+			timeout: 15_000,
+		});
+	});
+
+	test('도움말 → 키보드 단축키: 지금 앱에서 쓸 수 있는 단축키 목록', async ({ page }) => {
+		await enterDesktop(page);
+		await (await openMenu(page, '도움말')).getByRole('menuitem', { name: '키보드 단축키…' }).click();
+		const dialog = page.getByRole('dialog', { name: '키보드 단축키' });
+		await expect(dialog).toContainText('Safari에서 쓸 수 있는 단축키');
+		await expect(dialog.getByRole('region', { name: '파일' })).toContainText('새로운 탭');
+		await expect(dialog.getByRole('region', { name: '파일' })).toContainText(/⌥T|Alt\+T/);
+		// 안을 눌러도 지금 앱(Safari)이 그대로라 목록이 바뀌지 않는다
+		await dialog.getByRole('heading', { name: '키보드 단축키' }).click();
+		await expect(appName(page)).toHaveText('Safari');
+		await page.keyboard.press('Escape');
+		await expect(dialog).toHaveCount(0);
+	});
 });

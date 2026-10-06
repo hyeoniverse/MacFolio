@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST, APP_NAMES } from '@/apps/manifest';
 import { REPO_URL } from '@/apps/finder/repoDocs';
 import { useAppState } from '@/desktop/AppStateContext';
@@ -9,6 +9,7 @@ import { sendWindowCommand } from '@/desktop/window/windowCommands';
 import { appAddresses, LINKED_APPS, shareLink, type LinkedApp } from '@/shared/lib/appLink';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import Menu from '@/shared/ui/menu/Menu';
+import KeyboardShortcuts from '@/desktop/status-bar/KeyboardShortcuts';
 
 const openExternal = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
 
@@ -20,6 +21,8 @@ const MenuBarMenus = () => {
 	const { apps, activeApp, openApp } = useAppState();
 	const registered = useRegisteredMenus();
 	const [open, setOpen] = useState<{ index: number; anchor: { x: number; y: number }; keyboard: boolean } | null>(null);
+	const [shortcutsOpen, setShortcutsOpen] = useState(false);
+	const closeShortcuts = useCallback(() => setShortcutsOpen(false), []);
 	const bar = useRef<HTMLDivElement>(null);
 	const titles = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -49,6 +52,8 @@ const MenuBarMenus = () => {
 			{ label: 'API 문서', icon: 'fa-solid fa-book', onSelect: () => openApp('apidocs') },
 			{ label: 'GitHub 저장소', icon: 'fa-brands fa-github', onSelect: () => openExternal(REPO_URL) },
 			{ label: '문제 알리기…', icon: 'fa-solid fa-bug', onSelect: () => openExternal(`${REPO_URL}/issues/new/choose`) },
+			'separator',
+			{ label: '키보드 단축키…', icon: 'fa-regular fa-keyboard', onSelect: () => setShortcutsOpen(true) },
 		],
 	});
 
@@ -104,6 +109,7 @@ const MenuBarMenus = () => {
 					{menu.title}
 				</button>
 			))}
+			{shortcutsOpen && <KeyboardShortcuts appLabel={label} menus={menus} onClose={closeShortcuts} />}
 			{current && (
 				<Menu
 					key={current.index}

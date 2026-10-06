@@ -11,8 +11,40 @@ export const HELP_TITLE = '도움말';
 /** 공통 항목의 단축키. macOS의 ⌘W·⌘M 대신 ⌥ (브라우저가 ⌘W를 먼저 가져간다) */
 export const SHORTCUTS = {
 	closeWindow: { code: 'KeyW', alt: true },
+	/** 앱이 ⌥W를 쓰면 (Safari의 탭 닫기) 윈도우 닫기는 ⌥⇧W. macOS Safari의 ⌘W·⇧⌘W와 같다 */
+	closeWindowShifted: { code: 'KeyW', alt: true, shift: true },
 	minimize: { code: 'KeyM', alt: true },
 } satisfies Record<string, Shortcut>;
+
+const sameShortcut = (a: Shortcut, b: Shortcut) =>
+	a.code === b.code && !!a.mod === !!b.mod && !!a.alt === !!b.alt && !!a.shift === !!b.shift;
+
+const shortcutsOf = (menus: AppMenu[]) =>
+	menus.flatMap((menu) =>
+		menu.items.flatMap((item) =>
+			typeof item === 'object' && 'onSelect' in item && item.shortcut ? [item.shortcut] : []
+		)
+	);
+
+/**
+ * 메뉴마다 단축키가 있는 항목 (도움말 → 키보드 단축키 목록). 단축키가 없는 메뉴는 뺀다.
+ * 같은 단축키가 또 나오면 앞쪽 것만 실제로 듣으므로(findShortcutItem) 뒤쪽 것은 목록에서도 뺀다
+ */
+export function shortcutList(menus: AppMenu[]): { title: string; items: { label: string; shortcut: Shortcut }[] }[] {
+	const seen: Shortcut[] = [];
+	return menus
+		.map((menu) => ({
+			title: menu.title,
+			items: menu.items.flatMap((item) => {
+				if (typeof item !== 'object' || !('onSelect' in item) || !item.shortcut) return [];
+				const shortcut = item.shortcut;
+				if (seen.some((other) => sameShortcut(other, shortcut))) return [];
+				seen.push(shortcut);
+				return [{ label: item.label, shortcut }];
+			}),
+		}))
+		.filter((menu) => menu.items.length > 0);
+}
 
 /** 메뉴들에서 이 키에 맞는 항목을 찾는다. 앞쪽 메뉴가 먼저다 (Safari의 '탭 닫기' ⌥W가 공통 '윈도우 닫기' ⌥W보다 먼저) */
 export function findShortcutItem(
@@ -57,12 +89,15 @@ const join = (...groups: MenuItem[][]): MenuItem[] =>
  */
 export function buildMenuBar({ appMenus, hasWindow, actions, dark, windows, help }: MenuBarContext): AppMenu[] {
 	const fromApp = (title: string) => appMenus.filter((menu) => menu.title === title).flatMap((menu) => menu.items);
+	const closeWindowShortcut = shortcutsOf(appMenus).some((shortcut) => sameShortcut(shortcut, SHORTCUTS.closeWindow))
+		? SHORTCUTS.closeWindowShifted
+		: SHORTCUTS.closeWindow;
 
 	const common: Record<(typeof COMMON_TITLES)[number], MenuItem[]> = {
 		파일: join(
 			fromApp('파일'),
 			actions.copyLink ? [{ label: '링크 복사', icon: 'fa-solid fa-link', onSelect: actions.copyLink }] : [],
-			hasWindow ? [{ label: '윈도우 닫기', shortcut: SHORTCUTS.closeWindow, onSelect: actions.closeWindow }] : []
+			hasWindow ? [{ label: '윈도우 닫기', shortcut: closeWindowShortcut, onSelect: actions.closeWindow }] : []
 		),
 		편집: fromApp('편집'),
 		보기: join(fromApp('보기'), [{ label: '다크 모드', checked: dark, onSelect: actions.toggleDark }]),

@@ -1,3 +1,4 @@
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
@@ -38,6 +39,18 @@ const Settings: React.FC = () => {
 	const section = sections.some((item) => item.id === chosen) ? chosen : 'account';
 	/** 휴대폰: iOS 설정처럼 항목 목록 → 누르면 그 항목 화면 (넓은 창에서는 쓰지 않는다) */
 	const [phoneOpen, setPhoneOpen] = useState(false);
+
+	// 메뉴 막대의 시스템 설정 메뉴 (#96): 보기에서 항목 고르기
+	useAppMenus('settings', [
+		{
+			title: '보기',
+			items: sections.map((item) => ({
+				label: item.label,
+				checked: section === item.id,
+				onSelect: () => setSection(item.id),
+			})),
+		},
+	]);
 
 	return (
 		<AppWindow title="시스템 설정" appName="settings">
