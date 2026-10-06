@@ -30,6 +30,22 @@ export function parseAppPath(pathname: string): AppLink | null {
 	}
 }
 
+/**
+ * 링크(href)가 이 사이트의 앱 항목을 가리키면 그 항목 (`/memo/<글>`, 같은 사이트의 전체 주소도). 아니면 null.
+ * 글 안의 링크를 새 탭이 아니라 사이트 안의 앱으로 열 때 쓴다
+ */
+export function appLinkOf(href: string | undefined, origin = window.location.origin): AppLink | null {
+	if (!href) return null;
+	let url: URL;
+	try {
+		url = new URL(href, origin);
+	} catch {
+		return null;
+	}
+	if (url.origin !== origin) return null;
+	return parseAppPath(url.pathname);
+}
+
 /** 처음 연 주소가 가리키는 항목 (페이지를 연 순간의 주소. 앱이 주소를 바꾸기 전에 읽어 둔다) */
 const initial = typeof window === 'undefined' ? null : parseAppPath(window.location.pathname);
 
