@@ -14,6 +14,8 @@ export const SHORTCUTS = {
 	/** 앱이 ⌥W를 쓰면 (Safari의 탭 닫기) 윈도우 닫기는 ⌥⇧W. macOS Safari의 ⌘W·⇧⌘W와 같다 */
 	closeWindowShifted: { code: 'KeyW', alt: true, shift: true },
 	minimize: { code: 'KeyM', alt: true },
+	hide: { code: 'KeyH', alt: true },
+	quit: { code: 'KeyQ', alt: true },
 } satisfies Record<string, Shortcut>;
 
 const sameShortcut = (a: Shortcut, b: Shortcut) =>
@@ -59,21 +61,22 @@ export function findShortcutItem(
 }
 
 export interface MenuBarContext {
+	/** 지금 쓰는 앱의 이름 (맨 앞의 굵은 앱 메뉴 제목) */
+	appLabel: string;
 	/** 앱이 등록한 메뉴 (없으면 []) */
 	appMenus: AppMenu[];
 	/** 지금 쓰는 앱에 창이 있는지 (창 밖을 눌러 Finder가 되었거나 창이 없으면 false) */
 	hasWindow: boolean;
+	/** 종료할 수 있는 앱인지 (Finder는 끌 수 없다) */
+	canQuit: boolean;
 	/** 공통 항목의 동작 (없으면 그 항목을 두지 않는다) */
 	actions: {
 		copyLink?: () => void;
 		closeWindow: () => void;
 		minimize: () => void;
 		toggleMaximize: () => void;
-		toggleDark: () => void;
+		quit: () => void;
 	};
-	dark: boolean;
-	/** 열려 있는 창 목록 (윈도우 메뉴 아래쪽). active가 지금 쓰는 창 */
-	windows: { label: string; active: boolean; onSelect: () => void }[];
 	/** 도움말 메뉴 */
 	help: MenuItem[];
 }
@@ -87,11 +90,17 @@ const join = (...groups: MenuItem[][]): MenuItem[] =>
  * 메뉴 막대의 메뉴들. 앱이 등록한 항목을 같은 제목의 공통 메뉴 위쪽에 두고, 항목이 하나도 없는 제목은 뺀다
  * (macOS처럼 앱마다 보이는 제목이 다르다. 쓰지 않는 메뉴를 비활성으로 남기지 않는다)
  */
-export function buildMenuBar({ appMenus, hasWindow, actions, dark, windows, help }: MenuBarContext): AppMenu[] {
+export function buildMenuBar({ appLabel, appMenus, hasWindow, canQuit, actions, help }: MenuBarContext): AppMenu[] {
 	const fromApp = (title: string) => appMenus.filter((menu) => menu.title === title).flatMap((menu) => menu.items);
 	const closeWindowShortcut = shortcutsOf(appMenus).some((shortcut) => sameShortcut(shortcut, SHORTCUTS.closeWindow))
 		? SHORTCUTS.closeWindowShifted
 		: SHORTCUTS.closeWindow;
+
+	// 맨 앞의 굵은 앱 이름 메뉴 (macOS의 앱 메뉴): 가리기, 종료
+	const appMenu: MenuItem[] = join(
+		[{ label: `${appLabel} 가리기`, shortcut: SHORTCUTS.hide, disabled: !hasWindow, onSelect: actions.minimize }],
+		canQuit && hasWindow ? [{ label: `${appLabel} 종료`, shortcut: SHORTCUTS.quit, onSelect: actions.quit }] : []
+	);
 
 	const common: Record<(typeof COMMON_TITLES)[number], MenuItem[]> = {
 		파일: join(
@@ -100,12 +109,15 @@ export function buildMenuBar({ appMenus, hasWindow, actions, dark, windows, help
 			hasWindow ? [{ label: '윈도우 닫기', shortcut: closeWindowShortcut, onSelect: actions.closeWindow }] : []
 		),
 		편집: fromApp('편집'),
-		보기: join(fromApp('보기'), [{ label: '다크 모드', checked: dark, onSelect: actions.toggleDark }]),
+		보기: fromApp('보기'),
 		이동: fromApp('이동'),
 	};
 
-	const own = appMenus.filter((menu) => !(COMMON_TITLES as readonly string[]).includes(menu.title));
+	const own = appMenus.filter(
+		(menu) => !([...COMMON_TITLES, WINDOW_TITLE, HELP_TITLE] as string[]).includes(menu.title)
+	);
 
+	// 윈도우: 이 앱의 창에 대한 것만 (다른 앱의 창은 Dock으로 바꾼다. macOS의 윈도우 메뉴도 그 앱의 창만 보여 준다)
 	const windowMenu: MenuItem[] = join(
 		hasWindow
 			? [
@@ -113,13 +125,15 @@ export function buildMenuBar({ appMenus, hasWindow, actions, dark, windows, help
 					{ label: '확대/축소', onSelect: actions.toggleMaximize },
 				]
 			: [],
-		windows.map((window) => ({ label: window.label, checked: window.active, onSelect: window.onSelect }))
+		fromApp(WINDOW_TITLE)
 	);
 
-	return [
+	const menus: AppMenu[] = [
+		{ title: appLabel, items: appMenu, app: true },
 		...COMMON_TITLES.map((title) => ({ title, items: common[title] })),
 		...own,
 		{ title: WINDOW_TITLE, items: windowMenu },
 		{ title: HELP_TITLE, items: help },
-	].filter((menu) => menu.items.length > 0);
+	];
+	return menus.filter((menu) => menu.app || menu.items.length > 0);
 }

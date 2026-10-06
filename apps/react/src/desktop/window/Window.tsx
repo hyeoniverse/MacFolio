@@ -55,7 +55,7 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	onClick,
 	chrome = 'titlebar',
 }) => {
-	const { apps, closeApp, minimizeApp, bringAppToFront, goHome } = useAppState();
+	const { apps, closeApp, quitApp, minimizeApp, bringAppToFront, goHome } = useAppState();
 	const isMobile = useIsMobile();
 	const { rect, toggleMaximize, dragHandlers, resizeHandlers } = useWindowFrame(appName);
 	const frameRef = useRef<HTMLDivElement>(null);
@@ -97,7 +97,13 @@ const AppWindow: React.FC<AppWindowProps> = ({
 	};
 
 	// 메뉴 막대의 '윈도우 닫기'·'최소화'·'확대/축소' (desktop/window/windowCommands.ts)
-	useWindowCommands(appName, { close: handleClose, minimize: handleMinimize, toggleMaximize: handleToggleMaximize });
+	// 종료: 닫는 애니메이션 뒤 앱을 내린다 (입력 중이던 것도 사라진다)
+	useWindowCommands(appName, {
+		close: handleClose,
+		minimize: handleMinimize,
+		toggleMaximize: handleToggleMaximize,
+		quit: () => leave(false, () => quitApp(appName)),
+	});
 
 	if (!visible && cardIndex < 0) return null;
 

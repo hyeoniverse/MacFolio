@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import type { AppName } from '@/apps/manifest';
 import { createStore } from '@/shared/lib/createStore';
 
-export type WindowCommand = 'close' | 'minimize' | 'toggleMaximize';
+export type WindowCommand = 'close' | 'minimize' | 'toggleMaximize' | 'quit';
 
 const commandStore = createStore<{ request: { app: AppName; command: WindowCommand } | null }>({ request: null });
 

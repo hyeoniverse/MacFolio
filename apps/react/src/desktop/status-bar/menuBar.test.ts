@@ -3,17 +3,17 @@ import type { MenuItem } from '@/shared/ui/menu/Menu';
 import { buildMenuBar, shortcutList, type MenuBarContext } from './menuBar';
 
 const context = (overrides: Partial<MenuBarContext> = {}): MenuBarContext => ({
+	appLabel: '메모',
 	appMenus: [],
 	hasWindow: true,
+	canQuit: true,
 	actions: {
 		closeWindow: vi.fn(),
 		minimize: vi.fn(),
 		toggleMaximize: vi.fn(),
-		toggleDark: vi.fn(),
+		quit: vi.fn(),
 	},
-	dark: false,
-	windows: [],
-	help: [{ label: 'GitHub 저장소', onSelect: vi.fn() }],
+	help: [{ label: '키보드 단축키…', onSelect: vi.fn() }],
 	...overrides,
 });
 const titles = (menus: { title: string }[]) => menus.map((menu) => menu.title);
@@ -21,13 +21,35 @@ const labels = (items: MenuItem[]) =>
 	items.map((item) => (item === 'separator' ? '—' : 'label' in item ? item.label : '?'));
 
 describe('buildMenuBar', () => {
-	it('앱이 등록한 것이 없으면 쓰는 제목만: 파일·보기·윈도우·도움말 (편집·이동은 감춘다)', () => {
-		expect(titles(buildMenuBar(context()))).toEqual(['파일', '보기', '윈도우', '도움말']);
+	it('맨 앞은 굵은 앱 이름 메뉴(가리기·종료). 앱이 쓰지 않는 편집·보기·이동은 감춘다', () => {
+		const menus = buildMenuBar(context());
+		expect(titles(menus)).toEqual(['메모', '파일', '윈도우', '도움말']);
+		expect(menus[0]).toMatchObject({ app: true });
+		expect(labels(menus[0].items)).toEqual(['메모 가리기', '—', '메모 종료']);
 	});
 
-	it('창이 없으면(Finder) 창 항목이 빠지고, 빈 파일·윈도우 메뉴는 감춘다', () => {
-		const menus = buildMenuBar(context({ hasWindow: false }));
-		expect(titles(menus)).toEqual(['보기', '도움말']);
+	it('창이 없으면(바탕화면의 Finder) 앱 이름만 남고 가리기는 비활성, 종료할 수 없는 앱은 종료가 없다', () => {
+		const menus = buildMenuBar(context({ appLabel: 'Finder', hasWindow: false, canQuit: false }));
+		expect(titles(menus)).toEqual(['Finder', '도움말']);
+		expect(menus[0].items).toEqual([expect.objectContaining({ label: 'Finder 가리기', disabled: true })]);
+	});
+
+	it('보기·윈도우에는 이 앱의 것만: 다크 모드도, 다른 앱의 창 목록도 없다', () => {
+		const menus = buildMenuBar(
+			context({
+				appMenus: [
+					{ title: '보기', items: [{ label: '갤러리로 보기', onSelect: vi.fn() }] },
+					{ title: '윈도우', items: [{ label: '다음 탭 보기', onSelect: vi.fn() }] },
+				],
+			})
+		);
+		expect(labels(menus.find((menu) => menu.title === '보기')!.items)).toEqual(['갤러리로 보기']);
+		expect(labels(menus.find((menu) => menu.title === '윈도우')!.items)).toEqual([
+			'최소화',
+			'확대/축소',
+			'—',
+			'다음 탭 보기',
+		]);
 	});
 
 	it('앱 항목은 같은 제목의 공통 항목 위에, 구분선을 두고 합친다', () => {
@@ -37,10 +59,10 @@ describe('buildMenuBar', () => {
 				actions: { ...context().actions, copyLink: vi.fn() },
 			})
 		);
-		expect(labels(menus[0].items)).toEqual(['새로운 메모', '—', '링크 복사', '—', '윈도우 닫기']);
+		expect(labels(menus[1].items)).toEqual(['새로운 메모', '—', '링크 복사', '—', '윈도우 닫기']);
 	});
 
-	it('앱이 편집·이동을 등록하면 그 제목이 나타나고, 앱만의 메뉴는 이동 뒤·윈도우 앞에', () => {
+	it('앱만의 메뉴(음악의 제어, Safari의 책갈피)는 이동 뒤·윈도우 앞에', () => {
 		const menus = buildMenuBar(
 			context({
 				appMenus: [
@@ -50,26 +72,7 @@ describe('buildMenuBar', () => {
 				],
 			})
 		);
-		expect(titles(menus)).toEqual(['파일', '편집', '보기', '이동', '제어', '윈도우', '도움말']);
-	});
-
-	it('윈도우 메뉴: 최소화·확대/축소 아래에 열린 창 목록 (지금 쓰는 창에 체크)', () => {
-		const menus = buildMenuBar(
-			context({
-				windows: [
-					{ label: 'Safari', active: false, onSelect: vi.fn() },
-					{ label: '메모', active: true, onSelect: vi.fn() },
-				],
-			})
-		);
-		const window = menus.find((menu) => menu.title === '윈도우')!;
-		expect(labels(window.items)).toEqual(['최소화', '확대/축소', '—', 'Safari', '메모']);
-		expect(window.items[4]).toMatchObject({ checked: true });
-	});
-
-	it('다크 모드는 지금 상태를 체크로 보여 준다', () => {
-		const view = buildMenuBar(context({ dark: true })).find((menu) => menu.title === '보기')!;
-		expect(view.items).toEqual([expect.objectContaining({ label: '다크 모드', checked: true })]);
+		expect(titles(menus)).toEqual(['메모', '파일', '편집', '이동', '제어', '윈도우', '도움말']);
 	});
 
 	it('키보드 단축키 목록: 단축키가 있는 항목만, 메뉴 순서대로', () => {
@@ -87,6 +90,13 @@ describe('buildMenuBar', () => {
 			})
 		);
 		expect(shortcutList(menus)).toEqual([
+			{
+				title: '메모',
+				items: [
+					{ label: '메모 가리기', shortcut: { code: 'KeyH', alt: true } },
+					{ label: '메모 종료', shortcut: { code: 'KeyQ', alt: true } },
+				],
+			},
 			{
 				title: '파일',
 				items: [
@@ -112,10 +122,15 @@ describe('buildMenuBar', () => {
 				],
 			})
 		);
-		expect(menus[0].items.at(-1)).toMatchObject({
+		const file = menus.find((menu) => menu.title === '파일')!;
+		expect(file.items.at(-1)).toMatchObject({
 			label: '윈도우 닫기',
 			shortcut: { code: 'KeyW', alt: true, shift: true },
 		});
-		expect(shortcutList(menus)[0].items.map((item) => item.label)).toEqual(['탭 닫기', '윈도우 닫기']);
+		expect(
+			shortcutList(menus)
+				.find((menu) => menu.title === '파일')!
+				.items.map((item) => item.label)
+		).toEqual(['탭 닫기', '윈도우 닫기']);
 	});
 });
