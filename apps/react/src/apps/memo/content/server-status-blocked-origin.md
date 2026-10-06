@@ -64,3 +64,19 @@ reachable = await fetch(`${apiUrl}/health`, { mode: 'no-cors', … }).then(
 ```bash
 cd ~/deploy && docker compose up -d api
 ```
+
+## 로컬에서도 "연결할 수 없음"
+
+배포 서버를 고친 뒤 로컬(`pnpm dev:all`)에서 보려니, 이번엔 로컬에서 연결이 안 됐다. 로컬 API는 켜져 있었고 DB도 정상이었다. 어떤 주소를 허용하는지 물어보니 `http://localhost:5173`은 없고 `https://macfolio.hyeoniverse.com`만 허용했다. 서버에 넣을 값을 준비하면서 로컬 `apps/api/.env`의 `CORS_ORIGINS`가 배포 값으로 바뀌어 있었다.
+
+로컬 API는 `.env` 하나만 읽고, 배포 서버는 서버의 `~/deploy/api.env`만 읽는다. 파일은 이미 나뉘어 있었는데, 배포용 값을 적어 둘 곳이 따로 없어서 로컬 파일에 섞였다. 그래서 자리를 정했다.
+
+- `apps/api/.env`: 로컬 개발용 값만
+- `apps/api/.env.production`: 배포용 값을 내 컴퓨터에 적어 두는 곳. `.gitignore`의 `.env.*`에 걸려 커밋되지 않고, API는 이 파일을 읽지 않는다
+
+그래도 섞일 수 있으니 API가 뜰 때 알리게 했다. 개발 모드인데 `CORS_ORIGINS`가 로컬 프론트엔드를 허용하지 않으면 터미널에 한 줄 경고를 찍는다. 확인은 위의 `*` 규칙과 같은 함수로 한다.
+
+```text
+MacFolio API: http://localhost:4100 (문서: /docs)
+⚠️ CORS_ORIGINS가 로컬 프론트엔드(http://localhost:5173)를 허용하지 않습니다: https://macfolio.hyeoniverse.com. …
+```
