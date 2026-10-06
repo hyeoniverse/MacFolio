@@ -84,13 +84,28 @@ test.describe('메모 (블로그)', () => {
 		await expect(lightbox).toBeHidden();
 	});
 
-	test('본문의 링크는 새 탭으로 열린다', async ({ page }) => {
-		const memo = await openMemo(page);
-		const links = memo.getByRole('article').locator('.memo-markdown a');
-		for (const link of await links.all()) {
-			await expect(link).toHaveAttribute('target', '_blank');
-			await expect(link).toHaveAttribute('rel', /noopener/);
-		}
+	test('본문의 바깥 링크는 새 탭으로, 다른 글 링크는 메모 앱 안에서 그 글로', async ({ page }) => {
+		await enterDesktop(page, '/memo/r2-backup-setup');
+		const memo = appWindow(page, 'memo');
+		const article = memo.getByRole('article');
+		await expect(article.getByRole('heading', { level: 1 })).toHaveText(/R2에 DB 백업 걸기/);
+
+		// 바깥 링크는 새 탭
+		const outside = article.getByRole('link', { name: 'healthchecks.io' }).first();
+		await expect(outside).toHaveAttribute('target', '_blank');
+		await expect(outside).toHaveAttribute('rel', /noopener/);
+
+		// 다른 글 링크: 새 탭 없이 같은 메모 앱에서 그 글이 열리고, 주소 막대도 그 글로
+		const inside = article.getByRole('link', { name: '백업 스크립트' });
+		await expect(inside).toHaveAttribute('href', '/memo/db-backup');
+		await expect(inside).not.toHaveAttribute('target', '_blank');
+		const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
+		await inside.click();
+		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(
+			'글이 DB에만 있게 되어서 백업을 붙였다'
+		);
+		await expect(page).toHaveURL(/\/memo\/db-backup$/);
+		expect(await popup).toBeNull();
 	});
 
 	test('예전 메모(방명록) 데이터는 지운다', async ({ page }) => {
