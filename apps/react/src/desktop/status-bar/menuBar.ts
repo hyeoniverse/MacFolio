@@ -96,17 +96,19 @@ export function buildMenuBar({ appLabel, appMenus, hasWindow, canQuit, actions, 
 		? SHORTCUTS.closeWindowShifted
 		: SHORTCUTS.closeWindow;
 
-	// 맨 앞의 굵은 앱 이름 메뉴 (macOS의 앱 메뉴): 가리기, 종료
-	const appMenu: MenuItem[] = join(
-		[{ label: `${appLabel} 가리기`, shortcut: SHORTCUTS.hide, disabled: !hasWindow, onSelect: actions.minimize }],
-		canQuit && hasWindow ? [{ label: `${appLabel} 종료`, shortcut: SHORTCUTS.quit, onSelect: actions.quit }] : []
-	);
+	// 맨 앞의 굵은 앱 이름 메뉴 (macOS의 앱 메뉴): 가리기, 종료. 창이 없으면(바탕화면의 Finder) 비어서 이름만 보인다
+	const appMenu: MenuItem[] = hasWindow
+		? join(
+				[{ label: `${appLabel} 가리기`, shortcut: SHORTCUTS.hide, onSelect: actions.minimize }],
+				canQuit ? [{ label: `${appLabel} 종료`, shortcut: SHORTCUTS.quit, onSelect: actions.quit }] : []
+			)
+		: [];
 
 	const common: Record<(typeof COMMON_TITLES)[number], MenuItem[]> = {
+		// 파일은 그 앱의 파일 일(새로 만들기, 링크 복사 등)이 있을 때만. 윈도우 닫기는 윈도우 메뉴에 둔다
 		파일: join(
 			fromApp('파일'),
-			actions.copyLink ? [{ label: '링크 복사', icon: 'fa-solid fa-link', onSelect: actions.copyLink }] : [],
-			hasWindow ? [{ label: '윈도우 닫기', shortcut: closeWindowShortcut, onSelect: actions.closeWindow }] : []
+			actions.copyLink ? [{ label: '링크 복사', icon: 'fa-solid fa-link', onSelect: actions.copyLink }] : []
 		),
 		편집: fromApp('편집'),
 		보기: fromApp('보기'),
@@ -117,12 +119,13 @@ export function buildMenuBar({ appLabel, appMenus, hasWindow, canQuit, actions, 
 		(menu) => !([...COMMON_TITLES, WINDOW_TITLE, HELP_TITLE] as string[]).includes(menu.title)
 	);
 
-	// 윈도우: 이 앱의 창에 대한 것만 (다른 앱의 창은 Dock으로 바꾼다. macOS의 윈도우 메뉴도 그 앱의 창만 보여 준다)
+	// 윈도우: 이 앱의 창에 대한 것만 (최소화·확대/축소·닫기와 앱의 창 항목). 다른 앱의 창은 Dock으로 바꾼다
 	const windowMenu: MenuItem[] = join(
 		hasWindow
 			? [
 					{ label: '최소화', shortcut: SHORTCUTS.minimize, onSelect: actions.minimize },
 					{ label: '확대/축소', onSelect: actions.toggleMaximize },
+					{ label: '윈도우 닫기', shortcut: closeWindowShortcut, onSelect: actions.closeWindow },
 				]
 			: [],
 		fromApp(WINDOW_TITLE)

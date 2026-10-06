@@ -25,7 +25,7 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		const windows = await openMenu(page, '윈도우');
 		// 메뉴 제목을 눌러도 지금 쓰는 앱은 그대로다
 		await expect(appName(page)).toHaveText('메모');
-		await expect(windows.getByRole('menuitem')).toHaveText([/^최소화/, /^확대\/축소/]);
+		await expect(windows.getByRole('menuitem')).toHaveText([/^최소화/, /^확대\/축소/, /^윈도우 닫기/]);
 		await expect(windows.getByText('Safari')).toHaveCount(0);
 		await windows.getByRole('menuitem', { name: '최소화' }).click();
 		await expect(appWindow(page, 'memo')).toBeHidden();
@@ -38,10 +38,10 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await expect(appName(page)).toHaveText('Finder');
 	});
 
-	test('파일 → 윈도우 닫기는 창의 닫기와 같다', async ({ page }) => {
+	test('윈도우 → 윈도우 닫기는 창의 닫기와 같다 (파일이 아니라 윈도우 메뉴에)', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'memo').click();
-		await (await openMenu(page, '파일')).getByRole('menuitem', { name: '윈도우 닫기' }).click();
+		await (await openMenu(page, '윈도우')).getByRole('menuitem', { name: /윈도우 닫기/ }).click();
 		await expect(appWindow(page, 'memo')).toBeHidden();
 		await expect(appName(page)).toHaveText('Safari');
 	});
@@ -81,11 +81,9 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		const desktop = await desktopPoint(page);
 		await page.mouse.click(desktop.x, desktop.y);
 		await expect(appName(page)).toHaveText('Finder');
-		// 창이 없으니 파일(윈도우 닫기)·윈도우(최소화)도 없다
-		await expect(bar(page).getByRole('button')).toHaveText(['Finder', '도움말']);
-		const finder = await openMenu(page, 'Finder');
-		await expect(finder.getByRole('menuitem', { name: /Finder 가리기/ })).toBeDisabled();
-		await expect(finder.getByRole('menuitem', { name: /종료/ })).toHaveCount(0);
+		// 창이 없으니 앱 메뉴(가리기)·윈도우도 없다. 앱 이름은 눌러도 열 것이 없는 글자로 남는다
+		await expect(bar(page).getByRole('button')).toHaveText(['도움말']);
+		await expect(bar(page).getByRole('button', { name: 'Finder' })).toHaveCount(0);
 	});
 
 	test('주소가 있는 화면(메모의 글)이면 파일에 링크 복사, 도움말에서 API 문서', async ({ page }) => {
@@ -171,7 +169,7 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 	test('음악: 앱만의 제어 메뉴로 셔플과 반복을 바꾼다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'music').click();
-		await expect(bar(page).getByRole('button')).toHaveText(['음악', '파일', '제어', '윈도우', '도움말']);
+		await expect(bar(page).getByRole('button')).toHaveText(['음악', '제어', '윈도우', '도움말']);
 		await (await openMenu(page, '제어')).getByRole('menuitemcheckbox', { name: '셔플' }).click();
 		const playbar = appWindow(page, 'music').getByRole('contentinfo', { name: '재생 막대' });
 		await expect(playbar.getByRole('button', { name: '셔플' })).toHaveAttribute('aria-pressed', 'true');
