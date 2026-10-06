@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { MenuItem } from '@/shared/ui/menu/Menu';
-import { buildMenuBar, type MenuBarContext } from './menuBar';
+import { buildMenuBar, shortcutList, type MenuBarContext } from './menuBar';
 
 const context = (overrides: Partial<MenuBarContext> = {}): MenuBarContext => ({
 	appMenus: [],
@@ -70,5 +70,52 @@ describe('buildMenuBar', () => {
 	it('다크 모드는 지금 상태를 체크로 보여 준다', () => {
 		const view = buildMenuBar(context({ dark: true })).find((menu) => menu.title === '보기')!;
 		expect(view.items).toEqual([expect.objectContaining({ label: '다크 모드', checked: true })]);
+	});
+
+	it('키보드 단축키 목록: 단축키가 있는 항목만, 메뉴 순서대로', () => {
+		const menus = buildMenuBar(
+			context({
+				appMenus: [
+					{
+						title: '파일',
+						items: [
+							{ label: '새로운 탭', shortcut: { code: 'KeyT', alt: true }, onSelect: vi.fn() },
+							{ label: '단축키 없음', onSelect: vi.fn() },
+						],
+					},
+				],
+			})
+		);
+		expect(shortcutList(menus)).toEqual([
+			{
+				title: '파일',
+				items: [
+					{ label: '새로운 탭', shortcut: { code: 'KeyT', alt: true } },
+					{ label: '윈도우 닫기', shortcut: { code: 'KeyW', alt: true } },
+				],
+			},
+			{ title: '윈도우', items: [{ label: '최소화', shortcut: { code: 'KeyM', alt: true } }] },
+		]);
+	});
+
+	it('앱이 ⌥W를 쓰면(Safari의 탭 닫기) 윈도우 닫기는 ⌥⇧W. 목록에는 실제로 듣는 단축키만', () => {
+		const menus = buildMenuBar(
+			context({
+				appMenus: [
+					{
+						title: '파일',
+						items: [
+							{ label: '탭 닫기', shortcut: { code: 'KeyW', alt: true }, onSelect: vi.fn() },
+							{ label: '겹치는 항목', shortcut: { code: 'KeyW', alt: true }, onSelect: vi.fn() },
+						],
+					},
+				],
+			})
+		);
+		expect(menus[0].items.at(-1)).toMatchObject({
+			label: '윈도우 닫기',
+			shortcut: { code: 'KeyW', alt: true, shift: true },
+		});
+		expect(shortcutList(menus)[0].items.map((item) => item.label)).toEqual(['탭 닫기', '윈도우 닫기']);
 	});
 });
