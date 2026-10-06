@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST, APP_NAMES } from '@/apps/manifest';
 import { REPO_URL } from '@/apps/finder/repoDocs';
 import { useAppState } from '@/desktop/AppStateContext';
 import { useRegisteredMenus } from '@/desktop/status-bar/appMenus';
-import { buildMenuBar } from '@/desktop/status-bar/menuBar';
+import { buildMenuBar, findShortcutItem } from '@/desktop/status-bar/menuBar';
+import { isMacPlatform, isTypingTarget, matchesShortcut, usableWhileTyping } from '@/shared/ui/menu/shortcut';
 import { sendWindowCommand } from '@/desktop/window/windowCommands';
 import { appAddresses, LINKED_APPS, shareLink, type LinkedApp } from '@/shared/lib/appLink';
 import { settingsStore } from '@/shared/settings/settingsStore';
@@ -50,6 +51,29 @@ const MenuBarMenus = () => {
 			{ label: '문제 알리기…', icon: 'fa-solid fa-bug', onSelect: () => openExternal(`${REPO_URL}/issues/new/choose`) },
 		],
 	});
+
+	// 단축키: 지금 보이는 메뉴(지금 쓰는 앱 + 공통)에 있는 항목만. 메뉴는 렌더링마다 바뀌므로 최신 것을 ref로 본다
+	const latest = useRef(menus);
+	useEffect(() => {
+		latest.current = menus;
+	});
+	useEffect(() => {
+		const mac = isMacPlatform();
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.defaultPrevented || event.repeat) return;
+			const typing = isTypingTarget(event.target);
+			const item = findShortcutItem(
+				latest.current,
+				(shortcut) => matchesShortcut(event, shortcut, mac) && (!typing || usableWhileTyping(shortcut))
+			);
+			if (!item) return;
+			event.preventDefault();
+			setOpen(null);
+			item.onSelect();
+		};
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, []);
 
 	const openAt = (index: number, keyboard: boolean) => {
 		const wrapped = (index + menus.length) % menus.length;

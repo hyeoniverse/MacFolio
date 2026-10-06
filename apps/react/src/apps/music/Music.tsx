@@ -199,9 +199,9 @@ const Music: React.FC = () => {
 		{
 			title: '제어',
 			items: [
-				{ label: isPlaying ? '일시정지' : '재생', onSelect: togglePlayPause },
-				{ label: '다음 곡', onSelect: next },
-				{ label: '이전 곡', onSelect: music.previous },
+				{ label: isPlaying ? '일시정지' : '재생', shortcut: { code: 'Space', alt: true }, onSelect: togglePlayPause },
+				{ label: '다음 곡', shortcut: { code: 'ArrowRight', alt: true }, onSelect: next },
+				{ label: '이전 곡', shortcut: { code: 'ArrowLeft', alt: true }, onSelect: music.previous },
 				'separator',
 				{ label: '셔플', checked: music.shuffle, onSelect: music.toggleShuffle },
 				{ label: `반복: ${REPEAT_LABEL[music.repeat]}`, onSelect: music.cycleRepeat },
