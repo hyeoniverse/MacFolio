@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { SESSION_COOKIE } from './auth/session.js';
+import { originMatcher } from './common/cors.js';
 import { HttpErrorFilter } from './common/http-error.filter.js';
 import { APP_CONFIG, type AppConfig } from './config.js';
 
@@ -21,7 +22,13 @@ export function configureApp(app: INestApplication) {
 	// 프록시 뒤에서 실제 IP를 읽는다 (요청 제한). 0이면 X-Forwarded-For를 믿지 않는다
 	(app as NestExpressApplication).set('trust proxy', config.trustProxy);
 	app.use(helmet());
-	app.enableCors({ origin: config.corsOrigins, credentials: true });
+	// 허용 목록의 *는 PR 미리보기 주소처럼 한 자리만 바뀌는 주소 (common/cors.ts)
+	const allowedOrigin = originMatcher(config.corsOrigins);
+	app.enableCors({
+		origin: (origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) =>
+			callback(null, allowedOrigin(origin)),
+		credentials: true,
+	});
 	app.use(cookieParser());
 	app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
 	app.useGlobalFilters(new HttpErrorFilter());
