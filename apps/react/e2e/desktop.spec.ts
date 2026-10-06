@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { test, expect, enterDesktop, dockItem, appWindow, zIndexOf } from './fixtures';
+import { test, expect, enterDesktop, dockItem, appWindow, zIndexOf, desktopPoint } from './fixtures';
 
 test.describe('데스크톱', () => {
 	test('메뉴 막대의 시간이 바뀌어도 옆의 아이콘은 움직이지 않는다', async ({ page }) => {
@@ -124,24 +124,22 @@ test.describe('데스크톱', () => {
 		await dockItem(page, 'safari').click();
 		await expect(appName).toHaveText('Safari');
 
-		// 창 밖(바탕화면, 메뉴 막대)을 누르면 Finder, 창을 다시 누르면 그 앱. 창 순서는 그대로
-		const desktop = await page.evaluate(() => {
-			for (let x = window.innerWidth - 20; x > 0; x -= 40)
-				for (let y = 60; y < window.innerHeight - 160; y += 40) {
-					const hit = document.elementFromPoint(x, y);
-					if (hit && !hit.closest('[data-app], .dock, .macos-statusbar')) return { x, y };
-				}
-			return null;
-		});
-		expect(desktop).not.toBeNull();
-		await page.mouse.click(desktop!.x, desktop!.y);
+		// 메뉴 막대(빈 곳, Apple 메뉴와 그 메뉴, 음량)를 눌러도 지금 앱은 그대로다
+		await page.locator('.macos-statusbar .time-display').click();
+		await expect(appName).toHaveText('Safari');
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
+		await expect(page.getByRole('menu', { name: 'Apple 메뉴' })).toBeVisible();
+		await expect(appName).toHaveText('Safari');
+		await page.keyboard.press('Escape');
+		await page.locator('.macos-statusbar').getByRole('button', { name: /^음량/ }).click();
+		await page.locator('.volume-container').click();
+		await expect(appName).toHaveText('Safari');
+
+		// 바탕화면을 누르면 Finder, 창을 다시 누르면 그 앱. 창 순서는 그대로
+		const desktop = await desktopPoint(page);
+		await page.mouse.click(desktop.x, desktop.y);
 		await expect(appName).toHaveText('Finder');
 		await appWindow(page, 'safari').click({ position: { x: 200, y: 20 } });
-		await expect(appName).toHaveText('Safari');
-		// 메뉴 막대의 빈 곳(시계)을 누르면 Finder. 파일·보기 같은 메뉴 제목은 지금 앱의 메뉴라 바뀌지 않는다 (menubar.spec.ts)
-		await page.locator('.macos-statusbar .time-display').click();
-		await expect(appName).toHaveText('Finder');
-		await dockItem(page, 'safari').click();
 		await expect(appName).toHaveText('Safari');
 
 		// 맨 앞 창을 최소화하면 그다음 창, 모두 닫으면 Finder

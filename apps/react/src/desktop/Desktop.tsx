@@ -26,7 +26,7 @@ const OpenedApps = () => {
 };
 
 /**
- * 창 밖(바탕화면·메뉴 막대·Dock·Launchpad)을 누르면 메뉴 막대의 앱 이름이 Finder로 돌아간다.
+ * 창 밖(바탕화면·Dock·Launchpad)을 누르면 메뉴 막대의 앱 이름이 Finder로 돌아간다. 메뉴 막대는 예외다.
  * 이 상자가 먼저(캡처) 바탕화면을 앞으로 하고, 창 안을 누른 것이면 창이 바로 이어서(캡처) 자기 앱을 앞으로 한다.
  * React 이벤트는 React 트리를 따라가므로, 창이 포털로 띄운 메뉴를 눌러도 그 창의 앱으로 남는다
  */
@@ -38,8 +38,9 @@ const DesktopSurface = ({ children }: { children: React.ReactNode }) => {
 			className="desktop-surface"
 			style={{ width: '100%', height: '100%' }}
 			onPointerDownCapture={(event) => {
-				// 메뉴 막대의 파일·편집·보기… 제목과 그 메뉴는 지금 쓰는 앱의 것이라 바탕화면으로 바꾸지 않는다 (MenuBarMenus)
-				if ((event.target as Element).closest?.('[data-app-menu]')) return;
+				// 메뉴 막대와 거기서 연 메뉴·창(Apple 메뉴, 파일·보기…, 서버 상태, 음량)은 눌러도 지금 쓰는 앱이 그대로다.
+				// 메뉴는 body에 그려지므로(포털) .ui-menu로 본다. 창이 연 메뉴는 이어서 창이 자기 앱을 앞으로 한다
+				if ((event.target as Element).closest?.('.macos-statusbar, .ui-menu, .volume-container')) return;
 				focusDesktop();
 			}}
 		>
