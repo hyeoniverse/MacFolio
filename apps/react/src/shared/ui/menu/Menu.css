@@ -161,3 +161,12 @@
 .ui-menu[data-app-menu]:focus {
 	outline: none;
 }
+
+/* 단축키: 항목 오른쪽 끝 (macOS 메뉴처럼 흐리게) */
+.ui-menu-shortcut {
+	margin-left: auto;
+	padding-left: 24px;
+	opacity: 0.55;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
+}

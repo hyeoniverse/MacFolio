@@ -125,22 +125,48 @@ const Finder: React.FC = () => {
 	};
 	const parent = crumbs.length > 1 ? crumbs[crumbs.length - 2] : null;
 	useAppMenus('finder', [
-		{ title: '파일', items: [{ label: '새로운 Finder 윈도우', onSelect: () => openApp('finder') }] },
+		{
+			title: '파일',
+			items: [
+				{ label: '새로운 Finder 윈도우', shortcut: { code: 'KeyN', alt: true }, onSelect: () => openApp('finder') },
+			],
+		},
 		{
 			title: '보기',
 			items: [
-				{ label: '아이콘으로 보기', checked: view === 'icons', onSelect: inFinder(() => setView('icons')) },
-				{ label: '목록으로 보기', checked: view === 'list', onSelect: inFinder(() => setView('list')) },
+				{
+					label: '아이콘으로 보기',
+					checked: view === 'icons',
+					shortcut: { code: 'Digit1', alt: true },
+					onSelect: inFinder(() => setView('icons')),
+				},
+				{
+					label: '목록으로 보기',
+					checked: view === 'list',
+					shortcut: { code: 'Digit2', alt: true },
+					onSelect: inFinder(() => setView('list')),
+				},
 			],
 		},
 		{
 			title: '이동',
 			items: [
-				{ label: '뒤로', disabled: history.at === 0, onSelect: inFinder(() => step(-1)) },
-				{ label: '앞으로', disabled: history.at === history.places.length - 1, onSelect: inFinder(() => step(1)) },
+				{
+					label: '뒤로',
+					disabled: history.at === 0,
+					shortcut: { code: 'BracketLeft', alt: true },
+					onSelect: inFinder(() => step(-1)),
+				},
+				{
+					label: '앞으로',
+					disabled: history.at === history.places.length - 1,
+					shortcut: { code: 'BracketRight', alt: true },
+					onSelect: inFinder(() => step(1)),
+				},
 				{
 					label: '상위 폴더',
 					disabled: !parent,
+					shortcut: { code: 'ArrowUp', alt: true },
 					onSelect: inFinder(() => parent && go({ folder: parent.id })),
 				},
 				'separator',
