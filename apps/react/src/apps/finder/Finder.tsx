@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/AppStateContext';
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 import { APP_MANIFEST } from '@/apps/manifest';
 import { WINDOW_APPS } from '@/apps/registry';
@@ -116,6 +117,41 @@ const Finder: React.FC = () => {
 			: (folder?.name ?? 'Finder');
 	const crumbs = 'folder' in place ? pathTo(locations, place.folder) : pathTo(locations, `docs:${place.doc}`);
 	const location = crumbs[0]?.id ?? null;
+
+	// 메뉴 막대의 Finder 메뉴 (#96). 바탕화면을 눌러 Finder가 되었을 때도 보이므로, 고르면 Finder 창을 연다
+	const inFinder = (action: () => void) => () => {
+		openApp('finder');
+		action();
+	};
+	const parent = crumbs.length > 1 ? crumbs[crumbs.length - 2] : null;
+	useAppMenus('finder', [
+		{ title: '파일', items: [{ label: '새로운 Finder 윈도우', onSelect: () => openApp('finder') }] },
+		{
+			title: '보기',
+			items: [
+				{ label: '아이콘으로 보기', checked: view === 'icons', onSelect: inFinder(() => setView('icons')) },
+				{ label: '목록으로 보기', checked: view === 'list', onSelect: inFinder(() => setView('list')) },
+			],
+		},
+		{
+			title: '이동',
+			items: [
+				{ label: '뒤로', disabled: history.at === 0, onSelect: inFinder(() => step(-1)) },
+				{ label: '앞으로', disabled: history.at === history.places.length - 1, onSelect: inFinder(() => step(1)) },
+				{
+					label: '상위 폴더',
+					disabled: !parent,
+					onSelect: inFinder(() => parent && go({ folder: parent.id })),
+				},
+				'separator',
+				...locations.map((item) => ({
+					label: item.name,
+					checked: location === item.id && !searching,
+					onSelect: inFinder(() => go({ folder: item.id })),
+				})),
+			],
+		},
+	]);
 
 	const open = (item: FinderItem) => {
 		switch (item.kind) {

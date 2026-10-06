@@ -85,6 +85,8 @@ import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import MarkdownLink from '@/apps/memo/components/MarkdownLink';
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
+import type { MenuItem } from '@/shared/ui/menu/Menu';
 import Button from '@/shared/ui/button/Button';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 
@@ -931,6 +933,36 @@ const Memo: React.FC = () => {
 	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글·태그·최근 삭제된 항목이면 마지막 폴더) */
 	const newFolder = category === ALL_CATEGORY || inTags || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
 	const openFind = selected ? () => setFindSlug(selected.slug) : null;
+
+	// 메뉴 막대의 메모 메뉴 (#96). 메모가 지금 쓰는 앱일 때 보인다
+	useAppMenus('memo', [
+		{
+			title: '파일',
+			items: canEdit ? [{ label: '새로운 메모', icon: 'fa-regular fa-pen-to-square', onSelect: startNewDraft }] : [],
+		},
+		{
+			title: '편집',
+			items: [
+				{
+					label: '찾기…',
+					icon: 'fa-solid fa-magnifying-glass',
+					disabled: !openFind,
+					hint: openFind ? undefined : '글을 열면 그 글 안에서 찾습니다',
+					onSelect: () => openFind?.(),
+				},
+			],
+		},
+		{
+			title: '보기',
+			items: [
+				{ label: '목록으로 보기', checked: view === 'list', onSelect: () => changeView('list') },
+				{ label: '갤러리로 보기', checked: view === 'gallery', onSelect: () => changeView('gallery') },
+				'separator',
+				{ label: '사이드바', checked: sidebarOpen, onSelect: toggleSidebar },
+				...(inTrash ? [] : (['separator', ...sortMenuItems(arrangement, setArrangement)] as MenuItem[])),
+			],
+		},
+	]);
 	const findTarget = selected?.slug ?? null;
 	const memoInFront = foregroundApp(apps) === 'memo';
 	// ⌘F: 메모가 맨 앞 창이면 열린 글 안에서 찾기 (브라우저의 페이지 찾기 대신)
