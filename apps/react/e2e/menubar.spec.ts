@@ -1,4 +1,4 @@
-import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
+import { test, expect, enterDesktop, appWindow, dockItem, desktopPoint } from './fixtures';
 import type { Page } from '@playwright/test';
 
 const bar = (page: Page) => page.getByRole('group', { name: '메뉴 막대' });
@@ -69,9 +69,10 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await expect(page.getByRole('menu')).toHaveCount(0);
 	});
 
-	test('창 밖을 눌러 Finder가 되면 창 항목이 없는 Finder의 메뉴', async ({ page }) => {
+	test('바탕화면을 눌러 Finder가 되면 창 항목이 없는 Finder의 메뉴', async ({ page }) => {
 		await enterDesktop(page);
-		await page.locator('.macos-statusbar .time-display').click();
+		const desktop = await desktopPoint(page);
+		await page.mouse.click(desktop.x, desktop.y);
 		await expect(appName(page)).toHaveText('Finder');
 		// 창이 없으니 파일(윈도우 닫기)은 비고, 윈도우에는 열린 창 목록만
 		await expect(bar(page).getByRole('button')).toHaveText(['보기', '윈도우', '도움말']);
