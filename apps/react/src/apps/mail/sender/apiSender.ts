@@ -32,6 +32,8 @@ export function createApiSender(apiUrl: string, fallback: MailSender, fetchImpl:
 				response = await fetchImpl(`${apiUrl}/contact`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
+					// 방문자 쿠키: 서버가 이 브라우저의 보낸 편지함에 넣는다
+					credentials: 'include',
 					body: JSON.stringify({ ...input, turnstileToken: options?.turnstileToken }),
 					signal: AbortSignal.timeout(20_000),
 				});

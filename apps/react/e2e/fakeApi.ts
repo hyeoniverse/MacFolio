@@ -6,6 +6,17 @@ export const FAKE_SIGNED_IN_AT = '2026-10-02T10:03:00.000Z';
 /** 가짜 API가 알려 주는 세션 만료 시각. 시험 중에 만료되지 않게 먼 뒤로 둔다 (한국 시각 2099년 10월 3일 오전 7:03) */
 export const FAKE_EXPIRES_AT = '2099-10-02T22:03:00.000Z';
 
+/** 서버에 저장된 연락 메일 (apps/api/src/contact의 ContactMailView) */
+export interface FakeContactMail {
+	id: string;
+	name: string;
+	email: string;
+	subject: string;
+	body: string;
+	createdAt: string;
+	replies: { id: string; body: string; createdAt: string }[];
+}
+
 export interface FakeApiState {
 	signedIn: boolean;
 	/** 관리자가 고친 사진 캡션 { 사진 주소: 캡션 } (GET·PUT /photos/captions) */
@@ -52,6 +63,12 @@ export interface FakeApiState {
 		turnstileSiteKey: string | null;
 		sent: Record<string, unknown>[];
 		reject?: { status: number; message: string };
+		/** 이 브라우저의 보낸 편지함 (GET /contact/mine) */
+		mine: FakeContactMail[];
+		/** 관리자의 받은 편지함 (GET /contact/inbox) */
+		inbox: FakeContactMail[];
+		/** 관리자가 보낸 답장 (POST /contact/:id/reply) */
+		replies: { id: string; body: string }[];
 	};
 	/** /analytics/views가 알려 줄 항목마다 조회수 (앱 → 항목 → 수) */
 	analyticsViews: Record<string, Record<string, number>>;
@@ -303,7 +320,7 @@ export async function fakeApi(
 		analyticsSummary: fakeAnalyticsSummary(),
 		analyticsLive: fakeAnalyticsLive(),
 		analyticsQueries: [],
-		contact: { enabled: true, turnstileSiteKey: null, sent: [] },
+		contact: { enabled: true, turnstileSiteKey: null, sent: [], mine: [], inbox: fakeInbox(), replies: [] },
 		analyticsViews: { memo: { 'cra-to-vite': 42, 'post-editor': 7 } },
 		photoCaptions: {},
 		github: {
@@ -398,8 +415,35 @@ export async function fakeApi(
 					headers: cors(origin),
 					json: { statusCode: state.contact.reject.status, message: state.contact.reject.message },
 				});
-			state.contact.sent.push(JSON.parse(request.postData() ?? '{}'));
-			return route.fulfill({ status: 200, headers: cors(origin), json: { status: 'sent' } });
+			const input = JSON.parse(request.postData() ?? '{}');
+			state.contact.sent.push(input);
+			const mail: FakeContactMail = {
+				id: `mail-${state.contact.sent.length}`,
+				name: input.name,
+				email: input.email,
+				subject: input.subject,
+				body: input.body,
+				createdAt: '2026-10-07T05:00:00.000Z',
+				replies: [],
+			};
+			state.contact.mine.unshift(mail);
+			return route.fulfill({ status: 200, headers: cors(origin), json: { status: 'sent', mail } });
+		}
+		if (path === '/contact/mine')
+			return route.fulfill({ status: 200, headers: cors(origin), json: state.contact.mine });
+		if (path === '/contact/inbox') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			return route.fulfill({ status: 200, headers: cors(origin), json: state.contact.inbox });
+		}
+		const replyTo = /^\/contact\/([^/]+)\/reply$/.exec(path);
+		if (replyTo && request.method() === 'POST') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const mail = state.contact.inbox.find((entry) => entry.id === replyTo[1]);
+			if (!mail) return route.fulfill({ status: 404, headers: cors(origin), json: { statusCode: 404 } });
+			const { body } = JSON.parse(request.postData() ?? '{}');
+			state.contact.replies.push({ id: mail.id, body });
+			mail.replies.push({ id: `reply-${state.contact.replies.length}`, body, createdAt: '2026-10-07T06:00:00.000Z' });
+			return route.fulfill({ status: 200, headers: cors(origin), json: mail });
 		}
 		// 요약은 누구나: 방문자에게는 들어온 곳의 호스트·utm을 뺀 공개용 (서버와 같다)
 		if (path === '/analytics/summary') {
@@ -976,6 +1020,30 @@ function fakeAnalyticsLive() {
 				{ type: 'item', app: 'memo', item: 'cra-to-vite', at: '2026-10-07T03:01:00.000Z' },
 				{ type: 'link', app: null, item: 'github.com/hyeoniverse', at: '2026-10-07T03:02:00.000Z' },
 			],
+		},
+	];
+}
+
+/** 관리자의 받은 편지함: 방문자 둘이 보낸 메일 (하나는 이미 답장함) */
+function fakeInbox(): FakeContactMail[] {
+	return [
+		{
+			id: 'mail-a',
+			name: '민수',
+			email: 'minsu@example.com',
+			subject: '채용 제안드립니다',
+			body: '안녕하세요, 포트폴리오 잘 봤습니다.\n이야기 나눠 보고 싶습니다.',
+			createdAt: '2026-10-07T03:00:00.000Z',
+			replies: [],
+		},
+		{
+			id: 'mail-b',
+			name: '지수',
+			email: 'jisu@example.com',
+			subject: '활동 상태 보기 질문',
+			body: '어떻게 만드셨나요?',
+			createdAt: '2026-10-06T03:00:00.000Z',
+			replies: [{ id: 'reply-old', body: '글로 정리해 두었어요!', createdAt: '2026-10-06T05:00:00.000Z' }],
 		},
 	];
 }
