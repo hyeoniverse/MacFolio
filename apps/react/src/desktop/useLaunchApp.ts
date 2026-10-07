@@ -24,10 +24,14 @@ export function useLaunchApp() {
 		}
 
 		if (action?.type === 'share') {
-			navigator.clipboard.writeText(window.location.href);
+			const url = window.location.href;
 			setIsSharing(true);
-			notify({ app: 'share', title: '링크 복사됨', body: '링크가 복사되었습니다!' });
 			setTimeout(() => setIsSharing(false), SHARING_MS);
+			// 복사가 끝난 뒤에 알린다. 브라우저가 클립보드 쓰기를 막으면(권한, 포커스) 주소를 대신 보여 준다
+			navigator.clipboard.writeText(url).then(
+				() => notify({ app: 'share', title: '링크 복사됨', body: '링크가 복사되었습니다!' }),
+				() => notify({ app: 'share', title: '링크를 복사하지 못했습니다', body: url })
+			);
 			return;
 		}
 
