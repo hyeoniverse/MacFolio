@@ -50,7 +50,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 					/>
 				</div>
 
-				{/* 휴대폰: iOS 메시지처럼 큰 제목 */}
+				{/* 휴대폰: iOS 메시지처럼 떠 있는 뒤로 가기와 같은 줄 가운데에 제목 */}
 				<h2 className="messages-phone-title phone-title">메시지</h2>
 
 				{searchField('messages-search')}
@@ -65,7 +65,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 									aria-current={selectedId === thread.id || undefined}
 									onClick={() => onSelect(thread.id)}
 								>
-									<Avatar name={thread.title} size={phone ? 76 : 66} />
+									<Avatar name={thread.title} size={phone ? 128 : 66} />
 									<span>{thread.title}</span>
 								</button>
 							</li>
@@ -82,7 +82,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 								aria-current={selectedId === thread.id || undefined}
 								onClick={() => onSelect(thread.id)}
 							>
-								<Avatar name={thread.title} size={phone ? 52 : 40} />
+								<Avatar name={thread.title} size={phone ? 62 : 40} />
 								<span className="messages-thread-text">
 									<span className="messages-thread-top">
 										<strong>
