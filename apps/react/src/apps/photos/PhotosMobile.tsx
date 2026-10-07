@@ -220,7 +220,7 @@ const PhoneViewer = ({
 					<div className="photos-phone-info-panel">
 						<h3>{photo.album.period ?? photo.album.name}</h3>
 						<p className="photos-phone-file">
-							<i className="fa-regular fa-file-image" aria-hidden="true" /> {fileNameOf(photo.src)}
+							<i className="fa-regular fa-file-image" aria-hidden="true" /> <span>{fileNameOf(photo.src)}</span>
 						</p>
 						<section className="photos-phone-card" aria-label="파일">
 							<header>

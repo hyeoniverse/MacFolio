@@ -481,18 +481,17 @@
 	transition: flex-basis var(--duration) var(--ease-out);
 }
 
-/* 정보를 열면 사진은 위쪽 절반으로 줄고, 정보 판이 아래를 채운다 */
+/* 정보를 열면 정보 판은 제 높이만큼 다 보이고 (스크롤 없이), 사진이 남은 위쪽으로 줄어든다 */
 .photos-phone-stage.with-info {
-	flex: 0 0 42%;
+	flex: 1 1 0;
+	min-height: 96px;
 }
 
 .photos-phone-info {
 	display: flex;
-	flex: 1;
+	flex: none;
 	flex-direction: column;
-	min-height: 0;
-	overflow-y: auto;
-	padding-bottom: calc(var(--phone-bottom-inset) + 72px);
+	padding-bottom: 10px;
 	background: var(--phone-page-bg);
 	animation: photos-phone-info-up var(--duration-slow) var(--ease-out);
 }
@@ -504,17 +503,41 @@
 	}
 }
 
+/* 정보 판의 높이는 어떤 사진이든 같다: 캡션은 늘 두 줄 칸 (짧으면 비고, 길면 말줄임), 나머지는 한 줄씩 */
 .photos-phone-caption {
+	box-sizing: content-box;
+	height: calc(2em * 1.35);
 	margin: 0;
-	padding: 14px 20px;
+	padding: 12px 20px;
+	overflow: hidden;
 	border-bottom: 0.5px solid var(--phone-separator);
 	background: var(--phone-card-bg);
 	color: var(--color-text-secondary);
 	font-size: 17px;
+	line-height: 1.35;
+}
+
+p.photos-phone-caption {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.photos-phone-info-panel :is(h3, .photos-phone-file, .photos-phone-card strong, .photos-phone-card p) {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.photos-phone-file span,
+.photos-phone-card strong {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .photos-phone-info-panel {
-	padding: 14px 20px 0;
+	padding: 12px 20px 0;
 }
 
 .photos-phone-info-panel h3 {
@@ -527,10 +550,9 @@
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	margin: 4px 0 14px;
+	margin: 2px 0 10px;
 	color: var(--color-text-secondary);
 	font-size: 15px;
-	word-break: break-all;
 }
 
 /* 형식 카드: 머리(앨범 · 형식 딱지), 두 줄, 칸 나눈 줄 */
@@ -592,8 +614,8 @@
 
 .photos-phone-info-action {
 	width: 100%;
-	margin-top: 14px;
-	padding: 12px;
+	margin-top: 10px;
+	padding: 11px;
 	border: none;
 	border-radius: 14px;
 	background: var(--color-selected-bg);

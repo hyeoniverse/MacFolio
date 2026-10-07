@@ -1,5 +1,5 @@
 import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
 
 const openPhotos = async (page: Page) => {
@@ -7,6 +7,16 @@ const openPhotos = async (page: Page) => {
 	await dockItem(page, 'photos').click();
 	return appWindow(page, 'photos');
 };
+
+/** 정보 판이 스크롤 없이 다 보이고, 끝(프로젝트 페이지 단추)이 아래 막대보다 위에 있다 */
+async function expectInfoFits(viewer: Locator) {
+	const info = viewer.getByRole('complementary', { name: '사진 정보' });
+	await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(0);
+	const action = (await info.locator('.photos-phone-info-action').boundingBox())!;
+	const bar = (await viewer.locator('.photos-phone-viewer-bar').boundingBox())!;
+	expect(action.y + action.height).toBeLessThanOrEqual(bar.y);
+	expect((await viewer.locator('.photos-phone-stage').boundingBox())!.height).toBeGreaterThan(90);
+}
 
 test.describe('사진 (#21)', () => {
 	test('보관함 = 앨범 사진의 합, 비디오는 영상만, 앨범을 고른다', async ({ page }) => {
@@ -195,6 +205,8 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		await expect(info.getByRole('region', { name: '파일' })).toContainText(/\d+(\.\d)?MP · \d+ × \d+/);
 		await expect(info.getByRole('button', { name: 'QRU 큐알유 페이지 열기…' })).toBeVisible();
 		await expect(strip).toBeHidden();
+		// 정보는 스크롤 없이 한 번에 다 보이고, 아래 막대에 가리지 않는다 (사진이 그만큼 줄어든다)
+		await expectInfoFits(viewer);
 
 		// 아래 막대에는 Safari(프로젝트 페이지) 단추가 없다. 프로젝트 페이지는 정보에서 연다
 		await expect(viewer.locator('.photos-phone-viewer-bar').getByRole('button')).toHaveCount(3);
@@ -281,5 +293,47 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		await photos.getByRole('dialog').getByRole('button', { name: '정보' }).click();
 		await expect(photos.getByRole('textbox', { name: '캡션' })).toHaveCount(0);
 		await expect(photos.locator('p.photos-phone-caption')).not.toBeEmpty();
+	});
+});
+
+test.describe('사진: 작은 휴대폰', () => {
+	test.use({ viewport: { width: 375, height: 667 } });
+
+	test('정보는 스크롤 없이 다 보이고, 어떤 사진이든 (긴 캡션이어도) 정보 판과 사진의 크기가 같다', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		await page.locator('[data-launch="photos"]').click();
+		const photos = appWindow(page, 'photos');
+		const thumbs = photos.locator('.photos-phone-grid .photos-thumb');
+		await expect(thumbs.first()).toBeVisible();
+		const total = await thumbs.count();
+		await thumbs.last().click();
+		const viewer = photos.getByRole('dialog');
+		await viewer.getByRole('button', { name: '정보' }).click();
+		const info = viewer.getByRole('complementary', { name: '사진 정보' });
+		const card = info.getByRole('region', { name: '파일' });
+		const layout = async () => {
+			// 크기를 다 읽은 뒤에 잰다 (읽는 중… 줄과 높이가 같아야 하지만, 재는 시점은 맞춘다)
+			await expect(card).toContainText(/\d+ × \d+/);
+			await expectInfoFits(viewer);
+			const panel = (await info.boundingBox())!;
+			const stage = (await viewer.locator('.photos-phone-stage').boundingBox())!;
+			return [Math.round(panel.y), Math.round(panel.height), Math.round(stage.height)];
+		};
+		const first = await layout();
+
+		// 여러 앨범을 건너가며 넘겨도 그대로 (영상, 긴 앨범·파일 이름 포함)
+		for (let step = 1; step <= 12; step++) {
+			await page.keyboard.press('ArrowLeft');
+			await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 ${total - step}/${total}:`));
+			expect(await layout()).toEqual(first);
+		}
+
+		// 관리자가 가장 긴 캡션을 써도 그대로 (두 줄 칸 안에서 말줄임)
+		const field = viewer.getByRole('textbox', { name: '캡션' });
+		await field.fill('긴 캡션 '.repeat(40).slice(0, 200));
+		await field.press('Enter');
+		await expect(viewer.locator('.photos-phone-viewer-title span')).toHaveText(/^긴 캡션/);
+		expect(await layout()).toEqual(first);
 	});
 });
