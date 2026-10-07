@@ -3,6 +3,8 @@ import AppWindow from '@/desktop/window/Window';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { signIn, useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
+import { fetchViews } from '@/shared/analytics/analytics';
+import { getPostRepository } from '@/apps/memo/repository';
 import LineChart from './LineChart';
 import StatTable from './StatTable';
 import {
@@ -12,13 +14,12 @@ import {
 	fetchLive,
 	fetchSummary,
 	formatDuration,
-	groupRows,
 	kstToday,
 	labelOf,
 	PERIODS,
 	periodRange,
-	referrerGroup,
 	type LiveVisit,
+	type Row,
 	type Period,
 	type Summary,
 	type Totals,
@@ -102,7 +103,12 @@ const Overview = ({ summary }: { summary: Summary }) => {
 			<LineChart days={summary.days} />
 			<div className="activity-columns">
 				<StatTable title="가장 많이 연 앱" rows={summary.breakdown.app} metric="app" valueLabel="열기" limit={5} />
-				<StatTable title="가장 많이 들어온 곳" rows={summary.breakdown.referrer} metric="referrer" limit={5} />
+				{/* 방문자에게는 주소 대신 묶음 (검색·소셜·직접·링크) */}
+				{summary.scope === 'admin' ? (
+					<StatTable title="가장 많이 들어온 곳" rows={summary.breakdown.referrer} metric="referrer" limit={5} />
+				) : (
+					<StatTable title="들어온 곳" rows={summary.breakdown.referrerGroup} />
+				)}
 			</div>
 		</>
 	);
@@ -149,9 +155,21 @@ const Live = ({ visits }: { visits: LiveVisit[] | null }) => {
 	);
 };
 
+/** 관리자만 볼 수 있는 자리: 왜 비었는지와 로그인 단추 */
+const AdminOnly = ({ what }: { what: string }) => (
+	<div className="activity-locked">
+		<i className="fa-solid fa-lock" aria-hidden="true" />
+		<h2>관리자만 볼 수 있습니다</h2>
+		<p>{what}</p>
+		<button type="button" onClick={signIn}>
+			관리자 로그인…
+		</button>
+	</div>
+);
+
 /**
- * 활동 상태 보기 (#102): 관리자가 사이트의 방문을 본다. macOS의 활동 상태 보기처럼 위에 탭, 가운데 정렬되는 표, 작은 그래프.
- * 숫자는 분석 API(관리자만)에서 온다. 방문자가 열면 잠긴 화면만 보인다
+ * 활동 상태 보기 (#102): 사이트의 방문을 본다. macOS의 활동 상태 보기처럼 위에 탭, 가운데 정렬되는 표, 작은 그래프.
+ * 누구나 연다. 방문자에게는 서버가 공개용 숫자만 주고(scope: public), 들어온 곳의 주소·캠페인과 실시간은 관리자만 본다
  */
 const Activity = () => {
 	const admin = useAdmin().status === 'signed-in';
@@ -163,8 +181,30 @@ const Activity = () => {
 	const [reloads, setReloads] = useState(0);
 	const reload = () => setReloads((count) => count + 1);
 
+	// 블로그 글마다 전체 기간 조회수와 그 글의 제목
+	const [blogViews, setBlogViews] = useState<Row[] | null>(null);
+	const [titles, setTitles] = useState<Record<string, string>>({});
 	useEffect(() => {
-		if (!admin || !env.apiUrl) return;
+		if (!env.apiUrl) return;
+		let alive = true;
+		void fetchViews('memo').then(
+			(views) => alive && setBlogViews(views ? Object.entries(views).map(([key, value]) => ({ key, value })) : null)
+		);
+		void getPostRepository()
+			.list()
+			.then((posts) => alive && setTitles(Object.fromEntries(posts.map((post) => [post.slug, post.title]))))
+			.catch(() => undefined);
+		return () => {
+			alive = false;
+		};
+	}, [reloads]);
+	const postTitle = (slug: string) => titles[slug] ?? slug;
+	const itemLabel = (key: string) =>
+		key.startsWith('memo/') ? `메모 › ${postTitle(key.slice('memo/'.length))}` : labelOf('item', key);
+
+	// 로그인하거나 로그아웃하면 다시 묻는다 (서버가 주는 표가 달라진다)
+	useEffect(() => {
+		if (!env.apiUrl) return;
 		let alive = true;
 		const { from, to } = periodRange(period, kstToday());
 		fetchSummary(from, to)
@@ -215,17 +255,8 @@ const Activity = () => {
 
 	const body = () => {
 		if (!env.apiUrl) return <p className="activity-empty">연결된 서버가 없습니다 (VITE_API_URL)</p>;
-		if (!admin)
-			return (
-				<div className="activity-locked">
-					<i className="fa-solid fa-lock" aria-hidden="true" />
-					<h2>관리자만 볼 수 있습니다</h2>
-					<p>사이트의 방문 통계는 관리자에게만 보입니다. 방문자에게는 Apple 메뉴의 오늘 방문자 수만 보입니다.</p>
-					<button type="button" onClick={signIn}>
-						관리자 로그인…
-					</button>
-				</div>
-			);
+		if (tab === 'live' && !admin)
+			return <AdminOnly what="실시간 방문은 방문 흐름과 가린 IP가 있어서 관리자에게만 보입니다." />;
 		if (error) return <p className="activity-empty error">{error}</p>;
 		if (tab === 'live') return <Live visits={live} />;
 		if (!summary) return <p className="activity-empty">불러오는 중…</p>;
@@ -235,18 +266,33 @@ const Activity = () => {
 				return <Overview summary={summary} />;
 			case 'referrers':
 				return (
-					<div className="activity-columns">
-						<StatTable title="묶어 보기" rows={groupRows(breakdown.referrer, referrerGroup)} />
-						<StatTable title="들어온 곳" rows={breakdown.referrer} metric="referrer" />
-						<StatTable title="캠페인 (utm_campaign)" rows={breakdown.campaign} metric="campaign" />
-						<StatTable title="출처 (utm_source)" rows={breakdown.source} metric="source" />
-					</div>
+					<>
+						<div className="activity-columns">
+							<StatTable title="묶어 보기" rows={breakdown.referrerGroup} />
+							{summary.scope === 'admin' && <StatTable title="들어온 곳" rows={breakdown.referrer} metric="referrer" />}
+						</div>
+						{summary.scope === 'admin' ? (
+							<div className="activity-columns">
+								<StatTable title="캠페인 (utm_campaign)" rows={breakdown.campaign} metric="campaign" />
+								<StatTable title="출처 (utm_source)" rows={breakdown.source} metric="source" />
+							</div>
+						) : (
+							<AdminOnly what="들어온 곳의 주소와 캠페인(utm)은 관리자에게만 보입니다. 방문자에게는 검색·소셜·직접·링크 묶음만 보입니다." />
+						)}
+					</>
 				);
 			case 'content':
 				return (
 					<div className="activity-columns">
 						<StatTable title="앱" rows={breakdown.app} metric="app" valueLabel="열기" />
-						<StatTable title="글·프로젝트" rows={breakdown.item} metric="item" valueLabel="보기" />
+						<StatTable
+							title="블로그 글 조회수 (전체 기간)"
+							rows={blogViews ?? []}
+							labelFor={postTitle}
+							valueLabel="조회"
+							empty={blogViews ? '아직 없습니다' : '불러오는 중…'}
+						/>
+						<StatTable title="글·프로젝트 (이 기간)" rows={breakdown.item} labelFor={itemLabel} valueLabel="보기" />
 						<StatTable title="바깥 링크" rows={breakdown.link} metric="link" valueLabel="누름" />
 					</div>
 				);
@@ -266,7 +312,7 @@ const Activity = () => {
 	return (
 		<AppWindow title="활동 상태 보기" appName="activity">
 			<div className="activity">
-				{admin && env.apiUrl && (
+				{env.apiUrl && (
 					<div className="activity-toolbar">
 						<div className="activity-tabs" role="tablist" aria-label="보기">
 							{TABS.map(({ id, label }) => (
@@ -289,7 +335,8 @@ const Activity = () => {
 						)}
 					</div>
 				)}
-				<div className="activity-body" role={admin ? 'tabpanel' : undefined}>
+				{/* 탭마다 새로 그린다: 같은 자리의 표가 앞 탭의 정렬을 물려받지 않게 */}
+				<div key={tab} className="activity-body" role="tabpanel">
 					{body()}
 				</div>
 			</div>

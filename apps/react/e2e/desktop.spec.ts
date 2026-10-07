@@ -299,8 +299,8 @@ test.describe('좁은 화면', () => {
 
 		await dockItem(page, 'launchpad').click();
 		const launchpad = page.locator('.launchpad-modal');
-		// 들어가지 않은 뒤쪽 8개 (share부터, 프로젝트 앱 다섯 개 포함) + Launchpad에만 있는 'API 문서'
-		await expect(launchpad.locator('.dock-item')).toHaveCount(9);
+		// 들어가지 않은 뒤쪽 8개 (share부터, 프로젝트 앱 다섯 개 포함) + Launchpad에만 있는 'API 문서'·'활동 상태 보기'
+		await expect(launchpad.locator('.dock-item')).toHaveCount(10);
 
 		// Launchpad의 앱을 열면 Dock 끝에 나타나고, 그 칸만큼 고정 앱 하나가 Launchpad로 간다 (Launchpad 칸과 겹치지 않는다)
 		await launchpad.getByRole('button', { name: 'terminal', exact: true }).click();

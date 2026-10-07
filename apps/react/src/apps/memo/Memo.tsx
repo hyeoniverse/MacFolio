@@ -77,6 +77,7 @@ import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/popover';
 import { deletePost, fetchAdminPosts, fetchServerPosts, purgePost, restorePost, type PostDraft } from './postsApi';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
+import { fetchViews } from '@/shared/analytics/analytics';
 import { useOpenRequest } from '@/shared/lib/openRequest';
 import ShareIcon from '@/shared/ui/ShareIcon';
 import { createPortal } from 'react-dom';
@@ -213,6 +214,15 @@ const Memo: React.FC = () => {
 	const searching = searchFocused || moreMenu !== null;
 	// 글 주소(/memo/<글>)로 들어왔으면 그 글부터 (shared/lib/appLink.ts)
 	const [selectedSlug, setSelectedSlug] = useState<string | null>(() => linkedId('memo'));
+	// 글마다 조회수 (트래픽 분석 #102). 앱을 열 때 한 번 묻는다. 서버가 없으면 감춘다
+	const [views, setViews] = useState<Record<string, number> | null>(null);
+	useEffect(() => {
+		let alive = true;
+		void fetchViews('memo').then((next) => alive && setViews(next));
+		return () => {
+			alive = false;
+		};
+	}, []);
 	// 좁은 창에서는 한 칸씩 보여준다 (iOS 메모처럼 폴더 → 목록 → 본문). 넓은 창에서는 쓰지 않는다.
 	// 글 주소로 들어왔으면 본문부터
 	const [pane, setPaneState] = useState<Pane>(() => (linkedId('memo') ? 'reader' : 'list'));
@@ -1470,6 +1480,9 @@ const Memo: React.FC = () => {
 									<p className="memo-reader-date">
 										<time dateTime={selected.date}>{formatPostDate(selected.date)}</time> ·{' '}
 										{folderLabel(selected.category)}
+										{views && (
+											<span className="memo-reader-views"> · 조회 {(views[selected.slug] ?? 0).toLocaleString()}</span>
+										)}
 									</p>
 									{selected.deletedAt && (
 										// Finder의 휴지통 안내처럼: 왜 고칠 수 없는지, 어떻게 쓰는지, 그 아래 단추

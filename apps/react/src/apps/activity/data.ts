@@ -10,7 +10,18 @@ export interface Totals {
 }
 
 export type Breakdown =
-	'referrer' | 'source' | 'campaign' | 'app' | 'item' | 'link' | 'country' | 'device' | 'browser' | 'os' | 'language';
+	| 'referrerGroup'
+	| 'referrer'
+	| 'source'
+	| 'campaign'
+	| 'app'
+	| 'item'
+	| 'link'
+	| 'country'
+	| 'device'
+	| 'browser'
+	| 'os'
+	| 'language';
 
 export interface Row {
 	key: string;
@@ -18,6 +29,8 @@ export interface Row {
 }
 
 export interface Summary {
+	/** admin: 모든 표, public: 방문자에게 공개하는 표만 (들어온 곳의 호스트·utm은 빈 목록) */
+	scope: 'admin' | 'public';
 	from: string;
 	to: string;
 	days: { day: string; visits: number; visitors: number }[];
@@ -96,25 +109,6 @@ export function formatDuration(seconds: number | null): string {
 	if (seconds === null) return '–';
 	const minutes = Math.floor(seconds / 60);
 	return minutes ? `${minutes}분 ${seconds % 60}초` : `${seconds}초`;
-}
-
-const SEARCH = /(^|\.)(google|bing|naver|daum|yahoo|duckduckgo|baidu|yandex|ecosia)\./;
-const SOCIAL =
-	/(^|\.)(linkedin\.com|lnkd\.in|facebook\.com|instagram\.com|x\.com|t\.co|twitter\.com|threads\.net|kakao\.com|reddit\.com|youtube\.com|velog\.io|tistory\.com|discord\.com)$/;
-
-/** 들어온 곳의 묶음: 검색, 소셜, 직접, 링크 */
-export function referrerGroup(host: string): '검색' | '소셜' | '직접' | '링크' {
-	if (!host) return '직접';
-	if (SEARCH.test(host)) return '검색';
-	if (SOCIAL.test(host)) return '소셜';
-	return '링크';
-}
-
-/** 같은 묶음끼리 더한다 (많은 순) */
-export function groupRows(rows: Row[], groupOf: (key: string) => string): Row[] {
-	const sums = new Map<string, number>();
-	for (const { key, value } of rows) sums.set(groupOf(key), (sums.get(groupOf(key)) ?? 0) + value);
-	return [...sums].map(([key, value]) => ({ key, value })).sort((a, b) => b.value - a.value);
 }
 
 const regionNames = typeof Intl.DisplayNames === 'function' ? new Intl.DisplayNames(['ko'], { type: 'region' }) : null;
