@@ -14,6 +14,7 @@ import { FilesModule } from './files/files.module.js';
 import { ImagesModule } from './images/images.module.js';
 import { WallpapersModule } from './wallpapers/wallpapers.module.js';
 import { GithubModule } from './github/github.module.js';
+import { PhotosModule } from './photos/photos.module.js';
 import { SpeechModule } from './speech/speech.module.js';
 import { TranslateModule } from './translate/translate.module.js';
 import { SummaryModule } from './summary/summary.module.js';
@@ -44,6 +45,7 @@ import { ContactModule } from './contact/contact.module.js';
 		ImagesModule,
 		WallpapersModule,
 		GithubModule,
+		PhotosModule,
 		SpeechModule,
 		TranslateModule,
 		SummaryModule,

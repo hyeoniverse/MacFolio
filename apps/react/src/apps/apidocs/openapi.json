@@ -1304,6 +1304,65 @@
 				]
 			}
 		},
+		"/photos/captions": {
+			"get": {
+				"operationId": "PhotosController_captions",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "관리자가 고친 캡션 { 사진 주소: 캡션 }. 없는 사진은 원래 캡션을 쓴다",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"/imgs/projects/qru/screenshot.jpg": "QR 명함 첫 화면"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"photos"
+				]
+			},
+			"put": {
+				"operationId": "PhotosController_save",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"src": "/imgs/projects/qru/screenshot.jpg",
+									"caption": "QR 명함 첫 화면"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "고친 뒤의 캡션 전체. 캡션을 비우면 원래 캡션으로 돌아간다"
+					},
+					"400": {
+						"description": "사진 주소가 잘못되었거나 캡션이 200자를 넘는다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"photos"
+				]
+			}
+		},
 		"/speech": {
 			"get": {
 				"operationId": "SpeechController_status",
