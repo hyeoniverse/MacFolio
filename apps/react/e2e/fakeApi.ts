@@ -44,6 +44,13 @@ export interface FakeApiState {
 	analyticsSummary: Record<string, unknown>;
 	analyticsLive: Record<string, unknown>[];
 	analyticsQueries: string[];
+	/** 메일 앱의 연락 메일 (#25): 서버가 보낼 수 있는지, 사람 확인 키, 받은 메일, 다음 보내기를 거절할 응답 */
+	contact: {
+		enabled: boolean;
+		turnstileSiteKey: string | null;
+		sent: Record<string, unknown>[];
+		reject?: { status: number; message: string };
+	};
 	/** /analytics/views가 알려 줄 항목마다 조회수 (앱 → 항목 → 수) */
 	analyticsViews: Record<string, Record<string, number>>;
 	/** GitHub 앱: 프로필, README, 보일 저장소, GitHub에 있는 저장소 (listed: 고를 수 있는 목록에 나온다) */
@@ -294,6 +301,7 @@ export async function fakeApi(
 		analyticsSummary: fakeAnalyticsSummary(),
 		analyticsLive: fakeAnalyticsLive(),
 		analyticsQueries: [],
+		contact: { enabled: true, turnstileSiteKey: null, sent: [] },
 		analyticsViews: { memo: { 'cra-to-vite': 42, 'post-editor': 7 } },
 		github: {
 			followers: 42,
@@ -371,6 +379,24 @@ export async function fakeApi(
 		if (path === '/analytics/events' && request.method() === 'POST') {
 			state.analytics.push(JSON.parse(request.postData() ?? '{}'));
 			return route.fulfill({ status: 204, headers: cors(origin) });
+		}
+		if (path === '/contact' && request.method() === 'GET')
+			return route.fulfill({
+				status: 200,
+				headers: cors(origin),
+				json: { enabled: state.contact.enabled, turnstileSiteKey: state.contact.turnstileSiteKey },
+			});
+		if (path === '/contact' && request.method() === 'POST') {
+			if (!state.contact.enabled)
+				return route.fulfill({ status: 503, headers: cors(origin), json: { statusCode: 503 } });
+			if (state.contact.reject)
+				return route.fulfill({
+					status: state.contact.reject.status,
+					headers: cors(origin),
+					json: { statusCode: state.contact.reject.status, message: state.contact.reject.message },
+				});
+			state.contact.sent.push(JSON.parse(request.postData() ?? '{}'));
+			return route.fulfill({ status: 200, headers: cors(origin), json: { status: 'sent' } });
 		}
 		// 요약은 누구나: 방문자에게는 들어온 곳의 호스트·utm을 뺀 공개용 (서버와 같다)
 		if (path === '/analytics/summary') {
