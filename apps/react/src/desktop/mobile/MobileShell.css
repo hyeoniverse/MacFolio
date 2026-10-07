@@ -29,10 +29,10 @@
 	color: var(--color-text);
 }
 
-/* 앱 위: 바탕은 투명하게 두고, 밑으로 지나가는 내용만 약하게 흐려 글자가 읽히게 한다 */
+/* 앱 위: 바탕은 투명하게 두고, 밑으로 지나가는 내용만 아주 약하게 흐려 글자가 읽히게 한다 */
 .mobile-statusbar.app {
-	backdrop-filter: blur(6px);
-	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
 }
 
 .mobile-statusbar-time {
