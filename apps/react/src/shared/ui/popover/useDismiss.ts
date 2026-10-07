@@ -28,7 +28,10 @@ export function useDismiss(
 			onDismiss();
 		};
 		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') latest.current.onDismiss();
+			if (event.key !== 'Escape') return;
+			// 이 Esc는 팝오버를 닫는 데 썼다 (휴대폰의 Esc 뒤로 가기가 받지 않는다)
+			event.preventDefault();
+			latest.current.onDismiss();
 		};
 		document.addEventListener('pointerdown', onPointerDown);
 		document.addEventListener('keydown', onKeyDown);

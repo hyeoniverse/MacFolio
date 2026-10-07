@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/AppStateContext';
+import { foregroundApp } from '@/desktop/appStack';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import { closeSwitcher, getSwitcherScroll, openSwitcher, setSwitcherScroll } from '@/desktop/mobile/switcherStore';
 import { MobileNavContext, type MobileNav } from '@/desktop/window/mobileNav';
@@ -28,6 +29,10 @@ interface Props {
 	children: React.ReactNode;
 }
 
+/** 글자를 쓰는 곳 (그 안의 Esc는 쓰기를 위한 것이다) */
+const isEditable = (target: EventTarget | null) =>
+	target instanceof Element && target.closest('input, textarea, select, [contenteditable="true"]') !== null;
+
 /**
  * 모바일 앱 화면. 평소에는 화면을 가득 채우고, 앱 전환기가 열리면 작아져 카드가 된다.
  * 카드는 실제 앱 화면 그대로다 (스크린샷이 아니다). 누르면 그 앱으로, 위로 밀면 앱을 닫는다.
@@ -46,11 +51,31 @@ const MobileAppFrame: React.FC<Props> = ({
 	contentStyle,
 	children,
 }) => {
-	const { bringAppToFront, quitApp } = useAppState();
+	const { apps, bringAppToFront, quitApp } = useAppState();
 	const [nav, setNav] = useState<MobileNav | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
 	const gesture = useRef<{ x: number; y: number; scroll: number; axis: 'x' | 'y' | null } | null>(null);
 	const inSwitcher = cardIndex !== null;
+	const back = nav?.onBack ?? onHome;
+	const backRef = useRef(back);
+	useEffect(() => {
+		backRef.current = back;
+	});
+
+	// Esc는 떠 있는 뒤로 가기와 같다 (맨 앞 앱만). 앱 안의 팝오버·대화상자·쓰기 화면이 먼저다:
+	// 그들이 이 Esc를 썼으면(preventDefault) 뒤로 가지 않는다. 듣는 순서와 상관없게 이벤트가 다 돈 뒤에 본다
+	const foreground = !inSwitcher && foregroundApp(apps) === appName;
+	useEffect(() => {
+		if (!foreground) return;
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key !== 'Escape' || event.defaultPrevented || isEditable(event.target)) return;
+			setTimeout(() => {
+				if (!event.defaultPrevented) backRef.current();
+			}, 0);
+		};
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [foreground]);
 	const { label, icon } = APP_MANIFEST[appName].mobile ?? APP_MANIFEST[appName];
 
 	// 홈 인디케이터를 쓸어 올리는 동안 앱 화면이 손가락을 따라 작아진다

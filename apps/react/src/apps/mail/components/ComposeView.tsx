@@ -36,7 +36,9 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel }) => {
 	// Esc로 쓰기를 그만둔다
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') onCancel();
+			if (event.key !== 'Escape') return;
+			event.preventDefault();
+			onCancel();
 		};
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);

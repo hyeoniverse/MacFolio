@@ -69,7 +69,9 @@ const ChatView: React.FC<Props> = ({
 	useEffect(() => {
 		if (thread) return;
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape' && !document.querySelector('[role="dialog"]')) onCancelNew();
+			if (event.key !== 'Escape' || document.querySelector('[role="dialog"]')) return;
+			event.preventDefault();
+			onCancelNew();
 		};
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
