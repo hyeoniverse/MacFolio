@@ -78,7 +78,7 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		icon: 'finder.png',
 		inDock: true,
 		alwaysRunning: true,
-		mobile: { label: '파일', icon: 'finder.png' },
+		mobile: { label: '파일', icon: 'files.svg' },
 		windowSize: { width: 820, height: 520 },
 	},
 	music: { label: '음악', icon: 'music.png', inDock: true, windowSize: { width: 960, height: 600 } },

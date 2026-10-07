@@ -166,12 +166,15 @@ const MobileAppFrame: React.FC<Props> = ({
 			>
 				{/* iOS처럼 제목 막대가 없다: 뒤로 가기는 내용 위에 떠 있는 동그란 단추 하나 (첫 화면은 홈, 안으로 들어가면 앱이 정한 뒤로 가기).
 				    내용은 상태 표시줄 아래부터 화면 끝까지 쓰고, 홈 바도 내용 위에 떠 있다 */}
-				<div className={`mobile-navbar ${nav?.placement === 'bottom' ? 'bottom' : ''}`}>
-					<button type="button" className="mobile-navbar-home" onClick={nav?.onBack ?? onHome}>
-						<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
-						<span className="mobile-navbar-back-label">{nav?.backLabel ?? '홈'}</span>
-					</button>
-				</div>
+				{/* 홈으로 가는 단추를 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다 */}
+				{(nav?.onBack || !nav?.hideHome) && (
+					<div className={`mobile-navbar ${nav?.placement === 'bottom' ? 'bottom' : ''}`}>
+						<button type="button" className="mobile-navbar-home" onClick={nav?.onBack ?? onHome}>
+							<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
+							<span className="mobile-navbar-back-label">{nav?.backLabel ?? '홈'}</span>
+						</button>
+					</div>
+				)}
 				<div className="content" style={contentStyle}>
 					<MobileNavContext.Provider value={setNav}>{children}</MobileNavContext.Provider>
 				</div>

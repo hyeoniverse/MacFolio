@@ -228,6 +228,8 @@ test.describe('모바일', () => {
 		const frame = page.locator('.container.mobile .web-frame iframe');
 		await expect(frame).toBeVisible();
 		expect((await frame.boundingBox())!.y).toBe(0);
+		// 페이지를 가리는 홈 단추는 없다 (홈 바가 홈으로 간다)
+		await expect(page.locator('.container.mobile .mobile-navbar-home')).toHaveCount(0);
 		const look = () =>
 			statusBar.evaluate((el) => {
 				const style = getComputedStyle(el);
@@ -258,13 +260,12 @@ test.describe('모바일', () => {
 			'blur'
 		);
 
-		// 아래 막대: 뒤로 가기, 주소 알약, ••• 가 한 줄
-		const back = (await safari.locator('.mobile-navbar-home').boundingBox())!;
+		// 아래 막대: 주소 알약과 ••• 가 한 줄. 홈으로 가는 뒤로 가기는 없다 (홈 바가 한다)
+		await expect(safari.locator('.mobile-navbar-home')).toHaveCount(0);
 		const pill = (await safari.locator('.safari-phone-pill').boundingBox())!;
 		const more = (await safari.getByRole('button', { name: 'Safari 동작' }).boundingBox())!;
-		expect(back.y).toBe(pill.y);
 		expect(more.y).toBe(pill.y);
-		expect(back.x + back.width).toBeLessThan(pill.x);
+		expect(pill.x).toBe(16);
 		const address = safari.locator('.safari-phone-address');
 		await expect(address).toHaveText('www.hyeoniverse.com');
 
@@ -671,12 +672,12 @@ test.describe('모바일', () => {
 		const statusBar = page.getByRole('button', { name: '제어 센터 열기' });
 		await expect(statusBar.locator('time')).toHaveText(/^\d{1,2}:\d{2}$/);
 
-		await (await homeApp(page, 'Safari')).tap();
-		await expect(appWindow(page, 'safari')).toBeVisible();
+		await (await homeApp(page, '시스템 설정')).tap();
+		await expect(appWindow(page, 'settings')).toBeVisible();
 		await expect(statusBar).toBeVisible();
 		// 상태 표시줄은 앱 위에 겹치고, 뒤로 가기는 그 아래에 떠 있다
 		const barBox = (await statusBar.boundingBox())!;
-		const navBox = (await appWindow(page, 'safari').locator('.mobile-navbar-home').boundingBox())!;
+		const navBox = (await appWindow(page, 'settings').locator('.mobile-navbar-home').boundingBox())!;
 		expect(navBox.y).toBeGreaterThanOrEqual(barBox.y + barBox.height - 1);
 	});
 
