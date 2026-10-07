@@ -3,7 +3,8 @@ import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/AppStateContext';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
-import { APP_MANIFEST } from '@/apps/manifest';
+import { APP_MANIFEST, visibleTo } from '@/apps/manifest';
+import { useAdmin } from '@/shared/auth/adminStore';
 import { WINDOW_APPS } from '@/apps/registry';
 import { getPostRepository } from '@/apps/memo/repository';
 import { PROJECTS } from '@/shared/profile';
@@ -59,6 +60,7 @@ const dateCell = (item: FinderItem) => (item.kind === 'project' ? (item.period ?
 const Finder: React.FC = () => {
 	const { openApp, bringAppToFront } = useAppState();
 	const { launch } = useLaunchApp();
+	const admin = useAdmin().status === 'signed-in';
 	const { theme } = useSettings();
 	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
 	// 휴대폰에서는 홈 화면 이름처럼 '파일' (manifest.ts의 mobile)
@@ -82,13 +84,13 @@ const Finder: React.FC = () => {
 				docs: DOC_PATHS,
 				posts,
 				projects: PROJECTS.map(({ id, name, icon, period }) => ({ id, name, icon, period })),
-				apps: WINDOW_APPS.filter(({ name }) => name !== 'finder').map(({ name }) => ({
+				apps: WINDOW_APPS.filter(({ name }) => name !== 'finder' && visibleTo(admin)(name)).map(({ name }) => ({
 					app: name,
 					label: APP_MANIFEST[name].label,
 					icon: APP_MANIFEST[name].icon,
 				})),
 			}),
-		[posts]
+		[posts, admin]
 	);
 
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: [{ folder: 'docs' }], at: 0 });

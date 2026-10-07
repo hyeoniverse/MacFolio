@@ -40,6 +40,10 @@ export interface FakeApiState {
 	analytics: { visitId: string; events: Record<string, unknown>[] }[];
 	/** /analytics/today가 알려 줄 오늘 방문자 수 */
 	todayVisitors: number;
+	/** 관리자의 '활동 상태 보기'가 받는 요약과 실시간 (마지막으로 물은 기간도 남긴다) */
+	analyticsSummary: Record<string, unknown>;
+	analyticsLive: Record<string, unknown>[];
+	analyticsQueries: string[];
 	/** GitHub 앱: 프로필, README, 보일 저장소, GitHub에 있는 저장소 (listed: 고를 수 있는 목록에 나온다) */
 	github: {
 		followers: number;
@@ -285,6 +289,9 @@ export async function fakeApi(
 		stock: { providers: { unsplash: true, pexels: false }, searches: [], downloads: [] },
 		analytics: [],
 		todayVisitors: 12,
+		analyticsSummary: fakeAnalyticsSummary(),
+		analyticsLive: fakeAnalyticsLive(),
+		analyticsQueries: [],
 		github: {
 			followers: 42,
 			readme: FAKE_README,
@@ -357,11 +364,16 @@ export async function fakeApi(
 		// JSON을 보내는 PUT은 브라우저가 먼저 OPTIONS로 묻는다 (CORS)
 		if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors(origin) });
 
-		// 서버 상태 (메뉴 막대의 Wi-Fi 자리): ok, DB가 안 됨(503), 꺼짐(연결 실패)
 		// 트래픽 분석: sendBeacon은 text/plain(JSON 글자)으로 보낸다
 		if (path === '/analytics/events' && request.method() === 'POST') {
 			state.analytics.push(JSON.parse(request.postData() ?? '{}'));
 			return route.fulfill({ status: 204, headers: cors(origin) });
+		}
+		if (path === '/analytics/summary' || path === '/analytics/live') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			state.analyticsQueries.push(new URL(request.url()).search);
+			const json = path === '/analytics/summary' ? state.analyticsSummary : state.analyticsLive;
+			return route.fulfill({ status: 200, headers: cors(origin), json });
 		}
 		if (path === '/analytics/today')
 			return route.fulfill({
@@ -369,6 +381,7 @@ export async function fakeApi(
 				headers: cors(origin),
 				json: { day: '2026-10-07', visitors: state.todayVisitors },
 			});
+		// 서버 상태 (메뉴 막대의 Wi-Fi 자리): ok, DB가 안 됨(503), 꺼짐(연결 실패)
 		if (path === '/health') {
 			if (state.health === 'down') return route.abort('connectionrefused');
 			// 다른 주소만 허용한다고 답한다: 브라우저가 응답을 읽지 못하게 막고, 응답을 읽지 않는 no-cors 요청만 닿는다.
@@ -831,4 +844,70 @@ export async function fakeApi(
 		return route.fulfill({ status: 404 });
 	});
 	return state;
+}
+
+/** 활동 상태 보기의 요약 (7일). 숫자는 API(apps/api/src/analytics)의 응답 모양 그대로 */
+function fakeAnalyticsSummary() {
+	const days = ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07'];
+	const visits = [150, 180, 160, 210, 190, 170, 224];
+	return {
+		from: days[0],
+		to: days.at(-1),
+		days: days.map((day, index) => ({ day, visits: visits[index], visitors: Math.round(visits[index] * 0.7) })),
+		totals: { visits: 1284, visitors: 902, appOpens: 3410, avgDurationSec: 161 },
+		previous: { visits: 1146, visitors: 950, appOpens: 3410, avgDurationSec: 150 },
+		breakdown: {
+			referrer: [
+				{ key: 'github.com', value: 412 },
+				{ key: '', value: 301 },
+				{ key: 'www.linkedin.com', value: 188 },
+				{ key: 'www.google.com', value: 90 },
+			],
+			source: [{ key: 'resume', value: 40 }],
+			campaign: [{ key: 'kakao-2026', value: 25 }],
+			app: [
+				{ key: 'memo', value: 900 },
+				{ key: 'safari', value: 700 },
+				{ key: 'music', value: 120 },
+			],
+			item: [{ key: 'memo/cra-to-vite', value: 210 }],
+			link: [{ key: 'github.com/hyeoniverse', value: 77 }],
+			country: [
+				{ key: 'KR', value: 1000 },
+				{ key: 'US', value: 200 },
+			],
+			device: [
+				{ key: 'desktop', value: 800 },
+				{ key: 'mobile', value: 484 },
+			],
+			browser: [{ key: 'Chrome', value: 900 }],
+			os: [{ key: 'macOS', value: 700 }],
+			language: [{ key: 'ko-KR', value: 1100 }],
+		},
+	};
+}
+
+/** 활동 상태 보기의 실시간: 방문 하나와 그 흐름 */
+function fakeAnalyticsLive() {
+	return [
+		{
+			visitId: 'v-1',
+			startedAt: '2026-10-07T03:00:00.000Z',
+			lastAt: '2026-10-07T03:02:00.000Z',
+			visitor: 'a1b2',
+			country: 'KR',
+			device: 'desktop',
+			browser: 'Chrome',
+			os: 'macOS',
+			referrer: 'github.com',
+			path: '/',
+			ip: '203.0.113.x',
+			events: [
+				{ type: 'visit', app: null, item: null, at: '2026-10-07T03:00:00.000Z' },
+				{ type: 'app', app: 'memo', item: null, at: '2026-10-07T03:00:10.000Z' },
+				{ type: 'item', app: 'memo', item: 'cra-to-vite', at: '2026-10-07T03:01:00.000Z' },
+				{ type: 'link', app: null, item: 'github.com/hyeoniverse', at: '2026-10-07T03:02:00.000Z' },
+			],
+		},
+	];
 }

@@ -1,5 +1,6 @@
 import '@/desktop/mobile/MobileHome.css';
-import { APP_MANIFEST, APP_NAMES, type AppName } from '@/apps/manifest';
+import { APP_MANIFEST, APP_NAMES, visibleTo, type AppName } from '@/apps/manifest';
+import { useAdmin } from '@/shared/auth/adminStore';
 import { WINDOW_APPS } from '@/apps/registry';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
@@ -32,6 +33,8 @@ const AppIcon = ({ name, showLabel, onLaunch }: { name: AppName; showLabel: bool
  * 앱을 누르면 화면을 가득 채워 열리고(AppWindow 모바일 모드), 홈 인디케이터로 돌아온다.
  */
 const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
+	// 관리자 전용 앱(활동 상태 보기)은 관리자에게만
+	const admin = useAdmin().status === 'signed-in';
 	return (
 		<div className="mobile-home">
 			<section className="mobile-widget" aria-label="소개">
@@ -46,7 +49,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			<MusicWidget className="mobile-music-widget" onOpen={() => launch('music')} />
 
 			<nav className="mobile-grid" aria-label="앱">
-				{GRID_APPS.map((name) => (
+				{GRID_APPS.filter(visibleTo(admin)).map((name) => (
 					<AppIcon key={name} name={name} showLabel onLaunch={() => launch(name)} />
 				))}
 			</nav>
