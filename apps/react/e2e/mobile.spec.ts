@@ -219,6 +219,29 @@ test.describe('모바일', () => {
 			expect((await element.boundingBox())!.y).toBeGreaterThanOrEqual(bar.y + bar.height);
 	});
 
+	test('웹 페이지 앱은 페이지를 상태 표시줄 밑까지 그리고, 상태 표시줄은 페이지가 비치는 흐린 유리다', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		const statusBar = page.locator('.mobile-statusbar');
+		await (await homeApp(page, 'WTD')).tap();
+		const frame = page.locator('.container.mobile .web-frame iframe');
+		await expect(frame).toBeVisible();
+		expect((await frame.boundingBox())!.y).toBe(0);
+		const glass = await statusBar.evaluate((el) => {
+			const style = getComputedStyle(el);
+			return { background: style.backgroundColor, blur: style.backdropFilter };
+		});
+		expect(glass.background).not.toBe('rgba(0, 0, 0, 0)');
+		expect(glass.blur).toContain('blur');
+
+		// 다른 앱으로 가면 다시 투명하다
+		await page.locator('.container.mobile .home-indicator').tap();
+		await (await homeApp(page, '메모')).tap();
+		await expect(appWindow(page, 'memo')).toBeVisible();
+		expect(await statusBar.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+	});
+
 	test('설정의 계정은 다른 설정 화면처럼 폭을 꽉 채운 카드다', async ({ page }) => {
 		await enterHome(page);
 		await (await homeApp(page, '시스템 설정')).tap();
