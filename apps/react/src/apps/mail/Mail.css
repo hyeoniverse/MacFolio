@@ -597,7 +597,7 @@
 /* 읽기·쓰기: 떠 있는 뒤로 가기 아래부터 */
 @container (max-width: 560px) {
 	.container.mobile .mail-reader {
-		padding-top: 64px;
+		padding-top: calc(var(--phone-top) + 58px);
 	}
 }
 

@@ -431,7 +431,7 @@
 
 /* 휴대폰: 제목 막대가 없다. 첫 줄은 왼쪽 위에 떠 있는 뒤로 가기(16~60px) 옆에서 시작하고, 그 단추와 높이를 맞춘다 (Window.css) */
 .container.mobile .activity-toolbar {
-	padding: 11px 16px 10px 64px;
+	padding: calc(11px + var(--phone-status)) 16px 10px 64px;
 }
 
 .container.mobile .activity-tabs button {

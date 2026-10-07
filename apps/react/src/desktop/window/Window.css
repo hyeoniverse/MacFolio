@@ -242,8 +242,7 @@
 	border: none;
 	border-radius: 0;
 	box-shadow: none;
-	/* 위쪽은 모바일 상태 표시줄 자리 (desktop/mobile/MobileShell.css) */
-	padding-top: var(--mobile-statusbar-height);
+	/* 상태 표시줄은 앱 위에 투명하게 겹친다: 앱은 화면 맨 위부터 그리고, 앱의 첫 줄과 스크롤 내용이 --phone-top으로 그 높이를 비운다 */
 	overflow: hidden;
 }
 
@@ -264,7 +263,7 @@
 .mobile-navbar {
 	display: flex;
 	position: absolute;
-	top: var(--mobile-statusbar-height);
+	top: 0;
 	left: 0;
 	z-index: 6;
 	padding: var(--phone-top, 6px) 16px;
@@ -326,10 +325,13 @@
 }
 
 /* 큰 제목 (iOS의 Large Title): 떠 있는 뒤로 가기와 같은 줄, 그 오른쪽에 둔다.
-   화면은 위 여백을 --phone-top(뒤로 가기의 위 여백)만 두고, 제목 줄의 높이를 뒤로 가기(44px)에 맞춘다.
+   화면은 위 여백을 --phone-top(상태 표시줄 + 뒤로 가기의 위 여백)만 두고, 제목 줄의 높이를 뒤로 가기(44px)에 맞춘다.
+   상태 표시줄은 겹쳐 그리므로(투명), --phone-top을 스크롤 내용의 위 여백으로 쓰면 내용이 상태 표시줄 밑으로 스크롤된다.
    뒤로 가기는 왼쪽 16~60px, 화면의 옆 여백이 16px이라 제목은 그 안에서 64px 띄운다 (단추와 20px 사이) */
 .container.mobile[data-app] {
-	--phone-top: 6px;
+	/* 상태 표시줄 높이 (앱 위에 겹친다). 첫 줄을 이만큼 내린다 */
+	--phone-status: var(--mobile-statusbar-height);
+	--phone-top: calc(var(--phone-status) + 6px);
 	/* 홈 바(떠 있다)의 높이: 아래에 떠 있는 단추·입력 칸은 이만큼 올려 홈 바와 겹치지 않게 한다 */
 	--phone-bottom-inset: calc(22px + env(safe-area-inset-bottom));
 }

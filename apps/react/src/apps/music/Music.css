@@ -887,7 +887,7 @@
 
 	/* 곡 목록: 뒤로 가기 아래부터 큰 표지, [셔플][재생] */
 	.container.mobile .music-main {
-		padding-top: 60px;
+		padding-top: calc(var(--phone-top) + 54px);
 	}
 
 	.container.mobile .music-back {
