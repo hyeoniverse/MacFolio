@@ -199,6 +199,46 @@ test.describe('모바일', () => {
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
 	});
 
+	test('상태 표시줄은 앱 위에 투명하게 겹친다: 앱은 화면 맨 위부터 그리고, 첫 줄과 떠 있는 단추는 그 아래에서', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		await (await homeApp(page, '메모')).tap();
+		const memo = appWindow(page, 'memo');
+		const statusBar = page.locator('.mobile-statusbar');
+		const bar = (await statusBar.boundingBox())!;
+		expect(await statusBar.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+		// 앱 내용은 상태 표시줄 밑(화면 맨 위)부터
+		expect((await memo.locator('.content').boundingBox())!.y).toBe(0);
+		// 뒤로 가기, 오른쪽 위 단추, 큰 제목은 상태 표시줄 아래
+		for (const element of [
+			memo.locator('.mobile-navbar-home'),
+			memo.locator('.memo-phone-list-top'),
+			memo.getByRole('heading', { name: '모든 글' }),
+		])
+			expect((await element.boundingBox())!.y).toBeGreaterThanOrEqual(bar.y + bar.height);
+	});
+
+	test('설정의 계정은 다른 설정 화면처럼 폭을 꽉 채운 카드다', async ({ page }) => {
+		await enterHome(page);
+		await (await homeApp(page, '시스템 설정')).tap();
+		const settings = appWindow(page, 'settings');
+		await settings.getByRole('button', { name: '계정' }).tap();
+		const account = settings.getByRole('region', { name: '관리자 계정' });
+		const width = (await account.boundingBox())!.width;
+		for (const part of ['.admin-account-head', '.admin-account-details', '.admin-account-actions .ui-button']) {
+			const box = (await account.locator(part).first().boundingBox())!;
+			expect(box.width, part).toBeCloseTo(width, 0);
+		}
+		const cardColor = await account
+			.locator('.admin-account-details')
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(await account.locator('.admin-account-head').evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
+			cardColor
+		);
+		expect(cardColor).not.toBe('rgba(0, 0, 0, 0)');
+	});
+
 	test('Esc는 떠 있는 뒤로 가기와 같다: 한 화면씩 뒤로, 첫 화면에서는 홈. 입력 칸과 제어 센터의 Esc는 그것만 닫는다', async ({
 		page,
 	}) => {
@@ -538,9 +578,9 @@ test.describe('모바일', () => {
 		await (await homeApp(page, 'Safari')).tap();
 		await expect(appWindow(page, 'safari')).toBeVisible();
 		await expect(statusBar).toBeVisible();
-		// 앱 내용은 상태 표시줄 아래에서 시작한다
+		// 상태 표시줄은 앱 위에 겹치고, 뒤로 가기는 그 아래에 떠 있다
 		const barBox = (await statusBar.boundingBox())!;
-		const navBox = (await appWindow(page, 'safari').locator('.mobile-navbar').boundingBox())!;
+		const navBox = (await appWindow(page, 'safari').locator('.mobile-navbar-home').boundingBox())!;
 		expect(navBox.y).toBeGreaterThanOrEqual(barBox.y + barBox.height - 1);
 	});
 
