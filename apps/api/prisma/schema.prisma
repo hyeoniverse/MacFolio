@@ -250,3 +250,32 @@ model PhotoCaption {
   /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
   updatedBy String
 }
+
+/// 메일 앱으로 받은 연락 메일 (#25). 보낸 브라우저(방문자 쿠키의 HMAC)만 자기 메일을 보고, 관리자는 모두 보고 답장한다.
+/// 1년이 지나면 지운다
+model ContactMail {
+  id          String         @id @default(cuid())
+  /// 보낸 브라우저의 방문자 토큰 HMAC (visitors/visitor.ts). 이 값이 같은 요청에만 이 메일을 보여 준다
+  visitorHash String
+  name        String
+  /// 답장받을 주소 (메일의 Reply-To, 관리자 답장의 받는 사람)
+  email       String
+  subject     String
+  body        String
+  createdAt   DateTime       @default(now())
+  replies     ContactReply[]
+
+  @@index([visitorHash, createdAt])
+  @@index([createdAt])
+}
+
+/// 관리자가 메일 앱에서 쓴 답장. 방문자의 메일 주소로 보내고, 방문자의 보낸 편지함에서도 그 메일 아래에 보인다
+model ContactReply {
+  id        String      @id @default(cuid())
+  mailId    String
+  mail      ContactMail @relation(fields: [mailId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime    @default(now())
+
+  @@index([mailId])
+}
