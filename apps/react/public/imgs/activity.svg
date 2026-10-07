@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+	<!-- 활동 상태 보기 앱: 어두운 화면에 초록 선 그래프 (macOS 활동 상태 보기처럼) -->
+	<defs>
+		<linearGradient id="frame" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#f4f5f7"/>
+			<stop offset="1" stop-color="#c9ccd2"/>
+		</linearGradient>
+		<linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#2b2f36"/>
+			<stop offset="1" stop-color="#111317"/>
+		</linearGradient>
+		<linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#34c759" stop-opacity="0.45"/>
+			<stop offset="1" stop-color="#34c759" stop-opacity="0"/>
+		</linearGradient>
+	</defs>
+	<!-- 칸을 꽉 채운다 (둥근 모서리는 Dock·Launchpad가 깎는다, 다른 아이콘과 같게) -->
+	<rect width="1024" height="1024" fill="url(#frame)"/>
+	<rect x="132" y="172" width="760" height="680" rx="56" fill="url(#screen)"/>
+	<!-- 눈금 -->
+	<g stroke="#ffffff" stroke-opacity="0.08" stroke-width="6">
+		<path d="M132 342h760M132 512h760M132 682h760"/>
+		<path d="M322 172v680M512 172v680M702 172v680"/>
+	</g>
+	<!-- 그래프: 아래를 옅게 채운 선 -->
+	<path d="M172 640 L292 600 L372 660 L452 470 L532 540 L612 360 L692 430 L772 300 L852 340 L852 812 L172 812 Z" fill="url(#fill)"/>
+	<path d="M172 640 L292 600 L372 660 L452 470 L532 540 L612 360 L692 430 L772 300 L852 340" fill="none" stroke="#34c759" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
