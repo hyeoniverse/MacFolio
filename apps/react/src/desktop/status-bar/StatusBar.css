@@ -80,6 +80,9 @@
 
 .macos-statusbar .menubar-title {
 	flex-shrink: 0;
+	/* 글자를 높이의 가운데에 (요소 종류와 상관없이) */
+	display: inline-flex;
+	align-items: center;
 	height: 1.25rem;
 	padding: 0 0.5rem;
 	border: none;
