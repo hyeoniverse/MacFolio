@@ -275,6 +275,91 @@
 	font-size: 15px;
 }
 
+/* 받은 메일 아래의 주인 답장 (보낸 편지함, 관리자의 받은 편지함) */
+.mail-thread {
+	margin: 0 0 20px;
+	padding: 0;
+	list-style: none;
+}
+
+.mail-thread-reply {
+	padding: 12px 14px 2px;
+	border-left: 3px solid var(--mail-accent);
+	border-radius: 4px 10px 10px 4px;
+	background-color: var(--mail-hover-bg);
+}
+
+.mail-thread-reply + .mail-thread-reply {
+	margin-top: 10px;
+}
+
+.mail-thread-reply header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.mail-thread-reply time {
+	margin-left: auto;
+	color: var(--mail-muted);
+	font-size: 12px;
+}
+
+.mail-replied {
+	margin-left: 6px;
+	color: var(--mail-muted);
+	font-size: 11px;
+	font-weight: 400;
+}
+
+/* 고른 메일(강조색 바탕) 안에서는 글자색을 따른다 */
+.mail-item.selected .mail-replied {
+	color: inherit;
+	opacity: 0.85;
+}
+
+/* 관리자 답장 쓰기 */
+.mail-reply-box {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 8px;
+	padding-top: 12px;
+	border-top: 1px solid var(--mail-separator);
+}
+
+.mail-reply-box p {
+	margin: 0;
+	color: var(--mail-muted);
+	font-size: 12px;
+}
+
+.mail-reply-box textarea {
+	width: 100%;
+	min-height: 120px;
+	padding: 10px 12px;
+	border: 1px solid var(--mail-separator);
+	border-radius: 10px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-size: 14px;
+	line-height: 1.6;
+	resize: vertical;
+}
+
+.mail-list-empty {
+	padding: 24px 16px;
+	color: var(--mail-muted);
+	text-align: center;
+}
+
+/* 사서함 고르기: 사이드바가 숨는 좁은 창·휴대폰에서만 */
+.mail-mailbox-tabs {
+	display: none;
+}
+
 /* 글자 단추 (shared/ui/button/Button): 떠 있는 그림자, 창 끌기 영역(위쪽 52px)보다 위 */
 .mail .ui-button {
 	position: relative;
@@ -433,6 +518,29 @@
 
 	.mail-sidebar {
 		display: none;
+	}
+
+	.mail-mailbox-tabs {
+		display: flex;
+		gap: 4px;
+		margin: 0 12px 8px;
+		padding: 2px;
+		border-radius: 9px;
+		background-color: var(--mail-hover-bg);
+	}
+
+	.mail-mailbox-tabs button {
+		flex: 1;
+		padding: 4px 8px;
+		border: none;
+		border-radius: 7px;
+		background: none;
+	}
+
+	.mail-mailbox-tabs button[aria-selected='true'] {
+		background-color: var(--mail-panel-bg);
+		box-shadow: var(--mail-panel-shadow);
+		font-weight: 600;
 	}
 
 	/* 신호등 버튼과 겹치지 않도록 목록 위를 비운다 */
