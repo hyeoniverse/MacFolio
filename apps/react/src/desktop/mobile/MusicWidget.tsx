@@ -48,7 +48,7 @@ const MusicWidget = ({ onOpen, className = '' }: Props) => {
 						<i className="fas fa-backward" aria-hidden="true"></i>
 					</button>
 					<button type="button" aria-label={isPlaying ? '일시 정지' : '재생'} onClick={togglePlayPause}>
-						<i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
+						<i className={`fas fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
 					</button>
 					<button type="button" aria-label="다음 곡" onClick={next}>
 						<i className="fas fa-forward" aria-hidden="true"></i>

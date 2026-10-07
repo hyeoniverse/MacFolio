@@ -49,7 +49,7 @@ const StatusBar: React.FC = () => {
 						aria-label={isPlaying ? '일시정지' : '재생'}
 						onClick={togglePlayPause}
 					>
-						<i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true" />
+						<i className={`fas fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true" />
 					</button>
 					<button type="button" className="statusbar-icon-button" aria-label="다음 곡" onClick={playNextTrack}>
 						<i className="fas fa-fast-forward" aria-hidden="true" />
