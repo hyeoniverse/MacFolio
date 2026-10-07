@@ -141,7 +141,8 @@ const SafariMobile: React.FC<Props> = ({
 
 	return (
 		<div className="safari-phone">
-			<MobileNavigation placement="bottom" />
+			{/* 홈으로는 홈 바가 간다: 아래 막대 왼쪽에 단추를 따로 두지 않는다 */}
+			<MobileNavigation placement="bottom" hideHome />
 			{page}
 			<div className="safari-phone-bar">
 				<div

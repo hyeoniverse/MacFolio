@@ -71,7 +71,7 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 	return (
 		<div className={`web-frame ${tone}`}>
 			{/* 휴대폰: 페이지가 화면을 다 쓰고, 뒤로 가기는 왼쪽 아래에 떠 있다 (페이지의 왼쪽 위 메뉴를 가리지 않게) */}
-			<MobileNavigation placement="bottom" />
+			<MobileNavigation placement="bottom" hideHome />
 			<iframe ref={frame} src={src} title={title} allow={allow} allowFullScreen onLoad={() => setLoaded(true)} />
 			{!loaded && (
 				<div className="web-frame-loading" role="status">

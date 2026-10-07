@@ -13,6 +13,11 @@ export interface MobileNav {
 	 * 웹 페이지를 통째로 띄우는 앱(프로젝트 데모, API 문서)은 페이지의 왼쪽 위 메뉴를 가리지 않게 아래에 둔다 (iOS Safari처럼)
 	 */
 	placement?: 'top' | 'bottom';
+	/**
+	 * 홈으로 가는 단추는 감춘다 (홈 바가 같은 일을 한다). 아래 막대가 있는 앱(Safari, 웹 페이지 앱)처럼 단추가 내용을 가리기만 할 때.
+	 * 앱이 정한 뒤로 가기(onBack)는 그대로 보인다
+	 */
+	hideHome?: boolean;
 }
 
 /** AppWindow(모바일)가 제공한다. 데스크톱에서는 null */
