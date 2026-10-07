@@ -23,6 +23,7 @@ const ProjectApp: React.FC<ProjectAppProps> = ({ id }) => {
 				appName={id as AppName}
 				icon={project.icon}
 				tone={project.app.tone ?? 'light'}
+				barColor={project.app.barColor}
 				allow="autoplay; fullscreen; gamepad; clipboard-write"
 			/>
 		</AppWindow>

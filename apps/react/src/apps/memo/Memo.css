@@ -3282,14 +3282,20 @@
 		background-color: var(--phone-page-bg);
 	}
 
-	/* 큰 제목: 폴더 화면은 '폴더', 목록은 폴더 이름과 메모 수 */
+	/* 큰 제목: 폴더 화면은 '폴더', 목록은 폴더 이름과 메모 수.
+	   제목 줄은 떠 있는 뒤로 가기와 같은 줄(높이 44px)이고, 그 오른쪽(왼쪽 16 + 44 + 20)에서 시작한다.
+	   오른쪽은 떠 있는 단추(정렬·••• 또는 새로운 폴더) 자리를 비운다 */
 	.container.mobile .memo-phone-title {
 		display: block;
 		margin: 0 4px 16px;
+		padding: 0 106px 0 60px;
+		overflow: hidden;
 		color: var(--memo-text);
 		font-size: 30px;
 		font-weight: 700;
-		line-height: 1.2;
+		line-height: 44px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.container.mobile .memo-phone-title h2 {
@@ -3300,7 +3306,8 @@
 	}
 
 	.container.mobile .memo-phone-title p {
-		margin-top: 2px;
+		margin-top: -2px;
+		line-height: 1.3;
 		color: var(--memo-muted);
 		font-size: 15px;
 		font-weight: 400;
@@ -3308,7 +3315,7 @@
 
 	/* ── 폴더 화면 ── */
 	.container.mobile .memo-folder-scroll {
-		padding: calc(var(--phone-top) + 54px) 16px 96px;
+		padding: var(--phone-top) 16px 96px;
 	}
 
 	/* 새로운 폴더 (관리자): 오른쪽 위의 동그란 단추 */
@@ -3449,7 +3456,7 @@
 
 	/* ── 목록 화면 ── */
 	.container.mobile .memo-list .memo-scroll {
-		padding: calc(var(--phone-top) + 54px) 16px 96px;
+		padding: var(--phone-top) 16px 96px;
 	}
 
 	.container.mobile .memo-list .memo-section-title {
