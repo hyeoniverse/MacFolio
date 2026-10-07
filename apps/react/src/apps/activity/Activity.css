@@ -1,0 +1,430 @@
+/* 활동 상태 보기 (#102). 색은 테마 변수만 쓴다 (다크 모드는 styles/theme.css가 바꾼다).
+   창 폭에 따라(휴대폰, 좁힌 창) 표가 한 줄로 쌓이게 컨테이너 질의를 쓴다 */
+.activity {
+	--activity-green: #34c759;
+	--activity-red: #ff3b30;
+	container-type: inline-size;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+	background: var(--color-window-bg);
+	color: var(--color-text);
+	font-size: 13px;
+	/* 창은 글을 가운데로 둔다: 표와 목록은 왼쪽부터 */
+	text-align: left;
+}
+
+.activity-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 10px 16px;
+	border-bottom: 1px solid var(--color-divider);
+	background: var(--color-titlebar-bg);
+}
+
+/* macOS의 분할 단추 */
+.activity-tabs {
+	display: flex;
+	overflow-x: auto;
+	border: 1px solid var(--color-window-border);
+	border-radius: 7px;
+	background: var(--color-control-bg);
+	scrollbar-width: none;
+}
+
+.activity-tabs button {
+	flex: none;
+	padding: 4px 14px;
+	border: none;
+	border-right: 1px solid var(--color-divider);
+	background: transparent;
+	color: var(--color-text);
+	font: inherit;
+	cursor: pointer;
+}
+
+.activity-tabs button:last-child {
+	border-right: none;
+}
+
+.activity-tabs button[aria-selected='true'] {
+	background: var(--color-selected-bg);
+	color: var(--color-text-strong);
+	font-weight: 600;
+}
+
+.activity-period {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--color-text-secondary);
+}
+
+.activity-period select {
+	padding: 3px 6px;
+	border: 1px solid var(--color-window-border);
+	border-radius: 6px;
+	background: var(--color-control-bg);
+	color: var(--color-text);
+	font: inherit;
+}
+
+.activity-body {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	padding: 16px;
+}
+
+.activity-empty {
+	margin: 40px 0;
+	color: var(--color-text-secondary);
+	text-align: center;
+}
+
+.activity-empty.error {
+	color: var(--activity-red);
+}
+
+/* 개요의 숫자 칸 */
+.activity-stats {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 10px;
+	margin-bottom: 14px;
+}
+
+.activity-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: 10px 12px;
+	border: 1px solid var(--color-divider);
+	border-radius: 10px;
+	background: var(--color-sidebar-bg);
+}
+
+.activity-stat .label {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.activity-stat strong {
+	color: var(--color-text-strong);
+	font-size: 22px;
+	font-variant-numeric: tabular-nums;
+}
+
+.activity-stat .change {
+	font-size: 12px;
+	color: var(--color-text-secondary);
+}
+
+.activity-stat .change.up {
+	color: var(--activity-green);
+}
+
+.activity-stat .change.down {
+	color: var(--activity-red);
+}
+
+/* 그래프 */
+.activity-chart {
+	margin: 0 0 16px;
+	padding: 10px 12px 6px;
+	border: 1px solid var(--color-divider);
+	border-radius: 10px;
+}
+
+.activity-chart svg {
+	display: block;
+	width: 100%;
+	height: 140px;
+}
+
+.activity-chart .grid {
+	stroke: var(--color-divider);
+	stroke-width: 1;
+	vector-effect: non-scaling-stroke;
+}
+
+.activity-chart .area {
+	fill: var(--activity-green);
+	opacity: 0.15;
+}
+
+.activity-chart path.visits,
+.activity-chart path.visitors {
+	fill: none;
+	stroke-width: 2;
+	stroke-linejoin: round;
+	vector-effect: non-scaling-stroke;
+}
+
+.activity-chart path.visits {
+	stroke: var(--activity-green);
+}
+
+.activity-chart path.visitors {
+	stroke: var(--color-accent);
+	stroke-dasharray: 4 3;
+}
+
+.activity-chart figcaption {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 4px;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+}
+
+.activity-chart .legend i {
+	display: inline-block;
+	width: 12px;
+	height: 0;
+	margin: 0 2px 3px 6px;
+	border-top: 2px solid var(--activity-green);
+}
+
+.activity-chart .legend i.visitors {
+	border-top: 2px dashed var(--color-accent);
+}
+
+/* 표 */
+.activity-columns {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.activity-table h3,
+.activity-live h3 {
+	margin: 0 0 6px;
+	font-size: 13px;
+	color: var(--color-text-strong);
+}
+
+.activity-table table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.activity-table th {
+	padding: 0;
+	border-bottom: 1px solid var(--color-divider);
+	color: var(--color-text-secondary);
+	font-weight: 500;
+	text-align: left;
+}
+
+.activity-table th button {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	width: 100%;
+	padding: 4px 6px;
+	border: none;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+.activity-table th.value button {
+	justify-content: flex-end;
+}
+
+.activity-table th.share {
+	width: 34%;
+	padding: 4px 6px;
+}
+
+.activity-table th.value {
+	width: 22%;
+}
+
+.activity-table th i {
+	font-size: 9px;
+}
+
+.activity-table td {
+	padding: 4px 6px;
+	border-bottom: 1px solid var(--color-divider);
+	font-variant-numeric: tabular-nums;
+}
+
+.activity-table tbody tr:nth-child(even) {
+	background: var(--color-sidebar-bg);
+}
+
+.activity-table td.name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.activity-table td.value {
+	text-align: right;
+}
+
+.activity-table td.share {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.activity-table .share-cell {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.activity-table .bar {
+	flex: 1;
+	height: 6px;
+	border-radius: 3px;
+	background: var(--color-selected-bg);
+	overflow: hidden;
+}
+
+.activity-table .bar span {
+	display: block;
+	height: 100%;
+	background: var(--activity-green);
+}
+
+.activity-table .activity-empty {
+	margin: 12px 0;
+	text-align: left;
+}
+
+/* 실시간 */
+.activity-live ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.activity-live li > button {
+	display: grid;
+	grid-template-columns: 70px 1.2fr 0.7fr 0.7fr 1fr 1fr 32px;
+	gap: 8px;
+	width: 100%;
+	padding: 6px 8px;
+	border: none;
+	border-bottom: 1px solid var(--color-divider);
+	background: transparent;
+	color: var(--color-text);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.activity-live li > button > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.activity-live li.open > button,
+.activity-live li > button:hover {
+	background: var(--color-selected-bg);
+}
+
+.activity-live .when,
+.activity-live .muted {
+	color: var(--color-text-secondary);
+	font-variant-numeric: tabular-nums;
+}
+
+.activity-live .count {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.activity-live ol {
+	margin: 0;
+	padding: 6px 8px 10px 86px;
+	border-bottom: 1px solid var(--color-divider);
+}
+
+.activity-live ol li {
+	padding: 2px 0;
+}
+
+/* 방문자가 열었을 때 */
+.activity-locked {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	max-width: 360px;
+	margin: 60px auto;
+	text-align: center;
+}
+
+.activity-locked i {
+	font-size: 34px;
+	color: var(--color-text-secondary);
+}
+
+.activity-locked h2 {
+	margin: 0;
+	font-size: 17px;
+	color: var(--color-text-strong);
+}
+
+.activity-locked p {
+	margin: 0;
+	color: var(--color-text-secondary);
+	line-height: 1.5;
+}
+
+.activity-locked button {
+	margin-top: 6px;
+	padding: 5px 14px;
+	border: none;
+	border-radius: 7px;
+	background: var(--color-accent);
+	color: var(--color-on-accent);
+	font: inherit;
+	cursor: pointer;
+}
+
+/* 좁은 창·휴대폰: 숫자 칸은 두 줄, 표는 한 줄씩, 실시간은 주요 칸만 */
+@container (max-width: 640px) {
+	.activity-toolbar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.activity-tabs button {
+		flex: 1;
+		padding: 5px 8px;
+	}
+
+	.activity-stats {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.activity-columns {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.activity-live li > button {
+		grid-template-columns: 64px 1fr 1fr 28px;
+	}
+
+	.activity-live li > button > span:nth-child(3),
+	.activity-live li > button > span:nth-child(4),
+	.activity-live li > button > span:nth-child(6) {
+		display: none;
+	}
+
+	.activity-live ol {
+		padding-left: 24px;
+	}
+}
