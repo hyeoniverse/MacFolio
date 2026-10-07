@@ -19,6 +19,7 @@ import { TranslateModule } from './translate/translate.module.js';
 import { SummaryModule } from './summary/summary.module.js';
 import { CoverModule } from './cover/cover.module.js';
 import { AnalyticsModule } from './analytics/analytics.module.js';
+import { ContactModule } from './contact/contact.module.js';
 
 @Module({
 	imports: [
@@ -48,6 +49,7 @@ import { AnalyticsModule } from './analytics/analytics.module.js';
 		SummaryModule,
 		CoverModule,
 		AnalyticsModule,
+		ContactModule,
 	],
 })
 export class AppModule {}

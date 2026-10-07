@@ -214,6 +214,9 @@ chmod 600 .env api.env
 | `TRANSLATE_PER_IP_PER_DAY`, `TRANSLATE_TOTAL_PER_DAY` |        | 번역 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                                                                                                   |
 | `SUMMARY_PER_IP_PER_DAY`, `SUMMARY_TOTAL_PER_DAY`     |        | 요약 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                                                                                                   |
 | `COVER_PER_IP_PER_DAY`, `COVER_TOTAL_PER_DAY`         |        | 커버 하루 상한. 기본 IP마다 1번, 사이트 전체 5번 (무료 한도가 작다)                                                                                                                                 |
+| `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`        | 메일   | 메일 앱의 연락 메일 (#25). 셋이 다 있어야 서버가 보낸다. 없으면 사이트가 방문자의 메일 앱을 연다. 설정은 [연락 메일](#연락-메일-resend-turnstile)                                                   |
+| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`          |        | 연락 메일의 사람 확인 (Cloudflare Turnstile). 비우면 확인하지 않는다                                                                                                                                |
+| `CONTACT_PER_IP_PER_DAY`, `CONTACT_TOTAL_PER_DAY`     |        | 연락 메일 하루 상한. 기본 IP마다 5통, 사이트 전체 50통                                                                                                                                              |
 
 데모 상한은 데모마다 따로, 서버 메모리로 센다 (다시 띄우면 처음부터). 공급자가 모두 실패하면 쓴 횟수를 돌려준다. 커버는 두 공급자를 이어 시도해도 Cloudflare Tunnel의 100초 안에 끝나게 각각 45초에서 끊는다.
 
@@ -595,6 +598,43 @@ R2에는 청구 전에 멈추는 설정이 없다 (스크립트의 `MAX_REMOTE_G
 # R2에 있는 백업도 된다 (받아 와서 되살린다)
 ~/macfolio/ops/restore.sh r2:macfolio-backups/macfolio-2026-10-05T033000Z.sql.gz
 ```
+
+### 연락 메일 (Resend, Turnstile)
+
+메일 앱에서 방문자가 쓴 메일을 서버가 보낸다 (#25). 받는 사람은 늘 사이트 주인이고, 보낸 사람의 주소는 Reply-To에 들어가서 받은 메일에서 바로 답장한다. 설정이 없으면 사이트는 예전처럼 방문자의 메일 앱을 연다. 그래서 아래를 하기 전에 배포해도 된다.
+
+**1. Resend (보내기)** — 무료 요금제: 월 3,000통, 하루 100통
+
+1. [resend.com](https://resend.com)에 가입하고 **Domains → Add Domain**에서 `hyeoniverse.com`을 더한다
+2. 화면에 나오는 DNS 레코드(MX·TXT)를 Cloudflare의 `hyeoniverse.com` DNS에 그대로 더한다. 프록시는 끈다(DNS only, 회색 구름)
+3. Resend에서 **Verify**를 눌러 Verified가 되면, **API Keys → Create API Key**(Sending access, 도메인 `hyeoniverse.com`)로 키를 만든다
+
+**2. Turnstile (사람 확인, 선택)** — 무료
+
+1. Cloudflare 대시보드 → **Turnstile → Add widget**
+2. Hostnames에 `macfolio.hyeoniverse.com`을 넣는다. PR 미리보기에서도 쓰려면 `hyeoniverse.workers.dev`도, 로컬에서 쓰려면 `localhost`도 넣는다
+3. Widget mode는 **Managed**. 만들면 사이트 키와 비밀 키가 나온다
+
+**3. 서버의 `~/deploy/api.env`에 넣고 다시 띄우기**
+
+```bash
+nano ~/deploy/api.env
+```
+
+```
+RESEND_API_KEY=re_로 시작하는 키
+CONTACT_TO=hyeoniverse.dev@gmail.com
+CONTACT_FROM=MacFolio <contact@hyeoniverse.com>
+TURNSTILE_SITE_KEY=사이트 키
+TURNSTILE_SECRET_KEY=비밀 키
+```
+
+```bash
+cd ~/deploy && docker compose up -d api
+curl -s https://macfolio-api.hyeoniverse.com/contact; echo   # {"enabled":true,"turnstileSiteKey":"…"}
+```
+
+사이트의 메일 앱에서 보내 보고, `CONTACT_TO`로 메일이 오는지, 답장하면 보낸 사람 주소로 가는지 본다.
 
 ### 비밀 값 바꾸기
 
