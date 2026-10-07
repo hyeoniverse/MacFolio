@@ -12,6 +12,7 @@ import { useSettings } from '@/shared/settings/settingsStore';
 import { resolveTheme } from '@/shared/settings/settings';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import {
 	buildLocations,
 	countLabel,
@@ -286,6 +287,8 @@ const Finder: React.FC = () => {
 				</nav>
 
 				<div className="finder-main">
+					{/* 휴대폰: 떠 있는 뒤로 가기가 Finder의 뒤로 (iOS 파일처럼 단추 하나). 처음 화면이면 홈으로 */}
+					<MobileNavigation {...(history.at > 0 ? { backLabel: '뒤로', onBack: () => step(-1) } : {})} />
 					<div className="finder-toolbar">
 						<div className="finder-nav">
 							<IconButton

@@ -624,3 +624,14 @@
 .container.mobile .finder-toolbar {
 	padding-left: 12px;
 }
+
+/* 휴대폰: 제목 막대가 없다. 첫 줄은 왼쪽 위에 떠 있는 뒤로 가기(16~60px) 옆에서 시작하고, 그 단추와 높이를 맞춘다 (Window.css) */
+.container.mobile .finder-toolbar {
+	height: 56px;
+	padding-left: 64px;
+}
+
+/* 휴대폰: 뒤로·앞으로는 떠 있는 뒤로 가기 하나로 (위의 MobileNavigation) */
+.container.mobile .finder-nav {
+	display: none;
+}

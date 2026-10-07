@@ -1011,3 +1011,15 @@
 		border-radius: 50%;
 	}
 }
+
+/* 휴대폰: 홈 바가 내용 위에 떠 있어, 아래에 떠 있는 것은 홈 바 높이(--phone-bottom-inset)만큼 올린다 */
+.container.mobile .music-player-bar {
+	margin-bottom: calc(8px + var(--phone-bottom-inset));
+}
+
+/* 휴대폰: 시트는 떠 있는 뒤로 가기(닫기) 아래에 깔고, 그 동그라미 자리만큼 위를 비운다 */
+.container.mobile .music-now-playing {
+	z-index: 5;
+	padding-top: calc(var(--phone-top) + 56px);
+	padding-bottom: calc(28px + var(--phone-bottom-inset));
+}

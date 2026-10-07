@@ -25,7 +25,6 @@ interface Props {
 	onClick?: () => void;
 	appStyle?: React.CSSProperties;
 	contentStyle?: React.CSSProperties;
-	titleBarStyle?: React.CSSProperties;
 	children: React.ReactNode;
 }
 
@@ -45,7 +44,6 @@ const MobileAppFrame: React.FC<Props> = ({
 	onClick,
 	appStyle,
 	contentStyle,
-	titleBarStyle,
 	children,
 }) => {
 	const { bringAppToFront, quitApp } = useAppState();
@@ -135,20 +133,19 @@ const MobileAppFrame: React.FC<Props> = ({
 				ref={frameRef}
 				data-app={appName}
 				aria-label={title}
-				className={`container mobile ${chrome === 'unified' ? 'unified' : ''} ${nav?.floating ? 'nav-floating' : ''}`}
+				className={`container mobile ${chrome === 'unified' ? 'unified' : ''}`}
 				style={appStyle}
 				onClick={onClick}
 				// 전환기 안에서는 앱을 누를 수 없고 카드 전체가 버튼이다
 				inert={inSwitcher}
 			>
-				{/* iOS 제목 막대: 모든 앱에 같은 모양. 왼쪽 버튼은 첫 화면에서는 홈, 앱 안으로 들어가면 앱이 정한 뒤로 가기 */}
-				{/* floating이면 제목 막대 없이 뒤로 가기만 본문 위에 동그랗게 뜬다 (iOS 메모 본문) */}
-				<div className={`mobile-navbar ${nav?.floating ? 'floating' : ''}`} style={titleBarStyle}>
+				{/* iOS처럼 제목 막대가 없다: 뒤로 가기는 내용 위에 떠 있는 동그란 단추 하나 (첫 화면은 홈, 안으로 들어가면 앱이 정한 뒤로 가기).
+				    내용은 상태 표시줄 아래부터 화면 끝까지 쓰고, 홈 바도 내용 위에 떠 있다 */}
+				<div className={`mobile-navbar ${nav?.placement === 'bottom' ? 'bottom' : ''}`}>
 					<button type="button" className="mobile-navbar-home" onClick={nav?.onBack ?? onHome}>
 						<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
 						<span className="mobile-navbar-back-label">{nav?.backLabel ?? '홈'}</span>
 					</button>
-					<span className="title">{nav?.title ?? title}</span>
 				</div>
 				<div className="content" style={contentStyle}>
 					<MobileNavContext.Provider value={setNav}>{children}</MobileNavContext.Provider>

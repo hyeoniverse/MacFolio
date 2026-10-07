@@ -858,3 +858,12 @@
 	color: var(--messages-meta);
 	font-size: 15px;
 }
+
+/* 휴대폰: 홈 바가 내용 위에 떠 있어, 아래에 떠 있는 것은 홈 바 높이(--phone-bottom-inset)만큼 올린다 */
+.container.mobile .messages:not(.chat-open) .messages-phone-bottom {
+	bottom: calc(12px + var(--phone-bottom-inset));
+}
+
+.container.mobile .messages-composer {
+	padding-bottom: calc(10px + var(--phone-bottom-inset));
+}
