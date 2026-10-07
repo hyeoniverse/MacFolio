@@ -4057,3 +4057,8 @@
 	background-color: #edbb4d;
 	box-shadow: 0 0 0 2px color-mix(in srgb, #edbb4d 30%, transparent);
 }
+
+/* 휴대폰: 홈 바가 내용 위에 떠 있어, 아래에 떠 있는 것은 홈 바 높이(--phone-bottom-inset)만큼 올린다 */
+.container.mobile .memo-phone-bottom {
+	bottom: calc(12px + var(--phone-bottom-inset));
+}

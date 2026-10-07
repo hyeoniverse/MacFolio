@@ -1028,7 +1028,7 @@ const Memo: React.FC = () => {
 			{/* 모바일 제목 막대의 뒤로 가기를 메모 안의 이동에도 쓴다 (한 칸씩 보일 때만: 본문 → 목록 → 폴더 → 홈) */}
 			<MobileNavigation
 				{...(compact && pane === 'reader'
-					? { backLabel: categoryName, onBack: () => setPane('list'), floating: true }
+					? { backLabel: categoryName, onBack: () => setPane('list') }
 					: compact && pane === 'list'
 						? {
 								backLabel: '폴더',
@@ -1036,11 +1036,8 @@ const Memo: React.FC = () => {
 									setPicked(null);
 									setPane('folders');
 								},
-								floating: true,
 							}
-						: compact && pane === 'folders'
-							? { floating: true }
-							: {})}
+						: {})}
 			/>
 			<div ref={shellRef} className="memo-shell">
 				{purgeAlert && (

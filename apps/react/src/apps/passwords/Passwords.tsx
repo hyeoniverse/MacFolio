@@ -9,7 +9,7 @@ import '@/apps/passwords/Passwords.css';
  */
 const Passwords = () => (
 	<AppWindow title="암호" appName="passwords">
-		<MobileNavigation floating />
+		<MobileNavigation />
 		<div className="passwords">
 			{/* 휴대폰: iOS 암호 앱처럼 큰 제목 */}
 			<h1 className="passwords-phone-title phone-title">암호</h1>

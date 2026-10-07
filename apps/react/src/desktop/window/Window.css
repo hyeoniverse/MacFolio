@@ -260,28 +260,24 @@
 	overflow: hidden;
 }
 
+/* 뒤로 가기 자리: 제목 막대가 아니라 내용 위에 떠 있다 (자리를 차지하지 않는다). 단추만 누를 수 있다 */
 .mobile-navbar {
-	display: grid;
-	grid-template-columns: 1fr auto 1fr;
-	align-items: center;
-	flex: none;
-	height: 56px;
-	padding: 6px 16px;
-	/* 모든 앱이 같은 모양 (iOS 26): 테두리 없는 막대, 왼쪽에 동그란 뒤로 가기, 가운데 제목. 바탕은 앱의 회색 바탕과 같다 */
-	background-color: var(--phone-page-bg, var(--color-titlebar-bg));
+	display: flex;
+	position: absolute;
+	top: var(--mobile-statusbar-height);
+	left: 0;
+	z-index: 6;
+	padding: var(--phone-top, 6px) 16px;
+	pointer-events: none;
 }
 
-.mobile-navbar .title {
-	overflow: hidden;
-	max-width: 60vw;
-	color: var(--color-text-strong);
-	font-size: 17px;
-	font-weight: 600;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+/* 웹 페이지를 통째로 띄우는 앱: 왼쪽 아래, 홈 바 위 (페이지의 왼쪽 위 메뉴를 가리지 않게) */
+.mobile-navbar.bottom {
+	top: auto;
+	bottom: calc(var(--phone-bottom-inset) + 4px);
 }
 
-/* 뒤로 가기: 떠 있는 막대(floating)와 같은 동그란 단추. 글자(홈, 받은 편지함 등)는 화면 읽기 프로그램에만 */
+/* 뒤로 가기: 동그란 단추. 글자(홈, 받은 편지함 등)는 화면 읽기 프로그램에만 */
 .mobile-navbar-home {
 	display: flex;
 	align-items: center;
@@ -298,6 +294,7 @@
 	color: var(--color-text);
 	font: inherit;
 	cursor: pointer;
+	pointer-events: auto;
 }
 
 .mobile-navbar-home i {
@@ -333,6 +330,8 @@
    뒤로 가기는 왼쪽 16~60px, 화면의 옆 여백이 16px이라 제목은 그 안에서 64px 띄운다 (단추와 20px 사이) */
 .container.mobile[data-app] {
 	--phone-top: 6px;
+	/* 홈 바(떠 있다)의 높이: 아래에 떠 있는 단추·입력 칸은 이만큼 올려 홈 바와 겹치지 않게 한다 */
+	--phone-bottom-inset: calc(22px + env(safe-area-inset-bottom));
 }
 
 .container.mobile .phone-title {
@@ -368,63 +367,35 @@
 	font-size: 20px;
 }
 
-/* 떠 있는 제목 막대 (iOS 메모 본문): 막대는 비우고 뒤로 가기만 동그란 단추로, 본문이 그 아래까지 올라간다.
-   목록 화면처럼 회색 바탕이면 상태 막대 뒤와 홈 인디케이터 아래도 회색으로 잇는다.
-   흰 바탕인 읽기 화면(메모 본문, 메일 읽기)과 메시지·음악(iOS도 흰 바탕)은 흰색 그대로 */
-.container.mobile.nav-floating[data-app],
-.container.mobile.nav-floating[data-app] .home-indicator {
+/* 앱 바탕: 회색 바탕이 상태 표시줄 뒤까지 잇는다.
+   흰 바탕인 읽기 화면(메모 본문, 메일 읽기)과 메시지·음악(iOS도 흰 바탕)은 흰색 */
+.container.mobile[data-app] {
 	background-color: var(--phone-page-bg);
 }
 
-.container.mobile.nav-floating:is(
+.container.mobile:is(
 		[data-app='memo']:has(.memo.pane-reader),
 		[data-app='mail']:has(.mail.detail-open),
 		[data-app='messages'],
 		[data-app='music']
-	),
-.container.mobile.nav-floating:is(
-		[data-app='memo']:has(.memo.pane-reader),
-		[data-app='mail']:has(.mail.detail-open),
-		[data-app='messages'],
-		[data-app='music']
-	)
-	.home-indicator {
+	) {
 	background-color: var(--color-window-bg);
 }
 
-.mobile-navbar.floating {
-	display: flex;
-	position: absolute;
-	top: var(--mobile-statusbar-height);
-	left: 0;
-	right: 0;
-	z-index: 6;
-	height: auto;
-	padding: 6px 16px;
-	border-bottom: none;
-	background: none;
-	pointer-events: none;
-}
-
-.mobile-navbar.floating .title {
-	display: none;
-}
-
-.mobile-navbar.floating .mobile-navbar-home {
-	pointer-events: auto;
-}
-
-/* 홈 인디케이터: 누르거나 쓸어 올리면 홈으로 */
+/* 홈 인디케이터: 쓸어 올리면 홈으로. 내용 위에 떠 있어 자리를 차지하지 않는다 (내용은 그 뒤까지 이어진다) */
 .home-indicator {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	flex: none;
-	width: 100%;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 7;
 	height: calc(22px + env(safe-area-inset-bottom));
 	padding-bottom: env(safe-area-inset-bottom);
 	border: none;
-	background-color: var(--color-window-bg);
+	background: none;
 	cursor: pointer;
 	touch-action: none;
 }
@@ -435,11 +406,6 @@
 	border-radius: 3px;
 	background-color: var(--color-text);
 	opacity: 0.85;
-}
-
-/* iOS처럼 제목 막대 색이 상태 표시줄 아래까지 이어진다 (앱별 창 배경보다 우선) */
-.container.mobile[data-app] {
-	background-color: var(--phone-page-bg, var(--color-titlebar-bg));
 }
 
 .container.mobile:not(.unified) .content {

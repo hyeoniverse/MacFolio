@@ -199,7 +199,7 @@ test.describe('모바일', () => {
 
 		// 본문: 제목 막대 대신 왼쪽 위 동그란 뒤로 가기, 오른쪽 위 공유·••• 알약, 아래 서식 알약과 새 메모
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
-		await expect(memo.locator('.mobile-navbar.floating .mobile-navbar-home')).toBeVisible();
+		await expect(memo.locator('.mobile-navbar .mobile-navbar-home')).toBeVisible();
 		const top = memo.locator('.memo-phone-top');
 		await expect(top.getByRole('button', { name: '링크 공유' })).toBeVisible();
 		const bottom = memo.locator('.memo-phone-bottom');
@@ -236,7 +236,7 @@ test.describe('모바일', () => {
 		const list = memo.getByRole('region', { name: '글 목록' });
 
 		// 목록: 제목 막대 대신 떠 있는 뒤로 가기, 큰 제목과 메모 수, 아래에 검색 알약
-		await expect(memo.locator('.mobile-navbar.floating .mobile-navbar-home')).toBeVisible();
+		await expect(memo.locator('.mobile-navbar .mobile-navbar-home')).toBeVisible();
 		await expect(list.getByRole('heading', { name: '모든 글' })).toBeVisible();
 		await expect(list.locator('.memo-phone-title p')).toHaveText(/\d+개의 메모/);
 		const search = list.getByRole('searchbox', { name: '글 검색' });
@@ -327,7 +327,7 @@ test.describe('모바일', () => {
 		] as const) {
 			await homeApp(page, label).tap();
 			const app = appWindow(page, appName);
-			const back = app.locator('.mobile-navbar.floating .mobile-navbar-home');
+			const back = app.locator('.mobile-navbar .mobile-navbar-home');
 			const heading = app.getByRole('heading', { name: title, exact: true });
 			await expect(back).toBeVisible();
 			await expect(heading).toBeVisible();
@@ -428,7 +428,7 @@ test.describe('모바일', () => {
 		await expect(sheet.getByRole('slider', { name: '재생 위치' })).toBeVisible();
 		await expect(sheet.getByRole('region', { name: '다음 재생' })).toBeVisible();
 
-		// 닫기는 제목 막대의 버튼 하나
+		// 닫기는 시트 위에 떠 있는 뒤로 가기 하나
 		await music.locator('.mobile-navbar-home').tap();
 		await expect(sheet).toBeHidden();
 

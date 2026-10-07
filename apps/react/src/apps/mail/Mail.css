@@ -600,3 +600,8 @@
 		padding-top: 64px;
 	}
 }
+
+/* 휴대폰: 홈 바가 내용 위에 떠 있어, 아래에 떠 있는 것은 홈 바 높이(--phone-bottom-inset)만큼 올린다 */
+.container.mobile .mail-phone-compose {
+	bottom: calc(12px + var(--phone-bottom-inset));
+}
