@@ -481,19 +481,40 @@
 	transition: flex-basis var(--duration) var(--ease-out);
 }
 
-/* 정보를 열면 정보 판은 제 높이만큼 다 보이고 (스크롤 없이), 사진이 남은 위쪽으로 줄어든다 */
+/* 정보를 열면 사진은 맨 위의 정사각형 칸을 cover로 채우고 (위 단추들은 사진 위에 뜬다),
+   정보 판이 바로 아래 붙어 화면 끝까지 간다. 화면이 작으면 사진 칸만 납작해진다 (정보는 늘 다 보인다) */
 .photos-phone-stage.with-info {
-	flex: 1 1 0;
+	flex: 0 1 auto;
+	width: 100%;
 	min-height: 96px;
+	aspect-ratio: 1;
+	margin-top: 0;
+}
+
+.photos-phone-stage.with-info :is(img, video) {
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	max-height: none;
+	object-fit: cover;
 }
 
 .photos-phone-info {
 	display: flex;
-	flex: none;
+	flex: 1 0 auto;
 	flex-direction: column;
-	padding-bottom: 10px;
+	padding-bottom: calc(var(--phone-bottom-inset) + 84px);
 	background: var(--phone-page-bg);
 	animation: photos-phone-info-up var(--duration-slow) var(--ease-out);
+}
+
+/* 정보가 열려 있으면 아래 막대는 정보 판 위에 뜬다 */
+.photos-phone-viewer-bar.over-info {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 5;
 }
 
 @keyframes photos-phone-info-up {
@@ -503,10 +524,8 @@
 	}
 }
 
-/* 정보 판의 높이는 어떤 사진이든 같다: 캡션은 늘 두 줄 칸 (짧으면 비고, 길면 말줄임), 나머지는 한 줄씩 */
+/* 정보 판의 높이는 어떤 사진이든 같다: 캡션도 다른 줄처럼 한 줄 (길면 말줄임) */
 .photos-phone-caption {
-	box-sizing: content-box;
-	height: calc(2em * 1.35);
 	margin: 0;
 	padding: 12px 20px;
 	overflow: hidden;
@@ -515,12 +534,20 @@
 	color: var(--color-text-secondary);
 	font-size: 17px;
 	line-height: 1.35;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-p.photos-phone-caption {
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
+/* 관리자 캡션 칸: 오류는 같은 줄 오른쪽에 (높이가 바뀌지 않게) */
+.photos-caption-field.photos-phone-caption {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.photos-phone-caption .photos-caption-error {
+	flex: none;
+	margin: 0;
 }
 
 .photos-phone-info-panel :is(h3, .photos-phone-file, .photos-phone-card strong, .photos-phone-card p) {
