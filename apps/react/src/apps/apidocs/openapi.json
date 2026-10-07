@@ -1629,6 +1629,174 @@
 					"cover"
 				]
 			}
+		},
+		"/analytics/events": {
+			"post": {
+				"operationId": "AnalyticsController_events",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"description": "navigator.sendBeacon이 text/plain(JSON 글자)으로 보낸다 (CORS 사전 요청이 없다). type: visit, app, item, link, leave. 한 번에 30개까지",
+					"content": {
+						"text/plain": {
+							"schema": {
+								"example": {
+									"visitId": "v-1a2b3c4d5e6f",
+									"events": [
+										{
+											"type": "visit",
+											"path": "/memo/hello",
+											"referrer": "github.com",
+											"device": "desktop",
+											"language": "ko-KR"
+										},
+										{
+											"type": "app",
+											"app": "memo"
+										},
+										{
+											"type": "item",
+											"app": "memo",
+											"item": "hello"
+										},
+										{
+											"type": "leave",
+											"duration": 95000
+										}
+									]
+								}
+							}
+						},
+						"application/json": {
+							"schema": {
+								"example": {
+									"visitId": "v-1a2b3c4d5e6f",
+									"events": [
+										{
+											"type": "visit",
+											"path": "/memo/hello",
+											"referrer": "github.com",
+											"device": "desktop",
+											"language": "ko-KR"
+										},
+										{
+											"type": "app",
+											"app": "memo"
+										},
+										{
+											"type": "item",
+											"app": "memo",
+											"item": "hello"
+										},
+										{
+											"type": "leave",
+											"duration": 95000
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"204": {
+						"description": "받았다. 로봇과 관리자 세션은 저장하지 않는다"
+					},
+					"400": {
+						"description": "형식이 틀렸다 (하나라도 틀리면 전부 거절)"
+					},
+					"429": {
+						"description": "IP마다 1분에 30번까지"
+					}
+				},
+				"tags": [
+					"analytics"
+				]
+			}
+		},
+		"/analytics/today": {
+			"get": {
+				"operationId": "AnalyticsController_today",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "오늘(한국 시간) 순방문자 수. 누구나 본다 (1분마다 다시 센다)"
+					}
+				},
+				"tags": [
+					"analytics"
+				]
+			}
+		},
+		"/analytics/summary": {
+			"get": {
+				"operationId": "AnalyticsController_summary",
+				"parameters": [
+					{
+						"name": "to",
+						"required": false,
+						"in": "query",
+						"description": "YYYY-MM-DD (기본: 오늘, 한국 시간)",
+						"schema": {}
+					},
+					{
+						"name": "from",
+						"required": false,
+						"in": "query",
+						"description": "YYYY-MM-DD (기본: to의 6일 전)",
+						"schema": {}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳·앱·글·나라·기기별 표"
+					},
+					"400": {
+						"description": "기간이 틀렸다 (1~366일)"
+					},
+					"401": {
+						"description": "관리자 로그인이 필요하다"
+					}
+				},
+				"security": [
+					{
+						"cookie": []
+					}
+				],
+				"tags": [
+					"analytics"
+				]
+			}
+		},
+		"/analytics/live": {
+			"get": {
+				"operationId": "AnalyticsController_live",
+				"parameters": [
+					{
+						"name": "minutes",
+						"required": false,
+						"in": "query",
+						"description": "최근 몇 분 (기본 30, 최대 1440)",
+						"schema": {}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "최근 방문: 나라·기기·들어온 곳·가린 IP(7일)와 연 앱·본 글의 흐름"
+					},
+					"401": {
+						"description": "관리자 로그인이 필요하다"
+					}
+				},
+				"security": [
+					{
+						"cookie": []
+					}
+				],
+				"tags": [
+					"analytics"
+				]
+			}
 		}
 	},
 	"info": {

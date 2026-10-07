@@ -188,3 +188,55 @@ model GithubShowcase {
   /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
   updatedBy String
 }
+
+/// 트래픽 분석 이벤트 (#102). 사이트가 sendBeacon으로 보낸다. 90일 뒤 지우고, 그 전에 날마다 DailyStat으로 모은다.
+/// 원래 IP는 없다: 순방문자는 하루 해시로 세고, 관리자 화면용 가린 IP는 7일 뒤 지운다
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  /// visit(페이지를 열었다), app(앱 열기), item(글·프로젝트 보기), link(바깥 링크), leave(머문 시간)
+  type        String
+  createdAt   DateTime @default(now())
+  /// 받은 날 (한국 시간, YYYY-MM-DD). 집계 단위
+  day         String
+  /// HMAC(날짜 + IP + User-Agent). 날이 바뀌면 달라져서 날을 넘겨 한 사람을 따라갈 수 없다
+  dayHash     String
+  /// 페이지를 열 때마다 브라우저가 새로 만드는 무작위 값 (한 방문의 이벤트를 묶는다)
+  visitId     String
+  app         String?
+  /// 글 주소, 프로젝트 이름, 바깥 링크 주소
+  item        String?
+  /// 처음 연 주소 (visit)
+  path        String?
+  /// 들어온 곳의 호스트만 (예: github.com). 직접 들어왔으면 비운다
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  /// CF-IPCountry (예: KR)
+  country     String?
+  /// desktop, mobile (화면 폭)
+  device      String?
+  /// User-Agent를 줄인 종류 (Chrome, Safari…)
+  browser     String?
+  os          String?
+  language    String?
+  /// 머문 시간 (ms, leave)
+  duration    Int?
+  /// 마지막 자리를 가린 IP (203.0.113.x). 7일 뒤 지운다
+  maskedIp    String?
+
+  @@index([day])
+  @@index([createdAt])
+}
+
+/// 날마다 모은 분석 숫자 (#102). 이벤트를 지운 뒤에도 계속 남는다. (날짜, 지표, 키)마다 한 행
+model DailyStat {
+  day    String
+  /// visits, visitors, appOpens, durationSec, durationVisits, referrer, source, campaign, app, item, link, country, device, browser, os, language
+  metric String
+  /// 지표 안의 이름 (예: referrer의 github.com). 합계 지표는 빈 문자열
+  key    String
+  value  Int
+
+  @@id([day, metric, key])
+}
