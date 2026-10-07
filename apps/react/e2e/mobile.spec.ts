@@ -597,6 +597,52 @@ test.describe('모바일', () => {
 		}
 	});
 
+	test('메시지 대화 머리는 상태 표시줄 아래: 아바타(새 피드백은 이름)가 떠 있는 뒤로 가기와 같은 줄', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		await (await homeApp(page, '메시지')).tap();
+		const messages = appWindow(page, 'messages');
+		const header = messages.locator('.messages-chat-header');
+		const statusBar = (await page.locator('.mobile-statusbar').boundingBox())!;
+		const middle = (box: { y: number; height: number }) => box.y + box.height / 2;
+		/** 머리의 첫 요소(아바타 또는 이름)가 뒤로 가기와 같은 줄이고, 머리 전체가 상태 표시줄 아래에 있다 */
+		const check = async () => {
+			const first = (await header.locator(':scope > *').first().boundingBox())!;
+			const back = (await messages.locator('.mobile-navbar-home').boundingBox())!;
+			expect(first.y).toBeGreaterThanOrEqual(statusBar.y + statusBar.height);
+			expect(Math.abs(middle(first) - middle(back))).toBeLessThan(6);
+			expect((await header.locator('.messages-name-pill').boundingBox())!.y).toBeGreaterThanOrEqual(
+				statusBar.y + statusBar.height
+			);
+		};
+
+		// 대화 하나: 아바타가 뒤로 가기 줄, 이름은 그 아래
+		await messages.getByRole('complementary', { name: '대화 목록' }).getByRole('button').first().tap();
+		await expect(header.locator('.messages-name-pill')).toBeVisible();
+		await check();
+
+		// 새 피드백: 이름 알약이 뒤로 가기 줄
+		await messages.locator('.mobile-navbar-home').tap();
+		await messages.getByRole('button', { name: '새 피드백' }).tap();
+		await expect(header.locator('.messages-name-pill')).toHaveText('새 피드백');
+		await check();
+	});
+
+	test('GitHub 머리: 로고·이름은 떠 있는 뒤로 가기와 같은 줄 그 오른쪽, 탭은 들여 쓰지 않는다', async ({ page }) => {
+		await enterHome(page);
+		await (await homeApp(page, 'GitHub')).tap();
+		const github = appWindow(page, 'github');
+		const back = (await github.locator('.mobile-navbar-home').boundingBox())!;
+		const logo = (await github.locator('.gh-header > i').boundingBox())!;
+		const tabs = (await github.getByRole('navigation', { name: 'GitHub 탭' }).boundingBox())!;
+		const middle = (box: { y: number; height: number }) => box.y + box.height / 2;
+		expect(Math.abs(middle(logo) - middle(back))).toBeLessThan(4);
+		expect(logo.x).toBeGreaterThanOrEqual(back.x + back.width + 16);
+		expect(tabs.x).toBe(16);
+		expect(tabs.y).toBeGreaterThan(back.y + back.height);
+	});
+
 	test('시스템 설정: 항목 목록에서 누르면 그 화면으로, 떠 있는 뒤로 가기로 목록에 돌아온다', async ({ page }) => {
 		await enterHome(page);
 		await (await homeApp(page, '시스템 설정')).tap();
