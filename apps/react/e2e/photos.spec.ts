@@ -95,17 +95,55 @@ test.describe('사진 (#21)', () => {
 	});
 });
 
-test.describe('사진: 휴대폰', () => {
+test.describe('사진: 휴대폰 (iOS 사진)', () => {
 	test.use({ viewport: { width: 390, height: 844 } });
 
-	test('사이드바 대신 위의 앨범 단추로 고른다', async ({ page }) => {
+	const openPhone = async (page: Page) => {
 		await enterDesktop(page);
 		await page.locator('[data-launch="photos"]').click();
-		const chips = page.getByRole('navigation', { name: '앨범 고르기' });
-		await expect(chips).toBeVisible();
-		await expect(page.getByRole('complementary', { name: '사진 보관함' })).toBeHidden();
-		await chips.getByRole('button', { name: /^QRU/ }).click();
-		await expect(chips.getByRole('button', { name: /^QRU/ })).toHaveAttribute('aria-pressed', 'true');
-		await expect(page.getByRole('heading', { name: 'QRU 큐알유' })).toBeVisible();
+		return appWindow(page, 'photos');
+	};
+
+	test('보관함: 꽉 찬 격자 위의 큰 제목, 아래의 앨범별·전체', async ({ page }) => {
+		const photos = await openPhone(page);
+		await expect(photos.getByRole('heading', { name: '보관함', level: 2 })).toBeVisible();
+		const tabs = photos.getByRole('navigation', { name: '사진 탭' });
+		await expect(tabs.getByRole('button', { name: '전체' })).toHaveAttribute('aria-pressed', 'true');
+		const all = await photos.locator('.photos-phone-grid .photos-thumb').count();
+		expect(all).toBeGreaterThan(20);
+
+		await tabs.getByRole('button', { name: '앨범별' }).click();
+		await expect(photos.getByRole('region', { name: 'QRU 큐알유' })).toBeVisible();
+		await expect(photos.locator('.photos-phone-grid .photos-thumb')).toHaveCount(all);
+
+		// 사진을 누르면 크게 본다
+		await photos.getByRole('region', { name: 'QRU 큐알유' }).locator('.photos-thumb').first().click();
+		await expect(photos.getByRole('dialog')).toHaveAttribute('aria-label', /^사진 \d+\/\d+:/);
+	});
+
+	test('모음: 추억·고정됨·앨범 카드, 앨범을 누르면 그 격자로 들어가고 모음으로 돌아온다', async ({ page }) => {
+		const photos = await openPhone(page);
+		await photos.getByRole('navigation', { name: '사진 탭' }).getByRole('button', { name: '모음' }).click();
+		await expect(photos.getByRole('heading', { name: '모음', level: 2 })).toBeVisible();
+		for (const shelf of ['추억', '고정됨', '앨범'])
+			await expect(photos.getByRole('region', { name: shelf })).toBeVisible();
+		await expect(photos.getByRole('tab', { name: '모음' })).toHaveAttribute('aria-selected', 'true');
+
+		await photos
+			.getByRole('region', { name: '앨범' })
+			.getByRole('button', { name: /QRU 큐알유/ })
+			.click();
+		await expect(photos.getByRole('heading', { name: 'QRU 큐알유', level: 2 })).toBeVisible();
+		await expect(photos.locator('.photos-phone-grid .photos-thumb')).toHaveCount(9);
+
+		await page.getByRole('button', { name: '모음' }).first().click();
+		await expect(photos.getByRole('heading', { name: '모음', level: 2 })).toBeVisible();
+
+		await photos
+			.getByRole('region', { name: '고정됨' })
+			.getByRole('button', { name: /비디오/ })
+			.click();
+		await expect(photos.getByRole('heading', { name: '비디오', level: 2 })).toBeVisible();
+		await expect(photos.locator('.photos-phone-grid video')).not.toHaveCount(0);
 	});
 });
