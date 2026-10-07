@@ -22,7 +22,9 @@ const LoginFlow = () => {
 		if (!outcome) return;
 		confirmRef.current?.focus();
 		const close = (event: KeyboardEvent) => {
-			if (event.key === 'Escape' || event.key === 'Enter') dismissLoginResult();
+			if (event.key !== 'Escape' && event.key !== 'Enter') return;
+			event.preventDefault();
+			dismissLoginResult();
 		};
 		window.addEventListener('keydown', close);
 		return () => window.removeEventListener('keydown', close);

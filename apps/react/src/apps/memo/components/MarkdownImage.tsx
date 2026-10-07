@@ -71,7 +71,9 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 const Lightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({ src, alt, onClose }) => {
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') onClose();
+			if (event.key !== 'Escape') return;
+			event.preventDefault();
+			onClose();
 		};
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);

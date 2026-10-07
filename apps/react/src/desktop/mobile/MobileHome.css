@@ -80,21 +80,27 @@
 	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
 }
 
-/* 페이지: 옆으로 넘긴다 (한 페이지씩 딱 맞춰 멈춘다). 스크롤 막대는 숨긴다 */
+/* 페이지: 옆으로 넘긴다. 스크롤이 아니라 트랙을 옮긴다 (MobileHome이 끌기를 듣는다).
+   세로 쓸기는 브라우저에 맡겨 제어 센터가 받는다 */
 .mobile-pages {
 	display: flex;
 	flex: 1;
 	min-height: 0;
 	margin-inline: -20px;
-	overflow-x: auto;
-	overflow-y: hidden;
-	scroll-snap-type: x mandatory;
-	overscroll-behavior-x: contain;
-	scrollbar-width: none;
+	overflow: hidden;
+	touch-action: pan-y;
 }
 
-.mobile-pages::-webkit-scrollbar {
-	display: none;
+.mobile-pages-track {
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	transition: transform var(--duration-slow) var(--ease-out);
+}
+
+/* 끄는 동안은 손가락을 바로 따라온다 */
+.mobile-pages-track.dragging {
+	transition: none;
 }
 
 .mobile-page {
@@ -104,7 +110,6 @@
 	width: 100%;
 	min-height: 0;
 	padding-inline: 20px;
-	scroll-snap-align: start;
 }
 
 .mobile-widgets {

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
 import { foregroundApp } from '@/desktop/appStack';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
@@ -25,6 +25,19 @@ const MobileShell = () => {
 	const closeControlCenter = useCallback(() => setControlCenterOpen(false), []);
 
 	const onApp = foregroundApp(apps) !== null && !controlCenterOpen && !switcherOpen;
+
+	// Esc는 위에 열린 것부터 닫는다: 제어 센터, 앱 전환기 (그 아래 앱의 뒤로 가기가 이 Esc를 받지 않게 preventDefault)
+	useEffect(() => {
+		if (!controlCenterOpen && !switcherOpen) return;
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key !== 'Escape') return;
+			event.preventDefault();
+			if (controlCenterOpen) setControlCenterOpen(false);
+			else closeSwitcher(foregroundApp(apps));
+		};
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [controlCenterOpen, switcherOpen, apps]);
 
 	// 화면 어디서든 아래로 쓸면 제어 센터가 손가락을 따라 내려온다 (스크롤할 내용이 위에 남았으면 스크롤이 먼저)
 	useVerticalSwipe({
