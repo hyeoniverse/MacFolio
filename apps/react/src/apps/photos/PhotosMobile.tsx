@@ -96,6 +96,7 @@ const Card = ({
 
 /** 손가락으로 옆으로 밀었다고 보는 거리 */
 const SWIPE_PX = 50;
+const TAP_PX = 8;
 
 /**
  * 크게 보기 (iOS 사진): 위에 뒤로 가기·제목 알약·•••, 가운데 사진, 아래에 사진 띠와 막대(공유 · 좋아요·정보 · 프로젝트 페이지).
@@ -121,6 +122,8 @@ const PhoneViewer = ({
 	const photo = photos[index];
 	const caption = captionOf(photo, useCaptions());
 	const [info, setInfo] = useState(false);
+	// 사진만 보기 (iOS 사진): 사진을 탭하면 다른 UI는 숨고 까만 바탕에 사진만. 다시 탭하면 돌아온다
+	const [focus, setFocus] = useState(false);
 	// 불러온 사진의 실제 크기와 파일 크기 (정보 판). 사진이 바뀌면 그 사진의 것으로
 	const [measured, setMeasured] = useState<{ src: string; width: number; height: number; bytes: number | null } | null>(
 		null
@@ -159,8 +162,13 @@ const PhoneViewer = ({
 	}, [index]);
 
 	return (
-		<div className="photos-phone-viewer" role="dialog" aria-label={`사진 ${index + 1}/${photos.length}: ${caption}`}>
-			<MobileNavigation backLabel="돌아가기" onBack={onClose} />
+		<div
+			className="photos-phone-viewer"
+			role="dialog"
+			aria-label={`사진 ${index + 1}/${photos.length}: ${caption}`}
+			data-focus={focus || undefined}
+		>
+			{focus ? <MobileNavigation hideHome /> : <MobileNavigation backLabel="돌아가기" onBack={onClose} />}
 			<div className="photos-phone-viewer-title">
 				<strong>{photo.album.name}</strong>
 				<span>{caption}</span>
@@ -188,7 +196,13 @@ const PhoneViewer = ({
 					swipe.current = null;
 					if (!start) return;
 					const dx = event.clientX - start.x;
-					if (Math.abs(dx) >= SWIPE_PX && Math.abs(dx) > Math.abs(event.clientY - start.y)) move(dx < 0 ? 1 : -1);
+					const dy = event.clientY - start.y;
+					if (Math.abs(dx) >= SWIPE_PX && Math.abs(dx) > Math.abs(dy)) move(dx < 0 ? 1 : -1);
+					// 움직이지 않은 탭이면 사진만 보기를 켜고 끈다 (영상은 재생 단추를 눌러야 하니 영상 위의 탭은 빼고)
+					else if (Math.hypot(dx, dy) < TAP_PX && !(event.target instanceof HTMLVideoElement)) {
+						setInfo(false);
+						setFocus(!focus);
+					}
 				}}
 				onPointerCancel={() => (swipe.current = null)}
 			>

@@ -304,6 +304,46 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		await expect(photos.getByRole('textbox', { name: '캡션' })).toHaveCount(0);
 		await expect(photos.locator('p.photos-phone-caption')).not.toBeEmpty();
 	});
+	test('사진을 탭하면 사진만 보기: 다른 UI는 숨고 바탕은 까맣게. 다시 탭하면 돌아오고, 밀어 넘기기는 그대로', async ({
+		page,
+	}) => {
+		const photos = await openPhone(page);
+		await photos.locator('.photos-phone-grid .photos-thumb').last().click();
+		const viewer = photos.getByRole('dialog');
+		const stage = viewer.locator('.photos-phone-stage');
+		const chrome = [
+			viewer.locator('.photos-phone-viewer-title'),
+			viewer.getByRole('button', { name: '사진 동작' }),
+			viewer.getByRole('list', { name: '사진 띠' }),
+			viewer.getByRole('button', { name: '정보' }),
+			page.getByRole('button', { name: '돌아가기' }),
+		];
+		// 정보를 연 채로 탭해도 정보는 닫히고 사진만 남는다
+		await viewer.getByRole('button', { name: '정보' }).click();
+		await stage.locator('img').click();
+		await expect(viewer).toHaveAttribute('data-focus', 'true');
+		await expect(viewer).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+		await expect(viewer.getByRole('complementary', { name: '사진 정보' })).toHaveCount(0);
+		for (const part of chrome) await expect(part).toBeHidden();
+		// 사진은 화면 가득 (사진 칸이 대화 상자 전체)
+		expect(await stage.boundingBox()).toEqual(await viewer.boundingBox());
+
+		// 사진만 보기에서도 밀어 넘긴다 (마지막 사진이니 오른쪽으로 밀어 앞 사진으로)
+		const before = (await viewer.getAttribute('aria-label'))!;
+		const [, at, total] = before.match(/^사진 (\d+)\/(\d+):/)!;
+		const box = (await stage.boundingBox())!;
+		await page.mouse.move(box.x + 40, box.y + box.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(box.x + box.width - 40, box.y + box.height / 2, { steps: 6 });
+		await page.mouse.up();
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 ${Number(at) - 1}/${total}:`));
+		await expect(viewer).toHaveAttribute('data-focus', 'true');
+
+		// 다시 탭하면 돌아온다
+		await stage.click();
+		await expect(viewer).not.toHaveAttribute('data-focus');
+		for (const part of chrome) await expect(part).toBeVisible();
+	});
 });
 
 test.describe('사진: 작은 휴대폰', () => {
