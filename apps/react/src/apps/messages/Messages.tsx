@@ -35,7 +35,6 @@ const Messages: React.FC = () => {
 		<AppWindow title="메시지" appName="messages" chrome="unified">
 			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
 			<MobileNavigation
-				floating
 				{...(conversations.isChatOpen ? { backLabel: '메시지', onBack: back(conversations.back) } : {})}
 			/>
 			{conversations.status !== 'error' && (

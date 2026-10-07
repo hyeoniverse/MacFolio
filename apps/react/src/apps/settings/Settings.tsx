@@ -54,7 +54,7 @@ const Settings: React.FC = () => {
 
 	return (
 		<AppWindow title="시스템 설정" appName="settings">
-			<MobileNavigation floating {...(phoneOpen ? { backLabel: '설정', onBack: () => setPhoneOpen(false) } : {})} />
+			<MobileNavigation {...(phoneOpen ? { backLabel: '설정', onBack: () => setPhoneOpen(false) } : {})} />
 			<div className="settings-shell">
 				<div className={`settings ${phoneOpen ? 'phone-open' : ''}`}>
 					<nav className="settings-sidebar" aria-label="설정 항목">

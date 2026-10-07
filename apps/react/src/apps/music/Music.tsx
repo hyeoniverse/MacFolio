@@ -156,7 +156,7 @@ const CollectionItem: React.FC<{
 	</li>
 );
 
-/** 모바일: 화면을 덮는 '지금 재생 중'. 닫기는 제목 막대의 버튼 하나로 한다 */
+/** 모바일: 화면을 덮는 '지금 재생 중'. 닫기는 시트 위에 떠 있는 뒤로 가기로 한다 */
 const NowPlayingSheet: React.FC = () => {
 	const { track, isPlaying } = useMusic();
 	return (
@@ -301,20 +301,18 @@ const Music: React.FC = () => {
 
 	return (
 		<AppWindow title="음악" appName="music" chrome="unified">
-			{/* 지금 재생 중 시트는 제목 막대 아래에 열리므로, 시트가 열려 있을 때는 막대를 띄우지 않는다 (닫기 단추) */}
+			{/* 지금 재생 중 시트가 열려 있으면 떠 있는 뒤로 가기가 시트를 닫는다 */}
 			<MobileNavigation
-				floating={!nowPlayingOpen}
 				{...(nowPlayingOpen
-					? { backLabel: '닫기', onBack: () => setNowPlayingOpen(false), title: '지금 재생 중' }
+					? { backLabel: '닫기', onBack: () => setNowPlayingOpen(false) }
 					: view === 'playlist'
 						? {
 								backLabel: openedFrom === 'library' ? '보관함' : PHONE_LIST_TITLES[openedFrom],
 								onBack: () => setView(openedFrom),
-								title: '',
 							}
 						: listView
-							? { backLabel: '보관함', onBack: () => setView('library'), title: '' }
-							: { title: '' })}
+							? { backLabel: '보관함', onBack: () => setView('library') }
+							: {})}
 			/>
 			<div className="music-shell">
 				<div

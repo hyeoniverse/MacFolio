@@ -122,7 +122,6 @@ const AppWindow: React.FC<AppWindowProps> = ({
 				onClick={onClick}
 				appStyle={appStyle}
 				contentStyle={contentStyle}
-				titleBarStyle={titleBarStyle}
 			>
 				{children}
 			</MobileAppFrame>

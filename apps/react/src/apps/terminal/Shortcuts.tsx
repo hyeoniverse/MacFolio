@@ -126,10 +126,7 @@ const Shortcuts: React.FC = () => {
 		<AppWindow title="단축어" appName="terminal">
 			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
 			<MobileNavigation
-				floating
-				{...(page
-					? { backLabel: stack.length > 1 ? stack[stack.length - 2].title : '단축어', onBack: pop, title: '' }
-					: { title: '' })}
+				{...(page ? { backLabel: stack.length > 1 ? stack[stack.length - 2].title : '단축어', onBack: pop } : {})}
 			/>
 			{/* 화면이 바뀔 때마다 새로 그려서 옆에서 들어오는 애니메이션이 돈다 */}
 			<div key={stack.length} className="shortcuts" data-nav={nav}>
