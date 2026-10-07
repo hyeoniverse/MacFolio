@@ -381,6 +381,60 @@ test.describe('모바일', () => {
 		await expect(files.getByRole('button', { name: /deployment\.md/ })).toBeVisible();
 	});
 
+	test('상태 표시줄 글자 색은 밑의 실제 화면을 따른다: 음악의 어두운 지금 재생 중 위에서는 흰 글자, 닫으면 검은 글자', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		const statusBar = page.locator('.mobile-statusbar');
+		const color = () => statusBar.evaluate((el) => getComputedStyle(el).color);
+		await (await homeApp(page, '음악')).tap();
+		const music = appWindow(page, 'music');
+		await music.getByRole('button', { name: '플레이리스트', exact: true }).tap();
+		await music.getByRole('button', { name: /잔잔한 피아노/ }).tap();
+		await music.locator('.music-track').first().tap();
+		await expect.poll(color).toBe('rgb(28, 28, 30)');
+
+		await music.getByRole('button', { name: '지금 재생 중 열기' }).tap();
+		await expect(music.getByRole('dialog', { name: '지금 재생 중' })).toBeVisible();
+		await expect.poll(color).toBe('rgb(255, 255, 255)');
+
+		await music.locator('.mobile-navbar-home').tap();
+		await expect.poll(color).toBe('rgb(28, 28, 30)');
+	});
+
+	test('다른 사이트의 웹 페이지 앱: 페이지가 맨 위 색을 보내면 상태 표시줄 뒤와 글자가 따라 바뀐다', async ({
+		page,
+	}) => {
+		// WTD 사이트 대신, 맨 위 색을 postMessage로 알려 주는 페이지
+		await page.route('https://what-to-do-chi.vercel.app/**', (route) =>
+			route.fulfill({
+				contentType: 'text/html',
+				body: `<body style="margin:0;background:#111"><script>
+					window.parent.postMessage({ type: 'macfolio:bar-color', color: '#111111' }, '*');
+					window.addEventListener('message', (event) => {
+						if (event.data === 'light') window.parent.postMessage({ type: 'macfolio:bar-color', color: '#fafafa' }, '*');
+					});
+				</script></body>`,
+			})
+		);
+		await enterHome(page);
+		await (await homeApp(page, 'WTD')).tap();
+		const webFrame = page.locator('.container.mobile .web-frame');
+		const statusBar = page.locator('.mobile-statusbar');
+		const look = async () => ({
+			band: await webFrame.evaluate((el) => getComputedStyle(el).backgroundColor),
+			text: await statusBar.evaluate((el) => getComputedStyle(el).color),
+		});
+		await expect.poll(look).toEqual({ band: 'rgb(17, 17, 17)', text: 'rgb(255, 255, 255)' });
+
+		// 페이지가 밝은 색을 다시 보내면 (스크롤해서 맨 위가 바뀐 것처럼) 따라간다
+		await page
+			.frames()
+			.find((frame) => frame.url().startsWith('https://what-to-do-chi.vercel.app'))!
+			.evaluate(() => window.postMessage('light', '*'));
+		await expect.poll(look).toEqual({ band: 'rgb(250, 250, 250)', text: 'rgb(28, 28, 30)' });
+	});
+
 	test('설정의 계정은 다른 설정 화면처럼 폭을 꽉 채운 카드다', async ({ page }) => {
 		await enterHome(page);
 		await (await homeApp(page, '시스템 설정')).tap();

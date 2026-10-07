@@ -5,7 +5,6 @@ import type { AppName } from '@/apps/manifest';
 import '@/shared/ui/web-frame/WebFrame.css';
 import { openExternal } from '@/shared/analytics/analytics';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
-import { setBarColor } from '@/desktop/mobile/barColor';
 
 /** 이만큼 지나도 페이지가 다 불러지지 않으면 새 탭에서 여는 길을 알려 준다 */
 const SLOW_MS = 8000;
@@ -19,10 +18,20 @@ interface WebFrameProps {
 	icon?: string;
 	/** 불러오는 동안의 바탕 (페이지의 바탕색에 맞춘다) */
 	tone?: 'light' | 'dark';
-	/** 페이지 맨 위(머리 막대)의 색. 같은 사이트의 페이지(API 문서)는 불러온 뒤 직접 읽는다 */
+	/**
+	 * 페이지가 알려 주기 전까지 쓸 맨 위(머리 막대) 색. 같은 사이트의 페이지(API 문서)는 직접 읽고,
+	 * 다른 사이트는 페이지가 postMessage로 알려 주는 색을 따른다 (BAR_COLOR_MESSAGE)
+	 */
 	barColor?: string;
 	allow?: string;
 }
+
+/**
+ * 다른 사이트의 페이지가 자기 맨 위 색을 알려 주는 메시지. 페이지에서 이렇게 보낸다:
+ * window.parent.postMessage({ type: 'macfolio:bar-color', color: '#3b82f6' }, '*')
+ * (스크롤해서 맨 위 색이 바뀔 때마다 다시 보내면 상태 표시줄 뒤가 따라 바뀐다)
+ */
+export const BAR_COLOR_MESSAGE = 'macfolio:bar-color';
 
 /** 같은 사이트의 페이지면 맨 위 가운데 요소의 바탕색을 읽는다 (투명이면 부모로). 다른 사이트면 읽을 수 없어 null */
 function readTopColor(frame: HTMLIFrameElement): string | null {
@@ -52,11 +61,37 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 	const [slow, setSlow] = useState(false);
 	const [topColor, setTopColor] = useState<string | null>(barColor ?? null);
 
-	// 휴대폰 상태 표시줄이 이 색을 보고 글자 색을 고른다 (desktop/mobile/barColor.ts)
+	// 다른 사이트의 페이지가 알려 주는 맨 위 색 (이 iframe에서 온 메시지만)
 	useEffect(() => {
-		setBarColor(appName, topColor);
-		return () => setBarColor(appName, null);
-	}, [appName, topColor]);
+		const onMessage = (event: MessageEvent) => {
+			if (event.source !== frame.current?.contentWindow) return;
+			const data = event.data as { type?: unknown; color?: unknown } | null;
+			if (data?.type === BAR_COLOR_MESSAGE && typeof data.color === 'string' && CSS.supports('color', data.color))
+				setTopColor(data.color);
+		};
+		window.addEventListener('message', onMessage);
+		return () => window.removeEventListener('message', onMessage);
+	}, []);
+
+	// 같은 사이트의 페이지는 안에서 스크롤할 때마다 맨 위 색을 다시 읽는다
+	const watchSameSite = () => {
+		const current = frame.current;
+		const read = current && readTopColor(current);
+		if (!current || !read) return;
+		setTopColor(read);
+		try {
+			current.contentWindow?.addEventListener(
+				'scroll',
+				() => {
+					const again = readTopColor(current);
+					if (again) setTopColor(again);
+				},
+				{ passive: true }
+			);
+		} catch {
+			// 다른 사이트: 메시지를 기다린다
+		}
+	};
 
 	// iframe 안을 누르면 이벤트가 창까지 오지 않는다. 대신 이 문서가 포커스를 잃으니, 그때 창을 맨 앞으로
 	useEffect(() => {
@@ -109,8 +144,7 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 				allowFullScreen
 				onLoad={() => {
 					setLoaded(true);
-					const read = frame.current && readTopColor(frame.current);
-					if (read) setTopColor(read);
+					watchSameSite();
 				}}
 			/>
 			{!loaded && (

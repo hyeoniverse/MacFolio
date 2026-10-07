@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { StatusBarTone } from '@/desktop/mobile/statusBarTone';
 import ServerSignal from '@/shared/server/ServerSignal';
 import { useServerStatus } from '@/shared/server/serverStatus';
 
@@ -14,8 +15,11 @@ function useClock() {
 }
 
 interface Props {
-	/** 홈 화면에서는 흰 글자(light), 앱 위에서는 앱 글자색에 밑의 내용을 약하게 흐린다(app). 둘 다 바탕은 투명하다 */
-	tone: 'light' | 'app';
+	ref?: React.Ref<HTMLDivElement>;
+	/** 글자 색: 흰색(light) 또는 검은색(dark). 앱 위에서는 밑의 화면을 읽어 정한다 (statusBarTone.ts) */
+	tone: StatusBarTone;
+	/** 앱 위: 바탕은 투명하게 두고 밑으로 지나가는 내용만 아주 약하게 흐린다 */
+	onApp: boolean;
 	onOpen: () => void;
 }
 
@@ -23,11 +27,17 @@ interface Props {
  * iOS 상태 표시줄 (시간, 신호, Wi-Fi, 배터리). 누르면 제어 센터를 연다.
  * 끌어내려 여는 동작은 화면 어디서나 되도록 MobileShell이 듣는다 (useVerticalSwipe).
  */
-const MobileStatusBar = ({ tone, onOpen }: Props) => {
+const MobileStatusBar = ({ ref, tone, onApp, onOpen }: Props) => {
 	const now = useClock();
 
 	return (
-		<div className={`mobile-statusbar ${tone}`} role="button" aria-label="제어 센터 열기" onClick={onOpen}>
+		<div
+			ref={ref}
+			className={`mobile-statusbar ${tone}${onApp ? ' on-app' : ''}`}
+			role="button"
+			aria-label="제어 센터 열기"
+			onClick={onOpen}
+		>
 			<time className="mobile-statusbar-time" dateTime={now.toISOString()}>
 				{formatClock(now)}
 			</time>

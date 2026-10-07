@@ -25,12 +25,13 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
-.mobile-statusbar.app {
-	color: var(--color-text);
+/* 글자 색은 밑의 화면을 읽어 정한다 (statusBarTone.ts): 밝은 화면 위에는 검은 글자 */
+.mobile-statusbar.dark {
+	color: #1c1c1e;
 }
 
 /* 앱 위: 바탕은 투명하게 두고, 밑으로 지나가는 내용만 아주 약하게 흐려 글자가 읽히게 한다 */
-.mobile-statusbar.app {
+.mobile-statusbar.on-app {
 	backdrop-filter: blur(2px);
 	-webkit-backdrop-filter: blur(2px);
 }

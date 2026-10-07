@@ -127,8 +127,8 @@ export interface ProjectAppInfo {
 	/** 사이트가 뜨기 전 창 바탕 (게임은 검은 화면) */
 	tone?: 'light' | 'dark';
 	/**
-	 * 사이트 맨 위(머리 막대)의 바탕색. 휴대폰에서 상태 표시줄 뒤를 이 색으로 칠해 머리 막대와 이어 보이게 한다 (Safari처럼).
-	 * 다른 도메인의 페이지라 iframe 안의 색을 읽을 수 없어 적어 둔다
+	 * 사이트가 맨 위 색을 알려 주기 전까지(postMessage, shared/ui/web-frame/WebFrame.tsx의 BAR_COLOR_MESSAGE) 상태 표시줄 뒤에 칠할 색.
+	 * 다른 도메인의 페이지라 iframe 안을 직접 읽을 수 없다. 사이트가 색을 보내면 그 색을 따른다
 	 */
 	barColor?: string;
 	/** 처음 열 때 창 크기 */
