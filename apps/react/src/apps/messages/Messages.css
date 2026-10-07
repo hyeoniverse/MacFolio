@@ -764,15 +764,16 @@
 	background-color: var(--messages-window-bg);
 }
 
-/* 이름 알약은 떠 있는 단추 줄 가운데, 그 아래 설명은 단추를 비켜 화면 폭을 다 쓴다 */
+/* 이름 알약은 떠 있는 단추 줄 가운데, 그 아래 설명은 단추를 비켜 화면 폭을 다 쓴다.
+   앱은 상태 표시줄 밑까지 그려지므로 위 여백에 상태 표시줄 높이(--phone-status)를 더한다 */
 .container.mobile .messages-chat-header {
 	gap: 10px;
-	padding: 8px 16px 12px;
+	padding: calc(var(--phone-status) + 8px) 16px 12px;
 }
 
-/* 새 피드백: 이름 알약을 떠 있는 단추 줄(위 6~50px) 가운데에 맞추고, 설명은 그 줄 아래로 띄운다 */
+/* 새 피드백: 이름 알약을 떠 있는 단추 줄(상태 표시줄 아래 6~50px) 가운데에 맞추고, 설명은 그 줄 아래로 띄운다 */
 .container.mobile .messages-chat-header:has(.messages-cancel) {
-	padding-top: 12px;
+	padding-top: calc(var(--phone-status) + 12px);
 }
 
 .container.mobile .messages-chat-header:has(.messages-cancel) .messages-chat-subtitle {
