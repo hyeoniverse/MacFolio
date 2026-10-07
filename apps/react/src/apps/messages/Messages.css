@@ -617,7 +617,8 @@
 }
 
 .container.mobile .messages-sidebar {
-	padding: var(--phone-top) 16px 96px;
+	/* 아래는 떠 있는 검색 알약·새 피드백만큼 비워, 마지막 대화를 그 위로 올려 볼 수 있게 */
+	padding: var(--phone-top) 16px 120px;
 	background-color: var(--messages-window-bg);
 }
 
@@ -654,15 +655,15 @@
 .container.mobile .messages-threads li + li .messages-thread::before,
 .container.mobile .messages-threads li:has(.selected) + li .messages-thread::before {
 	display: block;
-	left: 64px;
+	left: 74px;
 	right: 0;
 	height: 0.5px;
 	background-color: var(--phone-separator);
 }
 
 .container.mobile .messages-thread {
-	align-items: flex-start;
-	padding: 10px 0;
+	align-items: center;
+	padding: 14px 0;
 	border-radius: 0;
 }
 
@@ -689,10 +690,13 @@
 
 .container.mobile .messages-thread strong {
 	font-size: 17px;
+	font-weight: 700;
 }
 
 .container.mobile .messages-thread-preview {
+	margin-top: 3px;
 	font-size: 15px;
+	line-height: 1.35;
 }
 
 /* 빈 목록: 고정 대화(큰 아바타)와 떨어진 가운데에 아이콘·제목·안내 (iOS의 빈 화면처럼) */
@@ -833,4 +837,24 @@
 	width: 36px;
 	height: 36px;
 	font-size: 16px;
+}
+
+/* iOS 메시지 목록: 큰 제목 대신 떠 있는 뒤로 가기와 같은 줄 가운데에 작은 제목, 고정 대화는 크게 */
+.container.mobile .messages-phone-title.phone-title {
+	justify-content: center;
+	margin: 0 0 14px;
+	padding: 0 56px;
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.container.mobile .messages-pinned {
+	padding: 4px 0 22px;
+}
+
+.container.mobile .messages-pinned-item,
+.container.mobile .messages-pinned-item.selected {
+	gap: 6px;
+	color: var(--messages-meta);
+	font-size: 15px;
 }
