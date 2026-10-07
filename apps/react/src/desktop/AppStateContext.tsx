@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect, useRef } from 'react';
+import { track } from '@/shared/analytics/analytics';
+import { newlyOpened, trackItemViews } from '@/shared/analytics/usage';
 import { appAddresses, linkedApp, syncAddressBar } from '@/shared/lib/appLink';
 import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
 import { bringToFront, foregroundApp, minimizeAll } from '@/desktop/appStack';
@@ -83,6 +85,14 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 	useEffect(() => {
 		trackApps(isMobileViewport({ width: window.innerWidth, height: window.innerHeight }), apps);
 	}, [apps]);
+
+	// 트래픽 분석 (#102): 새로 연 앱과, 앱이 보여 주는 글·프로젝트. 처음 떠 있는 창은 연 것으로 치지 않는다
+	const appsBefore = useRef(apps);
+	useEffect(() => {
+		for (const app of newlyOpened(appsBefore.current, apps)) track({ type: 'app', app });
+		appsBefore.current = apps;
+	}, [apps]);
+	useEffect(() => trackItemViews(), []);
 
 	// 주소 막대: 맨 앞 창이 가리키는 항목 (메모의 글, Safari의 프로젝트). 창이 없거나 주소가 없는 앱이면 사이트 주소
 	useEffect(() => {

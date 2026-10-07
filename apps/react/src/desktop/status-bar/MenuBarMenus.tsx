@@ -9,8 +9,7 @@ import { sendWindowCommand } from '@/desktop/window/windowCommands';
 import { appAddresses, LINKED_APPS, shareLink, type LinkedApp } from '@/shared/lib/appLink';
 import Menu from '@/shared/ui/menu/Menu';
 import KeyboardShortcuts from '@/desktop/status-bar/KeyboardShortcuts';
-
-const openExternal = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
+import { openExternal } from '@/shared/analytics/analytics';
 
 /**
  * 메뉴 막대의 파일·편집·보기·이동·윈도우·도움말 (#96). 지금 쓰는 앱(activeApp)이 등록한 메뉴와 공통 메뉴를 합쳐 그린다.
