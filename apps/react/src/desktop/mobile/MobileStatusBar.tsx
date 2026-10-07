@@ -14,8 +14,11 @@ function useClock() {
 }
 
 interface Props {
-	/** 앱 위에 있으면 글자를 앱 색에 맞추고, 홈 화면에서는 흰색 */
-	tone: 'light' | 'app';
+	/**
+	 * 홈 화면에서는 흰 글자(light), 앱 위에서는 앱 글자색(app), 둘 다 바탕 없이 투명하다.
+	 * 웹 페이지 앱 위(glass)에서는 페이지가 밑까지 그려져 글자가 페이지 메뉴와 겹치므로, 페이지가 비치는 흐린 유리를 깐다
+	 */
+	tone: 'light' | 'app' | 'glass';
 	onOpen: () => void;
 }
 

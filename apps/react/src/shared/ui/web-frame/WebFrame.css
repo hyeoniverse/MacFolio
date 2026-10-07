@@ -58,9 +58,3 @@
 		animation: none;
 	}
 }
-
-/* 휴대폰: 남의 페이지는 상태 표시줄(겹친다) 밑으로 넣을 수 없어 그만큼 내린다 */
-.container.mobile .web-frame {
-	box-sizing: border-box;
-	padding-top: var(--phone-status);
-}

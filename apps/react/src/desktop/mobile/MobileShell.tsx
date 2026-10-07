@@ -9,6 +9,7 @@ import { closeSwitcher, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
 import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { runningByRecency } from '@/desktop/appStack';
+import { WEB_PAGE_APPS } from '@/apps/registry';
 import '@/desktop/mobile/MobileShell.css';
 
 /**
@@ -24,7 +25,8 @@ const MobileShell = () => {
 
 	const closeControlCenter = useCallback(() => setControlCenterOpen(false), []);
 
-	const onApp = foregroundApp(apps) !== null && !controlCenterOpen && !switcherOpen;
+	const foreground = foregroundApp(apps);
+	const onApp = foreground !== null && !controlCenterOpen && !switcherOpen;
 
 	// Esc는 위에 열린 것부터 닫는다: 제어 센터, 앱 전환기 (그 아래 앱의 뒤로 가기가 이 Esc를 받지 않게 preventDefault)
 	useEffect(() => {
@@ -54,7 +56,10 @@ const MobileShell = () => {
 	return (
 		<>
 			<MobileHome launch={launch} />
-			<MobileStatusBar tone={onApp ? 'app' : 'light'} onOpen={() => setControlCenterOpen(true)} />
+			<MobileStatusBar
+				tone={!onApp ? 'light' : foreground && WEB_PAGE_APPS.has(foreground) ? 'glass' : 'app'}
+				onOpen={() => setControlCenterOpen(true)}
+			/>
 			{switcherOpen && (
 				// 카드 사이의 빈 곳을 누르면 홈으로
 				<div
