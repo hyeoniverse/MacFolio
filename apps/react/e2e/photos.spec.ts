@@ -14,8 +14,15 @@ async function expectInfoFits(viewer: Locator) {
 	await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(0);
 	const action = (await info.locator('.photos-phone-info-action').boundingBox())!;
 	const bar = (await viewer.locator('.photos-phone-viewer-bar').boundingBox())!;
-	expect(action.y + action.height).toBeLessThanOrEqual(bar.y);
-	expect((await viewer.locator('.photos-phone-stage').boundingBox())!.height).toBeGreaterThan(90);
+	expect(action.y + action.height + 12).toBeLessThanOrEqual(bar.y);
+	// 사진 칸은 맨 위에 있고, 캡션은 그 바로 아래 붙는다. 사진은 칸을 가득 채운다 (cover)
+	const stage = (await viewer.locator('.photos-phone-stage').boundingBox())!;
+	const caption = (await info.locator('.photos-phone-caption').boundingBox())!;
+	expect(stage.height).toBeGreaterThan(90);
+	expect(Math.abs(stage.y + stage.height - caption.y)).toBeLessThanOrEqual(1);
+	const media = (await viewer.locator('.photos-phone-stage :is(img, video)').boundingBox())!;
+	expect(Math.round(media.width)).toBe(Math.round(stage.width));
+	expect(Math.round(media.height)).toBe(Math.round(stage.height));
 }
 
 test.describe('사진 (#21)', () => {
@@ -205,8 +212,11 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		await expect(info.getByRole('region', { name: '파일' })).toContainText(/\d+(\.\d)?MP · \d+ × \d+/);
 		await expect(info.getByRole('button', { name: 'QRU 큐알유 페이지 열기…' })).toBeVisible();
 		await expect(strip).toBeHidden();
-		// 정보는 스크롤 없이 한 번에 다 보이고, 아래 막대에 가리지 않는다 (사진이 그만큼 줄어든다)
+		// 정보는 스크롤 없이 한 번에 다 보이고, 아래 막대에 가리지 않는다. 사진 칸은 화면 폭의 정사각형
 		await expectInfoFits(viewer);
+		const square = (await viewer.locator('.photos-phone-stage').boundingBox())!;
+		expect(Math.round(square.height)).toBe(Math.round(square.width));
+		expect(Math.round(square.y)).toBe(Math.round((await viewer.boundingBox())!.y));
 
 		// 아래 막대에는 Safari(프로젝트 페이지) 단추가 없다. 프로젝트 페이지는 정보에서 연다
 		await expect(viewer.locator('.photos-phone-viewer-bar').getByRole('button')).toHaveCount(3);

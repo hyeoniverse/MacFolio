@@ -271,7 +271,7 @@ const PhoneViewer = ({
 				))}
 			</ul>
 
-			<div className="photos-phone-viewer-bar">
+			<div className={`photos-phone-viewer-bar ${info ? 'over-info' : ''}`}>
 				<button type="button" className="photos-phone-round" aria-label="공유" onClick={share}>
 					<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
 				</button>
