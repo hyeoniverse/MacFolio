@@ -201,10 +201,10 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 						<button
 							type="button"
 							className="photos-phone-circle"
-							aria-label="모음"
+							aria-label="모음으로"
 							onClick={() => switchTab('collections')}
 						>
-							<i className="fa-solid fa-layer-group" aria-hidden="true" />
+							<i className="fa-solid fa-images" aria-hidden="true" />
 						</button>
 						<div className="photos-phone-segments" role="group" aria-label="보기 방식">
 							<button type="button" aria-pressed={grouped} onClick={() => setGrouped(true)}>

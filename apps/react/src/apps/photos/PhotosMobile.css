@@ -23,9 +23,19 @@
 	overflow-y: auto;
 }
 
+/* iOS 사진처럼 사진이 상태 표시줄 뒤까지 깔린다: 창의 상태 표시줄 자리를 비우지 않고, 제목·크게 보기가 그만큼 내려온다.
+   보관함의 어두운 제목 띠 위에서는 상태 표시줄 글자를 흰색으로 */
+.container.mobile[data-app='photos']:has(.photos-phone) {
+	padding-top: 0;
+}
+
+body:has(.photos-phone-title.overlay) .mobile-statusbar.app {
+	color: #fff;
+}
+
 /* ─── 큰 제목 ─── */
 .photos-phone-title {
-	padding: 4px 16px 14px 64px;
+	padding: calc(var(--mobile-statusbar-height) + 4px) 16px 14px 64px;
 }
 
 .photos-phone-title h2 {
@@ -50,7 +60,7 @@
 	position: sticky;
 	top: 0;
 	z-index: 1;
-	margin-bottom: -86px;
+	margin-bottom: calc(-86px - var(--mobile-statusbar-height));
 	padding-bottom: 26px;
 	background: linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.32) 60%, transparent);
 	pointer-events: none;
@@ -65,7 +75,7 @@
 /* ─── 꽉 찬 격자 ─── */
 .photos-phone-grid {
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-template-columns: repeat(5, minmax(0, 1fr));
 	gap: 1px;
 	margin: 0;
 	padding: 0;
@@ -108,7 +118,7 @@
 }
 
 .photos-phone-group:first-of-type h3 {
-	padding-top: 96px;
+	padding-top: calc(96px + var(--mobile-statusbar-height));
 }
 
 .photos-phone-group h3 button {
@@ -316,4 +326,5 @@
 .photos-phone .photos-viewer {
 	position: absolute;
 	inset: 0;
+	padding-top: var(--mobile-statusbar-height);
 }

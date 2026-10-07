@@ -123,7 +123,7 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 
 	test('모음: 추억·고정됨·앨범 카드, 앨범을 누르면 그 격자로 들어가고 모음으로 돌아온다', async ({ page }) => {
 		const photos = await openPhone(page);
-		await photos.getByRole('navigation', { name: '사진 탭' }).getByRole('button', { name: '모음' }).click();
+		await photos.getByRole('navigation', { name: '사진 탭' }).getByRole('button', { name: '모음으로' }).click();
 		await expect(photos.getByRole('heading', { name: '모음', level: 2 })).toBeVisible();
 		for (const shelf of ['추억', '고정됨', '앨범'])
 			await expect(photos.getByRole('region', { name: shelf })).toBeVisible();
