@@ -740,3 +740,26 @@ test.describe('모바일', () => {
 		await expect(widgetPlay()).toHaveAttribute('aria-label', '재생');
 	});
 });
+
+test.describe('휴대폰 홈 화면 페이지', () => {
+	test.use({ viewport: { width: 375, height: 667 } });
+
+	test('앱이 다 들어가지 않으면 스크롤하지 않고 다음 페이지로, 점으로 넘긴다', async ({ page }) => {
+		await enterHome(page);
+		const pages = page.locator('.mobile-page');
+		expect(await pages.count()).toBeGreaterThan(1);
+		// 격자는 스크롤하지 않는다: 놓인 아이콘이 모두 그 페이지 안에 보인다
+		const first = page.getByRole('navigation', { name: '앱', exact: true });
+		expect(await first.evaluate((grid) => grid.scrollHeight <= grid.clientHeight)).toBe(true);
+
+		const dots = page.getByRole('tablist', { name: '홈 화면 페이지' });
+		await expect(dots.getByRole('tab', { name: '1쪽' })).toHaveAttribute('aria-selected', 'true');
+		await dots.getByRole('tab', { name: '2쪽' }).click();
+		await expect(dots.getByRole('tab', { name: '2쪽' })).toHaveAttribute('aria-selected', 'true');
+
+		// 2쪽의 앱도 연다
+		const second = page.getByRole('navigation', { name: '앱 2쪽' });
+		await second.locator('.mobile-app').first().click();
+		await expect(page.locator('.container.mobile')).toBeVisible();
+	});
+});
