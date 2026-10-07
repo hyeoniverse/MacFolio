@@ -1,5 +1,5 @@
-/* 사진 (휴대폰): iOS 사진처럼 꽉 찬 격자 위의 큰 제목, 가로로 넘기는 모음 카드, 아래에 떠 있는 유리 탭.
-   떠 있는 뒤로 가기(MobileNavigation floating)가 왼쪽 위에 있어 제목은 그 오른쪽에서 시작한다 (.phone-title과 같다) */
+/* 사진 (휴대폰): iOS 사진처럼 꽉 찬 격자 위의 큰 제목, 가로로 넘기는 모음 카드, 아래에 떠 있는 유리 탭과 검색.
+   떠 있는 뒤로 가기가 왼쪽 위에 있어 제목은 그 오른쪽에서 시작한다 (.phone-title과 같다) */
 .photos-phone {
 	--photos-phone-glass: color-mix(in srgb, var(--phone-card-bg, #fff) 78%, transparent);
 	position: relative;
@@ -23,19 +23,11 @@
 	overflow-y: auto;
 }
 
-/* iOS 사진처럼 사진이 상태 표시줄 뒤까지 깔린다: 창의 상태 표시줄 자리를 비우지 않고, 제목·크게 보기가 그만큼 내려온다.
-   보관함의 어두운 제목 띠 위에서는 상태 표시줄 글자를 흰색으로 */
-.container.mobile[data-app='photos']:has(.photos-phone) {
-	padding-top: 0;
-}
-
-body:has(.photos-phone-title.overlay) .mobile-statusbar.app {
-	color: #fff;
-}
+/* 사진은 상태 표시줄 뒤까지 깔린다 (앱은 화면 맨 위부터 그린다). 상태 표시줄 글자 색은 밑의 실제 화면(어두운 제목 띠)을 읽어 정한다 */
 
 /* ─── 큰 제목 ─── */
 .photos-phone-title {
-	padding: calc(var(--mobile-statusbar-height) + 4px) 16px 14px 64px;
+	padding: var(--phone-top) 72px 14px 64px;
 }
 
 .photos-phone-title h2 {
@@ -238,14 +230,16 @@ body:has(.photos-phone-title.overlay) .mobile-statusbar.app {
 	font-size: 16px;
 }
 
-/* ─── 아래에 떠 있는 유리 탭 ─── */
+/* ─── 아래에 떠 있는 탭(보관함·모음)과 검색: 어느 화면에서나 같다 ─── */
 .photos-phone-bar {
 	position: absolute;
 	right: 16px;
-	bottom: 18px;
+	bottom: calc(var(--phone-bottom-inset) + 4px);
 	left: 16px;
+	z-index: 5;
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	gap: 10px;
 	pointer-events: none;
 }
@@ -254,48 +248,34 @@ body:has(.photos-phone-title.overlay) .mobile-statusbar.app {
 	pointer-events: auto;
 }
 
-.photos-phone-circle {
+/* 떠 있는 동그란 단추 (검색, 닫기, 공유 등) */
+.photos-phone-round {
+	display: grid;
 	flex: none;
-	width: 56px;
-	height: 56px;
+	place-items: center;
+	width: 52px;
+	height: 52px;
+	padding: 0;
 	border: none;
 	border-radius: 50%;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
-	color: var(--color-accent);
-	font-size: 22px;
+	color: var(--color-text-strong);
+	font-size: 20px;
 }
 
-.photos-phone-segments,
 .photos-phone-tabs {
 	display: flex;
-	flex: 1;
 	gap: 4px;
+	width: min(240px, 66%);
 	padding: 4px;
 	border-radius: 999px;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
-}
-
-.photos-phone-segments button {
-	flex: 1;
-	height: 48px;
-	border: none;
-	border-radius: 999px;
-	background: none;
-	font-size: 16px;
-	font-weight: 600;
-}
-
-.photos-phone-segments button[aria-pressed='true'] {
-	background: var(--color-selected-bg);
-}
-
-.photos-phone-tabs {
-	flex: none;
-	width: min(260px, 70%);
 }
 
 .photos-phone-tabs button {
@@ -305,16 +285,16 @@ body:has(.photos-phone-title.overlay) .mobile-statusbar.app {
 	align-items: center;
 	justify-content: center;
 	gap: 2px;
-	height: 56px;
+	height: 52px;
 	border: none;
 	border-radius: 999px;
 	background: none;
 	font-size: 11px;
-	font-weight: 600;
+	font-weight: 500;
 }
 
 .photos-phone-tabs button i {
-	font-size: 20px;
+	font-size: 19px;
 }
 
 .photos-phone-tabs button[aria-selected='true'] {
@@ -322,9 +302,286 @@ body:has(.photos-phone-title.overlay) .mobile-statusbar.app {
 	color: var(--color-accent);
 }
 
-/* 크게 보기는 데스크톱과 같은 것을 쓴다 (PhotoParts의 Viewer) */
-.photos-phone .photos-viewer {
+/* 보관함 오른쪽 위: 보기 방식(앨범별·전체) */
+.photos-phone-more {
+	position: absolute;
+	top: var(--phone-top);
+	right: 16px;
+	z-index: 5;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: var(--photos-phone-glass);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	box-shadow: var(--phone-float-shadow);
+	color: var(--color-text-strong);
+	font-size: 18px;
+}
+
+/* ─── 검색: 큰 제목, 최근 항목 카드, 앨범 추천, 아래의 검색 칸 ─── */
+.photos-phone.search .photos-phone-title {
+	padding-left: 20px;
+}
+
+.photos-phone.search .photos-shelf h3 {
+	font-size: 22px;
+}
+
+.photos-phone.search .photos-card {
+	width: 44%;
+}
+
+.photos-phone-suggestions {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 26px 0 0;
+	padding: 0 20px;
+	list-style: none;
+}
+
+.photos-phone-suggestions button {
+	padding: 12px 20px;
+	border: none;
+	border-radius: 999px;
+	background: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+	font-size: 17px;
+	font-weight: 500;
+}
+
+.photos-phone-results {
+	margin: 0 0 10px;
+	padding: 0 20px;
+	color: var(--color-text-secondary);
+	font-size: 15px;
+}
+
+.photos-phone-search {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	gap: 10px;
+	height: 52px;
+	padding: 0 18px;
+	border-radius: 999px;
+	background: var(--photos-phone-glass);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	box-shadow: var(--phone-float-shadow);
+	font-size: 17px;
+}
+
+.photos-phone-search input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	outline: none;
+	background: none;
+	color: var(--color-text);
+	font: inherit;
+}
+
+/* ─── 크게 보기 (iOS 사진) ─── */
+.photos-phone-viewer {
 	position: absolute;
 	inset: 0;
-	padding-top: var(--mobile-statusbar-height);
+	display: flex;
+	flex-direction: column;
+	background: var(--phone-card-bg);
+}
+
+/* 가운데 제목 알약: 앨범과 사진 설명 (뒤로 가기·••• 와 같은 줄) */
+.photos-phone-viewer-title {
+	position: absolute;
+	top: var(--phone-top);
+	left: 50%;
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	max-width: calc(100% - 152px);
+	min-height: 44px;
+	padding: 4px 18px;
+	border-radius: 22px;
+	background: var(--photos-phone-glass);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	box-shadow: var(--phone-float-shadow);
+	transform: translateX(-50%);
+	text-align: center;
+}
+
+.photos-phone-viewer-title strong,
+.photos-phone-viewer-title span {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.photos-phone-viewer-title strong {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.photos-phone-viewer-title span {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.photos-phone-viewer-more {
+	position: absolute;
+	top: var(--phone-top);
+	right: 16px;
+	z-index: 5;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: var(--photos-phone-glass);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	box-shadow: var(--phone-float-shadow);
+	color: var(--color-text-strong);
+	font-size: 18px;
+}
+
+/* 사진: 위 단추 줄과 아래 띠·막대 사이를 채운다. 옆으로 밀어 넘긴다 */
+.photos-phone-stage {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+	margin-top: calc(var(--phone-top) + 56px);
+	overflow: hidden;
+	touch-action: pan-y;
+}
+
+.photos-phone-stage img,
+.photos-phone-stage video {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	user-select: none;
+}
+
+.photos-phone-info {
+	margin: 0 16px 10px;
+	padding: 14px 16px;
+	border-radius: 18px;
+	background: var(--phone-page-bg);
+	font-size: 14px;
+}
+
+.photos-phone-info h3 {
+	margin: 0 0 8px;
+	font-size: 16px;
+}
+
+.photos-phone-info dl {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 4px 14px;
+	margin: 0;
+}
+
+.photos-phone-info dt {
+	color: var(--color-text-secondary);
+}
+
+.photos-phone-info dd {
+	margin: 0;
+}
+
+/* 사진 띠: 작은 사진을 촘촘히, 지금 사진은 넓게 (iOS 사진) */
+.photos-phone-strip {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: 2px;
+	height: 48px;
+	margin: 0 0 12px;
+	padding: 0 50%;
+	overflow-x: auto;
+	list-style: none;
+	scrollbar-width: none;
+}
+
+.photos-phone-strip button {
+	display: block;
+	width: 30px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	background: var(--color-selected-bg);
+	overflow: hidden;
+	transition: width var(--duration-fast) var(--ease-out);
+}
+
+.photos-phone-strip button[aria-current='true'] {
+	width: 58px;
+	margin: 0 6px;
+}
+
+.photos-phone-strip :is(img, video) {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.photos-phone-strip .photos-video-badge {
+	display: none;
+}
+
+/* 아래 막대: 공유 · (좋아요 · 정보) · 프로젝트 페이지 */
+.photos-phone-viewer-bar {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0 16px calc(var(--phone-bottom-inset) + 4px);
+}
+
+.photos-phone-pill {
+	display: flex;
+	gap: 6px;
+	padding: 4px 10px;
+	border-radius: 999px;
+	background: var(--photos-phone-glass);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	box-shadow: var(--phone-float-shadow);
+}
+
+.photos-phone-pill button {
+	display: grid;
+	place-items: center;
+	width: 52px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-text-strong);
+	font-size: 20px;
+}
+
+.photos-phone-pill button[aria-label='좋아요'][aria-pressed='true'] {
+	color: #ff3b30;
+}
+
+/* 지우기는 오른쪽의 × 동그라미로: 브라우저의 검색 칸 지우기 단추는 숨긴다 */
+.photos-phone-search input::-webkit-search-cancel-button {
+	display: none;
 }
