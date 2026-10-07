@@ -6,6 +6,7 @@ import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import { closeSwitcher, getSwitcherScroll, openSwitcher, setSwitcherScroll } from '@/desktop/mobile/switcherStore';
 import { MobileNavContext, type MobileNav } from '@/desktop/window/mobileNav';
 import { env } from '@/shared/config/env';
+import { clearImmersiveApp, setImmersiveApp } from '@/desktop/mobile/immersiveStore';
 
 /** 카드를 위로 이만큼 밀면 앱을 닫는다 */
 const SWIPE_CLOSE_PX = 120;
@@ -65,6 +66,14 @@ const MobileAppFrame: React.FC<Props> = ({
 	// Esc는 떠 있는 뒤로 가기와 같다 (맨 앞 앱만). 앱 안의 팝오버·대화상자·쓰기 화면이 먼저다:
 	// 그들이 이 Esc를 썼으면(preventDefault) 뒤로 가지 않는다. 듣는 순서와 상관없게 이벤트가 다 돈 뒤에 본다
 	const foreground = !inSwitcher && foregroundApp(apps) === appName;
+
+	// 화면만 보기: 맨 앞에 있는 동안 상태 표시줄도 숨긴다 (MobileShell이 읽는다)
+	const immersive = foreground && !!nav?.immersive;
+	useEffect(() => {
+		if (!immersive) return;
+		setImmersiveApp(appName);
+		return () => clearImmersiveApp(appName);
+	}, [immersive, appName]);
 	useEffect(() => {
 		if (!foreground) return;
 		const onKeyDown = (event: KeyboardEvent) => {
@@ -168,7 +177,9 @@ const MobileAppFrame: React.FC<Props> = ({
 				    내용은 상태 표시줄 아래부터 화면 끝까지 쓰고, 홈 바도 내용 위에 떠 있다 */}
 				{/* 홈으로 가는 단추를 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다 */}
 				{(nav?.onBack || !nav?.hideHome) && (
-					<div className={`mobile-navbar ${nav?.placement === 'bottom' ? 'bottom' : ''}`}>
+					<div
+						className={`mobile-navbar ${nav?.placement === 'bottom' ? 'bottom' : ''} ${nav?.immersive ? 'hidden' : ''}`}
+					>
 						<button type="button" className="mobile-navbar-home" onClick={nav?.onBack ?? onHome}>
 							<i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
 							<span className="mobile-navbar-back-label">{nav?.backLabel ?? '홈'}</span>
