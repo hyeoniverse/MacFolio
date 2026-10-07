@@ -24,6 +24,7 @@ import {
 } from './files';
 import { DOC_PATHS, DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
+import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
 import FinderIcon from './FinderIcon';
 import '@/apps/finder/Finder.css';
@@ -106,6 +107,18 @@ const Finder: React.FC = () => {
 		setHistory((current) => ({ ...current, at: Math.min(current.places.length - 1, Math.max(0, current.at + delta)) }));
 		setSelected(null);
 	};
+
+	// 바깥에서 온 문서 열기 요청 (openDoc.ts). 묶어 둔 문서만 연다
+	useEffect(() => {
+		const take = () => {
+			const { path } = finderDocRequest.getState();
+			if (!path) return;
+			finderDocRequest.setState({ path: null });
+			if (DOC_SOURCES[path] !== undefined) go({ doc: path });
+		};
+		take();
+		return finderDocRequest.subscribe(take);
+	}, []);
 
 	const folder = 'folder' in place ? (find(locations, place.folder) as FolderItem | null) : null;
 	const searching = query.trim() !== '';
