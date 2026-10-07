@@ -86,35 +86,40 @@ const MenuBarMenus = () => {
 
 	return (
 		<div className="menubar-menus" ref={bar} role="group" aria-label="메뉴 막대">
-			{menus.map((menu, index) =>
-				// 항목이 없는 앱 메뉴(바탕화면의 Finder)는 눌러도 열 것이 없어서 이름만 보인다
-				menu.app && menu.items.length === 0 ? (
-					<span key={menu.title} className="menubar-title app-name">
-						{menu.title}
-					</span>
-				) : (
+			{menus.map((menu, index) => {
+				// 항목이 없는 앱 메뉴(바탕화면의 Finder)는 눌러도 열 것이 없다. 그래도 다른 앱 이름과 같은 단추로 그린다:
+				// 요소가 바뀌면 글자 자리가 달라지고(수직 정렬) 앱이 바뀔 때마다 새로 그려져 움찔거린다
+				const empty = menu.app && menu.items.length === 0;
+				return (
 					<button
-						key={menu.title}
+						// 앱 이름 자리는 앱이 바뀌어도 같은 단추 (새로 그리지 않고 글자만 바꾼다)
+						key={menu.app ? 'app-menu' : menu.title}
 						ref={(element) => {
 							titles.current[index] = element;
 						}}
 						type="button"
 						// 맨 앞은 굵은 앱 이름 메뉴 (macOS의 앱 메뉴)
 						className={`menubar-title ${menu.app ? 'app-name' : ''} ${current?.index === index ? 'open' : ''}`}
-						aria-haspopup="menu"
-						aria-expanded={current?.index === index}
+						aria-haspopup={empty ? undefined : 'menu'}
+						aria-expanded={empty ? undefined : current?.index === index}
 						// 키보드로 열면(detail 0) 첫 항목에 초점
-						onClick={(event) => (current?.index === index ? close() : openAt(index, event.detail === 0))}
+						onClick={(event) =>
+							empty ? undefined : current?.index === index ? close() : openAt(index, event.detail === 0)
+						}
 						// 메뉴가 열린 채 다른 제목으로 마우스를 옮기면 넘어간다. 마우스가 실제로 움직였을 때만:
 						// 앱 메뉴가 늦게 등록돼 제목이 밀려도, 가만히 있는 마우스 아래로 들어온 제목은 열지 않는다
 						onPointerMove={(event) =>
-							(event.movementX || event.movementY) && current && current.index !== index && openAt(index, false)
+							!empty &&
+							(event.movementX || event.movementY) &&
+							current &&
+							current.index !== index &&
+							openAt(index, false)
 						}
 					>
 						{menu.title}
 					</button>
-				)
-			)}
+				);
+			})}
 			{shortcutsOpen && <KeyboardShortcuts appLabel={label} menus={menus} onClose={closeShortcuts} />}
 			{current && (
 				<Menu
