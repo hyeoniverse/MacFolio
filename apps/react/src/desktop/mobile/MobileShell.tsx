@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
 import { foregroundApp } from '@/desktop/appStack';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
@@ -9,7 +9,9 @@ import { closeSwitcher, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
 import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { runningByRecency } from '@/desktop/appStack';
-import { isDarkColor, useBarColor } from '@/desktop/mobile/barColor';
+import { useStatusBarTone } from '@/desktop/mobile/statusBarTone';
+import { useSettings } from '@/shared/settings/settingsStore';
+import { resolveTheme } from '@/shared/settings/settings';
 import '@/desktop/mobile/MobileShell.css';
 
 /**
@@ -27,8 +29,11 @@ const MobileShell = () => {
 
 	const foreground = foregroundApp(apps);
 	const onApp = foreground !== null && !controlCenterOpen && !switcherOpen;
-	// 맨 앞 앱이 상태 표시줄 뒤를 어두운 머리 막대 색으로 칠했으면 글자는 흰색 (웹 페이지 앱)
-	const barColor = useBarColor(onApp ? foreground : null);
+	// 상태 표시줄 글자 색: 앱 위에서는 그 밑에 실제로 그려진 화면을 읽어 정한다 (iOS처럼). 읽을 수 없으면 화면 모드를 따른다
+	const statusBar = useRef<HTMLDivElement>(null);
+	const { theme } = useSettings();
+	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
+	const appTone = useStatusBarTone(statusBar, onApp, dark ? 'light' : 'dark', `${foreground}:${dark}`);
 
 	// Esc는 위에 열린 것부터 닫는다: 제어 센터, 앱 전환기 (그 아래 앱의 뒤로 가기가 이 Esc를 받지 않게 preventDefault)
 	useEffect(() => {
@@ -59,7 +64,9 @@ const MobileShell = () => {
 		<>
 			<MobileHome launch={launch} />
 			<MobileStatusBar
-				tone={onApp && !(barColor && isDarkColor(barColor)) ? 'app' : 'light'}
+				ref={statusBar}
+				tone={onApp ? appTone : 'light'}
+				onApp={onApp}
 				onOpen={() => setControlCenterOpen(true)}
 			/>
 			{switcherOpen && (
