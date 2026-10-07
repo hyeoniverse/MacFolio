@@ -1,5 +1,6 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
+import { fakeApi } from './fakeApi';
 
 /** 실제 메일 앱이 열리지 않도록 window.open을 가로채 연 주소만 기록한다 */
 async function openMail(page: Page) {
@@ -77,5 +78,72 @@ test.describe('메일', () => {
 		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeVisible();
 		await page.keyboard.press('Escape');
 		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeHidden();
+	});
+
+	test.describe('서버가 보낸다 (#25)', () => {
+		const write = async (page: Page) => {
+			const mail = appWindow(page, 'mail');
+			await mail.getByRole('button', { name: '새로운 메시지' }).click();
+			await mail.getByLabel('이름').fill('민수');
+			await mail.getByLabel('회신 주소').fill('minsu@example.com');
+			await mail.getByLabel('제목').fill('포트폴리오 잘 봤습니다');
+			await mail.getByLabel('내용').fill('안녕하세요!');
+			return mail;
+		};
+
+		test('서버가 보낼 수 있으면 메일 앱을 열지 않고 서버가 보낸다', async ({ page }) => {
+			const api = await fakeApi(page);
+			await openMail(page);
+			const mail = await write(page);
+			await mail.getByRole('button', { name: /보내기/ }).click();
+
+			await expect(mail.getByRole('region', { name: '보내기 결과' })).toContainText('메일을 보냈어요');
+			expect(api.contact.sent).toEqual([
+				{ name: '민수', email: 'minsu@example.com', subject: '포트폴리오 잘 봤습니다', body: '안녕하세요!' },
+			]);
+			expect(await opened(page)).toEqual([]);
+		});
+
+		test('사람 확인(Turnstile)을 켰으면 확인이 끝난 뒤 토큰과 함께 보낸다', async ({ page }) => {
+			const api = await fakeApi(page);
+			api.contact.turnstileSiteKey = '1x00000000000000000000AA';
+			// 바깥 스크립트 대신: 그리자마자 확인이 끝났다고 알리는 Turnstile
+			await page.route('https://challenges.cloudflare.com/turnstile/**', (route) =>
+				route.fulfill({
+					contentType: 'text/javascript',
+					body: `window.turnstile = { render(el, o) { el.textContent = '사람 확인 완료'; setTimeout(() => o.callback('test-token'), 50); return 'w1'; }, remove() {} };`,
+				})
+			);
+			await openMail(page);
+			const mail = await write(page);
+			await expect(mail.getByText('사람 확인 완료')).toBeVisible();
+			await mail.getByRole('button', { name: /보내기/ }).click();
+
+			await expect(mail.getByRole('region', { name: '보내기 결과' })).toContainText('메일을 보냈어요');
+			expect(api.contact.sent[0]).toMatchObject({ subject: '포트폴리오 잘 봤습니다', turnstileToken: 'test-token' });
+		});
+
+		test('서버에 메일 설정이 없으면(503) 메일 앱으로 넘긴다', async ({ page }) => {
+			const api = await fakeApi(page);
+			api.contact.enabled = false;
+			await openMail(page);
+			const mail = await write(page);
+			await mail.getByRole('button', { name: /보내기/ }).click();
+
+			await expect(mail.getByRole('region', { name: '보내기 결과' })).toContainText('메일 앱에서 보내기를 눌러 주세요');
+			expect((await opened(page))[0]).toMatch(/^mailto:hyeoniverse\.dev@gmail\.com\?/);
+		});
+
+		test('서버가 거절하면 이유를 보여 주고 쓰던 글은 그대로', async ({ page }) => {
+			const api = await fakeApi(page);
+			api.contact.reject = { status: 429, message: '오늘은 더 보낼 수 없습니다. 내일 다시 보내 주세요.' };
+			await openMail(page);
+			const mail = await write(page);
+			await mail.getByRole('button', { name: /보내기/ }).click();
+
+			await expect(mail.getByRole('alert')).toHaveText('오늘은 더 보낼 수 없습니다. 내일 다시 보내 주세요.');
+			await expect(mail.getByLabel('내용')).toHaveValue('안녕하세요!');
+			expect(api.contact.sent).toEqual([]);
+		});
 	});
 });

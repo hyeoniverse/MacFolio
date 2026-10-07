@@ -1,4 +1,4 @@
-// 메일 발송 인터페이스. 지금은 방문자의 메일 앱을 열고(mailto), 백엔드(#9)가 생기면 서버에서 직접 보낸다.
+// 메일 발송 인터페이스. 서버(#25)가 보낼 수 있으면 서버가 보내고, 아니면 방문자의 메일 앱을 연다(mailto).
 import type { ContactInput } from '../contact';
 
 export type SendResult =
@@ -8,7 +8,12 @@ export type SendResult =
 	| { status: 'handed-off' }
 	| { status: 'failed'; message: string };
 
+export interface SendOptions {
+	/** Cloudflare Turnstile이 준 토큰 (서버가 사람 확인을 켰을 때) */
+	turnstileToken?: string;
+}
+
 export interface MailSender {
 	/** 입력은 이미 검증된 값이다 (mail.validateContact) */
-	send(input: ContactInput): Promise<SendResult>;
+	send(input: ContactInput, options?: SendOptions): Promise<SendResult>;
 }

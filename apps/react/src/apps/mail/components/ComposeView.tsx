@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { PROFILE } from '@/shared/profile';
 import { LIMITS, validateContact, type ContactErrors, type ContactInput } from '../contact';
-import type { SendResult } from '../sender';
+import { fetchContactStatus, type ContactStatus, type SendOptions, type SendResult } from '../sender';
+import { env } from '@/shared/config/env';
+import Turnstile from './Turnstile';
 import Button from '@/shared/ui/button/Button';
 
 interface Props {
-	onSend: (input: ContactInput) => Promise<SendResult>;
+	onSend: (input: ContactInput, options?: SendOptions) => Promise<SendResult>;
 	onCancel: () => void;
 }
 
@@ -17,6 +19,19 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel }) => {
 	const [errors, setErrors] = useState<ContactErrors>({});
 	const [result, setResult] = useState<SendResult | null>(null);
 	const [sending, setSending] = useState(false);
+	// 서버가 보낼 수 있는지, 사람 확인(Turnstile)을 켰는지 (#25). 서버가 없으면 묻지 않는다 (메일 앱으로 보낸다)
+	const [contact, setContact] = useState<ContactStatus | null>(null);
+	const [token, setToken] = useState<string | null>(null);
+	const [widget, setWidget] = useState(0);
+	useEffect(() => {
+		if (!env.apiUrl) return;
+		let alive = true;
+		void fetchContactStatus(env.apiUrl).then((status) => alive && setContact(status));
+		return () => {
+			alive = false;
+		};
+	}, []);
+	const siteKey = contact?.turnstileSiteKey ?? null;
 
 	// Esc로 쓰기를 그만둔다
 	useEffect(() => {
@@ -37,9 +52,16 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel }) => {
 		const { value, errors: found } = validateContact(form);
 		setErrors(found);
 		if (Object.keys(found).length > 0 || sending) return;
+		if (siteKey && !token) {
+			setResult({ status: 'failed', message: '사람인지 확인하는 칸이 끝날 때까지 기다려 주세요.' });
+			return;
+		}
 		setSending(true);
 		try {
-			setResult(await onSend(value));
+			const sent = await onSend(value, { turnstileToken: token ?? undefined });
+			setResult(sent);
+			// 토큰은 한 번만 쓸 수 있다: 실패했으면 새로 받는다
+			if (sent.status === 'failed' && siteKey) setWidget((count) => count + 1);
 		} finally {
 			setSending(false);
 		}
@@ -96,6 +118,7 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel }) => {
 					{errors.body}
 				</p>
 			)}
+			{siteKey && <Turnstile siteKey={siteKey} resetKey={widget} onToken={setToken} />}
 			{result?.status === 'failed' && (
 				<p className="mail-error" role="alert">
 					{result.message}

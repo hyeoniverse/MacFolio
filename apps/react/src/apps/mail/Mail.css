@@ -335,6 +335,11 @@
 	border-bottom-color: var(--mail-error);
 }
 
+.mail-turnstile {
+	padding: 8px 16px;
+	text-align: left;
+}
+
 .mail-compose-row .mail-error {
 	flex-basis: 100%;
 	padding-left: 78px;

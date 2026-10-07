@@ -122,7 +122,7 @@ const Mail: React.FC = () => {
 							<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 받은 편지함
 						</button>
 						{composing ? (
-							<ComposeView onSend={(input) => getMailSender().send(input)} onCancel={backToList} />
+							<ComposeView onSend={(input, options) => getMailSender().send(input, options)} onCancel={backToList} />
 						) : selected ? (
 							<article key={selected.id} className="mail-reader-article" aria-label={selected.subject}>
 								<header className="mail-reader-header">
