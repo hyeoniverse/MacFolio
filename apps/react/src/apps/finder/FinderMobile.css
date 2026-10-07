@@ -304,3 +304,28 @@
 	padding-bottom: calc(var(--phone-bottom-inset) + 24px);
 	background-color: var(--phone-card-bg);
 }
+
+/* ─── 넘어갈 때 움직임 ─── */
+/* 폴더·문서로 들어가면 오른쪽에서, 돌아오면 왼쪽에서, 탭을 바꾸면 서서히 */
+.files-phone-scroll[data-motion='forward'] {
+	animation: nav-forward var(--duration) var(--ease-out);
+}
+
+.files-phone-scroll[data-motion='back'] {
+	animation: nav-back var(--duration) var(--ease-out);
+}
+
+.files-phone-scroll[data-motion='fade'] {
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+/* 가운데 작은 제목은 화면이 바뀌면 서서히 */
+.files-phone-bar-title {
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+/* 보기·정렬을 바꾸면 항목이 다시 떠오르고, 위치 묶음을 펼치면 위에서 내려온다 */
+.files-phone-items,
+.files-phone-places {
+	animation: rise-in var(--duration) var(--ease-out);
+}

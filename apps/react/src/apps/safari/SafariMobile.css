@@ -206,3 +206,41 @@
 	font-size: 16px;
 	font-weight: 600;
 }
+
+/* ─── 넘어갈 때 움직임 ─── */
+.safari-phone-page-wrap {
+	height: 100%;
+}
+
+/* 알약을 밀어 옆 탭으로: 민 쪽에서 다음 페이지가 들어온다 */
+.safari-phone-page-wrap[data-motion='next'] {
+	animation: nav-forward var(--duration) var(--ease-out);
+}
+
+.safari-phone-page-wrap[data-motion='prev'] {
+	animation: nav-back var(--duration) var(--ease-out);
+}
+
+/* 탭 모음에서 카드를 고르면 페이지가 살짝 커지며 돌아오고, 탭 모음은 화면이 작아지듯 나타난다 */
+.safari-phone-page-wrap[data-motion='zoom'] {
+	animation: safari-phone-zoom-in var(--duration) var(--ease-out);
+}
+
+.safari-phone.overview .safari-phone-tabs {
+	animation: safari-phone-zoom-out var(--duration) var(--ease-out);
+}
+
+@keyframes safari-phone-zoom-in {
+	from {
+		opacity: 0.5;
+		transform: scale(0.88);
+		border-radius: 22px;
+	}
+}
+
+@keyframes safari-phone-zoom-out {
+	from {
+		opacity: 0;
+		transform: scale(1.12);
+	}
+}

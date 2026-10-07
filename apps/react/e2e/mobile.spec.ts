@@ -283,6 +283,8 @@ test.describe('모바일', () => {
 		await page.mouse.move(pill.x + 20, pill.y + 22, { steps: 6 });
 		await page.mouse.up();
 		await expect(address).toHaveText('github.com/hyeoniverse/MacFolio');
+		// 민 쪽(왼쪽으로 밀었으니 오른쪽)에서 다음 페이지가 들어온다
+		await expect(safari.locator('.safari-phone-page-wrap')).toHaveAttribute('data-motion', 'next');
 		await expect(page.context().pages()).toHaveLength(1);
 
 		// ••• > 새로운 탭: 시작 페이지
@@ -316,6 +318,8 @@ test.describe('모바일', () => {
 
 		await safari.getByRole('button', { name: /NewPick.* 탭 보기/ }).tap();
 		await expect(safari.getByRole('list', { name: '열린 탭' })).toBeHidden();
+		// 탭 모음에서 고른 페이지는 살짝 커지며 돌아온다
+		await expect(safari.locator('.safari-phone-page-wrap')).toHaveAttribute('data-motion', 'zoom');
 		await expect(safari.locator('.safari-phone-address')).toContainText('newpick');
 
 		// 뒤로 가기(완료)로도 닫힌다
@@ -361,6 +365,8 @@ test.describe('모바일', () => {
 		await expect(files.getByRole('heading', { name: '둘러보기' })).toBeVisible();
 		await files.locator('.files-phone-places').getByRole('button', { name: '문서' }).tap();
 		await expect(files.locator('.files-phone-bar-title')).toHaveText('문서');
+		// 폴더로 들어가면 오른쪽에서 넘어온다
+		await expect(files.locator('.files-phone-scroll')).toHaveAttribute('data-motion', 'forward');
 		await expect(files.locator('.mobile-navbar-home')).toHaveText('둘러보기');
 
 		// ••• > 목록
@@ -375,6 +381,8 @@ test.describe('모바일', () => {
 		await files.locator('.mobile-navbar-home').tap();
 		await files.locator('.mobile-navbar-home').tap();
 		await expect(files.getByRole('heading', { name: '둘러보기' })).toBeVisible();
+		// 돌아오면 왼쪽에서
+		await expect(files.locator('.files-phone-scroll')).toHaveAttribute('data-motion', 'back');
 
 		// 검색은 위치 전체에서
 		await files.getByRole('searchbox', { name: '검색' }).fill('deploy');
