@@ -208,3 +208,37 @@ export function search(roots: FinderItem[], query: string): FinderItem[] {
 
 /** 폴더 안 항목 개수 안내 (예: '항목 3개') */
 export const countLabel = (count: number) => (count === 0 ? '비어 있음' : `항목 ${count}개`);
+
+/** 최근 항목 (휴대폰 파일 앱): 날짜가 있는 파일을 최신 순으로. 폴더와 앱은 빼고, limit개까지 */
+export function recentItems(roots: FinderItem[], limit = 30): FinderItem[] {
+	const found: FinderItem[] = [];
+	const walk = (items: FinderItem[]) =>
+		items.forEach((item) => {
+			if (item.kind === 'folder') walk(item.children);
+			else if (item.kind !== 'app' && item.modified) found.push(item);
+		});
+	walk(roots);
+	return found.sort((a, b) => b.modified!.localeCompare(a.modified!)).slice(0, limit);
+}
+
+export type SortKey = 'name' | 'kind' | 'date';
+
+const KIND_ORDER: FinderItem['kind'][] = ['folder', 'doc', 'post', 'project', 'app'];
+
+/** 정렬 (휴대폰 파일 앱의 ••• 메뉴): 이름순, 종류(폴더 먼저)마다 이름순, 날짜는 최신이 위로(날짜 없는 것은 아래에 이름순) */
+export function sortItems(items: FinderItem[], key: SortKey): FinderItem[] {
+	const byItemName = (a: FinderItem, b: FinderItem) => a.name.localeCompare(b.name, 'ko');
+	const compare: Record<SortKey, (a: FinderItem, b: FinderItem) => number> = {
+		name: byItemName,
+		kind: (a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind) || byItemName(a, b),
+		date: (a, b) =>
+			a.modified && b.modified
+				? b.modified.localeCompare(a.modified)
+				: a.modified
+					? -1
+					: b.modified
+						? 1
+						: byItemName(a, b),
+	};
+	return [...items].sort(compare[key]);
+}

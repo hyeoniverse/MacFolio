@@ -318,6 +318,51 @@ test.describe('모바일', () => {
 		await expect(safari.getByRole('list', { name: '열린 탭' })).toBeHidden();
 	});
 
+	test('파일은 iOS 파일 앱처럼: 최근 항목·둘러보기 탭, 폴더는 한 화면씩, ••• 로 목록 보기', async ({ page }) => {
+		await enterHome(page);
+		await (await homeApp(page, '파일')).tap();
+		const files = appWindow(page, 'finder');
+		const tabs = files.getByRole('navigation', { name: '파일 탭' });
+
+		// 최근 항목: 큰 제목, 날짜가 있는 글이 최신 순 격자. 첫 화면에는 홈 단추가 없다 (탭과 홈 바가 있다)
+		await expect(files.getByRole('heading', { name: '최근 항목' })).toBeVisible();
+		await expect(tabs.getByRole('button', { name: '최근 항목' })).toHaveAttribute('aria-current', 'true');
+		await expect(files.locator('.mobile-navbar-home')).toHaveCount(0);
+		const recents = files.getByRole('list', { name: '최근 항목' });
+		const dates = await recents.locator('.files-phone-summary').allTextContents();
+		expect(dates.length).toBeGreaterThan(3);
+		const asKey = (date: string) =>
+			date
+				.split('.')
+				.map((part) => part.trim().padStart(2, '0'))
+				.join('');
+		expect(dates.map(asKey)).toEqual([...dates.map(asKey)].sort().reverse());
+
+		// 둘러보기 > 문서: 가운데 작은 제목, 뒤로 가기는 '둘러보기'
+		await tabs.getByRole('button', { name: '둘러보기' }).tap();
+		await expect(files.getByRole('heading', { name: '둘러보기' })).toBeVisible();
+		await files.locator('.files-phone-places').getByRole('button', { name: '문서' }).tap();
+		await expect(files.locator('.files-phone-bar-title')).toHaveText('문서');
+		await expect(files.locator('.mobile-navbar-home')).toHaveText('둘러보기');
+
+		// ••• > 목록
+		await files.getByRole('button', { name: '보기 옵션' }).tap();
+		await page.getByRole('menuitemcheckbox', { name: '목록' }).tap();
+		await expect(files.locator('.files-phone-items.list')).toBeVisible();
+
+		// 문서를 열면 앱 안에서 읽고, 뒤로 가기로 폴더에 돌아온다
+		await files.getByRole('button', { name: /README\.md/ }).tap();
+		await expect(files.locator('.files-phone-bar-title')).toHaveText('README.md');
+		await expect(files.locator('.mobile-navbar-home')).toHaveText('문서');
+		await files.locator('.mobile-navbar-home').tap();
+		await files.locator('.mobile-navbar-home').tap();
+		await expect(files.getByRole('heading', { name: '둘러보기' })).toBeVisible();
+
+		// 검색은 위치 전체에서
+		await files.getByRole('searchbox', { name: '검색' }).fill('deploy');
+		await expect(files.getByRole('button', { name: /deployment\.md/ })).toBeVisible();
+	});
+
 	test('설정의 계정은 다른 설정 화면처럼 폭을 꽉 채운 카드다', async ({ page }) => {
 		await enterHome(page);
 		await (await homeApp(page, '시스템 설정')).tap();
