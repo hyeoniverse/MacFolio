@@ -242,6 +242,79 @@ test.describe('모바일', () => {
 		expect(await statusBar.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
 	});
 
+	test('Safari는 iOS Safari처럼: 페이지가 화면을 다 쓰고, 아래 막대(뒤로·주소·•••)로 다룬다. 주소를 밀면 옆 탭', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		await (await homeApp(page, 'Safari')).tap();
+		const safari = appWindow(page, 'safari');
+		const pageBox = (await safari.locator('.safari-page').boundingBox())!;
+		const { height } = page.viewportSize()!;
+		// 위 도구 막대·탭 막대 없이 페이지가 화면 맨 위부터 끝까지, 상태 표시줄은 흐린 유리
+		expect(pageBox.y).toBe(0);
+		expect(pageBox.height).toBe(height);
+		await expect(safari.locator('.safari-toolbar, .safari-tabs')).toHaveCount(0);
+		expect(await page.locator('.mobile-statusbar').evaluate((el) => getComputedStyle(el).backdropFilter)).toContain(
+			'blur'
+		);
+
+		// 아래 막대: 뒤로 가기, 주소 알약, ••• 가 한 줄
+		const back = (await safari.locator('.mobile-navbar-home').boundingBox())!;
+		const pill = (await safari.locator('.safari-phone-pill').boundingBox())!;
+		const more = (await safari.getByRole('button', { name: 'Safari 동작' }).boundingBox())!;
+		expect(back.y).toBe(pill.y);
+		expect(more.y).toBe(pill.y);
+		expect(back.x + back.width).toBeLessThan(pill.x);
+		const address = safari.locator('.safari-phone-address');
+		await expect(address).toHaveText('www.hyeoniverse.com');
+
+		// 주소 알약을 왼쪽으로 밀면 다음 탭 (주소 링크는 열리지 않는다)
+		await page.mouse.move(pill.x + pill.width - 20, pill.y + 22);
+		await page.mouse.down();
+		await page.mouse.move(pill.x + 20, pill.y + 22, { steps: 6 });
+		await page.mouse.up();
+		await expect(address).toHaveText('github.com/hyeoniverse/MacFolio');
+		await expect(page.context().pages()).toHaveLength(1);
+
+		// ••• > 새로운 탭: 시작 페이지
+		await safari.getByRole('button', { name: 'Safari 동작' }).tap();
+		await page.getByRole('menuitem', { name: '새로운 탭' }).tap();
+		await expect(safari.getByRole('region', { name: '시작 페이지' })).toBeVisible();
+		await expect(address).toHaveText('검색 또는 웹 사이트 이름 입력');
+	});
+
+	test('Safari 탭 모음: 탭마다 미리보기 카드, ×로 닫고, 카드를 누르면 그 탭으로 돌아온다', async ({ page }) => {
+		await enterHome(page);
+		await (await homeApp(page, 'Safari')).tap();
+		const safari = appWindow(page, 'safari');
+		await safari.getByRole('button', { name: /탭 모두 보기/ }).tap();
+		const cards = safari.getByRole('list', { name: '열린 탭' }).getByRole('listitem');
+		const count = await cards.count();
+		expect(count).toBeGreaterThan(2);
+		await expect(safari.locator('.safari-phone-count')).toHaveText(`${count}개의 탭`);
+		// 미리보기는 실제 페이지를 줄인 것이고 눌리지 않는다
+		await expect(cards.first().locator('.safari-phone-thumb-page > article.sp')).toHaveCount(1);
+		expect(
+			await cards
+				.first()
+				.locator('.safari-phone-thumb-page')
+				.evaluate((el) => (el as HTMLElement).inert)
+		).toBe(true);
+
+		await safari.getByRole('button', { name: /^QRU.* 탭 닫기$/ }).tap();
+		await expect(cards).toHaveCount(count - 1);
+		await expect(safari.locator('.safari-phone-count')).toHaveText(`${count - 1}개의 탭`);
+
+		await safari.getByRole('button', { name: /NewPick.* 탭 보기/ }).tap();
+		await expect(safari.getByRole('list', { name: '열린 탭' })).toBeHidden();
+		await expect(safari.locator('.safari-phone-address')).toContainText('newpick');
+
+		// 뒤로 가기(완료)로도 닫힌다
+		await safari.getByRole('button', { name: /탭 모두 보기/ }).tap();
+		await safari.locator('.mobile-navbar-home').tap();
+		await expect(safari.getByRole('list', { name: '열린 탭' })).toBeHidden();
+	});
+
 	test('설정의 계정은 다른 설정 화면처럼 폭을 꽉 채운 카드다', async ({ page }) => {
 		await enterHome(page);
 		await (await homeApp(page, '시스템 설정')).tap();
