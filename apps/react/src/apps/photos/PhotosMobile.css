@@ -709,3 +709,7 @@
 .photos-phone.search .photos-phone-bar {
 	animation: rise-in var(--duration) var(--ease-out);
 }
+
+.photos-phone-bar-spacer {
+	width: 52px;
+}
