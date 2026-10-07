@@ -2,23 +2,36 @@ import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
 import { fakeApi } from './fakeApi';
 
 test.describe("'활동 상태 보기' 앱 (#102)", () => {
-	test('방문자에게는 Launchpad에 없고, 열어도(터미널 open) 잠긴 화면만 보인다', async ({ page }) => {
+	test('방문자도 Launchpad에서 열어 공개 숫자를 본다. 들어온 곳의 주소·캠페인과 실시간은 관리자만', async ({
+		page,
+	}) => {
 		const api = await fakeApi(page);
 		await enterDesktop(page);
 		await dockItem(page, 'launchpad').click();
-		const launchpad = page.locator('.launchpad-modal');
-		await expect(launchpad.getByRole('button', { name: 'apidocs', exact: true })).toBeVisible();
-		await expect(launchpad.getByRole('button', { name: 'activity', exact: true })).toHaveCount(0);
-		await launchpad.click({ position: { x: 5, y: 5 } });
-
-		await dockItem(page, 'terminal').click();
-		const input = appWindow(page, 'terminal').getByRole('textbox', { name: '명령어 입력' });
-		await input.fill('open activity');
-		await input.press('Enter');
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
 		const activity = appWindow(page, 'activity');
+
+		await expect(activity.locator('.activity-stats')).toContainText('방문1,284▲ +12%');
+		await expect(activity.getByRole('table', { name: '가장 많이 연 앱' })).toContainText('메모900');
+		// 들어온 곳은 주소 대신 묶음으로
+		await expect(activity.getByRole('table', { name: '가장 많이 들어온 곳' })).toHaveCount(0);
+		await expect(activity.getByRole('table', { name: '들어온 곳' })).toContainText('링크412');
+
+		await activity.getByRole('tab', { name: '유입 경로' }).click();
+		await expect(activity.getByRole('table', { name: '묶어 보기' }).locator('tbody tr')).toHaveText([
+			/^링크412/,
+			/^직접301/,
+			/^소셜188/,
+			/^검색90/,
+		]);
+		await expect(activity.getByRole('table', { name: '들어온 곳' })).toHaveCount(0);
+		await expect(activity.getByRole('table', { name: '캠페인 (utm_campaign)' })).toHaveCount(0);
 		await expect(activity.getByRole('heading', { name: '관리자만 볼 수 있습니다' })).toBeVisible();
-		await expect(activity.getByRole('tablist')).toHaveCount(0);
-		expect(api.analyticsQueries).toEqual([]);
+
+		await activity.getByRole('tab', { name: '실시간' }).click();
+		await expect(activity.getByRole('heading', { name: '관리자만 볼 수 있습니다' })).toBeVisible();
+		await expect(activity.getByRole('button', { name: '관리자 로그인…' })).toBeVisible();
+		expect(api.analyticsQueries.some((query) => query.includes('minutes'))).toBe(false);
 	});
 
 	test('관리자: 개요(앞 기간 대비, 그래프, 많이 연 앱·들어온 곳) → 탭과 기간을 바꾸고 표를 정렬한다', async ({
@@ -67,7 +80,14 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 
 		// 앱·글, 지역·기기
 		await activity.getByRole('tab', { name: '앱·글' }).click();
-		await expect(activity.getByRole('table', { name: '글·프로젝트' })).toContainText('메모 › cra-to-vite');
+		// 블로그 글은 제목으로: 전체 기간 조회수와 이 기간의 보기
+		await expect(activity.getByRole('table', { name: '블로그 글 조회수 (전체 기간)' }).locator('tbody tr')).toHaveText([
+			/^CRA에서 Vite로 옮기기42/,
+			/^Markdown 블로그에 글쓰기 붙이기7/,
+		]);
+		await expect(activity.getByRole('table', { name: '글·프로젝트 (이 기간)' })).toContainText(
+			'메모 › CRA에서 Vite로 옮기기'
+		);
 		await activity.getByRole('tab', { name: '지역·기기' }).click();
 		await expect(activity.getByRole('table', { name: '나라' })).toContainText('대한민국 (KR)');
 		await expect(activity.getByRole('table', { name: '기기' })).toContainText('모바일');
@@ -91,5 +111,21 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 			/메모 › cra-to-vite 보기$/,
 			/github\.com\/hyeoniverse 누름$/,
 		]);
+	});
+
+	test('블로그 글 머리에 조회수 (전체 기간). 서버가 없으면 감춘다', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page, '/memo/cra-to-vite');
+		const memo = appWindow(page, 'memo');
+		await expect(memo.locator('.memo-reader-date')).toContainText('조회 42');
+		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
+		await expect(memo.locator('.memo-reader-date')).toContainText('조회 7');
+	});
+
+	test('서버가 없으면 블로그 글에 조회수가 없다', async ({ page }) => {
+		await enterDesktop(page, '/memo/cra-to-vite');
+		const memo = appWindow(page, 'memo');
+		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText('CRA에서 Vite로 옮기기');
+		await expect(memo.locator('.memo-reader-date')).not.toContainText('조회');
 	});
 });

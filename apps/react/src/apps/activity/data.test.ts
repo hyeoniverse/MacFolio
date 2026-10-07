@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { change, eventLabel, formatDuration, groupRows, kstToday, labelOf, periodRange, referrerGroup } from './data';
+import { change, eventLabel, formatDuration, kstToday, labelOf, periodRange } from './data';
 
 describe('활동 상태 보기의 값 바꾸기', () => {
 	it('기간은 오늘(한국 시간)까지', () => {
@@ -21,31 +21,6 @@ describe('활동 상태 보기의 값 바꾸기', () => {
 		expect(formatDuration(161)).toBe('2분 41초');
 		expect(formatDuration(42)).toBe('42초');
 		expect(formatDuration(null)).toBe('–');
-	});
-
-	it('들어온 곳 묶기: 검색, 소셜, 직접, 링크', () => {
-		expect(referrerGroup('www.google.com')).toBe('검색');
-		expect(referrerGroup('search.naver.com')).toBe('검색');
-		expect(referrerGroup('www.linkedin.com')).toBe('소셜');
-		expect(referrerGroup('t.co')).toBe('소셜');
-		expect(referrerGroup('')).toBe('직접');
-		expect(referrerGroup('github.com')).toBe('링크');
-		expect(
-			groupRows(
-				[
-					{ key: 'github.com', value: 3 },
-					{ key: 'www.google.com', value: 2 },
-					{ key: 'velog.io', value: 1 },
-					{ key: '', value: 4 },
-				],
-				referrerGroup
-			)
-		).toEqual([
-			{ key: '직접', value: 4 },
-			{ key: '링크', value: 3 },
-			{ key: '검색', value: 2 },
-			{ key: '소셜', value: 1 },
-		]);
 	});
 
 	it('표의 이름: 앱 이름, 나라 이름, 빈 값', () => {

@@ -14,6 +14,7 @@ const StatTable = ({
 	valueLabel = '방문',
 	limit,
 	empty = '아직 없습니다',
+	labelFor,
 }: {
 	title: string;
 	rows: Row[];
@@ -21,10 +22,15 @@ const StatTable = ({
 	valueLabel?: string;
 	limit?: number;
 	empty?: string;
+	/** 표에 보일 이름을 직접 정한다 (예: 글 주소 → 글 제목). 없으면 metric으로 정한다 */
+	labelFor?: (key: string) => string;
 }) => {
 	const [sort, setSort] = useState<{ key: SortKey; descending: boolean }>({ key: 'value', descending: true });
 	const total = rows.reduce((sum, row) => sum + row.value, 0);
-	const named = rows.map((row) => ({ ...row, name: metric ? labelOf(metric, row.key) : row.key || '알 수 없음' }));
+	const named = rows.map((row) => ({
+		...row,
+		name: labelFor ? labelFor(row.key) : metric ? labelOf(metric, row.key) : row.key || '알 수 없음',
+	}));
 	const sorted = [...named].sort((a, b) => {
 		const order = sort.key === 'value' ? a.value - b.value : a.name.localeCompare(b.name, 'ko');
 		return sort.descending ? -order : order;

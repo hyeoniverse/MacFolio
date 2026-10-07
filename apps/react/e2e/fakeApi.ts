@@ -44,6 +44,8 @@ export interface FakeApiState {
 	analyticsSummary: Record<string, unknown>;
 	analyticsLive: Record<string, unknown>[];
 	analyticsQueries: string[];
+	/** /analytics/views가 알려 줄 항목마다 조회수 (앱 → 항목 → 수) */
+	analyticsViews: Record<string, Record<string, number>>;
 	/** GitHub 앱: 프로필, README, 보일 저장소, GitHub에 있는 저장소 (listed: 고를 수 있는 목록에 나온다) */
 	github: {
 		followers: number;
@@ -292,6 +294,7 @@ export async function fakeApi(
 		analyticsSummary: fakeAnalyticsSummary(),
 		analyticsLive: fakeAnalyticsLive(),
 		analyticsQueries: [],
+		analyticsViews: { memo: { 'cra-to-vite': 42, 'post-editor': 7 } },
 		github: {
 			followers: 42,
 			readme: FAKE_README,
@@ -369,11 +372,27 @@ export async function fakeApi(
 			state.analytics.push(JSON.parse(request.postData() ?? '{}'));
 			return route.fulfill({ status: 204, headers: cors(origin) });
 		}
-		if (path === '/analytics/summary' || path === '/analytics/live') {
+		// 요약은 누구나: 방문자에게는 들어온 곳의 호스트·utm을 뺀 공개용 (서버와 같다)
+		if (path === '/analytics/summary') {
+			state.analyticsQueries.push(new URL(request.url()).search);
+			const summary = state.analyticsSummary as { breakdown: Record<string, unknown> };
+			const json = state.signedIn
+				? summary
+				: { ...summary, scope: 'public', breakdown: { ...summary.breakdown, referrer: [], source: [], campaign: [] } };
+			return route.fulfill({ status: 200, headers: cors(origin), json });
+		}
+		if (path === '/analytics/live') {
 			if (!state.signedIn) return route.fulfill(unauthorized);
 			state.analyticsQueries.push(new URL(request.url()).search);
-			const json = path === '/analytics/summary' ? state.analyticsSummary : state.analyticsLive;
-			return route.fulfill({ status: 200, headers: cors(origin), json });
+			return route.fulfill({ status: 200, headers: cors(origin), json: state.analyticsLive });
+		}
+		if (path === '/analytics/views') {
+			const app = new URL(request.url()).searchParams.get('app') ?? '';
+			return route.fulfill({
+				status: 200,
+				headers: cors(origin),
+				json: { app, views: state.analyticsViews[app] ?? {} },
+			});
 		}
 		if (path === '/analytics/today')
 			return route.fulfill({
@@ -851,12 +870,19 @@ function fakeAnalyticsSummary() {
 	const days = ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07'];
 	const visits = [150, 180, 160, 210, 190, 170, 224];
 	return {
+		scope: 'admin',
 		from: days[0],
 		to: days.at(-1),
 		days: days.map((day, index) => ({ day, visits: visits[index], visitors: Math.round(visits[index] * 0.7) })),
 		totals: { visits: 1284, visitors: 902, appOpens: 3410, avgDurationSec: 161 },
 		previous: { visits: 1146, visitors: 950, appOpens: 3410, avgDurationSec: 150 },
 		breakdown: {
+			referrerGroup: [
+				{ key: '링크', value: 412 },
+				{ key: '직접', value: 301 },
+				{ key: '소셜', value: 188 },
+				{ key: '검색', value: 90 },
+			],
 			referrer: [
 				{ key: 'github.com', value: 412 },
 				{ key: '', value: 301 },
