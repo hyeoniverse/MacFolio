@@ -623,7 +623,7 @@ test.describe('모바일', () => {
 	test('목록형 앱은 메모처럼 떠 있는 뒤로 가기와 큰 제목을 쓴다', async ({ page }) => {
 		await enterHome(page);
 		for (const [label, appName, title] of [
-			['메일', 'mail', '받은 편지함'],
+			['메일', 'mail', '메일상자'],
 			['메시지', 'messages', '메시지'],
 			['음악', 'music', '보관함'],
 			['시스템 설정', 'settings', '설정'],
@@ -742,19 +742,94 @@ test.describe('모바일', () => {
 		await expect(topNames()).toHaveText(['개발기', '읽을거리', '디자인']);
 	});
 
-	test('메일은 목록과 읽기·쓰기를 한 화면씩 보여준다', async ({ page }) => {
+	test('메일은 iOS 메일처럼: 메일상자 → 사서함 → 메일로 한 화면씩, 넘어갈 때 옆으로 밀려 들어온다', async ({
+		page,
+	}) => {
 		await enterHome(page);
 		await (await homeApp(page, '메일')).tap();
 		const mail = appWindow(page, 'mail');
-		const list = mail.getByRole('region', { name: '받은 편지함' });
+		const page_ = mail.locator('.mail-phone-page');
+		await expect(mail.getByRole('heading', { name: '메일상자' })).toBeVisible();
+		await expect(page_).not.toHaveAttribute('data-direction');
 
-		await expect(list).toBeVisible();
+		// 받은 편지함으로 들어가면 오른쪽에서 (앞으로)
+		await mail
+			.getByRole('list', { name: '메일상자' })
+			.getByRole('button', { name: /받은 편지함/ })
+			.tap();
+		await expect(mail.getByRole('heading', { name: '받은 편지함' })).toBeVisible();
+		await expect(page_).toHaveAttribute('data-direction', 'forward');
+
+		// 메일 한 통: 받는 사람, 이전·다음, 아래의 답장
+		await mail.locator('.mail-phone-item').first().tap();
+		const article = mail.getByRole('article', { name: '방문해 주셔서 감사합니다!' });
+		await expect(article).toContainText('받는 사람: 방문자님');
+		await expect(mail.getByRole('button', { name: '이전 메일' })).toBeDisabled();
+
+		// 뒤로 가면 왼쪽에서 (뒤로)
+		await mail.locator('.mobile-navbar-home').tap();
+		await expect(mail.getByRole('heading', { name: '받은 편지함' })).toBeVisible();
+		await expect(page_).toHaveAttribute('data-direction', 'back');
+	});
+
+	test('메일 쓰기와 답장은 아래에서 올라오는 시트: ×로 닫으면 내려가며 사라지고, 답장은 Re: 제목으로 쓴다', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		await (await homeApp(page, '메일')).tap();
+		const mail = appWindow(page, 'mail');
+
 		await mail.getByRole('button', { name: '새로운 메시지' }).tap();
-		await expect(list).toBeHidden();
-		await expect(mail.getByRole('textbox', { name: '제목' })).toBeVisible();
+		const sheet = mail.getByRole('dialog', { name: '새로운 메시지' });
+		await expect(sheet.getByRole('heading', { name: '새로운 메시지' })).toBeVisible();
+		await sheet.getByRole('textbox', { name: '제목' }).fill('안녕하세요');
+		// 큰 제목은 쓴 제목을 따른다
+		await expect(sheet.getByRole('heading', { name: '안녕하세요' })).toBeVisible();
 
-		await mail.getByRole('button', { name: '받은 편지함' }).tap();
-		await expect(list).toBeVisible();
+		// 닫으면 바로 사라지지 않고 내려가는 동안 남아 있다
+		await sheet.getByRole('button', { name: '취소' }).tap();
+		await expect(mail.locator('.mail-phone-sheet-layer.closing')).toHaveCount(1);
+		await expect(sheet).toBeHidden();
+
+		// 방문자의 답장: 받은 메일에서 답장 → 메일 동작 → 답장은 주인에게 Re: 제목의 새 메일
+		await mail
+			.getByRole('list', { name: '메일상자' })
+			.getByRole('button', { name: /받은 편지함/ })
+			.tap();
+		await mail.locator('.mail-phone-item').first().tap();
+		await mail.getByRole('button', { name: '답장' }).tap();
+		const actions = mail.getByRole('dialog', { name: '메일 동작' });
+		await actions.getByRole('button', { name: '답장' }).tap();
+		await expect(
+			mail.getByRole('dialog', { name: '새로운 메시지' }).getByRole('textbox', { name: '제목' })
+		).toHaveValue('Re: 방문해 주셔서 감사합니다!');
+	});
+
+	test('관리자는 휴대폰에서도 받은 메일에 답장 시트로 답장하고, 그 메일 아래에 붙는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterHome(page);
+		await (await homeApp(page, '메일')).tap();
+		const mail = appWindow(page, 'mail');
+		await mail
+			.getByRole('list', { name: '메일상자' })
+			.getByRole('button', { name: /받은 편지함/ })
+			.tap();
+		await mail.locator('.mail-phone-item', { hasText: '채용 제안드립니다' }).tap();
+		await mail.getByRole('button', { name: '답장' }).tap();
+		await mail.getByRole('dialog', { name: '메일 동작' }).getByRole('button', { name: '답장' }).tap();
+
+		const reply = mail.getByRole('form', { name: '답장 쓰기' });
+		await expect(reply.getByRole('heading', { name: 'Re: 채용 제안드립니다' })).toBeVisible();
+		await expect(reply).toContainText('받는 사람:민수');
+		// 원래 메일을 인용한다
+		await expect(reply.locator('.mail-phone-quote')).toContainText('민수 <minsu@example.com> 작성:');
+		await reply.getByLabel('답장 내용').fill('연락 주셔서 감사합니다!');
+		await reply.getByRole('button', { name: '답장 보내기' }).tap();
+
+		await expect(
+			mail.getByRole('article', { name: '채용 제안드립니다' }).getByRole('list', { name: '답장' })
+		).toContainText('연락 주셔서 감사합니다!');
+		expect(api.contact.replies).toEqual([{ id: 'mail-a', body: '연락 주셔서 감사합니다!' }]);
 	});
 
 	test('음악: 보관함 → 플레이리스트 → 곡을 누르면 재생되고, 미니 플레이어로 지금 재생 중을 연다', async ({ page }) => {
