@@ -274,6 +274,8 @@
 .mobile-navbar.bottom {
 	top: auto;
 	bottom: calc(var(--phone-bottom-inset) + 4px);
+	/* 위쪽 여백(상태 표시줄 + 6px)은 위에 둘 때만. 아래에서는 단추가 홈 바 바로 위에 온다 */
+	padding-block: 0;
 }
 
 /* 뒤로 가기: 동그란 단추. 글자(홈, 받은 편지함 등)는 화면 읽기 프로그램에만 */

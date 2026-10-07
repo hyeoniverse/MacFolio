@@ -41,8 +41,10 @@ for (const { id } of PROJECT_APPS) {
 	APP_COMPONENTS[id as AppName] = Component;
 }
 
-/** 남의 웹 페이지를 통째로 띄우는 앱 (WebFrame). 휴대폰에서는 페이지가 상태 표시줄 밑까지 그려진다 */
+/** 웹 페이지를 화면 가득 보여 주는 앱: Safari와, 남의 페이지를 통째로 띄우는 앱(WebFrame).
+ * 휴대폰에서는 페이지가 상태 표시줄 밑까지 그려져, 상태 표시줄에 흐린 유리를 깐다 */
 export const WEB_PAGE_APPS: ReadonlySet<AppName> = new Set<AppName>([
+	'safari',
 	'apidocs',
 	...PROJECT_APPS.map(({ id }) => id as AppName),
 ]);
