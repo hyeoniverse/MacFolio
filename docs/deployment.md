@@ -226,10 +226,19 @@ chmod 600 .env api.env
 ```bash
 cat > compose.yml <<'EOF'
 name: macfolio
+
+# 로그가 디스크를 채우지 않게: 컨테이너마다 10MB짜리 3개까지만 남긴다
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '3'
+
 services:
   db:
     image: postgres:17-alpine
     restart: unless-stopped
+    logging: *logging
     environment:
       POSTGRES_USER: macfolio
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -245,6 +254,7 @@ services:
     # GitHub Actions가 만든 이미지 (서버에서 빌드하지 않는다). 태그는 .env의 API_TAG, ops/deploy.sh가 바꾼다
     image: ghcr.io/hyeoniverse/macfolio-api:${API_TAG:?API_TAG가 없다. ~/macfolio/ops/deploy.sh <태그>로 배포한다}
     restart: unless-stopped
+    logging: *logging
     env_file: api.env
     environment:
       DATABASE_URL: postgresql://macfolio:${DB_PASSWORD}@db:5432/macfolio
@@ -255,6 +265,7 @@ services:
   tunnel:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
+    logging: *logging
     command: tunnel --no-autoupdate run
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN}
@@ -417,6 +428,26 @@ docker compose ps
 docker compose logs --tail=100 api
 docker compose logs --tail=100 tunnel
 ```
+
+#### 로그 로테이션
+
+Docker는 기본으로 컨테이너 로그를 지우지 않아서, 오래 두면 디스크를 채운다. 위 `compose.yml`의 `x-logging`이 컨테이너마다 10MB짜리 파일 3개(30MB)까지만 남긴다. 이 설정이 없던 서버라면 `compose.yml`의 `name: macfolio` 아래에 `x-logging` 덩어리를, 서비스 셋(db, api, tunnel)의 `restart:` 아래에 `logging: *logging`을 넣고 다시 만든다.
+
+```bash
+cd ~/deploy
+docker compose config --quiet && echo OK     # 들여쓰기 확인
+docker compose up -d                         # 설정이 바뀐 컨테이너를 다시 만든다 (몇 초 끊긴다, DB 데이터는 볼륨에 남는다)
+docker inspect --format '{{.Name}} {{.HostConfig.LogConfig.Config}}' $(docker compose ps -q)   # 셋 다 max-size:10m
+```
+
+#### 업타임 감시
+
+GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분마다 바깥에서 `https://macfolio-api.hyeoniverse.com/health`(서버와 DB)와 사이트를 불러 본다. 배포 중 잠깐 끊긴 것으로 알리지 않게 30초 간격으로 세 번 더 시도하고, 그래도 안 되면 실행이 실패하고 GitHub이 메일로 알린다.
+
+- 알림은 예약 실행의 cron을 마지막으로 바꾼 사람(지금은 저장소 주인)에게 간다. GitHub **Settings → Notifications → Actions**에서 실패 알림이 켜져 있는지 확인한다
+- 기록은 저장소의 **Actions → uptime**에서 본다. **Run workflow**로 바로 한 번 돌릴 수도 있다
+- 예약 실행은 GitHub 사정으로 몇 분씩 늦게 돌 수 있다. 공개 저장소라 실행 시간은 무료다
+- 저장소에 60일 동안 활동이 없으면 GitHub이 예약 실행을 멈춘다. 그때는 Actions에서 다시 켠다
 
 ### 백업
 
@@ -610,4 +641,5 @@ Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Al
 
 [#10](https://github.com/hyeoniverse/MacFolio/issues/10)에서 이어서 한다.
 
-- 외부 업타임 모니터링으로 `/health` 감시
+- 계정을 Pay As You Go로 올려 유휴 회수에서 빼고 Budget 알림 걸기 ([유휴 회수](#유휴-회수))
+- 실제 사용률을 1~2주 관찰하기

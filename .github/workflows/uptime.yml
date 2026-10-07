@@ -1,0 +1,26 @@
+name: uptime
+
+# 업타임 감시 (#10): 10분마다 바깥에서 API의 /health와 사이트를 불러 본다.
+# 실패하면 이 실행이 실패하고, GitHub이 메일로 알린다 (예약 실행의 알림은 이 파일의 cron을 마지막으로 바꾼 사람에게 간다).
+# 배포 중의 잠깐 끊김으로 알리지 않게 30초 간격으로 세 번 더 시도한다.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+jobs:
+  uptime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: API /health (서버와 DB)
+        run: |
+          body=$(curl -fsS --max-time 15 --retry 3 --retry-delay 30 --retry-all-errors https://macfolio-api.hyeoniverse.com/health)
+          echo "$body"
+          jq -e '.status == "ok" and .database == "up"' <<<"$body" > /dev/null
+      - name: 사이트
+        run: curl -fsS -o /dev/null --max-time 15 --retry 3 --retry-delay 30 --retry-all-errors https://macfolio.hyeoniverse.com/
