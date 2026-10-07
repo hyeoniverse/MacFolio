@@ -88,3 +88,25 @@ test.describe('음악', () => {
 		await expect(music.getByRole('heading', { name: '보관함' })).toBeVisible();
 	});
 });
+
+test('재생과 일시 정지를 오가도 단추가 움직이지 않는다 (아이콘 폭이 달라도)', async ({ page }) => {
+	await enterDesktop(page);
+	await dockItem(page, 'music').click();
+	const play = page.locator('.music-play');
+	await expect(play).toBeVisible();
+	const layout = () =>
+		page.evaluate(() => {
+			const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect();
+			return {
+				play: box('.music-play').width,
+				next: box('.music-play + button').x,
+				previous: box('.music-transport button:has(+ .music-play)').x,
+				bar: box('.macos-statusbar [aria-label="다음 곡"]').x,
+			};
+		});
+	const before = await layout();
+	await play.click();
+	await expect(play).toHaveAttribute('aria-label', /재생|일시 정지/);
+	await page.waitForTimeout(100);
+	expect(await layout()).toEqual(before);
+});
