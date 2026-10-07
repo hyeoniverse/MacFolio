@@ -146,4 +146,73 @@ test.describe('메일', () => {
 			expect(api.contact.sent).toEqual([]);
 		});
 	});
+
+	test.describe('보낸 편지함과 관리자 받은 편지함', () => {
+		test('보낸 메일은 이 브라우저의 보낸 편지함에 들어간다 (처음에는 비어 있다)', async ({ page }) => {
+			await fakeApi(page);
+			const mail = await openMail(page);
+			await mail.getByRole('button', { name: '보낸 편지함' }).click();
+			await expect(mail.getByText('보낸 메일이 없습니다. 이 브라우저에서 보낸 메일만 보입니다.')).toBeVisible();
+
+			await mail.getByRole('button', { name: '새로운 메시지' }).click();
+			await mail.getByLabel('이름').fill('민수');
+			await mail.getByLabel('회신 주소').fill('minsu@example.com');
+			await mail.getByLabel('제목').fill('포트폴리오 잘 봤습니다');
+			await mail.getByLabel('내용').fill('안녕하세요!');
+			await mail.getByRole('button', { name: /보내기/ }).click();
+			await mail.getByRole('region', { name: '보내기 결과' }).getByRole('button', { name: '확인' }).click();
+
+			const list = mail.getByRole('region', { name: '보낸 편지함' });
+			await expect(list.locator('.mail-item')).toHaveCount(1);
+			await list.locator('.mail-item', { hasText: '포트폴리오 잘 봤습니다' }).click();
+			const article = mail.getByRole('article', { name: '포트폴리오 잘 봤습니다' });
+			await expect(article).toContainText('받는 사람: 김정현 <hyeoniverse.dev@gmail.com>');
+			// 방문자는 답장을 쓸 수 없다
+			await expect(article.getByRole('form', { name: '답장 쓰기' })).toHaveCount(0);
+		});
+
+		test('주인이 답장하면 보낸 편지함의 그 메일 아래에 보인다', async ({ page }) => {
+			const api = await fakeApi(page);
+			api.contact.mine = [
+				{
+					id: 'mail-1',
+					name: '민수',
+					email: 'minsu@example.com',
+					subject: '채용 제안드립니다',
+					body: '이야기 나눠 보고 싶습니다.',
+					createdAt: '2026-10-07T03:00:00.000Z',
+					replies: [{ id: 'r1', body: '연락 주셔서 감사합니다!', createdAt: '2026-10-07T05:00:00.000Z' }],
+				},
+			];
+			const mail = await openMail(page);
+			await mail.getByRole('button', { name: '보낸 편지함' }).click();
+			await expect(mail.locator('.mail-item')).toContainText('답장 1');
+			await mail.locator('.mail-item', { hasText: '채용 제안드립니다' }).click();
+			const thread = mail.getByRole('list', { name: '답장' });
+			await expect(thread).toContainText('김정현');
+			await expect(thread).toContainText('연락 주셔서 감사합니다!');
+		});
+
+		test('관리자: 받은 편지함에 받은 모든 메일, 앱에서 답장하면 그 메일 아래에 붙는다', async ({ page }) => {
+			const api = await fakeApi(page, { signedIn: true });
+			const mail = await openMail(page);
+			const inbox = mail.getByRole('region', { name: '받은 편지함' });
+			await expect(inbox.locator('.mail-item')).toHaveCount(2);
+			// 아직 답장하지 않은 메일 수
+			await expect(mail.getByRole('button', { name: /받은 편지함/ }).locator('.mail-badge')).toHaveText('1');
+
+			await inbox.locator('.mail-item', { hasText: '채용 제안드립니다' }).click();
+			const article = mail.getByRole('article', { name: '채용 제안드립니다' });
+			const reply = article.getByRole('form', { name: '답장 쓰기' });
+			await expect(reply).toContainText('받는 사람: 민수 <minsu@example.com>');
+			await reply.getByLabel('답장 내용').fill('연락 주셔서 감사합니다! 이번 주에 통화 가능할까요?');
+			await reply.getByRole('button', { name: /답장 보내기/ }).click();
+
+			await expect(article.getByRole('list', { name: '답장' })).toContainText('이번 주에 통화 가능할까요?');
+			expect(api.contact.replies).toEqual([
+				{ id: 'mail-a', body: '연락 주셔서 감사합니다! 이번 주에 통화 가능할까요?' },
+			]);
+			await expect(mail.getByRole('button', { name: /받은 편지함/ }).locator('.mail-badge')).toHaveCount(0);
+		});
+	});
 });
