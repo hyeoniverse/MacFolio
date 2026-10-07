@@ -46,7 +46,13 @@ const SafariMobile: React.FC<Props> = ({
 	onNewTab,
 	onShare,
 }) => {
-	const [overview, setOverview] = useState(false);
+	const [overview, setOverviewState] = useState(false);
+	// 바뀐 방식: 알약을 밀어 옆 탭으로(next·prev), 탭 모음에서 돌아옴(zoom). 처음에는 움직이지 않는다
+	const [motion, setMotion] = useState<'next' | 'prev' | 'zoom' | null>(null);
+	const setOverview = (open: boolean) => {
+		if (!open) setMotion('zoom');
+		setOverviewState(open);
+	};
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const index = tabs.indexOf(activeId);
@@ -63,7 +69,9 @@ const SafariMobile: React.FC<Props> = ({
 		if (Math.abs(dx) < SWIPE_TAB_PX || Math.abs(dx) < Math.abs(dy)) return;
 		swallowClick.current = true;
 		const next = tabs[index + (dx < 0 ? 1 : -1)];
-		if (next) onChoose(next);
+		if (!next) return;
+		setMotion(dx < 0 ? 'next' : 'prev');
+		onChoose(next);
 	};
 
 	// 미리보기 비율: 카드 폭 / 휴대폰 폭
@@ -142,7 +150,10 @@ const SafariMobile: React.FC<Props> = ({
 	return (
 		<div className="safari-phone">
 			<MobileNavigation placement="bottom" />
-			{page}
+			{/* 탭이 바뀌면 새로 그려 넘어오는 애니메이션을 다시 돌린다 */}
+			<div key={activeId} className="safari-phone-page-wrap" data-motion={motion ?? undefined}>
+				{page}
+			</div>
 			<div className="safari-phone-bar">
 				<div
 					className="safari-phone-pill"

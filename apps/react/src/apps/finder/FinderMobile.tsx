@@ -59,12 +59,20 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
 
+	// 화면이 바뀐 방식: 들어가면 오른쪽에서, 돌아오면 왼쪽에서, 탭을 바꾸면 서서히 (처음에는 움직이지 않는다)
+	const [motion, setMotion] = useState<'forward' | 'back' | 'fade' | null>(null);
+
 	const screen = stack.at(-1);
 	const push = (next: Screen) => {
+		setMotion('forward');
 		setStack((current) => [...current, next]);
 		setQuery('');
 	};
-	const pop = () => setStack((current) => current.slice(0, -1));
+	const pop = () => {
+		setMotion('back');
+		setStack((current) => current.slice(0, -1));
+	};
+	const screenKey = screen ? ('doc' in screen ? `doc:${screen.doc}` : `folder:${screen.folder}`) : `tab:${tab}`;
 
 	// 바깥에서 온 문서 열기 요청 (Apple 메뉴의 개인정보 처리 방침 등). 묶어 둔 문서만 연다
 	useEffect(() => {
@@ -95,6 +103,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const folder = screen && 'folder' in screen ? find(locations, screen.folder) : null;
 
 	const switchTab = (next: Tab) => {
+		setMotion('fade');
 		setTab(next);
 		setStack([]);
 		setQuery('');
@@ -110,8 +119,10 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		return (
 			<div className="files-phone doc">
 				{navigation}
-				<h2 className="files-phone-bar-title">{title}</h2>
-				<div className="files-phone-scroll">
+				<h2 key={`title:${screenKey}`} className="files-phone-bar-title">
+					{title}
+				</h2>
+				<div key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
 					<DocView path={screen.doc} dark={dark} onOpenDoc={(path) => push({ doc: path })} />
 				</div>
 			</div>
@@ -128,7 +139,11 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 				: [];
 
 	const grid = (
-		<ul className={`files-phone-items ${view}`} aria-label={searching ? `‘${query.trim()}’ 찾기` : title}>
+		<ul
+			key={`${view}:${sort}`}
+			className={`files-phone-items ${view}`}
+			aria-label={searching ? `‘${query.trim()}’ 찾기` : title}
+		>
 			{items.map((item) => (
 				<li key={item.id}>
 					<button type="button" className="files-phone-item" onClick={() => open(item)}>
@@ -166,9 +181,13 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			>
 				<i className="fa-solid fa-ellipsis" aria-hidden="true" />
 			</button>
-			{screen && <h2 className="files-phone-bar-title">{title}</h2>}
+			{screen && (
+				<h2 key={`title:${screenKey}`} className="files-phone-bar-title">
+					{title}
+				</h2>
+			)}
 
-			<div className={`files-phone-scroll ${screen ? 'inside' : ''}`}>
+			<div key={screenKey} className={`files-phone-scroll ${screen ? 'inside' : ''}`} data-motion={motion ?? undefined}>
 				{/* 첫 화면의 큰 제목: 뒤로 가기와 같은 줄 (다른 앱과 같은 phone-title) */}
 				{!screen && <h2 className="phone-title">{title}</h2>}
 				<label className="files-phone-search">
