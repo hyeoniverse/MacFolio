@@ -30,6 +30,8 @@ export function configureApp(app: INestApplication) {
 		credentials: true,
 	});
 	app.use(cookieParser());
+	// 분석 이벤트는 sendBeacon이 text/plain(JSON 글자)으로 보낸다 (CORS 사전 요청을 피한다)
+	(app as NestExpressApplication).useBodyParser('text', { type: 'text/plain', limit: '32kb' });
 	app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
 	app.useGlobalFilters(new HttpErrorFilter());
 
