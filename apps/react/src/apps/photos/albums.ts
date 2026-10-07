@@ -73,3 +73,22 @@ export function countText(photos: readonly Photo[]): string {
 	const pictures = photos.length - videos;
 	return [pictures && `사진 ${pictures}장`, videos && `영상 ${videos}개`].filter(Boolean).join(', ');
 }
+
+/** 파일 이름 (주소의 마지막 조각, 물음표 뒤는 뺀다) */
+export const fileNameOf = (src: string) => src.split('?')[0].split('/').pop() ?? src;
+
+/** 파일 형식 딱지: JPG, PNG, MP4 (jpeg는 JPG로) */
+export const formatOf = (src: string) => {
+	const ext = (fileNameOf(src).split('.').pop() ?? '').toUpperCase();
+	return ext === 'JPEG' ? 'JPG' : ext;
+};
+
+/** 파일 크기: 863KB, 1.2MB (1000 단위, iOS 사진처럼) */
+export function formatBytes(bytes: number): string {
+	if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1).replace(/\.0$/, '')}MB`;
+	return `${Math.max(1, Math.round(bytes / 1000))}KB`;
+}
+
+/** 화소 수: 12MP, 0.9MP (가로 × 세로 / 백만, 소수 한 자리) */
+export const megapixels = (width: number, height: number) =>
+	`${(Math.round((width * height) / 100_000) / 10).toString()}MP`;

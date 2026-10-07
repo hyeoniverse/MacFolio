@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Project } from '@/shared/profile';
-import { ALBUMS, albumsOf, photosOf } from './albums';
+import { ALBUMS, albumsOf, fileNameOf, formatBytes, formatOf, megapixels, photosOf } from './albums';
 
 const project = (fields: Partial<Project>): Project =>
 	({
@@ -54,5 +54,26 @@ describe('사진 앨범', () => {
 		expect(albumsOf([project({ image: '' })])).toEqual([]);
 		expect(ALBUMS.length).toBeGreaterThan(0);
 		for (const album of ALBUMS) expect(album.photos.length).toBeGreaterThan(0);
+	});
+});
+
+describe('사진 정보', () => {
+	it('파일 이름과 형식', () => {
+		expect(fileNameOf('/imgs/projects/qru/a/main.jpeg?v=2')).toBe('main.jpeg');
+		expect(formatOf('/imgs/projects/qru/a/main.jpeg')).toBe('JPG');
+		expect(formatOf('demo.mp4')).toBe('MP4');
+		expect(formatOf('shot.png')).toBe('PNG');
+	});
+
+	it('파일 크기는 1000 단위', () => {
+		expect(formatBytes(863_412)).toBe('863KB');
+		expect(formatBytes(10_700_000)).toBe('10.7MB');
+		expect(formatBytes(2_000_000)).toBe('2MB');
+		expect(formatBytes(120)).toBe('1KB');
+	});
+
+	it('화소 수', () => {
+		expect(megapixels(3024, 4032)).toBe('12.2MP');
+		expect(megapixels(1280, 720)).toBe('0.9MP');
 	});
 });

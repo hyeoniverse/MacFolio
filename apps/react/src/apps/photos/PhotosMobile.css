@@ -477,35 +477,135 @@
 	user-select: none;
 }
 
-.photos-phone-info {
-	margin: 0 16px 10px;
-	padding: 14px 16px;
-	border-radius: 18px;
-	background: var(--phone-page-bg);
-	font-size: 14px;
+.photos-phone-stage {
+	transition: flex-basis var(--duration) var(--ease-out);
 }
 
-.photos-phone-info h3 {
-	margin: 0 0 8px;
+/* 정보를 열면 사진은 위쪽 절반으로 줄고, 정보 판이 아래를 채운다 */
+.photos-phone-stage.with-info {
+	flex: 0 0 42%;
+}
+
+.photos-phone-info {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+	overflow-y: auto;
+	padding-bottom: calc(var(--phone-bottom-inset) + 72px);
+	background: var(--phone-page-bg);
+	animation: photos-phone-info-up var(--duration-slow) var(--ease-out);
+}
+
+@keyframes photos-phone-info-up {
+	from {
+		opacity: 0;
+		transform: translateY(40%);
+	}
+}
+
+.photos-phone-caption {
+	margin: 0;
+	padding: 14px 20px;
+	border-bottom: 0.5px solid var(--phone-separator);
+	background: var(--phone-card-bg);
+	color: var(--color-text-secondary);
+	font-size: 17px;
+}
+
+.photos-phone-info-panel {
+	padding: 14px 20px 0;
+}
+
+.photos-phone-info-panel h3 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.photos-phone-file {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 4px 0 14px;
+	color: var(--color-text-secondary);
+	font-size: 15px;
+	word-break: break-all;
+}
+
+/* 형식 카드: 머리(앨범 · 형식 딱지), 두 줄, 칸 나눈 줄 */
+.photos-phone-card {
+	overflow: hidden;
+	border-radius: 14px;
+	background: var(--color-selected-bg);
+}
+
+.photos-phone-card header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 10px 12px;
+	border-bottom: 0.5px solid var(--phone-separator);
 	font-size: 16px;
 }
 
-.photos-phone-info dl {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: 4px 14px;
-	margin: 0;
+.photos-phone-format {
+	padding: 2px 7px;
+	border-radius: 5px;
+	background: var(--color-text-secondary);
+	color: var(--phone-card-bg);
+	font-size: 12px;
+	font-weight: 700;
 }
 
-.photos-phone-info dt {
+.photos-phone-card p {
+	margin: 0;
+	padding: 6px 12px 0;
 	color: var(--color-text-secondary);
+	font-size: 15px;
 }
 
-.photos-phone-info dd {
+.photos-phone-card p:last-of-type {
+	padding-bottom: 10px;
+}
+
+.photos-phone-stats {
+	display: flex;
 	margin: 0;
+	padding: 8px 0;
+	border-top: 0.5px solid var(--phone-separator);
+	list-style: none;
+	color: var(--color-text-secondary);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.photos-phone-stats li {
+	flex: 1;
+	text-align: center;
+}
+
+.photos-phone-stats li + li {
+	border-left: 0.5px solid var(--phone-separator);
+}
+
+.photos-phone-info-action {
+	width: 100%;
+	margin-top: 14px;
+	padding: 12px;
+	border: none;
+	border-radius: 14px;
+	background: var(--color-selected-bg);
+	color: #0a84ff;
+	font-size: 17px;
 }
 
 /* 사진 띠: 작은 사진을 촘촘히, 지금 사진은 넓게 (iOS 사진) */
+.photos-phone-strip.hidden {
+	display: none;
+}
+
 .photos-phone-strip {
 	display: flex;
 	flex: none;
@@ -584,4 +684,28 @@
 /* 지우기는 오른쪽의 × 동그라미로: 브라우저의 검색 칸 지우기 단추는 숨긴다 */
 .photos-phone-search input::-webkit-search-cancel-button {
 	display: none;
+}
+
+/* ─── 넘어갈 때 움직임 ─── */
+/* 앨범으로 들어가면 오른쪽에서, 나오면 왼쪽에서, 탭을 바꾸면 서서히 */
+.photos-phone-scroll[data-motion='forward'] {
+	animation: nav-forward var(--duration) var(--ease-out);
+}
+
+.photos-phone-scroll[data-motion='back'] {
+	animation: nav-back var(--duration) var(--ease-out);
+}
+
+.photos-phone-scroll[data-motion='fade'] {
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+/* 크게 보기는 살짝 커지며 나타나고, 검색은 아래에서 떠오른다 */
+.photos-phone-viewer {
+	animation: pop-in var(--duration) var(--ease-out);
+}
+
+.photos-phone.search .photos-phone-scroll,
+.photos-phone.search .photos-phone-bar {
+	animation: rise-in var(--duration) var(--ease-out);
 }

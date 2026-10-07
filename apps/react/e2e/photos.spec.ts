@@ -138,9 +138,12 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 			.click();
 		await expect(photos.getByRole('heading', { name: 'QRU 큐알유', level: 2 })).toBeVisible();
 		await expect(photos.locator('.photos-phone-grid .photos-thumb')).toHaveCount(9);
+		// 앨범으로 들어갈 때는 오른쪽에서, 나올 때는 왼쪽에서 넘어온다
+		await expect(photos.locator('.photos-phone-scroll')).toHaveAttribute('data-motion', 'forward');
 
 		await photos.locator('.mobile-navbar-home').click();
 		await expect(photos.getByRole('heading', { name: '모음', level: 2 })).toBeVisible();
+		await expect(photos.locator('.photos-phone-scroll')).toHaveAttribute('data-motion', 'back');
 
 		await photos
 			.getByRole('region', { name: '고정됨' })
@@ -183,11 +186,17 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		// 좋아요, 정보
 		await viewer.getByRole('button', { name: '좋아요' }).click();
 		await expect(viewer.getByRole('button', { name: '좋아요' })).toHaveAttribute('aria-pressed', 'true');
+		// 정보 (iOS 사진): 사진이 위로 줄고, 형식 딱지와 실제 크기, 프로젝트 페이지 단추. 사진 띠는 숨는다
 		await viewer.getByRole('button', { name: '정보' }).click();
-		await expect(viewer.getByRole('complementary', { name: '사진 정보' })).toContainText('QRU 큐알유');
+		const info = viewer.getByRole('complementary', { name: '사진 정보' });
+		await expect(info.getByRole('region', { name: '파일' })).toContainText('QRU 큐알유');
+		await expect(info.locator('.photos-phone-format')).toHaveText(/^(JPG|PNG|WEBP|GIF|SVG|MP4)$/);
+		await expect(info.getByRole('region', { name: '파일' })).toContainText(/\d+(\.\d)?MP · \d+ × \d+/);
+		await expect(info.getByRole('button', { name: 'QRU 큐알유 페이지 열기…' })).toBeVisible();
+		await expect(strip).toBeHidden();
 
 		// 프로젝트 페이지: Safari가 그 프로젝트를 연다
-		await viewer.getByRole('button', { name: 'QRU 큐알유 페이지' }).click();
+		await viewer.getByRole('button', { name: 'QRU 큐알유 페이지', exact: true }).click();
 		await expect(appWindow(page, 'safari')).toBeVisible();
 	});
 
