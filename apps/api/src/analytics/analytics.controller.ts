@@ -67,15 +67,25 @@ export class AnalyticsController {
 	}
 
 	@Get('summary')
-	@UseGuards(AdminGuard)
-	@ApiCookieAuth()
 	@ApiQuery({ name: 'from', required: false, description: 'YYYY-MM-DD (기본: to의 6일 전)' })
 	@ApiQuery({ name: 'to', required: false, description: 'YYYY-MM-DD (기본: 오늘, 한국 시간)' })
-	@ApiOkResponse({ description: '일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳·앱·글·나라·기기별 표' })
+	@ApiOkResponse({
+		description:
+			'일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳(묶음)·앱·글·나라·기기별 표. 누구나 본다. ' +
+			'관리자(scope: admin)에게만 들어온 곳의 호스트와 utm 표가 있다. 방문자에게는 1분 동안 같은 값을 준다',
+	})
 	@ApiBadRequestResponse({ description: '기간이 틀렸다 (1~366일)' })
-	@ApiUnauthorizedResponse({ description: '관리자 로그인이 필요하다' })
-	summary(@Query('from') from: unknown, @Query('to') to: unknown) {
-		return this.analytics.summary(from, to);
+	async summary(@Query('from') from: unknown, @Query('to') to: unknown, @Req() request: Request) {
+		const admin = await this.auth.findAdmin(request.cookies?.[SESSION_COOKIE]);
+		return this.analytics.summary(from, to, !!admin);
+	}
+
+	@Get('views')
+	@ApiQuery({ name: 'app', required: true, description: '앱 이름 (memo: 블로그 글, safari: 프로젝트)' })
+	@ApiOkResponse({ description: '항목마다 전체 기간 조회수 (한 방문에서 같은 글은 한 번). 누구나 본다' })
+	@ApiBadRequestResponse({ description: 'app이 틀렸다' })
+	views(@Query('app') app: unknown) {
+		return this.analytics.views(app);
 	}
 
 	@Get('live')
