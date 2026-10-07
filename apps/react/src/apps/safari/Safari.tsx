@@ -8,6 +8,8 @@ import { useOpenRequest } from '@/shared/lib/openRequest';
 import ShareIcon from '@/shared/ui/ShareIcon';
 import '@/apps/safari/Safari.css';
 import IconButton from '@/shared/ui/button/IconButton';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import SafariMobile from '@/apps/safari/SafariMobile';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -47,6 +49,7 @@ const StartPage: React.FC<{ onOpen: (id: string) => void }> = ({ onOpen }) => (
  * 공유 단추는 이 프로젝트 페이지의 주소(/safari/<프로젝트>)를 보낸다.
  */
 const Safari: React.FC = () => {
+	const mobile = useIsMobile();
 	const [tabs, setTabs] = useState<TabId[]>(() => PROJECTS.map((project) => project.id));
 	// 프로젝트 주소(/safari/<프로젝트>)로 들어왔으면 그 탭부터 (shared/lib/appLink.ts)
 	const [activeId, setActiveId] = useState<TabId>(() => {
@@ -157,87 +160,111 @@ const Safari: React.FC = () => {
 		},
 	]);
 
+	const share = active ? () => void shareLink({ app: 'safari', id: active.id }, active.name) : null;
+	/** 탭을 바꾸면 페이지를 새로 그린다: 맨 위부터 보이고, 나타나는 애니메이션이 다시 돈다 */
+	const page = (
+		<div
+			key={activeId}
+			className="safari-page"
+			role="tabpanel"
+			id="safari-tabpanel"
+			aria-labelledby={mobile ? undefined : `safari-tab-${activeId}`}
+			aria-label={mobile ? tabTitle(active) : undefined}
+		>
+			{active ? <ProjectPage project={active} /> : <StartPage onOpen={openFromStart} />}
+		</div>
+	);
+
 	return (
 		<AppWindow title="Safari" appName="safari" chrome="unified">
-			<div className="safari">
-				{/* 도구 막대: 신호등 버튼 자리, 이전·다음 탭, 주소창, 새 탭에서 열기, 새 탭 */}
-				<div className="safari-toolbar">
-					<span className="safari-lights-space" aria-hidden="true" />
-					<IconButton label="이전 탭" disabled={index === 0} onClick={() => go(-1)} icon="fa-solid fa-chevron-left" />
-					<IconButton
-						label="다음 탭"
-						disabled={index === tabs.length - 1}
-						onClick={() => go(1)}
-						icon="fa-solid fa-chevron-right"
+			{/* 휴대폰은 iOS Safari처럼 따로 짠다 (SafariMobile): 페이지가 화면을 다 쓰고 아래 떠 있는 막대 하나 */}
+			{mobile ? (
+				<div className="safari">
+					<SafariMobile
+						tabs={tabs}
+						activeId={activeId}
+						projectOf={findProject}
+						titleOf={(id) => tabTitle(findProject(id))}
+						renderPage={(id) => {
+							const project = findProject(id);
+							return project ? <ProjectPage project={project} /> : <StartPage onOpen={() => undefined} />;
+						}}
+						page={page}
+						address={active ? { href: addressOf(active), text: displayAddress(addressOf(active)) } : null}
+						onChoose={choose}
+						onCloseTab={closeTab}
+						onNewTab={newTab}
+						onShare={share}
 					/>
-					{active ? (
-						<a className="safari-address" href={addressOf(active)} {...external} title="새 탭에서 열기">
-							<i className="fa-solid fa-lock" aria-hidden="true" />
-							<span>{displayAddress(addressOf(active))}</span>
-						</a>
-					) : (
-						<span className="safari-address placeholder">
-							<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-							<span>검색 또는 웹 사이트 이름 입력</span>
-						</span>
-					)}
-					{/* 공유: 이 프로젝트 페이지(MacFolio 안의 주소)를 보낸다. 데모·저장소는 주소창을 눌러 연다 */}
-					{active && (
+				</div>
+			) : (
+				<div className="safari">
+					{/* 도구 막대: 신호등 버튼 자리, 이전·다음 탭, 주소창, 새 탭에서 열기, 새 탭 */}
+					<div className="safari-toolbar">
+						<span className="safari-lights-space" aria-hidden="true" />
+						<IconButton label="이전 탭" disabled={index === 0} onClick={() => go(-1)} icon="fa-solid fa-chevron-left" />
 						<IconButton
-							className="safari-share"
-							label="링크 공유"
-							onClick={() => void shareLink({ app: 'safari', id: active.id }, active.name)}
-						>
-							<ShareIcon />
-						</IconButton>
-					)}
-					<IconButton label="새 탭" onClick={newTab} icon="fa-solid fa-plus" />
-				</div>
+							label="다음 탭"
+							disabled={index === tabs.length - 1}
+							onClick={() => go(1)}
+							icon="fa-solid fa-chevron-right"
+						/>
+						{active ? (
+							<a className="safari-address" href={addressOf(active)} {...external} title="새 탭에서 열기">
+								<i className="fa-solid fa-lock" aria-hidden="true" />
+								<span>{displayAddress(addressOf(active))}</span>
+							</a>
+						) : (
+							<span className="safari-address placeholder">
+								<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+								<span>검색 또는 웹 사이트 이름 입력</span>
+							</span>
+						)}
+						{/* 공유: 이 프로젝트 페이지(MacFolio 안의 주소)를 보낸다. 데모·저장소는 주소창을 눌러 연다 */}
+						{active && (
+							<IconButton className="safari-share" label="링크 공유" onClick={share!}>
+								<ShareIcon />
+							</IconButton>
+						)}
+						<IconButton label="새 탭" onClick={newTab} icon="fa-solid fa-plus" />
+					</div>
 
-				{/* 탭 막대: 프로젝트마다 탭 하나. 지금 탭은 넉넉하게, 나머지는 짧게 나눠 갖는다. 올리면 닫기 단추가 보인다 */}
-				<div ref={tabList} className="safari-tabs" role="tablist" aria-label="프로젝트 탭">
-					{tabs.map((id) => {
-						const project = findProject(id);
-						const title = tabTitle(project);
-						const selected = id === activeId;
-						return (
-							<div key={id} className={`safari-tab ${selected ? 'active' : ''}`}>
-								<button
-									type="button"
-									className="safari-tab-close"
-									aria-label={`${project?.name ?? title} 탭 닫기`}
-									onClick={() => closeTab(id)}
-								>
-									<i className="fa-solid fa-xmark" aria-hidden="true" />
-								</button>
-								<button
-									type="button"
-									role="tab"
-									id={`safari-tab-${id}`}
-									aria-selected={selected}
-									aria-controls="safari-tabpanel"
-									className="safari-tab-button"
-									onClick={() => choose(id)}
-								>
-									<Favicon project={project} />
-									<span title={title}>{title}</span>
-								</button>
-							</div>
-						);
-					})}
-				</div>
+					{/* 탭 막대: 프로젝트마다 탭 하나. 지금 탭은 넉넉하게, 나머지는 짧게 나눠 갖는다. 올리면 닫기 단추가 보인다 */}
+					<div ref={tabList} className="safari-tabs" role="tablist" aria-label="프로젝트 탭">
+						{tabs.map((id) => {
+							const project = findProject(id);
+							const title = tabTitle(project);
+							const selected = id === activeId;
+							return (
+								<div key={id} className={`safari-tab ${selected ? 'active' : ''}`}>
+									<button
+										type="button"
+										className="safari-tab-close"
+										aria-label={`${project?.name ?? title} 탭 닫기`}
+										onClick={() => closeTab(id)}
+									>
+										<i className="fa-solid fa-xmark" aria-hidden="true" />
+									</button>
+									<button
+										type="button"
+										role="tab"
+										id={`safari-tab-${id}`}
+										aria-selected={selected}
+										aria-controls="safari-tabpanel"
+										className="safari-tab-button"
+										onClick={() => choose(id)}
+									>
+										<Favicon project={project} />
+										<span title={title}>{title}</span>
+									</button>
+								</div>
+							);
+						})}
+					</div>
 
-				{/* 탭을 바꾸면 페이지를 새로 그린다: 맨 위부터 보이고, 나타나는 애니메이션이 다시 돈다 */}
-				<div
-					key={activeId}
-					className="safari-page"
-					role="tabpanel"
-					id="safari-tabpanel"
-					aria-labelledby={`safari-tab-${activeId}`}
-				>
-					{active ? <ProjectPage project={active} /> : <StartPage onOpen={openFromStart} />}
+					{page}
 				</div>
-			</div>
+			)}
 		</AppWindow>
 	);
 };

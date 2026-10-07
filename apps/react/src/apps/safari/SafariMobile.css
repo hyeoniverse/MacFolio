@@ -1,0 +1,208 @@
+/* Safari (휴대폰): iOS Safari처럼 페이지가 화면을 다 쓰고, 아래에 떠 있는 막대 하나 (SafariMobile.tsx) */
+.safari-phone {
+	position: relative;
+	height: 100%;
+}
+
+/* 페이지는 상태 표시줄(흐린 유리로 겹친다) 아래에서 시작해 그 밑으로 스크롤되고, 아래 막대에 마지막 줄이 가리지 않게 비운다 */
+.safari-phone .safari-page {
+	height: 100%;
+	padding-top: var(--phone-status);
+	padding-bottom: calc(var(--phone-bottom-inset) + 72px);
+}
+
+/* ─── 아래 막대: 뒤로 가기(MobileNavigation, 왼쪽 아래) 옆에 주소 알약과 ••• ─── */
+.safari-phone-bar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	position: absolute;
+	right: 16px;
+	bottom: calc(var(--phone-bottom-inset) + 4px);
+	/* 왼쪽은 뒤로 가기 동그라미(16 + 44)와 8px 사이 */
+	left: 68px;
+	z-index: 5;
+	height: 44px;
+}
+
+.safari-phone-pill,
+.safari-phone-circle {
+	border-radius: 999px;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+}
+
+.safari-phone-pill {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	min-width: 0;
+	height: 100%;
+	padding: 0 4px;
+	/* 옆으로 밀면 옆 탭 (세로는 페이지 스크롤에 둔다) */
+	touch-action: pan-y;
+}
+
+.safari-phone-tabs-button {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: none;
+	color: var(--safari-text);
+	font-size: 17px;
+}
+
+.safari-phone-address {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-width: 0;
+	/* 탭 단추만큼 오른쪽도 비워 주소가 알약 가운데에 온다 */
+	padding-right: 38px;
+	color: var(--safari-text);
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.safari-phone-address span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.safari-phone-address i {
+	color: var(--safari-muted);
+	font-size: 11px;
+}
+
+.safari-phone-address.placeholder {
+	color: var(--safari-muted);
+	font-weight: 400;
+}
+
+.safari-phone-circle {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	color: var(--safari-text);
+	font-size: 18px;
+}
+
+/* ─── 탭 모음: 두 줄 카드 ─── */
+.safari-phone.overview {
+	overflow-y: auto;
+	background-color: var(--phone-page-bg);
+}
+
+.safari-phone-tabs {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 22px 16px;
+	padding: var(--phone-top) 16px calc(var(--phone-bottom-inset) + 72px);
+	list-style: none;
+}
+
+.safari-phone-tabs li {
+	position: relative;
+	min-width: 0;
+}
+
+.safari-phone-card {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: none;
+	border-radius: 22px;
+	background: none;
+}
+
+.safari-phone-thumb {
+	display: block;
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: 390 / 560;
+	border-radius: 22px;
+	background-color: var(--safari-bg);
+	box-shadow: var(--phone-float-shadow);
+}
+
+/* 지금 탭은 테두리로 */
+.safari-phone-tabs li.active .safari-phone-thumb {
+	box-shadow:
+		0 0 0 3px var(--safari-accent),
+		var(--phone-float-shadow);
+}
+
+/* 실제 페이지를 휴대폰 폭으로 그려 카드 폭에 맞춰 줄인다 (--thumb-scale은 SafariMobile이 잰다) */
+.safari-phone-thumb-page {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 390px;
+	height: 560px;
+	overflow: hidden;
+	transform: scale(var(--thumb-scale, 0.44));
+	transform-origin: 0 0;
+	pointer-events: none;
+	container-type: inline-size;
+}
+
+.safari-phone-card-close {
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: rgba(120, 120, 128, 0.32);
+	color: #ffffff;
+	font-size: 14px;
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.safari-phone-card-title {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	margin-top: 10px;
+	color: var(--safari-text);
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.safari-phone-card-title span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.safari-phone-count {
+	display: grid;
+	flex: 1;
+	place-items: center;
+	height: 100%;
+	border-radius: 999px;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+	color: var(--safari-text);
+	font-size: 16px;
+	font-weight: 600;
+}
