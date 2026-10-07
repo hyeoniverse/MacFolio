@@ -1,14 +1,16 @@
-/* 사진 (#21). 메일처럼 창 안에 떠 있는 사이드바와 격자. 색은 테마 변수만 쓴다 (다크 모드는 styles/theme.css가 바꾼다).
-   창 폭으로 배치를 바꾼다 (휴대폰과 좁힌 창이 같다) */
+/* 사진 (#21). macOS 사진처럼: 떠 있는 사이드바, 격자 위에 떠 있는 둥근 막대, 자르지 않는 사진 칸, 막대 아래를 채우는 크게 보기.
+   색은 테마 변수만 쓴다 (다크 모드는 styles/theme.css가 바꾼다). 창 폭으로 배치를 바꾼다 (휴대폰과 좁힌 창이 같다) */
 .photos-shell {
 	container-type: inline-size;
 	height: 100%;
 }
 
 .photos {
+	--photos-glass: color-mix(in srgb, var(--color-window-bg) 72%, transparent);
+	--photos-cell: 150px;
 	position: relative;
 	display: grid;
-	grid-template-columns: 200px 1fr;
+	grid-template-columns: 220px 1fr;
 	gap: 8px;
 	height: 100%;
 	padding: 8px;
@@ -18,9 +20,11 @@
 	text-align: left;
 }
 
-/* 창 끌기 영역(위쪽 52px, 통합형 창의 제목 막대)보다 위에 둘 단추: 크게 보기의 위 막대, 프로젝트 페이지, 앨범 단추 */
-.photos-viewer-bar button,
-.photos-project-link,
+/* 창 끌기 영역(위쪽 52px, 통합형 창의 제목 막대 z-index 3)보다 위에 둘 것: 막대의 유리 묶음·단추, 앨범 단추.
+   유리 묶음은 backdrop-filter가 쌓임 맥락을 만들어 안의 단추만 올리면 묻힌다. 묶음째 올린다 */
+.photos-capsule,
+.photos-circle,
+.photos-pill,
 .photos-chips button {
 	position: relative;
 	z-index: 4;
@@ -34,6 +38,7 @@
 	}
 }
 
+/* ─── 사이드바 ─── */
 .photos-sidebar {
 	padding: 0 8px 8px;
 	border-radius: 18px;
@@ -43,11 +48,11 @@
 
 /* 신호등 버튼 자리 */
 .photos-sidebar-top {
-	height: 44px;
+	height: 48px;
 }
 
 .photos-sidebar-heading {
-	margin: 10px 8px 4px;
+	margin: 14px 10px 4px;
 	color: var(--color-text-secondary);
 	font-size: 11px;
 	font-weight: 600;
@@ -56,29 +61,53 @@
 .photos-place {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 	width: 100%;
-	padding: 6px 8px;
+	padding: 5px 10px;
 	border: none;
 	border-radius: 8px;
 	background: none;
+	font-size: 14px;
 	text-align: left;
 }
 
-.photos-place i {
-	width: 16px;
-	color: var(--color-accent);
+.photos-place > i {
+	width: 22px;
+	font-size: 15px;
+	text-align: center;
+	color: var(--color-text-secondary);
 }
 
-.photos-place span:nth-child(2) {
+.photos-place-label {
 	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
+/* 고른 곳: 아이콘과 글자가 강조색 (macOS 사진) */
 .photos-place.selected {
 	background-color: var(--color-selected-bg);
+	color: var(--color-accent);
+}
+
+.photos-place.selected > i {
+	color: var(--color-accent);
+}
+
+.photos-album-cover {
+	flex: none;
+	width: 22px;
+	height: 22px;
+	border-radius: 5px;
+	background: var(--color-selected-bg);
+	overflow: hidden;
+}
+
+.photos-album-cover img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .photos-count {
@@ -86,6 +115,7 @@
 	font-size: 12px;
 }
 
+/* ─── 가운데 ─── */
 .photos-main {
 	position: relative;
 	display: flex;
@@ -94,31 +124,131 @@
 	min-height: 0;
 }
 
-.photos-header {
-	flex: none;
-	display: flex;
-	align-items: baseline;
+/* 떠 있는 막대: 격자가 그 아래로 지나간다 */
+.photos-toolbar {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
 	gap: 10px;
-	padding: 10px 8px 12px;
+	height: 52px;
+	padding: 0 6px 0 10px;
+	background: linear-gradient(var(--color-window-bg) 30%, transparent);
 }
 
-.photos-header h2 {
+.photos-toolbar-heading h2 {
 	margin: 0;
 	color: var(--color-text-strong);
-	font-size: 20px;
+	font-size: 15px;
+	font-weight: 700;
 }
 
-.photos-header p {
+.photos-toolbar-heading p {
 	margin: 0;
 	color: var(--color-text-secondary);
+	font-size: 12px;
 }
 
-.photos-project-link {
-	margin-left: auto;
-	padding: 4px 10px;
+.photos-toolbar-group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.photos-toolbar-group.end {
+	justify-content: flex-end;
+}
+
+.photos-toolbar-title {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 0;
+	line-height: 1.25;
+}
+
+.photos-toolbar-title strong {
+	max-width: 320px;
+	overflow: hidden;
+	color: var(--color-text-strong);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.photos-toolbar-title span {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* 둥근 유리 단추 묶음 */
+.photos-capsule {
+	display: flex;
+	align-items: center;
+	height: 34px;
+	padding: 0 4px;
 	border: 1px solid var(--color-window-border);
-	border-radius: 7px;
-	background: var(--color-control-bg);
+	border-radius: 999px;
+	background: var(--photos-glass);
+	backdrop-filter: blur(12px);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.photos-capsule button {
+	min-width: 32px;
+	height: 28px;
+	padding: 0 8px;
+	border: none;
+	border-radius: 999px;
+	background: none;
+	font-size: 14px;
+}
+
+.photos-capsule button:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.photos-capsule button:hover:not(:disabled),
+.photos-capsule button.on {
+	background: var(--color-selected-bg);
+}
+
+.photos-segments button {
+	padding: 0 14px;
+	font-size: 13px;
+}
+
+.photos-segments button[aria-pressed='true'] {
+	background: var(--color-selected-bg);
+	font-weight: 600;
+}
+
+.photos-zoom input {
+	width: 90px;
+	accent-color: var(--color-accent);
+}
+
+.photos-circle {
+	width: 34px;
+	height: 34px;
+	border: 1px solid var(--color-window-border);
+	border-radius: 50%;
+	background: var(--photos-glass);
+	backdrop-filter: blur(12px);
+}
+
+.photos-pill {
+	height: 34px;
+	padding: 0 14px;
+	border: 1px solid var(--color-window-border);
+	border-radius: 999px;
+	background: var(--photos-glass);
+	backdrop-filter: blur(12px);
+	white-space: nowrap;
 }
 
 .photos-chips {
@@ -126,86 +256,107 @@
 	flex: none;
 }
 
+/* ─── 격자: 칸은 정사각형, 사진은 자르지 않고 가운데에 ─── */
+.photos-scroll {
+	flex: 1;
+	min-height: 0;
+	padding: 60px 10px 16px;
+	overflow-y: auto;
+}
+
 .photos-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-	gap: 4px;
+	grid-template-columns: repeat(auto-fill, minmax(var(--photos-cell), 1fr));
+	gap: calc(var(--photos-cell) * 0.12);
 	margin: 0;
-	padding: 0 8px 8px;
+	padding: 0;
 	list-style: none;
-	overflow-y: auto;
+}
+
+.photos-group + .photos-group {
+	margin-top: 24px;
+}
+
+.photos-group h3 {
+	margin: 0 0 10px;
+	font-size: 15px;
+}
+
+.photos-group h3 button {
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-text-strong);
+	font-weight: 700;
+}
+
+.photos-group h3 i {
+	color: var(--color-text-secondary);
+	font-size: 11px;
 }
 
 .photos-thumb {
 	position: relative;
-	display: block;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 100%;
 	aspect-ratio: 1;
 	padding: 0;
 	border: none;
-	border-radius: 6px;
-	background: var(--color-selected-bg);
-	overflow: hidden;
+	background: none;
 }
 
 .photos-thumb img,
 .photos-thumb video {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
+	max-width: 100%;
+	max-height: 100%;
+	border-radius: 4px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
 	transition: transform 0.2s ease;
 }
 
 .photos-thumb:hover img,
 .photos-thumb:hover video {
-	transform: scale(1.04);
+	transform: scale(1.03);
 }
 
 .photos-thumb:focus-visible {
 	outline: 3px solid var(--color-accent);
-	outline-offset: -3px;
+	outline-offset: 2px;
+	border-radius: 6px;
 }
 
 .photos-video-badge {
 	position: absolute;
-	right: 8px;
-	bottom: 8px;
+	right: 10%;
+	bottom: 10%;
 	color: #fff;
 	font-size: 12px;
 	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-/* 크게 보기: 격자 위를 덮는다 */
-/* z-index를 두지 않는다: 쌓임 맥락을 만들면 안의 단추가 창 끌기 영역(z-index 3) 아래로 묻힌다.
-   격자보다 뒤에 그려서 격자를 덮고, 뒤 머리의 단추는 열려 있는 동안 그리지 않는다 */
+/* ─── 크게 보기: 막대 아래를 가득 채운다 ─── */
+/* z-index를 두지 않는다: 쌓임 맥락을 만들면 안의 단추가 창 끌기 영역 아래로 묻힌다 */
 .photos-viewer {
 	position: absolute;
 	inset: 0;
 	display: flex;
 	flex-direction: column;
-	border-radius: 12px;
-	background: #111;
-	color: #f5f5f7;
+	background: var(--color-window-bg);
 }
 
-.photos-viewer-bar {
+.photos-toolbar.viewer {
+	position: relative;
+	flex: none;
+	background: none;
+	border-bottom: 1px solid var(--color-divider);
+}
+
+.photos-viewer-body {
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 8px;
-	padding: 8px 10px;
-}
-
-.photos-viewer-bar button {
-	padding: 4px 8px;
-	border: none;
-	border-radius: 6px;
-	background: rgba(255, 255, 255, 0.12);
-}
-
-.photos-viewer-count {
-	color: #a1a1a6;
-	font-variant-numeric: tabular-nums;
+	flex: 1;
+	min-height: 0;
 }
 
 .photos-viewer-stage {
@@ -214,8 +365,14 @@
 	flex: 1;
 	align-items: center;
 	justify-content: center;
-	min-height: 0;
-	padding: 0 48px;
+	min-width: 0;
+	overflow: hidden;
+}
+
+/* 확대하면 넘친 만큼 스크롤해서 본다 */
+.photos-viewer-stage.zoomed {
+	display: block;
+	overflow: auto;
 }
 
 .photos-viewer-stage img,
@@ -223,7 +380,6 @@
 	max-width: 100%;
 	max-height: 100%;
 	object-fit: contain;
-	border-radius: 4px;
 }
 
 .photos-viewer-nav {
@@ -233,37 +389,108 @@
 	height: 36px;
 	border: none;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.14);
+	background: var(--photos-glass);
+	backdrop-filter: blur(12px);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+	opacity: 0;
 	transform: translateY(-50%);
+	transition: opacity 0.15s ease;
+}
+
+.photos-viewer-stage:hover .photos-viewer-nav,
+.photos-viewer-nav:focus-visible {
+	opacity: 1;
+}
+
+.photos-viewer-stage.zoomed .photos-viewer-nav {
+	position: sticky;
 }
 
 .photos-viewer-nav.prev {
-	left: 6px;
+	left: 10px;
 }
 
 .photos-viewer-nav.next {
-	right: 6px;
+	right: 10px;
 }
 
-.photos-viewer-caption {
+.photos-info {
+	flex: none;
+	width: 220px;
+	padding: 14px 16px;
+	border-left: 1px solid var(--color-divider);
+	overflow-y: auto;
+}
+
+.photos-info h3 {
+	margin: 0 0 12px;
+	color: var(--color-text-strong);
+	font-size: 14px;
+}
+
+.photos-info dl {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 6px 12px;
 	margin: 0;
-	padding: 10px 14px 12px;
-	color: #d1d1d6;
-	text-align: center;
 }
 
-.photos-viewer-caption strong {
-	margin-right: 6px;
-	color: #fff;
+.photos-info dt {
+	color: var(--color-text-secondary);
 }
 
-/* 좁은 창·휴대폰: 사이드바 대신 위에 앨범 단추 */
+.photos-info dd {
+	margin: 0;
+	word-break: break-all;
+}
+
+/* ─── 좁은 창·휴대폰: 사이드바 대신 위에 앨범 단추 ─── */
 @container (max-width: 640px) {
 	.photos {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.photos-sidebar {
+		display: none;
+	}
+
+	/* 신호등 버튼과 겹치지 않도록 막대를 아래로 (휴대폰에는 신호등이 없다: 아래 .container.mobile) */
+	/* 격자 뒤에 둔 막대를 흐름에서는 맨 위로 (DOM 순서는 넓은 창의 겹쳐 그리기 때문) */
+	.photos-toolbar:not(.viewer) {
+		position: relative;
+		order: -2;
+		margin-top: 36px;
+		background: none;
+	}
+
+	.photos-chips {
+		order: -1;
+	}
+
+	.photos-toolbar.viewer {
+		margin-top: 36px;
+	}
+
+	.photos-toolbar {
+		grid-template-columns: 1fr auto;
+	}
+
+	/* 휴대폰 격자는 세 칸 고정이라 −·+를 감춘다 */
+	.photos-toolbar:not(.viewer) .photos-capsule,
+	.photos-toolbar-group.end,
+	.photos-zoom {
+		display: none;
+	}
+
+	.photos-toolbar.viewer .photos-toolbar-group.end {
+		display: flex;
+	}
+
+	.photos-toolbar.viewer {
+		grid-template-columns: auto 1fr auto;
+	}
+
+	.photos-pill {
 		display: none;
 	}
 
@@ -288,34 +515,30 @@
 		color: var(--color-on-accent);
 	}
 
+	.photos-scroll {
+		padding: 0 4px 8px;
+	}
+
 	.photos-grid {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 2px;
-		padding: 0 0 8px;
 	}
 
-	.photos-thumb {
+	.photos-thumb img,
+	.photos-thumb video {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 		border-radius: 0;
+		box-shadow: none;
 	}
 
-	.photos-viewer-stage {
-		padding: 0;
-	}
-
-	/* 신호등 버튼과 겹치지 않도록 위를 비운다 (휴대폰에는 신호등이 없다: 아래 .container.mobile) */
-	.photos-main {
-		padding-top: 36px;
-	}
-
-	.photos-viewer-bar {
-		padding-top: 40px;
+	.photos-info {
+		display: none;
 	}
 }
 
-.container.mobile .photos-main {
-	padding-top: 0;
-}
-
-.container.mobile .photos-viewer-bar {
-	padding-top: 8px;
+.container.mobile .photos-toolbar:not(.viewer),
+.container.mobile .photos-toolbar.viewer {
+	margin-top: 0;
 }
