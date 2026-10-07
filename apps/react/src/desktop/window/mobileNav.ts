@@ -18,6 +18,11 @@ export interface MobileNav {
 	 * 앱이 정한 뒤로 가기(onBack)는 그대로 보인다
 	 */
 	hideHome?: boolean;
+	/**
+	 * 화면만 보기 (사진만 보기처럼): 뒤로 가기와 상태 표시줄이 흐려지며 사라진다. 끄면 돌아온다.
+	 * 앱의 다른 UI는 앱이 함께 숨긴다
+	 */
+	immersive?: boolean;
 }
 
 /** AppWindow(모바일)가 제공한다. 데스크톱에서는 null */

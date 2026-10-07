@@ -10,6 +10,7 @@ import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { runningByRecency } from '@/desktop/appStack';
 import { useStatusBarTone } from '@/desktop/mobile/statusBarTone';
+import { useImmersiveApp } from '@/desktop/mobile/immersiveStore';
 import { useSettings } from '@/shared/settings/settingsStore';
 import { resolveTheme } from '@/shared/settings/settings';
 import '@/desktop/mobile/MobileShell.css';
@@ -33,6 +34,9 @@ const MobileShell = () => {
 	const statusBar = useRef<HTMLDivElement>(null);
 	const { theme } = useSettings();
 	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
+	// 화면만 보기 중인 앱 위에서는 상태 표시줄을 숨긴다 (사진만 보기)
+	const immersive = useImmersiveApp();
+	const hidden = onApp && immersive !== null && immersive === foreground;
 	const appTone = useStatusBarTone(statusBar, onApp, dark ? 'light' : 'dark', `${foreground}:${dark}`);
 
 	// Esc는 위에 열린 것부터 닫는다: 제어 센터, 앱 전환기 (그 아래 앱의 뒤로 가기가 이 Esc를 받지 않게 preventDefault)
@@ -67,6 +71,7 @@ const MobileShell = () => {
 				ref={statusBar}
 				tone={onApp ? appTone : 'light'}
 				onApp={onApp}
+				hidden={hidden}
 				onOpen={() => setControlCenterOpen(true)}
 			/>
 			{switcherOpen && (

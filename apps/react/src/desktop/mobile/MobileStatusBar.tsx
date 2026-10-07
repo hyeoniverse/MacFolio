@@ -20,6 +20,8 @@ interface Props {
 	tone: StatusBarTone;
 	/** 앱 위: 바탕은 투명하게 두고 밑으로 지나가는 내용만 아주 약하게 흐린다 */
 	onApp: boolean;
+	/** 화면만 보기 (사진만 보기): 흐려지며 사라진다 */
+	hidden?: boolean;
 	onOpen: () => void;
 }
 
@@ -27,13 +29,14 @@ interface Props {
  * iOS 상태 표시줄 (시간, 신호, Wi-Fi, 배터리). 누르면 제어 센터를 연다.
  * 끌어내려 여는 동작은 화면 어디서나 되도록 MobileShell이 듣는다 (useVerticalSwipe).
  */
-const MobileStatusBar = ({ ref, tone, onApp, onOpen }: Props) => {
+const MobileStatusBar = ({ ref, tone, onApp, hidden = false, onOpen }: Props) => {
 	const now = useClock();
 
 	return (
 		<div
 			ref={ref}
-			className={`mobile-statusbar ${tone}${onApp ? ' on-app' : ''}`}
+			className={`mobile-statusbar ${tone}${onApp ? ' on-app' : ''}${hidden ? ' hidden' : ''}`}
+			aria-hidden={hidden || undefined}
 			role="button"
 			aria-label="제어 센터 열기"
 			onClick={onOpen}

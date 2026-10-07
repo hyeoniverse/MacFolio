@@ -457,14 +457,14 @@
 	font-size: 18px;
 }
 
-/* 사진: 위 단추 줄과 아래 띠·막대 사이를 채운다. 옆으로 밀어 넘긴다 */
+/* 사진: 화면 가득, 위·아래 UI는 그 위에 뜬다 (iOS 사진). 사진만 보기로 바꿔도 사진은 움직이지 않는다.
+   옆으로 밀어 넘긴다 */
 .photos-phone-stage {
+	position: absolute;
+	inset: 0;
 	display: flex;
-	flex: 1;
 	align-items: center;
 	justify-content: center;
-	min-height: 0;
-	margin-top: calc(var(--phone-top) + 56px);
 	overflow: hidden;
 	touch-action: pan-y;
 }
@@ -477,13 +477,10 @@
 	user-select: none;
 }
 
-.photos-phone-stage {
-	transition: flex-basis var(--duration) var(--ease-out);
-}
-
 /* 정보를 열면 사진은 맨 위의 정사각형 칸을 cover로 채우고 (위 단추들은 사진 위에 뜬다),
    정보 판이 바로 아래 붙어 화면 끝까지 간다. 화면이 작으면 사진 칸만 납작해진다 (정보는 늘 다 보인다) */
 .photos-phone-stage.with-info {
+	position: static;
 	flex: 0 1 auto;
 	width: 100%;
 	min-height: 96px;
@@ -656,12 +653,14 @@
 }
 
 .photos-phone-strip {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	flex: none;
 	align-items: center;
 	gap: 2px;
 	height: 48px;
-	margin: 0 0 12px;
+	margin: auto 0 12px;
 	padding: 0 50%;
 	overflow-x: auto;
 	list-style: none;
@@ -696,6 +695,8 @@
 
 /* 아래 막대: 공유 · (좋아요 · 정보) · 프로젝트 페이지 */
 .photos-phone-viewer-bar {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	flex: none;
 	align-items: center;
@@ -783,10 +784,4 @@
 	:is(.photos-phone-viewer-title, .photos-phone-viewer-more, .photos-phone-strip, .photos-phone-viewer-bar) {
 	visibility: hidden;
 	opacity: 0;
-}
-
-.photos-phone-viewer[data-focus] .photos-phone-stage {
-	position: absolute;
-	inset: 0;
-	margin: 0;
 }
