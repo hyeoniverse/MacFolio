@@ -11,8 +11,18 @@ async function enterHome(page: Page, path = '/') {
 	await expect(loading).toBeHidden({ timeout: 20_000 });
 }
 
-const homeApp = (page: Page, label: string) =>
-	page.locator('.mobile-home').getByRole('button', { name: label, exact: true });
+/** 홈 화면의 앱 아이콘. 다른 페이지에 있으면 점을 눌러 그 페이지로 넘긴다 (보이는 페이지의 앱만 누를 수 있다) */
+async function homeApp(page: Page, label: string) {
+	const home = page.locator('.mobile-home');
+	const pages = home.locator('.mobile-page');
+	const count = await pages.count();
+	for (let index = 0; index < count; index++) {
+		if ((await pages.nth(index).locator(`.mobile-app[aria-label="${label}"]`).count()) === 0) continue;
+		if (count > 1) await home.getByRole('tab', { name: `${index + 1}쪽` }).click();
+		break;
+	}
+	return home.getByRole('button', { name: label, exact: true });
+}
 
 /** 마우스로 세로로 쓴다 */
 async function swipe(page: Page, x: number, fromY: number, toY: number) {
@@ -46,15 +56,15 @@ test.describe('모바일', () => {
 
 		await expect(page.getByRole('navigation', { name: 'Dock' }).getByRole('button')).toHaveCount(4);
 		// 화면이 없는 앱(사진, 휴지통)은 홈 화면에 두지 않는다
-		await expect(homeApp(page, '휴지통')).toHaveCount(0);
+		await expect(await homeApp(page, '휴지통')).toHaveCount(0);
 		// Finder는 iOS처럼 '파일'로 보인다
-		await expect(homeApp(page, 'Finder')).toHaveCount(0);
-		await expect(homeApp(page, '파일')).toBeVisible();
+		await expect(await homeApp(page, 'Finder')).toHaveCount(0);
+		await expect(await homeApp(page, '파일')).toBeVisible();
 		// 새싹 농장은 모바일 모드가 있어 휴대폰에서도 연다
-		await expect(homeApp(page, '새싹 농장')).toBeVisible();
+		await expect(await homeApp(page, '새싹 농장')).toBeVisible();
 		// 터미널은 모바일에서 '단축어'로 보인다
-		await expect(homeApp(page, '터미널')).toHaveCount(0);
-		await expect(homeApp(page, '단축어')).toBeVisible();
+		await expect(await homeApp(page, '터미널')).toHaveCount(0);
+		await expect(await homeApp(page, '단축어')).toBeVisible();
 	});
 
 	test('글 주소로 들어오면 홈 화면 대신 메모 앱이 그 글의 본문으로 열린다', async ({ page }) => {
@@ -71,7 +81,7 @@ test.describe('모바일', () => {
 			route.fulfill({ contentType: 'text/html', body: '<button>START</button>' })
 		);
 		await enterHome(page);
-		await homeApp(page, '새싹 농장').tap();
+		await (await homeApp(page, '새싹 농장')).tap();
 		const game = appWindow(page, 'sproutfarm');
 		await expect(game).toBeVisible();
 		await expect(
@@ -81,7 +91,7 @@ test.describe('모바일', () => {
 
 	test('앱은 화면을 가득 채워 열리고, 홈 인디케이터로 돌아온다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, 'Safari').tap();
+		await (await homeApp(page, 'Safari')).tap();
 
 		const safari = appWindow(page, 'safari');
 		await expect(safari).toBeVisible();
@@ -96,7 +106,7 @@ test.describe('모바일', () => {
 		await expect(safari).toBeHidden();
 
 		// 제목 막대의 홈 버튼으로도 돌아온다
-		await homeApp(page, '시스템 설정').tap();
+		await (await homeApp(page, '시스템 설정')).tap();
 		const settings = appWindow(page, 'settings');
 		await expect(settings).toBeVisible();
 		await settings.getByRole('button', { name: '홈', exact: true }).tap();
@@ -106,7 +116,7 @@ test.describe('모바일', () => {
 	test('메시지 서버에 닿지 못하면 메시지를 열지 않고, 확인하면 홈 화면으로 돌아온다', async ({ page }) => {
 		await storeMessagesOnServer(page);
 		await enterHome(page);
-		await homeApp(page, '메시지').tap();
+		await (await homeApp(page, '메시지')).tap();
 		const alert = appWindow(page, 'messages').getByRole('alertdialog', { name: '메시지를 열 수 없습니다' });
 		await expect(alert).toBeVisible();
 
@@ -124,7 +134,7 @@ test.describe('모바일', () => {
 			thumbnail: '/files/b',
 		});
 		await enterHome(page);
-		await homeApp(page, '시스템 설정').tap();
+		await (await homeApp(page, '시스템 설정')).tap();
 		const settings = appWindow(page, 'settings');
 		await settings.getByRole('button', { name: '배경화면' }).tap();
 		// 휴대폰에는 iOS 배경화면만, 더한 배경화면도 함께 (모두 보기 없이 격자)
@@ -153,7 +163,7 @@ test.describe('모바일', () => {
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {
 		await enterHome(page);
 		for (const label of ['Safari', 'GitHub', '메모', '메일', '메시지', '시스템 설정', '단축어', '음악']) {
-			await homeApp(page, label).tap();
+			await (await homeApp(page, label)).tap();
 			const content = page.locator('.container.mobile .content');
 			await expect(content).toBeVisible();
 			const overflow = await content.evaluate((el) => el.scrollWidth - el.clientWidth);
@@ -164,7 +174,7 @@ test.describe('모바일', () => {
 
 	test('메모는 목록 → 본문 → 목록 → 폴더 순서로 한 화면씩 넘어간다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, '메모').tap();
+		await (await homeApp(page, '메모')).tap();
 		const memo = appWindow(page, 'memo');
 
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
@@ -189,12 +199,51 @@ test.describe('모바일', () => {
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
 	});
 
+	test('Esc는 떠 있는 뒤로 가기와 같다: 한 화면씩 뒤로, 첫 화면에서는 홈. 입력 칸과 제어 센터의 Esc는 그것만 닫는다', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		await (await homeApp(page, '메모')).tap();
+		const memo = appWindow(page, 'memo');
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
+		await expect(memo.getByRole('article', { name: 'CRA에서 Vite로 옮기기' })).toBeVisible();
+
+		// 본문 → 목록 (한 번에 한 화면만)
+		await page.keyboard.press('Escape');
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+		await expect(memo.locator('.mobile-navbar-home')).toHaveText('폴더');
+
+		// 검색 칸 안의 Esc는 쓰기를 위한 것: 목록에 그대로 있다
+		const search = memo.getByRole('searchbox').first();
+		await search.focus();
+		await page.keyboard.press('Escape');
+		await page.waitForTimeout(100);
+		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
+
+		// 목록 → 폴더 → 홈
+		await search.blur();
+		await page.keyboard.press('Escape');
+		await expect(memo.getByRole('navigation', { name: '카테고리' })).toBeVisible();
+
+		// 제어 센터가 열려 있으면 Esc는 제어 센터만 닫는다
+		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
+		await page.getByRole('button', { name: '제어 센터 열기' }).click();
+		await expect(controlCenter).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(controlCenter).toBeHidden();
+		await expect(memo.getByRole('navigation', { name: '카테고리' })).toBeVisible();
+
+		await page.keyboard.press('Escape');
+		await expect(page.locator('.container.mobile')).toBeHidden();
+		await expect(page.locator('.mobile-home')).toBeVisible();
+	});
+
 	test('관리자 본문은 iOS 메모처럼 떠 있는 단추를 쓰고, 목록 위에서 새 메모·폴더 화면에서 새로운 폴더를 만든다', async ({
 		page,
 	}) => {
 		await fakeApi(page, { signedIn: true });
 		await enterHome(page);
-		await homeApp(page, '메모').tap();
+		await (await homeApp(page, '메모')).tap();
 		const memo = appWindow(page, 'memo');
 
 		// 본문: 제목 막대 대신 왼쪽 위 동그란 뒤로 가기, 오른쪽 위 공유·••• 알약, 아래 서식 알약과 새 메모
@@ -231,7 +280,7 @@ test.describe('모바일', () => {
 	test('목록·폴더 화면은 iOS 메모처럼 큰 제목과 카드 묶음, 떠 있는 단추, 아래 검색 알약을 쓴다', async ({ page }) => {
 		await fakeApi(page, { signedIn: false });
 		await enterHome(page);
-		await homeApp(page, '메모').tap();
+		await (await homeApp(page, '메모')).tap();
 		const memo = appWindow(page, 'memo');
 		const list = memo.getByRole('region', { name: '글 목록' });
 
@@ -269,7 +318,7 @@ test.describe('모바일', () => {
 	}) => {
 		await fakeApi(page, { signedIn: true });
 		await enterHome(page);
-		await homeApp(page, '메모').tap();
+		await (await homeApp(page, '메모')).tap();
 		const memo = appWindow(page, 'memo');
 		const list = memo.getByRole('region', { name: '글 목록' });
 		await expect(list.locator('.memo-item').first()).toBeVisible();
@@ -325,7 +374,7 @@ test.describe('모바일', () => {
 			['암호', 'passwords', '암호'],
 			['단축어', 'terminal', '단축어'],
 		] as const) {
-			await homeApp(page, label).tap();
+			await (await homeApp(page, label)).tap();
 			const app = appWindow(page, appName);
 			const back = app.locator('.mobile-navbar .mobile-navbar-home');
 			const heading = app.getByRole('heading', { name: title, exact: true });
@@ -348,7 +397,7 @@ test.describe('모바일', () => {
 
 	test('시스템 설정: 항목 목록에서 누르면 그 화면으로, 떠 있는 뒤로 가기로 목록에 돌아온다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, '시스템 설정').tap();
+		await (await homeApp(page, '시스템 설정')).tap();
 		const settings = appWindow(page, 'settings');
 		// 줄 끝의 ›는 카드 오른쪽 안쪽 여백(16px)에 붙는다
 		const row = settings.getByRole('button', { name: '화면 모드' });
@@ -365,7 +414,7 @@ test.describe('모바일', () => {
 	test('폴더 편집의 ≡ 손잡이로 같은 층 폴더 순서를 바꾸고, 정리 내용에 저장한다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true, organization: { folders: ['디자인', '읽을거리'] } });
 		await enterHome(page);
-		await homeApp(page, '메모').tap();
+		await (await homeApp(page, '메모')).tap();
 		const memo = appWindow(page, 'memo');
 		await memo.locator('.mobile-navbar-home').tap();
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
@@ -393,7 +442,7 @@ test.describe('모바일', () => {
 
 	test('메일은 목록과 읽기·쓰기를 한 화면씩 보여준다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, '메일').tap();
+		await (await homeApp(page, '메일')).tap();
 		const mail = appWindow(page, 'mail');
 		const list = mail.getByRole('region', { name: '받은 편지함' });
 
@@ -408,7 +457,7 @@ test.describe('모바일', () => {
 
 	test('음악: 보관함 → 플레이리스트 → 곡을 누르면 재생되고, 미니 플레이어로 지금 재생 중을 연다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, '음악').tap();
+		await (await homeApp(page, '음악')).tap();
 		const music = appWindow(page, 'music');
 		await expect(music.getByRole('heading', { name: '보관함' })).toBeVisible();
 
@@ -441,7 +490,7 @@ test.describe('모바일', () => {
 
 	test('음악: 플레이리스트는 격자·목록과 제목순으로 보고, 앨범·아티스트는 곡을 묶어 보여 준다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, '음악').tap();
+		await (await homeApp(page, '음악')).tap();
 		const music = appWindow(page, 'music');
 		const names = music.locator('.music-collection strong');
 
@@ -486,7 +535,7 @@ test.describe('모바일', () => {
 		const statusBar = page.getByRole('button', { name: '제어 센터 열기' });
 		await expect(statusBar.locator('time')).toHaveText(/^\d{1,2}:\d{2}$/);
 
-		await homeApp(page, 'Safari').tap();
+		await (await homeApp(page, 'Safari')).tap();
 		await expect(appWindow(page, 'safari')).toBeVisible();
 		await expect(statusBar).toBeVisible();
 		// 앱 내용은 상태 표시줄 아래에서 시작한다
@@ -542,7 +591,7 @@ test.describe('모바일', () => {
 
 	test('앱 안에서도 아래로 쓸면 열리고, 내용을 내려 둔 곳에서는 스크롤이 먼저다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, 'Safari').tap();
+		await (await homeApp(page, 'Safari')).tap();
 		const safari = appWindow(page, 'safari');
 		await expect(safari).toBeVisible();
 		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
@@ -597,7 +646,7 @@ test.describe('모바일', () => {
 
 		await passwords.getByRole('button', { name: '홈 화면으로' }).tap();
 		await expect(passwords).toBeHidden();
-		await expect(homeApp(page, '암호')).toBeVisible();
+		await expect(await homeApp(page, '암호')).toBeVisible();
 	});
 
 	test('제어 센터에서 다크 모드를 바꾸고 앱을 연다', async ({ page }) => {
@@ -619,7 +668,7 @@ test.describe('모바일', () => {
 
 	test('단축어는 터미널 명령을 눌러서 실행한다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, '단축어').tap();
+		await (await homeApp(page, '단축어')).tap();
 		const shortcuts = appWindow(page, 'terminal');
 		await expect(shortcuts.getByRole('heading', { name: '단축어' })).toBeVisible();
 		// 명령어 입력 칸은 없다
@@ -646,9 +695,9 @@ test.describe('모바일', () => {
 		page,
 	}) => {
 		await enterHome(page);
-		await homeApp(page, 'Safari').tap();
+		await (await homeApp(page, 'Safari')).tap();
 		await appWindow(page, 'safari').getByRole('button', { name: '홈 화면으로' }).tap();
-		await homeApp(page, '메모').tap();
+		await (await homeApp(page, '메모')).tap();
 		const memo = appWindow(page, 'memo');
 		await expect(memo).toBeVisible();
 
@@ -711,7 +760,7 @@ test.describe('모바일', () => {
 
 	test('앱 전환기에서 음악을 밀어 올려 끄면 재생도 멈춘다', async ({ page }) => {
 		await enterHome(page);
-		await homeApp(page, '음악').tap();
+		await (await homeApp(page, '음악')).tap();
 		const music = appWindow(page, 'music');
 		await music.getByRole('button', { name: '플레이리스트', exact: true }).tap();
 		await music.getByRole('button', { name: /지브리/ }).tap();
@@ -761,5 +810,61 @@ test.describe('휴대폰 홈 화면 페이지', () => {
 		const second = page.getByRole('navigation', { name: '앱 2쪽' });
 		await second.locator('.mobile-app').first().click();
 		await expect(page.locator('.container.mobile')).toBeVisible();
+	});
+
+	test('손가락으로 옆으로 쓸면 페이지가 넘어가고, 조금 끌다 놓으면 제자리, 아이콘에서 시작한 쓸기는 앱을 열지 않는다', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		const cdp = await page.context().newCDPSession(page);
+		// 손가락 하나로 (x0 → x1) 가로로 쓴다. 한 걸음씩 움직여 실제 손가락처럼
+		const swipe = async (x0: number, x1: number, y: number, steps = 8) => {
+			const point = (x: number) => [{ x, y }];
+			await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: point(x0) });
+			for (let step = 1; step <= steps; step++)
+				await cdp.send('Input.dispatchTouchEvent', {
+					type: 'touchMove',
+					touchPoints: point(x0 + ((x1 - x0) * step) / steps),
+				});
+			await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+		};
+		const dots = page.getByRole('tablist', { name: '홈 화면 페이지' });
+		// 그 페이지가 화면 왼쪽 끝에 멈췄고, 점도 그 페이지다 (넘어가는 중간이 아니라 멈춘 뒤를 본다)
+		const selected = async (name: string) => {
+			const index = Number.parseInt(name, 10) - 1;
+			await expect
+				.poll(async () => Math.round((await page.locator('.mobile-page').nth(index).boundingBox())!.x))
+				.toBe(0);
+			await page.waitForTimeout(500);
+			expect(Math.round((await page.locator('.mobile-page').nth(index).boundingBox())!.x)).toBe(0);
+			await expect(dots.getByRole('tab', { name })).toHaveAttribute('aria-selected', 'true');
+		};
+		const icon = (await page
+			.getByRole('navigation', { name: '앱', exact: true })
+			.locator('.mobile-app')
+			.first()
+			.boundingBox())!;
+		const y = icon.y + icon.height / 2;
+
+		// 첫 아이콘 위에서 왼쪽으로 쓸면 2쪽. 앱은 열리지 않는다
+		await swipe(300, 60, y);
+		await selected('2쪽');
+		await expect(page.locator('.container.mobile')).toHaveCount(0);
+		await expect(page.getByRole('navigation', { name: '앱 2쪽' }).locator('.mobile-app').first()).toBeInViewport();
+
+		// 오른쪽으로 쓸면 1쪽
+		await swipe(60, 300, y);
+		await selected('1쪽');
+
+		// 조금만 천천히 끌다 놓으면 제자리
+		await swipe(220, 190, y, 20);
+		await selected('1쪽');
+
+		// 마우스로 끌어도 넘어간다
+		await page.mouse.move(300, y);
+		await page.mouse.down();
+		await page.mouse.move(60, y, { steps: 8 });
+		await page.mouse.up();
+		await selected('2쪽');
 	});
 });
