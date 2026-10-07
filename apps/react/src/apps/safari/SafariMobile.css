@@ -19,8 +19,7 @@
 	position: absolute;
 	right: 16px;
 	bottom: calc(var(--phone-bottom-inset) + 4px);
-	/* 왼쪽은 뒤로 가기 동그라미(16 + 44)와 8px 사이 */
-	left: 68px;
+	left: 16px;
 	z-index: 5;
 	height: 44px;
 }
@@ -97,6 +96,11 @@
 	border: none;
 	color: var(--safari-text);
 	font-size: 18px;
+}
+
+/* 탭 모음에는 왼쪽 아래에 뒤로 가기(완료)가 있어, 막대는 그 동그라미(16 + 44)와 8px 사이를 두고 시작한다 */
+.safari-phone.overview .safari-phone-bar {
+	left: 68px;
 }
 
 /* ─── 탭 모음: 두 줄 카드 ─── */

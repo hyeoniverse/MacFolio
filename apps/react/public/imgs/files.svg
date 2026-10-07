@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- iOS 파일 앱: 흰 바탕에 파란 폴더 (뒤판과 탭은 밝게, 앞판은 진하게). 휴대폰 홈 화면이 모서리를 둥글린다 -->
+  <defs>
+    <linearGradient id="back" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7cc8ff"/>
+      <stop offset="1" stop-color="#3a9bff"/>
+    </linearGradient>
+    <linearGradient id="front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3ea2ff"/>
+      <stop offset="1" stop-color="#0a6cf0"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" fill="#ffffff"/>
+  <!-- 뒤판과 왼쪽 위 탭 -->
+  <path d="M22 38 Q22 30 30 30 H52 Q56 30 59 33 L64 38 H98 Q106 38 106 46 V92 H22 Z" fill="url(#back)"/>
+  <!-- 앞판 -->
+  <rect x="22" y="46" width="84" height="54" rx="8" fill="url(#front)"/>
+</svg>
