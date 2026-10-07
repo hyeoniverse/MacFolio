@@ -14,6 +14,8 @@ export interface Album {
 	/** 프로젝트 id */
 	id: string;
 	name: string;
+	/** 프로젝트 기간 (모음의 추억 카드에 쓴다) */
+	period?: string;
 	photos: Photo[];
 }
 
@@ -54,7 +56,7 @@ export function photosOf(project: Project): Photo[] {
 /** 사진이 있는 프로젝트마다 앨범 하나 (PROJECTS 순서) */
 export function albumsOf(projects: readonly Project[]): Album[] {
 	return projects
-		.map((project) => ({ id: project.id, name: project.name, photos: photosOf(project) }))
+		.map((project) => ({ id: project.id, name: project.name, period: project.period, photos: photosOf(project) }))
 		.filter((album) => album.photos.length > 0);
 }
 
@@ -64,3 +66,10 @@ export const ALBUMS = albumsOf(PROJECTS);
 export const ALL_PHOTOS: (Photo & { album: Album })[] = ALBUMS.flatMap((album) =>
 	album.photos.map((photo) => ({ ...photo, album }))
 );
+
+/** 사진 수를 말로: "사진 65장, 영상 5개" */
+export function countText(photos: readonly Photo[]): string {
+	const videos = photos.filter((photo) => photo.video).length;
+	const pictures = photos.length - videos;
+	return [pictures && `사진 ${pictures}장`, videos && `영상 ${videos}개`].filter(Boolean).join(', ');
+}
