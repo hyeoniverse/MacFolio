@@ -4,6 +4,7 @@ import {
 	countryOf,
 	dayHash,
 	isBot,
+	referrerGroup,
 	kstDay,
 	maskIp,
 	MAX_EVENTS,
@@ -145,6 +146,28 @@ describe('하루치 집계', () => {
 		// 머문 시간은 방문마다 가장 긴 값: 90초 + 10초
 		expect(value('durationSec')).toBe(100);
 		expect(value('durationVisits')).toBe(2);
+	});
+
+	it('글 보기는 방문마다 한 번 (같은 방문에서 같은 글을 다시 열어도 조회수 1)', () => {
+		const rows = aggregate([
+			event({ type: 'item', app: 'memo', item: 'hello' }),
+			event({ type: 'item', app: 'memo', item: 'hello' }),
+			event({ type: 'item', app: 'memo', item: 'other' }),
+			event({ visitId: 'v2', type: 'item', app: 'memo', item: 'hello' }),
+		]);
+		expect(rows.filter((row) => row.metric === 'item')).toEqual([
+			{ metric: 'item', key: 'memo/hello', value: 2 },
+			{ metric: 'item', key: 'memo/other', value: 1 },
+		]);
+	});
+
+	it('들어온 곳 묶음: 검색, 소셜, 직접, 링크', () => {
+		expect(referrerGroup('www.google.com')).toBe('검색');
+		expect(referrerGroup('search.naver.com')).toBe('검색');
+		expect(referrerGroup('www.linkedin.com')).toBe('소셜');
+		expect(referrerGroup('t.co')).toBe('소셜');
+		expect(referrerGroup('')).toBe('직접');
+		expect(referrerGroup('github.com')).toBe('링크');
 	});
 
 	it('이벤트가 없는 날도 visits 0을 남긴다 (모았다는 표시)', () => {

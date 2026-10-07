@@ -205,6 +205,8 @@ export function aggregate(events: StoredEvent[]): StatRow[] {
 	add('visits', '', 0);
 	const visitors = new Set<string>();
 	const durations = new Map<string, number>();
+	// 글·프로젝트 보기는 방문마다 한 번: 한 방문에서 같은 글을 여러 번 열어도 조회수 1
+	const viewed = new Set<string>();
 	for (const event of events) {
 		visitors.add(event.dayHash);
 		if (event.type === 'visit') {
@@ -227,7 +229,9 @@ export function aggregate(events: StoredEvent[]): StatRow[] {
 			add('appOpens', '');
 			add('app', event.app);
 		} else if (event.type === 'item' && event.app && event.item) {
-			add('item', `${event.app}/${event.item}`);
+			const key = `${event.app}/${event.item}`;
+			if (!viewed.has(`${event.visitId}\u0000${key}`)) add('item', key);
+			viewed.add(`${event.visitId}\u0000${key}`);
 		} else if (event.type === 'link' && event.item) {
 			add('link', event.item);
 		} else if (event.type === 'leave' && typeof event.duration === 'number') {
@@ -244,4 +248,16 @@ export function aggregate(events: StoredEvent[]): StatRow[] {
 		const [metric, key] = id.split('\u0000');
 		return { metric, key, value };
 	});
+}
+
+const SEARCH = /(^|\.)(google|bing|naver|daum|yahoo|duckduckgo|baidu|yandex|ecosia)\./;
+const SOCIAL =
+	/(^|\.)(linkedin\.com|lnkd\.in|facebook\.com|instagram\.com|x\.com|t\.co|twitter\.com|threads\.net|kakao\.com|reddit\.com|youtube\.com|velog\.io|tistory\.com|discord\.com)$/;
+
+/** 들어온 곳의 묶음: 검색, 소셜, 직접, 링크. 방문자에게는 호스트 대신 이 묶음만 보인다 */
+export function referrerGroup(host: string): '검색' | '소셜' | '직접' | '링크' {
+	if (!host) return '직접';
+	if (SEARCH.test(host)) return '검색';
+	if (SOCIAL.test(host)) return '소셜';
+	return '링크';
 }

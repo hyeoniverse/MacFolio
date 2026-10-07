@@ -121,14 +121,62 @@ describe('트래픽 분석 (e2e)', () => {
 		expect(response.body).toEqual({ day: kstDay(new Date()), visitors: 2 });
 	});
 
-	it('요약과 실시간은 관리자만', async () => {
-		await request(server()).get('/analytics/summary').expect(401);
+	it('요약은 누구나 보지만 방문자에게는 들어온 곳의 호스트·utm이 없다. 실시간은 관리자만', async () => {
+		await send(visit('v-kkkkkkkk', { utmSource: 'resume', utmCampaign: 'kakao-2026' })).expect(204);
+		const today = kstDay(new Date());
+
+		const visitor = await request(server()).get('/analytics/summary').query({ from: today, to: today }).expect(200);
+		expect(visitor.body.scope).toBe('public');
+		expect(visitor.body.totals.visits).toBe(1);
+		expect(visitor.body.breakdown.referrerGroup).toEqual([{ key: '링크', value: 1 }]);
+		expect(visitor.body.breakdown.referrer).toEqual([]);
+		expect(visitor.body.breakdown.source).toEqual([]);
+		expect(visitor.body.breakdown.campaign).toEqual([]);
+		expect(visitor.body.breakdown.item).toEqual([{ key: 'memo/hello', value: 1 }]);
+		expect(JSON.stringify(visitor.body)).not.toMatch(/github\.com"|kakao-2026|resume/);
+
+		const admin = await request(server())
+			.get('/analytics/summary')
+			.set('Cookie', adminCookie)
+			.query({ from: today, to: today })
+			.expect(200);
+		expect(admin.body.scope).toBe('admin');
+		expect(admin.body.breakdown.campaign).toEqual([{ key: 'kakao-2026', value: 1 }]);
+		expect(admin.body.breakdown.referrer).toEqual([{ key: 'github.com', value: 1 }]);
+
 		await request(server()).get('/analytics/live').expect(401);
 		await request(server())
 			.get('/analytics/summary')
 			.set('Cookie', adminCookie)
 			.query({ from: '2026-01-02', to: '2026-01-01' })
 			.expect(400);
+	});
+
+	it('글 조회수: 전체 기간, 한 방문에서 같은 글은 한 번. 누구나 본다', async () => {
+		const today = kstDay(new Date());
+		const yesterday = shiftDay(today, -1);
+		await prisma.dailyStat.createMany({
+			data: [
+				{ day: shiftDay(today, -30), metric: 'item', key: 'memo/hello', value: 5 },
+				{ day: yesterday, metric: 'item', key: 'memo/hello', value: 2 },
+				{ day: yesterday, metric: 'item', key: 'memo/other', value: 1 },
+				{ day: yesterday, metric: 'item', key: 'safari/macfolio', value: 9 },
+				{ day: yesterday, metric: 'visits', key: '', value: 0 },
+			],
+		});
+		// 오늘: 같은 방문에서 hello를 두 번 열어도 1
+		await send({
+			visitId: 'v-llllllll',
+			events: [
+				{ type: 'item', app: 'memo', item: 'hello' },
+				{ type: 'item', app: 'memo', item: 'other' },
+				{ type: 'item', app: 'memo', item: 'hello' },
+			],
+		}).expect(204);
+
+		const response = await request(server()).get('/analytics/views').query({ app: 'memo' }).expect(200);
+		expect(response.body).toEqual({ app: 'memo', views: { hello: 8, other: 2 } });
+		await request(server()).get('/analytics/views').query({ app: 'Memo App' }).expect(400);
 	});
 
 	it('지난 날은 DailyStat으로 모으고 오늘은 이벤트에서 바로 센다. 앞 기간과 비교한다', async () => {
