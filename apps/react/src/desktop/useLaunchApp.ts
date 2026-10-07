@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { notify } from '@/desktop/notifications/notificationStore';
+import { openExternal } from '@/shared/analytics/analytics';
 
 /** 공유 앱의 실행 중 표시(점)를 켜 두는 시간. 알림이 떠 있는 동안 */
 const SHARING_MS = 3500;
@@ -18,7 +19,7 @@ export function useLaunchApp() {
 		const action = APP_MANIFEST[appName].action;
 
 		if (action?.type === 'link') {
-			window.open(action.url, '_blank');
+			openExternal(action.url, '');
 			return;
 		}
 

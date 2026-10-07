@@ -36,6 +36,10 @@ export interface FakeApiState {
 	wallpapers: FakeWallpaper[];
 	/** 사진 찾기: 켜진 서비스, 받은 검색어, Unsplash에 알린 사진 */
 	stock: { providers: { unsplash: boolean; pexels: boolean }; searches: string[]; downloads: string[] };
+	/** 사이트가 보낸 분석 묶음 (POST /analytics/events의 본문) */
+	analytics: { visitId: string; events: Record<string, unknown>[] }[];
+	/** /analytics/today가 알려 줄 오늘 방문자 수 */
+	todayVisitors: number;
 	/** GitHub 앱: 프로필, README, 보일 저장소, GitHub에 있는 저장소 (listed: 고를 수 있는 목록에 나온다) */
 	github: {
 		followers: number;
@@ -279,6 +283,8 @@ export async function fakeApi(
 		uploads: [],
 		wallpapers: [],
 		stock: { providers: { unsplash: true, pexels: false }, searches: [], downloads: [] },
+		analytics: [],
+		todayVisitors: 12,
 		github: {
 			followers: 42,
 			readme: FAKE_README,
@@ -352,6 +358,17 @@ export async function fakeApi(
 		if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors(origin) });
 
 		// 서버 상태 (메뉴 막대의 Wi-Fi 자리): ok, DB가 안 됨(503), 꺼짐(연결 실패)
+		// 트래픽 분석: sendBeacon은 text/plain(JSON 글자)으로 보낸다
+		if (path === '/analytics/events' && request.method() === 'POST') {
+			state.analytics.push(JSON.parse(request.postData() ?? '{}'));
+			return route.fulfill({ status: 204, headers: cors(origin) });
+		}
+		if (path === '/analytics/today')
+			return route.fulfill({
+				status: 200,
+				headers: cors(origin),
+				json: { day: '2026-10-07', visitors: state.todayVisitors },
+			});
 		if (path === '/health') {
 			if (state.health === 'down') return route.abort('connectionrefused');
 			// 다른 주소만 허용한다고 답한다: 브라우저가 응답을 읽지 못하게 막고, 응답을 읽지 않는 no-cors 요청만 닿는다.

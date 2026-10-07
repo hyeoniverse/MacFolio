@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
 import type { AppName } from '@/apps/manifest';
 import '@/shared/ui/web-frame/WebFrame.css';
+import { openExternal } from '@/shared/analytics/analytics';
 
 /** 이만큼 지나도 페이지가 다 불러지지 않으면 새 탭에서 여는 길을 알려 준다 */
 const SLOW_MS = 8000;
@@ -53,7 +54,7 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 				{
 					label: '새 탭에서 열기',
 					icon: 'fa-solid fa-arrow-up-right-from-square',
-					onSelect: () => window.open(src, '_blank', 'noopener,noreferrer'),
+					onSelect: () => openExternal(src),
 				},
 			],
 		},
