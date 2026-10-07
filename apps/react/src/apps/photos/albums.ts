@@ -19,6 +19,9 @@ export interface Album {
 	photos: Photo[];
 }
 
+/** 캡션 길이 (서버 apps/api/src/photos/rules.ts와 같다) */
+export const CAPTION_MAX = 200;
+
 const isVideo = (src: string) => /\.mp4$/i.test(src);
 /** 사진으로 보여 줄 수 있는 파일 (소리·데이터 파일은 뺀다) */
 const isPicture = (src: string) => /\.(jpe?g|png|webp|gif|svg|mp4)$/i.test(src);
@@ -62,8 +65,21 @@ export function albumsOf(projects: readonly Project[]): Album[] {
 
 export const ALBUMS = albumsOf(PROJECTS);
 
-/** 모든 사진 (앨범 순서대로, 어느 앨범의 사진인지 함께) */
-export const ALL_PHOTOS: (Photo & { album: Album })[] = ALBUMS.flatMap((album) =>
+/** 프로젝트 기간의 시작일 (예: "2024.12.26 – 2025.02.05" → 2024-12-26). 사진에는 날짜가 없어 앨범의 기간으로 순서를 정한다. 모르면 null */
+export function periodStart(period?: string): number | null {
+	const match = period?.match(/(\d{4})\.(\d{1,2})(?:\.(\d{1,2}))?/);
+	return match ? Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3] ?? 1)) : null;
+}
+
+/** 오래된 앨범부터 (기간을 모르는 앨범은 맨 앞, 같으면 원래 순서) */
+export const oldestFirst = (albums: readonly Album[]) =>
+	[...albums].sort((a, b) => (periodStart(a.period) ?? -Infinity) - (periodStart(b.period) ?? -Infinity) || 0);
+
+/** 보관함 순서의 앨범: 오래된 것이 위, 최신이 아래 (iOS·macOS 사진처럼) */
+export const ALBUMS_BY_AGE = oldestFirst(ALBUMS);
+
+/** 모든 사진: 오래된 앨범부터, 앨범 안에서는 원래 순서 (어느 앨범의 사진인지 함께) */
+export const ALL_PHOTOS: (Photo & { album: Album })[] = ALBUMS_BY_AGE.flatMap((album) =>
 	album.photos.map((photo) => ({ ...photo, album }))
 );
 

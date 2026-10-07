@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import PhotosMobile from './PhotosMobile';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/AppStateContext';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { requestOpen } from '@/shared/lib/openRequest';
-import { ALBUMS, ALL_PHOTOS, countText } from './albums';
+import { ALBUMS, ALBUMS_BY_AGE, ALL_PHOTOS, countText } from './albums';
 import { Thumb, Viewer, type Shown } from './PhotoParts';
+import { captionOf, loadCaptions, useCaptions } from './captions';
 import '@/apps/photos/Photos.css';
 
 /** 보는 곳: 보관함(모든 사진), 비디오만, 앨범 하나 */
@@ -31,6 +32,9 @@ const Photos = () => {
 	const [grouped, setGrouped] = useState(false);
 	const [size, setSize] = useState(1);
 	const [viewing, setViewing] = useState<number | null>(null);
+	// 관리자가 고친 캡션 (서버). 앱을 열 때 한 번 받는다
+	const captions = useCaptions();
+	useEffect(() => loadCaptions(), []);
 	const album = place.kind === 'album' ? ALBUMS.find((entry) => entry.id === place.id) : undefined;
 	const photos: Shown[] = album
 		? album.photos.map((photo) => ({ ...photo, album }))
@@ -39,6 +43,11 @@ const Photos = () => {
 			: ALL_PHOTOS;
 	const title = album?.name ?? (place.kind === 'videos' ? '비디오' : '보관함');
 	const showGroups = place.kind === 'all' && grouped;
+	// 격자는 맨 아래(최신)부터 보인다. 크게 보기는 격자 위에 열려 닫으면 보던 자리 그대로
+	const scrollBox = useRef<HTMLDivElement>(null);
+	useLayoutEffect(() => {
+		if (scrollBox.current) scrollBox.current.scrollTop = scrollBox.current.scrollHeight;
+	}, [place, grouped, mobile]);
 
 	const go = (next: Place) => {
 		setPlace(next);
@@ -108,8 +117,8 @@ const Photos = () => {
 			<button
 				type="button"
 				className="photos-thumb"
-				aria-label={`${photo.album.name}: ${photo.caption}${photo.video ? ' (영상)' : ''}`}
-				title={photo.caption}
+				aria-label={`${photo.album.name}: ${captionOf(photo, captions)}${photo.video ? ' (영상)' : ''}`}
+				title={captionOf(photo, captions)}
 				onClick={() => setViewing(index)}
 			>
 				<Thumb photo={photo} />
@@ -174,9 +183,9 @@ const Photos = () => {
 									))}
 								</nav>
 							)}
-							<div className="photos-scroll">
+							<div ref={scrollBox} className="photos-scroll">
 								{showGroups ? (
-									ALBUMS.map((entry) => {
+									ALBUMS_BY_AGE.map((entry) => {
 										const start = photos.findIndex((photo) => photo.album.id === entry.id);
 										return (
 											<section key={entry.id} className="photos-group" aria-label={entry.name}>

@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import type { Project } from '@/shared/profile';
-import { ALBUMS, albumsOf, fileNameOf, formatBytes, formatOf, megapixels, photosOf } from './albums';
+import {
+	ALBUMS,
+	ALL_PHOTOS,
+	albumsOf,
+	fileNameOf,
+	formatBytes,
+	formatOf,
+	megapixels,
+	oldestFirst,
+	periodStart,
+	photosOf,
+} from './albums';
 
 const project = (fields: Partial<Project>): Project =>
 	({
@@ -75,5 +86,31 @@ describe('사진 정보', () => {
 	it('화소 수', () => {
 		expect(megapixels(3024, 4032)).toBe('12.2MP');
 		expect(megapixels(1280, 720)).toBe('0.9MP');
+	});
+});
+
+describe('보관함 순서', () => {
+	it('기간의 시작일', () => {
+		expect(periodStart('2024.12.26 – 2025.02.05')).toBe(Date.UTC(2024, 11, 26));
+		expect(periodStart('2026.02.05 – 운영 중')).toBe(Date.UTC(2026, 1, 5));
+		expect(periodStart('2024.10 –')).toBe(Date.UTC(2024, 9, 1));
+		expect(periodStart(undefined)).toBeNull();
+	});
+
+	it('오래된 앨범부터, 기간을 모르면 맨 앞', () => {
+		const album = (id: string, period?: string) => ({ id, name: id, period, photos: [] });
+		expect(
+			oldestFirst([
+				album('new', '2026.02.05 –'),
+				album('old', '2024.06.10 –'),
+				album('none'),
+				album('mid', '2024.12.26 –'),
+			]).map((entry) => entry.id)
+		).toEqual(['none', 'old', 'mid', 'new']);
+	});
+
+	it('모든 사진의 마지막은 가장 최근 앨범의 사진', () => {
+		const newest = [...ALBUMS].sort((a, b) => (periodStart(b.period) ?? 0) - (periodStart(a.period) ?? 0))[0];
+		expect(ALL_PHOTOS.at(-1)!.album.id).toBe(newest.id);
 	});
 });

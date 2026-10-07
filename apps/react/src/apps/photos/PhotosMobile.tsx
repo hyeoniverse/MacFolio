@@ -1,9 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
 import { shareLink } from '@/shared/lib/appLink';
-import { ALBUMS, ALL_PHOTOS, countText, fileNameOf, formatBytes, formatOf, megapixels, type Album } from './albums';
-import { Thumb, type Shown } from './PhotoParts';
+import {
+	ALBUMS,
+	ALBUMS_BY_AGE,
+	ALL_PHOTOS,
+	countText,
+	fileNameOf,
+	formatBytes,
+	formatOf,
+	megapixels,
+	type Album,
+} from './albums';
+import { CaptionField, Thumb, type Shown } from './PhotoParts';
+import { captionOf, useCaptions } from './captions';
 import '@/apps/photos/Photos.css';
 import '@/apps/photos/PhotosMobile.css';
 
@@ -20,30 +31,33 @@ const coverOf = (album: Album) => album.photos.find((photo) => !photo.video)?.sr
 const keyOf = (photo: Shown) => `${photo.album.id}:${photo.src}`;
 
 /** 검색: 사진 설명이나 앨범 이름에 검색어가 들어간 사진 (대소문자 무시) */
-const searchPhotos = (query: string) => {
+const searchPhotos = (query: string, captions: Record<string, string>) => {
 	const needle = query.trim().toLowerCase();
 	return needle
-		? ALL_PHOTOS.filter((photo) => `${photo.caption} ${photo.album.name}`.toLowerCase().includes(needle))
+		? ALL_PHOTOS.filter((photo) => `${captionOf(photo, captions)} ${photo.album.name}`.toLowerCase().includes(needle))
 		: [];
 };
 
 /** 꽉 찬 격자: iOS 사진처럼 칸 사이 1px, 사진은 칸을 채운다 */
-const Grid = ({ photos, onOpen }: { photos: Shown[]; onOpen: (index: number) => void }) => (
-	<ul className="photos-phone-grid">
-		{photos.map((photo, index) => (
-			<li key={keyOf(photo)}>
-				<button
-					type="button"
-					className="photos-thumb"
-					aria-label={`${photo.album.name}: ${photo.caption}${photo.video ? ' (영상)' : ''}`}
-					onClick={() => onOpen(index)}
-				>
-					<Thumb photo={photo} />
-				</button>
-			</li>
-		))}
-	</ul>
-);
+const Grid = ({ photos, onOpen }: { photos: Shown[]; onOpen: (index: number) => void }) => {
+	const captions = useCaptions();
+	return (
+		<ul className="photos-phone-grid">
+			{photos.map((photo, index) => (
+				<li key={keyOf(photo)}>
+					<button
+						type="button"
+						className="photos-thumb"
+						aria-label={`${photo.album.name}: ${captionOf(photo, captions)}${photo.video ? ' (영상)' : ''}`}
+						onClick={() => onOpen(index)}
+					>
+						<Thumb photo={photo} />
+					</button>
+				</li>
+			))}
+		</ul>
+	);
+};
 
 /** 모음의 묶음: 제목(›)과 가로로 넘기는 카드들 */
 const Shelf = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -105,6 +119,7 @@ const PhoneViewer = ({
 	onOpenProject: (id: string) => void;
 }) => {
 	const photo = photos[index];
+	const caption = captionOf(photo, useCaptions());
 	const [info, setInfo] = useState(false);
 	// 불러온 사진의 실제 크기와 파일 크기 (정보 판). 사진이 바뀌면 그 사진의 것으로
 	const [measured, setMeasured] = useState<{ src: string; width: number; height: number; bytes: number | null } | null>(
@@ -144,15 +159,11 @@ const PhoneViewer = ({
 	}, [index]);
 
 	return (
-		<div
-			className="photos-phone-viewer"
-			role="dialog"
-			aria-label={`사진 ${index + 1}/${photos.length}: ${photo.caption}`}
-		>
+		<div className="photos-phone-viewer" role="dialog" aria-label={`사진 ${index + 1}/${photos.length}: ${caption}`}>
 			<MobileNavigation backLabel="돌아가기" onBack={onClose} />
 			<div className="photos-phone-viewer-title">
 				<strong>{photo.album.name}</strong>
-				<span>{photo.caption}</span>
+				<span>{caption}</span>
 			</div>
 			<button
 				ref={moreButton}
@@ -195,7 +206,7 @@ const PhoneViewer = ({
 					<img
 						key={photo.src}
 						src={photo.src}
-						alt={photo.caption}
+						alt={caption}
 						draggable={false}
 						onLoad={(event) => measure(event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}
 					/>
@@ -205,7 +216,7 @@ const PhoneViewer = ({
 			{/* 정보 (iOS 사진): 사진이 위로 줄고, 캡션 줄과 회색 판(기간·파일, 형식 카드, 프로젝트 페이지)이 아래에서 올라온다 */}
 			{info && (
 				<aside className="photos-phone-info" aria-label="사진 정보">
-					<p className="photos-phone-caption">{photo.caption}</p>
+					<CaptionField key={photo.src} photo={photo} className="photos-phone-caption" />
 					<div className="photos-phone-info-panel">
 						<h3>{photo.album.period ?? photo.album.name}</h3>
 						<p className="photos-phone-file">
@@ -272,14 +283,8 @@ const PhoneViewer = ({
 						<i className={info ? 'fa-solid fa-circle-info' : 'fa-solid fa-info'} aria-hidden="true" />
 					</button>
 				</div>
-				<button
-					type="button"
-					className="photos-phone-round"
-					aria-label={`${photo.album.name} 페이지`}
-					onClick={() => onOpenProject(photo.album.id)}
-				>
-					<i className="fa-regular fa-compass" aria-hidden="true" />
-				</button>
+				{/* 오른쪽 자리는 비워 가운데 알약을 가운데에 둔다 (프로젝트 페이지는 정보와 ••• 에서 연다) */}
+				<span className="photos-phone-bar-spacer" aria-hidden="true" />
 			</div>
 
 			{menu && (
@@ -326,6 +331,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 	const [liked, setLiked] = useState<Set<string>>(() => new Set());
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
+	const captions = useCaptions();
 	// 화면이 바뀐 방식: 앨범으로 들어가면 오른쪽에서, 나오면 왼쪽에서, 탭을 바꾸면 서서히 (처음에는 움직이지 않는다)
 	const [motion, setMotion] = useState<'forward' | 'back' | 'fade' | null>(null);
 
@@ -338,16 +344,30 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 	const title = album?.name ?? (opened?.kind === 'videos' ? '비디오' : '보관함');
 	const showGrid = tab === 'library' || opened !== null;
 
+	// 격자는 맨 아래(최신)부터 보인다. 사진을 크게 봤다가 돌아오면 보던 자리로
+	const scrollBox = useRef<HTMLDivElement>(null);
+	const savedScroll = useRef(new Map<string, number>());
+	const scrollKey = `${opened ? (opened.kind === 'album' ? opened.id : 'videos') : tab}:${grouped}`;
+	useLayoutEffect(() => {
+		const box = scrollBox.current;
+		if (!box || viewing || searching) return;
+		const saved = savedScroll.current.get(scrollKey);
+		box.scrollTop = saved ?? (showGrid ? box.scrollHeight : 0);
+	}, [scrollKey, viewing, searching, showGrid]);
+
 	const view = (list: Shown[], index: number) => {
+		if (scrollBox.current) savedScroll.current.set(scrollKey, scrollBox.current.scrollTop);
 		setViewing({ photos: list, index });
 		setRecent(list[index]);
 	};
 	const open = (next: Opened) => {
+		savedScroll.current.clear();
 		setMotion(next ? 'forward' : 'back');
 		setOpened(next);
 		setViewing(null);
 	};
 	const switchTab = (next: Tab) => {
+		savedScroll.current.clear();
 		setTab(next);
 		setSearching(false);
 		setOpened(null);
@@ -407,7 +427,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 	);
 
 	if (searching) {
-		const results = searchPhotos(query);
+		const results = searchPhotos(query, captions);
 		const firstPicture = ALL_PHOTOS.find((photo) => !photo.video);
 		const recentCover = recent ?? firstPicture;
 		return (
@@ -514,6 +534,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 				</button>
 			)}
 			<div
+				ref={scrollBox}
 				key={opened ? (opened.kind === 'album' ? opened.id : 'videos') : tab}
 				className="photos-phone-scroll"
 				data-motion={motion ?? undefined}
@@ -525,7 +546,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 							<p>{countText(photos)}</p>
 						</header>
 						{tab === 'library' && !opened && grouped ? (
-							ALBUMS.map((entry) => {
+							ALBUMS_BY_AGE.map((entry) => {
 								const list = entry.photos.map((photo) => ({ ...photo, album: entry }));
 								return (
 									<section key={entry.id} className="photos-phone-group" aria-label={entry.name}>
