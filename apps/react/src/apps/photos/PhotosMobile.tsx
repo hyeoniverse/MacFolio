@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
 import { shareLink } from '@/shared/lib/appLink';
-import { ALBUMS, ALL_PHOTOS, countText, type Album } from './albums';
+import { ALBUMS, ALL_PHOTOS, countText, fileNameOf, formatBytes, formatOf, megapixels, type Album } from './albums';
 import { Thumb, type Shown } from './PhotoParts';
 import '@/apps/photos/Photos.css';
 import '@/apps/photos/PhotosMobile.css';
@@ -106,6 +106,17 @@ const PhoneViewer = ({
 }) => {
 	const photo = photos[index];
 	const [info, setInfo] = useState(false);
+	// 불러온 사진의 실제 크기와 파일 크기 (정보 판). 사진이 바뀌면 그 사진의 것으로
+	const [measured, setMeasured] = useState<{ src: string; width: number; height: number; bytes: number | null } | null>(
+		null
+	);
+	const measure = (width: number, height: number) => {
+		const entry = performance.getEntriesByName(new URL(photo.src, location.href).href)[0] as
+			PerformanceResourceTiming | undefined;
+		const bytes = entry ? entry.encodedBodySize || entry.decodedBodySize || null : null;
+		setMeasured({ src: photo.src, width, height, bytes });
+	};
+	const size = measured?.src === photo.src ? measured : null;
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const strip = useRef<HTMLUListElement>(null);
@@ -159,7 +170,7 @@ const PhoneViewer = ({
 			</button>
 
 			<div
-				className="photos-phone-stage"
+				className={`photos-phone-stage ${info ? 'with-info' : ''}`}
 				onPointerDown={(event) => (swipe.current = { x: event.clientX, y: event.clientY })}
 				onPointerUp={(event) => {
 					const start = swipe.current;
@@ -171,29 +182,70 @@ const PhoneViewer = ({
 				onPointerCancel={() => (swipe.current = null)}
 			>
 				{photo.video ? (
-					<video key={photo.src} src={photo.src} controls autoPlay muted playsInline />
+					<video
+						key={photo.src}
+						src={photo.src}
+						controls
+						autoPlay
+						muted
+						playsInline
+						onLoadedMetadata={(event) => measure(event.currentTarget.videoWidth, event.currentTarget.videoHeight)}
+					/>
 				) : (
-					<img key={photo.src} src={photo.src} alt={photo.caption} draggable={false} />
+					<img
+						key={photo.src}
+						src={photo.src}
+						alt={photo.caption}
+						draggable={false}
+						onLoad={(event) => measure(event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}
+					/>
 				)}
 			</div>
 
+			{/* 정보 (iOS 사진): 사진이 위로 줄고, 캡션 줄과 회색 판(기간·파일, 형식 카드, 프로젝트 페이지)이 아래에서 올라온다 */}
 			{info && (
 				<aside className="photos-phone-info" aria-label="사진 정보">
-					<h3>{photo.caption}</h3>
-					<dl>
-						<dt>앨범</dt>
-						<dd>{photo.album.name}</dd>
-						<dt>종류</dt>
-						<dd>{photo.video ? '영상' : '사진'}</dd>
-						<dt>순서</dt>
-						<dd>
-							{index + 1}/{photos.length}
-						</dd>
-					</dl>
+					<p className="photos-phone-caption">{photo.caption}</p>
+					<div className="photos-phone-info-panel">
+						<h3>{photo.album.period ?? photo.album.name}</h3>
+						<p className="photos-phone-file">
+							<i className="fa-regular fa-file-image" aria-hidden="true" /> {fileNameOf(photo.src)}
+						</p>
+						<section className="photos-phone-card" aria-label="파일">
+							<header>
+								<strong>{photo.album.name}</strong>
+								<span className="photos-phone-format">{formatOf(photo.src)}</span>
+							</header>
+							<p>
+								프로젝트 {photo.video ? '영상' : '화면'} — {index + 1}번째
+							</p>
+							<p>
+								{size
+									? [
+											megapixels(size.width, size.height),
+											`${size.width} × ${size.height}`,
+											size.bytes ? formatBytes(size.bytes) : null,
+										]
+											.filter(Boolean)
+											.join(' · ')
+									: '불러오는 중…'}
+							</p>
+							<ul className="photos-phone-stats">
+								<li>{photo.video ? '영상' : '사진'}</li>
+								<li>
+									{index + 1}/{photos.length}
+								</li>
+								<li>앨범 {photo.album.photos.length}장</li>
+							</ul>
+						</section>
+						<button type="button" className="photos-phone-info-action" onClick={() => onOpenProject(photo.album.id)}>
+							{photo.album.name} 페이지 열기…
+						</button>
+					</div>
 				</aside>
 			)}
 
-			<ul ref={strip} className="photos-phone-strip" aria-label="사진 띠">
+			<ul ref={strip} className={`photos-phone-strip ${info ? 'hidden' : ''}`} aria-label="사진 띠">
 				{photos.map((item, at) => (
 					<li key={keyOf(item)}>
 						<button
@@ -274,6 +326,8 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 	const [liked, setLiked] = useState<Set<string>>(() => new Set());
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
+	// 화면이 바뀐 방식: 앨범으로 들어가면 오른쪽에서, 나오면 왼쪽에서, 탭을 바꾸면 서서히 (처음에는 움직이지 않는다)
+	const [motion, setMotion] = useState<'forward' | 'back' | 'fade' | null>(null);
 
 	const album = opened?.kind === 'album' ? ALBUMS.find((entry) => entry.id === opened.id) : undefined;
 	const photos: Shown[] = album
@@ -289,13 +343,16 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 		setRecent(list[index]);
 	};
 	const open = (next: Opened) => {
+		setMotion(next ? 'forward' : 'back');
 		setOpened(next);
 		setViewing(null);
 	};
 	const switchTab = (next: Tab) => {
 		setTab(next);
 		setSearching(false);
-		open(null);
+		setOpened(null);
+		setViewing(null);
+		setMotion('fade');
 	};
 
 	if (viewing && viewing.photos[viewing.index]) {
@@ -456,7 +513,11 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 					<i className="fa-solid fa-ellipsis" aria-hidden="true" />
 				</button>
 			)}
-			<div className="photos-phone-scroll">
+			<div
+				key={opened ? (opened.kind === 'album' ? opened.id : 'videos') : tab}
+				className="photos-phone-scroll"
+				data-motion={motion ?? undefined}
+			>
 				{showGrid ? (
 					<>
 						<header className="photos-phone-title overlay">
@@ -469,7 +530,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 								return (
 									<section key={entry.id} className="photos-phone-group" aria-label={entry.name}>
 										<h3>
-											<button type="button" onClick={() => setOpened({ kind: 'album', id: entry.id })}>
+											<button type="button" onClick={() => open({ kind: 'album', id: entry.id })}>
 												{entry.name} <i className="fa-solid fa-chevron-right" aria-hidden="true" />
 											</button>
 										</h3>
