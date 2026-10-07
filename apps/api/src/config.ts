@@ -71,6 +71,22 @@ export interface AppConfig {
 		perIpPerDay: number;
 		totalPerDay: number;
 	};
+	/**
+	 * 메일 앱의 연락 메일 (#25). Resend로 보낸다. 키·받는 주소·보내는 주소가 다 있어야 켜지고, 없으면 사이트가 방문자의 메일 앱을 연다.
+	 * Turnstile 키가 있으면 사람인지 확인하고 보낸다. 스팸을 막으려고 IP마다, 사이트 전체로 하루 상한을 둔다
+	 */
+	contact: {
+		resendApiKey?: string;
+		/** 받는 사람 (사이트 주인) */
+		to?: string;
+		/** 보내는 주소. Resend에서 인증한 도메인의 주소 (예: MacFolio <contact@hyeoniverse.com>) */
+		from?: string;
+		/** Cloudflare Turnstile: 사이트 키는 화면이 쓰고(공개), 비밀 키로 서버가 확인한다 */
+		turnstileSiteKey?: string;
+		turnstileSecretKey?: string;
+		perIpPerDay: number;
+		totalPerDay: number;
+	};
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -153,6 +169,15 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			huggingfaceApiKey: env.HUGGINGFACE_API_KEY || undefined,
 			perIpPerDay: Number(env.COVER_PER_IP_PER_DAY ?? 1) || 1,
 			totalPerDay: Number(env.COVER_TOTAL_PER_DAY ?? 5) || 5,
+		},
+		contact: {
+			resendApiKey: env.RESEND_API_KEY || undefined,
+			to: env.CONTACT_TO || undefined,
+			from: env.CONTACT_FROM || undefined,
+			turnstileSiteKey: env.TURNSTILE_SITE_KEY || undefined,
+			turnstileSecretKey: env.TURNSTILE_SECRET_KEY || undefined,
+			perIpPerDay: Number(env.CONTACT_PER_IP_PER_DAY ?? 5) || 5,
+			totalPerDay: Number(env.CONTACT_TOTAL_PER_DAY ?? 50) || 50,
 		},
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
