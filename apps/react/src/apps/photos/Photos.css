@@ -422,7 +422,8 @@
 	overflow-y: auto;
 }
 
-.photos-info h3 {
+.photos-info h3,
+.photos-info-caption {
 	margin: 0 0 12px;
 	color: var(--color-text-strong);
 	font-size: 14px;
@@ -541,4 +542,26 @@
 .container.mobile .photos-toolbar:not(.viewer),
 .container.mobile .photos-toolbar.viewer {
 	margin-top: 0;
+}
+
+/* 관리자의 캡션 칸: 캡션 줄 그대로, 누르면 고친다 */
+.photos-caption-field input {
+	width: 100%;
+	padding: 0;
+	border: none;
+	outline: none;
+	background: none;
+	color: var(--color-text);
+	font: inherit;
+}
+
+.photos-caption-field input::placeholder {
+	color: var(--color-text-secondary);
+}
+
+.photos-caption-error {
+	display: block;
+	margin-top: 4px;
+	color: #ff3b30;
+	font-size: 13px;
 }

@@ -8,6 +8,8 @@ export const FAKE_EXPIRES_AT = '2099-10-02T22:03:00.000Z';
 
 export interface FakeApiState {
 	signedIn: boolean;
+	/** 관리자가 고친 사진 캡션 { 사진 주소: 캡션 } (GET·PUT /photos/captions) */
+	photoCaptions: Record<string, string>;
 	/** /health가 돌려줄 상태. blocked는 서버는 응답하지만 이 주소를 CORS로 허용하지 않는 경우 (PR 미리보기) */
 	health: 'ok' | 'database' | 'down' | 'blocked';
 	/** 서버에 저장된 메모 정리 내용 */
@@ -303,6 +305,7 @@ export async function fakeApi(
 		analyticsQueries: [],
 		contact: { enabled: true, turnstileSiteKey: null, sent: [] },
 		analyticsViews: { memo: { 'cra-to-vite': 42, 'post-editor': 7 } },
+		photoCaptions: {},
 		github: {
 			followers: 42,
 			readme: FAKE_README,
@@ -548,6 +551,19 @@ export async function fakeApi(
 						headers: cors(origin),
 						json: { statusCode: 404, message: '공개 저장소를 찾을 수 없습니다.' },
 					});
+		}
+		// 사진 캡션: 누구나 읽고, 관리자만 고친다. 비우면 원래 캡션으로
+		if (path === '/photos/captions' && request.method() === 'GET')
+			return route.fulfill({ headers: cors(origin), json: state.photoCaptions });
+		if (path === '/photos/captions' && request.method() === 'PUT') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			const { src, caption } = request.postDataJSON() as { src: string; caption: string };
+			const cleaned = caption.trim();
+			const next = { ...state.photoCaptions };
+			if (cleaned) next[src] = cleaned;
+			else delete next[src];
+			state.photoCaptions = next;
+			return route.fulfill({ headers: cors(origin), json: next });
 		}
 		if (path === '/github/showcase' && request.method() === 'PUT') {
 			if (!state.signedIn) return route.fulfill(unauthorized);

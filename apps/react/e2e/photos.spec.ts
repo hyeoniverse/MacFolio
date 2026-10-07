@@ -1,5 +1,6 @@
 import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
 import type { Page } from '@playwright/test';
+import { fakeApi } from './fakeApi';
 
 const openPhotos = async (page: Page) => {
 	await enterDesktop(page);
@@ -195,8 +196,9 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		await expect(info.getByRole('button', { name: 'QRU 큐알유 페이지 열기…' })).toBeVisible();
 		await expect(strip).toBeHidden();
 
-		// 프로젝트 페이지: Safari가 그 프로젝트를 연다
-		await viewer.getByRole('button', { name: 'QRU 큐알유 페이지', exact: true }).click();
+		// 아래 막대에는 Safari(프로젝트 페이지) 단추가 없다. 프로젝트 페이지는 정보에서 연다
+		await expect(viewer.locator('.photos-phone-viewer-bar').getByRole('button')).toHaveCount(3);
+		await info.getByRole('button', { name: 'QRU 큐알유 페이지 열기…' }).click();
 		await expect(appWindow(page, 'safari')).toBeVisible();
 	});
 
@@ -218,5 +220,66 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 
 		await photos.getByRole('button', { name: '검색 닫기' }).click();
 		await expect(photos.getByRole('heading', { name: '보관함', level: 2 })).toBeVisible();
+	});
+
+	test('보관함은 오래된 것이 위, 최신이 아래이고, 열면 맨 아래부터 보인다. 크게 봤다가 돌아오면 보던 자리', async ({
+		page,
+	}) => {
+		const photos = await openPhone(page);
+		const scroll = photos.locator('.photos-phone-scroll');
+		const atBottom = () =>
+			scroll.evaluate((element) => element.scrollHeight - element.scrollTop - element.clientHeight <= 2);
+		await expect.poll(atBottom).toBe(true);
+		// 맨 아래 칸은 가장 최근 프로젝트(HYEONIVERSE, 2026)의 사진, 맨 위 칸은 가장 오래된 프로젝트의 사진
+		const thumbs = photos.locator('.photos-phone-grid .photos-thumb');
+		await expect(thumbs.last()).toHaveAttribute('aria-label', /^HYEONIVERSE:/);
+		await expect(thumbs.first()).not.toHaveAttribute('aria-label', /^HYEONIVERSE:/);
+
+		// 조금 올려 둔 자리에서 사진을 크게 봤다가 돌아오면 그 자리
+		await scroll.evaluate((element) => (element.scrollTop = element.scrollHeight / 2));
+		const before = await scroll.evaluate((element) => element.scrollTop);
+		await thumbs.nth(Math.floor((await thumbs.count()) / 2)).click();
+		await photos.locator('.mobile-navbar-home').click();
+		await expect.poll(() => scroll.evaluate((element) => element.scrollTop)).toBe(before);
+	});
+
+	test('관리자는 사진 정보에서 캡션을 고친다: 저장하면 제목과 검색에 쓰이고, 비우면 원래 캡션으로', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const photos = await openPhone(page);
+		await photos.locator('.photos-phone-grid .photos-thumb').nth(7).click();
+		const viewer = photos.getByRole('dialog');
+		const original = (await viewer.locator('.photos-phone-viewer-title span').textContent())!;
+		await viewer.getByRole('button', { name: '정보' }).click();
+
+		const field = viewer.getByRole('textbox', { name: '캡션' });
+		await expect(field).toHaveValue(original);
+		await field.fill('관리자가 고친 캡션');
+		await field.press('Enter');
+		await expect(viewer.locator('.photos-phone-viewer-title span')).toHaveText('관리자가 고친 캡션');
+		const src = Object.keys(api.photoCaptions)[0];
+		expect(api.photoCaptions).toEqual({ [src]: '관리자가 고친 캡션' });
+
+		// Esc는 고치던 것만 되돌린다 (크게 보기는 그대로)
+		await field.fill('지울 글');
+		await field.press('Escape');
+		await expect(field).toHaveValue('관리자가 고친 캡션');
+		await expect(viewer).toBeVisible();
+
+		// 비우고 저장하면 원래 캡션
+		await field.fill('');
+		await field.press('Enter');
+		await expect(viewer.locator('.photos-phone-viewer-title span')).toHaveText(original);
+		expect(api.photoCaptions).toEqual({});
+	});
+
+	test('방문자에게는 캡션이 글자로만 보인다', async ({ page }) => {
+		await fakeApi(page);
+		const photos = await openPhone(page);
+		await photos.locator('.photos-phone-grid .photos-thumb').nth(7).click();
+		await photos.getByRole('dialog').getByRole('button', { name: '정보' }).click();
+		await expect(photos.getByRole('textbox', { name: '캡션' })).toHaveCount(0);
+		await expect(photos.locator('p.photos-phone-caption')).not.toBeEmpty();
 	});
 });
