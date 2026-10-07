@@ -1,13 +1,17 @@
+import { env } from '@/shared/config/env';
 import { PROFILE } from '@/shared/profile';
+import { createApiSender } from './apiSender';
 import { createMailtoSender } from './mailtoSender';
 import type { MailSender } from './types';
 
-export type { MailSender, SendResult } from './types';
+export type { MailSender, SendOptions, SendResult } from './types';
+export { fetchContactStatus, type ContactStatus } from './apiSender';
 
 let sender: MailSender | null = null;
 
-/** 지금은 방문자의 메일 앱을 연다. 백엔드(#9)가 생기면 여기서 API 구현체를 고른다. */
+/** 서버가 있으면 서버가 보낸다 (메일 설정이 없으면 메일 앱으로). 서버가 없는 빌드는 방문자의 메일 앱을 연다 */
 export function getMailSender(): MailSender {
-	sender ??= createMailtoSender(PROFILE.email);
+	const mailto = createMailtoSender(PROFILE.email);
+	sender ??= env.apiUrl ? createApiSender(env.apiUrl, mailto) : mailto;
 	return sender;
 }
