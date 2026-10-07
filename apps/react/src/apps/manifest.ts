@@ -83,7 +83,7 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 	},
 	music: { label: '음악', icon: 'music.png', inDock: true, windowSize: { width: 960, height: 600 } },
 	safari: { label: 'Safari', icon: 'safari.png', inDock: true, runningAtStart: true },
-	photos: { label: '사진', icon: 'photos.png', inDock: true },
+	photos: { label: '사진', icon: 'photos.png', inDock: true, windowSize: { width: 980, height: 640 } },
 	messages: { label: '메시지', icon: 'messages.png', inDock: true, windowSize: { width: 860, height: 560 } },
 	memo: { label: '메모', icon: 'memo.png', inDock: true, windowSize: { width: 900, height: 600 } },
 	github: { label: 'GitHub', icon: 'github.png', inDock: true },

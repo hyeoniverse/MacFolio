@@ -73,13 +73,13 @@ test.describe('메모 (블로그)', () => {
 		expect(imageBox.width).toBeLessThanOrEqual(readerBox.width + 1);
 		await expect(memo.locator('.memo-caption')).toHaveText('dev 서버 시작과 프로덕션 빌드 시간 (초)');
 
-		await memo.getByRole('button', { name: /크게 보기/ }).click();
+		await memo.getByRole('button', { name: 'CRA와 Vite의 빌드 시간 비교 그래프 크게 보기' }).click();
 		const lightbox = page.getByRole('dialog', { name: 'CRA와 Vite의 빌드 시간 비교 그래프' });
 		await expect(lightbox).toBeVisible();
 		await page.keyboard.press('Escape');
 		await expect(lightbox).toBeHidden();
 
-		await memo.getByRole('button', { name: /크게 보기/ }).click();
+		await memo.getByRole('button', { name: 'CRA와 Vite의 빌드 시간 비교 그래프 크게 보기' }).click();
 		await lightbox.click();
 		await expect(lightbox).toBeHidden();
 	});
