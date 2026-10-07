@@ -9,13 +9,17 @@ import Button from '@/shared/ui/button/Button';
 interface Props {
 	onSend: (input: ContactInput, options?: SendOptions) => Promise<SendResult>;
 	onCancel: () => void;
+	/** 휴대폰: iOS 메일처럼 아래에서 올라온 시트 (왼쪽 위 ×, 오른쪽 위 ↑ 보내기, 큰 제목) */
+	sheet?: boolean;
+	/** 처음 제목 (답장이면 'Re: …') */
+	initialSubject?: string;
 }
 
 const EMPTY: ContactInput = { name: '', email: '', subject: '', body: '' };
 
 /** macOS 메일의 새로운 메시지: 받는 사람은 사이트 주인으로 고정, 방문자는 이름·회신 주소·제목·내용을 쓴다 */
-const ComposeView: React.FC<Props> = ({ onSend, onCancel }) => {
-	const [form, setForm] = useState<ContactInput>(EMPTY);
+const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initialSubject = '' }) => {
+	const [form, setForm] = useState<ContactInput>({ ...EMPTY, subject: initialSubject });
 	const [errors, setErrors] = useState<ContactErrors>({});
 	const [result, setResult] = useState<SendResult | null>(null);
 	const [sending, setSending] = useState(false);
@@ -74,16 +78,36 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel }) => {
 	}
 
 	return (
-		<form className="mail-compose" aria-label="새로운 메시지" onSubmit={send} noValidate>
-			<header className="mail-compose-toolbar">
-				<strong>새로운 메시지</strong>
-				<div>
-					<Button onClick={onCancel}>취소</Button>
-					<Button tone="primary" type="submit" disabled={sending}>
-						<i className="fa-solid fa-paper-plane" aria-hidden="true" /> 보내기
-					</Button>
-				</div>
-			</header>
+		<form className={`mail-compose ${sheet ? 'sheet' : ''}`} aria-label="새로운 메시지" onSubmit={send} noValidate>
+			{sheet ? (
+				<>
+					{/* iOS 메일: 왼쪽 위 ×, 오른쪽 위 ↑ (다 쓰면 파랗게), 그 아래 큰 제목(쓴 제목, 없으면 새로운 메시지) */}
+					<header className="mail-sheet-head">
+						<button type="button" className="mail-sheet-circle" aria-label="취소" onClick={onCancel}>
+							<i className="fa-solid fa-xmark" aria-hidden="true" />
+						</button>
+						<button
+							type="submit"
+							className={`mail-sheet-circle send ${Object.values(form).every((value) => value.trim()) ? 'ready' : ''}`}
+							aria-label="보내기"
+							disabled={sending}
+						>
+							<i className="fa-solid fa-arrow-up" aria-hidden="true" />
+						</button>
+					</header>
+					<h2 className="mail-sheet-title">{form.subject.trim() || '새로운 메시지'}</h2>
+				</>
+			) : (
+				<header className="mail-compose-toolbar">
+					<strong>새로운 메시지</strong>
+					<div>
+						<Button onClick={onCancel}>취소</Button>
+						<Button tone="primary" type="submit" disabled={sending}>
+							<i className="fa-solid fa-paper-plane" aria-hidden="true" /> 보내기
+						</Button>
+					</div>
+				</header>
+			)}
 
 			<div className="mail-compose-row">
 				<span>받는 사람:</span>

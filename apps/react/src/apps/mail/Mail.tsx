@@ -1,11 +1,12 @@
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useEffect, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
-import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
 import { PROFILE } from '@/shared/profile';
 import ComposeView from './components/ComposeView';
+import MailMobile from './components/MailMobile';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { formatMailDate, INBOX } from './contact';
 import { fetchReceivedMail, fetchSentMail, replyToMail, type ContactMail } from './mailboxApi';
 import { getMailSender, type SendOptions } from './sender';
@@ -14,11 +15,11 @@ import '@/apps/mail/Mail.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
 
-type Mailbox = 'inbox' | 'sent';
+export type Mailbox = 'inbox' | 'sent';
 const MAILBOX_LABEL: Record<Mailbox, string> = { inbox: '받은 편지함', sent: '보낸 편지함' };
 
 /** 목록과 읽기 칸이 함께 쓰는 메일 한 통 */
-interface ListMail {
+export interface ListMail {
 	id: string;
 	fromName: string;
 	fromEmail: string;
@@ -110,6 +111,7 @@ const ReplyBox: React.FC<{ mail: ListMail; onReplied: (mail: ContactMail) => voi
  */
 const Mail: React.FC = () => {
 	const admin = useAdmin().status === 'signed-in';
+	const mobile = useIsMobile();
 	const [mailbox, setMailbox] = useState<Mailbox>('inbox');
 	const [received, setReceived] = useState<ListMail[] | null>(null);
 	const [sent, setSent] = useState<ListMail[] | null>(null);
@@ -222,156 +224,175 @@ const Mail: React.FC = () => {
 
 	return (
 		<AppWindow title="메일" appName="mail" chrome="unified">
-			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
-			<MobileNavigation {...(detailOpen ? { backLabel: MAILBOX_LABEL[mailbox], onBack: backToList } : {})} />
-			<div className="mail-shell">
-				<div className={`mail ${detailOpen ? 'detail-open' : ''}`} data-nav={nav}>
-					<aside className="mail-sidebar" aria-label="메일상자">
-						<div className="mail-sidebar-top" />
-						<p className="mail-sidebar-heading">메일상자</p>
-						<button
-							type="button"
-							className={`mail-mailbox ${mailbox === 'inbox' ? 'selected' : ''}`}
-							aria-current={mailbox === 'inbox' || undefined}
-							onClick={() => showMailbox('inbox')}
-						>
-							<i className="fa-solid fa-inbox" aria-hidden="true" />
-							<span>받은 편지함</span>
-							{unread > 0 && <span className="mail-badge">{unread}</span>}
-						</button>
-						{env.apiUrl && (
+			{/* 휴대폰은 iOS 메일처럼 따로 짠다 (MailMobile): 메일상자 → 목록 → 메일, 쓰기는 아래에서 올라오는 시트 */}
+			{mobile ? (
+				<MailMobile
+					admin={admin}
+					inbox={inbox}
+					sent={env.apiUrl ? (sent ?? []) : null}
+					loading={admin && received === null && !loadError}
+					loadError={loadError}
+					isUnread={isUnread}
+					onRead={(id, read) =>
+						setReadIds((prev) => {
+							const next = new Set(prev);
+							if (read) next.add(id);
+							else next.delete(id);
+							return next;
+						})
+					}
+					onSend={send}
+					onReplied={replied}
+				/>
+			) : (
+				<div className="mail-shell">
+					<div className={`mail ${detailOpen ? 'detail-open' : ''}`} data-nav={nav}>
+						<aside className="mail-sidebar" aria-label="메일상자">
+							<div className="mail-sidebar-top" />
+							<p className="mail-sidebar-heading">메일상자</p>
 							<button
 								type="button"
-								className={`mail-mailbox ${mailbox === 'sent' ? 'selected' : ''}`}
-								aria-current={mailbox === 'sent' || undefined}
-								onClick={() => showMailbox('sent')}
+								className={`mail-mailbox ${mailbox === 'inbox' ? 'selected' : ''}`}
+								aria-current={mailbox === 'inbox' || undefined}
+								onClick={() => showMailbox('inbox')}
 							>
-								<i className="fa-solid fa-paper-plane" aria-hidden="true" />
-								<span>보낸 편지함</span>
+								<i className="fa-solid fa-inbox" aria-hidden="true" />
+								<span>받은 편지함</span>
+								{unread > 0 && <span className="mail-badge">{unread}</span>}
 							</button>
-						)}
-					</aside>
+							{env.apiUrl && (
+								<button
+									type="button"
+									className={`mail-mailbox ${mailbox === 'sent' ? 'selected' : ''}`}
+									aria-current={mailbox === 'sent' || undefined}
+									onClick={() => showMailbox('sent')}
+								>
+									<i className="fa-solid fa-paper-plane" aria-hidden="true" />
+									<span>보낸 편지함</span>
+								</button>
+							)}
+						</aside>
 
-					<section className="mail-list" aria-label={MAILBOX_LABEL[mailbox]}>
-						<header className="mail-list-toolbar">
-							<div>
-								<h2 className="phone-title">{MAILBOX_LABEL[mailbox]}</h2>
-								<p>메일 {mails.length}통</p>
-							</div>
-							<IconButton variant="float" label="새로운 메시지" onClick={compose} icon="fa-regular fa-pen-to-square" />
-						</header>
-						{/* 휴대폰: 사이드바 대신 사서함을 위에서 고른다 */}
-						{env.apiUrl && (
-							<div className="mail-mailbox-tabs" role="tablist" aria-label="사서함">
-								{(['inbox', 'sent'] as const).map((entry) => (
-									<button
-										key={entry}
-										type="button"
-										role="tab"
-										aria-selected={mailbox === entry}
-										onClick={() => showMailbox(entry)}
-									>
-										{MAILBOX_LABEL[entry]}
-									</button>
-								))}
-							</div>
-						)}
-						{loadError && (
-							<p className="mail-error" role="alert">
-								{loadError}
-							</p>
-						)}
-						{mails.length === 0 ? (
-							<p className="mail-list-empty">{emptyText}</p>
-						) : (
-							<ul>
-								{mails.map((mail) => (
-									<li key={mail.id}>
+						<section className="mail-list" aria-label={MAILBOX_LABEL[mailbox]}>
+							<header className="mail-list-toolbar">
+								<div>
+									<h2 className="phone-title">{MAILBOX_LABEL[mailbox]}</h2>
+									<p>메일 {mails.length}통</p>
+								</div>
+								<IconButton
+									variant="float"
+									label="새로운 메시지"
+									onClick={compose}
+									icon="fa-regular fa-pen-to-square"
+								/>
+							</header>
+							{/* 휴대폰: 사이드바 대신 사서함을 위에서 고른다 */}
+							{env.apiUrl && (
+								<div className="mail-mailbox-tabs" role="tablist" aria-label="사서함">
+									{(['inbox', 'sent'] as const).map((entry) => (
 										<button
+											key={entry}
 											type="button"
-											className={`mail-item ${!composing && selectedId === mail.id ? 'selected' : ''}`}
-											aria-current={(!composing && selectedId === mail.id) || undefined}
-											onClick={() => open(mail.id)}
+											role="tab"
+											aria-selected={mailbox === entry}
+											onClick={() => showMailbox(entry)}
 										>
-											<span
-												className={`mail-unread ${mailbox === 'sent' || !isUnread(mail) ? 'read' : ''}`}
-												aria-hidden="true"
-											/>
-											<span className="mail-item-text">
-												<span className="mail-item-top">
-													<strong>{mailbox === 'sent' ? PROFILE.name : mail.fromName}</strong>
-													<time dateTime={mail.date}>{formatMailDate(mail.date)}</time>
-												</span>
-												<span className="mail-item-subject">
-													{mail.subject}
-													{mail.replies.length > 0 && (
-														<span className="mail-replied">
-															<i className="fa-solid fa-reply" aria-hidden="true" /> 답장 {mail.replies.length}
-														</span>
-													)}
-												</span>
-												<span className="mail-item-preview">{mail.body}</span>
-											</span>
+											{MAILBOX_LABEL[entry]}
 										</button>
-									</li>
-								))}
-							</ul>
-						)}
-					</section>
+									))}
+								</div>
+							)}
+							{loadError && (
+								<p className="mail-error" role="alert">
+									{loadError}
+								</p>
+							)}
+							{mails.length === 0 ? (
+								<p className="mail-list-empty">{emptyText}</p>
+							) : (
+								<ul>
+									{mails.map((mail) => (
+										<li key={mail.id}>
+											<button
+												type="button"
+												className={`mail-item ${!composing && selectedId === mail.id ? 'selected' : ''}`}
+												aria-current={(!composing && selectedId === mail.id) || undefined}
+												onClick={() => open(mail.id)}
+											>
+												<span
+													className={`mail-unread ${mailbox === 'sent' || !isUnread(mail) ? 'read' : ''}`}
+													aria-hidden="true"
+												/>
+												<span className="mail-item-text">
+													<span className="mail-item-top">
+														<strong>{mailbox === 'sent' ? PROFILE.name : mail.fromName}</strong>
+														<time dateTime={mail.date}>{formatMailDate(mail.date)}</time>
+													</span>
+													<span className="mail-item-subject">
+														{mail.subject}
+														{mail.replies.length > 0 && (
+															<span className="mail-replied">
+																<i className="fa-solid fa-reply" aria-hidden="true" /> 답장 {mail.replies.length}
+															</span>
+														)}
+													</span>
+													<span className="mail-item-preview">{mail.body}</span>
+												</span>
+											</button>
+										</li>
+									))}
+								</ul>
+							)}
+						</section>
 
-					<section className="mail-reader">
-						<button type="button" className="mail-back" onClick={backToList}>
-							<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {MAILBOX_LABEL[mailbox]}
-						</button>
-						{composing ? (
-							<ComposeView onSend={send} onCancel={backToList} />
-						) : selected ? (
-							<article key={selected.id} className="mail-reader-article" aria-label={selected.subject}>
-								<header className="mail-reader-header">
-									<Monogram name={selected.fromName} />
-									<div>
-										<strong>{selected.fromName}</strong>
-										<p>{selected.fromEmail}</p>
-										<p>받는 사람: {selected.to}</p>
-									</div>
-									<time dateTime={selected.date}>{formatMailDate(selected.date)}</time>
-								</header>
-								<h1>{selected.subject}</h1>
-								<p className="mail-reader-body">{selected.body}</p>
-								{selected.replies.length > 0 && (
-									<ol className="mail-thread" aria-label="답장">
-										{selected.replies.map((reply) => (
-											<li key={reply.id} className="mail-thread-reply">
-												<header>
-													<Monogram name={PROFILE.name} size={28} />
-													<strong>{PROFILE.name}</strong>
-													<time dateTime={reply.createdAt}>{formatMailDate(reply.createdAt)}</time>
-												</header>
-												<p className="mail-reader-body">{reply.body}</p>
-											</li>
-										))}
-									</ol>
-								)}
-								{selected.replyable ? (
-									<ReplyBox key={selected.id} mail={selected} onReplied={replied} />
-								) : mailbox === 'inbox' ? (
-									<Button tone="primary" onClick={compose}>
-										<i className="fa-solid fa-reply" aria-hidden="true" /> {PROFILE.name}에게 답장
-									</Button>
-								) : null}
-							</article>
-						) : (
-							<p className="mail-empty">선택된 메시지 없음</p>
-						)}
-					</section>
+						<section className="mail-reader">
+							<button type="button" className="mail-back" onClick={backToList}>
+								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {MAILBOX_LABEL[mailbox]}
+							</button>
+							{composing ? (
+								<ComposeView onSend={send} onCancel={backToList} />
+							) : selected ? (
+								<article key={selected.id} className="mail-reader-article" aria-label={selected.subject}>
+									<header className="mail-reader-header">
+										<Monogram name={selected.fromName} />
+										<div>
+											<strong>{selected.fromName}</strong>
+											<p>{selected.fromEmail}</p>
+											<p>받는 사람: {selected.to}</p>
+										</div>
+										<time dateTime={selected.date}>{formatMailDate(selected.date)}</time>
+									</header>
+									<h1>{selected.subject}</h1>
+									<p className="mail-reader-body">{selected.body}</p>
+									{selected.replies.length > 0 && (
+										<ol className="mail-thread" aria-label="답장">
+											{selected.replies.map((reply) => (
+												<li key={reply.id} className="mail-thread-reply">
+													<header>
+														<Monogram name={PROFILE.name} size={28} />
+														<strong>{PROFILE.name}</strong>
+														<time dateTime={reply.createdAt}>{formatMailDate(reply.createdAt)}</time>
+													</header>
+													<p className="mail-reader-body">{reply.body}</p>
+												</li>
+											))}
+										</ol>
+									)}
+									{selected.replyable ? (
+										<ReplyBox key={selected.id} mail={selected} onReplied={replied} />
+									) : mailbox === 'inbox' ? (
+										<Button tone="primary" onClick={compose}>
+											<i className="fa-solid fa-reply" aria-hidden="true" /> {PROFILE.name}에게 답장
+										</Button>
+									) : null}
+								</article>
+							) : (
+								<p className="mail-empty">선택된 메시지 없음</p>
+							)}
+						</section>
+					</div>
 				</div>
-				{/* 휴대폰: 목록 아래 오른쪽에 떠 있는 새로운 메시지 (iOS 메일처럼). 넘기는 목록 밖에 둔다 */}
-				{!detailOpen && (
-					<button type="button" className="mail-phone-compose phone-float" aria-label="새로운 메시지" onClick={compose}>
-						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-					</button>
-				)}
-			</div>
+			)}
 		</AppWindow>
 	);
 };

@@ -1,0 +1,537 @@
+/* 메일 (휴대폰): iOS 메일처럼 (MailMobile.tsx) */
+.mail-phone {
+	position: relative;
+	height: 100%;
+	overflow: hidden;
+	background-color: var(--phone-page-bg);
+	color: var(--color-text);
+	text-align: left;
+}
+
+.mail-phone[data-screen='mail'] {
+	background-color: var(--phone-card-bg);
+}
+
+@layer reset {
+	.mail-phone button {
+		font: inherit;
+		color: inherit;
+		cursor: pointer;
+	}
+}
+
+/* ─── 화면 넘기기: 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 ─── */
+.mail-phone-page {
+	height: 100%;
+}
+
+.mail-phone-page[data-direction='forward'] {
+	animation: nav-forward var(--duration) var(--ease-out);
+}
+
+.mail-phone-page[data-direction='back'] {
+	animation: nav-back var(--duration) var(--ease-out);
+}
+
+.mail-phone-scroll {
+	height: 100%;
+	overflow-y: auto;
+	padding: var(--phone-top) 16px calc(var(--phone-bottom-inset) + 88px);
+}
+
+/* ─── 메일상자: 흰 카드 목록 ─── */
+.mail-phone-group,
+.mail-phone-list {
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	border-radius: 22px;
+	background-color: var(--phone-card-bg);
+	list-style: none;
+}
+
+.mail-phone-group button {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	width: 100%;
+	min-height: 56px;
+	padding: 0 16px;
+	border: none;
+	background: none;
+	font-size: 17px;
+	text-align: left;
+}
+
+.mail-phone-group button > i:first-child {
+	width: 28px;
+	color: #0a84ff;
+	font-size: 21px;
+	text-align: center;
+}
+
+.mail-phone-group-name {
+	flex: 1;
+}
+
+.mail-phone-group-count {
+	color: var(--color-text-secondary);
+}
+
+.mail-phone-chevron {
+	color: var(--color-text-secondary);
+	font-size: 14px;
+	opacity: 0.6;
+}
+
+/* 줄 사이 선은 이름이 시작하는 자리부터 */
+.mail-phone-group li + li button {
+	box-shadow:
+		inset 60px 0 0 var(--phone-card-bg),
+		inset 0 0.5px 0 var(--phone-separator);
+}
+
+/* ─── 사서함 목록 ─── */
+.mail-phone-item {
+	display: flex;
+	gap: 8px;
+	width: 100%;
+	padding: 12px 16px 12px 8px;
+	border: none;
+	background: none;
+	text-align: left;
+}
+
+.mail-phone-list li + li .mail-phone-item {
+	box-shadow:
+		inset 24px 0 0 var(--phone-card-bg),
+		inset 0 0.5px 0 var(--phone-separator);
+}
+
+.mail-phone-unread {
+	flex: none;
+	width: 10px;
+	height: 10px;
+	margin-top: 6px;
+	border-radius: 50%;
+	background-color: #0a84ff;
+}
+
+.mail-phone-unread.read {
+	background: none;
+}
+
+.mail-phone-item-text {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.mail-phone-item-top {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.mail-phone-item-top strong {
+	overflow: hidden;
+	font-size: 17px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mail-phone-item-top time,
+.mail-phone-item-preview {
+	color: var(--color-text-secondary);
+	font-size: 15px;
+}
+
+.mail-phone-item-top time {
+	flex: none;
+}
+
+.mail-phone-item-subject {
+	font-size: 15px;
+}
+
+.mail-phone-item-preview {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.mail-phone-empty {
+	padding: 40px 0;
+	color: var(--color-text-secondary);
+	text-align: center;
+}
+
+/* ─── 메일 한 통 ─── */
+.mail-phone-updown {
+	position: absolute;
+	top: var(--phone-top);
+	right: 16px;
+	z-index: 5;
+	display: flex;
+	padding: 0 4px;
+	border-radius: 22px;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+}
+
+.mail-phone-updown button {
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	background: none;
+	font-size: 18px;
+}
+
+.mail-phone-updown button:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+
+.mail-phone-article {
+	padding-top: calc(var(--phone-top) + 60px);
+}
+
+.mail-phone-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding-bottom: 12px;
+	border-bottom: 0.5px solid var(--phone-separator);
+}
+
+.mail-phone-header > div {
+	flex: 1;
+	min-width: 0;
+}
+
+.mail-phone-header strong {
+	font-size: 20px;
+}
+
+.mail-phone-header p {
+	color: var(--color-text-secondary);
+	font-size: 15px;
+}
+
+.mail-phone-to {
+	color: var(--color-text);
+}
+
+.mail-phone-header time {
+	color: var(--color-text-secondary);
+	font-size: 15px;
+}
+
+.mail-phone-avatar {
+	display: grid;
+	flex: none;
+	place-items: center;
+	background: linear-gradient(#8e9fe0, #6d7ed1);
+	color: #ffffff;
+	font-weight: 600;
+}
+
+.mail-phone-article h1 {
+	margin: 16px 0 18px;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.mail-phone-body {
+	font-size: 17px;
+	line-height: 1.6;
+	white-space: pre-wrap;
+}
+
+/* ─── 아래: 답장 알약(왼쪽)과 새로운 메시지(오른쪽) ─── */
+.mail-phone-bar {
+	position: absolute;
+	right: 16px;
+	bottom: calc(var(--phone-bottom-inset) + 4px);
+	left: 16px;
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	pointer-events: none;
+}
+
+.mail-phone-bar.end {
+	justify-content: flex-end;
+}
+
+.mail-phone-bar > * {
+	pointer-events: auto;
+}
+
+.mail-phone-pill,
+.mail-phone-compose-button {
+	display: grid;
+	place-items: center;
+	height: 52px;
+	padding: 0;
+	border: none;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--phone-float-shadow);
+	font-size: 21px;
+}
+
+.mail-phone-pill {
+	width: 96px;
+	border-radius: 26px;
+}
+
+.mail-phone-compose-button {
+	width: 52px;
+	border-radius: 50%;
+}
+
+/* ─── 아래에서 올라오는 시트: 뒤는 어둡게, 닫으면 내려간다 ─── */
+.mail-phone-sheet-layer {
+	position: absolute;
+	inset: 0;
+	z-index: 20;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	background-color: rgba(0, 0, 0, 0.32);
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+.mail-phone-sheet-layer.closing {
+	animation: mail-phone-fade-out 240ms var(--ease-in) forwards;
+}
+
+.mail-phone-sheet {
+	display: flex;
+	flex-direction: column;
+	height: calc(100% - var(--phone-status) - 8px);
+	overflow-y: auto;
+	padding: 6px 16px calc(var(--phone-bottom-inset) + 16px);
+	border-radius: 34px 34px 0 0;
+	background-color: var(--phone-card-bg);
+	animation: mail-phone-sheet-up var(--duration-slow) var(--ease-out);
+}
+
+.mail-phone-actions {
+	margin: 0 12px calc(var(--phone-bottom-inset) + 8px);
+	padding: 16px;
+	border-radius: 34px;
+	background-color: var(--phone-card-bg);
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+	animation: mail-phone-sheet-up var(--duration-slow) var(--ease-spring);
+}
+
+.mail-phone-sheet-layer.closing :is(.mail-phone-sheet, .mail-phone-actions) {
+	animation: mail-phone-sheet-down 240ms var(--ease-in) forwards;
+}
+
+@keyframes mail-phone-sheet-up {
+	from {
+		transform: translateY(100%);
+	}
+}
+
+@keyframes mail-phone-sheet-down {
+	to {
+		transform: translateY(100%);
+	}
+}
+
+@keyframes mail-phone-fade-out {
+	to {
+		background-color: rgba(0, 0, 0, 0);
+	}
+}
+
+.mail-phone-grabber {
+	flex: none;
+	align-self: center;
+	width: 36px;
+	height: 5px;
+	margin-bottom: 8px;
+	border-radius: 3px;
+	background-color: var(--color-divider);
+}
+
+/* 쓰기·답장 시트의 머리: 왼쪽 ×, 오른쪽 ↑ (다 쓰면 파랗게), 큰 제목 */
+.mail-sheet-head {
+	display: flex;
+	justify-content: space-between;
+}
+
+.mail-sheet-circle {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--phone-page-bg);
+	color: var(--color-text-strong);
+	font-size: 20px;
+	transition:
+		background-color var(--duration-fast) var(--ease-out),
+		color var(--duration-fast) var(--ease-out);
+}
+
+.mail-sheet-circle.send {
+	color: var(--color-text-secondary);
+}
+
+.mail-sheet-circle.send.ready {
+	background-color: #0a84ff;
+	color: #ffffff;
+}
+
+.mail-sheet-title {
+	margin: 10px 0 8px;
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.mail-compose.sheet {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	padding: 0;
+	background: none;
+}
+
+.mail-compose.sheet .mail-compose-row {
+	gap: 8px;
+	min-height: 48px;
+	padding: 0;
+	border-bottom: 0.5px solid var(--phone-separator);
+	font-size: 16px;
+}
+
+.mail-compose.sheet .mail-compose-row > span:first-child {
+	color: var(--color-text-secondary);
+}
+
+.mail-compose.sheet .mail-compose-row input {
+	font-size: 16px;
+}
+
+.mail-compose.sheet .mail-compose-body {
+	flex: 1;
+	min-height: 180px;
+	padding: 14px 0;
+	border: none;
+	font-size: 17px;
+}
+
+.mail-phone-recipient {
+	color: #0a84ff;
+}
+
+.mail-phone-quote {
+	margin: 8px 0 0;
+	padding-left: 12px;
+	border-left: 2px solid #6d7ed1;
+	color: var(--color-text-secondary);
+	font-size: 15px;
+	white-space: pre-wrap;
+}
+
+.mail-phone-quote p:first-child {
+	margin-bottom: 8px;
+	color: #6d7ed1;
+}
+
+/* 메일 동작 시트 */
+.mail-phone-actions > header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+.mail-phone-actions > header > div {
+	flex: 1;
+	min-width: 0;
+}
+
+.mail-phone-actions > header strong {
+	font-size: 18px;
+}
+
+.mail-phone-actions > header p {
+	overflow: hidden;
+	color: var(--color-text-secondary);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mail-phone-tiles {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 10px;
+}
+
+.mail-phone-tiles button {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	height: 76px;
+	border: none;
+	border-radius: 20px;
+	background-color: var(--phone-page-bg);
+	font-size: 15px;
+	font-weight: 500;
+}
+
+.mail-phone-tiles button i {
+	font-size: 20px;
+}
+
+.mail-phone-action-list {
+	margin: 14px 0 0;
+	padding: 0;
+	overflow: hidden;
+	border-radius: 20px;
+	background-color: var(--phone-page-bg);
+	list-style: none;
+}
+
+.mail-phone-action-list button {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	min-height: 52px;
+	padding: 0 18px;
+	border: none;
+	background: none;
+	font-size: 17px;
+}
+
+/* 입력·받는 사람은 이름표 옆 남은 폭을 쓰고, 넘치면 말줄임 (오류 문구는 다음 줄로) */
+.mail-compose.sheet .mail-compose-row > :nth-child(2) {
+	flex: 1;
+	min-width: 0;
+}
+
+.mail-compose.sheet .mail-recipient {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
