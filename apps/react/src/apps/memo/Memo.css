@@ -3088,7 +3088,7 @@
 		align-items: center;
 		gap: 2px;
 		position: absolute;
-		top: 6px;
+		top: var(--phone-top);
 		right: 16px;
 		z-index: 5;
 		height: 44px;
@@ -3110,7 +3110,7 @@
 
 	/* 떠 있는 단추 바로 아래부터 본문, 아래 도구에 가리지 않게 여백 */
 	.container.mobile .memo-reader .memo-scroll {
-		padding-top: 64px;
+		padding-top: calc(var(--phone-top) + 58px);
 		padding-bottom: 96px;
 	}
 
@@ -3127,7 +3127,7 @@
 
 	.container.mobile .memo-reader .memo-writer-actions {
 		position: absolute;
-		top: 6px;
+		top: var(--phone-top);
 		right: 118px;
 		z-index: 5;
 		width: auto;
@@ -3198,7 +3198,7 @@
 	}
 
 	.container.mobile .memo-reader > .memo-find {
-		margin-top: 56px;
+		margin-top: calc(var(--phone-top) + 50px);
 	}
 
 	/* 아래: 왼쪽에 서식 알약, 오른쪽에 새 메모 */
@@ -3308,13 +3308,13 @@
 
 	/* ── 폴더 화면 ── */
 	.container.mobile .memo-folder-scroll {
-		padding: 60px 16px 96px;
+		padding: calc(var(--phone-top) + 54px) 16px 96px;
 	}
 
 	/* 새로운 폴더 (관리자): 오른쪽 위의 동그란 단추 */
 	.container.mobile .memo .memo-sidebar-bar:has(.memo-new-folder-button) {
 		position: absolute;
-		top: 6px;
+		top: var(--phone-top);
 		right: 16px;
 		z-index: 5;
 		padding: 0;
@@ -3449,7 +3449,7 @@
 
 	/* ── 목록 화면 ── */
 	.container.mobile .memo-list .memo-scroll {
-		padding: 60px 16px 96px;
+		padding: calc(var(--phone-top) + 54px) 16px 96px;
 	}
 
 	.container.mobile .memo-list .memo-section-title {
@@ -3530,7 +3530,7 @@
 		display: flex;
 		gap: 10px;
 		position: absolute;
-		top: 6px;
+		top: var(--phone-top);
 		right: 16px;
 		z-index: 5;
 	}
