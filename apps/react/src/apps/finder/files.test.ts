@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildLocations, countLabel, find, pathTo, search, type FolderItem } from './files';
+import { buildLocations, countLabel, find, pathTo, recentItems, search, sortItems, type FolderItem } from './files';
 
 const tree = buildLocations({
 	docs: ['README.md', 'docs/deployment.md'],
@@ -73,4 +73,37 @@ describe('search', () => {
 it('countLabel', () => {
 	expect(countLabel(0)).toBe('비어 있음');
 	expect(countLabel(3)).toBe('항목 3개');
+});
+
+describe('recentItems', () => {
+	it('날짜가 있는 파일을 최신 순으로, 폴더·앱은 빼고', () => {
+		expect(recentItems(tree).map((item) => item.name)).toEqual(['새 글', '서버 글', '예전 글', '기타 글']);
+		expect(recentItems(tree, 2).map((item) => item.name)).toEqual(['새 글', '서버 글']);
+	});
+});
+
+describe('sortItems', () => {
+	const macfolio = find(tree, 'blog/개발기/MacFolio') as FolderItem;
+
+	it('이름순', () => {
+		expect(sortItems(macfolio.children, 'name').map((item) => item.name)).toEqual(['백엔드', '새 글', '예전 글']);
+	});
+
+	it('종류: 폴더가 먼저, 같은 종류는 이름순', () => {
+		expect(sortItems(tree[0].children, 'kind').map((item) => item.name)).toEqual([
+			'이력서',
+			'deployment.md',
+			'README.md',
+		]);
+	});
+
+	it('날짜: 최신이 위로, 날짜 없는 것은 아래에 이름순', () => {
+		expect(sortItems(macfolio.children, 'date').map((item) => item.name)).toEqual(['새 글', '백엔드', '예전 글']);
+		// 날짜가 하나도 없으면 이름순 그대로
+		expect(sortItems(tree[0].children, 'date').map((item) => item.name)).toEqual([
+			'이력서',
+			'deployment.md',
+			'README.md',
+		]);
+	});
 });
