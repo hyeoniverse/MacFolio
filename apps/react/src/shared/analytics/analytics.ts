@@ -150,3 +150,18 @@ export async function fetchTodayVisitors(): Promise<number | null> {
 		return null;
 	}
 }
+
+/** 앱 항목(메모의 글, Safari의 프로젝트)마다 전체 기간 조회수 (누구나 본다). 서버가 없거나 닿지 않으면 null */
+export async function fetchViews(app: string): Promise<Record<string, number> | null> {
+	if (!env.apiUrl) return null;
+	try {
+		const response = await fetch(`${env.apiUrl}/analytics/views?app=${encodeURIComponent(app)}`, {
+			signal: AbortSignal.timeout(5000),
+		});
+		if (!response.ok) return null;
+		const { views } = (await response.json()) as { views?: unknown };
+		return views && typeof views === 'object' ? (views as Record<string, number>) : null;
+	} catch {
+		return null;
+	}
+}

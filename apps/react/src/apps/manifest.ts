@@ -67,8 +67,6 @@ export interface AppManifest {
 	windowSize?: { width: number; height: number };
 	/** 모바일에서 다른 이름·아이콘으로 보여줄 때 (휴대폰에 더 어울리는 앱으로 바꿔 보여준다) */
 	mobile?: { label: string; icon: string };
-	/** 관리자에게만 보이는 앱 (Launchpad, 휴대폰 홈 화면, Finder의 앱). 방문자가 열어도 내용은 서버가 막는다 */
-	adminOnly?: boolean;
 	/** 창을 여는 대신 실행할 동작 */
 	action?: { type: 'link'; url: string } | { type: 'share' };
 }
@@ -110,13 +108,12 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		inLaunchpad: true,
 		windowSize: { width: 1100, height: 680 },
 	},
-	// 트래픽 분석 (#102). macOS의 활동 상태 보기 모양. 관리자에게만 Launchpad에 보인다
+	// 트래픽 분석 (#102). macOS의 활동 상태 보기 모양. 누구나 열고, 들어온 곳의 상세와 실시간은 관리자만
 	activity: {
 		label: '활동 상태 보기',
 		icon: 'activity.svg',
 		inDock: false,
 		inLaunchpad: true,
-		adminOnly: true,
 		windowSize: { width: 1000, height: 640 },
 	},
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false },
@@ -147,6 +144,3 @@ export const DOCK_APPS = APP_NAMES.filter((name) => APP_MANIFEST[name].inDock);
 
 /** Launchpad에 늘 있는 앱 (APP_NAMES 순서) */
 export const LAUNCHPAD_APPS = APP_NAMES.filter((name) => APP_MANIFEST[name].inLaunchpad);
-
-/** 지금 보여 줄 수 있는 앱: 관리자 전용 앱은 관리자에게만 */
-export const visibleTo = (admin: boolean) => (name: AppName) => admin || !APP_MANIFEST[name].adminOnly;

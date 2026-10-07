@@ -4,8 +4,7 @@ import '@/desktop/dock/Dock.css';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 
 import { env } from '@/shared/config/env';
-import { APP_MANIFEST, DOCK_APPS, LAUNCHPAD_APPS, visibleTo, type AppName } from '@/apps/manifest';
-import { useAdmin } from '@/shared/auth/adminStore';
+import { APP_MANIFEST, DOCK_APPS, LAUNCHPAD_APPS, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
 import {
 	DOCK_DIVIDER,
@@ -25,13 +24,11 @@ const Dock: React.FC = () => {
 
 	// Dock에 다 들어가지 않는 앱은 Launchpad로 보낸다. 실행 중이라 나타난 앱도 칸에 세어서 Launchpad·휴지통과 겹치지 않는다
 	const { width } = useViewport();
-	// 관리자 전용 앱(활동 상태 보기)은 관리자에게만 Launchpad에
-	const admin = useAdmin().status === 'signed-in';
 	const {
 		pinned,
 		running,
 		launchpad: hiddenItems,
-	} = dockLayout(dockAppCapacity(width), DOCK_APPS, LAUNCHPAD_APPS.filter(visibleTo(admin)), isActive);
+	} = dockLayout(dockAppCapacity(width), DOCK_APPS, LAUNCHPAD_APPS, isActive);
 	// 아이콘 크기와 간격은 칸 수를 센 값 그대로 CSS에 넘긴다
 	const dockStyle = {
 		'--dock-icon': `${dockIconSize(width)}px`,
