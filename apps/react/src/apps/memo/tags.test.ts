@@ -20,6 +20,7 @@ describe('tagsOf', () => {
 			'```',
 			'`#인라인코드` 와 [링크](https://example.com/#section), [앞](#anchor)',
 			'Refs #14, 색은 #fff 와 #2b2100, C#언어',
+			'#115의 API, #96에서, #14로 옮긴 것',
 			'<a href="#html">',
 			'#진짜태그',
 		].join('\n');

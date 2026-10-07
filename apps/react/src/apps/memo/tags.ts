@@ -6,9 +6,15 @@ const NAME = '[\\p{L}\\p{N}_-]+';
 /** #태그: 줄 처음이나 공백·여는 괄호 뒤의 #, 바로 뒤에 이름 (# 뒤에 공백이 있으면 제목이다) */
 export const TAG_PATTERN = new RegExp(`(^|[\\s(（\\[])#(${NAME})`, 'gu');
 
-/** 태그로 보지 않는 것: 숫자만 (이슈 번호 #14), 색 (#edbb4d) */
+/** 이슈 번호 뒤에 붙는 조사: "#115의 API", "#96에서", "#14로" */
+const PARTICLE =
+	'(의|은|는|이|가|을|를|에|에서|에게|으로|로|과|와|도|만|까지|부터|처럼|보다|이나|나|부터는|에는|에서는|으로는|로는)';
+
+const ISSUE_NUMBER = new RegExp(`^\\d+${PARTICLE}?$`);
+
+/** 태그로 보지 않는 것: 숫자만 (이슈 번호 #14), 이슈 번호에 조사가 붙은 것 (#115의), 색 (#edbb4d) */
 export function isTagName(name: string): boolean {
-	if (/^\d+$/.test(name)) return false;
+	if (ISSUE_NUMBER.test(name)) return false;
 	if (/^[0-9a-f]{3}([0-9a-f]{3})?([0-9a-f]{2})?$/i.test(name)) return false;
 	return true;
 }
