@@ -29,16 +29,10 @@
 	color: var(--color-text);
 }
 
-/* 웹 페이지 앱 위: 페이지가 비치는 흐린 유리 (iOS 막대 재질). 글자가 페이지 메뉴와 겹쳐도 읽힌다 */
-.mobile-statusbar.glass {
-	background-color: rgba(250, 250, 252, 0.72);
-	color: var(--color-text);
-	backdrop-filter: saturate(180%) blur(20px);
-	-webkit-backdrop-filter: saturate(180%) blur(20px);
-}
-
-:root[data-theme='dark'] .mobile-statusbar.glass {
-	background-color: rgba(28, 28, 30, 0.72);
+/* 앱 위: 바탕은 투명하게 두고, 밑으로 지나가는 내용만 약하게 흐려 글자가 읽히게 한다 */
+.mobile-statusbar.app {
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
 }
 
 .mobile-statusbar-time {

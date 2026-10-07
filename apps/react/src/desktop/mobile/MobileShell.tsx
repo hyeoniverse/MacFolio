@@ -9,7 +9,6 @@ import { closeSwitcher, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
 import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { runningByRecency } from '@/desktop/appStack';
-import { WEB_PAGE_APPS } from '@/apps/registry';
 import '@/desktop/mobile/MobileShell.css';
 
 /**
@@ -56,10 +55,7 @@ const MobileShell = () => {
 	return (
 		<>
 			<MobileHome launch={launch} />
-			<MobileStatusBar
-				tone={!onApp ? 'light' : foreground && WEB_PAGE_APPS.has(foreground) ? 'glass' : 'app'}
-				onOpen={() => setControlCenterOpen(true)}
-			/>
+			<MobileStatusBar tone={onApp ? 'app' : 'light'} onOpen={() => setControlCenterOpen(true)} />
 			{switcherOpen && (
 				// 카드 사이의 빈 곳을 누르면 홈으로
 				<div
