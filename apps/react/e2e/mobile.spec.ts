@@ -219,7 +219,7 @@ test.describe('모바일', () => {
 			expect((await element.boundingBox())!.y).toBeGreaterThanOrEqual(bar.y + bar.height);
 	});
 
-	test('웹 페이지 앱도 페이지를 상태 표시줄 밑까지 그리고, 상태 표시줄은 어느 앱에서나 투명한 바탕에 약한 흐림이다', async ({
+	test('웹 페이지 앱은 사이트의 머리 막대가 상태 표시줄 아래에 오고, 상태 표시줄은 어느 앱에서나 투명한 바탕에 약한 흐림이다', async ({
 		page,
 	}) => {
 		await enterHome(page);
@@ -227,7 +227,8 @@ test.describe('모바일', () => {
 		await (await homeApp(page, 'WTD')).tap();
 		const frame = page.locator('.container.mobile .web-frame iframe');
 		await expect(frame).toBeVisible();
-		expect((await frame.boundingBox())!.y).toBe(0);
+		const bar = (await statusBar.boundingBox())!;
+		expect((await frame.boundingBox())!.y).toBe(bar.y + bar.height);
 		// 페이지를 가리는 홈 단추는 없다 (홈 바가 홈으로 간다)
 		await expect(page.locator('.container.mobile .mobile-navbar-home')).toHaveCount(0);
 		const look = () =>
@@ -235,13 +236,13 @@ test.describe('모바일', () => {
 				const style = getComputedStyle(el);
 				return { background: style.backgroundColor, blur: style.backdropFilter };
 			});
-		expect(await look()).toEqual({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(6px)' });
+		expect(await look()).toEqual({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(2px)' });
 
 		// 다른 앱에서도 같다
 		await page.locator('.container.mobile .home-indicator').tap();
 		await (await homeApp(page, '메모')).tap();
 		await expect(appWindow(page, 'memo')).toBeVisible();
-		expect(await look()).toEqual({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(6px)' });
+		expect(await look()).toEqual({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(2px)' });
 	});
 
 	test('Safari는 iOS Safari처럼: 페이지가 화면을 다 쓰고, 아래 막대(뒤로·주소·•••)로 다룬다. 주소를 밀면 옆 탭', async ({
@@ -260,12 +261,13 @@ test.describe('모바일', () => {
 			'blur'
 		);
 
-		// 아래 막대: 주소 알약과 ••• 가 한 줄. 홈으로 가는 뒤로 가기는 없다 (홈 바가 한다)
-		await expect(safari.locator('.mobile-navbar-home')).toHaveCount(0);
+		// 아래 막대: 뒤로 가기, 주소 알약, ••• 가 한 줄
+		const back = (await safari.locator('.mobile-navbar-home').boundingBox())!;
 		const pill = (await safari.locator('.safari-phone-pill').boundingBox())!;
 		const more = (await safari.getByRole('button', { name: 'Safari 동작' }).boundingBox())!;
+		expect(back.y).toBe(pill.y);
 		expect(more.y).toBe(pill.y);
-		expect(pill.x).toBe(16);
+		expect(back.x + back.width).toBeLessThan(pill.x);
 		const address = safari.locator('.safari-phone-address');
 		await expect(address).toHaveText('www.hyeoniverse.com');
 
