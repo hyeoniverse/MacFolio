@@ -72,7 +72,7 @@ const Transport: React.FC<{ large?: boolean }> = ({ large = false }) => {
 				aria-label={isPlaying ? '일시 정지' : '재생'}
 				onClick={togglePlayPause}
 			>
-				<i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
+				<i className={`fa-solid fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
 			</button>
 			<button type="button" aria-label="다음 곡" onClick={next}>
 				<i className="fa-solid fa-forward" aria-hidden="true"></i>
@@ -490,7 +490,7 @@ const Music: React.FC = () => {
 						{/* 미니 플레이어 버튼 (좁은 창) */}
 						<div className="music-mini-controls">
 							<button type="button" aria-label={isPlaying ? '일시 정지' : '재생'} onClick={togglePlayPause}>
-								<i className={`fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
+								<i className={`fa-solid fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
 							</button>
 							<button type="button" aria-label="다음 곡" onClick={next}>
 								<i className="fa-solid fa-forward" aria-hidden="true"></i>
