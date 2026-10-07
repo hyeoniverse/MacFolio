@@ -12,7 +12,6 @@ import { useSettings } from '@/shared/settings/settingsStore';
 import { resolveTheme } from '@/shared/settings/settings';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
-import MobileNavigation from '@/desktop/window/MobileNavigation';
 import {
 	buildLocations,
 	countLabel,
@@ -28,6 +27,7 @@ import { docTitle } from './repoDocs';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
 import FinderIcon from './FinderIcon';
+import FinderMobile from './FinderMobile';
 import '@/apps/finder/Finder.css';
 
 type View = 'icons' | 'list';
@@ -62,8 +62,9 @@ const Finder: React.FC = () => {
 	const { launch } = useLaunchApp();
 	const { theme } = useSettings();
 	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
+	const mobile = useIsMobile();
 	// 휴대폰에서는 홈 화면 이름처럼 '파일' (manifest.ts의 mobile)
-	const appTitle = useIsMobile() ? APP_MANIFEST.finder.mobile!.label : APP_MANIFEST.finder.label;
+	const appTitle = mobile ? APP_MANIFEST.finder.mobile!.label : APP_MANIFEST.finder.label;
 
 	const [posts, setPosts] = useState<{ slug: string; title: string; date: string; category: string }[]>([]);
 	useEffect(() => {
@@ -109,8 +110,9 @@ const Finder: React.FC = () => {
 		setSelected(null);
 	};
 
-	// 바깥에서 온 문서 열기 요청 (openDoc.ts). 묶어 둔 문서만 연다
+	// 바깥에서 온 문서 열기 요청 (openDoc.ts). 묶어 둔 문서만 연다. 휴대폰은 FinderMobile이 받는다
 	useEffect(() => {
+		if (mobile) return;
 		const take = () => {
 			const { path } = finderDocRequest.getState();
 			if (!path) return;
@@ -119,7 +121,7 @@ const Finder: React.FC = () => {
 		};
 		take();
 		return finderDocRequest.subscribe(take);
-	}, []);
+	}, [mobile]);
 
 	const folder = 'folder' in place ? (find(locations, place.folder) as FolderItem | null) : null;
 	const searching = query.trim() !== '';
@@ -268,164 +270,167 @@ const Finder: React.FC = () => {
 
 	return (
 		<AppWindow title={appTitle} appName="finder" chrome="unified">
-			<div className="finder">
-				<nav className="finder-sidebar" aria-label="즐겨찾기">
-					<div className="finder-lights-space" />
-					<h2>즐겨찾기</h2>
-					{locations.map((item) => (
-						<button
-							key={item.id}
-							type="button"
-							className={`finder-location${location === item.id && !searching ? ' active' : ''}`}
-							aria-current={location === item.id && !searching ? 'page' : undefined}
-							onClick={() => go({ folder: item.id })}
-						>
-							<i className={LOCATION_ICONS[item.id]} aria-hidden="true" />
-							{item.name}
-						</button>
-					))}
-				</nav>
-
-				<div className="finder-main">
-					{/* 휴대폰: 떠 있는 뒤로 가기가 Finder의 뒤로 (iOS 파일처럼 단추 하나). 처음 화면이면 홈으로 */}
-					<MobileNavigation {...(history.at > 0 ? { backLabel: '뒤로', onBack: () => step(-1) } : {})} />
-					<div className="finder-toolbar">
-						<div className="finder-nav">
-							<IconButton
-								icon="fa-solid fa-chevron-left"
-								label="뒤로"
-								disabled={history.at === 0}
-								onClick={() => step(-1)}
-							/>
-							<IconButton
-								icon="fa-solid fa-chevron-right"
-								label="앞으로"
-								disabled={history.at === history.places.length - 1}
-								onClick={() => step(1)}
-							/>
-						</div>
-						<h1 className="finder-title">{title}</h1>
-						{'folder' in place && (
-							<div className="finder-views" role="group" aria-label="보기">
-								<IconButton
-									icon="fa-solid fa-table-cells-large"
-									label="아이콘으로 보기"
-									on={view === 'icons'}
-									aria-pressed={view === 'icons'}
-									onClick={() => setView('icons')}
-								/>
-								<IconButton
-									icon="fa-solid fa-list"
-									label="목록으로 보기"
-									on={view === 'list'}
-									aria-pressed={view === 'list'}
-									onClick={() => setView('list')}
-								/>
-							</div>
-						)}
-						<label className="finder-search">
-							<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-							<input
-								type="search"
-								placeholder="이름으로 찾기"
-								aria-label="이름으로 찾기"
-								value={query}
-								onChange={(event) => {
-									setQuery(event.target.value);
-									setSelected(null);
-									if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
-								}}
-							/>
-						</label>
-					</div>
-
-					{/* 좁은 창: 사이드바 대신 위치를 한 줄로 */}
-					<div className="finder-chips" role="group" aria-label="위치">
+			{/* 휴대폰은 iOS 파일 앱처럼 따로 짠다 (FinderMobile) */}
+			{mobile ? (
+				<FinderMobile locations={locations} onOpenElsewhere={open} dark={dark} />
+			) : (
+				<div className="finder">
+					<nav className="finder-sidebar" aria-label="즐겨찾기">
+						<div className="finder-lights-space" />
+						<h2>즐겨찾기</h2>
 						{locations.map((item) => (
 							<button
 								key={item.id}
 								type="button"
-								className={location === item.id && !searching ? 'active' : undefined}
+								className={`finder-location${location === item.id && !searching ? ' active' : ''}`}
+								aria-current={location === item.id && !searching ? 'page' : undefined}
 								onClick={() => go({ folder: item.id })}
 							>
+								<i className={LOCATION_ICONS[item.id]} aria-hidden="true" />
 								{item.name}
 							</button>
 						))}
-					</div>
+					</nav>
 
-					<div
-						ref={content}
-						className="finder-content"
-						tabIndex={0}
-						onKeyDown={onKeyDown}
-						onClick={() => setSelected(null)}
-					>
-						{'doc' in place ? (
-							<DocView path={place.doc} dark={dark} onOpenDoc={(path) => go({ doc: path })} />
-						) : empty ? (
-							<p className="finder-empty">{folder.emptyNote ?? '비어 있음'}</p>
-						) : searching && items.length === 0 ? (
-							<p className="finder-empty">찾는 이름이 없습니다.</p>
-						) : view === 'icons' ? (
-							<div className="finder-grid" role="listbox" aria-label={title}>
-								{items.map((item) => (
-									<div key={item.id} {...itemProps(item)}>
-										<span className="finder-icon">
-											<FinderIcon item={item} />
-										</span>
-										<span className="finder-name" title={item.name}>
-											{item.name}
-										</span>
-									</div>
-								))}
+					<div className="finder-main">
+						<div className="finder-toolbar">
+							<div className="finder-nav">
+								<IconButton
+									icon="fa-solid fa-chevron-left"
+									label="뒤로"
+									disabled={history.at === 0}
+									onClick={() => step(-1)}
+								/>
+								<IconButton
+									icon="fa-solid fa-chevron-right"
+									label="앞으로"
+									disabled={history.at === history.places.length - 1}
+									onClick={() => step(1)}
+								/>
 							</div>
-						) : (
-							<div className="finder-list" role="listbox" aria-label={title}>
-								<div className="finder-list-head" aria-hidden="true">
-									<span>이름</span>
-									<span>수정일</span>
-									<span>종류</span>
+							<h1 className="finder-title">{title}</h1>
+							{'folder' in place && (
+								<div className="finder-views" role="group" aria-label="보기">
+									<IconButton
+										icon="fa-solid fa-table-cells-large"
+										label="아이콘으로 보기"
+										on={view === 'icons'}
+										aria-pressed={view === 'icons'}
+										onClick={() => setView('icons')}
+									/>
+									<IconButton
+										icon="fa-solid fa-list"
+										label="목록으로 보기"
+										on={view === 'list'}
+										aria-pressed={view === 'list'}
+										onClick={() => setView('list')}
+									/>
 								</div>
-								{items.map((item) => (
-									<div key={item.id} {...itemProps(item)}>
-										<span className="finder-list-name">
-											<span className="finder-icon small">
+							)}
+							<label className="finder-search">
+								<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+								<input
+									type="search"
+									placeholder="이름으로 찾기"
+									aria-label="이름으로 찾기"
+									value={query}
+									onChange={(event) => {
+										setQuery(event.target.value);
+										setSelected(null);
+										if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
+									}}
+								/>
+							</label>
+						</div>
+
+						{/* 좁은 창: 사이드바 대신 위치를 한 줄로 */}
+						<div className="finder-chips" role="group" aria-label="위치">
+							{locations.map((item) => (
+								<button
+									key={item.id}
+									type="button"
+									className={location === item.id && !searching ? 'active' : undefined}
+									onClick={() => go({ folder: item.id })}
+								>
+									{item.name}
+								</button>
+							))}
+						</div>
+
+						<div
+							ref={content}
+							className="finder-content"
+							tabIndex={0}
+							onKeyDown={onKeyDown}
+							onClick={() => setSelected(null)}
+						>
+							{'doc' in place ? (
+								<DocView path={place.doc} dark={dark} onOpenDoc={(path) => go({ doc: path })} />
+							) : empty ? (
+								<p className="finder-empty">{folder.emptyNote ?? '비어 있음'}</p>
+							) : searching && items.length === 0 ? (
+								<p className="finder-empty">찾는 이름이 없습니다.</p>
+							) : view === 'icons' ? (
+								<div className="finder-grid" role="listbox" aria-label={title}>
+									{items.map((item) => (
+										<div key={item.id} {...itemProps(item)}>
+											<span className="finder-icon">
 												<FinderIcon item={item} />
 											</span>
 											<span className="finder-name" title={item.name}>
 												{item.name}
 											</span>
-										</span>
-										<span className="finder-list-date">{dateCell(item)}</span>
-										<span className="finder-list-kind">{KIND_LABELS[item.kind]}</span>
+										</div>
+									))}
+								</div>
+							) : (
+								<div className="finder-list" role="listbox" aria-label={title}>
+									<div className="finder-list-head" aria-hidden="true">
+										<span>이름</span>
+										<span>수정일</span>
+										<span>종류</span>
 									</div>
-								))}
-							</div>
-						)}
-					</div>
+									{items.map((item) => (
+										<div key={item.id} {...itemProps(item)}>
+											<span className="finder-list-name">
+												<span className="finder-icon small">
+													<FinderIcon item={item} />
+												</span>
+												<span className="finder-name" title={item.name}>
+													{item.name}
+												</span>
+											</span>
+											<span className="finder-list-date">{dateCell(item)}</span>
+											<span className="finder-list-kind">{KIND_LABELS[item.kind]}</span>
+										</div>
+									))}
+								</div>
+							)}
+						</div>
 
-					{/* 경로 막대: 눌러서 위 폴더로 */}
-					<div className="finder-pathbar">
-						<nav aria-label="경로">
-							{crumbs.map((crumb, i) => (
-								<React.Fragment key={crumb.id}>
-									{i > 0 && <i className="fa-solid fa-chevron-right" aria-hidden="true" />}
-									{crumb.kind === 'folder' && i < crumbs.length - 1 ? (
-										<button type="button" onClick={() => go({ folder: crumb.id })}>
-											{crumb.name}
-										</button>
-									) : (
-										<span>
-											{crumb.kind === 'doc' ? docTitle(crumb.path, DOC_SOURCES[crumb.path] ?? '') : crumb.name}
-										</span>
-									)}
-								</React.Fragment>
-							))}
-						</nav>
-						{'folder' in place && <span className="finder-count">{countLabel(items.length)}</span>}
+						{/* 경로 막대: 눌러서 위 폴더로 */}
+						<div className="finder-pathbar">
+							<nav aria-label="경로">
+								{crumbs.map((crumb, i) => (
+									<React.Fragment key={crumb.id}>
+										{i > 0 && <i className="fa-solid fa-chevron-right" aria-hidden="true" />}
+										{crumb.kind === 'folder' && i < crumbs.length - 1 ? (
+											<button type="button" onClick={() => go({ folder: crumb.id })}>
+												{crumb.name}
+											</button>
+										) : (
+											<span>
+												{crumb.kind === 'doc' ? docTitle(crumb.path, DOC_SOURCES[crumb.path] ?? '') : crumb.name}
+											</span>
+										)}
+									</React.Fragment>
+								))}
+							</nav>
+							{'folder' in place && <span className="finder-count">{countLabel(items.length)}</span>}
+						</div>
 					</div>
 				</div>
-			</div>
+			)}
 		</AppWindow>
 	);
 };
