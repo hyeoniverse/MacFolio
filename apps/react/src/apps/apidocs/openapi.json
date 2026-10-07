@@ -1908,7 +1908,7 @@
 				},
 				"responses": {
 					"200": {
-						"description": "보냈다 ({ status: \"sent\" }). 받는 사람은 사이트 주인, Reply-To는 보낸 사람"
+						"description": "보냈다 ({ status: \"sent\", mail }). 받는 사람은 사이트 주인, Reply-To는 보낸 사람. 처음 보내는 브라우저에는 방문자 쿠키를 준다"
 					},
 					"400": {
 						"description": "입력 규칙을 어겼거나 사람 확인(Turnstile)에 실패했다"
@@ -1923,6 +1923,94 @@
 						"description": "서버에 메일 설정이 없다 (사이트는 메일 앱 열기로 대신한다)"
 					}
 				},
+				"tags": [
+					"contact"
+				]
+			}
+		},
+		"/contact/mine": {
+			"get": {
+				"operationId": "ContactController_mine",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "이 브라우저(방문자 쿠키)가 보낸 메일과 관리자 답장 (보낸 편지함). 쿠키가 없으면 빈 목록"
+					}
+				},
+				"tags": [
+					"contact"
+				]
+			}
+		},
+		"/contact/inbox": {
+			"get": {
+				"operationId": "ContactController_inbox",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "받은 모든 메일과 답장 (관리자의 받은 편지함, 새 것부터)"
+					},
+					"401": {
+						"description": "관리자 로그인이 필요하다"
+					}
+				},
+				"security": [
+					{
+						"cookie": []
+					}
+				],
+				"tags": [
+					"contact"
+				]
+			}
+		},
+		"/contact/{id}/reply": {
+			"post": {
+				"operationId": "ContactController_reply",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"body": "연락 주셔서 감사합니다!"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "답장을 보냈다: 답장이 붙은 메일. 방문자의 주소로 가고 Reply-To는 사이트 주인"
+					},
+					"400": {
+						"description": "답장 내용이 비었거나 너무 길다"
+					},
+					"401": {
+						"description": "관리자 로그인이 필요하다"
+					},
+					"404": {
+						"description": "메일이 없다"
+					},
+					"502": {
+						"description": "메일 서비스(Resend)가 받지 않았다"
+					}
+				},
+				"security": [
+					{
+						"cookie": []
+					}
+				],
 				"tags": [
 					"contact"
 				]
