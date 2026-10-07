@@ -1814,6 +1814,60 @@
 					"analytics"
 				]
 			}
+		},
+		"/contact": {
+			"get": {
+				"operationId": "ContactController_status",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "enabled: 서버에서 보낼 수 있다 (아니면 사이트가 방문자의 메일 앱을 연다). turnstileSiteKey: 사람 확인 위젯에 쓸 공개 키 (없으면 null)"
+					}
+				},
+				"tags": [
+					"contact"
+				]
+			},
+			"post": {
+				"operationId": "ContactController_send",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"name": "민수",
+									"email": "minsu@example.com",
+									"subject": "포트폴리오 잘 봤습니다",
+									"body": "안녕하세요…",
+									"turnstileToken": "(Turnstile이 준 토큰)"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "보냈다 ({ status: \"sent\" }). 받는 사람은 사이트 주인, Reply-To는 보낸 사람"
+					},
+					"400": {
+						"description": "입력 규칙을 어겼거나 사람 확인(Turnstile)에 실패했다"
+					},
+					"429": {
+						"description": "IP마다, 사이트 전체로 하루 상한에 닿았다"
+					},
+					"502": {
+						"description": "메일 서비스(Resend)가 받지 않았다"
+					},
+					"503": {
+						"description": "서버에 메일 설정이 없다 (사이트는 메일 앱 열기로 대신한다)"
+					}
+				},
+				"tags": [
+					"contact"
+				]
+			}
 		}
 	},
 	"info": {

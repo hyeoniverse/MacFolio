@@ -36,6 +36,15 @@ describe('loadConfig', () => {
 				perIpPerDay: 1,
 				totalPerDay: 5,
 			},
+			contact: {
+				resendApiKey: undefined,
+				to: undefined,
+				from: undefined,
+				turnstileSiteKey: undefined,
+				turnstileSecretKey: undefined,
+				perIpPerDay: 5,
+				totalPerDay: 50,
+			},
 			auth: {
 				githubClientId: undefined,
 				githubClientSecret: undefined,
