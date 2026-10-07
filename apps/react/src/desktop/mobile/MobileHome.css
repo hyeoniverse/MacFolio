@@ -80,7 +80,38 @@
 	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
 }
 
-/* 앱 격자: 4열 */
+/* 페이지: 옆으로 넘긴다 (한 페이지씩 딱 맞춰 멈춘다). 스크롤 막대는 숨긴다 */
+.mobile-pages {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+	margin-inline: -20px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x mandatory;
+	overscroll-behavior-x: contain;
+	scrollbar-width: none;
+}
+
+.mobile-pages::-webkit-scrollbar {
+	display: none;
+}
+
+.mobile-page {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	width: 100%;
+	min-height: 0;
+	padding-inline: 20px;
+	scroll-snap-align: start;
+}
+
+.mobile-widgets {
+	flex: none;
+}
+
+/* 앱 격자: 4열. 들어가는 만큼만 놓고 나머지는 다음 페이지로 (MobileHome이 재서 나눈다) */
 .mobile-grid {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
@@ -88,8 +119,39 @@
 	row-gap: 22px;
 	flex: 1;
 	min-height: 0;
+	overflow: hidden;
+}
+
+.mobile-widgets + .mobile-grid {
 	margin-top: 24px;
-	overflow-y: auto;
+}
+
+/* 페이지 점 (iOS): 지금 페이지만 밝게 */
+.mobile-page-dots {
+	display: flex;
+	flex: none;
+	justify-content: center;
+	gap: 8px;
+	margin: 10px auto 12px;
+	padding: 6px 10px;
+	border-radius: 999px;
+	background-color: rgba(255, 255, 255, 0.18);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.mobile-page-dots button {
+	width: 7px;
+	height: 7px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: rgba(255, 255, 255, 0.45);
+	cursor: pointer;
+}
+
+.mobile-page-dots button[aria-selected='true'] {
+	background-color: #fff;
 }
 
 .mobile-app {
@@ -154,6 +216,9 @@
 
 	.mobile-grid {
 		grid-template-columns: repeat(6, 1fr);
+	}
+
+	.mobile-widgets + .mobile-grid {
 		margin-top: 0;
 	}
 
