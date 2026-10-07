@@ -126,6 +126,11 @@ export interface ProjectAppInfo {
 	play?: boolean;
 	/** 사이트가 뜨기 전 창 바탕 (게임은 검은 화면) */
 	tone?: 'light' | 'dark';
+	/**
+	 * 사이트 맨 위(머리 막대)의 바탕색. 휴대폰에서 상태 표시줄 뒤를 이 색으로 칠해 머리 막대와 이어 보이게 한다 (Safari처럼).
+	 * 다른 도메인의 페이지라 iframe 안의 색을 읽을 수 없어 적어 둔다
+	 */
+	barColor?: string;
 	/** 처음 열 때 창 크기 */
 	windowSize?: { width: number; height: number };
 }
@@ -860,7 +865,12 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/hyeoniverse/web-portfolio-hyeoniverse',
 		demo: 'https://www.hyeoniverse.com',
 		icon: projectImage('hyeoniverse', 'icon.svg'),
-		app: { label: 'HYEONIVERSE', icon: 'projects/hyeoniverse/app-icon.png', windowSize: { width: 1080, height: 700 } },
+		app: {
+			label: 'HYEONIVERSE',
+			icon: 'projects/hyeoniverse/app-icon.png',
+			barColor: '#f8f6f0',
+			windowSize: { width: 1080, height: 700 },
+		},
 		image: projectImage('hyeoniverse', 'screenshot.jpg'),
 	},
 	{
@@ -1084,7 +1094,12 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/Devcourse-NewPick/front',
 		demo: 'https://newpick-tan.vercel.app',
 		icon: projectImage('newpick', 'icon.svg'),
-		app: { label: 'NewPick', icon: 'projects/newpick/app-icon.png', windowSize: { width: 1080, height: 700 } },
+		app: {
+			label: 'NewPick',
+			icon: 'projects/newpick/app-icon.png',
+			barColor: '#ffffff',
+			windowSize: { width: 1080, height: 700 },
+		},
 		logo: projectImage('newpick', 'logo.svg'),
 		image: projectImage('newpick', 'screenshot.jpg'),
 	},
@@ -1238,7 +1253,12 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/hyeoniverse/QRU',
 		demo: 'https://qryou-app.web.app',
 		icon: projectImage('qru', 'icon.png'),
-		app: { label: 'QRU', icon: 'projects/qru/app-icon.png', windowSize: { width: 1080, height: 700 } },
+		app: {
+			label: 'QRU',
+			icon: 'projects/qru/app-icon.png',
+			barColor: '#b8efed',
+			windowSize: { width: 1080, height: 700 },
+		},
 		image: projectImage('qru', 'screenshot.jpg'),
 	},
 	{
@@ -1390,7 +1410,12 @@ export const PROJECTS: Project[] = [
 		url: 'https://github.com/Devcourse-WhatToDo/todo-front',
 		demo: 'https://what-to-do-chi.vercel.app/',
 		icon: projectImage('whattodo', 'icon.png'),
-		app: { label: 'WTD', icon: 'projects/whattodo/app-icon.png', windowSize: { width: 1080, height: 700 } },
+		app: {
+			label: 'WTD',
+			icon: 'projects/whattodo/app-icon.png',
+			barColor: '#3b82f6',
+			windowSize: { width: 1080, height: 700 },
+		},
 		image: projectImage('whattodo', 'screenshot.jpg'),
 	},
 	{
@@ -1472,6 +1497,7 @@ export const PROJECTS: Project[] = [
 			icon: 'projects/sproutfarm/icon.png',
 			play: true,
 			tone: 'dark',
+			barColor: '#231f20',
 			// 게임 화면(16:9) + 제목 막대
 			windowSize: { width: 960, height: 569 },
 		},
