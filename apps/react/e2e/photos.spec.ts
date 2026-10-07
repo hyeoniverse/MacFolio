@@ -205,7 +205,12 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		await viewer.getByRole('button', { name: '좋아요' }).click();
 		await expect(viewer.getByRole('button', { name: '좋아요' })).toHaveAttribute('aria-pressed', 'true');
 		// 정보 (iOS 사진): 사진이 위로 줄고, 형식 딱지와 실제 크기, 프로젝트 페이지 단추. 사진 띠는 숨는다
+		// 정보 단추는 켜도 꺼도 같은 크기 (채움만 바뀐다)
+		const infoIcon = viewer.getByRole('button', { name: '정보' }).locator('i');
+		const off = await infoIcon.boundingBox();
 		await viewer.getByRole('button', { name: '정보' }).click();
+		await expect(viewer.getByRole('button', { name: '정보' })).toHaveAttribute('aria-pressed', 'true');
+		expect(await infoIcon.boundingBox()).toEqual(off);
 		const info = viewer.getByRole('complementary', { name: '사진 정보' });
 		await expect(info.getByRole('region', { name: '파일' })).toContainText('QRU 큐알유');
 		await expect(info.locator('.photos-phone-format')).toHaveText(/^(JPG|PNG|WEBP|GIF|SVG|MP4)$/);

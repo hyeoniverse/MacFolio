@@ -294,7 +294,7 @@ const PhoneViewer = ({
 						<i className={liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} aria-hidden="true" />
 					</button>
 					<button type="button" aria-label="정보" aria-pressed={info} onClick={() => setInfo(!info)}>
-						<i className={info ? 'fa-solid fa-circle-info' : 'fa-solid fa-info'} aria-hidden="true" />
+						<i className="fa-solid fa-info photos-phone-info-icon" aria-hidden="true" />
 					</button>
 				</div>
 				{/* 오른쪽 자리는 비워 가운데 알약을 가운데에 둔다 (프로젝트 페이지는 정보와 ••• 에서 연다) */}
