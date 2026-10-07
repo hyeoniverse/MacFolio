@@ -240,3 +240,13 @@ model DailyStat {
 
   @@id([day, metric, key])
 }
+
+/// 사진 앱의 캡션 (#21). 사진은 프로젝트 정보에서 꺼내므로 원래 캡션은 코드에 있고, 관리자가 고친 것만 사진 주소로 덮는다
+model PhotoCaption {
+  /// 사진 주소 (사이트가 쓰는 그대로)
+  src       String   @id
+  caption   String
+  updatedAt DateTime @updatedAt
+  /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
+  updatedBy String
+}
