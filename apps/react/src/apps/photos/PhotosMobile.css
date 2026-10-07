@@ -762,3 +762,31 @@
 .photos-phone-bar-spacer {
 	width: 52px;
 }
+
+/* 사진만 보기: 바탕이 까매지고 위·아래 UI는 흐려지며 사라진다. 사진은 화면 가득 (가운데, 잘리지 않게) */
+.photos-phone-viewer {
+	transition: background-color var(--duration) var(--ease-out);
+}
+
+.photos-phone-viewer[data-focus] {
+	background-color: #000000;
+}
+
+.photos-phone-viewer
+	:is(.photos-phone-viewer-title, .photos-phone-viewer-more, .photos-phone-strip, .photos-phone-viewer-bar) {
+	transition:
+		opacity var(--duration) var(--ease-out),
+		visibility var(--duration);
+}
+
+.photos-phone-viewer[data-focus]
+	:is(.photos-phone-viewer-title, .photos-phone-viewer-more, .photos-phone-strip, .photos-phone-viewer-bar) {
+	visibility: hidden;
+	opacity: 0;
+}
+
+.photos-phone-viewer[data-focus] .photos-phone-stage {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+}
