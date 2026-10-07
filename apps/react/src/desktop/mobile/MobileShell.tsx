@@ -9,6 +9,7 @@ import { closeSwitcher, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
 import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { runningByRecency } from '@/desktop/appStack';
+import { isDarkColor, useBarColor } from '@/desktop/mobile/barColor';
 import '@/desktop/mobile/MobileShell.css';
 
 /**
@@ -26,6 +27,8 @@ const MobileShell = () => {
 
 	const foreground = foregroundApp(apps);
 	const onApp = foreground !== null && !controlCenterOpen && !switcherOpen;
+	// 맨 앞 앱이 상태 표시줄 뒤를 어두운 머리 막대 색으로 칠했으면 글자는 흰색 (웹 페이지 앱)
+	const barColor = useBarColor(onApp ? foreground : null);
 
 	// Esc는 위에 열린 것부터 닫는다: 제어 센터, 앱 전환기 (그 아래 앱의 뒤로 가기가 이 Esc를 받지 않게 preventDefault)
 	useEffect(() => {
@@ -55,7 +58,10 @@ const MobileShell = () => {
 	return (
 		<>
 			<MobileHome launch={launch} />
-			<MobileStatusBar tone={onApp ? 'app' : 'light'} onOpen={() => setControlCenterOpen(true)} />
+			<MobileStatusBar
+				tone={onApp && !(barColor && isDarkColor(barColor)) ? 'app' : 'light'}
+				onOpen={() => setControlCenterOpen(true)}
+			/>
 			{switcherOpen && (
 				// 카드 사이의 빈 곳을 누르면 홈으로
 				<div

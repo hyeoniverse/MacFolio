@@ -219,30 +219,36 @@ test.describe('모바일', () => {
 			expect((await element.boundingBox())!.y).toBeGreaterThanOrEqual(bar.y + bar.height);
 	});
 
-	test('웹 페이지 앱은 사이트의 머리 막대가 상태 표시줄 아래에 오고, 상태 표시줄은 어느 앱에서나 투명한 바탕에 약한 흐림이다', async ({
+	test('웹 페이지 앱: 페이지는 상태 표시줄 아래에서, 상태 표시줄 뒤는 사이트 머리 막대 색으로 이어진다 (어두우면 흰 글자)', async ({
 		page,
 	}) => {
 		await enterHome(page);
 		const statusBar = page.locator('.mobile-statusbar');
-		await (await homeApp(page, 'WTD')).tap();
-		const frame = page.locator('.container.mobile .web-frame iframe');
-		await expect(frame).toBeVisible();
-		const bar = (await statusBar.boundingBox())!;
-		expect((await frame.boundingBox())!.y).toBe(bar.y + bar.height);
-		// 페이지를 가리는 홈 단추는 없다 (홈 바가 홈으로 간다)
-		await expect(page.locator('.container.mobile .mobile-navbar-home')).toHaveCount(0);
 		const look = () =>
 			statusBar.evaluate((el) => {
 				const style = getComputedStyle(el);
-				return { background: style.backgroundColor, blur: style.backdropFilter };
+				return { color: style.color, background: style.backgroundColor, blur: style.backdropFilter };
 			});
-		expect(await look()).toEqual({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(2px)' });
 
-		// 다른 앱에서도 같다
+		// WTD: 파란 머리 막대 (profile.ts의 barColor)
+		await (await homeApp(page, 'WTD')).tap();
+		const webFrame = page.locator('.container.mobile .web-frame');
+		const frame = webFrame.locator('iframe');
+		await expect(frame).toBeVisible();
+		const bar = (await statusBar.boundingBox())!;
+		expect((await frame.boundingBox())!.y).toBe(bar.y + bar.height);
+		expect(await webFrame.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(59, 130, 246)');
+		expect(await look()).toMatchObject({ color: 'rgb(255, 255, 255)', background: 'rgba(0, 0, 0, 0)' });
+		// 페이지를 가리는 홈 단추는 없다 (홈 바가 홈으로 간다)
+		await expect(page.locator('.container.mobile .mobile-navbar-home')).toHaveCount(0);
+
+		// 다른 앱에서는 투명한 바탕에 아주 약한 흐림, 앱 글자색
 		await page.locator('.container.mobile .home-indicator').tap();
 		await (await homeApp(page, '메모')).tap();
 		await expect(appWindow(page, 'memo')).toBeVisible();
-		expect(await look()).toEqual({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(2px)' });
+		const memo = await look();
+		expect(memo).toMatchObject({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(2px)' });
+		expect(memo.color).not.toBe('rgb(255, 255, 255)');
 	});
 
 	test('Safari는 iOS Safari처럼: 페이지가 화면을 다 쓰고, 아래 막대(뒤로·주소·•••)로 다룬다. 주소를 밀면 옆 탭', async ({
@@ -324,10 +330,22 @@ test.describe('모바일', () => {
 		const files = appWindow(page, 'finder');
 		const tabs = files.getByRole('navigation', { name: '파일 탭' });
 
-		// 최근 항목: 큰 제목, 날짜가 있는 글이 최신 순 격자. 첫 화면에는 홈 단추가 없다 (탭과 홈 바가 있다)
-		await expect(files.getByRole('heading', { name: '최근 항목' })).toBeVisible();
+		// 최근 항목: 뒤로 가기(홈)와 같은 줄의 큰 제목, 날짜가 있는 글이 최신 순 격자
+		const heading = files.getByRole('heading', { name: '최근 항목' });
+		await expect(heading).toBeVisible();
 		await expect(tabs.getByRole('button', { name: '최근 항목' })).toHaveAttribute('aria-current', 'true');
-		await expect(files.locator('.mobile-navbar-home')).toHaveCount(0);
+		const back = files.locator('.mobile-navbar-home');
+		await expect(back).toHaveText('홈');
+		const backBox = (await back.boundingBox())!;
+		const headingBox = (await heading.boundingBox())!;
+		expect(headingBox.y + headingBox.height / 2).toBeCloseTo(backBox.y + backBox.height / 2, 0);
+		// 제목 글자는 뒤로 가기 오른쪽에서 시작한다
+		const textLeft = await heading.evaluate((el) => {
+			const range = document.createRange();
+			range.selectNodeContents(el);
+			return range.getBoundingClientRect().left;
+		});
+		expect(textLeft).toBeGreaterThan(backBox.x + backBox.width);
 		const recents = files.getByRole('list', { name: '최근 항목' });
 		const dates = await recents.locator('.files-phone-summary').allTextContents();
 		expect(dates.length).toBeGreaterThan(3);

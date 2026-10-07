@@ -5,6 +5,7 @@ import type { AppName } from '@/apps/manifest';
 import '@/shared/ui/web-frame/WebFrame.css';
 import { openExternal } from '@/shared/analytics/analytics';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
+import { setBarColor } from '@/desktop/mobile/barColor';
 
 /** 이만큼 지나도 페이지가 다 불러지지 않으면 새 탭에서 여는 길을 알려 준다 */
 const SLOW_MS = 8000;
@@ -18,7 +19,25 @@ interface WebFrameProps {
 	icon?: string;
 	/** 불러오는 동안의 바탕 (페이지의 바탕색에 맞춘다) */
 	tone?: 'light' | 'dark';
+	/** 페이지 맨 위(머리 막대)의 색. 같은 사이트의 페이지(API 문서)는 불러온 뒤 직접 읽는다 */
+	barColor?: string;
 	allow?: string;
+}
+
+/** 같은 사이트의 페이지면 맨 위 가운데 요소의 바탕색을 읽는다 (투명이면 부모로). 다른 사이트면 읽을 수 없어 null */
+function readTopColor(frame: HTMLIFrameElement): string | null {
+	try {
+		const doc = frame.contentDocument;
+		if (!doc) return null;
+		const view = doc.defaultView!;
+		for (let element = doc.elementFromPoint(view.innerWidth / 2, 1); element; element = element.parentElement) {
+			const color = view.getComputedStyle(element).backgroundColor;
+			if (color && color !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(color)) return color;
+		}
+		return view.getComputedStyle(doc.body).backgroundColor || null;
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -26,11 +45,18 @@ interface WebFrameProps {
  * 불러오는 동안은 아이콘을 보여 주고, 오래 걸리면 새 탭에서 여는 링크를 띄운다
  * (사이트가 다른 곳에 들어가는 것을 막아 두었으면 iframe에는 빈 화면만 남기 때문이다).
  */
-const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = 'light', allow }) => {
+const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = 'light', barColor, allow }) => {
 	const frame = useRef<HTMLIFrameElement>(null);
 	const { bringAppToFront } = useAppState();
 	const [loaded, setLoaded] = useState(false);
 	const [slow, setSlow] = useState(false);
+	const [topColor, setTopColor] = useState<string | null>(barColor ?? null);
+
+	// 휴대폰 상태 표시줄이 이 색을 보고 글자 색을 고른다 (desktop/mobile/barColor.ts)
+	useEffect(() => {
+		setBarColor(appName, topColor);
+		return () => setBarColor(appName, null);
+	}, [appName, topColor]);
 
 	// iframe 안을 누르면 이벤트가 창까지 오지 않는다. 대신 이 문서가 포커스를 잃으니, 그때 창을 맨 앞으로
 	useEffect(() => {
@@ -69,10 +95,24 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 	}, [loaded]);
 
 	return (
-		<div className={`web-frame ${tone}`}>
+		<div
+			className={`web-frame ${tone}`}
+			style={topColor ? ({ '--web-bar-color': topColor } as React.CSSProperties) : undefined}
+		>
 			{/* 휴대폰: 페이지가 화면을 다 쓰고, 뒤로 가기는 왼쪽 아래에 떠 있다 (페이지의 왼쪽 위 메뉴를 가리지 않게) */}
 			<MobileNavigation placement="bottom" hideHome />
-			<iframe ref={frame} src={src} title={title} allow={allow} allowFullScreen onLoad={() => setLoaded(true)} />
+			<iframe
+				ref={frame}
+				src={src}
+				title={title}
+				allow={allow}
+				allowFullScreen
+				onLoad={() => {
+					setLoaded(true);
+					const read = frame.current && readTopColor(frame.current);
+					if (read) setTopColor(read);
+				}}
+			/>
 			{!loaded && (
 				<div className="web-frame-loading" role="status">
 					{icon && <img src={icon} alt="" />}

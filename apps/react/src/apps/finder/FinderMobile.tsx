@@ -47,8 +47,7 @@ interface Props {
 
 /**
  * 파일 (휴대폰): iOS 파일 앱처럼 아래 떠 있는 탭(최근 항목·둘러보기)으로 오가고, 폴더는 한 화면씩 들어간다.
- * 첫 화면은 큰 제목과 검색, 폴더 안은 가운데 작은 제목. ••• 에서 아이콘·목록 보기와 정렬을 고른다.
- * 첫 화면에는 홈으로 가는 뒤로 가기를 두지 않는다 (홈 바가 한다)
+ * 첫 화면은 뒤로 가기(홈)와 같은 줄의 큰 제목과 검색, 폴더 안은 가운데 작은 제목. ••• 에서 아이콘·목록 보기와 정렬을 고른다
  */
 const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => {
 	const [tab, setTab] = useState<Tab>('recents');
@@ -104,7 +103,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const navigation = screen ? (
 		<MobileNavigation backLabel={titleOf(stack.at(-2))} onBack={pop} />
 	) : (
-		<MobileNavigation hideHome />
+		<MobileNavigation />
 	);
 
 	if (screen && 'doc' in screen)
@@ -170,7 +169,8 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			{screen && <h2 className="files-phone-bar-title">{title}</h2>}
 
 			<div className={`files-phone-scroll ${screen ? 'inside' : ''}`}>
-				{!screen && <h2 className="files-phone-title">{title}</h2>}
+				{/* 첫 화면의 큰 제목: 뒤로 가기와 같은 줄 (다른 앱과 같은 phone-title) */}
+				{!screen && <h2 className="phone-title">{title}</h2>}
 				<label className="files-phone-search">
 					<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
 					<input
