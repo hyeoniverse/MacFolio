@@ -304,7 +304,7 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		await expect(photos.getByRole('textbox', { name: '캡션' })).toHaveCount(0);
 		await expect(photos.locator('p.photos-phone-caption')).not.toBeEmpty();
 	});
-	test('사진을 탭하면 사진만 보기: 다른 UI는 숨고 바탕은 까맣게. 다시 탭하면 돌아오고, 밀어 넘기기는 그대로', async ({
+	test('사진을 탭하면 사진만 보기: 상태줄과 다른 UI는 숨고 바탕은 까맣게, 사진은 제자리. 다시 탭하면 돌아오고, 밀어 넘기기는 그대로', async ({
 		page,
 	}) => {
 		const photos = await openPhone(page);
@@ -317,11 +317,20 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 			viewer.getByRole('list', { name: '사진 띠' }),
 			viewer.getByRole('button', { name: '정보' }),
 			page.getByRole('button', { name: '돌아가기' }),
+			page.locator('.mobile-statusbar'),
 		];
 		// 정보를 연 채로 탭해도 정보는 닫히고 사진만 남는다
 		await viewer.getByRole('button', { name: '정보' }).click();
 		await stage.locator('img').click();
 		await expect(viewer).toHaveAttribute('data-focus', 'true');
+		// 정보를 닫고 나면 사진은 제자리: 사진만 보기를 켜고 꺼도 사진은 움직이지 않는다 (움찔거리지 않게)
+		const still = await stage.locator('img').boundingBox();
+		await stage.click();
+		await expect(viewer).not.toHaveAttribute('data-focus');
+		expect(await stage.locator('img').boundingBox()).toEqual(still);
+		await stage.click();
+		await expect(viewer).toHaveAttribute('data-focus', 'true');
+		expect(await stage.locator('img').boundingBox()).toEqual(still);
 		await expect(viewer).toHaveCSS('background-color', 'rgb(0, 0, 0)');
 		await expect(viewer.getByRole('complementary', { name: '사진 정보' })).toHaveCount(0);
 		for (const part of chrome) await expect(part).toBeHidden();

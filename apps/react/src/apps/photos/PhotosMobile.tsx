@@ -168,7 +168,7 @@ const PhoneViewer = ({
 			aria-label={`사진 ${index + 1}/${photos.length}: ${caption}`}
 			data-focus={focus || undefined}
 		>
-			{focus ? <MobileNavigation hideHome /> : <MobileNavigation backLabel="돌아가기" onBack={onClose} />}
+			<MobileNavigation backLabel="돌아가기" onBack={onClose} immersive={focus} />
 			<div className="photos-phone-viewer-title">
 				<strong>{photo.album.name}</strong>
 				<span>{caption}</span>
