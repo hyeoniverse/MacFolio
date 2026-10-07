@@ -39,11 +39,19 @@ export function toneFor(colors: (string | null)[]): StatusBarTone | null {
 	return average < 0.4 ? 'light' : 'dark';
 }
 
-/** 요소부터 부모로 올라가며 처음 만나는 칠한 바탕색 */
+/** 그라데이션(background-image)의 첫 색: 사진 위의 어두운 띠처럼 바탕색 없이 그라데이션만 칠한 곳 */
+export function gradientStart(image: string): string | null {
+	if (!image.includes('gradient(')) return null;
+	return image.match(/rgba?\([^)]*\)|#[0-9a-f]{3,6}\b/i)?.[0] ?? null;
+}
+
+/** 요소부터 부모로 올라가며 처음 만나는 칠한 바탕 (바탕색, 없으면 그라데이션의 첫 색) */
 function paintedBackground(element: Element | null): string | null {
 	for (let current = element; current; current = current.parentElement) {
-		const color = current.ownerDocument.defaultView!.getComputedStyle(current).backgroundColor;
-		if (parseColor(color)) return color;
+		const style = current.ownerDocument.defaultView!.getComputedStyle(current);
+		if (parseColor(style.backgroundColor)) return style.backgroundColor;
+		const start = gradientStart(style.backgroundImage);
+		if (start && parseColor(start)) return start;
 	}
 	return null;
 }

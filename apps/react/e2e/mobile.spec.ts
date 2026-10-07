@@ -1108,9 +1108,9 @@ test.describe('휴대폰 홈 화면 페이지', () => {
 		await dots.getByRole('tab', { name: '2쪽' }).click();
 		await expect(dots.getByRole('tab', { name: '2쪽' })).toHaveAttribute('aria-selected', 'true');
 
-		// 2쪽의 앱도 연다
+		// 2쪽의 앱도 연다 (창이 있는 앱: 공유처럼 동작만 하는 앱은 빼고)
 		const second = page.getByRole('navigation', { name: '앱 2쪽' });
-		await second.locator('.mobile-app').first().click();
+		await second.locator('.mobile-app:not([data-launch="share"])').first().click();
 		await expect(page.locator('.container.mobile')).toBeVisible();
 	});
 

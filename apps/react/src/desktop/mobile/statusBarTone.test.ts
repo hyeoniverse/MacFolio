@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isDarkColor, parseColor, toneFor } from './statusBarTone';
+import { gradientStart, isDarkColor, parseColor, toneFor } from './statusBarTone';
 
 describe('parseColor', () => {
 	it('#rgb, #rrggbb, rgb(), rgba()', () => {
@@ -42,5 +42,18 @@ describe('toneFor', () => {
 	it('읽은 색이 없거나 모두 투명이면 null (앱의 기본을 쓴다)', () => {
 		expect(toneFor([null, null])).toBeNull();
 		expect(toneFor(['rgba(0, 0, 0, 0)'])).toBeNull();
+	});
+});
+
+describe('gradientStart', () => {
+	it('그라데이션의 첫 색 (사진 위의 어두운 띠)', () => {
+		expect(gradientStart('linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.32) 60%, rgba(0, 0, 0, 0))')).toBe(
+			'rgba(0, 0, 0, 0.62)'
+		);
+	});
+
+	it('그라데이션이 아니면 null', () => {
+		expect(gradientStart('none')).toBeNull();
+		expect(gradientStart('url("a.png")')).toBeNull();
 	});
 });
