@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isDarkColor, parseColor } from './barColor';
+import { isDarkColor, parseColor, toneFor } from './statusBarTone';
 
 describe('parseColor', () => {
 	it('#rgb, #rrggbb, rgb(), rgba()', () => {
@@ -25,5 +25,22 @@ describe('isDarkColor', () => {
 		expect(isDarkColor('#ffffff')).toBe(false);
 		expect(isDarkColor('#f8f6f0')).toBe(false);
 		expect(isDarkColor('#b8efed')).toBe(false);
+	});
+});
+
+describe('toneFor', () => {
+	it('밑의 바탕이 밝으면 검은 글자(dark), 어두우면 흰 글자(light)', () => {
+		expect(toneFor(['rgb(255, 255, 255)', '#f3f4f6', '#ffffff'])).toBe('dark');
+		expect(toneFor(['#3b82f6', '#3b82f6', '#3b82f6'])).toBe('light');
+		expect(toneFor(['rgb(28, 28, 30)', null, 'rgb(28, 28, 30)'])).toBe('light');
+	});
+
+	it('여러 곳을 읽으면 평균으로 (대부분 어두우면 흰 글자)', () => {
+		expect(toneFor(['#000000', '#000000', '#ffffff'])).toBe('light');
+	});
+
+	it('읽은 색이 없거나 모두 투명이면 null (앱의 기본을 쓴다)', () => {
+		expect(toneFor([null, null])).toBeNull();
+		expect(toneFor(['rgba(0, 0, 0, 0)'])).toBeNull();
 	});
 });
