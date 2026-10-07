@@ -219,7 +219,7 @@ test.describe('모바일', () => {
 			expect((await element.boundingBox())!.y).toBeGreaterThanOrEqual(bar.y + bar.height);
 	});
 
-	test('웹 페이지 앱은 페이지를 상태 표시줄 밑까지 그리고, 상태 표시줄은 페이지가 비치는 흐린 유리다', async ({
+	test('웹 페이지 앱도 페이지를 상태 표시줄 밑까지 그리고, 상태 표시줄은 어느 앱에서나 투명한 바탕에 약한 흐림이다', async ({
 		page,
 	}) => {
 		await enterHome(page);
@@ -228,18 +228,18 @@ test.describe('모바일', () => {
 		const frame = page.locator('.container.mobile .web-frame iframe');
 		await expect(frame).toBeVisible();
 		expect((await frame.boundingBox())!.y).toBe(0);
-		const glass = await statusBar.evaluate((el) => {
-			const style = getComputedStyle(el);
-			return { background: style.backgroundColor, blur: style.backdropFilter };
-		});
-		expect(glass.background).not.toBe('rgba(0, 0, 0, 0)');
-		expect(glass.blur).toContain('blur');
+		const look = () =>
+			statusBar.evaluate((el) => {
+				const style = getComputedStyle(el);
+				return { background: style.backgroundColor, blur: style.backdropFilter };
+			});
+		expect(await look()).toEqual({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(6px)' });
 
-		// 다른 앱으로 가면 다시 투명하다
+		// 다른 앱에서도 같다
 		await page.locator('.container.mobile .home-indicator').tap();
 		await (await homeApp(page, '메모')).tap();
 		await expect(appWindow(page, 'memo')).toBeVisible();
-		expect(await statusBar.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+		expect(await look()).toEqual({ background: 'rgba(0, 0, 0, 0)', blur: 'blur(6px)' });
 	});
 
 	test('Safari는 iOS Safari처럼: 페이지가 화면을 다 쓰고, 아래 막대(뒤로·주소·•••)로 다룬다. 주소를 밀면 옆 탭', async ({
@@ -250,7 +250,7 @@ test.describe('모바일', () => {
 		const safari = appWindow(page, 'safari');
 		const pageBox = (await safari.locator('.safari-page').boundingBox())!;
 		const { height } = page.viewportSize()!;
-		// 위 도구 막대·탭 막대 없이 페이지가 화면 맨 위부터 끝까지, 상태 표시줄은 흐린 유리
+		// 위 도구 막대·탭 막대 없이 페이지가 화면 맨 위부터 끝까지, 상태 표시줄은 그 위에서 약하게 흐린다
 		expect(pageBox.y).toBe(0);
 		expect(pageBox.height).toBe(height);
 		await expect(safari.locator('.safari-toolbar, .safari-tabs')).toHaveCount(0);
