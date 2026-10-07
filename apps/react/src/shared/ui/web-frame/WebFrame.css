@@ -58,3 +58,9 @@
 		animation: none;
 	}
 }
+
+/* 휴대폰: 사이트의 머리 막대(메뉴·로그인 등)가 상태 표시줄 밑에 깔리지 않게, 페이지는 상태 표시줄 아래에서 시작한다 */
+.container.mobile .web-frame {
+	box-sizing: border-box;
+	padding-top: var(--phone-status);
+}
