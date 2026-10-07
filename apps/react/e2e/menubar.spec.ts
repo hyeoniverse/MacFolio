@@ -91,9 +91,34 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		const desktop = await desktopPoint(page);
 		await page.mouse.click(desktop.x, desktop.y);
 		await expect(appName(page)).toHaveText('Finder');
-		// 창이 없으니 앱 메뉴(가리기)·윈도우도 없다. 앱 이름은 눌러도 열 것이 없는 글자로 남는다
-		await expect(bar(page).getByRole('button')).toHaveText(['도움말']);
-		await expect(bar(page).getByRole('button', { name: 'Finder' })).toHaveCount(0);
+		// 창이 없으니 앱 메뉴(가리기)·윈도우도 없다. 앱 이름은 눌러도 열 것이 없다
+		await expect(bar(page).getByRole('button')).toHaveText(['Finder', '도움말']);
+		const finder = title(page, 'Finder');
+		await expect(finder).not.toHaveAttribute('aria-haspopup');
+		await finder.click();
+		await expect(page.getByRole('menu')).toHaveCount(0);
+	});
+
+	test('앱 이름이 Finder로 바뀌어도 같은 자리, 같은 높이 (움찔거리지 않는다)', async ({ page }) => {
+		await enterDesktop(page);
+		await expect(appName(page)).toHaveText('Safari');
+		// 글자의 위·아래 (단추 안에서 가운데)
+		const textBox = () =>
+			appName(page).evaluate((element) => {
+				const range = document.createRange();
+				range.selectNodeContents(element);
+				const { top, bottom } = range.getBoundingClientRect();
+				return { top, bottom };
+			});
+		const before = await textBox();
+		// 앱 이름 자리는 앱이 바뀌어도 같은 요소다 (새로 그리지 않는다)
+		await appName(page).evaluate((element) => element.setAttribute('data-same', 'yes'));
+
+		const desktop = await desktopPoint(page);
+		await page.mouse.click(desktop.x, desktop.y);
+		await expect(appName(page)).toHaveText('Finder');
+		expect(await textBox()).toEqual(before);
+		await expect(appName(page)).toHaveAttribute('data-same', 'yes');
 	});
 
 	test('주소가 있는 화면(메모의 글)이면 파일에 링크 복사, 도움말에서 API 문서', async ({ page }) => {
