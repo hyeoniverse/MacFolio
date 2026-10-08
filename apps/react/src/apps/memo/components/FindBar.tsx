@@ -1,3 +1,4 @@
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
 import {
@@ -152,8 +153,10 @@ const FindBar = ({
 		{ mode: 'wholeWord', label: '전체 단어' },
 	];
 
+	// 열면 위에서 내려오고, 닫으면 흐려지며 사라진다
+	const findBar = useExitMotion<HTMLDivElement>('fade-out');
 	return (
-		<div className="memo-find" role="search" aria-label="메모에서 찾기">
+		<div ref={findBar} className="memo-find" role="search" aria-label="메모에서 찾기">
 			<div className="memo-find-row">
 				<div className="memo-find-field">
 					<button

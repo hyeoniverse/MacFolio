@@ -1023,3 +1023,19 @@
 	padding-top: calc(var(--phone-top) + 56px);
 	padding-bottom: calc(28px + var(--phone-bottom-inset));
 }
+
+/* ─── 움직임 ─── */
+/* 곡이 바뀌면 재생 막대의 표지·제목이 새로 나타난다 */
+.music-track-swap {
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+/* 지금 재생 중의 큰 표지는 곡이 바뀌면 살짝 커지며 나타난다 */
+.music-now-art {
+	animation: pop-in var(--duration-slow) var(--ease-out);
+}
+
+/* 재생·일시 정지 아이콘은 바뀔 때 톡 튄다 */
+.music-play-icon {
+	animation: toggle-pop var(--duration) var(--ease-spring);
+}

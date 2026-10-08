@@ -213,7 +213,7 @@ const Photos = () => {
 									ALBUMS_BY_AGE.map((entry) => {
 										const start = photos.findIndex((photo) => photo.album.id === entry.id);
 										return (
-											<section key={entry.id} className="photos-group motion-swap" aria-label={entry.name}>
+											<section key={`${entry.id}|${size}`} className="photos-group motion-swap" aria-label={entry.name}>
 												<h3>
 													<button type="button" onClick={() => go({ kind: 'album', id: entry.id })}>
 														{entry.name} <i className="fa-solid fa-chevron-right" aria-hidden="true" />
@@ -229,7 +229,7 @@ const Photos = () => {
 									})
 								) : (
 									// 다른 앨범으로 가면 격자가 서서히 바뀐다
-									<ul key={JSON.stringify(place)} className="photos-grid motion-swap">
+									<ul key={`${JSON.stringify(place)}|${size}`} className="photos-grid motion-swap">
 										{photos.map(cell)}
 									</ul>
 								)}

@@ -708,3 +708,50 @@
 .container.mobile .gh-tabs {
 	margin-top: 6px;
 }
+
+/* ─── 움직임 ─── */
+/* 열면 프로필, README, 고정 저장소, 활동이 차례로 떠오른다 */
+.gh-profile,
+.gh-readme,
+.gh-pinned,
+.gh-activity {
+	animation: rise-in var(--duration-slow) var(--ease-out) both;
+}
+
+.gh-readme {
+	animation-delay: 60ms;
+}
+
+.gh-pinned {
+	animation-delay: 120ms;
+}
+
+.gh-activity {
+	animation-delay: 180ms;
+}
+
+.gh-avatar {
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+/* 저장소 카드: 올리면 살짝 떠오른다 */
+.gh-repo {
+	transition:
+		transform var(--duration-fast) var(--ease-out),
+		box-shadow var(--duration-fast) var(--ease-out),
+		border-color var(--duration-fast) var(--ease-out);
+}
+
+.gh-repo:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* 기여 달력: 올린 칸이 살짝 커진다 */
+.gh-day {
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.gh-day:hover {
+	transform: scale(1.35);
+}

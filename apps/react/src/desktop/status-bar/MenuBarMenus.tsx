@@ -116,7 +116,14 @@ const MenuBarMenus = () => {
 							openAt(index, false)
 						}
 					>
-						{menu.title}
+						{/* 앱이 바뀌면 단추는 그대로 두고 글자만 서서히 바뀐다 */}
+						{menu.app ? (
+							<span key={menu.title} className="menubar-title-text">
+								{menu.title}
+							</span>
+						) : (
+							menu.title
+						)}
 					</button>
 				);
 			})}

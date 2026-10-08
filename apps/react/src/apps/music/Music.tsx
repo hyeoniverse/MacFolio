@@ -72,7 +72,11 @@ const Transport: React.FC<{ large?: boolean }> = ({ large = false }) => {
 				aria-label={isPlaying ? '일시 정지' : '재생'}
 				onClick={togglePlayPause}
 			>
-				<i className={`fa-solid fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
+				<i
+					key={isPlaying ? 'pause' : 'play'}
+					className={`music-play-icon fa-solid fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`}
+					aria-hidden="true"
+				></i>
 			</button>
 			<button type="button" aria-label="다음 곡" onClick={next}>
 				<i className="fa-solid fa-forward" aria-hidden="true"></i>
@@ -166,12 +170,14 @@ const NowPlayingSheet: React.FC = () => {
 			aria-label="지금 재생 중"
 			style={{ ['--artwork' as string]: `url('${track.artwork}')` }}
 		>
+			{/* 곡이 바뀌면 표지와 제목이 새로 나타난다 */}
 			<img
+				key={track.id}
 				className={`music-now-art ${isPlaying ? 'playing' : ''}`}
 				src={track.artwork}
 				alt={`${track.album} 앨범 표지`}
 			/>
-			<div className="music-now-info">
+			<div key={track.id} className="music-now-info music-track-swap">
 				<strong>{track.title}</strong>
 				<span>{track.artist}</span>
 			</div>
@@ -461,8 +467,8 @@ const Music: React.FC = () => {
 							aria-label="지금 재생 중 열기"
 							onClick={() => setNowPlayingOpen(true)}
 						>
-							<img src={track.artwork} alt="" />
-							<span>
+							<img key={track.id} className="music-track-swap" src={track.artwork} alt="" />
+							<span key={track.id} className="music-track-swap">
 								<strong>{track.title}</strong>
 								<small>
 									{track.artist} — {track.album}
@@ -488,7 +494,11 @@ const Music: React.FC = () => {
 						{/* 미니 플레이어 버튼 (좁은 창) */}
 						<div className="music-mini-controls">
 							<button type="button" aria-label={isPlaying ? '일시 정지' : '재생'} onClick={togglePlayPause}>
-								<i className={`fa-solid fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`} aria-hidden="true"></i>
+								<i
+									key={isPlaying ? 'pause' : 'play'}
+									className={`music-play-icon fa-solid fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`}
+									aria-hidden="true"
+								></i>
 							</button>
 							<button type="button" aria-label="다음 곡" onClick={next}>
 								<i className="fa-solid fa-forward" aria-hidden="true"></i>

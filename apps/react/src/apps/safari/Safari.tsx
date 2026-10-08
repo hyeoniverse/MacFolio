@@ -1,3 +1,4 @@
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useEffect, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { PROJECTS, type Project } from '@/shared/profile';
@@ -82,6 +83,7 @@ const Safari: React.FC = () => {
 
 	const go = (offset: number) => choose(tabs[index + offset]);
 
+	const tabExit = useExitMotion<HTMLDivElement>('pop-out');
 	const newTab = () => {
 		if (!tabs.includes(START)) setTabs([...tabs, START]);
 		setActiveId(START);
@@ -237,7 +239,8 @@ const Safari: React.FC = () => {
 							const title = tabTitle(project);
 							const selected = id === activeId;
 							return (
-								<div key={id} className={`safari-tab ${selected ? 'active' : ''}`}>
+								// 새 탭은 톡 나타나고, 닫은 탭은 작아지며 사라진다
+								<div key={id} ref={tabExit} className={`safari-tab ${selected ? 'active' : ''}`}>
 									<button
 										type="button"
 										className="safari-tab-close"

@@ -77,3 +77,8 @@
 		width: 3.5rem; /* 미디어 쿼리에서 너비를 3rem으로 변경 */
 	}
 }
+
+/* 켜짐 표시: 앱을 열면 톡 나타난다 */
+.active-indicator {
+	animation: pop-in var(--duration) var(--ease-spring);
+}
