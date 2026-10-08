@@ -1,7 +1,8 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { placeAtPoint } from '@/shared/ui/popover/placement';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
+import { useExitMotionRef } from '@/shared/ui/motion/useExitMotion';
 import { ariaShortcut, formatShortcut, isMacPlatform, type Shortcut } from '@/shared/ui/menu/shortcut';
 import '@/shared/ui/menu/Menu.css';
 
@@ -68,7 +69,8 @@ const Menu: React.FC<Props> = ({
 	onNavigate,
 	appMenu = false,
 }) => {
-	const ref = useRef<HTMLDivElement>(null);
+	// 닫히면 살짝 작아지며 사라진다 (열 때는 Menu.css의 pop-in)
+	const [ref, exitRef] = useExitMotionRef<HTMLDivElement>('pop-out');
 	const mac = isMacPlatform();
 	const [position, setPosition] = useState({ left: anchor.x, top: anchor.y });
 	useDismiss(true, onClose, trigger ? [ref, trigger] : [ref]);
@@ -92,7 +94,7 @@ const Menu: React.FC<Props> = ({
 		const resize = new ResizeObserver(place);
 		resize.observe(menu);
 		return () => resize.disconnect();
-	}, [anchor.x, anchor.y, autoFocus, appMenu]);
+	}, [ref, anchor.x, anchor.y, autoFocus, appMenu]);
 
 	const moveFocus = (event: React.KeyboardEvent) => {
 		if (onNavigate && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
@@ -127,7 +129,7 @@ const Menu: React.FC<Props> = ({
 
 	return createPortal(
 		<div
-			ref={ref}
+			ref={exitRef}
 			className={['ui-menu', className].filter(Boolean).join(' ')}
 			role="menu"
 			aria-label={label}

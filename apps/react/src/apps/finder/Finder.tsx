@@ -95,6 +95,8 @@ const Finder: React.FC = () => {
 
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: [{ folder: 'docs' }], at: 0 });
 	const place = history.places[history.at];
+	// 다른 폴더·문서로 가면 내용이 서서히 바뀐다 (motion.css의 motion-swap, key로 새로 그린다)
+	const placeKey = JSON.stringify(place);
 	const [view, setView] = useState<View>('icons');
 	const [selected, setSelected] = useState<string | null>(null);
 	const [query, setQuery] = useState('');
@@ -371,7 +373,7 @@ const Finder: React.FC = () => {
 							) : searching && items.length === 0 ? (
 								<p className="finder-empty">찾는 이름이 없습니다.</p>
 							) : view === 'icons' ? (
-								<div className="finder-grid" role="listbox" aria-label={title}>
+								<div key={placeKey} className="finder-grid motion-swap" role="listbox" aria-label={title}>
 									{items.map((item) => (
 										<div key={item.id} {...itemProps(item)}>
 											<span className="finder-icon">
@@ -384,7 +386,7 @@ const Finder: React.FC = () => {
 									))}
 								</div>
 							) : (
-								<div className="finder-list" role="listbox" aria-label={title}>
+								<div key={placeKey} className="finder-list motion-swap" role="listbox" aria-label={title}>
 									<div className="finder-list-head" aria-hidden="true">
 										<span>이름</span>
 										<span>수정일</span>

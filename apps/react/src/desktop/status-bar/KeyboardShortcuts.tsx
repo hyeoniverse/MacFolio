@@ -1,3 +1,4 @@
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { AppMenu } from '@/desktop/status-bar/appMenus';
@@ -32,9 +33,12 @@ const KeyboardShortcuts = ({ appLabel, menus, onClose }: Props) => {
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [onClose]);
+	// 바탕은 흐려지고 창은 작아지며 사라진다 (motion.css)
+	const overlay = useExitMotion<HTMLDivElement>('fade-out');
 
 	return createPortal(
 		<div
+			ref={overlay}
 			className="keyboard-shortcuts-overlay"
 			onPointerDown={(event) => {
 				if (event.target === event.currentTarget) onClose();

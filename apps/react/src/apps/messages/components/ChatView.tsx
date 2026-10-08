@@ -85,7 +85,8 @@ const ChatView: React.FC<Props> = ({
 
 	return (
 		<section
-			className="messages-chat"
+			// 다른 대화를 고르면 서서히 바뀐다 (좁은 창은 Messages.css의 nav-forward)
+			className="messages-chat motion-swap"
 			aria-label={thread ? (thread.pinned ? `${thread.title}의 안내` : `${thread.title}의 피드백`) : '새 피드백'}
 		>
 			{/* 창 왼쪽 위에 떠 있는 버튼: 뒤로 가기(좁은 창에서만), 새 피드백 */}

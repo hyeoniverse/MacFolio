@@ -1,5 +1,6 @@
 /* 도움말 → 키보드 단축키 (KeyboardShortcuts.tsx). 메뉴 막대 아래, 화면 가운데 */
 .keyboard-shortcuts-overlay {
+	animation: fade-in var(--duration-fast) var(--ease-out);
 	display: grid;
 	place-items: center;
 	position: fixed;
@@ -9,6 +10,7 @@
 }
 
 .keyboard-shortcuts {
+	animation: pop-in var(--duration) var(--ease-spring);
 	width: min(420px, calc(100vw - 32px));
 	max-height: calc(100vh - 120px);
 	overflow: auto;

@@ -1,3 +1,4 @@
+import { useExitMotionRef } from '@/shared/ui/motion/useExitMotion';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { placeBelow } from '@/shared/ui/popover/placement';
@@ -38,7 +39,8 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 	});
 	const [mode, setMode] = useState<Mode>('days');
 	const buttonRef = useRef<HTMLButtonElement>(null);
-	const panelRef = useRef<HTMLDivElement>(null);
+	// 닫히면 살짝 작아지며 사라진다
+	const [panelRef, panelExit] = useExitMotionRef<HTMLDivElement>('pop-out');
 	const [position, setPosition] = useState({ left: 0, top: 0 });
 
 	useLayoutEffect(() => {
@@ -46,7 +48,7 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 		const rect = buttonRef.current.getBoundingClientRect();
 		const size = { width: panelRef.current?.offsetWidth ?? 248, height: panelRef.current?.offsetHeight ?? 0 };
 		setPosition(placeBelow(rect, size));
-	}, [open]);
+	}, [panelRef, open]);
 
 	useDismiss(open, () => setOpen(false), [panelRef, buttonRef]);
 
@@ -83,7 +85,7 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 			</button>
 			{open &&
 				createPortal(
-					<div ref={panelRef} className="memo-calendar" role="dialog" aria-label="날짜 고르기" style={position}>
+					<div ref={panelExit} className="memo-calendar" role="dialog" aria-label="날짜 고르기" style={position}>
 						<div className="memo-calendar-head">
 							<button
 								type="button"

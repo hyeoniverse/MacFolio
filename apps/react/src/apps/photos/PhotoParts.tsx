@@ -6,6 +6,7 @@ import type { Album, Photo } from './albums';
 import { CAPTION_MAX } from './albums';
 import { captionOf, saveCaption, useCaptions } from './captions';
 import { initialSwipe, swipeStep, type SwipeState } from './swipe';
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 
 /** 화면에 보이는 사진 (어느 앨범의 것인지 함께) */
 export type Shown = Photo & { album: Album };
@@ -132,6 +133,8 @@ export const Viewer = ({
 	// 좌우 화살표는 마우스가 그쪽 가장자리 가까이 오면 나타난다 (macOS 사진)
 	const [near, setNear] = useState<'prev' | 'next' | null>(null);
 	const stage = useRef<HTMLDivElement>(null);
+	// 닫으면 흐려지며 격자가 드러난다 (열 때는 Photos.css의 fade-in)
+	const viewerRef = useExitMotion<HTMLDivElement>('fade-out');
 	// 트랙패드 두 손가락 스와이프 (swipe.ts): 한 번 밀면 한 장, 관성 중에 다시 밀어도 또 한 장
 	const swipe = useRef<SwipeState>(initialSwipe());
 
@@ -166,7 +169,12 @@ export const Viewer = ({
 	});
 
 	return (
-		<div className="photos-viewer" role="dialog" aria-label={`사진 ${index + 1}/${photos.length}: ${caption}`}>
+		<div
+			ref={viewerRef}
+			className="photos-viewer"
+			role="dialog"
+			aria-label={`사진 ${index + 1}/${photos.length}: ${caption}`}
+		>
 			<header className="photos-toolbar viewer">
 				<div className="photos-toolbar-group">
 					<button type="button" className="photos-circle" onClick={onClose} aria-label="돌아가기">

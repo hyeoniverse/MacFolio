@@ -336,7 +336,7 @@ const Activity = () => {
 					</div>
 				)}
 				{/* 탭마다 새로 그린다: 같은 자리의 표가 앞 탭의 정렬을 물려받지 않게 */}
-				<div key={tab} className="activity-body" role="tabpanel">
+				<div key={tab} className="activity-body motion-swap" role="tabpanel">
 					{body()}
 				</div>
 			</div>

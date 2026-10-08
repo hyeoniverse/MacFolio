@@ -310,7 +310,8 @@ const Mail: React.FC = () => {
 							{mails.length === 0 ? (
 								<p className="mail-list-empty">{emptyText}</p>
 							) : (
-								<ul>
+								// 사서함을 바꾸면 목록이 서서히 바뀐다
+								<ul key={mailbox} className="motion-swap">
 									{mails.map((mail) => (
 										<li key={mail.id}>
 											<button
@@ -352,7 +353,7 @@ const Mail: React.FC = () => {
 							{composing ? (
 								<ComposeView onSend={send} onCancel={backToList} />
 							) : selected ? (
-								<article key={selected.id} className="mail-reader-article" aria-label={selected.subject}>
+								<article key={selected.id} className="mail-reader-article motion-swap" aria-label={selected.subject}>
 									<header className="mail-reader-header">
 										<Monogram name={selected.fromName} />
 										<div>

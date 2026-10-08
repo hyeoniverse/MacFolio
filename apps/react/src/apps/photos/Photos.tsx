@@ -213,7 +213,7 @@ const Photos = () => {
 									ALBUMS_BY_AGE.map((entry) => {
 										const start = photos.findIndex((photo) => photo.album.id === entry.id);
 										return (
-											<section key={entry.id} className="photos-group" aria-label={entry.name}>
+											<section key={entry.id} className="photos-group motion-swap" aria-label={entry.name}>
 												<h3>
 													<button type="button" onClick={() => go({ kind: 'album', id: entry.id })}>
 														{entry.name} <i className="fa-solid fa-chevron-right" aria-hidden="true" />
@@ -228,7 +228,10 @@ const Photos = () => {
 										);
 									})
 								) : (
-									<ul className="photos-grid">{photos.map(cell)}</ul>
+									// 다른 앨범으로 가면 격자가 서서히 바뀐다
+									<ul key={JSON.stringify(place)} className="photos-grid motion-swap">
+										{photos.map(cell)}
+									</ul>
 								)}
 							</div>
 							{/* 떠 있는 막대는 격자 뒤에 둔다: z-index 없이도 격자 위에 그려지고, 안의 단추가 창 끌기 영역 위로 올라간다 */}

@@ -1,38 +1,87 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
+import type { Page } from '@playwright/test';
 
-// 애니메이션을 켠 채로, 애니메이션이 끝난 뒤 창이 제대로 닫히고 최소화되는지 확인한다
-test.use({ reducedMotion: 'no-preference' });
+const bar = (page: Page) => page.getByRole('group', { name: '메뉴 막대' });
 
-test.describe('애니메이션', () => {
-	test('창은 열릴 때 애니메이션이 돌고, 닫기·최소화는 애니메이션이 끝난 뒤 처리된다', async ({ page }) => {
+/** 사라지는 복사본(useExitMotion)이 생길 때마다 그 움직임 이름을 적는다 */
+async function recordExits(page: Page) {
+	await page.evaluate(() => {
+		const seen: string[] = [];
+		(window as unknown as { __exits: string[] }).__exits = seen;
+		new MutationObserver((records) => {
+			for (const record of records)
+				for (const node of record.addedNodes)
+					if (node instanceof HTMLElement && node.dataset.exiting) seen.push(node.dataset.exiting);
+		}).observe(document.body, { childList: true, subtree: true });
+	});
+	return () => page.evaluate(() => (window as unknown as { __exits: string[] }).__exits);
+}
+
+test.describe('움직임: 나타나고 사라지기, 화면 바뀌기', () => {
+	// 다른 시험은 움직임 줄이기로 돈다 (playwright.config.ts). 여기서는 움직임을 켠다
+	test.use({ reducedMotion: 'no-preference' });
+
+	test('메뉴는 닫히면 바로 닫히고(역할 없음), 겉모습만 잠깐 남아 작아지며 사라진다', async ({ page }) => {
 		await enterDesktop(page);
-		await dockItem(page, 'github').click();
-		const github = appWindow(page, 'github');
-		await expect(github).toBeVisible();
-		expect(await github.evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);
-		await expect.poll(() => github.evaluate((el) => el.getAnimations().length)).toBe(0);
+		const exits = await recordExits(page);
+		await bar(page).getByRole('button', { name: '파일', exact: true }).click();
+		const menu = page.getByRole('menu', { name: '파일', exact: true });
+		await expect(menu).toBeVisible();
+		// 열 때는 pop-in
+		expect(await menu.evaluate((element) => getComputedStyle(element).animationName)).toBe('pop-in');
 
-		await github.getByRole('button', { name: '최소화' }).click();
-		// 애니메이션 중에는 아직 남아 있다
-		await expect(github).toHaveClass(/closing/);
-		await expect(github).toBeHidden();
-
-		await dockItem(page, 'github').click();
-		await expect(github).toBeVisible();
-		await github.getByRole('button', { name: '닫기', exact: true }).click();
-		await expect(github).toBeHidden();
+		await page.keyboard.press('Escape');
+		// 메뉴는 바로 닫힌다: 역할로는 찾을 수 없다
+		await expect(page.getByRole('menu')).toHaveCount(0);
+		// 복사본: 누를 수 없고 화면 읽기 프로그램에 보이지 않으며, 움직임이 끝나면 없어진다
+		await expect.poll(exits).toEqual(['pop-out']);
+		await expect(page.locator('[data-exiting]')).toHaveCount(0);
 	});
 
-	test('전체 화면 전환은 크기가 부드럽게 바뀐다', async ({ page }) => {
+	test('움직임 줄이기를 켜면 복사본을 남기지 않는다', async ({ page }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 		await enterDesktop(page);
-		await dockItem(page, 'github').click();
-		const github = appWindow(page, 'github');
-		await expect.poll(() => github.evaluate((el) => el.getAnimations().length)).toBe(0);
+		const exits = await recordExits(page);
+		await bar(page).getByRole('button', { name: '파일', exact: true }).click();
+		await page.keyboard.press('Escape');
+		await expect(page.getByRole('menu')).toHaveCount(0);
+		await page.waitForTimeout(300);
+		expect(await exits()).toEqual([]);
+	});
 
-		await github.getByRole('button', { name: '전체 화면' }).click();
-		await expect(github).toHaveClass(/frame-animating/);
-		await expect(github).not.toHaveClass(/frame-animating/);
-		const viewport = page.viewportSize()!;
-		expect((await github.boundingBox())!.width).toBeCloseTo(viewport.width, 0);
+	test('경고창·단축키 창은 바탕이 흐려지며 사라진다', async ({ page }) => {
+		await enterDesktop(page);
+		const exits = await recordExits(page);
+		await bar(page).getByRole('button', { name: '도움말', exact: true }).click();
+		await page.getByRole('menuitem', { name: /키보드 단축키/ }).click();
+		const dialog = page.getByRole('dialog', { name: '키보드 단축키' });
+		await expect(dialog).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(dialog).toHaveCount(0);
+		// 메뉴(pop-out) 다음에 단축키 창(fade-out)
+		await expect.poll(exits).toEqual(['pop-out', 'fade-out']);
+	});
+
+	test('Finder에서 다른 폴더로 가면 내용이 새로 그려지며 서서히 나타난다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'finder').click();
+		const finder = appWindow(page, 'finder');
+		const content = finder.locator('.finder-content .motion-swap').first();
+		await expect(content).toBeVisible();
+		await content.evaluate((element) => element.setAttribute('data-before', 'yes'));
+		await finder.getByRole('navigation', { name: '즐겨찾기' }).getByRole('button').nth(1).click();
+		const next = finder.locator('.finder-content .motion-swap').first();
+		await expect(next).not.toHaveAttribute('data-before');
+		expect(await next.evaluate((element) => getComputedStyle(element).animationName)).toBe('fade-in');
+	});
+
+	test('누를 수 있는 것은 바탕·글자 색이 부드럽게 바뀐다 (자기 전환이 있는 것은 그것을 따른다)', async ({ page }) => {
+		await enterDesktop(page);
+		const transition = (element: Element) => getComputedStyle(element).transitionProperty;
+		const property = await bar(page).getByRole('button', { name: '파일', exact: true }).evaluate(transition);
+		expect(property).toContain('background-color');
+		expect(property).toContain('color');
+		// Dock 아이콘은 자기 전환(커지기)을 그대로 쓴다: 공통 규칙은 층 안이라 진다
+		expect(await dockItem(page, 'finder').evaluate(transition)).toBe('transform');
 	});
 });

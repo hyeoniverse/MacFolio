@@ -1,5 +1,6 @@
 /* 메뉴 막대의 음량 창 (VolumeMenu.tsx) */
 .volume-container {
+	animation: pop-in var(--duration-fast) var(--ease-out);
 	display: flex;
 
 	align-items: center;

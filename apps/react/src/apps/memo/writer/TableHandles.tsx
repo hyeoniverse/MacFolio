@@ -106,14 +106,14 @@ const TableHandles = () => {
 		open: colOpen,
 		setOpen: setColOpen,
 		buttonRef: colButton,
-		panelRef: colPanel,
+		panel: colPanelExit,
 		position: colPosition,
 	} = usePopover(undefined, KEEP_OPEN, 'right', settled);
 	const {
 		open: rowOpen,
 		setOpen: setRowOpen,
 		buttonRef: rowButton,
-		panelRef: rowPanel,
+		panel: rowPanelExit,
 		position: rowPosition,
 	} = usePopover(undefined, KEEP_OPEN, 'right', settled);
 	const [drag, setDrag] = useState<Drag | null>(null);
@@ -317,7 +317,7 @@ const TableHandles = () => {
 						!drag &&
 						createPortal(
 							<div
-								ref={colPanel}
+								ref={colPanelExit}
 								className="memo-format-panel memo-handle-panel"
 								role="dialog"
 								aria-label="열 편집"
@@ -332,7 +332,7 @@ const TableHandles = () => {
 						!drag &&
 						createPortal(
 							<div
-								ref={rowPanel}
+								ref={rowPanelExit}
 								className="memo-format-panel memo-handle-panel"
 								role="dialog"
 								aria-label="행 편집"

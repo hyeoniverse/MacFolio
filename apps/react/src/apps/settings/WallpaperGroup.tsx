@@ -1,3 +1,4 @@
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
@@ -45,8 +46,11 @@ const RenameDialog = ({
 		input.current?.select();
 	}, []);
 	const canSave = value.trim().length > 0;
+	// 닫히면 바탕은 흐려지고 상자는 작아지며 사라진다 (motion.css)
+	const overlay = useExitMotion<HTMLDivElement>('fade-out');
 	return (
 		<div
+			ref={overlay}
 			className="ui-alert-overlay"
 			onPointerDown={(event) => {
 				if (event.target === event.currentTarget) onCancel();
