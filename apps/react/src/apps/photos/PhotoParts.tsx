@@ -5,6 +5,7 @@ import { useAdmin } from '@/shared/auth/adminStore';
 import type { Album, Photo } from './albums';
 import { CAPTION_MAX } from './albums';
 import { captionOf, saveCaption, useCaptions } from './captions';
+import { initialSwipe, swipeStep, type SwipeState } from './swipe';
 
 /** 화면에 보이는 사진 (어느 앨범의 것인지 함께) */
 export type Shown = Photo & { album: Album };
@@ -105,10 +106,6 @@ export const CaptionField = ({ photo, className }: { photo: Photo; className?: s
 
 /** 화살표가 나타나는 가장자리 폭 */
 const NAV_NEAR_PX = 120;
-/** 트랙패드로 이만큼 가로로 밀면 한 장 넘긴다 */
-const SWIPE_DELTA = 60;
-/** 이 시간 동안 휠 이벤트가 없으면 한 번의 스와이프(관성 포함)가 끝난 것으로 본다 */
-const SWIPE_IDLE_MS = 250;
 
 /** 크게 보기 (macOS 사진처럼 막대 아래를 가득): ←·→로 넘기고 Esc로 닫는다. 막대로 확대한다 */
 export const Viewer = ({
@@ -135,8 +132,8 @@ export const Viewer = ({
 	// 좌우 화살표는 마우스가 그쪽 가장자리 가까이 오면 나타난다 (macOS 사진)
 	const [near, setNear] = useState<'prev' | 'next' | null>(null);
 	const stage = useRef<HTMLDivElement>(null);
-	// 트랙패드 두 손가락 스와이프: 가로로 민 양이 쌓이면 한 장 넘기고, 손을 떼고 관성이 멈출 때까지는 더 넘기지 않는다
-	const swipe = useRef({ sum: 0, locked: false, timer: 0 });
+	// 트랙패드 두 손가락 스와이프 (swipe.ts): 한 번 밀면 한 장, 관성 중에 다시 밀어도 또 한 장
+	const swipe = useRef<SwipeState>(initialSwipe());
 
 	useEffect(() => {
 		const onKey = (event: KeyboardEvent) => {
@@ -160,24 +157,13 @@ export const Viewer = ({
 			if (zoom > 1 || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
 			// 브라우저의 뒤로 가기(가로 스와이프)를 막는다
 			event.preventDefault();
-			const state = swipe.current;
-			window.clearTimeout(state.timer);
-			state.timer = window.setTimeout(() => {
-				state.sum = 0;
-				state.locked = false;
-			}, SWIPE_IDLE_MS);
-			if (state.locked) return;
-			state.sum += event.deltaX;
-			if (Math.abs(state.sum) < SWIPE_DELTA) return;
-			// 손가락을 왼쪽으로 밀면(내용이 왼쪽으로) 다음 사진
-			move(state.sum > 0 ? 1 : -1);
-			state.sum = 0;
-			state.locked = true;
+			const result = swipeStep(swipe.current, event.deltaX, event.timeStamp);
+			swipe.current = result.state;
+			if (result.move) move(result.move);
 		};
 		element.addEventListener('wheel', onWheel, { passive: false });
 		return () => element.removeEventListener('wheel', onWheel);
 	});
-	useEffect(() => () => window.clearTimeout(swipe.current.timer), []);
 
 	return (
 		<div className="photos-viewer" role="dialog" aria-label={`사진 ${index + 1}/${photos.length}: ${caption}`}>

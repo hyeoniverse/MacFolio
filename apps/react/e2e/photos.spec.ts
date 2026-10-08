@@ -106,10 +106,11 @@ test.describe('사진 (#21)', () => {
 		const prev = viewer.getByRole('button', { name: '이전 사진' });
 		const next = viewer.getByRole('button', { name: '다음 사진' });
 
-		// 둥근 모서리 사각형 (원이 아니다: 세로가 더 길고 모서리는 반지름 10px)
+		// 둥근 모서리 사각형 (원이 아니다: 세로가 조금 더 길고 모서리는 반지름 9px)
 		const box = (await next.boundingBox())!;
 		expect(box.height).toBeGreaterThan(box.width);
-		await expect(next).toHaveCSS('border-radius', '10px');
+		await expect(next).toHaveCSS('border-radius', '9px');
+		expect(box.height).toBeLessThanOrEqual(40);
 
 		// 가운데에서는 둘 다 숨고, 오른쪽 가장자리 가까이 가면 다음만, 왼쪽이면 이전만
 		const area = (await stage.boundingBox())!;
@@ -131,10 +132,14 @@ test.describe('사진 (#21)', () => {
 		await page.waitForTimeout(400);
 		for (let step = 0; step < 6; step++) await page.mouse.wheel(-40, 0);
 		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 2/${total}:`));
+		// 관성이 끝나기 전에 다시 밀어도 또 넘긴다 (쉬지 않고 두 번: 세졌다 약해지고, 다시 세졌다 약해진다)
+		const swipeTwice = [8, 16, 24, 30, 20, 12, 6, 3, 8, 16, 24, 30, 20, 12, 6, 3];
+		for (const delta of swipeTwice) await page.mouse.wheel(delta, 0);
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 4/${total}:`));
 		await page.waitForTimeout(400);
 		for (let step = 0; step < 6; step++) await page.mouse.wheel(0, 80);
 		await page.waitForTimeout(400);
-		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 2/${total}:`));
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 4/${total}:`));
 	});
 
 	test('크게 보기에서 그 프로젝트의 Safari 페이지로 간다', async ({ page }) => {

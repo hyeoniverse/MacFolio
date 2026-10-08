@@ -383,12 +383,12 @@
 	top: 50%;
 	display: grid;
 	place-items: center;
-	width: 32px;
-	height: 56px;
+	width: 30px;
+	height: 38px;
 	padding: 0;
 	border: none;
 	/* macOS 사진: 둥근 모서리 사각형. 평소엔 숨어 있다가 마우스가 그쪽 가장자리 가까이 오면 나타난다 */
-	border-radius: 10px;
+	border-radius: 9px;
 	background: var(--photos-glass);
 	backdrop-filter: blur(12px);
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
