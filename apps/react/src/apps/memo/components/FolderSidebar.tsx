@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import { ALL_CATEGORY, folderLabelOf, RECENTLY_DELETED, type FolderNode } from '../posts';
-import { cycleTag, toggleAllTags, type TagSelection } from '../tagFilter';
+import type { TagSelection } from '../tagFilter';
+import TagChips from './TagChips';
 import { canAddFolder, canMoveFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
 const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
@@ -650,41 +651,7 @@ const FolderSidebar: React.FC<Props> = (props) => {
 								/>
 							)}
 						</div>
-						<ul>
-							<li>
-								<button
-									type="button"
-									className={`memo-tag-chip ${props.tagSelection.all ? 'include' : ''}`}
-									aria-pressed={props.tagSelection.all}
-									onClick={() => props.onTagsChange!(toggleAllTags(props.tagSelection!))}
-								>
-									모든 태그
-								</button>
-							</li>
-							{props.tags.map((tag) => {
-								const state = props.tagSelection!.tags[tag.name];
-								return (
-									<li key={tag.name}>
-										<button
-											type="button"
-											className={`memo-tag-chip ${state ?? ''}`}
-											aria-pressed={state === 'include'}
-											data-state={state ?? 'none'}
-											title={
-												state === 'include'
-													? '이 태그가 있는 메모 (한 번 더 누르면 제외)'
-													: state === 'exclude'
-														? '이 태그가 있는 메모는 뺍니다 (한 번 더 누르면 풀림)'
-														: `${tag.count}개의 메모`
-											}
-											onClick={() => props.onTagsChange!(cycleTag(props.tagSelection!, tag.name))}
-										>
-											#{tag.name}
-										</button>
-									</li>
-								);
-							})}
-						</ul>
+						<TagChips tags={props.tags} selection={props.tagSelection} onChange={props.onTagsChange} />
 					</section>
 				)}
 			</div>

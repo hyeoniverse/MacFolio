@@ -84,6 +84,7 @@ import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import MarkdownLink from '@/apps/memo/components/MarkdownLink';
+import TagChips from './components/TagChips';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import type { MenuItem } from '@/shared/ui/menu/Menu';
 import Button from '@/shared/ui/button/Button';
@@ -428,6 +429,9 @@ const Memo: React.FC = () => {
 		setGalleryNoteOpen(false);
 		setPane('list');
 	};
+	// 휴대폰의 태그 화면 (iOS 메모): 칩을 다 풀면 화면을 떠나지 않고 '모든 태그'로 돌아간다
+	const changeTagsInView = (next: TagSelection) =>
+		changeTags(isTagSelectionActive(next) ? next : { ...next, all: true, tags: {} });
 
 	const selectFolder = (path: string) => {
 		// 폴더를 고르면 태그 고르기는 풀린다 (모두/일부 포함은 그대로)
@@ -1111,9 +1115,19 @@ const Memo: React.FC = () => {
 							</button>
 							{/* 휴대폰: iOS 메모처럼 목록 위에 큰 제목 (도구 막대의 제목은 좁은 창에서 숨는다) */}
 							<div className="memo-phone-title">
-								<h2>{categoryName}</h2>
+								{/* 휴대폰의 태그 화면은 제목이 늘 '태그'이고, 고른 태그는 아래 칩 줄이 보여 준다 (iOS 메모) */}
+								<h2>{phone && inTags ? '태그' : categoryName}</h2>
 								<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
 							</div>
+							{phone && inTags && (
+								<TagChips
+									className="memo-phone-tag-chips"
+									label="태그 고르기"
+									tags={tags}
+									selection={tagSelection}
+									onChange={changeTagsInView}
+								/>
+							)}
 							{compactTools}
 							{/* 쓰던 새 메모는 최근 삭제된 항목에서는 숨긴다 (모든 글로 돌아가면 다시 보인다) */}
 							{!inTrash && (newDraft !== null || leavingDraft) && (
@@ -1123,7 +1137,7 @@ const Memo: React.FC = () => {
 								</ul>
 							)}
 							{inTags && tagSelectionNote(tagSelection) && (
-								<p className="memo-trash-banner">{tagSelectionNote(tagSelection)}</p>
+								<p className="memo-trash-banner memo-tag-note">{tagSelectionNote(tagSelection)}</p>
 							)}
 							{inTrash && (
 								<p className="memo-trash-banner">
