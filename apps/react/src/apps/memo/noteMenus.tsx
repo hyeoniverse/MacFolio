@@ -1,5 +1,9 @@
 import type { MenuItem } from '@/shared/ui/menu/Menu';
+import ShareIcon from '@/shared/ui/ShareIcon';
 import type { Post } from './posts';
+import type { Arrangement } from './arrange';
+import type { View } from './components/MemoToolbar';
+import { sortMenuItems } from './components/sortMenuItems';
 
 /** 메모 하나에 할 수 있는 일 (관리자). 우클릭 메뉴, 도구 •••, 휴대폰 ••• 가 같은 동작을 부른다 */
 export interface NoteActions {
@@ -91,3 +95,47 @@ export const phoneNoteItems = (
 				{ label: '메모에서 찾기', icon: 'fa-solid fa-magnifying-glass', onSelect: onFind },
 				...(canEdit && !newDraft ? [{ ...removeItem(post, actions, '삭제'), destructive: true }] : []),
 			];
+
+/**
+ * 본문 도구 막대의 ••• 메뉴 (검색하는 동안 접힌 도구가 여기 모인다):
+ * 새 메모, 그 글의 일(되돌려 놓기·즉시 삭제, 또는 고정·잠그기·삭제), 링크 공유, 정렬, 보기 방식
+ */
+export const toolMenuItems = ({
+	selected,
+	actions,
+	canEdit,
+	inTrash,
+	onNewNote,
+	onShare,
+	arrangement,
+	onArrange,
+	view,
+	onView,
+}: {
+	selected: Post | null;
+	actions: NoteActions;
+	canEdit: boolean;
+	inTrash: boolean;
+	onNewNote: () => void;
+	onShare: (post: Post) => void;
+	arrangement: Arrangement;
+	onArrange: (next: Arrangement) => void;
+	view: View;
+	onView: (view: View) => void;
+}): MenuItem[] => [
+	...(canEdit ? [{ label: '새 메모', icon: 'fa-regular fa-pen-to-square', onSelect: onNewNote }] : []),
+	...(canEdit && selected && inTrash
+		? [restoreItem(selected, actions), purgeItem(selected, actions), 'separator' as const]
+		: []),
+	...(canEdit && selected && !inTrash
+		? [...pinLockItems(selected, actions), removeItem(selected, actions), 'separator' as const]
+		: []),
+	...(selected && !inTrash && !selected.status?.draftOnly
+		? [{ label: '링크 공유', icon: <ShareIcon />, onSelect: () => onShare(selected) }, 'separator' as const]
+		: []),
+	...sortMenuItems(arrangement, onArrange),
+	'separator',
+	{ heading: '보기' },
+	{ label: '목록으로 보기', checked: view === 'list', onSelect: () => onView('list') },
+	{ label: '갤러리로 보기', checked: view === 'gallery', onSelect: () => onView('gallery') },
+];
