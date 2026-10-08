@@ -116,3 +116,57 @@ test.describe('태그', () => {
 		await expect(browser.getByRole('button', { name: '#새태그' })).toBeVisible();
 	});
 });
+
+test.describe('태그: 휴대폰 (iOS 메모)', () => {
+	test.use({ viewport: { width: 390, height: 844 } });
+
+	test('태그 화면은 제목이 "태그", 위에 옆으로 넘기는 칩 줄. 칩으로 고르고, 다 풀면 모든 태그로 돌아온다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: false });
+		api.posts = [
+			published('2026-09-30-a', '태그 글 하나', '#가 #나'),
+			published('2026-09-30-b', '태그 글 둘', '#가'),
+			published('2026-09-30-c', '태그 글 셋', '#나 #다'),
+		];
+		await enterDesktop(page);
+		await page.locator('[data-launch="memo"]').click();
+		const memo = appWindow(page, 'memo');
+		await expect(memo.locator('.memo-item').first()).toBeVisible();
+		// 목록에서 뒤로 가면 폴더 화면
+		await page.locator('.mobile-navbar-home').click();
+
+		// 폴더 화면의 '모든 태그'로 태그 화면에 들어간다
+		await memo.getByRole('region', { name: '태그' }).getByRole('button', { name: '모든 태그' }).click();
+		const list = memo.getByRole('region', { name: '글 목록' });
+		await expect(list.locator('.memo-phone-title h2')).toHaveText('태그');
+		const chips = list.getByRole('list', { name: '태그 고르기' });
+		await expect(chips.getByRole('button', { name: '모든 태그' })).toHaveAttribute('aria-pressed', 'true');
+		await expect(list).toContainText('태그가 있는 모든 메모를 표시합니다.');
+		const titles = memo.locator('.memo-item', { hasText: '태그 글' });
+		await expect(titles).toHaveCount(3);
+
+		// 칩 줄은 한 줄 (넘치면 옆으로 넘긴다)
+		const tops = await chips
+			.getByRole('button')
+			.evaluateAll((buttons) => buttons.map((button) => Math.round(button.getBoundingClientRect().top)));
+		expect(new Set(tops).size).toBe(1);
+
+		// #다를 고르면 그 글만, 제목은 그대로 '태그'
+		await chips.getByRole('button', { name: '#다' }).click();
+		await expect(titles).toHaveText([/태그 글 셋/]);
+		await expect(list.locator('.memo-phone-title h2')).toHaveText('태그');
+		await expect(chips.getByRole('button', { name: '모든 태그' })).toHaveAttribute('aria-pressed', 'false');
+
+		// 한 번 더 누르면 제외, 또 누르면 풀리고, 다 풀리면 모든 태그 (태그 화면에 머문다)
+		await chips.getByRole('button', { name: '#다' }).click();
+		await expect(chips.getByRole('button', { name: '#다' })).toHaveAttribute('data-state', 'exclude');
+		await chips.getByRole('button', { name: '#다' }).click();
+		await expect(chips.getByRole('button', { name: '모든 태그' })).toHaveAttribute('aria-pressed', 'true');
+		await expect(list.locator('.memo-phone-title h2')).toHaveText('태그');
+		// '모든 태그'를 다시 눌러도 태그 화면에 머문다
+		await chips.getByRole('button', { name: '모든 태그' }).click();
+		await expect(chips.getByRole('button', { name: '모든 태그' })).toHaveAttribute('aria-pressed', 'true');
+		await expect(titles).toHaveCount(3);
+	});
+});

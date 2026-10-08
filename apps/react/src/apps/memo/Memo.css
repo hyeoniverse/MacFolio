@@ -3454,6 +3454,57 @@
 		padding: 0 4px;
 	}
 
+	/* 태그 칩 (iOS 메모): 둥근 네모에 굵은 글자. 미선택은 회색, 포함은 강조 색에 흰 글자, 제외는 테두리와 취소선 */
+	.container.mobile .memo .memo-tag-chip {
+		padding: 7px 14px;
+		border-radius: 10px;
+		background-color: var(--memo-search-bg);
+		color: var(--memo-muted);
+		font-size: 17px;
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	.container.mobile .memo .memo-tag-chip.include {
+		background-color: var(--memo-accent);
+		color: #ffffff;
+	}
+
+	.container.mobile .memo .memo-tag-chip.exclude {
+		background-color: transparent;
+	}
+
+	.container.mobile .memo-tag-browser ul {
+		gap: 8px;
+	}
+
+	/* 태그 화면: 큰 제목 아래 칩 줄은 한 줄로 옆으로 넘긴다 (화면 끝까지) */
+	.container.mobile .memo-phone-tag-chips {
+		display: flex;
+		gap: 8px;
+		margin: 6px -16px 14px;
+		padding: 0 16px;
+		overflow-x: auto;
+		list-style: none;
+		scrollbar-width: none;
+	}
+
+	.container.mobile .memo-phone-tag-chips::-webkit-scrollbar {
+		display: none;
+	}
+
+	.container.mobile .memo-phone-tag-chips li {
+		flex: none;
+	}
+
+	/* 칩 아래 안내는 선 없이 회색 한 줄 */
+	.container.mobile .memo-list .memo-tag-note {
+		margin: 0 4px 6px;
+		padding: 0;
+		border: none;
+		font-size: 15px;
+	}
+
 	/* ── 목록 화면 ── */
 	.container.mobile .memo-list .memo-scroll {
 		padding: var(--phone-top) 16px 96px;
