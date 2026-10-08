@@ -1,7 +1,7 @@
 ---
 title: '!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기'
 date: 2026-10-01
-category: 개발기/MacFolio
+category: 개발기/MacFolio/공통 UI
 summary: 앱마다 둔 `.app button { color: inherit }`가 단추 클래스를 이겨서, 단추마다 적은 색·글꼴을 !important로 덮어 왔다. 이 기본값을 @layer reset으로 옮기고, 화면 58장을 전후로 찍어 픽셀 단위로 비교해 무엇이 바뀌는지 확인했다.
 ---
 
@@ -110,3 +110,5 @@ for (let i = 0; i < a.length; i += 4) {
 이제 `!important` 대부분은 필요 없다. 하지만 한꺼번에 지우지 않았다. `!important`는 기본값만이 아니라 **같은 단추의 다른 상태**(올렸을 때, 눌렸을 때)와도 겨루고 있을 수 있다. 하나씩 지우면서 그 단추의 모든 상태를 확인해야 한다.
 
 다음 단계에서 공통 컴포넌트(`IconButton`, `Button`, `Menu`)를 만들어 단추를 옮긴다. 그때 그 단추의 CSS를 새로 쓰면서 `!important`를 걷어 낸다. 전후 비교도 같은 방법으로 한다.
+
+#MacFolio #CSS #공통컴포넌트

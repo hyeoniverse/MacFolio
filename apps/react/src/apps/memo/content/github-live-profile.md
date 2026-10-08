@@ -1,7 +1,7 @@
 ---
 title: GitHub 앱을 진짜 GitHub로 - 프로필·README·고른 저장소
 date: 2026-10-02
-category: 개발기/MacFolio
+category: 개발기/MacFolio/프로젝트·GitHub
 summary: GitHub 앱의 팔로워 수, README, 고정 저장소는 손으로 옮겨 적은 값이었다. 이제 API 서버가 GitHub에서 받아 30분(토큰이 있으면 10분) 동안 들고 있다가 내준다. README는 실제 Markdown을 그리되 배지는 앱의 Contact 단추로 바꾸고, 보일 저장소는 관리자가 시스템 설정에서 고른다.
 ---
 
@@ -46,4 +46,4 @@ GitHub의 Pinned는 GraphQL API로만 읽을 수 있고 토큰이 필요하다. 
 
 고른 목록은 DB에 "owner/이름"만 저장한다. 설명·별·언어는 GitHub에서 받으므로, 저장소 설명을 고쳐도 따로 손댈 것이 없다.
 
-#MacFolio
+#MacFolio #GitHub #시스템설정

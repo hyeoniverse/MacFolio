@@ -1,7 +1,7 @@
 ---
 title: R2에 DB 백업 걸기 - 대시보드부터 cron까지
 date: 2026-10-05
-category: 개발기/MacFolio
+category: 개발기/MacFolio/배포·운영
 summary: 백업 스크립트를 실제 서버에 거는 순서. R2 버킷과 키, 실패를 알려 줄 주소, rclone 버전, 연결 확인, cron, 되살리기 시험까지. 단계마다 그렇게 하는 까닭을 함께 적었다.
 ---
 
@@ -102,3 +102,5 @@ docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restore
 | 연결부터 확인              | 문제를 덤프와 섞지 않고 찾는다        |
 | 저장소 상한 8GB            | R2에는 청구 전에 멈추는 설정이 없다   |
 | 다른 DB에 되살리기         | 되살려 보지 않은 백업은 백업이 아니다 |
+
+#MacFolio #서버 #백업 #Cloudflare

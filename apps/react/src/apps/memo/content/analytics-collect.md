@@ -1,7 +1,7 @@
 ---
 title: 트래픽 분석 2 - 사이트에서 모아 보내기
 date: 2026-10-07
-category: 개발기/MacFolio
+category: 개발기/MacFolio/트래픽 분석
 summary: 분석 API에 보낼 이벤트를 사이트에서 모은다. 페이지 열기, 앱 열기, 글·프로젝트 보기, 바깥 링크, 머문 시간을 5초마다 sendBeacon으로 보낸다. 로컬 주소와 Global Privacy Control에서는 보내지 않고, Apple 메뉴에 오늘 방문자 수와 개인정보 처리 방침을 붙였다.
 ---
 
@@ -53,3 +53,5 @@ Apple 메뉴 맨 위에 "오늘 방문자 N명"을 붙였다. 메뉴를 열 때�
 - 화면(가짜 API): `?utm_source=resume`으로 들어와 메모를 열고 글을 보고 GitHub 저장소를 누른 뒤 탭을 숨기면, 한 `visitId`로 `visit`(utm·desktop) → `app`(memo, 처음 떠 있던 Safari는 없음) → `item`(memo/cra-to-vite) → `link`(github.com/hyeoniverse/MacFolio) → `leave`가 간다. 로컬 주소와 Global Privacy Control에서는 아무것도 가지 않는다. Apple 메뉴에 "오늘 방문자 1,234명"이 보이고, '개인정보 처리 방침'이 Finder에서 열린다
 
 다음은 이 숫자를 보는 관리자 화면, '활동 상태 보기' 앱이다.
+
+#MacFolio #트래픽분석

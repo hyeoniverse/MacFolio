@@ -1,7 +1,7 @@
 ---
 title: AI 요약 데모의 기본 공급자를 Groq로
 date: 2026-10-05
-category: 개발기/MacFolio
+category: 개발기/MacFolio/프로젝트·GitHub
 summary: Safari의 HYEONIVERSE 페이지에 있는 AI 요약 데모는 Gemini 하나로만 요약했다. Groq를 기본 공급자로 앞에 두고, 실패하면 Gemini로 넘어가게 했다. 번역 데모와 같은 "차례대로 시도" 구조를 그대로 썼다.
 ---
 
@@ -53,3 +53,5 @@ fetch('https://api.groq.com/openai/v1/chat/completions', {
 - 단위 테스트: Groq가 되면 Gemini는 묻지 않는다 / Groq가 실패하면 Gemini로 넘어간다 / 둘 다 실패하면 502에 두 이유, 쓴 횟수는 돌려준다 / `GROQ_MODEL`로 모델을 바꾼다
 - 화면 테스트: 가짜 서버가 `provider: 'groq'`로 답하면 "Groq로 만든 요약입니다"가 보인다
 - 키 없이 Groq 주소를 불러 `401 invalid_api_key`가 오는 것으로 주소가 맞는지 확인했다. 실제 키로 만든 요약은 서버에 키를 넣은 뒤 확인한다
+
+#MacFolio #AI #HYEONIVERSE
