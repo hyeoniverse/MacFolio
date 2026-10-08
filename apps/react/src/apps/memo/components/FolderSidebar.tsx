@@ -1,3 +1,4 @@
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
@@ -165,6 +166,7 @@ const FolderRow: React.FC<RowProps> = (props) => {
 	const open = !collapsed.has(node.path) || addingUnder === node.path;
 	const drop = useDropTarget(node.path, props);
 	const hasChildren = node.children.length > 0;
+	const subfolders = useExitMotion<HTMLUListElement>('fade-out');
 	const beingDragged = props.dragging?.type === 'folder' && props.dragging.id === node.path;
 	const siblingNames = (props.siblings ?? []).filter((name) => name !== node.name);
 	const removable = Boolean(node.custom) && node.count === 0;
@@ -336,7 +338,8 @@ const FolderRow: React.FC<RowProps> = (props) => {
 				</div>
 			)}
 			{open && (hasChildren || addingUnder === node.path) && (
-				<ul>
+				// 펼치면 하위 폴더가 위에서 내려오고, 접으면 흐려지며 사라진다
+				<ul ref={subfolders} className="memo-subfolders">
 					{node.children.map((child) => (
 						<FolderRow
 							key={child.path}
@@ -509,7 +512,7 @@ const FolderSidebar: React.FC<Props> = (props) => {
 						<i className="fa-solid fa-chevron-down" aria-hidden="true" />
 					</button>
 				</div>
-				<ul hidden={!blogOpen}>
+				<ul className="memo-subfolders" hidden={!blogOpen}>
 					<li>
 						{/* 모든 글: 폴더를 여기에 놓으면 맨 위로 옮겨 간다 */}
 						<div

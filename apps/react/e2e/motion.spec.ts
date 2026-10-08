@@ -62,14 +62,15 @@ test.describe('움직임: 나타나고 사라지기, 화면 바뀌기', () => {
 		await expect.poll(exits).toEqual(['pop-out', 'fade-out']);
 	});
 
-	test('Finder에서 다른 폴더로 가면 내용이 새로 그려지며 서서히 나타난다', async ({ page }) => {
+	test('Finder에서 보기를 바꾸면 내용이 새로 그려지며 서서히 나타난다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'finder').click();
 		const finder = appWindow(page, 'finder');
 		const content = finder.locator('.finder-content .motion-swap').first();
 		await expect(content).toBeVisible();
 		await content.evaluate((element) => element.setAttribute('data-before', 'yes'));
-		await finder.getByRole('navigation', { name: '즐겨찾기' }).getByRole('button').nth(1).click();
+		// 보기를 바꾸면 (들어가고 나오는 것이 아니라) 서서히
+		await finder.getByRole('button', { name: '목록으로 보기' }).first().click();
 		const next = finder.locator('.finder-content .motion-swap').first();
 		await expect(next).not.toHaveAttribute('data-before');
 		expect(await next.evaluate((element) => getComputedStyle(element).animationName)).toBe('fade-in');
@@ -83,5 +84,70 @@ test.describe('움직임: 나타나고 사라지기, 화면 바뀌기', () => {
 		expect(property).toContain('color');
 		// Dock 아이콘은 자기 전환(커지기)을 그대로 쓴다: 공통 규칙은 층 안이라 진다
 		expect(await dockItem(page, 'finder').evaluate(transition)).toBe('transform');
+	});
+
+	test('사진: 넘긴 쪽에서 사진이 들어오고, 정보 판은 오른쪽에서 들어왔다 나간다', async ({ page }) => {
+		await enterDesktop(page);
+		const exits = await recordExits(page);
+		await dockItem(page, 'photos').click();
+		const photos = appWindow(page, 'photos');
+		await photos.getByRole('complementary', { name: '사진 보관함' }).getByRole('button', { name: /^QRU/ }).click();
+		await photos.locator('.photos-thumb').nth(1).click();
+		const stage = photos.locator('.photos-viewer-stage');
+		const image = stage.locator('img');
+		const animationOf = () => image.evaluate((element) => getComputedStyle(element).animationName);
+		await page.keyboard.press('ArrowRight');
+		await expect(stage).toHaveAttribute('data-direction', 'next');
+		expect(await animationOf()).toBe('slide-from-right');
+		await page.keyboard.press('ArrowLeft');
+		await expect(stage).toHaveAttribute('data-direction', 'prev');
+		expect(await animationOf()).toBe('slide-from-left');
+
+		const info = photos.getByRole('button', { name: '정보' });
+		await info.click();
+		const panel = photos.getByRole('complementary', { name: '사진 정보' });
+		expect(await panel.evaluate((element) => getComputedStyle(element).animationName)).toBe('panel-in-right');
+		await info.click();
+		await expect(panel).toHaveCount(0);
+		await expect.poll(exits).toContain('panel-out-right');
+	});
+
+	test('Finder: 폴더로 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'finder').click();
+		const finder = appWindow(page, 'finder');
+		const content = finder.locator('.finder-content');
+		await finder.getByRole('navigation', { name: '즐겨찾기' }).getByRole('button').nth(1).click();
+		await expect(content).toHaveAttribute('data-direction', 'next');
+		expect(
+			await content
+				.locator('.motion-swap')
+				.first()
+				.evaluate((element) => getComputedStyle(element).animationName)
+		).toBe('slide-from-right');
+		await finder.getByRole('button', { name: '뒤로' }).first().click();
+		await expect(content).toHaveAttribute('data-direction', 'prev');
+	});
+
+	test('배경화면을 바꾸면 옛 배경이 흐려지며 새 배경이 드러난다', async ({ page }) => {
+		await enterDesktop(page);
+		await page.evaluate(() => {
+			const seen: string[] = [];
+			(window as unknown as { __fades: string[] }).__fades = seen;
+			new MutationObserver((records) => {
+				for (const record of records)
+					for (const node of record.addedNodes)
+						if (node instanceof HTMLElement && node.classList.contains('wallpaper-fade'))
+							seen.push(node.style.animationName || node.style.animation);
+			}).observe(document.body, { childList: true, subtree: true });
+		});
+		await dockItem(page, 'settings').click();
+		const settings = appWindow(page, 'settings');
+		await settings.getByRole('button', { name: '배경화면' }).click();
+		await settings.getByRole('radiogroup', { name: 'macOS 배경화면' }).getByRole('radio', { name: 'Sonoma' }).click();
+		await expect
+			.poll(() => page.evaluate(() => (window as unknown as { __fades: string[] }).__fades.join()))
+			.toContain('fade-out');
+		await expect(page.locator('.wallpaper-fade')).toHaveCount(0);
 	});
 });

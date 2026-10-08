@@ -7,6 +7,7 @@ import { CAPTION_MAX } from './albums';
 import { captionOf, saveCaption, useCaptions } from './captions';
 import { initialSwipe, swipeStep, type SwipeState } from './swipe';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
+import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
 
 /** 화면에 보이는 사진 (어느 앨범의 것인지 함께) */
 export type Shown = Photo & { album: Album };
@@ -126,6 +127,10 @@ export const Viewer = ({
 	const caption = captionOf(photo, useCaptions());
 	const [zoom, setZoom] = useState<number>(ZOOM.min);
 	const [info, setInfo] = useState(false);
+	// 넘긴 쪽에서 사진이 밀려 들어온다 (Photos.css의 data-direction)
+	const direction = useMoveDirection(index, photos.length);
+	// 정보 판은 오른쪽에서 들어오고, 닫으면 오른쪽으로 빠진다
+	const infoPanel = useExitMotion<HTMLElement>('panel-out-right');
 	const move = (delta: number) => {
 		setZoom(ZOOM.min);
 		onMove((index + delta + photos.length) % photos.length);
@@ -250,6 +255,7 @@ export const Viewer = ({
 				<div
 					ref={stage}
 					className={`photos-viewer-stage ${zoom > 1 ? 'zoomed' : ''}`}
+					data-direction={direction ?? undefined}
 					onMouseMove={(event) => {
 						const rect = event.currentTarget.getBoundingClientRect();
 						const side =
@@ -291,7 +297,7 @@ export const Viewer = ({
 					</button>
 				</div>
 				{info && (
-					<aside className="photos-info" aria-label="사진 정보">
+					<aside ref={infoPanel} className="photos-info" aria-label="사진 정보">
 						<CaptionField key={photo.src} photo={photo} className="photos-info-caption" />
 						<dl>
 							<dt>앨범</dt>

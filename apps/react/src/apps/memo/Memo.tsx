@@ -1153,7 +1153,9 @@ const Memo: React.FC = () => {
 							)}
 							{/* 휴대폰에서 갤러리로 보면 목록 칸에 카드로 (넓은 창의 갤러리 칸은 한 칸씩 볼 때 숨는다) */}
 							{/* 폴더·태그·정렬을 바꾸면 목록이 서서히 바뀐다 (감싸는 요소 없이 key로 새로 그린다: 휴대폰 CSS의 인접 선택자가 그대로 맞는다) */}
-							<React.Fragment key={`${category}|${JSON.stringify(tagSelection)}|${JSON.stringify(arrangement)}`}>
+							<React.Fragment
+								key={`${category}|${JSON.stringify(tagSelection)}|${JSON.stringify(arrangement)}|${view}`}
+							>
 								{phone && compact && view === 'gallery'
 									? sections(card, '고정된 메모', 'memo-cards motion-swap')
 									: sections(listItem, '고정됨', 'memo-items motion-swap')}

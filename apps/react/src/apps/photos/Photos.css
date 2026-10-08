@@ -377,6 +377,17 @@
 	max-width: 100%;
 	max-height: 100%;
 	object-fit: contain;
+	/* 확대·축소는 부드럽게 커지고 작아진다 */
+	transition: width var(--duration) var(--ease-out);
+}
+
+/* 다음 사진은 오른쪽에서, 이전 사진은 왼쪽에서 밀려 들어온다 */
+.photos-viewer-stage[data-direction='next'] > :is(img, video) {
+	animation: slide-from-right var(--duration) var(--ease-out);
+}
+
+.photos-viewer-stage[data-direction='prev'] > :is(img, video) {
+	animation: slide-from-left var(--duration) var(--ease-out);
 }
 
 .photos-viewer-nav {
@@ -417,6 +428,7 @@
 }
 
 .photos-info {
+	animation: panel-in-right var(--duration) var(--ease-out);
 	flex: none;
 	width: 220px;
 	padding: 14px 16px;

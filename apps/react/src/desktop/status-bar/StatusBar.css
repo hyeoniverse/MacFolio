@@ -203,3 +203,10 @@
 .macos-statusbar .menubar-title.app-name {
 	font-weight: 700;
 }
+
+/* ─── 움직임 ─── */
+/* 앱이 바뀌면 앱 이름은 서서히 바뀌고, 그 앱의 메뉴 제목은 서서히 나타난다 */
+.macos-statusbar .menubar-title-text,
+.macos-statusbar .menubar-title:not(.app-name) {
+	animation: fade-in var(--duration-fast) var(--ease-out);
+}

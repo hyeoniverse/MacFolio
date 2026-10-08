@@ -868,3 +868,9 @@
 .container.mobile .messages-composer {
 	padding-bottom: calc(10px + var(--phone-bottom-inset));
 }
+
+/* ─── 움직임 ─── */
+/* 새 대화가 생기면 목록에 떠오르며 들어온다 */
+.messages-threads > li {
+	animation: rise-in var(--duration) var(--ease-out);
+}

@@ -619,3 +619,28 @@
 		padding: 16px 18px 40px;
 	}
 }
+
+/* ─── 움직임 ─── */
+/* 폴더로 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 내용이 들어온다 (처음과 보기 바꾸기는 motion-swap의 서서히) */
+.finder-content[data-direction='next'] > .motion-swap {
+	animation: slide-from-right var(--duration) var(--ease-out);
+}
+
+.finder-content[data-direction='prev'] > .motion-swap {
+	animation: slide-from-left var(--duration) var(--ease-out);
+}
+
+/* 고르면 아이콘 바탕·이름 칠이 부드럽게 바뀐다 */
+.finder-icon,
+.finder-name,
+.finder-list-date,
+.finder-list-kind {
+	transition:
+		background-color var(--duration-fast) var(--ease-out),
+		color var(--duration-fast) var(--ease-out);
+}
+
+/* 문서 안의 그림은 불러오면 서서히 */
+.finder-doc img {
+	animation: fade-in var(--duration) var(--ease-out);
+}

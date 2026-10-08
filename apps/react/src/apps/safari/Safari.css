@@ -382,3 +382,9 @@
 		padding: 0 8px;
 	}
 }
+
+/* ─── 움직임 ─── */
+/* 새 탭은 톡 나타난다 (닫은 탭은 useExitMotion으로 작아지며 사라진다) */
+.safari-tab {
+	animation: pop-in var(--duration) var(--ease-spring);
+}

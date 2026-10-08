@@ -809,3 +809,41 @@
 	visibility: hidden;
 	opacity: 0;
 }
+
+/* ─── 움직임 ─── */
+/* 다음 사진은 오른쪽에서, 이전 사진은 왼쪽에서 밀려 들어온다 (밀기·사진 띠·←→) */
+.photos-phone-stage[data-direction='next'] > :is(img, video) {
+	animation: slide-from-right var(--duration) var(--ease-out);
+}
+
+.photos-phone-stage[data-direction='prev'] > :is(img, video) {
+	animation: slide-from-left var(--duration) var(--ease-out);
+}
+
+/* 정보를 열고 닫으면 사진 칸이 새 자리에 맞춰 살짝 커지며 자리 잡는다 (두 이름을 번갈아 써서 바뀔 때마다 다시 돈다) */
+.photos-phone-stage {
+	animation: photos-phone-stage-a var(--duration) var(--ease-out);
+}
+
+.photos-phone-stage.with-info {
+	animation: photos-phone-stage-b var(--duration) var(--ease-out);
+}
+
+@keyframes photos-phone-stage-a {
+	from {
+		opacity: 0.6;
+		transform: scale(0.96);
+	}
+}
+
+@keyframes photos-phone-stage-b {
+	from {
+		opacity: 0.6;
+		transform: scale(1.04);
+	}
+}
+
+/* 좋아요를 누르면 하트가 톡 튄다 */
+.photos-phone-pill button[aria-label='좋아요'][aria-pressed='true'] i {
+	animation: toggle-pop var(--duration) var(--ease-spring);
+}

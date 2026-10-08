@@ -15,6 +15,8 @@ import {
 } from './albums';
 import { CaptionField, Thumb, type Shown } from './PhotoParts';
 import { captionOf, useCaptions } from './captions';
+import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import '@/apps/photos/Photos.css';
 import '@/apps/photos/PhotosMobile.css';
 
@@ -122,6 +124,9 @@ const PhoneViewer = ({
 	const photo = photos[index];
 	const caption = captionOf(photo, useCaptions());
 	const [info, setInfo] = useState(false);
+	// 넘긴 쪽에서 사진이 밀려 들어오고(data-direction), 정보 판은 닫으면 아래로 내려가며 사라진다
+	const direction = useMoveDirection(index, photos.length);
+	const infoPanel = useExitMotion<HTMLElement>('panel-out-down');
 	// 사진만 보기 (iOS 사진): 사진을 탭하면 다른 UI는 숨고 까만 바탕에 사진만. 다시 탭하면 돌아온다
 	const [focus, setFocus] = useState(false);
 	// 불러온 사진의 실제 크기와 파일 크기 (정보 판). 사진이 바뀌면 그 사진의 것으로
@@ -190,6 +195,7 @@ const PhoneViewer = ({
 
 			<div
 				className={`photos-phone-stage ${info ? 'with-info' : ''}`}
+				data-direction={direction ?? undefined}
 				onPointerDown={(event) => (swipe.current = { x: event.clientX, y: event.clientY })}
 				onPointerUp={(event) => {
 					const start = swipe.current;
@@ -229,7 +235,7 @@ const PhoneViewer = ({
 
 			{/* 정보 (iOS 사진): 사진이 위로 줄고, 캡션 줄과 회색 판(기간·파일, 형식 카드, 프로젝트 페이지)이 아래에서 올라온다 */}
 			{info && (
-				<aside className="photos-phone-info" aria-label="사진 정보">
+				<aside ref={infoPanel} className="photos-phone-info" aria-label="사진 정보">
 					<CaptionField key={photo.src} photo={photo} className="photos-phone-caption" />
 					<div className="photos-phone-info-panel">
 						<h3>{photo.album.period ?? photo.album.name}</h3>

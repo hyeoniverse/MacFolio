@@ -75,7 +75,8 @@ const StatTable = ({
 							</th>
 						</tr>
 					</thead>
-					<tbody>
+					{/* 정렬을 바꾸면 줄이 서서히 다시 놓인다 */}
+					<tbody key={`${sort.key}-${sort.descending}`} className="motion-swap">
 						{shown.map((row) => {
 							const share = total ? row.value / total : 0;
 							return (

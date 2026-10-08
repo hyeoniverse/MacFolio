@@ -353,7 +353,7 @@ const Mail: React.FC = () => {
 							{composing ? (
 								<ComposeView onSend={send} onCancel={backToList} />
 							) : selected ? (
-								<article key={selected.id} className="mail-reader-article motion-swap" aria-label={selected.subject}>
+								<article key={selected.id} className="mail-reader-article" aria-label={selected.subject}>
 									<header className="mail-reader-header">
 										<Monogram name={selected.fromName} />
 										<div>
