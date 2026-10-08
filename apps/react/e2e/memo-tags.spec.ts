@@ -24,9 +24,9 @@ test.describe('태그', () => {
 			published(
 				'2026-09-30-a',
 				'태그 글 하나',
-				'오늘은 #리팩터링 과 #CSS 를 했다.\n\n```css\n.a { color: #edbb4d; }\n```'
+				'오늘은 #정리 과 #스타일 를 했다.\n\n```css\n.a { color: #edbb4d; }\n```'
 			),
-			published('2026-09-30-b', '태그 글 둘', '#리팩터링 이어서. Refs #14'),
+			published('2026-09-30-b', '태그 글 둘', '#정리 이어서. Refs #14'),
 		];
 		const memo = await openMemo(page, api);
 
@@ -34,28 +34,28 @@ test.describe('태그', () => {
 		const browser = memo.getByRole('navigation', { name: '카테고리' }).getByRole('region', { name: '태그' });
 		await expect(browser.getByRole('button').first()).toHaveText('모든 태그');
 		// 저장소 글의 태그(#MacFolio 등)는 글이 늘면 순서가 바뀌므로, 이 시험의 두 태그끼리만 비교한다
-		await expect(browser.getByRole('button', { name: '#CSS' })).toBeVisible();
+		await expect(browser.getByRole('button', { name: '#스타일' })).toBeVisible();
 		const chips = await browser.getByRole('button').allTextContents();
-		expect(chips.indexOf('#리팩터링')).toBeGreaterThan(0);
-		expect(chips.indexOf('#리팩터링')).toBeLessThan(chips.indexOf('#CSS'));
+		expect(chips.indexOf('#정리')).toBeGreaterThan(0);
+		expect(chips.indexOf('#정리')).toBeLessThan(chips.indexOf('#스타일'));
 		await expect(browser.getByRole('button', { name: /^#(14|edbb4d)$/ })).toHaveCount(0);
 
 		// 태그를 누르면 그 태그의 글만, 제목은 #태그, 목록 위에 안내
-		await browser.getByRole('button', { name: '#CSS' }).click();
+		await browser.getByRole('button', { name: '#스타일' }).click();
 		await expect(memo.locator('.memo-item')).toHaveText([/태그 글 하나/]);
-		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('#CSS');
+		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('#스타일');
 		await expect(memo.getByRole('region', { name: '글 목록' })).toContainText(
-			'선택된 태그(#CSS)와 일치하는 메모를 표시합니다.'
+			'선택된 태그(#스타일)와 일치하는 메모를 표시합니다.'
 		);
 
 		// 읽기 화면의 #태그도 누를 수 있다
 		await memo.locator('.memo-item', { hasText: '태그 글 하나' }).click();
-		await memo.locator('.memo-markdown .memo-tag', { hasText: '#리팩터링' }).click();
-		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('#리팩터링');
+		await memo.locator('.memo-markdown .memo-tag', { hasText: '#정리' }).click();
+		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('#정리');
 		await expect(memo.locator('.memo-item')).toHaveCount(2);
 
 		// 한 번 더 누르면 제외(그 태그가 없는 글), 또 누르면 풀려서 모든 글로
-		const refactor = browser.getByRole('button', { name: '#리팩터링' });
+		const refactor = browser.getByRole('button', { name: '#정리' });
 		await refactor.click();
 		await expect(refactor).toHaveAttribute('data-state', 'exclude');
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('1개의 태그');
