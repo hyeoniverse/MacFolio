@@ -93,6 +93,50 @@ test.describe('사진 (#21)', () => {
 		await expect(viewer).toHaveCount(0);
 	});
 
+	test('크게 보기의 좌우 화살표는 둥근 사각형으로, 가장자리 가까이 가야 나타난다. 트랙패드 두 손가락 스와이프로도 넘긴다', async ({
+		page,
+	}) => {
+		const photos = await openPhotos(page);
+		await photos.getByRole('complementary', { name: '사진 보관함' }).getByRole('button', { name: /^QRU/ }).click();
+		const total = await photos.locator('.photos-thumb').count();
+		await photos.locator('.photos-thumb').nth(1).click();
+		const viewer = photos.getByRole('dialog');
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 2/${total}:`));
+		const stage = viewer.locator('.photos-viewer-stage');
+		const prev = viewer.getByRole('button', { name: '이전 사진' });
+		const next = viewer.getByRole('button', { name: '다음 사진' });
+
+		// 둥근 모서리 사각형 (원이 아니다: 세로가 더 길고 모서리는 반지름 10px)
+		const box = (await next.boundingBox())!;
+		expect(box.height).toBeGreaterThan(box.width);
+		await expect(next).toHaveCSS('border-radius', '10px');
+
+		// 가운데에서는 둘 다 숨고, 오른쪽 가장자리 가까이 가면 다음만, 왼쪽이면 이전만
+		const area = (await stage.boundingBox())!;
+		await page.mouse.move(area.x + area.width / 2, area.y + area.height / 2);
+		await expect(next).toHaveCSS('opacity', '0');
+		await expect(prev).toHaveCSS('opacity', '0');
+		await page.mouse.move(area.x + area.width - 60, area.y + area.height / 2);
+		await expect(next).toHaveCSS('opacity', '1');
+		await expect(prev).toHaveCSS('opacity', '0');
+		await page.mouse.move(area.x + 60, area.y + area.height / 2);
+		await expect(prev).toHaveCSS('opacity', '1');
+		await expect(next).toHaveCSS('opacity', '0');
+
+		// 두 손가락으로 왼쪽으로 밀면(가로 휠) 다음 사진. 한 번 미는 동안(관성 포함)은 한 장만
+		await page.mouse.move(area.x + area.width / 2, area.y + area.height / 2);
+		for (let step = 0; step < 6; step++) await page.mouse.wheel(40, 0);
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 3/${total}:`));
+		// 손을 떼고 잠시 뒤 오른쪽으로 밀면 이전 사진. 세로로 민 것은 넘기지 않는다
+		await page.waitForTimeout(400);
+		for (let step = 0; step < 6; step++) await page.mouse.wheel(-40, 0);
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 2/${total}:`));
+		await page.waitForTimeout(400);
+		for (let step = 0; step < 6; step++) await page.mouse.wheel(0, 80);
+		await page.waitForTimeout(400);
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 2/${total}:`));
+	});
+
 	test('크게 보기에서 그 프로젝트의 Safari 페이지로 간다', async ({ page }) => {
 		const photos = await openPhotos(page);
 		await photos.getByRole('complementary', { name: '사진 보관함' }).getByRole('button', { name: /^QRU/ }).click();
