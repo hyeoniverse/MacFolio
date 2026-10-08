@@ -355,6 +355,8 @@
 
 .photos-viewer-stage {
 	position: relative;
+	/* 가로 두 손가락 스와이프가 브라우저의 뒤로 가기가 되지 않게 */
+	overscroll-behavior-x: none;
 	display: flex;
 	flex: 1;
 	align-items: center;
@@ -379,19 +381,24 @@
 .photos-viewer-nav {
 	position: absolute;
 	top: 50%;
-	width: 36px;
-	height: 36px;
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 56px;
+	padding: 0;
 	border: none;
-	border-radius: 50%;
+	/* macOS 사진: 둥근 모서리 사각형. 평소엔 숨어 있다가 마우스가 그쪽 가장자리 가까이 오면 나타난다 */
+	border-radius: 10px;
 	background: var(--photos-glass);
 	backdrop-filter: blur(12px);
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+	font-size: 15px;
 	opacity: 0;
 	transform: translateY(-50%);
-	transition: opacity 0.15s ease;
+	transition: opacity var(--duration-fast) var(--ease-out);
 }
 
-.photos-viewer-stage:hover .photos-viewer-nav,
+.photos-viewer-nav.shown,
 .photos-viewer-nav:focus-visible {
 	opacity: 1;
 }
