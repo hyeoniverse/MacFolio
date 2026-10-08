@@ -111,6 +111,69 @@ test.describe('사진 (#21)', () => {
 			.click();
 		await expect(photos.getByRole('heading', { name: /SproutFarm/ })).toBeVisible();
 	});
+	test('창을 좁히면 macOS 사진처럼: 사이드바는 좁게 남고 막대는 줄어 겹치지 않는다. 더 좁히면 사이드바가 접히고, 열면 격자 위에 뜬다', async ({
+		page,
+	}) => {
+		const photos = await openPhotos(page);
+		const shrinkBy = async (dx: number) => {
+			const handle = (await photos.locator('.resize-handle.bottom-right').boundingBox())!;
+			await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+			await page.mouse.down();
+			await page.mouse.move(handle.x + handle.width / 2 - dx, handle.y + handle.height / 2, { steps: 8 });
+			await page.mouse.up();
+		};
+		const sidebar = photos.getByRole('complementary', { name: '사진 보관함' });
+		const heading = photos.locator('.photos-toolbar-heading');
+		const noOverlap = async () => {
+			const title = (await heading.boundingBox())!;
+			for (const control of await photos
+				.locator('.photos-toolbar :is(.photos-capsule, .photos-pill, .photos-circle)')
+				.all()) {
+				const box = (await control.boundingBox())!;
+				expect(box.x).toBeGreaterThanOrEqual(title.x + title.width - 1);
+			}
+		};
+
+		// 좁은 창 (760px 아래): 사이드바는 그대로, 보기 방식은 팝업 단추, 격자는 정사각형으로 꽉
+		await shrinkBy(300);
+		await expect(sidebar).toBeVisible();
+		await expect(photos.getByRole('group', { name: '보기 방식' })).toHaveCount(0);
+		const viewButton = photos.getByRole('button', { name: '보기 방식: 모든 사진' });
+		await viewButton.click();
+		await page.getByRole('menu', { name: '보기 방식' }).getByRole('menuitemcheckbox', { name: '앨범별' }).click();
+		await expect(photos.getByRole('button', { name: '보기 방식: 앨범별' })).toBeVisible();
+		await expect(photos.getByRole('region', { name: 'QRU 큐알유' })).toBeVisible();
+		await noOverlap();
+		const thumb = (await photos.locator('.photos-thumb img').first().boundingBox())!;
+		const cellBox = (await photos.locator('.photos-thumb').first().boundingBox())!;
+		expect(Math.round(thumb.width)).toBe(Math.round(cellBox.width));
+		expect(Math.round(thumb.height)).toBe(Math.round(cellBox.height));
+
+		// 사이드바 단추로 접고 편다
+		await sidebar.getByRole('button', { name: '사이드바 가리기' }).click();
+		await expect(sidebar).toBeHidden();
+		await photos.getByRole('button', { name: '사이드바 보기' }).click();
+		await expect(sidebar).toBeVisible();
+
+		// 아주 좁은 창 (560px 아래): 사이드바는 접혀 있고, 열면 격자 위에 뜬다. 고르면 접힌다
+		await shrinkBy(200);
+		await photos.getByRole('button', { name: '사이드바 가리기' }).click();
+		await expect(sidebar).toBeHidden();
+		await photos.getByRole('button', { name: '사이드바 보기' }).click();
+		const main = (await photos.locator('.photos-main').boundingBox())!;
+		const side = (await sidebar.boundingBox())!;
+		expect(side.x).toBeLessThan(main.x + 20);
+		await sidebar.getByRole('button', { name: /QRU 큐알유/ }).click();
+		await expect(sidebar).toBeHidden();
+		await expect(photos.getByRole('heading', { name: 'QRU 큐알유' })).toBeVisible();
+		await noOverlap();
+
+		// 크게 보기: 프로젝트 페이지는 나침반 동그라미
+		await photos.locator('.photos-thumb').first().click();
+		const project = photos.getByRole('dialog').getByRole('button', { name: 'QRU 큐알유 페이지' });
+		await expect(project).toBeVisible();
+		expect((await project.boundingBox())!.width).toBeLessThanOrEqual(36);
+	});
 });
 
 test.describe('사진: 휴대폰 (iOS 사진)', () => {
