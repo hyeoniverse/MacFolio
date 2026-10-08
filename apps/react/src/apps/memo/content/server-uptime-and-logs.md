@@ -1,7 +1,7 @@
 ---
 title: 서버가 죽으면 알려 주기, 로그가 디스크를 채우지 않게
 date: 2026-10-07
-category: 개발기/MacFolio
+category: 개발기/MacFolio/배포·운영
 summary: API 서버가 내려가도 사이트에 들어와 보기 전에는 몰랐고, 컨테이너 로그는 지워지지 않고 쌓이기만 했다. 10분마다 바깥에서 /health를 부르는 GitHub Actions 예약 실행과, 컨테이너마다 30MB까지만 남기는 로그 설정을 더했다.
 ---
 
@@ -49,3 +49,5 @@ services:
 컨테이너마다 10MB짜리 파일 3개, 30MB까지만 남는다. `x-`로 시작하는 최상위 항목은 compose가 무시하는 자리라 앵커를 두기 좋다. 문서의 `compose.yml`을 그대로 꺼내 `docker compose config`로 펼쳐 보니 세 서비스 모두에 같은 설정이 들어갔다.
 
 로그 설정은 컨테이너를 만들 때 정해져서, 이미 떠 있는 서버는 `compose.yml`을 고친 뒤 `docker compose up -d`로 컨테이너를 다시 만들어야 한다. 서버 `compose.yml`은 저장소 밖(서버의 `~/deploy`)에 있어서 이 부분은 손으로 한 번 한다. 순서는 `docs/deployment.md`의 '로그 로테이션'에 적었다.
+
+#MacFolio #서버 #감시

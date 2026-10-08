@@ -1,7 +1,7 @@
 ---
 title: 없는 코드 파일에 index.html을 주던 문제
 date: 2026-10-05
-category: 개발기/MacFolio
+category: 개발기/MacFolio/배포·운영
 summary: 사이트는 없는 주소에 늘 첫 화면(index.html)을 200으로 줬다. 앱 주소에는 맞지만, 배포로 사라진 옛 코드 파일에도 그랬다. 없는 주소만 받는 작은 Worker를 두어 앱 주소는 첫 화면, 파일 주소는 404로 나눴다.
 ---
 
@@ -68,3 +68,5 @@ export const isAppRoute = (pathname: string) => {
 | `/assets/Memo-doesnotexist.js`, `/assets/Memo-old.css`, `/imgs/nope.png`   | **404**         |
 
 메모 앱이 열리지 않던 일은 이것 말고 다른 원인도 있는지 더 보고 있다.
+
+#MacFolio #배포 #Cloudflare #트러블슈팅

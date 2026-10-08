@@ -71,4 +71,4 @@ repository = env.apiUrl ? createApiConversationRepository(env.apiUrl) : createLo
 
 메시지와 댓글이 같은 쿠키를 쓰니, 메시지 앱에서 "🦊 날쌘 여우"였던 사람은 블로그 댓글에서도 "🦊 날쌘 여우"다.
 
-#MacFolio
+#MacFolio #백엔드 #메시지 #댓글

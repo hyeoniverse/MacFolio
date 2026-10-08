@@ -1,7 +1,7 @@
 ---
 title: API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel
 date: 2026-09-30
-category: 개발기/MacFolio/백엔드
+category: 개발기/MacFolio/배포·운영
 summary: 로컬에서 되던 관리자 로그인을 배포 환경으로 옮겼다. 포트를 하나도 열지 않는 서버, 1GB 메모리에서의 빌드, 그리고 /docs는 열리는데 로그인은 안 되던 이유.
 ---
 
@@ -119,3 +119,5 @@ GitHub에 다녀와서 `?admin=signed-in`으로 돌아오고, 계정 화면에 �
 - `/health`를 바깥에서 감시한다
 
 서버를 새로 만들어도 다시 구성할 수 있게, 이번에 한 일은 저장소의 `docs/deployment.md`에 순서대로 적어 두었다.
+
+#MacFolio #배포 #서버 #Cloudflare

@@ -1,7 +1,7 @@
 ---
 title: 배포 직후 메모가 안 열리던 까닭 - 옛 코드 파일과 OS 경고창
 date: 2026-10-02
-category: 개발기/MacFolio
+category: 개발기/MacFolio/배포·운영
 summary: 메모를 열 때 가끔 "memo 앱에서 문제가 발생했습니다"가 떴다. 배포로 메모 코드 파일 이름이 바뀌었는데, 열려 있던 페이지가 옛 이름을 찾고 있었다. 다시 열어도 소용없어서 새로고침을 권하는 경고창을 띄우고, 앱 에러 안내도 OS 경고창 모양으로 바꿨다.
 ---
 
@@ -50,4 +50,4 @@ Chrome은 'Failed to fetch dynamically imported module', Safari는 'Importing a 
 
 E2E 시험에서 메모 코드 파일 요청을 막고(`page.route`) 메모를 열면, "새 버전이 있습니다"가 뜨고 [새로고침]에 초점이 있는지, [닫기]로 사라지는지, [새로고침]으로 페이지를 다시 불러오는지 확인한다.
 
-#MacFolio
+#MacFolio #배포 #트러블슈팅

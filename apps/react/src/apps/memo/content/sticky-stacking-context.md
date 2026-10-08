@@ -1,7 +1,7 @@
 ---
 title: sticky 도구 막대가 버튼을 가린 이유
 date: 2026-09-29
-category: 개발기/MacFolio
+category: 개발기/MacFolio/메모
 summary: 메모 도구 막대를 스크롤에 붙였더니 버튼이 눌리지 않았다. position sticky가 만든 쌓임 맥락 이야기.
 ---
 
@@ -81,3 +81,5 @@ z-index가 이상하게 동작하면, 조상 중에 쌓임 맥락을 만드는 �
 - `isolation: isolate`, `will-change`, `contain`
 
 브라우저 개발자 도구의 3D 보기나 레이어 보기로 쌓인 순서를 확인할 수 있다.
+
+#MacFolio #메모앱 #CSS #트러블슈팅

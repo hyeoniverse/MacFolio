@@ -1,7 +1,7 @@
 ---
 title: 트래픽 분석 1 - 쿠키 없이 순방문자 세기
 date: 2026-10-07
-category: 개발기/MacFolio
+category: 개발기/MacFolio/트래픽 분석
 summary: 포트폴리오를 어디에 냈을 때 사람이 들어오고 무엇을 보는지 알고 싶었다. 외부 분석 도구 대신 API를 직접 만들었다. 쿠키 없이 하루 해시로 순방문자를 세고, 원래 IP는 저장하지 않으며, 90일이 지난 이벤트는 날마다 모은 숫자만 남기고 지운다.
 ---
 
@@ -80,3 +80,5 @@ export const dayHash = (day: string, ip: string, userAgent: string, secret: stri
 - e2e(실제 DB): 저장한 행에 원래 IP와 User-Agent 원문이 **없는지**, 로봇·관리자를 저장하지 않는지, 같은 사람의 두 방문이 한 명인지, 어제는 `DailyStat`으로 모으고 오늘은 바로 세는지, 90일·7일 정리, 실시간 흐름, 요청 제한
 
 무엇을 모으고 얼마나 두는지는 `docs/privacy.md`에 따로 적었다. 사이트에서도 볼 수 있게 수집 코드와 함께 붙일 생각이다.
+
+#MacFolio #트래픽분석 #백엔드 #개인정보

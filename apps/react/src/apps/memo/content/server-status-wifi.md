@@ -1,7 +1,7 @@
 ---
 title: 메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기
 date: 2026-10-05
-category: 개발기/MacFolio
+category: 개발기/MacFolio/데스크톱
 summary: 장식이던 Wi-Fi 아이콘을 이 사이트 API 서버의 상태로 바꿨다. /health를 주기적으로 불러 응답 시간과 DB 상태를 막대 수로 보여 준다.
 ---
 
@@ -47,3 +47,5 @@ Wi-Fi 자리를 바꾸자 음량 창이 음량 아이콘에서 비켜나 열렸�
 ## 맥에서만 깨지던 빌드
 
 작업하다가 타입 검사가 맥에서만 실패했다. GitHub 앱이 `GithubActivity.tsx`(화면)와 `githubActivity.ts`(데이터)를 함께 쓰는데, 두 파일 이름이 대소문자만 다르다. 리눅스(CI)에서는 서로 다른 파일이지만, 대소문자를 가리지 않는 맥의 파일 시스템에서는 `'@/apps/github/GithubActivity'`가 `.ts`를 먼저 찾아 데이터 파일을 가져왔다. 화면 파일 이름을 `GithubContributions.tsx`로 바꿨다.
+
+#MacFolio #데스크톱 #메뉴막대 #서버

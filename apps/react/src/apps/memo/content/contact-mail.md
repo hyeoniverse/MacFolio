@@ -1,7 +1,7 @@
 ---
 title: 메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile
 date: 2026-10-07
-category: 개발기/MacFolio
+category: 개발기/MacFolio/백엔드
 summary: 메일 앱의 보내기는 방문자의 메일 앱을 여는 mailto 링크였다. 서버가 Resend로 직접 보내게 하고, 보낸 사람 주소는 Reply-To로 넣어 바로 답장하게 했다. 스팸은 Cloudflare Turnstile과 하루 상한으로 막고, 서버에 설정이 없으면 예전처럼 메일 앱을 연다.
 ---
 
@@ -50,3 +50,5 @@ Resend 키·받는 주소·보내는 주소 셋이 다 있어야 서버가 보�
 - 화면: 서버가 보내면 메일 앱을 열지 않고 "메일을 보냈어요", Turnstile 토큰과 함께 보내기(바깥 스크립트 대신 대역), 설정이 없으면 메일 앱으로, 거절하면 이유를 보여 주고 쓰던 글은 그대로
 
 서버에 키를 넣는 방법은 `docs/deployment.md`의 '연락 메일'에 적었다.
+
+#MacFolio #백엔드 #메일

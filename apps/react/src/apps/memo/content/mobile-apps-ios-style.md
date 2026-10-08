@@ -1,7 +1,7 @@
 ---
 title: 휴대폰 앱들을 메모처럼 - 함께 쓰는 바탕과 카드, iOS 음악
 date: 2026-10-02
-category: 개발기/MacFolio
+category: 개발기/MacFolio/휴대폰
 summary: 메모의 휴대폰 화면을 iOS처럼 바꾸고 나니 다른 앱만 예전 모양으로 남았다. 회색 바탕, 흰 카드, 떠 있는 단추를 셸의 공통 값으로 빼고 메일·메시지·설정·암호·단축어가 같은 모양을 쓰게 했다. 큰 제목은 뒤로 가기와 같은 줄에 둔다. 음악은 iOS 음악처럼 보관함, 플레이리스트, 앨범, 아티스트로 나눴다.
 ---
 
@@ -251,4 +251,4 @@ window.parent.postMessage({ type: 'macfolio:bar-color', color: '#3b82f6' }, '*')
 
 움직임 줄이기 설정을 켰으면 공통 규칙(`motion.css`)이 모든 애니메이션을 끈다.
 
-#MacFolio
+#MacFolio #휴대폰 #iOS

@@ -1,7 +1,7 @@
 ---
 title: CRA에서 Vite로 옮기기
 date: 2026-09-28
-category: 개발기/MacFolio
+category: 개발기/MacFolio/빌드·테스트
 summary: dev 서버 시작 5.05초 → 0.58초. 옮긴 이유와 측정 방법, 옮기면서 조용히 깨져 있던 것들.
 ---
 
@@ -44,3 +44,5 @@ summary: dev 서버 시작 5.05초 → 0.58초. 옮긴 이유와 측정 방법, 
 - **빠진 의존성:** `react-dom`과 `typescript`가 `package.json`에 없었다. 예전 `node_modules`에 남아 있어서 내 컴퓨터에서는 드러나지 않았다.
 
 전부 "잘 되는 것처럼 보이는" 문제였다. 이 경험 이후로 빌드가 된다고 끝내지 않고, 배포 결과를 직접 열어 보고 자동 테스트로 확인하는 습관을 들였다.
+
+#MacFolio #Vite #성능

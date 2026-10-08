@@ -1,7 +1,7 @@
 ---
 title: 화면 어디서나 쓸어서 제어 센터 열기
 date: 2026-09-29
-category: 개발기/MacFolio
+category: 개발기/MacFolio/휴대폰
 summary: 상태 표시줄에서만 열리던 제어 센터를 화면 어디서든 쓸어서 여닫게 했다. 스크롤과 싸우지 않으면서 손가락을 따라오게 하기.
 ---
 
@@ -65,3 +65,5 @@ await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }
 ```
 
 홈 화면 가운데에서 열기, 타일 위에서 위로 쓸어 닫기(타일은 눌리지 않음), 앱 안 맨 위에서만 열리기, 음량 막대를 올려도 닫히지 않기를 iPhone과 Android 크기에서 모두 확인한다.
+
+#MacFolio #휴대폰 #제스처

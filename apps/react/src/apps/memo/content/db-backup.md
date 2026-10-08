@@ -1,7 +1,7 @@
 ---
 title: 글이 DB에만 있게 되어서 백업을 붙였다
 date: 2026-10-05
-category: 개발기/MacFolio
+category: 개발기/MacFolio/배포·운영
 summary: 블로그 글·임시 저장·버전·올린 이미지가 모두 1GB 무료 서버의 DB에만 있다. 매일 덤프해 서버 밖(R2)에 남기고, 되살려 보는 것까지 스크립트로 만들었다.
 ---
 
@@ -44,3 +44,5 @@ R2 키는 저장소 밖의 `~/deploy/backup.env`에만 둔다. rclone 설정도 
 - 저장소가 상한을 넘게 되면 올리지 않고 1로 끝나며 알림 주소의 `/fail`을 부르는지, 상한 값이 숫자가 아니면 멈추는지 (같은 방법으로)
 
 서버에 적용하는 순서(R2 버킷과 키, rclone, cron)는 `docs/deployment.md`의 '백업'에, 단계마다의 까닭은 [R2에 DB 백업 걸기](/memo/r2-backup-setup)에 적었다.
+
+#MacFolio #서버 #백업

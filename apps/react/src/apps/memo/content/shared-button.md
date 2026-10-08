@@ -1,7 +1,7 @@
 ---
 title: '!important 66개 지우기와 공통 아이콘 단추'
 date: 2026-10-01
-category: 개발기/MacFolio
+category: 개발기/MacFolio/공통 UI
 summary: 앱 기본값을 CSS 층으로 내린 덕분에 남은 !important를 모두 지울 수 있었다. 지우면서 생긴 차이는 화면 비교와 계산된 스타일 비교로 찾았다. 그리고 앱마다 따로 있던 아이콘 단추를 공통 IconButton 하나로 합쳤다.
 ---
 
@@ -120,3 +120,5 @@ for (let i = 0; i < count; i++) {
 - 계산된 스타일: 바뀐 것은 메시지 새 피드백 단추의 `z-index`(공통 단추는 창의 끌기 영역 위에 있게 `z-index: 4`를 준다)와, 같은 상자 크기를 다르게 적은 값들(Safari 단추의 `width: 30px` → `min-width: 30px` + 여백)뿐이다
 
 다음 단계에서는 글자가 있는 단추(`Button`), 목록의 줄(`ListRow`), 나눔 단추(`SegmentedControl`)를 같은 방법으로 옮긴다.
+
+#MacFolio #CSS #공통컴포넌트

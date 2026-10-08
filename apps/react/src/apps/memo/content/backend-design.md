@@ -87,3 +87,5 @@ API에 들어온 요청은 모두 같은 층을 차례로 지난다.
 - [GitHub 앱을 진짜 GitHub로](/memo/github-live-profile)
 - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
 - [프론트엔드 배포를 GitHub Actions로](/memo/deploy-github-actions)
+
+#MacFolio #백엔드 #설계

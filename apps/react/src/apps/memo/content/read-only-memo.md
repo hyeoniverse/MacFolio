@@ -1,7 +1,7 @@
 ---
 title: 메모 편집을 관리자만 하게 한 이유
 date: 2026-09-29
-category: 개발기/MacFolio
+category: 개발기/MacFolio/메모
 summary: 폴더 만들기, 끌어 옮기기, 고정까지 만든 뒤에 전부 잠갔다. 정적 사이트에서는 관리자를 가릴 수 없기 때문이다.
 ---
 
@@ -47,3 +47,5 @@ export function useCanEditMemo(): boolean {
 - 같은 로그인으로 GitHub 앱에 보여 줄 고정 저장소도 설정에서 고른다
 
 화면에서 단추를 숨기는 것은 보안이 아니라 안내일 뿐이다. 실제로 막는 일은 서버가 한다.
+
+#MacFolio #메모앱 #보안
