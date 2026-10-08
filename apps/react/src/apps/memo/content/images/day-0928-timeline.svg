@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 407" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>9월 28일 작업 흐름</title>
+<rect width="760" height="407" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">9월 28일</text>
+<text x="121" y="42" font-size="12.5" fill="#6b7280">커밋 65개 · 새 블로그 글 2편 · 하루 끝 E2E 78개</text>
+<rect x="546" y="31" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="564" y="41" font-size="11" fill="#8b93a1">그 시간에 들어간 커밋 수</text>
+<path d="M48.0 64 V365" stroke="#eef0f3"/>
+<text x="48.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 64 V365" stroke="#eef0f3"/>
+<text x="133.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 64 V365" stroke="#eef0f3"/>
+<text x="218.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 64 V365" stroke="#eef0f3"/>
+<text x="303.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 64 V365" stroke="#eef0f3"/>
+<text x="388.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 64 V365" stroke="#eef0f3"/>
+<text x="473.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 64 V365" stroke="#eef0f3"/>
+<text x="558.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 64 V365" stroke="#eef0f3"/>
+<text x="643.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 64 V365" stroke="#eef0f3"/>
+<text x="728.0" y="385" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<rect x="701.7" y="346.6" width="24.3" height="14.4" rx="3" fill="#c7d2fe"/>
+<text x="713.8" y="342.6" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="673.3" y="325.0" width="24.3" height="36.0" rx="3" fill="#c7d2fe"/>
+<text x="685.5" y="321.0" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="645.0" y="346.6" width="24.3" height="14.4" rx="3" fill="#c7d2fe"/>
+<text x="657.2" y="342.6" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="616.7" y="332.2" width="24.3" height="28.8" rx="3" fill="#c7d2fe"/>
+<text x="628.8" y="328.2" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="588.3" y="325.0" width="24.3" height="36.0" rx="3" fill="#c7d2fe"/>
+<text x="600.5" y="321.0" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="560.0" y="346.6" width="24.3" height="14.4" rx="3" fill="#c7d2fe"/>
+<text x="572.2" y="342.6" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="531.7" y="339.4" width="24.3" height="21.6" rx="3" fill="#c7d2fe"/>
+<text x="543.8" y="335.4" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="503.3" y="332.2" width="24.3" height="28.8" rx="3" fill="#c7d2fe"/>
+<text x="515.5" y="328.2" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="475.0" y="339.4" width="24.3" height="21.6" rx="3" fill="#c7d2fe"/>
+<text x="487.2" y="335.4" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="446.7" y="346.6" width="24.3" height="14.4" rx="3" fill="#c7d2fe"/>
+<text x="458.8" y="342.6" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="418.3" y="346.6" width="24.3" height="14.4" rx="3" fill="#c7d2fe"/>
+<text x="430.5" y="342.6" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="361.7" y="339.4" width="24.3" height="21.6" rx="3" fill="#c7d2fe"/>
+<text x="373.8" y="335.4" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="333.3" y="289.0" width="24.3" height="72.0" rx="3" fill="#c7d2fe"/>
+<text x="345.5" y="285.0" font-size="9.5" fill="#6366f1" text-anchor="middle">10</text>
+<rect x="305.0" y="325.0" width="24.3" height="36.0" rx="3" fill="#c7d2fe"/>
+<text x="317.2" y="321.0" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="106.7" y="353.8" width="24.3" height="7.2" rx="3" fill="#c7d2fe"/>
+<text x="118.8" y="349.8" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="78.3" y="317.8" width="24.3" height="43.2" rx="3" fill="#c7d2fe"/>
+<text x="90.5" y="313.8" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="50.0" y="317.8" width="24.3" height="43.2" rx="3" fill="#c7d2fe"/>
+<text x="62.2" y="313.8" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="48.0" y="70" width="95.7" height="101" rx="9" fill="#eef0f3" stroke="#a7afba"/>
+<text x="57.0" y="88" font-size="12" font-weight="700" fill="#3f4753">빌드·배포</text>
+<text x="57.0" y="105" font-size="10.5" fill="#3f4753">Vite 정리</text>
+<text x="57.0" y="120" font-size="10.5" fill="#3f4753">앱 단위 폴더</text>
+<text x="57.0" y="135" font-size="10.5" fill="#3f4753">Firebase 제거</text>
+<text x="57.0" y="150" font-size="10.5" fill="#3f4753">Workers 배포</text>
+<text x="57.0" y="165" font-size="10.5" fill="#3f4753">모노레포</text>
+<rect x="320.0" y="70" width="112.5" height="101" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="329.0" y="88" font-size="12" font-weight="700" fill="#1d4f91">토대</text>
+<text x="329.0" y="105" font-size="10.5" fill="#1d4f91">ESLint·Prettier</text>
+<text x="329.0" y="120" font-size="10.5" fill="#1d4f91">Playwright·CI</text>
+<text x="329.0" y="135" font-size="10.5" fill="#1d4f91">창 상태 순수 함수</text>
+<text x="329.0" y="150" font-size="10.5" fill="#1d4f91">설정 앱·테마</text>
+<text x="329.0" y="165" font-size="10.5" fill="#1d4f91">방명록</text>
+<rect x="424.8" y="179" width="92.4" height="86" rx="9" fill="#e3f6ea" stroke="#4fbf7a"/>
+<text x="433.8" y="197" font-size="12" font-weight="700" fill="#1f6b3d">앱 다시 짜기</text>
+<text x="433.8" y="214" font-size="10.5" fill="#1f6b3d">공개 방명록</text>
+<text x="433.8" y="229" font-size="10.5" fill="#1f6b3d">통합형 창</text>
+<text x="433.8" y="244" font-size="10.5" fill="#1f6b3d">메모 → 블로그</text>
+<text x="433.8" y="259" font-size="10.5" fill="#1f6b3d">터미널</text>
+<rect x="552.3" y="70" width="81.0" height="86" rx="9" fill="#efe8fb" stroke="#9b7ae0"/>
+<text x="561.3" y="88" font-size="12" font-weight="700" fill="#4c2f8f">휴대폰 셸</text>
+<text x="561.3" y="105" font-size="10.5" fill="#4c2f8f">iOS 홈 화면</text>
+<text x="561.3" y="120" font-size="10.5" fill="#4c2f8f">제어 센터</text>
+<text x="561.3" y="135" font-size="10.5" fill="#4c2f8f">앱 전환기</text>
+<text x="561.3" y="150" font-size="10.5" fill="#4c2f8f">음악 앱</text>
+<rect x="640.2" y="70" width="76.8" height="86" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="649.2" y="88" font-size="12" font-weight="700" fill="#7a5a12">메모 앱</text>
+<text x="649.2" y="105" font-size="10.5" fill="#7a5a12">목록·갤러리</text>
+<text x="649.2" y="120" font-size="10.5" fill="#7a5a12">폴더 트리</text>
+<text x="649.2" y="135" font-size="10.5" fill="#7a5a12">끌어 옮기기</text>
+<text x="649.2" y="150" font-size="10.5" fill="#7a5a12">고정</text>
+</svg>

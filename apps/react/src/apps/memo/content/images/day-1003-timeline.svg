@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 332" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 3일 작업 흐름</title>
+<rect width="760" height="332" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 3일</text>
+<text x="121" y="42" font-size="12.5" fill="#6b7280">커밋 30개 · 새 블로그 글 11편 · 하루 끝 E2E 198개</text>
+<rect x="546" y="31" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="564" y="41" font-size="11" fill="#8b93a1">그 시간에 들어간 커밋 수</text>
+<path d="M48.0 64 V290" stroke="#eef0f3"/>
+<text x="48.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 64 V290" stroke="#eef0f3"/>
+<text x="133.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 64 V290" stroke="#eef0f3"/>
+<text x="218.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 64 V290" stroke="#eef0f3"/>
+<text x="303.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 64 V290" stroke="#eef0f3"/>
+<text x="388.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 64 V290" stroke="#eef0f3"/>
+<text x="473.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 64 V290" stroke="#eef0f3"/>
+<text x="558.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 64 V290" stroke="#eef0f3"/>
+<text x="643.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 64 V290" stroke="#eef0f3"/>
+<text x="728.0" y="310" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<rect x="701.7" y="255.1" width="24.3" height="30.9" rx="3" fill="#c7d2fe"/>
+<text x="713.8" y="251.1" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="673.3" y="244.9" width="24.3" height="41.1" rx="3" fill="#c7d2fe"/>
+<text x="685.5" y="240.9" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="645.0" y="275.7" width="24.3" height="10.3" rx="3" fill="#c7d2fe"/>
+<text x="657.2" y="271.7" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="531.7" y="214.0" width="24.3" height="72.0" rx="3" fill="#c7d2fe"/>
+<text x="543.8" y="210.0" font-size="9.5" fill="#6366f1" text-anchor="middle">7</text>
+<rect x="503.3" y="275.7" width="24.3" height="10.3" rx="3" fill="#c7d2fe"/>
+<text x="515.5" y="271.7" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="475.0" y="265.4" width="24.3" height="20.6" rx="3" fill="#c7d2fe"/>
+<text x="487.2" y="261.4" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="191.7" y="255.1" width="24.3" height="30.9" rx="3" fill="#c7d2fe"/>
+<text x="203.8" y="251.1" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="163.3" y="255.1" width="24.3" height="30.9" rx="3" fill="#c7d2fe"/>
+<text x="175.5" y="251.1" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="135.0" y="255.1" width="24.3" height="30.9" rx="3" fill="#c7d2fe"/>
+<text x="147.2" y="251.1" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="106.7" y="265.4" width="24.3" height="20.6" rx="3" fill="#c7d2fe"/>
+<text x="118.8" y="261.4" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="78.3" y="275.7" width="24.3" height="10.3" rx="3" fill="#c7d2fe"/>
+<text x="90.5" y="271.7" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="96.2" y="70" width="104.8" height="71" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="105.2" y="88" font-size="12" font-weight="700" fill="#1d4f91">시스템 설정</text>
+<text x="105.2" y="105" font-size="10.5" fill="#1d4f91">배경화면 관리</text>
+<text x="105.2" y="120" font-size="10.5" fill="#1d4f91">로그인 시각</text>
+<text x="105.2" y="135" font-size="10.5" fill="#1d4f91">GitHub 저장소</text>
+<rect x="478.7" y="70" width="89.4" height="71" rx="9" fill="#eef0f3" stroke="#a7afba"/>
+<text x="487.7" y="88" font-size="12" font-weight="700" fill="#3f4753">다듬기·배포</text>
+<text x="487.7" y="105" font-size="10.5" fill="#3f4753">시계 칸 고정</text>
+<text x="487.7" y="120" font-size="10.5" fill="#3f4753">카드 크기</text>
+<text x="487.7" y="135" font-size="10.5" fill="#3f4753">Actions 배포</text>
+<rect x="543.8" y="149" width="66.3" height="41" rx="9" fill="#e3f6ea" stroke="#4fbf7a"/>
+<text x="552.8" y="167" font-size="12" font-weight="700" fill="#1f6b3d">아이콘</text>
+<text x="552.8" y="184" font-size="10.5" fill="#1f6b3d">새싹 농장</text>
+<rect x="651.2" y="70" width="76.8" height="71" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="660.2" y="88" font-size="12" font-weight="700" fill="#7a5a12">둘러보기</text>
+<text x="660.2" y="105" font-size="10.5" fill="#7a5a12">Finder</text>
+<text x="660.2" y="120" font-size="10.5" fill="#7a5a12">프로젝트 앱</text>
+<text x="660.2" y="135" font-size="10.5" fill="#7a5a12">목록 한 곳</text>
+</svg>

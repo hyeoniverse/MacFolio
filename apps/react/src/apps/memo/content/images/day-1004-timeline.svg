@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 313" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 4일 작업 흐름</title>
+<rect width="760" height="313" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 4일</text>
+<text x="121" y="42" font-size="12.5" fill="#6b7280">커밋 83개 · 새 블로그 글 1편 · 하루 끝 E2E 204개</text>
+<rect x="546" y="31" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="564" y="41" font-size="11" fill="#8b93a1">그 시간에 들어간 커밋 수</text>
+<path d="M48.0 64 V271" stroke="#eef0f3"/>
+<text x="48.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 64 V271" stroke="#eef0f3"/>
+<text x="133.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 64 V271" stroke="#eef0f3"/>
+<text x="218.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 64 V271" stroke="#eef0f3"/>
+<text x="303.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 64 V271" stroke="#eef0f3"/>
+<text x="388.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 64 V271" stroke="#eef0f3"/>
+<text x="473.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 64 V271" stroke="#eef0f3"/>
+<text x="558.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 64 V271" stroke="#eef0f3"/>
+<text x="643.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 64 V271" stroke="#eef0f3"/>
+<text x="728.0" y="291" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<rect x="701.7" y="245.4" width="24.3" height="21.6" rx="3" fill="#c7d2fe"/>
+<text x="713.8" y="241.4" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="673.3" y="252.6" width="24.3" height="14.4" rx="3" fill="#c7d2fe"/>
+<text x="685.5" y="248.6" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="645.0" y="245.4" width="24.3" height="21.6" rx="3" fill="#c7d2fe"/>
+<text x="657.2" y="241.4" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="616.7" y="245.4" width="24.3" height="21.6" rx="3" fill="#c7d2fe"/>
+<text x="628.8" y="241.4" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="588.3" y="245.4" width="24.3" height="21.6" rx="3" fill="#c7d2fe"/>
+<text x="600.5" y="241.4" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="560.0" y="259.8" width="24.3" height="7.2" rx="3" fill="#c7d2fe"/>
+<text x="572.2" y="255.8" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="475.0" y="238.2" width="24.3" height="28.8" rx="3" fill="#c7d2fe"/>
+<text x="487.2" y="234.2" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="276.7" y="216.6" width="24.3" height="50.4" rx="3" fill="#c7d2fe"/>
+<text x="288.8" y="212.6" font-size="9.5" fill="#6366f1" text-anchor="middle">7</text>
+<rect x="248.3" y="202.2" width="24.3" height="64.8" rx="3" fill="#c7d2fe"/>
+<text x="260.5" y="198.2" font-size="9.5" fill="#6366f1" text-anchor="middle">9</text>
+<rect x="220.0" y="223.8" width="24.3" height="43.2" rx="3" fill="#c7d2fe"/>
+<text x="232.2" y="219.8" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="191.7" y="245.4" width="24.3" height="21.6" rx="3" fill="#c7d2fe"/>
+<text x="203.8" y="241.4" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="163.3" y="195.0" width="24.3" height="72.0" rx="3" fill="#c7d2fe"/>
+<text x="175.5" y="191.0" font-size="9.5" fill="#6366f1" text-anchor="middle">10</text>
+<rect x="135.0" y="202.2" width="24.3" height="64.8" rx="3" fill="#c7d2fe"/>
+<text x="147.2" y="198.2" font-size="9.5" fill="#6366f1" text-anchor="middle">9</text>
+<rect x="106.7" y="202.2" width="24.3" height="64.8" rx="3" fill="#c7d2fe"/>
+<text x="118.8" y="198.2" font-size="9.5" fill="#6366f1" text-anchor="middle">9</text>
+<rect x="78.3" y="216.6" width="24.3" height="50.4" rx="3" fill="#c7d2fe"/>
+<text x="90.5" y="212.6" font-size="9.5" fill="#6366f1" text-anchor="middle">7</text>
+<rect x="50.0" y="238.2" width="24.3" height="28.8" rx="3" fill="#c7d2fe"/>
+<text x="62.2" y="234.2" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="48.0" y="70" width="252.2" height="101" rx="9" fill="#e3f6ea" stroke="#4fbf7a"/>
+<text x="57.0" y="88" font-size="12" font-weight="700" fill="#1f6b3d">Safari 프로젝트 페이지 (밤새)</text>
+<text x="57.0" y="105" font-size="10.5" fill="#1f6b3d">페이지마다 다른 짜임</text>
+<text x="57.0" y="120" font-size="10.5" fill="#1f6b3d">새싹 농장 길 지도</text>
+<text x="57.0" y="135" font-size="10.5" fill="#1f6b3d">DevCourse 터미널</text>
+<text x="57.0" y="150" font-size="10.5" fill="#1f6b3d">큐알유·뉴픽</text>
+<text x="57.0" y="165" font-size="10.5" fill="#1f6b3d">MacFolio 시뮬레이터</text>
+<rect x="473.0" y="70" width="255.0" height="101" rx="9" fill="#efe8fb" stroke="#9b7ae0"/>
+<text x="482.0" y="88" font-size="12" font-weight="700" fill="#4c2f8f">HYEONIVERSE 데모</text>
+<text x="482.0" y="105" font-size="10.5" fill="#4c2f8f">CMS·테마 장</text>
+<text x="482.0" y="120" font-size="10.5" fill="#4c2f8f">Fish 음성</text>
+<text x="482.0" y="135" font-size="10.5" fill="#4c2f8f">파형 편집</text>
+<text x="482.0" y="150" font-size="10.5" fill="#4c2f8f">AI 데모 API</text>
+<text x="482.0" y="165" font-size="10.5" fill="#4c2f8f">몽이</text>
+</svg>
