@@ -1,3 +1,4 @@
+import { useExitMotionRef } from '@/shared/ui/motion/useExitMotion';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMusic } from '@/apps/music/MusicContext';
@@ -18,7 +19,8 @@ const VolumeMenu = () => {
 	const [open, setOpen] = useState(false);
 	const [position, setPosition] = useState<Point | null>(null);
 	const button = useRef<HTMLButtonElement>(null);
-	const panel = useRef<HTMLDivElement>(null);
+	// 닫히면 살짝 작아지며 사라진다
+	const [panel, panelExit] = useExitMotionRef<HTMLDivElement>('pop-out');
 	useDismiss(open, () => setOpen(false), [panel, button]);
 
 	// 그려진 크기를 재서 자리를 정한다 (그리기 전에 옮겨 깜빡이지 않는다)
@@ -31,7 +33,7 @@ const VolumeMenu = () => {
 				{ align: 'center' }
 			)
 		);
-	}, [open]);
+	}, [panel, open]);
 
 	const icon = iconOf(volume);
 	return (
@@ -50,7 +52,7 @@ const VolumeMenu = () => {
 			{open &&
 				createPortal(
 					<div
-						ref={panel}
+						ref={panelExit}
 						className="volume-container"
 						role="dialog"
 						aria-label="음량"

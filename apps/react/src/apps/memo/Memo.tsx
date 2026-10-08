@@ -551,7 +551,7 @@ const Memo: React.FC = () => {
 			<>
 				{pinnedPosts.length > 0 && (
 					<>
-						<h3 className="memo-section-title">
+						<h3 className="memo-section-title motion-swap">
 							<i className="fa-solid fa-thumbtack" aria-hidden="true" /> {pinnedTitle}
 						</h3>
 						<ul className={className} aria-label={pinnedTitle}>
@@ -562,7 +562,7 @@ const Memo: React.FC = () => {
 				{grouped ? (
 					groups.map((group) => (
 						<React.Fragment key={group.title}>
-							<h3 className="memo-section-title">{group.title}</h3>
+							<h3 className="memo-section-title motion-swap">{group.title}</h3>
 							<ul className={className} aria-label={group.title ?? undefined}>
 								{group.posts.map(render)}
 							</ul>
@@ -570,7 +570,9 @@ const Memo: React.FC = () => {
 					))
 				) : (
 					<>
-						{pinnedPosts.length > 0 && otherPosts.length > 0 && <h3 className="memo-section-title">메모</h3>}
+						{pinnedPosts.length > 0 && otherPosts.length > 0 && (
+							<h3 className="memo-section-title motion-swap">메모</h3>
+						)}
 						{(pinnedPosts.length === 0 || otherPosts.length > 0) && (
 							<ul className={className}>{otherPosts.map(render)}</ul>
 						)}
@@ -683,7 +685,7 @@ const Memo: React.FC = () => {
 		open: revisionsOpen,
 		setOpen: setRevisionsOpen,
 		buttonRef: revisionsButton,
-		panelRef: revisionsPanel,
+		panel: revisionsPanelExit,
 		position: revisionsPosition,
 	} = usePopover();
 
@@ -1150,9 +1152,12 @@ const Memo: React.FC = () => {
 								</p>
 							)}
 							{/* 휴대폰에서 갤러리로 보면 목록 칸에 카드로 (넓은 창의 갤러리 칸은 한 칸씩 볼 때 숨는다) */}
-							{phone && compact && view === 'gallery'
-								? sections(card, '고정된 메모', 'memo-cards')
-								: sections(listItem, '고정됨', 'memo-items')}
+							{/* 폴더·태그·정렬을 바꾸면 목록이 서서히 바뀐다 (감싸는 요소 없이 key로 새로 그린다: 휴대폰 CSS의 인접 선택자가 그대로 맞는다) */}
+							<React.Fragment key={`${category}|${JSON.stringify(tagSelection)}|${JSON.stringify(arrangement)}`}>
+								{phone && compact && view === 'gallery'
+									? sections(card, '고정된 메모', 'memo-cards motion-swap')
+									: sections(listItem, '고정됨', 'memo-items motion-swap')}
+							</React.Fragment>
 							{empty}
 						</div>
 						{/* 휴대폰: 정렬은 오른쪽 위, 검색 알약과 새 메모는 아래에 뜬다 (넘기는 칸 밖에 두어 늘 제자리) */}
@@ -1557,7 +1562,7 @@ const Memo: React.FC = () => {
 						selected &&
 						createPortal(
 							<div
-								ref={revisionsPanel}
+								ref={revisionsPanelExit}
 								className="memo-format-panel memo-format-panel-wide"
 								role="dialog"
 								aria-label="버전 기록"

@@ -4,6 +4,7 @@ import type React from 'react';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { placeBelow, placeRight } from '@/shared/ui/popover/placement';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
+import { useExitMotionRef } from '@/shared/ui/motion/useExitMotion';
 
 /** 누를 때 편집기의 커서를 빼앗지 않는다 (서식을 커서 자리에 바로 적용하도록) */
 export const keepFocus = (event: React.MouseEvent | React.PointerEvent) => event.preventDefault();
@@ -19,7 +20,8 @@ export function usePopover(
 ) {
 	const [open, setOpen] = useState(false);
 	const buttonRef = useRef<HTMLButtonElement>(null);
-	const panelRef = useRef<HTMLDivElement>(null);
+	// 창: 닫히면 살짝 작아지며 사라진다. panelRef로 읽고, panel을 창에 건다
+	const [panelRef, panel] = useExitMotionRef<HTMLDivElement>('pop-out');
 	const [position, setPosition] = useState({ left: 0, top: 0 });
 
 	useLayoutEffect(() => {
@@ -29,9 +31,9 @@ export function usePopover(
 		const rect = anchor.getBoundingClientRect();
 		const size = { width: panelRef.current?.offsetWidth ?? 240, height: panelRef.current?.offsetHeight ?? 0 };
 		setPosition(placement === 'right' ? placeRight(rect, size) : placeBelow(rect, size, { align: 'center', gap: 8 }));
-	}, [open, fallback, placement, anchorKey]);
+	}, [panelRef, open, fallback, placement, anchorKey]);
 
 	useDismiss(open, () => setOpen(false), [panelRef, buttonRef], { keepOpenInside });
 
-	return { open, setOpen, buttonRef, panelRef, position };
+	return { open, setOpen, buttonRef, panelRef, panel, position };
 }

@@ -165,7 +165,8 @@ const Safari: React.FC = () => {
 	const page = (
 		<div
 			key={activeId}
-			className="safari-page"
+			// 탭을 바꾸면 서서히 바뀐다 (휴대폰은 SafariMobile의 넘기기)
+			className={`safari-page ${mobile ? '' : 'motion-swap'}`}
 			role="tabpanel"
 			id="safari-tabpanel"
 			aria-labelledby={mobile ? undefined : `safari-tab-${activeId}`}

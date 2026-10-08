@@ -384,7 +384,7 @@ const ImagePanel = ({
 					</button>
 				))}
 			</div>
-			<div role="tabpanel" aria-label={TABS.find((item) => item.id === tab)?.label}>
+			<div key={tab} className="motion-swap" role="tabpanel" aria-label={TABS.find((item) => item.id === tab)?.label}>
 				{tab === 'file' && <FileTab onDone={onDone} />}
 				{tab === 'url' && <UrlTab run={run} onDone={onDone} />}
 				{(tab === 'unsplash' || tab === 'pexels') && (
