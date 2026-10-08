@@ -68,6 +68,73 @@
 	animation: pop-out 140ms var(--ease-in) forwards !important;
 }
 
+/* 옆에서 여는 패널: 오른쪽에서 들어오고 오른쪽으로 나간다 */
+@keyframes panel-in-right {
+	from {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+}
+
+@keyframes panel-out-right {
+	to {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+}
+
+/* 아래에서 여는 판 */
+@keyframes panel-out-down {
+	to {
+		opacity: 0;
+		transform: translateY(40%);
+	}
+}
+
+/* 다음·이전 항목으로 넘길 때: 넘긴 쪽에서 살짝 밀려 들어온다 (data-direction) */
+@keyframes slide-from-right {
+	from {
+		opacity: 0;
+		transform: translateX(6%);
+	}
+}
+
+@keyframes slide-from-left {
+	from {
+		opacity: 0;
+		transform: translateX(-6%);
+	}
+}
+
+/* 펼치기: 위에서 살짝 내려오며 나타난다 (펼친 줄, 찾기 막대 등) */
+@keyframes drop-in {
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+}
+
+/* 막대가 왼쪽부터 차오른다 (비율 막대, 진행 막대) */
+@keyframes grow-x {
+	from {
+		transform: scaleX(0);
+	}
+}
+
+/* 선이 처음부터 끝까지 그려진다 (pathLength="1"인 SVG 선) */
+@keyframes draw-line {
+	from {
+		stroke-dashoffset: 1;
+	}
+}
+
+/* 켜기 (좋아요 하트, 고정 핀 등): 톡 튀었다 돌아온다 */
+@keyframes toggle-pop {
+	40% {
+		transform: scale(1.3);
+	}
+}
+
 /* 바뀌는 칸 (key로 새로 그릴 때 서서히): 데스크톱 앱의 화면·항목이 바뀔 때 */
 .motion-swap {
 	animation: fade-in var(--duration-fast) var(--ease-out);

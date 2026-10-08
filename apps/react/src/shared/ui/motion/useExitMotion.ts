@@ -1,21 +1,44 @@
 import { useCallback, useRef } from 'react';
 
 /** 사라지는 움직임 이름 (motion.css의 키프레임) */
-export type ExitMotion = 'pop-out' | 'fade-out' | 'sink-out' | 'slide-out-right';
+export type ExitMotion = 'pop-out' | 'fade-out' | 'sink-out' | 'slide-out-right' | 'panel-out-right' | 'panel-out-down';
 
 const DURATION: Record<ExitMotion, number> = {
 	'pop-out': 140,
 	'fade-out': 160,
 	'sink-out': 200,
 	'slide-out-right': 240,
+	'panel-out-right': 220,
+	'panel-out-down': 240,
 };
 
 const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-/** 지워지기 직전의 요소를 같은 자리에 복사해 두고, 사라지는 움직임이 끝나면 지운다 */
+/**
+ * 지워지기 직전의 요소를 같은 자리에 복사해 두고, 사라지는 움직임이 끝나면 지운다.
+ * 흐름 안의 요소(옆 패널 등)는 복사본이 자리를 차지하지 않게 같은 자리·크기로 띄운다
+ */
 export function playExit(element: HTMLElement, motion: ExitMotion) {
 	if (!element.isConnected || !element.parentNode || reducedMotion()) return;
+	const inFlow = ['static', 'relative', 'sticky'].includes(getComputedStyle(element).position);
+	const box = {
+		left: element.offsetLeft,
+		top: element.offsetTop,
+		width: element.offsetWidth,
+		height: element.offsetHeight,
+	};
 	const ghost = element.cloneNode(true) as HTMLElement;
+	if (inFlow) {
+		Object.assign(ghost.style, {
+			position: 'absolute',
+			left: `${box.left}px`,
+			top: `${box.top}px`,
+			width: `${box.width}px`,
+			height: `${box.height}px`,
+			margin: '0',
+			zIndex: '5',
+		});
+	}
 	ghost.setAttribute('aria-hidden', 'true');
 	ghost.setAttribute('data-exiting', motion);
 	ghost.inert = true;

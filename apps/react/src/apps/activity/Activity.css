@@ -437,3 +437,42 @@
 .container.mobile .activity-tabs button {
 	white-space: nowrap;
 }
+
+/* ─── 움직임 ─── */
+/* 숫자 카드는 차례로 떠오른다 */
+.activity-stat {
+	animation: rise-in var(--duration) var(--ease-out) both;
+}
+
+.activity-stat:nth-child(2) {
+	animation-delay: 40ms;
+}
+
+.activity-stat:nth-child(3) {
+	animation-delay: 80ms;
+}
+
+.activity-stat:nth-child(4) {
+	animation-delay: 120ms;
+}
+
+/* 그래프: 선은 왼쪽부터 그려지고, 아래 칠은 서서히 */
+.activity-chart path:is(.visits, .visitors) {
+	stroke-dasharray: 1;
+	animation: draw-line var(--duration-slow) var(--ease-out) both;
+}
+
+.activity-chart path.area {
+	animation: fade-in var(--duration-slow) var(--ease-out) both;
+}
+
+/* 비율 막대는 왼쪽부터 차오른다 */
+.activity-table td.share .bar > span {
+	transform-origin: left center;
+	animation: grow-x var(--duration-slow) var(--ease-out) both;
+}
+
+/* 방문을 펼치면 흐름이 위에서 내려온다 */
+.activity-live ol {
+	animation: drop-in var(--duration) var(--ease-out);
+}

@@ -4120,3 +4120,21 @@
 .container.mobile .memo-phone-bottom {
 	bottom: calc(12px + var(--phone-bottom-inset));
 }
+
+/* ─── 움직임 ─── */
+/* 폴더를 펼치면 하위 폴더가 위에서 내려온다 */
+.memo-subfolders {
+	animation: drop-in var(--duration) var(--ease-out);
+}
+
+/* 찾기 막대는 위에서 내려온다 */
+.memo-find {
+	animation: drop-in var(--duration) var(--ease-out);
+}
+
+/* 고정하면 핀이 톡 튄다 (도구 막대의 핀, 목록·카드의 핀 표시) */
+.memo-pin[aria-pressed='true'] i,
+.memo-card-pin i,
+.memo-section-title .fa-thumbtack {
+	animation: toggle-pop var(--duration) var(--ease-spring);
+}

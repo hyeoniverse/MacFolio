@@ -588,3 +588,16 @@
 		padding-top: 44px;
 	}
 }
+
+/* ─── 움직임 ─── */
+/* 답장을 보내면 새 답장이 떠오르며 붙는다 */
+.mail-thread-reply {
+	animation: rise-in var(--duration) var(--ease-out);
+}
+
+/* 읽으면 안 읽음 점이 흐려지며 사라진다 */
+.mail-unread {
+	transition:
+		background-color var(--duration) var(--ease-out),
+		opacity var(--duration) var(--ease-out);
+}

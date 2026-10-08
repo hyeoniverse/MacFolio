@@ -1,3 +1,4 @@
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useEffect, useState } from 'react';
 import { PROFILE } from '@/shared/profile';
 import { LIMITS, validateContact, type ContactErrors, type ContactInput } from '../contact';
@@ -48,6 +49,9 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [onCancel]);
 
+	// 넓은 창: 보내거나 취소하면 살짝 내려가며 사라진다 (휴대폰 시트는 MailMobile이 내린다)
+	const composeExit = useExitMotion<HTMLFormElement>('sink-out');
+
 	const field = (key: keyof ContactInput) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		setForm((prev) => ({ ...prev, [key]: event.target.value }));
 		setErrors((prev) => ({ ...prev, [key]: undefined }));
@@ -78,7 +82,13 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 	}
 
 	return (
-		<form className={`mail-compose ${sheet ? 'sheet' : ''}`} aria-label="새로운 메시지" onSubmit={send} noValidate>
+		<form
+			ref={sheet ? undefined : composeExit}
+			className={`mail-compose ${sheet ? 'sheet' : ''}`}
+			aria-label="새로운 메시지"
+			onSubmit={send}
+			noValidate
+		>
 			{sheet ? (
 				<>
 					{/* iOS 메일: 왼쪽 위 ×, 오른쪽 위 ↑ (다 쓰면 파랗게), 그 아래 큰 제목(쓴 제목, 없으면 새로운 메시지) */}

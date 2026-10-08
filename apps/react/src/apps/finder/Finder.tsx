@@ -29,6 +29,7 @@ import DocView from './DocView';
 import FinderIcon from './FinderIcon';
 import FinderMobile from './FinderMobile';
 import '@/apps/finder/Finder.css';
+import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
 
 type View = 'icons' | 'list';
 
@@ -95,8 +96,6 @@ const Finder: React.FC = () => {
 
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: [{ folder: 'docs' }], at: 0 });
 	const place = history.places[history.at];
-	// 다른 폴더·문서로 가면 내용이 서서히 바뀐다 (motion.css의 motion-swap, key로 새로 그린다)
-	const placeKey = JSON.stringify(place);
 	const [view, setView] = useState<View>('icons');
 	const [selected, setSelected] = useState<string | null>(null);
 	const [query, setQuery] = useState('');
@@ -127,6 +126,9 @@ const Finder: React.FC = () => {
 
 	const folder = 'folder' in place ? (find(locations, place.folder) as FolderItem | null) : null;
 	const searching = query.trim() !== '';
+	// 다른 폴더·문서·보기로 가면 내용을 새로 그린다 (motion.css의 motion-swap). 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다
+	const placeKey = `${JSON.stringify(place)}|${view}|${searching}`;
+	const direction = useMoveDirection(history.at, undefined, `${view}|${searching}`);
 	const items: FinderItem[] = searching ? search(locations, query) : (folder?.children ?? []);
 	const title = searching
 		? `‘${query.trim()}’ 찾기`
@@ -310,7 +312,9 @@ const Finder: React.FC = () => {
 									onClick={() => step(1)}
 								/>
 							</div>
-							<h1 className="finder-title">{title}</h1>
+							<h1 key={title} className="finder-title motion-swap">
+								{title}
+							</h1>
 							{'folder' in place && (
 								<div className="finder-views" role="group" aria-label="보기">
 									<IconButton
@@ -362,6 +366,7 @@ const Finder: React.FC = () => {
 						<div
 							ref={content}
 							className="finder-content"
+							data-direction={direction ?? undefined}
 							tabIndex={0}
 							onKeyDown={onKeyDown}
 							onClick={() => setSelected(null)}

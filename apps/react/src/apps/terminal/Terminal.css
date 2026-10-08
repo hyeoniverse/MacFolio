@@ -149,3 +149,29 @@
 	font: inherit;
 	outline: none;
 }
+
+/* ─── 움직임 ─── */
+/* 명령을 치면 결과가 서서히 나타나고, 목록은 줄마다 차례로 */
+.terminal-result {
+	animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+.terminal-items > li {
+	animation: fade-in var(--duration) var(--ease-out) both;
+}
+
+.terminal-items > li:nth-child(2) {
+	animation-delay: 30ms;
+}
+
+.terminal-items > li:nth-child(3) {
+	animation-delay: 60ms;
+}
+
+.terminal-items > li:nth-child(4) {
+	animation-delay: 90ms;
+}
+
+.terminal-items > li:nth-child(n + 5) {
+	animation-delay: 120ms;
+}

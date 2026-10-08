@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { createStore } from '@/shared/lib/createStore';
 import { parseSettings, resolveTheme, wallpaperCss, type Settings } from '@/shared/settings/settings';
+import { fadeOutWallpaper } from '@/shared/settings/wallpaperFade';
 
 /** index.html의 깜빡임 방지 스크립트도 이 키를 읽는다 */
 export const SETTINGS_STORAGE_KEY = 'macfolio:settings';
@@ -23,6 +24,12 @@ function apply(settings: Settings) {
 	const theme = resolveTheme(settings.theme, darkQuery().matches);
 	root.dataset.theme = theme;
 	const wallpaper = wallpaperCss(settings, theme);
+	// 바뀌면 옛 배경이 흐려지며 새 배경이 드러난다 (처음 그릴 때는 그대로)
+	const old = {
+		desktop: root.style.getPropertyValue('--wallpaper'),
+		mobile: root.style.getPropertyValue('--wallpaper-mobile'),
+	};
+	if (old.desktop && (old.desktop !== wallpaper.desktop || old.mobile !== wallpaper.mobile)) fadeOutWallpaper(old);
 	root.style.setProperty('--wallpaper', wallpaper.desktop);
 	root.style.setProperty('--wallpaper-mobile', wallpaper.mobile);
 }
