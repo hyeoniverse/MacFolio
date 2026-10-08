@@ -200,8 +200,16 @@ export const Viewer = ({
 							<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
 						</button>
 					</div>
-					<button type="button" className="photos-pill" onClick={() => onOpenProject(photo.album.id)}>
-						{photo.album.name} 페이지
+					{/* 좁은 창에서는 나침반 동그라미만 (Photos.css) */}
+					<button
+						type="button"
+						className="photos-pill photos-project-button"
+						aria-label={`${photo.album.name} 페이지`}
+						title={`${photo.album.name} 페이지`}
+						onClick={() => onOpenProject(photo.album.id)}
+					>
+						<i className="fa-regular fa-compass" aria-hidden="true" />
+						<span>{photo.album.name} 페이지</span>
 					</button>
 				</div>
 			</header>
