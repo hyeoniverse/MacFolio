@@ -853,6 +853,9 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		// 휴지통 단추와 우클릭 메뉴로 지운다 (묻지 않는다: 30일 동안 되살릴 수 있다)
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
+		// 편집기가 다 열려 서식 도구가 나온 뒤에 누른다. 서식 도구가 나오면 휴지통 단추가 옆으로 밀려서,
+		// 그 사이에 누르면 누른 자리와 뗀 자리의 단추가 달라 눌리지 않는다
+		await expect(memo.getByRole('button', { name: '서식', exact: true }).first()).toBeVisible();
 		await memo.getByRole('button', { name: '메모 삭제', exact: true }).first().click();
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
 		await memo.locator('.memo-item', { hasText: '테스트를 붙이자 보인 버그들' }).click({ button: 'right' });
