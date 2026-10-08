@@ -99,6 +99,32 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await expect(page.getByRole('menu')).toHaveCount(0);
 	});
 
+	test('Dock에서 앱을 누르는 동안 앱 이름은 그대로이고, 클릭이 끝나면 그 앱으로 (Finder로 깜빡이지 않는다)', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		await expect(appName(page)).toHaveText('Safari');
+		// 앱 이름이 지나간 글자를 모두 적는다
+		await appName(page).evaluate((element) => {
+			const seen: string[] = [];
+			(window as unknown as { __names: string[] }).__names = seen;
+			new MutationObserver(() => seen.push(element.textContent ?? '')).observe(element, {
+				childList: true,
+				characterData: true,
+				subtree: true,
+			});
+		});
+		const memo = (await dockItem(page, 'memo').boundingBox())!;
+		await page.mouse.move(memo.x + memo.width / 2, memo.y + memo.height / 2);
+		await page.mouse.down();
+		await page.waitForTimeout(200);
+		await expect(appName(page)).toHaveText('Safari');
+		await page.mouse.up();
+		await expect(appName(page)).toHaveText('메모');
+		const names = await page.evaluate(() => (window as unknown as { __names: string[] }).__names);
+		expect(names).not.toContain('Finder');
+	});
+
 	test('앱 이름이 Finder로 바뀌어도 같은 자리, 같은 높이 (움찔거리지 않는다)', async ({ page }) => {
 		await enterDesktop(page);
 		await expect(appName(page)).toHaveText('Safari');
