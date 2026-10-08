@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 370" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 6일 영역별 바뀐 줄</title>
+<rect width="760" height="370" rx="16" fill="#ffffff"/>
+<text x="32" y="38" font-size="16" font-weight="700" fill="#1f2937">어디를 얼마나 고쳤나</text>
+<text x="322" y="60" font-size="11" fill="#c2410c" text-anchor="end">← 지운 줄</text>
+<text x="338" y="60" font-size="11" fill="#15803d">더한 줄 →</text>
+<text x="32" y="88" font-size="12.5" fill="#374151">데스크톱·휴대폰 셸</text>
+<rect x="287.9" y="74" width="42.1" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="74" width="190.0" height="18" rx="3" fill="#86efac"/>
+<text x="281.9" y="87" font-size="10.5" fill="#9a3412" text-anchor="end">−92</text>
+<text x="526.0" y="87" font-size="10.5" fill="#166534">+415</text>
+<text x="32" y="118" font-size="12.5" fill="#374151">E2E 테스트</text>
+<rect x="301.2" y="104" width="28.8" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="104" width="137.8" height="18" rx="3" fill="#86efac"/>
+<text x="295.2" y="117" font-size="10.5" fill="#9a3412" text-anchor="end">−63</text>
+<text x="473.8" y="117" font-size="10.5" fill="#166534">+301</text>
+<text x="32" y="148" font-size="12.5" fill="#374151">공통 UI·데이터</text>
+<rect x="329.1" y="134" width="0.9" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="134" width="85.2" height="18" rx="3" fill="#86efac"/>
+<text x="323.1" y="147" font-size="10.5" fill="#9a3412" text-anchor="end">−2</text>
+<text x="421.2" y="147" font-size="10.5" fill="#166534">+186</text>
+<text x="32" y="178" font-size="12.5" fill="#374151">메모</text>
+<rect x="319.5" y="164" width="10.5" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="164" width="48.5" height="18" rx="3" fill="#86efac"/>
+<text x="313.5" y="177" font-size="10.5" fill="#9a3412" text-anchor="end">−23</text>
+<text x="384.5" y="177" font-size="10.5" fill="#166534">+106</text>
+<text x="32" y="208" font-size="12.5" fill="#374151">블로그 글</text>
+<rect x="326.8" y="194" width="3.2" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="194" width="39.8" height="18" rx="3" fill="#86efac"/>
+<text x="320.8" y="207" font-size="10.5" fill="#9a3412" text-anchor="end">−7</text>
+<text x="375.8" y="207" font-size="10.5" fill="#166534">+87</text>
+<text x="32" y="238" font-size="12.5" fill="#374151">Finder</text>
+<rect x="327.7" y="224" width="2.3" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="224" width="30.7" height="18" rx="3" fill="#86efac"/>
+<text x="321.7" y="237" font-size="10.5" fill="#9a3412" text-anchor="end">−5</text>
+<text x="366.7" y="237" font-size="10.5" fill="#166534">+67</text>
+<text x="32" y="268" font-size="12.5" fill="#374151">Safari</text>
+<rect x="327.3" y="254" width="2.7" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="254" width="23.8" height="18" rx="3" fill="#86efac"/>
+<text x="321.3" y="267" font-size="10.5" fill="#9a3412" text-anchor="end">−6</text>
+<text x="359.8" y="267" font-size="10.5" fill="#166534">+52</text>
+<text x="32" y="298" font-size="12.5" fill="#374151">음악</text>
+<rect x="327.7" y="284" width="2.3" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="284" width="15.1" height="18" rx="3" fill="#86efac"/>
+<text x="321.7" y="297" font-size="10.5" fill="#9a3412" text-anchor="end">−5</text>
+<text x="351.1" y="297" font-size="10.5" fill="#166534">+33</text>
+<text x="32" y="328" font-size="12.5" fill="#374151">메일</text>
+<rect x="329.5" y="314" width="0.5" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="314" width="8.2" height="18" rx="3" fill="#86efac"/>
+<text x="323.5" y="327" font-size="10.5" fill="#9a3412" text-anchor="end">−1</text>
+<text x="344.2" y="327" font-size="10.5" fill="#166534">+18</text>
+<path d="M330 66 V340" stroke="#d1d5db"/>
+<text x="32" y="358" font-size="10" fill="#8b93a1">머지 커밋, 잠금 파일·node_modules, 그림·영상, openapi.json은 빼고 셌다</text>
+</svg>
