@@ -1,3 +1,4 @@
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { resolveImageSrc } from '../posts';
@@ -78,9 +79,18 @@ const Lightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [onClose]);
+	// 닫히면 흐려지며 사라진다
+	const lightbox = useExitMotion<HTMLDivElement>('fade-out');
 
 	return createPortal(
-		<div className="memo-lightbox" role="dialog" aria-modal="true" aria-label={alt || '이미지'} onClick={onClose}>
+		<div
+			ref={lightbox}
+			className="memo-lightbox"
+			role="dialog"
+			aria-modal="true"
+			aria-label={alt || '이미지'}
+			onClick={onClose}
+		>
 			<img src={src} alt={alt} />
 		</div>,
 		document.body

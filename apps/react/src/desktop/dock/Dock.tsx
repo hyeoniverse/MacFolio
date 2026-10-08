@@ -1,3 +1,4 @@
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useState } from 'react';
 import DockItem from '@/desktop/dock/DockItem';
 import '@/desktop/dock/Dock.css';
@@ -36,6 +37,9 @@ const Dock: React.FC = () => {
 		'--dock-padding': `${DOCK_PADDING}px`,
 		'--dock-divider': `${DOCK_DIVIDER}px`,
 	} as React.CSSProperties;
+
+	// Launchpad는 닫히면 흐려지며 사라진다
+	const launchpad = useExitMotion<HTMLDivElement>('fade-out');
 
 	const handleLaunchpadClick = () => setIsLaunchpadOpen(!isLaunchpadOpen);
 
@@ -97,7 +101,7 @@ const Dock: React.FC = () => {
 
 			{/* Launchpad 모달 */}
 			{isLaunchpadOpen && hiddenItems.length > 0 && (
-				<div className="launchpad-modal" onClick={handleOutsideClick}>
+				<div ref={launchpad} className="launchpad-modal" onClick={handleOutsideClick}>
 					<div className="launchpad-content">
 						<div className="hidden-apps">
 							{hiddenItems.map((hiddenItem) => (

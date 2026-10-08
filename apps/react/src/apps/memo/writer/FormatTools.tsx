@@ -25,21 +25,21 @@ const FormatTools = () => {
 		open: formatOpen,
 		setOpen: setFormatOpen,
 		buttonRef: formatButton,
-		panelRef: formatPanel,
+		panel: formatPanelExit,
 		position: formatPosition,
 	} = usePopover();
 	const {
 		open: imageOpen,
 		setOpen: setImageOpen,
 		buttonRef: imageButton,
-		panelRef: imagePanel,
+		panel: imagePanelExit,
 		position: imagePosition,
 	} = usePopover(formatButton);
 	const {
 		open: tableOpen,
 		setOpen: setTableOpen,
 		buttonRef: tableButton,
-		panelRef: tablePanel,
+		panel: tablePanelExit,
 		position: tablePosition,
 		// 표 편집 메뉴는 표의 다른 칸을 눌러도 열어 둔다 (칸을 옮겨 가며 행·열을 고칠 수 있게)
 	} = usePopover(formatButton, '.ProseMirror table');
@@ -130,7 +130,7 @@ const FormatTools = () => {
 			{formatOpen &&
 				createPortal(
 					<div
-						ref={formatPanel}
+						ref={formatPanelExit}
 						className="memo-format-panel"
 						role="dialog"
 						aria-label="서식"
@@ -248,7 +248,7 @@ const FormatTools = () => {
 				table &&
 				createPortal(
 					<div
-						ref={tablePanel}
+						ref={tablePanelExit}
 						className="memo-format-panel"
 						role="dialog"
 						aria-label="표 편집"
@@ -268,7 +268,7 @@ const FormatTools = () => {
 			{imageOpen &&
 				createPortal(
 					<div
-						ref={imagePanel}
+						ref={imagePanelExit}
 						className="memo-format-panel memo-format-panel-wide"
 						role="dialog"
 						aria-label={state.image ? '이미지 편집' : '이미지 넣기'}

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Button from '@/shared/ui/button/Button';
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import '@/shared/ui/dialog/AlertDialog.css';
 
 export interface AlertDialogProps {
@@ -21,6 +22,8 @@ export interface AlertDialogProps {
  */
 const AlertDialog = ({ title, message, confirmLabel, cancelLabel = '취소', onConfirm, onCancel }: AlertDialogProps) => {
 	const confirmButton = useRef<HTMLButtonElement>(null);
+	// 닫히면 바탕은 흐려지고 상자는 작아지며 사라진다 (motion.css)
+	const overlay = useExitMotion<HTMLDivElement>('fade-out');
 	useEffect(() => {
 		confirmButton.current?.focus();
 		const onKeyDown = (event: KeyboardEvent) => {
@@ -35,6 +38,7 @@ const AlertDialog = ({ title, message, confirmLabel, cancelLabel = '취소', onC
 
 	return (
 		<div
+			ref={overlay}
 			className="ui-alert-overlay"
 			onPointerDown={(event) => {
 				if (event.target === event.currentTarget) onCancel();
