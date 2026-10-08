@@ -1,5 +1,5 @@
 // 사진 앱의 데스크톱·휴대폰 화면이 함께 쓰는 것: 사진 칸, 크게 보기
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { shareLink } from '@/shared/lib/appLink';
 import { useAdmin } from '@/shared/auth/adminStore';
 import type { Album, Photo } from './albums';
@@ -103,6 +103,13 @@ export const CaptionField = ({ photo, className }: { photo: Photo; className?: s
 	);
 };
 
+/** 화살표가 나타나는 가장자리 폭 */
+const NAV_NEAR_PX = 120;
+/** 트랙패드로 이만큼 가로로 밀면 한 장 넘긴다 */
+const SWIPE_DELTA = 60;
+/** 이 시간 동안 휠 이벤트가 없으면 한 번의 스와이프(관성 포함)가 끝난 것으로 본다 */
+const SWIPE_IDLE_MS = 250;
+
 /** 크게 보기 (macOS 사진처럼 막대 아래를 가득): ←·→로 넘기고 Esc로 닫는다. 막대로 확대한다 */
 export const Viewer = ({
 	photos,
@@ -125,6 +132,11 @@ export const Viewer = ({
 		setZoom(ZOOM.min);
 		onMove((index + delta + photos.length) % photos.length);
 	};
+	// 좌우 화살표는 마우스가 그쪽 가장자리 가까이 오면 나타난다 (macOS 사진)
+	const [near, setNear] = useState<'prev' | 'next' | null>(null);
+	const stage = useRef<HTMLDivElement>(null);
+	// 트랙패드 두 손가락 스와이프: 가로로 민 양이 쌓이면 한 장 넘기고, 손을 떼고 관성이 멈출 때까지는 더 넘기지 않는다
+	const swipe = useRef({ sum: 0, locked: false, timer: 0 });
 
 	useEffect(() => {
 		const onKey = (event: KeyboardEvent) => {
@@ -139,6 +151,33 @@ export const Viewer = ({
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
 	});
+
+	useEffect(() => {
+		const element = stage.current;
+		if (!element) return;
+		const onWheel = (event: WheelEvent) => {
+			// 확대한 사진은 스크롤로 둘러본다. 세로로 민 것은 넘기기가 아니다
+			if (zoom > 1 || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+			// 브라우저의 뒤로 가기(가로 스와이프)를 막는다
+			event.preventDefault();
+			const state = swipe.current;
+			window.clearTimeout(state.timer);
+			state.timer = window.setTimeout(() => {
+				state.sum = 0;
+				state.locked = false;
+			}, SWIPE_IDLE_MS);
+			if (state.locked) return;
+			state.sum += event.deltaX;
+			if (Math.abs(state.sum) < SWIPE_DELTA) return;
+			// 손가락을 왼쪽으로 밀면(내용이 왼쪽으로) 다음 사진
+			move(state.sum > 0 ? 1 : -1);
+			state.sum = 0;
+			state.locked = true;
+		};
+		element.addEventListener('wheel', onWheel, { passive: false });
+		return () => element.removeEventListener('wheel', onWheel);
+	});
+	useEffect(() => () => window.clearTimeout(swipe.current.timer), []);
 
 	return (
 		<div className="photos-viewer" role="dialog" aria-label={`사진 ${index + 1}/${photos.length}: ${caption}`}>
@@ -214,7 +253,21 @@ export const Viewer = ({
 				</div>
 			</header>
 			<div className="photos-viewer-body">
-				<div className={`photos-viewer-stage ${zoom > 1 ? 'zoomed' : ''}`}>
+				<div
+					ref={stage}
+					className={`photos-viewer-stage ${zoom > 1 ? 'zoomed' : ''}`}
+					onMouseMove={(event) => {
+						const rect = event.currentTarget.getBoundingClientRect();
+						const side =
+							event.clientX - rect.left < NAV_NEAR_PX
+								? 'prev'
+								: rect.right - event.clientX < NAV_NEAR_PX
+									? 'next'
+									: null;
+						if (side !== near) setNear(side);
+					}}
+					onMouseLeave={() => setNear(null)}
+				>
 					{photo.video ? (
 						<video key={photo.src} src={photo.src} controls autoPlay muted playsInline />
 					) : (
@@ -226,10 +279,20 @@ export const Viewer = ({
 							style={zoom > 1 ? { width: `${zoom * 100}%`, maxWidth: 'none', maxHeight: 'none' } : undefined}
 						/>
 					)}
-					<button type="button" className="photos-viewer-nav prev" aria-label="이전 사진" onClick={() => move(-1)}>
+					<button
+						type="button"
+						className={`photos-viewer-nav prev ${near === 'prev' ? 'shown' : ''}`}
+						aria-label="이전 사진"
+						onClick={() => move(-1)}
+					>
 						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
 					</button>
-					<button type="button" className="photos-viewer-nav next" aria-label="다음 사진" onClick={() => move(1)}>
+					<button
+						type="button"
+						className={`photos-viewer-nav next ${near === 'next' ? 'shown' : ''}`}
+						aria-label="다음 사진"
+						onClick={() => move(1)}
+					>
 						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
 					</button>
 				</div>
