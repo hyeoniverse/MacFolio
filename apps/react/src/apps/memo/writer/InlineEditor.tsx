@@ -235,6 +235,25 @@ const filesOf = (data: DataTransfer | null) => (data && !data.getData('text/plai
 /** 읽기 화면(Memo.tsx)과 같게: 한국어 사이의 `**굵게**`가 문장부호 뒤에서도 끝나게 한다 */
 const cjkFriendly = $remark('cjkFriendly', () => remarkCjkFriendly);
 
+/** 휴대폰에서 커서 줄을 맞출 때 비울 자리 (Memo.css: 위 단추 줄 = 상태 표시줄 + 58px, 아래 서식 막대 = 96px) */
+const PHONE_CARET_MARGIN = { top: 120, bottom: 110 };
+
+/**
+ * 휴대폰(모바일 셸)에서 커서 줄을 보이게 넘길 때, 내용 위에 떠 있는 위·아래 막대에 가리지 않게 그만큼 띄운다.
+ * 넓은 창에서는 편집기 기본 동작을 그대로 쓴다 (false)
+ */
+function scrollCaretOnPhone(view: EditorView): boolean {
+	const scroller = view.dom.closest<HTMLElement>('.container.mobile .memo-scroll');
+	if (!scroller) return false;
+	const caret = view.coordsAtPos(view.state.selection.head);
+	const area = scroller.getBoundingClientRect();
+	const top = area.top + PHONE_CARET_MARGIN.top;
+	const bottom = area.bottom - PHONE_CARET_MARGIN.bottom;
+	if (caret.bottom > bottom) scroller.scrollTop += caret.bottom - bottom;
+	else if (caret.top < top) scroller.scrollTop -= top - caret.top;
+	return true;
+}
+
 const Inner = ({ markdown, onChange }: Props) => {
 	const onChangeRef = useRef(onChange);
 	useEffect(() => {
@@ -255,6 +274,8 @@ const Inner = ({ markdown, onChange }: Props) => {
 					// 체크 항목: 네모를 누르면 체크를 켜고 끈다
 					ctx.update(editorViewOptionsCtx, (options) => ({
 						...options,
+						// 휴대폰: 쓰는 줄을 화면에 맞출 때 위의 떠 있는 단추 줄과 아래 서식 막대에 가리지 않게 그만큼 띄운다
+						handleScrollToSelection: scrollCaretOnPhone,
 						// 표 안의 Enter·Tab (편집기 기본 동작보다 먼저)
 						handleKeyDown: (view, event) => handleTableKey(ctx, view, event),
 						// 이미지·파일을 붙여넣거나 끌어다 놓으면 올리고 그 자리에 넣는다
