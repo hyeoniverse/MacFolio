@@ -254,7 +254,10 @@ const Memo: React.FC = () => {
 		[editing, repoPosts, adminPosts, publicPosts, todayIso]
 	);
 	const shellRef = useRef<HTMLDivElement>(null);
-	const { compact, narrow } = useShellSize(shellRef);
+	const shellSize = useShellSize(shellRef);
+	// 휴대폰 화면에서는 폭과 상관없이 한 칸씩 (Memo.css의 --memo-phone과 같다)
+	const compact = phone || shellSize.compact;
+	const narrow = shellSize.narrow;
 	// 한 칸씩 볼 때는 폴더가 따로 한 화면이라 닫지 않는다
 	const sidebarOpen = compact || (sidebarChoice ?? !narrow);
 	// 관리자가 정리한 내용 (API). 방문자도 같은 정리 내용으로 본다

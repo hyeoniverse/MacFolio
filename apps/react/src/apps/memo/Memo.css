@@ -2864,6 +2864,12 @@
 }
 
 /* ─── 좁은 창: 폴더 → 목록 → 본문을 한 칸씩 (iOS 메모처럼) ─── */
+/* 휴대폰 화면(모바일 셸)에서는 폭과 상관없이 늘 한 칸씩 (휴대폰은 767px까지, 낮은 가로 화면은 1023px까지라
+   메모 칸이 700px보다 넓어도 휴대폰이다). 아래의 @container 조건이 이 값을 본다 */
+.container.mobile .memo-shell {
+	--memo-phone: 1;
+}
+
 .memo-shell {
 	/* 경고창(AlertDialog)이 메모 창 한가운데에 뜨도록 위치 기준 */
 	position: relative;
@@ -2887,7 +2893,7 @@
 	color: var(--memo-accent);
 }
 
-@container (max-width: 700px) {
+@container (max-width: 700px) or style(--memo-phone: 1) {
 	.memo,
 	.memo.sidebar-closed,
 	.memo.view-gallery,
@@ -3041,7 +3047,7 @@
 }
 
 /* 모바일: 신호등 버튼이 없으므로 위쪽 자리를 비우지 않는다 */
-@container (max-width: 700px) {
+@container (max-width: 700px) or style(--memo-phone: 1) {
 	.container.mobile .memo-shell .memo > :is(.memo-folders, .memo-list, .memo-reader) {
 		padding-top: 0;
 	}
@@ -3072,7 +3078,7 @@
 	display: none;
 }
 
-@container (max-width: 700px) {
+@container (max-width: 700px) or style(--memo-phone: 1) {
 	.container.mobile .memo-reader {
 		position: relative;
 	}
@@ -3276,7 +3282,7 @@
 	--phone-card-bg: #2c2c2e;
 }
 
-@container (max-width: 700px) {
+@container (max-width: 700px) or style(--memo-phone: 1) {
 	.container.mobile .memo :is(.memo-folders, .memo-list) {
 		position: relative;
 		background-color: var(--phone-page-bg);
