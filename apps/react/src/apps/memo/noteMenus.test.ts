@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { noteContextItems, phoneNoteItems, type NoteActions } from './noteMenus';
+import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
+import { DEFAULT_ARRANGEMENT } from './arrange';
 import type { Post } from './posts';
 import type { MenuItem } from '@/shared/ui/menu/Menu';
 
@@ -65,6 +66,31 @@ describe('메모 메뉴', () => {
 		expect(shape(phoneNoteItems(post(), actions(), { ...options, inTrash: true }))).toEqual([
 			'되돌려 놓기',
 			'즉시 삭제',
+		]);
+	});
+
+	it('도구 •••: 새 메모, 그 글의 일, 링크 공유, 정렬, 보기. 방문자는 공유부터, 게시하지 않은 글은 공유가 없다', () => {
+		const base = {
+			actions: actions(),
+			inTrash: false,
+			onNewNote: vi.fn(),
+			onShare: vi.fn(),
+			arrangement: DEFAULT_ARRANGEMENT,
+			onArrange: vi.fn(),
+			view: 'list' as const,
+			onView: vi.fn(),
+		};
+		const admin = shape(toolMenuItems({ ...base, selected: post(), canEdit: true }));
+		expect(admin.slice(0, 7)).toEqual(['새 메모', '메모 고정', '메모 잠그기', '메모 삭제', '—', '링크 공유', '—']);
+		expect(admin.slice(-2)).toEqual(['목록으로 보기', '갤러리로 보기']);
+		expect(shape(toolMenuItems({ ...base, selected: post(), canEdit: false })).slice(0, 2)).toEqual(['링크 공유', '—']);
+		const draft = post({ status: { draftOnly: true, changed: false, scheduled: null } });
+		expect(shape(toolMenuItems({ ...base, selected: draft, canEdit: true }))).not.toContain('링크 공유');
+		expect(shape(toolMenuItems({ ...base, selected: post(), canEdit: true, inTrash: true })).slice(0, 4)).toEqual([
+			'새 메모',
+			'되돌려 놓기',
+			'즉시 삭제',
+			'—',
 		]);
 	});
 });
