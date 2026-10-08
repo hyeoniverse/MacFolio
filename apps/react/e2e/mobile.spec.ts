@@ -733,6 +733,8 @@ test.describe('모바일', () => {
 		await expect(topNames()).toHaveText(['개발기', '디자인', '읽을거리']);
 
 		await folders.getByRole('button', { name: '폴더 편집' }).tap();
+		// 하위 폴더가 많은 '개발기'를 접어 세 폴더가 한 화면에 들어오게 한다
+		await folders.getByRole('button', { name: '하위 폴더 접기 (개발기)' }).tap();
 		// 끌기: '읽을거리'를 맨 위로
 		const handle = folders.getByRole('button', { name: '순서 바꾸기 (읽을거리)' });
 		const target = folders.getByRole('button', { name: '순서 바꾸기 (개발기)' });
