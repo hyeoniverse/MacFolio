@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // MacFolio: Apple 제품 페이지 흐름 그대로.
 // 스크롤하면 커지는 노트북 → 숫자 띠 → 기능 타일 → 화면 크기를 바꿔 보는 시뮬레이터 → 어두운 만든 방식(구조 그림) → 맡은 일 → 기술 사양 표
 // 첫 화면 밖의 요소는 화면에 들어오면 나타나고 벗어나면 사라진다(data-reveal). 제목은 스크롤에 맞춰 낱말마다 밝아진다
@@ -76,7 +77,7 @@ const Bento: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
 				data-size={i === 0 || i === 3 ? 'large' : 'small'}
 				data-tone={i === 0 ? 'dark' : undefined}
 				data-reveal=""
-				style={{ '--d': i % 2 } as React.CSSProperties}
+				style={cssVars({ d: i % 2 })}
 			>
 				<div className="pd-bento-text">
 					<h3>{point.title}</h3>
@@ -158,11 +159,11 @@ const Headline: React.FC<{ title: string; sub?: string }> = ({ title, sub }) => 
 			.map((word) => ({ word, sub: true })),
 	];
 	return (
-		<h2 className="sp-headline pd-scrub" ref={ref} style={{ '--n': words.length } as React.CSSProperties}>
+		<h2 className="sp-headline pd-scrub" ref={ref} style={cssVars({ n: words.length })}>
 			{words.map(({ word, sub: muted }, i) => (
 				<React.Fragment key={i}>
 					{i > 0 && ' '}
-					<span className={muted ? 'pd-word sub' : 'pd-word'} style={{ '--i': i } as React.CSSProperties}>
+					<span className={muted ? 'pd-word sub' : 'pd-word'} style={cssVars({ i })}>
 						{word}
 					</span>
 				</React.Fragment>
@@ -333,7 +334,7 @@ const Simulator: React.FC = () => {
 											type="button"
 											aria-current={i === index ? 'step' : undefined}
 											onClick={() => choose(app, i)}
-											style={{ '--i': i } as React.CSSProperties}
+											style={cssVars({ i })}
 										>
 											<strong>{item.name}</strong>
 											<span>{item.px}px</span>
@@ -349,11 +350,7 @@ const Simulator: React.FC = () => {
 							</p>
 						</div>
 
-						<div
-							className="pd-sim"
-							data-kind={size.id}
-							style={{ '--share': size.share, '--ratio': size.ratio } as React.CSSProperties}
-						>
+						<div className="pd-sim" data-kind={size.id} style={cssVars({ share: size.share, ratio: size.ratio })}>
 							<div className="pd-sim-device">
 								<div className="pd-sim-screen">
 									{SIZES.map((item) => (
@@ -425,7 +422,7 @@ const Architecture: React.FC = () => {
 		return (p - 0.08) / 0.8;
 	});
 	const id = useId().replace(/:/g, '');
-	const step = (n: number) => ({ '--i': n, '--n': ARCH_STEPS }) as React.CSSProperties;
+	const step = (n: number) => cssVars({ i: n, n: ARCH_STEPS });
 	return (
 		<div className="pd-arch-track" ref={ref}>
 			<div className="pd-arch-sticky">
@@ -512,7 +509,7 @@ const ProductPage: React.FC<{ project: Project }> = ({ project }) => {
 					<Architecture />
 					<ul className="sp-points">
 						{project.build.map((point, i) => (
-							<li key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+							<li key={point.title} data-reveal="" style={cssVars({ d: i % 2 })}>
 								<h3>{point.title}</h3>
 								<p>{point.body}</p>
 							</li>
@@ -526,7 +523,7 @@ const ProductPage: React.FC<{ project: Project }> = ({ project }) => {
 					<Headline title="맡은 일." sub={project.role} />
 					<ul className="sp-checks">
 						{project.contributions.map((item, i) => (
-							<li key={item} data-reveal="" style={{ '--d': i } as React.CSSProperties}>
+							<li key={item} data-reveal="" style={cssVars({ d: i })}>
 								<i className="fa-solid fa-circle-check" aria-hidden="true" />
 								{item}
 							</li>

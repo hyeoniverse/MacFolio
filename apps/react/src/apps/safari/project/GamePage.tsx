@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // SproutFarm (게임): 게임 화면 흐름. 타이틀 화면 → HUD(숫자) → 퀘스트(기능, 게임 대화창)와 조작법 → 하루(화면 모음)
 // → 흙길을 따라가는 개발 일지 지도(만든 방식) → 인벤토리(기술 사양) → 크레딧(맡은 일).
 // 그림은 게임에 쓴 Sprout Lands 에셋에서 필요한 조각만 잘라 쓴다 (public/imgs/projects/sproutfarm/sprites)
@@ -28,12 +29,7 @@ const EmoteFace: React.FC<{ emote: Emote; className?: string }> = ({ emote: [nam
 	<span
 		className={`gm-emote ${className}`}
 		aria-hidden="true"
-		style={
-			{
-				backgroundImage: `url(${SPRITES}/emotes/${name}.png)`,
-				'--frames': frames,
-			} as React.CSSProperties
-		}
+		style={{ backgroundImage: `url(${SPRITES}/emotes/${name}.png)`, ...cssVars({ frames }) }}
 	/>
 );
 
@@ -531,7 +527,7 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 
 			<section className="gm-map" aria-label="만든 방식">
 				<h2 className="gm-map-title">개발 일지</h2>
-				<div className="gm-road" ref={road} style={{ '--stages': stages } as React.CSSProperties}>
+				<div className="gm-road" ref={road} style={cssVars({ stages })}>
 					<div className="gm-decor" aria-hidden="true">
 						{decor.map((item, i) => (
 							<img

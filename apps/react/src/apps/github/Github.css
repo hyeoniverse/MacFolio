@@ -422,6 +422,8 @@
 }
 
 .gh-language-dot {
+	/* 언어 색 (Github.tsx의 LANGUAGE_COLORS, 모르는 언어는 회색) */
+	background-color: var(--color, var(--gh-muted));
 	display: inline-block;
 	width: 12px;
 	height: 12px;

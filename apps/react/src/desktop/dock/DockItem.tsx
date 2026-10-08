@@ -38,7 +38,8 @@ const DockItem: React.FC<DockItemProps> = ({ label, icon, isActive, isHidden, on
 
 	return (
 		<div className="dock-item" role="button" aria-label={label} title={label} onClick={onClick}>
-			<img ref={iconRef} src={icon} alt={label} style={{ borderRadius: disableRadius ? '0' : '1rem' }} />
+			{/* 네모난 아이콘(직접 모서리를 그린 그림)은 모서리를 깎지 않는다 */}
+			<img ref={iconRef} src={icon} alt={label} className={disableRadius ? 'square' : undefined} />
 			{/* 켜짐 표시는 앱을 열면 톡 나타나고, 끄면 흐려지며 사라진다 */}
 			{isActive && <div ref={indicator} className="active-indicator"></div>}
 		</div>

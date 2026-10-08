@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import React, { useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/AppStateContext';
@@ -25,8 +26,6 @@ interface Props {
 	cardCount: number;
 	onHome: () => void;
 	onClick?: () => void;
-	appStyle?: React.CSSProperties;
-	contentStyle?: React.CSSProperties;
 	children: React.ReactNode;
 }
 
@@ -48,8 +47,6 @@ const MobileAppFrame: React.FC<Props> = ({
 	cardCount,
 	onHome,
 	onClick,
-	appStyle,
-	contentStyle,
 	children,
 }) => {
 	const { apps, bringAppToFront, quitApp } = useAppState();
@@ -152,7 +149,7 @@ const MobileAppFrame: React.FC<Props> = ({
 		<div
 			ref={cardRef}
 			className={`mobile-app-frame ${inSwitcher ? 'in-switcher' : ''}`}
-			style={{ zIndex: inSwitcher ? 1500 - cardIndex : zIndex, ['--card-index' as string]: cardIndex ?? 0 }}
+			style={{ zIndex: inSwitcher ? 1500 - cardIndex : zIndex, ...cssVars({ 'card-index': cardIndex ?? 0 }) }}
 			{...(inSwitcher ? cardHandlers : {})}
 			aria-label={inSwitcher ? `${label} 열기` : undefined}
 			role={inSwitcher ? 'button' : undefined}
@@ -168,7 +165,6 @@ const MobileAppFrame: React.FC<Props> = ({
 				data-app={appName}
 				aria-label={title}
 				className={`container mobile ${chrome === 'unified' ? 'unified' : ''}`}
-				style={appStyle}
 				onClick={onClick}
 				// 전환기 안에서는 앱을 누를 수 없고 카드 전체가 버튼이다
 				inert={inSwitcher}
@@ -186,7 +182,7 @@ const MobileAppFrame: React.FC<Props> = ({
 						</button>
 					</div>
 				)}
-				<div className="content" style={contentStyle}>
+				<div className="content">
 					<MobileNavContext.Provider value={setNav}>{children}</MobileNavContext.Provider>
 				</div>
 				<HomeIndicator
