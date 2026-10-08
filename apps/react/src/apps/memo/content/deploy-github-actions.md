@@ -1,7 +1,7 @@
 ---
 title: 프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만
 date: 2026-10-03
-category: 개발기/MacFolio
+category: 개발기/MacFolio/배포·운영
 summary: Cloudflare 빌드 서버가 빌드 환경을 띄우지 못하고 시간 초과로 실패하는 일이 이어졌다. 빌드와 배포를 GitHub Actions로 옮겨, 시험(check)을 통과한 main 커밋만 wrangler deploy로 올리고 PR에는 브랜치 이름으로 된 미리보기 주소를 단다.
 ---
 
@@ -38,4 +38,4 @@ Cloudflare에는 API 토큰(Workers 편집 권한)과 계정 ID만 GitHub Secret
 
 배포 대상은 여전히 Cloudflare라 Cloudflare 자체가 멈추면 영향을 받는다. 하지만 이번처럼 빌드 서버가 뜨지 않는 일과는 상관없어졌고, 무엇이 실패했는지 GitHub에서 바로 보인다.
 
-#MacFolio
+#MacFolio #배포 #CI #Cloudflare

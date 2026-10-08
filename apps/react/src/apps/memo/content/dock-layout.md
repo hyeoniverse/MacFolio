@@ -1,7 +1,7 @@
 ---
 title: 앱이 많아지자 Dock이 Launchpad와 겹쳤다
 date: 2026-10-05
-category: 개발기/MacFolio
+category: 개발기/MacFolio/데스크톱
 summary: Dock의 Launchpad·휴지통이 절대 위치로 박혀 있고, 앱 칸 수는 어림셈이었다. 실행 중인 앱이 끝에 붙으면 Launchpad 아래로 파고들었다. Dock을 내용만큼 넓어지는 한 줄로 바꾸고, 칸 수를 CSS와 같은 치수로 세는 함수 하나로 모았다.
 ---
 
@@ -60,3 +60,5 @@ while (shown > 0 && shown + runningOf(shown).length > capacity) shown -= 1;
 ## API 문서 아이콘
 
 김에 'API 문서' 앱 아이콘도 손봤다. 처음 아이콘은 어두운 남색 바탕에 흰 `{ }`와 청록 'API' 글자였는데, Dock에서 혼자 무거워 보였다. 엔드포인트 목록을 그린 문서 모양도 그려 봤지만 'API' 글자가 있어야 무슨 앱인지 바로 보였다. 결국 처음 모양(`{ API }`)을 그대로 두고 색만 가볍게 했다. 밝은 바탕에 옅은 파랑 중괄호, 'API' 글자는 더 크게 진한 파랑으로. 암호·메모처럼 흰 바탕인 아이콘들과 나란히 둬도 어울린다.
+
+#MacFolio #데스크톱 #Dock

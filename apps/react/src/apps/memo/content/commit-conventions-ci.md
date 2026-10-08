@@ -1,7 +1,7 @@
 ---
 title: 커밋 규칙을 문서 대신 CI로 지키기
 date: 2026-10-01
-category: 개발기/MacFolio
+category: 개발기/MacFolio/빌드·테스트
 summary: 브랜치·커밋·PR 규칙을 새로 만들지 않고 지금까지 써 온 모양에서 뽑아냈다. 그리고 PR마다 CI가 확인하게 했다. PR 제목을 스크립트에 그대로 넣으면 생기는 문제와, 검사 스크립트를 로컬에서 시험한 방법.
 ---
 
@@ -107,3 +107,5 @@ BRANCH=my-branch TITLE='Update stuff' BASE_SHA=<첫 커밋> HEAD_SHA=… bash co
 - 예전의 브랜치 보호 규칙(Branch protection rules) 대신 Rulesets를 썼다. 규칙을 켜고 끄기(Active/Disabled)가 쉽고, 여러 브랜치에 같은 규칙을 이름 붙여 걸 수 있다
 - **Require a pull request before merging**에 승인 수는 걸지 않았다. 혼자 하는 저장소에서는 내 PR을 내가 승인할 수 없어서, 걸면 아무것도 머지하지 못한다
 - 검사 이름은 워크플로 파일의 **job 이름**(`check`, `conventions`)이다. job 이름을 바꾸면 규칙의 검사 이름도 같이 바꿔야 한다. 안 그러면 이미 사라진 검사를 영영 기다린다
+
+#MacFolio #CI #깃

@@ -102,3 +102,5 @@ Test.createTestingModule({ imports: [AppModule] })
 그래도 로그인 경로(시작, 콜백)에는 IP마다 1분에 10번까지만 받는 요청 제한을 걸었다. 자동화된 시도가 서버와 GitHub API를 두드리지 못하게 하려는 것이다. 요청 제한은 IP로 세므로, 프록시 뒤에 둘 때만 `X-Forwarded-For`를 믿도록 설정(`TRUST_PROXY`)으로 따로 켠다. 아무 때나 믿으면 헤더를 꾸며 제한을 피할 수 있다. 관리자가 아닌 계정의 시도는 서버 로그에 남긴다.
 
 ![시스템 설정의 계정 화면](./images/settings-account.jpg '시스템 설정 → 계정. 로그인한 GitHub 계정과 세션 정보를 보여 준다')
+
+#MacFolio #백엔드 #로그인 #보안

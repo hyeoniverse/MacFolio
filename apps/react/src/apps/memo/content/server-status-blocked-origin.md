@@ -1,7 +1,7 @@
 ---
 title: 서버는 켜져 있는데 "서버에 연결할 수 없음"
 date: 2026-10-07
-category: 개발기/MacFolio
+category: 개발기/MacFolio/배포·운영
 summary: PR 미리보기 주소에서 메뉴 막대의 서버 상태가 늘 "서버에 연결할 수 없음"이었다. 서버는 멀쩡했고, 서버가 그 주소를 허용하지 않았을 뿐이다. 브라우저는 둘을 구별해 주지 않아서, 응답을 읽지 않는 요청을 한 번 더 보내 가렸다. 서버 쪽은 허용 주소에 *를 쓸 수 있게 했다.
 ---
 
@@ -80,3 +80,5 @@ cd ~/deploy && docker compose up -d api
 MacFolio API: http://localhost:4100 (문서: /docs)
 ⚠️ CORS_ORIGINS가 로컬 프론트엔드(http://localhost:5173)를 허용하지 않습니다: https://macfolio.hyeoniverse.com. …
 ```
+
+#MacFolio #서버 #CORS #트러블슈팅
