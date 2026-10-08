@@ -3,24 +3,13 @@ import Menu from '@/shared/ui/menu/Menu';
 import { sortMenuItems } from './sortMenuItems';
 import type { Arrangement } from '../arrange';
 import IconButton from '@/shared/ui/button/IconButton';
+import SharedSidebarToggle from '@/shared/ui/button/SidebarToggle';
 
 export type View = 'list' | 'gallery';
 
-/** 사이드바 여닫기 (SF Symbols의 sidebar.left 모양) */
-export const SidebarToggle: React.FC<{ open: boolean; onToggle: () => void }> = ({ open, onToggle }) => (
-	<IconButton
-		className="memo-sidebar-toggle"
-		label={open ? '사이드바 가리기' : '사이드바 보기'}
-		aria-expanded={open}
-		onClick={onToggle}
-	>
-		<svg viewBox="0 0 20 16" aria-hidden="true">
-			<rect x="1" y="1" width="18" height="14" rx="3" fill="none" stroke="currentColor" strokeWidth="1.5" />
-			<line x1="7.5" y1="1.5" x2="7.5" y2="14.5" stroke="currentColor" strokeWidth="1.5" />
-			<line x1="3.2" y1="5" x2="5.3" y2="5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-			<line x1="3.2" y1="7.5" x2="5.3" y2="7.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-		</svg>
-	</IconButton>
+/** 사이드바 여닫기 (모양은 shared의 SidebarToggle, 크기는 Memo.css) */
+export const SidebarToggle: React.FC<{ open: boolean; onToggle: () => void }> = (props) => (
+	<SharedSidebarToggle className="memo-sidebar-toggle" {...props} />
 );
 
 /** 목록으로 보기 / 갤러리로 보기 */
