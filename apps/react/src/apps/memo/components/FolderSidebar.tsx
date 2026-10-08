@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
@@ -99,7 +100,7 @@ const FolderNameInput: React.FC<{
 
 	return (
 		<>
-			<div className="memo-folder-row" style={{ ['--depth' as string]: depth }}>
+			<div className="memo-folder-row" style={cssVars({ depth })}>
 				<span className="memo-disclosure" aria-hidden="true" />
 				<div className="memo-folder editing">
 					<FolderIcon />
@@ -126,7 +127,7 @@ const FolderNameInput: React.FC<{
 				</div>
 			</div>
 			{error && (
-				<p className="memo-folder-error" role="alert" style={{ ['--depth' as string]: depth }}>
+				<p className="memo-folder-error" role="alert" style={cssVars({ depth })}>
 					{error}
 				</p>
 			)}
@@ -193,7 +194,7 @@ const FolderRow: React.FC<RowProps> = (props) => {
 			) : (
 				<div
 					className={`memo-folder-row ${drop.active ? 'drop-target' : ''} ${beingDragged ? 'dragging' : ''} ${menuOpen ? 'menu-open' : ''}`}
-					style={{ ['--depth' as string]: depth }}
+					style={cssVars({ depth })}
 					onContextMenu={
 						props.canEdit
 							? (event) => {
@@ -517,7 +518,7 @@ const FolderSidebar: React.FC<Props> = (props) => {
 						{/* 모든 글: 폴더를 여기에 놓으면 맨 위로 옮겨 간다 */}
 						<div
 							className={`memo-folder-row ${rootDrop.active ? 'drop-target' : ''}`}
-							style={{ ['--depth' as string]: 0 }}
+							style={cssVars({ depth: 0 })}
 							{...rootDrop.handlers}
 						>
 							<span className="memo-disclosure" aria-hidden="true" />
@@ -559,7 +560,7 @@ const FolderSidebar: React.FC<Props> = (props) => {
 						<li>
 							<div
 								className={`memo-folder-row ${trashDrop.active ? 'drop-target' : ''} ${trashMenuAt ? 'menu-open' : ''}`}
-								style={{ ['--depth' as string]: 0 }}
+								style={cssVars({ depth: 0 })}
 								onContextMenu={
 									props.canEdit && props.onEmptyTrash
 										? (event) => {

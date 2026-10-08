@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // HYEONIVERSE의 더 들려줄 장마다 다른 짜임 (Apple 제품 페이지처럼 큰 제목·넉넉한 여백·둥근 타일).
 // showcase: 묶음마다 큰 칸과 작은 칸 / stage: 데모마다 큰 무대 / bento: 글과 데모가 좌우로 엇갈린 줄
 // dashboard: 계기판 숫자, 겹친 화면, 옆으로 넘기는 카드 / gauges: 점수 고리 / shield: 바깥부터 차례로 선 방어 카드
@@ -62,7 +63,7 @@ export const ChapterFacts: React.FC<{ facts: ProjectFact[]; look?: ProjectChapte
 				{facts.map((fact) => {
 					const score = /^(\d+)점$/.exec(fact.value);
 					return (
-						<li key={fact.label} style={{ '--score': score ? Number(score[1]) : 100 } as React.CSSProperties}>
+						<li key={fact.label} style={cssVars({ score: score ? Number(score[1]) : 100 })}>
 							<span className="cr-gauge" data-score={score ? '' : undefined}>
 								<FactValue text={score ? score[1] : fact.value} />
 							</span>
@@ -146,12 +147,7 @@ const Showcase: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 						</article>
 						<div className="cr-showcase-rest" data-count={rest.length}>
 							{rest.map((point, i) => (
-								<article
-									key={point.title}
-									className="cr-tile"
-									data-reveal=""
-									style={{ '--d': i } as React.CSSProperties}
-								>
+								<article key={point.title} className="cr-tile" data-reveal="" style={cssVars({ d: i })}>
 									<ShotSlot point={point} className="cr-showcase-shot" />
 									<h4>{point.title}</h4>
 									<p>{point.body}</p>
@@ -254,7 +250,7 @@ const Dashboard: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 const Numbered: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
 	<ol className="cr-numbered">
 		{points.map((point, i) => (
-			<li key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+			<li key={point.title} data-reveal="" style={cssVars({ d: i % 2 })}>
 				<span className="cr-numbered-no">{i + 1}</span>
 				<div>
 					<h3>{point.title}</h3>
@@ -269,7 +265,7 @@ const Numbered: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
 const Shield: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
 	<ol className="cr-shield">
 		{points.map((point, i) => (
-			<li key={point.title} className="cr-tile" data-reveal="" style={{ '--d': i % 3 } as React.CSSProperties}>
+			<li key={point.title} className="cr-tile" data-reveal="" style={cssVars({ d: i % 3 })}>
 				<i className={`cr-tile-icon fa-solid ${point.icon ?? 'fa-shield-halved'}`} aria-hidden="true" />
 				<p className="cr-eyebrow">{i === points.length - 1 ? '가장 안쪽' : `${i + 1}겹`}</p>
 				<h3>{point.title}</h3>
@@ -361,7 +357,7 @@ export const ChapterPoints: React.FC<{ chapter: ProjectChapter }> = ({ chapter }
 					data-reveal=""
 					data-wide={point.image || point.demo || point.shots ? '' : undefined}
 					data-demo={point.demo || point.shots ? '' : undefined}
-					style={{ '--d': i % 2 } as React.CSSProperties}
+					style={cssVars({ d: i % 2 })}
 				>
 					<PointMedia point={point} />
 					<div>

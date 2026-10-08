@@ -15,9 +15,6 @@ interface AppWindowProps {
 	title: string;
 	appName: AppName;
 	children: React.ReactNode;
-	appStyle?: React.CSSProperties;
-	contentStyle?: React.CSSProperties;
-	titleBarStyle?: React.CSSProperties;
 	onClick?: () => void;
 	/**
 	 * titlebar: 제목 표시줄이 있는 창 (기본)
@@ -45,16 +42,7 @@ const FRAME_MS = 300;
  * 앱 창. 앱이 실행 중이 아니거나 최소화되어 있으면 아무것도 그리지 않는다.
  * 앱 컴포넌트는 표시 여부를 따로 확인하지 않아도 된다.
  */
-const AppWindow: React.FC<AppWindowProps> = ({
-	title,
-	appName,
-	children,
-	appStyle,
-	contentStyle,
-	titleBarStyle,
-	onClick,
-	chrome = 'titlebar',
-}) => {
+const AppWindow: React.FC<AppWindowProps> = ({ title, appName, children, onClick, chrome = 'titlebar' }) => {
 	const { apps, closeApp, quitApp, minimizeApp, bringAppToFront, goHome } = useAppState();
 	const isMobile = useIsMobile();
 	const { rect, toggleMaximize, dragHandlers, resizeHandlers } = useWindowFrame(appName);
@@ -120,8 +108,6 @@ const AppWindow: React.FC<AppWindowProps> = ({
 				cardCount={cards.length}
 				onHome={handleHome}
 				onClick={onClick}
-				appStyle={appStyle}
-				contentStyle={contentStyle}
 			>
 				{children}
 			</MobileAppFrame>
@@ -135,24 +121,17 @@ const AppWindow: React.FC<AppWindowProps> = ({
 			aria-label={chrome === 'unified' ? title : undefined}
 			className={`container ${chrome === 'unified' ? 'unified' : ''}`}
 			style={{
-				...appStyle,
 				left: rect.x,
 				top: rect.y,
 				width: rect.width,
 				height: rect.height,
-				position: 'absolute',
 				zIndex,
 			}}
 			// 캡처 단계에서 처리해야 제목 표시줄·핸들이 이벤트 전파를 막아도 맨 앞으로 온다
 			onPointerDownCapture={() => bringAppToFront(appName)}
 			onClick={onClick}
 		>
-			<div
-				className="macos-titlebar"
-				style={{ ...titleBarStyle, cursor: 'grab', touchAction: 'none' }}
-				onDoubleClick={handleToggleMaximize}
-				{...dragHandlers}
-			>
+			<div className="macos-titlebar" onDoubleClick={handleToggleMaximize} {...dragHandlers}>
 				<div className="traffic-lights">
 					<span className="close" role="button" aria-label="닫기" onClick={handleClose}></span>
 					<span className="minimize" role="button" aria-label="최소화" onClick={handleMinimize}></span>
@@ -160,17 +139,10 @@ const AppWindow: React.FC<AppWindowProps> = ({
 				</div>
 				{chrome === 'titlebar' && <span className="title">{title}</span>}
 			</div>
-			<div className="content" style={{ ...contentStyle }}>
-				{children}
-			</div>
+			<div className="content">{children}</div>
 
 			{RESIZE_DIRECTIONS.map((direction) => (
-				<div
-					key={direction}
-					className={`resize-handle ${direction}`}
-					style={{ touchAction: 'none' }}
-					{...resizeHandlers(direction)}
-				></div>
+				<div key={direction} className={`resize-handle ${direction}`} {...resizeHandlers(direction)}></div>
 			))}
 		</div>
 	);

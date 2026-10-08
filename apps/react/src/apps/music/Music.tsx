@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import React, { useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
@@ -168,7 +169,7 @@ const NowPlayingSheet: React.FC = () => {
 			className="music-now-playing"
 			role="dialog"
 			aria-label="지금 재생 중"
-			style={{ ['--artwork' as string]: `url('${track.artwork}')` }}
+			style={cssVars({ artwork: `url('${track.artwork}')` })}
 		>
 			{/* 곡이 바뀌면 표지와 제목이 새로 나타난다 */}
 			<img

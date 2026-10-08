@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // QRU (디지털 명함): 그 앱의 민트→분홍 바탕과 두툼한 그림자를 그대로 쓴다.
 // 명함 앞뒤(앞면은 앱 로고 카드, 뒷면은 기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 앱 화면) →
 // 더 들려줄 장(데이터베이스 구조와 글) → 묻고 답하기(만든 방식) → 화면 모음 → 맡은 일.
@@ -194,7 +195,7 @@ const SchemaDoc: React.FC<{ doc: SchemaDoc; docs: SchemaDoc[] }> = ({ doc, docs 
 			</header>
 			<ul aria-label={`${doc.path} 필드`}>
 				{doc.fields.map((field, i) => (
-					<li key={field} style={{ '--i': i } as React.CSSProperties}>
+					<li key={field} style={cssVars({ i })}>
 						{field}
 					</li>
 				))}
@@ -237,7 +238,7 @@ const Chapter: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
 		{chapter.facts && (
 			<ul className="qc-chips">
 				{chapter.facts.map((fact, i) => (
-					<li key={fact.label} data-reveal="" style={{ '--d': i } as React.CSSProperties}>
+					<li key={fact.label} data-reveal="" style={cssVars({ d: i })}>
 						<FactValue text={fact.value} />
 						<span>{fact.label}</span>
 					</li>
@@ -247,7 +248,7 @@ const Chapter: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
 		{chapter.schema && <Schema docs={chapter.schema} />}
 		<div className="qc-tiles">
 			{chapter.points.map((point, i) => (
-				<article key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+				<article key={point.title} data-reveal="" style={cssVars({ d: i % 2 })}>
 					<h3>{point.title}</h3>
 					<p>{point.body}</p>
 				</article>
@@ -330,7 +331,7 @@ const CardPage: React.FC<{ project: Project }> = ({ project }) => {
 						<div className="qc-brand">
 							<span className="qc-logo" aria-hidden="true">
 								{LOGO_FILLED.map((filled, i) => (
-									<i key={i} data-filled={filled || undefined} style={{ '--i': i } as React.CSSProperties} />
+									<i key={i} data-filled={filled || undefined} style={cssVars({ i })} />
 								))}
 							</span>
 							<p className="qc-word">
@@ -396,7 +397,7 @@ const CardPage: React.FC<{ project: Project }> = ({ project }) => {
 			<footer className="qc-foot" data-reveal="">
 				<span className="qc-logo small" aria-hidden="true">
 					{LOGO_FILLED.map((filled, i) => (
-						<i key={i} data-filled={filled || undefined} style={{ '--i': i } as React.CSSProperties} />
+						<i key={i} data-filled={filled || undefined} style={cssVars({ i })} />
 					))}
 				</span>
 				<p>{project.tagline}</p>

@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import React, { useEffect } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { env } from '@/shared/config/env';
@@ -31,10 +32,7 @@ const RepoCard: React.FC<{ repo: Repo; login: string }> = ({ repo, login }) => (
 		<div className="gh-repo-meta">
 			{repo.language && (
 				<span>
-					<span
-						className="gh-language-dot"
-						style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? 'var(--gh-muted)' }}
-					/>
+					<span className="gh-language-dot" style={cssVars({ color: LANGUAGE_COLORS[repo.language] })} />
 					{repo.language}
 				</span>
 			)}

@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // HYEONIVERSE (포트폴리오): Apple 제품 페이지처럼 가운데 정렬된 큰 첫머리 아래로, 화면 폭을 다 쓰는 띠(장)가 번갈아 바탕을 바꾸며 내려간다.
 // 그 사이트의 마스코트 몽이는 첫머리에 서 있다가, 내려가면 화면 가장자리로 뛰어가 장마다 자리와 표정을 바꾸며 늘 따라다닌다
 import React, { useEffect, useRef, useState } from 'react';
@@ -272,11 +273,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 						</span>
 					)}
 					{hearts.map((heart) => (
-						<i
-							key={heart.id}
-							className="cr-heart fa-solid fa-heart"
-							style={{ '--dx': heart.dx } as React.CSSProperties}
-						/>
+						<i key={heart.id} className="cr-heart fa-solid fa-heart" style={cssVars({ dx: heart.dx })} />
 					))}
 				</figure>
 			</div>
@@ -310,7 +307,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					<h2>주요 기능</h2>
 					<ol className="cr-features">
 						{project.highlights.map((point, i) => (
-							<li key={point.title} style={{ '--d': i } as React.CSSProperties}>
+							<li key={point.title} style={cssVars({ d: i })}>
 								<div className="cr-feature-text" data-reveal="left">
 									<h3>{point.title}</h3>
 									<p>{point.body}</p>
@@ -336,7 +333,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					{project.timeline && (
 						<ol className="cr-timeline">
 							{project.timeline.map((step, i) => (
-								<li key={step.date} data-reveal="left" style={{ '--d': i % 4 } as React.CSSProperties}>
+								<li key={step.date} data-reveal="left" style={cssVars({ d: i % 4 })}>
 									<time>{step.date}</time>
 									<span>{step.label}</span>
 								</li>
@@ -345,7 +342,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					)}
 					<div className="cr-build">
 						{project.build.map((point, i) => (
-							<article key={point.title} data-reveal="" style={{ '--d': i % 2 } as React.CSSProperties}>
+							<article key={point.title} data-reveal="" style={cssVars({ d: i % 2 })}>
 								<h3>{point.title}</h3>
 								<p>{point.body}</p>
 							</article>
@@ -359,7 +356,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					{project.role && <p className="cr-role">{project.role}</p>}
 					<ul className="cr-roles">
 						{project.contributions.map((item, i) => (
-							<li key={item} data-reveal="left" style={{ '--d': i } as React.CSSProperties}>
+							<li key={item} data-reveal="left" style={cssVars({ d: i })}>
 								{item}
 							</li>
 						))}
@@ -371,7 +368,7 @@ const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
 					<h2>기술 사양</h2>
 					<dl className="cr-specs">
 						{project.specs.map((spec, i) => (
-							<div key={spec.label} data-reveal="" style={{ '--d': i % 3 } as React.CSSProperties}>
+							<div key={spec.label} data-reveal="" style={cssVars({ d: i % 3 })}>
 								<dt>{spec.label}</dt>
 								<dd>{spec.value}</dd>
 							</div>

@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // WTD (할 일 관리): 칸반 보드. 머리(소개와 숫자) → 할 일·진행 중·완료 세 열(기능·만든 방식·맡은 일) → 쓰는 법 두 줄 → 에픽(장마다 붙임쪽지) → 날짜별 스프린트 → 폴더 구조 → 라벨(기술 사양)
 import React, { useState } from 'react';
 import type { Project } from '@/shared/profile';
@@ -97,7 +98,7 @@ const Board: React.FC<{ project: Project }> = ({ project }) => {
 										}}
 										onDragEnd={() => setOver(null)}
 										data-reveal="drop"
-										style={{ '--d': laneIndex + i * 0.6 } as React.CSSProperties}
+										style={cssVars({ d: laneIndex + i * 0.6 })}
 									>
 										{lane.id === 'done' && <i className="fa-solid fa-square-check" aria-hidden="true" />}
 										<div className="kb-text">
@@ -174,7 +175,7 @@ const BoardPage: React.FC<{ project: Project }> = ({ project }) => {
 					)}
 					<ul className="kb-notes">
 						{chapter.points.map((point, i) => (
-							<li key={point.title} data-reveal="drop" style={{ '--d': i % 3, '--n': i } as React.CSSProperties}>
+							<li key={point.title} data-reveal="drop" style={cssVars({ d: i % 3, n: i })}>
 								<h3>{point.title}</h3>
 								<p>{point.body}</p>
 							</li>
@@ -190,7 +191,7 @@ const BoardPage: React.FC<{ project: Project }> = ({ project }) => {
 					</h2>
 					<ol>
 						{project.timeline.map((step, i) => (
-							<li key={step.date} style={{ '--i': i } as React.CSSProperties}>
+							<li key={step.date} style={cssVars({ i })}>
 								<time>{step.date}</time>
 								<span>{step.label}</span>
 							</li>

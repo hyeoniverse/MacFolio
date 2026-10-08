@@ -234,6 +234,10 @@
 }
 
 .mail-phone-avatar {
+	width: var(--size);
+	height: var(--size);
+	border-radius: calc(var(--size) * 0.24);
+	font-size: calc(var(--size) * 0.42);
 	display: grid;
 	flex: none;
 	place-items: center;

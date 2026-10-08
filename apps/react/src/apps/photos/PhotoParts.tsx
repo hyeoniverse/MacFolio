@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // 사진 앱의 데스크톱·휴대폰 화면이 함께 쓰는 것: 사진 칸, 크게 보기
 import { useEffect, useRef, useState } from 'react';
 import { shareLink } from '@/shared/lib/appLink';
@@ -276,7 +277,7 @@ export const Viewer = ({
 							src={photo.src}
 							alt={caption}
 							draggable={false}
-							style={zoom > 1 ? { width: `${zoom * 100}%`, maxWidth: 'none', maxHeight: 'none' } : undefined}
+							style={zoom > 1 ? cssVars({ zoom }) : undefined}
 						/>
 					)}
 					<button

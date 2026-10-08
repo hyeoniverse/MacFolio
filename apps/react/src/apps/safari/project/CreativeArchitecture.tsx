@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // HYEONIVERSE 구조도: MacFolio 페이지의 "요청이 지나는 길"처럼 SVG로 그린다. 그림이 화면에 고정된 채로
 // 스크롤하는 만큼 상자가 차례로 켜지고 화살표가 이어진다. 좁은 창과 움직임 줄이기에서는 다 그려진 채로 둔다
 import React, { useEffect, useId, useRef } from 'react';
@@ -157,7 +158,7 @@ export const Architecture: React.FC = () => {
 		});
 	}, []);
 
-	const step = (n: number) => ({ '--i': n, '--n': STEPS }) as React.CSSProperties;
+	const step = (n: number) => cssVars({ i: n, n: STEPS });
 	return (
 		<div className="cr-arch-track" ref={ref}>
 			<div className="cr-arch-sticky">

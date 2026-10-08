@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import {
 	mergePushes,
@@ -52,7 +53,7 @@ export const ContributionGraph: React.FC<{ contributions: Contributions }> = ({ 
 						className="gh-graph"
 						role="img"
 						aria-label={`지난 1년 동안 기여 ${total}개`}
-						style={{ '--weeks': weeks.length } as React.CSSProperties}
+						style={cssVars({ weeks: weeks.length })}
 					>
 						{months.map((month, i) => (
 							// 바로 앞 달 이름과 겹치면 (첫 주가 며칠뿐일 때) 앞의 것을 뺀다

@@ -12,6 +12,8 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	const [progress, setProgress] = useState(0);
 	const startLabel = `${useIsMobile() ? '탭' : '클릭'}하여 로딩을 시작하세요`;
 	const isInteractedRef = useRef(false);
+	// 눌러서 시작했으면 안내 문구를 감춘다 (자리는 그대로 두어 진행 막대가 움직이지 않게)
+	const [started, setStarted] = useState(false);
 	const mp3Url = env.sfxUrl;
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -26,6 +28,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 		const startLoading = () => {
 			if (!isInteractedRef.current) {
 				isInteractedRef.current = true;
+				setStarted(true);
 				audioRef.current = new Audio(`${mp3Url}/mac-startup.mp3`);
 
 				audioRef.current.play().catch((error) => {
@@ -69,13 +72,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	return (
 		<div ref={containerRef} className="loading-container">
 			<i className="fa-brands fa-apple loading-icon" />
-			{!isInteractedRef.current ? (
-				<p className="loading-text">{startLabel}</p>
-			) : (
-				<p className="loading-text" style={{ visibility: 'hidden' }}>
-					{startLabel}
-				</p>
-			)}
+			<p className={`loading-text ${started ? 'started' : ''}`}>{startLabel}</p>
 			<div className="progress-bar-container">
 				<div className="progress-bar" style={{ width: `${progress}%` }} />
 			</div>

@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import { useMusic } from '@/apps/music/MusicContext';
 import SeekBar from '@/apps/music/SeekBar';
 
@@ -18,7 +19,7 @@ const MusicWidget = ({ onOpen, className = '' }: Props) => {
 		<section
 			className={`music-widget ${className}`}
 			aria-label="음악"
-			style={{ ['--artwork' as string]: `url('${track.artwork}')` }}
+			style={cssVars({ artwork: `url('${track.artwork}')` })}
 			onClick={(event) => {
 				if (!(event.target as Element).closest('button, [role="slider"]')) onOpen();
 			}}

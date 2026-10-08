@@ -79,6 +79,9 @@
 }
 
 .messages-avatar {
+	width: var(--size);
+	height: var(--size);
+	font-size: calc(var(--size) * 0.46);
 	display: grid;
 	place-items: center;
 	flex: none;
@@ -88,6 +91,10 @@
 	font-weight: 600;
 	letter-spacing: -0.02em;
 	user-select: none;
+}
+
+.messages-avatar[data-letters='2'] {
+	font-size: calc(var(--size) * 0.36);
 }
 
 .messages-me-badge {

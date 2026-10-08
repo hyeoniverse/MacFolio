@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import { useEffect, useState } from 'react';
 import { useMusic } from '@/apps/music/MusicContext';
 import type { AppName } from '@/apps/manifest';
@@ -141,7 +142,7 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 			role="dialog"
 			aria-modal="true"
 			aria-label="제어 센터"
-			style={{ ['--cc-progress' as string]: progress }}
+			style={cssVars({ 'cc-progress': progress })}
 			onClick={(event) => {
 				// 타일 사이의 빈 곳을 누르면 닫는다
 				if (event.target === event.currentTarget || (event.target as Element).classList.contains('cc-grid')) close();

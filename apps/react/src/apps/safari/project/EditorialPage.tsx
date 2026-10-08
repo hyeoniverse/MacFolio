@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // NewPick (뉴스레터): 신문 1면. 제호 → 속보 띠 → 머리기사와 옆 단(숫자, 진행 과정) → 기사 꼭지 → 두 단 해설 → 기획 기사(장마다) → 아래 칸(맡은 일, 기술 사양)
 // 기사는 화면에 들어오면 잉크가 번지듯 나타난다. 주요 기능은 머리 사진 기사, 사진 기사, 단신으로 짠 지면
 import React from 'react';
@@ -41,7 +42,7 @@ const Articles: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 			{photos.length > 0 && (
 				<div className="np-stories">
 					{photos.map((point, i) => (
-						<article key={point.title} data-reveal="ink" style={{ '--d': i } as React.CSSProperties}>
+						<article key={point.title} data-reveal="ink" style={cssVars({ d: i })}>
 							<Photo point={point} />
 							<h3>{point.title}</h3>
 							<p className="np-story-dek">{point.body}</p>
@@ -119,22 +120,12 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 				</section>
 
 				<div className="np-side">
-					<section
-						className="np-box"
-						aria-label="한눈에 보기"
-						data-reveal=""
-						style={{ '--d': 1 } as React.CSSProperties}
-					>
+					<section className="np-box" aria-label="한눈에 보기" data-reveal="" style={cssVars({ d: 1 })}>
 						<h2>숫자로 보면</h2>
 						<Facts project={project} className="np-facts" />
 					</section>
 					{project.timeline && (
-						<section
-							className="np-box"
-							aria-label="진행 과정"
-							data-reveal=""
-							style={{ '--d': 2 } as React.CSSProperties}
-						>
+						<section className="np-box" aria-label="진행 과정" data-reveal="" style={cssVars({ d: 2 })}>
 							<h2>진행 과정</h2>
 							<ol className="np-timeline">
 								{project.timeline.map((step) => (
@@ -155,7 +146,7 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 				<h2 className="np-section">해설 · 만든 방식</h2>
 				<div className="np-body">
 					{project.build.map((point, i) => (
-						<p key={point.title} data-reveal="ink" style={{ '--d': i % 2 } as React.CSSProperties}>
+						<p key={point.title} data-reveal="ink" style={cssVars({ d: i % 2 })}>
 							<strong>{point.title}.</strong> {point.body}
 						</p>
 					))}
@@ -172,7 +163,7 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 					)}
 					<ol>
 						{chapter.points.map((point, i) => (
-							<li key={point.title} data-reveal="ink" style={{ '--d': i % 2 } as React.CSSProperties}>
+							<li key={point.title} data-reveal="ink" style={cssVars({ d: i % 2 })}>
 								<h3>{point.title}</h3>
 								<p>{point.body}</p>
 							</li>
@@ -191,12 +182,7 @@ const EditorialPage: React.FC<{ project: Project }> = ({ project }) => {
 						))}
 					</ul>
 				</section>
-				<section
-					className="np-classified"
-					aria-label="기술 사양"
-					data-reveal=""
-					style={{ '--d': 1 } as React.CSSProperties}
-				>
+				<section className="np-classified" aria-label="기술 사양" data-reveal="" style={cssVars({ d: 1 })}>
 					<h2 className="np-section">기술 사양</h2>
 					<dl>
 						{project.specs.map((spec) => (

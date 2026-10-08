@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import PhotosMobile from './PhotosMobile';
@@ -168,7 +169,7 @@ const Photos = () => {
 				<div ref={shell} className="photos-shell">
 					<div
 						className={`photos ${sidebarOpen ? '' : 'no-sidebar'} ${sidebarOpen && overlay ? 'overlay' : ''} ${compact ? 'compact' : ''}`}
-						style={{ '--photos-cell': `${CELL_SIZES[size]}px` } as React.CSSProperties}
+						style={cssVars({ 'photos-cell': `${CELL_SIZES[size]}px` })}
 					>
 						<aside className="photos-sidebar" aria-label="사진 보관함" hidden={!sidebarOpen}>
 							<div className="photos-sidebar-top">

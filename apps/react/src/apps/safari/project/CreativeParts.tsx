@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // HYEONIVERSE 페이지의 그림과 놀잇거리: 스크롤하면 넘어가는 화면, 라이트·다크를 밀대로 나눠 보는 그림, 레이아웃 도식,
 // 화면에 보일 때만 도는 영상, 줄어드는 전후 막대, 스크롤하면 펼쳐지는 토큰 세 층
 import React, { useEffect, useRef, useState } from 'react';
@@ -66,7 +67,7 @@ export const Compare: React.FC<{ light: string; dark: string; alt: string }> = (
 			ref={box}
 			data-swaying={swaying || undefined}
 			data-touched={touched || undefined}
-			style={{ '--split': `${split}%` } as React.CSSProperties}
+			style={cssVars({ split: `${split}%` })}
 		>
 			<img src={light} alt={`${alt} (라이트)`} loading="lazy" />
 			<img src={dark} alt={`${alt} (다크)`} loading="lazy" className="cr-compare-dark" />
@@ -162,12 +163,12 @@ const Layouts: React.FC<{ variants: NonNullable<ProjectPoint['variants']> }> = (
 		{variants.map((variant, i) => {
 			const kind = variant.label.toLowerCase();
 			return (
-				<li key={variant.label} style={{ '--d': i % 3 } as React.CSSProperties}>
+				<li key={variant.label} style={cssVars({ d: i % 3 })}>
 					<div className="cr-lay" data-kind={kind} aria-hidden="true">
 						{kind === 'split' && <b />}
 						<span className="cr-lay-stage">
 							{Array.from({ length: LAYOUT_PARTS[kind] ?? 4 }, (_, part) => (
-								<i key={part} style={{ '--i': part } as React.CSSProperties} />
+								<i key={part} style={cssVars({ i: part })} />
 							))}
 						</span>
 						{kind === 'fullscreen' &&
@@ -252,7 +253,7 @@ export const Bars: React.FC<{ rows: NonNullable<ProjectChapter['compare']> }> = 
 		{rows.map((row) => {
 			const ratio = row.after / row.before;
 			return (
-				<li key={row.label} style={{ '--r': ratio } as React.CSSProperties}>
+				<li key={row.label} style={cssVars({ r: ratio })}>
 					<span className="cr-bars-label">{row.label}</span>
 					<span className="cr-bars-track before" aria-hidden="true">
 						<i />

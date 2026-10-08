@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
@@ -130,10 +131,7 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 	}, [loaded]);
 
 	return (
-		<div
-			className={`web-frame ${tone}`}
-			style={topColor ? ({ '--web-bar-color': topColor } as React.CSSProperties) : undefined}
-		>
+		<div className={`web-frame ${tone}`} style={topColor ? cssVars({ 'web-bar-color': topColor }) : undefined}>
 			{/* 휴대폰: 페이지가 화면을 다 쓰고, 뒤로 가기는 왼쪽 아래에 떠 있다 (페이지의 왼쪽 위 메뉴를 가리지 않게) */}
 			<MobileNavigation placement="bottom" hideHome />
 			<iframe

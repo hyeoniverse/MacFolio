@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import { useEffect, useId, useState } from 'react';
 import { env } from '@/shared/config/env';
 import { captionParts } from '../caption';
@@ -292,7 +293,8 @@ const StockTab = ({
 							role="listitem"
 							aria-label={`${photo.alt || '사진'}, ${photo.author}`}
 							title={photo.author}
-							style={{ backgroundColor: photo.color ?? undefined }}
+							// 사진을 불러오기 전에 보이는 그 사진의 대표 색 (공급자가 준 값)
+							style={cssVars({ color: photo.color ?? undefined })}
 							onClick={() => {
 								setPicked(photo);
 								setAlt(photo.alt);
