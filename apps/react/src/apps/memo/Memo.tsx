@@ -116,7 +116,7 @@ type Pane = 'folders' | 'list' | 'reader';
 const NEW_ITEM_LEAVE_MS = 240;
 
 /**
- * 이 폭 이하면 한 칸씩 보인다 (Memo.css의 @container (max-width: 700px)와 같아야 한다).
+ * 이 폭 이하면 한 칸씩 보인다 (Memo.css의 [data-compact] 규칙이 이 값을 따른다).
  * 폴더·목록·본문 세 칸을 나란히 두기에 700px보다 좁으면 본문이 너무 좁아진다
  */
 const COMPACT_WIDTH = 700;
@@ -255,7 +255,7 @@ const Memo: React.FC = () => {
 	);
 	const shellRef = useRef<HTMLDivElement>(null);
 	const shellSize = useShellSize(shellRef);
-	// 휴대폰 화면에서는 폭과 상관없이 한 칸씩 (Memo.css의 --memo-phone과 같다)
+	// 휴대폰 화면에서는 폭과 상관없이 한 칸씩. 모양도 이 값을 따른다 (memo-shell의 data-compact)
 	const compact = phone || shellSize.compact;
 	const narrow = shellSize.narrow;
 	// 한 칸씩 볼 때는 폴더가 따로 한 화면이라 닫지 않는다
@@ -1046,7 +1046,8 @@ const Memo: React.FC = () => {
 							}
 						: {})}
 			/>
-			<div ref={shellRef} className="memo-shell">
+			{/* 한 칸씩 볼 때의 모양은 Memo.css의 [data-compact] 규칙이 그린다 (휴대폰 화면이거나 메모 칸이 700px 이하) */}
+			<div ref={shellRef} className="memo-shell" data-compact={compact || undefined}>
 				{purgeAlert && (
 					<AlertDialog
 						title={purgeAlert.title}
