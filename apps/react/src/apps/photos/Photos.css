@@ -372,6 +372,13 @@
 	overflow: auto;
 }
 
+/* 확대한 사진: 칸 폭의 --zoom배 (PhotoParts.tsx) */
+.photos-viewer-stage.zoomed > img {
+	width: calc(var(--zoom) * 100%);
+	max-width: none;
+	max-height: none;
+}
+
 .photos-viewer-stage img,
 .photos-viewer-stage video {
 	max-width: 100%;

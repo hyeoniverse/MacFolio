@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import React, { useEffect, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { PROFILE } from '@/shared/profile';
@@ -40,11 +41,7 @@ interface Props {
 
 /** 이름의 첫 글자 아바타 (iOS 메일처럼 둥근 네모) */
 const Avatar: React.FC<{ name: string; size?: number }> = ({ name, size = 48 }) => (
-	<span
-		className="mail-phone-avatar"
-		aria-hidden="true"
-		style={{ width: size, height: size, fontSize: size * 0.42, borderRadius: size * 0.24 }}
-	>
+	<span className="mail-phone-avatar" aria-hidden="true" style={cssVars({ size: `${size}px` })}>
 		{Array.from(name)[0]}
 	</span>
 );

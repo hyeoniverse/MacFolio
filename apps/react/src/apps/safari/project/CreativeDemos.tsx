@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 // HYEONIVERSE 페이지에서 직접 만져 보는 데모: 그 사이트의 관리자 기능(슬라이드 갤러리와 음성, TTS, 파형 편집,
 // PDF·PPTX 변환, 자동 번역, AI 요약, AI 커버)과 테마 프리셋을 같은 규칙으로 흉내 낸다.
 // 음성 만들기·번역·요약·커버는 MacFolio API를 거쳐 실제 AI 서비스를 부른다 (하루 상한이 있다)
@@ -239,7 +240,7 @@ const Slides: React.FC = () => {
 	};
 
 	return (
-		<div className="cd-slides" style={{ '--ms': `${ms}ms` } as React.CSSProperties}>
+		<div className="cd-slides" style={cssVars({ ms: `${ms}ms` })}>
 			<div
 				className="cd-slides-stage"
 				ref={stage}
@@ -275,13 +276,11 @@ const Slides: React.FC = () => {
 							data-far={Math.abs(d) > 2 || undefined}
 							aria-hidden={d !== 0}
 							tabIndex={-1}
-							style={
-								{
-									'--d': Math.max(-2, Math.min(2, d)),
-									'--a': Math.min(2, Math.abs(d)),
-									'--r': Math.max(-1, Math.min(1, d)),
-								} as React.CSSProperties
-							}
+							style={cssVars({
+								d: Math.max(-2, Math.min(2, d)),
+								a: Math.min(2, Math.abs(d)),
+								r: Math.max(-1, Math.min(1, d)),
+							})}
 							onClick={() => d !== 0 && go(i)}
 						>
 							<img src={item.src} alt={d === 0 ? `${i + 1}장` : ''} loading="lazy" draggable={false} />
@@ -646,7 +645,7 @@ const Voice: React.FC = () => {
 						el.currentTime = Number(event.target.value);
 						setTime(el.currentTime);
 					}}
-					style={{ '--fill': `${length ? (time / length) * 100 : 0}%` } as React.CSSProperties}
+					style={cssVars({ fill: `${length ? (time / length) * 100 : 0}%` })}
 				/>
 				<span>
 					{clock(time)} / {clock(length)}
@@ -1018,12 +1017,7 @@ const Wave: React.FC = () => {
 						<div
 							key={`${n}-${start}`}
 							className="cd-clip"
-							style={
-								{
-									flexGrow: clip.length,
-									'--dx': drag?.from === n ? `${drag.dx}px` : '0px',
-								} as React.CSSProperties
-							}
+							style={{ flexGrow: clip.length, ...cssVars({ dx: drag?.from === n ? `${drag.dx}px` : '0px' }) }}
 							data-index={n}
 							data-dragging={drag?.from === n || undefined}
 							data-pressing={pressing === n || undefined}
@@ -1032,7 +1026,7 @@ const Wave: React.FC = () => {
 							{clip.map((sample, i) => (
 								<i
 									key={i}
-									style={{ '--h': SAMPLES[sample] } as React.CSSProperties}
+									style={cssVars({ h: SAMPLES[sample] })}
 									data-on={(span && start + i >= span[0] && start + i < span[1]) || undefined}
 								/>
 							))}
@@ -1338,7 +1332,7 @@ const Translate: React.FC = () => {
 							) : busy ? (
 								<span className="cd-shimmer" />
 							) : made ? (
-								<span className="cd-typed" key={run} style={{ '--i': i } as React.CSSProperties}>
+								<span className="cd-typed" key={run} style={cssVars({ i })}>
 									{made.texts[i]}
 								</span>
 							) : (
@@ -1748,15 +1742,13 @@ export const Themes: React.FC<{ palette: ThemeSwatch[] }> = ({ palette }) => {
 			<div
 				className="cd-site"
 				data-mode={mode}
-				style={
-					{
-						'--t-bg': bg,
-						'--t-text': text,
-						'--t-accent': theme.accent,
-						'--t-on': onAccent,
-						'--t-accent-text': accentText,
-					} as React.CSSProperties
-				}
+				style={cssVars({
+					't-bg': bg,
+					't-text': text,
+					't-accent': theme.accent,
+					't-on': onAccent,
+					't-accent-text': accentText,
+				})}
 				aria-label={`${theme.name} 테마 ${mode === 'light' ? '라이트' : '다크'} 미리보기`}
 				role="img"
 			>
@@ -1822,12 +1814,10 @@ export const Themes: React.FC<{ palette: ThemeSwatch[] }> = ({ palette }) => {
 									setTouched(true);
 									setIndex(i);
 								}}
-								style={
-									{
-										'--s-accent': swatch.accent,
-										'--s-bg': mode === 'light' ? swatch.lightBg : swatch.darkBg,
-									} as React.CSSProperties
-								}
+								style={cssVars({
+									's-accent': swatch.accent,
+									's-bg': mode === 'light' ? swatch.lightBg : swatch.darkBg,
+								})}
 							/>
 						</li>
 					))}

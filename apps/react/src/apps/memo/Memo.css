@@ -1815,6 +1815,7 @@
 }
 
 .memo-format-panel .memo-stock-grid button {
+	background-color: var(--color, transparent);
 	aspect-ratio: 1;
 	padding: 0;
 	overflow: hidden;

@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
@@ -150,7 +151,7 @@ const Shortcuts: React.FC = () => {
 									<button
 										type="button"
 										className="shortcut-tile"
-										style={{ background: `linear-gradient(160deg, ${shortcut.colors[0]}, ${shortcut.colors[1]})` }}
+										style={cssVars({ from: shortcut.colors[0], to: shortcut.colors[1] })}
 										onClick={() => run({ title: shortcut.title, command: shortcut.command })}
 									>
 										<i className={shortcut.icon} aria-hidden="true"></i>

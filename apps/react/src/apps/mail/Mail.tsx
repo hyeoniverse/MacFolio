@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useEffect, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
@@ -54,7 +55,7 @@ const WELCOME: ListMail[] = INBOX.map((mail) => ({ ...mail, to: '방문자님', 
 
 /** 이름의 첫 글자 아바타 */
 const Monogram: React.FC<{ name: string; size?: number }> = ({ name, size = 36 }) => (
-	<span className="mail-avatar" aria-hidden="true" style={{ width: size, height: size, fontSize: size * 0.44 }}>
+	<span className="mail-avatar" aria-hidden="true" style={cssVars({ size: `${size}px` })}>
 		{Array.from(name)[0]}
 	</span>
 );

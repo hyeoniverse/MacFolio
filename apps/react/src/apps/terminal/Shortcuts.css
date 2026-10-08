@@ -47,6 +47,8 @@
 }
 
 .shortcut-tile {
+	/* 단축어마다 다른 두 색 (shortcutList.ts) */
+	background: linear-gradient(160deg, var(--from), var(--to));
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;

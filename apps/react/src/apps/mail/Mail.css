@@ -228,6 +228,9 @@
 }
 
 .mail-avatar {
+	width: var(--size);
+	height: var(--size);
+	font-size: calc(var(--size) * 0.44);
 	display: grid;
 	place-items: center;
 	flex: none;

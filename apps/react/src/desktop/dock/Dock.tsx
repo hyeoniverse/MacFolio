@@ -1,3 +1,4 @@
+import { cssVars } from '@/shared/lib/cssVars';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useState } from 'react';
 import DockItem from '@/desktop/dock/DockItem';
@@ -31,12 +32,12 @@ const Dock: React.FC = () => {
 		launchpad: hiddenItems,
 	} = dockLayout(dockAppCapacity(width), DOCK_APPS, LAUNCHPAD_APPS, isActive);
 	// 아이콘 크기와 간격은 칸 수를 센 값 그대로 CSS에 넘긴다
-	const dockStyle = {
-		'--dock-icon': `${dockIconSize(width)}px`,
-		'--dock-gap': `${DOCK_GAP}px`,
-		'--dock-padding': `${DOCK_PADDING}px`,
-		'--dock-divider': `${DOCK_DIVIDER}px`,
-	} as React.CSSProperties;
+	const dockStyle = cssVars({
+		'dock-icon': `${dockIconSize(width)}px`,
+		'dock-gap': `${DOCK_GAP}px`,
+		'dock-padding': `${DOCK_PADDING}px`,
+		'dock-divider': `${DOCK_DIVIDER}px`,
+	});
 
 	// Launchpad는 닫히면 흐려지며 사라진다
 	const launchpad = useExitMotion<HTMLDivElement>('fade-out');

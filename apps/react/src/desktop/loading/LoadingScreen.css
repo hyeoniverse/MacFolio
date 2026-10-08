@@ -40,3 +40,8 @@
 	margin: 1rem;
 	color: #fff;
 }
+
+/* 눌러서 시작하면 안내 문구는 감추고 자리는 남긴다 */
+.loading-text.started {
+	visibility: hidden;
+}

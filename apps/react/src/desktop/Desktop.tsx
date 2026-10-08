@@ -36,7 +36,6 @@ const DesktopSurface = ({ children }: { children: React.ReactNode }) => {
 		// 화면 전체를 덮는 바탕화면 판: 창이 없는 곳을 눌러도 여기에 닿는다
 		<div
 			className="desktop-surface"
-			style={{ width: '100%', height: '100%' }}
 			onPointerDownCapture={(event) => {
 				// 메뉴 막대와 거기서 연 메뉴·창(Apple 메뉴, 파일·보기…, 서버 상태, 음량, 키보드 단축키)은 눌러도 지금 쓰는 앱이 그대로다.
 				// 메뉴는 body에 그려지므로(포털) .ui-menu로 본다. 창이 연 메뉴는 이어서 창이 자기 앱을 앞으로 한다.
@@ -60,14 +59,7 @@ const Desktop = () => {
 	const isMobile = useIsMobile();
 
 	return (
-		<div
-			className="App"
-			style={{
-				width: '100vw',
-				height: '100vh',
-				overflow: 'hidden',
-			}}
-		>
+		<div className="App">
 			<AppStateProvider>
 				{/* StatusBar의 볼륨 조절도 음악 상태를 쓰므로 MusicProvider는 전역에 둔다 */}
 				<MusicProvider>
