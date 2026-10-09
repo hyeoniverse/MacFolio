@@ -10,6 +10,10 @@ export interface Comment {
 	createdAt: string;
 	/** 이 브라우저가 쓴 댓글 (지울 수 있다) */
 	mine: boolean;
+	/** 좋아요 수 */
+	likes: number;
+	/** 이 브라우저가 좋아요를 눌렀는지 */
+	liked: boolean;
 }
 
 export type CreateResult = { ok: true; comment: Comment } | { ok: false; errors: string[] };

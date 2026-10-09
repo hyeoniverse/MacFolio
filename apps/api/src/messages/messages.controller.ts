@@ -49,7 +49,7 @@ export class MessagesController {
 
 	@Post('threads')
 	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@SkipThrottle({ login: true, like: true })
 	@ApiBody({ schema: { example: { body: '디자인이 깔끔해요' } } })
 	@ApiCreatedResponse({ description: '새 피드백과 그 첫 말풍선' })
 	@ApiBadRequestResponse({ description: '내용이 비었거나 500자를 넘는다' })
@@ -61,7 +61,7 @@ export class MessagesController {
 
 	@Post('threads/:id')
 	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@SkipThrottle({ login: true, like: true })
 	@ApiBody({ schema: { example: { body: '저도 그래요' } } })
 	@ApiCreatedResponse({ description: '단 답글' })
 	@ApiNotFoundResponse({ description: '피드백이 없다' })
@@ -78,7 +78,7 @@ export class MessagesController {
 	@Delete(':id')
 	@HttpCode(204)
 	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@SkipThrottle({ login: true, like: true })
 	@ApiNoContentResponse({ description: '지웠다' })
 	@ApiForbiddenResponse({ description: '다른 브라우저에서 쓴 메시지다' })
 	@ApiNotFoundResponse({ description: '메시지가 없다' })

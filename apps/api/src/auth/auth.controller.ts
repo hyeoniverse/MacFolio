@@ -66,7 +66,7 @@ export class AuthController {
 
 	@Get('github')
 	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ comment: true })
+	@SkipThrottle({ comment: true, like: true })
 	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 시도했다' })
 	@ApiFoundResponse({ description: 'GitHub 로그인 화면으로 보낸다' })
 	github(@Res() response: Response) {
@@ -79,7 +79,7 @@ export class AuthController {
 
 	@Get('github/callback')
 	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ comment: true })
+	@SkipThrottle({ comment: true, like: true })
 	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 시도했다' })
 	@ApiFoundResponse({ description: '프론트엔드로 돌아간다 (?admin=signed-in | denied | cancelled)' })
 	async callback(

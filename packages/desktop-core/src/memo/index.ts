@@ -4,6 +4,7 @@ export * from './caption.js';
 export * from './find.js';
 export * from './organize.js';
 export * from './postRules.js';
+export * from './popular.js';
 export * from './posts.js';
 export * from './rules.js';
 export * from './tagFilter.js';

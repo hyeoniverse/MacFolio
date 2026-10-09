@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_ARRANGEMENT } from './arrange.js';
 import { filterFor, folderPaths, listPosts, postsInView, selectPost } from './noteView.js';
-import { ALL_CATEGORY, TAG_VIEW, type FolderNode, type Post } from './posts.js';
+import { ALL_CATEGORY, POPULAR_VIEW, TAG_VIEW, type FolderNode, type Post } from './posts.js';
 import { EMPTY_TAG_SELECTION } from './tagFilter.js';
 
 const post = (slug: string, date: string, extra: Partial<Post> = {}): Post => ({
@@ -65,4 +65,43 @@ describe('selectPost', () => {
 
 it('ALL_CATEGORY는 모든 폴더의 글', () => {
 	expect(postsInView([a, b], ALL_CATEGORY, EMPTY_TAG_SELECTION)).toHaveLength(2);
+});
+
+describe('인기글 보기', () => {
+	const posts = [post('a', '2026-10-01', { pinned: true }), post('b', '2026-10-01'), post('c', '2026-10-01')];
+	const stats = { a: { views: 1 }, b: { views: 9 }, c: { likes: 1 } };
+
+	it('반응 순서로, 정렬·고정과 상관없이 순위 그대로', () => {
+		const inView = postsInView(posts, POPULAR_VIEW, EMPTY_TAG_SELECTION, stats);
+		expect(inView.map((entry) => entry.slug)).toEqual(['b', 'c', 'a']);
+		const visible = listPosts({
+			inView,
+			trash: [],
+			inTrash: false,
+			query: '',
+			filter: null,
+			editing: false,
+			arrangement: DEFAULT_ARRANGEMENT,
+			ranked: true,
+		});
+		expect(visible.map((entry) => entry.slug)).toEqual(['b', 'c', 'a']);
+		const { pinned, others } = selectPost(visible, null, true);
+		expect(pinned).toEqual([]);
+		expect(others.map((entry) => entry.slug)).toEqual(['b', 'c', 'a']);
+	});
+
+	it('검색어로 거르면 순위는 그대로', () => {
+		const inView = postsInView(posts, POPULAR_VIEW, EMPTY_TAG_SELECTION, stats);
+		const visible = listPosts({
+			inView,
+			trash: [],
+			inTrash: false,
+			query: 'a',
+			filter: null,
+			editing: false,
+			arrangement: DEFAULT_ARRANGEMENT,
+			ranked: true,
+		});
+		expect(visible.map((entry) => entry.slug)).toEqual(['a']);
+	});
 });

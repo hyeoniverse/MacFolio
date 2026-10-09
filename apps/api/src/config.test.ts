@@ -14,6 +14,7 @@ describe('loadConfig', () => {
 			apiUrl: 'http://localhost:4000',
 			trustProxy: 0,
 			commentRateLimit: 5,
+			likeRateLimit: 30,
 			ipHashSecret: 'macfolio-dev-ip-hash-secret',
 			// 사진 찾기 키가 없으면 그 서비스만 꺼진다
 			stockPhotos: { unsplashAccessKey: undefined, pexelsApiKey: undefined },

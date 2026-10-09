@@ -36,6 +36,8 @@ export interface FakeApiState {
 	saves: number;
 	/** 글마다 댓글 (가짜 서버는 비밀번호를 그대로 들고 있다) */
 	comments: Record<string, FakeComment[]>;
+	/** 글마다 좋아요 (수와 이 브라우저가 눌렀는지) */
+	postLikes: Record<string, { count: number; liked: boolean }>;
 	/** 이 브라우저(방문자 쿠키)의 이름. 서버처럼 첫 요청에 정해진다 */
 	visitorName: string;
 	/** 메시지 앱: 방문자가 남긴 피드백과 말풍선 (주인 안내에 단 답글은 threadId 'owner') */
@@ -278,6 +280,10 @@ export interface FakeComment {
 	createdAt: string;
 	/** 이 브라우저가 쓴 댓글 */
 	mine: boolean;
+	/** 좋아요 수 (없으면 0) */
+	likes?: number;
+	/** 이 브라우저가 좋아요를 눌렀는지 (없으면 아니다) */
+	liked?: boolean;
 }
 
 export interface FakeMessage {
@@ -311,6 +317,7 @@ export async function fakeApi(
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		saves: 0,
 		comments: {},
+		postLikes: {},
 		visitorName: '🦊 날쌘 여우',
 		messageThreads: [],
 		messages: [],
@@ -791,6 +798,39 @@ export async function fakeApi(
 			return route.fulfill({ status: 200, headers: cors(origin), json: { results, hasMore: page < 2 } });
 		}
 
+		// 좋아요: 글·댓글마다 이 브라우저가 한 번. /posts/stats는 글마다 댓글 수·좋아요 수 (인기글)
+		const reply = (body: unknown) => route.fulfill({ status: 200, headers: cors(origin), json: body });
+		if (path === '/posts/stats' && request.method() === 'GET') {
+			const stats: Record<string, { comments: number; likes: number }> = {};
+			for (const [slug, comments] of Object.entries(state.comments))
+				if (comments.length > 0) stats[slug] = { comments: comments.length, likes: 0 };
+			for (const [slug, { count }] of Object.entries(state.postLikes))
+				if (count > 0) stats[slug] = { comments: stats[slug]?.comments ?? 0, likes: count };
+			return reply(stats);
+		}
+		const postLike = path.match(/^\/posts\/([\w-]+)\/(likes|like)$/);
+		if (postLike) {
+			const likes = (state.postLikes[postLike[1]] ??= { count: 0, liked: false });
+			const method = request.method();
+			if (postLike[2] === 'like' && (method === 'PUT' || method === 'DELETE')) {
+				const liked = method === 'PUT';
+				if (likes.liked !== liked) likes.count += liked ? 1 : -1;
+				likes.liked = liked;
+			}
+			return reply({ count: likes.count, liked: likes.liked });
+		}
+		const commentLike = path.match(/^\/comments\/(\w+)\/like$/);
+		if (commentLike) {
+			const comment = Object.values(state.comments)
+				.flat()
+				.find((item) => item.id === commentLike[1]);
+			if (!comment) return route.fulfill({ status: 404, headers: cors(origin), json: { statusCode: 404 } });
+			const liked = request.method() === 'PUT';
+			if (!!comment.liked !== liked) comment.likes = (comment.likes ?? 0) + (liked ? 1 : -1);
+			comment.liked = liked;
+			return reply({ count: comment.likes ?? 0, liked });
+		}
+
 		// 글: 누구나 게시한 글을 읽고, 로그인했을 때만 임시 저장·게시·버리기·지우기 (apps/api와 같은 규칙)
 		const postPath = path.match(
 			/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions|restore|permanent)(?:\/(\d+))?)?$/
@@ -939,7 +979,7 @@ export async function fakeApi(
 		const list = path.match(/^\/posts\/([\w-]+)\/comments$/);
 		if (list) {
 			const comments = (state.comments[list[1]] ??= []);
-			if (request.method() === 'GET') return json(comments);
+			if (request.method() === 'GET') return json(comments.map((comment) => ({ likes: 0, liked: false, ...comment })));
 			const input = request.postDataJSON() as { body?: string };
 			const comment: FakeComment = {
 				id: `c${nextId++}`,
@@ -947,6 +987,8 @@ export async function fakeApi(
 				body: input.body ?? '',
 				createdAt: new Date().toISOString(),
 				mine: true,
+				likes: 0,
+				liked: false,
 			};
 			comments.push(comment);
 			return json(comment, 201);
