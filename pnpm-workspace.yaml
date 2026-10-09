@@ -16,3 +16,16 @@ ignoredBuiltDependencies:
   - '@scarf/scarf'
   # Node 버전 확인뿐이다. 지원 범위(^20.19 || ^22.12 || >=24) 밖의 Node(예: 23)에서 설치를 통째로 막으므로 건너뛴다
   - prisma
+
+# 하위 의존성 취약점 패치 (pnpm audit --prod). 위 패키지가 고친 버전을 받으면 지운다
+overrides:
+  # prisma > @prisma/config: 재귀 객체 병합 시 스택 소진 (GHSA, high)
+  deepmerge-ts: '^8.0.0'
+  # prisma: 인증 플러그인 다운그레이드·압축 해제 무제한 (high, moderate). 이 프로젝트는 PostgreSQL이라 실제로 쓰지 않는다
+  mysql2: '^3.23.1'
+  # milkdown > vue 컴파일러: 소스맵 해석 서비스 거부 (high)
+  source-map-js: '^1.2.2'
+  # milkdown 수식: 프로토타입 오염으로 trust 제한 우회 (low)
+  katex: '^0.18.2'
+  # scalar 문서 앱: 자원 소비 제한 없음 (low)
+  '@ai-sdk/provider-utils': '^4.0.33'
