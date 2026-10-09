@@ -43,7 +43,7 @@ export class CommentsController {
 
 	@Post('posts/:slug/comments')
 	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@SkipThrottle({ login: true, like: true })
 	@ApiBody({ schema: { example: { body: '잘 봤어요!' } } })
 	@ApiCreatedResponse({ description: '쓴 댓글. 처음 쓰는 브라우저에는 방문자 쿠키를 준다' })
 	@ApiBadRequestResponse({ description: '입력 규칙을 어겼다 (내용 1~500자)' })
@@ -61,7 +61,7 @@ export class CommentsController {
 	@Delete('comments/:id')
 	@HttpCode(204)
 	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@SkipThrottle({ login: true, like: true })
 	@ApiNoContentResponse({ description: '지웠다' })
 	@ApiForbiddenResponse({ description: '다른 브라우저에서 쓴 댓글이다' })
 	@ApiNotFoundResponse({ description: '댓글이 없다' })

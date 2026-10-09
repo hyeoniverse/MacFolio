@@ -16,6 +16,10 @@ export interface CommentView {
 	createdAt: string;
 	/** 보고 있는 브라우저가 쓴 댓글 (지우기 단추를 보인다) */
 	mine: boolean;
+	/** 좋아요 수 */
+	likes: number;
+	/** 보고 있는 브라우저가 좋아요를 눌렀는지 */
+	liked: boolean;
 }
 
 const SELECT = {
@@ -28,14 +32,34 @@ const SELECT = {
 	visitorHash: true,
 } as const;
 
+/** 좋아요 수와, 보고 있는 브라우저가 누른 좋아요 (없으면 빈 목록) */
+const selectWithLikes = (visitor: Visitor | null) => ({
+	...SELECT,
+	_count: { select: { likes: true } },
+	likes: { where: { visitorHash: visitor?.hash ?? '' }, select: { visitorHash: true } },
+});
+
 const toView = (
 	{
 		visitorHash,
 		createdAt,
+		_count,
+		likes,
 		...row
-	}: { visitorHash: string | null; createdAt: Date } & Omit<CommentView, 'createdAt' | 'mine'>,
+	}: {
+		visitorHash: string | null;
+		createdAt: Date;
+		_count: { likes: number };
+		likes: unknown[];
+	} & Omit<CommentView, 'createdAt' | 'mine' | 'likes' | 'liked'>,
 	visitor: Visitor | null
-): CommentView => ({ ...row, createdAt: createdAt.toISOString(), mine: !!visitor && visitorHash === visitor.hash });
+): CommentView => ({
+	...row,
+	createdAt: createdAt.toISOString(),
+	mine: !!visitor && visitorHash === visitor.hash,
+	likes: _count.likes,
+	liked: !!visitor && likes.length > 0,
+});
 
 @Injectable()
 export class CommentsService {
@@ -54,7 +78,7 @@ export class CommentsService {
 		const rows = await this.prisma.postComment.findMany({
 			where: { postSlug: slug },
 			orderBy: { createdAt: 'asc' },
-			select: SELECT,
+			select: selectWithLikes(visitor),
 		});
 		return rows.map((row) => toView(row, visitor));
 	}
@@ -80,7 +104,7 @@ export class CommentsService {
 				ipPrefix: admin ? null : maskIp(ip),
 				ipHash: hashIp(ip, this.config.ipHashSecret),
 			},
-			select: SELECT,
+			select: selectWithLikes(visitor),
 		});
 		return toView(row, visitor);
 	}

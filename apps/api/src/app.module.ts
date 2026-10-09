@@ -7,6 +7,7 @@ import { HealthModule } from './health/health.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { MemoModule } from './memo/memo.module.js';
 import { CommentsModule } from './comments/comments.module.js';
+import { LikesModule } from './likes/likes.module.js';
 import { MessagesModule } from './messages/messages.module.js';
 import { VisitorsModule } from './visitors/visitors.module.js';
 import { PostsModule } from './posts/posts.module.js';
@@ -26,12 +27,13 @@ import { ContactModule } from './contact/contact.module.js';
 @Module({
 	imports: [
 		ConfigModule,
-		// 요청 제한 (IP마다 1분에): 로그인, 댓글·메시지. 경로마다 ThrottlerGuard를 걸고 해당하지 않는 제한은 건너뛴다
+		// 요청 제한 (IP마다 1분에): 로그인, 댓글·메시지, 좋아요. 경로마다 ThrottlerGuard를 걸고 해당하지 않는 제한은 건너뛴다
 		ThrottlerModule.forRootAsync({
 			inject: [APP_CONFIG],
 			useFactory: (config: AppConfig) => [
 				{ name: 'login', ttl: 60_000, limit: config.auth.loginRateLimit },
 				{ name: 'comment', ttl: 60_000, limit: config.commentRateLimit },
+				{ name: 'like', ttl: 60_000, limit: config.likeRateLimit },
 			],
 		}),
 		PrismaModule,
@@ -40,6 +42,7 @@ import { ContactModule } from './contact/contact.module.js';
 		MemoModule,
 		VisitorsModule,
 		CommentsModule,
+		LikesModule,
 		MessagesModule,
 		PostsModule,
 		FilesModule,
