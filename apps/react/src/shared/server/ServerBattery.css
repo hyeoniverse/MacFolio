@@ -1,0 +1,39 @@
+/* 배터리 (메뉴 막대의 배터리 자리). macOS처럼 테두리는 옅고 안쪽 막대는 진하다 */
+.server-battery {
+	width: 1.75em;
+	height: 0.82em;
+	overflow: visible;
+	vertical-align: -0.05em;
+}
+
+.server-battery .shell {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.2;
+	opacity: 0.45;
+}
+
+.server-battery .cap {
+	fill: currentColor;
+	opacity: 0.45;
+}
+
+.server-battery .level {
+	fill: currentColor;
+	transition: width 0.3s ease;
+}
+
+/* 서버 자원이 유휴 회수 기준에 가까우면 (주의) 주황, 걸려 있으면 (회수 위험) 빨강 */
+.server-battery.warning .level {
+	fill: #ff9f0a;
+}
+
+.server-battery.danger .level {
+	fill: #ff453a;
+}
+
+/* 메뉴 줄의 아이콘 칸(14px)에 맞춘다 */
+.ui-menu-info .server-battery {
+	width: 14px;
+	height: auto;
+}

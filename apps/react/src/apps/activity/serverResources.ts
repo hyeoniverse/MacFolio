@@ -12,9 +12,7 @@ export const requestedTab = createStore<{ tab: string | null }>({ tab: null });
 const POLL_MS = 5 * 60_000;
 
 export interface Battery {
-	/** Font Awesome 배터리 아이콘 */
-	icon: string;
-	/** 휴대폰 배터리의 찬 정도 (%) */
+	/** 배터리가 찬 정도 (%) */
 	fill: number;
 	tone: 'danger' | 'warning' | null;
 	/** 한 줄 요약 (단추 이름·툴팁) */
@@ -38,7 +36,7 @@ export const RISK_LABEL = { danger: '위험', warning: '주의', safe: '안전',
  * 종량제·꺼짐·아직 모름은 평소 모양 그대로
  */
 export function batteryOf(status: ResourceStatus | null): Battery {
-	const plain = { icon: 'fa-battery-three-quarters', fill: 75, tone: null };
+	const plain = { fill: 75, tone: null };
 	if (!status) return { ...plain, summary: '불러오는 중' };
 	if (status.mode === 'off') return { ...plain, summary: '감시 꺼짐' };
 	const usage = usageLine(status) ?? '아직 잰 값 없음';
@@ -46,13 +44,13 @@ export function batteryOf(status: ResourceStatus | null): Battery {
 	const summary = `${usage} · 유휴 회수 ${RISK_LABEL[status.risk.level]}`;
 	switch (status.risk.level) {
 		case 'danger':
-			return { icon: 'fa-battery-empty', fill: 10, tone: 'danger', summary };
+			return { fill: 10, tone: 'danger', summary };
 		case 'warning':
-			return { icon: 'fa-battery-quarter', fill: 25, tone: 'warning', summary };
+			return { fill: 25, tone: 'warning', summary };
 		case 'safe':
-			return { icon: 'fa-battery-full', fill: 100, tone: null, summary };
+			return { fill: 100, tone: null, summary };
 		default:
-			return { icon: 'fa-battery-half', fill: 50, tone: null, summary };
+			return { fill: 50, tone: null, summary };
 	}
 }
 

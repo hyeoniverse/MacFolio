@@ -155,7 +155,7 @@ test.describe('메뉴 막대의 서버 자원 (배터리 자리)', () => {
 		const asked: string[] = [];
 		page.on('request', (request) => request.url().endsWith('/resources') && asked.push(request.url()));
 		await enterDesktop(page);
-		await expect(page.locator('.macos-statusbar .statusbar-icon .fa-battery-three-quarters')).toBeVisible();
+		await expect(page.locator('.macos-statusbar .battery-icon .server-battery')).toHaveAttribute('data-fill', '75');
 		await expect(page.getByRole('button', { name: /^서버 자원/ })).toHaveCount(0);
 		expect(asked).toEqual([]);
 	});
@@ -171,8 +171,8 @@ test.describe('메뉴 막대의 서버 자원 (배터리 자리)', () => {
 			name: '서버 자원: CPU 3.2% · 메모리 41% · 네트워크 0.6% · 유휴 회수 위험',
 		});
 		await expect(button).toBeVisible();
-		await expect(button).toHaveClass(/danger/);
-		await expect(button.locator('i')).toHaveClass(/fa-battery-empty/);
+		await expect(button.locator('svg')).toHaveClass(/danger/);
+		await expect(button.locator('svg')).toHaveAttribute('data-fill', '10');
 
 		await button.click();
 		const menu = page.getByRole('menu', { name: '서버 자원' });
@@ -194,16 +194,17 @@ test.describe('메뉴 막대의 서버 자원 (배터리 자리)', () => {
 		api.resources = { ...freeDanger(), risk: { level: 'safe', days: 7, conditions: [] } };
 		await enterDesktop(page);
 		const safe = page.getByRole('button', { name: /^서버 자원: .* · 유휴 회수 안전$/ });
-		await expect(safe.locator('i')).toHaveClass(/fa-battery-full/);
-		await expect(safe).not.toHaveClass(/danger|warning/);
+		await expect(safe.locator('svg')).toHaveAttribute('data-fill', '100');
+		await expect(safe.locator('svg')).not.toHaveClass(/danger|warning/);
 
 		// 서버에서 끄면 메뉴를 열 때 다시 물어 알린다
 		api.resources = { mode: 'off' };
 		await safe.click();
 		const menu = page.getByRole('menu', { name: '서버 자원' });
 		await expect(menu).toContainText('서버 자원 감시가 꺼져 있습니다 (RESOURCE_MONITOR)');
-		await expect(page.getByRole('button', { name: '서버 자원: 감시 꺼짐' }).locator('i')).toHaveClass(
-			/fa-battery-three-quarters/
+		await expect(page.getByRole('button', { name: '서버 자원: 감시 꺼짐' }).locator('svg')).toHaveAttribute(
+			'data-fill',
+			'75'
 		);
 	});
 });
