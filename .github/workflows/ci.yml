@@ -28,9 +28,11 @@ jobs:
     # Playwright 시스템 패키지 설치(4분 안팎)까지 넣으면 13~15분 걸려서, 15분이면 조금만 느려도 잘린다
     timeout-minutes: 25
     # API e2e 테스트용 PostgreSQL (apps/api/docker-compose.yml과 같은 계정)
+    # 이미지는 Docker Hub가 아니라 AWS ECR Public의 공식 이미지 사본에서 받는다.
+    # Docker Hub는 로그인하지 않으면 받는 횟수를 IP마다 제한해서, GitHub 러너가 그 한도에 걸려 CI가 시작도 못 하고 멈췄다
     services:
       postgres:
-        image: postgres:17-alpine
+        image: public.ecr.aws/docker/library/postgres:17-alpine
         env:
           POSTGRES_USER: macfolio
           POSTGRES_PASSWORD: macfolio
