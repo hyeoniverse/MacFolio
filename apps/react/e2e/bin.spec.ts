@@ -116,6 +116,7 @@ test.describe('휴지통', () => {
 		await expect(row('배경.png')).toContainText('배경화면');
 		await expect(row('예전 그림.png')).toContainText('예전 버전에서만: server-post');
 		await expect(row('안 쓰는 그림.png')).toContainText('쓰는 곳 없음');
+		await expect(bin.getByText(/저장소 글\(Markdown\)의 이미지는 사이트와 함께 배포되어/)).toBeVisible();
 		// 쓰는 파일에는 지우기 단추가 없다
 		await expect(row('글 그림.png').getByRole('button', { name: '지우기' })).toHaveCount(0);
 		await expect(row('배경.png').getByRole('button', { name: '지우기' })).toHaveCount(0);
@@ -131,6 +132,16 @@ test.describe('휴지통', () => {
 		await expect(list.getByRole('listitem')).toHaveCount(2);
 		expect(api.uploads.map((item) => item.id).sort()).toEqual(['usedinpost000001', 'wallpaper0000001']);
 		await expect(bin.getByRole('button', { name: '쓰지 않는 파일 지우기' })).toHaveCount(0);
+	});
+
+	test('서버 파일이 없으면 무엇이 여기 보이는지 알려 준다', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		await dockItem(page, 'bin').click();
+		const bin = appWindow(page, 'bin');
+		await bin.getByRole('button', { name: /서버 파일/ }).click();
+		await expect(bin.getByText('서버에 올린 파일이 없습니다.')).toBeVisible();
+		await expect(bin.getByText(/메모 편집기로 올린 이미지·첨부 파일과 시스템 설정에서 올린 배경화면/)).toBeVisible();
 	});
 
 	test('머리줄(제목·항목 수)을 두 번 누르면 창이 커지고, 끌면 창이 옮겨진다', async ({ page }) => {
