@@ -1,5 +1,5 @@
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
@@ -9,15 +9,19 @@ import AdminAccount from '@/shared/auth/AdminAccount';
 import { useAdmin } from '@/shared/auth/adminStore';
 import GithubShowcase from '@/apps/settings/GithubShowcase';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import AboutPane from '@/apps/settings/AboutPane';
+import { requestedSection } from '@/apps/settings/settingsRequest';
 import '@/apps/settings/Settings.css';
 
-type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'github';
+type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'about' | 'github';
 
 const SECTIONS: { id: Section; label: string; icon: string }[] = [
 	{ id: 'account', label: '계정', icon: 'fa-solid fa-circle-user' },
 	{ id: 'appearance', label: '화면 모드', icon: 'fa-solid fa-circle-half-stroke' },
 	{ id: 'wallpaper', label: '배경화면', icon: 'fa-solid fa-image' },
 	{ id: 'sound', label: '사운드', icon: 'fa-solid fa-volume-high' },
+	// macOS의 일반 › 정보: 만든 사람의 프로필 ('이 Mac에 관하여'의 추가 정보…가 연다)
+	{ id: 'about', label: '정보', icon: 'fa-solid fa-circle-info' },
 ];
 
 /** 관리자로 로그인했을 때만 보이는 항목 */
@@ -39,6 +43,19 @@ const Settings: React.FC = () => {
 	const section = sections.some((item) => item.id === chosen) ? chosen : 'account';
 	/** 휴대폰: iOS 설정처럼 항목 목록 → 누르면 그 항목 화면 (넓은 창에서는 쓰지 않는다) */
 	const [phoneOpen, setPhoneOpen] = useState(false);
+
+	// 다른 곳에서 항목을 골라 열면 그 항목으로 ('이 Mac에 관하여'의 추가 정보… → 정보)
+	useEffect(() => {
+		const take = ({ section: requested }: { section: string | null }) => {
+			const match = SECTIONS.find((item) => item.id === requested);
+			if (!match) return;
+			setSection(match.id);
+			setPhoneOpen(true);
+			requestedSection.setState({ section: null });
+		};
+		take(requestedSection.getState());
+		return requestedSection.subscribe(take);
+	}, []);
 
 	// 메뉴 막대의 시스템 설정 메뉴 (#96): 보기에서 항목 고르기
 	useAppMenus('settings', [
@@ -128,6 +145,13 @@ const Settings: React.FC = () => {
 										selected={settings.wallpaper}
 									/>
 								)}
+							</>
+						)}
+
+						{section === 'about' && (
+							<>
+								<h2 className="phone-title">정보</h2>
+								<AboutPane />
 							</>
 						)}
 
