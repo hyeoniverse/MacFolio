@@ -3,14 +3,12 @@
 	--bin-accent: #0063e1;
 	--bin-accent-soft: rgba(0, 99, 225, 0.14);
 	--bin-deleted: #c4352b;
-	--bin-added: #1a7f37;
 }
 
 :root[data-theme='dark'] [data-app='bin'] {
 	--bin-accent: #0a84ff;
 	--bin-accent-soft: rgba(10, 132, 255, 0.24);
 	--bin-deleted: #ff7b72;
-	--bin-added: #56d364;
 }
 
 .bin {
@@ -118,231 +116,76 @@
 	font-size: 12px;
 }
 
-/* 지운 기능: 목록 | 정보 */
-.bin-features {
+/* 내 브라우저 데이터 */
+.bin-browser {
 	display: flex;
 	flex: 1;
+	flex-direction: column;
 	min-height: 0;
 }
 
-.bin-list {
+.bin-data-list {
 	flex: 1;
-	min-width: 0;
+	margin: 0;
 	padding: 6px;
 	overflow-y: auto;
-	outline: none;
+	list-style: none;
 }
 
-.bin-item {
-	display: flex;
+.bin-data {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: center;
-	gap: 10px;
-	padding: 7px 10px;
+	gap: 2px 12px;
+	padding: 8px 10px;
 	border-radius: 6px;
-	font-size: 13px;
-	cursor: default;
 }
 
-.bin-item:nth-child(even) {
+.bin-data:nth-child(even) {
 	background-color: var(--color-row-alt, rgba(127, 127, 127, 0.05));
 }
 
-.bin-item.selected {
-	background-color: var(--bin-accent-soft);
-}
-
-.bin-list:focus-visible .bin-item.selected {
-	background-color: var(--bin-accent);
-	color: #fff;
-}
-
-.bin-item-icon {
-	flex: none;
-	width: 18px;
-	color: var(--color-text-secondary);
-	text-align: center;
-}
-
-.bin-list:focus-visible .bin-item.selected .bin-item-icon,
-.bin-list:focus-visible .bin-item.selected .bin-item-date {
-	color: inherit;
-}
-
-.bin-item-name {
-	flex: 1;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.bin-item-date {
-	flex: none;
-	color: var(--color-text-secondary);
-	font-size: 12px;
-	font-variant-numeric: tabular-nums;
-}
-
-.bin-info {
-	display: flex;
-	flex: none;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 10px;
-	width: 280px;
-	padding: 20px;
-	overflow-y: auto;
-	border-left: 1px solid var(--color-divider);
-}
-
-.bin-info-icon {
-	color: var(--color-text-secondary);
-	font-size: 34px;
-}
-
-.bin-info h2 {
-	margin: 0;
-	font-size: 16px;
-	line-height: 1.35;
-}
-
-.bin-info dl {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: 4px 10px;
-	margin: 0;
-	font-size: 12px;
-}
-
-.bin-info dt {
-	color: var(--color-text-secondary);
-}
-
-.bin-info dd {
-	margin: 0;
-}
-
-.bin-info p {
-	margin: 0;
+.bin-data-name {
 	font-size: 13px;
-	line-height: 1.6;
+	font-weight: 600;
 }
 
-/* 지운 줄 수 (목록과 정보) */
-.bin-item-lines {
-	flex: none;
-	color: var(--bin-deleted);
+.bin-data-meta {
+	grid-column: 2;
+	grid-row: 1;
+	color: var(--color-text-secondary);
 	font-size: 12px;
 	font-variant-numeric: tabular-nums;
 }
 
-.bin-list:focus-visible .bin-item.selected .bin-item-lines {
-	color: inherit;
+.bin-data-description {
+	grid-column: 1;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	line-height: 1.5;
 }
 
-.bin-deleted {
-	color: var(--bin-deleted);
+.bin-data-clear {
+	grid-column: 2;
+	grid-row: 2;
+	justify-self: end;
 }
 
-.bin-added {
-	color: var(--bin-added);
-}
-
-.bin-commits {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-}
-
-.bin-commits a {
-	color: var(--bin-accent);
-	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	text-decoration: none;
-}
-
-.bin-commits a:hover {
-	text-decoration: underline;
-}
-
-/* 바꾸기 전 모습: 누르면 크게 */
-.bin-info-before {
-	position: relative;
-	width: 100%;
-	padding: 0;
-	overflow: hidden;
-	border: 1px solid var(--color-divider);
-	border-radius: 8px;
+.bin-data.note {
+	grid-template-columns: 1fr;
+	margin-top: 8px;
+	border: 1px dashed var(--color-divider);
 	background: none;
-	cursor: zoom-in;
 }
 
-.bin-info-before img {
-	display: block;
-	width: 100%;
-	aspect-ratio: 16 / 10;
-	object-fit: cover;
-	object-position: top left;
-}
-
-.bin-info-before span {
-	position: absolute;
-	bottom: 6px;
-	left: 6px;
-	padding: 2px 7px;
-	border-radius: 999px;
-	background-color: rgba(0, 0, 0, 0.6);
-	color: #fff;
-	font-size: 11px;
-}
-
-/* 훑어보기: 창 위에 어둡게 깔고 그림을 가득 */
-.bin-quicklook {
-	display: flex;
-	position: absolute;
-	z-index: 10;
-	inset: 0;
-	align-items: center;
-	justify-content: center;
-	padding: 56px 28px 28px;
-	background-color: rgba(0, 0, 0, 0.72);
-	animation: fade-in 0.18s ease;
-}
-
-.bin-quicklook figure {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 10px;
-	max-width: 100%;
-	max-height: 100%;
-	margin: 0;
-}
-
-.bin-quicklook img {
-	min-height: 0;
-	max-width: 100%;
-	max-height: calc(100% - 40px);
-	border-radius: 8px;
-	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-	object-fit: contain;
-}
-
-.bin-quicklook figcaption {
-	color: rgba(255, 255, 255, 0.9);
-	font-size: 13px;
-	text-align: center;
-}
-
-.bin-quicklook-close {
-	position: absolute;
-	top: 14px;
-	right: 14px;
-	width: 28px;
-	height: 28px;
+.bin-link {
+	padding: 0;
 	border: none;
-	border-radius: 50%;
-	background-color: rgba(255, 255, 255, 0.18);
-	color: #fff;
+	background: none;
+	color: var(--bin-accent);
+	font: inherit;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
 /* 서버 파일 (관리자) */
@@ -481,16 +324,5 @@
 
 	.bin-toolbar {
 		height: 44px;
-	}
-
-	.bin-features {
-		flex-direction: column;
-	}
-
-	.bin-info {
-		width: auto;
-		max-height: 45%;
-		border-top: 1px solid var(--color-divider);
-		border-left: none;
 	}
 }
