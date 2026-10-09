@@ -1,7 +1,7 @@
 ---
 title: CRA에서 Vite로 옮기기
 date: 2026-09-28
-category: 개발기/MacFolio/빌드·테스트
+category: 인프라/빌드·테스트
 summary: dev 서버 시작 5.05초 → 0.58초. 옮긴 이유와 측정 방법, 옮기면서 조용히 깨져 있던 것들.
 ---
 

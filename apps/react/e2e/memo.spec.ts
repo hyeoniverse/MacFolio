@@ -44,7 +44,7 @@ test.describe('메모 (블로그)', () => {
 		const total = await items.count();
 
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		await folders.getByRole('button', { name: /^개발기/ }).click();
+		await folders.getByRole('button', { name: /^인프라/ }).click();
 		await expect(items).not.toHaveCount(0);
 
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('Fast Refresh');
@@ -124,15 +124,15 @@ test.describe('메모 (블로그)', () => {
 	test('하위 폴더를 접고 펼치고, 상위 폴더를 고르면 하위 폴더의 글도 보인다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		const child = folders.getByRole('button', { name: /^MacFolio/ });
+		const child = folders.getByRole('button', { name: /^기능/ });
 		await expect(child).toBeVisible();
 
-		await folders.getByRole('button', { name: /^개발기/ }).click();
+		await folders.getByRole('button', { name: /^프론트엔드/ }).click();
 		await expect(memo.locator('.memo-item')).not.toHaveCount(0);
 
-		await folders.getByRole('button', { name: '하위 폴더 접기 (개발기)' }).click();
+		await folders.getByRole('button', { name: '하위 폴더 접기 (프론트엔드)' }).click();
 		await expect(child).toBeHidden();
-		await folders.getByRole('button', { name: '하위 폴더 펼치기 (개발기)' }).click();
+		await folders.getByRole('button', { name: '하위 폴더 펼치기 (프론트엔드)' }).click();
 		await expect(child).toBeVisible();
 	});
 
@@ -249,10 +249,10 @@ test.describe('메모 (블로그)', () => {
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 
 		await expect(memo.getByRole('button', { name: '새로운 폴더' })).toHaveCount(0);
-		await folders.getByRole('button', { name: /^개발기/ }).hover();
+		await folders.getByRole('button', { name: /^프론트엔드/ }).hover();
 		await expect(folders.getByRole('button', { name: /폴더 동작/ })).toHaveCount(0);
 		await expect(memo.getByRole('button', { name: /메모 고정/ })).toHaveCount(0);
-		await expect(folders.getByRole('button', { name: /^개발기/ })).toHaveAttribute('draggable', 'false');
+		await expect(folders.getByRole('button', { name: /^프론트엔드/ })).toHaveAttribute('draggable', 'false');
 
 		await memo.locator('.memo-item').first().click({ button: 'right' });
 		await expect(page.getByRole('menu')).toHaveCount(0);

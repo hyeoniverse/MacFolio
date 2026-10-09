@@ -1,7 +1,7 @@
 ---
 title: 메모 로직을 desktop-core로 - localStorage는 어디에 둘까
 date: 2026-10-09
-category: 개발기/MacFolio/메모
+category: 프론트엔드/구조·리팩터링
 summary: 메모 앱의 글 읽기·정렬, 태그, 폴더 정리, 찾기, 글 검사를 React 앱에서 packages/desktop-core로 옮겼다. 대부분은 처음부터 순수 함수라 경로만 바뀌었는데, 세 파일은 localStorage를 직접 읽고 있었다. 값을 검사하는 일은 core에, 브라우저에 읽고 쓰는 일은 앱에 나눴다. 목록에 무엇을 보일지 정하던 hook 안의 계산도 core로 꺼냈다.
 ---
 

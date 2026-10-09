@@ -1,7 +1,7 @@
 ---
 title: Finder 앱 - 사이트를 파일처럼 둘러보기
 date: 2026-10-03
-category: 개발기/MacFolio/데스크톱
+category: 프론트엔드/기능
 summary: Dock에 Finder 아이콘은 있었지만 눌러도 창이 열리지 않았다. 저장소 문서, 프로젝트, 블로그 글, 앱을 폴더와 파일로 묶어 둘러보는 Finder를 만들었다. 문서는 Finder 안에서 GitHub처럼 읽고(Mermaid 그림까지), 글은 메모, 프로젝트는 Safari, 앱은 그 앱으로 연다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: 메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기
 date: 2026-10-05
-category: 개발기/MacFolio/데스크톱
+category: 프론트엔드/기능
 summary: 장식이던 Wi-Fi 아이콘을 이 사이트 API 서버의 상태로 바꿨다. /health를 주기적으로 불러 응답 시간과 DB 상태를 막대 수로 보여 준다.
 ---
 
