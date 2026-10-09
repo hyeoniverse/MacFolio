@@ -70,8 +70,6 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 
 export interface StoredItem {
 	item: BrowserDataItem;
-	/** 저장된 바이트 수 (키와 값의 글자 수, UTF-16) */
-	bytes: number;
 	summary: string | null;
 }
 
@@ -91,8 +89,7 @@ export function readBrowserData(items: BrowserDataItem[] = BROWSER_DATA): Stored
 			.map((key) => [key, storage?.getItem(key) ?? null] as const)
 			.filter((entry): entry is readonly [string, string] => entry[1] !== null);
 		if (values.length === 0) return [];
-		const bytes = values.reduce((sum, [key, value]) => sum + (key.length + value.length) * 2, 0);
-		return [{ item, bytes, summary: item.summarize?.(values[0][1]) ?? null }];
+		return [{ item, summary: item.summarize?.(values[0][1]) ?? null }];
 	});
 }
 

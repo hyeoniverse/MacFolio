@@ -32,7 +32,8 @@ describe('usageOf', () => {
 
 describe('formatSize', () => {
 	it('알맞은 단위로', () => {
-		expect(formatSize(512)).toBe('512 B');
+		expect(formatSize(512)).toBe('512 Bytes');
+		expect(formatSize(1)).toBe('1 Byte');
 		expect(formatSize(1536)).toBe('1.5 KB');
 		expect(formatSize(20 * 1024 * 1024)).toBe('20 MB');
 	});

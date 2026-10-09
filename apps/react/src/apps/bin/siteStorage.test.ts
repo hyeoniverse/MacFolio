@@ -26,7 +26,6 @@ describe('내 브라우저 데이터', () => {
 		const stored = readBrowserData();
 		expect(stored.map((entry) => entry.item.id)).toEqual(['memo-finds', 'apps-before-leaving']);
 		expect(stored[0].summary).toBe('검색어 3개');
-		expect(stored[0].bytes).toBe(('macfolio:memo:recent-finds'.length + '["a","b","c"]'.length) * 2);
 
 		clearBrowserData(stored[0].item);
 		expect(readBrowserData().map((entry) => entry.item.id)).toEqual(['apps-before-leaving']);

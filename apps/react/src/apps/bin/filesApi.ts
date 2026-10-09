@@ -32,9 +32,9 @@ export function usageOf(file: ServerFile, repoPosts: { slug: string; body: strin
 	return { removable: true, label: '쓰는 곳 없음' };
 }
 
-/** 1536 → "1.5 KB" */
+/** 296 → "296 Bytes", 1536 → "1.5 KB" (B 한 글자는 무슨 뜻인지 헷갈려서 바이트는 풀어 쓴다) */
 export function formatSize(bytes: number): string {
-	if (bytes < 1024) return `${bytes} B`;
+	if (bytes < 1024) return `${bytes} ${bytes === 1 ? 'Byte' : 'Bytes'}`;
 	const units = ['KB', 'MB', 'GB'];
 	let value = bytes / 1024;
 	let unit = 0;

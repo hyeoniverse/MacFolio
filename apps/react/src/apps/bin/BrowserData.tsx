@@ -6,7 +6,6 @@ import { settingsStore } from '@/shared/settings/settingsStore';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import { clearBrowserData, readBrowserData, type BrowserDataItem } from './siteStorage';
-import { formatSize } from './filesApi';
 
 /** 지운다. 설정은 앱이 들고 있는 값도 처음 설정으로 돌린다 (돌리면 저장소에 다시 쓰므로 그 뒤에 지운다) */
 function clear(item: BrowserDataItem) {
@@ -38,7 +37,7 @@ const BrowserData = () => {
 			<div className="bin-files-summary">
 				<span>
 					{stored.length > 0
-						? `이 사이트가 이 브라우저에 남긴 것 ${stored.length}가지 · ${formatSize(stored.reduce((sum, entry) => sum + entry.bytes, 0))}`
+						? `이 사이트가 이 브라우저에 남긴 것 ${stored.length}가지`
 						: '이 사이트가 이 브라우저에 남긴 것이 없습니다'}
 				</span>
 				{stored.length > 0 && (
@@ -49,10 +48,10 @@ const BrowserData = () => {
 			</div>
 
 			<ul className="bin-data-list" aria-label="내 브라우저 데이터">
-				{stored.map(({ item, bytes, summary }) => (
+				{stored.map(({ item, summary }) => (
 					<li key={item.id} className="bin-data">
 						<span className="bin-data-name">{item.name}</span>
-						<span className="bin-data-meta">{[summary, formatSize(bytes)].filter(Boolean).join(' · ')}</span>
+						{summary && <span className="bin-data-meta">{summary}</span>}
 						<span className="bin-data-description">{item.description}</span>
 						<Button
 							className="bin-data-clear"
