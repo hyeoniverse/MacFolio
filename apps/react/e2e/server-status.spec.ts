@@ -150,14 +150,57 @@ const freeDanger = () => ({
 });
 
 test.describe('메뉴 막대의 서버 자원 (배터리 자리)', () => {
-	test('방문자에게는 평소의 배터리 아이콘이고, 서버 자원을 묻지 않는다', async ({ page }) => {
+	test('방문자에게는 방문 추이: 앞 7일보다 늘어난 만큼 차고, 누르면 방문 수가 보인다. 서버 자원은 묻지 않는다', async ({
+		page,
+	}) => {
 		await fakeApi(page);
 		const asked: string[] = [];
 		page.on('request', (request) => request.url().endsWith('/resources') && asked.push(request.url()));
 		await enterDesktop(page);
-		await expect(page.locator('.macos-statusbar .battery-icon .server-battery')).toHaveAttribute('data-fill', '75');
-		await expect(page.getByRole('button', { name: /^서버 자원/ })).toHaveCount(0);
+
+		// 1,284회 vs 1,146회 (+12%) → 절반(50%)에서 6% 더
+		const button = page.getByRole('button', { name: '방문: 최근 7일 1,284회 (앞 7일보다 +12%)' });
+		await expect(button.locator('svg')).toHaveAttribute('data-fill', '56');
+		await expect(button.locator('svg')).not.toHaveClass(/danger|warning/);
+
+		await button.click();
+		const menu = page.getByRole('menu', { name: '방문' });
+		await expect(menu).toContainText('방문 (최근 7일)');
+		await expect(menu).toContainText('1,284회 방문');
+		await expect(menu).toContainText('앞 7일(1,146회)보다 +12% ▲');
+		await expect(menu).toContainText('오늘 224회');
+		await expect(menu).not.toContainText('서버 자원');
 		expect(asked).toEqual([]);
+
+		await menu.getByRole('menuitem', { name: '활동 상태 보기에서 자세히' }).click();
+		const activity = appWindow(page, 'activity');
+		await expect(activity.getByRole('tab', { name: '개요' })).toHaveAttribute('aria-selected', 'true');
+	});
+
+	test('방문이 줄면 그만큼 빈다', async ({ page }) => {
+		const api = await fakeApi(page);
+		const summary = api.analyticsSummary as { totals: { visits: number }; previous: { visits: number } };
+		summary.totals = { ...summary.totals, visits: 300 };
+		summary.previous = { ...summary.previous, visits: 600 };
+		await enterDesktop(page);
+		const button = page.getByRole('button', { name: '방문: 최근 7일 300회 (앞 7일보다 -50%)' });
+		await expect(button.locator('svg')).toHaveAttribute('data-fill', '25');
+	});
+
+	test('방문 수를 묻지 못하면 평소 모양', async ({ page }) => {
+		await fakeApi(page);
+		await page.route('http://api.test/analytics/summary**', (route) => route.fulfill({ status: 500 }));
+		await enterDesktop(page);
+		await expect(page.getByRole('button', { name: '방문: 불러오지 못함' }).locator('svg')).toHaveAttribute(
+			'data-fill',
+			'75'
+		);
+	});
+
+	test('서버 주소가 없으면 누를 수 없는 평소 모양', async ({ page }) => {
+		await enterDesktop(page);
+		await expect(page.locator('.macos-statusbar .battery-icon .server-battery')).toHaveAttribute('data-fill', '75');
+		await expect(page.getByRole('button', { name: /^방문:/ })).toHaveCount(0);
 	});
 
 	test('관리자: 회수 위험이면 빈 빨간 배터리, 누르면 사용률·위험이 보이고 활동 상태 보기의 서버 탭을 연다', async ({
@@ -180,6 +223,8 @@ test.describe('메뉴 막대의 서버 자원 (배터리 자리)', () => {
 		await expect(menu).toContainText('Always Free · VM.Standard.E2.1.Micro · 3분 전 측정');
 		await expect(menu).toContainText('유휴 회수: 위험');
 		await expect(menu).toContainText('2일치로 미리 본 값');
+		// 관리자에게는 방문도 함께
+		await expect(menu).toContainText('1,284회 방문');
 		// 정보 줄은 누를 수 있는 항목이 아니다
 		await expect(menu.getByRole('menuitem', { name: /CPU/ })).toHaveCount(0);
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { batteryOf, useServerResources } from '@/apps/activity/serverResources';
+import { useVisitTrend, visitBattery } from '@/apps/activity/visitTrend';
 import type { StatusBarTone } from '@/desktop/mobile/statusBarTone';
 import ServerSignal from '@/shared/server/ServerSignal';
 import { useServerStatus } from '@/shared/server/serverStatus';
@@ -32,9 +33,15 @@ interface Props {
  */
 const MobileStatusBar = ({ ref, tone, onApp, hidden = false, onOpen }: Props) => {
 	const now = useClock();
-	// 배터리 자리: 관리자에게는 서버 자원 (데스크톱 메뉴 막대와 같다). 유휴 회수에서 먼 만큼 차 있다
+	// 배터리 자리 (데스크톱 메뉴 막대와 같다): 관리자에게는 서버 자원 (유휴 회수에서 먼 만큼),
+	// 방문자에게는 방문 추이 (최근 7일이 앞 7일보다 늘어난 만큼)
 	const resources = useServerResources();
-	const battery = resources.enabled ? batteryOf(resources.status) : null;
+	const visits = useVisitTrend();
+	const battery = resources.enabled
+		? batteryOf(resources.status)
+		: visits.trend && !visits.failed
+			? visitBattery(visits.trend)
+			: null;
 
 	return (
 		<div
