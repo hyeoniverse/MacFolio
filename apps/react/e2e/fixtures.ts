@@ -1,7 +1,7 @@
 import { test as base, expect, type Page } from '@playwright/test';
 
 /** 페이지에서 처리되지 않은 에러가 나면 테스트를 실패시킨다. */
-export const test = base.extend<{ pageErrors: Error[]; noApi: void }>({
+export const test = base.extend<{ pageErrors: Error[]; noApi: void; cspViolations: string[] }>({
 	// 관리자 API가 없는 상태로 시작한다 (로컬 .env.local의 VITE_API_URL과 상관없이). 가짜 API는 테스트에서 따로 넣는다.
 	// 메시지는 브라우저 저장소를 쓴다 (VITE_MESSAGES_STORE=local). 서버 저장은 fakeApi나 storeMessagesOnServer로 켠다
 	noApi: [
@@ -11,6 +11,20 @@ export const test = base.extend<{ pageErrors: Error[]; noApi: void }>({
 				window.__MACFOLIO_MESSAGES_STORE__ = 'local';
 			});
 			await use();
+		},
+		{ auto: true },
+	],
+	// 미리보기는 배포와 같은 CSP를 붙인다 (vite.config.ts). 막힌 요청·스크립트가 있으면 테스트를 실패시킨다
+	cspViolations: [
+		async ({ page }, use) => {
+			const violations: string[] = [];
+			page.on('console', (message) => {
+				if (message.type() === 'error' && message.text().includes('Content Security Policy')) {
+					violations.push(message.text());
+				}
+			});
+			await use(violations);
+			expect(violations, 'CSP에 막힌 요청이 있습니다').toEqual([]);
 		},
 		{ auto: true },
 	],
