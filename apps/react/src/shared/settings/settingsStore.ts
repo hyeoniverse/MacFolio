@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 import { parseSettings, resolveTheme, wallpaperCss, type Settings } from '@/shared/settings/settings';
 import { fadeOutWallpaper } from '@/shared/settings/wallpaperFade';
 

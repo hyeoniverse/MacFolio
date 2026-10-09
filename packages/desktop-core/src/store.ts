@@ -1,6 +1,6 @@
 /**
  * 프레임워크에 의존하지 않는 작은 상태 저장소.
- * React에서는 useSyncExternalStore로 구독한다. 이후 desktop-core(#16)의 store도 같은 형태를 쓴다.
+ * React에서는 useSyncExternalStore로 구독한다. Vue라면 shallowRef에 담아 subscribe로 갱신하면 된다.
  */
 export interface Store<State> {
 	getState: () => State;

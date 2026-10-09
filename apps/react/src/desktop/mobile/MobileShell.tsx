@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/AppStateContext';
-import { foregroundApp } from '@/desktop/appStack';
+import { foregroundApp, runningByRecency } from '@macfolio/desktop-core';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 import MobileHome from '@/desktop/mobile/MobileHome';
 import MobileStatusBar from '@/desktop/mobile/MobileStatusBar';
@@ -8,7 +8,6 @@ import ControlCenter from '@/desktop/mobile/ControlCenter';
 import { closeSwitcher, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
 import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
-import { runningByRecency } from '@/desktop/appStack';
 import { useStatusBarTone } from '@/desktop/mobile/statusBarTone';
 import { useImmersiveApp } from '@/desktop/mobile/immersiveStore';
 import { useSettings } from '@/shared/settings/settingsStore';

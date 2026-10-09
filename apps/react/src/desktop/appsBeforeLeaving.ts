@@ -1,6 +1,7 @@
 // GitHub 로그인처럼 페이지를 떠났다 돌아올 때, 켜 두었던 앱을 그대로 되살린다.
 // 창 위치·크기는 이미 localStorage에 남으므로(useWindowFrame) 여기서는 어떤 앱이 켜져 있었는지만 다룬다.
-import { APP_NAMES, type AppName } from '@/apps/manifest';
+import { restoreWindows } from '@macfolio/desktop-core';
+import type { AppName } from '@/apps/manifest';
 import type { AppState } from '@/desktop/AppStateContext';
 
 const STORAGE_KEY = 'macfolio:apps-before-leaving';
@@ -27,18 +28,6 @@ export function saveAppsBeforeLeaving() {
 	}
 }
 
-const isAppState = (value: unknown): value is AppState => {
-	const state = value as AppState | null;
-	return (
-		typeof state === 'object' &&
-		state !== null &&
-		typeof state.isRunning === 'boolean' &&
-		typeof state.isMinimized === 'boolean' &&
-		typeof state.hasOpened === 'boolean' &&
-		Number.isFinite(state.zIndex)
-	);
-};
-
 /**
  * 떠나기 전에 남긴 앱 상태를 한 번만 꺼낸다. 없거나, 화면 종류(데스크톱/모바일)가 바뀌었으면 null.
  * 앱 목록이 그사이 바뀌었을 수 있어서 아는 앱만 initial 위에 덮는다.
@@ -54,11 +43,6 @@ export function takeAppsSavedBeforeLeaving(
 	} catch {
 		return null;
 	}
-	if (!saved || saved.mobile !== mobile || typeof saved.apps !== 'object' || saved.apps === null) return null;
-	const restored = { ...initial };
-	for (const name of APP_NAMES) {
-		const state = saved.apps[name];
-		if (isAppState(state)) restored[name] = state;
-	}
-	return restored;
+	if (!saved || saved.mobile !== mobile) return null;
+	return restoreWindows(initial, saved.apps);
 }

@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { saveAppsBeforeLeaving } from '@/desktop/appsBeforeLeaving';

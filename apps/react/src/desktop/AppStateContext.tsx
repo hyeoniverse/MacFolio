@@ -1,19 +1,30 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect, useRef } from 'react';
+import React, {
+	createContext,
+	useContext,
+	useState,
+	ReactNode,
+	useEffect,
+	useMemo,
+	useRef,
+	useSyncExternalStore,
+} from 'react';
+import {
+	activeApp as activeAppOf,
+	createWindowStore,
+	foregroundApp,
+	initialWindows,
+	type AppWindow,
+	type WindowStore,
+} from '@macfolio/desktop-core';
 import { track } from '@/shared/analytics/analytics';
 import { newlyOpened, trackItemViews } from '@/shared/analytics/usage';
 import { appAddresses, linkedApp, syncAddressBar } from '@/shared/lib/appLink';
 import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
-import { bringToFront, foregroundApp, minimizeAll } from '@/desktop/appStack';
 import { isMobileViewport } from '@/desktop/layout';
 import { takeAppsSavedBeforeLeaving, trackApps } from '@/desktop/appsBeforeLeaving';
 
-export type AppState = {
-	isRunning: boolean;
-	isMinimized: boolean;
-	zIndex: number;
-	/** 한 번이라도 열린 적이 있는지. 처음 열 때부터 앱을 렌더링한다 (지연 로딩 앱은 이때 코드를 불러온다) */
-	hasOpened: boolean;
-};
+// 창 상태와 동작은 desktop-core의 창 store가 갖고, 여기서는 React에 연결만 한다 (#16)
+export type AppState = AppWindow;
 
 // Define the structure of the context
 interface AppContextType {
@@ -47,18 +58,17 @@ interface AppContextType {
 }
 
 /**
- * 처음 상태. 모바일은 홈 화면에서 시작하므로 처음부터 실행되는 앱이 없다.
+ * 처음 창 상태. 모바일은 홈 화면에서 시작하므로 처음부터 실행되는 앱이 없다.
  * 앱 항목 주소(/memo/<글>, /safari/<프로젝트>)로 들어오면 그 앱을 맨 앞에 열어 둔다 (항목은 그 앱이 연다).
+ * 로그인하러 떠났다 돌아왔으면 켜 두었던 앱을 그대로
  */
-const createInitialAppStates = (mobile: boolean) => {
-	const linked = linkedApp();
-	return Object.fromEntries(
-		APP_NAMES.map((name) => {
-			if (name === linked) return [name, { isRunning: true, isMinimized: false, zIndex: 2, hasOpened: true }];
-			const running = !mobile && (APP_MANIFEST[name].runningAtStart ?? false);
-			return [name, { isRunning: running, isMinimized: false, zIndex: 1, hasOpened: running }];
-		})
-	) as Record<AppName, AppState>;
+const createAppWindowStore = (): WindowStore<AppName> => {
+	const mobile = isMobileViewport({ width: window.innerWidth, height: window.innerHeight });
+	const initial = initialWindows(APP_NAMES, {
+		linked: linkedApp(),
+		runningAtStart: (name) => !mobile && (APP_MANIFEST[name].runningAtStart ?? false),
+	});
+	return createWindowStore(takeAppsSavedBeforeLeaving(mobile, initial) ?? initial);
 };
 
 // Create context
@@ -75,12 +85,9 @@ export const useAppState = () => {
 
 // Context provider component
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [apps, setApps] = useState<Record<AppName, AppState>>(() => {
-		const mobile = isMobileViewport({ width: window.innerWidth, height: window.innerHeight });
-		const initial = createInitialAppStates(mobile);
-		// 로그인하러 떠났다 돌아왔으면 켜 두었던 앱을 그대로
-		return takeAppsSavedBeforeLeaving(mobile, initial) ?? initial;
-	});
+	const [store] = useState(createAppWindowStore);
+	const state = useSyncExternalStore(store.subscribe, store.getState);
+	const { apps } = state;
 
 	useEffect(() => {
 		trackApps(isMobileViewport({ width: window.innerWidth, height: window.innerHeight }), apps);
@@ -100,107 +107,24 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 		return appAddresses.subscribe(() => syncAddressBar(foregroundApp(apps)));
 	}, [apps]);
 
-	// 창 밖을 눌렀는지. 창을 누르거나 앱을 열면 다시 false
-	const [desktopFocused, setDesktopFocused] = useState(false);
-	const focusDesktop = useCallback(() => setDesktopFocused(true), []);
-	const activeApp = desktopFocused ? null : foregroundApp(apps);
-
 	// 화면 밖 창을 되돌리는 처리는 창이 렌더링될 때 한다 (desktop/window/geometry.ts의 clampRect)
-	const bringAppToFront = useCallback((appName: AppName) => {
-		setDesktopFocused(false);
-		setApps((prevState) => bringToFront(prevState, appName));
-	}, []);
-
-	const toggleAppState = useCallback((appName: AppName) => {
-		setApps((prevState) => ({
-			...prevState,
-			[appName]: {
-				...prevState[appName],
-				isRunning: !prevState[appName].isRunning,
-				isMinimized: false, // 항상 실행되면 최대화 상태로 변경
-				hasOpened: true,
-			},
-		}));
-	}, []);
-
-	const toggleAppSize = useCallback((appName: AppName) => {
-		setApps((prevState) => ({
-			...prevState,
-			[appName]: {
-				...prevState[appName],
-				isMinimized: !prevState[appName].isMinimized,
-			},
-		}));
-	}, []);
-
-	const closeApp = useCallback((appName: AppName) => {
-		setApps((prevState) => ({
-			...prevState,
-			[appName]: {
-				...prevState[appName],
-				isRunning: false,
-			},
-		}));
-	}, []);
-
-	const quitApp = useCallback((appName: AppName) => {
-		setApps((prevState) => ({
-			...prevState,
-			[appName]: { ...prevState[appName], isRunning: false, isMinimized: false, hasOpened: false },
-		}));
-	}, []);
-
-	// 여는 앱은 늘 맨 앞에 (Apple 메뉴의 시스템 설정처럼 다른 창이 떠 있을 때 열어도 뒤에 숨지 않게)
-	const openApp = useCallback((appName: AppName) => {
-		setDesktopFocused(false);
-		setApps((prevState) => {
-			const fronted = bringToFront(prevState, appName);
-			return { ...fronted, [appName]: { ...fronted[appName], isRunning: true, hasOpened: true } };
-		});
-	}, []);
-
-	const maximizeApp = useCallback((appName: AppName) => {
-		setApps((prevState) => ({
-			...prevState,
-			[appName]: {
-				...prevState[appName],
-				isMinimized: false,
-			},
-		}));
-	}, []);
-
-	const minimizeApp = useCallback((appName: AppName) => {
-		setApps((prevState) => ({
-			...prevState,
-			[appName]: {
-				...prevState[appName],
-				isMinimized: true,
-			},
-		}));
-	}, []);
-
-	const goHome = useCallback(() => {
-		setApps((prevState) => minimizeAll(prevState));
-	}, []);
+	const actions = useMemo(
+		() => ({
+			toggleAppState: store.toggleRunning,
+			toggleAppSize: store.toggleMinimized,
+			closeApp: store.close,
+			quitApp: store.quit,
+			openApp: store.open,
+			minimizeApp: store.minimize,
+			maximizeApp: store.restore,
+			bringAppToFront: store.bringToFront,
+			focusDesktop: store.focusDesktop,
+			goHome: store.goHome,
+		}),
+		[store]
+	);
 
 	return (
-		<AppContext.Provider
-			value={{
-				apps,
-				toggleAppState,
-				toggleAppSize,
-				closeApp,
-				quitApp,
-				openApp,
-				minimizeApp,
-				maximizeApp,
-				bringAppToFront,
-				activeApp,
-				focusDesktop,
-				goHome,
-			}}
-		>
-			{children}
-		</AppContext.Provider>
+		<AppContext.Provider value={{ apps, activeApp: activeAppOf(state), ...actions }}>{children}</AppContext.Provider>
 	);
 };

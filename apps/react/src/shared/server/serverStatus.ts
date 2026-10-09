@@ -1,7 +1,7 @@
 // 서버(API) 상태: 메뉴 막대의 Wi-Fi 자리에 보인다. /health를 주기적으로 불러 응답 시간과 DB 상태로 나눈다.
 import { useEffect, useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 
 export type ServerState =
 	/** 서버 주소가 없다 (로컬에서 API 없이 띄웠을 때) */
