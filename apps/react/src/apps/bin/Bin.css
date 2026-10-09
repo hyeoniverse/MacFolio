@@ -97,10 +97,8 @@
 }
 
 .bin-toolbar {
+	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 둔다. 단추가 생기면 단추만 위로 올린다 */
 	display: flex;
-	position: relative;
-	/* 창 위쪽 52px는 창을 옮기는 자리라, 단추가 눌리도록 그 위로 올린다 */
-	z-index: 4;
 	flex: none;
 	align-items: center;
 	gap: 10px;
@@ -459,7 +457,10 @@
 		display: none;
 	}
 
+	/* 탭 줄이 창을 옮기는 자리에 들어오므로 탭만 그 위로 */
 	.bin-location {
+		position: relative;
+		z-index: 4;
 		margin: 12px 0;
 	}
 

@@ -133,6 +133,28 @@ test.describe('휴지통', () => {
 		await expect(bin.getByRole('button', { name: '쓰지 않는 파일 지우기' })).toHaveCount(0);
 	});
 
+	test('머리줄(제목·항목 수)을 두 번 누르면 창이 커지고, 끌면 창이 옮겨진다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'bin').click();
+		const bin = appWindow(page, 'bin');
+		const title = (await bin.locator('.bin-count').boundingBox())!;
+		const before = (await bin.boundingBox())!;
+		await page.mouse.dblclick(title.x + title.width / 2, title.y + title.height / 2);
+		await expect.poll(async () => (await bin.boundingBox())!.width).toBeGreaterThan(before.width);
+
+		// 커진 창에서 머리줄은 다른 자리에 있다
+		const grown = (await bin.locator('.bin-count').boundingBox())!;
+		await page.mouse.dblclick(grown.x + grown.width / 2, grown.y + grown.height / 2);
+		await expect.poll(async () => (await bin.boundingBox())!.width).toBe(before.width);
+		const start = (await bin.boundingBox())!;
+		const header = (await bin.locator('.bin-count').boundingBox())!;
+		await page.mouse.move(header.x + header.width / 2, header.y + header.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(header.x + header.width / 2 + 60, header.y + header.height / 2 + 40, { steps: 5 });
+		await page.mouse.up();
+		await expect.poll(async () => (await bin.boundingBox())!.x).toBeGreaterThan(start.x + 30);
+	});
+
 	test('휴대폰 홈 화면에는 휴지통이 없다', async ({ page }) => {
 		await page.setViewportSize({ width: 390, height: 844 });
 		await enterDesktop(page);

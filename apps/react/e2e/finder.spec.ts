@@ -112,4 +112,15 @@ test.describe('Finder', () => {
 		await finder.getByRole('searchbox', { name: '이름으로 찾기' }).fill('없는이름zzz');
 		await expect(finder.getByText('찾는 이름이 없습니다.')).toBeVisible();
 	});
+
+	test('도구 막대의 제목 자리를 두 번 누르면 창이 커진다 (단추·찾기 칸만 끌기 영역 위에 있다)', async ({ page }) => {
+		const finder = await openFinder(page);
+		const title = (await finder.locator('.finder-title').boundingBox())!;
+		const before = (await finder.boundingBox())!;
+		await page.mouse.dblclick(title.x + 10, title.y + title.height / 2);
+		await expect.poll(async () => (await finder.boundingBox())!.width).toBeGreaterThan(before.width);
+		// 단추는 그대로 눌린다
+		await finder.getByRole('button', { name: '목록으로 보기' }).click();
+		await expect(finder.locator('.finder-list-head')).toBeVisible();
+	});
 });
