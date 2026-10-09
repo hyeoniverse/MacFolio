@@ -6,9 +6,10 @@ import { REPO_URL } from '@/apps/finder/repoDocs';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import { fetchTodayVisitors, openExternal } from '@/shared/analytics/analytics';
 import { requestFinderDoc } from '@/apps/finder/openDoc';
+import { openAbout } from '@/desktop/about/aboutStore';
 
 /**
- * 메뉴 막대의 Apple 메뉴. 오늘 방문자 수, 시스템 설정, 다크 모드, 사이트 바로가기(API 문서, 저장소, 개인정보 처리 방침),
+ * 메뉴 막대의 Apple 메뉴. 이 Mac에 관하여(만든 사람의 프로필), 오늘 방문자 수, 시스템 설정, 다크 모드, 사이트 바로가기(API 문서, 저장소, 개인정보 처리 방침),
  * 관리자 로그인·로그아웃.
  * 메뉴는 공통 메뉴(shared/ui/menu)로 body에 그린다 (메뉴 막대는 넘치는 항목을 잘라 낸다).
  */
@@ -25,6 +26,9 @@ const AppleMenu = () => {
 
 	const dark = document.documentElement.dataset.theme === 'dark';
 	const items: MenuItem[] = [
+		// macOS처럼 맨 위. 이 Mac 대신 만든 사람의 프로필을 보여 준다 (desktop/about)
+		{ label: '이 Mac에 관하여', onSelect: openAbout },
+		'separator',
 		...(visitors !== null ? ([{ note: `오늘 방문자 ${visitors.toLocaleString()}명` }, 'separator'] as MenuItem[]) : []),
 		{ label: '시스템 설정…', onSelect: () => openApp('settings') },
 		// 화면 모드는 앱이 아니라 시스템의 것이라 앱의 보기 메뉴가 아니라 여기에 둔다
