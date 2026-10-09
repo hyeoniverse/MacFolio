@@ -1,5 +1,5 @@
 // 메모 정리 내용을 API에서 읽고 쓴다. 누구나 읽고, 관리자만 쓴다 (서버가 세션으로 확인한다).
-import { EMPTY_ORGANIZATION, normalizeOrganization, type Organization } from './organize';
+import { EMPTY_ORGANIZATION, normalizeOrganization, type Organization } from '@macfolio/desktop-core/memo';
 
 /** 정리 내용을 읽는다. API가 없거나 읽지 못하면 빈 정리 내용 (글은 원래 폴더대로 보인다) */
 export async function fetchOrganization(apiUrl: string, fetchImpl: typeof fetch = fetch): Promise<Organization> {

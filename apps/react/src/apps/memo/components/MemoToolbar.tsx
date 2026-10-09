@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
 import { sortMenuItems } from './sortMenuItems';
-import type { Arrangement } from '../arrange';
+import type { Arrangement } from '@macfolio/desktop-core/memo';
 import IconButton from '@/shared/ui/button/IconButton';
 import SharedSidebarToggle from '@/shared/ui/button/SidebarToggle';
 

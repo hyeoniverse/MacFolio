@@ -3,10 +3,19 @@ import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
-import { ALL_CATEGORY, folderLabelOf, RECENTLY_DELETED, type FolderNode } from '../posts';
-import type { TagSelection } from '../tagFilter';
+import {
+	ALL_CATEGORY,
+	canAddFolder,
+	canMoveFolder,
+	FOLDER_NAME_MAX,
+	folderLabelOf,
+	type FolderNode,
+	MAX_FOLDER_DEPTH,
+	RECENTLY_DELETED,
+	type TagSelection,
+	validateFolderName,
+} from '@macfolio/desktop-core/memo';
 import TagChips from './TagChips';
-import { canAddFolder, canMoveFolder, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, validateFolderName } from '../organize';
 
 const DEPTH_LIMIT_HINT = `폴더는 ${MAX_FOLDER_DEPTH}단까지 만들 수 있어요`;
 import { SidebarToggle } from './MemoToolbar';

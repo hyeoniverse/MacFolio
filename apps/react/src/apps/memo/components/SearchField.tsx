@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
-import { POST_FILTERS, type PostFilter } from '../posts';
+import { POST_FILTERS, type PostFilter } from '@macfolio/desktop-core/memo';
 
 /**
  * 메모 검색 칸 (macOS 메모): 돋보기 옆 ⌄를 누르면 검색 조건(체크리스트가 있는 메모 등)과 '이 메모에서 찾기'.

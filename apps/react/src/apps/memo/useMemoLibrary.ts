@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { mergeAdminPosts, mergeServerPosts, type AdminPost, type Post, type ServerPost } from './posts';
-import { discardVisitorOrganization, EMPTY_ORGANIZATION, organizePosts, type Organization } from './organize';
+import {
+	type AdminPost,
+	EMPTY_ORGANIZATION,
+	mergeAdminPosts,
+	mergeServerPosts,
+	type Organization,
+	organizePosts,
+	type Post,
+	type ServerPost,
+} from '@macfolio/desktop-core/memo';
+import { discardVisitorOrganization } from './memoStorage';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 import { fetchAdminPosts, fetchServerPosts } from './postsApi';
 import { getPostRepository } from './repository';

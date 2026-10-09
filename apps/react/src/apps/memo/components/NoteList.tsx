@@ -1,6 +1,15 @@
 import React from 'react';
-import { daysUntilPurge, excerpt, firstImage, folderName, formatPostDate, resolveImageSrc, type Post } from '../posts';
-import { groupPosts, type Arrangement } from '../arrange';
+import {
+	type Arrangement,
+	daysUntilPurge,
+	excerpt,
+	firstImage,
+	folderName,
+	formatPostDate,
+	groupPosts,
+	type Post,
+	resolveImageSrc,
+} from '@macfolio/desktop-core/memo';
 import { CONTENT_IMAGES } from '../contentImages';
 import type { PostDraft } from '../postsApi';
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_FIND_OPTIONS, findInBlocks, findMatches, rememberFind, stepMatch } from './find';
+import { addRecentFind, DEFAULT_FIND_OPTIONS, findInBlocks, findMatches, parseRecentFinds, stepMatch } from './find';
 
 const opts = (patch: Partial<typeof DEFAULT_FIND_OPTIONS> = {}) => ({ ...DEFAULT_FIND_OPTIONS, ...patch });
 
@@ -42,8 +42,13 @@ describe('글 안에서 찾기', () => {
 
 	it('최근 검색: 같은 말은 맨 앞으로, 다섯 개까지', () => {
 		let recent: string[] = [];
-		for (const word of ['a', 'b', 'c', 'd', 'e', 'f', 'c']) recent = rememberFind(recent, word);
+		for (const word of ['a', 'b', 'c', 'd', 'e', 'f', 'c']) recent = addRecentFind(recent, word);
 		expect(recent).toEqual(['c', 'f', 'e', 'd', 'b']);
-		expect(rememberFind(recent, '  ')).toBe(recent);
+		expect(addRecentFind(recent, '  ')).toBe(recent);
+	});
+
+	it('저장해 둔 최근 검색: 글자만, 다섯 개까지', () => {
+		expect(parseRecentFinds(['a', 1, 'b', null, 'c', 'd', 'e', 'f'])).toEqual(['a', 'b', 'c', 'd', 'e']);
+		expect(parseRecentFinds({})).toEqual([]);
 	});
 });

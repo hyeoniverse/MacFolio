@@ -1,6 +1,6 @@
 import type React from 'react';
 import Button from '@/shared/ui/button/Button';
-import { daysUntilPurge, formatPostDate, type Post } from '../posts';
+import { daysUntilPurge, formatPostDate, type Post } from '@macfolio/desktop-core/memo';
 import MemoMarkdown from './MemoMarkdown';
 
 /** 폴더 경로를 "개발기 › MacFolio"처럼 */

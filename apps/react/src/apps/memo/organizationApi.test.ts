@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { EMPTY_ORGANIZATION } from './organize';
+import { EMPTY_ORGANIZATION } from '@macfolio/desktop-core/memo';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 
 const ORGANIZATION = {

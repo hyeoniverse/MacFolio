@@ -1,7 +1,7 @@
 import type { Options } from 'react-markdown';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import remarkGfm from 'remark-gfm';
-import { tagsInText } from './tags';
+import { tagsInText } from '@macfolio/desktop-core/memo';
 
 /**
  * 글을 읽을 때 쓰는 Markdown 규칙: 표 · 취소선 · 체크 목록(GFM), 그리고 한국어 사이의 굵게·기울임.

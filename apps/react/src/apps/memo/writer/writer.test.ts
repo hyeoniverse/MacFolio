@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from './calendar';
 import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
-import { captionParts } from '../caption';
+import { captionParts } from '@macfolio/desktop-core/memo';
 import { imageFileName } from '../download';
 
 describe('이미지 경로', () => {

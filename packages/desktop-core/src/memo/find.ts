@@ -62,33 +62,18 @@ export function findInBlocks(blocks: string[], query: string, options: FindOptio
 	);
 }
 
-const RECENT_KEY = 'macfolio:memo:recent-finds';
 const MAX_RECENT = 5;
 
-export function loadRecentFinds(): string[] {
-	try {
-		const list = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') as unknown;
-		return Array.isArray(list)
-			? list.filter((item): item is string => typeof item === 'string').slice(0, MAX_RECENT)
-			: [];
-	} catch {
-		return [];
-	}
+/** 저장해 둔 최근 검색어(JSON에서 읽은 값)를 확인한다. 글자만, 다섯 개까지 */
+export function parseRecentFinds(value: unknown): string[] {
+	return Array.isArray(value)
+		? value.filter((item): item is string => typeof item === 'string').slice(0, MAX_RECENT)
+		: [];
 }
 
-/** 최근 검색에 더한다 (같은 말은 맨 앞으로) */
-export function rememberFind(recent: string[], query: string): string[] {
+/** 최근 검색어에 더한다. 같은 말은 맨 앞으로 옮기고, 빈 말이면 그대로 */
+export function addRecentFind(recent: string[], query: string): string[] {
 	const trimmed = query.trim();
 	if (!trimmed) return recent;
-	const next = [trimmed, ...recent.filter((item) => item !== trimmed)].slice(0, MAX_RECENT);
-	saveRecentFinds(next);
-	return next;
-}
-
-export function saveRecentFinds(list: string[]) {
-	try {
-		localStorage.setItem(RECENT_KEY, JSON.stringify(list));
-	} catch {
-		// 저장하지 못해도 찾기는 된다
-	}
+	return [trimmed, ...recent.filter((item) => item !== trimmed)].slice(0, MAX_RECENT);
 }

@@ -1,12 +1,8 @@
 // 관리자가 메모를 정리한 내용: 만든 폴더, 옮긴 글, 옮긴 폴더, 고정.
 // 글은 저장소의 Markdown 파일이라 파일은 그대로 두고, API(/memo/organization)에 저장한 정리 내용을 겹쳐 보여준다.
-// 서버도 같은 규칙(3단, 이름)을 검사한다 (apps/api/src/memo/organization.ts). React에 의존하지 않는 순수 함수만 둔다.
+// 서버도 같은 규칙(3단, 이름)을 검사한다 (apps/api/src/memo/organization.ts). 순수 함수만 둔다.
 import type { Post } from './posts';
 
-/** 예전에 방문자 브라우저에 저장하던 키 (지금은 지우기만 한다) */
-const ORGANIZATION_KEY = 'macfolio:memo:organization';
-/** 더 예전(폴더 이름 목록만 저장하던) 키 */
-const LEGACY_FOLDERS_KEY = 'macfolio:memo:folders';
 export const FOLDER_NAME_MAX = 30;
 /** 폴더는 3단까지 (예: 개발기/MacFolio/초안) */
 export const MAX_FOLDER_DEPTH = 3;
@@ -173,17 +169,4 @@ export function normalizeOrganization(raw: unknown): Organization {
 		locks: isRecord(value.locks) ? (value.locks as Record<string, boolean>) : {},
 		order: Array.isArray(value.order) ? value.order.filter((path) => typeof path === 'string') : [],
 	};
-}
-
-/**
- * 예전에 방문자 브라우저에 저장한 정리 내용을 지운다.
- * 이제 정리 내용은 관리자만 바꾸고 서버에 저장하므로, 브라우저에 남은 것은 쓰지 않는다.
- */
-export function discardVisitorOrganization() {
-	try {
-		localStorage.removeItem(ORGANIZATION_KEY);
-		localStorage.removeItem(LEGACY_FOLDERS_KEY);
-	} catch {
-		// 지우지 못해도 읽지 않으므로 상관없다
-	}
 }

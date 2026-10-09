@@ -5,7 +5,8 @@
 	"type": "module",
 	"description": "프레임워크에 의존하지 않는 데스크톱 로직 (창 관리 등). React·Vue는 store를 구독해서 쓴다",
 	"exports": {
-		".": "./src/index.ts"
+		".": "./src/index.ts",
+		"./memo": "./src/memo/index.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc",

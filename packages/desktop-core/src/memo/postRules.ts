@@ -1,6 +1,6 @@
 // 글쓰기 입력 규칙. 서버(apps/api/src/posts/rules.ts)와 같은 규칙을 저장하기 전에 먼저 확인한다.
 // 서버와 DB도 같은 규칙으로 다시 막는다 (화면을 거치지 않은 요청도 있으므로).
-import type { PostDraft } from './postsApi';
+import type { PostContent as PostDraft } from './posts';
 
 export const POST_LIMITS = { title: 100, summary: 200, body: 50_000 } as const;
 

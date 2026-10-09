@@ -1,7 +1,7 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import { useEffect, useId, useState } from 'react';
 import { env } from '@/shared/config/env';
-import { captionParts } from '../caption';
+import { captionParts } from '@macfolio/desktop-core/memo';
 import { baseName, uploadAndInsert } from './attachments';
 import type { FormatAction, ImageState } from './editorControls';
 import {

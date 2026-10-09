@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
-import { DEFAULT_ARRANGEMENT } from './arrange';
-import type { Post } from './posts';
+import { DEFAULT_ARRANGEMENT, type Post } from '@macfolio/desktop-core/memo';
 import type { MenuItem } from '@/shared/ui/menu/Menu';
 
 const post = (extra: Partial<Post> = {}): Post => ({

@@ -1,22 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
 	adjacentPosts,
-	ALL_CATEGORY,
-	buildFolderTree,
-	filterPosts,
-	folderName,
-	recentlyDeletedPosts,
-	RECENTLY_DELETED,
-	TAG_VIEW,
 	type AdminPost,
-	type FolderNode,
+	ALL_CATEGORY,
+	type Arrangement,
+	buildFolderTree,
+	collectTags,
+	EMPTY_TAG_SELECTION,
+	folderName,
+	folderPaths,
+	listPosts,
+	type Organization,
 	type Post,
 	type PostFilter,
-} from './posts';
-import { splitPinned, type Organization } from './organize';
-import { collectTags, tagsOf } from './tags';
-import { EMPTY_TAG_SELECTION, matchesTags, tagSelectionTitle, type TagSelection } from './tagFilter';
-import { loadArrangement, saveArrangement, sortBy, type Arrangement } from './arrange';
+	postsInView,
+	RECENTLY_DELETED,
+	recentlyDeletedPosts,
+	selectPost,
+	TAG_VIEW,
+	type TagSelection,
+	tagSelectionTitle,
+} from '@macfolio/desktop-core/memo';
+import { loadArrangement, saveArrangement } from './memoStorage';
 import { linkedId, setAppAddress } from '@/shared/lib/appLink';
 
 /**
@@ -48,7 +53,7 @@ export function useNoteView({
 	const [filter, setFilter] = useState<PostFilter | null>(null);
 	/** 사이드바에서 고른 태그 (태그마다 미선택 → 포함 → 제외) */
 	const [tagSelection, setTagSelection] = useState<TagSelection>(EMPTY_TAG_SELECTION);
-	/** 정렬과 날짜별 묶기. 보기 설정이라 방문자도 바꾸고, 이 브라우저에 저장한다 (arrange.ts) */
+	/** 정렬과 날짜별 묶기. 보기 설정이라 방문자도 바꾸고, 이 브라우저에 저장한다 (memoStorage.ts) */
 	const [arrangement, setArrangementState] = useState<Arrangement>(loadArrangement);
 	const setArrangement = (next: Arrangement) => {
 		setArrangementState(next);
@@ -61,17 +66,7 @@ export function useNoteView({
 		() => buildFolderTree(organized, organization.folders, organization.order),
 		[organized, organization.folders, organization.order]
 	);
-	// 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다)
-	const folderPaths = useMemo(() => {
-		const paths: string[] = [];
-		const walk = (nodes: FolderNode[]) =>
-			nodes.forEach((node) => {
-				paths.push(node.path);
-				walk(node.children);
-			});
-		walk(folders);
-		return paths;
-	}, [folders]);
+	const paths = useMemo(() => folderPaths(folders), [folders]);
 	/** 최근 삭제된 항목 (관리자): 30일 동안 되살리거나 영구히 지울 수 있다 */
 	const inTrash = category === RECENTLY_DELETED;
 	const trash = useMemo(
@@ -82,33 +77,14 @@ export function useNoteView({
 	const tags = useMemo(() => collectTags(organized), [organized]);
 	const inTags = category === TAG_VIEW;
 	/** 태그로 볼 때는 고른 태그에 맞는 글, 아니면 폴더의 글 */
-	const inCategory = useMemo(
-		() =>
-			inTags
-				? filterPosts(organized, ALL_CATEGORY, '').filter((post) => matchesTags(tagsOf(post.body), tagSelection))
-				: filterPosts(organized, category, ''),
-		[organized, category, inTags, tagSelection]
-	);
+	const inCategory = useMemo(() => postsInView(organized, category, tagSelection), [organized, category, tagSelection]);
 	/** 목록 위 제목: 폴더 이름, 또는 #태그 / N개의 태그 / 모든 태그 */
 	const categoryName = inTags ? tagSelectionTitle(tagSelection) : folderName(category);
 	const visible = useMemo(
-		() =>
-			inTrash
-				? filterPosts(trash, ALL_CATEGORY, query)
-				: sortBy(
-						filterPosts(
-							inCategory,
-							ALL_CATEGORY,
-							query,
-							editing ? filter : filter === 'draft' || filter === 'scheduled' ? null : filter
-						),
-						arrangement
-					),
+		() => listPosts({ inView: inCategory, trash, inTrash, query, filter, editing, arrangement }),
 		[inTrash, trash, inCategory, query, filter, editing, arrangement]
 	);
-	const { pinned: pinnedPosts, others: otherPosts } = splitPinned(visible);
-	// 고른 글이 목록에 없으면(카테고리·검색으로 걸러지면) 목록 맨 위의 글(고정된 글 먼저)을 보여준다
-	const selected = visible.find((post) => post.slug === selectedSlug) ?? pinnedPosts[0] ?? otherPosts[0] ?? null;
+	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug);
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
 		selected && !inTrash ? adjacentPosts(inCategory, selected.slug) : { older: null, newer: null };
@@ -136,7 +112,7 @@ export function useNoteView({
 		setArrangement,
 		setSelectedSlug,
 		folders,
-		folderPaths,
+		folderPaths: paths,
 		inTrash,
 		trash,
 		tags,

@@ -1,8 +1,7 @@
 import React, { lazy, Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
-import { folderLabelOf, formatPostDate, type AdminPost, type Post } from '../posts';
+import { type AdminPost, folderLabelOf, formatPostDate, type Post, validateDraft } from '@macfolio/desktop-core/memo';
 import { discardDraft, publishPost, saveDraft, type PostDraft } from '../postsApi';
-import { validateDraft } from '../postRules';
 import { env } from '@/shared/config/env';
 import DatePicker from './DatePicker';
 

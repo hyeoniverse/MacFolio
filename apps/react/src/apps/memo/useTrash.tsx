@@ -2,8 +2,7 @@ import { useState } from 'react';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
-import { ALL_CATEGORY, type AdminPost, type Post } from './posts';
-import { movePost, type Organization } from './organize';
+import { type AdminPost, ALL_CATEGORY, movePost, type Organization, type Post } from '@macfolio/desktop-core/memo';
 import { deletePost, purgePost, restorePost } from './postsApi';
 
 const failed = (title: string) =>

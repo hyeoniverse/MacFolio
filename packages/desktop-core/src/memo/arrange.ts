@@ -80,27 +80,13 @@ export function groupPosts(posts: Post[], arrangement: Arrangement, today: Date)
 	return groups;
 }
 
-const ARRANGEMENT_KEY = 'macfolio:memo:arrangement';
-
-/** 저장된 보기 설정. 없거나 잘못되었으면 기본값 */
-export function loadArrangement(): Arrangement {
-	try {
-		const saved = JSON.parse(localStorage.getItem(ARRANGEMENT_KEY) ?? 'null') as Partial<Arrangement> | null;
-		if (!saved) return DEFAULT_ARRANGEMENT;
-		return {
-			sort: saved.sort === 'title' ? 'title' : 'date',
-			order: saved.order === 'asc' ? 'asc' : 'desc',
-			groupByDate: typeof saved.groupByDate === 'boolean' ? saved.groupByDate : DEFAULT_ARRANGEMENT.groupByDate,
-		};
-	} catch {
-		return DEFAULT_ARRANGEMENT;
-	}
-}
-
-export function saveArrangement(arrangement: Arrangement) {
-	try {
-		localStorage.setItem(ARRANGEMENT_KEY, JSON.stringify(arrangement));
-	} catch {
-		// 저장하지 못해도 이번에는 그대로 보인다
-	}
+/** 저장해 둔 보기 설정(JSON에서 읽은 값)을 확인한다. 없거나 잘못된 값은 기본값으로 */
+export function parseArrangement(value: unknown): Arrangement {
+	if (typeof value !== 'object' || value === null) return DEFAULT_ARRANGEMENT;
+	const saved = value as Partial<Arrangement>;
+	return {
+		sort: saved.sort === 'title' ? 'title' : 'date',
+		order: saved.order === 'asc' ? 'asc' : 'desc',
+		groupByDate: typeof saved.groupByDate === 'boolean' ? saved.groupByDate : DEFAULT_ARRANGEMENT.groupByDate,
+	};
 }

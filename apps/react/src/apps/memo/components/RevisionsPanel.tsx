@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { env } from '@/shared/config/env';
-import { formatPostDate, type PostContent } from '../posts';
+import { formatPostDate, type PostContent } from '@macfolio/desktop-core/memo';
 import { fetchRevision, fetchRevisions, type RevisionSummary } from '../postsApi';
 
 /** 버전을 남긴 때 (9월 30일 오후 3:04) */
