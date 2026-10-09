@@ -17,18 +17,18 @@ describe('메뉴 막대의 배터리 (서버 자원)', () => {
 	});
 
 	it('Always Free면 유휴 회수에서 먼 만큼 차 있다', () => {
-		expect(batteryOf(free('safe'))).toMatchObject({ icon: 'fa-battery-full', fill: 100, tone: null });
-		expect(batteryOf(free('warning'))).toMatchObject({ icon: 'fa-battery-quarter', tone: 'warning' });
+		expect(batteryOf(free('safe'))).toMatchObject({ fill: 100, tone: null });
+		expect(batteryOf(free('warning'))).toMatchObject({ fill: 25, tone: 'warning' });
 		expect(batteryOf(free('danger'))).toMatchObject({
-			icon: 'fa-battery-empty',
+			fill: 10,
 			tone: 'danger',
 			summary: 'CPU 3.2% · 메모리 41% · 네트워크 0.6% · 유휴 회수 위험',
 		});
-		expect(batteryOf(free('unknown'))).toMatchObject({ icon: 'fa-battery-half', tone: null });
+		expect(batteryOf(free('unknown'))).toMatchObject({ fill: 50, tone: null });
 	});
 
 	it('종량제·꺼짐·불러오는 중에는 평소 모양', () => {
-		const plain = { icon: 'fa-battery-three-quarters', tone: null };
+		const plain = { fill: 75, tone: null };
 		expect(batteryOf({ ...free('danger'), mode: 'payg', risk: undefined })).toMatchObject({
 			...plain,
 			summary: 'CPU 3.2% · 메모리 41% · 네트워크 0.6%',

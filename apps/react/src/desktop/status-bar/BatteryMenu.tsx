@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useAppState } from '@/desktop/useAppState';
 import { RISK_LABEL, batteryOf, requestedTab, usageLine, useServerResources } from '@/apps/activity/serverResources';
+import ServerBattery from '@/shared/server/ServerBattery';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 
 /** '방금', '3분 전', '2시간 전' */
@@ -23,8 +24,8 @@ const BatteryMenu = () => {
 
 	if (!enabled)
 		return (
-			<span className="statusbar-icon">
-				<i className="fas fa-battery-three-quarters" aria-hidden="true" />
+			<span className="statusbar-icon battery-icon">
+				<ServerBattery fill={75} />
 			</span>
 		);
 
@@ -48,7 +49,10 @@ const BatteryMenu = () => {
 			},
 			...(risk
 				? [
-						{ info: `유휴 회수: ${RISK_LABEL[risk.level]}`, icon: `fa-solid ${battery.icon}` },
+						{
+							info: `유휴 회수: ${RISK_LABEL[risk.level]}`,
+							icon: <ServerBattery fill={battery.fill} tone={battery.tone} />,
+						},
 						...(risk.level !== 'unknown' && risk.days < 7 ? [{ note: `${risk.days}일치로 미리 본 값` }] : []),
 					]
 				: []),
@@ -73,7 +77,7 @@ const BatteryMenu = () => {
 			<button
 				ref={button}
 				type="button"
-				className={`statusbar-icon-button battery-menu-button ${battery.tone ?? ''} ${anchor ? 'open' : ''}`}
+				className={`statusbar-icon-button battery-icon battery-menu-button ${anchor ? 'open' : ''}`}
 				aria-label={`서버 자원: ${battery.summary}`}
 				title={`서버 자원: ${battery.summary}`}
 				aria-haspopup="menu"
@@ -85,7 +89,7 @@ const BatteryMenu = () => {
 					setAnchor(anchor ? null : { x: rect.left, y: rect.bottom + 3 });
 				}}
 			>
-				<i className={`fas ${battery.icon}`} aria-hidden="true" />
+				<ServerBattery fill={battery.fill} tone={battery.tone} />
 			</button>
 			{anchor && (
 				<Menu label="서버 자원" anchor={anchor} items={items} trigger={button} onClose={() => setAnchor(null)} />
