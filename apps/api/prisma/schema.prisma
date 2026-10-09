@@ -279,3 +279,27 @@ model ContactReply {
 
   @@index([mailId])
 }
+
+/// 서버 자원 사용률 (RESOURCE_MONITOR가 off가 아닐 때). 1분마다 하나, 14일 뒤 지운다.
+/// Oracle Always Free의 유휴 회수 위험(7일)과 화면의 그래프에 쓴다. CPU·메모리는 VM 전체, 네트워크는 API 컨테이너의 것
+model ResourceSample {
+  id      Int      @id @default(autoincrement())
+  at      DateTime @default(now())
+  /// CPU 사용률 (%)
+  cpu     Float
+  /// 메모리 사용률 (%)
+  memory  Float
+  /// 네트워크 (받고 보낸 합, Mbps)
+  network Float
+
+  @@index([at])
+}
+
+/// 보낸 알림 메일 (같은 알림을 너무 자주 보내지 않게). 서버를 다시 띄워도 남는다
+model ResourceAlert {
+  /// 알림 종류 (reclaim: 유휴 회수 위험)
+  kind   String   @id
+  sentAt DateTime
+  /// 보낸 내용 요약
+  detail String
+}

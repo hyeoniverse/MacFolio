@@ -10,12 +10,12 @@ import {
 } from '@nestjs/common';
 import { hashIp } from '../comments/rules.js';
 import { DailyQuota } from '../common/demo.js';
+import { sendResendMail } from '../common/resend.js';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
 import { buildEmail, buildReply, parseContact, parseReply } from './rules.js';
 
-const RESEND_URL = 'https://api.resend.com/emails';
 const TURNSTILE_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const TIMEOUT_MS = 10_000;
 /** 받은 메일을 두는 기간 */
@@ -101,25 +101,8 @@ export class ContactService {
 	}
 
 	/** Resend로 한 통 보낸다. 받지 않으면 false */
-	private async deliver(message: { to: string; replyTo: string; subject: string; text: string }) {
-		const { resendApiKey, from } = this.config.contact;
-		try {
-			const response = await fetch(RESEND_URL, {
-				method: 'POST',
-				headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					from,
-					to: [message.to],
-					reply_to: message.replyTo,
-					subject: message.subject,
-					text: message.text,
-				}),
-				signal: AbortSignal.timeout(TIMEOUT_MS),
-			});
-			return response.ok;
-		} catch {
-			return false;
-		}
+	private deliver(message: { to: string; replyTo: string; subject: string; text: string }) {
+		return sendResendMail(this.config.contact, message);
 	}
 
 	/** 1년이 지난 메일(과 답장)을 지운다. 보낼 때와 관리자가 받은 편지함을 열 때 */

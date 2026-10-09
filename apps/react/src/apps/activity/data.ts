@@ -75,6 +75,29 @@ async function get<T>(path: string): Promise<T> {
 export const fetchSummary = (from: string, to: string) => get<Summary>(`/analytics/summary?from=${from}&to=${to}`);
 export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?minutes=${minutes}`);
 
+/** 서버 자원 (관리자). 서버의 RESOURCE_MONITOR가 off면 mode만 온다 */
+export interface ResourceStatus {
+	mode: 'off' | 'free' | 'payg';
+	shape?: string;
+	networkMbps?: number;
+	latest?: { at: string; cpu: number; memory: number; network: number } | null;
+	series?: { at: string; cpu: number; memory: number; network: number }[];
+	risk?: {
+		level: 'danger' | 'warning' | 'safe' | 'unknown';
+		conditions: {
+			metric: 'cpu' | 'network' | 'memory';
+			measure: string;
+			value: number;
+			threshold: number;
+			below: boolean;
+		}[];
+		days: number;
+	};
+	alert?: { mailReady: boolean; lastSentAt: string | null };
+}
+
+export const fetchResources = () => get<ResourceStatus>('/resources');
+
 export const PERIODS = [
 	{ id: 'today', label: '오늘', days: 1 },
 	{ id: '7d', label: '7일', days: 7 },
