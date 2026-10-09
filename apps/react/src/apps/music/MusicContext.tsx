@@ -1,59 +1,9 @@
-import React, {
-	createContext,
-	useCallback,
-	useContext,
-	useEffect,
-	useRef,
-	useState,
-	useSyncExternalStore,
-} from 'react';
-import {
-	createPlayerStore,
-	currentTrackId,
-	type Queue,
-	type RepeatMode,
-	type Track,
-} from '@macfolio/desktop-core/music';
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createPlayerStore, currentTrackId } from '@macfolio/desktop-core/music';
 import { isMobileViewport } from '@/desktop/layout';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { ALL_SONGS, findPlaylist, findTrack, TRACKS } from './library';
-
-interface MusicContextType {
-	/** 지금 곡 */
-	track: Track;
-	/** 지금 재생 중인 재생 목록 */
-	playlistId: string;
-	queue: Queue;
-	isPlaying: boolean;
-	currentTime: number;
-	duration: number;
-	isBuffering: boolean;
-	volume: number;
-	shuffle: boolean;
-	repeat: RepeatMode;
-	/** 곡별 길이(초). 메타데이터를 불러온 곡만 있다 */
-	durations: Record<string, number>;
-	/** 재생 목록의 한 곡을 재생한다 (trackId를 비우면 목록의 첫 곡, 셔플이면 아무 곡) */
-	playFrom: (playlistId: string, trackId?: string) => void;
-	togglePlayPause: () => void;
-	next: () => void;
-	previous: () => void;
-	seekTo: (time: number) => void;
-	setVolume: (volume: number) => void;
-	toggleShuffle: () => void;
-	cycleRepeat: () => void;
-	/** 반복 방식을 바로 고른다 (메뉴 막대의 '제어') */
-	setRepeat: (mode: RepeatMode) => void;
-	stopAndReset: () => void;
-}
-
-const MusicContext = createContext<MusicContextType | undefined>(undefined);
-
-export const useMusic = () => {
-	const context = useContext(MusicContext);
-	if (!context) throw new Error('useMusic must be used within MusicProvider');
-	return context;
-};
+import { MusicContext } from './useMusic';
 
 /** 곡 길이를 미리 알아 둔다 (목록에 시간을 보여주려고). 메타데이터만 받는다 */
 function useTrackDurations() {

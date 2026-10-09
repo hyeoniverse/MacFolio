@@ -2,7 +2,7 @@
 // 창 위치·크기는 이미 localStorage에 남으므로(useWindowFrame) 여기서는 어떤 앱이 켜져 있었는지만 다룬다.
 import { restoreWindows } from '@macfolio/desktop-core';
 import type { AppName } from '@/apps/manifest';
-import type { AppState } from '@/desktop/AppStateContext';
+import type { AppState } from '@/desktop/useAppState';
 
 const STORAGE_KEY = 'macfolio:apps-before-leaving';
 

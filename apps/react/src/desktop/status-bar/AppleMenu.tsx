@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { signIn, signOut, useAdmin } from '@/shared/auth/adminStore';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { REPO_URL } from '@/apps/finder/repoDocs';

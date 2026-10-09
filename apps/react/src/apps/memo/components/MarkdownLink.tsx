@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { appLinkOf } from '@/shared/lib/appLink';
 import { requestOpen } from '@/shared/lib/openRequest';
 

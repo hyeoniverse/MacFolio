@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMusic } from './MusicContext';
+import { useMusic } from './useMusic';
 import '@/apps/music/SeekBar.css';
 
 /**

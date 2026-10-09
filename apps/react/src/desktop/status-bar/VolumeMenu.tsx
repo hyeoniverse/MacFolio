@@ -1,7 +1,7 @@
 import { useExitMotionRef } from '@/shared/ui/motion/useExitMotion';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useMusic } from '@/apps/music/MusicContext';
+import { useMusic } from '@/apps/music/useMusic';
 import { placeBelow, type Point } from '@/shared/ui/popover/placement';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
 import '@/desktop/status-bar/VolumeMenu.css';
