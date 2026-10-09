@@ -2,11 +2,15 @@
 [data-app='bin'] {
 	--bin-accent: #0063e1;
 	--bin-accent-soft: rgba(0, 99, 225, 0.14);
+	--bin-deleted: #c4352b;
+	--bin-added: #1a7f37;
 }
 
 :root[data-theme='dark'] [data-app='bin'] {
 	--bin-accent: #0a84ff;
 	--bin-accent-soft: rgba(10, 132, 255, 0.24);
+	--bin-deleted: #ff7b72;
+	--bin-added: #56d364;
 }
 
 .bin {
@@ -114,10 +118,6 @@
 .bin-count {
 	color: var(--color-text-secondary);
 	font-size: 12px;
-}
-
-.bin-empty {
-	margin-left: auto;
 }
 
 /* 지운 기능: 목록 | 정보 */
@@ -230,49 +230,121 @@
 	line-height: 1.6;
 }
 
-/* 지운 메모 */
-.bin-memos {
-	flex: 1;
-	margin: 0;
-	padding: 6px;
-	overflow-y: auto;
-	list-style: none;
-}
-
-.bin-memo {
-	display: grid;
-	grid-template-columns: 1fr auto;
-	align-items: center;
-	gap: 2px 12px;
-	padding: 8px 10px;
-	border-bottom: 1px solid var(--color-divider);
-}
-
-.bin-memo-title {
-	overflow: hidden;
-	font-size: 13px;
-	font-weight: 600;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.bin-memo-meta {
-	grid-row: 2;
-	color: var(--color-text-secondary);
+/* 지운 줄 수 (목록과 정보) */
+.bin-item-lines {
+	flex: none;
+	color: var(--bin-deleted);
 	font-size: 12px;
+	font-variant-numeric: tabular-nums;
 }
 
-.bin-memo-actions {
+.bin-list:focus-visible .bin-item.selected .bin-item-lines {
+	color: inherit;
+}
+
+.bin-deleted {
+	color: var(--bin-deleted);
+}
+
+.bin-added {
+	color: var(--bin-added);
+}
+
+.bin-commits {
 	display: flex;
-	grid-row: 1 / 3;
-	grid-column: 2;
-	gap: 6px;
+	flex-wrap: wrap;
+	gap: 8px;
 }
 
-.bin-empty-note {
-	margin: 40px auto;
-	color: var(--color-text-secondary);
+.bin-commits a {
+	color: var(--bin-accent);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	text-decoration: none;
+}
+
+.bin-commits a:hover {
+	text-decoration: underline;
+}
+
+/* 바꾸기 전 모습: 누르면 크게 */
+.bin-info-before {
+	position: relative;
+	width: 100%;
+	padding: 0;
+	overflow: hidden;
+	border: 1px solid var(--color-divider);
+	border-radius: 8px;
+	background: none;
+	cursor: zoom-in;
+}
+
+.bin-info-before img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top left;
+}
+
+.bin-info-before span {
+	position: absolute;
+	bottom: 6px;
+	left: 6px;
+	padding: 2px 7px;
+	border-radius: 999px;
+	background-color: rgba(0, 0, 0, 0.6);
+	color: #fff;
+	font-size: 11px;
+}
+
+/* 훑어보기: 창 위에 어둡게 깔고 그림을 가득 */
+.bin-quicklook {
+	display: flex;
+	position: absolute;
+	z-index: 10;
+	inset: 0;
+	align-items: center;
+	justify-content: center;
+	padding: 56px 28px 28px;
+	background-color: rgba(0, 0, 0, 0.72);
+	animation: fade-in 0.18s ease;
+}
+
+.bin-quicklook figure {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	max-width: 100%;
+	max-height: 100%;
+	margin: 0;
+}
+
+.bin-quicklook img {
+	min-height: 0;
+	max-width: 100%;
+	max-height: calc(100% - 40px);
+	border-radius: 8px;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+	object-fit: contain;
+}
+
+.bin-quicklook figcaption {
+	color: rgba(255, 255, 255, 0.9);
 	font-size: 13px;
+	text-align: center;
+}
+
+.bin-quicklook-close {
+	position: absolute;
+	top: 14px;
+	right: 14px;
+	width: 28px;
+	height: 28px;
+	border: none;
+	border-radius: 50%;
+	background-color: rgba(255, 255, 255, 0.18);
+	color: #fff;
 }
 
 /* 좁은 창: 사이드바는 위의 탭 줄로, 정보는 목록 아래로 */

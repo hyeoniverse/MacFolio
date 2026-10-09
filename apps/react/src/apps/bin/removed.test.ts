@@ -16,4 +16,13 @@ describe('지운 기능', () => {
 		expect(new Set(REMOVED.map((item) => item.id)).size).toBe(REMOVED.length);
 		for (const item of REMOVED) expect(isCalendarDate(item.date), item.id).toBe(true);
 	});
+
+	it('커밋은 전체 해시이고 하나 이상, 줄 수는 0 이상의 정수다', () => {
+		for (const item of REMOVED) {
+			expect(item.commits.length, item.id).toBeGreaterThan(0);
+			for (const hash of item.commits) expect(hash, item.id).toMatch(/^[0-9a-f]{40}$/);
+			expect(Number.isInteger(item.lines.added) && item.lines.added >= 0, item.id).toBe(true);
+			expect(Number.isInteger(item.lines.deleted) && item.lines.deleted >= 0, item.id).toBe(true);
+		}
+	});
 });
