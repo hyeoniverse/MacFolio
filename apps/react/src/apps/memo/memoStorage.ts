@@ -3,10 +3,6 @@ import { addRecentFind, parseArrangement, parseRecentFinds, type Arrangement } f
 
 const ARRANGEMENT_KEY = 'macfolio:memo:arrangement';
 const RECENT_KEY = 'macfolio:memo:recent-finds';
-/** 예전에 방문자 브라우저에 저장하던 정리 내용 (지금은 지우기만 한다) */
-const ORGANIZATION_KEY = 'macfolio:memo:organization';
-/** 더 예전(폴더 이름 목록만 저장하던) 키 */
-const LEGACY_FOLDERS_KEY = 'macfolio:memo:folders';
 
 const read = (key: string): unknown => {
 	try {
@@ -36,17 +32,4 @@ export function rememberFind(recent: string[], query: string): string[] {
 	const next = addRecentFind(recent, query);
 	if (next !== recent) saveRecentFinds(next);
 	return next;
-}
-
-/**
- * 예전에 방문자 브라우저에 저장한 정리 내용을 지운다.
- * 이제 정리 내용은 관리자만 바꾸고 서버에 저장하므로, 브라우저에 남은 것은 쓰지 않는다.
- */
-export function discardVisitorOrganization() {
-	try {
-		localStorage.removeItem(ORGANIZATION_KEY);
-		localStorage.removeItem(LEGACY_FOLDERS_KEY);
-	} catch {
-		// 지우지 못해도 읽지 않으므로 상관없다
-	}
 }
