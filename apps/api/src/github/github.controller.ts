@@ -14,6 +14,7 @@ import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { GithubService } from './github.service.js';
 import { MAX_SHOWCASE } from './showcase.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * GitHub 앱에 보여 줄 관리자의 GitHub 프로필·README·저장소·활동.
@@ -59,6 +60,7 @@ export class GithubController {
 
 	@Put('showcase')
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiBody({ schema: { example: { repos: ['hyeoniverse/MacFolio', 'Devcourse-NewPick/front'] } } })
 	@ApiOkResponse({ description: '저장한 목록 (GitHub에 적힌 이름으로)' })

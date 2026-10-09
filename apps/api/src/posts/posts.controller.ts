@@ -13,6 +13,7 @@ import { AdminGuard, CurrentAdmin } from '../auth/admin.guard.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { PostsService } from './posts.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 const POST_EXAMPLE = {
 	title: '새 글',
@@ -50,6 +51,7 @@ export class PostsController {
 
 	@Post()
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiBody({ schema: { example: POST_EXAMPLE } })
 	@ApiBadRequestResponse({ description: '입력 규칙을 어겼다' })
@@ -60,6 +62,7 @@ export class PostsController {
 
 	@Put(':slug/draft')
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiBody({ schema: { example: POST_EXAMPLE } })
 	@ApiOkResponse({ description: '임시 저장했다 (방문자에게는 아직 보이지 않는다)' })
@@ -69,6 +72,7 @@ export class PostsController {
 
 	@Delete(':slug/draft')
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiOkResponse({ description: '임시 저장을 버렸다. 게시한 적 없는 글이면 null (글이 사라진다)' })
 	@ApiNotFoundResponse({ description: '글이 없다' })
@@ -79,6 +83,7 @@ export class PostsController {
 	@Post(':slug/publish')
 	@HttpCode(200)
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiBody({ schema: { example: POST_EXAMPLE } })
 	@ApiOkResponse({ description: '게시했다 (날짜가 미래면 그날부터 보인다). 버전이 하나 늘어난다' })
@@ -106,6 +111,7 @@ export class PostsController {
 	@Post(':slug/restore')
 	@HttpCode(200)
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiOkResponse({ description: '되살렸다. 서버에 내용이 없던 저장소 글이면 null (파일이 다시 보인다)' })
 	@ApiNotFoundResponse({ description: "'최근 삭제된 항목'에 없다" })
@@ -116,6 +122,7 @@ export class PostsController {
 	@Delete(':slug/permanent')
 	@HttpCode(204)
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiNoContentResponse({ description: '영구히 지웠다 (내용·버전을 지우고, 저장소 글을 가리는 표시만 남긴다)' })
 	@ApiNotFoundResponse({ description: "'최근 삭제된 항목'에 없다" })
@@ -126,6 +133,7 @@ export class PostsController {
 	@Delete(':slug')
 	@HttpCode(204)
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiNoContentResponse({ description: "지웠다 ('최근 삭제된 항목'으로, 30일 동안 되살릴 수 있다)" })
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })

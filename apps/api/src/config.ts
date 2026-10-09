@@ -1,6 +1,7 @@
 // 환경 변수를 읽어 검사한다. 잘못되었으면 서버를 띄우지 않고 바로 알린다.
 
 import type { OciCredentials } from './resources/oci.js';
+import { RATE_LIMIT_DEFAULTS, type RateLimitName } from './common/rate-limit.js';
 import { parseMonitorMode, type MonitorMode } from './resources/rules.js';
 
 export interface AppConfig {
@@ -23,6 +24,8 @@ export interface AppConfig {
 	commentRateLimit: number;
 	/** 좋아요 누르기·취소를 IP마다 1분에 몇 번까지 받을지 (경로마다: 글 누르기, 글 취소, 댓글 누르기, 댓글 취소) */
 	likeRateLimit: number;
+	/** 쓰기 경로의 요청 제한 (이름마다 IP당 1분 횟수). login·comment·like는 위의 값과 같다 (common/rate-limit.ts) */
+	rateLimits: Record<RateLimitName, number>;
 	/**
 	 * IP를 그대로 저장하지 않고 이 키로 HMAC해 둔다 (같은 사람이 쓴 글을 묶어 볼 때만 쓴다).
 	 * 배포에서는 반드시 정한다. 로컬·테스트는 기본값
@@ -159,6 +162,15 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		trustProxy: Number(env.TRUST_PROXY ?? 0) || 0,
 		commentRateLimit: Number(env.COMMENT_RATE_LIMIT ?? 5) || 5,
 		likeRateLimit: Number(env.LIKE_RATE_LIMIT ?? 30) || 30,
+		rateLimits: {
+			login: Number(env.AUTH_RATE_LIMIT ?? 10) || 10,
+			comment: Number(env.COMMENT_RATE_LIMIT ?? 5) || 5,
+			like: Number(env.LIKE_RATE_LIMIT ?? 30) || 30,
+			write: Number(env.WRITE_RATE_LIMIT ?? RATE_LIMIT_DEFAULTS.write.limit) || RATE_LIMIT_DEFAULTS.write.limit,
+			upload: Number(env.UPLOAD_RATE_LIMIT ?? RATE_LIMIT_DEFAULTS.upload.limit) || RATE_LIMIT_DEFAULTS.upload.limit,
+			demo: Number(env.DEMO_RATE_LIMIT ?? RATE_LIMIT_DEFAULTS.demo.limit) || RATE_LIMIT_DEFAULTS.demo.limit,
+			events: Number(env.EVENTS_RATE_LIMIT ?? RATE_LIMIT_DEFAULTS.events.limit) || RATE_LIMIT_DEFAULTS.events.limit,
+		},
 		ipHashSecret,
 		stockPhotos: {
 			unsplashAccessKey: env.UNSPLASH_ACCESS_KEY || undefined,

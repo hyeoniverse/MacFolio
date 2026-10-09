@@ -13,6 +13,8 @@ process.env.GITHUB_CLIENT_ID = 'test-client-id';
 process.env.GITHUB_CLIENT_SECRET = 'test-client-secret';
 process.env.ADMIN_GITHUB_ID = '68999618';
 process.env.AUTH_RATE_LIMIT = '1000';
+process.env.UPLOAD_RATE_LIMIT = '1000';
+process.env.WRITE_RATE_LIMIT = '1000';
 
 const fakeGithub: Partial<GithubClient> = {
 	exchangeCode: async () => 'token',
