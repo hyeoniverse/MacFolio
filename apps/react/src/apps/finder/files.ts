@@ -4,7 +4,7 @@
 import type { AppName } from '@/apps/manifest';
 
 interface ItemBase {
-	/** 트리 안에서 하나뿐인 경로 (예: blog/개발기/MacFolio, docs/deployment.md) */
+	/** 트리 안에서 하나뿐인 경로 (예: blog/프론트엔드/기능, docs/deployment.md) */
 	id: string;
 	/** 보이는 이름 */
 	name: string;
@@ -92,7 +92,7 @@ function docsFolder(paths: string[]): FolderItem {
 	return { kind: 'folder', id: 'docs', name: '문서', children: [resume, ...docs].sort(byName) };
 }
 
-/** 블로그 폴더: 글의 카테고리(개발기/MacFolio/백엔드)를 폴더로. 같은 폴더 안은 최신 글이 위로 */
+/** 블로그 폴더: 글의 카테고리(프론트엔드/기능)를 폴더로. 같은 폴더 안은 최신 글이 위로 */
 function blogFolder(posts: TreeInput['posts']): FolderItem {
 	const root: FolderItem = { kind: 'folder', id: 'blog', name: '블로그', children: [] };
 	const folderAt = (path: string[]): FolderItem => {

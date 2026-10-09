@@ -1,7 +1,7 @@
 ---
 title: 메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu
 date: 2026-10-01
-category: 개발기/MacFolio/공통 UI
+category: 프론트엔드/구조·리팩터링
 summary: 우클릭 메뉴, Apple 메뉴, 서식 창, 달력이 저마다 "바깥을 누르면 닫기"와 "화면 안에 자리 잡기"를 따로 짜고 있었다. 셋으로 나눠 공통 부품을 만들고, 다섯 벌을 옮기며 생긴 일들.
 ---
 
