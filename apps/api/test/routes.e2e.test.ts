@@ -20,6 +20,7 @@ process.env.GITHUB_CLIENT_SECRET = 'test-client-secret';
 process.env.ADMIN_GITHUB_ID = '68999618';
 process.env.AUTH_RATE_LIMIT = '1000';
 process.env.COMMENT_RATE_LIMIT = '1000';
+process.env.LIKE_RATE_LIMIT = '1000';
 // 메일 발송이 꺼져 있으면 /contact는 검사 전에 503으로 끝난다. 검사까지 가도록 켠다 (실제로 보내지는 않는다: 몸통이 거절된다)
 process.env.RESEND_API_KEY = 're_test';
 process.env.CONTACT_TO = 'admin@example.com';
@@ -58,6 +59,14 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'GET /posts/:slug/comments': 'public',
 	'POST /posts/:slug/comments': 'visitor',
 	'DELETE /comments/:id': 'visitor',
+
+	// 좋아요: 누구나 읽고, 누르기·취소는 방문자 쿠키로 자기 것만 (글·댓글마다 한 번)
+	'GET /posts/stats': 'public',
+	'GET /posts/:slug/likes': 'public',
+	'PUT /posts/:slug/like': 'visitor',
+	'DELETE /posts/:slug/like': 'visitor',
+	'PUT /comments/:id/like': 'visitor',
+	'DELETE /comments/:id/like': 'visitor',
 
 	'GET /memo/organization': 'public',
 	'PUT /memo/organization': 'admin',
@@ -243,6 +252,11 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 			'DELETE /files/:id',
 			'DELETE /wallpapers/:id',
 			'POST /images/unsplash/:id/download',
+			// 좋아요는 몸통 없이 누르고 취소한다 (주소의 글·댓글만 본다)
+			'PUT /posts/:slug/like',
+			'DELETE /posts/:slug/like',
+			'PUT /comments/:id/like',
+			'DELETE /comments/:id/like',
 		]);
 		for (const route of routes) {
 			if (route.method === 'get' || noBody.has(route.key)) continue;
@@ -259,5 +273,7 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 		await request(server()).get('/posts/x/revisions/abc').set('Cookie', adminCookie).expect(400);
 		await request(server()).get('/images/search').set('Cookie', adminCookie).query({ q: '' }).expect(400);
 		await request(server()).post('/images/unsplash/!/download').set('Cookie', adminCookie).expect(400);
+		await request(server()).put('/posts/!/like').expect(400);
+		await request(server()).get('/posts/!/likes').expect(400);
 	});
 });
