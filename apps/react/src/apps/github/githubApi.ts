@@ -1,7 +1,7 @@
 // GitHub 앱의 값 (apps/api의 /github). 누구나 프로필을 받고, 관리자만 보일 저장소를 고른다.
 import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 import { GITHUB_SNAPSHOT, type GithubData, type RepoCard } from '@/apps/github/githubProfile';
 
 /** 보일 저장소는 GitHub의 Pinned처럼 6개까지 (서버와 같다) */

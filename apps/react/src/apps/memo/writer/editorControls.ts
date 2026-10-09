@@ -1,7 +1,7 @@
 // 본문 편집기(InlineEditor)와 창 위 도구 막대(FormatTools)를 잇는 작은 저장소.
 // 편집기는 커서 자리의 서식과 명령 실행 함수를 알리고, 도구 막대는 그걸 보고 그리고 누른다.
 import { useSyncExternalStore } from 'react';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 import type { FindOptions } from '../find';
 
 /** 문단 모양 (macOS 메모의 서식 이름) */

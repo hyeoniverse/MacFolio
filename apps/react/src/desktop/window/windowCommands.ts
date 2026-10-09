@@ -2,7 +2,7 @@
 // 창이 직접 한다: 바깥은 명령만 보내고, 창이 자기 앱으로 온 명령을 받아 처리한다 (#96).
 import { useEffect, useRef } from 'react';
 import type { AppName } from '@/apps/manifest';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 
 export type WindowCommand = 'close' | 'minimize' | 'toggleMaximize' | 'quit';
 

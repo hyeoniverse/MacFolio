@@ -7,7 +7,7 @@ import type { ResizeDirection } from '@/desktop/window/geometry';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import MobileAppFrame from '@/desktop/mobile/MobileAppFrame';
 import { switcherStore, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
-import { runningByRecency } from '@/desktop/appStack';
+import { runningByRecency } from '@macfolio/desktop-core';
 import { animateClose, animateOpen } from '@/desktop/window/windowMotion';
 import { useWindowCommands } from '@/desktop/window/windowCommands';
 
