@@ -675,26 +675,101 @@ echo 'RESOURCE_MONITOR=free' >> api.env
 docker compose up -d api
 ```
 
-종량제에서 요금을 보려면 OCI API 키를 만든다:
+- 네트워크는 Oracle이 재는 VM 전체 값이 아니라 API 컨테이너가 주고받은 양이다 (tunnel이 Cloudflare와 주고받는 양, 이미지 받기 등은 따로 세지 않는다). 방문 트래픽은 모두 tunnel을 거쳐 API로 오므로 흐름은 비슷하다
 
-1. 콘솔 → 오른쪽 위 프로필 → **내 프로필 → API 키 → API 키 추가** → 키 쌍을 만들고 **개인 키를 내려받는다**
-2. 추가하면 나오는 설정 미리보기에서 `tenancy`, `user`, `fingerprint`, `region`(홈 리전)을 옮겨 적는다
-3. 서버 `~/deploy/api.env`에 넣고 `docker compose up -d api`:
+#### 종량제 요금·예산 보기 (OCI API 키)
+
+`RESOURCE_MONITOR=payg`일 때 서버 탭에 **이번 달 요금과 예산 한도**를 보이고, 예산의 80%·100%를 넘으면 메일로 알린다(달마다 한 번씩). Oracle의 요금·예산 API를 부르려면 OCI API 키가 필요하다. 키가 없으면 사용률만 보이고, 서버 탭의 요금 칸에 넣는 방법이 나온다.
+
+**0. 예산 만들기** (한도와 경고의 기준)
+
+1. 콘솔 왼쪽 위 메뉴 → **Billing & Cost Management → Budgets → Create Budget**
+2. 이름(예: `월 1달러`), 대상은 **루트 compartment**(테넌시), 금액 `1`(USD), 기간 **Monthly**
+3. 알림 규칙(Alert Rule)은 비워도 된다. 이 서버가 80%·100%에서 메일을 보낸다. Oracle 자체 메일도 받고 싶으면 여기서 더한다
+
+예산은 늘 루트 compartment에 만들어진다. 예산이 없어도 이번 달 요금은 보이지만, 한도 막대와 경고 메일은 없다.
+
+**1. API 키를 쓸 사용자 정하기**
+
+- **간단히:** 지금 쓰는 관리자 계정에 키를 만든다. 권한을 따로 줄 필요가 없다. 대신 이 키는 계정의 모든 권한을 갖는다
+- **권장:** 읽기 전용 사용자를 따로 만든다
+  1. **Identity & Security → Domains → (기본 도메인) → Users → Create user** (예: `macfolio-billing`, 이메일 없이 만들어도 된다)
+  2. **Groups → Create group** (예: `macfolio-billing`)에 그 사용자를 넣는다
+  3. **Identity & Security → Policies →** 루트 compartment에서 **Create Policy**, 두 줄:
+
+     ```
+     Allow group macfolio-billing to read usage-budgets in tenancy
+     Allow group macfolio-billing to read usage-report in tenancy
+     ```
+
+     (`usage-report`는 단수형이다.) 다른 도메인의 그룹이면 `group <도메인>/macfolio-billing`
+
+**2. API 키 만들기**
+
+1. (관리자 계정이면) 오른쪽 위 프로필 → **My profile**, (따로 만든 사용자면) 그 사용자 화면
+2. **Resources → API keys → Add API key → Generate API key pair**
+3. **Download private key** (`.pem`). 이 파일은 다시 받을 수 없다. 공개 키는 받지 않아도 된다
+4. **Add**를 누르면 **Configuration file preview**가 나온다. 여기 값을 옮겨 적는다:
+
+   ```
+   user=ocid1.user.oc1..aaaa...       → OCI_USER_OCID
+   fingerprint=12:34:...:ef           → OCI_FINGERPRINT
+   tenancy=ocid1.tenancy.oc1..aaaa... → OCI_TENANCY_OCID
+   region=ap-chuncheon-1              → OCI_REGION
+   ```
+
+   `region`은 **홈 리전**이어야 한다 (요금·예산 API는 홈 리전에만 있다). 콘솔 위쪽 리전 메뉴에서 "Home region"으로 표시된 곳이다
+
+**3. 서버에 넣기**
+
+개인 키가 셸 기록이나 저장소에 남지 않게 파일로 옮겨서 한 줄로 바꾼다. Mac에서:
 
 ```bash
+scp ~/Downloads/<내려받은키>.pem <서버>:~/deploy/oci.pem
+```
+
+서버에서:
+
+```bash
+cd ~/deploy
+# 개인 키를 줄바꿈을 \n으로 바꾼 한 줄로 api.env에 더한다
+printf 'OCI_PRIVATE_KEY="%s"\n' "$(awk 'NF {sub(/\r/, ""); printf "%s\\n", $0}' oci.pem)" >> api.env
+rm oci.pem
+# 나머지 값 (2에서 옮겨 적은 것)
+cat >> api.env <<'ENV'
 RESOURCE_MONITOR=payg
 OCI_TENANCY_OCID=ocid1.tenancy.oc1..
 OCI_USER_OCID=ocid1.user.oc1..
-OCI_FINGERPRINT=aa:bb:cc:...
-OCI_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----"   # 줄바꿈을 \n으로
+OCI_FINGERPRINT=12:34:...:ef
 OCI_REGION=ap-chuncheon-1
+ENV
+chmod 600 api.env
+docker compose up -d api
 ```
 
-- 개인 키를 한 줄로 만들기: `awk 'NF {sub(/\r/, ""); printf "%s\\n", $0}' 내려받은키.pem`
-- 키를 만든 사용자가 테넌시 관리자면 따로 권한을 줄 필요가 없다. 다른 사용자면 그 사용자의 그룹에 `Allow group <그룹> to read usage-budgets in tenancy`, `Allow group <그룹> to read usage-reports in tenancy` 정책을 준다
-- 키가 틀리거나 권한이 없으면 서버 탭의 요금 칸에 Oracle이 돌려준 이유(예: `401 NotAuthenticated`)가 보인다
+이미 `RESOURCE_MONITOR=free`가 있으면 그 줄을 `payg`로 바꾼다 (같은 키가 두 번 있으면 뒤의 것이 쓰인다).
 
-- 네트워크는 Oracle이 재는 VM 전체 값이 아니라 API 컨테이너가 주고받은 양이다 (tunnel이 Cloudflare와 주고받는 양, 이미지 받기 등은 따로 세지 않는다). 방문 트래픽은 모두 tunnel을 거쳐 API로 오므로 흐름은 비슷하다
+**4. 확인**
+
+- 사이트에서 관리자로 로그인 → **활동 상태 보기 → 서버** 탭의 **요금** 칸에 이번 달 요금과 예산 막대가 보이면 끝이다
+- 요금은 한 시간마다 다시 읽는다. Oracle의 요금 자료는 몇 시간 늦게 반영된다
+- Always Free 한도 안에서만 쓰면 요금은 `US$0.00`이 정상이다
+
+**5. 안 될 때** (요금 칸에 Oracle이 돌려준 이유가 그대로 보인다)
+
+| 요금 칸의 메시지                         | 원인과 해결                                                                                                                          |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `401 NotAuthenticated`                   | 개인 키·지문·사용자 OCID가 서로 짝이 아니다(다른 키의 지문 등). 또는 서버 시각이 5분 넘게 틀렸다 (`date -u`로 확인)                  |
+| `404 NotAuthorizedOrNotFound`            | 권한이 없다(1의 정책). 또는 `OCI_REGION`이 홈 리전이 아니다                                                                          |
+| `Oracle Cloud API에 연결할 수 없습니다.` | 리전 이름 오타(`ap-chuncheon-1`처럼), 서버에서 바깥으로 나가는 HTTPS가 막혔다                                                        |
+| 요금 칸에 "OCI API 키를 넣습니다"        | 다섯 값 중 하나가 비었다. `docker compose exec api printenv`에서 `OCI_`로 시작하는 이름이 다섯 개인지 본다 (값은 남에게 보이지 않게) |
+| 예산 막대가 없다                         | 예산이 없다 (0)                                                                                                                      |
+
+**키 관리**
+
+- 키는 서버의 `~/deploy/api.env`에만 둔다. 저장소, 로컬 `apps/api/.env`, 채팅에 붙이지 않는다
+- 바꿀 때: 콘솔에서 새 키를 더하고 → `api.env`의 네 값(키·지문)을 바꾸고 `docker compose up -d api` → 확인한 뒤 옛 키를 지운다
+- 키가 새면 콘솔의 API keys에서 그 키를 바로 지운다 (그 순간부터 쓸 수 없다)
 
 ## 문제 해결
 
