@@ -33,7 +33,8 @@ test.describe('좋아요', () => {
 
 		const like = memo.getByRole('button', { name: '이 글 좋아요 4개' });
 		await expect(like).toHaveAttribute('aria-pressed', 'false');
-		await expect(like).toContainText('좋아요 4');
+		// Apple 스타일: 하트와 수만
+		await expect(like).toHaveText('4');
 		await like.click();
 		const liked = memo.getByRole('button', { name: '이 글 좋아요 5개' });
 		await expect(liked).toHaveAttribute('aria-pressed', 'true');
