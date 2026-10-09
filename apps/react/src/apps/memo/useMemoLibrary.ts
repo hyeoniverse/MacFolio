@@ -13,7 +13,6 @@ import { fetchOrganization, saveOrganization } from './organizationApi';
 import { fetchAdminPosts, fetchServerPosts } from './postsApi';
 import { getPostRepository } from './repository';
 import { useCanEditMemo } from './admin';
-import { useMemoPostsChangedBy } from './memoPostsSignal';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { fetchViews } from '@/shared/analytics/analytics';
@@ -76,8 +75,7 @@ export function useMemoLibrary() {
 		};
 	}, []);
 
-	// 관리자로 로그인하면 임시 저장까지 읽는다. 휴지통에서 되살리거나 지우면 다시 읽는다
-	const binChanges = useMemoPostsChangedBy('bin');
+	// 관리자로 로그인하면 임시 저장까지 읽는다
 	useEffect(() => {
 		if (!canEdit) return;
 		let cancelled = false;
@@ -87,7 +85,7 @@ export function useMemoLibrary() {
 		return () => {
 			cancelled = true;
 		};
-	}, [canEdit, binChanges]);
+	}, [canEdit]);
 
 	/** 관리자 글 하나를 서버가 돌려준 것으로 바꾼다 (없으면 더한다) */
 	const upsertAdminPost = (post: AdminPost) =>

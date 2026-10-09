@@ -34,74 +34,38 @@ test.describe('휴지통', () => {
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' })).toHaveClass(/active/);
 	});
 
-	test('관리자는 지운 메모를 되돌려 놓거나 영구히 지운다', async ({ page }) => {
-		const api = await fakeApi(page, { signedIn: true });
-		const removed = (slug: string) => ({
-			slug,
-			title: '',
-			date: '',
-			category: '',
-			summary: '',
-			body: '',
-			deleted: true,
-			deletedAt: new Date().toISOString(),
-			published: null,
-			draft: null,
-		});
-		api.posts.push(removed('cra-to-vite'), removed('bugs-found-by-tests'));
+	test('바꾸기 전 모습을 크게 보고, 지운 줄 수와 커밋을 보여 준다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'bin').click();
 		const bin = appWindow(page, 'bin');
+		await bin.getByRole('option', { name: /방명록이던 메모 앱/ }).click();
+		const info = bin.getByRole('region', { name: '방명록이던 메모 앱 정보' });
+		await expect(info).toContainText('−1,253줄');
+		await expect(info.getByRole('link', { name: '844688c' })).toHaveAttribute(
+			'href',
+			'https://github.com/hyeoniverse/MacFolio/commit/844688c42f90264ce2d4fdee407028c7e4489970'
+		);
 
-		await bin.getByRole('button', { name: /지운 메모/ }).click();
-		const memos = bin.getByRole('list', { name: '지운 메모' });
-		await expect(memos.getByRole('listitem')).toHaveCount(2);
-		await expect(memos).toContainText('30일 남음');
+		// 누르면 크게, Esc로 닫는다
+		await info.getByRole('button', { name: '바꾸기 전 모습 크게 보기' }).click();
+		const look = bin.getByRole('dialog', { name: '방명록이던 메모 앱 바꾸기 전 모습' });
+		await expect(look.getByRole('img')).toBeVisible();
+		expect(await look.getByRole('img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+		await page.keyboard.press('Escape');
+		await expect(look).toHaveCount(0);
 
-		// 되돌려 놓기
-		await memos
-			.getByRole('listitem')
-			.filter({ hasText: 'CRA에서 Vite로' })
-			.getByRole('button', { name: '되돌려 놓기' })
-			.click();
-		await expect(memos.getByRole('listitem')).toHaveCount(1);
-		// 서버에 내용이 없던 저장소 글이라 지운 표시가 사라진다 (파일이 다시 보인다)
-		expect(api.posts.find((post) => post.slug === 'cra-to-vite')).toBeUndefined();
-
-		// 즉시 삭제는 묻는다
-		await memos.getByRole('button', { name: '즉시 삭제' }).click();
-		await bin.getByRole('alertdialog').getByRole('button', { name: '삭제' }).click();
-		await expect(bin.getByText('지운 메모가 없습니다.')).toBeVisible();
-		expect(api.posts.find((post) => post.slug === 'bugs-found-by-tests')).toMatchObject({ deletedAt: null });
+		// 목록에서 스페이스로도 연다 (Finder의 훑어보기)
+		await bin.getByRole('listbox', { name: '지운 기능' }).focus();
+		await page.keyboard.press('Space');
+		await expect(look).toBeVisible();
 	});
 
-	test('휴지통에서 되살리면 열려 있는 메모 앱의 최근 삭제된 항목도 바뀐다', async ({ page }) => {
-		const api = await fakeApi(page, { signedIn: true });
-		api.posts.push({
-			slug: 'cra-to-vite',
-			title: '',
-			date: '',
-			category: '',
-			summary: '',
-			body: '',
-			deleted: true,
-			deletedAt: new Date().toISOString(),
-			published: null,
-			draft: null,
-		});
+	test('관리자에게도 휴지통에는 지운 기능만 있다 (지운 메모는 메모 앱의 최근 삭제된 항목에)', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
 		await enterDesktop(page);
-		await dockItem(page, 'memo').click();
-		const memo = appWindow(page, 'memo');
-		const trash = memo.getByRole('navigation', { name: '카테고리' }).getByRole('button', { name: /^최근 삭제된 항목/ });
-		await expect(trash).toContainText('1');
-
 		await dockItem(page, 'bin').click();
 		const bin = appWindow(page, 'bin');
-		await bin.getByRole('button', { name: /지운 메모/ }).click();
-		await bin.getByRole('button', { name: '되돌려 놓기' }).click();
-		await expect(bin.getByText('지운 메모가 없습니다.')).toBeVisible();
-		await expect(trash).toHaveCount(0);
-		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(1);
+		await expect(bin.getByRole('navigation', { name: '휴지통' }).getByRole('button')).toHaveText([/지운 기능/]);
 	});
 
 	test('휴대폰 홈 화면에는 휴지통이 없다', async ({ page }) => {
