@@ -860,9 +860,64 @@
 				"tags": [
 					"files"
 				]
+			},
+			"get": {
+				"operationId": "FilesController_list",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "올린 파일 모두와, 파일마다 쓰는 곳 (지금 글, 예전 버전, 배경화면). 최근 것이 위로"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"files"
+				]
 			}
 		},
 		"/files/{id}": {
+			"delete": {
+				"operationId": "FilesController_remove",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "지웠다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"404": {
+						"description": "파일이 없다"
+					},
+					"409": {
+						"description": "배경화면이나 지금 글에서 쓰는 파일이다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"files"
+				]
+			},
 			"get": {
 				"operationId": "FilesController_download",
 				"parameters": [
