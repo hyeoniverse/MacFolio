@@ -2,7 +2,7 @@ import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import type { MenuItem } from '@/shared/ui/menu/Menu';
 import { sortMenuItems } from './components/sortMenuItems';
 import type { View } from './components/MemoToolbar';
-import type { Arrangement } from './arrange';
+import type { Arrangement } from '@macfolio/desktop-core/memo';
 
 /**
  * 메뉴 막대의 메모 메뉴 (#96). 메모가 지금 쓰는 앱일 때 보인다.

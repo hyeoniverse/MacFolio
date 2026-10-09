@@ -3,7 +3,7 @@ import type { Node } from '@milkdown/kit/prose/model';
 import { Plugin, PluginKey, TextSelection, type Transaction } from '@milkdown/kit/prose/state';
 import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/view';
 import { $prose } from '@milkdown/kit/utils';
-import { findMatches, type FindOptions } from '../find';
+import { findMatches, type FindOptions } from '@macfolio/desktop-core/memo';
 import { editorControls } from './editorControls';
 
 interface Match {

@@ -1,13 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-	dateGroup,
-	DEFAULT_ARRANGEMENT,
-	groupPosts,
-	loadArrangement,
-	saveArrangement,
-	sortBy,
-	type Arrangement,
-} from './arrange';
+import { describe, expect, it } from 'vitest';
+import { dateGroup, DEFAULT_ARRANGEMENT, groupPosts, parseArrangement, sortBy, type Arrangement } from './arrange';
 import type { Post } from './posts';
 
 const post = (title: string, date: string): Post => ({
@@ -80,28 +72,15 @@ describe('groupPosts', () => {
 	});
 });
 
-describe('loadArrangement / saveArrangement', () => {
-	// 테스트는 Node에서 돌므로 localStorage를 흉내 낸다
-	beforeEach(() => {
-		const store = new Map<string, string>();
-		vi.stubGlobal('localStorage', {
-			getItem: (key: string) => store.get(key) ?? null,
-			setItem: (key: string, value: string) => store.set(key, value),
-		});
-	});
-	afterEach(() => vi.unstubAllGlobals());
-
-	it('저장한 설정을 읽는다', () => {
+describe('parseArrangement', () => {
+	it('맞는 값은 그대로 읽는다', () => {
 		const arrangement: Arrangement = { sort: 'title', order: 'desc', groupByDate: false };
-		saveArrangement(arrangement);
-		expect(loadArrangement()).toEqual(arrangement);
+		expect(parseArrangement(arrangement)).toEqual(arrangement);
 	});
 
 	it('없거나 잘못된 값이면 기본값으로', () => {
-		expect(loadArrangement()).toEqual(DEFAULT_ARRANGEMENT);
-		localStorage.setItem('macfolio:memo:arrangement', '{"sort":"size","order":1}');
-		expect(loadArrangement()).toEqual(DEFAULT_ARRANGEMENT);
-		localStorage.setItem('macfolio:memo:arrangement', 'not json');
-		expect(loadArrangement()).toEqual(DEFAULT_ARRANGEMENT);
+		expect(parseArrangement(null)).toEqual(DEFAULT_ARRANGEMENT);
+		expect(parseArrangement('not json')).toEqual(DEFAULT_ARRANGEMENT);
+		expect(parseArrangement({ sort: 'size', order: 1 })).toEqual(DEFAULT_ARRANGEMENT);
 	});
 });

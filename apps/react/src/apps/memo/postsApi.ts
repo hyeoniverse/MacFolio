@@ -1,6 +1,6 @@
 // 블로그 글 API (apps/api의 /posts). 누구나 게시한 글을 읽고, 관리자만 쓰고 고치고 게시하고 지운다.
 // 고치는 동안은 임시 저장에만 쓰고(자동 저장), 게시해야 방문자에게 보인다. 게시할 때마다 버전이 남는다.
-import type { AdminPost, PostContent, ServerPost } from './posts';
+import type { AdminPost, PostContent, ServerPost } from '@macfolio/desktop-core/memo';
 
 export type PostDraft = PostContent;
 

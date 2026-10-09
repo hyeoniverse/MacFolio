@@ -1,5 +1,5 @@
 import Menu from '@/shared/ui/menu/Menu';
-import { folderLabelOf } from '../posts';
+import { folderLabelOf } from '@macfolio/desktop-core/memo';
 
 /** 휴대폰 메모 선택의 '이동': 고른 메모들을 옮길 폴더 */
 const FolderPickMenu = ({

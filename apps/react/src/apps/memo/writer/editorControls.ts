@@ -2,7 +2,7 @@
 // 편집기는 커서 자리의 서식과 명령 실행 함수를 알리고, 도구 막대는 그걸 보고 그리고 누른다.
 import { useSyncExternalStore } from 'react';
 import { createStore } from '@macfolio/desktop-core';
-import type { FindOptions } from '../find';
+import type { FindOptions } from '@macfolio/desktop-core/memo';
 
 /** 문단 모양 (macOS 메모의 서식 이름) */
 export type BlockStyle = 'title' | 'heading' | 'subheading' | 'body' | 'mono';

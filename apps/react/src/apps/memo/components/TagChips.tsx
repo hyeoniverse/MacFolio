@@ -1,4 +1,4 @@
-import { cycleTag, toggleAllTags, type TagSelection } from '../tagFilter';
+import { cycleTag, toggleAllTags, type TagSelection } from '@macfolio/desktop-core/memo';
 
 interface Props {
 	/** 본문에 쓴 #태그와 글 수 (tags.ts) */

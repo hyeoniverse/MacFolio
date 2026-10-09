@@ -1,7 +1,6 @@
 import type { MenuItem } from '@/shared/ui/menu/Menu';
 import ShareIcon from '@/shared/ui/ShareIcon';
-import type { Post } from './posts';
-import type { Arrangement } from './arrange';
+import type { Arrangement, Post } from '@macfolio/desktop-core/memo';
 import type { View } from './components/MemoToolbar';
 import { sortMenuItems } from './components/sortMenuItems';
 

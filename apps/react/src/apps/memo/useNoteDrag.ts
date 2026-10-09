@@ -1,6 +1,12 @@
 import { useState } from 'react';
-import { ALL_CATEGORY, RECENTLY_DELETED, type Post } from './posts';
-import { canMoveFolder, movePost, type Organization } from './organize';
+import {
+	ALL_CATEGORY,
+	canMoveFolder,
+	movePost,
+	type Organization,
+	type Post,
+	RECENTLY_DELETED,
+} from '@macfolio/desktop-core/memo';
 import type { DragItem } from './components/FolderSidebar';
 
 /**
