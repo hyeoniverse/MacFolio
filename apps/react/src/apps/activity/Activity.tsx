@@ -8,6 +8,7 @@ import { getPostRepository } from '@/apps/memo/repository';
 import LineChart from './LineChart';
 import StatTable from './StatTable';
 import Server from './Server';
+import { requestedTab } from './serverResources';
 import {
 	ActivityError,
 	change,
@@ -185,6 +186,18 @@ const Activity = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [reloads, setReloads] = useState(0);
 	const reload = () => setReloads((count) => count + 1);
+
+	// 다른 곳(메뉴 막대의 배터리)에서 탭을 골라 열면 그 탭으로
+	useEffect(() => {
+		const take = ({ tab: requested }: { tab: string | null }) => {
+			const match = TABS.find(({ id }) => id === requested);
+			if (!match) return;
+			setTab(match.id);
+			requestedTab.setState({ tab: null });
+		};
+		take(requestedTab.getState());
+		return requestedTab.subscribe(take);
+	}, []);
 
 	// 블로그 글마다 전체 기간 조회수와 그 글의 제목
 	const [blogViews, setBlogViews] = useState<Row[] | null>(null);
