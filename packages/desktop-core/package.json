@@ -14,6 +14,11 @@
 			"source": "./src/memo/index.ts",
 			"types": "./dist/memo/index.d.ts",
 			"default": "./dist/memo/index.js"
+		},
+		"./music": {
+			"source": "./src/music/index.ts",
+			"types": "./dist/music/index.d.ts",
+			"default": "./dist/music/index.js"
 		}
 	},
 	"scripts": {
