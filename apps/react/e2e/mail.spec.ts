@@ -25,6 +25,34 @@ test.describe('메일', () => {
 		await expect(mail.getByRole('article', { name: '방문해 주셔서 감사합니다!' })).toContainText('편하게 연락 주세요');
 	});
 
+	test('사이트 주인의 주소를 누르면 이메일 주소를 복사한다 (새로운 메시지의 받는 사람, 환영 메일의 보낸 사람)', async ({
+		page,
+		context,
+	}) => {
+		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+		const mail = await openMail(page);
+		const clipboard = () => page.evaluate(() => navigator.clipboard.readText());
+
+		// 환영 메일의 보낸 사람 주소
+		const article = mail.getByRole('article', { name: '방문해 주셔서 감사합니다!' });
+		const sender = article.getByRole('button', { name: 'hyeoniverse.dev@gmail.com (눌러서 이메일 주소 복사)' });
+		await sender.click();
+		await expect(sender.getByRole('status')).toHaveText('복사했어요');
+		expect(await clipboard()).toBe('hyeoniverse.dev@gmail.com');
+		// 잠깐 뒤 말풍선은 사라진다
+		await expect(sender.getByRole('status')).toHaveCount(0);
+
+		// 새로운 메시지의 받는 사람: 이름 없이 주소만 복사한다
+		await page.evaluate(() => navigator.clipboard.writeText(''));
+		await mail.getByRole('button', { name: '새로운 메시지' }).click();
+		const recipient = mail.getByRole('button', {
+			name: '김정현 <hyeoniverse.dev@gmail.com> (눌러서 이메일 주소 복사)',
+		});
+		await recipient.click();
+		await expect(recipient.getByRole('status')).toHaveText('복사했어요');
+		expect(await clipboard()).toBe('hyeoniverse.dev@gmail.com');
+	});
+
 	test('필수 입력이 비었거나 이메일 형식이 틀리면 보내지 않는다', async ({ page }) => {
 		const mail = await openMail(page);
 		await mail.getByRole('button', { name: '새로운 메시지' }).click();
