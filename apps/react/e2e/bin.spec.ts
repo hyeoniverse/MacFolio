@@ -60,12 +60,77 @@ test.describe('휴지통', () => {
 		await expect(look).toBeVisible();
 	});
 
-	test('관리자에게도 휴지통에는 지운 기능만 있다 (지운 메모는 메모 앱의 최근 삭제된 항목에)', async ({ page }) => {
-		await fakeApi(page, { signedIn: true });
+	test('방문자에게는 서버 파일이 없다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'bin').click();
 		const bin = appWindow(page, 'bin');
 		await expect(bin.getByRole('navigation', { name: '휴지통' }).getByRole('button')).toHaveText([/지운 기능/]);
+	});
+
+	test('관리자는 서버 파일에서 쓰는 곳이 없는 파일을 지운다 (글·배경화면이 쓰는 파일은 지울 수 없다)', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+		const upload = (id: string, name: string) =>
+			api.uploads.push({ id, name, type: 'image/png', image: true, data: png, createdAt: '2026-10-01T00:00:00.000Z' });
+		upload('usedinpost000001', '글 그림.png');
+		upload('wallpaper0000001', '배경.png');
+		upload('oldversion000001', '예전 그림.png');
+		upload('nobodyuses000001', '안 쓰는 그림.png');
+		api.posts.push({
+			slug: 'server-post',
+			title: '서버 글',
+			date: '2026-10-01',
+			category: '기타',
+			summary: '',
+			body: '![그림](https://api.example.com/files/usedinpost000001)',
+			deleted: false,
+			revisions: [
+				{
+					id: 1,
+					createdAt: '2026-10-01T00:00:00Z',
+					createdBy: 'hyeoniverse',
+					title: '서버 글',
+					date: '2026-10-01',
+					category: '기타',
+					summary: '',
+					body: '/files/oldversion000001',
+				},
+			],
+		});
+		api.wallpapers.push({
+			id: 'w1',
+			name: '바다',
+			image: '/files/wallpaper0000001',
+			thumbnail: '/files/wallpaper0000001',
+		});
+
+		await enterDesktop(page);
+		await dockItem(page, 'bin').click();
+		const bin = appWindow(page, 'bin');
+		await bin.getByRole('button', { name: /서버 파일/ }).click();
+		const list = bin.getByRole('list', { name: '서버 파일' });
+		const row = (name: string) => list.getByRole('listitem').filter({ hasText: name });
+		await expect(row('글 그림.png')).toContainText('글 1개: server-post');
+		await expect(row('배경.png')).toContainText('배경화면');
+		await expect(row('예전 그림.png')).toContainText('예전 버전에서만: server-post');
+		await expect(row('안 쓰는 그림.png')).toContainText('쓰는 곳 없음');
+		// 쓰는 파일에는 지우기 단추가 없다
+		await expect(row('글 그림.png').getByRole('button', { name: '지우기' })).toHaveCount(0);
+		await expect(row('배경.png').getByRole('button', { name: '지우기' })).toHaveCount(0);
+
+		// 하나 지우기 (묻는다)
+		await row('안 쓰는 그림.png').getByRole('button', { name: '지우기' }).click();
+		await bin.getByRole('alertdialog').getByRole('button', { name: '지우기' }).click();
+		await expect(row('안 쓰는 그림.png')).toHaveCount(0);
+
+		// 쓰지 않는 파일 모두 지우기: 예전 버전에서만 쓰던 파일
+		await bin.getByRole('button', { name: '쓰지 않는 파일 지우기' }).click();
+		await bin.getByRole('alertdialog').getByRole('button', { name: '지우기' }).click();
+		await expect(list.getByRole('listitem')).toHaveCount(2);
+		expect(api.uploads.map((item) => item.id).sort()).toEqual(['usedinpost000001', 'wallpaper0000001']);
+		await expect(bin.getByRole('button', { name: '쓰지 않는 파일 지우기' })).toHaveCount(0);
 	});
 
 	test('휴대폰 홈 화면에는 휴지통이 없다', async ({ page }) => {
