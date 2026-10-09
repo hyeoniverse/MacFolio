@@ -101,10 +101,8 @@
 }
 
 .finder-toolbar {
+	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 두고 단추·찾기 칸만 위로 올린다 */
 	display: flex;
-	position: relative;
-	/* 창 위쪽 52px는 창을 옮기는 자리라, 단추가 눌리도록 그 위로 올린다 */
-	z-index: 4;
 	flex: none;
 	align-items: center;
 	gap: 8px;
@@ -129,6 +127,12 @@
 	font-weight: 700;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.finder-toolbar button,
+.finder-search {
+	position: relative;
+	z-index: 4;
 }
 
 .finder-search {
