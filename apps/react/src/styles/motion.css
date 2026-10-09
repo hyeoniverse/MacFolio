@@ -121,10 +121,16 @@
 	}
 }
 
-/* 선이 처음부터 끝까지 그려진다 (pathLength="1"인 SVG 선) */
+/*
+ * 선이 왼쪽부터 그려진다 (SVG 선). 점선 길이(stroke-dasharray)로 그리면, 그래프를 가로로 늘린 SVG에서
+ * vector-effect: non-scaling-stroke와 함께 쓸 때 선이 중간에서 끊기고 점선 모양도 지워져서 왼쪽부터 드러내는 것으로 한다
+ */
 @keyframes draw-line {
 	from {
-		stroke-dashoffset: 1;
+		clip-path: inset(0 100% 0 0);
+	}
+	to {
+		clip-path: inset(0 0 0 0);
 	}
 }
 

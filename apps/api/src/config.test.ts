@@ -45,6 +45,7 @@ describe('loadConfig', () => {
 				perIpPerDay: 5,
 				totalPerDay: 50,
 			},
+			resources: { mode: 'off', shape: 'VM.Standard.E2.1.Micro', networkMbps: 50, alertTo: undefined },
 			auth: {
 				githubClientId: undefined,
 				githubClientSecret: undefined,
@@ -86,4 +87,23 @@ describe('loadConfig', () => {
 		expect(() => loadConfig({})).toThrow(/DATABASE_URL/);
 		expect(() => loadConfig({ DATABASE_URL, PORT: 'abc' })).toThrow(/PORT/);
 	});
+});
+
+it('서버 자원 감시: 모드·shape·대역폭, 알림 주소는 없으면 연락 메일의 받는 주소', () => {
+	const base = { DATABASE_URL: 'postgresql://x' };
+	expect(loadConfig({ ...base, RESOURCE_MONITOR: 'free', CONTACT_TO: 'owner@x.com' }).resources).toEqual({
+		mode: 'free',
+		shape: 'VM.Standard.E2.1.Micro',
+		networkMbps: 50,
+		alertTo: 'owner@x.com',
+	});
+	expect(
+		loadConfig({
+			...base,
+			RESOURCE_MONITOR: 'payg',
+			OCI_SHAPE: 'VM.Standard.A1.Flex',
+			RESOURCE_NETWORK_MBPS: '1000',
+			RESOURCE_ALERT_TO: 'ops@x.com',
+		}).resources
+	).toEqual({ mode: 'payg', shape: 'VM.Standard.A1.Flex', networkMbps: 1000, alertTo: 'ops@x.com' });
 });

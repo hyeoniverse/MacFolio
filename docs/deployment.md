@@ -650,6 +650,21 @@ curl -s https://macfolio-api.hyeoniverse.com/contact; echo   # {"enabled":true,"
 
 Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Always Free 인스턴스를 회수할 수 있다. 계정을 **Pay As You Go로 업그레이드**하면 회수 대상에서 빠지고, Always Free 한도 안에서는 그대로 0원이다. 업그레이드했다면 Budget 알림(예: 월 $1)을 걸어 둔다. 회수돼도 다시 만들 수 있게 이 문서와 서버 밖 백업을 유지한다.
 
+**서버 자원 감시**로 위험을 미리 본다. `api.env`에 넣고 `docker compose up -d api`:
+
+```bash
+RESOURCE_MONITOR=free          # off(기본) / free(Always Free) / payg(종량제)
+OCI_SHAPE=VM.Standard.E2.1.Micro
+RESOURCE_NETWORK_MBPS=50       # 네트워크 사용률의 기준 (shape의 대역폭)
+# RESOURCE_ALERT_TO=           # 알림 받을 주소 (없으면 CONTACT_TO). 보내는 데는 RESEND_API_KEY·CONTACT_FROM
+```
+
+- 1분마다 CPU·메모리(VM 전체, 컨테이너 안의 `/proc`으로 읽는다)와 네트워크(API 컨테이너가 주고받은 양)를 DB에 남기고, 14일 뒤 지운다. compose를 바꿀 필요는 없다
+- `free`: 최근 7일 CPU 95퍼센타일·네트워크 평균(A1이면 메모리 평균도)이 모두 20% 미만이면 '회수 위험'. 한 시간마다 확인해 위험하면 메일로 알린다 (3일에 한 번까지)
+- `payg`: 회수 대상이 아니라서 사용률만 남기고 보여 준다
+- 사이트의 **활동 상태 보기 → 서버** 탭(관리자만)에서 본다
+- 네트워크는 Oracle이 재는 VM 전체 값이 아니라 API 컨테이너가 주고받은 양이다 (tunnel이 Cloudflare와 주고받는 양, 이미지 받기 등은 따로 세지 않는다). 방문 트래픽은 모두 tunnel을 거쳐 API로 오므로 흐름은 비슷하다
+
 ## 문제 해결
 
 | 증상                                                                 | 원인과 해결                                                                                                                                                                                      |

@@ -56,6 +56,8 @@ export interface FakeApiState {
 	/** 관리자의 '활동 상태 보기'가 받는 요약과 실시간 (마지막으로 물은 기간도 남긴다) */
 	analyticsSummary: Record<string, unknown>;
 	analyticsLive: Record<string, unknown>[];
+	/** 서버 자원 (GET /resources, 관리자만). 서버의 RESOURCE_MONITOR가 off면 mode만 */
+	resources: Record<string, unknown>;
 	analyticsQueries: string[];
 	/** 메일 앱의 연락 메일 (#25): 서버가 보낼 수 있는지, 사람 확인 키, 받은 메일, 다음 보내기를 거절할 응답 */
 	contact: {
@@ -320,6 +322,7 @@ export async function fakeApi(
 		todayVisitors: 12,
 		analyticsSummary: fakeAnalyticsSummary(),
 		analyticsLive: fakeAnalyticsLive(),
+		resources: { mode: 'off' },
 		analyticsQueries: [],
 		contact: { enabled: true, turnstileSiteKey: null, sent: [], mine: [], inbox: fakeInbox(), replies: [] },
 		analyticsViews: { memo: { 'cra-to-vite': 42, 'post-editor': 7 } },
@@ -454,6 +457,10 @@ export async function fakeApi(
 				? summary
 				: { ...summary, scope: 'public', breakdown: { ...summary.breakdown, referrer: [], source: [], campaign: [] } };
 			return route.fulfill({ status: 200, headers: cors(origin), json });
+		}
+		if (path === '/resources') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			return route.fulfill({ status: 200, headers: cors(origin), json: state.resources });
 		}
 		if (path === '/analytics/live') {
 			if (!state.signedIn) return route.fulfill(unauthorized);

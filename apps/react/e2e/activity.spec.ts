@@ -128,4 +128,65 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText('CRA에서 Vite로 옮기기');
 		await expect(memo.locator('.memo-reader-date')).not.toContainText('조회');
 	});
+
+	test('서버 탭: 방문자에게는 잠겨 있고, 관리자에게는 사용률과 유휴 회수 위험이 보인다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const now = Date.now();
+		api.resources = {
+			mode: 'free',
+			shape: 'VM.Standard.E2.1.Micro',
+			networkMbps: 50,
+			latest: { at: new Date(now).toISOString(), cpu: 3.2, memory: 41, network: 0.3 },
+			series: Array.from({ length: 48 }, (_, index) => ({
+				at: new Date(now - (48 - index) * 3_600_000).toISOString(),
+				cpu: 3,
+				memory: 40,
+				network: 0.25,
+			})),
+			risk: {
+				level: 'danger',
+				days: 2,
+				conditions: [
+					{ metric: 'cpu', measure: '95퍼센타일', value: 4.1, threshold: 20, below: true },
+					{ metric: 'network', measure: '평균', value: 0.5, threshold: 20, below: true },
+				],
+			},
+			alert: { mailReady: true, lastSentAt: null },
+		};
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '서버' }).click();
+
+		const summary = activity.getByRole('region', { name: '서버 상태' });
+		await expect(summary).toContainText('Always Free');
+		await expect(summary).toContainText('회수 위험');
+		await expect(summary).toContainText('2일치로 미리 본 값');
+		await expect(summary).toContainText('위험해지면 보냅니다');
+		await expect(activity.getByRole('table', { name: '유휴 회수 기준' }).locator('tbody tr')).toHaveText([
+			/CPU \(95퍼센타일\)4\.1%20% 미만걸림/,
+			/네트워크 \(평균\)0\.5%20% 미만걸림/,
+		]);
+		await expect(activity.getByRole('img', { name: 'CPU 최근 7일' })).toBeVisible();
+		// 기간 고르기는 서버 탭에 없다
+		await expect(activity.getByRole('combobox')).toHaveCount(0);
+
+		// 서버에서 꺼 두면 켜는 방법을 알려 준다
+		api.resources = { mode: 'off' };
+		// 탭을 다시 열면 다시 묻는다
+		await activity.getByRole('tab', { name: '개요' }).click();
+		await activity.getByRole('tab', { name: '서버' }).click();
+		await expect(activity.getByRole('heading', { name: '서버 자원 감시가 꺼져 있습니다' })).toBeVisible();
+	});
+
+	test('서버 탭은 관리자만', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '서버' }).click();
+		await expect(activity.getByText('서버 자원 사용률과 Oracle 유휴 회수 위험은 관리자에게만 보입니다.')).toBeVisible();
+	});
 });

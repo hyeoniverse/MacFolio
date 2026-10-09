@@ -20,6 +20,7 @@ import { TranslateModule } from './translate/translate.module.js';
 import { SummaryModule } from './summary/summary.module.js';
 import { CoverModule } from './cover/cover.module.js';
 import { AnalyticsModule } from './analytics/analytics.module.js';
+import { ResourcesModule } from './resources/resources.module.js';
 import { ContactModule } from './contact/contact.module.js';
 
 @Module({
@@ -51,6 +52,7 @@ import { ContactModule } from './contact/contact.module.js';
 		SummaryModule,
 		CoverModule,
 		AnalyticsModule,
+		ResourcesModule,
 		ContactModule,
 	],
 })

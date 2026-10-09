@@ -7,6 +7,7 @@ import { fetchViews } from '@/shared/analytics/analytics';
 import { getPostRepository } from '@/apps/memo/repository';
 import LineChart from './LineChart';
 import StatTable from './StatTable';
+import Server from './Server';
 import {
 	ActivityError,
 	change,
@@ -18,7 +19,9 @@ import {
 	labelOf,
 	PERIODS,
 	periodRange,
+	fetchResources,
 	type LiveVisit,
+	type ResourceStatus,
 	type Row,
 	type Period,
 	type Summary,
@@ -32,6 +35,7 @@ const TABS = [
 	{ id: 'content', label: '앱·글' },
 	{ id: 'audience', label: '지역·기기' },
 	{ id: 'live', label: '실시간' },
+	{ id: 'server', label: '서버' },
 ] as const;
 type Tab = (typeof TABS)[number]['id'];
 
@@ -177,6 +181,7 @@ const Activity = () => {
 	const [period, setPeriod] = useState<Period>('7d');
 	const [summary, setSummary] = useState<Summary | null>(null);
 	const [live, setLive] = useState<LiveVisit[] | null>(null);
+	const [resources, setResources] = useState<ResourceStatus | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [reloads, setReloads] = useState(0);
 	const reload = () => setReloads((count) => count + 1);
@@ -236,6 +241,18 @@ const Activity = () => {
 		};
 	}, [admin, tab, reloads]);
 
+	// 서버 탭 (관리자): 서버 자원 사용률과 유휴 회수 위험
+	useEffect(() => {
+		if (!admin || !env.apiUrl || tab !== 'server') return;
+		let alive = true;
+		fetchResources()
+			.then((next) => alive && setResources(next))
+			.catch((caught: unknown) => alive && setError(caught instanceof ActivityError ? caught.message : String(caught)));
+		return () => {
+			alive = false;
+		};
+	}, [admin, tab, reloads]);
+
 	useAppMenus('activity', [
 		{
 			title: '보기',
@@ -257,8 +274,11 @@ const Activity = () => {
 		if (!env.apiUrl) return <p className="activity-empty">연결된 서버가 없습니다 (VITE_API_URL)</p>;
 		if (tab === 'live' && !admin)
 			return <AdminOnly what="실시간 방문은 방문 흐름과 가린 IP가 있어서 관리자에게만 보입니다." />;
+		if (tab === 'server' && !admin)
+			return <AdminOnly what="서버 자원 사용률과 Oracle 유휴 회수 위험은 관리자에게만 보입니다." />;
 		if (error) return <p className="activity-empty error">{error}</p>;
 		if (tab === 'live') return <Live visits={live} />;
+		if (tab === 'server') return <Server status={resources} />;
 		if (!summary) return <p className="activity-empty">불러오는 중…</p>;
 		const { breakdown } = summary;
 		switch (tab) {
@@ -321,7 +341,7 @@ const Activity = () => {
 								</button>
 							))}
 						</div>
-						{tab !== 'live' && (
+						{tab !== 'live' && tab !== 'server' && (
 							<label className="activity-period">
 								기간
 								<select value={period} onChange={(event) => setPeriod(event.target.value as Period)}>

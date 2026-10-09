@@ -29,8 +29,8 @@ const LineChart = ({ days }: { days: { day: string; visits: number; visitors: nu
 				{total > 0 && (
 					<>
 						<path className="area" d={`${visits} L${x(days.length - 1)} ${HEIGHT} L${x(0)} ${HEIGHT} Z`} />
-						<path className="visits" d={visits} pathLength={1} />
-						<path className="visitors" d={line((day) => day.visitors)} pathLength={1} />
+						<path className="visits" d={visits} />
+						<path className="visitors" d={line((day) => day.visitors)} />
 					</>
 				)}
 			</svg>

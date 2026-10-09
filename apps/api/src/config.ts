@@ -1,5 +1,7 @@
 // 환경 변수를 읽어 검사한다. 잘못되었으면 서버를 띄우지 않고 바로 알린다.
 
+import { parseMonitorMode, type MonitorMode } from './resources/rules.js';
+
 export interface AppConfig {
 	/** 이 서버의 버전: 배포 이미지를 만든 커밋 (Dockerfile의 APP_VERSION, 예: sha-1a2b3c4). 로컬은 dev */
 	version: string;
@@ -86,6 +88,17 @@ export interface AppConfig {
 		turnstileSecretKey?: string;
 		perIpPerDay: number;
 		totalPerDay: number;
+	};
+	/**
+	 * 서버 자원 감시 (RESOURCE_MONITOR). off: 끔, free: Always Free (유휴 회수 위험과 알림 메일), payg: 종량제 (사용률).
+	 * 회수 기준은 shape마다 다르다 (A1만 메모리를 본다). 네트워크 사용률은 shape의 대역폭 대비
+	 */
+	resources: {
+		mode: MonitorMode;
+		shape: string;
+		networkMbps: number;
+		/** 알림을 받을 주소. 없으면 연락 메일의 받는 주소(CONTACT_TO) */
+		alertTo?: string;
 	};
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
@@ -178,6 +191,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			turnstileSecretKey: env.TURNSTILE_SECRET_KEY || undefined,
 			perIpPerDay: Number(env.CONTACT_PER_IP_PER_DAY ?? 5) || 5,
 			totalPerDay: Number(env.CONTACT_TOTAL_PER_DAY ?? 50) || 50,
+		},
+		resources: {
+			mode: parseMonitorMode(env.RESOURCE_MONITOR),
+			shape: env.OCI_SHAPE || 'VM.Standard.E2.1.Micro',
+			networkMbps: Number(env.RESOURCE_NETWORK_MBPS ?? 50) || 50,
+			alertTo: env.RESOURCE_ALERT_TO || env.CONTACT_TO || undefined,
 		},
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
