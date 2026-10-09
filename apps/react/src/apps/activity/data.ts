@@ -94,6 +94,23 @@ export interface ResourceStatus {
 		days: number;
 	};
 	alert?: { mailReady: boolean; lastSentAt: string | null };
+	/** 종량제: 요금과 예산. configured가 false면 서버에 OCI API 키가 없다 */
+	billing?: {
+		configured: boolean;
+		error: string | null;
+		data: {
+			monthToDate: number;
+			currency: string | null;
+			updatedAt: string;
+			budgets: {
+				displayName: string;
+				amount: number;
+				actualSpend: number | null;
+				forecastedSpend: number | null;
+				resetPeriod: string;
+			}[];
+		} | null;
+	};
 }
 
 export const fetchResources = () => get<ResourceStatus>('/resources');

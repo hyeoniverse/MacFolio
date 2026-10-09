@@ -3,6 +3,7 @@ import { Inject, Injectable, type OnModuleDestroy, type OnModuleInit } from '@ne
 import { sendResendMail } from '../common/resend.js';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { budgetLevel, fetchBilling, OciError, type Billing, type Budget } from './oci.js';
 import {
 	cpuPercent,
 	DAY_MS,
@@ -39,17 +40,25 @@ export interface ResourceStatus {
 	/** 유휴 회수 위험 (free) */
 	risk?: ReclaimRisk;
 	alert?: { mailReady: boolean; lastSentAt: string | null };
+	/** 요금과 예산 (payg). configured가 false면 OCI API 키가 없다 */
+	billing?: { configured: boolean; data: Billing | null; error: string | null };
 }
+
+/** 요금을 다시 읽는 간격 (Oracle의 요금 자료는 몇 시간에 한 번 바뀐다) */
+const BILLING_STALE_MS = 60 * 60_000;
+const monthKey = (now: Date) => now.toISOString().slice(0, 7);
 
 /**
  * 서버 자원 감시 (RESOURCE_MONITOR). 1분마다 CPU·메모리·네트워크를 재어 남기고, 한 시간마다 오래된 표본을 지운다.
- * Always Free(free)면 유휴 회수 위험을 계산해 위험하면 메일로 알린다 (3일에 한 번까지)
+ * Always Free(free)면 유휴 회수 위험을 계산해 위험하면 메일로 알린다 (3일에 한 번까지).
+ * 종량제(payg)면 OCI API 키가 있을 때 요금·예산을 읽어 보여 주고, 예산의 80%·100%를 넘으면 한 번씩 알린다
  */
 @Injectable()
 export class ResourcesService implements OnModuleInit, OnModuleDestroy {
 	private sampleTimer?: NodeJS.Timeout;
 	private maintainTimer?: NodeJS.Timeout;
 	private previous: { at: number; cpu: CpuTimes; network: number } | null = null;
+	private billing: { data: Billing | null; error: string | null; at: number } | null = null;
 
 	constructor(
 		private readonly prisma: PrismaService,
@@ -112,9 +121,64 @@ export class ResourcesService implements OnModuleInit, OnModuleDestroy {
 		await this.prisma.resourceSample.deleteMany({
 			where: { at: { lt: new Date(now.getTime() - KEEP_DAYS * DAY_MS) } },
 		});
+		if (this.config.resources.mode === 'payg') {
+			const billing = await this.refreshBilling(now);
+			for (const budget of billing?.budgets ?? []) await this.alertBudget(budget, now);
+			return;
+		}
 		if (this.config.resources.mode !== 'free') return;
 		const risk = this.riskOf(await this.recent(now), now);
 		if (risk.level === 'danger') await this.alertReclaim(risk, now);
+	}
+
+	/** 요금과 예산을 다시 읽는다 (OCI API 키가 있을 때만). 실패하면 이유를 남긴다 */
+	async refreshBilling(now = new Date()): Promise<Billing | null> {
+		const credentials = this.config.resources.oci;
+		if (!credentials) return null;
+		try {
+			const data = await fetchBilling(credentials, now);
+			this.billing = { data, error: null, at: now.getTime() };
+			return data;
+		} catch (caught) {
+			const error = caught instanceof OciError ? caught.message : '요금을 읽지 못했습니다.';
+			this.billing = { data: this.billing?.data ?? null, error, at: now.getTime() };
+			return null;
+		}
+	}
+
+	/** 예산의 80%·100%를 넘으면 한 번씩 알린다 (예산 이름과 달마다) */
+	private async alertBudget(budget: Budget, now: Date) {
+		const level = budgetLevel(budget);
+		if (level === 'ok' || !this.mailReady) return false;
+		const kind = `budget-${level}:${monthKey(now)}:${budget.displayName}`;
+		if (await this.prisma.resourceAlert.findUnique({ where: { kind } })) return false;
+		const currency = this.billing?.data?.currency ?? '';
+		const spent = budget.actualSpend ?? 0;
+		const percent = Math.round((spent / budget.amount) * 100);
+		const text = [
+			`Oracle Cloud 예산 "${budget.displayName}"을 ${percent}% 썼습니다.`,
+			`- 쓴 금액: ${spent} ${currency} / 한도 ${budget.amount} ${currency}`,
+			...(budget.forecastedSpend !== null ? [`- 이번 기간 예상: ${budget.forecastedSpend} ${currency}`] : []),
+			'',
+			level === 'over'
+				? '한도를 넘었습니다. Always Free 한도 밖의 자원(유료 shape, 큰 볼륨 등)이 있는지 콘솔에서 확인하세요.'
+				: '한도에 가까워졌습니다. Always Free 한도 밖의 자원이 있는지 확인하세요.',
+			'',
+			'자세한 요금은 사이트의 "활동 상태 보기" → 서버 탭에서 봅니다.',
+		].join('\n');
+		const sent = await sendResendMail(this.config.contact, {
+			to: this.config.resources.alertTo!,
+			subject:
+				level === 'over'
+					? `[MacFolio] Oracle Cloud 예산 한도를 넘었습니다 (${budget.displayName})`
+					: `[MacFolio] Oracle Cloud 예산의 ${percent}%를 썼습니다 (${budget.displayName})`,
+			text,
+		});
+		if (!sent) return false;
+		await this.prisma.resourceAlert.create({
+			data: { kind, sentAt: now, detail: `${spent}/${budget.amount} ${currency}` },
+		});
+		return true;
 	}
 
 	/** 위험하면 메일로 알린다. 같은 알림은 3일에 한 번까지 (보낸 때는 DB에 남긴다) */
@@ -155,7 +219,13 @@ export class ResourcesService implements OnModuleInit, OnModuleDestroy {
 		const { mode, shape, networkMbps: bandwidth } = this.config.resources;
 		if (mode === 'off') return { mode };
 		const samples = await this.recent(now);
-		const last = await this.prisma.resourceAlert.findUnique({ where: { kind: 'reclaim' } });
+		const last = await this.prisma.resourceAlert.findFirst({
+			where: { kind: { startsWith: mode === 'free' ? 'reclaim' : 'budget' } },
+			orderBy: { sentAt: 'desc' },
+		});
+		const configured = Boolean(this.config.resources.oci);
+		if (mode === 'payg' && configured && (!this.billing || now.getTime() - this.billing.at > BILLING_STALE_MS))
+			await this.refreshBilling(now);
 		return {
 			mode,
 			shape,
@@ -164,6 +234,9 @@ export class ResourcesService implements OnModuleInit, OnModuleDestroy {
 			series: hourly(samples),
 			...(mode === 'free' && { risk: this.riskOf(samples, now) }),
 			alert: { mailReady: this.mailReady, lastSentAt: last?.sentAt.toISOString() ?? null },
+			...(mode === 'payg' && {
+				billing: { configured, data: this.billing?.data ?? null, error: this.billing?.error ?? null },
+			}),
 		};
 	}
 }

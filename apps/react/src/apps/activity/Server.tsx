@@ -25,8 +25,8 @@ const UsageChart = ({
 	max?: number;
 	threshold?: number;
 }) => {
-	// 기준선이 있으면 그 위로 여유를 두어 기준선이 그래프 안에 보이게
-	const top = max ?? Math.max((threshold ?? 0) * 1.25, 1e-6, ...points.map((point) => point.value));
+	// 기준선이 있으면 그 위로 여유를 두어 기준선이 그래프 안에 보이게. 없어도 10% 아래로는 줄이지 않는다 (작은 흔들림이 크게 보이지 않게)
+	const top = max ?? Math.max((threshold ?? 8) * 1.25, ...points.map((point) => point.value));
 	const x = (index: number) => (points.length <= 1 ? WIDTH / 2 : (index / (points.length - 1)) * WIDTH);
 	const y = (value: number) => HEIGHT - (Math.min(value, top) / top) * (HEIGHT - 6) - 2;
 	const path = points
@@ -46,6 +46,75 @@ const UsageChart = ({
 				{points.length > 0 && <path className="visits" d={path} />}
 			</svg>
 		</figure>
+	);
+};
+
+const money = (amount: number, currency: string | null) =>
+	currency ? amount.toLocaleString('ko-KR', { style: 'currency', currency }) : amount.toLocaleString('ko-KR');
+
+/** 종량제: 이번 달 요금과 예산 한도 (OCI API 키가 있을 때) */
+const Billing = ({ billing }: { billing: NonNullable<ResourceStatus['billing']> }) => {
+	if (!billing.configured)
+		return (
+			<section className="server-billing" aria-label="요금">
+				<h3>요금</h3>
+				<p className="activity-note">
+					요금과 예산 한도를 보려면 서버의 api.env에 OCI API 키(<code>OCI_TENANCY_OCID</code>,{' '}
+					<code>OCI_USER_OCID</code>, <code>OCI_FINGERPRINT</code>, <code>OCI_PRIVATE_KEY</code>,{' '}
+					<code>OCI_REGION</code>)를 넣습니다. 콘솔 → 내 프로필 → API 키에서 만듭니다.
+				</p>
+			</section>
+		);
+	const { data, error } = billing;
+	return (
+		<section className="server-billing" aria-label="요금">
+			<h3>요금</h3>
+			{error && <p className="activity-empty error">{error}</p>}
+			{data && (
+				<>
+					<p className="server-billing-total">
+						이번 달 <strong>{money(data.monthToDate, data.currency)}</strong>
+						<span className="activity-note"> · {new Date(data.updatedAt).toLocaleString('ko-KR')}에 읽음</span>
+					</p>
+					{data.budgets.length === 0 ? (
+						<p className="activity-note">
+							예산이 없습니다. 콘솔 → Billing & Cost Management → Budgets에서 한도를 만들면 여기와 메일로 알립니다.
+						</p>
+					) : (
+						<ul className="server-budgets">
+							{data.budgets.map((budget) => {
+								const spent = budget.actualSpend ?? 0;
+								const percent = budget.amount > 0 ? Math.round((spent / budget.amount) * 100) : 0;
+								const level = percent >= 100 ? 'over' : percent >= 80 ? 'near' : 'ok';
+								return (
+									<li key={budget.displayName} className={`server-budget ${level}`}>
+										<span className="server-budget-name">{budget.displayName}</span>
+										<span className="server-budget-amount">
+											{money(spent, data.currency)} / {money(budget.amount, data.currency)} ({percent}%)
+										</span>
+										<span
+											className="server-budget-bar"
+											role="meter"
+											aria-label={`${budget.displayName} 예산 사용`}
+											aria-valuenow={percent}
+											aria-valuemin={0}
+											aria-valuemax={100}
+										>
+											<span style={{ width: `${Math.min(percent, 100)}%` }} />
+										</span>
+										{budget.forecastedSpend !== null && (
+											<span className="activity-note">
+												이번 기간 예상 {money(budget.forecastedSpend, data.currency)}
+											</span>
+										)}
+									</li>
+								);
+							})}
+						</ul>
+					)}
+				</>
+			)}
+		</section>
 	);
 };
 
@@ -92,10 +161,12 @@ const Server = ({ status }: { status: ResourceStatus | null }) => {
 				{status.alert && (
 					<div className="activity-stat">
 						<span className="label">알림 메일</span>
-						<strong>{status.mode === 'free' ? (status.alert.mailReady ? '켜짐' : '꺼짐') : '없음'}</strong>
+						<strong>{status.alert.mailReady ? '켜짐' : '꺼짐'}</strong>
 						<span className="change">
 							{status.mode !== 'free'
-								? '종량제는 회수 대상이 아닙니다'
+								? status.alert.mailReady
+									? '예산의 80%·100%를 넘으면 보냅니다'
+									: 'RESEND_API_KEY·CONTACT_FROM·받는 주소가 필요합니다'
 								: status.alert.mailReady
 									? status.alert.lastSentAt
 										? `마지막 알림 ${new Date(status.alert.lastSentAt).toLocaleString('ko-KR')}`
@@ -105,6 +176,8 @@ const Server = ({ status }: { status: ResourceStatus | null }) => {
 					</div>
 				)}
 			</section>
+
+			{status.billing && <Billing billing={status.billing} />}
 
 			{risk && risk.conditions.length > 0 && (
 				<table className="server-conditions" aria-label="유휴 회수 기준">
