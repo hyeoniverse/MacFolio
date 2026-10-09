@@ -1,6 +1,6 @@
 // 창 상태: 어떤 앱이 켜져 있고, 최소화됐고, 어떤 순서로 쌓였는지. 창 위치·크기는 각 창이 따로 다룬다
-import { createStore } from '../store';
-import { bringToFront, foregroundApp, minimizeAll } from './stack';
+import { createStore } from '../store.js';
+import { bringToFront, foregroundApp, minimizeAll } from './stack.js';
 
 export interface AppWindow {
 	isRunning: boolean;

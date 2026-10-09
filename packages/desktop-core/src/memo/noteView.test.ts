@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_ARRANGEMENT } from './arrange';
-import { filterFor, folderPaths, listPosts, postsInView, selectPost } from './noteView';
-import { ALL_CATEGORY, TAG_VIEW, type FolderNode, type Post } from './posts';
-import { EMPTY_TAG_SELECTION } from './tagFilter';
+import { DEFAULT_ARRANGEMENT } from './arrange.js';
+import { filterFor, folderPaths, listPosts, postsInView, selectPost } from './noteView.js';
+import { ALL_CATEGORY, TAG_VIEW, type FolderNode, type Post } from './posts.js';
+import { EMPTY_TAG_SELECTION } from './tagFilter.js';
 
 const post = (slug: string, date: string, extra: Partial<Post> = {}): Post => ({
 	slug,

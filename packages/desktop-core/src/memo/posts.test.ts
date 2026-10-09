@@ -18,7 +18,7 @@ import {
 	recentlyDeletedPosts,
 	type AdminPost,
 	type Post,
-} from './posts';
+} from './posts.js';
 
 const post = (slug: string, date: string, category: string, title = slug, body = ''): Post => ({
 	slug,
@@ -217,7 +217,7 @@ describe('mergeServerPosts', () => {
 		body: slug,
 		...extra,
 	});
-	const server = (slug: string, extra: Partial<import('./posts').ServerPost> = {}) => ({
+	const server = (slug: string, extra: Partial<import('./posts.js').ServerPost> = {}) => ({
 		slug,
 		title: `${slug} (서버)`,
 		date: '2026-09-29',
@@ -269,7 +269,7 @@ describe('mergeAdminPosts (관리자 목록)', () => {
 		body: '원본',
 		pinned: true,
 	};
-	const admin = (slug: string, extra: Partial<import('./posts').AdminPost>) => ({
+	const admin = (slug: string, extra: Partial<import('./posts.js').AdminPost>) => ({
 		slug,
 		published: null,
 		publishedAt: null,

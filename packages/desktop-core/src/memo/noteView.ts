@@ -1,10 +1,10 @@
 // 메모 목록에 무엇을 보여 줄지: 폴더(또는 태그·최근 삭제된 항목)와 검색어·검색 조건·정렬로 고른 글들, 본문에 열 글.
 // 상태는 앱 쪽(React의 useNoteView)이 갖고, 여기서는 그 상태로 계산만 한다
-import { sortBy, type Arrangement } from './arrange';
-import { filterPosts, ALL_CATEGORY, TAG_VIEW, type FolderNode, type Post, type PostFilter } from './posts';
-import { splitPinned } from './organize';
-import { matchesTags, type TagSelection } from './tagFilter';
-import { tagsOf } from './tags';
+import { sortBy, type Arrangement } from './arrange.js';
+import { filterPosts, ALL_CATEGORY, TAG_VIEW, type FolderNode, type Post, type PostFilter } from './posts.js';
+import { splitPinned } from './organize.js';
+import { matchesTags, type TagSelection } from './tagFilter.js';
+import { tagsOf } from './tags.js';
 
 /** 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다) */
 export function folderPaths(folders: FolderNode[]): string[] {

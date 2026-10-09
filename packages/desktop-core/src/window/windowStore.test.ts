@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { initialWindows } from './initialWindows';
-import { activeApp, createWindowStore } from './windowStore';
+import { initialWindows } from './initialWindows.js';
+import { activeApp, createWindowStore } from './windowStore.js';
 
 const names = ['finder', 'memo', 'music'] as const;
 const setup = () =>

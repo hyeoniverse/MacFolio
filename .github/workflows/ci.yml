@@ -120,7 +120,7 @@ jobs:
           echo "서버의 API: ${deployed:-알 수 없음}"
           if [ -z "$commit" ] || ! git cat-file -e "$commit^{commit}" 2>/dev/null; then
             echo "api=true" >> "$GITHUB_OUTPUT"
-          elif git diff --quiet "$commit" "$GITHUB_SHA" -- apps/api package.json pnpm-lock.yaml pnpm-workspace.yaml ops/deploy.sh; then
+          elif git diff --quiet "$commit" "$GITHUB_SHA" -- apps/api packages/desktop-core package.json pnpm-lock.yaml pnpm-workspace.yaml ops/deploy.sh; then
             echo "api=false" >> "$GITHUB_OUTPUT"
           else
             echo "api=true" >> "$GITHUB_OUTPUT"

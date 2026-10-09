@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bringToFront, foregroundApp, minimizeAll, runningByRecency } from './stack';
+import { bringToFront, foregroundApp, minimizeAll, runningByRecency } from './stack.js';
 
 const apps = {
 	a: { zIndex: 3, isMinimized: false, isRunning: true },

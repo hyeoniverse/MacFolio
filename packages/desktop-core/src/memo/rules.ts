@@ -1,16 +1,21 @@
-// 메모 정리 내용의 규칙. 화면(packages/desktop-core/src/memo/organize.ts)과 같은 규칙을 서버에서도 검사한다.
-// 화면에서 막아도 요청은 직접 보낼 수 있으므로, 저장하기 전에 여기서 한 번 더 막는다.
+// 화면과 서버(apps/api)가 함께 쓰는 메모 규칙: 정리 내용의 모양과 검사, 폴더 경로, 글 길이와 날짜.
+// 화면은 저장하기 전에 먼저 알려 주고, 서버는 화면을 거치지 않은 요청도 있으므로 저장하기 전에 다시 막는다.
+// 서버는 빌드한 dist를 쓴다 (package.json의 exports)
+
+export const FOLDER_NAME_MAX = 30;
+/** 폴더는 3단까지 (예: 개발기/MacFolio/초안) */
+export const MAX_FOLDER_DEPTH = 3;
 
 export interface Organization {
-	/** 만든 폴더의 전체 경로 (예: 개발기/읽을거리) */
+	/** 만든 폴더의 전체 경로 (예: 읽을거리, 개발기/읽을거리) */
 	folders: string[];
 	/** 옮긴 글: slug → 폴더 경로 */
 	posts: Record<string, string>;
-	/** 옮긴 폴더 (순서대로 적용) */
+	/** 옮긴 폴더 (순서대로 적용한다). 글의 원래 category 경로에 적용된다 */
 	moves: { from: string; to: string }[];
-	/** 고정을 바꾼 글: slug → 고정 여부 */
+	/** 고정을 바꾼 글: slug → 고정 여부 (머리말의 pinned보다 우선) */
 	pins: Record<string, boolean>;
-	/** 잠근 글: slug → true (잠그면 고치거나 지울 수 없다) */
+	/** 잠근 글: slug → true. 잠그면 고치거나 지울 수 없다 (실수로 바꾸지 않게) */
 	locks: Record<string, boolean>;
 	/** 폴더 순서: 폴더 경로를 보일 순서대로. 같은 층끼리 이 순서를 따르고, 없는 폴더는 뒤에 가나다순 */
 	order: string[];
@@ -18,13 +23,21 @@ export interface Organization {
 
 export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {}, order: [] };
 
-export const FOLDER_NAME_MAX = 30;
-/** 폴더는 3단까지 */
-export const MAX_FOLDER_DEPTH = 3;
-/** 한 번에 저장할 수 있는 항목 수 (이상한 요청으로 DB가 커지지 않게) */
-export const LIMITS = { folders: 200, posts: 500, moves: 200, pins: 500, locks: 500, order: 300 } as const;
+/** 글 길이 (글자 수) */
+export const POST_LIMITS = { title: 100, summary: 200, body: 50_000 } as const;
 
-const SLUG = /^[\w-]{1,100}$/;
+/** 실제로 있는 날짜인지 (YYYY-MM-DD, 2026-02-30 같은 날짜는 거절) */
+export function isCalendarDate(value: string): boolean {
+	if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+	const date = new Date(`${value}T00:00:00Z`);
+	return !Number.isNaN(date.getTime()) && date.toISOString().startsWith(value);
+}
+
+/** 한 번에 저장할 수 있는 항목 수 (이상한 요청으로 DB가 커지지 않게) */
+export const ORGANIZATION_LIMITS = { folders: 200, posts: 500, moves: 200, pins: 500, locks: 500, order: 300 } as const;
+
+/** 글 주소 (Markdown 파일 이름, 서버에서 만든 글의 날짜-무작위 문자) */
+export const POST_SLUG = /^[\w-]{1,100}$/;
 
 /** 폴더 경로가 규칙에 맞는지. 맞지 않으면 이유 */
 export function folderPathError(path: unknown): string | null {
@@ -52,7 +65,7 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 
 	if (!Array.isArray(folders)) errors.push('folders는 배열이어야 합니다');
 	else {
-		if (folders.length > LIMITS.folders) errors.push(`폴더는 ${LIMITS.folders}개까지입니다`);
+		if (folders.length > ORGANIZATION_LIMITS.folders) errors.push(`폴더는 ${ORGANIZATION_LIMITS.folders}개까지입니다`);
 		folders.forEach((folder) => {
 			const error = folderPathError(folder);
 			if (error) errors.push(error);
@@ -63,9 +76,9 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 	if (!isRecord(posts)) errors.push('posts는 객체여야 합니다');
 	else {
 		const entries = Object.entries(posts);
-		if (entries.length > LIMITS.posts) errors.push(`옮긴 글은 ${LIMITS.posts}개까지입니다`);
+		if (entries.length > ORGANIZATION_LIMITS.posts) errors.push(`옮긴 글은 ${ORGANIZATION_LIMITS.posts}개까지입니다`);
 		for (const [slug, path] of entries) {
-			if (!SLUG.test(slug)) errors.push(`글 주소가 올바르지 않습니다: ${slug}`);
+			if (!POST_SLUG.test(slug)) errors.push(`글 주소가 올바르지 않습니다: ${slug}`);
 			const error = folderPathError(path);
 			if (error) errors.push(error);
 		}
@@ -73,7 +86,7 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 
 	if (!Array.isArray(moves)) errors.push('moves는 배열이어야 합니다');
 	else {
-		if (moves.length > LIMITS.moves) errors.push(`옮긴 폴더는 ${LIMITS.moves}개까지입니다`);
+		if (moves.length > ORGANIZATION_LIMITS.moves) errors.push(`옮긴 폴더는 ${ORGANIZATION_LIMITS.moves}개까지입니다`);
 		for (const move of moves) {
 			if (!isRecord(move)) {
 				errors.push('moves의 항목은 { from, to }여야 합니다');
@@ -87,9 +100,9 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 	if (!isRecord(pins)) errors.push('pins는 객체여야 합니다');
 	else {
 		const entries = Object.entries(pins);
-		if (entries.length > LIMITS.pins) errors.push(`고정은 ${LIMITS.pins}개까지입니다`);
+		if (entries.length > ORGANIZATION_LIMITS.pins) errors.push(`고정은 ${ORGANIZATION_LIMITS.pins}개까지입니다`);
 		for (const [slug, pinned] of entries) {
-			if (!SLUG.test(slug)) errors.push(`글 주소가 올바르지 않습니다: ${slug}`);
+			if (!POST_SLUG.test(slug)) errors.push(`글 주소가 올바르지 않습니다: ${slug}`);
 			if (typeof pinned !== 'boolean') errors.push(`고정 여부는 true/false여야 합니다: ${slug}`);
 		}
 	}
@@ -97,16 +110,16 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 	if (!isRecord(locks)) errors.push('locks는 객체여야 합니다');
 	else {
 		const entries = Object.entries(locks);
-		if (entries.length > LIMITS.locks) errors.push(`잠금은 ${LIMITS.locks}개까지입니다`);
+		if (entries.length > ORGANIZATION_LIMITS.locks) errors.push(`잠금은 ${ORGANIZATION_LIMITS.locks}개까지입니다`);
 		for (const [slug, locked] of entries) {
-			if (!SLUG.test(slug)) errors.push(`글 주소가 올바르지 않습니다: ${slug}`);
+			if (!POST_SLUG.test(slug)) errors.push(`글 주소가 올바르지 않습니다: ${slug}`);
 			if (typeof locked !== 'boolean') errors.push(`잠금 여부는 true/false여야 합니다: ${slug}`);
 		}
 	}
 
 	if (!Array.isArray(order)) errors.push('order는 배열이어야 합니다');
 	else {
-		if (order.length > LIMITS.order) errors.push(`폴더 순서는 ${LIMITS.order}개까지입니다`);
+		if (order.length > ORGANIZATION_LIMITS.order) errors.push(`폴더 순서는 ${ORGANIZATION_LIMITS.order}개까지입니다`);
 		order.forEach((path) => {
 			const error = folderPathError(path);
 			if (error) errors.push(error);
