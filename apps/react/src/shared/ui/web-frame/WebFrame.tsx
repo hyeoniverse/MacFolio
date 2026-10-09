@@ -7,6 +7,20 @@ import '@/shared/ui/web-frame/WebFrame.css';
 import { openExternal } from '@/shared/analytics/analytics';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 
+/**
+ * 안에 띄운 페이지에 주는 권한 (iframe sandbox). 바깥 사이트가 이 사이트를 다른 주소로 바꾸지 못하게
+ * allow-top-navigation은 주지 않는다. 그 밖에 사이트가 보통 쓰는 것(스크립트, 자기 저장소·쿠키, 폼, 새 창, 내려받기, alert)은 준다
+ */
+const FRAME_SANDBOX = [
+	'allow-scripts',
+	'allow-same-origin',
+	'allow-forms',
+	'allow-popups',
+	'allow-popups-to-escape-sandbox',
+	'allow-downloads',
+	'allow-modals',
+].join(' ');
+
 /** 이만큼 지나도 페이지가 다 불러지지 않으면 새 탭에서 여는 길을 알려 준다 */
 const SLOW_MS = 8000;
 
@@ -139,6 +153,7 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 				src={src}
 				title={title}
 				allow={allow}
+				sandbox={FRAME_SANDBOX}
 				allowFullScreen
 				onLoad={() => {
 					setLoaded(true);
