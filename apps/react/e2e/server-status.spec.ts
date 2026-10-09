@@ -133,3 +133,77 @@ test.describe('메뉴 막대의 서버 상태 (Wi-Fi 자리)', () => {
 		await expect(menu).toContainText('서버는 켜져 있지만 이 주소(localhost:4173)는 허용하지 않습니다');
 	});
 });
+
+/** Always Free, 사용률이 낮아 회수 위험인 서버 */
+const freeDanger = () => ({
+	mode: 'free',
+	shape: 'VM.Standard.E2.1.Micro',
+	networkMbps: 50,
+	latest: { at: new Date(Date.now() - 3 * 60_000).toISOString(), cpu: 3.2, memory: 41, network: 0.3 },
+	series: [],
+	risk: {
+		level: 'danger',
+		days: 2,
+		conditions: [{ metric: 'cpu', measure: '95퍼센타일', value: 4.1, threshold: 20, below: true }],
+	},
+	alert: { mailReady: true, lastSentAt: null },
+});
+
+test.describe('메뉴 막대의 서버 자원 (배터리 자리)', () => {
+	test('방문자에게는 평소의 배터리 아이콘이고, 서버 자원을 묻지 않는다', async ({ page }) => {
+		await fakeApi(page);
+		const asked: string[] = [];
+		page.on('request', (request) => request.url().endsWith('/resources') && asked.push(request.url()));
+		await enterDesktop(page);
+		await expect(page.locator('.macos-statusbar .statusbar-icon .fa-battery-three-quarters')).toBeVisible();
+		await expect(page.getByRole('button', { name: /^서버 자원/ })).toHaveCount(0);
+		expect(asked).toEqual([]);
+	});
+
+	test('관리자: 회수 위험이면 빈 빨간 배터리, 누르면 사용률·위험이 보이고 활동 상태 보기의 서버 탭을 연다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.resources = freeDanger();
+		await enterDesktop(page);
+
+		const button = page.getByRole('button', {
+			name: '서버 자원: CPU 3.2% · 메모리 41% · 네트워크 0.6% · 유휴 회수 위험',
+		});
+		await expect(button).toBeVisible();
+		await expect(button).toHaveClass(/danger/);
+		await expect(button.locator('i')).toHaveClass(/fa-battery-empty/);
+
+		await button.click();
+		const menu = page.getByRole('menu', { name: '서버 자원' });
+		await expect(menu).toContainText('CPU 3.2% · 메모리 41% · 네트워크 0.6%');
+		await expect(menu).toContainText('Always Free · VM.Standard.E2.1.Micro · 3분 전 측정');
+		await expect(menu).toContainText('유휴 회수: 위험');
+		await expect(menu).toContainText('2일치로 미리 본 값');
+		// 정보 줄은 누를 수 있는 항목이 아니다
+		await expect(menu.getByRole('menuitem', { name: /CPU/ })).toHaveCount(0);
+
+		await menu.getByRole('menuitem', { name: '활동 상태 보기에서 자세히' }).click();
+		const activity = appWindow(page, 'activity');
+		await expect(activity.getByRole('tab', { name: '서버' })).toHaveAttribute('aria-selected', 'true');
+		await expect(activity.getByRole('region', { name: '서버 상태' })).toContainText('회수 위험');
+	});
+
+	test('관리자: 안전하면 가득 찬 배터리, 꺼져 있으면 평소 모양에 켜는 곳을 알린다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.resources = { ...freeDanger(), risk: { level: 'safe', days: 7, conditions: [] } };
+		await enterDesktop(page);
+		const safe = page.getByRole('button', { name: /^서버 자원: .* · 유휴 회수 안전$/ });
+		await expect(safe.locator('i')).toHaveClass(/fa-battery-full/);
+		await expect(safe).not.toHaveClass(/danger|warning/);
+
+		// 서버에서 끄면 메뉴를 열 때 다시 물어 알린다
+		api.resources = { mode: 'off' };
+		await safe.click();
+		const menu = page.getByRole('menu', { name: '서버 자원' });
+		await expect(menu).toContainText('서버 자원 감시가 꺼져 있습니다 (RESOURCE_MONITOR)');
+		await expect(page.getByRole('button', { name: '서버 자원: 감시 꺼짐' }).locator('i')).toHaveClass(
+			/fa-battery-three-quarters/
+		);
+	});
+});

@@ -147,8 +147,18 @@
 	outline-offset: -2px;
 }
 
-.volume-menu {
+.volume-menu,
+.battery-menu {
 	display: flex;
+}
+
+/* 서버 자원이 유휴 회수 기준에 가까우면 (주의) 주황, 걸려 있으면 (회수 위험) 빨강 */
+.macos-statusbar .battery-menu-button.warning {
+	color: var(--color-warning, #f5a623);
+}
+
+.macos-statusbar .battery-menu-button.danger {
+	color: var(--color-danger, #e5484d);
 }
 
 /* 작은 화면에서 대응 */

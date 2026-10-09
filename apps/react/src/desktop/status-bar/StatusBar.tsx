@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/apps/music/useMusic'; // MusicContext 사용
 import AppleMenu from '@/desktop/status-bar/AppleMenu';
 import MenuBarMenus from '@/desktop/status-bar/MenuBarMenus';
+import BatteryMenu from '@/desktop/status-bar/BatteryMenu';
 import ServerMenu from '@/desktop/status-bar/ServerMenu';
 import VolumeMenu from '@/desktop/status-bar/VolumeMenu';
 import '@/desktop/status-bar/StatusBar.css';
@@ -59,9 +60,8 @@ const StatusBar: React.FC = () => {
 
 				{/* Wi-Fi 자리: 이 사이트 서버(API)의 상태 */}
 				<ServerMenu />
-				<span className="statusbar-icon">
-					<i className="fas fa-battery-three-quarters" aria-hidden="true" />
-				</span>
+				{/* 배터리 자리: 관리자에게는 서버 자원 (사용률, 유휴 회수 위험) */}
+				<BatteryMenu />
 				{/* 시간 칸은 가장 넓은 시간(12:00 AM·PM)만큼 늘 차지한다. 시간이 바뀌어도 왼쪽 아이콘이 움찔하지 않게 */}
 				<span className="menu-item time-display">
 					<span className="time-display-reserve" aria-hidden="true">

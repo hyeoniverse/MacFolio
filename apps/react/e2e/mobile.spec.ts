@@ -160,6 +160,25 @@ test.describe('모바일', () => {
 		await expect(tile).not.toBeChecked();
 	});
 
+	test('관리자에게는 상태 표시줄의 배터리가 서버 자원을 보인다 (회수 위험이면 빨갛게 조금만 찬다)', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.resources = {
+			mode: 'free',
+			shape: 'VM.Standard.E2.1.Micro',
+			networkMbps: 50,
+			latest: { at: new Date().toISOString(), cpu: 3, memory: 40, network: 0.3 },
+			series: [],
+			risk: { level: 'danger', days: 7, conditions: [] },
+			alert: { mailReady: true, lastSentAt: null },
+		};
+		await enterHome(page);
+		const battery = page.locator('.mobile-statusbar .mobile-battery');
+		await expect(battery).toHaveClass(/danger/);
+		await expect(battery).toHaveAttribute('data-fill', '10');
+	});
+
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {
 		await enterHome(page);
 		for (const label of ['Safari', 'GitHub', '메모', '메일', '메시지', '시스템 설정', '단축어', '음악']) {
