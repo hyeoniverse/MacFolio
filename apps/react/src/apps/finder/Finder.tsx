@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 import { APP_MANIFEST } from '@/apps/manifest';

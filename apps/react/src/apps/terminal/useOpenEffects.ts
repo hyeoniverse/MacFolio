@@ -1,4 +1,4 @@
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { APP_MANIFEST } from '@/apps/manifest';
 import type { Effect } from './commands';
 import { openExternal } from '@/shared/analytics/analytics';

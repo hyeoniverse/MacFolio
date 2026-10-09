@@ -1,7 +1,7 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useEffect, useRef, useState } from 'react';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import type { AppName } from '@/apps/manifest';
 import '@/shared/ui/web-frame/WebFrame.css';
 import { openExternal } from '@/shared/analytics/analytics';

@@ -1,5 +1,5 @@
 import { cssVars } from '@/shared/lib/cssVars';
-import { useMusic } from '@/apps/music/MusicContext';
+import { useMusic } from '@/apps/music/useMusic';
 import SeekBar from '@/apps/music/SeekBar';
 
 interface Props {

@@ -19,11 +19,8 @@ export default tseslint.config(
 		},
 		rules: {
 			...reactHooks.configs.recommended.rules,
-			// 아래 규칙은 기존 코드 구조를 바꿔야 고칠 수 있어 경고로 둔다. #15 리팩터링에서 해결한 뒤 에러로 올린다.
-			'react-hooks/refs': 'warn',
-			'react-hooks/set-state-in-effect': 'warn',
-			'react-hooks/immutability': 'warn',
-			'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+			// 컴포넌트 파일은 컴포넌트만 내보낸다 (훅·목록은 따로 두어야 Fast Refresh가 상태를 지킨다)
+			'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
 			'no-console': ['warn', { allow: ['warn', 'error'] }],
 			// 구조 분해로 특정 필드를 빼낼 때(`const { a, ...rest } = obj`) 쓰는 변수는 허용
 			'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', ignoreRestSiblings: true }],

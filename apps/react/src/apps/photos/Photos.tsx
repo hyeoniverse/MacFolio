@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import PhotosMobile from './PhotosMobile';
 import AppWindow from '@/desktop/window/Window';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { requestOpen } from '@/shared/lib/openRequest';
 import { ALBUMS, ALBUMS_BY_AGE, ALL_PHOTOS, countText } from './albums';

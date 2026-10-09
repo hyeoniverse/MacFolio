@@ -1,7 +1,7 @@
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import React, { useEffect, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { APP_MANIFEST, APP_NAMES } from '@/apps/manifest';
 import { complete, formatDate, runCommand, toBlocks, type Block, type CommandContext, type Line } from './commands';
 import { useOpenEffects } from './useOpenEffects';

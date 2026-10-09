@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { openExternal } from '@/shared/analytics/analytics';

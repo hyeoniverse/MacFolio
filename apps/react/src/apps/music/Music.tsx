@@ -6,7 +6,7 @@ import Menu from '@/shared/ui/menu/Menu';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { formatTime, formatTotal, type Playlist } from '@macfolio/desktop-core/music';
 import { ALBUMS, ALL_SONGS, ARTISTS, findPlaylist, findTrack, PLAYLISTS } from './library';
-import { useMusic } from './MusicContext';
+import { useMusic } from './useMusic';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import SeekBar from './SeekBar';
 import VolumeBar from './VolumeBar';

@@ -1,7 +1,7 @@
 // Path: client/src/components/common/StatusBar.tsx
 
 import React, { useState, useEffect } from 'react';
-import { useMusic } from '@/apps/music/MusicContext'; // MusicContext 사용
+import { useMusic } from '@/apps/music/useMusic'; // MusicContext 사용
 import AppleMenu from '@/desktop/status-bar/AppleMenu';
 import MenuBarMenus from '@/desktop/status-bar/MenuBarMenus';
 import ServerMenu from '@/desktop/status-bar/ServerMenu';

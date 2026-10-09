@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
-import { AppStateProvider, useAppState } from '@/desktop/AppStateContext';
+import { AppStateProvider } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { MusicProvider } from '@/apps/music/MusicContext';
 import { WINDOW_APPS } from '@/apps/registry';
 import AppErrorBoundary from '@/desktop/window/AppErrorBoundary';

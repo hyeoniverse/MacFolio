@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import '@/desktop/window/Window.css';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import type { AppName } from '@/apps/manifest';
 import { useWindowFrame } from '@/desktop/window/useWindowFrame';
 import type { ResizeDirection } from '@/desktop/window/geometry';

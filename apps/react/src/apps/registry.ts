@@ -1,4 +1,5 @@
-import { lazy, type ComponentType } from 'react';
+// 앱 이름 → 창에 띄울 컴포넌트. 컴포넌트를 정의하는 파일이 아니라 목록이라 .ts로 둔다 (JSX 없이 createElement)
+import { createElement, lazy, type ComponentType } from 'react';
 import { APP_NAMES, PROJECT_APPS, type AppName } from '@/apps/manifest';
 
 import Safari from '@/apps/safari/Safari';
@@ -38,7 +39,7 @@ const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
 
 /** 프로젝트 앱: 데모 사이트를 창 안에 띄운다 (shared/profile.ts의 PROJECTS에서) */
 for (const { id } of PROJECT_APPS) {
-	const Component = () => <ProjectApp id={id} />;
+	const Component = () => createElement(ProjectApp, { id });
 	Component.displayName = `ProjectApp(${id})`;
 	APP_COMPONENTS[id as AppName] = Component;
 }

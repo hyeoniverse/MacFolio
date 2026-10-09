@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import AppWindow from '@/desktop/window/Window';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import MobileNavigation from '@/desktop/window/MobileNavigation';

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST } from '@/apps/manifest';
 import { REPO_URL } from '@/apps/finder/repoDocs';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { useRegisteredMenus } from '@/desktop/status-bar/appMenus';
 import { buildMenuBar, findShortcutItem } from '@/desktop/status-bar/menuBar';
 import { isMacPlatform, isTypingTarget, matchesShortcut, usableWhileTyping } from '@/shared/ui/menu/shortcut';
