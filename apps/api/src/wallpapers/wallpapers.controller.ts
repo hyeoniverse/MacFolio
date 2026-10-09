@@ -31,6 +31,7 @@ import { SESSION_COOKIE } from '../auth/session.js';
 import type { IncomingFile } from '../files/files.service.js';
 import { MAX_UPLOAD_BYTES } from '../files/rules.js';
 import { WallpapersService } from './wallpapers.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 관리자가 더한 배경화면 (시스템 설정 → 배경화면). 데스크톱·휴대폰 어디서나 고른다.
@@ -50,6 +51,7 @@ export class WallpapersController {
 
 	@Post()
 	@UseGuards(AdminGuard)
+	@RateLimit('upload')
 	@UseInterceptors(
 		FileFieldsInterceptor(
 			[
@@ -89,6 +91,7 @@ export class WallpapersController {
 
 	@Patch(':id')
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiBody({ schema: { type: 'object', required: ['name'], properties: { name: { type: 'string', maxLength: 40 } } } })
 	@ApiOkResponse({ description: '이름을 바꾼 배경화면' })
@@ -102,6 +105,7 @@ export class WallpapersController {
 	@Delete(':id')
 	@HttpCode(204)
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiNoContentResponse({ description: '지웠다 (이미지 두 장도 함께)' })
 	@ApiNotFoundResponse({ description: '배경화면이 없다' })

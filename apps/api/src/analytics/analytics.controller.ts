@@ -16,6 +16,7 @@ import { AdminGuard } from '../auth/admin.guard.js';
 import { AuthService } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { AnalyticsService } from './analytics.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 트래픽 분석 (#102). 사이트가 이벤트를 보내고, 관리자가 '활동 상태 보기' 앱으로 본다.
@@ -30,6 +31,7 @@ export class AnalyticsController {
 	) {}
 
 	@Post('events')
+	@RateLimit('events')
 	@HttpCode(204)
 	@ApiConsumes('text/plain', 'application/json')
 	@ApiBody({

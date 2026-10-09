@@ -9,6 +9,7 @@ import {
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { TranslateService } from './translate.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 번역 데모 (Safari의 HYEONIVERSE 페이지). 짧은 칸(최대 3칸, 합쳐 200자)을 DeepL → Google 차례로 한 번에 번역한다.
@@ -29,6 +30,7 @@ export class TranslateController {
 	}
 
 	@Post()
+	@RateLimit('demo')
 	@HttpCode(200)
 	@ApiBody({
 		schema: {
