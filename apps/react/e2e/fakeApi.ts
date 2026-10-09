@@ -229,6 +229,7 @@ export interface FakeUpload {
 	type: string;
 	image: boolean;
 	data: Buffer;
+	createdAt?: string;
 }
 
 /** multipart 요청에서 파일 하나를 꺼낸다 (가짜 서버용으로 단순하게) */
@@ -526,7 +527,12 @@ export async function fakeApi(
 			if (!state.signedIn) return route.fulfill(unauthorized);
 			const file = readMultipartFile(request.postDataBuffer()!);
 			const image = file.data.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47]));
-			const upload: FakeUpload = { id: `fakeupload${String(nextId++).padStart(6, '0')}`, ...file, image };
+			const upload: FakeUpload = {
+				id: `fakeupload${String(nextId++).padStart(6, '0')}`,
+				...file,
+				image,
+				createdAt: new Date().toISOString(),
+			};
 			if (image) upload.type = 'image/png';
 			state.uploads.push(upload);
 			const { data, ...view } = upload;
@@ -535,6 +541,61 @@ export async function fakeApi(
 				headers: cors(origin),
 				json: { ...view, size: data.length, path: `/files/${upload.id}` },
 			});
+		}
+		// 파일 목록과 지우기 (관리자): 실제 서버처럼 지금 글·예전 버전·배경화면에서 쓰는지 알려 주고, 쓰는 파일은 지우지 않는다
+		const fileUsage = (id: string) => {
+			const pointsTo = (text?: string | null) => Boolean(text?.includes(`/files/${id}`));
+			const posts = state.posts
+				.filter((post) =>
+					[
+						post.summary,
+						post.body,
+						post.published?.body,
+						post.published?.summary,
+						post.draft?.body,
+						post.draft?.summary,
+					].some(pointsTo)
+				)
+				.map((post) => post.slug)
+				.sort();
+			const revisions = state.posts
+				.filter(
+					(post) => !posts.includes(post.slug) && (post.revisions ?? []).some((revision) => pointsTo(revision.body))
+				)
+				.map((post) => post.slug)
+				.sort();
+			const wallpaper = state.wallpapers.some((item) => pointsTo(item.image) || pointsTo(item.thumbnail));
+			return { posts, revisions, wallpaper };
+		};
+		if (path === '/files' && request.method() === 'GET') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			return route.fulfill({
+				status: 200,
+				headers: cors(origin),
+				json: [...state.uploads].reverse().map(({ data, ...upload }) => ({
+					...upload,
+					size: data.length,
+					path: `/files/${upload.id}`,
+					createdAt: upload.createdAt ?? '2026-10-01T00:00:00.000Z',
+					createdBy: 'hyeoniverse',
+					usedBy: fileUsage(upload.id),
+				})),
+			});
+		}
+		const deleteFile = request.method() === 'DELETE' && path.match(/^\/files\/([\w-]+)$/);
+		if (deleteFile) {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			if (!state.uploads.some((item) => item.id === deleteFile[1]))
+				return route.fulfill({ status: 404, headers: cors(origin) });
+			const usage = fileUsage(deleteFile[1]);
+			if (usage.wallpaper || usage.posts.length > 0)
+				return route.fulfill({
+					status: 409,
+					headers: cors(origin),
+					json: { statusCode: 409, message: '쓰는 파일입니다.' },
+				});
+			state.uploads = state.uploads.filter((item) => item.id !== deleteFile[1]);
+			return route.fulfill({ status: 204, headers: cors(origin) });
 		}
 		// GitHub 앱: 누구나 프로필을 받고, 관리자만 보일 저장소를 고른다
 		const cards = (names: string[]) =>

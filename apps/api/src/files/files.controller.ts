@@ -1,11 +1,24 @@
-import { Controller, Get, Param, Post, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	Param,
+	Post,
+	Res,
+	UploadedFile,
+	UseGuards,
+	UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
 	ApiConsumes,
 	ApiCookieAuth,
+	ApiConflictResponse,
 	ApiCreatedResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiPayloadTooLargeResponse,
@@ -20,7 +33,7 @@ import { FilesService, type IncomingFile } from './files.service.js';
 import { contentDisposition, MAX_UPLOAD_BYTES } from './rules.js';
 
 /**
- * 글에 넣는 이미지와 첨부 파일. 관리자만 올리고, 누구나 받는다.
+ * 글에 넣는 이미지와 첨부 파일. 관리자만 올리고 목록을 보고 지운다. 누구나 받는다.
  * 올린 파일은 이 사이트와 다른 주소(API)에서 내려가므로, 받는 쪽에서 스크립트로 실행되지 않게 막는다.
  */
 @ApiTags('files')
@@ -40,6 +53,27 @@ export class FilesController {
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
 	upload(@UploadedFile() file: IncomingFile | undefined, @CurrentAdmin() admin: AdminIdentity) {
 		return this.files.upload(file, admin.login);
+	}
+
+	@Get()
+	@UseGuards(AdminGuard)
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiOkResponse({ description: '올린 파일 모두와, 파일마다 쓰는 곳 (지금 글, 예전 버전, 배경화면). 최근 것이 위로' })
+	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
+	list() {
+		return this.files.list();
+	}
+
+	@Delete(':id')
+	@HttpCode(204)
+	@UseGuards(AdminGuard)
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiNoContentResponse({ description: '지웠다' })
+	@ApiNotFoundResponse({ description: '파일이 없다' })
+	@ApiConflictResponse({ description: '배경화면이나 지금 글에서 쓰는 파일이다' })
+	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
+	async remove(@Param('id') id: string) {
+		await this.files.remove(id);
 	}
 
 	@Get(':id')

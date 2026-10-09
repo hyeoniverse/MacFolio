@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { cleanFileName, cleanFileType, newUploadId, sniffImage, UPLOAD_ID } from './rules.js';
+import { cleanFileName, cleanFileType, IMAGE_TYPES, newUploadId, sniffImage, UPLOAD_ID, uploadIdsIn } from './rules.js';
 
 /** multer가 넘겨주는 파일 (메모리에 받는다) */
 export interface IncomingFile {
@@ -19,6 +19,20 @@ export interface UploadView {
 	image: boolean;
 	/** API 주소 기준 경로 (/files/:id) */
 	path: string;
+}
+
+/** 관리자가 보는 파일 하나와, 그 파일을 어디에서 쓰는지 */
+export interface UploadUsageView extends UploadView {
+	createdAt: string;
+	createdBy: string;
+	usedBy: {
+		/** 지금 글(게시한 내용·임시 저장, 최근 삭제된 글 포함)에서 가리키는 글 주소 */
+		posts: string[];
+		/** 예전 버전에서만 가리키는 글 주소 (지우면 그 버전으로 되돌릴 때 그림이 깨진다) */
+		revisions: string[];
+		/** 배경화면의 원본이나 썸네일 */
+		wallpaper: boolean;
+	};
 }
 
 @Injectable()
@@ -42,6 +56,82 @@ export class FilesService {
 			select: { id: true, name: true, type: true, size: true },
 		});
 		return { ...row, image: image !== null, path: `/files/${row.id}` };
+	}
+
+	/** 지금 글이 가리키는 파일 → 글 주소들, 예전 버전만 가리키는 파일 → 글 주소들 */
+	private async references() {
+		const [posts, revisions] = await Promise.all([
+			this.prisma.post.findMany({
+				select: { slug: true, summary: true, body: true, draftSummary: true, draftBody: true },
+			}),
+			this.prisma.postRevision.findMany({ select: { postSlug: true, summary: true, body: true } }),
+		]);
+		const add = (map: Map<string, Set<string>>, id: string, slug: string) =>
+			map.set(id, (map.get(id) ?? new Set()).add(slug));
+		const current = new Map<string, Set<string>>();
+		const old = new Map<string, Set<string>>();
+		for (const post of posts)
+			for (const text of [post.summary, post.body, post.draftSummary, post.draftBody])
+				for (const id of uploadIdsIn(text)) add(current, id, post.slug);
+		for (const revision of revisions)
+			for (const text of [revision.summary, revision.body])
+				for (const id of uploadIdsIn(text)) add(old, id, revision.postSlug);
+		return { current, old };
+	}
+
+	/** 올린 파일 모두 (최근 것이 위로). 파일 내용은 읽지 않는다 */
+	async list(): Promise<UploadUsageView[]> {
+		const [rows, { current, old }] = await Promise.all([
+			this.prisma.upload.findMany({
+				select: {
+					id: true,
+					name: true,
+					type: true,
+					size: true,
+					createdAt: true,
+					createdBy: true,
+					wallpaperImage: { select: { id: true } },
+					wallpaperThumb: { select: { id: true } },
+				},
+				orderBy: { createdAt: 'desc' },
+			}),
+			this.references(),
+		]);
+		return rows.map((row) => {
+			const posts = [...(current.get(row.id) ?? [])].sort();
+			return {
+				id: row.id,
+				name: row.name,
+				type: row.type,
+				size: row.size,
+				image: IMAGE_TYPES.includes(row.type),
+				path: `/files/${row.id}`,
+				createdAt: row.createdAt.toISOString(),
+				createdBy: row.createdBy,
+				usedBy: {
+					posts,
+					revisions: [...(old.get(row.id) ?? [])].filter((slug) => !posts.includes(slug)).sort(),
+					wallpaper: Boolean(row.wallpaperImage || row.wallpaperThumb),
+				},
+			};
+		});
+	}
+
+	/**
+	 * 파일을 지운다. 배경화면이나 지금 글이 쓰는 파일은 지우지 않는다 (배경화면은 배경화면 설정에서 지운다).
+	 * 예전 버전에서만 쓰는 파일은 지운다: 그 버전으로 되돌리면 그 자리가 빈다
+	 */
+	async remove(id: string): Promise<void> {
+		if (!UPLOAD_ID.test(id)) throw new NotFoundException('파일이 없습니다.');
+		const row = await this.prisma.upload.findUnique({
+			where: { id },
+			select: { id: true, wallpaperImage: { select: { id: true } }, wallpaperThumb: { select: { id: true } } },
+		});
+		if (!row) throw new NotFoundException('파일이 없습니다.');
+		if (row.wallpaperImage || row.wallpaperThumb) throw new ConflictException('배경화면에서 쓰는 파일입니다.');
+		const posts = (await this.references()).current.get(id);
+		if (posts?.size) throw new ConflictException(`글에서 쓰는 파일입니다: ${[...posts].sort().join(', ')}`);
+		await this.prisma.upload.delete({ where: { id } });
 	}
 
 	async find(id: string) {
