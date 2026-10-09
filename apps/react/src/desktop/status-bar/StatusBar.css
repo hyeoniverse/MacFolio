@@ -152,13 +152,17 @@
 	display: flex;
 }
 
-/* 서버 자원이 유휴 회수 기준에 가까우면 (주의) 주황, 걸려 있으면 (회수 위험) 빨강 */
-.macos-statusbar .battery-menu-button.warning {
-	color: var(--color-warning, #f5a623);
+/* 배터리는 아이콘보다 넓다 (macOS처럼 가로로 긴 모양). 작은 화면에서 아이콘 칸이 좁아져도 이 너비는 따로 */
+.macos-statusbar .statusbar-icon.battery-icon,
+.macos-statusbar .statusbar-icon-button.battery-icon {
+	width: 2rem;
 }
 
-.macos-statusbar .battery-menu-button.danger {
-	color: var(--color-danger, #e5484d);
+@media (max-width: 600px) {
+	.macos-statusbar .statusbar-icon.battery-icon,
+	.macos-statusbar .statusbar-icon-button.battery-icon {
+		width: 1.6rem;
+	}
 }
 
 /* 작은 화면에서 대응 */
