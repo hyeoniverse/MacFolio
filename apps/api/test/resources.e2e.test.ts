@@ -176,4 +176,113 @@ describe('서버 자원 감시 (e2e)', () => {
 			expect(await prisma.resourceSample.count()).toBe(0);
 		});
 	});
+
+	describe('종량제 (RESOURCE_MONITOR=payg)', () => {
+		// Oracle 문서의 시험용 개인 키 (요청 서명만 확인한다)
+		const PRIVATE_KEY = `-----BEGIN RSA PRIVATE KEY-----
+MIICXgIBAAKBgQDCFENGw33yGihy92pDjZQhl0C36rPJj+CvfSC8+q28hxA161QF
+NUd13wuCTUcq0Qd2qsBe/2hFyc2DCJJg0h1L78+6Z4UMR7EOcpfdUE9Hf3m/hs+F
+UR45uBJeDK1HSFHD8bHKD6kv8FPGfJTotc+2xjJwoYi+1hqp1fIekaxsyQIDAQAB
+AoGBAJR8ZkCUvx5kzv+utdl7T5MnordT1TvoXXJGXK7ZZ+UuvMNUCdN2QPc4sBiA
+QWvLw1cSKt5DsKZ8UETpYPy8pPYnnDEz2dDYiaew9+xEpubyeW2oH4Zx71wqBtOK
+kqwrXa/pzdpiucRRjk6vE6YY7EBBs/g7uanVpGibOVAEsqH1AkEA7DkjVH28WDUg
+f1nqvfn2Kj6CT7nIcE3jGJsZZ7zlZmBmHFDONMLUrXR/Zm3pR5m0tCmBqa5RK95u
+412jt1dPIwJBANJT3v8pnkth48bQo/fKel6uEYyboRtA5/uHuHkZ6FQF7OUkGogc
+mSJluOdc5t6hI1VsLn0QZEjQZMEOWr+wKSMCQQCC4kXJEsHAve77oP6HtG/IiEn7
+kpyUXRNvFsDE0czpJJBvL/aRFUJxuRK91jhjC68sA7NsKMGg5OXb5I5Jj36xAkEA
+gIT7aFOYBFwGgQAQkWNKLvySgKbAZRTeLBacpHMuQdl1DfdntvAyqpAZ0lY0RKmW
+G6aFKaqQfOXKCyWoUiVknQJAXrlgySFci/2ueKlIE1QqIiLSZ8V8OlpFLRnb1pzI
+7U1yQXnTAEFYM560yJlzUpOb1V4cScGd365tiSMvxLOvTA==
+-----END RSA PRIVATE KEY-----`;
+		let ctx: Awaited<ReturnType<typeof start>>;
+		let prisma: PrismaService;
+		let service: ResourcesService;
+		let spend = 0.5;
+		const mails: { subject: string }[] = [];
+		const oracleCalls: { url: string; authorization: string }[] = [];
+
+		beforeAll(async () => {
+			ctx = await start({
+				RESOURCE_MONITOR: 'payg',
+				RESEND_API_KEY: 'test-resend',
+				CONTACT_FROM: 'MacFolio <contact@example.com>',
+				CONTACT_TO: 'owner@example.com',
+				OCI_TENANCY_OCID: 'ocid1.tenancy.oc1..aaaa',
+				OCI_USER_OCID: 'ocid1.user.oc1..bbbb',
+				OCI_FINGERPRINT: '20:3b:97:13',
+				OCI_PRIVATE_KEY: PRIVATE_KEY.replace(/\n/g, '\\n'),
+				OCI_REGION: 'ap-chuncheon-1',
+			});
+			prisma = ctx.app.get(PrismaService);
+			service = ctx.app.get(ResourcesService);
+			await prisma.resourceAlert.deleteMany();
+		});
+		beforeAll(() => {
+			const real = globalThis.fetch;
+			vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, init) => {
+				const address = String(url);
+				if (address.startsWith('https://api.resend.com')) {
+					mails.push(JSON.parse(String(init?.body)));
+					return new Response('{}', { status: 200 });
+				}
+				if (address.includes('.oci.oraclecloud.com')) {
+					oracleCalls.push({ url: address, authorization: (init?.headers as Record<string, string>).authorization });
+					if (address.includes('/budgets'))
+						return Response.json([
+							{
+								displayName: '월 1달러',
+								amount: 1,
+								actualSpend: spend,
+								forecastedSpend: 0.9,
+								resetPeriod: 'MONTHLY',
+								timeSpendComputed: null,
+							},
+						]);
+					return Response.json({ items: [{ computedAmount: spend, currency: 'USD' }] });
+				}
+				return real(url, init);
+			});
+		});
+		afterAll(async () => {
+			vi.restoreAllMocks();
+			await ctx?.app.close();
+		});
+
+		it('요금과 예산을 서명한 요청으로 읽어 보여 준다 (회수 위험은 없다)', async () => {
+			const status = await request(ctx.server).get('/resources').set('Cookie', ctx.adminCookie).expect(200);
+			expect(status.body.mode).toBe('payg');
+			expect(status.body.risk).toBeUndefined();
+			expect(status.body.billing).toMatchObject({
+				configured: true,
+				error: null,
+				data: {
+					monthToDate: 0.5,
+					currency: 'USD',
+					budgets: [{ displayName: '월 1달러', amount: 1, actualSpend: 0.5 }],
+				},
+			});
+			expect(oracleCalls[0].authorization).toMatch(
+				/^Signature version="1",keyId="ocid1.tenancy.oc1..aaaa\/ocid1.user.oc1..bbbb\/20:3b:97:13",algorithm="rsa-sha256"/
+			);
+		});
+
+		it('예산의 80%와 100%를 넘으면 달마다 한 번씩 알린다', async () => {
+			const now = new Date();
+			spend = 0.5;
+			await service.maintain(now);
+			expect(mails).toHaveLength(0);
+
+			spend = 0.85;
+			await service.maintain(now);
+			await service.maintain(now);
+			expect(mails.map((mail) => mail.subject)).toEqual([expect.stringContaining('85%')]);
+
+			spend = 1.2;
+			await service.maintain(now);
+			expect(mails).toHaveLength(2);
+			expect(mails[1].subject).toContain('한도를 넘었습니다');
+			await service.maintain(now);
+			expect(mails).toHaveLength(2);
+		});
+	});
 });

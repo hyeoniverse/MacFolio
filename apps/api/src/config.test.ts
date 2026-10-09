@@ -45,7 +45,7 @@ describe('loadConfig', () => {
 				perIpPerDay: 5,
 				totalPerDay: 50,
 			},
-			resources: { mode: 'off', shape: 'VM.Standard.E2.1.Micro', networkMbps: 50, alertTo: undefined },
+			resources: { mode: 'off', shape: 'VM.Standard.E2.1.Micro', networkMbps: 50, alertTo: undefined, oci: undefined },
 			auth: {
 				githubClientId: undefined,
 				githubClientSecret: undefined,
@@ -96,6 +96,7 @@ it('서버 자원 감시: 모드·shape·대역폭, 알림 주소는 없으면 �
 		shape: 'VM.Standard.E2.1.Micro',
 		networkMbps: 50,
 		alertTo: 'owner@x.com',
+		oci: undefined,
 	});
 	expect(
 		loadConfig({
@@ -105,5 +106,27 @@ it('서버 자원 감시: 모드·shape·대역폭, 알림 주소는 없으면 �
 			RESOURCE_NETWORK_MBPS: '1000',
 			RESOURCE_ALERT_TO: 'ops@x.com',
 		}).resources
-	).toEqual({ mode: 'payg', shape: 'VM.Standard.A1.Flex', networkMbps: 1000, alertTo: 'ops@x.com' });
+	).toMatchObject({
+		mode: 'payg',
+		shape: 'VM.Standard.A1.Flex',
+		networkMbps: 1000,
+		alertTo: 'ops@x.com',
+		oci: undefined,
+	});
+	// OCI 키는 다섯 값이 다 있어야 켜진다
+	const oci = {
+		OCI_TENANCY_OCID: 't',
+		OCI_USER_OCID: 'u',
+		OCI_FINGERPRINT: 'f',
+		OCI_PRIVATE_KEY: 'k',
+		OCI_REGION: 'r',
+	};
+	expect(loadConfig({ ...base, ...oci }).resources.oci).toEqual({
+		tenancy: 't',
+		user: 'u',
+		fingerprint: 'f',
+		privateKey: 'k',
+		region: 'r',
+	});
+	expect(loadConfig({ ...base, ...oci, OCI_REGION: '' }).resources.oci).toBeUndefined();
 });

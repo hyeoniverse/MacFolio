@@ -1,5 +1,6 @@
 // 환경 변수를 읽어 검사한다. 잘못되었으면 서버를 띄우지 않고 바로 알린다.
 
+import type { OciCredentials } from './resources/oci.js';
 import { parseMonitorMode, type MonitorMode } from './resources/rules.js';
 
 export interface AppConfig {
@@ -99,6 +100,11 @@ export interface AppConfig {
 		networkMbps: number;
 		/** 알림을 받을 주소. 없으면 연락 메일의 받는 주소(CONTACT_TO) */
 		alertTo?: string;
+		/**
+		 * 요금·예산을 읽을 OCI API 키 (종량제에서 보인다). 다섯 값이 다 있어야 켜진다.
+		 * 콘솔 → 내 프로필 → API 키에서 만든다. 개인 키는 PEM을 한 줄로(줄바꿈을 \n으로) 적는다
+		 */
+		oci?: OciCredentials;
 	};
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
@@ -197,6 +203,16 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			shape: env.OCI_SHAPE || 'VM.Standard.E2.1.Micro',
 			networkMbps: Number(env.RESOURCE_NETWORK_MBPS ?? 50) || 50,
 			alertTo: env.RESOURCE_ALERT_TO || env.CONTACT_TO || undefined,
+			oci:
+				env.OCI_TENANCY_OCID && env.OCI_USER_OCID && env.OCI_FINGERPRINT && env.OCI_PRIVATE_KEY && env.OCI_REGION
+					? {
+							tenancy: env.OCI_TENANCY_OCID,
+							user: env.OCI_USER_OCID,
+							fingerprint: env.OCI_FINGERPRINT,
+							privateKey: env.OCI_PRIVATE_KEY,
+							region: env.OCI_REGION,
+						}
+					: undefined,
 		},
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
