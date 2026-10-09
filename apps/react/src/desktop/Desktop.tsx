@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import AboutThisMac from '@/desktop/about/AboutThisMac';
 import { AppStateProvider } from '@/desktop/AppStateContext';
 import { useAppState } from '@/desktop/useAppState';
 import { MusicProvider } from '@/apps/music/MusicContext';
@@ -74,6 +75,7 @@ const Desktop = () => {
 							<StatusBar />
 							<OpenedApps />
 							<Dock />
+							<AboutThisMac />
 						</DesktopSurface>
 					)}
 					<Notifications />
