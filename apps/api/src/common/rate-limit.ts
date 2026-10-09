@@ -4,13 +4,14 @@
 import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 
-export const RATE_LIMIT_NAMES = ['login', 'comment', 'write', 'upload', 'demo', 'events'] as const;
+export const RATE_LIMIT_NAMES = ['login', 'comment', 'like', 'write', 'upload', 'demo', 'events'] as const;
 export type RateLimitName = (typeof RATE_LIMIT_NAMES)[number];
 
 /** 이름마다 무엇을 세는지와 기본 횟수 (1분에, IP마다). 환경 변수 이름은 config.ts */
 export const RATE_LIMIT_DEFAULTS: Record<RateLimitName, { limit: number; description: string }> = {
 	login: { limit: 10, description: '로그인 시작·콜백' },
 	comment: { limit: 5, description: '방문자가 쓰는 것: 댓글, 메시지, 메일' },
+	like: { limit: 30, description: '좋아요 누르기·취소 (글, 댓글)' },
 	write: { limit: 60, description: '관리자의 쓰기: 글, 폴더 정리, 설정, 지우기' },
 	upload: { limit: 20, description: '파일·배경화면 올리기' },
 	demo: { limit: 10, description: 'AI 데모 (하루 상한은 따로 있다)' },

@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Put, Req, Res } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiNotFoundResponse,
@@ -6,10 +6,10 @@ import {
 	ApiTags,
 	ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { VisitorsService } from '../visitors/visitors.service.js';
 import { LikesService } from './likes.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 블로그 글과 댓글의 좋아요. 누구나 누른다 (로그인 없이). 같은 브라우저(방문자 쿠키)는 하나에 한 번만 센다.
@@ -39,8 +39,7 @@ export class LikesController {
 	}
 
 	@Put('posts/:slug/like')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true, comment: true })
+	@RateLimit('like')
 	@ApiOkResponse({ description: '눌렀다. 이미 눌렀으면 그대로. 처음 누르는 브라우저에는 방문자 쿠키를 준다' })
 	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 눌렀다' })
 	likePost(@Param('slug') slug: string, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
@@ -48,16 +47,14 @@ export class LikesController {
 	}
 
 	@Delete('posts/:slug/like')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true, comment: true })
+	@RateLimit('like')
 	@ApiOkResponse({ description: '취소했다. 누르지 않았으면 그대로' })
 	unlikePost(@Param('slug') slug: string, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
 		return this.likes.setPost(slug, this.visitors.identify(request, response), false);
 	}
 
 	@Put('comments/:id/like')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true, comment: true })
+	@RateLimit('like')
 	@ApiOkResponse({ description: '댓글에 눌렀다 ({ count, liked })' })
 	@ApiNotFoundResponse({ description: '댓글이 없다' })
 	likeComment(@Param('id') id: string, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
@@ -65,8 +62,7 @@ export class LikesController {
 	}
 
 	@Delete('comments/:id/like')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true, comment: true })
+	@RateLimit('like')
 	@ApiOkResponse({ description: '댓글의 좋아요를 취소했다' })
 	@ApiNotFoundResponse({ description: '댓글이 없다' })
 	unlikeComment(@Param('id') id: string, @Req() request: Request, @Res({ passthrough: true }) response: Response) {
