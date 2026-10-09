@@ -64,6 +64,8 @@ test.describe('임시 저장·게시·버전 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('예약할 글');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('다음 달에 공개한다.');
 		await expect(memo.getByRole('status').filter({ hasText: '임시 저장됨' })).toBeVisible();
 

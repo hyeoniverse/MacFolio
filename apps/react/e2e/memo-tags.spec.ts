@@ -109,6 +109,8 @@ test.describe('태그', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('태그 쓰기');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('오늘 배운 것 #새태그 정리, `#코드` 는 아님');
 		await expect(memo.locator('.ProseMirror .memo-tag')).toHaveText(['#새태그']);
 		await expect.poll(() => api.posts[0]?.body).toContain('#새태그');
