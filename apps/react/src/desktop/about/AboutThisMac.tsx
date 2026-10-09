@@ -11,7 +11,7 @@ const PHOTO = `https://github.com/${encodeURIComponent(GITHUB_LOGIN)}.png?size=2
 
 /** 이 Mac의 사양 자리에 놓는 프로필 (macOS의 칩·메모리·일련 번호·macOS 줄처럼) */
 const ROWS: { label: string; value: string; href?: string }[] = [
-	{ label: '역할', value: PROFILE.role },
+	{ label: '직무', value: PROFILE.role },
 	{ label: '학교', value: PROFILE.school },
 	{ label: '위치', value: PROFILE.location },
 	{ label: '이메일', value: PROFILE.email, href: `mailto:${PROFILE.email}` },
