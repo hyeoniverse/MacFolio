@@ -4,6 +4,7 @@ import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { type AdminPost, ALL_CATEGORY, movePost, type Organization, type Post } from '@macfolio/desktop-core/memo';
 import { deletePost, purgePost, restorePost } from './postsApi';
+import { announceMemoPostsChanged } from './memoPostsSignal';
 
 const failed = (title: string) =>
 	notify({ app: 'memo', title, body: '관리자 로그인이 끝났거나 서버에 연결할 수 없습니다.' });
@@ -49,6 +50,7 @@ export function useTrash({
 			deletedAt: new Date().toISOString(),
 			revisions: current?.revisions ?? 0,
 		});
+		announceMemoPostsChanged('memo');
 	};
 
 	/** 되살린다. 폴더에 끌어 놓았으면 그 폴더로 옮기고 그 폴더를, 아니면 모든 글을 열어 그 글을 보여준다 */
@@ -58,6 +60,7 @@ export function useTrash({
 		if (result.post) upsertAdminPost(result.post);
 		else dropAdminPost(post.slug);
 		if (folder !== ALL_CATEGORY && folder !== post.category) edit((prev) => movePost(prev, post.slug, folder));
+		announceMemoPostsChanged('memo');
 		onRestored(post.slug, folder);
 	};
 
@@ -90,6 +93,7 @@ export function useTrash({
 		// 마지막 하나였으면 최근 삭제된 항목이 사라지므로 모든 글로
 		if (trash.length <= 1) onTrashGone();
 		markPurged(post.slug);
+		announceMemoPostsChanged('memo');
 	};
 
 	/** 휴지통 비우기: 최근 삭제된 항목의 메모를 모두 즉시 삭제한다 */
@@ -100,6 +104,7 @@ export function useTrash({
 			trash.map(async (post) => ({ slug: post.slug, ok: await purgePost(env.apiUrl, post.slug) }))
 		);
 		results.filter((result) => result.ok).forEach((result) => markPurged(result.slug));
+		announceMemoPostsChanged('memo');
 		if (results.some((result) => !result.ok)) failed('휴지통을 다 비우지 못함');
 		else if (inTrash) onTrashGone();
 	};
