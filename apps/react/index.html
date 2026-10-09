@@ -16,14 +16,8 @@
 				background: #000 !important;
 			}
 		</style>
-		<script>
-			// 첫 화면이 그려지기 전에 테마를 적용해 깜빡임을 막는다 (shared/settings/settingsStore.ts와 같은 키)
-			try {
-				var theme = (JSON.parse(localStorage.getItem('macfolio:settings')) || {}).theme || 'system';
-				if (theme === 'system') theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-				if (theme === 'dark') document.documentElement.dataset.theme = 'dark';
-			} catch (e) {}
-		</script>
+		<!-- 첫 화면이 그려지기 전에 테마를 적용한다. CSP가 인라인 스크립트를 막아서 파일로 둔다 -->
+		<script src="/theme-boot.js"></script>
 	</head>
 	<body>
 		<div id="root"></div>
