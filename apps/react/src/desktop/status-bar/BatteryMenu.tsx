@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useAppState } from '@/desktop/useAppState';
 import { RISK_LABEL, batteryOf, requestedTab, usageLine, useServerResources } from '@/apps/activity/serverResources';
+import { useVisitTrend, visitBattery } from '@/apps/activity/visitTrend';
 import ServerBattery from '@/shared/server/ServerBattery';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 
@@ -13,24 +14,49 @@ const ago = (iso: string) => {
 };
 
 /**
- * 메뉴 막대의 배터리 자리: 관리자에게는 서버(VM)의 자원. Always Free면 유휴 회수에서 먼 만큼 배터리가 차 있고,
- * 누르면 macOS 배터리 메뉴처럼 지금 사용률과 회수 위험이 보인다. 방문자에게는 평소의 배터리 아이콘
+ * 메뉴 막대의 배터리 자리. 누르면 macOS 배터리 메뉴처럼 짧게 보인다.
+ * - 관리자: 서버(VM)의 자원. Always Free면 유휴 회수에서 먼 만큼 차 있다. 메뉴에는 사용률·회수 위험과 방문
+ * - 방문자: 방문 추이. 최근 7일 방문이 앞 7일보다 늘어난 만큼 차 있다 (같으면 절반). 메뉴에는 방문 수
+ * 서버가 없으면 평소의 배터리 그림
  */
 const BatteryMenu = () => {
-	const { enabled, status, error, refresh } = useServerResources();
+	const resources = useServerResources();
+	const visits = useVisitTrend();
 	const { openApp } = useAppState();
 	const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
 	const button = useRef<HTMLButtonElement>(null);
 
-	if (!enabled)
+	if (!visits.enabled)
 		return (
 			<span className="statusbar-icon battery-icon">
 				<ServerBattery fill={75} />
 			</span>
 		);
 
-	const battery = batteryOf(status);
-	const details = (): MenuItem[] => {
+	const admin = resources.enabled;
+	const { status, error } = resources;
+	const trend = visits.trend;
+	const visitSummary = visits.failed ? { fill: 75, tone: null, summary: '불러오지 못함' } : visitBattery(trend);
+	const battery = admin ? batteryOf(status) : visitSummary;
+	const what = admin ? '서버 자원' : '방문';
+
+	const visitItems = (): MenuItem[] => {
+		if (visits.failed) return [{ note: '방문 수를 불러오지 못했습니다' }];
+		if (!trend) return [{ note: '불러오는 중…' }];
+		return [
+			{
+				info: `${trend.visits.toLocaleString()}회 방문`,
+				icon: admin ? 'fa-solid fa-eye' : <ServerBattery fill={visitSummary.fill} />,
+			},
+			{
+				note: trend.change
+					? `앞 7일(${trend.previous.toLocaleString()}회)보다 ${trend.change.text} ${{ up: '▲', down: '▼', same: '' }[trend.change.direction]}`.trim()
+					: '앞 7일에는 방문이 없었습니다',
+			},
+			{ note: `오늘 ${trend.today.toLocaleString()}회` },
+		];
+	};
+	const serverItems = (): MenuItem[] => {
 		if (error) return [{ note: `불러오지 못했습니다: ${error}` }];
 		if (!status) return [{ note: '불러오는 중…' }];
 		if (status.mode === 'off') return [{ note: '서버 자원 감시가 꺼져 있습니다 (RESOURCE_MONITOR)' }];
@@ -58,19 +84,26 @@ const BatteryMenu = () => {
 				: []),
 		];
 	};
-	const items: MenuItem[] = [
-		{ heading: '서버 자원' },
-		...details(),
-		'separator',
-		{
-			label: '활동 상태 보기에서 자세히',
-			icon: 'fa-solid fa-chart-line',
-			onSelect: () => {
-				requestedTab.setState({ tab: 'server' });
-				openApp('activity');
-			},
-		},
-	];
+	const open = (tab: 'overview' | 'server') => () => {
+		requestedTab.setState({ tab });
+		openApp('activity');
+	};
+	const items: MenuItem[] = admin
+		? [
+				{ heading: '서버 자원' },
+				...serverItems(),
+				'separator',
+				{ heading: '방문 (최근 7일)' },
+				...visitItems(),
+				'separator',
+				{ label: '활동 상태 보기에서 자세히', icon: 'fa-solid fa-chart-line', onSelect: open('server') },
+			]
+		: [
+				{ heading: '방문 (최근 7일)' },
+				...visitItems(),
+				'separator',
+				{ label: '활동 상태 보기에서 자세히', icon: 'fa-solid fa-chart-line', onSelect: open('overview') },
+			];
 
 	return (
 		<span className="battery-menu">
@@ -78,22 +111,20 @@ const BatteryMenu = () => {
 				ref={button}
 				type="button"
 				className={`statusbar-icon-button battery-icon battery-menu-button ${anchor ? 'open' : ''}`}
-				aria-label={`서버 자원: ${battery.summary}`}
-				title={`서버 자원: ${battery.summary}`}
+				aria-label={`${what}: ${battery.summary}`}
+				title={`${what}: ${battery.summary}`}
 				aria-haspopup="menu"
 				aria-expanded={anchor !== null}
 				onClick={(event) => {
 					const rect = event.currentTarget.getBoundingClientRect();
 					// 열 때 한 번 더 물어서 최신 값을 보여 준다
-					if (!anchor) refresh();
+					if (!anchor) resources.refresh();
 					setAnchor(anchor ? null : { x: rect.left, y: rect.bottom + 3 });
 				}}
 			>
 				<ServerBattery fill={battery.fill} tone={battery.tone} />
 			</button>
-			{anchor && (
-				<Menu label="서버 자원" anchor={anchor} items={items} trigger={button} onClose={() => setAnchor(null)} />
-			)}
+			{anchor && <Menu label={what} anchor={anchor} items={items} trigger={button} onClose={() => setAnchor(null)} />}
 		</span>
 	);
 };
