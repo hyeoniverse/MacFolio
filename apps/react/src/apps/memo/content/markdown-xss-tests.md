@@ -16,7 +16,7 @@ summary: 메모 글, GitHub README, Finder 문서는 Markdown과 HTML을 그린�
 | GitHub 홈페이지·웹사이트   | GitHub API             | `safeUrl`이 `http(s)`가 아닌 주소를 버린다 (시험 있음)           |
 | 사진 캡션의 링크           | 관리자가 쓴 캡션(서버) | `captionParts`가 `http(s)`가 아닌 주소를 버린다 (시험 있음)      |
 
-문제는 위 네 줄에 시험이 없었다는 것이다. 예를 들어 메모 글에서 HTML(`<div align="center">`)을 쓰고 싶어서 `rehype-raw`를 더하면, 그 순간 글에 넣은 `<img onerror>`가 실행된다. 지금은 안전하지만 나중에 바꾸는 사람(나)이 이것을 모르고 바꿀 수 있다.
+문제는 위 네 줄에 시험이 없었다는 것이다. 이번에는 바깥 내용이 가장 많이 들어오는 메모 글과 README에 시험을 더했다(Finder 문서와 Mermaid 도식은 이 저장소의 파일이라 뒤로 미뤘다). 예를 들어 메모 글에서 HTML(`<div align="center">`)을 쓰고 싶어서 `rehype-raw`를 더하면, 그 순간 글에 넣은 `<img onerror>`가 실행된다. 지금은 안전하지만 나중에 바꾸는 사람(나)이 이것을 모르고 바꿀 수 있다.
 
 ## 용어
 
