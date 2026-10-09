@@ -138,6 +138,14 @@ const PostWriter = ({
 		onSavedRef.current = onSaved;
 	});
 
+	/** 본문 편집기에 초점을 둔다. 편집기가 아직 없으면 false */
+	const bodyFocusPending = useRef(false);
+	const focusBody = () => {
+		const body = titleRef.current?.closest('.memo-writer')?.querySelector<HTMLElement>('.ProseMirror');
+		body?.focus();
+		return Boolean(body);
+	};
+
 	// 새 메모는 제목부터 쓴다
 	useEffect(() => {
 		if (!post) titleRef.current?.focus();
@@ -314,10 +322,10 @@ const PostWriter = ({
 				value={draft.title}
 				onChange={(event) => change({ title: event.target.value.replace(/\n/g, ' ') })}
 				onKeyDown={(event) => {
-					// 제목에서 Enter를 누르면 본문으로
+					// 제목에서 Enter를 누르면 본문으로. 편집기를 아직 불러오는 중이면 다 만들어진 뒤에 옮긴다
 					if (event.key === 'Enter') {
 						event.preventDefault();
-						event.currentTarget.closest('.memo-writer')?.querySelector<HTMLElement>('.ProseMirror')?.focus();
+						if (!focusBody()) bodyFocusPending.current = true;
 					}
 				}}
 			/>
@@ -327,6 +335,11 @@ const PostWriter = ({
 					markdown={draft.body}
 					onChange={(body) => change({ body })}
 					placeholder="본문을 쓰세요"
+					onReady={() => {
+						if (!bodyFocusPending.current) return;
+						bodyFocusPending.current = false;
+						focusBody();
+					}}
 				/>
 			</Suspense>
 		</div>
