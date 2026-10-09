@@ -33,6 +33,8 @@ interface Props {
 	/** 고칠 때마다 바뀐 본문 (Markdown) */
 	onChange: (markdown: string) => void;
 	placeholder?: string;
+	/** 편집기가 다 만들어졌을 때. 편집기는 따로 불러와서, 그 전에 본문으로 옮기려던 초점을 이때 옮긴다 */
+	onReady?: () => void;
 }
 
 /** 체크 항목의 네모(왼쪽 여백)를 눌렀는지 */
@@ -254,13 +256,15 @@ function scrollCaretOnPhone(view: EditorView): boolean {
 	return true;
 }
 
-const Inner = ({ markdown, onChange }: Props) => {
+const Inner = ({ markdown, onChange, onReady }: Props) => {
 	const onChangeRef = useRef(onChange);
+	const onReadyRef = useRef(onReady);
 	useEffect(() => {
 		onChangeRef.current = onChange;
+		onReadyRef.current = onReady;
 	});
 
-	const { get } = useEditor(
+	const { get, loading } = useEditor(
 		(root) =>
 			Editor.make()
 				.config((ctx) => {
@@ -334,6 +338,10 @@ const Inner = ({ markdown, onChange }: Props) => {
 				.use(tagHighlight),
 		[]
 	);
+
+	useEffect(() => {
+		if (!loading) onReadyRef.current?.();
+	}, [loading]);
 
 	// 도구 막대가 이 편집기에 명령을 보낼 수 있게 한다 (편집기가 사라지면 도구 막대도 숨는다)
 	const getRef = useRef(get);

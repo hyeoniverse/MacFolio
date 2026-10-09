@@ -78,6 +78,7 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		// 제목에서 Enter를 누르면 본문으로
 		await page.keyboard.press('Enter');
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('## 소제목');
 		await page.keyboard.press('Enter');
 		await page.keyboard.type('본문입니다.');
@@ -96,12 +97,36 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.locator('.memo-item').filter({ hasText: '새로 쓴 글' })).toBeVisible();
 	});
 
+	test('편집기를 불러오는 중에 제목에서 Enter를 눌러도, 다 불러오면 본문으로 옮겨 간다', async ({ page }) => {
+		// 편집기 코드를 늦게 보내 느린 기기처럼
+		let release = () => {};
+		const held = new Promise<void>((resolve) => (release = resolve));
+		await page.route(/InlineEditor-[\w-]+\.js$/, async (route) => {
+			await held;
+			await route.continue();
+		});
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('느린 기기');
+		await page.keyboard.press('Enter');
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+
+		release();
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
+		await page.keyboard.type('본문이 여기로');
+		await expect.poll(() => api.posts[0]?.body).toBe('본문이 여기로\n');
+		expect(api.posts[0]?.title).toBe('느린 기기');
+	});
+
 	test('가가 메뉴와 빠른 단추로 머리말·굵게·체크리스트·표·이미지를 넣는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('서식 시험');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('머리말이 될 줄');
 
 		// 가가 → 머리말 (커서는 본문에 남는다)
@@ -167,6 +192,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('표 시험');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('위 문단');
 
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
@@ -237,6 +264,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('파일 시험');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('본문');
 		// 1×1 PNG (미리 보기에 실제로 그려지는 그림)
 		const png = Buffer.from(
@@ -378,6 +407,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('사진 시험');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('본문');
 		await page.keyboard.press('Enter');
 
@@ -445,6 +476,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('손잡이 시험');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('위 문단');
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
@@ -522,6 +555,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('옮기기');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('위 문단');
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
@@ -578,6 +613,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('범위');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('위 문단');
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
@@ -627,6 +664,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('끌어 고르기');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('위 문단');
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
@@ -685,6 +724,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('표 양옆');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('위 문단');
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
@@ -739,6 +780,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('표 옆 누르기');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		await page.keyboard.type('위 문단');
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
@@ -770,6 +813,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('표 지우기');
 		await page.keyboard.press('Enter');
+		// 본문 편집기는 따로 불러오므로 초점이 옮겨 간 뒤에 쓴다
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
 		// 본문 맨 앞의 표: 앞에 문단이 없다
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '표 넣기' }).click();
