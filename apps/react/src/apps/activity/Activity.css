@@ -555,3 +555,71 @@
 		grid-template-columns: 1fr;
 	}
 }
+
+.server-billing {
+	margin-bottom: 14px;
+	padding: 12px;
+	border: 1px solid var(--color-divider);
+	border-radius: 10px;
+}
+
+.server-billing h3 {
+	margin: 0 0 6px;
+	font-size: 13px;
+}
+
+.server-billing-total {
+	margin: 0 0 8px;
+	font-size: 13px;
+}
+
+.server-billing-total strong {
+	font-size: 18px;
+	font-variant-numeric: tabular-nums;
+}
+
+.server-budgets {
+	display: grid;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.server-budget {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 4px 10px;
+	font-size: 12px;
+}
+
+.server-budget-amount {
+	font-variant-numeric: tabular-nums;
+}
+
+.server-budget-bar {
+	grid-column: 1 / -1;
+	height: 6px;
+	overflow: hidden;
+	border-radius: 3px;
+	background: var(--color-divider);
+}
+
+.server-budget-bar > span {
+	display: block;
+	height: 100%;
+	background: var(--activity-green);
+}
+
+.server-budget.near .server-budget-bar > span {
+	background: #c27c0e;
+}
+
+.server-budget.over .server-budget-bar > span {
+	background: var(--activity-red);
+}
+
+.server-budget.over .server-budget-amount {
+	color: var(--activity-red);
+	font-weight: 600;
+}
