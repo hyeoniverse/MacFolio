@@ -1,7 +1,7 @@
 ---
 title: 프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기
 date: 2026-10-03
-category: 개발기/MacFolio/프로젝트·GitHub
+category: 프론트엔드/기능
 summary: 새싹 농장만 앱 창에서 바로 해 볼 수 있었다. HYEONIVERSE, NewPick, WTD, QRU도 배포한 사이트를 창 안에 띄우는 앱으로 만들었다. 다섯 앱이 한 컴포넌트를 쓰고, 앱 목록은 프로젝트 목록에서 만들며, 모두 Dock에 고정한다.
 ---
 

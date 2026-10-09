@@ -1,7 +1,7 @@
 ---
 title: sticky 도구 막대가 버튼을 가린 이유
 date: 2026-09-29
-category: 개발기/MacFolio/메모
+category: 프론트엔드/트러블슈팅
 summary: 메모 도구 막대를 스크롤에 붙였더니 버튼이 눌리지 않았다. position sticky가 만든 쌓임 맥락 이야기.
 ---
 

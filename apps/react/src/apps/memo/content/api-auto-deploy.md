@@ -1,7 +1,7 @@
 ---
 title: API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만
 date: 2026-10-05
-category: 개발기/MacFolio/배포·운영
+category: 인프라/배포·운영
 summary: main에 머지하면 GitHub Actions가 API 이미지를 만들어 GHCR에 올리고, 배포 전용 SSH 키로 서버의 배포 스크립트를 부른다. 서버는 백업 → 교체 → 건강 확인을 하고, 안 되면 이전 버전으로 되돌린다. 로컬 레지스트리로 실패와 되돌리기까지 시험했다.
 ---
 

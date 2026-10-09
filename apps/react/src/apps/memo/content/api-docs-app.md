@@ -1,7 +1,7 @@
 ---
 title: API 문서를 사이트 안의 앱으로
 date: 2026-10-05
-category: 개발기/MacFolio/데스크톱
+category: 프론트엔드/기능
 summary: 서버 메뉴의 'API 문서 열기'가 새 탭 대신 사이트 안의 'API 문서' 앱을 연다. 서버의 Swagger 화면을 띄우지 않고, API 코드에서 뽑은 openapi.json을 Scalar로 그린다. 김에 Wi-Fi 아이콘을 다시 그리고, 누를 수 없는 상태 줄은 파랗게 바뀌지 않게 했다.
 ---
 
