@@ -9,7 +9,6 @@ import {
 	type Post,
 	type ServerPost,
 } from '@macfolio/desktop-core/memo';
-import { discardVisitorOrganization } from './memoStorage';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 import { fetchAdminPosts, fetchServerPosts } from './postsApi';
 import { getPostRepository } from './repository';
@@ -99,9 +98,8 @@ export function useMemoLibrary() {
 	/** 관리자가 방금 바꿔서 아직 저장하지 않았는지 */
 	const unsaved = useRef(false);
 
-	// 예전에 방문자 브라우저에 저장된 정리 내용은 지우고, 서버의 정리 내용을 읽는다
+	// 서버의 정리 내용을 읽는다
 	useEffect(() => {
-		discardVisitorOrganization();
 		let cancelled = false;
 		fetchOrganization(env.apiUrl).then((loaded) => {
 			if (!cancelled && !unsaved.current) setOrganization(loaded);

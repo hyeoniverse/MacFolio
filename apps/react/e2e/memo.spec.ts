@@ -108,13 +108,6 @@ test.describe('메모 (블로그)', () => {
 		expect(await popup).toBeNull();
 	});
 
-	test('예전 메모(방명록) 데이터는 지운다', async ({ page }) => {
-		await page.goto('/');
-		await page.evaluate(() => localStorage.setItem('macfolio:memos', '{"folders":{},"memos":{}}'));
-		await openMemo(page);
-		expect(await page.evaluate(() => localStorage.getItem('macfolio:memos'))).toBeNull();
-	});
-
 	test('사이드바를 여닫을 수 있다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
@@ -252,19 +245,8 @@ test.describe('메모 (블로그)', () => {
 	});
 
 	test('방문자는 편집할 수 없다 (편집은 관리자만, #9)', async ({ page }) => {
-		// 예전에 방문자 브라우저에 저장된 정리 내용은 지운다
-		await page.goto('/');
-		await page.evaluate(() =>
-			localStorage.setItem(
-				'macfolio:memo:organization',
-				JSON.stringify({ folders: ['몰래 만든 폴더'], posts: {}, moves: [], pins: {} })
-			)
-		);
 		const memo = await openMemo(page);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-
-		await expect(folders.getByRole('button', { name: /^몰래 만든 폴더/ })).toHaveCount(0);
-		expect(await page.evaluate(() => localStorage.getItem('macfolio:memo:organization'))).toBeNull();
 
 		await expect(memo.getByRole('button', { name: '새로운 폴더' })).toHaveCount(0);
 		await folders.getByRole('button', { name: /^개발기/ }).hover();

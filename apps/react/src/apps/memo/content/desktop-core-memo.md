@@ -51,7 +51,9 @@ export function loadArrangement(): Arrangement {
 - core: `parseArrangement(value: unknown)`. 무엇이 들어와도 맞는 보기 설정을 돌려준다
 - 앱: `memoStorage.ts`. `localStorage`에서 읽어 JSON으로 풀고 `parseArrangement`에 넘긴다
 
-최근 검색어도 같다. "같은 말은 맨 앞으로, 다섯 개까지"는 core의 `addRecentFind`가 하고, 앱의 `rememberFind`는 그 결과를 저장만 한다. 방문자 브라우저에 남은 예전 정리 내용을 지우는 `discardVisitorOrganization`은 브라우저 일뿐이라 통째로 앱에 남겼다.
+최근 검색어도 같다. "같은 말은 맨 앞으로, 다섯 개까지"는 core의 `addRecentFind`가 하고, 앱의 `rememberFind`는 그 결과를 저장만 한다.
+
+`organize.ts`에는 하나가 더 있었다. 예전에는 방문자도 폴더를 만들고 글을 옮길 수 있었고, 그 내용을 방문자 브라우저에 저장했다. 지금은 관리자만 정리하고 서버에 저장하는데, 그때 방문자 브라우저에 남은 값을 지우는 `discardVisitorOrganization`이 메모 앱을 열 때마다 돌고 있었다. 방명록 시절의 `macfolio:memos`를 지우는 코드도 비슷하게 남아 있었다. 남은 값은 아무도 읽지 않고 크기도 몇 바이트라, 옮기는 대신 이 청소 코드와 그 시험을 지웠다.
 
 시험도 따라 나뉘었다. 전에는 `localStorage`를 `vi.stubGlobal`로 흉내 내서 잘못된 값을 넣어 보았는데, 이제 core 시험은 `parseArrangement({ sort: 'size', order: 1 })`처럼 값을 바로 넘긴다. 흉내가 필요한 시험은 앱의 `memoStorage.test.ts`에 세 개만 남았다.
 
