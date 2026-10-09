@@ -1,19 +1,22 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { isMobileViewport } from '@/desktop/layout';
-import { useAppState } from '@/desktop/AppStateContext';
+import React, {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+	useSyncExternalStore,
+} from 'react';
 import {
-	ALL_SONGS,
-	buildQueue,
-	findPlaylist,
-	findTrack,
-	nextPosition,
-	nextRepeatMode,
-	previousPosition,
-	TRACKS,
+	createPlayerStore,
+	currentTrackId,
 	type Queue,
 	type RepeatMode,
 	type Track,
-} from './library';
+} from '@macfolio/desktop-core/music';
+import { isMobileViewport } from '@/desktop/layout';
+import { useAppState } from '@/desktop/AppStateContext';
+import { ALL_SONGS, findPlaylist, findTrack, TRACKS } from './library';
 
 interface MusicContextType {
 	/** 지금 곡 */
@@ -52,8 +55,6 @@ export const useMusic = () => {
 	return context;
 };
 
-const INITIAL_QUEUE = buildQueue(findPlaylist(ALL_SONGS).trackIds, TRACKS[0].id, false);
-
 /** 곡 길이를 미리 알아 둔다 (목록에 시간을 보여주려고). 메타데이터만 받는다 */
 function useTrackDurations() {
 	const [durations, setDurations] = useState<Record<string, number>>({});
@@ -72,17 +73,20 @@ function useTrackDurations() {
 
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
-	const [playlistId, setPlaylistId] = useState(ALL_SONGS);
-	const [queue, setQueue] = useState<Queue>(INITIAL_QUEUE);
+	// 무엇을 어떤 순서로 재생할지(재생 목록, 대기열, 셔플, 반복)는 desktop-core의 플레이어 store가 정한다 (#16).
+	// 여기서는 그 결과대로 audio를 틀고 멈추고, 재생 시간·음량을 다룬다
+	const [player] = useState(() =>
+		createPlayerStore({ trackIdsOf: (id) => findPlaylist(id).trackIds, playlistId: ALL_SONGS })
+	);
+	const playerState = useSyncExternalStore(player.subscribe, player.getState);
+	const { playlistId, queue, shuffle, repeat } = playerState;
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [isBuffering, setIsBuffering] = useState(false);
 	const [volume, setVolumeState] = useState(1);
-	const [shuffle, setShuffle] = useState(false);
-	const [repeat, setRepeat] = useState<RepeatMode>('all');
 	const durations = useTrackDurations();
-	const track = findTrack(queue.order[queue.position]);
+	const track = findTrack(currentTrackId(playerState));
 
 	/** 곡이 바뀐 뒤 이어서 재생할지 (src를 바꾸면 audio가 멈추므로 기억해 둔다) */
 	const playAfterLoad = useRef(false);
@@ -100,10 +104,10 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 		setIsPlaying(false);
 	}, []);
 
-	const goTo = useCallback((position: number, autoplay: boolean) => {
+	/** 대기열에서 곡을 옮긴 뒤: 처음부터, autoplay면 이어서 재생 */
+	const startTrack = useCallback((autoplay: boolean) => {
 		playAfterLoad.current = autoplay;
 		setCurrentTime(0);
-		setQueue((prev) => ({ ...prev, position }));
 		// 같은 곡이면 src가 바뀌지 않으므로 여기서 처음부터 다시 재생한다
 		const audio = audioRef.current;
 		if (audio) audio.currentTime = 0;
@@ -122,46 +126,40 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 	}, [track.src, queue]);
 
 	const next = useCallback(() => {
-		const position = nextPosition(queue, repeat);
-		if (position === null) {
+		if (player.next() === 'stopped') {
 			pause();
-			goTo(0, false);
-		} else goTo(position, isPlaying);
-	}, [queue, repeat, isPlaying, goTo, pause]);
+			startTrack(false);
+		} else startTrack(isPlaying);
+	}, [player, isPlaying, startTrack, pause]);
 
 	const previous = useCallback(() => {
-		const position = previousPosition(queue, audioRef.current?.currentTime ?? 0, repeat);
-		if (position === 'restart') {
+		if (player.previous(audioRef.current?.currentTime ?? 0) === 'restart') {
 			if (audioRef.current) audioRef.current.currentTime = 0;
 			setCurrentTime(0);
-		} else goTo(position, true);
-	}, [queue, repeat, goTo]);
+		} else startTrack(true);
+	}, [player, startTrack]);
 
 	// 곡이 끝나면: 한 곡 반복이면 다시, 아니면 다음 곡
 	const onEnded = useCallback(() => {
-		if (repeat === 'one' && audioRef.current) {
-			audioRef.current.currentTime = 0;
+		const result = player.ended();
+		if (result === 'repeat') {
+			if (audioRef.current) audioRef.current.currentTime = 0;
 			play();
-			return;
-		}
-		const position = nextPosition(queue, repeat);
-		if (position === null) {
+		} else if (result === 'stopped') {
 			setIsPlaying(false);
-			goTo(0, false);
-		} else goTo(position, true);
-	}, [queue, repeat, play, goTo]);
+			startTrack(false);
+		} else startTrack(true);
+	}, [player, play, startTrack]);
 
 	const playFrom = useCallback(
 		(id: string, trackId?: string) => {
-			const ids = findPlaylist(id).trackIds;
-			const start = trackId ?? (shuffle ? ids[Math.floor(Math.random() * ids.length)] : ids[0]);
-			setPlaylistId(id);
+			player.playFrom(id, trackId);
 			playAfterLoad.current = true;
 			setCurrentTime(0);
-			setQueue(buildQueue(ids, start, shuffle));
-			if (audioRef.current && audioRef.current.src.endsWith(findTrack(start).src)) audioRef.current.currentTime = 0;
+			const start = findTrack(currentTrackId(player.getState()));
+			if (audioRef.current && audioRef.current.src.endsWith(start.src)) audioRef.current.currentTime = 0;
 		},
-		[shuffle]
+		[player]
 	);
 
 	const togglePlayPause = useCallback(() => (isPlaying ? pause() : play()), [isPlaying, pause, play]);
@@ -177,15 +175,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 		if (audioRef.current) audioRef.current.volume = value;
 		setVolumeState(value);
 	}, []);
-
-	// 셔플을 켜고 끄면 지금 곡은 그대로 두고 나머지 순서만 바꾼다
-	const toggleShuffle = useCallback(() => {
-		const next = !shuffle;
-		setShuffle(next);
-		setQueue(buildQueue(findPlaylist(playlistId).trackIds, track.id, next));
-	}, [shuffle, playlistId, track.id]);
-
-	const cycleRepeat = useCallback(() => setRepeat(nextRepeatMode), []);
 
 	const stopAndReset = useCallback(() => {
 		pause();
@@ -231,9 +220,9 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 				previous,
 				seekTo,
 				setVolume,
-				toggleShuffle,
-				cycleRepeat,
-				setRepeat,
+				toggleShuffle: player.toggleShuffle,
+				cycleRepeat: player.cycleRepeat,
+				setRepeat: player.setRepeat,
 				stopAndReset,
 			}}
 		>

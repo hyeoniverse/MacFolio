@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { formatTime } from './library';
+import { formatTime } from '@macfolio/desktop-core/music';
 import { useMusic } from './MusicContext';
 import '@/apps/music/SeekBar.css';
 
