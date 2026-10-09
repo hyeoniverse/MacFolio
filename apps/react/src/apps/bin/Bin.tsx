@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { requestOpen } from '@/shared/lib/openRequest';
 import Button from '@/shared/ui/button/Button';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
