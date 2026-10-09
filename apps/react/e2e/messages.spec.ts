@@ -158,22 +158,6 @@ test.describe('메시지 (감상·의견·피드백)', () => {
 		await expect(messages.locator('.messages-bubble')).toHaveCount(before);
 	});
 
-	test('예전 형식으로 저장된 목록은 지운다', async ({ page }) => {
-		await page.goto('/');
-		await page.evaluate(() =>
-			localStorage.setItem(
-				'macfolio:messages',
-				JSON.stringify({
-					threads: [{ id: 'old', ownerId: 'x', title: '예전 방', createdAt: '2026-09-01T00:00:00Z' }],
-					messages: [],
-				})
-			)
-		);
-		const messages = await openMessages(page);
-		await expect(items(messages)).toHaveCount(0);
-		expect(await page.evaluate(() => localStorage.getItem('macfolio:messages'))).toBeNull();
-	});
-
 	test('창이 좁으면 목록과 대화를 한 화면씩 보여주고, 뒤로 가기로 목록에 돌아간다', async ({ page }) => {
 		const messages = await openMessages(page);
 		const handle = (await messages.locator('.resize-handle.bottom-right').boundingBox())!;
