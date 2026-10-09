@@ -150,10 +150,11 @@ test.describe('데스크톱', () => {
 	});
 
 	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
-		// 스크립트를 늦게 받게 해서 로딩 화면이 뜨기 전의 모습을 본다
+		// 앱 스크립트(빌드한 /assets/*.js)를 늦게 받게 해서 로딩 화면이 뜨기 전의 모습을 본다.
+		// <head>의 theme-boot.js는 HTML 읽기를 멈추는 작은 스크립트라 붙잡지 않는다
 		let release = () => {};
 		const held = new Promise<void>((resolve) => (release = resolve));
-		await page.route(/\.js$/, async (route) => {
+		await page.route(/\/assets\/.*\.js$/, async (route) => {
 			await held;
 			await route.continue();
 		});
