@@ -29,6 +29,11 @@ test.describe('프로젝트 앱', () => {
 		// 불러온 뒤에는 불러오는 중 화면이 사라진다
 		await expect(app.getByRole('status')).toHaveCount(0);
 
+		// 안의 사이트는 sandbox에 들어 있고, 이 사이트를 다른 주소로 바꾸는 권한(allow-top-navigation)은 없다
+		const sandbox = await app.locator('iframe[title="NewPick 뉴픽"]').getAttribute('sandbox');
+		expect(sandbox?.split(' ')).toEqual(expect.arrayContaining(['allow-scripts', 'allow-same-origin']));
+		expect(sandbox).not.toContain('allow-top-navigation');
+
 		// 닫아도 고정된 아이콘은 Dock에 남는다
 		await app.getByRole('button', { name: '닫기', exact: true }).click();
 		await expect(app).toBeHidden();
@@ -62,5 +67,24 @@ test.describe('프로젝트 앱', () => {
 			await expect(appWindow(page, app).locator(`iframe[title="${title}"]`)).toBeVisible();
 			await dockItem(page, 'safari').click();
 		}
+	});
+
+	test('안에 띄운 사이트의 링크가 이 사이트를 다른 주소로 바꾸지 못한다', async ({ page }) => {
+		// 브라우저는 클릭 없이 맨 위 창을 옮기는 것은 이미 막는다. sandbox는 클릭으로 옮기는 것(target="_top")까지 막는다
+		await page.route('https://newpick-tan.vercel.app/**', (route) =>
+			route.fulfill({
+				contentType: 'text/html; charset=utf-8',
+				body: '<h1>NewPick 첫 화면</h1><a href="https://evil.example/" target="_top">바깥으로</a>',
+			})
+		);
+		await page.route('https://evil.example/**', (route) => route.fulfill({ body: 'evil' }));
+		await enterDesktop(page);
+		await dockItem(page, 'newpick').click();
+		const site = page.frameLocator('iframe[title="NewPick 뉴픽"]');
+		await expect(site.getByRole('heading')).toHaveText('NewPick 첫 화면');
+		await site.getByRole('link', { name: '바깥으로' }).click();
+		await page.waitForTimeout(500);
+		expect(new URL(page.url()).hostname).toBe('localhost');
+		await expect(appWindow(page, 'newpick')).toBeVisible();
 	});
 });
