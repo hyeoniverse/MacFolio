@@ -6,6 +6,7 @@ import { useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
 import { PROFILE } from '@/shared/profile';
 import ComposeView from './components/ComposeView';
+import CopyAddress, { OWNER_ADDRESS } from './components/CopyAddress';
 import MailMobile from './components/MailMobile';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { formatMailDate, INBOX } from './contact';
@@ -37,7 +38,7 @@ export interface ListMail {
 	replyable?: boolean;
 }
 
-const OWNER = `${PROFILE.name} <${PROFILE.email}>`;
+const OWNER = OWNER_ADDRESS;
 
 const fromServer = (mail: ContactMail, replyable: boolean): ListMail => ({
 	id: mail.id,
@@ -370,8 +371,11 @@ const Mail: React.FC = () => {
 										<Monogram name={selected.fromName} />
 										<div>
 											<strong>{selected.fromName}</strong>
-											<p>{selected.fromEmail}</p>
-											<p>받는 사람: {selected.to}</p>
+											{/* 사이트 주인의 주소는 누르면 복사한다 */}
+											<p>
+												{selected.fromEmail === PROFILE.email ? <CopyAddress withName={false} /> : selected.fromEmail}
+											</p>
+											<p>받는 사람: {selected.to === OWNER ? <CopyAddress /> : selected.to}</p>
 										</div>
 										<time dateTime={selected.date}>{formatMailDate(selected.date)}</time>
 									</header>

@@ -534,7 +534,13 @@
 	min-width: 0;
 }
 
+/* 주소가 길면 글자만 줄인다 (단추는 자르지 않는다: 복사했어요 말풍선이 위로 나온다) */
 .mail-compose.sheet .mail-recipient {
+	display: flex;
+	min-width: 0;
+}
+
+.mail-compose.sheet .mail-recipient .mail-copy-text {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;

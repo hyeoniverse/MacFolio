@@ -1,4 +1,5 @@
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
+import CopyAddress from './CopyAddress';
 import React, { useEffect, useState } from 'react';
 import { PROFILE } from '@/shared/profile';
 import { LIMITS, validateContact, type ContactErrors, type ContactInput } from '../contact';
@@ -121,9 +122,8 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 
 			<div className="mail-compose-row">
 				<span>받는 사람:</span>
-				<span className="mail-recipient">
-					{PROFILE.name} &lt;{PROFILE.email}&gt;
-				</span>
+				{/* 누르면 이메일 주소를 복사한다 */}
+				<CopyAddress className="mail-recipient" />
 			</div>
 			<Row label="이름:" error={errors.name}>
 				<input aria-label="이름" maxLength={LIMITS.name} value={form.name} onChange={field('name')} autoFocus />
