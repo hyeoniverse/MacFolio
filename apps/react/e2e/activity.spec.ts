@@ -180,6 +180,53 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await expect(activity.getByRole('heading', { name: '서버 자원 감시가 꺼져 있습니다' })).toBeVisible();
 	});
 
+	test('서버 탭 (종량제): 이번 달 요금과 예산 한도, 키가 없으면 넣는 방법', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const base = {
+			mode: 'payg',
+			shape: 'VM.Standard.E2.1.Micro',
+			networkMbps: 50,
+			latest: null,
+			series: [],
+			alert: { mailReady: true, lastSentAt: null },
+		};
+		api.resources = {
+			...base,
+			billing: {
+				configured: true,
+				error: null,
+				data: {
+					monthToDate: 0.85,
+					currency: 'USD',
+					updatedAt: new Date().toISOString(),
+					budgets: [
+						{ displayName: '월 1달러', amount: 1, actualSpend: 0.85, forecastedSpend: 0.95, resetPeriod: 'MONTHLY' },
+					],
+				},
+			},
+		};
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '서버' }).click();
+
+		await expect(activity.getByRole('region', { name: '서버 상태' })).toContainText('종량제');
+		await expect(activity.getByRole('region', { name: '서버 상태' })).toContainText(
+			'예산의 80%·100%를 넘으면 보냅니다'
+		);
+		await expect(activity.getByRole('table', { name: '유휴 회수 기준' })).toHaveCount(0);
+		const billing = activity.getByRole('region', { name: '요금' });
+		await expect(billing).toContainText('이번 달 US$0.85');
+		await expect(billing).toContainText('US$0.85 / US$1.00 (85%)');
+		await expect(billing.getByRole('meter', { name: '월 1달러 예산 사용' })).toHaveAttribute('aria-valuenow', '85');
+
+		api.resources = { ...base, billing: { configured: false, error: null, data: null } };
+		await activity.getByRole('tab', { name: '개요' }).click();
+		await activity.getByRole('tab', { name: '서버' }).click();
+		await expect(activity.getByRole('region', { name: '요금' })).toContainText('OCI_TENANCY_OCID');
+	});
+
 	test('서버 탭은 관리자만', async ({ page }) => {
 		await fakeApi(page);
 		await enterDesktop(page);

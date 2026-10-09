@@ -661,7 +661,7 @@ RESOURCE_NETWORK_MBPS=50       # 네트워크 사용률의 기준 (shape의 대�
 
 - 1분마다 CPU·메모리(VM 전체, 컨테이너 안의 `/proc`으로 읽는다)와 네트워크(API 컨테이너가 주고받은 양)를 DB에 남기고, 14일 뒤 지운다. compose를 바꿀 필요는 없다
 - `free`: 최근 7일 CPU 95퍼센타일·네트워크 평균(A1이면 메모리 평균도)이 모두 20% 미만이면 '회수 위험'. 한 시간마다 확인해 위험하면 메일로 알린다 (3일에 한 번까지)
-- `payg`: 회수 대상이 아니라서 사용률만 남기고 보여 준다
+- `payg`: 회수 대상이 아니라서 사용률을 남기고 보여 준다. OCI API 키가 있으면 **이번 달 요금과 예산 한도**도 보이고, 예산의 80%·100%를 넘으면 메일로 알린다 (달마다 한 번씩). 예산은 콘솔 → Billing & Cost Management → Budgets에서 만든다
 - 사이트의 **활동 상태 보기 → 서버** 탭(관리자만)에서 본다. 켜고 1~2분 뒤부터 값이 보인다
 - 알림 메일은 연락 메일 설정(`RESEND_API_KEY`·`CONTACT_FROM`·`CONTACT_TO`)을 그대로 쓴다. 셋이 다 있는지는 `curl https://macfolio-api.hyeoniverse.com/contact`의 `"enabled":true`로 확인한다 (비밀 값은 보이지 않는다). 받는 주소를 따로 두려면 `RESOURCE_ALERT_TO`
 - 로컬(macOS)에서는 동작하지 않는다. 사용률을 Linux의 `/proc`에서 읽기 때문이다
@@ -674,6 +674,25 @@ cd ~/deploy
 echo 'RESOURCE_MONITOR=free' >> api.env
 docker compose up -d api
 ```
+
+종량제에서 요금을 보려면 OCI API 키를 만든다:
+
+1. 콘솔 → 오른쪽 위 프로필 → **내 프로필 → API 키 → API 키 추가** → 키 쌍을 만들고 **개인 키를 내려받는다**
+2. 추가하면 나오는 설정 미리보기에서 `tenancy`, `user`, `fingerprint`, `region`(홈 리전)을 옮겨 적는다
+3. 서버 `~/deploy/api.env`에 넣고 `docker compose up -d api`:
+
+```bash
+RESOURCE_MONITOR=payg
+OCI_TENANCY_OCID=ocid1.tenancy.oc1..
+OCI_USER_OCID=ocid1.user.oc1..
+OCI_FINGERPRINT=aa:bb:cc:...
+OCI_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----"   # 줄바꿈을 \n으로
+OCI_REGION=ap-chuncheon-1
+```
+
+- 개인 키를 한 줄로 만들기: `awk 'NF {sub(/\r/, ""); printf "%s\\n", $0}' 내려받은키.pem`
+- 키를 만든 사용자가 테넌시 관리자면 따로 권한을 줄 필요가 없다. 다른 사용자면 그 사용자의 그룹에 `Allow group <그룹> to read usage-budgets in tenancy`, `Allow group <그룹> to read usage-reports in tenancy` 정책을 준다
+- 키가 틀리거나 권한이 없으면 서버 탭의 요금 칸에 Oracle이 돌려준 이유(예: `401 NotAuthenticated`)가 보인다
 
 - 네트워크는 Oracle이 재는 VM 전체 값이 아니라 API 컨테이너가 주고받은 양이다 (tunnel이 Cloudflare와 주고받는 양, 이미지 받기 등은 따로 세지 않는다). 방문 트래픽은 모두 tunnel을 거쳐 API로 오므로 흐름은 비슷하다
 
