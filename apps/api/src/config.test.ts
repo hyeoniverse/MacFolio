@@ -15,7 +15,8 @@ describe('loadConfig', () => {
 			trustProxy: 0,
 			commentRateLimit: 5,
 			// 쓰기 경로의 1분 제한 (common/rate-limit.ts). login·comment는 위 값과 같다
-			rateLimits: { login: 10, comment: 5, write: 60, upload: 20, demo: 10, events: 120 },
+			likeRateLimit: 30,
+			rateLimits: { login: 10, comment: 5, like: 30, write: 60, upload: 20, demo: 10, events: 120 },
 			ipHashSecret: 'macfolio-dev-ip-hash-secret',
 			// 사진 찾기 키가 없으면 그 서비스만 꺼진다
 			stockPhotos: { unsplashAccessKey: undefined, pexelsApiKey: undefined },
