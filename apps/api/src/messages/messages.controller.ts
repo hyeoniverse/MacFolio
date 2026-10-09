@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Req, Res } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -10,12 +10,12 @@ import {
 	ApiTags,
 	ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthService } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { VisitorsService } from '../visitors/visitors.service.js';
 import { MessagesService } from './messages.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 메시지 앱 (감상·의견·피드백). 누구나 읽고 쓴다. 이름·비밀번호는 받지 않는다 (방문자 쿠키로 정한 이름).
@@ -48,8 +48,7 @@ export class MessagesController {
 	}
 
 	@Post('threads')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@RateLimit('comment')
 	@ApiBody({ schema: { example: { body: '디자인이 깔끔해요' } } })
 	@ApiCreatedResponse({ description: '새 피드백과 그 첫 말풍선' })
 	@ApiBadRequestResponse({ description: '내용이 비었거나 500자를 넘는다' })
@@ -60,8 +59,7 @@ export class MessagesController {
 	}
 
 	@Post('threads/:id')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@RateLimit('comment')
 	@ApiBody({ schema: { example: { body: '저도 그래요' } } })
 	@ApiCreatedResponse({ description: '단 답글' })
 	@ApiNotFoundResponse({ description: '피드백이 없다' })
@@ -77,8 +75,7 @@ export class MessagesController {
 
 	@Delete(':id')
 	@HttpCode(204)
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@RateLimit('comment')
 	@ApiNoContentResponse({ description: '지웠다' })
 	@ApiForbiddenResponse({ description: '다른 브라우저에서 쓴 메시지다' })
 	@ApiNotFoundResponse({ description: '메시지가 없다' })

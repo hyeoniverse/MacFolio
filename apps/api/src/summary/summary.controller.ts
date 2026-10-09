@@ -9,6 +9,7 @@ import {
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { SummaryService } from './summary.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * AI 요약 데모 (Safari의 HYEONIVERSE 페이지). 붙여 넣은 글을 Groq(실패하면 Gemini)가 한국어·영어로 한두 문장씩 요약한다.
@@ -29,6 +30,7 @@ export class SummaryController {
 	}
 
 	@Post()
+	@RateLimit('demo')
 	@HttpCode(200)
 	@ApiBody({ schema: { example: { text: '흩어져 있던 프로젝트와 글을 한 곳에서 보여 주는 개인 포트폴리오입니다.' } } })
 	@ApiOkResponse({

@@ -12,6 +12,7 @@ import {
 import { AdminGuard } from '../auth/admin.guard.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { ImagesService } from './images.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 글에 넣을 사진 찾기 (Unsplash, Pexels). API 키는 서버에만 두고, 관리자만 쓴다.
@@ -45,6 +46,7 @@ export class ImagesController {
 	}
 
 	@Post('unsplash/:id/download')
+	@RateLimit('write')
 	@HttpCode(204)
 	@ApiNoContentResponse({ description: 'Unsplash에 사진을 썼다고 알렸다 (가이드라인)' })
 	async trackUnsplashDownload(@Param('id') id: string) {

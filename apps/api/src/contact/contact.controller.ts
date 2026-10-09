@@ -15,6 +15,7 @@ import type { Request, Response } from 'express';
 import { AdminGuard } from '../auth/admin.guard.js';
 import { VisitorsService } from '../visitors/visitors.service.js';
 import { ContactService } from './contact.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 메일 앱의 연락 메일 (#25): 방문자가 사이트 주인에게 보낸다. 보낸 메일은 보낸 브라우저(방문자 쿠키)의 보낸 편지함에만 보이고,
@@ -38,6 +39,7 @@ export class ContactController {
 	}
 
 	@Post()
+	@RateLimit('comment')
 	@HttpCode(200)
 	@ApiBody({
 		schema: {
@@ -82,6 +84,7 @@ export class ContactController {
 	@Post(':id/reply')
 	@HttpCode(200)
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth()
 	@ApiBody({ schema: { example: { body: '연락 주셔서 감사합니다!' } } })
 	@ApiOkResponse({ description: '답장을 보냈다: 답장이 붙은 메일. 방문자의 주소로 가고 Reply-To는 사이트 주인' })
