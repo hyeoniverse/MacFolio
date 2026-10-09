@@ -458,7 +458,6 @@
 
 /* 그래프: 선은 왼쪽부터 그려지고, 아래 칠은 서서히 */
 .activity-chart path:is(.visits, .visitors) {
-	stroke-dasharray: 1;
 	animation: draw-line var(--duration-slow) var(--ease-out) both;
 }
 
@@ -475,4 +474,84 @@
 /* 방문을 펼치면 흐름이 위에서 내려온다 */
 .activity-live ol {
 	animation: drop-in var(--duration) var(--ease-out);
+}
+
+/* 서버 탭 */
+.server-summary {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+	margin-bottom: 14px;
+}
+
+.server-risk.danger strong {
+	color: var(--activity-red);
+}
+
+.server-risk.warning strong {
+	color: #c27c0e;
+}
+
+.server-risk.safe strong {
+	color: var(--activity-green);
+}
+
+.server-conditions {
+	width: 100%;
+	margin-bottom: 14px;
+	border-collapse: collapse;
+	font-size: 13px;
+}
+
+.server-conditions th,
+.server-conditions td {
+	padding: 6px 8px;
+	border-bottom: 1px solid var(--color-divider);
+	text-align: left;
+}
+
+.server-conditions th {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.server-conditions tr.below td:last-child {
+	color: var(--activity-red);
+	font-weight: 600;
+}
+
+.server-charts {
+	display: grid;
+	gap: 10px;
+}
+
+.server-chart-title {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 4px;
+	font-size: 12px;
+}
+
+.server-chart svg {
+	height: 80px;
+}
+
+.server-chart .threshold {
+	stroke: var(--activity-red);
+	stroke-dasharray: 4 4;
+	stroke-width: 1;
+	vector-effect: non-scaling-stroke;
+}
+
+.activity-note {
+	margin: 10px 0 0;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+@container (max-width: 560px) {
+	.server-summary {
+		grid-template-columns: 1fr;
+	}
 }
