@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { batteryOf, useServerResources } from '@/apps/activity/serverResources';
 import type { StatusBarTone } from '@/desktop/mobile/statusBarTone';
 import ServerSignal from '@/shared/server/ServerSignal';
 import { useServerStatus } from '@/shared/server/serverStatus';
@@ -31,6 +32,9 @@ interface Props {
  */
 const MobileStatusBar = ({ ref, tone, onApp, hidden = false, onOpen }: Props) => {
 	const now = useClock();
+	// 배터리 자리: 관리자에게는 서버 자원 (데스크톱 메뉴 막대와 같다). 유휴 회수에서 먼 만큼 차 있다
+	const resources = useServerResources();
+	const battery = resources.enabled ? batteryOf(resources.status) : null;
 
 	return (
 		<div
@@ -47,8 +51,8 @@ const MobileStatusBar = ({ ref, tone, onApp, hidden = false, onOpen }: Props) =>
 			<span className="mobile-statusbar-icons" aria-hidden="true">
 				<i className="fa-solid fa-signal"></i>
 				<MobileServerSignal />
-				<span className="mobile-battery">
-					<span></span>
+				<span className={`mobile-battery ${battery?.tone ?? ''}`} data-fill={battery?.fill}>
+					<span style={battery ? { flex: 'none', width: `${battery.fill}%` } : undefined}></span>
 				</span>
 			</span>
 		</div>

@@ -90,6 +90,15 @@
 	background-color: currentColor;
 }
 
+/* 관리자: 서버 자원이 유휴 회수 기준에 가까우면 주황, 걸려 있으면 빨강 (테두리는 글자 색 그대로) */
+.mobile-battery.warning span {
+	background-color: var(--color-warning, #f5a623);
+}
+
+.mobile-battery.danger span {
+	background-color: var(--color-danger, #e5484d);
+}
+
 /* ─── 음악 위젯 (홈 화면, 제어 센터) ─── */
 .music-widget {
 	display: flex;
