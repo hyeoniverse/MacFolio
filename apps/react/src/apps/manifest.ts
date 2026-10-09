@@ -67,6 +67,8 @@ export interface AppManifest {
 	windowSize?: { width: number; height: number };
 	/** 모바일에서 다른 이름·아이콘으로 보여줄 때 (휴대폰에 더 어울리는 앱으로 바꿔 보여준다) */
 	mobile?: { label: string; icon: string };
+	/** 휴대폰 홈 화면에 두지 않는 앱 (iOS에는 없는 앱) */
+	desktopOnly?: boolean;
 	/** 창을 여는 대신 실행할 동작 */
 	action?: { type: 'link'; url: string } | { type: 'share' };
 }
@@ -116,7 +118,8 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		inLaunchpad: true,
 		windowSize: { width: 1000, height: 640 },
 	},
-	bin: { label: '휴지통', icon: 'bin.png', inDock: false },
+	// 이 사이트에서 버린 기능과, 관리자에게는 지운 메모. Dock 오른쪽 끝에 따로 있고 휴대폰 홈 화면에는 두지 않는다
+	bin: { label: '휴지통', icon: 'bin.png', inDock: false, desktopOnly: true, windowSize: { width: 860, height: 540 } },
 };
 
 /**
