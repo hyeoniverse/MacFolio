@@ -52,6 +52,7 @@ describe('이미지·첨부 파일 (e2e)', () => {
 		// 배경화면이 Upload를 가리키므로 먼저 지운다
 		await prisma.wallpaper.deleteMany();
 		await prisma.upload.deleteMany();
+		await prisma.post.deleteMany();
 	});
 
 	afterAll(async () => {
@@ -107,5 +108,96 @@ describe('이미지·첨부 파일 (e2e)', () => {
 		expect(await prisma.upload.count()).toBe(0);
 		await request(server()).get('/files/aaaaaaaaaaaaaaaa').expect(404);
 		await request(server()).get('/files/../etc').expect(404);
+	});
+
+	describe('관리자의 파일 목록과 지우기', () => {
+		const upload = async (name: string) =>
+			(await request(server()).post('/files').set('Cookie', adminCookie).attach('file', PNG, name).expect(201)).body
+				.id as string;
+		const post = (slug: string, body: string) =>
+			prisma.post.create({
+				data: {
+					slug,
+					title: slug,
+					date: '2026-10-09',
+					category: '기타',
+					summary: '',
+					body,
+					publishedAt: new Date(),
+					updatedBy: 'hyeoniverse',
+				},
+			});
+
+		it('파일마다 지금 글, 예전 버전, 배경화면 중 어디에서 쓰는지 알려 준다', async () => {
+			const inPost = await upload('in-post.png');
+			const inRevision = await upload('in-revision.png');
+			const inWallpaper = await upload('wallpaper.png');
+			const unused = await upload('unused.png');
+			await post('a', `![그림](https://api.example.com/files/${inPost})`);
+			await post('b', '본문');
+			await prisma.postRevision.create({
+				data: {
+					postSlug: 'b',
+					title: 'b',
+					date: '2026-10-01',
+					category: '기타',
+					summary: '',
+					body: `[첨부](/files/${inRevision})`,
+					createdBy: 'hyeoniverse',
+				},
+			});
+			await prisma.wallpaper.create({
+				data: { id: 'wallpaper-1', name: '바다', imageId: inWallpaper, thumbId: inWallpaper, createdBy: 'hyeoniverse' },
+			});
+
+			const list = await request(server()).get('/files').set('Cookie', adminCookie).expect(200);
+			const usage = Object.fromEntries(
+				list.body.map((file: { id: string; usedBy: unknown }) => [file.id, file.usedBy])
+			);
+			expect(usage[inPost]).toEqual({ posts: ['a'], revisions: [], wallpaper: false });
+			expect(usage[inRevision]).toEqual({ posts: [], revisions: ['b'], wallpaper: false });
+			expect(usage[inWallpaper]).toEqual({ posts: [], revisions: [], wallpaper: true });
+			expect(usage[unused]).toEqual({ posts: [], revisions: [], wallpaper: false });
+			expect(list.body[0]).toMatchObject({ name: 'unused.png', image: true, path: `/files/${unused}` });
+		});
+
+		it('안 쓰는 파일과 예전 버전에서만 쓰는 파일은 지우고, 지금 글이나 배경화면이 쓰는 파일은 409', async () => {
+			const inPost = await upload('in-post.png');
+			const inRevision = await upload('in-revision.png');
+			const inWallpaper = await upload('wallpaper.png');
+			const unused = await upload('unused.png');
+			await post('a', `![그림](/files/${inPost})`);
+			await prisma.postRevision.create({
+				data: {
+					postSlug: 'a',
+					title: 'a',
+					date: '2026-10-01',
+					category: '기타',
+					summary: '',
+					body: `/files/${inRevision}`,
+					createdBy: 'hyeoniverse',
+				},
+			});
+			await prisma.wallpaper.create({
+				data: { id: 'wallpaper-1', name: '바다', imageId: inWallpaper, thumbId: inWallpaper, createdBy: 'hyeoniverse' },
+			});
+
+			await request(server()).delete(`/files/${unused}`).set('Cookie', adminCookie).expect(204);
+			await request(server()).delete(`/files/${inRevision}`).set('Cookie', adminCookie).expect(204);
+			const blocked = await request(server()).delete(`/files/${inPost}`).set('Cookie', adminCookie).expect(409);
+			expect(blocked.body.message).toContain('a');
+			await request(server()).delete(`/files/${inWallpaper}`).set('Cookie', adminCookie).expect(409);
+			await request(server()).delete(`/files/${unused}`).set('Cookie', adminCookie).expect(404);
+			expect((await prisma.upload.findMany({ select: { id: true } })).map((row) => row.id).sort()).toEqual(
+				[inPost, inWallpaper].sort()
+			);
+		});
+
+		it('관리자가 아니면 목록을 보거나 지울 수 없다 (401)', async () => {
+			const id = await upload('a.png');
+			await request(server()).get('/files').expect(401);
+			await request(server()).delete(`/files/${id}`).expect(401);
+			expect(await prisma.upload.count()).toBe(1);
+		});
 	});
 });

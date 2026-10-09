@@ -347,6 +347,93 @@
 	color: #fff;
 }
 
+/* 서버 파일 (관리자) */
+.bin-files {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.bin-files-summary {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 10px 16px;
+	border-bottom: 1px solid var(--color-divider);
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.bin-file-list {
+	flex: 1;
+	margin: 0;
+	padding: 6px;
+	overflow-y: auto;
+	list-style: none;
+}
+
+.bin-file {
+	display: grid;
+	grid-template-columns: 40px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 0 12px;
+	padding: 6px 10px;
+	border-radius: 6px;
+}
+
+.bin-file:nth-child(even) {
+	background-color: var(--color-row-alt, rgba(127, 127, 127, 0.05));
+}
+
+.bin-file-thumb {
+	grid-row: 1 / 4;
+	width: 40px;
+	height: 40px;
+	border-radius: 6px;
+	background-color: var(--color-divider);
+	color: var(--color-text-secondary);
+	font-size: 20px;
+	line-height: 40px;
+	text-align: center;
+	object-fit: cover;
+}
+
+.bin-file-name {
+	overflow: hidden;
+	font-size: 13px;
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bin-file-meta,
+.bin-file-usage {
+	grid-column: 2;
+	overflow: hidden;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bin-file.removable .bin-file-usage {
+	color: var(--bin-deleted);
+}
+
+.bin-file-remove {
+	grid-row: 1 / 4;
+	grid-column: 3;
+}
+
+.bin-empty-note {
+	margin: 40px auto;
+	color: var(--color-text-secondary);
+	font-size: 13px;
+}
+
 /* 좁은 창: 사이드바는 위의 탭 줄로, 정보는 목록 아래로 */
 @container (max-width: 620px) {
 	.bin-body {
