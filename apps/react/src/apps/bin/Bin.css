@@ -427,9 +427,24 @@
 }
 
 .bin-empty-note {
+	max-width: 360px;
 	margin: 40px auto;
 	color: var(--color-text-secondary);
 	font-size: 13px;
+	text-align: center;
+}
+
+.bin-files-note {
+	flex: none;
+	margin: 0;
+	padding: 8px 16px;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.bin-empty-note .bin-files-note {
+	padding: 8px 0 0;
 }
 
 /* 좁은 창: 사이드바는 위의 탭 줄로, 정보는 목록 아래로 */
