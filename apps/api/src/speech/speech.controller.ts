@@ -9,6 +9,7 @@ import {
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { SpeechService } from './speech.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 음성 만들기 데모 (Safari의 HYEONIVERSE 페이지). 짧은 글을 Fish → Google → Edge 차례로 MP3로 만든다.
@@ -29,6 +30,7 @@ export class SpeechController {
 	}
 
 	@Post()
+	@RateLimit('demo')
 	@HttpCode(200)
 	@ApiBody({ schema: { example: { text: '안녕하세요, 방금 만든 목소리입니다.', lang: 'ko', skip: ['fish'] } } })
 	@ApiOkResponse({

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Req, Res } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -10,12 +10,12 @@ import {
 	ApiTags,
 	ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthService } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { VisitorsService } from '../visitors/visitors.service.js';
 import { CommentsService } from './comments.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 블로그 글의 댓글. 누구나 읽고 쓴다. 방문자는 쿠키로 정한 이름으로 쓰고, 같은 브라우저에서 쓴 것만 지운다.
@@ -42,8 +42,7 @@ export class CommentsController {
 	}
 
 	@Post('posts/:slug/comments')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@RateLimit('comment')
 	@ApiBody({ schema: { example: { body: '잘 봤어요!' } } })
 	@ApiCreatedResponse({ description: '쓴 댓글. 처음 쓰는 브라우저에는 방문자 쿠키를 준다' })
 	@ApiBadRequestResponse({ description: '입력 규칙을 어겼다 (내용 1~500자)' })
@@ -60,8 +59,7 @@ export class CommentsController {
 
 	@Delete('comments/:id')
 	@HttpCode(204)
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ login: true })
+	@RateLimit('comment')
 	@ApiNoContentResponse({ description: '지웠다' })
 	@ApiForbiddenResponse({ description: '다른 브라우저에서 쓴 댓글이다' })
 	@ApiNotFoundResponse({ description: '댓글이 없다' })
