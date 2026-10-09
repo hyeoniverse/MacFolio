@@ -39,6 +39,8 @@ export default defineConfig({
 	// 빌드 결과를 대상으로 테스트한다 (pnpm build 후 실행)
 	webServer: {
 		command: `vite preview --port ${PORT} --strictPort`,
+		// 미리보기도 배포와 같은 보안 헤더(CSP)를 붙인다 (vite.config.ts). 가짜 API(e2e/fakeApi.ts)를 API 주소로 더한다
+		env: { CSP_TEST_API_URL: 'http://api.test' },
 		url: `http://localhost:${PORT}`,
 		reuseExistingServer: !process.env.CI,
 	},
