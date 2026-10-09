@@ -12,6 +12,10 @@ const formatDate = (iso: string) => new Date(iso).toLocaleDateString('ko-KR');
  * 서버 파일 (관리자): 글에 넣은 이미지·첨부와 배경화면. 쓰는 곳이 없는 파일을 지운다.
  * 지금 글이나 배경화면이 쓰는 파일은 지울 수 없다 (서버도 막는다)
  */
+/** 무엇이 여기 보이는지. 블로그 글의 이미지는 대부분 저장소에 있어 사이트와 함께 배포되므로 여기 없다 */
+const SCOPE_NOTE =
+	'메모 편집기로 올린 이미지·첨부 파일과 시스템 설정에서 올린 배경화면이 여기 보입니다. 저장소 글(Markdown)의 이미지는 사이트와 함께 배포되어 서버에 없습니다.';
+
 const ServerFiles = ({ files }: { files: ReturnType<typeof useServerFiles> }) => {
 	const { loaded, rows, reload } = files;
 	const [confirm, setConfirm] = useState<ServerFile[] | null>(null);
@@ -26,7 +30,13 @@ const ServerFiles = ({ files }: { files: ReturnType<typeof useServerFiles> }) =>
 	};
 
 	if (!loaded) return <p className="bin-empty-note">불러오는 중…</p>;
-	if (rows.length === 0) return <p className="bin-empty-note">서버에 올린 파일이 없습니다.</p>;
+	if (rows.length === 0)
+		return (
+			<div className="bin-empty-note">
+				<p>서버에 올린 파일이 없습니다.</p>
+				<p className="bin-files-note">{SCOPE_NOTE}</p>
+			</div>
+		);
 	return (
 		<div className="bin-files">
 			<div className="bin-files-summary">
@@ -39,6 +49,7 @@ const ServerFiles = ({ files }: { files: ReturnType<typeof useServerFiles> }) =>
 					</Button>
 				)}
 			</div>
+			<p className="bin-files-note">{SCOPE_NOTE}</p>
 			<ul className="bin-file-list" aria-label="서버 파일">
 				{rows.map(({ file, usage }) => (
 					<li key={file.id} className={`bin-file${usage.removable ? ' removable' : ''}`}>
