@@ -156,8 +156,42 @@
 	outline-offset: 2px;
 }
 
+.about-mac-link {
+	margin-top: 16px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-accent);
+	font: inherit;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+.about-mac-link:hover {
+	text-decoration: underline;
+}
+
+.about-mac-link:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+	border-radius: 3px;
+}
+
 .about-mac-legal {
-	margin: 16px 0 0;
+	margin: 4px 0 0;
 	color: var(--color-text-secondary);
 	font-size: 10px;
+}
+
+/* 바깥 링크(GitHub)의 ↗: 새 탭으로 연다는 표시 (시스템 설정의 정보에도 쓴다) */
+.profile-external-link i {
+	margin-left: 4px;
+	font-size: 0.75em;
+	opacity: 0.7;
+	vertical-align: 1px;
+}
+
+/* 이 창의 링크는 값처럼 보이다가, 올리면 파란 밑줄 */
+.about-mac-specs .profile-external-link {
+	color: var(--color-accent);
 }

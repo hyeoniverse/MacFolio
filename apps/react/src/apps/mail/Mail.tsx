@@ -12,6 +12,7 @@ import { formatMailDate, INBOX } from './contact';
 import { fetchReceivedMail, fetchSentMail, replyToMail, type ContactMail } from './mailboxApi';
 import { getMailSender, type SendOptions } from './sender';
 import type { ContactInput } from './contact';
+import { takeComposeRequest } from './composeRequest';
 import '@/apps/mail/Mail.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
@@ -169,6 +170,16 @@ const Mail: React.FC = () => {
 		setDetailOpen(true);
 		setNav('forward');
 	};
+
+	// 다른 곳(프로필의 이메일)에서 '새로운 메시지'를 열어 달라고 하면 (휴대폰은 MailMobile이 시트로 연다)
+	useEffect(() => {
+		if (mobile) return;
+		return takeComposeRequest(() => {
+			setComposing(true);
+			setDetailOpen(true);
+			setNav('forward');
+		});
+	}, [mobile]);
 
 	const backToList = () => {
 		setComposing(false);

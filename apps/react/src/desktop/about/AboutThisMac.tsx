@@ -1,27 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/useAppState';
-import { openExternal } from '@/shared/analytics/analytics';
-import { PROFILE, SKILLS } from '@/shared/profile';
+import { requestFinderDoc } from '@/apps/finder/openDoc';
+import { requestedSection } from '@/apps/settings/settingsRequest';
+import { PROFILE } from '@/shared/profile';
+import { PHOTO_URL, PROFILE_ROWS } from './profileInfo';
+import ProfileLink from './ProfileLink';
 import { closeAbout, useAboutOpen } from './aboutStore';
 import './AboutThisMac.css';
 
-const GITHUB_LOGIN = PROFILE.github.split('/').at(-1) ?? '';
-/** GitHub 프로필 사진. 132px 동그라미를 레티나 화면에서도 또렷하게 (2배) */
-const PHOTO = `https://github.com/${encodeURIComponent(GITHUB_LOGIN)}.png?size=280`;
-
-/** 이 Mac의 사양 자리에 놓는 프로필 (macOS의 칩·메모리·일련 번호·macOS 줄처럼) */
-const ROWS: { label: string; value: string; href?: string }[] = [
-	{ label: '직무', value: PROFILE.role },
-	{ label: '학교', value: PROFILE.school },
-	{ label: '위치', value: PROFILE.location },
-	{ label: '이메일', value: PROFILE.email, href: `mailto:${PROFILE.email}` },
-	{ label: 'GitHub', value: GITHUB_LOGIN, href: PROFILE.github },
-	{ label: '주요 기술', value: SKILLS.frontend.slice(0, 3).join(' · ') },
-];
-
 /**
  * Apple 메뉴의 '이 Mac에 관하여': macOS의 같은 창처럼 가운데 작은 창에 그림, 이름, 사양 줄, '추가 정보…'.
- * 이 Mac 대신 만든 사람(김정현)의 프로필을 보여 준다. 앱이 아니라 시스템 창이라 Dock·Finder에는 없다.
+ * 이 Mac 대신 만든 사람(김정현)의 프로필을 보여 준다. '추가 정보…'는 macOS처럼 시스템 설정의 '정보'를 연다. 앱이 아니라 시스템 창이라 Dock·Finder에는 없다.
  * 창의 빈 곳을 잡아 옮기고, 닫기 단추나 Esc로 닫는다 (최소화·확대는 macOS처럼 꺼져 있다)
  */
 const AboutThisMac = () => {
@@ -71,7 +60,7 @@ const AboutThisMac = () => {
 			</div>
 
 			{photo ? (
-				<img className="about-mac-photo" src={PHOTO} alt="" draggable={false} onError={() => setPhoto(false)} />
+				<img className="about-mac-photo" src={PHOTO_URL} alt="" draggable={false} onError={() => setPhoto(false)} />
 			) : (
 				<span className="about-mac-photo monogram" aria-hidden="true">
 					{PROFILE.name.slice(-2)}
@@ -81,25 +70,10 @@ const AboutThisMac = () => {
 			<p className="about-mac-subtitle">{PROFILE.nameEn}</p>
 
 			<dl className="about-mac-specs">
-				{ROWS.map(({ label, value, href }) => (
+				{PROFILE_ROWS.map(({ label, value, href }) => (
 					<div key={label}>
 						<dt>{label}</dt>
-						<dd>
-							{href ? (
-								<a
-									href={href}
-									onClick={(event) => {
-										if (href.startsWith('mailto:')) return;
-										event.preventDefault();
-										openExternal(href);
-									}}
-								>
-									{value}
-								</a>
-							) : (
-								value
-							)}
-						</dd>
+						<dd>{href ? <ProfileLink href={href}>{value}</ProfileLink> : value}</dd>
 					</div>
 				))}
 			</dl>
@@ -108,11 +82,25 @@ const AboutThisMac = () => {
 				type="button"
 				className="about-mac-more"
 				onClick={() => {
+					// macOS처럼 시스템 설정의 정보로 (만든 사람의 기술 전부, 이 사이트를 만든 기술)
+					requestedSection.setState({ section: 'about' });
 					closeAbout();
-					openApp('safari');
+					openApp('settings');
 				}}
 			>
 				추가 정보…
+			</button>
+			{/* macOS에서 이 자리는 '규제 인증서'. 이 사이트에서 그에 맞는 문서는 개인정보 처리 방침이다 (Apple 메뉴와 같은 문서) */}
+			<button
+				type="button"
+				className="about-mac-link"
+				onClick={() => {
+					closeAbout();
+					requestFinderDoc('docs/privacy.md');
+					openApp('finder');
+				}}
+			>
+				개인정보 처리 방침
 			</button>
 			<p className="about-mac-legal">
 				™ &amp; © {new Date().getFullYear()} {PROFILE.nameEn}. 모든 권리 보유.
