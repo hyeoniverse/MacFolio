@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { collectTags, tagsInText, tagsOf } from './tags';
+import { collectTags, tagsInText, tagsOf } from './tags.js';
 
 describe('tagsOf', () => {
 	it('본문의 #태그를 처음 나온 순서로, 대소문자가 달라도 하나로', () => {

@@ -98,6 +98,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
   - 앱마다 폴더 하나(`src/apps/<앱>`)를 두고, `manifest.ts` 한 곳에서 이름·아이콘·창 크기·모바일 이름을 정합니다. Dock, Launchpad, 터미널의 `open`, 모바일 홈 화면이 모두 이 목록을 읽습니다
   - 창 위치·앞뒤 순서, 관리자 로그인 상태, 음악 재생은 작은 저장소(`createStore`)에 두고 `useSyncExternalStore`로 구독합니다
   - 프레임워크와 무관한 로직은 `packages/desktop-core`로 떼어 냅니다(#16). 지금은 저장소, 창 관리(열기·닫기·최소화·앞뒤 순서), 메모 로직(글 읽기·정렬·필터, 태그, 폴더 정리, 찾기, 글 검사)이 있고, React 쪽은 store를 구독하는 hook과 화면만 둡니다. 이 패키지는 DOM 타입과 React를 불러오지 못하게 막아 두었습니다
+  - 메모 정리 내용의 검사, 폴더 경로, 글 길이·날짜 규칙은 서버(`apps/api`)도 `desktop-core`에서 가져다 씁니다. React는 `src`를 바로 읽고, 서버는 빌드한 `dist`를 씁니다(`package.json`의 `exports` 조건)
   - Vite의 `import.meta.glob`으로 블로그 글(Markdown)과 이미지를 빌드할 때 함께 묶습니다. `VITE_API_URL`도 빌드할 때 코드에 들어갑니다
   - 메모 창은 CSS 컨테이너 쿼리로 창 폭에 따라 도구 막대와 목록 배치를 바꿉니다. 화면 폭이 아니라 창 폭이 기준이라 창을 줄여도 맞게 바뀝니다
 
@@ -195,7 +196,7 @@ apps/
     e2e/                  Playwright
   api/                    NestJS API (관리자 로그인, 글, 댓글, 이미지, 메모 정리)
 packages/
-  desktop-core/           프레임워크와 무관한 로직: 저장소, 창 관리, 메모 (React·DOM 없이 테스트)
+  desktop-core/           프레임워크와 무관한 로직: 저장소, 창 관리, 메모 (React·DOM 없이 테스트, 서버와 함께 쓰는 규칙)
 docs/                     백엔드 설계, 배포, 마이그레이션 기록
 wrangler.jsonc            Cloudflare Workers 설정
 ```

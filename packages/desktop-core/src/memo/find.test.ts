@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addRecentFind, DEFAULT_FIND_OPTIONS, findInBlocks, findMatches, parseRecentFinds, stepMatch } from './find';
+import { addRecentFind, DEFAULT_FIND_OPTIONS, findInBlocks, findMatches, parseRecentFinds, stepMatch } from './find.js';
 
 const opts = (patch: Partial<typeof DEFAULT_FIND_OPTIONS> = {}) => ({ ...DEFAULT_FIND_OPTIONS, ...patch });
 

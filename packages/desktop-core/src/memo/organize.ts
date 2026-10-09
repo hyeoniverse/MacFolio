@@ -1,28 +1,8 @@
 // 관리자가 메모를 정리한 내용: 만든 폴더, 옮긴 글, 옮긴 폴더, 고정.
 // 글은 저장소의 Markdown 파일이라 파일은 그대로 두고, API(/memo/organization)에 저장한 정리 내용을 겹쳐 보여준다.
-// 서버도 같은 규칙(3단, 이름)을 검사한다 (apps/api/src/memo/organization.ts). 순수 함수만 둔다.
-import type { Post } from './posts';
-
-export const FOLDER_NAME_MAX = 30;
-/** 폴더는 3단까지 (예: 개발기/MacFolio/초안) */
-export const MAX_FOLDER_DEPTH = 3;
-
-export interface Organization {
-	/** 방문자가 만든 폴더의 전체 경로 (예: 읽을거리, 개발기/읽을거리) */
-	folders: string[];
-	/** 옮긴 글: slug → 폴더 경로 */
-	posts: Record<string, string>;
-	/** 옮긴 폴더 (순서대로 적용한다). 글의 원래 category 경로에 적용된다 */
-	moves: { from: string; to: string }[];
-	/** 고정을 바꾼 글: slug → 고정 여부 (머리말의 pinned보다 우선) */
-	pins: Record<string, boolean>;
-	/** 잠근 글: slug → true. 잠그면 고치거나 지울 수 없다 (실수로 바꾸지 않게) */
-	locks: Record<string, boolean>;
-	/** 폴더 순서: 폴더 경로를 보일 순서대로. 같은 층끼리 이 순서를 따르고, 없는 폴더는 뒤에 가나다순 */
-	order: string[];
-}
-
-export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {}, order: [] };
+// 정리 내용의 모양과 서버도 쓰는 검사는 rules.ts에 있다. 순수 함수만 둔다.
+import type { Post } from './posts.js';
+import { EMPTY_ORGANIZATION, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, type Organization } from './rules.js';
 
 const lastName = (path: string) => path.split('/').at(-1) ?? path;
 const parentOf = (path: string) => path.split('/').slice(0, -1).join('/');

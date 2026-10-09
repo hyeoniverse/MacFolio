@@ -3,12 +3,21 @@
 	"private": true,
 	"version": "1.0.0",
 	"type": "module",
-	"description": "프레임워크에 의존하지 않는 데스크톱 로직 (창 관리 등). React·Vue는 store를 구독해서 쓴다",
+	"description": "프레임워크에 의존하지 않는 데스크톱 로직 (창 관리, 메모, 음악). React는 src를 바로 쓰고(source 조건), 서버(Node)는 빌드한 dist를 쓴다",
 	"exports": {
-		".": "./src/index.ts",
-		"./memo": "./src/memo/index.ts"
+		".": {
+			"source": "./src/index.ts",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./memo": {
+			"source": "./src/memo/index.ts",
+			"types": "./dist/memo/index.d.ts",
+			"default": "./dist/memo/index.js"
+		}
 	},
 	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
 		"typecheck": "tsc",
 		"lint": "eslint .",
 		"test": "vitest run"
@@ -19,5 +28,8 @@
 		"typescript": "~5.9",
 		"typescript-eslint": "^8.70.1",
 		"vitest": "^4.1.11"
-	}
+	},
+	"files": [
+		"dist"
+	]
 }

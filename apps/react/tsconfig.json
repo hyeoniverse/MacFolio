@@ -4,6 +4,8 @@
 		"lib": ["DOM", "DOM.Iterable", "ES2020"],
 		"module": "ESNext",
 		"moduleResolution": "bundler",
+		// desktop-core는 빌드하지 않고 src를 바로 읽는다 (package.json exports의 source 조건)
+		"customConditions": ["source"],
 		"jsx": "react-jsx",
 		"strict": true,
 		"skipLibCheck": true,

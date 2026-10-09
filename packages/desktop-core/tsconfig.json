@@ -1,11 +1,12 @@
 {
-	// 브라우저 API(DOM)와 React·Vue 타입을 넣지 않는다. window나 react를 쓰면 타입 검사에서 걸린다
+	// 브라우저 API(DOM)와 React·Vue 타입을 넣지 않는다. window나 react를 쓰면 타입 검사에서 걸린다.
+	// 서버(Node)도 빌드한 결과를 쓰므로 NodeNext로 검사한다 (상대 경로 import에 .js를 붙인다)
 	"compilerOptions": {
 		"target": "ES2022",
 		"lib": ["ES2022"],
 		"types": [],
-		"module": "ESNext",
-		"moduleResolution": "bundler",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"strict": true,
 		"skipLibCheck": true,
 		"isolatedModules": true,

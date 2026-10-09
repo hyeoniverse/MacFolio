@@ -1,5 +1,5 @@
-import { sortPosts, toPost, type Post } from '../posts';
-import type { PostRepository } from './types';
+import { sortPosts, toPost, type Post } from '../posts.js';
+import type { PostRepository } from './types.js';
 
 /**
  * Markdown 파일 묶음으로 만든 저장소.

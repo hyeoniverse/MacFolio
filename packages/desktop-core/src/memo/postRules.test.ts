@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateDraft } from './postRules';
+import { validateDraft } from './postRules.js';
 
 const DRAFT = { title: '새 글', date: '2026-09-29', category: '개발기', summary: '', body: '본문' };
 

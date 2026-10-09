@@ -1,12 +1,13 @@
 // 메모(블로그) 로직: 글 읽기·정렬, 태그, 폴더 정리, 찾기, 글 검사. 화면과 저장(localStorage·API)은 앱 쪽에 있다
-export * from './arrange';
-export * from './caption';
-export * from './find';
-export * from './organize';
-export * from './postRules';
-export * from './posts';
-export * from './tagFilter';
-export * from './tags';
-export { createStaticPostRepository } from './repository/staticPostRepository';
-export type { PostRepository } from './repository/types';
-export * from './noteView';
+export * from './arrange.js';
+export * from './caption.js';
+export * from './find.js';
+export * from './organize.js';
+export * from './postRules.js';
+export * from './posts.js';
+export * from './rules.js';
+export * from './tagFilter.js';
+export * from './tags.js';
+export { createStaticPostRepository } from './repository/staticPostRepository.js';
+export type { PostRepository } from './repository/types.js';
+export * from './noteView.js';
