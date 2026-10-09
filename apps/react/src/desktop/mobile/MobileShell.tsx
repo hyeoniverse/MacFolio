@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { foregroundApp, runningByRecency } from '@macfolio/desktop-core';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 import MobileHome from '@/desktop/mobile/MobileHome';

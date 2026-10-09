@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { env } from '@/shared/config/env';
 import ServerSignal from '@/shared/server/ServerSignal';
 import { checkServer, STATE_LABEL, useServerStatus } from '@/shared/server/serverStatus';

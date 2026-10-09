@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { isChunkLoadError } from '@/shared/lib/chunkLoadError';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';

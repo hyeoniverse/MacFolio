@@ -1,7 +1,7 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import React, { useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { foregroundApp } from '@macfolio/desktop-core';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import { closeSwitcher, getSwitcherScroll, openSwitcher, setSwitcherScroll } from '@/desktop/mobile/switcherStore';

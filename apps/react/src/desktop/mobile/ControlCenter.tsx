@@ -1,6 +1,6 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import { useEffect, useState } from 'react';
-import { useMusic } from '@/apps/music/MusicContext';
+import { useMusic } from '@/apps/music/useMusic';
 import type { AppName } from '@/apps/manifest';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
 import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';

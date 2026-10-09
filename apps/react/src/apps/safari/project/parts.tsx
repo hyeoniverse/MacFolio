@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Project } from '@/shared/profile';
 import { projectAppName } from '@/apps/manifest';
-import { useAppState } from '@/desktop/AppStateContext';
+import { useAppState } from '@/desktop/useAppState';
 import { splitNumber, useCountUp } from '@/apps/safari/project/reveal';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;

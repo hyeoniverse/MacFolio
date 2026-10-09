@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { formatTime } from '@macfolio/desktop-core/music';
-import { useMusic } from './MusicContext';
+import { useMusic } from './useMusic';
 import '@/apps/music/SeekBar.css';
 
 interface Props {
