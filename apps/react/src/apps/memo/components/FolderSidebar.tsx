@@ -559,7 +559,7 @@ const FolderSidebar: React.FC<Props> = (props) => {
 									disabled={editing}
 									onClick={() => onSelect(POPULAR_VIEW)}
 								>
-									<i className="fa-solid fa-fire memo-folder-icon" aria-hidden="true" />
+									<FolderIcon />
 									<span className="memo-folder-name">인기글</span>
 									<span className="memo-count">{props.popular}</span>
 								</button>
