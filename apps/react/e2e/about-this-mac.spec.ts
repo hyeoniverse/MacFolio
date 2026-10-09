@@ -13,7 +13,7 @@ test.describe('이 Mac에 관하여', () => {
 		await expect(about).toContainText('Kim Jeong Hyeon');
 		const specs = about.locator('.about-mac-specs > div');
 		await expect(specs).toHaveText([
-			'역할Frontend Focused Fullstack Developer',
+			'직무Frontend Focused Fullstack Developer',
 			'학교서울여자대학교',
 			'위치Seoul, South Korea',
 			'이메일hyeoniverse.dev@gmail.com',
