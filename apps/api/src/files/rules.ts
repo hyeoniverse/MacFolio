@@ -44,3 +44,12 @@ export function contentDisposition(kind: 'inline' | 'attachment', name: string):
 	);
 	return `${kind}; filename="${ascii}"; filename*=UTF-8''${encoded}`;
 }
+
+/** 브라우저가 바로 보여 주는 이미지 형식 (올릴 때 파일 앞부분으로 확인해 type에 적은 값) */
+export const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+
+/** 글(Markdown)에서 가리키는 파일 id들. 편집기는 이미지·첨부를 `<API 주소>/files/<id>`로 넣는다 */
+export function uploadIdsIn(text: string | null | undefined): string[] {
+	if (!text) return [];
+	return [...new Set([...text.matchAll(/\/files\/([\w-]{16})(?![\w-])/g)].map((match) => match[1]))];
+}
