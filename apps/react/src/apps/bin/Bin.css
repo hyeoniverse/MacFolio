@@ -1,0 +1,321 @@
+/* 휴지통: 왼쪽 사이드바 + 오른쪽 목록과 정보 (Finder와 같은 모양) */
+[data-app='bin'] {
+	--bin-accent: #0063e1;
+	--bin-accent-soft: rgba(0, 99, 225, 0.14);
+}
+
+:root[data-theme='dark'] [data-app='bin'] {
+	--bin-accent: #0a84ff;
+	--bin-accent-soft: rgba(10, 132, 255, 0.24);
+}
+
+.bin {
+	position: relative;
+	height: 100%;
+	background-color: var(--color-window-bg);
+	color: var(--color-text);
+	text-align: left;
+	/* 창 폭에 따라 배치를 바꾼다 (아래 @container). 자기 자신은 바꿀 수 없어서 안쪽 .bin-body를 바꾼다 */
+	container-type: inline-size;
+}
+
+.bin-body {
+	display: flex;
+	height: 100%;
+}
+
+/* ─── 사이드바 ─── */
+.bin-sidebar {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	gap: 2px;
+	width: 180px;
+	padding: 0 10px 12px;
+	border-right: 1px solid var(--color-divider);
+	background-color: var(--color-sidebar-bg);
+}
+
+.bin-lights-space {
+	flex: none;
+	height: 52px;
+}
+
+.bin-sidebar h2 {
+	margin: 4px 8px;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.bin-location {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 5px 8px;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: var(--color-text);
+	font-size: 13px;
+	text-align: left;
+	cursor: default;
+}
+
+.bin-location i {
+	width: 16px;
+	color: var(--bin-accent);
+	text-align: center;
+}
+
+.bin-location:hover,
+.bin-location.active {
+	background-color: var(--color-selected-bg);
+}
+
+.bin-location.active {
+	font-weight: 600;
+}
+
+.bin-location-count {
+	margin-left: auto;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	font-weight: 400;
+}
+
+/* ─── 오른쪽 ─── */
+.bin-main {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.bin-toolbar {
+	display: flex;
+	position: relative;
+	/* 창 위쪽 52px는 창을 옮기는 자리라, 단추가 눌리도록 그 위로 올린다 */
+	z-index: 4;
+	flex: none;
+	align-items: center;
+	gap: 10px;
+	height: 52px;
+	padding: 0 16px;
+	border-bottom: 1px solid var(--color-divider);
+}
+
+.bin-title {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.bin-count {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.bin-empty {
+	margin-left: auto;
+}
+
+/* 지운 기능: 목록 | 정보 */
+.bin-features {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+}
+
+.bin-list {
+	flex: 1;
+	min-width: 0;
+	padding: 6px;
+	overflow-y: auto;
+	outline: none;
+}
+
+.bin-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 7px 10px;
+	border-radius: 6px;
+	font-size: 13px;
+	cursor: default;
+}
+
+.bin-item:nth-child(even) {
+	background-color: var(--color-row-alt, rgba(127, 127, 127, 0.05));
+}
+
+.bin-item.selected {
+	background-color: var(--bin-accent-soft);
+}
+
+.bin-list:focus-visible .bin-item.selected {
+	background-color: var(--bin-accent);
+	color: #fff;
+}
+
+.bin-item-icon {
+	flex: none;
+	width: 18px;
+	color: var(--color-text-secondary);
+	text-align: center;
+}
+
+.bin-list:focus-visible .bin-item.selected .bin-item-icon,
+.bin-list:focus-visible .bin-item.selected .bin-item-date {
+	color: inherit;
+}
+
+.bin-item-name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bin-item-date {
+	flex: none;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+.bin-info {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	width: 280px;
+	padding: 20px;
+	overflow-y: auto;
+	border-left: 1px solid var(--color-divider);
+}
+
+.bin-info-icon {
+	color: var(--color-text-secondary);
+	font-size: 34px;
+}
+
+.bin-info h2 {
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.35;
+}
+
+.bin-info dl {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 4px 10px;
+	margin: 0;
+	font-size: 12px;
+}
+
+.bin-info dt {
+	color: var(--color-text-secondary);
+}
+
+.bin-info dd {
+	margin: 0;
+}
+
+.bin-info p {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+/* 지운 메모 */
+.bin-memos {
+	flex: 1;
+	margin: 0;
+	padding: 6px;
+	overflow-y: auto;
+	list-style: none;
+}
+
+.bin-memo {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: center;
+	gap: 2px 12px;
+	padding: 8px 10px;
+	border-bottom: 1px solid var(--color-divider);
+}
+
+.bin-memo-title {
+	overflow: hidden;
+	font-size: 13px;
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bin-memo-meta {
+	grid-row: 2;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.bin-memo-actions {
+	display: flex;
+	grid-row: 1 / 3;
+	grid-column: 2;
+	gap: 6px;
+}
+
+.bin-empty-note {
+	margin: 40px auto;
+	color: var(--color-text-secondary);
+	font-size: 13px;
+}
+
+/* 좁은 창: 사이드바는 위의 탭 줄로, 정보는 목록 아래로 */
+@container (max-width: 620px) {
+	.bin-body {
+		flex-direction: column;
+	}
+
+	/* 휴대폰 화면: 상태 표시줄이 앱 위에 겹치므로 그만큼 내린다 */
+	.container.mobile .bin-body {
+		padding-top: var(--phone-status);
+	}
+
+	.bin-sidebar {
+		flex-direction: row;
+		align-items: center;
+		width: auto;
+		padding: 0 12px 0 84px;
+		border-right: none;
+		border-bottom: 1px solid var(--color-divider);
+	}
+
+	.bin-lights-space,
+	.bin-sidebar h2 {
+		display: none;
+	}
+
+	.bin-location {
+		margin: 12px 0;
+	}
+
+	.bin-toolbar {
+		height: 44px;
+	}
+
+	.bin-features {
+		flex-direction: column;
+	}
+
+	.bin-info {
+		width: auto;
+		max-height: 45%;
+		border-top: 1px solid var(--color-divider);
+		border-left: none;
+	}
+}
