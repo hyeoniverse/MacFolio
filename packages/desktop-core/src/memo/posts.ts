@@ -39,6 +39,8 @@ export const RECENTLY_DELETED = '\u0000recently-deleted';
 export const RECENTLY_DELETED_DAYS = 30;
 /** 태그로 보기: 경로 자리에 둔다 (고른 태그는 tagFilter.ts). 폴더 이름과 겹치지 않게 경로에 쓸 수 없는 글자로 시작한다 */
 export const TAG_VIEW = '\u0000tags';
+/** 인기글 (조회수·댓글·좋아요로 고른 10개, popular.ts). 폴더 이름과 겹치지 않게 경로에 쓸 수 없는 글자로 시작한다 */
+export const POPULAR_VIEW = '\u0000popular';
 
 /**
  * 머리말을 읽는다. 지원하는 형식은 한 줄짜리 `key: value`뿐이다.
@@ -282,7 +284,13 @@ export const folderLabelOf = (path: string) => path.split('/').join(' › ');
 
 /** 경로의 마지막 이름 (예: 개발기/MacFolio → MacFolio) */
 export const folderName = (path: string) =>
-	path === RECENTLY_DELETED ? '최근 삭제된 항목' : path === TAG_VIEW ? '태그' : (path.split('/').at(-1) ?? path);
+	path === RECENTLY_DELETED
+		? '최근 삭제된 항목'
+		: path === TAG_VIEW
+			? '태그'
+			: path === POPULAR_VIEW
+				? '인기글'
+				: (path.split('/').at(-1) ?? path);
 
 /** 본문의 첫 이미지 주소 (갤러리 미리보기용). 없으면 null */
 export function firstImage(body: string): string | null {

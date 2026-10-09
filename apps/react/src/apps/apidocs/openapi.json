@@ -334,6 +334,143 @@
 				]
 			}
 		},
+		"/posts/stats": {
+			"get": {
+				"operationId": "LikesController_stats",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "글마다 댓글 수와 좋아요 수 ({ 주소: { comments, likes } }). 하나라도 있는 글만. 인기글 순위에 쓴다"
+					}
+				},
+				"tags": [
+					"likes"
+				]
+			}
+		},
+		"/posts/{slug}/likes": {
+			"get": {
+				"operationId": "LikesController_post",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "좋아요 수와 이 브라우저가 눌렀는지 ({ count, liked })"
+					},
+					"400": {
+						"description": "글 주소가 올바르지 않다"
+					}
+				},
+				"tags": [
+					"likes"
+				]
+			}
+		},
+		"/posts/{slug}/like": {
+			"put": {
+				"operationId": "LikesController_likePost",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "눌렀다. 이미 눌렀으면 그대로. 처음 누르는 브라우저에는 방문자 쿠키를 준다"
+					},
+					"429": {
+						"description": "짧은 시간에 너무 많이 눌렀다"
+					}
+				},
+				"tags": [
+					"likes"
+				]
+			},
+			"delete": {
+				"operationId": "LikesController_unlikePost",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "취소했다. 누르지 않았으면 그대로"
+					}
+				},
+				"tags": [
+					"likes"
+				]
+			}
+		},
+		"/comments/{id}/like": {
+			"put": {
+				"operationId": "LikesController_likeComment",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "댓글에 눌렀다 ({ count, liked })"
+					},
+					"404": {
+						"description": "댓글이 없다"
+					}
+				},
+				"tags": [
+					"likes"
+				]
+			},
+			"delete": {
+				"operationId": "LikesController_unlikeComment",
+				"parameters": [
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "댓글의 좋아요를 취소했다"
+					},
+					"404": {
+						"description": "댓글이 없다"
+					}
+				},
+				"tags": [
+					"likes"
+				]
+			}
+		},
 		"/messages/threads": {
 			"get": {
 				"operationId": "MessagesController_listThreads",

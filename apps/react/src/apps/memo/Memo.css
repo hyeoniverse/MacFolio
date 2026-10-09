@@ -1017,6 +1017,125 @@
 }
 
 /* 본문 아래 이전 글·다음 글: 두 칸, 다음 글은 오른쪽 정렬 */
+/* 글 아래의 좋아요 (가운데 알약). 누르면 하트가 빨갛게 차고 살짝 튄다 */
+.memo-post-like {
+	display: flex;
+	justify-content: center;
+	margin-top: 2.5rem;
+}
+
+.memo-like {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	border: none;
+	background: none;
+	color: var(--memo-muted);
+	font: inherit;
+	cursor: pointer;
+	transition:
+		background-color var(--duration-fast) var(--ease-out),
+		color var(--duration-fast) var(--ease-out),
+		border-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-like.post {
+	padding: 7px 16px;
+	border: 1px solid var(--memo-border);
+	border-radius: 999px;
+	color: var(--memo-text);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.memo-like.post:hover {
+	background-color: var(--memo-search-bg);
+}
+
+.memo-like.comment {
+	min-height: 22px;
+	padding: 2px 6px;
+	margin-left: -6px;
+	border-radius: 6px;
+	font-size: 12px;
+}
+
+.memo-like.comment:hover {
+	background-color: var(--memo-search-bg);
+}
+
+.memo-like.liked {
+	color: #e5484d;
+}
+
+.memo-like.post.liked {
+	border-color: color-mix(in srgb, #e5484d 45%, transparent);
+	background-color: color-mix(in srgb, #e5484d 10%, transparent);
+}
+
+.memo-like.liked i {
+	animation: memo-like-pop 0.32s var(--ease-out);
+}
+
+.memo-like:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 2px;
+}
+
+@keyframes memo-like-pop {
+	50% {
+		transform: scale(1.3);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-like.liked i {
+		animation: none;
+	}
+}
+
+/* 좋아요 바로 아래의 이전·다음 글은 위 여백을 줄인다 (구분선은 그대로) */
+.memo-post-like + .memo-post-nav {
+	margin-top: 1.25rem;
+}
+
+.memo-comment-actions {
+	display: flex;
+	margin-top: 2px;
+}
+
+/* 인기글 목록: 제목 앞 순위 (1~3위는 강조), 날짜·요약 자리에 조회·댓글·좋아요 */
+.memo-item-rank {
+	display: inline-grid;
+	place-items: center;
+	min-width: 18px;
+	height: 18px;
+	margin-right: 6px;
+	padding: 0 4px;
+	border-radius: 5px;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-muted);
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+	vertical-align: 1px;
+}
+
+.memo-item-rank.rank-1,
+.memo-item-rank.rank-2,
+.memo-item-rank.rank-3 {
+	background-color: color-mix(in srgb, #ff9f0a 22%, transparent);
+	color: #c76a00;
+}
+
+.memo-item.active .memo-item-rank {
+	background-color: rgba(255, 255, 255, 0.25);
+	color: inherit;
+}
+
+.memo-item-reactions {
+	font-variant-numeric: tabular-nums;
+}
+
 .memo-post-nav {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));

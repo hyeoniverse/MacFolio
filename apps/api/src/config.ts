@@ -21,6 +21,8 @@ export interface AppConfig {
 	trustProxy: number;
 	/** 댓글 쓰기·지우기를 IP마다 1분에 몇 번까지 받을지 */
 	commentRateLimit: number;
+	/** 좋아요 누르기·취소를 IP마다 1분에 몇 번까지 받을지 (경로마다: 글 누르기, 글 취소, 댓글 누르기, 댓글 취소) */
+	likeRateLimit: number;
 	/**
 	 * IP를 그대로 저장하지 않고 이 키로 HMAC해 둔다 (같은 사람이 쓴 글을 묶어 볼 때만 쓴다).
 	 * 배포에서는 반드시 정한다. 로컬·테스트는 기본값
@@ -156,6 +158,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		apiUrl: (env.API_URL ?? `http://localhost:${port}`).replace(/\/$/, ''),
 		trustProxy: Number(env.TRUST_PROXY ?? 0) || 0,
 		commentRateLimit: Number(env.COMMENT_RATE_LIMIT ?? 5) || 5,
+		likeRateLimit: Number(env.LIKE_RATE_LIMIT ?? 30) || 30,
 		ipHashSecret,
 		stockPhotos: {
 			unsplashAccessKey: env.UNSPLASH_ACCESS_KEY || undefined,

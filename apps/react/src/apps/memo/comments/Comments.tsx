@@ -7,6 +7,8 @@ import { displayName, LIMITS, monogram, OWNER_NAME, validateMessageInput } from 
 import { fetchVisitorName } from '@/shared/lib/visitor';
 import { createComment, deleteComment, formatCommentTime, listComments, type Comment } from './commentsApi';
 import Button from '@/shared/ui/button/Button';
+import LikeButton from '../likes/LikeButton';
+import { setCommentLike, toggleLike } from '../likes/likesApi';
 
 /** 작성자(관리자)의 GitHub 계정 */
 const OWNER_LOGIN = PROFILE.github.split('/').at(-1) ?? '';
@@ -21,7 +23,7 @@ const CommentAvatar = ({ name, owner }: { name: string; owner: boolean }) =>
 		</span>
 	);
 
-/** 댓글 하나. 지우기는 이 브라우저에서 쓴 댓글(관리자는 모든 댓글)에만 있고, 한 번 더 물어본다 */
+/** 댓글 하나. 지우기는 이 브라우저에서 쓴 댓글(관리자는 모든 댓글)에만 있고, 한 번 더 물어본다. 좋아요는 누구나 */
 const CommentItem = ({
 	comment,
 	isAdmin,
@@ -31,6 +33,8 @@ const CommentItem = ({
 	isAdmin: boolean;
 	onDeleted: () => void;
 }) => {
+	const [likes, setLikes] = useState({ count: comment.likes, liked: comment.liked });
+	const [liking, setLiking] = useState(false);
 	const [asking, setAsking] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const canDelete = isAdmin || comment.mine;
@@ -66,6 +70,20 @@ const CommentItem = ({
 					)}
 				</div>
 				<p className="memo-comment-body">{comment.body}</p>
+				<div className="memo-comment-actions">
+					<LikeButton
+						likes={likes}
+						what={`${comment.isAdmin ? OWNER_NAME : comment.name}의 댓글`}
+						size="comment"
+						onToggle={() => {
+							if (liking) return;
+							setLiking(true);
+							void toggleLike(likes, (liked) => setCommentLike(env.apiUrl, comment.id, liked), setLikes).then(() =>
+								setLiking(false)
+							);
+						}}
+					/>
+				</div>
 				{asking && (
 					<div className="memo-comment-confirm" role="group" aria-label="댓글 삭제 확인">
 						<span>이 댓글을 지울까요?</span>
@@ -89,7 +107,7 @@ const CommentItem = ({
  * 글 아래 댓글. 방문자는 이름·비밀번호 없이, 서버가 방문자 쿠키로 정한 이름(메시지 앱과 같은 이름)으로 쓴다.
  * 이 브라우저에서 쓴 댓글만 지운다. 관리자로 로그인했으면 김정현으로 쓰고 무엇이든 지운다. 서버가 권한을 다시 확인한다.
  */
-const Comments = ({ slug }: { slug: string }) => {
+const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, count: number) => void }) => {
 	const admin = useAdmin();
 	const isAdmin = admin.status === 'signed-in';
 	const [comments, setComments] = useState<Comment[] | null>(null);
@@ -136,6 +154,7 @@ const Comments = ({ slug }: { slug: string }) => {
 		setBody('');
 		if (!result.comment.isAdmin) setName(result.comment.name);
 		setComments((list) => [...(list ?? []), result.comment]);
+		onCount?.(slug, (comments?.length ?? 0) + 1);
 	};
 
 	return (
@@ -154,7 +173,10 @@ const Comments = ({ slug }: { slug: string }) => {
 							key={comment.id}
 							comment={comment}
 							isAdmin={isAdmin}
-							onDeleted={() => setComments((list) => list?.filter((item) => item.id !== comment.id) ?? null)}
+							onDeleted={() => {
+								setComments((list) => list?.filter((item) => item.id !== comment.id) ?? null);
+								onCount?.(slug, (comments?.length ?? 1) - 1);
+							}}
 						/>
 					))}
 				</ul>
