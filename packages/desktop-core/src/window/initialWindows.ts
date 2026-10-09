@@ -1,4 +1,4 @@
-import type { AppWindow, AppWindows } from './windowStore';
+import type { AppWindow, AppWindows } from './windowStore.js';
 
 /**
  * 처음 창 상태. linked(앱 항목 주소로 들어온 앱)는 맨 앞에 열어 두고, 나머지는 runningAtStart가 참인 앱만 켠다.

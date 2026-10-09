@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EMPTY_ORGANIZATION, folderPathError, parseOrganization } from './organization.js';
+import { EMPTY_ORGANIZATION, folderPathError, parseOrganization } from './rules.js';
 
 describe('folderPathError', () => {
 	it('3단까지, 이름은 1~30자, 앞뒤 공백 없이', () => {

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { EMPTY_ORGANIZATION, parseOrganization, type Organization } from './organization.js';
+import { EMPTY_ORGANIZATION, parseOrganization, type Organization } from '@macfolio/desktop-core/memo';
 
 const ROW_ID = 1;
 

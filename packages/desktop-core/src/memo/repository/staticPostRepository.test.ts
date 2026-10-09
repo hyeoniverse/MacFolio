@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createStaticPostRepository } from './staticPostRepository';
+import { createStaticPostRepository } from './staticPostRepository.js';
 
 describe('createStaticPostRepository', () => {
 	it('파일 이름이 slug가 되고, 최신 글이 위로 온다', async () => {

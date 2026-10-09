@@ -1,4 +1,4 @@
-import { sameTag } from './tags';
+import { sameTag } from './tags.js';
 
 /** 태그 하나의 고른 상태: 포함(이 태그가 있는 메모) 또는 제외(이 태그가 있는 메모는 뺀다) */
 export type TagState = 'include' | 'exclude';

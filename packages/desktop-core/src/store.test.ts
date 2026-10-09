@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createStore } from './store';
+import { createStore } from './store.js';
 
 describe('createStore', () => {
 	it('일부 필드만 바꿔도 나머지는 유지된다', () => {

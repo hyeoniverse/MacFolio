@@ -1,6 +1,6 @@
 // 메모 목록의 정렬과 날짜별 그룹화 (macOS 메모의 '정렬 기준', '날짜별로 그룹화').
 // 보기 설정이라 방문자도 바꿀 수 있고, 이 브라우저에 저장한다. React에 의존하지 않는 순수 함수만 둔다.
-import type { Post } from './posts';
+import type { Post } from './posts.js';
 
 export type SortKey = 'date' | 'title';
 export type SortOrder = 'desc' | 'asc';

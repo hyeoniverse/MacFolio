@@ -3,7 +3,6 @@ import {
 	addFolder,
 	canAddFolder,
 	canMoveFolder,
-	EMPTY_ORGANIZATION,
 	moveFolder,
 	movePost,
 	organizePosts,
@@ -14,8 +13,9 @@ import {
 	splitPinned,
 	validateFolderName,
 	normalizeOrganization,
-} from './organize';
-import type { Post } from './posts';
+} from './organize.js';
+import { EMPTY_ORGANIZATION } from './rules.js';
+import type { Post } from './posts.js';
 
 const post = (slug: string, category: string): Post => ({
 	slug,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { initialWindows, restoreWindows } from './initialWindows';
+import { initialWindows, restoreWindows } from './initialWindows.js';
 
 const names = ['finder', 'memo', 'music'] as const;
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dateGroup, DEFAULT_ARRANGEMENT, groupPosts, parseArrangement, sortBy, type Arrangement } from './arrange';
-import type { Post } from './posts';
+import { dateGroup, DEFAULT_ARRANGEMENT, groupPosts, parseArrangement, sortBy, type Arrangement } from './arrange.js';
+import type { Post } from './posts.js';
 
 const post = (title: string, date: string): Post => ({
 	slug: title,

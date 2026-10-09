@@ -9,7 +9,7 @@ import {
 	tagSelectionTitle,
 	toggleAllTags,
 	type TagSelection,
-} from './tagFilter';
+} from './tagFilter.js';
 
 describe('tagFilter', () => {
 	it('누를 때마다 미선택 → 포함 → 제외 → 미선택', () => {
