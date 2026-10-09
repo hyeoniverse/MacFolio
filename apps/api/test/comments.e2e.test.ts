@@ -84,7 +84,7 @@ describe('댓글 (e2e)', () => {
 		const named = await request(server()).get('/visitor').set('Cookie', cookie).expect(200);
 		expect(named.body).toEqual({ name: first.body.name });
 
-		// 목록의 mine은 쿠키로 정한다. 응답에 방문자·IP 해시가 없다
+		// 목록의 mine은 쿠키로 정한다. 응답에 방문자·IP 해시가 없다 (좋아요도 수와 눌렀는지만)
 		const mine = await request(server()).get('/posts/cra-to-vite/comments').set('Cookie', cookie).expect(200);
 		expect(mine.body.map((comment: { mine: boolean }) => comment.mine)).toEqual([true, true]);
 		expect(Object.keys(mine.body[0]).sort()).toEqual([
@@ -93,6 +93,8 @@ describe('댓글 (e2e)', () => {
 			'id',
 			'ipPrefix',
 			'isAdmin',
+			'liked',
+			'likes',
 			'mine',
 			'name',
 		]);

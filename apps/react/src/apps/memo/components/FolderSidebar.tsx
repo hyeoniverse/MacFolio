@@ -5,6 +5,7 @@ import Menu from '@/shared/ui/menu/Menu';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import {
 	ALL_CATEGORY,
+	POPULAR_VIEW,
 	canAddFolder,
 	canMoveFolder,
 	FOLDER_NAME_MAX,
@@ -32,6 +33,8 @@ interface Props {
 	onToggle: () => void;
 	folders: FolderNode[];
 	total: number;
+	/** 인기글에 보일 글 수. null이면 인기글을 감춘다 (서버가 없을 때) */
+	popular?: number | null;
 	current: string;
 	onSelect: (path: string) => void;
 	/** 새 폴더를 이 폴더 아래에 만든다 ('' = 맨 위) */
@@ -544,6 +547,25 @@ const FolderSidebar: React.FC<Props> = (props) => {
 							</button>
 						</div>
 					</li>
+					{/* 인기글: 조회·댓글·좋아요로 고른 10개 (폴더가 아니라 보기라서 끌어 놓을 수 없다) */}
+					{props.popular != null && (
+						<li>
+							<div className="memo-folder-row" style={cssVars({ depth: 0 })}>
+								<span className="memo-disclosure" aria-hidden="true" />
+								<button
+									type="button"
+									className={`memo-folder memo-popular-folder ${current === POPULAR_VIEW ? 'active' : ''}`}
+									aria-current={current === POPULAR_VIEW || undefined}
+									disabled={editing}
+									onClick={() => onSelect(POPULAR_VIEW)}
+								>
+									<FolderIcon />
+									<span className="memo-folder-name">인기글</span>
+									<span className="memo-count">{props.popular}</span>
+								</button>
+							</div>
+						</li>
+					)}
 					{folders.map((node) => (
 						<FolderRow
 							key={node.path}

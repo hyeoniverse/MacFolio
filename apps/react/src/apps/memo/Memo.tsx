@@ -15,6 +15,7 @@ import {
 	reorderFolders,
 	setLocked,
 	setPinned,
+	statsOf,
 	TAG_VIEW,
 	type TagSelection,
 	tagSelectionNote,
@@ -85,6 +86,9 @@ const Memo: React.FC = () => {
 		organization,
 		edit,
 		views,
+		stats,
+		setLikes,
+		setCommentCount,
 	} = useMemoLibrary();
 	const noteView = useNoteView({
 		organized,
@@ -94,6 +98,7 @@ const Memo: React.FC = () => {
 		editing,
 		today,
 		ready: status === 'ready',
+		stats,
 	});
 	const {
 		category,
@@ -113,6 +118,8 @@ const Memo: React.FC = () => {
 		trash,
 		tags,
 		inTags,
+		inPopular,
+		popular,
 		categoryName,
 		visible,
 		pinnedPosts,
@@ -245,7 +252,7 @@ const Memo: React.FC = () => {
 			posts={visible}
 			pinned={pinnedPosts}
 			others={otherPosts}
-			flat={inTrash}
+			flat={inTrash || inPopular}
 			arrangement={arrangement}
 			today={today}
 			pinnedTitle={pinnedTitle}
@@ -275,6 +282,11 @@ const Memo: React.FC = () => {
 						onOpen={open}
 						active={selected?.slug === post.slug && newDraft === null}
 						today={today}
+						popularity={
+							inPopular && stats
+								? { rank: (popular?.indexOf(post.slug) ?? 0) + 1, stats: statsOf(stats, post.slug) }
+								: undefined
+						}
 					/>
 				);
 			}}
@@ -396,7 +408,16 @@ const Memo: React.FC = () => {
 		);
 
 	/** 글 아래: 이전 글·다음 글, 댓글 */
-	const postFooter = (post: Post) => <PostFooter post={post} older={older} newer={newer} onOpen={openAdjacent} />;
+	const postFooter = (post: Post) => (
+		<PostFooter
+			post={post}
+			older={older}
+			newer={newer}
+			onOpen={openAdjacent}
+			onLikes={setLikes}
+			onComments={setCommentCount}
+		/>
+	);
 
 	/** 본문의 고정 단추 */
 	const pinButton = (className: string) =>
@@ -440,7 +461,8 @@ const Memo: React.FC = () => {
 	);
 
 	/** 새 메모가 들어갈 폴더: 지금 연 폴더 (모든 글·태그·최근 삭제된 항목이면 마지막 폴더) */
-	const newFolder = category === ALL_CATEGORY || inTags || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
+	const newFolder =
+		category === ALL_CATEGORY || inTags || inPopular || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
 	const openFind = selected ? () => setFindSlug(selected.slug) : null;
 
 	useMemoAppMenus({
@@ -516,6 +538,7 @@ const Memo: React.FC = () => {
 						onToggle={toggleSidebar}
 						folders={folders}
 						total={posts.length}
+						popular={popular?.length ?? null}
 						current={category}
 						onSelect={selectFolder}
 						onAddFolder={(parent, name) => {

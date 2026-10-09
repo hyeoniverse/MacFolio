@@ -11,8 +11,10 @@ import {
 	folderPaths,
 	listPosts,
 	type Organization,
+	POPULAR_VIEW,
 	type Post,
 	type PostFilter,
+	type PostStats,
 	postsInView,
 	RECENTLY_DELETED,
 	recentlyDeletedPosts,
@@ -25,7 +27,7 @@ import { loadArrangement, saveArrangement } from './memoStorage';
 import { linkedId, setAppAddress } from '@/shared/lib/appLink';
 
 /**
- * 지금 무엇을 보여 주는지: 폴더(또는 태그·최근 삭제된 항목), 검색어와 검색 조건, 정렬, 고른 글.
+ * 지금 무엇을 보여 주는지: 폴더(또는 태그·인기글·최근 삭제된 항목), 검색어와 검색 조건, 정렬, 고른 글.
  * 이것으로 목록에 보일 글, 고정된 글과 나머지, 본문에 열 글, 그 옆의 이전·다음 글을 정한다.
  * 고른 글의 주소를 주소 막대에 둔다 (shared/lib/appLink.ts)
  */
@@ -37,6 +39,7 @@ export function useNoteView({
 	editing,
 	today,
 	ready,
+	stats,
 }: {
 	organized: Post[];
 	organization: Organization;
@@ -46,6 +49,8 @@ export function useNoteView({
 	today: Date;
 	/** 글을 다 읽어 왔는지 (그 전에는 주소 막대를 그대로 둔다) */
 	ready: boolean;
+	/** 글마다 조회·댓글·좋아요 (인기글). 서버가 없으면 null */
+	stats: Record<string, PostStats> | null;
 }) {
 	const [category, setCategory] = useState(ALL_CATEGORY);
 	const [query, setQuery] = useState('');
@@ -76,15 +81,25 @@ export function useNoteView({
 	/** 본문의 #태그 (사이드바의 태그 묶음, 태그로 보기) */
 	const tags = useMemo(() => collectTags(organized), [organized]);
 	const inTags = category === TAG_VIEW;
-	/** 태그로 볼 때는 고른 태그에 맞는 글, 아니면 폴더의 글 */
-	const inCategory = useMemo(() => postsInView(organized, category, tagSelection), [organized, category, tagSelection]);
+	/** 인기글: 조회·댓글·좋아요 점수 순서로 10개. 순위 그대로 보인다 (정렬·고정·날짜 묶음 없이) */
+	const inPopular = category === POPULAR_VIEW;
+	/** 태그로 볼 때는 고른 태그에 맞는 글, 인기글은 순위대로, 아니면 폴더의 글 */
+	const inCategory = useMemo(
+		() => postsInView(organized, category, tagSelection, stats ?? {}),
+		[organized, category, tagSelection, stats]
+	);
+	/** 인기글의 순위 (글 주소, 1위부터). 검색어로 걸러도 순위는 그대로. 서버가 없으면 null (인기글을 감춘다) */
+	const popular = useMemo(
+		() => (stats ? postsInView(organized, POPULAR_VIEW, EMPTY_TAG_SELECTION, stats).map((post) => post.slug) : null),
+		[organized, stats]
+	);
 	/** 목록 위 제목: 폴더 이름, 또는 #태그 / N개의 태그 / 모든 태그 */
 	const categoryName = inTags ? tagSelectionTitle(tagSelection) : folderName(category);
 	const visible = useMemo(
-		() => listPosts({ inView: inCategory, trash, inTrash, query, filter, editing, arrangement }),
-		[inTrash, trash, inCategory, query, filter, editing, arrangement]
+		() => listPosts({ inView: inCategory, trash, inTrash, query, filter, editing, arrangement, ranked: inPopular }),
+		[inTrash, trash, inCategory, query, filter, editing, arrangement, inPopular]
 	);
-	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug);
+	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug, inPopular);
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
 		selected && !inTrash ? adjacentPosts(inCategory, selected.slug) : { older: null, newer: null };
@@ -117,6 +132,8 @@ export function useNoteView({
 		trash,
 		tags,
 		inTags,
+		inPopular,
+		popular,
 		categoryName,
 		visible,
 		pinnedPosts,

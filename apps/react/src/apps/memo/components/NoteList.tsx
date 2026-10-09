@@ -8,6 +8,7 @@ import {
 	formatPostDate,
 	groupPosts,
 	type Post,
+	type PostStats,
 	resolveImageSrc,
 } from '@macfolio/desktop-core/memo';
 import { CONTENT_IMAGES } from '../contentImages';
@@ -50,7 +51,20 @@ export const StatusBadge = ({ post }: { post: Post }) =>
 		<span className="memo-status-dot" role="img" aria-label="게시하지 않은 변경" title="게시하지 않은 변경" />
 	) : null);
 
-/** 목록의 메모 한 줄: 제목, 날짜·요약, 폴더 (최근 삭제된 메모는 남은 날) */
+/** 인기글의 반응: 조회 42 · 댓글 3 · 좋아요 5 (0인 것은 뺀다) */
+const reactionsOf = ({ views, comments, likes }: PostStats) =>
+	[
+		views > 0 && `조회 ${views.toLocaleString()}`,
+		comments > 0 && `댓글 ${comments.toLocaleString()}`,
+		likes > 0 && `좋아요 ${likes.toLocaleString()}`,
+	]
+		.filter(Boolean)
+		.join(' · ');
+
+/**
+ * 목록의 메모 한 줄: 제목, 날짜·요약, 폴더 (최근 삭제된 메모는 남은 날).
+ * 인기글에서는 제목 앞에 순위, 날짜·요약 자리에 조회·댓글·좋아요
+ */
 export const NoteItem = ({
 	post,
 	picked,
@@ -60,7 +74,8 @@ export const NoteItem = ({
 	onOpen,
 	active,
 	today,
-}: NoteProps & { active: boolean; today: Date }) => (
+	popularity,
+}: NoteProps & { active: boolean; today: Date; popularity?: { rank: number; stats: PostStats } }) => (
 	<li>
 		<button
 			type="button"
@@ -73,12 +88,23 @@ export const NoteItem = ({
 		>
 			{picked && <PickMark on={picked.has(post.slug)} />}
 			<strong>
+				{popularity && (
+					<span className={`memo-item-rank rank-${popularity.rank}`} aria-label={`${popularity.rank}위`}>
+						{popularity.rank}
+					</span>
+				)}
 				{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
 				{post.title}
 				<StatusBadge post={post} />
 			</strong>
 			<span className="memo-item-meta">
-				<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
+				{popularity ? (
+					<span className="memo-item-reactions">{reactionsOf(popularity.stats)}</span>
+				) : (
+					<>
+						<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
+					</>
+				)}
 			</span>
 			<span className="memo-item-folder">
 				<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}

@@ -7,6 +7,7 @@ import {
 	type Organization,
 	organizePosts,
 	type Post,
+	type PostStats,
 	type ServerPost,
 } from '@macfolio/desktop-core/memo';
 import { fetchOrganization, saveOrganization } from './organizationApi';
@@ -16,6 +17,7 @@ import { useCanEditMemo } from './admin';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { fetchViews } from '@/shared/analytics/analytics';
+import { fetchPostCounts, type Likes, type PostCounts } from './likes/likesApi';
 
 /** 날짜 묶음·예약 공개의 기준이 되는 오늘 (YYYY-MM-DD) */
 const isoDate = (date: Date) =>
@@ -25,7 +27,7 @@ const isoDate = (date: Date) =>
  * 메모 앱이 보여 줄 글과 정리 내용을 모은다.
  * - 저장소의 Markdown 글을 먼저 보여 주고, 서버의 글(게시한 글, 관리자면 임시 저장까지)을 겹친다
  * - 정리 내용(폴더·옮기기·고정·잠금)은 서버에서 읽고, 관리자가 바꾸면 바로 차례로 저장한다
- * - 글마다 조회수 (트래픽 분석 #102)
+ * - 글마다 조회수 (트래픽 분석 #102), 댓글 수·좋아요 수 (인기글)
  */
 export function useMemoLibrary() {
 	/** 저장소의 Markdown 글 */
@@ -50,13 +52,33 @@ export function useMemoLibrary() {
 
 	// 글마다 조회수. 앱을 열 때 한 번 묻는다. 서버가 없으면 감춘다 (null)
 	const [views, setViews] = useState<Record<string, number> | null>(null);
+	// 글마다 댓글 수·좋아요 수 (인기글 순위). 앱을 열 때 한 번 묻고, 이 화면에서 누르거나 쓰면 바로 고친다
+	const [counts, setCounts] = useState<PostCounts | null>(null);
 	useEffect(() => {
 		let alive = true;
 		void fetchViews('memo').then((next) => alive && setViews(next));
+		if (env.apiUrl) void fetchPostCounts(env.apiUrl).then((next) => alive && setCounts(next));
 		return () => {
 			alive = false;
 		};
 	}, []);
+	/** 글마다 조회·댓글·좋아요. 서버가 없거나 둘 다 읽지 못하면 null (인기글을 감춘다) */
+	const stats = useMemo(() => {
+		if (!views && !counts) return null;
+		const merged: Record<string, PostStats> = {};
+		const entry = (slug: string) => (merged[slug] ??= { views: 0, comments: 0, likes: 0 });
+		for (const [slug, count] of Object.entries(views ?? {})) entry(slug).views = count;
+		for (const [slug, { comments, likes }] of Object.entries(counts ?? {}))
+			Object.assign(entry(slug), { comments, likes });
+		return merged;
+	}, [views, counts]);
+	const setLikes = (slug: string, likes: Likes) =>
+		setCounts((current) => ({
+			...current,
+			[slug]: { comments: current?.[slug]?.comments ?? 0, likes: likes.count },
+		}));
+	const setCommentCount = (slug: string, comments: number) =>
+		setCounts((current) => ({ ...current, [slug]: { likes: current?.[slug]?.likes ?? 0, comments } }));
 
 	useEffect(() => {
 		let cancelled = false;
@@ -146,5 +168,8 @@ export function useMemoLibrary() {
 		organization,
 		edit,
 		views,
+		stats,
+		setLikes,
+		setCommentCount,
 	};
 }

@@ -39,13 +39,13 @@ model MemoOrganization {
 /// 블로그 글의 댓글. 방문자는 쿠키로 정한 이름(예: 🦊 날쌘 여우)으로 쓰고, 같은 브라우저에서만 지운다.
 /// 관리자는 김정현으로 쓰고 무엇이든 지운다
 model PostComment {
-  id           String   @id @default(cuid())
+  id           String        @id @default(cuid())
   /// 글 주소 (Markdown 파일 이름)
   postSlug     String
   name         String
   body         String
   /// 관리자가 쓴 댓글 (이름은 김정현)
-  isAdmin      Boolean  @default(false)
+  isAdmin      Boolean       @default(false)
   /// 쓴 브라우저의 방문자 토큰 HMAC (visitors/visitor.ts). 이름·비밀번호를 받던 때의 댓글은 없다 (관리자만 지운다)
   visitorHash  String?
   /// 예전 방식(이름·비밀번호)으로 쓴 댓글의 비밀번호 scrypt 해시. 새 댓글은 비워 둔다
@@ -54,9 +54,30 @@ model PostComment {
   ipPrefix     String?
   /// IP를 비밀 키로 HMAC한 값 (같은 사람이 쓴 댓글을 묶어 볼 때만)
   ipHash       String
-  createdAt    DateTime @default(now())
+  createdAt    DateTime      @default(now())
+  likes        CommentLike[]
 
   @@index([postSlug, createdAt])
+}
+
+/// 블로그 글의 좋아요. 브라우저(방문자 쿠키)마다 글 하나에 한 번. 글은 저장소 Markdown일 수도 있어 주소(slug)로만 잇는다
+model PostLike {
+  postSlug    String
+  /// 누른 브라우저의 방문자 토큰 HMAC (visitors/visitor.ts)
+  visitorHash String
+  createdAt   DateTime @default(now())
+
+  @@id([postSlug, visitorHash])
+}
+
+/// 댓글의 좋아요. 브라우저마다 댓글 하나에 한 번. 댓글을 지우면 함께 지워진다
+model CommentLike {
+  commentId   String
+  comment     PostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  visitorHash String
+  createdAt   DateTime    @default(now())
+
+  @@id([commentId, visitorHash])
 }
 
 /// 관리자가 쓰거나 고친 블로그 글. 저장소의 Markdown 글과 주소(slug)가 같으면 이 글이 그 글을 대신한다.
