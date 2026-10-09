@@ -96,7 +96,8 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 - **왜:** 화면이 데스크톱 하나뿐이고 창 끌기, 오디오, 제스처가 모두 브라우저에서 돕니다. 라우팅이나 서버 렌더링이 필요 없어서 Next.js 대신 SPA로 두었습니다. 처음 쓰던 Create React App이 2025년 2월 deprecated되어 Vite로 옮겼고, dev 서버 시작이 5.05초에서 0.58초로 줄었습니다([측정](docs/migration-cra-to-vite.md))
 - **어떻게:**
   - 앱마다 폴더 하나(`src/apps/<앱>`)를 두고, `manifest.ts` 한 곳에서 이름·아이콘·창 크기·모바일 이름을 정합니다. Dock, Launchpad, 터미널의 `open`, 모바일 홈 화면이 모두 이 목록을 읽습니다
-  - 창 위치·앞뒤 순서, 관리자 로그인 상태, 음악 재생은 작은 저장소(`createStore`)에 두고 `useSyncExternalStore`로 구독합니다. React에 묶이지 않은 형태라 나중에 로직을 프레임워크 밖으로 떼어 낼 수 있습니다(#16)
+  - 창 위치·앞뒤 순서, 관리자 로그인 상태, 음악 재생은 작은 저장소(`createStore`)에 두고 `useSyncExternalStore`로 구독합니다
+  - 프레임워크와 무관한 로직은 `packages/desktop-core`로 떼어 냅니다(#16). 지금은 저장소와 창 관리(열기·닫기·최소화·앞뒤 순서)가 있고, React 쪽은 store를 구독하는 hook만 둡니다. 이 패키지는 DOM 타입과 React를 불러오지 못하게 막아 두었습니다
   - Vite의 `import.meta.glob`으로 블로그 글(Markdown)과 이미지를 빌드할 때 함께 묶습니다. `VITE_API_URL`도 빌드할 때 코드에 들어갑니다
   - 메모 창은 CSS 컨테이너 쿼리로 창 폭에 따라 도구 막대와 목록 배치를 바꿉니다. 화면 폭이 아니라 창 폭이 기준이라 창을 줄여도 맞게 바뀝니다
 
@@ -190,9 +191,11 @@ apps/
   react/                  데스크톱 UI (Vite + React)
     src/apps/             앱마다 폴더 하나 (manifest.ts가 앱 목록의 단일 출처)
     src/apps/memo/content 블로그 글 (Markdown)
-    src/desktop/          창 관리, Dock, 메뉴 막대, 모바일 셸
+    src/desktop/          창, Dock, 메뉴 막대, 모바일 셸 (화면과 hook 연결)
     e2e/                  Playwright
   api/                    NestJS API (관리자 로그인, 글, 댓글, 이미지, 메모 정리)
+packages/
+  desktop-core/           프레임워크와 무관한 로직: 저장소, 창 관리 (React·DOM 없이 테스트)
 docs/                     백엔드 설계, 배포, 마이그레이션 기록
 wrangler.jsonc            Cloudflare Workers 설정
 ```

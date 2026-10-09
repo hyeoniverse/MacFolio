@@ -3,7 +3,7 @@
 // 메뉴 막대는 지금 쓰는 앱(activeApp)의 메뉴와 공통 메뉴를 합쳐 그린다 (menuBar.ts)
 import { useEffect, useSyncExternalStore } from 'react';
 import type { AppName } from '@/apps/manifest';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 import type { MenuItem } from '@/shared/ui/menu/Menu';
 
 /** 메뉴 하나: 제목과 항목. 제목이 공통 제목(파일·편집·보기·이동)이면 그 메뉴에 합쳐지고, 아니면 앱만의 메뉴가 된다 (예: 음악의 '제어') */

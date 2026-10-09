@@ -1,0 +1,22 @@
+{
+	"name": "@macfolio/desktop-core",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"description": "프레임워크에 의존하지 않는 데스크톱 로직 (창 관리 등). React·Vue는 store를 구독해서 쓴다",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc",
+		"lint": "eslint .",
+		"test": "vitest run"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"eslint": "^10.11.0",
+		"typescript": "~5.9",
+		"typescript-eslint": "^8.70.1",
+		"vitest": "^4.1.11"
+	}
+}

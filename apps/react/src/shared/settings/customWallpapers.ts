@@ -2,7 +2,7 @@
 // 기본 배경화면은 화면 모드마다(macOS·iOS) 따로지만, 더한 배경화면은 데스크톱·휴대폰 어디서나 고른다.
 import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import {
 	DEFAULT_SETTINGS,

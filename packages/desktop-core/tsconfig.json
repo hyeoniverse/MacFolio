@@ -1,0 +1,16 @@
+{
+	// 브라우저 API(DOM)와 React·Vue 타입을 넣지 않는다. window나 react를 쓰면 타입 검사에서 걸린다
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"types": [],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"skipLibCheck": true,
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"noEmit": true
+	},
+	"include": ["src", "eslint.config.js"]
+}

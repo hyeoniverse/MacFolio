@@ -1,7 +1,7 @@
 // GitHub 앱의 기여 달력과 활동 기록 (apps/api의 /github/activity). 서버에 닿지 않으면 두 부분을 숨긴다.
 import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 
 export interface ContributionDay {
 	/** YYYY-MM-DD */

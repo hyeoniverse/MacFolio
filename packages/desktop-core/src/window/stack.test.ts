@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bringToFront, foregroundApp, minimizeAll, runningByRecency } from './appStack';
+import { bringToFront, foregroundApp, minimizeAll, runningByRecency } from './stack';
 
 const apps = {
 	a: { zIndex: 3, isMinimized: false, isRunning: true },
@@ -24,7 +24,7 @@ describe('bringToFront', () => {
 	});
 
 	it('입력 객체를 바꾸지 않는다', () => {
-		const snapshot = structuredClone(apps);
+		const snapshot = JSON.parse(JSON.stringify(apps));
 		bringToFront(apps, 'b');
 		expect(apps).toEqual(snapshot);
 	});

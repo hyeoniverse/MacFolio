@@ -1,4 +1,4 @@
-// 창 쌓임 순서 계산. React에 의존하지 않는 순수 함수만 둔다.
+// 창 쌓임 순서 계산. 입력을 바꾸지 않는 순수 함수만 둔다.
 
 export interface StackedApp {
 	zIndex: number;

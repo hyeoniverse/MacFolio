@@ -1,7 +1,7 @@
 // 사진 캡션 (#21): 원래 캡션은 프로젝트 정보(shared/profile.ts)에 있고, 관리자가 고친 것만 서버(GET·PUT /photos/captions)에 둔다.
 // 앱이 열릴 때 한 번 받아 두고, 관리자가 고치면 서버가 돌려준 전체로 바꾼다
 import { useSyncExternalStore } from 'react';
-import { createStore } from '@/shared/lib/createStore';
+import { createStore } from '@macfolio/desktop-core';
 import { env } from '@/shared/config/env';
 import type { Photo } from './albums';
 

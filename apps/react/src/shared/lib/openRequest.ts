@@ -1,7 +1,7 @@
 // 다른 앱의 항목 하나를 열어 달라는 요청 (Finder에서 글을 열면 메모가 그 글을, 프로젝트를 열면 Safari가 그 탭을 연다).
 // 받는 앱이 아직 한 번도 열리지 않아 마운트 전이어도 요청이 남아 있다가, 마운트되면 그때 처리한다.
 import { useEffect, useRef } from 'react';
-import { createStore } from './createStore';
+import { createStore } from '@macfolio/desktop-core';
 import type { LinkedApp } from './appLink';
 
 interface OpenRequest {
