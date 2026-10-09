@@ -9,6 +9,7 @@ import {
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { CoverService } from './cover.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * AI 커버 데모 (Safari의 HYEONIVERSE 페이지). 제목으로 Cloudflare Workers AI → Hugging Face 차례로 FLUX 커버를 그린다.
@@ -29,6 +30,7 @@ export class CoverController {
 	}
 
 	@Post()
+	@RateLimit('demo')
 	@HttpCode(200)
 	@ApiBody({ schema: { example: { title: '혼자 만드는 포트폴리오', style: 'watercolor', skip: [] } } })
 	@ApiOkResponse({

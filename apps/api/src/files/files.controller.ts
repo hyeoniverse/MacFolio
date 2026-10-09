@@ -31,6 +31,7 @@ import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { FilesService, type IncomingFile } from './files.service.js';
 import { contentDisposition, MAX_UPLOAD_BYTES } from './rules.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 글에 넣는 이미지와 첨부 파일. 관리자만 올리고 목록을 보고 지운다. 누구나 받는다.
@@ -43,6 +44,7 @@ export class FilesController {
 
 	@Post()
 	@UseGuards(AdminGuard)
+	@RateLimit('upload')
 	@UseInterceptors(FileInterceptor('file', { limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 } }))
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiConsumes('multipart/form-data')
@@ -67,6 +69,7 @@ export class FilesController {
 	@Delete(':id')
 	@HttpCode(204)
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiNoContentResponse({ description: '지웠다' })
 	@ApiNotFoundResponse({ description: '파일이 없다' })

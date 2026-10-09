@@ -61,6 +61,7 @@ describe('연락 메일 (e2e)', () => {
 				GITHUB_CLIENT_SECRET: 'test-client-secret',
 				ADMIN_GITHUB_ID: '68999618',
 				AUTH_RATE_LIMIT: '1000',
+				COMMENT_RATE_LIMIT: '1000',
 			});
 			// 바깥 호출(Resend, Turnstile)만 바꿔 끼운다
 			const real = globalThis.fetch;
@@ -170,6 +171,7 @@ describe('연락 메일 (e2e)', () => {
 				GITHUB_CLIENT_SECRET: 'test-client-secret',
 				ADMIN_GITHUB_ID: '68999618',
 				AUTH_RATE_LIMIT: '1000',
+				COMMENT_RATE_LIMIT: '1000',
 			});
 			prisma = app.get(PrismaService);
 			await prisma.contactMail.deleteMany();
