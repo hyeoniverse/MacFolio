@@ -650,7 +650,7 @@ curl -s https://macfolio-api.hyeoniverse.com/contact; echo   # {"enabled":true,"
 
 Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Always Free 인스턴스를 회수할 수 있다. 계정을 **Pay As You Go로 업그레이드**하면 회수 대상에서 빠지고, Always Free 한도 안에서는 그대로 0원이다. 업그레이드했다면 Budget 알림(예: 월 $1)을 걸어 둔다. 회수돼도 다시 만들 수 있게 이 문서와 서버 밖 백업을 유지한다.
 
-**서버 자원 감시**로 위험을 미리 본다. `api.env`에 넣고 `docker compose up -d api`:
+**서버 자원 감시**로 위험을 미리 본다. **운영 서버**에서 `~/deploy/api.env`에 넣고 그 폴더에서 `docker compose up -d api` (로컬 Mac에는 이 `compose.yml`이 없어서 `no configuration file provided`가 난다. 로컬의 `apps/api/.env`는 개발용이라 운영에 적용되지 않는다):
 
 ```bash
 RESOURCE_MONITOR=free          # off(기본) / free(Always Free) / payg(종량제)
@@ -662,7 +662,19 @@ RESOURCE_NETWORK_MBPS=50       # 네트워크 사용률의 기준 (shape의 대�
 - 1분마다 CPU·메모리(VM 전체, 컨테이너 안의 `/proc`으로 읽는다)와 네트워크(API 컨테이너가 주고받은 양)를 DB에 남기고, 14일 뒤 지운다. compose를 바꿀 필요는 없다
 - `free`: 최근 7일 CPU 95퍼센타일·네트워크 평균(A1이면 메모리 평균도)이 모두 20% 미만이면 '회수 위험'. 한 시간마다 확인해 위험하면 메일로 알린다 (3일에 한 번까지)
 - `payg`: 회수 대상이 아니라서 사용률만 남기고 보여 준다
-- 사이트의 **활동 상태 보기 → 서버** 탭(관리자만)에서 본다
+- 사이트의 **활동 상태 보기 → 서버** 탭(관리자만)에서 본다. 켜고 1~2분 뒤부터 값이 보인다
+- 알림 메일은 연락 메일 설정(`RESEND_API_KEY`·`CONTACT_FROM`·`CONTACT_TO`)을 그대로 쓴다. 셋이 다 있는지는 `curl https://macfolio-api.hyeoniverse.com/contact`의 `"enabled":true`로 확인한다 (비밀 값은 보이지 않는다). 받는 주소를 따로 두려면 `RESOURCE_ALERT_TO`
+- 로컬(macOS)에서는 동작하지 않는다. 사용률을 Linux의 `/proc`에서 읽기 때문이다
+
+순서:
+
+```bash
+ssh <서버>
+cd ~/deploy
+echo 'RESOURCE_MONITOR=free' >> api.env
+docker compose up -d api
+```
+
 - 네트워크는 Oracle이 재는 VM 전체 값이 아니라 API 컨테이너가 주고받은 양이다 (tunnel이 Cloudflare와 주고받는 양, 이미지 받기 등은 따로 세지 않는다). 방문 트래픽은 모두 tunnel을 거쳐 API로 오므로 흐름은 비슷하다
 
 ## 문제 해결
