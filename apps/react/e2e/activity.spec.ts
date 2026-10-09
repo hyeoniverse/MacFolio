@@ -56,9 +56,10 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await expect(activity.getByRole('table', { name: '가장 많이 들어온 곳' })).toContainText('직접 들어옴');
 		expect(api.analyticsQueries[0]).toMatch(/^\?from=\d{4}-\d{2}-\d{2}&to=\d{4}-\d{2}-\d{2}$/);
 
-		// 기간을 바꾸면 다시 묻는다
+		// 기간을 바꾸면 다시 묻는다 (메뉴 막대의 배터리도 최근 7일을 물으므로 늘어난 수로 센다)
+		const asked = api.analyticsQueries.length;
 		await activity.getByLabel('기간').selectOption('30d');
-		await expect.poll(() => api.analyticsQueries.length).toBe(2);
+		await expect.poll(() => api.analyticsQueries.length).toBe(asked + 1);
 
 		// 유입 경로: 묶어 보기(검색·소셜·직접·링크)와 캠페인
 		await activity.getByRole('tab', { name: '유입 경로' }).click();

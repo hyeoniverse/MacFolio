@@ -160,6 +160,14 @@ test.describe('모바일', () => {
 		await expect(tile).not.toBeChecked();
 	});
 
+	test('방문자에게는 상태 표시줄의 배터리가 방문 추이를 보인다 (앞 7일보다 늘어난 만큼)', async ({ page }) => {
+		await fakeApi(page);
+		await enterHome(page);
+		const battery = page.locator('.mobile-statusbar .mobile-battery');
+		await expect(battery).toHaveAttribute('data-fill', '56');
+		await expect(battery).not.toHaveClass(/danger|warning/);
+	});
+
 	test('관리자에게는 상태 표시줄의 배터리가 서버 자원을 보인다 (회수 위험이면 빨갛게 조금만 찬다)', async ({
 		page,
 	}) => {
