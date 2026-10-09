@@ -17,7 +17,7 @@ import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
 import { uploadAndInsert } from './attachments';
 import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
-import { tagsInText } from '../tags';
+import { tagsInText } from '@macfolio/desktop-core/memo';
 import TableHandles from './TableHandles';
 import { findPlugin } from './findPlugin';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import IconButton from '@/shared/ui/button/IconButton';
 import Menu from '@/shared/ui/menu/Menu';
-import type { Post } from '../posts';
+import type { Post } from '@macfolio/desktop-core/memo';
 import type { View } from './MemoToolbar';
 import FolderPickMenu from './FolderPickMenu';
 

@@ -5,7 +5,7 @@ import type { Node } from '@milkdown/kit/prose/model';
 import type { EditorView, ViewMutationRecord } from '@milkdown/kit/prose/view';
 import { $nodeSchema, $remark, $view } from '@milkdown/kit/utils';
 import { visit } from 'unist-util-visit';
-import { captionParts } from '../caption';
+import { captionParts } from '@macfolio/desktop-core/memo';
 import { downloadImage } from '../download';
 
 /** 이 파일에서 쓰는 Markdown 트리(mdast)의 모양 */

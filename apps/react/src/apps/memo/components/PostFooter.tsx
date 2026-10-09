@@ -1,5 +1,5 @@
 import Comments from '../comments/Comments';
-import type { Post } from '../posts';
+import type { Post } from '@macfolio/desktop-core/memo';
 
 /** 글 아래: 같은 폴더 안의 이전 글·다음 글(날짜 순), 댓글 */
 const PostFooter = ({

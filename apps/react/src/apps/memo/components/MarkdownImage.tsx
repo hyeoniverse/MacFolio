@@ -1,9 +1,8 @@
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { resolveImageSrc } from '../posts';
+import { captionParts, resolveImageSrc } from '@macfolio/desktop-core/memo';
 import { CONTENT_IMAGES } from '../contentImages';
-import { captionParts } from '../caption';
 import { downloadImage } from '../download';
 
 interface Props {

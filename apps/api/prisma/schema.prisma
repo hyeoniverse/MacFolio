@@ -29,7 +29,7 @@ model AdminSession {
 /// 한 행만 쓴다 (id = 1). 관리자만 바꾼다
 model MemoOrganization {
   id        Int      @id @default(1)
-  /// { folders, posts, moves, pins } (apps/react/src/apps/memo/organize.ts의 Organization)
+  /// { folders, posts, moves, pins } (packages/desktop-core/src/memo/organize.ts의 Organization)
   data      Json
   updatedAt DateTime @updatedAt
   /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)

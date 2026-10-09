@@ -4,13 +4,11 @@ import Menu from '@/shared/ui/menu/Menu';
 import {
 	DEFAULT_FIND_OPTIONS,
 	findInBlocks,
-	loadRecentFinds,
-	rememberFind,
-	saveRecentFinds,
 	stepMatch,
 	type FindMode,
 	type FindOptions,
-} from '../find';
+} from '@macfolio/desktop-core/memo';
+import { loadRecentFinds, rememberFind, saveRecentFinds } from '../memoStorage';
 import { useEditorControls } from '../writer/editorControls';
 
 /** 읽기 화면에서 찾을 곳: 글 제목과 본문 (댓글·단추 글자는 뺀다) */

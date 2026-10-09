@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AdminPost } from './posts';
+import type { AdminPost } from '@macfolio/desktop-core/memo';
 import type { PostDraft } from './postsApi';
 
 /** 새 메모 자리가 접히며 사라지는 시간 (Memo.css의 memo-new-item-out과 같다) */

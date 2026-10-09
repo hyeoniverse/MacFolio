@@ -1,4 +1,4 @@
-// 메모 정리 내용의 규칙. 화면(apps/react/src/apps/memo/organize.ts)과 같은 규칙을 서버에서도 검사한다.
+// 메모 정리 내용의 규칙. 화면(packages/desktop-core/src/memo/organize.ts)과 같은 규칙을 서버에서도 검사한다.
 // 화면에서 막아도 요청은 직접 보낼 수 있으므로, 저장하기 전에 여기서 한 번 더 막는다.
 
 export interface Organization {

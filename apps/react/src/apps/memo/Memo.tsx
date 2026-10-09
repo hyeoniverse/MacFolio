@@ -1,20 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { EMPTY_TAG_SELECTION, isTagSelectionActive, onlyTag, tagSelectionNote, type TagSelection } from './tagFilter';
+import {
+	addFolder,
+	ALL_CATEGORY,
+	EMPTY_TAG_SELECTION,
+	isTagSelectionActive,
+	moveFolder,
+	movePost,
+	onlyTag,
+	type Post,
+	RECENTLY_DELETED_DAYS,
+	removeFolder,
+	renameFolder,
+	reorderFolders,
+	setLocked,
+	setPinned,
+	TAG_VIEW,
+	type TagSelection,
+	tagSelectionNote,
+} from '@macfolio/desktop-core/memo';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
-import { ALL_CATEGORY, type Post, RECENTLY_DELETED_DAYS, TAG_VIEW } from './posts';
-import {
-	addFolder,
-	moveFolder,
-	movePost,
-	removeFolder,
-	reorderFolders,
-	renameFolder,
-	setLocked,
-	setPinned,
-} from './organize';
 import FolderSidebar from './components/FolderSidebar';
 import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
 
