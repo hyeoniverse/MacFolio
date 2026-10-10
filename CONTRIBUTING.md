@@ -153,7 +153,7 @@ summary: 목록과 검색에 보이는 한두 문장 요약
 
 ### 머지
 
-- CI(`check`, `conventions`)가 통과해야 머지한다. `main`의 Ruleset이 두 검사를 필수로 걸어 두어, 통과하기 전에는 Merge 버튼이 막힌다
+- CI(`check`, `conventions`, `secrets`)가 통과해야 머지한다. `main`의 Ruleset이 세 검사를 필수로 걸어 두어, 통과하기 전에는 Merge 버튼이 막힌다. `secrets`는 gitleaks로 API 키·토큰·개인 키 모양의 글자가 커밋에 들어왔는지 기록 전체를 본다 (예외는 `.gitleaks.toml`)
 - **Merge commit**으로 머지한다. 브랜치의 커밋이 그대로 main에 남는다
 - 머지한 브랜치는 지운다 (PR 페이지의 Delete branch)
 - 아직 손볼 게 남았으면 draft로 열어 두고, 다 되면 Ready for review로 바꾼다
@@ -170,10 +170,10 @@ CI가 실패해도 Merge 버튼이 눌리지 않게, `main`에 필수 검사를 
 2. **Ruleset name**: `main 보호` 처럼 알아볼 이름
 3. **Enforcement status**: **Active**
 4. **Target branches** → **Add target** → **Include default branch**
-5. **Require status checks to pass**를 켜고 **Add checks**에서 `check`와 `conventions`를 더한다
+5. **Require status checks to pass**를 켜고 **Add checks**에서 `check`, `conventions`, `secrets`를 더한다
 6. **Create**
 
-- 검사 이름은 워크플로의 job 이름이다 (`.github/workflows/ci.yml`의 `check`, `conventions.yml`의 `conventions`). job 이름을 바꾸면 여기 검사 이름도 바꾼다. 안 바꾸면 사라진 검사를 기다리느라 아무 PR도 머지되지 않는다
+- 검사 이름은 워크플로의 job 이름이다 (`.github/workflows/ci.yml`의 `check`, `conventions.yml`의 `conventions`, `secrets.yml`의 `secrets`). job 이름을 바꾸면 여기 검사 이름도 바꾼다. 안 바꾸면 사라진 검사를 기다리느라 아무 PR도 머지되지 않는다
 - 검사는 PR에서 한 번 돌아야 목록에 나타난다. 목록에 없으면 아무 PR이나 열어 CI를 돌린 뒤 다시 찾는다
 - **Require a pull request before merging**에 승인 수(required approvals)는 걸지 않는다. 혼자 하는 저장소에서는 내 PR을 내가 승인할 수 없어 머지가 막힌다
 - 같은 Ruleset에서 **Block force pushes**를 켜 두면 `main`의 기록을 덮어쓰는 push도 막는다
