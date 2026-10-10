@@ -18,6 +18,7 @@ const BUILTIN_APP_NAMES = [
 	'passwords',
 	'apidocs',
 	'activity',
+	'weather',
 	'bin',
 ] as const;
 
@@ -117,6 +118,14 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		inDock: false,
 		inLaunchpad: true,
 		windowSize: { width: 1000, height: 640 },
+	},
+	// 날씨 (macOS 날씨 앱 모양). Open-Meteo의 공개 데이터로 장소마다 지금 날씨와 시간별·10일 일기예보. Dock에는 고정하지 않는다
+	weather: {
+		label: '날씨',
+		icon: 'weather.svg',
+		inDock: false,
+		inLaunchpad: true,
+		windowSize: { width: 920, height: 640 },
 	},
 	// 이 사이트에서 버린 기능과, 관리자에게는 지운 메모. Dock 오른쪽 끝에 따로 있고 휴대폰 홈 화면에는 두지 않는다
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false, desktopOnly: true, windowSize: { width: 860, height: 540 } },

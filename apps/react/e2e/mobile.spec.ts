@@ -1,5 +1,6 @@
 import { test, expect, appWindow, storeMessagesOnServer } from './fixtures';
 import { fakeApi } from './fakeApi';
+import { fakeWeather } from './fakeWeather';
 import type { Page } from '@playwright/test';
 
 /** 로딩 화면을 탭해 넘기고 홈 화면에 들어간다. */
@@ -195,6 +196,26 @@ test.describe('모바일', () => {
 		await settings.getByRole('link', { name: 'hyeoniverse.dev@gmail.com' }).tap();
 		const mail = appWindow(page, 'mail');
 		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeVisible();
+	});
+
+	test('날씨: 화면 가득 지금 날씨, 목록 단추로 장소를 덮어 열고 골라 돌아온다', async ({ page }) => {
+		await fakeWeather(page);
+		await enterHome(page);
+		await (await homeApp(page, '날씨')).tap();
+		const weather = appWindow(page, 'weather');
+		await expect(weather.getByRole('main', { name: '서울 날씨' }).getByLabel('현재 기온 19도')).toBeVisible();
+		const sidebar = weather.getByRole('navigation', { name: '장소' });
+		await expect(sidebar).toBeHidden();
+
+		await weather.getByRole('button', { name: '장소 목록' }).tap();
+		await expect(sidebar).toBeVisible();
+		// 검색 칸이 위에 떠 있는 뒤로 가기 단추에 가리지 않는다
+		const search = sidebar.getByRole('searchbox', { name: '도시 검색' });
+		await search.tap();
+		await search.fill('제주');
+		await sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button', { name: /제주/ }).tap();
+		await expect(sidebar).toBeHidden();
+		await expect(weather.getByRole('main', { name: '제주 날씨' })).toBeVisible();
 	});
 
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {
