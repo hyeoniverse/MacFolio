@@ -205,6 +205,8 @@
 
 .weather-cards,
 .weather-results {
+	/* 목록은 위아래로만 스크롤한다: 옆으로 미는 손가락은 카드가 받는다 (밀어서 지우기) */
+	touch-action: pan-y;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
@@ -873,4 +875,73 @@
 	.weather-card-trash {
 		transition: none;
 	}
+}
+
+/*
+ * 날씨 앱의 팝업 (••• 메뉴, 카드의 오른쪽 클릭 메뉴). 공통 메뉴는 흰 판이라 어두운 하늘 위에서 튀어서,
+ * iOS·macOS 날씨처럼 어두운 유리 판에 흰 글자로 (메뉴는 body에 그려지므로 .ui-menu에 이름을 붙여 고른다)
+ */
+.ui-menu.weather-menu {
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	background-color: rgba(34, 36, 54, 0.72);
+	backdrop-filter: blur(30px) saturate(1.6);
+	box-shadow:
+		0 18px 48px rgba(0, 0, 0, 0.45),
+		inset 0 1px 0 rgba(255, 255, 255, 0.06);
+	color: #ffffff;
+}
+
+.ui-menu.weather-menu .ui-menu-item:hover:not(:disabled),
+.ui-menu.weather-menu .ui-menu-item:focus-visible {
+	background-color: rgba(255, 255, 255, 0.12);
+	color: #ffffff;
+}
+
+.ui-menu.weather-menu .ui-menu-item i {
+	opacity: 1;
+}
+
+.ui-menu.weather-menu .ui-menu-separator {
+	margin: 6px 12px;
+	border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ••• 메뉴 (iOS 날씨): 큰 둥근 판, 굵은 줄, 왼쪽에 체크·아이콘 칸 */
+.ui-menu.weather-menu-large {
+	min-width: 260px;
+	padding: 12px 10px;
+	border-radius: 28px;
+	font-size: 17px;
+	transform-origin: top right;
+}
+
+.ui-menu.weather-menu-large .ui-menu-item {
+	gap: 16px;
+	min-height: 48px;
+	padding: 10px 16px;
+	border-radius: 14px;
+}
+
+.ui-menu.weather-menu-large .ui-menu-item i {
+	width: 22px;
+	font-size: 18px;
+}
+
+/* 카드의 오른쪽 클릭 메뉴 (macOS 날씨): 휴지통과 '삭제'만 있는 작은 알약 */
+.ui-menu.weather-menu-compact {
+	min-width: 0;
+	padding: 4px;
+	border-radius: 14px;
+	font-size: 14px;
+}
+
+.ui-menu.weather-menu-compact .ui-menu-item {
+	gap: 8px;
+	padding: 7px 16px 7px 12px;
+	border-radius: 10px;
+	font-weight: 500;
+}
+
+.ui-menu.weather-menu-compact .ui-menu-item.destructive {
+	color: #ffffff;
 }
