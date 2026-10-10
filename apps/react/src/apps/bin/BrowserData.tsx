@@ -16,6 +16,18 @@ function clear(item: BrowserDataItem) {
 	clearBrowserData(item);
 }
 
+/** 방문자 이름 쿠키: 사이트가 지울 수 없어서 목록에는 안내만 둔다 (비어 있어도 보인다) */
+const CookieNote = ({ as: Tag = 'li' }: { as?: 'li' | 'div' }) => (
+	<Tag className="bin-data note">
+		<span className="bin-data-name">방문자 이름 쿠키</span>
+		<span className="bin-data-description">
+			메시지나 댓글을 쓰면 서버가 이 브라우저에 쿠키(macfolio_visitor)를 주고, 그것으로 이름(예: 🦊 날쌘 여우)을
+			정합니다. 사이트의 자바스크립트가 읽거나 지울 수 없게 해 두어서 여기서는 비울 수 없습니다. 지우려면 브라우저
+			설정에서 macfolio-api.hyeoniverse.com의 쿠키를 지우세요. 지우면 그 브라우저에서 쓴 글을 더는 지울 수 없습니다.
+		</span>
+	</Tag>
+);
+
 /**
  * 내 브라우저 데이터: 이 사이트가 이 브라우저에 남긴 것을 보여 주고 지운다 (휴지통 비우기).
  * 서버에 남는 것은 개인정보 문서(docs/privacy.md)로 잇는다
@@ -42,51 +54,47 @@ const BrowserData = () => {
 	return (
 		<div className="bin-browser" onPointerEnter={refresh}>
 			{stored.length > 0 ? (
-				<div className="bin-files-summary">
-					<span>
-						{`이 사이트가 이 브라우저에 남긴 것 ${stored.length}가지 · ${formatSize(stored.reduce((sum, entry) => sum + entry.bytes, 0))}`}
-					</span>
-					<Button tone="danger" onClick={() => setConfirm(true)}>
-						휴지통 비우기
-					</Button>
-				</div>
+				<>
+					<div className="bin-files-summary">
+						<span>
+							{`이 사이트가 이 브라우저에 남긴 것 ${stored.length}가지 · ${formatSize(stored.reduce((sum, entry) => sum + entry.bytes, 0))}`}
+						</span>
+						<Button tone="danger" onClick={() => setConfirm(true)}>
+							휴지통 비우기
+						</Button>
+					</div>
+					<ul className="bin-data-list" aria-label="내 브라우저 데이터">
+						{stored.map(({ item, bytes, summary }) => (
+							<li key={item.id} className="bin-data">
+								<span className="bin-data-name">{item.name}</span>
+								<span className="bin-data-meta">{[summary, formatSize(bytes)].filter(Boolean).join(' · ')}</span>
+								<span className="bin-data-description">{item.description}</span>
+								<Button
+									className="bin-data-clear"
+									title={item.afterClear}
+									onClick={() => {
+										clear(item);
+										refresh();
+									}}
+								>
+									비우기
+								</Button>
+							</li>
+						))}
+						<CookieNote />
+					</ul>
+				</>
 			) : (
-				// macOS Finder의 빈 휴지통처럼: 빈 휴지통 그림과 '휴지통이 비어 있음'
-				<div className="bin-empty-state" role="status">
-					<img src={`${env.imageUrl}/bin-empty.png`} alt="" draggable={false} />
-					<strong>휴지통이 비어 있음</strong>
-					<span>이 사이트가 이 브라우저에 남긴 것이 없습니다.</span>
+				// 비었으면 목록 대신 가운데에 빈 휴지통 그림과 안내 (쿠키 안내는 그 아래 작게)
+				<div className="bin-empty-state">
+					<div className="bin-empty-hero" role="status">
+						<img src={`${env.imageUrl}/bin-empty.png`} alt="" draggable={false} />
+						<strong>휴지통이 비어 있습니다</strong>
+						<span>이 사이트가 이 브라우저에 남긴 설정이나 검색어가 없습니다.</span>
+					</div>
+					<CookieNote as="div" />
 				</div>
 			)}
-
-			<ul className="bin-data-list" aria-label="내 브라우저 데이터">
-				{stored.map(({ item, bytes, summary }) => (
-					<li key={item.id} className="bin-data">
-						<span className="bin-data-name">{item.name}</span>
-						<span className="bin-data-meta">{[summary, formatSize(bytes)].filter(Boolean).join(' · ')}</span>
-						<span className="bin-data-description">{item.description}</span>
-						<Button
-							className="bin-data-clear"
-							title={item.afterClear}
-							onClick={() => {
-								clear(item);
-								refresh();
-							}}
-						>
-							비우기
-						</Button>
-					</li>
-				))}
-				<li className="bin-data note">
-					<span className="bin-data-name">방문자 이름 쿠키</span>
-					<span className="bin-data-description">
-						메시지나 댓글을 쓰면 서버가 이 브라우저에 쿠키(macfolio_visitor)를 주고, 그것으로 이름(예: 🦊 날쌘 여우)을
-						정합니다. 사이트의 자바스크립트가 읽거나 지울 수 없게 해 두어서 여기서는 비울 수 없습니다. 지우려면 브라우저
-						설정에서 macfolio-api.hyeoniverse.com의 쿠키를 지우세요. 지우면 그 브라우저에서 쓴 글을 더는 지울 수
-						없습니다.
-					</span>
-				</li>
-			</ul>
 
 			<p className="bin-files-note">
 				방문 통계는 쿠키 없이 합계만 남깁니다. 서버에 무엇을 얼마나 두는지는{' '}
