@@ -184,7 +184,7 @@ CI가 실패해도 Merge 버튼이 눌리지 않게, `main`에 필수 검사를 
 
 1. 저장소 → **Settings** → **Advanced Security** (예전 이름 **Code security and analysis**)
 2. **Dependabot** 묶음에서 **Dependabot alerts**와 **Dependabot security updates**를 **Enable**. 알려진 취약점이 있는 의존성이 생기면 알림이 오고, 고친 버전으로 올리는 PR이 저절로 열린다 (주간 버전 올리기는 `.github/dependabot.yml`이 따로 한다)
-3. **Secret Protection**(예전 이름 Secret scanning) 묶음에서 **Secret Protection**을 **Enable**, 그 아래 **Push protection**("Block commits that contain supported secrets")도 **Enable**. 알려진 서비스의 키 모양(GitHub 토큰, AWS 키 등)이 커밋에 들어오면 GitHub이 알려 주고, push protection은 그런 커밋의 push 자체를 막는다. 공개 저장소는 무료
+3. **Secret Protection**(예전 이름 Secret scanning) 묶음에서 **Secret Protection**을 **Enable**, 그 아래 **Push protection**("Block commits that contain supported secrets")도 **Enable**. 알려진 서비스의 키 모양(GitHub 토큰, AWS 키 등)이 커밋에 들어오면 GitHub이 알려 주고, push protection은 그런 커밋의 push 자체를 막는다. 공개 저장소는 무료이고 둘 다 기본으로 켜져 있는 경우가 많다: 단추가 **Disable**로 보이면 이미 켜진 것이니 그대로 둔다
 4. 이미 만든 `main` Ruleset(위)을 열어 **Require status checks to pass**의 **Add checks**에서 `secrets`를 더하고 **Save changes**. `secrets`는 `.github/workflows/secrets.yml`(gitleaks)로, PR 한 번은 돌아야 목록에 나타난다
 
 GitHub secret scanning은 GitHub이 아는 서비스의 키만 보고, gitleaks(`secrets` 작업)는 `.gitleaks.toml`의 규칙(이 프로젝트의 Resend·Groq 키, DB 주소의 비밀번호 등)까지 본다. 둘 다 켠다.
