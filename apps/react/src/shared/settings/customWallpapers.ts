@@ -4,6 +4,7 @@ import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
 import { api, apiFetch, SIGNED_OUT } from '@/shared/api/client';
 import { createStore } from '@macfolio/desktop-core';
+import type { Wallpaper as ServerWallpaper } from '@macfolio/contracts';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import {
 	DEFAULT_SETTINGS,
@@ -34,13 +35,7 @@ interface State {
 
 export const customWallpaperStore = createStore<State>({ status: 'idle', list: [] });
 
-interface ServerWallpaper {
-	id: string;
-	name: string;
-	image: string;
-	thumbnail: string;
-}
-
+/** 서버 응답(contracts의 Wallpaper)을 설정에서 쓰는 모양으로: 경로 앞에 API 주소 */
 const toCustom = (apiUrl: string, row: ServerWallpaper): CustomWallpaper => ({
 	id: `custom:${row.id}`,
 	serverId: row.id,
