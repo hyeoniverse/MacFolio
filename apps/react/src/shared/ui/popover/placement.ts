@@ -1,3 +1,5 @@
+import { getViewport } from '@/shared/hooks/useViewport';
+
 // 떠 있는 창(메뉴·팝오버)의 자리. 화면 가장자리에서 EDGE만큼 띄우고, 넘치면 안쪽으로 당긴다.
 
 /** 화면 가장자리와 띄울 간격 */
@@ -22,12 +24,10 @@ export interface AnchorRect {
 	width: number;
 }
 
-const viewport = (): Size => ({ width: window.innerWidth, height: window.innerHeight });
-
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
 
 /** 한 점(우클릭한 자리 등)에 왼쪽 위를 맞춘다. 오른쪽·아래로 넘치면 안쪽으로 */
-export function placeAtPoint(point: Point, size: Size, view: Size = viewport()): Point {
+export function placeAtPoint(point: Point, size: Size, view: Size = getViewport()): Point {
 	return {
 		left: clamp(point.left, EDGE, view.width - size.width - EDGE),
 		top: clamp(point.top, EDGE, view.height - size.height - EDGE),
@@ -42,7 +42,7 @@ export function placeBelow(
 	anchor: AnchorRect,
 	size: Size,
 	{ align = 'start', gap = 6 }: { align?: 'start' | 'center'; gap?: number } = {},
-	view: Size = viewport()
+	view: Size = getViewport()
 ): Point {
 	const left = align === 'center' ? anchor.left + anchor.width / 2 - size.width / 2 : anchor.left;
 	// 아래에 자리가 없고 위에는 있으면 위로 연다 (휴대폰 아래 도구 막대의 단추처럼)
@@ -53,6 +53,6 @@ export function placeBelow(
 }
 
 /** 기준 오른쪽에 위를 맞춰 둔다 (표 손잡이 메뉴). 오른쪽으로 넘치면 안쪽으로 */
-export function placeRight(anchor: AnchorRect, size: Size, { gap = 6 } = {}, view: Size = viewport()): Point {
+export function placeRight(anchor: AnchorRect, size: Size, { gap = 6 } = {}, view: Size = getViewport()): Point {
 	return { left: Math.min(anchor.right + gap, view.width - size.width - EDGE), top: anchor.top };
 }

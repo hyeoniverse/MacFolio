@@ -1,5 +1,6 @@
 // 창 여닫기 애니메이션. 창이 앱 아이콘(Dock, 모바일 홈 화면)에서 나오고 아이콘으로 돌아간다.
 import type { AppName } from '@/apps/manifest';
+import { prefersReducedMotion } from '@/shared/lib/media';
 
 export interface Box {
 	x: number;
@@ -18,8 +19,6 @@ export function flyTransform(from: Box, to: Box): string {
 	const scale = Math.max(0.05, to.width / from.width);
 	return `translate(${Math.round(dx)}px, ${Math.round(dy)}px) scale(${scale.toFixed(3)})`;
 }
-
-const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** 앱을 여는 아이콘의 위치. 모바일은 홈 화면, 데스크톱은 Dock. 화면에 없으면(Launchpad 안 등) null */
 function launcherBox(appName: AppName, mobile: boolean): Box | null {
