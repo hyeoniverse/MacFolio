@@ -70,7 +70,7 @@ test.describe('이 Mac에 관하여', () => {
 		await about.getByRole('button', { name: '추가 정보…' }).click();
 		await expect(about).toBeHidden();
 		const settings = appWindow(page, 'settings');
-		await expect(settings.getByRole('button', { name: '정보' })).toHaveAttribute('aria-current', 'page');
+		await expect(settings.getByRole('button', { name: '정보', exact: true })).toHaveAttribute('aria-current', 'page');
 		// 작은 창보다 자세히: 기술 전부와 이 사이트를 만든 기술
 		await expect(settings.getByRole('region', { name: '프로필' })).toContainText('이름김정현 (Kim Jeong Hyeon)');
 		await expect(settings.getByRole('region', { name: '기술' })).toContainText('백엔드Node.js · Express');
@@ -83,7 +83,7 @@ test.describe('이 Mac에 관하여', () => {
 		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await page.getByRole('menuitem', { name: '이 Mac에 관하여' }).click();
 		await about.getByRole('button', { name: '추가 정보…' }).click();
-		await expect(settings.getByRole('button', { name: '정보' })).toHaveAttribute('aria-current', 'page');
+		await expect(settings.getByRole('button', { name: '정보', exact: true })).toHaveAttribute('aria-current', 'page');
 	});
 
 	test('저작권 줄 위의 개인정보 처리 방침(macOS의 규제 인증서 자리)은 Finder에서 문서를 연다', async ({ page }) => {
