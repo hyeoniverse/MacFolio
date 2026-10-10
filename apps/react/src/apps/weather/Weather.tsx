@@ -143,6 +143,8 @@ const PlaceCard = ({
 }) => {
 	const weather = loaded?.status === 'ready' ? loaded.weather : null;
 	const [offset, setOffset] = useState(0);
+	/** 손가락으로 미는 중: 카드가 손가락을 바로 따라오게 애니메이션을 끈다 (손을 떼면 제자리로 미끄러진다) */
+	const [dragging, setDragging] = useState(false);
 	const drag = useRef<{ x: number; y: number; from: number; moved: boolean } | null>(null);
 	/** 방금 밀었는지: 손을 뗄 때 따라오는 누름은 고르기·닫기가 아니다 */
 	const dragged = useRef(false);
@@ -165,7 +167,7 @@ const PlaceCard = ({
 			)}
 			<button
 				type="button"
-				className={`weather-card-face ${active ? 'active' : ''}`}
+				className={`weather-card-face ${active ? 'active' : ''} ${dragging ? 'dragging' : ''}`}
 				aria-current={active || undefined}
 				style={shown ? { transform: `translateX(${shown}px)` } : undefined}
 				onContextMenu={
@@ -177,6 +179,8 @@ const PlaceCard = ({
 						: undefined
 				}
 				onPointerDown={(event) => {
+					// 휴대폰에서는 밀고 난 뒤 누름이 따라오지 않는다. 새로 누르면 지난 밀기는 잊는다
+					dragged.current = false;
 					if (!onRemove || editing) return;
 					drag.current = { x: event.clientX, y: event.clientY, from: offset, moved: false };
 				}}
@@ -195,12 +199,14 @@ const PlaceCard = ({
 						}
 					}
 					start.moved = true;
+					setDragging(true);
 					setOffset(Math.min(0, Math.max(-SWIPE_OPEN - 24, start.from + dx)));
 				}}
 				onPointerUp={() => {
 					const start = drag.current;
 					drag.current = null;
 					dragged.current = Boolean(start?.moved);
+					setDragging(false);
 					if (start?.moved) setOffset((current) => (current < -SWIPE_OPEN / 2 ? -SWIPE_OPEN : 0));
 				}}
 				onPointerCancel={() => {
@@ -209,6 +215,7 @@ const PlaceCard = ({
 					const start = drag.current;
 					drag.current = null;
 					dragged.current = Boolean(start?.moved);
+					setDragging(false);
 					setOffset((current) => (current < -SWIPE_OPEN / 2 ? -SWIPE_OPEN : 0));
 				}}
 				onClick={(event) => {
