@@ -24,3 +24,6 @@ build
 # playwright
 playwright-report
 test-results
+
+# turbo가 AI 에이전트를 감지하면 스스로 만드는 안내 파일 (저장소에 두지 않는다)
+AGENTS.md
