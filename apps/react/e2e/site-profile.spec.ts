@@ -76,6 +76,11 @@ test.describe('사이트 주인의 프로필', () => {
 		await expect(form.getByRole('textbox', { name: '프론트엔드' })).toHaveValue(
 			'React, Next.js, TypeScript, JavaScript, TailwindCSS, Zustand'
 		);
+		// 기술 칸은 쉼표로 나눠 쓴다는 안내를 칸 아래에 따로 둔다 (제목에 붙이지 않는다)
+		await expect(form.getByRole('region', { name: '기술', exact: true })).toBeVisible();
+		await expect(form.getByRole('textbox', { name: '프론트엔드' })).toHaveAccessibleDescription(
+			'쉼표(,)로 나눠 씁니다. 예: React, TypeScript, Vite'
+		);
 		// 저장한 값이 없으면 되돌릴 것도 없다
 		await expect(form.getByRole('button', { name: '기본값으로 되돌리기' })).toHaveCount(0);
 

@@ -16,8 +16,16 @@ import {
 } from '@/shared/site/profileStore';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 
-/** 묶음 하나: 작은 회색 제목, 둥근 칸 안에 이름표·값 줄 */
-const Group = ({ title, rows }: { title: string; rows: { label: string; value: React.ReactNode }[] }) => (
+/** 묶음 하나: 작은 회색 제목, 둥근 칸 안에 이름표·값 줄. hint는 칸 아래의 작은 안내 (macOS 설정의 설명 글처럼) */
+const Group = ({
+	title,
+	rows,
+	hint,
+}: {
+	title: string;
+	rows: { label: string; value: React.ReactNode }[];
+	hint?: { id: string; text: string };
+}) => (
 	<section className="about-pane-group" aria-label={title}>
 		<h3>{title}</h3>
 		<dl>
@@ -28,8 +36,16 @@ const Group = ({ title, rows }: { title: string; rows: { label: string; value: R
 				</div>
 			))}
 		</dl>
+		{hint && (
+			<p id={hint.id} className="about-pane-hint">
+				{hint.text}
+			</p>
+		)}
 	</section>
 );
+
+/** 기술 칸 아래 안내 (입력칸이 aria-describedby로 가리킨다) */
+const LIST_HINT = { id: 'about-pane-list-hint', text: '쉼표(,)로 나눠 씁니다. 예: React, TypeScript, Vite' };
 
 /** 편집 중인 값: 기술 목록은 쉼표로 이은 한 줄로 고친다 */
 type Draft = Record<
@@ -76,7 +92,11 @@ const fromDraft = (draft: Draft) => ({
 });
 
 /** 편집 칸의 묶음: 보기와 같은 둥근 칸에 이름표와 입력칸 */
-const FIELDS: { title: string; rows: { key: keyof Draft; label: string; type?: string; list?: boolean }[] }[] = [
+const FIELDS: {
+	title: string;
+	hint?: typeof LIST_HINT;
+	rows: { key: keyof Draft; label: string; type?: string; list?: boolean }[];
+}[] = [
 	{
 		title: '프로필',
 		rows: [
@@ -95,7 +115,8 @@ const FIELDS: { title: string; rows: { key: keyof Draft; label: string; type?: s
 		],
 	},
 	{
-		title: '기술 (쉼표로 나눠 씁니다)',
+		title: '기술',
+		hint: LIST_HINT,
 		rows: [
 			{ key: 'frontend', label: '프론트엔드', list: true },
 			{ key: 'backend', label: '백엔드', list: true },
@@ -210,6 +231,7 @@ const AboutPane = () => {
 						<Group
 							key={group.title}
 							title={group.title}
+							hint={group.hint}
 							rows={group.rows.map(({ key, label, type = 'text', list }) => ({
 								label,
 								value: (
@@ -218,6 +240,7 @@ const AboutPane = () => {
 										aria-label={label}
 										value={draft[key]}
 										maxLength={list ? undefined : PROFILE_LIMITS.text}
+										aria-describedby={list ? LIST_HINT.id : undefined}
 										spellCheck={false}
 										onChange={(event) => setDraft({ ...draft, [key]: event.target.value })}
 									/>
