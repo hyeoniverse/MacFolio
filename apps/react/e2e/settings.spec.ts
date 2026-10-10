@@ -19,7 +19,7 @@ test.describe('Settings', () => {
 		await enterDesktop(page);
 		await dockItem(page, 'settings').click();
 		const items = appWindow(page, 'settings').locator('.settings-nav-item');
-		await expect(items).toHaveCount(5);
+		await expect(items).toHaveCount(6);
 		const gaps = await items.evaluateAll((rows) =>
 			rows.map((row) => {
 				const chevron = row.querySelector('.settings-nav-chevron')!.getBoundingClientRect();
@@ -27,7 +27,7 @@ test.describe('Settings', () => {
 				return Math.abs(Math.round(right - chevron.right));
 			})
 		);
-		expect(gaps).toEqual([0, 0, 0, 0, 0]);
+		expect(gaps).toEqual([0, 0, 0, 0, 0, 0]);
 	});
 
 	test('처음 열면 계정이 보인다', async ({ page }) => {

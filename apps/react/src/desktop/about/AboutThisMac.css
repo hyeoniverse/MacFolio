@@ -1,0 +1,199 @@
+/* '이 Mac에 관하여' (macOS Sequoia의 같은 창): 가운데 좁은 창, 큰 그림, 굵은 이름, 오른쪽 맞춘 이름표와 값 */
+.about-mac {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 1500;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 316px;
+	padding: 44px 24px 18px;
+	border: 0.5px solid var(--color-window-border);
+	border-radius: 16px;
+	background-color: var(--color-titlebar-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.12),
+		0 22px 70px rgba(0, 0, 0, 0.35);
+	color: var(--color-text-strong);
+	text-align: center;
+	transform: translate(-50%, -50%);
+	user-select: none;
+	cursor: default;
+	animation: about-mac-in 0.22s var(--ease-out, ease-out);
+}
+
+@keyframes about-mac-in {
+	from {
+		opacity: 0;
+		scale: 0.96;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.about-mac {
+		animation: none;
+	}
+}
+
+.about-mac-lights {
+	position: absolute;
+	top: 14px;
+	left: 14px;
+	display: flex;
+	gap: 8px;
+}
+
+.about-mac-lights > * {
+	width: 12px;
+	height: 12px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+}
+
+.about-mac-lights .close {
+	background-color: #ff5f57;
+	cursor: pointer;
+}
+
+.about-mac-lights .close:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+/* 최소화·확대는 이 창에 없다 (macOS처럼 회색) */
+.about-mac-lights .off {
+	background-color: color-mix(in srgb, var(--color-text-secondary) 35%, transparent);
+}
+
+.about-mac-photo {
+	display: grid;
+	place-items: center;
+	width: 132px;
+	height: 132px;
+	margin-bottom: 18px;
+	border-radius: 50%;
+	object-fit: cover;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.about-mac-photo.monogram {
+	background: linear-gradient(160deg, #8e8e93, #5a5a5f);
+	color: #ffffff;
+	font-size: 40px;
+	font-weight: 600;
+}
+
+.about-mac h2 {
+	margin: 0;
+	font-size: 26px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.about-mac-subtitle {
+	margin: 2px 0 20px;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.about-mac-specs {
+	display: grid;
+	gap: 5px;
+	width: 100%;
+	margin: 0 0 20px;
+	font-size: 12px;
+}
+
+.about-mac-specs > div {
+	display: grid;
+	grid-template-columns: 64px 1fr;
+	gap: 10px;
+	text-align: left;
+}
+
+.about-mac-specs dt {
+	color: var(--color-text-secondary);
+	text-align: right;
+}
+
+.about-mac-specs dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+	user-select: text;
+	cursor: text;
+}
+
+.about-mac-specs a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.about-mac-specs a:hover {
+	color: var(--color-accent);
+	text-decoration: underline;
+}
+
+.about-mac-more {
+	padding: 4px 14px;
+	border: 0.5px solid var(--color-window-border);
+	border-radius: 6px;
+	background-color: var(--color-control-bg);
+	box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.12);
+	color: var(--color-text-strong);
+	font: inherit;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.about-mac-more:active {
+	background-color: var(--color-selected-bg);
+}
+
+.about-mac-more:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+}
+
+.about-mac-link {
+	margin-top: 16px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-accent);
+	font: inherit;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+.about-mac-link:hover {
+	text-decoration: underline;
+}
+
+.about-mac-link:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 2px;
+	border-radius: 3px;
+}
+
+.about-mac-legal {
+	margin: 4px 0 0;
+	color: var(--color-text-secondary);
+	font-size: 10px;
+}
+
+/* 누를 수 있는 프로필 링크(이메일, GitHub)의 ↗ (시스템 설정의 정보에도 쓴다) */
+.profile-external-link i {
+	margin-left: 4px;
+	font-size: 0.75em;
+	opacity: 0.7;
+	vertical-align: 1px;
+}
+
+/* 이 창의 링크는 파란 글자 (다른 값과 구별되게), 올리면 밑줄 */
+.about-mac-specs .profile-external-link {
+	color: var(--color-accent);
+	/* ↗가 다음 줄로 떨어지지 않게 링크는 한 줄로 */
+	white-space: nowrap;
+}

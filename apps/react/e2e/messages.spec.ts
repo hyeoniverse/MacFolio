@@ -30,6 +30,15 @@ const compose = (messages: Locator) => messages.getByRole('button', { name: '새
 const items = (messages: Locator) => messages.locator('.messages-thread');
 
 test.describe('메시지 (감상·의견·피드백)', () => {
+	// 첫 브라우저 id도 정해 둔다. 무작위 id면 이름(id로 정한다)이 가끔 visitor-b와 같아져서,
+	// '사람마다 다른 이름' 시험이 운에 따라 실패했다. 이미 정한 id(becomeVisitor)는 그대로 둔다
+	test.beforeEach(async ({ page }) => {
+		await page.addInitScript(() => {
+			if (!localStorage.getItem('macfolio:messages:visitor'))
+				localStorage.setItem('macfolio:messages:visitor', 'visitor-a');
+		});
+	});
+
 	test('처음에는 김정현의 안내가 열리고, 누구나 답글을 달 수 있다', async ({ page }) => {
 		const messages = await openMessages(page);
 		await expect(messages.getByRole('region', { name: '김정현의 안내' })).toBeVisible();
