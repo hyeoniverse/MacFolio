@@ -1,5 +1,5 @@
 // 앱 목록의 단일 출처. React에 의존하지 않는 정보만 둔다.
-// 컴포넌트 연결은 registry.tsx에서 한다. 프로젝트 앱은 shared/profile.ts의 PROJECTS에서 만든다.
+// 컴포넌트 연결은 registry.ts에서 한다. 프로젝트 앱은 shared/profile.ts의 PROJECTS에서 만든다.
 import { PROJECTS, type Project, type ProjectAppInfo } from '@/shared/profile';
 
 /** 이 사이트에 들어 있는 앱 (프로젝트 앱은 아래에서 PROJECTS로 만든다) */
@@ -150,6 +150,9 @@ export const APP_MANIFEST = {
 		])
 	),
 } as Record<AppName, AppManifest>;
+
+/** 창으로 열리는 앱 (APP_NAMES 순서). action이 있는 앱(공유)은 누르면 바로 동작하고 창이 없다. 컴포넌트 연결은 registry.ts */
+export const WINDOW_APP_NAMES = APP_NAMES.filter((name) => APP_MANIFEST[name].action === undefined);
 
 /** Dock 왼쪽 영역에 표시할 앱 (APP_NAMES 순서) */
 export const DOCK_APPS = APP_NAMES.filter((name) => APP_MANIFEST[name].inDock);
