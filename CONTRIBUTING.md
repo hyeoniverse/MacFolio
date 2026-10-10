@@ -83,6 +83,25 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 건강하�
 - 이름 바꾸기·지우기: 한 번에 하지 않고 나눈다. ① 새 열을 더하고 코드가 둘 다 쓰게 → ② 다음 배포에서 옛 열을 지운다
 - 정말 DB까지 되돌려야 하면 배포 직전 백업(`~/backups`, `ops/deploy.sh`가 남긴다)을 `ops/restore.sh`로
 
+## 프론트엔드 파일 이름
+
+`apps/react/src/apps/<앱>/`은 기능(앱)마다 한 폴더다. 그 안의 파일은 이름이 종류를 말한다. 폴더는 묶을 것이 생겼을 때만 만든다.
+
+| 종류                              | 이름                                | 예                                                |
+| --------------------------------- | ----------------------------------- | ------------------------------------------------- |
+| 서버 호출 (`fetch`)               | `*Api.ts` (하나뿐이면 `<앱>Api.ts`) | `postsApi.ts`, `captionsApi.ts`, `activityApi.ts` |
+| 타입과 순수 계산 (React·DOM 없음) | `model.ts`, 또는 뜻이 드러나는 이름 | `activity/model.ts`, `weather/forecast.ts`        |
+| 훅                                | `use*.ts`                           | `useServerResources.ts`, `usePopover.ts`          |
+| 화면 조각                         | `PascalCase.tsx`                    | `FolderRow.tsx`                                   |
+| 화면 조각이 셋 이상 모이면        | `components/`                       | `memo/components/`, `mail/components/`            |
+| 스타일                            | 컴포넌트와 같은 이름의 `.css`       | `Memo.css`, `PhotosMobile.css`                    |
+| 두 화면이 함께 쓰는 타입          | `model.ts` 또는 `<무엇>.model.ts`   | `mail/model.ts`, `folderSidebar.model.ts`         |
+
+- 한 파일에 서버 호출과 순수 계산을 섞지 않는다. 섞이면 순수 계산에 시험을 붙이기 어렵고, 서버 호출을 공통 클라이언트로 옮길 때 파일을 다시 가른다
+- 값을 받아 두는 store와 그것을 읽는 한 줄짜리 훅(`useSyncExternalStore`)은 그 `*Api.ts`에 둬도 된다 (`githubApi.ts`의 `useGithub`)
+- 시험은 대상 파일 옆에 같은 이름으로 (`forecast.ts` ↔ `forecast.test.ts`)
+- 앱이 커져 파일이 열 개를 넘으면 그때 `components/`·`writer/`처럼 묶는다. 작은 앱에 미리 폴더를 파지 않는다
+
 ## 블로그 글
 
 사이트의 메모 앱이 블로그다. 글은 `apps/react/src/apps/memo/content/*.md`, 이미지는 `content/images/`에 둔다.

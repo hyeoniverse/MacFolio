@@ -31,7 +31,7 @@ import PostWriter, { type PostWriterHandle } from './writer/PostWriter';
 import RevisionsPanel from './components/RevisionsPanel';
 import SearchField from './components/SearchField';
 import FindBar from './components/FindBar';
-import { keepFocus, usePopover } from './writer/popover';
+import { keepFocus, usePopover } from './writer/usePopover';
 import type { PostDraft } from './postsApi';
 import { linkedId, shareLink } from '@/shared/lib/appLink';
 import { useOpenRequest } from '@/shared/lib/openRequest';

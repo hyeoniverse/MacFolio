@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { ResourceStatus } from './data';
-import { batteryOf, usageLine } from './serverResources';
+import type { ResourceStatus } from './activityApi';
+import { batteryOf, usageLine } from './useServerResources';
 
 const free = (level: 'danger' | 'warning' | 'safe' | 'unknown'): ResourceStatus => ({
 	mode: 'free',
