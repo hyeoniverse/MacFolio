@@ -72,7 +72,7 @@ describe('loadActivity', () => {
 
 		const ok = vi.fn(async () => new Response(JSON.stringify({ contributions: null, events: [item({})] })));
 		await loadActivity('http://api', ok as unknown as typeof fetch);
-		expect(ok).toHaveBeenCalledWith('http://api/github/activity');
+		expect(ok).toHaveBeenCalledWith('http://api/github/activity', expect.anything());
 		expect(activityStore.getState().data?.events).toHaveLength(1);
 	});
 });

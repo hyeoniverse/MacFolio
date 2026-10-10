@@ -47,6 +47,9 @@ describe('deleteServerFile', () => {
 			ok: false,
 			reason: '배경화면에서 쓰는 파일입니다.',
 		});
-		expect(fetchImpl).toHaveBeenCalledWith('https://api.x/files/id', { method: 'DELETE', credentials: 'include' });
+		expect(fetchImpl).toHaveBeenCalledWith(
+			'https://api.x/files/id',
+			expect.objectContaining({ method: 'DELETE', credentials: 'include' })
+		);
 	});
 });
