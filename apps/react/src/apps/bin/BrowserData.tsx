@@ -4,7 +4,6 @@ import { requestFinderDoc } from '@/apps/finder/openDoc';
 import { DEFAULT_SETTINGS } from '@/shared/settings/settings';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
-import Button from '@/shared/ui/button/Button';
 import { clearBrowserData, readBrowserData, type BrowserDataItem } from './siteStorage';
 import { formatSize } from './filesApi';
 import { refreshBin } from './binState';
@@ -59,9 +58,16 @@ const BrowserData = () => {
 						? `이 사이트가 이 브라우저에 남긴 것 ${stored.length}가지 · ${formatSize(stored.reduce((sum, entry) => sum + entry.bytes, 0))}`
 						: '내 브라우저 데이터'}
 				</span>
-				<Button tone="danger" onClick={() => setConfirm(true)} disabled={stored.length === 0}>
-					휴지통 비우기
-				</Button>
+				{/* Finder 휴지통의 작은 회색 '비우기' 단추 (비었으면 꺼짐) */}
+				<button
+					type="button"
+					className="bin-empty-button"
+					aria-label="휴지통 비우기"
+					onClick={() => setConfirm(true)}
+					disabled={stored.length === 0}
+				>
+					비우기
+				</button>
 			</div>
 			{stored.length > 0 ? (
 				<ul className="bin-data-list" aria-label="내 브라우저 데이터">
@@ -70,8 +76,9 @@ const BrowserData = () => {
 							<span className="bin-data-name">{item.name}</span>
 							<span className="bin-data-meta">{[summary, formatSize(bytes)].filter(Boolean).join(' · ')}</span>
 							<span className="bin-data-description">{item.description}</span>
-							<Button
-								className="bin-data-clear"
+							<button
+								type="button"
+								className="bin-empty-button bin-data-clear"
 								title={item.afterClear}
 								onClick={() => {
 									clear(item);
@@ -79,7 +86,7 @@ const BrowserData = () => {
 								}}
 							>
 								비우기
-							</Button>
+							</button>
 						</li>
 					))}
 					<CookieNote />
@@ -96,7 +103,7 @@ const BrowserData = () => {
 			<p className="bin-files-note">
 				{stored.length === 0 &&
 					'방문자 이름 쿠키(macfolio_visitor)는 사이트가 지울 수 없어 여기에 없습니다. 지우려면 브라우저 설정에서 지우세요. '}
-				방문 통계는 쿠키 없이 합계만 남깁니다. 서버에 무엇을 얼마나 두는지는{' '}
+				방문 통계는 쿠키 없이 합계만 남깁니다. 서버에 무엇을 얼마나 보관하는지는{' '}
 				<button
 					type="button"
 					className="bin-link"
