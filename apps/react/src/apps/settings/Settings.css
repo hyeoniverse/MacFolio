@@ -1230,3 +1230,154 @@ ol.showcase-list .showcase-row.reordering {
 	padding-left: 4px;
 	color: #ff3b30;
 }
+
+/* 시스템 설정 › 프로젝트 (관리자) */
+.projects-pane,
+.projects-editor {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	max-width: 620px;
+}
+
+.projects-row .showcase-lines {
+	flex: 1;
+	min-width: 0;
+}
+
+.projects-row.hidden .showcase-lines {
+	opacity: 0.5;
+}
+
+.projects-edit {
+	margin: 0 6px 0 4px;
+}
+
+.projects-saved {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 10px 14px;
+	border-radius: 10px;
+	background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+	color: var(--color-text-strong);
+	font-size: 12px;
+}
+
+.projects-editor-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+/* 기본 / 고급 (JSON): macOS의 작은 세그먼트 단추 */
+.projects-tabs {
+	display: inline-flex;
+	padding: 2px;
+	border-radius: 8px;
+	background: var(--color-divider);
+}
+
+.projects-tabs button {
+	padding: 3px 12px;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: var(--color-text);
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.projects-tabs button[aria-selected='true'] {
+	background: var(--color-control-bg);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+	font-weight: 600;
+}
+
+.projects-editor .about-pane-group {
+	gap: 0;
+	overflow: hidden;
+	border: 1px solid var(--color-divider);
+	border-radius: 10px;
+	background: var(--color-control-bg);
+}
+
+.projects-editor .about-pane-group h3 {
+	padding: 8px 14px 4px;
+}
+
+.projects-field {
+	padding: 6px 14px;
+	border-top: 1px solid var(--color-divider);
+}
+
+.projects-field label {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	font-size: 13px;
+}
+
+.projects-field label > span {
+	flex: none;
+	min-width: 110px;
+	color: var(--color-text-strong);
+}
+
+.projects-field input,
+.projects-field select {
+	flex: 1;
+	min-width: 0;
+	padding: 4px 0;
+	border: none;
+	background: none;
+	color: var(--color-text);
+	font: inherit;
+	text-align: right;
+	outline: none;
+}
+
+.projects-field:focus-within {
+	box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+
+.projects-field .about-pane-hint {
+	padding: 2px 0 2px;
+	text-align: right;
+}
+
+.projects-field-pair {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.projects-switch {
+	border: none;
+	border-top: 1px solid var(--color-divider);
+	border-radius: 0;
+	font-size: 13px;
+}
+
+.projects-json textarea {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 420px;
+	padding: 10px 12px;
+	border: 1px solid var(--color-divider);
+	border-radius: 10px;
+	background: var(--color-control-bg);
+	color: var(--color-text);
+	font:
+		12px/1.5 ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+	resize: vertical;
+	outline: none;
+}
+
+.projects-json textarea:focus {
+	border-color: var(--color-accent);
+}

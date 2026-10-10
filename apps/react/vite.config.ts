@@ -2,7 +2,7 @@ import { appendFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 import { defaultClientConditions, defaultServerConditions, defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { PROJECTS } from './src/shared/profile';
+import { DEFAULT_PROJECTS } from './src/shared/profile';
 import { headersFileBlock, securityHeaders } from './worker/securityHeaders';
 
 /**
@@ -18,7 +18,7 @@ function securityHeadersPlugin(): Plugin {
 			const env = loadEnv(config.mode, config.envDir || process.cwd(), '');
 			headers = securityHeaders({
 				apiUrl: env.VITE_API_URL,
-				frameUrls: PROJECTS.flatMap((project) => (project.demo ? [project.demo] : [])),
+				frameUrls: DEFAULT_PROJECTS.flatMap((project) => (project.demo ? [project.demo] : [])),
 				// E2E의 가짜 API (e2e/fakeApi.ts의 FAKE_API). 배포 빌드에는 넣지 않는다
 				testApiUrls: env.CSP_TEST_API_URL ? [env.CSP_TEST_API_URL] : [],
 			});
