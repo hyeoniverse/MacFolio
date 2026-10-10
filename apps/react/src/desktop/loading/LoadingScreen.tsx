@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { prefersReducedMotion } from '@/shared/lib/media';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '@/desktop/loading/LoadingScreen.css';
 import { env } from '@/shared/config/env';
@@ -45,7 +46,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 								window.dispatchEvent(new Event('startMusic'));
 								// 검은 화면이 서서히 걷히며 데스크톱이 나타난다
 								const fade = containerRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
-									duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450,
+									duration: prefersReducedMotion() ? 0 : 450,
 									easing: 'ease-out',
 									fill: 'forwards',
 								});
