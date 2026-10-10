@@ -7,23 +7,10 @@ import { tokenOf } from '../common/turnstile.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
 import { hashIp, maskIp, parseBody, SLUG } from './rules.js';
+import type { Comment } from '@macfolio/contracts';
 
-/** 밖으로 내보내는 댓글. 방문자 해시와 IP 해시는 절대 담지 않는다 */
-export interface CommentView {
-	id: string;
-	name: string;
-	/** IP 앞 두 자리 (관리자 댓글은 없음) */
-	ipPrefix: string | null;
-	isAdmin: boolean;
-	body: string;
-	createdAt: string;
-	/** 보고 있는 브라우저가 쓴 댓글 (지우기 단추를 보인다) */
-	mine: boolean;
-	/** 좋아요 수 */
-	likes: number;
-	/** 보고 있는 브라우저가 좋아요를 눌렀는지 */
-	liked: boolean;
-}
+/** 밖으로 내보내는 댓글의 모양은 화면과 같은 스키마(contracts의 Comment). 방문자 해시와 IP 해시는 절대 담지 않는다 */
+export type CommentView = Comment;
 
 const SELECT = {
 	id: true,

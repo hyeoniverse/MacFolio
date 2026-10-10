@@ -1,0 +1,12 @@
+{
+	// 서버(apps/api)가 쓰는 dist: JS와 타입 선언. 시험 파일은 빼고 만든다
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": false,
+		"declaration": true,
+		"rootDir": "src",
+		"outDir": "dist"
+	},
+	"include": ["src"],
+	"exclude": ["src/**/*.test.ts"]
+}

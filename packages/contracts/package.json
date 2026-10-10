@@ -1,0 +1,33 @@
+{
+	"name": "@macfolio/contracts",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"description": "API 요청·응답의 모양(zod 스키마). API는 검증에, React는 타입 추론에 같이 쓴다. React는 src를 바로 쓰고(source 조건), 서버(Node)는 빌드한 dist를 쓴다",
+	"exports": {
+		".": {
+			"source": "./src/index.ts",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"typecheck": "tsc",
+		"lint": "eslint . --max-warnings 0",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"zod": "^4.6.5"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"eslint": "^10.12.0",
+		"typescript": "~5.9",
+		"typescript-eslint": "^8.71.1",
+		"vitest": "^4.1.11"
+	},
+	"files": [
+		"dist"
+	]
+}

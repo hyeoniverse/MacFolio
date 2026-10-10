@@ -1,14 +1,10 @@
 // 좋아요 API (apps/api의 /posts/:slug/likes·like, /comments/:id/like, /posts/stats)
+import type { Likes, PostStats } from '@macfolio/contracts';
 import { api, type ApiOptions } from '@/shared/api/client';
 
-/** 좋아요 수와 이 브라우저가 눌렀는지 */
-export interface Likes {
-	count: number;
-	liked: boolean;
-}
-
-/** 글마다 댓글 수와 좋아요 수 (하나라도 있는 글만) */
-export type PostCounts = Record<string, { comments: number; likes: number }>;
+/** 응답 모양은 서버와 같은 스키마(contracts). 글마다 댓글·좋아요 수는 PostStats */
+export type { Likes };
+export type PostCounts = PostStats;
 
 /** 실패하면 null (좋아요는 조용히 실패한다) */
 const call = <T>(path: string, options: ApiOptions): Promise<T | null> => api<T>(path, options).catch(() => null);
