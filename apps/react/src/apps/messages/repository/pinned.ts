@@ -2,8 +2,9 @@
 // 이름은 그때의 프로필 (관리자가 시스템 설정에서 바꿀 수 있다)
 import { getProfile } from '@/shared/site/profileStore';
 import type { Message, Thread } from '../conversations';
+import { PINNED_THREAD_ID } from '@macfolio/contracts';
 
-export const PINNED_THREAD_ID = 'owner';
+export { PINNED_THREAD_ID };
 export const OWNER_AUTHOR_ID = 'owner';
 
 export const pinnedThread = (): Thread => ({
