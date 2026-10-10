@@ -1381,3 +1381,27 @@ ol.showcase-list .showcase-row.reordering {
 .projects-json textarea:focus {
 	border-color: var(--color-accent);
 }
+
+/* 화면 모음 폴더의 그림 미리 보기 (12장까지) */
+.projects-folder-preview {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+	gap: 6px;
+	margin: 0;
+	padding: 4px 14px 12px;
+	list-style: none;
+}
+
+.projects-folder-preview img,
+.projects-folder-preview video {
+	display: block;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	border-radius: 6px;
+	object-fit: cover;
+	background: var(--color-divider);
+}
+
+.projects-add {
+	justify-content: flex-start;
+}

@@ -97,6 +97,16 @@ describe('parseProjects', () => {
 		});
 	});
 
+	it('화면 모음 폴더는 /imgs 아래 경로만 (.. 없이)', () => {
+		expect(parseProjects({ items: [{ id: 'x', override: { galleryFolder: '/imgs/projects/x/shots' } }] })).toEqual({
+			value: { items: [{ id: 'x', override: { galleryFolder: '/imgs/projects/x/shots' } }] },
+		});
+		for (const galleryFolder of ['/assets', '/imgs/../secret', 'https://example.com/imgs/a', '/imgs/a b'])
+			expect(parseProjects({ items: [{ id: 'x', override: { galleryFolder } }] })).toEqual({
+				errors: ['프로젝트 x.galleryFolder: 모양이 맞지 않습니다.'],
+			});
+	});
+
 	it('너무 길거나 많으면 거절하고, 틀린 값이 DB에 있으면 읽을 때 null', () => {
 		expect(parseProjects({ items: Array.from({ length: 41 }, (_, i) => ({ id: `p${i}` })) })).toEqual({
 			errors: ['프로젝트는 40개까지입니다.'],

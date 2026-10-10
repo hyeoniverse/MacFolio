@@ -6,6 +6,7 @@ import { readProfile, readProjects, mergeProjects, type SiteProjects } from '@ma
 import { env } from '@/shared/config/env';
 import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { setSiteProfile } from './profileStore';
+import { withFolderGallery } from './publicImages';
 
 /** Worker가 index.html에 넣는 <script type="application/json"> (실행되지 않는 데이터) */
 export const SITE_CONTENT_ELEMENT_ID = 'site-content';
@@ -28,7 +29,11 @@ export function applySiteContent(body: unknown) {
 	const content = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
 	setSiteProfile(readProfile(content.profile));
 	savedProjects = readProjects(content.projects);
-	PROJECTS.splice(0, PROJECTS.length, ...mergeProjects(DEFAULT_PROJECTS, savedProjects));
+	PROJECTS.splice(
+		0,
+		PROJECTS.length,
+		...mergeProjects(DEFAULT_PROJECTS, savedProjects).map((project) => withFolderGallery(project))
+	);
 }
 
 function readInjected(): unknown {

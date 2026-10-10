@@ -69,7 +69,10 @@ test.describe('프로젝트 관리', () => {
 		const settings = await openProjectsPane(page);
 		const list = settings.getByRole('list', { name: '프로젝트' });
 		await expect(list.getByRole('listitem')).toHaveCount(7);
-		await expect(settings.getByRole('button', { name: '저장' })).toBeDisabled();
+		// GitHub 항목처럼: 편집을 누르기 전에는 줄마다 단추가 없다
+		await expect(list.getByRole('button')).toHaveCount(0);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
+		await expect(settings.getByRole('button', { name: '완료' })).toBeVisible();
 
 		// MacFolio: 폼에서 이름을 바꾸고, 데모에 http 주소를 넣으면 거절된다
 		await list.getByRole('listitem').filter({ hasText: 'MacFolio' }).getByRole('button', { name: '편집' }).click();
@@ -96,7 +99,7 @@ test.describe('프로젝트 관리', () => {
 		await macfolio.getByRole('button', { name: '맥폴리오 위로' }).click();
 		await list.getByRole('button', { name: 'DevCourse FullStack 숨기기' }).click();
 		await expect(list.getByRole('listitem').first()).toContainText('맥폴리오');
-		await settings.getByRole('button', { name: '저장' }).click();
+		await settings.getByRole('button', { name: '완료' }).click();
 		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
 		// 코드의 기본값과 다른 것만 저장한다
 		expect(api.siteProjects?.items[0]).toEqual({
@@ -115,6 +118,7 @@ test.describe('프로젝트 관리', () => {
 		const api = await fakeApi(page, { signedIn: true });
 		await enterDesktop(page);
 		const settings = await openProjectsPane(page);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
 		await settings.getByRole('button', { name: '새 프로젝트' }).click();
 		const editor = settings.getByRole('form', { name: '새 프로젝트 편집' });
 		await editor.getByRole('textbox', { name: 'id' }).fill('side-app');
@@ -126,18 +130,28 @@ test.describe('프로젝트 관리', () => {
 		const stack = editor.getByRole('textbox', { name: '기술' });
 		await stack.pressSequentially('React, Vite');
 		await expect(stack).toHaveValue('React, Vite');
+		// 화면 모음은 폴더 하나로: 그 폴더의 그림을 모두 쓴다 (고르면 미리 보기)
+		await editor.getByRole('combobox', { name: '폴더' }).selectOption('/imgs/projects/qru/screens');
+		await expect(editor.getByRole('list', { name: '화면 모음 미리 보기' }).locator('img').first()).toBeVisible();
 		await editor.getByRole('switch', { name: /이 사이트 안에서 창으로 열기/ }).check();
 		await expect(editor.getByRole('textbox', { name: '앱 이름' })).toHaveValue('사이드 앱');
 		await editor.getByRole('switch', { name: /Dock에 고정/ }).uncheck();
 		await editor.getByRole('button', { name: '완료' }).click();
 
 		const list = settings.getByRole('list', { name: '프로젝트' });
-		await expect(list.getByRole('listitem').last()).toContainText('side-app · 앱 · 새 프로젝트');
-		await settings.getByRole('button', { name: '저장' }).click();
+		await expect(list.getByRole('listitem').filter({ hasText: 'side-app' })).toContainText(
+			'side-app · 앱 · 새 프로젝트'
+		);
+		await settings.getByRole('button', { name: '완료' }).click();
 		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
 		expect(api.siteProjects?.items.at(-1)).toMatchObject({
 			id: 'side-app',
-			override: { name: '사이드 앱', stack: ['React', 'Vite'], app: { label: '사이드 앱', inDock: false } },
+			override: {
+				name: '사이드 앱',
+				stack: ['React', 'Vite'],
+				galleryFolder: '/imgs/projects/qru/screens',
+				app: { label: '사이드 앱', inDock: false },
+			},
 		});
 
 		// 새로고침하면 Launchpad에 앱이 생기고(Dock에 고정하지 않음), 열면 데모를 띄운다
@@ -146,9 +160,16 @@ test.describe('프로젝트 관리', () => {
 		await expect(dockItem(page, 'side-app')).toHaveCount(0);
 		await openFromDock(page, 'side-app');
 		await expect(page.frameLocator('iframe[title="사이드 앱"]').getByRole('heading')).toHaveText('새 앱 첫 화면');
+		// Safari의 새 프로젝트 페이지에 그 폴더의 그림이 화면 모음으로 보인다
+		await dockItem(page, 'safari').click();
+		const safari = appWindow(page, 'safari');
+		await safari.getByRole('tab', { name: /사이드 앱/ }).click();
+		const shots = safari.getByRole('tabpanel').locator('.qc-gallery img');
+		await expect(shots.first()).toHaveAttribute('src', /^\/imgs\/projects\/qru\/screens\//);
 
 		// 기본값으로 되돌리기: 한 번 더 묻고 서버의 내용을 지운다
 		const again = await openProjectsPane(page);
+		await again.getByRole('button', { name: '편집', exact: true }).click();
 		await again.getByRole('button', { name: '기본값으로 되돌리기' }).click();
 		await page
 			.getByRole('alertdialog', { name: '프로젝트를 기본값으로 되돌릴까요?' })
