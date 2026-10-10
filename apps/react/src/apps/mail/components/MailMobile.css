@@ -534,7 +534,7 @@
 	min-width: 0;
 }
 
-/* 주소가 길면 글자만 줄인다 (단추는 자르지 않는다: 복사했어요 말풍선이 위로 나온다) */
+/* 주소가 길면 글자를 줄인다 */
 .mail-compose.sheet .mail-recipient {
 	display: flex;
 	min-width: 0;
