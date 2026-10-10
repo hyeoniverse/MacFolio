@@ -1,0 +1,38 @@
+# gitleaks 설정 (.github/workflows/secrets.yml이 PR과 main마다 저장소 기록 전체를 훑는다).
+# 기본 규칙(API 키·토큰·개인 키 모양 수백 가지)을 그대로 쓰고, 비밀 값이 아닌 것만 예외로 둔다.
+title = "MacFolio"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Oracle 문서(Request Signatures)에 실린 시험용 RSA 개인 키. 요청 서명 코드의 시험 값이라 비밀이 아니다"
+targetRules = ["private-key"]
+paths = [
+  '''apps/api/src/resources/oci\.test\.ts''',
+  '''apps/api/test/resources\.e2e\.test\.ts''',
+]
+
+# 기본 규칙에 없는, 이 프로젝트가 쓰는 비밀 값 모양
+[[rules]]
+id = "macfolio-resend-api-key"
+description = "Resend API 키 (re_…)"
+regex = '''\bre_[A-Za-z0-9]{20,}\b'''
+entropy = 3.0
+
+[[rules]]
+id = "macfolio-groq-api-key"
+description = "Groq API 키 (gsk_…)"
+regex = '''\bgsk_[A-Za-z0-9]{20,}\b'''
+entropy = 3.0
+
+[[rules]]
+id = "macfolio-url-password"
+description = "비밀번호가 든 접속 주소 (postgresql://user:password@host 등)"
+regex = '''\b[a-z][a-z0-9+.-]*://[^\s:/@"']+:([^\s@/"']{6,})@'''
+secretGroup = 1
+entropy = 2.5
+  [rules.allowlist]
+  # 로컬·시험용 기본값 (docker-compose, 시험 파일의 macfolio:macfolio). 비밀번호 부분이 아니라 줄 전체로 본다
+  regexTarget = "line"
+  regexes = ['''://macfolio:macfolio@''', '''://postgres:postgres@''', '''://u:p@''', '''://user:password@''', '''://[a-z]+:s3cret@''']

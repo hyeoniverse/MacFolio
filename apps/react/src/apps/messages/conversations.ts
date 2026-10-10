@@ -42,13 +42,15 @@ export interface Message {
 
 export interface MessageInput {
 	text: string;
+	/** 사람 확인(Turnstile) 토큰. 관리자가 메시지에 사람 확인을 켰을 때 서버에 함께 보낸다 (로컬 저장소는 쓰지 않는다) */
+	turnstileToken?: string;
 }
 
 export const LIMITS = {
 	text: { min: 1, max: 500 },
 } as const;
 
-export type InputErrors = Partial<Record<keyof MessageInput, string>>;
+export type InputErrors = Partial<Record<'text', string>>;
 
 /** 입력을 다듬고 검증한다. 서버(apps/api/src/comments/rules.ts)도 같은 규칙을 쓴다. */
 export function validateMessageInput(input: MessageInput): { value: MessageInput; errors: InputErrors } {
