@@ -33,14 +33,16 @@ test.describe('휴지통', () => {
 		// 휴지통 비우기는 묻고 모두 지운다 (쿠키 안내는 남는다)
 		await bin.getByRole('button', { name: '휴지통 비우기' }).click();
 		await bin.getByRole('alertdialog').getByRole('button', { name: '휴지통 비우기' }).click();
-		// 비면 macOS처럼 '휴지통이 비어 있음'과 빈 휴지통, Dock도 바로 빈 휴지통
-		const empty = bin.getByRole('status').filter({ hasText: '휴지통이 비어 있음' });
-		await expect(empty).toContainText('이 사이트가 이 브라우저에 남긴 것이 없습니다.');
+		// 비면 목록 대신 가운데에 빈 휴지통과 '휴지통이 비어 있습니다', Dock도 바로 빈 휴지통
+		const empty = bin.getByRole('status').filter({ hasText: '휴지통이 비어 있습니다' });
+		await expect(empty).toContainText('이 사이트가 이 브라우저에 남긴 설정이나 검색어가 없습니다.');
+		await expect(list).toHaveCount(0);
 		await expect(empty.locator('img')).toHaveAttribute('src', /\/bin-empty\.png$/);
 		await expect(bin.getByRole('button', { name: '휴지통 비우기' })).toHaveCount(0);
 		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin-empty\.png$/);
 		expect(await page.evaluate(() => localStorage.getItem('macfolio:memo:recent-finds'))).toBeNull();
-		await expect(row('방문자 이름 쿠키')).toBeVisible();
+		// 사이트가 지울 수 없는 쿠키 안내는 비어 있어도 그 아래에 남는다
+		await expect(bin.getByText('방문자 이름 쿠키')).toBeVisible();
 	});
 
 	test('처음 온 브라우저는 Dock의 휴지통이 비어 있고, 설정을 바꾸면 종이가 담긴다', async ({ page }) => {
