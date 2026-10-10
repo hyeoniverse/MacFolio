@@ -72,7 +72,7 @@ test: 글 순서에 기대지 않게 E2E 고침
 ### 함께 커밋할 것
 
 - 기능을 바꾸면 **테스트와 블로그 글도 같은 PR에** 넣는다. 막혔던 곳은 그때 적지 않으면 잊는다 ([블로그 글](#블로그-글))
-- 커밋하기 전에 `pnpm format:check`, `pnpm lint`, `pnpm test`를 돌린다
+- 커밋하기 전에 `pnpm format:check`, `pnpm lint`, `pnpm cycles`(파일끼리 서로 import하는 순환이 없는지), `pnpm test`를 돌린다. 두 화면이 같은 타입을 쓰면 둘 중 하나가 아니라 `model.ts` 같은 셋째 파일에 둔다
 - API의 컨트롤러나 DTO를 바꾸면 `pnpm --filter @macfolio/api openapi`로 `apps/react/src/apps/apidocs/openapi.json`을 다시 만들어 함께 커밋한다. 사이트의 'API 문서' 앱이 이 파일을 그린다. 빠뜨리면 `pnpm test`(`apps/api/src/openapi.test.ts`)가 실패한다
 
 ### 마이그레이션

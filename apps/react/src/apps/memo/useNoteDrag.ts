@@ -7,7 +7,7 @@ import {
 	type Post,
 	RECENTLY_DELETED,
 } from '@macfolio/desktop-core/memo';
-import type { DragItem } from './components/FolderSidebar';
+import type { DragItem } from './components/folderSidebar.model';
 
 /**
  * 끌어 놓기 (관리자): 글은 다른 폴더로(최근 삭제된 항목에 놓으면 지우기), 지운 글은 폴더에 놓으면 되살리기,
