@@ -131,6 +131,15 @@ describe('관리자 로그인 (e2e)', () => {
 		expect(response.headers.location).toBe('http://localhost:5173/?admin=cancelled');
 	});
 
+	it('허용한 사이트 주소가 아닌 Origin이 붙으면 세션이 맞아도 403 (PR 미리보기·다른 사이트에서는 관리자 기능이 열리지 않는다)', async () => {
+		const token = valueOf(cookieFrom(await signIn('admin-code'), 'macfolio_session'))!;
+		const me = (origin: string) =>
+			request(app.getHttpServer()).get('/auth/me').set('Cookie', `macfolio_session=${token}`).set('Origin', origin);
+		await me('http://localhost:5173').expect(200);
+		await me('https://feat-x-macfolio.hyeoniverse.workers.dev').expect(403);
+		await me('https://evil.example').expect(403);
+	});
+
 	it('로그인하지 않았거나 토큰이 틀리면 /auth/me는 401', async () => {
 		await request(app.getHttpServer()).get('/auth/me').expect(401);
 		await request(app.getHttpServer()).get('/auth/me').set('Cookie', 'macfolio_session=guess').expect(401);
