@@ -1,6 +1,7 @@
 // 메일 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 방문자가 사이트 주인에게 연락(contact) 메일을 보내는 앱이다. 받는 사람은 항상 주인 한 명이다.
 import type { SiteProfile } from '@/shared/site/profileStore';
+import { CONTACT_LIMITS, ContactInput as ContactSchema, contactText, type ContactFields } from '@macfolio/contracts';
 
 export interface InboxMail {
 	id: string;
@@ -27,47 +28,27 @@ export const inboxOf = (profile: SiteProfile): InboxMail[] => [
 	},
 ];
 
-export interface ContactInput {
-	name: string;
-	/** 답장받을 이메일 */
-	email: string;
-	subject: string;
-	body: string;
-}
-
-export const LIMITS = {
-	name: 30,
-	subject: 100,
-	body: 2000,
-} as const;
+/** 보낼 네 칸. 규칙·문구는 서버와 같은 스키마(@macfolio/contracts) */
+export type ContactInput = ContactFields;
+export const LIMITS = CONTACT_LIMITS;
 
 export type ContactErrors = Partial<Record<keyof ContactInput, string>>;
 
-/** 흔한 오타를 거르는 정도의 이메일 형식 검사 (정확한 확인은 답장으로 한다) */
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-/** 입력을 다듬고 검증한다. 서버(#9)도 같은 규칙을 쓴다. */
+/** 입력을 다듬고 검증한다. 칸마다 처음 어긋난 문구 하나 (서버도 같은 스키마로 다시 본다) */
 export function validateContact(input: ContactInput): { value: ContactInput; errors: ContactErrors } {
 	const value = {
-		name: input.name.trim(),
-		email: input.email.trim(),
-		subject: input.subject.trim(),
-		body: input.body.trim(),
+		name: contactText(input.name),
+		email: contactText(input.email),
+		subject: contactText(input.subject),
+		body: contactText(input.body),
 	};
 	const errors: ContactErrors = {};
-
-	if (!value.name) errors.name = '이름을 입력해주세요.';
-	else if (value.name.length > LIMITS.name) errors.name = `이름은 ${LIMITS.name}자까지 입력할 수 있습니다.`;
-
-	if (!value.email) errors.email = '답장받을 이메일을 입력해주세요.';
-	else if (!EMAIL.test(value.email)) errors.email = '이메일 형식을 확인해주세요.';
-
-	if (!value.subject) errors.subject = '제목을 입력해주세요.';
-	else if (value.subject.length > LIMITS.subject) errors.subject = `제목은 ${LIMITS.subject}자까지 입력할 수 있습니다.`;
-
-	if (!value.body) errors.body = '내용을 입력해주세요.';
-	else if (value.body.length > LIMITS.body) errors.body = `내용은 ${LIMITS.body}자까지 입력할 수 있습니다.`;
-
+	const result = ContactSchema.safeParse(value);
+	if (!result.success)
+		for (const issue of result.error.issues) {
+			const key = issue.path[0] as keyof ContactInput;
+			errors[key] ??= issue.message;
+		}
 	return { value, errors };
 }
 

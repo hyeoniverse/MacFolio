@@ -16,20 +16,13 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { SecurityService } from '../security/security.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
 import { buildEmail, buildReply, parseContact, parseReply } from './rules.js';
+import type { ContactMail, ContactSent } from '@macfolio/contracts';
 
 /** 받은 메일을 두는 기간 */
 const RETENTION_MS = 365 * 24 * 60 * 60 * 1000;
 
-/** 밖으로 내보내는 메일. 방문자 HMAC은 담지 않는다 */
-export interface ContactMailView {
-	id: string;
-	name: string;
-	email: string;
-	subject: string;
-	body: string;
-	createdAt: string;
-	replies: { id: string; body: string; createdAt: string }[];
-}
+/** 밖으로 내보내는 메일. 방문자 HMAC은 담지 않는다. 모양은 @macfolio/contracts (화면과 같은 스키마) */
+export type ContactMailView = ContactMail;
 
 const INCLUDE = { replies: { orderBy: { createdAt: 'asc' as const } } };
 
@@ -91,19 +84,20 @@ export class ContactService {
 		await this.prisma.contactMail.deleteMany({ where: { createdAt: { lt: new Date(now.getTime() - RETENTION_MS) } } });
 	}
 
-	async send(input: unknown, ip: string, visitor: Visitor): Promise<{ status: 'sent'; mail: ContactMailView }> {
+	async send(input: unknown, ip: string, visitor: Visitor): Promise<ContactSent> {
 		if (!this.enabled) throw new ServiceUnavailableException('메일 발송이 설정되지 않았습니다.');
 		const parsed = parseContact(input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
 		// 사람 확인: 관리자가 시스템 설정에서 켜고 끈다 (security/)
-		await this.security.requireHuman('contact', parsed.token, ip);
+		const { turnstileToken, ...value } = parsed.value;
+		await this.security.requireHuman('contact', turnstileToken, ip);
 
 		const key = hashIp(ip, this.config.ipHashSecret);
 		if (!this.quota.take(key))
 			throw new HttpException('오늘은 더 보낼 수 없습니다. 내일 다시 보내 주세요.', HttpStatus.TOO_MANY_REQUESTS);
 
-		const { subject, text } = buildEmail(parsed.value);
-		const sent = await this.deliver({ to: this.config.contact.to!, replyTo: parsed.value.email, subject, text });
+		const { subject, text } = buildEmail(value);
+		const sent = await this.deliver({ to: this.config.contact.to!, replyTo: value.email, subject, text });
 		if (!sent) {
 			// 보내지 못했으면 쓴 횟수를 돌려준다
 			this.quota.refund(key);
@@ -111,7 +105,7 @@ export class ContactService {
 		}
 		await this.purge();
 		const mail = await this.prisma.contactMail.create({
-			data: { ...parsed.value, visitorHash: visitor.hash },
+			data: { ...value, visitorHash: visitor.hash },
 			include: INCLUDE,
 		});
 		return { status: 'sent', mail: toView(mail) };
@@ -147,10 +141,10 @@ export class ContactService {
 		const mail = await this.prisma.contactMail.findUnique({ where: { id } });
 		if (!mail) throw new NotFoundException('메일이 없습니다.');
 
-		const { subject, text } = buildReply(mail, parsed.body);
+		const { subject, text } = buildReply(mail, parsed.value.body);
 		const sent = await this.deliver({ to: mail.email, replyTo: this.config.contact.to!, subject, text });
 		if (!sent) throw new BadGatewayException('답장을 보내지 못했습니다. 잠시 뒤 다시 시도해 주세요.');
-		await this.prisma.contactReply.create({ data: { mailId: id, body: parsed.body } });
+		await this.prisma.contactReply.create({ data: { mailId: id, body: parsed.value.body } });
 		const updated = await this.prisma.contactMail.findUniqueOrThrow({ where: { id }, include: INCLUDE });
 		return toView(updated);
 	}
