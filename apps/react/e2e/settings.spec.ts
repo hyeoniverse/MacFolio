@@ -1,5 +1,6 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
+import { fakeApi } from './fakeApi';
 
 const theme = (page: Page) => page.evaluate(() => document.documentElement.dataset.theme);
 const windowBackground = (page: Page, name: string) =>
@@ -84,4 +85,35 @@ test.describe('Settings', () => {
 		await page.reload();
 		await expect.poll(background).toContain('sonoma-dark.jpg');
 	});
+});
+
+test.describe('시스템 설정 스크롤', () => {
+	for (const viewport of [
+		{ width: 1280, height: 800 },
+		{ width: 1600, height: 1000 },
+	]) {
+		test(`스크롤은 패널(과 넘치면 사이드바)만 하고, 창 전체는 스크롤되지 않는다 (${viewport.width}px)`, async ({
+			page,
+		}) => {
+			await page.setViewportSize(viewport);
+			// 관리자: 항목이 가장 많다
+			await fakeApi(page, { signedIn: true });
+			await enterDesktop(page);
+			await dockItem(page, 'settings').click();
+			const settings = appWindow(page, 'settings');
+			const content = settings.locator('.content');
+			for (const item of ['정보', '개인정보 보호 및 보안', '프로젝트', '배경화면']) {
+				const button = settings.getByRole('button', { name: item, exact: true });
+				if ((await button.count()) === 0) continue;
+				await button.click();
+				// 창의 콘텐츠 칸은 넘치지 않는다 (넘치면 패널 끝에서 한 번 더 스크롤된다)
+				await expect
+					.poll(() => content.evaluate((element) => element.scrollHeight - element.clientHeight))
+					.toBeLessThanOrEqual(1);
+				// 패널은 창 안에 들어온다 (위쪽 탭에 밀려 몇십 px로 눌리지 않는다)
+				const panel = (await settings.locator('.settings-panel').boundingBox())!;
+				expect(panel.height).toBeGreaterThan(200);
+			}
+		});
+	}
 });
