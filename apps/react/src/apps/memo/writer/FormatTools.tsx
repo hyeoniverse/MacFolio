@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { uploadAndInsert } from './attachments';
+import { uploadAndInsert } from './attachmentsApi';
 import ImagePanel from './ImagePanel';
 import { useEditorControls, type BlockStyle, type FormatAction } from './editorControls';
-import { keepFocus, usePopover } from './popover';
+import { keepFocus, usePopover } from './usePopover';
 import TableMenu from './TableMenu';
 import IconButton from '@/shared/ui/button/IconButton';
 

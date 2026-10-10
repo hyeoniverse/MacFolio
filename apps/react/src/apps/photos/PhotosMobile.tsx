@@ -14,7 +14,7 @@ import {
 	type Album,
 } from './albums';
 import { CaptionField, Thumb, type Shown } from './PhotoParts';
-import { captionOf, useCaptions } from './captions';
+import { captionOf, useCaptions } from './captionsApi';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import '@/apps/photos/Photos.css';

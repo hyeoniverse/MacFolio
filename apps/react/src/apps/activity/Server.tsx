@@ -1,4 +1,4 @@
-import type { ResourceStatus } from './data';
+import type { ResourceStatus } from './activityApi';
 
 const METRIC_LABEL = { cpu: 'CPU', network: '네트워크', memory: '메모리' } as const;
 const LEVEL = {
