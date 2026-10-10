@@ -795,11 +795,11 @@ test.describe('모바일', () => {
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 		await folders.getByRole('button', { name: '폴더 편집' }).tap();
 		await expect(folders.getByRole('button', { name: /^모든 글/ })).toBeDisabled();
-		await folders.getByRole('button', { name: '폴더 동작 (기능)' }).tap();
-		const folderMenu = page.getByRole('menu', { name: '기능 폴더 메뉴' });
+		await folders.getByRole('button', { name: '폴더 동작 (회고)' }).tap();
+		const folderMenu = page.getByRole('menu', { name: '회고 폴더 메뉴' });
 		await expect(folderMenu.getByRole('menuitem')).toHaveText(['폴더 추가', '이 폴더 이동', '이름 변경', '삭제']);
 		await folderMenu.getByRole('menuitem', { name: '이 폴더 이동' }).tap();
-		await expect(page.getByRole('menu', { name: '기능 폴더를 옮길 곳' })).toBeVisible();
+		await expect(page.getByRole('menu', { name: '회고 폴더를 옮길 곳' })).toBeVisible();
 		await page.keyboard.press('Escape');
 		await folders.getByRole('button', { name: '편집 완료' }).tap();
 		await expect(folders.getByRole('button', { name: /^모든 글/ })).toBeEnabled();
@@ -905,14 +905,15 @@ test.describe('모바일', () => {
 		const memo = appWindow(page, 'memo');
 		await memo.locator('.mobile-navbar-home').tap();
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		// 개발기 › MacFolio 아래 같은 층의 네 폴더
 		const topNames = () =>
-			folders.locator('.memo-folder-scroll > ul > li[data-folder-path] > .memo-folder-row .memo-folder-name');
+			folders.locator(
+				'li[data-folder-path="개발기/MacFolio"] > ul > li[data-folder-path] > .memo-folder-row .memo-folder-name'
+			);
+		const paths = (names: string[]) => names.map((name) => `개발기/MacFolio/${name}`);
 		await expect(topNames()).toHaveText(['백엔드', '인프라', '프론트엔드', '회고']);
 
 		await folders.getByRole('button', { name: '폴더 편집' }).tap();
-		// 하위 폴더가 있는 '인프라'·'프론트엔드'를 접어 네 폴더가 한 화면에 들어오게 한다
-		await folders.getByRole('button', { name: '하위 폴더 접기 (인프라)' }).tap();
-		await folders.getByRole('button', { name: '하위 폴더 접기 (프론트엔드)' }).tap();
 		// 끌기: '회고'를 맨 위로
 		const handle = folders.getByRole('button', { name: '순서 바꾸기 (회고)' });
 		const target = folders.getByRole('button', { name: '순서 바꾸기 (백엔드)' });
@@ -923,7 +924,7 @@ test.describe('모바일', () => {
 		await page.mouse.move(from.x + from.width / 2, to.y + 4, { steps: 8 });
 		await page.mouse.up();
 		await expect(topNames()).toHaveText(['회고', '백엔드', '인프라', '프론트엔드']);
-		await expect.poll(() => api.organization.order).toEqual(['회고', '백엔드', '인프라', '프론트엔드']);
+		await expect.poll(() => api.organization.order).toEqual(paths(['회고', '백엔드', '인프라', '프론트엔드']));
 
 		// 키보드: ↓로 한 칸 내린다
 		await folders.getByRole('button', { name: '순서 바꾸기 (회고)' }).press('ArrowDown');

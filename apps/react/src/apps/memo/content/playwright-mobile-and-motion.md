@@ -1,7 +1,7 @@
 ---
 title: Playwright로 모바일과 애니메이션까지 테스트하기
 date: 2026-09-29
-category: 인프라/빌드·테스트
+category: 개발기/MacFolio/인프라
 summary: 휴대폰 화면을 붙이고 애니메이션을 넣자 E2E가 흔들렸다. 뷰포트 높이, 움직임 줄이기, 병렬 실행에서 배운 것.
 ---
 

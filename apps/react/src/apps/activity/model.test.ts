@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { change, eventLabel, formatDuration, kstToday, labelOf, periodRange } from './data';
+import { change, eventLabel, formatDuration, kstToday, labelOf, periodRange } from './model';
 
 describe('활동 상태 보기의 값 바꾸기', () => {
 	it('기간은 오늘(한국 시간)까지', () => {

@@ -6,7 +6,7 @@ import { useSettings } from '@/shared/settings/settingsStore';
 import { resolveTheme } from '@/shared/settings/settings';
 import { LANGUAGE_COLORS, type RepoCard as Repo } from '@/apps/github/githubProfile';
 import { loadGithub, useGithub } from '@/apps/github/githubApi';
-import { loadActivity, useActivity } from '@/apps/github/githubActivity';
+import { loadActivity, useActivity } from '@/apps/github/githubActivityApi';
 import { ActivityHistory, ContributionGraph } from '@/apps/github/GithubContributions';
 import GithubReadme from '@/apps/github/GithubReadme';
 import '@/apps/github/Github.css';

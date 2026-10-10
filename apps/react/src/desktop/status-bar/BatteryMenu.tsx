@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useAppState } from '@/desktop/useAppState';
-import { RISK_LABEL, batteryOf, requestedTab, usageLine, useServerResources } from '@/apps/activity/serverResources';
-import { useVisitTrend, visitBattery } from '@/apps/activity/visitTrend';
+import { RISK_LABEL, batteryOf, requestedTab, usageLine, useServerResources } from '@/apps/activity/useServerResources';
+import { useVisitTrend, visitBattery } from '@/apps/activity/useVisitTrend';
 import ServerBattery from '@/shared/server/ServerBattery';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 

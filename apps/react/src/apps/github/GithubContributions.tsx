@@ -6,7 +6,7 @@ import {
 	type ActivityItem,
 	type ContributionDay,
 	type Contributions,
-} from '@/apps/github/githubActivity';
+} from '@/apps/github/githubActivityApi';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
