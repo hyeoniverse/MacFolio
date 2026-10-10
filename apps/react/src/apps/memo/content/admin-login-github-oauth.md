@@ -1,7 +1,7 @@
 ---
 title: 정적 사이트에 관리자 로그인 붙이기
 date: 2026-09-29
-category: 백엔드
+category: 개발기/MacFolio/백엔드
 summary: GitHub OAuth로 내 계정만 관리자로 들여보낸다. 비밀번호는 없고, DB에는 세션 토큰 대신 해시만 둔다.
 ---
 
