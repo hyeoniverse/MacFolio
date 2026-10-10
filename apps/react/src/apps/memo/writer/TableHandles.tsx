@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useEditorControls, type TableOp, type TableState } from './editorControls';
-import { keepFocus, usePopover } from './popover';
+import { keepFocus, usePopover } from './usePopover';
 import { canRunTableOp } from './tableRules';
 
 /** 손잡이 메뉴는 표의 다른 칸을 눌러도 열어 둔다 (칸을 옮겨 가며 고칠 수 있게) */

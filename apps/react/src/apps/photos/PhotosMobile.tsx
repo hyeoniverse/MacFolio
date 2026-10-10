@@ -3,7 +3,7 @@ import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
 import { ALBUMS, ALBUMS_BY_AGE, ALL_PHOTOS, countText } from './albums';
 import { Thumb, type Shown } from './PhotoParts';
-import { useCaptions } from './captions';
+import { useCaptions } from './captionsApi';
 import { Card, Grid, Shelf } from './PhotoGrid';
 import { type Opened, type Tab, VIDEOS, type Viewing, coverOf, keyOf, searchPhotos } from './photosMobile.model';
 import { PhoneViewer } from './PhoneViewer';

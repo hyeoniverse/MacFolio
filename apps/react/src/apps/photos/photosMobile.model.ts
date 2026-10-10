@@ -1,7 +1,7 @@
 // 휴대폰 사진 앱의 화면 상태 타입과 목록 계산 (격자·크게 보기·본체가 함께 쓴다)
 import { ALL_PHOTOS, type Album } from './albums';
 import type { Shown } from './PhotoParts';
-import { captionOf } from './captions';
+import { captionOf } from './captionsApi';
 
 export type Tab = 'library' | 'collections';
 /** 모음에서 들어간 곳: 앨범 하나, 또는 비디오만 */
