@@ -100,9 +100,19 @@ export interface ProjectChapter {
 /**
  * 프로젝트 페이지 모양. 모양마다 페이지의 짜임과 읽는 순서가 다르다 (apps/safari/project/).
  * editorial 신문 1면(뉴스레터), playful 칸반 보드(할 일), minimal 명함 앞뒤와 단계(명함), game 타이틀 화면부터 크레딧까지(게임),
- * terminal 명령과 결과가 이어지는 터미널(학습 기록), product Apple 제품 페이지(이 사이트), creative 붙어 있는 차례와 장(포트폴리오)
+ * terminal 명령과 결과가 이어지는 터미널(학습 기록), product Apple 제품 페이지(이 사이트), creative 붙어 있는 차례와 장(포트폴리오).
+ * showcase는 어떤 프로젝트에나 맞는 모양(큰 제목·숫자·대표 화면·카드)으로, 새 프로젝트의 기본값이다
  */
-export const PROJECT_LOOKS = ['editorial', 'playful', 'minimal', 'game', 'terminal', 'product', 'creative'] as const;
+export const PROJECT_LOOKS = [
+	'showcase',
+	'editorial',
+	'playful',
+	'minimal',
+	'game',
+	'terminal',
+	'product',
+	'creative',
+] as const;
 export type ProjectLook = (typeof PROJECT_LOOKS)[number];
 
 /** 프로젝트 앱의 모양 (Project.app) */
@@ -413,12 +423,27 @@ const hasControl = (value: string, multiline: boolean) =>
 // URL은 브라우저와 Node 모두에 있다. 이 패키지는 DOM 타입을 넣지 않으므로 쓰는 만큼만 적는다
 declare const URL: new (input: string) => { protocol: string; origin: string };
 
-const isHttps = (value: string) => {
+/** 검사 옵션 */
+export interface ParseProjectsOptions {
+	/**
+	 * https가 아니어도 받는 출처 (예: 로컬·시험의 API 주소 http://localhost:3000). 관리자가 올린 그림은 API의 /files/<id> 주소라,
+	 * 운영에서는 https지만 로컬에서는 http다. 서버와 화면이 자기 API 주소를 넘긴다
+	 */
+	allowOrigins?: readonly string[];
+}
+
+const originOf = (value: string) => {
 	try {
-		return new URL(value).protocol === 'https:';
+		return new URL(value);
 	} catch {
-		return false;
+		return null;
 	}
+};
+
+/** https 주소, 또는 허용한 출처(로컬 API)의 주소 */
+const isSafeUrl = (value: string, allow: readonly string[]) => {
+	const url = originOf(value);
+	return url !== null && (url.protocol === 'https:' || allow.includes(url.origin));
 };
 
 /** 그림·영상 주소: 사이트 안의 경로(/imgs/…, 서버에 올린 파일은 https 주소) 또는 https. 따옴표·괄호·공백은 받지 않는다 */
@@ -428,7 +453,7 @@ const IMAGE_PATH = /^(?!.*\.\.)[a-z0-9][a-z0-9/._-]*$/i;
 const COLOR_VALUE = /^(#[0-9a-f]{3,8}|(rgb|hsl)a?\([0-9.,%\s]+\))$/i;
 
 /** 값을 규칙으로 검사한다. 틀린 곳은 errors에 경로와 함께 적고 undefined를 돌려준다 */
-function check(value: unknown, rule: Rule, path: string, errors: string[]): unknown {
+function check(value: unknown, rule: Rule, path: string, errors: string[], allow: readonly string[]): unknown {
 	const fail = (message: string) => {
 		errors.push(`${path}: ${message}`);
 		return undefined;
@@ -444,20 +469,20 @@ function check(value: unknown, rule: Rule, path: string, errors: string[]): unkn
 			return trimmed;
 		}
 		case 'href':
-			if (typeof value !== 'string' || !isHttps(value.trim())) return fail('https:// 주소여야 합니다.');
+			if (typeof value !== 'string' || !isSafeUrl(value.trim(), allow)) return fail('https:// 주소여야 합니다.');
 			return value.trim();
 		case 'src': {
 			if (typeof value !== 'string') return fail('주소여야 합니다.');
 			const trimmed = value.trim();
 			if (!trimmed && rule.allowEmpty) return '';
-			if (!(SITE_PATH.test(trimmed) || (isHttps(trimmed) && !/[\s"'()<>\\]/.test(trimmed))))
+			if (!(SITE_PATH.test(trimmed) || (isSafeUrl(trimmed, allow) && !/[\s"'()<>\\]/.test(trimmed))))
 				return fail('사이트 안 경로(/imgs/…)나 https:// 주소여야 합니다.');
 			return trimmed;
 		}
 		case 'appIcon': {
 			if (typeof value !== 'string') return fail('주소여야 합니다.');
 			const trimmed = value.trim();
-			if (!(IMAGE_PATH.test(trimmed) || (isHttps(trimmed) && !/[\s"'()<>\\]/.test(trimmed))))
+			if (!(IMAGE_PATH.test(trimmed) || (isSafeUrl(trimmed, allow) && !/[\s"'()<>\\]/.test(trimmed))))
 				return fail('이미지 폴더 기준 경로(projects/…/icon.png)나 https:// 주소여야 합니다.');
 			return trimmed;
 		}
@@ -478,7 +503,7 @@ function check(value: unknown, rule: Rule, path: string, errors: string[]): unkn
 		case 'list': {
 			if (!Array.isArray(value)) return fail('목록이어야 합니다.');
 			if (value.length > rule.max) return fail(`${rule.max}개까지입니다.`);
-			const items = value.map((item, index) => check(item, rule.of, `${path}[${index}]`, errors));
+			const items = value.map((item, index) => check(item, rule.of, `${path}[${index}]`, errors, allow));
 			return items.some((item) => item === undefined) ? undefined : items;
 		}
 		case 'object': {
@@ -494,7 +519,7 @@ function check(value: unknown, rule: Rule, path: string, errors: string[]): unkn
 					}
 					continue;
 				}
-				const checked = check(raw, field.rule, `${path}.${key}`, errors);
+				const checked = check(raw, field.rule, `${path}.${key}`, errors, allow);
 				if (checked === undefined) ok = false;
 				else out[key] = checked;
 			}
@@ -507,7 +532,10 @@ function check(value: unknown, rule: Rule, path: string, errors: string[]): unkn
  * 요청 본문을 검사해 저장할 값으로 바꾼다. 문제가 있으면 어디가 왜 틀렸는지 모두 모아 돌려준다.
  * 모르는 필드는 버리고, 글자는 앞뒤 공백을 지운다
  */
-export function parseProjects(input: unknown): { value: SiteProjects } | { errors: string[] } {
+export function parseProjects(
+	input: unknown,
+	{ allowOrigins = [] }: ParseProjectsOptions = {}
+): { value: SiteProjects } | { errors: string[] } {
 	if (!isRecord(input) || !Array.isArray(input.items)) return { errors: ['items 목록을 보내 주세요.'] };
 	if (JSON.stringify(input).length > PROJECTS_LIMITS.json)
 		return { errors: [`프로젝트 내용이 너무 깁니다 (${PROJECTS_LIMITS.json.toLocaleString()}자까지).`] };
@@ -545,7 +573,7 @@ export function parseProjects(input: unknown): { value: SiteProjects } | { error
 						else override[key] = null;
 						continue;
 					}
-					const checked = check(value, rule, `${where}.${key}`, errors);
+					const checked = check(value, rule, `${where}.${key}`, errors, allowOrigins);
 					if (checked !== undefined) override[key] = checked;
 				}
 				if (Object.keys(override).length > 0) entry.override = override as ProjectOverride;
@@ -559,9 +587,9 @@ export function parseProjects(input: unknown): { value: SiteProjects } | { error
 }
 
 /** 저장해 둔 값(DB)을 읽을 때: 규칙에 맞으면 그 값, 아니면 null (코드의 기본값을 쓴다) */
-export function readProjects(stored: unknown): SiteProjects | null {
+export function readProjects(stored: unknown, options: ParseProjectsOptions = {}): SiteProjects | null {
 	if (stored === null || stored === undefined) return null;
-	const parsed = parseProjects(stored);
+	const parsed = parseProjects(stored, options);
 	return 'value' in parsed ? parsed.value : null;
 }
 
@@ -569,7 +597,7 @@ export function readProjects(stored: unknown): SiteProjects | null {
 export const blankProject = (id: string): Project => ({
 	id,
 	name: id,
-	look: 'minimal',
+	look: 'showcase',
 	tagline: '',
 	description: '',
 	context: '',

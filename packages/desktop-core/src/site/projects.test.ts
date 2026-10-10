@@ -86,7 +86,7 @@ describe('parseProjects', () => {
 		});
 		expect('errors' in parsed && parsed.errors).toEqual([
 			'프로젝트 x.name: 지울 수 없는 필드입니다.',
-			'프로젝트 x.look: editorial, playful, minimal, game, terminal, product, creative 가운데 하나여야 합니다.',
+			'프로젝트 x.look: showcase, editorial, playful, minimal, game, terminal, product, creative 가운데 하나여야 합니다.',
 			'프로젝트 x.highlights[0].body: 꼭 있어야 합니다.',
 			'프로젝트 x.app.icon: 이미지 폴더 기준 경로(projects/…/icon.png)나 https:// 주소여야 합니다.',
 			'프로젝트 x.app.barColor: 색(#rrggbb, rgb())이어야 합니다.',
@@ -95,6 +95,26 @@ describe('parseProjects', () => {
 		expect(parseProjects({ items: [{ id: 'x', override: { demo: null, app: null } }] })).toEqual({
 			value: { items: [{ id: 'x', override: { demo: null, app: null } }] },
 		});
+	});
+
+	it('허용한 출처(로컬 API)의 http 주소는 받는다 (올린 그림의 /files 주소)', () => {
+		const allowOrigins = ['http://localhost:3000'];
+		const items = [
+			{
+				id: 'x',
+				override: {
+					logo: 'http://localhost:3000/files/abc',
+					app: { label: 'a', icon: 'http://localhost:3000/files/def' },
+				},
+			},
+		];
+		expect(parseProjects({ items }, { allowOrigins })).toEqual({ value: { items } });
+		expect('errors' in parseProjects({ items })).toBe(true);
+		expect(
+			'errors' in
+				parseProjects({ items: [{ id: 'x', override: { logo: 'http://evil.test/a.png' } }] }, { allowOrigins })
+		).toBe(true);
+		expect(readProjects({ items }, { allowOrigins })).toEqual({ items });
 	});
 
 	it('화면 캡처는 비워도 된다 (다른 그림 주소는 비우면 거절)', () => {
@@ -158,7 +178,7 @@ describe('mergeProjects', () => {
 		});
 		expect(merged[0].app).toBeUndefined();
 		expect('app' in merged[0]).toBe(false);
-		expect(merged[1]).toMatchObject({ id: 'new', name: '새 프로젝트', look: 'minimal', highlights: [], stack: [] });
+		expect(merged[1]).toMatchObject({ id: 'new', name: '새 프로젝트', look: 'showcase', highlights: [], stack: [] });
 	});
 });
 

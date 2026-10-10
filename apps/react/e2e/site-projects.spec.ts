@@ -146,6 +146,16 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('checkbox', { name: '진행 중' }).check();
 		// 언어: 후보 목록에서 (다른 값도 쓸 수 있다)
 		await editor.getByRole('combobox', { name: '주 언어' }).fill('TypeScript');
+		// 그림: 프로젝트 아이콘은 사이트 안 그림에서 고르고, 글자 로고는 올린다 (올린 그림의 주소는 API의 /files/…)
+		await editor.getByRole('combobox', { name: '프로젝트 아이콘 고르기' }).selectOption('/imgs/projects/qru/icon.png');
+		await editor.getByLabel('글자 로고 올리기').setInputFiles({
+			name: 'logo.png',
+			mimeType: 'image/png',
+			buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+		});
+		await expect(editor.getByRole('textbox', { name: '글자 로고 주소' })).toHaveValue(/^http:\/\/api\.test\/files\//);
+		// 새 프로젝트의 기본 모양은 어디에나 맞는 '기본 (카드)'
+		await expect(editor.getByRole('combobox', { name: '페이지 모양' })).toHaveValue('showcase');
 		// 기술: 쉼표를 치면 칩이 되고, 몇 글자 치면 후보가 걸러진다 (고르면 칩)
 		const stack = editor.getByRole('combobox', { name: '기술' });
 		await stack.pressSequentially('React, Vi');
@@ -180,6 +190,8 @@ test.describe('프로젝트 관리', () => {
 				stack: ['React', 'Vite'],
 				language: 'TypeScript',
 				period: '2025.01.02 – 진행 중',
+				icon: '/imgs/projects/qru/icon.png',
+				logo: expect.stringMatching(/^http:\/\/api\.test\/files\//),
 				galleryFolder: '/imgs/projects/qru/screens',
 				app: { label: '사이드 앱', inDock: false },
 			},
@@ -195,12 +207,22 @@ test.describe('프로젝트 관리', () => {
 		await dockItem(page, 'safari').click();
 		const safari = appWindow(page, 'safari');
 		await safari.getByRole('tab', { name: /사이드 앱/ }).click();
-		const shots = safari.getByRole('tabpanel').locator('.qc-gallery img');
-		await expect(shots.first()).toHaveAttribute('src', /^\/imgs\/projects\/qru\/screens\//);
-		// 화면 캡처를 비웠으니 화면 모음의 첫 그림이 대표 화면이 된다
-		await expect(safari.getByRole('tabpanel').locator('.qc-shot img')).toHaveAttribute(
+		// 기본 모양(showcase) 페이지: 올린 로고가 맨 위에, 화면 캡처를 비웠으니 화면 모음의 첫 그림이 대표 화면, 화면 모음은 그 폴더
+		const panel = safari.getByRole('tabpanel');
+		await expect(panel.locator('.sp[data-look="showcase"]')).toBeVisible();
+		await expect(panel.locator('.sc-logo')).toHaveAttribute('src', /^http:\/\/api\.test\/files\//);
+		await expect(panel.locator('.sc-figure img')).toHaveAttribute('src', /^\/imgs\/projects\/qru\/screens\//);
+		await expect(panel.getByRole('region', { name: '화면 모음' }).locator('img').first()).toHaveAttribute(
 			'src',
 			/^\/imgs\/projects\/qru\/screens\//
+		);
+		await expect(
+			panel.getByRole('region', { name: '기술 사양' }).getByRole('list', { name: '기술' }).getByRole('listitem')
+		).toHaveText(['React', 'Vite']);
+		// 탭의 작은 아이콘은 고른 프로젝트 아이콘
+		await expect(safari.getByRole('tab', { name: /사이드 앱/ }).locator('img')).toHaveAttribute(
+			'src',
+			'/imgs/projects/qru/icon.png'
 		);
 
 		// 기본값으로 되돌리기: 한 번 더 묻고 서버의 내용을 지운다

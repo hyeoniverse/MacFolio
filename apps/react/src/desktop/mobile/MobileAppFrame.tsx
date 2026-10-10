@@ -6,7 +6,7 @@ import { foregroundApp } from '@macfolio/desktop-core';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import { closeSwitcher, getSwitcherScroll, openSwitcher, setSwitcherScroll } from '@/desktop/mobile/switcherStore';
 import { MobileNavContext, type MobileNav } from '@/desktop/window/mobileNav';
-import { env } from '@/shared/config/env';
+import { appIconUrl } from '@/shared/config/appIcon';
 import { clearImmersiveApp, setImmersiveApp } from '@/desktop/mobile/immersiveStore';
 
 /** 카드를 위로 이만큼 밀면 앱을 닫는다 */
@@ -156,7 +156,7 @@ const MobileAppFrame: React.FC<Props> = ({
 		>
 			{inSwitcher && (
 				<div className="switcher-label" aria-hidden="true">
-					<img src={`${env.imageUrl}/${icon}`} alt="" />
+					<img src={appIconUrl(icon)} alt="" />
 					{label}
 				</div>
 			)}
