@@ -1,7 +1,7 @@
 ---
 title: 글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기
 date: 2026-10-09
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: 메모 글, GitHub README, Finder 문서는 Markdown과 HTML을 그린다. 위험한 링크와 스크립트를 막는 설정은 이미 있었지만 그것을 확인하는 시험이 없었다. 설정을 바꾸면 깨지는 시험을 더했다.
 ---
 

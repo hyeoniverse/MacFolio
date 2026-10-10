@@ -6,7 +6,8 @@ import { tokenOf } from '../common/turnstile.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
 import { publicAuthorId } from '../visitors/visitor.js';
-import { hashIp, maskIp, OWNER_NAME, parseBody } from '../comments/rules.js';
+import { hashIp, maskIp, parseBody } from '../comments/rules.js';
+import { SiteService } from '../site/site.service.js';
 
 /** 사이트 주인의 고정 안내. 안내 글은 프론트엔드에 있고, 여기에는 거기 단 답글만 있다 (threadId가 빈 글) */
 export const PINNED_THREAD_ID = 'owner';
@@ -65,14 +66,15 @@ const last = (rows: MessageRow[]) =>
 
 /**
  * 메시지 앱: 쓰기 단추로 남긴 피드백 하나가 목록의 항목 하나가 되고, 누구나 어느 피드백(과 주인 안내)에나 답글을 단다.
- * 방문자는 쿠키로 정한 이름으로 쓰고 같은 브라우저에서 쓴 글만 지운다. 관리자는 김정현으로 쓰고 무엇이든 지운다.
+ * 방문자는 쿠키로 정한 이름으로 쓰고 같은 브라우저에서 쓴 글만 지운다. 관리자는 프로필의 이름(기본 김정현)으로 쓰고 무엇이든 지운다.
  */
 @Injectable()
 export class MessagesService {
 	constructor(
 		private readonly prisma: PrismaService,
 		@Inject(APP_CONFIG) private readonly config: AppConfig,
-		private readonly security: SecurityService
+		private readonly security: SecurityService,
+		private readonly site: SiteService
 	) {}
 
 	/** 주인 안내(답글이 있으면 마지막 활동과 함께) + 방문자가 남긴 피드백 */
@@ -86,7 +88,8 @@ export class MessagesService {
 		]);
 		const pinned: ThreadView = {
 			id: PINNED_THREAD_ID,
-			title: OWNER_NAME,
+			// 주인 안내의 이름은 시스템 설정에서 고친 프로필을 따른다
+			title: await this.site.ownerName(),
 			createdAt: '2026-09-28T00:00:00.000Z',
 			pinned: true,
 			mine: false,
@@ -115,9 +118,9 @@ export class MessagesService {
 		return rows.map((row) => toMessage(row, visitor));
 	}
 
-	private author(ip: string, visitor: Visitor, admin: AdminIdentity | null) {
+	private async author(ip: string, visitor: Visitor, admin: AdminIdentity | null) {
 		return {
-			name: admin ? OWNER_NAME : visitor.name,
+			name: admin ? await this.site.ownerName() : visitor.name,
 			isAdmin: !!admin,
 			visitorHash: visitor.hash,
 			ipPrefix: admin ? null : maskIp(ip),
@@ -131,7 +134,7 @@ export class MessagesService {
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
 		// 사람 확인: 관리자가 시스템 설정에서 켜면 (관리자 글은 확인하지 않는다)
 		await this.security.requireHuman('message', tokenOf(input), ip, admin);
-		const author = this.author(ip, visitor, admin);
+		const author = await this.author(ip, visitor, admin);
 		const thread = await this.prisma.messageThread.create({
 			data: {
 				title: author.name,
@@ -164,7 +167,7 @@ export class MessagesService {
 			throw new NotFoundException('삭제된 피드백입니다.');
 		const row = await this.prisma.guestMessage.create({
 			data: {
-				...this.author(ip, visitor, admin),
+				...(await this.author(ip, visitor, admin)),
 				threadId: threadId === PINNED_THREAD_ID ? null : threadId,
 				body: parsed.value.body,
 			},

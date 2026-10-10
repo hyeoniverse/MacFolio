@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { activityStore, loadActivity, mergePushes, toActivity, toWeeks, type ActivityItem } from './githubActivity';
+import { activityStore, loadActivity, mergePushes, toActivity, toWeeks, type ActivityItem } from './githubActivityApi';
 
 const item = (over: Partial<ActivityItem>): ActivityItem => ({
 	id: '1',

@@ -1,8 +1,9 @@
 // 메뉴 막대의 배터리 자리에 방문자에게 보이는 방문 추이. '활동 상태 보기'의 개요와 같은 GET /analytics/summary를 읽는다.
 import { useEffect, useState } from 'react';
 import { env } from '@/shared/config/env';
-import { change, fetchSummary, kstToday, periodRange, type Summary } from './data';
-import type { Battery } from './serverResources';
+import { fetchSummary, type Summary } from './activityApi';
+import { change, kstToday, periodRange } from './model';
+import type { Battery } from './useServerResources';
 
 /** 서버는 방문자에게 1분 동안 같은 값을 준다. 메뉴 막대는 10분마다 다시 묻는다 */
 const POLL_MS = 10 * 60_000;

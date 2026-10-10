@@ -1,7 +1,7 @@
 ---
 title: macOS 날씨 앱 만들기 (Open-Meteo)
 date: 2026-10-10
-category: 프론트엔드/기능
+category: 개발기/MacFolio/프론트엔드
 summary: macOS 날씨 앱 모양으로 날씨 앱을 더했다. 데이터는 키 없이 쓰는 Open-Meteo에서 받고, 왼쪽에 장소 카드, 오른쪽에 하늘 색 배경과 큰 기온, 시간별·10일 일기예보, 상세 칸이 있다. Open-Meteo가 한국어 도시 이름을 잘 찾지 못해서 자주 찾을 도시는 사이트에 넣어 두었다.
 ---
 

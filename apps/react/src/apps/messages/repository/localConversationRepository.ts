@@ -1,6 +1,6 @@
 import { visitorName, type Message, type MessageInput, type Thread } from '../conversations';
 import type { ConversationRepository } from './types';
-import { PINNED_MESSAGES, PINNED_THREAD, PINNED_THREAD_ID, withPinnedIntro } from './pinned';
+import { pinnedMessages, pinnedThread, PINNED_THREAD_ID, withPinnedIntro } from './pinned';
 
 // 서버가 없을 때 브라우저에만 저장하는 구현. 브라우저 id로 사람을 구분하고 이름도 정한다.
 // 저장소에는 브라우저 id 대신 해시만 남긴다 (서버의 방문자 해시와 같은 역할).
@@ -107,7 +107,7 @@ export function createLocalConversationRepository(
 			const me = await authorIdPromise;
 			const { threads, messages } = read();
 			const replies = messages.filter((m) => m.threadId === PINNED_THREAD_ID);
-			return [withPinnedIntro(PINNED_THREAD, replies), ...threads.map((thread) => toThread(thread, messages, me))];
+			return [withPinnedIntro(pinnedThread(), replies), ...threads.map((thread) => toThread(thread, messages, me))];
 		},
 
 		async listMessages(threadId) {
@@ -115,7 +115,7 @@ export function createLocalConversationRepository(
 			const stored = read()
 				.messages.filter((m) => m.threadId === threadId)
 				.map((message) => toMessage(message, me));
-			return threadId === PINNED_THREAD_ID ? [...PINNED_MESSAGES, ...stored] : stored;
+			return threadId === PINNED_THREAD_ID ? [...pinnedMessages(), ...stored] : stored;
 		},
 
 		async createThread(input) {

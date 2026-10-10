@@ -15,7 +15,7 @@ import { $prose, $remark } from '@milkdown/kit/utils';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
-import { uploadAndInsert } from './attachments';
+import { uploadAndInsert } from './attachmentsApi';
 import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
 import { tagsInText } from '@macfolio/desktop-core/memo';
 import TableHandles from './TableHandles';

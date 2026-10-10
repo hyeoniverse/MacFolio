@@ -2,10 +2,11 @@ import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundEx
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { SecurityService } from '../security/security.service.js';
+import { SiteService } from '../site/site.service.js';
 import { tokenOf } from '../common/turnstile.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
-import { hashIp, maskIp, OWNER_NAME, parseBody, SLUG } from './rules.js';
+import { hashIp, maskIp, parseBody, SLUG } from './rules.js';
 
 /** 밖으로 내보내는 댓글. 방문자 해시와 IP 해시는 절대 담지 않는다 */
 export interface CommentView {
@@ -68,7 +69,8 @@ export class CommentsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		@Inject(APP_CONFIG) private readonly config: AppConfig,
-		private readonly security: SecurityService
+		private readonly security: SecurityService,
+		private readonly site: SiteService
 	) {}
 
 	private checkSlug(slug: string) {
@@ -86,7 +88,7 @@ export class CommentsService {
 		return rows.map((row) => toView(row, visitor));
 	}
 
-	/** 댓글을 쓴다. 관리자면 김정현으로, 아니면 방문자 쿠키로 정한 이름으로 */
+	/** 댓글을 쓴다. 관리자면 프로필의 이름으로, 아니면 방문자 쿠키로 정한 이름으로 */
 	async create(
 		slug: string,
 		input: unknown,
@@ -102,7 +104,8 @@ export class CommentsService {
 		const row = await this.prisma.postComment.create({
 			data: {
 				postSlug: slug,
-				name: admin ? OWNER_NAME : visitor.name,
+				// 관리자 이름은 시스템 설정에서 고친 프로필을 따른다
+				name: admin ? await this.site.ownerName() : visitor.name,
 				body: parsed.value.body,
 				isAdmin: !!admin,
 				visitorHash: visitor.hash,

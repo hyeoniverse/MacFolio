@@ -43,12 +43,15 @@ describe('API (e2e)', () => {
 		const allowed = await request(app.getHttpServer()).get('/health').set('Origin', 'https://macfolio.hyeoniverse.com');
 		expect(allowed.headers['access-control-allow-origin']).toBe('https://macfolio.hyeoniverse.com');
 		expect(allowed.headers['access-control-allow-credentials']).toBe('true');
+		expect(allowed.headers['access-control-allow-credentials']).toBe('true');
 
 		// PR 미리보기 주소 (*): 그 자리만 바뀐 주소는 허용, 다른 도메인으로 넓어지지 않는다
 		const preview = await request(app.getHttpServer())
 			.get('/health')
 			.set('Origin', 'https://feat-x-macfolio.hyeoniverse.workers.dev');
 		expect(preview.headers['access-control-allow-origin']).toBe('https://feat-x-macfolio.hyeoniverse.workers.dev');
+		// 미리보기는 읽기만: 쿠키(관리자 세션)는 주고받지 않는다
+		expect(preview.headers['access-control-allow-credentials']).toBeUndefined();
 		const sneaky = await request(app.getHttpServer())
 			.get('/health')
 			.set('Origin', 'https://a.evil-macfolio.hyeoniverse.workers.dev');
