@@ -1,7 +1,7 @@
 ---
 title: 폴더 대신 이름으로 — 앱 안의 파일 규칙
 date: 2026-10-10
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: 앱마다 components/·hooks/·api/를 파는 대신, 파일 이름이 종류를 말하게 했다. 서버 호출은 *Api.ts, 순수 계산은 model.ts, 훅은 use*.ts. 폴더는 묶을 것이 생겼을 때만. 어긋난 파일 아홉 개의 이름을 맞추고 섞여 있던 둘을 갈랐다.
 ---
 
