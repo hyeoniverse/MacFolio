@@ -7,8 +7,7 @@ import { APP_MANIFEST, WINDOW_APP_NAMES } from '@/apps/manifest';
 import { getPostRepository } from '@/apps/memo/repository';
 import { PROJECTS } from '@/shared/profile';
 import { requestOpen } from '@/shared/lib/openRequest';
-import { useSettings } from '@/shared/settings/settingsStore';
-import { resolveTheme } from '@/shared/settings/settings';
+import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
 import {
@@ -60,8 +59,7 @@ const dateCell = (item: FinderItem) => (item.kind === 'project' ? (item.period ?
 const Finder: React.FC = () => {
 	const { openApp, bringAppToFront } = useAppState();
 	const { launch } = useLaunchApp();
-	const { theme } = useSettings();
-	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
+	const dark = useResolvedTheme() === 'dark';
 	const mobile = useIsMobile();
 	// 휴대폰에서는 홈 화면 이름처럼 '파일' (manifest.ts의 mobile)
 	const appTitle = mobile ? APP_MANIFEST.finder.mobile!.label : APP_MANIFEST.finder.label;

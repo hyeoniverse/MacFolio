@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPlayerStore, currentTrackId } from '@macfolio/desktop-core/music';
 import { isMobileViewport } from '@/desktop/layout';
+import { getViewport } from '@/shared/hooks/useViewport';
 import { useAppState } from '@/desktop/useAppState';
 import { ALL_SONGS, findPlaylist, findTrack, TRACKS } from './library';
 import { MusicContext } from './useMusic';
@@ -144,7 +145,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 	// 로딩 화면을 넘기면(사용자가 클릭한 직후라 자동 재생이 된다) 데스크톱에서는 음악을 튼다
 	useEffect(() => {
 		const start = () => {
-			if (!isMobileViewport({ width: window.innerWidth, height: window.innerHeight })) play();
+			if (!isMobileViewport(getViewport())) play();
 		};
 		window.addEventListener('startMusic', start);
 		return () => window.removeEventListener('startMusic', start);

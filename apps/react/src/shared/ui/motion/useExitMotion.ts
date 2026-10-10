@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react';
+import { prefersReducedMotion } from '@/shared/lib/media';
 
 /** 사라지는 움직임 이름 (motion.css의 키프레임) */
 export type ExitMotion = 'pop-out' | 'fade-out' | 'sink-out' | 'slide-out-right' | 'panel-out-right' | 'panel-out-down';
@@ -12,14 +13,12 @@ const DURATION: Record<ExitMotion, number> = {
 	'panel-out-down': 240,
 };
 
-const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-
 /**
  * 지워지기 직전의 요소를 같은 자리에 복사해 두고, 사라지는 움직임이 끝나면 지운다.
  * 흐름 안의 요소(옆 패널 등)는 복사본이 자리를 차지하지 않게 같은 자리·크기로 띄운다
  */
 export function playExit(element: HTMLElement, motion: ExitMotion) {
-	if (!element.isConnected || !element.parentNode || reducedMotion()) return;
+	if (!element.isConnected || !element.parentNode || prefersReducedMotion()) return;
 	const inFlow = ['static', 'relative', 'sticky'].includes(getComputedStyle(element).position);
 	const box = {
 		left: element.offsetLeft,

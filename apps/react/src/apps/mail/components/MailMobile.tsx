@@ -1,4 +1,5 @@
 import { cssVars } from '@/shared/lib/cssVars';
+import { prefersReducedMotion } from '@/shared/lib/media';
 import React, { useEffect, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useProfile } from '@/shared/site/profileStore';
@@ -20,7 +21,6 @@ const DEPTH: Record<Screen['kind'], number> = { mailboxes: 0, list: 1, mail: 2 }
 
 /** 시트가 내려가며 닫히는 시간 (CSS의 mail-phone-sheet-down과 같다). 움직임 줄이기면 바로 닫는다 */
 const SHEET_CLOSE_MS = 240;
-const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 /** 아래에서 올라오는 것: 새로운 메시지, 관리자 답장, 메일 동작 */
 type Sheet =
@@ -160,7 +160,7 @@ const MailMobile: React.FC<Props> = ({
 				setSheetState(null);
 				setClosing(false);
 			},
-			reducedMotion() ? 0 : SHEET_CLOSE_MS
+			prefersReducedMotion() ? 0 : SHEET_CLOSE_MS
 		);
 	};
 	useEffect(
