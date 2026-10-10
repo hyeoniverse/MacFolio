@@ -117,3 +117,29 @@ test.describe('시스템 설정 스크롤', () => {
 		});
 	}
 });
+
+test('시스템 설정 창은 사이드바와 패널이 함께 들어가는 크기보다 작게 줄지 않는다 (macOS처럼)', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await enterDesktop(page);
+	await dockItem(page, 'settings').click();
+	const settings = appWindow(page, 'settings');
+	const before = (await settings.boundingBox())!;
+	// 오른쪽 아래 모서리를 왼쪽 위로 한참 끈다
+	const handle = settings.locator('.resize-handle.bottom-right');
+	const box = (await handle.boundingBox())!;
+	// 손잡이의 바깥쪽(창 밖으로 걸친 부분)을 잡는다: 가운데는 창 안의 내용과 겹친다
+	const x = box.x + box.width * 0.25;
+	const y = box.y + box.height * 0.25;
+	await page.mouse.move(x, y);
+	await page.mouse.down();
+	await page.mouse.move(x - 600, y - 500, { steps: 10 });
+	await page.mouse.up();
+	const after = (await settings.boundingBox())!;
+	expect(Math.round(after.width)).toBe(680);
+	expect(Math.round(after.height)).toBe(420);
+	expect(after.x).toBe(before.x);
+	// 사이드바는 왼쪽에 그대로 있다 (위쪽 탭으로 바뀌지 않는다)
+	const sidebar = (await settings.getByRole('navigation', { name: '설정 항목' }).boundingBox())!;
+	const panel = (await settings.locator('.settings-panel').boundingBox())!;
+	expect(sidebar.x + sidebar.width).toBeLessThanOrEqual(panel.x + 1);
+});

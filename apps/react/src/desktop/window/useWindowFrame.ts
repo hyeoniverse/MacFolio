@@ -39,21 +39,22 @@ type Gesture = GestureKind & { pointerX: number; pointerY: number; start: Rect }
  */
 export function useWindowFrame(appName: AppName) {
 	const viewport = useViewport();
+	const { windowSize, minSize } = APP_MANIFEST[appName];
 	const [savedRect, setSavedRect] = useState<Rect>(
-		() => loadRect(appName) ?? defaultRect(viewport, APP_MANIFEST[appName].windowSize)
+		() => loadRect(appName) ?? defaultRect(viewport, windowSize, minSize)
 	);
 	const [isMaximized, setIsMaximized] = useState(false);
 	const gesture = useRef<Gesture | null>(null);
 
 	// 렌더링할 때마다 화면 안으로 제한한다. 브라우저 크기가 줄어도 창이 화면 밖에 남지 않는다.
-	const rect = isMaximized ? maximizedRect(viewport) : clampRect(savedRect, viewport);
+	const rect = isMaximized ? maximizedRect(viewport) : clampRect(savedRect, viewport, minSize);
 
 	const nextRect = (current: Gesture, event: React.PointerEvent) => {
 		const dx = event.clientX - current.pointerX;
 		const dy = event.clientY - current.pointerY;
 		return current.kind === 'move'
-			? moveRect(current.start, dx, dy, viewport)
-			: resizeRect(current.start, current.direction, dx, dy, viewport);
+			? moveRect(current.start, dx, dy, viewport, minSize)
+			: resizeRect(current.start, current.direction, dx, dy, viewport, minSize);
 	};
 
 	const begin = (event: React.PointerEvent, next: GestureKind) => {
