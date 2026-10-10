@@ -10,7 +10,7 @@
 		"typecheck": "turbo run typecheck",
 		"test": "turbo run test",
 		"lint": "turbo run lint",
-		"cycles": "madge --circular --extensions ts,tsx --ts-config apps/react/tsconfig.json apps/react/src && madge --circular --extensions ts --ts-config apps/api/tsconfig.json --exclude 'generated/' apps/api/src && madge --circular --extensions ts --ts-config packages/desktop-core/tsconfig.json packages/desktop-core/src",
+		"cycles": "madge --circular --extensions ts,tsx --ts-config apps/react/tsconfig.json apps/react/src && madge --circular --extensions ts --ts-config apps/api/tsconfig.json --exclude 'generated/' apps/api/src && madge --circular --extensions ts --ts-config packages/desktop-core/tsconfig.json packages/desktop-core/src && madge --circular --extensions ts --ts-config packages/contracts/tsconfig.json packages/contracts/src",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."
 	},

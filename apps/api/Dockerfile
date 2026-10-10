@@ -9,10 +9,12 @@ WORKDIR /repo
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/api/package.json apps/api/
 COPY packages/desktop-core/package.json packages/desktop-core/
+COPY packages/contracts/package.json packages/contracts/
 RUN pnpm install --frozen-lockfile --filter @macfolio/api...
-# 화면과 함께 쓰는 규칙(desktop-core)을 먼저 빌드한다. api는 그 dist를 쓴다
+# 화면과 함께 쓰는 규칙(desktop-core)과 요청·응답 모양(contracts)을 먼저 빌드한다. api는 그 dist를 쓴다
 COPY packages/desktop-core packages/desktop-core
-RUN pnpm --filter @macfolio/desktop-core build
+COPY packages/contracts packages/contracts
+RUN pnpm --filter @macfolio/desktop-core --filter @macfolio/contracts build
 COPY apps/api apps/api
 RUN pnpm --filter @macfolio/api build
 # 실행에 필요한 것만 따로 모은다 (개발 의존성 제외)

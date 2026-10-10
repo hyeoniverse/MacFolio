@@ -1,0 +1,17 @@
+{
+	// 브라우저 API(DOM)와 React·Vue·NestJS 타입을 넣지 않는다. 스키마와 순수 함수만 둔다.
+	// 서버(Node)도 빌드한 결과를 쓰므로 NodeNext로 검사한다 (상대 경로 import에 .js를 붙인다)
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"types": [],
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"strict": true,
+		"skipLibCheck": true,
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"noEmit": true
+	},
+	"include": ["src", "eslint.config.js"]
+}
