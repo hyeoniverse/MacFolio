@@ -19,7 +19,10 @@ describe('listComments', () => {
 	it('글의 댓글을 읽고, 실패하면 null', async () => {
 		const fetchImpl = respond(200, [COMMENT]);
 		await expect(listComments('http://api', 'cra-to-vite', fetchImpl)).resolves.toEqual([COMMENT]);
-		expect(fetchImpl).toHaveBeenCalledWith('http://api/posts/cra-to-vite/comments', { credentials: 'include' });
+		expect(fetchImpl).toHaveBeenCalledWith(
+			'http://api/posts/cra-to-vite/comments',
+			expect.objectContaining({ credentials: 'include' })
+		);
 		await expect(listComments('http://api', 'x', respond(500))).resolves.toBeNull();
 	});
 });
@@ -48,7 +51,10 @@ describe('deleteComment', () => {
 		const fetchImpl = respond(204);
 		await expect(deleteComment('http://api', 'c1', fetchImpl)).resolves.toBe('ok');
 		// 본문 없이 쿠키(credentials)로만 누구인지 알린다
-		expect(fetchImpl).toHaveBeenCalledWith('http://api/comments/c1', { method: 'DELETE', credentials: 'include' });
+		expect(fetchImpl).toHaveBeenCalledWith(
+			'http://api/comments/c1',
+			expect.objectContaining({ method: 'DELETE', credentials: 'include' })
+		);
 		await expect(deleteComment('http://api', 'c1', respond(403))).resolves.toBe('forbidden');
 		await expect(deleteComment('http://api', 'c1', respond(404))).resolves.toBe('not-found');
 	});

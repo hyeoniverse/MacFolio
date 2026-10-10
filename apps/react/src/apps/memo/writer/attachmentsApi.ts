@@ -1,5 +1,6 @@
 // 글에 넣는 이미지와 첨부 파일을 API(/files)에 올리고 커서 자리에 넣는다. 모양 규칙은 attachments.ts
 import { env } from '@/shared/config/env';
+import { apiFetch, SIGNED_OUT } from '@/shared/api/client';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { editorControls } from './editorControls';
 import { baseName, MAX_UPLOAD_BYTES, type Uploaded } from './attachments';
@@ -9,13 +10,8 @@ export async function uploadFile(apiUrl: string, file: File): Promise<Uploaded> 
 	if (file.size > MAX_UPLOAD_BYTES) throw new Error(`${file.name}: 10MB까지 올릴 수 있습니다.`);
 	const form = new FormData();
 	form.append('file', file);
-	let response: Response;
-	try {
-		response = await fetch(`${apiUrl}/files`, { method: 'POST', body: form, credentials: 'include' });
-	} catch {
-		throw new Error('서버에 연결하지 못했습니다.');
-	}
-	if (response.status === 401) throw new Error('관리자 로그인이 끝났습니다. 다시 로그인해 주세요.');
+	const response = await apiFetch('/files', { method: 'POST', body: form, timeout: 0, apiUrl });
+	if (response.status === 401) throw new Error(SIGNED_OUT);
 	if (response.status === 413) throw new Error(`${file.name}: 10MB까지 올릴 수 있습니다.`);
 	if (!response.ok) throw new Error(`${file.name}을(를) 올리지 못했습니다.`);
 	const body = (await response.json()) as Omit<Uploaded, 'url'> & { path: string };

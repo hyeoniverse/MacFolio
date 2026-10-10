@@ -41,12 +41,15 @@ describe('saveOrganization', () => {
 	it('쿠키와 함께 PUT, 성공 여부를 돌려준다', async () => {
 		const fetchImpl = respond(200, ORGANIZATION);
 		await expect(saveOrganization('http://api', ORGANIZATION, fetchImpl)).resolves.toBe(true);
-		expect(fetchImpl).toHaveBeenCalledWith('http://api/memo/organization', {
-			method: 'PUT',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(ORGANIZATION),
-		});
+		expect(fetchImpl).toHaveBeenCalledWith(
+			'http://api/memo/organization',
+			expect.objectContaining({
+				method: 'PUT',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(ORGANIZATION),
+			})
+		);
 		await expect(saveOrganization('http://api', ORGANIZATION, respond(401))).resolves.toBe(false);
 	});
 });

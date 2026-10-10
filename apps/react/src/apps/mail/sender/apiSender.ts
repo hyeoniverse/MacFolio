@@ -1,4 +1,5 @@
 import type { MailSender } from './types';
+import { api, apiFetch, reasonsOf, UNREACHABLE } from '@/shared/api/client';
 
 /** 서버의 연락 메일 설정 (GET /contact) */
 export interface ContactStatus {
@@ -11,9 +12,7 @@ export interface ContactStatus {
 /** 서버의 연락 메일 설정. 서버에 닿지 않으면 꺼진 것으로 본다 */
 export async function fetchContactStatus(apiUrl: string, fetchImpl: typeof fetch = fetch): Promise<ContactStatus> {
 	try {
-		const response = await fetchImpl(`${apiUrl}/contact`, { signal: AbortSignal.timeout(5000) });
-		if (!response.ok) return { enabled: false, turnstileSiteKey: null };
-		const body = (await response.json()) as Partial<ContactStatus>;
+		const body = await api<Partial<ContactStatus>>('/contact', { apiUrl, fetchImpl, timeout: 5000 });
 		return { enabled: body.enabled === true, turnstileSiteKey: body.turnstileSiteKey || null };
 	} catch {
 		return { enabled: false, turnstileSiteKey: null };
@@ -29,22 +28,20 @@ export function createApiSender(apiUrl: string, fallback: MailSender, fetchImpl:
 		async send(input, options) {
 			let response: Response;
 			try {
-				response = await fetchImpl(`${apiUrl}/contact`, {
+				// 방문자 쿠키(credentials)는 클라이언트가 보낸다: 서버가 이 브라우저의 보낸 편지함에 넣는다
+				response = await apiFetch('/contact', {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					// 방문자 쿠키: 서버가 이 브라우저의 보낸 편지함에 넣는다
-					credentials: 'include',
-					body: JSON.stringify({ ...input, turnstileToken: options?.turnstileToken }),
-					signal: AbortSignal.timeout(20_000),
+					json: { ...input, turnstileToken: options?.turnstileToken },
+					timeout: 20_000,
+					apiUrl,
+					fetchImpl,
 				});
 			} catch {
-				return { status: 'failed', message: '서버에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.' };
+				return { status: 'failed', message: UNREACHABLE };
 			}
 			if (response.ok) return { status: 'sent' };
 			if (response.status === 503) return fallback.send(input, options);
-			const body = (await response.json().catch(() => ({}))) as { message?: string | string[] };
-			const message = Array.isArray(body.message) ? body.message.join(' ') : body.message;
-			return { status: 'failed', message: message || '메일을 보내지 못했습니다.' };
+			return { status: 'failed', message: (await reasonsOf(response, '메일을 보내지 못했습니다.')).join(' ') };
 		},
 	};
 }
