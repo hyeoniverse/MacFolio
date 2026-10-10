@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Summary } from './data';
-import { trendOf, visitBattery, type VisitTrend } from './visitTrend';
+import type { Summary } from './activityApi';
+import { trendOf, visitBattery, type VisitTrend } from './useVisitTrend';
 
 const trend = (visits: number, previous: number): VisitTrend => ({
 	visits,

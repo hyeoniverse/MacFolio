@@ -74,6 +74,9 @@ jobs:
       - name: 린트
         run: pnpm lint
 
+      - name: 순환 의존 (madge)
+        run: pnpm cycles
+
       - name: 타입 체크
         run: pnpm typecheck
 

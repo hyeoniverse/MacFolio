@@ -8,7 +8,8 @@ import '@/apps/safari/project/CreativePage.css';
 import { useReveal } from '@/apps/safari/project/reveal';
 import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project/CreativeParts';
 import { ChapterFacts, ChapterPoints } from '@/apps/safari/project/CreativeChapters';
-import { DEMO_EVENT, Themes, type DemoKind, type DemoState } from '@/apps/safari/project/CreativeDemos';
+import { DEMO_EVENT, type DemoKind, type DemoState } from '@/apps/safari/project/creative/demoEvent';
+import { Themes } from '@/apps/safari/project/creative/Themes';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
 
 /** 진행 과정이 있으면 만든 방식을 그 장에 품질 장치로 함께 싣는다 */

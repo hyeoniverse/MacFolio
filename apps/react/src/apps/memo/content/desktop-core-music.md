@@ -1,7 +1,7 @@
 ---
 title: 음악 플레이어를 둘로 나누기 - 무엇을 틀지와 어떻게 틀지
 date: 2026-10-09
-category: 프론트엔드/구조·리팩터링
+category: 개발기/MacFolio/프론트엔드
 summary: 음악 앱의 MusicContext는 재생 목록·셔플·반복으로 다음 곡을 정하는 일과 audio 요소를 틀고 멈추는 일을 한 컴포넌트에서 했다. 앞쪽을 desktop-core의 플레이어 store로 옮기고, 동작마다 'moved', 'stopped', 'restart' 같은 결과를 돌려주게 했다. React는 그 결과를 보고 audio만 다룬다.
 ---
 

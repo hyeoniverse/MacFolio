@@ -29,7 +29,7 @@
 빌드와 배포는 GitHub Actions(`.github/workflows/ci.yml`)가 한다. Cloudflare의 빌드 서버(Workers Builds)는 쓰지 않는다. 워크플로가 쓰는 액션은 태그(`@v7`)가 아니라 커밋 SHA로 고정하고(태그는 나중에 다른 코드를 가리킬 수 있다), 새 버전은 Dependabot(`.github/dependabot.yml`)이 PR로 올린다.
 
 - **main**: 시험(`check`)이 통과하면 `deploy` 작업이 `wrangler deploy`로 실제 사이트에 올린다. 시험이 실패한 커밋은 배포되지 않는다.
-- **PR**: `preview` 작업이 `wrangler versions upload --preview-alias <브랜치>`로 미리보기 버전을 올리고, 주소를 PR 댓글 하나에 적는다(새 커밋을 올리면 같은 댓글을 고친다). 실제 사이트는 바뀌지 않는다. Dependabot PR과 프론트엔드 파일(`apps/react`, `packages`, lockfile 등)이 바뀌지 않은 PR에서는 건너뛴다. 올리는 것 자체는 무료(요청 수로만 과금)이고 버전은 최근 100개까지만 남지만, CI 시간과 댓글을 아낀다.
+- **PR**: `preview` 작업이 `wrangler versions upload --preview-alias <브랜치>`로 미리보기 버전을 올리고, 주소를 PR 댓글 하나에 적는다(새 커밋을 올리면 같은 댓글을 고친다). 실제 사이트는 바뀌지 않는다. 미리보기는 실제 API를 읽기만 한다: 주소가 `*.workers.dev`라 `SameSite=Lax` 세션 쿠키가 가지 않고, API도 `*`로 맞은 주소에는 쿠키를 허용하지 않으며 관리자 API는 그런 Origin을 403으로 거절한다. 미리보기에서 관리자 기능을 확인하려면 로컬(`pnpm dev`)에서 한다. Dependabot PR과 프론트엔드 파일(`apps/react`, `packages`, lockfile 등)이 바뀌지 않은 PR에서는 건너뛴다. 올리는 것 자체는 무료(요청 수로만 과금)이고 버전은 최근 100개까지만 남지만, CI 시간과 댓글을 아낀다.
 
 ### 처음 한 번: 토큰과 Git 연결
 
@@ -189,34 +189,34 @@ EOF
 chmod 600 .env api.env
 ```
 
-| 변수                                                  | 필수   | 설명                                                                                                                                                                                                |
-| ----------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                                        | ✓      | compose.yml에서 `db` 서비스 주소로 넣는다                                                                                                                                                           |
-| `CORS_ORIGINS`                                        | ✓      | 요청을 받을 프론트엔드 주소 (쉼표로 여러 개). 한 글자라도 다르면(끝의 `/`, `www`) CORS 에러. `*`는 점 없는 이름 한 칸에 맞아, `https://*-macfolio.hyeoniverse.workers.dev`로 PR 미리보기를 허용한다 |
-| `API_URL`                                             | ✓      | 이 API의 바깥 주소. OAuth 콜백 주소를 여기서 만든다                                                                                                                                                 |
-| `GITHUB_CLIENT_ID`                                    | 로그인 | 비우면 로그인만 503, 나머지 API는 동작한다                                                                                                                                                          |
-| `GITHUB_CLIENT_SECRET`                                | 로그인 |                                                                                                                                                                                                     |
-| `IP_HASH_SECRET`                                      | ✓      | 댓글 작성자 IP를 HMAC하는 키. production에서 없으면 서버가 뜨지 않는다                                                                                                                              |
-| `TRUST_PROXY`                                         |        | 앞에 둔 프록시 수. Tunnel만 거치면 `1`. `X-Forwarded-For`에서 실제 IP를 읽어 요청 제한에 쓴다                                                                                                       |
-| `FRONTEND_URL`                                        |        | 로그인 후 돌아갈 주소 (기본: `CORS_ORIGINS`의 첫 주소)                                                                                                                                              |
-| `ADMIN_GITHUB_ID`                                     |        | 관리자 GitHub 숫자 ID (기본 68999618)                                                                                                                                                               |
-| `UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY`               |        | 편집기의 사진 찾기. 없으면 그 서비스만 꺼진다                                                                                                                                                       |
-| `GITHUB_TOKEN`                                        |        | GitHub 앱의 프로필·저장소를 받을 토큰. 없으면 시간당 60번 제한이라 30분마다 새로 받는다                                                                                                             |
-| `FISH_AUDIO_API_KEY`, `GOOGLE_TTS_API_KEY`            |        | Safari HYEONIVERSE 페이지의 음성 만들기 (Fish → Google → Edge). 없으면 그 공급자만 건너뛴다 (Edge는 키 없이 된다)                                                                                   |
-| `SPEECH_PER_IP_PER_DAY`, `SPEECH_TOTAL_PER_DAY`       |        | 음성 만들기 하루 상한. 기본 IP마다 3번, 사이트 전체 50번 (서버 메모리로 센다)                                                                                                                       |
-| `DEEPL_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`           |        | 번역 데모 (DeepL → Google). HYEONIVERSE와 같은 키. 없으면 그 공급자만 건너뛴다                                                                                                                      |
-| `GROQ_API_KEY`                                        |        | AI 요약 데모의 기본 공급자 (Groq, OpenAI 호환 API). 없거나 실패하면 Gemini로 넘어간다                                                                                                               |
-| `GROQ_MODEL`                                          |        | Groq 모델 (기본 `openai/gpt-oss-120b`). Groq는 모델을 자주 내리므로, 요약이 Gemini로만 만들어지면 내려갔는지 본다                                                                                   |
-| `GEMINI_API_KEY`                                      |        | AI 요약 데모의 두 번째 공급자 (Groq가 실패할 때). 둘 다 없으면 요약이 502                                                                                                                           |
-| `GEMINI_MODEL`                                        |        | 요약 모델 (기본 `gemini-flash-latest`, 늘 최신 Flash). 내려간 모델이면 응답이 권하는 모델로 한 번 다시 묻는다                                                                                       |
-| `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_AI_TOKEN`        |        | AI 커버 데모의 첫 공급자 (Cloudflare Workers AI FLUX, 매일 무료 할당). 토큰에는 Workers AI 권한만 준다                                                                                              |
-| `HUGGINGFACE_API_KEY`                                 |        | AI 커버 데모의 두 번째 공급자 (Hugging Face FLUX). 둘 다 없으면 커버가 502                                                                                                                          |
-| `TRANSLATE_PER_IP_PER_DAY`, `TRANSLATE_TOTAL_PER_DAY` |        | 번역 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                                                                                                   |
-| `SUMMARY_PER_IP_PER_DAY`, `SUMMARY_TOTAL_PER_DAY`     |        | 요약 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                                                                                                   |
-| `COVER_PER_IP_PER_DAY`, `COVER_TOTAL_PER_DAY`         |        | 커버 하루 상한. 기본 IP마다 1번, 사이트 전체 5번 (무료 한도가 작다)                                                                                                                                 |
-| `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`        | 메일   | 메일 앱의 연락 메일 (#25). 셋이 다 있어야 서버가 보낸다. 없으면 사이트가 방문자의 메일 앱을 연다. 설정은 [연락 메일](#연락-메일-resend-turnstile)                                                   |
-| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`          |        | 메일·댓글·메시지의 사람 확인 (Cloudflare Turnstile). 비우면 확인하지 않는다. 어디에 걸지는 시스템 설정의 개인정보 보호 및 보안에서 켜고 끈다                                                        |
-| `CONTACT_PER_IP_PER_DAY`, `CONTACT_TOTAL_PER_DAY`     |        | 연락 메일 하루 상한. 기본 IP마다 5통, 사이트 전체 50통                                                                                                                                              |
+| 변수                                                  | 필수   | 설명                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                        | ✓      | compose.yml에서 `db` 서비스 주소로 넣는다                                                                                                                                                                                                                              |
+| `CORS_ORIGINS`                                        | ✓      | 요청을 받을 프론트엔드 주소 (쉼표로 여러 개). 한 글자라도 다르면(끝의 `/`, `www`) CORS 에러. `*`는 점 없는 이름 한 칸에 맞아, `https://*-macfolio.hyeoniverse.workers.dev`로 PR 미리보기를 허용한다. `*`로 맞은 주소는 읽기만 되고 쿠키(관리자 세션)는 주고받지 않는다 |
+| `API_URL`                                             | ✓      | 이 API의 바깥 주소. OAuth 콜백 주소를 여기서 만든다                                                                                                                                                                                                                    |
+| `GITHUB_CLIENT_ID`                                    | 로그인 | 비우면 로그인만 503, 나머지 API는 동작한다                                                                                                                                                                                                                             |
+| `GITHUB_CLIENT_SECRET`                                | 로그인 |                                                                                                                                                                                                                                                                        |
+| `IP_HASH_SECRET`                                      | ✓      | 댓글 작성자 IP를 HMAC하는 키. production에서 없으면 서버가 뜨지 않는다                                                                                                                                                                                                 |
+| `TRUST_PROXY`                                         |        | 앞에 둔 프록시 수. Tunnel만 거치면 `1`. `X-Forwarded-For`에서 실제 IP를 읽어 요청 제한에 쓴다                                                                                                                                                                          |
+| `FRONTEND_URL`                                        |        | 로그인 후 돌아갈 주소 (기본: `CORS_ORIGINS`의 첫 주소)                                                                                                                                                                                                                 |
+| `ADMIN_GITHUB_ID`                                     |        | 관리자 GitHub 숫자 ID (기본 68999618)                                                                                                                                                                                                                                  |
+| `UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY`               |        | 편집기의 사진 찾기. 없으면 그 서비스만 꺼진다                                                                                                                                                                                                                          |
+| `GITHUB_TOKEN`                                        |        | GitHub 앱의 프로필·저장소를 받을 토큰. 없으면 시간당 60번 제한이라 30분마다 새로 받는다                                                                                                                                                                                |
+| `FISH_AUDIO_API_KEY`, `GOOGLE_TTS_API_KEY`            |        | Safari HYEONIVERSE 페이지의 음성 만들기 (Fish → Google → Edge). 없으면 그 공급자만 건너뛴다 (Edge는 키 없이 된다)                                                                                                                                                      |
+| `SPEECH_PER_IP_PER_DAY`, `SPEECH_TOTAL_PER_DAY`       |        | 음성 만들기 하루 상한. 기본 IP마다 3번, 사이트 전체 50번 (서버 메모리로 센다)                                                                                                                                                                                          |
+| `DEEPL_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`           |        | 번역 데모 (DeepL → Google). HYEONIVERSE와 같은 키. 없으면 그 공급자만 건너뛴다                                                                                                                                                                                         |
+| `GROQ_API_KEY`                                        |        | AI 요약 데모의 기본 공급자 (Groq, OpenAI 호환 API). 없거나 실패하면 Gemini로 넘어간다                                                                                                                                                                                  |
+| `GROQ_MODEL`                                          |        | Groq 모델 (기본 `openai/gpt-oss-120b`). Groq는 모델을 자주 내리므로, 요약이 Gemini로만 만들어지면 내려갔는지 본다                                                                                                                                                      |
+| `GEMINI_API_KEY`                                      |        | AI 요약 데모의 두 번째 공급자 (Groq가 실패할 때). 둘 다 없으면 요약이 502                                                                                                                                                                                              |
+| `GEMINI_MODEL`                                        |        | 요약 모델 (기본 `gemini-flash-latest`, 늘 최신 Flash). 내려간 모델이면 응답이 권하는 모델로 한 번 다시 묻는다                                                                                                                                                          |
+| `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_AI_TOKEN`        |        | AI 커버 데모의 첫 공급자 (Cloudflare Workers AI FLUX, 매일 무료 할당). 토큰에는 Workers AI 권한만 준다                                                                                                                                                                 |
+| `HUGGINGFACE_API_KEY`                                 |        | AI 커버 데모의 두 번째 공급자 (Hugging Face FLUX). 둘 다 없으면 커버가 502                                                                                                                                                                                             |
+| `TRANSLATE_PER_IP_PER_DAY`, `TRANSLATE_TOTAL_PER_DAY` |        | 번역 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                                                                                                                                                                      |
+| `SUMMARY_PER_IP_PER_DAY`, `SUMMARY_TOTAL_PER_DAY`     |        | 요약 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                                                                                                                                                                      |
+| `COVER_PER_IP_PER_DAY`, `COVER_TOTAL_PER_DAY`         |        | 커버 하루 상한. 기본 IP마다 1번, 사이트 전체 5번 (무료 한도가 작다)                                                                                                                                                                                                    |
+| `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`        | 메일   | 메일 앱의 연락 메일 (#25). 셋이 다 있어야 서버가 보낸다. 없으면 사이트가 방문자의 메일 앱을 연다. 설정은 [연락 메일](#연락-메일-resend-turnstile)                                                                                                                      |
+| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`          |        | 메일·댓글·메시지의 사람 확인 (Cloudflare Turnstile). 비우면 확인하지 않는다. 어디에 걸지는 시스템 설정의 개인정보 보호 및 보안에서 켜고 끈다                                                                                                                           |
+| `CONTACT_PER_IP_PER_DAY`, `CONTACT_TOTAL_PER_DAY`     |        | 연락 메일 하루 상한. 기본 IP마다 5통, 사이트 전체 50통                                                                                                                                                                                                                 |
 
 데모 상한은 데모마다 따로, 서버 메모리로 센다 (다시 띄우면 처음부터). 공급자가 모두 실패하면 쓴 횟수를 돌려준다. 커버는 두 공급자를 이어 시도해도 Cloudflare Tunnel의 100초 안에 끝나게 각각 45초에서 끊는다.
 
@@ -451,6 +451,31 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 - 기록은 저장소의 **Actions → uptime**에서 본다. **Run workflow**로 바로 한 번 돌릴 수도 있다
 - 예약 실행은 GitHub 사정으로 몇 분씩 늦게 돌 수 있다. 공개 저장소라 실행 시간은 무료다
 - 저장소에 60일 동안 활동이 없으면 GitHub이 예약 실행을 멈춘다. 그때는 Actions에서 다시 켠다
+
+### 서버 하드닝 점검
+
+서버가 바깥에 내놓은 것은 SSH(22) 하나다. API는 Cloudflare Tunnel로만 들어오고(`compose.yml`에 `ports`가 없다), DB는 compose 네트워크 안에서만 보인다. 그래서 지킬 것은 넷이다: **SSH는 키로만**, **열린 포트는 22뿐**, **컨테이너는 root가 아닌 사용자로**, **보안 업데이트는 자동으로**. `ops/audit.sh`가 이 넷을 읽기만 하고 항목마다 `OK`/`확인`을 찍는다. 아무것도 바꾸지 않는다.
+
+```bash
+~/macfolio/ops/audit.sh      # 확인 항목이 있으면 1로 끝난다
+```
+
+| 항목     | 기대하는 상태                                                                                                                                    | 어긋나면                                                                                                                                                                                                                                                                                         |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| SSH      | `PasswordAuthentication no`, `KbdInteractiveAuthentication no`, `PermitRootLogin prohibit-password`, 비밀번호 있는 계정 0                        | `/etc/ssh/sshd_config.d/99-macfolio.conf`에 세 줄을 적고 `sudo systemctl reload ssh`. Oracle Ubuntu 이미지는 처음부터 이렇게 되어 있다                                                                                                                                                           |
+| 포트     | 바깥에서 듣는 것은 22뿐. 호스트 포트를 연 컨테이너 없음. iptables에 22 허용 규칙(Oracle 기본)                                                    | `compose.yml`에 `ports:`를 넣지 않는다. 111(rpcbind)은 Oracle 이미지가 NFS용으로 켜 두는 것이라 `sudo systemctl disable --now rpcbind.socket rpcbind.service`로 끈다. 클라우드 쪽 **Security List**(VCN → Subnet → Security List)의 Ingress도 `22/tcp` 하나만 둔다 (80·443은 터널이라 필요 없다) |
+| 컨테이너 | `api → node`(Dockerfile의 `USER node`), `tunnel → nonroot`(cloudflared 이미지 기본), `db → postgres`. privileged 없음, `docker.sock` 마운트 없음 | 이미지나 compose를 손댔다면 되돌린다. `db`가 `root`로 나오는 것은 postgres 이미지가 시작 때만 root였다가 postgres로 내려가는 것이라 OK로 친다                                                                                                                                                    |
+| 업데이트 | `unattended-upgrades` 켜짐, 재부팅 대기 없음                                                                                                     | `sudo apt install unattended-upgrades && sudo dpkg-reconfigure -plow unattended-upgrades`. `/var/run/reboot-required`가 있으면 한가한 때 `sudo reboot`                                                                                                                                           |
+
+- 배포용 SSH 키(`macfolio-deploy`)는 `authorized_keys`의 `restrict,command=`로 `ops/deploy.sh`만 돌릴 수 있다 ([자동 배포 설정](#자동-배포-설정-한-번)). `audit.sh`는 이 키를 보지 않는다
+- `ubuntu` 계정이 `docker` 그룹이라 그 계정으로 들어오면 호스트 root와 같다. 그래서 SSH 키 관리가 곧 서버 전체의 열쇠 관리다. 키를 잃어버리면 Oracle 콘솔의 **Console connection**으로 들어가 `authorized_keys`를 바꾼다
+- 점검은 분기마다 한 번, 그리고 서버 설정을 손댄 뒤에 돌린다
+
+#### 처음 한 번 (스크립트를 넣은 뒤)
+
+1. 서버에서 코드를 받고 돌린다: `cd ~/macfolio && git pull && ops/audit.sh`. `확인`이 나오면 위 표대로 손보고 다시 돌려 `모두 OK`를 본다
+2. 스크립트가 보지 못하는 클라우드 쪽 방화벽을 콘솔에서 본다: Oracle Cloud → Networking → Virtual cloud networks → VCN → Subnets → public subnet → **Security Lists** → Default Security List → **Ingress Rules**. `0.0.0.0/0`에서 열린 TCP 포트가 **22** 하나면 된다 (ICMP 규칙 둘은 Oracle 기본이라 그대로 둔다). 80·443이 있으면 지운다 (터널이라 필요 없다)
+3. 결과를 어디에도 올리지 않는다. 출력에 계정 이름과 듣는 주소가 들어 있다
 
 ### 백업
 
@@ -814,3 +839,4 @@ docker compose up -d api
 
 - 계정을 Pay As You Go로 올려 유휴 회수에서 빼고 Budget 알림 걸기 ([유휴 회수](#유휴-회수))
 - 실제 사용률을 1~2주 관찰하기
+- fail2ban 또는 SSH 포트 바꾸기: 키로만 받으면 실패 로그만 쌓일 뿐이라 지금은 두지 않는다. 로그가 거슬리면 그때
