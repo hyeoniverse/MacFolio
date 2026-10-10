@@ -1,8 +1,10 @@
 // 프로젝트 페이지가 함께 쓰는 스크롤 연출: 화면에 들어오면 나타나고 벗어나면 사라진다
 import { useEffect, useRef, useState } from 'react';
 import { scrollParent } from '@/apps/safari/project/scroll';
+import { prefersReducedMotion } from '@/shared/lib/media';
 
-export const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+/** 프로젝트 페이지의 연출 코드가 함께 쓴다 (shared/lib/media.ts) */
+export { prefersReducedMotion };
 
 /**
  * 돌려준 ref를 단 요소 안의 [data-reveal] 요소(나중에 생긴 것도)가 화면(스크롤 상자)에 들어오면 data-shown을 붙이고, 벗어나면 뗀다.

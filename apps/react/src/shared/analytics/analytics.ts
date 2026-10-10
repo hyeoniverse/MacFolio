@@ -3,6 +3,8 @@
 // 무엇을 모으는지는 docs/privacy.md. 서버 쪽은 apps/api/src/analytics.
 import { env } from '@/shared/config/env';
 import { api } from '@/shared/api/client';
+import { isMobileViewport } from '@/desktop/layout';
+import { getViewport } from '@/shared/hooks/useViewport';
 import { MAX_EVENTS, type AppViews, type TodayVisitors } from '@macfolio/contracts';
 
 declare global {
@@ -31,7 +33,6 @@ export const FLUSH_MS = 5000;
 /** 한 번에 보내는 수 (서버의 상한, contracts) */
 const MAX_BATCH = MAX_EVENTS;
 /** 사이트의 휴대폰 화면 기준과 같다 */
-const MOBILE_WIDTH = 768;
 
 /** 보낼지: 서버가 있고, Global Privacy Control을 켜지 않았고, 로컬 주소가 아니다 (테스트는 따로 켠다) */
 export function analyticsEnabled(
@@ -120,7 +121,7 @@ export function startAnalytics() {
 		path: window.location.pathname.slice(0, 300),
 		referrer: referrerHost(document.referrer, window.location.hostname),
 		...utmOf(window.location.search),
-		device: window.innerWidth < MOBILE_WIDTH ? 'mobile' : 'desktop',
+		device: isMobileViewport(getViewport()) ? 'mobile' : 'desktop',
 		language: navigator.language || undefined,
 	});
 	window.setInterval(flush, FLUSH_MS);

@@ -1,4 +1,5 @@
 import { cssVars } from '@/shared/lib/cssVars';
+import { getViewport } from '@/shared/hooks/useViewport';
 // QRU (디지털 명함): 그 앱의 민트→분홍 바탕과 두툼한 그림자를 그대로 쓴다.
 // 명함 앞뒤(앞면은 앱 로고 카드, 뒷면은 기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 앱 화면) →
 // 더 들려줄 장(데이터베이스 구조와 글) → 묻고 답하기(만든 방식) → 화면 모음 → 맡은 일.
@@ -37,7 +38,7 @@ function useScrollUnfold(list: React.RefObject<HTMLElement | null>, count: numbe
 		const measure = () => {
 			frame = 0;
 			const view = scroller?.getBoundingClientRect();
-			const line = view ? view.top + view.height * LINE : window.innerHeight * LINE;
+			const line = view ? view.top + view.height * LINE : getViewport().height * LINE;
 			const heads = root.querySelectorAll<HTMLElement>('[data-index]');
 			let reached = 0;
 			for (const head of heads) {
