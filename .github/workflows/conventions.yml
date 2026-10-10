@@ -26,8 +26,9 @@ jobs:
         env:
           # 제목·브랜치 이름은 누구나 정할 수 있는 값이라 스크립트에 바로 넣지 않고 환경 변수로 넘긴다
           BRANCH: ${{ github.head_ref }}
-          # Dependabot의 브랜치 이름(dependabot/npm_and_yarn/…)은 GitHub이 정한다. 제목과 커밋은 규칙대로 오게 .github/dependabot.yml에서 맞춘다
-          SKIP_BRANCH: ${{ github.actor == 'dependabot[bot]' }}
+          # Dependabot의 브랜치 이름(dependabot/npm_and_yarn/…)은 GitHub이 정한다. 제목과 커밋은 규칙대로 오게 .github/dependabot.yml에서 맞춘다.
+          # 푸시한 사람(actor)이 아니라 PR 작성자로 본다: 사람이 Dependabot 브랜치에 고친 커밋을 올려도 예외가 유지되게
+          SKIP_BRANCH: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
           TITLE: ${{ github.event.pull_request.title }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
