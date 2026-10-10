@@ -260,7 +260,6 @@
 	border-radius: 50%;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--color-text-strong);
 	font-size: 20px;
@@ -274,7 +273,6 @@
 	border-radius: 999px;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 }
 
@@ -317,7 +315,6 @@
 	border-radius: 50%;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--color-text-strong);
 	font-size: 18px;
@@ -373,7 +370,6 @@
 	border-radius: 999px;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 	font-size: 17px;
 }
@@ -413,7 +409,6 @@
 	border-radius: 22px;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 	transform: translateX(-50%);
 	text-align: center;
@@ -451,7 +446,6 @@
 	border-radius: 50%;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--color-text-strong);
 	font-size: 18px;
@@ -711,7 +705,6 @@
 	border-radius: 999px;
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 }
 
