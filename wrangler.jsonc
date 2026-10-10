@@ -10,12 +10,18 @@
 	// PR 미리보기(`wrangler versions upload --preview-alias`)에 필요하다 (비어 있어도 됨)
 	"previews": {},
 	// Vite 빌드 결과(apps/react/dist)를 정적 파일로 준다. 있는 파일은 Worker를 거치지 않는다.
-	// 없는 주소만 Worker(apps/react/worker)로 간다: 앱 주소(/memo/<글>)는 index.html, 옛 코드 파일(/assets/…)은 404.
+	// 첫 화면과 없는 주소만 Worker(apps/react/worker)로 간다: 앱 주소(/memo/<글>)는 index.html, 옛 코드 파일(/assets/…)은 404.
 	// 예전에는 not_found_handling: single-page-application이라 없는 코드 파일에도 index.html이 200으로 갔다
 	"main": "./apps/react/worker/index.ts",
 	"assets": {
 		"directory": "./apps/react/dist",
 		"binding": "ASSETS",
 		"not_found_handling": "none",
+		// 첫 화면은 있는 파일(index.html)이지만 Worker를 먼저 거친다: 관리자가 고친 사이트 콘텐츠를 넣고, 그 데모 주소를 CSP에 더한다
+		"run_worker_first": ["/", "/index.html"],
+	},
+	// Worker가 사이트 콘텐츠(GET /site)를 묻는 API 주소 (ci.yml의 VITE_API_URL과 같다)
+	"vars": {
+		"API_URL": "https://macfolio-api.hyeoniverse.com",
 	},
 }

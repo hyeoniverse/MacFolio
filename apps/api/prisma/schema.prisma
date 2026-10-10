@@ -345,6 +345,8 @@ model SiteContent {
   id        Int      @id @default(1)
   /// 프로필 (이름, 직무, 학교, 위치, GitHub, 이메일, 기술). 모양은 @macfolio/desktop-core/site의 SiteProfile
   profile   Json?
+  /// 프로젝트: 코드의 기본값에 덮어쓸 순서·숨김·필드와 새 프로젝트. 모양은 @macfolio/desktop-core/site의 SiteProjects
+  projects  Json?
   updatedAt DateTime @updatedAt
   updatedBy String?
 }
