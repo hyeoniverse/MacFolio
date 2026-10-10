@@ -338,3 +338,13 @@ model SecuritySetting {
   updatedAt    DateTime @updatedAt
   updatedBy    String?
 }
+
+/// 사이트 콘텐츠 (한 줄, id = 1): 관리자가 시스템 설정에서 고친 사이트 주인의 정보.
+/// 비어 있는 칸은 화면이 코드의 기본값(apps/react/src/shared/profile.ts)을 쓴다. 이 저장소를 가져다 띄우는 사람이 코드를 고치지 않고 바꾸게
+model SiteContent {
+  id        Int      @id @default(1)
+  /// 프로필 (이름, 직무, 학교, 위치, GitHub, 이메일, 기술). 모양은 @macfolio/desktop-core/site의 SiteProfile
+  profile   Json?
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}

@@ -3,6 +3,7 @@
 import { createHmac } from 'node:crypto';
 
 /** 관리자 이름 */
+/** 관리자 이름의 기본값. 시스템 설정에서 프로필을 저장하면 그 이름을 쓴다 (site/site.service.ts) */
 export const OWNER_NAME = '김정현';
 
 export const LIMITS = {
