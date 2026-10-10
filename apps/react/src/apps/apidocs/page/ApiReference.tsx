@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { prefersDarkScheme } from '@/shared/lib/media';
 import { ApiReferenceReact } from '@scalar/api-reference-react';
 import '@scalar/api-reference-react/style.css';
 import document from '@/apps/apidocs/openapi.json';
@@ -19,8 +20,7 @@ const subscribeTheme = (onChange: () => void) => {
 	observer.observe(siteRoot, { attributes: true, attributeFilter: ['data-theme'] });
 	return () => observer.disconnect();
 };
-const isDark = () =>
-	siteRoot ? siteRoot.dataset.theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+const isDark = () => (siteRoot ? siteRoot.dataset.theme === 'dark' : prefersDarkScheme());
 
 /** 관리자 API는 세션 쿠키로 확인한다. 'Test Request'에도 쿠키를 함께 보낸다 (서버 CORS가 이 사이트에 credentials를 허용한다) */
 const fetchWithCookies: typeof fetch = (input, init) => fetch(input, { ...init, credentials: 'include' });

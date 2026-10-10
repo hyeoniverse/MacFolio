@@ -2,6 +2,8 @@
 // 쿠키를 쓰지 않는다: 같은 방문은 페이지를 열 때마다 새로 만드는 visitId로 묶고, 같은 사람은 서버가 하루 해시로 센다.
 // 무엇을 모으는지는 docs/privacy.md. 서버 쪽은 apps/api/src/analytics.
 import { env } from '@/shared/config/env';
+import { isMobileViewport } from '@/desktop/layout';
+import { getViewport } from '@/shared/hooks/useViewport';
 
 declare global {
 	/** E2E 테스트가 수집을 켜고 끄는 자리 (로컬 주소에서는 기본으로 보내지 않는다) */
@@ -29,7 +31,6 @@ export const FLUSH_MS = 5000;
 /** 한 번에 보내는 수 (서버의 상한과 같다) */
 const MAX_BATCH = 30;
 /** 사이트의 휴대폰 화면 기준과 같다 */
-const MOBILE_WIDTH = 768;
 
 /** 보낼지: 서버가 있고, Global Privacy Control을 켜지 않았고, 로컬 주소가 아니다 (테스트는 따로 켠다) */
 export function analyticsEnabled(
@@ -118,7 +119,7 @@ export function startAnalytics() {
 		path: window.location.pathname.slice(0, 300),
 		referrer: referrerHost(document.referrer, window.location.hostname),
 		...utmOf(window.location.search),
-		device: window.innerWidth < MOBILE_WIDTH ? 'mobile' : 'desktop',
+		device: isMobileViewport(getViewport()) ? 'mobile' : 'desktop',
 		language: navigator.language || undefined,
 	});
 	window.setInterval(flush, FLUSH_MS);

@@ -99,6 +99,7 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 건강하�
 
 - 대소문자: 폴더는 소문자(두 낱말이면 `status-bar`처럼 kebab-case), 컴포넌트 파일은 `PascalCase.tsx`, 그 밖의 `.ts`·훅·메뉴 정의는 `camelCase`, CSS는 짝이 되는 컴포넌트와 같은 이름
 - 한 파일에 서버 호출과 순수 계산을 섞지 않는다. 섞이면 순수 계산에 시험을 붙이기 어렵고, 서버 호출을 공통 클라이언트로 옮길 때 파일을 다시 가른다
+- 화면 크기는 `shared/hooks/useViewport.ts`(`useViewport` 훅, 훅 밖에서는 `getViewport()`)로 읽고, 모바일 셸 여부는 `desktop/layout.ts`의 `isMobileViewport`(컴포넌트에서는 `useIsMobile`)로 정한다. 움직임 줄이기·어두운 화면 모드·손가락 입력 같은 `matchMedia` 질문은 `shared/lib/media.ts`(`prefersReducedMotion`·`useResolvedTheme` 등)를 거친다. `window.innerWidth`·`matchMedia`를 직접 쓰지 않는다
 - 값을 받아 두는 store와 그것을 읽는 한 줄짜리 훅(`useSyncExternalStore`)은 그 `*Api.ts`에 둬도 된다 (`githubApi.ts`의 `useGithub`)
 - 시험은 대상 파일 옆에 같은 이름으로 (`forecast.ts` ↔ `forecast.test.ts`)
 - 앱이 커져 파일이 열 개를 넘으면 그때 `components/`·`writer/`처럼 묶는다. 작은 앱에 미리 폴더를 파지 않는다

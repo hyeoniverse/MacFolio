@@ -1,4 +1,5 @@
 import { cssVars } from '@/shared/lib/cssVars';
+import { getViewport } from '@/shared/hooks/useViewport';
 import React, { useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
@@ -106,7 +107,7 @@ const MobileAppFrame: React.FC<Props> = ({
 			if (!g.axis && Math.hypot(dx, dy) > TAP_PX) g.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
 			if (g.axis === 'x') {
 				// 옆으로 끌면 카드 줄이 움직인다 (첫 카드와 마지막 카드 밖으로는 조금만)
-				const step = window.innerWidth * 0.66;
+				const step = getViewport().width * 0.66;
 				const min = -(cardCount - 1) * step;
 				const next = g.scroll + dx;
 				const clamped = next > 0 ? next * 0.3 : next < min ? min + (next - min) * 0.3 : next;
@@ -123,7 +124,7 @@ const MobileAppFrame: React.FC<Props> = ({
 			const card = cardRef.current;
 			if (g.axis === 'x') {
 				// 가장 가까운 카드에 맞춘다
-				const step = window.innerWidth * 0.66;
+				const step = getViewport().width * 0.66;
 				const index = Math.min(cardCount - 1, Math.max(0, Math.round(-getSwitcherScroll() / step)));
 				setSwitcherScroll(-index * step);
 			} else if (g.axis === 'y') {

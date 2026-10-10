@@ -8,15 +8,18 @@ const subscribe = (onChange: () => void) => {
 	return () => window.removeEventListener('resize', onChange);
 };
 
-// 크기가 바뀌었을 때만 새 객체를 돌려준다 (useSyncExternalStore는 같은 값이면 같은 참조를 기대한다)
-const getSnapshot = (): Viewport => {
+/**
+ * 지금 브라우저 창 크기 (훅 밖에서: 이벤트 처리, 스토어 초기화, 좌표 계산).
+ * 크기가 바뀌었을 때만 새 객체를 돌려준다 (useSyncExternalStore는 같은 값이면 같은 참조를 기대한다)
+ */
+export function getViewport(): Viewport {
 	if (!cached || cached.width !== window.innerWidth || cached.height !== window.innerHeight) {
 		cached = { width: window.innerWidth, height: window.innerHeight };
 	}
 	return cached;
-};
+}
 
 /** 브라우저 창 크기. 크기가 바뀌면 다시 렌더링한다. */
 export function useViewport(): Viewport {
-	return useSyncExternalStore(subscribe, getSnapshot);
+	return useSyncExternalStore(subscribe, getViewport);
 }

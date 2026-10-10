@@ -1,3 +1,5 @@
+import { prefersReducedMotion } from '@/shared/lib/media';
+
 /** 배경화면이 바뀔 때 옛 배경이 흐려지며 새 배경이 드러나는 시간 */
 const FADE_MS = 600;
 
@@ -6,7 +8,7 @@ const FADE_MS = 600;
  * 데스크톱은 문서 배경(body) 위·창 아래에, 휴대폰은 홈 화면 배경 위·아이콘 아래에 얹는다 (z-index -1)
  */
 export function fadeOutWallpaper(old: { desktop: string; mobile: string }) {
-	if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+	if (prefersReducedMotion()) return;
 	const layer = (background: string, position: 'fixed' | 'absolute') => {
 		const element = document.createElement('div');
 		element.className = 'wallpaper-fade';
