@@ -7,6 +7,8 @@ import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import { clearBrowserData, readBrowserData, type BrowserDataItem } from './siteStorage';
 import { formatSize } from './filesApi';
+import { refreshBin } from './binState';
+import { env } from '@/shared/config/env';
 
 /** 지운다. 설정은 앱이 들고 있는 값도 처음 설정으로 돌린다 (돌리면 저장소에 다시 쓰므로 그 뒤에 지운다) */
 function clear(item: BrowserDataItem) {
@@ -22,7 +24,11 @@ const BrowserData = () => {
 	const { openApp } = useAppState();
 	const [stored, setStored] = useState(readBrowserData);
 	const [confirm, setConfirm] = useState(false);
-	const refresh = () => setStored(readBrowserData());
+	const refresh = () => {
+		setStored(readBrowserData());
+		// Dock의 휴지통 그림도 바로
+		refreshBin();
+	};
 
 	// 휴지통을 연 채 시스템 설정을 바꾸면 바로 보이게
 	useEffect(() => settingsStore.subscribe(() => setStored(readBrowserData())), []);
@@ -35,18 +41,23 @@ const BrowserData = () => {
 
 	return (
 		<div className="bin-browser" onPointerEnter={refresh}>
-			<div className="bin-files-summary">
-				<span>
-					{stored.length > 0
-						? `이 사이트가 이 브라우저에 남긴 것 ${stored.length}가지 · ${formatSize(stored.reduce((sum, entry) => sum + entry.bytes, 0))}`
-						: '이 사이트가 이 브라우저에 남긴 것이 없습니다'}
-				</span>
-				{stored.length > 0 && (
+			{stored.length > 0 ? (
+				<div className="bin-files-summary">
+					<span>
+						{`이 사이트가 이 브라우저에 남긴 것 ${stored.length}가지 · ${formatSize(stored.reduce((sum, entry) => sum + entry.bytes, 0))}`}
+					</span>
 					<Button tone="danger" onClick={() => setConfirm(true)}>
 						휴지통 비우기
 					</Button>
-				)}
-			</div>
+				</div>
+			) : (
+				// macOS Finder의 빈 휴지통처럼: 빈 휴지통 그림과 '휴지통이 비어 있음'
+				<div className="bin-empty-state" role="status">
+					<img src={`${env.imageUrl}/bin-empty.png`} alt="" draggable={false} />
+					<strong>휴지통이 비어 있음</strong>
+					<span>이 사이트가 이 브라우저에 남긴 것이 없습니다.</span>
+				</div>
+			)}
 
 			<ul className="bin-data-list" aria-label="내 브라우저 데이터">
 				{stored.map(({ item, bytes, summary }) => (

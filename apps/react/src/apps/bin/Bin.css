@@ -269,6 +269,33 @@
 	grid-column: 3;
 }
 
+/* 내 브라우저 데이터가 비었을 때: 가운데 빈 휴지통 (아래 쿠키 안내는 그대로) */
+.bin-empty-state {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 28px 16px 20px;
+	border-bottom: 1px solid var(--color-divider);
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	text-align: center;
+}
+
+.bin-empty-state img {
+	width: 72px;
+	height: 72px;
+	margin-bottom: 6px;
+	user-select: none;
+}
+
+.bin-empty-state strong {
+	color: var(--color-text-strong);
+	font-size: 15px;
+	font-weight: 600;
+}
+
 .bin-empty-note {
 	max-width: 360px;
 	margin: 40px auto;
