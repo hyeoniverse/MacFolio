@@ -13,11 +13,10 @@ import { DailyQuota } from '../common/demo.js';
 import { sendResendMail } from '../common/resend.js';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { SecurityService } from '../security/security.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
 import { buildEmail, buildReply, parseContact, parseReply } from './rules.js';
 
-const TURNSTILE_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-const TIMEOUT_MS = 10_000;
 /** 받은 메일을 두는 기간 */
 const RETENTION_MS = 365 * 24 * 60 * 60 * 1000;
 
@@ -63,7 +62,8 @@ export class ContactService {
 
 	constructor(
 		private readonly prisma: PrismaService,
-		@Inject(APP_CONFIG) private readonly config: AppConfig
+		@Inject(APP_CONFIG) private readonly config: AppConfig,
+		private readonly security: SecurityService
 	) {
 		this.quota = new DailyQuota(config.contact.perIpPerDay, config.contact.totalPerDay);
 	}
@@ -73,31 +73,12 @@ export class ContactService {
 		return Boolean(resendApiKey && to && from);
 	}
 
-	/** 사이트가 쓸 설정: 서버에서 보낼 수 있는지, 사람 확인(Turnstile)에 쓸 사이트 키 */
-	status() {
+	/** 사이트가 쓸 설정: 서버에서 보낼 수 있는지, 사람 확인(Turnstile)에 쓸 사이트 키 (관리자가 메일의 사람 확인을 껐으면 null) */
+	async status() {
 		return {
 			enabled: this.enabled,
-			turnstileSiteKey: (this.enabled && this.config.contact.turnstileSiteKey) || null,
+			turnstileSiteKey: this.enabled ? await this.security.siteKeyFor('contact') : null,
 		};
-	}
-
-	/** Turnstile 토큰이 이 사이트에서 사람이 받은 것인지 Cloudflare에 묻는다 */
-	private async human(token: string | undefined, ip: string) {
-		const secret = this.config.contact.turnstileSecretKey;
-		if (!secret) return true;
-		if (!token) return false;
-		try {
-			const response = await fetch(TURNSTILE_URL, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ secret, response: token, remoteip: ip || undefined }),
-				signal: AbortSignal.timeout(TIMEOUT_MS),
-			});
-			const result = (await response.json()) as { success?: boolean };
-			return result.success === true;
-		} catch {
-			return false;
-		}
 	}
 
 	/** Resend로 한 통 보낸다. 받지 않으면 false */
@@ -114,8 +95,8 @@ export class ContactService {
 		if (!this.enabled) throw new ServiceUnavailableException('메일 발송이 설정되지 않았습니다.');
 		const parsed = parseContact(input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
-		if (!(await this.human(parsed.token, ip)))
-			throw new BadRequestException('사람인지 확인하지 못했습니다. 다시 시도해 주세요.');
+		// 사람 확인: 관리자가 시스템 설정에서 켜고 끈다 (security/)
+		await this.security.requireHuman('contact', parsed.token, ip);
 
 		const key = hashIp(ip, this.config.ipHashSecret);
 		if (!this.quota.take(key))

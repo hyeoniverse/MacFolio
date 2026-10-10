@@ -7,6 +7,8 @@ import { displayName, LIMITS, monogram, OWNER_NAME, validateMessageInput } from 
 import { fetchVisitorName } from '@/shared/lib/visitor';
 import { createComment, deleteComment, formatCommentTime, listComments, type Comment } from './commentsApi';
 import Button from '@/shared/ui/button/Button';
+import Turnstile from '@/shared/ui/turnstile/Turnstile';
+import { useHumanCheck } from '@/shared/security/security';
 import LikeButton from '../likes/LikeButton';
 import { setCommentLike, toggleLike } from '../likes/likesApi';
 
@@ -117,6 +119,8 @@ const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, co
 	const [body, setBody] = useState('');
 	const [errors, setErrors] = useState<string[]>([]);
 	const [sending, setSending] = useState(false);
+	/** 사람 확인: 관리자가 시스템 설정에서 댓글에 켜면 (관리자에게는 없다) */
+	const human = useHumanCheck('comment');
 
 	useEffect(() => {
 		if (!env.apiUrl) return;
@@ -146,9 +150,13 @@ const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, co
 		const { errors: invalid } = validateMessageInput({ text: body });
 		if (invalid.text) return setErrors([invalid.text]);
 
+		if (!human.ready) return setErrors(['사람인지 확인하는 칸이 끝날 때까지 기다려 주세요.']);
+
 		setSending(true);
-		const result = await createComment(env.apiUrl, slug, { body });
+		const result = await createComment(env.apiUrl, slug, { body, turnstileToken: human.token ?? undefined });
 		setSending(false);
+		// 토큰은 한 번만 쓸 수 있다: 다음 댓글을 위해 새로 받는다
+		if (human.siteKey) human.reset();
 		if (!result.ok) return setErrors(result.errors);
 		setErrors([]);
 		setBody('');
@@ -220,6 +228,14 @@ const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, co
 							<li key={error}>{error}</li>
 						))}
 					</ul>
+				)}
+				{human.siteKey && (
+					<Turnstile
+						className="memo-comment-turnstile"
+						siteKey={human.siteKey}
+						resetKey={human.resetKey}
+						onToken={human.setToken}
+					/>
 				)}
 				<div className="memo-comment-footer">
 					<span className="memo-comment-count">

@@ -36,6 +36,19 @@ export interface FakeApiState {
 	saves: number;
 	/** 글마다 댓글 (가짜 서버는 비밀번호를 그대로 들고 있다) */
 	comments: Record<string, FakeComment[]>;
+	/** 보안 설정 (GET·PUT /security): 곳마다 사람 확인을 켰는지, 서버에 Turnstile 키가 있는지 */
+	security: {
+		contact: boolean;
+		comment: boolean;
+		message: boolean;
+		available: boolean;
+		turnstileSiteKey: string | null;
+		updatedAt: string | null;
+	};
+	/** 받은 PUT /security 몸통 */
+	securityUpdates: Record<string, boolean>[];
+	/** 댓글·메시지를 쓸 때 받은 사람 확인 토큰 (켜져 있을 때) */
+	humanTokens: string[];
 	/** 글마다 좋아요 (수와 이 브라우저가 눌렀는지) */
 	postLikes: Record<string, { count: number; liked: boolean }>;
 	/** 이 브라우저(방문자 쿠키)의 이름. 서버처럼 첫 요청에 정해진다 */
@@ -318,6 +331,16 @@ export async function fakeApi(
 		saves: 0,
 		comments: {},
 		postLikes: {},
+		security: {
+			contact: true,
+			comment: false,
+			message: false,
+			available: true,
+			turnstileSiteKey: '1x00000000000000000000AA',
+			updatedAt: null,
+		},
+		securityUpdates: [],
+		humanTokens: [],
 		visitorName: '🦊 날쌘 여우',
 		messageThreads: [],
 		messages: [],
@@ -798,6 +821,31 @@ export async function fakeApi(
 			return route.fulfill({ status: 200, headers: cors(origin), json: { results, hasMore: page < 2 } });
 		}
 
+		// 보안 설정: 누구나 읽고 관리자만 바꾼다
+		if (path === '/security') {
+			if (request.method() === 'GET')
+				return route.fulfill({ status: 200, headers: cors(origin), json: state.security });
+			if (!state.signedIn) return route.fulfill({ status: 401, headers: cors(origin), json: { statusCode: 401 } });
+			const patch = request.postDataJSON() as Record<string, boolean>;
+			state.securityUpdates.push(patch);
+			state.security = { ...state.security, ...patch, updatedAt: new Date().toISOString() };
+			return route.fulfill({ status: 200, headers: cors(origin), json: state.security });
+		}
+		/** 사람 확인을 켠 곳에 방문자가 쓰면 토큰이 있어야 한다 (서버처럼 관리자는 건너뛴다). 없으면 400 응답 */
+		const needsHuman = (check: 'comment' | 'message') => {
+			if (!state.security[check] || !state.security.available || state.signedIn) return null;
+			const token = (request.postDataJSON() as { turnstileToken?: string }).turnstileToken;
+			if (token) {
+				state.humanTokens.push(token);
+				return null;
+			}
+			return route.fulfill({
+				status: 400,
+				headers: cors(origin),
+				json: { statusCode: 400, message: '사람인지 확인하지 못했습니다. 다시 시도해 주세요.' },
+			});
+		};
+
 		// 좋아요: 글·댓글마다 이 브라우저가 한 번. /posts/stats는 글마다 댓글 수·좋아요 수 (인기글)
 		const reply = (body: unknown) => route.fulfill({ status: 200, headers: cors(origin), json: body });
 		if (path === '/posts/stats' && request.method() === 'GET') {
@@ -980,6 +1028,8 @@ export async function fakeApi(
 		if (list) {
 			const comments = (state.comments[list[1]] ??= []);
 			if (request.method() === 'GET') return json(comments.map((comment) => ({ likes: 0, liked: false, ...comment })));
+			const rejected = needsHuman('comment');
+			if (rejected) return rejected;
 			const input = request.postDataJSON() as { body?: string };
 			const comment: FakeComment = {
 				id: `c${nextId++}`,
@@ -1033,6 +1083,8 @@ export async function fakeApi(
 				const pinned = threadView({ id: 'owner', title: '김정현', createdAt: '2026-09-28T00:00:00.000Z', mine: false });
 				return json([{ ...pinned, summary: undefined, pinned: true }, ...state.messageThreads.map(threadView)]);
 			}
+			const rejected = needsHuman('message');
+			if (rejected) return rejected;
 			const { body } = request.postDataJSON() as { body: string };
 			const thread = { id: `t${nextId++}`, title: author().name, createdAt: new Date().toISOString(), mine: true };
 			const message = newMessage(thread.id, body.trim());
@@ -1044,6 +1096,8 @@ export async function fakeApi(
 		if (thread) {
 			if (thread[1] !== 'owner' && !state.messageThreads.some((t) => t.id === thread[1])) return notFound();
 			if (request.method() === 'GET') return json(state.messages.filter((m) => m.threadId === thread[1]));
+			const rejected = needsHuman('message');
+			if (rejected) return rejected;
 			const message = newMessage(thread[1], (request.postDataJSON() as { body: string }).body.trim());
 			state.messages.push(message);
 			return json(message, 201);
