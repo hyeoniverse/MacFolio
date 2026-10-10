@@ -2,6 +2,7 @@
 // 기본 배경화면은 화면 모드마다(macOS·iOS) 따로지만, 더한 배경화면은 데스크톱·휴대폰 어디서나 고른다.
 import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
+import { api, apiFetch, SIGNED_OUT } from '@/shared/api/client';
 import { createStore } from '@macfolio/desktop-core';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import {
@@ -82,9 +83,7 @@ export function loadCustomWallpapers(apiUrl = env.apiUrl, fetchImpl: typeof fetc
 	pending ??= (async () => {
 		customWallpaperStore.setState({ status: 'loading' });
 		try {
-			const response = await fetchImpl(`${apiUrl}/wallpapers`);
-			if (!response.ok) throw new Error(String(response.status));
-			const rows = (await response.json()) as ServerWallpaper[];
+			const rows = await api<ServerWallpaper[]>('/wallpapers', { apiUrl, fetchImpl });
 			const list = rows.map((row) => toCustom(apiUrl, row)).filter((w) => isSafeImageUrl(w.image));
 			customWallpaperStore.setState({ status: 'ready', list });
 			reconcile(list);
@@ -143,13 +142,8 @@ export async function addCustomWallpaper(file: File, apiUrl = env.apiUrl): Promi
 	form.append('name', baseName(file.name));
 	form.append('image', image, `${baseName(file.name)}.jpg`);
 	form.append('thumbnail', thumbnail, `${baseName(file.name)}-thumb.jpg`);
-	let response: Response;
-	try {
-		response = await fetch(`${apiUrl}/wallpapers`, { method: 'POST', body: form, credentials: 'include' });
-	} catch {
-		throw new Error('서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
-	}
-	if (response.status === 401) throw new Error('관리자 로그인이 끝났습니다. 다시 로그인해 주세요.');
+	const response = await apiFetch('/wallpapers', { method: 'POST', body: form, timeout: 0, apiUrl });
+	if (response.status === 401) throw new Error(SIGNED_OUT);
 	if (response.status === 413) throw new Error('이미지가 너무 큽니다.');
 	if (!response.ok) throw new Error('배경화면을 올리지 못했습니다.');
 	const added = toCustom(apiUrl, (await response.json()) as ServerWallpaper);
@@ -163,18 +157,12 @@ export async function renameCustomWallpaper(
 	name: string,
 	apiUrl = env.apiUrl
 ): Promise<CustomWallpaper> {
-	let response: Response;
-	try {
-		response = await fetch(`${apiUrl}/wallpapers/${encodeURIComponent(wallpaper.serverId)}`, {
-			method: 'PATCH',
-			body: JSON.stringify({ name }),
-			headers: { 'Content-Type': 'application/json' },
-			credentials: 'include',
-		});
-	} catch {
-		throw new Error('서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
-	}
-	if (response.status === 401) throw new Error('관리자 로그인이 끝났습니다. 다시 로그인해 주세요.');
+	const response = await apiFetch(`/wallpapers/${encodeURIComponent(wallpaper.serverId)}`, {
+		method: 'PATCH',
+		json: { name },
+		apiUrl,
+	});
+	if (response.status === 401) throw new Error(SIGNED_OUT);
 	if (response.status === 400) throw new Error('이름을 입력해 주세요.');
 	if (!response.ok) throw new Error('이름을 바꾸지 못했습니다.');
 	const renamed = toCustom(apiUrl, (await response.json()) as ServerWallpaper);
@@ -187,16 +175,11 @@ export async function renameCustomWallpaper(
 
 /** 관리자: 지운다. 지금 고른 배경화면이면 기본값으로 돌린다 */
 export async function removeCustomWallpaper(wallpaper: CustomWallpaper, apiUrl = env.apiUrl): Promise<void> {
-	let response: Response;
-	try {
-		response = await fetch(`${apiUrl}/wallpapers/${encodeURIComponent(wallpaper.serverId)}`, {
-			method: 'DELETE',
-			credentials: 'include',
-		});
-	} catch {
-		throw new Error('서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
-	}
-	if (response.status === 401) throw new Error('관리자 로그인이 끝났습니다. 다시 로그인해 주세요.');
+	const response = await apiFetch(`/wallpapers/${encodeURIComponent(wallpaper.serverId)}`, {
+		method: 'DELETE',
+		apiUrl,
+	});
+	if (response.status === 401) throw new Error(SIGNED_OUT);
 	if (!response.ok && response.status !== 404) throw new Error('배경화면을 지우지 못했습니다.');
 	customWallpaperStore.setState((state) => ({
 		...state,

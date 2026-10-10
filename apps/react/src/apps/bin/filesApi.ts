@@ -1,5 +1,6 @@
 // 서버에 올린 파일 (관리자): 목록과 지우기. 글에서 이미지를 빼도 서버의 파일은 남으므로, 어디에서도 쓰지 않는 파일을 찾아 지운다.
 // 서버는 자기 DB의 글·예전 버전·배경화면만 보므로, 저장소의 Markdown 글이 가리키는지는 여기서 함께 본다
+import { api, apiFetch, reasonsOf, UNREACHABLE } from '@/shared/api/client';
 
 export interface ServerFile {
 	id: string;
@@ -45,15 +46,8 @@ export function formatSize(bytes: number): string {
 	return `${value >= 10 ? Math.round(value) : Math.round(value * 10) / 10} ${units[unit]}`;
 }
 
-export async function fetchServerFiles(apiUrl: string, fetchImpl: typeof fetch = fetch): Promise<ServerFile[] | null> {
-	if (!apiUrl) return null;
-	try {
-		const response = await fetchImpl(`${apiUrl}/files`, { credentials: 'include' });
-		return response.ok ? ((await response.json()) as ServerFile[]) : null;
-	} catch {
-		return null;
-	}
-}
+export const fetchServerFiles = (apiUrl: string, fetchImpl: typeof fetch = fetch): Promise<ServerFile[] | null> =>
+	api<ServerFile[]>('/files', { apiUrl, fetchImpl }).catch(() => null);
 
 /** 지운다. 실패하면 서버가 말한 이유 (쓰는 파일이면 409) */
 export async function deleteServerFile(
@@ -62,11 +56,10 @@ export async function deleteServerFile(
 	fetchImpl: typeof fetch = fetch
 ): Promise<{ ok: true } | { ok: false; reason: string }> {
 	try {
-		const response = await fetchImpl(`${apiUrl}/files/${id}`, { method: 'DELETE', credentials: 'include' });
+		const response = await apiFetch(`/files/${id}`, { method: 'DELETE', apiUrl, fetchImpl });
 		if (response.ok) return { ok: true };
-		const body = (await response.json().catch(() => ({}))) as { message?: string };
-		return { ok: false, reason: body.message ?? '지우지 못했습니다.' };
+		return { ok: false, reason: (await reasonsOf(response, '지우지 못했습니다.'))[0] };
 	} catch {
-		return { ok: false, reason: '서버에 연결할 수 없습니다.' };
+		return { ok: false, reason: UNREACHABLE };
 	}
 }
