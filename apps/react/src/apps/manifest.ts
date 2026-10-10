@@ -66,6 +66,8 @@ export interface AppManifest {
 	squareIcon?: boolean;
 	/** 처음 열 때 창 크기. 없으면 화면 크기에 맞춘 기본값 (desktop/window/geometry.ts) */
 	windowSize?: { width: number; height: number };
+	/** 가장 작은 창 크기 (macOS처럼 그보다 줄일 수 없다). 없으면 desktop/window/geometry.ts의 MIN_SIZE */
+	minSize?: { width: number; height: number };
 	/** 모바일에서 다른 이름·아이콘으로 보여줄 때 (휴대폰에 더 어울리는 앱으로 바꿔 보여준다) */
 	mobile?: { label: string; icon: string };
 	/** 휴대폰 홈 화면에 두지 않는 앱 (iOS에는 없는 앱) */
@@ -100,7 +102,14 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		mobile: { label: '단축어', icon: 'shortcuts.svg' },
 		windowSize: { width: 596, height: 420 },
 	},
-	settings: { label: '시스템 설정', icon: 'settings.png', inDock: true },
+	// 사이드바와 패널이 함께 들어가는 크기보다 작게 줄이지 않는다 (macOS 시스템 설정처럼)
+	settings: {
+		label: '시스템 설정',
+		icon: 'settings.png',
+		inDock: true,
+		windowSize: { width: 780, height: 540 },
+		minSize: { width: 680, height: 420 },
+	},
 	// 관리자 로그인 (iOS 암호 앱 모양). 데스크톱에서는 Apple 메뉴와 시스템 설정에서 같은 일을 하므로 Dock에 두지 않는다
 	passwords: { label: '암호', icon: 'passwords.svg', inDock: false, windowSize: { width: 560, height: 520 } },
 	// 서버(API)의 문서 (API 코드에서 만든 openapi.json을 그린다). 메뉴 막대의 서버 상태에서 열고, Dock에는 고정하지 않는다

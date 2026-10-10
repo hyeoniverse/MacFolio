@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 377" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 9일 작업 흐름</title>
+<rect width="760" height="377" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 9일</text>
+<text x="121" y="42" font-size="12.5" fill="#6b7280">커밋 14개 · 새 블로그 글 6편 · 하루 끝 E2E 297개</text>
+<rect x="546" y="31" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="564" y="41" font-size="11" fill="#8b93a1">그 시간에 들어간 커밋 수</text>
+<path d="M48.0 64 V335" stroke="#eef0f3"/>
+<text x="48.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 64 V335" stroke="#eef0f3"/>
+<text x="133.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 64 V335" stroke="#eef0f3"/>
+<text x="218.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 64 V335" stroke="#eef0f3"/>
+<text x="303.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 64 V335" stroke="#eef0f3"/>
+<text x="388.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 64 V335" stroke="#eef0f3"/>
+<text x="473.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 64 V335" stroke="#eef0f3"/>
+<text x="558.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 64 V335" stroke="#eef0f3"/>
+<text x="643.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 64 V335" stroke="#eef0f3"/>
+<text x="728.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<rect x="701.7" y="307.0" width="24.3" height="24.0" rx="3" fill="#c7d2fe"/>
+<text x="713.8" y="303.0" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="446.7" y="283.0" width="24.3" height="48.0" rx="3" fill="#c7d2fe"/>
+<text x="458.8" y="279.0" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="418.3" y="259.0" width="24.3" height="72.0" rx="3" fill="#c7d2fe"/>
+<text x="430.5" y="255.0" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="390.0" y="307.0" width="24.3" height="24.0" rx="3" fill="#c7d2fe"/>
+<text x="402.2" y="303.0" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="396.5" y="70" width="104.4" height="101" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="405.5" y="88" font-size="12" font-weight="700" fill="#1d4f91">desktop-core</text>
+<text x="405.5" y="105" font-size="10.5" fill="#1d4f91">창 관리</text>
+<text x="405.5" y="120" font-size="10.5" fill="#1d4f91">메모</text>
+<text x="405.5" y="135" font-size="10.5" fill="#1d4f91">음악</text>
+<text x="405.5" y="150" font-size="10.5" fill="#1d4f91">공통 규칙</text>
+<text x="405.5" y="165" font-size="10.5" fill="#1d4f91">lint 0</text>
+<rect x="453.2" y="179" width="104.1" height="56" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="462.2" y="197" font-size="12" font-weight="700" fill="#7a5a12">블로그·휴지통</text>
+<text x="462.2" y="214" font-size="10.5" fill="#7a5a12">폴더 다시 나누기</text>
+<text x="462.2" y="229" font-size="10.5" fill="#7a5a12">휴지통 앱</text>
+<rect x="606.8" y="70" width="121.2" height="56" rx="9" fill="#e3f6ea" stroke="#4fbf7a"/>
+<text x="615.8" y="88" font-size="12" font-weight="700" fill="#1f6b3d">휴지통 (쌓은 PR)</text>
+<text x="615.8" y="105" font-size="10.5" fill="#1f6b3d">지운 기능</text>
+<text x="615.8" y="120" font-size="10.5" fill="#1f6b3d">서버 파일</text>
+</svg>

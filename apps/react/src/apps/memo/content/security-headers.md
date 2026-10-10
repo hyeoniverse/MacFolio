@@ -1,7 +1,7 @@
 ---
 title: 사이트에 CSP와 보안 헤더 붙이기
 date: 2026-10-09
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: API 서버에는 helmet이 있었지만 사이트 자체에는 보안 헤더가 하나도 없었다. CSP의 출처 목록을 손으로 적지 않고 빌드 환경 변수와 PROJECTS에서 만들고, E2E가 같은 CSP를 켠 채로 돌면서 막힌 요청이 있으면 실패하게 했다.
 ---
 
