@@ -3,16 +3,10 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import type { IncomingFile } from '../files/files.service.js';
 import { stripImageMetadata } from '../files/metadata.js';
 import { cleanFileName, newUploadId, sniffImage, UPLOAD_ID } from '../files/rules.js';
-import { cleanWallpaperName } from './rules.js';
+import { cleanWallpaperName, parse, type Wallpaper, WallpaperRename } from '@macfolio/contracts';
 
-export interface WallpaperView {
-	id: string;
-	name: string;
-	/** API 주소 기준 경로 (/files/:id) */
-	image: string;
-	thumbnail: string;
-	createdAt: string;
-}
+/** 밖으로 내보내는 배경화면. 모양은 @macfolio/contracts (화면과 같은 스키마) */
+export type WallpaperView = Wallpaper;
 
 export interface WallpaperInput {
 	name?: unknown;
@@ -69,10 +63,11 @@ export class WallpapersService {
 	}
 
 	/** 이름을 바꾼다 (다듬은 이름이 비면 400) */
-	async rename(id: string, name: unknown): Promise<WallpaperView> {
+	async rename(id: string, input: unknown): Promise<WallpaperView> {
 		if (!UPLOAD_ID.test(id)) throw new NotFoundException('배경화면이 없습니다.');
-		const cleaned = cleanWallpaperName(name);
-		if (!cleaned) throw new BadRequestException('이름을 입력해 주세요.');
+		const parsed = parse(WallpaperRename, input);
+		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		const cleaned = parsed.value.name;
 		const found = await this.prisma.wallpaper.findUnique({ where: { id }, select: { id: true } });
 		if (!found) throw new NotFoundException('배경화면이 없습니다.');
 		return view(await this.prisma.wallpaper.update({ where: { id }, data: { name: cleaned } }));

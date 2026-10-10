@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>배경화면 이름 규칙: 서버의 다듬기 함수와 화면의 maxLength 40이 contracts 한 곳에서 온다</title>
+<defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="640" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937">숫자 40이 세 곳에 있었다</text>
+<!-- before -->
+<text x="32" y="66" font-size="12" font-weight="600" fill="#ef4444">전</text>
+<g font-size="10.5" fill="#374151">
+<rect x="56" y="50" width="172" height="44" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="142" y="68" text-anchor="middle" font-weight="600">DB · CHECK 제약</text><text x="142" y="84" text-anchor="middle">char_length(name) &lt;= 40</text>
+<rect x="240" y="50" width="172" height="44" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="326" y="68" text-anchor="middle" font-weight="600">api · rules.ts</text><text x="326" y="84" text-anchor="middle">NAME_MAX = 40 · 다듬기 함수</text>
+<rect x="424" y="50" width="184" height="44" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="516" y="68" text-anchor="middle" font-weight="600">react · WallpaperGroup.tsx</text><text x="516" y="84" text-anchor="middle">NAME_MAX = 40 // "API와 같다"</text>
+</g>
+<!-- after -->
+<text x="32" y="142" font-size="12" font-weight="600" fill="#4f46e5">후</text>
+<rect x="56" y="118" width="220" height="84" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="166" y="140" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">contracts/wallpapers.ts</text>
+<text x="166" y="158" font-size="10.5" fill="#374151" text-anchor="middle">WALLPAPER_NAME_MAX = 40</text>
+<text x="166" y="173" font-size="10.5" fill="#374151" text-anchor="middle">cleanWallpaperName · WallpaperRename</text>
+<text x="166" y="188" font-size="10.5" fill="#374151" text-anchor="middle">Wallpaper (목록 항목)</text>
+<g stroke="#4f46e5" stroke-width="2" fill="none">
+<path d="M276 146 H334" marker-end="url(#ok)"/>
+<path d="M276 178 H334" marker-end="url(#ok)"/>
+</g>
+<g font-size="10" fill="#374151">
+<rect x="336" y="128" width="272" height="36" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="348" y="143" font-weight="600" fill="#1f2937">apps/api · wallpapers.service.ts</text>
+<text x="348" y="157">올릴 때 cleanWallpaperName · 바꿀 때 WallpaperRename</text>
+<rect x="336" y="170" width="272" height="36" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="348" y="185" font-weight="600" fill="#1f2937">apps/react · WallpaperGroup.tsx</text>
+<text x="348" y="199">이름 칸 maxLength={WALLPAPER_NAME_MAX}</text>
+</g>
+<rect x="32" y="222" width="576" height="58" rx="10" fill="#f3f4f6"/>
+<text x="48" y="244" font-size="11" font-weight="600" fill="#1f2937">올리기(multipart)는 스키마가 없다</text>
+<text x="48" y="262" font-size="10.5" fill="#374151">이미지 두 장과 이름이 FormData로 오고 이미지는 매직 바이트로 본다. 이름만 같은 다듬기 함수를 거친다.</text>
+<text x="48" y="276" font-size="10.5" fill="#6b7280">DB의 CHECK 제약은 그대로 둔다: 코드가 틀려도 마지막에 막는 줄</text>
+</svg>

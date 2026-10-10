@@ -14,3 +14,4 @@ export {
 	REPLY_LIMIT,
 	ReplyInput,
 } from './contact.js';
+export { cleanWallpaperName, Wallpaper, WALLPAPER_NAME_MAX, WallpaperRename } from './wallpapers.js';
