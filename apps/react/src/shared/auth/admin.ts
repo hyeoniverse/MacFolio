@@ -1,4 +1,5 @@
 // 관리자 로그인 상태의 규칙. React와 DOM에 의존하지 않는다.
+import { apiFetch } from '@/shared/api/client';
 
 /**
  * - disabled: API 주소가 없다 (배포된 API가 아직 없다)
@@ -80,7 +81,7 @@ function toDate(value: string | undefined): Date | null {
 export async function checkAdmin(apiUrl: string, fetchImpl: typeof fetch = fetch): Promise<AdminState> {
 	if (!apiUrl) return { status: 'disabled', login: null };
 	try {
-		const response = await fetchImpl(`${apiUrl}/auth/me`, { credentials: 'include' });
+		const response = await apiFetch('/auth/me', { apiUrl, fetchImpl });
 		if (response.status === 401) return { status: 'signed-out', login: null };
 		if (!response.ok) return { status: 'offline', login: null };
 		const body = (await response.json()) as { login: string; signedInAt?: string; expiresAt?: string };

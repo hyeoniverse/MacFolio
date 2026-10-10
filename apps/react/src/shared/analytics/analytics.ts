@@ -2,6 +2,7 @@
 // 쿠키를 쓰지 않는다: 같은 방문은 페이지를 열 때마다 새로 만드는 visitId로 묶고, 같은 사람은 서버가 하루 해시로 센다.
 // 무엇을 모으는지는 docs/privacy.md. 서버 쪽은 apps/api/src/analytics.
 import { env } from '@/shared/config/env';
+import { api } from '@/shared/api/client';
 
 declare global {
 	/** E2E 테스트가 수집을 켜고 끄는 자리 (로컬 주소에서는 기본으로 보내지 않는다) */
@@ -140,11 +141,8 @@ export function startAnalytics() {
 
 /** 오늘(한국 시간) 순방문자 수 (누구나 본다). 서버가 없거나 닿지 않으면 null */
 export async function fetchTodayVisitors(): Promise<number | null> {
-	if (!env.apiUrl) return null;
 	try {
-		const response = await fetch(`${env.apiUrl}/analytics/today`, { signal: AbortSignal.timeout(5000) });
-		if (!response.ok) return null;
-		const { visitors } = (await response.json()) as { visitors?: unknown };
+		const { visitors } = await api<{ visitors?: unknown }>('/analytics/today', { timeout: 5000 });
 		return typeof visitors === 'number' ? visitors : null;
 	} catch {
 		return null;
@@ -153,13 +151,10 @@ export async function fetchTodayVisitors(): Promise<number | null> {
 
 /** 앱 항목(메모의 글, Safari의 프로젝트)마다 전체 기간 조회수 (누구나 본다). 서버가 없거나 닿지 않으면 null */
 export async function fetchViews(app: string): Promise<Record<string, number> | null> {
-	if (!env.apiUrl) return null;
 	try {
-		const response = await fetch(`${env.apiUrl}/analytics/views?app=${encodeURIComponent(app)}`, {
-			signal: AbortSignal.timeout(5000),
+		const { views } = await api<{ views?: unknown }>(`/analytics/views?app=${encodeURIComponent(app)}`, {
+			timeout: 5000,
 		});
-		if (!response.ok) return null;
-		const { views } = (await response.json()) as { views?: unknown };
 		return views && typeof views === 'object' ? (views as Record<string, number>) : null;
 	} catch {
 		return null;
