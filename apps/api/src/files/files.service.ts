@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { stripImageMetadata } from './metadata.js';
 import { cleanFileName, cleanFileType, IMAGE_TYPES, newUploadId, sniffImage, UPLOAD_ID, uploadIdsIn } from './rules.js';
 
 /** multer가 넘겨주는 파일 (메모리에 받는다) */
@@ -44,13 +45,15 @@ export class FilesService {
 		// multer는 파일 이름을 latin1로 읽는다. 한글 이름이 깨지지 않게 UTF-8로 다시 읽는다
 		const name = cleanFileName(Buffer.from(file.originalname, 'latin1').toString('utf8'));
 		const image = sniffImage(file.buffer);
+		// 사진의 EXIF(찍은 곳·기기)와 XMP는 지우고 저장한다. 저장한 크기가 곧 내려줄 크기
+		const data = new Uint8Array(image ? stripImageMetadata(file.buffer, image) : file.buffer);
 		const row = await this.prisma.upload.create({
 			data: {
 				id: newUploadId(),
 				name,
 				type: image ?? cleanFileType(file.mimetype),
-				size: file.size,
-				data: new Uint8Array(file.buffer),
+				size: data.byteLength,
+				data,
 				createdBy: admin,
 			},
 			select: { id: true, name: true, type: true, size: true },

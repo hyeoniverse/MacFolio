@@ -11,6 +11,7 @@ import { AdminGuard, CurrentAdmin } from '../auth/admin.guard.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { MemoService } from './memo.service.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 const ORGANIZATION_EXAMPLE = {
 	folders: ['읽을거리'],
@@ -39,6 +40,7 @@ export class MemoController {
 
 	@Put('organization')
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiBody({ schema: { example: ORGANIZATION_EXAMPLE } })
 	@ApiOkResponse({ description: '저장한 정리 내용' })

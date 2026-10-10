@@ -9,10 +9,12 @@ import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
 import { AdminGuard } from '../src/auth/admin.guard.js';
 import { GithubClient } from '../src/auth/github.client.js';
+import { RATE_LIMIT_KEY, RATE_LIMIT_NAMES, type RateLimitName } from '../src/common/rate-limit.js';
 
 // 모든 API 경로의 목록과 각 경로가 누구의 것인지(관리자·방문자·공개)를 한 표로 고정한다.
 // 새 경로를 더하거나 가드를 바꾸면 이 표도 같이 고쳐야 시험이 통과한다. 그래서 가드를 빠뜨린 관리자 경로가 조용히 들어오지 못한다.
 // 더해서, 관리자 경로는 로그인 없이 401, 몸통을 받는 경로는 엉뚱한 값에 400으로 답하는지(500이나 성공이 아닌지) 본다.
+// 쓰기 경로(GET이 아닌 것)는 모두 요청 제한(@RateLimit)이 있어야 한다 (common/rate-limit.ts).
 
 process.env.DATABASE_URL ??= 'postgresql://macfolio:macfolio@localhost:5432/macfolio';
 process.env.GITHUB_CLIENT_ID = 'test-client-id';
@@ -20,6 +22,11 @@ process.env.GITHUB_CLIENT_SECRET = 'test-client-secret';
 process.env.ADMIN_GITHUB_ID = '68999618';
 process.env.AUTH_RATE_LIMIT = '1000';
 process.env.COMMENT_RATE_LIMIT = '1000';
+process.env.WRITE_RATE_LIMIT = '1000';
+process.env.UPLOAD_RATE_LIMIT = '1000';
+process.env.DEMO_RATE_LIMIT = '1000';
+process.env.EVENTS_RATE_LIMIT = '1000';
+process.env.LIKE_RATE_LIMIT = '1000';
 // 메일 발송이 꺼져 있으면 /contact는 검사 전에 503으로 끝난다. 검사까지 가도록 켠다 (실제로 보내지는 않는다: 몸통이 거절된다)
 process.env.RESEND_API_KEY = 're_test';
 process.env.CONTACT_TO = 'admin@example.com';
@@ -54,6 +61,13 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'POST /posts/:slug/restore': 'admin',
 	'DELETE /posts/:slug/permanent': 'admin',
 	'DELETE /posts/:slug': 'admin',
+
+	'GET /posts/stats': 'public',
+	'GET /posts/:slug/likes': 'public',
+	'PUT /posts/:slug/like': 'visitor',
+	'DELETE /posts/:slug/like': 'visitor',
+	'PUT /comments/:id/like': 'visitor',
+	'DELETE /comments/:id/like': 'visitor',
 
 	'GET /posts/:slug/comments': 'public',
 	'POST /posts/:slug/comments': 'visitor',
@@ -148,6 +162,10 @@ interface Route {
 	method: 'get' | 'post' | 'put' | 'patch' | 'delete';
 	path: string;
 	guards: string[];
+	/** 컨트롤러 클래스에 건 가드 (모든 경로에 먼저 돈다) */
+	classGuards: string[];
+	/** @RateLimit로 건 제한 이름 (없으면 null) */
+	limit: RateLimitName | null;
 }
 
 describe('API 경로 목록과 권한 (e2e)', () => {
@@ -188,6 +206,8 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 					method: method.toLowerCase() as Route['method'],
 					path: full,
 					guards: guards.map((guard) => guard.name),
+					classGuards: classGuards.map((guard) => guard.name),
+					limit: (Reflect.getMetadata(RATE_LIMIT_KEY, handler) as RateLimitName | undefined) ?? null,
 				});
 			}
 		}
@@ -221,6 +241,32 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 		expect(guarded.sort()).toEqual(expected.sort());
 	});
 
+	it('쓰기 경로는 모두 요청 제한이 있고, 읽기 경로는 로그인 시작·콜백에만 있다', () => {
+		const limited = routes.filter((route) => route.limit !== null);
+		// 제한이 있는 경로에만 ThrottlerGuard가 있다 (@RateLimit가 둘을 같이 건다)
+		expect(
+			routes
+				.filter((route) => route.guards.includes('ThrottlerGuard'))
+				.map((route) => route.key)
+				.sort()
+		).toEqual(limited.map((route) => route.key).sort());
+		const unlimitedWrites = routes.filter((route) => route.method !== 'get' && route.limit === null);
+		expect(unlimitedWrites.map((route) => route.key)).toEqual([]);
+		const limitedReads = routes.filter((route) => route.method === 'get' && route.limit !== null);
+		expect(limitedReads.map((route) => `${route.key} ${route.limit}`).sort()).toEqual([
+			'GET /auth/github login',
+			'GET /auth/github/callback login',
+		]);
+		// 관리자 경로는 제한이 로그인 확인보다 먼저 돈다 (로그인하지 않은 요청도 횟수에 들고, 세션 조회 전에 막는다).
+		// 클래스에 AdminGuard를 건 컨트롤러(images)는 클래스 가드가 늘 먼저라 뺀다
+		const wrongOrder = limited
+			.filter((route) => route.guards.includes(AdminGuard.name) && !route.classGuards.includes(AdminGuard.name))
+			.filter((route) => route.guards.indexOf('ThrottlerGuard') > route.guards.indexOf(AdminGuard.name));
+		expect(wrongOrder.map((route) => route.key)).toEqual([]);
+		// 이름 여섯 개가 모두 어딘가에 쓰인다 (안 쓰는 이름이 남지 않게)
+		expect([...new Set(limited.map((route) => route.limit))].sort()).toEqual([...RATE_LIMIT_NAMES].sort());
+	});
+
 	it('관리자 경로는 로그인 없이 401 (파라미터·몸통을 보기 전에 막는다)', async () => {
 		for (const route of routes) {
 			if (ACCESS[route.key] !== 'admin') continue;
@@ -243,6 +289,10 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 			'DELETE /files/:id',
 			'DELETE /wallpapers/:id',
 			'POST /images/unsplash/:id/download',
+			'PUT /posts/:slug/like',
+			'DELETE /posts/:slug/like',
+			'PUT /comments/:id/like',
+			'DELETE /comments/:id/like',
 		]);
 		for (const route of routes) {
 			if (route.method === 'get' || noBody.has(route.key)) continue;
