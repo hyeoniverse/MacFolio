@@ -1,10 +1,5 @@
-// '이 Mac에 관하여' 창과 시스템 설정의 '정보'가 함께 쓰는 프로필 (값은 shared/profile.ts)
-import { PROFILE, SKILLS } from '@/shared/profile';
-
-export const GITHUB_LOGIN = PROFILE.github.split('/').at(-1) ?? '';
-
-/** GitHub 프로필 사진. 132px 동그라미를 레티나 화면에서도 또렷하게 (2배) */
-export const PHOTO_URL = `https://github.com/${encodeURIComponent(GITHUB_LOGIN)}.png?size=280`;
+// '이 Mac에 관하여' 창과 시스템 설정의 '정보'가 함께 쓰는 프로필 줄 (값은 shared/site/profileStore.ts)
+import { githubLogin, type SiteProfile } from '@/shared/site/profileStore';
 
 export interface ProfileRow {
 	label: string;
@@ -13,12 +8,17 @@ export interface ProfileRow {
 	href?: string;
 }
 
-/** 이 Mac의 사양 자리에 놓는 프로필 (macOS의 칩·메모리·일련 번호·macOS 줄처럼) */
-export const PROFILE_ROWS: ProfileRow[] = [
-	{ label: '직무', value: PROFILE.role },
-	{ label: '학교', value: PROFILE.school },
-	{ label: '위치', value: PROFILE.location },
-	{ label: '이메일', value: PROFILE.email, href: `mailto:${PROFILE.email}` },
-	{ label: 'GitHub', value: GITHUB_LOGIN, href: PROFILE.github },
-	{ label: '주요 기술', value: SKILLS.frontend.slice(0, 3).join(' · ') },
-];
+/** 이 Mac의 사양 자리에 놓는 프로필 (macOS의 칩·메모리·일련 번호·macOS 줄처럼). 비운 값은 줄째 뺀다 */
+export const profileRows = (profile: SiteProfile): ProfileRow[] =>
+	[
+		{ label: '직무', value: profile.role },
+		{ label: '학교', value: profile.school },
+		{ label: '위치', value: profile.location },
+		{ label: '이메일', value: profile.email, href: `mailto:${profile.email}` },
+		{ label: 'GitHub', value: githubLogin(profile), href: profile.github },
+		{ label: '주요 기술', value: profile.skills.frontend.slice(0, 3).join(' · ') },
+	].filter((row) => row.value);
+
+/** '김정현 (Kim Jeong Hyeon)', 영문 이름이 없으면 이름만 */
+export const fullName = (profile: SiteProfile) =>
+	profile.nameEn ? `${profile.name} (${profile.nameEn})` : profile.name;

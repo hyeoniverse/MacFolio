@@ -1,6 +1,6 @@
 // 메일 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 방문자가 사이트 주인에게 연락(contact) 메일을 보내는 앱이다. 받는 사람은 항상 주인 한 명이다.
-import { PROFILE } from '@/shared/profile';
+import type { SiteProfile } from '@/shared/site/profileStore';
 
 export interface InboxMail {
 	id: string;
@@ -12,12 +12,15 @@ export interface InboxMail {
 	body: string;
 }
 
+/** 서버에 저장된 메일의 받는 사람 자리: 사이트 주인 (보일 때 지금 프로필의 이름·주소로 바꾼다) */
+export const TO_OWNER = '\u0000owner';
+
 /** 받은 편지함: 사이트 주인의 환영 메일 */
-export const INBOX: InboxMail[] = [
+export const inboxOf = (profile: SiteProfile): InboxMail[] => [
 	{
 		id: 'welcome',
-		fromName: PROFILE.name,
-		fromEmail: PROFILE.email,
+		fromName: profile.name,
+		fromEmail: profile.email,
 		subject: '방문해 주셔서 감사합니다!',
 		date: '2026-09-28T00:00:00.000Z',
 		body: '제 사이트에 방문해 주셔서 감사합니다.\n저는 지금 일자리를 찾고 있어요! 편하게 연락 주세요.\n\n왼쪽 위 쓰기 버튼으로 바로 메일을 보낼 수 있어요.',

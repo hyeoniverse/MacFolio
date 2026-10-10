@@ -1,13 +1,10 @@
 import { env } from '@/shared/config/env';
-import { PROFILE } from '@/shared/profile';
+import { githubLogin, useProfile } from '@/shared/site/profileStore';
 import { formatSessionTime, type AdminStatus } from '@/shared/auth/admin';
 import GitHubAvatar from '@/shared/auth/GitHubAvatar';
 import { refreshAdmin, signIn, signOut, useAdmin } from '@/shared/auth/adminStore';
 import '@/shared/auth/AdminAccount.css';
 import Button from '@/shared/ui/button/Button';
-
-/** 관리자로 인정하는 GitHub 계정 (프로필 주소의 마지막 부분) */
-const ADMIN_LOGIN = PROFILE.github.split('/').at(-1) ?? '';
 
 const STATUS_TEXT: Record<AdminStatus, string> = {
 	disabled: '관리자 서버가 아직 연결되지 않았습니다',
@@ -23,6 +20,8 @@ const STATUS_TEXT: Record<AdminStatus, string> = {
  */
 const AdminAccount = () => {
 	const { status, login, signedInAt, expiresAt } = useAdmin();
+	/** 관리자로 인정하는 GitHub 계정 (프로필 주소의 마지막 부분) */
+	const adminLogin = githubLogin(useProfile());
 	const signedIn = status === 'signed-in' && login;
 
 	return (
@@ -60,7 +59,7 @@ const AdminAccount = () => {
 				</div>
 				<div>
 					<dt>로그인</dt>
-					<dd>GitHub {ADMIN_LOGIN} 계정만</dd>
+					<dd>GitHub {adminLogin} 계정만</dd>
 				</div>
 				<div>
 					<dt>세션</dt>

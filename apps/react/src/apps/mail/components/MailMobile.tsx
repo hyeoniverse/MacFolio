@@ -1,9 +1,9 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import React, { useEffect, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
-import { PROFILE } from '@/shared/profile';
+import { useProfile } from '@/shared/site/profileStore';
 import ComposeView from './ComposeView';
-import { formatMailDate, type ContactInput } from '../contact';
+import { formatMailDate, TO_OWNER, type ContactInput } from '../contact';
 import { replyToMail, type ContactMail } from '../mailboxApi';
 import type { SendOptions, SendResult } from '../sender';
 import type { ListMail, Mailbox } from '../Mail';
@@ -135,6 +135,7 @@ const MailMobile: React.FC<Props> = ({
 	onSend,
 	onReplied,
 }) => {
+	const profile = useProfile();
 	const [screen, setScreenState] = useState<Screen>({ kind: 'mailboxes' });
 	// 화면이 넘어간 방향: 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 (처음에는 움직이지 않는다)
 	const [direction, setDirection] = useState<'forward' | 'back' | null>(null);
@@ -262,7 +263,7 @@ const MailMobile: React.FC<Props> = ({
 									/>
 									<span className="mail-phone-item-text">
 										<span className="mail-phone-item-top">
-											<strong>{screen.mailbox === 'sent' ? PROFILE.name : mail.fromName}</strong>
+											<strong>{screen.mailbox === 'sent' ? profile.name : mail.fromName}</strong>
 											<time dateTime={mail.date}>{formatMailDate(mail.date)}</time>
 										</span>
 										<span className="mail-phone-item-subject">
@@ -313,7 +314,8 @@ const MailMobile: React.FC<Props> = ({
 						<div>
 							<strong>{mail.fromName}</strong>
 							<p>
-								받는 사람: <span className="mail-phone-to">{mail.to.split(' <')[0]}</span>
+								받는 사람:{' '}
+								<span className="mail-phone-to">{mail.to === TO_OWNER ? profile.name : mail.to.split(' <')[0]}</span>
 							</p>
 						</div>
 						<time dateTime={mail.date}>{formatMailDate(mail.date)}</time>
@@ -325,8 +327,8 @@ const MailMobile: React.FC<Props> = ({
 							{mail.replies.map((entry) => (
 								<li key={entry.id} className="mail-thread-reply">
 									<header>
-										<Avatar name={PROFILE.name} size={32} />
-										<strong>{PROFILE.name}</strong>
+										<Avatar name={profile.name} size={32} />
+										<strong>{profile.name}</strong>
 										<time dateTime={entry.createdAt}>{formatMailDate(entry.createdAt)}</time>
 									</header>
 									<p className="mail-phone-body">{entry.body}</p>
