@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
+import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import {
 	clampRect,
 	defaultRect,
@@ -11,24 +12,9 @@ import {
 	type ResizeDirection,
 } from '@/desktop/window/geometry';
 
-const storageKey = (appName: AppName) => `macfolio:window:${appName}`;
-
-function loadRect(appName: AppName): Rect | null {
-	try {
-		const raw = localStorage.getItem(storageKey(appName));
-		return raw ? (JSON.parse(raw) as Rect) : null;
-	} catch {
-		return null;
-	}
-}
-
-function saveRect(appName: AppName, rect: Rect) {
-	try {
-		localStorage.setItem(storageKey(appName), JSON.stringify(rect));
-	} catch {
-		// 저장하지 못해도 동작에는 문제없다
-	}
-}
+const loadRect = (appName: AppName) => readJson(STORAGE_KEYS.window(appName)) as Rect | null;
+/** 저장하지 못해도 동작에는 문제없다 */
+const saveRect = (appName: AppName, rect: Rect) => writeJson(STORAGE_KEYS.window(appName), rect);
 
 type GestureKind = { kind: 'move' } | { kind: 'resize'; direction: ResizeDirection };
 type Gesture = GestureKind & { pointerX: number; pointerY: number; start: Rect };
@@ -39,21 +25,22 @@ type Gesture = GestureKind & { pointerX: number; pointerY: number; start: Rect }
  */
 export function useWindowFrame(appName: AppName) {
 	const viewport = useViewport();
+	const { windowSize, minSize } = APP_MANIFEST[appName];
 	const [savedRect, setSavedRect] = useState<Rect>(
-		() => loadRect(appName) ?? defaultRect(viewport, APP_MANIFEST[appName].windowSize)
+		() => loadRect(appName) ?? defaultRect(viewport, windowSize, minSize)
 	);
 	const [isMaximized, setIsMaximized] = useState(false);
 	const gesture = useRef<Gesture | null>(null);
 
 	// 렌더링할 때마다 화면 안으로 제한한다. 브라우저 크기가 줄어도 창이 화면 밖에 남지 않는다.
-	const rect = isMaximized ? maximizedRect(viewport) : clampRect(savedRect, viewport);
+	const rect = isMaximized ? maximizedRect(viewport) : clampRect(savedRect, viewport, minSize);
 
 	const nextRect = (current: Gesture, event: React.PointerEvent) => {
 		const dx = event.clientX - current.pointerX;
 		const dy = event.clientY - current.pointerY;
 		return current.kind === 'move'
-			? moveRect(current.start, dx, dy, viewport)
-			: resizeRect(current.start, current.direction, dx, dy, viewport);
+			? moveRect(current.start, dx, dy, viewport, minSize)
+			: resizeRect(current.start, current.direction, dx, dy, viewport, minSize);
 	};
 
 	const begin = (event: React.PointerEvent, next: GestureKind) => {
