@@ -51,6 +51,15 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		summarize: (raw) => countOf(raw, '검색어'),
 	},
 	{
+		id: 'weather-places',
+		name: '날씨 장소',
+		description: '날씨 앱에 더한 도시 목록',
+		storage: 'local',
+		keys: ['macfolio:weather:places'],
+		afterClear: '날씨 앱을 다음에 열면 서울만 보입니다',
+		summarize: (raw) => countOf(raw, '도시'),
+	},
+	{
 		id: 'local-messages',
 		name: '이 브라우저에 저장한 메시지',
 		description: '서버 없이 띄운 사이트에서 메시지 앱에 쓴 글과, 그 글을 쓴 사람을 가리는 무작위 값',

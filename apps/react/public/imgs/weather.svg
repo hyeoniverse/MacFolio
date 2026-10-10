@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+	<!-- 날씨 앱: 파란 하늘에 해와 구름 (iOS·macOS 날씨 앱처럼) -->
+	<defs>
+		<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#1e74d6"/>
+			<stop offset="1" stop-color="#6bb8f2"/>
+		</linearGradient>
+		<radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+			<stop offset="0" stop-color="#fff3a6"/>
+			<stop offset="0.7" stop-color="#ffd23c"/>
+			<stop offset="1" stop-color="#ffb000"/>
+		</radialGradient>
+		<linearGradient id="cloud" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#ffffff"/>
+			<stop offset="1" stop-color="#dfe9f5"/>
+		</linearGradient>
+	</defs>
+	<!-- 칸을 꽉 채운다 (둥근 모서리는 Dock·Launchpad가 깎는다, 다른 아이콘과 같게) -->
+	<rect width="1024" height="1024" fill="url(#sky)"/>
+	<circle cx="380" cy="370" r="190" fill="url(#sun)"/>
+	<path d="M330 790 Q220 790 220 690 Q220 590 330 585 Q350 470 470 460 Q560 455 610 530 Q650 500 700 505 Q800 515 805 610 Q880 625 880 700 Q880 790 790 790 Z" fill="url(#cloud)"/>
+</svg>

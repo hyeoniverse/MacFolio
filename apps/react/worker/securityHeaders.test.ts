@@ -47,8 +47,13 @@ describe('보안 헤더', () => {
 		expect(csp['object-src']).toEqual(["'none'"]);
 		expect(csp['base-uri']).toEqual(["'self'"]);
 		expect(csp['frame-ancestors']).toEqual(["'self'"]);
-		// API 주소가 없는 빌드에는 바깥 연결 출처가 Turnstile뿐이다
-		expect(csp['connect-src']).toEqual(["'self'", 'https://challenges.cloudflare.com']);
+		// API 주소가 없는 빌드에는 바깥 연결 출처가 Turnstile과 날씨 앱의 Open-Meteo뿐이다
+		expect(csp['connect-src']).toEqual([
+			"'self'",
+			'https://challenges.cloudflare.com',
+			'https://api.open-meteo.com',
+			'https://geocoding-api.open-meteo.com',
+		]);
 	});
 
 	it('_headers 파일의 모든 경로 덩어리로 쓴다', () => {

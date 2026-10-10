@@ -1,0 +1,557 @@
+/*
+ * 날씨 (macOS 날씨 앱): 하늘 색 배경 위에 흰 글자, 반투명 카드. 왼쪽 장소 목록도 카드마다 그곳의 하늘 색.
+ * 하늘 색은 sky-<모양>과 day/night로 고른다 (forecast.ts의 Sky)
+ */
+.weather {
+	--weather-top: #4f86c6;
+	--weather-bottom: #8db4dc;
+	--weather-panel: rgba(255, 255, 255, 0.14);
+	--weather-line: rgba(255, 255, 255, 0.22);
+	--weather-dim: rgba(255, 255, 255, 0.72);
+	position: relative;
+	display: flex;
+	height: 100%;
+	color: #ffffff;
+	text-align: left;
+	container-type: inline-size;
+	font-variant-numeric: tabular-nums;
+}
+
+/* 하늘 색 (낮 / 밤). 장소 카드도 같은 규칙을 쓴다 */
+.sky-clear.day {
+	--weather-top: #2f7fd1;
+	--weather-bottom: #6fb4ee;
+}
+.sky-clear.night {
+	--weather-top: #0b1733;
+	--weather-bottom: #2a3a63;
+}
+.sky-partly.day {
+	--weather-top: #4a7fbd;
+	--weather-bottom: #8fb3d9;
+}
+.sky-partly.night {
+	--weather-top: #1a2540;
+	--weather-bottom: #3b4966;
+}
+.sky-cloudy.day,
+.sky-fog.day {
+	--weather-top: #66788c;
+	--weather-bottom: #9cabba;
+}
+.sky-cloudy.night,
+.sky-fog.night {
+	--weather-top: #262d36;
+	--weather-bottom: #47515e;
+}
+.sky-drizzle.day,
+.sky-rain.day {
+	--weather-top: #45566b;
+	--weather-bottom: #77889a;
+}
+.sky-drizzle.night,
+.sky-rain.night {
+	--weather-top: #1b232e;
+	--weather-bottom: #36414f;
+}
+.sky-snow.day {
+	--weather-top: #7f98b4;
+	--weather-bottom: #bccddf;
+}
+.sky-snow.night {
+	--weather-top: #34445a;
+	--weather-bottom: #5a6b81;
+}
+.sky-storm.day,
+.sky-storm.night {
+	--weather-top: #262c38;
+	--weather-bottom: #4a5366;
+}
+
+.weather button {
+	font: inherit;
+	color: inherit;
+}
+
+/* ─── 왼쪽: 장소 목록 ─── */
+.weather-sidebar {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	gap: 10px;
+	width: 250px;
+	padding: 0 12px 12px;
+	border-right: 1px solid rgba(0, 0, 0, 0.25);
+	background-color: rgba(28, 28, 30, 0.92);
+	overflow-y: auto;
+}
+
+.weather-lights-space {
+	flex: none;
+	height: 42px;
+}
+
+.weather-search {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: 6px;
+	height: 30px;
+	padding: 0 10px;
+	border-radius: 8px;
+	background-color: rgba(118, 118, 128, 0.32);
+	color: var(--weather-dim);
+	font-size: 12px;
+}
+
+.weather-search input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	outline: none;
+	background: none;
+	color: #ffffff;
+	font: inherit;
+	font-size: 13px;
+}
+
+.weather-search input::placeholder {
+	color: rgba(235, 235, 245, 0.5);
+}
+
+.weather-search:focus-within {
+	outline: 2px solid rgba(10, 132, 255, 0.8);
+}
+
+.weather-cards,
+.weather-results {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.weather-card {
+	position: relative;
+}
+
+.weather-card > button:first-child {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	width: 100%;
+	padding: 10px 12px;
+	border: 2px solid transparent;
+	border-radius: 12px;
+	background: linear-gradient(160deg, var(--weather-top), var(--weather-bottom));
+	text-align: left;
+	cursor: pointer;
+}
+
+.weather-card > button.active {
+	border-color: rgba(255, 255, 255, 0.85);
+}
+
+.weather-card-top {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.weather-card-top strong {
+	overflow: hidden;
+	font-size: 16px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.weather-card-temp {
+	font-size: 30px;
+	font-weight: 300;
+	line-height: 1;
+}
+
+.weather-card-time,
+.weather-card-bottom {
+	color: var(--weather-dim);
+	font-size: 11px;
+}
+
+.weather-card-bottom {
+	display: flex;
+	justify-content: space-between;
+	gap: 6px;
+	margin-top: 10px;
+	color: #ffffff;
+}
+
+/* 올려 두면 오른쪽 위에 지우기 단추 */
+.weather-card-remove {
+	position: absolute;
+	top: -6px;
+	right: -6px;
+	display: grid;
+	place-items: center;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: rgba(60, 60, 67, 0.95);
+	font-size: 10px;
+	opacity: 0;
+	cursor: pointer;
+	transition: opacity 0.15s ease;
+}
+
+.weather-card:hover .weather-card-remove,
+.weather-card-remove:focus-visible {
+	opacity: 1;
+}
+
+@media (hover: none) {
+	.weather-card-remove {
+		opacity: 1;
+	}
+}
+
+.weather-results button {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	padding: 8px 10px;
+	border: none;
+	border-radius: 8px;
+	background: none;
+	text-align: left;
+	cursor: pointer;
+}
+
+.weather-results button:hover,
+.weather-results button:focus-visible {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.weather-results strong {
+	font-size: 13px;
+}
+
+.weather-results span,
+.weather-empty {
+	color: var(--weather-dim);
+	font-size: 11px;
+}
+
+.weather-empty {
+	padding: 8px 10px;
+}
+
+/* ─── 오른쪽: 고른 곳의 날씨 ─── */
+.weather-main {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+	background: linear-gradient(180deg, var(--weather-top), var(--weather-bottom));
+	transition: background 0.4s ease;
+}
+
+.weather-scroll {
+	height: 100%;
+	padding: 52px 22px 18px;
+	overflow-y: auto;
+}
+
+.weather-hero {
+	margin-bottom: 22px;
+	text-align: center;
+	text-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+}
+
+.weather-hero h1 {
+	margin: 0;
+	font-size: 30px;
+	font-weight: 400;
+}
+
+.weather-hero-temp {
+	margin: 0 0 0 0.12em;
+	font-size: 96px;
+	font-weight: 200;
+	line-height: 1;
+}
+
+.weather-hero-label,
+.weather-hero-range {
+	margin: 2px 0 0;
+	font-size: 17px;
+	font-weight: 500;
+}
+
+.weather-hero-label {
+	color: var(--weather-dim);
+}
+
+/* 반투명 카드 (macOS의 머티리얼) */
+.weather-panel {
+	margin-bottom: 12px;
+	padding: 10px 14px 12px;
+	border-radius: 14px;
+	background-color: var(--weather-panel);
+	backdrop-filter: blur(20px);
+}
+
+.weather-panel h3 {
+	margin: 0 0 8px;
+	padding-bottom: 7px;
+	border-bottom: 1px solid var(--weather-line);
+	color: var(--weather-dim);
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.weather-hours ol {
+	display: flex;
+	gap: 4px;
+	margin: 0;
+	padding: 0;
+	overflow-x: auto;
+	list-style: none;
+	scrollbar-width: none;
+}
+
+.weather-hours li {
+	display: grid;
+	flex: none;
+	justify-items: center;
+	gap: 6px;
+	/* '오후 12시'도 잘리지 않게 글자만큼 넓어진다 */
+	min-width: 52px;
+	padding: 0 3px;
+	font-size: 13px;
+}
+
+.weather-hour-label {
+	font-size: 12px;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.weather-hours i {
+	font-size: 18px;
+	line-height: 22px;
+}
+
+/* 비 올 확률: 밝은 하늘 위에서도 읽히게 옅은 하늘색에 그림자 */
+.weather-rain {
+	min-height: 13px;
+	color: #d4f1ff;
+	font-size: 11px;
+	font-weight: 700;
+	text-shadow: 0 1px 2px rgba(0, 40, 80, 0.45);
+}
+
+.weather-hours strong {
+	font-size: 15px;
+	font-weight: 500;
+}
+
+.weather-days ol {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.weather-days li {
+	display: grid;
+	grid-template-columns: 44px 42px 34px 1fr 34px;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	border-bottom: 1px solid var(--weather-line);
+	font-size: 15px;
+	font-weight: 500;
+}
+
+.weather-days li:last-child {
+	border-bottom: none;
+}
+
+.weather-day-icon {
+	display: grid;
+	justify-items: center;
+	font-size: 17px;
+}
+
+.weather-day-icon .weather-rain {
+	min-height: 0;
+	font-size: 10px;
+}
+
+.weather-day-min {
+	color: var(--weather-dim);
+	text-align: right;
+}
+
+/* 10일 동안의 가장 낮은·높은 기온 눈금 위에 그날의 범위 막대 (차가우면 초록·파랑, 더우면 노랑·주황) */
+.weather-day-bar {
+	position: relative;
+	height: 5px;
+	border-radius: 999px;
+	background-color: rgba(0, 0, 0, 0.18);
+}
+
+.weather-day-bar > span {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	min-width: 6px;
+	border-radius: inherit;
+	background: linear-gradient(90deg, #5ac8fa, #a5de37, #ffcc00, #ff9500);
+}
+
+.weather-day-now {
+	position: absolute;
+	top: 50%;
+	width: 7px;
+	height: 7px;
+	border: 1.5px solid rgba(0, 0, 0, 0.35);
+	border-radius: 50%;
+	background-color: #ffffff;
+	transform: translate(-50%, -50%);
+}
+
+.weather-tiles {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.weather-tile {
+	min-height: 120px;
+	margin: 0;
+}
+
+.weather-tile strong {
+	display: block;
+	font-size: 28px;
+	font-weight: 400;
+}
+
+.weather-tile p {
+	margin: 4px 0 0;
+	font-size: 12px;
+}
+
+.weather-status {
+	display: grid;
+	justify-items: center;
+	gap: 10px;
+	margin-top: 120px;
+	color: var(--weather-dim);
+	font-size: 15px;
+	text-align: center;
+}
+
+.weather-status button {
+	padding: 5px 14px;
+	border: none;
+	border-radius: 999px;
+	background-color: var(--weather-panel);
+	cursor: pointer;
+}
+
+.weather-credit {
+	margin: 14px 0 0;
+	color: var(--weather-dim);
+	font-size: 11px;
+	text-align: center;
+}
+
+.weather-credit a {
+	color: inherit;
+}
+
+/* 장소 목록 단추: 좁은 창에서만 (넓으면 목록이 늘 보인다). 제목 표시줄 자리(52px)라 위로 올린다 */
+.weather-list-toggle {
+	position: absolute;
+	top: 12px;
+	right: 14px;
+	z-index: 4;
+	display: none;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--weather-panel);
+	cursor: pointer;
+}
+
+/* ─── 좁은 창·휴대폰: 날씨만, 목록은 단추로 덮어 연다 ─── */
+@container (max-width: 640px) {
+	.weather-sidebar {
+		position: absolute;
+		inset: 0;
+		z-index: 5;
+		width: auto;
+		border-right: none;
+		visibility: hidden;
+		opacity: 0;
+		transition:
+			opacity 0.2s ease,
+			visibility 0.2s;
+	}
+
+	.weather-sidebar.open {
+		visibility: visible;
+		opacity: 1;
+	}
+
+	/* 덮어 연 목록: 밑의 날씨가 비치지 않게 거의 불투명하게, 흐리게 */
+	.weather-sidebar {
+		background-color: rgba(28, 28, 30, 0.97);
+		backdrop-filter: blur(24px);
+	}
+
+	.weather-list-toggle {
+		display: grid;
+	}
+
+	.weather-sidebar.open ~ .weather-main .weather-list-toggle {
+		z-index: 6;
+	}
+
+	.weather-tiles {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.weather-hero-temp {
+		font-size: 80px;
+	}
+}
+
+/* 휴대폰: 상태 표시줄 아래부터 */
+.container.mobile .weather-scroll {
+	padding-top: calc(var(--phone-top, 47px) + 24px);
+}
+
+/* 목록 위에 떠 있는 뒤로 가기 단추(왼쪽 위) 아래부터 검색 칸 */
+.container.mobile .weather-lights-space {
+	height: calc(var(--phone-top, 47px) + 56px);
+}
+
+.container.mobile .weather-list-toggle {
+	top: calc(var(--phone-top, 47px) + 6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.weather-main,
+	.weather-sidebar {
+		transition: none;
+	}
+}
