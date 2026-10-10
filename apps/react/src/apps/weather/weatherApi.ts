@@ -24,10 +24,19 @@ const DAILY = [
 	'sunset',
 	'uv_index_max',
 	'precipitation_probability_max',
+	'wind_gusts_10m_max',
 ];
 
-/** 그곳의 지금 날씨, 시간별(이틀), 일별(10일). 시각은 그곳의 시간대로 온다 (timezone=auto) */
-export async function fetchForecast(latitude: number, longitude: number, signal?: AbortSignal) {
+/** 기온 단위: 섭씨(c), 화씨(f) */
+export type TemperatureUnit = 'c' | 'f';
+
+/** 그곳의 지금 날씨, 시간별(이틀), 일별(10일). 시각은 그곳의 시간대로 온다 (timezone=auto). 기온은 unit으로 */
+export async function fetchForecast(
+	latitude: number,
+	longitude: number,
+	signal?: AbortSignal,
+	unit: TemperatureUnit = 'c'
+) {
 	const params = new URLSearchParams({
 		latitude: String(latitude),
 		longitude: String(longitude),
@@ -37,6 +46,7 @@ export async function fetchForecast(latitude: number, longitude: number, signal?
 		timezone: 'auto',
 		forecast_days: '10',
 		wind_speed_unit: 'ms',
+		...(unit === 'f' ? { temperature_unit: 'fahrenheit' } : {}),
 	});
 	const response = await fetch(`${FORECAST_URL}?${params}`, { signal });
 	if (!response.ok) throw new Error(`forecast ${response.status}`);

@@ -35,15 +35,20 @@ test.describe('날씨', () => {
 		await expect(main.getByRole('region', { name: '체감 온도' })).toContainText('17°');
 		await expect(main.getByRole('region', { name: '습도' })).toContainText('61%');
 		await expect(main.getByRole('region', { name: '바람' })).toContainText('3.2m/s');
-		await expect(main.getByRole('region', { name: '바람' })).toContainText('동풍');
+		await expect(main.getByRole('region', { name: '바람' })).toContainText('동풍 · 돌풍 최대 8m/s');
+		// 시간별 위의 문장: 날씨가 처음 바뀌는 시각과 돌풍
+		await expect(main.getByRole('region', { name: '시간별 일기예보' }).locator('.weather-summary')).toHaveText(
+			'오전 8시쯤 구름 조금 상태가 예상됩니다. 돌풍의 풍속은 최대 8m/s입니다.'
+		);
 		await expect(main.getByRole('region', { name: '자외선 지수' })).toContainText('보통');
 		await expect(main.getByRole('region', { name: '일출' })).toContainText('오전 6:35');
 		await expect(main.getByRole('link', { name: 'Open-Meteo.com' })).toBeVisible();
 
 		// 사이드바의 카드
-		const card = weather.getByRole('navigation', { name: '장소' }).locator('.weather-card button').first();
+		const card = weather.getByRole('navigation', { name: '장소' }).locator('.weather-card-face').first();
 		await expect(card).toHaveAttribute('aria-current', 'true');
 		await expect(card).toContainText('19°');
+		await expect(card).toContainText('• 대한민국');
 		expect(asked.forecast).toEqual(['37.5665']);
 	});
 
@@ -57,8 +62,7 @@ test.describe('날씨', () => {
 		await expect(weather.getByRole('main', { name: '도쿄 날씨' })).toBeVisible();
 		const cards = sidebar.locator('.weather-card');
 		await expect(cards).toHaveCount(2);
-		// 카드의 첫 단추가 고르기, 둘째(올리면 보이는 ×)가 지우기
-		await expect(cards.nth(1).locator('button').first()).toHaveAttribute('aria-current', 'true');
+		await expect(cards.nth(1).locator('.weather-card-face')).toHaveAttribute('aria-current', 'true');
 
 		// 다시 열어도 남아 있다
 		await page.reload();
@@ -88,13 +92,16 @@ test.describe('날씨', () => {
 		await fakeWeather(page);
 		const weather = await openWeather(page);
 		const sidebar = weather.getByRole('navigation', { name: '장소' });
-		await expect(sidebar.getByRole('button', { name: '서울 삭제' })).toHaveCount(0);
+		// 하나뿐이면 오른쪽 클릭 메뉴가 없다
+		await sidebar.locator('.weather-card-face').first().click({ button: 'right' });
+		await expect(page.getByRole('menu', { name: '장소 메뉴' })).toHaveCount(0);
 		await sidebar.getByRole('searchbox', { name: '도시 검색' }).fill('부산');
 		await sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button', { name: /부산/ }).click();
 		await expect(sidebar.locator('.weather-card')).toHaveCount(2);
 
-		await sidebar.locator('.weather-card').nth(1).hover();
-		await sidebar.getByRole('button', { name: '부산 삭제' }).click();
+		// 넓은 창: macOS처럼 오른쪽 클릭 메뉴의 삭제
+		await sidebar.locator('.weather-card-face').nth(1).click({ button: 'right' });
+		await page.getByRole('menu', { name: '장소 메뉴' }).getByRole('menuitem', { name: '삭제' }).click();
 		await expect(sidebar.locator('.weather-card')).toHaveCount(1);
 		await expect(weather.getByRole('main', { name: '서울 날씨' })).toBeVisible();
 	});
@@ -106,5 +113,31 @@ test.describe('날씨', () => {
 		await expect(main).toContainText('날씨를 불러오지 못했습니다.');
 		await main.getByRole('button', { name: '다시 시도' }).click();
 		await expect.poll(() => asked.forecast.length).toBe(2);
+	});
+
+	test('보기 메뉴에서 화씨로 바꾸면 화씨로 다시 묻고, 이 브라우저에 남는다', async ({ page }) => {
+		const asked = await fakeWeather(page);
+		const weather = await openWeather(page);
+		await expect(weather.getByLabel('현재 기온 19도')).toBeVisible();
+		await page.getByRole('group', { name: '메뉴 막대' }).getByRole('button', { name: '보기', exact: true }).click();
+		await page.getByRole('menuitemcheckbox', { name: '화씨 (°F)' }).click();
+		// 37.5665 / 2 × 1.8 + 32 → 66°
+		await expect(weather.getByLabel('현재 기온 66도')).toBeVisible();
+		expect(asked.units).toContain('f');
+		expect(await page.evaluate(() => localStorage.getItem('macfolio:weather:unit'))).toBe('f');
+	});
+
+	test('사이드바를 접고 펴고, 위쪽에는 지역 이름과 시간별 위의 문장', async ({ page }) => {
+		await fakeWeather(page);
+		const weather = await openWeather(page);
+		const main = weather.getByRole('main', { name: '서울 날씨' });
+		await expect(main.locator('.weather-hero-region')).toHaveText('대한민국');
+		await weather.getByRole('button', { name: '사이드바 가리기' }).click();
+		await expect(weather.getByRole('navigation', { name: '장소' })).toBeHidden();
+		await weather.getByRole('button', { name: '사이드바 보기' }).click();
+		await expect(weather.getByRole('navigation', { name: '장소' })).toBeVisible();
+		// 신호등은 그대로 누를 수 있다
+		await weather.getByRole('button', { name: '최소화' }).click();
+		await expect(weather).toBeHidden();
 	});
 });

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	clockLabel,
+	summaryOf,
 	describeCode,
 	hourLabel,
 	iconOf,
@@ -100,7 +101,7 @@ describe('날씨 값 바꾸기', () => {
 		});
 		// 07시 칸부터: 첫 칸은 '지금'이고 지금 기온·날씨
 		expect(weather.hours).toHaveLength(24);
-		expect(weather.hours[0]).toEqual({ label: '지금', temp: 14, icon: 'fa-sun', rain: null });
+		expect(weather.hours[0]).toEqual({ label: '지금', temp: 14, icon: 'fa-sun', condition: '맑음', rain: null });
 		expect(weather.hours[1].label).toBe('오전 8시');
 		// 비 올 확률은 30% 이상일 때만
 		expect(weather.hours[8]).toMatchObject({ label: '오후 3시', icon: 'fa-cloud-showers-heavy', rain: 70 });
@@ -110,5 +111,16 @@ describe('날씨 값 바꾸기', () => {
 		expect(weather.days.map((day) => day.label).slice(0, 3)).toEqual(['오늘', '일', '월']);
 		expect(weather.days[2]).toMatchObject({ icon: 'fa-cloud-showers-heavy', rain: 63 });
 		expect(weather.range).toEqual({ min: 10, max: 31 });
+	});
+
+	it('시간별 위의 문장: 날씨가 처음 바뀌는 시각과 돌풍', () => {
+		const hours = [
+			{ label: '지금', condition: '흐림' },
+			{ label: '오후 10시', condition: '흐림' },
+			{ label: '오전 12시', condition: '구름 조금' },
+		];
+		expect(summaryOf(hours, 3.2)).toBe('오전 12시쯤 구름 조금 상태가 예상됩니다. 돌풍의 풍속은 최대 3m/s입니다.');
+		expect(summaryOf(hours.slice(0, 2), null)).toBe('앞으로 2시간 동안 흐림 상태가 이어집니다.');
+		expect(toWeather(response()).summary).toBe('오전 8시쯤 구름 조금 상태가 예상됩니다.');
 	});
 });

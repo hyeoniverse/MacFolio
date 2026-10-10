@@ -198,24 +198,98 @@ test.describe('모바일', () => {
 		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeVisible();
 	});
 
-	test('날씨: 화면 가득 지금 날씨, 목록 단추로 장소를 덮어 열고 골라 돌아온다', async ({ page }) => {
+	test('날씨 (iOS 모양): 홈 단추 없이 날씨만, 아래 막대의 점으로 넘기고, 목록에서 찾아 더하고, ••• 목록 편집으로 지우고, 화씨로', async ({
+		page,
+	}) => {
+		await page.addInitScript(() => {
+			if (!localStorage.getItem('macfolio:weather:places'))
+				localStorage.setItem(
+					'macfolio:weather:places',
+					JSON.stringify([
+						{ name: '서울', region: '대한민국', latitude: 37.5665, longitude: 126.978 },
+						{ name: '도쿄', region: '일본', latitude: 35.6762, longitude: 139.6503 },
+					])
+				);
+		});
 		await fakeWeather(page);
 		await enterHome(page);
 		await (await homeApp(page, '날씨')).tap();
 		const weather = appWindow(page, 'weather');
 		await expect(weather.getByRole('main', { name: '서울 날씨' }).getByLabel('현재 기온 19도')).toBeVisible();
+		// iOS 날씨처럼 홈으로 가는 단추가 없다 (홈 바로 나간다)
+		await expect(page.locator('.mobile-navbar')).toHaveCount(0);
+
+		// 아래 막대의 점으로 다음 장소
+		const pages = weather.getByRole('group', { name: '장소 넘기기' });
+		await expect(pages.getByRole('button')).toHaveCount(2);
+		await pages.getByRole('button', { name: '도쿄 날씨 보기' }).tap();
+		await expect(weather.getByRole('main', { name: '도쿄 날씨' })).toBeVisible();
+
+		// 목록: 큰 제목, 카드, 아래 검색
 		const sidebar = weather.getByRole('navigation', { name: '장소' });
 		await expect(sidebar).toBeHidden();
-
 		await weather.getByRole('button', { name: '장소 목록' }).tap();
-		await expect(sidebar).toBeVisible();
-		// 검색 칸이 위에 떠 있는 뒤로 가기 단추에 가리지 않는다
+		await expect(sidebar.getByRole('heading', { name: '날씨' })).toBeVisible();
 		const search = sidebar.getByRole('searchbox', { name: '도시 검색' });
+		const cards = sidebar.locator('.weather-card');
+		expect((await search.boundingBox())!.y).toBeGreaterThan((await cards.last().boundingBox())!.y);
 		await search.tap();
 		await search.fill('제주');
 		await sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button', { name: /제주/ }).tap();
 		await expect(sidebar).toBeHidden();
 		await expect(weather.getByRole('main', { name: '제주 날씨' })).toBeVisible();
+
+		// ••• → 목록 편집: 카드마다 빨간 휴지통
+		await weather.getByRole('button', { name: '장소 목록' }).tap();
+		await sidebar.getByRole('button', { name: '더 보기' }).tap();
+		await page.getByRole('menuitem', { name: '목록 편집' }).tap();
+		await sidebar.getByRole('button', { name: '도쿄 삭제' }).tap();
+		await expect(cards).toHaveCount(2);
+
+		// ••• → 화씨
+		await sidebar.getByRole('button', { name: '더 보기' }).tap();
+		await page.getByRole('menuitemcheckbox', { name: '°F 화씨' }).tap();
+		await expect(cards.first()).toContainText('66°');
+	});
+
+	test('날씨: 화면을 옆으로 밀면 다음 장소, 카드를 왼쪽으로 밀면 빨간 휴지통이 드러난다', async ({ page }) => {
+		await page.addInitScript(() =>
+			localStorage.setItem(
+				'macfolio:weather:places',
+				JSON.stringify([
+					{ name: '서울', region: '대한민국', latitude: 37.5665, longitude: 126.978 },
+					{ name: '도쿄', region: '일본', latitude: 35.6762, longitude: 139.6503 },
+				])
+			)
+		);
+		await fakeWeather(page);
+		await enterHome(page);
+		await (await homeApp(page, '날씨')).tap();
+		const weather = appWindow(page, 'weather');
+		const hero = weather.locator('.weather-hero');
+		await expect(hero).toContainText('서울');
+
+		// 큰 기온 위에서 왼쪽으로 밀면 다음 장소
+		const box = (await hero.boundingBox())!;
+		const y = box.y + box.height / 2;
+		await page.mouse.move(box.x + box.width - 20, y);
+		await page.mouse.down();
+		await page.mouse.move(box.x + 20, y, { steps: 8 });
+		await page.mouse.up();
+		await expect(weather.getByRole('main', { name: '도쿄 날씨' })).toBeVisible();
+
+		// 목록의 카드를 왼쪽으로 밀면 휴지통
+		await weather.getByRole('button', { name: '장소 목록' }).tap();
+		const card = weather.locator('.weather-card').nth(1);
+		const face = (await card.locator('.weather-card-face').boundingBox())!;
+		const cy = face.y + face.height / 2;
+		await page.mouse.move(face.x + face.width - 30, cy);
+		await page.mouse.down();
+		await page.mouse.move(face.x + face.width - 150, cy, { steps: 8 });
+		await page.mouse.up();
+		await expect(card).toHaveClass(/swiped/);
+		await card.getByRole('button', { name: '도쿄 삭제' }).tap();
+		await expect(weather.locator('.weather-card')).toHaveCount(1);
 	});
 
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {

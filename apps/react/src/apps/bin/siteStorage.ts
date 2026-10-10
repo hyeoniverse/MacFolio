@@ -53,10 +53,10 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 	{
 		id: 'weather-places',
 		name: '날씨 장소',
-		description: '날씨 앱에 더한 도시 목록',
+		description: '날씨 앱에 더한 도시 목록과 기온 단위(섭씨·화씨)',
 		storage: 'local',
-		keys: ['macfolio:weather:places'],
-		afterClear: '날씨 앱을 다음에 열면 서울만 보입니다',
+		keys: ['macfolio:weather:places', 'macfolio:weather:unit'],
+		afterClear: '날씨 앱을 다음에 열면 서울만, 섭씨로 보입니다',
 		summarize: (raw) => countOf(raw, '도시'),
 	},
 	{

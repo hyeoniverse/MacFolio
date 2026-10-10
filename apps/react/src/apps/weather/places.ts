@@ -110,6 +110,24 @@ export function mergePlaces(cities: Place[], found: Place[], limit = 8): Place[]
 }
 
 const STORAGE_KEY = 'macfolio:weather:places';
+const UNIT_KEY = 'macfolio:weather:unit';
+
+/** 고른 기온 단위 (이 브라우저). 없으면 섭씨 */
+export function loadUnit(): 'c' | 'f' {
+	try {
+		return localStorage.getItem(UNIT_KEY) === 'f' ? 'f' : 'c';
+	} catch {
+		return 'c';
+	}
+}
+
+export function saveUnit(unit: 'c' | 'f') {
+	try {
+		localStorage.setItem(UNIT_KEY, unit);
+	} catch {
+		// 저장하지 못해도 이번에는 그대로 쓴다
+	}
+}
 
 /** 저장한 장소 (이 브라우저). 읽지 못하면 기본(서울) */
 export function loadPlaces(): Place[] {
