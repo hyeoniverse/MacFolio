@@ -171,11 +171,10 @@
 	justify-self: end;
 }
 
-.bin-data.note {
-	grid-template-columns: 1fr;
-	margin-top: 8px;
-	border: 1px dashed var(--color-divider);
-	background: none;
+/* 사이트가 비울 수 없는 줄: 비우기 단추 자리에 어디서 지우는지 */
+.bin-data-elsewhere {
+	color: var(--color-text-secondary);
+	font-size: 11px;
 }
 
 .bin-link {
