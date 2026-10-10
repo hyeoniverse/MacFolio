@@ -191,7 +191,7 @@ test.describe('모바일', () => {
 		await enterHome(page);
 		await (await homeApp(page, '시스템 설정')).tap();
 		const settings = appWindow(page, 'settings');
-		await settings.getByRole('button', { name: '정보' }).tap();
+		await settings.getByRole('button', { name: '정보', exact: true }).tap();
 		await settings.getByRole('link', { name: 'hyeoniverse.dev@gmail.com' }).tap();
 		const mail = appWindow(page, 'mail');
 		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeVisible();

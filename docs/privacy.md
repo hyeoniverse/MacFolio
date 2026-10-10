@@ -63,3 +63,11 @@ MacFolio(macfolio.hyeoniverse.com)가 방문자에 대해 서버에 남기는 �
 - **기간:** 1년이 지난 메일과 답장은 지운다 (메일을 보내거나 관리자가 받은 편지함을 열 때)
 - 하루에 보낼 수 있는 수를 세려고 IP의 HMAC을 서버 메모리에만 두고, 날이 바뀌거나 서버를 다시 띄우면 사라진다
 - 사람 확인(Cloudflare Turnstile)을 켜 두면 Cloudflare가 브라우저를 확인한다
+
+## 사람 확인 (Cloudflare Turnstile)
+
+메일·댓글·메시지를 쓸 때 사람인지 확인할 수 있다. 어디에 켤지는 관리자가 시스템 설정의 **개인정보 보호 및 보안**에서 정한다 (처음에는 메일만). 누구나 같은 화면에서 지금 어디에 켜져 있는지 본다.
+
+- 켜진 곳에 글을 쓰면 Cloudflare의 위젯이 브라우저를 확인하고 한 번 쓰는 토큰을 준다. 서버는 그 토큰을 Cloudflare에 물어 확인한다. 이때 Cloudflare는 IP와 브라우저 정보를 본다 ([Cloudflare 개인정보 처리 방침](https://www.cloudflare.com/privacypolicy/))
+- 이 사이트는 토큰을 저장하지 않는다
+- 관리자가 쓰는 글은 확인하지 않는다
