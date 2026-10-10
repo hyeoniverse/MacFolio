@@ -11,7 +11,7 @@ import { Summary } from './Summary';
 import { Translate } from './Translate';
 import { Voice } from './Voice';
 import { Wave } from './Wave';
-import '@/apps/safari/project/CreativeDemos.css';
+import './demos.css';
 import { Autosave } from './cms/Autosave';
 import { Lifecycle } from './cms/Lifecycle';
 import { Comments } from './cms/Comments';
@@ -20,7 +20,7 @@ import { Invite } from './cms/Invite';
 import { Roles } from './cms/Roles';
 import { Kitchen } from './cms/Kitchen';
 import { Providers } from './cms/Providers';
-import '@/apps/safari/project/CreativeCms.css';
+import './cms/cms.css';
 
 /** 장 글 묶음에 붙는 데모 */
 export const Demo: React.FC<{ kind: NonNullable<ProjectPoint['demo']> }> = ({ kind }) => {

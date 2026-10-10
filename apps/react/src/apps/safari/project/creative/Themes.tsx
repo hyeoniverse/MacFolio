@@ -5,7 +5,7 @@ import type { ThemeSwatch } from '@/shared/profile';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import { contrast, grade, readableAccent, textOnAccent } from './color';
 import { useInView } from './useInView';
-import '@/apps/safari/project/CreativeDemos.css';
+import './demos.css';
 
 /** 홈의 3D 토러스: 색 프리셋과 상관없이 라이트·다크 두 벌뿐이라, 실제 홈 캡처에서 오려 낸 그림을 모드마다 쓴다 (돌리지 않는다) */
 const TORUS = {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KITCHEN_EMOJIS, KITCHEN_PAIRS } from '@/apps/safari/project/CreativeKitchenData';
+import { KITCHEN_EMOJIS, KITCHEN_PAIRS } from './kitchenData';
 
 /** 조합 그림 주소 (그 사이트 lib/emojiKitchen과 같다): gstatic은 코드포인트 덩어리마다 u를 붙인다 */
 const kitchenUrl = ([date, left, right]: [string, string, string]) => {
