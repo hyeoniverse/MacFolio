@@ -9,7 +9,7 @@
 <g font-size="10.5" fill="#374151">
 <rect x="32" y="58" width="280" height="22" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="40" y="73">matchMedia('(prefers-reduced-motion: reduce)').matches</text>
 <rect x="32" y="86" width="280" height="22" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="40" y="101">matchMedia?.('(prefers-reduced-motion…)').matches ?? false</text>
-<rect x="32" y="114" width="280" height="22" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="40" y="129">resolveTheme(theme, matchMedia('(prefers-color-scheme: dark)').matches)</text>
+<rect x="32" y="114" width="280" height="22" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="40" y="129">resolveTheme(theme, matchMedia('(prefers-color-scheme…)').matches) ×3</text>
 <rect x="32" y="142" width="280" height="22" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="40" y="157">isMobileViewport({ width: innerWidth, height: innerHeight })</text>
 <rect x="32" y="170" width="280" height="22" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="40" y="185">innerWidth &lt; 768 ? 'mobile' : 'desktop'   ← 기준이 달랐다</text>
 <rect x="32" y="198" width="280" height="22" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="40" y="213">innerHeight / 2, innerWidth * 0.66 …</text>
