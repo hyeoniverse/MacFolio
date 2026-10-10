@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
+import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import {
 	clampRect,
 	defaultRect,
@@ -11,24 +12,9 @@ import {
 	type ResizeDirection,
 } from '@/desktop/window/geometry';
 
-const storageKey = (appName: AppName) => `macfolio:window:${appName}`;
-
-function loadRect(appName: AppName): Rect | null {
-	try {
-		const raw = localStorage.getItem(storageKey(appName));
-		return raw ? (JSON.parse(raw) as Rect) : null;
-	} catch {
-		return null;
-	}
-}
-
-function saveRect(appName: AppName, rect: Rect) {
-	try {
-		localStorage.setItem(storageKey(appName), JSON.stringify(rect));
-	} catch {
-		// 저장하지 못해도 동작에는 문제없다
-	}
-}
+const loadRect = (appName: AppName) => readJson(STORAGE_KEYS.window(appName)) as Rect | null;
+/** 저장하지 못해도 동작에는 문제없다 */
+const saveRect = (appName: AppName, rect: Rect) => writeJson(STORAGE_KEYS.window(appName), rect);
 
 type GestureKind = { kind: 'move' } | { kind: 'resize'; direction: ResizeDirection };
 type Gesture = GestureKind & { pointerX: number; pointerY: number; start: Rect };
