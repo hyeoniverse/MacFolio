@@ -180,6 +180,15 @@ CI가 실패해도 Merge 버튼이 눌리지 않게, `main`에 필수 검사를 
 - **Require a pull request before merging**에 승인 수(required approvals)는 걸지 않는다. 혼자 하는 저장소에서는 내 PR을 내가 승인할 수 없어 머지가 막힌다
 - 같은 Ruleset에서 **Block force pushes**를 켜 두면 `main`의 기록을 덮어쓰는 push도 막는다
 
+### 비밀 값·의존성 (Code security)
+
+1. 저장소 → **Settings** → **Advanced Security** (예전 이름 **Code security and analysis**)
+2. **Dependabot** 묶음에서 **Dependabot alerts**와 **Dependabot security updates**를 **Enable**. 알려진 취약점이 있는 의존성이 생기면 알림이 오고, 고친 버전으로 올리는 PR이 저절로 열린다 (주간 버전 올리기는 `.github/dependabot.yml`이 따로 한다)
+3. **Secret scanning** 묶음에서 **Secret scanning**을 **Enable**, 이어서 나타나는 **Push protection**도 **Enable**. 알려진 서비스의 키 모양(GitHub 토큰, AWS 키 등)이 커밋에 들어오면 GitHub이 알려 주고, push protection은 그런 커밋의 push 자체를 막는다. 공개 저장소는 무료
+4. 이미 만든 `main` Ruleset(위)을 열어 **Require status checks to pass**의 **Add checks**에서 `secrets`를 더하고 **Save changes**. `secrets`는 `.github/workflows/secrets.yml`(gitleaks)로, PR 한 번은 돌아야 목록에 나타난다
+
+GitHub secret scanning은 GitHub이 아는 서비스의 키만 보고, gitleaks(`secrets` 작업)는 `.gitleaks.toml`의 규칙(이 프로젝트의 Resend·Groq 키, DB 주소의 비밀번호 등)까지 본다. 둘 다 켠다.
+
 ### 머지한 브랜치 지우기
 
 Settings → General → Pull Requests의 **Automatically delete head branches**를 켜면 머지한 브랜치가 저절로 지워진다.
