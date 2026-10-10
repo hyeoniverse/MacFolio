@@ -6,7 +6,7 @@ import MusicWidget from '@/desktop/mobile/MusicWidget';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import { openSwitcher } from '@/desktop/mobile/switcherStore';
 import { env } from '@/shared/config/env';
-import { PROFILE } from '@/shared/profile';
+import { useProfile } from '@/shared/site/profileStore';
 import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit } from '@/desktop/mobile/homePages';
 
 /** 홈 화면 아래 Dock에 둘 앱 */
@@ -49,6 +49,7 @@ const WHEEL_REST_MS = 450;
  * 놓을 때 끈 거리와 빠르기로 넘길지 정한다(pageAfterSwipe). 트랙패드로 옆으로 밀어도 넘어간다
  */
 const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
+	const profile = useProfile();
 	const pagesRef = useRef<HTMLDivElement>(null);
 	const widgetsRef = useRef<HTMLDivElement>(null);
 	// 칸 수: 첫 페이지(위젯 아래)와 나머지 페이지. 화면 크기가 바뀌면 다시 잰다
@@ -176,10 +177,10 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 								<div ref={widgetsRef} className="mobile-widgets">
 									<section className="mobile-widget" aria-label="소개">
 										<p className="mobile-widget-eyebrow">Portfolio</p>
-										<h1>{PROFILE.name}</h1>
-										<p>{PROFILE.role}</p>
+										<h1>{profile.name}</h1>
+										<p>{profile.role}</p>
 										<p className="mobile-widget-meta">
-											<i className="fa-solid fa-location-dot" aria-hidden="true"></i> {PROFILE.location}
+											<i className="fa-solid fa-location-dot" aria-hidden="true"></i> {profile.location}
 										</p>
 									</section>
 

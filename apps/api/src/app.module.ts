@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { HealthModule } from './health/health.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { MemoModule } from './memo/memo.module.js';
+import { SiteModule } from './site/site.module.js';
 import { CommentsModule } from './comments/comments.module.js';
 import { SecurityModule } from './security/security.module.js';
 import { MessagesModule } from './messages/messages.module.js';
@@ -39,6 +40,7 @@ import { ContactModule } from './contact/contact.module.js';
 		HealthModule,
 		AuthModule,
 		MemoModule,
+		SiteModule,
 		VisitorsModule,
 		SecurityModule,
 		CommentsModule,

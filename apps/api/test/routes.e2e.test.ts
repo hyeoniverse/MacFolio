@@ -130,6 +130,10 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 
 	'GET /security': 'public',
 	'PUT /security': 'admin',
+
+	'GET /site': 'public',
+	'PUT /site/profile': 'admin',
+	'DELETE /site/profile': 'admin',
 };
 
 /** 어떤 경로든 타입이 틀린 몸통. 각 경로의 검사기가 거절해야 한다 */
@@ -283,6 +287,8 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 		// 몸통 없이 동작하는 쓰기 경로와, 파일 업로드가 아닌 몸통이 필요 없는 경로는 뺀다
 		const noBody = new Set([
 			'POST /auth/logout',
+			// 저장한 프로필을 지운다 (코드의 기본값으로)
+			'DELETE /site/profile',
 			'POST /posts/:slug/restore',
 			'DELETE /posts/:slug/permanent',
 			'DELETE /posts/:slug',

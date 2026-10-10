@@ -1,7 +1,7 @@
 import type { Message, Thread } from '../conversations';
 import { fetchVisitorName } from '@/shared/lib/visitor';
 import type { ConversationRepository } from './types';
-import { PINNED_MESSAGES, PINNED_THREAD_ID, withPinnedIntro } from './pinned';
+import { pinnedMessages, PINNED_THREAD_ID, withPinnedIntro } from './pinned';
 
 // 서버(apps/api의 /messages)에 저장하는 구현. 사람 구분과 이름은 서버가 방문자 쿠키로 정한다.
 
@@ -51,7 +51,7 @@ export function createApiConversationRepository(
 			if (response.status === 404) return [];
 			if (!response.ok) throw await failure(response);
 			const messages = (await response.json()) as Message[];
-			return threadId === PINNED_THREAD_ID ? [...PINNED_MESSAGES, ...messages] : messages;
+			return threadId === PINNED_THREAD_ID ? [...pinnedMessages(), ...messages] : messages;
 		},
 
 		async createThread(input) {
