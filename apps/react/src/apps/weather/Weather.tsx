@@ -65,26 +65,58 @@ function useForecasts(places: Place[], unit: TemperatureUnit) {
 	return { forecastOf: (place: Place) => forecasts[`${keyOf(place)}|${unit}`], reload };
 }
 
-/** 이름으로 장소 찾기: 내장 도시는 바로, Open-Meteo는 잠깐 멈춘 뒤 */
-function usePlaceSearch(query: string) {
-	const [found, setFound] = useState<{ query: string; places: Place[] }>({ query: '', places: [] });
+/** Open-Meteo에 물은 찾기 결과 (같은 말은 다시 묻지 않는다). 창을 닫았다 열어도 페이지가 그대로면 남는다 */
+const searchCache = new Map<string, Place[]>();
+/** 글자를 치다 멈추면 묻는다 */
+const SEARCH_DELAY_MS = 250;
+/** Open-Meteo 지오코딩은 한 번에 1~10초가 걸린다. 이보다 길면 그만 묻는다 (내장 도시는 그대로 보인다) */
+const SEARCH_TIMEOUT_MS = 8000;
+
+/**
+ * 이름으로 장소 찾기. 내장 도시(cities.ts, 211곳)는 글자를 칠 때마다 바로 보이고,
+ * Open-Meteo는 두 글자 이상을 치다 멈추면(한글은 조합이 끝난 뒤) 묻고, 오는 대로 아래에 붙인다.
+ * 기다리는 동안에는 searching이 true (목록 아래에 '더 찾는 중')
+ */
+function usePlaceSearch(query: string, composing: boolean) {
+	const [answered, setAnswered] = useState<{ key: string; failed: boolean } | null>(null);
+	const q = query.trim();
+	const key = q.toLowerCase();
+	const cached = searchCache.get(key);
+	const failed = answered?.key === key && answered.failed;
+	const remote = q.length >= 2 && !composing && !cached && !failed;
+
 	useEffect(() => {
-		const q = query.trim();
-		if (!q) return;
+		if (!remote) return;
 		const controller = new AbortController();
+		let timedOut = false;
 		const timer = window.setTimeout(() => {
-			searchPlaces(q, controller.signal).then(
-				(results) => setFound({ query: q, places: toPlaces(results) }),
-				() => !controller.signal.aborted && setFound({ query: q, places: [] })
-			);
-		}, 300);
+			const timeout = window.setTimeout(() => {
+				timedOut = true;
+				controller.abort();
+			}, SEARCH_TIMEOUT_MS);
+			searchPlaces(q, controller.signal)
+				.then(
+					(results) => {
+						searchCache.set(key, toPlaces(results));
+						setAnswered({ key, failed: false });
+					},
+					() => {
+						// 다른 말을 치느라 그만둔 것은 실패가 아니다
+						if (!controller.signal.aborted || timedOut) setAnswered({ key, failed: true });
+					}
+				)
+				.finally(() => window.clearTimeout(timeout));
+		}, SEARCH_DELAY_MS);
 		return () => {
 			controller.abort();
 			window.clearTimeout(timer);
 		};
-	}, [query]);
-	const q = query.trim();
-	return q ? mergePlaces(matchCities(q), found.query === q ? found.places : []) : [];
+	}, [remote, q, key]);
+
+	return {
+		places: q ? mergePlaces(matchCities(q), cached ?? []) : [],
+		searching: remote,
+	};
 }
 
 /**
@@ -336,7 +368,10 @@ const Weather = () => {
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const swipe = useRef<{ x: number; y: number } | null>(null);
 	const { forecastOf, reload } = useForecasts(places, unit);
-	const results = usePlaceSearch(query);
+	/** 한글을 조합하는 중인지 (조합 중에는 Open-Meteo에 묻지 않는다) */
+	const [composing, setComposing] = useState(false);
+	const search = usePlaceSearch(query, composing);
+	const results = search.places;
 
 	const changePlaces = (next: Place[]) => {
 		setPlaces(next);
@@ -445,7 +480,16 @@ const Weather = () => {
 							placeholder="도시 검색"
 							aria-label="도시 검색"
 							value={query}
-							onChange={(event) => setQuery(event.target.value)}
+							onChange={(event) => {
+								setQuery(event.target.value);
+								// 조합이 끝났다는 신호(compositionend)를 보내지 않는 키보드도 있어서, 입력마다 다시 확인한다
+								setComposing((event.nativeEvent as InputEvent).isComposing ?? false);
+							}}
+							onCompositionStart={() => setComposing(true)}
+							onCompositionEnd={(event) => {
+								setComposing(false);
+								setQuery(event.currentTarget.value);
+							}}
 						/>
 					</label>
 					{query.trim() ? (
@@ -458,7 +502,14 @@ const Weather = () => {
 									</button>
 								</li>
 							))}
-							{results.length === 0 && <li className="weather-empty">찾는 중…</li>}
+							{search.searching ? (
+								<li className="weather-empty weather-searching" role="status">
+									<i className="fa-solid fa-circle-notch fa-spin" aria-hidden="true" />{' '}
+									{results.length ? '더 찾는 중…' : '찾는 중…'}
+								</li>
+							) : (
+								results.length === 0 && <li className="weather-empty">결과 없음</li>
+							)}
 						</ul>
 					) : (
 						<>

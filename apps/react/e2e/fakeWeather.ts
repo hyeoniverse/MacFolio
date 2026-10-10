@@ -45,7 +45,8 @@ function forecast(latitude: number, fahrenheit = false, night = false) {
 }
 
 /** Open-Meteo를 가짜로: 일기예보와 장소 찾기. failForecast면 일기예보는 500 */
-export async function fakeWeather(page: Page, { failForecast = false, night = false } = {}) {
+/** searchDelayMs: 장소 찾기 응답을 그만큼 늦춘다 (실제 Open-Meteo 지오코딩은 1~10초) */
+export async function fakeWeather(page: Page, { failForecast = false, night = false, searchDelayMs = 0 } = {}) {
 	const asked = { forecast: [] as string[], search: [] as string[], units: [] as string[] };
 	await page.route('https://api.open-meteo.com/v1/forecast?**', (route) => {
 		const url = new URL(route.request().url());
@@ -55,27 +56,28 @@ export async function fakeWeather(page: Page, { failForecast = false, night = fa
 		if (failForecast) return route.fulfill({ status: 500, body: 'error' });
 		return route.fulfill({ json: forecast(Number(url.searchParams.get('latitude')), fahrenheit, night) });
 	});
-	await page.route('https://geocoding-api.open-meteo.com/v1/search?**', (route) => {
+	await page.route('https://geocoding-api.open-meteo.com/v1/search?**', async (route) => {
 		const name = new URL(route.request().url()).searchParams.get('name')!;
 		asked.search.push(name);
+		if (searchDelayMs) await new Promise((resolve) => setTimeout(resolve, searchDelayMs));
 		const results =
-			name.toLowerCase() === 'reykjavik'
+			name.toLowerCase() === 'ushuaia'
 				? [
 						{
-							name: 'Reykjavík',
-							latitude: 64.1355,
-							longitude: -21.8954,
-							country: '아이슬란드',
-							admin1: '수도권',
-							feature_code: 'PPLC',
-							population: 118918,
+							name: '우수아이아',
+							latitude: -54.8019,
+							longitude: -68.303,
+							country: '아르헨티나',
+							admin1: '티에라델푸에고주',
+							feature_code: 'PPLA',
+							population: 57000,
 						},
 						{
-							name: 'Reykjavik',
-							latitude: 50.36,
-							longitude: -96.7,
-							country: '캐나다',
-							admin1: '매니토바주',
+							name: 'Ushuaia',
+							latitude: -16.3,
+							longitude: -68.1,
+							country: '볼리비아',
+							admin1: '라파스주',
 							feature_code: 'PPL',
 						},
 					]
