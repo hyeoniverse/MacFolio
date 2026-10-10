@@ -130,6 +130,9 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 						name: '새 프로젝트',
 						url: 'https://github.com/hyeoniverse/new-project',
 						demo: 'https://new-project.example.com',
+						// 화면 캡처는 비워도 된다 (화면은 화면 모음의 첫 그림을 쓴다)
+						image: '',
+						galleryFolder: '/imgs/projects/qru/screens',
 						app: { label: '새 앱', icon: 'projects/new-project/app-icon.png' },
 					},
 				},

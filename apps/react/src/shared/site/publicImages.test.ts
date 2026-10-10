@@ -9,6 +9,9 @@ describe('사이트의 그림 폴더', () => {
 		expect(screens).toEqual([...screens].sort((a, b) => a.localeCompare(b)));
 		expect(screens.every((src) => src.startsWith('/imgs/projects/qru/screens/'))).toBe(true);
 		expect(imageFolders()).toContain('/imgs/projects/qru/screens');
+		// 고를 수 있는 폴더는 /imgs/projects 아래만 (배경화면 등은 빼고)
+		expect(imageFolders().every((folder) => folder.startsWith('/imgs/projects/'))).toBe(true);
+		expect(Object.keys(PUBLIC_IMAGES).some((folder) => !folder.startsWith('/imgs/projects/'))).toBe(true);
 	});
 
 	it('파일 이름으로 설명을 만든다 (앞 번호·확장자를 떼고 -·_는 띄어 쓴다)', () => {

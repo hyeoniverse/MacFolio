@@ -103,7 +103,7 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 
 - 빌드할 때 `public/imgs` 아래 폴더마다 그림·영상 목록을 이름 순으로 모아 둔다(Vite 플러그인이 만드는 `virtual:public-images` 모듈).
 - 프로젝트의 `galleryFolder`에 폴더 경로(예: `/imgs/projects/qru/screens`)를 두면, 앱을 그리기 전에 그 폴더의 그림으로 화면 모음을 채운다. 설명은 파일 이름에서 앞 번호와 확장자를 떼고 만든다(`02-login_page.png` → login page).
-- 편집 화면에서는 폴더를 고르는 칸과 미리 보기(12장까지)가 보인다.
+- 편집 화면에서는 폴더를 고르는 칸과 미리 보기(12장까지)가 보인다. 고를 수 있는 폴더는 프로젝트 그림을 두는 `/imgs/projects` 아래뿐이다(배경화면·앱 아이콘 폴더는 빼고).
 - 폴더 경로는 `/imgs` 아래만 받는다(`..` 없이).
 
 그림은 사이트와 함께 배포되는 파일이라, 새 그림을 더하려면 저장소의 그 폴더에 넣고 배포해야 한다.
