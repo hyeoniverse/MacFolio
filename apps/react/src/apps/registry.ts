@@ -1,6 +1,6 @@
 // 앱 이름 → 창에 띄울 컴포넌트. 컴포넌트를 정의하는 파일이 아니라 목록이라 .ts로 둔다 (JSX 없이 createElement)
 import { createElement, lazy, type ComponentType } from 'react';
-import { APP_NAMES, PROJECT_APPS, type AppName } from '@/apps/manifest';
+import { PROJECT_APPS, WINDOW_APP_NAMES, type AppName } from '@/apps/manifest';
 
 import Safari from '@/apps/safari/Safari';
 import Music from '@/apps/music/Music';
@@ -19,7 +19,7 @@ import Weather from '@/apps/weather/Weather';
 
 // Markdown 렌더러가 무거워서 메모(블로그)는 처음 열 때 불러온다
 const Memo = lazy(() => import('@/apps/memo/Memo'));
-// Finder는 저장소 문서를 묶어 두어서 처음 열 때 불러온다. 이 목록(WINDOW_APPS)을 Finder가 다시 읽으므로 지연 로딩이어야 한다
+// Finder는 저장소 문서를 묶어 두어서 처음 열 때 불러온다
 const Finder = lazy(() => import('@/apps/finder/Finder'));
 
 /** 창으로 열리는 앱의 컴포넌트. 여기 없는 앱은 Dock 아이콘만 있다. */
@@ -48,8 +48,9 @@ for (const { id } of PROJECT_APPS) {
 	APP_COMPONENTS[id as AppName] = Component;
 }
 
-/** 데스크톱에 렌더링할 앱 (APP_NAMES 순서) */
-export const WINDOW_APPS = APP_NAMES.flatMap((name) => {
+/** 데스크톱에 렌더링할 앱 (WINDOW_APP_NAMES 순서). 목록(manifest)에 있는데 컴포넌트가 없으면 여기서 바로 알 수 있게 한다 */
+export const WINDOW_APPS = WINDOW_APP_NAMES.map((name) => {
 	const Component = APP_COMPONENTS[name];
-	return Component ? [{ name, Component }] : [];
+	if (!Component) throw new Error(`창으로 여는 앱인데 컴포넌트가 없다: ${name} (apps/registry.ts)`);
+	return { name, Component };
 });
