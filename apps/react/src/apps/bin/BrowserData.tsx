@@ -14,15 +14,17 @@ function clear(item: BrowserDataItem) {
 	clearBrowserData(item);
 }
 
-/** 방문자 이름 쿠키: 사이트가 지울 수 없어서 목록에는 안내만 둔다 (비었으면 아래 안내에 짧게) */
+/** 방문자 이름 쿠키: 다른 줄과 같은 모양이되, 사이트가 비울 수 없어서 비우기 대신 어디서 지우는지 적는다 */
 const CookieNote = () => (
-	<li className="bin-data note">
+	<li className="bin-data">
 		<span className="bin-data-name">방문자 이름 쿠키</span>
+		<span className="bin-data-meta">macfolio_visitor</span>
 		<span className="bin-data-description">
-			메시지나 댓글을 쓰면 서버가 이 브라우저에 쿠키(macfolio_visitor)를 주고, 그것으로 이름(예: 🦊 날쌘 여우)을
-			정합니다. 사이트의 자바스크립트가 읽거나 지울 수 없게 해 두어서 여기서는 비울 수 없습니다. 지우려면 브라우저
-			설정에서 macfolio-api.hyeoniverse.com의 쿠키를 지우세요. 지우면 그 브라우저에서 쓴 글을 더는 지울 수 없습니다.
+			메시지나 댓글을 쓰면 서버가 주는 쿠키로, 이 브라우저의 이름(예: 🦊 날쌘 여우)을 정합니다. 사이트가 읽거나 지울 수
+			없게 해 두어서, 지우려면 브라우저 설정에서 macfolio-api.hyeoniverse.com의 쿠키를 지우세요. 지우면 그 브라우저에서
+			쓴 글을 더는 지울 수 없습니다.
 		</span>
+		<span className="bin-data-clear bin-data-elsewhere">브라우저 설정에서</span>
 	</li>
 );
 
