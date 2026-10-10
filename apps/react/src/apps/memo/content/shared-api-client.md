@@ -1,7 +1,7 @@
 ---
 title: fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트
 date: 2026-10-10
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: 서버를 부르는 파일 22개가 저마다 credentials·JSON 머리말·try/catch·실패 문구를 적고 있었다. shared/api/client.ts의 api()·apiFetch()로 모아, 앱의 *Api.ts에는 경로와 응답 모양만 남겼다. 401은 한 곳에서 받아 관리자 상태를 바로 로그아웃으로 바꾼다. 346줄이 179줄이 됐다.
 ---
 
