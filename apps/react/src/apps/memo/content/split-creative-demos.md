@@ -30,7 +30,7 @@ safari/project/creative/
 
 ## 알게 된 것
 
-- **Fast Refresh 규칙**: ESLint의 `react-refresh/only-export-components`가 "컴포넌트와 훅을 한 파일에서 같이 export하지 말라"고 했다. 훅(`useLiveDemo`)과 칩 컴포넌트(`QuotaChip`)를 한 파일에 두었다가 둘로 나눴다. 한 파일에 섞여 있을 때는 이 규칙이 걸리지 않았다. export가 없었으니까
+- **react-refresh 규칙**: ESLint의 `react-refresh/only-export-components`가 "컴포넌트와 훅을 한 파일에서 같이 export하지 말라"고 했다. 훅(`useLiveDemo`)과 칩 컴포넌트(`QuotaChip`)를 한 파일에 두었다가 둘로 나눴다. 한 파일에 섞여 있을 때는 이 규칙이 걸리지 않았다. export가 없었으니까
 - **순수 함수가 드러난다**: 색 계산(`contrast`, `readableAccent`, `textOnAccent`)은 DOM도 React도 필요 없는데 컴포넌트 파일 안에 있어서 시험이 없었다. 따로 나오자마자 단위 시험 7개를 붙였다. "연한 노랑을 흰 바탕 위에 올리면 어두워지되 여전히 노란 계열"처럼 눈으로 확인하던 것이 글로 남는다
 - 가져오는 쪽은 둘뿐이었다. `CreativeChapters`는 `Demo`를, `CreativePage`는 `Themes`와 데모 이벤트를. 경로만 바꿨고 동작은 그대로다
 
