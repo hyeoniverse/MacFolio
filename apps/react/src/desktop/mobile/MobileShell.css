@@ -33,7 +33,6 @@
 /* 앱 위: 바탕은 투명하게 두고, 밑으로 지나가는 내용만 아주 약하게 흐려 글자가 읽히게 한다 */
 .mobile-statusbar.on-app {
 	backdrop-filter: blur(2px);
-	-webkit-backdrop-filter: blur(2px);
 }
 
 /* 화면만 보기 (사진만 보기): 흐려지며 사라진다 */
@@ -225,7 +224,6 @@
 	overflow-y: auto;
 	background-color: rgba(0, 0, 0, calc(0.5 * var(--cc-progress)));
 	backdrop-filter: blur(calc(28px * var(--cc-progress))) saturate(calc(100% + 60% * var(--cc-progress)));
-	-webkit-backdrop-filter: blur(calc(28px * var(--cc-progress)));
 	color: #fff;
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	touch-action: none;
@@ -481,7 +479,6 @@
 	place-items: center;
 	background-color: rgba(0, 0, 0, 0.35);
 	backdrop-filter: blur(24px);
-	-webkit-backdrop-filter: blur(24px);
 	color: rgba(255, 255, 255, 0.85);
 	font-size: 15px;
 	animation: fade-in var(--duration) var(--ease-out);
