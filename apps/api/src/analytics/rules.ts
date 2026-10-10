@@ -1,109 +1,20 @@
-// 트래픽 분석의 규칙 (#102). 순수 함수만 둔다: 받은 값 검사, User-Agent 줄이기, IP 가리기, 하루 해시, 하루치 집계.
+// 트래픽 분석의 규칙 (#102). 순수 함수만 둔다: User-Agent 줄이기, IP 가리기, 하루 해시, 하루치 집계.
+// 이벤트 묶음의 모양·검사와 응답 모양은 @macfolio/contracts (사이트와 같은 스키마)
 import { createHmac } from 'node:crypto';
 
-export const EVENT_TYPES = ['visit', 'app', 'item', 'link', 'leave'] as const;
-export type EventType = (typeof EVENT_TYPES)[number];
+import { EventBatch, parse } from '@macfolio/contracts';
 
-/** 한 번에 받는 이벤트 수 (사이트는 5초마다 모아 보낸다) */
-export const MAX_EVENTS = 30;
-/** 머문 시간의 상한 (하루) */
-const MAX_DURATION_MS = 24 * 60 * 60 * 1000;
+export { EVENT_TYPES, type EventType, MAX_EVENTS, type EventInput, type EventBatch } from '@macfolio/contracts';
+
 /** 원래 이벤트를 두는 기간과, 가린 IP를 두는 기간 */
 export const EVENT_RETENTION_DAYS = 90;
 export const IP_RETENTION_DAYS = 7;
 
-/** 브라우저가 보내는 이벤트 하나 (서버가 붙이는 나라·브라우저·하루 해시는 없다) */
-export interface EventInput {
-	type: EventType;
-	app?: string;
-	item?: string;
-	path?: string;
-	referrer?: string;
-	utmSource?: string;
-	utmMedium?: string;
-	utmCampaign?: string;
-	device?: 'desktop' | 'mobile';
-	language?: string;
-	duration?: number;
-}
-
-export interface EventBatch {
-	visitId: string;
-	events: EventInput[];
-}
-
-const VISIT_ID = /^[\w-]{8,64}$/;
-const APP = /^[a-z][a-z0-9-]{0,31}$/;
-const HOST = /^[a-z0-9.-]{1,253}$/;
-const LANGUAGE = /^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$/;
-
-/** 길이가 맞는 글자면 그대로, 비었으면 undefined, 아니면 오류 */
-function text(value: unknown, max: number, name: string, errors: string[]): string | undefined {
-	if (value === undefined || value === null || value === '') return undefined;
-	if (typeof value !== 'string' || value.length > max) {
-		errors.push(`${name}은(는) ${max}자 이하의 글자입니다.`);
-		return undefined;
-	}
-	return value;
-}
-
 /**
- * 브라우저가 보낸 묶음을 검사한다. sendBeacon이 text/plain으로 보내므로 JSON 글자로 와도 받는다.
+ * 브라우저가 보낸 묶음을 검사한다 (스키마와 문구는 contracts에). sendBeacon의 text/plain(JSON 글자)도 받는다.
  * 하나라도 틀리면 전부 거절한다 (사이트의 버그를 숨기지 않는다)
  */
-export function parseBatch(input: unknown): { value: EventBatch } | { errors: string[] } {
-	let raw = input;
-	if (typeof raw === 'string') {
-		try {
-			raw = JSON.parse(raw);
-		} catch {
-			return { errors: ['JSON이 아닙니다.'] };
-		}
-	}
-	if (!raw || typeof raw !== 'object') return { errors: ['본문이 없습니다.'] };
-	const { visitId, events } = raw as Record<string, unknown>;
-	const errors: string[] = [];
-	if (typeof visitId !== 'string' || !VISIT_ID.test(visitId)) errors.push('visitId가 올바르지 않습니다.');
-	if (!Array.isArray(events) || events.length === 0 || events.length > MAX_EVENTS)
-		return { errors: [...errors, `events는 1~${MAX_EVENTS}개입니다.`] };
-
-	const parsed = events.map((event, index): EventInput => {
-		const at = `events[${index}]`;
-		if (!event || typeof event !== 'object') {
-			errors.push(`${at}가 올바르지 않습니다.`);
-			return { type: 'visit' };
-		}
-		const e = event as Record<string, unknown>;
-		if (!EVENT_TYPES.includes(e.type as EventType)) errors.push(`${at}.type이 올바르지 않습니다.`);
-		const app = text(e.app, 32, `${at}.app`, errors);
-		if (app && !APP.test(app)) errors.push(`${at}.app이 올바르지 않습니다.`);
-		const referrer = text(e.referrer, 253, `${at}.referrer`, errors)?.toLowerCase();
-		if (referrer && !HOST.test(referrer)) errors.push(`${at}.referrer는 호스트만 받습니다.`);
-		const language = text(e.language, 35, `${at}.language`, errors);
-		if (language && !LANGUAGE.test(language)) errors.push(`${at}.language가 올바르지 않습니다.`);
-		if (e.device !== undefined && e.device !== 'desktop' && e.device !== 'mobile')
-			errors.push(`${at}.device는 desktop, mobile입니다.`);
-		if (
-			e.duration !== undefined &&
-			(!Number.isInteger(e.duration) || (e.duration as number) < 0 || (e.duration as number) > MAX_DURATION_MS)
-		)
-			errors.push(`${at}.duration은 0~${MAX_DURATION_MS} 정수(ms)입니다.`);
-		return {
-			type: e.type as EventType,
-			app,
-			item: text(e.item, 200, `${at}.item`, errors),
-			path: text(e.path, 300, `${at}.path`, errors),
-			referrer,
-			utmSource: text(e.utmSource, 100, `${at}.utmSource`, errors),
-			utmMedium: text(e.utmMedium, 100, `${at}.utmMedium`, errors),
-			utmCampaign: text(e.utmCampaign, 100, `${at}.utmCampaign`, errors),
-			device: e.device as EventInput['device'],
-			language,
-			duration: e.duration as number | undefined,
-		};
-	});
-	return errors.length ? { errors } : { value: { visitId: visitId as string, events: parsed } };
-}
+export const parseBatch = (input: unknown) => parse(EventBatch, input);
 
 /** 세지 않는 요청: 검색 로봇, 미리보기, 자동 도구 */
 const BOT =
