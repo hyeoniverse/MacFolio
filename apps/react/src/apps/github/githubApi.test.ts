@@ -59,7 +59,7 @@ describe('loadGithub', () => {
 
 		const ok = vi.fn(async () => new Response(JSON.stringify(SERVER))) as unknown as typeof fetch;
 		await loadGithub('http://api', ok);
-		expect(ok).toHaveBeenCalledWith('http://api/github/profile');
+		expect(ok).toHaveBeenCalledWith('http://api/github/profile', expect.anything());
 		expect(githubStore.getState().source).toBe('live');
 		expect(githubStore.getState().data.profile.followers).toBe(7);
 	});

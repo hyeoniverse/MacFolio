@@ -1,5 +1,5 @@
 // '활동 상태 보기'가 읽는 분석 API (apps/api/src/analytics): 응답 모양과 요청. 화면에 맞게 바꾸는 순수 함수는 model.ts
-import { env } from '@/shared/config/env';
+import { ApiError, api } from '@/shared/api/client';
 
 export interface Totals {
 	visits: number;
@@ -60,16 +60,10 @@ export class ActivityError extends Error {
 	}
 }
 
-async function get<T>(path: string): Promise<T> {
-	let response: Response;
-	try {
-		response = await fetch(`${env.apiUrl}${path}`, { credentials: 'include', signal: AbortSignal.timeout(10_000) });
-	} catch {
-		throw new ActivityError(0);
-	}
-	if (!response.ok) throw new ActivityError(response.status);
-	return (await response.json()) as T;
-}
+const get = <T>(path: string): Promise<T> =>
+	api<T>(path, { timeout: 10_000 }).catch((error: unknown) => {
+		throw new ActivityError(error instanceof ApiError ? error.status : 0);
+	});
 
 export const fetchSummary = (from: string, to: string) => get<Summary>(`/analytics/summary?from=${from}&to=${to}`);
 export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?minutes=${minutes}`);

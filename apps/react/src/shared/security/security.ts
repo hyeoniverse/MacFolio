@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { createStore } from '@macfolio/desktop-core';
 import { env } from '@/shared/config/env';
+import { api, reasonsFrom } from '@/shared/api/client';
 import { useAdmin } from '@/shared/auth/adminStore';
 
 export const HUMAN_CHECKS = ['contact', 'comment', 'message'] as const;
@@ -23,11 +24,8 @@ let loading: Promise<void> | null = null;
 export function loadSecurity(force = false): Promise<void> {
 	if (!env.apiUrl) return Promise.resolve();
 	if (loading && !force) return loading;
-	loading = fetch(`${env.apiUrl}/security`, { credentials: 'include' })
-		.then(async (response) => {
-			if (!response.ok) throw new Error(String(response.status));
-			store.setState({ settings: (await response.json()) as SecuritySettings, failed: false });
-		})
+	loading = api<SecuritySettings>('/security')
+		.then((settings) => store.setState({ settings, failed: false }))
 		.catch(() => {
 			loading = null;
 			store.setState({ failed: true });
@@ -38,21 +36,15 @@ export function loadSecurity(force = false): Promise<void> {
 /** 관리자가 켜고 끈다. 실패하면 이유 */
 export async function saveSecurity(patch: Partial<Record<HumanCheck, boolean>>): Promise<string | null> {
 	try {
-		const response = await fetch(`${env.apiUrl}/security`, {
+		const settings = await api<SecuritySettings>('/security', {
 			method: 'PUT',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(patch),
+			json: patch,
+			fallback: '저장하지 못했습니다.',
 		});
-		if (!response.ok) {
-			const body = (await response.json().catch(() => ({}))) as { message?: string | string[] };
-			if (response.status === 401) return '관리자 로그인이 필요합니다.';
-			return [body.message].flat().filter(Boolean).join(' ') || '저장하지 못했습니다.';
-		}
-		store.setState({ settings: (await response.json()) as SecuritySettings, failed: false });
+		store.setState({ settings, failed: false });
 		return null;
-	} catch {
-		return '서버에 연결할 수 없습니다.';
+	} catch (error) {
+		return reasonsFrom(error).join(' ');
 	}
 }
 
