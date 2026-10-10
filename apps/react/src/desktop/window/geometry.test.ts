@@ -53,6 +53,15 @@ describe('clampRect', () => {
 		expect(rect.width).toBe(MIN_SIZE.width);
 		expect(rect.height).toBe(MIN_SIZE.height);
 	});
+
+	it('앱이 정한 최소 크기가 있으면 그보다 작게 만들지 않는다 (시스템 설정처럼). 화면이 그보다 작으면 화면 크기', () => {
+		const min = { width: 680, height: 420 };
+		expect(clampRect({ x: 10, y: 50, width: 400, height: 300 }, viewport, min)).toMatchObject(min);
+		expect(clampRect({ x: 0, y: 0, width: 400, height: 300 }, { width: 600, height: 400 }, min)).toMatchObject({
+			width: 600,
+			height: 400 - STATUSBAR_HEIGHT,
+		});
+	});
 });
 
 describe('moveRect', () => {
@@ -72,6 +81,15 @@ describe('resizeRect', () => {
 
 	it('오른쪽 아래 모서리: 크기만 바뀐다', () => {
 		expect(resizeRect(start, 'bottom-right', 50, 30, viewport)).toEqual({ ...start, width: 690, height: 430 });
+	});
+
+	it('앱이 정한 최소 크기 아래로는 줄지 않고, 반대쪽 변은 그대로', () => {
+		const min = { width: 680, height: 420 };
+		const big = { x: 100, y: 100, width: 800, height: 500 };
+		expect(resizeRect(big, 'bottom-right', -400, -400, viewport, min)).toEqual({ ...big, ...min });
+		const fromLeft = resizeRect(big, 'left', 400, 0, viewport, min);
+		expect(fromLeft.width).toBe(680);
+		expect(fromLeft.x + fromLeft.width).toBe(big.x + big.width);
 	});
 
 	it('왼쪽 변: 오른쪽 변은 고정되고 위치와 폭이 바뀐다', () => {
