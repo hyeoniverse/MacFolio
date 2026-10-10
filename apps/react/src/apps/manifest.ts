@@ -125,7 +125,7 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		icon: 'weather.svg',
 		inDock: false,
 		inLaunchpad: true,
-		windowSize: { width: 920, height: 640 },
+		windowSize: { width: 1080, height: 720 },
 	},
 	// 이 사이트에서 버린 기능과, 관리자에게는 지운 메모. Dock 오른쪽 끝에 따로 있고 휴대폰 홈 화면에는 두지 않는다
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false, desktopOnly: true, windowSize: { width: 860, height: 540 } },
