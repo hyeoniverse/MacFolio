@@ -1,7 +1,7 @@
 ---
 title: '!important 66개 지우기와 공통 아이콘 단추'
 date: 2026-10-01
-category: 프론트엔드/구조·리팩터링
+category: 개발기/MacFolio/프론트엔드
 summary: 앱 기본값을 CSS 층으로 내린 덕분에 남은 !important를 모두 지울 수 있었다. 지우면서 생긴 차이는 화면 비교와 계산된 스타일 비교로 찾았다. 그리고 앱마다 따로 있던 아이콘 단추를 공통 IconButton 하나로 합쳤다.
 ---
 
