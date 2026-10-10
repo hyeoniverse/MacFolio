@@ -10,8 +10,7 @@ import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { useStatusBarTone } from '@/desktop/mobile/statusBarTone';
 import { useImmersiveApp } from '@/desktop/mobile/immersiveStore';
-import { useSettings } from '@/shared/settings/settingsStore';
-import { resolveTheme } from '@/shared/settings/settings';
+import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import '@/desktop/mobile/MobileShell.css';
 
 /**
@@ -31,8 +30,7 @@ const MobileShell = () => {
 	const onApp = foreground !== null && !controlCenterOpen && !switcherOpen;
 	// 상태 표시줄 글자 색: 앱 위에서는 그 밑에 실제로 그려진 화면을 읽어 정한다 (iOS처럼). 읽을 수 없으면 화면 모드를 따른다
 	const statusBar = useRef<HTMLDivElement>(null);
-	const { theme } = useSettings();
-	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
+	const dark = useResolvedTheme() === 'dark';
 	// 화면만 보기 중인 앱 위에서는 상태 표시줄을 숨긴다 (사진만 보기)
 	const immersive = useImmersiveApp();
 	const hidden = onApp && immersive !== null && immersive === foreground;

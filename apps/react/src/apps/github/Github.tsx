@@ -2,8 +2,7 @@ import { cssVars } from '@/shared/lib/cssVars';
 import React, { useEffect } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { env } from '@/shared/config/env';
-import { useSettings } from '@/shared/settings/settingsStore';
-import { resolveTheme } from '@/shared/settings/settings';
+import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { LANGUAGE_COLORS, type RepoCard as Repo } from '@/apps/github/githubProfile';
 import { loadGithub, useGithub } from '@/apps/github/githubApi';
 import { loadActivity, useActivity } from '@/apps/github/githubActivityApi';
@@ -62,9 +61,8 @@ const RepoCard: React.FC<{ repo: Repo; login: string }> = ({ repo, login }) => (
  * 값은 API 서버가 GitHub에서 받아 둔 것이고, 서버에 닿지 않으면 넣어 둔 스냅샷을 보여 준다.
  */
 const Github: React.FC = () => {
-	const { theme } = useSettings();
 	// README의 밝은·어두운 그림(통계 카드)을 앱의 화면 모드에 맞춘다
-	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
+	const dark = useResolvedTheme() === 'dark';
 	const { source, data } = useGithub();
 	const { profile, repos } = data;
 	const activity = useActivity();

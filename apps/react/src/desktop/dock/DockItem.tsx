@@ -1,4 +1,5 @@
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
+import { prefersReducedMotion } from '@/shared/lib/media';
 import React, { useEffect, useRef } from 'react';
 import '@/desktop/dock/DockItem.css';
 
@@ -19,7 +20,7 @@ const DockItem: React.FC<DockItemProps> = ({ label, icon, isActive, isHidden, on
 
 	// 앱이 실행되면 macOS처럼 아이콘이 두 번 튄다 (처음부터 실행 중인 앱은 튀지 않는다)
 	useEffect(() => {
-		if (isActive && !wasActive.current && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		if (isActive && !wasActive.current && !prefersReducedMotion()) {
 			iconRef.current?.animate(
 				[
 					{ transform: 'translateY(0)' },
