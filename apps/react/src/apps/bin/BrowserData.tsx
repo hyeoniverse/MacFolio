@@ -8,7 +8,6 @@ import Button from '@/shared/ui/button/Button';
 import { clearBrowserData, readBrowserData, type BrowserDataItem } from './siteStorage';
 import { formatSize } from './filesApi';
 import { refreshBin } from './binState';
-import { env } from '@/shared/config/env';
 
 /** 지운다. 설정은 앱이 들고 있는 값도 처음 설정으로 돌린다 (돌리면 저장소에 다시 쓰므로 그 뒤에 지운다) */
 function clear(item: BrowserDataItem) {
@@ -85,10 +84,9 @@ const BrowserData = () => {
 					</ul>
 				</>
 			) : (
-				// 비었으면 목록 대신 가운데에 빈 휴지통 그림과 안내 (쿠키 안내는 그 아래 작게)
+				// 비었으면 목록 대신 가운데에 안내 (쿠키 안내는 그 아래 작게). 빈 휴지통 그림은 Dock에만
 				<div className="bin-empty-state">
 					<div className="bin-empty-hero" role="status">
-						<img src={`${env.imageUrl}/bin-empty.png`} alt="" draggable={false} />
 						<strong>휴지통이 비어 있습니다</strong>
 						<span>이 사이트가 이 브라우저에 남긴 설정이나 검색어가 없습니다.</span>
 					</div>

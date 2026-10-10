@@ -37,7 +37,8 @@ test.describe('휴지통', () => {
 		const empty = bin.getByRole('status').filter({ hasText: '휴지통이 비어 있습니다' });
 		await expect(empty).toContainText('이 사이트가 이 브라우저에 남긴 설정이나 검색어가 없습니다.');
 		await expect(list).toHaveCount(0);
-		await expect(empty.locator('img')).toHaveAttribute('src', /\/bin-empty\.png$/);
+		// 빈 휴지통 그림은 Dock에만 (창 안에는 글만)
+		await expect(empty.locator('img')).toHaveCount(0);
 		await expect(bin.getByRole('button', { name: '휴지통 비우기' })).toHaveCount(0);
 		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin-empty\.png$/);
 		expect(await page.evaluate(() => localStorage.getItem('macfolio:memo:recent-finds'))).toBeNull();

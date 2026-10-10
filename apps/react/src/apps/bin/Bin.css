@@ -293,14 +293,6 @@
 	text-align: center;
 }
 
-.bin-empty-hero img {
-	width: 112px;
-	height: 112px;
-	margin-bottom: 10px;
-	filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12));
-	user-select: none;
-}
-
 .bin-empty-hero strong {
 	color: var(--color-text-strong);
 	font-size: 17px;
