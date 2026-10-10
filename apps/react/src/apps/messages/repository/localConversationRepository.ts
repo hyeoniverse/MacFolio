@@ -1,11 +1,12 @@
 import { visitorName, type Message, type MessageInput, type Thread } from '../conversations';
 import type { ConversationRepository } from './types';
+import { readString, STORAGE_KEYS, writeString } from '@/shared/lib/storage';
 import { pinnedMessages, pinnedThread, PINNED_THREAD_ID, withPinnedIntro } from './pinned';
 
 // 서버가 없을 때 브라우저에만 저장하는 구현. 브라우저 id로 사람을 구분하고 이름도 정한다.
 // 저장소에는 브라우저 id 대신 해시만 남긴다 (서버의 방문자 해시와 같은 역할).
-/** 저장 형식 버전이 바뀌면 키를 바꾼다. 예전 키의 데이터는 index.ts에서 지운다 */
-export const STORAGE_KEY = 'macfolio:messages:v2';
+/** 저장 형식 버전이 바뀌면 키를 바꾼다 (shared/lib/storage.ts) */
+export const STORAGE_KEY = STORAGE_KEYS.messages;
 export { PINNED_THREAD_ID };
 
 interface StoredThread {
@@ -33,6 +34,12 @@ interface StoredData {
 
 type KeyValueStorage = Pick<Storage, 'getItem' | 'setItem'>;
 
+/** 기본 저장소: 이 브라우저의 localStorage (shared/lib/storage.ts가 실패를 삼킨다) */
+const browserStorage: KeyValueStorage = {
+	getItem: (key) => readString(key),
+	setItem: (key, value) => void writeString(key, value),
+};
+
 async function sha256(value: string): Promise<string> {
 	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
 	return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
@@ -43,7 +50,7 @@ async function sha256(value: string): Promise<string> {
  */
 export function createLocalConversationRepository(
 	visitorId: string,
-	storage: KeyValueStorage = localStorage,
+	storage: KeyValueStorage = browserStorage,
 	now: () => Date = () => new Date()
 ): ConversationRepository {
 	const authorIdPromise = sha256(`visitor:${visitorId}`).then((hash) => hash.slice(0, 16));

@@ -1,5 +1,6 @@
 // 이 사이트가 방문자 브라우저에 남기는 것. 휴지통의 '내 브라우저 데이터'가 보여 주고 지운다.
 // 새 키를 쓰면 여기에도 더한다 (siteStorage.test.ts가 코드에 있는 macfolio: 키를 모두 다루는지 확인한다)
+import { STORAGE_KEYS, storageOf } from '@/shared/lib/storage';
 
 export interface BrowserDataItem {
 	id: string;
@@ -30,7 +31,7 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		name: '설정',
 		description: '시스템 설정에서 고른 화면 모드, 배경화면(데스크톱·휴대폰), 딸깍 소리',
 		storage: 'local',
-		keys: ['macfolio:settings'],
+		keys: [STORAGE_KEYS.settings],
 		afterClear: '바로 처음 설정으로 돌아갑니다',
 	},
 	{
@@ -38,7 +39,7 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		name: '메모 보기 설정',
 		description: '메모 앱 목록의 정렬 기준과 날짜별 묶기',
 		storage: 'local',
-		keys: ['macfolio:memo:arrangement'],
+		keys: [STORAGE_KEYS.memoArrangement],
 		afterClear: '메모 앱을 다음에 열 때부터 처음 설정으로 보입니다',
 	},
 	{
@@ -46,7 +47,7 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		name: '메모 최근 검색어',
 		description: '메모 본문 찾기(⌘F)에서 쓴 검색어 다섯 개까지',
 		storage: 'local',
-		keys: ['macfolio:memo:recent-finds'],
+		keys: [STORAGE_KEYS.memoRecentFinds],
 		afterClear: '찾기 칸의 최근 목록이 비워집니다',
 		summarize: (raw) => countOf(raw, '검색어'),
 	},
@@ -55,7 +56,7 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		name: '날씨 장소',
 		description: '날씨 앱에 더한 도시 목록과 기온 단위(섭씨·화씨)',
 		storage: 'local',
-		keys: ['macfolio:weather:places', 'macfolio:weather:unit'],
+		keys: [STORAGE_KEYS.weatherPlaces, STORAGE_KEYS.weatherUnit],
 		afterClear: '날씨 앱을 다음에 열면 서울만, 섭씨로 보입니다',
 		summarize: (raw) => countOf(raw, '도시'),
 	},
@@ -64,7 +65,7 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		name: '이 브라우저에 저장한 메시지',
 		description: '서버 없이 띄운 사이트에서 메시지 앱에 쓴 글과, 그 글을 쓴 사람을 가리는 무작위 값',
 		storage: 'local',
-		keys: ['macfolio:messages:v2', 'macfolio:messages:visitor'],
+		keys: [STORAGE_KEYS.messages, STORAGE_KEYS.messagesVisitor],
 		afterClear: '이 브라우저에 쓴 메시지가 사라집니다',
 	},
 	{
@@ -72,7 +73,7 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		name: '로그인하러 떠날 때 켜 둔 앱',
 		description: 'GitHub 로그인에서 돌아왔을 때 켜 두었던 창을 되살리려고 잠깐 남기는 목록 (이 탭을 닫으면 사라진다)',
 		storage: 'session',
-		keys: ['macfolio:apps-before-leaving'],
+		keys: [STORAGE_KEYS.appsBeforeLeaving],
 		afterClear: '돌아왔을 때 창이 처음 상태로 열립니다',
 	},
 ];
@@ -83,14 +84,6 @@ export interface StoredItem {
 	bytes: number;
 	summary: string | null;
 }
-
-const storageOf = (kind: BrowserDataItem['storage']): Storage | null => {
-	try {
-		return kind === 'local' ? window.localStorage : window.sessionStorage;
-	} catch {
-		return null;
-	}
-};
 
 /** 지금 이 브라우저에 남아 있는 것만 */
 export function readBrowserData(items: BrowserDataItem[] = BROWSER_DATA): StoredItem[] {
