@@ -471,6 +471,12 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 - `ubuntu` 계정이 `docker` 그룹이라 그 계정으로 들어오면 호스트 root와 같다. 그래서 SSH 키 관리가 곧 서버 전체의 열쇠 관리다. 키를 잃어버리면 Oracle 콘솔의 **Console connection**으로 들어가 `authorized_keys`를 바꾼다
 - 점검은 분기마다 한 번, 그리고 서버 설정을 손댄 뒤에 돌린다
 
+#### 처음 한 번 (스크립트를 넣은 뒤)
+
+1. 서버에서 코드를 받고 돌린다: `cd ~/macfolio && git pull && ops/audit.sh`. `확인`이 나오면 위 표대로 손보고 다시 돌려 `모두 OK`를 본다
+2. 스크립트가 보지 못하는 클라우드 쪽 방화벽을 콘솔에서 본다: Oracle Cloud → Networking → Virtual cloud networks → VCN → Subnets → public subnet → **Security Lists** → Default Security List → **Ingress Rules**. `0.0.0.0/0`에서 열린 TCP 포트가 **22** 하나면 된다 (ICMP 규칙 둘은 Oracle 기본이라 그대로 둔다). 80·443이 있으면 지운다 (터널이라 필요 없다)
+3. 결과를 어디에도 올리지 않는다. 출력에 계정 이름과 듣는 주소가 들어 있다
+
 ### 백업
 
 블로그 글·임시 저장·버전 기록·올린 이미지가 **모두 DB에만** 있다. `ops/backup.sh`를 cron으로 매일 돌려 서버와 서버 밖(Cloudflare R2)에 남긴다.
