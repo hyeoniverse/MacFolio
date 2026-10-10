@@ -32,6 +32,8 @@
 | `docs/deployment`     | `docs/Deployment`  | 소문자로                  |
 | `feat/memo-admin-api` | `my-branch`        | 타입이 없다               |
 
+Dependabot이 여는 의존성 PR은 예외다. 브랜치 이름(`dependabot/npm_and_yarn/…`)은 GitHub이 정하므로 `conventions`가 보지 않고, 제목과 커밋은 `.github/dependabot.yml`에서 `chore(deps): …`, `ci(deps): …`로 맞춰 둔다.
+
 ## 커밋
 
 ```
