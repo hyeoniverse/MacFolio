@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { localFrontendWarning, originMatcher } from './cors.js';
+import { cookiesAllowedFrom, localFrontendWarning, originClassifier, originMatcher } from './cors.js';
 
 describe('CORS 허용 주소', () => {
 	const allowed = originMatcher(['https://macfolio.hyeoniverse.com', 'https://*-macfolio.hyeoniverse.workers.dev']);
@@ -18,6 +18,25 @@ describe('CORS 허용 주소', () => {
 		expect(allowed('http://a-macfolio.hyeoniverse.workers.dev')).toBe(false);
 		expect(allowed('https://macfolio.hyeoniverse.workers.dev')).toBe(false);
 		expect(allowed(undefined)).toBe(false);
+	});
+});
+
+describe('쿠키를 붙여도 되는 주소', () => {
+	const classify = originClassifier(['https://macfolio.hyeoniverse.com', 'https://*-macfolio.hyeoniverse.workers.dev']);
+
+	it('그대로 적은 주소는 exact, *에 맞은 주소는 pattern', () => {
+		expect(classify('https://macfolio.hyeoniverse.com')).toBe('exact');
+		expect(classify('https://feat-x-macfolio.hyeoniverse.workers.dev')).toBe('pattern');
+		expect(classify('https://evil.example')).toBeNull();
+		expect(classify(undefined)).toBeNull();
+	});
+
+	it('exact 주소와 Origin이 없는 요청(같은 사이트 이동, curl)에만 쿠키를 허용한다', () => {
+		const allowed = cookiesAllowedFrom(classify);
+		expect(allowed(undefined)).toBe(true);
+		expect(allowed('https://macfolio.hyeoniverse.com')).toBe(true);
+		expect(allowed('https://feat-x-macfolio.hyeoniverse.workers.dev')).toBe(false);
+		expect(allowed('https://evil.example')).toBe(false);
 	});
 });
 

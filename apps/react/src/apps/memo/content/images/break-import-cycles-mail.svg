@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>메일 앱의 순환 의존: 전과 후</title>
+<defs>
+<marker id="red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="640" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="40" font-size="17" font-weight="700" fill="#1f2937">전: 서로 가져온다</text>
+<text x="352" y="40" font-size="17" font-weight="700" fill="#1f2937">후: 셋째 파일에서 가져온다</text>
+<!-- before -->
+<rect x="40" y="90" width="110" height="44" rx="10" fill="#fff1f2" stroke="#fda4af"/>
+<text x="95" y="117" font-size="13" font-weight="600" fill="#1f2937" text-anchor="middle">Mail.tsx</text>
+<rect x="190" y="90" width="110" height="44" rx="10" fill="#fff1f2" stroke="#fda4af"/>
+<text x="245" y="117" font-size="13" font-weight="600" fill="#1f2937" text-anchor="middle">MailMobile.tsx</text>
+<path d="M150 103 H188" stroke="#ef4444" stroke-width="2" marker-end="url(#red)"/>
+<path d="M190 121 H152" stroke="#ef4444" stroke-width="2" marker-end="url(#red)"/>
+<text x="170" y="92" font-size="10.5" fill="#6b7280" text-anchor="middle">그린다</text>
+<text x="170" y="145" font-size="10.5" fill="#6b7280" text-anchor="middle">ListMail·Mailbox 타입</text>
+<rect x="40" y="180" width="260" height="84" rx="10" fill="#f9fafb"/>
+<text x="54" y="204" font-size="12" fill="#374151">어느 쪽을 먼저 읽어야 하는지 정할 수 없다</text>
+<text x="54" y="224" font-size="12" fill="#374151">MAILBOX_LABEL이 두 파일에 따로 적혀 있었다</text>
+<text x="54" y="244" font-size="12" fill="#374151">madge: ✖ Found 2 circular dependencies</text>
+<!-- after -->
+<rect x="360" y="90" width="110" height="44" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="415" y="117" font-size="13" font-weight="600" fill="#1f2937" text-anchor="middle">Mail.tsx</text>
+<rect x="500" y="90" width="110" height="44" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="555" y="117" font-size="13" font-weight="600" fill="#1f2937" text-anchor="middle">MailMobile.tsx</text>
+<path d="M470 112 H498" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<text x="484" y="92" font-size="10.5" fill="#6b7280" text-anchor="middle">그린다</text>
+<rect x="430" y="196" width="110" height="44" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="485" y="223" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">model.ts</text>
+<path d="M415 134 L470 194" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M555 134 L500 194" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<text x="485" y="262" font-size="10.5" fill="#6b7280" text-anchor="middle">Mailbox · ListMail · MAILBOX_LABEL</text>
+<text x="485" y="284" font-size="11" fill="#374151" text-anchor="middle">화살표가 한 방향으로만 간다</text>
+</svg>

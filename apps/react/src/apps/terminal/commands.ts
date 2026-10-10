@@ -1,6 +1,8 @@
 // 터미널 명령어. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 명령은 출력할 줄(lines)과 화면에서 실행할 효과(effects)를 돌려준다.
-import { PROFILE, PROJECTS, SITE_STACK, SKILLS } from '@/shared/profile';
+import { PROJECTS } from '@/shared/profile';
+import { getProfile } from '@/shared/site/profileStore';
+import { fullName } from '@/desktop/about/profileInfo';
 import type { AppName } from '@/apps/manifest';
 
 /**
@@ -94,34 +96,41 @@ export const COMMANDS: Record<string, Command> = {
 	},
 	whoami: {
 		description: '저를 소개합니다',
-		run: () =>
-			output([
-				heading(`${PROFILE.name} (${PROFILE.nameEn})`),
-				pair('역할', PROFILE.role),
-				pair('학교', PROFILE.school),
-				pair('지역', PROFILE.location),
-			]),
+		run: () => {
+			const profile = getProfile();
+			return output([
+				heading(fullName(profile)),
+				// 비운 값은 줄째 뺀다
+				...[pair('역할', profile.role), pair('학교', profile.school), pair('지역', profile.location)].filter(
+					(line) => line.kind === 'pair' && line.value
+				),
+			]);
+		},
 	},
 	neofetch: {
 		description: '이 사이트의 정보',
-		run: () =>
-			output([
+		run: () => {
+			const profile = getProfile();
+			return output([
 				heading('guest@macfolio'),
 				pair('OS', 'MacFolio (웹)'),
 				pair('Shell', 'zsh (흉내)'),
-				pair('Owner', `${PROFILE.name} · ${PROFILE.role}`),
-				pair('Stack', SITE_STACK.join(', ')),
-			]),
+				pair('Owner', `${profile.name} · ${profile.role}`),
+				pair('Stack', profile.siteStack.join(', ')),
+			]);
+		},
 	},
 	skills: {
 		description: '다룰 수 있는 기술',
-		run: () =>
-			output([
-				pair('프론트엔드', SKILLS.frontend.join(', ')),
-				pair('백엔드', SKILLS.backend.join(', ')),
-				pair('인터랙션', SKILLS.interaction.join(', ')),
-				pair('이 사이트', SITE_STACK.join(', ')),
-			]),
+		run: () => {
+			const profile = getProfile();
+			return output([
+				pair('프론트엔드', profile.skills.frontend.join(', ')),
+				pair('백엔드', profile.skills.backend.join(', ')),
+				pair('인터랙션', profile.skills.interaction.join(', ')),
+				pair('이 사이트', profile.siteStack.join(', ')),
+			]);
+		},
 	},
 	projects: {
 		description: '프로젝트 목록',
@@ -156,13 +165,15 @@ export const COMMANDS: Record<string, Command> = {
 	},
 	contact: {
 		description: '연락하는 방법',
-		run: () =>
-			output([
-				pair('GitHub', PROFILE.github, PROFILE.github),
-				pair('이메일', PROFILE.email, `mailto:${PROFILE.email}`),
+		run: () => {
+			const profile = getProfile();
+			return output([
+				pair('GitHub', profile.github, profile.github),
+				pair('이메일', profile.email, `mailto:${profile.email}`),
 				pair('감상·피드백', 'open messages'),
 				pair('메일 앱', 'open mail'),
-			]),
+			]);
+		},
 	},
 	open: {
 		description: '앱 열기',

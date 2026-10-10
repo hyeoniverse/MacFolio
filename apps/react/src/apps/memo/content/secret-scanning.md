@@ -1,7 +1,7 @@
 ---
 title: 커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기
 date: 2026-10-10
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: 저장소 791커밋을 gitleaks로 훑으니 걸린 것은 Oracle 문서의 시험용 개인 키 4건뿐이었다. 그 예외만 적어 두고, PR과 main마다 기록 전체를 다시 훑는 CI 작업을 더했다. 한 번 커밋했다 지운 값도 기록에 남으므로 "지금 파일"이 아니라 "기록"을 본다.
 ---
 
@@ -47,7 +47,9 @@ PR과 main push마다, 그리고 월요일마다 돈다. 바이너리는 버전(
 
 코드로 할 수 있는 것은 여기까지고, 둘은 저장소 설정이다.
 
-1. Settings → Code security → **Secret scanning**과 **Push protection** 켜기
-2. main의 Ruleset에 `secrets`를 필수 검사로 더하기 (CONTRIBUTING.md의 '저장소 설정')
+1. Settings → Advanced Security(예전 이름 Code security)에서 **Secret Protection**(예전 이름 Secret scanning)과 그 아래 **Push protection**, 그리고 **Dependabot security updates** 켜기
+2. main의 Ruleset에 `secrets`를 필수 검사로 더하기
+
+단추 위치와 순서는 CONTRIBUTING.md의 '저장소 설정 › 비밀 값·의존성'에 적어 두었다. GitHub의 스캐너와 gitleaks는 보는 범위가 다르다. GitHub은 자기가 아는 서비스의 키만, gitleaks는 `.gitleaks.toml`에 적은 이 프로젝트의 키(Resend·Groq, DB 비밀번호)까지 본다. 그래서 둘 다 켠다.
 
 #MacFolio #보안 #CI #gitleaks

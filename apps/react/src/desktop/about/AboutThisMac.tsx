@@ -2,23 +2,26 @@ import { useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/useAppState';
 import { requestFinderDoc } from '@/apps/finder/openDoc';
 import { requestedSection } from '@/apps/settings/settingsRequest';
-import { PROFILE } from '@/shared/profile';
-import { PHOTO_URL, PROFILE_ROWS } from './profileInfo';
+import { photoUrl, useProfile } from '@/shared/site/profileStore';
+import { profileRows } from './profileInfo';
 import ProfileLink from './ProfileLink';
 import { closeAbout, useAboutOpen } from './aboutStore';
 import './AboutThisMac.css';
 
 /**
  * Apple 메뉴의 '이 Mac에 관하여': macOS의 같은 창처럼 가운데 작은 창에 그림, 이름, 사양 줄, '추가 정보…'.
- * 이 Mac 대신 만든 사람(김정현)의 프로필을 보여 준다. '추가 정보…'는 macOS처럼 시스템 설정의 '정보'를 연다. 앱이 아니라 시스템 창이라 Dock·Finder에는 없다.
+ * 이 Mac 대신 만든 사람(사이트 주인)의 프로필을 보여 준다. '추가 정보…'는 macOS처럼 시스템 설정의 '정보'를 연다. 앱이 아니라 시스템 창이라 Dock·Finder에는 없다.
  * 창의 빈 곳을 잡아 옮기고, 닫기 단추나 Esc로 닫는다 (최소화·확대는 macOS처럼 꺼져 있다)
  */
 const AboutThisMac = () => {
 	const open = useAboutOpen();
 	const { openApp } = useAppState();
+	const profile = useProfile();
+	const photo = photoUrl(profile);
+	/** 불러오지 못한 사진 주소 (프로필의 GitHub 주소가 바뀌면 다시 시도한다) */
+	const [brokenPhoto, setBrokenPhoto] = useState<string | null>(null);
 	/** 가운데에서 옮긴 만큼 */
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
-	const [photo, setPhoto] = useState(true);
 	const drag = useRef<{ x: number; y: number; from: { x: number; y: number } } | null>(null);
 	const closeButton = useRef<HTMLButtonElement>(null);
 
@@ -59,18 +62,18 @@ const AboutThisMac = () => {
 				<span className="off" aria-hidden="true" />
 			</div>
 
-			{photo ? (
-				<img className="about-mac-photo" src={PHOTO_URL} alt="" draggable={false} onError={() => setPhoto(false)} />
+			{brokenPhoto !== photo ? (
+				<img className="about-mac-photo" src={photo} alt="" draggable={false} onError={() => setBrokenPhoto(photo)} />
 			) : (
 				<span className="about-mac-photo monogram" aria-hidden="true">
-					{PROFILE.name.slice(-2)}
+					{profile.name.slice(-2)}
 				</span>
 			)}
-			<h2>{PROFILE.name}</h2>
-			<p className="about-mac-subtitle">{PROFILE.nameEn}</p>
+			<h2>{profile.name}</h2>
+			{profile.nameEn && <p className="about-mac-subtitle">{profile.nameEn}</p>}
 
 			<dl className="about-mac-specs">
-				{PROFILE_ROWS.map(({ label, value, href }) => (
+				{profileRows(profile).map(({ label, value, href }) => (
 					<div key={label}>
 						<dt>{label}</dt>
 						<dd>{href ? <ProfileLink href={href}>{value}</ProfileLink> : value}</dd>
@@ -103,7 +106,7 @@ const AboutThisMac = () => {
 				개인정보 처리 방침
 			</button>
 			<p className="about-mac-legal">
-				™ &amp; © {new Date().getFullYear()} {PROFILE.nameEn}. 모든 권리 보유.
+				™ &amp; © {new Date().getFullYear()} {profile.nameEn || profile.name}. 모든 권리 보유.
 			</p>
 		</div>
 	);

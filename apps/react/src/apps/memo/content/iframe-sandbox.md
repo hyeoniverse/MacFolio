@@ -1,7 +1,7 @@
 ---
 title: 프로젝트 앱의 iframe에 sandbox 걸기
 date: 2026-10-09
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: 프로젝트 앱은 배포한 사이트를 iframe으로 띄우는데, 그 iframe에 아무 제한이 없었다. 안에 띄운 사이트의 링크 하나로 MacFolio 전체가 다른 주소로 바뀔 수 있었다. sandbox로 그 권한만 빼고, 빠뜨리면 실패하는 시험을 더했다.
 ---
 

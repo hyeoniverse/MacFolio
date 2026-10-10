@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
-import { useCanEditMemo } from '@/apps/memo/admin';
+import { useCanEditMemo } from '@/apps/memo/useCanEditMemo';
 import BrowserData from './BrowserData';
 import ServerFiles from './ServerFiles';
 import { useServerFiles } from './useServerFiles';

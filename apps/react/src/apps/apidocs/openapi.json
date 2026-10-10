@@ -220,6 +220,133 @@
 				]
 			}
 		},
+		"/site": {
+			"get": {
+				"operationId": "SiteController_view",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "관리자가 저장한 프로필 (없으면 null)과 마지막으로 바꾼 시각",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"profile": {
+											"name": "김정현",
+											"nameEn": "Kim Jeong Hyeon",
+											"role": "Frontend Focused Fullstack Developer",
+											"school": "서울여자대학교",
+											"location": "Seoul, South Korea",
+											"github": "https://github.com/hyeoniverse",
+											"email": "hyeoniverse.dev@gmail.com",
+											"skills": {
+												"frontend": [
+													"React",
+													"TypeScript"
+												],
+												"backend": [
+													"Node.js"
+												],
+												"interaction": [
+													"GSAP"
+												]
+											},
+											"siteStack": [
+												"React 19",
+												"Vite"
+											]
+										},
+										"updatedAt": null
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"site"
+				]
+			}
+		},
+		"/site/profile": {
+			"put": {
+				"operationId": "SiteController_saveProfile",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"name": "김정현",
+									"nameEn": "Kim Jeong Hyeon",
+									"role": "Frontend Focused Fullstack Developer",
+									"school": "서울여자대학교",
+									"location": "Seoul, South Korea",
+									"github": "https://github.com/hyeoniverse",
+									"email": "hyeoniverse.dev@gmail.com",
+									"skills": {
+										"frontend": [
+											"React",
+											"TypeScript"
+										],
+										"backend": [
+											"Node.js"
+										],
+										"interaction": [
+											"GSAP"
+										]
+									},
+									"siteStack": [
+										"React 19",
+										"Vite"
+									]
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "저장한 뒤의 사이트 콘텐츠"
+					},
+					"400": {
+						"description": "규칙을 어겼다 (이름·이메일·GitHub 주소 필수, 길이, 개수). message에 이유를 모두 담는다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"site"
+				]
+			},
+			"delete": {
+				"operationId": "SiteController_resetProfile",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "저장한 프로필을 지웠다 (코드의 기본값으로 돌아간다)"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"site"
+				]
+			}
+		},
 		"/visitor": {
 			"get": {
 				"operationId": "VisitorsController_me",
