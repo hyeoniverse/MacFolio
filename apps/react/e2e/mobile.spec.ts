@@ -292,6 +292,45 @@ test.describe('모바일', () => {
 		await expect(weather.locator('.weather-card')).toHaveCount(1);
 	});
 
+	test('날씨: 장소가 하나면 아래 점 막대가 없고, 손가락으로 카드를 밀면(위아래로 조금 흔들려도) 휴지통이 드러난다', async ({
+		page,
+	}) => {
+		await fakeWeather(page);
+		await enterHome(page);
+		await (await homeApp(page, '날씨')).tap();
+		const weather = appWindow(page, 'weather');
+		await expect(weather.getByLabel('현재 기온 19도')).toBeVisible();
+		// 서울 하나: 넘길 곳이 없으니 점 막대도 없다 (목록 단추만)
+		await expect(weather.getByRole('group', { name: '장소 넘기기' })).toHaveCount(0);
+		await expect(weather.getByRole('button', { name: '장소 목록' })).toBeVisible();
+
+		// 도쿄를 더하면 점 막대가 생긴다
+		await weather.getByRole('button', { name: '장소 목록' }).tap();
+		const sidebar = weather.getByRole('navigation', { name: '장소' });
+		await sidebar.getByRole('searchbox', { name: '도시 검색' }).fill('도쿄');
+		await sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button', { name: /도쿄/ }).tap();
+		await expect(weather.getByRole('group', { name: '장소 넘기기' }).getByRole('button')).toHaveCount(2);
+
+		// 실제 터치 이벤트로 왼쪽으로 민다 (손가락이 위아래로 조금 흔들린다)
+		await weather.getByRole('button', { name: '장소 목록' }).tap();
+		const card = sidebar.locator('.weather-card').nth(1);
+		const face = (await card.locator('.weather-card-face').boundingBox())!;
+		const x0 = face.x + face.width - 30;
+		const y0 = face.y + face.height / 2;
+		const cdp = await page.context().newCDPSession(page);
+		await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x0, y: y0 }] });
+		for (let i = 1; i <= 10; i++)
+			await cdp.send('Input.dispatchTouchEvent', {
+				type: 'touchMove',
+				touchPoints: [{ x: x0 - i * 14, y: y0 + (i % 2 ? 2 : -2) }],
+			});
+		await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+		await cdp.detach();
+		await expect(card).toHaveClass(/swiped/);
+		await card.getByRole('button', { name: '도쿄 삭제' }).tap();
+		await expect(sidebar.locator('.weather-card')).toHaveCount(1);
+	});
+
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {
 		await enterHome(page);
 		for (const label of ['Safari', 'GitHub', '메모', '메일', '메시지', '시스템 설정', '단축어', '음악']) {
