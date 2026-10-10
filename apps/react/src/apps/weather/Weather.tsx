@@ -154,6 +154,14 @@ const PlaceCard = ({
 					const dx = event.clientX - start.x;
 					// 옆으로 미는 것만 (위아래 스크롤은 그대로)
 					if (!start.moved && (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(event.clientY - start.y))) return;
+					if (!start.moved) {
+						// 옆으로 밀기 시작하면 손가락을 이 카드가 붙잡는다 (손가락이 카드 밖으로 나가도 계속 민다)
+						try {
+							event.currentTarget.setPointerCapture(event.pointerId);
+						} catch {
+							// 이미 끝난 포인터면 그냥 둔다
+						}
+					}
 					start.moved = true;
 					setOffset(Math.min(0, Math.max(-SWIPE_OPEN - 24, start.from + dx)));
 				}}
@@ -164,8 +172,12 @@ const PlaceCard = ({
 					if (start?.moved) setOffset((current) => (current < -SWIPE_OPEN / 2 ? -SWIPE_OPEN : 0));
 				}}
 				onPointerCancel={() => {
+					// iOS Safari는 손가락이 조금만 위아래로 흔들려도 스크롤로 보고 취소를 보낸다.
+					// 그때도 닫지 않고, 민 만큼으로 열지 닫을지 정한다
+					const start = drag.current;
 					drag.current = null;
-					setOffset(0);
+					dragged.current = Boolean(start?.moved);
+					setOffset((current) => (current < -SWIPE_OPEN / 2 ? -SWIPE_OPEN : 0));
 				}}
 				onClick={(event) => {
 					if (dragged.current) {
@@ -420,7 +432,7 @@ const Weather = () => {
 							aria-expanded={menu !== null}
 							onClick={(event) => {
 								const rect = event.currentTarget.getBoundingClientRect();
-								setMenu(menu ? null : { x: rect.right - 220, y: rect.bottom + 6 });
+								setMenu(menu ? null : { x: rect.right - 260, y: rect.bottom + 8 });
 							}}
 						>
 							<i className="fa-solid fa-ellipsis" aria-hidden="true" />
@@ -534,18 +546,21 @@ const Weather = () => {
 					{/* 좁은 창·휴대폰의 아래 막대 (iOS 날씨): 가운데 장소 점, 오른쪽 목록 단추 */}
 					<div className="weather-bottom-bar">
 						<span className="weather-bottom-spacer" />
-						<div className="weather-pages" role="group" aria-label="장소 넘기기">
-							{places.map((entry, at) => (
-								<button
-									key={keyOf(entry)}
-									type="button"
-									className={at === index ? 'active' : ''}
-									aria-label={`${entry.name} 날씨 보기`}
-									aria-current={at === index || undefined}
-									onClick={() => setSelected(at)}
-								/>
-							))}
-						</div>
+						{/* 장소가 둘 이상일 때만 (하나면 넘길 곳이 없다) */}
+						{places.length > 1 && (
+							<div className="weather-pages" role="group" aria-label="장소 넘기기">
+								{places.map((entry, at) => (
+									<button
+										key={keyOf(entry)}
+										type="button"
+										className={at === index ? 'active' : ''}
+										aria-label={`${entry.name} 날씨 보기`}
+										aria-current={at === index || undefined}
+										onClick={() => setSelected(at)}
+									/>
+								))}
+							</div>
+						)}
 						<button
 							type="button"
 							className="weather-list-toggle"
@@ -561,6 +576,7 @@ const Weather = () => {
 			{cardMenu && (
 				<Menu
 					label="장소 메뉴"
+					className="weather-menu weather-menu-compact"
 					anchor={cardMenu}
 					items={[
 						{
@@ -574,7 +590,14 @@ const Weather = () => {
 				/>
 			)}
 			{menu && (
-				<Menu label="날씨 메뉴" anchor={menu} items={menuItems} trigger={moreButton} onClose={() => setMenu(null)} />
+				<Menu
+					label="날씨 메뉴"
+					className="weather-menu weather-menu-large"
+					anchor={menu}
+					items={menuItems}
+					trigger={moreButton}
+					onClose={() => setMenu(null)}
+				/>
 			)}
 		</AppWindow>
 	);
