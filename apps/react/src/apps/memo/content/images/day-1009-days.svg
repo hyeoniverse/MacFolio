@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>9월 28일부터 10월 9일까지</title>
+<rect width="760" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="38" font-size="16" font-weight="700" fill="#1f2937">9월 28일부터 12일</text>
+<rect x="190" y="28" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="208" y="38" font-size="11" fill="#6b7280">하루 커밋</text>
+<path d="M276 34 H292" stroke="#f59e0b" stroke-width="2.5"/><text x="298" y="38" font-size="11" fill="#6b7280">하루 끝 E2E 테스트 수</text>
+<rect x="70.7" y="99.1" width="32.0" height="104.9" rx="4" fill="#c7d2fe"/>
+<text x="86.7" y="94.1" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">65</text>
+<text x="86.7" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">9/28</text>
+<rect x="124.0" y="165.3" width="32.0" height="38.7" rx="4" fill="#c7d2fe"/>
+<text x="140.0" y="160.3" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">24</text>
+<text x="140.0" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">9/29</text>
+<rect x="177.3" y="150.7" width="32.0" height="53.3" rx="4" fill="#c7d2fe"/>
+<text x="193.3" y="145.7" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">33</text>
+<text x="193.3" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">9/30</text>
+<rect x="230.7" y="121.7" width="32.0" height="82.3" rx="4" fill="#c7d2fe"/>
+<text x="246.7" y="116.7" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">51</text>
+<text x="246.7" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">10/1</text>
+<rect x="284.0" y="118.4" width="32.0" height="85.6" rx="4" fill="#c7d2fe"/>
+<text x="300.0" y="113.4" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">53</text>
+<text x="300.0" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">10/2</text>
+<rect x="337.3" y="155.6" width="32.0" height="48.4" rx="4" fill="#c7d2fe"/>
+<text x="353.3" y="150.6" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">30</text>
+<text x="353.3" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">10/3</text>
+<rect x="390.7" y="70.0" width="32.0" height="134.0" rx="4" fill="#c7d2fe"/>
+<text x="406.7" y="65.0" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">83</text>
+<text x="406.7" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">10/4</text>
+<rect x="444.0" y="79.7" width="32.0" height="124.3" rx="4" fill="#c7d2fe"/>
+<text x="460.0" y="74.7" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">77</text>
+<text x="460.0" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">10/5</text>
+<rect x="497.3" y="184.6" width="32.0" height="19.4" rx="4" fill="#c7d2fe"/>
+<text x="513.3" y="179.6" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">12</text>
+<text x="513.3" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">10/6</text>
+<rect x="550.7" y="157.2" width="32.0" height="46.8" rx="4" fill="#c7d2fe"/>
+<text x="566.7" y="152.2" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">29</text>
+<text x="566.7" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">10/7</text>
+<rect x="604.0" y="115.2" width="32.0" height="88.8" rx="4" fill="#c7d2fe"/>
+<text x="620.0" y="110.2" font-size="10.5" fill="#8b93a1" text-anchor="middle" font-weight="400">55</text>
+<text x="620.0" y="222" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="400">10/8</text>
+<rect x="657.3" y="181.4" width="32.0" height="22.6" rx="4" fill="#6366f1"/>
+<text x="673.3" y="176.4" font-size="10.5" fill="#4338ca" text-anchor="middle" font-weight="700">14</text>
+<text x="673.3" y="222" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="700">10/9</text>
+<polyline fill="none" stroke="#f59e0b" stroke-width="2.5" points="86.7,169.0 140.0,157.4 193.3,145.3 246.7,136.3 300.0,126.5 353.3,115.3 406.7,112.6 460.0,101.8 513.3,98.7 566.7,90.6 620.0,70.0 673.3,70.9"/>
+<circle cx="86.7" cy="169.0" r="3" fill="#f59e0b"/>
+<circle cx="140.0" cy="157.4" r="3" fill="#f59e0b"/>
+<circle cx="193.3" cy="145.3" r="3" fill="#f59e0b"/>
+<circle cx="246.7" cy="136.3" r="3" fill="#f59e0b"/>
+<circle cx="300.0" cy="126.5" r="3" fill="#f59e0b"/>
+<circle cx="353.3" cy="115.3" r="3" fill="#f59e0b"/>
+<circle cx="406.7" cy="112.6" r="3" fill="#f59e0b"/>
+<circle cx="460.0" cy="101.8" r="3" fill="#f59e0b"/>
+<circle cx="513.3" cy="98.7" r="3" fill="#f59e0b"/>
+<circle cx="566.7" cy="90.6" r="3" fill="#f59e0b"/>
+<circle cx="620.0" cy="70.0" r="3" fill="#f59e0b"/>
+<circle cx="673.3" cy="70.9" r="4.5" fill="#f59e0b"/>
+<text x="682.3" y="85.9" font-size="10.5" fill="#b45309" font-weight="700">E2E 297</text>
+</svg>

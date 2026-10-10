@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 370" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 10일 영역별 바뀐 줄</title>
+<rect width="760" height="370" rx="16" fill="#ffffff"/>
+<text x="32" y="38" font-size="16" font-weight="700" fill="#1f2937">어디를 얼마나 고쳤나</text>
+<text x="322" y="60" font-size="11" fill="#c2410c" text-anchor="end">← 지운 줄</text>
+<text x="338" y="60" font-size="11" fill="#15803d">더한 줄 →</text>
+<text x="32" y="88" font-size="12.5" fill="#374151">날씨</text>
+<rect x="309.7" y="74" width="20.3" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="74" width="190.0" height="18" rx="3" fill="#86efac"/>
+<text x="303.7" y="87" font-size="10.5" fill="#9a3412" text-anchor="end">−298</text>
+<text x="526.0" y="87" font-size="10.5" fill="#166534">+2,794</text>
+<text x="32" y="118" font-size="12.5" fill="#374151">E2E 테스트</text>
+<rect x="320.7" y="104" width="9.3" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="104" width="111.0" height="18" rx="3" fill="#86efac"/>
+<text x="314.7" y="117" font-size="10.5" fill="#9a3412" text-anchor="end">−137</text>
+<text x="447.0" y="117" font-size="10.5" fill="#166534">+1,632</text>
+<text x="32" y="148" font-size="12.5" fill="#374151">API e2e 테스트</text>
+<rect x="329.9" y="134" width="0.1" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="134" width="106.8" height="18" rx="3" fill="#86efac"/>
+<text x="323.9" y="147" font-size="10.5" fill="#9a3412" text-anchor="end">−1</text>
+<text x="442.8" y="147" font-size="10.5" fill="#166534">+1,571</text>
+<text x="32" y="178" font-size="12.5" fill="#374151">블로그 글</text>
+<rect x="324.4" y="164" width="5.6" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="164" width="98.5" height="18" rx="3" fill="#86efac"/>
+<text x="318.4" y="177" font-size="10.5" fill="#9a3412" text-anchor="end">−82</text>
+<text x="434.5" y="177" font-size="10.5" fill="#166534">+1,449</text>
+<text x="32" y="208" font-size="12.5" fill="#374151">휴지통</text>
+<rect x="290.8" y="194" width="39.2" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="194" width="24.8" height="18" rx="3" fill="#86efac"/>
+<text x="284.8" y="207" font-size="10.5" fill="#9a3412" text-anchor="end">−576</text>
+<text x="360.8" y="207" font-size="10.5" fill="#166534">+365</text>
+<text x="32" y="238" font-size="12.5" fill="#374151">API · 서버 자원</text>
+<rect x="329.9" y="224" width="0.1" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="224" width="60.0" height="18" rx="3" fill="#86efac"/>
+<text x="323.9" y="237" font-size="10.5" fill="#9a3412" text-anchor="end">−2</text>
+<text x="396.0" y="237" font-size="10.5" fill="#166534">+882</text>
+<text x="32" y="268" font-size="12.5" fill="#374151">시스템 설정</text>
+<rect x="326.7" y="254" width="3.3" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="254" width="56.0" height="18" rx="3" fill="#86efac"/>
+<text x="320.7" y="267" font-size="10.5" fill="#9a3412" text-anchor="end">−48</text>
+<text x="392.0" y="267" font-size="10.5" fill="#166534">+824</text>
+<text x="32" y="298" font-size="12.5" fill="#374151">데스크톱·휴대폰 셸</text>
+<rect x="321.3" y="284" width="8.7" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="284" width="47.2" height="18" rx="3" fill="#86efac"/>
+<text x="315.3" y="297" font-size="10.5" fill="#9a3412" text-anchor="end">−128</text>
+<text x="383.2" y="297" font-size="10.5" fill="#166534">+694</text>
+<text x="32" y="328" font-size="12.5" fill="#374151">활동 상태 보기</text>
+<rect x="328.6" y="314" width="1.4" height="18" rx="3" fill="#fdba74"/>
+<rect x="330.0" y="314" width="49.5" height="18" rx="3" fill="#86efac"/>
+<text x="322.6" y="327" font-size="10.5" fill="#9a3412" text-anchor="end">−21</text>
+<text x="385.5" y="327" font-size="10.5" fill="#166534">+728</text>
+<path d="M330 66 V340" stroke="#d1d5db"/>
+<text x="32" y="358" font-size="10" fill="#8b93a1">머지 커밋, 잠금 파일·node_modules, 그림·영상, openapi.json은 빼고 셌다</text>
+</svg>
