@@ -10,7 +10,7 @@ import { ALBUMS, ALBUMS_BY_AGE, ALL_PHOTOS, countText } from './albums';
 import { Thumb, Viewer, type Shown } from './PhotoParts';
 import Menu from '@/shared/ui/menu/Menu';
 import SidebarToggle from '@/shared/ui/button/SidebarToggle';
-import { captionOf, loadCaptions, useCaptions } from './captions';
+import { captionOf, loadCaptions, useCaptions } from './captionsApi';
 import '@/apps/photos/Photos.css';
 
 /** 보는 곳: 보관함(모든 사진), 비디오만, 앨범 하나 */

@@ -13,7 +13,7 @@ import {
 import { fetchOrganization, saveOrganization } from './organizationApi';
 import { fetchAdminPosts, fetchServerPosts } from './postsApi';
 import { getPostRepository } from './repository';
-import { useCanEditMemo } from './admin';
+import { useCanEditMemo } from './useCanEditMemo';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { fetchViews } from '@/shared/analytics/analytics';

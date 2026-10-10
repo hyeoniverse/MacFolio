@@ -8,26 +8,19 @@ import { getPostRepository } from '@/apps/memo/repository';
 import LineChart from './LineChart';
 import StatTable from './StatTable';
 import Server from './Server';
-import { requestedTab } from './serverResources';
+import { requestedTab } from './useServerResources';
 import {
 	ActivityError,
-	change,
-	eventLabel,
 	fetchLive,
 	fetchSummary,
-	formatDuration,
-	kstToday,
-	labelOf,
-	PERIODS,
-	periodRange,
 	fetchResources,
 	type LiveVisit,
 	type ResourceStatus,
 	type Row,
-	type Period,
 	type Summary,
 	type Totals,
-} from './data';
+} from './activityApi';
+import { change, eventLabel, formatDuration, kstToday, labelOf, PERIODS, periodRange, type Period } from './model';
 import '@/apps/activity/Activity.css';
 
 const TABS = [

@@ -1,7 +1,7 @@
 ---
 title: Unity WebGL 게임을 창 안에 넣기
 date: 2026-09-29
-category: 프론트엔드/기능
+category: 개발기/MacFolio/프론트엔드
 summary: 따로 배포한 새싹 농장 게임을 이 데스크톱의 앱으로 넣었다. iframe으로 넣을 때 확인한 것과 창 포커스 문제.
 ---
 
