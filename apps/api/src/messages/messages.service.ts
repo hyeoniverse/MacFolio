@@ -1,6 +1,8 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { SecurityService } from '../security/security.service.js';
+import { tokenOf } from '../common/turnstile.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
 import { publicAuthorId } from '../visitors/visitor.js';
@@ -69,7 +71,8 @@ const last = (rows: MessageRow[]) =>
 export class MessagesService {
 	constructor(
 		private readonly prisma: PrismaService,
-		@Inject(APP_CONFIG) private readonly config: AppConfig
+		@Inject(APP_CONFIG) private readonly config: AppConfig,
+		private readonly security: SecurityService
 	) {}
 
 	/** 주인 안내(답글이 있으면 마지막 활동과 함께) + 방문자가 남긴 피드백 */
@@ -126,6 +129,8 @@ export class MessagesService {
 	async createThread(input: unknown, ip: string, visitor: Visitor, admin: AdminIdentity | null) {
 		const parsed = parseBody(input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		// 사람 확인: 관리자가 시스템 설정에서 켜면 (관리자 글은 확인하지 않는다)
+		await this.security.requireHuman('message', tokenOf(input), ip, admin);
 		const author = this.author(ip, visitor, admin);
 		const thread = await this.prisma.messageThread.create({
 			data: {
@@ -154,6 +159,7 @@ export class MessagesService {
 	async post(threadId: string, input: unknown, ip: string, visitor: Visitor, admin: AdminIdentity | null) {
 		const parsed = parseBody(input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		await this.security.requireHuman('message', tokenOf(input), ip, admin);
 		if (threadId !== PINNED_THREAD_ID && !(await this.prisma.messageThread.findUnique({ where: { id: threadId } })))
 			throw new NotFoundException('삭제된 피드백입니다.');
 		const row = await this.prisma.guestMessage.create({

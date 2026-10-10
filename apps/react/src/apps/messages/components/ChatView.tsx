@@ -7,6 +7,9 @@ import { useAdmin } from '@/shared/auth/adminStore';
 import { buildTimeline, displayName, type Message, type Thread } from '../conversations';
 import type { DeleteResult } from '../repository';
 import IconButton from '@/shared/ui/button/IconButton';
+import Turnstile from '@/shared/ui/turnstile/Turnstile';
+import { useHumanCheck } from '@/shared/security/security';
+import { env } from '@/shared/config/env';
 
 interface Props {
 	/** null이면 새 피드백을 남기는 화면 */
@@ -20,7 +23,7 @@ interface Props {
 	/** 새 피드백을 그만두기 */
 	onCancelNew: () => void;
 	onCompose: () => void;
-	onSend: (text: string) => Promise<{ text?: string }>;
+	onSend: (text: string, turnstileToken?: string) => Promise<{ text?: string }>;
 	onRemove: (messageId: string) => Promise<DeleteResult>;
 }
 
@@ -56,6 +59,9 @@ const ChatView: React.FC<Props> = ({
 	const [deleting, setDeleting] = useState<string | null>(null);
 	/** 관리자는 무엇이든, 방문자는 이 브라우저에서 쓴 글만 지운다 (서버가 다시 확인한다) */
 	const isAdmin = useAdmin().status === 'signed-in';
+	/** 사람 확인: 관리자가 시스템 설정에서 메시지에 켜면 (서버에 저장할 때만, 관리자에게는 없다) */
+	const humanCheck = useHumanCheck('message');
+	const human = env.messagesStore === 'local' ? { ...humanCheck, siteKey: null, ready: true } : humanCheck;
 	const canDelete = (message: Message) => !message.fromOwner && (message.mine || isAdmin);
 	const listEnd = useRef<HTMLDivElement>(null);
 	const timeline = buildTimeline(messages, { now: new Date() });
@@ -161,10 +167,21 @@ const ChatView: React.FC<Props> = ({
 				placeholder={thread ? '답글' : '감상, 의견, 피드백'}
 				autoFocus={focusRequest > 0}
 				onSend={async (text) => {
-					const result = await onSend(text);
+					if (!human.ready) return { sent: false, error: '사람인지 확인하는 칸이 끝날 때까지 기다려 주세요.' };
+					const result = await onSend(text, human.token ?? undefined);
+					// 토큰은 한 번만 쓸 수 있다: 다음 메시지를 위해 새로 받는다
+					if (human.siteKey) human.reset();
 					return { sent: !result.text, error: result.text };
 				}}
 			>
+				{human.siteKey && (
+					<Turnstile
+						className="messages-turnstile"
+						siteKey={human.siteKey}
+						resetKey={human.resetKey}
+						onToken={human.setToken}
+					/>
+				)}
 				{myName && (
 					<p className="messages-as">
 						<strong>{myName}</strong> 이름으로 남겨요

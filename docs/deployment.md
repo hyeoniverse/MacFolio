@@ -215,7 +215,7 @@ chmod 600 .env api.env
 | `SUMMARY_PER_IP_PER_DAY`, `SUMMARY_TOTAL_PER_DAY`     |        | 요약 하루 상한. 기본 IP마다 3번, 사이트 전체 50번                                                                                                                                                   |
 | `COVER_PER_IP_PER_DAY`, `COVER_TOTAL_PER_DAY`         |        | 커버 하루 상한. 기본 IP마다 1번, 사이트 전체 5번 (무료 한도가 작다)                                                                                                                                 |
 | `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`        | 메일   | 메일 앱의 연락 메일 (#25). 셋이 다 있어야 서버가 보낸다. 없으면 사이트가 방문자의 메일 앱을 연다. 설정은 [연락 메일](#연락-메일-resend-turnstile)                                                   |
-| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`          |        | 연락 메일의 사람 확인 (Cloudflare Turnstile). 비우면 확인하지 않는다                                                                                                                                |
+| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`          |        | 메일·댓글·메시지의 사람 확인 (Cloudflare Turnstile). 비우면 확인하지 않는다. 어디에 걸지는 시스템 설정의 개인정보 보호 및 보안에서 켜고 끈다                                                        |
 | `CONTACT_PER_IP_PER_DAY`, `CONTACT_TOTAL_PER_DAY`     |        | 연락 메일 하루 상한. 기본 IP마다 5통, 사이트 전체 50통                                                                                                                                              |
 
 데모 상한은 데모마다 따로, 서버 메모리로 센다 (다시 띄우면 처음부터). 공급자가 모두 실패하면 쓴 횟수를 돌려준다. 커버는 두 공급자를 이어 시도해도 Cloudflare Tunnel의 100초 안에 끝나게 각각 45초에서 끊는다.
@@ -635,6 +635,16 @@ curl -s https://macfolio-api.hyeoniverse.com/contact; echo   # {"enabled":true,"
 ```
 
 사이트의 메일 앱에서 보내 보고, `CONTACT_TO`로 메일이 오는지, 답장하면 보낸 사람 주소로 가는지 본다.
+
+**4. 사람 확인을 어디에 걸지 (댓글·메시지에도)**
+
+키를 넣으면 처음에는 **메일만** 사람을 확인한다. 댓글과 메시지에도 걸려면 관리자로 로그인해 사이트의 **시스템 설정 → 개인정보 보호 및 보안**에서 켠다. 서버(DB의 `SecuritySetting`)에 저장되어 모든 방문자에게 바로 적용되고, 다시 배포할 필요는 없다. 관리자가 쓰는 글은 확인하지 않는다.
+
+```bash
+curl -s https://macfolio-api.hyeoniverse.com/security; echo   # {"contact":true,"comment":false,"message":false,"available":true,…}
+```
+
+`available`이 `false`면 서버에 키(사이트·비밀)가 둘 다 있지 않은 것이다. 이때는 켜 두어도 확인하지 않는다.
 
 ### 비밀 값 바꾸기
 

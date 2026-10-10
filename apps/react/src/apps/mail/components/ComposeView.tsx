@@ -4,7 +4,7 @@ import { PROFILE } from '@/shared/profile';
 import { LIMITS, validateContact, type ContactErrors, type ContactInput } from '../contact';
 import { fetchContactStatus, type ContactStatus, type SendOptions, type SendResult } from '../sender';
 import { env } from '@/shared/config/env';
-import Turnstile from './Turnstile';
+import Turnstile from '@/shared/ui/turnstile/Turnstile';
 import Button from '@/shared/ui/button/Button';
 
 interface Props {
@@ -154,7 +154,7 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 					{errors.body}
 				</p>
 			)}
-			{siteKey && <Turnstile siteKey={siteKey} resetKey={widget} onToken={setToken} />}
+			{siteKey && <Turnstile className="mail-turnstile" siteKey={siteKey} resetKey={widget} onToken={setToken} />}
 			{result?.status === 'failed' && (
 				<p className="mail-error" role="alert">
 					{result.message}

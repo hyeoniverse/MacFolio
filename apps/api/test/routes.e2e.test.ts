@@ -127,6 +127,9 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'GET /analytics/live': 'admin',
 
 	'GET /resources': 'admin',
+
+	'GET /security': 'public',
+	'PUT /security': 'admin',
 };
 
 /** 어떤 경로든 타입이 틀린 몸통. 각 경로의 검사기가 거절해야 한다 */
