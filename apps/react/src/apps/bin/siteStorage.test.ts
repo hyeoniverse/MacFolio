@@ -15,14 +15,15 @@ const fakeStorage = () => {
 
 describe('내 브라우저 데이터', () => {
 	beforeEach(() => {
-		vi.stubGlobal('window', { localStorage: fakeStorage(), sessionStorage: fakeStorage() });
+		vi.stubGlobal('localStorage', fakeStorage());
+		vi.stubGlobal('sessionStorage', fakeStorage());
 	});
 	afterEach(() => vi.unstubAllGlobals());
 
 	it('남아 있는 것만 보여 주고, 지우면 사라진다', () => {
 		expect(readBrowserData()).toEqual([]);
-		window.localStorage.setItem('macfolio:memo:recent-finds', '["a","b","c"]');
-		window.sessionStorage.setItem('macfolio:apps-before-leaving', '{}');
+		localStorage.setItem('macfolio:memo:recent-finds', '["a","b","c"]');
+		sessionStorage.setItem('macfolio:apps-before-leaving', '{}');
 		const stored = readBrowserData();
 		expect(stored.map((entry) => entry.item.id)).toEqual(['memo-finds', 'apps-before-leaving']);
 		expect(stored[0].summary).toBe('검색어 3개');

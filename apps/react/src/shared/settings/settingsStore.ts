@@ -1,21 +1,11 @@
 import { useSyncExternalStore } from 'react';
 import { createStore } from '@macfolio/desktop-core';
 import { DARK_SCHEME, onMediaChange, prefersDarkScheme, useMediaQuery } from '@/shared/lib/media';
+import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import { parseSettings, resolveTheme, wallpaperCss, type Settings } from '@/shared/settings/settings';
 import { fadeOutWallpaper } from '@/shared/settings/wallpaperFade';
 
-/** index.html의 깜빡임 방지 스크립트도 이 키를 읽는다 */
-export const SETTINGS_STORAGE_KEY = 'macfolio:settings';
-
-function load(): Settings {
-	try {
-		return parseSettings(JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) ?? 'null'));
-	} catch {
-		return parseSettings(null);
-	}
-}
-
-export const settingsStore = createStore<Settings>(load());
+export const settingsStore = createStore<Settings>(parseSettings(readJson(STORAGE_KEYS.settings)));
 
 /** 설정을 문서에 반영한다: <html data-theme>, 배경화면 CSS 변수 */
 function apply(settings: Settings) {
@@ -38,11 +28,8 @@ export function initSettings() {
 	apply(settingsStore.getState());
 	settingsStore.subscribe((settings) => {
 		apply(settings);
-		try {
-			localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
-		} catch {
-			// 저장하지 못해도 이번 방문 동안은 적용된다
-		}
+		// 저장하지 못해도 이번 방문 동안은 적용된다
+		writeJson(STORAGE_KEYS.settings, settings);
 	});
 	onMediaChange(DARK_SCHEME, () => apply(settingsStore.getState()));
 }
