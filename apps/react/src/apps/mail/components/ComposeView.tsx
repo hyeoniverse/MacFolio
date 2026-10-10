@@ -1,7 +1,7 @@
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import CopyAddress from './CopyAddress';
 import React, { useEffect, useState } from 'react';
-import { PROFILE } from '@/shared/profile';
+import { useProfile } from '@/shared/site/profileStore';
 import { LIMITS, validateContact, type ContactErrors, type ContactInput } from '../contact';
 import { fetchContactStatus, type ContactStatus, type SendOptions, type SendResult } from '../sender';
 import { env } from '@/shared/config/env';
@@ -179,10 +179,11 @@ const Row: React.FC<{ label: string; error?: string; children: React.ReactElemen
 /** 보낸 뒤: 메일 앱으로 넘긴 경우에는 메일 앱에서 보내기를 눌러야 한다고 안내한다 */
 const SentView: React.FC<{ handedOff: boolean; onDone: () => void }> = ({ handedOff, onDone }) => {
 	const [copied, setCopied] = useState(false);
+	const { email } = useProfile();
 
 	const copy = async () => {
 		try {
-			await navigator.clipboard.writeText(PROFILE.email);
+			await navigator.clipboard.writeText(email);
 			setCopied(true);
 		} catch {
 			setCopied(false);
@@ -197,7 +198,7 @@ const SentView: React.FC<{ handedOff: boolean; onDone: () => void }> = ({ handed
 					<h2>메일 앱에서 보내기를 눌러 주세요</h2>
 					<p>작성한 내용을 담아 메일 앱을 열었어요. 메일 앱이 열리지 않았다면 주소를 복사해서 보내 주세요.</p>
 					<div className="mail-sent-actions">
-						<Button onClick={copy}>{copied ? '복사했어요' : `${PROFILE.email} 복사`}</Button>
+						<Button onClick={copy}>{copied ? '복사했어요' : `${email} 복사`}</Button>
 						<Button tone="primary" onClick={onDone}>
 							확인
 						</Button>
