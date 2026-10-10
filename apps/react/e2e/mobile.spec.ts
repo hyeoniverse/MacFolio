@@ -187,6 +187,16 @@ test.describe('모바일', () => {
 		await expect(battery).toHaveAttribute('data-fill', '10');
 	});
 
+	test('설정의 정보에서 이메일을 누르면 메일 앱의 새로운 메시지 시트가 열린다', async ({ page }) => {
+		await enterHome(page);
+		await (await homeApp(page, '시스템 설정')).tap();
+		const settings = appWindow(page, 'settings');
+		await settings.getByRole('button', { name: '정보', exact: true }).tap();
+		await settings.getByRole('link', { name: 'hyeoniverse.dev@gmail.com' }).tap();
+		const mail = appWindow(page, 'mail');
+		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeVisible();
+	});
+
 	test('가로로 넘치는 화면이 없다', async ({ page }) => {
 		await enterHome(page);
 		for (const label of ['Safari', 'GitHub', '메모', '메일', '메시지', '시스템 설정', '단축어', '음악']) {
