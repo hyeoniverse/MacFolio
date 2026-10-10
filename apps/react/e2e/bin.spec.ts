@@ -22,6 +22,7 @@ test.describe('휴지통', () => {
 		const row = (name: string) =>
 			list.getByRole('listitem').filter({ has: page.locator('.bin-data-name', { hasText: new RegExp(`^${name}$`) }) });
 		await expect(row('메모 최근 검색어')).toContainText('검색어 2개');
+		await expect(bin.locator('.bin-statusbar')).toHaveText(/^[1-9]\d*개의 항목$/);
 		await expect(row('방문자 이름 쿠키')).toContainText('macfolio_visitor');
 
 		// 설정을 비우면 바로 처음 설정(시스템을 따름)으로
@@ -33,17 +34,16 @@ test.describe('휴지통', () => {
 		// 휴지통 비우기는 묻고 모두 지운다 (쿠키 안내는 남는다)
 		await bin.getByRole('button', { name: '휴지통 비우기' }).click();
 		await bin.getByRole('alertdialog').getByRole('button', { name: '휴지통 비우기' }).click();
-		// 비면 목록 대신 가운데에 빈 휴지통과 '휴지통이 비어 있습니다', Dock도 바로 빈 휴지통
-		const empty = bin.getByRole('status').filter({ hasText: '휴지통이 비어 있습니다' });
-		await expect(empty).toContainText('이 사이트가 이 브라우저에 남긴 설정이나 검색어가 없습니다.');
+		// 비면 Finder처럼 가운데는 비우고, 비우기 단추는 꺼지고, 아래에 0개의 항목. Dock도 바로 빈 휴지통
+		await expect(bin.getByRole('status').filter({ hasText: '휴지통이 비어 있습니다' })).toBeAttached();
 		await expect(list).toHaveCount(0);
-		// 빈 휴지통 그림은 Dock에만 (창 안에는 글만)
-		await expect(empty.locator('img')).toHaveCount(0);
-		await expect(bin.getByRole('button', { name: '휴지통 비우기' })).toHaveCount(0);
+		await expect(bin.locator('.bin-browser img')).toHaveCount(0);
+		await expect(bin.getByRole('button', { name: '휴지통 비우기' })).toBeDisabled();
+		await expect(bin.locator('.bin-statusbar')).toHaveText('0개의 항목');
 		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin-empty\.png$/);
 		expect(await page.evaluate(() => localStorage.getItem('macfolio:memo:recent-finds'))).toBeNull();
-		// 사이트가 지울 수 없는 쿠키 안내는 비어 있어도 그 아래에 남는다
-		await expect(bin.getByText('방문자 이름 쿠키')).toBeVisible();
+		// 사이트가 지울 수 없는 쿠키 안내는 비어 있어도 아래 안내에 짧게 남는다
+		await expect(bin.locator('.bin-files-note')).toContainText('macfolio_visitor');
 	});
 
 	test('처음 온 브라우저는 Dock의 휴지통이 비어 있고, 설정을 바꾸면 종이가 담긴다', async ({ page }) => {
