@@ -1,5 +1,6 @@
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { readFileSync } from 'node:fs';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module.js';
@@ -82,6 +83,25 @@ describe('이미지·첨부 파일 (e2e)', () => {
 		expect(file.headers['cross-origin-resource-policy']).toBe('cross-origin');
 		expect(file.headers['x-content-type-options']).toBe('nosniff');
 		expect(Buffer.compare(file.body as Buffer, PNG)).toBe(0);
+	});
+
+	it('사진의 EXIF(찍은 곳·기기)는 지우고 저장한다. 크기도 지운 뒤의 크기', async () => {
+		const photo = readFileSync(new URL('./fixtures/exif.jpg', import.meta.url));
+		expect(photo.toString('latin1')).toContain('TestCam');
+		const uploaded = await request(server())
+			.post('/files')
+			.set('Cookie', adminCookie)
+			.attach('file', photo, { filename: 'photo.jpg', contentType: 'image/jpeg' })
+			.expect(201);
+		expect(uploaded.body).toMatchObject({ type: 'image/jpeg', image: true });
+		expect(uploaded.body.size).toBeLessThan(photo.length);
+
+		const file = await request(server()).get(uploaded.body.path).expect(200);
+		expect(file.headers['content-length']).toBe(String(uploaded.body.size));
+		expect((file.body as Buffer).length).toBe(uploaded.body.size);
+		expect((file.body as Buffer).toString('latin1')).not.toContain('TestCam');
+		// 방향(Orientation 6)은 남긴다
+		expect((file.body as Buffer).subarray(2, 10).toString('latin1')).toBe('\xff\xe1\0\x22Exif');
 	});
 
 	it('이미지가 아닌 파일(HTML 등)은 이 주소에서 열리지 않고 원래 이름으로 내려받는다', async () => {

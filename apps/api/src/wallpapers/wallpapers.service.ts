@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { IncomingFile } from '../files/files.service.js';
+import { stripImageMetadata } from '../files/metadata.js';
 import { cleanFileName, newUploadId, sniffImage, UPLOAD_ID } from '../files/rules.js';
 import { cleanWallpaperName } from './rules.js';
 
@@ -50,17 +51,13 @@ export class WallpapersService {
 
 		const imageId = newUploadId();
 		const thumbId = newUploadId();
-		const upload = (id: string, file: IncomingFile, type: string, fileNameForDownload: string) =>
-			this.prisma.upload.create({
-				data: {
-					id,
-					name: fileNameForDownload,
-					type,
-					size: file.size,
-					data: new Uint8Array(file.buffer),
-					createdBy: admin,
-				},
+		const upload = (id: string, file: IncomingFile, type: string, fileNameForDownload: string) => {
+			// 브라우저에서 줄인 그림이라 보통 메타데이터가 없지만, 원본을 그대로 올려도 EXIF는 남기지 않는다
+			const data = new Uint8Array(stripImageMetadata(file.buffer, type));
+			return this.prisma.upload.create({
+				data: { id, name: fileNameForDownload, type, size: data.byteLength, data, createdBy: admin },
 			});
+		};
 		const [, , row] = await this.prisma.$transaction([
 			upload(imageId, image, imageType, fileName),
 			upload(thumbId, thumbnail, thumbType, `thumb-${fileName}`),
