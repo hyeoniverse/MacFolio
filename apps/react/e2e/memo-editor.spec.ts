@@ -1017,7 +1017,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(trash).toHaveCount(0);
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('회고');
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveClass(/active/);
-		await expect.poll(() => api.organization.posts['cra-to-vite']).toBe('회고');
+		await expect.poll(() => api.organization.posts['cra-to-vite']).toBe('개발기/MacFolio/회고');
 	});
 
 	test('방문자는 서버의 글을 보지만 고칠 수 없다', async ({ page }) => {

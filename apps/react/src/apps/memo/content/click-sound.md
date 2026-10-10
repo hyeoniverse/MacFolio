@@ -1,7 +1,7 @@
 ---
 title: 누를 때마다 딸깍 - Web Audio로 클릭 소리 내기
 date: 2026-10-01
-category: 프론트엔드/기능
+category: 개발기/MacFolio/프론트엔드
 summary: 어디를 누르든 누를 때와 뗄 때 딸깍 소리가 나게 했다. <audio> 대신 Web Audio를 쓴 이유, 로딩 화면의 시작음과 겹치지 않게 한 방법, 소리를 테스트하는 법.
 ---
 

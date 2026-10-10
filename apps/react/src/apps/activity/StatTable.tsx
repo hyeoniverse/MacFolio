@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { labelOf, type Breakdown, type Row } from './data';
+import { type Breakdown, type Row } from './activityApi';
+import { labelOf } from './model';
 
 type SortKey = 'name' | 'value';
 

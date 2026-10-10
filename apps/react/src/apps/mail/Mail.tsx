@@ -1,59 +1,35 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
-import { PROFILE } from '@/shared/profile';
+import { useProfile } from '@/shared/site/profileStore';
 import ComposeView from './components/ComposeView';
-import CopyAddress, { OWNER_ADDRESS } from './components/CopyAddress';
+import CopyAddress from './components/CopyAddress';
 import MailMobile from './components/MailMobile';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
-import { formatMailDate, INBOX } from './contact';
+import { formatMailDate, inboxOf, TO_OWNER } from './contact';
 import { fetchReceivedMail, fetchSentMail, replyToMail, type ContactMail } from './mailboxApi';
 import { getMailSender, type SendOptions } from './sender';
 import type { ContactInput } from './contact';
 import { takeComposeRequest } from './composeRequest';
+import { MAILBOX_LABEL, type ListMail, type Mailbox } from './model';
 import '@/apps/mail/Mail.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
-
-export type Mailbox = 'inbox' | 'sent';
-const MAILBOX_LABEL: Record<Mailbox, string> = { inbox: '받은 편지함', sent: '보낸 편지함' };
-
-/** 목록과 읽기 칸이 함께 쓰는 메일 한 통 */
-export interface ListMail {
-	id: string;
-	fromName: string;
-	fromEmail: string;
-	/** 받는 사람 (읽기 칸에 보인다) */
-	to: string;
-	subject: string;
-	/** ISO 8601 */
-	date: string;
-	body: string;
-	/** 사이트 주인의 답장 (서버에 저장된 메일만) */
-	replies: { id: string; body: string; createdAt: string }[];
-	/** 서버에 저장된 받은 메일: 관리자가 앱에서 답장한다 */
-	replyable?: boolean;
-}
-
-const OWNER = OWNER_ADDRESS;
 
 const fromServer = (mail: ContactMail, replyable: boolean): ListMail => ({
 	id: mail.id,
 	fromName: mail.name,
 	fromEmail: mail.email,
-	to: OWNER,
+	to: TO_OWNER,
 	subject: mail.subject,
 	date: mail.createdAt,
 	body: mail.body,
 	replies: mail.replies,
 	replyable,
 });
-
-/** 방문자의 받은 편지함: 사이트 주인의 환영 메일 */
-const WELCOME: ListMail[] = INBOX.map((mail) => ({ ...mail, to: '방문자님', replies: [] }));
 
 /** 이름의 첫 글자 아바타 */
 const Monogram: React.FC<{ name: string; size?: number }> = ({ name, size = 36 }) => (
@@ -114,15 +90,21 @@ const ReplyBox: React.FC<{ mail: ListMail; onReplied: (mail: ContactMail) => voi
  */
 const Mail: React.FC = () => {
 	const admin = useAdmin().status === 'signed-in';
+	const profile = useProfile();
+	/** 방문자의 받은 편지함: 사이트 주인의 환영 메일 */
+	const welcome = useMemo<ListMail[]>(
+		() => inboxOf(profile).map((mail) => ({ ...mail, to: '방문자님', replies: [] })),
+		[profile]
+	);
 	const mobile = useIsMobile();
 	const [mailbox, setMailbox] = useState<Mailbox>('inbox');
 	const [received, setReceived] = useState<ListMail[] | null>(null);
 	const [sent, setSent] = useState<ListMail[] | null>(null);
 	const [loadError, setLoadError] = useState<string | null>(null);
 	const [refreshes, setRefreshes] = useState(0);
-	const [selectedId, setSelectedId] = useState<string | null>(WELCOME[0]?.id ?? null);
+	const [selectedId, setSelectedId] = useState<string | null>('welcome');
 	// 처음 보여 주는 메일은 읽은 것으로 친다
-	const [readIds, setReadIds] = useState<Set<string>>(() => new Set(WELCOME[0] ? [WELCOME[0].id] : []));
+	const [readIds, setReadIds] = useState<Set<string>>(() => new Set(['welcome']));
 	const [composing, setComposing] = useState(false);
 	// 좁은 창에서는 목록과 읽기(쓰기)를 한 화면씩 보여준다. 넓은 창에서는 쓰지 않는다.
 	const [detailOpen, setDetailOpen] = useState(false);
@@ -151,7 +133,7 @@ const Mail: React.FC = () => {
 		};
 	}, [admin, refreshes]);
 
-	const inbox = admin ? (received ?? []) : WELCOME;
+	const inbox = admin ? (received ?? []) : welcome;
 	const mails = mailbox === 'inbox' ? inbox : (sent ?? []);
 	const selected = mails.find((mail) => mail.id === selectedId) ?? null;
 	// 안 읽은 메일: 관리자는 아직 답장하지 않은 메일, 방문자는 열어 보지 않은 메일
@@ -339,7 +321,7 @@ const Mail: React.FC = () => {
 												/>
 												<span className="mail-item-text">
 													<span className="mail-item-top">
-														<strong>{mailbox === 'sent' ? PROFILE.name : mail.fromName}</strong>
+														<strong>{mailbox === 'sent' ? profile.name : mail.fromName}</strong>
 														<time dateTime={mail.date}>{formatMailDate(mail.date)}</time>
 													</span>
 													<span className="mail-item-subject">
@@ -373,9 +355,9 @@ const Mail: React.FC = () => {
 											<strong>{selected.fromName}</strong>
 											{/* 사이트 주인의 주소는 누르면 복사한다 */}
 											<p>
-												{selected.fromEmail === PROFILE.email ? <CopyAddress withName={false} /> : selected.fromEmail}
+												{selected.fromEmail === profile.email ? <CopyAddress withName={false} /> : selected.fromEmail}
 											</p>
-											<p>받는 사람: {selected.to === OWNER ? <CopyAddress /> : selected.to}</p>
+											<p>받는 사람: {selected.to === TO_OWNER ? <CopyAddress /> : selected.to}</p>
 										</div>
 										<time dateTime={selected.date}>{formatMailDate(selected.date)}</time>
 									</header>
@@ -386,8 +368,8 @@ const Mail: React.FC = () => {
 											{selected.replies.map((reply) => (
 												<li key={reply.id} className="mail-thread-reply">
 													<header>
-														<Monogram name={PROFILE.name} size={28} />
-														<strong>{PROFILE.name}</strong>
+														<Monogram name={profile.name} size={28} />
+														<strong>{profile.name}</strong>
 														<time dateTime={reply.createdAt}>{formatMailDate(reply.createdAt)}</time>
 													</header>
 													<p className="mail-reader-body">{reply.body}</p>
@@ -399,7 +381,7 @@ const Mail: React.FC = () => {
 										<ReplyBox key={selected.id} mail={selected} onReplied={replied} />
 									) : mailbox === 'inbox' ? (
 										<Button tone="primary" onClick={compose}>
-											<i className="fa-solid fa-reply" aria-hidden="true" /> {PROFILE.name}에게 답장
+											<i className="fa-solid fa-reply" aria-hidden="true" /> {profile.name}에게 답장
 										</Button>
 									) : null}
 								</article>

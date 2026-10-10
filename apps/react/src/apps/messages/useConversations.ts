@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { sortThreads, validateMessageInput, type InputErrors, type Message, type Thread } from './conversations';
+import { useProfile } from '@/shared/site/profileStore';
 import { getConversationRepository, PINNED_THREAD_ID, type DeleteResult } from './repository';
 
 /** 새 피드백을 남기는 화면 (쓰기 버튼) */
@@ -7,6 +8,8 @@ export const NEW_THREAD = 'new';
 
 export function useConversations() {
 	const repository = getConversationRepository();
+	/** 고정 항목의 이름·안내 글은 프로필에서 온다. 바뀌면(앱을 연 뒤 서버의 프로필이 도착하면) 다시 읽는다 */
+	const ownerName = useProfile().name;
 	const [threads, setThreads] = useState<Thread[]>([]);
 	const [selectedId, setSelectedId] = useState<string>(PINNED_THREAD_ID);
 	const [messages, setMessages] = useState<Message[]>([]);
@@ -36,7 +39,7 @@ export function useConversations() {
 	useEffect(() => {
 		void refreshThreads();
 		repository.myName().then(setMyName, () => setMyName(null));
-	}, [refreshThreads, repository]);
+	}, [refreshThreads, repository, ownerName]);
 
 	useEffect(() => {
 		if (selectedId === NEW_THREAD) return;
@@ -48,7 +51,7 @@ export function useConversations() {
 		return () => {
 			cancelled = true;
 		};
-	}, [repository, selectedId]);
+	}, [repository, selectedId, ownerName]);
 
 	const select = useCallback((id: string) => {
 		setSelectedId(id);

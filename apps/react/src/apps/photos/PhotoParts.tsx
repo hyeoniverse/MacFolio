@@ -5,7 +5,7 @@ import { shareLink } from '@/shared/lib/appLink';
 import { useAdmin } from '@/shared/auth/adminStore';
 import type { Album, Photo } from './albums';
 import { CAPTION_MAX } from './albums';
-import { captionOf, saveCaption, useCaptions } from './captions';
+import { captionOf, saveCaption, useCaptions } from './captionsApi';
 import { initialSwipe, swipeStep, type SwipeState } from './swipe';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';

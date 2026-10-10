@@ -7,7 +7,7 @@ import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
 import { IOS_WALLPAPERS } from '@/shared/settings/settings';
 import { settingsStore, useSettings } from '@/shared/settings/settingsStore';
-import { PROFILE } from '@/shared/profile';
+import { useProfile } from '@/shared/site/profileStore';
 import { signIn, useAdmin } from '@/shared/auth/adminStore';
 import type { AdminStatus } from '@/shared/auth/admin';
 import { env } from '@/shared/config/env';
@@ -76,6 +76,7 @@ const TRANSITION_MS = 250;
 const ControlCenter = (props: Props) => (props.open || props.pull !== null ? <Panel {...props} /> : null);
 
 const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
+	const profile = useProfile();
 	const settings = useSettings();
 	const admin = useAdmin();
 	/** 위로 쓸어 닫는 중인 거리 */
@@ -168,7 +169,7 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 					<i className="fa-solid fa-link" aria-hidden="true"></i>
 					<span className="visually-hidden">링크 복사</span>
 				</button>
-				<a className="cc-tile cc-toggle" href={PROFILE.github} target="_blank" rel="noopener noreferrer">
+				<a className="cc-tile cc-toggle" href={profile.github} target="_blank" rel="noopener noreferrer">
 					<i className="fa-brands fa-github" aria-hidden="true"></i>
 					<span className="visually-hidden">GitHub</span>
 				</a>
@@ -179,7 +180,7 @@ const Panel = ({ open, pull, onClose, onLaunch }: Props) => {
 					<i className="fa-solid fa-envelope" aria-hidden="true"></i>
 					<span>
 						<strong>연락하기</strong>
-						<small>{PROFILE.email}</small>
+						<small>{profile.email}</small>
 					</span>
 				</button>
 				<button type="button" className="cc-tile cc-wide" onClick={() => launch('messages')}>

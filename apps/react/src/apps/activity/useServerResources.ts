@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { createStore } from '@macfolio/desktop-core';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
-import { ActivityError, fetchResources, type ResourceStatus } from './data';
+import { ActivityError, fetchResources, type ResourceStatus } from './activityApi';
 
 /** 다른 곳(메뉴 막대의 배터리)에서 '활동 상태 보기'를 열 때 보일 탭. 앱이 읽고 비운다 */
 export const requestedTab = createStore<{ tab: string | null }>({ tab: null });
