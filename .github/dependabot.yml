@@ -1,0 +1,63 @@
+# 의존성 업데이트 PR을 자동으로 연다 (리팩터링 계획 #150, 보안).
+# - npm: 워크스페이스 전체(pnpm-lock.yaml 하나)를 매주 월요일에 본다. 작은 업데이트(minor·patch)는 PR 하나로 묶고, 큰 업데이트(major)는 따로
+# - github-actions: 워크플로의 액션은 커밋 SHA로 고정되어 있다. Dependabot이 새 버전의 SHA로 올리는 PR을 연다
+# - docker: apps/api/Dockerfile의 바탕 이미지
+# 취약점이 알려진 패키지는 이 일정과 상관없이 바로 PR이 온다 (저장소 Settings → Code security → Dependabot security updates)
+# PR 제목·커밋은 CONTRIBUTING.md의 규칙(chore(deps): …, ci(deps): …)에 맞춘다. 브랜치 이름은 GitHub이 정하므로 conventions 워크플로가 예외로 둔다
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'chore(deps)'
+    labels: [dependencies]
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    # 중요한 런타임은 major를 손으로 본다 (마이그레이션 문서를 읽어야 한다)
+    ignore:
+      - dependency-name: '@nestjs/*'
+        update-types: [version-update:semver-major]
+      - dependency-name: prisma
+        update-types: [version-update:semver-major]
+      - dependency-name: '@prisma/*'
+        update-types: [version-update:semver-major]
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Seoul
+    commit-message:
+      prefix: 'ci(deps)'
+    labels: [dependencies]
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: docker
+    directory: /apps/api
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Seoul
+    commit-message:
+      prefix: 'chore(deps)'
+    labels: [dependencies]
+    # Node 큰 버전은 .node-version과 함께 손으로 올린다
+    ignore:
+      - dependency-name: node
+        update-types: [version-update:semver-major]

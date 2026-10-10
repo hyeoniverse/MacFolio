@@ -12,6 +12,9 @@ concurrency:
   group: uptime
   cancel-in-progress: false
 
+# 저장소를 읽지도 쓰지도 않는다 (curl뿐)
+permissions: {}
+
 jobs:
   uptime:
     runs-on: ubuntu-latest

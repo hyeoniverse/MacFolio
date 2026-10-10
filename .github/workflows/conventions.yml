@@ -9,12 +9,16 @@ concurrency:
   group: conventions-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+# 커밋을 읽기만 한다
+permissions:
+  contents: read
+
 jobs:
   conventions:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
@@ -22,6 +26,8 @@ jobs:
         env:
           # 제목·브랜치 이름은 누구나 정할 수 있는 값이라 스크립트에 바로 넣지 않고 환경 변수로 넘긴다
           BRANCH: ${{ github.head_ref }}
+          # Dependabot의 브랜치 이름(dependabot/npm_and_yarn/…)은 GitHub이 정한다. 제목과 커밋은 규칙대로 오게 .github/dependabot.yml에서 맞춘다
+          SKIP_BRANCH: ${{ github.actor == 'dependabot[bot]' }}
           TITLE: ${{ github.event.pull_request.title }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -31,7 +37,7 @@ jobs:
           branch="^($types)/[a-z0-9][a-z0-9-]*$"
           failed=0
 
-          if [[ ! "$BRANCH" =~ $branch ]]; then
+          if [[ "$SKIP_BRANCH" != "true" && ! "$BRANCH" =~ $branch ]]; then
             echo "::error::브랜치 이름이 규칙과 다릅니다: '$BRANCH' (예: feat/post-comments)"
             failed=1
           fi
