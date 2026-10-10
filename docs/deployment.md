@@ -452,6 +452,25 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 - 예약 실행은 GitHub 사정으로 몇 분씩 늦게 돌 수 있다. 공개 저장소라 실행 시간은 무료다
 - 저장소에 60일 동안 활동이 없으면 GitHub이 예약 실행을 멈춘다. 그때는 Actions에서 다시 켠다
 
+### 서버 하드닝 점검
+
+서버가 바깥에 내놓은 것은 SSH(22) 하나다. API는 Cloudflare Tunnel로만 들어오고(`compose.yml`에 `ports`가 없다), DB는 compose 네트워크 안에서만 보인다. 그래서 지킬 것은 넷이다: **SSH는 키로만**, **열린 포트는 22뿐**, **컨테이너는 root가 아닌 사용자로**, **보안 업데이트는 자동으로**. `ops/audit.sh`가 이 넷을 읽기만 하고 항목마다 `OK`/`확인`을 찍는다. 아무것도 바꾸지 않는다.
+
+```bash
+~/macfolio/ops/audit.sh      # 확인 항목이 있으면 1로 끝난다
+```
+
+| 항목     | 기대하는 상태                                                                                                                                    | 어긋나면                                                                                                                                                           |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| SSH      | `PasswordAuthentication no`, `KbdInteractiveAuthentication no`, `PermitRootLogin prohibit-password`, 비밀번호 있는 계정 0                        | `/etc/ssh/sshd_config.d/99-macfolio.conf`에 세 줄을 적고 `sudo systemctl reload ssh`. Oracle Ubuntu 이미지는 처음부터 이렇게 되어 있다                             |
+| 포트     | 바깥에서 듣는 것은 22뿐. 호스트 포트를 연 컨테이너 없음. iptables에 22 허용 규칙(Oracle 기본)                                                    | `compose.yml`에 `ports:`를 넣지 않는다. 클라우드 쪽 **Security List**(VCN → Subnet → Security List)의 Ingress도 `22/tcp` 하나만 둔다 (80·443은 터널이라 필요 없다) |
+| 컨테이너 | `api → node`(Dockerfile의 `USER node`), `tunnel → nonroot`(cloudflared 이미지 기본), `db → postgres`. privileged 없음, `docker.sock` 마운트 없음 | 이미지나 compose를 손댔다면 되돌린다. `db`가 `root`로 나오는 것은 postgres 이미지가 시작 때만 root였다가 postgres로 내려가는 것이라 OK로 친다                      |
+| 업데이트 | `unattended-upgrades` 켜짐, 재부팅 대기 없음                                                                                                     | `sudo apt install unattended-upgrades && sudo dpkg-reconfigure -plow unattended-upgrades`. `/var/run/reboot-required`가 있으면 한가한 때 `sudo reboot`             |
+
+- 배포용 SSH 키(`macfolio-deploy`)는 `authorized_keys`의 `restrict,command=`로 `ops/deploy.sh`만 돌릴 수 있다 ([자동 배포 설정](#자동-배포-설정-한-번)). `audit.sh`는 이 키를 보지 않는다
+- `ubuntu` 계정이 `docker` 그룹이라 그 계정으로 들어오면 호스트 root와 같다. 그래서 SSH 키 관리가 곧 서버 전체의 열쇠 관리다. 키를 잃어버리면 Oracle 콘솔의 **Console connection**으로 들어가 `authorized_keys`를 바꾼다
+- 점검은 분기마다 한 번, 그리고 서버 설정을 손댄 뒤에 돌린다
+
 ### 백업
 
 블로그 글·임시 저장·버전 기록·올린 이미지가 **모두 DB에만** 있다. `ops/backup.sh`를 cron으로 매일 돌려 서버와 서버 밖(Cloudflare R2)에 남긴다.
@@ -814,3 +833,4 @@ docker compose up -d api
 
 - 계정을 Pay As You Go로 올려 유휴 회수에서 빼고 Budget 알림 걸기 ([유휴 회수](#유휴-회수))
 - 실제 사용률을 1~2주 관찰하기
+- fail2ban 또는 SSH 포트 바꾸기: 키로만 받으면 실패 로그만 쌓일 뿐이라 지금은 두지 않는다. 로그가 거슬리면 그때
