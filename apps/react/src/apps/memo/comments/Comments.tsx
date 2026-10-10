@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { env } from '@/shared/config/env';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { avatarUrl } from '@/shared/auth/admin';
-import { PROFILE } from '@/shared/profile';
-import { displayName, LIMITS, monogram, OWNER_NAME, validateMessageInput } from '@/apps/messages/conversations';
+import { githubLogin, useProfile } from '@/shared/site/profileStore';
+import { displayName, LIMITS, monogram, validateMessageInput } from '@/apps/messages/conversations';
 import { fetchVisitorName } from '@/shared/lib/visitor';
 import { createComment, deleteComment, formatCommentTime, listComments, type Comment } from './commentsApi';
 import Button from '@/shared/ui/button/Button';
@@ -12,18 +12,17 @@ import { useHumanCheck } from '@/shared/security/security';
 import LikeButton from '../likes/LikeButton';
 import { setCommentLike, toggleLike } from '../likes/likesApi';
 
-/** 작성자(관리자)의 GitHub 계정 */
-const OWNER_LOGIN = PROFILE.github.split('/').at(-1) ?? '';
-
 /** 프로필 동그라미: 작성자는 GitHub 사진, 방문자는 이름 첫 글자 */
-const CommentAvatar = ({ name, owner }: { name: string; owner: boolean }) =>
-	owner ? (
-		<img className="memo-comment-avatar" src={avatarUrl(OWNER_LOGIN)} alt="" />
+const CommentAvatar = ({ name, owner }: { name: string; owner: boolean }) => {
+	const profile = useProfile();
+	return owner ? (
+		<img className="memo-comment-avatar" src={avatarUrl(githubLogin(profile))} alt="" />
 	) : (
 		<span className="memo-comment-avatar" aria-hidden="true">
 			{monogram(name)}
 		</span>
 	);
+};
 
 /** 댓글 하나. 지우기는 이 브라우저에서 쓴 댓글(관리자는 모든 댓글)에만 있고, 한 번 더 물어본다. 좋아요는 누구나 */
 const CommentItem = ({
@@ -35,6 +34,7 @@ const CommentItem = ({
 	isAdmin: boolean;
 	onDeleted: () => void;
 }) => {
+	const ownerName = useProfile().name;
 	const [likes, setLikes] = useState({ count: comment.likes, liked: comment.liked });
 	const [liking, setLiking] = useState(false);
 	const [asking, setAsking] = useState(false);
@@ -56,7 +56,7 @@ const CommentItem = ({
 			<CommentAvatar name={comment.name} owner={comment.isAdmin} />
 			<div className="memo-comment-main">
 				<div className="memo-comment-head">
-					<strong>{comment.isAdmin ? OWNER_NAME : displayName(comment.name, comment.ipPrefix ?? undefined)}</strong>
+					<strong>{comment.isAdmin ? ownerName : displayName(comment.name, comment.ipPrefix ?? undefined)}</strong>
 					{comment.isAdmin && <span className="memo-comment-badge">작성자</span>}
 					<time dateTime={comment.createdAt}>{formatCommentTime(comment.createdAt)}</time>
 					{canDelete && (
@@ -75,7 +75,7 @@ const CommentItem = ({
 				<div className="memo-comment-actions">
 					<LikeButton
 						likes={likes}
-						what={`${comment.isAdmin ? OWNER_NAME : comment.name}의 댓글`}
+						what={`${comment.isAdmin ? ownerName : comment.name}의 댓글`}
 						size="comment"
 						onToggle={() => {
 							if (liking) return;
@@ -110,6 +110,7 @@ const CommentItem = ({
  * 이 브라우저에서 쓴 댓글만 지운다. 관리자로 로그인했으면 김정현으로 쓰고 무엇이든 지운다. 서버가 권한을 다시 확인한다.
  */
 const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, count: number) => void }) => {
+	const ownerName = useProfile().name;
 	const admin = useAdmin();
 	const isAdmin = admin.status === 'signed-in';
 	const [comments, setComments] = useState<Comment[] | null>(null);
@@ -200,9 +201,9 @@ const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, co
 			>
 				{isAdmin ? (
 					<div className="memo-comment-as">
-						<CommentAvatar name={OWNER_NAME} owner />
+						<CommentAvatar name={ownerName} owner />
 						<span>
-							<strong>{OWNER_NAME}</strong>(작성자)으로 씁니다.
+							<strong>{ownerName}</strong>(작성자)으로 씁니다.
 						</span>
 					</div>
 				) : (

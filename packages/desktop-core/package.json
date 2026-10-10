@@ -19,6 +19,11 @@
 			"source": "./src/music/index.ts",
 			"types": "./dist/music/index.d.ts",
 			"default": "./dist/music/index.js"
+		},
+		"./site": {
+			"source": "./src/site/index.ts",
+			"types": "./dist/site/index.d.ts",
+			"default": "./dist/site/index.js"
 		}
 	},
 	"scripts": {

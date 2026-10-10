@@ -3,7 +3,8 @@ import { cssVars } from '@/shared/lib/cssVars';
 // → 흙길을 따라가는 개발 일지 지도(만든 방식) → 인벤토리(기술 사양) → 크레딧(맡은 일).
 // 그림은 게임에 쓴 Sprout Lands 에셋에서 필요한 조각만 잘라 쓴다 (public/imgs/projects/sproutfarm/sprites)
 import React, { useEffect, useRef, useState } from 'react';
-import { PROFILE, type Project } from '@/shared/profile';
+import type { Project } from '@/shared/profile';
+import { useProfile } from '@/shared/site/profileStore';
 import { Favicon, Links } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/GamePage.css';
 import { scrollParent } from '@/apps/safari/project/scroll';
@@ -178,6 +179,7 @@ function roadPath(count: number) {
 }
 
 const GamePage: React.FC<{ project: Project }> = ({ project }) => {
+	const owner = useProfile().name;
 	const root = useRef<HTMLDivElement>(null);
 	const title = useRef<HTMLElement>(null);
 	const hud = useRef<HTMLElement>(null);
@@ -632,7 +634,7 @@ const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 					{project.contributions.map((item) => (
 						<div key={item}>
 							<dt>{item}</dt>
-							<dd>{PROFILE.name}</dd>
+							<dd>{owner}</dd>
 						</div>
 					))}
 				</dl>
