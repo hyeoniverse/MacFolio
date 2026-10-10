@@ -11,3 +11,9 @@ interface ImportMetaEnv {
 interface ImportMeta {
 	readonly env: ImportMetaEnv;
 }
+
+/** public/imgs 아래 폴더마다 그 안의 그림·영상 주소 (vite.config.ts의 publicImagesPlugin) */
+declare module 'virtual:public-images' {
+	const folders: Record<string, string[]>;
+	export default folders;
+}

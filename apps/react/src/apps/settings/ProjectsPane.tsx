@@ -12,6 +12,7 @@ import {
 } from '@macfolio/desktop-core/site';
 import { DEFAULT_PROJECTS } from '@/shared/profile';
 import { getSavedProjects, sendProjects } from '@/shared/site/siteContent';
+import { imageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
@@ -375,6 +376,41 @@ const ProjectEditor = ({
 						/>
 					</section>
 
+					<section className="about-pane-group" aria-label="화면 모음">
+						<h3>화면 모음</h3>
+						<div className="projects-field">
+							<label>
+								<span>폴더</span>
+								<select
+									value={draft.galleryFolder ?? ''}
+									onChange={(event) => set({ galleryFolder: optional(event.target.value) })}
+								>
+									<option value="">
+										{draft.gallery?.length ? `직접 적은 화면 ${draft.gallery.length}장` : '없음'}
+									</option>
+									{imageFolders().map((folder) => (
+										<option key={folder} value={folder}>
+											{folder.replace(/^\/imgs\//, '')} ({PUBLIC_IMAGES[folder].length}장)
+										</option>
+									))}
+								</select>
+							</label>
+							<p className="about-pane-hint">
+								폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은
+								저장소의 apps/react/public/imgs 아래 폴더에 넣고 배포하면 여기에 나옵니다.
+							</p>
+						</div>
+						{draft.galleryFolder && (
+							<ul className="projects-folder-preview" aria-label="화면 모음 미리 보기">
+								{(PUBLIC_IMAGES[draft.galleryFolder] ?? []).slice(0, 12).map((src) => (
+									<li key={src}>
+										{src.endsWith('.mp4') ? <video src={src} muted /> : <img src={src} alt="" loading="lazy" />}
+									</li>
+								))}
+							</ul>
+						)}
+					</section>
+
 					<section className="about-pane-group" aria-label="앱">
 						<h3>앱</h3>
 						<Switch
@@ -468,6 +504,8 @@ const ProjectsPane = () => {
 	const [saved, setSaved] = useState(getSavedProjects);
 	const initial = useMemo(() => rowsFrom(saved), [saved]);
 	const [rows, setRows] = useState<Row[]>(initial);
+	/** 편집 모드 (GitHub 항목처럼: 편집을 눌러야 순서·숨김·고치기가 나오고, 완료로 저장한다) */
+	const [editMode, setEditMode] = useState(false);
 	const [editing, setEditing] = useState<Row | null>(null);
 	const [errors, setErrors] = useState<string[]>([]);
 	const [busy, setBusy] = useState(false);
@@ -494,17 +532,33 @@ const ProjectsPane = () => {
 		setErrors([]);
 		setSavedNow(true);
 	};
-	const save = async () => {
+	/** 완료: 바뀐 것이 있으면 저장하고 편집을 마친다. 실패하면 편집 중인 채로 이유를 보여 준다 */
+	const finish = async () => {
+		if (!dirty) {
+			setEditMode(false);
+			setErrors([]);
+			return;
+		}
 		const content = contentFrom(rows);
 		const parsed = parseProjects(content);
 		if ('errors' in parsed) return setErrors(parsed.errors);
 		setBusy(true);
-		finishSend(await sendProjects(parsed.value));
+		const result = await sendProjects(parsed.value);
+		finishSend(result);
+		if (result.ok) setEditMode(false);
+	};
+	/** 취소: 바꾼 것을 버리고 편집을 마친다 */
+	const cancel = () => {
+		setRows(initial);
+		setErrors([]);
+		setEditMode(false);
 	};
 	const reset = async () => {
 		setConfirmingReset(false);
 		setBusy(true);
-		finishSend(await sendProjects(null));
+		const result = await sendProjects(null);
+		finishSend(result);
+		if (result.ok) setEditMode(false);
 	};
 
 	if (editing)
@@ -527,31 +581,32 @@ const ProjectsPane = () => {
 					프로젝트<span className="showcase-count">{rows.filter((row) => !row.hidden).length}개 보임</span>
 				</h3>
 				<span className="showcase-head-actions">
-					<button
-						type="button"
-						className="showcase-text-button"
-						onClick={() => {
-							let n = 1;
-							while (rows.some((row) => row.id === `new-project-${n}`)) n += 1;
-							const id = `new-project-${n}`;
-							setEditing({ id, hidden: false, isNew: true, project: { ...blankProject(id), name: '새 프로젝트' } });
-						}}
-					>
-						새 프로젝트
-					</button>
-					{dirty && (
-						<button type="button" className="showcase-text-button" onClick={() => update(initial)} disabled={busy}>
-							되돌리기
+					{editMode ? (
+						<>
+							<button type="button" className="showcase-text-button" onClick={cancel} disabled={busy}>
+								취소
+							</button>
+							<button
+								type="button"
+								className="showcase-text-button strong"
+								onClick={() => void finish()}
+								disabled={busy}
+							>
+								완료
+							</button>
+						</>
+					) : (
+						<button
+							type="button"
+							className="showcase-text-button"
+							onClick={() => {
+								setEditMode(true);
+								setSavedNow(false);
+							}}
+						>
+							편집
 						</button>
 					)}
-					<button
-						type="button"
-						className="showcase-text-button strong"
-						onClick={() => void save()}
-						disabled={busy || !dirty}
-					>
-						저장
-					</button>
 				</span>
 			</div>
 
@@ -585,45 +640,66 @@ const ProjectsPane = () => {
 								<strong>{row.project.name}</strong>
 								<span className="showcase-meta">{[row.id, ...tags].join(' · ')}</span>
 							</span>
-							<span className="showcase-actions">
-								<IconButton
-									label={`${row.project.name} 위로`}
-									icon="fa-solid fa-chevron-up"
-									disabled={index === 0}
-									onClick={() => move(index, -1)}
-								/>
-								<IconButton
-									label={`${row.project.name} 아래로`}
-									icon="fa-solid fa-chevron-down"
-									disabled={index === rows.length - 1}
-									onClick={() => move(index, 1)}
-								/>
-								<IconButton
-									label={row.hidden ? `${row.project.name} 보이기` : `${row.project.name} 숨기기`}
-									icon={row.hidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}
-									onClick={() => update(rows.map((other) => (other === row ? { ...row, hidden: !row.hidden } : other)))}
-								/>
-								{row.isNew && (
+							{editMode && (
+								<span className="showcase-actions">
 									<IconButton
-										label={`${row.project.name} 지우기`}
-										icon="fa-solid fa-trash-can"
-										onClick={() => update(rows.filter((other) => other !== row))}
+										label={`${row.project.name} 위로`}
+										icon="fa-solid fa-chevron-up"
+										disabled={index === 0}
+										onClick={() => move(index, -1)}
 									/>
-								)}
-								<button type="button" className="showcase-text-button projects-edit" onClick={() => setEditing(row)}>
-									편집
-								</button>
-							</span>
+									<IconButton
+										label={`${row.project.name} 아래로`}
+										icon="fa-solid fa-chevron-down"
+										disabled={index === rows.length - 1}
+										onClick={() => move(index, 1)}
+									/>
+									<IconButton
+										label={row.hidden ? `${row.project.name} 보이기` : `${row.project.name} 숨기기`}
+										icon={row.hidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}
+										onClick={() =>
+											update(rows.map((other) => (other === row ? { ...row, hidden: !row.hidden } : other)))
+										}
+									/>
+									{row.isNew && (
+										<IconButton
+											label={`${row.project.name} 지우기`}
+											icon="fa-solid fa-trash-can"
+											onClick={() => update(rows.filter((other) => other !== row))}
+										/>
+									)}
+									<button type="button" className="showcase-text-button projects-edit" onClick={() => setEditing(row)}>
+										편집
+									</button>
+								</span>
+							)}
 						</li>
 					);
 				})}
+				{editMode && (
+					<li className="showcase-row projects-row projects-add">
+						<button
+							type="button"
+							className="showcase-text-button"
+							onClick={() => {
+								let n = 1;
+								while (rows.some((row) => row.id === `new-project-${n}`)) n += 1;
+								const id = `new-project-${n}`;
+								setEditing({ id, hidden: false, isNew: true, project: { ...blankProject(id), name: '새 프로젝트' } });
+							}}
+						>
+							<i className="fa-solid fa-plus" aria-hidden="true" /> 새 프로젝트
+						</button>
+					</li>
+				)}
 			</ul>
 
 			<p className="about-pane-hint">
-				숨긴 프로젝트는 Safari 탭·Finder·터미널·Dock에서 빠집니다. 코드에 있는 프로젝트는 숨길 수만 있고, 새로 더한
+				편집을 누르면 순서를 바꾸고, 숨기고, 고치고, 새 프로젝트를 더할 수 있습니다. 완료를 누르면 저장합니다. 숨긴
+				프로젝트는 Safari 탭·Finder·터미널·Dock에서 빠집니다. 코드에 있는 프로젝트는 숨길 수만 있고, 새로 더한
 				프로젝트는 지울 수 있습니다.
 			</p>
-			{saved && (
+			{editMode && saved && (
 				<button
 					type="button"
 					className="showcase-text-button about-pane-reset"

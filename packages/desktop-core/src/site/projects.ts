@@ -158,6 +158,11 @@ export interface Project {
 	structure?: string;
 	/** 화면 모음 (차례대로 넘겨 본다) */
 	gallery?: { src: string; caption: string }[];
+	/**
+	 * 화면 모음 폴더 (사이트 안 경로, 예: /imgs/projects/qru/screens). 있으면 그 폴더의 그림을 이름 순으로 모두 화면 모음으로 쓴다
+	 * (화면이 빌드할 때 모은 목록에서 찾는다: apps/react/src/shared/site/publicImages.ts)
+	 */
+	galleryFolder?: string;
 	/** 빌려 쓴 에셋·글꼴 출처: 맡은 부분, 이름, 만든 사람, 주소, 한 줄 설명 */
 	credits?: { role: string; name: string; by: string; href?: string; note?: string }[];
 	/** 기술 사양: 분류별 기술 */
@@ -356,6 +361,7 @@ const PROJECT_FIELDS: Record<keyof Omit<Project, 'id'>, Rule> = {
 	usage: list(POINT, 20),
 	structure: text(6000, true),
 	gallery: list(object({ src: req(SRC), caption: req(text(200)) }), 40),
+	galleryFolder: { kind: 'text', max: 200, pattern: /^(?!.*\.\.)\/imgs(\/[A-Za-z0-9._-]+)+\/?$/ },
 	credits: list(
 		object({ role: req(text(80)), name: req(text(120)), by: req(text(120)), href: HREF, note: text(300) }),
 		40
