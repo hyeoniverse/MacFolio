@@ -1,7 +1,7 @@
 ---
 title: 트래픽 분석 2 - 사이트에서 모아 보내기
 date: 2026-10-07
-category: 백엔드
+category: 개발기/MacFolio/백엔드
 summary: 분석 API에 보낼 이벤트를 사이트에서 모은다. 페이지 열기, 앱 열기, 글·프로젝트 보기, 바깥 링크, 머문 시간을 5초마다 sendBeacon으로 보낸다. 로컬 주소와 Global Privacy Control에서는 보내지 않고, Apple 메뉴에 오늘 방문자 수와 개인정보 처리 방침을 붙였다.
 ---
 

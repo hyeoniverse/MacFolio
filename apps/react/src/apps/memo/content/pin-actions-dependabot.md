@@ -1,7 +1,7 @@
 ---
 title: 액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게
 date: 2026-10-10
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: 워크플로의 `actions/checkout@v7` 같은 태그는 언제든 다른 코드를 가리킬 수 있다. 액션 9개를 커밋 SHA로 고정하고, 워크플로 둘의 토큰 권한을 줄이고, 새 버전과 취약점 수정은 Dependabot이 PR로 가져오게 했다. Dependabot 브랜치 이름은 규칙 검사에서 예외로 둔다.
 ---
 

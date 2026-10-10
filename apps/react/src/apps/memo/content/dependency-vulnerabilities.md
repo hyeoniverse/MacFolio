@@ -1,7 +1,7 @@
 ---
 title: 하위 의존성 취약점 6건을 overrides로 고치기
 date: 2026-10-09
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: pnpm audit --prod에서 운영 의존성 취약점 6건(high 3)이 나왔다. 모두 직접 설치한 패키지가 아니라 그 아래의 패키지였다. 위 패키지가 아직 고친 버전을 받지 않아서 pnpm overrides로 하위 패키지만 올리고, CI에 취약점 검사를 넣었다.
 ---
 
