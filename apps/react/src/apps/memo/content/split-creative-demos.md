@@ -20,13 +20,13 @@ safari/project/creative/
 ├── Translate.tsx  Summary.tsx  Cover.tsx  Themes.tsx
 ├── demoEvent.ts    데모가 페이지(몽이)에 상태를 알리는 이벤트
 ├── useInView.ts    화면 안에 들어왔는지
-├── slides.ts       발표 장 목록 (Slides와 Convert가 함께 쓴다)
+├── slideDeck.ts    발표 장 목록 (Slides와 Convert가 함께 쓴다)
 ├── liveDemo.ts     실제 AI를 부르는 데모의 서버 호출과 남은 횟수
 ├── QuotaChip.tsx   남은 횟수 칩
 └── color.ts        WCAG 대비, OKLab 명도 옮기기 (+ color.test.ts)
 ```
 
-기준은 하나다. **한 데모만 쓰는 것은 그 데모 파일 안에, 둘 이상이 쓰는 것은 따로.** 그래서 `FISH_SAMPLE`(파형 편집기가 트는 음성 파일)은 음성 데모 쪽에 적혀 있었지만 파형 데모만 쓰기에 그쪽으로 옮겼고, 발표 장 목록은 갤러리와 변환 데모가 같이 써서 `slides.ts`가 됐다.
+기준은 하나다. **한 데모만 쓰는 것은 그 데모 파일 안에, 둘 이상이 쓰는 것은 따로.** 그래서 `FISH_SAMPLE`(파형 편집기가 트는 음성 파일)은 음성 데모 쪽에 적혀 있었지만 파형 데모만 쓰기에 그쪽으로 옮겼고, 발표 장 목록은 갤러리와 변환 데모가 같이 써서 `slideDeck.ts`가 됐다.
 
 ## 알게 된 것
 
@@ -34,4 +34,7 @@ safari/project/creative/
 - **순수 함수가 드러난다**: 색 계산(`contrast`, `readableAccent`, `textOnAccent`)은 DOM도 React도 필요 없는데 컴포넌트 파일 안에 있어서 시험이 없었다. 따로 나오자마자 단위 시험 7개를 붙였다. "연한 노랑을 흰 바탕 위에 올리면 어두워지되 여전히 노란 계열"처럼 눈으로 확인하던 것이 글로 남는다
 - 가져오는 쪽은 둘뿐이었다. `CreativeChapters`는 `Demo`를, `CreativePage`는 `Themes`와 데모 이벤트를. 경로만 바꿨고 동작은 그대로다
 
+## 대소문자만 다른 파일 이름
+
+처음에는 발표 장 목록을 `slides.ts`로 두었다. 같은 폴더에 갤러리 데모 `Slides.tsx`가 있다. 리눅스(CI)에서는 두 파일이 따로 보여 시험이 모두 통과했는데, macOS에서는 타입 검사와 빌드가 깨졌다. macOS의 기본 파일 시스템은 대소문자를 구분하지 않아서, `import { Slides } from './Slides'`를 `Slides.ts`부터 찾다가 `slides.ts`를 집었다. 그 파일에는 `Slides`가 없다. 목록 파일 이름을 `slideDeck.ts`로 바꿨다. 대소문자만 다른 이름은 같은 폴더에 두지 않는다.
 #MacFolio #리팩터링 #React
