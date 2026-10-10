@@ -35,10 +35,15 @@ describe('자동완성 후보', () => {
 		expect(options.slice(0, 2)).toEqual(['TypeScript', 'JavaScript']);
 		expect(options.filter((option) => option === 'TypeScript')).toHaveLength(1);
 		expect(options).toContain('Python');
+		expect(options.length).toBeGreaterThan(40);
 	});
 
-	it('기술: 많이 쓴 것부터, 다룰 수 있는 기술도', () => {
-		expect(stackOptions(projects, ['Three.js'])).toEqual(['React', 'Express', 'Firebase', 'Three.js', 'Vite']);
+	it('기술: 많이 쓴 것부터, 다룰 수 있는 기술도, 그다음 자주 쓰는 기술 (겹치지 않게)', () => {
+		const options = stackOptions(projects, ['Three.js']);
+		expect(options.slice(0, 5)).toEqual(['React', 'Express', 'Firebase', 'Three.js', 'Vite']);
+		expect(options.length).toBeGreaterThan(100);
+		expect(options.filter((option) => option.toLowerCase() === 'react')).toHaveLength(1);
+		expect(options).toContain('PostgreSQL');
 	});
 
 	it('친 글자로 고른다: 앞이 맞는 것 먼저, 이미 고른 것은 빼고, 대소문자 무시', () => {

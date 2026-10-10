@@ -5,7 +5,7 @@
 	"description": "MacFolio API: 메시지, 블로그(관리자 편집), 메일 (#9)",
 	"type": "module",
 	"scripts": {
-		"dev": "prisma generate && nest start --watch",
+		"dev": "prisma generate && prisma migrate deploy && nest start --watch",
 		"build": "prisma generate && tsc -p tsconfig.build.json",
 		"start": "node dist/main.js",
 		"start:prod": "prisma migrate deploy && node dist/main.js",

@@ -3,7 +3,7 @@ import Menu from '@/shared/ui/menu/Menu';
 import { type AdminPost, folderLabelOf, formatPostDate, type Post, validateDraft } from '@macfolio/desktop-core/memo';
 import { discardDraft, publishPost, saveDraft, type PostDraft } from '../postsApi';
 import { env } from '@/shared/config/env';
-import DatePicker from './DatePicker';
+import DatePicker from '@/shared/ui/date/DatePicker';
 
 // 편집기(Milkdown)는 관리자에게만 필요해서 처음 쓸 때 불러온다
 const InlineEditor = lazy(() => import('./InlineEditor'));

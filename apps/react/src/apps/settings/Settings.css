@@ -1438,7 +1438,23 @@ ol.showcase-list .showcase-row.reordering {
 	font-size: 13px;
 }
 
-.projects-period input[type='date'],
+/* 기간의 날짜 단추: 사이트 달력이 열린다 (메모 글 날짜와 같은 것) */
+.projects-date {
+	padding: 3px 8px;
+	border: 1px solid var(--color-divider);
+	border-radius: 6px;
+	background: var(--color-window-bg, transparent);
+	color: var(--color-text);
+	font: inherit;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.projects-date:hover,
+.projects-date[aria-expanded='true'] {
+	border-color: var(--color-accent);
+}
+
 .projects-period input[type='text'] {
 	padding: 3px 6px;
 	border: 1px solid var(--color-divider);
@@ -1459,13 +1475,8 @@ ol.showcase-list .showcase-row.reordering {
 	text-align: left;
 }
 
-.projects-period input[type='date'] {
+.projects-period .projects-date:first-of-type {
 	margin-left: auto;
-}
-
-.projects-period input[type='date'] ~ input[type='date'],
-.projects-period span + input {
-	margin-left: 0;
 }
 
 .projects-field .projects-tags input {
