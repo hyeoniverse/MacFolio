@@ -96,7 +96,8 @@ test.describe('프로젝트 관리', () => {
 		// 순서: 맥폴리오를 맨 위로. DevCourse는 숨긴다
 		const macfolio = list.getByRole('listitem').filter({ hasText: '맥폴리오' });
 		await expect(macfolio).toContainText('macfolio · 고침');
-		await macfolio.getByRole('button', { name: '맥폴리오 위로' }).click();
+		// ≡ 손잡이에서 ↑ 키로 한 칸 위로 (끌어도 된다)
+		await macfolio.getByRole('button', { name: '순서 바꾸기 (맥폴리오)' }).press('ArrowUp');
 		await list.getByRole('button', { name: 'DevCourse FullStack 숨기기' }).click();
 		await expect(list.getByRole('listitem').first()).toContainText('맥폴리오');
 		await settings.getByRole('button', { name: '완료' }).click();
@@ -119,7 +120,9 @@ test.describe('프로젝트 관리', () => {
 		await enterDesktop(page);
 		const settings = await openProjectsPane(page);
 		await settings.getByRole('button', { name: '편집', exact: true }).click();
-		await settings.getByRole('button', { name: '새 프로젝트' }).click();
+		// GitHub 항목의 owner/이름으로 더하기처럼, 맨 아래 칸에 id를 적어 더한다
+		await settings.getByRole('textbox', { name: '새 프로젝트 id' }).fill('side-app');
+		await settings.getByRole('button', { name: '더하기' }).click();
 		const editor = settings.getByRole('form', { name: '새 프로젝트 편집' });
 		await editor.getByRole('textbox', { name: 'id' }).fill('side-app');
 		await editor.getByRole('textbox', { name: '이름', exact: true }).fill('사이드 앱');
