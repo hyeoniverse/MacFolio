@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 456" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 10일 작업 흐름</title>
+<rect width="760" height="456" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 10일</text>
+<text x="132" y="42" font-size="12.5" fill="#6b7280">커밋 59개 · 새 블로그 글 21편 · 하루 끝 E2E 347개</text>
+<rect x="546" y="31" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="564" y="41" font-size="11" fill="#8b93a1">그 시간에 들어간 커밋 수</text>
+<path d="M48.0 64 V414" stroke="#eef0f3"/>
+<text x="48.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 64 V414" stroke="#eef0f3"/>
+<text x="133.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 64 V414" stroke="#eef0f3"/>
+<text x="218.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 64 V414" stroke="#eef0f3"/>
+<text x="303.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 64 V414" stroke="#eef0f3"/>
+<text x="388.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 64 V414" stroke="#eef0f3"/>
+<text x="473.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 64 V414" stroke="#eef0f3"/>
+<text x="558.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 64 V414" stroke="#eef0f3"/>
+<text x="643.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 64 V414" stroke="#eef0f3"/>
+<text x="728.0" y="434" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<rect x="701.7" y="380.0" width="24.3" height="30.0" rx="3" fill="#c7d2fe"/>
+<text x="713.8" y="376.0" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="673.3" y="380.0" width="24.3" height="30.0" rx="3" fill="#c7d2fe"/>
+<text x="685.5" y="376.0" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="645.0" y="338.0" width="24.3" height="72.0" rx="3" fill="#c7d2fe"/>
+<text x="657.2" y="334.0" font-size="9.5" fill="#6366f1" text-anchor="middle">12</text>
+<rect x="616.7" y="380.0" width="24.3" height="30.0" rx="3" fill="#c7d2fe"/>
+<text x="628.8" y="376.0" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="276.7" y="374.0" width="24.3" height="36.0" rx="3" fill="#c7d2fe"/>
+<text x="288.8" y="370.0" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="588.3" y="404.0" width="24.3" height="6.0" rx="3" fill="#c7d2fe"/>
+<text x="600.5" y="400.0" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="248.3" y="356.0" width="24.3" height="54.0" rx="3" fill="#c7d2fe"/>
+<text x="260.5" y="352.0" font-size="9.5" fill="#6366f1" text-anchor="middle">9</text>
+<rect x="220.0" y="374.0" width="24.3" height="36.0" rx="3" fill="#c7d2fe"/>
+<text x="232.2" y="370.0" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="191.7" y="386.0" width="24.3" height="24.0" rx="3" fill="#c7d2fe"/>
+<text x="203.8" y="382.0" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="163.3" y="404.0" width="24.3" height="6.0" rx="3" fill="#c7d2fe"/>
+<text x="175.5" y="400.0" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="135.0" y="398.0" width="24.3" height="12.0" rx="3" fill="#c7d2fe"/>
+<text x="147.2" y="394.0" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="106.7" y="398.0" width="24.3" height="12.0" rx="3" fill="#c7d2fe"/>
+<text x="118.8" y="394.0" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="78.3" y="404.0" width="24.3" height="6.0" rx="3" fill="#c7d2fe"/>
+<text x="90.5" y="400.0" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="90.5" y="70" width="110.4" height="56" rx="9" fill="#e3f6ea" stroke="#4fbf7a"/>
+<text x="99.5" y="88" font-size="12" font-weight="700" fill="#1f6b3d">휴지통 다시</text>
+<text x="99.5" y="105" font-size="10.5" fill="#1f6b3d">비울 수 있는 것만</text>
+<text x="99.5" y="120" font-size="10.5" fill="#1f6b3d">편집기 초점 버그</text>
+<rect x="186.8" y="164" width="93.6" height="71" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="195.8" y="182" font-size="12" font-weight="700" fill="#1d4f91">서버 감시</text>
+<text x="195.8" y="199" font-size="10.5" fill="#1d4f91">자원·유휴 회수</text>
+<text x="195.8" y="214" font-size="10.5" fill="#1d4f91">요금·예산</text>
+<text x="195.8" y="229" font-size="10.5" fill="#1d4f91">ECR Public</text>
+<rect x="229.3" y="70" width="110.4" height="86" rx="9" fill="#efe8fb" stroke="#9b7ae0"/>
+<text x="238.3" y="88" font-size="12" font-weight="700" fill="#4c2f8f">보안·기능</text>
+<text x="238.3" y="105" font-size="10.5" fill="#4c2f8f">CSP·sandbox</text>
+<text x="238.3" y="120" font-size="10.5" fill="#4c2f8f">좋아요·인기글</text>
+<text x="238.3" y="135" font-size="10.5" fill="#4c2f8f">경로 표·요청 제한</text>
+<text x="238.3" y="150" font-size="10.5" fill="#4c2f8f">이 Mac에 관하여</text>
+<rect x="605.0" y="70" width="123.0" height="71" rx="9" fill="#fde8ef" stroke="#e8789e"/>
+<text x="614.0" y="88" font-size="12" font-weight="700" fill="#8c2348">보안 설정</text>
+<text x="614.0" y="105" font-size="10.5" fill="#8c2348">413·로그 가리기</text>
+<text x="614.0" y="120" font-size="10.5" fill="#8c2348">사람 확인 켜고 끄기</text>
+<text x="614.0" y="135" font-size="10.5" fill="#8c2348">액션 고정·gitleaks</text>
+<rect x="623.9" y="164" width="104.1" height="41" rx="9" fill="#eef0f3" stroke="#a7afba"/>
+<text x="632.9" y="182" font-size="12" font-weight="700" fill="#3f4753">의존성</text>
+<text x="632.9" y="199" font-size="10.5" fill="#3f4753">Dependabot 6개</text>
+<rect x="626.0" y="243" width="102.0" height="71" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="635.0" y="261" font-size="12" font-weight="700" fill="#7a5a12">날씨</text>
+<text x="635.0" y="278" font-size="10.5" fill="#7a5a12">macOS·iOS 날씨</text>
+<text x="635.0" y="293" font-size="10.5" fill="#7a5a12">장소 찾기</text>
+<text x="635.0" y="308" font-size="10.5" fill="#7a5a12">밀어서 지우기</text>
+</svg>
