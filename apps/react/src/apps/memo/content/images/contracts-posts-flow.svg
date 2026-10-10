@@ -12,8 +12,8 @@
 <text x="122" y="100" font-size="10.5" fill="#374151" text-anchor="middle">type PostContent · AdminPost</text>
 <text x="122" y="114" font-size="10.5" fill="#374151" text-anchor="middle">POST_LIMITS · isCalendarDate</text>
 <text x="122" y="128" font-size="10.5" fill="#374151" text-anchor="middle">folderPathError</text>
-<path d="M212 98 H250" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
-<text x="231" y="90" font-size="9.5" fill="#6b7280" text-anchor="middle">타입·규칙</text>
+<path d="M212 104 H250" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<text x="231" y="86" font-size="9.5" fill="#6b7280" text-anchor="middle">타입·규칙</text>
 <!-- contracts -->
 <rect x="252" y="52" width="200" height="92" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
 <text x="352" y="74" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">contracts/posts.ts</text>
