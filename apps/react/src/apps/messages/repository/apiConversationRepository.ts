@@ -1,4 +1,4 @@
-import type { Message, Thread } from '../conversations';
+import type { Message, Thread, ThreadCreated } from '@macfolio/contracts';
 import { apiFetch, type ApiOptions, reasonsOf, UNREACHABLE } from '@/shared/api/client';
 import { fetchVisitorName } from '@/shared/lib/visitor';
 import type { ConversationRepository } from './types';
@@ -48,7 +48,7 @@ export function createApiConversationRepository(
 				json: { body: input.text, turnstileToken: input.turnstileToken },
 			});
 			if (!response.ok) throw await failure(response);
-			return (await response.json()) as { thread: Thread; message: Message };
+			return (await response.json()) as ThreadCreated;
 		},
 
 		async postMessage(threadId, input) {

@@ -76,6 +76,7 @@ describe('sortThreads', () => {
 			title: id,
 			createdAt: '2026-01-01T00:00:00Z',
 			pinned,
+			mine: false,
 			lastMessage: { text: '', createdAt: at },
 		});
 		const sorted = sortThreads([

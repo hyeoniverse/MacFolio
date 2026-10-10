@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>메시지 모양 하나를 서버·서버 저장소·로컬 저장소 셋이 쓴다</title>
+<defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="640" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937">메시지 모양 하나를 세 곳이 쓴다</text>
+<!-- before -->
+<text x="32" y="64" font-size="12" font-weight="600" fill="#ef4444">전</text>
+<g font-size="10.5" fill="#374151">
+<rect x="56" y="50" width="160" height="40" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="136" y="66" text-anchor="middle" font-weight="600">api · ThreadView</text><text x="136" y="81" text-anchor="middle">mine: boolean · 'owner'</text>
+<rect x="232" y="50" width="160" height="40" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="312" y="66" text-anchor="middle" font-weight="600">react · Thread</text><text x="312" y="81" text-anchor="middle">mine?: boolean · 'owner'</text>
+<rect x="408" y="50" width="200" height="40" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="508" y="66" text-anchor="middle" font-weight="600">api · parseBody (댓글 규칙 빌림)</text><text x="508" y="81" text-anchor="middle">같은 모양을 두 번, 상수도 두 번</text>
+</g>
+<!-- after -->
+<text x="32" y="130" font-size="12" font-weight="600" fill="#4f46e5">후</text>
+<rect x="56" y="112" width="200" height="92" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="156" y="134" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">contracts/messages.ts</text>
+<text x="156" y="152" font-size="10.5" fill="#374151" text-anchor="middle">Thread · Message · ThreadCreated</text>
+<text x="156" y="167" font-size="10.5" fill="#374151" text-anchor="middle">MessageInput = CommentInput</text>
+<text x="156" y="182" font-size="10.5" fill="#374151" text-anchor="middle">PINNED_THREAD_ID = 'owner'</text>
+<text x="156" y="197" font-size="10" fill="#6b7280" text-anchor="middle">mine은 늘 boolean</text>
+<g stroke="#4f46e5" stroke-width="2" fill="none">
+<path d="M256 135 H330" marker-end="url(#ok)"/>
+<path d="M256 158 H300 V171 H330" marker-end="url(#ok)"/>
+<path d="M256 181 H290 V207 H330" marker-end="url(#ok)"/>
+</g>
+<g font-size="10" fill="#374151">
+<rect x="332" y="120" width="276" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="344" y="133" font-weight="600" fill="#1f2937">apps/api · messages.service.ts</text><text x="344" y="145">parse(MessageInput, body) · MessageView = Message</text>
+<rect x="332" y="156" width="276" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="344" y="169" font-weight="600" fill="#1f2937">apps/react · apiConversationRepository.ts</text><text x="344" y="181">서버 응답을 ThreadCreated · Message로 읽는다</text>
+<rect x="332" y="192" width="276" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="344" y="205" font-weight="600" fill="#1f2937">apps/react · localConversationRepository.ts</text><text x="344" y="217">서버 없이도 같은 Thread · Message 모양</text>
+</g>
+<!-- note -->
+<rect x="32" y="232" width="576" height="64" rx="10" fill="#f3f4f6"/>
+<text x="48" y="254" font-size="11" font-weight="600" fill="#1f2937">왜 둘(댓글·메시지)이 같은 요청 몸통을 쓰나</text>
+<text x="48" y="272" font-size="10.5" fill="#374151">둘 다 이름·비밀번호 없이 본문 1~500자와 사람 확인 토큰만 받는다. 서버는 원래 댓글의 parseBody를 빌려 썼다.</text>
+<text x="48" y="288" font-size="10.5" fill="#374151">그 "빌림"을 MessageInput = CommentInput 한 줄로 적어 두면, 갈라질 때 여기만 바꾸면 된다.</text>
+</svg>
