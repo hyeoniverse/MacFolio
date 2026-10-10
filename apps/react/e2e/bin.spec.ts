@@ -13,6 +13,8 @@ test.describe('휴지통', () => {
 		});
 		await enterDesktop(page);
 		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+		// 남긴 것이 있으면 Dock의 휴지통에 종이가 담겨 있다
+		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin\.png$/);
 		await dockItem(page, 'bin').click();
 		const bin = appWindow(page, 'bin');
 		const list = bin.getByRole('list', { name: '내 브라우저 데이터' });
@@ -20,6 +22,7 @@ test.describe('휴지통', () => {
 		const row = (name: string) =>
 			list.getByRole('listitem').filter({ has: page.locator('.bin-data-name', { hasText: new RegExp(`^${name}$`) }) });
 		await expect(row('메모 최근 검색어')).toContainText('검색어 2개');
+		await expect(bin.locator('.bin-statusbar')).toHaveText(/^[1-9]\d*개의 항목$/);
 		await expect(row('방문자 이름 쿠키')).toContainText('macfolio_visitor');
 
 		// 설정을 비우면 바로 처음 설정(시스템을 따름)으로
@@ -31,9 +34,27 @@ test.describe('휴지통', () => {
 		// 휴지통 비우기는 묻고 모두 지운다 (쿠키 안내는 남는다)
 		await bin.getByRole('button', { name: '휴지통 비우기' }).click();
 		await bin.getByRole('alertdialog').getByRole('button', { name: '휴지통 비우기' }).click();
-		await expect(bin.getByText('이 사이트가 이 브라우저에 남긴 것이 없습니다')).toBeVisible();
+		// 비면 Finder처럼 가운데는 비우고, 비우기 단추는 꺼지고, 아래에 0개의 항목. Dock도 바로 빈 휴지통
+		await expect(bin.getByRole('status').filter({ hasText: '휴지통이 비어 있습니다' })).toBeAttached();
+		await expect(list).toHaveCount(0);
+		await expect(bin.locator('.bin-browser img')).toHaveCount(0);
+		await expect(bin.getByRole('button', { name: '휴지통 비우기' })).toBeDisabled();
+		await expect(bin.locator('.bin-statusbar')).toHaveText('0개의 항목');
+		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin-empty\.png$/);
 		expect(await page.evaluate(() => localStorage.getItem('macfolio:memo:recent-finds'))).toBeNull();
-		await expect(row('방문자 이름 쿠키')).toBeVisible();
+		// 사이트가 지울 수 없는 쿠키 안내는 비어 있어도 아래 안내에 짧게 남는다
+		await expect(bin.locator('.bin-files-note')).toContainText('macfolio_visitor');
+	});
+
+	test('처음 온 브라우저는 Dock의 휴지통이 비어 있고, 설정을 바꾸면 종이가 담긴다', async ({ page }) => {
+		await enterDesktop(page);
+		const icon = dockItem(page, 'bin').locator('img');
+		await expect(icon).toHaveAttribute('src', /\/bin-empty\.png$/);
+		await dockItem(page, 'settings').click();
+		const settings = appWindow(page, 'settings');
+		await settings.getByRole('button', { name: '화면 모드' }).click();
+		await settings.getByRole('radio', { name: '다크' }).click();
+		await expect(icon).toHaveAttribute('src', /\/bin\.png$/);
 	});
 
 	test('개인정보 문서를 누르면 Finder가 그 문서를 연다', async ({ page }) => {
