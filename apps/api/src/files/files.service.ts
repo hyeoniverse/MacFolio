@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { PrismaService } from '../prisma/prisma.service.js';
 import { stripImageMetadata } from './metadata.js';
 import { cleanFileName, cleanFileType, IMAGE_TYPES, newUploadId, sniffImage, UPLOAD_ID, uploadIdsIn } from './rules.js';
+import type { Upload, UploadUsage } from '@macfolio/contracts';
 
 /** multer가 넘겨주는 파일 (메모리에 받는다) */
 export interface IncomingFile {
@@ -11,30 +12,9 @@ export interface IncomingFile {
 	buffer: Buffer;
 }
 
-export interface UploadView {
-	id: string;
-	name: string;
-	type: string;
-	size: number;
-	/** 브라우저가 바로 보여 줄 수 있는 이미지인지 */
-	image: boolean;
-	/** API 주소 기준 경로 (/files/:id) */
-	path: string;
-}
-
-/** 관리자가 보는 파일 하나와, 그 파일을 어디에서 쓰는지 */
-export interface UploadUsageView extends UploadView {
-	createdAt: string;
-	createdBy: string;
-	usedBy: {
-		/** 지금 글(게시한 내용·임시 저장, 최근 삭제된 글 포함)에서 가리키는 글 주소 */
-		posts: string[];
-		/** 예전 버전에서만 가리키는 글 주소 (지우면 그 버전으로 되돌릴 때 그림이 깨진다) */
-		revisions: string[];
-		/** 배경화면의 원본이나 썸네일 */
-		wallpaper: boolean;
-	};
-}
+/** 올린 파일 하나와, 관리자가 보는 쓰는 곳. 모양은 @macfolio/contracts (화면과 같은 스키마) */
+export type UploadView = Upload;
+export type UploadUsageView = UploadUsage;
 
 @Injectable()
 export class FilesService {

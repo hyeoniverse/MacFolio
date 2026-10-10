@@ -1,7 +1,7 @@
 // 글에 넣는 이미지와 첨부 파일의 모양 (한도, 제목, 파일 이름). 올리는 것은 attachmentsApi.ts
 
-/** API의 한 파일 한도와 같다 */
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+/** 한 파일 한도 (서버와 같은 값, contracts) */
+export { MAX_UPLOAD_BYTES } from '@macfolio/contracts';
 
 export interface Uploaded {
 	id: string;
