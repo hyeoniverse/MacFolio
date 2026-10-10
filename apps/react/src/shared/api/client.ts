@@ -49,16 +49,23 @@ export function onUnauthorized(handler: UnauthorizedHandler): () => void {
 	return () => unauthorizedHandlers.delete(handler);
 }
 
-/** 서버 오류 몸통({ message: string | string[] })에서 이유를 읽는다 */
+/** NestJS가 기본으로 붙이는 영어 문구 (서버가 이유를 따로 적지 않은 것) */
+const isGenericMessage = (line: string) => /^(Unauthorized|Forbidden|Too Many Requests|ThrottlerException)/.test(line);
+
+/**
+ * 서버 오류 몸통({ message: string | string[] })에서 이유를 읽는다.
+ * 서버가 적은 한국어 이유가 있으면 그것을, 없으면 상태별 문구(401·429)나 fallback
+ */
 export async function reasonsOf(response: Response, fallback = DEFAULT_FAILURE): Promise<string[]> {
-	if (response.status === 401) return [SIGNED_OUT];
-	if (response.status === 429) return [TOO_MANY];
 	const body = (await response.json().catch(() => null)) as { message?: unknown } | null;
 	const message = body?.message;
 	const reasons = (Array.isArray(message) ? message : [message]).filter(
-		(line): line is string => typeof line === 'string' && line.length > 0
+		(line): line is string => typeof line === 'string' && line.length > 0 && !isGenericMessage(line)
 	);
-	return reasons.length > 0 ? reasons : [fallback];
+	if (reasons.length > 0) return reasons;
+	if (response.status === 401) return [SIGNED_OUT];
+	if (response.status === 429) return [TOO_MANY];
+	return [fallback];
 }
 
 /**
