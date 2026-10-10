@@ -243,6 +243,69 @@
 				]
 			}
 		},
+		"/security": {
+			"get": {
+				"operationId": "SecurityController_get",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "곳마다 사람 확인을 켰는지, 서버에 Turnstile 키가 있는지(available), 위젯의 사이트 키",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"contact": true,
+										"comment": false,
+										"message": false,
+										"available": true,
+										"turnstileSiteKey": "0x4AAAA…",
+										"updatedAt": null
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"security"
+				]
+			},
+			"put": {
+				"operationId": "SecurityController_update",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"comment": true
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "바꾼 뒤의 설정"
+					},
+					"400": {
+						"description": "모르는 설정, true/false가 아닌 값, 바꿀 것이 없음"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"security"
+				]
+			}
+		},
 		"/posts/{slug}/comments": {
 			"get": {
 				"operationId": "CommentsController_list",

@@ -41,7 +41,7 @@ export async function listComments(apiUrl: string, slug: string, fetchImpl: type
 export async function createComment(
 	apiUrl: string,
 	slug: string,
-	input: { body: string },
+	input: { body: string; turnstileToken?: string },
 	fetchImpl: typeof fetch = fetch
 ): Promise<CreateResult> {
 	try {

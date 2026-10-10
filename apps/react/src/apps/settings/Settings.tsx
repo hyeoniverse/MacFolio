@@ -9,15 +9,18 @@ import AdminAccount from '@/shared/auth/AdminAccount';
 import { useAdmin } from '@/shared/auth/adminStore';
 import GithubShowcase from '@/apps/settings/GithubShowcase';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import PrivacyPane from '@/apps/settings/PrivacyPane';
 import '@/apps/settings/Settings.css';
 
-type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'github';
+type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'privacy' | 'github';
 
 const SECTIONS: { id: Section; label: string; icon: string }[] = [
 	{ id: 'account', label: '계정', icon: 'fa-solid fa-circle-user' },
 	{ id: 'appearance', label: '화면 모드', icon: 'fa-solid fa-circle-half-stroke' },
 	{ id: 'wallpaper', label: '배경화면', icon: 'fa-solid fa-image' },
 	{ id: 'sound', label: '사운드', icon: 'fa-solid fa-volume-high' },
+	// macOS의 개인정보 보호 및 보안: 모으는 것, 글을 쓸 때 사람 확인 (관리자가 켜고 끈다)
+	{ id: 'privacy', label: '개인정보 보호 및 보안', icon: 'fa-solid fa-hand' },
 ];
 
 /** 관리자로 로그인했을 때만 보이는 항목 */
@@ -128,6 +131,13 @@ const Settings: React.FC = () => {
 										selected={settings.wallpaper}
 									/>
 								)}
+							</>
+						)}
+
+						{section === 'privacy' && (
+							<>
+								<h2 className="phone-title">개인정보 보호 및 보안</h2>
+								<PrivacyPane />
 							</>
 						)}
 

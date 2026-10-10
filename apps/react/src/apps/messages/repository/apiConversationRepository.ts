@@ -55,7 +55,10 @@ export function createApiConversationRepository(
 		},
 
 		async createThread(input) {
-			const response = await call('/threads', { method: 'POST', body: JSON.stringify({ body: input.text }) });
+			const response = await call('/threads', {
+				method: 'POST',
+				body: JSON.stringify({ body: input.text, turnstileToken: input.turnstileToken }),
+			});
 			if (!response.ok) throw await failure(response);
 			return (await response.json()) as { thread: Thread; message: Message };
 		},
@@ -63,7 +66,7 @@ export function createApiConversationRepository(
 		async postMessage(threadId, input) {
 			const response = await call(`/threads/${encodeURIComponent(threadId)}`, {
 				method: 'POST',
-				body: JSON.stringify({ body: input.text }),
+				body: JSON.stringify({ body: input.text, turnstileToken: input.turnstileToken }),
 			});
 			if (response.status === 404) return 'not-found';
 			if (!response.ok) throw await failure(response);

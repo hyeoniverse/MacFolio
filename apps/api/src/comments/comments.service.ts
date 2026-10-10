@@ -1,6 +1,8 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { SecurityService } from '../security/security.service.js';
+import { tokenOf } from '../common/turnstile.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
 import { hashIp, maskIp, OWNER_NAME, parseBody, SLUG } from './rules.js';
@@ -65,7 +67,8 @@ const toView = (
 export class CommentsService {
 	constructor(
 		private readonly prisma: PrismaService,
-		@Inject(APP_CONFIG) private readonly config: AppConfig
+		@Inject(APP_CONFIG) private readonly config: AppConfig,
+		private readonly security: SecurityService
 	) {}
 
 	private checkSlug(slug: string) {
@@ -94,6 +97,8 @@ export class CommentsService {
 		this.checkSlug(slug);
 		const parsed = parseBody(input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		// 사람 확인: 관리자가 시스템 설정에서 켜면 (관리자 댓글은 확인하지 않는다)
+		await this.security.requireHuman('comment', tokenOf(input), ip, admin);
 		const row = await this.prisma.postComment.create({
 			data: {
 				postSlug: slug,

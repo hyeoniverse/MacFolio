@@ -324,3 +324,17 @@ model ResourceAlert {
   /// 보낸 내용 요약
   detail String
 }
+
+/// 사이트의 보안 설정 (한 줄, id = 1). 관리자가 시스템 설정의 '개인정보 보호 및 보안'에서 바꾼다.
+/// 줄이 없으면 기본값 (메일만 사람 확인)
+model SecuritySetting {
+  id           Int      @id @default(1)
+  /// 메일 앱의 연락 메일을 보낼 때 사람 확인 (Cloudflare Turnstile)
+  contactHuman Boolean  @default(true)
+  /// 댓글을 쓸 때 사람 확인
+  commentHuman Boolean  @default(false)
+  /// 메시지(피드백·답글)를 쓸 때 사람 확인
+  messageHuman Boolean  @default(false)
+  updatedAt    DateTime @updatedAt
+  updatedBy    String?
+}

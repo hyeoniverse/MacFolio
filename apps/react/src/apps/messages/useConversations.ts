@@ -68,11 +68,12 @@ export function useConversations() {
 	/** 좁은 창에서 대화 목록으로 돌아간다 */
 	const back = useCallback(() => setChatOpen(false), []);
 
-	/** 새 피드백을 남기거나, 보고 있는 항목에 답글을 단다. 실패하면 이유를 돌려준다 */
+	/** 새 피드백을 남기거나, 보고 있는 항목에 답글을 단다. 실패하면 이유를 돌려준다. turnstileToken: 사람 확인을 켰을 때 */
 	const send = useCallback(
-		async (text: string): Promise<InputErrors> => {
-			const { value, errors } = validateMessageInput({ text });
-			if (Object.keys(errors).length > 0) return errors;
+		async (text: string, turnstileToken?: string): Promise<InputErrors> => {
+			const checked = validateMessageInput({ text });
+			if (Object.keys(checked.errors).length > 0) return checked.errors;
+			const value = { ...checked.value, turnstileToken };
 			try {
 				if (selectedId === NEW_THREAD) {
 					const { thread, message } = await repository.createThread(value);
