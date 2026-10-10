@@ -1,5 +1,6 @@
 // 날씨 앱의 장소: 저장한 목록(이 브라우저), 찾기(먼저 내장 도시, 그다음 Open-Meteo 지오코딩)
 import { CITY_ROWS } from './cities';
+import { readJson, readString, STORAGE_KEYS, writeJson, writeString } from '@/shared/lib/storage';
 
 export interface Place {
 	/** 목록에 보일 이름 */
@@ -88,40 +89,17 @@ export function mergePlaces(cities: Place[], found: Place[], limit = 12): Place[
 	return merged.slice(0, limit);
 }
 
-const STORAGE_KEY = 'macfolio:weather:places';
-const UNIT_KEY = 'macfolio:weather:unit';
-
 /** 고른 기온 단위 (이 브라우저). 없으면 섭씨 */
-export function loadUnit(): 'c' | 'f' {
-	try {
-		return localStorage.getItem(UNIT_KEY) === 'f' ? 'f' : 'c';
-	} catch {
-		return 'c';
-	}
-}
+export const loadUnit = (): 'c' | 'f' => (readString(STORAGE_KEYS.weatherUnit) === 'f' ? 'f' : 'c');
 
-export function saveUnit(unit: 'c' | 'f') {
-	try {
-		localStorage.setItem(UNIT_KEY, unit);
-	} catch {
-		// 저장하지 못해도 이번에는 그대로 쓴다
-	}
-}
+/** 저장하지 못해도 이번에는 그대로 쓴다 */
+export const saveUnit = (unit: 'c' | 'f') => writeString(STORAGE_KEYS.weatherUnit, unit);
 
 /** 저장한 장소 (이 브라우저). 읽지 못하면 기본(서울) */
 export function loadPlaces(): Place[] {
-	try {
-		const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as Place[] | null;
-		return Array.isArray(saved) && saved.length > 0 ? saved : DEFAULT_PLACES;
-	} catch {
-		return DEFAULT_PLACES;
-	}
+	const saved = readJson(STORAGE_KEYS.weatherPlaces) as Place[] | null;
+	return Array.isArray(saved) && saved.length > 0 ? saved : DEFAULT_PLACES;
 }
 
-export function savePlaces(places: Place[]) {
-	try {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(places));
-	} catch {
-		// 저장하지 못해도(사생활 보호 창 등) 이번에는 그대로 쓴다
-	}
-}
+/** 저장하지 못해도(사생활 보호 창 등) 이번에는 그대로 쓴다 */
+export const savePlaces = (places: Place[]) => writeJson(STORAGE_KEYS.weatherPlaces, places);
