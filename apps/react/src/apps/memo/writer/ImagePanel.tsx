@@ -3,6 +3,7 @@ import { useEffect, useId, useState } from 'react';
 import { env } from '@/shared/config/env';
 import { captionParts } from '@macfolio/desktop-core/memo';
 import { baseName } from './attachments';
+import { IMAGE_TYPES } from '@macfolio/contracts';
 import { uploadAndInsert } from './attachmentsApi';
 import type { FormatAction, ImageState } from './editorControls';
 import {
@@ -15,9 +16,6 @@ import {
 	type StockProvider,
 } from './stockApi';
 import Button from '@/shared/ui/button/Button';
-
-/** 이미지로 고를 수 있는 형식 (API가 바로 보여 주는 형식과 같다) */
-const IMAGE_TYPES = 'image/png,image/jpeg,image/gif,image/webp';
 
 type Tab = 'file' | 'url' | StockProvider;
 const TABS: { id: Tab; label: string }[] = [
@@ -141,7 +139,7 @@ const FileTab = ({ onDone }: { onDone: () => void }) => {
 			<span>PNG·JPEG·GIF·WebP 파일을 10MB까지 올릴 수 있습니다. 본문에 붙여넣거나 끌어다 놓아도 됩니다.</span>
 			<input
 				type="file"
-				accept={IMAGE_TYPES}
+				accept={IMAGE_TYPES.join(',')}
 				aria-label="이미지 파일"
 				onChange={(event) => {
 					const file = event.target.files?.[0];
