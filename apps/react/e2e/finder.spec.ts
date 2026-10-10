@@ -66,14 +66,14 @@ test.describe('Finder', () => {
 		await finder.getByRole('button', { name: '목록으로 보기' }).click();
 		await expect(finder.locator('.finder-list-head')).toContainText('수정일');
 		const list = finder.getByRole('listbox', { name: '블로그' });
-		await expect(list.getByRole('option', { name: /백엔드/ })).toContainText('폴더');
+		await expect(list.getByRole('option', { name: /개발기/ })).toContainText('폴더');
 
-		// ↓로 고르고 Enter로 들어간다, ⌘↑로 위 폴더로 (폴더는 이름순이라 백엔드가 맨 위)
+		// ↓로 고르고 Enter로 들어간다, ⌘↑로 위 폴더로 (블로그 글은 모두 개발기 › MacFolio 아래에 있다)
 		await finder.locator('.finder-content').focus();
 		await page.keyboard.press('ArrowDown');
-		await expect(list.getByRole('option', { name: /백엔드/ })).toHaveAttribute('aria-selected', 'true');
+		await expect(list.getByRole('option', { name: /개발기/ })).toHaveAttribute('aria-selected', 'true');
 		await page.keyboard.press('Enter');
-		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('백엔드');
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('개발기');
 		await page.keyboard.press('Meta+ArrowUp');
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('블로그');
 	});

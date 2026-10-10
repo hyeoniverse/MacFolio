@@ -1,7 +1,7 @@
 ---
 title: 블로그 스크린샷을 테스트 코드로 찍기
 date: 2026-10-01
-category: 인프라/빌드·테스트
+category: 개발기/MacFolio/인프라
 summary: README와 블로그 글에 넣을 스크린샷을 손으로 찍지 않고 Playwright로 찍었다. E2E의 가짜 API로 원하는 장면을 만들고, 잘린 메뉴·깨진 아바타·안 보이는 표시를 하나씩 고친 기록.
 ---
 
