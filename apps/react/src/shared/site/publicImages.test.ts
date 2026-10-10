@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { blankProject } from '@macfolio/desktop-core/site';
-import { captionOf, completeProject, imageFolders, PUBLIC_IMAGES, withFolderGallery } from './publicImages';
+import {
+	captionOf,
+	completeProject,
+	groupedImageFolders,
+	imageFolders,
+	PUBLIC_IMAGES,
+	withFolderGallery,
+} from './publicImages';
 
 describe('사이트의 그림 폴더', () => {
 	it('빌드할 때 public/imgs 아래 폴더마다 그림을 이름 순으로 모은다', () => {
@@ -44,5 +51,17 @@ describe('화면 캡처가 비었을 때', () => {
 			completeProject({ ...blankProject('p'), image: '/imgs/own.png', galleryFolder: '/imgs/x' }, folders).image
 		).toBe('/imgs/own.png');
 		expect(completeProject(blankProject('p'), folders).image).toBe('');
+	});
+});
+
+describe('groupedImageFolders', () => {
+	it('프로젝트 폴더별로 묶고, 묶음 이름은 프로젝트 이름, 폴더 이름은 그 아래 경로', () => {
+		const groups = groupedImageFolders((id) => (id === 'qru' ? 'QRU 큐알유' : undefined));
+		const qru = groups.find((group) => group.label === 'QRU 큐알유')!;
+		expect(qru.folders.map((folder) => folder.value)).toContain('/imgs/projects/qru/screens');
+		expect(qru.folders.find((folder) => folder.value === '/imgs/projects/qru/screens')?.label).toBe('screens');
+		expect(groups.every((group) => group.folders.every((folder) => folder.value.startsWith('/imgs/projects/')))).toBe(
+			true
+		);
 	});
 });

@@ -13,6 +13,21 @@ export const imageFolders = () =>
 		.filter((folder) => folder.startsWith(PROJECT_IMAGES_ROOT))
 		.sort((a, b) => a.localeCompare(b));
 
+/**
+ * 화면 모음 폴더를 프로젝트(첫 단계 폴더)별로 묶는다. 묶음 이름은 프로젝트 이름(없으면 폴더 이름), 폴더 이름은 그 아래 경로
+ * (프로젝트 폴더 자체는 '프로젝트 폴더')
+ */
+export function groupedImageFolders(nameOf: (folderName: string) => string | undefined = () => undefined) {
+	const groups = new Map<string, { label: string; folders: { value: string; label: string }[] }>();
+	for (const folder of imageFolders()) {
+		const [head, ...rest] = folder.slice(PROJECT_IMAGES_ROOT.length).split('/');
+		const group = groups.get(head) ?? { label: nameOf(head) ?? head, folders: [] };
+		group.folders.push({ value: folder, label: rest.length ? rest.join('/') : '프로젝트 폴더' });
+		groups.set(head, group);
+	}
+	return [...groups.values()].sort((a, b) => a.label.localeCompare(b.label));
+}
+
 /** 파일 이름으로 만든 설명: 앞의 번호와 확장자를 떼고 -·_는 띄어 쓴다 (예: 02-login_page.png → login page) */
 export function captionOf(src: string) {
 	const name = decodeURIComponent(src.split('/').pop() ?? '')
