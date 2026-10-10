@@ -26,7 +26,7 @@
 
 설정은 루트의 `wrangler.jsonc`에 있다. Worker 스크립트 없이 `apps/react/dist`를 정적 파일로 서빙하고, 없는 경로는 `index.html`로 보낸다(SPA).
 
-빌드와 배포는 GitHub Actions(`.github/workflows/ci.yml`)가 한다. Cloudflare의 빌드 서버(Workers Builds)는 쓰지 않는다.
+빌드와 배포는 GitHub Actions(`.github/workflows/ci.yml`)가 한다. Cloudflare의 빌드 서버(Workers Builds)는 쓰지 않는다. 워크플로가 쓰는 액션은 태그(`@v7`)가 아니라 커밋 SHA로 고정하고(태그는 나중에 다른 코드를 가리킬 수 있다), 새 버전은 Dependabot(`.github/dependabot.yml`)이 PR로 올린다.
 
 - **main**: 시험(`check`)이 통과하면 `deploy` 작업이 `wrangler deploy`로 실제 사이트에 올린다. 시험이 실패한 커밋은 배포되지 않는다.
 - **PR**: `preview` 작업이 `wrangler versions upload --preview-alias <브랜치>`로 미리보기 버전을 올리고, 주소를 PR 댓글 하나에 적는다(새 커밋을 올리면 같은 댓글을 고친다). 실제 사이트는 바뀌지 않는다.
