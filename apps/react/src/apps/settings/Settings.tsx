@@ -11,10 +11,11 @@ import GithubShowcase from '@/apps/settings/GithubShowcase';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import AboutPane from '@/apps/settings/AboutPane';
 import PrivacyPane from '@/apps/settings/PrivacyPane';
+import ProjectsPane from '@/apps/settings/ProjectsPane';
 import { requestedSection } from '@/apps/settings/settingsRequest';
 import '@/apps/settings/Settings.css';
 
-type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'privacy' | 'about' | 'github';
+type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'privacy' | 'about' | 'github' | 'projects';
 
 const SECTIONS: { id: Section; label: string; icon: string }[] = [
 	{ id: 'account', label: '계정', icon: 'fa-solid fa-circle-user' },
@@ -28,7 +29,11 @@ const SECTIONS: { id: Section; label: string; icon: string }[] = [
 ];
 
 /** 관리자로 로그인했을 때만 보이는 항목 */
-const ADMIN_SECTIONS: typeof SECTIONS = [{ id: 'github', label: 'GitHub', icon: 'fa-brands fa-github' }];
+const ADMIN_SECTIONS: typeof SECTIONS = [
+	{ id: 'github', label: 'GitHub', icon: 'fa-brands fa-github' },
+	// Safari의 프로젝트 페이지와 프로젝트 앱(데모를 창으로): 순서·숨김·고치기·새 프로젝트
+	{ id: 'projects', label: '프로젝트', icon: 'fa-solid fa-folder-open' },
+];
 
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
 	{ value: 'light', label: '라이트' },
@@ -169,6 +174,13 @@ const Settings: React.FC = () => {
 							<>
 								<h2 className="phone-title">GitHub</h2>
 								<GithubShowcase />
+							</>
+						)}
+
+						{section === 'projects' && (
+							<>
+								<h2 className="phone-title">프로젝트</h2>
+								<ProjectsPane />
 							</>
 						)}
 

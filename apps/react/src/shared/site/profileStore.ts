@@ -26,18 +26,8 @@ const profileStore = createStore<ProfileState>({ profile: DEFAULT_PROFILE, custo
 const apply = (profile: SiteProfile | null) =>
 	profileStore.setState({ profile: profile ?? DEFAULT_PROFILE, custom: profile !== null });
 
-/** 앱 시작 시 한 번: 서버에 저장한 프로필을 읽는다. 서버가 없거나 읽지 못하면 기본값 그대로 */
-export async function loadSiteProfile(fetchImpl: typeof fetch = fetch) {
-	if (!env.apiUrl) return;
-	try {
-		const response = await fetchImpl(`${env.apiUrl}/site`, { credentials: 'include' });
-		if (!response.ok) return;
-		const body = (await response.json()) as { profile: SiteProfile | null };
-		apply(body.profile);
-	} catch {
-		// 기본값 그대로
-	}
-}
+/** 서버에 저장한 프로필을 쓴다 (앱 시작 때 shared/site/siteContent.ts가 부른다). null이면 기본값 */
+export const setSiteProfile = (profile: SiteProfile | null) => apply(profile);
 
 export type SaveResult = { ok: true } | { ok: false; errors: string[] };
 

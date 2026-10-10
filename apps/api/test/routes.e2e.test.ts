@@ -134,6 +134,8 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'GET /site': 'public',
 	'PUT /site/profile': 'admin',
 	'DELETE /site/profile': 'admin',
+	'PUT /site/projects': 'admin',
+	'DELETE /site/projects': 'admin',
 };
 
 /** 어떤 경로든 타입이 틀린 몸통. 각 경로의 검사기가 거절해야 한다 */
@@ -289,6 +291,7 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 			'POST /auth/logout',
 			// 저장한 프로필을 지운다 (코드의 기본값으로)
 			'DELETE /site/profile',
+			'DELETE /site/projects',
 			'POST /posts/:slug/restore',
 			'DELETE /posts/:slug/permanent',
 			'DELETE /posts/:slug',
