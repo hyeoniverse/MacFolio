@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
-import { SLIDES } from './slides';
+import { SLIDES } from './slideDeck';
 import { useInView } from './useInView';
 
 /** 변환 데모의 단계: 읽기 → 장마다 그리기 → 올리기 → 끝 */

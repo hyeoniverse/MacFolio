@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cssVars } from '@/shared/lib/cssVars';
-import { SLIDES } from './slides';
+import { SLIDES } from './slideDeck';
 import { useInView } from './useInView';
 
 /** 대본 없는 장을 보여 주는 시간, 대본 한 글자를 읽는 시간 (ms) */
