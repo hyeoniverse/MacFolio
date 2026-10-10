@@ -16,14 +16,18 @@ test.describe('이 Mac에 관하여', () => {
 			'직무Frontend Focused Fullstack Developer',
 			'학교서울여자대학교',
 			'위치Seoul, South Korea',
-			'이메일hyeoniverse.dev@gmail.com',
+			'이메일hyeoniverse.dev@gmail.com (메일 앱에서 쓰기)',
 			'GitHubhyeoniverse (새 탭)',
 			'주요 기술React · Next.js · TypeScript',
 		]);
-		await expect(about.getByRole('link', { name: 'hyeoniverse.dev@gmail.com' })).toHaveAttribute(
-			'href',
-			'mailto:hyeoniverse.dev@gmail.com'
+		// 이메일도 누를 수 있는 링크로 보인다: GitHub과 같은 파란 글자와 ↗
+		const email = about.getByRole('link', { name: 'hyeoniverse.dev@gmail.com (메일 앱에서 쓰기)' });
+		await expect(email.locator('.fa-arrow-up-right-from-square')).toBeVisible();
+		const role = about.locator('.about-mac-specs dd').first();
+		expect(await email.evaluate((el) => getComputedStyle(el).color)).not.toBe(
+			await role.evaluate((el) => getComputedStyle(el).color)
 		);
+		await expect(email).toHaveAttribute('href', 'mailto:hyeoniverse.dev@gmail.com');
 		// 메뉴는 닫히고, 닫기 단추에 초점
 		await expect(menu).toBeHidden();
 		await expect(about.getByRole('button', { name: '닫기' })).toBeFocused();

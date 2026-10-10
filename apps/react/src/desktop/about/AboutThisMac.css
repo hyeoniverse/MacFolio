@@ -7,7 +7,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 290px;
+	width: 316px;
 	padding: 44px 24px 18px;
 	border: 0.5px solid var(--color-window-border);
 	border-radius: 16px;
@@ -108,7 +108,7 @@
 
 .about-mac-specs > div {
 	display: grid;
-	grid-template-columns: 76px 1fr;
+	grid-template-columns: 64px 1fr;
 	gap: 10px;
 	text-align: left;
 }
@@ -183,7 +183,7 @@
 	font-size: 10px;
 }
 
-/* 바깥 링크(GitHub)의 ↗: 새 탭으로 연다는 표시 (시스템 설정의 정보에도 쓴다) */
+/* 누를 수 있는 프로필 링크(이메일, GitHub)의 ↗ (시스템 설정의 정보에도 쓴다) */
 .profile-external-link i {
 	margin-left: 4px;
 	font-size: 0.75em;
@@ -191,7 +191,9 @@
 	vertical-align: 1px;
 }
 
-/* 이 창의 링크는 값처럼 보이다가, 올리면 파란 밑줄 */
+/* 이 창의 링크는 파란 글자 (다른 값과 구별되게), 올리면 밑줄 */
 .about-mac-specs .profile-external-link {
 	color: var(--color-accent);
+	/* ↗가 다음 줄로 떨어지지 않게 링크는 한 줄로 */
+	white-space: nowrap;
 }
