@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { placeBelow } from '@/shared/ui/popover/placement';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
 import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from './calendar';
+import '@/shared/ui/date/DatePicker.css';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 const MONTHS = Array.from({ length: 12 }, (_, month) => month);
@@ -30,7 +31,22 @@ const todayIso = () => {
  * 위의 '2026년 9월'을 누르면 월을, 거기서 '2026년'을 누르면 연도를 한 번에 고른다.
  * 바깥을 누르거나 Esc를 누르면 닫힌다.
  */
-const DatePicker = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
+const DatePicker = ({
+	value,
+	onChange,
+	label = '날짜',
+	placeholder = '날짜 고르기',
+	className = 'memo-meta-button',
+}: {
+	/** YYYY-MM-DD. 비어 있으면 placeholder를 보여 준다 */
+	value: string;
+	onChange: (value: string) => void;
+	/** 단추의 이름 앞부분 (예: 시작일) */
+	label?: string;
+	placeholder?: string;
+	/** 여는 단추의 모양 (쓰는 앱의 CSS) */
+	className?: string;
+}) => {
 	const [open, setOpen] = useState(false);
 	const selected = parseIso(value);
 	const [view, setView] = useState(() => {
@@ -71,8 +87,8 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 			<button
 				ref={buttonRef}
 				type="button"
-				className="memo-meta-button"
-				aria-label={`날짜 ${formatIso(value)}, 바꾸기`}
+				className={className}
+				aria-label={value ? `${label} ${formatIso(value)}, 바꾸기` : `${label} 고르기`}
 				aria-haspopup="dialog"
 				aria-expanded={open}
 				onClick={() => {
@@ -81,15 +97,15 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 					setOpen((value) => !value);
 				}}
 			>
-				<time dateTime={value}>{formatIso(value)}</time>
+				{value ? <time dateTime={value}>{formatIso(value)}</time> : <span>{placeholder}</span>}
 			</button>
 			{open &&
 				createPortal(
-					<div ref={panelExit} className="memo-calendar" role="dialog" aria-label="날짜 고르기" style={position}>
-						<div className="memo-calendar-head">
+					<div ref={panelExit} className="ui-calendar" role="dialog" aria-label="날짜 고르기" style={position}>
+						<div className="ui-calendar-head">
 							<button
 								type="button"
-								className="memo-calendar-title"
+								className="ui-calendar-title"
 								aria-label={
 									mode === 'days'
 										? `${view.year}년 ${view.month + 1}월, 월 고르기`
@@ -115,9 +131,9 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 							</button>
 						</div>
 						{mode === 'days' && (
-							<div className="memo-calendar-grid" role="grid">
+							<div className="ui-calendar-grid" role="grid">
 								{WEEKDAYS.map((day) => (
-									<span key={day} className="memo-calendar-weekday" role="columnheader">
+									<span key={day} className="ui-calendar-weekday" role="columnheader">
 										{day}
 									</span>
 								))}
@@ -143,7 +159,7 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 							</div>
 						)}
 						{mode === 'months' && (
-							<div className="memo-calendar-picks" role="group" aria-label="월">
+							<div className="ui-calendar-picks" role="group" aria-label="월">
 								{MONTHS.map((month) => (
 									<button
 										key={month}
@@ -162,7 +178,7 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 							</div>
 						)}
 						{mode === 'years' && (
-							<div className="memo-calendar-picks" role="group" aria-label="연도">
+							<div className="ui-calendar-picks" role="group" aria-label="연도">
 								{Array.from({ length: YEAR_PAGE }, (_, index) => yearStart + index).map((year) => (
 									<button
 										key={year}
@@ -180,7 +196,7 @@ const DatePicker = ({ value, onChange }: { value: string; onChange: (value: stri
 								))}
 							</div>
 						)}
-						<button type="button" className="memo-calendar-today" onClick={() => pick(today)}>
+						<button type="button" className="ui-calendar-today" onClick={() => pick(today)}>
 							오늘
 						</button>
 					</div>,

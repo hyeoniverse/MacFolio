@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from './calendar';
+import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from '@/shared/ui/date/calendar';
 import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
 import { captionParts } from '@macfolio/desktop-core/memo';
 import { imageFileName } from '../download';

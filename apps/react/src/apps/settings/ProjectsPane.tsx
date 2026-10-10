@@ -16,6 +16,7 @@ import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type
 import { getSavedProjects, sendProjects } from '@/shared/site/siteContent';
 import { groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
+import DatePicker from '@/shared/ui/date/DatePicker';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
@@ -216,12 +217,12 @@ const PeriodField = ({
 		<div className="projects-field">
 			<div className="projects-period" role="group" aria-label="기간">
 				<FieldLabel label="기간" />
-				<input
-					type="date"
-					aria-label="시작일"
+				<DatePicker
+					label="시작일"
+					placeholder="시작일"
+					className="projects-date"
 					value={period.start}
-					max={period.end || undefined}
-					onChange={(event) => update({ start: event.target.value })}
+					onChange={(start) => update({ start })}
 				/>
 				<span aria-hidden="true">–</span>
 				{period.ongoing ? (
@@ -232,12 +233,12 @@ const PeriodField = ({
 						onChange={(event) => update({ ongoing: event.target.value || '진행 중' })}
 					/>
 				) : (
-					<input
-						type="date"
-						aria-label="끝날"
+					<DatePicker
+						label="끝날"
+						placeholder="끝날"
+						className="projects-date"
 						value={period.end}
-						min={period.start || undefined}
-						onChange={(event) => update({ end: event.target.value })}
+						onChange={(end) => update({ end })}
 					/>
 				)}
 				<label className="projects-period-ongoing">

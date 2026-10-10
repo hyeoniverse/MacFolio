@@ -1,0 +1,130 @@
+/* 날짜 고르기 달력 (메모 글 날짜, 프로젝트 기간이 함께 쓴다). body에 그려서 앱 변수 대신 값을 직접 쓴다 */
+.ui-calendar {
+	position: fixed;
+	z-index: 10000;
+	width: 248px;
+	padding: 10px;
+	border-radius: 12px;
+	background-color: var(--color-popover-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.15),
+		0 10px 30px rgba(0, 0, 0, 0.2);
+	color: var(--color-popover-text);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-size: 12px;
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top left;
+}
+
+.ui-calendar-head {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	margin-bottom: 6px;
+	padding: 0 2px;
+}
+
+.ui-calendar-head .ui-calendar-title {
+	display: inline-flex;
+	flex: 1;
+	align-items: center;
+	gap: 5px;
+	width: auto;
+	margin-right: auto;
+	padding: 0 6px;
+	color: var(--color-popover-text);
+	font-size: 13px;
+	font-weight: 700;
+	text-align: left;
+}
+
+.ui-calendar-title i {
+	color: var(--color-text-secondary);
+	font-size: 9px;
+}
+
+.ui-calendar-head .ui-calendar-title:disabled {
+	cursor: default;
+}
+
+.ui-calendar-head .ui-calendar-title:disabled:hover {
+	background: none;
+}
+
+.ui-calendar button {
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+.ui-calendar-head button {
+	width: 26px;
+	height: 26px;
+	border-radius: 6px;
+	color: var(--color-text-secondary);
+}
+
+.ui-calendar-head button:hover,
+.ui-calendar-today:hover {
+	background-color: var(--color-control-bg, rgba(127, 127, 127, 0.15));
+}
+
+.ui-calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 2px;
+	text-align: center;
+}
+
+.ui-calendar-weekday {
+	padding: 4px 0;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+}
+
+.ui-calendar-grid button {
+	height: 30px;
+	border-radius: 50%;
+	font-variant-numeric: tabular-nums;
+}
+
+.ui-calendar-picks {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 4px;
+	text-align: center;
+}
+
+.ui-calendar-picks button {
+	height: 40px;
+	border-radius: 8px;
+	font-variant-numeric: tabular-nums;
+}
+
+.ui-calendar-picks button:hover,
+.ui-calendar-grid button:hover {
+	background-color: color-mix(in srgb, #edbb4d 25%, transparent);
+}
+
+.ui-calendar-picks button.today,
+.ui-calendar-grid button.today {
+	color: #c78b00;
+	font-weight: 700;
+}
+
+.ui-calendar-picks button.selected,
+.ui-calendar-grid button.selected {
+	background-color: #edbb4d;
+	color: #2b2100;
+	font-weight: 700;
+}
+
+.ui-calendar-today {
+	width: 100%;
+	margin-top: 6px;
+	padding: 5px 0;
+	border-radius: 6px;
+	font-weight: 600;
+}

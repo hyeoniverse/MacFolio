@@ -134,8 +134,15 @@ test.describe('프로젝트 관리', () => {
 		await expect(fieldName('저장소')).toHaveText('저장소필수');
 		await expect(fieldName('이름')).toHaveText('이름필수');
 		await expect(fieldName('화면 캡처')).toHaveText('화면 캡처');
-		// 기간: 달력에서 시작일을 고르고, 끝 대신 '진행 중'
-		await editor.getByLabel('시작일').fill('2025-01-02');
+		// 기간: 사이트 달력(메모 글 날짜와 같은 것)에서 시작일을 고르고, 끝 대신 '진행 중'
+		await editor.getByRole('button', { name: '시작일 고르기' }).click();
+		const calendar = page.getByRole('dialog', { name: '날짜 고르기' });
+		await calendar.getByRole('button', { name: /월, 월 고르기$/ }).click();
+		await calendar.getByRole('button', { name: /년, 연도 고르기$/ }).click();
+		await calendar.getByRole('button', { name: '2025년' }).click();
+		await calendar.getByRole('button', { name: '2025년 1월' }).click();
+		await calendar.getByRole('gridcell', { name: '2025년 1월 2일' }).click();
+		await expect(editor.getByRole('button', { name: /^시작일 2025\. 1\. 2\./ })).toBeVisible();
 		await editor.getByRole('checkbox', { name: '진행 중' }).check();
 		// 언어: 후보 목록에서 (다른 값도 쓸 수 있다)
 		await editor.getByRole('combobox', { name: '주 언어' }).fill('TypeScript');
