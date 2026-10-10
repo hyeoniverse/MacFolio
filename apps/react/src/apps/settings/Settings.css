@@ -1249,10 +1249,6 @@ ol.showcase-list .showcase-row.reordering {
 	opacity: 0.5;
 }
 
-.projects-edit {
-	margin: 0 6px 0 4px;
-}
-
 .projects-saved {
 	display: flex;
 	align-items: center;
@@ -1402,6 +1398,11 @@ ol.showcase-list .showcase-row.reordering {
 	background: var(--color-divider);
 }
 
-.projects-add {
-	justify-content: flex-start;
+/* 프로젝트 편집 모드의 줄 단추: 고치기(ⓘ)는 강조 색, 숨기기(눈)는 회색 */
+.projects-info {
+	color: var(--color-accent);
+}
+
+.projects-visibility {
+	color: var(--color-text-secondary);
 }
