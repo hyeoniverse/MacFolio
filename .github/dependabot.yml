@@ -32,6 +32,9 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: react-dom
         update-types: [version-update:semver-major]
+      # Node 타입은 실행하는 Node(.node-version)와 같은 큰 버전으로 둔다
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /
