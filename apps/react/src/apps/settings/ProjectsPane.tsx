@@ -14,7 +14,7 @@ import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { DEFAULT_PROFILE } from '@/shared/site/profileStore';
 import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type Period } from './projectInputs';
 import { getSavedProjects, sendProjects } from '@/shared/site/siteContent';
-import { imageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
+import { imageFolders, PROJECT_IMAGES_ROOT, PUBLIC_IMAGES } from '@/shared/site/publicImages';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
@@ -603,14 +603,14 @@ const ProjectEditor = ({
 									</option>
 									{imageFolders().map((folder) => (
 										<option key={folder} value={folder}>
-											{folder.replace(/^\/imgs\//, '')} ({PUBLIC_IMAGES[folder].length}장)
+											{folder.replace(PROJECT_IMAGES_ROOT, '')} ({PUBLIC_IMAGES[folder].length}장)
 										</option>
 									))}
 								</select>
 							</label>
 							<p className="about-pane-hint">
 								폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은
-								저장소의 apps/react/public/imgs 아래 폴더에 넣고 배포하면 여기에 나옵니다.
+								저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다.
 							</p>
 						</div>
 						{draft.galleryFolder && (

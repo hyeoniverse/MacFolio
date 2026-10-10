@@ -4,8 +4,14 @@ import type { Project } from '@macfolio/desktop-core/site';
 
 export { PUBLIC_IMAGES };
 
-/** 그림이 있는 폴더 (이름 순) */
-export const imageFolders = () => Object.keys(PUBLIC_IMAGES).sort((a, b) => a.localeCompare(b));
+/** 프로젝트 그림을 두는 곳. 화면 모음 폴더는 이 아래에서만 고른다 (배경화면·앱 아이콘 같은 다른 그림 폴더는 빼고) */
+export const PROJECT_IMAGES_ROOT = '/imgs/projects/';
+
+/** 화면 모음으로 고를 수 있는 폴더: /imgs/projects 아래에서 그림이 있는 폴더 (이름 순) */
+export const imageFolders = () =>
+	Object.keys(PUBLIC_IMAGES)
+		.filter((folder) => folder.startsWith(PROJECT_IMAGES_ROOT))
+		.sort((a, b) => a.localeCompare(b));
 
 /** 파일 이름으로 만든 설명: 앞의 번호와 확장자를 떼고 -·_는 띄어 쓴다 (예: 02-login_page.png → login page) */
 export function captionOf(src: string) {
