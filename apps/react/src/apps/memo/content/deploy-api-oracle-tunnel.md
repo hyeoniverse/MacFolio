@@ -1,7 +1,7 @@
 ---
 title: API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel
 date: 2026-09-30
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: 로컬에서 되던 관리자 로그인을 배포 환경으로 옮겼다. 포트를 하나도 열지 않는 서버, 1GB 메모리에서의 빌드, 그리고 /docs는 열리는데 로그인은 안 되던 이유.
 ---
 

@@ -124,15 +124,15 @@ test.describe('메모 (블로그)', () => {
 	test('하위 폴더를 접고 펼치고, 상위 폴더를 고르면 하위 폴더의 글도 보인다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		const child = folders.getByRole('button', { name: /^기능/ });
+		const child = folders.getByRole('button', { name: /^프론트엔드/ });
 		await expect(child).toBeVisible();
 
-		await folders.getByRole('button', { name: /^프론트엔드/ }).click();
+		await folders.getByRole('button', { name: /^MacFolio/ }).click();
 		await expect(memo.locator('.memo-item')).not.toHaveCount(0);
 
-		await folders.getByRole('button', { name: '하위 폴더 접기 (프론트엔드)' }).click();
+		await folders.getByRole('button', { name: '하위 폴더 접기 (MacFolio)' }).click();
 		await expect(child).toBeHidden();
-		await folders.getByRole('button', { name: '하위 폴더 펼치기 (프론트엔드)' }).click();
+		await folders.getByRole('button', { name: '하위 폴더 펼치기 (MacFolio)' }).click();
 		await expect(child).toBeVisible();
 	});
 

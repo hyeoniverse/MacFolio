@@ -1,7 +1,7 @@
 ---
 title: 시스템 설정에서 사람 확인을 켜고 끄기
 date: 2026-10-10
-category: 백엔드
+category: 개발기/MacFolio/백엔드
 summary: 메일에만 걸려 있던 Cloudflare Turnstile(사람 확인)을 댓글·메시지에도 걸 수 있게 하고, 어디에 걸지 관리자가 macOS의 '개인정보 보호 및 보안' 모양 화면에서 켜고 끄게 했다. 설정은 서버에 두어 모든 방문자에게 바로 적용된다.
 ---
 
