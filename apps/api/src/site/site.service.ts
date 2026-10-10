@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { APP_CONFIG, type AppConfig } from '../config.js';
 import { Prisma } from '../generated/prisma/client.js';
 import {
 	parseProfile,
@@ -29,12 +30,20 @@ export interface SiteView {
 export class SiteService {
 	private cache: Promise<SiteView> | null = null;
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		@Inject(APP_CONFIG) private readonly config: AppConfig
+	) {}
+
+	/** 올린 그림(/files/<id>)은 이 서버의 주소라, 로컬의 http 주소도 받는다 */
+	private get parseOptions() {
+		return { allowOrigins: [this.config.apiUrl] };
+	}
 
 	view(): Promise<SiteView> {
 		this.cache ??= this.prisma.siteContent.findUnique({ where: { id: ROW_ID } }).then((row) => ({
 			profile: readProfile(row?.profile),
-			projects: readProjects(row?.projects),
+			projects: readProjects(row?.projects, this.parseOptions),
 			updatedAt: row?.updatedAt.toISOString() ?? null,
 		}));
 		this.cache.catch(() => (this.cache = null));
@@ -73,7 +82,7 @@ export class SiteService {
 
 	/** 프로젝트를 통째로 바꾼다 (순서·숨김·덮어쓸 필드). 규칙을 어기면 400과 이유 전부 */
 	async saveProjects(input: unknown, admin: string): Promise<SiteView> {
-		const parsed = parseProjects(input);
+		const parsed = parseProjects(input, this.parseOptions);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
 		const projects = parsed.value as unknown as Prisma.InputJsonValue;
 		await this.prisma.siteContent.upsert({

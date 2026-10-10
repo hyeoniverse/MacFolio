@@ -13,8 +13,11 @@ import {
 import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { DEFAULT_PROFILE } from '@/shared/site/profileStore';
 import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type Period } from './projectInputs';
-import { getSavedProjects, sendProjects } from '@/shared/site/siteContent';
+import { getSavedProjects, PARSE_OPTIONS, sendProjects } from '@/shared/site/siteContent';
 import { groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
+import { uploadFile } from '@/apps/memo/writer/attachmentsApi';
+import { appIconUrl } from '@/shared/config/appIcon';
+import { env } from '@/shared/config/env';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import DatePicker from '@/shared/ui/date/DatePicker';
 import Button from '@/shared/ui/button/Button';
@@ -48,6 +51,7 @@ const STACKS = stackOptions(
 const LOOK_LABEL: Record<ProjectLook, string> = {
 	editorial: '신문 1면',
 	playful: '칸반 보드',
+	showcase: '기본 (카드)',
 	minimal: '명함',
 	game: '게임',
 	terminal: '터미널',
@@ -116,7 +120,7 @@ function validate(id: string, project: Project): { value: Project } | { errors: 
 		project.app && !project.app.icon.trim() && '앱 아이콘을 입력해 주세요.',
 	].filter((error): error is string => Boolean(error));
 	if (missing.length) return { errors: missing };
-	const parsed = parseProjects({ items: [{ id, override: withoutId(project) }] });
+	const parsed = parseProjects({ items: [{ id, override: withoutId(project) }] }, PARSE_OPTIONS);
 	if ('errors' in parsed) return parsed;
 	const value = { id, ...parsed.value.items[0].override } as Project;
 	if (value.app && !value.demo) return { errors: ['앱으로 열려면 데모 주소가 있어야 합니다.'] };
@@ -391,6 +395,113 @@ const Switch = ({
 	</label>
 );
 
+/** 사이트 안 그림 전부 (폴더별) → 고르기 목록에 쓴다 */
+const ALL_PICTURES = Object.entries(PUBLIC_IMAGES)
+	.filter(([folder]) => folder.startsWith('/imgs/projects/'))
+	.flatMap(([, files]) => files.filter((src) => !src.endsWith('.mp4')));
+
+/**
+ * 그림 한 장 고르기: 미리 보기, 사이트 안 그림에서 고르거나(폴더별 목록), 파일을 올리거나(POST /files), 주소를 적는다.
+ * 앱 아이콘은 이미지 폴더 기준 경로(projects/…)라 값을 그대로 두고, 보여 줄 때만 주소로 바꾼다
+ */
+const ImageField = ({
+	label,
+	value,
+	onChange,
+	required = false,
+	hint,
+	toUrl = (v) => v,
+	fromPicked = (src) => src,
+}: {
+	label: string;
+	value: string | undefined;
+	onChange: (value: string | undefined) => void;
+	required?: boolean;
+	hint?: string;
+	/** 저장된 값 → 보여 줄 주소 */
+	toUrl?: (value: string) => string;
+	/** 고른 그림 주소(/imgs/…) → 저장할 값 */
+	fromPicked?: (src: string) => string;
+}) => {
+	const [uploading, setUploading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const fileId = useId();
+	const upload = async (file: File | undefined) => {
+		if (!file) return;
+		setUploading(true);
+		setError(null);
+		try {
+			const uploaded = await uploadFile(env.apiUrl, file);
+			if (!uploaded.image) throw new Error('그림 파일만 올릴 수 있습니다.');
+			onChange(uploaded.url);
+		} catch (cause) {
+			setError(cause instanceof Error ? cause.message : '올리지 못했습니다.');
+		} finally {
+			setUploading(false);
+		}
+	};
+	return (
+		<div className="projects-field projects-image">
+			<div className="projects-image-row">
+				<FieldLabel label={label} required={required} />
+				<span className="projects-image-preview" aria-hidden="true">
+					{value ? <img src={toUrl(value)} alt="" /> : <i className="fa-regular fa-image" />}
+				</span>
+				<select
+					aria-label={`${label} 고르기`}
+					value={value && ALL_PICTURES.some((src) => fromPicked(src) === value) ? value : ''}
+					onChange={(event) => onChange(event.target.value ? fromPicked(event.target.value) : undefined)}
+				>
+					<option value="">{value ? '다른 그림 고르기…' : '사이트 안 그림에서 고르기…'}</option>
+					{FOLDER_GROUPS.map((group) => (
+						<optgroup key={group.label} label={group.label}>
+							{group.folders.flatMap((folder) =>
+								PUBLIC_IMAGES[folder.value]
+									.filter((src) => !src.endsWith('.mp4'))
+									.map((src) => (
+										<option key={src} value={fromPicked(src)}>
+											{src.slice(folder.value.length + 1)}
+											{folder.label !== '프로젝트 폴더' ? ` (${folder.label})` : ''}
+										</option>
+									))
+							)}
+						</optgroup>
+					))}
+				</select>
+				<label className="showcase-text-button projects-upload">
+					{uploading ? '올리는 중…' : '올리기'}
+					<input
+						id={fileId}
+						type="file"
+						accept="image/*"
+						aria-label={`${label} 올리기`}
+						disabled={uploading}
+						onChange={(event) => {
+							void upload(event.target.files?.[0]);
+							event.target.value = '';
+						}}
+					/>
+				</label>
+				{value && (
+					<button type="button" className="showcase-text-button projects-clear" onClick={() => onChange(undefined)}>
+						지우기
+					</button>
+				)}
+			</div>
+			<input
+				type="text"
+				aria-label={`${label} 주소`}
+				value={value ?? ''}
+				placeholder="직접 적기: /imgs/… 또는 https://…"
+				spellCheck={false}
+				onChange={(event) => onChange(optional(event.target.value))}
+			/>
+			{error && <p className="about-pane-hint projects-error">{error}</p>}
+			{hint && <p className="about-pane-hint">{hint}</p>}
+		</div>
+	);
+};
+
 /** 빈 글자는 필드를 지운다 (고를 수 있는 필드) */
 const optional = (value: string) => (value.trim() ? value : undefined);
 
@@ -586,12 +697,27 @@ const ProjectEditor = ({
 							placeholder="찾거나 적기"
 						/>
 						<TagInput label="기술" items={draft.stack} options={STACKS} onChange={(stack) => set({ stack })} />
-						<TextField
+					</section>
+
+					<section className="about-pane-group" aria-label="그림">
+						<h3>그림</h3>
+						<ImageField
 							label="화면 캡처"
-							value={draft.image}
-							onChange={(image) => set({ image })}
-							placeholder="/imgs/projects/아이디/screenshot.jpg"
-							hint="사이트 안 경로(/imgs/…)나 https:// 주소. 비우면 화면 모음의 첫 그림을 씁니다."
+							value={draft.image || undefined}
+							onChange={(image) => set({ image: image ?? '' })}
+							hint="페이지 맨 위의 대표 화면. 비우면 화면 모음의 첫 그림을 씁니다."
+						/>
+						<ImageField
+							label="프로젝트 아이콘"
+							value={draft.icon}
+							onChange={(icon) => set({ icon })}
+							hint="Safari 탭·시작 페이지·Finder에 보이는 작은 아이콘. 없으면 기본 모양"
+						/>
+						<ImageField
+							label="글자 로고"
+							value={draft.logo}
+							onChange={(logo) => set({ logo })}
+							hint="페이지 맨 위에 이름 대신 보여 줄 로고 (없으면 이름 글자)"
 						/>
 					</section>
 
@@ -646,7 +772,7 @@ const ProjectEditor = ({
 									app: on
 										? (row.project.app ?? {
 												label: draft.name,
-												icon: draft.icon ? draft.icon.replace(/^\/imgs\//, '') : 'safari.png',
+												icon: draft.icon ? draft.icon.replace(/^\/imgs\//, '') : '',
 											})
 										: undefined,
 								})
@@ -655,12 +781,14 @@ const ProjectEditor = ({
 						{app && (
 							<>
 								<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
-								<TextField
+								<ImageField
 									label="앱 아이콘"
 									required
-									value={app.icon}
-									onChange={(icon) => setApp({ icon })}
-									hint="이미지 폴더 기준 경로 (예: projects/newpick/app-icon.png)나 https:// 주소"
+									value={app.icon || undefined}
+									onChange={(icon) => setApp({ icon: icon ?? '' })}
+									toUrl={appIconUrl}
+									fromPicked={(src) => src.replace(/^\/imgs\//, '')}
+									hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘 (이미지 폴더 기준 경로 또는 올린 그림)"
 								/>
 								<Switch
 									label="Dock에 고정"
@@ -761,7 +889,7 @@ const ProjectsPane = () => {
 			return;
 		}
 		const content = contentFrom(rows);
-		const parsed = parseProjects(content);
+		const parsed = parseProjects(content, PARSE_OPTIONS);
 		if ('errors' in parsed) return setErrors(parsed.errors);
 		setBusy(true);
 		const result = await sendProjects(parsed.value);

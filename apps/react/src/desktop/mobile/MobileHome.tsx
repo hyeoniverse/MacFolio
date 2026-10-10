@@ -5,7 +5,7 @@ import { WINDOW_APPS } from '@/apps/registry';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import { openSwitcher } from '@/desktop/mobile/switcherStore';
-import { env } from '@/shared/config/env';
+import { appIconUrl } from '@/shared/config/appIcon';
 import { useProfile } from '@/shared/site/profileStore';
 import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit } from '@/desktop/mobile/homePages';
 
@@ -24,7 +24,7 @@ const AppIcon = ({ name, showLabel, onLaunch }: { name: AppName; showLabel: bool
 	const { label, icon } = mobile ?? APP_MANIFEST[name];
 	return (
 		<button type="button" className="mobile-app" aria-label={label} data-launch={name} onClick={onLaunch}>
-			<img src={`${env.imageUrl}/${icon}`} alt="" className={squareIcon ? 'square' : undefined} draggable={false} />
+			<img src={appIconUrl(icon)} alt="" className={squareIcon ? 'square' : undefined} draggable={false} />
 			{showLabel && <span>{label}</span>}
 		</button>
 	);

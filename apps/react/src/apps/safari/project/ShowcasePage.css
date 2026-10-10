@@ -1,0 +1,323 @@
+/* 어떤 프로젝트에나 맞는 모양(showcase): 흰 바탕에 큰 제목, 카드 묶음. 색은 .sp의 공통 값만 쓴다 */
+.sc {
+	max-width: 980px;
+	margin: 0 auto;
+	padding: 56px 32px 64px;
+}
+
+.sc-hero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+	text-align: center;
+}
+
+.sc-logo {
+	max-width: 240px;
+	max-height: 64px;
+	object-fit: contain;
+}
+
+.sc-name {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	color: var(--sp-muted);
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.sc-name img {
+	width: 28px;
+	height: 28px;
+	border-radius: 7px;
+	object-fit: cover;
+}
+
+.sc-hero h1 {
+	max-width: 18em;
+	margin: 0;
+	font-size: clamp(30px, 5vw, 48px);
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: -0.02em;
+}
+
+.sc-lead {
+	max-width: 36em;
+	margin: 0;
+	color: var(--sp-muted);
+	font-size: 17px;
+	line-height: 1.6;
+}
+
+.sc-context {
+	margin: 0;
+	color: var(--sp-muted);
+	font-size: 13px;
+}
+
+.sc-links {
+	justify-content: center;
+	margin-top: 6px;
+}
+
+.sc-facts {
+	justify-content: center;
+	margin: 40px 0 0;
+}
+
+.sc-shot {
+	position: relative;
+	margin: 40px auto 0;
+}
+
+.sc-art {
+	position: absolute;
+	top: -24px;
+	right: -8px;
+	width: 120px;
+	pointer-events: none;
+}
+
+.sc-figure {
+	margin: 0;
+	overflow: hidden;
+	border: 1px solid var(--sp-line);
+	border-radius: 16px;
+	box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+}
+
+.sc-figure img {
+	display: block;
+	width: 100%;
+}
+
+.sc-section {
+	margin-top: 64px;
+}
+
+.sc-section.sc-alt {
+	margin-top: 48px;
+	padding: 40px 32px;
+	border-radius: 20px;
+	background: var(--sp-alt);
+}
+
+.sc-section h2 {
+	margin: 0 0 20px;
+	font-size: 26px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.sc-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sc-cards li {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 20px;
+	border: 1px solid var(--sp-line);
+	border-radius: 14px;
+	background: var(--sp-bg);
+}
+
+.sc-cards li > i {
+	color: var(--sp-accent);
+	font-size: 20px;
+}
+
+.sc-cards h3 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.sc-cards p {
+	margin: 0;
+	color: var(--sp-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.sc-cards .sc-detail {
+	font-size: 13px;
+}
+
+.sc-cards img {
+	width: 100%;
+	margin-top: 6px;
+	border-radius: 8px;
+}
+
+.sc-gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 14px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sc-gallery li {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.sc-gallery img,
+.sc-gallery video {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	border: 1px solid var(--sp-line);
+	border-radius: 10px;
+	object-fit: cover;
+	background: var(--sp-alt);
+}
+
+.sc-gallery figcaption {
+	color: var(--sp-muted);
+	font-size: 12px;
+}
+
+.sc-timeline {
+	margin: 0;
+	padding: 0 0 0 18px;
+	border-left: 2px solid var(--sp-line);
+	list-style: none;
+}
+
+.sc-timeline li {
+	position: relative;
+	display: flex;
+	gap: 14px;
+	padding: 6px 0 14px;
+	font-size: 14px;
+}
+
+.sc-timeline li::before {
+	content: '';
+	position: absolute;
+	top: 11px;
+	left: -24px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--sp-accent);
+}
+
+.sc-timeline time {
+	flex: none;
+	min-width: 7em;
+	color: var(--sp-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.sc-specs {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: 24px;
+}
+
+.sc-specs dl {
+	margin: 0;
+}
+
+.sc-specs dl > div {
+	display: flex;
+	gap: 12px;
+	padding: 8px 0;
+	border-bottom: 1px solid var(--sp-line);
+	font-size: 14px;
+}
+
+.sc-specs dt {
+	flex: none;
+	min-width: 6em;
+	color: var(--sp-muted);
+}
+
+.sc-specs dd {
+	margin: 0;
+}
+
+.sc-stack {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-content: flex-start;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sc-stack li {
+	padding: 4px 12px;
+	border-radius: 999px;
+	background: var(--sp-bg);
+	border: 1px solid var(--sp-line);
+	font-size: 13px;
+}
+
+.sc-contributions h3 {
+	margin: 0 0 8px;
+	font-size: 14px;
+	color: var(--sp-muted);
+}
+
+.sc-contributions ul {
+	margin: 0;
+	padding-left: 18px;
+	font-size: 14px;
+	line-height: 1.7;
+}
+
+.sc-foot {
+	margin-top: 64px;
+	padding-top: 24px;
+	border-top: 1px solid var(--sp-line);
+}
+
+/* 화면에 들어올 때 살짝 떠오른다 (reveal.ts) */
+.sc [data-reveal] {
+	opacity: 0;
+	transform: translateY(16px);
+	transition:
+		opacity 0.5s var(--ease-out),
+		transform 0.5s var(--ease-out);
+}
+
+.sc [data-reveal][data-shown] {
+	opacity: 1;
+	transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sc [data-reveal] {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
+@container (max-width: 640px) {
+	.sc {
+		padding: 36px 20px 48px;
+	}
+
+	.sc-section.sc-alt {
+		padding: 28px 20px;
+	}
+}

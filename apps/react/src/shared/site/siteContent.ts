@@ -8,6 +8,9 @@ import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { setSiteProfile } from './profileStore';
 import { completeProject } from './publicImages';
 
+/** 올린 그림(/files/<id>)은 API 주소라, 로컬의 http 주소도 받는다 (서버와 같은 규칙) */
+export const PARSE_OPTIONS = { allowOrigins: env.apiUrl ? [env.apiUrl] : [] };
+
 /** Worker가 index.html에 넣는 <script type="application/json"> (실행되지 않는 데이터) */
 export const SITE_CONTENT_ELEMENT_ID = 'site-content';
 
@@ -28,7 +31,7 @@ export const setSavedProjects = (projects: SiteProjects | null) => {
 export function applySiteContent(body: unknown) {
 	const content = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
 	setSiteProfile(readProfile(content.profile));
-	savedProjects = readProjects(content.projects);
+	savedProjects = readProjects(content.projects, PARSE_OPTIONS);
 	PROJECTS.splice(
 		0,
 		PROJECTS.length,
@@ -80,7 +83,7 @@ export async function sendProjects(projects: SiteProjects | null): Promise<SaveR
 				errors: Array.isArray(message) ? message : [message ?? `저장하지 못했습니다 (${response.status}).`],
 			};
 		}
-		setSavedProjects(readProjects(body?.projects));
+		setSavedProjects(readProjects(body?.projects, PARSE_OPTIONS));
 		return { ok: true };
 	} catch {
 		return { ok: false, errors: ['서버에 연결하지 못했습니다.'] };
