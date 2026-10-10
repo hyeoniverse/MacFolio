@@ -1207,6 +1207,14 @@ ol.showcase-list .showcase-row.reordering {
 	border-radius: 0 0 10px 10px;
 }
 
+/* 칸 아래 작은 안내 (macOS 설정의 설명 글) */
+.about-pane-hint {
+	padding: 0 4px;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	line-height: 1.5;
+}
+
 .about-pane-errors {
 	margin: 0;
 	padding: 10px 14px 10px 30px;
