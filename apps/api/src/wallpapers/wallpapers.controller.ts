@@ -98,8 +98,8 @@ export class WallpapersController {
 	@ApiBadRequestResponse({ description: '이름이 비었다' })
 	@ApiNotFoundResponse({ description: '배경화면이 없다' })
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
-	rename(@Param('id') id: string, @Body() body: { name?: unknown }) {
-		return this.wallpapers.rename(id, body?.name);
+	rename(@Param('id') id: string, @Body() body: unknown) {
+		return this.wallpapers.rename(id, body);
 	}
 
 	@Delete(':id')

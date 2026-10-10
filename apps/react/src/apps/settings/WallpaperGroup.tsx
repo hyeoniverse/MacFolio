@@ -1,6 +1,7 @@
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAdmin } from '@/shared/auth/adminStore';
+import { WALLPAPER_NAME_MAX } from '@macfolio/contracts';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { wallpaperUrl, type ResolvedTheme, type Wallpaper } from '@/shared/settings/settings';
 import {
@@ -25,8 +26,6 @@ interface Props {
 	selected: string;
 }
 
-/** 이름 칸과 같은 한도 (API의 NAME_MAX) */
-const NAME_MAX = 40;
 /** 휴대폰에서 이만큼 누르고 있으면 메뉴 (오른쪽 클릭 대신) */
 const LONG_PRESS_MS = 500;
 
@@ -77,7 +76,7 @@ const RenameDialog = ({
 					ref={input}
 					aria-label="배경화면 이름"
 					value={value}
-					maxLength={NAME_MAX}
+					maxLength={WALLPAPER_NAME_MAX}
 					onChange={(event) => setValue(event.target.value)}
 				/>
 				<div className="ui-alert-actions">
