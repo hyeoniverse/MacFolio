@@ -97,6 +97,7 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 건강하�
 | 스타일                            | 컴포넌트와 같은 이름의 `.css`       | `Memo.css`, `PhotosMobile.css`                    |
 | 두 화면이 함께 쓰는 타입          | `model.ts` 또는 `<무엇>.model.ts`   | `mail/model.ts`, `folderSidebar.model.ts`         |
 
+- 대소문자: 폴더는 소문자(두 낱말이면 `status-bar`처럼 kebab-case), 컴포넌트 파일은 `PascalCase.tsx`, 그 밖의 `.ts`·훅·메뉴 정의는 `camelCase`, CSS는 짝이 되는 컴포넌트와 같은 이름
 - 한 파일에 서버 호출과 순수 계산을 섞지 않는다. 섞이면 순수 계산에 시험을 붙이기 어렵고, 서버 호출을 공통 클라이언트로 옮길 때 파일을 다시 가른다
 - 값을 받아 두는 store와 그것을 읽는 한 줄짜리 훅(`useSyncExternalStore`)은 그 `*Api.ts`에 둬도 된다 (`githubApi.ts`의 `useGithub`)
 - 시험은 대상 파일 옆에 같은 이름으로 (`forecast.ts` ↔ `forecast.test.ts`)
