@@ -14,29 +14,10 @@ import { fetchReceivedMail, fetchSentMail, replyToMail, type ContactMail } from 
 import { getMailSender, type SendOptions } from './sender';
 import type { ContactInput } from './contact';
 import { takeComposeRequest } from './composeRequest';
+import { MAILBOX_LABEL, type ListMail, type Mailbox } from './model';
 import '@/apps/mail/Mail.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
-
-export type Mailbox = 'inbox' | 'sent';
-const MAILBOX_LABEL: Record<Mailbox, string> = { inbox: '받은 편지함', sent: '보낸 편지함' };
-
-/** 목록과 읽기 칸이 함께 쓰는 메일 한 통 */
-export interface ListMail {
-	id: string;
-	fromName: string;
-	fromEmail: string;
-	/** 받는 사람 (읽기 칸에 보인다) */
-	to: string;
-	subject: string;
-	/** ISO 8601 */
-	date: string;
-	body: string;
-	/** 사이트 주인의 답장 (서버에 저장된 메일만) */
-	replies: { id: string; body: string; createdAt: string }[];
-	/** 서버에 저장된 받은 메일: 관리자가 앱에서 답장한다 */
-	replyable?: boolean;
-}
 
 const fromServer = (mail: ContactMail, replyable: boolean): ListMail => ({
 	id: mail.id,
