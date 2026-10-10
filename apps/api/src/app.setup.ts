@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import { SESSION_COOKIE } from './auth/session.js';
 import { originMatcher } from './common/cors.js';
 import { HttpErrorFilter } from './common/http-error.filter.js';
+import { SafeLogger } from './common/safe-logger.js';
 import { APP_CONFIG, type AppConfig } from './config.js';
 
 /**
@@ -14,10 +15,12 @@ import { APP_CONFIG, type AppConfig } from './config.js';
  * - CORS: 허용한 프론트엔드 주소만, 쿠키 포함 (관리자 세션)
  * - 쿠키 읽기 (관리자 세션, OAuth state)
  * - 입력 검증: DTO에 없는 필드는 거절한다
- * - 에러 응답 모양 통일, API 문서(/docs)
+ * - 에러 응답 모양 통일, 로그의 비밀 값 가리기, API 문서(/docs)
  */
 export function configureApp(app: INestApplication) {
 	const config = app.get<AppConfig>(APP_CONFIG);
+	// 모든 로그(서비스의 new Logger 포함)에서 DB 비밀번호·API 키·쿠키·메일 주소를 가린다 (common/redact.ts)
+	app.useLogger(new SafeLogger());
 
 	// 프록시 뒤에서 실제 IP를 읽는다 (요청 제한). 0이면 X-Forwarded-For를 믿지 않는다
 	(app as NestExpressApplication).set('trust proxy', config.trustProxy);
