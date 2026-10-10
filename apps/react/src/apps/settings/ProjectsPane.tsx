@@ -148,6 +148,37 @@ const Switch = ({
 	</label>
 );
 
+/**
+ * 쉼표로 나눠 쓰는 목록 칸. 치는 동안은 친 그대로 두고(끝의 쉼표·공백이 사라지지 않게), 목록으로 나눈 값만 올려 보낸다
+ */
+const ListField = ({
+	label,
+	items,
+	onChange,
+}: {
+	label: string;
+	items: string[];
+	onChange: (items: string[]) => void;
+}) => {
+	const [text, setText] = useState(() => items.join(', '));
+	return (
+		<TextField
+			label={label}
+			value={text}
+			onChange={(raw) => {
+				setText(raw);
+				onChange(
+					raw
+						.split(',')
+						.map((item) => item.trim())
+						.filter(Boolean)
+				);
+			}}
+			hint="쉼표(,)로 나눠 씁니다."
+		/>
+	);
+};
+
 /** 빈 글자는 필드를 지운다 (고를 수 있는 필드) */
 const optional = (value: string) => (value.trim() ? value : undefined);
 
@@ -334,19 +365,7 @@ const ProjectEditor = ({
 							placeholder="https://"
 						/>
 						<TextField label="주 언어" value={draft.language} onChange={(language) => set({ language })} />
-						<TextField
-							label="기술"
-							value={draft.stack.join(', ')}
-							onChange={(stack) =>
-								set({
-									stack: stack
-										.split(',')
-										.map((item) => item.trim())
-										.filter(Boolean),
-								})
-							}
-							hint="쉼표(,)로 나눠 씁니다."
-						/>
+						<ListField label="기술" items={draft.stack} onChange={(stack) => set({ stack })} />
 						<TextField
 							label="화면 캡처"
 							value={draft.image}

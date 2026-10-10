@@ -122,6 +122,10 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('textbox', { name: '저장소' }).fill('https://github.com/hyeoniverse/side-app');
 		await editor.getByRole('textbox', { name: '데모' }).fill('https://what-to-do-chi.vercel.app/side');
 		await editor.getByRole('textbox', { name: '화면 캡처' }).fill('/imgs/projects/whattodo/screenshot.jpg');
+		// 기술은 한 글자씩 쳐도 쉼표와 공백이 그대로 남고, 저장할 때 목록으로 나뉜다
+		const stack = editor.getByRole('textbox', { name: '기술' });
+		await stack.pressSequentially('React, Vite');
+		await expect(stack).toHaveValue('React, Vite');
 		await editor.getByRole('switch', { name: /이 사이트 안에서 창으로 열기/ }).check();
 		await expect(editor.getByRole('textbox', { name: '앱 이름' })).toHaveValue('사이드 앱');
 		await editor.getByRole('switch', { name: /Dock에 고정/ }).uncheck();
@@ -133,7 +137,7 @@ test.describe('프로젝트 관리', () => {
 		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
 		expect(api.siteProjects?.items.at(-1)).toMatchObject({
 			id: 'side-app',
-			override: { name: '사이드 앱', app: { label: '사이드 앱', inDock: false } },
+			override: { name: '사이드 앱', stack: ['React', 'Vite'], app: { label: '사이드 앱', inDock: false } },
 		});
 
 		// 새로고침하면 Launchpad에 앱이 생기고(Dock에 고정하지 않음), 열면 데모를 띄운다
