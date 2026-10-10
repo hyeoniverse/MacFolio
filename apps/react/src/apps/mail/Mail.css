@@ -605,7 +605,7 @@
 		opacity var(--duration) var(--ease-out);
 }
 
-/* 사이트 주인의 주소 (누르면 복사): 글자처럼 보이다가 올리면 밑줄, 복사하면 위에 잠깐 말풍선 */
+/* 사이트 주인의 주소 (누르면 복사하고 알림): 글자처럼 보이다가 올리면 밑줄 */
 .mail-copy-address {
 	position: relative;
 	/* 읽기 칸 머리는 창 위쪽 끌기 자리(52px, z-index 3)와 겹친다. 그 위로 올려야 누를 수 있다 */
@@ -638,38 +638,4 @@
 	outline: 2px solid var(--color-accent);
 	outline-offset: 2px;
 	border-radius: 6px;
-}
-
-.mail-copied {
-	position: absolute;
-	bottom: calc(100% + 6px);
-	left: 50%;
-	z-index: 5;
-	padding: 3px 8px;
-	border-radius: 6px;
-	background-color: rgba(30, 30, 32, 0.92);
-	color: #ffffff;
-	font-size: 11px;
-	font-weight: 500;
-	white-space: nowrap;
-	transform: translateX(-50%);
-	pointer-events: none;
-	animation: mail-copied-in 0.16s ease-out;
-}
-
-.mail-copied.failed {
-	background-color: #d70015;
-}
-
-@keyframes mail-copied-in {
-	from {
-		opacity: 0;
-		transform: translate(-50%, 3px);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.mail-copied {
-		animation: none;
-	}
 }
