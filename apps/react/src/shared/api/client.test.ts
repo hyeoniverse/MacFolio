@@ -113,9 +113,12 @@ describe('api', () => {
 });
 
 describe('reasonsOf', () => {
-	it('401·429는 정해진 문구, 그 밖은 서버의 message', async () => {
-		expect(await reasonsOf(json({ message: 'x' }, 401))).toEqual([SIGNED_OUT]);
-		expect(await reasonsOf(json({ message: 'x' }, 429))).toEqual([TOO_MANY]);
+	it('서버가 적은 이유가 먼저, 없으면 401·429는 정해진 문구', async () => {
+		expect(await reasonsOf(json({ message: 'Unauthorized' }, 401))).toEqual([SIGNED_OUT]);
+		expect(await reasonsOf(json({ message: 'ThrottlerException: Too Many Requests' }, 429))).toEqual([TOO_MANY]);
+		expect(await reasonsOf(json({ message: '오늘은 더 보낼 수 없습니다.' }, 429))).toEqual([
+			'오늘은 더 보낼 수 없습니다.',
+		]);
 		expect(await reasonsOf(json({ message: 'x' }, 409))).toEqual(['x']);
 		expect(await reasonsOf(json({ message: ['a', '', 3] }, 400))).toEqual(['a']);
 		expect(await reasonsOf(new Response('', { status: 500 }), '안 됨')).toEqual(['안 됨']);
