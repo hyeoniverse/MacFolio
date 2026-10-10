@@ -1,21 +1,9 @@
 // 블로그 댓글 API (apps/api의 /posts/:slug/comments, /comments/:id)
+import type { Comment } from '@macfolio/contracts';
 import { api, apiFetch, reasonsFrom } from '@/shared/api/client';
 
-export interface Comment {
-	id: string;
-	name: string;
-	/** IP 앞 두 자리 (관리자 댓글은 없음) */
-	ipPrefix: string | null;
-	isAdmin: boolean;
-	body: string;
-	createdAt: string;
-	/** 이 브라우저가 쓴 댓글 (지울 수 있다) */
-	mine: boolean;
-	/** 좋아요 수 */
-	likes: number;
-	/** 이 브라우저가 좋아요를 눌렀는지 */
-	liked: boolean;
-}
+/** 댓글 모양은 서버와 같은 스키마(contracts). 서버가 바꾸면 여기 타입도 같이 바뀐다 */
+export type { Comment };
 
 export type CreateResult = { ok: true; comment: Comment } | { ok: false; errors: string[] };
 export type DeleteResult = 'ok' | 'forbidden' | 'not-found' | 'error';

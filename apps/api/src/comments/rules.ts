@@ -1,26 +1,17 @@
-// 댓글·메시지 입력 규칙. 메시지 앱(apps/react/src/apps/messages/conversations.ts)과 같은 규칙을 서버에서 검사한다.
-// 이름은 받지 않는다: 방문자는 쿠키로 정한 이름(visitors/visitor.ts), 관리자는 김정현으로 쓴다.
+// 댓글 주변 규칙: 글 주소, IP 가리기. 댓글 몸통의 모양은 @macfolio/contracts의 CommentInput (화면과 같은 스키마)
+// 이름은 받지 않는다: 방문자는 쿠키로 정한 이름(visitors/visitor.ts), 관리자는 프로필 이름으로 쓴다.
 import { createHmac } from 'node:crypto';
+import { CommentInput, parse } from '@macfolio/contracts';
 
 /** 관리자 이름 */
 /** 관리자 이름의 기본값. 시스템 설정에서 프로필을 저장하면 그 이름을 쓴다 (site/site.service.ts) */
 export const OWNER_NAME = '김정현';
 
-export const LIMITS = {
-	body: { min: 1, max: 500 },
-} as const;
-
 /** 글 주소 (Markdown 파일 이름) */
 export const SLUG = /^[\w-]{1,100}$/;
 
-/** 내용을 다듬고 검사한다 */
-export function parseBody(input: unknown): { value: { body: string } } | { errors: string[] } {
-	const raw = (typeof input === 'object' && input !== null ? input : {}) as Record<string, unknown>;
-	const body = typeof raw.body === 'string' ? raw.body.trim() : '';
-	if (body.length < LIMITS.body.min) return { errors: ['내용을 입력해주세요.'] };
-	if (body.length > LIMITS.body.max) return { errors: [`내용은 ${LIMITS.body.max}자까지 입력할 수 있습니다.`] };
-	return { value: { body } };
-}
+/** 내용을 다듬고 검사한다 (스키마는 contracts에, 문구도 거기에) */
+export const parseBody = (input: unknown) => parse(CommentInput, input);
 
 /** IPv4는 앞 두 자리("211.234"), IPv6는 앞 두 묶음("2001:db8") */
 export function maskIp(ip: string): string {

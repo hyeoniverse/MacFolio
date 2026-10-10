@@ -2,15 +2,11 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service.js';
 import { SLUG } from '../comments/rules.js';
 import type { Visitor } from '../visitors/visitors.service.js';
+import type { Likes, PostStats } from '@macfolio/contracts';
 
-/** 좋아요 수와 보고 있는 브라우저가 눌렀는지 */
-export interface LikeView {
-	count: number;
-	liked: boolean;
-}
-
-/** 글마다 댓글 수와 좋아요 수 (인기글 순위에 쓴다. 조회수는 /analytics/views) */
-export type PostStats = Record<string, { comments: number; likes: number }>;
+/** 응답 모양은 화면과 같은 스키마(contracts). 조회수는 /analytics/views */
+export type LikeView = Likes;
+export type { PostStats };
 
 @Injectable()
 export class LikesService {
