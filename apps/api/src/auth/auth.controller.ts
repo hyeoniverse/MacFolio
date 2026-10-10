@@ -21,12 +21,12 @@ import {
 	ApiTooManyRequestsResponse,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import type { CookieOptions, Request, Response } from 'express';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { AdminGuard, CurrentAdmin } from './admin.guard.js';
 import { type AdminIdentity, AuthService } from './auth.service.js';
 import { safeEqual, SESSION_COOKIE, SESSION_TTL_MS, STATE_COOKIE, STATE_TTL_MS, randomToken } from './session.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 export class AdminResponse {
 	@ApiProperty({ example: 'hyeoniverse' })
@@ -65,8 +65,7 @@ export class AuthController {
 	}
 
 	@Get('github')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ comment: true })
+	@RateLimit('login')
 	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 시도했다' })
 	@ApiFoundResponse({ description: 'GitHub 로그인 화면으로 보낸다' })
 	github(@Res() response: Response) {
@@ -78,8 +77,7 @@ export class AuthController {
 	}
 
 	@Get('github/callback')
-	@UseGuards(ThrottlerGuard)
-	@SkipThrottle({ comment: true })
+	@RateLimit('login')
 	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 시도했다' })
 	@ApiFoundResponse({ description: '프론트엔드로 돌아간다 (?admin=signed-in | denied | cancelled)' })
 	async callback(
@@ -115,6 +113,7 @@ export class AuthController {
 	}
 
 	@Post('logout')
+	@RateLimit('write')
 	@HttpCode(204)
 	@ApiNoContentResponse({ description: '세션을 지웠다 (로그인하지 않았어도 204)' })
 	async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {

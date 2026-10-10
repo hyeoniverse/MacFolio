@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { RATE_LIMIT_NAMES, RATE_LIMIT_TTL_MS } from './common/rate-limit.js';
 import { APP_CONFIG, type AppConfig } from './config.js';
 import { ConfigModule } from './config.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
@@ -15,6 +16,7 @@ import { ImagesModule } from './images/images.module.js';
 import { WallpapersModule } from './wallpapers/wallpapers.module.js';
 import { GithubModule } from './github/github.module.js';
 import { PhotosModule } from './photos/photos.module.js';
+import { LikesModule } from './likes/likes.module.js';
 import { SpeechModule } from './speech/speech.module.js';
 import { TranslateModule } from './translate/translate.module.js';
 import { SummaryModule } from './summary/summary.module.js';
@@ -26,13 +28,11 @@ import { ContactModule } from './contact/contact.module.js';
 @Module({
 	imports: [
 		ConfigModule,
-		// 요청 제한 (IP마다 1분에): 로그인, 댓글·메시지. 경로마다 ThrottlerGuard를 걸고 해당하지 않는 제한은 건너뛴다
+		// 요청 제한 (IP마다 1분에). 쓰기 경로마다 @RateLimit('이름')으로 하나를 건다 (common/rate-limit.ts)
 		ThrottlerModule.forRootAsync({
 			inject: [APP_CONFIG],
-			useFactory: (config: AppConfig) => [
-				{ name: 'login', ttl: 60_000, limit: config.auth.loginRateLimit },
-				{ name: 'comment', ttl: 60_000, limit: config.commentRateLimit },
-			],
+			useFactory: (config: AppConfig) =>
+				RATE_LIMIT_NAMES.map((name) => ({ name, ttl: RATE_LIMIT_TTL_MS, limit: config.rateLimits[name] })),
 		}),
 		PrismaModule,
 		HealthModule,
@@ -40,6 +40,7 @@ import { ContactModule } from './contact/contact.module.js';
 		MemoModule,
 		VisitorsModule,
 		CommentsModule,
+		LikesModule,
 		MessagesModule,
 		PostsModule,
 		FilesModule,
