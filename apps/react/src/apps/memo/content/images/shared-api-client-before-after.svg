@@ -17,7 +17,7 @@
 <g font-size="10" fill="#6b7280">
 <text x="46" y="114">credentials · JSON · try/catch</text><text x="46" y="128">401 → "로그인이 필요합니다"</text>
 <text x="186" y="114">credentials · JSON · try/catch</text><text x="186" y="128">429 → "잠시 뒤에"</text>
-<text x="46" y="196">credentials · JSON · try/catch</text><text x="46" y="210">네트워크 → "연결할 수 없습니다"</text>
+<text x="46" y="196">credentials · JSON · try/catch</text><text x="46" y="210">네트워크 → 연결 실패 문구</text>
 <text x="186" y="196">credentials · JSON · try/catch</text><text x="186" y="210">message[] 합치기</text>
 </g>
 <path d="M100 215 V236" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#gray)"/>
@@ -32,14 +32,13 @@
 <rect x="360" y="108" width="120" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/><text x="420" y="127">githubApi.ts</text>
 <rect x="500" y="108" width="110" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/><text x="555" y="127">profileStore.ts</text>
 </g>
-<text x="485" y="154" font-size="10" fill="#6b7280" text-anchor="middle">경로와 응답 모양만 적는다</text>
-<path d="M420 140 L470 176" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
-<path d="M555 140 L505 176" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M420 140 L440 156 L470 176" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M555 140 L535 156 L505 176" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
 <rect x="400" y="180" width="170" height="60" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
 <text x="485" y="202" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">shared/api/client.ts</text>
 <text x="485" y="222" font-size="10.5" fill="#6b7280" text-anchor="middle">쿠키 · JSON · 시간 제한 · 실패 문구 · 401 알림</text>
 <path d="M485 242 V262" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
 <rect x="360" y="266" width="250" height="26" rx="8" fill="#f3f4f6"/>
 <text x="485" y="283" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">apps/api</text>
-<text x="485" y="310" font-size="11" fill="#374151" text-anchor="middle">바뀌는 것은 한 군데: 346줄 → 179줄</text>
+<text x="485" y="310" font-size="11" fill="#374151" text-anchor="middle">*Api.ts에는 경로와 응답 모양만: 346줄 → 179줄</text>
 </svg>
