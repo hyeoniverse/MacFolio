@@ -1,7 +1,7 @@
 ---
 title: 서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게
 date: 2026-10-10
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: madge로 재 보니 순환 의존이 둘 있었다. 메일의 데스크톱·휴대폰 화면이 서로를 import했고, 앱 목록(registry)과 Finder가 서로를 읽었다. 공통 타입은 셋째 파일(model.ts)로, 창 앱 이름 목록은 manifest로 옮겨 풀고, pnpm cycles를 CI에 넣어 다시 생기면 실패하게 했다.
 ---
 

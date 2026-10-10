@@ -1,7 +1,7 @@
 ---
 title: 프로젝트 목록은 한 곳에 - MacFolio와 HYEONIVERSE를 프로젝트로 더하며
 date: 2026-10-03
-category: 프론트엔드/기능
+category: 개발기/MacFolio/프론트엔드
 summary: 이 사이트(MacFolio)를 프로젝트로 넣으려다 보니, 프로젝트 목록이 GitHub 앱에만 따로 적혀 있었다. GitHub 앱의 스냅샷이 Safari·Finder와 같은 목록을 읽게 바꾸고, MacFolio와 포트폴리오 사이트(HYEONIVERSE)는 그 목록에 한 번씩만 더했다. 색만 다르고 순서는 같던 Safari 프로젝트 페이지도 프로젝트마다 짜임을 따로 만들었다.
 ---
 
