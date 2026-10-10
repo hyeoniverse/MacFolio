@@ -329,9 +329,11 @@ test.describe('모바일', () => {
 		await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
 		await cdp.detach();
 		await expect(card).toHaveClass(/swiped/);
-		// 손을 뗀 카드가 휴지통이 다 드러나는 자리(84px)까지 미끄러져 멈춘 뒤에 누른다 (느린 CI에서는 아직 휴지통을 덮고 있다)
+		// 손을 뗀 카드가 휴지통이 다 드러나는 자리(84px)까지 미끄러져 멈춘다
 		await expect(card.locator('.weather-card-face')).toHaveCSS('transform', 'matrix(1, 0, 0, 1, -84, 0)');
-		await card.getByRole('button', { name: '도쿄 삭제' }).tap();
+		// 지우기는 click으로: 리눅스의 Chrome은 CDP로 보낸 터치가 끝나고 몇백 ms 안에 tap하면 click을 만들지 않는다
+		// (pointerdown·up까지만 온다). 사람 손으로는 생기지 않는 간격이고, 밀고 tap해서 지우는 것은 위 시험이 확인한다
+		await card.getByRole('button', { name: '도쿄 삭제' }).click();
 		await expect(sidebar.locator('.weather-card')).toHaveCount(1);
 	});
 
