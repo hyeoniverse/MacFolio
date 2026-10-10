@@ -1,19 +1,10 @@
 // 서버에 올린 파일 (관리자): 목록과 지우기. 글에서 이미지를 빼도 서버의 파일은 남으므로, 어디에서도 쓰지 않는 파일을 찾아 지운다.
 // 서버는 자기 DB의 글·예전 버전·배경화면만 보므로, 저장소의 Markdown 글이 가리키는지는 여기서 함께 본다
 import { api, apiFetch, reasonsOf, UNREACHABLE } from '@/shared/api/client';
+import type { UploadUsage } from '@macfolio/contracts';
 
-export interface ServerFile {
-	id: string;
-	name: string;
-	type: string;
-	size: number;
-	image: boolean;
-	/** API 주소 기준 경로 (/files/:id) */
-	path: string;
-	createdAt: string;
-	createdBy: string;
-	usedBy: { posts: string[]; revisions: string[]; wallpaper: boolean };
-}
+/** 서버가 보내는 파일 하나와 쓰는 곳. 모양은 서버와 같은 스키마(contracts) */
+export type ServerFile = UploadUsage;
 
 export interface FileUsage {
 	/** 지워도 지금 보이는 곳이 깨지지 않는지 */

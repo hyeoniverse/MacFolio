@@ -4,6 +4,7 @@ import { apiFetch, SIGNED_OUT } from '@/shared/api/client';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { editorControls } from './editorControls';
 import { baseName, MAX_UPLOAD_BYTES, type Uploaded } from './attachments';
+import type { Upload } from '@macfolio/contracts';
 
 /** 파일을 올린다. 실패하면 이유를 담은 Error */
 export async function uploadFile(apiUrl: string, file: File): Promise<Uploaded> {
@@ -14,7 +15,7 @@ export async function uploadFile(apiUrl: string, file: File): Promise<Uploaded> 
 	if (response.status === 401) throw new Error(SIGNED_OUT);
 	if (response.status === 413) throw new Error(`${file.name}: 10MB까지 올릴 수 있습니다.`);
 	if (!response.ok) throw new Error(`${file.name}을(를) 올리지 못했습니다.`);
-	const body = (await response.json()) as Omit<Uploaded, 'url'> & { path: string };
+	const body = (await response.json()) as Upload;
 	return {
 		id: body.id,
 		name: body.name,
