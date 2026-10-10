@@ -3,8 +3,7 @@ import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
-import { APP_MANIFEST } from '@/apps/manifest';
-import { WINDOW_APPS } from '@/apps/registry';
+import { APP_MANIFEST, WINDOW_APP_NAMES } from '@/apps/manifest';
 import { getPostRepository } from '@/apps/memo/repository';
 import { PROJECTS } from '@/shared/profile';
 import { requestOpen } from '@/shared/lib/openRequest';
@@ -85,7 +84,7 @@ const Finder: React.FC = () => {
 				docs: DOC_PATHS,
 				posts,
 				projects: PROJECTS.map(({ id, name, icon, period }) => ({ id, name, icon, period })),
-				apps: WINDOW_APPS.filter(({ name }) => name !== 'finder').map(({ name }) => ({
+				apps: WINDOW_APP_NAMES.filter((name) => name !== 'finder').map((name) => ({
 					app: name,
 					label: APP_MANIFEST[name].label,
 					icon: APP_MANIFEST[name].icon,
