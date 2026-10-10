@@ -239,6 +239,10 @@
 	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+.weather-card-face.dragging {
+	transition: none;
+}
+
 .weather-card-face.active {
 	border-color: rgba(255, 255, 255, 0.45);
 }
