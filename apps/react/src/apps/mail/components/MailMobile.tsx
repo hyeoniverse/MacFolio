@@ -6,11 +6,10 @@ import ComposeView from './ComposeView';
 import { formatMailDate, TO_OWNER, type ContactInput } from '../contact';
 import { replyToMail, type ContactMail } from '../mailboxApi';
 import type { SendOptions, SendResult } from '../sender';
-import type { ListMail, Mailbox } from '../Mail';
+import { MAILBOX_LABEL, type ListMail, type Mailbox } from '../model';
 import { takeComposeRequest } from '../composeRequest';
 import '@/apps/mail/components/MailMobile.css';
 
-const MAILBOX_LABEL: Record<Mailbox, string> = { inbox: '받은 편지함', sent: '보낸 편지함' };
 const MAILBOX_ICON: Record<Mailbox, string> = { inbox: 'fa-solid fa-inbox', sent: 'fa-regular fa-paper-plane' };
 
 /** 지금 보는 화면: 메일상자, 한 사서함의 목록, 메일 한 통 */

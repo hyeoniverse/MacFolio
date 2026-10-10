@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { ProjectChapter, ProjectFact, ProjectPoint } from '@/shared/profile';
 import { FactValue } from '@/apps/safari/project/parts';
 import { Clip, ZoomImage } from '@/apps/safari/project/CreativeParts';
-import { Demo } from '@/apps/safari/project/CreativeDemos';
+import { Demo } from '@/apps/safari/project/creative/Demo';
 import { scrollParent } from '@/apps/safari/project/scroll';
 import { Architecture } from '@/apps/safari/project/CreativeArchitecture';
 import '@/apps/safari/project/CreativeChapters.css';

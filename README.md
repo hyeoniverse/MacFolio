@@ -125,7 +125,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
   - `AdminGuard`: 관리자 전용 API(글쓰기, 메모 정리, 업로드)가 요청마다 세션 쿠키를 DB에서 확인합니다. 화면의 편집 버튼을 숨기는 것과 상관없이 서버가 막습니다
   - `ValidationPipe` + class-validator: 모든 입력을 DTO로 검사하고, 정해 두지 않은 필드는 거절합니다
   - `@nestjs/throttler`: 쓰기 경로마다 IP별 요청 제한 (`@RateLimit`). 터널 뒤에서는 `TRUST_PROXY`로 실제 IP를 읽습니다
-  - helmet(보안 헤더), CORS는 사이트 주소만 허용하고 PR 미리보기 주소에는 쿠키를 주지 않으며, 전역 예외 필터로 에러 모양을 하나로 맞추고 예상하지 못한 에러는 내용을 감춥니다
+  - helmet(보안 헤더), CORS는 사이트 주소만 허용하고 PR 미리보기 주소에는 쿠키를 주지 않으며, 서버는 SSH 키로만 들어오고 API 컨테이너는 root가 아닌 사용자로 돕니다(`ops/audit.sh`로 점검), 전역 예외 필터로 에러 모양을 하나로 맞추고 예상하지 못한 에러는 내용을 감춥니다
   - Swagger: 컨트롤러에서 [API 문서](https://macfolio-api.hyeoniverse.com/docs)를 자동으로 만듭니다
 
 **Prisma 7 + PostgreSQL**

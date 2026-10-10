@@ -29,7 +29,7 @@ test.describe('메모 편집 (관리자)', () => {
 
 		await memo.getByRole('button', { name: '새로운 폴더' }).click();
 		const input = memo.getByRole('textbox', { name: '새로운 폴더 이름' });
-		await input.fill('프론트엔드');
+		await input.fill('개발기');
 		await input.press('Enter');
 		await expect(memo.getByRole('alert')).toHaveText('이미 있는 폴더예요.');
 
@@ -55,14 +55,14 @@ test.describe('메모 편집 (관리자)', () => {
 	test('폴더를 고른 채 새로운 폴더를 누르면 그 폴더 아래에 만든다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		await folders.getByRole('button', { name: /^프론트엔드/ }).click();
+		await folders.getByRole('button', { name: /^MacFolio/ }).click();
 		await memo.getByRole('button', { name: '새로운 폴더' }).click();
 		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('읽을거리');
 		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
 
 		await expect(folders.getByRole('button', { name: /^읽을거리/ })).toHaveAttribute('aria-current', 'true');
-		// 프론트엔드를 접으면 함께 숨는다 (프론트엔드 아래에 있다)
-		await folders.getByRole('button', { name: '하위 폴더 접기 (프론트엔드)' }).click();
+		// MacFolio를 접으면 함께 숨는다 (MacFolio 아래에 있다)
+		await folders.getByRole('button', { name: '하위 폴더 접기 (MacFolio)' }).click();
 		await expect(folders.getByRole('button', { name: /^읽을거리/ })).toBeHidden();
 	});
 
@@ -70,8 +70,8 @@ test.describe('메모 편집 (관리자)', () => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		// '기능' 폴더의 글 수. 아래에서 먼저 옮기는 CRA 글은 다른 폴더(인프라)에 있다
-		const total = await countOf(folders.getByRole('button', { name: /^기능/ }));
+		// '회고' 폴더의 글 수. 아래에서 먼저 옮기는 CRA 글은 다른 폴더(인프라)에 있다
+		const total = await countOf(folders.getByRole('button', { name: /^회고/ }));
 		await memo.getByRole('button', { name: '새로운 폴더' }).click();
 		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('보관');
 		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
@@ -85,8 +85,8 @@ test.describe('메모 편집 (관리자)', () => {
 		await folders.getByRole('button', { name: /^보관/ }).click();
 		await expect(memo.locator('.memo-item')).toHaveText([/CRA에서 Vite로 옮기기/]);
 
-		// 폴더 '기능'을 '보관' 안으로: 안의 글도 따라온다
-		await folders.getByRole('button', { name: /^기능/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
+		// 폴더 '회고'를 '보관' 안으로: 안의 글도 따라온다
+		await folders.getByRole('button', { name: /^회고/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
 		await expect.poll(() => countOf(folders.getByRole('button', { name: /^보관/ }))).toBe(total + 1);
 
 		// 서버에 저장되어 새로고침해도 정리한 대로
@@ -99,11 +99,11 @@ test.describe('메모 편집 (관리자)', () => {
 	test('폴더 메뉴: 이름 변경, 우클릭, 글이 있는 폴더는 지울 수 없다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		const total = await countOf(folders.getByRole('button', { name: /^기능/ }));
+		const total = await countOf(folders.getByRole('button', { name: /^MacFolio/ }));
 
 		// 우클릭으로 메뉴를 연다. 블로그 글의 폴더는 지울 수 없다
-		await folders.getByRole('button', { name: /^기능/ }).click({ button: 'right' });
-		const menu = page.getByRole('menu', { name: '기능 폴더 메뉴' });
+		await folders.getByRole('button', { name: /^MacFolio/ }).click({ button: 'right' });
+		const menu = page.getByRole('menu', { name: 'MacFolio 폴더 메뉴' });
 		await expect(menu.getByRole('menuitem', { name: '폴더 삭제' })).toBeDisabled();
 
 		await menu.getByRole('menuitem', { name: '폴더 이름 변경' }).click();
@@ -111,7 +111,7 @@ test.describe('메모 편집 (관리자)', () => {
 		await input.fill('포트폴리오');
 		await input.press('Enter');
 		await expect.poll(() => countOf(folders.getByRole('button', { name: /^포트폴리오/ }))).toBe(total);
-		await expect(folders.getByRole('button', { name: /^기능/ })).toHaveCount(0);
+		await expect(folders.getByRole('button', { name: /^MacFolio/ })).toHaveCount(0);
 
 		// 메뉴의 새로운 폴더는 그 폴더 안에 만든다
 		await folders.getByRole('button', { name: '폴더 동작 (포트폴리오)' }).click();
@@ -127,27 +127,22 @@ test.describe('메모 편집 (관리자)', () => {
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 		const newFolder = memo.getByRole('button', { name: '새로운 폴더', exact: true });
 
-		// 프론트엔드(1단) / 기능(2단) / 초안(3단)
-		await folders.getByRole('button', { name: /^기능/ }).click();
-		await newFolder.click();
-		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('초안');
-		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
-
-		// 3단 폴더를 고르면 그 안에는 만들 수 없다
-		await expect(folders.getByRole('button', { name: /^초안/ })).toHaveAttribute('aria-current', 'true');
+		// 개발기(1단) / MacFolio(2단) / 회고(3단): 3단 폴더를 고르면 그 안에는 만들 수 없다
+		await folders.getByRole('button', { name: /^회고/ }).click();
+		await expect(folders.getByRole('button', { name: /^회고/ })).toHaveAttribute('aria-current', 'true');
 		await expect(newFolder).toBeDisabled();
-		await folders.getByRole('button', { name: '폴더 동작 (초안)' }).click();
+		await folders.getByRole('button', { name: '폴더 동작 (회고)' }).click();
 		await expect(page.getByRole('menuitem', { name: '새로운 폴더' })).toBeDisabled();
 		await page.keyboard.press('Escape');
 
-		// 3단 높이가 된 프론트엔드를 다른 폴더 안으로는 옮길 수 없다
+		// 3단 높이인 개발기를 다른 폴더 안으로는 옮길 수 없다
 		await folders.getByRole('button', { name: /^모든 글/ }).click();
 		await newFolder.click();
 		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('보관');
 		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
-		await folders.getByRole('button', { name: /^프론트엔드/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
+		await folders.getByRole('button', { name: /^개발기/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
 		await expect(folders.getByRole('button', { name: /^보관/ })).toContainText('0');
-		await expect(folders.getByRole('button', { name: /^프론트엔드/ })).toBeVisible();
+		await expect(folders.getByRole('button', { name: /^개발기/ })).toBeVisible();
 	});
 
 	test('메모를 고정하면 맨 위 고정됨 묶음에 들어가고, 풀 수 있다', async ({ page }) => {
