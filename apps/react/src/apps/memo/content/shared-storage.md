@@ -1,7 +1,7 @@
 ---
 title: try/catch 열두 개를 하나로 — 브라우저 저장소 모듈
 date: 2026-10-10
-category: 인프라/배포·운영
+category: 개발기/MacFolio/인프라
 summary: localStorage·sessionStorage를 쓰는 파일 일곱 개가 저마다 키 문자열, JSON.parse, try/catch를 들고 있었다. shared/lib/storage.ts에 키 목록(STORAGE_KEYS)과 readJson·writeJson을 두고 실패를 거기서 삼키게 했다. 134줄이 53줄이 됐고, 부르는 쪽에는 모양 검사만 남았다.
 ---
 
