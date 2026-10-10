@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import {
 	blankProject,
 	mergeProjects,
@@ -10,7 +10,9 @@ import {
 	type ProjectLook,
 	type SiteProjects,
 } from '@macfolio/desktop-core/site';
-import { DEFAULT_PROJECTS } from '@/shared/profile';
+import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
+import { DEFAULT_PROFILE } from '@/shared/site/profileStore';
+import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type Period } from './projectInputs';
 import { getSavedProjects, sendProjects } from '@/shared/site/siteContent';
 import { imageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
@@ -29,6 +31,13 @@ interface Row {
 }
 
 const DEFAULTS = new Map(DEFAULT_PROJECTS.map((project) => [project.id, project]));
+
+/** 언어·기술 칸의 후보: 지금 보이는 프로젝트와 코드의 프로젝트, 사이트 주인의 기술 */
+const LANGUAGES = languageOptions([...PROJECTS, ...DEFAULT_PROJECTS]);
+const STACKS = stackOptions(
+	[...PROJECTS, ...DEFAULT_PROJECTS.filter((project) => !PROJECTS.some((shown) => shown.id === project.id))],
+	[...Object.values(DEFAULT_PROFILE.skills).flat(), ...DEFAULT_PROFILE.siteStack]
+);
 
 const LOOK_LABEL: Record<ProjectLook, string> = {
 	editorial: '신문 1면',
@@ -93,6 +102,14 @@ const REQUIRED: (keyof Project)[] = [
 
 /** 프로젝트 하나를 검사한다 (서버와 같은 규칙). 앱은 데모 주소가 있어야 한다 */
 function validate(id: string, project: Project): { value: Project } | { errors: string[] } {
+	// 꼭 적어야 하는 칸 (화면에 '필수'로 표시한 칸)
+	const missing = [
+		!project.name.trim() && '이름을 입력해 주세요.',
+		!project.url.trim() && '저장소 주소를 입력해 주세요.',
+		project.app && !project.app.label.trim() && '앱 이름을 입력해 주세요.',
+		project.app && !project.app.icon.trim() && '앱 아이콘을 입력해 주세요.',
+	].filter((error): error is string => Boolean(error));
+	if (missing.length) return { errors: missing };
 	const parsed = parseProjects({ items: [{ id, override: withoutId(project) }] });
 	if ('errors' in parsed) return parsed;
 	const value = { id, ...parsed.value.items[0].override } as Project;
@@ -108,6 +125,8 @@ const TextField = ({
 	hint,
 	type = 'text',
 	placeholder,
+	required = false,
+	options,
 }: {
 	label: string;
 	value: string | number | undefined;
@@ -115,21 +134,236 @@ const TextField = ({
 	hint?: string;
 	type?: string;
 	placeholder?: string;
-}) => (
-	<div className="projects-field">
-		<label>
-			<span>{label}</span>
-			<input
-				type={type}
-				value={value ?? ''}
-				placeholder={placeholder}
-				spellCheck={false}
-				onChange={(event) => onChange(event.target.value)}
-			/>
-		</label>
-		{hint && <p className="about-pane-hint">{hint}</p>}
-	</div>
+	/** 꼭 적어야 하는 칸: 이름 옆에 '필수' */
+	required?: boolean;
+	/** 고를 수 있는 값 (치면 걸러지는 목록, 다른 값도 쓸 수 있다) */
+	options?: readonly string[];
+}) => {
+	const listId = useId();
+	return (
+		<div className="projects-field">
+			<label>
+				<FieldLabel label={label} required={required} />
+				<input
+					type={type}
+					value={value ?? ''}
+					placeholder={placeholder}
+					spellCheck={false}
+					required={required}
+					aria-required={required || undefined}
+					list={options ? listId : undefined}
+					onChange={(event) => onChange(event.target.value)}
+				/>
+			</label>
+			{options && (
+				<datalist id={listId}>
+					{options.map((option) => (
+						<option key={option} value={option} />
+					))}
+				</datalist>
+			)}
+			{hint && <p className="about-pane-hint">{hint}</p>}
+		</div>
+	);
+};
+
+/** 칸 이름. 꼭 적어야 하면 옆에 빨간 '필수' */
+const FieldLabel = ({ label, required = false }: { label: string; required?: boolean }) => (
+	<span className="projects-field-label">
+		{label}
+		{required && (
+			<em className="projects-required" aria-hidden="true">
+				필수
+			</em>
+		)}
+	</span>
 );
+
+/**
+ * 기간: 시작일·끝날을 달력에서 고른다. 끝 대신 '운영 중' 같은 글을 쓸 수도 있다.
+ * 날짜 모양이 아닌 예전 값(예: Week 01–15)은 글 칸으로 그대로 고친다
+ */
+const PeriodField = ({
+	value,
+	onChange,
+}: {
+	value: string | undefined;
+	onChange: (value: string | undefined) => void;
+}) => {
+	const parsed = parsePeriod(value);
+	const [period, setPeriod] = useState<Period>(parsed ?? { start: '', end: '', ongoing: '' });
+	const [asText] = useState(parsed === null);
+	const update = (patch: Partial<Period>) => {
+		const next = { ...period, ...patch };
+		setPeriod(next);
+		onChange(formatPeriod(next));
+	};
+	if (asText)
+		return (
+			<TextField
+				label="기간"
+				value={value}
+				onChange={(text) => onChange(optional(text))}
+				hint="날짜 모양이 아니라 글로 고칩니다."
+			/>
+		);
+	return (
+		<div className="projects-field">
+			<div className="projects-period" role="group" aria-label="기간">
+				<FieldLabel label="기간" />
+				<input
+					type="date"
+					aria-label="시작일"
+					value={period.start}
+					max={period.end || undefined}
+					onChange={(event) => update({ start: event.target.value })}
+				/>
+				<span aria-hidden="true">–</span>
+				{period.ongoing ? (
+					<input
+						type="text"
+						aria-label="끝 대신 쓸 글"
+						value={period.ongoing}
+						onChange={(event) => update({ ongoing: event.target.value || '진행 중' })}
+					/>
+				) : (
+					<input
+						type="date"
+						aria-label="끝날"
+						value={period.end}
+						min={period.start || undefined}
+						onChange={(event) => update({ end: event.target.value })}
+					/>
+				)}
+				<label className="projects-period-ongoing">
+					<input
+						type="checkbox"
+						checked={Boolean(period.ongoing)}
+						onChange={(event) => update({ ongoing: event.target.checked ? '진행 중' : '', end: '' })}
+					/>
+					진행 중
+				</label>
+			</div>
+			{!period.start && (period.end || period.ongoing) && (
+				<p className="about-pane-hint">시작일을 고르면 기간이 저장됩니다.</p>
+			)}
+		</div>
+	);
+};
+
+/**
+ * 기술: 고른 것은 칩으로, 치면 후보가 걸러져 아래에 나온다. Enter·쉼표로 더하고(목록에 없는 것도), ↑·↓로 후보를 고르고,
+ * 빈 칸에서 Backspace는 마지막 칩을 뺀다
+ */
+const TagInput = ({
+	label,
+	items,
+	options,
+	onChange,
+}: {
+	label: string;
+	items: string[];
+	options: readonly string[];
+	onChange: (items: string[]) => void;
+}) => {
+	const [query, setQuery] = useState('');
+	const [open, setOpen] = useState(false);
+	const [active, setActive] = useState(0);
+	const listId = useId();
+	const shown = open ? suggest(options, query, items) : [];
+	const add = (raw: string) => {
+		const value = raw.trim();
+		setQuery('');
+		setActive(0);
+		if (!value || items.some((item) => item.toLowerCase() === value.toLowerCase())) return;
+		onChange([...items, value]);
+	};
+	return (
+		<div className="projects-field">
+			<div className="projects-tags">
+				<FieldLabel label={label} />
+				<ul className="projects-chips" aria-label={`고른 ${label}`}>
+					{items.map((item) => (
+						<li key={item}>
+							{item}
+							<button
+								type="button"
+								aria-label={`${item} 빼기`}
+								onClick={() => onChange(items.filter((other) => other !== item))}
+							>
+								<i className="fa-solid fa-xmark" aria-hidden="true" />
+							</button>
+						</li>
+					))}
+				</ul>
+				<input
+					role="combobox"
+					aria-label={label}
+					aria-expanded={shown.length > 0}
+					aria-controls={listId}
+					aria-autocomplete="list"
+					aria-activedescendant={shown.length ? `${listId}-${active}` : undefined}
+					value={query}
+					placeholder={items.length ? '' : '찾거나 적어서 더하기'}
+					spellCheck={false}
+					onFocus={() => setOpen(true)}
+					onBlur={() => setOpen(false)}
+					onChange={(event) => {
+						const text = event.target.value;
+						// 쉼표를 치면 그 앞까지 더한다 (붙여 넣은 'React, Vite'도 나눠 더한다)
+						if (text.includes(',')) {
+							const parts = text.split(',');
+							const rest = parts.pop() ?? '';
+							const next = [...items];
+							for (const part of parts.map((item) => item.trim()).filter(Boolean))
+								if (!next.some((item) => item.toLowerCase() === part.toLowerCase())) next.push(part);
+							if (next.length !== items.length) onChange(next);
+							setQuery(rest.trimStart());
+						} else setQuery(text);
+						setActive(0);
+						setOpen(true);
+					}}
+					onKeyDown={(event) => {
+						if (event.key === 'ArrowDown' && shown.length) {
+							event.preventDefault();
+							setActive((index) => (index + 1) % shown.length);
+						} else if (event.key === 'ArrowUp' && shown.length) {
+							event.preventDefault();
+							setActive((index) => (index - 1 + shown.length) % shown.length);
+						} else if (event.key === 'Enter') {
+							// 폼을 보내지 않고 더한다: 친 글자가 있으면 고른 후보(없으면 친 그대로)
+							event.preventDefault();
+							if (query.trim()) add(shown[active] ?? query);
+						} else if (event.key === 'Escape' && open) {
+							event.stopPropagation();
+							setOpen(false);
+						} else if (event.key === 'Backspace' && !query && items.length) {
+							onChange(items.slice(0, -1));
+						}
+					}}
+				/>
+			</div>
+			{shown.length > 0 && (
+				<ul className="projects-suggestions" role="listbox" id={listId} aria-label={`${label} 후보`}>
+					{shown.map((option, index) => (
+						<li
+							key={option}
+							id={`${listId}-${index}`}
+							role="option"
+							aria-selected={index === active}
+							// 누르는 동안 입력칸의 초점이 빠져 목록이 닫히지 않게
+							onPointerDown={(event) => event.preventDefault()}
+							onClick={() => add(option)}
+						>
+							{option}
+						</li>
+					))}
+				</ul>
+			)}
+			<p className="about-pane-hint">찾아서 고르거나 적고 Enter·쉼표로 더합니다.</p>
+		</div>
+	);
+};
 
 const Switch = ({
 	label,
@@ -150,37 +384,6 @@ const Switch = ({
 		<input type="checkbox" role="switch" checked={checked} onChange={(event) => onChange(event.target.checked)} />
 	</label>
 );
-
-/**
- * 쉼표로 나눠 쓰는 목록 칸. 치는 동안은 친 그대로 두고(끝의 쉼표·공백이 사라지지 않게), 목록으로 나눈 값만 올려 보낸다
- */
-const ListField = ({
-	label,
-	items,
-	onChange,
-}: {
-	label: string;
-	items: string[];
-	onChange: (items: string[]) => void;
-}) => {
-	const [text, setText] = useState(() => items.join(', '));
-	return (
-		<TextField
-			label={label}
-			value={text}
-			onChange={(raw) => {
-				setText(raw);
-				onChange(
-					raw
-						.split(',')
-						.map((item) => item.trim())
-						.filter(Boolean)
-				);
-			}}
-			hint="쉼표(,)로 나눠 씁니다."
-		/>
-	);
-};
 
 /** 빈 글자는 필드를 지운다 (고를 수 있는 필드) */
 const optional = (value: string) => (value.trim() ? value : undefined);
@@ -328,15 +531,16 @@ const ProjectEditor = ({
 								label="id"
 								value={id}
 								onChange={setId}
+								required
 								hint="주소와 앱 이름에 쓰입니다. 영어 소문자·숫자·-로 (예: my-project)"
 							/>
 						)}
-						<TextField label="이름" value={draft.name} onChange={(name) => set({ name })} />
+						<TextField label="이름" value={draft.name} onChange={(name) => set({ name })} required />
 						<TextField label="한 줄 소개" value={draft.description} onChange={(description) => set({ description })} />
 						<TextField label="큰 제목" value={draft.tagline} onChange={(tagline) => set({ tagline })} />
 						<TextField label="어떤 프로젝트" value={draft.context} onChange={(context) => set({ context })} />
 						<TextField label="맡은 일" value={draft.role} onChange={(role) => set({ role: optional(role) })} />
-						<TextField label="기간" value={draft.period} onChange={(period) => set({ period: optional(period) })} />
+						<PeriodField value={draft.period} onChange={(period) => set({ period })} />
 						<div className="projects-field">
 							<label>
 								<span>페이지 모양</span>
@@ -355,6 +559,7 @@ const ProjectEditor = ({
 						<h3>주소와 기술</h3>
 						<TextField
 							label="저장소"
+							required
 							type="url"
 							value={draft.url}
 							onChange={(url) => set({ url })}
@@ -367,14 +572,20 @@ const ProjectEditor = ({
 							onChange={(demo) => set({ demo: optional(demo) })}
 							placeholder="https://"
 						/>
-						<TextField label="주 언어" value={draft.language} onChange={(language) => set({ language })} />
-						<ListField label="기술" items={draft.stack} onChange={(stack) => set({ stack })} />
+						<TextField
+							label="주 언어"
+							value={draft.language}
+							onChange={(language) => set({ language })}
+							options={LANGUAGES}
+							placeholder="찾거나 적기"
+						/>
+						<TagInput label="기술" items={draft.stack} options={STACKS} onChange={(stack) => set({ stack })} />
 						<TextField
 							label="화면 캡처"
 							value={draft.image}
 							onChange={(image) => set({ image })}
 							placeholder="/imgs/projects/아이디/screenshot.jpg"
-							hint="사이트 안 경로(/imgs/…)나 https:// 주소"
+							hint="사이트 안 경로(/imgs/…)나 https:// 주소. 비우면 화면 모음의 첫 그림을 씁니다."
 						/>
 					</section>
 
@@ -432,9 +643,10 @@ const ProjectEditor = ({
 						/>
 						{app && (
 							<>
-								<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} />
+								<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
 								<TextField
 									label="앱 아이콘"
+									required
 									value={app.icon}
 									onChange={(icon) => setApp({ icon })}
 									hint="이미지 폴더 기준 경로 (예: projects/newpick/app-icon.png)나 https:// 주소"

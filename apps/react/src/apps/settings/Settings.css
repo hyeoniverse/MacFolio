@@ -1406,3 +1406,154 @@ ol.showcase-list .showcase-row.reordering {
 .projects-visibility {
 	color: var(--color-text-secondary);
 }
+
+/* 칸 이름과 '필수' 표시 */
+.projects-field-label {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 6px;
+	min-width: 110px;
+	color: var(--color-text-strong);
+	font-size: 13px;
+}
+
+.projects-required {
+	padding: 0 5px;
+	border-radius: 4px;
+	background: color-mix(in srgb, #ff3b30 14%, transparent);
+	color: #ff3b30;
+	font-size: 10px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 16px;
+}
+
+/* 기간: 시작일 – 끝날 (진행 중이면 끝 대신 글) */
+.projects-period {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+}
+
+.projects-period input[type='date'],
+.projects-period input[type='text'] {
+	padding: 3px 6px;
+	border: 1px solid var(--color-divider);
+	border-radius: 6px;
+	background: var(--color-window-bg, transparent);
+	color: var(--color-text);
+	font: inherit;
+}
+
+.projects-period input[type='text'] {
+	width: 7em;
+}
+
+/* 공통 칸 규칙(오른쪽 정렬로 남은 폭을 다 쓰기)을 기간·기술에서는 쓰지 않는다 */
+.projects-field .projects-period input {
+	flex: none;
+	width: auto;
+	text-align: left;
+}
+
+.projects-period input[type='date'] {
+	margin-left: auto;
+}
+
+.projects-period input[type='date'] ~ input[type='date'],
+.projects-period span + input {
+	margin-left: 0;
+}
+
+.projects-field .projects-tags input {
+	text-align: left;
+}
+
+.projects-period-ongoing {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin-left: auto;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+/* 기술: 칩 + 찾는 칸 + 후보 목록 */
+.projects-tags {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+}
+
+.projects-chips {
+	display: contents;
+	list-style: none;
+}
+
+.projects-chips li {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	padding: 1px 4px 1px 8px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+	color: var(--color-text-strong);
+	font-size: 12px;
+}
+
+.projects-chips button {
+	display: grid;
+	place-items: center;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: none;
+	color: var(--color-text-secondary);
+	font-size: 10px;
+	cursor: pointer;
+}
+
+.projects-chips button:hover {
+	background: color-mix(in srgb, var(--color-text) 12%, transparent);
+}
+
+.projects-tags input {
+	flex: 1;
+	min-width: 8em;
+	padding: 3px 0;
+	border: none;
+	background: none;
+	color: var(--color-text);
+	font: inherit;
+	outline: none;
+}
+
+.projects-suggestions {
+	margin: 6px 0 2px;
+	padding: 4px;
+	border: 1px solid var(--color-divider);
+	border-radius: 8px;
+	background: var(--color-control-bg);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+	list-style: none;
+}
+
+.projects-suggestions li {
+	padding: 4px 8px;
+	border-radius: 5px;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.projects-suggestions li[aria-selected='true'],
+.projects-suggestions li:hover {
+	background: var(--color-accent);
+	color: #ffffff;
+}

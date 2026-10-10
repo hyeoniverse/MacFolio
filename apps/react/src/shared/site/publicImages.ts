@@ -17,6 +17,14 @@ export function captionOf(src: string) {
 	return name || '화면';
 }
 
+/** 보이기 전에 채운다: 화면 모음 폴더의 그림으로 화면 모음을, 화면 캡처가 비었으면 화면 모음의 첫 그림을 */
+export function completeProject(project: Project, folders: Record<string, string[]> = PUBLIC_IMAGES): Project {
+	const withGallery = withFolderGallery(project, folders);
+	if (withGallery.image) return withGallery;
+	const first = withGallery.gallery?.find((shot) => !shot.src.endsWith('.mp4'))?.src;
+	return first ? { ...withGallery, image: first } : withGallery;
+}
+
 /** 화면 모음 폴더가 있는 프로젝트는 그 폴더의 그림으로 화면 모음을 채운다 (폴더가 비었거나 없으면 그대로) */
 export function withFolderGallery(project: Project, folders: Record<string, string[]> = PUBLIC_IMAGES): Project {
 	const files = project.galleryFolder ? folders[project.galleryFolder.replace(/\/$/, '')] : undefined;

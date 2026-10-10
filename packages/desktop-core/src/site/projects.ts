@@ -186,7 +186,7 @@ export interface Project {
 	art?: string;
 	/** 글자 로고 (public/imgs/projects/{id}/logo.png) */
 	logo?: string;
-	/** 화면 캡처 (public/imgs/projects/{id}/screenshot.jpg) */
+	/** 화면 캡처 (public/imgs/projects/{id}/screenshot.jpg). 비어 있으면 화면 모음의 첫 그림을 쓴다 */
 	image: string;
 	/** 게임 조작법 */
 	controls?: { keys: string[]; label: string }[];
@@ -250,7 +250,7 @@ const PROJECT_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
 type Rule =
 	| { kind: 'text'; max: number; multiline?: boolean; pattern?: RegExp }
 	| { kind: 'href' }
-	| { kind: 'src' }
+	| { kind: 'src'; allowEmpty?: boolean }
 	| { kind: 'appIcon' }
 	| { kind: 'color' }
 	| { kind: 'enum'; values: readonly string[] }
@@ -375,7 +375,8 @@ const PROJECT_FIELDS: Record<keyof Omit<Project, 'id'>, Rule> = {
 	app: APP,
 	art: SRC,
 	logo: SRC,
-	image: SRC,
+	// 비워도 된다: 화면은 화면 모음의 첫 그림을 쓴다 (apps/react/src/shared/site/publicImages.ts)
+	image: { kind: 'src', allowEmpty: true },
 	controls: list(object({ keys: req(list(text(20), 8)), label: req(text(80)) }), 20),
 	terminal: list(text(200), 40),
 	conventions: list(object({ type: req(text(30)), description: req(text(200)) }), 20),
@@ -448,6 +449,7 @@ function check(value: unknown, rule: Rule, path: string, errors: string[]): unkn
 		case 'src': {
 			if (typeof value !== 'string') return fail('주소여야 합니다.');
 			const trimmed = value.trim();
+			if (!trimmed && rule.allowEmpty) return '';
 			if (!(SITE_PATH.test(trimmed) || (isHttps(trimmed) && !/[\s"'()<>\\]/.test(trimmed))))
 				return fail('사이트 안 경로(/imgs/…)나 https:// 주소여야 합니다.');
 			return trimmed;

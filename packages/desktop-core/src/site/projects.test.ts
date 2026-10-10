@@ -97,6 +97,15 @@ describe('parseProjects', () => {
 		});
 	});
 
+	it('화면 캡처는 비워도 된다 (다른 그림 주소는 비우면 거절)', () => {
+		expect(parseProjects({ items: [{ id: 'x', override: { image: '' } }] })).toEqual({
+			value: { items: [{ id: 'x', override: { image: '' } }] },
+		});
+		expect(parseProjects({ items: [{ id: 'x', override: { logo: '' } }] })).toEqual({
+			errors: ['프로젝트 x.logo: 사이트 안 경로(/imgs/…)나 https:// 주소여야 합니다.'],
+		});
+	});
+
 	it('화면 모음 폴더는 /imgs 아래 경로만 (.. 없이)', () => {
 		expect(parseProjects({ items: [{ id: 'x', override: { galleryFolder: '/imgs/projects/x/shots' } }] })).toEqual({
 			value: { items: [{ id: 'x', override: { galleryFolder: '/imgs/projects/x/shots' } }] },
