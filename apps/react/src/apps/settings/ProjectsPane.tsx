@@ -14,7 +14,7 @@ import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { DEFAULT_PROFILE } from '@/shared/site/profileStore';
 import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type Period } from './projectInputs';
 import { getSavedProjects, sendProjects } from '@/shared/site/siteContent';
-import { imageFolders, PROJECT_IMAGES_ROOT, PUBLIC_IMAGES } from '@/shared/site/publicImages';
+import { groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
@@ -31,6 +31,11 @@ interface Row {
 }
 
 const DEFAULTS = new Map(DEFAULT_PROJECTS.map((project) => [project.id, project]));
+
+/** 화면 모음 폴더 목록: 프로젝트 폴더(id)별로 묶고, 묶음 이름은 그 프로젝트의 이름 */
+const FOLDER_GROUPS = groupedImageFolders(
+	(id) => [...PROJECTS, ...DEFAULT_PROJECTS].find((project) => project.id === id)?.name
+);
 
 /** 언어·기술 칸의 후보: 지금 보이는 프로젝트와 코드의 프로젝트, 사이트 주인의 기술 */
 const LANGUAGES = languageOptions([...PROJECTS, ...DEFAULT_PROJECTS]);
@@ -601,10 +606,15 @@ const ProjectEditor = ({
 									<option value="">
 										{draft.gallery?.length ? `직접 적은 화면 ${draft.gallery.length}장` : '없음'}
 									</option>
-									{imageFolders().map((folder) => (
-										<option key={folder} value={folder}>
-											{folder.replace(PROJECT_IMAGES_ROOT, '')} ({PUBLIC_IMAGES[folder].length}장)
-										</option>
+									{/* 같은 프로젝트 폴더 아래의 것끼리 묶는다 (묶음 이름은 그 프로젝트 이름) */}
+									{FOLDER_GROUPS.map((group) => (
+										<optgroup key={group.label} label={group.label}>
+											{group.folders.map((folder) => (
+												<option key={folder.value} value={folder.value}>
+													{folder.label} ({PUBLIC_IMAGES[folder.value].length}장)
+												</option>
+											))}
+										</optgroup>
 									))}
 								</select>
 							</label>
