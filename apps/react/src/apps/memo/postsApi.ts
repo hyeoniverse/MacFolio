@@ -1,21 +1,14 @@
 // 블로그 글 API (apps/api의 /posts). 누구나 게시한 글을 읽고, 관리자만 쓰고 고치고 게시하고 지운다.
 // 고치는 동안은 임시 저장에만 쓰고(자동 저장), 게시해야 방문자에게 보인다. 게시할 때마다 버전이 남는다.
-import type { AdminPost, PostContent, ServerPost } from '@macfolio/desktop-core/memo';
+import type { AdminPost, PostContent, Revision, RevisionSummary, ServerPost } from '@macfolio/contracts';
 import { api, type ApiOptions, reasonsFrom } from '@/shared/api/client';
 
 export type PostDraft = PostContent;
 
 export type SaveResult = { ok: true; post: AdminPost } | { ok: false; errors: string[] };
 
-export interface RevisionSummary {
-	id: number;
-	title: string;
-	date: string;
-	createdAt: string;
-	createdBy: string;
-}
-
-export type Revision = RevisionSummary & PostContent;
+/** 버전 모양은 서버와 같은 스키마(contracts) */
+export type { Revision, RevisionSummary };
 
 /** 성공하면 몸통, 실패하면 서버가 준 이유들 (던지지 않는다: 화면이 이유를 그대로 보여 준다) */
 async function send(
