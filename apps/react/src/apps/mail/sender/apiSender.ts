@@ -1,13 +1,9 @@
 import type { MailSender } from './types';
 import { api, apiFetch, reasonsOf, UNREACHABLE } from '@/shared/api/client';
+import type { ContactStatus } from '@macfolio/contracts';
 
-/** 서버의 연락 메일 설정 (GET /contact) */
-export interface ContactStatus {
-	/** 서버가 보낼 수 있다 */
-	enabled: boolean;
-	/** 사람 확인(Turnstile) 위젯의 공개 키. 없으면 확인하지 않는다 */
-	turnstileSiteKey: string | null;
-}
+/** 서버의 연락 메일 설정 (GET /contact). 모양은 서버와 같은 스키마(contracts) */
+export type { ContactStatus };
 
 /** 서버의 연락 메일 설정. 서버에 닿지 않으면 꺼진 것으로 본다 */
 export async function fetchContactStatus(apiUrl: string, fetchImpl: typeof fetch = fetch): Promise<ContactStatus> {
