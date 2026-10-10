@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from 'react';
 import { createStore } from '@macfolio/desktop-core';
 import { env } from '@/shared/config/env';
+import { api } from '@/shared/api/client';
 import type { Photo } from './albums';
 
 const captions = createStore<{ map: Record<string, string> }>({ map: {} });
@@ -12,8 +13,7 @@ let requested = false;
 export function loadCaptions() {
 	if (requested || !env.apiUrl) return;
 	requested = true;
-	fetch(`${env.apiUrl}/photos/captions`, { credentials: 'include', signal: AbortSignal.timeout(15_000) })
-		.then((response) => (response.ok ? (response.json() as Promise<Record<string, string>>) : {}))
+	api<Record<string, string>>('/photos/captions')
 		.then((map) => captions.setState({ map }))
 		.catch(() => {
 			requested = false;
@@ -27,17 +27,10 @@ export const captionOf = (photo: Photo, map: Record<string, string>) => map[phot
 
 /** 관리자: 캡션 하나를 고친다. 비우면 원래 캡션으로 돌아간다 */
 export async function saveCaption(src: string, caption: string): Promise<void> {
-	const response = await fetch(`${env.apiUrl}/photos/captions`, {
+	const map = await api<Record<string, string>>('/photos/captions', {
 		method: 'PUT',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ src, caption }),
-		signal: AbortSignal.timeout(15_000),
+		json: { src, caption },
+		fallback: '캡션을 저장하지 못했습니다.',
 	});
-	if (!response.ok) {
-		const body = (await response.json().catch(() => ({}))) as { message?: string | string[] };
-		const message = Array.isArray(body.message) ? body.message.join(' ') : body.message;
-		throw new Error(message || '캡션을 저장하지 못했습니다.');
-	}
-	captions.setState({ map: (await response.json()) as Record<string, string> });
+	captions.setState({ map });
 }

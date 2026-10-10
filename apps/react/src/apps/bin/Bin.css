@@ -171,11 +171,10 @@
 	justify-self: end;
 }
 
-.bin-data.note {
-	grid-template-columns: 1fr;
-	margin-top: 8px;
-	border: 1px dashed var(--color-divider);
-	background: none;
+/* 사이트가 비울 수 없는 줄: 비우기 단추 자리에 어디서 지우는지 */
+.bin-data-elsewhere {
+	color: var(--color-text-secondary);
+	font-size: 11px;
 }
 
 .bin-link {
@@ -206,6 +205,29 @@
 	border-bottom: 1px solid var(--color-divider);
 	color: var(--color-text-secondary);
 	font-size: 12px;
+}
+
+.bin-empty-button {
+	flex: none;
+	padding: 2px 9px;
+	border: none;
+	border-radius: 5px;
+	background-color: var(--color-control-bg, rgba(127, 127, 127, 0.12));
+	box-shadow: inset 0 0 0 0.5px var(--color-divider);
+	color: var(--color-text);
+	font: inherit;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+.bin-empty-button:hover:not(:disabled) {
+	background-color: color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+
+.bin-empty-button:disabled {
+	color: var(--color-text-secondary);
+	opacity: 0.6;
+	cursor: default;
 }
 
 .bin-file-list {
@@ -267,6 +289,23 @@
 .bin-file-remove {
 	grid-row: 1 / 4;
 	grid-column: 3;
+}
+
+/* 내 브라우저 데이터가 비었을 때: Finder처럼 가운데를 비워 둔다 */
+.bin-empty-space {
+	flex: 1;
+	min-height: 0;
+}
+
+/* 아래 상태 막대: 항목 수 (Finder의 'n개의 항목') */
+.bin-statusbar {
+	flex: none;
+	padding: 6px 16px;
+	border-top: 1px solid var(--color-divider);
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
 }
 
 .bin-empty-note {

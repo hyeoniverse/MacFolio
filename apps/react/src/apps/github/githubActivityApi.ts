@@ -1,6 +1,7 @@
 // GitHub 앱의 기여 달력과 활동 기록 (apps/api의 /github/activity). 서버에 닿지 않으면 두 부분을 숨긴다.
 import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
+import { apiFetch } from '@/shared/api/client';
 import { createStore } from '@macfolio/desktop-core';
 
 export interface ContributionDay {
@@ -138,7 +139,7 @@ export function loadActivity(apiUrl = env.apiUrl, fetchImpl: typeof fetch = fetc
 	if (!apiUrl) return Promise.resolve();
 	pending ??= (async () => {
 		try {
-			const response = await fetchImpl(`${apiUrl}/github/activity`);
+			const response = await apiFetch('/github/activity', { apiUrl, fetchImpl });
 			if (!response.ok) return;
 			const data = toActivity(await response.json());
 			if (data) activityStore.setState({ data });

@@ -31,7 +31,7 @@ describe('checkAdmin', () => {
 	it('관리자면 signed-in, 쿠키를 함께 보낸다', async () => {
 		const fetchImpl = respond(200, { login: 'hyeoniverse' });
 		await expect(checkAdmin('http://api', fetchImpl)).resolves.toEqual({ status: 'signed-in', login: 'hyeoniverse' });
-		expect(fetchImpl).toHaveBeenCalledWith('http://api/auth/me', { credentials: 'include' });
+		expect(fetchImpl).toHaveBeenCalledWith('http://api/auth/me', expect.objectContaining({ credentials: 'include' }));
 	});
 
 	it('로그인한 때와 세션이 끝나는 때를 받으면 함께 둔다 (예전 서버처럼 없거나 잘못된 값이면 뺀다)', async () => {
