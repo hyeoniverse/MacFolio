@@ -95,6 +95,8 @@ export interface ForecastResponse {
 		sunset: string[];
 		uv_index_max: (number | null)[];
 		precipitation_probability_max: (number | null)[];
+		/** 돌풍 (m/s). 예전 응답·가짜에는 없을 수 있다 */
+		wind_gusts_10m_max?: (number | null)[];
 	};
 }
 
@@ -103,6 +105,8 @@ export interface Hour {
 	label: string;
 	temp: number;
 	icon: string;
+	/** 그 시각의 날씨 ('맑음', '비' …) */
+	condition: string;
 	/** 비 올 확률 (30% 이상일 때만, 아니면 null) */
 	rain: number | null;
 }
@@ -140,6 +144,10 @@ export interface Weather {
 	range: { min: number; max: number };
 	/** 그곳의 지금 시각과 UTC의 차 (초) */
 	utcOffset: number;
+	/** 오늘 돌풍의 최대 풍속 (m/s, 모르면 null) */
+	gust: number | null;
+	/** 시간별 일기예보 위의 한두 문장 (iOS 날씨처럼) */
+	summary: string;
 }
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -175,10 +183,12 @@ export function toWeather(response: ForecastResponse): Weather {
 	const start = Math.max(0, hourly.time.indexOf(nowHour));
 	const hours = hourly.time.slice(start, start + 24).map((time, offset) => {
 		const index = start + offset;
+		const code = offset === 0 ? current.weather_code : hourly.weather_code[index];
 		return {
 			label: offset === 0 ? '지금' : hourLabel(time),
 			temp: Math.round(offset === 0 ? current.temperature_2m : hourly.temperature_2m[index]),
-			icon: iconOf(offset === 0 ? current.weather_code : hourly.weather_code[index], hourly.is_day[index] === 1),
+			icon: iconOf(code, offset === 0 ? current.is_day === 1 : hourly.is_day[index] === 1),
+			condition: describeCode(code).label,
 			rain: rainOf(hourly.precipitation_probability[index]),
 		};
 	});
@@ -190,6 +200,7 @@ export function toWeather(response: ForecastResponse): Weather {
 		rain: rainOf(daily.precipitation_probability_max[index]),
 	}));
 	const { label, sky } = describeCode(current.weather_code);
+	const gust = daily.wind_gusts_10m_max?.[0] ?? null;
 	return {
 		temp: Math.round(current.temperature_2m),
 		feelsLike: Math.round(current.apparent_temperature),
@@ -213,7 +224,25 @@ export function toWeather(response: ForecastResponse): Weather {
 			max: Math.max(...days.map((entry) => entry.max)),
 		},
 		utcOffset: response.utc_offset_seconds,
+		gust: gust === null ? null : Math.round(gust),
+		summary: summaryOf(hours, gust),
 	};
+}
+
+/**
+ * 시간별 일기예보 위의 문장 (iOS 날씨처럼): 날씨가 처음 바뀌는 시각, 오늘 돌풍의 최대 풍속.
+ * 예: '오후 3시쯤 비 상태가 예상됩니다. 돌풍의 풍속은 최대 8m/s입니다.'
+ */
+export function summaryOf(hours: Pick<Hour, 'label' | 'condition'>[], gust: number | null): string {
+	const now = hours[0];
+	const change = hours.slice(1).find((hour) => hour.condition !== now?.condition);
+	const first = !now
+		? ''
+		: change
+			? `${change.label}쯤 ${change.condition} 상태가 예상됩니다.`
+			: `앞으로 ${hours.length}시간 동안 ${now.condition} 상태가 이어집니다.`;
+	const wind = gust === null ? '' : ` 돌풍의 풍속은 최대 ${Math.round(gust)}m/s입니다.`;
+	return (first + wind).trim();
 }
 
 /** 자외선 지수 단계 (기상청 기준) */

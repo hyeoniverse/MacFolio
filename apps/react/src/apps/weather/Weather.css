@@ -8,13 +8,35 @@
 	--weather-panel: rgba(255, 255, 255, 0.14);
 	--weather-line: rgba(255, 255, 255, 0.22);
 	--weather-dim: rgba(255, 255, 255, 0.72);
+	/* 밤하늘의 별 (밤일 때만 그린다) */
+	--weather-stars: none;
 	position: relative;
 	display: flex;
 	height: 100%;
+	/* macOS 날씨처럼 하늘 색이 창 전체에 깔리고, 사이드바는 그 위에 떠 있다 */
+	background-color: var(--weather-top);
+	background-image: var(--weather-stars), linear-gradient(180deg, var(--weather-top), var(--weather-bottom));
 	color: #ffffff;
 	text-align: left;
-	container-type: inline-size;
+	container: weather / inline-size;
 	font-variant-numeric: tabular-nums;
+	transition: background-color 0.4s ease;
+}
+
+/* 밤: 별을 흩뿌리고, 카드는 더 어둡고 투명하게 */
+.night {
+	--weather-stars:
+		radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.7), transparent 60%),
+		radial-gradient(1px 1px at 38% 8%, rgba(255, 255, 255, 0.5), transparent 60%),
+		radial-gradient(1.5px 1.5px at 66% 26%, rgba(255, 255, 255, 0.6), transparent 60%),
+		radial-gradient(1px 1px at 84% 12%, rgba(255, 255, 255, 0.5), transparent 60%),
+		radial-gradient(1px 1px at 22% 46%, rgba(255, 255, 255, 0.4), transparent 60%),
+		radial-gradient(1px 1px at 54% 58%, rgba(255, 255, 255, 0.45), transparent 60%),
+		radial-gradient(1.5px 1.5px at 90% 52%, rgba(255, 255, 255, 0.5), transparent 60%),
+		radial-gradient(1px 1px at 8% 78%, rgba(255, 255, 255, 0.4), transparent 60%),
+		radial-gradient(1px 1px at 72% 84%, rgba(255, 255, 255, 0.35), transparent 60%);
+	--weather-panel: rgba(255, 255, 255, 0.07);
+	--weather-line: rgba(255, 255, 255, 0.12);
 }
 
 /* 하늘 색 (낮 / 밤). 장소 카드도 같은 규칙을 쓴다 */
@@ -23,16 +45,16 @@
 	--weather-bottom: #6fb4ee;
 }
 .sky-clear.night {
-	--weather-top: #0b1733;
-	--weather-bottom: #2a3a63;
+	--weather-top: #0d1230;
+	--weather-bottom: #2b3160;
 }
 .sky-partly.day {
 	--weather-top: #4a7fbd;
 	--weather-bottom: #8fb3d9;
 }
 .sky-partly.night {
-	--weather-top: #1a2540;
-	--weather-bottom: #3b4966;
+	--weather-top: #161a35;
+	--weather-bottom: #363b63;
 }
 .sky-cloudy.day,
 .sky-fog.day {
@@ -41,8 +63,8 @@
 }
 .sky-cloudy.night,
 .sky-fog.night {
-	--weather-top: #262d36;
-	--weather-bottom: #47515e;
+	--weather-top: #1b1d34;
+	--weather-bottom: #3d3f5e;
 }
 .sky-drizzle.day,
 .sky-rain.day {
@@ -51,8 +73,8 @@
 }
 .sky-drizzle.night,
 .sky-rain.night {
-	--weather-top: #1b232e;
-	--weather-bottom: #36414f;
+	--weather-top: #181c2c;
+	--weather-bottom: #343a50;
 }
 .sky-snow.day {
 	--weather-top: #7f98b4;
@@ -80,15 +102,73 @@
 	flex-direction: column;
 	gap: 10px;
 	width: 250px;
-	padding: 0 12px 12px;
-	border-right: 1px solid rgba(0, 0, 0, 0.25);
-	background-color: rgba(28, 28, 30, 0.92);
+	/* macOS 날씨처럼 창 안에 떠 있는 둥근 반투명 사이드바 */
+	margin: 8px 0 8px 8px;
+	padding: 0 10px 12px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 16px;
+	background-color: rgba(18, 20, 34, 0.45);
+	backdrop-filter: blur(30px) saturate(1.3);
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
 	overflow-y: auto;
+	/*
+	 * 흐림(backdrop-filter)이 새 층을 만들어, 안의 단추는 z-index를 올려도 창 위쪽 끌기 자리(z-index 3) 밑에 깔린다.
+	 * 그래서 사이드바째 그 위로 올리고, 신호등 줄만 누름을 통과시켜 신호등·창 끌기는 그대로 둔다
+	 */
+	position: relative;
+	z-index: 4;
+	pointer-events: none;
 }
 
+/* 사이드바 상자는 누름을 통과시키고(신호등·창 끌기), 안의 것만 누른다 */
+.weather-sidebar > * {
+	pointer-events: auto;
+}
+
+.weather-sidebar.hidden {
+	display: none;
+}
+
+/* 신호등 줄: 오른쪽에 사이드바 단추 */
 .weather-lights-space {
+	display: flex;
 	flex: none;
-	height: 42px;
+	align-items: center;
+	justify-content: flex-end;
+	height: 36px;
+}
+
+/* 신호등 줄은 통과 (그 위의 사이드바 단추만 누른다) */
+.weather-sidebar > .weather-lights-space {
+	pointer-events: none;
+}
+
+.weather-sidebar-toggle {
+	position: relative;
+	z-index: 4;
+	pointer-events: auto;
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	color: var(--weather-dim);
+	font-size: 15px;
+	cursor: pointer;
+}
+
+.weather-sidebar-toggle:hover {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 사이드바를 접었을 때: 신호등 옆에 */
+.weather-sidebar-toggle.shown {
+	position: absolute;
+	top: 14px;
+	left: 84px;
 }
 
 .weather-search {
@@ -96,10 +176,10 @@
 	flex: none;
 	align-items: center;
 	gap: 6px;
-	height: 30px;
+	height: 32px;
 	padding: 0 10px;
-	border-radius: 8px;
-	background-color: rgba(118, 118, 128, 0.32);
+	border-radius: 10px;
+	background-color: rgba(0, 0, 0, 0.22);
 	color: var(--weather-dim);
 	font-size: 12px;
 }
@@ -137,21 +217,56 @@
 	position: relative;
 }
 
-.weather-card > button:first-child {
+.weather-card-face {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
 	width: 100%;
 	padding: 10px 12px;
-	border: 2px solid transparent;
-	border-radius: 12px;
-	background: linear-gradient(160deg, var(--weather-top), var(--weather-bottom));
+	min-height: 92px;
+	border: 3px solid transparent;
+	border-radius: 14px;
+	background-color: var(--weather-top);
+	background-image: var(--weather-stars), linear-gradient(160deg, var(--weather-top), var(--weather-bottom));
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 	text-align: left;
+	cursor: pointer;
+	touch-action: pan-y;
+	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.weather-card-face.active {
+	border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* 카드를 왼쪽으로 밀거나(목록 편집) 드러나는 빨간 휴지통 (iOS 날씨) */
+.weather-card-trash {
+	position: absolute;
+	top: 50%;
+	right: 8px;
+	display: grid;
+	place-items: center;
+	width: 56px;
+	height: 56px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: #ff3b30;
+	color: #ffffff;
+	font-size: 20px;
+	opacity: 0;
+	transform: translateY(-50%) scale(0.6);
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
 	cursor: pointer;
 }
 
-.weather-card > button.active {
-	border-color: rgba(255, 255, 255, 0.85);
+.weather-card.swiped .weather-card-trash {
+	opacity: 1;
+	transform: translateY(-50%) scale(1);
 }
 
 .weather-card-top {
@@ -188,36 +303,6 @@
 	color: #ffffff;
 }
 
-/* 올려 두면 오른쪽 위에 지우기 단추 */
-.weather-card-remove {
-	position: absolute;
-	top: -6px;
-	right: -6px;
-	display: grid;
-	place-items: center;
-	width: 20px;
-	height: 20px;
-	padding: 0;
-	border: none;
-	border-radius: 50%;
-	background-color: rgba(60, 60, 67, 0.95);
-	font-size: 10px;
-	opacity: 0;
-	cursor: pointer;
-	transition: opacity 0.15s ease;
-}
-
-.weather-card:hover .weather-card-remove,
-.weather-card-remove:focus-visible {
-	opacity: 1;
-}
-
-@media (hover: none) {
-	.weather-card-remove {
-		opacity: 1;
-	}
-}
-
 .weather-results button {
 	display: flex;
 	flex-direction: column;
@@ -249,18 +334,80 @@
 	padding: 8px 10px;
 }
 
+/* 큰 '날씨' 제목과 ••• (좁은 창·휴대폰의 목록에서만, 넓은 창은 메뉴 막대의 보기 메뉴) */
+.weather-list-head {
+	display: none;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.weather-list-head h2 {
+	margin: 0;
+	font-size: 34px;
+	font-weight: 700;
+}
+
+.weather-more {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 50%;
+	background-color: rgba(118, 118, 128, 0.24);
+	font-size: 18px;
+	cursor: pointer;
+}
+
+.weather-list-credit {
+	margin: 6px 0 0;
+	color: var(--weather-dim);
+	font-size: 12px;
+	text-align: center;
+}
+
+.weather-list-credit a {
+	color: inherit;
+}
+
 /* ─── 오른쪽: 고른 곳의 날씨 ─── */
 .weather-main {
 	position: relative;
 	flex: 1;
 	min-width: 0;
-	background: linear-gradient(180deg, var(--weather-top), var(--weather-bottom));
-	transition: background 0.4s ease;
+	/* 넓으면 10일 예보와 상세 칸을 두 단으로 (아래 @container main) */
+	container: main / inline-size;
+}
+
+.weather-columns > * + * {
+	margin-top: 12px;
+}
+
+@container main (min-width: 720px) {
+	.weather-columns {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: start;
+		gap: 12px;
+	}
+
+	.weather-columns > * + * {
+		margin-top: 0;
+	}
+
+	.weather-columns .weather-panel {
+		margin-bottom: 0;
+	}
+
+	.weather-columns .weather-tiles {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
 }
 
 .weather-scroll {
 	height: 100%;
-	padding: 52px 22px 18px;
+	padding: 56px 28px 20px;
 	overflow-y: auto;
 }
 
@@ -270,15 +417,21 @@
 	text-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 }
 
+.weather-hero-region {
+	margin: 0;
+	font-size: 12px;
+	font-weight: 600;
+}
+
 .weather-hero h1 {
 	margin: 0;
-	font-size: 30px;
+	font-size: 32px;
 	font-weight: 400;
 }
 
 .weather-hero-temp {
 	margin: 0 0 0 0.12em;
-	font-size: 96px;
+	font-size: 88px;
 	font-weight: 200;
 	line-height: 1;
 }
@@ -298,7 +451,8 @@
 .weather-panel {
 	margin-bottom: 12px;
 	padding: 10px 14px 12px;
-	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	border-radius: 16px;
 	background-color: var(--weather-panel);
 	backdrop-filter: blur(20px);
 }
@@ -311,6 +465,36 @@
 	font-size: 11px;
 	font-weight: 600;
 	text-transform: uppercase;
+}
+
+/* 시간별 위의 문장 (iOS 날씨): 날씨가 바뀌는 시각, 돌풍 */
+.weather-summary {
+	margin: 0 0 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid var(--weather-line);
+	font-size: 14px;
+	line-height: 1.45;
+}
+
+/* 날씨 아이콘 색 (iOS 날씨처럼 해는 노랑, 비는 하늘색, 나머지는 흰색) */
+.weather .fa-sun {
+	color: #ffd60a;
+}
+
+.weather .fa-cloud-showers-heavy,
+.weather .fa-cloud-sun-rain,
+.weather .fa-cloud-moon-rain,
+.weather .fa-cloud-rain {
+	color: #9ad8ff;
+}
+
+.weather .fa-cloud-bolt {
+	color: #ffe066;
+}
+
+.weather .weather-tile h3 i,
+.weather .weather-panel h3 i {
+	color: inherit;
 }
 
 .weather-hours ol {
@@ -336,7 +520,7 @@
 
 .weather-hour-label {
 	font-size: 12px;
-	font-weight: 500;
+	font-weight: 600;
 	white-space: nowrap;
 }
 
@@ -476,30 +660,27 @@
 }
 
 /* 장소 목록 단추: 좁은 창에서만 (넓으면 목록이 늘 보인다). 제목 표시줄 자리(52px)라 위로 올린다 */
-.weather-list-toggle {
-	position: absolute;
-	top: 12px;
-	right: 14px;
-	z-index: 4;
+.weather-bottom-bar {
 	display: none;
-	place-items: center;
-	width: 30px;
-	height: 30px;
-	padding: 0;
-	border: none;
-	border-radius: 50%;
-	background-color: var(--weather-panel);
-	cursor: pointer;
 }
 
-/* ─── 좁은 창·휴대폰: 날씨만, 목록은 단추로 덮어 연다 ─── */
-@container (max-width: 640px) {
+/* ─── 좁은 창·휴대폰: iOS 날씨처럼 날씨만, 아래 막대에 장소 점과 목록 단추. 목록은 덮어 연다 ─── */
+@container weather (max-width: 640px) {
 	.weather-sidebar {
 		position: absolute;
 		inset: 0;
 		z-index: 5;
 		width: auto;
-		border-right: none;
+		margin: 0;
+		padding: 0 16px 16px;
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+		/* 덮어 연 목록은 빈 곳도 막는다 (밑의 날씨를 누르지 않게) */
+		pointer-events: auto;
+		/* 덮어 연 목록: 밑의 날씨가 비치지 않게 거의 불투명하게 */
+		background-color: rgba(18, 20, 32, 0.98);
+		backdrop-filter: blur(24px);
 		visibility: hidden;
 		opacity: 0;
 		transition:
@@ -512,46 +693,184 @@
 		opacity: 1;
 	}
 
-	/* 덮어 연 목록: 밑의 날씨가 비치지 않게 거의 불투명하게, 흐리게 */
-	.weather-sidebar {
-		background-color: rgba(28, 28, 30, 0.97);
-		backdrop-filter: blur(24px);
+	/* 접기 단추는 넓은 창의 것 (좁으면 목록을 덮어 연다) */
+	.weather-sidebar.hidden {
+		display: flex;
+	}
+
+	.weather-sidebar-toggle {
+		display: none;
+	}
+
+	.weather-list-head {
+		display: flex;
+		order: 1;
+	}
+
+	.weather-cards,
+	.weather-results {
+		order: 2;
+		gap: 12px;
+	}
+
+	.weather-list-credit {
+		order: 3;
+	}
+
+	/* 검색은 아래에 떠 있는 알약 (iOS의 '도시 또는 공항 검색') */
+	.weather-search {
+		position: sticky;
+		bottom: 0;
+		order: 4;
+		height: 48px;
+		margin-top: auto;
+		padding: 0 18px;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 999px;
+		background-color: rgba(44, 46, 62, 0.96);
+		font-size: 16px;
+	}
+
+	.weather-search input {
+		font-size: 16px;
+	}
+
+	.weather-card-face {
+		padding: 14px 16px;
+		border-radius: 18px;
+	}
+
+	.weather-card-face.active {
+		border-color: transparent;
+	}
+
+	.weather-card-top strong {
+		font-size: 22px;
+	}
+
+	.weather-card-temp {
+		font-size: 48px;
+		font-weight: 300;
+	}
+
+	.weather-card-time {
+		font-size: 14px;
+	}
+
+	.weather-card-bottom {
+		margin-top: 18px;
+		font-size: 14px;
+	}
+
+	.weather-scroll {
+		padding-bottom: 96px;
+	}
+
+	.weather-bottom-bar {
+		position: absolute;
+		right: 16px;
+		bottom: 16px;
+		left: 16px;
+		z-index: 4;
+		display: grid;
+		grid-template-columns: 48px 1fr 48px;
+		align-items: center;
+		pointer-events: none;
+	}
+
+	.weather-bottom-bar > * {
+		pointer-events: auto;
+	}
+
+	.weather-bottom-spacer {
+		pointer-events: none;
+	}
+
+	/* 가운데 장소 점 (지금 보는 곳만 진하게) */
+	.weather-pages {
+		display: flex;
+		justify-self: center;
+		gap: 4px;
+		padding: 10px 14px;
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		border-radius: 999px;
+		background-color: rgba(30, 40, 70, 0.45);
+		backdrop-filter: blur(16px);
+	}
+
+	.weather-pages button {
+		width: 8px;
+		height: 8px;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background-color: rgba(255, 255, 255, 0.35);
+		cursor: pointer;
+	}
+
+	.weather-pages button.active {
+		background-color: #ffffff;
 	}
 
 	.weather-list-toggle {
 		display: grid;
-	}
-
-	.weather-sidebar.open ~ .weather-main .weather-list-toggle {
-		z-index: 6;
+		place-items: center;
+		width: 48px;
+		height: 48px;
+		padding: 0;
+		border: 1px solid rgba(255, 255, 255, 0.16);
+		border-radius: 50%;
+		background-color: rgba(30, 40, 70, 0.45);
+		backdrop-filter: blur(16px);
+		font-size: 18px;
+		cursor: pointer;
 	}
 
 	.weather-tiles {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
+	.weather-hero h1 {
+		font-size: 34px;
+	}
+
 	.weather-hero-temp {
-		font-size: 80px;
+		font-size: 96px;
+		font-weight: 200;
+	}
+
+	.weather-hero-range {
+		font-weight: 600;
+	}
+
+	/* 장소를 옆으로 넘기는 몸짓은 위아래 스크롤과 함께 쓴다 */
+	.weather-main {
+		touch-action: pan-y;
 	}
 }
 
-/* 휴대폰: 상태 표시줄 아래부터 */
+/* 휴대폰: 상태 표시줄 아래부터, 홈 바 위까지 */
 .container.mobile .weather-scroll {
 	padding-top: calc(var(--phone-top, 47px) + 24px);
 }
 
-/* 목록 위에 떠 있는 뒤로 가기 단추(왼쪽 위) 아래부터 검색 칸 */
 .container.mobile .weather-lights-space {
-	height: calc(var(--phone-top, 47px) + 56px);
+	height: calc(var(--phone-top, 47px) + 8px);
 }
 
-.container.mobile .weather-list-toggle {
-	top: calc(var(--phone-top, 47px) + 6px);
+.container.mobile .weather-bottom-bar {
+	bottom: 28px;
+}
+
+.container.mobile .weather-sidebar {
+	padding-bottom: 28px;
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.weather-main,
-	.weather-sidebar {
+	.weather-sidebar,
+	.weather-card-face,
+	.weather-card-trash {
 		transition: none;
 	}
 }
