@@ -18,6 +18,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"@macfolio/desktop-core": "workspace:*",
 		"zod": "^4.6.5"
 	},
 	"devDependencies": {
