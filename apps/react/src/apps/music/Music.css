@@ -368,7 +368,6 @@
 	border-top: 1px solid var(--music-separator);
 	background-color: var(--music-bar-bg);
 	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
 }
 
 .music-now {
