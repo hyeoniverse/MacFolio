@@ -81,12 +81,13 @@ export const Facts: React.FC<{ project: Project; className?: string }> = ({ proj
 	</ul>
 );
 
-/** 화면 캡처 */
-export const Shot: React.FC<{ project: Project; className?: string }> = ({ project, className = 'sp-shot' }) => (
-	<figure className={className}>
-		<img src={project.image} alt={`${project.name} 화면`} />
-	</figure>
-);
+/** 화면 캡처 (화면 캡처도 화면 모음도 없는 새 프로젝트는 그리지 않는다) */
+export const Shot: React.FC<{ project: Project; className?: string }> = ({ project, className = 'sp-shot' }) =>
+	project.image ? (
+		<figure className={className}>
+			<img src={project.image} alt={`${project.name} 화면`} />
+		</figure>
+	) : null;
 
 /** 이름 붙은 구역 (보조 기술과 시험이 이름으로 찾는다: 주요 기능, 만든 방식, 맡은 일, 기술 사양 …) */
 export const Region: React.FC<

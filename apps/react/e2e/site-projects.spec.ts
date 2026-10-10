@@ -128,11 +128,23 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('textbox', { name: '이름', exact: true }).fill('사이드 앱');
 		await editor.getByRole('textbox', { name: '저장소' }).fill('https://github.com/hyeoniverse/side-app');
 		await editor.getByRole('textbox', { name: '데모' }).fill('https://what-to-do-chi.vercel.app/side');
-		await editor.getByRole('textbox', { name: '화면 캡처' }).fill('/imgs/projects/whattodo/screenshot.jpg');
-		// 기술은 한 글자씩 쳐도 쉼표와 공백이 그대로 남고, 저장할 때 목록으로 나뉜다
-		const stack = editor.getByRole('textbox', { name: '기술' });
-		await stack.pressSequentially('React, Vite');
-		await expect(stack).toHaveValue('React, Vite');
+		// 꼭 적어야 하는 칸에는 '필수' 표시. 화면 캡처는 비워도 된다 (화면 모음의 첫 그림을 쓴다)
+		const fieldName = (name: string) =>
+			editor.locator('.projects-field-label').filter({ hasText: new RegExp(`^${name}`) });
+		await expect(fieldName('저장소')).toHaveText('저장소필수');
+		await expect(fieldName('이름')).toHaveText('이름필수');
+		await expect(fieldName('화면 캡처')).toHaveText('화면 캡처');
+		// 기간: 달력에서 시작일을 고르고, 끝 대신 '진행 중'
+		await editor.getByLabel('시작일').fill('2025-01-02');
+		await editor.getByRole('checkbox', { name: '진행 중' }).check();
+		// 언어: 후보 목록에서 (다른 값도 쓸 수 있다)
+		await editor.getByRole('combobox', { name: '주 언어' }).fill('TypeScript');
+		// 기술: 쉼표를 치면 칩이 되고, 몇 글자 치면 후보가 걸러진다 (고르면 칩)
+		const stack = editor.getByRole('combobox', { name: '기술' });
+		await stack.pressSequentially('React, Vi');
+		await expect(editor.getByRole('list', { name: '고른 기술' })).toHaveText(['React']);
+		await editor.getByRole('listbox', { name: '기술 후보' }).getByRole('option', { name: 'Vite', exact: true }).click();
+		await expect(editor.getByRole('list', { name: '고른 기술' }).getByRole('listitem')).toHaveText(['React', 'Vite']);
 		// 화면 모음은 폴더 하나로: 그 폴더의 그림을 모두 쓴다 (고르면 미리 보기)
 		await editor.getByRole('combobox', { name: '폴더' }).selectOption('/imgs/projects/qru/screens');
 		await expect(editor.getByRole('list', { name: '화면 모음 미리 보기' }).locator('img').first()).toBeVisible();
@@ -152,6 +164,8 @@ test.describe('프로젝트 관리', () => {
 			override: {
 				name: '사이드 앱',
 				stack: ['React', 'Vite'],
+				language: 'TypeScript',
+				period: '2025.01.02 – 진행 중',
 				galleryFolder: '/imgs/projects/qru/screens',
 				app: { label: '사이드 앱', inDock: false },
 			},
@@ -169,6 +183,11 @@ test.describe('프로젝트 관리', () => {
 		await safari.getByRole('tab', { name: /사이드 앱/ }).click();
 		const shots = safari.getByRole('tabpanel').locator('.qc-gallery img');
 		await expect(shots.first()).toHaveAttribute('src', /^\/imgs\/projects\/qru\/screens\//);
+		// 화면 캡처를 비웠으니 화면 모음의 첫 그림이 대표 화면이 된다
+		await expect(safari.getByRole('tabpanel').locator('.qc-shot img')).toHaveAttribute(
+			'src',
+			/^\/imgs\/projects\/qru\/screens\//
+		);
 
 		// 기본값으로 되돌리기: 한 번 더 묻고 서버의 내용을 지운다
 		const again = await openProjectsPane(page);

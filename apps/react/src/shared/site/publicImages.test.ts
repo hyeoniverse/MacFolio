@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { blankProject } from '@macfolio/desktop-core/site';
-import { captionOf, imageFolders, PUBLIC_IMAGES, withFolderGallery } from './publicImages';
+import { captionOf, completeProject, imageFolders, PUBLIC_IMAGES, withFolderGallery } from './publicImages';
 
 describe('사이트의 그림 폴더', () => {
 	it('빌드할 때 public/imgs 아래 폴더마다 그림을 이름 순으로 모은다', () => {
@@ -30,5 +30,16 @@ describe('사이트의 그림 폴더', () => {
 			...plain,
 			galleryFolder: '/imgs/none',
 		});
+	});
+});
+
+describe('화면 캡처가 비었을 때', () => {
+	it('화면 모음의 첫 그림을 쓰고 (영상은 건너뛴다), 화면 모음도 없으면 빈 채로', () => {
+		const folders = { '/imgs/x': ['/imgs/x/0-intro.mp4', '/imgs/x/1-a.png'] };
+		expect(completeProject({ ...blankProject('p'), galleryFolder: '/imgs/x' }, folders).image).toBe('/imgs/x/1-a.png');
+		expect(
+			completeProject({ ...blankProject('p'), image: '/imgs/own.png', galleryFolder: '/imgs/x' }, folders).image
+		).toBe('/imgs/own.png');
+		expect(completeProject(blankProject('p'), folders).image).toBe('');
 	});
 });
