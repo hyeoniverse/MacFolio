@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
-		"lib": ["DOM", "DOM.Iterable", "ES2020"],
+		"target": "ES2022",
+		"lib": ["DOM", "DOM.Iterable", "ES2022"],
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		// desktop-core는 빌드하지 않고 src를 바로 읽는다 (package.json exports의 source 조건)
