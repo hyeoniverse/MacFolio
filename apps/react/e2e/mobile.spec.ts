@@ -235,7 +235,7 @@ test.describe('모바일', () => {
 		expect((await search.boundingBox())!.y).toBeGreaterThan((await cards.last().boundingBox())!.y);
 		await search.tap();
 		await search.fill('제주');
-		await sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button', { name: /제주/ }).tap();
+		await sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button', { name: /제주/ }).first().tap();
 		await expect(sidebar).toBeHidden();
 		await expect(weather.getByRole('main', { name: '제주 날씨' })).toBeVisible();
 

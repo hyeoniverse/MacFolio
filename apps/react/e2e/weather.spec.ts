@@ -70,22 +70,52 @@ test.describe('날씨', () => {
 		await expect(again.getByRole('navigation', { name: '장소' }).locator('.weather-card')).toHaveCount(2);
 	});
 
-	test('영어 이름은 Open-Meteo로 찾고, 수도·큰 도시가 먼저 온다. 같은 곳은 한 번만 더한다', async ({ page }) => {
+	test('내장 목록에 없는 곳은 Open-Meteo로 찾고, 수도·행정 중심지가 먼저 온다. 같은 곳은 한 번만 더한다', async ({
+		page,
+	}) => {
 		const asked = await fakeWeather(page);
 		const weather = await openWeather(page);
 		const sidebar = weather.getByRole('navigation', { name: '장소' });
 		const search = sidebar.getByRole('searchbox', { name: '도시 검색' });
-		await search.fill('Reykjavik');
+		await search.fill('Ushuaia');
 		const results = sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button');
 		await expect(results).toHaveCount(2);
-		await expect(results.first()).toContainText('Reykjavík');
-		await expect(results.first()).toContainText('아이슬란드 수도권');
-		expect(asked.search).toContain('Reykjavik');
+		await expect(results.first()).toContainText('우수아이아');
+		await expect(results.first()).toContainText('아르헨티나 티에라델푸에고주');
+		expect(asked.search).toContain('Ushuaia');
 
 		// 이미 있는 서울을 다시 고르면 더하지 않고 그 카드로 간다
 		await search.fill('seoul');
-		await sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button', { name: /서울/ }).click();
+		await sidebar.getByRole('list', { name: '검색 결과' }).getByRole('button', { name: /서울/ }).first().click();
 		await expect(sidebar.locator('.weather-card')).toHaveCount(1);
+	});
+
+	test('Open-Meteo가 느려도 내장 도시는 바로 보이고, 기다리는 동안 더 찾는 중, 같은 말은 다시 묻지 않는다', async ({
+		page,
+	}) => {
+		const asked = await fakeWeather(page, { searchDelayMs: 1500 });
+		const weather = await openWeather(page);
+		const sidebar = weather.getByRole('navigation', { name: '장소' });
+		const search = sidebar.getByRole('searchbox', { name: '도시 검색' });
+		const list = sidebar.getByRole('list', { name: '검색 결과' });
+
+		// '노원구'·'강남구'는 Open-Meteo가 찾지 못하는 이름이라 내장 목록에 있다
+		await search.fill('노원');
+		await expect(list.getByRole('button')).toHaveText([/노원구서울특별시/], { timeout: 300 });
+		await expect(list.getByRole('status')).toHaveText(/더 찾는 중/);
+		await expect(list.getByRole('status')).toHaveCount(0, { timeout: 5000 });
+		expect(asked.search).toEqual(['노원']);
+
+		// 다른 말을 쳤다가 돌아오면 다시 묻지 않는다
+		await search.fill('강남');
+		await expect(list.getByRole('button', { name: /강남구/ })).toBeVisible();
+		await search.fill('노원');
+		await expect(list.getByRole('status')).toHaveCount(0);
+		await expect.poll(() => asked.search.filter((name) => name === '노원').length).toBe(1);
+
+		// 내장 목록에도 Open-Meteo에도 없으면 '결과 없음'
+		await search.fill('없는도시이름');
+		await expect(list).toContainText('결과 없음', { timeout: 5000 });
 	});
 
 	test('장소를 지우면 목록에서 빠지고, 마지막 하나는 지울 수 없다', async ({ page }) => {

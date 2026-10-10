@@ -12,11 +12,28 @@ describe('날씨 앱의 장소', () => {
 	});
 	afterEach(() => vi.unstubAllGlobals());
 
-	it('내장 도시를 한국어·영어 이름으로 찾는다', () => {
-		expect(matchCities('서울').map((place) => place.name)).toEqual(['서울']);
+	it('내장 도시를 한국어·영어 이름으로 찾는다 (서울의 구까지)', () => {
 		expect(matchCities('BUSAN').map((place) => place.name)).toEqual(['부산']);
-		expect(matchCities('주').map((place) => place.name)).toEqual(['광주', '청주', '전주', '제주']);
+		expect(matchCities('노원').map((place) => [place.name, place.region])).toEqual([['노원구', '서울특별시']]);
+		expect(matchCities('nowon').map((place) => place.name)).toEqual(['노원구']);
 		expect(matchCities('  ')).toEqual([]);
+	});
+
+	it('이름이 찾는 말로 시작하는 곳 먼저, 그다음 이름에 들어 있는 곳, 마지막으로 지역 이름', () => {
+		const san = matchCities('san').map((place) => place.name);
+		expect(san.slice(0, 2)).toEqual(['샌프란시스코', '샌디에이고']);
+		expect(san).toContain('부산');
+		// '서울'은 서울 다음에 서울특별시의 구 25개
+		const seoul = matchCities('서울');
+		expect(seoul[0].name).toBe('서울');
+		// 서울(시청)과 가까운 종로구(구청)도 다른 곳으로 남는다
+		expect(
+			mergePlaces(seoul, [])
+				.map((place) => place.name)
+				.slice(0, 2)
+		).toEqual(['서울', '종로구']);
+		expect(seoul).toHaveLength(26);
+		expect(seoul.slice(1).every((place) => place.region === '서울특별시')).toBe(true);
 	});
 
 	it('지오코딩 결과는 수도·행정 중심지·큰 도시 먼저, 지역 이름을 붙인다', () => {
@@ -49,7 +66,7 @@ describe('날씨 앱의 장소', () => {
 	});
 
 	it('찾기 결과는 내장 도시 먼저, 같은 곳은 한 번만', () => {
-		const seoul = matchCities('서울');
+		const seoul = matchCities('서울').slice(0, 1);
 		const found = [
 			{ name: 'Seoul', region: '대한민국', latitude: 37.566, longitude: 126.9784 },
 			{ name: 'Suwon', region: '대한민국', latitude: 37.29, longitude: 127.01 },
