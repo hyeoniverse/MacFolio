@@ -242,6 +242,9 @@ importers:
 
   packages/contracts:
     dependencies:
+      '@macfolio/desktop-core':
+        specifier: workspace:*
+        version: link:../desktop-core
       zod:
         specifier: ^4.6.5
         version: 4.6.5

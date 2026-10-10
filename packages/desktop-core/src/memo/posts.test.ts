@@ -276,6 +276,7 @@ describe('mergeAdminPosts (관리자 목록)', () => {
 		draft: null,
 		draftUpdatedAt: null,
 		deleted: false,
+		deletedAt: null,
 		revisions: 0,
 		...extra,
 	});

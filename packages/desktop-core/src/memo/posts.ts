@@ -141,7 +141,7 @@ export interface AdminPost {
 	draftUpdatedAt: string | null;
 	deleted: boolean;
 	/** 지운 때. 있으면 '최근 삭제된 항목'에 있다 (30일 동안 되살릴 수 있다) */
-	deletedAt?: string | null;
+	deletedAt: string | null;
 	/** 남은 버전 수 */
 	revisions: number;
 }

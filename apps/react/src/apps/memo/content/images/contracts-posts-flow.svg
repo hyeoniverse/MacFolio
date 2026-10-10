@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>글 스키마: desktop-core의 타입을 contracts가 검증하고 서버·화면이 같이 쓴다</title>
+<defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+</defs>
+<rect width="640" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937">글 하나의 모양이 흐르는 길</text>
+<!-- desktop-core -->
+<rect x="32" y="60" width="180" height="76" rx="10" fill="#f3f4f6"/>
+<text x="122" y="82" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">desktop-core/memo</text>
+<text x="122" y="100" font-size="10.5" fill="#374151" text-anchor="middle">type PostContent · AdminPost</text>
+<text x="122" y="114" font-size="10.5" fill="#374151" text-anchor="middle">POST_LIMITS · isCalendarDate</text>
+<text x="122" y="128" font-size="10.5" fill="#374151" text-anchor="middle">folderPathError</text>
+<path d="M212 98 H250" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<text x="231" y="90" font-size="9.5" fill="#6b7280" text-anchor="middle">타입·규칙</text>
+<!-- contracts -->
+<rect x="252" y="52" width="200" height="92" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="352" y="74" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">contracts/posts.ts</text>
+<text x="352" y="92" font-size="10.5" fill="#374151" text-anchor="middle">postInput(today): ZodType&lt;PostContent&gt;</text>
+<text x="352" y="106" font-size="10.5" fill="#374151" text-anchor="middle">AdminPost · ServerPost · Revision</text>
+<text x="352" y="124" font-size="10" fill="#6b7280" text-anchor="middle">스키마가 타입과 어긋나면 tsc가 막는다</text>
+<path d="M452 98 H490" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<!-- consumers -->
+<rect x="492" y="52" width="116" height="40" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="550" y="68" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">apps/api</text>
+<text x="550" y="83" font-size="9.5" fill="#374151" text-anchor="middle">parse(postInput(today))</text>
+<rect x="492" y="104" width="116" height="40" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="550" y="120" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">apps/react</text>
+<text x="550" y="135" font-size="9.5" fill="#374151" text-anchor="middle">import type { Revision }</text>
+<!-- error order -->
+<text x="32" y="178" font-size="12" font-weight="600" fill="#1f2937">400 응답의 이유는 칸 순서대로, 모두 모아서</text>
+<g font-size="10.5" fill="#374151">
+<rect x="32" y="190" width="96" height="26" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="80" y="207" text-anchor="middle">제목</text>
+<rect x="138" y="190" width="96" height="26" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="186" y="207" text-anchor="middle">날짜</text>
+<rect x="244" y="190" width="96" height="26" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="292" y="207" text-anchor="middle">폴더</text>
+<rect x="350" y="190" width="96" height="26" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="398" y="207" text-anchor="middle">요약</text>
+<rect x="456" y="190" width="96" height="26" rx="6" fill="#fff1f2" stroke="#fda4af"/><text x="504" y="207" text-anchor="middle">본문</text>
+</g>
+<g stroke="#9ca3af" stroke-width="1.5"><path d="M128 203 H136" marker-end="url(#gray)"/><path d="M234 203 H242" marker-end="url(#gray)"/><path d="M340 203 H348" marker-end="url(#gray)"/><path d="M446 203 H454" marker-end="url(#gray)"/></g>
+<text x="32" y="240" font-size="10.5" fill="#6b7280">zod는 객체 키 순서대로 모든 칸을 검사하므로, 스키마의 키 순서가 곧 문구 순서다</text>
+<text x="32" y="258" font-size="10.5" fill="#6b7280">예: { title: '', date: '2026-02-30', category: 'a/b/c/d', body: ' ' }</text>
+<text x="32" y="276" font-size="10.5" fill="#374151">→ ['제목을 입력해주세요.', '날짜가 올바르지 않습니다.', '폴더는 3단까지입니다: a/b/c/d', '본문을 입력해주세요.']</text>
+</svg>
