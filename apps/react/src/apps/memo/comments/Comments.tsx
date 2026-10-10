@@ -242,8 +242,9 @@ const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, co
 					<span className="memo-comment-count">
 						{body.length}/{LIMITS.text.max}
 					</span>
-					<Button tone="primary" type="submit" disabled={sending}>
-						{sending ? '등록 중…' : '등록'}
+					{/* 사람 확인을 켰으면 토큰이 올 때까지 끈다: 댓글을 쓴 직후 새 토큰을 받는 사이에 누르면 보내지 못한다 */}
+					<Button tone="primary" type="submit" disabled={sending || !human.ready}>
+						{sending ? '등록 중…' : human.ready ? '등록' : '확인 중…'}
 					</Button>
 				</div>
 			</form>

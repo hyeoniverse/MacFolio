@@ -1,6 +1,10 @@
 .settings {
 	display: flex;
 	height: 100%;
+	/* 창 높이 안에 딱 맞춘다: 넘치는 것은 사이드바·패널이 각자 스크롤한다 (창 전체가 한 번 더 스크롤되지 않게) */
+	min-height: 0;
+	overflow: hidden;
+	position: relative;
 	text-align: left;
 }
 
@@ -10,8 +14,11 @@
 	gap: 0.25rem;
 	width: 11rem;
 	padding: 0.75rem 0.5rem;
+	flex: none;
 	border-right: 1px solid var(--color-divider);
 	background-color: var(--color-sidebar-bg);
+	/* 항목이 창보다 많으면 사이드바만 스크롤 (관리자는 항목이 늘어난다) */
+	overflow-y: auto;
 }
 
 .settings-nav-item {
@@ -57,8 +64,14 @@
 	/* 항목을 바꾸면 살짝 떠오르며 나타난다 */
 	animation: rise-in var(--duration) var(--ease-out);
 	flex: 1;
+	min-width: 0;
+	min-height: 0;
 	padding: 1.25rem 1.5rem;
 	overflow-y: auto;
+	/* 패널 끝에 닿아도 창(바깥)으로 스크롤이 이어지지 않게 */
+	overscroll-behavior: contain;
+	/* 안의 position: absolute 요소(화면 읽기용 숨은 글자 등)도 패널을 기준으로: 창의 콘텐츠 칸을 기준으로 놓이면 그 칸이 늘어나 창 전체가 스크롤된다 */
+	position: relative;
 }
 
 .settings-panel h2 {
@@ -337,17 +350,22 @@
 		flex-direction: column;
 	}
 
+	/* 한 줄 탭: 다 들어가지 않으면 옆으로 넘긴다 (글자가 세로로 꺾이며 패널을 밀어내지 않게) */
 	.settings-sidebar {
 		flex-direction: row;
 		width: 100%;
 		border-right: none;
 		border-bottom: 1px solid var(--color-divider);
+		overflow-x: auto;
+		overflow-y: hidden;
+		scrollbar-width: none;
 	}
 
 	.settings-nav-item {
-		flex: 1;
+		flex: none;
 		justify-content: center;
 		font-size: 15px;
+		white-space: nowrap;
 	}
 
 	/* 좁은 창은 위쪽 탭이라 › 없이 */
