@@ -2,3 +2,4 @@
 export { parse, requestBody, type Parsed } from './parse.js';
 export { Comment, CommentInput, COMMENT_BODY_MAX, Likes, PostStats } from './comments.js';
 export { AdminPost, PostContent, postInput, type PostInput, Revision, RevisionSummary, ServerPost } from './posts.js';
+export { Message, MessageInput, PINNED_THREAD_ID, Thread, ThreadCreated } from './messages.js';
