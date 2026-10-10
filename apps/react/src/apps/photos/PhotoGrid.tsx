@@ -1,6 +1,6 @@
 // 휴대폰 사진 앱의 목록 조각: 꽉 찬 격자, 가로로 넘기는 선반, 앨범 카드
 import { Thumb, type Shown } from './PhotoParts';
-import { captionOf, useCaptions } from './captions';
+import { captionOf, useCaptions } from './captionsApi';
 import { keyOf } from './photosMobile.model';
 
 /** 꽉 찬 격자: iOS 사진처럼 칸 사이 1px, 사진은 칸을 채운다 */

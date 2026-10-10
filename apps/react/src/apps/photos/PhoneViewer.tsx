@@ -5,7 +5,7 @@ import Menu from '@/shared/ui/menu/Menu';
 import { shareLink } from '@/shared/lib/appLink';
 import { fileNameOf, formatBytes, formatOf, megapixels } from './albums';
 import { CaptionField, Thumb, type Shown } from './PhotoParts';
-import { captionOf, useCaptions } from './captions';
+import { captionOf, useCaptions } from './captionsApi';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import { keyOf } from './photosMobile.model';

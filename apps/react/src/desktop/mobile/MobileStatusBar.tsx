@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { batteryOf, useServerResources } from '@/apps/activity/serverResources';
-import { useVisitTrend, visitBattery } from '@/apps/activity/visitTrend';
+import { batteryOf, useServerResources } from '@/apps/activity/useServerResources';
+import { useVisitTrend, visitBattery } from '@/apps/activity/useVisitTrend';
 import type { StatusBarTone } from '@/desktop/mobile/statusBarTone';
 import ServerSignal from '@/shared/server/ServerSignal';
 import { useServerStatus } from '@/shared/server/serverStatus';
