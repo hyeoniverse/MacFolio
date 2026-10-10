@@ -2,33 +2,11 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { newSlug, parsePostInput, SLUG, type PostInput } from './rules.js';
+import type { AdminPost, RevisionSummary, ServerPost } from '@macfolio/contracts';
 
-/** 방문자에게 보이는 글. deleted면 저장소의 같은 주소 글도 가린다 (지운 글, 아직 날짜가 안 된 예약 글) */
-export interface PublicPost extends PostInput {
-	slug: string;
-	deleted: boolean;
-}
-
-/** 관리자가 보는 글: 게시한 내용과 임시 저장을 따로 */
-export interface AdminPost {
-	slug: string;
-	published: PostInput | null;
-	publishedAt: string | null;
-	draft: PostInput | null;
-	draftUpdatedAt: string | null;
-	deleted: boolean;
-	/** 지운 때. 있으면 '최근 삭제된 항목'에 있다 (RECENTLY_DELETED_DAYS일 동안) */
-	deletedAt: string | null;
-	revisions: number;
-}
-
-export interface RevisionSummary {
-	id: number;
-	title: string;
-	date: string;
-	createdAt: string;
-	createdBy: string;
-}
+/** 응답 모양은 화면과 같은 스키마(contracts). 방문자에게 보이는 글은 deleted면 저장소의 같은 주소 글도 가린다 */
+export type PublicPost = ServerPost;
+export type { AdminPost, RevisionSummary };
 
 /** 글마다 남기는 버전 수 */
 export const MAX_REVISIONS = 50;
