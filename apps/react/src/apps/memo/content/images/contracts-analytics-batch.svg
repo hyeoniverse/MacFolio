@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>분석 이벤트 묶음: 사이트가 보내는 모양과 서버가 받는 모양, 활동 상태 보기가 읽는 응답이 contracts 하나에서 온다</title>
+<defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="640" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937">보내는 쪽과 받는 쪽이 같은 모양을 본다</text>
+<!-- sender -->
+<rect x="32" y="60" width="176" height="110" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="120" y="82" font-size="12" font-weight="600" fill="#1f2937" text-anchor="middle">apps/react · analytics.ts</text>
+<text x="120" y="100" font-size="10.5" fill="#374151" text-anchor="middle">5초마다 모아서 sendBeacon</text>
+<text x="120" y="116" font-size="10.5" fill="#374151" text-anchor="middle">MAX_EVENTS개면 바로</text>
+<text x="120" y="138" font-size="10" fill="#6b7280" text-anchor="middle">text/plain(JSON 글자)로 간다</text>
+<text x="120" y="152" font-size="10" fill="#6b7280" text-anchor="middle">CORS 사전 요청이 없다</text>
+<path d="M208 115 H250" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<!-- contracts -->
+<rect x="252" y="52" width="208" height="126" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="356" y="74" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">contracts/analytics.ts</text>
+<text x="356" y="92" font-size="10.5" fill="#374151" text-anchor="middle">EventBatch = preprocess(JSON.parse)</text>
+<text x="356" y="106" font-size="10.5" fill="#374151" text-anchor="middle">→ { visitId, events: EventInput[1..30] }</text>
+<text x="356" y="124" font-size="10.5" fill="#374151" text-anchor="middle">EVENT_TYPES · MAX_EVENTS</text>
+<text x="356" y="140" font-size="10.5" fill="#374151" text-anchor="middle">Summary · LiveVisit · Totals</text>
+<text x="356" y="154" font-size="10.5" fill="#374151" text-anchor="middle">BREAKDOWNS(12) · AppViews</text>
+<text x="356" y="170" font-size="10" fill="#6b7280" text-anchor="middle">모르는 필드는 버린다 → DB 열과 같은 모양</text>
+<path d="M460 115 H502" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<!-- server -->
+<rect x="504" y="60" width="104" height="110" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="556" y="82" font-size="12" font-weight="600" fill="#1f2937" text-anchor="middle">apps/api</text>
+<text x="556" y="100" font-size="10.5" fill="#374151" text-anchor="middle">parse(EventBatch)</text>
+<text x="556" y="116" font-size="10.5" fill="#374151" text-anchor="middle">createMany({</text>
+<text x="556" y="130" font-size="10.5" fill="#374151" text-anchor="middle">...event, ...shared })</text>
+<text x="556" y="152" font-size="10" fill="#6b7280" text-anchor="middle">하나라도 틀리면 400</text>
+<!-- what stays on server -->
+<rect x="32" y="196" width="576" height="50" rx="10" fill="#f3f4f6"/>
+<text x="48" y="216" font-size="11" font-weight="600" fill="#1f2937">서버에 남는 것 (api/analytics/rules.ts)</text>
+<text x="48" y="234" font-size="10.5" fill="#374151">User-Agent → 브라우저·OS · IP 가리기 · 나라 · 하루 해시(HMAC) · 집계. 요청 머리말과 비밀 키가 필요하다</text>
+<!-- reader -->
+<rect x="32" y="262" width="576" height="52" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="48" y="282" font-size="11" font-weight="600" fill="#1f2937">apps/react · 활동 상태 보기 (activityApi.ts)</text>
+<text x="48" y="300" font-size="10.5" fill="#374151">손으로 적던 Totals · Summary · LiveVisit · Breakdown → contracts의 같은 이름을 다시 내보낸다</text>
+</svg>
