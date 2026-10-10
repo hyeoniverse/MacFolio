@@ -12,6 +12,7 @@ import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { PhotosService } from './photos.service.js';
 import { CAPTION_MAX } from './rules.js';
+import { RateLimit } from '../common/rate-limit.js';
 
 /**
  * 사진 앱의 캡션 (#21). 사진은 프로젝트 정보에서 꺼내고, 관리자가 고친 캡션만 여기 둔다.
@@ -33,6 +34,7 @@ export class PhotosController {
 
 	@Put('captions')
 	@UseGuards(AdminGuard)
+	@RateLimit('write')
 	@ApiCookieAuth(SESSION_COOKIE)
 	@ApiBody({ schema: { example: { src: '/imgs/projects/qru/screenshot.jpg', caption: 'QR 명함 첫 화면' } } })
 	@ApiOkResponse({ description: '고친 뒤의 캡션 전체. 캡션을 비우면 원래 캡션으로 돌아간다' })
