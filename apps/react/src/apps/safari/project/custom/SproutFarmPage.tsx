@@ -1,4 +1,4 @@
-// 직접 짠 페이지 보기: SproutFarm 전용 (타이틀 화면, 걸어 다니는 동물, 지도 위를 걷는 주인공, 크레딧). custom/index.ts에 등록돼 있다
+// 직접 짠 페이지: sproutfarm 전용 (처음부터 이 프로젝트를 위해 짠 페이지. custom/index.ts에 등록돼 있고 look이 custom이면 이걸로 그린다)
 import { cssVars } from '@/shared/lib/cssVars';
 // SproutFarm (게임): 게임 화면 흐름. 타이틀 화면 → HUD(숫자) → 퀘스트(기능, 게임 대화창)와 조작법 → 하루(화면 모음)
 // → 흙길을 따라가는 개발 일지 지도(만든 방식) → 인벤토리(기술 사양) → 크레딧(맡은 일).

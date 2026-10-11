@@ -3,7 +3,7 @@ import { openLook } from './open';
 
 // 폰 모양: 오른쪽 고정된 폰 안의 화면이 왼쪽 이야기 단계를 따라 바뀐다
 test('phone: 이야기 단계를 지나면 폰 화면이 그 단계의 그림으로 바뀐다', async ({ page }) => {
-	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/ });
+	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'phone' });
 
 	await expect(panel.getByRole('heading', { level: 1 })).toHaveText('QR 한 장에 담은 나.');
 	await expect(panel.getByRole('link', { name: /GitHub에서 보기/ })).toBeVisible();

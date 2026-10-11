@@ -1,0 +1,1045 @@
+/* QRU: 그 앱처럼 민트→분홍 바탕, 청록 로고 칸, 두툼한(뉴모피즘) 그림자. 다크 모드는 앱의 어두운 청회색→자줏빛 바탕 */
+.sp[data-look='minimal'] {
+	--qc-surface: #fafafa;
+	--qc-ink: #213c48;
+	--qc-muted: #5c7a88;
+	--qc-line: rgba(33, 60, 72, 0.12);
+	--qc-cell: #e0f7fa;
+	/* 청록: 큰 장식(로고 칸, 선)은 앱의 주색, 글자와 단추는 대비가 넉넉한 짙은 청록 */
+	--qc-teal: #4db6ac;
+	--qc-deep: #00867d;
+	--qc-pink: #ffa0c0;
+	--qc-shadow: -12px 14px 22px rgba(33, 60, 72, 0.16), inset 4px -4px 8px rgba(33, 60, 72, 0.06);
+	--qc-shadow-up: -16px 22px 30px rgba(33, 60, 72, 0.22), inset 4px -4px 8px rgba(33, 60, 72, 0.06);
+	--sp-accent: #00867d;
+	background: linear-gradient(135deg, #a8edea, #fed6e3);
+	color: var(--qc-ink);
+}
+
+:root[data-theme='dark'] .sp[data-look='minimal'] {
+	--qc-surface: #2b2b2b;
+	--qc-ink: #e8e8e8;
+	--qc-muted: #9aa5aa;
+	--qc-line: rgba(255, 255, 255, 0.1);
+	--qc-cell: #3a5663;
+	--qc-pink: #cf6679;
+	--qc-shadow: -12px 14px 22px rgba(0, 0, 0, 0.35), inset 4px -4px 8px rgba(0, 0, 0, 0.2);
+	--qc-shadow-up: -16px 22px 30px rgba(0, 0, 0, 0.45), inset 4px -4px 8px rgba(0, 0, 0, 0.2);
+	--sp-accent: #4db6ac;
+	background: linear-gradient(135deg, #3a5663, #65474c);
+}
+
+/* 끝까지 당겨도 바탕색이 이어지게 */
+.safari-page:has(> .sp[data-look='minimal']) {
+	background: linear-gradient(#a8edea 50%, #fed6e3 50%);
+}
+
+:root[data-theme='dark'] .safari-page:has(> .sp[data-look='minimal']) {
+	background: linear-gradient(#3a5663 50%, #65474c 50%);
+}
+
+.qc {
+	max-width: 980px;
+	margin: 0 auto;
+	padding: 56px 32px 0;
+	text-align: left;
+}
+
+/* ───────── 명함 앞뒤 ───────── */
+.qc-cards {
+	display: grid;
+	perspective: 1200px;
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+	gap: 32px;
+	align-items: stretch;
+}
+
+/* 반듯하게 놓여 있다가, 마우스를 올리면 그쪽으로 아주 살짝 기운다 (--rx·--ry는 스크립트가 정한다) */
+.qc-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: 30px;
+	border-radius: clamp(18px, 3cqi, 28px);
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+	transform: var(--lay) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+	transform-style: preserve-3d;
+	transition:
+		transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+		box-shadow 0.3s;
+}
+
+.qc-card {
+	--lay: rotate(0deg);
+}
+
+.qc-card[data-tilt] {
+	box-shadow: var(--qc-shadow-up);
+	transition:
+		transform 0.12s linear,
+		box-shadow 0.3s;
+}
+
+/* 빛: 마우스가 있는 곳이 밝다 */
+.qc-card::after {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(circle at var(--gx, 50%) var(--gy, 0%), rgba(255, 255, 255, 0.55), transparent 55%);
+	content: '';
+	mix-blend-mode: soft-light;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s;
+}
+
+.qc-card[data-tilt]::after {
+	opacity: 1;
+}
+
+/* 앱 로고: 3×3 칸. 처음에 한 칸씩 튀어 오르며 놓이고, 카드에 마우스를 올리면 채운 칸이 물결처럼 들린다 */
+.qc-brand {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.qc-logo {
+	display: grid;
+	flex: none;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6%;
+	width: 84px;
+	aspect-ratio: 1;
+}
+
+.qc-logo i {
+	border-radius: 30%;
+	background-color: var(--qc-cell);
+	box-shadow:
+		0 4px 10px rgba(0, 0, 0, 0.18),
+		inset 3px -3px 6px rgba(0, 0, 0, 0.22);
+	animation: qc-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	animation-delay: calc(var(--i) * 70ms + 150ms);
+	transition: translate 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.qc-logo i[data-filled] {
+	background-color: var(--qc-teal);
+	box-shadow:
+		0 4px 10px rgba(0, 0, 0, 0.35),
+		inset 3px -3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.qc-card:hover .qc-logo i[data-filled] {
+	translate: 0 -4px;
+	transition-delay: calc(var(--i) * 45ms);
+}
+
+@keyframes qc-pop {
+	from {
+		opacity: 0;
+		scale: 0.2;
+	}
+
+	to {
+		opacity: 1;
+		scale: 1;
+	}
+}
+
+.qc-word {
+	display: flex;
+	flex-direction: column;
+	line-height: 1;
+}
+
+.qc-word strong {
+	color: var(--qc-teal);
+	font-size: clamp(40px, 6cqi, 58px);
+	font-weight: 900;
+	letter-spacing: 0.02em;
+	text-shadow: -2px 3px 4px rgba(0, 0, 0, 0.22);
+}
+
+.qc-word span {
+	margin-top: 6px;
+	color: var(--qc-muted);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+}
+
+.qc-name {
+	margin-top: 22px;
+	color: var(--sp-accent);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.qc-front h1 {
+	margin-top: 4px;
+	font-size: clamp(26px, 4cqi, 38px);
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.18;
+}
+
+.qc-lead {
+	margin-top: 10px;
+	color: var(--qc-muted);
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+/* 뒷면: 기술 사양 */
+.qc-back h2 {
+	padding-bottom: 12px;
+	border-bottom: 2px solid var(--qc-teal);
+	color: var(--sp-accent);
+	font-size: 14px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+}
+
+.qc-back div {
+	display: grid;
+	grid-template-columns: 92px minmax(0, 1fr);
+	gap: 10px;
+	padding: 10px 0;
+	border-bottom: 1px dashed var(--qc-line);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.qc-back div:last-child {
+	border-bottom: none;
+}
+
+.qc-back dt {
+	color: var(--sp-accent);
+	font-weight: 700;
+}
+
+/* 앱의 알약 단추: 짙은 청록에 두툼한 그림자 */
+.qc-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 24px;
+	margin-top: 44px;
+}
+
+.sp .qc-links .sp-pill {
+	background-color: var(--qc-deep);
+	box-shadow:
+		-4px 6px 12px rgba(0, 0, 0, 0.22),
+		inset 2px -3px 6px rgba(0, 0, 0, 0.2);
+	color: #ffffff;
+	transition:
+		translate 0.2s,
+		box-shadow 0.2s;
+}
+
+.sp .qc-links .sp-pill:hover {
+	translate: 0 -2px;
+	box-shadow:
+		-6px 10px 16px rgba(0, 0, 0, 0.26),
+		inset 2px -3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* ───────── 숫자 한 줄 ───────── */
+.qc-facts {
+	margin-top: 48px;
+	padding: 22px 26px;
+	border-radius: 22px;
+	background-color: color-mix(in srgb, var(--qc-surface) 82%, transparent);
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-facts > p {
+	color: var(--qc-muted);
+	font-size: 13px;
+}
+
+.qc-facts ul {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-top: 10px;
+	list-style: none;
+}
+
+.qc-facts li {
+	display: flex;
+	flex-direction: column;
+	padding: 0 20px;
+	border-left: 1px solid var(--qc-line);
+}
+
+.qc-facts li:first-child {
+	padding-left: 0;
+	border-left: none;
+}
+
+.qc-facts strong {
+	color: var(--sp-accent);
+	font-size: 30px;
+	font-weight: 900;
+}
+
+.qc-facts li > span {
+	color: var(--qc-muted);
+	font-size: 13px;
+}
+
+.qc-title {
+	margin-bottom: 20px;
+	font-size: clamp(22px, 3.4cqi, 30px);
+	font-weight: 800;
+	letter-spacing: -0.02em;
+}
+
+/* ───────── 명함이 오가는 순서: 왼쪽 단계, 오른쪽에 따라오는 앱 창 ───────── */
+.qc-journey {
+	margin-top: 72px;
+}
+
+.qc-journey-body {
+	display: grid;
+	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+	gap: 40px;
+	align-items: start;
+}
+
+.qc-steps {
+	list-style: none;
+}
+
+.qc-steps li {
+	position: relative;
+	padding: 0 0 30px 58px;
+}
+
+.qc-steps li:not(:last-child)::before {
+	position: absolute;
+	top: 42px;
+	bottom: 0;
+	left: 20px;
+	width: 3px;
+	border-radius: 2px;
+	background-color: var(--qc-teal);
+	content: '';
+	transform: scaleY(0);
+	transform-origin: top;
+	transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 펼쳐진 단계에서 다음 단계로 선이 이어진다 */
+.qc-steps li[data-open='true']:not(:last-child)::before {
+	transform: none;
+}
+
+/* 번호는 로고 칸 모양: 아직이면 옅은 칸, 닿으면 청록 칸이 튀어 오른다 */
+.qc-step {
+	display: grid;
+	position: absolute;
+	top: 0;
+	left: 0;
+	place-items: center;
+	width: 42px;
+	height: 42px;
+	border-radius: 30%;
+	background-color: var(--qc-cell);
+	box-shadow:
+		0 4px 10px rgba(0, 0, 0, 0.15),
+		inset 3px -3px 6px rgba(0, 0, 0, 0.18);
+	color: var(--qc-muted);
+	font-weight: 800;
+	transition:
+		background-color 320ms ease-out,
+		color 320ms ease-out,
+		scale 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.qc-steps li[data-open='true'] .qc-step {
+	background-color: var(--qc-teal);
+	box-shadow:
+		0 4px 10px rgba(0, 0, 0, 0.3),
+		inset 3px -3px 6px rgba(0, 0, 0, 0.28);
+	color: #ffffff;
+	scale: 1.08;
+}
+
+.qc-steps h3 {
+	padding-top: 9px;
+	font-size: 18px;
+	font-weight: 800;
+	transition: color 320ms ease-out;
+}
+
+.qc-steps li[data-open='false'] h3 {
+	color: var(--qc-muted);
+}
+
+.qc-step-body {
+	display: grid;
+	grid-template-rows: 0fr;
+	opacity: 0;
+	transition:
+		grid-template-rows 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 420ms ease-out;
+}
+
+.qc-steps li[data-open='true'] .qc-step-body {
+	grid-template-rows: 1fr;
+	opacity: 1;
+}
+
+.qc-steps p {
+	overflow: hidden;
+	padding-top: 6px;
+	color: var(--qc-muted);
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+/* 앱 창: 단계가 바뀌면 화면이 겹쳐 바뀌고, 아래 이름표가 튀어 오른다 */
+.qc-screen {
+	position: sticky;
+	top: 24px;
+	overflow: hidden;
+	border-radius: 18px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow-up);
+}
+
+.qc-screen-bar {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 10px 14px;
+	border-bottom: 1px solid var(--qc-line);
+}
+
+.qc-screen-bar i {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: var(--qc-line);
+}
+
+.qc-screen-bar span {
+	flex: 1;
+	margin-left: 8px;
+	padding: 3px 12px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--qc-cell) 60%, transparent);
+	color: var(--qc-muted);
+	font-size: 11px;
+	text-align: center;
+}
+
+.qc-screen-view {
+	position: relative;
+	aspect-ratio: 16 / 11;
+	overflow: hidden;
+}
+
+.qc-screen-view img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+	opacity: 0;
+	scale: 1.04;
+	transition:
+		opacity 0.5s ease-out,
+		scale 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.qc-screen-view img[data-on='true'] {
+	opacity: 1;
+	scale: 1;
+}
+
+.qc-screen figcaption {
+	position: absolute;
+	bottom: 14px;
+	left: 50%;
+	padding: 6px 16px;
+	border-radius: 999px;
+	background-color: var(--qc-deep);
+	box-shadow: -3px 5px 10px rgba(0, 0, 0, 0.25);
+	color: #ffffff;
+	font-size: 13px;
+	font-weight: 700;
+	white-space: nowrap;
+	translate: -50% 0;
+	animation: qc-tag 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes qc-tag {
+	from {
+		opacity: 0;
+		transform: translateY(12px) scale(0.9);
+	}
+}
+
+.qc-shot {
+	position: sticky;
+	top: 24px;
+	overflow: hidden;
+	border-radius: 16px;
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-shot img {
+	display: block;
+	width: 100%;
+}
+
+/* ───────── 더 들려줄 장 ───────── */
+.qc-chapter {
+	margin-top: 72px;
+}
+
+.qc-chapter-lead {
+	max-width: 44em;
+	margin: -8px 0 22px;
+	color: var(--qc-muted);
+	font-size: 16px;
+	line-height: 1.7;
+}
+
+.qc-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px;
+	margin-bottom: 24px;
+	list-style: none;
+}
+
+.qc-chips li {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	padding: 10px 18px;
+	border-radius: 999px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-chips strong {
+	color: var(--sp-accent);
+	font-size: 20px;
+	font-weight: 900;
+}
+
+.qc-chips li > span {
+	color: var(--qc-muted);
+	font-size: 13px;
+}
+
+/* 데이터베이스 구조: 문서마다 경로와 읽을 수 있는 사람, 필드 칩. 하위 문서는 왼쪽 줄로 이어 안에 그린다 */
+.qc-schema {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	margin-bottom: 28px;
+}
+
+.qc-doc {
+	padding: 20px 22px;
+	border: 2px solid color-mix(in srgb, var(--qc-teal) 55%, transparent);
+	border-radius: 20px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-doc[data-child] {
+	border-color: var(--qc-line);
+	box-shadow: none;
+}
+
+.qc-doc header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.qc-doc code {
+	color: var(--sp-accent);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 17px;
+	font-weight: 800;
+}
+
+.qc-access {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 3px 12px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--qc-teal) 18%, transparent);
+	color: var(--sp-accent);
+	font-size: 12px;
+	font-weight: 800;
+}
+
+.qc-access[data-locked] {
+	background-color: color-mix(in srgb, var(--qc-pink) 28%, transparent);
+	color: #b4235a;
+}
+
+:root[data-theme='dark'] .qc-access[data-locked] {
+	color: #ffb3c8;
+}
+
+.qc-doc ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 12px;
+	list-style: none;
+}
+
+/* 필드 칩: 문서가 화면에 들어오면 하나씩 톡 놓인다 */
+.qc-doc li {
+	padding: 4px 12px;
+	border-radius: 10px;
+	background-color: color-mix(in srgb, var(--qc-cell) 70%, var(--qc-surface));
+	box-shadow: inset 2px -2px 4px rgba(0, 0, 0, 0.08);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 13px;
+	opacity: 0;
+	scale: 0.7;
+	transition:
+		opacity 0.3s ease-out,
+		scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition-delay: calc(var(--i) * 60ms + 200ms);
+}
+
+.qc-doc[data-shown] li {
+	opacity: 1;
+	scale: 1;
+}
+
+.qc-doc > p,
+.qc-doc-children > p {
+	margin-top: 12px;
+	color: var(--qc-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.qc-doc-children {
+	margin-top: 18px;
+	padding-left: 18px;
+	border-left: 3px solid color-mix(in srgb, var(--qc-teal) 45%, transparent);
+}
+
+.qc-doc-children > p {
+	margin: 0 0 12px;
+	font-weight: 700;
+}
+
+.qc-doc-children > div {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.qc-tiles {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+}
+
+.qc-tiles article {
+	padding: 22px;
+	border-radius: 20px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+}
+
+/* 나타날 때(투명도·transform)는 차례로 늦게, 마우스에 들릴 때(translate·그림자)는 바로 */
+.sp .qc-tiles article[data-reveal] {
+	transition:
+		opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+		transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+		translate 0.25s ease-out,
+		box-shadow 0.25s;
+	transition-delay: calc(var(--d, 0) * 90ms), calc(var(--d, 0) * 90ms), 0s, 0s;
+}
+
+.qc-tiles article:hover {
+	translate: 0 -4px;
+	box-shadow: var(--qc-shadow-up);
+}
+
+.qc-tiles h3 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 17px;
+	font-weight: 800;
+}
+
+/* 제목 앞의 작은 로고 칸 */
+.qc-tiles h3::before {
+	flex: none;
+	width: 12px;
+	height: 12px;
+	border-radius: 30%;
+	background-color: var(--qc-teal);
+	box-shadow: inset 1px -1px 2px rgba(0, 0, 0, 0.3);
+	content: '';
+}
+
+.qc-tiles p {
+	margin-top: 8px;
+	color: var(--qc-muted);
+	font-size: 14px;
+	line-height: 1.65;
+}
+
+.qc-figure {
+	margin-top: 28px;
+	overflow: hidden;
+	border-radius: 20px;
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-figure img {
+	display: block;
+	width: 100%;
+}
+
+/* ───────── 묻고 답하기: 스크롤하면 하나씩 펼쳐진다 ───────── */
+.qc-faq {
+	margin-top: 72px;
+}
+
+.qc-answer {
+	margin-bottom: 12px;
+	padding: 0 22px;
+	border-radius: 18px;
+	background-color: color-mix(in srgb, var(--qc-surface) 86%, transparent);
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-answer button {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	padding: 18px 0;
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: 17px;
+	font-weight: 800;
+	text-align: left;
+	cursor: pointer;
+}
+
+.qc-answer button::after {
+	color: var(--qc-teal);
+	content: '+';
+	font-size: 24px;
+	line-height: 1;
+	transition: transform var(--duration) var(--ease-out);
+}
+
+.qc-answer[data-open='true'] button::after {
+	transform: rotate(45deg);
+}
+
+/* 높이를 0fr → 1fr로 바꿔 내용 길이만큼 부드럽게 열리고, 글은 살짝 내려오며 나타난다 */
+.qc-answer-body {
+	display: grid;
+	grid-template-rows: 0fr;
+	opacity: 0;
+	transition:
+		grid-template-rows 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		opacity 420ms ease-out;
+}
+
+.qc-answer[data-open='true'] .qc-answer-body {
+	grid-template-rows: 1fr;
+	opacity: 1;
+}
+
+.qc-answer-body p {
+	overflow: hidden;
+	color: var(--qc-muted);
+	font-size: 15px;
+	line-height: 1.65;
+	transform: translateY(-8px);
+	transition:
+		transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+		padding 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.qc-answer[data-open='true'] .qc-answer-body p {
+	padding-bottom: 18px;
+	transform: none;
+}
+
+/* ───────── 화면 모음: 고정된 채 세로 스크롤만큼 띠가 옆으로 넘어간다 ───────── */
+.qc-gallery {
+	/* 고정된 동안 내려갈 길이 = 화면 높이 + 띠가 넘치는 만큼 */
+	height: calc(var(--view, 100vh) + var(--overflow, 0px));
+	margin-top: 72px;
+}
+
+.qc-gallery-sticky {
+	display: flex;
+	position: sticky;
+	top: 0;
+	flex-direction: column;
+	justify-content: center;
+	height: var(--view, 100vh);
+}
+
+.qc-gallery-window {
+	margin: 0 -32px;
+	padding: 8px 32px 28px;
+	overflow: hidden;
+}
+
+.qc-gallery ul {
+	/* 스크립트가 고정 여부를 읽는다 */
+	--pin: 1;
+	display: flex;
+	gap: 22px;
+	width: max-content;
+	list-style: none;
+	transform: translateX(var(--x, 0px));
+	will-change: transform;
+}
+
+.qc-gallery li {
+	flex: none;
+}
+
+.qc-gallery figure {
+	overflow: hidden;
+	border-radius: 18px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+	transition:
+		translate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+		rotate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+		box-shadow 0.3s;
+}
+
+.qc-gallery li:hover figure {
+	translate: 0 -6px;
+	rotate: -1deg;
+	box-shadow: var(--qc-shadow-up);
+}
+
+.qc-gallery img {
+	display: block;
+	width: auto;
+	height: clamp(200px, min(34cqi, calc(var(--view, 100vh) * 0.5)), 360px);
+}
+
+.qc-gallery figcaption {
+	padding: 10px 16px;
+	color: var(--qc-muted);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+/* 얼마나 넘겼는지: 아래 가는 막대가 차오른다 */
+.qc-gallery-bar {
+	display: block;
+	height: 4px;
+	border-radius: 2px;
+	background:
+		linear-gradient(var(--qc-teal), var(--qc-teal)) 0 0 / calc(var(--p, 0) * 100%) 100% no-repeat,
+		color-mix(in srgb, var(--qc-teal) 18%, transparent);
+}
+
+/* ───────── 맡은 일 ───────── */
+.qc-lists {
+	margin-top: 40px;
+}
+
+.qc-lists section {
+	padding: 26px;
+	border-radius: 22px;
+	background-color: var(--qc-surface);
+	box-shadow: var(--qc-shadow);
+}
+
+.qc-role {
+	margin: -12px 0 14px;
+	color: var(--qc-muted);
+	font-size: 14px;
+}
+
+.qc-lists ul {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px 28px;
+	list-style: none;
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.qc-lists li {
+	display: flex;
+	gap: 10px;
+}
+
+.qc-lists i {
+	margin-top: 3px;
+	color: var(--qc-teal);
+}
+
+.qc-foot {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 72px;
+	padding: 40px 0 64px;
+	text-align: center;
+}
+
+.qc-logo.small {
+	width: 52px;
+}
+
+.qc-foot p {
+	margin-top: 18px;
+	font-size: clamp(22px, 3.6cqi, 30px);
+	font-weight: 800;
+}
+
+.qc-foot .qc-links {
+	justify-content: center;
+	margin-top: 20px;
+}
+
+@container (max-width: 600px) {
+	.qc {
+		padding: 28px 20px 0;
+	}
+
+	.qc-cards,
+	.qc-journey-body,
+	.qc-lists ul,
+	.qc-tiles,
+	.qc-doc-children > div,
+	.qc-facts ul {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.qc-logo {
+		width: 64px;
+	}
+
+	.qc-facts li {
+		padding: 8px 0;
+		border-left: none;
+	}
+
+	/* 좁으면 따라오지 않고 단계 아래에 놓인다 (이름표는 창 안에 남도록 relative) */
+	.qc-screen,
+	.qc-shot {
+		position: relative;
+		top: 0;
+	}
+
+	.qc-gallery {
+		height: auto;
+	}
+
+	.qc-gallery-sticky {
+		position: static;
+		height: auto;
+	}
+
+	.qc-gallery-window {
+		margin: 0 -20px;
+		padding-inline: 20px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+	}
+
+	.qc-gallery ul {
+		--pin: 0;
+		transform: none;
+	}
+
+	.qc-gallery li {
+		scroll-snap-align: start;
+	}
+
+	.qc-gallery-bar {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.qc-gallery {
+		height: auto;
+	}
+
+	.qc-gallery-sticky {
+		position: static;
+		height: auto;
+	}
+
+	.qc-gallery-window {
+		overflow-x: auto;
+	}
+
+	.qc-gallery ul {
+		--pin: 0;
+		transform: none;
+	}
+
+	.qc-gallery-bar {
+		display: none;
+	}
+
+	.qc-doc li {
+		opacity: 1;
+		scale: 1;
+	}
+
+	.qc-card,
+	.qc-card[data-tilt] {
+		transform: var(--lay);
+		transition: none;
+	}
+
+	.qc-card::after {
+		display: none;
+	}
+
+	.qc-logo i,
+	.qc-screen figcaption {
+		animation: none;
+	}
+
+	.qc-answer-body,
+	.qc-answer-body p,
+	.qc-step-body,
+	.qc-steps li::before,
+	.qc-screen-view img,
+	.qc-doc li,
+	.sp .qc-tiles article[data-reveal] {
+		transition: none;
+	}
+}
