@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import Button from '@/shared/ui/button/Button';
-import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
+import Modal from '@/shared/ui/dialog/Modal';
 import '@/shared/ui/dialog/AlertDialog.css';
 
 export interface AlertDialogProps {
@@ -17,44 +17,29 @@ export interface AlertDialogProps {
 }
 
 /**
- * macOS 경고창 (앱 안). 화면 전체가 아니라 가장 가까운 위치 기준(앱 창) 한가운데에 뜬다.
+ * macOS 경고창 (앱 안). 화면 전체가 아니라 가장 가까운 위치 기준(앱 창) 한가운데에 뜬다 (Modal의 window).
  * Esc·바깥 누르기는 취소, Enter는 확인 (확인 단추에 초점이 있다).
  */
 const AlertDialog = ({ title, message, confirmLabel, cancelLabel = '취소', onConfirm, onCancel }: AlertDialogProps) => {
 	const confirmButton = useRef<HTMLButtonElement>(null);
-	// 닫히면 바탕은 흐려지고 상자는 작아지며 사라진다 (motion.css)
-	const overlay = useExitMotion<HTMLDivElement>('fade-out');
-	useEffect(() => {
-		confirmButton.current?.focus();
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') {
-				event.preventDefault();
-				onCancel();
-			}
-		};
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [onCancel]);
-
 	return (
-		<div
-			ref={overlay}
-			className="ui-alert-overlay"
-			onPointerDown={(event) => {
-				if (event.target === event.currentTarget) onCancel();
-			}}
+		<Modal
+			label={title}
+			role="alertdialog"
+			onClose={onCancel}
+			initialFocus={confirmButton}
+			overlayClassName="ui-alert-overlay"
+			className="ui-alert"
 		>
-			<div className="ui-alert" role="alertdialog" aria-modal="true" aria-label={title}>
-				<h3>{title}</h3>
-				{message && <p>{message}</p>}
-				<div className="ui-alert-actions">
-					{cancelLabel !== null && <Button onClick={onCancel}>{cancelLabel}</Button>}
-					<Button ref={confirmButton} tone="primary" onClick={onConfirm}>
-						{confirmLabel}
-					</Button>
-				</div>
+			<h3>{title}</h3>
+			{message && <p>{message}</p>}
+			<div className="ui-alert-actions">
+				{cancelLabel !== null && <Button onClick={onCancel}>{cancelLabel}</Button>}
+				<Button ref={confirmButton} tone="primary" onClick={onConfirm}>
+					{confirmLabel}
+				</Button>
 			</div>
-		</div>
+		</Modal>
 	);
 };
 
