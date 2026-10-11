@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { Favicon, Links } from '@/apps/safari/project/parts';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
+import { Backdrop } from '@/apps/safari/project/dialogue/Backdrop';
+import { useIconColors } from '@/apps/safari/project/dialogue/iconColors';
 import '@/apps/safari/project/DialoguePage.css';
 
 /** 장면 액자에 띄우는 그림(또는 영상) 한 장. caption이 있으면 액자 아래 나무 팻말에 적는다 */
@@ -245,17 +247,6 @@ const Portrait: React.FC<{ project: Project; talking: boolean }> = ({ project, t
 	</div>
 );
 
-/** 장면 바닥의 장식 스프라이트 (sproutfarm). 왼쪽부터 자리(%)·크기 배율 */
-const PROPS: { src: string; left: number; scale: number }[] = [
-	{ src: 'tree', left: 2, scale: 5 },
-	{ src: 'bush', left: 12, scale: 4 },
-	{ src: 'flower-pink', left: 17, scale: 3 },
-	{ src: 'sunflower', left: 21, scale: 4 },
-	{ src: 'flower-blue', left: 77, scale: 3 },
-	{ src: 'bush', left: 81, scale: 4 },
-	{ src: 'fruit-tree', left: 88, scale: 5 },
-];
-
 const MENU_TITLE = '무엇을 들어 볼까요?';
 const SUB_TITLE = '어떤 이야기를 더 들어 볼까요?';
 const ENDING: Line = {
@@ -324,6 +315,18 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const [cursor, setCursor] = useState(0);
 	const rootRef = useRef<HTMLDivElement>(null);
 	const fit = useFit(rootRef);
+
+	// 배경: 고른 테마(없으면 auto). 배경 그림이 있으면 그것을, auto면 대표 화면을 픽셀로 바꿔 하늘 자리에 깐다.
+	// 아이콘에서 뽑은 색은 강조색과 하늘 톤으로
+	const theme = project.backdrop?.theme ?? 'auto';
+	const pixelSrc =
+		project.backdrop?.image ||
+		(theme === 'auto' ? project.art || project.image || project.gallery?.[0]?.src : undefined) ||
+		undefined;
+	const [pixel, setPixel] = useState<{ src: string; state: 'ok' | 'fail' } | null>(null);
+	const pixelState = pixelSrc && pixel?.src === pixelSrc ? pixel.state : 'loading';
+	const onPixel = useCallback((src: string, state: 'ok' | 'fail') => setPixel({ src, state }), []);
+	const iconColors = useIconColors(project.icon);
 
 	const back: Topic = useMemo(() => ({ id: BACK_TOPIC, label: '처음 선택지로', lines: [] }), []);
 	const subList = useMemo(() => [...chapters, back], [chapters, back]);
@@ -615,22 +618,18 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	};
 
 	return (
-		<div className="dl" data-id={project.id} data-mode={mode.kind} data-fit={fit} ref={rootRef}>
-			{/* 바탕: 하늘과 풀밭(sproutfarm) 또는 낮 하늘과 마룻바닥 */}
-			<div className="dl-sky" aria-hidden="true" />
-			<div className="dl-ground" aria-hidden="true" />
-			{project.id === 'sproutfarm' && (
-				<div className="dl-props" aria-hidden="true">
-					{PROPS.map((prop, i) => (
-						<img
-							key={i}
-							src={`/imgs/projects/sproutfarm/sprites/${prop.src}.png`}
-							alt=""
-							style={{ left: `${prop.left}%`, ['--dl-scale' as string]: prop.scale }}
-						/>
-					))}
-				</div>
-			)}
+		<div
+			className="dl"
+			data-id={project.id}
+			data-theme={theme}
+			data-pixel={pixelSrc && pixelState === 'ok' ? '' : undefined}
+			data-mode={mode.kind}
+			data-fit={fit}
+			style={iconColors}
+			ref={rootRef}
+		>
+			{/* 바탕: 테마의 하늘(벽)·바닥·소품, 또는 픽셀로 바꾼 그림 */}
+			<Backdrop theme={theme} pixelSrc={pixelState === 'fail' ? undefined : pixelSrc} onPixel={onPixel} />
 
 			{/* HUD: 왼쪽 위 숫자 판(값과 무엇의 숫자인지), 오른쪽 위 읽은 주제 판 */}
 			{project.facts.length > 0 && (

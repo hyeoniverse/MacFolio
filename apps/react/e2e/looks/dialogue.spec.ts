@@ -117,3 +117,19 @@ test('dialogue: 장 목록에서 항목의 화면 여러 장을 액자 안에서
 		'/imgs/projects/hyeoniverse/cms/gallery.jpg'
 	);
 });
+
+test('dialogue: 배경은 프로젝트에 정한 테마를 따른다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue' });
+	const scene = panel.locator('.dl');
+	// 코드의 기본값: QRU는 사무실 (그림을 픽셀로 깔지 않는다)
+	await expect(scene).toHaveAttribute('data-theme', 'office');
+	await expect(scene.locator('.dl-pixel canvas')).toHaveCount(0);
+});
+
+test('dialogue: 배경 테마가 자동이면 대표 화면을 픽셀로 바꿔 하늘 자리에 깐다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue', override: { backdrop: null } });
+	const scene = panel.locator('.dl');
+	await expect(scene).toHaveAttribute('data-theme', 'auto');
+	await expect(scene.locator('.dl-pixel canvas')).toHaveCount(1);
+	await expect(scene).toHaveAttribute('data-pixel', '');
+});
