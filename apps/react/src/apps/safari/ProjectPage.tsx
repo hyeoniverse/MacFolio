@@ -41,9 +41,11 @@ const PAGES: Record<Exclude<ProjectLook, 'custom'>, React.FC<{ project: Project 
 
 /** Safari 탭 안의 페이지: 프로젝트를 소개한다 */
 const ProjectPage: React.FC<{ project: Project }> = ({ project }) => {
-	const Page = project.look === 'custom' ? (CUSTOM_PAGES[project.id] ?? ShowcasePage) : PAGES[project.look];
+	const custom = project.look === 'custom' ? CUSTOM_PAGES[project.id] : undefined;
+	const Page = project.look === 'custom' ? (custom?.page ?? ShowcasePage) : PAGES[project.look];
+	// 직접 짠 페이지는 자기 CSS가 알아보는 이름(tone)을 data-look에 둔다
 	return (
-		<article className="sp" data-look={project.look} aria-label={project.name}>
+		<article className="sp" data-look={custom?.tone ?? project.look} aria-label={project.name}>
 			<Page project={project} />
 		</article>
 	);
