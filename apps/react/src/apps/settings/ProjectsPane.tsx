@@ -409,7 +409,7 @@ const TagInput = ({
 					aria-autocomplete="list"
 					aria-activedescendant={shown.length ? `${listId}-${active}` : undefined}
 					value={query}
-					placeholder={`${label} 찾기 (없으면 적고 Enter)`}
+					placeholder={`${label} 검색`}
 					spellCheck={false}
 					onFocus={() => setOpen(true)}
 					onBlur={() => setOpen(false)}
@@ -478,8 +478,8 @@ const TagInput = ({
 				)}
 			<p className="about-pane-hint">
 				{matched
-					? `${matched}개가 맞습니다${remote ? ` (아래에 ${remote.name} 검색 결과도)` : ''}.`
-					: `후보 ${options.length}개 (칸을 누르면 목록 전체를 굴려 볼 수 있습니다)${remote ? `, 두 글자부터 ${remote.name}도 찾습니다` : ''}. 찾아서 고르거나, 적고 Enter·쉼표로 더합니다. 여러 개를 쉼표로 붙여 넣어도 됩니다.`}
+					? `${matched}개의 ${label}이 검색되었습니다.${remote ? ` ${remote.name} 패키지 검색 결과는 목록 아래쪽에 표시됩니다.` : ''}`
+					: `목록에서 고르거나 이름으로 검색합니다. 목록에 없는 ${label}은 이름을 입력한 뒤 Enter를 누르면 추가됩니다.`}
 			</p>
 		</div>
 	);
