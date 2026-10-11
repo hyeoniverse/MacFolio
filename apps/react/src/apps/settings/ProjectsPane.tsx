@@ -24,6 +24,7 @@ import { appIconUrl } from '@/shared/config/appIcon';
 import { env } from '@/shared/config/env';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import DatePicker from '@/shared/ui/date/DatePicker';
+import { todayIso } from '@/shared/ui/date/calendar';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
@@ -233,6 +234,8 @@ const PeriodField = ({
 		setPeriod(next);
 		onChange(formatPeriod(next));
 	};
+	// 아직 오지 않은 날은 고를 수 없다. 끝날은 시작일보다 앞설 수 없고, 시작일은 끝날 뒤로 갈 수 없다
+	const today = todayIso();
 	if (asText)
 		return (
 			<TextField
@@ -251,6 +254,7 @@ const PeriodField = ({
 					placeholder="시작일"
 					className="projects-date"
 					value={period.start}
+					max={period.end && period.end < today ? period.end : today}
 					onChange={(start) => update({ start })}
 				/>
 				<span aria-hidden="true">–</span>
@@ -267,6 +271,8 @@ const PeriodField = ({
 						placeholder="끝날"
 						className="projects-date"
 						value={period.end}
+						min={period.start || undefined}
+						max={today}
 						onChange={(end) => update({ end })}
 					/>
 				)}

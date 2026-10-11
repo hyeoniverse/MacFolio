@@ -108,6 +108,20 @@
 	background-color: color-mix(in srgb, #edbb4d 25%, transparent);
 }
 
+/* 범위 밖의 날·달·해 (min·max): 흐리게, 눌리지 않는다 */
+.ui-calendar-picks button:disabled,
+.ui-calendar-grid button:disabled,
+.ui-calendar-today:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+
+.ui-calendar-picks button:disabled:hover,
+.ui-calendar-grid button:disabled:hover,
+.ui-calendar-today:disabled:hover {
+	background: none;
+}
+
 .ui-calendar-picks button.today,
 .ui-calendar-grid button.today {
 	color: #c78b00;

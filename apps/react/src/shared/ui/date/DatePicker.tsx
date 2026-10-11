@@ -3,7 +3,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { placeBelow } from '@/shared/ui/popover/placement';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
-import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from './calendar';
+import { formatIso, monthGrid, parseIso, shiftMonth, todayIso, toIso } from './calendar';
 import '@/shared/ui/date/DatePicker.css';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -20,12 +20,6 @@ const STEP_LABELS: Record<Mode, [string, string]> = {
 	years: ['이전 12년', '다음 12년'],
 };
 
-/** 오늘 (YYYY-MM-DD, 지역 시간) */
-const todayIso = () => {
-	const now = new Date();
-	return toIso(now.getFullYear(), now.getMonth(), now.getDate());
-};
-
 /**
  * 날짜 고르기: 누르면 사이트 모양의 달력이 열린다 (브라우저 기본 달력 대신).
  * 위의 '2026년 9월'을 누르면 월을, 거기서 '2026년'을 누르면 연도를 한 번에 고른다.
@@ -37,6 +31,8 @@ const DatePicker = ({
 	label = '날짜',
 	placeholder = '날짜 고르기',
 	className = 'memo-meta-button',
+	min,
+	max,
 }: {
 	/** YYYY-MM-DD. 비어 있으면 placeholder를 보여 준다 */
 	value: string;
@@ -46,6 +42,9 @@ const DatePicker = ({
 	placeholder?: string;
 	/** 여는 단추의 모양 (쓰는 앱의 CSS) */
 	className?: string;
+	/** 고를 수 있는 날짜의 범위 (YYYY-MM-DD, 그 날 포함). 벗어나는 날·달·해는 눌리지 않는다 */
+	min?: string;
+	max?: string;
 }) => {
 	const [open, setOpen] = useState(false);
 	const selected = parseIso(value);
@@ -68,6 +67,12 @@ const DatePicker = ({
 
 	useDismiss(open, () => setOpen(false), [panelRef, buttonRef]);
 
+	// ISO 날짜는 글자 순서가 날짜 순서라 그대로 비교한다
+	const allowed = (iso: string) => (!min || iso >= min) && (!max || iso <= max);
+	/** 그 달(또는 해)에 고를 수 있는 날이 하루라도 있는지 */
+	const monthAllowed = (year: number, month: number) =>
+		allowed(toIso(year, month, 1)) || allowed(toIso(year, month, new Date(year, month + 1, 0).getDate()));
+	const yearAllowed = (year: number) => monthAllowed(year, 0) || monthAllowed(year, 11);
 	const pick = (iso: string) => {
 		onChange(iso);
 		setOpen(false);
@@ -150,6 +155,7 @@ const DatePicker = ({
 												aria-label={`${view.year}년 ${view.month + 1}월 ${day}일`}
 												aria-selected={iso === value}
 												className={`${iso === value ? 'selected' : ''} ${iso === today ? 'today' : ''}`}
+												disabled={!allowed(iso)}
 												onClick={() => pick(iso)}
 											>
 												{day}
@@ -167,6 +173,7 @@ const DatePicker = ({
 										aria-label={`${view.year}년 ${month + 1}월`}
 										aria-pressed={selected?.year === view.year && selected.month === month}
 										className={`${selected?.year === view.year && selected.month === month ? 'selected' : ''} ${todayParts.year === view.year && todayParts.month === month ? 'today' : ''}`}
+										disabled={!monthAllowed(view.year, month)}
 										onClick={() => {
 											setView({ year: view.year, month });
 											setMode('days');
@@ -186,6 +193,7 @@ const DatePicker = ({
 										aria-label={`${year}년`}
 										aria-pressed={selected?.year === year}
 										className={`${selected?.year === year ? 'selected' : ''} ${todayParts.year === year ? 'today' : ''}`}
+										disabled={!yearAllowed(year)}
 										onClick={() => {
 											setView({ year, month: view.month });
 											setMode('months');
@@ -196,7 +204,7 @@ const DatePicker = ({
 								))}
 							</div>
 						)}
-						<button type="button" className="ui-calendar-today" onClick={() => pick(today)}>
+						<button type="button" className="ui-calendar-today" disabled={!allowed(today)} onClick={() => pick(today)}>
 							오늘
 						</button>
 					</div>,
