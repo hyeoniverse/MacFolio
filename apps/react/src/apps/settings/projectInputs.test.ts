@@ -35,7 +35,9 @@ describe('자동완성 후보', () => {
 		expect(options.slice(0, 2)).toEqual(['TypeScript', 'JavaScript']);
 		expect(options.filter((option) => option === 'TypeScript')).toHaveLength(1);
 		expect(options).toContain('Python');
-		expect(options.length).toBeGreaterThan(40);
+		expect(options.length).toBeGreaterThan(600);
+		expect(options).toContain('Elm');
+		expect(options.filter((option) => option.toLowerCase() === 'python')).toHaveLength(1);
 	});
 
 	it('기술: 많이 쓴 것부터, 다룰 수 있는 기술도, 그다음 자주 쓰는 기술 (겹치지 않게)', () => {
