@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <text x="320" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">공통 부품 후보 아홉: 따로 만든 곳 수와 정한 것</text>
+  <!-- 축 -->
+  <line x1="150" y1="50" x2="150" y2="340" stroke="#d1d5db"/>
+  <!-- rows: y step 32 -->
+  <g font-size="12">
+    <!-- 뽑는다 -->
+    <text x="140" y="70" text-anchor="end" fill="#1f2937">Modal</text>
+    <rect x="150" y="58" width="120" height="18" rx="4" fill="#4f46e5"/>
+    <text x="278" y="72" fill="#374151">4곳 · Esc·바깥 누르기 8+6파일</text>
+    <text x="140" y="102" text-anchor="end" fill="#1f2937">SearchField</text>
+    <rect x="150" y="90" width="150" height="18" rx="4" fill="#4f46e5"/>
+    <text x="308" y="104" fill="#374151">5곳 같은 칸 (메모는 따로)</text>
+    <text x="140" y="134" text-anchor="end" fill="#1f2937">Sheet</text>
+    <rect x="150" y="122" width="90" height="18" rx="4" fill="#4f46e5"/>
+    <text x="248" y="136" fill="#374151">3곳 · 올라오는 움직임·닫기가 같다</text>
+    <!-- 보류 -->
+    <text x="140" y="166" text-anchor="end" fill="#1f2937">Toolbar</text>
+    <rect x="150" y="154" width="360" height="18" rx="4" fill="#a5b4fc"/>
+    <text x="518" y="168" fill="#6b7280">12 · 높이·여백 다름</text>
+    <text x="140" y="198" text-anchor="end" fill="#1f2937">EmptyState</text>
+    <rect x="150" y="186" width="300" height="18" rx="4" fill="#a5b4fc"/>
+    <text x="458" y="200" fill="#6b7280">10 · 글 한 줄</text>
+    <text x="140" y="230" text-anchor="end" fill="#1f2937">Sidebar</text>
+    <rect x="150" y="218" width="300" height="18" rx="4" fill="#a5b4fc"/>
+    <text x="458" y="232" fill="#6b7280">10 · 내용 다름</text>
+    <text x="140" y="262" text-anchor="end" fill="#1f2937">SegmentedControl</text>
+    <rect x="150" y="250" width="240" height="18" rx="4" fill="#a5b4fc"/>
+    <text x="398" y="264" fill="#6b7280">8 · 뜻이 셋 (탭·라디오·단추)</text>
+    <text x="140" y="294" text-anchor="end" fill="#1f2937">ListRow</text>
+    <rect x="150" y="282" width="150" height="18" rx="4" fill="#a5b4fc"/>
+    <text x="308" y="296" fill="#6b7280">5 · 줄 안이 다름</text>
+    <text x="140" y="326" text-anchor="end" fill="#1f2937">Switch</text>
+    <rect x="150" y="314" width="60" height="18" rx="4" fill="#a5b4fc"/>
+    <text x="218" y="328" fill="#6b7280">2 · 설정 앱 한 곳</text>
+  </g>
+  <!-- 범례 -->
+  <rect x="150" y="362" width="14" height="14" rx="3" fill="#4f46e5"/>
+  <text x="170" y="374" font-size="12" fill="#374151">뽑는다 (둘째 항목)</text>
+  <rect x="300" y="362" width="14" height="14" rx="3" fill="#a5b4fc"/>
+  <text x="320" y="374" font-size="12" fill="#374151">보류: 수가 많아도 모양·뜻이 다르다</text>
+</svg>
