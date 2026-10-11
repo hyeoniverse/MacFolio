@@ -1428,17 +1428,18 @@ ol.showcase-list .showcase-row.reordering {
 	line-height: 16px;
 }
 
-/* 기간: 시작일 – 끝날 (진행 중이면 끝 대신 글) */
+/* 기간: 이름 | 시작일 – 끝날 | 진행 중. 칸마다 자리가 정해져 있어 날짜를 골라도 줄 모양이 그대로다 (진행 중이면 끝 대신 글) */
 .projects-period {
-	display: flex;
-	flex-wrap: wrap;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto auto auto;
 	align-items: center;
 	gap: 8px;
 	font-size: 13px;
 }
 
-/* 기간의 날짜 단추: 사이트 달력이 열린다 (메모 글 날짜와 같은 것) */
+/* 기간의 날짜 단추: 사이트 달력이 열린다 (메모 글 날짜와 같은 것). 날짜가 비어도 찼어도 같은 폭 */
 .projects-date {
+	width: 8.5em;
 	padding: 3px 8px;
 	border: 1px solid var(--color-divider);
 	border-radius: 6px;
@@ -1464,7 +1465,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .projects-period input[type='text'] {
-	width: 7em;
+	width: 8.5em;
 }
 
 /* 공통 칸 규칙(오른쪽 정렬로 남은 폭을 다 쓰기)을 기간·기술에서는 쓰지 않는다 */
@@ -1472,10 +1473,6 @@ ol.showcase-list .showcase-row.reordering {
 	flex: none;
 	width: auto;
 	text-align: left;
-}
-
-.projects-period .projects-date:first-of-type {
-	margin-left: auto;
 }
 
 .projects-field .projects-tags input {
@@ -1486,7 +1483,7 @@ ol.showcase-list .showcase-row.reordering {
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
-	margin-left: auto;
+	margin-left: 4px;
 	color: var(--color-text-secondary);
 	font-size: 12px;
 }

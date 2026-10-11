@@ -34,3 +34,9 @@ export function formatIso(value: string) {
 	const parsed = parseIso(value);
 	return parsed ? `${parsed.year}. ${parsed.month + 1}. ${parsed.day}.` : value;
 }
+
+/** 오늘 (YYYY-MM-DD, 지역 시간) */
+export const todayIso = () => {
+	const now = new Date();
+	return toIso(now.getFullYear(), now.getMonth(), now.getDate());
+};
