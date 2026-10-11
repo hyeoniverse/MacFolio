@@ -241,7 +241,7 @@ export const LAMP = fromRows(
 		'....kmk....',
 		'....kmk....',
 		'...kkkkk...',
-		...Array.from({ length: 24 }, () => '....kmk....'),
+		...Array.from({ length: 13 }, () => '....kmk....'),
 		'...kkmkk...',
 		'..kkkkkkk..',
 		'..kkkkkkk..',
@@ -494,7 +494,7 @@ export const FLOOR_LAMP = fromRows(
 		'ssssssssssssss',
 		'....yyyyyy....',
 		'......kk......',
-		...Array.from({ length: 30 }, () => '......kk......'),
+		...Array.from({ length: 21 }, () => '......kk......'),
 		'.....kkkk.....',
 		'...kkkkkkkk...',
 	],
@@ -648,10 +648,10 @@ export const LIGHTHOUSE = (() => {
 		['#2a2a33', cx + 4, 10, 1, 1],
 		['#2a2a33', cx - 5, 11, 10, 1]
 	);
-	// 몸통: 아래로 갈수록 넓다, 오른쪽 그늘
-	for (let y = 12; y < 52; y++) {
-		const half = 3 + Math.floor((y - 12) / 9);
-		const red = Math.floor((y - 12) / 6) % 2 === 1;
+	// 몸통: 아래로 갈수록 넓다, 오른쪽 그늘 (HUD 아래로 숨지 않게 낮고 다부지게)
+	for (let y = 12; y < 32; y++) {
+		const half = 3 + Math.floor((y - 12) / 8);
+		const red = Math.floor((y - 12) / 5) % 2 === 1;
 		const [lit, shade] = red ? ['#d23a35', '#9e2a26'] : ['#f6f1e6', '#cfc6b4'];
 		px.push(
 			['#2a2a33', cx - half - 1, y, 1, 1],
@@ -660,10 +660,10 @@ export const LIGHTHOUSE = (() => {
 			['#2a2a33', cx + half, y, 1, 1]
 		);
 	}
-	px.push(['#3a3a48', cx - 1, 22, 2, 3], ['#3a3a48', cx - 1, 34, 2, 3], ['#4a2a1c', cx - 1, 47, 3, 5]);
+	px.push(['#3a3a48', cx - 1, 19, 2, 2], ['#4a2a1c', cx - 1, 27, 3, 5]);
 	// 바위
-	px.push(['#6e6a72', 1, 52, 20, 2], ['#8d8992', 3, 51, 8, 1], ['#55515a', 0, 54, 22, 3], ['#8d8992', 4, 54, 5, 1]);
-	return { w, h: 57, px } satisfies Art;
+	px.push(['#6e6a72', 1, 32, 20, 2], ['#8d8992', 3, 31, 8, 1], ['#55515a', 0, 34, 22, 3], ['#8d8992', 4, 34, 5, 1]);
+	return { w, h: 37, px } satisfies Art;
 })();
 
 export const CRAB = fromRows(

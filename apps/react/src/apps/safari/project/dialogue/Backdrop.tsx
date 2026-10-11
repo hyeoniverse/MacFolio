@@ -2,9 +2,11 @@
 // 모두 장식(aria-hidden)이고 대화 상자·장면 액자·HUD 뒤에 깔린다
 import React, { useEffect, useRef } from 'react';
 import type { BackdropTheme } from '@macfolio/desktop-core/site';
-import { artUrl, type Art } from './pixelArt';
+import { artUrl, quantize, type Art } from './pixelArt';
 import { Pixel } from './Pixel';
 import * as S from './sprites';
+import * as I from './spritesIndoor';
+import * as O from './spritesOutdoor';
 
 /** 가장자리 소품 하나: 왼쪽이나 오른쪽에서 몇 %, 바닥에서 몇 px, 칸 크기 */
 interface Prop {
@@ -14,10 +16,10 @@ interface Prop {
 	left?: string;
 	right?: string;
 	bottom?: number;
-	/** 불빛 (소품 안에서의 자리 %, 지름 px) */
-	glow?: { x: number; y: number; size: number };
-	/** 뒤집어 놓기 */
-	flip?: boolean;
+	/** 불빛 (소품 안에서의 자리 %, 지름 px, 빛깔) */
+	glow?: { x: number; y: number; size: number; tone?: 'warm' | 'cyan' | 'red' | 'pink' };
+	/** 벽에 걸린 것: 배경 그림을 깔면(벽이 그림으로 바뀌면) 접는다 */
+	wall?: boolean;
 	className?: string;
 }
 
@@ -33,10 +35,23 @@ interface SkyItem {
 
 interface Scene {
 	sky?: SkyItem[];
+	/** 별 하늘 (반짝임 층 포함) */
+	stars?: boolean;
 	/** 지평선을 따라 가로로 이어지는 그림 */
 	band?: { art: Art; scale: number; wall?: boolean };
+	/** 지평선에 붙는 CSS 띠 (난간·벽 판넬·바다·아지랑이): .dl-props 안의 빈 div, 모양은 CSS */
+	strips?: string[];
+	/** 소품 위를 덮는 CSS 층 (햇살·눈): 대화 상자·액자·HUD 아래 */
+	overlay?: string;
 	props?: Prop[];
+	/** 바닥 무늬 타일 */
+	tile?: { art: Art; scale: number };
+	/** 장면이 쓰는 CSS 변수 (반복 무늬 주소) */
+	vars?: Record<string, string>;
 }
+
+const CABINET_PINK = I.arcadeCabinet('#c0408a', '#8a2a66', '#ffd84a');
+const CABINET_BLUE = I.arcadeCabinet('#3a5ad0', '#26388a', '#7ad0ff');
 
 const sprout = (name: string) => `/imgs/projects/sproutfarm/sprites/${name}.png`;
 
@@ -46,6 +61,20 @@ const CLOUDS: SkyItem[] = [
 	{ art: S.CLOUD, scale: 5, right: '22%', top: '6%', className: 'dl-drift slow' },
 	{ art: S.CLOUD_SMALL, scale: 4, right: '6%', top: '24%', className: 'dl-drift' },
 ];
+
+/** 반딧불: 숲 띠 앞, 땅 위 여기저기에서 천천히 깜빡인다 */
+const FIREFLIES: Prop[] = (
+	[
+		['5%', 96, ''],
+		['12%', 140, 'b'],
+		['18.5%', 64, 'c'],
+		['24%', 120, 'b'],
+		['27%', 40, ''],
+	] as const
+).flatMap(([x, bottom, delay], i) => [
+	{ art: O.FIREFLY, scale: 4, left: x, bottom, className: `dl-firefly ${delay}` },
+	{ art: O.FIREFLY, scale: 4, right: x, bottom: bottom + (i % 2 ? -20 : 24), className: `dl-firefly ${delay || 'c'}` },
+]);
 
 const SCENES: Record<Exclude<BackdropTheme, 'auto'>, Scene> = {
 	farm: {
@@ -68,16 +97,21 @@ const SCENES: Record<Exclude<BackdropTheme, 'auto'>, Scene> = {
 			{ art: S.STREAK, scale: 5, right: '8%', top: '30%' },
 		],
 		band: { art: S.SKYLINE, scale: 4, wall: true },
+		tile: { art: S.TILES.town, scale: 3 },
 		props: [
-			{ art: S.LAMP, scale: 4, left: '3%', glow: { x: 50, y: 12, size: 112 } },
+			{ art: S.LAMP, scale: 4, left: '3%', glow: { x: 50, y: 16, size: 112 } },
 			{ art: S.BENCH, scale: 4, left: '7.5%' },
 			{ art: S.TREE_POT, scale: 5, right: '10%' },
 			{ art: S.POSTBOX, scale: 4, right: '7%' },
-			{ art: S.LAMP, scale: 4, right: '2%', glow: { x: 50, y: 12, size: 112 } },
+			{ art: S.LAMP, scale: 4, right: '2%', glow: { x: 50, y: 16, size: 112 } },
 		],
 	},
 	office: {
+		strips: ['dl-wainscot'],
+		tile: { art: S.TILES.office, scale: 3 },
 		props: [
+			{ art: S.WINDOW, scale: 4, left: '1.5%', bottom: 112, wall: true },
+			{ art: S.WINDOW, scale: 4, right: '1.5%', bottom: 112, wall: true },
 			{ art: S.DESK, scale: 4, left: '0.5%' },
 			{ art: S.COOLER, scale: 4, right: '12%' },
 			{ art: S.MONSTERA, scale: 5, right: '2%' },
@@ -89,18 +123,22 @@ const SCENES: Record<Exclude<BackdropTheme, 'auto'>, Scene> = {
 			{ art: S.PENDANT, scale: 4, right: '31%', top: '0', className: 'dl-pendant' },
 		],
 		band: { art: S.SHELVES, scale: 4, wall: true },
+		tile: { art: S.TILES.library, scale: 4 },
 		props: [
 			{ art: S.LADDER, scale: 4, left: '9%' },
 			{ art: S.BOOKS, scale: 4, left: '2%' },
 			{ art: S.GLOBE, scale: 4, right: '12%' },
-			{ art: S.FLOOR_LAMP, scale: 4, right: '3%', glow: { x: 50, y: 14, size: 190 } },
+			{ art: S.FLOOR_LAMP, scale: 4, right: '3%', glow: { x: 50, y: 18, size: 190 } },
 		],
 	},
 	space: {
+		stars: true,
 		sky: [
 			{ art: S.PLANET, scale: 4, right: '4%', top: '24%', className: 'dl-float' },
 			{ art: S.MOON, scale: 4, left: '17%', top: '30%', className: 'dl-float slow' },
 		],
+		strips: ['dl-rail'],
+		tile: { art: S.TILES.space, scale: 4 },
 		props: [
 			{ art: S.DISH, scale: 5, left: '1.5%' },
 			{ art: S.CRATE, scale: 4, left: '9%' },
@@ -116,29 +154,152 @@ const SCENES: Record<Exclude<BackdropTheme, 'auto'>, Scene> = {
 			{ art: S.GULL, scale: 3, left: '25%', top: '26%', className: 'dl-gull slow' },
 			{ art: S.GULL, scale: 3, right: '19%', top: '30%', className: 'dl-gull' },
 		],
+		strips: ['dl-sea'],
+		tile: { art: S.TILES.sea, scale: 3 },
+		vars: { '--dl-wave': artUrl(S.WAVE, 3), '--dl-foam': artUrl(S.FOAM, 3) },
 		props: [
 			{ art: S.PALM, scale: 3, left: '1%' },
 			{ art: S.CRAB, scale: 3, left: '12%', className: 'dl-crab' },
 			{ art: S.UMBRELLA, scale: 4, right: '13%' },
-			{ art: S.LIGHTHOUSE, scale: 3, right: '3%', glow: { x: 50, y: 10, size: 90 } },
+			{ art: S.LIGHTHOUSE, scale: 3, right: '3%', glow: { x: 50, y: 18, size: 90 } },
+		],
+	},
+	forest: {
+		band: { art: O.PINES, scale: 4 },
+		overlay: 'dl-rays',
+		tile: { art: O.FOREST_TILE, scale: 4 },
+		props: [
+			{ art: O.PINE_NEAR, scale: 4, left: '0.5%' },
+			{ art: O.LOG, scale: 4, left: '7%' },
+			{ art: O.MUSHROOMS, scale: 3, left: '15%' },
+			{ art: O.FERN, scale: 4, right: '15%' },
+			{ art: O.STUMP, scale: 4, right: '8.5%' },
+			{ art: O.PINE_SMALL, scale: 4, right: '4.5%' },
+			{ art: O.PINE_NEAR, scale: 4, right: '0.5%' },
+			...FIREFLIES,
+		],
+	},
+	snow: {
+		band: { art: O.PEAKS, scale: 4 },
+		overlay: 'dl-snow',
+		tile: { art: O.SNOW_TILE, scale: 3 },
+		vars: {
+			'--dl-flakes': [artUrl(O.flakeTile(5, 48, 14, 0), 3), artUrl(O.flakeTile(13, 64, 22, 0), 2)].join(', '),
+			'--dl-flakes-big': artUrl(O.flakeTile(29, 50, 3, 5), 4),
+		},
+		props: [
+			{ art: O.SMOKE, scale: 3, left: 'calc(1% + 84px)', bottom: 116, className: 'dl-smoke' },
+			{ art: O.SMOKE, scale: 3, left: 'calc(1% + 84px)', bottom: 116, className: 'dl-smoke late' },
+			{ art: O.CABIN, scale: 4, left: '1%' },
+			{ art: O.FIR_SNOW_SMALL, scale: 4, left: '11%' },
+			{ art: O.SNOWMAN, scale: 4, right: '12%' },
+			{ art: O.FIR_SNOW_SMALL, scale: 4, right: '6.5%' },
+			{ art: O.FIR_SNOW, scale: 4, right: '1%' },
+		],
+	},
+	cafe: {
+		sky: [
+			{ art: I.CAFE_PENDANT, scale: 4, left: '27%', top: '0' },
+			{ art: I.CAFE_PENDANT, scale: 4, right: '27%', top: '0' },
+		],
+		strips: ['dl-wainscot'],
+		tile: { art: I.TERRACOTTA_TILE, scale: 3 },
+		vars: { '--dl-wall': artUrl(I.BRICK_TILE, 4) },
+		props: [
+			{ art: I.MENU_BOARD, scale: 3, right: '13%', bottom: 76, wall: true },
+			{ art: I.COUNTER, scale: 4, left: '0.5%' },
+			{ art: I.STEAM, scale: 3, right: 'calc(7% + 36px)', bottom: 72, className: 'dl-steam' },
+			{ art: I.CAFE_TABLE, scale: 4, right: '7%' },
+			{ art: I.FIDDLE, scale: 4, right: '0.5%' },
+		],
+	},
+	classroom: {
+		strips: ['dl-wainscot'],
+		tile: { art: I.OAK_TILE, scale: 3 },
+		props: [
+			{ art: I.CHALKBOARD, scale: 3, left: '1.5%', bottom: 46, wall: true },
+			{ art: I.CLASS_WINDOW, scale: 3, right: '2%', bottom: 50, wall: true },
+			{ art: I.TIMETABLE, scale: 3, right: '10.5%', bottom: 58, wall: true },
+			{ art: I.SCHOOL_DESK, scale: 4, left: '1%' },
+			{ art: I.SCHOOL_DESK, scale: 4, left: '10%' },
+			{ art: I.CABINET, scale: 4, right: '17%' },
+			{ art: S.GLOBE, scale: 4, right: 'calc(17% + 8px)', bottom: 48 },
+			{ art: I.SPIDER_PLANT, scale: 4, right: '4%' },
+		],
+	},
+	lab: {
+		strips: ['dl-wainscot'],
+		tile: { art: I.LAB_TILE, scale: 3 },
+		props: [
+			{ art: I.LAB_SHELF, scale: 3, left: '17%', bottom: 64, wall: true },
+			{ art: I.LAB_BENCH, scale: 4, left: '0.5%' },
+			{ art: I.BUBBLES, scale: 3, left: 'calc(0.5% + 58px)', bottom: 112, className: 'dl-bubble' },
+			{ art: I.EXTINGUISHER, scale: 4, right: '16%' },
+			{ art: I.LAB_DESK, scale: 4, right: '1%' },
+			{
+				art: I.GRAPH_MONITOR,
+				scale: 4,
+				right: 'calc(1% + 48px)',
+				bottom: 40,
+				glow: { x: 50, y: 40, size: 100, tone: 'cyan' },
+			},
+			{ art: I.MICROSCOPE, scale: 4, right: 'calc(1% + 6px)', bottom: 40 },
+		],
+	},
+	arcade: {
+		band: { art: I.CABINET_ROW, scale: 4, wall: true },
+		tile: { art: I.CHECK_TILE, scale: 4 },
+		props: [
+			{ art: I.NEON_GAME, scale: 4, left: '22%', bottom: 100, wall: true, className: 'dl-neon pink' },
+			{ art: I.NEON_STAR, scale: 4, right: '23%', bottom: 112, wall: true, className: 'dl-neon cyan' },
+			{ art: CABINET_PINK, scale: 4, left: '1%', glow: { x: 45, y: 33, size: 120, tone: 'cyan' } },
+			{ art: CABINET_BLUE, scale: 4, left: '7.5%', glow: { x: 45, y: 33, size: 120, tone: 'pink' } },
+			{ art: I.STOOL, scale: 4, left: '14%' },
+			{ art: I.STOOL, scale: 4, right: '15%' },
+			{ art: I.CLAW, scale: 4, right: '1.5%', glow: { x: 50, y: 30, size: 150, tone: 'pink' } },
+		],
+	},
+	rooftop: {
+		stars: true,
+		sky: [{ art: O.CRESCENT, scale: 4, right: '25%', top: '6%', className: 'dl-float slow' }],
+		band: { art: O.NIGHT_CITY, scale: 4, wall: true },
+		strips: ['dl-railing'],
+		tile: { art: O.CONCRETE_TILE, scale: 3 },
+		props: [
+			{ art: O.WATER_TANK, scale: 4, left: '1%' },
+			{ art: O.STRING_LIGHTS, scale: 3, left: 'calc(1% + 92px)', className: 'dl-bulbs' },
+			{ art: O.VENT, scale: 4, right: '15%' },
+			{ art: O.AC_UNIT, scale: 4, right: '7.5%' },
+			{ art: O.ANTENNA, scale: 4, right: '2%', glow: { x: 50, y: 3, size: 48, tone: 'red' }, className: 'dl-beacon' },
+		],
+	},
+	desert: {
+		sky: [
+			{ art: S.STREAK, scale: 4, left: '8%', top: '20%', className: 'dl-drift slow' },
+			{ art: S.STREAK, scale: 5, right: '9%', top: '14%', className: 'dl-drift' },
+		],
+		band: { art: O.DUNES, scale: 4 },
+		strips: ['dl-haze'],
+		tile: { art: O.SAND_TILE, scale: 3 },
+		props: [
+			{ art: O.SAGUARO, scale: 4, left: '2%' },
+			{ art: O.SKULL, scale: 3, left: '9%' },
+			{ art: O.BARREL_CACTUS, scale: 4, left: '14%' },
+			{ art: O.TUMBLEWEED, scale: 3, right: '20%', className: 'dl-tumble' },
+			{ art: O.ROCKS, scale: 4, right: '10%' },
+			{ art: O.SAGUARO, scale: 3, right: '2.5%' },
 		],
 	},
 };
 
-/** 바닥 무늬와 물결·별 타일 (CSS 배경 주소) */
-const TILE_URL: Partial<Record<BackdropTheme, string>> = {
-	town: artUrl(S.TILES.town, 3),
-	office: artUrl(S.TILES.office, 3),
-	library: artUrl(S.TILES.library, 4),
-	space: artUrl(S.TILES.space, 4),
-	sea: artUrl(S.TILES.sea, 3),
-};
-const SEA_VARS = { '--dl-wave': artUrl(S.WAVE, 3), '--dl-foam': artUrl(S.FOAM, 3) } as React.CSSProperties;
 const STARS = [artUrl(S.starTile(3, 90, 26, 1), 2), artUrl(S.starTile(9, 70, 12, 2), 3)].join(', ');
 const TWINKLE = artUrl(S.starTile(17, 80, 0, 3), 3);
 
-/** 그림을 장면 크기에 맞춰 아주 작게 그린 뒤(칸 하나 = 12px) 픽셀 그대로 키워 보인다. 못 불러오면 onFail */
-const PIXEL_CELL = 12;
+/** 그림을 장면 크기에 맞춰 아주 작게 그린 뒤(칸 하나 = 8px) 픽셀 그대로 키워 보인다. 못 불러오면 onFail */
+const PIXEL_CELL = 8;
+
+/** 픽셀로 바꾼 그림의 색 수 (팔레트 크기) */
+const PALETTE_SIZE = 20;
 
 const PixelImage: React.FC<{ src: string; onState: (state: 'ok' | 'fail') => void }> = ({ src, onState }) => {
 	const ref = useRef<HTMLCanvasElement>(null);
@@ -169,15 +330,10 @@ const PixelImage: React.FC<{ src: string; onState: (state: 'ok' | 'fail') => voi
 			const h = img.naturalHeight * scale;
 			ctx.clearRect(0, 0, cols, rows);
 			ctx.drawImage(img, (cols - w) / 2, (rows - h) / 3, w, h);
-			// 색 수를 줄여 픽셀 그림답게. 다른 출처 그림이면 읽기가 막혀 그대로 둔다
+			// 색 수를 몇 가지 팔레트로 줄여 픽셀 그림답게. 다른 출처 그림이면 읽기가 막혀 그대로 둔다
 			try {
 				const data = ctx.getImageData(0, 0, cols, rows);
-				const d = data.data;
-				for (let i = 0; i < d.length; i += 4) {
-					d[i] = Math.round(d[i] / 36) * 36;
-					d[i + 1] = Math.round(d[i + 1] / 36) * 36;
-					d[i + 2] = Math.round(d[i + 2] / 36) * 36;
-				}
+				quantize(data.data, PALETTE_SIZE);
 				ctx.putImageData(data, 0, 0);
 			} catch {
 				// 다른 출처: 그리기만 한다
@@ -212,20 +368,31 @@ const PixelImage: React.FC<{ src: string; onState: (state: 'ok' | 'fail') => voi
 
 const place = (item: { left?: string; right?: string }) => (item.left ? { left: item.left } : { right: item.right });
 
+/** 테마마다 한 번만 만든다: 바닥 타일 주소와 장면 CSS 변수 */
+const VARS = Object.fromEntries(
+	Object.entries(SCENES).map(([theme, scene]) => [
+		theme,
+		{ ...(scene.tile ? { '--dl-tile': artUrl(scene.tile.art, scene.tile.scale) } : {}), ...scene.vars },
+	])
+) as Record<string, React.CSSProperties>;
+
 /**
  * 배경: 하늘(또는 벽)과 하늘의 것들, 바닥, 지평선 띠와 가장자리 소품.
- * pixelSrc가 있으면 그 그림을 픽셀로 바꿔 하늘 자리에 깐다 (테마의 바닥·소품은 그 위에, 벽 띠는 접는다)
+ * pixelSrc가 있으면 그 그림을 픽셀로 바꿔 하늘 자리에 깐다 (테마의 바닥·소품은 그 위에, 벽 띠·벽 소품은 접는다).
+ * auto면 바닥도 없이 그림이 화면 전체를 덮는다 (아래로 갈수록 어둡게 바래 대화 상자 글이 읽힌다)
  */
 export const Backdrop: React.FC<{
 	theme: BackdropTheme;
 	pixelSrc?: string;
 	onPixel: (src: string, state: 'ok' | 'fail') => void;
 }> = ({ theme, pixelSrc, onPixel }) => {
-	const scene = theme === 'auto' ? { sky: CLOUDS } : SCENES[theme];
+	const scene: Scene = theme === 'auto' ? { sky: CLOUDS } : SCENES[theme];
+	const vars = VARS[theme];
+	const fullPixel = theme === 'auto' && !!pixelSrc;
 	return (
 		<>
-			<div className="dl-sky" aria-hidden="true">
-				{theme === 'space' && !pixelSrc && (
+			<div className="dl-sky" aria-hidden="true" style={vars}>
+				{scene.stars && !pixelSrc && (
 					<>
 						<div className="dl-stars" style={{ backgroundImage: STARS }} />
 						<div className="dl-stars dl-twinkle" style={{ backgroundImage: TWINKLE }} />
@@ -242,64 +409,56 @@ export const Backdrop: React.FC<{
 						/>
 					))}
 				{pixelSrc && (
-					<div className="dl-pixel">
+					<div className="dl-pixel" data-full={fullPixel || undefined}>
 						<PixelImage key={pixelSrc} src={pixelSrc} onState={(state) => onPixel(pixelSrc, state)} />
 					</div>
 				)}
 			</div>
-			<div
-				className="dl-ground"
-				aria-hidden="true"
-				style={{
-					...(TILE_URL[theme] ? { ['--dl-tile' as string]: TILE_URL[theme] } : {}),
-					...(theme === 'sea' ? SEA_VARS : {}),
-				}}
-			/>
-			<div className="dl-props" aria-hidden="true">
+			{!fullPixel && <div className="dl-ground" aria-hidden="true" style={vars} />}
+			<div className="dl-props" aria-hidden="true" style={vars}>
 				{scene.band && !(pixelSrc && scene.band.wall) && (
 					<Pixel art={scene.band.art} scale={scene.band.scale} className="dl-band" />
 				)}
-				{theme === 'office' && !pixelSrc && (
-					<>
-						<Pixel art={S.WINDOW} scale={4} className="dl-window" style={{ left: '1.5%' }} />
-						<Pixel art={S.WINDOW} scale={4} className="dl-window" style={{ right: '1.5%' }} />
-					</>
-				)}
-				{theme === 'sea' && (
-					<div className="dl-sea" style={SEA_VARS}>
-						<i />
-						<i />
-						<i />
+				{scene.strips?.map((strip) => (
+					<div key={strip} className={strip}>
+						{strip === 'dl-sea' && (
+							<>
+								<i />
+								<i />
+								<i />
+							</>
+						)}
 					</div>
-				)}
-				{theme === 'space' && <div className="dl-rail" />}
-				{theme === 'office' && <div className="dl-wainscot" />}
-				{scene.props?.map((prop, i) => (
-					<span
-						key={i}
-						className={`dl-prop ${prop.className ?? ''}`}
-						style={{ ...place(prop), bottom: prop.bottom ?? 0 }}
-						data-flip={prop.flip || undefined}
-					>
-						{prop.glow && (
-							<i
-								className="dl-glow"
-								style={{
-									left: `${prop.glow.x}%`,
-									top: `${prop.glow.y}%`,
-									width: prop.glow.size,
-									height: prop.glow.size,
-								}}
-							/>
-						)}
-						{prop.art ? (
-							<Pixel art={prop.art} scale={prop.scale} />
-						) : (
-							<img src={prop.img} alt="" style={{ ['--dl-scale' as string]: prop.scale }} />
-						)}
-					</span>
 				))}
+				{scene.props?.map((prop, i) =>
+					prop.wall && pixelSrc ? null : (
+						<span
+							key={i}
+							className={`dl-prop ${prop.className ?? ''}`}
+							style={{ ...place(prop), bottom: prop.bottom ?? 0 }}
+						>
+							{prop.glow && (
+								<i
+									className="dl-glow"
+									data-tone={prop.glow.tone}
+									style={{
+										left: `${prop.glow.x}%`,
+										top: `${prop.glow.y}%`,
+										width: prop.glow.size,
+										height: prop.glow.size,
+									}}
+								/>
+							)}
+							{prop.art ? (
+								<Pixel art={prop.art} scale={prop.scale} />
+							) : (
+								<img src={prop.img} alt="" style={{ ['--dl-scale' as string]: prop.scale }} />
+							)}
+						</span>
+					)
+				)}
 			</div>
+			{scene.overlay && <div className={`dl-overlay ${scene.overlay}`} aria-hidden="true" style={vars} />}
 		</>
 	);
 };
