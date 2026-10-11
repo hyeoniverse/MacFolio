@@ -126,9 +126,26 @@ export type ProjectLook = (typeof PROJECT_LOOKS)[number];
 
 /**
  * dialogue 모양(RPG 대화창)의 배경 장면. auto는 배경 그림이 없으면 프로젝트 대표 화면을 픽셀로 바꿔 깐다.
- * farm 풀밭, town 노을 거리, office 사무실, library 도서관, space 우주, sea 바닷가
+ * farm 풀밭, town 노을 거리, office 사무실, library 도서관, space 우주, sea 바닷가,
+ * forest 깊은 숲, snow 설산, cafe 카페, classroom 교실, lab 연구실, arcade 게임장, rooftop 밤 옥상, desert 사막
  */
-export const BACKDROP_THEMES = ['auto', 'farm', 'town', 'office', 'library', 'space', 'sea'] as const;
+export const BACKDROP_THEMES = [
+	'auto',
+	'farm',
+	'town',
+	'office',
+	'library',
+	'space',
+	'sea',
+	'forest',
+	'snow',
+	'cafe',
+	'classroom',
+	'lab',
+	'arcade',
+	'rooftop',
+	'desert',
+] as const;
 export type BackdropTheme = (typeof BACKDROP_THEMES)[number];
 
 /** 페이지 배경 (지금은 dialogue 모양만 쓴다) */

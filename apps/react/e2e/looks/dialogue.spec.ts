@@ -133,3 +133,24 @@ test('dialogue: 배경 테마가 자동이면 대표 화면을 픽셀로 바꿔 
 	await expect(scene.locator('.dl-pixel canvas')).toHaveCount(1);
 	await expect(scene).toHaveAttribute('data-pixel', '');
 });
+
+test('dialogue: 새 배경 테마(숲)를 고르면 그 장면을 깐다', async ({ page }) => {
+	const { panel } = await openLook(page, {
+		id: 'qru',
+		tab: /QRU/,
+		look: 'dialogue',
+		override: { backdrop: { theme: 'forest' } },
+	});
+	const scene = panel.locator('.dl');
+	await expect(scene).toHaveAttribute('data-theme', 'forest');
+	await expect(scene.locator('.dl-ground')).toHaveCount(1);
+	await expect(scene.locator('.dl-pixel canvas')).toHaveCount(0);
+});
+
+test('dialogue: 자동이면 바닥 타일 없이 픽셀 그림이 화면 전체를 덮는다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue', override: { backdrop: null } });
+	const scene = panel.locator('.dl');
+	await expect(scene).toHaveAttribute('data-pixel', '');
+	await expect(scene.locator('.dl-ground')).toHaveCount(0);
+	await expect(scene.locator('.dl-pixel[data-full]')).toHaveCount(1);
+});

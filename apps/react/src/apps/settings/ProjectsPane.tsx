@@ -89,6 +89,14 @@ const BACKDROP_LABEL: Record<BackdropTheme, string> = {
 	library: '도서관',
 	space: '우주',
 	sea: '바다',
+	forest: '숲',
+	snow: '설산',
+	cafe: '카페',
+	classroom: '교실',
+	lab: '연구실',
+	arcade: '게임장',
+	rooftop: '밤 옥상',
+	desert: '사막',
 };
 
 /** 배경 묶음을 정리한다: 자동 테마는 적지 않고, 아무것도 없으면 필드째 뺀다 */
