@@ -1,0 +1,406 @@
+/*
+ * 어디서 열어도 (MacFolio 전용 시뮬레이터). 구역을 지나는 동안 화면에 고정되고, 스크롤한 만큼 기기가 바뀐다.
+ * 어두운 론칭 톤: 거의 검은 무대에 강조색 빛, 기기 틀은 어두운 알루미늄. 색은 .sp의 공통 값(--sp-*)과 ProductPage.css의 --pd-*
+ */
+.pdv {
+	background: linear-gradient(180deg, var(--pd-ink), var(--pd-ink-2));
+	color: var(--pd-ink-text);
+}
+
+.pdv-track {
+	--sp: 0;
+	/* 장면마다 화면 높이의 60%씩 (앱 셋 × 크기 넷) */
+	height: calc(var(--view, 700px) * (1 + var(--steps, 4) * 0.6));
+}
+
+.pdv-sticky {
+	position: sticky;
+	top: 0;
+	display: flex;
+	align-items: center;
+	height: var(--view, 700px);
+	overflow: hidden;
+}
+
+.pdv-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+	gap: 40px;
+	align-items: center;
+	width: 100%;
+	max-width: var(--pd-max, 1040px);
+	margin: 0 auto;
+	padding: 0 var(--pd-gutter, 32px);
+}
+
+.pdv-copy h2 {
+	max-width: 14ch;
+}
+
+.pdv-lead {
+	margin-top: 14px;
+	color: var(--pd-ink-muted);
+	font-size: 17px;
+}
+
+/* 앱 고르기: 알약 모양 스위치 */
+.pdv-switch {
+	display: inline-flex;
+	gap: 4px;
+	margin-top: 24px;
+	padding: 4px;
+	border-radius: 980px;
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.pdv-switch button {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	padding: 8px 16px;
+	border: none;
+	border-radius: 980px;
+	background: none;
+	color: var(--pd-ink-text);
+	font: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.pdv-switch button span {
+	color: var(--pd-ink-muted);
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.pdv-switch button[aria-pressed='true'] {
+	background: var(--sp-accent);
+}
+
+.pdv-switch button[aria-pressed='true'] span {
+	color: rgba(255, 255, 255, 0.75);
+}
+
+/* 단계: 영상의 챕터처럼, 지나온 만큼 아래 막대가 찬다 (--sp는 구역을 지나온 비율) */
+.pdv-steps {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
+	margin-top: 20px;
+	list-style: none;
+}
+
+.pdv-steps button {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	width: 100%;
+	padding: 10px 14px 12px;
+	overflow: hidden;
+	border: 1px solid var(--pd-ink-line);
+	border-radius: 14px;
+	background: rgba(255, 255, 255, 0.04);
+	color: var(--pd-ink-muted);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		background-color 0.3s,
+		color 0.3s;
+}
+
+.pdv-steps strong {
+	font-size: 15px;
+}
+
+.pdv-steps span {
+	font-family: var(--sp-mono);
+	font-size: 12px;
+}
+
+.pdv-steps button[aria-current] {
+	background: rgba(255, 255, 255, 0.1);
+	color: var(--pd-ink-text);
+}
+
+.pdv-steps button::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: calc(clamp(0, var(--sp) * 4 - var(--i), 1) * 100%);
+	height: 3px;
+	background: var(--sp-accent);
+}
+
+.pdv-note {
+	min-height: 4.8em;
+	margin-top: 18px;
+	color: var(--pd-ink-muted);
+	font-size: 15px;
+	line-height: 1.6;
+	animation: pdv-note 0.5s ease-out;
+}
+
+.pdv-note strong {
+	color: var(--pd-ink-text);
+}
+
+@keyframes pdv-note {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+}
+
+/* 무대: 기기는 같은 바닥선에 서고, 아래에 지금 폭을 재는 자가 있다 */
+.pdv-stage {
+	--ease: cubic-bezier(0.65, 0, 0.35, 1);
+	--zoom: 1;
+	container-type: inline-size;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	aspect-ratio: 5 / 4;
+	padding-bottom: 12%;
+	overflow: hidden;
+	border-radius: 28px;
+	background:
+		radial-gradient(60% 55% at 50% 40%, var(--pd-glow), transparent 70%),
+		radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px) 0 0 / 22px 22px,
+		rgba(255, 255, 255, 0.03);
+	box-shadow: inset 0 0 0 1px var(--pd-ink-line);
+}
+
+.pdv-device {
+	--bz: 10px;
+	--br: 14px;
+	position: relative;
+	width: calc(var(--share) * var(--zoom) * 100cqi);
+	height: calc(var(--share) * var(--zoom) * 100cqi * var(--ratio));
+	border: var(--bz) solid #26262a;
+	border-radius: var(--br);
+	background: #000000;
+	box-shadow:
+		0 0 0 1px #4a4a50,
+		0 30px 60px rgba(0, 0, 0, 0.6);
+	transition:
+		width 0.9s var(--ease),
+		height 0.9s var(--ease),
+		border-width 0.9s var(--ease),
+		border-radius 0.9s var(--ease);
+}
+
+.pdv-stage[data-kind='laptop'] .pdv-device {
+	--br: 14px 14px 4px 4px;
+}
+
+.pdv-stage[data-kind='tablet'] .pdv-device {
+	--bz: 12px;
+	--br: 26px;
+}
+
+.pdv-stage[data-kind='phone'] .pdv-device {
+	--bz: 7px;
+	--br: 30px;
+}
+
+.pdv-screen {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	border-radius: calc(var(--br) - var(--bz));
+	transition: border-radius 0.9s var(--ease);
+}
+
+.pdv-screen img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+	opacity: 0;
+	transition: opacity 0.45s ease-out;
+}
+
+/* 틀이 모양을 반쯤 바꾼 뒤에 새 화면이 나타난다 */
+.pdv-screen img.active {
+	opacity: 1;
+	transition-delay: 0.35s;
+}
+
+/* 휴대폰은 위에 다이내믹 아일랜드 */
+.pdv-device::before {
+	content: '';
+	position: absolute;
+	z-index: 1;
+	top: 6px;
+	left: 50%;
+	width: 30%;
+	height: 4.5%;
+	transform: translateX(-50%);
+	border-radius: 20px;
+	background: #000000;
+	opacity: 0;
+	transition: opacity 0.3s;
+}
+
+.pdv-stage[data-kind='phone'] .pdv-device::before {
+	opacity: 1;
+	transition-delay: 0.6s;
+}
+
+/* 모니터 받침대와 노트북 바닥: 그 기기일 때만 */
+.pdv-stand,
+.pdv-base {
+	position: absolute;
+	top: calc(100% + var(--bz));
+	left: 50%;
+	opacity: 0;
+	transform: translateX(-50%);
+	transition: opacity 0.4s;
+}
+
+.pdv-stand {
+	width: 14%;
+	height: 7cqi;
+	background: linear-gradient(90deg, #3a3a40, #5b5b63 45%, #2f2f35);
+	clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+}
+
+.pdv-stand::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: -40%;
+	width: 180%;
+	height: 0.9cqi;
+	border-radius: 4px;
+	background: #4a4a52;
+}
+
+.pdv-base {
+	width: calc(100% + var(--bz) * 2 + 12%);
+	height: 1.6cqi;
+	border-radius: 2px 2px 12px 12px;
+	background: linear-gradient(#5b5b63, #3a3a40 60%, #26262a);
+}
+
+.pdv-stage[data-kind='monitor'] .pdv-stand,
+.pdv-stage[data-kind='laptop'] .pdv-base {
+	opacity: 1;
+	transition-delay: 0.6s;
+}
+
+/* 폭을 재는 자: 기기 폭을 따라 늘고 줄며, 숫자가 굴러간다 */
+.pdv-ruler {
+	position: absolute;
+	bottom: 2.4cqi;
+	left: 50%;
+	display: grid;
+	place-items: center;
+	width: calc(var(--share) * var(--zoom) * 100cqi);
+	height: 22px;
+	transform: translateX(-50%);
+	border-inline: 2px solid var(--sp-accent);
+	transition: width 0.9s var(--ease);
+}
+
+.pdv-ruler::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	right: 0;
+	left: 0;
+	height: 1px;
+	background: var(--sp-accent);
+	opacity: 0.6;
+}
+
+.pdv-ruler span {
+	position: relative;
+	padding: 2px 10px;
+	border-radius: 999px;
+	background: var(--sp-accent);
+	color: #ffffff;
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* ─── 좁은 창: 고정하지 않고 세로로 넉넉하게 ─── */
+@container (max-width: 600px) {
+	.pdv-switch button span {
+		display: none;
+	}
+
+	.pdv-track {
+		height: auto;
+	}
+
+	.pdv-sticky {
+		position: static;
+		height: auto;
+		padding: 56px 0;
+	}
+
+	.pdv-layout {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 24px;
+	}
+
+	.pdv-stage {
+		aspect-ratio: 4 / 5;
+		padding-bottom: 16%;
+		border-radius: 20px;
+	}
+
+	.pdv-stage[data-kind='monitor'] {
+		--zoom: 1.05;
+	}
+
+	.pdv-stage[data-kind='laptop'] {
+		--zoom: 1.15;
+	}
+
+	.pdv-stage[data-kind='tablet'] {
+		--zoom: 1.4;
+	}
+
+	.pdv-stage[data-kind='phone'] {
+		--zoom: 1.5;
+	}
+
+	.pdv-device {
+		--bz: 6px;
+	}
+}
+
+/* ─── 움직임 줄이기: 고정하지 않고 눌러서 고른다 ─── */
+@media (prefers-reduced-motion: reduce) {
+	.pdv-track {
+		height: auto;
+	}
+
+	.pdv-sticky {
+		position: static;
+		height: auto;
+		padding: 80px 0;
+	}
+
+	.pdv-steps button[aria-current]::after {
+		width: 100%;
+	}
+
+	.pdv-device,
+	.pdv-screen,
+	.pdv-screen img,
+	.pdv-ruler {
+		transition: none;
+	}
+}

@@ -1,166 +1,699 @@
-/* HYEONIVERSE: 그 사이트처럼 큰 세리프와 마젠타, 다크 모드는 그 사이트의 어두운 바탕.
-   Apple 제품 페이지처럼 위에 붙은 로컬 내비, 가운데 정렬된 큰 첫머리, 화면 폭을 다 쓰는 띠가 번갈아 내려간다 */
+/* creative: 큰 타이포와 스크롤 챕터. 첫 화면은 이름이 화면을 꽉 채우고, 왼쪽에 붙은 차례가 지금 읽는 장을 가리키며,
+   장마다 거대한 번호가 바탕에 흐리게 깔린 채 바탕 톤(bg → alt → dark)이 번갈아 내려간다.
+   --cr-bg/--cr-ink/--cr-muted/--cr-line 은 데모·장 모양 조각(creative/, CreativeChapters.css)이 읽는 색이라 이름을 지킨다.
+   파일 뒤쪽 "가져다 쓰는 조각" 블록은 CreativeParts.tsx·CreativeChapters.tsx가 만드는 마크업의 스타일이다 */
 .sp[data-look='creative'] {
-	--cr-bg: #f6f5f3;
-	--cr-ink: #1c1b1a;
-	--cr-muted: #6b665f;
-	--cr-line: #dcd8d1;
+	--cr-bg: #f7f6f2;
+	--cr-ink: #17161a;
+	--cr-muted: #6a6770;
+	--cr-line: #dad7d0;
+	--cr-alt: #edebe4;
+	--cr-ink-dark: #f4f1ea;
+	--cr-bg-dark: #141318;
 	--sp-accent: #d40063;
-	/* 띠가 바뀌는 바탕과, 그 띠 위에 뜨는 타일 */
-	--cr-band: #ecebe8;
-	--cr-raised: #ffffff;
-	/* 금속 질감(화면 테와 차례 표시만): 크롬은 위아래로 빛이 갈리는 은색, 테는 비스듬히 빛이 도는 은색 */
-	--cr-sheen: conic-gradient(from 210deg, #f6f7f9, #a9aeb6, #ffffff, #8a9099, #e8eaee, #9ea3ab, #f6f7f9);
+	--sp-grad: linear-gradient(100deg, #d40063 0%, #ff5c38 55%, #ffb03b 100%);
+	/* 테두리 글자의 선 색 (톤마다 바뀐다) */
+	--ct-stroke: var(--cr-ink);
 	background-color: var(--cr-bg);
 	color: var(--cr-ink);
 }
 
 :root[data-theme='dark'] .sp[data-look='creative'] {
-	--cr-bg: #1c1b1a;
-	--cr-ink: #f3efe6;
-	--cr-muted: #a8a39b;
-	--cr-line: #3a3836;
-	--sp-accent: #f74d96;
-	--cr-band: #242321;
-	--cr-raised: #2e2c2a;
-	--cr-sheen: conic-gradient(from 210deg, #5b6068, #2a2c31, #b9bec6, #34373d, #8b9099, #2f3237, #5b6068);
+	--cr-bg: #17161a;
+	--cr-ink: #f4f1ea;
+	--cr-muted: #a39fa8;
+	--cr-line: #363440;
+	--cr-alt: #1f1e24;
+	--cr-bg-dark: #0a0a0d;
+	--sp-accent: #ff4f9a;
+	--sp-grad: linear-gradient(100deg, #ff4f9a 0%, #ff8a5b 55%, #ffd166 100%);
 }
 
-.cr {
-	/* 내용 폭은 1080px까지, 좁으면 양옆 24px (padding의 %는 띠 폭 기준) */
-	--cr-pad: max(24px, calc((100% - 1080px) / 2));
+.ct {
+	/* 내용 폭과 양옆 여백. 넓은 창에서는 왼쪽에 차례 칸이 하나 더 선다 */
+	--ct-max: 1040px;
+	--ct-pad: clamp(20px, 4cqi, 56px);
+	--ct-toc: 220px;
+	display: grid;
+	grid-template-columns: var(--ct-toc) minmax(0, 1fr);
 	text-align: left;
 }
 
-.cr :is(h1, h2, h3, .cr-facts strong, dt, .cr-foot p) {
-	font-family: var(--sp-serif);
+/* 그라데이션 글자 (이름, 맺음말) */
+.ct-grad {
+	background: var(--sp-grad);
+	background-clip: text;
+	-webkit-background-clip: text;
+	color: transparent;
+	-webkit-text-fill-color: transparent;
 }
 
-/* 몽이가 떠 있는 층: 스크롤하는 칸 맨 위에 붙어 있고 높이가 없어 내용을 밀지 않는다 */
-.cr-buddy {
-	position: sticky;
-	top: 0;
-	z-index: 20;
-	/* 자르기(overflow)를 걸지 않는다: 페이지 전체에 걸면 Safari에서 스크롤 장면의 sticky가 멈췄고,
-	   높이 0인 이 층에 걸면 Safari가 세로까지 잘라 몽이가 사라졌다. 몽이는 늘 화면 안에 둔다 */
+/* ─── 첫 화면 ─── */
+.ct-hero {
+	display: flex;
+	grid-column: 1 / -1;
+	position: relative;
+	flex-direction: column;
+	justify-content: flex-end;
+	min-height: min(760px, 88vh);
+	padding: 72px var(--ct-pad) 28px;
+	overflow: hidden;
+	border-bottom: 1px solid var(--cr-line);
+	/* 바탕의 빛(z-index -1)이 첫머리 안에 머물게 */
+	isolation: isolate;
+}
+
+/* 바탕에 번지는 강조색 빛 */
+.ct-hero::before {
+	content: '';
+	position: absolute;
+	top: -20%;
+	right: -10%;
+	z-index: -1;
+	width: 60%;
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--sp-accent) 18%, transparent), transparent);
+	pointer-events: none;
+}
+
+.ct-hero-kicker {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 18px;
+	color: var(--cr-muted);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	letter-spacing: 0.08em;
+}
+
+.ct-hero-kicker span + span::before {
+	content: '/';
+	margin-right: 18px;
+	color: var(--cr-line);
+}
+
+/* 이름: 화면 폭에 맞춰 커지는 그라데이션 글자 */
+.ct-hero-name {
+	margin: 14px 0 0 -0.04em;
+	font-size: clamp(48px, 12cqi, 160px);
+	font-weight: 800;
+	letter-spacing: -0.05em;
+	line-height: 0.95;
+	text-wrap: balance;
+}
+
+.ct-hero-name .ct-grad {
+	display: inline-block;
+	/* 글자의 아래 획이 잘리지 않게 */
+	padding-bottom: 0.08em;
+}
+
+/* 한 줄 소개: 세리프 테두리 글자 */
+.ct-hero-tagline {
+	max-width: 14em;
+	margin-top: 4px;
+	color: transparent;
+	font-family: var(--sp-serif);
+	font-size: clamp(28px, 6cqi, 80px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.12;
+	-webkit-text-stroke: 1px var(--ct-stroke);
+	text-wrap: balance;
+}
+
+/* 작은 설명과 링크는 왼쪽, 몽이 자리는 오른쪽 아래 */
+.ct-hero-row {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 24px;
+	margin-top: 36px;
+}
+
+.ct-hero-desc {
+	max-width: 34em;
+	color: var(--cr-muted);
+	font-size: clamp(16px, 1.6cqi, 19px);
+	line-height: 1.65;
+	text-wrap: pretty;
+}
+
+.ct-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 22px;
+	margin-top: 22px;
+	font-size: 16px;
+}
+
+.ct-hero-seat {
+	flex: none;
+	width: 0;
 	height: 0;
 }
 
-/* 첫머리: 가운데 정렬, 몽이 아래로 큰 제목과 소개, 링크 */
-.cr-hero {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 40px var(--cr-pad) 48px;
-	text-align: center;
-}
-
-/* 첫머리에서 몽이가 서는 자리 (몽이 몸 높이만큼 비워 둔다) */
-.cr-hero-seat {
+/* 몽이가 있는 프로젝트만 자리를 비운다 (몽이 몸 크기) */
+.ct-hero-seat[data-mascot] {
 	width: 140px;
 	height: 136px;
 }
 
-.cr-name {
-	margin-top: 8px;
-	color: var(--sp-accent);
-	font-size: 15px;
-	font-weight: 700;
+/* 스크롤 표시: 아래로 흐르는 가는 선 */
+.ct-scroll {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 32px;
+	color: var(--cr-muted);
+	font-family: var(--sp-mono);
+	font-size: 11px;
 	letter-spacing: 0.2em;
 	text-transform: uppercase;
 }
 
-.cr-hero h1 {
-	max-width: 14em;
-	margin-top: 12px;
-	font-size: clamp(36px, 6.4cqi, 72px);
+.ct-scroll i {
+	position: relative;
+	width: 1px;
+	height: 44px;
+	overflow: hidden;
+	background-color: var(--cr-line);
+}
+
+.ct-scroll i::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-color: var(--sp-accent);
+	animation: ct-drip 1.8s ease-in-out infinite;
+}
+
+@keyframes ct-drip {
+	from {
+		transform: translateY(-100%);
+	}
+
+	to {
+		transform: translateY(100%);
+	}
+}
+
+/* ─── 차례 ─── */
+.ct-toc {
+	position: sticky;
+	top: 0;
+	align-self: start;
+	padding: 40px 0 40px var(--ct-pad);
+}
+
+.ct-toc ol {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	list-style: none;
+	border-left: 1px solid var(--cr-line);
+}
+
+.ct-toc button {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	width: 100%;
+	margin-left: -1px;
+	padding: 6px 12px;
+	border: none;
+	border-left: 2px solid transparent;
+	background: none;
+	color: var(--cr-muted);
+	font: inherit;
+	font-size: 13px;
+	line-height: 1.4;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		color var(--duration),
+		border-color var(--duration);
+}
+
+.ct-toc button:hover {
+	color: var(--cr-ink);
+}
+
+.ct-toc-no {
+	flex: none;
+	font-family: var(--sp-mono);
+	font-size: 11px;
+	letter-spacing: 0.06em;
+}
+
+.ct-toc li[data-current] button {
+	border-left-color: var(--sp-accent);
+	color: var(--cr-ink);
 	font-weight: 700;
-	letter-spacing: -0.035em;
-	line-height: 1.06;
+}
+
+.ct-toc li[data-current] .ct-toc-no {
+	color: var(--sp-accent);
+}
+
+/* ─── 본문 ─── */
+.ct-body {
+	min-width: 0;
+}
+
+/* 한눈에 보기: 대표 화면과 큰 숫자 */
+.ct-glance {
+	max-width: var(--ct-max);
+	margin: 0 auto;
+	padding: 64px var(--ct-pad) 32px;
+}
+
+.ct-shot {
+	overflow: hidden;
+	border: 1px solid var(--cr-line);
+	border-radius: 18px;
+	box-shadow: 0 30px 70px rgba(0, 0, 0, 0.16);
+}
+
+.ct-shot img {
+	display: block;
+	width: 100%;
+}
+
+.ct-facts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 24px;
+	margin-top: 48px;
+	list-style: none;
+}
+
+.ct-facts li {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding-top: 14px;
+	border-top: 1px solid var(--cr-ink);
+}
+
+.ct-facts strong {
+	font-size: clamp(36px, 5cqi, 64px);
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	line-height: 1;
+}
+
+.ct-facts li > span {
+	color: var(--cr-muted);
+	font-size: 14px;
+}
+
+/* ─── 장 ─── */
+.ct-chapter {
+	position: relative;
+	padding: 128px var(--ct-pad) 144px;
+	/* 자르기(overflow)는 걸지 않는다 (Safari에서 스크롤 장면의 sticky가 멈춘다). 배경 번호는 글 뒤에 머물도록 쌓임만 가둔다 */
+	isolation: isolate;
+	background-color: var(--cr-bg);
+	color: var(--cr-ink);
+}
+
+.ct-chapter[data-tone='alt'] {
+	background-color: var(--cr-alt);
+}
+
+/* 어두운 장: 조각들이 읽는 --cr-* 색을 통째로 바꿔 데모·타일도 따라 어두워진다 */
+.ct-chapter[data-tone='dark'] {
+	--cr-bg: var(--cr-bg-dark);
+	--cr-ink: var(--cr-ink-dark);
+	--cr-muted: #a39fa8;
+	--cr-line: #343239;
+	--ct-stroke: var(--cr-ink-dark);
+	background-color: var(--cr-bg);
+}
+
+/* 바탕에 깔린 거대한 번호 */
+.ct-ghost {
+	position: absolute;
+	top: 24px;
+	right: calc(var(--ct-pad) - 0.08em);
+	z-index: 0;
+	color: transparent;
+	font-size: clamp(160px, 28cqi, 420px);
+	font-weight: 800;
+	letter-spacing: -0.08em;
+	line-height: 0.8;
+	-webkit-text-stroke: 1px color-mix(in srgb, var(--cr-ink) 14%, transparent);
+	user-select: none;
+	pointer-events: none;
+}
+
+.ct-chapter[data-tone='alt'] .ct-ghost {
+	color: color-mix(in srgb, var(--cr-ink) 4%, transparent);
+	-webkit-text-stroke: 0;
+}
+
+.ct-chapter-head,
+.ct-chapter-body {
+	position: relative;
+	z-index: 1;
+	max-width: var(--ct-max);
+	margin: 0 auto;
+}
+
+.ct-chapter-no {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+}
+
+.ct-chapter-no::after {
+	content: '';
+	width: 56px;
+	height: 1px;
+	background-color: var(--sp-accent);
+}
+
+.ct-chapter h2 {
+	max-width: 12em;
+	margin-top: 18px;
+	font-size: clamp(40px, 7cqi, 96px);
+	font-weight: 800;
+	letter-spacing: -0.045em;
+	line-height: 1;
 	text-wrap: balance;
 }
 
-.cr-lead {
+.ct-chapter-lead {
 	max-width: 36em;
-	margin-top: 20px;
+	margin-top: 24px;
 	color: var(--cr-muted);
-	font-size: clamp(16px, 1.7cqi, 20px);
+	font-size: clamp(17px, 1.8cqi, 22px);
 	line-height: 1.6;
 	text-wrap: pretty;
 }
 
-.cr-links {
+.ct-chapter-body {
+	margin-top: 72px;
+}
+
+/* 장 끝 그림 */
+.ct-figure {
+	margin-top: 64px;
+}
+
+.ct-figure > img {
+	display: block;
+	width: 100%;
+	border: 1px solid var(--cr-line);
+	border-radius: 16px;
+}
+
+.ct-figure figcaption {
+	margin-top: 12px;
+	color: var(--cr-muted);
+	font-family: var(--sp-mono);
+	font-size: 12px;
+	letter-spacing: 0.04em;
+}
+
+/* 주요 기능: 항목마다 큰 번호와 두 칸 글, 그 아래 화면 */
+.ct-features {
+	list-style: none;
+}
+
+.ct-feature {
+	padding: 40px 0 56px;
+	border-top: 1px solid var(--cr-line);
+}
+
+.ct-feature:first-child {
+	padding-top: 0;
+	border-top: none;
+}
+
+.ct-feature-text {
+	display: grid;
+	grid-template-columns: auto minmax(0, 0.9fr) minmax(0, 1.1fr);
+	gap: 24px 32px;
+	align-items: start;
+	margin-bottom: 28px;
+}
+
+.ct-feature-idx {
+	color: transparent;
+	font-size: clamp(40px, 5cqi, 64px);
+	font-weight: 800;
+	letter-spacing: -0.06em;
+	line-height: 0.9;
+	-webkit-text-stroke: 1px var(--ct-stroke);
+}
+
+.ct-feature h3 {
+	font-size: clamp(22px, 2.6cqi, 32px);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 1.2;
+	text-wrap: balance;
+}
+
+.ct-feature p {
+	color: var(--cr-muted);
+	font-size: 16px;
+	line-height: 1.7;
+	text-wrap: pretty;
+}
+
+.ct-feature > .cr-point-demo {
+	margin-top: 8px;
+}
+
+/* 화면 모음: 가로로 넘기는 띠 */
+.ct-gallery {
 	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: center;
-	gap: 10px 22px;
-	margin-top: 26px;
-	font-size: 16px;
+	gap: 16px;
+	margin: 24px calc(var(--ct-pad) * -1) 0;
+	padding: 8px var(--ct-pad) 16px;
+	overflow-x: auto;
+	list-style: none;
+	scroll-snap-type: x mandatory;
 }
 
-/* 몽이를 누르면 하트가 퐁퐁 솟고, 몽이는 한 번 뛴다 */
-.cr-mascot {
-	cursor: pointer;
+.ct-gallery li {
+	flex: 0 0 min(72%, 420px);
+	scroll-snap-align: start;
 }
 
-.cr-mascot[data-hop] img[data-on='true'] {
-	animation: cr-hop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+.ct-gallery .cr-zoom {
+	border: 1px solid var(--cr-line);
+	border-radius: 12px;
+	overflow: hidden;
 }
 
-@keyframes cr-hop {
-	40% {
-		translate: 0 -14px;
-	}
+.ct-gallery li > span {
+	display: block;
+	margin-top: 8px;
+	color: var(--cr-muted);
+	font-size: 13px;
 }
 
-.cr-heart {
+/* 진행 과정: 왼쪽 세로줄에 날짜가 모노로 */
+.ct-timeline {
+	display: grid;
+	gap: 0;
+	max-width: 46em;
+	list-style: none;
+	border-left: 1px solid var(--cr-line);
+}
+
+.ct-timeline li {
+	display: grid;
+	grid-template-columns: 9em minmax(0, 1fr);
+	position: relative;
+	gap: 16px;
+	padding: 14px 0 14px 28px;
+	font-size: 17px;
+	line-height: 1.5;
+}
+
+.ct-timeline li::before {
+	content: '';
 	position: absolute;
-	z-index: 2;
-	top: 30%;
-	left: 50%;
+	top: 24px;
+	left: -5px;
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background-color: var(--cr-bg);
+	box-shadow: 0 0 0 2px var(--sp-accent);
+}
+
+.ct-timeline li:last-child::before {
+	background-color: var(--sp-accent);
+}
+
+.ct-timeline time {
 	color: var(--sp-accent);
-	font-size: 16px;
-	pointer-events: none;
-	animation: cr-heart 1.05s ease-out forwards;
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	letter-spacing: 0.06em;
+	line-height: inherit;
 }
 
-@keyframes cr-heart {
-	from {
-		opacity: 1;
-		transform: translate(-50%, 0) scale(0.4);
-	}
-
-	to {
-		opacity: 0;
-		transform: translate(calc(-50% + var(--dx) * 1px), -90px) scale(1.2) rotate(calc(var(--dx) * 0.4deg));
-	}
+/* 맡은 일: 큰 글씨의 번호 목록 */
+.ct-roles {
+	max-width: 30em;
+	list-style: none;
+	counter-reset: ct-role;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.cr-mascot[data-hop] img[data-on='true'],
-	.cr-heart {
-		animation: none;
-		display: none;
-	}
+.ct-roles li {
+	display: grid;
+	grid-template-columns: 2.2em minmax(0, 1fr);
+	padding: 20px 0;
+	border-top: 1px solid var(--cr-line);
+	font-size: clamp(19px, 2.1cqi, 26px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.35;
+	counter-increment: ct-role;
 }
 
-/* 몽이: 바닥 그림자 위에서 장에 따라 표정을 바꾼다 (표정 그림을 겹쳐 두고 하나만 보인다) */
+.ct-roles li::before {
+	content: counter(ct-role, decimal-leading-zero);
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 2.2;
+}
+
+.ct-roles li:last-child {
+	border-bottom: 1px solid var(--cr-line);
+}
+
+/* 빌려 쓴 것 */
+.ct-credits {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 20px;
+	margin-top: 48px;
+	list-style: none;
+}
+
+.ct-credits li {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding-top: 12px;
+	border-top: 1px solid var(--cr-line);
+	font-size: 14px;
+}
+
+.ct-credits li > span {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 11px;
+	letter-spacing: 0.1em;
+}
+
+.ct-credits em {
+	color: var(--cr-muted);
+	font-style: normal;
+}
+
+/* 기술 사양: 분류는 모노, 값은 크게 */
+.ct-specs {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: 0 40px;
+}
+
+.ct-specs div {
+	padding: 22px 0;
+	border-top: 1px solid var(--cr-line);
+}
+
+.ct-specs dt {
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 12px;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.ct-specs dd {
+	margin-top: 8px;
+	font-size: clamp(18px, 1.9cqi, 22px);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.4;
+}
+
+/* ─── 맺음말 ─── */
+.ct-end {
+	padding: 144px var(--ct-pad) 120px;
+	border-top: 1px solid var(--cr-line);
+	text-align: center;
+}
+
+.ct-end-big {
+	font-size: clamp(48px, 11cqi, 140px);
+	font-weight: 800;
+	letter-spacing: -0.05em;
+	line-height: 1;
+}
+
+.ct-end-big .ct-grad {
+	display: inline-block;
+	padding-bottom: 0.1em;
+}
+
+.ct-end-line {
+	margin-top: 16px;
+	color: var(--cr-muted);
+	font-family: var(--sp-serif);
+	font-size: clamp(17px, 2cqi, 24px);
+}
+
+.ct-end .ct-links {
+	justify-content: center;
+	margin-top: 32px;
+}
+
+/* ─── 몽이 (creative/Mascot.tsx) ─── */
+/* 몽이가 떠 있는 층: 스크롤하는 칸 맨 위에 붙어 있고 높이가 없어 내용을 밀지 않는다.
+   자르기(overflow)를 걸지 않는다: Safari에서 세로까지 잘라 몽이가 사라졌다 */
+.cr-buddy {
+	grid-column: 1 / -1;
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	height: 0;
+}
+
+/* 표정 그림을 겹쳐 두고 하나만 보인다. 자리(--x, --y)와 크기(--s)는 스크립트가 정한다.
+   크기를 못 박아 둔다: 표정 그림마다 크기가 달라 마우스를 올리면 칸이 바뀌어 깜빡였다 */
 .cr-mascot {
 	display: grid;
 	position: absolute;
 	top: 0;
 	left: 0;
 	justify-items: center;
-	/* 자리(--x, --y)와 크기(--s)는 스크립트가 정한다. 첫머리에서는 스크롤을 그대로 따라가고, 장 사이를 옮길 때만 통통 튀며 건너간다 */
-	/* 크기를 못 박아 둔다: 표정 그림마다 크기가 달라 마우스를 올리면 칸이 바뀌어 들어왔다 나갔다를 되풀이하며 깜빡였다 */
 	width: 140px;
 	height: 136px;
-	transform: translate(var(--x, -999px), var(--y, 0)) scale(var(--s, 1));
-	transform-origin: top left;
-	width: 140px;
 	margin: 0;
 	padding-bottom: 12px;
+	transform: translate(var(--x, -999px), var(--y, 0)) scale(var(--s, 1));
+	transform-origin: top left;
+	cursor: pointer;
 }
 
 /* 자리를 바꿀 때만 통통 튀며 건너간다 (그 밖에는 데모와 함께 스크롤된다) */
@@ -168,64 +701,20 @@
 	transition: transform 0.85s cubic-bezier(0.5, -0.35, 0.3, 1.35);
 }
 
-/* 그림과 그림자는 마우스를 받지 않는다 (몸이 뛰거나 표정이 바뀌어도 올린 자리가 그대로) */
-.cr-mascot img,
 .cr-mascot::after {
-	pointer-events: none;
-}
-
-/* 말풍선: 몽이 머리 위에서 데모를 거든다. 몽이가 작아져도 글자는 같은 크기로 (--s로 나눈다) */
-.cr-bubble {
-	position: absolute;
-	z-index: 3;
-	right: 30%;
-	bottom: calc(100% - 6px / var(--s, 1));
-	padding: calc(7px / var(--s, 1)) calc(12px / var(--s, 1));
-	border-radius: calc(14px / var(--s, 1));
-	background-color: var(--cr-ink);
-	color: var(--cr-bg);
-	font-size: calc(13px / var(--s, 1));
-	font-weight: 600;
-	/* 왼쪽으로 남은 자리(--room, 스크립트가 잰다)를 넘으면 줄을 바꾼다 */
-	width: max-content;
-	max-width: var(--room, calc(320px / var(--s, 1)));
-	text-wrap: balance;
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-	pointer-events: none;
-	animation: cr-bubble 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
-	transform-origin: right bottom;
-}
-
-.cr-bubble::after {
 	content: '';
-	position: absolute;
-	right: calc(18px / var(--s, 1));
-	bottom: calc(-5px / var(--s, 1));
-	border: calc(6px / var(--s, 1)) solid transparent;
-	border-top-color: var(--cr-ink);
-	border-bottom-width: 0;
-}
-
-@keyframes cr-bubble {
-	from {
-		opacity: 0;
-		scale: 0.6;
-	}
-}
-
-/* 첫머리에서는 말풍선을 띄우지 않는다 */
-.cr-mascot[data-spot='hero'] .cr-bubble {
-	display: none;
-}
-
-.cr-mascot::after {
 	position: absolute;
 	bottom: 0;
 	width: 120px;
 	height: 22px;
 	border-radius: 50%;
 	background: radial-gradient(closest-side, rgba(0, 0, 0, 0.18), transparent);
-	content: '';
+}
+
+/* 그림과 그림자는 마우스를 받지 않는다 (몸이 뛰거나 표정이 바뀌어도 올린 자리가 그대로) */
+.cr-mascot img,
+.cr-mascot::after {
+	pointer-events: none;
 }
 
 .cr-mascot img {
@@ -235,7 +724,7 @@
 	align-self: end;
 	height: 112px;
 	opacity: 0;
-	/* 나가는 표정은 들어오는 표정이 다 보인 뒤에 사라진다. 둘이 함께 옅어지면 그 사이로 몸이 비쳐 깜빡여 보였다 */
+	/* 나가는 표정은 들어오는 표정이 다 보인 뒤에 사라진다 (함께 옅어지면 깜빡여 보였다) */
 	transition: opacity 0.12s linear 0.12s;
 }
 
@@ -249,12 +738,12 @@
 	transition: opacity 0.12s linear;
 }
 
-/* 데모가 끝나 기뻐할 때만 통통 튄다. 마우스를 올렸을 때는 표정만 바꾼다 (튀면 깜빡이는 것처럼 보였다) */
+/* 데모가 끝나 기뻐할 때만 통통 튄다. 마우스를 올렸을 때는 표정만 바꾼다 */
 .cr-mascot[data-mood='happy']:not([data-petted]) img[data-on='true'] {
-	animation: cr-boing 0.6s var(--ease-out);
+	animation: ct-boing 0.6s var(--ease-out);
 }
 
-@keyframes cr-boing {
+@keyframes ct-boing {
 	30% {
 		transform: translateY(-14px) scale(1.04, 0.96);
 	}
@@ -264,120 +753,205 @@
 	}
 }
 
-/* 본문: 장마다 화면 폭을 다 쓰는 띠, 내용은 가운데 1080px 안에 */
-.cr-main {
-	padding: 0;
+/* 누르면 한 번 뛰고 하트가 퐁퐁 */
+.cr-mascot[data-hop] img[data-on='true'] {
+	animation: ct-hop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
-/* 화면은 금속 테 안에 */
-.cr-shot {
-	max-width: 1080px;
-	margin: 0 auto;
-	margin-inline: var(--cr-pad);
-	overflow: hidden;
-	padding: 6px;
-	border-radius: 14px;
-	background: var(--cr-sheen);
-	box-shadow:
-		0 1px 0 rgba(255, 255, 255, 0.8) inset,
-		0 30px 60px rgba(0, 0, 0, 0.18);
+@keyframes ct-hop {
+	40% {
+		translate: 0 -14px;
+	}
 }
 
-.cr-shot img {
-	display: block;
-	width: 100%;
-	border-radius: 9px;
-}
-
-/* 한눈에 보기: 큰 숫자 셋을 가운데 줄로 */
-.cr-facts {
-	padding: 72px var(--cr-pad) 96px;
-	text-align: center;
-}
-
-.cr-facts > p {
-	color: var(--cr-muted);
-	font-size: 15px;
-}
-
-.cr-facts ul {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 24px;
-	margin-top: 28px;
-	list-style: none;
-}
-
-.cr-facts li {
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-}
-
-.cr-facts strong {
+.cr-heart {
+	position: absolute;
+	top: 30%;
+	left: 50%;
+	z-index: 2;
 	color: var(--sp-accent);
-	font-size: clamp(36px, 5cqi, 56px);
+	font-size: 16px;
+	pointer-events: none;
+	animation: ct-heart 1.05s ease-out forwards;
+}
+
+@keyframes ct-heart {
+	from {
+		opacity: 1;
+		transform: translate(-50%, 0) scale(0.4);
+	}
+
+	to {
+		opacity: 0;
+		transform: translate(calc(-50% + var(--dx) * 1px), -90px) scale(1.2) rotate(calc(var(--dx) * 0.4deg));
+	}
+}
+
+/* 말풍선: 머리 위에서 데모를 거든다. 몽이가 작아져도 글자는 같은 크기로 (--s로 나눈다) */
+.cr-bubble {
+	position: absolute;
+	right: 30%;
+	bottom: calc(100% - 6px / var(--s, 1));
+	z-index: 3;
+	width: max-content;
+	/* 왼쪽으로 남은 자리(--room, 스크립트가 잰다)를 넘으면 줄을 바꾼다 */
+	max-width: var(--room, calc(320px / var(--s, 1)));
+	padding: calc(7px / var(--s, 1)) calc(12px / var(--s, 1));
+	border-radius: calc(14px / var(--s, 1));
+	background-color: var(--sp-accent);
+	color: #ffffff;
+	font-size: calc(13px / var(--s, 1));
 	font-weight: 700;
-	letter-spacing: -0.02em;
-	line-height: 1.05;
-}
-
-.cr-facts span {
-	color: var(--cr-muted);
-	font-size: 14px;
-}
-
-/* 장: 띠가 번갈아 바탕을 바꾸고, 띠 위 타일은 떠 보이는 색으로 */
-.cr-chapter {
-	padding: 112px var(--cr-pad);
-	scroll-margin-top: 0;
-}
-
-.cr-chapter:nth-of-type(even) {
-	--cr-tile: var(--cr-raised);
-	background-color: var(--cr-band);
-}
-
-/* 장 머리: 작은 번호, 큰 제목, 첫머리 글을 가운데에 */
-.cr-no {
-	color: var(--sp-accent);
-	font-family: var(--sp-mono);
-	font-size: 14px;
-	font-weight: 700;
-	letter-spacing: 0.12em;
-	text-align: center;
-}
-
-.cr-chapter h2 {
-	max-width: 16em;
-	margin: 10px auto 56px;
-	font-size: clamp(34px, 5.4cqi, 60px);
-	font-weight: 700;
-	letter-spacing: -0.03em;
-	line-height: 1.08;
-	text-align: center;
 	text-wrap: balance;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+	pointer-events: none;
+	transform-origin: right bottom;
+	animation: ct-bubble 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
 }
 
-.cr-chapter h2:has(+ .cr-chapter-lead) {
-	margin-bottom: 20px;
+.cr-bubble::after {
+	content: '';
+	position: absolute;
+	right: calc(18px / var(--s, 1));
+	bottom: calc(-5px / var(--s, 1));
+	border: calc(6px / var(--s, 1)) solid transparent;
+	border-top-color: var(--sp-accent);
+	border-bottom-width: 0;
 }
 
-.cr-features {
-	list-style: none;
+@keyframes ct-bubble {
+	from {
+		opacity: 0;
+		scale: 0.6;
+	}
 }
 
-.cr-features li {
-	padding: 22px 0 30px;
-	border-top: 1px solid var(--cr-line);
+/* 첫머리에서는 말풍선을 띄우지 않는다 */
+.cr-mascot[data-spot='hero'] .cr-bubble {
+	display: none;
 }
 
-.cr-feature-text {
-	display: grid;
-	grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-	gap: 24px;
+/* ─── 좁은 창 ─── */
+@container (max-width: 900px) {
+	/* 격자를 풀어야 위에 붙은 차례가 (자기 줄이 아니라) 페이지 끝까지 따라온다 */
+	.ct {
+		display: block;
+	}
+
+	/* 차례는 위에 붙은 가로 띠 */
+	.ct-toc {
+		z-index: 10;
+		padding: 0;
+		border-bottom: 1px solid var(--cr-line);
+		background-color: color-mix(in srgb, var(--cr-bg) 88%, transparent);
+		backdrop-filter: blur(12px);
+	}
+
+	.ct-toc ol {
+		flex-direction: row;
+		gap: 0;
+		padding: 0 var(--ct-pad);
+		overflow-x: auto;
+		border-left: none;
+		scrollbar-width: none;
+	}
+
+	.ct-toc ol::-webkit-scrollbar {
+		display: none;
+	}
+
+	.ct-toc button {
+		width: auto;
+		margin: 0;
+		padding: 12px 10px;
+		border-left: none;
+		border-bottom: 2px solid transparent;
+		white-space: nowrap;
+	}
+
+	.ct-toc li[data-current] button {
+		border-bottom-color: var(--sp-accent);
+	}
 }
 
+@container (max-width: 600px) {
+	/* 좁은 창에서는 몽이가 오른쪽 위에 서고 글은 그 아래로: 줄 끝에 두면 휴대폰 Safari의 아래 막대(주소 알약)에 겹쳐 눌리지 않았다 */
+	.ct-hero {
+		min-height: min(640px, 80vh);
+		padding-top: 48px;
+	}
+
+	.ct-hero:has(.ct-hero-seat[data-mascot]) {
+		padding-top: 200px;
+	}
+
+	.ct-hero-row {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.ct-hero-seat[data-mascot] {
+		position: absolute;
+		top: 48px;
+		right: var(--ct-pad);
+	}
+
+	.ct-chapter {
+		padding: 80px var(--ct-pad) 96px;
+	}
+
+	.ct-chapter-body {
+		margin-top: 44px;
+	}
+
+	.ct-ghost {
+		font-size: clamp(120px, 40cqi, 200px);
+	}
+
+	.ct-feature-text {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 10px;
+	}
+
+	.ct-feature-idx {
+		font-size: 32px;
+	}
+
+	.ct-timeline li {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
+	}
+
+	.ct-roles li {
+		grid-template-columns: 2em minmax(0, 1fr);
+	}
+
+	.ct-end {
+		padding: 96px var(--ct-pad) 80px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ct-scroll i::after,
+	.cr-bubble,
+	.cr-mascot[data-mood='happy'] img[data-on='true'],
+	.cr-mascot[data-hop] img[data-on='true'],
+	.cr-heart {
+		animation: none;
+	}
+
+	.cr-heart {
+		display: none;
+	}
+
+	.cr-mascot,
+	.cr-mascot[data-moving],
+	.cr-mascot img {
+		transition: none;
+	}
+}
+
+/* ═══ 가져다 쓰는 조각 (CreativeParts.tsx·CreativeChapters.tsx가 만드는 마크업의 스타일. 조각은 손대지 않는다) ═══ */
 /* 기능마다 붙는 실제 화면 */
 .cr-feature-media {
 	margin-top: 18px;
@@ -1171,13 +1745,6 @@
 	}
 }
 
-.cr-features h3 {
-	font-size: 20px;
-	font-weight: 700;
-	line-height: 1.3;
-}
-
-.cr-features p,
 .cr-build p {
 	color: var(--cr-muted);
 	font-size: 15px;
@@ -1199,17 +1766,6 @@
 	margin-bottom: 8px;
 	font-size: 19px;
 	font-weight: 700;
-}
-
-/* 더 들려줄 장: 첫머리 글, 숫자 한 줄, 그림 */
-.cr-chapter-lead {
-	max-width: 38em;
-	margin: 0 auto 56px;
-	color: var(--cr-muted);
-	font-size: clamp(17px, 1.8cqi, 21px);
-	line-height: 1.6;
-	text-align: center;
-	text-wrap: pretty;
 }
 
 .cr-chapter-facts {
@@ -1242,180 +1798,13 @@
 	font-size: 13px;
 }
 
-.cr-figure {
-	margin-top: 36px;
-	overflow: hidden;
-	border: 1px solid var(--cr-line);
-	border-radius: 14px;
-}
-
-/* 그림이 늦게 불러와져도 아래 장이 밀리지 않게 자리를 미리 잡는다 (차례를 눌러 내려가는 동안 목적지가 움직이지 않게) */
-.cr-figure img {
-	display: block;
-	width: 100%;
-	aspect-ratio: auto;
-	object-fit: cover;
-	object-position: top;
-}
-
-.cr-figure figcaption {
-	padding: 8px 12px;
-	color: var(--cr-muted);
-	font-size: 12px;
-}
-
-/* 진행 과정: 장을 읽는 만큼(--read) 세로줄이 위에서부터 차오른다 */
-.cr-timeline {
-	position: relative;
-	margin-bottom: 40px;
-	padding-left: 28px;
-	list-style: none;
-}
-
-.cr-timeline::before,
-.cr-timeline::after {
-	position: absolute;
-	top: 8px;
-	bottom: 8px;
-	left: 5px;
-	width: 2px;
-	content: '';
-}
-
-.cr-timeline::before {
-	background-color: var(--cr-line);
-}
-
-.cr-timeline::after {
-	background-color: var(--sp-accent);
-	transform: scaleY(clamp(0, calc(var(--read, 0) * 1.8), 1));
-	transform-origin: top;
-}
-
-.cr-timeline li {
-	position: relative;
-	display: grid;
-	grid-template-columns: 64px minmax(0, 1fr);
-	gap: 12px;
-	padding: 10px 0;
-	font-size: 16px;
-	line-height: 1.5;
-}
-
-.cr-timeline li::before {
-	position: absolute;
-	top: 16px;
-	left: -28px;
-	z-index: 1;
-	width: 12px;
-	height: 12px;
-	border: 2px solid var(--sp-accent);
-	border-radius: 50%;
-	background-color: var(--cr-bg);
-	content: '';
-}
-
-.cr-timeline time {
-	color: var(--sp-accent);
-	font-family: var(--sp-mono);
-	font-size: 14px;
-	line-height: 1.7;
-}
-
-.cr-role {
-	color: var(--cr-muted);
-	font-size: 15px;
-}
-
-.cr-roles {
-	margin-top: 16px;
-	list-style: none;
-	font-size: 20px;
-	line-height: 1.5;
-}
-
-.cr-roles li {
-	padding: 10px 0;
-	border-top: 1px solid var(--cr-line);
-}
-
-.cr-specs div {
-	display: grid;
-	grid-template-columns: 180px minmax(0, 1fr);
-	gap: 16px;
-	padding: 16px 0;
-	border-top: 1px solid var(--cr-line);
-}
-
-.cr-specs dt {
-	font-size: 18px;
-	font-weight: 700;
-}
-
-.cr-specs dd {
-	color: var(--cr-muted);
-	font-size: 15px;
-	line-height: 1.6;
-}
-
-.cr-foot {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 120px var(--cr-pad);
-	text-align: center;
-}
-
-.cr-foot p {
-	max-width: 16em;
-	font-size: clamp(30px, 5cqi, 52px);
-	font-weight: 700;
-	letter-spacing: -0.03em;
-	line-height: 1.1;
-	text-wrap: balance;
-}
-
-@container (max-width: 760px) {
-	.cr-shots ul,
-	.cr-shots ul:not(:has([data-video])) {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		grid-auto-flow: row;
-	}
-}
-
-@container (max-width: 760px) {
-	.cr {
-		--cr-pad: 20px;
-	}
-
-	.cr-hero {
-		padding-top: 36px;
-	}
-
-	.cr-facts {
-		padding: 48px var(--cr-pad) 64px;
-	}
-
-	.cr-chapter {
-		padding: 72px var(--cr-pad);
-	}
-
-	.cr-chapter h2 {
-		margin-bottom: 36px;
-	}
-
-	.cr-chapter-lead {
-		margin-bottom: 36px;
-	}
-
-	.cr-feature-text,
+/* 가져다 쓰는 조각의 좁은 창 (위 조각 규칙보다 뒤에 두어야 이긴다) */
+@container (max-width: 600px) {
 	.cr-build,
 	.cr-build article[data-wide],
-	.cr-build article[data-wide]:nth-child(even),
-	.cr-specs div,
-	.cr-facts ul {
+	.cr-build article[data-wide]:nth-child(even) {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
+		gap: 12px;
 	}
 
 	.cr-build article[data-wide]:nth-child(even) :is(.cr-point-shot, .cr-point-demo) {
@@ -1425,20 +1814,10 @@
 	.cr-layouts {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
-}
 
-@media (prefers-reduced-motion: reduce) {
-	.cr-mascot,
-	.cr-mascot[data-moving],
-	.cr-mascot img {
-		transition: none;
-	}
-
-	.cr-bubble {
-		animation: none;
-	}
-
-	.cr-mascot[data-mood='happy'] img[data-on='true'] {
-		animation: none;
+	.cr-shots ul,
+	.cr-shots ul:not(:has([data-video])) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-flow: row;
 	}
 }

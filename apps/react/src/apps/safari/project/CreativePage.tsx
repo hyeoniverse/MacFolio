@@ -1,385 +1,326 @@
-import { cssVars } from '@/shared/lib/cssVars';
-// HYEONIVERSE (포트폴리오): Apple 제품 페이지처럼 가운데 정렬된 큰 첫머리 아래로, 화면 폭을 다 쓰는 띠(장)가 번갈아 바탕을 바꾸며 내려간다.
-// 그 사이트의 마스코트 몽이는 첫머리에 서 있다가, 내려가면 화면 가장자리로 뛰어가 장마다 자리와 표정을 바꾸며 늘 따라다닌다
+// creative: 큰 타이포와 스크롤 챕터. 첫 화면은 화면을 꽉 채운 이름·한 줄 소개 글자, 왼쪽에 붙은 차례가 지금 읽는 장을 가리키고,
+// 장마다 거대한 번호가 바탕에 흐리게 깔린 채 바탕 톤이 번갈아 내려간다. 데모·장 모양(look) 조각은 그대로 가져다 쓰고,
+// HYEONIVERSE에서는 마스코트 몽이가 데모를 거든다 (creative/Mascot.tsx)
 import React, { useEffect, useRef, useState } from 'react';
-import type { Project, ProjectChapter } from '@/shared/profile';
-import { Links, Shot } from '@/apps/safari/project/parts';
-import '@/apps/safari/project/CreativePage.css';
+import { cssVars } from '@/shared/lib/cssVars';
+import type { Project, ProjectChapter, ProjectPoint } from '@/shared/profile';
+import { Facts, Links } from '@/apps/safari/project/parts';
 import { useReveal } from '@/apps/safari/project/reveal';
-import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project/CreativeParts';
-import { ChapterFacts, ChapterPoints } from '@/apps/safari/project/CreativeChapters';
-import { DEMO_EVENT, type DemoKind, type DemoState } from '@/apps/safari/project/creative/demoEvent';
+import { scrollParent } from '@/apps/safari/project/scroll';
+import { Bars, Compare, FeatureMedia, ScrollFrames, ZoomImage } from '@/apps/safari/project/CreativeParts';
+import { ChapterFacts, ChapterPoints, Shots } from '@/apps/safari/project/CreativeChapters';
+import { Demo } from '@/apps/safari/project/creative/Demo';
 import { Themes } from '@/apps/safari/project/creative/Themes';
-import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
+import { Mascot } from '@/apps/safari/project/creative/Mascot';
+import '@/apps/safari/project/CreativePage.css';
 
-/** 진행 과정이 있으면 만든 방식을 그 장에 품질 장치로 함께 싣는다 */
-const buildTitle = (project: Project) => (project.timeline ? '진행 과정과 품질' : '만든 방식');
+/** 장의 바탕 톤: 밝은 바탕, 한 단 어두운 바탕, 어두운 바탕을 돌아가며 리듬을 준다 */
+const TONES = ['bg', 'alt', 'dark'] as const;
+const number = (index: number) => String(index + 1).padStart(2, '0');
 
-/** 차례: 주요 기능 → 더 들려줄 장들 → 진행 과정(만든 방식) → 맡은 일 → 기술 사양 */
-const chaptersOf = (project: Project) => [
-	'주요 기능',
-	...(project.chapters ?? []).map((chapter) => chapter.title),
-	buildTitle(project),
-	'맡은 일',
-	'기술 사양',
-];
-
-const BUNNY = '/imgs/projects/hyeoniverse/bunny';
-const MOODS = ['normal', 'wave', 'star', 'happy', 'surprised', 'sleep'] as const;
-type Mood = (typeof MOODS)[number];
-/** 장마다 몽이의 표정: 들어가기 전엔 그냥, 장마다 손 흔들기·별·웃음·놀람을 돌아가며, 끝에선 잔다 (마우스를 올리면 웃는다) */
-const READING: Mood[] = ['wave', 'star', 'happy', 'surprised'];
-const moodOf = (chapter: number, total: number): Mood =>
-	chapter < 0 ? 'normal' : chapter >= total ? 'sleep' : READING[chapter % READING.length];
-
-/** 몽이가 데모 곁에 갔을 때 건네는 말 */
-const HINTS: Record<DemoKind, string> = {
-	slides: '음성과 함께 넘겨 보세요',
-	voice: '글을 고치고 진짜로 읽혀 보세요',
-	wave: '파형을 끌어 골라 잘라 보세요',
-	convert: 'PPTX와 PDF를 바꿔 보세요',
-	translate: 'EN을 누르면 진짜로 번역해요',
-	summary: '발행하면 진짜로 요약해요',
-	cover: '제목을 넣고 그려 보세요',
-	autosave: '글을 고치고 3초 기다려 보세요',
-	lifecycle: '단추로 글의 일생을 넘겨 보세요',
-	comments: '반응을 누르고 지워 보세요',
-	mailbox: '메일을 눌러 열어 보세요',
-	invite: '누가 들어올 수 있는지 골라 보세요',
-	roles: '역할을 바꿔 동작을 눌러 보세요',
-	kitchen: '이모지 두 개를 골라 섞어 보세요',
-	providers: '공급자를 실패시켜 보고 요청을 보내 보세요',
-};
-/** 데모가 돌 때 몽이의 반응: 만드는 중엔 기다리고, 끝나면 반짝, 실패하면 놀란다 */
-const REACTIONS: Record<DemoState, { mood: Mood; text: (kind: DemoKind) => string }> = {
-	busy: { mood: 'normal', text: (kind) => (kind === 'cover' ? '그리는 중… 조금 걸려요' : '만드는 중… 잠깐만요') },
-	done: { mood: 'star', text: (kind) => (kind === 'voice' ? '됐어요! 들어 보세요' : '됐어요!') },
-	error: { mood: 'surprised', text: () => '앗, 안 됐어요. 아래 이유를 보세요' },
-	play: { mood: 'happy', text: () => '편집한 순서대로 들려요' },
-};
-/** 데모 곁에서 말을 건네는 시간 (ms) */
-const HINT_MS = 4000;
-/** 몽이 그림 크기 (px): 몸 폭 140, 높이 124. 내용 옆 여백이 좁으면 줄인다 */
-const BUDDY_W = 140;
-const BUDDY_H = 124;
-
-/** 더 들려줄 장 하나: 첫머리, 숫자, 테마 미리보기, 전후 막대, 장 모양(look)마다 다른 글 묶음, 장 끝 그림(다크가 있으면 밀대) */
-const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, no }) => (
-	<section className="cr-chapter" aria-label={chapter.title} data-look={chapter.look}>
-		<p className="cr-no">{no}</p>
-		<h2>{chapter.title}</h2>
-		{chapter.lead && (
-			<p className="cr-chapter-lead" data-reveal="">
-				{chapter.lead}
+/** 장 하나의 뼈대: 바탕에 깔린 거대한 번호, 번호와 큰 제목, 첫머리 글, 그 아래 내용. .cr-chapter는 장 모양 조각(CreativeChapters.css)이 타일 색의 기준으로 삼는다 */
+const Section: React.FC<{
+	index: number;
+	title: string;
+	lead?: string;
+	look?: ProjectChapter['look'];
+	children: React.ReactNode;
+}> = ({ index, title, lead, look, children }) => (
+	<section
+		className="ct-chapter cr-chapter"
+		aria-label={title}
+		data-tone={TONES[index % TONES.length]}
+		data-look={look}
+	>
+		<span className="ct-ghost" aria-hidden="true">
+			{number(index)}
+		</span>
+		<header className="ct-chapter-head">
+			<p className="ct-chapter-no">
+				<span>{number(index)}</span>
 			</p>
+			<h2>{title}</h2>
+			{lead && (
+				<p className="ct-chapter-lead" data-reveal="">
+					{lead}
+				</p>
+			)}
+		</header>
+		<div className="ct-chapter-body">{children}</div>
+	</section>
+);
+
+/** 주요 기능 한 항목: 번호 붙은 글 뒤에 스크롤 장면, 화면(그림·영상·레이아웃), 데모, 실제 화면 중 있는 것 */
+const Feature: React.FC<{ point: ProjectPoint; index: number }> = ({ point, index }) => (
+	<li className="ct-feature" style={cssVars({ d: index % 3 })}>
+		<div className="ct-feature-text" data-reveal="left">
+			<span className="ct-feature-idx" aria-hidden="true">
+				{number(index)}
+			</span>
+			<h3>{point.title}</h3>
+			<p>{point.body}</p>
+		</div>
+		{point.scrollFrames && <ScrollFrames frames={point.scrollFrames} title={point.title} />}
+		{(point.image || point.video || point.variants) && (
+			<figure className="cr-feature-media" data-reveal="zoom">
+				<FeatureMedia point={point} />
+			</figure>
 		)}
+		{point.demo && (
+			<div className="cr-point-demo" data-demo={point.demo}>
+				<Demo kind={point.demo} />
+			</div>
+		)}
+		{point.shots && !point.demo && (
+			<div className="cr-point-demo">
+				<Shots shots={point.shots} />
+			</div>
+		)}
+	</li>
+);
+
+/** 더 들려줄 장의 속: 숫자, 테마 미리보기, 전후 막대, 장 모양마다 다른 글 묶음, 장 끝 그림(다크가 있으면 밀대) */
+const ChapterBody: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
+	<>
 		{chapter.facts && <ChapterFacts facts={chapter.facts} look={chapter.look} />}
 		{chapter.palette && <Themes palette={chapter.palette} />}
 		{chapter.compare && <Bars rows={chapter.compare} />}
 		<ChapterPoints chapter={chapter} />
 		{/* 테마 장은 장 그림을 항목 화면(붙은 화면)으로 쓰므로 끝에 따로 두지 않는다 */}
 		{chapter.image && chapter.look !== 'palette' && (
-			<figure className="cr-figure" data-reveal="">
+			<figure className="ct-figure" data-reveal="">
 				{chapter.image.dark ? (
 					<Compare light={chapter.image.src} dark={chapter.image.dark} alt={chapter.image.alt} />
 				) : (
-					<img src={chapter.image.src} alt={chapter.image.alt} />
+					<img src={chapter.image.src} alt={chapter.image.alt} loading="lazy" />
 				)}
 				<figcaption>{chapter.image.alt}</figcaption>
 			</figure>
 		)}
-	</section>
+	</>
 );
 
-const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
-	const main = useRef<HTMLDivElement>(null);
-	const titles = chaptersOf(project);
-	const extra = project.chapters ?? [];
-	// 장 번호: 주요 기능이 01, 더 들려줄 장이 그다음, 그 뒤로 진행 과정·맡은 일·기술 사양
-	const after = extra.length + 1;
-	// -1은 장에 들어가기 전, titles.length는 끝(맺음말)
-	const [chapter, setChapter] = useState(-1);
-	const [petted, setPetted] = useState(false);
-	// 몽이를 누르면 하트가 퐁퐁 (하트마다 id와 날아갈 방향)
-	const [hearts, setHearts] = useState<{ id: number; dx: number }[]>([]);
-	const heartId = useRef(0);
-	const root = useReveal<HTMLDivElement>();
-	// 몽이(화면 위에 떠 있다)와, 첫머리에서 몽이가 서는 자리
-	const buddy = useRef<HTMLElement>(null);
-	const slot = useRef<HTMLDivElement>(null);
-	// 몽이가 곁에 있는 데모, 막 건넨 말, 데모가 돌 때의 반응
-	const [guide, setGuide] = useState<DemoKind | null>(null);
-	const [hint, setHint] = useState<DemoKind | null>(null);
-	const [reaction, setReaction] = useState<{ mood: Mood; text: string } | null>(null);
-	const guiding = useRef<string | null>(null);
-	useEffect(() => {
-		if (!hint) return;
-		const timer = window.setTimeout(() => setHint(null), HINT_MS);
-		return () => window.clearTimeout(timer);
-	}, [hint]);
-	// 데모가 알리는 일(만드는 중, 끝, 실패, 재생)에 반응한다. 만드는 중은 끝날 때까지 이어진다
-	useEffect(() => {
-		let timer = 0;
-		const onDemo = (event: Event) => {
-			const { kind, state } = (event as CustomEvent<{ kind: DemoKind; state: DemoState }>).detail;
-			window.clearTimeout(timer);
-			setHint(null);
-			setReaction({ mood: REACTIONS[state].mood, text: REACTIONS[state].text(kind) });
-			if (state !== 'busy') timer = window.setTimeout(() => setReaction(null), HINT_MS);
-		};
-		window.addEventListener(DEMO_EVENT, onDemo);
-		return () => {
-			window.removeEventListener(DEMO_EVENT, onDemo);
-			window.clearTimeout(timer);
-		};
-	}, []);
-	const pet = () => {
-		const burst = Array.from({ length: 6 }, (_, i) => ({ id: (heartId.current += 1), dx: (i - 2.5) * 22 }));
-		setHearts((now) => [...now, ...burst]);
-		window.setTimeout(() => setHearts((now) => now.filter((heart) => !burst.includes(heart))), 1100);
-	};
+/** 장 하나: 차례에 보일 제목과, 그릴 내용 */
+interface Part {
+	title: string;
+	lead?: string;
+	look?: ProjectChapter['look'];
+	body: React.ReactNode;
+}
 
-	// 장마다 그 장을 얼마나 읽었는지(화면 가운데가 장의 어디쯤인지)를 --read로 (진행 과정 세로줄이 차오른다)
-	// 몽이 자리도 여기서 정한다: 첫머리 자리가 화면에 보이면 그 자리에 붙어 함께 스크롤되고, 지나가면 화면에 가장 크게 보이는
-	// 데모 곁(내용 칸 오른쪽 가장자리, 데모 머리 높이)에 서서 함께 움직인다. 보이는 데모가 없으면 오른쪽 아래에서 쉰다
+/** 차례: 주요 기능 → 더 들려줄 장들 → 만든 방식 → 진행 과정 → 쓰는 법 → 맡은 일 → 기술 사양 (없는 것은 뺀다) */
+const partsOf = (project: Project): Part[] => {
+	const parts: Part[] = [];
+	if (project.highlights.length)
+		parts.push({
+			title: '주요 기능',
+			body: (
+				<>
+					<ol className="ct-features">
+						{project.highlights.map((point, i) => (
+							<Feature key={point.title} point={point} index={i} />
+						))}
+					</ol>
+					{project.gallery?.length ? (
+						<ul className="ct-gallery" aria-label="화면 모음">
+							{project.gallery.map((shot) => (
+								<li key={shot.src} data-reveal="zoom">
+									<ZoomImage src={shot.src} alt={shot.caption} />
+									<span>{shot.caption}</span>
+								</li>
+							))}
+						</ul>
+					) : null}
+				</>
+			),
+		});
+	for (const chapter of project.chapters ?? [])
+		parts.push({
+			title: chapter.title,
+			lead: chapter.lead,
+			look: chapter.look,
+			body: <ChapterBody chapter={chapter} />,
+		});
+	if (project.build.length)
+		parts.push({
+			title: '만든 방식',
+			// 장 모양 조각의 기본 꼴(두 칸 글 묶음, 그림·데모가 있으면 넓게)을 그대로 빌린다
+			body: <ChapterPoints chapter={{ title: '만든 방식', points: project.build }} />,
+		});
+	if (project.timeline?.length)
+		parts.push({
+			title: '진행 과정',
+			body: (
+				<ol className="ct-timeline">
+					{project.timeline.map((step, i) => (
+						<li key={`${step.date}-${step.label}`} data-reveal="left" style={cssVars({ d: i % 4 })}>
+							<time>{step.date}</time>
+							<span>{step.label}</span>
+						</li>
+					))}
+				</ol>
+			),
+		});
+	if (project.usage?.length)
+		parts.push({ title: '쓰는 법', body: <ChapterPoints chapter={{ title: '쓰는 법', points: project.usage }} /> });
+	if (project.contributions.length || project.role)
+		parts.push({
+			title: '맡은 일',
+			lead: project.role,
+			body: (
+				<>
+					<ol className="ct-roles">
+						{project.contributions.map((item, i) => (
+							<li key={item} data-reveal="left" style={cssVars({ d: i % 4 })}>
+								{item}
+							</li>
+						))}
+					</ol>
+					{project.credits?.length ? (
+						<ul className="ct-credits" aria-label="빌려 쓴 것">
+							{project.credits.map((credit) => (
+								<li key={`${credit.role}-${credit.name}`} data-reveal="">
+									<span>{credit.role}</span>
+									<strong>
+										{credit.href ? (
+											<a href={credit.href} target="_blank" rel="noopener noreferrer">
+												{credit.name}
+											</a>
+										) : (
+											credit.name
+										)}
+									</strong>
+									<em>
+										{credit.by}
+										{credit.note && ` · ${credit.note}`}
+									</em>
+								</li>
+							))}
+						</ul>
+					) : null}
+				</>
+			),
+		});
+	if (project.specs.length)
+		parts.push({
+			title: '기술 사양',
+			body: (
+				<dl className="ct-specs">
+					{project.specs.map((spec, i) => (
+						<div key={spec.label} data-reveal="" style={cssVars({ d: i % 3 })}>
+							<dt>{spec.label}</dt>
+							<dd>{spec.value}</dd>
+						</div>
+					))}
+				</dl>
+			),
+		});
+	return parts;
+};
+
+const CreativePage: React.FC<{ project: Project }> = ({ project }) => {
+	const root = useReveal<HTMLDivElement>();
+	const main = useRef<HTMLDivElement>(null);
+	const seat = useRef<HTMLDivElement>(null);
+	const parts = partsOf(project);
+	// -1은 장에 들어가기 전, parts.length는 맺음말
+	const [current, setCurrent] = useState(-1);
+	// 몽이는 HYEONIVERSE의 것 (그 사이트의 그림을 쓴다)
+	const mascot = project.id === 'hyeoniverse';
+
+	// 스크롤하는 칸 가운데 띠를 지나는 장이 지금 읽는 장 (차례 표시와 몽이의 표정)
 	useEffect(() => {
 		const body = main.current;
-		const page = root.current;
-		if (!body || !page) return;
-		let settle = 0;
-		const stop = onScrollFrame(body, (scroller) => {
-			const view = viewOf(scroller);
-			const middle = view.top + view.height / 2;
-			body.querySelectorAll<HTMLElement>('.cr-chapter').forEach((chapterNode) => {
-				const box = chapterNode.getBoundingClientRect();
-				chapterNode.style.setProperty('--read', Math.min(1, Math.max(0, (middle - box.top) / box.height)).toFixed(3));
-			});
-			const figure = buddy.current;
-			const seat = slot.current?.getBoundingClientRect();
-			if (!figure || !seat) return;
-			const frame = page.getBoundingClientRect();
-			const width = frame.width;
-			const narrow = width <= 760;
-			// 내용(가운데 1080px) 옆 여백에 맞춰 크기를 정한다
-			const side = Math.max(24, (width - 1080) / 2);
-			const scale = narrow ? 0.5 : Math.min(1, Math.max(0.6, (side - 12) / BUDDY_W));
-			const w = BUDDY_W * scale;
-			const h = BUDDY_H * scale;
-			// 화면에 보이는 높이가 가장 큰 데모 (화면의 3분의 1 이상 보이거나 데모가 통째로 보일 때)
-			let target: HTMLElement | null = null;
-			let best = 0;
-			body.querySelectorAll<HTMLElement>('.cr-point-demo[data-demo], .cr-showcase-live[data-demo]').forEach((node) => {
-				const box = node.getBoundingClientRect();
-				const shown = Math.min(box.bottom, view.top + view.height) - Math.max(box.top, view.top);
-				if (shown > best && (shown > view.height / 3 || shown >= box.height - 1)) {
-					best = shown;
-					target = node;
-				}
-			});
-			let key: string;
-			let x: number;
-			let y: number;
-			if (seat.bottom > view.top + 40) {
-				key = 'hero';
-				x = seat.left - frame.left + (seat.width - BUDDY_W) / 2;
-				y = seat.top - view.top;
-			} else if (target) {
-				const box = (target as HTMLElement).getBoundingClientRect();
-				key = `demo:${(target as HTMLElement).dataset.demo}`;
-				// 내용 칸 오른쪽 가장자리에 걸쳐 서서(몸은 옆 여백에) 데모 머리 높이를 따라간다. 데모 글을 가리지 않게
-				x = narrow ? width - w - 6 : Math.min(width - side - w * 0.3, width - w - 6);
-				// 머리 위 말풍선이 화면 위로 잘리지 않게, 말풍선 높이만큼은 아래에 선다
-				const talk = (figure.querySelector('.cr-bubble') as HTMLElement | null)?.offsetHeight ?? 0;
-				y = Math.min(Math.max(box.top - view.top - h * 0.2, 8 + talk * scale), view.height - h - 8);
-			} else {
-				key = 'rest';
-				x = width - w - (narrow ? 6 : 20);
-				y = view.height - h - 16;
-			}
-			// 자리를 바꿀 때만 통통 튀며 건너가고, 같은 자리에 있는 동안은 데모와 함께 스크롤된다
-			if (key !== guiding.current) {
-				guiding.current = key;
-				figure.dataset.moving = '';
-				window.clearTimeout(settle);
-				settle = window.setTimeout(() => delete figure.dataset.moving, 900);
-				const kind = key.startsWith('demo:') ? (key.slice(5) as DemoKind) : null;
-				setGuide(kind);
-				setHint(kind);
-			}
-			figure.dataset.spot = key === 'hero' ? 'hero' : key === 'rest' ? 'rest' : 'demo';
-			figure.style.setProperty('--x', `${Math.round(x)}px`);
-			figure.style.setProperty('--y', `${Math.round(y)}px`);
-			const s = key === 'hero' ? 1 : scale;
-			figure.style.setProperty('--s', s.toFixed(3));
-			// 말풍선 오른쪽 끝은 몸의 70% 자리. 그 왼쪽으로 화면 끝까지 남은 폭 (몸 크기로 나눠 그대로 쓴다)
-			figure.style.setProperty('--room', `${Math.round(Math.min(320, x + BUDDY_W * 0.7 * s - 12) / s)}px`);
-		});
-		return () => {
-			stop();
-			window.clearTimeout(settle);
-		};
-	}, [root]);
-
-	// 화면 가운데를 지나는 장이 지금 읽는 장
-	useEffect(() => {
-		const root = main.current;
-		if (!root || typeof IntersectionObserver === 'undefined') return;
-		const parts = [...root.querySelectorAll<HTMLElement>('.cr-chapter, .cr-foot')];
+		if (!body || typeof IntersectionObserver === 'undefined') return;
+		const nodes = [...body.querySelectorAll<HTMLElement>('.ct-chapter, .ct-end')];
 		const seen = new Set<number>();
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					const at = parts.indexOf(entry.target as HTMLElement);
+					const at = nodes.indexOf(entry.target as HTMLElement);
 					if (entry.isIntersecting) seen.add(at);
 					else seen.delete(at);
 				}
-				setChapter(seen.size ? Math.max(...seen) : -1);
+				setCurrent(seen.size ? Math.max(...seen) : -1);
 			},
-			// 기준은 페이지를 스크롤하는 칸의 가운데 (창이 작아도 칸 안에서 잰다)
-			{ root: scrollParent(root), rootMargin: '-45% 0px -45% 0px' }
+			{ root: scrollParent(body), rootMargin: '-45% 0px -45% 0px' }
 		);
-		parts.forEach((part) => observer.observe(part));
+		nodes.forEach((node) => observer.observe(node));
 		return () => observer.disconnect();
-	}, []);
-	const mood: Mood = petted ? 'happy' : (reaction?.mood ?? (guide ? 'wave' : moodOf(chapter, titles.length)));
-	const bubble = reaction?.text ?? (hint ? HINTS[hint] : null);
-	// 말풍선 글이 바뀌면 키가 달라질 수 있어, 몽이 자리를 한 번 다시 잰다
-	useEffect(() => {
-		const node = root.current;
-		if (node) (scrollParent(node) ?? window).dispatchEvent(new Event('scroll'));
-	}, [bubble, root]);
-	const number = (index: number) => String(index + 1).padStart(2, '0');
+	}, [parts.length]);
+
+	const go = (index: number) => {
+		const node = main.current?.querySelectorAll<HTMLElement>('.ct-chapter')[index];
+		node?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	};
 
 	return (
-		<div className="cr" ref={root} data-reading={chapter >= 0 || undefined}>
-			{/* 몽이: 스크롤하는 칸 맨 위에 붙은 높이 0인 층 위에 떠서, 스크립트가 정한 자리(--x, --y)로 옮겨 다닌다 */}
-			<div className="cr-buddy">
-				<figure
-					ref={buddy}
-					className="cr-mascot"
-					data-mood={mood}
-					data-spot="hero"
-					data-petted={petted || undefined}
-					onPointerEnter={() => setPetted(true)}
-					onPointerLeave={() => setPetted(false)}
-					onClick={pet}
-					data-hop={hearts.length > 0 || undefined}
-				>
-					{MOODS.map((name) => (
-						<img key={name} src={`${BUNNY}/${name}-front.webp`} alt="" data-on={name === mood} />
-					))}
-					{bubble && (
-						<span className="cr-bubble" key={bubble} role="status">
-							{bubble}
-						</span>
-					)}
-					{hearts.map((heart) => (
-						<i key={heart.id} className="cr-heart fa-solid fa-heart" style={cssVars({ dx: heart.dx })} />
-					))}
-				</figure>
-			</div>
+		<div className="ct" ref={root} data-reading={current >= 0 || undefined}>
+			{mascot && <Mascot page={root} body={main} seat={seat} chapter={current} total={parts.length} />}
 
-			<header className="cr-hero">
-				{/* 첫머리에서 몽이가 서는 자리 (몽이는 위 층에 떠 있다) */}
-				<div className="cr-hero-seat" ref={slot} />
-				<p className="cr-name">{project.name}</p>
-				<h1>{project.tagline}</h1>
-				<p className="cr-lead">{project.description}</p>
-				<Links project={project} className="cr-links" />
+			{/* 첫 화면: 화면을 꽉 채운 이름(그라데이션)과 한 줄 소개(테두리 글자), 작은 설명과 링크, 아래에 스크롤 표시 */}
+			<header className="ct-hero" aria-label="첫머리">
+				<p className="ct-hero-kicker">
+					<span>{project.context}</span>
+					{project.period && <span>{project.period}</span>}
+				</p>
+				{/* 제목(h1)은 다른 모양처럼 tagline. 이름은 그 위에 거대한 글자로 */}
+				<p className="ct-hero-name">
+					<span className="ct-grad">{project.name}</span>
+				</p>
+				<h1 className="ct-hero-tagline">{project.tagline}</h1>
+				<div className="ct-hero-row">
+					<div>
+						<p className="ct-hero-desc">{project.description}</p>
+						<Links project={project} className="ct-links" />
+					</div>
+					{/* 몽이가 서는 자리 (몽이는 위 층에 떠서 이 자리에 맞춰 선다) */}
+					<div className="ct-hero-seat" ref={seat} data-mascot={mascot || undefined} />
+				</div>
+				<p className="ct-scroll" aria-hidden="true">
+					<i />
+					<span>스크롤</span>
+				</p>
 			</header>
 
-			<div className="cr-main" ref={main}>
-				<Shot project={project} className="cr-shot" />
+			{/* 차례: 넓은 창에서는 왼쪽에 붙어 따라오고, 좁은 창에서는 위에 붙은 가로 띠 */}
+			<nav className="ct-toc" aria-label="차례">
+				<ol>
+					{parts.map((part, i) => (
+						<li key={part.title} data-current={i === current || undefined}>
+							<button type="button" onClick={() => go(i)} aria-current={i === current ? 'true' : undefined}>
+								<span className="ct-toc-no">{number(i)}</span>
+								<span className="ct-toc-title">{part.title}</span>
+							</button>
+						</li>
+					))}
+				</ol>
+			</nav>
 
-				<section className="cr-facts" aria-label="한눈에 보기" data-reveal="">
-					<p>{project.context}</p>
-					<ul>
-						{project.facts.map((fact) => (
-							<li key={fact.label}>
-								<strong>{fact.value}</strong>
-								<span>{fact.label}</span>
-							</li>
-						))}
-					</ul>
-				</section>
+			<div className="ct-body" ref={main}>
+				{(project.image || project.facts.length > 0) && (
+					<section className="ct-glance" aria-label="한눈에 보기">
+						{project.image && (
+							<figure className="ct-shot" data-reveal="zoom">
+								<img src={project.image} alt={`${project.name} 화면`} />
+							</figure>
+						)}
+						{project.facts.length > 0 && <Facts project={project} className="ct-facts" />}
+					</section>
+				)}
 
-				<section className="cr-chapter" aria-label="주요 기능">
-					<p className="cr-no">{number(0)}</p>
-					<h2>주요 기능</h2>
-					<ol className="cr-features">
-						{project.highlights.map((point, i) => (
-							<li key={point.title} style={cssVars({ d: i })}>
-								<div className="cr-feature-text" data-reveal="left">
-									<h3>{point.title}</h3>
-									<p>{point.body}</p>
-								</div>
-								{point.scrollFrames && <ScrollFrames frames={point.scrollFrames} title={point.title} />}
-								{(point.image || point.video || point.variants) && (
-									<figure className="cr-feature-media" data-reveal="zoom">
-										<FeatureMedia point={point} />
-									</figure>
-								)}
-							</li>
-						))}
-					</ol>
-				</section>
-
-				{extra.map((item, i) => (
-					<Chapter key={item.title} chapter={item} no={number(i + 1)} />
+				{parts.map((part, i) => (
+					<Section key={part.title} index={i} title={part.title} lead={part.lead} look={part.look}>
+						{part.body}
+					</Section>
 				))}
 
-				<section className="cr-chapter" aria-label={buildTitle(project)}>
-					<p className="cr-no">{number(after)}</p>
-					<h2>{buildTitle(project)}</h2>
-					{project.timeline && (
-						<ol className="cr-timeline">
-							{project.timeline.map((step, i) => (
-								<li key={step.date} data-reveal="left" style={cssVars({ d: i % 4 })}>
-									<time>{step.date}</time>
-									<span>{step.label}</span>
-								</li>
-							))}
-						</ol>
-					)}
-					<div className="cr-build">
-						{project.build.map((point, i) => (
-							<article key={point.title} data-reveal="" style={cssVars({ d: i % 2 })}>
-								<h3>{point.title}</h3>
-								<p>{point.body}</p>
-							</article>
-						))}
-					</div>
-				</section>
-
-				<section className="cr-chapter" aria-label="맡은 일">
-					<p className="cr-no">{number(after + 1)}</p>
-					<h2>맡은 일</h2>
-					{project.role && <p className="cr-role">{project.role}</p>}
-					<ul className="cr-roles">
-						{project.contributions.map((item, i) => (
-							<li key={item} data-reveal="left" style={cssVars({ d: i })}>
-								{item}
-							</li>
-						))}
-					</ul>
-				</section>
-
-				<section className="cr-chapter" aria-label="기술 사양">
-					<p className="cr-no">{number(after + 2)}</p>
-					<h2>기술 사양</h2>
-					<dl className="cr-specs">
-						{project.specs.map((spec, i) => (
-							<div key={spec.label} data-reveal="" style={cssVars({ d: i % 3 })}>
-								<dt>{spec.label}</dt>
-								<dd>{spec.value}</dd>
-							</div>
-						))}
-					</dl>
-				</section>
-
-				<footer className="cr-foot" data-reveal="">
-					<p>{project.tagline}</p>
-					<Links project={project} className="cr-links" />
+				<footer className="ct-end" aria-label="맺음말" data-reveal="">
+					<p className="ct-end-big">
+						<span className="ct-grad">고맙습니다</span>
+					</p>
+					<p className="ct-end-line">{project.tagline}</p>
+					<Links project={project} className="ct-links" />
 				</footer>
 			</div>
 		</div>

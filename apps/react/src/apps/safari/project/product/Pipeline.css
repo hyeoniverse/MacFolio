@@ -1,0 +1,149 @@
+/*
+ * 요청이 지나는 길 (MacFolio 전용 구조 그림). 밝은 만든 방식 띠 안의 어두운 카드. 트랙을 지나는 동안 화면에 고정되고,
+ * 스크롤한 만큼(--p) 상자와 선이 차례로 켜진다. 색은 ProductPage.css의 --pd-*와 .sp의 --sp-accent
+ */
+.pdp-track {
+	--p: 0;
+	height: calc(var(--view, 700px) * 2.4);
+	margin-bottom: clamp(32px, 5cqi, 56px);
+}
+
+.pdp-sticky {
+	position: sticky;
+	top: 0;
+	display: flex;
+	align-items: center;
+	height: var(--view, 700px);
+}
+
+.pdp {
+	width: 100%;
+	padding: clamp(20px, 3cqi, 36px);
+	border-radius: 24px;
+	background:
+		radial-gradient(50% 60% at 50% 50%, color-mix(in srgb, var(--sp-accent) 18%, transparent), transparent 70%),
+		linear-gradient(180deg, var(--pd-ink-2), var(--pd-ink));
+	box-shadow:
+		inset 0 0 0 1px var(--pd-ink-line),
+		0 30px 60px -30px rgba(0, 0, 0, 0.5);
+	color: var(--pd-ink-text);
+}
+
+.pdp-scroll {
+	overflow-x: auto;
+}
+
+.pdp svg {
+	display: block;
+	width: 100%;
+	min-width: 620px;
+	height: auto;
+	font-family: inherit;
+}
+
+/* 단계마다 0→1: 앞 단계가 끝나면 다음이 시작된다 */
+.pdp-node,
+.pdp-edge {
+	--s: clamp(0, var(--p) * var(--n) - var(--i), 1);
+}
+
+.pdp-body {
+	fill: rgba(255, 255, 255, calc(0.03 + var(--s) * 0.07));
+	stroke: rgba(255, 255, 255, calc(0.16 + var(--s) * 0.5));
+	stroke-width: 1;
+}
+
+.pdp-line {
+	fill: none;
+	stroke: rgba(255, 255, 255, calc(0.12 + var(--s) * 0.35));
+	stroke-width: 1;
+}
+
+.pdp-dot {
+	fill: rgba(255, 255, 255, calc(0.2 + var(--s) * 0.5));
+}
+
+.pdp-node text {
+	text-anchor: middle;
+	opacity: calc(0.28 + var(--s) * 0.72);
+}
+
+.pdp-label {
+	fill: var(--pd-ink-text);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+/* 아이콘은 Font Awesome 글자 (브랜드는 브랜드 글꼴) */
+.pdp-icon {
+	fill: color-mix(in srgb, var(--sp-accent) calc(var(--s) * 100%), #8e8e93);
+	font-family: 'Font Awesome 6 Free';
+	font-size: 18px;
+	font-weight: 900;
+}
+
+.pdp-icon.brand {
+	font-family: 'Font Awesome 6 Brands';
+	font-weight: 400;
+}
+
+/* 사람이 보는 화면과 데이터가 머무는 곳은 강조색 */
+.pdp-node-browser .pdp-body,
+.pdp-node-db .pdp-body {
+	stroke: color-mix(in srgb, var(--sp-accent) calc(var(--s) * 100%), rgba(255, 255, 255, 0.18));
+}
+
+.pdp-edge > path {
+	fill: none;
+	stroke: var(--sp-accent);
+	stroke-width: 2;
+	stroke-dasharray: 1;
+	stroke-dashoffset: calc(1 - var(--s));
+	stroke-linecap: round;
+}
+
+/* 화살촉은 선이 거의 다 그려졌을 때 */
+.pdp-edge marker path {
+	fill: var(--sp-accent);
+	stroke: none;
+	opacity: clamp(0, (var(--s) - 0.85) * 7, 1);
+}
+
+.pdp-edge text {
+	fill: var(--pd-ink-muted);
+	font-size: 13px;
+	text-anchor: middle;
+	opacity: var(--s);
+}
+
+.pdp figcaption {
+	margin-top: 16px;
+	color: var(--pd-ink-muted);
+	font-size: 15px;
+	text-align: center;
+}
+
+/* ─── 좁은 창·움직임 줄이기: 고정하지 않고 다 그려진 채로 ─── */
+@container (max-width: 600px) {
+	.pdp-track {
+		--p: 1 !important;
+		height: auto;
+	}
+
+	.pdp-sticky {
+		position: static;
+		height: auto;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pdp-track {
+		--p: 1 !important;
+		height: auto;
+	}
+
+	.pdp-sticky {
+		position: static;
+		height: auto;
+	}
+}

@@ -1,688 +1,348 @@
-import { cssVars } from '@/shared/lib/cssVars';
-// SproutFarm (게임): 게임 화면 흐름. 타이틀 화면 → HUD(숫자) → 퀘스트(기능, 게임 대화창)와 조작법 → 하루(화면 모음)
-// → 흙길을 따라가는 개발 일지 지도(만든 방식) → 인벤토리(기술 사양) → 크레딧(맡은 일).
-// 그림은 게임에 쓴 Sprout Lands 에셋에서 필요한 조각만 잘라 쓴다 (public/imgs/projects/sproutfarm/sprites)
+// 게임 모양: 픽셀 타이틀 화면 + 스테이지 셀렉트. PRESS START → HUD(한눈에 보기) → STAGE SELECT(주요 기능) → CONTROLS(조작법)
+// → DEV LOG(만든 방식, 스크롤하면 주인공이 따라 내려간다) → GALLERY(화면 모음) → INVENTORY(기술 사양) → CREDITS(맡은 일) → THE END.
+// 어떤 프로젝트든 고를 수 있다: 없는 필드는 그 구역을 빼고, 픽셀 스프라이트는 새싹 농장(sproutfarm)에만 있어 그때만 쓴다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project } from '@/shared/profile';
 import { useProfile } from '@/shared/site/profileStore';
-import { Favicon, Links } from '@/apps/safari/project/parts';
+import { Favicon, FactValue, Links, Region } from '@/apps/safari/project/parts';
+import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
+import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
+import { cssVars } from '@/shared/lib/cssVars';
 import '@/apps/safari/project/GamePage.css';
-import { scrollParent } from '@/apps/safari/project/scroll';
 
 const SPRITES = '/imgs/projects/sproutfarm/sprites';
+const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
-/** 장식 스프라이트 (글을 읽는 데는 필요 없다) */
-const Sprite: React.FC<{ name: string; className: string }> = ({ name, className }) => (
-	<img className={`gm-sprite ${className}`} src={`${SPRITES}/${name}.png`} alt="" aria-hidden="true" />
-);
-
-/** 게임 대화창의 표정(Teemo 이모트): 이름과 칸 수. 퀘스트마다 다른 표정을 차례대로 돌려 쓴다 */
-type Emote = [name: string, frames: number];
-const QUEST_EMOTES: Emote[] = [
-	['hooray', 2],
-	['blink', 4],
-	['ears', 5],
-	['sleeping', 2],
-];
-
-/** 한 칸씩 넘기며 움직이는 표정 */
-const EmoteFace: React.FC<{ emote: Emote; className?: string }> = ({ emote: [name, frames], className = '' }) => (
-	<span
-		className={`gm-emote ${className}`}
-		aria-hidden="true"
-		style={{ backgroundImage: `url(${SPRITES}/emotes/${name}.png)`, ...cssVars({ frames }) }}
-	/>
-);
-
-/** 인벤토리 칸의 아이템 그림: 기술 사양 이름에 맞춰 고르고, 없으면 차례대로 */
-const ITEM_ICONS: Record<string, string> = {
-	엔진: 'items/pickaxe',
-	렌더링: 'items/painting',
-	맵: 'items/seeds',
-	AI: 'items/egg',
-	'입력 · UI': 'items/gamepad',
-	배포: 'items/chest',
-	서버: 'items/milk',
+/** 인벤토리 칸의 아이템 그림 (새싹 농장의 기술 사양 분류 → Sprout Lands 아이템). 다른 분류는 돌아가며 쓴다 */
+const ITEM_SPRITES: Record<string, string> = {
+	엔진: 'pickaxe',
+	렌더링: 'painting',
+	맵: 'seeds',
+	AI: 'egg',
+	'입력 · UI': 'gamepad',
+	배포: 'chest',
+	서버: 'milk',
 };
-const FALLBACK_ICONS = Object.values(ITEM_ICONS);
-const SLOTS = 12;
+const ITEM_FALLBACKS = Object.values(ITEM_SPRITES);
 
-/**
- * 지도 풀밭에 흩어 둘 것들: 이름, 원래 픽셀 폭(세 배로 키운다), 뽑힐 몫.
- * 나무와 꽃을 가장 많이, 돌과 버섯(빨간 버섯)은 조금씩
- */
-const DECOR: [string, number, number][] = [
-	['tree', 24, 3],
-	['tree-apple', 24, 3],
-	['tree-tall', 14, 3],
-	['bush', 16, 2],
-	['berry-bush', 16, 2],
-	['flower-yellow', 9, 3],
-	['flower-rose', 11, 3],
-	['flower-small', 9, 3],
-	['flower-blue', 11, 3],
-	['sprout', 8, 2],
-	['mushrooms', 13, 1],
-	['mushroom-red', 16, 1],
-	['rock', 16, 1],
-	['rock-big', 16, 1],
-	['pebble', 10, 1],
-	['stump', 10, 1],
-	['log', 16, 1],
-];
-const DECOR_POOL = DECOR.flatMap(([name, width, share]) => Array.from({ length: share }, () => [name, width] as const));
-/** 연못이 놓인 칸 (짝·홀로 정해진 빈 풀밭 쪽, 그 칸에는 다른 것을 심지 않는다) */
-const POND_STAGE = 1;
+/** 두 줄 머리글: 영어 픽셀 글씨와 한국어 이름 */
+const Heading: React.FC<{ en: string; ko: string }> = ({ en, ko }) => (
+	<h2 className="gm-heading" data-reveal="up">
+		<span className="gm-heading-en">{en}</span>
+		<span className="gm-heading-ko">{ko}</span>
+	</h2>
+);
 
-/**
- * 페이지를 내려가는 만큼 하루가 흐른다: 아침(타이틀) → 낮(하루) → 노을(개발 일지 가운데) → 붉은 저녁(개발 일지 끝) → 해 질 녘(인벤토리) → 밤(크레딧).
- * anchor는 그 시간이 되는 자리(구역과 그 구역 안의 비율), sky는 바탕색, light는 풀밭 그림 위에 얹는 빛(마지막 값은 진하기)
- */
-type DayStop = { anchor: [string, number]; sky: number[]; dark: number[]; light: number[] };
-const DAY: DayStop[] = [
-	{ anchor: ['.gm-title', 0.3], sky: [253, 240, 214], dark: [40, 38, 28], light: [255, 214, 150, 0.12] },
-	{ anchor: ['.gm-day', 0.5], sky: [232, 243, 211], dark: [24, 33, 15], light: [255, 255, 255, 0] },
-	{ anchor: ['.gm-map', 0.5], sky: [248, 196, 150], dark: [62, 36, 26], light: [255, 130, 50, 0.26] },
-	{ anchor: ['.gm-map', 0.92], sky: [214, 136, 140], dark: [58, 30, 40], light: [210, 90, 120, 0.3] },
-	{ anchor: ['.gm-inventory', 0.5], sky: [92, 78, 128], dark: [36, 28, 58], light: [70, 50, 140, 0.42] },
-	{ anchor: ['.gm-credits', 0.2], sky: [22, 30, 60], dark: [14, 21, 48], light: [10, 20, 70, 0.55] },
-];
+/** 타이틀 화면과 크레딧 가장자리의 장식: 새싹 농장은 에셋 스프라이트, 아니면 CSS로만 그린 픽셀 별·풀 */
+const Decor: React.FC<{ pixel: boolean; where: 'title' | 'end' }> = ({ pixel, where }) => (
+	<div className={`gm-decor gm-decor-${where}`} aria-hidden="true">
+		{pixel ? (
+			<>
+				<img className="gm-decor-a" src={`${SPRITES}/tree.png`} alt="" />
+				<img className="gm-decor-b" src={`${SPRITES}/sunflower.png`} alt="" />
+				<img className="gm-decor-c" src={`${SPRITES}/mushroom.png`} alt="" />
+				<img className="gm-decor-d" src={`${SPRITES}/star.png`} alt="" />
+			</>
+		) : (
+			<>
+				<i className="gm-decor-a" />
+				<i className="gm-decor-b" />
+				<i className="gm-decor-c" />
+				<i className="gm-decor-d" />
+			</>
+		)}
+	</div>
+);
 
-/** 하루 색: 앞뒤 두 때 사이에서 t만큼 섞는다 */
-function dayAt(index: number, t: number, dark: boolean) {
-	const a = DAY[index];
-	const b = DAY[Math.min(index + 1, DAY.length - 1)];
-	const mix = (x: number[], y: number[]) => x.map((v, i) => v + (y[i] - v) * Math.min(Math.max(t, 0), 1));
-	const sky = mix(dark ? a.dark : a.sky, dark ? b.dark : b.sky).map(Math.round);
-	const light = mix(a.light, b.light);
-	// 바탕이 어두우면 제목 글자를 밝게
-	const luminance = (0.299 * sky[0] + 0.587 * sky[1] + 0.114 * sky[2]) / 255;
-	return {
-		sky: `rgb(${sky.join(' ')})`,
-		ink: luminance < 0.5 ? '#f3e1bb' : '#4a3222',
-		light: `rgb(${light.slice(0, 3).map(Math.round).join(' ')} / ${light[3].toFixed(3)})`,
-	};
-}
-
-/** 개발 일지 주인공의 걸음 속도 (화면 px/초) */
-const HERO_SPEED = 150;
-/** 멀리 떨어지면 남은 거리(px)에 이 배수를 곱한 속도로 따라간다 (1초에 남은 거리의 몇 배) */
-const HERO_CATCH_UP = 1.6;
-/** 목표에서 화면 높이의 이 비율보다 멀면 그만큼 거리로 당겨 온다 (화면 가운데에서 가장자리 조금 밖) */
-const HERO_EDGE = 0.6;
-
-/** 소 걸음: 한 칸을 보여 주는 시간과 그동안 나가는 거리 (게임보다 조금 느긋하게) */
-const COW_FRAME_MS = 130;
-const COW_STEP = 6;
-
-/** 늘 같은 자리에 놓이도록 씨앗이 정해진 난수 */
-function seeded(seed: number) {
-	let a = seed;
-	return () => {
-		a = (a + 0x6d2b79f5) | 0;
-		let t = Math.imul(a ^ (a >>> 15), 1 | a);
-		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-	};
-}
-
-type Decor = { name: string; width: number; x: number; y: number };
-
-/** 칸마다 표지판 반대편 빈 풀밭에 일고여덟 개씩, 자리와 크기를 불규칙하게 (연못 칸은 비워 둔다) */
-function scatter(count: number) {
-	const random = seeded(count * 7919 + 17);
-	const items: Decor[] = [];
-	for (let i = 0; i < count; i++) {
-		// 짝수 칸은 표지판이 왼쪽이라 오른쪽이 비고, 홀수 칸은 그 반대
-		const [from, to] = i % 2 === 0 ? [74, 96] : [4, 26];
-		if (i === POND_STAGE) {
-			// 연못(칸 가운데부터 아래)은 비우고, 그 위 둑에만 작은 꽃을 몇 송이
-			for (const name of ['flower-yellow', 'flower-small', 'flower-blue']) {
-				items.push({
-					name,
-					width: 9,
-					x: from + random() * (to - from),
-					y: ((i + 0.12 + random() * 0.26) / count) * 100,
-				});
-			}
-			continue;
-		}
-		const many = 7 + Math.floor(random() * 3);
-		for (let k = 0; k < many; k++) {
-			const [name, width] = DECOR_POOL[Math.floor(random() * DECOR_POOL.length)];
-			items.push({
-				name,
-				width,
-				x: from + random() * (to - from),
-				y: ((i + 0.08 + ((k + random()) / many) * 0.84) / count) * 100,
-			});
-		}
-	}
-	// 아래에 있는 것이 앞에 오도록
-	return items.sort((a, b) => a.y - b.y);
-}
-
-const itemIcon = (label: string, i: number) => ITEM_ICONS[label] ?? FALLBACK_ICONS[i % FALLBACK_ICONS.length];
-
-/** 개발 일지 지도의 흙길: 칸마다 왼쪽·오른쪽 표지판 옆을 지나 구불구불 내려간다 (칸 높이 100) */
-function roadPath(count: number) {
-	let d = 'M50 0';
-	let y = 0;
-	for (let i = 0; i < count; i++) {
-		const x = i % 2 === 0 ? 64 : 36;
-		const next = 100 * i + 50;
-		d += ` C${i === 0 ? 50 : i % 2 === 0 ? 36 : 64} ${y + 35} ${x} ${next - 35} ${x} ${next}`;
-		y = next;
-	}
-	const last = count % 2 === 0 ? 36 : 64;
-	return `${d} C${last} ${y + 35} 50 ${100 * count - 20} 50 ${100 * count}`;
+/** 개발 일지 옆을 걸어 내려가는 주인공: 그 구역이 화면 가운데를 지난 만큼 아래로 */
+function useWalker<T extends HTMLElement>() {
+	const ref = useRef<T>(null);
+	useEffect(() => {
+		const node = ref.current;
+		if (!node) return;
+		return onScrollFrame(node, (scroller) => {
+			const view = viewOf(scroller);
+			const box = node.getBoundingClientRect();
+			const center = view.top + view.height / 2;
+			const walked = Math.min(1, Math.max(0, (center - box.top) / box.height));
+			node.style.setProperty('--gm-walk', walked.toFixed(4));
+		});
+	}, []);
+	return ref;
 }
 
 const GamePage: React.FC<{ project: Project }> = ({ project }) => {
 	const owner = useProfile().name;
-	const root = useRef<HTMLDivElement>(null);
-	const title = useRef<HTMLElement>(null);
-	const hud = useRef<HTMLElement>(null);
-	const road = useRef<HTMLDivElement>(null);
-	const path = useRef<SVGPathElement>(null);
-	const hero = useRef<HTMLSpanElement>(null);
-	const paw = useRef<HTMLSpanElement>(null);
-	const [started, setStarted] = useState(false);
+	const root = useReveal<HTMLDivElement>();
+	const devlog = useWalker<HTMLDivElement>();
+	// 스프라이트 그림은 새싹 농장 것이라 그 프로젝트에서만
+	const pixel = project.id === 'sproutfarm';
+	const [flash, setFlash] = useState(false);
+	// 인벤토리: 누른 칸(picked)과 올려 둔 칸(peek). 올려 둔 칸이 있으면 그걸 먼저 보여 준다
 	const [picked, setPicked] = useState(0);
-	const stages = project.build.length;
-	const decor = React.useMemo(() => scatter(stages), [stages]);
+	const [peek, setPeek] = useState<number | null>(null);
+	const shown = project.specs[peek ?? picked] ?? project.specs[0];
 
-	// 타이틀 화면의 앞뒤: 발끝이 더 위에 있는 것이 뒤로 간다. 발끝은 상자 아래 끝에서 그림 아래의 투명한 여백(data-foot)을 뺀 곳이다.
-	// 동물은 옆으로만 걸으니 발끝 높이가 그대로다
-	useEffect(() => {
-		const scene = title.current;
-		if (!scene) return;
-		const sort = () => {
-			const top = scene.getBoundingClientRect().top;
-			for (const item of scene.children) {
-				if (item instanceof HTMLElement)
-					item.style.zIndex = String(
-						Math.round(item.getBoundingClientRect().bottom - top - Number(item.dataset.foot ?? 0))
-					);
-			}
-		};
-		sort();
-		// 그림이 늦게 불러와지면 높이가 바뀐다
-		scene.addEventListener('load', sort, true);
-		const resized = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(sort);
-		resized?.observe(scene);
-		return () => {
-			scene.removeEventListener('load', sort, true);
-			resized?.disconnect();
-		};
-	}, []);
-
-	// 하루의 흐름: 화면 가운데가 페이지의 어디쯤인지로 바탕색과 풀밭의 빛을 정한다
-	useEffect(() => {
-		const page = root.current;
-		if (!page) return;
-		const scroller = scrollParent(page);
-		const source = scroller ?? window;
-		let frame = 0;
-		const paint = () => {
-			frame = 0;
-			const view = scroller?.getBoundingClientRect();
-			const center = view ? view.top + view.height / 2 : window.innerHeight / 2;
-			// 때마다 그 자리가 지금 화면의 어디쯤인지
-			const marks = DAY.map(({ anchor: [selector, ratio] }) => {
-				const box = page.querySelector(selector)?.getBoundingClientRect();
-				return box ? box.top + box.height * ratio : Number.NaN;
-			});
-			if (marks.some(Number.isNaN)) return;
-			let index = marks.findIndex((mark) => mark > center) - 1;
-			if (index < 0) index = marks[0] > center ? 0 : DAY.length - 1;
-			const from = marks[index];
-			const to = marks[Math.min(index + 1, marks.length - 1)];
-			const t = to === from ? 0 : (center - from) / (to - from);
-			const day = dayAt(index, Math.min(Math.max(t, 0), 1), document.documentElement.dataset.theme === 'dark');
-			page.style.setProperty('--gm-sky', day.sky);
-			page.style.setProperty('--gm-sky-ink', day.ink);
-			page.style.setProperty('--gm-light', day.light);
-		};
-		const onScroll = () => {
-			if (!frame) frame = requestAnimationFrame(paint);
-		};
-		paint();
-		source.addEventListener('scroll', onScroll, { passive: true });
-		// 테마를 바꾸면 다시 칠한다
-		const themed = new MutationObserver(paint);
-		themed.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-		return () => {
-			source.removeEventListener('scroll', onScroll);
-			themed.disconnect();
-			cancelAnimationFrame(frame);
-		};
-	}, []);
-
-	// 소는 그림이 바뀔 때만 몸도 한 걸음(원본 2px, 화면 6px) 나간다. 매끄럽게 밀면 제자리걸음하며 미끄러지는 것처럼 보인다
-	useEffect(() => {
-		const cow = title.current?.querySelector<HTMLElement>('.gm-cow');
-		if (!cow || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-		let x = 160;
-		let frame = 0;
-		const timer = window.setInterval(() => {
-			const width = cow.parentElement?.clientWidth ?? 0;
-			frame = 1 - frame;
-			x = x > width + 100 ? 0 : x + COW_STEP;
-			cow.style.backgroundPositionX = `${-frame * 96}px`;
-			cow.style.transform = `translateX(${x}px)`;
-		}, COW_FRAME_MS);
-		return () => window.clearInterval(timer);
-	}, []);
-
-	// 스크롤하면 주인공이 흙길을 따라 걷는다: 목표는 화면 가운데 높이와 같은 길 위의 점이고,
-	// 주인공은 그 점까지 길을 따라 걸어간다(스크롤에 바로 붙으면 순간이동처럼 빠르다). 멀어지면 빨리 따라오고, 화면 밖으로 멀리 벗어나지는 않는다
-	useEffect(() => {
-		const box = road.current;
-		const line = path.current;
-		const walker = hero.current;
-		if (!box || !line || !walker || typeof line.getPointAtLength !== 'function') return;
-		const scroller = scrollParent(box);
-		const source = scroller ?? window;
-		const total = line.getTotalLength();
-		const still = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-		let frame = 0;
-		let last = 0;
-		let at: number | null = null;
-		// 바라보는 쪽: 시트의 줄 (0 아래·1 위·2 왼쪽·3 오른쪽). 멈추면 앞모습
-		let facing = 0;
-
-		/** 화면 가운데 높이와 같은 길 위의 거리 (길은 아래로만 내려가니 높이로 찾는다) */
-		const goal = () => {
-			const area = line.ownerSVGElement?.getBoundingClientRect();
-			if (!area || area.height === 0) return null;
-			const view = scroller?.getBoundingClientRect();
-			const center = view ? view.top + view.height / 2 : window.innerHeight / 2;
-			const y = Math.min(Math.max((center - area.top) / area.height, 0), 1) * stages * 100;
-			let low = 0;
-			let high = total;
-			for (let i = 0; i < 18; i++) {
-				const mid = (low + high) / 2;
-				if (line.getPointAtLength(mid).y < y) low = mid;
-				else high = mid;
-			}
-			return { length: low, unit: area.height / (stages * 100) };
-		};
-
-		const draw = (length: number) => {
-			const area = line.ownerSVGElement?.getBoundingClientRect();
-			if (!area) return;
-			const base = box.getBoundingClientRect();
-			const point = line.getPointAtLength(length);
-			const x = area.left - base.left + (point.x / 100) * area.width;
-			const y = area.top - base.top + (point.y / (stages * 100)) * area.height;
-			walker.style.transform = `translate(${x - 72}px, ${y - 96}px)`;
-			walker.style.backgroundPositionY = `${-facing * 144}px`;
-		};
-
-		const step = (time: number) => {
-			frame = 0;
-			const target = goal();
-			if (!target) return;
-			const elapsed = last ? Math.min(time - last, 50) : 16;
-			last = time;
-			if (at === null || still) at = target.length;
-			// 빠르게 스크롤해 화면 밖으로 멀어졌으면, 먼저 화면 가장자리 바로 바깥까지 옮겨 둔다(오래 사라져 있지 않게)
-			const viewHeight = scroller?.clientHeight ?? window.innerHeight;
-			const edge = (viewHeight * HERO_EDGE) / target.unit;
-			if (Math.abs(target.length - at) > edge) at = target.length - Math.sign(target.length - at) * edge;
-			const left = target.length - at;
-			// 멀수록 빨리 따라간다(뛰어온다). 길 1단위가 화면에서 몇 px인지로 걸음 속도를 길 위의 거리로 바꾼다
-			const speed = Math.max(HERO_SPEED, Math.abs(left) * target.unit * HERO_CATCH_UP);
-			const reach = (speed * elapsed) / 1000 / target.unit;
-			if (Math.abs(left) <= reach) {
-				at = target.length;
-				facing = 0;
-				walker.dataset.walking = 'false';
-				last = 0;
-			} else {
-				const before = line.getPointAtLength(at);
-				at += Math.sign(left) * reach;
-				const after = line.getPointAtLength(at);
-				// 화면에서 더 많이 움직인 쪽을 바라본다 (길 단위는 가로·세로 배율이 다르다)
-				const area = line.ownerSVGElement?.getBoundingClientRect();
-				const dx = ((after.x - before.x) / 100) * (area?.width ?? 0);
-				const dy = (after.y - before.y) * target.unit;
-				if (Math.abs(dx) > Math.abs(dy)) facing = dx < 0 ? 2 : 3;
-				else if (dy !== 0) facing = dy < 0 ? 1 : 0;
-				walker.dataset.walking = 'true';
-				frame = requestAnimationFrame(step);
-			}
-			draw(at);
-		};
-		const wake = () => {
-			if (!frame) frame = requestAnimationFrame(step);
-		};
-		// 처음과 길 높이가 바뀔 때는 걷지 않고 바로 그 자리에 선다
-		const jump = () => {
-			const target = goal();
-			if (!target) return;
-			at = target.length;
-			draw(at);
-		};
-		jump();
-		source.addEventListener('scroll', wake, { passive: true });
-		// 그림이 늦게 불러와져 길의 높이가 바뀌면 자리를 다시 잡는다
-		const resized = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(jump);
-		resized?.observe(box);
-		return () => {
-			source.removeEventListener('scroll', wake);
-			resized?.disconnect();
-			cancelAnimationFrame(frame);
-		};
-	}, [stages]);
-
-	// 커서는 게임의 고양이 발: 마우스를 따라다니며 톡톡 두드리고, 누르면 꾹 잡는다
-	useEffect(() => {
-		const page = root.current;
-		const hand = paw.current;
-		if (!page || !hand) return;
-		const scroller = scrollParent(page);
-		let last: { x: number; y: number } | null = null;
-		const move = () => {
-			if (!last) return;
-			const base = page.getBoundingClientRect();
-			hand.style.transform = `translate(${last.x - base.left - 6}px, ${last.y - base.top - 2}px)`;
-		};
-		const onMove = (event: PointerEvent) => {
-			if (event.pointerType !== 'mouse') return;
-			last = { x: event.clientX, y: event.clientY };
-			page.dataset.paw = 'on';
-			move();
-		};
-		const onLeave = () => {
-			last = null;
-			page.dataset.paw = 'off';
-		};
-		const onDown = () => (hand.dataset.hold = 'true');
-		const onUp = () => (hand.dataset.hold = 'false');
-		page.addEventListener('pointermove', onMove);
-		page.addEventListener('pointerleave', onLeave);
-		page.addEventListener('pointerdown', onDown);
-		window.addEventListener('pointerup', onUp);
-		(scroller ?? window).addEventListener('scroll', move, { passive: true });
-		return () => {
-			page.removeEventListener('pointermove', onMove);
-			page.removeEventListener('pointerleave', onLeave);
-			page.removeEventListener('pointerdown', onDown);
-			window.removeEventListener('pointerup', onUp);
-			(scroller ?? window).removeEventListener('scroll', move);
-		};
-	}, []);
-
-	// 게임처럼 START를 누르면 화면이 한 번 번쩍이고 첫 화면(HUD와 퀘스트)으로 내려간다
+	// PRESS START: 화면이 한 번 번쩍이고 HUD로 내려간다
 	const start = () => {
-		setStarted(true);
-		window.setTimeout(() => {
-			hud.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-			setStarted(false);
-		}, 260);
+		setFlash(true);
+		window.setTimeout(() => setFlash(false), 420);
+		root.current
+			?.querySelector('[data-gm="hud"]')
+			?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
 	};
 
-	return (
-		<div className="gm" ref={root} data-started={started}>
-			<span className="gm-paw" ref={paw} aria-hidden="true" />
-			<header className="gm-title" ref={title}>
-				<Sprite name="chicken-house" className="gm-house" />
-				<Sprite name="tree" className="gm-tree a" />
-				<Sprite name="fruit-tree" className="gm-tree b" />
-				<Sprite name="tree" className="gm-tree c" />
-				<Sprite name="sunflower" className="gm-sunflower" />
-				<Sprite name="flower-pink" className="gm-flower a" />
-				<Sprite name="flower-blue" className="gm-flower b" />
-				<Sprite name="mushroom" className="gm-flower c" />
-				<Sprite name="bush" className="gm-flower d" />
-				{/* 소 그림은 발 아래로 원본 8px(화면 24px)이 비어 있다 */}
-				<span className="gm-walker gm-cow" aria-hidden="true" data-foot={24} />
-				<span className="gm-walker gm-chick a" aria-hidden="true" />
-				<span className="gm-walker gm-chick b" aria-hidden="true" />
+	const cover = project.art ?? project.image;
+	const itemSprite = (label: string, i: number) =>
+		`${SPRITES}/items/${ITEM_SPRITES[label] ?? ITEM_FALLBACKS[i % ITEM_FALLBACKS.length]}.png`;
 
-				<div className="gm-title-body">
-					<Favicon project={project} className="gm-icon" />
-					<p className="gm-sign">{project.name}</p>
-					<h1>
-						{/* 문장마다 한 덩어리로 줄을 바꾼다 */}
-						{project.tagline.split(/(?<=[.!?])\s+/).map((sentence) => (
-							<React.Fragment key={sentence}>
-								<span>{sentence}</span>{' '}
-							</React.Fragment>
-						))}
-					</h1>
-					<p className="gm-lead">{project.description}</p>
-					<Links project={project} className="gm-links" />
-					<button type="button" className="gm-press" onClick={start} aria-label="시작: 퀘스트로 내려가기">
-						PRESS START
+	return (
+		<div className={`gm${pixel ? ' gm-pixel' : ''}`} ref={root}>
+			{/* ─── 타이틀 화면 ─── */}
+			<header className="gm-title" data-flash={flash || undefined}>
+				{cover && <img className="gm-title-art" src={cover} alt={`${project.name} 장면`} />}
+				<Decor pixel={pixel} where="title" />
+				<div className="gm-title-main">
+					{project.logo ? (
+						<img className="gm-logo" src={project.logo} alt={project.name} />
+					) : (
+						<h1 className="gm-name">{project.name}</h1>
+					)}
+					<p className="gm-tagline">{project.tagline}</p>
+					<button type="button" className="gm-start" onClick={start} aria-label="시작: 한눈에 보기로 내려가기">
+						▶ PRESS START
 					</button>
+					<p className="gm-copyright">
+						<Favicon project={project} className="gm-favicon" />
+						<span>
+							© {owner} · {project.context}
+						</span>
+					</p>
 				</div>
 			</header>
 
-			<section className="gm-hud" aria-label="한눈에 보기" ref={hud}>
-				{project.facts.map((fact) => (
-					<div key={fact.label}>
-						<span>{fact.label}</span>
-						<strong>{fact.value}</strong>
-					</div>
-				))}
-			</section>
+			{/* ─── HUD: 한눈에 보기 ─── */}
+			<Region label="한눈에 보기" className="gm-hud" data-gm="hud">
+				<div className="gm-inner">
+					<Heading en="STATUS" ko="한눈에 보기" />
+					<p className="gm-desc" data-reveal="up">
+						{project.description}
+					</p>
+					{project.facts.length > 0 && (
+						<ul className="gm-stats">
+							{project.facts.map((fact, i) => (
+								<li key={fact.label} className="gm-panel" data-reveal="drop" style={cssVars({ d: i })}>
+									<FactValue text={fact.value} />
+									<span>{fact.label}</span>
+								</li>
+							))}
+						</ul>
+					)}
+					<Links project={project} className="gm-links" />
+				</div>
+			</Region>
 
-			<div className="gm-row">
-				<section className="gm-quests" aria-label="주요 기능">
-					<h2>
-						<img src={`${SPRITES}/star.png`} alt="" aria-hidden="true" /> 퀘스트
-					</h2>
-					{project.art && <img className="gm-art" src={project.art} alt={`${project.name} 장면`} />}
-					<ol>
-						{project.highlights.map((point, i) => (
-							<li key={point.title} className="gm-dialog">
-								<span className="gm-portrait" aria-hidden="true">
-									<EmoteFace emote={QUEST_EMOTES[i % QUEST_EMOTES.length]} />
-								</span>
-								<div className="gm-bubble">
+			{/* ─── STAGE SELECT: 주요 기능 ─── */}
+			{project.highlights.length > 0 && (
+				<Region label="주요 기능" className="gm-stages">
+					<div className="gm-inner">
+						<Heading en="STAGE SELECT" ko="주요 기능" />
+						<ol className="gm-stage-grid">
+							{project.highlights.map((point, i) => (
+								<li key={point.title} className="gm-stage gm-panel" data-reveal="up" style={cssVars({ d: i % 4 })}>
+									{point.image ? (
+										<img className="gm-stage-thumb" src={point.image} alt="" />
+									) : (
+										<span className="gm-stage-thumb gm-stage-blank" aria-hidden="true" />
+									)}
+									<span className="gm-stage-no">STAGE {String(i + 1).padStart(2, '0')}</span>
 									<h3>{point.title}</h3>
 									<p>{point.body}</p>
-									{point.image && <img className="gm-shot" src={point.image} alt={`${point.title} 장면`} />}
-								</div>
-							</li>
-						))}
-					</ol>
-				</section>
-				{project.controls && (
-					<section className="gm-panel gm-controls" aria-label="조작법">
-						<h2>조작법</h2>
-						<ul>
+								</li>
+							))}
+						</ol>
+					</div>
+				</Region>
+			)}
+
+			{/* ─── CONTROLS: 조작법 ─── */}
+			{project.controls && project.controls.length > 0 && (
+				<Region label="조작법" className="gm-controls">
+					<div className="gm-inner">
+						<Heading en="CONTROLS" ko="조작법" />
+						<ul className="gm-keys gm-panel" data-reveal="up">
 							{project.controls.map((control) => (
 								<li key={control.label}>
-									<span className="gm-keys">
+									<span className="gm-keycaps">
 										{control.keys.map((key) => (
 											<kbd key={key}>{key}</kbd>
 										))}
 									</span>
-									<span>{control.label}</span>
+									<span className="gm-key-label">{control.label}</span>
 								</li>
 							))}
 						</ul>
-						<span className="gm-walker gm-runner" aria-hidden="true" />
-					</section>
-				)}
-			</div>
-
-			{project.gallery && (
-				<section className="gm-day" aria-label="화면 모음">
-					<h2>
-						<img src={`${SPRITES}/heart.png`} alt="" aria-hidden="true" /> 하루
-					</h2>
-					<ol>
-						{project.gallery.map((shot) => (
-							<li key={shot.src}>
-								<img src={shot.src} alt={shot.caption} loading="lazy" />
-								<p>{shot.caption}</p>
-							</li>
-						))}
-					</ol>
-				</section>
+					</div>
+				</Region>
 			)}
 
-			<section className="gm-map" aria-label="만든 방식">
-				<h2 className="gm-map-title">개발 일지</h2>
-				<div className="gm-road" ref={road} style={cssVars({ stages })}>
-					<div className="gm-decor" aria-hidden="true">
-						{decor.map((item, i) => (
-							<img
-								key={i}
-								src={`${SPRITES}/map/${item.name}.png`}
-								alt=""
-								style={{ left: `${item.x}%`, top: `${item.y}%`, width: item.width * 3 }}
-							/>
-						))}
-						<span className="gm-pond" />
+			{/* ─── DEV LOG: 만든 방식 ─── */}
+			{project.build.length > 0 && (
+				<Region label="만든 방식" className="gm-devlog">
+					<div className="gm-inner">
+						<Heading en="DEV LOG" ko="만든 방식" />
+						<div className="gm-log-track" ref={devlog}>
+							{/* 길: 스크롤한 만큼 주인공이 아래로 걸어 내려간다 */}
+							<div className="gm-road" aria-hidden="true">
+								<span className="gm-hero" />
+							</div>
+							<ol className="gm-log">
+								{project.build.map((point, i) => (
+									<li
+										key={point.title}
+										className="gm-log-entry gm-panel"
+										data-reveal="left"
+										style={cssVars({ d: i % 3 })}
+									>
+										<span className="gm-log-no">LOG {String(i + 1).padStart(2, '0')}</span>
+										<h3>{point.title}</h3>
+										<p>{point.body}</p>
+										{point.image && <img className="gm-log-shot" src={point.image} alt={`${point.title} 화면`} />}
+									</li>
+								))}
+							</ol>
+						</div>
 					</div>
-					<svg
-						className="gm-road-line"
-						viewBox={`0 0 100 ${stages * 100}`}
-						preserveAspectRatio="none"
-						aria-hidden="true"
-					>
-						<path d={roadPath(stages)} className="dirt" ref={path} />
-						<path d={roadPath(stages)} className="edge" />
-					</svg>
-					<span className="gm-walker gm-hero" ref={hero} aria-hidden="true" data-walking="false" />
-					<ol>
-						{project.build.map((point, i) => (
-							<li key={point.title}>
-								<span className="gm-marker" aria-hidden="true">
-									{i + 1}
-								</span>
-								<div className="gm-stage">
-									<span className="gm-stage-no">STAGE {i + 1}</span>
-									<h3>{point.title}</h3>
-									<p>{point.body}</p>
-									{point.image && <img src={point.image} alt={`${point.title} 그림`} loading="lazy" />}
-								</div>
+				</Region>
+			)}
+
+			{/* ─── GALLERY: 화면 모음 ─── */}
+			{project.gallery && project.gallery.length > 0 && (
+				<Region label="화면 모음" className="gm-gallery">
+					<div className="gm-inner">
+						<Heading en="GALLERY" ko="화면 모음" />
+					</div>
+					<ul className="gm-reel" data-reveal="up">
+						{project.gallery.map((shot) => (
+							<li key={shot.src}>
+								<figure className="gm-panel">
+									<img src={shot.src} alt={shot.caption} loading="lazy" />
+									<figcaption>{shot.caption}</figcaption>
+								</figure>
 							</li>
 						))}
-					</ol>
-					<p className="gm-goal">
-						<EmoteFace emote={['sunglasses', 2]} className="small" /> CLEAR
-					</p>
-				</div>
-			</section>
+					</ul>
+				</Region>
+			)}
 
-			<section className="gm-inventory" aria-label="기술 사양">
-				<h2>
-					<img src={`${SPRITES}/items/chest.png`} alt="" aria-hidden="true" /> 인벤토리
-				</h2>
-				<div className="gm-bag">
-					<ul className="gm-slots">
-						{Array.from({ length: Math.max(SLOTS, project.specs.length) }, (_, i) => {
-							const spec = project.specs[i];
-							if (!spec) return <li key={i} className="gm-slot empty" aria-hidden="true" />;
-							return (
-								<li key={spec.label}>
+			{/* ─── INVENTORY: 기술 사양 ─── */}
+			{project.specs.length > 0 && (
+				<Region label="기술 사양" className="gm-inventory">
+					<div className="gm-inner">
+						<Heading en="INVENTORY" ko="기술 사양" />
+						<div className="gm-bag gm-panel" data-reveal="up" onMouseLeave={() => setPeek(null)}>
+							<div className="gm-slots">
+								{project.specs.map((spec, i) => (
 									<button
+										key={spec.label}
 										type="button"
 										className="gm-slot"
-										aria-pressed={picked === i}
 										aria-label={spec.label}
-										title={spec.label}
+										aria-pressed={picked === i}
 										onClick={() => setPicked(i)}
-										onMouseEnter={() => setPicked(i)}
-										onFocus={() => setPicked(i)}
+										onMouseEnter={() => setPeek(i)}
+										onFocus={() => setPeek(i)}
+										onBlur={() => setPeek(null)}
 									>
-										<img src={`${SPRITES}/${itemIcon(spec.label, i)}.png`} alt="" />
-										<span className="gm-slot-no">{i + 1}</span>
-									</button>
-								</li>
-							);
-						})}
-					</ul>
-					{project.specs[picked] && (
-						<div className="gm-item" aria-live="polite">
-							<img src={`${SPRITES}/${itemIcon(project.specs[picked].label, picked)}.png`} alt="" />
-							<div>
-								<strong>{project.specs[picked].label}</strong>
-								<p>{project.specs[picked].value}</p>
-							</div>
-						</div>
-					)}
-				</div>
-				<ul className="visually-hidden">
-					{project.specs.map((spec) => (
-						<li key={spec.label}>
-							{spec.label}: {spec.value}
-						</li>
-					))}
-				</ul>
-			</section>
-
-			{/* 엔딩 크레딧: 별이 뜬 밤 들판, 맡은 일은 점선으로 이름까지, 빌려 쓴 에셋은 나무 표지판, 맨 아래로 동물들이 지나간다 */}
-			<section className="gm-credits" aria-label="맡은 일">
-				<span className="gm-sky" aria-hidden="true" />
-				<span className="gm-moon" aria-hidden="true" />
-				<h2>
-					<img src={`${SPRITES}/star.png`} alt="" aria-hidden="true" />
-					CREDITS
-					<img src={`${SPRITES}/star.png`} alt="" aria-hidden="true" />
-				</h2>
-				<p className="gm-credit-role">{project.context}</p>
-				{project.period && <p className="gm-credit-role">{project.period}</p>}
-				<dl className="gm-staff">
-					{project.contributions.map((item) => (
-						<div key={item}>
-							<dt>{item}</dt>
-							<dd>{owner}</dd>
-						</div>
-					))}
-				</dl>
-				{project.credits && (
-					<>
-						<p className="gm-thanks">SPECIAL THANKS</p>
-						<dl className="gm-asset-credits">
-							{project.credits.map((credit) => (
-								<div key={credit.name} className="gm-credit-card">
-									<span className="gm-credit-icon" aria-hidden="true">
-										{credit.role === 'FONT' ? (
-											<span className="gm-glyph">가</span>
+										{pixel ? (
+											<img src={itemSprite(spec.label, i)} alt="" />
 										) : (
-											<img src={`${SPRITES}/fruit-tree.png`} alt="" />
+											<span className="gm-slot-tile" aria-hidden="true">
+												{spec.label.slice(0, 1)}
+											</span>
 										)}
-									</span>
-									<div>
-										<dt>{credit.role}</dt>
-										<dd>
-											<p className="gm-asset-name">
-												{credit.href ? (
-													<a href={credit.href} target="_blank" rel="noreferrer">
-														{credit.name}
-													</a>
-												) : (
-													credit.name
-												)}{' '}
-												<span>by {credit.by}</span>
-											</p>
-											{credit.note && <p className="gm-asset-note">{credit.note}</p>}
-										</dd>
-									</div>
+									</button>
+								))}
+							</div>
+							{shown && (
+								<div className="gm-item" aria-live="polite">
+									<strong>{shown.label}</strong>
+									<p>{shown.value}</p>
 								</div>
+							)}
+						</div>
+						{/* 보조 기술에는 목록 전체를 */}
+						<ul className="visually-hidden">
+							{project.specs.map((spec) => (
+								<li key={spec.label}>
+									{spec.label}: {spec.value}
+								</li>
 							))}
-						</dl>
-					</>
-				)}
-				<p className="gm-the-end">THE END</p>
-				<EmoteFace emote={['loving', 2]} className="gm-bow" />
-				{/* 타이틀의 "농장에 작은 소동이 생겼어요"에 답하는 마무리 인사 */}
-				<p className="gm-end">오늘도 농장은 평화로워요. 도와줘서 고마워요!</p>
-				<Links project={project} className="gm-links" />
-				<div className="gm-parade" aria-hidden="true">
-					<span className="gm-walker gm-parade-hero" />
-					<span className="gm-walker gm-chick gm-parade-chick a" />
-					<span className="gm-walker gm-chick gm-parade-chick b" />
+						</ul>
+						{project.stack.length > 0 && (
+							<p className="gm-stack" data-reveal="up">
+								{project.stack.map((tech) => (
+									<span key={tech}>{tech}</span>
+								))}
+							</p>
+						)}
+					</div>
+				</Region>
+			)}
+
+			{/* ─── CREDITS: 맡은 일 ─── */}
+			<Region label="맡은 일" className="gm-credits">
+				<Decor pixel={pixel} where="end" />
+				<div className="gm-inner">
+					<Heading en="CREDITS" ko="맡은 일" />
+					<p className="gm-credit-meta" data-reveal="up">
+						{project.context}
+						{project.period && <span> · {project.period}</span>}
+						{project.role && <span> · {project.role}</span>}
+					</p>
+					{project.contributions.length > 0 && (
+						<ul className="gm-roll" data-reveal="up">
+							{project.contributions.map((job) => (
+								<li key={job}>
+									<span className="gm-roll-role">{job}</span>
+									<span className="gm-roll-dots" aria-hidden="true" />
+									<span className="gm-roll-name">{owner}</span>
+								</li>
+							))}
+						</ul>
+					)}
+					{project.credits && project.credits.length > 0 && (
+						<>
+							<h3 className="gm-thanks" data-reveal="up">
+								SPECIAL THANKS
+							</h3>
+							<ul className="gm-roll gm-roll-thanks" data-reveal="up">
+								{project.credits.map((credit) => (
+									<li key={credit.name}>
+										<span className="gm-roll-role">{credit.role}</span>
+										<span className="gm-roll-dots" aria-hidden="true" />
+										<span className="gm-roll-name">
+											{credit.href ? (
+												<a href={credit.href} {...external}>
+													{credit.name}
+												</a>
+											) : (
+												credit.name
+											)}
+											<small> by {credit.by}</small>
+										</span>
+										{credit.note && <p className="gm-roll-note">{credit.note}</p>}
+									</li>
+								))}
+							</ul>
+						</>
+					)}
+					<p className="gm-end" data-reveal="zoom">
+						THE END
+					</p>
+					<Links project={project} className="gm-links gm-links-end" />
 				</div>
-			</section>
+			</Region>
 		</div>
 	);
 };
