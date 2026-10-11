@@ -2132,3 +2132,9 @@ ol.showcase-list .showcase-row.reordering {
 .projects-size:focus-within {
 	box-shadow: none;
 }
+
+/* 기술 칸 아래 안내는 칸과 같이 왼쪽에 */
+.projects-field.projects-tags > .about-pane-hint {
+	padding-inline: 0;
+	text-align: left;
+}
