@@ -190,14 +190,13 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 		lines: [{ title: project.name, body: '여기서 더 볼 수 있어요.', media: cover ? [{ src: cover }] : undefined }],
 	});
 
-	// 그림이 없는 장은 화면 모음을 차례로 돌려 쓴다 (늘 같은 대표 화면만 나오지 않게). 첫 장은 인사가 쓰므로 둘째부터
-	let turn = 1;
+	// 그림이 없는 장은 같은 주제의 바로 앞 장 그림을 이어 쓴다 (그 이야기와 상관없는 그림을 끌어오지 않는다).
+	// 주제에 그림이 하나도 없으면 장면 자리에는 프로젝트 간판이 선다
 	for (const topic of [...filled, ...chapters]) {
-		if (topic.id === MORE_TOPIC) continue;
+		let last: Slide[] | undefined;
 		for (const line of topic.lines) {
-			if (line.media?.length || album.length === 0) continue;
-			line.media = [album[turn % album.length]!];
-			turn += 1;
+			if (line.media?.length) last = line.media;
+			else if (last) line.media = last;
 		}
 	}
 	// 긴 글은 여러 장으로 (같은 제목과 장면을 이어 쓴다)
@@ -206,11 +205,8 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 	}
 	const thumbOf = (topic: Topic) => topic.lines.flatMap((l) => l.media ?? []).find((s) => !s.video)?.src;
 	for (const topic of chapters) topic.thumb = thumbOf(topic);
-	filled.forEach((topic, i) => {
-		topic.thumb =
-			topic.id === MORE_TOPIC
-				? chapters.find((c) => c.thumb)?.thumb
-				: (thumbOf(topic) ?? (album.length > 0 ? album[i % album.length]!.src : undefined));
+	filled.forEach((topic) => {
+		topic.thumb = topic.id === MORE_TOPIC ? chapters.find((c) => c.thumb)?.thumb : thumbOf(topic);
 	});
 	return { topics: filled, chapters };
 }
@@ -497,8 +493,6 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const meta = [project.period, project.language].filter(Boolean).join(' · ');
 	// 선택지가 다섯 개 이상이면 두 열 (위에서 아래로 채운다, ↑·↓가 눈으로 보는 순서와 같게)
 	const rowsOf = (list: Topic[]) => (list.length > 4 ? Math.ceil(list.length / 2) : list.length);
-	// 바닥에 세워 두는 작은 액자: 화면 모음에서 인사 장면과 다른 세 장
-	const wall = album.filter((slide) => slide.src !== cover).slice(0, 3);
 
 	/** 선택지 한 벌 (처음 선택지와 장 목록이 같은 칸에 겹쳐 있고, 열린 쪽만 보인다) */
 	const renderMenu = (list: Topic[], heading: string, open: boolean) => {
@@ -637,23 +631,6 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 					))}
 				</div>
 			)}
-
-			{/* 바닥에 세워 둔 작은 액자: 화면 모음 몇 장 (장식, 넓은 창에서만) */}
-			{wall.length > 0 &&
-				(['l', 'r'] as const).map((side) => {
-					const pics = wall.filter((_, i) => (i % 2 === 0) === (side === 'l'));
-					return (
-						pics.length > 0 && (
-							<div key={side} className={`dl-wall dl-wall-${side}`} aria-hidden="true">
-								{pics.map((slide) => (
-									<span key={slide.src} className="dl-pic dl-frame">
-										<img src={slide.src} alt="" />
-									</span>
-								))}
-							</div>
-						)
-					);
-				})}
 
 			{/* HUD: 왼쪽 위 숫자 판(값과 무엇의 숫자인지), 오른쪽 위 읽은 주제 판 */}
 			{project.facts.length > 0 && (
