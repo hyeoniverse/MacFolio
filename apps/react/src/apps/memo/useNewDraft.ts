@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AdminPost } from '@macfolio/desktop-core/memo';
+import type { AdminPost, PostSlug } from '@macfolio/desktop-core/memo';
 import type { PostDraft } from './postsApi';
 
 /** 새 메모 자리가 접히며 사라지는 시간 (Memo.css의 memo-new-item-out과 같다) */
@@ -18,9 +18,9 @@ export function useNewDraft({
 }: {
 	canEdit: boolean;
 	upsertAdminPost: (post: AdminPost) => void;
-	dropAdminPost: (slug: string) => void;
+	dropAdminPost: (slug: PostSlug) => void;
 	/** 새 메모가 처음 저장되어 주소가 생겼을 때 (그 글을 고른다) */
-	onCreated: (slug: string) => void;
+	onCreated: (slug: PostSlug) => void;
 }) {
 	/** 새 메모에 지금 쓰고 있는 것 (목록 미리 보기) */
 	const [preview, setPreview] = useState<PostDraft | null>(null);
@@ -57,7 +57,7 @@ export function useNewDraft({
 	};
 
 	/** 변경 사항을 버렸다: 게시한 내용(없으면 저장소 원본)으로. 둘 다 없던 새 메모는 사라진다. 편집기는 새로 그린다 */
-	const onDiscarded = (slug: string, post: AdminPost | null) => {
+	const onDiscarded = (slug: PostSlug, post: AdminPost | null) => {
 		if (post) upsertAdminPost(post);
 		else dropAdminPost(slug);
 		setWriterKeys((keys) => ({ ...keys, [slug]: `${slug}-${Date.now()}` }));

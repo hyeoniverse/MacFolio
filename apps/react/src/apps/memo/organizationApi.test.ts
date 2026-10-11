@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import { EMPTY_ORGANIZATION } from '@macfolio/desktop-core/memo';
+import { EMPTY_ORGANIZATION, type FolderPath, type Organization, type PostSlug } from '@macfolio/desktop-core/memo';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 
-const ORGANIZATION = {
-	folders: ['읽을거리'],
-	posts: { a: '읽을거리' },
+const ORGANIZATION: Organization = {
+	folders: ['읽을거리' as FolderPath],
+	posts: { a: '읽을거리' } as Record<PostSlug, FolderPath>,
 	moves: [],
-	pins: { a: true },
+	pins: { a: true } as Record<PostSlug, boolean>,
 	locks: {},
 	order: [],
 };

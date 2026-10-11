@@ -22,6 +22,8 @@ import {
 	TAG_VIEW,
 	type TagSelection,
 	tagSelectionTitle,
+	type PostSlug,
+	postSlug,
 } from '@macfolio/desktop-core/memo';
 import { loadArrangement, saveArrangement } from './memoStorage';
 import { linkedId, setAppAddress } from '@/shared/lib/appLink';
@@ -65,7 +67,7 @@ export function useNoteView({
 		saveArrangement(next);
 	};
 	// 글 주소(/memo/<글>)로 들어왔으면 그 글부터
-	const [selectedSlug, setSelectedSlug] = useState<string | null>(() => linkedId('memo'));
+	const [selectedSlug, setSelectedSlug] = useState<PostSlug | null>(() => postSlug(linkedId('memo')));
 
 	const folders = useMemo(
 		() => buildFolderTree(organized, organization.folders, organization.order),

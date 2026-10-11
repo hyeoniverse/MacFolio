@@ -4,7 +4,9 @@ import { z } from 'zod';
 import {
 	folderPathError,
 	isCalendarDate,
+	isPostSlug,
 	POST_LIMITS,
+	type PostSlug,
 	type AdminPost as AdminPostShape,
 	type PostContent as PostContentShape,
 	type ServerPost as ServerPostShape,
@@ -53,8 +55,11 @@ export const PostContent: z.ZodType<PostContentShape> = z.object({
 export type PostContent = PostContentShape;
 
 /** 방문자에게 보이는 글. deleted면 저장소의 같은 주소 글도 가린다 (지운 글, 아직 날짜가 안 된 예약 글) */
+/** 글 주소 (POST_SLUG 모양). 서버가 보낸 값도 모양을 확인해 PostSlug로 */
+const slug = () => z.custom<PostSlug>(isPostSlug, { error: '글 주소가 올바르지 않습니다.' });
+
 export const ServerPost: z.ZodType<ServerPostShape> = z.object({
-	slug: z.string(),
+	slug: slug(),
 	title: z.string(),
 	date: z.string(),
 	category: z.string(),
@@ -66,7 +71,7 @@ export type ServerPost = ServerPostShape;
 
 /** 관리자가 보는 글: 게시한 내용과 임시 저장을 따로 */
 export const AdminPost: z.ZodType<AdminPostShape> = z.object({
-	slug: z.string(),
+	slug: slug(),
 	published: PostContent.nullable(),
 	publishedAt: z.string().nullable(),
 	draft: PostContent.nullable(),

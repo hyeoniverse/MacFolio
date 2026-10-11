@@ -19,6 +19,8 @@ import {
 	TAG_VIEW,
 	type TagSelection,
 	tagSelectionNote,
+	type FolderPath,
+	postSlug,
 } from '@macfolio/desktop-core/memo';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
@@ -195,7 +197,10 @@ const Memo: React.FC = () => {
 	};
 
 	// Finder에서 글을 열면 모든 글에서 그 글을 본문으로 연다 (shared/lib/openRequest.ts)
-	useOpenRequest('memo', (slug) => {
+	useOpenRequest('memo', (opened) => {
+		// 열어 달라는 id는 문자열이라 글 주소 모양인지 먼저 본다
+		const slug = postSlug(opened);
+		if (!slug) return;
 		setTagSelection((current) => ({ ...EMPTY_TAG_SELECTION, match: current.match }));
 		setCategory(ALL_CATEGORY);
 		setQuery('');
@@ -207,7 +212,7 @@ const Memo: React.FC = () => {
 	});
 
 	/** 폴더를 target 폴더 안(모든 글이면 맨 위)으로 옮긴다. 고른 폴더를 옮겼으면 새 경로를 따라간다 */
-	const moveFolderTo = (path: string, target: string) => {
+	const moveFolderTo = (path: FolderPath, target: string) => {
 		const parent = target === ALL_CATEGORY ? '' : target;
 		edit((prev) => moveFolder(prev, path, parent, folderPaths));
 		const moved = `${parent ? `${parent}/` : ''}${path.split('/').at(-1)}`;
@@ -224,7 +229,7 @@ const Memo: React.FC = () => {
 		});
 	const pickedPosts = picked ? organized.filter((post) => picked.has(post.slug)) : [];
 	/** 고른 메모들을 한 폴더로 옮기고 고르기를 끝낸다 */
-	const movePicked = (path: string) => {
+	const movePicked = (path: FolderPath) => {
 		edit((prev) => pickedPosts.reduce((next, post) => movePost(next, post.slug, path), prev));
 		setPicked(null);
 	};

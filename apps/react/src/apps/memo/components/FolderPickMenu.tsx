@@ -1,5 +1,5 @@
 import Menu from '@/shared/ui/menu/Menu';
-import { folderLabelOf } from '@macfolio/desktop-core/memo';
+import { folderLabelOf, type FolderPath } from '@macfolio/desktop-core/memo';
 
 /** 휴대폰 메모 선택의 '이동': 고른 메모들을 옮길 폴더 */
 const FolderPickMenu = ({
@@ -9,9 +9,9 @@ const FolderPickMenu = ({
 	onPick,
 }: {
 	anchor: { x: number; y: number };
-	paths: string[];
+	paths: FolderPath[];
 	onClose: () => void;
-	onPick: (path: string) => void;
+	onPick: (path: FolderPath) => void;
 }) => (
 	<Menu
 		label="옮길 폴더"

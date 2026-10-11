@@ -4,7 +4,14 @@ import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
 import { reorderKeyDelta } from '@/shared/ui/reorder/pointerReorder';
-import { ALL_CATEGORY, canAddFolder, canMoveFolder, folderLabelOf, type FolderNode } from '@macfolio/desktop-core/memo';
+import {
+	ALL_CATEGORY,
+	canAddFolder,
+	canMoveFolder,
+	folderLabelOf,
+	type FolderNode,
+	type FolderPath,
+} from '@macfolio/desktop-core/memo';
 import { useDropTarget } from './useDropTarget';
 import { FolderIcon, FolderNameInput } from './FolderNameInput';
 import { DEPTH_LIMIT_HINT, type FolderSidebarProps } from './folderSidebar.model';
@@ -26,7 +33,7 @@ type RowProps = Omit<FolderSidebarProps, 'open' | 'onToggle' | 'folders' | 'tota
 	movePaths?: string[];
 	/** ≡ 손잡이: 끌기 시작 (포인터), ↑·↓ 키로 한 칸씩 */
 	onReorderStart?: (event: React.PointerEvent<HTMLButtonElement>) => void;
-	onReorderStep?: (path: string, delta: number) => void;
+	onReorderStep?: (path: FolderPath, delta: number) => void;
 };
 
 /** 폴더 한 줄: 펼침 단추 + 폴더 + (마우스를 올리면) ••• 메뉴. 끌어서 다른 폴더로 옮긴다 */
