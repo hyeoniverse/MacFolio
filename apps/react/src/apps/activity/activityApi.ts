@@ -1,57 +1,10 @@
 // '활동 상태 보기'가 읽는 분석 API (apps/api/src/analytics): 응답 모양과 요청. 화면에 맞게 바꾸는 순수 함수는 model.ts
 import { ApiError, api } from '@/shared/api/client';
+import type { Breakdown, LiveVisit, Summary, SummaryRow, Totals } from '@macfolio/contracts';
 
-export interface Totals {
-	visits: number;
-	visitors: number;
-	appOpens: number;
-	avgDurationSec: number | null;
-}
-
-export type Breakdown =
-	| 'referrerGroup'
-	| 'referrer'
-	| 'source'
-	| 'campaign'
-	| 'app'
-	| 'item'
-	| 'link'
-	| 'country'
-	| 'device'
-	| 'browser'
-	| 'os'
-	| 'language';
-
-export interface Row {
-	key: string;
-	value: number;
-}
-
-export interface Summary {
-	/** admin: 모든 표, public: 방문자에게 공개하는 표만 (들어온 곳의 호스트·utm은 빈 목록) */
-	scope: 'admin' | 'public';
-	from: string;
-	to: string;
-	days: { day: string; visits: number; visitors: number }[];
-	totals: Totals;
-	previous: Totals;
-	breakdown: Record<Breakdown, Row[]>;
-}
-
-export interface LiveVisit {
-	visitId: string;
-	startedAt: string;
-	lastAt: string;
-	visitor: string;
-	country: string | null;
-	device: string | null;
-	browser: string | null;
-	os: string | null;
-	referrer: string | null;
-	path: string | null;
-	ip: string | null;
-	events: { type: string; app: string | null; item: string | null; at: string }[];
-}
+/** 응답 모양은 서버와 같은 스키마(contracts). 화면에서 쓰던 이름 그대로 다시 내보낸다 */
+export type { Breakdown, LiveVisit, Summary, Totals };
+export type Row = SummaryRow;
 
 /** 서버 응답의 실패 (401이면 관리자 로그인이 풀렸다) */
 export class ActivityError extends Error {

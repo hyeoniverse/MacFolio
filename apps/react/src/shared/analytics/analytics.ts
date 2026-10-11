@@ -5,6 +5,7 @@ import { env } from '@/shared/config/env';
 import { api } from '@/shared/api/client';
 import { isMobileViewport } from '@/desktop/layout';
 import { getViewport } from '@/shared/hooks/useViewport';
+import { MAX_EVENTS, type AppViews, type TodayVisitors } from '@macfolio/contracts';
 
 declare global {
 	/** E2E 테스트가 수집을 켜고 끄는 자리 (로컬 주소에서는 기본으로 보내지 않는다) */
@@ -29,8 +30,8 @@ export type AnalyticsEvent =
 
 /** 모아 두었다가 보내는 간격 */
 export const FLUSH_MS = 5000;
-/** 한 번에 보내는 수 (서버의 상한과 같다) */
-const MAX_BATCH = 30;
+/** 한 번에 보내는 수 (서버의 상한, contracts) */
+const MAX_BATCH = MAX_EVENTS;
 /** 사이트의 휴대폰 화면 기준과 같다 */
 
 /** 보낼지: 서버가 있고, Global Privacy Control을 켜지 않았고, 로컬 주소가 아니다 (테스트는 따로 켠다) */
@@ -143,7 +144,7 @@ export function startAnalytics() {
 /** 오늘(한국 시간) 순방문자 수 (누구나 본다). 서버가 없거나 닿지 않으면 null */
 export async function fetchTodayVisitors(): Promise<number | null> {
 	try {
-		const { visitors } = await api<{ visitors?: unknown }>('/analytics/today', { timeout: 5000 });
+		const { visitors } = await api<Partial<TodayVisitors>>('/analytics/today', { timeout: 5000 });
 		return typeof visitors === 'number' ? visitors : null;
 	} catch {
 		return null;
@@ -153,7 +154,7 @@ export async function fetchTodayVisitors(): Promise<number | null> {
 /** 앱 항목(메모의 글, Safari의 프로젝트)마다 전체 기간 조회수 (누구나 본다). 서버가 없거나 닿지 않으면 null */
 export async function fetchViews(app: string): Promise<Record<string, number> | null> {
 	try {
-		const { views } = await api<{ views?: unknown }>(`/analytics/views?app=${encodeURIComponent(app)}`, {
+		const { views } = await api<Partial<AppViews>>(`/analytics/views?app=${encodeURIComponent(app)}`, {
 			timeout: 5000,
 		});
 		return views && typeof views === 'object' ? (views as Record<string, number>) : null;
