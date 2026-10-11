@@ -104,7 +104,7 @@ export interface ProjectChapter {
  * 강한 비주얼: brutal 브루탈리즘(굵은 선·큰 고정폭 글자·흐르는 띠), arcade 네온·CRT 아케이드.
  * 차분한: atelier 큰 여백과 세리프의 느린 드러남.
  * 앱 UI 흉내: inbox 메일 클라이언트 3단, checklist 할 일 앱, repo 저장소 페이지(파일 트리·커밋 그래프), dialogue RPG 대화창, deck 발표 슬라이드, assistant 설정 도우미 단계.
- * custom 프로젝트 id로 등록한 직접 짠 코드 페이지 (apps/safari/project/custom/; 등록이 없으면 showcase)
+ * custom 프로젝트 id로 등록한 직접 짠 코드 페이지 (apps/safari/project/custom/; 코드의 일곱 프로젝트는 모두 자기 페이지가 있다. 등록이 없으면 showcase)
  */
 export const PROJECT_LOOKS = [
 	'showcase',
