@@ -2,16 +2,25 @@
 // 글은 저장소의 Markdown 파일이라 파일은 그대로 두고, API(/memo/organization)에 저장한 정리 내용을 겹쳐 보여준다.
 // 정리 내용의 모양과 서버도 쓰는 검사는 rules.ts에 있다. 순수 함수만 둔다.
 import type { Post } from './posts.js';
-import { EMPTY_ORGANIZATION, FOLDER_NAME_MAX, MAX_FOLDER_DEPTH, type Organization } from './rules.js';
+import {
+	EMPTY_ORGANIZATION,
+	FOLDER_NAME_MAX,
+	MAX_FOLDER_DEPTH,
+	type FolderPath,
+	type Organization,
+	type PostSlug,
+} from './rules.js';
 
 const lastName = (path: string) => path.split('/').at(-1) ?? path;
 const parentOf = (path: string) => path.split('/').slice(0, -1).join('/');
+/** 규칙에 맞는 경로끼리 잇거나 앞부분을 바꾼 결과는 다시 폴더 경로다 (여기서만 표시를 붙인다) */
+const asPath = (path: string) => path as FolderPath;
 const join = (parent: string, name: string) => (parent ? `${parent}/${name}` : name);
 
 /** path가 prefix이거나 그 아래 경로면 prefix를 바꾼다 */
-function rebase(path: string, from: string, to: string): string {
+function rebase(path: FolderPath, from: FolderPath, to: FolderPath): FolderPath {
 	if (path === from) return to;
-	if (path.startsWith(`${from}/`)) return to + path.slice(from.length);
+	if (path.startsWith(`${from}/`)) return asPath(to + path.slice(from.length));
 	return path;
 }
 
@@ -30,7 +39,7 @@ export function organizePosts(posts: Post[], organization: Organization): Post[]
 	return posts.map((post) => {
 		const moved = organization.posts[post.slug];
 		const category =
-			moved ?? organization.moves.reduce((path, move) => rebase(path, move.from, move.to), post.category);
+			moved ?? organization.moves.reduce((path, move) => rebase(path, move.from, move.to), asPath(post.category));
 		const pinned = organization.pins[post.slug] ?? post.pinned ?? false;
 		const locked = organization.locks[post.slug] ?? false;
 		return category === post.category && pinned === (post.pinned ?? false) && locked === Boolean(post.locked)
@@ -40,12 +49,12 @@ export function organizePosts(posts: Post[], organization: Organization): Post[]
 }
 
 /** 글을 고정하거나 고정을 푼다 */
-export function setPinned(organization: Organization, slug: string, pinned: boolean): Organization {
+export function setPinned(organization: Organization, slug: PostSlug, pinned: boolean): Organization {
 	return { ...organization, pins: { ...organization.pins, [slug]: pinned } };
 }
 
 /** 글을 잠그거나 잠금을 푼다 (푼 글은 목록에서 지운다) */
-export function setLocked(organization: Organization, slug: string, locked: boolean): Organization {
+export function setLocked(organization: Organization, slug: PostSlug, locked: boolean): Organization {
 	const { [slug]: _, ...rest } = organization.locks;
 	return { ...organization, locks: locked ? { ...rest, [slug]: true } : rest };
 }
@@ -80,25 +89,27 @@ export function canMoveFolder(from: string, parent: string, allFolders: string[]
 /** 폴더를 parent 아래로 옮긴다 (parent가 ''이면 맨 위로). 안의 글과 하위 폴더도 함께 옮겨 간다 */
 export function moveFolder(
 	organization: Organization,
-	from: string,
+	from: FolderPath,
 	parent: string,
 	allFolders: string[] = []
 ): Organization {
 	if (!canMoveFolder(from, parent, allFolders)) return organization;
-	return relocate(organization, from, join(parent, lastName(from)));
+	return relocate(organization, from, asPath(join(parent, lastName(from))));
 }
 
 /** 폴더 이름을 바꾼다. 안의 글과 하위 폴더도 새 경로를 따라간다 */
-export function renameFolder(organization: Organization, path: string, name: string): Organization {
-	const to = join(parentOf(path), name.trim());
+export function renameFolder(organization: Organization, path: FolderPath, name: string): Organization {
+	const to = asPath(join(parentOf(path), name.trim()));
 	return to === path ? organization : relocate(organization, path, to);
 }
 
 /** 폴더를 from에서 to 경로로 옮긴다 */
-function relocate(organization: Organization, from: string, to: string): Organization {
+function relocate(organization: Organization, from: FolderPath, to: FolderPath): Organization {
 	return {
 		folders: [...new Set(organization.folders.map((path) => rebase(path, from, to)))],
-		posts: Object.fromEntries(Object.entries(organization.posts).map(([slug, path]) => [slug, rebase(path, from, to)])),
+		posts: Object.fromEntries(
+			Object.entries(organization.posts).map(([slug, path]) => [slug, rebase(path, from, to)])
+		) as Record<PostSlug, FolderPath>,
 		moves: [...organization.moves, { from, to }],
 		pins: organization.pins,
 		locks: organization.locks,
@@ -107,18 +118,18 @@ function relocate(organization: Organization, from: string, to: string): Organiz
 }
 
 /** 글을 폴더로 옮긴다 */
-export function movePost(organization: Organization, slug: string, folder: string): Organization {
+export function movePost(organization: Organization, slug: PostSlug, folder: FolderPath): Organization {
 	return { ...organization, posts: { ...organization.posts, [slug]: folder } };
 }
 
 /** 폴더를 만든다 (parent가 ''이면 맨 위) */
 export function addFolder(organization: Organization, parent: string, name: string): Organization {
 	if (!canAddFolder(parent)) return organization;
-	return { ...organization, folders: [...organization.folders, join(parent, name.trim())] };
+	return { ...organization, folders: [...organization.folders, asPath(join(parent, name.trim()))] };
 }
 
 /** 만든 폴더를 지운다 (비어 있는 폴더만 지우게 화면에서 막는다) */
-export function removeFolder(organization: Organization, path: string): Organization {
+export function removeFolder(organization: Organization, path: FolderPath): Organization {
 	return {
 		...organization,
 		folders: organization.folders.filter((folder) => folder !== path && !folder.startsWith(`${path}/`)),
@@ -130,7 +141,7 @@ export function removeFolder(organization: Organization, path: string): Organiza
  * 같은 층 폴더의 순서를 바꾼다. siblings는 그 층의 폴더 경로를 새 순서대로 모두 담는다.
  * 다른 층의 순서는 그대로 두고, 이 층의 경로만 새 순서로 바꿔 넣는다.
  */
-export function reorderFolders(organization: Organization, siblings: string[]): Organization {
+export function reorderFolders(organization: Organization, siblings: FolderPath[]): Organization {
 	return { ...organization, order: [...organization.order.filter((path) => !siblings.includes(path)), ...siblings] };
 }
 
@@ -141,12 +152,12 @@ export function normalizeOrganization(raw: unknown): Organization {
 	const isRecord = (field: unknown) => typeof field === 'object' && field !== null && !Array.isArray(field);
 	return {
 		folders: Array.isArray(value.folders) ? value.folders.filter((folder) => typeof folder === 'string') : [],
-		posts: isRecord(value.posts) ? (value.posts as Record<string, string>) : {},
+		posts: isRecord(value.posts) ? (value.posts as Record<PostSlug, FolderPath>) : {},
 		moves: Array.isArray(value.moves)
 			? value.moves.filter((move) => move && typeof move.from === 'string' && typeof move.to === 'string')
 			: [],
-		pins: isRecord(value.pins) ? (value.pins as Record<string, boolean>) : {},
-		locks: isRecord(value.locks) ? (value.locks as Record<string, boolean>) : {},
+		pins: isRecord(value.pins) ? (value.pins as Record<PostSlug, boolean>) : {},
+		locks: isRecord(value.locks) ? (value.locks as Record<PostSlug, boolean>) : {},
 		order: Array.isArray(value.order) ? value.order.filter((path) => typeof path === 'string') : [],
 	};
 }

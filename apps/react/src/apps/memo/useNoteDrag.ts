@@ -6,6 +6,9 @@ import {
 	type Organization,
 	type Post,
 	RECENTLY_DELETED,
+	folderPath,
+	type FolderPath,
+	postSlug,
 } from '@macfolio/desktop-core/memo';
 import type { DragItem } from './components/folderSidebar.model';
 
@@ -33,7 +36,7 @@ export function useNoteDrag({
 	edit: (update: (prev: Organization) => Organization) => void;
 	onRemove: (post: Post) => void;
 	onRestore: (post: Post, folder: string) => void;
-	onMoveFolder: (path: string, target: string) => void;
+	onMoveFolder: (path: FolderPath, target: string) => void;
 }) {
 	/** 끌고 있는 글이나 폴더 */
 	const [dragging, setDragging] = useState<DragItem | null>(null);
@@ -58,8 +61,15 @@ export function useNoteDrag({
 		} else if (target === RECENTLY_DELETED) {
 			const post = organized.find((item) => item.slug === dragging.id);
 			if (post) onRemove(post);
-		} else if (dragging.type === 'post') edit((prev) => movePost(prev, dragging.id, target));
-		else onMoveFolder(dragging.id, target);
+		} else if (dragging.type === 'post') {
+			// 끄는 항목의 id는 문자열이라, 글 주소·폴더 경로 모양인지 확인하고 쓴다
+			const slug = postSlug(dragging.id);
+			const folder = folderPath(target);
+			if (slug && folder) edit((prev) => movePost(prev, slug, folder));
+		} else {
+			const path = folderPath(dragging.id);
+			if (path) onMoveFolder(path, target);
+		}
 		setDragging(null);
 	};
 
