@@ -1,4 +1,14 @@
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+	useEffect,
+	useId,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+	type CSSProperties,
+	type ReactNode,
+	type RefObject,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { placeBelow } from '@/shared/ui/popover/placement';
 import {
@@ -12,7 +22,6 @@ import {
 	type Project,
 	type ProjectAppInfo,
 	type ProjectBackdrop,
-	type ProjectFact,
 	type ProjectPoint,
 	type ProjectLook,
 	type SiteProjects,
@@ -63,21 +72,22 @@ const STACKS = stackOptions(
 	[...Object.values(DEFAULT_PROFILE.skills).flat(), ...DEFAULT_PROFILE.siteStack]
 );
 
-const LOOK_LABEL: Record<ProjectLook, string> = {
-	showcase: '기본 (카드)',
-	cinema: '시네마 (한 화면씩 장면)',
-	phone: '폰 (틀 안의 화면)',
-	horizontal: '가로 (옆으로 가는 패널)',
-	brutal: '브루탈 (굵은 선·큰 글자)',
-	arcade: '아케이드 (네온·CRT)',
-	atelier: '아틀리에 (여백·세리프)',
-	inbox: '메일함 (3단)',
-	checklist: '할 일 앱',
-	repo: '저장소 (파일 트리·커밋)',
-	dialogue: 'RPG 대화창',
-	deck: '발표 슬라이드',
-	assistant: '설정 도우미 (단계)',
-	custom: '직접 짠 페이지 (코드)',
+/** 페이지 모양 카드의 이름과 짧은 설명 */
+const LOOKS: Record<ProjectLook, { name: string; note: string }> = {
+	showcase: { name: '기본', note: '카드' },
+	cinema: { name: '시네마', note: '한 화면씩 장면' },
+	phone: { name: '폰', note: '틀 안의 화면' },
+	horizontal: { name: '가로', note: '옆으로 가는 패널' },
+	brutal: { name: '브루탈', note: '굵은 선·큰 글자' },
+	arcade: { name: '아케이드', note: '네온·CRT' },
+	atelier: { name: '아틀리에', note: '여백·세리프' },
+	inbox: { name: '메일함', note: '3단 화면' },
+	checklist: { name: '할 일 앱', note: '체크 목록' },
+	repo: { name: '저장소', note: '파일 트리·커밋' },
+	dialogue: { name: 'RPG 대화창', note: '픽셀 장면' },
+	deck: { name: '발표 슬라이드', note: '한 장씩' },
+	assistant: { name: '설정 도우미', note: '단계별' },
+	custom: { name: '직접 짠 페이지', note: '코드' },
 };
 
 /** dialogue 모양(RPG 대화창)의 배경 장면 이름 */
@@ -196,55 +206,27 @@ function validate(id: string, raw: Project): { value: Project } | { errors: stri
 	return { value };
 }
 
-/** 한 줄 입력칸 */
-const TextField = ({
+/* ─── 편집 화면의 틀 (macOS 시스템 설정): 회색 바탕 위 둥근 묶음 상자, 상자 안의 줄은 왼쪽 이름 · 오른쪽 컨트롤 ─── */
+
+/** 묶음: 위에 작은 회색 제목, 둥근 상자, 아래에 설명 */
+const Group = ({
+	title,
 	label,
-	value,
-	onChange,
 	hint,
-	type = 'text',
-	placeholder,
-	required = false,
-	options,
+	children,
 }: {
-	label: string;
-	value: string | number | undefined;
-	onChange: (value: string) => void;
-	hint?: string;
-	type?: string;
-	placeholder?: string;
-	/** 꼭 적어야 하는 칸: 이름 옆에 '필수' */
-	required?: boolean;
-	/** 고를 수 있는 값 (치면 걸러지는 목록, 다른 값도 쓸 수 있다) */
-	options?: readonly string[];
-}) => {
-	const listId = useId();
-	return (
-		<div className="projects-field">
-			<label>
-				<FieldLabel label={label} required={required} />
-				<input
-					type={type}
-					value={value ?? ''}
-					placeholder={placeholder}
-					spellCheck={false}
-					required={required}
-					aria-required={required || undefined}
-					list={options ? listId : undefined}
-					onChange={(event) => onChange(event.target.value)}
-				/>
-			</label>
-			{options && (
-				<datalist id={listId}>
-					{options.map((option) => (
-						<option key={option} value={option} />
-					))}
-				</datalist>
-			)}
-			{hint && <p className="about-pane-hint">{hint}</p>}
-		</div>
-	);
-};
+	title?: string;
+	/** 영역 이름 (없으면 제목) */
+	label?: string;
+	hint?: ReactNode;
+	children: ReactNode;
+}) => (
+	<section className="projects-group" aria-label={label ?? title}>
+		{title && <h3 className="projects-group-title">{title}</h3>}
+		<div className="projects-box">{children}</div>
+		{hint && <p className="projects-group-hint">{hint}</p>}
+	</section>
+);
 
 /** 칸 이름. 꼭 적어야 하면 옆에 빨간 '필수' */
 const FieldLabel = ({ label, required = false }: { label: string; required?: boolean }) => (
@@ -257,6 +239,129 @@ const FieldLabel = ({ label, required = false }: { label: string; required?: boo
 		)}
 	</span>
 );
+
+/**
+ * 줄 하나: 왼쪽 이름, 오른쪽 컨트롤(줄의 오른쪽 6할), 아래 회색 설명.
+ * align: 컨트롤을 칸 폭에 채울지(fill, 글자 칸) 오른쪽 끝에 붙일지(end, 팝업·스위치)
+ */
+const FormRow = ({
+	label,
+	required = false,
+	htmlFor,
+	hint,
+	hintId,
+	align = 'fill',
+	top = false,
+	children,
+}: {
+	label: string;
+	required?: boolean;
+	/** 이름을 누르면 초점이 갈 컨트롤 */
+	htmlFor?: string;
+	hint?: ReactNode;
+	hintId?: string;
+	align?: 'fill' | 'end';
+	/** 여러 줄 컨트롤: 이름을 위쪽에 맞춘다 */
+	top?: boolean;
+	children: ReactNode;
+}) => (
+	<div className={`projects-item ${top ? 'top' : ''}`}>
+		{htmlFor ? (
+			<label className="projects-item-label" htmlFor={htmlFor}>
+				<FieldLabel label={label} required={required} />
+			</label>
+		) : (
+			<span className="projects-item-label">
+				<FieldLabel label={label} required={required} />
+			</span>
+		)}
+		<div className={`projects-item-control ${align}`}>{children}</div>
+		{hint && (
+			<p className="projects-item-hint" id={hintId}>
+				{hint}
+			</p>
+		)}
+	</div>
+);
+
+/** 위아래 화살표 (macOS 팝업 단추의 ⌃⌄) */
+const PopupChevrons = () => (
+	<svg className="projects-popup-chevrons" viewBox="0 0 8 12" aria-hidden="true">
+		<path d="M1.5 4.5 4 2l2.5 2.5M1.5 7.5 4 10l2.5-2.5" />
+	</svg>
+);
+
+/** 팝업 단추 (select): 고른 값과 오른쪽 ⌃⌄ */
+const Popup = ({
+	id,
+	label,
+	value,
+	onChange,
+	children,
+}: {
+	id?: string;
+	/** 이름표가 따로 없을 때의 이름 */
+	label?: string;
+	value: string;
+	onChange: (value: string) => void;
+	children: ReactNode;
+}) => (
+	<span className="projects-popup">
+		<select id={id} aria-label={label} value={value} onChange={(event) => onChange(event.target.value)}>
+			{children}
+		</select>
+		<PopupChevrons />
+	</span>
+);
+
+/** 한 줄(또는 여러 줄) 글자 칸 */
+const TextField = ({
+	label,
+	value,
+	onChange,
+	hint,
+	type = 'text',
+	placeholder,
+	required = false,
+	multiline = false,
+	ariaLabel,
+}: {
+	label: string;
+	value: string | number | undefined;
+	onChange: (value: string) => void;
+	hint?: string;
+	type?: string;
+	placeholder?: string;
+	/** 꼭 적어야 하는 칸: 이름 옆에 '필수' */
+	required?: boolean;
+	/** 긴 글: 여러 줄 칸 */
+	multiline?: boolean;
+	/** 보이는 이름과 다른 접근성 이름 (목록 항목의 '주요 기능 1 제목' 등) */
+	ariaLabel?: string;
+}) => {
+	const id = useId();
+	const hintId = `${id}-hint`;
+	const common = {
+		id,
+		className: 'projects-input',
+		value: value ?? '',
+		placeholder,
+		spellCheck: false,
+		required,
+		'aria-label': ariaLabel,
+		'aria-required': required || undefined,
+		'aria-describedby': hint ? hintId : undefined,
+	};
+	return (
+		<FormRow label={label} required={required} htmlFor={id} hint={hint} hintId={hintId} top={multiline}>
+			{multiline ? (
+				<textarea {...common} rows={3} onChange={(event) => onChange(event.target.value)} />
+			) : (
+				<input {...common} type={type} onChange={(event) => onChange(event.target.value)} />
+			)}
+		</FormRow>
+	);
+};
 
 /**
  * 기간: 시작일·끝날을 달력에서 고른다. 끝 대신 '운영 중' 같은 글을 쓸 수도 있다.
@@ -285,25 +390,30 @@ const PeriodField = ({
 				label="기간"
 				value={value}
 				onChange={(text) => onChange(optional(text))}
-				hint="날짜 모양이 아니라 글로 고칩니다."
+				hint="날짜 모양이 아닌 기간이라 글로 고칩니다."
 			/>
 		);
 	return (
-		<div className="projects-field">
+		<FormRow
+			label="기간"
+			hint={!period.start && (period.end || period.ongoing) ? '시작일을 고르면 기간이 저장됩니다.' : undefined}
+		>
 			<div className="projects-period" role="group" aria-label="기간">
-				<FieldLabel label="기간" />
 				<DatePicker
 					label="시작일"
 					placeholder="시작일"
-					className="projects-date"
+					className="projects-popup projects-date"
 					value={period.start}
 					max={period.end && period.end < today ? period.end : today}
 					onChange={(start) => update({ start })}
 				/>
-				<span aria-hidden="true">–</span>
+				<span className="projects-period-dash" aria-hidden="true">
+					–
+				</span>
 				{period.ongoing ? (
 					<input
 						type="text"
+						className="projects-input projects-period-text"
 						aria-label="끝 대신 쓸 글"
 						value={period.ongoing}
 						onChange={(event) => update({ ongoing: event.target.value || '진행 중' })}
@@ -312,14 +422,14 @@ const PeriodField = ({
 					<DatePicker
 						label="끝날"
 						placeholder="끝날"
-						className="projects-date"
+						className="projects-popup projects-date"
 						value={period.end}
 						min={period.start || undefined}
 						max={today}
 						onChange={(end) => update({ end })}
 					/>
 				)}
-				<label className="projects-period-ongoing">
+				<label className="projects-check">
 					<input
 						type="checkbox"
 						checked={Boolean(period.ongoing)}
@@ -328,17 +438,22 @@ const PeriodField = ({
 					진행 중
 				</label>
 			</div>
-			{!period.start && (period.end || period.ongoing) && (
-				<p className="about-pane-hint">시작일을 고르면 기간이 저장됩니다.</p>
-			)}
-		</div>
+		</FormRow>
 	);
 };
 
-/**
- * 기술: 고른 것은 칩으로, 치면 후보가 걸러져 아래에 나온다. Enter·쉼표로 더하고(목록에 없는 것도), ↑·↓로 후보를 고르고,
- * 빈 칸에서 Backspace는 마지막 칩을 뺀다
- */
+/** 후보 목록을 칸 아래에 띄운다 (설정 창의 스크롤·상자 경계에 잘리지 않게 body에 portal) */
+function useSuggestionPosition(anchor: RefObject<HTMLElement | null>, list: RefObject<HTMLElement | null>) {
+	const [position, setPosition] = useState({ left: 0, top: 0, width: 0 });
+	const place = () => {
+		if (!anchor.current) return;
+		const rect = anchor.current.getBoundingClientRect();
+		const height = list.current?.offsetHeight ?? 0;
+		setPosition({ ...placeBelow(rect, { width: rect.width, height }), width: rect.width });
+	};
+	return [position, place] as const;
+}
+
 /**
  * 하나를 고르는 칸 (주 언어): 누르면 후보 전체가 칸 아래에 뜨고, 입력하면 걸러진다.
  * 목록에 없는 이름도 그대로 쓸 수 있다 (입력한 글자가 곧 값)
@@ -358,17 +473,15 @@ const ChoiceInput = ({
 	// 칸을 막 열었을 때는 지금 값으로 거르지 않고 전체를 보여 준다. 입력하면 그때부터 거른다
 	const [typed, setTyped] = useState(false);
 	const [active, setActive] = useState(0);
-	const listId = useId();
+	const id = useId();
+	const listId = `${id}-list`;
+	const boxRef = useRef<HTMLSpanElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const listRef = useRef<HTMLUListElement>(null);
-	const [position, setPosition] = useState({ left: 0, top: 0, width: 0 });
+	const [position, place] = useSuggestionPosition(boxRef, listRef);
 	const shown = open ? suggest(options, typed ? value : '', [], Infinity) : [];
-	useLayoutEffect(() => {
-		if (!shown.length || !inputRef.current) return;
-		const rect = inputRef.current.getBoundingClientRect();
-		const height = listRef.current?.offsetHeight ?? 0;
-		setPosition({ ...placeBelow(rect, { width: rect.width, height }), width: rect.width });
-	}, [shown.length, value]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps -- 목록 길이·값이 바뀔 때만 자리를 다시 잰다
+	useLayoutEffect(() => void (shown.length && place()), [shown.length, value]);
 	// 열면 지금 값이 목록에 보이게, ↑·↓로 고른 후보도 목록 안에서 보이게 굴린다
 	useEffect(() => {
 		listRef.current?.querySelector(`[id="${listId}-${active}"]`)?.scrollIntoView({ block: 'nearest' });
@@ -384,50 +497,63 @@ const ChoiceInput = ({
 		setOpen(false);
 	};
 	return (
-		<div className="projects-field projects-choice">
-			<label>
-				<FieldLabel label={label} />
-				<span className="projects-choice-box">
-					<input
-						ref={inputRef}
-						role="combobox"
-						aria-label={label}
-						aria-expanded={shown.length > 0}
-						aria-controls={listId}
-						aria-autocomplete="list"
-						aria-activedescendant={shown.length ? `${listId}-${active}` : undefined}
-						value={value}
-						placeholder={`${label} 검색`}
-						spellCheck={false}
-						onFocus={openList}
-						onClick={() => !open && openList()}
-						onBlur={() => setOpen(false)}
-						onChange={(event) => {
-							onChange(event.target.value);
-							setTyped(true);
-							setActive(0);
-							setOpen(true);
-						}}
-						onKeyDown={(event) => {
-							if (event.key === 'ArrowDown' && shown.length) {
-								event.preventDefault();
-								setActive((index) => (index + 1) % shown.length);
-							} else if (event.key === 'ArrowUp' && shown.length) {
-								event.preventDefault();
-								setActive((index) => (index - 1 + shown.length) % shown.length);
-							} else if (event.key === 'Enter') {
-								event.preventDefault();
-								if (shown[active]) pick(shown[active]);
-								else setOpen(false);
-							} else if (event.key === 'Escape' && open) {
-								event.stopPropagation();
-								setOpen(false);
-							}
-						}}
-					/>
-					<i className="fa-solid fa-chevron-down" aria-hidden="true" />
+		<FormRow
+			label={label}
+			htmlFor={id}
+			hint="목록에서 고르거나 이름으로 검색합니다. 목록에 없는 언어는 이름을 직접 입력합니다."
+		>
+			<span className="projects-combo" ref={boxRef}>
+				<input
+					id={id}
+					ref={inputRef}
+					role="combobox"
+					aria-label={label}
+					aria-expanded={shown.length > 0}
+					aria-controls={listId}
+					aria-autocomplete="list"
+					aria-activedescendant={shown.length ? `${listId}-${active}` : undefined}
+					value={value}
+					placeholder={`${label} 검색`}
+					spellCheck={false}
+					onFocus={openList}
+					onClick={() => !open && openList()}
+					onBlur={() => setOpen(false)}
+					onChange={(event) => {
+						onChange(event.target.value);
+						setTyped(true);
+						setActive(0);
+						setOpen(true);
+					}}
+					onKeyDown={(event) => {
+						if (event.key === 'ArrowDown' && shown.length) {
+							event.preventDefault();
+							setActive((index) => (index + 1) % shown.length);
+						} else if (event.key === 'ArrowUp' && shown.length) {
+							event.preventDefault();
+							setActive((index) => (index - 1 + shown.length) % shown.length);
+						} else if (event.key === 'Enter') {
+							event.preventDefault();
+							if (shown[active]) pick(shown[active]);
+							else setOpen(false);
+						} else if (event.key === 'Escape' && open) {
+							event.stopPropagation();
+							setOpen(false);
+						}
+					}}
+				/>
+				{/* 오른쪽 ⌄: 누르면 후보 전체를 연다 (콤보 상자의 단추) */}
+				<span
+					className="projects-combo-button"
+					aria-hidden="true"
+					onPointerDown={(event) => {
+						event.preventDefault();
+						if (open) setOpen(false);
+						else inputRef.current?.focus();
+					}}
+				>
+					<i className="fa-solid fa-chevron-down" />
 				</span>
-			</label>
+			</span>
 			{shown.length > 0 &&
 				createPortal(
 					<ul
@@ -455,13 +581,14 @@ const ChoiceInput = ({
 					</ul>,
 					document.body
 				)}
-			<p className="about-pane-hint">
-				목록에서 고르거나 이름으로 검색합니다. 목록에 없는 언어는 이름을 직접 입력합니다.
-			</p>
-		</div>
+		</FormRow>
 	);
 };
 
+/**
+ * 기술: 토큰 칸 (macOS의 토큰 필드). 고른 것은 칸 안의 칩으로, 치면 후보가 걸러져 아래에 나온다.
+ * Enter·쉼표로 더하고(목록에 없는 것도), ↑·↓로 후보를 고르고, 빈 칸에서 Backspace는 마지막 칩을 뺀다
+ */
 const TagInput = ({
 	label,
 	items,
@@ -495,11 +622,12 @@ const TagInput = ({
 	}, [query, remote]);
 	const [open, setOpen] = useState(false);
 	const [active, setActive] = useState(0);
-	const listId = useId();
+	const id = useId();
+	const listId = `${id}-list`;
+	const boxRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const listRef = useRef<HTMLUListElement>(null);
-	const [position, setPosition] = useState({ left: 0, top: 0, width: 0 });
-	// 후보는 입력칸 아래에 떠서(portal) 설정 창의 스크롤·칸 경계에 잘리지 않는다. 글자를 안 쳤을 땐 자주 쓰는 것부터 보여 준다
+	const [position, place] = useSuggestionPosition(boxRef, listRef);
 	// 글자를 안 쳤으면 후보 전체를, 쳤으면 맞는 것 전부를 보여 준다 (목록 안에서 스크롤)
 	const localShown = open ? suggest(options, query, items, Infinity) : [];
 	const merged = mergeSuggestions(
@@ -516,12 +644,9 @@ const TagInput = ({
 	useEffect(() => {
 		listRef.current?.querySelector(`[id="${listId}-${active}"]`)?.scrollIntoView({ block: 'nearest' });
 	}, [active, listId]);
-	useLayoutEffect(() => {
-		if (!shown.length || !inputRef.current) return;
-		const rect = inputRef.current.getBoundingClientRect();
-		const height = listRef.current?.offsetHeight ?? 0;
-		setPosition({ ...placeBelow(rect, { width: rect.width, height }), width: rect.width });
-	}, [shown.length, query]);
+	// 칩이 늘면 칸이 높아지므로 칩 수도 본다
+	// eslint-disable-next-line react-hooks/exhaustive-deps -- 목록 길이·글자·칩 수가 바뀔 때만 자리를 다시 잰다
+	useLayoutEffect(() => void (shown.length && place()), [shown.length, query, items.length]);
 	const add = (raw: string) => {
 		const value = raw.trim();
 		setQuery('');
@@ -530,30 +655,45 @@ const TagInput = ({
 		onChange([...items, value]);
 	};
 	return (
-		<div className="projects-field projects-tags">
-			<div className="projects-tags-head">
-				<FieldLabel label={label} />
-				<span className="projects-tags-count">{items.length ? `${items.length}개` : ''}</span>
-			</div>
-			{items.length > 0 && (
-				<ul className="projects-chips" aria-label={`고른 ${label}`}>
-					{items.map((item) => (
-						<li key={item}>
-							{item}
-							<button
-								type="button"
-								aria-label={`${item} 빼기`}
-								onClick={() => onChange(items.filter((other) => other !== item))}
-							>
-								<i className="fa-solid fa-xmark" aria-hidden="true" />
-							</button>
-						</li>
-					))}
-				</ul>
-			)}
-			<div className="projects-tags-search">
-				<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+		<FormRow
+			label={label}
+			htmlFor={id}
+			top
+			hint={
+				matched
+					? `${matched}개의 ${label}이 검색되었습니다.${remote ? ` ${remote.name} 패키지 검색 결과는 목록 아래쪽에 표시됩니다.` : ''}`
+					: `목록에서 고르거나 이름으로 검색합니다. 목록에 없는 ${label}은 이름을 입력한 뒤 Enter를 누르면 추가됩니다.`
+			}
+		>
+			{/* 칸의 빈 곳을 누르면 입력 칸으로 */}
+			<div
+				className="projects-tokens"
+				ref={boxRef}
+				onPointerDown={(event) => {
+					if (event.target === event.currentTarget) {
+						event.preventDefault();
+						inputRef.current?.focus();
+					}
+				}}
+			>
+				{items.length > 0 && (
+					<ul className="projects-chips" aria-label={`고른 ${label}`}>
+						{items.map((item) => (
+							<li key={item}>
+								{item}
+								<button
+									type="button"
+									aria-label={`${item} 빼기`}
+									onClick={() => onChange(items.filter((other) => other !== item))}
+								>
+									<i className="fa-solid fa-xmark" aria-hidden="true" />
+								</button>
+							</li>
+						))}
+					</ul>
+				)}
 				<input
+					id={id}
 					ref={inputRef}
 					role="combobox"
 					aria-label={label}
@@ -562,7 +702,7 @@ const TagInput = ({
 					aria-autocomplete="list"
 					aria-activedescendant={shown.length ? `${listId}-${active}` : undefined}
 					value={query}
-					placeholder={`${label} 검색`}
+					placeholder={items.length ? '' : `${label} 검색`}
 					spellCheck={false}
 					onFocus={() => setOpen(true)}
 					onBlur={() => setOpen(false)}
@@ -629,15 +769,11 @@ const TagInput = ({
 					</ul>,
 					document.body
 				)}
-			<p className="about-pane-hint">
-				{matched
-					? `${matched}개의 ${label}이 검색되었습니다.${remote ? ` ${remote.name} 패키지 검색 결과는 목록 아래쪽에 표시됩니다.` : ''}`
-					: `목록에서 고르거나 이름으로 검색합니다. 목록에 없는 ${label}은 이름을 입력한 뒤 Enter를 누르면 추가됩니다.`}
-			</p>
-		</div>
+		</FormRow>
 	);
 };
 
+/** 켜고 끄는 줄: 왼쪽 이름(아래 설명), 오른쪽 토글 */
 const Switch = ({
 	label,
 	checked,
@@ -648,42 +784,127 @@ const Switch = ({
 	checked: boolean;
 	onChange: (checked: boolean) => void;
 	hint?: string;
-}) => (
-	<label className="settings-toggle projects-switch">
-		<span>
-			<strong>{label}</strong>
-			{hint && <span className="settings-hint">{hint}</span>}
-		</span>
-		<input type="checkbox" role="switch" checked={checked} onChange={(event) => onChange(event.target.checked)} />
-	</label>
-);
+}) => {
+	const id = useId();
+	return (
+		<FormRow label={label} htmlFor={id} hint={hint} hintId={`${id}-hint`} align="end">
+			<input
+				id={id}
+				type="checkbox"
+				role="switch"
+				className="projects-switch"
+				aria-describedby={hint ? `${id}-hint` : undefined}
+				checked={checked}
+				onChange={(event) => onChange(event.target.checked)}
+			/>
+		</FormRow>
+	);
+};
 
 /** 사이트 안 그림 전부 (폴더별) → 고르기 목록에 쓴다 */
 const ALL_PICTURES = Object.entries(PUBLIC_IMAGES)
 	.filter(([folder]) => folder.startsWith('/imgs/projects/'))
 	.flatMap(([, files]) => files.filter((src) => !src.endsWith('.mp4')));
 
+const fileName = (src: string) => decodeURIComponent(src.split('/').pop() ?? src);
+
+/** 그림 크게 보기: 창 위에 어둡게 깔고 가운데 크게. 여러 장이면 ←·→로 넘긴다. Esc·바깥 누르기로 닫는다 */
+const Lightbox = ({ items, start, onClose }: { items: string[]; start: number; onClose: () => void }) => {
+	const [index, setIndex] = useState(start);
+	const closeRef = useRef<HTMLButtonElement>(null);
+	const step = (delta: number) => setIndex((current) => (current + delta + items.length) % items.length);
+	useEffect(() => {
+		const opener = document.activeElement as HTMLElement | null;
+		closeRef.current?.focus();
+		return () => opener?.focus();
+	}, []);
+	const src = items[index];
+	return createPortal(
+		<div
+			className="projects-lightbox"
+			role="dialog"
+			aria-modal="true"
+			aria-label="그림 크게 보기"
+			onClick={onClose}
+			onKeyDown={(event) => {
+				if (event.key === 'Escape') {
+					event.stopPropagation();
+					onClose();
+				} else if (items.length > 1 && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+					event.preventDefault();
+					step(event.key === 'ArrowLeft' ? -1 : 1);
+				}
+			}}
+		>
+			<figure onClick={(event) => event.stopPropagation()}>
+				{src.endsWith('.mp4') ? (
+					<video src={src} controls autoPlay muted loop />
+				) : (
+					<img src={src} alt={fileName(src)} />
+				)}
+				<figcaption>
+					{fileName(src)}
+					{items.length > 1 && <span>{`${index + 1} / ${items.length}`}</span>}
+				</figcaption>
+			</figure>
+			{items.length > 1 && (
+				<>
+					<button
+						type="button"
+						className="projects-lightbox-step prev"
+						aria-label="이전 그림"
+						onClick={(event) => {
+							event.stopPropagation();
+							step(-1);
+						}}
+					>
+						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
+					</button>
+					<button
+						type="button"
+						className="projects-lightbox-step next"
+						aria-label="다음 그림"
+						onClick={(event) => {
+							event.stopPropagation();
+							step(1);
+						}}
+					>
+						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
+					</button>
+				</>
+			)}
+			<button ref={closeRef} type="button" className="projects-lightbox-close" aria-label="닫기" onClick={onClose}>
+				<i className="fa-solid fa-xmark" aria-hidden="true" />
+			</button>
+		</div>,
+		document.body
+	);
+};
+
 /**
- * 그림 한 장 고르기: 미리 보기, 사이트 안 그림에서 고르거나(폴더별 목록), 파일을 올리거나(POST /files), 주소를 적는다.
- * 앱 아이콘은 이미지 폴더 기준 경로(projects/…)라 값을 그대로 두고, 보여 줄 때만 주소로 바꾼다
+ * 그림 한 장 고르기: 왼쪽 미리 보기 타일(누르면 크게 보기), 오른쪽에 사이트 안 그림 고르기(폴더별 팝업)·올리기(POST /files)·지우기,
+ * 그 아래 주소 칸. 앱 아이콘은 이미지 폴더 기준 경로(projects/…)라 값을 그대로 두고, 보여 줄 때만 주소로 바꾼다
  */
 const ImageField = ({
 	label,
+	name = label,
 	value,
 	onChange,
 	required = false,
 	hint,
-	compact = false,
+	shape = 'square',
 	toUrl = (v) => v,
 	fromPicked = (src) => src,
 }: {
 	label: string;
+	/** 컨트롤의 접근성 이름 앞부분 (기본은 보이는 이름) */
+	name?: string;
 	value: string | undefined;
 	onChange: (value: string | undefined) => void;
 	required?: boolean;
 	hint?: string;
-	/** 목록 항목 안의 작은 꼴: 작은 썸네일과 고르기·올리기·주소를 한 줄에 */
-	compact?: boolean;
+	/** 아이콘은 정사각형, 화면·배경은 16:10 */
+	shape?: 'square' | 'wide';
 	/** 저장된 값 → 보여 줄 주소 */
 	toUrl?: (value: string) => string;
 	/** 고른 그림 주소(/imgs/…) → 저장할 값 */
@@ -691,7 +912,8 @@ const ImageField = ({
 }) => {
 	const [uploading, setUploading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const fileId = useId();
+	const [zoomed, setZoomed] = useState(false);
+	const id = useId();
 	const upload = async (file: File | undefined) => {
 		if (!file) return;
 		setUploading(true);
@@ -706,100 +928,80 @@ const ImageField = ({
 			setUploading(false);
 		}
 	};
-	const picker = (
-		<span className="projects-image-pick">
-			<select
-				aria-label={`${label} 고르기`}
-				value={value && ALL_PICTURES.some((src) => fromPicked(src) === value) ? value : ''}
-				onChange={(event) => onChange(event.target.value ? fromPicked(event.target.value) : undefined)}
-			>
-				<option value="">{value ? '다른 그림 고르기…' : '사이트 안 그림에서 고르기…'}</option>
-				{FOLDER_GROUPS.map((group) => (
-					<optgroup key={group.label} label={group.label}>
-						{group.folders.flatMap((folder) =>
-							PUBLIC_IMAGES[folder.value]
-								.filter((src) => !src.endsWith('.mp4'))
-								.map((src) => (
-									<option key={src} value={fromPicked(src)}>
-										{src.slice(folder.value.length + 1)}
-										{folder.label !== '프로젝트 폴더' ? ` (${folder.label})` : ''}
-									</option>
-								))
-						)}
-					</optgroup>
-				))}
-			</select>
-			<i className="fa-solid fa-chevron-down" aria-hidden="true" />
-		</span>
-	);
-	const uploader = (
-		<label className="projects-upload">
-			<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
-			{uploading ? '올리는 중…' : '올리기'}
-			<input
-				id={fileId}
-				type="file"
-				accept="image/*"
-				aria-label={`${label} 올리기`}
-				disabled={uploading}
-				onChange={(event) => {
-					void upload(event.target.files?.[0]);
-					event.target.value = '';
-				}}
-			/>
-		</label>
-	);
-	const clear = value && (
-		<button type="button" className="projects-clear" onClick={() => onChange(undefined)}>
-			지우기
-		</button>
-	);
-	const url = (
-		<input
-			type="text"
-			aria-label={`${label} 주소`}
-			value={value ?? ''}
-			placeholder="주소 직접 적기"
-			spellCheck={false}
-			onChange={(event) => onChange(optional(event.target.value))}
-		/>
-	);
-	const preview = (
-		<span className={`projects-image-preview ${value ? 'filled' : 'empty'}`} aria-hidden="true">
-			{value ? <img src={toUrl(value)} alt="" /> : <i className="fa-regular fa-image" />}
-		</span>
-	);
-	if (compact)
-		return (
-			<div className="projects-field projects-image compact">
-				{preview}
-				<div className="projects-image-main">
-					<div className="projects-image-tools">
-						<FieldLabel label={label} required={required} />
-						{picker}
-						{uploader}
-						{clear}
-					</div>
-					{url}
-					{error && <p className="about-pane-hint projects-error">{error}</p>}
-				</div>
-			</div>
-		);
 	return (
-		<div className="projects-field projects-image">
-			{preview}
-			<div className="projects-image-main">
-				<FieldLabel label={label} required={required} />
-				{hint && <p className="about-pane-hint">{hint}</p>}
+		<FormRow label={label} required={required} htmlFor={id} hint={hint} top>
+			<div className={`projects-image ${shape}`}>
+				{value ? (
+					<button
+						type="button"
+						className="projects-thumb filled"
+						aria-label={`${name} 크게 보기`}
+						onClick={() => setZoomed(true)}
+					>
+						<img src={toUrl(value)} alt="" />
+					</button>
+				) : (
+					<span className="projects-thumb empty" aria-hidden="true">
+						<i className="fa-regular fa-image" />
+					</span>
+				)}
 				<div className="projects-image-tools">
-					{picker}
-					{uploader}
-					{clear}
-					{url}
+					<div className="projects-image-buttons">
+						<Popup
+							id={id}
+							label={`${name} 고르기`}
+							value={value && ALL_PICTURES.some((src) => fromPicked(src) === value) ? value : ''}
+							onChange={(picked) => onChange(picked ? fromPicked(picked) : undefined)}
+						>
+							<option value="">{value ? '다른 그림 고르기…' : '그림 고르기…'}</option>
+							{FOLDER_GROUPS.map((group) => (
+								<optgroup key={group.label} label={group.label}>
+									{group.folders.flatMap((folder) =>
+										PUBLIC_IMAGES[folder.value]
+											.filter((src) => !src.endsWith('.mp4'))
+											.map((src) => (
+												<option key={src} value={fromPicked(src)}>
+													{src.slice(folder.value.length + 1)}
+													{folder.label !== '프로젝트 폴더' ? ` (${folder.label})` : ''}
+												</option>
+											))
+									)}
+								</optgroup>
+							))}
+						</Popup>
+						<label className={`projects-button ${uploading ? 'busy' : ''}`}>
+							{uploading ? '올리는 중…' : '올리기…'}
+							<input
+								type="file"
+								accept="image/*"
+								aria-label={`${name} 올리기`}
+								disabled={uploading}
+								onChange={(event) => {
+									void upload(event.target.files?.[0]);
+									event.target.value = '';
+								}}
+							/>
+						</label>
+						{value && (
+							<button type="button" className="projects-button" onClick={() => onChange(undefined)}>
+								지우기
+							</button>
+						)}
+					</div>
+					<input
+						type="text"
+						className="projects-input mono"
+						aria-label={`${name} 주소`}
+						value={value ?? ''}
+						placeholder="/imgs/… 또는 https://"
+						spellCheck={false}
+						onChange={(event) => onChange(optional(event.target.value))}
+					/>
+					{error && <p className="projects-error">{error}</p>}
 				</div>
-				{error && <p className="about-pane-hint projects-error">{error}</p>}
 			</div>
-		</div>
+			{zoomed && value && <Lightbox items={[toUrl(value)]} start={0} onClose={() => setZoomed(false)} />}
+		</FormRow>
 	);
 };
 
@@ -815,31 +1017,449 @@ const TABS: [EditorTab, string][] = [
 	['json', 'JSON'],
 ];
 
-/** 목록 편집의 줄 틀: 위·아래·빼기 */
-const RowTools = ({
-	index,
-	count,
-	onMove,
-	onRemove,
+/**
+ * 페이지 모양의 작은 도식: 모양마다 바탕과 몇 개의 네모(왼쪽·위·너비·높이 %, 바탕, 덧붙일 모양).
+ * 실제 페이지를 그리지 않고 그 모양의 생김새만 (카드 14장을 가볍게)
+ */
+type Part = [number, number, number, number, string, CSSProperties?];
+const round = { borderRadius: '999px' };
+const card = { borderRadius: '8%/12%', boxShadow: '0 1px 2px rgba(0,0,0,0.12)' };
+const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> = {
+	showcase: {
+		bg: 'linear-gradient(160deg, #d9f2ee, #e8e4f7)',
+		parts: [
+			[6, 9, 52, 54, '#ffffff', card],
+			[11, 17, 16, 9, '#2bb3a3', { borderRadius: '2px' }],
+			[11, 33, 40, 6, '#2c2f3a'],
+			[11, 44, 32, 3.5, '#9aa0ad'],
+			[62, 9, 32, 54, '#ffffff', card],
+			[66, 18, 22, 3.5, '#9aa0ad'],
+			[66, 27, 20, 3.5, '#c6cad3'],
+			[66, 36, 23, 3.5, '#c6cad3'],
+			[6, 70, 88, 21, '#ffffff', card],
+			[12, 77, 12, 7, '#2bb3a3'],
+			[44, 77, 12, 7, '#2bb3a3'],
+			[74, 77, 12, 7, '#2bb3a3'],
+		],
+	},
+	cinema: {
+		bg: '#0b0b10',
+		parts: [
+			[0, 0, 100, 74, 'linear-gradient(135deg, #39407a, #c45f7c)'],
+			[0, 38, 100, 36, 'linear-gradient(transparent, #0b0b10)'],
+			[8, 50, 50, 8, '#ffffff'],
+			[8, 63, 34, 3.5, '#b8b8c4'],
+			[8, 81, 16, 6, '#ffffff', round],
+			[40, 83, 20, 2, '#4a4a55', round],
+		],
+	},
+	phone: {
+		bg: '#f3f0ea',
+		parts: [
+			[8, 30, 40, 8, '#24242a'],
+			[8, 44, 34, 3.5, '#8d8a85'],
+			[8, 51, 28, 3.5, '#8d8a85'],
+			[8, 64, 14, 6, '#24242a', round],
+			[60, 6, 25, 88, '#141416', { borderRadius: '18%/10%' }],
+			[62, 10, 21, 80, 'linear-gradient(180deg, #7fb2ff, #c7a4ff)', { borderRadius: '14%/7%' }],
+		],
+	},
+	horizontal: {
+		bg: '#f6f6f4',
+		parts: [
+			[5, 10, 34, 72, '#ffd166', { borderRadius: '3px' }],
+			[42, 10, 34, 72, '#ef476f', { borderRadius: '3px' }],
+			[79, 10, 34, 72, '#118ab2', { borderRadius: '3px' }],
+			[9, 20, 22, 5, '#3b2f00'],
+			[46, 20, 20, 5, '#ffffff'],
+			[5, 88, 90, 2.5, '#d9d9d6', round],
+			[5, 88, 36, 2.5, '#333333', round],
+		],
+	},
+	brutal: {
+		bg: '#fff04d',
+		parts: [
+			[6, 8, 72, 17, '#111111'],
+			[6, 30, 48, 9, '#111111'],
+			[6, 50, 40, 38, '#ffffff', { border: '2px solid #111111' }],
+			[52, 50, 42, 38, '#ff5ca8', { border: '2px solid #111111' }],
+			[10, 57, 24, 4, '#111111'],
+		],
+	},
+	arcade: {
+		bg: '#0b0322',
+		parts: [
+			[0, 58, 100, 42, 'repeating-linear-gradient(90deg, rgba(41,243,255,0.45) 0 1px, transparent 1px 11%)'],
+			[0, 58, 100, 1.5, '#ff2bd6'],
+			[10, 14, 56, 11, '#ff2bd6', { boxShadow: '0 0 8px #ff2bd6' }],
+			[10, 32, 40, 5, '#29f3ff', { boxShadow: '0 0 6px #29f3ff' }],
+			[72, 12, 18, 30, 'transparent', { border: '1.5px solid #29f3ff', boxShadow: '0 0 6px #29f3ff' }],
+			[0, 0, 100, 100, 'repeating-linear-gradient(rgba(255,255,255,0.07) 0 1px, transparent 1px 3px)'],
+		],
+	},
+	atelier: {
+		bg: '#f5f0e6',
+		parts: [
+			[10, 16, 38, 7, '#2b2925'],
+			[10, 30, 32, 2.5, '#8d8271'],
+			[10, 36, 36, 2.5, '#8d8271'],
+			[10, 42, 26, 2.5, '#8d8271'],
+			[58, 14, 32, 58, '#cdbea6'],
+			[10, 82, 80, 1, 'rgba(43,41,37,0.25)'],
+		],
+	},
+	inbox: {
+		bg: '#ffffff',
+		parts: [
+			[0, 0, 20, 100, '#eceef3'],
+			[4, 10, 12, 3.5, '#7b8191'],
+			[4, 18, 10, 3.5, '#a4a9b5'],
+			[20, 0, 30, 100, '#f8f8fa'],
+			[50, 0, 0.8, 100, '#e3e4e8'],
+			[23, 9, 22, 4, '#3d4150'],
+			[23, 16, 18, 3, '#a4a9b5'],
+			[21.5, 27, 27, 17, '#d5e5ff', { borderRadius: '3px' }],
+			[23, 31, 22, 4, '#1d4ed8'],
+			[23, 38, 18, 3, '#6b8fd6'],
+			[23, 52, 22, 4, '#3d4150'],
+			[23, 59, 18, 3, '#a4a9b5'],
+			[55, 10, 34, 6, '#22252e'],
+			[55, 24, 38, 3, '#a4a9b5'],
+			[55, 31, 36, 3, '#a4a9b5'],
+			[55, 38, 30, 3, '#a4a9b5'],
+		],
+	},
+	checklist: {
+		bg: '#ffffff',
+		parts: [
+			[10, 9, 42, 8, '#1f1f24'],
+			[10, 28, 6, 9.6, '#34c759', round],
+			[20, 31, 46, 3.5, '#b5b5bb'],
+			[10, 45, 6, 9.6, 'transparent', { ...round, border: '1.5px solid #c7c7cc' }],
+			[20, 48, 58, 3.5, '#4a4a52'],
+			[10, 62, 6, 9.6, 'transparent', { ...round, border: '1.5px solid #c7c7cc' }],
+			[20, 65, 40, 3.5, '#4a4a52'],
+			[10, 79, 6, 9.6, 'transparent', { ...round, border: '1.5px solid #c7c7cc' }],
+			[20, 82, 52, 3.5, '#4a4a52'],
+		],
+	},
+	repo: {
+		bg: '#0d1117',
+		parts: [
+			[0, 0, 100, 12, '#161b22'],
+			[4, 4, 18, 4, '#8b949e'],
+			[0, 12, 24, 88, '#0d1117'],
+			[24, 12, 0.8, 88, '#30363d'],
+			[4, 20, 14, 3, '#58a6ff'],
+			[7, 28, 13, 3, '#8b949e'],
+			[7, 36, 11, 3, '#8b949e'],
+			[4, 44, 15, 3, '#58a6ff'],
+			[30, 20, 40, 6, '#e6edf3'],
+			[30, 32, 60, 3, '#8b949e'],
+			[30, 39, 52, 3, '#8b949e'],
+			[30, 50, 64, 34, '#161b22', { border: '1px solid #30363d', borderRadius: '3px' }],
+			[34, 57, 30, 3, '#7ee787'],
+			[34, 64, 40, 3, '#d2a8ff'],
+		],
+	},
+	dialogue: {
+		bg: 'linear-gradient(#8fd3ff, #d4f0ff 60%)',
+		parts: [
+			[10, 12, 18, 7, '#ffffff'],
+			[64, 8, 22, 8, '#ffffff'],
+			[6, 6, 16, 10, 'rgba(255,255,255,0.85)', { border: '1.5px solid #2b2b4a' }],
+			[0, 56, 100, 44, 'repeating-linear-gradient(90deg, #6cbf4b 0 8%, #63b243 8% 16%)'],
+			[6, 62, 88, 31, '#1d1d3a', { border: '2px solid #ffffff', outline: '1.5px solid #1d1d3a' }],
+			[11, 70, 50, 4.5, '#ffffff'],
+			[11, 79, 36, 4.5, '#ffffff'],
+			[84, 85, 4, 4, '#ffd166'],
+		],
+	},
+	deck: {
+		bg: '#2b2d31',
+		parts: [
+			[10, 7, 80, 63, '#ffffff', { borderRadius: '2px' }],
+			[16, 17, 40, 8, '#1f2937'],
+			[16, 33, 40, 3, '#9ca3af'],
+			[16, 40, 34, 3, '#9ca3af'],
+			[16, 47, 38, 3, '#9ca3af'],
+			[62, 27, 22, 32, '#5b8def'],
+			[10, 77, 18, 14, '#ffffff', { outline: '1.5px solid #5b8def', outlineOffset: '1px' }],
+			[31, 77, 18, 14, '#6b6e75'],
+			[52, 77, 18, 14, '#6b6e75'],
+			[73, 77, 17, 14, '#6b6e75'],
+		],
+	},
+	assistant: {
+		bg: '#e9e9ec',
+		parts: [
+			[6, 7, 88, 86, '#ffffff', { borderRadius: '5%/8%', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }],
+			[6, 7, 26, 86, '#f2f2f5', { borderRadius: '5% 0 0 5%/8% 0 0 8%' }],
+			[10, 18, 3.6, 5.8, '#007aff', round],
+			[16, 19, 12, 3, '#2c2c30'],
+			[10, 30, 3.6, 5.8, '#c7c7cc', round],
+			[16, 31, 11, 3, '#8e8e93'],
+			[10, 42, 3.6, 5.8, '#c7c7cc', round],
+			[16, 43, 12, 3, '#8e8e93'],
+			[38, 18, 40, 7, '#1f1f24'],
+			[38, 32, 50, 3, '#a1a1a6'],
+			[38, 39, 44, 3, '#a1a1a6'],
+			[62, 78, 13, 8, '#e5e5ea', { borderRadius: '3px' }],
+			[77, 78, 13, 8, '#007aff', { borderRadius: '3px' }],
+		],
+	},
+	custom: {
+		bg: 'linear-gradient(160deg, #f4f4f6, #e4e4e9)',
+		parts: [],
+		text: '</>',
+	},
+};
+
+const LookSketch = ({ look }: { look: ProjectLook }) => {
+	const { bg, parts, text } = SKETCH[look];
+	return (
+		<span className="projects-look-sketch" style={{ background: bg }}>
+			{parts.map(([left, top, width, height, background, extra], index) => (
+				<span
+					key={index}
+					style={{ left: `${left}%`, top: `${top}%`, width: `${width}%`, height: `${height}%`, background, ...extra }}
+				/>
+			))}
+			{text && <b>{text}</b>}
+		</span>
+	);
+};
+
+/** 페이지 모양 고르기: 바탕화면 고르기처럼 작은 그림 카드 격자. ←·→·↑·↓로 옮겨 고른다 (라디오 묶음) */
+const LookPicker = ({ value, onChange }: { value: ProjectLook; onChange: (look: ProjectLook) => void }) => {
+	const groupRef = useRef<HTMLDivElement>(null);
+	const choose = (index: number) => {
+		const look = PROJECT_LOOKS[(index + PROJECT_LOOKS.length) % PROJECT_LOOKS.length];
+		onChange(look);
+		groupRef.current?.querySelector<HTMLElement>(`[data-look="${look}"]`)?.focus();
+	};
+	return (
+		<div className="projects-looks" role="radiogroup" aria-label="페이지 모양" ref={groupRef}>
+			{PROJECT_LOOKS.map((look, index) => {
+				const checked = look === value;
+				return (
+					<button
+						key={look}
+						type="button"
+						role="radio"
+						aria-checked={checked}
+						aria-label={LOOKS[look].name}
+						title={`${LOOKS[look].name} (${LOOKS[look].note})`}
+						tabIndex={checked ? 0 : -1}
+						data-look={look}
+						className="projects-look"
+						onClick={() => onChange(look)}
+						onKeyDown={(event) => {
+							const delta = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+							if (!delta) return;
+							event.preventDefault();
+							choose(index + delta);
+						}}
+					>
+						<span className="projects-look-thumb">
+							<LookSketch look={look} />
+							{checked && (
+								<span className="projects-look-check" aria-hidden="true">
+									<i className="fa-solid fa-check" />
+								</span>
+							)}
+						</span>
+						<span className="projects-look-name">{LOOKS[look].name}</span>
+						<span className="projects-look-note">{LOOKS[look].note}</span>
+					</button>
+				);
+			})}
+		</div>
+	);
+};
+
+/**
+ * 목록 편집 (macOS의 표): 둥근 상자 안의 줄 목록과 아래 ＋/− 막대.
+ * 줄을 누르면 고른 상태(강조 바탕)가 되고, 끌거나 ⌥↑·⌥↓로 순서를 바꾸고, −나 Delete로 고른 줄을 뺀다.
+ * detail이 있으면 고른 항목의 칸을 목록 아래에 연다 (마스터–디테일). 없으면 줄의 칸을 바로 고친다
+ */
+function ListTable<T>({
+	label,
+	hint,
+	items,
+	onChange,
+	blank,
+	columns,
+	cells,
+	detail,
 }: {
-	index: number;
-	count: number;
-	onMove: (delta: number) => void;
-	onRemove: () => void;
-}) => (
-	<span className="projects-row-tools">
-		<IconButton icon="fa-solid fa-chevron-up" label="위로" disabled={index === 0} onClick={() => onMove(-1)} />
-		<IconButton
-			icon="fa-solid fa-chevron-down"
-			label="아래로"
-			disabled={index === count - 1}
-			onClick={() => onMove(1)}
-		/>
-		<IconButton icon="fa-solid fa-xmark" label="빼기" onClick={onRemove} />
+	label: string;
+	hint?: string;
+	items: T[];
+	onChange: (items: T[]) => void;
+	/** ＋로 더하는 빈 항목 */
+	blank: () => T;
+	/** 줄 위의 열 이름 (칸을 바로 고치는 표) */
+	columns?: string[];
+	/** 줄의 칸들 */
+	cells: (item: T, index: number, update: (next: T) => void) => ReactNode[];
+	/** 고른 항목의 상세 칸 */
+	detail?: (item: T, index: number, update: (next: T) => void) => ReactNode;
+}) {
+	const [picked, setPicked] = useState<number | null>(null);
+	const selected = picked !== null && picked < items.length ? picked : null;
+	const listRef = useRef<HTMLOListElement>(null);
+	const sectionRef = useRef<HTMLElement>(null);
+	/** 그린 뒤 초점을 줄 곳: 그 줄 자체, 또는 (새로 더한 항목이면) 첫 입력 칸 */
+	const pendingFocus = useRef<{ index: number; input: boolean } | null>(null);
+	useLayoutEffect(() => {
+		const pending = pendingFocus.current;
+		if (!pending) return;
+		pendingFocus.current = null;
+		const row = listRef.current?.children[pending.index] as HTMLElement | undefined;
+		if (!pending.input) return row?.focus();
+		const field =
+			sectionRef.current?.querySelector<HTMLElement>(
+				'.projects-detail input:not([type="file"]), .projects-detail textarea'
+			) ?? row?.querySelector<HTMLElement>('input');
+		field?.focus();
+	});
+	const update = (index: number) => (next: T) => onChange(items.map((item, i) => (i === index ? next : item)));
+	const select = (index: number, focus = true) => {
+		setPicked(index);
+		if (focus) pendingFocus.current = { index, input: false };
+	};
+	const add = () => {
+		onChange([...items, blank()]);
+		setPicked(items.length);
+		pendingFocus.current = { index: items.length, input: true };
+	};
+	const remove = (index: number) => {
+		onChange(items.filter((_, i) => i !== index));
+		const next = Math.min(index, items.length - 2);
+		setPicked(next >= 0 ? next : null);
+		if (next >= 0) pendingFocus.current = { index: next, input: false };
+	};
+	const move = (index: number, delta: number) => {
+		const target = index + delta;
+		if (target < 0 || target >= items.length) return;
+		onChange(moveItem(items, index, delta));
+		select(target);
+	};
+	return (
+		<section className="projects-group" aria-label={label} ref={sectionRef}>
+			<h3 className="projects-group-title">
+				{label}
+				<span className="projects-group-count">{items.length}</span>
+			</h3>
+			<div className="projects-box projects-table">
+				{columns && items.length > 0 && (
+					<div className="projects-table-head" aria-hidden="true">
+						{columns.map((column) => (
+							<span key={column}>{column}</span>
+						))}
+					</div>
+				)}
+				{items.length > 0 ? (
+					<ol
+						className={`projects-table-rows ${columns ? 'columns' : ''}`}
+						role="grid"
+						aria-label={label}
+						ref={listRef}
+					>
+						{items.map((item, index) => (
+							<li
+								key={index}
+								role="row"
+								aria-selected={index === selected}
+								aria-rowindex={index + 1}
+								tabIndex={index === (selected ?? 0) ? 0 : -1}
+								className="projects-table-row"
+								onFocus={(event) => {
+									if (event.target !== event.currentTarget) setPicked(index);
+								}}
+								onPointerDown={(event) => {
+									if (event.button !== 0) return;
+									if ((event.target as HTMLElement).closest('input, textarea, select, button, label')) return;
+									setPicked(index);
+									event.currentTarget.focus();
+									if (items.length < 2) return;
+									// 줄을 끌어서 순서 바꾸기 (프로젝트 목록의 ≡ 손잡이와 같은 동작)
+									startPointerReorder(event, (from, to) => {
+										onChange(moveItem(items, from, to - from));
+										select(to);
+									});
+								}}
+								onKeyDown={(event) => {
+									if (event.target !== event.currentTarget) return;
+									if (event.altKey) {
+										const delta = reorderKeyDelta(event.key);
+										if (!delta) return;
+										event.preventDefault();
+										move(index, delta);
+									} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+										event.preventDefault();
+										select(Math.min(items.length - 1, Math.max(0, index + (event.key === 'ArrowUp' ? -1 : 1))));
+									} else if (event.key === 'Delete' || event.key === 'Backspace') {
+										event.preventDefault();
+										remove(index);
+									}
+								}}
+							>
+								{cells(item, index, update(index)).map((cell, column) => (
+									<div key={column} role="gridcell" className="projects-table-cell">
+										{cell}
+									</div>
+								))}
+							</li>
+						))}
+					</ol>
+				) : (
+					<p className="projects-table-empty">항목이 없습니다. ＋를 눌러 더합니다.</p>
+				)}
+				<div className="projects-table-bar">
+					<span className="projects-segmented">
+						<button type="button" aria-label="더하기" title="항목 더하기" onClick={add}>
+							<svg viewBox="0 0 10 10" aria-hidden="true">
+								<path d="M5 1v8M1 5h8" />
+							</svg>
+						</button>
+						<button
+							type="button"
+							aria-label="빼기"
+							title="고른 항목 빼기"
+							disabled={selected === null}
+							onClick={() => selected !== null && remove(selected)}
+						>
+							<svg viewBox="0 0 10 10" aria-hidden="true">
+								<path d="M1 5h8" />
+							</svg>
+						</button>
+					</span>
+					{hint && <span className="projects-table-note">{hint}</span>}
+				</div>
+			</div>
+			{detail && selected !== null && (
+				<div className="projects-box projects-detail" role="group" aria-label={`${label} ${selected + 1}`}>
+					<p className="projects-detail-title">
+						{`${label} ${selected + 1}`}
+						<span>{`${items.length}개 가운데 ${selected + 1}번째`}</span>
+					</p>
+					<div key={selected}>{detail(items[selected], selected, update(selected))}</div>
+				</div>
+			)}
+		</section>
+	);
+}
+
+/** 줄 오른쪽의 16:10 썸네일 (그림이 없으면 빈 칸) */
+const RowThumb = ({ src }: { src?: string }) => (
+	<span className={`projects-row-thumb ${src ? 'filled' : 'empty'}`} aria-hidden="true">
+		{src ? <img src={src} alt="" loading="lazy" /> : <i className="fa-regular fa-image" />}
 	</span>
 );
 
-/** 제목·설명(·그림) 묶음 목록: 주요 기능, 만든 방식, 쓰는 법 */
+/** 제목·설명(·그림) 묶음 목록: 주요 기능, 만든 방식, 쓰는 법. 줄에는 제목·설명 첫 줄·그림, 고르면 아래에서 고친다 */
 const PointsEditor = ({
 	label,
 	hint,
@@ -851,165 +1471,154 @@ const PointsEditor = ({
 	points: ProjectPoint[];
 	onChange: (points: ProjectPoint[]) => void;
 }) => {
-	const update = (index: number, patch: Partial<ProjectPoint>) =>
-		onChange(
-			points.map((point, i) => {
-				if (i !== index) return point;
-				const next = { ...point, ...patch };
-				for (const key of Object.keys(patch) as (keyof ProjectPoint)[]) if (next[key] === undefined) delete next[key];
-				return next;
-			})
-		);
+	const patch = (point: ProjectPoint, change: Partial<ProjectPoint>) => {
+		const next = { ...point, ...change };
+		for (const key of Object.keys(change) as (keyof ProjectPoint)[]) if (next[key] === undefined) delete next[key];
+		return next;
+	};
 	return (
-		<section className="about-pane-group projects-list" aria-label={label}>
-			<h3>
-				{label}
-				<span className="showcase-count">{points.length}</span>
-			</h3>
-			{hint && <p className="about-pane-hint">{hint}</p>}
-			<ol>
-				{points.map((point, index) => (
-					<li key={index}>
-						<div className="projects-list-fields">
-							<input
-								className="projects-list-title"
-								aria-label={`${label} ${index + 1} 제목`}
-								placeholder="제목"
-								value={point.title}
-								onChange={(event) => update(index, { title: event.target.value })}
-							/>
-							<textarea
-								aria-label={`${label} ${index + 1} 설명`}
-								placeholder="설명"
-								rows={2}
-								value={point.body}
-								onChange={(event) => update(index, { body: event.target.value })}
-							/>
-							<ImageField label="그림" compact value={point.image} onChange={(image) => update(index, { image })} />
-						</div>
-						<RowTools
-							index={index}
-							count={points.length}
-							onMove={(delta) => onChange(moveItem(points, index, delta))}
-							onRemove={() => onChange(points.filter((_, i) => i !== index))}
-						/>
-					</li>
-				))}
-			</ol>
-			<button
-				type="button"
-				className="showcase-text-button projects-list-add"
-				onClick={() => onChange([...points, { title: '', body: '' }])}
-			>
-				<i className="fa-solid fa-plus" aria-hidden="true" /> 더하기
-			</button>
-		</section>
+		<ListTable<ProjectPoint>
+			label={label}
+			hint={hint}
+			items={points}
+			onChange={onChange}
+			blank={() => ({ title: '', body: '' })}
+			cells={(point) => [
+				<span className="projects-point" key="text">
+					<strong className={point.title.trim() ? '' : 'placeholder'}>{point.title.trim() || '제목 없음'}</strong>
+					<span>{point.body.trim() || '설명이 없습니다.'}</span>
+				</span>,
+				<RowThumb key="thumb" src={point.image} />,
+			]}
+			detail={(point, index, update) => (
+				<>
+					<TextField
+						label="제목"
+						ariaLabel={`${label} ${index + 1} 제목`}
+						value={point.title}
+						onChange={(title) => update(patch(point, { title }))}
+					/>
+					<TextField
+						label="설명"
+						multiline
+						ariaLabel={`${label} ${index + 1} 설명`}
+						value={point.body}
+						onChange={(body) => update(patch(point, { body }))}
+					/>
+					<ImageField
+						label="그림"
+						name={`${label} ${index + 1} 그림`}
+						shape="wide"
+						value={point.image}
+						onChange={(image) => update(patch(point, { image }))}
+					/>
+				</>
+			)}
+		/>
 	);
 };
 
-/** 두 칸짜리 줄 목록: 진행 과정(때·한 일), 기술 사양(분류·기술) */
+/** 두 칸짜리 줄 목록: 진행 과정(때·한 일), 기술 사양(분류·기술), 숫자(값·이름표). 표의 칸을 바로 고친다 */
 const PairsEditor = <K extends string>({
 	label,
+	hint,
 	keys,
 	names,
+	placeholders,
 	rows,
 	onChange,
 }: {
 	label: string;
+	hint?: string;
 	keys: [K, K];
 	names: [string, string];
+	placeholders?: [string, string];
 	rows: Record<K, string>[];
 	onChange: (rows: Record<K, string>[]) => void;
 }) => (
-	<section className="about-pane-group projects-list" aria-label={label}>
-		<h3>
-			{label}
-			<span className="showcase-count">{rows.length}</span>
-		</h3>
-		<ol>
-			{rows.map((row, index) => (
-				<li key={index}>
-					<div className="projects-list-fields projects-pair">
-						{keys.map((key, k) => (
-							<input
-								key={key}
-								aria-label={`${label} ${index + 1} ${names[k]}`}
-								placeholder={names[k]}
-								value={row[key]}
-								onChange={(event) =>
-									onChange(rows.map((other, i) => (i === index ? { ...other, [key]: event.target.value } : other)))
-								}
-							/>
-						))}
-					</div>
-					<RowTools
-						index={index}
-						count={rows.length}
-						onMove={(delta) => onChange(moveItem(rows, index, delta))}
-						onRemove={() => onChange(rows.filter((_, i) => i !== index))}
-					/>
-				</li>
-			))}
-		</ol>
-		<button
-			type="button"
-			className="showcase-text-button projects-list-add"
-			onClick={() => onChange([...rows, { [keys[0]]: '', [keys[1]]: '' } as Record<K, string>])}
-		>
-			<i className="fa-solid fa-plus" aria-hidden="true" /> 더하기
-		</button>
-	</section>
-);
-
-/** 한눈에 보는 숫자: 값·이름표 */
-const FactsEditor = ({ facts, onChange }: { facts: ProjectFact[]; onChange: (facts: ProjectFact[]) => void }) => (
-	<PairsEditor
-		label="한눈에 보는 숫자"
-		keys={['value', 'label']}
-		names={['값 (예: 6주)', '이름표 (예: 개발 기간)']}
-		rows={facts}
+	<ListTable
+		label={label}
+		hint={hint}
+		items={rows}
 		onChange={onChange}
+		blank={() => ({ [keys[0]]: '', [keys[1]]: '' }) as Record<K, string>}
+		columns={names}
+		cells={(row, index, update) =>
+			keys.map((key, k) => (
+				<input
+					key={key}
+					className="projects-cell-input"
+					aria-label={`${label} ${index + 1} ${names[k]}`}
+					placeholder={placeholders?.[k] ?? names[k]}
+					value={row[key]}
+					onChange={(event) => update({ ...row, [key]: event.target.value })}
+				/>
+			))
+		}
 	/>
 );
 
 /** 한 줄씩: 맡은 일 */
 const LinesEditor = ({
 	label,
+	hint,
 	lines,
 	onChange,
 }: {
 	label: string;
+	hint?: string;
 	lines: string[];
 	onChange: (lines: string[]) => void;
 }) => (
-	<section className="about-pane-group projects-list" aria-label={label}>
-		<h3>
-			{label}
-			<span className="showcase-count">{lines.length}</span>
-		</h3>
-		<ol>
-			{lines.map((line, index) => (
-				<li key={index}>
-					<div className="projects-list-fields">
-						<input
-							aria-label={`${label} ${index + 1}`}
-							value={line}
-							onChange={(event) => onChange(lines.map((other, i) => (i === index ? event.target.value : other)))}
-						/>
-					</div>
-					<RowTools
-						index={index}
-						count={lines.length}
-						onMove={(delta) => onChange(moveItem(lines, index, delta))}
-						onRemove={() => onChange(lines.filter((_, i) => i !== index))}
-					/>
-				</li>
-			))}
-		</ol>
-		<button type="button" className="showcase-text-button projects-list-add" onClick={() => onChange([...lines, ''])}>
-			<i className="fa-solid fa-plus" aria-hidden="true" /> 더하기
-		</button>
-	</section>
+	<ListTable
+		label={label}
+		hint={hint}
+		items={lines}
+		onChange={onChange}
+		blank={() => ''}
+		cells={(line, index, update) => [
+			<input
+				key="line"
+				className="projects-cell-input"
+				aria-label={`${label} ${index + 1}`}
+				placeholder="한 일을 한 줄로 적습니다."
+				value={line}
+				onChange={(event) => update(event.target.value)}
+			/>,
+		]}
+	/>
+);
+
+/** 화면 모음 폴더의 그림 격자 (12장까지). 누르면 크게 보기 */
+const FolderShots = ({ folder }: { folder: string }) => {
+	const [zoomed, setZoomed] = useState<number | null>(null);
+	const all = PUBLIC_IMAGES[folder] ?? [];
+	const shots = all.slice(0, 12);
+	return (
+		<div className="projects-shots">
+			<p className="projects-shots-count">
+				{all.length > 12 ? `${all.length}장 가운데 12장을 미리 봅니다.` : `${all.length}장이 있습니다.`}
+			</p>
+			<ul className="projects-shots-grid" aria-label="화면 모음 미리 보기">
+				{shots.map((src, index) => (
+					<li key={src}>
+						<button type="button" aria-label={`${fileName(src)} 크게 보기`} onClick={() => setZoomed(index)}>
+							{src.endsWith('.mp4') ? <video src={src} muted /> : <img src={src} alt="" loading="lazy" />}
+						</button>
+					</li>
+				))}
+			</ul>
+			{zoomed !== null && <Lightbox items={all} start={zoomed} onClose={() => setZoomed(null)} />}
+		</div>
+	);
+};
+
+/** 오른쪽 패널 단추 모양 (macOS의 sidebar.right) */
+const SidebarRightIcon = () => (
+	<svg viewBox="0 0 18 14" aria-hidden="true" className="projects-toolbar-glyph">
+		<rect x="0.75" y="0.75" width="16.5" height="12.5" rx="2.5" />
+		<path d="M11.5 1v12" />
+	</svg>
 );
 
 /**
@@ -1030,10 +1639,13 @@ const ProjectEditor = ({
 	const [id, setId] = useState(row.id);
 	const [draft, setDraft] = useState<Project>(row.project);
 	const [tab, setTab] = useState<EditorTab>('intro');
-	/** 오른쪽에 Safari 페이지를 그대로 그려 둔다 (고치는 대로 바뀐다) */
+	/** 오른쪽에 Safari 페이지를 그대로 그려 둔다 (고치는 대로 바뀐다). 단추로 접고 편다 */
 	const [preview, setPreview] = useState(true);
 	// 폼과 미리 보기가 나란히 들어가게 창을 키운다 (이미 크면 그대로)
-	useEffect(() => requestWindowSize('settings', 1120, 720), []);
+	useEffect(() => {
+		if (preview) requestWindowSize('settings', 1280, 740);
+	}, [preview]);
+	const formRef = useRef<HTMLDivElement>(null);
 	const [json, setJson] = useState('');
 	const [errors, setErrors] = useState<string[]>([]);
 	const set = (patch: Partial<Project>) => {
@@ -1099,10 +1711,20 @@ const ProjectEditor = ({
 				finish();
 			}}
 		>
-			<div className="projects-editor-head">
-				<button type="button" className="showcase-text-button" onClick={onCancel}>
-					<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 프로젝트
-				</button>
+			{/* 창 맨 위 도구 막대: 왼쪽 돌아가기와 이름, 가운데 탭(세그먼트), 오른쪽 미리 보기 패널 단추와 완료 */}
+			<div className="projects-toolbar">
+				<div className="projects-toolbar-start">
+					<button
+						type="button"
+						className="projects-toolbar-button"
+						aria-label="프로젝트 목록으로 돌아가기"
+						title="고친 것을 버리고 프로젝트 목록으로 돌아갑니다."
+						onClick={onCancel}
+					>
+						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
+					</button>
+					<h3 className="projects-toolbar-title">{draft.name.trim() || '새 프로젝트'}</h3>
+				</div>
 				<div className="projects-tabs" role="tablist" aria-label="편집 항목">
 					{TABS.map(([key, label]) => (
 						<button
@@ -1120,184 +1742,145 @@ const ProjectEditor = ({
 								}
 								if (key === 'json') openJson();
 								else setTab(key);
+								formRef.current?.scrollTo({ top: 0 });
 							}}
 						>
 							{label}
 						</button>
 					))}
 				</div>
-				<span className="showcase-head-actions">
+				<div className="projects-toolbar-end">
 					<button
 						type="button"
-						className={`showcase-text-button ${preview ? 'strong' : ''}`}
+						className="projects-toolbar-button"
+						aria-label="미리 보기"
+						title={preview ? '미리 보기를 접습니다.' : '미리 보기를 엽니다.'}
 						aria-pressed={preview}
 						onClick={() => setPreview((value) => !value)}
 					>
-						<i className="fa-regular fa-eye" aria-hidden="true" /> 미리 보기
+						<SidebarRightIcon />
 					</button>
-					<button type="submit" className="showcase-text-button strong">
+					<button type="submit" className="projects-button primary">
 						완료
 					</button>
-				</span>
+				</div>
 			</div>
 
-			{errors.length > 0 && (
-				<ul className="about-pane-errors" role="alert">
-					{errors.map((error) => (
-						<li key={error}>{error}</li>
-					))}
-				</ul>
-			)}
-
-			<div className="projects-editor-body">
-				<div className="projects-editor-form">
-					{tab === 'json' && (
-						<div className="projects-json">
-							<textarea
-								aria-label="프로젝트 JSON"
-								value={json}
-								spellCheck={false}
-								onChange={(event) => setJson(event.target.value)}
-							/>
-							<p className="about-pane-hint">
-								모든 필드를 고칠 수 있습니다 (장, 출처, 조작법 등). 링크·데모는 https:// 주소, 그림은 사이트 안
-								경로(/imgs/…)나 https:// 주소만 받습니다.
-							</p>
-						</div>
-					)}
-					{tab === 'intro' && (
-						<>
-							<section className="about-pane-group" aria-label="소개">
-								<h3>소개</h3>
-								{row.isNew && (
-									<TextField
-										label="id"
-										value={id}
-										onChange={setId}
-										required
-										hint="주소와 앱 이름에 쓰입니다. 영어 소문자·숫자·-로 (예: my-project)"
-									/>
-								)}
-								<TextField label="이름" value={draft.name} onChange={(name) => set({ name })} required />
-								<TextField
-									label="한 줄 소개"
-									value={draft.description}
-									onChange={(description) => set({ description })}
+			<div className={`projects-editor-body ${preview ? 'with-preview' : ''}`}>
+				<div className="projects-editor-form" ref={formRef}>
+					<div className="projects-editor-column">
+						{errors.length > 0 && (
+							<ul className="about-pane-errors" role="alert">
+								{errors.map((error) => (
+									<li key={error}>{error}</li>
+								))}
+							</ul>
+						)}
+						{tab === 'json' && (
+							<Group
+								title="JSON"
+								label="고급 JSON"
+								hint="모든 필드를 고칠 수 있습니다 (장, 출처, 조작법 등). 링크·데모는 https:// 주소, 그림은 사이트 안 경로(/imgs/…)나 https:// 주소만 받습니다."
+							>
+								<textarea
+									className="projects-json"
+									aria-label="프로젝트 JSON"
+									value={json}
+									spellCheck={false}
+									onChange={(event) => setJson(event.target.value)}
 								/>
-								<TextField label="큰 제목" value={draft.tagline} onChange={(tagline) => set({ tagline })} />
-								<TextField label="어떤 프로젝트" value={draft.context} onChange={(context) => set({ context })} />
-								<TextField label="맡은 일" value={draft.role} onChange={(role) => set({ role: optional(role) })} />
-								<PeriodField value={draft.period} onChange={(period) => set({ period })} />
-								<div className="projects-field">
-									<label>
-										<span>페이지 모양</span>
-										<select value={draft.look} onChange={(event) => set({ look: event.target.value as ProjectLook })}>
-											{PROJECT_LOOKS.map((look) => (
-												<option key={look} value={look}>
-													{LOOK_LABEL[look]}
-												</option>
-											))}
-										</select>
-									</label>
-									{/* 직접 짠 페이지는 코드(apps/safari/project/custom/)에 프로젝트 id로 등록해야 한다 */}
-									{draft.look === 'custom' && (
-										<p className="about-pane-hint">
-											{hasCustomPage(draft.id)
-												? `코드에 등록된 ${draft.id} 전용 페이지로 그립니다.`
-												: `코드에 ${draft.id} 전용 페이지가 없어 기본 (카드)로 그립니다. 저장소의 safari/project/custom/에 등록하세요.`}
-										</p>
+							</Group>
+						)}
+						{tab === 'intro' && (
+							<>
+								<Group title="소개">
+									{row.isNew && (
+										<TextField
+											label="id"
+											value={id}
+											onChange={setId}
+											required
+											hint="주소와 앱 이름에 쓰입니다. 영어 소문자·숫자·-로 적습니다 (예: my-project)."
+										/>
 									)}
-								</div>
-							</section>
-							<section className="about-pane-group" aria-label="주소와 기술">
-								<h3>주소와 기술</h3>
-								<TextField
-									label="저장소"
-									required
-									type="url"
-									value={draft.url}
-									onChange={(url) => set({ url })}
-									placeholder="https://github.com/아이디/저장소"
-								/>
-								<TextField
-									label="데모"
-									type="url"
-									value={draft.demo}
-									onChange={(demo) => set({ demo: optional(demo) })}
-									placeholder="https://"
-								/>
-								<ChoiceInput
-									label="주 언어"
-									value={draft.language}
-									options={LANGUAGES}
-									onChange={(language) => set({ language })}
-								/>
-								<TagInput
-									label="기술"
-									items={draft.stack}
-									options={STACKS}
-									remote={NPM}
-									onChange={(stack) => set({ stack })}
-								/>
-							</section>
-						</>
-					)}
-					{tab === 'pictures' && (
-						<>
-							<section className="about-pane-group" aria-label="그림">
-								<h3>그림</h3>
+									<TextField label="이름" value={draft.name} onChange={(name) => set({ name })} required />
+									<TextField label="큰 제목" value={draft.tagline} onChange={(tagline) => set({ tagline })} />
+									<TextField
+										label="한 줄 소개"
+										multiline
+										value={draft.description}
+										onChange={(description) => set({ description })}
+									/>
+									<TextField label="어떤 프로젝트" value={draft.context} onChange={(context) => set({ context })} />
+									<TextField label="맡은 일" value={draft.role} onChange={(role) => set({ role: optional(role) })} />
+									<PeriodField value={draft.period} onChange={(period) => set({ period })} />
+								</Group>
+								<Group
+									title="페이지 모양"
+									label="페이지 모양 고르기"
+									hint={
+										draft.look === 'custom'
+											? hasCustomPage(draft.id)
+												? `코드에 등록된 ${draft.id} 전용 페이지로 그립니다.`
+												: `코드에 ${draft.id} 전용 페이지가 없어 기본 (카드)로 그립니다. 저장소의 safari/project/custom/에 등록하세요.`
+											: 'Safari에서 이 프로젝트를 여는 페이지의 모양입니다. 고르면 미리 보기가 바로 바뀝니다.'
+									}
+								>
+									<LookPicker value={draft.look} onChange={(look) => set({ look })} />
+								</Group>
+								<Group title="주소와 기술">
+									<TextField
+										label="저장소"
+										required
+										type="url"
+										value={draft.url}
+										onChange={(url) => set({ url })}
+										placeholder="https://github.com/아이디/저장소"
+									/>
+									<TextField
+										label="데모"
+										type="url"
+										value={draft.demo}
+										onChange={(demo) => set({ demo: optional(demo) })}
+										placeholder="https://"
+									/>
+									<ChoiceInput
+										label="주 언어"
+										value={draft.language}
+										options={LANGUAGES}
+										onChange={(language) => set({ language })}
+									/>
+									<TagInput
+										label="기술"
+										items={draft.stack}
+										options={STACKS}
+										remote={NPM}
+										onChange={(stack) => set({ stack })}
+									/>
+								</Group>
+							</>
+						)}
+						{tab === 'pictures' && (
+							<>
 								{/* 대표 화면(image)은 따로 고르지 않는다: 화면 모음의 첫 그림을 쓴다 (다른 장을 쓰려면 JSON의 image).
 								    글자 로고(logo)도 폼에는 두지 않는다: 쓰는 프로젝트가 드물고 아이콘과 헷갈린다 (필요하면 JSON의 logo) */}
-								<ImageField
-									label="프로젝트 아이콘"
-									value={draft.icon}
-									onChange={(icon) => set({ icon })}
-									hint="네모난 앱 아이콘. Safari 탭·Finder·페이지 맨 위에 작게 보입니다. 없으면 기본 모양"
-								/>
-							</section>
-							<section className="about-pane-group" aria-label="대화창 배경">
-								<h3>대화창 배경</h3>
-								<div className="projects-field">
-									<label>
-										<span>배경 테마</span>
-										<select
-											value={draft.backdrop?.theme ?? 'auto'}
-											onChange={(event) =>
-												set({
-													backdrop: tidyBackdrop({
-														...draft.backdrop,
-														theme: event.target.value as BackdropTheme,
-													}),
-												})
-											}
-										>
-											{BACKDROP_THEMES.map((theme) => (
-												<option key={theme} value={theme}>
-													{BACKDROP_LABEL[theme]}
-												</option>
-											))}
-										</select>
-									</label>
-									<p className="about-pane-hint">
-										RPG 대화창 모양의 하늘·바닥·소품을 고릅니다. 자동은 배경 그림이 없으면 대표 화면을 픽셀로 바꿔 깔고,
-										강조색은 언제나 프로젝트 아이콘의 색을 따릅니다.
-									</p>
-								</div>
-								<ImageField
-									label="배경 그림"
-									value={draft.backdrop?.image}
-									onChange={(image) => set({ backdrop: tidyBackdrop({ ...draft.backdrop, image }) })}
-									hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
-								/>
-							</section>
-							<section className="about-pane-group" aria-label="화면 모음">
-								<h3>화면 모음</h3>
-								<div className="projects-field projects-folder">
-									<label>
-										<span>폴더</span>
-										<select
+								<Group title="아이콘" label="그림">
+									<ImageField
+										label="프로젝트 아이콘"
+										value={draft.icon}
+										onChange={(icon) => set({ icon })}
+										hint="네모난 앱 아이콘입니다. Safari 탭·Finder·페이지 맨 위에 작게 보이고, 없으면 기본 모양을 씁니다."
+									/>
+								</Group>
+								<Group
+									title="화면 모음"
+									hint="폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은 저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다."
+								>
+									<FormRow label="폴더" htmlFor="projects-gallery-folder" align="end">
+										<Popup
+											id="projects-gallery-folder"
 											value={draft.galleryFolder ?? ''}
-											onChange={(event) => set({ galleryFolder: optional(event.target.value) })}
+											onChange={(folder) => set({ galleryFolder: optional(folder) })}
 										>
 											<option value="">
 												{draft.gallery?.length ? `직접 적은 화면 ${draft.gallery.length}장` : '없음'}
@@ -1312,175 +1895,195 @@ const ProjectEditor = ({
 													))}
 												</optgroup>
 											))}
-										</select>
-									</label>
-									<p className="about-pane-hint">
-										폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은
-										저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다.
-									</p>
-								</div>
-								{draft.galleryFolder && (
-									<div className="projects-folder-shots">
-										<p className="projects-folder-count">
-											{PUBLIC_IMAGES[draft.galleryFolder]?.length ?? 0}장
-											{(PUBLIC_IMAGES[draft.galleryFolder]?.length ?? 0) > 12 ? ' (12장까지 미리 보기)' : ''}
-										</p>
-										<ul className="projects-folder-preview" aria-label="화면 모음 미리 보기">
-											{(PUBLIC_IMAGES[draft.galleryFolder] ?? []).slice(0, 12).map((src) => (
-												<li key={src}>
-													{src.endsWith('.mp4') ? <video src={src} muted /> : <img src={src} alt="" loading="lazy" />}
-												</li>
+										</Popup>
+									</FormRow>
+									{draft.galleryFolder && <FolderShots key={draft.galleryFolder} folder={draft.galleryFolder} />}
+								</Group>
+								<Group
+									title="대화창 배경"
+									hint="RPG 대화창 모양의 하늘·바닥·소품을 고릅니다. 자동은 배경 그림이 없으면 대표 화면을 픽셀로 바꿔 깔고, 강조색은 언제나 프로젝트 아이콘의 색을 따릅니다."
+								>
+									<FormRow label="배경 테마" htmlFor="projects-backdrop-theme" align="end">
+										<Popup
+											id="projects-backdrop-theme"
+											value={draft.backdrop?.theme ?? 'auto'}
+											onChange={(theme) =>
+												set({ backdrop: tidyBackdrop({ ...draft.backdrop, theme: theme as BackdropTheme }) })
+											}
+										>
+											{BACKDROP_THEMES.map((theme) => (
+												<option key={theme} value={theme}>
+													{BACKDROP_LABEL[theme]}
+												</option>
 											))}
-										</ul>
-									</div>
-								)}
-							</section>
-						</>
-					)}
-					{tab === 'content' && (
-						<>
-							<FactsEditor facts={draft.facts} onChange={(facts) => set({ facts })} />
-							<PointsEditor
-								label="주요 기능"
-								hint="첫 항목은 크게, 그림이 있으면 그림이 바탕이 됩니다."
-								points={draft.highlights}
-								onChange={(highlights) => set({ highlights })}
-							/>
-							<PointsEditor
-								label="만든 방식"
-								hint="번호가 붙어 좌우로 번갈아 놓입니다. 그림이 있으면 옆에 함께."
-								points={draft.build}
-								onChange={(build) => set({ build })}
-							/>
-							<PointsEditor
-								label="쓰는 법"
-								hint="단계로 보입니다."
-								points={draft.usage ?? []}
-								onChange={(usage) => set({ usage: usage.length ? usage : undefined })}
-							/>
-							<PairsEditor
-								label="진행 과정"
-								keys={['date', 'label']}
-								names={['때', '한 일']}
-								rows={draft.timeline ?? []}
-								onChange={(timeline) => set({ timeline: timeline.length ? timeline : undefined })}
-							/>
-							<PairsEditor
-								label="기술 사양"
-								keys={['label', 'value']}
-								names={['분류', '기술']}
-								rows={draft.specs}
-								onChange={(specs) => set({ specs })}
-							/>
-							<LinesEditor
-								label="맡은 일"
-								lines={draft.contributions}
-								onChange={(contributions) => set({ contributions })}
-							/>
-						</>
-					)}
-					{tab === 'app' && (
-						<section className="about-pane-group" aria-label="앱">
-							<h3>앱</h3>
-							<Switch
-								label="이 사이트 안에서 창으로 열기"
-								checked={Boolean(app)}
-								hint="데모를 창 안(iframe)에 띄우는 앱을 만듭니다. Dock·Launchpad·터미널 open에 나옵니다."
-								onChange={(on) =>
-									set({
-										app: on
-											? (row.project.app ?? {
-													label: draft.name,
-													icon: draft.icon ? draft.icon.replace(/^\/imgs\//, '') : '',
-												})
-											: undefined,
-									})
-								}
-							/>
-							{app && (
-								<div className="projects-app-settings">
-									<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
+										</Popup>
+									</FormRow>
 									<ImageField
-										label="앱 아이콘"
-										required
-										value={app.icon || undefined}
-										onChange={(icon) => setApp({ icon: icon ?? '' })}
-										toUrl={appIconUrl}
-										fromPicked={(src) => src.replace(/^\/imgs\//, '')}
-										hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘 (이미지 폴더 기준 경로 또는 올린 그림)"
+										label="배경 그림"
+										shape="wide"
+										value={draft.backdrop?.image}
+										onChange={(image) => set({ backdrop: tidyBackdrop({ ...draft.backdrop, image }) })}
+										hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
 									/>
+								</Group>
+							</>
+						)}
+						{tab === 'content' && (
+							<>
+								<p className="projects-tab-hint">
+									목록의 줄을 눌러 고르고, 끌거나 ⌥↑·⌥↓ 키로 순서를 바꿉니다. ＋로 항목을 더하고, −로 고른 항목을
+									뺍니다.
+								</p>
+								<PairsEditor
+									label="한눈에 보는 숫자"
+									keys={['value', 'label']}
+									names={['값', '이름표']}
+									placeholders={['예: 6주', '예: 개발 기간']}
+									rows={draft.facts}
+									onChange={(facts) => set({ facts })}
+								/>
+								<PointsEditor
+									label="주요 기능"
+									hint="첫 항목은 크게 보이고, 그림이 있으면 바탕이 됩니다."
+									points={draft.highlights}
+									onChange={(highlights) => set({ highlights })}
+								/>
+								<PointsEditor
+									label="만든 방식"
+									hint="번호가 붙어 좌우로 번갈아 놓이고, 그림이 있으면 옆에 함께 보입니다."
+									points={draft.build}
+									onChange={(build) => set({ build })}
+								/>
+								<PointsEditor
+									label="쓰는 법"
+									hint="단계로 보입니다."
+									points={draft.usage ?? []}
+									onChange={(usage) => set({ usage: usage.length ? usage : undefined })}
+								/>
+								<PairsEditor
+									label="진행 과정"
+									keys={['date', 'label']}
+									names={['때', '한 일']}
+									rows={draft.timeline ?? []}
+									onChange={(timeline) => set({ timeline: timeline.length ? timeline : undefined })}
+								/>
+								<PairsEditor
+									label="기술 사양"
+									keys={['label', 'value']}
+									names={['분류', '기술']}
+									rows={draft.specs}
+									onChange={(specs) => set({ specs })}
+								/>
+								<LinesEditor
+									label="맡은 일"
+									lines={draft.contributions}
+									onChange={(contributions) => set({ contributions })}
+								/>
+							</>
+						)}
+						{tab === 'app' && (
+							<>
+								<Group title="앱">
 									<Switch
-										label="Dock에 고정"
-										checked={app.inDock !== false}
-										hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
-										onChange={(on) => setApp({ inDock: on ? undefined : false })}
+										label="이 사이트 안에서 창으로 열기"
+										checked={Boolean(app)}
+										hint="데모를 창 안(iframe)에 띄우는 앱을 만듭니다. Dock·Launchpad·터미널 open에 나옵니다."
+										onChange={(on) =>
+											set({
+												app: on
+													? (row.project.app ?? {
+															label: draft.name,
+															icon: draft.icon ? draft.icon.replace(/^\/imgs\//, '') : '',
+														})
+													: undefined,
+											})
+										}
 									/>
-									<Switch
-										label="게임"
-										checked={Boolean(app.play)}
-										hint="Safari 단추가 '여기서 열기' 대신 '여기서 플레이'가 됩니다."
-										onChange={(on) => setApp({ play: on || undefined })}
-									/>
-									<div className="projects-field">
-										<label>
-											<span>뜨기 전 창 바탕</span>
-											<select
+								</Group>
+								{app && (
+									<Group title="앱 설정">
+										<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
+										<ImageField
+											label="앱 아이콘"
+											required
+											value={app.icon || undefined}
+											onChange={(icon) => setApp({ icon: icon ?? '' })}
+											toUrl={appIconUrl}
+											fromPicked={(src) => src.replace(/^\/imgs\//, '')}
+											hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘입니다 (이미지 폴더 기준 경로 또는 올린 그림)."
+										/>
+										<Switch
+											label="Dock에 고정"
+											checked={app.inDock !== false}
+											hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
+											onChange={(on) => setApp({ inDock: on ? undefined : false })}
+										/>
+										<Switch
+											label="게임"
+											checked={Boolean(app.play)}
+											hint="Safari 단추가 '여기서 열기' 대신 '여기서 플레이'가 됩니다."
+											onChange={(on) => setApp({ play: on || undefined })}
+										/>
+										<FormRow label="뜨기 전 창 바탕" htmlFor="projects-app-tone" align="end">
+											<Popup
+												id="projects-app-tone"
 												value={app.tone ?? 'light'}
-												onChange={(event) => setApp({ tone: event.target.value === 'dark' ? 'dark' : undefined })}
+												onChange={(tone) => setApp({ tone: tone === 'dark' ? 'dark' : undefined })}
 											>
 												<option value="light">밝게</option>
 												<option value="dark">어둡게</option>
-											</select>
-										</label>
-									</div>
-									<div className="projects-field projects-size">
-										<div className="projects-size-row" role="group" aria-label="창 크기">
-											<FieldLabel label="창 크기" />
-											<input
-												type="number"
-												aria-label="창 너비"
-												placeholder="1100"
-												value={app.windowSize?.width ?? ''}
-												onChange={(event) =>
-													setApp({
-														windowSize: event.target.value
-															? { width: Number(event.target.value), height: app.windowSize?.height ?? 720 }
-															: undefined,
-													})
-												}
-											/>
-											<span aria-hidden="true">×</span>
-											<input
-												type="number"
-												aria-label="창 높이"
-												placeholder="720"
-												value={app.windowSize?.height ?? ''}
-												onChange={(event) =>
-													setApp({
-														windowSize: event.target.value
-															? { width: app.windowSize?.width ?? 1100, height: Number(event.target.value) }
-															: undefined,
-													})
-												}
-											/>
-											<span className="projects-size-unit" aria-hidden="true">
-												px
-											</span>
-										</div>
-									</div>
-								</div>
-							)}
-						</section>
-					)}
+											</Popup>
+										</FormRow>
+										<FormRow label="창 크기" align="end" hint="비워 두면 화면 크기에 맞춘 기본 크기로 엽니다.">
+											<div className="projects-size" role="group" aria-label="창 크기">
+												<input
+													type="number"
+													className="projects-input"
+													aria-label="창 너비"
+													placeholder="1100"
+													value={app.windowSize?.width ?? ''}
+													onChange={(event) =>
+														setApp({
+															windowSize: event.target.value
+																? { width: Number(event.target.value), height: app.windowSize?.height ?? 720 }
+																: undefined,
+														})
+													}
+												/>
+												<span aria-hidden="true">×</span>
+												<input
+													type="number"
+													className="projects-input"
+													aria-label="창 높이"
+													placeholder="720"
+													value={app.windowSize?.height ?? ''}
+													onChange={(event) =>
+														setApp({
+															windowSize: event.target.value
+																? { width: app.windowSize?.width ?? 1100, height: Number(event.target.value) }
+																: undefined,
+														})
+													}
+												/>
+												<span aria-hidden="true">px</span>
+											</div>
+										</FormRow>
+									</Group>
+								)}
+							</>
+						)}
+					</div>
 				</div>
 				{preview && (
 					<aside className="projects-preview" aria-label="미리 보기">
-						<div className="projects-preview-chrome">
-							<span /> <span /> <span />
-							<em>{draft.demo || `${draft.name} 미리 보기`}</em>
-						</div>
-						<div className="projects-preview-page">
-							<ProjectPage project={{ ...completeProject({ ...draft, id }), id }} />
+						<div className="projects-preview-window">
+							<div className="projects-preview-chrome">
+								<span /> <span /> <span />
+								<em>{draft.demo || `${draft.name} 미리 보기`}</em>
+							</div>
+							<div className="projects-preview-page">
+								<ProjectPage project={{ ...completeProject({ ...draft, id }), id }} />
+							</div>
 						</div>
 					</aside>
 				)}
