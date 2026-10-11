@@ -1,6 +1,13 @@
 import React, { lazy, Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Menu from '@/shared/ui/menu/Menu';
-import { type AdminPost, folderLabelOf, formatPostDate, type Post, validateDraft } from '@macfolio/desktop-core/memo';
+import {
+	type AdminPost,
+	folderLabelOf,
+	formatPostDate,
+	type Post,
+	type PostSlug,
+	validateDraft,
+} from '@macfolio/desktop-core/memo';
 import { discardDraft, publishPost, saveDraft, type PostDraft } from '../postsApi';
 import { env } from '@/shared/config/env';
 import DatePicker from './DatePicker';
@@ -37,7 +44,7 @@ interface Props {
 	/** 임시 저장·게시할 때마다: 서버가 돌려준 글 */
 	onSaved: (post: AdminPost) => void;
 	/** 변경 사항을 버렸다. post가 null이면 서버에서 글이 없어졌다 (저장소 원본으로 돌아가거나, 새 메모면 사라진다) */
-	onDiscarded: (slug: string, post: AdminPost | null) => void;
+	onDiscarded: (slug: PostSlug, post: AdminPost | null) => void;
 	/** 본문 미리 보기 (편집기를 불러오는 동안) */
 	renderMarkdown: (body: string) => React.ReactNode;
 	/** 쓰는 대로 알린다 (새 메모의 목록 미리 보기) */
@@ -126,7 +133,7 @@ const PostWriter = ({
 	/** 되돌리기로 내용을 통째로 바꾸면 본문 편집기를 새로 그린다 */
 	const [editorVersion, setEditorVersion] = useState(0);
 	/** 저장한 글의 주소 (새 메모는 처음 저장할 때 생긴다) */
-	const slug = useRef<string | null>(post?.slug ?? null);
+	const slug = useRef<PostSlug | null>(post?.slug ?? null);
 	const dirty = useRef(false);
 	const latest = useRef(draft);
 	const queue = useRef<Promise<void>>(Promise.resolve());

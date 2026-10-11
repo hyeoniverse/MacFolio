@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import IconButton from '@/shared/ui/button/IconButton';
 import Menu from '@/shared/ui/menu/Menu';
-import type { Post } from '@macfolio/desktop-core/memo';
+import type { FolderPath, Post } from '@macfolio/desktop-core/memo';
 import type { View } from './MemoToolbar';
 import FolderPickMenu from './FolderPickMenu';
 
@@ -33,9 +33,9 @@ const PhoneListBars = ({
 	canPick: boolean;
 	onStartPicking: () => void;
 	onStopPicking: () => void;
-	onMovePicked: (path: string) => void;
+	onMovePicked: (path: FolderPath) => void;
 	onDeletePicked: () => void;
-	folderPaths: string[];
+	folderPaths: FolderPath[];
 	sort: ReactNode;
 	search: ReactNode;
 	canEdit: boolean;

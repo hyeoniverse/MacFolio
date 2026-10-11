@@ -1,5 +1,5 @@
 // 폴더 사이드바(FolderSidebar)와 폴더 줄(FolderRow)이 함께 쓰는 타입. 둘이 서로 import하지 않게 여기에 둔다
-import { type FolderNode, MAX_FOLDER_DEPTH, type TagSelection } from '@macfolio/desktop-core/memo';
+import { type FolderNode, type FolderPath, MAX_FOLDER_DEPTH, type TagSelection } from '@macfolio/desktop-core/memo';
 
 /** 끌고 있는 것: 글(slug) 또는 폴더(경로) */
 /** 끄는 것: 글, 폴더, 최근 삭제된 항목의 글 (폴더에 놓으면 되살린다) */
@@ -20,12 +20,12 @@ export interface FolderSidebarProps {
 	onAddFolder: (parent: string, name: string) => void;
 	/** 새 메모 (관리자). 사이드바 위쪽의 새로운 폴더 단추 왼쪽에 둔다 */
 	onNewNote?: () => void;
-	onRenameFolder: (path: string, name: string) => void;
-	onRemoveFolder: (path: string) => void;
+	onRenameFolder: (path: FolderPath, name: string) => void;
+	onRemoveFolder: (path: FolderPath) => void;
 	/** 폴더를 target 폴더 안으로 옮긴다 (ALL_CATEGORY = 맨 위). 휴대폰 편집의 '이 폴더 이동' */
-	onMoveFolder?: (path: string, target: string) => void;
+	onMoveFolder?: (path: FolderPath, target: string) => void;
 	/** 같은 층 폴더의 순서를 바꾼다 (그 층의 경로를 새 순서대로). 휴대폰 편집의 ≡ 손잡이 */
-	onReorderFolders?: (siblings: string[]) => void;
+	onReorderFolders?: (siblings: FolderPath[]) => void;
 	dragging: DragItem | null;
 	onDragFolder: (item: DragItem | null) => void;
 	/** 끌고 있는 것을 target 폴더에 놓을 수 있는지 (ALL_CATEGORY = 맨 위) */

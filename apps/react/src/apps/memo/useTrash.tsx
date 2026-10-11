@@ -2,7 +2,15 @@ import { useState } from 'react';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
-import { type AdminPost, ALL_CATEGORY, movePost, type Organization, type Post } from '@macfolio/desktop-core/memo';
+import {
+	type AdminPost,
+	ALL_CATEGORY,
+	folderPath,
+	movePost,
+	type Organization,
+	type Post,
+	type PostSlug,
+} from '@macfolio/desktop-core/memo';
 import { deletePost, purgePost, restorePost } from './postsApi';
 
 const failed = (title: string) =>
@@ -31,7 +39,7 @@ export function useTrash({
 	/** 지금 최근 삭제된 항목을 보고 있는지 */
 	inTrash: boolean;
 	/** 되살린 글을 그 폴더(끌어 놓은 곳, 아니면 모든 글)에서 연다 */
-	onRestored: (slug: string, folder: string) => void;
+	onRestored: (slug: PostSlug, folder: string) => void;
 	/** 최근 삭제된 항목이 비어 사라졌을 때 (모든 글로) */
 	onTrashGone: () => void;
 }) {
@@ -57,7 +65,8 @@ export function useTrash({
 		if (!result.ok) return failed('되돌려 놓지 못함');
 		if (result.post) upsertAdminPost(result.post);
 		else dropAdminPost(post.slug);
-		if (folder !== ALL_CATEGORY && folder !== post.category) edit((prev) => movePost(prev, post.slug, folder));
+		const target = folder === ALL_CATEGORY ? null : folderPath(folder);
+		if (target && target !== post.category) edit((prev) => movePost(prev, post.slug, target));
 		onRestored(post.slug, folder);
 	};
 

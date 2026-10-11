@@ -16,9 +16,10 @@ import {
 } from './organize.js';
 import { EMPTY_ORGANIZATION } from './rules.js';
 import type { Post } from './posts.js';
+import { type PostSlug, type FolderPath } from './rules.js';
 
 const post = (slug: string, category: string): Post => ({
-	slug,
+	slug: slug as PostSlug,
 	title: slug,
 	date: '2026-09-28',
 	category,
@@ -48,21 +49,21 @@ describe('폴더 만들기·지우기', () => {
 	});
 
 	it('지우면 그 아래 만든 폴더도 지운다', () => {
-		const org = { ...EMPTY_ORGANIZATION, folders: ['읽을거리', '읽을거리/책', '회고'] };
-		expect(removeFolder(org, '읽을거리').folders).toEqual(['회고']);
+		const org = { ...EMPTY_ORGANIZATION, folders: ['읽을거리', '읽을거리/책', '회고'] as FolderPath[] };
+		expect(removeFolder(org, '읽을거리' as FolderPath).folders).toEqual(['회고']);
 	});
 });
 
 describe('글 옮기기', () => {
 	it('글의 폴더만 바뀐다', () => {
-		const result = organizePosts(posts, movePost(EMPTY_ORGANIZATION, 'b', '회고'));
+		const result = organizePosts(posts, movePost(EMPTY_ORGANIZATION, 'b' as PostSlug, '회고' as FolderPath));
 		expect(categories(result)).toEqual({ a: '개발기/MacFolio', b: '회고', c: '회고' });
 	});
 });
 
 describe('폴더 옮기기', () => {
 	it('안의 글과 하위 폴더가 함께 옮겨 간다', () => {
-		const org = moveFolder(EMPTY_ORGANIZATION, '개발기', '회고');
+		const org = moveFolder(EMPTY_ORGANIZATION, '개발기' as FolderPath, '회고');
 		expect(categories(organizePosts(posts, org))).toEqual({
 			a: '회고/개발기/MacFolio',
 			b: '회고/개발기',
@@ -71,17 +72,17 @@ describe('폴더 옮기기', () => {
 	});
 
 	it('여러 번 옮기면 순서대로 적용된다', () => {
-		let org = moveFolder(EMPTY_ORGANIZATION, '개발기/MacFolio', '');
-		org = moveFolder(org, 'MacFolio', '회고');
+		let org = moveFolder(EMPTY_ORGANIZATION, '개발기/MacFolio' as FolderPath, '');
+		org = moveFolder(org, 'MacFolio' as FolderPath, '회고');
 		expect(organizePosts(posts, org)[0].category).toBe('회고/MacFolio');
 	});
 
 	it('옮긴 글과 만든 폴더도 폴더를 따라간다', () => {
 		let org = addFolder(EMPTY_ORGANIZATION, '회고', '책');
-		org = movePost(org, 'b', '회고/책');
-		org = moveFolder(org, '회고', '개발기');
+		org = movePost(org, 'b' as PostSlug, '회고/책' as FolderPath);
+		org = moveFolder(org, '회고' as FolderPath, '개발기');
 		expect(org.folders).toEqual(['개발기/회고/책']);
-		expect(org.posts.b).toBe('개발기/회고/책');
+		expect(org.posts['b' as PostSlug]).toBe('개발기/회고/책');
 	});
 
 	it('자기 자신이나 자기 아래로는 옮기지 못하고, 이미 그 자리면 옮기지 않는다', () => {
@@ -89,19 +90,19 @@ describe('폴더 옮기기', () => {
 		expect(canMoveFolder('개발기', '개발기/MacFolio')).toBe(false);
 		expect(canMoveFolder('개발기/MacFolio', '개발기')).toBe(false);
 		expect(canMoveFolder('개발기/MacFolio', '')).toBe(true);
-		expect(moveFolder(EMPTY_ORGANIZATION, '개발기', '개발기')).toBe(EMPTY_ORGANIZATION);
+		expect(moveFolder(EMPTY_ORGANIZATION, '개발기' as FolderPath, '개발기')).toBe(EMPTY_ORGANIZATION);
 	});
 });
 
 describe('폴더 이름 바꾸기', () => {
 	it('안의 글과 하위 폴더가 새 이름을 따라간다', () => {
-		const org = renameFolder(addFolder(EMPTY_ORGANIZATION, '개발기', '읽을거리'), '개발기', '작업기');
+		const org = renameFolder(addFolder(EMPTY_ORGANIZATION, '개발기', '읽을거리'), '개발기' as FolderPath, '작업기');
 		expect(org.folders).toEqual(['작업기/읽을거리']);
 		expect(categories(organizePosts(posts, org))).toEqual({ a: '작업기/MacFolio', b: '작업기', c: '회고' });
 	});
 
 	it('같은 이름이면 그대로', () => {
-		expect(renameFolder(EMPTY_ORGANIZATION, '개발기', ' 개발기 ')).toBe(EMPTY_ORGANIZATION);
+		expect(renameFolder(EMPTY_ORGANIZATION, '개발기' as FolderPath, ' 개발기 ')).toBe(EMPTY_ORGANIZATION);
 	});
 });
 
@@ -121,14 +122,14 @@ describe('폴더는 3단까지', () => {
 		expect(canMoveFolder('x', 'p/q', all)).toBe(false);
 		// 하위 폴더가 없는 r은 p/q 안으로 (3단) 가능
 		expect(canMoveFolder('r', 'p/q', all)).toBe(true);
-		expect(moveFolder(EMPTY_ORGANIZATION, 'x', 'p/q', all)).toBe(EMPTY_ORGANIZATION);
+		expect(moveFolder(EMPTY_ORGANIZATION, 'x' as FolderPath, 'p/q', all)).toBe(EMPTY_ORGANIZATION);
 	});
 });
 
 describe('메모 고정', () => {
 	it('머리말의 pinned를 따르고, 방문자가 고정을 바꿀 수 있다', () => {
 		const list = [{ ...post('a', 'x'), pinned: true }, post('b', 'x'), post('c', 'x')];
-		const org = setPinned(setPinned(EMPTY_ORGANIZATION, 'a', false), 'c', true);
+		const org = setPinned(setPinned(EMPTY_ORGANIZATION, 'a' as PostSlug, false), 'c' as PostSlug, true);
 		const { pinned, others } = splitPinned(organizePosts(list, org));
 		expect(pinned.map((item) => item.slug)).toEqual(['c']);
 		expect(others.map((item) => item.slug)).toEqual(['a', 'b']);
@@ -162,11 +163,14 @@ describe('normalizeOrganization', () => {
 	});
 
 	it('폴더 순서: 같은 층만 새 순서로 바꾸고, 이름을 바꾸거나 옮기거나 지우면 순서도 따라간다', () => {
-		let org = reorderFolders({ ...EMPTY_ORGANIZATION, order: ['회고', '개발기/MacFolio'] }, ['디자인', '회고']);
+		let org = reorderFolders(
+			{ ...EMPTY_ORGANIZATION, order: ['회고' as FolderPath, '개발기/MacFolio' as FolderPath] },
+			['디자인', '회고'] as FolderPath[]
+		);
 		expect(org.order).toEqual(['개발기/MacFolio', '디자인', '회고']);
-		org = renameFolder(org, '개발기', '작업기');
+		org = renameFolder(org, '개발기' as FolderPath, '작업기');
 		expect(org.order).toEqual(['작업기/MacFolio', '디자인', '회고']);
-		org = removeFolder({ ...org, folders: ['디자인'] }, '디자인');
+		org = removeFolder({ ...org, folders: ['디자인' as FolderPath] }, '디자인' as FolderPath);
 		expect(org.order).toEqual(['작업기/MacFolio', '회고']);
 		expect(normalizeOrganization({ ...EMPTY_ORGANIZATION, order: ['회고', 3] }).order).toEqual(['회고']);
 	});
