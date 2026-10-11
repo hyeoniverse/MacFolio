@@ -54,14 +54,20 @@ const STACKS = stackOptions(
 );
 
 const LOOK_LABEL: Record<ProjectLook, string> = {
-	editorial: '신문 1면',
-	playful: '칸반 보드',
 	showcase: '기본 (카드)',
-	minimal: '명함',
-	game: '게임',
-	terminal: '터미널',
-	product: '제품 페이지',
-	creative: '포트폴리오',
+	cinema: '시네마 (한 화면씩 장면)',
+	phone: '폰 (틀 안의 화면)',
+	horizontal: '가로 (옆으로 가는 패널)',
+	brutal: '브루탈 (굵은 선·큰 글자)',
+	arcade: '아케이드 (네온·CRT)',
+	atelier: '아틀리에 (여백·세리프)',
+	inbox: '메일함 (3단)',
+	checklist: '할 일 앱',
+	repo: '저장소 (파일 트리·커밋)',
+	dialogue: 'RPG 대화창',
+	deck: '발표 슬라이드',
+	assistant: '설정 도우미 (단계)',
+	custom: '직접 짠 페이지 (코드)',
 };
 
 /** 서버에 둔 순서대로, 서버 목록에 없는 코드의 프로젝트는 끝에 (숨긴 것도 목록에는 보인다) */

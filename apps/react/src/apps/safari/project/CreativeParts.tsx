@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { ProjectChapter, ProjectPoint } from '@/shared/profile';
 import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
+import '@/apps/safari/project/CreativeParts.css';
 
 /** 밀대가 혼자 한 번 흔들리는 데 걸리는 시간과, 다음 흔들림까지 쉬는 시간 (ms) */
 const SWAY_MS = 2400;
