@@ -1,4 +1,6 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { placeBelow } from '@/shared/ui/popover/placement';
 import {
 	blankProject,
 	mergeProjects,
@@ -318,7 +320,17 @@ const TagInput = ({
 	const [open, setOpen] = useState(false);
 	const [active, setActive] = useState(0);
 	const listId = useId();
-	const shown = open ? suggest(options, query, items) : [];
+	const inputRef = useRef<HTMLInputElement>(null);
+	const listRef = useRef<HTMLUListElement>(null);
+	const [position, setPosition] = useState({ left: 0, top: 0, width: 0 });
+	// 후보는 입력칸 아래에 떠서(portal) 설정 창의 스크롤·칸 경계에 잘리지 않는다. 글자를 안 쳤을 땐 자주 쓰는 것부터 보여 준다
+	const shown = open ? suggest(options, query, items, 12) : [];
+	useLayoutEffect(() => {
+		if (!shown.length || !inputRef.current) return;
+		const rect = inputRef.current.getBoundingClientRect();
+		const height = listRef.current?.offsetHeight ?? 0;
+		setPosition({ ...placeBelow(rect, { width: rect.width, height }), width: rect.width });
+	}, [shown.length, query]);
 	const add = (raw: string) => {
 		const value = raw.trim();
 		setQuery('');
@@ -327,9 +339,12 @@ const TagInput = ({
 		onChange([...items, value]);
 	};
 	return (
-		<div className="projects-field">
-			<div className="projects-tags">
+		<div className="projects-field projects-tags">
+			<div className="projects-tags-head">
 				<FieldLabel label={label} />
+				<span className="projects-tags-count">{items.length ? `${items.length}개` : ''}</span>
+			</div>
+			{items.length > 0 && (
 				<ul className="projects-chips" aria-label={`고른 ${label}`}>
 					{items.map((item) => (
 						<li key={item}>
@@ -344,7 +359,11 @@ const TagInput = ({
 						</li>
 					))}
 				</ul>
+			)}
+			<div className="projects-tags-search">
+				<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
 				<input
+					ref={inputRef}
 					role="combobox"
 					aria-label={label}
 					aria-expanded={shown.length > 0}
@@ -352,7 +371,7 @@ const TagInput = ({
 					aria-autocomplete="list"
 					aria-activedescendant={shown.length ? `${listId}-${active}` : undefined}
 					value={query}
-					placeholder={items.length ? '' : '찾거나 적어서 더하기'}
+					placeholder={`${label} 찾기 (없으면 적고 Enter)`}
 					spellCheck={false}
 					onFocus={() => setOpen(true)}
 					onBlur={() => setOpen(false)}
@@ -391,24 +410,35 @@ const TagInput = ({
 					}}
 				/>
 			</div>
-			{shown.length > 0 && (
-				<ul className="projects-suggestions" role="listbox" id={listId} aria-label={`${label} 후보`}>
-					{shown.map((option, index) => (
-						<li
-							key={option}
-							id={`${listId}-${index}`}
-							role="option"
-							aria-selected={index === active}
-							// 누르는 동안 입력칸의 초점이 빠져 목록이 닫히지 않게
-							onPointerDown={(event) => event.preventDefault()}
-							onClick={() => add(option)}
-						>
-							{option}
-						</li>
-					))}
-				</ul>
-			)}
-			<p className="about-pane-hint">찾아서 고르거나 적고 Enter·쉼표로 더합니다.</p>
+			{shown.length > 0 &&
+				createPortal(
+					<ul
+						ref={listRef}
+						className="projects-suggestions"
+						role="listbox"
+						id={listId}
+						aria-label={`${label} 후보`}
+						style={position}
+					>
+						{shown.map((option, index) => (
+							<li
+								key={option}
+								id={`${listId}-${index}`}
+								role="option"
+								aria-selected={index === active}
+								// 누르는 동안 입력칸의 초점이 빠져 목록이 닫히지 않게
+								onPointerDown={(event) => event.preventDefault()}
+								onClick={() => add(option)}
+							>
+								{option}
+							</li>
+						))}
+					</ul>,
+					document.body
+				)}
+			<p className="about-pane-hint">
+				찾아서 고르거나, 적고 Enter·쉼표로 더합니다. 여러 개를 쉼표로 붙여 넣어도 됩니다.
+			</p>
 		</div>
 	);
 };

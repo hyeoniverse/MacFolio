@@ -1475,10 +1475,6 @@ ol.showcase-list .showcase-row.reordering {
 	text-align: left;
 }
 
-.projects-field .projects-tags input {
-	text-align: left;
-}
-
 .projects-period-ongoing {
 	display: inline-flex;
 	align-items: center;
@@ -1488,17 +1484,29 @@ ol.showcase-list .showcase-row.reordering {
 	font-size: 12px;
 }
 
-/* 기술: 칩 + 찾는 칸 + 후보 목록 */
-.projects-tags {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 6px;
+/* 기술: 이름 줄 → 고른 칩 → 찾는 칸. 후보 목록은 입력칸 아래에 떠 있다 (body에 portal) */
+.projects-field.projects-tags {
+	display: block;
 	font-size: 13px;
 }
 
+.projects-tags-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.projects-tags-count {
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
 .projects-chips {
-	display: contents;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 8px;
 	list-style: none;
 }
 
@@ -1506,7 +1514,7 @@ ol.showcase-list .showcase-row.reordering {
 	display: inline-flex;
 	align-items: center;
 	gap: 2px;
-	padding: 1px 4px 1px 8px;
+	padding: 2px 4px 2px 9px;
 	border-radius: 999px;
 	background: color-mix(in srgb, var(--color-accent) 14%, transparent);
 	color: var(--color-text-strong);
@@ -1531,30 +1539,57 @@ ol.showcase-list .showcase-row.reordering {
 	background: color-mix(in srgb, var(--color-text) 12%, transparent);
 }
 
-.projects-tags input {
+.projects-tags-search {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 10px;
+	border: 1px solid var(--color-divider);
+	border-radius: 7px;
+	background: var(--color-window-bg, transparent);
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.projects-tags-search:focus-within {
+	border-color: var(--color-accent);
+}
+
+.projects-field .projects-tags-search input {
 	flex: 1;
-	min-width: 8em;
-	padding: 3px 0;
+	width: auto;
+	min-width: 0;
+	padding: 6px 0;
 	border: none;
 	background: none;
 	color: var(--color-text);
 	font: inherit;
+	font-size: 13px;
+	text-align: left;
 	outline: none;
 }
 
 .projects-suggestions {
-	margin: 6px 0 2px;
+	position: fixed;
+	z-index: 10000;
+	max-height: 300px;
+	margin: 0;
 	padding: 4px;
-	border: 1px solid var(--color-divider);
-	border-radius: 8px;
-	background: var(--color-control-bg);
-	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+	overflow-y: auto;
+	border-radius: 10px;
+	background: var(--color-popover-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.15),
+		0 10px 30px rgba(0, 0, 0, 0.2);
+	color: var(--color-popover-text);
 	list-style: none;
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top left;
 }
 
 .projects-suggestions li {
-	padding: 4px 8px;
-	border-radius: 5px;
+	padding: 5px 9px;
+	border-radius: 6px;
 	font-size: 13px;
 	cursor: pointer;
 }

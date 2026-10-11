@@ -156,7 +156,7 @@ test.describe('프로젝트 관리', () => {
 		const stack = editor.getByRole('combobox', { name: '기술' });
 		await stack.pressSequentially('React, Vi');
 		await expect(editor.getByRole('list', { name: '고른 기술' })).toHaveText(['React']);
-		await editor.getByRole('listbox', { name: '기술 후보' }).getByRole('option', { name: 'Vite', exact: true }).click();
+		await page.getByRole('listbox', { name: '기술 후보' }).getByRole('option', { name: 'Vite', exact: true }).click();
 		await expect(editor.getByRole('list', { name: '고른 기술' }).getByRole('listitem')).toHaveText(['React', 'Vite']);
 		// 새 프로젝트의 기본 모양은 어디에나 맞는 '기본 (카드)'
 		await expect(editor.getByRole('combobox', { name: '페이지 모양' })).toHaveValue('showcase');
