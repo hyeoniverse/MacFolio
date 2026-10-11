@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { cssVars } from '@/shared/lib/cssVars';
 import { DEMO_EVENT, type DemoKind, type DemoState } from '@/apps/safari/project/creative/demoEvent';
 import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
+import '@/apps/safari/project/creative/Mascot.css';
 
 const BUNNY = '/imgs/projects/hyeoniverse/bunny';
 const MOODS = ['normal', 'wave', 'star', 'happy', 'surprised', 'sleep'] as const;

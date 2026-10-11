@@ -98,20 +98,29 @@ export interface ProjectChapter {
 }
 
 /**
- * 프로젝트 페이지 모양. 모양마다 페이지의 짜임과 읽는 순서가 다르다 (apps/safari/project/).
- * editorial 신문 1면(뉴스레터), playful 칸반 보드(할 일), minimal 명함 앞뒤와 단계(명함), game 타이틀 화면부터 크레딧까지(게임),
- * terminal 명령과 결과가 이어지는 터미널(학습 기록), product Apple 제품 페이지(이 사이트), creative 붙어 있는 차례와 장(포트폴리오).
- * showcase는 어떤 프로젝트에나 맞는 모양(큰 제목·숫자·대표 화면·카드)으로, 새 프로젝트의 기본값이다
+ * 프로젝트 페이지 모양. 모양마다 페이지의 짜임과 읽는 방식이 다르다 (apps/safari/project/).
+ * showcase 어떤 프로젝트에나 맞는 카드 모양(새 프로젝트의 기본값).
+ * 스크롤 연출: cinema 한 화면씩 고정되는 장면(큰 화면이 스크롤에 따라 움직임), phone 가운데 고정된 폰 틀 안의 화면이 바뀜, horizontal 세로 스크롤이 가로 패널을 밀어 감.
+ * 강한 비주얼: brutal 브루탈리즘(굵은 선·큰 고정폭 글자·흐르는 띠), arcade 네온·CRT 아케이드.
+ * 차분한: atelier 큰 여백과 세리프의 느린 드러남.
+ * 앱 UI 흉내: inbox 메일 클라이언트 3단, checklist 할 일 앱, repo 저장소 페이지(파일 트리·커밋 그래프), dialogue RPG 대화창, deck 발표 슬라이드, assistant 설정 도우미 단계.
+ * custom 프로젝트 id로 등록한 직접 짠 코드 페이지 (apps/safari/project/custom/; 등록이 없으면 showcase)
  */
 export const PROJECT_LOOKS = [
 	'showcase',
-	'editorial',
-	'playful',
-	'minimal',
-	'game',
-	'terminal',
-	'product',
-	'creative',
+	'cinema',
+	'phone',
+	'horizontal',
+	'brutal',
+	'arcade',
+	'atelier',
+	'inbox',
+	'checklist',
+	'repo',
+	'dialogue',
+	'deck',
+	'assistant',
+	'custom',
 ] as const;
 export type ProjectLook = (typeof PROJECT_LOOKS)[number];
 
