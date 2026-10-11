@@ -7,7 +7,6 @@ import {
 	referrerGroup,
 	kstDay,
 	maskIp,
-	MAX_EVENTS,
 	parseBatch,
 	parseUserAgent,
 	shiftDay,
@@ -20,31 +19,12 @@ const SAFARI_IPHONE =
 	'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
 
 describe('이벤트 묶음 검사', () => {
-	const batch = { visitId: 'v-1a2b3c4d', events: [{ type: 'visit', referrer: 'GitHub.com', device: 'desktop' }] };
-
-	it('sendBeacon의 text/plain(JSON 글자)과 JSON 객체를 모두 받는다. 호스트는 소문자로', () => {
-		for (const input of [batch, JSON.stringify(batch)]) {
-			const parsed = parseBatch(input);
-			expect(parsed).toEqual({
-				value: { visitId: 'v-1a2b3c4d', events: [expect.objectContaining({ type: 'visit', referrer: 'github.com' })] },
-			});
-		}
-	});
-
-	it('하나라도 틀리면 전부 거절한다', () => {
-		const wrong = (events: unknown[], visitId = 'v-1a2b3c4d') => 'errors' in parseBatch({ visitId, events });
-		expect('errors' in parseBatch('not json')).toBe(true);
-		expect(wrong([{ type: 'visit' }], 'short')).toBe(true);
-		expect(wrong([])).toBe(true);
-		expect(wrong(Array.from({ length: MAX_EVENTS + 1 }, () => ({ type: 'visit' })))).toBe(true);
-		expect(wrong([{ type: 'visit' }, { type: 'hack' }])).toBe(true);
-		expect(wrong([{ type: 'app', app: 'Memo App' }])).toBe(true);
-		// 들어온 곳은 호스트만: 경로·검색어를 받지 않는다
-		expect(wrong([{ type: 'visit', referrer: 'https://google.com/search?q=me' }])).toBe(true);
-		expect(wrong([{ type: 'visit', device: 'tablet' }])).toBe(true);
-		expect(wrong([{ type: 'leave', duration: -1 }])).toBe(true);
-		expect(wrong([{ type: 'leave', duration: 1.5 }])).toBe(true);
-		expect(wrong([{ type: 'item', app: 'memo', item: 'x'.repeat(201) }])).toBe(true);
+	it('contracts의 스키마로 검사한다 (경우는 거기 시험에). JSON 글자도 받는다', () => {
+		const batch = { visitId: 'v-1a2b3c4d', events: [{ type: 'visit', referrer: 'GitHub.com' }] };
+		expect(parseBatch(JSON.stringify(batch))).toEqual({
+			value: { visitId: 'v-1a2b3c4d', events: [{ type: 'visit', referrer: 'github.com' }] },
+		});
+		expect(parseBatch('not json')).toEqual({ errors: ['본문이 없습니다.'] });
 	});
 });
 

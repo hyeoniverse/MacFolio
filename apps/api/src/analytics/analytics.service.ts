@@ -24,63 +24,22 @@ import {
 	shiftDay,
 	type StatRow,
 } from './rules.js';
+import {
+	ADMIN_ONLY_BREAKDOWNS,
+	APP_NAME,
+	BREAKDOWNS,
+	type AppViews,
+	type LiveVisit as ContractLiveVisit,
+	type Summary as ContractSummary,
+	type TodayVisitors,
+	type Totals as ContractTotals,
+} from '@macfolio/contracts';
 
-/** 요약에 싣는 표 (지표 → 많은 순). referrerGroup은 referrer를 검색·소셜·직접·링크로 묶은 것 */
-export const BREAKDOWNS = [
-	'referrerGroup',
-	'referrer',
-	'source',
-	'campaign',
-	'app',
-	'item',
-	'link',
-	'country',
-	'device',
-	'browser',
-	'os',
-	'language',
-] as const;
-
-export interface Totals {
-	visits: number;
-	/** 일별 순방문자의 합 (날을 넘겨 같은 사람을 알아보지 않는다) */
-	visitors: number;
-	appOpens: number;
-	/** 머문 시간을 보낸 방문의 평균 (초). 없으면 null */
-	avgDurationSec: number | null;
-}
-
-/** 방문자에게는 감추는 표: 들어온 곳의 호스트와 utm (지원한 곳 이름이 드러날 수 있다) */
-export const ADMIN_ONLY_BREAKDOWNS = ['referrer', 'source', 'campaign'] as const;
-
-export interface Summary {
-	/** admin: 모든 표, public: 방문자에게 공개하는 표만 (ADMIN_ONLY_BREAKDOWNS는 빈 목록) */
-	scope: 'admin' | 'public';
-	from: string;
-	to: string;
-	days: { day: string; visits: number; visitors: number }[];
-	totals: Totals;
-	/** 바로 앞의 같은 길이 기간 (비교용) */
-	previous: Totals;
-	breakdown: Record<(typeof BREAKDOWNS)[number], { key: string; value: number }[]>;
-}
-
-export interface LiveVisit {
-	visitId: string;
-	startedAt: string;
-	lastAt: string;
-	/** 하루 해시의 앞 4자리 (같은 사람의 방문을 묶어 본다) */
-	visitor: string;
-	country: string | null;
-	device: string | null;
-	browser: string | null;
-	os: string | null;
-	referrer: string | null;
-	path: string | null;
-	/** 가린 IP (7일이 지나면 null) */
-	ip: string | null;
-	events: { type: string; app: string | null; item: string | null; at: string }[];
-}
+/** 요약에 싣는 표와 응답 모양은 @macfolio/contracts (활동 상태 보기 화면과 같은 스키마) */
+export { ADMIN_ONLY_BREAKDOWNS, BREAKDOWNS };
+export type Totals = ContractTotals;
+export type Summary = ContractSummary;
+export type LiveVisit = ContractLiveVisit;
 
 /** 받은 요청의 사정 (컨트롤러가 채운다) */
 export interface Sender {
@@ -198,7 +157,7 @@ export class AnalyticsService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	/** 오늘(한국 시간) 순방문자 수. 방문자에게 공개하는 숫자라 1분 동안 같은 값을 준다 */
-	async todayVisitors(now = new Date()): Promise<{ day: string; visitors: number }> {
+	async todayVisitors(now = new Date()): Promise<TodayVisitors> {
 		const day = kstDay(now);
 		if (this.today?.day === day && now.getTime() - this.today.at < TODAY_CACHE_MS)
 			return { day, visitors: this.today.visitors };
@@ -316,8 +275,8 @@ export class AnalyticsService implements OnModuleInit, OnModuleDestroy {
 	 * 앱의 항목(메모의 글, Safari의 프로젝트)마다 전체 기간 조회수. 한 방문에서 같은 글을 여러 번 열어도 1.
 	 * 누구나 본다 (블로그 글의 조회수). 1분 동안 같은 값을 준다
 	 */
-	async views(appInput: unknown, now = new Date()): Promise<{ app: string; views: Record<string, number> }> {
-		const app = typeof appInput === 'string' && /^[a-z][a-z0-9-]{0,31}$/.test(appInput) ? appInput : null;
+	async views(appInput: unknown, now = new Date()): Promise<AppViews> {
+		const app = typeof appInput === 'string' && APP_NAME.test(appInput) ? appInput : null;
 		if (!app) throw new BadRequestException('app이 올바르지 않습니다 (예: memo).');
 		return this.cached(`views:${app}`, now, async () => {
 			await this.maintainIfStale(now);
