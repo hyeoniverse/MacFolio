@@ -18,6 +18,7 @@ import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type
 import { getSavedProjects, PARSE_OPTIONS, sendProjects } from '@/shared/site/siteContent';
 import { completeProject, groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
 import ProjectPage from '@/apps/safari/ProjectPage';
+import { hasCustomPage } from '@/apps/safari/project/custom';
 import { requestWindowSize } from '@/desktop/window/windowSizeRequest';
 import { uploadFile } from '@/apps/memo/writer/attachmentsApi';
 import { appIconUrl } from '@/shared/config/appIcon';
@@ -934,6 +935,14 @@ const ProjectEditor = ({
 											))}
 										</select>
 									</label>
+									{/* 직접 짠 페이지는 코드(apps/safari/project/custom/)에 프로젝트 id로 등록해야 한다 */}
+									{draft.look === 'custom' && (
+										<p className="about-pane-hint">
+											{hasCustomPage(draft.id)
+												? `코드에 등록된 ${draft.id} 전용 페이지로 그립니다.`
+												: `코드에 ${draft.id} 전용 페이지가 없어 기본 (카드)로 그립니다. 저장소의 safari/project/custom/에 등록하세요.`}
+										</p>
+									)}
 								</div>
 							</section>
 							<section className="about-pane-group" aria-label="주소와 기술">

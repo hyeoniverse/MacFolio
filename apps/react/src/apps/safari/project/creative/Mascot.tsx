@@ -44,6 +44,8 @@ const HINT_MS = 4000;
 /** 몽이 그림 크기 (px): 몸 폭 140, 높이 124. 내용 옆 여백이 좁으면 줄인다 */
 const BUDDY_W = 140;
 const BUDDY_H = 124;
+/** 휴대폰 Safari의 아래 막대 높이 (px): 몽이가 그 위에 서야 눌린다 */
+const MOBILE_BAR = 110;
 /** 데모 곁에 설 때 몸의 이만큼은 내용 칸 위에 걸친다 (나머지는 옆 여백에) */
 const OVERLAP = 0.3;
 /** 데모가 있는 칸 (데모 조각이 만든다: CreativeChapters.tsx) */
@@ -113,7 +115,8 @@ export const Mascot: React.FC<MascotProps> = ({ page, body, seat, chapter, total
 			const view = viewOf(scroller);
 			const frame = root.getBoundingClientRect();
 			const width = frame.width;
-			const narrow = width <= 760;
+			// 좁은 창 판정은 스크롤 상자 폭으로: 페이지 뿌리가 축소(scale)된 슬라이드처럼 실제보다 넓을 수 있다
+			const narrow = Math.min(width, scroller?.clientWidth ?? width) <= 760;
 			// 화면에 보이는 높이가 가장 큰 데모 (화면의 3분의 1 이상 보이거나 데모가 통째로 보일 때)
 			let target: HTMLElement | null = null;
 			let best = 0;
@@ -150,6 +153,14 @@ export const Mascot: React.FC<MascotProps> = ({ page, body, seat, chapter, total
 				scale = narrow ? 0.5 : 0.8;
 				x = width - BUDDY_W * scale - (narrow ? 6 : 20);
 				y = view.height - BUDDY_H * scale - 16;
+			}
+			// 좁은 창(휴대폰)에서는 아래 막대(주소 알약·홈 표시)가 페이지 위에 겹치므로 그 위로 올라서 있는다
+			if (narrow) y = Math.min(y, view.height - BUDDY_H * scale - MOBILE_BAR);
+			// 자리는 화면(스크롤 상자) 기준으로 쟀는데 몽이 층(.cr-buddy)이 머리말 아래에서 시작하면 그만큼 빼야 그 자리에 선다
+			const layer = node.parentElement?.getBoundingClientRect();
+			if (layer) {
+				y -= layer.top - view.top;
+				x -= layer.left - frame.left;
 			}
 			if (key !== standing.current) {
 				standing.current = key;

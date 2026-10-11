@@ -1,0 +1,1283 @@
+/*
+ * deck (발표 슬라이드): 검은 바탕에 흰 글. 16:9 슬라이드(1280×720으로 그려 --s로 축소)가 창 가운데에 놓이고,
+ * 장마다 강조 색상(--dk-hue)에서 그라데이션(--sp-grad)과 강조색(--sp-accent)을 뽑는다.
+ * 위 진행 막대와 n / N, 좌우 화살표, 아래 점, Esc 소터. 좁은 창(data-mode='stack')에서는 세로로 쌓인다
+ */
+.sp[data-look='deck'] {
+	--sp-bg: #000000;
+	--sp-alt: #141418;
+	--sp-text: #f5f5f7;
+	--sp-muted: #9a9aa3;
+	--sp-line: #2a2a31;
+	--sp-dark-bg: #0c0c10;
+	--cr-bg: #0c0c10;
+	--cr-ink: #f5f5f7;
+	--cr-muted: #9a9aa3;
+	--cr-line: #2c2c34;
+	/* 슬라이드 밖 바탕: 라이트에서는 한 단 밝은 검정 */
+	--dk-stage: #1a1a1f;
+	background-color: var(--dk-stage);
+	color: var(--sp-text);
+}
+
+:root[data-theme='dark'] .sp[data-look='deck'] {
+	--dk-stage: #000000;
+}
+
+.dk {
+	--dk-hue: 222;
+	--dk-c1: hsl(var(--dk-hue) 90% 62%);
+	--dk-c2: hsl(calc(var(--dk-hue) + 60) 90% 66%);
+	--sp-accent: var(--dk-c1);
+	--sp-grad: linear-gradient(100deg, var(--dk-c1), var(--dk-c2));
+	--s: 0.6;
+	--vh: 720px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: var(--vh);
+	overflow: hidden;
+	background-color: var(--dk-stage);
+}
+
+.dk-grad {
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.dk-eyebrow {
+	margin-bottom: 14px;
+	color: var(--sp-accent);
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+/* ─── 위: 진행 막대, 제목, n / N, 단추 ─── */
+.dk-top {
+	flex: none;
+	z-index: 5;
+}
+
+.dk-progress {
+	height: 3px;
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dk-progress i {
+	display: block;
+	width: calc(var(--p) * 100%);
+	height: 100%;
+	background: var(--sp-grad);
+	transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.dk-top-row {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	gap: 16px;
+	padding: 10px 20px 0;
+	font-size: 13px;
+}
+
+.dk-title {
+	overflow: hidden;
+	color: var(--sp-muted);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.dk-count {
+	font-size: 15px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
+}
+
+.dk-tools {
+	display: flex;
+	justify-content: flex-end;
+	gap: 6px;
+}
+
+.dk-tools button,
+.dk-sorter header button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 5px 10px;
+	border: 1px solid var(--sp-line);
+	border-radius: 999px;
+	background-color: transparent;
+	color: var(--sp-muted);
+	font: inherit;
+	font-size: 12px;
+	cursor: pointer;
+	transition:
+		color var(--duration-fast) var(--ease-out),
+		border-color var(--duration-fast) var(--ease-out);
+}
+
+.dk-tools button:hover,
+.dk-tools button[aria-pressed='true'] {
+	border-color: var(--sp-accent);
+	color: var(--sp-text);
+}
+
+.dk-tools kbd {
+	padding: 0 5px;
+	border: 1px solid var(--sp-line);
+	border-radius: 4px;
+	font: inherit;
+	font-size: 10px;
+	font-family: var(--sp-mono);
+}
+
+/* ─── 무대: 슬라이드가 가운데에 ─── */
+.dk-stage {
+	position: relative;
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+}
+
+.dk-deck {
+	position: relative;
+	width: calc(1280px * var(--s));
+	height: calc(720px * var(--s));
+}
+
+/* 슬라이드: 원본 크기로 그리고 축소한다. 지금 장만 보인다 */
+.dk-slide {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1280px;
+	height: 720px;
+	overflow: hidden;
+	border-radius: 18px;
+	background-color: var(--sp-bg);
+	color: var(--sp-text);
+	box-shadow:
+		0 0 0 1px rgba(255, 255, 255, 0.06),
+		0 40px 120px rgba(0, 0, 0, 0.6);
+	transform: scale(var(--s));
+	transform-origin: top left;
+}
+
+.dk-slide[data-current] {
+	display: block;
+	animation: dk-push 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.dk-slide[data-current][data-dir='back'] {
+	animation-name: dk-push-back;
+}
+
+.dk-slide[data-fx='zoom'][data-current] {
+	animation-name: dk-zoom;
+}
+
+/* 축소(--s)는 transform에 함께 있어서, 들어오는 움직임도 --s를 곱해 그린다 */
+@keyframes dk-push {
+	from {
+		opacity: 0;
+		transform: translateX(calc(80px * var(--s))) scale(var(--s));
+	}
+}
+
+@keyframes dk-push-back {
+	from {
+		opacity: 0;
+		transform: translateX(calc(-80px * var(--s))) scale(var(--s));
+	}
+}
+
+@keyframes dk-zoom {
+	from {
+		opacity: 0;
+		transform: scale(calc(var(--s) * 0.92));
+	}
+}
+
+/* 장마다 왼쪽 위에 강조 그라데이션 띠, 오른쪽 아래에 큰 번호 */
+.dk-slide::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 6px;
+	background: var(--sp-grad);
+}
+
+.dk-no {
+	position: absolute;
+	right: 36px;
+	bottom: -30px;
+	z-index: 0;
+	font-size: 200px;
+	font-weight: 800;
+	letter-spacing: -0.06em;
+	line-height: 1;
+	color: transparent;
+	-webkit-text-stroke: 1px rgba(255, 255, 255, 0.14);
+	pointer-events: none;
+	user-select: none;
+}
+
+.dk-slide[data-kind='cover'] .dk-no,
+.dk-slide[data-kind='end'] .dk-no {
+	display: none;
+}
+
+.dk-slide-body {
+	position: relative;
+	z-index: 1;
+	height: 100%;
+	padding: 56px 72px 48px;
+}
+
+.dk-slide-body h2 {
+	font-size: 44px;
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 1.12;
+}
+
+/* 장 안에서 스크롤하는 칸 (몽이·스크롤 장면·구조도가 이 칸을 스크롤 상자로 본다) */
+.dk-scroll {
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--sp-line) transparent;
+}
+
+/* ─── 표지 ─── */
+/* 표지: 이름은 폭 전체 한 줄, 그 아래 글(55%)과 그림(45%) 두 열. 그림이 글을 덮지 않는다 */
+.dk-cover {
+	--mx: 0;
+	--my: 0;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto auto minmax(0, 1fr);
+	align-content: center;
+	column-gap: 40px;
+	height: 100%;
+}
+
+.dk-cover[data-shot] {
+	grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+}
+
+.dk-cover > .dk-kicker,
+.dk-cover > .dk-cover-name {
+	grid-column: 1 / -1;
+}
+
+.dk-cover-text {
+	align-self: center;
+	min-width: 0;
+}
+
+/* 바탕에 천천히 흐르는 빛 두 덩이 */
+.dk-slide[data-kind='cover'] .dk-slide-body::before,
+.dk-slide[data-kind='end'] .dk-slide-body::before {
+	content: '';
+	position: absolute;
+	inset: -30%;
+	z-index: -1;
+	background:
+		radial-gradient(40% 50% at 30% 30%, color-mix(in srgb, var(--dk-c1) 28%, transparent), transparent 70%),
+		radial-gradient(35% 45% at 75% 75%, color-mix(in srgb, var(--dk-c2) 24%, transparent), transparent 70%);
+	animation: dk-drift 14s ease-in-out infinite alternate;
+}
+
+@keyframes dk-drift {
+	to {
+		transform: translate(6%, -5%) rotate(8deg);
+	}
+}
+
+.dk-kicker {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	color: var(--sp-muted);
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.dk-kicker span + span::before {
+	content: '·';
+	margin-right: 14px;
+}
+
+.dk-cover-icon {
+	width: 34px;
+	height: 34px;
+	border-radius: 9px;
+	object-fit: contain;
+}
+
+/* 이름: 거대한 그라데이션 글자. 그라데이션이 천천히 흐른다 */
+.dk-cover-name {
+	margin-top: 14px;
+	margin-bottom: 20px;
+	overflow: hidden;
+	font-size: var(--size, 120px);
+	font-weight: 900;
+	letter-spacing: -0.05em;
+	line-height: 0.95;
+	white-space: nowrap;
+}
+
+.dk-cover-name .dk-grad,
+.dk-end-big .dk-grad {
+	background-image: linear-gradient(100deg, var(--dk-c1), var(--dk-c2), #ffffff, var(--dk-c1));
+	background-size: 300% 100%;
+	animation: dk-shimmer 9s linear infinite;
+}
+
+@keyframes dk-shimmer {
+	to {
+		background-position: 300% 0;
+	}
+}
+
+.dk-cover-tagline {
+	max-width: 640px;
+	font-size: 34px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.25;
+}
+
+.dk-presenter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 10px;
+	margin-top: 28px;
+	padding-top: 18px;
+	border-top: 1px solid var(--sp-line);
+	font-size: 15px;
+}
+
+.dk-presenter span {
+	color: var(--sp-muted);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.dk-presenter strong {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.dk-presenter em {
+	color: var(--sp-muted);
+	font-style: normal;
+}
+
+.dk-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 22px;
+	margin-top: 22px;
+	font-size: 16px;
+}
+
+.dk-links .sp-pill {
+	background: var(--sp-grad);
+	color: #ffffff;
+}
+
+/* 오른쪽 열: 그림은 위에, 몽이 자리는 그림 아래 오른쪽 구석에 (겹치지 않게 자리만큼 비운다) */
+.dk-cover-side {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	justify-content: center;
+	gap: 12px;
+	min-width: 0;
+	min-height: 0;
+}
+
+/* 대표 화면: 마우스를 따라 기울고, 아래로 비친다 */
+.dk-cover-shot {
+	width: 100%;
+	max-height: 270px;
+	flex: none;
+	margin: 0;
+	border-radius: 14px;
+	overflow: hidden;
+	box-shadow:
+		0 0 0 1px rgba(255, 255, 255, 0.1),
+		0 30px 60px rgba(0, 0, 0, 0.55);
+	transform: perspective(1400px) rotateY(calc(-10deg + var(--mx) * -6deg)) rotateX(calc(var(--my) * 5deg))
+		translateX(calc(var(--mx) * -8px));
+	transition: transform 0.25s ease-out;
+	-webkit-box-reflect: below 10px linear-gradient(transparent 70%, rgba(0, 0, 0, 0.25));
+}
+
+.dk-cover-shot img {
+	display: block;
+	width: 100%;
+	max-height: 270px;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 몽이 자리: 표지에서만 크기가 있다 (몽이는 이 자리에 맞춰 선다). 표지가 아닐 때는 감춰 몽이가 데모 곁으로 */
+.dk-seat {
+	width: 0;
+	height: 0;
+}
+
+.dk-seat[data-mascot] {
+	flex: none;
+	width: 140px;
+	height: 136px;
+	margin-right: -12px;
+}
+
+.dk-slide:not([data-current]) .dk-seat {
+	display: none;
+}
+
+/* ─── 숫자 ─── */
+.dk-facts-wrap {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 100%;
+}
+
+.dk-facts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 32px;
+	list-style: none;
+}
+
+.dk-facts li {
+	padding-left: 22px;
+	border-left: 3px solid;
+	border-image: var(--sp-grad) 1;
+}
+
+.dk-facts strong {
+	display: block;
+	font-size: 92px;
+	font-weight: 900;
+	letter-spacing: -0.05em;
+	line-height: 1;
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.dk-facts li > span {
+	display: block;
+	margin-top: 14px;
+	color: var(--sp-muted);
+	font-size: 18px;
+}
+
+/* ─── 주요 기능: 왼쪽 글, 오른쪽 화면 ─── */
+.dk-feature {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: minmax(0, 1fr);
+	gap: 48px;
+	height: 100%;
+}
+
+.dk-feature[data-media] {
+	grid-template-columns: 400px minmax(0, 1fr);
+}
+
+.dk-feature-text {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.dk-feature-text p:last-child {
+	margin-top: 20px;
+	color: var(--sp-muted);
+	font-size: 19px;
+	line-height: 1.6;
+}
+
+.dk-feature-media {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	padding: 4px;
+	border-radius: 16px;
+}
+
+.dk-media {
+	margin: 0;
+}
+
+.dk-media img,
+.dk-media video {
+	display: block;
+	width: 100%;
+	border-radius: 12px;
+}
+
+/* 데모는 슬라이드 바탕 위에 그대로 */
+.dk .cr-point-demo > :first-child:not(.cr-shots) {
+	border-color: var(--cr-line);
+	background-color: var(--cr-bg);
+}
+
+/* ─── 장 제목 ─── */
+.dk-chapter {
+	display: grid;
+	grid-template-columns: 220px minmax(0, 1fr);
+	grid-template-rows: minmax(0, 1fr);
+	gap: 40px;
+	align-items: center;
+	height: 100%;
+}
+
+.dk-chapter-no {
+	font-size: 180px;
+	font-weight: 900;
+	letter-spacing: -0.08em;
+	line-height: 0.9;
+}
+
+.dk-chapter > div {
+	min-height: 0;
+	overflow-y: auto;
+	scrollbar-width: thin;
+}
+
+.dk-chapter h2 {
+	font-size: 60px;
+}
+
+.dk-lead {
+	max-width: 760px;
+	margin-top: 20px;
+	color: var(--sp-muted);
+	font-size: 19px;
+	line-height: 1.6;
+}
+
+/* 장의 숫자(ChapterFacts)는 제목 아래 한 줄에 */
+.dk-chapter .cr-chapter-facts,
+.dk-chapter .cr-gauges {
+	margin-top: 32px;
+}
+
+/* ─── 장 내용: 전체가 스크롤 칸 ─── */
+.dk-content {
+	height: 100%;
+	padding-right: 8px;
+}
+
+.dk-content > * + * {
+	margin-top: 36px;
+}
+
+/* ─── 장 그림 ─── */
+.dk-figure {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 100%;
+	margin: 0;
+}
+
+.dk-figure > img,
+.dk-figure .cr-compare {
+	max-height: 540px;
+	border-radius: 14px;
+	object-fit: contain;
+}
+
+.dk-figure figcaption {
+	margin-top: 14px;
+	color: var(--sp-muted);
+	font-size: 14px;
+	text-align: center;
+}
+
+/* ─── 화면 모음 ─── */
+.dk-gallery {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 20px;
+	height: 100%;
+	list-style: none;
+}
+
+.dk-gallery li span {
+	display: block;
+	margin-top: 8px;
+	color: var(--sp-muted);
+	font-size: 13px;
+}
+
+/* ─── 진행 과정: 가로 타임라인 ─── */
+.dk-timeline-wrap {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 100%;
+}
+
+.dk-timeline {
+	display: grid;
+	grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+	margin-top: 56px;
+	list-style: none;
+}
+
+.dk-timeline li {
+	position: relative;
+	padding: 36px 14px 0 0;
+}
+
+/* 가로 선: 지나온 만큼 그라데이션으로 그려진다 */
+.dk-timeline li::before {
+	content: '';
+	position: absolute;
+	top: 11px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background: var(--sp-grad);
+	transform-origin: left;
+	transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) * 120ms);
+}
+
+.dk-timeline li i {
+	position: absolute;
+	top: 5px;
+	left: 0;
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: var(--sp-grad);
+	box-shadow: 0 0 0 4px var(--sp-bg);
+	transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) calc(var(--d) * 120ms);
+}
+
+.dk-timeline li[data-reveal]:not([data-shown])::before {
+	transform: scaleX(0);
+}
+
+.dk-timeline li[data-reveal]:not([data-shown]) i {
+	transform: scale(0);
+}
+
+.dk-timeline time {
+	display: block;
+	font-size: 24px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.dk-timeline span {
+	display: block;
+	margin-top: 8px;
+	color: var(--sp-muted);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+/* ─── 맡은 일 ─── */
+.dk-roles {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+	grid-template-rows: minmax(0, 1fr);
+	gap: 56px;
+	align-items: center;
+	height: 100%;
+}
+
+.dk-roles .dk-scroll {
+	max-height: 100%;
+}
+
+.dk-checks {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	list-style: none;
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.dk-checks li {
+	display: flex;
+	gap: 14px;
+}
+
+.dk-checks i {
+	flex: none;
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	margin-top: 2px;
+	border-radius: 50%;
+	background: var(--sp-grad);
+	color: #ffffff;
+	font-size: 14px;
+}
+
+.dk-credits {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-top: 32px;
+	padding-top: 20px;
+	border-top: 1px solid var(--sp-line);
+	list-style: none;
+	font-size: 14px;
+}
+
+.dk-credits li {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.dk-credits span {
+	color: var(--sp-muted);
+}
+
+.dk-credits em {
+	color: var(--sp-muted);
+	font-style: normal;
+}
+
+/* ─── 폴더 구조 ─── */
+.dk-structure {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.dk-structure pre {
+	flex: 1;
+	padding: 20px 24px;
+	border-radius: 14px;
+	background-color: var(--sp-alt);
+	font-family: var(--sp-mono);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+/* ─── 기술 사양 ─── */
+.dk-specs-wrap {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.dk-specs {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0 48px;
+	flex: 1;
+	align-content: start;
+}
+
+.dk-specs div {
+	padding: 18px 0;
+	border-bottom: 1px solid var(--sp-line);
+}
+
+.dk-specs dt {
+	color: var(--sp-accent);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.dk-specs dd {
+	margin-top: 8px;
+	font-size: 20px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.dk-stack {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 24px;
+	list-style: none;
+}
+
+.dk-stack li {
+	padding: 6px 14px;
+	border: 1px solid var(--sp-line);
+	border-radius: 999px;
+	color: var(--sp-muted);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+/* ─── 맺음말 ─── */
+.dk-end {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	text-align: center;
+}
+
+.dk-end-big {
+	font-size: 140px;
+	font-weight: 900;
+	letter-spacing: -0.05em;
+	line-height: 1;
+}
+
+.dk-end-line {
+	margin-top: 24px;
+	color: var(--sp-muted);
+	font-size: 24px;
+}
+
+.dk-end .dk-links {
+	justify-content: center;
+	margin-top: 36px;
+}
+
+/* ─── 좌우 화살표 ─── */
+.dk-arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 4;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border: 1px solid var(--sp-line);
+	border-radius: 50%;
+	background-color: color-mix(in srgb, var(--dk-stage) 70%, transparent);
+	color: var(--sp-text);
+	font-size: 15px;
+	cursor: pointer;
+	transform: translateY(-50%);
+	transition:
+		border-color var(--duration-fast) var(--ease-out),
+		transform var(--duration-fast) var(--ease-out),
+		opacity var(--duration-fast) var(--ease-out);
+}
+
+.dk-arrow[data-side='prev'] {
+	left: 12px;
+}
+
+.dk-arrow[data-side='next'] {
+	right: 12px;
+}
+
+.dk-arrow:hover:not(:disabled) {
+	border-color: var(--sp-accent);
+	transform: translateY(-50%) scale(1.08);
+}
+
+.dk-arrow:disabled {
+	opacity: 0.25;
+	cursor: default;
+}
+
+/* ─── 발표자 노트: 오른쪽 패널 ─── */
+.dk-notes {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	bottom: 12px;
+	z-index: 6;
+	width: min(320px, 40%);
+	padding: 20px 22px;
+	overflow-y: auto;
+	border: 1px solid var(--sp-line);
+	border-radius: 14px;
+	background-color: color-mix(in srgb, #0c0c10 92%, transparent);
+	backdrop-filter: blur(12px);
+	font-size: 14px;
+	line-height: 1.6;
+	animation: dk-notes-in 0.3s var(--ease-out);
+}
+
+@keyframes dk-notes-in {
+	from {
+		opacity: 0;
+		transform: translateX(16px);
+	}
+}
+
+.dk-notes h3 {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.dk-notes p + p,
+.dk-notes h3 + p {
+	margin-top: 12px;
+	color: var(--sp-muted);
+}
+
+/* ─── 아래: 점 ─── */
+.dk-dots {
+	flex: none;
+	z-index: 5;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px;
+	padding: 10px 20px 14px;
+}
+
+.dk-dots button {
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	border: none;
+	border-radius: 4px;
+	background-color: rgba(255, 255, 255, 0.22);
+	cursor: pointer;
+	transition:
+		width 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+		background-color 0.3s;
+}
+
+/* 장 제목은 조금 큰 점 */
+.dk-dots button[data-kind='chapter'],
+.dk-dots button[data-kind='cover'],
+.dk-dots button[data-kind='end'] {
+	background-color: rgba(255, 255, 255, 0.45);
+}
+
+.dk-dots button:hover {
+	background-color: rgba(255, 255, 255, 0.6);
+}
+
+.dk-dots button[aria-current='true'] {
+	width: 28px;
+	background: var(--sp-grad);
+}
+
+/* ─── 소터: 모든 장의 썸네일 격자 ─── */
+.dk-sorter {
+	position: absolute;
+	inset: 0;
+	z-index: 30;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	background-color: color-mix(in srgb, var(--dk-stage) 94%, transparent);
+	backdrop-filter: blur(16px);
+	animation: dk-fade 0.25s var(--ease-out);
+}
+
+@keyframes dk-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+.dk-sorter header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 24px 0;
+}
+
+.dk-sorter h2 {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.dk-sorter ol {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 20px 16px;
+	padding: 20px 24px 32px;
+	list-style: none;
+}
+
+.dk-sorter li {
+	animation: dk-thumb-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+	animation-delay: calc(var(--d) * 25ms);
+}
+
+@keyframes dk-thumb-in {
+	from {
+		opacity: 0;
+		transform: translateY(14px) scale(0.96);
+	}
+}
+
+.dk-sorter ol button {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* 썸네일: 16:9 작은 카드에 띠·번호·제목 */
+.dk-thumb {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	aspect-ratio: 16 / 9;
+	padding: 12px;
+	overflow: hidden;
+	border: 1px solid var(--sp-line);
+	border-radius: 10px;
+	background-color: var(--sp-bg);
+	transition:
+		border-color var(--duration-fast) var(--ease-out),
+		transform var(--duration-fast) var(--ease-out);
+}
+
+.dk-thumb::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 4px;
+	background: var(--sp-grad);
+}
+
+.dk-thumb b {
+	position: absolute;
+	top: 6px;
+	right: 10px;
+	font-size: 34px;
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	color: transparent;
+	-webkit-text-stroke: 1px rgba(255, 255, 255, 0.25);
+}
+
+.dk-thumb strong {
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.dk-thumb[data-kind='cover'] strong,
+.dk-thumb[data-kind='end'] strong,
+.dk-thumb[data-kind='chapter'] strong {
+	font-size: 17px;
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.dk-sorter ol button:hover .dk-thumb,
+.dk-sorter ol button:focus-visible .dk-thumb {
+	border-color: var(--sp-accent);
+	transform: translateY(-3px);
+}
+
+.dk-sorter ol button[aria-current='true'] .dk-thumb {
+	box-shadow: 0 0 0 2px var(--sp-accent);
+}
+
+.dk-thumb-kind {
+	display: block;
+	margin-top: 6px;
+	color: var(--sp-muted);
+	font-size: 12px;
+}
+
+/* ─── 좁은 창: 슬라이드가 세로 목록으로 풀린다 ─── */
+.dk[data-mode='stack'] {
+	display: block;
+	height: auto;
+	overflow: visible;
+}
+
+.dk[data-mode='stack'] .dk-top,
+.dk[data-mode='stack'] .dk-arrow,
+.dk[data-mode='stack'] .dk-dots,
+.dk[data-mode='stack'] .dk-notes,
+.dk[data-mode='stack'] .dk-sorter {
+	display: none;
+}
+
+.dk[data-mode='stack'] .dk-stage {
+	display: block;
+}
+
+.dk[data-mode='stack'] .dk-deck {
+	width: auto;
+	height: auto;
+}
+
+.dk[data-mode='stack'] .dk-slide {
+	display: block;
+	position: static;
+	width: auto;
+	height: auto;
+	margin: 12px;
+	border-radius: 14px;
+	animation: none;
+	transform: none;
+}
+
+.dk[data-mode='stack'] .dk-slide-body {
+	height: auto;
+	padding: 36px 20px 32px;
+}
+
+.dk[data-mode='stack'] .dk-slide-body h2 {
+	font-size: 28px;
+}
+
+.dk[data-mode='stack'] .dk-no {
+	right: 12px;
+	bottom: -14px;
+	font-size: 90px;
+}
+
+.dk[data-mode='stack'] .dk-scroll {
+	height: auto;
+	max-height: none;
+	overflow: visible;
+}
+
+.dk[data-mode='stack'] .dk-cover,
+.dk[data-mode='stack'] .dk-feature,
+.dk[data-mode='stack'] .dk-chapter,
+.dk[data-mode='stack'] .dk-roles,
+.dk[data-mode='stack'] .dk-gallery {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 24px;
+	height: auto;
+}
+
+.dk[data-mode='stack'] .dk-cover-name {
+	font-size: min(var(--size, 120px), 13cqi);
+}
+
+.dk[data-mode='stack'] .dk-cover-tagline {
+	font-size: 24px;
+}
+
+.dk[data-mode='stack'] .dk-cover-shot {
+	transform: none;
+	-webkit-box-reflect: none;
+}
+
+.dk[data-mode='stack'] .dk-seat[data-mascot] {
+	margin-right: 0;
+}
+
+.dk[data-mode='stack'] .dk-facts strong {
+	font-size: 56px;
+}
+
+.dk[data-mode='stack'] .dk-chapter-no {
+	font-size: 90px;
+}
+
+.dk[data-mode='stack'] .dk-chapter h2 {
+	font-size: 34px;
+}
+
+.dk[data-mode='stack'] .dk-timeline {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 14px;
+	margin-top: 24px;
+}
+
+.dk[data-mode='stack'] .dk-timeline li {
+	padding: 0 0 0 28px;
+}
+
+.dk[data-mode='stack'] .dk-timeline li::before {
+	top: 0;
+	width: 2px;
+	height: 100%;
+}
+
+.dk[data-mode='stack'] .dk-specs {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.dk[data-mode='stack'] .dk-checks {
+	font-size: 18px;
+}
+
+.dk[data-mode='stack'] .dk-end-big {
+	font-size: 56px;
+}
+
+.dk[data-mode='stack'] .dk-slide-body::before {
+	animation: none;
+}
+
+/* ─── 움직임 줄이기: 전환·흐름·흔들림을 끈다 (내용은 모두 그대로 닿는다) ─── */
+@media (prefers-reduced-motion: reduce) {
+	.dk-slide[data-current],
+	.dk-slide-body::before,
+	.dk-cover-name .dk-grad,
+	.dk-end-big .dk-grad,
+	.dk-notes,
+	.dk-sorter,
+	.dk-sorter li {
+		animation: none;
+	}
+
+	.dk-progress i,
+	.dk-cover-shot,
+	.dk-dots button,
+	.dk-timeline li::before,
+	.dk-timeline li i,
+	.dk-thumb,
+	.dk-arrow {
+		transition: none;
+	}
+
+	.dk-cover-shot {
+		transform: perspective(1400px) rotateY(-10deg);
+	}
+
+	.dk-timeline li::before,
+	.dk-timeline li i {
+		transform: none;
+	}
+}

@@ -1,0 +1,742 @@
+/* 브루탈리즘 모양(brutal): 종이(흰)·잉크(검)·형광 세 색. 4px 선, 그림자 없음, 라벨 11px ↔ 이름 160px의 극단적인 크기 대비.
+   격자는 바탕을 잉크로 칠하고 4px 틈을 두어 블록 사이가 곧 선이 된다 */
+.sp[data-look='brutal'] {
+	--br-paper: #ffffff;
+	--br-ink: #000000;
+	--br-neon: #e6ff00;
+	--br-line: 4px;
+	--sp-bg: var(--br-paper);
+	--sp-alt: var(--br-paper);
+	--sp-text: var(--br-ink);
+	--sp-muted: var(--br-ink);
+	--sp-line: var(--br-ink);
+	--sp-accent: var(--br-ink);
+	--sp-grad: none;
+	--cr-bg: var(--br-paper);
+	--cr-ink: var(--br-ink);
+	--cr-muted: var(--br-ink);
+	--cr-line: var(--br-ink);
+	letter-spacing: 0;
+}
+
+:root[data-theme='dark'] .sp[data-look='brutal'] {
+	--br-paper: #000000;
+	--br-ink: #ffffff;
+}
+
+.br {
+	position: relative;
+	overflow-x: hidden;
+	background: var(--br-paper);
+	color: var(--br-ink);
+	font-family: var(--sp-mono);
+	font-size: 15px;
+	line-height: 1.5;
+	cursor: crosshair;
+}
+
+/* 작은 라벨: 11px 고정폭 대문자 */
+.br-tag {
+	display: inline-block;
+	font-family: var(--sp-mono);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	line-height: 1;
+}
+
+/* ─── 마우스 커서: 밑을 반전시키는 큰 원 ─── */
+.br-cursor {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 5;
+	width: 72px;
+	height: 72px;
+	margin: -36px 0 0 -36px;
+	border-radius: 50%;
+	background: #ffffff;
+	mix-blend-mode: difference;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.2s;
+	will-change: transform;
+}
+
+.br-cursor.on {
+	opacity: 1;
+}
+
+/* ─── 맨 위: 화면을 넘치는 이름, 반대로 밀리는 큰 제목 ─── */
+.br-hero {
+	--br-shift: 0px;
+	padding: 28px 24px 12px;
+	border-bottom: var(--br-line) solid var(--br-ink);
+}
+
+.br-tag-top span {
+	margin-left: 1em;
+	font-weight: 400;
+}
+
+.br-tag-top span + span {
+	margin-left: 0.5em;
+}
+
+.br-name {
+	margin: 18px 0 0 -0.04em;
+	font-family: 'Helvetica Neue', 'Arial Black', Impact, 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(72px, 19cqi, 170px);
+	font-weight: 900;
+	font-stretch: condensed;
+	letter-spacing: -0.05em;
+	line-height: 0.88;
+	text-transform: uppercase;
+	white-space: nowrap;
+	/* 스크롤하면 왼쪽으로 밀려 나간다 */
+	transform: translateX(calc(var(--br-shift) * -1));
+	will-change: transform;
+}
+
+.br-tagline {
+	margin: 10px 0 8px -0.02em;
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(30px, 7.5cqi, 72px);
+	font-weight: 900;
+	letter-spacing: -0.04em;
+	line-height: 1;
+	white-space: nowrap;
+	/* 이름과 반대로 오른쪽으로 밀린다 */
+	transform: translateX(var(--br-shift));
+	will-change: transform;
+}
+
+/* ─── 흐르는 띠 둘: 위는 왼쪽으로, 아래는 오른쪽으로 ─── */
+.br-marquee {
+	overflow: hidden;
+	padding: 8px 0;
+	border-bottom: var(--br-line) solid var(--br-ink);
+	background: var(--br-ink);
+	color: var(--br-paper);
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.br-marquee.reverse {
+	background: var(--br-neon);
+	color: #000000;
+}
+
+.br-marquee-track {
+	display: flex;
+	width: max-content;
+	animation: br-flow 28s linear infinite;
+}
+
+.br-marquee.reverse .br-marquee-track {
+	animation-direction: reverse;
+}
+
+.br-marquee-track > div {
+	display: flex;
+	flex: none;
+}
+
+.br-marquee span {
+	display: inline-flex;
+	align-items: center;
+	gap: 18px;
+	padding: 0 9px 0 18px;
+}
+
+.br-marquee b {
+	font-size: 10px;
+}
+
+@keyframes br-flow {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+/* 마우스를 올리면 느려진다 */
+.br-marquee:hover .br-marquee-track {
+	animation-play-state: paused;
+}
+
+/* ─── 12열 격자: 틈이 곧 선 ─── */
+.br-grid,
+.br-sub {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: var(--br-line);
+	background: var(--br-ink);
+}
+
+.br-grid {
+	padding: 0 0 var(--br-line);
+}
+
+/* 안쪽 묶음(Region)은 격자 한 줄을 통째로 차지하고 그 안에 다시 12열 */
+.br-sub {
+	grid-column: 1 / -1;
+}
+
+.br-grid > *,
+.br-sub > * {
+	grid-column: span var(--span, 12);
+	min-width: 0;
+}
+
+.br-facts {
+	grid-template-columns: minmax(0, 1fr);
+	grid-auto-rows: minmax(0, 1fr);
+}
+
+/* 숫자 칸은 한 열이라 span을 따르지 않는다 */
+.br-facts > * {
+	grid-column: auto;
+}
+
+/* 블록: 종이 바탕, 왼쪽 위 라벨, hover 시 2px 밀림 */
+.br-block {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 40px 20px 22px;
+	background: var(--br-paper);
+	color: var(--br-ink);
+	transition: transform 0.12s steps(2);
+}
+
+.br-block > .br-tag {
+	position: absolute;
+	top: 10px;
+	left: 12px;
+	padding: 3px 5px;
+	background: var(--br-paper);
+	color: var(--br-ink);
+	transition: none;
+}
+
+.br-block:hover {
+	transform: translate(2px, 2px);
+}
+
+/* hover 시 라벨은 반전 */
+.br-block:hover > .br-tag {
+	background: var(--br-ink);
+	color: var(--br-paper);
+}
+
+.br-ink {
+	background: var(--br-ink);
+	color: var(--br-paper);
+}
+
+.br-ink > .br-tag {
+	background: var(--br-ink);
+	color: var(--br-paper);
+}
+
+.br-ink:hover > .br-tag {
+	background: var(--br-paper);
+	color: var(--br-ink);
+}
+
+.br-neon,
+.br-neon > .br-tag {
+	background: var(--br-neon);
+	color: #000000;
+}
+
+.br-neon:hover > .br-tag {
+	background: #000000;
+	color: var(--br-neon);
+}
+
+/* 빈 칸: 빗금 */
+.br-hatch {
+	min-height: 48px;
+	background: var(--br-paper) repeating-linear-gradient(135deg, var(--br-ink) 0 2px, transparent 2px 12px);
+}
+
+/* 묶음 제목: 격자 한 줄, 잉크 바탕에 큰 글자 */
+.br-h2 {
+	margin: 0;
+	padding: 18px 20px 14px;
+	background: var(--br-ink);
+	color: var(--br-paper);
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(34px, 6cqi, 64px);
+	font-weight: 900;
+	letter-spacing: -0.04em;
+	line-height: 1;
+}
+
+.br-h2 span {
+	margin-left: 0.3em;
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	vertical-align: 0.5em;
+}
+
+/* 블록 안 글 */
+.br .br-block h2 {
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(28px, 4.6cqi, 44px);
+	font-weight: 900;
+	letter-spacing: -0.04em;
+	line-height: 1;
+}
+
+.br .br-block h2 span,
+.br-specs h2 span {
+	font-family: var(--sp-mono);
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	vertical-align: 0.6em;
+}
+
+.br .br-block h3 {
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(22px, 3.2cqi, 32px);
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	line-height: 1.05;
+}
+
+.br .br-block p {
+	margin: 0;
+	color: inherit;
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.br-detail {
+	padding-top: 10px;
+	border-top: 2px dashed currentColor;
+}
+
+.br-icon {
+	font-size: 28px;
+}
+
+.br-media:empty {
+	display: none;
+}
+
+.br-media {
+	margin-top: auto;
+}
+
+/* 데모 조각의 둥근 모서리·그림자는 걷는다 */
+.br .cr-feature-media,
+.br .br-media > * {
+	border-radius: 0;
+	box-shadow: none;
+	border: 2px solid var(--br-ink);
+}
+
+/* 소개 */
+.br .br-block .br-lead {
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(22px, 3.4cqi, 34px);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1.2;
+}
+
+.br-meta {
+	display: grid;
+	gap: 8px;
+	margin: 6px 0 0;
+}
+
+.br-meta div {
+	display: grid;
+	grid-template-columns: 80px minmax(0, 1fr);
+	gap: 12px;
+	padding-top: 8px;
+	border-top: 2px solid var(--br-ink);
+}
+
+.br-meta dt {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	line-height: 1.8;
+}
+
+.br-meta dd {
+	margin: 0;
+}
+
+/* 링크 단추: 반전 hover (밑줄 대신) */
+.br-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.sp[data-look='brutal'] .br-links .sp-pill,
+.sp[data-look='brutal'] .br-links .sp-link,
+.br-inv {
+	display: inline-block;
+	padding: 10px 14px;
+	border: 3px solid currentColor;
+	border-radius: 0;
+	background: transparent;
+	color: inherit;
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	text-decoration: none;
+	transition: none;
+}
+
+.sp[data-look='brutal'] .br-links .sp-pill {
+	background: var(--br-ink);
+	color: var(--br-paper);
+	border-color: var(--br-ink);
+}
+
+.br-neon .br-links .sp-pill {
+	background: #000000;
+	color: var(--br-neon);
+	border-color: #000000;
+}
+
+.sp[data-look='brutal'] .br-links .sp-pill:hover,
+.sp[data-look='brutal'] .br-links .sp-link:hover,
+.br-inv:hover {
+	filter: none;
+	text-decoration: none;
+	background: var(--br-neon);
+	color: #000000;
+	border-color: #000000;
+}
+
+.sp[data-look='brutal'] .br-links i {
+	display: none;
+}
+
+/* 숫자 */
+.br-facts .br-block {
+	justify-content: flex-end;
+	gap: 4px;
+}
+
+.br-facts strong {
+	display: block;
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(44px, 7cqi, 88px);
+	font-weight: 900;
+	letter-spacing: -0.05em;
+	line-height: 0.95;
+	font-variant-numeric: tabular-nums;
+}
+
+.br-fact-label {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+/* 큰 그림 */
+.br-shot {
+	padding: 40px 0 0;
+	gap: 0;
+}
+
+.br-shot img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	min-height: 240px;
+	object-fit: cover;
+	object-position: top;
+	filter: grayscale(1) contrast(1.15);
+	transition: filter 0.2s steps(3);
+}
+
+.br-shot:hover img {
+	filter: none;
+}
+
+.br-gallery-shot figcaption {
+	padding: 10px 14px;
+	border-top: var(--br-line) solid var(--br-ink);
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+/* 기술 목록: 잉크 블록에 큰 글자 */
+.br-stack ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(22px, 3cqi, 30px);
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+	text-transform: uppercase;
+}
+
+.br-stack li {
+	padding: 6px 0;
+	border-bottom: 2px solid var(--br-paper);
+}
+
+.br-stack li:hover {
+	background: var(--br-paper);
+	color: var(--br-ink);
+}
+
+/* 장 제목 블록 */
+.br-chapter {
+	justify-content: flex-end;
+}
+
+/* 표: 선 그대로 */
+.br-table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 3px solid currentColor;
+	font-variant-numeric: tabular-nums;
+}
+
+.br-table th,
+.br-table td {
+	padding: 8px 10px;
+	border: 2px solid currentColor;
+	text-align: left;
+	vertical-align: top;
+}
+
+.br-table thead th {
+	font-size: 11px;
+	letter-spacing: 0.08em;
+	background: var(--br-ink);
+	color: var(--br-paper);
+}
+
+.br-table tbody tr:hover {
+	background: var(--br-neon);
+	color: #000000;
+}
+
+.br-table time {
+	font-weight: 700;
+}
+
+/* 기술 사양: 거대한 두 열 */
+.br-table-big th,
+.br-table-big td {
+	padding: 14px 16px;
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(20px, 3cqi, 34px);
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+}
+
+.br-table-big th {
+	width: 32%;
+	text-transform: uppercase;
+}
+
+.br-table-big td {
+	font-weight: 700;
+}
+
+/* 폴더 구조 */
+.br-tree pre {
+	margin: 0;
+	padding: 14px;
+	overflow-x: auto;
+	border: 2px solid var(--br-paper);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* 맡은 일: □ 가 화면에 들어오면 ■ 로 */
+.br-checks {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 6px 24px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 16px;
+	font-weight: 700;
+}
+
+.br-checks li {
+	display: flex;
+	gap: 12px;
+	padding: 6px 0;
+	border-bottom: 2px solid var(--br-ink);
+}
+
+.br-checks li::before {
+	content: '□';
+	flex: none;
+	font-size: 18px;
+	line-height: 1.3;
+}
+
+.br-checks li[data-shown]::before {
+	content: '■';
+}
+
+.br-checks li:hover {
+	background: var(--br-neon);
+	color: #000000;
+}
+
+/* 출처 */
+.br-credits ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 13px;
+}
+
+.br-credits li {
+	padding: 6px 0;
+	border-bottom: 2px solid var(--br-ink);
+}
+
+.br-credits li > span {
+	display: block;
+	font-size: 11px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.br-credits .br-inv {
+	padding: 1px 4px;
+	border-width: 2px;
+}
+
+.br-credits em {
+	font-style: normal;
+	opacity: 0.7;
+}
+
+/* 마무리 */
+.br-end {
+	padding-top: 44px;
+}
+
+.br .br-block .br-end-name {
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(40px, 11cqi, 120px);
+	font-weight: 900;
+	letter-spacing: -0.05em;
+	line-height: 0.9;
+	text-transform: uppercase;
+}
+
+/* 나타나기: 미끄러지지 않고 딱 켜진다 */
+.sp[data-look='brutal'] [data-reveal] {
+	--reveal-from: translate(-4px, 4px);
+	transition-timing-function: steps(2);
+	transition-duration: 0.25s;
+}
+
+/* ─── 좁은 창: 블록은 한두 열 ─── */
+@container (max-width: 900px) {
+	.br-grid > .br-block,
+	.br-sub > .br-block,
+	.br-grid > .br-facts,
+	.br-hatch {
+		grid-column: span 6;
+	}
+
+	.br-grid > .br-intro,
+	.br-shot,
+	.br-table-block,
+	.br-tree,
+	.br-specs,
+	.br-checks-block,
+	.br-end,
+	.br-chapter,
+	.br-grid > .br-facts {
+		grid-column: 1 / -1;
+	}
+
+	.br-facts {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+@container (max-width: 600px) {
+	.br-grid > *,
+	.br-sub > *,
+	.br-hatch {
+		grid-column: 1 / -1;
+	}
+
+	.br-facts {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.br-facts > * {
+		grid-column: auto;
+	}
+
+	.br-hero {
+		padding: 20px 16px 10px;
+	}
+
+	.br-block {
+		padding: 36px 16px 18px;
+	}
+
+	.br-checks {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.br-table-big th {
+		width: 40%;
+	}
+
+	.br-cursor {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.br-marquee-track {
+		animation: none;
+	}
+
+	.br-name,
+	.br-tagline {
+		transform: none;
+	}
+
+	.br-block,
+	.br-shot img {
+		transition: none;
+	}
+}

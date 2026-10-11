@@ -1,0 +1,823 @@
+/* 설정 도우미 모양(assistant): 흐린 그라데이션 위에 떠 있는 큰 둥근 창, 왼쪽 단계 목록, 한 단계가 한 화면 */
+.sp[data-look='assistant'] {
+	--sp-accent: #0a84ff;
+	--asst-a: #0a84ff;
+	--asst-b: #bf5af2;
+	--asst-c: #ff9f0a;
+	--asst-win: rgba(255, 255, 255, 0.86);
+	--asst-side: rgba(242, 242, 247, 0.9);
+	--asst-line: rgba(0, 0, 0, 0.08);
+	--asst-shadow: 0 30px 80px rgba(20, 20, 60, 0.28), 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+	--cr-bg: transparent;
+	--cr-line: var(--asst-line);
+	background: #dfe6f3;
+}
+
+:root[data-theme='dark'] .sp[data-look='assistant'] {
+	--asst-win: rgba(34, 34, 40, 0.9);
+	--asst-side: rgba(24, 24, 28, 0.92);
+	--asst-line: rgba(255, 255, 255, 0.1);
+	--asst-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.14);
+	background: #101018;
+}
+
+.asst {
+	position: relative;
+	display: grid;
+	place-items: center;
+	min-height: 100%;
+	padding: clamp(24px, 5cqi, 64px) clamp(16px, 4cqi, 48px);
+	overflow: hidden;
+	isolation: isolate;
+}
+
+/* ─── 바탕: 강조색 두 개가 천천히 떠다니는 흐린 덩이 ─── */
+.asst-sky {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	filter: blur(70px) saturate(1.3);
+}
+
+.asst-sky i {
+	position: absolute;
+	border-radius: 50%;
+	opacity: 0.75;
+	animation: asst-drift 18s ease-in-out infinite alternate;
+}
+
+.asst-sky i:nth-child(1) {
+	top: -10%;
+	left: -10%;
+	width: 60cqi;
+	height: 60cqi;
+	background: var(--asst-a);
+}
+
+.asst-sky i:nth-child(2) {
+	right: -15%;
+	bottom: -20%;
+	width: 70cqi;
+	height: 70cqi;
+	background: var(--asst-b);
+	animation-delay: -6s;
+	animation-duration: 24s;
+}
+
+.asst-sky i:nth-child(3) {
+	top: 40%;
+	left: 40%;
+	width: 30cqi;
+	height: 30cqi;
+	background: var(--asst-c);
+	opacity: 0.45;
+	animation-delay: -12s;
+	animation-duration: 30s;
+}
+
+@keyframes asst-drift {
+	from {
+		transform: translate(0, 0) scale(1);
+	}
+	to {
+		transform: translate(12%, -10%) scale(1.15);
+	}
+}
+
+/* ─── 창 ─── */
+.asst-window {
+	display: grid;
+	grid-template-columns: 220px minmax(0, 1fr);
+	width: 100%;
+	max-width: 960px;
+	min-height: 560px;
+	overflow: hidden;
+	border-radius: 22px;
+	background: var(--asst-win);
+	box-shadow: var(--asst-shadow);
+	backdrop-filter: blur(30px) saturate(1.4);
+	-webkit-backdrop-filter: blur(30px) saturate(1.4);
+	animation: asst-pop 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes asst-pop {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.96);
+	}
+}
+
+/* 단계 목록: 점과 선으로 이어진 진행 표시 */
+.asst-steps {
+	padding: 28px 18px;
+	border-right: 1px solid var(--asst-line);
+	background: var(--asst-side);
+}
+
+.asst-steps ol {
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+}
+
+.asst-steps li {
+	position: relative;
+}
+
+/* 점 사이를 잇는 선. 지나온 단계는 강조색으로 찬다 */
+.asst-steps li:not(:last-child)::after {
+	position: absolute;
+	top: 30px;
+	left: 29px;
+	width: 2px;
+	height: calc(100% - 22px);
+	border-radius: 1px;
+	background: var(--asst-line);
+	content: '';
+}
+
+.asst-steps li[data-state='done']:not(:last-child)::after {
+	background: var(--asst-a);
+}
+
+.asst-steps button {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 8px 6px;
+	border: 0;
+	border-radius: 10px;
+	background: none;
+	color: var(--sp-muted);
+	font: inherit;
+	font-size: 14px;
+	text-align: left;
+	cursor: pointer;
+	transition: color var(--duration-fast) var(--ease-out);
+}
+
+.asst-steps button:hover {
+	color: var(--sp-text);
+}
+
+.asst-steps button[aria-current='step'] {
+	color: var(--sp-text);
+	font-weight: 600;
+}
+
+.asst-dot {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	border: 2px solid var(--asst-line);
+	border-radius: 50%;
+	background: var(--asst-win);
+	color: transparent;
+	font-size: 10px;
+	transition:
+		border-color 0.4s var(--ease-out),
+		background-color 0.4s var(--ease-out),
+		transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.asst-steps li[data-state='done'] .asst-dot {
+	border-color: var(--asst-a);
+	background: var(--asst-a);
+	color: #ffffff;
+}
+
+.asst-steps li[data-state='current'] .asst-dot {
+	border-color: var(--asst-a);
+	color: var(--asst-a);
+	transform: scale(1.25);
+	box-shadow: 0 0 0 5px color-mix(in srgb, var(--asst-a) 18%, transparent);
+}
+
+/* ─── 창 본문 ─── */
+.asst-main {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.asst-pane {
+	flex: 1;
+	max-height: clamp(360px, 64vh, 680px);
+	padding: 40px 44px 24px;
+	overflow: auto;
+	animation: asst-slide 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.asst-pane[data-dir='back'] {
+	animation-name: asst-slide-back;
+}
+
+@keyframes asst-slide {
+	from {
+		opacity: 0;
+		transform: translateX(28px);
+	}
+}
+
+@keyframes asst-slide-back {
+	from {
+		opacity: 0;
+		transform: translateX(-28px);
+	}
+}
+
+.asst-pane h2 {
+	font-size: clamp(24px, 3.4cqi, 32px);
+	font-weight: 300;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+}
+
+.asst-sub {
+	margin-top: 6px;
+	color: var(--sp-muted);
+	font-size: 14px;
+}
+
+.asst-sub + * {
+	margin-top: 24px;
+}
+
+.asst-meta {
+	color: var(--sp-muted);
+	font-size: 13px;
+}
+
+/* 아래 막대: 뒤로 · 계속 */
+.asst-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 16px 24px;
+	border-top: 1px solid var(--asst-line);
+}
+
+.asst-count {
+	color: var(--sp-muted);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+.asst-buttons {
+	display: flex;
+	gap: 10px;
+}
+
+.asst-btn {
+	min-width: 88px;
+	padding: 7px 18px;
+	border: 1px solid var(--asst-line);
+	border-radius: 8px;
+	background: var(--asst-win);
+	color: var(--sp-text);
+	font: inherit;
+	font-size: 14px;
+	cursor: pointer;
+	transition:
+		transform var(--duration-fast) var(--ease-out),
+		filter var(--duration-fast) var(--ease-out);
+}
+
+.asst-btn:hover:not(:disabled) {
+	filter: brightness(1.05);
+}
+
+.asst-btn:active:not(:disabled) {
+	transform: scale(0.97);
+}
+
+.asst-btn:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.sp .asst-btn.primary {
+	border-color: transparent;
+	background: linear-gradient(180deg, color-mix(in srgb, var(--asst-a) 85%, #ffffff), var(--asst-a));
+	color: #ffffff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── 환영 ─── */
+.asst-welcome,
+.asst-finish {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-height: 100%;
+	padding-top: 12px;
+	text-align: center;
+}
+
+.asst-welcome h2,
+.asst-finish h2 {
+	max-width: 560px;
+	margin-top: 6px;
+	font-size: clamp(30px, 4.4cqi, 44px);
+}
+
+.asst-icon {
+	display: block;
+	width: 112px;
+	height: 112px;
+	margin-bottom: 24px;
+	object-fit: contain;
+	border-radius: 26px;
+	filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.22));
+	animation: asst-float 5s ease-in-out infinite;
+}
+
+.asst-icon.fallback {
+	display: grid;
+	place-items: center;
+	background: linear-gradient(135deg, var(--asst-a), var(--asst-b));
+	color: #ffffff;
+	font-size: 48px;
+}
+
+@keyframes asst-float {
+	0%,
+	100% {
+		transform: translateY(0) rotate(-1deg);
+	}
+	50% {
+		transform: translateY(-12px) rotate(1deg);
+	}
+}
+
+.asst-hello {
+	color: var(--sp-muted);
+	font-size: 15px;
+	letter-spacing: 0.04em;
+}
+
+.asst-lead {
+	max-width: 520px;
+	margin-top: 16px;
+	color: var(--sp-muted);
+	font-size: 16px;
+	line-height: 1.55;
+}
+
+.asst-welcome .asst-meta {
+	margin-top: 10px;
+}
+
+.asst-links {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 12px 22px;
+	margin-top: 28px;
+	font-size: 15px;
+}
+
+/* ─── 한눈에 보기: 큰 숫자 카드 ─── */
+.asst-facts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 14px;
+	margin-top: 28px;
+	list-style: none;
+}
+
+.asst-facts li {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 22px 20px;
+	border: 1px solid var(--asst-line);
+	border-radius: 16px;
+	background: var(--asst-side);
+	animation: asst-rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+	animation-delay: calc(var(--i, 0) * 80ms + 120ms);
+}
+
+.asst-facts strong {
+	background: linear-gradient(120deg, var(--asst-a), var(--asst-b));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: clamp(30px, 4.6cqi, 44px);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1.05;
+}
+
+.asst-facts span {
+	color: var(--sp-muted);
+	font-size: 13px;
+}
+
+.asst-glance .asst-meta {
+	margin-top: 22px;
+}
+
+@keyframes asst-rise {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+}
+
+/* ─── 주요 기능: 왼쪽 고르기, 오른쪽 설명 ─── */
+.asst-features {
+	display: grid;
+	grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.6fr);
+	gap: 28px;
+	align-items: start;
+}
+
+.asst-pick {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	list-style: none;
+}
+
+.asst-pick button {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 10px 12px;
+	border: 0;
+	border-radius: 10px;
+	background: none;
+	color: var(--sp-text);
+	font: inherit;
+	font-size: 14px;
+	text-align: left;
+	cursor: pointer;
+	animation: asst-rise 0.4s var(--ease-out) both;
+	animation-delay: calc(var(--i, 0) * 60ms);
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.asst-pick button:hover {
+	background: var(--asst-side);
+}
+
+.asst-pick button i {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 26px;
+	height: 26px;
+	border-radius: 8px;
+	background: var(--asst-side);
+	color: var(--sp-muted);
+	font-size: 12px;
+}
+
+.sp .asst-pick button[aria-pressed='true'] {
+	background: var(--asst-a);
+	color: #ffffff;
+	font-weight: 600;
+}
+
+.asst-pick button[aria-pressed='true'] i {
+	background: rgba(255, 255, 255, 0.25);
+	color: #ffffff;
+}
+
+.asst-detail {
+	animation: asst-slide 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.asst-detail h3 {
+	font-size: 22px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.asst-detail p {
+	margin-top: 10px;
+	color: var(--sp-muted);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.asst-detail-media {
+	margin-top: 18px;
+}
+
+.asst-detail-media:empty {
+	display: none;
+}
+
+.asst-detail-media img,
+.asst-detail-media video {
+	display: block;
+	width: 100%;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* ─── 만든 방식·쓰는 법: 약관 읽기처럼 ─── */
+.asst-terms {
+	display: flex;
+	flex-direction: column;
+	margin-top: 8px;
+	border: 1px solid var(--asst-line);
+	border-radius: 14px;
+	background: var(--asst-side);
+	list-style: none;
+}
+
+.asst-terms li {
+	display: grid;
+	grid-template-columns: 44px minmax(0, 1fr);
+	gap: 8px;
+	padding: 18px 20px;
+	animation: asst-rise 0.4s var(--ease-out) both;
+	animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+.asst-terms li + li {
+	border-top: 1px solid var(--asst-line);
+}
+
+.asst-terms-no {
+	color: var(--asst-a);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+.asst-terms h3 {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.asst-terms p {
+	margin-top: 6px;
+	color: var(--sp-muted);
+	font-size: 14px;
+	line-height: 1.55;
+}
+
+/* ─── 진행 과정: 타임라인 ─── */
+.asst-timeline {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	margin-top: 24px;
+	padding-left: 28px;
+	list-style: none;
+}
+
+.asst-timeline::before {
+	position: absolute;
+	top: 6px;
+	bottom: 6px;
+	left: 6px;
+	width: 2px;
+	background: linear-gradient(180deg, var(--asst-a), var(--asst-b));
+	content: '';
+}
+
+.asst-timeline li {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	animation: asst-rise 0.4s var(--ease-out) both;
+	animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+.asst-timeline li::before {
+	position: absolute;
+	top: 5px;
+	left: -27px;
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--asst-win);
+	border-radius: 50%;
+	background: var(--asst-a);
+	content: '';
+}
+
+.asst-timeline time {
+	font-size: 13px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: var(--asst-a);
+}
+
+.asst-timeline span {
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+/* ─── 기술 사양 ─── */
+.asst-specs {
+	margin-top: 20px;
+	border-top: 1px solid var(--asst-line);
+}
+
+.asst-specs div {
+	display: grid;
+	grid-template-columns: 140px minmax(0, 1fr);
+	gap: 12px;
+	padding: 14px 0;
+	border-bottom: 1px solid var(--asst-line);
+	font-size: 15px;
+	animation: asst-rise 0.4s var(--ease-out) both;
+	animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+.asst-specs dt {
+	font-weight: 600;
+}
+
+.asst-specs dd {
+	color: var(--sp-muted);
+	line-height: 1.5;
+}
+
+.asst-stack {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 20px;
+	list-style: none;
+}
+
+.asst-stack li {
+	padding: 4px 12px;
+	border-radius: 999px;
+	background: var(--asst-side);
+	border: 1px solid var(--asst-line);
+	font-family: var(--sp-mono);
+	font-size: 12px;
+}
+
+/* ─── 맡은 일 ─── */
+.asst-roles {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-top: 24px;
+	list-style: none;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.asst-roles li {
+	display: flex;
+	gap: 12px;
+	animation: asst-rise 0.4s var(--ease-out) both;
+	animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+.asst-roles i {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	margin-top: 1px;
+	border-radius: 50%;
+	background: var(--asst-a);
+	color: #ffffff;
+	font-size: 11px;
+}
+
+/* ─── 완료: 원이 그려지고 체크가 찍힌다 ─── */
+.asst-done-mark {
+	width: 112px;
+	height: 112px;
+	margin-bottom: 20px;
+	fill: none;
+	stroke: var(--asst-a);
+	stroke-width: 5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.asst-done-mark circle,
+.asst-done-mark path {
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	animation: asst-draw 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.asst-done-mark path {
+	stroke: var(--asst-b);
+	animation-delay: 0.55s;
+	animation-duration: 0.45s;
+}
+
+@keyframes asst-draw {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+/* ─── MacFolio 데모를 창 안에서: 고정(sticky)하지 않고 다 그려진 채로 ─── */
+.sp[data-look='assistant'] .pdv-track,
+.sp[data-look='assistant'] .pdp-track {
+	--p: 1 !important;
+	height: auto;
+	margin-bottom: 24px;
+}
+
+.sp[data-look='assistant'] .pdv-sticky,
+.sp[data-look='assistant'] .pdp-sticky {
+	position: static;
+	height: auto;
+	padding: 0;
+}
+
+/* 데모의 머리글(어디서 열어도)은 창 제목과 겹치니 숨긴다 */
+.sp[data-look='assistant'] .pdv .pd-kicker,
+.sp[data-look='assistant'] .pdv h2 {
+	display: none;
+}
+
+/* ─── 좁은 창: 단계 목록은 위에 점으로만 ─── */
+@container (max-width: 700px) {
+	.asst {
+		padding: 16px;
+	}
+
+	.asst-window {
+		grid-template-columns: minmax(0, 1fr);
+		min-height: 0;
+	}
+
+	.asst-steps {
+		padding: 16px 12px;
+		border-right: 0;
+		border-bottom: 1px solid var(--asst-line);
+	}
+
+	.asst-steps ol {
+		flex-direction: row;
+		justify-content: center;
+		gap: 10px;
+	}
+
+	.asst-steps li::after {
+		display: none;
+	}
+
+	.asst-steps button {
+		width: auto;
+		padding: 2px;
+	}
+
+	.asst-step-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+
+	.asst-dot {
+		width: 18px;
+		height: 18px;
+		font-size: 8px;
+	}
+
+	.asst-pane {
+		max-height: none;
+		padding: 28px 20px 16px;
+	}
+
+	.asst-features {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.asst-specs div {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
+	}
+}
+
+/* ─── 움직임 줄이기: 즉시 ─── */
+@media (prefers-reduced-motion: reduce) {
+	.sp[data-look='assistant'] *,
+	.sp[data-look='assistant'] *::before,
+	.sp[data-look='assistant'] *::after {
+		animation: none !important;
+		transition: none !important;
+	}
+
+	.asst-done-mark circle,
+	.asst-done-mark path {
+		stroke-dashoffset: 0;
+	}
+}

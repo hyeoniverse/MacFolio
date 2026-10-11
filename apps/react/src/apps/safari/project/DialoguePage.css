@@ -1,0 +1,542 @@
+/* dialogue 모양: 어두운 장면 위에 떠 있는 RPG 대화 상자. 크림색 글, 금색 굵은 테두리 (sproutfarm은 초록·흙색) */
+.sp[data-look='dialogue'] {
+	--sp-bg: #14110f;
+	--sp-text: #fff3d6;
+	--sp-muted: #c9b48c;
+	--sp-line: #e3b74a;
+	--sp-accent: #f2c75c;
+	--dl-frame: #e3b74a;
+	--dl-frame-dark: #7a5a16;
+	--dl-panel: rgba(22, 17, 12, 0.86);
+	--dl-name-bg: #e3b74a;
+	--dl-name-text: #241a08;
+	--dl-choice: rgba(255, 243, 214, 0.08);
+	--dl-choice-hover: rgba(242, 199, 92, 0.22);
+	height: 100%;
+	/* 타자 글은 둥글고 두꺼운 산세리프 */
+	font-family:
+		'Arial Rounded MT Bold', 'Apple SD Gothic Neo', 'Pretendard', 'Nanum Gothic', ui-rounded, system-ui, sans-serif;
+	font-weight: 700;
+}
+
+/* 라이트·다크가 따로 없이 늘 어둡지만, 다크에서는 테두리 금색을 조금 눌러 눈부심을 줄인다 */
+:root[data-theme='dark'] .sp[data-look='dialogue'] {
+	--dl-frame: #cfa63e;
+	--dl-name-bg: #cfa63e;
+}
+
+/* sproutfarm: 들판의 초록과 흙색 */
+.sp[data-look='dialogue'] .dl[data-id='sproutfarm'] {
+	--sp-line: #8fd14f;
+	--sp-accent: #b8e986;
+	--dl-frame: #6f4a2a;
+	--dl-frame-dark: #3f2a16;
+	--dl-panel: rgba(33, 46, 24, 0.9);
+	--dl-name-bg: #8fd14f;
+	--dl-name-text: #1d2a10;
+	--dl-choice-hover: rgba(143, 209, 79, 0.24);
+}
+
+.dl {
+	--dl-mx: 0;
+	--dl-my: 0;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	height: 100%;
+	min-height: 560px;
+	padding: 20px;
+	overflow: hidden;
+	color: var(--sp-text);
+	background: var(--sp-bg);
+	isolation: isolate;
+}
+
+/* ─── 배경 장면: 흐릿하게, 천천히 커지며 떠다닌다(켄 번즈). 마우스 반대쪽으로 살짝 밀린다 ─── */
+.dl-bg {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+}
+
+.dl-scene {
+	position: absolute;
+	inset: -6%;
+	width: 112%;
+	height: 112%;
+	object-fit: cover;
+	filter: blur(3px) saturate(1.15) brightness(0.75);
+	transform: translate(calc(var(--dl-mx) * -24px), calc(var(--dl-my) * -16px));
+	animation:
+		dl-fade 0.9s ease-out both,
+		dl-kenburns 28s ease-in-out infinite alternate;
+	transition: transform 0.6s ease-out;
+}
+
+.dl-vignette {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(0, 0, 0, 0.55) 100%),
+		linear-gradient(to bottom, rgba(0, 0, 0, 0.35), transparent 30%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+@keyframes dl-kenburns {
+	from {
+		scale: 1;
+		translate: 0 0;
+	}
+	to {
+		scale: 1.12;
+		translate: -2% 1.5%;
+	}
+}
+
+@keyframes dl-fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* ─── HUD: 왼쪽 위, 숫자는 HP·골드처럼 아이콘과 값 ─── */
+.dl-hud {
+	position: absolute;
+	top: 18px;
+	left: 20px;
+	right: 20px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.dl-stats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	list-style: none;
+}
+
+.dl-stats li {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 12px 6px 10px;
+	border: 3px solid var(--dl-frame);
+	border-radius: 6px;
+	background: var(--dl-panel);
+	box-shadow: inset 0 0 0 2px var(--dl-frame-dark);
+	font-size: 15px;
+}
+
+.dl-stats i {
+	color: var(--sp-accent);
+	font-size: 13px;
+}
+
+.dl-quest {
+	padding: 6px 12px;
+	border-radius: 6px;
+	background: rgba(0, 0, 0, 0.45);
+	color: var(--sp-muted);
+	font-size: 13px;
+	letter-spacing: 0.02em;
+	text-align: right;
+}
+
+.dl-progress {
+	color: var(--sp-accent);
+}
+
+/* ─── 대화 상자: 아래에 붙은 큰 상자, 굵은 이중 테두리 ─── */
+.dl-box {
+	position: relative;
+	width: min(100%, 920px);
+	min-height: 220px;
+	margin: 0 auto;
+	padding: 34px 30px 22px 30px;
+	border: 4px solid var(--dl-frame);
+	border-radius: 10px;
+	background: var(--dl-panel);
+	box-shadow:
+		inset 0 0 0 3px var(--dl-frame-dark),
+		inset 0 0 0 5px var(--dl-frame),
+		0 18px 50px rgba(0, 0, 0, 0.55);
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+	cursor: pointer;
+	animation: dl-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+@keyframes dl-pop {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* 화자 이름표: 상자 윗선에 걸쳐 있다 */
+.dl-name {
+	position: absolute;
+	top: -18px;
+	left: 132px;
+	padding: 5px 16px;
+	border: 3px solid var(--dl-frame-dark);
+	border-radius: 6px;
+	background: var(--dl-name-bg);
+	color: var(--dl-name-text);
+	font-size: 16px;
+	letter-spacing: 0.02em;
+	white-space: nowrap;
+}
+
+/* 초상: 상자 왼쪽 위에서 밖으로 튀어나온다 */
+.dl-portrait {
+	position: absolute;
+	top: -46px;
+	left: 20px;
+	display: grid;
+	place-items: center;
+	width: 96px;
+	height: 96px;
+	border: 4px solid var(--dl-frame);
+	border-radius: 10px;
+	background: #1b1611;
+	box-shadow:
+		inset 0 0 0 3px var(--dl-frame-dark),
+		0 8px 20px rgba(0, 0, 0, 0.5);
+	animation: dl-bob 2.4s ease-in-out infinite;
+}
+
+@keyframes dl-bob {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-4px);
+	}
+}
+
+.dl-favicon {
+	width: 56px;
+	height: 56px;
+	border-radius: 12px;
+	object-fit: contain;
+}
+
+.dl-favicon.fallback {
+	display: grid;
+	place-items: center;
+	color: var(--sp-accent);
+	font-size: 30px;
+}
+
+/* sproutfarm: 픽셀 액자 안에서 캐릭터가 제자리걸음 (char-walk.png 96×96 네 칸) */
+.dl-portrait-sprite {
+	border: none;
+	background: url('/imgs/projects/sproutfarm/sprites/portrait-frame.png') 0 0 / 96px 96px no-repeat;
+	box-shadow: none;
+	image-rendering: pixelated;
+}
+
+.dl-sprite {
+	display: block;
+	width: 96px;
+	height: 96px;
+	background: url('/imgs/projects/sproutfarm/sprites/char-walk.png') 0 0 / 384px 96px no-repeat;
+	animation: dl-walk 0.6s steps(4) infinite;
+}
+
+@keyframes dl-walk {
+	to {
+		background-position-x: -384px;
+	}
+}
+
+/* ─── 글: 제목은 굵게 크게, 본문은 타자치듯 ─── */
+.dl-text {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding-left: 100px;
+	min-height: 150px;
+}
+
+.dl-title {
+	display: block;
+	color: var(--sp-accent);
+	font-size: clamp(22px, 3cqi, 30px);
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.dl-body {
+	flex: 1;
+	font-size: clamp(17px, 2.2cqi, 22px);
+	font-weight: 600;
+	line-height: 1.55;
+	white-space: pre-wrap;
+}
+
+.dl-caret {
+	display: inline-block;
+	width: 0.55em;
+	height: 1em;
+	margin-left: 2px;
+	vertical-align: -0.15em;
+	background: var(--sp-accent);
+	animation: dl-blink 0.7s steps(2, start) infinite;
+}
+
+@keyframes dl-blink {
+	to {
+		visibility: hidden;
+	}
+}
+
+.dl-foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.dl-count {
+	color: var(--sp-muted);
+	font-size: 14px;
+	letter-spacing: 0.06em;
+}
+
+.dl-next {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 18px;
+	border: 3px solid var(--dl-frame);
+	border-radius: 6px;
+	background: transparent;
+	color: var(--sp-text);
+	font: inherit;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background 0.15s;
+}
+
+.dl-next:hover,
+.dl-next:focus-visible {
+	background: var(--dl-choice-hover);
+}
+
+.dl-next i {
+	font-style: normal;
+	animation: dl-nudge 0.9s ease-in-out infinite;
+}
+
+@keyframes dl-nudge {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(4px);
+	}
+}
+
+.dl-links {
+	justify-content: flex-start;
+	margin-top: 4px;
+}
+
+.dl .sp-pill {
+	border-radius: 6px;
+	background: var(--dl-name-bg);
+	font-weight: 700;
+}
+
+.dl .sp-pill {
+	color: var(--dl-name-text);
+}
+
+/* ─── 선택지 ─── */
+.dl-menu {
+	padding-left: 100px;
+}
+
+.dl-ask {
+	margin-bottom: 12px;
+	color: var(--sp-accent);
+	font-size: clamp(20px, 2.6cqi, 26px);
+}
+
+.dl-choices {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+	gap: 8px;
+	list-style: none;
+}
+
+.dl-choices button {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 10px 14px;
+	border: 3px solid transparent;
+	border-radius: 6px;
+	background: var(--dl-choice);
+	color: var(--sp-text);
+	font: inherit;
+	font-size: 17px;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		border-color 0.15s,
+		transform 0.15s;
+}
+
+.dl-choices button:hover,
+.dl-choices button:focus-visible {
+	border-color: var(--dl-frame);
+	background: var(--dl-choice-hover);
+	transform: translateX(4px);
+}
+
+/* 손가락 커서처럼 앞에 ▸ */
+.dl-choices button::before {
+	content: '▸';
+	color: var(--sp-accent);
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+
+.dl-choices button:hover::before,
+.dl-choices button:focus-visible::before {
+	opacity: 1;
+}
+
+.dl-choices kbd {
+	display: inline-grid;
+	place-items: center;
+	min-width: 22px;
+	height: 22px;
+	border-radius: 4px;
+	background: var(--dl-frame-dark);
+	color: var(--sp-text);
+	font: inherit;
+	font-size: 12px;
+}
+
+.dl-choices span {
+	flex: 1;
+}
+
+.dl-choices button[aria-pressed='true'] {
+	color: var(--sp-muted);
+}
+
+.dl-choices em {
+	color: var(--sp-line);
+	font-style: normal;
+}
+
+.dl-hint {
+	margin: 10px auto 0;
+	color: var(--sp-muted);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	opacity: 0.8;
+}
+
+/* ─── 좁은 창 ─── */
+@container (max-width: 600px) {
+	.dl {
+		min-height: 520px;
+		padding: 12px;
+	}
+
+	.dl-hud {
+		top: 10px;
+		left: 12px;
+		right: 12px;
+	}
+
+	.dl-stats li {
+		padding: 4px 8px;
+		font-size: 13px;
+	}
+
+	.dl-quest {
+		display: none;
+	}
+
+	.dl-box {
+		padding: 44px 16px 16px;
+	}
+
+	.dl-portrait {
+		top: -40px;
+		left: 12px;
+		width: 72px;
+		height: 72px;
+		background-size: 72px 72px;
+	}
+
+	.dl-sprite {
+		scale: 0.75;
+	}
+
+	.dl-name {
+		left: 94px;
+		top: -14px;
+		font-size: 14px;
+	}
+
+	.dl-text,
+	.dl-menu {
+		padding-left: 0;
+	}
+
+	.dl-choices {
+		grid-template-columns: 1fr;
+	}
+
+	.dl-hint {
+		display: none;
+	}
+}
+
+/* ─── 움직임 줄이기: 전부 고정 ─── */
+@media (prefers-reduced-motion: reduce) {
+	.dl-scene,
+	.dl-box,
+	.dl-portrait,
+	.dl-sprite,
+	.dl-caret,
+	.dl-next i {
+		animation: none;
+	}
+
+	.dl-scene {
+		transform: none;
+		transition: none;
+	}
+
+	.dl-choices button,
+	.dl-next {
+		transition: none;
+	}
+}

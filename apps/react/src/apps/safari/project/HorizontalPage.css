@@ -1,0 +1,674 @@
+/* 가로 모양(horizontal): 세로 스크롤이 가로 트랙을 밀어 간다. 패널마다 바탕 네 색이 돌고(크림·코발트·주황·먹), 거대한 타이포 */
+.sp[data-look='horizontal'] {
+	--hz-bg-0: #f4ecd8;
+	--hz-ink-0: #17160f;
+	--hz-bg-1: #1a3fd6;
+	--hz-ink-1: #f6f3ea;
+	--hz-bg-2: #ff5a1f;
+	--hz-ink-2: #160e09;
+	--hz-bg-3: #141418;
+	--hz-ink-3: #f4ecd8;
+	--hz-view: 100vh;
+	--hz-w: 100%;
+	--hz-p: 0;
+	--sp-bg: var(--hz-bg-0);
+	--sp-text: var(--hz-ink-0);
+	--sp-accent: var(--hz-bg-2);
+	animation: none;
+}
+
+/* 다크: 크림은 짙은 회갈색으로, 코발트는 조금 더 깊게 */
+:root[data-theme='dark'] .sp[data-look='horizontal'] {
+	--hz-bg-0: #24221d;
+	--hz-ink-0: #f4ecd8;
+	--hz-bg-1: #10309f;
+	--hz-bg-3: #0a0a0c;
+}
+
+.hz {
+	position: relative;
+	outline: none;
+}
+
+.hz:focus-visible .hz-bar {
+	box-shadow: inset 0 -2px 0 currentColor;
+}
+
+/* ─── 위 막대: 이전·번호·진행·다음 ─── */
+.hz-bar {
+	position: sticky;
+	top: 0;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	height: 44px;
+	padding: 0 18px;
+	color: var(--hz-ink-0);
+	font-variant-numeric: tabular-nums;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	/* 어떤 바탕 위에서도 보이게: 흰색을 바탕색과 차로 섞는다 */
+	color: #ffffff;
+	mix-blend-mode: difference;
+	pointer-events: none;
+	/* 막대 자리를 패널이 이어받는다 (막대는 패널 위에 떠 있다) */
+	margin-bottom: -44px;
+}
+
+.hz-bar > * {
+	pointer-events: auto;
+}
+
+.hz-nav {
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border: 1.5px solid currentColor;
+	border-radius: 50%;
+	background: none;
+	color: inherit;
+	font-size: 12px;
+	cursor: pointer;
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.hz-nav:hover:not(:disabled) {
+	transform: scale(1.12);
+}
+
+.hz-nav:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.hz-progress {
+	flex: 1;
+	height: 2px;
+	background: rgba(255, 255, 255, 0.3);
+}
+
+.hz-progress > span {
+	display: block;
+	width: var(--fill, 0%);
+	height: 100%;
+	background: currentColor;
+	transition: width 0.4s var(--ease-out);
+}
+
+/* ─── 트랙 모드: 바깥 높이 = n × 뷰, 안쪽 sticky, 트랙이 가로로 밀린다 ─── */
+.hz[data-mode='track'] {
+	height: calc(var(--hz-view) * var(--n));
+}
+
+.hz[data-mode='track'] .hz-view {
+	position: sticky;
+	top: 0;
+	height: var(--hz-view);
+	overflow: hidden;
+}
+
+.hz[data-mode='track'] .hz-track {
+	display: flex;
+	height: 100%;
+	transform: translateX(calc(var(--hz-p) * -1 * var(--hz-w)));
+	will-change: transform;
+}
+
+.hz[data-mode='track'] .hz-group {
+	display: flex;
+	flex: none;
+	height: 100%;
+}
+
+.hz[data-mode='track'] .hz-panel {
+	flex: none;
+	width: var(--hz-w);
+	height: 100%;
+}
+
+/* 글은 배경보다 느리게: 패널이 멀수록 그만큼 밀려 있다가 가운데에 오면 제자리. 패널 안쪽 패딩(7cqi)보다 작게 움직여 가장자리에서 잘리지 않는다 */
+.hz[data-mode='track'] .hz-text {
+	transform: translateX(calc((var(--i) - var(--hz-p)) * 6cqi));
+	will-change: transform;
+}
+
+/* 표지의 화면은 글보다 더 뒤처진다 */
+.hz[data-mode='track'] .hz-cover-shot {
+	transform: translate(calc((var(--i) - var(--hz-p)) * 26cqi + var(--hz-mx, 0) * 16px), calc(var(--hz-my, 0) * 16px))
+		rotate(calc(-8deg + var(--hz-mx, 0) * 4deg));
+}
+
+/* ─── 쌓임 모드(좁은 창·움직임 줄이기): 패널이 세로로 쌓여 그냥 스크롤 ─── */
+.hz[data-mode='stacked'] .hz-panel {
+	min-height: var(--hz-view);
+}
+
+/* ─── 패널 공통 ─── */
+.hz-panel {
+	--hz-bg: var(--hz-bg-0);
+	--hz-ink: var(--hz-ink-0);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	box-sizing: border-box;
+	padding: 64px 7cqi 48px;
+	overflow: hidden;
+	background: var(--hz-bg);
+	color: var(--hz-ink);
+	--sp-text: var(--hz-ink);
+	--sp-muted: color-mix(in srgb, var(--hz-ink) 70%, var(--hz-bg));
+	--sp-accent: var(--hz-ink);
+}
+
+.hz-panel[data-tone='1'] {
+	--hz-bg: var(--hz-bg-1);
+	--hz-ink: var(--hz-ink-1);
+}
+
+.hz-panel[data-tone='2'] {
+	--hz-bg: var(--hz-bg-2);
+	--hz-ink: var(--hz-ink-2);
+}
+
+.hz-panel[data-tone='3'] {
+	--hz-bg: var(--hz-bg-3);
+	--hz-ink: var(--hz-ink-3);
+}
+
+/* 큰 글자 뒤에 희미한 패널 번호 */
+.hz-panel::before {
+	position: absolute;
+	right: -0.1em;
+	bottom: -0.25em;
+	color: var(--hz-ink);
+	opacity: 0.06;
+	font-size: clamp(160px, 42cqi, 520px);
+	font-weight: 900;
+	letter-spacing: -0.08em;
+	line-height: 1;
+	pointer-events: none;
+	content: attr(data-no);
+}
+
+.sp[data-look='horizontal'] .hz-panel a,
+.sp[data-look='horizontal'] .hz-panel .sp-link {
+	color: var(--hz-ink);
+}
+
+.sp[data-look='horizontal'] .hz-panel .sp-pill {
+	background: var(--hz-ink);
+	color: var(--hz-bg);
+}
+
+.hz-text {
+	position: relative;
+	z-index: 1;
+}
+
+.hz-title {
+	margin-bottom: 28px;
+	font-size: clamp(36px, 7cqi, 88px);
+	font-weight: 900;
+	letter-spacing: -0.05em;
+	line-height: 0.95;
+}
+
+.hz-title span,
+.hz-end-word span {
+	color: var(--hz-bg-2);
+}
+
+.hz-panel[data-tone='2'] .hz-title span,
+.hz-panel[data-tone='2'] .hz-end-word span {
+	color: var(--hz-bg-0);
+}
+
+.hz-eyebrow {
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	opacity: 0.8;
+}
+
+.hz-eyebrow strong {
+	font-size: 22px;
+	letter-spacing: -0.03em;
+}
+
+.hz-eyebrow span {
+	opacity: 0.6;
+}
+
+/* ─── 표지 ─── */
+.hz-cover-inner {
+	position: relative;
+	display: flex;
+	align-items: center;
+	min-height: 100%;
+}
+
+.hz-cover .hz-text {
+	max-width: 60%;
+}
+
+.hz-kicker {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	opacity: 0.8;
+}
+
+.hz-kicker img {
+	width: 28px;
+	height: 28px;
+	border-radius: 7px;
+}
+
+.hz-name {
+	margin-top: 14px;
+	font-size: clamp(48px, 11cqi, 150px);
+	font-weight: 900;
+	letter-spacing: -0.06em;
+	line-height: 0.92;
+	/* 두 줄로 쪼개진 이름이 거대한 글꼴로 겹치지 않게 */
+	text-wrap: balance;
+}
+
+.hz-tagline {
+	margin-top: 18px;
+	font-size: clamp(22px, 3.2cqi, 38px);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+}
+
+.hz-lead {
+	max-width: 520px;
+	margin-top: 14px;
+	color: var(--sp-muted);
+	font-size: 16px;
+	line-height: 1.55;
+}
+
+.hz-links {
+	justify-content: flex-start;
+	margin-top: 24px;
+}
+
+/* 스크롤 안내: 화살표가 시간에 따라 흘러간다 */
+.hz-hint {
+	margin-top: 36px;
+	font-size: 12px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	opacity: 0.6;
+}
+
+.hz-hint span {
+	display: inline-block;
+	animation: hz-slide 1.4s ease-in-out infinite;
+}
+
+@keyframes hz-slide {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+
+	50% {
+		transform: translateX(10px);
+	}
+}
+
+.hz-cover-shot {
+	position: absolute;
+	top: 50%;
+	right: -16cqi;
+	width: 52cqi;
+	margin-top: -16cqi;
+	border-radius: 14px;
+	overflow: hidden;
+	box-shadow: 0 40px 80px rgba(0, 0, 0, 0.35);
+	transform: rotate(-8deg);
+	transition: transform 0.2s ease-out;
+}
+
+.hz-cover-shot img,
+.hz-cover-shot video {
+	display: block;
+	width: 100%;
+}
+
+/* ─── 숫자 ─── */
+.hz-facts ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 40px 32px;
+	list-style: none;
+}
+
+.hz-facts li {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding-top: 18px;
+	border-top: 2px solid var(--hz-ink);
+}
+
+.hz-facts strong {
+	font-size: clamp(64px, 12cqi, 170px);
+	font-weight: 900;
+	letter-spacing: -0.06em;
+	line-height: 0.9;
+	font-variant-numeric: tabular-nums;
+}
+
+.hz-facts li > span {
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	opacity: 0.8;
+}
+
+/* ─── 주요 기능 ─── */
+.hz-feature {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+	gap: 5cqi;
+	align-items: center;
+}
+
+.hz-feature.flip .hz-text {
+	order: 2;
+}
+
+.hz-feature.bare {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.hz-feature h2 {
+	margin-top: 16px;
+	font-size: clamp(32px, 5.4cqi, 72px);
+	font-weight: 900;
+	letter-spacing: -0.045em;
+	line-height: 1;
+}
+
+.hz-body {
+	margin-top: 20px;
+	font-size: clamp(17px, 1.9cqi, 22px);
+	font-weight: 500;
+	line-height: 1.45;
+}
+
+.hz-detail {
+	margin-top: 14px;
+	color: var(--sp-muted);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.hz-feature-media {
+	position: relative;
+	z-index: 1;
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3);
+}
+
+.hz-feature-media img,
+.hz-feature-media video {
+	display: block;
+	width: 100%;
+	max-height: calc(var(--hz-view) - 180px);
+	object-fit: cover;
+	object-position: top;
+}
+
+/* ─── 만든 방식: 카드 가로 한 줄 ─── */
+.hz-cards {
+	display: flex;
+	gap: 16px;
+	margin: 0 -7cqi;
+	padding: 4px 7cqi 16px;
+	overflow-x: auto;
+	list-style: none;
+	scroll-snap-type: x proximity;
+	scrollbar-width: none;
+}
+
+.hz-cards::-webkit-scrollbar {
+	display: none;
+}
+
+.hz-cards li {
+	flex: 0 0 min(300px, 68cqi);
+	padding: 22px;
+	border: 1.5px solid var(--hz-ink);
+	border-radius: 18px;
+	scroll-snap-align: start;
+	transition: transform 0.3s var(--ease-out);
+}
+
+.hz-cards li:hover {
+	transform: translateY(-6px);
+}
+
+.hz-card-no {
+	display: block;
+	margin-bottom: 20px;
+	font-size: 30px;
+	font-weight: 900;
+	letter-spacing: -0.05em;
+}
+
+.hz-cards h3 {
+	font-size: 19px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+}
+
+.hz-cards p {
+	margin-top: 10px;
+	color: var(--sp-muted);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+/* ─── 진행 과정: 가로 선 위 날짜 ─── */
+.hz-rail {
+	position: relative;
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: minmax(0, 1fr);
+	gap: 16px;
+	padding-top: 36px;
+	list-style: none;
+}
+
+.hz-rail::before {
+	position: absolute;
+	top: 11px;
+	right: 0;
+	left: 0;
+	height: 2px;
+	background: var(--hz-ink);
+	content: '';
+}
+
+.hz-rail li {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.hz-rail li::before {
+	position: absolute;
+	top: -32px;
+	left: 0;
+	width: 16px;
+	height: 16px;
+	border: 3px solid var(--hz-ink);
+	border-radius: 50%;
+	background: var(--hz-bg);
+	content: '';
+}
+
+.hz-rail time {
+	font-size: clamp(28px, 4cqi, 54px);
+	font-weight: 900;
+	letter-spacing: -0.05em;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.hz-rail span {
+	font-size: 14px;
+	line-height: 1.45;
+	opacity: 0.85;
+}
+
+/* ─── 기술 사양 · 맡은 일 ─── */
+.hz-specs .hz-text {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 48px;
+}
+
+.hz-specs dl div {
+	display: grid;
+	grid-template-columns: 120px minmax(0, 1fr);
+	gap: 12px;
+	padding: 12px 0;
+	border-top: 1px solid color-mix(in srgb, var(--hz-ink) 30%, transparent);
+	font-size: 15px;
+	line-height: 1.45;
+}
+
+.hz-specs dt {
+	font-weight: 800;
+}
+
+.hz-specs dd {
+	color: var(--sp-muted);
+}
+
+.hz-role {
+	margin: -16px 0 20px;
+	color: var(--sp-muted);
+	font-size: 15px;
+}
+
+.hz-checks {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	list-style: none;
+	font-size: 16px;
+	line-height: 1.45;
+}
+
+.hz-checks li {
+	display: flex;
+	gap: 12px;
+}
+
+.hz-checks i {
+	flex: none;
+	margin-top: 4px;
+	font-size: 14px;
+}
+
+/* ─── 끝 ─── */
+.hz-end {
+	align-items: center;
+	text-align: center;
+}
+
+.hz-end .hz-links {
+	justify-content: center;
+}
+
+.hz-end-word {
+	font-size: clamp(120px, 28cqi, 360px);
+	font-weight: 900;
+	letter-spacing: -0.08em;
+	line-height: 0.85;
+}
+
+/* ─── 좁은 창 ─── */
+@container (max-width: 700px) {
+	.hz-panel {
+		padding: 72px 20px 48px;
+	}
+
+	.hz-cover .hz-text {
+		max-width: 100%;
+	}
+
+	.hz-cover-shot {
+		position: relative;
+		top: auto;
+		right: auto;
+		width: 100%;
+		margin: 32px 0 0;
+		transform: rotate(-2deg);
+	}
+
+	.hz-cover-inner {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.hz-feature {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.hz-feature.flip .hz-text {
+		order: 0;
+	}
+
+	.hz-rail {
+		grid-auto-flow: row;
+		gap: 24px;
+		padding-top: 0;
+		padding-left: 28px;
+	}
+
+	.hz-rail::before {
+		top: 0;
+		bottom: 0;
+		left: 7px;
+		width: 2px;
+		height: auto;
+	}
+
+	.hz-rail li::before {
+		top: 6px;
+		left: -28px;
+	}
+
+	.hz-cards {
+		margin: 0 -20px;
+		padding: 4px 20px 16px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hz-hint span,
+	.hz-progress > span,
+	.hz-cover-shot,
+	.hz-cards li {
+		animation: none;
+		transition: none;
+	}
+}

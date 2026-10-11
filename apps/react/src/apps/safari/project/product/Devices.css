@@ -1,7 +1,28 @@
 /*
  * 어디서 열어도 (MacFolio 전용 시뮬레이터). 구역을 지나는 동안 화면에 고정되고, 스크롤한 만큼 기기가 바뀐다.
- * 어두운 론칭 톤: 거의 검은 무대에 강조색 빛, 기기 틀은 어두운 알루미늄. 색은 .sp의 공통 값(--sp-*)과 ProductPage.css의 --pd-*
+ * 어두운 론칭 톤: 거의 검은 무대에 강조색 빛, 기기 틀은 어두운 알루미늄. 색은 .sp의 공통 값(--sp-*)과 아래 --pd-* (모양마다 덮어써도 된다)
  */
+.sp {
+	--pd-ink: #050507;
+	--pd-ink-2: #101014;
+	--pd-ink-text: #f5f5f7;
+	--pd-ink-muted: #8e8e95;
+	--pd-ink-line: rgba(255, 255, 255, 0.1);
+	--pd-glow: color-mix(in srgb, var(--sp-accent) 70%, transparent);
+	--pd-gutter: clamp(20px, 5cqi, 64px);
+	--pd-max: 1040px;
+}
+
+/* 데모 머리의 작은 대문자 라벨 */
+.pd-kicker {
+	margin-bottom: 10px;
+	color: var(--sp-accent);
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
 .pdv {
 	background: linear-gradient(180deg, var(--pd-ink), var(--pd-ink-2));
 	color: var(--pd-ink-text);
