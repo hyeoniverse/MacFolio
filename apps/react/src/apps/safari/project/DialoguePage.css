@@ -4,6 +4,24 @@
  * 위 두 모서리는 나무판 HUD. 게임 화면이라 라이트·다크 모두 같은 색을 쓴다.
  * 크기가 움직이지 않게: 대화 상자는 모든 장의 글을 같은 칸에 안 보이게 깔아 가장 큰 장에 맞추고, 지금 장은 그 위에 겹친다.
  */
+/* 픽셀 글꼴: 갈무리11 (Galmuri, 한글·영문 11px 격자, SIL OFL 1.1 — public/fonts/galmuri/OFL.txt).
+   이 모양이 열릴 때만 받는다. 격자에 맞게 11의 배수(11·22px)에서 가장 또렷하다 */
+@font-face {
+	font-family: 'Galmuri11';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('/fonts/galmuri/Galmuri11.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Galmuri11';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('/fonts/galmuri/Galmuri11-Bold.woff2') format('woff2');
+}
+
 .sp[data-look='dialogue'] {
 	--sp-bg: #10183a;
 	height: 100%;
@@ -36,10 +54,20 @@
 	padding: 24px 28px 8px;
 	overflow: hidden;
 	color: var(--dl-ink);
-	/* 시스템 글꼴. 한글이 굵기를 다 갖춘 글꼴로 떨어지게 이름을 적어 둔다 (굵은 제목이 가늘게 나오지 않게) */
+	/* 픽셀 글꼴. 받기 전과 없는 글자는 시스템 글꼴로 */
 	font-family:
-		-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
-	letter-spacing: 0.01em;
+		'Galmuri11',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Apple SD Gothic Neo',
+		'Malgun Gothic',
+		'Noto Sans KR',
+		sans-serif;
+	letter-spacing: 0;
+	/* 픽셀 가장자리를 흐리지 않는다 */
+	-webkit-font-smoothing: none;
+	font-smooth: never;
+	text-rendering: optimizeSpeed;
 	isolation: isolate;
 	/* 밤: 짙은 남색 그라데이션 위에 은은한 별 */
 	background:
@@ -159,8 +187,8 @@
 	align-self: start;
 	margin: 9px 9px 18px;
 	padding: 8px 12px;
-	font-size: 13px;
-	font-weight: 600;
+	font-size: 11px;
+	font-weight: 700;
 	font-variant-numeric: tabular-nums;
 	line-height: 1.35;
 }
@@ -184,13 +212,13 @@
 
 .dl-stats i {
 	color: var(--dl-accent);
-	font-size: 13px;
+	font-size: 11px;
 	text-align: center;
 }
 
 .dl-stats strong {
 	font-size: 16px;
-	font-weight: 800;
+	font-weight: 700;
 	white-space: nowrap;
 }
 
@@ -203,13 +231,13 @@
 }
 
 .dl-quest-count {
-	font-size: 13px;
+	font-size: 11px;
 	font-weight: 700;
 }
 
 .dl-quest-count b {
 	font-size: 15px;
-	font-weight: 800;
+	font-weight: 700;
 }
 
 /* 진행 칸: 읽은 주제마다 한 칸이 채워진다 */
@@ -232,7 +260,7 @@
 
 .dl-meta {
 	color: var(--dl-ink-soft);
-	font-size: 12px;
+	font-size: 11px;
 	white-space: nowrap;
 }
 
@@ -283,7 +311,7 @@
 	padding: 18px 30px;
 	color: var(--dl-ink);
 	font-size: clamp(24px, 6cqw, 44px);
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.02em;
 	white-space: nowrap;
 }
@@ -360,7 +388,7 @@
 	margin: 0 0 6px;
 	color: var(--dl-ink);
 	font-size: 22px;
-	font-weight: 800;
+	font-weight: 700;
 	line-height: 1.45;
 	letter-spacing: 0.005em;
 	word-break: keep-all;
@@ -370,8 +398,8 @@
 .dl-body {
 	margin: 0;
 	color: var(--dl-ink);
-	font-size: 20px;
-	font-weight: 500;
+	font-size: 22px;
+	font-weight: 400;
 	line-height: 1.6;
 	word-break: keep-all;
 	overflow-wrap: anywhere;
@@ -421,7 +449,7 @@
 	background: transparent;
 	color: var(--dl-ink);
 	font: inherit;
-	font-size: 19px;
+	font-size: 22px;
 	font-weight: 700;
 	text-align: left;
 	cursor: pointer;
@@ -482,7 +510,7 @@
 	color: var(--dl-accent);
 	font-size: 16px;
 	font-style: normal;
-	font-weight: 900;
+	font-weight: 700;
 	text-align: center;
 }
 
@@ -490,7 +518,7 @@
 	min-width: 18px;
 	color: var(--dl-ink-soft);
 	font-family: inherit;
-	font-size: 12px;
+	font-size: 11px;
 	font-weight: 700;
 	font-variant-numeric: tabular-nums;
 	text-align: right;
@@ -510,7 +538,7 @@
 .dl-count {
 	color: var(--dl-ink-soft);
 	font-size: 15px;
-	font-weight: 800;
+	font-weight: 700;
 	font-variant-numeric: tabular-nums;
 }
 
@@ -536,7 +564,7 @@
 	background: var(--dl-accent);
 	color: var(--dl-accent-ink);
 	font-size: 14px;
-	font-weight: 800;
+	font-weight: 700;
 	box-shadow:
 		inset 0 -3px 0 rgba(0, 0, 0, 0.22),
 		inset 0 3px 0 rgba(255, 255, 255, 0.18);
@@ -581,7 +609,7 @@
 	color: var(--dl-ink);
 	font: inherit;
 	font-size: 16px;
-	font-weight: 800;
+	font-weight: 700;
 	cursor: pointer;
 	opacity: 0.4;
 	transition: opacity 0.15s;
@@ -691,7 +719,7 @@
 	background: var(--dl-accent);
 	color: var(--dl-accent-ink);
 	font-size: 14px;
-	font-weight: 800;
+	font-weight: 700;
 	line-height: 1.5;
 	letter-spacing: 0;
 	text-align: center;
@@ -714,8 +742,8 @@
 	min-width: 0;
 	margin: 0;
 	overflow: hidden;
-	font-size: 13px;
-	font-weight: 600;
+	font-size: 11px;
+	font-weight: 700;
 	line-height: 22px;
 	text-align: center;
 	text-overflow: ellipsis;
@@ -811,7 +839,7 @@
 	}
 
 	.dl-title {
-		font-size: 19px;
+		font-size: 22px;
 	}
 
 	.dl-body,
