@@ -34,6 +34,8 @@ import { getSavedProjects, PARSE_OPTIONS, sendProjects } from '@/shared/site/sit
 import { completeProject, groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
 import ProjectPage from '@/apps/safari/ProjectPage';
 import { hasCustomPage } from '@/apps/safari/project/custom';
+import { PROJECT_APPS } from '@/apps/manifest';
+import { ALBUMS, albumsOf } from '@/apps/photos/albums';
 import { requestWindowSize } from '@/desktop/window/windowSizeRequest';
 import { uploadFile } from '@/apps/memo/writer/attachmentsApi';
 import { appIconUrl } from '@/shared/config/appIcon';
@@ -116,6 +118,17 @@ const tidyBackdrop = ({ theme, image }: ProjectBackdrop): ProjectBackdrop | unde
 	if (image) out.image = image;
 	return out.theme || out.image ? out : undefined;
 };
+
+/** 앱이 쓰는 프로젝트 값 (Dock·Launchpad의 앱 목록은 시작할 때 한 번 정한다: apps/manifest.ts) */
+const appSignature = (projects: readonly Project[]) =>
+	JSON.stringify(
+		projects.filter((project) => project.app && project.demo).map(({ id, demo, app }) => ({ id, demo, app }))
+	);
+
+/** 저장한 뒤 새로고침해야 하는지: 앱 목록이나 사진 앨범(시작할 때 한 번 정함)이 바뀌었을 때 */
+const needsReload = () =>
+	appSignature(PROJECTS) !== appSignature(PROJECT_APPS) ||
+	JSON.stringify(albumsOf(PROJECTS)) !== JSON.stringify(ALBUMS);
 
 /** 서버에 둔 순서대로, 서버 목록에 없는 코드의 프로젝트는 끝에 (숨긴 것도 목록에는 보인다) */
 function rowsFrom(saved: SiteProjects | null): Row[] {
@@ -2106,7 +2119,8 @@ const ProjectsPane = () => {
 	const [editing, setEditing] = useState<Row | null>(null);
 	const [errors, setErrors] = useState<string[]>([]);
 	const [busy, setBusy] = useState(false);
-	const [savedNow, setSavedNow] = useState(false);
+	// 저장한 뒤: 'live'는 모든 화면에 바로 적용됨, 'reload'는 앱 목록·사진 앨범까지 바뀌어 새로고침이 필요함
+	const [savedNow, setSavedNow] = useState<false | 'live' | 'reload'>(false);
 	const [confirmingReset, setConfirmingReset] = useState(false);
 	/** 맨 아래 칸에 적는 새 프로젝트 id (GitHub 항목의 owner/이름으로 더하기처럼) */
 	const [newId, setNewId] = useState('');
@@ -2123,7 +2137,7 @@ const ProjectsPane = () => {
 		setSaved(fresh);
 		setRows(rowsFrom(fresh));
 		setErrors([]);
-		setSavedNow(true);
+		setSavedNow(needsReload() ? 'reload' : 'live');
 	};
 	/** 완료: 바뀐 것이 있으면 저장하고 편집을 마친다. 실패하면 편집 중인 채로 이유를 보여 준다 */
 	const finish = async () => {
@@ -2212,10 +2226,19 @@ const ProjectsPane = () => {
 			)}
 			{savedNow && (
 				<div className="projects-saved" role="status">
-					<span>저장했습니다. 새로고침하면 Safari·Dock·Finder·터미널에 적용됩니다.</span>
-					<Button tone="primary" onClick={() => window.location.reload()}>
-						지금 새로고침
-					</Button>
+					{savedNow === 'reload' ? (
+						<>
+							<span>
+								저장했습니다. Safari·Finder·터미널에는 바로 적용했습니다. 바뀐 앱 목록과 사진 앨범은 새로고침하면
+								Dock·Launchpad·사진에 적용됩니다.
+							</span>
+							<Button tone="primary" onClick={() => window.location.reload()}>
+								지금 새로고침
+							</Button>
+						</>
+					) : (
+						<span>저장했습니다. 모든 화면에 바로 적용했습니다.</span>
+					)}
 				</div>
 			)}
 

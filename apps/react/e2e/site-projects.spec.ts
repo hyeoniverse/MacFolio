@@ -63,7 +63,9 @@ test.describe('프로젝트 관리', () => {
 		await expect(appWindow(page, 'settings').getByRole('button', { name: '프로젝트', exact: true })).toHaveCount(0);
 	});
 
-	test('관리자: 폼으로 고치고, 순서를 바꾸고, 숨기고, 저장하면 새로고침 뒤 모든 화면에 적용된다', async ({ page }) => {
+	test('관리자: 폼으로 고치고, 순서를 바꾸고, 숨기고, 저장하면 Safari에 바로, 새로고침 뒤 모든 화면에 적용된다', async ({
+		page,
+	}) => {
 		const api = await fakeApi(page, { signedIn: true });
 		await enterDesktop(page);
 		const settings = await openProjectsPane(page);
@@ -109,6 +111,12 @@ test.describe('프로젝트 관리', () => {
 		});
 		expect(api.siteProjects?.items).toContainEqual({ id: 'devcourse', hidden: true });
 
+		// Safari에는 새로고침 없이 바로: 맥폴리오가 맨 앞, 숨긴 DevCourse는 탭에서 빠진다
+		const live = appWindow(page, 'safari');
+		await dockItem(page, 'safari').click();
+		await expect(live.getByRole('tab').first()).toContainText('맥폴리오');
+		await expect(live.getByRole('tab', { name: /DevCourse/ })).toHaveCount(0);
+		// 사진 앨범이 바뀌었으니(DevCourse를 숨김) 새로고침을 권한다. 새로고침해도 그대로
 		await settings.getByRole('button', { name: '지금 새로고침' }).click();
 		await expect(appWindow(page, 'safari').getByRole('tab').first()).toContainText('맥폴리오');
 		await expect(appWindow(page, 'safari').getByRole('tab', { name: /DevCourse/ })).toHaveCount(0);
@@ -381,5 +389,31 @@ test.describe('프로젝트 관리', () => {
 			look: 'dialogue',
 			backdrop: { theme: 'sea', image: '/imgs/projects/qru/screenshot.jpg' },
 		});
+	});
+
+	test('관리자: 페이지 모양만 바꾸면 새로고침 없이 열려 있는 Safari 탭이 바로 바뀐다', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		await dockItem(page, 'safari').click();
+		const safari = appWindow(page, 'safari');
+		await safari.getByRole('tab', { name: /QRU/ }).click();
+		const article = safari.getByRole('tabpanel').getByRole('article', { name: 'QRU 큐알유' });
+		await expect(article).toHaveAttribute('data-look', 'minimal');
+
+		const settings = await openProjectsPane(page);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
+		const list = settings.getByRole('list', { name: '프로젝트' });
+		await list.getByRole('listitem').filter({ hasText: 'QRU' }).getByRole('button', { name: '편집' }).click();
+		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
+		await editor
+			.getByRole('radiogroup', { name: '페이지 모양' })
+			.getByRole('radio', { name: /RPG 대화창/ })
+			.click();
+		await editor.getByRole('button', { name: '완료' }).click();
+		await settings.getByRole('button', { name: '완료' }).click();
+		const saved = settings.getByRole('status').filter({ hasText: '저장했습니다' });
+		await expect(saved).toContainText('모든 화면에 바로 적용했습니다.');
+		await expect(settings.getByRole('button', { name: '지금 새로고침' })).toHaveCount(0);
+		await expect(article).toHaveAttribute('data-look', 'dialogue');
 	});
 });
