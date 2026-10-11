@@ -482,6 +482,7 @@ const ImageField = ({
 	onChange,
 	required = false,
 	hint,
+	compact = false,
 	toUrl = (v) => v,
 	fromPicked = (src) => src,
 }: {
@@ -490,6 +491,8 @@ const ImageField = ({
 	onChange: (value: string | undefined) => void;
 	required?: boolean;
 	hint?: string;
+	/** 목록 항목 안의 작은 꼴: 작은 썸네일과 고르기·올리기·주소를 한 줄에 */
+	compact?: boolean;
 	/** 저장된 값 → 보여 줄 주소 */
 	toUrl?: (value: string) => string;
 	/** 고른 그림 주소(/imgs/…) → 저장할 값 */
@@ -512,64 +515,99 @@ const ImageField = ({
 			setUploading(false);
 		}
 	};
+	const picker = (
+		<span className="projects-image-pick">
+			<select
+				aria-label={`${label} 고르기`}
+				value={value && ALL_PICTURES.some((src) => fromPicked(src) === value) ? value : ''}
+				onChange={(event) => onChange(event.target.value ? fromPicked(event.target.value) : undefined)}
+			>
+				<option value="">{value ? '다른 그림 고르기…' : '사이트 안 그림에서 고르기…'}</option>
+				{FOLDER_GROUPS.map((group) => (
+					<optgroup key={group.label} label={group.label}>
+						{group.folders.flatMap((folder) =>
+							PUBLIC_IMAGES[folder.value]
+								.filter((src) => !src.endsWith('.mp4'))
+								.map((src) => (
+									<option key={src} value={fromPicked(src)}>
+										{src.slice(folder.value.length + 1)}
+										{folder.label !== '프로젝트 폴더' ? ` (${folder.label})` : ''}
+									</option>
+								))
+						)}
+					</optgroup>
+				))}
+			</select>
+			<i className="fa-solid fa-chevron-down" aria-hidden="true" />
+		</span>
+	);
+	const uploader = (
+		<label className="projects-upload">
+			<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
+			{uploading ? '올리는 중…' : '올리기'}
+			<input
+				id={fileId}
+				type="file"
+				accept="image/*"
+				aria-label={`${label} 올리기`}
+				disabled={uploading}
+				onChange={(event) => {
+					void upload(event.target.files?.[0]);
+					event.target.value = '';
+				}}
+			/>
+		</label>
+	);
+	const clear = value && (
+		<button type="button" className="projects-clear" onClick={() => onChange(undefined)}>
+			지우기
+		</button>
+	);
+	const url = (
+		<input
+			type="text"
+			aria-label={`${label} 주소`}
+			value={value ?? ''}
+			placeholder="주소 직접 적기"
+			spellCheck={false}
+			onChange={(event) => onChange(optional(event.target.value))}
+		/>
+	);
+	const preview = (
+		<span className={`projects-image-preview ${value ? 'filled' : 'empty'}`} aria-hidden="true">
+			{value ? <img src={toUrl(value)} alt="" /> : <i className="fa-regular fa-image" />}
+		</span>
+	);
+	if (compact)
+		return (
+			<div className="projects-field projects-image compact">
+				{preview}
+				<div className="projects-image-main">
+					<div className="projects-image-tools">
+						<FieldLabel label={label} required={required} />
+						{picker}
+						{uploader}
+						{clear}
+					</div>
+					{url}
+					{error && <p className="about-pane-hint projects-error">{error}</p>}
+				</div>
+			</div>
+		);
 	return (
 		<div className="projects-field projects-image">
-			<div className="projects-image-row">
+			{preview}
+			<div className="projects-image-main">
 				<FieldLabel label={label} required={required} />
-				<span className="projects-image-preview" aria-hidden="true">
-					{value ? <img src={toUrl(value)} alt="" /> : <i className="fa-regular fa-image" />}
-				</span>
-				<select
-					aria-label={`${label} 고르기`}
-					value={value && ALL_PICTURES.some((src) => fromPicked(src) === value) ? value : ''}
-					onChange={(event) => onChange(event.target.value ? fromPicked(event.target.value) : undefined)}
-				>
-					<option value="">{value ? '다른 그림 고르기…' : '사이트 안 그림에서 고르기…'}</option>
-					{FOLDER_GROUPS.map((group) => (
-						<optgroup key={group.label} label={group.label}>
-							{group.folders.flatMap((folder) =>
-								PUBLIC_IMAGES[folder.value]
-									.filter((src) => !src.endsWith('.mp4'))
-									.map((src) => (
-										<option key={src} value={fromPicked(src)}>
-											{src.slice(folder.value.length + 1)}
-											{folder.label !== '프로젝트 폴더' ? ` (${folder.label})` : ''}
-										</option>
-									))
-							)}
-						</optgroup>
-					))}
-				</select>
-				<label className="showcase-text-button projects-upload">
-					{uploading ? '올리는 중…' : '올리기'}
-					<input
-						id={fileId}
-						type="file"
-						accept="image/*"
-						aria-label={`${label} 올리기`}
-						disabled={uploading}
-						onChange={(event) => {
-							void upload(event.target.files?.[0]);
-							event.target.value = '';
-						}}
-					/>
-				</label>
-				{value && (
-					<button type="button" className="showcase-text-button projects-clear" onClick={() => onChange(undefined)}>
-						지우기
-					</button>
-				)}
+				{hint && <p className="about-pane-hint">{hint}</p>}
+				<div className="projects-image-tools">
+					{picker}
+					{uploader}
+					{clear}
+					{url}
+				</div>
+				{error && <p className="about-pane-hint projects-error">{error}</p>}
 			</div>
-			<input
-				type="text"
-				aria-label={`${label} 주소`}
-				value={value ?? ''}
-				placeholder="직접 적기: /imgs/… 또는 https://…"
-				spellCheck={false}
-				onChange={(event) => onChange(optional(event.target.value))}
-			/>
-			{error && <p className="about-pane-hint projects-error">{error}</p>}
-			{hint && <p className="about-pane-hint">{hint}</p>}
 		</div>
 	);
 };
@@ -643,6 +681,7 @@ const PointsEditor = ({
 					<li key={index}>
 						<div className="projects-list-fields">
 							<input
+								className="projects-list-title"
 								aria-label={`${label} ${index + 1} 제목`}
 								placeholder="제목"
 								value={point.title}
@@ -655,7 +694,7 @@ const PointsEditor = ({
 								value={point.body}
 								onChange={(event) => update(index, { body: event.target.value })}
 							/>
-							<ImageField label="그림" value={point.image} onChange={(image) => update(index, { image })} />
+							<ImageField label="그림" compact value={point.image} onChange={(image) => update(index, { image })} />
 						</div>
 						<RowTools
 							index={index}
@@ -1027,7 +1066,7 @@ const ProjectEditor = ({
 							</section>
 							<section className="about-pane-group" aria-label="화면 모음">
 								<h3>화면 모음</h3>
-								<div className="projects-field">
+								<div className="projects-field projects-folder">
 									<label>
 										<span>폴더</span>
 										<select
@@ -1055,13 +1094,19 @@ const ProjectEditor = ({
 									</p>
 								</div>
 								{draft.galleryFolder && (
-									<ul className="projects-folder-preview" aria-label="화면 모음 미리 보기">
-										{(PUBLIC_IMAGES[draft.galleryFolder] ?? []).slice(0, 12).map((src) => (
-											<li key={src}>
-												{src.endsWith('.mp4') ? <video src={src} muted /> : <img src={src} alt="" loading="lazy" />}
-											</li>
-										))}
-									</ul>
+									<div className="projects-folder-shots">
+										<p className="projects-folder-count">
+											{PUBLIC_IMAGES[draft.galleryFolder]?.length ?? 0}장
+											{(PUBLIC_IMAGES[draft.galleryFolder]?.length ?? 0) > 12 ? ' (12장까지 미리 보기)' : ''}
+										</p>
+										<ul className="projects-folder-preview" aria-label="화면 모음 미리 보기">
+											{(PUBLIC_IMAGES[draft.galleryFolder] ?? []).slice(0, 12).map((src) => (
+												<li key={src}>
+													{src.endsWith('.mp4') ? <video src={src} muted /> : <img src={src} alt="" loading="lazy" />}
+												</li>
+											))}
+										</ul>
+									</div>
 								)}
 							</section>
 						</>
@@ -1127,7 +1172,7 @@ const ProjectEditor = ({
 								}
 							/>
 							{app && (
-								<>
+								<div className="projects-app-settings">
 									<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
 									<ImageField
 										label="앱 아이콘"
@@ -1162,33 +1207,42 @@ const ProjectEditor = ({
 											</select>
 										</label>
 									</div>
-									<div className="projects-field-pair">
-										<TextField
-											label="창 너비"
-											type="number"
-											value={app.windowSize?.width}
-											onChange={(width) =>
-												setApp({
-													windowSize: width
-														? { width: Number(width), height: app.windowSize?.height ?? 720 }
-														: undefined,
-												})
-											}
-										/>
-										<TextField
-											label="창 높이"
-											type="number"
-											value={app.windowSize?.height}
-											onChange={(height) =>
-												setApp({
-													windowSize: height
-														? { width: app.windowSize?.width ?? 1100, height: Number(height) }
-														: undefined,
-												})
-											}
-										/>
+									<div className="projects-field projects-size">
+										<div className="projects-size-row" role="group" aria-label="창 크기">
+											<FieldLabel label="창 크기" />
+											<input
+												type="number"
+												aria-label="창 너비"
+												placeholder="1100"
+												value={app.windowSize?.width ?? ''}
+												onChange={(event) =>
+													setApp({
+														windowSize: event.target.value
+															? { width: Number(event.target.value), height: app.windowSize?.height ?? 720 }
+															: undefined,
+													})
+												}
+											/>
+											<span aria-hidden="true">×</span>
+											<input
+												type="number"
+												aria-label="창 높이"
+												placeholder="720"
+												value={app.windowSize?.height ?? ''}
+												onChange={(event) =>
+													setApp({
+														windowSize: event.target.value
+															? { width: app.windowSize?.width ?? 1100, height: Number(event.target.value) }
+															: undefined,
+													})
+												}
+											/>
+											<span className="projects-size-unit" aria-hidden="true">
+												px
+											</span>
+										</div>
 									</div>
-								</>
+								</div>
 							)}
 						</section>
 					)}
