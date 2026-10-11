@@ -37,21 +37,10 @@
 
 /* Dock.css */
 .launchpad-modal {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 2000;
-	width: 100%;
-	height: 100%;
-	background: var(--color-overlay);
-	animation: fade-in var(--duration) var(--ease-out);
+	--ui-modal-z: 2000;
 }
 
 .launchpad-content {
-	animation: pop-in var(--duration) var(--ease-spring);
 	display: flex;
 	margin: 2rem;
 

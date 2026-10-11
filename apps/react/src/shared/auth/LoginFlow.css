@@ -1,12 +1,15 @@
 /* 로그인하러 다녀올 때의 안내와 결과 창 (macOS 경고창 모양). 앱 창·메뉴 막대보다 위 */
+/* 결과 창은 Modal의 덮개이고, 떠나는 안내(role=status)는 같은 모양의 덮개를 직접 그린다 */
 .login-flow {
+	--ui-modal-z: 20000;
+	--ui-modal-dim: rgba(0, 0, 0, 0.3);
 	display: grid;
 	position: fixed;
 	inset: 0;
-	z-index: 20000;
+	z-index: var(--ui-modal-z);
 	place-items: center;
 	padding: 24px;
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: var(--ui-modal-dim);
 	backdrop-filter: blur(6px);
 	animation: fade-in var(--duration-fast) var(--ease-out);
 }
