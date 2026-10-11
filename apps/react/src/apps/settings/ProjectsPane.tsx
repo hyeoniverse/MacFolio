@@ -324,7 +324,9 @@ const TagInput = ({
 	const listRef = useRef<HTMLUListElement>(null);
 	const [position, setPosition] = useState({ left: 0, top: 0, width: 0 });
 	// 후보는 입력칸 아래에 떠서(portal) 설정 창의 스크롤·칸 경계에 잘리지 않는다. 글자를 안 쳤을 땐 자주 쓰는 것부터 보여 준다
-	const shown = open ? suggest(options, query, items, 12) : [];
+	const shown = open ? suggest(options, query, items, 40) : [];
+	// 글자를 쳤을 때 전체 후보 가운데 몇 개가 맞는지 (목록은 40개까지)
+	const matched = open && query.trim() ? suggest(options, query, items, Infinity).length : 0;
 	useLayoutEffect(() => {
 		if (!shown.length || !inputRef.current) return;
 		const rect = inputRef.current.getBoundingClientRect();
@@ -437,7 +439,9 @@ const TagInput = ({
 					document.body
 				)}
 			<p className="about-pane-hint">
-				찾아서 고르거나, 적고 Enter·쉼표로 더합니다. 여러 개를 쉼표로 붙여 넣어도 됩니다.
+				{matched
+					? `${matched}개가 맞습니다${matched > 40 ? ' (40개까지 보여 줍니다. 더 쳐서 좁히세요)' : ''}.`
+					: `후보 ${options.length}개. 찾아서 고르거나, 적고 Enter·쉼표로 더합니다. 여러 개를 쉼표로 붙여 넣어도 됩니다.`}
 			</p>
 		</div>
 	);
