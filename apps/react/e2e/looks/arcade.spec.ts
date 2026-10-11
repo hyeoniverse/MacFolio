@@ -5,7 +5,7 @@ import { openLook } from './open';
 test.describe('arcade 모양', () => {
 	test('새싹 농장: 캐비닛·점수판·캐릭터 선택·조작법·갤러리 단추·크레딧', async ({ page }) => {
 		// sproutfarm은 기본 모양이 arcade라 look을 덮어쓰지 않는다
-		const { panel } = await openLook(page, { id: 'sproutfarm', tab: /SproutFarm/ });
+		const { panel } = await openLook(page, { id: 'sproutfarm', tab: /SproutFarm/, look: 'arcade' });
 
 		// 타이틀 화면: INSERT COIN, 네온 간판(이름), 캐비닛 안의 게임 장면
 		await expect(panel.getByText('INSERT COIN')).toBeVisible();

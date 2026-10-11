@@ -5,7 +5,7 @@ import { openLook } from './open';
 test('cinema: 제목이 글자마다 나타나고, 기능마다 한 장면, 숫자 장면, 시뮬레이터와 요청 경로, 어두운 표', async ({
 	page,
 }) => {
-	const { panel } = await openLook(page, { id: 'macfolio', tab: /MacFolio/ });
+	const { panel } = await openLook(page, { id: 'macfolio', tab: /MacFolio/, look: 'cinema' });
 	const article = panel.getByRole('article', { name: 'MacFolio' });
 
 	// 첫 장면: 제목은 글자마다 span으로 나눠도 읽히는 글은 그대로

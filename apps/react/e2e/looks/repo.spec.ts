@@ -3,7 +3,7 @@ import { test, expect } from '../fixtures';
 import { openLook } from './open';
 
 test('repo: 파일 트리를 펼쳐 읽고, 커밋을 타입으로 거르고, 서랍 터미널에 명령을 친다', async ({ page }) => {
-	const { panel } = await openLook(page, { id: 'devcourse', tab: /DevCourse/ });
+	const { panel } = await openLook(page, { id: 'devcourse', tab: /DevCourse/, look: 'repo' });
 
 	// 저장소 트리가 있으니 Code 탭이 먼저 골라져 있다
 	await expect(

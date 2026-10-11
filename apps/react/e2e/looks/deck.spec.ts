@@ -56,7 +56,7 @@ async function jump(panel: Locator, title: string, kind = 'content') {
 }
 
 test('deck: 진행 표시와 단추·키·소터로 넘기고, 슬라이드 안의 데모가 살아 있다', async ({ page }) => {
-	const { safari, panel } = await openLook(page, { id: 'hyeoniverse', tab: /HYEONIVERSE/ });
+	const { safari, panel } = await openLook(page, { id: 'hyeoniverse', tab: /HYEONIVERSE/, look: 'deck' });
 	// 발표는 큰 화면에서: 창을 최대화한다 (작은 기본 창에서는 슬라이드가 아주 작게 축소된다)
 	await safari.getByRole('button', { name: '전체 화면' }).click();
 	const count = panel.locator('.dk-count');
@@ -123,7 +123,7 @@ test('deck: 진행 표시와 단추·키·소터로 넘기고, 슬라이드 안�
 test('deck: 갤러리·파형·번역·요약·공급자 데모가 슬라이드 안에서 살아 있고, 몽이가 데모 곁에서 반응한다', async ({
 	page,
 }) => {
-	const { safari, panel } = await openLook(page, { id: 'hyeoniverse', tab: /HYEONIVERSE/ });
+	const { safari, panel } = await openLook(page, { id: 'hyeoniverse', tab: /HYEONIVERSE/, look: 'deck' });
 	await safari.getByRole('button', { name: '전체 화면' }).click();
 	const translated = await fakeAi(page);
 	const count = panel.locator('.dk-count');

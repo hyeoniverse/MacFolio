@@ -5,7 +5,7 @@ import { openLook } from './open';
 test('atelier: 로고와 이탤릭 tagline, 주요 기능 목차는 읽는 항목을 따라가고, 장과 진행 과정이 구역으로 있다', async ({
 	page,
 }) => {
-	const { panel } = await openLook(page, { id: 'newpick', tab: /NewPick/ });
+	const { panel } = await openLook(page, { id: 'newpick', tab: /NewPick/, look: 'atelier' });
 	const article = panel.getByRole('article', { name: 'NewPick 뉴픽' });
 	await expect(article).toBeVisible();
 	// h1은 tagline, 로고 그림의 이름은 프로젝트 이름
