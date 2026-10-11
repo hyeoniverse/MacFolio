@@ -6,6 +6,7 @@ import { useLaunchApp } from '@/desktop/useLaunchApp';
 import { APP_MANIFEST, WINDOW_APP_NAMES } from '@/apps/manifest';
 import { getPostRepository } from '@/apps/memo/repository';
 import { PROJECTS } from '@/shared/profile';
+import { useProjectsVersion } from '@/shared/site/siteContent';
 import { requestOpen } from '@/shared/lib/openRequest';
 import { useSettings } from '@/shared/settings/settingsStore';
 import { resolveTheme } from '@/shared/settings/settings';
@@ -78,6 +79,8 @@ const Finder: React.FC = () => {
 		};
 	}, []);
 
+	// 시스템 설정에서 프로젝트를 저장하면 프로젝트 폴더도 새로고침 없이 바뀐다
+	const projectsVersion = useProjectsVersion();
 	const locations = useMemo(
 		() =>
 			buildLocations({
@@ -90,7 +93,8 @@ const Finder: React.FC = () => {
 					icon: APP_MANIFEST[name].icon,
 				})),
 			}),
-		[posts]
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- PROJECTS는 안만 바뀌는 배열이라 판(version)으로 다시 계산한다
+		[posts, projectsVersion]
 	);
 
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: [{ folder: 'docs' }], at: 0 });
