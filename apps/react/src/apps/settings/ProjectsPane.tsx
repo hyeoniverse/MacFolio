@@ -309,6 +309,129 @@ const PeriodField = ({
  * 기술: 고른 것은 칩으로, 치면 후보가 걸러져 아래에 나온다. Enter·쉼표로 더하고(목록에 없는 것도), ↑·↓로 후보를 고르고,
  * 빈 칸에서 Backspace는 마지막 칩을 뺀다
  */
+/**
+ * 하나를 고르는 칸 (주 언어): 누르면 후보 전체가 칸 아래에 뜨고, 입력하면 걸러진다.
+ * 목록에 없는 이름도 그대로 쓸 수 있다 (입력한 글자가 곧 값)
+ */
+const ChoiceInput = ({
+	label,
+	value,
+	options,
+	onChange,
+}: {
+	label: string;
+	value: string;
+	options: readonly string[];
+	onChange: (value: string) => void;
+}) => {
+	const [open, setOpen] = useState(false);
+	// 칸을 막 열었을 때는 지금 값으로 거르지 않고 전체를 보여 준다. 입력하면 그때부터 거른다
+	const [typed, setTyped] = useState(false);
+	const [active, setActive] = useState(0);
+	const listId = useId();
+	const inputRef = useRef<HTMLInputElement>(null);
+	const listRef = useRef<HTMLUListElement>(null);
+	const [position, setPosition] = useState({ left: 0, top: 0, width: 0 });
+	const shown = open ? suggest(options, typed ? value : '', [], Infinity) : [];
+	useLayoutEffect(() => {
+		if (!shown.length || !inputRef.current) return;
+		const rect = inputRef.current.getBoundingClientRect();
+		const height = listRef.current?.offsetHeight ?? 0;
+		setPosition({ ...placeBelow(rect, { width: rect.width, height }), width: rect.width });
+	}, [shown.length, value]);
+	// 열면 지금 값이 목록에 보이게, ↑·↓로 고른 후보도 목록 안에서 보이게 굴린다
+	useEffect(() => {
+		listRef.current?.querySelector(`[id="${listId}-${active}"]`)?.scrollIntoView({ block: 'nearest' });
+	}, [active, listId, open]);
+	const openList = () => {
+		setTyped(false);
+		const index = options.findIndex((option) => option.toLowerCase() === value.toLowerCase());
+		setActive(Math.max(0, index));
+		setOpen(true);
+	};
+	const pick = (option: string) => {
+		onChange(option);
+		setOpen(false);
+	};
+	return (
+		<div className="projects-field projects-choice">
+			<label>
+				<FieldLabel label={label} />
+				<span className="projects-choice-box">
+					<input
+						ref={inputRef}
+						role="combobox"
+						aria-label={label}
+						aria-expanded={shown.length > 0}
+						aria-controls={listId}
+						aria-autocomplete="list"
+						aria-activedescendant={shown.length ? `${listId}-${active}` : undefined}
+						value={value}
+						placeholder={`${label} 검색`}
+						spellCheck={false}
+						onFocus={openList}
+						onClick={() => !open && openList()}
+						onBlur={() => setOpen(false)}
+						onChange={(event) => {
+							onChange(event.target.value);
+							setTyped(true);
+							setActive(0);
+							setOpen(true);
+						}}
+						onKeyDown={(event) => {
+							if (event.key === 'ArrowDown' && shown.length) {
+								event.preventDefault();
+								setActive((index) => (index + 1) % shown.length);
+							} else if (event.key === 'ArrowUp' && shown.length) {
+								event.preventDefault();
+								setActive((index) => (index - 1 + shown.length) % shown.length);
+							} else if (event.key === 'Enter') {
+								event.preventDefault();
+								if (shown[active]) pick(shown[active]);
+								else setOpen(false);
+							} else if (event.key === 'Escape' && open) {
+								event.stopPropagation();
+								setOpen(false);
+							}
+						}}
+					/>
+					<i className="fa-solid fa-chevron-down" aria-hidden="true" />
+				</span>
+			</label>
+			{shown.length > 0 &&
+				createPortal(
+					<ul
+						ref={listRef}
+						className="projects-suggestions"
+						role="listbox"
+						id={listId}
+						aria-label={`${label} 후보`}
+						style={position}
+					>
+						{shown.map((option, index) => (
+							<li
+								key={option}
+								id={`${listId}-${index}`}
+								role="option"
+								aria-selected={index === active}
+								data-current={option === value || undefined}
+								onPointerDown={(event) => event.preventDefault()}
+								onClick={() => pick(option)}
+							>
+								{option}
+								{option === value && <i className="fa-solid fa-check" aria-hidden="true" />}
+							</li>
+						))}
+					</ul>,
+					document.body
+				)}
+			<p className="about-pane-hint">
+				목록에서 고르거나 이름으로 검색합니다. 목록에 없는 언어는 이름을 직접 입력합니다.
+			</p>
+		</div>
+	);
+};
+
 const TagInput = ({
 	label,
 	items,
@@ -1073,12 +1196,11 @@ const ProjectEditor = ({
 									onChange={(demo) => set({ demo: optional(demo) })}
 									placeholder="https://"
 								/>
-								<TextField
+								<ChoiceInput
 									label="주 언어"
 									value={draft.language}
-									onChange={(language) => set({ language })}
 									options={LANGUAGES}
-									placeholder="찾거나 적기"
+									onChange={(language) => set({ language })}
 								/>
 								<TagInput
 									label="기술"

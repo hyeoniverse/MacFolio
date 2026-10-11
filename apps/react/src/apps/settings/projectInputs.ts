@@ -1,5 +1,6 @@
 // 시스템 설정 › 프로젝트의 입력칸 규칙 (React와 DOM 없이): 기간 읽기·쓰기, 자동완성 후보
 import type { Project } from '@macfolio/desktop-core/site';
+import { LINGUIST_LANGUAGES } from './linguistLanguages';
 
 /** 기간: 시작일과 끝(날짜, 또는 '운영 중' 같은 글). 프로젝트의 period는 '2024.12.26 – 2025.02.05' 모양이다 */
 export interface Period {
@@ -1897,9 +1898,19 @@ const COMMON_STACKS = [
 
 const unique = (values: string[]) => [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 
-/** 언어 후보: 프로젝트들이 쓴 언어 먼저, 그다음 자주 쓰는 언어 */
-export const languageOptions = (projects: readonly Project[]) =>
-	unique([...projects.map((project) => project.language), ...COMMON_LANGUAGES]);
+/** 언어 후보: 프로젝트들이 쓴 언어 먼저, 그다음 자주 쓰는 언어, 그다음 GitHub linguist의 언어 전부 */
+export const languageOptions = (projects: readonly Project[]) => {
+	// 프로젝트들이 쓴 언어 → 자주 쓰는 언어 → linguist의 나머지 (같은 이름은 대소문자 무시하고 하나로)
+	const seen = new Set<string>();
+	return unique([...projects.map((project) => project.language), ...COMMON_LANGUAGES, ...LINGUIST_LANGUAGES]).filter(
+		(name) => {
+			const key = name.toLowerCase();
+			if (seen.has(key)) return false;
+			seen.add(key);
+			return true;
+		}
+	);
+};
 
 /** 기술 후보: 프로젝트들의 기술과 다룰 수 있는 기술(많이 쓴 것부터), 그다음 자주 쓰는 기술 */
 export function stackOptions(projects: readonly Project[], extra: readonly string[] = []): string[] {
