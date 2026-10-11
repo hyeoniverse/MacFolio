@@ -69,29 +69,12 @@
 	font-smooth: never;
 	text-rendering: optimizeSpeed;
 	isolation: isolate;
-	/* 낮: 맑은 하늘에 픽셀 구름. 아래쪽은 강조색이 은은하게 번진 지평선 (프로젝트마다 색이 조금 다르다) */
-	background:
-		linear-gradient(#fff 0 0) 9% 14% / 72px 12px no-repeat,
-		linear-gradient(#fff 0 0) calc(9% + 12px) calc(14% - 12px) / 40px 12px no-repeat,
-		linear-gradient(#fff 0 0) 31% 24% / 56px 10px no-repeat,
-		linear-gradient(#fff 0 0) calc(31% + 10px) calc(24% - 10px) / 28px 10px no-repeat,
-		linear-gradient(#fff 0 0) 70% 11% / 88px 12px no-repeat,
-		linear-gradient(#fff 0 0) calc(70% + 16px) calc(11% - 12px) / 48px 12px no-repeat,
-		linear-gradient(#fff 0 0) 90% 27% / 52px 10px no-repeat,
-		linear-gradient(#fff 0 0) calc(90% + 10px) calc(27% - 10px) / 24px 10px no-repeat,
-		radial-gradient(120% 60% at 50% 100%, color-mix(in srgb, var(--dl-accent) 28%, transparent), transparent 70%),
-		linear-gradient(#7cc8f2, #b8e3f8 55%, #f3ead2);
+	background: #8fd0f2;
 }
 
-/* QRU: 푸른 강조 */
+/* QRU: 푸른 강조 (아이콘 색을 읽기 전·못 읽을 때) */
 .dl[data-id='qru'] {
 	--dl-accent: #2f6fae;
-}
-
-/* sproutfarm: 하늘과 풀밭, 초록 강조 */
-.dl[data-id='sproutfarm'] {
-	--dl-accent: #4d8a2a;
-	background: linear-gradient(#6ec3ee, #a9def5 55%, #d4f0f7);
 }
 
 /* ─── 픽셀 테두리: box-shadow를 겹쳐 계단 모서리를 만든다 (모서리를 둥글리지 않는다) ─── */
@@ -127,12 +110,56 @@
 		0 calc(var(--dl-u) * 5) 0 rgba(20, 10, 4, 0.22);
 }
 
-/* ─── 바탕 장식 ─── */
+/* ─── 바탕 장면 (dialogue/Backdrop.tsx): 테마마다 하늘(벽)·지평선 띠·바닥·가장자리 소품 ───
+   auto(기본): 낮 하늘에 구름과 마룻바닥, 아이콘 색이 하늘 톤과 바닥에 번진다. 배경 그림이 있으면 픽셀로 바꿔 하늘 자리에 */
 .dl-sky {
 	position: absolute;
 	inset: 0;
 	z-index: -2;
+	overflow: hidden;
 	pointer-events: none;
+	background: linear-gradient(
+		color-mix(in srgb, var(--dl-sky-1, #7cc8f2) 45%, #7cc8f2),
+		color-mix(in srgb, var(--dl-sky-2, #b8e3f8) 45%, #b8e3f8) 55%,
+		#f3ead2
+	);
+}
+
+/* 테마 하늘에도 아이콘 색이 살짝: 위쪽에 옅게 겹친다 (테마의 정체성은 그대로) */
+.dl-sky::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(var(--dl-tint, transparent), transparent 60%);
+	opacity: 0.14;
+	mix-blend-mode: soft-light;
+}
+
+.dl-sky-item {
+	position: absolute;
+}
+
+/* 픽셀로 바꾼 그림: 작은 canvas를 흐림 없이 키우고, 살짝 어둡게 + 가장자리 비네트로 글자 대비를 지킨다 */
+.dl-pixel {
+	position: absolute;
+	inset: 0;
+}
+
+.dl-pixel-canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+	image-rendering: pixelated;
+	filter: saturate(1.15) brightness(0.86);
+}
+
+.dl-pixel::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(130% 95% at 50% 40%, transparent 45%, rgba(20, 12, 6, 0.55)),
+		linear-gradient(rgba(20, 12, 6, 0.12), rgba(20, 12, 6, 0.04) 40%, rgba(20, 12, 6, 0.3));
 }
 
 /* 땅: 대화 상자 줄보다 조금 위에서 시작해 아래 끝까지 */
@@ -142,23 +169,19 @@
 	z-index: -1;
 	margin: -56px -28px -8px;
 	pointer-events: none;
-	/* 낮: 따뜻한 나무 마룻바닥 (판 이음새 줄) */
+	/* 기본: 따뜻한 나무 마룻바닥 (판 이음새 줄), 아이콘 색이 조금 */
 	background:
 		linear-gradient(rgba(91, 52, 23, 0.18) 2px, transparent 2px) 0 0 / 100% 24px,
 		linear-gradient(90deg, rgba(91, 52, 23, 0.12) 2px, transparent 2px) 0 0 / 96px 24px,
-		linear-gradient(#e2b47a, #cf9a5f);
+		linear-gradient(
+			color-mix(in srgb, var(--dl-floor, #e2b47a) 18%, #e2b47a),
+			color-mix(in srgb, var(--dl-floor, #cf9a5f) 18%, #cf9a5f)
+		);
 	border-top: 4px solid #a8723f;
-}
-
-.dl[data-id='sproutfarm'] .dl-ground {
-	background:
-		url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px,
-		#6fb84a;
-	border-top: 4px solid #4b8a2e;
 	image-rendering: pixelated;
 }
 
-/* 나무·덤불·꽃: 장면 줄의 바닥(땅 시작선)에 서 있다 */
+/* 지평선에 붙은 띠와 소품: 장면 줄의 바닥(땅 시작선)에 서 있다 */
 .dl-props {
 	position: relative;
 	grid-row: stage-start / stage-end;
@@ -170,15 +193,329 @@
 	pointer-events: none;
 }
 
-.dl-props img {
+.dl-band,
+.dl-sea,
+.dl-rail,
+.dl-wainscot {
+	position: absolute;
+	bottom: 12px;
+}
+
+.dl-band {
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.dl-prop {
 	position: absolute;
 	bottom: 0;
+	display: block;
+	line-height: 0;
+}
+
+.dl-prop > svg,
+.dl-prop > img {
+	position: relative;
+	display: block;
+}
+
+.dl-prop > img {
 	width: calc(16px * var(--dl-scale));
 	image-rendering: pixelated;
 }
 
-.dl-props img[src*='tree'] {
+.dl-prop > img[src*='tree'] {
 	width: calc(32px * var(--dl-scale));
+}
+
+/* 등불: 소품 뒤에 번지는 둥근 빛 (픽셀 계단 세 겹) */
+.dl-glow {
+	position: absolute;
+	translate: -50% -50%;
+	background: radial-gradient(
+		closest-side,
+		rgba(255, 226, 140, 0.55) 0 30%,
+		rgba(255, 210, 120, 0.3) 30% 60%,
+		rgba(255, 200, 110, 0.14) 60% 100%,
+		transparent 100%
+	);
+}
+
+/* 움직임: 구름은 천천히 옆으로, 행성·갈매기는 둥실, 물결은 흐른다 (모두 계단 걸음) */
+.dl-drift {
+	animation: dl-drift 26s steps(13) infinite alternate;
+}
+
+.dl-drift.slow {
+	animation-duration: 38s;
+}
+
+@keyframes dl-drift {
+	to {
+		translate: 52px 0;
+	}
+}
+
+.dl-float {
+	animation: dl-float 7s steps(4) infinite alternate;
+}
+
+.dl-float.slow {
+	animation-duration: 10s;
+}
+
+@keyframes dl-float {
+	to {
+		translate: 0 8px;
+	}
+}
+
+.dl-gull {
+	animation: dl-gull 1.2s steps(2) infinite;
+}
+
+.dl-gull.slow {
+	animation-duration: 1.6s;
+}
+
+@keyframes dl-gull {
+	50% {
+		translate: 0 -3px;
+	}
+}
+
+/* ─── farm: 맑은 하늘, 겹친 언덕, 풀밭과 나무·꽃 스프라이트 ─── */
+.dl[data-theme='farm'] {
+	--dl-accent: #4d8a2a;
+	background: #a9def5;
+}
+
+.dl[data-theme='farm'] .dl-sky {
+	background: linear-gradient(#6ec3ee, #a9def5 55%, #d4f0f7);
+}
+
+.dl[data-theme='farm'] .dl-ground {
+	background:
+		url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px,
+		#6fb84a;
+	border-top: 4px solid #4b8a2e;
+}
+
+/* ─── town: 노을 하늘, 줄무늬 해와 건물 실루엣(창 불빛), 보도블록, 가로등 ─── */
+.dl[data-theme='town'] {
+	background: #6b3a75;
+}
+
+.dl[data-theme='town'] .dl-sky {
+	background: linear-gradient(#272456 0%, #3f2c69 18%, #6b3476 34%, #a8456e 48%, #e0675e 60%, #f59a5a 70%, #fbc77f 80%);
+}
+
+.dl[data-theme='town'] .dl-ground {
+	background:
+		linear-gradient(#d8ccbf 0 6px, #8a7c70 6px 10px, #5e5249 10px 12px, transparent 12px),
+		var(--dl-tile) 0 12px,
+		#a69788;
+	border-top: 0;
+}
+
+/* ─── office: 푸른 회색 벽, 블라인드 창 두 개, 벽 아래 판넬, 카펫, 책상·화분 ─── */
+.dl[data-theme='office'] {
+	background: #b9c6cd;
+}
+
+.dl[data-theme='office'] .dl-sky {
+	background:
+		repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0 28px, transparent 28px 56px),
+		linear-gradient(#c9d4da, #b4c2ca);
+}
+
+.dl-window {
+	position: absolute;
+	bottom: 112px;
+}
+
+.dl-wainscot {
+	left: 0;
+	right: 0;
+	height: 88px;
+	background:
+		linear-gradient(#e9e4da 0 6px, #a8a093 6px 9px, transparent 9px),
+		repeating-linear-gradient(90deg, transparent 0 116px, rgba(0, 0, 0, 0.1) 116px 120px),
+		linear-gradient(#8fa3b0, #8399a7);
+}
+
+.dl[data-theme='office'] .dl-ground {
+	background:
+		linear-gradient(#f2ede4 0 10px, #b9b1a4 10px 13px, transparent 13px),
+		var(--dl-tile) 0 13px,
+		#56697d;
+	border-top: 0;
+}
+
+/* ─── library: 나무 벽판, 벽을 채운 책장(색 띠 책등), 매단 등과 따뜻한 빛, 짙은 나무 바닥 ─── */
+.dl[data-theme='library'] {
+	background: #4a2c19;
+}
+
+.dl[data-theme='library'] .dl-sky {
+	background:
+		radial-gradient(38% 46% at 31% 6%, rgba(255, 200, 110, 0.32), transparent 70%),
+		radial-gradient(38% 46% at 69% 6%, rgba(255, 200, 110, 0.32), transparent 70%),
+		repeating-linear-gradient(90deg, transparent 0 116px, rgba(0, 0, 0, 0.22) 116px 120px),
+		linear-gradient(#3c2313, #5a3820 60%, #4a2c19);
+}
+
+/* 책장 위에 내려앉는 등불 빛 */
+.dl[data-theme='library'] .dl-band {
+	filter: drop-shadow(0 -4px 0 #2b170b);
+}
+
+.dl[data-theme='library'] .dl-props::before {
+	content: '';
+	position: absolute;
+	inset: auto 0 12px;
+	height: 300px;
+	z-index: 1;
+	background:
+		radial-gradient(30% 70% at 31% 0, rgba(255, 196, 100, 0.22), transparent 70%),
+		radial-gradient(30% 70% at 69% 0, rgba(255, 196, 100, 0.22), transparent 70%);
+	pointer-events: none;
+}
+
+.dl[data-theme='library'] .dl-ground {
+	background:
+		linear-gradient(#2b170b 0 8px, #6e4424 8px 10px, transparent 10px),
+		var(--dl-tile) 0 10px,
+		#8a5631;
+	border-top: 0;
+}
+
+/* ─── space: 별이 가득한 짙은 하늘(반짝임), 고리 행성과 달, 난간, 금속 판 바닥 ─── */
+.dl[data-theme='space'] {
+	background: #0b1030;
+}
+
+.dl[data-theme='space'] .dl-sky {
+	background:
+		radial-gradient(40% 30% at 22% 40%, rgba(120, 80, 200, 0.28), transparent 70%),
+		radial-gradient(36% 28% at 78% 62%, rgba(60, 160, 200, 0.2), transparent 70%),
+		linear-gradient(#050817, #0d1438 45%, #251b52 75%, #3a2266);
+}
+
+.dl-stars {
+	position: absolute;
+	inset: 0;
+	image-rendering: pixelated;
+}
+
+.dl-twinkle {
+	animation: dl-twinkle 2.4s steps(2) infinite;
+}
+
+@keyframes dl-twinkle {
+	50% {
+		opacity: 0.25;
+	}
+}
+
+.dl-rail {
+	left: 0;
+	right: 0;
+	height: 40px;
+	background:
+		linear-gradient(#8593ab 0 3px, #4f5b72 3px 6px, transparent 6px) 0 0 / 100% 100% no-repeat,
+		linear-gradient(transparent 22px, #4f5b72 22px 25px, transparent 25px) 0 0 / 100% 100% no-repeat,
+		linear-gradient(90deg, #66738c 0 6px, #3e4759 6px 8px, transparent 8px) 0 0 / 72px 100% repeat-x;
+}
+
+.dl[data-theme='space'] .dl-ground {
+	background:
+		repeating-linear-gradient(90deg, #f2c230 0 16px, #1d2230 16px 32px) 0 0 / 100% 8px no-repeat,
+		linear-gradient(transparent 8px, #1d2230 8px 11px, transparent 11px),
+		var(--dl-tile) 0 11px,
+		#3e4759;
+	border-top: 0;
+}
+
+/* 로켓의 불꽃이 깜빡인다 */
+.dl-rocket {
+	animation: dl-hover 0.5s steps(2) infinite;
+}
+
+@keyframes dl-hover {
+	50% {
+		translate: 0 -2px;
+	}
+}
+
+/* ─── sea: 밝은 하늘과 해, 수평선까지 흐르는 물결, 거품과 모래, 야자·등대·파라솔 ─── */
+.dl[data-theme='sea'] {
+	background: #8fd2f2;
+}
+
+.dl[data-theme='sea'] .dl-sky {
+	background: linear-gradient(#4fb0e6, #8fd2f2 40%, #d2eff9 70%);
+}
+
+.dl-sea {
+	left: 0;
+	right: 0;
+	height: 104px;
+	background: linear-gradient(#bfe9f7 0 3px, transparent 3px), linear-gradient(#2f88c4, #2a74b0 40%, #22609a);
+}
+
+.dl-sea i {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 9px;
+	background: var(--dl-wave) 0 0 / 96px 9px repeat-x;
+	animation: dl-wave 9s steps(32) infinite linear;
+	image-rendering: pixelated;
+}
+
+.dl-sea i:nth-child(1) {
+	top: 16px;
+	opacity: 0.55;
+}
+
+.dl-sea i:nth-child(2) {
+	top: 44px;
+	background-position-x: 40px;
+	animation-duration: 12s;
+	animation-direction: reverse;
+	opacity: 0.75;
+}
+
+.dl-sea i:nth-child(3) {
+	top: 76px;
+	background-position-x: 20px;
+	animation-duration: 7s;
+}
+
+@keyframes dl-wave {
+	to {
+		background-position-x: 96px;
+	}
+}
+
+.dl[data-theme='sea'] .dl-ground {
+	background:
+		var(--dl-foam) 0 0 / 48px 9px repeat-x,
+		linear-gradient(transparent 9px, #d9bd84 9px 18px, transparent 18px),
+		var(--dl-tile) 0 18px,
+		#ecd39b;
+	border-top: 0;
+}
+
+.dl-crab {
+	animation: dl-scuttle 3s steps(6) infinite alternate;
+}
+
+@keyframes dl-scuttle {
+	to {
+		translate: 24px 0;
+	}
 }
 
 /* ─── HUD: 왼쪽 위 숫자 판, 오른쪽 위 읽은 주제 판 ─── */

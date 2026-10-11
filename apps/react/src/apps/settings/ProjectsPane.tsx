@@ -2,13 +2,16 @@ import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 're
 import { createPortal } from 'react-dom';
 import { placeBelow } from '@/shared/ui/popover/placement';
 import {
+	BACKDROP_THEMES,
 	blankProject,
 	mergeProjects,
 	overrideOf,
 	parseProjects,
 	PROJECT_LOOKS,
+	type BackdropTheme,
 	type Project,
 	type ProjectAppInfo,
+	type ProjectBackdrop,
 	type ProjectFact,
 	type ProjectPoint,
 	type ProjectLook,
@@ -75,6 +78,25 @@ const LOOK_LABEL: Record<ProjectLook, string> = {
 	deck: '발표 슬라이드',
 	assistant: '설정 도우미 (단계)',
 	custom: '직접 짠 페이지 (코드)',
+};
+
+/** dialogue 모양(RPG 대화창)의 배경 장면 이름 */
+const BACKDROP_LABEL: Record<BackdropTheme, string> = {
+	auto: '자동',
+	farm: '농장',
+	town: '도시 거리',
+	office: '사무실',
+	library: '도서관',
+	space: '우주',
+	sea: '바다',
+};
+
+/** 배경 묶음을 정리한다: 자동 테마는 적지 않고, 아무것도 없으면 필드째 뺀다 */
+const tidyBackdrop = ({ theme, image }: ProjectBackdrop): ProjectBackdrop | undefined => {
+	const out: ProjectBackdrop = {};
+	if (theme && theme !== 'auto') out.theme = theme;
+	if (image) out.image = image;
+	return out.theme || out.image ? out : undefined;
 };
 
 /** 서버에 둔 순서대로, 서버 목록에 없는 코드의 프로젝트는 끝에 (숨긴 것도 목록에는 보인다) */
@@ -1223,6 +1245,41 @@ const ProjectEditor = ({
 									value={draft.icon}
 									onChange={(icon) => set({ icon })}
 									hint="네모난 앱 아이콘. Safari 탭·Finder·페이지 맨 위에 작게 보입니다. 없으면 기본 모양"
+								/>
+							</section>
+							<section className="about-pane-group" aria-label="대화창 배경">
+								<h3>대화창 배경</h3>
+								<div className="projects-field">
+									<label>
+										<span>배경 테마</span>
+										<select
+											value={draft.backdrop?.theme ?? 'auto'}
+											onChange={(event) =>
+												set({
+													backdrop: tidyBackdrop({
+														...draft.backdrop,
+														theme: event.target.value as BackdropTheme,
+													}),
+												})
+											}
+										>
+											{BACKDROP_THEMES.map((theme) => (
+												<option key={theme} value={theme}>
+													{BACKDROP_LABEL[theme]}
+												</option>
+											))}
+										</select>
+									</label>
+									<p className="about-pane-hint">
+										RPG 대화창 모양의 하늘·바닥·소품을 고릅니다. 자동은 배경 그림이 없으면 대표 화면을 픽셀로 바꿔 깔고,
+										강조색은 언제나 프로젝트 아이콘의 색을 따릅니다.
+									</p>
+								</div>
+								<ImageField
+									label="배경 그림"
+									value={draft.backdrop?.image}
+									onChange={(image) => set({ backdrop: tidyBackdrop({ ...draft.backdrop, image }) })}
+									hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
 								/>
 							</section>
 							<section className="about-pane-group" aria-label="화면 모음">
