@@ -1,97 +1,144 @@
-import { cssVars } from '@/shared/lib/cssVars';
-// QRU (디지털 명함): 그 앱의 민트→분홍 바탕과 두툼한 그림자를 그대로 쓴다.
-// 명함 앞뒤(앞면은 앱 로고 카드, 뒷면은 기술 사양) → 숫자 한 줄 → 명함이 오가는 순서(단계와 앱 화면) →
-// 더 들려줄 장(데이터베이스 구조와 글) → 묻고 답하기(만든 방식) → 화면 모음 → 맡은 일.
-// 순서와 묻고 답하기는 스크롤에 맞춰 위에서부터 차례로 펼쳐지고, 다시 올리면 아래부터 접힌다
+// 한 장짜리 스펙 시트 (minimal): 큰 여백과 아주 가는 괘선, 작은 대문자 라벨, mono 숫자, 흑백에 강조색 한 점.
+// 머리(번호·큰 tagline·메타 표) → 대표 화면 → 숫자 한 줄 → 주요 기능(번호 단계) → 만든 방식(Q&A) → 더 들려줄 장 → 화면 모음 →
+// 쓰는 법 → 진행 과정 → 기술 사양 → 맡은 일 → 출처 → 링크. 어떤 프로젝트든 고를 수 있어 없는 필드는 그 구역을 통째로 뺀다.
+// 단계와 Q&A는 스크롤에 맞춰 위 항목부터 차례로 열리고(머리가 스크롤 상자 60% 선을 지나면), 다시 올리면 닫힌다
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectChapter, ProjectPoint } from '@/shared/profile';
-import { FactValue, Facts, Links, Shot } from '@/apps/safari/project/parts';
+import { FactValue, Facts, Links, Region, Shot } from '@/apps/safari/project/parts';
 import '@/apps/safari/project/CardPage.css';
-import { onScrollFrame, scrollParent, viewOf } from '@/apps/safari/project/scroll';
+import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
 import { useReveal } from '@/apps/safari/project/reveal';
 
-/** 한 칸씩 펼치거나 접는 사이 간격 (ms). 빠르게 스크롤해도 한꺼번에가 아니라 차례로 */
-const STEP = 220;
-/** 칸의 머리가 화면 위에서 이 비율만큼 내려온 선을 지나면 펼친다 (읽는 눈높이쯤) */
+/** 항목의 머리가 스크롤 상자 위에서 이 비율만큼 내려온 선을 지나면 연다 (읽는 눈높이쯤) */
 const LINE = 0.6;
+/** 한 항목씩 열거나 닫는 사이 간격 (ms). 빨리 스크롤해도 한꺼번에가 아니라 차례로 */
+const STEP = 200;
 
-/** 앱 로고: 3×3 칸 가운데 청록으로 채운 다섯 칸 (앱의 LogoCard와 같은 자리) */
-const LOGO_FILLED = [false, true, true, false, true, true, false, false, true];
+/** "01", "02" … 스펙 시트의 번호 */
+const num = (i: number) => String(i + 1).padStart(2, '0');
 
 /**
- * 스크롤에 맞춰 위 칸부터 차례로 펼치고, 다시 올리면 아래 칸부터 차례로 접는다.
- * 칸의 머리(`[data-index]`)가 기준선 위로 올라온 만큼이 목표이고, 지금 펼친 수를 한 칸씩 그 목표로 옮긴다.
- * 펼친 수를 돌려준다
+ * 스크롤에 맞춰 위 항목부터 차례로 열고, 다시 올리면 아래 항목부터 차례로 닫는다.
+ * 목록 안의 `[data-head]`가 기준선 위로 올라온 수가 목표이고, 지금 열린 수를 한 항목씩 그쪽으로 옮긴다.
+ * 눌러서 직접 여닫은 항목은 그 뜻을 지키다가, 스크롤이 그 항목을 다시 지날 때 잊는다
+ * (그래서 눌러 닫은 항목은 더 내려가도 닫힌 채이고, 맨 위로 올리면 모두 닫힌다)
  */
-function useScrollUnfold(list: React.RefObject<HTMLElement | null>, count: number) {
-	const supported = typeof window !== 'undefined' && 'requestAnimationFrame' in window;
-	const [target, setTarget] = useState(supported ? 0 : count);
-	const [opened, setOpened] = useState(supported ? 0 : count);
+function useUnfold(list: React.RefObject<HTMLElement | null>, count: number) {
+	const live = typeof window !== 'undefined' && 'requestAnimationFrame' in window;
+	const [target, setTarget] = useState(live ? 0 : count);
+	const [opened, setOpened] = useState(live ? 0 : count);
+	const [manual, setManual] = useState<Record<number, boolean>>({});
 
 	useEffect(() => {
 		const root = list.current;
-		if (!root || !supported) return;
-		const scroller = scrollParent(root);
-		const source = scroller ?? window;
-		let frame = 0;
-		const measure = () => {
-			frame = 0;
-			const view = scroller?.getBoundingClientRect();
-			const line = view ? view.top + view.height * LINE : window.innerHeight * LINE;
-			const heads = root.querySelectorAll<HTMLElement>('[data-index]');
+		if (!root || !live) return;
+		return onScrollFrame(root, (scroller) => {
+			const view = viewOf(scroller);
+			const line = view.top + view.height * LINE;
 			let reached = 0;
-			for (const head of heads) {
+			for (const head of root.querySelectorAll<HTMLElement>('[data-head]')) {
 				if (head.getBoundingClientRect().top > line) break;
 				reached += 1;
 			}
 			setTarget(reached);
-		};
-		const onScroll = () => {
-			if (!frame) frame = requestAnimationFrame(measure);
-		};
-		measure();
-		source.addEventListener('scroll', onScroll, { passive: true });
-		window.addEventListener('resize', onScroll);
-		return () => {
-			source.removeEventListener('scroll', onScroll);
-			window.removeEventListener('resize', onScroll);
-			cancelAnimationFrame(frame);
-		};
-	}, [list, supported]);
+		});
+	}, [list, live]);
 
 	useEffect(() => {
 		if (opened === target) return;
-		const timer = window.setTimeout(() => setOpened((now) => now + Math.sign(target - now)), STEP);
+		const next = opened + Math.sign(target - opened);
+		const timer = window.setTimeout(() => {
+			setOpened(next);
+			// 스크롤이 지나간 항목은 누른 뜻을 잊는다
+			const passed = Math.min(opened, next);
+			setManual((prev) => {
+				if (!(passed in prev)) return prev;
+				const rest = { ...prev };
+				delete rest[passed];
+				return rest;
+			});
+		}, STEP);
 		return () => window.clearTimeout(timer);
 	}, [opened, target]);
 
-	return opened;
+	const isOpen = (i: number) => manual[i] ?? i < opened;
+	const toggle = (i: number) => setManual((prev) => ({ ...prev, [i]: !isOpen(i) }));
+	return { isOpen, toggle };
 }
 
-/** 묻고 답하기: 스크롤에 맞춰 펼치고 접는다. 누르면 그 칸만 직접 접고 펼 수 있다(그 칸을 스크롤이 다시 지나면 스크롤을 따른다) */
+/** 구역 머리: 번호, 영문 라벨, 제목. 괘선 한 줄 위에 */
+const Head: React.FC<{ no: string; label: string; title: string }> = ({ no, label, title }) => (
+	<div className="ss-head">
+		<span className="ss-no">{no}</span>
+		<span className="ss-label">{label}</span>
+		<h2>{title}</h2>
+	</div>
+);
+
+/** 주요 기능: 번호 단계 목록. 번호와 제목은 늘 보이고, 본문(과 그림)은 스크롤에 맞춰 차례로 열린다 */
+const Steps: React.FC<{ points: ProjectPoint[]; name: string }> = ({ points, name }) => {
+	const list = useRef<HTMLOListElement>(null);
+	const { isOpen, toggle } = useUnfold(list, points.length);
+	return (
+		<ol className="ss-steps" ref={list}>
+			{points.map((point, i) => {
+				const open = isOpen(i);
+				return (
+					<li key={point.title} data-head="" data-open={open}>
+						<span className="ss-step-no" aria-hidden="true">
+							{num(i)}
+						</span>
+						<h3>
+							<button type="button" aria-expanded={open} onClick={() => toggle(i)}>
+								{point.title}
+							</button>
+						</h3>
+						<div className="ss-fold">
+							<div>
+								<p>{point.body}</p>
+								{point.detail && <p>{point.detail}</p>}
+								{point.image && (
+									<figure className="ss-frame">
+										<img src={point.image} alt={`${name}: ${point.title}`} loading="lazy" />
+										<figcaption>
+											<span className="ss-label">Fig. {num(i)}</span> {point.title}
+										</figcaption>
+									</figure>
+								)}
+							</div>
+						</div>
+					</li>
+				);
+			})}
+		</ol>
+	);
+};
+
+/** 만든 방식: 묻고 답하기. 제목이 단추(aria-expanded)이고, 스크롤에 맞춰 차례로 열리며 눌러서 여닫는다 */
 const Answers: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 	const list = useRef<HTMLDivElement>(null);
-	const opened = useScrollUnfold(list, points.length);
-	const [toggled, setToggled] = useState<Record<number, boolean>>({});
-	const [lastOpened, setLastOpened] = useState(opened);
-	// 스크롤이 지나간 칸은 누른 뜻을 잊는다
-	if (lastOpened !== opened) {
-		setLastOpened(opened);
-		const [from, to] = [Math.min(lastOpened, opened), Math.max(lastOpened, opened)];
-		setToggled((prev) => Object.fromEntries(Object.entries(prev).filter(([i]) => Number(i) < from || Number(i) >= to)));
-	}
-
+	const { isOpen, toggle } = useUnfold(list, points.length);
 	return (
-		<div ref={list}>
+		<div className="ss-qa" ref={list}>
 			{points.map((point, i) => {
-				const open = toggled[i] ?? i < opened;
+				const open = isOpen(i);
 				return (
-					<div key={point.title} className="qc-answer" data-index={i} data-open={open}>
-						<button type="button" aria-expanded={open} onClick={() => setToggled((prev) => ({ ...prev, [i]: !open }))}>
-							{point.title}
-						</button>
-						<div className="qc-answer-body">
-							<p>{point.body}</p>
+					<div key={point.title} className="ss-q" data-head="" data-open={open}>
+						<span className="ss-q-mark" aria-hidden="true">
+							Q.{num(i)}
+						</span>
+						<h3>
+							<button type="button" aria-expanded={open} onClick={() => toggle(i)}>
+								{point.title}
+								<span className="ss-q-sign" aria-hidden="true" />
+							</button>
+						</h3>
+						<div className="ss-fold">
+							<div>
+								<span className="ss-label">A.</span>
+								<p>{point.body}</p>
+								{point.detail && <p>{point.detail}</p>}
+							</div>
 						</div>
 					</div>
 				);
@@ -100,145 +147,49 @@ const Answers: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 	);
 };
 
-/**
- * 명함 한 장이 오가는 순서: 단계마다 번호와 제목은 늘 보이고, 스크롤에 맞춰 설명이 차례로 펼쳐지며 다음 단계로 선이 이어진다.
- * 옆의 앱 창은 마지막으로 펼친 단계의 화면으로 바뀐다
- */
-const Journey: React.FC<{ project: Project }> = ({ project }) => {
-	const points = project.highlights;
-	const list = useRef<HTMLOListElement>(null);
-	const opened = useScrollUnfold(list, points.length);
-	const current = Math.max(0, Math.min(opened, points.length) - 1);
-	const screens = points.filter((point) => point.image);
+type SchemaDoc = NonNullable<ProjectChapter['schema']>[number];
 
+/** 데이터베이스 구조: 문서마다 경로, 누가 읽는지, 필드(mono 칩), 한 줄 설명. 하위 문서는 그 문서 아래 들여 쓴다 */
+const Schema: React.FC<{ docs: SchemaDoc[] }> = ({ docs }) => {
+	const ordered = docs
+		.filter((doc) => !doc.parent)
+		.flatMap((doc) => [doc, ...docs.filter((child) => child.parent === doc.path)]);
 	return (
-		<div className="qc-journey-body">
-			<ol className="qc-steps" ref={list}>
-				{points.map((point, i) => (
-					<li key={point.title} data-index={i} data-open={i < opened}>
-						<span className="qc-step">{i + 1}</span>
-						<h3>{point.title}</h3>
-						<div className="qc-step-body">
-							<p>{point.body}</p>
-						</div>
-					</li>
-				))}
-			</ol>
-			{screens.length ? (
-				<figure className="qc-screen">
-					<div className="qc-screen-bar" aria-hidden="true">
-						<i />
-						<i />
-						<i />
-						<span>{project.demo?.replace(/^https?:\/\//, '')}</span>
-					</div>
-					<div className="qc-screen-view">
-						{points.map(
-							(point, i) =>
-								point.image && (
-									<img
-										key={point.title}
-										src={point.image}
-										alt={`${project.name}: ${point.title}`}
-										data-on={i === current}
-										loading={i === 0 ? undefined : 'lazy'}
-									/>
-								)
-						)}
-					</div>
-					<figcaption key={current}>{points[current].title}</figcaption>
-				</figure>
-			) : (
-				<Shot project={project} className="qc-shot" />
-			)}
+		<div className="ss-schema" role="group" aria-label="데이터베이스 구조">
+			{ordered.map((doc) => (
+				<article key={doc.path} data-child={doc.parent ? '' : undefined}>
+					<header>
+						<code>{doc.path}</code>
+						<span className="ss-access" data-locked={doc.locked || undefined}>
+							{doc.locked && <i className="fa-solid fa-lock" aria-hidden="true" />}
+							{doc.access}
+						</span>
+					</header>
+					<ul aria-label={`${doc.path} 필드`}>
+						{doc.fields.map((field) => (
+							<li key={field}>{field}</li>
+						))}
+					</ul>
+					<p>{doc.note}</p>
+				</article>
+			))}
 		</div>
 	);
 };
 
-/**
- * 명함을 손에 든 것처럼: 마우스를 올리면 그쪽으로 아주 살짝 기울고, 빛이 마우스를 따라 비친다. 마우스를 떼면 제자리로 돌아온다
- */
-const tilt = {
-	onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
-		if (event.pointerType !== 'mouse') return;
-		const card = event.currentTarget;
-		const box = card.getBoundingClientRect();
-		const x = (event.clientX - box.left) / box.width;
-		const y = (event.clientY - box.top) / box.height;
-		card.style.setProperty('--rx', `${((0.5 - y) * 4).toFixed(2)}deg`);
-		card.style.setProperty('--ry', `${((x - 0.5) * 5).toFixed(2)}deg`);
-		card.style.setProperty('--gx', `${(x * 100).toFixed(1)}%`);
-		card.style.setProperty('--gy', `${(y * 100).toFixed(1)}%`);
-		card.dataset.tilt = '';
-	},
-	onPointerLeave: (event: React.PointerEvent<HTMLElement>) => {
-		const card = event.currentTarget;
-		card.style.removeProperty('--rx');
-		card.style.removeProperty('--ry');
-		delete card.dataset.tilt;
-	},
-};
-
-type SchemaDoc = NonNullable<ProjectChapter['schema']>[number];
-
-/** 문서 하나: 경로와 누가 읽는지, 필드 칩(문서가 나타나면 하나씩 놓인다), 한 줄 설명. 하위 문서는 안에 이어 그린다 */
-const SchemaDoc: React.FC<{ doc: SchemaDoc; docs: SchemaDoc[] }> = ({ doc, docs }) => {
-	const children = docs.filter((item) => item.parent === doc.path);
-	return (
-		<article className="qc-doc" data-child={doc.parent ? '' : undefined} data-reveal={doc.parent ? undefined : ''}>
-			<header>
-				<code>{doc.path}</code>
-				<span className="qc-access" data-locked={doc.locked || undefined}>
-					{doc.locked && <i className="fa-solid fa-lock" aria-hidden="true" />}
-					{doc.access}
-				</span>
-			</header>
-			<ul aria-label={`${doc.path} 필드`}>
-				{doc.fields.map((field, i) => (
-					<li key={field} style={cssVars({ i })}>
-						{field}
-					</li>
-				))}
-			</ul>
-			<p>{doc.note}</p>
-			{children.length > 0 && (
-				<div className="qc-doc-children">
-					<p>하위 문서: 같은 명함에 딸려 있지만 읽을 수 있는 사람이 다릅니다</p>
-					<div>
-						{children.map((child) => (
-							<SchemaDoc key={child.path} doc={child} docs={docs} />
-						))}
-					</div>
-				</div>
-			)}
-		</article>
-	);
-};
-
-/** 데이터베이스 구조: 최상위 문서부터, 하위 문서는 그 안에 */
-const Schema: React.FC<{ docs: SchemaDoc[] }> = ({ docs }) => (
-	<div className="qc-schema" aria-label="데이터베이스 구조" role="group">
-		{docs
-			.filter((doc) => !doc.parent)
-			.map((doc) => (
-				<SchemaDoc key={doc.path} doc={doc} docs={docs} />
-			))}
-	</div>
-);
-
-/** 더 들려줄 장: 첫머리, 숫자 칩, 두툼한 타일, 그림 */
-const Chapter: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
-	<section className="qc-chapter" aria-label={chapter.title}>
-		<h2 className="qc-title">{chapter.title}</h2>
+/** 더 들려줄 장: 첫머리, 숫자, 데이터베이스 구조, 글 묶음(괘선 격자), 전후 비교, 그림 */
+const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, no }) => (
+	<section className="ss-sec" aria-label={chapter.title}>
+		<Head no={no} label="Notes" title={chapter.title} />
 		{chapter.lead && (
-			<p className="qc-chapter-lead" data-reveal="">
+			<p className="ss-lead" data-reveal="">
 				{chapter.lead}
 			</p>
 		)}
 		{chapter.facts && (
-			<ul className="qc-chips">
-				{chapter.facts.map((fact, i) => (
-					<li key={fact.label} data-reveal="" style={cssVars({ d: i })}>
+			<ul className="ss-facts ss-facts-small" data-reveal="">
+				{chapter.facts.map((fact) => (
+					<li key={fact.label}>
 						<FactValue text={fact.value} />
 						<span>{fact.label}</span>
 					</li>
@@ -246,162 +197,242 @@ const Chapter: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
 			</ul>
 		)}
 		{chapter.schema && <Schema docs={chapter.schema} />}
-		<div className="qc-tiles">
+		<ol className="ss-grid">
 			{chapter.points.map((point, i) => (
-				<article key={point.title} data-reveal="" style={cssVars({ d: i % 2 })}>
+				<li key={point.title} data-reveal="">
+					<span className="ss-label">
+						{no}.{num(i)}
+					</span>
 					<h3>{point.title}</h3>
 					<p>{point.body}</p>
-				</article>
+				</li>
 			))}
-		</div>
+		</ol>
+		{chapter.compare && (
+			<table className="ss-table" data-reveal="">
+				<thead>
+					<tr>
+						<th scope="col">항목</th>
+						<th scope="col">전</th>
+						<th scope="col">후</th>
+					</tr>
+				</thead>
+				<tbody>
+					{chapter.compare.map((row) => (
+						<tr key={row.label}>
+							<th scope="row">{row.label}</th>
+							<td>
+								{row.before}
+								{row.unit}
+							</td>
+							<td>
+								{row.after}
+								{row.unit}
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		)}
 		{chapter.image && (
-			<figure className="qc-figure" data-reveal="">
+			<figure className="ss-frame" data-reveal="">
 				<img src={chapter.image.src} alt={chapter.image.alt} loading="lazy" />
+				<figcaption>
+					<span className="ss-label">Fig.</span> {chapter.image.alt}
+				</figcaption>
 			</figure>
 		)}
 	</section>
 );
 
-/**
- * 화면 모음: 이 구역에 들어오면 화면에 고정되고, 세로로 스크롤하는 만큼 띠가 옆으로 넘어간다.
- * 띠의 끝까지 넘어가야 다음 구역으로 내려간다. 좁은 창과 움직임 줄이기에서는 고정하지 않고 손으로 옆으로 넘긴다
- */
-const Gallery: React.FC<{ shots: NonNullable<Project['gallery']> }> = ({ shots }) => {
-	const track = useRef<HTMLElement>(null);
-	const strip = useRef<HTMLUListElement>(null);
-	useEffect(() => {
-		const node = track.current;
-		const list = strip.current;
-		const frame = list?.parentElement;
-		if (!node || !list || !frame) return;
-		const measure = (scroller: HTMLElement | null) => {
-			const view = viewOf(scroller);
-			// 띠가 창보다 넘치는 만큼이 옆으로 갈 거리이고, 고정된 동안 그만큼 세로로 스크롤한다
-			const pad = getComputedStyle(frame);
-			const inner = frame.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
-			const overflow = Math.max(0, list.scrollWidth - inner);
-			node.style.setProperty('--view', `${view.height}px`);
-			node.style.setProperty('--overflow', `${overflow}px`);
-			const box = node.getBoundingClientRect();
-			const run = box.height - view.height;
-			const pinned = getComputedStyle(list).getPropertyValue('--pin').trim() === '1';
-			const progress = pinned && run > 0 ? Math.min(1, Math.max(0, (view.top - box.top) / run)) : 0;
-			node.style.setProperty('--p', progress.toFixed(4));
-			list.style.setProperty('--x', `${(-progress * overflow).toFixed(1)}px`);
-		};
-		const stop = onScrollFrame(node, measure);
-		// 화면 그림이 늦게 불러와져 띠 폭이 바뀌면 다시 잰다
-		const resized = new ResizeObserver(() => measure(scrollParent(node)));
-		resized.observe(list);
-		return () => {
-			stop();
-			resized.disconnect();
-		};
-	}, []);
+const CardPage: React.FC<{ project: Project }> = ({ project }) => {
+	const root = useReveal<HTMLDivElement>();
+	// 구역 번호는 있는 구역만 세어 매긴다
+	let count = 0;
+	const next = () => num(count++);
+	const meta: [string, string | undefined][] = [
+		['Context', project.context],
+		['Period', project.period],
+		['Role', project.role],
+		['Language', project.language],
+	];
 
 	return (
-		<section className="qc-gallery" aria-label="화면 모음" ref={track}>
-			<div className="qc-gallery-sticky">
-				<h2 className="qc-title">화면 모음</h2>
-				<div className="qc-gallery-window">
-					<ul ref={strip}>
-						{shots.map((shot) => (
-							<li key={shot.src}>
+		<div className="ss" ref={root}>
+			<header className="ss-top">
+				<p className="ss-ident">
+					<span className="ss-label">
+						<b>{project.id}</b> · Spec sheet
+					</span>
+					<span className="ss-label">{project.name}</span>
+				</p>
+				<div className="ss-title">
+					<div>
+						<h1>{project.tagline}</h1>
+						<p className="ss-desc">{project.description}</p>
+					</div>
+					<dl className="ss-meta">
+						{meta.map(
+							([label, value]) =>
+								value && (
+									<div key={label}>
+										<dt className="ss-label">{label}</dt>
+										<dd>{value}</dd>
+									</div>
+								)
+						)}
+					</dl>
+				</div>
+				<Links project={project} className="ss-links" />
+			</header>
+
+			{project.image && (
+				<div className="ss-hero" data-reveal="zoom">
+					<Shot project={project} className="ss-frame" />
+					<p className="ss-label">Fig. 00 · {project.name} 화면</p>
+				</div>
+			)}
+
+			{project.facts.length > 0 && (
+				<Region label="한눈에 보기" className="ss-sec ss-sec-facts" data-reveal="">
+					<Facts project={project} className="ss-facts" />
+				</Region>
+			)}
+
+			{project.highlights.length > 0 && (
+				<Region label="주요 기능" className="ss-sec">
+					<Head no={next()} label="Features" title="주요 기능" />
+					<Steps points={project.highlights} name={project.name} />
+				</Region>
+			)}
+
+			{project.build.length > 0 && (
+				<Region label="만든 방식" className="ss-sec">
+					<Head no={next()} label="Q & A" title="만든 방식" />
+					<Answers points={project.build} />
+				</Region>
+			)}
+
+			{project.chapters?.map((chapter) => (
+				<Chapter key={chapter.title} chapter={chapter} no={next()} />
+			))}
+
+			{project.gallery && project.gallery.length > 0 && (
+				<Region label="화면 모음" className="ss-sec">
+					<Head no={next()} label="Figures" title="화면 모음" />
+					<ul className="ss-gallery">
+						{project.gallery.map((shot, i) => (
+							<li key={shot.src} data-reveal="">
 								<figure>
 									<img src={shot.src} alt={shot.caption} loading="lazy" />
-									<figcaption>{shot.caption}</figcaption>
+									<figcaption>
+										<span className="ss-label">Fig. {num(i)}</span> {shot.caption}
+									</figcaption>
 								</figure>
 							</li>
 						))}
 					</ul>
-				</div>
-				<span className="qc-gallery-bar" aria-hidden="true" />
-			</div>
-		</section>
-	);
-};
+				</Region>
+			)}
 
-const CardPage: React.FC<{ project: Project }> = ({ project }) => {
-	const root = useReveal<HTMLDivElement>();
-	return (
-		<div className="qc" ref={root}>
-			<header className="qc-hero">
-				<div className="qc-cards">
-					<div className="qc-card qc-front" {...tilt}>
-						<div className="qc-brand">
-							<span className="qc-logo" aria-hidden="true">
-								{LOGO_FILLED.map((filled, i) => (
-									<i key={i} data-filled={filled || undefined} style={cssVars({ i })} />
-								))}
-							</span>
-							<p className="qc-word">
-								<strong>QRU</strong>
-								<span>Your Digital Identity</span>
-							</p>
-						</div>
-						<p className="qc-name">{project.name}</p>
-						<h1>{project.tagline}</h1>
-						<p className="qc-lead">{project.description}</p>
-					</div>
-					<section className="qc-card qc-back" aria-label="기술 사양" {...tilt}>
-						<h2>기술 사양</h2>
-						<dl>
-							{project.specs.map((spec) => (
-								<div key={spec.label}>
-									<dt>{spec.label}</dt>
-									<dd>{spec.value}</dd>
-								</div>
+			{project.usage && project.usage.length > 0 && (
+				<Region label="쓰는 법" className="ss-sec">
+					<Head no={next()} label="Usage" title="쓰는 법" />
+					<dl className="ss-usage">
+						{project.usage.map((item) => (
+							<div key={item.title} data-reveal="">
+								<dt>{item.title}</dt>
+								<dd>{item.body}</dd>
+							</div>
+						))}
+					</dl>
+				</Region>
+			)}
+
+			{project.timeline && project.timeline.length > 0 && (
+				<Region label="진행 과정" className="ss-sec">
+					<Head no={next()} label="Timeline" title="진행 과정" />
+					<ol className="ss-timeline">
+						{project.timeline.map((item) => (
+							<li key={`${item.date} ${item.label}`} data-reveal="left">
+								<time>{item.date}</time>
+								<span>{item.label}</span>
+							</li>
+						))}
+					</ol>
+				</Region>
+			)}
+
+			{project.specs.length > 0 && (
+				<Region label="기술 사양" className="ss-sec">
+					<Head no={next()} label="Specifications" title="기술 사양" />
+					<dl className="ss-specs">
+						{project.specs.map((spec, i) => (
+							<div key={spec.label} data-reveal="">
+								<dt>
+									<span className="ss-label">{num(i)}</span>
+									{spec.label}
+								</dt>
+								<dd>{spec.value}</dd>
+							</div>
+						))}
+					</dl>
+					{project.stack.length > 0 && (
+						<p className="ss-stack">
+							{project.stack.map((item) => (
+								<code key={item}>{item}</code>
 							))}
-						</dl>
-					</section>
-				</div>
-				<Links project={project} className="qc-links" />
-			</header>
+						</p>
+					)}
+				</Region>
+			)}
 
-			<section className="qc-facts" aria-label="한눈에 보기" data-reveal="">
-				<p>{project.context}</p>
-				<Facts project={project} />
-			</section>
-
-			<section className="qc-journey" aria-label="주요 기능">
-				<h2 className="qc-title">명함 한 장이 오가는 순서</h2>
-				<Journey project={project} />
-			</section>
-
-			{project.chapters?.map((chapter) => (
-				<Chapter key={chapter.title} chapter={chapter} />
-			))}
-
-			<section className="qc-faq" aria-label="만든 방식">
-				<h2 className="qc-title">어떻게 만들었나요?</h2>
-				<Answers points={project.build} />
-			</section>
-
-			{project.gallery && <Gallery shots={project.gallery} />}
-
-			<div className="qc-lists">
-				<section aria-label="맡은 일" data-reveal="left">
-					<h2 className="qc-title">맡은 일</h2>
-					{project.role && <p className="qc-role">{project.role}</p>}
-					<ul>
-						{project.contributions.map((item) => (
-							<li key={item}>
-								<i className="fa-solid fa-circle-check" aria-hidden="true" />
+			{project.contributions.length > 0 && (
+				<Region label="맡은 일" className="ss-sec">
+					<Head no={next()} label="Contributions" title="맡은 일" />
+					{project.role && <p className="ss-lead">{project.role}</p>}
+					<ul className="ss-list">
+						{project.contributions.map((item, i) => (
+							<li key={item} data-reveal="">
+								<span className="ss-label">{num(i)}</span>
 								{item}
 							</li>
 						))}
 					</ul>
-				</section>
-			</div>
+				</Region>
+			)}
 
-			<footer className="qc-foot" data-reveal="">
-				<span className="qc-logo small" aria-hidden="true">
-					{LOGO_FILLED.map((filled, i) => (
-						<i key={i} data-filled={filled || undefined} style={cssVars({ i })} />
-					))}
+			{project.credits && project.credits.length > 0 && (
+				<Region label="출처" className="ss-sec">
+					<Head no={next()} label="Credits" title="출처" />
+					<table className="ss-table">
+						<tbody>
+							{project.credits.map((credit) => (
+								<tr key={`${credit.role} ${credit.name}`}>
+									<th scope="row">{credit.role}</th>
+									<td>
+										{credit.href ? (
+											<a href={credit.href} target="_blank" rel="noopener noreferrer">
+												{credit.name}
+											</a>
+										) : (
+											credit.name
+										)}
+										<span> · {credit.by}</span>
+										{credit.note && <small>{credit.note}</small>}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</Region>
+			)}
+
+			<footer className="ss-foot">
+				<span className="ss-label">
+					<b>{project.id}</b> · End of sheet
 				</span>
-				<p>{project.tagline}</p>
-				<Links project={project} className="qc-links" />
+				<Links project={project} className="ss-links" />
 			</footer>
 		</div>
 	);

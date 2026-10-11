@@ -466,20 +466,23 @@ test('칸반(WTD): 카드를 다음 열로 옮기면 열의 카드 수가 바뀌
 	await expect(panel.getByRole('button', { name: '처음대로' })).toHaveCount(0);
 });
 
-test('신문(NewPick): 주요 기능은 머리 사진 기사, 사진 기사, 단신으로 짠 지면이고 사진에는 실제 화면 설명이 붙는다', async ({
+test('잡지(NewPick): 주요 기능은 머리기사 안에 기사 꼭지로 처음부터 다 펼쳐져 있고, 사진에는 실제 화면 설명이 붙는다', async ({
 	page,
 }) => {
 	await enterDesktop(page);
 	const safari = appWindow(page, 'safari');
 	await safari.getByRole('tab', { name: /NewPick/ }).click();
 	const panel = safari.getByRole('tabpanel');
-	const articles = panel.getByRole('region', { name: '주요 기능' });
+	const story = panel.getByRole('region', { name: '머리기사' });
+	const articles = story.getByRole('region', { name: '주요 기능' });
 	// 펼치는 단추 없이 처음부터 다 보인다
 	await expect(articles.getByRole('button')).toHaveCount(0);
-	const lead = articles.locator('.np-story-lead');
-	await expect(lead.getByRole('heading', { name: 'AI 뉴스 요약' })).toBeVisible();
-	await expect(lead.getByRole('img', { name: 'AI 뉴스 요약 화면' })).toBeVisible();
-	await expect(lead).toContainText('▲ 실제 서비스 화면');
-	await expect(articles.locator('.np-stories article')).toHaveCount(3);
-	await expect(articles.getByRole('complementary', { name: '단신' })).toContainText('가입 전에 체험');
+	// 첫 꼭지: 소제목과 사진, 사진 아래 실제 화면이라는 설명
+	const first = articles.locator('.mg-passage').first();
+	await expect(first.getByRole('heading', { name: 'AI 뉴스 요약' })).toBeVisible();
+	await expect(first.getByRole('img', { name: 'AI 뉴스 요약 화면' })).toBeVisible();
+	await expect(first.locator('figcaption')).toContainText('▲ 실제 서비스 화면');
+	// 주요 기능 수만큼 꼭지가 있고, 사진 없는 기능도 글로 들어 있다
+	await expect(articles.locator('.mg-passage')).toHaveCount(6);
+	await expect(articles).toContainText('가입 전에 체험');
 });

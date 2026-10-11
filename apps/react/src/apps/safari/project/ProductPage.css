@@ -1,879 +1,633 @@
-/* MacFolio: 스크롤하면 커지는 노트북, 화면 크기 시뮬레이터, 요청이 지나는 길, 화면에 들어오면 나타나는 요소들 */
+/*
+ * 어두운 제품 론칭 페이지(product). 거의 검은 맨 위에 아주 큰 제목, 화면 폭 가득 떠 있는 대표 화면과 강조색 빛, 큰 숫자 띠.
+ * 그 아래는 밝은 바탕(기능·만든 방식·쓰는 법·진행 과정)과 다시 어두운 띠(기술 사양·맡은 일). 색은 .sp의 공통 값(--sp-*)에서.
+ * 글꼴은 시스템 산세리프, 자간은 좁게. 넓이는 Safari 창(컨테이너)에 따른다
+ */
+.sp[data-look='product'] {
+	--pd-ink: #050507;
+	--pd-ink-2: #101014;
+	--pd-ink-text: #f5f5f7;
+	--pd-ink-muted: #8e8e95;
+	--pd-ink-line: rgba(255, 255, 255, 0.1);
+	--pd-glow: color-mix(in srgb, var(--sp-accent) 70%, transparent);
+	--pd-glow-2: color-mix(in srgb, #a24bf5 50%, transparent);
+	--pd-gutter: clamp(20px, 5cqi, 64px);
+	--pd-max: 1040px;
+	background: var(--sp-bg);
+	letter-spacing: -0.02em;
+}
 
-/* ─── 첫 화면: 멈춰 선 무대 위에서 노트북이 커진다 ─── */
-.sp-hero.pd-hero {
-	--p: 0;
-	--view: 640px;
+.pd {
+	container-type: inline-size;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'SF Pro KR', 'Apple SD Gothic Neo', 'Pretendard', 'Noto Sans KR', system-ui,
+		sans-serif;
+}
+
+/* ─── 맨 위: 거의 검은 바탕 ─── */
+.pd-hero {
 	position: relative;
-	height: calc(var(--view) * 2.2);
-	padding: 0 0 72px;
-}
-
-.pd-stage {
-	position: sticky;
-	top: 0;
-	height: var(--view);
+	padding: clamp(56px, 9cqi, 112px) var(--pd-gutter) 0;
 	overflow: hidden;
+	background: linear-gradient(180deg, var(--pd-ink) 0%, var(--pd-ink-2) 70%, var(--pd-ink) 100%);
+	color: var(--pd-ink-text);
 }
 
-.pd-copy {
+.pd-hero-copy {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 56px 32px 0;
-	opacity: clamp(0, 1 - var(--p) * 3, 1);
-	transform: translateY(calc(var(--p) * -120px));
-}
-
-/* 처음에는 제목 아래 작게, 끝에는 무대 가운데에 크게. 노트북과 아래 한 줄이 한 덩어리로 움직인다 */
-.pd-hero-group {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: min(820px, 80%);
-	/* 끝 크기는 --fit(노트북과 한 줄이 화면 높이에 다 들어오는 비율, 스크립트가 정한다), 처음은 그 2/3쯤 */
-	/* 처음 자리(--start)는 제목·링크 아래, 스크립트가 잰다. 끝에는 가운데보다 살짝 위 (아래 여백을 남긴다) */
-	transform: translate(-50%, -54%) translateY(calc((1 - var(--p)) * var(--start, calc(var(--view) * 0.42))))
-		scale(calc(var(--fit, 0.9) * (0.66 + var(--p) * 0.34)));
-	transform-origin: 50% 50%;
-	will-change: transform;
-}
-
-/*
- * 한 줄: 노트북이 거의 다 올라왔을 때 화면 가운데에 작게 떠올라, 앞으로 튀어나오듯 커지며 노트북 아래 제자리로 내려온다.
- * --rise는 제자리에서 화면 가운데까지의 거리(스크립트가 잰다)
- */
-.pd-caption {
-	--c: clamp(0, (var(--p) - 0.5) * 2.6, 1);
-	position: relative;
-	z-index: 1;
-	margin-top: 34px;
-	color: var(--sp-text);
-	font-size: clamp(30px, 5.2cqi, 52px);
-	font-weight: 800;
-	letter-spacing: -0.025em;
-	line-height: 1.15;
+	max-width: var(--pd-max);
+	margin: 0 auto;
 	text-align: center;
-	opacity: clamp(0, var(--c) * 4, 1);
-	transform: translateY(calc((1 - var(--c)) * var(--rise, 300px) * -1)) scale(calc(0.3 + var(--c) * 0.7));
-	filter: blur(calc((1 - var(--c)) * 4px))
-		drop-shadow(0 calc((1 - var(--c)) * 30px) 30px rgb(0 0 0 / calc((1 - var(--c)) * 0.35)));
 }
 
-.pd-caption strong {
-	background: var(--sp-grad);
+.pd-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	color: var(--pd-ink-muted);
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.pd-brand-icon {
+	width: 28px;
+	height: 28px;
+	border-radius: 7px;
+	object-fit: cover;
+}
+
+.pd-brand-icon.fallback {
+	display: grid;
+	place-items: center;
+	background: rgba(255, 255, 255, 0.08);
+	font-size: 13px;
+}
+
+.pd-brand-logo {
+	max-height: 22px;
+	object-fit: contain;
+	filter: brightness(0) invert(1);
+}
+
+.pd-hero h1 {
+	max-width: 14ch;
+	margin-top: 22px;
+	font-size: clamp(44px, 10cqi, 112px);
+	font-weight: 800;
+	letter-spacing: -0.045em;
+	line-height: 0.98;
+	/* 글자 안에 위에서 아래로 살짝 가라앉는 빛 */
+	background: linear-gradient(180deg, #ffffff 30%, rgba(255, 255, 255, 0.62));
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
 }
 
-/* ─── 노트북 틀 ─── */
-.pd-laptop {
-	position: relative;
-}
-
-.pd-screen {
-	position: relative;
-	aspect-ratio: 16 / 10;
-	overflow: hidden;
-	border: 10px solid #1d1d1f;
-	border-bottom-width: 14px;
-	border-radius: 18px 18px 6px 6px;
-	background-color: #000000;
-	box-shadow:
-		0 0 0 1px #3a3a3c,
-		0 24px 60px rgba(0, 0, 0, 0.22);
-}
-
-.pd-screen img {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: top;
-}
-
-/* 받침: 화면보다 조금 넓고 가운데가 살짝 파인 알루미늄 */
-.pd-base {
-	position: relative;
-	width: 112%;
-	height: 14px;
-	margin-left: -6%;
-	border-radius: 2px 2px 14px 14px;
-	background: linear-gradient(#e3e4e8, #b7b9bf 60%, #8e9096);
-	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-}
-
-.pd-base::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 50%;
-	width: 16%;
-	height: 5px;
-	transform: translateX(-50%);
-	border-radius: 0 0 8px 8px;
-	background-color: #a3a5ab;
-}
-
-/* ─── 화면에 들어오면 나타나는 모양은 ProjectPage.css의 [data-reveal]. 숫자 띠는 숫자가 하나씩 올라온다 */
-.pd-band .sp-facts li {
-	opacity: 0;
-	transform: translateY(24px);
-	transition:
-		opacity 0.6s ease-out,
-		transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.pd-band .sp-facts li:nth-child(2) {
-	transition-delay: 0.12s;
-}
-
-.pd-band .sp-facts li:nth-child(3) {
-	transition-delay: 0.24s;
-}
-
-.pd-band[data-shown] .sp-facts li {
-	opacity: 1;
-	transform: none;
-}
-
-/* ─── 제목: 스크롤에 맞춰 낱말이 하나씩 밝아진다 ─── */
-.pd .sp-headline .pd-word {
-	--w: clamp(0, var(--p, 1) * (var(--n) + 3) - var(--i), 1);
-	display: inline-block;
-	color: inherit;
-	opacity: calc(0.12 + var(--w) * 0.88);
-	transform: translateY(calc((1 - var(--w)) * 0.3em));
-	filter: blur(calc((1 - var(--w)) * 3px));
-}
-
-.pd .sp-headline .pd-word.sub {
-	color: var(--sp-muted);
-}
-
-.pd .sp-dark .sp-headline .pd-word.sub {
-	color: var(--sp-dark-muted);
-}
-
-/* ─── 주요 기능: 벤토 그리드. 큰 타일과 작은 타일이 엇갈려 여섯 칸 격자를 채운다 ─── */
-.pd-bento {
-	display: grid;
-	grid-template-columns: repeat(6, minmax(0, 1fr));
-	gap: 16px;
-	margin-top: 8px;
-	list-style: none;
-}
-
-.pd-bento-tile {
-	display: flex;
-	position: relative;
-	flex-direction: column;
-	min-height: 420px;
-	overflow: hidden;
-	border-radius: 28px;
-	background-color: var(--sp-alt);
-	color: var(--sp-text);
-}
-
-/* 첫 줄은 큰 타일(4칸) + 작은 타일(2칸), 둘째 줄은 작은 타일 + 큰 타일로 엇갈린다 */
-.pd-bento-tile[data-size='large'] {
-	grid-column: span 4;
-}
-
-.pd-bento-tile[data-size='small'] {
-	grid-column: span 2;
-}
-
-.pd-bento-tile[data-tone='dark'] {
-	background-color: #000000;
-	color: #f5f5f7;
-}
-
-:root[data-theme='dark'] .pd-bento-tile[data-tone='dark'] {
-	background-color: #1d1d1f;
-}
-
-.pd-bento-text {
-	padding: 32px 32px 20px;
-}
-
-.pd-bento-text h3 {
-	font-size: clamp(22px, 2.8cqi, 30px);
-	font-weight: 700;
-	letter-spacing: -0.025em;
-	line-height: 1.15;
-}
-
-.pd-bento-tile[data-size='small'] .pd-bento-text h3 {
-	font-size: clamp(20px, 2.2cqi, 24px);
-}
-
-.pd-bento-text p {
-	margin-top: 10px;
-	color: var(--sp-muted);
-	font-size: 15px;
+.pd-lead {
+	max-width: 36em;
+	margin-top: 24px;
+	color: var(--pd-ink-muted);
+	font-size: clamp(17px, 2.3cqi, 22px);
 	line-height: 1.5;
 }
 
-.pd-bento-tile[data-tone='dark'] .pd-bento-text p {
-	color: #a1a1a6;
+.pd-meta {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px 0;
+	margin-top: 18px;
+	color: var(--pd-ink-muted);
+	font-size: 14px;
 }
 
-/* 화면: 타일 아래쪽에 걸쳐 놓인다. 큰 타일은 가운데, 작은 타일은 오른쪽으로 비켜 잘린다 */
-.pd-bento-media {
-	margin: auto 0 0 32px;
-	overflow: hidden;
-	border-radius: 12px 0 0 0;
-	box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.14);
+.pd-meta span + span::before {
+	margin: 0 10px;
+	color: rgba(255, 255, 255, 0.25);
+	content: '·';
 }
 
-.pd-bento-tile[data-size='large'] .pd-bento-media {
-	margin: auto 32px 0;
-	border-radius: 12px 12px 0 0;
+/* 링크: 공통 단추(.sp-pill/.sp-link)를 어두운 바탕에 맞게 */
+.pd-links {
+	margin-top: 32px;
 }
 
-.pd-bento-media img {
+.pd-hero .sp-link,
+.pd-dark .sp-link,
+.pd-cta .sp-link {
+	color: var(--pd-ink-text);
+}
+
+/* 대표 화면: 폭 가득, 뒤에서 강조색 빛이 번지고 아래는 바탕에 녹아든다 */
+.pd-stage {
+	position: relative;
+	max-width: 1280px;
+	margin: clamp(40px, 7cqi, 88px) auto 0;
+}
+
+.pd-stage::before {
+	position: absolute;
+	inset: -12% -8% 10%;
+	background:
+		radial-gradient(50% 55% at 30% 45%, var(--pd-glow), transparent 70%),
+		radial-gradient(45% 55% at 75% 60%, var(--pd-glow-2), transparent 70%);
+	filter: blur(40px);
+	content: '';
+}
+
+.pd-stage img {
+	position: relative;
 	display: block;
 	width: 100%;
-	aspect-ratio: 16 / 10;
-	object-fit: cover;
-	object-position: top left;
-	transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-	transform-origin: 50% 100%;
-}
-
-.pd-bento-tile[data-size='small'] .pd-bento-media img {
-	width: 160%;
-	max-width: none;
-	aspect-ratio: 16 / 13;
-}
-
-.pd-bento-tile:hover .pd-bento-media img {
-	transform: scale(1.04);
-}
-
-@container (max-width: 600px) {
-	.pd-bento {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.pd-bento-tile[data-size] {
-		grid-column: auto;
-		min-height: 0;
-	}
-
-	.pd-bento-text {
-		padding: 26px 24px 18px;
-	}
-
-	.pd-bento-media,
-	.pd-bento-tile[data-size='large'] .pd-bento-media {
-		margin: 0 24px;
-		border-radius: 12px 12px 0 0;
-	}
-
-	.pd-bento-tile[data-size='small'] .pd-bento-media img {
-		width: 100%;
-		aspect-ratio: 16 / 10;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.pd-bento-media img {
-		transition: none;
-	}
-}
-
-/* ─── 어디서 열어도: 화면 크기 시뮬레이터. 구역을 지나는 동안 화면에 고정되고, 스크롤한 만큼 크기가 바뀐다 ─── */
-.pd-devices.sp-section {
-	padding: 0;
-}
-
-.pd-sim-track {
-	--sp: 0;
-	/* 장면마다 화면 높이의 60%씩 (앱 셋 × 크기 넷) */
-	height: calc(var(--view, 700px) * (1 + var(--steps, 4) * 0.6));
-}
-
-.pd-sim-sticky {
-	position: sticky;
-	top: 0;
-	display: flex;
-	align-items: center;
-	height: var(--view, 700px);
-	overflow: hidden;
-}
-
-.pd-sim-layout {
-	display: grid;
-	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-	gap: 40px;
-	align-items: center;
-	width: 100%;
-	max-width: 1080px;
-	margin: 0 auto;
-	padding: 0 32px;
-}
-
-.pd-sim-copy .sp-headline {
-	margin-bottom: 24px;
-	font-size: clamp(26px, 3.6cqi, 38px);
-}
-
-.pd-switch {
-	display: inline-flex;
-	gap: 4px;
-	padding: 4px;
-	border-radius: 980px;
-	background-color: var(--sp-alt);
-}
-
-.pd-switch button {
-	display: flex;
-	align-items: baseline;
-	gap: 6px;
-	padding: 8px 16px;
-	border: none;
-	border-radius: 980px;
-	background: none;
-	color: var(--sp-text);
-	font: inherit;
-	font-size: 15px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: background-color var(--duration-fast) var(--ease-out);
-}
-
-.pd-switch button span {
-	color: var(--sp-muted);
-	font-size: 12px;
-	font-weight: 500;
-}
-
-.pd-switch button[aria-pressed='true'] {
-	background-color: var(--sp-bg);
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-}
-
-/* 무대: 기기는 같은 바닥선에 서고, 아래에 지금 폭을 재는 자가 있다 */
-.pd-sim {
-	--ease: cubic-bezier(0.65, 0, 0.35, 1);
-	--zoom: 1;
-	container-type: inline-size;
-	position: relative;
-	display: flex;
-	align-items: flex-end;
-	justify-content: center;
-	aspect-ratio: 5 / 4;
-	padding-bottom: 12%;
-	border-radius: 28px;
-	background:
-		radial-gradient(60% 55% at 50% 45%, color-mix(in srgb, var(--sp-accent) 12%, transparent), transparent 70%),
-		var(--sp-alt);
-	overflow: hidden;
-}
-
-.pd-sim-device {
-	--bz: 10px;
-	--br: 14px;
-	position: relative;
-	width: calc(var(--share) * var(--zoom) * 100cqi);
-	height: calc(var(--share) * var(--zoom) * 100cqi * var(--ratio));
-	border: var(--bz) solid #1d1d1f;
-	border-radius: var(--br);
-	background-color: #000000;
+	border-radius: 16px 16px 0 0;
 	box-shadow:
-		0 0 0 1px #3a3a3c,
-		0 30px 60px rgba(0, 0, 0, 0.25);
-	transition:
-		width 0.9s var(--ease),
-		height 0.9s var(--ease),
-		border-width 0.9s var(--ease),
-		border-radius 0.9s var(--ease);
+		0 0 0 1px rgba(255, 255, 255, 0.12),
+		0 -20px 80px rgba(0, 0, 0, 0.5);
 }
 
-.pd-sim[data-kind='laptop'] .pd-sim-device {
-	--br: 14px 14px 4px 4px;
-}
-
-.pd-sim[data-kind='tablet'] .pd-sim-device {
-	--bz: 12px;
-	--br: 26px;
-}
-
-.pd-sim[data-kind='phone'] .pd-sim-device {
-	--bz: 7px;
-	--br: 30px;
-}
-
-.pd-sim-screen {
-	position: absolute;
-	inset: 0;
-	overflow: hidden;
-	border-radius: calc(var(--br) - var(--bz));
-	transition: border-radius 0.9s var(--ease);
-}
-
-.pd-sim-screen img {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: top;
-	opacity: 0;
-	transition: opacity 0.45s ease-out;
-}
-
-/* 틀이 모양을 반쯤 바꾼 뒤에 새 화면이 나타난다 */
-.pd-sim-screen img.active {
-	opacity: 1;
-	transition-delay: 0.35s;
-}
-
-/* 휴대폰은 위에 다이내믹 아일랜드 */
-.pd-sim-device::before {
-	content: '';
-	position: absolute;
-	z-index: 1;
-	top: 6px;
-	left: 50%;
-	width: 30%;
-	height: 4.5%;
-	transform: translateX(-50%);
-	border-radius: 20px;
-	background-color: #000000;
-	opacity: 0;
-	transition: opacity 0.3s;
-}
-
-.pd-sim[data-kind='phone'] .pd-sim-device::before {
-	opacity: 1;
-	transition-delay: 0.6s;
-}
-
-/* 모니터 받침대와 노트북 바닥: 그 기기일 때만 */
-.pd-sim-stand,
-.pd-sim-base {
-	position: absolute;
-	top: calc(100% + var(--bz));
-	left: 50%;
-	opacity: 0;
-	transform: translateX(-50%);
-	transition: opacity 0.4s;
-}
-
-.pd-sim-stand {
-	width: 14%;
-	height: 7cqi;
-	background: linear-gradient(90deg, #b9bbc1, #e2e3e7 45%, #a7a9af);
-	clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
-}
-
-.pd-sim-stand::after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: -40%;
-	width: 180%;
-	height: 0.9cqi;
-	border-radius: 4px;
-	background: #c7c9ce;
-}
-
-.pd-sim-base {
-	width: calc(100% + var(--bz) * 2 + 12%);
-	height: 1.6cqi;
-	border-radius: 2px 2px 12px 12px;
-	background: linear-gradient(#e3e4e8, #b7b9bf 60%, #8e9096);
-}
-
-.pd-sim[data-kind='monitor'] .pd-sim-stand,
-.pd-sim[data-kind='laptop'] .pd-sim-base {
-	opacity: 1;
-	transition-delay: 0.6s;
-}
-
-/* 폭을 재는 자: 기기 폭을 따라 늘고 줄며, 숫자가 굴러간다 */
-.pd-sim-ruler {
-	position: absolute;
-	bottom: 2.4cqi;
-	left: 50%;
-	display: grid;
-	place-items: center;
-	width: calc(var(--share) * var(--zoom) * 100cqi);
-	height: 22px;
-	transform: translateX(-50%);
-	border-inline: 2px solid var(--sp-accent);
-	transition: width 0.9s var(--ease);
-}
-
-.pd-sim-ruler::before {
-	content: '';
+/* 화면 위 아래쪽을 바탕색으로 덮어, 띠로 이어진다 */
+.pd-stage::after {
 	position: absolute;
 	right: 0;
-	left: 0;
-	top: 50%;
-	height: 1px;
-	background-color: var(--sp-accent);
-	opacity: 0.6;
-}
-
-.pd-sim-ruler span {
-	position: relative;
-	padding: 2px 10px;
-	border-radius: 999px;
-	background-color: var(--sp-accent);
-	color: #ffffff;
-	font-family: var(--sp-mono);
-	font-size: 13px;
-	font-variant-numeric: tabular-nums;
-}
-
-/* 단계: 영상의 챕터처럼, 지나온 만큼 아래 막대가 찬다 (--sp는 구역을 지나온 비율) */
-.pd-sim-steps {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 8px;
-	margin-top: 20px;
-	list-style: none;
-}
-
-.pd-sim-steps button {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-	width: 100%;
-	padding: 10px 14px 12px;
-	overflow: hidden;
-	border: none;
-	border-radius: 14px;
-	background-color: var(--sp-alt);
-	color: var(--sp-muted);
-	font: inherit;
-	text-align: left;
-	cursor: pointer;
-	transition:
-		background-color 0.3s,
-		color 0.3s;
-}
-
-.pd-sim-steps strong {
-	font-size: 15px;
-}
-
-.pd-sim-steps span {
-	font-family: var(--sp-mono);
-	font-size: 12px;
-}
-
-.pd-sim-steps button[aria-current] {
-	background-color: var(--sp-bg);
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-	color: var(--sp-text);
-}
-
-.pd-sim-steps button::after {
-	content: '';
-	position: absolute;
 	bottom: 0;
 	left: 0;
-	width: calc(clamp(0, var(--sp) * 4 - var(--i), 1) * 100%);
-	height: 3px;
-	background-color: var(--sp-accent);
+	height: 30%;
+	background: linear-gradient(180deg, transparent, var(--pd-ink));
+	content: '';
 }
 
-.pd-sim-note {
-	min-height: 4.8em;
-	margin-top: 18px;
-	color: var(--sp-muted);
-	font-size: 15px;
-	line-height: 1.6;
-	animation: pd-note 0.5s ease-out;
-}
-
-.pd-sim-note strong {
-	color: var(--sp-text);
-}
-
-@keyframes pd-note {
-	from {
-		opacity: 0;
-		transform: translateY(8px);
-	}
-}
-
-/* ─── 요청이 지나는 길: 트랙을 지나는 동안 그림이 화면에 고정되고, 스크롤한 만큼 그려진다 ─── */
-.pd-arch-track {
-	--p: 0;
-	height: calc(var(--view, 700px) * 2.4);
-	margin-bottom: 48px;
-}
-
-.pd-arch-sticky {
-	position: sticky;
-	top: 0;
-	display: flex;
-	align-items: center;
-	height: var(--view, 700px);
-}
-
-.pd-arch {
-	width: 100%;
-}
-
-.pd-arch-scroll {
-	overflow-x: auto;
-}
-
-.pd-arch svg {
-	display: block;
-	width: 100%;
-	min-width: 620px;
-	height: auto;
-	font-family: inherit;
-}
-
-/* 단계마다 0→1: 앞 단계가 끝나면 다음이 시작된다 */
-.pd-node,
-.pd-edge {
-	--s: clamp(0, var(--p) * var(--n) - var(--i), 1);
-}
-
-.pd-node-body {
-	fill: rgba(255, 255, 255, calc(0.03 + var(--s) * 0.07));
-	stroke: rgba(255, 255, 255, calc(0.16 + var(--s) * 0.5));
-	stroke-width: 1;
-}
-
-.pd-node-line {
-	fill: none;
-	stroke: rgba(255, 255, 255, calc(0.12 + var(--s) * 0.35));
-	stroke-width: 1;
-}
-
-.pd-node-dot {
-	fill: rgba(255, 255, 255, calc(0.2 + var(--s) * 0.5));
-}
-
-.pd-node text {
-	text-anchor: middle;
-	opacity: calc(0.28 + var(--s) * 0.72);
-}
-
-.pd-node-label {
-	fill: var(--sp-dark-text);
-	font-size: 14px;
-	font-weight: 600;
-}
-
-/* 아이콘은 Font Awesome 글자 (브랜드는 브랜드 글꼴) */
-.pd-node-icon {
-	fill: color-mix(in srgb, #2997ff calc(var(--s) * 100%), #8e8e93);
-	font-family: 'Font Awesome 6 Free';
-	font-size: 18px;
-	font-weight: 900;
-}
-
-.pd-node-icon.brand {
-	font-family: 'Font Awesome 6 Brands';
-	font-weight: 400;
-}
-
-/* 사람이 보는 화면과 데이터가 머무는 곳은 강조색 */
-.pd-node-browser .pd-node-body,
-.pd-node-db .pd-node-body {
-	stroke: color-mix(in srgb, #2997ff calc(var(--s) * 100%), rgba(255, 255, 255, 0.18));
-}
-
-.pd-edge > path {
-	fill: none;
-	stroke: #2997ff;
-	stroke-width: 2;
-	stroke-dasharray: 1;
-	stroke-dashoffset: calc(1 - var(--s));
-	stroke-linecap: round;
-}
-
-/* 화살촉은 선이 거의 다 그려졌을 때 */
-.pd-edge marker path {
-	fill: #2997ff;
-	stroke: none;
-	opacity: clamp(0, (var(--s) - 0.85) * 7, 1);
-}
-
-.pd-edge text {
-	fill: var(--sp-dark-muted);
-	font-size: 13px;
-	text-anchor: middle;
-	opacity: var(--s);
-}
-
-.pd-arch figcaption {
-	margin-top: 16px;
-	color: var(--sp-dark-muted);
-	font-size: 15px;
+/* 큰 숫자 띠 */
+.pd-numbers {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 24px 16px;
+	max-width: var(--pd-max);
+	margin: 0 auto;
+	padding: clamp(40px, 6cqi, 72px) 0 clamp(56px, 8cqi, 96px);
+	border-top: 1px solid var(--pd-ink-line);
+	list-style: none;
 	text-align: center;
 }
 
-/* ─── 좁은 창: 멈춰 선 무대 없이, 시뮬레이터는 세로로 넉넉하게 ─── */
+.pd-stage + .pd-numbers {
+	border-top: none;
+}
+
+.pd-numbers li {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.pd-numbers strong {
+	font-size: clamp(44px, 8cqi, 88px);
+	font-weight: 800;
+	letter-spacing: -0.05em;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	background: linear-gradient(90deg, #ffffff, var(--sp-accent));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.pd-numbers li > span {
+	color: var(--pd-ink-muted);
+	font-size: 15px;
+}
+
+/* ─── 구역 공통 ─── */
+.pd-section {
+	max-width: var(--pd-max);
+	margin: 0 auto;
+	padding: clamp(64px, 9cqi, 120px) var(--pd-gutter);
+}
+
+.pd-head {
+	max-width: 24ch;
+	margin-bottom: clamp(32px, 5cqi, 56px);
+}
+
+.pd-kicker {
+	margin-bottom: 10px;
+	color: var(--sp-accent);
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.pd h2 {
+	font-size: clamp(30px, 5.4cqi, 56px);
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	line-height: 1.05;
+}
+
+.pd h3 {
+	font-size: clamp(20px, 2.6cqi, 28px);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1.2;
+}
+
+.pd h3 i {
+	margin-right: 8px;
+	color: var(--sp-accent);
+	font-size: 0.85em;
+}
+
+.pd p {
+	line-height: 1.55;
+}
+
+.pd-detail {
+	margin-top: 10px;
+	font-size: 15px;
+	opacity: 0.8;
+}
+
+/* 작은 번호 (01, 02 …) */
+.pd-index {
+	display: block;
+	margin-bottom: 14px;
+	color: var(--sp-accent);
+	font-family: var(--sp-mono);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+}
+
+/* ─── 주요 기능: 하나씩 크게, 좌우 번갈아 ─── */
+.pd-features ol {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(48px, 8cqi, 112px);
+	list-style: none;
+}
+
+.pd-feature {
+	display: grid;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+	gap: clamp(24px, 5cqi, 64px);
+	align-items: center;
+}
+
+.pd-feature:nth-child(even) {
+	grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+
+.pd-feature:nth-child(even) .pd-feature-copy {
+	order: 2;
+}
+
+.pd-feature-text {
+	grid-template-columns: minmax(0, 1fr);
+	max-width: 44em;
+	padding: clamp(24px, 4cqi, 40px) 0;
+	border-top: 1px solid var(--sp-line);
+}
+
+.pd-feature-copy p {
+	margin-top: 14px;
+	color: var(--sp-muted);
+	font-size: clamp(16px, 2cqi, 19px);
+}
+
+.pd-feature-media {
+	position: relative;
+	overflow: hidden;
+	border-radius: 20px;
+	background: var(--sp-alt);
+	box-shadow:
+		0 0 0 1px var(--sp-line),
+		0 30px 60px -30px rgba(0, 0, 0, 0.45);
+	/* 홀수·짝수에 따라 살짝 다른 방향으로 기울어진 채 떠 있다 */
+	transform: perspective(1200px) rotateY(-4deg);
+	transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.pd-feature:nth-child(even) .pd-feature-media {
+	transform: perspective(1200px) rotateY(4deg);
+}
+
+.pd-feature:hover .pd-feature-media {
+	transform: perspective(1200px) rotateY(0deg);
+}
+
+.pd-feature-media img,
+.pd-feature-media video {
+	display: block;
+	width: 100%;
+}
+
+/* ─── 만든 방식: 밝은 띠, 2열 카드, 큰 번호 ─── */
+.pd-build {
+	max-width: none;
+	background: var(--sp-alt);
+}
+
+.pd-build .pd-head,
+.pd-build .pd-cards,
+.pd-build .pdp-track {
+	max-width: var(--pd-max);
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.pd-build .pd-head h2 {
+	max-width: 20ch;
+}
+
+.pd-cards {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+	list-style: none;
+}
+
+.pd-cards li {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: clamp(24px, 3.5cqi, 40px);
+	overflow: hidden;
+	border-radius: 24px;
+	background: var(--sp-bg);
+	box-shadow: 0 0 0 1px var(--sp-line);
+}
+
+.pd-card-num {
+	display: block;
+	margin-bottom: 36px;
+	font-size: clamp(48px, 7cqi, 80px);
+	font-weight: 800;
+	letter-spacing: -0.06em;
+	line-height: 0.9;
+	background: linear-gradient(135deg, var(--sp-accent), #a24bf5);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.pd-cards p {
+	margin-top: 12px;
+	color: var(--sp-muted);
+	font-size: 16px;
+}
+
+/* ─── 쓰는 법: 가로 단계 ─── */
+.pd-steps {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: minmax(0, 1fr);
+	gap: 24px;
+	list-style: none;
+}
+
+.pd-steps li {
+	position: relative;
+	padding-top: 24px;
+	border-top: 2px solid var(--sp-line);
+}
+
+/* 다음 단계로 이어지는 선 위의 동그라미 */
+.pd-step-num {
+	position: absolute;
+	top: -17px;
+	left: 0;
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: var(--sp-accent);
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.pd-steps h3 {
+	margin-top: 18px;
+	font-size: 19px;
+}
+
+.pd-steps p {
+	margin-top: 8px;
+	color: var(--sp-muted);
+	font-size: 15px;
+}
+
+/* ─── 진행 과정: 가로 선 ─── */
+.pd-track {
+	display: flex;
+	gap: 0;
+	overflow-x: auto;
+	padding-bottom: 8px;
+	list-style: none;
+	scrollbar-width: thin;
+}
+
+.pd-track li {
+	position: relative;
+	flex: 1 0 160px;
+	padding: 28px 20px 0 0;
+	border-top: 2px solid var(--sp-line);
+}
+
+.pd-track li::before {
+	position: absolute;
+	top: -7px;
+	left: 0;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: var(--sp-bg);
+	box-shadow:
+		inset 0 0 0 3px var(--sp-accent),
+		0 0 0 4px var(--sp-bg);
+	content: '';
+}
+
+.pd-track li:last-child::before {
+	background: var(--sp-accent);
+}
+
+.pd-track time {
+	display: block;
+	font-size: 20px;
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	font-variant-numeric: tabular-nums;
+}
+
+.pd-track span {
+	display: block;
+	margin-top: 6px;
+	color: var(--sp-muted);
+	font-size: 15px;
+	line-height: 1.45;
+}
+
+/* ─── 어두운 띠: 기술 사양 표와 맡은 일 ─── */
+.pd-dark {
+	background: linear-gradient(180deg, var(--pd-ink-2), var(--pd-ink));
+	color: var(--pd-ink-text);
+}
+
+.pd-dark .pd-section + .pd-section {
+	padding-top: 0;
+}
+
+.pd-specs dl {
+	border-top: 1px solid var(--pd-ink-line);
+}
+
+.pd-specs div {
+	display: grid;
+	grid-template-columns: minmax(140px, 1fr) minmax(0, 3fr);
+	gap: 16px;
+	padding: 22px 0;
+	border-bottom: 1px solid var(--pd-ink-line);
+	font-size: 17px;
+	line-height: 1.45;
+}
+
+.pd-specs dt {
+	color: var(--pd-ink-muted);
+	font-weight: 600;
+}
+
+.pd-specs dd {
+	font-weight: 500;
+}
+
+.pd-checks {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px 32px;
+	list-style: none;
+	font-size: clamp(17px, 2.1cqi, 21px);
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.pd-checks li {
+	display: flex;
+	gap: 14px;
+	padding: 18px 0;
+	border-bottom: 1px solid var(--pd-ink-line);
+}
+
+.pd-checks i {
+	flex: none;
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	margin-top: 2px;
+	border-radius: 50%;
+	background: var(--sp-accent);
+	color: #ffffff;
+	font-size: 11px;
+}
+
+/* ─── 마지막 부름 ─── */
+.pd-cta {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: clamp(72px, 10cqi, 128px) var(--pd-gutter) clamp(80px, 11cqi, 144px);
+	background: radial-gradient(60% 50% at 50% 100%, var(--pd-glow), transparent 70%), var(--pd-ink);
+	color: var(--pd-ink-text);
+	text-align: center;
+}
+
+.pd-cta-icon {
+	width: 64px;
+	height: 64px;
+	border-radius: 16px;
+	object-fit: cover;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.pd-cta-icon.fallback {
+	display: grid;
+	place-items: center;
+	background: rgba(255, 255, 255, 0.08);
+	font-size: 26px;
+}
+
+.pd-cta-title {
+	margin-top: 22px;
+	font-size: clamp(34px, 6cqi, 64px);
+	font-weight: 800;
+	letter-spacing: -0.045em;
+	line-height: 1;
+}
+
+.pd-cta-sub {
+	margin-top: 12px;
+	color: var(--pd-ink-muted);
+	font-size: 18px;
+}
+
+/* ─── 좁은 창 (모바일) ─── */
 @container (max-width: 600px) {
-	.sp-hero.pd-hero {
-		height: auto;
-		padding-bottom: 8px;
+	.pd-hero h1 {
+		max-width: none;
 	}
 
-	.pd-stage {
-		position: static;
-		height: auto;
-		overflow: visible;
+	.pd-stage img {
+		border-radius: 10px 10px 0 0;
 	}
 
-	.pd-copy {
-		padding: 40px 20px 0;
-		opacity: 1;
-		transform: none;
+	.pd-numbers {
+		grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 	}
 
-	.pd-hero-group {
-		position: relative;
-		top: auto;
-		left: auto;
-		width: auto;
-		margin: 36px 20px 0;
-		transform: none;
-	}
-
-	.pd-caption {
-		--c: 1;
-		margin-top: 20px;
-		font-size: 26px;
-	}
-
-	.pd-screen {
-		border-width: 6px 6px 9px;
-		border-radius: 12px 12px 4px 4px;
-	}
-
-	.pd-switch button span {
-		display: none;
-	}
-
-	.pd-sim-track {
-		height: auto;
-	}
-
-	.pd-sim-sticky {
-		position: static;
-		height: auto;
-		padding: 56px 0;
-	}
-
-	.pd-sim-layout {
+	.pd-feature,
+	.pd-feature:nth-child(even) {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 24px;
-		padding: 0 20px;
 	}
 
-	.pd-sim {
-		aspect-ratio: 4 / 5;
-		padding-bottom: 16%;
-		border-radius: 20px;
+	.pd-feature:nth-child(even) .pd-feature-copy {
+		order: 0;
 	}
 
-	.pd-sim[data-kind='monitor'] {
-		--zoom: 1.05;
+	.pd-feature-media,
+	.pd-feature:nth-child(even) .pd-feature-media {
+		transform: none;
+		border-radius: 14px;
 	}
 
-	.pd-sim[data-kind='laptop'] {
-		--zoom: 1.15;
+	.pd-cards,
+	.pd-checks {
+		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.pd-sim[data-kind='tablet'] {
-		--zoom: 1.4;
+	.pd-steps {
+		grid-auto-flow: row;
+		gap: 36px;
 	}
 
-	.pd-sim[data-kind='phone'] {
-		--zoom: 1.5;
-	}
-
-	.pd-sim-device {
-		--bz: 6px;
+	.pd-specs div {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
 	}
 }
 
-/* ─── 움직임 줄이기: 멈춘 그대로 다 보인다 ─── */
 @media (prefers-reduced-motion: reduce) {
-	.sp-hero.pd-hero {
-		height: auto;
-		padding-bottom: 8px;
-	}
-
-	.pd-stage {
-		position: static;
-		height: auto;
-		overflow: visible;
-	}
-
-	.pd-copy {
-		opacity: 1;
+	.pd-feature-media,
+	.pd-feature:nth-child(even) .pd-feature-media {
 		transform: none;
-	}
-
-	.pd-hero-group {
-		position: relative;
-		top: auto;
-		left: auto;
-		width: min(880px, 90%);
-		margin: 48px auto 0;
-		transform: none;
-	}
-
-	.pd-caption {
-		--c: 1;
-	}
-
-	.pd-arch-track {
-		--p: 1 !important;
-		height: auto;
-	}
-
-	.pd-arch-sticky {
-		position: static;
-		height: auto;
-	}
-
-	.pd-sim-track {
-		height: auto;
-	}
-
-	.pd-sim-sticky {
-		position: static;
-		height: auto;
-		padding: 80px 0;
-	}
-
-	.pd-sim-steps button[aria-current]::after {
-		width: 100%;
-	}
-
-	.pd .sp-headline .pd-word {
-		--w: 1;
-	}
-
-	.pd-band .sp-facts li {
-		opacity: 1;
-		transform: none;
-		transition: none;
-	}
-
-	.pd-sim-device,
-	.pd-sim-screen,
-	.pd-sim-screen img,
-	.pd-sim-ruler {
 		transition: none;
 	}
 }

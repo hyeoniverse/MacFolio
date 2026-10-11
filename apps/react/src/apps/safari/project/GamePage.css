@@ -1,1358 +1,901 @@
-/* SproutFarm: 게임에 쓴 Sprout Lands 에셋으로 꾸민다. 픽셀 그림은 정수 배로 키우고 색을 섞지 않는다(pixelated) */
-.sp[data-look='game'] {
-	--gm-wood: #8b5a3c;
-	--gm-wood-dark: #5e3b25;
-	--gm-paper: #f3e1bb;
-	--gm-cream: #fbf1dc;
-	--gm-grass: #b5dc85;
-	--gm-grass-dark: #6a9a3a;
-	--gm-dirt: #dcb886;
-	--gm-bg: #e8f3d3;
-	--gm-ink: #4a3222;
-	--gm-muted: #6b5038;
-	--sp-accent: #6a9a3a;
-	background-color: var(--gm-bg);
-	color: var(--gm-ink);
-	cursor:
-		url('/imgs/projects/sproutfarm/sprites/catpaw.png') 6 2,
-		auto;
-}
-
-:root[data-theme='dark'] .sp[data-look='game'] {
-	--gm-bg: #18210f;
-	--gm-paper: #e9d3a6;
-	--sp-accent: #a5d46e;
-}
-
+/* 게임 모양(game): 픽셀 타이틀 화면과 스테이지 셀렉트. 밤하늘(타이틀·크레딧)과 들판(그 사이) 두 톤, 계단식 픽셀 테두리 */
 .gm {
+	/* 픽셀 글꼴이 깔려 있으면 쓰고, 없으면 고정폭 */
+	--gm-font: 'Galmuri11', 'Galmuri', 'DungGeunMo', 'Press Start 2P', var(--sp-mono);
+	--gm-night: #1b1a3a;
+	--gm-night-deep: #0e0d22;
+	--gm-night-text: #f4efe2;
+	--gm-night-muted: #a9a4c8;
+	--gm-field: #e9f3d8;
+	--gm-field-alt: #d9ebc2;
+	--gm-grass: #5fa54f;
+	--gm-dirt: #c08a4b;
+	--gm-panel: #fff8e6;
+	--gm-panel-line: #3b2a1a;
+	--gm-panel-shade: #e3c99a;
+	--gm-gold: #f7c948;
+	--gm-pink: #ff6b9d;
+	--gm-sky: #6fb7ff;
+	--gm-px: 4px;
 	position: relative;
-	/* 바탕은 스크롤에 따라 아침 → 노을 → 밤 (--gm-sky는 스크립트가 정한다).
-	   스크롤마다 바로 칠한다. 바탕에만 늦게 따라오는 전환을 두면 같은 색을 쓰는 지도·크레딧 가장자리와 어긋나 경계가 진해진다 */
-	background-color: var(--gm-sky, var(--gm-bg));
-	text-align: left;
+	overflow: hidden;
+	background: var(--gm-field);
+	color: var(--sp-text);
+	font-family: var(--gm-font);
+	line-height: 1.6;
+	letter-spacing: 0;
 }
 
-/* 고양이 발 커서: 마우스로 움직일 때만 진짜 커서를 감추고 이것을 띄운다 */
-.gm-paw {
-	display: none;
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 20;
-	width: 32px;
-	height: 32px;
-	background: url('/imgs/projects/sproutfarm/sprites/catpaw-sheet.png') 0 0 / 64px 32px;
-	pointer-events: none;
-	animation: gm-paw-tap 1.2s steps(1) infinite;
+:root[data-theme='dark'] .gm {
+	--gm-field: #16261a;
+	--gm-field-alt: #1d3222;
+	--gm-grass: #3f8a3a;
+	--gm-panel: #26223f;
+	--gm-panel-line: #09081a;
+	--gm-panel-shade: #141230;
 }
 
-.gm[data-paw='on'] .gm-paw {
-	display: block;
-}
-
-.gm[data-paw='on'],
-.gm[data-paw='on'] * {
-	cursor: none;
-}
-
-.gm-paw[data-hold='true'] {
-	background-position-x: -32px;
-	animation: none;
-}
-
-/* 누를 수 있는 것 위에서는 더 빨리 두드린다 */
-.gm:has(:is(a, button):hover) .gm-paw {
-	animation-duration: 0.5s;
-}
-
-@keyframes gm-paw-tap {
-	0%,
-	70% {
-		background-position-x: 0;
-	}
-
-	71%,
-	100% {
-		background-position-x: -32px;
-	}
-}
-
-/* 상자 테두리(border-image)까지 픽셀 그대로 키운다. 게임 캡처 사진만 따로 auto */
-.gm,
-.gm * {
+.gm img,
+.gm i {
 	image-rendering: pixelated;
 }
 
-.gm h2 {
+.gm-inner {
+	max-width: 880px;
+	margin: 0 auto;
+	padding: 0 32px;
+}
+
+/* 계단식 픽셀 테두리: 네 변을 box-shadow로 그려 모서리 한 픽셀이 비어 보인다 */
+.gm-panel {
+	background: var(--gm-panel);
+	box-shadow:
+		0 calc(-1 * var(--gm-px)) 0 0 var(--gm-panel-line),
+		0 var(--gm-px) 0 0 var(--gm-panel-line),
+		calc(-1 * var(--gm-px)) 0 0 0 var(--gm-panel-line),
+		var(--gm-px) 0 0 0 var(--gm-panel-line),
+		inset 0 calc(-1 * var(--gm-px)) 0 0 var(--gm-panel-shade);
+}
+
+/* ─── 머리글: 영어 픽셀 글씨 위에 한국어 이름 ─── */
+.gm-heading {
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	gap: 10px;
-	margin-bottom: 16px;
-	font-size: 22px;
-	font-weight: 800;
-	letter-spacing: 0.04em;
-}
-
-.gm h2 img {
-	width: 32px;
-	height: 32px;
-}
-
-.gm :is(.gm-quests, .gm-day, .gm-inventory) > h2 {
-	color: var(--gm-sky-ink, var(--gm-ink));
-	transition: color 0.4s linear;
-}
-
-:root[data-theme='dark'] .gm :is(.gm-quests, .gm-day, .gm-inventory) > h2 {
-	color: var(--gm-sky-ink, #f3e1bb);
-}
-
-/* ─── 타이틀 화면: 풀밭 위의 집과 나무, 걸어 다니는 동물 ─── */
-.gm-title {
-	display: grid;
-	position: relative;
-	place-items: center;
-	min-height: 540px;
-	overflow: hidden;
-	/* 아래쪽은 동물이 지나가는 풀밭 길 (상자 뒤로 숨지 않게 비워 둔다) */
-	padding: 56px 32px 136px;
-	/* 풀밭 위에 그 시간의 빛(--gm-light)을 얹는다 */
-	background:
-		linear-gradient(var(--gm-light, transparent), var(--gm-light, transparent)),
-		url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px;
+	gap: 6px;
+	margin: 0 0 28px;
 	text-align: center;
 }
 
-.gm-sprite {
-	position: absolute;
-	pointer-events: none;
-}
-
-.gm-house {
-	top: 28px;
-	left: 4%;
-	width: 192px;
-}
-
-.gm-tree {
-	width: 128px;
-}
-
-.gm-tree.a {
-	top: 230px;
-	left: 1%;
-}
-
-.gm-tree.b {
-	top: 40px;
-	right: 6%;
-}
-
-.gm-tree.c {
-	right: 1%;
-	bottom: 40px;
-}
-
-.gm-sunflower {
-	bottom: 70px;
-	left: 20%;
-	width: 48px;
-}
-
-.gm-flower {
-	width: 48px;
-}
-
-.gm-flower.a {
-	top: 180px;
-	right: 22%;
-}
-
-.gm-flower.b {
-	bottom: 150px;
-	right: 20%;
-}
-
-.gm-flower.c {
-	top: 60px;
-	left: 30%;
-}
-
-.gm-flower.d {
-	bottom: 30px;
-	left: 4%;
-}
-
-/* 걷는 동물: 스프라이트 시트의 칸을 차례로 넘기며 가로질러 간다 */
-.gm-walker {
-	position: absolute;
-	z-index: 2;
-	background-repeat: no-repeat;
-	image-rendering: pixelated;
-	pointer-events: none;
-}
-
-.gm-cow {
-	bottom: 18px;
-	left: -100px;
-	width: 96px;
-	height: 96px;
-	background-image: url('/imgs/projects/sproutfarm/sprites/cow-run.png');
-	/* 달리는 두 칸. 넘기기와 걸음은 스크립트가 칸마다 함께 정한다(몸이 미끄러지지 않게) */
-	background-size: 192px 96px;
-}
-
-.gm-chick {
-	width: 48px;
-	height: 48px;
-	background-image: url('/imgs/projects/sproutfarm/sprites/chick-walk.png');
-	background-size: 192px 48px;
-	animation:
-		gm-chick-frames 0.5s steps(4) infinite,
-		gm-cross 18s linear infinite;
-}
-
-.gm-chick.a {
-	bottom: 70px;
-	left: -60px;
-	animation-delay:
-		0s,
-		-6s;
-}
-
-.gm-chick.b {
-	bottom: 22px;
-	left: -60px;
-	animation-delay:
-		0s,
-		-13s;
-}
-
-@keyframes gm-chick-frames {
-	to {
-		background-position-x: -192px;
-	}
-}
-
-@keyframes gm-cross {
-	to {
-		transform: translateX(calc(100cqi + 200px));
-	}
-}
-
-.gm-title-body {
-	position: relative;
-	z-index: 1;
-	max-width: 620px;
-	padding: 28px 28px 22px;
-	border: solid transparent;
-	border-width: 12px 12px 15px;
-	border-image: url('/imgs/projects/sproutfarm/sprites/panel.png') 4 4 5 fill / 12px 12px 15px stretch;
-	color: var(--gm-ink);
-}
-
-.gm-icon {
-	display: block;
-	width: 88px;
-	height: 88px;
-	margin: 0 auto 22px;
-	border: 4px solid var(--gm-wood);
-	border-radius: 14px;
-	box-shadow: 0 5px 0 var(--gm-wood-dark);
-}
-
-.gm-sign {
-	display: inline-block;
-	padding: 2px 14px;
-	border: 3px solid var(--gm-wood);
-	border-radius: 8px;
-	background-color: var(--gm-cream);
-	color: var(--gm-wood-dark);
+.gm-heading-en {
+	font-size: clamp(22px, 4.4cqi, 34px);
 	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-shadow:
+		3px 3px 0 var(--gm-panel-line),
+		0 0 0 transparent;
+	color: var(--gm-gold);
 }
 
-.gm-title-body h1 {
-	margin-top: 10px;
-	text-wrap: balance;
-	font-size: clamp(28px, 4.8cqi, 46px);
-	font-weight: 800;
+.gm-heading-ko {
+	font-size: 14px;
+	color: var(--sp-muted);
+}
+
+/* ─── 타이틀 화면: 밤하늘, 장면 그림, 깜빡이는 PRESS START ─── */
+.gm-title {
+	position: relative;
+	display: grid;
+	place-items: center;
+	min-height: 100cqh;
+	padding: 72px 32px 56px;
+	overflow: hidden;
+	background: var(--gm-night);
+	color: var(--gm-night-text);
+	text-align: center;
+	border-bottom: var(--gm-px) solid var(--gm-panel-line);
+}
+
+/* 번쩍: PRESS START를 누르면 흰 막이 한 번 지나간다 */
+.gm-title::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: #ffffff;
+	opacity: 0;
+	pointer-events: none;
+	z-index: 3;
+}
+
+.gm-title[data-flash]::after {
+	animation: gm-flash 0.42s steps(3, end);
+}
+
+@keyframes gm-flash {
+	0% {
+		opacity: 0.9;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+.gm-title-art {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0.55;
+	/* 아래로 갈수록 밤하늘에 묻힌다 */
+	mask-image: linear-gradient(180deg, #000 30%, transparent 95%);
+}
+
+.gm-title-main {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 18px;
+	max-width: 720px;
+}
+
+.gm-name {
+	margin: 0;
+	font-size: clamp(30px, 7.2cqi, 64px);
+	font-weight: 700;
 	line-height: 1.15;
+	letter-spacing: 0.02em;
+	color: var(--gm-gold);
+	text-shadow:
+		var(--gm-px) var(--gm-px) 0 var(--gm-night-deep),
+		calc(var(--gm-px) * 2) calc(var(--gm-px) * 2) 0 var(--gm-pink);
 }
 
-.gm-title-body h1 span {
-	display: inline-block;
+.gm-logo {
+	max-width: min(520px, 80cqi);
+	height: auto;
 }
 
-.gm-lead {
-	margin-top: 10px;
-	color: var(--gm-muted);
+.gm-tagline {
+	margin: 0;
+	padding: 8px 14px;
+	background: rgba(14, 13, 34, 0.75);
+	font-size: clamp(15px, 2.4cqi, 20px);
+	color: var(--gm-night-text);
+}
+
+.gm-start {
+	margin-top: 18px;
+	padding: 14px 28px;
+	border: none;
+	background: var(--gm-panel-line);
+	color: var(--gm-gold);
+	font: inherit;
+	font-size: clamp(16px, 2.6cqi, 22px);
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	cursor: pointer;
+	box-shadow:
+		0 calc(-1 * var(--gm-px)) 0 0 var(--gm-gold),
+		0 var(--gm-px) 0 0 var(--gm-gold),
+		calc(-1 * var(--gm-px)) 0 0 0 var(--gm-gold),
+		var(--gm-px) 0 0 0 var(--gm-gold);
+	animation: gm-blink 1.1s steps(1, end) infinite;
+}
+
+.gm-start:hover,
+.gm-start:focus-visible {
+	animation: none;
+	background: var(--gm-gold);
+	color: var(--gm-night-deep);
+	outline: none;
+}
+
+.gm-start:active {
+	transform: translateY(var(--gm-px));
+}
+
+@keyframes gm-blink {
+	50% {
+		opacity: 0.25;
+	}
+}
+
+.gm-copyright {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 24px 0 0;
+	font-size: 12px;
+	color: var(--gm-night-muted);
+}
+
+.gm-favicon {
+	width: 20px;
+	height: 20px;
+	object-fit: contain;
+}
+
+.gm-favicon.fallback {
+	display: inline-grid;
+	place-items: center;
+	font-size: 12px;
+}
+
+/* ─── 가장자리 장식: 스프라이트 또는 CSS 픽셀 ─── */
+.gm-decor {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 1;
+}
+
+.gm-decor > * {
+	position: absolute;
+	display: block;
+}
+
+.gm-decor img {
+	width: auto;
+	height: 96px;
+}
+
+.gm-decor img.gm-decor-b,
+.gm-decor img.gm-decor-c,
+.gm-decor img.gm-decor-d {
+	height: 48px;
+}
+
+.gm-decor-a {
+	left: 4%;
+	bottom: 8%;
+}
+
+.gm-decor-b {
+	right: 6%;
+	bottom: 10%;
+}
+
+.gm-decor-c {
+	left: 14%;
+	top: 14%;
+}
+
+.gm-decor-d {
+	right: 14%;
+	top: 12%;
+	animation: gm-twinkle 1.6s steps(2, end) infinite;
+}
+
+/* 스프라이트가 없는 프로젝트: 별 둘, 풀 둘을 box-shadow 픽셀로 */
+.gm-decor i {
+	width: var(--gm-px);
+	height: var(--gm-px);
+	background: var(--gm-gold);
+}
+
+.gm-decor i.gm-decor-c,
+.gm-decor i.gm-decor-d {
+	box-shadow:
+		0 calc(-2 * var(--gm-px)) var(--gm-gold),
+		0 calc(2 * var(--gm-px)) var(--gm-gold),
+		calc(-2 * var(--gm-px)) 0 var(--gm-gold),
+		calc(2 * var(--gm-px)) 0 var(--gm-gold),
+		var(--gm-px) var(--gm-px) var(--gm-gold),
+		calc(-1 * var(--gm-px)) var(--gm-px) var(--gm-gold),
+		var(--gm-px) calc(-1 * var(--gm-px)) var(--gm-gold),
+		calc(-1 * var(--gm-px)) calc(-1 * var(--gm-px)) var(--gm-gold);
+}
+
+.gm-decor i.gm-decor-a,
+.gm-decor i.gm-decor-b {
+	background: var(--gm-grass);
+	box-shadow:
+		0 calc(-1 * var(--gm-px)) var(--gm-grass),
+		0 calc(-2 * var(--gm-px)) var(--gm-grass),
+		calc(2 * var(--gm-px)) 0 var(--gm-grass),
+		calc(2 * var(--gm-px)) calc(-1 * var(--gm-px)) var(--gm-grass),
+		calc(4 * var(--gm-px)) 0 var(--gm-grass),
+		calc(4 * var(--gm-px)) calc(-1 * var(--gm-px)) var(--gm-grass),
+		calc(4 * var(--gm-px)) calc(-2 * var(--gm-px)) var(--gm-grass),
+		calc(4 * var(--gm-px)) calc(-3 * var(--gm-px)) var(--gm-grass),
+		calc(-2 * var(--gm-px)) 0 var(--gm-grass);
+}
+
+@keyframes gm-twinkle {
+	50% {
+		opacity: 0.3;
+	}
+}
+
+/* ─── 들판 구역 공통 ─── */
+.gm-hud,
+.gm-stages,
+.gm-controls,
+.gm-devlog,
+.gm-gallery,
+.gm-inventory {
+	position: relative;
+	padding: 72px 0;
+}
+
+/* 구역이 번갈아 두 톤, 사이에는 픽셀 풀 띠 */
+.gm-stages,
+.gm-devlog,
+.gm-inventory {
+	background: var(--gm-field-alt);
+}
+
+.gm-stages::before,
+.gm-devlog::before,
+.gm-inventory::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: calc(var(--gm-px) * 3);
+	background: repeating-linear-gradient(
+		90deg,
+		var(--gm-grass) 0 calc(var(--gm-px) * 2),
+		transparent calc(var(--gm-px) * 2) calc(var(--gm-px) * 5)
+	);
+}
+
+/* HUD: 숫자 패널 */
+.gm-desc {
+	max-width: 620px;
+	margin: 0 auto 32px;
+	text-align: center;
 	font-size: 16px;
-	line-height: 1.55;
+	color: var(--sp-muted);
+}
+
+.gm-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 20px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.gm-stats li {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 20px 18px 22px;
+	text-align: center;
+}
+
+.gm-stats strong {
+	font-size: clamp(24px, 4cqi, 34px);
+	font-weight: 700;
+	color: var(--gm-dirt);
+	text-shadow: 2px 2px 0 var(--gm-panel-line);
+}
+
+.gm-stats span {
+	font-size: 13px;
+	color: var(--sp-muted);
+}
+
+:root[data-theme='dark'] .gm-stats strong {
+	color: var(--gm-gold);
 }
 
 .gm-links {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
 	justify-content: center;
-	gap: 12px 22px;
-	margin-top: 20px;
+	gap: 14px 24px;
+	margin-top: 32px;
 }
 
-/* 여기서 플레이: 게임의 PLAY 단추 그림 */
-.sp .gm-links .sp-pill {
-	padding: 6px 18px;
-	border: 12px solid transparent;
+.gm .sp-pill {
 	border-radius: 0;
-	border-image: url('/imgs/projects/sproutfarm/sprites/button.png') 8 fill / 12px stretch;
-	background: none;
-	color: var(--gm-wood-dark);
-	font-size: 17px;
-	font-weight: 800;
+	font-family: inherit;
+	box-shadow: var(--gm-px) var(--gm-px) 0 0 var(--gm-panel-line);
 }
 
-.sp .gm-links .sp-pill:active {
-	border-image-source: url('/imgs/projects/sproutfarm/sprites/button-pressed.png');
+.gm .sp-link {
+	font-family: inherit;
 }
 
-.sp .gm-links .sp-link {
-	color: var(--gm-wood);
-	font-weight: 700;
-}
-
-.gm-press {
-	display: block;
-	margin: 18px auto 0;
-	padding: 6px 16px;
-	border: none;
-	border-radius: 6px;
-	background: none;
-	color: var(--gm-wood);
-	font-family: var(--sp-mono);
-	font-size: 14px;
-	font-weight: 700;
-	letter-spacing: 0.3em;
-	cursor: inherit;
-	animation: gm-blink 1.2s steps(2, start) infinite;
-}
-
-.gm-press:hover,
-.gm-press:focus-visible {
-	background-color: rgba(139, 90, 60, 0.12);
-	animation: none;
-}
-
-@keyframes gm-blink {
-	to {
-		visibility: hidden;
-	}
-}
-
-/* START를 누른 순간: 화면이 한 번 하얗게 번쩍인다 */
-.gm-title::after {
-	position: absolute;
-	inset: 0;
-	z-index: 2;
-	background: rgba(255, 248, 230, 0);
-	content: '';
-	pointer-events: none;
-	transition: background 120ms linear;
-}
-
-.gm[data-started='true'] .gm-title::after {
-	background: rgba(255, 248, 230, 0.85);
-}
-
-/* ─── HUD ─── */
-.gm-hud {
+/* STAGE SELECT: 스테이지 카드 */
+.gm-stage-grid {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 12px;
-	padding: 16px 32px;
-	background-color: var(--gm-wood-dark);
-}
-
-.gm-hud div {
-	display: flex;
-	flex-direction: column;
-	padding: 6px 10px;
-	border: 12px solid transparent;
-	border-image: url('/imgs/projects/sproutfarm/sprites/button.png') 8 fill / 12px stretch;
-	color: var(--gm-ink);
-}
-
-.gm-hud span {
-	font-size: 12px;
-}
-
-.gm-hud strong {
-	font-size: 24px;
-	font-weight: 800;
-}
-
-/* ─── 퀘스트(게임 대화창)와 조작법 ─── */
-.gm-row {
-	display: grid;
-	grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 	gap: 24px;
-	max-width: 1040px;
-	margin: 0 auto;
-	padding: 44px 32px 0;
-	align-items: start;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: stage;
 }
 
-.gm-art {
-	display: block;
-	width: 160px;
-	margin-bottom: 14px;
-	border: 4px solid var(--gm-wood);
-	border-radius: 8px;
-	box-shadow: 0 4px 0 var(--gm-wood-dark);
-}
-
-.gm-quests ol {
+.gm-stage {
 	display: flex;
 	flex-direction: column;
-	gap: 14px;
-	list-style: none;
+	padding: 16px 16px 20px;
+	transition: transform 0.15s steps(3, end);
 }
 
-/* 대화창: 나무 틀 안의 초상화와 말풍선 (게임 화면 그대로) */
-.gm-dialog {
-	display: grid;
-	grid-template-columns: 96px minmax(0, 1fr);
-	gap: 10px;
-	align-items: start;
-	padding: 12px;
-	border: 12px solid transparent;
-	border-image: url('/imgs/projects/sproutfarm/sprites/button.png') 8 fill / 12px stretch;
+.gm-stage:hover {
+	transform: translate(calc(-1 * var(--gm-px)), calc(-1 * var(--gm-px)));
 }
 
-.gm-portrait {
-	display: grid;
-	place-items: center;
-	width: 96px;
-	height: 96px;
-	background: url('/imgs/projects/sproutfarm/sprites/portrait-frame.png') 0 0 / 96px 96px no-repeat;
-}
-
-/* 표정: 32칸 그림을 두 배로, 칸 수(--frames)만큼 넘긴다 */
-.gm-emote {
-	display: inline-block;
-	width: 64px;
-	height: 64px;
-	background-repeat: no-repeat;
-	background-size: auto 64px;
-	animation: gm-emote calc(var(--frames) * 0.18s) steps(var(--frames)) infinite;
-}
-
-.gm-emote.small {
-	width: 48px;
-	height: 48px;
-	background-size: auto 48px;
-	animation-name: gm-emote-small;
-	vertical-align: middle;
-}
-
-.gm-bow {
-	display: block;
-	margin: 28px auto 0;
-}
-
-@keyframes gm-emote {
-	to {
-		background-position-x: calc(var(--frames) * -64px);
-	}
-}
-
-@keyframes gm-emote-small {
-	to {
-		background-position-x: calc(var(--frames) * -48px);
-	}
-}
-
-.gm-bubble {
-	position: relative;
-	padding: 6px 10px 8px;
-	border: solid transparent;
-	border-width: 12px 12px 15px;
-	border-image: url('/imgs/projects/sproutfarm/sprites/panel.png') 4 4 5 fill / 12px 12px 15px stretch;
-}
-
-/* 말풍선 꼬리는 따로 붙인다 (상자와 같이 늘리면 뭉개진다) */
-.gm-bubble::before {
-	position: absolute;
-	top: 21px;
-	left: -24px;
-	width: 30px;
-	height: 42px;
-	background: url('/imgs/projects/sproutfarm/sprites/bubble-tail.png') 0 0 / 100% 100%;
-	image-rendering: pixelated;
-	content: '';
-}
-
-.gm-bubble h3 {
-	font-size: 17px;
-	font-weight: 800;
-}
-
-.gm-bubble p {
-	margin-top: 4px;
-	color: var(--gm-muted);
-	font-size: 14px;
-	line-height: 1.6;
-}
-
-.gm-shot {
+.gm-stage-thumb {
 	display: block;
 	width: 100%;
-	margin-top: 10px;
-	border: 3px solid var(--gm-wood);
-	border-radius: 6px;
+	aspect-ratio: 16 / 9;
+	margin-bottom: 14px;
+	object-fit: cover;
+	border: var(--gm-px) solid var(--gm-panel-line);
 }
 
-.gm-panel {
-	position: relative;
-	padding: 14px 16px 64px;
-	border: 12px solid transparent;
-	border-image: url('/imgs/projects/sproutfarm/sprites/button.png') 8 fill / 12px stretch;
+/* 그림이 없는 스테이지: 밤하늘에 지평선 */
+.gm-stage-blank {
+	background: linear-gradient(180deg, var(--gm-night) 0 70%, var(--gm-grass) 70%);
 }
 
-.gm-controls ul {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
+.gm-stage-no {
+	font-size: 12px;
+	letter-spacing: 0.1em;
+	color: var(--gm-pink);
+}
+
+.gm-stage h3,
+.gm-log-entry h3 {
+	margin: 4px 0 8px;
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.gm-stage p,
+.gm-log-entry p {
+	margin: 0;
+	font-size: 14px;
+	color: var(--sp-muted);
+}
+
+/* CONTROLS: 키캡 */
+.gm-keys {
+	display: grid;
+	gap: 18px;
+	max-width: 620px;
+	margin: 0 auto;
+	padding: 24px 28px;
 	list-style: none;
 }
 
-.gm-controls li {
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-	font-size: 14px;
-}
-
-.gm-keys {
+.gm-keys li {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 4px;
+	align-items: center;
+	gap: 10px 18px;
+}
+
+.gm-keycaps {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
 }
 
 .gm-keys kbd {
-	min-width: 32px;
-	padding: 4px 8px;
-	border: 2px solid var(--gm-wood-dark);
-	border-radius: 6px;
-	background-color: #ffffff;
-	box-shadow: 0 3px 0 var(--gm-wood-dark);
-	color: var(--gm-ink);
-	font-family: var(--sp-mono);
-	font-size: 13px;
-	text-align: center;
-}
-
-/* 조작법 아래를 걸어가는 주인공 (시트 한 줄: 48px 4칸을 두 배로) */
-.gm-runner {
-	right: 8px;
-	bottom: -8px;
-	width: 96px;
-	height: 96px;
-	background: url('/imgs/projects/sproutfarm/sprites/char-walk.png') 0 0 / 384px 96px;
-	animation: gm-hero 0.6s steps(4) infinite;
-}
-
-/* ─── 하루: 아침부터 결과까지 넘겨 보는 화면 ─── */
-.gm-day {
-	max-width: 1040px;
-	margin: 0 auto;
-	padding: 48px 32px 0;
-}
-
-.gm-day ol {
-	display: grid;
-	grid-auto-columns: minmax(260px, 32%);
-	grid-auto-flow: column;
-	gap: 14px;
-	overflow-x: auto;
-	padding: 4px 4px 14px;
-	list-style: none;
-	scroll-snap-type: x mandatory;
-}
-
-.gm-day li {
-	scroll-snap-align: start;
-}
-
-.gm-day img {
-	display: block;
-	width: 100%;
-	border: 4px solid var(--gm-wood);
-	border-radius: 8px;
-	box-shadow: 0 4px 0 var(--gm-wood-dark);
-	image-rendering: auto;
-}
-
-/* 공통 .sp li > p(회색)보다 세게 */
-.gm-day li > p {
-	margin-top: 10px;
-	padding: 2px 6px;
-	border: solid transparent;
-	border-width: 12px 12px 15px;
-	border-image: url('/imgs/projects/sproutfarm/sprites/panel.png') 4 4 5 fill / 12px 12px 15px stretch;
-	color: var(--gm-ink);
-	font-size: 13px;
+	display: inline-grid;
+	place-items: center;
+	min-width: 38px;
+	height: 38px;
+	padding: 0 10px;
+	background: var(--gm-night-text);
+	color: var(--gm-night-deep);
+	font: inherit;
+	font-size: 14px;
 	font-weight: 700;
-	text-align: center;
+	box-shadow:
+		0 var(--gm-px) 0 0 var(--gm-panel-line),
+		0 calc(-1 * var(--gm-px)) 0 0 var(--gm-panel-line),
+		var(--gm-px) 0 0 0 var(--gm-panel-line),
+		calc(-1 * var(--gm-px)) 0 0 0 var(--gm-panel-line),
+		inset 0 calc(-1 * var(--gm-px)) 0 0 var(--gm-panel-shade);
 }
 
-/* ─── 개발 일지: 풀밭 위 흙길을 따라 내려가는 지도 ─── */
-.gm-map {
-	position: relative;
-	margin-top: 56px;
-	padding: 40px 32px 48px;
-	/* 풀 조각을 불규칙하게 섞어 만든 넓은 풀밭 (한 번 반복하는 데 1152px) */
-	background:
-		linear-gradient(var(--gm-light, transparent), var(--gm-light, transparent)),
-		url('/imgs/projects/sproutfarm/sprites/map/grass-field.png') 0 0 / 1152px 1152px;
+.gm-key-label {
+	font-size: 15px;
 }
 
-/* 풀밭의 위아래 끝은 바탕 하늘로 스며들게 (선이 딱 끊기지 않게) */
-.gm-map::before {
-	content: '';
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(
-		var(--gm-sky, var(--gm-bg)),
-		transparent 32px,
-		transparent calc(100% - 220px),
-		color-mix(in srgb, var(--gm-sky, var(--gm-bg)) 45%, transparent) calc(100% - 110px),
-		var(--gm-sky, var(--gm-bg))
-	);
-	pointer-events: none;
-}
-
-.gm-map-title {
-	justify-content: center;
-	width: max-content;
-	margin: 0 auto 64px;
-	padding: 2px 18px;
-	border: 3px solid var(--gm-wood);
-	border-radius: 8px;
-	background-color: var(--gm-cream);
-	box-shadow: 0 4px 0 var(--gm-wood-dark);
-	color: var(--gm-wood-dark);
+/* DEV LOG: 길 옆 주인공이 걸어 내려간다 */
+.gm-log-track {
+	--gm-walk: 0;
+	display: grid;
+	grid-template-columns: 56px 1fr;
+	gap: 24px;
 }
 
 .gm-road {
 	position: relative;
-	max-width: 960px;
-	margin: 0 auto;
-	padding: 40px 0 56px;
+	/* 흙길: 점선 */
+	background: repeating-linear-gradient(
+		180deg,
+		var(--gm-dirt) 0 calc(var(--gm-px) * 3),
+		transparent calc(var(--gm-px) * 3) calc(var(--gm-px) * 5)
+	);
+	background-size: calc(var(--gm-px) * 2) 100%;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
-.gm-road-line {
-	position: absolute;
-	inset: 40px 0 56px;
-	width: 100%;
-	height: calc(100% - 96px);
-	overflow: visible;
-}
-
-.gm-road-line path {
-	fill: none;
-	vector-effect: non-scaling-stroke;
-	stroke-linecap: round;
-}
-
-.gm-road-line .dirt {
-	stroke: var(--gm-dirt);
-	stroke-width: 34px;
-}
-
-.gm-road-line .edge {
-	stroke: #c79a62;
-	stroke-dasharray: 2 14;
-	stroke-width: 4px;
-}
-
-/* 주인공: 스크롤하는 만큼 흙길을 따라 걷는다 (자리는 스크립트가 정한다) */
 .gm-hero {
-	top: 0;
-	left: calc(50% - 72px);
-	z-index: 2;
-	width: 144px;
-	height: 144px;
-	/* 걷는 방향마다 한 줄씩(아래·위·왼쪽·오른쪽) 있는 캐릭터 시트. 줄은 스크립트가 고른다 */
-	background: url('/imgs/projects/sproutfarm/sprites/char-sheet.png') 0 0 / 576px 576px;
-	transform: translate(0, -96px);
-}
-
-.gm-hero[style] {
-	left: 0;
-}
-
-.gm-hero[data-walking='true'] {
-	animation: gm-hero-big 0.6s steps(4) infinite;
-}
-
-/* 풀밭의 나무, 덤불, 돌, 꽃과 작은 연못 */
-.gm-decor {
 	position: absolute;
-	inset: 40px 0 56px;
-	pointer-events: none;
+	left: 50%;
+	top: calc(var(--gm-walk) * (100% - 48px));
+	width: 48px;
+	height: 48px;
+	transform: translateX(-50%);
+	/* 스프라이트가 없는 프로젝트: 픽셀 얼굴 */
+	background: var(--gm-gold);
+	box-shadow:
+		inset 12px 14px 0 0 var(--gm-night-deep),
+		inset -12px 14px 0 0 var(--gm-night-deep);
+	clip-path: polygon(
+		25% 0,
+		75% 0,
+		75% 25%,
+		100% 25%,
+		100% 75%,
+		75% 75%,
+		75% 100%,
+		25% 100%,
+		25% 75%,
+		0 75%,
+		0 25%,
+		25% 25%
+	);
+	transition: top 0.2s linear;
 }
 
-.gm-decor img {
-	position: absolute;
-	transform: translate(-50%, -100%);
+.gm-pixel .gm-hero {
+	--gm-sheet: 192px;
+	background: url('/imgs/projects/sproutfarm/sprites/char-walk.png') 0 0 / var(--gm-sheet) 100%;
+	box-shadow: none;
+	clip-path: none;
+	image-rendering: pixelated;
+	animation: gm-walk 0.6s steps(4) infinite;
 }
 
-.gm-pond {
-	position: absolute;
-	top: calc(100% * 1.5 / var(--stages));
-	left: 2%;
-	width: 156px;
-	height: 84px;
-	border: 6px solid #8fbf5a;
-	border-radius: 42px 48px 40px 52px / 34px 40px 36px 42px;
-	background: url('/imgs/projects/sproutfarm/sprites/map/water.png') 0 0 / 192px 48px;
-	box-shadow: inset 0 6px 0 rgba(0, 0, 0, 0.12);
-}
-
-.gm-pond::after {
-	position: absolute;
-	top: 22px;
-	left: 70px;
-	width: 39px;
-	height: 27px;
-	background: url('/imgs/projects/sproutfarm/sprites/map/lily.png') 0 0 / 100% 100%;
-	content: '';
-}
-
-@keyframes gm-hero-big {
+@keyframes gm-walk {
 	to {
-		background-position-x: -576px;
+		background-position-x: calc(-1 * var(--gm-sheet));
 	}
 }
 
-@keyframes gm-hero {
-	to {
-		background-position-x: -384px;
-	}
-}
-
-.gm-road ol {
+.gm-log {
 	display: grid;
-	grid-auto-rows: 1fr;
-	position: relative;
+	gap: 28px;
+	margin: 0;
+	padding: 0;
 	list-style: none;
 }
 
-/* 표지판은 길이 돌아 나가는 쪽의 반대편에 선다 */
-.gm-road li {
-	display: flex;
-	position: relative;
-	align-items: center;
-	padding: 18px 0;
+.gm-log-entry {
+	padding: 18px 20px 20px;
 }
 
-.gm-road li:nth-child(even) {
-	justify-content: flex-end;
-}
-
-.gm-marker {
-	display: grid;
-	position: absolute;
-	top: 50%;
-	left: 64%;
-	place-items: center;
-	width: 40px;
-	height: 40px;
-	border: 4px solid var(--gm-wood-dark);
-	border-radius: 50%;
-	background-color: #fbf1dc;
-	color: var(--gm-wood-dark);
-	font-weight: 800;
-	transform: translate(-50%, -50%);
-}
-
-.gm-road li:nth-child(even) .gm-marker {
-	left: 36%;
-}
-
-.gm-stage {
-	width: 48%;
-	padding: 8px 12px 10px;
-	border: solid transparent;
-	border-width: 12px 12px 15px;
-	border-image: url('/imgs/projects/sproutfarm/sprites/panel.png') 4 4 5 fill / 12px 12px 15px stretch;
-}
-
-.gm-stage-no {
-	display: inline-block;
-	padding: 1px 8px;
-	border-radius: 4px;
-	background-color: var(--gm-grass-dark);
-	color: #ffffff;
-	font-family: var(--sp-mono);
+.gm-log-no {
 	font-size: 12px;
-	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: var(--gm-grass);
 }
 
-.gm-stage h3 {
-	margin-top: 6px;
-	font-size: 18px;
-	font-weight: 800;
-}
-
-.gm-stage p {
-	margin-top: 4px;
-	color: var(--gm-muted);
-	font-size: 14px;
-	line-height: 1.6;
-}
-
-.gm-stage img {
+.gm-log-shot {
 	display: block;
 	width: 100%;
-	margin-top: 10px;
-	border: 3px solid var(--gm-wood);
-	border-radius: 6px;
-	image-rendering: auto;
+	max-width: 420px;
+	margin-top: 14px;
+	border: var(--gm-px) solid var(--gm-panel-line);
 }
 
-.gm-goal {
+/* GALLERY: 가로로 넘기는 화면 띠 */
+.gm-reel {
 	display: flex;
-	position: absolute;
-	bottom: 0;
-	left: 50%;
-	align-items: center;
-	gap: 6px;
-	padding: 4px 14px;
-	border: 3px solid var(--gm-wood-dark);
-	border-radius: 999px;
-	background-color: #fbf1dc;
-	color: var(--gm-wood-dark);
-	font-family: var(--sp-mono);
-	font-weight: 800;
-	letter-spacing: 0.2em;
-	transform: translateX(-50%);
+	gap: 24px;
+	margin: 0;
+	padding: 8px 32px 24px;
+	list-style: none;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: thin;
 }
 
-.gm-goal img {
-	width: 24px;
-	height: 24px;
+.gm-reel li {
+	flex: 0 0 min(360px, 80cqi);
+	scroll-snap-align: start;
 }
 
-/* ─── 인벤토리 ─── */
-.gm-inventory {
-	max-width: 1040px;
-	margin: 0 auto;
-	/* 위쪽 여백은 저녁에서 해 질 녘으로 하늘이 넘어가는 다리 */
-	padding: 180px 32px 0;
+.gm-reel figure {
+	margin: var(--gm-px);
+	padding: 10px;
 }
 
-/* 나무 상자 같은 가방: 왼쪽은 칸, 오른쪽은 고른 아이템 설명 */
+.gm-reel img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	border: var(--gm-px) solid var(--gm-panel-line);
+}
+
+.gm-reel figcaption {
+	margin-top: 10px;
+	font-size: 13px;
+	color: var(--sp-muted);
+}
+
+/* INVENTORY: 아이템 칸 */
 .gm-bag {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	align-items: start;
-	gap: 32px;
-	padding: 32px;
-	border: 6px solid var(--gm-wood-dark);
-	border-radius: 14px;
-	background-color: var(--gm-wood);
-	background-image: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0 2px, transparent 2px 28px);
-	box-shadow:
-		inset 0 4px 0 rgba(255, 255, 255, 0.16),
-		0 6px 0 var(--gm-wood-dark);
+	max-width: 640px;
+	margin: 0 auto;
+	padding: 24px;
 }
 
 .gm-slots {
 	display: grid;
-	grid-template-columns: repeat(4, 76px);
-	gap: 14px;
-	list-style: none;
+	grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+	gap: 12px;
 }
 
 .gm-slot {
 	display: grid;
-	position: relative;
 	place-items: center;
-	width: 76px;
-	height: 76px;
+	aspect-ratio: 1;
 	padding: 0;
-	border: 4px solid var(--gm-wood-dark);
-	border-radius: 8px;
-	background-color: #c99a66;
-	box-shadow: inset 0 4px 0 rgba(0, 0, 0, 0.18);
-	cursor: inherit;
-	transition: transform 0.12s;
+	border: none;
+	background: var(--gm-panel-shade);
+	cursor: pointer;
+	box-shadow: inset 0 0 0 var(--gm-px) var(--gm-panel-line);
 }
 
-.gm-slot.empty {
-	opacity: 0.7;
+.gm-slot:hover,
+.gm-slot:focus-visible {
+	outline: none;
+	box-shadow:
+		inset 0 0 0 var(--gm-px) var(--gm-gold),
+		0 0 0 var(--gm-px) var(--gm-panel-line);
+}
+
+.gm-slot[aria-pressed='true'] {
+	background: var(--gm-gold);
+	box-shadow:
+		inset 0 0 0 var(--gm-px) var(--gm-panel-line),
+		inset 0 calc(-2 * var(--gm-px)) 0 0 var(--gm-dirt);
 }
 
 .gm-slot img {
 	width: 48px;
 	height: 48px;
+	object-fit: contain;
 }
 
-.gm-slot:hover img,
-.gm-slot[aria-pressed='true'] img {
-	transform: translateY(-3px);
-}
-
-.gm-slot[aria-pressed='true'] {
-	border-color: #fbf1dc;
-	background-color: #e7c08a;
-	box-shadow:
-		inset 0 4px 0 rgba(0, 0, 0, 0.12),
-		0 0 0 4px var(--gm-wood-dark);
-}
-
-.gm-slot:focus-visible {
-	outline: 3px solid #fbf1dc;
-	outline-offset: 4px;
-}
-
-.gm-slot-no {
-	position: absolute;
-	right: 4px;
-	bottom: 0;
-	color: var(--gm-wood-dark);
-	font-family: var(--sp-mono);
-	font-size: 11px;
-	font-weight: 800;
+.gm-slot-tile {
+	font-size: 22px;
+	font-weight: 700;
+	color: var(--gm-panel-line);
 }
 
 .gm-item {
-	display: flex;
-	align-items: flex-start;
-	gap: 20px;
-	min-height: 160px;
-	padding: 20px 22px;
-	border: solid transparent;
-	border-width: 12px 12px 15px;
-	border-image: url('/imgs/projects/sproutfarm/sprites/panel.png') 4 4 5 fill / 12px 12px 15px stretch;
-	color: var(--gm-ink);
-}
-
-.gm-item img {
-	flex: none;
-	width: 96px;
-	height: 96px;
+	min-height: 64px;
+	margin-top: 20px;
+	padding: 12px 16px;
+	background: var(--gm-night);
+	color: var(--gm-night-text);
 }
 
 .gm-item strong {
 	display: block;
-	color: var(--gm-wood-dark);
-	font-size: 20px;
-	font-weight: 800;
+	font-size: 13px;
+	letter-spacing: 0.08em;
+	color: var(--gm-gold);
 }
 
 .gm-item p {
-	margin-top: 8px;
-	font-size: 16px;
-	line-height: 1.6;
+	margin: 4px 0 0;
+	font-size: 15px;
 }
 
-/* ─── 크레딧: 별이 뜬 밤 들판 ─── */
+.gm-stack {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+	margin: 28px 0 0;
+}
+
+.gm-stack span {
+	padding: 4px 10px;
+	background: var(--gm-panel);
+	font-size: 12px;
+	box-shadow: 2px 2px 0 0 var(--gm-panel-line);
+}
+
+/* ─── CREDITS: 엔딩, 밤 ─── */
 .gm-credits {
 	position: relative;
+	padding: 80px 0 72px;
+	background: linear-gradient(180deg, var(--gm-field-alt) 0, var(--gm-night) 120px, var(--gm-night-deep) 100%);
+	color: var(--gm-night-text);
 	overflow: hidden;
-	padding: 320px 32px 150px;
-	/* 위는 지금의 하늘에서 시작해 천천히 밤으로 짙어진다 */
-	background: linear-gradient(
-		180deg,
-		transparent 0,
-		rgb(14 21 48 / 0.2) 90px,
-		rgb(14 21 48 / 0.55) 190px,
-		rgb(14 21 48 / 0.85) 280px,
-		#0e1530 360px,
-		#1a2340 60%,
-		#121c2a 100%
-	);
-	color: #f6e8c8;
-	text-align: center;
 }
 
-.gm-credits > :not(.gm-sky, .gm-moon, .gm-parade) {
+.gm-credits .gm-inner {
 	position: relative;
+	z-index: 2;
 }
 
-/* 별: 점을 몇 겹 흩뿌리고, 한 겹은 천천히 깜빡인다 */
-.gm-sky,
-.gm-sky::after {
-	position: absolute;
-	inset: 0 0 40%;
-	/* 별은 하늘이 어두워진 다음부터 */
-	-webkit-mask-image: linear-gradient(transparent 200px, #000 380px);
-	mask-image: linear-gradient(transparent 200px, #000 380px);
-	background-image:
-		radial-gradient(2px 2px at 20px 30px, #fff6d8 50%, transparent 51%),
-		radial-gradient(2px 2px at 90px 80px, #fff6d8 50%, transparent 51%),
-		radial-gradient(3px 3px at 150px 20px, #ffe9a8 50%, transparent 51%),
-		radial-gradient(2px 2px at 210px 110px, #fff6d8 50%, transparent 51%);
-	background-size: 260px 160px;
-	opacity: 0.8;
-	pointer-events: none;
+.gm-credits .gm-heading-ko,
+.gm-credit-meta {
+	color: var(--gm-night-muted);
 }
 
-.gm-sky::after {
-	background-position: 130px 70px;
-	content: '';
-	animation: gm-twinkle 2.6s steps(2) infinite;
-}
-
-@keyframes gm-twinkle {
-	50% {
-		opacity: 0.2;
-	}
-}
-
-.gm-moon {
-	position: absolute;
-	top: 260px;
-	right: 10%;
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	background-color: #fff3c8;
-	box-shadow:
-		inset -10px -4px 0 #ecd897,
-		0 0 0 8px rgba(255, 243, 200, 0.08);
-}
-
-.gm-credits h2 {
-	justify-content: center;
-	gap: 14px;
-	font-family: var(--sp-mono);
-	font-size: 26px;
-	letter-spacing: 0.4em;
-}
-
-.gm-credit-role {
-	color: #cdbb98;
+.gm-credit-meta {
+	margin: 0 0 32px;
+	text-align: center;
 	font-size: 14px;
 }
 
-/* 스태프 롤: 맡은 일 …… 이름 */
-.gm-staff {
+.gm-roll {
 	display: grid;
 	gap: 14px;
-	max-width: 520px;
-	margin: 32px auto 0;
-	font-size: 16px;
+	max-width: 620px;
+	margin: 0 auto;
+	padding: 0;
+	list-style: none;
 }
 
-.gm-staff div {
+.gm-roll li {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: baseline;
-	gap: 10px;
+	gap: 0 12px;
+	font-size: 15px;
 }
 
-.gm-staff dt {
-	display: flex;
-	flex: 1;
-	align-items: baseline;
-	gap: 10px;
-	text-align: left;
+.gm-roll-role {
+	color: var(--gm-night-muted);
 }
 
-.gm-staff dt::after {
-	flex: 1;
-	border-bottom: 2px dotted rgba(246, 232, 200, 0.35);
-	content: '';
+/* 점선 리더: 역할 ...... 이름 */
+.gm-roll-dots {
+	flex: 1 1 40px;
+	min-width: 40px;
+	height: var(--gm-px);
+	background: repeating-linear-gradient(
+		90deg,
+		var(--gm-night-muted) 0 var(--gm-px),
+		transparent var(--gm-px) calc(var(--gm-px) * 3)
+	);
+	align-self: center;
 }
 
-.gm-staff dd {
-	color: #ffe9a8;
-	font-weight: 800;
+.gm-roll-name {
+	font-weight: 700;
+}
+
+.gm-roll-name small {
+	font-size: 12px;
+	font-weight: 400;
+	color: var(--gm-night-muted);
+}
+
+.gm-credits .gm-roll-name a {
+	color: var(--gm-gold);
+	text-decoration: underline;
+	text-underline-offset: 4px;
+	text-decoration-thickness: 2px;
+}
+
+.gm-roll-note {
+	flex-basis: 100%;
+	margin: 4px 0 0;
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--gm-night-muted);
 }
 
 .gm-thanks {
-	margin-top: 48px;
-	color: #cdbb98;
-	font-family: var(--sp-mono);
-	font-size: 13px;
-	letter-spacing: 0.4em;
-}
-
-/* 빌려 쓴 에셋: 나무 표지판 카드 */
-.gm-asset-credits {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-	gap: 18px;
-	max-width: 760px;
-	margin: 16px auto 0;
-	text-align: left;
-}
-
-.gm-credit-card {
-	display: flex;
-	align-items: flex-start;
-	gap: 14px;
-	padding: 10px 14px 12px;
-	border: solid transparent;
-	border-width: 12px 12px 15px;
-	border-image: url('/imgs/projects/sproutfarm/sprites/panel.png') 4 4 5 fill / 12px 12px 15px stretch;
-	color: var(--gm-ink);
-}
-
-.gm-credit-icon {
-	display: grid;
-	flex: none;
-	place-items: center;
-	width: 64px;
-	height: 64px;
-	border: 3px solid var(--gm-wood);
-	border-radius: 8px;
-	background-color: var(--gm-grass);
-}
-
-.gm-credit-icon img {
-	width: 56px;
-	height: 56px;
-}
-
-.gm-glyph {
-	color: var(--gm-wood-dark);
-	font-size: 34px;
-	font-weight: 900;
-}
-
-.gm-asset-credits dt {
-	color: var(--gm-grass-dark);
-	font-family: var(--sp-mono);
-	font-size: 12px;
-	font-weight: 800;
-	letter-spacing: 0.3em;
-}
-
-.gm-asset-name {
-	margin-top: 2px;
-	font-size: 17px;
-	font-weight: 800;
-}
-
-.gm-asset-name a {
-	color: var(--gm-wood-dark);
-	text-decoration: underline;
-	text-decoration-color: rgba(94, 59, 37, 0.4);
-	text-underline-offset: 4px;
-}
-
-.gm-asset-name a:hover {
-	text-decoration-color: currentColor;
-}
-
-.gm-asset-name span {
-	color: var(--gm-muted);
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.gm-asset-note {
-	margin-top: 4px;
-	color: var(--gm-muted);
-	font-size: 13.5px;
-	line-height: 1.65;
-}
-
-.gm-the-end {
-	margin-top: 56px;
-	color: #ffe9a8;
-	font-family: var(--sp-mono);
-	font-size: 20px;
-	font-weight: 800;
-	letter-spacing: 0.5em;
+	margin: 44px 0 16px;
+	text-align: center;
+	font-size: 18px;
+	letter-spacing: 0.14em;
+	color: var(--gm-pink);
 }
 
 .gm-end {
-	margin-top: 20px;
-	font-size: clamp(22px, 3.6cqi, 30px);
-	font-weight: 800;
+	margin: 64px 0 0;
+	text-align: center;
+	font-size: clamp(28px, 6cqi, 52px);
+	font-weight: 700;
+	letter-spacing: 0.2em;
+	color: var(--gm-gold);
+	text-shadow: var(--gm-px) var(--gm-px) 0 var(--gm-pink);
 }
 
-/* 엔딩 행렬: 맨 아래 풀밭을 주인공과 병아리가 지나간다 */
-.gm-parade {
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	height: 96px;
-	/* 밤의 풀밭: 남색 그늘을 덮고, 윗줄에만 달빛이 살짝 닿는다 */
-	background:
-		linear-gradient(rgb(200 215 255 / 0.22), transparent 16px),
-		linear-gradient(rgb(20 34 80 / 0.34), rgb(14 22 56 / 0.46)),
-		url('/imgs/projects/sproutfarm/sprites/grass.png') 0 0 / 128px 128px;
-	box-shadow: 0 -20px 36px rgb(8 12 36 / 0.3);
-}
-
-/* 밤길을 걷는 주인공과 병아리도 어둡게, 달빛 쪽(위)으로 옅은 테 */
-.gm-parade .gm-walker {
-	filter: brightness(0.85) saturate(0.85) drop-shadow(0 -1px 0 rgb(200 215 255 / 0.4));
-}
-
-/* 반딧불이: 풀밭 위에 작은 빛이 천천히 깜빡인다 */
-.gm-parade::before,
-.gm-parade::after {
-	content: '';
-	position: absolute;
-	inset: -40px 0 30px;
-	background-image:
-		radial-gradient(3px 3px at 12% 40%, #fff3a8 40%, rgb(255 236 140 / 0.35) 60%, transparent 100%),
-		radial-gradient(3px 3px at 37% 18%, #fff3a8 40%, rgb(255 236 140 / 0.35) 60%, transparent 100%),
-		radial-gradient(3px 3px at 64% 52%, #fff3a8 40%, rgb(255 236 140 / 0.35) 60%, transparent 100%),
-		radial-gradient(3px 3px at 88% 26%, #fff3a8 40%, rgb(255 236 140 / 0.35) 60%, transparent 100%);
-	filter: drop-shadow(0 0 4px #ffe98a);
-	pointer-events: none;
-	animation: gm-firefly 3.2s ease-in-out infinite alternate;
-}
-
-.gm-parade::after {
-	background-position: 140px 22px;
-	animation-delay: -1.6s;
-}
-
-@keyframes gm-firefly {
-	from {
-		opacity: 0.2;
-		transform: translateY(4px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(-6px);
-	}
-}
-
-.gm-parade-hero {
-	bottom: 6px;
-	left: -150px;
-	width: 144px;
-	height: 144px;
-	background: url('/imgs/projects/sproutfarm/sprites/char-sheet.png') 0 -432px / 576px 576px;
-	animation:
-		gm-hero-big 0.6s steps(4) infinite,
-		gm-cross 24s linear infinite;
-}
-
-.gm-parade-chick {
-	bottom: 18px;
-}
-
-.gm-parade-chick.a {
-	left: -60px;
-	animation-delay:
-		0s,
-		-2s;
-}
-
-.gm-parade-chick.b {
-	left: -60px;
-	animation-delay:
-		0s,
-		-3.4s;
+.gm-links-end {
+	margin-top: 24px;
 }
 
 .gm-credits .sp-link {
-	color: #f3e1bb;
+	color: var(--gm-night-text);
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.gm,
-	.gm :is(.gm-quests, .gm-day, .gm-inventory) > h2 {
-		transition: none;
-	}
-
-	.gm-press,
-	.gm-walker,
-	.gm-runner,
-	.gm-paw,
-	.gm-sky::after,
-	.gm-parade::before,
-	.gm-parade::after,
-	.gm-emote,
-	.gm-hero[data-walking='true'] {
-		animation: none;
-	}
+.gm-decor-end .gm-decor-a,
+.gm-decor-end .gm-decor-b {
+	display: none;
 }
 
+.gm-decor-end .gm-decor-c {
+	top: auto;
+	bottom: 18%;
+}
+
+/* ─── 좁은 창 ─── */
 @container (max-width: 600px) {
-	.gm-title {
-		min-height: 460px;
-		padding: 40px 16px 120px;
+	.gm-inner {
+		padding: 0 16px;
 	}
 
-	.gm-house,
-	.gm-tree.b {
-		display: none;
+	.gm-title {
+		padding: 56px 16px 40px;
 	}
 
 	.gm-hud,
-	.gm-row {
-		grid-template-columns: minmax(0, 1fr);
-		padding-inline: 16px;
+	.gm-stages,
+	.gm-controls,
+	.gm-devlog,
+	.gm-gallery,
+	.gm-inventory {
+		padding: 52px 0;
 	}
 
-	.gm-day,
-	.gm-inventory,
-	.gm-map {
-		padding-inline: 16px;
+	.gm-log-track {
+		grid-template-columns: 36px 1fr;
+		gap: 12px;
 	}
 
-	.gm-dialog {
-		grid-template-columns: minmax(0, 1fr);
+	.gm-hero {
+		width: 36px;
+		height: 36px;
+		top: calc(var(--gm-walk) * (100% - 36px));
 	}
 
-	/* 좁으면 길은 왼쪽 한 줄, 표지판은 그 오른쪽에 */
-	.gm-road-line,
-	.gm-hero,
-	.gm-decor {
-		display: none;
+	.gm-pixel .gm-hero {
+		--gm-sheet: 144px;
 	}
 
-	.gm-bag {
-		grid-template-columns: minmax(0, 1fr);
-		padding: 20px;
+	.gm-reel {
+		padding: 8px 16px 20px;
 	}
 
-	.gm-slots {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 10px;
+	.gm-keys li {
+		flex-direction: column;
+		align-items: flex-start;
 	}
 
-	.gm-slot {
-		width: 100%;
-		height: auto;
-		aspect-ratio: 1;
-	}
-
-	.gm-road ol {
-		padding-left: 28px;
-		border-left: 10px solid var(--gm-dirt);
-	}
-
-	.gm-road li,
-	.gm-road li:nth-child(even) {
-		justify-content: flex-start;
-	}
-
-	.gm-marker,
-	.gm-road li:nth-child(even) .gm-marker {
-		left: -47px;
-	}
-
-	.gm-stage {
-		width: 100%;
+	.gm-decor img {
+		height: 64px;
 	}
 }
 
-/* 끝까지 스크롤해 튕길 때 탭 화면의 흰 바탕이 드러나지 않게: 튕기지 않고, 위는 아침·아래는 밤 색을 깔아 둔다 */
-.safari-page:has(> .sp[data-look='game']) {
-	overscroll-behavior-y: none;
-	background: linear-gradient(#fdf0d6 50%, #121c2a 50%);
+@media (prefers-reduced-motion: reduce) {
+	.gm-start,
+	.gm-decor-d,
+	.gm-pixel .gm-hero {
+		animation: none;
+	}
+
+	.gm-hero {
+		transition: none;
+	}
 }
