@@ -19,9 +19,10 @@ import {
 	type AdminPost,
 	type Post,
 } from './posts.js';
+import { type PostSlug } from './rules.js';
 
 const post = (slug: string, date: string, category: string, title = slug, body = ''): Post => ({
-	slug,
+	slug: slug as PostSlug,
 	title,
 	date,
 	category,
@@ -66,7 +67,7 @@ describe('excerpt', () => {
 
 describe('toPost', () => {
 	it('요약이 없으면 본문 앞부분, 카테고리가 없으면 기타', () => {
-		expect(toPost('a', '---\ntitle: 제목\ndate: 2026-09-28\n---\n본문입니다')).toEqual({
+		expect(toPost('a' as PostSlug, '---\ntitle: 제목\ndate: 2026-09-28\n---\n본문입니다')).toEqual({
 			slug: 'a',
 			title: '제목',
 			date: '2026-09-28',
@@ -77,8 +78,8 @@ describe('toPost', () => {
 	});
 
 	it('제목이나 날짜 형식이 잘못되면 null', () => {
-		expect(toPost('a', '---\ndate: 2026-09-28\n---\n')).toBeNull();
-		expect(toPost('a', '---\ntitle: t\ndate: 9월 28일\n---\n')).toBeNull();
+		expect(toPost('a' as PostSlug, '---\ndate: 2026-09-28\n---\n')).toBeNull();
+		expect(toPost('a' as PostSlug, '---\ntitle: t\ndate: 9월 28일\n---\n')).toBeNull();
 	});
 });
 
@@ -128,7 +129,7 @@ describe('resolveImageSrc', () => {
 
 describe('폴더', () => {
 	const post = (category: string, slug = category): Post => ({
-		slug,
+		slug: slug as PostSlug,
 		title: slug,
 		date: '2026-09-28',
 		category,
@@ -183,7 +184,7 @@ describe('firstImage', () => {
 
 describe('adjacentPosts', () => {
 	const make = (slug: string, date: string): Post => ({
-		slug,
+		slug: slug as PostSlug,
 		title: slug,
 		date,
 		category: '기타',
@@ -193,23 +194,23 @@ describe('adjacentPosts', () => {
 	const posts = [make('b', '2026-09-28'), make('c', '2026-09-29'), make('a', '2026-09-01'), make('d', '2026-09-29')];
 
 	it('이전 글은 더 오래된 글, 다음 글은 더 최근 글', () => {
-		expect(adjacentPosts(posts, 'b')).toEqual({ older: posts[2], newer: posts[3] });
+		expect(adjacentPosts(posts, 'b' as PostSlug)).toEqual({ older: posts[2], newer: posts[3] });
 	});
 
 	it('같은 날이면 제목 순으로 잇는다', () => {
-		expect(adjacentPosts(posts, 'd')).toEqual({ older: posts[0], newer: posts[1] });
+		expect(adjacentPosts(posts, 'd' as PostSlug)).toEqual({ older: posts[0], newer: posts[1] });
 	});
 
 	it('맨 끝 글에는 한쪽이 없고, 없는 글이면 둘 다 없다', () => {
-		expect(adjacentPosts(posts, 'c').newer).toBeNull();
-		expect(adjacentPosts(posts, 'a').older).toBeNull();
-		expect(adjacentPosts(posts, 'nope')).toEqual({ older: null, newer: null });
+		expect(adjacentPosts(posts, 'c' as PostSlug).newer).toBeNull();
+		expect(adjacentPosts(posts, 'a' as PostSlug).older).toBeNull();
+		expect(adjacentPosts(posts, 'nope' as PostSlug)).toEqual({ older: null, newer: null });
 	});
 });
 
 describe('mergeServerPosts', () => {
 	const make = (slug: string, date: string, extra: Partial<Post> = {}): Post => ({
-		slug,
+		slug: slug as PostSlug,
 		title: slug,
 		date,
 		category: '개발기',
@@ -218,7 +219,7 @@ describe('mergeServerPosts', () => {
 		...extra,
 	});
 	const server = (slug: string, extra: Partial<import('./posts.js').ServerPost> = {}) => ({
-		slug,
+		slug: slug as PostSlug,
 		title: `${slug} (서버)`,
 		date: '2026-09-29',
 		category: '읽을거리',
@@ -261,7 +262,7 @@ describe('mergeAdminPosts (관리자 목록)', () => {
 		body: `${title} 본문`,
 	});
 	const repo: Post = {
-		slug: 'repo',
+		slug: 'repo' as PostSlug,
 		title: '저장소 글',
 		date: '2026-09-01',
 		category: '개발기',
@@ -270,7 +271,7 @@ describe('mergeAdminPosts (관리자 목록)', () => {
 		pinned: true,
 	};
 	const admin = (slug: string, extra: Partial<import('./posts.js').AdminPost>) => ({
-		slug,
+		slug: slug as PostSlug,
 		published: null,
 		publishedAt: null,
 		draft: null,
@@ -316,7 +317,7 @@ describe('mergeAdminPosts (관리자 목록)', () => {
 
 describe('검색 조건', () => {
 	const make = (slug: string, body: string, extra: Partial<Post> = {}): Post => ({
-		slug,
+		slug: slug as PostSlug,
 		title: slug,
 		date: '2026-09-29',
 		category: '개발기',
@@ -358,7 +359,7 @@ describe('recentlyDeletedPosts', () => {
 	const repo = [post('repo', '2026-09-01', '개발기', '저장소 글')];
 	const content = { title: '서버 글', date: '2026-09-30', category: '개발기', summary: '', body: '본문' };
 	const admin = (slug: string, deletedAt: string | null, draft = content): AdminPost => ({
-		slug,
+		slug: slug as PostSlug,
 		published: null,
 		publishedAt: null,
 		draft: slug === 'repo' ? null : draft,

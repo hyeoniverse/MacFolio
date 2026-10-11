@@ -1,9 +1,10 @@
 // 블로그 글 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 글은 Markdown 파일이고, 맨 위 머리말(---로 감싼 key: value)에 제목·날짜·카테고리를 적는다.
+import type { FolderPath, PostSlug } from './rules.js';
 
 export interface Post {
 	/** 파일 이름에서 온 주소용 이름 (예: cra-to-vite) */
-	slug: string;
+	slug: PostSlug;
 	title: string;
 	/** YYYY-MM-DD */
 	date: string;
@@ -72,7 +73,7 @@ export function excerpt(body: string, length = 80): string {
 }
 
 /** 파일 하나를 글로 바꾼다. 제목이나 날짜가 없으면 잘못된 글로 보고 null */
-export function toPost(slug: string, source: string): Post | null {
+export function toPost(slug: PostSlug, source: string): Post | null {
 	const { meta, body } = parseFrontmatter(source);
 	if (!meta.title || !/^\d{4}-\d{2}-\d{2}$/.test(meta.date ?? '')) return null;
 	return {
@@ -88,7 +89,7 @@ export function toPost(slug: string, source: string): Post | null {
 
 /** API의 글 (관리자가 쓰거나 고친 글, 또는 저장소 글을 지운 표시) */
 export interface ServerPost {
-	slug: string;
+	slug: PostSlug;
 	title: string;
 	date: string;
 	category: string;
@@ -134,7 +135,7 @@ export interface PostContent {
 
 /** API가 관리자에게 주는 글: 게시한 내용과 임시 저장을 따로 */
 export interface AdminPost {
-	slug: string;
+	slug: PostSlug;
 	published: PostContent | null;
 	publishedAt: string | null;
 	draft: PostContent | null;
@@ -146,7 +147,7 @@ export interface AdminPost {
 	revisions: number;
 }
 
-const toListPost = (slug: string, content: PostContent, pinned: boolean | undefined, status: PostStatus): Post => ({
+const toListPost = (slug: PostSlug, content: PostContent, pinned: boolean | undefined, status: PostStatus): Post => ({
 	slug,
 	title: content.title,
 	date: content.date,
@@ -219,7 +220,7 @@ export function sortPosts(posts: Post[]): Post[] {
  * 날짜 순으로 바로 옆의 글: 이전 글은 더 오래된 글, 다음 글은 더 최근 글 (블로그의 흔한 관례).
  * 같은 날이면 목록과 같은 순서(제목 순)를 따른다. 목록을 어떻게 정렬해 보고 있든 날짜로 잇는다.
  */
-export function adjacentPosts(posts: Post[], slug: string): { older: Post | null; newer: Post | null } {
+export function adjacentPosts(posts: Post[], slug: PostSlug): { older: Post | null; newer: Post | null } {
 	const ordered = sortPosts(posts);
 	const index = ordered.findIndex((post) => post.slug === slug);
 	if (index === -1) return { older: null, newer: null };
@@ -229,8 +230,8 @@ export function adjacentPosts(posts: Post[], slug: string): { older: Post | null
 /** 폴더 트리의 한 폴더. category의 '/'로 하위 폴더를 만든다 (예: 개발기/MacFolio) */
 export interface FolderNode {
 	name: string;
-	/** 전체 경로 (예: 개발기/MacFolio) */
-	path: string;
+	/** 전체 경로 (예: 개발기/MacFolio). 글의 category와 만든 폴더에서 왔으므로 폴더 경로로 본다 */
+	path: FolderPath;
 	/** 하위 폴더의 글까지 센 수 */
 	count: number;
 	children: FolderNode[];
@@ -256,7 +257,7 @@ export function buildFolderTree(posts: Post[], customFolders: string[] = [], ord
 			.filter(Boolean);
 		let level = root;
 		parts.forEach((name, index) => {
-			const path = parts.slice(0, index + 1).join('/');
+			const path = parts.slice(0, index + 1).join('/') as FolderPath;
 			let node = level.find((n) => n.name === name);
 			if (!node) {
 				node = { name, path, count: 0, children: [], ...(customFolders.includes(path) && { custom: true }) };

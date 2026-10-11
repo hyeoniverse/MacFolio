@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { dateGroup, DEFAULT_ARRANGEMENT, groupPosts, parseArrangement, sortBy, type Arrangement } from './arrange.js';
 import type { Post } from './posts.js';
+import { type PostSlug } from './rules.js';
 
 const post = (title: string, date: string): Post => ({
-	slug: title,
+	slug: title as PostSlug,
 	title,
 	date,
 	category: '기타',

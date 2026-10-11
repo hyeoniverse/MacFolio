@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
-import { DEFAULT_ARRANGEMENT, type Post } from '@macfolio/desktop-core/memo';
+import { DEFAULT_ARRANGEMENT, type Post, type PostSlug } from '@macfolio/desktop-core/memo';
 import type { MenuItem } from '@/shared/ui/menu/Menu';
 
 const post = (extra: Partial<Post> = {}): Post => ({
-	slug: 'a',
+	slug: 'a' as PostSlug,
 	title: '글',
 	date: '2026-10-08',
 	category: '개발기',

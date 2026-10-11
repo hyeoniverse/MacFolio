@@ -1,7 +1,8 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { newSlug, parsePostInput, SLUG, type PostInput } from './rules.js';
+import { newSlug, parsePostInput, type PostInput } from './rules.js';
+import { isPostSlug, type PostSlug } from '@macfolio/desktop-core/memo';
 import type { AdminPost, RevisionSummary, ServerPost } from '@macfolio/contracts';
 
 /** 응답 모양은 화면과 같은 스키마(contracts). 방문자에게 보이는 글은 deleted면 저장소의 같은 주소 글도 가린다 */
@@ -35,7 +36,8 @@ const draftOf = (row: Row): PostInput | null =>
 			};
 
 const toAdmin = (row: Row): AdminPost => ({
-	slug: row.slug,
+	// DB의 slug는 넣을 때 확인한 값이다
+	slug: row.slug as PostSlug,
 	published: publishedOf(row),
 	publishedAt: row.publishedAt?.toISOString() ?? null,
 	draft: draftOf(row),
@@ -80,8 +82,9 @@ export class PostsService {
 		return parsed.value;
 	}
 
-	private checkSlug(slug: string) {
-		if (!SLUG.test(slug)) throw new NotFoundException('글이 없습니다.');
+	/** 주소의 slug가 글 주소 모양인지. 아니면 404 (맞으면 그 뒤로는 PostSlug로 쓴다) */
+	private checkSlug(slug: string): asserts slug is PostSlug {
+		if (!isPostSlug(slug)) throw new NotFoundException('글이 없습니다.');
 	}
 
 	/**
@@ -95,9 +98,9 @@ export class PostsService {
 		});
 		return rows.map((row) => {
 			const hidden = row.deleted || row.date! > now;
-			if (hidden) return { slug: row.slug, ...EMPTY, deleted: true };
+			if (hidden) return { slug: row.slug as PostSlug, ...EMPTY, deleted: true };
 			return {
-				slug: row.slug,
+				slug: row.slug as PostSlug,
 				title: row.title!,
 				date: row.date!,
 				category: row.category!,
