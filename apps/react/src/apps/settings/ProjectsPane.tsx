@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import {
 	blankProject,
 	mergeProjects,
@@ -7,6 +7,8 @@ import {
 	PROJECT_LOOKS,
 	type Project,
 	type ProjectAppInfo,
+	type ProjectFact,
+	type ProjectPoint,
 	type ProjectLook,
 	type SiteProjects,
 } from '@macfolio/desktop-core/site';
@@ -14,7 +16,9 @@ import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { DEFAULT_PROFILE } from '@/shared/site/profileStore';
 import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type Period } from './projectInputs';
 import { getSavedProjects, PARSE_OPTIONS, sendProjects } from '@/shared/site/siteContent';
-import { groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
+import { completeProject, groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
+import ProjectPage from '@/apps/safari/ProjectPage';
+import { requestWindowSize } from '@/desktop/window/windowSizeRequest';
 import { uploadFile } from '@/apps/memo/writer/attachmentsApi';
 import { appIconUrl } from '@/shared/config/appIcon';
 import { env } from '@/shared/config/env';
@@ -111,7 +115,28 @@ const REQUIRED: (keyof Project)[] = [
 ];
 
 /** 프로젝트 하나를 검사한다 (서버와 같은 규칙). 앱은 데모 주소가 있어야 한다 */
-function validate(id: string, project: Project): { value: Project } | { errors: string[] } {
+/** 목록에서 비워 둔 줄은 뺀다 (더하기만 누르고 안 적은 것) */
+function tidy(project: Project): Project {
+	const points = (list?: ProjectPoint[]) => list?.filter((point) => point.title.trim() || point.body.trim());
+	const pairs = <T extends object>(list?: T[]) =>
+		list?.filter((row) => Object.values(row as Record<string, unknown>).some((value) => String(value ?? '').trim()));
+	const next: Project = {
+		...project,
+		facts: pairs(project.facts) ?? [],
+		highlights: points(project.highlights) ?? [],
+		build: points(project.build) ?? [],
+		usage: points(project.usage),
+		timeline: pairs(project.timeline),
+		specs: pairs(project.specs) ?? [],
+		contributions: project.contributions.map((line) => line.trim()).filter(Boolean),
+	};
+	if (!next.usage?.length) delete next.usage;
+	if (!next.timeline?.length) delete next.timeline;
+	return next;
+}
+
+function validate(id: string, raw: Project): { value: Project } | { errors: string[] } {
+	const project = tidy(raw);
 	// 꼭 적어야 하는 칸 (화면에 '필수'로 표시한 칸)
 	const missing = [
 		!project.name.trim() && '이름을 입력해 주세요.',
@@ -505,6 +530,211 @@ const ImageField = ({
 /** 빈 글자는 필드를 지운다 (고를 수 있는 필드) */
 const optional = (value: string) => (value.trim() ? value : undefined);
 
+type EditorTab = 'intro' | 'pictures' | 'content' | 'app' | 'json';
+const TABS: [EditorTab, string][] = [
+	['intro', '소개'],
+	['pictures', '그림'],
+	['content', '내용'],
+	['app', '앱'],
+	['json', 'JSON'],
+];
+
+/** 목록 편집의 줄 틀: 위·아래·빼기 */
+const RowTools = ({
+	index,
+	count,
+	onMove,
+	onRemove,
+}: {
+	index: number;
+	count: number;
+	onMove: (delta: number) => void;
+	onRemove: () => void;
+}) => (
+	<span className="projects-row-tools">
+		<IconButton icon="fa-solid fa-chevron-up" label="위로" disabled={index === 0} onClick={() => onMove(-1)} />
+		<IconButton
+			icon="fa-solid fa-chevron-down"
+			label="아래로"
+			disabled={index === count - 1}
+			onClick={() => onMove(1)}
+		/>
+		<IconButton icon="fa-solid fa-xmark" label="빼기" onClick={onRemove} />
+	</span>
+);
+
+/** 제목·설명(·그림) 묶음 목록: 주요 기능, 만든 방식, 쓰는 법 */
+const PointsEditor = ({
+	label,
+	hint,
+	points,
+	onChange,
+}: {
+	label: string;
+	hint?: string;
+	points: ProjectPoint[];
+	onChange: (points: ProjectPoint[]) => void;
+}) => {
+	const update = (index: number, patch: Partial<ProjectPoint>) =>
+		onChange(
+			points.map((point, i) => {
+				if (i !== index) return point;
+				const next = { ...point, ...patch };
+				for (const key of Object.keys(patch) as (keyof ProjectPoint)[]) if (next[key] === undefined) delete next[key];
+				return next;
+			})
+		);
+	return (
+		<section className="about-pane-group projects-list" aria-label={label}>
+			<h3>
+				{label}
+				<span className="showcase-count">{points.length}</span>
+			</h3>
+			{hint && <p className="about-pane-hint">{hint}</p>}
+			<ol>
+				{points.map((point, index) => (
+					<li key={index}>
+						<div className="projects-list-fields">
+							<input
+								aria-label={`${label} ${index + 1} 제목`}
+								placeholder="제목"
+								value={point.title}
+								onChange={(event) => update(index, { title: event.target.value })}
+							/>
+							<textarea
+								aria-label={`${label} ${index + 1} 설명`}
+								placeholder="설명"
+								rows={2}
+								value={point.body}
+								onChange={(event) => update(index, { body: event.target.value })}
+							/>
+							<ImageField label="그림" value={point.image} onChange={(image) => update(index, { image })} />
+						</div>
+						<RowTools
+							index={index}
+							count={points.length}
+							onMove={(delta) => onChange(moveItem(points, index, delta))}
+							onRemove={() => onChange(points.filter((_, i) => i !== index))}
+						/>
+					</li>
+				))}
+			</ol>
+			<button
+				type="button"
+				className="showcase-text-button projects-list-add"
+				onClick={() => onChange([...points, { title: '', body: '' }])}
+			>
+				<i className="fa-solid fa-plus" aria-hidden="true" /> 더하기
+			</button>
+		</section>
+	);
+};
+
+/** 두 칸짜리 줄 목록: 진행 과정(때·한 일), 기술 사양(분류·기술) */
+const PairsEditor = <K extends string>({
+	label,
+	keys,
+	names,
+	rows,
+	onChange,
+}: {
+	label: string;
+	keys: [K, K];
+	names: [string, string];
+	rows: Record<K, string>[];
+	onChange: (rows: Record<K, string>[]) => void;
+}) => (
+	<section className="about-pane-group projects-list" aria-label={label}>
+		<h3>
+			{label}
+			<span className="showcase-count">{rows.length}</span>
+		</h3>
+		<ol>
+			{rows.map((row, index) => (
+				<li key={index}>
+					<div className="projects-list-fields projects-pair">
+						{keys.map((key, k) => (
+							<input
+								key={key}
+								aria-label={`${label} ${index + 1} ${names[k]}`}
+								placeholder={names[k]}
+								value={row[key]}
+								onChange={(event) =>
+									onChange(rows.map((other, i) => (i === index ? { ...other, [key]: event.target.value } : other)))
+								}
+							/>
+						))}
+					</div>
+					<RowTools
+						index={index}
+						count={rows.length}
+						onMove={(delta) => onChange(moveItem(rows, index, delta))}
+						onRemove={() => onChange(rows.filter((_, i) => i !== index))}
+					/>
+				</li>
+			))}
+		</ol>
+		<button
+			type="button"
+			className="showcase-text-button projects-list-add"
+			onClick={() => onChange([...rows, { [keys[0]]: '', [keys[1]]: '' } as Record<K, string>])}
+		>
+			<i className="fa-solid fa-plus" aria-hidden="true" /> 더하기
+		</button>
+	</section>
+);
+
+/** 한눈에 보는 숫자: 값·이름표 */
+const FactsEditor = ({ facts, onChange }: { facts: ProjectFact[]; onChange: (facts: ProjectFact[]) => void }) => (
+	<PairsEditor
+		label="한눈에 보는 숫자"
+		keys={['value', 'label']}
+		names={['값 (예: 6주)', '이름표 (예: 개발 기간)']}
+		rows={facts}
+		onChange={onChange}
+	/>
+);
+
+/** 한 줄씩: 맡은 일 */
+const LinesEditor = ({
+	label,
+	lines,
+	onChange,
+}: {
+	label: string;
+	lines: string[];
+	onChange: (lines: string[]) => void;
+}) => (
+	<section className="about-pane-group projects-list" aria-label={label}>
+		<h3>
+			{label}
+			<span className="showcase-count">{lines.length}</span>
+		</h3>
+		<ol>
+			{lines.map((line, index) => (
+				<li key={index}>
+					<div className="projects-list-fields">
+						<input
+							aria-label={`${label} ${index + 1}`}
+							value={line}
+							onChange={(event) => onChange(lines.map((other, i) => (i === index ? event.target.value : other)))}
+						/>
+					</div>
+					<RowTools
+						index={index}
+						count={lines.length}
+						onMove={(delta) => onChange(moveItem(lines, index, delta))}
+						onRemove={() => onChange(lines.filter((_, i) => i !== index))}
+					/>
+				</li>
+			))}
+		</ol>
+		<button type="button" className="showcase-text-button projects-list-add" onClick={() => onChange([...lines, ''])}>
+			<i className="fa-solid fa-plus" aria-hidden="true" /> 더하기
+		</button>
+	</section>
+);
+
 /**
  * 프로젝트 하나 고치기: 기본 필드 폼, 앱(데모를 창 안의 iframe으로), 고급 JSON (모든 필드).
  * 완료를 누르면 서버와 같은 규칙으로 검사하고 목록으로 돌아간다 (저장은 목록에서)
@@ -522,7 +752,11 @@ const ProjectEditor = ({
 }) => {
 	const [id, setId] = useState(row.id);
 	const [draft, setDraft] = useState<Project>(row.project);
-	const [tab, setTab] = useState<'basic' | 'json'>('basic');
+	const [tab, setTab] = useState<EditorTab>('intro');
+	/** 오른쪽에 Safari 페이지를 그대로 그려 둔다 (고치는 대로 바뀐다) */
+	const [preview, setPreview] = useState(true);
+	// 폼과 미리 보기가 나란히 들어가게 창을 키운다 (이미 크면 그대로)
+	useEffect(() => requestWindowSize('settings', 1120, 720), []);
 	const [json, setJson] = useState('');
 	const [errors, setErrors] = useState<string[]>([]);
 	const set = (patch: Partial<Project>) => {
@@ -592,30 +826,42 @@ const ProjectEditor = ({
 				<button type="button" className="showcase-text-button" onClick={onCancel}>
 					<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 프로젝트
 				</button>
-				<div className="projects-tabs" role="tablist" aria-label="편집 방식">
+				<div className="projects-tabs" role="tablist" aria-label="편집 항목">
+					{TABS.map(([key, label]) => (
+						<button
+							key={key}
+							type="button"
+							role="tab"
+							aria-selected={tab === key}
+							onClick={() => {
+								if (tab === key) return;
+								if (tab === 'json') {
+									const project = readJson();
+									if (!project) return;
+									setDraft(project);
+									setErrors([]);
+								}
+								if (key === 'json') openJson();
+								else setTab(key);
+							}}
+						>
+							{label}
+						</button>
+					))}
+				</div>
+				<span className="showcase-head-actions">
 					<button
 						type="button"
-						role="tab"
-						aria-selected={tab === 'basic'}
-						onClick={() => {
-							if (tab === 'basic') return;
-							const project = readJson();
-							if (project) {
-								setDraft(project);
-								setErrors([]);
-								setTab('basic');
-							}
-						}}
+						className={`showcase-text-button ${preview ? 'strong' : ''}`}
+						aria-pressed={preview}
+						onClick={() => setPreview((value) => !value)}
 					>
-						기본
+						<i className="fa-regular fa-eye" aria-hidden="true" /> 미리 보기
 					</button>
-					<button type="button" role="tab" aria-selected={tab === 'json'} onClick={() => tab !== 'json' && openJson()}>
-						고급 (JSON)
+					<button type="submit" className="showcase-text-button strong">
+						완료
 					</button>
-				</div>
-				<button type="submit" className="showcase-text-button strong">
-					완료
-				</button>
+				</span>
 			</div>
 
 			{errors.length > 0 && (
@@ -626,224 +872,289 @@ const ProjectEditor = ({
 				</ul>
 			)}
 
-			{tab === 'json' ? (
-				<div className="projects-json">
-					<textarea
-						aria-label="프로젝트 JSON"
-						value={json}
-						spellCheck={false}
-						onChange={(event) => setJson(event.target.value)}
-					/>
-					<p className="about-pane-hint">
-						모든 필드를 고칠 수 있습니다 (주요 기능, 장, 화면 모음, 출처 등). 링크·데모는 https:// 주소, 그림은 사이트
-						안 경로(/imgs/…)나 https:// 주소만 받습니다.
-					</p>
-				</div>
-			) : (
-				<>
-					<section className="about-pane-group" aria-label="소개">
-						<h3>소개</h3>
-						{row.isNew && (
-							<TextField
-								label="id"
-								value={id}
-								onChange={setId}
-								required
-								hint="주소와 앱 이름에 쓰입니다. 영어 소문자·숫자·-로 (예: my-project)"
+			<div className="projects-editor-body">
+				<div className="projects-editor-form">
+					{tab === 'json' && (
+						<div className="projects-json">
+							<textarea
+								aria-label="프로젝트 JSON"
+								value={json}
+								spellCheck={false}
+								onChange={(event) => setJson(event.target.value)}
 							/>
-						)}
-						<TextField label="이름" value={draft.name} onChange={(name) => set({ name })} required />
-						<TextField label="한 줄 소개" value={draft.description} onChange={(description) => set({ description })} />
-						<TextField label="큰 제목" value={draft.tagline} onChange={(tagline) => set({ tagline })} />
-						<TextField label="어떤 프로젝트" value={draft.context} onChange={(context) => set({ context })} />
-						<TextField label="맡은 일" value={draft.role} onChange={(role) => set({ role: optional(role) })} />
-						<PeriodField value={draft.period} onChange={(period) => set({ period })} />
-						<div className="projects-field">
-							<label>
-								<span>페이지 모양</span>
-								<select value={draft.look} onChange={(event) => set({ look: event.target.value as ProjectLook })}>
-									{PROJECT_LOOKS.map((look) => (
-										<option key={look} value={look}>
-											{LOOK_LABEL[look]}
-										</option>
-									))}
-								</select>
-							</label>
-						</div>
-					</section>
-
-					<section className="about-pane-group" aria-label="주소와 기술">
-						<h3>주소와 기술</h3>
-						<TextField
-							label="저장소"
-							required
-							type="url"
-							value={draft.url}
-							onChange={(url) => set({ url })}
-							placeholder="https://github.com/아이디/저장소"
-						/>
-						<TextField
-							label="데모"
-							type="url"
-							value={draft.demo}
-							onChange={(demo) => set({ demo: optional(demo) })}
-							placeholder="https://"
-						/>
-						<TextField
-							label="주 언어"
-							value={draft.language}
-							onChange={(language) => set({ language })}
-							options={LANGUAGES}
-							placeholder="찾거나 적기"
-						/>
-						<TagInput label="기술" items={draft.stack} options={STACKS} onChange={(stack) => set({ stack })} />
-					</section>
-
-					<section className="about-pane-group" aria-label="그림">
-						<h3>그림</h3>
-						<ImageField
-							label="화면 캡처"
-							value={draft.image || undefined}
-							onChange={(image) => set({ image: image ?? '' })}
-							hint="페이지 맨 위의 대표 화면. 비우면 화면 모음의 첫 그림을 씁니다."
-						/>
-						<ImageField
-							label="프로젝트 아이콘"
-							value={draft.icon}
-							onChange={(icon) => set({ icon })}
-							hint="Safari 탭·시작 페이지·Finder에 보이는 작은 아이콘. 없으면 기본 모양"
-						/>
-						<ImageField
-							label="글자 로고"
-							value={draft.logo}
-							onChange={(logo) => set({ logo })}
-							hint="페이지 맨 위에 이름 대신 보여 줄 로고 (없으면 이름 글자)"
-						/>
-					</section>
-
-					<section className="about-pane-group" aria-label="화면 모음">
-						<h3>화면 모음</h3>
-						<div className="projects-field">
-							<label>
-								<span>폴더</span>
-								<select
-									value={draft.galleryFolder ?? ''}
-									onChange={(event) => set({ galleryFolder: optional(event.target.value) })}
-								>
-									<option value="">
-										{draft.gallery?.length ? `직접 적은 화면 ${draft.gallery.length}장` : '없음'}
-									</option>
-									{/* 같은 프로젝트 폴더 아래의 것끼리 묶는다 (묶음 이름은 그 프로젝트 이름) */}
-									{FOLDER_GROUPS.map((group) => (
-										<optgroup key={group.label} label={group.label}>
-											{group.folders.map((folder) => (
-												<option key={folder.value} value={folder.value}>
-													{folder.label} ({PUBLIC_IMAGES[folder.value].length}장)
-												</option>
-											))}
-										</optgroup>
-									))}
-								</select>
-							</label>
 							<p className="about-pane-hint">
-								폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은
-								저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다.
+								모든 필드를 고칠 수 있습니다 (장, 출처, 조작법 등). 링크·데모는 https:// 주소, 그림은 사이트 안
+								경로(/imgs/…)나 https:// 주소만 받습니다.
 							</p>
 						</div>
-						{draft.galleryFolder && (
-							<ul className="projects-folder-preview" aria-label="화면 모음 미리 보기">
-								{(PUBLIC_IMAGES[draft.galleryFolder] ?? []).slice(0, 12).map((src) => (
-									<li key={src}>
-										{src.endsWith('.mp4') ? <video src={src} muted /> : <img src={src} alt="" loading="lazy" />}
-									</li>
-								))}
-							</ul>
-						)}
-					</section>
-
-					<section className="about-pane-group" aria-label="앱">
-						<h3>앱</h3>
-						<Switch
-							label="이 사이트 안에서 창으로 열기"
-							checked={Boolean(app)}
-							hint="데모를 창 안(iframe)에 띄우는 앱을 만듭니다. Dock·Launchpad·터미널 open에 나옵니다."
-							onChange={(on) =>
-								set({
-									app: on
-										? (row.project.app ?? {
-												label: draft.name,
-												icon: draft.icon ? draft.icon.replace(/^\/imgs\//, '') : '',
-											})
-										: undefined,
-								})
-							}
-						/>
-						{app && (
-							<>
-								<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
-								<ImageField
-									label="앱 아이콘"
-									required
-									value={app.icon || undefined}
-									onChange={(icon) => setApp({ icon: icon ?? '' })}
-									toUrl={appIconUrl}
-									fromPicked={(src) => src.replace(/^\/imgs\//, '')}
-									hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘 (이미지 폴더 기준 경로 또는 올린 그림)"
+					)}
+					{tab === 'intro' && (
+						<>
+							<section className="about-pane-group" aria-label="소개">
+								<h3>소개</h3>
+								{row.isNew && (
+									<TextField
+										label="id"
+										value={id}
+										onChange={setId}
+										required
+										hint="주소와 앱 이름에 쓰입니다. 영어 소문자·숫자·-로 (예: my-project)"
+									/>
+								)}
+								<TextField label="이름" value={draft.name} onChange={(name) => set({ name })} required />
+								<TextField
+									label="한 줄 소개"
+									value={draft.description}
+									onChange={(description) => set({ description })}
 								/>
-								<Switch
-									label="Dock에 고정"
-									checked={app.inDock !== false}
-									hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
-									onChange={(on) => setApp({ inDock: on ? undefined : false })}
-								/>
-								<Switch
-									label="게임"
-									checked={Boolean(app.play)}
-									hint="Safari 단추가 '여기서 열기' 대신 '여기서 플레이'가 됩니다."
-									onChange={(on) => setApp({ play: on || undefined })}
-								/>
+								<TextField label="큰 제목" value={draft.tagline} onChange={(tagline) => set({ tagline })} />
+								<TextField label="어떤 프로젝트" value={draft.context} onChange={(context) => set({ context })} />
+								<TextField label="맡은 일" value={draft.role} onChange={(role) => set({ role: optional(role) })} />
+								<PeriodField value={draft.period} onChange={(period) => set({ period })} />
 								<div className="projects-field">
 									<label>
-										<span>뜨기 전 창 바탕</span>
-										<select
-											value={app.tone ?? 'light'}
-											onChange={(event) => setApp({ tone: event.target.value === 'dark' ? 'dark' : undefined })}
-										>
-											<option value="light">밝게</option>
-											<option value="dark">어둡게</option>
+										<span>페이지 모양</span>
+										<select value={draft.look} onChange={(event) => set({ look: event.target.value as ProjectLook })}>
+											{PROJECT_LOOKS.map((look) => (
+												<option key={look} value={look}>
+													{LOOK_LABEL[look]}
+												</option>
+											))}
 										</select>
 									</label>
 								</div>
-								<div className="projects-field-pair">
-									<TextField
-										label="창 너비"
-										type="number"
-										value={app.windowSize?.width}
-										onChange={(width) =>
-											setApp({
-												windowSize: width ? { width: Number(width), height: app.windowSize?.height ?? 720 } : undefined,
-											})
-										}
-									/>
-									<TextField
-										label="창 높이"
-										type="number"
-										value={app.windowSize?.height}
-										onChange={(height) =>
-											setApp({
-												windowSize: height
-													? { width: app.windowSize?.width ?? 1100, height: Number(height) }
-													: undefined,
-											})
-										}
-									/>
+							</section>
+							<section className="about-pane-group" aria-label="주소와 기술">
+								<h3>주소와 기술</h3>
+								<TextField
+									label="저장소"
+									required
+									type="url"
+									value={draft.url}
+									onChange={(url) => set({ url })}
+									placeholder="https://github.com/아이디/저장소"
+								/>
+								<TextField
+									label="데모"
+									type="url"
+									value={draft.demo}
+									onChange={(demo) => set({ demo: optional(demo) })}
+									placeholder="https://"
+								/>
+								<TextField
+									label="주 언어"
+									value={draft.language}
+									onChange={(language) => set({ language })}
+									options={LANGUAGES}
+									placeholder="찾거나 적기"
+								/>
+								<TagInput label="기술" items={draft.stack} options={STACKS} onChange={(stack) => set({ stack })} />
+							</section>
+						</>
+					)}
+					{tab === 'pictures' && (
+						<>
+							<section className="about-pane-group" aria-label="그림">
+								<h3>그림</h3>
+								<ImageField
+									label="화면 캡처"
+									value={draft.image || undefined}
+									onChange={(image) => set({ image: image ?? '' })}
+									hint="페이지 맨 위의 대표 화면. 비우면 화면 모음의 첫 그림을 씁니다."
+								/>
+								<ImageField
+									label="프로젝트 아이콘"
+									value={draft.icon}
+									onChange={(icon) => set({ icon })}
+									hint="Safari 탭·시작 페이지·Finder에 보이는 작은 아이콘. 없으면 기본 모양"
+								/>
+								<ImageField
+									label="글자 로고"
+									value={draft.logo}
+									onChange={(logo) => set({ logo })}
+									hint="페이지 맨 위에 이름 대신 보여 줄 로고 (없으면 이름 글자)"
+								/>
+							</section>
+							<section className="about-pane-group" aria-label="화면 모음">
+								<h3>화면 모음</h3>
+								<div className="projects-field">
+									<label>
+										<span>폴더</span>
+										<select
+											value={draft.galleryFolder ?? ''}
+											onChange={(event) => set({ galleryFolder: optional(event.target.value) })}
+										>
+											<option value="">
+												{draft.gallery?.length ? `직접 적은 화면 ${draft.gallery.length}장` : '없음'}
+											</option>
+											{/* 같은 프로젝트 폴더 아래의 것끼리 묶는다 (묶음 이름은 그 프로젝트 이름) */}
+											{FOLDER_GROUPS.map((group) => (
+												<optgroup key={group.label} label={group.label}>
+													{group.folders.map((folder) => (
+														<option key={folder.value} value={folder.value}>
+															{folder.label} ({PUBLIC_IMAGES[folder.value].length}장)
+														</option>
+													))}
+												</optgroup>
+											))}
+										</select>
+									</label>
+									<p className="about-pane-hint">
+										폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은
+										저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다.
+									</p>
 								</div>
-							</>
-						)}
-					</section>
-					<p className="about-pane-hint">주요 기능, 장, 화면 모음 같은 나머지 내용은 고급 (JSON)에서 고칩니다.</p>
-				</>
-			)}
+								{draft.galleryFolder && (
+									<ul className="projects-folder-preview" aria-label="화면 모음 미리 보기">
+										{(PUBLIC_IMAGES[draft.galleryFolder] ?? []).slice(0, 12).map((src) => (
+											<li key={src}>
+												{src.endsWith('.mp4') ? <video src={src} muted /> : <img src={src} alt="" loading="lazy" />}
+											</li>
+										))}
+									</ul>
+								)}
+							</section>
+						</>
+					)}
+					{tab === 'content' && (
+						<>
+							<FactsEditor facts={draft.facts} onChange={(facts) => set({ facts })} />
+							<PointsEditor
+								label="주요 기능"
+								hint="첫 항목은 크게, 그림이 있으면 그림이 바탕이 됩니다."
+								points={draft.highlights}
+								onChange={(highlights) => set({ highlights })}
+							/>
+							<PointsEditor
+								label="만든 방식"
+								hint="번호가 붙어 좌우로 번갈아 놓입니다. 그림이 있으면 옆에 함께."
+								points={draft.build}
+								onChange={(build) => set({ build })}
+							/>
+							<PointsEditor
+								label="쓰는 법"
+								hint="단계로 보입니다."
+								points={draft.usage ?? []}
+								onChange={(usage) => set({ usage: usage.length ? usage : undefined })}
+							/>
+							<PairsEditor
+								label="진행 과정"
+								keys={['date', 'label']}
+								names={['때', '한 일']}
+								rows={draft.timeline ?? []}
+								onChange={(timeline) => set({ timeline: timeline.length ? timeline : undefined })}
+							/>
+							<PairsEditor
+								label="기술 사양"
+								keys={['label', 'value']}
+								names={['분류', '기술']}
+								rows={draft.specs}
+								onChange={(specs) => set({ specs })}
+							/>
+							<LinesEditor
+								label="맡은 일"
+								lines={draft.contributions}
+								onChange={(contributions) => set({ contributions })}
+							/>
+						</>
+					)}
+					{tab === 'app' && (
+						<section className="about-pane-group" aria-label="앱">
+							<h3>앱</h3>
+							<Switch
+								label="이 사이트 안에서 창으로 열기"
+								checked={Boolean(app)}
+								hint="데모를 창 안(iframe)에 띄우는 앱을 만듭니다. Dock·Launchpad·터미널 open에 나옵니다."
+								onChange={(on) =>
+									set({
+										app: on
+											? (row.project.app ?? {
+													label: draft.name,
+													icon: draft.icon ? draft.icon.replace(/^\/imgs\//, '') : '',
+												})
+											: undefined,
+									})
+								}
+							/>
+							{app && (
+								<>
+									<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
+									<ImageField
+										label="앱 아이콘"
+										required
+										value={app.icon || undefined}
+										onChange={(icon) => setApp({ icon: icon ?? '' })}
+										toUrl={appIconUrl}
+										fromPicked={(src) => src.replace(/^\/imgs\//, '')}
+										hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘 (이미지 폴더 기준 경로 또는 올린 그림)"
+									/>
+									<Switch
+										label="Dock에 고정"
+										checked={app.inDock !== false}
+										hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
+										onChange={(on) => setApp({ inDock: on ? undefined : false })}
+									/>
+									<Switch
+										label="게임"
+										checked={Boolean(app.play)}
+										hint="Safari 단추가 '여기서 열기' 대신 '여기서 플레이'가 됩니다."
+										onChange={(on) => setApp({ play: on || undefined })}
+									/>
+									<div className="projects-field">
+										<label>
+											<span>뜨기 전 창 바탕</span>
+											<select
+												value={app.tone ?? 'light'}
+												onChange={(event) => setApp({ tone: event.target.value === 'dark' ? 'dark' : undefined })}
+											>
+												<option value="light">밝게</option>
+												<option value="dark">어둡게</option>
+											</select>
+										</label>
+									</div>
+									<div className="projects-field-pair">
+										<TextField
+											label="창 너비"
+											type="number"
+											value={app.windowSize?.width}
+											onChange={(width) =>
+												setApp({
+													windowSize: width
+														? { width: Number(width), height: app.windowSize?.height ?? 720 }
+														: undefined,
+												})
+											}
+										/>
+										<TextField
+											label="창 높이"
+											type="number"
+											value={app.windowSize?.height}
+											onChange={(height) =>
+												setApp({
+													windowSize: height
+														? { width: app.windowSize?.width ?? 1100, height: Number(height) }
+														: undefined,
+												})
+											}
+										/>
+									</div>
+								</>
+							)}
+						</section>
+					)}
+				</div>
+				{preview && (
+					<aside className="projects-preview" aria-label="미리 보기">
+						<div className="projects-preview-chrome">
+							<span /> <span /> <span />
+							<em>{draft.demo || `${draft.name} 미리 보기`}</em>
+						</div>
+						<div className="projects-preview-page">
+							<ProjectPage project={{ ...completeProject({ ...draft, id }), id }} />
+						</div>
+					</aside>
+				)}
+			</div>
 		</form>
 	);
 };
