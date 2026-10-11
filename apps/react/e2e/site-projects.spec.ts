@@ -173,15 +173,10 @@ test.describe('프로젝트 관리', () => {
 		]);
 		// 새 프로젝트의 기본 모양은 어디에나 맞는 '기본 (카드)'
 		await expect(editor.getByRole('combobox', { name: '페이지 모양' })).toHaveValue('showcase');
-		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고르고, 글자 로고는 올린다 (올린 그림의 주소는 API의 /files/…)
+		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고른다. 글자 로고 칸은 없다 (필요하면 JSON의 logo)
 		await editor.getByRole('tab', { name: '그림' }).click();
 		await editor.getByRole('combobox', { name: '프로젝트 아이콘 고르기' }).selectOption('/imgs/projects/qru/icon.png');
-		await editor.getByLabel('글자 로고 올리기').setInputFiles({
-			name: 'logo.png',
-			mimeType: 'image/png',
-			buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
-		});
-		await expect(editor.getByRole('textbox', { name: '글자 로고 주소' })).toHaveValue(/^http:\/\/api\.test\/files\//);
+		await expect(editor.getByLabel(/글자 로고/)).toHaveCount(0);
 		// 고를 수 있는 폴더는 /imgs/projects 아래뿐 (배경화면 등은 없다)
 		const folderValues = await editor
 			.getByRole('combobox', { name: '폴더' })
@@ -204,6 +199,13 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('switch', { name: /이 사이트 안에서 창으로 열기/ }).check();
 		await expect(editor.getByRole('textbox', { name: '앱 이름' })).toHaveValue('사이드 앱');
 		await editor.getByRole('switch', { name: /Dock에 고정/ }).uncheck();
+		// 앱 아이콘은 올린다 (올린 그림의 주소는 API의 /files/…)
+		await editor.getByLabel('앱 아이콘 올리기').setInputFiles({
+			name: 'app-icon.png',
+			mimeType: 'image/png',
+			buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+		});
+		await expect(editor.getByRole('textbox', { name: '앱 아이콘 주소' })).toHaveValue(/^http:\/\/api\.test\/files\//);
 		await editor.getByRole('button', { name: '완료' }).click();
 
 		const list = settings.getByRole('list', { name: '프로젝트' });
@@ -221,9 +223,8 @@ test.describe('프로젝트 관리', () => {
 				period: '2025.01.02 – 진행 중',
 				icon: '/imgs/projects/qru/icon.png',
 				highlights: [{ title: '한 화면', body: '할 일과 메모를 나란히 둔다.' }],
-				logo: expect.stringMatching(/^http:\/\/api\.test\/files\//),
 				galleryFolder: '/imgs/projects/qru/screens',
-				app: { label: '사이드 앱', inDock: false },
+				app: { label: '사이드 앱', inDock: false, icon: expect.stringMatching(/^http:\/\/api\.test\/files\//) },
 			},
 		});
 
@@ -237,10 +238,11 @@ test.describe('프로젝트 관리', () => {
 		await dockItem(page, 'safari').click();
 		const safari = appWindow(page, 'safari');
 		await safari.getByRole('tab', { name: /사이드 앱/ }).click();
-		// 기본 모양(showcase) 페이지: 올린 로고가 맨 위에, 화면 캡처를 비웠으니 화면 모음의 첫 그림이 대표 화면, 화면 모음은 그 폴더
+		// 기본 모양(showcase) 페이지: 로고가 없으니 맨 위에 고른 아이콘과 이름, 화면 캡처를 비웠으니 화면 모음의 첫 그림이 대표 화면
 		const panel = safari.getByRole('tabpanel');
 		await expect(panel.locator('.sp[data-look="showcase"]')).toBeVisible();
-		await expect(panel.locator('.sc-hero .sc-logo')).toHaveAttribute('src', /^http:\/\/api\.test\/files\//);
+		await expect(panel.locator('.sc-hero .sc-logo')).toHaveCount(0);
+		await expect(panel.locator('.sc-hero .sc-tile')).toHaveAttribute('src', '/imgs/projects/qru/icon.png');
 		// 화면 캡처를 비웠으니 화면 모음의 첫 그림이 맨 위의 떠 있는 화면이 된다
 		await expect(panel.locator('.sc-hero-shot').first()).toHaveAttribute('src', /^\/imgs\/projects\/qru\/screens\//);
 		await expect(panel.getByRole('region', { name: '화면 모음' }).locator('img').first()).toHaveAttribute(
