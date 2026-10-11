@@ -273,4 +273,42 @@ test.describe('프로젝트 관리', () => {
 		expect(api.siteProjects).toBeNull();
 		await expect(again.getByRole('list', { name: '프로젝트' }).getByRole('listitem')).toHaveCount(7);
 	});
+
+	test('관리자: RPG 대화창의 배경 테마와 배경 그림을 고르면 미리 보기의 장면이 바뀐다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openProjectsPane(page);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
+		const list = settings.getByRole('list', { name: '프로젝트' });
+		await list.getByRole('listitem').filter({ hasText: 'QRU' }).getByRole('button', { name: '편집' }).click();
+		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
+		await editor.getByRole('combobox', { name: '페이지 모양' }).selectOption('dialogue');
+		const scene = editor.getByRole('complementary', { name: '미리 보기' }).locator('.dl');
+		// 코드의 기본값: QRU는 사무실
+		await expect(scene).toHaveAttribute('data-theme', 'office');
+
+		await editor.getByRole('tab', { name: '그림' }).click();
+		const theme = editor.getByRole('combobox', { name: '배경 테마' });
+		await expect(theme).toHaveValue('office');
+		await theme.selectOption('sea');
+		await expect(scene).toHaveAttribute('data-theme', 'sea');
+		// 테마를 고르고 배경 그림이 없으면 픽셀 그림을 깔지 않는다
+		await expect(scene.locator('.dl-pixel canvas')).toHaveCount(0);
+
+		// 배경 그림을 고르면 픽셀로 바꿔 하늘 자리에 깐다
+		await editor.getByRole('combobox', { name: '배경 그림 고르기' }).selectOption('/imgs/projects/qru/screenshot.jpg');
+		await expect(scene.locator('.dl-pixel canvas')).toHaveCount(1);
+		await expect(scene).toHaveAttribute('data-pixel', '');
+		await expect(editor.getByRole('textbox', { name: '배경 그림 주소' })).toHaveValue(
+			'/imgs/projects/qru/screenshot.jpg'
+		);
+
+		await editor.getByRole('button', { name: '완료' }).click();
+		await settings.getByRole('button', { name: '완료' }).click();
+		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
+		expect(api.siteProjects?.items.find((item) => item.id === 'qru')?.override).toMatchObject({
+			look: 'dialogue',
+			backdrop: { theme: 'sea', image: '/imgs/projects/qru/screenshot.jpg' },
+		});
+	});
 });
