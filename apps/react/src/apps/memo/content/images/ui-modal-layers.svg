@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">겉은 Modal 하나, 안은 창마다</text>
+  <!-- 전 -->
+  <text x="150" y="58" text-anchor="middle" font-size="12" font-weight="600" fill="#6b7280">전: 창 다섯이 겉을 저마다 적었다</text>
+  <g font-size="11">
+    <rect x="30" y="70" width="240" height="40" rx="6" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="40" y="86" fill="#374151">경고창</text>
+    <text x="40" y="101" fill="#ef4444">덮개 · Esc · 바깥 · 초점 · 사라짐</text>
+    <rect x="30" y="118" width="240" height="40" rx="6" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="40" y="134" fill="#374151">배경화면 이름 바꾸기</text>
+    <text x="40" y="149" fill="#ef4444">덮개 · Esc · 바깥 · 초점 · 사라짐</text>
+    <rect x="30" y="166" width="240" height="40" rx="6" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="40" y="182" fill="#374151">키보드 단축키</text>
+    <text x="40" y="197" fill="#ef4444">덮개 · Esc · 바깥 · 초점 · 사라짐 · portal</text>
+    <rect x="30" y="214" width="240" height="40" rx="6" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="40" y="230" fill="#374151">로그인 결과</text>
+    <text x="40" y="245" fill="#ef4444">덮개 · Esc · Enter · 바깥 · 초점 · 사라짐</text>
+    <rect x="30" y="262" width="240" height="40" rx="6" fill="#fff1f2" stroke="#fda4af"/>
+    <text x="40" y="278" fill="#374151">Launchpad</text>
+    <text x="40" y="293" fill="#ef4444">덮개 · 바깥(click) · 사라짐 (Esc·초점 없음)</text>
+  </g>
+  <!-- 화살표 -->
+  <path d="M290 186 L340 186" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#6b7280"/></marker></defs>
+  <!-- 후 -->
+  <text x="480" y="58" text-anchor="middle" font-size="12" font-weight="600" fill="#6b7280">후: 겉은 Modal, 안만 창마다</text>
+  <rect x="360" y="70" width="240" height="232" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="372" y="90" font-size="12" font-weight="600" fill="#4f46e5">Modal</text>
+  <text x="372" y="106" font-size="11" fill="#4f46e5">덮개 · role · aria-modal · 초점</text>
+  <text x="372" y="121" font-size="11" fill="#4f46e5">Esc · 바깥 누르기 · 사라지는 움직임</text>
+  <text x="372" y="136" font-size="11" fill="#4f46e5">scope: window(앱 창) / screen(화면, portal)</text>
+  <g font-size="11">
+    <rect x="372" y="150" width="216" height="26" rx="5" fill="#fff" stroke="#a5b4fc"/>
+    <text x="382" y="167" fill="#374151">경고창: 제목 · 설명 · 취소 · 확인</text>
+    <rect x="372" y="180" width="216" height="26" rx="5" fill="#fff" stroke="#a5b4fc"/>
+    <text x="382" y="197" fill="#374151">이름 바꾸기: 입력 칸 · 저장</text>
+    <rect x="372" y="210" width="216" height="26" rx="5" fill="#fff" stroke="#a5b4fc"/>
+    <text x="382" y="227" fill="#374151">단축키: 메뉴별 목록 · 닫기</text>
+    <rect x="372" y="240" width="216" height="26" rx="5" fill="#fff" stroke="#a5b4fc"/>
+    <text x="382" y="257" fill="#374151">로그인 결과: 아바타 · 결과 · 확인</text>
+    <rect x="372" y="270" width="216" height="26" rx="5" fill="#fff" stroke="#a5b4fc"/>
+    <text x="382" y="287" fill="#374151">Launchpad: 숨은 앱 아이콘</text>
+  </g>
+  <text x="320" y="335" text-anchor="middle" font-size="11" fill="#6b7280">어둡기와 층은 쓰는 쪽 CSS가 --ui-modal-dim · --ui-modal-z로 정한다</text>
+</svg>

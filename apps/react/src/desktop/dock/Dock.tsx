@@ -1,7 +1,7 @@
 import { cssVars } from '@/shared/lib/cssVars';
-import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useState } from 'react';
 import DockItem from '@/desktop/dock/DockItem';
+import Modal from '@/shared/ui/dialog/Modal';
 import '@/desktop/dock/Dock.css';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 
@@ -42,22 +42,8 @@ const Dock: React.FC = () => {
 		'dock-divider': `${DOCK_DIVIDER}px`,
 	});
 
-	// Launchpad는 닫히면 흐려지며 사라진다
-	const launchpad = useExitMotion<HTMLDivElement>('fade-out');
-
 	const handleLaunchpadClick = () => setIsLaunchpadOpen(!isLaunchpadOpen);
-
-	const closeLaunchpad = () => {
-		setIsLaunchpadOpen(false); // 모달 닫기
-	};
-
-	// 모달 외부 클릭 시 모달을 닫음
-	const handleOutsideClick = (e: React.MouseEvent) => {
-		const target = e.target as Element;
-		if (target.classList.contains('launchpad-modal')) {
-			closeLaunchpad();
-		}
-	};
+	const closeLaunchpad = () => setIsLaunchpadOpen(false);
 
 	return (
 		<div>
@@ -105,27 +91,31 @@ const Dock: React.FC = () => {
 
 			{/* Launchpad 모달 */}
 			{isLaunchpadOpen && hiddenItems.length > 0 && (
-				<div ref={launchpad} className="launchpad-modal" onClick={handleOutsideClick}>
-					<div className="launchpad-content">
-						<div className="hidden-apps">
-							{hiddenItems.map((hiddenItem) => (
-								<DockItem
-									key={hiddenItem}
-									label={hiddenItem}
-									icon={iconOf(hiddenItem)}
-									isActive={isActive(hiddenItem)}
-									isHidden={false}
-									onClick={() => {
-										// 앱을 열면 Launchpad는 닫힌다
-										closeLaunchpad();
-										handleAppOpen(hiddenItem);
-									}}
-									disableRadius={APP_MANIFEST[hiddenItem].squareIcon}
-								/>
-							))}
-						</div>
+				<Modal
+					label="Launchpad"
+					scope="screen"
+					onClose={closeLaunchpad}
+					overlayClassName="launchpad-modal"
+					className="launchpad-content"
+				>
+					<div className="hidden-apps">
+						{hiddenItems.map((hiddenItem) => (
+							<DockItem
+								key={hiddenItem}
+								label={hiddenItem}
+								icon={iconOf(hiddenItem)}
+								isActive={isActive(hiddenItem)}
+								isHidden={false}
+								onClick={() => {
+									// 앱을 열면 Launchpad는 닫힌다
+									closeLaunchpad();
+									handleAppOpen(hiddenItem);
+								}}
+								disableRadius={APP_MANIFEST[hiddenItem].squareIcon}
+							/>
+						))}
 					</div>
-				</div>
+				</Modal>
 			)}
 		</div>
 	);

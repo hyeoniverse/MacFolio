@@ -322,6 +322,12 @@
 }
 
 /* 이름 바꾸기 창의 입력 칸 */
+/* 상자(Modal)는 div라 칸 사이 간격은 안의 form이 잡는다 (ui-alert의 grid와 같게) */
+.wallpaper-rename form {
+	display: grid;
+	gap: 10px;
+}
+
 .wallpaper-rename input {
 	width: 100%;
 	padding: 7px 10px;
