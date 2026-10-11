@@ -347,7 +347,8 @@ const TagInput = ({
 	const listRef = useRef<HTMLUListElement>(null);
 	const [position, setPosition] = useState({ left: 0, top: 0, width: 0 });
 	// 후보는 입력칸 아래에 떠서(portal) 설정 창의 스크롤·칸 경계에 잘리지 않는다. 글자를 안 쳤을 땐 자주 쓰는 것부터 보여 준다
-	const localShown = open ? suggest(options, query, items, 40) : [];
+	// 글자를 안 쳤으면 후보 전체를, 쳤으면 맞는 것 전부를 보여 준다 (목록 안에서 스크롤)
+	const localShown = open ? suggest(options, query, items, Infinity) : [];
 	const merged = mergeSuggestions(
 		localShown,
 		open && found.query === query.trim() ? found.names : [],
@@ -356,8 +357,12 @@ const TagInput = ({
 	);
 	const shown = [...merged.local, ...merged.remote];
 	const remoteFrom = merged.local.length;
-	// 글자를 쳤을 때 전체 후보 가운데 몇 개가 맞는지 (목록은 40개까지)
-	const matched = open && query.trim() ? suggest(options, query, items, Infinity).length : 0;
+	// 글자를 쳤을 때 코드의 후보 가운데 몇 개가 맞는지
+	const matched = query.trim() ? localShown.length : 0;
+	// ↑·↓로 고른 후보가 목록 밖이면 보이게 굴린다
+	useEffect(() => {
+		listRef.current?.querySelector(`[id="${listId}-${active}"]`)?.scrollIntoView({ block: 'nearest' });
+	}, [active, listId]);
 	useLayoutEffect(() => {
 		if (!shown.length || !inputRef.current) return;
 		const rect = inputRef.current.getBoundingClientRect();
@@ -473,8 +478,8 @@ const TagInput = ({
 				)}
 			<p className="about-pane-hint">
 				{matched
-					? `${matched}개가 맞습니다${matched > 40 ? ' (40개까지 보여 줍니다. 더 쳐서 좁히세요)' : ''}.`
-					: `후보 ${options.length}개${remote ? ` + ${remote.name} 검색` : ''}. 찾아서 고르거나, 적고 Enter·쉼표로 더합니다. 여러 개를 쉼표로 붙여 넣어도 됩니다.`}
+					? `${matched}개가 맞습니다${remote ? ` (아래에 ${remote.name} 검색 결과도)` : ''}.`
+					: `후보 ${options.length}개 (칸을 누르면 목록 전체를 굴려 볼 수 있습니다)${remote ? `, 두 글자부터 ${remote.name}도 찾습니다` : ''}. 찾아서 고르거나, 적고 Enter·쉼표로 더합니다. 여러 개를 쉼표로 붙여 넣어도 됩니다.`}
 			</p>
 		</div>
 	);
