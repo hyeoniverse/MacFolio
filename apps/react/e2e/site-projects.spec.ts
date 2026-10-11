@@ -172,7 +172,9 @@ test.describe('프로젝트 관리', () => {
 			'tiny-qr-kit',
 		]);
 		// 새 프로젝트의 기본 모양은 어디에나 맞는 '기본 (카드)'
-		await expect(editor.getByRole('combobox', { name: '페이지 모양' })).toHaveValue('showcase');
+		await expect(
+			editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { checked: true })
+		).toHaveAccessibleName('기본');
 		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고른다. 글자 로고 칸은 없다 (필요하면 JSON의 logo)
 		await editor.getByRole('tab', { name: '그림' }).click();
 		await editor.getByRole('combobox', { name: '프로젝트 아이콘 고르기' }).selectOption('/imgs/projects/qru/icon.png');
@@ -274,6 +276,73 @@ test.describe('프로젝트 관리', () => {
 		await expect(again.getByRole('list', { name: '프로젝트' }).getByRole('listitem')).toHaveCount(7);
 	});
 
+	test('관리자: 내용 탭의 목록은 ＋로 더하고, 줄을 끌거나 ⌥↑로 옮기고, −로 빼고, 그림을 크게 본다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openProjectsPane(page);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
+		const list = settings.getByRole('list', { name: '프로젝트' });
+		await list.getByRole('listitem').filter({ hasText: 'QRU' }).getByRole('button', { name: '편집' }).click();
+		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
+		await editor.getByRole('tab', { name: '내용' }).click();
+		// 미리 보기에도 같은 이름의 영역이 있어 폼 쪽만 본다
+		const form = editor.locator('.projects-editor-form');
+
+		// 두 칸 표 (기술 사양): ＋는 끝에 빈 줄을 더하고 첫 칸에 초점을 둔다
+		const specs = form.getByRole('region', { name: '기술 사양' });
+		const specRows = specs.getByRole('row');
+		const count = await specRows.count();
+		await specs.getByRole('button', { name: '더하기' }).click();
+		await expect(specRows).toHaveCount(count + 1);
+		await expect(editor.getByRole('textbox', { name: `기술 사양 ${count + 1} 분류` })).toBeFocused();
+		await page.keyboard.type('시험');
+		await editor.getByRole('textbox', { name: `기술 사양 ${count + 1} 기술` }).fill('Playwright');
+		// 줄에 초점을 두고 ⌥↑: 한 칸 위로 (고른 줄도 따라간다)
+		await specRows.nth(count).focus();
+		await page.keyboard.press('Alt+ArrowUp');
+		await expect(editor.getByRole('textbox', { name: `기술 사양 ${count} 분류` })).toHaveValue('시험');
+		await expect(specRows.nth(count - 1)).toHaveAttribute('aria-selected', 'true');
+		// −: 고른 줄을 뺀다
+		await specs.getByRole('button', { name: '빼기' }).click();
+		await expect(specRows).toHaveCount(count);
+		await expect(editor.getByRole('textbox', { name: `기술 사양 ${count} 분류` })).not.toHaveValue('시험');
+
+		// 주요 기능: 줄을 누르면 고른 상태가 되고, 아래에 그 항목의 칸이 열린다
+		const highlights = form.getByRole('region', { name: '주요 기능' });
+		const rows = highlights.getByRole('row');
+		const first = await editor.locator('.projects-point strong').first().textContent();
+		await rows.nth(1).click();
+		await expect(rows.nth(1)).toHaveAttribute('aria-selected', 'true');
+		const second = await editor.getByRole('textbox', { name: '주요 기능 2 제목' }).inputValue();
+		expect(second).not.toBe('');
+		// 그림을 누르면 크게 보고, Esc로 닫는다
+		await highlights.getByRole('button', { name: '주요 기능 2 그림 크게 보기' }).click();
+		const lightbox = page.getByRole('dialog', { name: '그림 크게 보기' });
+		await expect(lightbox.locator('img')).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(lightbox).toHaveCount(0);
+		// 첫 줄을 끌어 둘째 줄 아래로 놓으면 순서가 바뀐다
+		await rows.nth(0).scrollIntoViewIfNeeded();
+		const from = await rows.nth(0).boundingBox();
+		const to = await rows.nth(1).boundingBox();
+		await page.mouse.move(from!.x + 40, from!.y + from!.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(from!.x + 40, to!.y + to!.height * 0.9, { steps: 8 });
+		await page.mouse.up();
+		await expect(rows.nth(0).locator('.projects-point strong')).toHaveText(second);
+		await expect(rows.nth(1).locator('.projects-point strong')).toHaveText(first!);
+
+		await editor.getByRole('button', { name: '완료' }).click();
+		await settings.getByRole('button', { name: '완료' }).click();
+		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
+		const saved = api.siteProjects?.items.find((item) => item.id === 'qru')?.override as {
+			highlights?: { title: string }[];
+		};
+		expect(saved.highlights?.slice(0, 2).map((point) => point.title)).toEqual([second, first]);
+	});
+
 	test('관리자: RPG 대화창의 배경 테마와 배경 그림을 고르면 미리 보기의 장면이 바뀐다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		await enterDesktop(page);
@@ -282,7 +351,9 @@ test.describe('프로젝트 관리', () => {
 		const list = settings.getByRole('list', { name: '프로젝트' });
 		await list.getByRole('listitem').filter({ hasText: 'QRU' }).getByRole('button', { name: '편집' }).click();
 		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
-		await editor.getByRole('combobox', { name: '페이지 모양' }).selectOption('dialogue');
+		// 페이지 모양은 그림 카드에서 고른다 (라디오)
+		await editor.getByRole('radio', { name: 'RPG 대화창' }).click();
+		await expect(editor.getByRole('radio', { name: 'RPG 대화창' })).toHaveAttribute('aria-checked', 'true');
 		const scene = editor.getByRole('complementary', { name: '미리 보기' }).locator('.dl');
 		// 코드의 기본값: QRU는 사무실
 		await expect(scene).toHaveAttribute('data-theme', 'office');
