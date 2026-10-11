@@ -10,6 +10,8 @@ export const test = base.extend<{ pageErrors: Error[]; noApi: void; cspViolation
 				window.__MACFOLIO_API_URL__ = '';
 				window.__MACFOLIO_MESSAGES_STORE__ = 'local';
 			});
+			// 기술 칸의 npm 검색은 바깥으로 나가지 않게 빈 결과 (시험에서 결과가 필요하면 다시 route한다)
+			await page.route('https://registry.npmjs.org/**', (route) => route.fulfill({ json: { objects: [] } }));
 			await use();
 		},
 		{ auto: true },

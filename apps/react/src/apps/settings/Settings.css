@@ -1596,6 +1596,29 @@ ol.showcase-list .showcase-row.reordering {
 	cursor: pointer;
 }
 
+.projects-suggestions li {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+/* npm에서 찾은 후보: 오른쪽에 출처 */
+.projects-suggestion-source {
+	flex: none;
+	padding: 0 6px;
+	border-radius: 4px;
+	background: color-mix(in srgb, #cb3837 16%, transparent);
+	color: #cb3837;
+	font-size: 10px;
+	font-weight: 600;
+}
+
+.projects-suggestions li[aria-selected='true'] .projects-suggestion-source {
+	background: rgba(255, 255, 255, 0.25);
+	color: #ffffff;
+}
+
 .projects-suggestions li[aria-selected='true'],
 .projects-suggestions li:hover {
 	background: var(--color-accent);
