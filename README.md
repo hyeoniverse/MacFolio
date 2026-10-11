@@ -294,6 +294,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 
 - [작업 규칙](CONTRIBUTING.md): 브랜치, 커밋, 이슈, PR, 저장소 설정(필수 검사)
 - [백엔드 설계](docs/backend-design.md): 구성도, 요청 흐름, 데이터 모델, 설계 결정
+- [공통 UI 부품](docs/ui.md): `shared/ui`의 부품과 props, 쓰는 곳, 새로 뽑을 후보
 - [배포](docs/deployment.md): Cloudflare Workers, Oracle VM, Cloudflare Tunnel, GitHub OAuth
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
