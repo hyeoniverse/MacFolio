@@ -962,23 +962,18 @@ const ProjectEditor = ({
 						<>
 							<section className="about-pane-group" aria-label="그림">
 								<h3>그림</h3>
-								<ImageField
-									label="화면 캡처"
-									value={draft.image || undefined}
-									onChange={(image) => set({ image: image ?? '' })}
-									hint="페이지 맨 위의 대표 화면. 비우면 화면 모음의 첫 그림을 씁니다."
-								/>
+								{/* 대표 화면(image)은 따로 고르지 않는다: 화면 모음의 첫 그림을 쓴다 (다른 장을 쓰려면 JSON의 image) */}
 								<ImageField
 									label="프로젝트 아이콘"
 									value={draft.icon}
 									onChange={(icon) => set({ icon })}
-									hint="Safari 탭·시작 페이지·Finder에 보이는 작은 아이콘. 없으면 기본 모양"
+									hint="네모난 앱 아이콘. Safari 탭·Finder·페이지 맨 위에 작게 보입니다. 없으면 기본 모양"
 								/>
 								<ImageField
 									label="글자 로고"
 									value={draft.logo}
 									onChange={(logo) => set({ logo })}
-									hint="페이지 맨 위에 이름 대신 보여 줄 로고 (없으면 이름 글자)"
+									hint="가로로 긴 글자 로고(워드마크). 있으면 페이지 머리에서 이름 글자 대신 크게 보입니다. 없어도 됩니다"
 								/>
 							</section>
 							<section className="about-pane-group" aria-label="화면 모음">

@@ -128,7 +128,7 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('textbox', { name: '이름', exact: true }).fill('사이드 앱');
 		await editor.getByRole('textbox', { name: '저장소' }).fill('https://github.com/hyeoniverse/side-app');
 		await editor.getByRole('textbox', { name: '데모' }).fill('https://what-to-do-chi.vercel.app/side');
-		// 꼭 적어야 하는 칸에는 '필수' 표시. 화면 캡처는 비워도 된다 (화면 모음의 첫 그림을 쓴다)
+		// 꼭 적어야 하는 칸에는 '필수' 표시. 대표 화면은 따로 고르지 않는다 (화면 모음의 첫 그림을 쓴다)
 		const fieldName = (name: string) =>
 			editor.locator('.projects-field-label').filter({ hasText: new RegExp(`^${name}`) });
 		await expect(fieldName('저장소')).toHaveText('저장소필수');
@@ -162,7 +162,6 @@ test.describe('프로젝트 관리', () => {
 		await expect(editor.getByRole('combobox', { name: '페이지 모양' })).toHaveValue('showcase');
 		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고르고, 글자 로고는 올린다 (올린 그림의 주소는 API의 /files/…)
 		await editor.getByRole('tab', { name: '그림' }).click();
-		await expect(fieldName('화면 캡처')).toHaveText('화면 캡처');
 		await editor.getByRole('combobox', { name: '프로젝트 아이콘 고르기' }).selectOption('/imgs/projects/qru/icon.png');
 		await editor.getByLabel('글자 로고 올리기').setInputFiles({
 			name: 'logo.png',
