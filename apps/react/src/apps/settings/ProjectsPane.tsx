@@ -16,6 +16,7 @@ import {
 } from '@macfolio/desktop-core/site';
 import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { DEFAULT_PROFILE } from '@/shared/site/profileStore';
+import { mergeSuggestions, searchPackages } from './packageSearch';
 import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type Period } from './projectInputs';
 import { getSavedProjects, PARSE_OPTIONS, sendProjects } from '@/shared/site/siteContent';
 import { completeProject, groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
@@ -51,6 +52,9 @@ const FOLDER_GROUPS = groupedImageFolders(
 
 /** 언어·기술 칸의 후보: 지금 보이는 프로젝트와 코드의 프로젝트, 사이트 주인의 기술 */
 const LANGUAGES = languageOptions([...PROJECTS, ...DEFAULT_PROJECTS]);
+/** 기술 칸의 바깥 후보: npm 레지스트리 (코드의 목록에 없는 라이브러리) */
+const NPM = { name: 'npm', search: searchPackages };
+
 const STACKS = stackOptions(
 	[...PROJECTS, ...DEFAULT_PROJECTS.filter((project) => !PROJECTS.some((shown) => shown.id === project.id))],
 	[...Object.values(DEFAULT_PROFILE.skills).flat(), ...DEFAULT_PROFILE.siteStack]
@@ -310,13 +314,32 @@ const TagInput = ({
 	items,
 	options,
 	onChange,
+	remote,
 }: {
 	label: string;
 	items: string[];
 	options: readonly string[];
 	onChange: (items: string[]) => void;
+	/** 코드의 후보 밖에서 더 찾기 (기술은 npm 레지스트리) */
+	remote?: { name: string; search: (query: string, signal: AbortSignal) => Promise<string[]> };
 }) => {
 	const [query, setQuery] = useState('');
+	const [found, setFound] = useState<{ query: string; names: string[] }>({ query: '', names: [] });
+	// 바깥 검색은 치기를 멈추면(0.25초) 한 번. 앞 요청은 끊는다
+	useEffect(() => {
+		const text = query.trim();
+		if (!remote || text.length < 2) return;
+		const controller = new AbortController();
+		const timer = window.setTimeout(() => {
+			void remote.search(text, controller.signal).then((names) => {
+				if (!controller.signal.aborted) setFound({ query: text, names });
+			});
+		}, 250);
+		return () => {
+			window.clearTimeout(timer);
+			controller.abort();
+		};
+	}, [query, remote]);
 	const [open, setOpen] = useState(false);
 	const [active, setActive] = useState(0);
 	const listId = useId();
@@ -324,7 +347,15 @@ const TagInput = ({
 	const listRef = useRef<HTMLUListElement>(null);
 	const [position, setPosition] = useState({ left: 0, top: 0, width: 0 });
 	// 후보는 입력칸 아래에 떠서(portal) 설정 창의 스크롤·칸 경계에 잘리지 않는다. 글자를 안 쳤을 땐 자주 쓰는 것부터 보여 준다
-	const shown = open ? suggest(options, query, items, 40) : [];
+	const localShown = open ? suggest(options, query, items, 40) : [];
+	const merged = mergeSuggestions(
+		localShown,
+		open && found.query === query.trim() ? found.names : [],
+		items,
+		localShown.length + 20
+	);
+	const shown = [...merged.local, ...merged.remote];
+	const remoteFrom = merged.local.length;
 	// 글자를 쳤을 때 전체 후보 가운데 몇 개가 맞는지 (목록은 40개까지)
 	const matched = open && query.trim() ? suggest(options, query, items, Infinity).length : 0;
 	useLayoutEffect(() => {
@@ -428,11 +459,13 @@ const TagInput = ({
 								id={`${listId}-${index}`}
 								role="option"
 								aria-selected={index === active}
+								data-source={index >= remoteFrom ? remote?.name : undefined}
 								// 누르는 동안 입력칸의 초점이 빠져 목록이 닫히지 않게
 								onPointerDown={(event) => event.preventDefault()}
 								onClick={() => add(option)}
 							>
 								{option}
+								{index >= remoteFrom && remote && <span className="projects-suggestion-source">{remote.name}</span>}
 							</li>
 						))}
 					</ul>,
@@ -441,7 +474,7 @@ const TagInput = ({
 			<p className="about-pane-hint">
 				{matched
 					? `${matched}개가 맞습니다${matched > 40 ? ' (40개까지 보여 줍니다. 더 쳐서 좁히세요)' : ''}.`
-					: `후보 ${options.length}개. 찾아서 고르거나, 적고 Enter·쉼표로 더합니다. 여러 개를 쉼표로 붙여 넣어도 됩니다.`}
+					: `후보 ${options.length}개${remote ? ` + ${remote.name} 검색` : ''}. 찾아서 고르거나, 적고 Enter·쉼표로 더합니다. 여러 개를 쉼표로 붙여 넣어도 됩니다.`}
 			</p>
 		</div>
 	);
@@ -1042,7 +1075,13 @@ const ProjectEditor = ({
 									options={LANGUAGES}
 									placeholder="찾거나 적기"
 								/>
-								<TagInput label="기술" items={draft.stack} options={STACKS} onChange={(stack) => set({ stack })} />
+								<TagInput
+									label="기술"
+									items={draft.stack}
+									options={STACKS}
+									remote={NPM}
+									onChange={(stack) => set({ stack })}
+								/>
 							</section>
 						</>
 					)}
