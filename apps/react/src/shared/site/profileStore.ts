@@ -1,9 +1,10 @@
-// 사이트 주인의 프로필. 관리자가 시스템 설정 › 정보에서 고친 값(서버의 GET /site)이 있으면 그 값, 없으면 코드의 기본값.
+// 사이트 주인의 프로필. 관리자가 시스템 설정 › 정보에서 고친 값(서버의 GET /site, 모양은 contracts의 SiteView)이 있으면 그 값, 없으면 코드의 기본값.
 // 프로필을 읽는 곳은 모두 여기를 거친다: 컴포넌트는 useProfile(), 그 밖(메일 보내기 등)은 getProfile()
 import { useSyncExternalStore } from 'react';
 import { createStore } from '@macfolio/desktop-core';
 import { githubLogin, type SiteProfile } from '@macfolio/desktop-core/site';
 import { api, type ApiOptions, reasonsFrom } from '@/shared/api/client';
+import type { SiteView } from '@macfolio/contracts';
 import { PROFILE, SITE_STACK, SKILLS } from '@/shared/profile';
 
 export { githubLogin, type SiteProfile };
@@ -29,7 +30,7 @@ const apply = (profile: SiteProfile | null) =>
 /** 앱 시작 시 한 번: 서버에 저장한 프로필을 읽는다. 서버가 없거나 읽지 못하면 기본값 그대로 */
 export async function loadSiteProfile(fetchImpl: typeof fetch = fetch) {
 	try {
-		const body = await api<{ profile: SiteProfile | null }>('/site', { fetchImpl });
+		const body = await api<SiteView>('/site', { fetchImpl });
 		apply(body.profile);
 	} catch {
 		// 서버가 없거나 읽지 못하면 기본값 그대로
@@ -40,7 +41,7 @@ export type SaveResult = { ok: true } | { ok: false; errors: string[] };
 
 async function send(options: ApiOptions): Promise<SaveResult> {
 	try {
-		const body = await api<{ profile?: SiteProfile | null } | null>('/site/profile', {
+		const body = await api<Partial<SiteView> | null>('/site/profile', {
 			...options,
 			fallback: '저장하지 못했습니다.',
 		});

@@ -562,7 +562,7 @@ export async function fakeApi(
 		}
 		if (path === '/site/profile') {
 			if (!state.signedIn) return route.fulfill(unauthorized);
-			// 검사는 화면이 서버와 같은 규칙(desktop-core의 parseProfile)으로 먼저 한다
+			// 검사는 화면이 서버와 같은 규칙(contracts의 parseProfile)으로 먼저 한다
 			state.siteProfile = request.method() === 'PUT' ? request.postDataJSON() : null;
 			return route.fulfill({
 				status: 200,

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { parseProfile, PROFILE_LIMITS } from '@macfolio/desktop-core/site';
+import { PROFILE_LIMITS } from '@macfolio/desktop-core/site';
+import { parseProfile } from '@macfolio/contracts';
 import { REPO_URL } from '@/apps/finder/repoDocs';
 import { fullName } from '@/desktop/about/profileInfo';
 import ProfileLink from '@/desktop/about/ProfileLink';
