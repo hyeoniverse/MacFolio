@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
+import { windowSizeRequest } from '@/desktop/window/windowSizeRequest';
 import { useViewport } from '@/shared/hooks/useViewport';
 import {
 	clampRect,
@@ -44,6 +45,19 @@ export function useWindowFrame(appName: AppName) {
 	);
 	const [isMaximized, setIsMaximized] = useState(false);
 	const gesture = useRef<Gesture | null>(null);
+
+	// 앱이 창을 키워 달라고 하면(프로젝트 편집) 지금보다 작은 쪽만 키운다
+	useEffect(
+		() =>
+			windowSizeRequest.subscribe(({ app, width, height }) => {
+				if (app !== appName) return;
+				setSavedRect((current) => {
+					const next = { ...current, width: Math.max(current.width, width), height: Math.max(current.height, height) };
+					return next.width === current.width && next.height === current.height ? current : next;
+				});
+			}),
+		[appName]
+	);
 
 	// 렌더링할 때마다 화면 안으로 제한한다. 브라우저 크기가 줄어도 창이 화면 밖에 남지 않는다.
 	const rect = isMaximized ? maximizedRect(viewport) : clampRect(savedRect, viewport);

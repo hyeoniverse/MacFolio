@@ -84,11 +84,11 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('textbox', { name: '데모' }).fill('');
 
 		// 고급 JSON: 폼에 없는 필드도 고친다. 기본으로 돌아가면 JSON에서 고친 값이 폼에 보인다
-		await editor.getByRole('tab', { name: '고급 (JSON)' }).click();
+		await editor.getByRole('tab', { name: 'JSON' }).click();
 		const json = editor.getByRole('textbox', { name: '프로젝트 JSON' });
 		const text = await json.inputValue();
 		await json.fill(text.replace('"포트폴리오를, 데스크톱으로."', '"JSON으로 고친 제목"'));
-		await editor.getByRole('tab', { name: '기본' }).click();
+		await editor.getByRole('tab', { name: '소개' }).click();
 		await expect(editor.getByRole('textbox', { name: '큰 제목' })).toHaveValue('JSON으로 고친 제목');
 		await editor.getByRole('button', { name: '완료' }).click();
 		await expect(editor).toBeHidden();
@@ -133,7 +133,13 @@ test.describe('프로젝트 관리', () => {
 			editor.locator('.projects-field-label').filter({ hasText: new RegExp(`^${name}`) });
 		await expect(fieldName('저장소')).toHaveText('저장소필수');
 		await expect(fieldName('이름')).toHaveText('이름필수');
-		await expect(fieldName('화면 캡처')).toHaveText('화면 캡처');
+		// 미리 보기가 함께 보인다 (고치는 대로 바뀐다)
+		await expect(
+			editor.getByRole('complementary', { name: '미리 보기' }).locator('.sp[data-look="showcase"]')
+		).toBeVisible();
+		await expect(editor.getByRole('complementary', { name: '미리 보기' }).locator('.sc-hero h1')).toHaveText(
+			'사이드 앱'
+		);
 		// 기간: 사이트 달력(메모 글 날짜와 같은 것)에서 시작일을 고르고, 끝 대신 '진행 중'
 		await editor.getByRole('button', { name: '시작일 고르기' }).click();
 		const calendar = page.getByRole('dialog', { name: '날짜 고르기' });
@@ -146,7 +152,17 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('checkbox', { name: '진행 중' }).check();
 		// 언어: 후보 목록에서 (다른 값도 쓸 수 있다)
 		await editor.getByRole('combobox', { name: '주 언어' }).fill('TypeScript');
-		// 그림: 프로젝트 아이콘은 사이트 안 그림에서 고르고, 글자 로고는 올린다 (올린 그림의 주소는 API의 /files/…)
+		// 기술: 쉼표를 치면 칩이 되고, 몇 글자 치면 후보가 걸러진다 (고르면 칩)
+		const stack = editor.getByRole('combobox', { name: '기술' });
+		await stack.pressSequentially('React, Vi');
+		await expect(editor.getByRole('list', { name: '고른 기술' })).toHaveText(['React']);
+		await editor.getByRole('listbox', { name: '기술 후보' }).getByRole('option', { name: 'Vite', exact: true }).click();
+		await expect(editor.getByRole('list', { name: '고른 기술' }).getByRole('listitem')).toHaveText(['React', 'Vite']);
+		// 새 프로젝트의 기본 모양은 어디에나 맞는 '기본 (카드)'
+		await expect(editor.getByRole('combobox', { name: '페이지 모양' })).toHaveValue('showcase');
+		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고르고, 글자 로고는 올린다 (올린 그림의 주소는 API의 /files/…)
+		await editor.getByRole('tab', { name: '그림' }).click();
+		await expect(fieldName('화면 캡처')).toHaveText('화면 캡처');
 		await editor.getByRole('combobox', { name: '프로젝트 아이콘 고르기' }).selectOption('/imgs/projects/qru/icon.png');
 		await editor.getByLabel('글자 로고 올리기').setInputFiles({
 			name: 'logo.png',
@@ -154,15 +170,6 @@ test.describe('프로젝트 관리', () => {
 			buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
 		});
 		await expect(editor.getByRole('textbox', { name: '글자 로고 주소' })).toHaveValue(/^http:\/\/api\.test\/files\//);
-		// 새 프로젝트의 기본 모양은 어디에나 맞는 '기본 (카드)'
-		await expect(editor.getByRole('combobox', { name: '페이지 모양' })).toHaveValue('showcase');
-		// 기술: 쉼표를 치면 칩이 되고, 몇 글자 치면 후보가 걸러진다 (고르면 칩)
-		const stack = editor.getByRole('combobox', { name: '기술' });
-		await stack.pressSequentially('React, Vi');
-		await expect(editor.getByRole('list', { name: '고른 기술' })).toHaveText(['React']);
-		await editor.getByRole('listbox', { name: '기술 후보' }).getByRole('option', { name: 'Vite', exact: true }).click();
-		await expect(editor.getByRole('list', { name: '고른 기술' }).getByRole('listitem')).toHaveText(['React', 'Vite']);
-		// 화면 모음은 폴더 하나로: 그 폴더의 그림을 모두 쓴다 (고르면 미리 보기)
 		// 고를 수 있는 폴더는 /imgs/projects 아래뿐 (배경화면 등은 없다)
 		const folderValues = await editor
 			.getByRole('combobox', { name: '폴더' })
@@ -172,6 +179,16 @@ test.describe('프로젝트 관리', () => {
 		expect(folderValues.every((value) => value.startsWith('/imgs/projects/'))).toBe(true);
 		await editor.getByRole('combobox', { name: '폴더' }).selectOption('/imgs/projects/qru/screens');
 		await expect(editor.getByRole('list', { name: '화면 모음 미리 보기' }).locator('img').first()).toBeVisible();
+		// 화면 모음은 폴더 하나로: 그 폴더의 그림을 모두 쓴다 (고르면 미리 보기)
+		// 내용 탭: 주요 기능 하나 (미리 보기의 벤토에 바로 보인다)
+		await editor.getByRole('tab', { name: '내용' }).click();
+		await editor.getByRole('region', { name: '주요 기능' }).getByRole('button', { name: '더하기' }).click();
+		await editor.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('한 화면');
+		await editor.getByRole('textbox', { name: '주요 기능 1 설명' }).fill('할 일과 메모를 나란히 둔다.');
+		await expect(
+			editor.getByRole('complementary', { name: '미리 보기' }).getByRole('region', { name: '주요 기능' })
+		).toContainText('한 화면');
+		await editor.getByRole('tab', { name: '앱' }).click();
 		await editor.getByRole('switch', { name: /이 사이트 안에서 창으로 열기/ }).check();
 		await expect(editor.getByRole('textbox', { name: '앱 이름' })).toHaveValue('사이드 앱');
 		await editor.getByRole('switch', { name: /Dock에 고정/ }).uncheck();
@@ -191,6 +208,7 @@ test.describe('프로젝트 관리', () => {
 				language: 'TypeScript',
 				period: '2025.01.02 – 진행 중',
 				icon: '/imgs/projects/qru/icon.png',
+				highlights: [{ title: '한 화면', body: '할 일과 메모를 나란히 둔다.' }],
 				logo: expect.stringMatching(/^http:\/\/api\.test\/files\//),
 				galleryFolder: '/imgs/projects/qru/screens',
 				app: { label: '사이드 앱', inDock: false },
@@ -210,15 +228,18 @@ test.describe('프로젝트 관리', () => {
 		// 기본 모양(showcase) 페이지: 올린 로고가 맨 위에, 화면 캡처를 비웠으니 화면 모음의 첫 그림이 대표 화면, 화면 모음은 그 폴더
 		const panel = safari.getByRole('tabpanel');
 		await expect(panel.locator('.sp[data-look="showcase"]')).toBeVisible();
-		await expect(panel.locator('.sc-logo')).toHaveAttribute('src', /^http:\/\/api\.test\/files\//);
-		await expect(panel.locator('.sc-figure img')).toHaveAttribute('src', /^\/imgs\/projects\/qru\/screens\//);
+		await expect(panel.locator('.sc-hero .sc-logo')).toHaveAttribute('src', /^http:\/\/api\.test\/files\//);
+		// 화면 캡처를 비웠으니 화면 모음의 첫 그림이 맨 위의 떠 있는 화면이 된다
+		await expect(panel.locator('.sc-hero-shot').first()).toHaveAttribute('src', /^\/imgs\/projects\/qru\/screens\//);
 		await expect(panel.getByRole('region', { name: '화면 모음' }).locator('img').first()).toHaveAttribute(
 			'src',
 			/^\/imgs\/projects\/qru\/screens\//
 		);
-		await expect(
-			panel.getByRole('region', { name: '기술 사양' }).getByRole('list', { name: '기술' }).getByRole('listitem')
-		).toHaveText(['React', 'Vite']);
+		await expect(panel.locator('.sc-hero').getByRole('list', { name: '기술' }).getByRole('listitem')).toHaveText([
+			'React',
+			'Vite',
+		]);
+		await expect(panel.getByRole('region', { name: '주요 기능' })).toContainText('한 화면');
 		// 탭의 작은 아이콘은 고른 프로젝트 아이콘
 		await expect(safari.getByRole('tab', { name: /사이드 앱/ }).locator('img')).toHaveAttribute(
 			'src',

@@ -1237,7 +1237,6 @@ ol.showcase-list .showcase-row.reordering {
 	display: flex;
 	flex-direction: column;
 	gap: 14px;
-	max-width: 620px;
 }
 
 .projects-row .showcase-lines {
@@ -1636,4 +1635,182 @@ ol.showcase-list .showcase-row.reordering {
 
 .projects-error {
 	color: #ff3b30;
+}
+
+/* ─── 프로젝트 편집: 왼쪽 폼, 오른쪽 미리 보기 ─── */
+.projects-editor-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 18px;
+	align-items: start;
+}
+
+.projects-editor-body:has(.projects-preview) {
+	grid-template-columns: minmax(360px, 5fr) minmax(360px, 6fr);
+}
+
+.projects-editor-form {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	min-width: 0;
+}
+
+/* 미리 보기: 작은 Safari 창. 페이지를 실제 크기로 그리고 0.62배로 줄여서 넓은 창 모양으로 보인다 */
+.projects-preview {
+	position: sticky;
+	top: 0;
+	overflow: hidden;
+	border: 1px solid var(--color-divider);
+	border-radius: 12px;
+	background: var(--color-control-bg);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+}
+
+.projects-preview-chrome {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 10px;
+	border-bottom: 1px solid var(--color-divider);
+}
+
+.projects-preview-chrome span {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #c7c7cc;
+}
+
+.projects-preview-chrome em {
+	flex: 1;
+	margin-left: 8px;
+	padding: 3px 10px;
+	overflow: hidden;
+	border-radius: 6px;
+	background: var(--color-divider);
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	font-style: normal;
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.projects-preview-page {
+	--scale: 0.62;
+	height: min(70vh, 640px);
+	overflow: hidden;
+}
+
+.projects-preview-page > .sp {
+	width: calc(100% / var(--scale));
+	height: calc(100% / var(--scale));
+	overflow-x: hidden;
+	overflow-y: auto;
+	transform: scale(var(--scale));
+	transform-origin: top left;
+	animation: none;
+}
+
+/* 좁은 창: 미리 보기는 폼 아래로 */
+@container (max-width: 900px) {
+	.projects-editor-body:has(.projects-preview) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.projects-preview {
+		position: static;
+	}
+}
+
+/* ─── 내용 탭의 목록 편집 ─── */
+.projects-list ol {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.projects-list li {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+	padding: 10px 10px 10px 14px;
+	border-top: 1px solid var(--color-divider);
+}
+
+.projects-list-fields {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 0;
+}
+
+.projects-list-fields input,
+.projects-list-fields textarea {
+	width: 100%;
+	padding: 5px 8px;
+	border: 1px solid var(--color-divider);
+	border-radius: 6px;
+	background: var(--color-window-bg, transparent);
+	color: var(--color-text);
+	font: inherit;
+	font-size: 13px;
+	resize: vertical;
+}
+
+.projects-list-fields input:focus,
+.projects-list-fields textarea:focus {
+	border-color: var(--color-accent);
+	outline: none;
+}
+
+.projects-list-fields .projects-field {
+	padding: 0;
+	border-top: none;
+}
+
+.projects-list-fields .projects-field:focus-within {
+	box-shadow: none;
+}
+
+.projects-pair {
+	flex-direction: row;
+}
+
+.projects-pair input:first-child {
+	flex: 0 0 38%;
+}
+
+.projects-row-tools {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+}
+
+/* 한 줄짜리 항목(숫자·진행 과정·기술 사양·맡은 일)은 단추를 옆으로 나란히 */
+.projects-list li:has(.projects-pair) .projects-row-tools,
+.projects-list li:has(> .projects-list-fields > input:only-child) .projects-row-tools {
+	flex-direction: row;
+}
+
+.projects-row-tools .ui-icon-button {
+	width: 26px;
+	height: 26px;
+	font-size: 12px;
+}
+
+.projects-list-add {
+	padding: 10px 14px;
+	border-top: 1px solid var(--color-divider);
+	text-align: left;
+}
+
+.projects-list .showcase-count {
+	margin-left: 6px;
+}
+
+.projects-list > .about-pane-hint {
+	padding: 0 14px 8px;
 }
