@@ -41,7 +41,8 @@ describe('자동완성 후보', () => {
 	it('기술: 많이 쓴 것부터, 다룰 수 있는 기술도, 그다음 자주 쓰는 기술 (겹치지 않게)', () => {
 		const options = stackOptions(projects, ['Three.js']);
 		expect(options.slice(0, 5)).toEqual(['React', 'Express', 'Firebase', 'Three.js', 'Vite']);
-		expect(options.length).toBeGreaterThan(100);
+		expect(options.length).toBeGreaterThan(600);
+		expect(options.filter((option) => option.toLowerCase() === 'storybook')).toHaveLength(1);
 		expect(options.filter((option) => option.toLowerCase() === 'react')).toHaveLength(1);
 		expect(options).toContain('PostgreSQL');
 	});
