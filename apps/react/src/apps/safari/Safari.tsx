@@ -2,6 +2,7 @@ import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useEffect, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { PROJECTS, type Project } from '@/shared/profile';
+import { useProjectsVersion } from '@/shared/site/siteContent';
 import ProjectPage, { Favicon } from '@/apps/safari/ProjectPage';
 import { linkedId, setAppAddress, shareLink } from '@/shared/lib/appLink';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
@@ -57,6 +58,21 @@ const Safari: React.FC = () => {
 		const linked = linkedId('safari');
 		return linked && findProject(linked) ? linked : PROJECTS[0].id;
 	});
+	// 시스템 설정에서 프로젝트를 저장하면 새로고침 없이 탭을 맞춘다: 빠진(숨긴) 프로젝트의 탭은 닫고,
+	// 새로 생긴 프로젝트만 끝에 연다 (사용자가 닫아 둔 탭은 다시 열지 않는다). 페이지 모양·내용은 다시 그리면 바로 바뀐다
+	const projectsVersion = useProjectsVersion();
+	const knownIds = useRef(PROJECTS.map((project) => project.id));
+	useEffect(() => {
+		const ids = PROJECTS.map((project) => project.id);
+		const added = ids.filter((id) => !knownIds.current.includes(id));
+		knownIds.current = ids;
+		// 순서도 시스템 설정에서 정한 차례로 (닫아 둔 탭은 닫힌 채, 시작 페이지 탭은 끝에)
+		setTabs((previous) => [
+			...ids.filter((id) => previous.includes(id) || added.includes(id)),
+			...previous.filter((id) => id === START),
+		]);
+		setActiveId((current) => (current === START || findProject(current) ? current : (ids[0] ?? START)));
+	}, [projectsVersion]);
 	const index = Math.max(0, tabs.indexOf(activeId));
 	const active = findProject(activeId);
 	const tabList = useRef<HTMLDivElement>(null);

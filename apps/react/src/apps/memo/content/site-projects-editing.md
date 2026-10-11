@@ -142,6 +142,10 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 
 그림은 사이트와 함께 배포되는 파일이라, 새 그림을 더하려면 저장소의 그 폴더에 넣고 배포해야 한다.
 
+## 저장하면 바로
+
+처음에는 저장한 뒤 "지금 새로고침"을 눌러야 Safari에 바뀐 모양이 보였다. 프로젝트 목록(`PROJECTS`)은 시작할 때 한 번 채우고 여러 모듈이 그 배열을 읽기 때문이다. 이제 저장이 끝나면 같은 배열을 다시 채우고, 바뀐 횟수를 담은 작은 저장소(`useSyncExternalStore`)를 올려 Safari와 Finder가 다시 그린다. Safari 탭도 저장한 순서로 맞추고, 숨긴 프로젝트의 탭은 닫고, 새 프로젝트는 끝에 연다. 다만 Dock·Launchpad의 앱 목록과 사진 앨범은 시작할 때 한 번 정해지므로, 저장으로 그것들이 바뀐 경우에만 새로고침을 권한다.
+
 ## 시험
 
 - 단위(desktop-core): 다듬기와 모르는 필드 버리기, `javascript:`·`data:`·http 거절, id 규칙, 안쪽 필수·열거·숫자·색, `null` 지우기, 길이·개수, 합치기 순서, 기본값과 다른 필드만, 데모 출처
