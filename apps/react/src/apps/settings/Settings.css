@@ -2138,3 +2138,44 @@ ol.showcase-list .showcase-row.reordering {
 	padding-inline: 0;
 	text-align: left;
 }
+
+/* 하나를 고르는 칸 (주 언어): 테두리 있는 검색 칸, 오른쪽 아래 화살표. 후보 목록은 기술 칸과 같다 */
+.projects-field.projects-choice > label > .projects-choice-box {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	padding: 0 10px;
+	border: 1px solid var(--color-divider);
+	border-radius: 7px;
+	background: var(--color-window-bg, transparent);
+	color: var(--color-text-secondary);
+	font-size: 10px;
+}
+
+.projects-field.projects-choice > label > .projects-choice-box:focus-within {
+	border-color: var(--color-accent);
+}
+
+.projects-field.projects-choice .projects-choice-box input {
+	flex: 1;
+	min-width: 0;
+	padding: 5px 0;
+	border: none;
+	background: none;
+	color: var(--color-text);
+	font: inherit;
+	font-size: 13px;
+	text-align: left;
+	outline: none;
+}
+
+.projects-field.projects-choice > .about-pane-hint {
+	padding-inline: 0;
+	text-align: left;
+}
+
+.projects-suggestions li[data-current] {
+	font-weight: 600;
+}
