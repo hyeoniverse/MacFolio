@@ -63,3 +63,57 @@ test('dialogue: 조작법이 없는 프로젝트(qru)도 깨지지 않는다', a
 	await expect(dialog.getByRole('button', { name: '조작법' })).toHaveCount(0);
 	await expect(dialog.getByRole('button', { name: '링크 줘' })).toBeVisible();
 });
+
+test('dialogue: 숫자 판에 무엇의 숫자인지 늘 보이고, 선택지 커서를 옮기면 장면이 그 주제의 그림으로 바뀐다', async ({
+	page,
+}) => {
+	const { safari, panel } = await openLook(page, { id: 'sproutfarm', tab: /SproutFarm/, look: 'dialogue' });
+	// 장면과 숫자 판은 창이 넉넉할 때 보인다
+	await safari.getByRole('button', { name: '전체 화면' }).click();
+	const dialog = dialogOf(panel);
+
+	// HUD: 값 옆의 설명이 화면에 보인다
+	const stats = panel.getByRole('list', { name: '숫자' });
+	await expect(stats.getByText('자정 전에 데려올 동물')).toBeVisible();
+	await expect(stats.getByText('서버에서 다시 계산하는 랭킹')).toBeVisible();
+
+	// 선택지: 커서를 옮기면 장면 액자의 그림이 바뀐다
+	await nextOf(dialog).click();
+	const preview = panel.locator('.dl-preview .dl-shot-frame img');
+	await expect(preview).toBeVisible();
+	const first = await preview.getAttribute('src');
+	await dialog.getByRole('button', { name: '어떻게 만들었어?' }).hover();
+	await expect(preview).not.toHaveAttribute('src', first ?? '');
+});
+
+test('dialogue: 화면 모음 주제는 그림을 한 장씩 캡션과 함께 넘긴다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'sproutfarm', tab: /SproutFarm/, look: 'dialogue' });
+	const dialog = dialogOf(panel);
+	await nextOf(dialog).click();
+	await dialog.getByRole('button', { name: '화면 모음 보여줘' }).click();
+	const shot = panel.locator('.dl-stage .dl-shot-frame img');
+	await expect(dialog).toContainText('시작 — 동물들이 달아났다');
+	await expect(dialog).toContainText('1 / 8');
+	await expect(shot).toHaveAttribute('src', '/imgs/projects/sproutfarm/shots/intro.jpg');
+	await nextOf(dialog).click();
+	await expect(dialog).toContainText('오전 9시, 농장에서');
+	await expect(shot).toHaveAttribute('src', '/imgs/projects/sproutfarm/shots/farm.jpg');
+});
+
+test('dialogue: 장 목록에서 항목의 화면 여러 장을 액자 안에서 넘겨 본다', async ({ page }) => {
+	const { safari, panel } = await openLook(page, { id: 'hyeoniverse', tab: /HYEONIVERSE/, look: 'dialogue' });
+	await safari.getByRole('button', { name: '전체 화면' }).click();
+	const dialog = dialogOf(panel);
+	await nextOf(dialog).click();
+	await dialog.getByRole('button', { name: '더 들려줄 이야기 있어?' }).click();
+	await dialog.getByRole('button', { name: '발표 갤러리와 음성' }).click();
+	const flipNext = panel.getByRole('button', { name: '다음 그림' });
+	await readUntil(dialog, flipNext);
+	await expect(panel.getByText('그림 1 / 2')).toBeAttached();
+	await flipNext.click();
+	await expect(panel.getByText('그림 2 / 2')).toBeAttached();
+	await expect(panel.locator('.dl-stage .dl-shot-frame img')).toHaveAttribute(
+		'src',
+		'/imgs/projects/hyeoniverse/cms/gallery.jpg'
+	);
+});
