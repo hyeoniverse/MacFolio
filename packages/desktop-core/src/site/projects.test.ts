@@ -136,6 +136,27 @@ describe('parseProjects', () => {
 			});
 	});
 
+	it('배경: 테마는 정해진 것만, 그림은 사이트 안 경로나 https(허용한 출처)만', () => {
+		expect(
+			parseProjects({ items: [{ id: 'x', override: { backdrop: { theme: 'sea', image: '/imgs/bg.png', extra: 1 } } }] })
+		).toEqual({ value: { items: [{ id: 'x', override: { backdrop: { theme: 'sea', image: '/imgs/bg.png' } } }] } });
+		expect(
+			parseProjects(
+				{ items: [{ id: 'x', override: { backdrop: { image: 'http://localhost:3000/files/a' } } }] },
+				{ allowOrigins: ['http://localhost:3000'] }
+			)
+		).toEqual({ value: { items: [{ id: 'x', override: { backdrop: { image: 'http://localhost:3000/files/a' } } }] } });
+		expect(parseProjects({ items: [{ id: 'x', override: { backdrop: { theme: 'jungle' } } }] })).toEqual({
+			errors: ['프로젝트 x.backdrop.theme: auto, farm, town, office, library, space, sea 가운데 하나여야 합니다.'],
+		});
+		expect(parseProjects({ items: [{ id: 'x', override: { backdrop: { image: 'javascript:alert(1)' } } }] })).toEqual({
+			errors: ['프로젝트 x.backdrop.image: 사이트 안 경로(/imgs/…)나 https:// 주소여야 합니다.'],
+		});
+		expect(parseProjects({ items: [{ id: 'x', override: { backdrop: null } }] })).toEqual({
+			value: { items: [{ id: 'x', override: { backdrop: null } }] },
+		});
+	});
+
 	it('너무 길거나 많으면 거절하고, 틀린 값이 DB에 있으면 읽을 때 null', () => {
 		expect(parseProjects({ items: Array.from({ length: 41 }, (_, i) => ({ id: `p${i}` })) })).toEqual({
 			errors: ['프로젝트는 40개까지입니다.'],
