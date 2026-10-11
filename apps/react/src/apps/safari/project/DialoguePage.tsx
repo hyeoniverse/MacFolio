@@ -90,29 +90,34 @@ function useTyped(text: string, speed = 18) {
 	return { shown: text.slice(0, count), done: count >= text.length, finish };
 }
 
-/** 화자 초상: sproutfarm은 걷는 캐릭터 스프라이트(액자 안), 다른 프로젝트는 아이콘 */
-const Portrait: React.FC<{ project: Project }> = ({ project }) =>
-	project.id === 'sproutfarm' ? (
-		<span className="dl-portrait dl-portrait-sprite" aria-hidden="true">
+/** 화자: sproutfarm은 크게 서서 제자리걸음하는 캐릭터 스프라이트, 다른 프로젝트는 큰 둥근 아이콘 타일 */
+const Speaker: React.FC<{ project: Project; talking: boolean }> = ({ project, talking }) => (
+	<div className="dl-speaker" data-talking={talking || undefined} aria-hidden="true">
+		{project.id === 'sproutfarm' ? (
 			<i className="dl-sprite" />
-		</span>
-	) : (
-		<span className="dl-portrait" aria-hidden="true">
-			<Favicon project={project} className="dl-favicon" />
-		</span>
-	);
+		) : (
+			<span className="dl-tile">
+				<Favicon project={project} className="dl-favicon" />
+			</span>
+		)}
+	</div>
+);
 
-/** 왼쪽 위 HUD: facts를 HP·골드처럼 아이콘과 값으로 */
+/** HUD의 facts 아이콘: HP·골드처럼 */
 const HUD_ICONS = ['fa-heart', 'fa-coins', 'fa-star', 'fa-bolt', 'fa-gem', 'fa-flag'];
 
 const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const topics = useMemo(() => buildTopics(project), [project]);
 	const [mode, setMode] = useState<Mode>({ kind: 'greet' });
 	const [read, setRead] = useState<Set<string>>(() => new Set());
+	// 선택지 메뉴의 ▶ 커서 (마우스를 올리거나 ↑·↓로 옮긴다)
+	const [cursor, setCursor] = useState(0);
 	const rootRef = useRef<HTMLDivElement>(null);
+	const menuRef = useRef<HTMLOListElement>(null);
 
 	const countable = topics.filter((t) => t.id !== LINKS_TOPIC);
 	const allRead = countable.every((t) => read.has(t.id));
+	const readCount = countable.filter((t) => read.has(t.id)).length;
 	const current = mode.kind === 'topic' ? topics.find((t) => t.id === mode.id) : undefined;
 
 	// 지금 보이는 한 장
@@ -134,15 +139,27 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const shownTitle = line?.title ? shown.split('\n')[0] : '';
 	const shownBody = shown.includes('\n') ? shown.slice(shown.indexOf('\n') + 1) : '';
 
-	// 배경 장면: 주제를 읽는 중이면 지금 장까지 중 마지막 그림, 아니면 대표 그림
-	const fallbackScene = project.art ?? project.image;
-	const scene =
-		mode.kind === 'topic' && current
-			? (current.lines
-					.slice(0, mode.at + 1)
-					.reverse()
-					.find((l) => l.image)?.image ?? fallbackScene)
-			: fallbackScene;
+	// 무대: 인사에서는 대표 화면, 주제를 읽는 중이면 지금 장까지 중 마지막 그림을 선명하게 액자에. 없으면 비운다
+	const backdrop = project.art ?? project.image;
+	const shot =
+		mode.kind === 'greet'
+			? line?.image
+			: mode.kind === 'topic' && current
+				? current.lines
+						.slice(0, mode.at + 1)
+						.reverse()
+						.find((l) => l.image)?.image
+				: undefined;
+
+	/** 선택지로 돌아갈 때 커서는 아직 안 읽은 첫 주제에 */
+	const backToMenu = useCallback(
+		(nowRead: Set<string>) => {
+			const unread = topics.findIndex((t) => t.id !== LINKS_TOPIC && !nowRead.has(t.id));
+			setCursor(unread >= 0 ? unread : topics.length - 1);
+			setMode({ kind: 'menu' });
+		},
+		[topics]
+	);
 
 	/** '다음': 찍히는 중이면 바로 다 보이고, 다 보였으면 다음 장으로 */
 	const next = useCallback(() => {
@@ -150,7 +167,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			finish();
 			return;
 		}
-		if (mode.kind === 'greet' || mode.kind === 'ending') setMode({ kind: 'menu' });
+		if (mode.kind === 'greet' || mode.kind === 'ending') backToMenu(read);
 		else if (mode.kind === 'topic' && current) {
 			if (mode.at + 1 < current.lines.length) setMode({ kind: 'topic', id: mode.id, at: mode.at + 1 });
 			else {
@@ -158,14 +175,31 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				setRead(nowRead);
 				const finished = countable.every((t) => nowRead.has(t.id));
 				// 마지막 주제를 다 읽은 순간에만 엔딩. 이미 엔딩을 본 뒤 다시 읽으면 바로 선택지
-				setMode(finished && !allRead ? { kind: 'ending' } : { kind: 'menu' });
+				if (finished && !allRead) setMode({ kind: 'ending' });
+				else backToMenu(nowRead);
 			}
 		}
-	}, [done, finish, mode, current, read, countable, allRead]);
+	}, [done, finish, mode, current, read, countable, allRead, backToMenu]);
 
-	const choose = useCallback((topic: Topic) => setMode({ kind: 'topic', id: topic.id, at: 0 }), []);
+	const choose = useCallback(
+		(topic: Topic) => {
+			setCursor(topics.indexOf(topic));
+			setMode({ kind: 'topic', id: topic.id, at: 0 });
+		},
+		[topics]
+	);
 
-	// 키보드: Space·Enter는 다음, 숫자는 선택지. 글 상자 안에서는 안 받는다
+	/** 커서를 옮기고, 키보드로 옮겼으면 그 단추에 포커스 (메뉴가 길면 상자 안에서 굴러 보인다) */
+	const moveCursor = useCallback(
+		(index: number) => {
+			const wrapped = (index + topics.length) % topics.length;
+			setCursor(wrapped);
+			menuRef.current?.querySelectorAll('button')[wrapped]?.focus();
+		},
+		[topics.length]
+	);
+
+	// 키보드: Space·Enter는 다음(선택지에서는 커서 줄 고르기), ↑·↓는 커서, 숫자는 선택지. 글 상자 안에서는 안 받는다
 	useEffect(() => {
 		const root = rootRef.current;
 		if (!root) return;
@@ -173,43 +207,46 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			const target = event.target as HTMLElement | null;
 			if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
 			if (target && target !== document.body && !root.contains(target)) return;
-			if (event.key === ' ' || event.key === 'Enter') {
-				if (mode.kind === 'menu') return;
+			if (mode.kind === 'menu') {
+				if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+					event.preventDefault();
+					moveCursor(cursor + (event.key === 'ArrowDown' ? 1 : -1));
+				} else if (event.key === ' ' || event.key === 'Enter') {
+					// 다른 단추(링크 등)에 포커스가 있으면 그 단추가 받는다
+					if (target && target.tagName === 'BUTTON' && !menuRef.current?.contains(target)) return;
+					event.preventDefault();
+					const topic = topics[cursor];
+					if (topic) choose(topic);
+				} else if (/^[1-9]$/.test(event.key)) {
+					const topic = topics[Number(event.key) - 1];
+					if (topic) {
+						event.preventDefault();
+						choose(topic);
+					}
+				}
+			} else if (event.key === ' ' || event.key === 'Enter') {
 				event.preventDefault();
 				next();
-			} else if (mode.kind === 'menu' && /^[1-9]$/.test(event.key)) {
-				const topic = topics[Number(event.key) - 1];
-				if (topic) {
-					event.preventDefault();
-					choose(topic);
-				}
 			}
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
-	}, [mode, next, choose, topics]);
-
-	// 마우스: 배경이 마우스 반대쪽으로 살짝 밀린다 (줄이기면 가만히)
-	const onMove = (event: React.MouseEvent<HTMLDivElement>) => {
-		const root = rootRef.current;
-		if (!root || prefersReducedMotion()) return;
-		const box = root.getBoundingClientRect();
-		root.style.setProperty('--dl-mx', String((event.clientX - box.left) / box.width - 0.5));
-		root.style.setProperty('--dl-my', String((event.clientY - box.top) / box.height - 0.5));
-	};
+	}, [mode, next, choose, topics, cursor, moveCursor]);
 
 	const inMenu = mode.kind === 'menu';
 	const progress = mode.kind === 'topic' && current ? `${mode.at + 1} / ${current.lines.length}` : '';
+	const meta = [project.period, project.language].filter(Boolean).join(' · ');
+	// 장면 열쇠: 바뀔 때마다 무대가 새로 페이드·슬라이드로 들어온다
+	const sceneKey = shot ?? `none-${mode.kind}`;
 
 	return (
-		<div className="dl" data-id={project.id} ref={rootRef} onMouseMove={onMove}>
-			{/* 배경: 장면 그림이 흐릿하게 천천히 움직인다 */}
+		<div className="dl" data-id={project.id} data-mode={mode.kind} ref={rootRef}>
+			{/* 바탕: 단색 그라데이션과 패턴, 그 위에 대표 화면을 은은하게 */}
 			<div className="dl-bg" aria-hidden="true">
-				{scene && <img key={scene} className="dl-scene" src={scene} alt="" />}
-				<div className="dl-vignette" />
+				{backdrop && <img className="dl-backdrop" src={backdrop} alt="" data-dim={shot ? '' : undefined} />}
 			</div>
 
-			{/* HUD: 숫자(HP·골드처럼)와 짧은 정보 */}
+			{/* HUD: 맨 위 한 줄 — 왼쪽 숫자, 오른쪽 읽은 주제와 기간·언어 */}
 			<header className="dl-hud">
 				{project.facts.length > 0 && (
 					<ul className="dl-stats" aria-label="숫자">
@@ -217,86 +254,116 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 							<li key={fact.label} title={fact.label}>
 								<i className={`fa-solid ${HUD_ICONS[i % HUD_ICONS.length]}`} aria-hidden="true" />
 								<strong>{fact.value}</strong>
-								<span className="visually-hidden">{fact.label}</span>
+								<span className="dl-stat-label">{fact.label}</span>
 							</li>
 						))}
 					</ul>
 				)}
-				<p className="dl-quest">
-					{[project.period, project.language].filter(Boolean).join(' · ')}
+				<div className="dl-quest">
 					{countable.length > 0 && (
 						<span className="dl-progress">
-							{' '}
-							읽은 주제 {countable.filter((t) => read.has(t.id)).length}/{countable.length}
+							<span>
+								읽은 주제 {readCount}/{countable.length}
+							</span>
+							<span className="dl-meter" aria-hidden="true">
+								<span style={{ width: `${(readCount / countable.length) * 100}%` }} />
+							</span>
 						</span>
 					)}
-				</p>
+					{meta && <span className="dl-meta">{meta}</span>}
+				</div>
 			</header>
 
-			{/* 대화 상자 */}
-			<section
-				className="dl-box"
-				role="dialog"
-				aria-label="대화"
-				aria-live="polite"
-				onClick={inMenu ? undefined : next}
-			>
-				<Portrait project={project} />
+			{/* 무대: 지금 이야기하는 화면 */}
+			<div className="dl-stage" aria-hidden="true">
+				<div className="dl-scene" key={sceneKey}>
+					{shot && (
+						<figure className="dl-shot">
+							<span className="dl-shot-bar">
+								<i />
+								<i />
+								<i />
+							</span>
+							<img src={shot} alt="" />
+						</figure>
+					)}
+				</div>
+			</div>
+
+			{/* 대화: 화자, 이름표, 선택지 메뉴, 대화 상자 */}
+			<section className="dl-floor" role="dialog" aria-label="대화" aria-live="polite">
+				<Speaker project={project} talking={!done && !inMenu} />
 				<div className="dl-name">{project.name}</div>
 
-				{inMenu ? (
+				{inMenu && (
 					<div className="dl-menu">
-						<p className="dl-ask">무엇을 들어 볼까요?</p>
-						<ol className="dl-choices">
+						<ol className="dl-choices" ref={menuRef}>
 							{topics.map((topic, i) => {
 								const isRead = read.has(topic.id);
 								return (
 									<li key={topic.id}>
 										<button
 											type="button"
+											data-active={i === cursor || undefined}
 											aria-pressed={topic.id === LINKS_TOPIC ? undefined : isRead}
 											onClick={() => choose(topic)}
+											onMouseEnter={() => setCursor(i)}
+											onFocus={() => setCursor(i)}
 										>
-											<kbd>{i + 1}</kbd>
-											<span>{topic.label}</span>
+											<span className="dl-cursor" aria-hidden="true">
+												▶
+											</span>
+											<span className="dl-label">{topic.label}</span>
 											{isRead && <em aria-label="읽음">✓</em>}
+											<kbd>{i + 1}</kbd>
 										</button>
 									</li>
 								);
 							})}
 						</ol>
 					</div>
-				) : (
-					<div className="dl-text">
-						{line?.title && <strong className="dl-title">{shownTitle}</strong>}
-						<p className="dl-body">
-							{shownBody}
-							{!done && <span className="dl-caret" aria-hidden="true" />}
-						</p>
-						{done && (mode.kind === 'ending' || (mode.kind === 'topic' && mode.id === LINKS_TOPIC)) && (
-							<div onClick={(e) => e.stopPropagation()}>
-								<Links project={project} className="sp-links dl-links" />
-							</div>
-						)}
-						<div className="dl-foot">
-							<span className="dl-count">{progress}</span>
-							<button
-								type="button"
-								className="dl-next"
-								onClick={(e) => {
-									e.stopPropagation();
-									next();
-								}}
-							>
-								다음 <i aria-hidden="true">▸</i>
-							</button>
-						</div>
-					</div>
 				)}
+
+				<div className="dl-box" onClick={inMenu ? undefined : next}>
+					{inMenu ? (
+						<div className="dl-text">
+							<strong className="dl-title">무엇을 들어 볼까요?</strong>
+							<p className="dl-body dl-body-menu">듣고 싶은 이야기를 목록에서 고르세요.</p>
+							<div className="dl-foot">
+								<span className="dl-hint">↑·↓ 키로 고르고 Enter를 누릅니다. 숫자 키로도 고를 수 있습니다.</span>
+							</div>
+						</div>
+					) : (
+						<div className="dl-text">
+							{line?.title && <strong className="dl-title">{shownTitle}</strong>}
+							<p className="dl-body">
+								{shownBody}
+								{!done && <span className="dl-caret" aria-hidden="true" />}
+							</p>
+							{done && (mode.kind === 'ending' || (mode.kind === 'topic' && mode.id === LINKS_TOPIC)) && (
+								<div onClick={(e) => e.stopPropagation()}>
+									<Links project={project} className="sp-links dl-links" />
+								</div>
+							)}
+							<div className="dl-foot">
+								<span className="dl-hint">Space 또는 Enter를 누르면 다음으로 넘어갑니다.</span>
+								<span className="dl-count">{progress}</span>
+								<button
+									type="button"
+									className="dl-next"
+									data-ready={done || undefined}
+									onClick={(e) => {
+										e.stopPropagation();
+										next();
+									}}
+								>
+									다음 <i aria-hidden="true">▼</i>
+								</button>
+							</div>
+						</div>
+					)}
+				</div>
 			</section>
-			<p className="dl-hint" aria-hidden="true">
-				Space·Enter 다음 · 숫자 키로 고르기
-			</p>
 		</div>
 	);
 };
