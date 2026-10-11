@@ -195,33 +195,46 @@
 	line-height: 1.35;
 }
 
+/* 숫자 판: 값 옆에 무엇의 숫자인지 늘 적는다. 값끼리 한 열로 맞추고, 긴 설명은 두 줄까지 감싼다 */
 .dl-stats {
 	grid-area: hudl;
 	justify-self: start;
 	display: grid;
-	gap: 3px;
+	grid-template-columns: 6px max-content minmax(0, 176px);
+	align-items: baseline;
+	gap: 6px 8px;
+	max-width: 260px;
 	margin-right: 0;
-	padding-right: 16px;
+	padding: 10px 14px 10px 12px;
 	list-style: none;
 }
 
 .dl-stats li {
-	display: grid;
-	grid-template-columns: 16px auto;
-	align-items: center;
-	gap: 8px;
+	display: contents;
 }
 
-.dl-stats i {
-	color: var(--dl-accent);
-	font-size: 11px;
-	text-align: center;
+/* 줄 머리의 작은 강조색 점 */
+.dl-stats li::before {
+	content: '';
+	width: 6px;
+	height: 6px;
+	background: var(--dl-accent);
+	transform: translateY(-3px);
 }
 
 .dl-stats strong {
 	font-size: 16px;
 	font-weight: 700;
 	white-space: nowrap;
+}
+
+.dl-stats span {
+	color: var(--dl-ink-soft);
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.4;
+	word-break: keep-all;
+	overflow-wrap: anywhere;
 }
 
 .dl-quest {
@@ -290,18 +303,308 @@
 	}
 }
 
+/* 액자 한 장과 그 아래 나무 팻말 */
 .dl-shot {
+	display: grid;
+	justify-items: center;
+	gap: 18px;
 	margin: 0;
-	padding: 0;
+}
+
+.dl-shot-frame {
+	position: relative;
 	background: #1d140c;
 	line-height: 0;
 }
 
-.dl-shot img {
+.dl-shot-frame > :is(img, video) {
 	display: block;
 	max-width: calc(100cqw - 28px);
-	max-height: calc(100cqh - 32px);
+	max-height: calc(100cqh - 32px - var(--dl-plank-room, 0px) - var(--dl-strip-room, 0px));
 	object-fit: contain;
+}
+
+.dl-shot:has(> .dl-plank) {
+	--dl-plank-room: 50px;
+}
+
+/* 팻말: 액자에 줄 두 가닥으로 매단 나무판 */
+.dl-plank {
+	--dl-u: 3px;
+	position: relative;
+	max-width: min(560px, calc(100cqw - 40px));
+	padding: 4px 14px;
+	background: var(--dl-wood);
+	color: var(--dl-ink);
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.5;
+	text-align: center;
+	box-shadow:
+		inset 0 -3px 0 rgba(91, 52, 23, 0.35),
+		inset 0 3px 0 rgba(255, 255, 255, 0.25),
+		0 -3px 0 var(--dl-edge),
+		0 3px 0 var(--dl-edge),
+		-3px 0 0 var(--dl-edge),
+		3px 0 0 var(--dl-edge),
+		0 7px 0 rgba(20, 10, 4, 0.2);
+}
+
+.dl-plank span {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 액자에서 내려온 줄 두 가닥 */
+.dl-plank::before {
+	content: '';
+	position: absolute;
+	bottom: calc(100% + 3px);
+	left: 18px;
+	right: 18px;
+	height: 26px;
+	border-inline: 3px solid var(--dl-edge);
+}
+
+/* 여러 장 넘기기: 액자 아래쪽 안에 ◀ 점 ▶ */
+.dl-flip {
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 4px 6px;
+	background: rgba(46, 26, 12, 0.78);
+	line-height: 1;
+	transform: translateX(-50%);
+}
+
+.dl-flip button {
+	display: grid;
+	place-items: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: 0;
+	background: var(--dl-paper);
+	color: var(--dl-accent);
+	font: inherit;
+	font-size: 11px;
+	cursor: pointer;
+	box-shadow: inset 0 -3px 0 var(--dl-paper-deep);
+}
+
+.dl-flip button:hover {
+	background: #fff4dc;
+}
+
+.dl-flip button:focus-visible {
+	outline: 3px solid var(--dl-accent);
+	outline-offset: 1px;
+}
+
+.dl-dots {
+	display: flex;
+	gap: 5px;
+}
+
+.dl-dots i {
+	width: 8px;
+	height: 8px;
+	background: rgba(246, 231, 200, 0.35);
+}
+
+.dl-dots i[data-on] {
+	background: var(--dl-paper);
+}
+
+/* 선택지 미리보기: 커서 주제의 그림을 크게, 아래에 주제마다 작은 그림 한 줄 */
+.dl-preview {
+	grid-template-columns: auto auto;
+	gap: 40px;
+}
+
+.dl-preview:has(.dl-strip) {
+	--dl-strip-room: 0px;
+	--dl-strip-side: 200px;
+}
+
+.dl-preview .dl-shot-frame > :is(img, video) {
+	max-width: calc(100cqw - 28px - var(--dl-strip-side, 0px));
+}
+
+.dl-scene-main {
+	display: grid;
+	place-items: center;
+	min-height: 0;
+	animation: dl-fade 0.25s ease both;
+}
+
+.dl-strip {
+	display: grid;
+	grid-template-rows: repeat(4, auto);
+	grid-auto-flow: column;
+	gap: 16px 18px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dl-strip li {
+	width: 64px;
+	height: 42px;
+	background: #1d140c;
+	box-shadow:
+		0 0 0 3px var(--dl-rim),
+		0 0 0 6px var(--dl-edge);
+	opacity: 0.62;
+	transition:
+		transform 0.15s steps(2),
+		opacity 0.15s;
+}
+
+.dl-strip li[data-active] {
+	opacity: 1;
+	transform: translateX(-6px);
+	box-shadow:
+		0 0 0 3px var(--dl-accent),
+		0 0 0 6px var(--dl-edge);
+}
+
+.dl-strip img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 엔딩 앨범: 화면 모음을 격자로 (최대 여섯 장) */
+.dl-album {
+	--dl-cell: min(calc((100cqh - 32px - 50px - 24px) / 2), 150px);
+	display: grid;
+	grid-template-columns: repeat(3, auto);
+	gap: 8px;
+	padding: 8px;
+	background: #1d140c;
+}
+
+.dl-album[data-count='2'],
+.dl-album[data-count='4'] {
+	grid-template-columns: repeat(2, auto);
+}
+
+.dl-album img {
+	display: block;
+	height: var(--dl-cell);
+	max-width: calc((100cqw - 60px) / 3);
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 장면이 낮거나 좁으면 옆의 그림 줄을, 더 낮으면 팻말도 접는다 */
+@container (max-height: 250px) or (max-width: 600px) {
+	.dl-strip {
+		display: none;
+	}
+
+	.dl-preview:has(.dl-strip) {
+		grid-template-columns: auto;
+		--dl-strip-side: 0px;
+	}
+}
+
+@container (max-height: 220px) {
+	.dl-plank {
+		display: none;
+	}
+
+	.dl-shot:has(> .dl-plank) {
+		--dl-plank-room: 0px;
+	}
+}
+
+/* ─── 바닥에 세워 둔 작은 액자: 대화 상자 양옆 (넓은 창에서만) ─── */
+.dl-wall {
+	display: none;
+	grid-row: 2;
+	z-index: 1;
+	align-self: end;
+	justify-self: center;
+	flex-direction: column;
+	align-items: center;
+	gap: 26px;
+	margin-bottom: 30px;
+	pointer-events: none;
+}
+
+.dl-wall-l {
+	grid-column: 1;
+}
+
+.dl-wall-r {
+	grid-column: 3;
+}
+
+.dl-pic {
+	--dl-u: 3px;
+	position: relative;
+	display: block;
+	padding: 4px;
+	background: #1d140c;
+	line-height: 0;
+}
+
+.dl-pic img {
+	display: block;
+	width: 100px;
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 위 액자는 못에 건 줄에 매달려 있다 */
+.dl-pic:not(:last-child)::before {
+	content: '';
+	position: absolute;
+	bottom: calc(100% + 3px);
+	left: 50%;
+	width: 4px;
+	height: 18px;
+	background: var(--dl-edge);
+	box-shadow:
+		-2px -2px 0 0 var(--dl-edge),
+		2px -2px 0 0 var(--dl-edge);
+	transform: translateX(-50%);
+}
+
+/* 맨 아래 액자는 이젤 다리 위에 */
+.dl-pic:last-child {
+	margin-bottom: 26px;
+}
+
+.dl-pic:last-child::after {
+	content: '';
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	width: 70%;
+	height: 34px;
+	background:
+		linear-gradient(var(--dl-rim) 0 0) 0 0 / 6px 100% no-repeat,
+		linear-gradient(var(--dl-rim) 0 0) 100% 0 / 6px 100% no-repeat,
+		linear-gradient(var(--dl-edge) 0 0) 50% 0 / 6px 70% no-repeat;
+	transform: translateX(-50%);
+}
+
+@container (min-width: 1300px) {
+	.dl[data-fit='full'] .dl-wall {
+		display: flex;
+	}
 }
 
 /* 그림이 없으면 간판 */
@@ -782,6 +1085,7 @@
 	}
 
 	.dl-stats li:nth-child(n + 2),
+	.dl-stats li:nth-child(n + 2)::before,
 	.dl-meta {
 		display: none;
 	}
@@ -868,6 +1172,18 @@
 	display: none;
 }
 
+/* 숫자 판은 설명을 접는 대신 판째 접는다 (읽기 프로그램에는 남긴다) */
+.dl[data-fit='compact'] .dl-stats,
+.dl[data-fit='tiny'] .dl-stats {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+}
+
 .dl[data-fit='compact'] .dl-hud {
 	margin-bottom: 12px;
 }
@@ -883,17 +1199,6 @@
 
 .dl[data-fit='tiny'] :is(.dl-quest, .dl-stage, .dl-props, .dl-keys) {
 	display: none;
-}
-
-/* 숫자 판은 접어 두되 읽기 프로그램에는 남긴다 */
-.dl[data-fit='tiny'] .dl-stats {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	clip-path: inset(50%);
 }
 
 .dl[data-fit='tiny'] .dl-ground {
@@ -981,6 +1286,7 @@
 /* ─── 움직임 줄이기: 타자·들썩임·깜빡임 없이 (자리는 그대로) ─── */
 @media (prefers-reduced-motion: reduce) {
 	.dl-scene,
+	.dl-scene-main,
 	.dl-face[data-talking] > *,
 	.dl-choices button[data-active] .dl-cursor,
 	.dl-next[data-ready] i {
@@ -991,7 +1297,8 @@
 	.dl-menu[data-open],
 	.dl-links-slot,
 	.dl-next,
-	.dl-meter i {
+	.dl-meter i,
+	.dl-strip li {
 		transition: none;
 	}
 }
