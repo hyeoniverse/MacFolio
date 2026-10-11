@@ -1,0 +1,181 @@
+/* ─── 몽이 (creative/Mascot.tsx) ─── */
+/* 몽이가 떠 있는 층: 스크롤하는 칸 맨 위에 붙어 있고 높이가 없어 내용을 밀지 않는다.
+   자르기(overflow)를 걸지 않는다: Safari에서 세로까지 잘라 몽이가 사라졌다 */
+.cr-buddy {
+	grid-column: 1 / -1;
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	height: 0;
+}
+
+/* 표정 그림을 겹쳐 두고 하나만 보인다. 자리(--x, --y)와 크기(--s)는 스크립트가 정한다.
+   크기를 못 박아 둔다: 표정 그림마다 크기가 달라 마우스를 올리면 칸이 바뀌어 깜빡였다 */
+.cr-mascot {
+	display: grid;
+	position: absolute;
+	top: 0;
+	left: 0;
+	justify-items: center;
+	width: 140px;
+	height: 136px;
+	margin: 0;
+	padding-bottom: 12px;
+	transform: translate(var(--x, -999px), var(--y, 0)) scale(var(--s, 1));
+	transform-origin: top left;
+	cursor: pointer;
+}
+
+/* 자리를 바꿀 때만 통통 튀며 건너간다 (그 밖에는 데모와 함께 스크롤된다) */
+.cr-mascot[data-moving] {
+	transition: transform 0.85s cubic-bezier(0.5, -0.35, 0.3, 1.35);
+}
+
+.cr-mascot::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	width: 120px;
+	height: 22px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, rgba(0, 0, 0, 0.18), transparent);
+}
+
+/* 그림과 그림자는 마우스를 받지 않는다 (몸이 뛰거나 표정이 바뀌어도 올린 자리가 그대로) */
+.cr-mascot img,
+.cr-mascot::after {
+	pointer-events: none;
+}
+
+.cr-mascot img {
+	grid-area: 1 / 1;
+	position: relative;
+	z-index: 1;
+	align-self: end;
+	height: 112px;
+	opacity: 0;
+	/* 나가는 표정은 들어오는 표정이 다 보인 뒤에 사라진다 (함께 옅어지면 깜빡여 보였다) */
+	transition: opacity 0.12s linear 0.12s;
+}
+
+.cr-mascot img[src*='star'] {
+	margin-inline: -60px;
+}
+
+.cr-mascot img[data-on='true'] {
+	z-index: 2;
+	opacity: 1;
+	transition: opacity 0.12s linear;
+}
+
+/* 데모가 끝나 기뻐할 때만 통통 튄다. 마우스를 올렸을 때는 표정만 바꾼다 */
+.cr-mascot[data-mood='happy']:not([data-petted]) img[data-on='true'] {
+	animation: ct-boing 0.6s var(--ease-out);
+}
+
+@keyframes ct-boing {
+	30% {
+		transform: translateY(-14px) scale(1.04, 0.96);
+	}
+
+	60% {
+		transform: translateY(0) scale(0.97, 1.03);
+	}
+}
+
+/* 누르면 한 번 뛰고 하트가 퐁퐁 */
+.cr-mascot[data-hop] img[data-on='true'] {
+	animation: ct-hop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@keyframes ct-hop {
+	40% {
+		translate: 0 -14px;
+	}
+}
+
+.cr-heart {
+	position: absolute;
+	top: 30%;
+	left: 50%;
+	z-index: 2;
+	color: var(--sp-accent);
+	font-size: 16px;
+	pointer-events: none;
+	animation: ct-heart 1.05s ease-out forwards;
+}
+
+@keyframes ct-heart {
+	from {
+		opacity: 1;
+		transform: translate(-50%, 0) scale(0.4);
+	}
+
+	to {
+		opacity: 0;
+		transform: translate(calc(-50% + var(--dx) * 1px), -90px) scale(1.2) rotate(calc(var(--dx) * 0.4deg));
+	}
+}
+
+/* 말풍선: 머리 위에서 데모를 거든다. 몽이가 작아져도 글자는 같은 크기로 (--s로 나눈다) */
+.cr-bubble {
+	position: absolute;
+	right: 30%;
+	bottom: calc(100% - 6px / var(--s, 1));
+	z-index: 3;
+	width: max-content;
+	/* 왼쪽으로 남은 자리(--room, 스크립트가 잰다)를 넘으면 줄을 바꾼다 */
+	max-width: var(--room, calc(320px / var(--s, 1)));
+	padding: calc(7px / var(--s, 1)) calc(12px / var(--s, 1));
+	border-radius: calc(14px / var(--s, 1));
+	background-color: var(--sp-accent);
+	color: #ffffff;
+	font-size: calc(13px / var(--s, 1));
+	font-weight: 700;
+	text-wrap: balance;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+	pointer-events: none;
+	transform-origin: right bottom;
+	animation: ct-bubble 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+.cr-bubble::after {
+	content: '';
+	position: absolute;
+	right: calc(18px / var(--s, 1));
+	bottom: calc(-5px / var(--s, 1));
+	border: calc(6px / var(--s, 1)) solid transparent;
+	border-top-color: var(--sp-accent);
+	border-bottom-width: 0;
+}
+
+@keyframes ct-bubble {
+	from {
+		opacity: 0;
+		scale: 0.6;
+	}
+}
+
+/* 첫머리에서는 말풍선을 띄우지 않는다 */
+.cr-mascot[data-spot='hero'] .cr-bubble {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cr-bubble,
+	.cr-mascot[data-mood='happy'] img[data-on='true'],
+	.cr-mascot[data-hop] img[data-on='true'],
+	.cr-heart {
+		animation: none;
+	}
+
+	.cr-heart {
+		display: none;
+	}
+
+	.cr-mascot,
+	.cr-mascot[data-moving],
+	.cr-mascot img {
+		transition: none;
+	}
+}

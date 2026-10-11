@@ -2,36 +2,46 @@ import React from 'react';
 import type { Project, ProjectLook } from '@/shared/profile';
 // 공통 값을 먼저 읽어야 페이지마다의 CSS가 그 위에 덮인다
 import '@/apps/safari/ProjectPage.css';
-import ProductPage from '@/apps/safari/project/ProductPage';
-import EditorialPage from '@/apps/safari/project/EditorialPage';
-import BoardPage from '@/apps/safari/project/BoardPage';
-import CardPage from '@/apps/safari/project/CardPage';
-import GamePage from '@/apps/safari/project/GamePage';
-import TerminalPage from '@/apps/safari/project/TerminalPage';
-import CreativePage from '@/apps/safari/project/CreativePage';
 import ShowcasePage from '@/apps/safari/project/ShowcasePage';
+import CinemaPage from '@/apps/safari/project/CinemaPage';
+import PhonePage from '@/apps/safari/project/PhonePage';
+import HorizontalPage from '@/apps/safari/project/HorizontalPage';
+import BrutalPage from '@/apps/safari/project/BrutalPage';
+import ArcadePage from '@/apps/safari/project/ArcadePage';
+import AtelierPage from '@/apps/safari/project/AtelierPage';
+import InboxPage from '@/apps/safari/project/InboxPage';
+import ChecklistPage from '@/apps/safari/project/ChecklistPage';
+import RepoPage from '@/apps/safari/project/RepoPage';
+import DialoguePage from '@/apps/safari/project/DialoguePage';
+import DeckPage from '@/apps/safari/project/DeckPage';
+import AssistantPage from '@/apps/safari/project/AssistantPage';
+import { CUSTOM_PAGES } from '@/apps/safari/project/custom';
 
 export { Favicon } from '@/apps/safari/project/parts';
 
 /**
- * 모양마다 페이지의 짜임과 읽는 순서가 다르다 (색만 바꾸지 않는다).
- * product 제품 페이지, editorial 신문 1면, playful 칸반 보드, minimal 명함 앞뒤와 단계,
- * game 타이틀 화면부터 크레딧까지, terminal 명령과 결과, creative 붙어 있는 차례와 장, showcase 어떤 프로젝트에나 맞는 카드 모양
+ * 모양마다 페이지의 짜임과 읽는 방식이 다르다 (색만 바꾸지 않는다). 어떤 모양이 무엇인지는 desktop-core의 PROJECT_LOOKS 주석에.
+ * custom은 프로젝트 id로 등록한 직접 짠 페이지(project/custom/)이고, 등록이 없으면 showcase로 그린다
  */
-const PAGES: Record<ProjectLook, React.FC<{ project: Project }>> = {
+const PAGES: Record<Exclude<ProjectLook, 'custom'>, React.FC<{ project: Project }>> = {
 	showcase: ShowcasePage,
-	product: ProductPage,
-	editorial: EditorialPage,
-	playful: BoardPage,
-	minimal: CardPage,
-	game: GamePage,
-	terminal: TerminalPage,
-	creative: CreativePage,
+	cinema: CinemaPage,
+	phone: PhonePage,
+	horizontal: HorizontalPage,
+	brutal: BrutalPage,
+	arcade: ArcadePage,
+	atelier: AtelierPage,
+	inbox: InboxPage,
+	checklist: ChecklistPage,
+	repo: RepoPage,
+	dialogue: DialoguePage,
+	deck: DeckPage,
+	assistant: AssistantPage,
 };
 
 /** Safari 탭 안의 페이지: 프로젝트를 소개한다 */
 const ProjectPage: React.FC<{ project: Project }> = ({ project }) => {
-	const Page = PAGES[project.look];
+	const Page = project.look === 'custom' ? (CUSTOM_PAGES[project.id] ?? ShowcasePage) : PAGES[project.look];
 	return (
 		<article className="sp" data-look={project.look} aria-label={project.name}>
 			<Page project={project} />
