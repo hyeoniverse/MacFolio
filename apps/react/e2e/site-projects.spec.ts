@@ -158,6 +158,19 @@ test.describe('프로젝트 관리', () => {
 		await expect(editor.getByRole('list', { name: '고른 기술' })).toHaveText(['React']);
 		await page.getByRole('listbox', { name: '기술 후보' }).getByRole('option', { name: 'Vite', exact: true }).click();
 		await expect(editor.getByRole('list', { name: '고른 기술' }).getByRole('listitem')).toHaveText(['React', 'Vite']);
+		// 코드의 목록에 없는 라이브러리는 npm 레지스트리에서 찾아 뒤에 붙인다 (출처 표시)
+		await page.route('https://registry.npmjs.org/**', (route) =>
+			route.fulfill({ json: { objects: [{ package: { name: 'react' } }, { package: { name: 'tiny-qr-kit' } }] } })
+		);
+		await stack.pressSequentially('tiny');
+		const npmOption = page.getByRole('listbox', { name: '기술 후보' }).getByRole('option', { name: /tiny-qr-kit/ });
+		await expect(npmOption).toHaveAttribute('data-source', 'npm');
+		await npmOption.click();
+		await expect(editor.getByRole('list', { name: '고른 기술' }).getByRole('listitem')).toHaveText([
+			'React',
+			'Vite',
+			'tiny-qr-kit',
+		]);
 		// 새 프로젝트의 기본 모양은 어디에나 맞는 '기본 (카드)'
 		await expect(editor.getByRole('combobox', { name: '페이지 모양' })).toHaveValue('showcase');
 		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고르고, 글자 로고는 올린다 (올린 그림의 주소는 API의 /files/…)
@@ -203,7 +216,7 @@ test.describe('프로젝트 관리', () => {
 			id: 'side-app',
 			override: {
 				name: '사이드 앱',
-				stack: ['React', 'Vite'],
+				stack: ['React', 'Vite', 'tiny-qr-kit'],
 				language: 'TypeScript',
 				period: '2025.01.02 – 진행 중',
 				icon: '/imgs/projects/qru/icon.png',
@@ -237,6 +250,7 @@ test.describe('프로젝트 관리', () => {
 		await expect(panel.locator('.sc-hero').getByRole('list', { name: '기술' }).getByRole('listitem')).toHaveText([
 			'React',
 			'Vite',
+			'tiny-qr-kit',
 		]);
 		await expect(panel.getByRole('region', { name: '주요 기능' })).toContainText('한 화면');
 		// 탭의 작은 아이콘은 고른 프로젝트 아이콘
