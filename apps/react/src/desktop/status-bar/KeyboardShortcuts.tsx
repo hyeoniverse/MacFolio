@@ -1,6 +1,5 @@
-import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
-import { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { useRef } from 'react';
+import Modal from '@/shared/ui/dialog/Modal';
 import type { AppMenu } from '@/desktop/status-bar/appMenus';
 import { shortcutList } from '@/desktop/status-bar/menuBar';
 import { formatShortcut, isMacPlatform } from '@/shared/ui/menu/shortcut';
@@ -23,57 +22,42 @@ const KeyboardShortcuts = ({ appLabel, menus, onClose }: Props) => {
 	const mac = isMacPlatform();
 	const groups = shortcutList(menus);
 
-	useEffect(() => {
-		close.current?.focus();
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key !== 'Escape') return;
-			event.preventDefault();
-			onClose();
-		};
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [onClose]);
-	// 바탕은 흐려지고 창은 작아지며 사라진다 (motion.css)
-	const overlay = useExitMotion<HTMLDivElement>('fade-out');
-
-	return createPortal(
-		<div
-			ref={overlay}
-			className="keyboard-shortcuts-overlay"
-			onPointerDown={(event) => {
-				if (event.target === event.currentTarget) onClose();
-			}}
+	return (
+		<Modal
+			label="키보드 단축키"
+			scope="screen"
+			onClose={onClose}
+			initialFocus={close}
+			overlayClassName="keyboard-shortcuts-overlay"
+			className="keyboard-shortcuts"
 		>
-			<div className="keyboard-shortcuts" role="dialog" aria-modal="true" aria-label="키보드 단축키">
-				<h2>키보드 단축키</h2>
-				<p className="keyboard-shortcuts-sub">
-					{appLabel}에서 쓸 수 있는 단축키입니다. 브라우저가 먼저 쓰는 ⌘N·⌘T·⌘W 대신 ⌥를 씁니다.
-				</p>
-				{groups.length === 0 ? (
-					<p className="keyboard-shortcuts-empty">이 앱에는 단축키가 없습니다.</p>
-				) : (
-					groups.map((group) => (
-						<section key={group.title} aria-label={group.title}>
-							<h3>{group.title}</h3>
-							<dl>
-								{group.items.map((item) => (
-									<div key={item.label}>
-										<dt>{item.label}</dt>
-										<dd>
-											<kbd>{formatShortcut(item.shortcut, mac)}</kbd>
-										</dd>
-									</div>
-								))}
-							</dl>
-						</section>
-					))
-				)}
-				<button ref={close} type="button" className="keyboard-shortcuts-close" onClick={onClose}>
-					닫기
-				</button>
-			</div>
-		</div>,
-		document.body
+			<h2>키보드 단축키</h2>
+			<p className="keyboard-shortcuts-sub">
+				{appLabel}에서 쓸 수 있는 단축키입니다. 브라우저가 먼저 쓰는 ⌘N·⌘T·⌘W 대신 ⌥를 씁니다.
+			</p>
+			{groups.length === 0 ? (
+				<p className="keyboard-shortcuts-empty">이 앱에는 단축키가 없습니다.</p>
+			) : (
+				groups.map((group) => (
+					<section key={group.title} aria-label={group.title}>
+						<h3>{group.title}</h3>
+						<dl>
+							{group.items.map((item) => (
+								<div key={item.label}>
+									<dt>{item.label}</dt>
+									<dd>
+										<kbd>{formatShortcut(item.shortcut, mac)}</kbd>
+									</dd>
+								</div>
+							))}
+						</dl>
+					</section>
+				))
+			)}
+			<button ref={close} type="button" className="keyboard-shortcuts-close" onClick={onClose}>
+				닫기
+			</button>
+		</Modal>
 	);
 };
 

@@ -63,8 +63,8 @@
 	animation: none !important;
 }
 
-/* 경고창·로그인 창: 바탕은 흐려지고 가운데 상자는 작아지며 사라진다 */
-[data-exiting] :is(.ui-alert, .login-flow-card, .keyboard-shortcuts, .launchpad-content) {
+/* 가운데 뜨는 창(Modal): 바탕은 흐려지고 가운데 상자는 작아지며 사라진다 */
+[data-exiting] .ui-modal {
 	animation: pop-out 140ms var(--ease-in) forwards !important;
 }
 
