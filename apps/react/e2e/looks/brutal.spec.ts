@@ -15,7 +15,7 @@ const whattodo = {
 };
 
 test('brutal: 이름이 h1, 격자 블록에 기능·숫자·진행 과정 표가 있고 GitHub 링크로 간다', async ({ page }) => {
-	const { panel } = await openLook(page, { id: 'whattodo', tab: /WTD/ });
+	const { panel } = await openLook(page, { id: 'whattodo', tab: /WTD/, look: 'brutal' });
 	const article = panel.getByRole('article', { name: whattodo.name });
 	await expect(article.getByRole('heading', { level: 1 })).toHaveText(whattodo.name);
 	await expect(article.locator('.br-tagline')).toHaveText(whattodo.tagline);

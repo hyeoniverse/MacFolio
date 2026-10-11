@@ -49,7 +49,7 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 	{
 		id: 'hyeoniverse',
 		name: 'HYEONIVERSE',
-		look: 'deck',
+		look: 'custom',
 		tagline: '작업물과 글을, 움직이는 화면으로.',
 		description:
 			'작업물과 글을 보여 주는 공개 화면부터, 그 글을 직접 쓰고 고치는 관리자 화면까지 한 저장소에 담은 개인 포트폴리오',
@@ -714,7 +714,7 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 	{
 		id: 'macfolio',
 		name: 'MacFolio',
-		look: 'cinema',
+		look: 'custom',
 		tagline: '포트폴리오를, 데스크톱으로.',
 		description:
 			'macOS 데스크톱을 웹으로 옮긴 포트폴리오. 메모 앱은 블로그, 메시지 앱은 방명록, Safari는 프로젝트 소개가 된다',
@@ -789,7 +789,7 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 	{
 		id: 'newpick',
 		name: 'NewPick 뉴픽',
-		look: 'atelier',
+		look: 'custom',
 		tagline: '아침 뉴스, 요약해서 한 통에.',
 		description: '관심사에 맞춰 AI가 요약한 뉴스를 매일 아침 메일로 보내 주는 맞춤형 뉴스레터 서비스',
 		context: '프로그래머스 데브코스 팀 프로젝트 (5인: 프론트엔드 2, 백엔드 3)',
@@ -944,7 +944,7 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 	{
 		id: 'qru',
 		name: 'QRU 큐알유',
-		look: 'phone',
+		look: 'custom',
 		tagline: 'QR 한 장에 담은 나.',
 		description: '내 정보를 담은 QR 디지털 명함을 만들어 공유하고, 공개된 명함을 셔플로 찾아보는 웹 앱',
 		context: '개인 프로젝트',
@@ -1102,7 +1102,7 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 	{
 		id: 'whattodo',
 		name: 'WTD (What To Do)',
-		look: 'brutal',
+		look: 'custom',
 		tagline: '할 일은 끌어서. 루틴은 알아서.',
 		description: '할 일과 세부 할 일을 끌어서 정리하고, 매일 반복되는 일은 루틴으로 관리하는 할 일 관리 웹 앱',
 		context: '프로그래머스 데브코스 팀 프로젝트 (4인)',
@@ -1259,7 +1259,7 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 	{
 		id: 'sproutfarm',
 		name: 'SproutFarm 새싹 농장',
-		look: 'arcade',
+		look: 'custom',
 		controls: [
 			{ keys: ['↑', '↓', '←', '→'], label: '움직이기' },
 			{ keys: ['Shift'], label: '달리기' },
@@ -1371,7 +1371,7 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 	{
 		id: 'devcourse',
 		name: 'DevCourse FullStack',
-		look: 'repo',
+		look: 'custom',
 		terminal: [
 			'$ git clone https://github.com/hyeoniverse/DevCourse-FullStack',
 			'# README.md 수강 목록',
