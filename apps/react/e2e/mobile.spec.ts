@@ -975,9 +975,8 @@ test.describe('모바일', () => {
 		// 큰 제목은 쓴 제목을 따른다
 		await expect(sheet.getByRole('heading', { name: '안녕하세요' })).toBeVisible();
 
-		// 닫으면 바로 사라지지 않고 내려가는 동안 남아 있다
+		// 닫는다 (내려가는 움직임은 mobile-motion.spec.ts)
 		await sheet.getByRole('button', { name: '취소' }).tap();
-		await expect(mail.locator('.mail-phone-sheet-layer.closing')).toHaveCount(1);
 		await expect(sheet).toBeHidden();
 
 		// 방문자의 답장: 받은 메일에서 답장 → 메일 동작 → 답장은 주인에게 Re: 제목의 새 메일
@@ -1042,6 +1041,12 @@ test.describe('모바일', () => {
 		await expect(sheet).toBeVisible();
 		await expect(sheet.getByRole('slider', { name: '재생 위치' })).toBeVisible();
 		await expect(sheet.getByRole('region', { name: '다음 재생' })).toBeVisible();
+
+		// 옆으로 밀어도 시트는 가로로 움직이지 않는다 (흐린 표지 배경이 시트 밖까지 그려져 있다)
+		await sheet.hover();
+		await page.mouse.wheel(120, 0);
+		await expect.poll(() => sheet.evaluate((el) => el.scrollLeft)).toBe(0);
+		expect(await sheet.evaluate((el) => getComputedStyle(el).overflowX)).toBe('hidden');
 
 		// 닫기는 시트 위에 떠 있는 뒤로 가기 하나
 		await music.locator('.mobile-navbar-home').tap();

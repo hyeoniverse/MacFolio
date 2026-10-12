@@ -2,7 +2,15 @@ import { useCallback, useRef } from 'react';
 import { prefersReducedMotion } from '@/shared/lib/media';
 
 /** 사라지는 움직임 이름 (motion.css의 키프레임) */
-export type ExitMotion = 'pop-out' | 'fade-out' | 'sink-out' | 'slide-out-right' | 'panel-out-right' | 'panel-out-down';
+export type ExitMotion =
+	| 'pop-out'
+	| 'fade-out'
+	| 'sink-out'
+	| 'slide-out-right'
+	| 'panel-out-right'
+	| 'panel-out-down'
+	| 'sheet-out'
+	| 'dim-out';
 
 const DURATION: Record<ExitMotion, number> = {
 	'pop-out': 140,
@@ -11,6 +19,8 @@ const DURATION: Record<ExitMotion, number> = {
 	'slide-out-right': 240,
 	'panel-out-right': 220,
 	'panel-out-down': 240,
+	'sheet-out': 240,
+	'dim-out': 240,
 };
 
 /**
