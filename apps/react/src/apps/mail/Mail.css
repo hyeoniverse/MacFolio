@@ -423,11 +423,23 @@
 	text-align: left;
 }
 
-/* 칸 오류: 줄을 늘리거나 밑줄을 칠하지 않고, 같은 줄 오른쪽 끝에 작게 */
-.mail-compose-row .mail-error {
+/* 칸 오류: 줄 오른쪽 끝의 작은 배지 (비었으면 '필수') */
+.mail-badge {
 	flex: none;
 	margin-left: auto;
+	padding: 1px 8px;
+	border-radius: 999px;
+	background-color: var(--mail-hover-bg);
+	color: var(--mail-error);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 18px;
 	white-space: nowrap;
+}
+
+.mail-body-error {
+	align-self: flex-end;
+	margin: 6px 2px 10px;
 }
 
 .mail-recipient {
