@@ -93,7 +93,7 @@ const Letters: React.FC<{ text: string }> = ({ text }) => {
 };
 
 /**
- * 첫 장면 (Apple 제품 페이지의 히어로): 검은 화면 위쪽에 제목이 글자마다 번지듯 나타나고, 아래에서 노트북이 고개를 내밀고 있다.
+ * 첫 장면 (Apple 제품 페이지의 히어로): 화면 위쪽에 제목이 글자마다 번지듯 나타나고, 아래에서 노트북이 고개를 내밀고 있다.
  * 스크롤하면 제목이 위로 물러나고 노트북이 솟아 화면 가운데를 채운다. 대표 화면이 없으면 프로젝트 데이터로 그린 화면(MockScreen)
  */
 const Opening: React.FC<{ project: Project }> = ({ project }) => (
@@ -111,7 +111,7 @@ const Opening: React.FC<{ project: Project }> = ({ project }) => (
 		</header>
 		<div className="cn-poster">
 			<DeviceFrame kind="laptop" src={project.image} alt={`${project.name} 화면`}>
-				{!project.image && <MockScreen project={project} tone="dark" decorative />}
+				{!project.image && <MockScreen project={project} decorative />}
 			</DeviceFrame>
 		</div>
 	</Scene>
@@ -128,7 +128,7 @@ const Counter: React.FC<{ index: number; total: number }> = ({ index, total }) =
 /**
  * 기능 장면 하나: 앞 장면 위로 아래서부터 밀고 들어온다.
  * 그림이 있으면 무대에 꽉 차고 캡션은 그림 위에. 없으면 글과 제품 화면이 좌우로 짝을 짓는다
- * (짝수 차례는 그 기능을 고른 MockScreen을 창 틀에, 홀수 차례는 그 기능의 FeatureVisual을 어두운 판에. 좌우는 번갈아)
+ * (짝수 차례는 그 기능을 고른 MockScreen을 창 틀에, 홀수 차례는 그 기능의 FeatureVisual을 옅은 판에. 좌우는 번갈아)
  */
 const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number; total: number; image?: string }> = ({
 	project,
@@ -165,11 +165,11 @@ const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number; 
 			<div className="cn-split-visual">
 				{index % 2 === 0 ? (
 					<DeviceFrame kind="browser" url={project.demo}>
-						<MockScreen project={project} focus={index} tone="dark" decorative />
+						<MockScreen project={project} focus={index} decorative />
 					</DeviceFrame>
 				) : (
 					<div className="cn-panel">
-						<FeatureVisual point={point} index={index} project={project} tone="dark" />
+						<FeatureVisual point={point} index={index} project={project} />
 					</div>
 				)}
 			</div>
@@ -177,7 +177,7 @@ const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number; 
 	);
 };
 
-/** 숫자 장면: 숫자가 거대하게, 스크롤하는 만큼 하나씩 바뀐다 */
+/** 숫자 장면: 숫자가 거대하게, 스크롤하는 만큼 하나씩 바뀐다. 페이지 안에서 하나뿐인 어두운 띠 (키노트의 포인트) */
 const Numbers: React.FC<{ project: Project }> = ({ project }) => {
 	const n = project.facts.length;
 	return (
@@ -204,7 +204,7 @@ const BuildCard: React.FC<{ project: Project; point: ProjectPoint; index: number
 	<article className="cn-card" data-size={size}>
 		{size === 'lg' && (
 			<div className="cn-card-visual">
-				<FeatureVisual point={point} index={index + 1} project={project} tone="dark" />
+				<FeatureVisual point={point} index={index + 1} project={project} />
 			</div>
 		)}
 		<div className="cn-card-text">
@@ -315,7 +315,7 @@ const Credits: React.FC<{ project: Project }> = ({ project }) => {
 const CinemaPage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
 	return (
-		<div className="cn" ref={root} data-lk-tone="dark">
+		<div className="cn" ref={root}>
 			<Opening project={project} />
 			{project.highlights.length > 0 && (
 				<Region label="주요 기능" className="cn-features">

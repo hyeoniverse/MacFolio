@@ -1,23 +1,26 @@
 # 랜딩 페이지 키트 (`project/landing/`)
 
-템플릿(`project/*Page.tsx`)이 "브랜드 제품 랜딩 페이지"처럼 보이도록 함께 쓰는 조각. 기본값은 절제: 단색 바탕, 그라데이션 글자·빛 번짐·유리·기울기 없음, 얕은 그림자 한 벌, 강조색 하나. 모두 `@/apps/safari/project/landing`에서 가져온다.
+템플릿(`project/*Page.tsx`)이 "브랜드 제품 랜딩 페이지"처럼 보이도록 함께 쓰는 조각. 기본값은 가볍고 절제: 사이트 테마를 따르는 흰(다크는 검정) 단색 바탕, 제목 굵기 600·자간 -0.02em, 본문 17px·줄 간격 1.6, 그라데이션 글자·빛 번짐·유리·기울기 없음, 얕은 그림자 한 벌, 강조색 하나. 모두 `@/apps/safari/project/landing`에서 가져온다.
 CSS 클래스는 `lk-` 접두사, 장식 조각은 `aria-hidden`, 움직임은 `prefers-reduced-motion`이면 멈춘다.
 
 ## 톤 변수
 
 페이지(또는 아무 바깥 요소)에 `--lk-*`를 두면 안쪽 조각이 모두 그 색을 쓴다. 없으면 라이트·다크(`:root[data-theme='dark']`) 기본값.
 
-| 변수                                  | 쓰임                                    |
-| ------------------------------------- | --------------------------------------- |
-| `--lk-accent`, `--lk-accent-2`        | 강조색 하나와 그 옅은 값 (단추, 그래프) |
-| `--lk-surface`, `--lk-surface-2`      | 바탕, 한 단계 진한 바탕(카드·벤토 칸)   |
-| `--lk-ink`, `--lk-muted`, `--lk-line` | 글자, 흐린 글자, 선                     |
-| `--lk-radius`                         | 카드 모서리 (기본 20px)                 |
-| `--lk-dark-*` / `--lk-light-*`        | `data-lk-tone`으로 톤을 고정했을 때     |
-| `--lk-bento-row`, `--lk-bento-gap`    | 벤토 한 줄 높이(220px)·틈(16px)         |
+| 변수                                  | 쓰임                                                         |
+| ------------------------------------- | ------------------------------------------------------------ |
+| `--lk-accent`, `--lk-accent-2`        | 강조색 하나와 그 옅은 값 (단추, 그래프)                      |
+| `--lk-accent-fill`                    | 흰 글자를 얹는 단추 칠 (기본 --lk-accent, 다크에서도 그대로) |
+| `--lk-body`                           | 본문 글자 (라이트 #424245, 다크 #d2d2d7)                     |
+| `--lk-title-weight`                   | 큰 제목 굵기 (기본 600)                                      |
+| `--lk-surface`, `--lk-surface-2`      | 바탕, 한 단계 진한 바탕(카드·벤토 칸)                        |
+| `--lk-ink`, `--lk-muted`, `--lk-line` | 제목 글자, 흐린 글자(캡션), 선(라이트 rgba(0,0,0,.06))       |
+| `--lk-radius`                         | 카드 모서리 (기본 14px)                                      |
+| `--lk-dark-*` / `--lk-light-*`        | `data-lk-tone`으로 톤을 고정했을 때                          |
+| `--lk-bento-row`, `--lk-bento-gap`    | 벤토 한 줄 높이(220px)·틈(16px)                              |
 
 - `data-lk-tone="dark" | "light"`: 페이지 테마와 상관없이 그 톤. 아무 요소에나 달면 안쪽 조각 중 톤을 따로 받지 않은 것이 모두 따른다 (어두운 히어로 띠 등).
-- 아이콘 색으로 칠하기: `const accent = useLandingAccent(project.icon)` → 페이지 바탕에 `style={accent}` (`--lk-accent`·`--lk-accent-2`를 돌려준다. 못 읽으면 빈 묶음).
+- 아이콘 색으로 칠하기: `const accent = useLandingAccent(project.icon)` → 페이지 바탕에 `style={accent}` (`--lk-accent`·`--lk-accent-2`·`--lk-dark-accent`를 돌려준다. 채도는 아이콘 색 그대로이고, 흰 글자가 읽히게 밝기만 맞춘다. 못 읽으면 빈 묶음).
 
 ## 조각
 
@@ -39,7 +42,7 @@ CSS 클래스는 `lk-` 접두사, 장식 조각은 `aria-hidden`, 움직임은 `
 {point.image ? <img … /> : <FeatureVisual point={point} index={i} project={project} />}
 ```
 
-**`GlowBackdrop`** 히어로 뒤 단색 바탕 + 아주 옅은 격자/점 무늬. `tone` `'dark' | 'light'`, `pattern` `'grid' | 'dots' | 'none'`, `focus` `'top' | 'center' | 'side'`, `glow`(강조색 한 덩어리를 옅게, 기본 끔), `animate`(glow일 때만, 기본 끔). 부모는 `position: relative`, 글은 `z-index: 1`.
+**`GlowBackdrop`** 히어로 뒤 단색 바탕 + 아주 옅은 격자/점 무늬. `tone` `'dark' | 'light'`(기본: 사이트 테마), `pattern` `'grid' | 'dots' | 'none'`, `focus` `'top' | 'center' | 'side'`, `glow`(강조색 한 덩어리를 옅게, 기본 끔), `animate`(glow일 때만, 기본 끔). 부모는 `position: relative`, 글은 `z-index: 1`.
 
 ```tsx
 <header style={{ position: 'relative' }} data-lk-tone="dark">
@@ -66,7 +69,7 @@ CSS 클래스는 `lk-` 접두사, 장식 조각은 `aria-hidden`, 움직임은 `
 <LogoStrip items={project.stack} caption="만든 기술" marquee />
 ```
 
-**`CtaBand`** 마지막 행동 유도 띠: 단색 바탕에 큰 문장 + 링크(parts의 `Links`). `project`, `title`(기본 tagline), `lead`(기본 description), `tone`(기본 dark), `showIcon`, `pattern`(옅은 무늬, 기본 `'none'`).
+**`CtaBand`** 마지막 행동 유도 띠: 단색 바탕에 큰 문장 + 링크(parts의 `Links`). `project`, `title`(기본 tagline), `lead`(기본 description), `tone`(기본: 사이트 테마), `showIcon`, `pattern`(옅은 무늬, 기본 `'none'`).
 
 ```tsx
 <CtaBand project={project} title="지금 열어 보세요." />

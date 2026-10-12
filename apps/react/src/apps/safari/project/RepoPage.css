@@ -9,6 +9,7 @@
 	--sp-muted: #59636e;
 	--sp-line: #d1d9e0;
 	--sp-accent: #0969da;
+	--rp-body: #424a53;
 	--rp-green: #1f883d;
 	--rp-green-hover: #1a7f37;
 	--rp-ink: #fd8c73;
@@ -37,6 +38,7 @@
 	--sp-muted: #9198a1;
 	--sp-line: #3d444d;
 	--sp-accent: #4493f8;
+	--rp-body: #d1d7e0;
 	--rp-green: #238636;
 	--rp-green-hover: #29903b;
 	--rp-chip: #121d2f;
@@ -1650,23 +1652,30 @@
 
 /*
  * ─── 랜딩 히어로 띠: 저장소 머리 위에 개발자 도구 첫 화면처럼 ───
- * 테마와 상관없이 GitHub 어두운 단색 띠 → 배지, 큰 한 줄, 링크와 clone 명령, 아래에서 잘리는 똑바른 편집기 창, 숫자 띠.
+ * 페이지 테마를 따른다: 라이트는 GitHub 라이트(흰 바탕·#f6f8fa 면·#1f2328 글·#0969da 강조), 다크는 GitHub 다크.
+ * 배지, 큰 한 줄, 링크와 clone 명령, 아래에서 잘리는 똑바른 편집기 창, 숫자 띠.
  * 빛 번짐·그라데이션 글자·기울기 없이 1px 선과 얕은 그림자 한 벌만
  */
 .rp {
-	--lk-accent: #3b82e0;
-	--lk-accent-2: #3b82e0;
+	--lk-accent: var(--sp-accent);
+	--lk-accent-2: var(--sp-accent);
+	/* 키트 조각(가짜 화면·숫자 띠·로고 줄)도 GitHub 팔레트로 */
+	--lk-surface: var(--sp-bg);
+	--lk-surface-2: var(--sp-alt);
+	--lk-ink: var(--sp-text);
+	--lk-body: var(--rp-body);
+	--lk-muted: var(--sp-muted);
+	--lk-line: color-mix(in srgb, var(--sp-line) 70%, transparent);
 }
 
 .rp-hero {
-	--lk-dark-surface: #0d1117;
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	min-height: min(760px, 62cqi);
 	overflow: hidden;
-	background: #0d1117;
-	color: #f0f6fc;
+	background: var(--sp-bg);
+	color: var(--sp-text);
 	isolation: isolate;
 }
 
@@ -1677,7 +1686,7 @@
 	flex: 1;
 	flex-direction: column;
 	align-items: center;
-	padding: clamp(56px, 8cqi, 96px) 32px 0;
+	padding: clamp(64px, 9cqi, 112px) 32px 0;
 	text-align: center;
 }
 
@@ -1687,9 +1696,9 @@
 	gap: 10px;
 	max-width: 100%;
 	padding: 4px 14px 4px 4px;
-	border: 1px solid rgba(240, 246, 252, 0.14);
+	border: 1px solid var(--sp-line);
 	border-radius: 999px;
-	color: #9198a1;
+	color: var(--sp-muted);
 	font-size: 13px;
 }
 
@@ -1698,29 +1707,29 @@
 	align-items: center;
 	gap: 6px;
 	padding: 3px 10px;
-	border: 1px solid rgba(240, 246, 252, 0.14);
+	border: 1px solid var(--sp-line);
 	border-radius: 999px;
-	color: #f0f6fc;
+	color: var(--sp-text);
 	font-size: 12px;
 	font-weight: 600;
 }
 
 .rp-hero-title {
 	max-width: 16em;
-	margin-top: 26px;
-	color: #f0f6fc;
-	font-size: clamp(36px, 6cqi, 76px);
-	font-weight: 700;
-	letter-spacing: -0.045em;
-	line-height: 1.05;
+	margin-top: 28px;
+	color: var(--sp-text);
+	font-size: clamp(36px, 5.6cqi, 72px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.1;
 	text-wrap: balance;
 }
 
 .rp-hero-lead {
 	max-width: 600px;
-	margin-top: 20px;
-	color: #9198a1;
-	font-size: clamp(16px, 1.5cqi, 19px);
+	margin-top: 22px;
+	color: var(--rp-body);
+	font-size: clamp(17px, 1.5cqi, 19px);
 	line-height: 1.6;
 	text-wrap: pretty;
 }
@@ -1741,8 +1750,8 @@
 
 .rp .rp-hero-links .sp-pill {
 	padding: 11px 22px;
-	background: #f0f6fc;
-	color: #0d1117;
+	background: var(--sp-accent);
+	color: #ffffff;
 	font-weight: 600;
 }
 
@@ -1751,16 +1760,16 @@
 	align-items: center;
 	gap: 6px;
 	padding: 10px 18px;
-	border: 1px solid rgba(240, 246, 252, 0.16);
+	border: 1px solid var(--sp-line);
 	border-radius: 999px;
 	background: transparent;
-	color: #f0f6fc;
+	color: var(--sp-text);
 	font-weight: 600;
 	text-decoration: none;
 }
 
 .rp .rp-hero-links .sp-link:hover {
-	background: rgba(240, 246, 252, 0.08);
+	background: var(--sp-alt);
 }
 
 /* clone 명령: 터미널 한 줄 모양의 복사 단추 */
@@ -1770,10 +1779,10 @@
 	gap: 10px;
 	max-width: 100%;
 	padding: 10px 14px;
-	border: 1px solid rgba(240, 246, 252, 0.14);
+	border: 1px solid var(--sp-line);
 	border-radius: 8px;
-	background: #010409;
-	color: #e6edf3;
+	background: var(--sp-alt);
+	color: var(--sp-text);
 	font-family: var(--sp-mono);
 	font-size: 12.5px;
 	cursor: pointer;
@@ -1781,7 +1790,7 @@
 }
 
 .rp-hero-clone:hover {
-	border-color: rgba(240, 246, 252, 0.32);
+	border-color: var(--sp-muted);
 }
 
 .rp-hero-clone code {
@@ -1792,11 +1801,11 @@
 }
 
 .rp-hero-prompt {
-	color: var(--rp-term-green);
+	color: var(--rp-green);
 }
 
 .rp-hero-clone i {
-	color: #9198a1;
+	color: var(--sp-muted);
 }
 
 /* 편집기 창은 똑바로 서서 숫자 띠 위에서 잘린다 */
@@ -1804,16 +1813,16 @@
 	position: relative;
 	width: min(1040px, 100%);
 	height: clamp(260px, 30cqi, 420px);
-	margin-top: clamp(40px, 5cqi, 64px);
+	margin-top: clamp(48px, 6cqi, 80px);
 	overflow: hidden;
 }
 
 .rp-hero-stats {
 	position: relative;
 	z-index: 2;
-	border-top: 1px solid rgba(240, 246, 252, 0.1);
+	border-top: 1px solid var(--sp-line);
 	border-bottom: 0;
-	background: #0d1117;
+	background: var(--sp-bg);
 }
 
 .rp-hero-stats .lk-stat {
@@ -1999,10 +2008,12 @@
 	content: '';
 }
 
-/* 맨 끝 행동 유도 띠 (서랍 위) */
+/* 맨 끝 행동 유도 띠 (서랍 위): 페이지 테마의 GitHub 팔레트, 바탕만 한 단 옅은 면(#f6f8fa / 다크 #151b23) */
 .rp-cta {
-	--lk-dark-surface: #0d1117;
+	--lk-surface: var(--sp-alt);
+	--lk-surface-2: var(--sp-bg);
 	margin-top: 24px;
+	border-top: 1px solid var(--sp-line);
 }
 
 @container (max-width: 600px) {

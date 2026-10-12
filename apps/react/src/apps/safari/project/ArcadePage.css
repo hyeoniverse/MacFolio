@@ -1,19 +1,21 @@
 /*
- * 아케이드 모양 (arcade): 검은 단색 바탕, 무광 자홍·시안·노랑, 옅은 주사선, 멀어지는 격자 바닥.
- * 네온 빛은 타이틀 간판(.ac-sign) 한 곳에만 남기고 카드·숫자·단추·바닥은 빛 없이 평평하게
+ * 아케이드 모양 (arcade): 검은 단색 바탕(게임이라 테마와 상관없이 어둡다), 산뜻한 단색 자홍·시안·노랑, 옅은 주사선,
+ * 멀어지는 격자 바닥. 네온 빛은 타이틀 간판(.ac-sign) 한 곳에만 남기고 카드·숫자·단추·바닥은 빛 없이 평평하게.
+ * 제목은 700, 본문은 밝은 연보라(--ac-body) 17px, 구역 사이는 넉넉히
  */
 .sp[data-look='arcade'] {
 	--sp-bg: #07040f;
 	--sp-alt: #130a24;
 	--sp-text: #f4ecff;
-	--sp-muted: #a894c7;
+	--sp-muted: #b8a7d9;
 	--sp-line: #3a2560;
-	--sp-accent: #5cc8dc;
-	--sp-grad: linear-gradient(#e0559f, #e0559f);
-	--ac-pink: #e0559f;
-	--ac-cyan: #5cc8dc;
-	--ac-yellow: #e9cf63;
-	--ac-grid: rgba(224, 85, 159, 0.22);
+	--sp-accent: #3dd6f0;
+	--sp-grad: linear-gradient(#ff4fa8, #ff4fa8);
+	--ac-body: #ddd3f2;
+	--ac-pink: #ff4fa8;
+	--ac-cyan: #3dd6f0;
+	--ac-yellow: #ffd23f;
+	--ac-grid: rgba(255, 79, 168, 0.24);
 	/* 네온은 간판(.ac-sign) 한 곳에만 */
 	--ac-neon-pink: 0 0 4px #fff, 0 0 10px #ff2bd6, 0 0 24px #ff2bd6, 0 0 48px rgba(255, 43, 214, 0.6);
 	--ac-neon-cyan: 0 0 4px #fff, 0 0 10px #39e7ff, 0 0 24px #39e7ff, 0 0 48px rgba(57, 231, 255, 0.6);
@@ -58,7 +60,7 @@
 .ac-h2 {
 	margin: 0 0 22px;
 	font-size: clamp(22px, 4cqi, 36px);
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.18em;
 	text-transform: uppercase;
 	color: #fff;
@@ -121,7 +123,7 @@
 .ac-coin {
 	margin: 0 0 18px;
 	font-size: 14px;
-	font-weight: 800;
+	font-weight: 600;
 	letter-spacing: 0.4em;
 	color: var(--ac-yellow);
 	animation: ac-blink 1.1s steps(1) infinite;
@@ -165,7 +167,7 @@
 	column-gap: 0.3em;
 	/* 긴 이름("SproutFarm 새싹 농장")도 두 줄 안에 들어가는 크기 */
 	font-size: clamp(30px, 6.4cqi, 64px);
-	font-weight: 900;
+	font-weight: 700;
 	line-height: 1.08;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
@@ -244,7 +246,7 @@
 	border-radius: 6px;
 	background: var(--ac-pink);
 	color: #fff;
-	font-weight: 800;
+	font-weight: 600;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
 	box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.3);
@@ -432,7 +434,7 @@
 	z-index: 1;
 	max-width: 960px;
 	margin: 0 auto;
-	padding: 56px 32px 0;
+	padding: clamp(72px, 10cqi, 112px) 32px 0;
 }
 
 /* ─── HIGH SCORE 점수판 ─── */
@@ -468,14 +470,14 @@
 
 .ac-rank {
 	font-size: 13px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.15em;
 	color: var(--ac-yellow);
 }
 
 .ac-scores strong {
 	font-size: clamp(24px, 4cqi, 36px);
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.06em;
 	color: #fff;
 }
@@ -490,9 +492,9 @@
 .ac-desc {
 	max-width: 640px;
 	margin: 20px auto 0;
-	font-size: 16px;
+	font-size: 17px;
 	line-height: 1.6;
-	color: var(--sp-muted);
+	color: var(--ac-body);
 }
 
 /* ─── SELECT PLAYER: 가로로 흐르는 캐릭터 카드 ─── */
@@ -532,7 +534,7 @@
 	top: 12px;
 	right: 14px;
 	font-size: 12px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.2em;
 	color: var(--ac-yellow);
 }
@@ -555,22 +557,22 @@
 	border-radius: 6px;
 	border: 1px solid var(--sp-line);
 	font-size: 48px;
-	font-weight: 900;
+	font-weight: 700;
 	color: var(--ac-cyan);
 }
 
 .ac-char h3 {
 	margin: 0 0 8px;
 	font-size: 19px;
-	font-weight: 800;
+	font-weight: 600;
 	color: #fff;
 }
 
 .ac-char p {
 	margin: 0;
-	font-size: 14px;
+	font-size: 15px;
 	line-height: 1.6;
-	color: var(--sp-muted);
+	color: var(--ac-body);
 }
 
 .ac-char .ac-char-detail {
@@ -684,7 +686,7 @@
 
 .ac-stage-no {
 	font-size: 15px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.12em;
 	color: var(--ac-pink);
 }
@@ -692,15 +694,15 @@
 .ac-stage-text h3 {
 	margin: 0 0 6px;
 	font-size: 18px;
-	font-weight: 800;
+	font-weight: 600;
 	color: #fff;
 }
 
 .ac-stage-text p {
 	margin: 0;
-	font-size: 14px;
+	font-size: 15px;
 	line-height: 1.6;
-	color: var(--sp-muted);
+	color: var(--ac-body);
 }
 
 .ac-stage-text .ac-stage-detail {
@@ -744,7 +746,7 @@
 
 .ac-start-no {
 	font-size: 12px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.2em;
 	color: var(--ac-yellow);
 }
@@ -752,15 +754,15 @@
 .ac-start-list h3 {
 	margin: 10px 0 6px;
 	font-size: 18px;
-	font-weight: 800;
+	font-weight: 600;
 	color: #fff;
 }
 
 .ac-start-list p {
 	margin: 0;
-	font-size: 14px;
+	font-size: 15px;
 	line-height: 1.6;
-	color: var(--sp-muted);
+	color: var(--ac-body);
 }
 
 .ac-start-list .ac-start-detail {
@@ -816,7 +818,7 @@
 	background: var(--ac-pink);
 	color: #fff;
 	font-size: 15px;
-	font-weight: 900;
+	font-weight: 700;
 	box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.35);
 }
 
@@ -883,7 +885,7 @@
 	top: 12px;
 	left: 14px;
 	font-size: 12px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.3em;
 	color: var(--ac-yellow);
 	animation: ac-blink 1.4s steps(1) infinite;
@@ -906,7 +908,7 @@
 
 .ac-attract-count {
 	margin-right: 10px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.1em;
 	color: var(--ac-cyan);
 }
@@ -956,7 +958,7 @@
 
 .ac-spec-list dt {
 	font-size: 11px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.2em;
 	text-transform: uppercase;
 	color: var(--ac-yellow);
@@ -1010,7 +1012,7 @@
 .ac-roll-head {
 	margin: 24px 0 12px;
 	font-size: 13px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.3em;
 	color: var(--ac-cyan);
 }
@@ -1032,14 +1034,14 @@
 
 .ac-roll-tag {
 	font-size: 11px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.3em;
 	color: var(--ac-yellow);
 }
 
 .ac-roll-name {
 	font-size: 18px;
-	font-weight: 800;
+	font-weight: 600;
 }
 
 .ac-roll-name a {
@@ -1068,7 +1070,7 @@
 .ac-roll-end {
 	margin: 40px 0 0;
 	font-size: 20px;
-	font-weight: 900;
+	font-weight: 700;
 	letter-spacing: 0.2em;
 	color: #fff;
 }
@@ -1238,15 +1240,15 @@
 
 .ac-hero-desc {
 	max-width: 560px;
-	margin: 12px 0 0;
-	color: var(--sp-muted);
-	font-size: 15px;
-	line-height: 1.65;
+	margin: 14px 0 0;
+	color: var(--ac-body);
+	font-size: 17px;
+	line-height: 1.6;
 }
 
 .ac-tagline {
 	font-size: clamp(19px, 2.6cqi, 28px);
-	font-weight: 800;
+	font-weight: 600;
 	line-height: 1.35;
 	text-wrap: balance;
 }
@@ -1461,7 +1463,7 @@
 
 .ac-logos .lk-logos-caption {
 	color: var(--ac-yellow);
-	font-weight: 800;
+	font-weight: 600;
 	letter-spacing: 0.3em;
 }
 
@@ -1494,7 +1496,7 @@
 	margin: 0 auto;
 	color: #fff;
 	font-size: clamp(28px, 4.6cqi, 52px);
-	font-weight: 900;
+	font-weight: 700;
 	line-height: 1.2;
 	text-wrap: balance;
 }

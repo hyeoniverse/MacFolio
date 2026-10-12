@@ -1,48 +1,53 @@
-/* 아틀리에(atelier) 모양: 옅은 종이색 바탕·먹색 글·차분한 테라코타 하나. 거대한 세리프와 아주 작은 대문자 라벨, 넉넉한 여백, 1px 선 */
+/* 아틀리에(atelier) 모양: 따뜻한 흰 바탕·짙은 글·맑은 테라코타 하나. 거대한 세리프와 아주 작은 대문자 라벨, 넉넉한 여백, 1px 선 */
 .sp[data-look='atelier'] {
-	--sp-bg: #f7f5f0;
-	--sp-alt: #efece5;
-	--sp-text: #1c1b19;
-	--sp-muted: #6f6a60;
-	--sp-line: rgba(28, 27, 25, 0.16);
-	--sp-accent: #a65a3d;
+	--sp-bg: #fcfbf8;
+	--sp-alt: #f5f3ee;
+	--sp-text: #1d1d1f;
+	--sp-muted: #6e6a63;
+	--sp-line: rgba(0, 0, 0, 0.08);
+	--sp-accent: #bf5530;
 	--sp-grad: linear-gradient(var(--sp-text), var(--sp-text));
-	--cr-bg: #faf8f3;
-	--cr-ink: #1c1b19;
-	--cr-muted: #6f6a60;
-	--cr-line: rgba(28, 27, 25, 0.16);
+	--at-body: #424245;
+	--cr-bg: #ffffff;
+	--cr-ink: #1d1d1f;
+	--cr-muted: #6e6a63;
+	--cr-line: rgba(0, 0, 0, 0.08);
 	/* 랜딩 키트 조각이 읽는 색: 테라코타 하나와 그 옅은 값, 바탕·글·선은 페이지 것 (CTA의 light 톤도 페이지 테마를 따른다) */
-	--lk-accent: #a65a3d;
-	--lk-accent-2: #c9977f;
+	--lk-accent: #bf5530;
+	--lk-accent-2: #e2a184;
+	--lk-dark-accent: #ec8a64;
 	--lk-surface: var(--cr-bg);
 	--lk-surface-2: var(--sp-alt);
 	--lk-ink: var(--sp-text);
+	--lk-body: var(--at-body);
 	--lk-muted: var(--sp-muted);
 	--lk-line: var(--sp-line);
 	--lk-light-surface: var(--sp-alt);
 	--lk-light-surface-2: var(--sp-bg);
 	--lk-light-ink: var(--sp-text);
+	--lk-light-body: var(--at-body);
 	--lk-light-muted: var(--sp-muted);
 	--lk-light-line: var(--sp-line);
 	--lk-radius: 6px;
 	letter-spacing: 0;
 }
 
-/* 다크는 먹색 바탕 */
+/* 다크는 검정 바탕에 한 단계 밝은 면 */
 :root[data-theme='dark'] .sp[data-look='atelier'] {
-	--sp-bg: #121110;
-	--sp-alt: #1b1a18;
-	--sp-text: #ece7dc;
-	--sp-muted: #9b958a;
-	--sp-line: rgba(236, 231, 220, 0.18);
-	--sp-accent: #c98066;
+	--sp-bg: #000000;
+	--sp-alt: #1c1c1e;
+	--sp-text: #f5f5f7;
+	--sp-muted: #a1a1a6;
+	--sp-line: rgba(255, 255, 255, 0.12);
+	--sp-accent: #ec8a64;
 	--sp-grad: linear-gradient(var(--sp-text), var(--sp-text));
-	--cr-bg: #1b1a18;
-	--cr-ink: #ece7dc;
-	--cr-muted: #9b958a;
-	--cr-line: rgba(236, 231, 220, 0.18);
-	--lk-accent: #c07359;
-	--lk-accent-2: #d7a893;
+	--at-body: #d2d2d7;
+	--cr-bg: #1c1c1e;
+	--cr-ink: #f5f5f7;
+	--cr-muted: #a1a1a6;
+	--cr-line: rgba(255, 255, 255, 0.12);
+	--lk-accent: #bf5530;
+	--lk-accent-2: #e2a184;
 }
 
 .at {
@@ -100,6 +105,7 @@
 .at .at-body {
 	margin-top: 16px;
 	max-width: 56ch;
+	color: var(--at-body);
 	font-size: 17px;
 	line-height: 1.7;
 }
@@ -287,7 +293,7 @@
 
 .at .at-desc {
 	max-width: 46ch;
-	color: var(--sp-muted);
+	color: var(--at-body);
 	font-size: clamp(16px, 1.8cqi, 19px);
 }
 
@@ -300,12 +306,12 @@
 	align-items: center;
 }
 
-/* 히어로의 첫 단추만 먹색 알약 (나머지는 밑줄 글) */
+/* 히어로의 첫 단추만 테라코타 알약 (나머지는 밑줄 글) */
 .at .at-hero-links .sp-pill {
 	padding: 13px 26px;
 	border-radius: 99px;
-	background: var(--sp-text);
-	color: var(--sp-bg);
+	background: var(--lk-accent);
+	color: #ffffff;
 	letter-spacing: 0.16em;
 }
 
@@ -768,8 +774,8 @@
 }
 
 .at .at-cta .lk-cta-links .sp-pill {
-	background: var(--sp-text);
-	color: var(--sp-bg);
+	background: var(--lk-accent);
+	color: #ffffff;
 }
 
 .at .at-cta a {

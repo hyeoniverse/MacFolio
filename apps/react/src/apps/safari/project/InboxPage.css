@@ -1,53 +1,61 @@
 /*
  * 메일함 모양(inbox): 뉴스레터 서비스 랜딩. 맨 위 단색 띠(큰 한 줄, 구독 칸, 휴대폰과 알림 한 장) 아래에
- * 메일 앱 3단을 제품 데모처럼 창으로 놓는다 (1px 선과 얕은 그림자 한 벌). 앱은 밝은 회색·흰 패널에 파랑 강조, 다크는 그래파이트. 앱 안의 단은 따로 스크롤한다
+ * 메일 앱 3단을 제품 데모처럼 창으로 놓는다 (옅은 선과 얕은 그림자 한 벌). 페이지와 앱 패널은 흰 바탕, 메일함 목록 단만 #f5f5f7, 파랑 강조.
+ * 다크는 검정 페이지에 #1c1c1e 창. 앱 안의 단은 따로 스크롤한다
  */
 .sp[data-look='inbox'] {
-	--sp-bg: #eef0f3;
+	--sp-bg: #ffffff;
 	--sp-alt: #ffffff;
-	--sp-text: #1c1c1e;
-	--sp-muted: #6b6f76;
-	--sp-line: #d9dce1;
-	--sp-accent: #2f6bd8;
-	--ib-side: #e4e7ec;
-	--ib-hover: #f3f5f8;
-	--ib-selected: #dce9ff;
+	--sp-text: #1d1d1f;
+	--sp-muted: #6e6e73;
+	--sp-line: #e8e8ed;
+	--sp-accent: #0071e3;
+	--ib-body: #424245;
+	--ib-side: #f5f5f7;
+	--ib-soft: #f5f5f7;
+	--ib-hover: #f5f5f7;
+	--ib-selected: #e8f1fd;
 	--cr-bg: var(--sp-alt);
 	--cr-ink: var(--sp-text);
 	--cr-muted: var(--sp-muted);
 	--cr-line: var(--sp-line);
-	--ib-page: #f7f8fb;
-	--lk-light-surface: var(--ib-page);
+	--ib-page: #ffffff;
 	background: var(--ib-page);
 }
 
 :root[data-theme='dark'] .sp[data-look='inbox'] {
-	--sp-bg: #1c1d21;
-	--sp-alt: #26282e;
-	--sp-text: #ecedef;
-	--sp-muted: #9a9ea8;
-	--sp-line: #3a3d45;
-	--sp-accent: #5b8fe6;
-	--ib-side: #15161a;
-	--ib-hover: #2d3037;
-	--ib-selected: #2a3d63;
-	--ib-page: #0b0b0c;
-	--lk-light-surface-2: #1a1b20;
-	--lk-light-ink: #ecedef;
-	--lk-light-muted: #9a9ea8;
-	--lk-light-line: rgba(255, 255, 255, 0.1);
+	--sp-bg: #1c1c1e;
+	--sp-alt: #1c1c1e;
+	--sp-text: #f5f5f7;
+	--sp-muted: #a1a1a6;
+	--sp-line: #323236;
+	--sp-accent: #2997ff;
+	--ib-body: #d2d2d7;
+	--ib-side: #232326;
+	--ib-soft: #2c2c2e;
+	--ib-hover: #26262a;
+	--ib-selected: #13335a;
+	--ib-page: #000000;
+	--lk-light-surface: #1c1c1e;
+	--lk-light-surface-2: #2c2c2e;
+	--lk-light-ink: #f5f5f7;
+	--lk-light-body: #d2d2d7;
+	--lk-light-muted: #a1a1a6;
+	--lk-light-line: rgba(255, 255, 255, 0.08);
 }
 
 .ib-page {
 	--ib-accent: var(--lk-accent, var(--sp-accent));
 	--ib-accent-2: var(--lk-accent-2, var(--ib-accent));
 	--ib-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
-	--ib-accent-ink: color-mix(in srgb, var(--ib-accent) 70%, var(--sp-text));
+	--ib-accent-ink: color-mix(in srgb, var(--ib-accent) 85%, var(--sp-text));
 	container-type: inline-size;
-	padding-bottom: 56px;
+	padding-bottom: 72px;
 }
 
 :root[data-theme='dark'] .ib-page {
+	--ib-accent: var(--lk-dark-accent, var(--lk-accent, var(--sp-accent)));
+	--ib-accent-ink: var(--ib-accent);
 	--ib-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -68,14 +76,14 @@
 	max-width: 1160px;
 	min-height: 560px;
 	margin: 0 auto;
-	padding: 80px 48px 150px;
+	padding: 112px 48px 176px;
 }
 
 .ib-hero-text {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 18px;
+	gap: 20px;
 }
 
 .ib-eyebrow {
@@ -110,17 +118,17 @@
 	margin: 0;
 	color: var(--sp-text);
 	font-size: clamp(36px, 4.6cqi, 60px);
-	font-weight: 700;
-	line-height: 1.06;
-	letter-spacing: -0.04em;
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.025em;
 	text-wrap: balance;
 }
 
 .ib-hero-lead {
 	max-width: 30em;
 	margin: 0;
-	color: var(--sp-muted);
-	font-size: 17px;
+	color: var(--ib-body);
+	font-size: 19px;
 	line-height: 1.6;
 }
 
@@ -135,6 +143,7 @@
 	border: 1px solid var(--sp-line);
 	border-radius: 12px;
 	background-color: var(--sp-alt);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .ib-hero-field {
@@ -158,9 +167,11 @@
 	font-size: 14px;
 }
 
-.ib-hero-links .sp-pill {
-	background-color: var(--sp-text);
-	color: var(--ib-page);
+/* 구독 단추가 강조색을 쓰므로 여기서 열기는 옅은 면 단추로 (검은 덩어리를 만들지 않는다) */
+.sp .ib-hero-links .sp-pill {
+	background-color: var(--ib-soft);
+	box-shadow: none;
+	color: var(--sp-text);
 }
 
 .ib-hero-links .sp-link {
@@ -191,7 +202,7 @@
 
 .ib-hero-facts strong {
 	color: var(--sp-text);
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .ib-hero-meta {
@@ -269,7 +280,7 @@
 .ib-notice-head b {
 	overflow: hidden;
 	color: var(--sp-text);
-	font-weight: 700;
+	font-weight: 600;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -291,15 +302,20 @@
 	position: relative;
 	z-index: 2;
 	max-width: 1180px;
-	margin: -112px auto 0;
+	margin: -128px auto 0;
 	padding: 0 32px;
 }
 
 .ib-cta {
+	--lk-surface: #f5f5f7;
 	max-width: 1180px;
-	margin: 96px auto 0;
+	margin: 128px auto 0;
 	overflow: hidden;
-	border-radius: 16px;
+	border-radius: 20px;
+}
+
+:root[data-theme='dark'] .ib-cta {
+	--lk-surface: #1c1c1e;
 }
 
 @container (max-width: 1180px) {
@@ -369,7 +385,7 @@
 	align-items: center;
 	gap: 8px;
 	min-width: 0;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: -0.02em;
 	white-space: nowrap;
 }
@@ -497,8 +513,9 @@
 }
 
 .ib-boxes button[aria-pressed='true'] {
-	background-color: var(--sp-accent);
-	color: #ffffff;
+	background-color: color-mix(in srgb, var(--sp-text) 8%, transparent);
+	color: var(--sp-text);
+	font-weight: 600;
 }
 
 .ib-boxes button i {
@@ -509,7 +526,7 @@
 }
 
 .ib-boxes button[aria-pressed='true'] i {
-	color: #ffffff;
+	color: var(--sp-accent);
 }
 
 .ib-boxes button > span:first-of-type {
@@ -526,15 +543,17 @@
 	padding: 0 6px;
 	border-radius: 999px;
 	background-color: color-mix(in srgb, var(--sp-text) 12%, transparent);
+	color: var(--sp-muted);
 	font-size: 11px;
-	font-weight: 700;
+	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 	text-align: center;
 	animation: ib-pop 0.35s var(--ease-out);
 }
 
 .ib-boxes button[aria-pressed='true'] .ib-badge {
-	background-color: rgba(255, 255, 255, 0.25);
+	background-color: var(--sp-accent);
+	color: #ffffff;
 }
 
 @keyframes ib-pop {
@@ -561,8 +580,8 @@
 
 .ib-list-pane h2 {
 	font-size: 20px;
-	font-weight: 800;
-	letter-spacing: -0.03em;
+	font-weight: 600;
+	letter-spacing: -0.02em;
 }
 
 .ib-list-pane > header span {
@@ -627,7 +646,7 @@
 }
 
 .ib-from {
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .ib-mail time {
@@ -638,13 +657,13 @@
 
 .ib-mail strong {
 	overflow: hidden;
-	font-weight: 600;
+	font-weight: 500;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .ib-mail[data-unread] strong {
-	font-weight: 800;
+	font-weight: 650;
 }
 
 .ib-preview {
@@ -672,7 +691,7 @@
 .ib-read {
 	max-width: 720px;
 	margin: 0 auto;
-	padding: 28px 32px 48px;
+	padding: 36px 40px 56px;
 	animation: ib-slide 0.35s var(--ease-out);
 }
 
@@ -697,8 +716,8 @@
 
 .ib-read h1 {
 	font-size: clamp(22px, 3.4cqi, 30px);
-	font-weight: 800;
-	letter-spacing: -0.03em;
+	font-weight: 600;
+	letter-spacing: -0.025em;
 	line-height: 1.2;
 }
 
@@ -741,15 +760,17 @@
 .ib-body {
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
-	margin-top: 20px;
-	font-size: 15px;
-	line-height: 1.65;
+	gap: 18px;
+	margin-top: 24px;
+	color: var(--ib-body);
+	font-size: 16px;
+	line-height: 1.6;
 }
 
 .ib-lead {
+	color: var(--sp-text);
 	font-size: 17px;
-	font-weight: 500;
+	font-weight: 400;
 }
 
 .ib-dim {
@@ -778,17 +799,16 @@
 .ib-facts li {
 	display: flex;
 	flex-direction: column;
-	padding: 14px;
+	padding: 16px;
 	border-radius: 12px;
-	background-color: var(--sp-alt);
-	box-shadow: 0 0 0 1px var(--sp-line);
+	background-color: var(--ib-soft);
 }
 
 .ib-facts strong {
-	color: var(--sp-accent);
+	color: var(--sp-text);
 	font-size: 24px;
-	font-weight: 800;
-	letter-spacing: -0.03em;
+	font-weight: 600;
+	letter-spacing: -0.02em;
 }
 
 .ib-facts li > span {
@@ -819,8 +839,7 @@
 .ib-demo {
 	padding: 16px;
 	border-radius: 12px;
-	background-color: var(--sp-alt);
-	box-shadow: 0 0 0 1px var(--sp-line);
+	background-color: var(--ib-soft);
 }
 
 .ib-gallery {
@@ -851,7 +870,8 @@
 }
 
 .ib-specs dt {
-	font-weight: 700;
+	color: var(--sp-text);
+	font-weight: 600;
 }
 
 .ib-specs dd {
@@ -930,8 +950,7 @@
 .ib-tags li {
 	padding: 3px 10px;
 	border-radius: 999px;
-	background-color: var(--sp-alt);
-	box-shadow: 0 0 0 1px var(--sp-line);
+	background-color: var(--ib-soft);
 	color: var(--sp-muted);
 	font-size: 12.5px;
 }
@@ -955,8 +974,7 @@
 	gap: 6px;
 	padding: 6px 14px;
 	border-radius: 8px;
-	background-color: var(--sp-alt);
-	box-shadow: 0 0 0 1px var(--sp-line);
+	background-color: var(--ib-soft);
 	color: var(--sp-muted);
 	font-size: 13px;
 }
@@ -1037,7 +1055,7 @@
 @container (max-width: 860px) {
 	.ib-hero-inner {
 		grid-template-columns: minmax(0, 1fr);
-		padding: 44px 24px 140px;
+		padding: 64px 24px 160px;
 	}
 
 	.ib-hero-art {
@@ -1048,7 +1066,7 @@
 @container (max-width: 600px) {
 	.ib-hero-inner {
 		min-height: 0;
-		padding: 36px 16px 120px;
+		padding: 48px 16px 136px;
 	}
 
 	.ib-hero-art {

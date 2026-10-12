@@ -1,33 +1,62 @@
 /*
- * deck (발표 슬라이드): 검은 바탕에 흰 글. 16:9 슬라이드(1280×720으로 그려 --s로 축소)가 창 가운데에 놓이고,
- * 강조 색상(--dk-hue, 채도를 낮춘 한 가지)에서 강조색(--sp-accent)을 뽑는다. --sp-grad는 공통 조각이 쓰는 이름이라
+ * deck (발표 슬라이드): Apple 키노트 톤. 페이지 테마를 따른다: 라이트는 옅은 무대(#f5f5f7) 위 흰 슬라이드에 짙은 글,
+ * 다크는 검은 무대 위 검은 슬라이드에 흰 글. 라이트에서도 숫자 장과 맺음말 장만은 어두운 슬라이드로 두어 포인트를 준다
+ * (슬라이드의 data-lk-tone='dark'). 16:9 슬라이드(1280×720으로 그려 --s로 축소)가 창 가운데에 놓이고,
+ * 강조 색상(--dk-hue)에서 산뜻한 강조색(--sp-accent)을 뽑는다. --sp-grad는 공통 조각이 쓰는 이름이라
  * 남기되 단색이다 (빛 번짐·그라데이션 글자·기울기·유리 효과 없이 절제한 키노트 톤).
  * 위 진행 막대와 n / N, 좌우 화살표, 아래 점, Esc 소터. 좁은 창(data-mode='stack')에서는 세로로 쌓인다
  */
 .sp[data-look='deck'] {
-	--sp-bg: #000000;
-	--sp-alt: #141418;
-	--sp-text: #f5f5f7;
-	--sp-muted: #9a9aa3;
-	--sp-line: #2a2a31;
-	--sp-dark-bg: #0c0c10;
-	--cr-bg: #0c0c10;
-	--cr-ink: #f5f5f7;
-	--cr-muted: #9a9aa3;
-	--cr-line: #2c2c34;
-	/* 슬라이드 밖 바탕: 라이트에서는 한 단 밝은 검정 */
-	--dk-stage: #1a1a1f;
+	--sp-bg: #ffffff;
+	--sp-alt: #f5f5f7;
+	--sp-text: #1d1d1f;
+	--sp-muted: #6e6e73;
+	--sp-body: #424245;
+	--sp-line: rgba(0, 0, 0, 0.08);
+	--sp-dark-bg: #000000;
+	/* 공통 조각의 명조 자리(장 숫자 등)도 키노트처럼 산세리프로 */
+	--sp-serif: -apple-system, MacSystemFont, Arial, sans-serif;
+	--cr-bg: #ffffff;
+	--cr-ink: #1d1d1f;
+	--cr-muted: #6e6e73;
+	--cr-line: rgba(0, 0, 0, 0.08);
+	--dk-l: 50%;
+	--dk-sat: 82%;
+	--dk-panel: #ffffff;
+	--dk-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.07);
+	/* 슬라이드 밖 바탕: 라이트에서는 아주 옅은 회색 무대 위에 흰 슬라이드 */
+	--dk-stage: #f5f5f7;
 	background-color: var(--dk-stage);
 	color: var(--sp-text);
 }
 
+/* 다크 테마, 그리고 라이트에서도 포인트로 어둡게 두는 슬라이드: 검정 바탕·#1c1c1e 면·밝은 강조색 */
+:root[data-theme='dark'] .sp[data-look='deck'],
+.sp[data-look='deck'] .dk-slide[data-lk-tone='dark'] {
+	--sp-bg: #000000;
+	--sp-alt: #1c1c1e;
+	--sp-text: #f5f5f7;
+	--sp-muted: #a1a1a6;
+	--sp-body: #d2d2d7;
+	--sp-line: rgba(255, 255, 255, 0.1);
+	--cr-bg: #000000;
+	--cr-ink: #f5f5f7;
+	--cr-muted: #a1a1a6;
+	--cr-line: rgba(255, 255, 255, 0.1);
+	--dk-l: 64%;
+	--dk-sat: 90%;
+	--dk-panel: #1c1c1e;
+	--dk-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* 다크 무대는 슬라이드(검정)보다 한 단 밝게: 슬라이드 가장자리가 무대에 묻히지 않게 */
 :root[data-theme='dark'] .sp[data-look='deck'] {
-	--dk-stage: #000000;
+	--dk-stage: #1c1c1e;
 }
 
 .dk {
 	--dk-hue: 222;
-	--dk-c1: hsl(var(--dk-hue) 62% 62%);
+	--dk-c1: hsl(var(--dk-hue) var(--dk-sat) var(--dk-l));
 	--dk-c2: var(--dk-c1);
 	--sp-accent: var(--dk-c1);
 	--sp-grad: linear-gradient(var(--dk-c1), var(--dk-c1));
@@ -50,7 +79,7 @@
 	margin-bottom: 14px;
 	color: var(--sp-accent);
 	font-size: 15px;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
 }
@@ -63,7 +92,7 @@
 
 .dk-progress {
 	height: 3px;
-	background-color: rgba(255, 255, 255, 0.1);
+	background-color: color-mix(in srgb, var(--sp-text) 8%, transparent);
 }
 
 .dk-progress i {
@@ -92,7 +121,7 @@
 
 .dk-count {
 	font-size: 15px;
-	font-weight: 700;
+	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 	letter-spacing: 0.04em;
 }
@@ -164,10 +193,7 @@
 	border-radius: 18px;
 	background-color: var(--sp-bg);
 	color: var(--sp-text);
-	box-shadow:
-		0 0 0 1px rgba(255, 255, 255, 0.08),
-		0 1px 2px rgba(0, 0, 0, 0.3),
-		0 8px 24px rgba(0, 0, 0, 0.3);
+	box-shadow: var(--dk-shadow);
 	transform: scale(var(--s));
 	transform-origin: top left;
 }
@@ -176,7 +202,14 @@
 	--lk-accent: var(--dk-c1);
 	--lk-accent-2: var(--dk-c1);
 	--lk-dark-surface: #000000;
-	--lk-dark-surface-2: #121216;
+	--lk-dark-surface-2: #1c1c1e;
+	/* 슬라이드 톤(테마 또는 어두운 포인트 장)을 키트 조각에도 */
+	--lk-surface: var(--sp-bg);
+	--lk-surface-2: var(--sp-alt);
+	--lk-ink: var(--sp-text);
+	--lk-body: var(--sp-body);
+	--lk-muted: var(--sp-muted);
+	--lk-line: var(--sp-line);
 }
 
 .dk-slide[data-current] {
@@ -221,11 +254,11 @@
 	bottom: -30px;
 	z-index: 0;
 	font-size: 200px;
-	font-weight: 800;
-	letter-spacing: -0.06em;
+	font-weight: 600;
+	letter-spacing: -0.035em;
 	line-height: 1;
 	color: transparent;
-	-webkit-text-stroke: 1px rgba(255, 255, 255, 0.14);
+	-webkit-text-stroke: 1px color-mix(in srgb, var(--sp-text) 12%, transparent);
 	pointer-events: none;
 	user-select: none;
 }
@@ -244,8 +277,8 @@
 
 .dk-slide-body h2 {
 	font-size: 44px;
-	font-weight: 800;
-	letter-spacing: -0.03em;
+	font-weight: 600;
+	letter-spacing: -0.02em;
 	line-height: 1.12;
 }
 
@@ -298,7 +331,7 @@
 	justify-self: start;
 	gap: 14px;
 	padding: 6px 18px 6px 6px;
-	border: 1px solid rgba(255, 255, 255, 0.12);
+	border: 1px solid var(--sp-line);
 	border-radius: 999px;
 	color: var(--sp-muted);
 	font-size: 16px;
@@ -317,14 +350,14 @@
 	object-fit: contain;
 }
 
-/* 이름: 거대한 흰 글자 */
+/* 이름: 거대한 글자 (굵기는 650으로 가볍게) */
 .dk-cover-name {
 	margin-top: 14px;
 	margin-bottom: 20px;
 	overflow: hidden;
 	font-size: var(--size, 120px);
-	font-weight: 900;
-	letter-spacing: -0.05em;
+	font-weight: 650;
+	letter-spacing: -0.02em;
 	line-height: 0.95;
 	white-space: nowrap;
 }
@@ -332,7 +365,7 @@
 .dk-cover-tagline {
 	max-width: 640px;
 	font-size: 34px;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: -0.02em;
 	line-height: 1.25;
 }
@@ -340,8 +373,8 @@
 .dk-cover-lead {
 	max-width: 600px;
 	margin-top: 16px;
-	color: var(--sp-muted);
-	font-size: 18px;
+	color: var(--sp-body);
+	font-size: 19px;
 	line-height: 1.6;
 }
 
@@ -359,14 +392,14 @@
 .dk-presenter span {
 	color: var(--sp-muted);
 	font-size: 12px;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
 }
 
 .dk-presenter strong {
 	font-size: 18px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .dk-presenter em {
@@ -384,8 +417,8 @@
 }
 
 .dk-links .sp-pill {
-	background: #f5f5f7;
-	color: #000000;
+	background: var(--sp-accent);
+	color: #ffffff;
 }
 
 /* 오른쪽 열: 그림은 위에, 몽이 자리는 그림 아래 오른쪽 구석에 (겹치지 않게 자리만큼 비운다) */
@@ -442,9 +475,9 @@
 }
 
 .dk-stats {
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--sp-line);
 	border-radius: 16px;
-	background: #0e0e11;
+	background: var(--sp-alt);
 }
 
 .dk-stats .lk-stat {
@@ -453,8 +486,8 @@
 
 .dk-stats .lk-stat strong {
 	font-size: 84px;
-	font-weight: 800;
-	letter-spacing: -0.05em;
+	font-weight: 600;
+	letter-spacing: -0.02em;
 	white-space: nowrap;
 }
 
@@ -487,7 +520,7 @@
 
 .dk-feature-text .dk-feature-body {
 	margin-top: 20px;
-	color: var(--sp-muted);
+	color: var(--sp-body);
 	font-size: 19px;
 	line-height: 1.6;
 }
@@ -558,8 +591,8 @@
 
 .dk-chapter-no {
 	font-size: 180px;
-	font-weight: 900;
-	letter-spacing: -0.08em;
+	font-weight: 650;
+	letter-spacing: -0.025em;
 	line-height: 0.9;
 }
 
@@ -653,8 +686,8 @@
 	background-clip: text;
 	color: transparent;
 	font-size: 40px;
-	font-weight: 900;
-	letter-spacing: -0.04em;
+	font-weight: 650;
+	letter-spacing: -0.025em;
 	line-height: 1;
 }
 
@@ -664,15 +697,15 @@
 
 .dk-points h3 {
 	font-size: 24px;
-	font-weight: 800;
+	font-weight: 600;
 	letter-spacing: -0.02em;
 	line-height: 1.25;
 }
 
 .dk-points p {
 	margin-top: 10px;
-	color: var(--sp-muted);
-	font-size: 16px;
+	color: var(--sp-body);
+	font-size: 17px;
 	line-height: 1.6;
 }
 
@@ -754,7 +787,7 @@
 	left: 0;
 	width: 100%;
 	height: 1px;
-	background: rgba(255, 255, 255, 0.22);
+	background: color-mix(in srgb, var(--sp-text) 20%, transparent);
 	transform-origin: left;
 	transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) * 120ms);
 }
@@ -786,7 +819,7 @@
 .dk-timeline time {
 	display: block;
 	font-size: 24px;
-	font-weight: 800;
+	font-weight: 600;
 	letter-spacing: -0.02em;
 	font-variant-numeric: tabular-nums;
 }
@@ -911,7 +944,7 @@
 .dk-specs dt {
 	color: var(--sp-accent);
 	font-size: 13px;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
 }
@@ -948,13 +981,13 @@
 	height: 88px;
 	margin-bottom: 28px;
 	border-radius: 22%;
-	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+	box-shadow: 0 0 0 1px var(--sp-line);
 }
 
 .dk-end-big {
 	font-size: 140px;
-	font-weight: 900;
-	letter-spacing: -0.05em;
+	font-weight: 650;
+	letter-spacing: -0.02em;
 	line-height: 1;
 }
 
@@ -1021,7 +1054,8 @@
 	overflow-y: auto;
 	border: 1px solid var(--sp-line);
 	border-radius: 14px;
-	background-color: #0c0c10;
+	background-color: var(--dk-panel);
+	box-shadow: var(--dk-shadow);
 	font-size: 14px;
 	line-height: 1.6;
 	animation: dk-notes-in 0.3s var(--ease-out);
@@ -1036,7 +1070,7 @@
 
 .dk-notes h3 {
 	font-size: 18px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .dk-notes p + p,
@@ -1062,7 +1096,7 @@
 	padding: 0;
 	border: none;
 	border-radius: 4px;
-	background-color: rgba(255, 255, 255, 0.22);
+	background-color: color-mix(in srgb, var(--sp-text) 18%, transparent);
 	cursor: pointer;
 	transition:
 		width 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
@@ -1073,11 +1107,11 @@
 .dk-dots button[data-kind='chapter'],
 .dk-dots button[data-kind='cover'],
 .dk-dots button[data-kind='end'] {
-	background-color: rgba(255, 255, 255, 0.45);
+	background-color: color-mix(in srgb, var(--sp-text) 40%, transparent);
 }
 
 .dk-dots button:hover {
-	background-color: rgba(255, 255, 255, 0.6);
+	background-color: color-mix(in srgb, var(--sp-text) 55%, transparent);
 }
 
 .dk-dots button[aria-current='true'] {
@@ -1112,7 +1146,7 @@
 
 .dk-sorter h2 {
 	font-size: 18px;
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .dk-sorter ol {
@@ -1169,15 +1203,15 @@
 	top: 6px;
 	right: 10px;
 	font-size: 34px;
-	font-weight: 800;
-	letter-spacing: -0.04em;
+	font-weight: 600;
+	letter-spacing: -0.025em;
 	color: transparent;
-	-webkit-text-stroke: 1px rgba(255, 255, 255, 0.25);
+	-webkit-text-stroke: 1px color-mix(in srgb, var(--sp-text) 22%, transparent);
 }
 
 .dk-thumb strong {
 	font-size: 14px;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1.3;
 }
 

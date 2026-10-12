@@ -125,7 +125,7 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 	};
 	const badge = [project.language, project.context].filter(Boolean).join(' · ');
 	return (
-		<section className="rp-hero" data-lk-tone="dark" aria-label="소개">
+		<section className="rp-hero" aria-label="소개">
 			<div className="rp-hero-inner">
 				{badge && (
 					<p className="rp-hero-badge">
@@ -149,11 +149,11 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 				</div>
 				<div className="rp-hero-visual">
 					<DeviceFrame kind="browser" url={project.url}>
-						<MockScreen project={project} kind="editor" tone="dark" decorative />
+						<MockScreen project={project} kind="editor" decorative />
 					</DeviceFrame>
 				</div>
 			</div>
-			<StatBand facts={project.facts} tone="dark" label="숫자" className="rp-hero-stats" />
+			<StatBand facts={project.facts} label="숫자" className="rp-hero-stats" />
 		</section>
 	);
 };

@@ -1,22 +1,23 @@
 /*
  * 가로 모양(horizontal): 세로 스크롤이 가로 트랙을 밀어 간다. Linear·Vercel 같은 절제한 제품 투어 톤:
- * 표지와 끝은 늘 어두운 단색, 그 사이 패널은 페이지 테마(밝음·어두움)를 따르며 두 단색 바탕이 번갈아 돈다.
- * 빛 번짐·그라데이션 글자·기울기·유리 효과 없이 1px 선과 얕은 그림자 한 벌만 쓴다.
- * 강조색은 아이콘에서 뽑아 .hz에 --lk-accent로 단다 (못 뽑으면 아래 기본 보라). 강조색은 점·번호 같은 작은 곳에만
+ * 표지부터 끝까지 모든 패널이 페이지 테마(밝음·어두움)를 따른다. 라이트는 흰 바탕과 아주 옅은 흰(#fbfbfd)이,
+ * 다크는 검정과 #1c1c1e 면이 번갈아 돈다. 빛 번짐·그라데이션 글자·기울기·유리 효과 없이 1px 선과 얕은 그림자 한 벌만 쓴다.
+ * 강조색은 아이콘에서 뽑아 .hz에 --lk-accent로 단다 (못 뽑으면 아래 기본 보라). 강조색은 단추·점·번호 같은 작은 곳에만
  */
 .sp[data-look='horizontal'] {
 	--hz-bg-0: #ffffff;
-	--hz-bg-1: #f6f7f9;
-	--hz-ink-0: #0b0c0f;
-	--hz-muted-0: #5b606d;
-	--hz-line-0: rgba(10, 12, 20, 0.09);
+	--hz-bg-1: #fbfbfd;
+	--hz-ink-0: #1d1d1f;
+	--hz-body-0: #424245;
+	--hz-muted-0: #6e6e73;
+	--hz-line-0: rgba(0, 0, 0, 0.07);
 	--hz-card-0: #ffffff;
-	--hz-shadow-0: 0 1px 2px rgba(10, 12, 20, 0.05), 0 8px 24px -12px rgba(10, 12, 20, 0.1);
+	--hz-shadow-0: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 20px rgba(0, 0, 0, 0.05);
 	--hz-view: 100vh;
 	--hz-w: 100%;
 	--hz-p: 0;
-	--lk-accent: #5e5ad8;
-	--lk-accent-2: #5e5ad8;
+	--lk-accent: #5856d6;
+	--lk-accent-2: #5856d6;
 	--sp-bg: var(--hz-bg-0);
 	--sp-text: var(--hz-ink-0);
 	--sp-accent: var(--lk-accent);
@@ -24,12 +25,13 @@
 }
 
 :root[data-theme='dark'] .sp[data-look='horizontal'] {
-	--hz-bg-0: #0b0b0c;
-	--hz-bg-1: #111113;
-	--hz-ink-0: #f3f4f6;
-	--hz-muted-0: #9aa0ad;
-	--hz-line-0: rgba(255, 255, 255, 0.08);
-	--hz-card-0: #151517;
+	--hz-bg-0: #000000;
+	--hz-bg-1: #0d0d0f;
+	--hz-ink-0: #f5f5f7;
+	--hz-body-0: #d2d2d7;
+	--hz-muted-0: #a1a1a6;
+	--hz-line-0: rgba(255, 255, 255, 0.1);
+	--hz-card-0: #1c1c1e;
 	--hz-shadow-0: none;
 }
 
@@ -45,7 +47,7 @@
 	outline-offset: 2px;
 }
 
-/* ─── 위 막대: 어두운 알약 하나에 이전·번호·진행·다음 ─── */
+/* ─── 위 막대: 페이지 톤의 알약 하나에 이전·번호·진행·다음 ─── */
 .hz-bar {
 	position: sticky;
 	top: 0;
@@ -68,13 +70,11 @@
 	height: 38px;
 	padding: 0 5px;
 	box-sizing: border-box;
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--hz-line-0);
 	border-radius: 999px;
-	background: #161618;
-	box-shadow:
-		0 1px 2px rgba(0, 0, 0, 0.2),
-		0 8px 24px -12px rgba(0, 0, 0, 0.35);
-	color: #f5f5f7;
+	background: var(--hz-card-0);
+	box-shadow: var(--hz-shadow-0);
+	color: var(--hz-ink-0);
 	font-size: 12px;
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
@@ -90,7 +90,7 @@
 	height: 28px;
 	border: 0;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.1);
+	background: color-mix(in srgb, var(--hz-ink-0) 6%, transparent);
 	color: inherit;
 	font-size: 11px;
 	cursor: pointer;
@@ -98,7 +98,7 @@
 }
 
 .hz-nav:hover:not(:disabled) {
-	background: rgba(255, 255, 255, 0.18);
+	background: color-mix(in srgb, var(--hz-ink-0) 12%, transparent);
 }
 
 .hz-nav:disabled {
@@ -114,7 +114,7 @@
 	flex: 1;
 	height: 3px;
 	border-radius: 3px;
-	background: rgba(255, 255, 255, 0.14);
+	background: color-mix(in srgb, var(--hz-ink-0) 10%, transparent);
 	overflow: hidden;
 }
 
@@ -123,7 +123,7 @@
 	width: var(--fill, 0%);
 	height: 100%;
 	border-radius: inherit;
-	background: #f5f5f7;
+	background: var(--lk-accent);
 	transition: width 0.4s var(--ease-out);
 }
 
@@ -188,6 +188,7 @@
 .hz-panel {
 	--hz-bg: var(--hz-bg-0);
 	--hz-ink: var(--hz-ink-0);
+	--hz-body: var(--hz-body-0);
 	--hz-muted: var(--hz-muted-0);
 	--hz-line: var(--hz-line-0);
 	--hz-card: var(--hz-card-0);
@@ -197,7 +198,7 @@
 	flex-direction: column;
 	justify-content: center;
 	box-sizing: border-box;
-	padding: 84px 6.5cqi 56px;
+	padding: 96px 7cqi 64px;
 	overflow: hidden;
 	background: var(--hz-bg);
 	color: var(--hz-ink);
@@ -208,23 +209,13 @@
 	--lk-surface: var(--hz-bg);
 	--lk-surface-2: color-mix(in srgb, var(--hz-ink) 5%, var(--hz-bg));
 	--lk-ink: var(--hz-ink);
+	--lk-body: var(--hz-body);
 	--lk-muted: var(--hz-muted);
 	--lk-line: var(--hz-line);
 }
 
 .hz-panel[data-tone='1'] {
 	--hz-bg: var(--hz-bg-1);
-}
-
-/* 표지와 끝은 테마와 상관없이 어둡다 */
-.hz-panel[data-lk-tone='dark'] {
-	--hz-bg: #0b0b0c;
-	--hz-ink: #f5f5f7;
-	--hz-muted: #a1a1aa;
-	--hz-line: rgba(255, 255, 255, 0.1);
-	--hz-card: #151517;
-	--hz-shadow: none;
-	--lk-dark-surface: #0b0b0c;
 }
 
 .hz-text {
@@ -236,11 +227,11 @@
 	color: var(--hz-ink);
 }
 
-/* 주 단추: 흰(밝은 바탕에서는 검은) 알약, 나머지 링크는 1px 선 알약 */
+/* 주 단추: 강조색 알약, 나머지 링크는 1px 선 알약 */
 .sp[data-look='horizontal'] .hz-links .sp-pill {
 	padding: 12px 22px;
-	background: var(--hz-ink);
-	color: var(--hz-bg);
+	background: var(--hz-accent);
+	color: #ffffff;
 	font-weight: 600;
 }
 
@@ -302,7 +293,7 @@
 	gap: 10px;
 	max-width: 100%;
 	padding: 6px 14px 6px 10px;
-	border: 1px solid rgba(255, 255, 255, 0.12);
+	border: 1px solid var(--hz-line);
 	border-radius: 999px;
 	color: var(--hz-muted);
 	font-size: 13px;
@@ -332,25 +323,25 @@
 	width: 34px;
 	height: 34px;
 	border-radius: 9px;
-	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+	box-shadow: 0 0 0 1px var(--hz-line);
 }
 
-/* 큰 한 줄: 흰 단색, 굵고 자간을 좁게 */
+/* 큰 한 줄: 글자색 단색, 600 굵기에 자간을 살짝 좁게 */
 .hz-tagline {
 	margin-top: 18px;
 	color: var(--hz-ink);
 	font-size: clamp(40px, 5.4cqi, 84px);
-	font-weight: 700;
-	letter-spacing: -0.045em;
-	line-height: 1.04;
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.1;
 	text-wrap: balance;
 }
 
 .hz-lead {
 	max-width: 520px;
-	margin-top: 22px;
-	color: var(--hz-muted);
-	font-size: clamp(16px, 1.4cqi, 19px);
+	margin-top: 24px;
+	color: var(--hz-body);
+	font-size: clamp(17px, 1.4cqi, 19px);
 	line-height: 1.6;
 	text-wrap: pretty;
 }
@@ -389,8 +380,8 @@
 .hz-logos {
 	position: relative;
 	z-index: 1;
-	margin: 0 -6.5cqi;
-	padding: 20px 6.5cqi 26px;
+	margin: 0 -7cqi;
+	padding: 20px 7cqi 26px;
 	border-top: 1px solid var(--hz-line);
 }
 
@@ -470,18 +461,18 @@
 
 .hz-feature h2 {
 	margin-top: 20px;
-	font-size: min(clamp(34px, 4.4cqi, 64px), calc(var(--hz-view) * 0.075));
-	font-weight: 700;
-	letter-spacing: -0.04em;
-	line-height: 1.06;
+	font-size: min(clamp(34px, 4.4cqi, 60px), calc(var(--hz-view) * 0.072));
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.12;
 	text-wrap: balance;
 }
 
 .hz-body {
 	max-width: 30em;
-	margin-top: 20px;
-	color: var(--hz-muted);
-	font-size: clamp(17px, 1.5cqi, 20px);
+	margin-top: 22px;
+	color: var(--hz-body);
+	font-size: clamp(17px, 1.4cqi, 19px);
 	line-height: 1.6;
 	text-wrap: pretty;
 }
@@ -554,20 +545,20 @@
 	background: color-mix(in srgb, var(--hz-ink) 4%, var(--hz-card));
 	color: var(--hz-ink);
 	font-size: 15px;
-	font-weight: 700;
+	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 }
 
 .hz-cards h3 {
 	font-size: clamp(17px, 1.5cqi, 20px);
-	font-weight: 650;
+	font-weight: 600;
 	letter-spacing: -0.02em;
 }
 
 .hz-cards p {
 	margin-top: 8px;
-	color: var(--hz-muted);
-	font-size: 14px;
+	color: var(--hz-body);
+	font-size: 15px;
 	line-height: 1.55;
 }
 
@@ -660,14 +651,14 @@
 
 .hz-rail time {
 	font-size: clamp(22px, 2.4cqi, 34px);
-	font-weight: 700;
-	letter-spacing: -0.04em;
+	font-weight: 600;
+	letter-spacing: -0.02em;
 	line-height: 1;
 	font-variant-numeric: tabular-nums;
 }
 
 .hz-rail span {
-	color: var(--hz-muted);
+	color: var(--hz-body);
 	font-size: 14px;
 	line-height: 1.45;
 }
@@ -700,8 +691,8 @@
 .hz-col-title {
 	margin: 8px 0 22px;
 	font-size: clamp(22px, 2.4cqi, 32px);
-	font-weight: 700;
-	letter-spacing: -0.03em;
+	font-weight: 600;
+	letter-spacing: -0.02em;
 	line-height: 1.2;
 }
 
@@ -748,7 +739,7 @@
 	font-size: 10px;
 }
 
-/* ─── 끝: 행동 유도 띠가 패널을 채운다 ─── */
+/* ─── 끝: 행동 유도 띠가 패널을 채운다 (띠는 패널의 --lk-* 톤, 곧 페이지 테마를 따른다) ─── */
 .hz-end {
 	padding: 0;
 }

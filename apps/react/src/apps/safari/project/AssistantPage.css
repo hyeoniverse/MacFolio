@@ -1,29 +1,38 @@
-/* 설정 도우미 모양(assistant): 옅은 회색 단색 바탕 위의 큰 둥근 창(그림자 한 벌), 왼쪽 단계 목록, 한 단계가 한 화면 */
+/* 설정 도우미 모양(assistant): 아주 옅은 바탕(#f5f5f7) 위의 흰 둥근 창(얕은 그림자 한 벌), 왼쪽 단계 목록, 한 단계가 한 화면 */
 .sp[data-look='assistant'] {
-	--sp-accent: #2f7bd6;
+	--sp-accent: #0071e3;
 	--sp-grad: linear-gradient(var(--sp-text), var(--sp-text));
-	--asst-a: #2f7bd6;
+	--asst-a: #0071e3;
+	--asst-body: #424245;
 	--asst-win: #ffffff;
-	--asst-side: #f7f7f8;
-	--asst-line: rgba(0, 0, 0, 0.08);
-	--asst-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.07);
+	--asst-side: #fbfbfd;
+	--asst-face: #f5f5f7;
+	--asst-line: rgba(0, 0, 0, 0.06);
+	--asst-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
 	--cr-bg: transparent;
 	--cr-line: var(--asst-line);
 	/* 랜딩 키트 조각(기기 틀, 가짜 화면, 항목 비주얼, 기술 줄)이 읽는 색: 파랑 하나와 그 옅은 값 */
-	--lk-accent: #2f7bd6;
-	--lk-accent-2: #7ea7da;
+	--lk-accent: #0071e3;
+	--lk-accent-2: #6aa9f0;
+	--lk-dark-accent: #2997ff;
+	--lk-line: var(--asst-line);
 	--lk-radius: 12px;
-	background: #f1f1f3;
+	background: #f5f5f7;
 }
 
 :root[data-theme='dark'] .sp[data-look='assistant'] {
-	--asst-a: #4a90e2;
-	--asst-win: #161618;
-	--asst-side: #1c1c1f;
-	--asst-line: rgba(255, 255, 255, 0.09);
-	--asst-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
-	--lk-accent: #4a90e2;
-	background: #0b0b0c;
+	--sp-muted: #a1a1a6;
+	--asst-a: #2997ff;
+	--asst-body: #d2d2d7;
+	--asst-win: #1c1c1e;
+	--asst-side: #19191b;
+	--asst-face: #2c2c2e;
+	--asst-line: rgba(255, 255, 255, 0.08);
+	--asst-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+	--lk-accent: #0071e3;
+	--lk-surface: #1c1c1e;
+	--lk-surface-2: #2c2c2e;
+	background: #000000;
 }
 
 .asst {
@@ -294,7 +303,7 @@
 	margin-top: 6px;
 	font-size: clamp(28px, 3.6cqi, 40px);
 	font-weight: 600;
-	letter-spacing: -0.03em;
+	letter-spacing: -0.02em;
 	line-height: 1.12;
 	text-wrap: balance;
 }
@@ -341,9 +350,9 @@
 .asst-lead {
 	max-width: 520px;
 	margin-top: 16px;
-	color: var(--sp-muted);
-	font-size: 16px;
-	line-height: 1.55;
+	color: var(--asst-body);
+	font-size: 17px;
+	line-height: 1.6;
 }
 
 .asst-welcome .asst-meta {
@@ -373,9 +382,9 @@
 	flex-direction: column;
 	gap: 8px;
 	padding: 22px 20px;
-	border: 1px solid var(--asst-line);
+	border: 0;
 	border-radius: 16px;
-	background: var(--asst-side);
+	background: var(--asst-face);
 	animation: asst-rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 	animation-delay: calc(var(--i, 0) * 80ms + 120ms);
 }
@@ -383,8 +392,8 @@
 .asst-facts strong {
 	color: var(--sp-text);
 	font-size: clamp(30px, 4.6cqi, 44px);
-	font-weight: 700;
-	letter-spacing: -0.03em;
+	font-weight: 600;
+	letter-spacing: -0.02em;
 	line-height: 1.05;
 }
 
@@ -504,7 +513,7 @@
 }
 
 .asst-pick button:hover {
-	background: var(--asst-side);
+	background: var(--asst-face);
 }
 
 .asst-pick button i {
@@ -542,9 +551,9 @@
 
 .asst-detail p {
 	margin-top: 10px;
-	color: var(--sp-muted);
-	font-size: 15px;
-	line-height: 1.55;
+	color: var(--asst-body);
+	font-size: 16px;
+	line-height: 1.6;
 }
 
 .asst-detail-media {
@@ -664,7 +673,7 @@
 
 .asst-timeline time {
 	font-size: 13px;
-	font-weight: 700;
+	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 	color: var(--asst-a);
 }
@@ -696,7 +705,7 @@
 }
 
 .asst-specs dd {
-	color: var(--sp-muted);
+	color: var(--asst-body);
 	line-height: 1.5;
 }
 

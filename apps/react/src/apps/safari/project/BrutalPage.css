@@ -1,5 +1,5 @@
 /* 브루탈리즘 모양(brutal): 종이(흰)·잉크(검)·형광 세 색. 4px 선, 딱딱한 그림자는 제품 창 한 곳만, 라벨 11px ↔ 이름 160px의 극단적인 크기 대비.
-   격자는 바탕을 잉크로 칠하고 4px 틈을 두어 블록 사이가 곧 선이 된다 */
+   격자는 바탕을 잉크로 칠하고 4px 틈을 두어 블록 사이가 곧 선이 된다. 면은 거의 다 종이: 잉크로 칠한 면은 폴더 구조 한 곳뿐, 형광은 띠·숫자·장·마무리에 */
 .sp[data-look='brutal'] {
 	--br-paper: #ffffff;
 	--br-ink: #000000;
@@ -262,8 +262,8 @@
 	overflow: hidden;
 	padding: 8px 0;
 	border-bottom: var(--br-line) solid var(--br-ink);
-	background: var(--br-ink);
-	color: var(--br-paper);
+	background: var(--br-paper);
+	color: var(--br-ink);
 	font-size: 15px;
 	font-weight: 700;
 	letter-spacing: 0.06em;
@@ -414,12 +414,12 @@
 	background: var(--br-paper) repeating-linear-gradient(135deg, var(--br-ink) 0 2px, transparent 2px 12px);
 }
 
-/* 묶음 제목: 격자 한 줄, 잉크 바탕에 큰 글자 */
+/* 묶음 제목: 격자 한 줄, 종이 바탕에 큰 잉크 글자 */
 .br-h2 {
 	margin: 0;
-	padding: 18px 20px 14px;
-	background: var(--br-ink);
-	color: var(--br-paper);
+	padding: 22px 20px 16px;
+	background: var(--br-paper);
+	color: var(--br-ink);
 	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
 	font-size: clamp(34px, 6cqi, 64px);
 	font-weight: 900;
@@ -631,7 +631,7 @@
 	text-transform: uppercase;
 }
 
-/* 기술 목록: 잉크 블록에 큰 글자 */
+/* 기술 목록: 종이 블록에 큰 글자, 올리면 줄이 반전 */
 .br-stack ul {
 	margin: 0;
 	padding: 0;
@@ -646,12 +646,12 @@
 
 .br-stack li {
 	padding: 6px 0;
-	border-bottom: 2px solid var(--br-paper);
+	border-bottom: 2px solid var(--br-ink);
 }
 
 .br-stack li:hover {
-	background: var(--br-paper);
-	color: var(--br-ink);
+	background: var(--br-ink);
+	color: var(--br-paper);
 }
 
 /* 장 제목 블록 */
