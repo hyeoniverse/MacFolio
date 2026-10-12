@@ -296,6 +296,12 @@
 	line-height: 1.5;
 }
 
+.cn-caption .cn-caption-detail {
+	margin-top: 10px;
+	color: var(--sp-muted);
+	font-size: clamp(14px, 1.6cqi, 16px);
+}
+
 .cn-counter {
 	--in: clamp(0, calc((var(--p) - 0.15) / 0.15), 1);
 	position: absolute;
@@ -412,7 +418,7 @@
 
 .cn-build {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr));
 	gap: 0 48px;
 	list-style: none;
 }
@@ -423,6 +429,60 @@
 	gap: 12px;
 	padding: 28px 0;
 	border-top: 1px solid var(--sp-line);
+}
+
+.cn-build li:last-child,
+.cn-steps li:last-child {
+	grid-column: span var(--last, 1);
+}
+
+.cn .cn-build .cn-detail,
+.cn .cn-steps .cn-detail {
+	margin-top: 10px;
+	color: var(--sp-muted);
+	opacity: 0.85;
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+/* 쓰는 법: 거대한 번호 아래 짧은 글이 나란히 */
+.cn-steps {
+	display: grid;
+	grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+	gap: 0 40px;
+	list-style: none;
+}
+
+.cn-steps li {
+	padding: 24px 0 8px;
+	border-top: 1px solid var(--sp-line);
+}
+
+.cn-step-no {
+	display: block;
+	margin-bottom: 18px;
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: clamp(56px, 8cqi, 96px);
+	font-weight: 800;
+	letter-spacing: -0.06em;
+	line-height: 0.9;
+}
+
+.cn-steps h3 {
+	font-size: 21px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.cn .cn-steps p {
+	margin-top: 8px;
+	color: var(--sp-muted);
+	font-size: 16px;
+	letter-spacing: -0.01em;
+	line-height: 1.5;
 }
 
 .cn-no {
@@ -554,6 +614,27 @@
 	line-height: 0.95;
 }
 
+/* 엔딩 크레디트처럼: 기술 이름이 가운데 한 줄로 흐른다 */
+.cn-cast {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px 0;
+	max-width: 760px;
+	margin: 28px auto 0;
+	list-style: none;
+	color: var(--sp-muted);
+	font-size: 15px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.cn-cast li + li::before {
+	margin: 0 14px;
+	color: var(--sp-accent);
+	content: '·';
+}
+
 .cn .cn-links {
 	margin-top: 36px;
 }
@@ -569,8 +650,14 @@
 /* ─── 좁은 창 ─── */
 @container (max-width: 600px) {
 	.cn-build,
-	.cn-sheet {
+	.cn-sheet,
+	.cn-steps {
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.cn-build li:last-child,
+	.cn-steps li:last-child {
+		grid-column: auto;
 	}
 
 	.cn-specs div,

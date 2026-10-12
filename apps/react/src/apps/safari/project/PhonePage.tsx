@@ -57,7 +57,7 @@ function buildSteps(project: Project): Step[] {
 			point,
 		})),
 	];
-	if (project.specs.length > 0 || project.contributions.length > 0)
+	if (project.specs.length > 0 || project.contributions.length > 0 || (project.timeline?.length ?? 0) > 0)
 		steps.push({ key: 'specs', kind: 'specs', title: '기술 사양' });
 	// 소개는 대표 화면을 이미 받았으니 나머지는 두 번째 그림부터 돌린다
 	return assignImages(steps, pool.length > 1 ? [...pool.slice(1), pool[0]] : pool);
@@ -227,6 +227,11 @@ const PhonePage: React.FC<{ project: Project }> = ({ project }) => {
 	const indexOf = (step: Step) => steps.indexOf(step);
 	const specsStep = steps.find((step) => step.kind === 'specs');
 	const meta = [project.context, project.role, project.period].filter(Boolean);
+	const tech =
+		project.language && !project.stack.includes(project.language)
+			? [project.language, ...project.stack]
+			: project.stack;
+	const gallery = project.gallery ?? [];
 
 	return (
 		<div ref={root} className="ph">
@@ -258,6 +263,13 @@ const PhonePage: React.FC<{ project: Project }> = ({ project }) => {
 								<ul className="ph-meta">
 									{meta.map((line) => (
 										<li key={line}>{line}</li>
+									))}
+								</ul>
+							)}
+							{tech.length > 0 && (
+								<ul className="ph-tech" aria-label="기술">
+									{tech.map((item) => (
+										<li key={item}>{item}</li>
 									))}
 								</ul>
 							)}
@@ -354,6 +366,27 @@ const PhonePage: React.FC<{ project: Project }> = ({ project }) => {
 					)}
 				</div>
 			</div>
+
+			{/* 앱스토어 미리 보기처럼: 화면 모음을 작은 폰 화면으로 나란히 (두 장 이상일 때) */}
+			{gallery.length > 1 && (
+				<Region label="화면 모음" className="ph-gallery">
+					<h2 data-reveal="">화면 모음</h2>
+					<ul>
+						{gallery.map((shot) => (
+							<li key={shot.src} data-reveal="">
+								<div className="ph-mini">
+									{isVideo(shot.src) ? (
+										<video src={shot.src} muted loop playsInline autoPlay aria-label={shot.caption} />
+									) : (
+										<img src={shot.src} alt={shot.caption} loading="lazy" />
+									)}
+								</div>
+								<p>{shot.caption}</p>
+							</li>
+						))}
+					</ul>
+				</Region>
+			)}
 		</div>
 	);
 };

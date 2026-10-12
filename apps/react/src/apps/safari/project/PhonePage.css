@@ -510,6 +510,86 @@
 	color: var(--sp-muted);
 }
 
+/* 기술: 강조색 테두리의 작은 알약 */
+.ph-tech {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 12px;
+	padding: 0;
+	list-style: none;
+}
+
+.ph-tech li {
+	padding: 4px 10px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--ph-mint) 16%, transparent);
+	color: var(--sp-text);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+/* 마지막 단계가 기술 사양이면 그 자체로 길어 가운데까지 올라오므로 아래를 조금만 비운다 */
+.ph-story:has(> .ph-specs:last-child) {
+	padding-bottom: 12vh;
+}
+
+/* ─── 화면 모음: 작은 폰 화면이 나란히 ─── */
+.ph-gallery {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 48px 40px 0;
+}
+
+.ph-gallery h2 {
+	margin-bottom: 28px;
+	font-size: clamp(28px, 4cqi, 44px);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+}
+
+.ph-gallery ul {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 28px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ph-gallery li {
+	width: clamp(150px, 18cqi, 210px);
+}
+
+.ph-mini {
+	aspect-ratio: 9 / 19.2;
+	padding: 7px;
+	border-radius: 30px;
+	background: var(--ph-bezel);
+	box-shadow:
+		inset 0 0 0 1px var(--ph-bezel-edge),
+		0 18px 40px rgba(10, 14, 40, 0.25);
+}
+
+.ph-mini img,
+.ph-mini video {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border-radius: 24px;
+	object-fit: cover;
+	object-position: top;
+}
+
+.ph-gallery p {
+	margin-top: 12px;
+	color: var(--sp-muted);
+	font-size: 14px;
+	font-weight: 600;
+	text-align: center;
+}
+
 /* 기술 사양 */
 .ph-specs h4 {
 	margin-top: 36px;
@@ -669,6 +749,26 @@
 	.ph-step {
 		min-height: 0;
 		padding: 40px 0 40px 18px;
+	}
+
+	.ph-gallery {
+		padding: 32px 20px 0;
+	}
+
+	/* 좁은 창: 옆으로 넘기는 띠 */
+	.ph-gallery ul {
+		display: flex;
+		justify-content: flex-start;
+		gap: 16px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		padding-bottom: 8px;
+	}
+
+	.ph-gallery li {
+		flex: none;
+		width: 150px;
+		scroll-snap-align: start;
 	}
 
 	.ph-num {

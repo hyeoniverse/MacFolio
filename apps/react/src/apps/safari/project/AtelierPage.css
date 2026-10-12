@@ -219,6 +219,14 @@
 	margin-top: 22px;
 }
 
+.at .at-hero-icon img {
+	display: block;
+	width: 56px;
+	height: 56px;
+	border-radius: 14px;
+	object-fit: contain;
+}
+
 .at .at-logo img {
 	display: block;
 	max-width: min(520px, 60cqi);
@@ -385,6 +393,15 @@
 	border-top: 1px solid var(--sp-line);
 }
 
+/* 그림 없는 항목은 글만이라 위아래 여백을 줄여 빈 띠가 생기지 않게 */
+.at-hl-flow > li:not(:has(.at-curtain, .at-media:not(:empty), .at-demo)) {
+	padding-bottom: 40px;
+}
+
+.at-hl-flow > li:not(:has(.at-curtain, .at-media:not(:empty), .at-demo)) + li {
+	padding-top: 40px;
+}
+
 .at-hl-flow h3 {
 	margin-top: 12px;
 }
@@ -396,6 +413,10 @@
 .at-points .at-media,
 .at-points .at-demo {
 	margin-top: 36px;
+}
+
+.at .at-media:empty {
+	display: none;
 }
 
 .at .at-media img,
@@ -440,6 +461,13 @@
 /* 그림이 없는 항목은 글이 한 열 전체로 */
 .at-points > li:has(> :only-child) {
 	grid-template-columns: minmax(0, 1fr);
+}
+
+/* 장 안 항목이 모두 글뿐이면 한 줄에 나란히 (둘이면 두 칸, 셋이면 세 칸) */
+.at-points:not(:has(.at-curtain, .at-media:not(:empty), .at-demo)) {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	column-gap: 48px;
 }
 
 .at-points > li > .at-curtain,
@@ -553,28 +581,38 @@
 	margin-top: 0;
 }
 
+.at-rules .at-body p {
+	margin: 0;
+}
+
+.at-rules .at-detail {
+	margin-top: 10px;
+}
+
 /* ─── 진행 과정: 얇은 세로 선과 날짜 ─── */
+/* 넓은 창: 가로로 놓인 가는 선 위의 점과 날짜 (칸이 모자라면 다음 줄로) */
 .at-timeline {
 	position: relative;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	row-gap: 40px;
 	margin-top: 48px;
-	margin-left: 8px;
-	padding-left: 40px;
-	border-left: 1px solid var(--sp-line);
 	list-style: none;
 }
 
 .at-timeline li {
 	position: relative;
 	display: grid;
-	grid-template-columns: 120px minmax(0, 1fr);
-	gap: 24px;
-	padding: 0 0 36px;
+	align-content: start;
+	gap: 10px;
+	padding: 28px 24px 0 0;
+	border-top: 1px solid var(--sp-line);
 }
 
 .at-timeline li::before {
 	position: absolute;
-	top: 12px;
-	left: -44px;
+	top: -4px;
+	left: 0;
 	width: 7px;
 	height: 7px;
 	border-radius: 50%;
@@ -629,6 +667,17 @@
 
 .at-table dt {
 	color: var(--sp-muted);
+}
+
+.at-stack {
+	padding: 20px 0 0;
+}
+
+.at-stack p {
+	margin-top: 10px;
+	font-family: var(--sp-serif);
+	font-size: 17px;
+	line-height: 1.6;
 }
 
 /* ─── 마무리: 다음 작업처럼 큰 링크 ─── */
@@ -707,9 +756,28 @@
 		grid-column: 2;
 	}
 
-	.at-timeline li {
+	/* 좁은 창: 진행 과정은 왼쪽 세로 선을 따라 */
+	.at-timeline {
 		grid-template-columns: minmax(0, 1fr);
+		row-gap: 0;
+		margin-left: 8px;
+		padding-left: 32px;
+		border-left: 1px solid var(--sp-line);
+	}
+
+	.at-timeline li {
 		gap: 4px;
+		padding: 0 0 28px;
+		border-top: 0;
+	}
+
+	.at-timeline li::before {
+		top: 10px;
+		left: -36px;
+	}
+
+	.at-points:not(:has(.at-curtain, .at-media:not(:empty), .at-demo)) {
+		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.at-gallery li {

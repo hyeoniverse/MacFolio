@@ -112,25 +112,27 @@ function splitBody(body: string): string[] {
 
 /** 프로젝트 데이터에서 선택지를 만든다. 비어 있는 주제는 선택지에 안 나온다. chapters는 두 번째 선택지(sub)로 */
 function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cover: string | undefined) {
+	// 항목 하나는 설명 한 장, 자세히가 있으면 이어서 한 장 더 (같은 제목과 장면)
 	const points = (items: ProjectPoint[]): Line[] =>
-		items.map((p) => ({ title: p.title, body: p.body, media: pointMedia(p) }));
+		items.flatMap((p) => {
+			const media = pointMedia(p);
+			return [
+				{ title: p.title, body: p.body, media },
+				...(p.detail ? [{ title: p.title, body: p.detail, media }] : []),
+			];
+		});
 	const chapters: Topic[] = (project.chapters ?? [])
-		.map((chapter, i) => ({
-			id: `chapter-${i}`,
-			label: chapter.title,
-			lines: [
-				...(chapter.lead
-					? [
-							{
-								title: chapter.title,
-								body: chapter.lead,
-								media: chapter.image ? [{ src: chapter.image.src, caption: chapter.image.alt }] : undefined,
-							},
-						]
-					: []),
-				...points(chapter.points),
-			],
-		}))
+		.map((chapter, i) => {
+			const image = chapter.image ? [{ src: chapter.image.src, caption: chapter.image.alt }] : undefined;
+			const lines = points(chapter.points);
+			// 머리말이 없으면 장 그림은 첫 항목의 장면으로 (그 항목에 그림이 없을 때)
+			if (!chapter.lead && image && lines[0] && !lines[0].media?.length) lines[0] = { ...lines[0], media: image };
+			return {
+				id: `chapter-${i}`,
+				label: chapter.title,
+				lines: [...(chapter.lead ? [{ title: chapter.title, body: chapter.lead, media: image }] : []), ...lines],
+			};
+		})
 		.filter((t) => t.lines.length > 0);
 	const topics: Topic[] = [
 		{ id: 'highlights', label: '주요 기능 알려줘', lines: points(project.highlights) },
@@ -144,7 +146,8 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 		{
 			id: 'controls',
 			label: '조작법',
-			lines: (project.controls ?? []).map((c) => ({ title: c.keys.join(' + '), body: c.label })),
+			// 한 줄의 키들은 같은 일을 하는 다른 키다 (Space 또는 ↑): 더하기가 아니라 빗금으로 잇는다
+			lines: (project.controls ?? []).map((c) => ({ title: c.keys.join(' / '), body: c.label })),
 		},
 		{
 			id: 'timeline',
@@ -154,15 +157,22 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 		{
 			id: 'specs',
 			label: '기술 사양',
-			lines: project.specs.map((s) => ({ title: s.label, body: s.value })),
+			lines: [
+				...project.specs.map((s) => ({ title: s.label, body: s.value })),
+				// 쓴 기술 묶음은 사양 끝에 한 장으로
+				...(project.stack.length > 0 ? [{ title: '쓴 기술', body: project.stack.join(', ') }] : []),
+			],
 		},
 		{
 			id: 'contributions',
 			label: '맡은 일',
-			lines: project.contributions.map((c, i) => ({
-				title: `맡은 일 ${i + 1}/${project.contributions.length}`,
-				body: c,
-			})),
+			lines: [
+				...(project.role ? [{ title: '맡은 역할', body: project.role }] : []),
+				...project.contributions.map((c, i) => ({
+					title: `맡은 일 ${i + 1}/${project.contributions.length}`,
+					body: c,
+				})),
+			],
 		},
 		// 장 묶음: 고르면 장마다 하나씩 고르는 두 번째 선택지가 열린다 (lines는 자리만)
 		{ id: MORE_TOPIC, label: '더 들려줄 이야기 있어?', lines: chapters.length > 0 ? [{ body: '' }] : [] },

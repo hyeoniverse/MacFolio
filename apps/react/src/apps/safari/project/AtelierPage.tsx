@@ -273,13 +273,18 @@ const Gallery: React.FC<{ shots: NonNullable<Project['gallery']> }> = ({ shots }
  */
 const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
-	const meta = [project.context, project.period].filter(Boolean).join(' · ');
+	const meta = [project.context, project.period, project.language].filter(Boolean).join(' · ');
 	const repo = project.url.replace(/^https?:\/\//, '');
 
 	return (
 		<div ref={root} className="at">
 			<header className="at-hero">
 				<Lines className="at-hero-text">
+					{project.icon && !project.logo && (
+						<Line as="div" className="at-hero-icon">
+							<img src={project.icon} alt="" />
+						</Line>
+					)}
 					{meta && <Line className="at-label">{meta}</Line>}
 					{project.logo ? (
 						<Line i={1} as="div" className="at-logo">
@@ -363,9 +368,16 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 								<h3>
 									<Line i={1}>{point.title}</Line>
 								</h3>
-								<p className="at-body">
-									<Line i={2}>{point.body}</Line>
-								</p>
+								<div className="at-body">
+									<p>
+										<Line i={2}>{point.body}</Line>
+									</p>
+									{point.detail && (
+										<p className="at-detail">
+											<Line i={3}>{point.detail}</Line>
+										</p>
+									)}
+								</div>
 							</li>
 						))}
 					</ol>
@@ -387,9 +399,16 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 								<h3>
 									<Line i={1}>{point.title}</Line>
 								</h3>
-								<p className="at-body">
-									<Line i={2}>{point.body}</Line>
-								</p>
+								<div className="at-body">
+									<p>
+										<Line i={2}>{point.body}</Line>
+									</p>
+									{point.detail && (
+										<p className="at-detail">
+											<Line i={3}>{point.detail}</Line>
+										</p>
+									)}
+								</div>
 							</li>
 						))}
 					</ol>
@@ -441,6 +460,14 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 									</div>
 								))}
 							</dl>
+							{project.stack.length > 0 && (
+								<div className="at-stack" data-reveal="lines">
+									<Line className="at-label">Tools</Line>
+									<p>
+										<Line i={1}>{project.stack.join(' · ')}</Line>
+									</p>
+								</div>
+							)}
 						</Region>
 					)}
 					{project.contributions.length > 0 && (
