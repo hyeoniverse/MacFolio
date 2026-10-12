@@ -1,0 +1,394 @@
+/*
+ * 랜딩 키트 FeatureVisual: 그림 없는 항목의 비주얼. 들어 있는 칸을 꽉 채우고(최소 높이 220px),
+ * 크기는 칸 폭(cqi)에 비례한다. --hue는 항목 차례마다 조금씩 돌려 칸끼리 달라 보이게 한다
+ */
+.lk-feature {
+	--_f-a: color-mix(in srgb, var(--_accent) calc(100% - var(--hue) / 6 * 1%), var(--_accent-2));
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	min-height: 220px;
+	overflow: hidden;
+	container-type: size;
+	color: var(--_ink);
+	isolation: isolate;
+}
+
+.lk-feature-bg {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(60% 70% at 30% 20%, color-mix(in srgb, var(--_f-a) 22%, transparent), transparent 70%),
+		radial-gradient(50% 60% at 85% 90%, color-mix(in srgb, var(--_accent-2) 18%, transparent), transparent 70%),
+		radial-gradient(color-mix(in srgb, var(--_ink) 9%, transparent) 1px, transparent 1.3px) 0 0 / 18px 18px;
+	mask-image: linear-gradient(180deg, #000 60%, transparent);
+}
+
+/* 큰 아이콘 타일: 강조색 유리 */
+.lk-feature-icon {
+	display: grid;
+	place-items: center;
+	width: clamp(64px, 22cqmin, 112px);
+	aspect-ratio: 1;
+	border-radius: 28%;
+	background:
+		linear-gradient(160deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 45%),
+		linear-gradient(135deg, var(--_f-a), var(--_accent-2));
+	color: #fff;
+	font-size: clamp(26px, 9cqmin, 46px);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.45),
+		inset 0 -2px 6px rgba(0, 0, 0, 0.12),
+		0 18px 40px -12px color-mix(in srgb, var(--_f-a) 75%, transparent);
+}
+
+.lk-feature-card,
+.lk-feature-toast,
+.lk-feature-window,
+.lk-feature-panel {
+	border: 1px solid var(--_line);
+	border-radius: 16px;
+	background: color-mix(in srgb, var(--_surface) 88%, transparent);
+	backdrop-filter: blur(12px);
+	box-shadow: var(--_shadow);
+}
+
+.lk-feature .lk-sk {
+	height: 8px;
+}
+
+/* ─── toast: 뒤의 흐린 카드, 가운데 아이콘, 앞의 알림 ─── */
+.lk-feature[data-variant='toast'] .lk-feature-back {
+	position: absolute;
+	top: 12%;
+	left: 50%;
+	display: flex;
+	width: min(76%, 460px);
+	height: min(58%, 300px);
+	overflow: hidden;
+	transform: translateX(-50%) rotate(-2deg);
+	opacity: 0.85;
+}
+
+/* 뒤 카드: 작은 앱 창 (사이드바 + 그 항목 제목 + 막대 그래프) */
+.lk-feature-back-side {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: 26%;
+	padding: 16px 10px;
+	border-right: 1px solid var(--_line);
+	background: color-mix(in srgb, var(--_ink) 3%, transparent);
+}
+
+.lk-feature-back-side i {
+	height: 10px;
+	border-radius: 4px;
+	background: color-mix(in srgb, var(--_ink) 9%, transparent);
+}
+
+.lk-feature-back-side i[data-on] {
+	background: color-mix(in srgb, var(--_f-a) 35%, transparent);
+}
+
+.lk-feature-back-main {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	flex: 1;
+	min-width: 0;
+	padding: 16px 18px;
+}
+
+.lk-feature-back-main b {
+	overflow: hidden;
+	font-size: 15px;
+	font-weight: 700;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.lk-feature-back-main .lk-feature-bars {
+	flex: 1;
+	height: auto;
+	min-height: 0;
+	margin-top: 6px;
+}
+
+.lk-feature[data-variant='toast'] .lk-feature-icon {
+	position: absolute;
+	left: 9%;
+	bottom: 12%;
+	z-index: 1;
+	transform: rotate(-6deg);
+}
+
+.lk-feature-toast {
+	position: absolute;
+	right: 8%;
+	bottom: 12%;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	max-width: min(78%, 340px);
+	padding: 12px 16px 12px 12px;
+	animation: lk-toast-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1.2) both;
+}
+
+.lk-feature-toast-icon {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	flex-shrink: 0;
+	border-radius: 10px;
+	background: #30b158;
+	color: #fff;
+	font-size: 15px;
+}
+
+.lk-feature-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.lk-feature-text small {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: var(--_muted);
+}
+
+.lk-feature-text b,
+.lk-feature-window-body b,
+.lk-feature-panel b {
+	overflow: hidden;
+	font-size: 14px;
+	font-weight: 650;
+	line-height: 1.3;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+@keyframes lk-toast-in {
+	from {
+		transform: translateY(14px) scale(0.96);
+		opacity: 0;
+	}
+}
+
+/* ─── window: 설정 창 조각 + 떠 있는 아이콘 ─── */
+.lk-feature-window {
+	display: flex;
+	flex-direction: column;
+	width: min(76%, 380px);
+	overflow: hidden;
+	transform: translate(-6%, 4%);
+}
+
+.lk-feature-window-bar {
+	display: flex;
+	gap: 6px;
+	padding: 10px 12px;
+	border-bottom: 1px solid var(--_line);
+}
+
+.lk-feature-window-bar i {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--_ink) 16%, transparent);
+}
+
+.lk-feature-window-body {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 16px 16px 18px;
+}
+
+.lk-feature-setting {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding-top: 12px;
+	border-top: 1px solid var(--_line);
+}
+
+.lk-feature-switch {
+	position: relative;
+	width: 34px;
+	height: 20px;
+	flex-shrink: 0;
+	border-radius: 99px;
+	background: color-mix(in srgb, var(--_ink) 16%, transparent);
+	transition: background 0.3s;
+}
+
+.lk-feature-switch::after {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	transition: transform 0.3s;
+}
+
+.lk-feature-switch[data-on] {
+	background: var(--_f-a);
+}
+
+.lk-feature-switch[data-on]::after {
+	transform: translateX(14px);
+}
+
+.lk-feature-icon-float {
+	position: absolute;
+	top: 10%;
+	right: 9%;
+	width: clamp(56px, 18cqmin, 92px);
+	font-size: clamp(22px, 7cqmin, 38px);
+	transform: rotate(8deg);
+}
+
+/* ─── orbit: 가운데 아이콘과 두 고리, 고리 위의 칩 ─── */
+.lk-feature-ring {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	aspect-ratio: 1;
+	border: 1px dashed color-mix(in srgb, var(--_f-a) 40%, transparent);
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.lk-feature-ring-1 {
+	width: min(48cqw, 70cqh);
+}
+
+.lk-feature-ring-2 {
+	width: min(78cqw, 110cqh);
+	border-style: solid;
+	border-color: color-mix(in srgb, var(--_ink) 7%, transparent);
+}
+
+.lk-feature-icon-center {
+	position: relative;
+	z-index: 1;
+}
+
+.lk-feature-chip {
+	--_angle: calc(360deg / var(--n) * var(--i) - 90deg);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 2;
+	padding: 6px 12px;
+	border: 1px solid var(--_line);
+	border-radius: 99px;
+	background: var(--_surface);
+	box-shadow: var(--_shadow);
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+	transform: translate(-50%, -50%) rotate(var(--_angle)) translateX(min(39cqw, 40cqh)) rotate(calc(-1 * var(--_angle)));
+}
+
+.lk-feature-chip:nth-of-type(odd) {
+	color: var(--_f-a);
+}
+
+.lk-feature-chip-title {
+	--_angle: 0deg;
+	top: auto;
+	bottom: 14%;
+	transform: translateX(-50%);
+}
+
+/* ─── meter: 점수 고리 + 막대 패널 ─── */
+.lk-feature[data-variant='meter'] {
+	grid-template-columns: auto minmax(0, auto);
+	justify-content: center;
+	gap: clamp(16px, 6cqw, 40px);
+}
+
+.lk-feature-meter {
+	display: grid;
+	place-items: center;
+	width: clamp(120px, 44cqmin, 200px);
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background:
+		radial-gradient(closest-side, var(--_surface) 76%, transparent 77%),
+		conic-gradient(var(--_f-a) calc(var(--v) * 360deg), color-mix(in srgb, var(--_ink) 8%, transparent) 0);
+	box-shadow: var(--_shadow);
+}
+
+.lk-feature-meter .lk-feature-icon {
+	width: 52%;
+	font-size: clamp(20px, 8cqmin, 36px);
+}
+
+.lk-feature-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	width: clamp(140px, 36cqw, 240px);
+	padding: 14px 16px;
+}
+
+.lk-feature-bars {
+	display: flex;
+	align-items: flex-end;
+	gap: 6px;
+	height: 64px;
+}
+
+.lk-feature-bars i {
+	flex: 1;
+	height: calc(var(--v) * 100%);
+	border-radius: 4px;
+	background: color-mix(in srgb, var(--_f-a) 28%, transparent);
+	transform-origin: bottom;
+	animation: lk-grow 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+	animation-delay: calc(var(--i) * 60ms);
+}
+
+.lk-feature-bars i:last-child {
+	background: linear-gradient(180deg, var(--_accent-2), var(--_f-a));
+}
+
+@keyframes lk-grow {
+	from {
+		transform: scaleY(0.1);
+	}
+}
+
+/* 좁은 칸: 패널은 고리 아래로 */
+@container (max-width: 420px) {
+	.lk-feature[data-variant='meter'] {
+		grid-template-columns: auto;
+	}
+
+	.lk-feature-panel {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.lk-feature-toast,
+	.lk-feature-bars i {
+		animation: none;
+	}
+}
