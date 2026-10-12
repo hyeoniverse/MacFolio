@@ -488,4 +488,63 @@ test.describe('프로젝트 관리', () => {
 		await expect(settings.getByRole('button', { name: '지금 새로고침' })).toHaveCount(0);
 		await expect(article).toHaveAttribute('data-look', 'dialogue');
 	});
+
+	test('관리자: 이미 있는 주요 기능에 그림을 넣으면 다크 그림·갈래 도식 대신 그 그림이 Safari 페이지에 보인다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openProjectsPane(page);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
+		const list = settings.getByRole('list', { name: '프로젝트' });
+		await list.getByRole('listitem').filter({ hasText: 'HYEONIVERSE' }).getByRole('button', { name: '편집' }).click();
+		const editor = settings.getByRole('form', { name: 'HYEONIVERSE 편집' });
+		await editor.getByRole('tab', { name: '내용' }).click();
+		const rows = editor.locator('.projects-editor-form').getByRole('region', { name: '주요 기능' }).getByRole('row');
+		// 1: 라이트·다크 짝 그림이 있던 항목, 2: 그림 없이 갈래 도식만 있던 항목
+		const picks = ['/imgs/projects/qru/screens/card.jpg', '/imgs/projects/qru/screens/create-modal.jpg'];
+		for (const [i, src] of picks.entries()) {
+			await rows.nth(i).click();
+			await editor.getByRole('combobox', { name: `주요 기능 ${i + 1} 그림 고르기` }).selectOption(src);
+			await expect(rows.nth(i).locator('img')).toHaveAttribute('src', src);
+		}
+		// 4: 영상이 있는 항목은 영상이 먼저 보인다고 알려 준다
+		await rows.nth(3).click();
+		await expect(editor).toContainText('영상이 있으면 그림 대신 영상이 보입니다.');
+		await editor.getByRole('button', { name: '완료' }).click();
+		await settings.getByRole('button', { name: '완료' }).click();
+		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
+		const saved = api.siteProjects?.items.find((item) => item.id === 'hyeoniverse')?.override as {
+			highlights: { image?: string; imageDark?: string }[];
+		};
+		expect(saved.highlights.slice(0, 2).map((point) => point.image)).toEqual(picks);
+		expect(saved.highlights[0].imageDark).toBeUndefined();
+
+		await dockItem(page, 'safari').click();
+		const safari = appWindow(page, 'safari');
+		await safari.getByRole('tab', { name: /HYEONIVERSE/ }).click();
+		const features = safari.getByRole('region', { name: '주요 기능' });
+		for (const src of picks) await expect(features.locator(`img[src="${src}"]`)).toHaveCount(1);
+	});
+
+	test('직접 짠 페이지(칸반·터미널)도 주요 기능의 그림을 보여 준다', async ({ page }) => {
+		const image = '/imgs/projects/qru/screens/card.jpg';
+		const api = await fakeApi(page);
+		api.siteProjects = {
+			items: ['whattodo', 'devcourse'].map((id) => ({
+				id,
+				override: { highlights: [{ title: '그림 있는 기능', body: '그림을 함께 보여 줍니다.', image }] },
+			})),
+		};
+		await enterDesktop(page);
+		await dockItem(page, 'safari').click();
+		const safari = appWindow(page, 'safari');
+		const shot = safari.getByRole('tabpanel').locator(`img[src="${image}"]`);
+		await safari.getByRole('tab', { name: /WTD/ }).click();
+		await expect(shot.first()).toBeAttached();
+		// 터미널은 projects 명령을 친 결과에 보인다
+		await safari.getByRole('tab', { name: /DevCourse/ }).click();
+		await safari.getByRole('tabpanel').getByRole('button', { name: 'projects', exact: true }).first().click();
+		await expect(shot.first()).toBeVisible();
+	});
 });
