@@ -27,4 +27,29 @@ describe('REMARK_PLUGINS', () => {
 			'<p><code>#코드</code> <a href="https://a.b">#링크</a> #14</p>'
 		);
 	});
+
+	it('<details>·<summary> 표기는 접기 블록으로, 안의 Markdown은 그대로 그린다', () => {
+		expect(render('<details>\n<summary>용어</summary>\n\n**굵게** 설명\n\n</details>')).toBe(
+			'<details class="memo-details"><summary>용어</summary><p><strong>굵게</strong> 설명</p></details>'
+		);
+		expect(render('<details open>\n<summary>펼침</summary>\n\n내용\n\n</details>')).toBe(
+			'<details class="memo-details" open=""><summary>펼침</summary><p>내용</p></details>'
+		);
+	});
+
+	it('<details id>는 user-content-를 붙인 id로 (본문 링크로 찾아간다)', () => {
+		expect(render('<details id="terms">\n<summary>용어</summary>\n\n내용\n\n</details>')).toBe(
+			'<details class="memo-details" id="user-content-terms"><summary>용어</summary><p>내용</p></details>'
+		);
+	});
+
+	it('접기 요약은 글자로만 넣고, 다른 HTML은 여전히 요소로 그리지 않는다', () => {
+		const html = render(
+			'<details>\n<summary>&lt;b&gt;굵게&lt;/b&gt;</summary>\n\n내용\n\n</details>\n\n<script>x</script>'
+		);
+		expect(html).toContain('<summary>&lt;b&gt;굵게&lt;/b&gt;</summary>');
+		expect(html).not.toContain('<script');
+		// 속성이 붙은 줄은 접기로 알아보지 않는다 (지금처럼 글자로 보인다)
+		expect(render('<details onclick="x">\n\n내용\n\n</details>')).not.toContain('<details');
+	});
 });
