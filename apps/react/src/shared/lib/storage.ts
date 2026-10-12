@@ -8,6 +8,8 @@ export const STORAGE_KEYS = {
 	settings: 'macfolio:settings',
 	memoArrangement: 'macfolio:memo:arrangement',
 	memoRecentFinds: 'macfolio:memo:recent-finds',
+	memoSidebarWidth: 'macfolio:memo:sidebar-width',
+	memoListWidth: 'macfolio:memo:list-width',
 	weatherPlaces: 'macfolio:weather:places',
 	weatherUnit: 'macfolio:weather:unit',
 	/** 저장 형식 버전이 바뀌면 키를 바꾼다 */

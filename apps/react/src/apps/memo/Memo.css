@@ -59,8 +59,13 @@
 
 /* 떠 있는 사이드바 · 글 목록 · 본문 (갤러리로 볼 때는 사이드바 · 갤러리) */
 .memo {
+	/* 사이드바 너비는 경계를 끌어 바꾼다 (SidebarResizer, Memo.tsx가 px로 넣는다) */
+	--memo-sidebar-width: 13rem;
+	--memo-list-width: 17rem;
+	/* 사이드바 칸이 실제로 차지하는 너비 (가리면 0): 목록 손잡이의 위치 계산에 쓴다 */
+	--memo-sidebar-column: var(--memo-sidebar-width);
 	display: grid;
-	grid-template-columns: 13rem 17rem 1fr;
+	grid-template-columns: var(--memo-sidebar-column) var(--memo-list-width) minmax(0, 1fr);
 	position: relative;
 	height: 100%;
 	background-color: var(--memo-bg);
@@ -71,15 +76,61 @@
 }
 
 .memo.sidebar-closed {
-	grid-template-columns: 0 17rem 1fr;
+	--memo-sidebar-column: 0px;
 }
 
 .memo.view-gallery {
-	grid-template-columns: 13rem 1fr;
+	grid-template-columns: var(--memo-sidebar-column) minmax(0, 1fr);
 }
 
-.memo.view-gallery.sidebar-closed {
-	grid-template-columns: 0 1fr;
+/* 끄는 동안은 손을 따라 바로 바뀌어야 한다 */
+.memo[data-resizing] {
+	transition: none;
+	cursor: col-resize;
+	user-select: none;
+}
+
+/* 칸 오른쪽 경계의 너비 조절 손잡이 (PaneResizer): 경계에 걸친 보이지 않는 띠.
+   그리드 칸을 차지하지 않게 절대 위치로 둔다. macOS처럼 가리키면 커서만 바뀌고,
+   키보드로 포커스했을 때만 가는 회색 선으로 자리를 보인다 */
+.memo-pane-resizer {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 5;
+	width: 12px;
+	cursor: col-resize;
+	touch-action: none;
+}
+
+.memo-pane-resizer-sidebar {
+	top: 16px;
+	bottom: 16px;
+	left: calc(var(--memo-sidebar-width) - 4px);
+}
+
+.memo-pane-resizer-list {
+	left: calc(var(--memo-sidebar-column) + var(--memo-list-width) - 6px);
+}
+
+.memo-pane-resizer::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 5px;
+	width: 2px;
+	border-radius: 1px;
+	background-color: var(--memo-muted);
+	opacity: 0;
+}
+
+.memo-pane-resizer:focus-visible {
+	outline: none;
+}
+
+.memo-pane-resizer:focus-visible::after {
+	opacity: 0.6;
 }
 
 /* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
