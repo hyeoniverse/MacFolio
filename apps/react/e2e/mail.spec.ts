@@ -53,23 +53,33 @@ test.describe('메일', () => {
 		expect(await clipboard()).toBe('hyeoniverse.dev@gmail.com');
 	});
 
-	test('필수 입력이 비었거나 이메일 형식이 틀리면 보내지 않는다', async ({ page }) => {
+	test('네 칸이 모두 차야 보내기를 누를 수 있고, 형식이 틀리면 경고창으로 알린다', async ({ page }) => {
 		const mail = await openMail(page);
 		await mail.getByRole('button', { name: '새로운 메시지' }).click();
+		const send = mail.getByRole('button', { name: /보내기/ });
+		await expect(send).toBeDisabled();
+
 		await mail.getByLabel('이름').fill('민수');
 		await mail.getByLabel('회신 주소').fill('minsu@');
-		await mail.getByRole('button', { name: /보내기/ }).click();
+		await mail.getByLabel('제목').fill('안녕하세요');
+		await expect(send).toBeDisabled();
+		await mail.getByLabel('내용').fill('협업 제안드립니다.');
+		await expect(send).toBeEnabled();
 
-		await expect(mail.getByText('이메일 형식을 확인해주세요.')).toBeVisible();
-		// 빈 칸은 칸 안의 안내 글자로 알리고, 화면 읽기 프로그램에도 알린다
-		await expect(mail.getByLabel('제목')).toHaveAttribute('placeholder', '제목을 입력해주세요.');
-		await expect(mail.getByLabel('내용')).toHaveAttribute('placeholder', '내용을 입력해주세요.');
-		await expect(mail.getByRole('alert').filter({ hasText: '제목을 입력해주세요.' })).toBeAttached();
+		// 공백만 있는 칸은 빈 칸과 같다
+		await mail.getByLabel('제목').fill('   ');
+		await expect(send).toBeDisabled();
+		await mail.getByLabel('제목').fill('안녕하세요');
+
+		await send.click();
+		const warning = page.getByRole('alertdialog', { name: '경고' });
+		await expect(warning).toContainText('이메일 형식을 확인해주세요.');
 		expect(await opened(page)).toEqual([]);
 
-		// 고치면 해당 필드의 오류가 사라진다
-		await mail.getByLabel('회신 주소').fill('minsu@example.com');
-		await expect(mail.getByText('이메일 형식을 확인해주세요.')).toBeHidden();
+		// 확인을 누르면 경고창만 닫히고 쓰던 내용은 남는다
+		await warning.getByRole('button', { name: '확인' }).click();
+		await expect(warning).toBeHidden();
+		await expect(mail.getByLabel('회신 주소')).toHaveValue('minsu@');
 	});
 
 	test('보내면 작성한 내용이 채워진 메일 앱을 열고, 안내와 주소 복사를 보여준다', async ({ page, context }) => {
@@ -171,7 +181,9 @@ test.describe('메일', () => {
 			const mail = await write(page);
 			await mail.getByRole('button', { name: /보내기/ }).click();
 
-			await expect(mail.getByRole('alert')).toHaveText('오늘은 더 보낼 수 없습니다. 내일 다시 보내 주세요.');
+			await expect(page.getByRole('alertdialog', { name: '경고' })).toContainText(
+				'오늘은 더 보낼 수 없습니다. 내일 다시 보내 주세요.'
+			);
 			await expect(mail.getByLabel('내용')).toHaveValue('안녕하세요!');
 			expect(api.contact.sent).toEqual([]);
 		});
