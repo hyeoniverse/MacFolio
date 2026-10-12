@@ -272,6 +272,79 @@ test.describe('메모 (블로그)', () => {
 	});
 });
 
+test('칸 너비: 사이드바와 목록의 경계를 끌어 바꾸고, 키보드로도 바꾸고, 다시 열어도 남는다', async ({ page }) => {
+	const memo = await openMemo(page);
+	const sidebar = memo.getByRole('navigation', { name: '카테고리' });
+	const list = memo.getByRole('region', { name: '글 목록' });
+	const sidebarHandle = memo.getByRole('separator', { name: '사이드바 너비' });
+	const listHandle = memo.getByRole('separator', { name: '목록 너비' });
+	const widthOf = (locator: typeof sidebar) => async () => (await locator.boundingBox())!.width;
+
+	const drag = async (handle: typeof sidebar, dx: number) => {
+		const box = (await handle.boundingBox())!;
+		const x = box.x + box.width / 2;
+		const y = box.y + box.height / 2;
+		await page.mouse.move(x, y);
+		await page.mouse.down();
+		await page.mouse.move(x + dx / 2, y, { steps: 4 });
+		await page.mouse.move(x + dx, y, { steps: 4 });
+		await page.mouse.up();
+	};
+
+	// 사이드바: 끌어서 넓힌다
+	const sidebarBefore = await widthOf(sidebar)();
+	await expect(sidebarHandle).toHaveAttribute('aria-valuenow', '208');
+	await drag(sidebarHandle, 40);
+	await expect(sidebarHandle).toHaveAttribute('aria-valuenow', '248');
+	await expect.poll(widthOf(sidebar)).toBeCloseTo(sidebarBefore + 40, 0);
+
+	// 목록: 끌어서 좁힌다 (손잡이는 사이드바가 넓어진 만큼 따라 움직였다)
+	const listBefore = await widthOf(list)();
+	await expect(listHandle).toHaveAttribute('aria-valuenow', '272');
+	await drag(listHandle, -40);
+	await expect(listHandle).toHaveAttribute('aria-valuenow', '232');
+	await expect.poll(widthOf(list)).toBeCloseTo(listBefore - 40, 0);
+
+	// 키보드: ← 한 번에 8px, Home은 가장 좁게, End는 가장 넓게
+	await sidebarHandle.focus();
+	await page.keyboard.press('ArrowLeft');
+	await expect(sidebarHandle).toHaveAttribute('aria-valuenow', '240');
+	await page.keyboard.press('Home');
+	await expect(sidebarHandle).toHaveAttribute('aria-valuenow', '180');
+
+	// 본문 칸은 최소 360px을 남긴다: 크게 끌어도 그 이상 넓어지지 않는다
+	const memoWidth = (await memo.locator('.memo').boundingBox())!.width;
+	await drag(listHandle, 600);
+	await expect
+		.poll(async () => Number(await listHandle.getAttribute('aria-valuenow')))
+		.toBeLessThanOrEqual(memoWidth - 180 - 360 + 1);
+	await listHandle.focus();
+	await page.keyboard.press('Home');
+	await page.keyboard.press('ArrowRight');
+	await page.keyboard.press('ArrowRight');
+	await page.keyboard.press('ArrowRight');
+	await expect(listHandle).toHaveAttribute('aria-valuenow', '244');
+
+	// 다시 열어도 남는다
+	await page.reload();
+	const again = await openMemo(page);
+	await expect(again.getByRole('separator', { name: '사이드바 너비' })).toHaveAttribute('aria-valuenow', '180');
+	await expect(again.getByRole('separator', { name: '목록 너비' })).toHaveAttribute('aria-valuenow', '244');
+
+	// 두 번 누르면 기본 너비
+	await again.getByRole('separator', { name: '목록 너비' }).dblclick();
+	await expect(again.getByRole('separator', { name: '목록 너비' })).toHaveAttribute('aria-valuenow', '272');
+
+	// 사이드바를 가리면 사이드바 손잡이만 없어지고, 목록 손잡이는 남는다
+	await again.getByRole('button', { name: '사이드바 가리기' }).click();
+	await expect(again.getByRole('separator', { name: '사이드바 너비' })).toHaveCount(0);
+	await expect(again.getByRole('separator', { name: '목록 너비' })).toBeVisible();
+
+	// 갤러리로 보면 목록 칸이 없어 목록 손잡이도 없다
+	await again.getByRole('button', { name: '갤러리로 보기' }).click();
+	await expect(again.getByRole('separator', { name: '목록 너비' })).toHaveCount(0);
+});
+
 test('각주: 번호를 누르면 글 아래 설명으로, 되돌아가기를 누르면 본문 자리로 (새 탭이 아니다)', async ({ page }) => {
 	const api = await fakeApi(page, { signedIn: false });
 	const content = {

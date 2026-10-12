@@ -1,6 +1,6 @@
 // 메모 앱이 이 브라우저에 남기는 것: 보기 설정, 최근 검색어. 값 검사는 desktop-core가 하고 여기서는 읽고 쓰기만 한다
 import { addRecentFind, parseArrangement, parseRecentFinds, type Arrangement } from '@macfolio/desktop-core/memo';
-import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
+import { readJson, readString, removeKey, STORAGE_KEYS, writeJson, writeString } from '@/shared/lib/storage';
 
 /** 저장된 보기 설정. 없거나 잘못되었으면 기본값 */
 export const loadArrangement = (): Arrangement => parseArrangement(readJson(STORAGE_KEYS.memoArrangement));
@@ -14,4 +14,28 @@ export function rememberFind(recent: string[], query: string): string[] {
 	const next = addRecentFind(recent, query);
 	if (next !== recent) saveRecentFinds(next);
 	return next;
+}
+
+/** 너비를 조절하는 칸: 사이드바(폴더·태그), 목록(글 목록) */
+export type ResizablePane = 'sidebar' | 'list';
+
+/** 칸마다 너비(px)의 범위와 기본값 (기본값은 Memo.css의 13rem·17rem), 저장 키 */
+export const PANE_WIDTHS: Record<ResizablePane, { min: number; max: number; initial: number; key: string }> = {
+	sidebar: { min: 180, max: 360, initial: 208, key: STORAGE_KEYS.memoSidebarWidth },
+	list: { min: 220, max: 440, initial: 272, key: STORAGE_KEYS.memoListWidth },
+};
+
+export const clampPaneWidth = (pane: ResizablePane, width: number) =>
+	Math.round(Math.min(PANE_WIDTHS[pane].max, Math.max(PANE_WIDTHS[pane].min, width)));
+
+/** 저장된 너비. 없거나 숫자가 아니면 기본값, 범위 밖이면 범위 안으로 */
+export function loadPaneWidth(pane: ResizablePane): number {
+	const value = Number(readString(PANE_WIDTHS[pane].key));
+	return Number.isFinite(value) && value > 0 ? clampPaneWidth(pane, value) : PANE_WIDTHS[pane].initial;
+}
+
+/** 기본값이면 지운다 (휴지통의 '내 브라우저 데이터'에 쓸데없이 남지 않게) */
+export function savePaneWidth(pane: ResizablePane, width: number) {
+	if (width === PANE_WIDTHS[pane].initial) removeKey(PANE_WIDTHS[pane].key);
+	else writeString(PANE_WIDTHS[pane].key, String(width));
 }
