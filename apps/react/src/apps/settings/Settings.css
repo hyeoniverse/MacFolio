@@ -1674,6 +1674,15 @@ textarea.projects-input {
 	font-weight: 500;
 }
 
+/* 지우는 단추 (macOS 시트의 항목 삭제): 빨간 글자. 흰 바탕에서 읽히도록 라이트는 짙은 빨강 */
+.projects-button.destructive {
+	color: #d70015;
+}
+
+:root[data-theme='dark'] .projects-button.destructive {
+	color: #ffa198;
+}
+
 .projects-button:focus-visible,
 .projects-button:has(input:focus-visible) {
 	outline: 3px solid var(--pe-focus);
@@ -2293,7 +2302,7 @@ button.projects-thumb:focus-visible {
 	white-space: nowrap;
 }
 
-/* 목록 (macOS의 표): 줄 목록, 아래 ＋/− 막대. 고른 줄은 회색(초점이 있으면 강조 색) 바탕 */
+/* 목록 (macOS의 표): 줄 목록, 아래 ＋/− 막대. 칸을 바로 고치는 표에서 고른 줄은 회색(초점이 있으면 강조 색) 바탕 */
 .projects-table-head {
 	display: grid;
 	grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
@@ -2314,7 +2323,7 @@ button.projects-thumb:focus-visible {
 .projects-table-row {
 	position: relative;
 	display: grid;
-	/* 첫 칸이 남는 폭을 다 쓰고, 썸네일·ⓘ 단추 같은 칸은 뒤에 제 폭으로 붙는다 */
+	/* 첫 칸이 남는 폭을 다 쓰고, 썸네일 같은 칸은 뒤에 제 폭으로 붙는다 */
 	grid-template-columns: minmax(0, 1fr);
 	grid-auto-columns: auto;
 	grid-auto-flow: column;
@@ -2537,45 +2546,115 @@ button.projects-thumb:focus-visible {
 	word-break: keep-all;
 }
 
-/* 줄 끝의 ⓘ 단추: 항목을 시트로 연다 */
-.projects-info-button {
+/*
+ * 이동 목록 (macOS 시스템 설정의 › 줄): 줄 전체가 단추라 누르면 시트가 열린다.
+ * 왼쪽 ≡ 손잡이로 순서를 바꾸고, 가리키면 옅은 바탕, 고른 상태(파란 채움)는 두지 않는다
+ */
+.projects-table-row.nav {
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0;
+	padding: 0;
+	transition:
+		transform var(--duration-fast) var(--ease-out),
+		background-color var(--duration-fast) var(--ease-out);
+}
+
+/* 줄 사이 선은 손잡이 뒤에서 시작한다 (macOS 목록의 들여 쓴 선) */
+.projects-table-row.nav + .projects-table-row.nav::before {
+	left: 34px;
+}
+
+.projects-table-row.nav:hover {
+	background: var(--pe-hover);
+}
+
+.projects-table-row.nav:hover::before,
+.projects-table-row.nav:hover + .projects-table-row.nav::before {
+	display: none;
+}
+
+.projects-table-row.nav:has(.projects-nav-row:active) {
+	background: var(--pe-selected-quiet);
+}
+
+.projects-table-row.nav:has(.projects-nav-row:focus-visible) {
+	box-shadow: inset 0 0 0 2px var(--pe-focus);
+}
+
+.projects-row-handle {
 	display: grid;
 	place-items: center;
-	width: 22px;
-	height: 22px;
-	padding: 0;
+	align-self: stretch;
+	width: 30px;
+	padding: 0 0 0 4px;
 	border: none;
-	border-radius: 50%;
+	border-radius: 6px 0 0 6px;
 	background: none;
 	color: var(--color-text-secondary);
+	font-size: 12px;
+	opacity: 0.6;
+	cursor: grab;
+	touch-action: none;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.projects-table-row.nav:hover .projects-row-handle:not(:disabled),
+.projects-row-handle:focus-visible {
+	opacity: 1;
+}
+
+.projects-row-handle:disabled {
+	opacity: 0.25;
+	cursor: default;
+}
+
+.projects-row-handle:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: -2px;
+}
+
+.projects-nav-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
+	min-height: 36px;
+	padding: 3px 12px 3px 6px;
+	border: none;
+	border-radius: 0 6px 6px 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	outline: none;
 	cursor: pointer;
 }
 
-.projects-info-button:hover {
-	color: var(--color-text);
+.projects-nav-cells {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-auto-columns: auto;
+	grid-auto-flow: column;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
 }
 
-.projects-info-button:focus-visible {
-	outline: 2px solid var(--color-accent);
-	outline-offset: 0;
-}
-
-.projects-table-row[aria-selected='true']:focus .projects-info-button {
-	color: #ffffff;
-}
-
-.projects-info-glyph {
-	width: 16px;
-	height: 16px;
+.projects-nav-chevron {
+	width: 7px;
+	height: 12px;
 	fill: none;
-	stroke: currentColor;
+	stroke: var(--color-text-secondary);
 	stroke-linecap: round;
-	stroke-width: 1.2;
+	stroke-linejoin: round;
+	stroke-width: 1.6;
+	opacity: 0.7;
 }
 
-.projects-info-glyph .dot {
-	fill: currentColor;
-	stroke-width: 0.6;
+/* 끄는 줄은 가리킨 바탕 없이 상자 색으로 */
+.projects-table-row.nav.reordering {
+	background: var(--pe-box);
 }
 
 /* 화면 목록의 줄: 썸네일, 설명 칸, 그 아래 주소 칸과 고르기·올리기 */
@@ -2790,14 +2869,19 @@ button.projects-shot-thumb:focus-visible {
 	overscroll-behavior: contain;
 }
 
-/* 아래 막대: 오른쪽 끝에 완료 */
+/* 아래 막대: 왼쪽 끝에 항목 삭제, 오른쪽 끝에 완료 */
 .projects-sheet-foot {
 	display: flex;
+	flex: none;
 	justify-content: flex-end;
 	gap: 8px;
 	padding: 12px 20px;
 	border-top: 1px solid var(--pe-separator);
 	background: var(--pe-canvas);
+}
+
+.projects-sheet-foot .destructive {
+	margin-right: auto;
 }
 
 /* 시트 안 목록의 썸네일은 작게 (판의 폭이 좁다) */
