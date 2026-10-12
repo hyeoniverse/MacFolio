@@ -23,6 +23,8 @@ interface List {
 	label: string;
 	tone: 'red' | 'orange' | 'blue' | 'green' | 'purple' | 'teal' | 'gray';
 	done?: boolean;
+	/** 목록 이름 아래의 한두 줄 메모 (장 머리말) */
+	note?: string;
 	items: Item[];
 }
 
@@ -47,13 +49,18 @@ function buildLists(project: Project): List[] {
 			key: `chapter-${i}`,
 			label: chapter.title,
 			tone: i % 2 ? 'teal' : 'purple',
+			note: chapter.lead,
 			items: fromPoints(`ch${i}`, chapter.points),
 		})),
 		{
 			key: 'specs',
 			label: '기술 사양',
 			tone: 'gray',
-			items: project.specs.map((spec, i) => ({ key: `spec-${i}`, title: spec.label, body: spec.value })),
+			items: [
+				...project.specs.map((spec, i) => ({ key: `spec-${i}`, title: spec.label, body: spec.value })),
+				...(project.language ? [{ key: 'spec-language', title: '주 언어', body: project.language }] : []),
+				...(project.stack.length ? [{ key: 'spec-stack', title: '쓴 기술', body: project.stack.join(', ') }] : []),
+			],
 		},
 		{
 			key: 'timeline',
@@ -190,6 +197,7 @@ const ChecklistPage: React.FC<{ project: Project }> = ({ project }) => {
 										: `${list.items.filter((item) => checked.has(item.key)).length}/${list.items.length}`}
 								</small>
 							</h2>
+							{list.note && <p className="ck-list-note">{list.note}</p>}
 							<ul>
 								{list.items.map((item, i) => {
 									const isChecked = list.done || checked.has(item.key);

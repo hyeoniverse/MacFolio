@@ -3,7 +3,7 @@
 // 파일 트리는 terminalRepo.ts의 저장소(DevCourse만 있다)를 돌아보고, 서랍의 셸은 terminalShell.ts의 명령을 그대로 쓴다.
 // 저장소 트리가 없는 프로젝트는 Code 탭 없이 README부터 시작한다
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { Project } from '@/shared/profile';
+import type { Project, ProjectPoint } from '@/shared/profile';
 import { FactValue, Links, Region } from '@/apps/safari/project/parts';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import { entries, isDir, loadRepo, nodeAt, type RepoDir, type RepoNode } from '@/apps/safari/project/terminalRepo';
@@ -499,58 +499,147 @@ const CommitsTab: React.FC<{ project: Project; commits: Commit[] }> = ({ project
 
 /* ─── README 탭 ─── */
 
-const ReadmeTab: React.FC<{ project: Project }> = ({ project }) => (
-	<div className="rp-readme">
-		<div className="rp-readme-bar">
-			<i className="fa-solid fa-list-ul" aria-hidden="true" /> README.md
-		</div>
-		<div className="rp-md">
-			<h1>{project.tagline || project.name}</h1>
-			{project.description && <p>{project.description}</p>}
-			{project.highlights.length > 0 && (
-				<Region label="주요 기능">
-					<h2>주요 기능</h2>
-					<ul>
-						{project.highlights.map((point) => (
-							<li key={point.title}>
-								<strong>{point.title}</strong> — {point.body}
+/** README의 항목 한 줄: 아이콘(있으면), 굵은 제목 — 설명, 그 아래 자세히 */
+const ReadmeItem: React.FC<{ point: ProjectPoint }> = ({ point }) => (
+	<li>
+		<strong>
+			{point.icon && <i className={`rp-md-icon fa-solid ${point.icon}`} aria-hidden="true" />}
+			{point.title}
+		</strong>{' '}
+		— {point.body}
+		{point.detail && <span className="rp-md-detail">{point.detail}</span>}
+	</li>
+);
+
+/** README 오른쪽 열 (GitHub 저장소 첫 화면의 옆 칸처럼): 마지막 커밋(진행 과정의 끝), 커밋 타입, 언어 */
+const ReadmeSide: React.FC<{ project: Project; commits: Commit[]; onTab: (id: TabId) => void }> = ({
+	project,
+	commits,
+	onTab,
+}) => {
+	const latest = commits[commits.length - 1];
+	return (
+		<aside className="rp-readme-side" aria-label="저장소 요약">
+			{latest && (
+				<section>
+					<h2>Latest commit</h2>
+					<p className="rp-release">
+						<i className="fa-solid fa-code-commit" aria-hidden="true" />
+						<span>
+							{latest.type && (
+								<span className="rp-badge" style={typeStyle(latest.type)}>
+									{latest.type}
+								</span>
+							)}
+							<strong>{latest.message}</strong>
+							<time className="rp-muted">
+								{latest.date} · <span className="rp-mono">{latest.hash}</span>
+							</time>
+						</span>
+					</p>
+					<button type="button" className="rp-side-more" onClick={() => onTab('commits')}>
+						<i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> {commits.length} commits
+					</button>
+				</section>
+			)}
+			{project.conventions?.length ? (
+				<section>
+					<h2>Commit types</h2>
+					<ul className="rp-side-types">
+						{project.conventions.map((convention) => (
+							<li key={convention.type}>
+								<span className="rp-badge" style={typeStyle(convention.type)}>
+									{convention.type}
+								</span>
 							</li>
 						))}
 					</ul>
-				</Region>
+					<button type="button" className="rp-side-more" onClick={() => onTab('conventions')}>
+						규칙 보기
+					</button>
+				</section>
+			) : null}
+			{project.language && (
+				<section>
+					<h2>Languages</h2>
+					<span
+						className="rp-lang-bar"
+						style={{ background: LANGUAGE_COLORS[project.language] ?? 'var(--sp-accent)' }}
+						aria-hidden="true"
+					/>
+					<p className="rp-lang">
+						<i
+							className="rp-dot"
+							style={{ background: LANGUAGE_COLORS[project.language] ?? 'var(--sp-accent)' }}
+							aria-hidden="true"
+						/>
+						<strong>{project.language}</strong>
+					</p>
+				</section>
 			)}
-			{project.build.length > 0 && (
-				<Region label="만든 방식">
-					<h2>만든 방식</h2>
-					{project.build.map((point) => (
-						<React.Fragment key={point.title}>
-							<h3>{point.title}</h3>
-							<p>{point.body}</p>
-						</React.Fragment>
-					))}
-				</Region>
-			)}
-			{project.usage && project.usage.length > 0 && (
-				<Region label="쓰는 법">
-					<h2>쓰는 법</h2>
-					<ol>
-						{project.usage.map((point) => (
-							<li key={point.title}>
-								<strong>{point.title}</strong> — {point.body}
-							</li>
+		</aside>
+	);
+};
+
+const ReadmeTab: React.FC<{ project: Project; commits: Commit[]; onTab: (id: TabId) => void }> = ({
+	project,
+	commits,
+	onTab,
+}) => (
+	<div className="rp-readme-layout">
+		<div className="rp-readme">
+			<div className="rp-readme-bar">
+				<i className="fa-solid fa-list-ul" aria-hidden="true" /> README.md
+			</div>
+			<div className="rp-md">
+				<h1>{project.tagline || project.name}</h1>
+				{project.description && <p>{project.description}</p>}
+				{project.highlights.length > 0 && (
+					<Region label="주요 기능">
+						<h2>주요 기능</h2>
+						<ul>
+							{project.highlights.map((point) => (
+								<ReadmeItem key={point.title} point={point} />
+							))}
+						</ul>
+					</Region>
+				)}
+				{project.build.length > 0 && (
+					<Region label="만든 방식">
+						<h2>만든 방식</h2>
+						{project.build.map((point) => (
+							<React.Fragment key={point.title}>
+								<h3>
+									{point.icon && <i className={`rp-md-icon fa-solid ${point.icon}`} aria-hidden="true" />}
+									{point.title}
+								</h3>
+								<p>{point.body}</p>
+								{point.detail && <p className="rp-md-detail">{point.detail}</p>}
+							</React.Fragment>
 						))}
-					</ol>
-				</Region>
-			)}
-			{project.structure && (
-				<Region label="폴더 구조">
-					<h2>폴더 구조</h2>
-					<pre>
-						<code>{project.structure}</code>
-					</pre>
-				</Region>
-			)}
+					</Region>
+				)}
+				{project.usage && project.usage.length > 0 && (
+					<Region label="쓰는 법">
+						<h2>쓰는 법</h2>
+						<ol>
+							{project.usage.map((point) => (
+								<ReadmeItem key={point.title} point={point} />
+							))}
+						</ol>
+					</Region>
+				)}
+				{project.structure && (
+					<Region label="폴더 구조">
+						<h2>폴더 구조</h2>
+						<pre>
+							<code>{project.structure}</code>
+						</pre>
+					</Region>
+				)}
+			</div>
 		</div>
+		<ReadmeSide project={project} commits={commits} onTab={onTab} />
 	</div>
 );
 
@@ -589,8 +678,9 @@ const ConventionsTab: React.FC<{ project: Project }> = ({ project }) => (
 /** 기여 그래프 모양의 장식: 프로젝트 이름으로 늘 같은 무늬 (실제 기록은 아니다) */
 const Heat: React.FC<{ seed: string }> = ({ seed }) => {
 	const cells = useMemo(() => {
-		const hex = Array.from({ length: 6 }, (_, i) => fakeHash(`${seed}:${i}`)).join('');
-		return Array.from({ length: 7 * 26 }, (_, i) => {
+		const hex = Array.from({ length: 24 }, (_, i) => fakeHash(`${seed}:${i}`)).join('');
+		// 한 해(52주)를 카드 너비에 맞춰 채운다
+		return Array.from({ length: 7 * 52 }, (_, i) => {
 			const value = parseInt(hex[i % hex.length], 16);
 			return value < 7 ? 0 : value < 10 ? 1 : value < 13 ? 2 : value < 15 ? 3 : 4;
 		});
@@ -688,6 +778,7 @@ const AboutTab: React.FC<{ project: Project }> = ({ project }) => (
 									credit.name
 								)}{' '}
 								<span className="rp-muted">· {credit.by}</span>
+								{credit.note && <span className="rp-credit-note">{credit.note}</span>}
 							</li>
 						))}
 					</ul>
@@ -1060,7 +1151,8 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 		list.push({ id: 'about', label: 'About', icon: 'fa-solid fa-circle-info' });
 		return list;
 	}, [withRepo, commits.length, project.conventions]);
-	const [active, setActive] = useState<TabId>(tabs[0].id);
+	// 저장소 트리가 없으면 README부터 (GitHub 저장소 첫 화면처럼)
+	const [active, setActive] = useState<TabId>(withRepo ? 'code' : 'readme');
 	const [drawer, setDrawer] = useState(false);
 
 	// 트리 상태는 탭을 오가도 남는다 (처음 고른 파일은 저장소를 불러올 때 맨 위 README.md로 둔다)
@@ -1117,7 +1209,7 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 			>
 				{active === 'code' && <CodeTab project={project} repo={repo} error={error} state={treeState} />}
 				{active === 'commits' && <CommitsTab project={project} commits={commits} />}
-				{active === 'readme' && <ReadmeTab project={project} />}
+				{active === 'readme' && <ReadmeTab project={project} commits={commits} onTab={setActive} />}
 				{active === 'conventions' && <ConventionsTab project={project} />}
 				{active === 'about' && <AboutTab project={project} />}
 			</div>

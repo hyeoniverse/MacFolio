@@ -25,7 +25,11 @@ function stepsOf(project: Project): Step[] {
 	const macfolio = project.id === 'macfolio';
 	const steps: (Step | false)[] = [
 		{ id: 'welcome', label: '환영', icon: 'fa-hand' },
-		project.facts.length > 0 && { id: 'glance', label: '한눈에 보기', icon: 'fa-chart-simple' },
+		(project.facts.length > 0 || Boolean(project.role)) && {
+			id: 'glance',
+			label: '한눈에 보기',
+			icon: 'fa-chart-simple',
+		},
 		project.highlights.length > 0 && { id: 'features', label: '주요 기능', icon: 'fa-wand-magic-sparkles' },
 		macfolio && { id: 'devices', label: '어디서 열어도', icon: 'fa-display' },
 		(project.build.length > 0 || macfolio) && { id: 'build', label: '만든 방식', icon: 'fa-screwdriver-wrench' },
@@ -42,6 +46,7 @@ function stepsOf(project: Project): Step[] {
 const Features: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 	const [index, setIndex] = useState(0);
 	const point = points[Math.min(index, points.length - 1)];
+	const media = Boolean(point.video || point.variants || point.image);
 	return (
 		<div className="asst-features">
 			<ul className="asst-pick" role="list" aria-label="기능 목록">
@@ -59,9 +64,17 @@ const Features: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 				<h3>{point.title}</h3>
 				<p>{point.body}</p>
 				{point.detail && <p className="asst-detail-more">{point.detail}</p>}
-				<div className="asst-detail-media">
-					<FeatureMedia point={point} />
-				</div>
+				{media ? (
+					<div className="asst-detail-media">
+						<FeatureMedia point={point} />
+					</div>
+				) : (
+					// 화면이 없는 기능은 그 아이콘을 큰 타일로 (macOS 기능 소개의 그림 자리처럼)
+					<div className="asst-detail-glyph" aria-hidden="true">
+						<i className={`fa-solid ${point.icon ?? 'fa-circle-dot'}`} />
+						<span>{String(Math.min(index, points.length - 1) + 1).padStart(2, '0')}</span>
+					</div>
+				)}
 			</div>
 		</div>
 	);
@@ -139,7 +152,7 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 				return (
 					<div className="asst-glance">
 						<h2>한눈에 보기</h2>
-						<ul className="asst-facts">
+						<ul className="asst-facts" data-count={Math.min(project.facts.length, 6)}>
 							{project.facts.map((fact, i) => (
 								<li key={fact.label} style={cssVars({ i })}>
 									<FactValue text={fact.value} />
@@ -147,11 +160,41 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 								</li>
 							))}
 						</ul>
-						{project.role && (
-							<p className="asst-meta">
-								<i className="fa-solid fa-user" aria-hidden="true" /> {project.role}
-							</p>
-						)}
+						{/* 프로젝트 정보: macOS '이 Mac에 관하여'의 줄처럼 */}
+						<dl className="asst-about">
+							{project.role && (
+								<div>
+									<dt>
+										<i className="fa-solid fa-user" aria-hidden="true" /> 맡은 일
+									</dt>
+									<dd>{project.role}</dd>
+								</div>
+							)}
+							{project.language && (
+								<div>
+									<dt>
+										<i className="fa-solid fa-code" aria-hidden="true" /> 주 언어
+									</dt>
+									<dd>{project.language}</dd>
+								</div>
+							)}
+							{project.context && (
+								<div>
+									<dt>
+										<i className="fa-solid fa-people-group" aria-hidden="true" /> 만든 곳
+									</dt>
+									<dd>{project.context}</dd>
+								</div>
+							)}
+							{project.period && (
+								<div>
+									<dt>
+										<i className="fa-regular fa-calendar" aria-hidden="true" /> 기간
+									</dt>
+									<dd>{project.period}</dd>
+								</div>
+							)}
+						</dl>
 					</div>
 				);
 			case 'features':
@@ -225,6 +268,7 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 				return (
 					<>
 						<h2>맡은 일</h2>
+						{project.role && <p className="asst-sub">{project.role}</p>}
 						<ul className="asst-roles">
 							{project.contributions.map((item, i) => (
 								<li key={item} style={cssVars({ i })}>

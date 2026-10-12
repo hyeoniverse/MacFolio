@@ -474,6 +474,16 @@
 	list-style: none;
 }
 
+/* 숫자가 둘이나 넷이면 두 칸씩, 하나면 한 칸으로 (줄 끝이 비지 않게) */
+.ib-facts:has(> li:only-child) {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.ib-facts:has(> li:nth-child(2):last-child),
+.ib-facts:has(> li:nth-child(4):last-child) {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .ib-facts li {
 	display: flex;
 	flex-direction: column;
@@ -529,6 +539,10 @@
 	list-style: none;
 }
 
+.ib-gallery[data-odd] li:first-child {
+	grid-column: 1 / -1;
+}
+
 .ib-gallery li {
 	display: flex;
 	flex-direction: column;
@@ -569,6 +583,72 @@
 	margin-top: 5px;
 	color: var(--sp-accent);
 	font-size: 13px;
+}
+
+/* 장 머리말: 앞선 편지를 인용한 것처럼 */
+.ib-quote {
+	margin: 0;
+	padding: 4px 0 4px 14px;
+	border-left: 3px solid var(--sp-accent);
+	color: var(--sp-muted);
+	font-size: 14.5px;
+}
+
+/* 진행 과정 메일: 전체 일정, 지금 메일은 강조 */
+.ib-thread {
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+	border-radius: 12px;
+	background-color: var(--sp-alt);
+	box-shadow: 0 0 0 1px var(--sp-line);
+	overflow: hidden;
+}
+
+.ib-thread li {
+	display: grid;
+	grid-template-columns: 110px minmax(0, 1fr);
+	gap: 12px;
+	padding: 10px 16px;
+	color: var(--sp-muted);
+	font-size: 14px;
+}
+
+.ib-thread li + li {
+	border-top: 1px solid var(--sp-line);
+}
+
+.ib-thread time {
+	font-variant-numeric: tabular-nums;
+}
+
+.ib-thread li[aria-current] {
+	background-color: color-mix(in srgb, var(--sp-accent) 12%, transparent);
+	color: var(--sp-text);
+	font-weight: 600;
+}
+
+/* 기술 사양 메일의 기술 꼬리표 */
+.ib-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	list-style: none;
+}
+
+.ib-tags li {
+	padding: 3px 10px;
+	border-radius: 999px;
+	background-color: var(--sp-alt);
+	box-shadow: 0 0 0 1px var(--sp-line);
+	color: var(--sp-muted);
+	font-size: 12.5px;
+}
+
+.ib-subject-icon {
+	margin-right: 6px;
+	color: var(--sp-accent);
+	font-size: 0.9em;
 }
 
 /* 답장·전달: 장식 */

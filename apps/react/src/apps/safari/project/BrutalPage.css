@@ -642,9 +642,33 @@
 	opacity: 0.7;
 }
 
-/* 마무리 */
+.br-credits small {
+	display: block;
+	margin-top: 2px;
+	font-size: 11px;
+	letter-spacing: 0.04em;
+}
+
+/* 마무리: 아이콘(잉크 테두리 사각)과 큰 이름 */
 .br-end {
 	padding-top: 44px;
+}
+
+.br-end-head {
+	display: flex;
+	align-items: center;
+	gap: clamp(14px, 2.4cqi, 28px);
+	min-width: 0;
+}
+
+.br-end-icon {
+	flex: none;
+	width: clamp(56px, 9cqi, 104px);
+	height: clamp(56px, 9cqi, 104px);
+	padding: 8px;
+	border: var(--br-line) solid #000000;
+	background: #ffffff;
+	object-fit: contain;
 }
 
 .br .br-block .br-end-name {

@@ -118,10 +118,28 @@ const Feature: React.FC<{ point: ProjectPoint; index: number }> = ({ point, inde
 			<div className="dk-feature-text">
 				<p className="dk-eyebrow">주요 기능 {two(index + 1)}</p>
 				<h2 data-reveal="left">{point.title}</h2>
-				<p data-reveal="left" style={cssVars({ d: 1 })}>
+				<p className="dk-feature-body" data-reveal="left" style={cssVars({ d: 1 })}>
 					{point.body}
 				</p>
+				{media && point.detail && (
+					<p className="dk-feature-more" data-reveal="left" style={cssVars({ d: 2 })}>
+						{point.detail}
+					</p>
+				)}
 			</div>
+			{/* 화면이 없는 기능: 오른쪽 절반에 큰 번호(또는 아이콘)와 자세히를 둔다 */}
+			{!media && (
+				<div className="dk-feature-aside" data-reveal="zoom">
+					<span className="dk-feature-big" aria-hidden="true">
+						{point.icon ? (
+							<i className={`fa-solid ${point.icon}`} />
+						) : (
+							<span className="dk-grad">{two(index + 1)}</span>
+						)}
+					</span>
+					{point.detail && <p>{point.detail}</p>}
+				</div>
+			)}
 			{media && (
 				<div className="dk-scroll dk-feature-media" data-reveal="zoom">
 					{point.scrollFrames && <ScrollFrames frames={point.scrollFrames} title={point.title} />}
@@ -164,17 +182,67 @@ const ChapterTitle: React.FC<{ chapter: ProjectChapter; index: number }> = ({ ch
 	</div>
 );
 
-/** 장 내용 장: 테마 미리보기, 전후 막대, 장 모양마다 다른 글 묶음. 길면 장 안에서 스크롤 */
-const ChapterBody: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
-	<div className="dk-scroll dk-content cr-chapter" data-look={chapter.look}>
-		{chapter.palette && <Themes palette={chapter.palette} />}
-		{chapter.compare && <Bars rows={chapter.compare} />}
-		<ChapterPoints chapter={chapter} />
-	</div>
+/** 그림·데모 없이 글만 있는 기본 모양의 항목들인지 (그러면 슬라이드용 번호 카드로 그린다) */
+const plainPoints = (points: ProjectPoint[], chapter?: ProjectChapter) =>
+	points.length > 0 &&
+	!chapter?.look &&
+	!chapter?.palette &&
+	!chapter?.compare &&
+	points.every(
+		(point) => !point.image && !point.video && !point.demo && !point.shots && !point.variants && !point.scrollFrames
+	);
+
+/** 글만 있는 항목: 번호(또는 아이콘) 카드 격자. 항목 수에 맞춰 열을 정하고 자세히까지 슬라이드에 보인다 */
+const DeckPoints: React.FC<{ points: ProjectPoint[] }> = ({ points }) => (
+	<ol className="dk-points" data-count={Math.min(points.length, 7)}>
+		{points.map((point, i) => (
+			<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
+				<span className="dk-points-no" aria-hidden="true">
+					{point.icon ? <i className={`fa-solid ${point.icon}`} /> : two(i + 1)}
+				</span>
+				<h3>{point.title}</h3>
+				<p>{point.body}</p>
+				{point.detail && <p className="dk-points-more">{point.detail}</p>}
+			</li>
+		))}
+	</ol>
 );
 
+/**
+ * 글 묶음 장(만든 방식·쓰는 법·장 내용): 글만 있으면 번호 카드, 아니면 장 모양 조각.
+ * 머리 글(eyebrow)은 번호 카드에는 늘, 장 모양 조각에는 always일 때만 (장 내용은 앞 장이 제목 장이다)
+ */
+const PointsBody: React.FC<{ eyebrow: string; chapter: ProjectChapter; always?: boolean }> = ({
+	eyebrow,
+	chapter,
+	always,
+}) =>
+	plainPoints(chapter.points, chapter) ? (
+		<div className="dk-scroll dk-content dk-plain">
+			<p className="dk-eyebrow">{eyebrow}</p>
+			<DeckPoints points={chapter.points} />
+		</div>
+	) : (
+		<div className="dk-scroll dk-content cr-chapter" data-look={chapter.look}>
+			{always && <p className="dk-eyebrow">{eyebrow}</p>}
+			{chapter.palette && <Themes palette={chapter.palette} />}
+			{chapter.compare && <Bars rows={chapter.compare} />}
+			<ChapterPoints chapter={chapter} />
+		</div>
+	);
+
+/** 장 내용 장: 테마 미리보기, 전후 막대, 장 모양마다 다른 글 묶음. 길면 장 안에서 스크롤 */
+const ChapterBody: React.FC<{ chapter: ProjectChapter }> = ({ chapter }) => (
+	<PointsBody eyebrow={chapter.title} chapter={chapter} />
+);
+
+/** 진행 과정: 여섯 단계를 넘으면 두 줄로 나눠 날짜가 붙지 않게 한다 */
 const Timeline: React.FC<{ steps: NonNullable<Project['timeline']> }> = ({ steps }) => (
-	<ol className="dk-timeline" style={cssVars({ n: steps.length })}>
+	<ol
+		className="dk-timeline"
+		data-rows={steps.length > 6 ? 2 : undefined}
+		style={cssVars({ n: steps.length > 6 ? Math.ceil(steps.length / 2) : steps.length })}
+	>
 		{steps.map((step, i) => (
 			<li key={`${step.date}-${step.label}`} data-reveal="" style={cssVars({ d: i })}>
 				<time>{step.date}</time>
@@ -214,7 +282,7 @@ function slidesOf(project: Project): Slide[] {
 			body: (
 				<div className="dk-facts-wrap">
 					<p className="dk-eyebrow">한눈에</p>
-					<ul className="dk-facts">
+					<ul className="dk-facts" data-count={Math.min(project.facts.length, 6)}>
 						{project.facts.map((fact, i) => (
 							<li key={fact.label} data-reveal="" style={cssVars({ d: i })}>
 								<FactValue text={fact.value} />
@@ -312,12 +380,7 @@ function slidesOf(project: Project): Slide[] {
 			hue: hue(),
 			fx: 'push',
 			notes: project.build.map((point) => point.detail ?? `${point.title}: ${point.body}`),
-			body: (
-				<div className="dk-scroll dk-content cr-chapter">
-					<p className="dk-eyebrow">만든 방식</p>
-					<ChapterPoints chapter={{ title: '만든 방식', points: project.build }} />
-				</div>
-			),
+			body: <PointsBody eyebrow="만든 방식" chapter={{ title: '만든 방식', points: project.build }} always />,
 		});
 	}
 	if (project.usage?.length) {
@@ -329,12 +392,7 @@ function slidesOf(project: Project): Slide[] {
 			hue: hue(),
 			fx: 'push',
 			notes: project.usage.map((point) => `${point.title}: ${point.body}`),
-			body: (
-				<div className="dk-scroll dk-content cr-chapter">
-					<p className="dk-eyebrow">쓰는 법</p>
-					<ChapterPoints chapter={{ title: '쓰는 법', points: project.usage }} />
-				</div>
-			),
+			body: <PointsBody eyebrow="쓰는 법" chapter={{ title: '쓰는 법', points: project.usage }} always />,
 		});
 	}
 	if (project.timeline?.length) {
@@ -443,11 +501,18 @@ function slidesOf(project: Project): Slide[] {
 							</div>
 						))}
 					</dl>
-					{project.stack.length > 0 && (
+					{(project.stack.length > 0 || project.language) && (
 						<ul className="dk-stack" aria-label="기술">
-							{project.stack.map((item) => (
-								<li key={item}>{item}</li>
-							))}
+							{project.language && (
+								<li className="dk-stack-lang">
+									<i className="fa-solid fa-code" aria-hidden="true" /> {project.language}
+								</li>
+							)}
+							{project.stack
+								.filter((item) => item !== project.language)
+								.map((item) => (
+									<li key={item}>{item}</li>
+								))}
 						</ul>
 					)}
 				</div>

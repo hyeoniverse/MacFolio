@@ -413,13 +413,78 @@
 	line-height: 1.05;
 }
 
-.asst-facts span {
+.asst-facts li > span {
 	color: var(--sp-muted);
 	font-size: 13px;
 }
 
-.asst-glance .asst-meta {
-	margin-top: 22px;
+/* 숫자 수에 맞춰 열을 정한다: 넷까지는 한 줄, 다섯·여섯은 세 열 두 줄 (남는 칸 없이) */
+.asst-facts[data-count='2'] {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.asst-facts[data-count='3'],
+.asst-facts[data-count='5'],
+.asst-facts[data-count='6'] {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.asst-facts[data-count='4'] {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* 다섯 개면 위 줄 둘은 넓게, 아래 줄 셋 (6칸 격자에서 3칸씩, 2칸씩) */
+.asst-facts[data-count='5'] {
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.asst-facts[data-count='5'] li {
+	grid-column: span 2;
+}
+
+.asst-facts[data-count='5'] li:nth-child(-n + 2) {
+	grid-column: span 3;
+}
+
+/* 프로젝트 정보 줄 */
+.asst-about {
+	margin-top: 28px;
+	border: 1px solid var(--asst-line);
+	border-radius: 14px;
+	background: var(--asst-side);
+}
+
+.asst-about:empty {
+	display: none;
+}
+
+.asst-about div {
+	display: grid;
+	grid-template-columns: 140px minmax(0, 1fr);
+	gap: 12px;
+	padding: 13px 18px;
+	font-size: 14px;
+	animation: asst-rise 0.4s var(--ease-out) both;
+	animation-delay: 0.3s;
+}
+
+.asst-about div + div {
+	border-top: 1px solid var(--asst-line);
+}
+
+.asst-about dt {
+	color: var(--sp-muted);
+}
+
+.asst-about dt i {
+	width: 16px;
+	margin-right: 6px;
+	color: var(--asst-a);
+	text-align: center;
+}
+
+.asst-about dd {
+	line-height: 1.5;
 }
 
 @keyframes asst-rise {
@@ -513,6 +578,37 @@
 
 .asst-detail-media:empty {
 	display: none;
+}
+
+/* 화면이 없는 기능: 아이콘 타일과 번호 */
+.asst-detail-glyph {
+	position: relative;
+	display: grid;
+	place-items: center;
+	height: clamp(120px, 22vh, 190px);
+	margin-top: 22px;
+	overflow: hidden;
+	border-radius: 16px;
+	background: linear-gradient(135deg, var(--asst-a), var(--asst-b));
+	color: #ffffff;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.asst-detail-glyph i {
+	font-size: 64px;
+	filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
+	animation: asst-float 5s ease-in-out infinite;
+}
+
+.asst-detail-glyph span {
+	position: absolute;
+	right: 18px;
+	bottom: 6px;
+	font-size: 72px;
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	line-height: 1;
+	opacity: 0.18;
 }
 
 .asst-detail-media img,
@@ -667,8 +763,10 @@
 .asst-roles {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
 	margin-top: 24px;
+	border: 1px solid var(--asst-line);
+	border-radius: 14px;
+	background: var(--asst-side);
 	list-style: none;
 	font-size: 16px;
 	line-height: 1.5;
@@ -677,8 +775,13 @@
 .asst-roles li {
 	display: flex;
 	gap: 12px;
+	padding: 14px 18px;
 	animation: asst-rise 0.4s var(--ease-out) both;
 	animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+.asst-roles li + li {
+	border-top: 1px solid var(--asst-line);
 }
 
 .asst-roles i {
@@ -801,9 +904,18 @@
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.asst-specs div {
+	.asst-specs div,
+	.asst-about div {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 4px;
+	}
+
+	.asst-facts[data-count] {
+		grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+	}
+
+	.asst-facts[data-count] li {
+		grid-column: auto;
 	}
 }
 
