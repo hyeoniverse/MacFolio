@@ -53,14 +53,12 @@ const Panel: React.FC<{
 	index: number;
 	label?: string;
 	className?: string;
-	dark?: boolean;
 	children: React.ReactNode;
-}> = ({ index, label, className = '', dark, children }) => (
+}> = ({ index, label, className = '', children }) => (
 	<section
 		className={`hz-panel ${className}`}
 		data-tone={index % TONES}
 		data-panel={index}
-		data-lk-tone={dark ? 'dark' : undefined}
 		aria-label={label}
 		style={cssVars({ i: index })}
 	>
@@ -76,7 +74,7 @@ const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }
 			: project.stack;
 	const meta = [project.context, project.contributions.length ? '' : project.role, project.period].filter(Boolean);
 	return (
-		<Panel index={index} className="hz-cover" label="표지" dark>
+		<Panel index={index} className="hz-cover" label="표지">
 			<div className="hz-cover-inner">
 				<div className="hz-text">
 					{meta.length > 0 && (
@@ -103,7 +101,7 @@ const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }
 						src={project.image}
 						alt={project.image ? `${project.name} 화면` : undefined}
 					>
-						<MockScreen project={project} kind={pickMockKind(project)} tone="dark" decorative />
+						<MockScreen project={project} kind={pickMockKind(project)} decorative />
 					</DeviceFrame>
 				</div>
 			</div>
@@ -263,7 +261,7 @@ const SpecsPanel: React.FC<{ project: Project; index: number }> = ({ project, in
 
 /** 끝: 행동 유도 띠 */
 const EndPanel: React.FC<{ project: Project; index: number }> = ({ project, index }) => (
-	<Panel index={index} className="hz-end" label="마무리" dark>
+	<Panel index={index} className="hz-end" label="마무리">
 		<CtaBand project={project} title={project.tagline || project.name} className="hz-cta" />
 	</Panel>
 );

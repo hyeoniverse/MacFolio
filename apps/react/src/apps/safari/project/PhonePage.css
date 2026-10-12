@@ -1,48 +1,49 @@
-/* 폰 모양(phone): 거의 흰 바탕(라이트)·남색 기 도는 검정(다크), 강조색은 차분한 민트 하나. 오른쪽 폰은 고정, 왼쪽 이야기가 흐른다 */
+/* 폰 모양(phone): 흰 바탕(라이트)·검정(다크), 강조색은 맑은 민트 하나. 오른쪽 폰은 고정, 왼쪽 이야기가 흐른다 */
 .sp[data-look='phone'] {
-	--sp-bg: #fbfaf7;
-	--sp-alt: #f2f0eb;
-	--sp-text: #141a2e;
-	--sp-muted: #5f6478;
-	--sp-line: #e3e0d8;
-	--sp-accent: #1f8f7c;
+	--sp-bg: #ffffff;
+	--sp-alt: #f5f5f7;
+	--sp-text: #1d1d1f;
+	--sp-muted: #6e6e73;
+	--sp-line: rgba(0, 0, 0, 0.08);
+	--sp-accent: #00998a;
 	/* 공통 조각이 그라데이션 글자로 쓰던 값: 단색으로 (그라데이션 글자 없음) */
 	--sp-grad: linear-gradient(var(--sp-text), var(--sp-text));
-	--ph-mint: #1f8f7c;
-	--ph-bezel: #16181f;
+	--ph-body: #424245;
+	--ph-mint: #00998a;
+	--ph-on-mint: #ffffff;
+	--ph-bezel: #1d1d1f;
 	--ph-bezel-edge: rgba(255, 255, 255, 0.18);
-	--ph-num: rgba(20, 26, 58, 0.14);
+	--ph-num: rgba(0, 0, 0, 0.08);
 	--cr-bg: var(--sp-bg);
 	--cr-ink: var(--sp-text);
 	--cr-muted: var(--sp-muted);
 	--cr-line: var(--sp-line);
 	/* 랜딩 키트 조각(기기 틀, 가짜 화면, 숫자 띠, 구역 머리, CTA)이 읽는 색: 민트 하나와 그 옅은 값, 페이지 바탕을 따른다 */
-	--lk-accent: #1f8f7c;
-	--lk-accent-2: #6fb3a6;
+	--lk-accent: #00998a;
+	--lk-accent-2: #5cc8b8;
+	--lk-dark-accent: #3ad6c0;
 	--lk-surface: #ffffff;
-	--lk-surface-2: var(--sp-bg);
+	--lk-surface-2: #f5f5f7;
 	--lk-ink: var(--sp-text);
 	--lk-muted: var(--sp-muted);
 	--lk-line: var(--sp-line);
-	--lk-dark-surface: #11131a;
-	--lk-dark-surface-2: #1a1d26;
 }
 
 :root[data-theme='dark'] .sp[data-look='phone'] {
-	--sp-bg: #0c0d12;
-	--sp-alt: #14161d;
-	--sp-text: #eef0f6;
-	--sp-muted: #9a9eb0;
-	--sp-line: #262934;
-	--sp-accent: #5cc4b0;
-	--ph-mint: #5cc4b0;
-	--ph-bezel: #050608;
+	--sp-bg: #000000;
+	--sp-alt: #1c1c1e;
+	--sp-text: #f5f5f7;
+	--sp-muted: #a1a1a6;
+	--sp-line: rgba(255, 255, 255, 0.1);
+	--sp-accent: #3ad6c0;
+	--ph-body: #d2d2d7;
+	--ph-mint: #3ad6c0;
+	--ph-on-mint: #00201b;
+	--ph-bezel: #2c2c2e;
 	--ph-bezel-edge: rgba(255, 255, 255, 0.16);
-	--ph-num: rgba(238, 240, 255, 0.1);
-	--lk-accent: #3fa894;
-	--lk-surface: #14161d;
-	--lk-dark-surface: #08090c;
-	--lk-dark-surface-2: #14161d;
+	--ph-num: rgba(255, 255, 255, 0.1);
+	--lk-surface: #000000;
+	--lk-surface-2: #1c1c1e;
 }
 
 .ph {
@@ -90,7 +91,7 @@
 
 .ph-app-name {
 	font-size: 17px;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: -0.01em;
 }
 
@@ -103,19 +104,19 @@
 .ph-hero h1 {
 	max-width: 14ch;
 	margin-top: 30px;
-	font-size: clamp(40px, 5.6cqi, 76px);
-	font-weight: 800;
-	letter-spacing: -0.04em;
-	line-height: 1.02;
+	font-size: clamp(40px, 5.4cqi, 72px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.08;
 	text-wrap: balance;
 }
 
 .ph-lead {
 	max-width: 40ch;
 	margin-top: 20px;
-	color: var(--sp-muted);
-	font-size: clamp(17px, 1.7cqi, 20px);
-	line-height: 1.55;
+	color: var(--ph-body);
+	font-size: clamp(17px, 1.6cqi, 19px);
+	line-height: 1.6;
 }
 
 .ph-links {
@@ -130,6 +131,7 @@
 /* 받기 단추: App Store처럼 굵은 알약 */
 .sp[data-look='phone'] .ph-links .sp-pill {
 	padding: 12px 28px;
+	color: var(--ph-on-mint);
 	font-size: 16px;
 	box-shadow: none;
 }
@@ -178,12 +180,12 @@
 
 .sp[data-look='phone'] .ph-info strong {
 	font-size: clamp(30px, 3.6cqi, 44px);
-	font-weight: 800;
+	font-weight: 600;
 	color: var(--sp-text);
 }
 
 .ph-tour-head {
-	padding: 88px 40px 8px;
+	padding: 120px 40px 8px;
 }
 
 /* ─── 본문: 왼쪽 이야기 + 오른쪽 고정 폰 ─── */
@@ -335,7 +337,7 @@
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 	color: var(--sp-text);
 	font-size: 13px;
-	font-weight: 700;
+	font-weight: 600;
 	animation: ph-slide-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s both;
 }
 
@@ -347,7 +349,7 @@
 	place-items: center;
 	border-radius: 8px;
 	background: var(--ph-mint);
-	color: #fff;
+	color: var(--ph-on-mint);
 	font-size: 12px;
 }
 
@@ -388,7 +390,7 @@
 
 .ph-repo-eyebrow {
 	font-size: 12px;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
 	color: var(--ph-mint);
@@ -451,10 +453,10 @@
 	z-index: -1;
 	color: transparent;
 	font-size: clamp(96px, 16cqi, 170px);
-	font-weight: 900;
-	letter-spacing: -0.06em;
+	font-weight: 600;
+	letter-spacing: -0.04em;
 	line-height: 1;
-	-webkit-text-stroke: 2px var(--ph-num);
+	-webkit-text-stroke: 1.5px var(--ph-num);
 	font-variant-numeric: tabular-nums;
 	transition: -webkit-text-stroke-color 0.4s ease;
 }
@@ -469,8 +471,8 @@
 	gap: 8px;
 	color: var(--ph-mint);
 	font-size: 13px;
-	font-weight: 700;
-	letter-spacing: 0.14em;
+	font-weight: 600;
+	letter-spacing: 0.1em;
 	text-transform: uppercase;
 }
 
@@ -483,16 +485,16 @@
 
 .ph-step h3 {
 	margin-top: 14px;
-	font-size: clamp(28px, 4cqi, 44px);
-	font-weight: 800;
-	letter-spacing: -0.03em;
-	line-height: 1.08;
+	font-size: clamp(28px, 3.8cqi, 42px);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.12;
 }
 
 .ph-step p {
 	max-width: 44ch;
 	margin-top: 16px;
-	color: var(--sp-muted);
+	color: var(--ph-body);
 	font-size: 17px;
 	line-height: 1.6;
 }
@@ -546,19 +548,20 @@
 .ph-gallery {
 	max-width: 1100px;
 	margin: 0 auto;
-	padding: 72px 40px 0;
+	padding: 112px 40px 0;
 }
 
-/* 마지막 행동 유도 띠: 둥근 어두운 판 */
+/* 마지막 행동 유도 띠: 페이지와 한 단계 다른 옅은 면의 둥근 판 */
 .sp[data-look='phone'] .ph-cta {
+	--lk-surface: var(--sp-alt);
 	max-width: 1100px;
-	margin: 96px auto 0;
-	border-radius: 16px;
+	margin: 120px auto 0;
+	border-radius: 18px;
 }
 
 .sp[data-look='phone'] .ph-cta .lk-cta-links .sp-pill {
 	background: var(--ph-mint);
-	color: #fff;
+	color: var(--ph-on-mint);
 }
 
 .ph-gallery ul {
@@ -608,8 +611,8 @@
 .ph-specs h4 {
 	margin-top: 36px;
 	font-size: 14px;
-	font-weight: 700;
-	letter-spacing: 0.14em;
+	font-weight: 600;
+	letter-spacing: 0.1em;
 	text-transform: uppercase;
 	color: var(--sp-muted);
 }
@@ -629,11 +632,11 @@
 }
 
 .ph-spec-list dt {
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .ph-spec-list dd {
-	color: var(--sp-muted);
+	color: var(--ph-body);
 }
 
 .ph-contrib,
@@ -671,7 +674,7 @@
 }
 
 .ph-timeline time {
-	font-weight: 700;
+	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 }
 

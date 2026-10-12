@@ -11,7 +11,7 @@ export interface CtaBandProps {
 	title?: string;
 	/** 그 아래 한 줄 (기본: description) */
 	lead?: string;
-	/** dark(기본) 어두운 띠, light 밝은 띠 */
+	/** dark 어두운 띠, light 밝은 띠 (기본: 사이트 테마를 따른다) */
 	tone?: 'dark' | 'light';
 	/** 아이콘 타일을 문장 위에 (기본 켬) */
 	showIcon?: boolean;
@@ -24,7 +24,7 @@ export const CtaBand: React.FC<CtaBandProps> = ({
 	project,
 	title,
 	lead,
-	tone = 'dark',
+	tone,
 	showIcon = true,
 	pattern = 'none',
 	className,

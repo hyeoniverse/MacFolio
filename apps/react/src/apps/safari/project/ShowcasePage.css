@@ -9,33 +9,41 @@
 }
 
 :root[data-theme='dark'] .sp[data-look='showcase'] {
-	--sp-bg: #0b0b0c;
+	--sp-bg: #000000;
 }
 
 .sc {
 	--sc-accent: var(--lk-accent, var(--sp-accent));
 	--sc-accent-2: var(--lk-accent-2, var(--sc-accent));
 	/* 흰 바탕 위 글자로 쓰는 강조색 (노란 아이콘처럼 밝은 색도 읽히게 글자색 쪽으로 당긴다) */
-	--sc-accent-ink: color-mix(in srgb, var(--sc-accent) 62%, var(--sp-text));
+	--sc-accent-ink: color-mix(in srgb, var(--sc-accent) 80%, var(--sp-text));
+	/* 본문 글자: 너무 옅지도 짙지도 않은 회색 */
+	--sc-body: #424245;
 	--sc-card: var(--sp-bg);
-	--sc-line: color-mix(in srgb, var(--sp-text) 9%, transparent);
+	--sc-soft: #f5f5f7;
+	--sc-line: rgba(0, 0, 0, 0.07);
 	--sc-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
-	--sc-radius: 14px;
-	--lk-bento-row: 230px;
+	--sc-radius: 16px;
+	--lk-bento-row: 240px;
 	container-type: inline-size;
-	padding-bottom: 56px;
+	padding-bottom: 72px;
 }
 
 /* 다크 테마: 키트의 '밝은 톤' 조각도 어두운 바탕을 쓴다 */
 :root[data-theme='dark'] .sc {
-	--sc-card: #141416;
-	--sc-line: rgba(255, 255, 255, 0.1);
+	/* 단추 바탕은 흰 글자가 읽히는 원래 값 그대로, 글자로 쓰는 강조색만 같은 색상의 밝은 값 */
+	--sc-accent-ink: var(--lk-dark-accent, var(--sc-accent));
+	--sc-body: #d2d2d7;
+	--sc-card: #1c1c1e;
+	--sc-soft: #1c1c1e;
+	--sc-line: rgba(255, 255, 255, 0.08);
 	--sc-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
-	--lk-light-surface: #0b0b0c;
-	--lk-light-surface-2: #161618;
+	--lk-light-surface: #000000;
+	--lk-light-surface-2: #1c1c1e;
 	--lk-light-ink: #f5f5f7;
 	--lk-light-muted: #a1a1a6;
-	--lk-light-line: rgba(255, 255, 255, 0.1);
+	--lk-light-body: #d2d2d7;
+	--lk-light-line: rgba(255, 255, 255, 0.08);
 }
 
 /* ─── 맨 위 ─── */
@@ -55,14 +63,14 @@
 	align-items: center;
 	max-width: 1180px;
 	margin: 0 auto;
-	padding: 88px 48px 120px;
+	padding: 112px 48px 136px;
 }
 
 .sc-hero-text {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 18px;
+	gap: 20px;
 }
 
 .sc-brand {
@@ -107,17 +115,17 @@
 	margin: 6px 0 0;
 	color: var(--sp-text);
 	font-size: clamp(38px, 4.8cqi, 64px);
-	font-weight: 700;
-	line-height: 1.05;
-	letter-spacing: -0.04em;
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.025em;
 	text-wrap: balance;
 }
 
 .sc-lead {
 	max-width: 30em;
 	margin: 0;
-	color: var(--sp-muted);
-	font-size: 18px;
+	color: var(--sc-body);
+	font-size: 19px;
 	font-weight: 400;
 	line-height: 1.6;
 }
@@ -201,26 +209,26 @@
 .sc-section {
 	max-width: 1080px;
 	margin: 0 auto;
-	padding: 104px 32px 0;
+	padding: 128px 32px 0;
 }
 
 .sc-section .lk-section-head {
-	margin-bottom: 44px;
+	margin-bottom: 56px;
 }
 
 .sc-section h3 {
 	margin: 0;
 	color: var(--sp-text);
-	font-size: 18px;
-	font-weight: 650;
-	letter-spacing: -0.015em;
+	font-size: 19px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
 }
 
 .sc-section p {
 	margin: 0;
-	color: var(--sp-muted);
-	font-size: 14.5px;
-	line-height: 1.65;
+	color: var(--sc-body);
+	font-size: 16px;
+	line-height: 1.6;
 }
 
 /* ─── 주요 기능: 카드 벤토 ─── */
@@ -238,7 +246,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	padding: 24px 26px 18px;
+	padding: 28px 30px 24px;
 }
 
 .sc-card-icon {
@@ -254,8 +262,12 @@
 }
 
 .sc-section .sc-card-detail {
-	font-size: 13px;
-	opacity: 0.85;
+	color: var(--sp-muted);
+	font-size: 14px;
+}
+
+.sc-section .sc-card-detail {
+	color: var(--sp-muted);
 }
 
 .sc-card-visual {
@@ -264,7 +276,7 @@
 	min-height: 150px;
 	overflow: hidden;
 	border-top: 1px solid var(--sc-line);
-	background: color-mix(in srgb, var(--sp-alt) 60%, var(--sc-card));
+	background: var(--sc-soft);
 }
 
 .sc-card-visual .lk-feature {
@@ -282,12 +294,12 @@
 
 /* 큰 칸: 그림이 아래를 크게 채운다 (가짜 화면은 둥근 창처럼 아래로 빠져나간다) */
 .sc-card[data-size='lg'] h3 {
-	font-size: 24px;
+	font-size: 26px;
 	letter-spacing: -0.025em;
 }
 
 .sc-card[data-size='lg'] .sc-card-text > p:not(.sc-card-detail) {
-	font-size: 15.5px;
+	font-size: 17px;
 }
 
 .sc-card[data-size='lg'] .sc-card-visual {
@@ -314,7 +326,7 @@
 .sc-card[data-size='wide'] .sc-card-text {
 	flex: 1 1 0;
 	justify-content: center;
-	padding: 26px;
+	padding: 30px;
 }
 
 .sc-card[data-size='wide'] .sc-card-visual {
@@ -355,7 +367,7 @@
 	overflow: hidden;
 	border: 1px solid var(--sc-line);
 	border-radius: 12px;
-	background: var(--sp-alt);
+	background: var(--sc-soft);
 	cursor: zoom-in;
 	transition: border-color var(--duration-fast) var(--ease-out);
 }
@@ -410,7 +422,7 @@
 .sc-zig {
 	display: flex;
 	flex-direction: column;
-	gap: 72px;
+	gap: 96px;
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -434,14 +446,18 @@
 }
 
 .sc-section .sc-zig-text h3 {
-	font-size: clamp(22px, 2.6cqi, 30px);
-	font-weight: 650;
-	letter-spacing: -0.03em;
+	font-size: clamp(24px, 2.6cqi, 32px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
 }
 
 .sc-section .sc-zig-text > p:not(.sc-zig-detail) {
-	color: var(--sp-text);
-	font-size: 16px;
+	font-size: 17px;
+}
+
+.sc-section .sc-zig-detail {
+	color: var(--sp-muted);
+	font-size: 15px;
 }
 
 .sc-zig-num {
@@ -458,7 +474,7 @@
 	overflow: hidden;
 	border: 1px solid var(--sc-line);
 	border-radius: var(--sc-radius);
-	background: color-mix(in srgb, var(--sp-alt) 60%, var(--sc-card));
+	background: var(--sc-soft);
 }
 
 .sc-zig-media {
@@ -474,7 +490,7 @@
 	--cols: 3;
 	display: grid;
 	grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-	gap: 20px;
+	gap: 32px;
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -497,7 +513,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	padding: 24px 0 0;
+	padding: 28px 0 0;
 	border-top: 1px solid var(--sc-line);
 }
 
@@ -515,7 +531,8 @@
 }
 
 .sc-section .sc-step-detail {
-	font-size: 13px;
+	color: var(--sp-muted);
+	font-size: 14px;
 }
 
 /* ─── 진행 과정 ─── */
@@ -532,8 +549,9 @@
 	flex: 1 1 0;
 	min-width: 120px;
 	padding: 24px 14px 0 0;
-	font-size: 13.5px;
-	line-height: 1.5;
+	color: var(--sc-body);
+	font-size: 14.5px;
+	line-height: 1.55;
 }
 
 .sc-timeline li::before {
@@ -589,7 +607,7 @@
 
 .sc-specs-card {
 	margin: 0;
-	padding: 24px 26px;
+	padding: 28px 30px;
 	border: 1px solid var(--sc-line);
 	border-radius: var(--sc-radius);
 	background: var(--sc-card);
@@ -598,9 +616,10 @@
 .sc-specs dl > div {
 	display: flex;
 	gap: 16px;
-	padding: 12px 0;
+	padding: 14px 0;
 	border-bottom: 1px solid var(--sc-line);
-	font-size: 14px;
+	color: var(--sc-body);
+	font-size: 15px;
 }
 
 .sc-specs dl > div:last-child {
@@ -611,7 +630,7 @@
 	flex: none;
 	min-width: 5.5em;
 	color: var(--sp-muted);
-	font-weight: 600;
+	font-weight: 500;
 }
 
 .sc-specs dd {
@@ -630,11 +649,12 @@
 .sc-contributions ul {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 12px;
 	margin: 0;
 	padding: 0;
-	font-size: 14px;
-	line-height: 1.5;
+	color: var(--sc-body);
+	font-size: 15px;
+	line-height: 1.55;
 	list-style: none;
 }
 
@@ -656,14 +676,18 @@
 
 /* ─── 마무리 띠 ─── */
 .sc-cta {
+	/* 다크에서도 단추는 흰 글자가 읽히는 원래 강조색 */
+	--lk-dark-accent: var(--lk-accent, var(--sp-accent));
 	max-width: 1080px;
-	margin: 112px auto 0;
+	margin: 136px auto 0;
 	padding: 0 32px;
 }
 
+/* 흰 페이지 위의 아주 옅은 면 하나 (다크에서는 #1c1c1e) */
 .sc-cta .lk-cta {
+	--lk-surface: var(--sc-soft);
 	overflow: hidden;
-	border-radius: var(--sc-radius);
+	border-radius: 20px;
 }
 
 /* ─── 나타나기 ─── */

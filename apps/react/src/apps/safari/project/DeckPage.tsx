@@ -44,6 +44,9 @@ type Kind =
 	| 'specs'
 	| 'end';
 
+/** 라이트 테마에서도 어두운 슬라이드로 두는 장 (키노트의 포인트 장처럼, 나머지는 페이지 테마를 따른다) */
+const DARK_KINDS: ReadonlySet<Kind> = new Set<Kind>(['facts', 'end']);
+
 interface Slide {
 	key: string;
 	kind: Kind;
@@ -97,7 +100,7 @@ const Cover: React.FC<{ project: Project; seat: React.RefObject<HTMLDivElement |
 				{/* 신제품 발표처럼: 노트북 화면에 대표 화면(없으면 데이터로 그린 화면) */}
 				<div className="dk-cover-device" aria-hidden="true">
 					<DeviceFrame kind="laptop" src={project.image}>
-						<MockScreen project={project} kind={pickMockKind(project)} tone="dark" tint={false} decorative />
+						<MockScreen project={project} kind={pickMockKind(project)} tint={false} decorative />
 					</DeviceFrame>
 				</div>
 				{/* 몽이가 서는 자리 (몽이는 위 층에 떠서 이 자리에 맞춰 선다). 표지가 아닐 때는 자리를 감춰 몽이가 다른 데로 가게 */}
@@ -131,14 +134,7 @@ const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number }
 			{!media && (
 				<div className="dk-feature-aside" data-reveal="zoom" aria-hidden="true">
 					<DeviceFrame kind="browser" url={project.demo ?? project.url}>
-						<MockScreen
-							project={project}
-							kind={pickMockKind(project)}
-							focus={index}
-							tone="dark"
-							tint={false}
-							decorative
-						/>
+						<MockScreen project={project} kind={pickMockKind(project)} focus={index} tint={false} decorative />
 					</DeviceFrame>
 				</div>
 			)}
@@ -285,7 +281,7 @@ function slidesOf(project: Project): Slide[] {
 				<div className="dk-facts-wrap">
 					<p className="dk-eyebrow">한눈에</p>
 					<h2 className="dk-facts-title">{project.tagline}</h2>
-					<StatBand facts={project.facts} tone="dark" label="숫자" className="dk-stats" />
+					<StatBand facts={project.facts} label="숫자" className="dk-stats" />
 				</div>
 			),
 		});
@@ -664,7 +660,7 @@ const DeckPage: React.FC<{ project: Project }> = ({ project }) => {
 							key={slide.key}
 							label={slide.region ?? slide.title}
 							className="dk-slide"
-							data-lk-tone="dark"
+							data-lk-tone={DARK_KINDS.has(slide.kind) ? 'dark' : undefined}
 							data-kind={slide.kind}
 							data-fx={slide.fx}
 							data-dir={dir}
