@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">손잡이는 그리드 칸이 아니라 경계 위에 떠 있다</text>
+  <!-- grid frame -->
+  <rect x="20" y="50" width="600" height="170" rx="10" fill="#f3f4f6"/>
+  <!-- sidebar column -->
+  <rect x="28" y="58" width="150" height="154" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="103" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="#4f46e5">사이드바</text>
+  <text x="103" y="148" text-anchor="middle" font-size="11" fill="#374151">var(--memo-sidebar-width)</text>
+  <!-- list column -->
+  <rect x="190" y="58" width="170" height="154" rx="6" fill="#fff" stroke="#e5e7eb"/>
+  <text x="275" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2937">목록</text>
+  <text x="275" y="148" text-anchor="middle" font-size="11" fill="#6b7280">17rem</text>
+  <!-- reader column -->
+  <rect x="368" y="58" width="244" height="154" rx="6" fill="#fff" stroke="#e5e7eb"/>
+  <text x="490" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2937">본문</text>
+  <text x="490" y="148" text-anchor="middle" font-size="11" fill="#6b7280">1fr</text>
+  <!-- handle -->
+  <rect x="178" y="66" width="12" height="138" fill="#fff1f2" stroke="#fda4af" stroke-dasharray="3 2"/>
+  <line x1="184" y1="66" x2="184" y2="204" stroke="#ef4444" stroke-width="2"/>
+  <!-- arrows -->
+  <path d="M150 236 L218 236" stroke="#ef4444" stroke-width="1.5"/>
+  <path d="M150 236 L158 231 L158 241 z" fill="#ef4444"/>
+  <path d="M218 236 L210 231 L210 241 z" fill="#ef4444"/>
+  <text x="184" y="258" text-anchor="middle" font-size="11" fill="#ef4444">손잡이 (position: absolute, 너비 12px)</text>
+  <text x="184" y="275" text-anchor="middle" font-size="11" fill="#6b7280">left: calc(var(--memo-sidebar-width) - 4px)</text>
+  <text x="490" y="258" text-anchor="middle" font-size="11" fill="#374151">끄는 동안: data-resizing</text>
+  <text x="490" y="275" text-anchor="middle" font-size="11" fill="#6b7280">transition 끔 · 180~360px로 제한</text>
+</svg>
