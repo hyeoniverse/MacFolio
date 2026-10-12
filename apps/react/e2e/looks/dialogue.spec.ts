@@ -1,4 +1,4 @@
-// dialogue 모양: RPG 대화창으로 읽는다 — 인사 → 선택지 → 주제를 '다음'으로 한 장씩 → 다시 선택지(읽음 표시)
+// dialogue 모양: 고전 RPG 대화창으로 읽는다 — 인사 → 선택지 창 → 주제를 '다음'(▼)으로 한 장씩 → 다시 선택지(읽음 표시)
 import type { Locator } from '@playwright/test';
 import { test, expect } from '../fixtures';
 import { openLook } from './open';
@@ -124,6 +124,33 @@ test('dialogue: 장 목록에서 항목의 화면 여러 장을 액자 안에서
 		'src',
 		'/imgs/projects/hyeoniverse/cms/gallery.jpg'
 	);
+});
+
+test('dialogue: Z로 넘기고 고르며, →는 옆 열로, X는 장 목록에서 처음 선택지로 돌아간다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'hyeoniverse', tab: /HYEONIVERSE/, look: 'dialogue' });
+	const dialog = dialogOf(panel);
+	await nextOf(dialog).click();
+	const features = dialog.getByRole('button', { name: '주요 기능 알려줘' });
+	await expect(features).toBeVisible();
+
+	// 두 열 선택지: →는 옆 열의 같은 줄로 커서를 옮긴다
+	const active = dialog.locator('.dl-menu[data-open] button[data-active]');
+	await expect(active).toContainText('주요 기능 알려줘');
+	await page.keyboard.press('ArrowRight');
+	await expect(active).not.toContainText('주요 기능 알려줘');
+
+	// 장 목록에서 X를 누르면 처음 선택지로
+	await dialog.getByRole('button', { name: '더 들려줄 이야기 있어?' }).click();
+	await expect(dialog.getByRole('button', { name: '처음 선택지로' })).toBeVisible();
+	await page.keyboard.press('x');
+	await expect(features).toBeVisible();
+
+	// Z는 고르기와 다음
+	await features.focus();
+	await page.keyboard.press('z');
+	await expect(dialog).toContainText('1 / ');
+	await page.keyboard.press('z');
+	await expect(dialog).toContainText('2 / ');
 });
 
 test('dialogue: 배경은 프로젝트에 정한 테마를 따른다', async ({ page }) => {
