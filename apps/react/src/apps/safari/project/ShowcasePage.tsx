@@ -7,7 +7,6 @@ import {
 	CtaBand,
 	DeviceFrame,
 	FeatureVisual,
-	GlowBackdrop,
 	LogoStrip,
 	MockScreen,
 	SectionHeader,
@@ -36,16 +35,14 @@ const Media: React.FC<{ src: string; alt: string; className?: string }> = ({ src
 	);
 
 /**
- * 맨 위 (Stripe식): 밝은 바탕 위로 비스듬한 색 띠가 흐르고, 왼쪽에 이름 배지·큰 한 줄·소개·단추·기술 칩,
- * 오른쪽에 브라우저 틀에 담긴 대표 화면과 그 앞에 겹친 휴대폰 화면. 대표 화면이 없으면 프로젝트 데이터로 그린 가짜 화면
+ * 맨 위 (Stripe식): 흰 바탕에 왼쪽은 이름·큰 한 줄·소개·단추·기술, 오른쪽은 브라우저 틀에 담긴 대표 화면 하나 (똑바로, 그림자 하나).
+ * 대표 화면이 없으면 프로젝트 데이터로 그린 가짜 화면
  */
-const Hero: React.FC<{ project: Project; shots: string[] }> = ({ project, shots }) => {
+const Hero: React.FC<{ project: Project; shot?: string }> = ({ project, shot }) => {
 	const tech = techOf(project);
 	const meta = [project.role, project.period].filter(Boolean);
 	return (
 		<header className="sc-hero">
-			<GlowBackdrop tone="light" pattern="grid" focus="side" />
-			<span className="sc-ribbon" aria-hidden="true" />
 			<div className="sc-hero-inner">
 				<div className="sc-hero-text">
 					<div className="sc-brand">
@@ -70,18 +67,11 @@ const Hero: React.FC<{ project: Project; shots: string[] }> = ({ project, shots 
 					)}
 				</div>
 				<div className="sc-hero-art" aria-hidden="true">
-					<DeviceFrame kind="browser" url={project.demo} glow className="sc-hero-device">
-						{shots[0] ? (
-							<Media src={shots[0]} alt="" className="sc-hero-shot lk-device-media" />
+					<DeviceFrame kind="browser" url={project.demo} className="sc-hero-device">
+						{shot ? (
+							<Media src={shot} alt="" className="sc-hero-shot lk-device-media" />
 						) : (
 							<MockScreen project={project} decorative />
-						)}
-					</DeviceFrame>
-					<DeviceFrame kind="phone" className="sc-hero-phone">
-						{shots[1] ? (
-							<Media src={shots[1]} alt="" className="sc-hero-shot sc-hero-shot-back lk-device-media" />
-						) : (
-							<MockScreen project={project} kind="mobile" focus={1} decorative />
 						)}
 					</DeviceFrame>
 				</div>
@@ -172,7 +162,7 @@ const Zig: React.FC<{ project: Project; points: ProjectPoint[] }> = ({ project, 
 );
 
 /**
- * 어떤 프로젝트에나 맞는 모양(showcase), Stripe식 밝은 제품 랜딩: 색 띠가 흐르는 히어로와 기기 속 대표 화면 → 숫자 띠 →
+ * 어떤 프로젝트에나 맞는 모양(showcase), Stripe식 밝은 제품 랜딩: 흰 바탕 히어로와 브라우저 틀 속 대표 화면 → 숫자 띠 →
  * 주요 기능 벤토 → 화면 모음 띠 → 만든 방식(좌우 번갈이) → 쓰는 법(이어진 단계) → 진행 과정 → 기술과 사양 → 마무리 띠.
  * 없는 묶음은 통째로 빠진다
  */
@@ -189,11 +179,11 @@ const ShowcasePage: React.FC<{ project: Project }> = ({ project }) => {
 
 	return (
 		<div ref={root} className="sc" style={accent}>
-			<Hero project={project} shots={stillShots} />
+			<Hero project={project} shot={stillShots[0]} />
 
 			{project.facts.length > 0 && (
 				<div className="sc-stats" data-reveal="">
-					<StatBand facts={project.facts} />
+					<StatBand facts={project.facts} gradient={false} />
 				</div>
 			)}
 
@@ -257,7 +247,7 @@ const ShowcasePage: React.FC<{ project: Project }> = ({ project }) => {
 			{(project.specs.length > 0 || project.contributions.length > 0) && (
 				<Region label="기술 사양" className="sc-section sc-specs-section">
 					<SectionHeader eyebrow="기술 사양" title="무엇으로, 누가 만들었나요?" />
-					{tech.length > 0 && <LogoStrip items={tech} caption="만든 기술" label="만든 기술" marquee />}
+					{tech.length > 0 && <LogoStrip items={tech} caption="만든 기술" label="만든 기술" />}
 					<div className="sc-specs" data-reveal="">
 						{project.specs.length > 0 && (
 							<dl className="sc-specs-card">

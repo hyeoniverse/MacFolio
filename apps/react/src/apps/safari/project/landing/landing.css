@@ -6,37 +6,37 @@
  */
 .lk-root {
 	--_accent: var(--lk-accent, #0071e3);
-	--_accent-2: var(--lk-accent-2, #a24bf5);
+	--_accent-2: var(--lk-accent-2, var(--_accent));
 	--_surface: var(--lk-surface, #ffffff);
 	--_surface-2: var(--lk-surface-2, #f5f5f7);
 	--_ink: var(--lk-ink, #1d1d1f);
 	--_muted: var(--lk-muted, #6e6e73);
 	--_line: var(--lk-line, rgba(0, 0, 0, 0.09));
-	--_radius: var(--lk-radius, 20px);
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -8px rgba(0, 0, 0, 0.12);
+	--_radius: var(--lk-radius, 14px);
+	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.06);
 	--_on-accent: #ffffff;
 }
 
 :root[data-theme='dark'] .lk-root {
 	--_accent: var(--lk-accent, #2997ff);
-	--_surface: var(--lk-surface, #111114);
-	--_surface-2: var(--lk-surface-2, #1c1c21);
+	--_surface: var(--lk-surface, #0b0b0c);
+	--_surface-2: var(--lk-surface-2, #161618);
 	--_ink: var(--lk-ink, #f5f5f7);
 	--_muted: var(--lk-muted, #a1a1a6);
 	--_line: var(--lk-line, rgba(255, 255, 255, 0.1));
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .lk-root[data-lk-tone='dark'],
 :root[data-theme='dark'] .lk-root[data-lk-tone='dark'],
 [data-lk-tone='dark'] .lk-root:not([data-lk-tone]) {
 	--_accent: var(--lk-dark-accent, var(--lk-accent, #2997ff));
-	--_surface: var(--lk-dark-surface, #0a0a0d);
-	--_surface-2: var(--lk-dark-surface-2, #16161b);
+	--_surface: var(--lk-dark-surface, #0b0b0c);
+	--_surface-2: var(--lk-dark-surface-2, #161618);
 	--_ink: var(--lk-dark-ink, #f5f5f7);
 	--_muted: var(--lk-dark-muted, #a1a1a6);
 	--_line: var(--lk-dark-line, rgba(255, 255, 255, 0.1));
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .lk-root[data-lk-tone='light'],
@@ -48,15 +48,7 @@
 	--_ink: var(--lk-light-ink, #1d1d1f);
 	--_muted: var(--lk-light-muted, #6e6e73);
 	--_line: var(--lk-light-line, rgba(0, 0, 0, 0.09));
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -8px rgba(0, 0, 0, 0.12);
-}
-
-/* 강조색 그라데이션 글자 */
-.lk-gradient-text {
-	background: linear-gradient(100deg, var(--_ink) 10%, var(--_accent) 55%, var(--_accent-2) 95%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* 글 없는 자리 표시 막대 (가짜 화면과 비주얼의 "글줄") */
@@ -70,6 +62,7 @@
 }
 
 /* ─── GlowBackdrop ─── */
+/* 기본은 단색 바탕 위 아주 옅은 무늬 하나. glow를 켜야 강조색 한 덩어리가 옅게 번진다 */
 .lk-glow {
 	position: absolute;
 	inset: 0;
@@ -82,139 +75,62 @@
 
 .lk-glow-blob {
 	position: absolute;
+	top: -40%;
+	left: 25%;
+	width: 50%;
+	height: 80%;
 	border-radius: 50%;
-	filter: blur(70px);
-	opacity: 0.55;
-	will-change: transform;
-}
-
-.lk-glow-a {
-	top: -30%;
-	left: 18%;
-	width: 52%;
-	height: 85%;
 	background: radial-gradient(closest-side, var(--_accent), transparent);
-}
-
-.lk-glow-b {
-	top: -18%;
-	right: 6%;
-	width: 44%;
-	height: 75%;
-	background: radial-gradient(closest-side, var(--_accent-2), transparent);
-	opacity: 0.45;
-}
-
-.lk-glow-c {
-	bottom: -40%;
-	left: 34%;
-	width: 40%;
-	height: 70%;
-	background: radial-gradient(closest-side, color-mix(in srgb, var(--_accent) 50%, var(--_accent-2)), transparent);
-	opacity: 0.3;
+	filter: blur(80px);
+	opacity: 0.14;
 }
 
 .lk-glow[data-lk-tone='light'] .lk-glow-blob {
-	opacity: 0.22;
+	opacity: 0.08;
 }
 
-.lk-glow[data-lk-tone='light'] .lk-glow-b {
-	opacity: 0.18;
-}
-
-.lk-glow[data-focus='center'] .lk-glow-a {
+.lk-glow[data-focus='center'] .lk-glow-blob {
 	top: 10%;
-	left: 10%;
 }
 
-.lk-glow[data-focus='center'] .lk-glow-b {
-	top: 20%;
-	right: 8%;
+.lk-glow[data-focus='side'] .lk-glow-blob {
+	top: -10%;
+	left: 50%;
 }
 
-.lk-glow[data-focus='side'] .lk-glow-a {
-	top: 0;
-	left: 48%;
-}
-
-.lk-glow[data-focus='side'] .lk-glow-b {
-	top: 30%;
-	right: -10%;
-}
-
-/* 무늬: 가운데 위가 진하고 가장자리로 갈수록 사라진다 */
+/* 무늬: 가운데 위가 조금 보이고 가장자리로 갈수록 사라진다 */
 .lk-glow-pattern {
 	position: absolute;
 	inset: 0;
-	--_pat: color-mix(in srgb, var(--_ink) 9%, transparent);
-	mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 20%, transparent 75%);
+	--_pat: color-mix(in srgb, var(--_ink) 5%, transparent);
+	mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 10%, transparent 70%);
 }
 
 .lk-glow[data-pattern='grid'] .lk-glow-pattern {
 	background-image:
 		linear-gradient(to right, var(--_pat) 1px, transparent 1px),
 		linear-gradient(to bottom, var(--_pat) 1px, transparent 1px);
-	background-size: 56px 56px;
+	background-size: 64px 64px;
 	background-position: center top;
 }
 
 .lk-glow[data-pattern='dots'] .lk-glow-pattern {
-	--_pat: color-mix(in srgb, var(--_ink) 16%, transparent);
+	--_pat: color-mix(in srgb, var(--_ink) 9%, transparent);
 	background-image: radial-gradient(var(--_pat) 1px, transparent 1.4px);
-	background-size: 22px 22px;
+	background-size: 24px 24px;
 }
 
 .lk-glow[data-focus='side'] .lk-glow-pattern {
-	mask-image: radial-gradient(ellipse 60% 70% at 70% 40%, #000 15%, transparent 75%);
+	mask-image: radial-gradient(ellipse 60% 70% at 70% 40%, #000 10%, transparent 70%);
 }
 
-/* 위에서 내려오는 가는 빛줄기 (Linear 풍) */
-.lk-glow-beam {
-	position: absolute;
-	top: 0;
-	left: 50%;
-	width: min(900px, 90%);
-	height: 1px;
-	transform: translateX(-50%);
-	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--_accent) 70%, #fff), transparent);
-	box-shadow: 0 0 60px 18px color-mix(in srgb, var(--_accent) 25%, transparent);
-	opacity: 0.8;
+.lk-glow[data-animate] .lk-glow-blob {
+	animation: lk-drift 24s ease-in-out infinite alternate;
 }
 
-.lk-glow[data-lk-tone='light'] .lk-glow-beam {
-	opacity: 0.35;
-}
-
-.lk-glow[data-focus='side'] .lk-glow-beam {
-	left: 68%;
-}
-
-/* 아주 옅은 알갱이: 그라데이션이 띠지지 않게 */
-.lk-glow-noise {
-	position: absolute;
-	inset: 0;
-	opacity: 0.07;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-	mix-blend-mode: overlay;
-}
-
-.lk-glow[data-animate] .lk-glow-a {
-	animation: lk-drift-a 18s ease-in-out infinite alternate;
-}
-
-.lk-glow[data-animate] .lk-glow-b {
-	animation: lk-drift-b 22s ease-in-out infinite alternate;
-}
-
-@keyframes lk-drift-a {
+@keyframes lk-drift {
 	to {
-		transform: translate(12%, 8%) scale(1.12);
-	}
-}
-
-@keyframes lk-drift-b {
-	to {
-		transform: translate(-14%, 10%) scale(0.92);
+		transform: translateX(8%);
 	}
 }
 
@@ -252,8 +168,7 @@
 	width: 6px;
 	height: 6px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, var(--_accent), var(--_accent-2));
-	box-shadow: 0 0 10px var(--_accent);
+	background: var(--_accent);
 }
 
 .lk-section-title {
@@ -268,10 +183,6 @@
 
 h3.lk-section-title {
 	font-size: clamp(24px, 3vw, 34px);
-}
-
-.lk-section-title.lk-gradient-text {
-	color: transparent;
 }
 
 .lk-section-lead {
@@ -333,13 +244,6 @@ h3.lk-section-title {
 	line-height: 1;
 	letter-spacing: -0.04em;
 	font-variant-numeric: tabular-nums;
-}
-
-.lk-stats[data-gradient] .lk-stat strong {
-	background: linear-gradient(180deg, var(--_ink) 30%, color-mix(in srgb, var(--_accent) 70%, var(--_ink)));
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
 }
 
 .lk-stat > span {
@@ -496,7 +400,7 @@ h3.lk-section-title {
 	border-radius: 22%;
 	box-shadow:
 		0 0 0 1px var(--_line),
-		0 18px 40px -10px color-mix(in srgb, var(--_accent) 60%, transparent);
+		var(--_shadow);
 }
 
 .lk-cta-title {
@@ -528,7 +432,7 @@ h3.lk-section-title {
 	background: var(--_ink);
 	color: var(--_surface);
 	font-weight: 600;
-	box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--_accent) 70%, transparent);
+	box-shadow: none;
 }
 
 /* 링크도 단추 모양 (데모가 없어 GitHub 링크 하나뿐이어도 행동 유도가 약해 보이지 않게) */
@@ -538,13 +442,12 @@ h3.lk-section-title {
 	align-items: center;
 	gap: 6px;
 	padding: 11px 22px;
-	border: 1px solid color-mix(in srgb, var(--_ink) 22%, transparent);
+	border: 1px solid color-mix(in srgb, var(--_ink) 20%, transparent);
 	border-radius: 99px;
-	background: color-mix(in srgb, var(--_ink) 6%, transparent);
+	background: transparent;
 	color: var(--_ink);
 	font-weight: 600;
 	text-decoration: none;
-	backdrop-filter: blur(8px);
 	transition:
 		background 0.2s,
 		border-color 0.2s;
@@ -552,7 +455,7 @@ h3.lk-section-title {
 
 .lk-cta .lk-cta-links .sp-link:hover {
 	border-color: color-mix(in srgb, var(--_ink) 40%, transparent);
-	background: color-mix(in srgb, var(--_ink) 12%, transparent);
+	background: color-mix(in srgb, var(--_ink) 6%, transparent);
 }
 
 /* ─── BentoGrid ─── */
@@ -601,8 +504,7 @@ h3.lk-section-title {
 
 /* ─── 움직임 줄이기 ─── */
 @media (prefers-reduced-motion: reduce) {
-	.lk-glow[data-animate] .lk-glow-a,
-	.lk-glow[data-animate] .lk-glow-b {
+	.lk-glow[data-animate] .lk-glow-blob {
 		animation: none;
 	}
 

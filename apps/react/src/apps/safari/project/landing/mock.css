@@ -114,7 +114,7 @@
 .lk-mock-initial {
 	display: grid;
 	place-items: center;
-	background: linear-gradient(135deg, var(--_m-accent), var(--_m-accent-2));
+	background: var(--_m-accent);
 	color: #fff;
 	font-weight: 700;
 	font-size: 1em;
@@ -161,8 +161,7 @@
 	border-radius: 50%;
 	background:
 		radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.85) 0 22%, transparent 23%),
-		radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.85) 0 38%, transparent 39%),
-		linear-gradient(135deg, var(--_dot, var(--_m-accent)), color-mix(in srgb, var(--_dot, var(--_m-accent)) 60%, #000));
+		radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.85) 0 38%, transparent 39%), var(--_dot, var(--_m-accent));
 	box-shadow: 0 0 0 2px var(--_m-bg);
 }
 
@@ -174,11 +173,8 @@
 	min-width: 2.3em;
 	padding: 0 0.9em;
 	border-radius: 0.65em;
-	background: linear-gradient(180deg, color-mix(in srgb, var(--_m-accent) 85%, #fff), var(--_m-accent));
+	background: var(--_m-accent);
 	color: #fff;
-	box-shadow:
-		0 1px 0 rgba(255, 255, 255, 0.25) inset,
-		0 0.4em 1em -0.3em color-mix(in srgb, var(--_m-accent) 70%, transparent);
 }
 
 .lk-mock-round {
@@ -437,7 +433,7 @@
 
 .lk-mock-stop-top {
 	stop-color: var(--_m-accent);
-	stop-opacity: 0.32;
+	stop-opacity: 0.16;
 }
 
 .lk-mock-stop-bottom {
@@ -485,7 +481,7 @@
 	inset: 0 auto 0 0;
 	width: calc(var(--v) * 100%);
 	border-radius: inherit;
-	background: linear-gradient(90deg, var(--_m-accent), var(--_m-accent-2));
+	background: var(--_m-accent);
 }
 
 .lk-mock-tile {
@@ -652,7 +648,7 @@
 .lk-mock-bubble[data-me] {
 	align-self: flex-end;
 	border-radius: 1.1em 1.1em 0.35em 1.1em;
-	background: linear-gradient(135deg, var(--_m-accent), color-mix(in srgb, var(--_m-accent) 70%, var(--_m-accent-2)));
+	background: var(--_m-accent);
 	color: #fff;
 	font-weight: 500;
 }
@@ -856,22 +852,20 @@
 	letter-spacing: -0.025em;
 }
 
-/* 문서에 끼운 그림 자리: 강조색 그라데이션 위 앱 아이콘 */
+/* 문서에 끼운 그림 자리: 옅은 강조색 바탕 위 앱 아이콘 */
 .lk-mock-embed {
 	display: grid;
 	place-items: center;
 	flex-shrink: 0;
 	height: 9em;
 	border-radius: 0.8em;
-	background:
-		radial-gradient(60% 90% at 20% 10%, color-mix(in srgb, var(--_m-accent-2) 55%, transparent), transparent 70%),
-		linear-gradient(135deg, color-mix(in srgb, var(--_m-accent) 75%, #fff), var(--_m-accent));
+	background: color-mix(in srgb, var(--_m-accent) 12%, var(--_m-card));
 }
 
 .lk-mock-embed-icon {
 	width: 4em;
 	height: 4em;
-	box-shadow: 0 0.8em 1.6em -0.6em rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.12);
 }
 
 .lk-mock-docline {
@@ -954,11 +948,8 @@
 	gap: 0.15em;
 	padding: 1em 1.1em 0.4em;
 	border-radius: 1.1em;
-	background:
-		radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--_m-accent-2) 70%, transparent), transparent 60%),
-		linear-gradient(140deg, var(--_m-accent), color-mix(in srgb, var(--_m-accent) 55%, var(--_m-accent-2)));
+	background: var(--_m-accent);
 	color: #fff;
-	box-shadow: 0 0.8em 1.6em -0.8em color-mix(in srgb, var(--_m-accent) 80%, transparent);
 }
 
 .lk-mock-herocard > span {
@@ -1008,8 +999,7 @@
 	flex-shrink: 0;
 	padding: 0.8em 1em 0.4em;
 	border-top: 1px solid var(--_m-line);
-	background: color-mix(in srgb, var(--_m-card) 85%, transparent);
-	backdrop-filter: blur(10px);
+	background: var(--_m-card);
 }
 
 .lk-mock-tab {
@@ -1058,7 +1048,6 @@
 	gap: 0.8em;
 	padding: 1.2em 1.6em;
 	font-size: 1.05em;
-	text-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.5);
 }
 
 .lk-mock-hud > b {
@@ -1075,8 +1064,7 @@
 	padding: 0.45em 0.9em;
 	border: 1px solid rgba(255, 255, 255, 0.16);
 	border-radius: 0.6em;
-	background: rgba(10, 8, 24, 0.45);
-	backdrop-filter: blur(6px);
+	background: rgba(10, 8, 24, 0.6);
 }
 
 .lk-mock-hudstat b {
@@ -1095,14 +1083,11 @@
 	position: relative;
 	flex: 1;
 	overflow: hidden;
-	background:
-		radial-gradient(70% 60% at 70% 30%, color-mix(in srgb, var(--_m-accent-2) 45%, transparent), transparent 70%),
-		linear-gradient(
-			180deg,
-			color-mix(in srgb, var(--_m-accent) 45%, #0b0820) 0%,
-			color-mix(in srgb, var(--_m-accent-2) 55%, #1a0d2e) 62%,
-			#f7a76c 100%
-		);
+	background: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--_m-accent) 30%, #0b0b14) 0%,
+		color-mix(in srgb, var(--_m-accent) 40%, #1a1626) 100%
+	);
 }
 
 .lk-mock-sun {
@@ -1114,7 +1099,6 @@
 	border-radius: 50%;
 	background: repeating-linear-gradient(180deg, #ffd36e 0 8%, #ff8a5c 8% 10%);
 	mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
-	box-shadow: 0 0 6em 1em rgba(255, 170, 90, 0.4);
 }
 
 .lk-mock-stars {
@@ -1169,9 +1153,8 @@
 	inset: auto 0 0;
 	height: 15%;
 	background:
-		linear-gradient(180deg, color-mix(in srgb, var(--_m-accent-2) 55%, #fff) 0 14%, transparent 14%),
+		linear-gradient(180deg, color-mix(in srgb, var(--_m-accent) 55%, #fff) 0 14%, transparent 14%),
 		repeating-linear-gradient(90deg, #2a1a3e 0 2.4em, #241534 2.4em 4.8em), #241534;
-	box-shadow: 0 -0.2em 1.2em color-mix(in srgb, var(--_m-accent) 50%, transparent);
 }
 
 .lk-mock-platform {
@@ -1184,7 +1167,6 @@
 	background:
 		linear-gradient(180deg, color-mix(in srgb, var(--_m-accent) 55%, #fff) 0 25%, transparent 25%),
 		repeating-linear-gradient(90deg, #3a2557 0 1.6em, #2f1d48 1.6em 3.2em);
-	box-shadow: 0 0.4em 0.8em rgba(0, 0, 0, 0.35);
 }
 
 .lk-mock-coin {
@@ -1194,8 +1176,7 @@
 	width: 1.5%;
 	aspect-ratio: 2 / 3;
 	border-radius: 50%;
-	background: radial-gradient(circle at 35% 30%, #fff6c2, #ffcc33 45%, #d48a0a);
-	box-shadow: 0 0 0.8em rgba(255, 204, 51, 0.6);
+	background: #f2c230;
 	animation: lk-bob 1.6s ease-in-out infinite;
 	animation-delay: calc(var(--i) * -0.2s);
 }
@@ -1216,11 +1197,7 @@
 	border-radius: 0.25em 0.25em 0.1em 0.1em;
 	background:
 		radial-gradient(circle at 68% 32%, #111 0 9%, transparent 10%),
-		radial-gradient(circle at 66% 30%, #fff 0 18%, transparent 19%),
-		linear-gradient(180deg, color-mix(in srgb, var(--_m-accent) 60%, #fff), var(--_m-accent));
-	box-shadow:
-		0 0 1.4em color-mix(in srgb, var(--_m-accent) 80%, transparent),
-		0 0.25em 0 rgba(0, 0, 0, 0.35);
+		radial-gradient(circle at 66% 30%, #fff 0 18%, transparent 19%), var(--_m-accent);
 }
 
 .lk-mock-enemy {
@@ -1232,7 +1209,7 @@
 	border-radius: 50% 50% 0.1em 0.1em;
 	background:
 		radial-gradient(circle at 30% 45%, #fff 0 12%, transparent 13%),
-		radial-gradient(circle at 70% 45%, #fff 0 12%, transparent 13%), linear-gradient(180deg, #ff5f7e, #c3264c);
+		radial-gradient(circle at 70% 45%, #fff 0 12%, transparent 13%), #d9455f;
 }
 
 .lk-mock-controls {

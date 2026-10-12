@@ -1,5 +1,5 @@
-// 아케이드 모양: 네온·CRT. 캐비닛 화면, HIGH SCORE 점수판, 캐릭터 선택 카드, 버튼 조작법, STAGE 목록, 어트랙트 모드 갤러리, 크레딧 롤
-import React, { useEffect, useRef, useState } from 'react';
+// 아케이드 모양: CRT 게임기 (네온은 타이틀 간판 한 곳에만). 캐비닛 화면, HIGH SCORE 점수판, 캐릭터 선택 카드, 버튼 조작법, STAGE 목록, 어트랙트 모드 갤러리, 크레딧 롤
+import React, { useEffect, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { Favicon, FactValue, Links, Region } from '@/apps/safari/project/parts';
 import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
@@ -26,29 +26,11 @@ const NeonSign: React.FC<{ text: string }> = ({ text }) => {
 	);
 };
 
-/** 캐릭터 선택 카드: 마우스 위치에 따라 3D로 기울고 네온 테두리가 흐른다 */
+/** 캐릭터 선택 카드: 1px 선 카드, 그림이 없으면 키트 비주얼 */
 const CharCard: React.FC<{ project: Project; point: ProjectPoint; index: number }> = ({ project, point, index }) => {
 	const { title, body, detail, image } = point;
-	const ref = useRef<HTMLLIElement>(null);
-	const tilt = (event: React.MouseEvent<HTMLLIElement>) => {
-		const node = ref.current;
-		if (!node || prefersReducedMotion()) return;
-		const box = node.getBoundingClientRect();
-		const x = (event.clientX - box.left) / box.width - 0.5;
-		const y = (event.clientY - box.top) / box.height - 0.5;
-		node.style.setProperty('--rx', `${(-y * 14).toFixed(2)}deg`);
-		node.style.setProperty('--ry', `${(x * 14).toFixed(2)}deg`);
-		node.style.setProperty('--mx', `${((x + 0.5) * 100).toFixed(1)}%`);
-		node.style.setProperty('--my', `${((y + 0.5) * 100).toFixed(1)}%`);
-	};
-	const reset = () => {
-		const node = ref.current;
-		if (!node) return;
-		node.style.removeProperty('--rx');
-		node.style.removeProperty('--ry');
-	};
 	return (
-		<li ref={ref} className="ac-char" onMouseMove={tilt} onMouseLeave={reset} data-reveal="up">
+		<li className="ac-char" data-reveal="up">
 			<span className="ac-char-no">P{index + 1}</span>
 			{image ? (
 				<img src={image} alt="" className="ac-char-img" />
@@ -163,7 +145,6 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 	return (
 		<div ref={root} className={`ac${sprout ? ' ac-sprout' : ''}`} data-lk-tone="dark">
 			<div className="ac-scanlines" aria-hidden="true" />
-			<div className="ac-vignette" aria-hidden="true" />
 
 			{/* ─── 타이틀 화면 ─── */}
 			<header className="ac-title">

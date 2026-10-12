@@ -77,15 +77,13 @@ const KIND_LABEL: Record<Step['kind'], string> = {
 
 /**
  * 폰 틀: 둥근 베젤·다이내믹 아일랜드 안에 지금 단계의 그림이 세로로 밀려 들어온다.
- * 단계가 바뀔 때 폰이 살짝 기울었다 돌아오고, 마우스를 따라 아주 조금 돈다 (움직임 줄이기에서는 둘 다 없음)
+ * 폰은 늘 똑바로 서 있고, 화면만 바뀐다 (움직임 줄이기에서는 밀려 들어오는 움직임도 없음)
  */
 const Phone: React.FC<{ project: Project; steps: Step[]; active: number }> = ({ project, steps, active }) => {
 	const repo = project.url;
 	const step = steps[active];
 	const [outgoing, setOutgoing] = useState<Step | null>(null);
-	const [tilting, setTilting] = useState(false);
 	const previous = useRef(active);
-	const frame = useRef<HTMLDivElement>(null);
 
 	// 바뀐 그림은 뒤에 두고 위로 밀어 올린다. 끝나면 지운다
 	useEffect(() => {
@@ -94,36 +92,12 @@ const Phone: React.FC<{ project: Project; steps: Step[]; active: number }> = ({ 
 		previous.current = active;
 		if (prefersReducedMotion()) return;
 		setOutgoing(from ?? null);
-		setTilting(true);
-		const timer = window.setTimeout(() => {
-			setOutgoing(null);
-			setTilting(false);
-		}, 620);
+		const timer = window.setTimeout(() => setOutgoing(null), 620);
 		return () => window.clearTimeout(timer);
 	}, [active, steps]);
 
-	// 마우스 위치에 따라 살짝 돈다 (CSS 변수로 넘기고 transform은 CSS가)
-	const onMove = (event: React.PointerEvent<HTMLDivElement>) => {
-		const node = frame.current;
-		if (!node || prefersReducedMotion()) return;
-		const box = node.getBoundingClientRect();
-		const x = (event.clientX - box.left) / box.width - 0.5;
-		const y = (event.clientY - box.top) / box.height - 0.5;
-		node.style.setProperty('--ph-rx', `${(-y * 6).toFixed(2)}deg`);
-		node.style.setProperty('--ph-ry', `${(x * 8).toFixed(2)}deg`);
-	};
-	const onLeave = () => {
-		frame.current?.style.removeProperty('--ph-rx');
-		frame.current?.style.removeProperty('--ph-ry');
-	};
-
 	return (
-		<div
-			ref={frame}
-			className={`ph-phone${tilting ? ' ph-tilting' : ''}`}
-			onPointerMove={onMove}
-			onPointerLeave={onLeave}
-		>
+		<div className="ph-phone">
 			<div className="ph-island" aria-hidden="true" />
 			<div className="ph-screen">
 				{outgoing?.image && (
@@ -173,7 +147,7 @@ const Phone: React.FC<{ project: Project; steps: Step[]; active: number }> = ({ 
 };
 
 /**
- * 히어로의 기기 둘: 앞 폰은 대표 화면, 뒤에 비스듬히 선 폰은 화면 모음의 다음 장 (App Store 제품 페이지처럼).
+ * 히어로의 기기 둘: 앞 폰은 대표 화면, 오른쪽 뒤에 조금 낮게 선 폰은 화면 모음의 다음 장 (App Store 제품 페이지처럼, 둘 다 똑바로).
  * 그림이 없으면 프로젝트 데이터로 그린 앱 화면(첫 기능, 둘째 기능)
  */
 const HeroDevices: React.FC<{ project: Project }> = ({ project }) => {
@@ -184,7 +158,6 @@ const HeroDevices: React.FC<{ project: Project }> = ({ project }) => {
 	const back = shots.find((src) => src !== front);
 	return (
 		<div className="ph-hero-devices">
-			<span className="ph-hero-halo" aria-hidden="true" />
 			<DeviceFrame kind="phone" src={back} className="ph-hero-back">
 				{!back && <MockScreen project={project} kind="mobile" focus={1} decorative />}
 			</DeviceFrame>
@@ -261,7 +234,7 @@ const PhonePage: React.FC<{ project: Project }> = ({ project }) => {
 				</div>
 				<HeroDevices project={project} />
 			</header>
-			<StatBand facts={project.facts} label="한눈에" gradient={false} className="ph-info" />
+			<StatBand facts={project.facts} label="한눈에" className="ph-info" />
 
 			<div className="ph-tour-head" data-reveal="">
 				<SectionHeader

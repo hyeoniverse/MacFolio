@@ -125,7 +125,16 @@ describe('DeviceFrame', () => {
 		expect(laptop).toContain('<p>안</p>');
 	});
 
-	it('기울기·빛·반사는 data 속성으로', () => {
+	it('기본은 똑바로, 빛·반사·유리 광택 없이 그림자 하나', () => {
+		const html = render(h(DeviceFrame, { kind: 'phone' }));
+		expect(html).not.toContain('data-tilt');
+		expect(html).not.toContain('data-glow');
+		expect(html).not.toContain('data-reflection');
+		expect(html).not.toContain('lk-device-glare');
+		expect(html).toContain('data-shadow=""');
+	});
+
+	it('기울기·빛·반사는 켤 때만 data 속성으로', () => {
 		const html = render(h(DeviceFrame, { tilt: true, glow: true, reflection: true }));
 		expect(html).toContain('data-tilt="left"');
 		expect(html).toContain('data-glow=""');
@@ -191,13 +200,29 @@ describe('띠와 머리', () => {
 		expect(render(h(GlowBackdrop, { pattern: 'none' }))).not.toContain('lk-glow-pattern');
 	});
 
-	it('CtaBand: 큰 문장(기본 tagline)과 링크, 장식 빛', () => {
+	it('GlowBackdrop: 기본은 무늬만 (빛 덩어리·움직임 없음), glow를 켜야 한 덩어리', () => {
+		const plain = render(h(GlowBackdrop, {}));
+		expect(plain).not.toContain('lk-glow-blob');
+		expect(plain).not.toContain('data-animate');
+		expect(render(h(GlowBackdrop, { glow: true })).match(/lk-glow-blob/g)).toHaveLength(1);
+	});
+
+	it('SectionHeader·StatBand: 그라데이션 글자 없이 단색', () => {
+		const head = render(h(SectionHeader, { title: '제목', gradient: true }));
+		expect(head).not.toContain('gradient');
+		expect(render(h(StatBand, { facts: sample('showcase').facts, gradient: true }))).not.toContain('data-gradient');
+	});
+
+	it('CtaBand: 큰 문장(기본 tagline)과 링크, 바탕은 기본 단색 (무늬는 고를 때만)', () => {
 		const project = sample('showcase');
 		const ctx = new Proxy({}, { get: () => () => undefined }) as unknown as AppContextType;
 		const html = render(h(AppContext.Provider, { value: ctx }, h(CtaBand, { project })));
 		expect(html).toContain(`<h2 class="lk-cta-title">${project.tagline}</h2>`);
 		expect(html).toContain('GitHub에서 보기');
-		expect(html).toContain('lk-glow');
+		expect(html).not.toContain('lk-glow');
+		const dotted = render(h(AppContext.Provider, { value: ctx }, h(CtaBand, { project, pattern: 'dots' })));
+		expect(dotted).toContain('lk-glow-pattern');
+		expect(dotted).not.toContain('lk-glow-blob');
 	});
 });
 

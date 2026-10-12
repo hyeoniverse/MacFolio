@@ -1,7 +1,8 @@
 /*
- * 가로 모양(horizontal): 세로 스크롤이 가로 트랙을 밀어 간다. Linear·Vercel 같은 제품 투어 톤:
- * 표지와 끝은 늘 어두운 빛 바탕, 그 사이 패널은 페이지 테마(밝음·어두움)를 따르며 두 바탕이 번갈아 돈다.
- * 강조색은 아이콘에서 뽑아 .hz에 --lk-accent·--lk-accent-2로 단다 (못 뽑으면 아래 기본 보라·하늘)
+ * 가로 모양(horizontal): 세로 스크롤이 가로 트랙을 밀어 간다. Linear·Vercel 같은 절제한 제품 투어 톤:
+ * 표지와 끝은 늘 어두운 단색, 그 사이 패널은 페이지 테마(밝음·어두움)를 따르며 두 단색 바탕이 번갈아 돈다.
+ * 빛 번짐·그라데이션 글자·기울기·유리 효과 없이 1px 선과 얕은 그림자 한 벌만 쓴다.
+ * 강조색은 아이콘에서 뽑아 .hz에 --lk-accent로 단다 (못 뽑으면 아래 기본 보라). 강조색은 점·번호 같은 작은 곳에만
  */
 .sp[data-look='horizontal'] {
 	--hz-bg-0: #ffffff;
@@ -9,12 +10,13 @@
 	--hz-ink-0: #0b0c0f;
 	--hz-muted-0: #5b606d;
 	--hz-line-0: rgba(10, 12, 20, 0.09);
-	--hz-card-0: rgba(255, 255, 255, 0.72);
+	--hz-card-0: #ffffff;
+	--hz-shadow-0: 0 1px 2px rgba(10, 12, 20, 0.05), 0 8px 24px -12px rgba(10, 12, 20, 0.1);
 	--hz-view: 100vh;
 	--hz-w: 100%;
 	--hz-p: 0;
-	--lk-accent: #6d5ef5;
-	--lk-accent-2: #38bdf8;
+	--lk-accent: #5e5ad8;
+	--lk-accent-2: #5e5ad8;
 	--sp-bg: var(--hz-bg-0);
 	--sp-text: var(--hz-ink-0);
 	--sp-accent: var(--lk-accent);
@@ -22,12 +24,13 @@
 }
 
 :root[data-theme='dark'] .sp[data-look='horizontal'] {
-	--hz-bg-0: #08090c;
-	--hz-bg-1: #0d0f14;
+	--hz-bg-0: #0b0b0c;
+	--hz-bg-1: #111113;
 	--hz-ink-0: #f3f4f6;
 	--hz-muted-0: #9aa0ad;
 	--hz-line-0: rgba(255, 255, 255, 0.08);
-	--hz-card-0: rgba(255, 255, 255, 0.03);
+	--hz-card-0: #151517;
+	--hz-shadow-0: none;
 }
 
 .hz {
@@ -42,7 +45,7 @@
 	outline-offset: 2px;
 }
 
-/* ─── 위 막대: 유리 알약 하나에 이전·번호·진행·다음 ─── */
+/* ─── 위 막대: 어두운 알약 하나에 이전·번호·진행·다음 ─── */
 .hz-bar {
 	position: sticky;
 	top: 0;
@@ -65,18 +68,18 @@
 	height: 38px;
 	padding: 0 5px;
 	box-sizing: border-box;
-	border: 1px solid rgba(255, 255, 255, 0.12);
+	border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 999px;
-	background: rgba(14, 15, 20, 0.62);
-	box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.5);
+	background: #161618;
+	box-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.2),
+		0 8px 24px -12px rgba(0, 0, 0, 0.35);
 	color: #f5f5f7;
 	font-size: 12px;
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 	letter-spacing: 0.06em;
 	pointer-events: auto;
-	backdrop-filter: blur(16px) saturate(1.4);
-	-webkit-backdrop-filter: blur(16px) saturate(1.4);
 }
 
 .hz-nav {
@@ -91,14 +94,11 @@
 	color: inherit;
 	font-size: 11px;
 	cursor: pointer;
-	transition:
-		background var(--duration-fast) var(--ease-out),
-		transform var(--duration-fast) var(--ease-out);
+	transition: background var(--duration-fast) var(--ease-out);
 }
 
 .hz-nav:hover:not(:disabled) {
-	background: rgba(255, 255, 255, 0.2);
-	transform: scale(1.06);
+	background: rgba(255, 255, 255, 0.18);
 }
 
 .hz-nav:disabled {
@@ -123,8 +123,7 @@
 	width: var(--fill, 0%);
 	height: 100%;
 	border-radius: inherit;
-	background: linear-gradient(90deg, var(--hz-accent), var(--hz-accent-2));
-	box-shadow: 0 0 10px var(--hz-accent);
+	background: #f5f5f7;
 	transition: width 0.4s var(--ease-out);
 }
 
@@ -192,6 +191,7 @@
 	--hz-muted: var(--hz-muted-0);
 	--hz-line: var(--hz-line-0);
 	--hz-card: var(--hz-card-0);
+	--hz-shadow: var(--hz-shadow-0);
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -218,44 +218,13 @@
 
 /* 표지와 끝은 테마와 상관없이 어둡다 */
 .hz-panel[data-lk-tone='dark'] {
-	--hz-bg: #050608;
+	--hz-bg: #0b0b0c;
 	--hz-ink: #f5f5f7;
 	--hz-muted: #a1a1aa;
 	--hz-line: rgba(255, 255, 255, 0.1);
-	--hz-card: rgba(255, 255, 255, 0.04);
-	--lk-dark-surface: #050608;
-}
-
-/* 패널마다 강조색 빛이 한쪽에서 번진다 (주요 기능은 화면 쪽, 나머지는 위 가운데) */
-.hz-panel:not(.hz-cover, .hz-end)::before {
-	position: absolute;
-	inset: 0;
-	background:
-		radial-gradient(
-			60% 55% at var(--hz-glow-x, 50%) var(--hz-glow-y, 0%),
-			color-mix(in srgb, var(--hz-accent) 16%, transparent),
-			transparent 70%
-		),
-		radial-gradient(
-			40% 40% at calc(var(--hz-glow-x, 50%) + 12%) calc(var(--hz-glow-y, 0%) + 18%),
-			color-mix(in srgb, var(--hz-accent-2) 10%, transparent),
-			transparent 70%
-		);
-	pointer-events: none;
-	content: '';
-}
-
-/* 가는 격자가 가장자리로 갈수록 사라진다 */
-.hz-panel:not(.hz-cover, .hz-end)::after {
-	position: absolute;
-	inset: 0;
-	background-image:
-		linear-gradient(var(--hz-line) 1px, transparent 1px), linear-gradient(90deg, var(--hz-line) 1px, transparent 1px);
-	background-size: 64px 64px;
-	opacity: 0.6;
-	mask-image: radial-gradient(ellipse 60% 55% at var(--hz-glow-x, 50%) var(--hz-glow-y, 0%), #000, transparent 75%);
-	pointer-events: none;
-	content: '';
+	--hz-card: #151517;
+	--hz-shadow: none;
+	--lk-dark-surface: #0b0b0c;
 }
 
 .hz-text {
@@ -267,13 +236,12 @@
 	color: var(--hz-ink);
 }
 
-/* 주 단추: 흰(밝은 바탕에서는 검은) 알약, 나머지 링크는 유리 알약 */
+/* 주 단추: 흰(밝은 바탕에서는 검은) 알약, 나머지 링크는 1px 선 알약 */
 .sp[data-look='horizontal'] .hz-links .sp-pill {
 	padding: 12px 22px;
 	background: var(--hz-ink);
 	color: var(--hz-bg);
 	font-weight: 600;
-	box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--hz-accent) 80%, transparent);
 }
 
 .sp[data-look='horizontal'] .hz-links .sp-link {
@@ -283,7 +251,7 @@
 	padding: 11px 20px;
 	border: 1px solid color-mix(in srgb, var(--hz-ink) 18%, transparent);
 	border-radius: 999px;
-	background: color-mix(in srgb, var(--hz-ink) 5%, transparent);
+	background: transparent;
 	font-weight: 600;
 	text-decoration: none;
 	transition:
@@ -293,7 +261,7 @@
 
 .sp[data-look='horizontal'] .hz-links .sp-link:hover {
 	border-color: color-mix(in srgb, var(--hz-ink) 36%, transparent);
-	background: color-mix(in srgb, var(--hz-ink) 10%, transparent);
+	background: color-mix(in srgb, var(--hz-ink) 6%, transparent);
 }
 
 .hz-links {
@@ -302,7 +270,7 @@
 	margin-top: 32px;
 }
 
-/* 구역 머리는 패널 톤의 글자와 강조색 점 */
+/* 구역 머리는 패널 톤의 글자 */
 .hz-panel .lk-section-head {
 	margin-bottom: clamp(28px, 4cqi, 48px);
 }
@@ -336,11 +304,9 @@
 	padding: 6px 14px 6px 10px;
 	border: 1px solid rgba(255, 255, 255, 0.12);
 	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.04);
 	color: var(--hz-muted);
 	font-size: 13px;
 	font-weight: 500;
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .hz-badge-dot {
@@ -348,8 +314,7 @@
 	width: 7px;
 	height: 7px;
 	border-radius: 50%;
-	background: var(--hz-accent-2);
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--hz-accent-2) 25%, transparent);
+	background: var(--hz-accent);
 }
 
 .hz-name {
@@ -367,18 +332,13 @@
 	width: 34px;
 	height: 34px;
 	border-radius: 9px;
-	box-shadow:
-		0 0 0 1px rgba(255, 255, 255, 0.1),
-		0 8px 20px -6px color-mix(in srgb, var(--hz-accent) 70%, transparent);
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* 큰 한 줄: 위는 흰, 아래로 갈수록 흐려지는 글자 */
+/* 큰 한 줄: 흰 단색, 굵고 자간을 좁게 */
 .hz-tagline {
 	margin-top: 18px;
-	background: linear-gradient(180deg, #ffffff 30%, color-mix(in srgb, #ffffff 55%, var(--hz-accent-2)));
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	color: var(--hz-ink);
 	font-size: clamp(40px, 5.4cqi, 84px);
 	font-weight: 700;
 	letter-spacing: -0.045em;
@@ -420,17 +380,10 @@
 	}
 }
 
-/* 화면은 오른쪽 밖으로 걸치고, 원근으로 살짝 돌아 마우스를 따라 기운다 */
+/* 화면은 똑바로 서서 오른쪽 밖으로 살짝 걸친다 */
 .hz-cover-visual {
 	position: relative;
-	margin-right: -12cqi;
-	perspective: 1800px;
-}
-
-.hz-cover-visual .lk-device {
-	transform: rotateY(calc(-12deg + var(--hz-mx, 0) * 5deg)) rotateX(calc(5deg - var(--hz-my, 0) * 4deg));
-	transform-origin: left center;
-	transition: transform 0.25s ease-out;
+	margin-right: -8cqi;
 }
 
 .hz-logos {
@@ -439,7 +392,6 @@
 	margin: 0 -6.5cqi;
 	padding: 20px 6.5cqi 26px;
 	border-top: 1px solid var(--hz-line);
-	background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.02));
 }
 
 .hz-logos .lk-logo {
@@ -447,10 +399,6 @@
 }
 
 /* ─── 숫자 ─── */
-.hz-facts {
-	--hz-glow-y: 40%;
-}
-
 .hz-facts .hz-text {
 	width: 100%;
 	max-width: 1180px;
@@ -459,10 +407,9 @@
 
 .hz-stats {
 	border: 1px solid var(--hz-line);
-	border-radius: 24px;
+	border-radius: 16px;
 	background: var(--hz-card);
-	box-shadow: 0 30px 80px -40px color-mix(in srgb, var(--hz-accent) 50%, transparent);
-	backdrop-filter: blur(6px);
+	box-shadow: var(--hz-shadow);
 }
 
 .hz-stats .lk-stat {
@@ -474,16 +421,8 @@
 	overflow-wrap: anywhere;
 }
 
-.hz-stats.lk-stats[data-gradient] .lk-stat strong {
-	background: linear-gradient(180deg, var(--hz-ink) 25%, var(--hz-accent));
-	-webkit-background-clip: text;
-	background-clip: text;
-}
-
 /* ─── 주요 기능: 글과 화면이 좌우로 번갈아 ─── */
 .hz-feature {
-	--hz-glow-x: 72%;
-	--hz-glow-y: 50%;
 	display: grid;
 	grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
 	gap: 5cqi;
@@ -491,7 +430,6 @@
 }
 
 .hz-feature.flip {
-	--hz-glow-x: 28%;
 	grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
 }
 
@@ -517,14 +455,9 @@
 	margin-right: 4px;
 	border: 1px solid var(--hz-line);
 	border-radius: 10px;
-	background: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--hz-accent) 22%, transparent),
-		color-mix(in srgb, var(--hz-accent-2) 12%, transparent)
-	);
+	background: var(--hz-card);
 	color: var(--hz-accent);
 	font-size: 14px;
-	box-shadow: 0 8px 24px -10px var(--hz-accent);
 }
 
 .hz-eyebrow strong {
@@ -560,7 +493,7 @@
 	margin-top: 26px;
 	padding: 14px 16px;
 	border: 1px solid var(--hz-line);
-	border-radius: 14px;
+	border-radius: 12px;
 	background: var(--hz-card);
 	color: var(--hz-ink);
 	font-size: 14px;
@@ -584,12 +517,7 @@
 	width: 100%;
 }
 
-/* ─── 만든 방식 · 쓰는 법: 유리 카드 ─── */
-.hz-build,
-.hz-usage {
-	--hz-glow-x: 20%;
-}
-
+/* ─── 만든 방식 · 쓰는 법: 1px 선 카드 ─── */
 .hz-cards {
 	display: grid;
 	grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
@@ -605,29 +533,14 @@
 	position: relative;
 	padding: clamp(20px, 2.2cqi, 28px);
 	border: 1px solid var(--hz-line);
-	border-radius: 20px;
+	border-radius: 16px;
 	background: var(--hz-card);
-	box-shadow: inset 0 1px 0 color-mix(in srgb, var(--hz-ink) 6%, transparent);
-	transition:
-		transform 0.3s var(--ease-out),
-		border-color 0.3s var(--ease-out);
+	box-shadow: var(--hz-shadow);
+	transition: border-color 0.2s var(--ease-out);
 }
 
 .hz-cards li:hover {
-	border-color: color-mix(in srgb, var(--hz-accent) 50%, var(--hz-line));
-	transform: translateY(-4px);
-}
-
-/* 위 테두리를 따라 강조색 빛 한 줄 */
-.hz-cards li::before {
-	position: absolute;
-	top: -1px;
-	left: 24px;
-	right: 24px;
-	height: 1px;
-	background: linear-gradient(90deg, transparent, var(--hz-accent), transparent);
-	opacity: 0.7;
-	content: '';
+	border-color: color-mix(in srgb, var(--hz-ink) 22%, var(--hz-line));
 }
 
 .hz-card-mark {
@@ -637,12 +550,8 @@
 	height: 40px;
 	margin-bottom: 22px;
 	border: 1px solid var(--hz-line);
-	border-radius: 12px;
-	background: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--hz-accent) 24%, transparent),
-		color-mix(in srgb, var(--hz-accent-2) 10%, transparent)
-	);
+	border-radius: 10px;
+	background: color-mix(in srgb, var(--hz-ink) 4%, var(--hz-card));
 	color: var(--hz-ink);
 	font-size: 15px;
 	font-weight: 700;
@@ -669,17 +578,16 @@
 	font-size: 13px;
 }
 
-/* 쓰는 법: 단계 번호 사이를 빛나는 선이 잇는다 */
+/* 쓰는 법: 단계 번호 사이를 가는 선이 잇는다 */
 .hz-steps {
 	position: relative;
 }
 
 .hz-steps .hz-card-mark {
+	border-color: var(--hz-accent);
 	border-radius: 50%;
-	background: var(--hz-bg);
-	box-shadow:
-		0 0 0 4px color-mix(in srgb, var(--hz-accent) 18%, transparent),
-		0 0 22px -2px var(--hz-accent);
+	background: var(--hz-card);
+	color: var(--hz-accent);
 }
 
 .hz-steps li:not(:last-child)::after {
@@ -688,15 +596,11 @@
 	left: calc(clamp(20px, 2.2cqi, 28px) + 52px);
 	right: -16px;
 	height: 1px;
-	background: linear-gradient(90deg, var(--hz-accent), color-mix(in srgb, var(--hz-accent-2) 40%, transparent));
+	background: var(--hz-line);
 	content: '';
 }
 
-/* ─── 진행 과정: 가로 선 위 빛나는 점 ─── */
-.hz-timeline {
-	--hz-glow-y: 60%;
-}
-
+/* ─── 진행 과정: 가로 선 위 점 ─── */
 .hz-rail {
 	position: relative;
 	display: grid;
@@ -712,14 +616,8 @@
 	top: 11px;
 	right: 0;
 	left: 0;
-	height: 2px;
-	border-radius: 2px;
-	background: linear-gradient(
-		90deg,
-		var(--hz-accent),
-		var(--hz-accent-2),
-		color-mix(in srgb, var(--hz-ink) 14%, transparent)
-	);
+	height: 1px;
+	background: color-mix(in srgb, var(--hz-ink) 16%, transparent);
 	content: '';
 }
 
@@ -730,8 +628,9 @@
 	gap: 10px;
 	padding: 16px;
 	border: 1px solid var(--hz-line);
-	border-radius: 16px;
+	border-radius: 12px;
 	background: var(--hz-card);
+	box-shadow: var(--hz-shadow);
 }
 
 .hz-rail li::before {
@@ -743,7 +642,6 @@
 	border: 2px solid var(--hz-accent);
 	border-radius: 50%;
 	background: var(--hz-bg);
-	box-shadow: 0 0 14px var(--hz-accent);
 	content: '';
 }
 
@@ -775,10 +673,6 @@
 }
 
 /* ─── 기술 사양 · 맡은 일: 두 장의 카드 ─── */
-.hz-specs {
-	--hz-glow-y: 100%;
-}
-
 .hz-specs .hz-text {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -791,8 +685,9 @@
 .hz-col {
 	padding: clamp(24px, 3cqi, 40px);
 	border: 1px solid var(--hz-line);
-	border-radius: 24px;
+	border-radius: 16px;
 	background: var(--hz-card);
+	box-shadow: var(--hz-shadow);
 }
 
 .hz-col-eyebrow {
@@ -888,11 +783,7 @@
 	}
 
 	.hz-cover-visual {
-		margin: 8px -40px 32px 0;
-	}
-
-	.hz-cover-visual .lk-device {
-		transform: rotateY(-8deg);
+		margin: 8px 0 32px;
 	}
 
 	.hz-feature.flip .hz-text {
@@ -929,7 +820,6 @@
 		left: 7px;
 		width: 2px;
 		height: auto;
-		background: linear-gradient(180deg, var(--hz-accent), var(--hz-accent-2));
 	}
 
 	.hz-rail li::before {
@@ -946,7 +836,6 @@
 @media (prefers-reduced-motion: reduce) {
 	.hz-hint span,
 	.hz-progress > span,
-	.hz-cover-visual .lk-device,
 	.hz-cards li {
 		animation: none;
 		transition: none;
