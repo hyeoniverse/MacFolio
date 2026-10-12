@@ -22,6 +22,7 @@ import {
 	type Project,
 	type ProjectAppInfo,
 	type ProjectBackdrop,
+	type ProjectChapter,
 	type ProjectPoint,
 	type ProjectLook,
 	type SiteProjects,
@@ -47,6 +48,7 @@ import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import { move as moveItem } from '@/apps/settings/showcase';
+import { fillWithSample } from '@/apps/settings/lookSamples';
 
 /** 목록의 한 줄: 프로젝트 하나 (코드의 기본값에 덮어쓴 모습) */
 interface Row {
@@ -163,6 +165,13 @@ function contentFrom(rows: Row[]): SiteProjects {
 
 const withoutId = ({ id: _id, ...rest }: Project) => rest;
 
+/** 적은 내용이 있는지 (예시로 채우기 전에 물어볼지): id·저장소·데모·앱·모양과 처음 이름은 내용으로 치지 않는다 */
+const hasContent = (project: Project) => {
+	const { id: _id, url: _url, demo: _demo, app: _app, look: _look, name, ...rest } = project;
+	const { id: _bid, url: _burl, look: _blook, name: _bname, ...blank } = blankProject('');
+	return (name.trim() !== '' && name !== '새 프로젝트') || JSON.stringify(rest) !== JSON.stringify(blank);
+};
+
 /** 맨 위에서 꼭 있어야 하는 필드 (고급 JSON으로 통째로 바꿀 때 확인) */
 const REQUIRED: (keyof Project)[] = [
 	'name',
@@ -184,21 +193,48 @@ const REQUIRED: (keyof Project)[] = [
 /** 프로젝트 하나를 검사한다 (서버와 같은 규칙). 앱은 데모 주소가 있어야 한다 */
 /** 목록에서 비워 둔 줄은 뺀다 (더하기만 누르고 안 적은 것) */
 function tidy(project: Project): Project {
-	const points = (list?: ProjectPoint[]) => list?.filter((point) => point.title.trim() || point.body.trim());
+	// 화면 여러 장: 그림을 고르지 않은 줄은 빼고, 설명을 비우면 항목 제목을 쓴다
+	const point = (item: ProjectPoint): ProjectPoint => {
+		const shots = item.shots
+			?.filter((shot) => shot.src.trim())
+			.map((shot) => ({ ...shot, alt: shot.alt.trim() || item.title }));
+		const out = { ...item, shots };
+		if (!shots?.length) delete out.shots;
+		return out;
+	};
+	const points = (list?: ProjectPoint[]) => list?.filter((item) => item.title.trim() || item.body.trim()).map(point);
 	const pairs = <T extends object>(list?: T[]) =>
 		list?.filter((row) => Object.values(row as Record<string, unknown>).some((value) => String(value ?? '').trim()));
+	const chapters = project.chapters
+		?.filter((chapter) => chapter.title.trim() || chapter.lead?.trim() || chapter.points.length)
+		.map((chapter) => {
+			const out: ProjectChapter = { ...chapter, points: points(chapter.points) ?? [] };
+			const facts = pairs(chapter.facts);
+			if (facts?.length) out.facts = facts;
+			else delete out.facts;
+			// 장 그림의 설명을 비우면 장 제목을 쓴다 (설명은 꼭 있어야 한다)
+			if (out.image?.src) out.image = { ...out.image, alt: out.image.alt.trim() || chapter.title };
+			else delete out.image;
+			return out;
+		});
 	const next: Project = {
 		...project,
 		facts: pairs(project.facts) ?? [],
 		highlights: points(project.highlights) ?? [],
 		build: points(project.build) ?? [],
 		usage: points(project.usage),
+		chapters,
 		timeline: pairs(project.timeline),
 		specs: pairs(project.specs) ?? [],
 		contributions: project.contributions.map((line) => line.trim()).filter(Boolean),
+		controls: project.controls
+			?.map((control) => ({ ...control, keys: control.keys.map((key) => key.trim()).filter(Boolean) }))
+			.filter((control) => control.keys.length || control.label.trim()),
+		credits: pairs(project.credits),
+		conventions: pairs(project.conventions),
 	};
-	if (!next.usage?.length) delete next.usage;
-	if (!next.timeline?.length) delete next.timeline;
+	for (const key of ['usage', 'chapters', 'timeline', 'controls', 'credits', 'conventions'] as const)
+		if (!next[key]?.length) delete next[key];
 	return next;
 }
 
@@ -337,6 +373,8 @@ const TextField = ({
 	placeholder,
 	required = false,
 	multiline = false,
+	mono = false,
+	rows = 3,
 	ariaLabel,
 }: {
 	label: string;
@@ -349,6 +387,10 @@ const TextField = ({
 	required?: boolean;
 	/** 긴 글: 여러 줄 칸 */
 	multiline?: boolean;
+	/** 고정폭 글꼴 (폴더 구조처럼 줄을 맞춰 쓰는 글) */
+	mono?: boolean;
+	/** 여러 줄 칸의 처음 높이 (줄 수) */
+	rows?: number;
 	/** 보이는 이름과 다른 접근성 이름 (목록 항목의 '주요 기능 1 제목' 등) */
 	ariaLabel?: string;
 }) => {
@@ -356,7 +398,7 @@ const TextField = ({
 	const hintId = `${id}-hint`;
 	const common = {
 		id,
-		className: 'projects-input',
+		className: `projects-input${mono ? ' mono' : ''}`,
 		value: value ?? '',
 		placeholder,
 		spellCheck: false,
@@ -368,7 +410,7 @@ const TextField = ({
 	return (
 		<FormRow label={label} required={required} htmlFor={id} hint={hint} hintId={hintId} top={multiline}>
 			{multiline ? (
-				<textarea {...common} rows={3} onChange={(event) => onChange(event.target.value)} />
+				<textarea {...common} rows={rows} onChange={(event) => onChange(event.target.value)} />
 			) : (
 				<input {...common} type={type} onChange={(event) => onChange(event.target.value)} />
 			)}
@@ -1298,6 +1340,8 @@ const LookPicker = ({ value, onChange }: { value: ProjectLook; onChange: (look: 
  */
 function ListTable<T>({
 	label,
+	title = label,
+	nested = false,
 	hint,
 	items,
 	onChange,
@@ -1306,7 +1350,12 @@ function ListTable<T>({
 	cells,
 	detail,
 }: {
+	/** 목록의 접근성 이름. 항목 칸의 이름 앞부분('주요 기능 1 제목')에도 쓴다 */
 	label: string;
+	/** 목록 위에 보이는 제목 (없으면 label) */
+	title?: string;
+	/** 다른 항목의 상세 칸 안에 든 목록: 영역(region)이 아니라 묶음(group)으로 둔다 (바깥 목록의 영역 이름과 겹치지 않게) */
+	nested?: boolean;
 	hint?: string;
 	items: T[];
 	onChange: (items: T[]) => void;
@@ -1360,9 +1409,14 @@ function ListTable<T>({
 		select(target);
 	};
 	return (
-		<section className="projects-group" aria-label={label} ref={sectionRef}>
+		<section
+			className={`projects-group${nested ? ' nested' : ''}`}
+			role={nested ? 'group' : undefined}
+			aria-label={label}
+			ref={sectionRef}
+		>
 			<h3 className="projects-group-title">
-				{label}
+				{title}
 				<span className="projects-group-count">{items.length}</span>
 			</h3>
 			<div className="projects-box projects-table">
@@ -1472,68 +1526,166 @@ const RowThumb = ({ src }: { src?: string }) => (
 	</span>
 );
 
-/** 제목·설명(·그림) 묶음 목록: 주요 기능, 만든 방식, 쓰는 법. 줄에는 제목·설명 첫 줄·그림, 고르면 아래에서 고친다 */
+/** 고를 수 있는 필드를 바꾼다: undefined가 된 키는 지운다 */
+const patchOf = <T extends object>(item: T, change: Partial<T>): T => {
+	const next = { ...item, ...change };
+	for (const key of Object.keys(change) as (keyof T)[]) if (next[key] === undefined) delete next[key];
+	return next;
+};
+
+type Shot = NonNullable<ProjectPoint['shots']>[number];
+
+/** 화면 여러 장: 항목의 상세 칸 안에 든 작은 목록. 줄에는 그림과 설명, 고르면 아래에서 그림을 고르고 설명을 적는다 */
+const ShotsEditor = ({
+	label,
+	shots,
+	onChange,
+}: {
+	label: string;
+	shots: Shot[];
+	onChange: (shots: Shot[]) => void;
+}) => (
+	<ListTable<Shot>
+		label={label}
+		title="화면 여러 장"
+		nested
+		hint="글 옆이나 아래에 차례로 보입니다. .mp4 주소는 화면에 보일 때만 도는 영상이 됩니다."
+		items={shots}
+		onChange={onChange}
+		blank={() => ({ src: '', alt: '' })}
+		cells={(shot) => [
+			<span className="projects-point" key="text">
+				<strong className={shot.alt.trim() ? '' : 'placeholder'}>{shot.alt.trim() || '설명 없음'}</strong>
+				<span>{shot.src || '그림을 고르지 않았습니다.'}</span>
+			</span>,
+			<RowThumb key="thumb" src={shot.src && !shot.src.endsWith('.mp4') ? shot.src : undefined} />,
+		]}
+		detail={(shot, index, update) => (
+			<>
+				<ImageField
+					label="그림"
+					name={`${label} ${index + 1} 그림`}
+					shape="wide"
+					value={shot.src || undefined}
+					onChange={(src) => update({ ...shot, src: src ?? '' })}
+				/>
+				<TextField
+					label="설명"
+					ariaLabel={`${label} ${index + 1} 설명`}
+					value={shot.alt}
+					placeholder="예: 첫 화면"
+					onChange={(alt) => update({ ...shot, alt })}
+				/>
+			</>
+		)}
+	/>
+);
+
+/** 항목 하나의 칸: 제목, 설명, 자세히, 그림, 화면 여러 장, 영상, 아이콘 */
+const PointFields = ({
+	label,
+	point,
+	update,
+}: {
+	/** 항목 이름 ('주요 기능 1'): 칸마다 접근성 이름 앞에 붙인다 */
+	label: string;
+	point: ProjectPoint;
+	update: (next: ProjectPoint) => void;
+}) => (
+	<>
+		<TextField
+			label="제목"
+			ariaLabel={`${label} 제목`}
+			value={point.title}
+			onChange={(title) => update(patchOf(point, { title }))}
+		/>
+		<TextField
+			label="설명"
+			multiline
+			ariaLabel={`${label} 설명`}
+			value={point.body}
+			onChange={(body) => update(patchOf(point, { body }))}
+		/>
+		<TextField
+			label="자세히"
+			multiline
+			rows={4}
+			ariaLabel={`${label} 자세히`}
+			value={point.detail}
+			hint="펼쳐 읽거나 다음 장으로 넘길 때 더 보이는 설명입니다."
+			onChange={(detail) => update(patchOf(point, { detail: optional(detail) }))}
+		/>
+		<ImageField
+			label="그림"
+			name={`${label} 그림`}
+			shape="wide"
+			value={point.image}
+			onChange={(image) => update(patchOf(point, { image }))}
+		/>
+		<ShotsEditor
+			label={`${label} 화면`}
+			shots={point.shots ?? []}
+			onChange={(shots) => update(patchOf(point, { shots: shots.length ? shots : undefined }))}
+		/>
+		<TextField
+			label="영상"
+			ariaLabel={`${label} 영상`}
+			value={point.video}
+			placeholder="/imgs/….mp4 또는 https://"
+			hint="그림 대신 화면에 보일 때만 도는 짧은 영상입니다."
+			onChange={(video) => update(patchOf(point, { video: optional(video) }))}
+		/>
+		<TextField
+			label="아이콘"
+			ariaLabel={`${label} 아이콘`}
+			value={point.icon}
+			placeholder="예: fa-bolt"
+			hint="카드와 번호 자리에 보이는 Font Awesome 아이콘 이름입니다 (fa-로 시작)."
+			onChange={(icon) => update(patchOf(point, { icon: optional(icon) }))}
+		/>
+	</>
+);
+
+/** 제목·설명(·그림) 묶음 목록: 주요 기능, 만든 방식, 쓰는 법, 장 안 항목. 줄에는 제목·설명 첫 줄·그림, 고르면 아래에서 고친다 */
 const PointsEditor = ({
 	label,
+	title,
+	nested = false,
 	hint,
 	points,
 	onChange,
 }: {
 	label: string;
+	title?: string;
+	nested?: boolean;
 	hint?: string;
 	points: ProjectPoint[];
 	onChange: (points: ProjectPoint[]) => void;
-}) => {
-	const patch = (point: ProjectPoint, change: Partial<ProjectPoint>) => {
-		const next = { ...point, ...change };
-		for (const key of Object.keys(change) as (keyof ProjectPoint)[]) if (next[key] === undefined) delete next[key];
-		return next;
-	};
-	return (
-		<ListTable<ProjectPoint>
-			label={label}
-			hint={hint}
-			items={points}
-			onChange={onChange}
-			blank={() => ({ title: '', body: '' })}
-			cells={(point) => [
-				<span className="projects-point" key="text">
-					<strong className={point.title.trim() ? '' : 'placeholder'}>{point.title.trim() || '제목 없음'}</strong>
-					<span>{point.body.trim() || '설명이 없습니다.'}</span>
-				</span>,
-				<RowThumb key="thumb" src={point.image} />,
-			]}
-			detail={(point, index, update) => (
-				<>
-					<TextField
-						label="제목"
-						ariaLabel={`${label} ${index + 1} 제목`}
-						value={point.title}
-						onChange={(title) => update(patch(point, { title }))}
-					/>
-					<TextField
-						label="설명"
-						multiline
-						ariaLabel={`${label} ${index + 1} 설명`}
-						value={point.body}
-						onChange={(body) => update(patch(point, { body }))}
-					/>
-					<ImageField
-						label="그림"
-						name={`${label} ${index + 1} 그림`}
-						shape="wide"
-						value={point.image}
-						onChange={(image) => update(patch(point, { image }))}
-					/>
-				</>
-			)}
-		/>
-	);
-};
+}) => (
+	<ListTable<ProjectPoint>
+		label={label}
+		title={title}
+		nested={nested}
+		hint={hint}
+		items={points}
+		onChange={onChange}
+		blank={() => ({ title: '', body: '' })}
+		cells={(point) => [
+			<span className="projects-point" key="text">
+				<strong className={point.title.trim() ? '' : 'placeholder'}>{point.title.trim() || '제목 없음'}</strong>
+				<span>{point.body.trim() || '설명이 없습니다.'}</span>
+			</span>,
+			<RowThumb key="thumb" src={point.image ?? point.shots?.find((shot) => !shot.src.endsWith('.mp4'))?.src} />,
+		]}
+		detail={(point, index, update) => <PointFields label={`${label} ${index + 1}`} point={point} update={update} />}
+	/>
+);
 
 /** 두 칸짜리 줄 목록: 진행 과정(때·한 일), 기술 사양(분류·기술), 숫자(값·이름표). 표의 칸을 바로 고친다 */
 const PairsEditor = <K extends string>({
 	label,
+	title,
+	nested = false,
 	hint,
 	keys,
 	names,
@@ -1542,6 +1694,8 @@ const PairsEditor = <K extends string>({
 	onChange,
 }: {
 	label: string;
+	title?: string;
+	nested?: boolean;
 	hint?: string;
 	keys: [K, K];
 	names: [string, string];
@@ -1551,6 +1705,8 @@ const PairsEditor = <K extends string>({
 }) => (
 	<ListTable
 		label={label}
+		title={title}
+		nested={nested}
 		hint={hint}
 		items={rows}
 		onChange={onChange}
@@ -1599,6 +1755,189 @@ const LinesEditor = ({
 				onChange={(event) => update(event.target.value)}
 			/>,
 		]}
+	/>
+);
+
+/**
+ * 장: 주요 기능과 만든 방식 말고 더 들려줄 이야기 (브루탈·아틀리에·메일함·할 일 앱·RPG 대화창·발표 슬라이드가 그린다).
+ * 줄에는 장 제목과 머리말, 고르면 아래에서 제목·머리말·숫자·항목·장 그림을 고친다.
+ * 장 모양(look)·테마(palette)·데이터 구조(schema)·전후 비교(compare)는 코드로 짜는 연출이라 JSON에서만 고친다
+ */
+const ChaptersEditor = ({
+	chapters,
+	onChange,
+}: {
+	chapters: ProjectChapter[];
+	onChange: (chapters: ProjectChapter[]) => void;
+}) => (
+	<ListTable<ProjectChapter>
+		label="장"
+		hint="주요 기능·만든 방식 뒤에 이어지는 이야기입니다. 모양마다 그 페이지에 맞는 꼴로 그립니다."
+		items={chapters}
+		onChange={onChange}
+		blank={() => ({ title: '', points: [] })}
+		cells={(chapter) => [
+			<span className="projects-point" key="text">
+				<strong className={chapter.title.trim() ? '' : 'placeholder'}>{chapter.title.trim() || '제목 없음'}</strong>
+				<span>{chapter.lead?.trim() || `항목 ${chapter.points.length}개`}</span>
+			</span>,
+			<RowThumb key="thumb" src={chapter.image?.src} />,
+		]}
+		detail={(chapter, index, update) => {
+			const name = `장 ${index + 1}`;
+			return (
+				<>
+					<TextField
+						label="장 제목"
+						ariaLabel={`${name} 제목`}
+						value={chapter.title}
+						onChange={(title) => update(patchOf(chapter, { title }))}
+					/>
+					<TextField
+						label="머리말"
+						multiline
+						ariaLabel={`${name} 머리말`}
+						value={chapter.lead}
+						hint="장 첫머리에 크게 보이는 한두 문장입니다."
+						onChange={(lead) => update(patchOf(chapter, { lead: optional(lead) }))}
+					/>
+					<PairsEditor
+						label={`${name} 숫자`}
+						title="장 숫자"
+						nested
+						keys={['value', 'label']}
+						names={['값', '이름표']}
+						placeholders={['예: 3배', '예: 빨라진 저장']}
+						rows={chapter.facts ?? []}
+						onChange={(facts) => update(patchOf(chapter, { facts: facts.length ? facts : undefined }))}
+					/>
+					<PointsEditor
+						label={`${name} 항목`}
+						title="장 안 항목"
+						nested
+						points={chapter.points}
+						onChange={(points) => update(patchOf(chapter, { points }))}
+					/>
+					<ImageField
+						label="장 그림"
+						name={`${name} 그림`}
+						shape="wide"
+						value={chapter.image?.src}
+						hint="장 끝이나 옆에 크게 보입니다."
+						onChange={(src) =>
+							update(
+								patchOf(chapter, {
+									image: src ? { ...chapter.image, src, alt: chapter.image?.alt ?? '' } : undefined,
+								})
+							)
+						}
+					/>
+					{chapter.image && (
+						<TextField
+							label="그림 설명"
+							ariaLabel={`${name} 그림 설명`}
+							value={chapter.image.alt}
+							hint="비워 두면 장 제목을 씁니다."
+							onChange={(alt) => chapter.image && update({ ...chapter, image: { ...chapter.image, alt } })}
+						/>
+					)}
+				</>
+			);
+		}}
+	/>
+);
+
+type Control = NonNullable<Project['controls']>[number];
+
+/** 조작법 (아케이드·RPG 대화창): 키 여러 개(쉼표로)와 설명. 표의 칸을 바로 고친다 */
+const ControlsEditor = ({ controls, onChange }: { controls: Control[]; onChange: (controls: Control[]) => void }) => (
+	<ListTable<Control>
+		label="조작법"
+		hint="키는 쉼표로 나눠 적습니다 (예: ←, →). 게임을 담은 아케이드·RPG 대화창 모양이 보여 줍니다."
+		items={controls}
+		onChange={onChange}
+		blank={() => ({ keys: [], label: '' })}
+		columns={['키', '설명']}
+		cells={(control, index, update) => [
+			<input
+				key="keys"
+				className="projects-cell-input"
+				aria-label={`조작법 ${index + 1} 키`}
+				placeholder="예: Shift, Space"
+				value={control.keys.join(', ')}
+				onChange={(event) => update({ ...control, keys: event.target.value.split(/, ?/) })}
+			/>,
+			<input
+				key="label"
+				className="projects-cell-input"
+				aria-label={`조작법 ${index + 1} 설명`}
+				placeholder="예: 달리기"
+				value={control.label}
+				onChange={(event) => update({ ...control, label: event.target.value })}
+			/>,
+		]}
+	/>
+);
+
+type Credit = NonNullable<Project['credits']>[number];
+
+/** 출처: 빌려 쓴 에셋·글꼴. 줄에는 이름과 만든 사람, 고르면 아래에서 맡은 부분·이름·만든 사람·주소·한 줄 설명을 고친다 */
+const CreditsEditor = ({ credits, onChange }: { credits: Credit[]; onChange: (credits: Credit[]) => void }) => (
+	<ListTable<Credit>
+		label="출처"
+		hint="빌려 쓴 그림·글꼴·소리를 적습니다. 브루탈·아케이드·저장소·발표 슬라이드 모양이 보여 줍니다."
+		items={credits}
+		onChange={onChange}
+		blank={() => ({ role: '', name: '', by: '' })}
+		cells={(credit) => [
+			<span className="projects-point" key="text">
+				<strong className={credit.name.trim() ? '' : 'placeholder'}>{credit.name.trim() || '이름 없음'}</strong>
+				<span>
+					{[credit.role, credit.by].filter((part) => part.trim()).join(' · ') || '맡은 부분과 만든 사람이 없습니다.'}
+				</span>
+			</span>,
+		]}
+		detail={(credit, index, update) => {
+			const name = `출처 ${index + 1}`;
+			return (
+				<>
+					<TextField
+						label="맡은 부분"
+						ariaLabel={`${name} 맡은 부분`}
+						value={credit.role}
+						placeholder="예: 글꼴"
+						onChange={(role) => update({ ...credit, role })}
+					/>
+					<TextField
+						label="이름"
+						ariaLabel={`${name} 이름`}
+						value={credit.name}
+						onChange={(value) => update({ ...credit, name: value })}
+					/>
+					<TextField
+						label="만든 사람"
+						ariaLabel={`${name} 만든 사람`}
+						value={credit.by}
+						onChange={(by) => update({ ...credit, by })}
+					/>
+					<TextField
+						label="주소"
+						type="url"
+						ariaLabel={`${name} 주소`}
+						value={credit.href}
+						placeholder="https://"
+						onChange={(href) => update(patchOf(credit, { href: optional(href) }))}
+					/>
+					<TextField
+						label="한 줄 설명"
+						ariaLabel={`${name} 한 줄 설명`}
+						value={credit.note}
+						placeholder="예: CC BY 4.0"
+						onChange={(note) => update(patchOf(credit, { note: optional(note) }))}
+					/>
+				</>
+			);
+		}}
 	/>
 );
 
@@ -1661,6 +2000,16 @@ const ProjectEditor = ({
 	const formRef = useRef<HTMLDivElement>(null);
 	const [json, setJson] = useState('');
 	const [errors, setErrors] = useState<string[]>([]);
+	/** 예시로 채운 횟수: 칸들이 새 값으로 처음부터 다시 그려지게 (기간 칸처럼 처음 값만 읽는 칸이 있다) */
+	const [filled, setFilled] = useState(0);
+	const [confirmingSample, setConfirmingSample] = useState(false);
+	const fillSample = () => {
+		setConfirmingSample(false);
+		setDraft(fillWithSample({ ...draft, id }));
+		setErrors([]);
+		setFilled((count) => count + 1);
+		if (tab === 'json') setTab('intro');
+	};
 	const set = (patch: Partial<Project>) => {
 		const next = { ...draft, ...patch };
 		for (const key of Object.keys(patch) as (keyof Project)[]) if (next[key] === undefined) delete next[key];
@@ -1715,379 +2064,446 @@ const ProjectEditor = ({
 
 	const app = draft.app;
 	return (
-		<form
-			className="projects-editor"
-			aria-label={`${row.project.name} 편집`}
-			noValidate
-			onSubmit={(event) => {
-				event.preventDefault();
-				finish();
-			}}
-		>
-			{/* 창 맨 위 도구 막대: 왼쪽 돌아가기와 이름, 가운데 탭(세그먼트), 오른쪽 미리 보기 패널 단추와 완료 */}
-			<div className="projects-toolbar">
-				<div className="projects-toolbar-start">
-					<button
-						type="button"
-						className="projects-toolbar-button"
-						aria-label="프로젝트 목록으로 돌아가기"
-						title="고친 것을 버리고 프로젝트 목록으로 돌아갑니다."
-						onClick={onCancel}
-					>
-						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
-					</button>
-					<h3 className="projects-toolbar-title">{draft.name.trim() || '새 프로젝트'}</h3>
-				</div>
-				<div className="projects-tabs" role="tablist" aria-label="편집 항목">
-					{TABS.map(([key, label]) => (
+		<>
+			<form
+				className="projects-editor"
+				aria-label={`${row.project.name} 편집`}
+				noValidate
+				onSubmit={(event) => {
+					event.preventDefault();
+					finish();
+				}}
+			>
+				{/* 창 맨 위 도구 막대: 왼쪽 돌아가기와 이름, 가운데 탭(세그먼트), 오른쪽 미리 보기 패널 단추와 완료 */}
+				<div className="projects-toolbar">
+					<div className="projects-toolbar-start">
 						<button
-							key={key}
 							type="button"
-							role="tab"
-							aria-selected={tab === key}
-							onClick={() => {
-								if (tab === key) return;
-								if (tab === 'json') {
-									const project = readJson();
-									if (!project) return;
-									setDraft(project);
-									setErrors([]);
-								}
-								if (key === 'json') openJson();
-								else setTab(key);
-								formRef.current?.scrollTo({ top: 0 });
-							}}
+							className="projects-toolbar-button"
+							aria-label="프로젝트 목록으로 돌아가기"
+							title="고친 것을 버리고 프로젝트 목록으로 돌아갑니다."
+							onClick={onCancel}
 						>
-							{label}
+							<i className="fa-solid fa-chevron-left" aria-hidden="true" />
 						</button>
-					))}
-				</div>
-				<div className="projects-toolbar-end">
-					<button
-						type="button"
-						className="projects-toolbar-button"
-						aria-label="미리 보기"
-						title={preview ? '미리 보기를 접습니다.' : '미리 보기를 엽니다.'}
-						aria-pressed={preview}
-						onClick={() => setPreview((value) => !value)}
-					>
-						<SidebarRightIcon />
-					</button>
-					<button type="submit" className="projects-button primary">
-						완료
-					</button>
-				</div>
-			</div>
-
-			<div className={`projects-editor-body ${preview ? 'with-preview' : ''}`}>
-				<div className="projects-editor-form" ref={formRef}>
-					<div className="projects-editor-column">
-						{errors.length > 0 && (
-							<ul className="about-pane-errors" role="alert">
-								{errors.map((error) => (
-									<li key={error}>{error}</li>
-								))}
-							</ul>
-						)}
-						{tab === 'json' && (
-							<Group
-								title="JSON"
-								label="고급 JSON"
-								hint="모든 필드를 고칠 수 있습니다 (장, 출처, 조작법 등). 링크·데모는 https:// 주소, 그림은 사이트 안 경로(/imgs/…)나 https:// 주소만 받습니다."
-							>
-								<textarea
-									className="projects-json"
-									aria-label="프로젝트 JSON"
-									value={json}
-									spellCheck={false}
-									onChange={(event) => setJson(event.target.value)}
-								/>
-							</Group>
-						)}
-						{tab === 'intro' && (
-							<>
-								<Group title="소개">
-									{row.isNew && (
-										<TextField
-											label="id"
-											value={id}
-											onChange={setId}
-											required
-											hint="주소와 앱 이름에 쓰입니다. 영어 소문자·숫자·-로 적습니다 (예: my-project)."
-										/>
-									)}
-									<TextField label="이름" value={draft.name} onChange={(name) => set({ name })} required />
-									<TextField label="큰 제목" value={draft.tagline} onChange={(tagline) => set({ tagline })} />
-									<TextField
-										label="한 줄 소개"
-										multiline
-										value={draft.description}
-										onChange={(description) => set({ description })}
-									/>
-									<TextField label="어떤 프로젝트" value={draft.context} onChange={(context) => set({ context })} />
-									<TextField label="맡은 일" value={draft.role} onChange={(role) => set({ role: optional(role) })} />
-									<PeriodField value={draft.period} onChange={(period) => set({ period })} />
-								</Group>
-								<Group
-									title="페이지 모양"
-									label="페이지 모양 고르기"
-									hint={
-										draft.look === 'custom'
-											? hasCustomPage(draft.id)
-												? `코드에 등록된 ${draft.id} 전용 페이지로 그립니다.`
-												: `코드에 ${draft.id} 전용 페이지가 없어 기본 (카드)로 그립니다. 저장소의 safari/project/custom/에 등록하세요.`
-											: 'Safari에서 이 프로젝트를 여는 페이지의 모양입니다. 고르면 미리 보기가 바로 바뀝니다.'
+						<h3 className="projects-toolbar-title">{draft.name.trim() || '새 프로젝트'}</h3>
+					</div>
+					<div className="projects-tabs" role="tablist" aria-label="편집 항목">
+						{TABS.map(([key, label]) => (
+							<button
+								key={key}
+								type="button"
+								role="tab"
+								aria-selected={tab === key}
+								onClick={() => {
+									if (tab === key) return;
+									if (tab === 'json') {
+										const project = readJson();
+										if (!project) return;
+										setDraft(project);
+										setErrors([]);
 									}
-								>
-									<LookPicker value={draft.look} onChange={(look) => set({ look })} />
-								</Group>
-								<Group title="주소와 기술">
-									<TextField
-										label="저장소"
-										required
-										type="url"
-										value={draft.url}
-										onChange={(url) => set({ url })}
-										placeholder="https://github.com/아이디/저장소"
-									/>
-									<TextField
-										label="데모"
-										type="url"
-										value={draft.demo}
-										onChange={(demo) => set({ demo: optional(demo) })}
-										placeholder="https://"
-									/>
-									<ChoiceInput
-										label="주 언어"
-										value={draft.language}
-										options={LANGUAGES}
-										onChange={(language) => set({ language })}
-									/>
-									<TagInput
-										label="기술"
-										items={draft.stack}
-										options={STACKS}
-										remote={NPM}
-										onChange={(stack) => set({ stack })}
-									/>
-								</Group>
-							</>
+									if (key === 'json') openJson();
+									else setTab(key);
+									formRef.current?.scrollTo({ top: 0 });
+								}}
+							>
+								{label}
+							</button>
+						))}
+					</div>
+					<div className="projects-toolbar-end">
+						{/* 새 프로젝트만: 지금 고른 페이지 모양의 예시 내용을 칸에 채운다 (lookSamples.ts) */}
+						{row.isNew && (
+							<button
+								type="button"
+								className="projects-button"
+								title="지금 고른 페이지 모양의 예시 내용으로 칸을 채웁니다. id·저장소·데모·앱은 그대로 둡니다."
+								onClick={() => (hasContent(draft) ? setConfirmingSample(true) : fillSample())}
+							>
+								예시로 채우기
+							</button>
 						)}
-						{tab === 'pictures' && (
-							<>
-								{/* 대표 화면(image)은 따로 고르지 않는다: 화면 모음의 첫 그림을 쓴다 (다른 장을 쓰려면 JSON의 image).
-								    글자 로고(logo)도 폼에는 두지 않는다: 쓰는 프로젝트가 드물고 아이콘과 헷갈린다 (필요하면 JSON의 logo) */}
-								<Group title="아이콘" label="그림">
-									<ImageField
-										label="프로젝트 아이콘"
-										value={draft.icon}
-										onChange={(icon) => set({ icon })}
-										hint="네모난 앱 아이콘입니다. Safari 탭·Finder·페이지 맨 위에 작게 보이고, 없으면 기본 모양을 씁니다."
-									/>
-								</Group>
-								<Group
-									title="화면 모음"
-									hint="폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은 저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다."
-								>
-									<FormRow label="폴더" htmlFor="projects-gallery-folder" align="end">
-										<Popup
-											id="projects-gallery-folder"
-											value={draft.galleryFolder ?? ''}
-											onChange={(folder) => set({ galleryFolder: optional(folder) })}
-										>
-											<option value="">
-												{draft.gallery?.length ? `직접 적은 화면 ${draft.gallery.length}장` : '없음'}
-											</option>
-											{/* 같은 프로젝트 폴더 아래의 것끼리 묶는다 (묶음 이름은 그 프로젝트 이름) */}
-											{FOLDER_GROUPS.map((group) => (
-												<optgroup key={group.label} label={group.label}>
-													{group.folders.map((folder) => (
-														<option key={folder.value} value={folder.value}>
-															{folder.label} ({PUBLIC_IMAGES[folder.value].length}장)
-														</option>
-													))}
-												</optgroup>
-											))}
-										</Popup>
-									</FormRow>
-									{draft.galleryFolder && <FolderShots key={draft.galleryFolder} folder={draft.galleryFolder} />}
-								</Group>
-								<Group
-									title="대화창 배경"
-									hint="RPG 대화창 모양의 하늘·바닥·소품을 고릅니다. 자동은 배경 그림이 없으면 대표 화면을 픽셀로 바꿔 깔고, 강조색은 언제나 프로젝트 아이콘의 색을 따릅니다."
-								>
-									<FormRow label="배경 테마" htmlFor="projects-backdrop-theme" align="end">
-										<Popup
-											id="projects-backdrop-theme"
-											value={draft.backdrop?.theme ?? 'auto'}
-											onChange={(theme) =>
-												set({ backdrop: tidyBackdrop({ ...draft.backdrop, theme: theme as BackdropTheme }) })
-											}
-										>
-											{BACKDROP_THEMES.map((theme) => (
-												<option key={theme} value={theme}>
-													{BACKDROP_LABEL[theme]}
-												</option>
-											))}
-										</Popup>
-									</FormRow>
-									<ImageField
-										label="배경 그림"
-										shape="wide"
-										value={draft.backdrop?.image}
-										onChange={(image) => set({ backdrop: tidyBackdrop({ ...draft.backdrop, image }) })}
-										hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
-									/>
-								</Group>
-							</>
-						)}
-						{tab === 'content' && (
-							<>
-								<p className="projects-tab-hint">
-									목록의 줄을 눌러 고르고, 끌거나 ⌥↑·⌥↓ 키로 순서를 바꿉니다. ＋로 항목을 더하고, −로 고른 항목을
-									뺍니다.
-								</p>
-								<PairsEditor
-									label="한눈에 보는 숫자"
-									keys={['value', 'label']}
-									names={['값', '이름표']}
-									placeholders={['예: 6주', '예: 개발 기간']}
-									rows={draft.facts}
-									onChange={(facts) => set({ facts })}
-								/>
-								<PointsEditor
-									label="주요 기능"
-									hint="첫 항목은 크게 보이고, 그림이 있으면 바탕이 됩니다."
-									points={draft.highlights}
-									onChange={(highlights) => set({ highlights })}
-								/>
-								<PointsEditor
-									label="만든 방식"
-									hint="번호가 붙어 좌우로 번갈아 놓이고, 그림이 있으면 옆에 함께 보입니다."
-									points={draft.build}
-									onChange={(build) => set({ build })}
-								/>
-								<PointsEditor
-									label="쓰는 법"
-									hint="단계로 보입니다."
-									points={draft.usage ?? []}
-									onChange={(usage) => set({ usage: usage.length ? usage : undefined })}
-								/>
-								<PairsEditor
-									label="진행 과정"
-									keys={['date', 'label']}
-									names={['때', '한 일']}
-									rows={draft.timeline ?? []}
-									onChange={(timeline) => set({ timeline: timeline.length ? timeline : undefined })}
-								/>
-								<PairsEditor
-									label="기술 사양"
-									keys={['label', 'value']}
-									names={['분류', '기술']}
-									rows={draft.specs}
-									onChange={(specs) => set({ specs })}
-								/>
-								<LinesEditor
-									label="맡은 일"
-									lines={draft.contributions}
-									onChange={(contributions) => set({ contributions })}
-								/>
-							</>
-						)}
-						{tab === 'app' && (
-							<>
-								<Group title="앱">
-									<Switch
-										label="이 사이트 안에서 창으로 열기"
-										checked={Boolean(app)}
-										hint="데모를 창 안(iframe)에 띄우는 앱을 만듭니다. Dock·Launchpad·터미널 open에 나옵니다."
-										onChange={(on) =>
-											set({
-												app: on
-													? (row.project.app ?? {
-															label: draft.name,
-															icon: draft.icon ? draft.icon.replace(/^\/imgs\//, '') : '',
-														})
-													: undefined,
-											})
-										}
-									/>
-								</Group>
-								{app && (
-									<Group title="앱 설정">
-										<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
-										<ImageField
-											label="앱 아이콘"
-											required
-											value={app.icon || undefined}
-											onChange={(icon) => setApp({ icon: icon ?? '' })}
-											toUrl={appIconUrl}
-											fromPicked={(src) => src.replace(/^\/imgs\//, '')}
-											hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘입니다 (이미지 폴더 기준 경로 또는 올린 그림)."
-										/>
-										<Switch
-											label="Dock에 고정"
-											checked={app.inDock !== false}
-											hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
-											onChange={(on) => setApp({ inDock: on ? undefined : false })}
-										/>
-										{/* 게임 표시(play, '여기서 플레이')와 뜨기 전 창 바탕(tone)은 폼에 두지 않는다: 쓰는 프로젝트가 SproutFarm뿐이고
-										    눈에 띄는 차이가 작다. 필요하면 JSON 탭의 app.play·app.tone에 적는다 */}
-										<FormRow label="창 크기" align="end" hint="비워 두면 화면 크기에 맞춘 기본 크기로 엽니다.">
-											<div className="projects-size" role="group" aria-label="창 크기">
-												<input
-													type="number"
-													className="projects-input"
-													aria-label="창 너비"
-													placeholder="1100"
-													value={app.windowSize?.width ?? ''}
-													onChange={(event) =>
-														setApp({
-															windowSize: event.target.value
-																? { width: Number(event.target.value), height: app.windowSize?.height ?? 720 }
-																: undefined,
-														})
-													}
-												/>
-												<span aria-hidden="true">×</span>
-												<input
-													type="number"
-													className="projects-input"
-													aria-label="창 높이"
-													placeholder="720"
-													value={app.windowSize?.height ?? ''}
-													onChange={(event) =>
-														setApp({
-															windowSize: event.target.value
-																? { width: app.windowSize?.width ?? 1100, height: Number(event.target.value) }
-																: undefined,
-														})
-													}
-												/>
-												<span aria-hidden="true">px</span>
-											</div>
-										</FormRow>
-									</Group>
-								)}
-							</>
-						)}
+						<button
+							type="button"
+							className="projects-toolbar-button"
+							aria-label="미리 보기"
+							title={preview ? '미리 보기를 접습니다.' : '미리 보기를 엽니다.'}
+							aria-pressed={preview}
+							onClick={() => setPreview((value) => !value)}
+						>
+							<SidebarRightIcon />
+						</button>
+						<button type="submit" className="projects-button primary">
+							완료
+						</button>
 					</div>
 				</div>
-				{preview && (
-					<aside className="projects-preview" aria-label="미리 보기">
-						<div className="projects-preview-window">
-							<div className="projects-preview-chrome">
-								<span /> <span /> <span />
-								<em>{draft.demo || `${draft.name} 미리 보기`}</em>
-							</div>
-							<div className="projects-preview-page">
-								<ProjectPage project={{ ...completeProject({ ...draft, id }), id }} />
-							</div>
+
+				<div className={`projects-editor-body ${preview ? 'with-preview' : ''}`}>
+					<div className="projects-editor-form" ref={formRef}>
+						<div className="projects-editor-column" key={filled}>
+							{errors.length > 0 && (
+								<ul className="about-pane-errors" role="alert">
+									{errors.map((error) => (
+										<li key={error}>{error}</li>
+									))}
+								</ul>
+							)}
+							{tab === 'json' && (
+								<Group
+									title="JSON"
+									label="고급 JSON"
+									hint="모든 필드를 고칠 수 있습니다 (장, 출처, 조작법 등). 링크·데모는 https:// 주소, 그림은 사이트 안 경로(/imgs/…)나 https:// 주소만 받습니다."
+								>
+									<textarea
+										className="projects-json"
+										aria-label="프로젝트 JSON"
+										value={json}
+										spellCheck={false}
+										onChange={(event) => setJson(event.target.value)}
+									/>
+								</Group>
+							)}
+							{tab === 'intro' && (
+								<>
+									<Group title="소개">
+										{row.isNew && (
+											<TextField
+												label="id"
+												value={id}
+												onChange={setId}
+												required
+												hint="주소와 앱 이름에 쓰입니다. 영어 소문자·숫자·-로 적습니다 (예: my-project)."
+											/>
+										)}
+										<TextField label="이름" value={draft.name} onChange={(name) => set({ name })} required />
+										<TextField label="큰 제목" value={draft.tagline} onChange={(tagline) => set({ tagline })} />
+										<TextField
+											label="한 줄 소개"
+											multiline
+											value={draft.description}
+											onChange={(description) => set({ description })}
+										/>
+										<TextField label="어떤 프로젝트" value={draft.context} onChange={(context) => set({ context })} />
+										<TextField label="맡은 일" value={draft.role} onChange={(role) => set({ role: optional(role) })} />
+										<PeriodField value={draft.period} onChange={(period) => set({ period })} />
+									</Group>
+									<Group
+										title="페이지 모양"
+										label="페이지 모양 고르기"
+										hint={
+											draft.look === 'custom'
+												? hasCustomPage(draft.id)
+													? `코드에 등록된 ${draft.id} 전용 페이지로 그립니다.`
+													: `코드에 ${draft.id} 전용 페이지가 없어 기본 (카드)로 그립니다. 저장소의 safari/project/custom/에 등록하세요.`
+												: 'Safari에서 이 프로젝트를 여는 페이지의 모양입니다. 고르면 미리 보기가 바로 바뀝니다.'
+										}
+									>
+										<LookPicker value={draft.look} onChange={(look) => set({ look })} />
+									</Group>
+									<Group title="주소와 기술">
+										<TextField
+											label="저장소"
+											required
+											type="url"
+											value={draft.url}
+											onChange={(url) => set({ url })}
+											placeholder="https://github.com/아이디/저장소"
+										/>
+										<TextField
+											label="데모"
+											type="url"
+											value={draft.demo}
+											onChange={(demo) => set({ demo: optional(demo) })}
+											placeholder="https://"
+										/>
+										<ChoiceInput
+											label="주 언어"
+											value={draft.language}
+											options={LANGUAGES}
+											onChange={(language) => set({ language })}
+										/>
+										<TagInput
+											label="기술"
+											items={draft.stack}
+											options={STACKS}
+											remote={NPM}
+											onChange={(stack) => set({ stack })}
+										/>
+									</Group>
+								</>
+							)}
+							{tab === 'pictures' && (
+								<>
+									{/* 대표 화면(image)은 따로 고르지 않는다: 화면 모음의 첫 그림을 쓴다 (다른 장을 쓰려면 JSON의 image).
+								    글자 로고(logo)도 폼에는 두지 않는다: 쓰는 프로젝트가 드물고 아이콘과 헷갈린다 (필요하면 JSON의 logo) */}
+									<Group title="아이콘" label="그림">
+										<ImageField
+											label="프로젝트 아이콘"
+											value={draft.icon}
+											onChange={(icon) => set({ icon })}
+											hint="네모난 앱 아이콘입니다. Safari 탭·Finder·페이지 맨 위에 작게 보이고, 없으면 기본 모양을 씁니다."
+										/>
+									</Group>
+									<Group title="장면 그림" label="장면">
+										<ImageField
+											label="장면 그림"
+											shape="wide"
+											value={draft.art}
+											onChange={(art) => set({ art })}
+											hint="아케이드 모양의 첫 화면과 RPG 대화창 모양의 표지에 대표 화면 대신 크게 보입니다. 없으면 대표 화면을 씁니다."
+										/>
+									</Group>
+									<Group
+										title="화면 모음"
+										hint="폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은 저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다."
+									>
+										<FormRow label="폴더" htmlFor="projects-gallery-folder" align="end">
+											<Popup
+												id="projects-gallery-folder"
+												value={draft.galleryFolder ?? ''}
+												onChange={(folder) => set({ galleryFolder: optional(folder) })}
+											>
+												<option value="">
+													{draft.gallery?.length ? `직접 적은 화면 ${draft.gallery.length}장` : '없음'}
+												</option>
+												{/* 같은 프로젝트 폴더 아래의 것끼리 묶는다 (묶음 이름은 그 프로젝트 이름) */}
+												{FOLDER_GROUPS.map((group) => (
+													<optgroup key={group.label} label={group.label}>
+														{group.folders.map((folder) => (
+															<option key={folder.value} value={folder.value}>
+																{folder.label} ({PUBLIC_IMAGES[folder.value].length}장)
+															</option>
+														))}
+													</optgroup>
+												))}
+											</Popup>
+										</FormRow>
+										{draft.galleryFolder && <FolderShots key={draft.galleryFolder} folder={draft.galleryFolder} />}
+									</Group>
+									<Group
+										title="대화창 배경"
+										hint="RPG 대화창 모양의 하늘·바닥·소품을 고릅니다. 자동은 배경 그림이 없으면 대표 화면을 픽셀로 바꿔 깔고, 강조색은 언제나 프로젝트 아이콘의 색을 따릅니다."
+									>
+										<FormRow label="배경 테마" htmlFor="projects-backdrop-theme" align="end">
+											<Popup
+												id="projects-backdrop-theme"
+												value={draft.backdrop?.theme ?? 'auto'}
+												onChange={(theme) =>
+													set({ backdrop: tidyBackdrop({ ...draft.backdrop, theme: theme as BackdropTheme }) })
+												}
+											>
+												{BACKDROP_THEMES.map((theme) => (
+													<option key={theme} value={theme}>
+														{BACKDROP_LABEL[theme]}
+													</option>
+												))}
+											</Popup>
+										</FormRow>
+										<ImageField
+											label="배경 그림"
+											shape="wide"
+											value={draft.backdrop?.image}
+											onChange={(image) => set({ backdrop: tidyBackdrop({ ...draft.backdrop, image }) })}
+											hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
+										/>
+									</Group>
+								</>
+							)}
+							{tab === 'content' && (
+								<>
+									<p className="projects-tab-hint">
+										목록의 줄을 눌러 고르고, 끌거나 ⌥↑·⌥↓ 키로 순서를 바꿉니다. ＋로 항목을 더하고, −로 고른 항목을
+										뺍니다.
+									</p>
+									<PairsEditor
+										label="한눈에 보는 숫자"
+										keys={['value', 'label']}
+										names={['값', '이름표']}
+										placeholders={['예: 6주', '예: 개발 기간']}
+										rows={draft.facts}
+										onChange={(facts) => set({ facts })}
+									/>
+									<PointsEditor
+										label="주요 기능"
+										hint="첫 항목은 크게 보이고, 그림이 있으면 바탕이 됩니다."
+										points={draft.highlights}
+										onChange={(highlights) => set({ highlights })}
+									/>
+									<PointsEditor
+										label="만든 방식"
+										hint="번호가 붙어 좌우로 번갈아 놓이고, 그림이 있으면 옆에 함께 보입니다."
+										points={draft.build}
+										onChange={(build) => set({ build })}
+									/>
+									<PointsEditor
+										label="쓰는 법"
+										hint="단계로 보입니다."
+										points={draft.usage ?? []}
+										onChange={(usage) => set({ usage: usage.length ? usage : undefined })}
+									/>
+									<ChaptersEditor
+										chapters={draft.chapters ?? []}
+										onChange={(chapters) => set({ chapters: chapters.length ? chapters : undefined })}
+									/>
+									<PairsEditor
+										label="진행 과정"
+										keys={['date', 'label']}
+										names={['때', '한 일']}
+										rows={draft.timeline ?? []}
+										onChange={(timeline) => set({ timeline: timeline.length ? timeline : undefined })}
+									/>
+									<PairsEditor
+										label="기술 사양"
+										keys={['label', 'value']}
+										names={['분류', '기술']}
+										rows={draft.specs}
+										onChange={(specs) => set({ specs })}
+									/>
+									<LinesEditor
+										label="맡은 일"
+										lines={draft.contributions}
+										onChange={(contributions) => set({ contributions })}
+									/>
+									<ControlsEditor
+										controls={draft.controls ?? []}
+										onChange={(controls) => set({ controls: controls.length ? controls : undefined })}
+									/>
+									<Group
+										label="폴더 구조"
+										hint="저장소의 폴더 트리를 그대로 붙여 넣습니다. 브루탈·저장소·발표 슬라이드 모양이 고정폭 글꼴로 보여 줍니다."
+									>
+										<TextField
+											label="폴더 구조"
+											multiline
+											mono
+											rows={8}
+											value={draft.structure}
+											placeholder={'src/\n├── app/\n└── features/'}
+											onChange={(structure) => set({ structure: optional(structure) })}
+										/>
+									</Group>
+									<CreditsEditor
+										credits={draft.credits ?? []}
+										onChange={(credits) => set({ credits: credits.length ? credits : undefined })}
+									/>
+									<PairsEditor
+										label="커밋 규칙"
+										hint="저장소 모양의 Conventions 탭과 커밋 그래프의 색에 쓰입니다."
+										keys={['type', 'description']}
+										names={['타입', '설명']}
+										placeholders={['예: feat', '예: 새 기능']}
+										rows={draft.conventions ?? []}
+										onChange={(conventions) => set({ conventions: conventions.length ? conventions : undefined })}
+									/>
+								</>
+							)}
+							{tab === 'app' && (
+								<>
+									<Group title="앱">
+										<Switch
+											label="이 사이트 안에서 창으로 열기"
+											checked={Boolean(app)}
+											hint="데모를 창 안(iframe)에 띄우는 앱을 만듭니다. Dock·Launchpad·터미널 open에 나옵니다."
+											onChange={(on) =>
+												set({
+													app: on
+														? (row.project.app ?? {
+																label: draft.name,
+																icon: draft.icon ? draft.icon.replace(/^\/imgs\//, '') : '',
+															})
+														: undefined,
+												})
+											}
+										/>
+									</Group>
+									{app && (
+										<Group title="앱 설정">
+											<TextField label="앱 이름" value={app.label} onChange={(label) => setApp({ label })} required />
+											<ImageField
+												label="앱 아이콘"
+												required
+												value={app.icon || undefined}
+												onChange={(icon) => setApp({ icon: icon ?? '' })}
+												toUrl={appIconUrl}
+												fromPicked={(src) => src.replace(/^\/imgs\//, '')}
+												hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘입니다 (이미지 폴더 기준 경로 또는 올린 그림)."
+											/>
+											<Switch
+												label="Dock에 고정"
+												checked={app.inDock !== false}
+												hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
+												onChange={(on) => setApp({ inDock: on ? undefined : false })}
+											/>
+											{/* 게임 표시(play, '여기서 플레이')와 뜨기 전 창 바탕(tone)은 폼에 두지 않는다: 쓰는 프로젝트가 SproutFarm뿐이고
+										    눈에 띄는 차이가 작다. 필요하면 JSON 탭의 app.play·app.tone에 적는다 */}
+											<FormRow label="창 크기" align="end" hint="비워 두면 화면 크기에 맞춘 기본 크기로 엽니다.">
+												<div className="projects-size" role="group" aria-label="창 크기">
+													<input
+														type="number"
+														className="projects-input"
+														aria-label="창 너비"
+														placeholder="1100"
+														value={app.windowSize?.width ?? ''}
+														onChange={(event) =>
+															setApp({
+																windowSize: event.target.value
+																	? { width: Number(event.target.value), height: app.windowSize?.height ?? 720 }
+																	: undefined,
+															})
+														}
+													/>
+													<span aria-hidden="true">×</span>
+													<input
+														type="number"
+														className="projects-input"
+														aria-label="창 높이"
+														placeholder="720"
+														value={app.windowSize?.height ?? ''}
+														onChange={(event) =>
+															setApp({
+																windowSize: event.target.value
+																	? { width: app.windowSize?.width ?? 1100, height: Number(event.target.value) }
+																	: undefined,
+															})
+														}
+													/>
+													<span aria-hidden="true">px</span>
+												</div>
+											</FormRow>
+										</Group>
+									)}
+								</>
+							)}
 						</div>
-					</aside>
-				)}
-			</div>
-		</form>
+					</div>
+					{preview && (
+						<aside className="projects-preview" aria-label="미리 보기">
+							<div className="projects-preview-window">
+								<div className="projects-preview-chrome">
+									<span /> <span /> <span />
+									<em>{draft.demo || `${draft.name} 미리 보기`}</em>
+								</div>
+								<div className="projects-preview-page">
+									<ProjectPage project={{ ...completeProject({ ...draft, id }), id }} />
+								</div>
+							</div>
+						</aside>
+					)}
+				</div>
+			</form>
+			{/* 확인 창은 폼 밖에 둔다 (폼 안의 단추 모양을 물려받지 않고, 설정 창 한가운데에 뜨게) */}
+			{confirmingSample && (
+				<AlertDialog
+					title="예시로 채울까요?"
+					message="입력한 내용을 예시로 바꿉니다. id·저장소·데모·앱 설정은 그대로 둡니다."
+					confirmLabel="채우기"
+					onConfirm={fillSample}
+					onCancel={() => setConfirmingSample(false)}
+				/>
+			)}
+		</>
 	);
 };
 
