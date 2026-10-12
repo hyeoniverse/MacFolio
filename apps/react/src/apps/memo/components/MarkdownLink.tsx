@@ -16,12 +16,26 @@ interface Props extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
  */
 function scrollToAnchor(link: HTMLAnchorElement, id: string) {
 	const root = link.closest('.memo-markdown') ?? document;
-	const target = root.querySelector<HTMLElement>(`[id="${CSS.escape(id)}"]`);
+	const find = (name: string) => root.querySelector<HTMLElement>(`[id="${CSS.escape(name)}"]`);
+	// 글 안의 id는 user-content-가 붙는다 (각주, 접기 블록). 글에는 짧은 이름(#terms)으로 적는다
+	const target = find(id) ?? find(`user-content-${id}`);
 	if (!target) return;
+	// 접힌 블록이거나 접힌 블록 안이면 펼친다
+	for (let el: HTMLElement | null = target; el && el !== root; el = el.parentElement) {
+		if (el instanceof HTMLDetailsElement) el.open = true;
+	}
 	const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-	target.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+	target.scrollIntoView({
+		block: target instanceof HTMLDetailsElement ? 'start' : 'center',
+		behavior: reduce ? 'auto' : 'smooth',
+	});
 	// 도착한 자리를 잠깐 표시하고, 키보드 사용자도 그 자리에서 이어 읽게 포커스를 옮긴다
-	const focusable = target.matches('a, button') ? target : (target.querySelector<HTMLElement>('a') ?? target);
+	const focusable =
+		target instanceof HTMLDetailsElement
+			? (target.querySelector<HTMLElement>(':scope > summary') ?? target)
+			: target.matches('a, button')
+				? target
+				: (target.querySelector<HTMLElement>('a') ?? target);
 	focusable.focus({ preventScroll: true });
 	target.classList.remove('memo-anchor-hit');
 	void target.offsetWidth;

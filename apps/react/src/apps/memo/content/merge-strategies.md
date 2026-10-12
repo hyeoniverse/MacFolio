@@ -7,7 +7,8 @@ summary: PR의 Merge 단추에는 세 가지 방식이 있다. 같은 PR을 각 
 
 GitHub PR 페이지의 Merge 단추를 누르면 세 가지 방식 가운데 하나를 고르게 된다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것을 골라야 하는지 물으면 "팀마다 다르다"는 답이 돌아오는데, 무엇이 달라서 다른 답이 나오는지 정리한다.
 
-## 먼저 알아 둘 용어
+<details id="terms">
+<summary>먼저 알아 둘 용어</summary>
 
 글에서 자주 나오는 Git 용어를 먼저 정리한다. 이미 아는 내용이면 건너뛰어도 된다.
 
@@ -24,17 +25,28 @@ GitHub PR 페이지의 Merge 단추를 누르면 세 가지 방식 가운데 하
 | `git revert`             | 지정한 커밋의 변경을 반대로 적용하는 새 커밋을 만든다. 기록을 지우지 않고 되돌린다.                                                                                                                                               |
 | `git bisect`             | 문제가 생긴 커밋을 이진 탐색으로 찾는 명령. "여기선 정상, 여기선 고장"인 두 지점을 알려 주면 Git이 가운데 커밋을 하나씩 꺼내 주고, 정상인지 고장인지 답하면 범위를 반씩 줄인다. 커밋이 잘게 나뉘어 있을수록 찾은 결과가 정확하다. |
 
-`--first-parent`의 효과는 출력을 비교하면 바로 보인다.
+`--first-parent`의 효과는 출력을 비교하면 바로 보인다. 그냥 `git log`는 PR 안의 커밋까지 모두 보여 준다.
 
 ```text
-$ git log --oneline main            $ git log --oneline --first-parent main
-a1b2c3d Merge pull request #12      a1b2c3d Merge pull request #12
-9f8e7d6 CSS 정리                    4d5e6f7 Merge pull request #11
-8e7d6c5 호출처 교체                 1a2b3c4 첫 커밋
+$ git log --oneline main
+a1b2c3d Merge pull request #12
+9f8e7d6 CSS 정리
+8e7d6c5 호출처 교체
 7d6c5b4 컴포넌트 추가
 4d5e6f7 Merge pull request #11
 ...
 ```
+
+`--first-parent`를 붙이면 머지 커밋만 남아 PR 하나가 한 줄이 된다.
+
+```text
+$ git log --oneline --first-parent main
+a1b2c3d Merge pull request #12
+4d5e6f7 Merge pull request #11
+1a2b3c4 첫 커밋
+```
+
+</details>
 
 ## 같은 PR, 세 가지 기록
 
@@ -102,7 +114,7 @@ GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식
 
 [^no-ff]: main이 브랜치를 만든 뒤로 바뀌지 않았다면 Git은 머지 커밋 없이 main 포인터만 브랜치 끝으로 옮긴다(fast-forward). `--no-ff`는 이때도 머지 커밋을 꼭 만들라는 옵션이다. GitHub의 Create a merge commit은 늘 이렇게 동작한다.
 
-[^first-parent]: 머지 커밋은 부모가 둘인데, 첫째 부모가 병합을 받은 쪽(main)이다. `--first-parent`는 기록을 거슬러 올라갈 때 첫째 부모만 따라가므로 브랜치 안의 커밋은 건너뛰고 main에 직접 쌓인 머지 커밋만 보인다. 위의 "먼저 알아 둘 용어"에 출력 예시가 있다.
+[^first-parent]: 머지 커밋은 부모가 둘인데, 첫째 부모가 병합을 받은 쪽(main)이다. `--first-parent`는 기록을 거슬러 올라갈 때 첫째 부모만 따라가므로 브랜치 안의 커밋은 건너뛰고 main에 직접 쌓인 머지 커밋만 보인다. 출력 예시는 글 앞쪽의 [먼저 알아 둘 용어](#terms)에 있다.
 
 [^diff]: 두 시점 사이에 바뀐 줄의 목록. "무엇이 바뀌었나"만 담고 누가 어떤 순서로 바꿨는지는 담지 않는다. 그래서 diff를 합쳐 만든 커밋 S에는 A·B·C의 메시지와 순서가 남지 않는다.
 
