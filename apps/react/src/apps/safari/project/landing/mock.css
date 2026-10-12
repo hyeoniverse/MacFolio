@@ -9,7 +9,7 @@
 	--_m-side: color-mix(in srgb, var(--_surface-2) 70%, var(--_surface));
 	--_m-card: var(--_surface);
 	--_m-soft: color-mix(in srgb, var(--_ink) 5%, transparent);
-	--_m-line: color-mix(in srgb, var(--_ink) 9%, transparent);
+	--_m-line: color-mix(in srgb, var(--_ink) 7%, transparent);
 	position: relative;
 	width: 100%;
 	aspect-ratio: 16 / 10;
@@ -288,7 +288,7 @@
 
 .lk-mock-title {
 	font-size: 1.7em;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: -0.03em;
 	line-height: 1.15;
 	overflow: hidden;
@@ -309,8 +309,8 @@
 
 .lk-mock-value {
 	font-size: 1.85em;
-	font-weight: 700;
-	letter-spacing: -0.035em;
+	font-weight: 600;
+	letter-spacing: -0.025em;
 	line-height: 1.1;
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
@@ -789,8 +789,8 @@
 
 .lk-mock-doctitle {
 	font-size: 2.3em;
-	font-weight: 750;
-	letter-spacing: -0.035em;
+	font-weight: 600;
+	letter-spacing: -0.025em;
 	line-height: 1.12;
 }
 
@@ -848,7 +848,7 @@
 .lk-mock-dochead {
 	margin-top: 0.4em;
 	font-size: 1.45em;
-	font-weight: 700;
+	font-weight: 600;
 	letter-spacing: -0.025em;
 }
 
@@ -938,7 +938,7 @@
 .lk-mock-largetitle {
 	flex: 1;
 	font-size: 1.85em;
-	font-weight: 750;
+	font-weight: 600;
 	letter-spacing: -0.03em;
 }
 
@@ -959,7 +959,7 @@
 
 .lk-mock-herocard > b {
 	font-size: 1.9em;
-	font-weight: 750;
+	font-weight: 600;
 	letter-spacing: -0.03em;
 }
 

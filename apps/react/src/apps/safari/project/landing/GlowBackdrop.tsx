@@ -3,7 +3,7 @@ import React from 'react';
 import './landing.css';
 
 export interface GlowBackdropProps {
-	/** dark 어두운 바탕, light 밝은 바탕 */
+	/** dark 어두운 바탕, light 밝은 바탕 (기본: 사이트 테마를 따른다) */
 	tone?: 'dark' | 'light';
 	/** 바탕 무늬: grid 가는 격자(기본), dots 점, none 무늬 없이 단색 */
 	pattern?: 'grid' | 'dots' | 'none';
@@ -18,7 +18,7 @@ export interface GlowBackdropProps {
 
 /** 부모(position: relative) 뒤를 꽉 채우는 장식 층. 부모의 글은 z-index 1 이상으로 올려 둔다 */
 export const GlowBackdrop: React.FC<GlowBackdropProps> = ({
-	tone = 'dark',
+	tone,
 	pattern = 'grid',
 	focus = 'top',
 	glow = false,

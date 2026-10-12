@@ -10,20 +10,26 @@
 	--_surface: var(--lk-surface, #ffffff);
 	--_surface-2: var(--lk-surface-2, #f5f5f7);
 	--_ink: var(--lk-ink, #1d1d1f);
+	--_body: var(--lk-body, #424245);
 	--_muted: var(--lk-muted, #6e6e73);
-	--_line: var(--lk-line, rgba(0, 0, 0, 0.09));
+	--_line: var(--lk-line, rgba(0, 0, 0, 0.06));
 	--_radius: var(--lk-radius, 14px);
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.06);
+	--_title-weight: var(--lk-title-weight, 600);
+	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 20px rgba(0, 0, 0, 0.05);
+	/* 흰 글자를 얹는 칠(단추). 다크의 밝은 강조색(--lk-dark-accent)은 흰 글자가 안 읽혀 칠에는 쓰지 않는다 */
+	--_accent-fill: var(--lk-accent-fill, var(--lk-accent, #0071e3));
 	--_on-accent: #ffffff;
 }
 
+/* 다크: 칙칙한 남색·짙은 회색이 아니라 검정 바탕에 #1c1c1e 면, 밝은 글자, 같은 색상의 밝은 강조색 */
 :root[data-theme='dark'] .lk-root {
-	--_accent: var(--lk-accent, #2997ff);
-	--_surface: var(--lk-surface, #0b0b0c);
-	--_surface-2: var(--lk-surface-2, #161618);
+	--_accent: var(--lk-dark-accent, var(--lk-accent, #2997ff));
+	--_surface: var(--lk-surface, #000000);
+	--_surface-2: var(--lk-surface-2, #1c1c1e);
 	--_ink: var(--lk-ink, #f5f5f7);
+	--_body: var(--lk-body, #d2d2d7);
 	--_muted: var(--lk-muted, #a1a1a6);
-	--_line: var(--lk-line, rgba(255, 255, 255, 0.1));
+	--_line: var(--lk-line, rgba(255, 255, 255, 0.08));
 	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -31,11 +37,12 @@
 :root[data-theme='dark'] .lk-root[data-lk-tone='dark'],
 [data-lk-tone='dark'] .lk-root:not([data-lk-tone]) {
 	--_accent: var(--lk-dark-accent, var(--lk-accent, #2997ff));
-	--_surface: var(--lk-dark-surface, #0b0b0c);
-	--_surface-2: var(--lk-dark-surface-2, #161618);
+	--_surface: var(--lk-dark-surface, #000000);
+	--_surface-2: var(--lk-dark-surface-2, #1c1c1e);
 	--_ink: var(--lk-dark-ink, #f5f5f7);
+	--_body: var(--lk-dark-body, #d2d2d7);
 	--_muted: var(--lk-dark-muted, #a1a1a6);
-	--_line: var(--lk-dark-line, rgba(255, 255, 255, 0.1));
+	--_line: var(--lk-dark-line, rgba(255, 255, 255, 0.08));
 	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -46,9 +53,10 @@
 	--_surface: var(--lk-light-surface, #ffffff);
 	--_surface-2: var(--lk-light-surface-2, #f5f5f7);
 	--_ink: var(--lk-light-ink, #1d1d1f);
+	--_body: var(--lk-light-body, #424245);
 	--_muted: var(--lk-light-muted, #6e6e73);
-	--_line: var(--lk-light-line, rgba(0, 0, 0, 0.09));
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.06);
+	--_line: var(--lk-light-line, rgba(0, 0, 0, 0.06));
+	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* 글 없는 자리 표시 막대 (가짜 화면과 비주얼의 "글줄") */
@@ -174,9 +182,9 @@
 .lk-section-title {
 	margin: 0;
 	font-size: clamp(30px, 4.6vw, 52px);
-	font-weight: 700;
-	line-height: 1.12;
-	letter-spacing: -0.035em;
+	font-weight: var(--_title-weight);
+	line-height: 1.14;
+	letter-spacing: -0.02em;
 	text-wrap: balance;
 	color: var(--_ink);
 }
@@ -188,9 +196,9 @@ h3.lk-section-title {
 .lk-section-lead {
 	margin: 0;
 	max-width: 620px;
-	font-size: clamp(16px, 1.6vw, 19px);
-	line-height: 1.55;
-	color: var(--_muted);
+	font-size: clamp(16px, 1.5vw, 17px);
+	line-height: 1.6;
+	color: var(--_body);
 	text-wrap: pretty;
 }
 
@@ -221,7 +229,7 @@ h3.lk-section-title {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	padding: 40px 28px;
+	padding: 48px 28px;
 	text-align: center;
 }
 
@@ -239,10 +247,10 @@ h3.lk-section-title {
 }
 
 .lk-stat strong {
-	font-size: clamp(36px, 5vw, 60px);
-	font-weight: 700;
+	font-size: clamp(36px, 5vw, 56px);
+	font-weight: 600;
 	line-height: 1;
-	letter-spacing: -0.04em;
+	letter-spacing: -0.03em;
 	font-variant-numeric: tabular-nums;
 }
 
@@ -298,7 +306,7 @@ h3.lk-section-title {
 	white-space: nowrap;
 	font-size: 19px;
 	line-height: 1;
-	color: color-mix(in srgb, var(--_ink) 62%, transparent);
+	color: color-mix(in srgb, var(--_ink) 55%, transparent);
 	transition: color 0.2s;
 }
 
@@ -307,7 +315,7 @@ h3.lk-section-title {
 }
 
 .lk-logo[data-style='heavy'] {
-	font-weight: 800;
+	font-weight: 700;
 	letter-spacing: -0.04em;
 }
 
@@ -376,7 +384,7 @@ h3.lk-section-title {
 .lk-cta {
 	position: relative;
 	overflow: hidden;
-	padding: clamp(72px, 10vw, 128px) 24px;
+	padding: clamp(96px, 12vw, 140px) 24px;
 	background: var(--_surface);
 	color: var(--_ink);
 	text-align: center;
@@ -405,10 +413,10 @@ h3.lk-section-title {
 
 .lk-cta-title {
 	margin: 0;
-	font-size: clamp(32px, 5.4vw, 60px);
-	font-weight: 700;
-	line-height: 1.08;
-	letter-spacing: -0.04em;
+	font-size: clamp(32px, 5.4vw, 56px);
+	font-weight: var(--_title-weight);
+	line-height: 1.1;
+	letter-spacing: -0.02em;
 	text-wrap: balance;
 	color: var(--_ink);
 }
@@ -416,9 +424,9 @@ h3.lk-section-title {
 .lk-cta-lead {
 	margin: 0;
 	max-width: 560px;
-	font-size: clamp(16px, 1.6vw, 19px);
-	line-height: 1.55;
-	color: var(--_muted);
+	font-size: clamp(16px, 1.5vw, 17px);
+	line-height: 1.6;
+	color: var(--_body);
 	text-wrap: pretty;
 }
 
@@ -429,8 +437,8 @@ h3.lk-section-title {
 
 .lk-cta .lk-cta-links .sp-pill {
 	padding: 12px 24px;
-	background: var(--_ink);
-	color: var(--_surface);
+	background: var(--_accent-fill);
+	color: var(--_on-accent);
 	font-weight: 600;
 	box-shadow: none;
 }
