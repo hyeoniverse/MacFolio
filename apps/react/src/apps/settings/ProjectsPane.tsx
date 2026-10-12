@@ -2590,8 +2590,8 @@ const ProjectEditor = ({
 							)}
 							{tab === 'pictures' && (
 								<>
-									{/* 대표 화면(image)은 따로 고르지 않는다: 화면 모음의 첫 그림을 쓴다 (completeProject. 다른 장을 쓰려면 JSON의 image).
-								    화면 모음은 그림마다 고르거나 올린다. 폴더(galleryFolder)는 저장소에 넣고 배포한 그림만 되어 JSON에서만 고친다.
+									{/* 대표 화면(image)은 한 장만 고르고, 비우면 화면 더 보기의 첫 그림을 쓴다 (completeProject).
+								    화면 더 보기(gallery)는 그림마다 고르거나 올린다. 폴더(galleryFolder)는 저장소에 넣고 배포한 그림만 되어 JSON에서만 고친다.
 								    글자 로고(logo)도 폼에는 두지 않는다: 쓰는 프로젝트가 드물고 아이콘과 헷갈린다 (필요하면 JSON의 logo) */}
 									<Group title="아이콘" label="그림">
 										<ImageField
@@ -2601,20 +2601,25 @@ const ProjectEditor = ({
 											hint="네모난 앱 아이콘입니다. Safari 탭·Finder·페이지 맨 위에 작게 보이고, 없으면 기본 모양을 씁니다."
 										/>
 									</Group>
+									<Group title="대표 화면">
+										<ImageField
+											label="대표 화면"
+											shape="wide"
+											value={draft.image || undefined}
+											onChange={(image) => set({ image: image ?? '' })}
+											hint="페이지 첫 화면과 Finder 미리 보기에 보이는 그림입니다. 비워 두면 아래 화면 더 보기의 첫 그림을 씁니다."
+										/>
+									</Group>
 									{draft.galleryFolder && !draft.gallery?.length && (
 										<p className="projects-tab-hint">
-											{`화면 모음은 JSON에 적은 폴더 ${draft.galleryFolder}의 그림을 씁니다. 아래 목록에 그림을 더하면 폴더 대신 목록을 씁니다.`}
+											{`화면 더 보기는 JSON에 적은 폴더 ${draft.galleryFolder}의 그림을 씁니다. 아래 목록에 그림을 더하면 폴더 대신 목록을 씁니다.`}
 										</p>
 									)}
 									<ShotsEditor
-										label="화면 모음"
-										title="화면 모음"
+										label="화면 더 보기"
+										title="화면 더 보기"
 										nested={false}
-										hint={
-											draft.image
-												? '대표 화면은 JSON에 적은 그림을 씁니다. 줄을 끌어 순서를 바꿉니다.'
-												: '첫 번째 그림이 대표 화면으로 쓰입니다. 줄을 끌어 순서를 바꿉니다.'
-										}
+										hint="대표 화면 말고 더 보여 줄 화면입니다. 화면 모음을 그리는 모양에서 갤러리로 보입니다. 줄을 끌어 순서를 바꿉니다."
 										shots={(draft.gallery ?? []).map(({ src, caption }) => ({ src, alt: caption }))}
 										onChange={(shots) =>
 											set({
