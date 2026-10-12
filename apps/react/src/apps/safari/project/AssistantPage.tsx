@@ -8,6 +8,7 @@ import { Favicon, FactValue, Links } from '@/apps/safari/project/parts';
 import { FeatureMedia } from '@/apps/safari/project/CreativeParts';
 import Devices from '@/apps/safari/project/product/Devices';
 import Pipeline from '@/apps/safari/project/product/Pipeline';
+import { DeviceFrame, FeatureVisual, LogoStrip, MockScreen } from '@/apps/safari/project/landing';
 import '@/apps/safari/project/AssistantPage.css';
 
 type StepId =
@@ -43,7 +44,7 @@ function stepsOf(project: Project): Step[] {
 }
 
 /** 주요 기능: 왼쪽 목록에서 고르면 오른쪽에 설명과 그림 (macOS '기능 소개' 화면처럼) */
-const Features: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
+const Features: React.FC<{ project: Project; points: ProjectPoint[] }> = ({ project, points }) => {
 	const [index, setIndex] = useState(0);
 	const point = points[Math.min(index, points.length - 1)];
 	const media = Boolean(point.video || point.variants || point.image);
@@ -69,10 +70,9 @@ const Features: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 						<FeatureMedia point={point} />
 					</div>
 				) : (
-					// 화면이 없는 기능은 그 아이콘을 큰 타일로 (macOS 기능 소개의 그림 자리처럼)
-					<div className="asst-detail-glyph" aria-hidden="true">
-						<i className={`fa-solid ${point.icon ?? 'fa-circle-dot'}`} />
-						<span>{String(Math.min(index, points.length - 1) + 1).padStart(2, '0')}</span>
+					// 화면이 없는 기능: 그 기능의 제목을 담은 비주얼 (macOS 기능 소개의 그림 자리처럼)
+					<div className="asst-detail-visual" aria-hidden="true">
+						<FeatureVisual point={point} index={Math.min(index, points.length - 1)} project={project} />
 					</div>
 				)}
 			</div>
@@ -137,15 +137,29 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 			case 'welcome':
 				return (
 					<div className="asst-welcome">
-						<Favicon project={project} className="asst-icon" />
-						<p className="asst-hello">환영합니다</p>
-						<h2>{project.tagline}</h2>
-						<p className="asst-lead">{project.description}</p>
-						<p className="asst-meta">
-							{project.context}
-							{project.period && <span> · {project.period}</span>}
-						</p>
-						<Links project={project} className="asst-links" />
+						<div className="asst-welcome-text">
+							<Favicon project={project} className="asst-icon" />
+							<p className="asst-hello">환영합니다</p>
+							<h2>{project.tagline}</h2>
+							<p className="asst-lead">{project.description}</p>
+							<p className="asst-meta">
+								{project.context}
+								{project.period && <span> · {project.period}</span>}
+							</p>
+							<Links project={project} className="asst-links" />
+						</div>
+						{/* 제품 화면: 대표 화면이 있으면 그것, 없으면 프로젝트 데이터로 그린 화면 */}
+						<div className="asst-welcome-device">
+							<DeviceFrame
+								kind="browser"
+								url={project.demo}
+								src={project.image || undefined}
+								alt={`${project.name} 화면`}
+								glow
+							>
+								{!project.image && <MockScreen project={project} decorative />}
+							</DeviceFrame>
+						</div>
 					</div>
 				);
 			case 'glance':
@@ -202,7 +216,7 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 					<>
 						<h2>주요 기능</h2>
 						<p className="asst-sub">왼쪽에서 하나를 고르면 자세히 보여 줍니다.</p>
-						<Features points={project.highlights} />
+						<Features project={project} points={project.highlights} />
 					</>
 				);
 			case 'devices':
@@ -255,13 +269,7 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 								</div>
 							))}
 						</dl>
-						{project.stack.length > 0 && (
-							<ul className="asst-stack" aria-label="기술">
-								{project.stack.map((item) => (
-									<li key={item}>{item}</li>
-								))}
-							</ul>
-						)}
+						<LogoStrip items={project.stack} caption="만든 기술" className="asst-stack" />
 					</>
 				);
 			case 'roles':
@@ -289,6 +297,7 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 							{project.demo || project.app ? '을(를) 바로 열어 보거나' : '의'} 코드를 GitHub에서 볼 수 있습니다.
 						</p>
 						<Links project={project} className="asst-links" />
+						<LogoStrip items={project.stack} caption="함께한 기술" marquee className="asst-done-stack" />
 					</div>
 				);
 		}
