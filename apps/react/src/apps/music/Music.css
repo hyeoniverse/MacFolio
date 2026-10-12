@@ -463,27 +463,16 @@
 	display: none;
 }
 
-/* ─── 지금 재생 중 (모바일 시트) ─── */
+/* ─── 지금 재생 중 (모바일 시트: shared/ui의 Sheet cover. 덮는 자리·움직임은 Sheet.css) ─── */
 .music-now-playing {
+	--ui-sheet-bg: #1c1c1e;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 16px;
-	position: absolute;
-	inset: 0;
-	z-index: 10;
 	padding: 24px 28px 28px;
-	overflow-y: auto;
-	background-color: #1c1c1e;
 	color: #fff;
 	isolation: isolate;
-	animation: music-sheet-up var(--duration-slow) var(--ease-out);
-}
-
-@keyframes music-sheet-up {
-	from {
-		transform: translateY(100%);
-	}
 }
 
 /* 앨범 표지를 흐리게 깐 배경 */

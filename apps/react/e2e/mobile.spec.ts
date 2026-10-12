@@ -975,9 +975,8 @@ test.describe('모바일', () => {
 		// 큰 제목은 쓴 제목을 따른다
 		await expect(sheet.getByRole('heading', { name: '안녕하세요' })).toBeVisible();
 
-		// 닫으면 바로 사라지지 않고 내려가는 동안 남아 있다
+		// 닫는다 (내려가는 움직임은 mobile-motion.spec.ts)
 		await sheet.getByRole('button', { name: '취소' }).tap();
-		await expect(mail.locator('.mail-phone-sheet-layer.closing')).toHaveCount(1);
 		await expect(sheet).toBeHidden();
 
 		// 방문자의 답장: 받은 메일에서 답장 → 메일 동작 → 답장은 주인에게 Re: 제목의 새 메일
