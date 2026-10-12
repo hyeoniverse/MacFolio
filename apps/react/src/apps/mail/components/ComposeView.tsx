@@ -125,10 +125,10 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 				{/* 누르면 이메일 주소를 복사한다 */}
 				<CopyAddress className="mail-recipient" />
 			</div>
-			<Row label="이름:" error={errors.name} empty={!form.name.trim()}>
+			<Row label="이름:" error={errors.name}>
 				<input aria-label="이름" maxLength={LIMITS.name} value={form.name} onChange={field('name')} autoFocus />
 			</Row>
-			<Row label="회신 주소:" error={errors.email} empty={!form.email.trim()}>
+			<Row label="회신 주소:" error={errors.email}>
 				<input
 					aria-label="회신 주소"
 					type="email"
@@ -137,7 +137,7 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 					onChange={field('email')}
 				/>
 			</Row>
-			<Row label="제목:" error={errors.subject} empty={!form.subject.trim()}>
+			<Row label="제목:" error={errors.subject}>
 				<input aria-label="제목" maxLength={LIMITS.subject} value={form.subject} onChange={field('subject')} />
 			</Row>
 			<textarea
@@ -149,7 +149,7 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 				value={form.body}
 				onChange={field('body')}
 			/>
-			{errors.body && <ErrorBadge error={errors.body} empty={!form.body.trim()} className="mail-body-error" />}
+			{errors.body && <ErrorHint error={errors.body} className="mail-body-error" />}
 			{siteKey && <Turnstile className="mail-turnstile" siteKey={siteKey} resetKey={widget} onToken={setToken} />}
 			{result?.status === 'failed' && (
 				<p className="mail-error" role="alert">
@@ -160,34 +160,19 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 	);
 };
 
-const Row: React.FC<{ label: string; error?: string; empty: boolean; children: React.ReactElement }> = ({
-	label,
-	error,
-	empty,
-	children,
-}) => (
+const Row: React.FC<{ label: string; error?: string; children: React.ReactElement }> = ({ label, error, children }) => (
 	<label className={`mail-compose-row ${error ? 'invalid' : ''}`}>
 		<span>{label}</span>
 		{children}
-		{error && <ErrorBadge error={error} empty={empty} />}
+		{error && <ErrorHint error={error} />}
 	</label>
 );
 
-/** 칸 오류: 비어 있으면 '필수' 배지만, 형식·길이 오류는 같은 배지 모양에 문구를 담는다 (화면 읽기 프로그램에는 전체 문구) */
-const ErrorBadge: React.FC<{ error: string; empty: boolean; className?: string }> = ({
-	error,
-	empty,
-	className = '',
-}) => (
-	<span className={`mail-badge ${className}`} role="alert">
-		{empty ? (
-			<>
-				<span aria-hidden="true">필수</span>
-				<span className="visually-hidden">{error}</span>
-			</>
-		) : (
-			error
-		)}
+/** 칸 오류: 칸 아래 줄의 작은 안내 문구 */
+const ErrorHint: React.FC<{ error: string; className?: string }> = ({ error, className = '' }) => (
+	<span className={`mail-hint ${className}`} role="alert">
+		<i className="fa-solid fa-circle-exclamation" aria-hidden="true" />
+		{error}
 	</span>
 );
 
