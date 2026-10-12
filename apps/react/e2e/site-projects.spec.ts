@@ -145,11 +145,11 @@ test.describe('프로젝트 관리', () => {
 		await expect(fieldName('이름')).toHaveText('이름필수');
 		// 미리 보기가 함께 보인다 (고치는 대로 바뀐다)
 		await expect(
-			editor.getByRole('complementary', { name: '미리 보기' }).locator('.sp[data-look="showcase"]')
+			editor.getByRole('complementary', { name: '미리 보기' }).locator('.sp[data-look="friendly"]')
 		).toBeVisible();
-		await expect(editor.getByRole('complementary', { name: '미리 보기' }).locator('.sc-hero h1')).toHaveText(
-			'사이드 앱'
-		);
+		await expect(
+			editor.getByRole('complementary', { name: '미리 보기' }).getByRole('heading', { level: 1 })
+		).toHaveText('사이드 앱');
 		// 기간: 사이트 달력(메모 글 날짜와 같은 것)에서 시작일을 고르고, 끝 대신 '진행 중'
 		await editor.getByRole('button', { name: '시작일 고르기' }).click();
 		const calendar = page.getByRole('dialog', { name: '날짜 고르기' });
@@ -181,10 +181,10 @@ test.describe('프로젝트 관리', () => {
 			'Vite',
 			'tiny-qr-kit',
 		]);
-		// 새 프로젝트의 기본 모양은 어디에나 맞는 '기본 (카드)'
-		await expect(
-			editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { checked: true })
-		).toHaveAccessibleName('기본');
+		// 새 프로젝트의 기본 모양은 그림이 없어도 꽉 차 보이는 '카드'. 직접 짠 페이지는 등록된 프로젝트만 고른다
+		const looks = editor.getByRole('radiogroup', { name: '페이지 모양' });
+		await expect(looks.getByRole('radio', { checked: true })).toHaveAccessibleName('카드');
+		await expect(looks.getByRole('radio')).toHaveText([/제품/, /카드/, /문서/, /벤토/, /RPG 대화창/]);
 		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고른다. 글자 로고 칸은 없다 (필요하면 JSON의 logo)
 		await editor.getByRole('tab', { name: '그림' }).click();
 		await editor.getByRole('combobox', { name: '프로젝트 아이콘 고르기' }).selectOption('/imgs/projects/qru/icon.png');
@@ -219,7 +219,7 @@ test.describe('프로젝트 관리', () => {
 		await expect(lightbox).toHaveCount(0);
 		// 미리 보기: 첫 그림이 대표 화면이 되어 맨 위에 뜬다
 		const preview = editor.getByRole('complementary', { name: '미리 보기' });
-		await expect(preview.locator('.sc-hero-shot').first()).toHaveAttribute('src', shots[0]);
+		await expect(preview.locator('.fr-hero .fr-window img')).toHaveAttribute('src', shots[0]);
 		await expect(preview.getByRole('region', { name: '화면 모음' }).locator('img').first()).toHaveAttribute(
 			'src',
 			shots[0]
@@ -281,19 +281,20 @@ test.describe('프로젝트 관리', () => {
 		await dockItem(page, 'safari').click();
 		const safari = appWindow(page, 'safari');
 		await safari.getByRole('tab', { name: /사이드 앱/ }).click();
-		// 기본 모양(showcase) 페이지: 로고가 없으니 맨 위에 고른 아이콘과 이름, 대표 화면을 비웠으니 화면 더 보기의 첫 그림이 대표 화면
+		// 기본 모양(friendly) 페이지: 로고가 없으니 맨 위에 고른 아이콘과 이름, 대표 화면을 비웠으니 화면 더 보기의 첫 그림이 대표 화면
 		const panel = safari.getByRole('tabpanel');
-		await expect(panel.locator('.sp[data-look="showcase"]')).toBeVisible();
-		await expect(panel.locator('.sc-hero .sc-logo')).toHaveCount(0);
-		await expect(panel.locator('.sc-hero .sc-tile')).toHaveAttribute('src', '/imgs/projects/qru/icon.png');
-		// 대표 화면을 비워 두었으니 화면 더 보기의 첫 그림이 맨 위의 떠 있는 화면이 된다
-		await expect(panel.locator('.sc-hero-shot').first()).toHaveAttribute('src', shots[0]);
+		await expect(panel.locator('.sp[data-look="friendly"]')).toBeVisible();
+		const hero = panel.locator('.fr-hero');
+		await expect(hero.locator('.fr-logo')).toHaveCount(0);
+		await expect(hero.locator('.fr-brand-icon')).toHaveAttribute('src', '/imgs/projects/qru/icon.png');
+		// 대표 화면을 비워 두었으니 화면 더 보기의 첫 그림이 첫 화면의 창 틀 속 화면이 된다
+		await expect(hero.locator('.fr-window img')).toHaveAttribute('src', shots[0]);
 		await expect(panel.getByRole('region', { name: '화면 모음' }).locator('img')).toHaveCount(2);
 		await expect(panel.getByRole('region', { name: '화면 모음' }).locator('img').first()).toHaveAttribute(
 			'src',
 			shots[0]
 		);
-		await expect(panel.locator('.sc-hero').getByRole('list', { name: '기술' }).getByRole('listitem')).toHaveText([
+		await expect(hero.getByRole('list', { name: '기술' }).getByRole('listitem')).toHaveText([
 			// 주 언어가 기술 칩 맨 앞에 함께 나온다
 			'TypeScript',
 			'React',
@@ -366,10 +367,14 @@ test.describe('프로젝트 관리', () => {
 		await sheet.getByRole('button', { name: '완료' }).click();
 		await expect(highlights.getByRole('row').first()).toContainText('씨앗부터 수확까지');
 		await expect(form.getByRole('region', { name: '장', exact: true }).getByRole('row')).toHaveCount(2);
-		// 조작법은 그 모양(RPG 대화창)에서만 쓰는 칸이라 소개 탭의 페이지 모양 아래에 있다
-		await expect(editor.getByRole('textbox', { name: '조작법 1 키' })).toHaveCount(0);
+		// 조작법은 어느 모양에서나 그리는 공통 칸이라 내용 탭에 있다
+		await expect(form.getByRole('textbox', { name: '조작법 1 키' })).toHaveValue('↑, ↓, ←, →');
+		// 대화창 배경은 RPG 대화창 모양에서만 쓰는 칸이라 소개 탭의 페이지 모양 아래에만 있다
 		await editor.getByRole('tab', { name: '소개' }).click();
-		await expect(editor.getByRole('textbox', { name: '조작법 1 키' })).toHaveValue('↑, ↓, ←, →');
+		await expect(editor.getByRole('combobox', { name: '배경 테마' })).toBeVisible();
+		await editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { name: '문서' }).click();
+		await expect(editor.getByRole('combobox', { name: '배경 테마' })).toHaveCount(0);
+		await editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { name: 'RPG 대화창' }).click();
 
 		await editor.getByRole('button', { name: '완료' }).click();
 		await expect(editor).toBeHidden();

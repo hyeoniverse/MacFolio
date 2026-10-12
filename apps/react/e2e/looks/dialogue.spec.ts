@@ -54,6 +54,14 @@ test('dialogue: 인사 → 선택지 → 주요 기능을 한 장씩 → 읽음 
 	await expect(dialog).toContainText('Shift');
 });
 
+test('dialogue: 빌려 쓴 에셋의 출처도 대사로 읽는다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'sproutfarm', tab: /SproutFarm/, look: 'dialogue' });
+	const dialog = dialogOf(panel);
+	await nextOf(dialog).click();
+	await dialog.getByRole('button', { name: '누가 도와줬어?' }).click();
+	await expect(dialog).toContainText('Sprout Lands Asset Pack');
+});
+
 test('dialogue: 조작법이 없는 프로젝트(qru)도 깨지지 않는다', async ({ page }) => {
 	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue' });
 	const dialog = dialogOf(panel);

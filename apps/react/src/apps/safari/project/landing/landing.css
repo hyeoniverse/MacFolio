@@ -1,547 +1,79 @@
-/*
- * 랜딩 키트 (project/landing/): 템플릿이 함께 쓰는 히어로·구역 조각.
- * 톤은 바깥에서 --lk-* 변수로 정한다 (README.md). 조각마다 .lk-root가 그 값을 안쪽 이름(--_*)으로 받아 쓰고,
- * 값이 없으면 아래 라이트·다크 기본값. data-lk-tone='dark'|'light'는 페이지 테마와 상관없이 그 톤으로 (--lk-dark-* / --lk-light-*).
- * data-lk-tone은 아무 요소에나 달 수 있고, 그 안의 조각 중 톤을 따로 받지 않은 것은 모두 그 톤을 따른다
- */
-.lk-root {
-	--_accent: var(--lk-accent, #0071e3);
-	--_accent-2: var(--lk-accent-2, var(--_accent));
-	--_surface: var(--lk-surface, #ffffff);
-	--_surface-2: var(--lk-surface-2, #f5f5f7);
-	--_ink: var(--lk-ink, #1d1d1f);
-	--_body: var(--lk-body, #424245);
-	--_muted: var(--lk-muted, #6e6e73);
-	--_line: var(--lk-line, rgba(0, 0, 0, 0.06));
-	--_radius: var(--lk-radius, 14px);
-	--_title-weight: var(--lk-title-weight, 600);
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 20px rgba(0, 0, 0, 0.05);
-	/* 흰 글자를 얹는 칠(단추). 다크의 밝은 강조색(--lk-dark-accent)은 흰 글자가 안 읽혀 칠에는 쓰지 않는다 */
-	--_accent-fill: var(--lk-accent-fill, var(--lk-accent, #0071e3));
-	--_on-accent: #ffffff;
+/* 랜딩 키트 공통 (project/landing/): 템플릿 바탕(.tpl)의 강조색 기본값, 그림·영상, 그림이 없는 항목의 비주얼.
+   템플릿은 강조색을 var(--tpl-accent) 하나로 쓴다. 아이콘에서 뽑은 색(accent.ts)이 --lk-*를 덮는다 */
+.tpl {
+	--lk-accent: #0071e3;
+	--lk-accent-2: #6aa8f8;
+	--lk-dark-accent: #2997ff;
+	--tpl-accent: var(--lk-accent);
+	container-type: inline-size;
+	min-height: 100%;
 }
 
-/* 다크: 칙칙한 남색·짙은 회색이 아니라 검정 바탕에 #1c1c1e 면, 밝은 글자, 같은 색상의 밝은 강조색 */
-:root[data-theme='dark'] .lk-root {
-	--_accent: var(--lk-dark-accent, var(--lk-accent, #2997ff));
-	--_surface: var(--lk-surface, #000000);
-	--_surface-2: var(--lk-surface-2, #1c1c1e);
-	--_ink: var(--lk-ink, #f5f5f7);
-	--_body: var(--lk-body, #d2d2d7);
-	--_muted: var(--lk-muted, #a1a1a6);
-	--_line: var(--lk-line, rgba(255, 255, 255, 0.08));
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+:root[data-theme='dark'] .tpl {
+	--tpl-accent: var(--lk-dark-accent);
 }
 
-.lk-root[data-lk-tone='dark'],
-:root[data-theme='dark'] .lk-root[data-lk-tone='dark'],
-[data-lk-tone='dark'] .lk-root:not([data-lk-tone]) {
-	--_accent: var(--lk-dark-accent, var(--lk-accent, #2997ff));
-	--_surface: var(--lk-dark-surface, #000000);
-	--_surface-2: var(--lk-dark-surface-2, #1c1c1e);
-	--_ink: var(--lk-dark-ink, #f5f5f7);
-	--_body: var(--lk-dark-body, #d2d2d7);
-	--_muted: var(--lk-dark-muted, #a1a1a6);
-	--_line: var(--lk-dark-line, rgba(255, 255, 255, 0.08));
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-.lk-root[data-lk-tone='light'],
-:root[data-theme='dark'] .lk-root[data-lk-tone='light'],
-[data-lk-tone='light'] .lk-root:not([data-lk-tone]) {
-	--_accent: var(--lk-light-accent, var(--lk-accent, #0071e3));
-	--_surface: var(--lk-light-surface, #ffffff);
-	--_surface-2: var(--lk-light-surface-2, #f5f5f7);
-	--_ink: var(--lk-light-ink, #1d1d1f);
-	--_body: var(--lk-light-body, #424245);
-	--_muted: var(--lk-light-muted, #6e6e73);
-	--_line: var(--lk-light-line, rgba(0, 0, 0, 0.06));
-	--_shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 20px rgba(0, 0, 0, 0.05);
-}
-
-/* 글 없는 자리 표시 막대 (가짜 화면과 비주얼의 "글줄") */
-.lk-sk {
+.lk-media {
 	display: block;
-	width: var(--w, 60%);
-	height: 0.55em;
-	flex-shrink: 0;
-	border-radius: 99px;
-	background: color-mix(in srgb, var(--_ink) 12%, transparent);
-}
-
-/* ─── GlowBackdrop ─── */
-/* 기본은 단색 바탕 위 아주 옅은 무늬 하나. glow를 켜야 강조색 한 덩어리가 옅게 번진다 */
-.lk-glow {
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	overflow: hidden;
-	pointer-events: none;
-	background: var(--_surface);
-	isolation: isolate;
-}
-
-.lk-glow-blob {
-	position: absolute;
-	top: -40%;
-	left: 25%;
-	width: 50%;
-	height: 80%;
-	border-radius: 50%;
-	background: radial-gradient(closest-side, var(--_accent), transparent);
-	filter: blur(80px);
-	opacity: 0.14;
-}
-
-.lk-glow[data-lk-tone='light'] .lk-glow-blob {
-	opacity: 0.08;
-}
-
-.lk-glow[data-focus='center'] .lk-glow-blob {
-	top: 10%;
-}
-
-.lk-glow[data-focus='side'] .lk-glow-blob {
-	top: -10%;
-	left: 50%;
-}
-
-/* 무늬: 가운데 위가 조금 보이고 가장자리로 갈수록 사라진다 */
-.lk-glow-pattern {
-	position: absolute;
-	inset: 0;
-	--_pat: color-mix(in srgb, var(--_ink) 5%, transparent);
-	mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 10%, transparent 70%);
-}
-
-.lk-glow[data-pattern='grid'] .lk-glow-pattern {
-	background-image:
-		linear-gradient(to right, var(--_pat) 1px, transparent 1px),
-		linear-gradient(to bottom, var(--_pat) 1px, transparent 1px);
-	background-size: 64px 64px;
-	background-position: center top;
-}
-
-.lk-glow[data-pattern='dots'] .lk-glow-pattern {
-	--_pat: color-mix(in srgb, var(--_ink) 9%, transparent);
-	background-image: radial-gradient(var(--_pat) 1px, transparent 1.4px);
-	background-size: 24px 24px;
-}
-
-.lk-glow[data-focus='side'] .lk-glow-pattern {
-	mask-image: radial-gradient(ellipse 60% 70% at 70% 40%, #000 10%, transparent 70%);
-}
-
-.lk-glow[data-animate] .lk-glow-blob {
-	animation: lk-drift 24s ease-in-out infinite alternate;
-}
-
-@keyframes lk-drift {
-	to {
-		transform: translateX(8%);
-	}
-}
-
-/* ─── SectionHeader ─── */
-.lk-section-head {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 14px;
-	max-width: 760px;
-	margin: 0 auto 48px;
-	text-align: center;
-	color: var(--_ink);
-}
-
-.lk-section-head[data-align='start'] {
-	align-items: flex-start;
-	margin-left: 0;
-	text-align: left;
-}
-
-.lk-eyebrow {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	margin: 0;
-	font-size: 13px;
-	font-weight: 600;
-	letter-spacing: 0.04em;
-	color: var(--_accent);
-}
-
-.lk-eyebrow::before {
-	content: '';
-	width: 6px;
-	height: 6px;
-	border-radius: 50%;
-	background: var(--_accent);
-}
-
-.lk-section-title {
-	margin: 0;
-	font-size: clamp(30px, 4.6vw, 52px);
-	font-weight: var(--_title-weight);
-	line-height: 1.14;
-	letter-spacing: -0.02em;
-	text-wrap: balance;
-	color: var(--_ink);
-}
-
-h3.lk-section-title {
-	font-size: clamp(24px, 3vw, 34px);
-}
-
-.lk-section-lead {
-	margin: 0;
-	max-width: 620px;
-	font-size: clamp(16px, 1.5vw, 17px);
-	line-height: 1.6;
-	color: var(--_body);
-	text-wrap: pretty;
-}
-
-/* ─── StatBand ─── */
-.lk-stats {
-	display: grid;
-	grid-template-columns: repeat(var(--_cols, 4), minmax(0, 1fr));
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	border-block: 1px solid var(--_line);
-	color: var(--_ink);
-}
-
-.lk-stats[data-count='1'] {
-	--_cols: 1;
-}
-
-.lk-stats[data-count='2'] {
-	--_cols: 2;
-}
-
-.lk-stats[data-count='3'] {
-	--_cols: 3;
-}
-
-.lk-stat {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	padding: 48px 28px;
-	text-align: center;
-}
-
-.lk-stat + .lk-stat {
-	border-left: 1px solid var(--_line);
-}
-
-/* 넷보다 많으면 다음 줄 첫 칸은 왼쪽 선 없이 */
-.lk-stat:nth-child(4n + 1) {
-	border-left: 0;
-}
-
-.lk-stat:nth-child(n + 5) {
-	border-top: 1px solid var(--_line);
-}
-
-.lk-stat strong {
-	font-size: clamp(36px, 5vw, 56px);
-	font-weight: 600;
-	line-height: 1;
-	letter-spacing: -0.03em;
-	font-variant-numeric: tabular-nums;
-}
-
-.lk-stat > span {
-	font-size: 14px;
-	line-height: 1.4;
-	color: var(--_muted);
-}
-
-/* ─── LogoStrip ─── */
-.lk-logos {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 18px;
-	padding: 28px 0;
-	color: var(--_ink);
-}
-
-.lk-logos-caption {
-	margin: 0;
-	font-size: 13px;
-	font-weight: 500;
-	letter-spacing: 0.02em;
-	color: var(--_muted);
-}
-
-.lk-logos-viewport {
-	display: flex;
 	width: 100%;
-	justify-content: center;
+	height: auto;
+	max-width: 100%;
 }
 
-.lk-logos-track {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
-	gap: 14px 44px;
-	margin: 0;
-	padding: 0 24px;
-	list-style: none;
+.lk-media-pair {
+	position: relative;
 }
 
-.lk-logos-clone {
+.lk-media-pair img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: inherit;
+	object-position: inherit;
+}
+
+.lk-media-pair .lk-media-dark,
+:root[data-theme='dark'] .lk-media-pair .lk-media-light {
 	display: none;
 }
 
-.lk-logo {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	white-space: nowrap;
-	font-size: 19px;
-	line-height: 1;
-	color: color-mix(in srgb, var(--_ink) 55%, transparent);
-	transition: color 0.2s;
+:root[data-theme='dark'] .lk-media-pair .lk-media-dark {
+	display: block;
 }
 
-.lk-logo:hover {
-	color: var(--_ink);
-}
-
-.lk-logo[data-style='heavy'] {
-	font-weight: 700;
-	letter-spacing: -0.04em;
-}
-
-.lk-logo[data-style='wide'] {
-	font-size: 15px;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.18em;
-}
-
-.lk-logo[data-style='italic'] {
-	font-style: italic;
-	font-weight: 700;
-	letter-spacing: -0.02em;
-}
-
-.lk-logo[data-style='mono'] {
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 17px;
-	font-weight: 600;
-	letter-spacing: -0.03em;
-}
-
-.lk-logo[data-style='mark'] {
-	font-weight: 650;
-	letter-spacing: -0.02em;
-}
-
-.lk-logo-mark {
-	width: 18px;
-	height: 18px;
-	border-radius: 6px;
-	background: currentColor;
-	mask: radial-gradient(circle at 70% 30%, transparent 4px, #000 4.5px);
-}
-
-/* 흐르는 띠: 두 줄을 이어 붙여 왼쪽으로 민다. 양 끝은 흐려진다 */
-.lk-logos[data-marquee] .lk-logos-viewport {
-	justify-content: flex-start;
-	overflow: hidden;
-	mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-}
-
-.lk-logos[data-marquee] .lk-logos-track {
-	flex-wrap: nowrap;
-	flex-shrink: 0;
-	padding: 0 22px;
-	animation: lk-marquee 36s linear infinite;
-}
-
-.lk-logos[data-marquee] .lk-logos-clone {
+/* 그림이 없는 항목: 아이콘 하나와 제목. 바탕은 강조색을 아주 옅게 */
+.lk-art {
 	display: flex;
-}
-
-.lk-logos[data-marquee]:hover .lk-logos-track {
-	animation-play-state: paused;
-}
-
-@keyframes lk-marquee {
-	to {
-		transform: translateX(-100%);
-	}
-}
-
-/* ─── CtaBand ─── */
-.lk-cta {
-	position: relative;
-	overflow: hidden;
-	padding: clamp(96px, 12vw, 140px) 24px;
-	background: var(--_surface);
-	color: var(--_ink);
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	min-height: 200px;
+	padding: 24px;
+	background-color: color-mix(in srgb, var(--tpl-accent) 7%, transparent);
+	color: var(--tpl-accent);
 	text-align: center;
 }
 
-.lk-cta-inner {
-	position: relative;
-	z-index: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 18px;
-	max-width: 760px;
-	margin: 0 auto;
+.lk-art-icon {
+	font-size: 40px;
+	line-height: 1;
 }
 
-.lk-cta-icon {
-	width: 76px;
-	height: 76px;
-	margin-bottom: 8px;
-	border-radius: 22%;
-	box-shadow:
-		0 0 0 1px var(--_line),
-		var(--_shadow);
-}
-
-.lk-cta-title {
-	margin: 0;
-	font-size: clamp(32px, 5.4vw, 56px);
-	font-weight: var(--_title-weight);
-	line-height: 1.1;
-	letter-spacing: -0.02em;
-	text-wrap: balance;
-	color: var(--_ink);
-}
-
-.lk-cta-lead {
-	margin: 0;
-	max-width: 560px;
-	font-size: clamp(16px, 1.5vw, 17px);
-	line-height: 1.6;
-	color: var(--_body);
-	text-wrap: pretty;
-}
-
-.lk-cta-links {
-	justify-content: center;
-	margin-top: 10px;
-}
-
-.lk-cta .lk-cta-links .sp-pill {
-	padding: 12px 24px;
-	background: var(--_accent-fill);
-	color: var(--_on-accent);
+.lk-art-title {
+	max-width: 22ch;
+	color: inherit;
+	font-size: 15px;
 	font-weight: 600;
-	box-shadow: none;
+	opacity: 0.8;
 }
 
-/* 링크도 단추 모양 (데모가 없어 GitHub 링크 하나뿐이어도 행동 유도가 약해 보이지 않게) */
-.lk-cta .lk-cta-links .sp-link,
-.lk-cta .lk-cta-links a.sp-link {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 11px 22px;
-	border: 1px solid color-mix(in srgb, var(--_ink) 20%, transparent);
-	border-radius: 99px;
-	background: transparent;
-	color: var(--_ink);
-	font-weight: 600;
-	text-decoration: none;
-	transition:
-		background 0.2s,
-		border-color 0.2s;
+.lk-links button {
+	font: inherit;
+	cursor: pointer;
 }
 
-.lk-cta .lk-cta-links .sp-link:hover {
-	border-color: color-mix(in srgb, var(--_ink) 40%, transparent);
-	background: color-mix(in srgb, var(--_ink) 6%, transparent);
-}
-
-/* ─── BentoGrid ─── */
-.lk-bento-wrap {
-	container-type: inline-size;
-}
-
-.lk-bento {
-	display: grid;
-	grid-template-columns: repeat(6, minmax(0, 1fr));
-	grid-auto-rows: minmax(var(--lk-bento-row, 220px), auto);
-	grid-auto-flow: dense;
-	gap: var(--lk-bento-gap, 16px);
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-.lk-bento-cell {
-	grid-column: span var(--col);
-	grid-row: span var(--row);
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	min-width: 0;
-	overflow: hidden;
-	color: var(--_ink);
-}
-
-.lk-bento[data-framed] .lk-bento-cell {
-	border: 1px solid var(--_line);
-	border-radius: var(--_radius);
-	background: var(--_surface-2);
-}
-
-@container (max-width: 640px) {
-	.lk-bento {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.lk-bento-cell {
-		grid-column: auto;
-		grid-row: auto;
-	}
-}
-
-/* ─── 움직임 줄이기 ─── */
-@media (prefers-reduced-motion: reduce) {
-	.lk-glow[data-animate] .lk-glow-blob {
-		animation: none;
-	}
-
-	.lk-logos[data-marquee] .lk-logos-viewport {
-		justify-content: center;
-		mask-image: none;
-	}
-
-	.lk-logos[data-marquee] .lk-logos-track {
-		flex-wrap: wrap;
-		flex-shrink: 1;
-		animation: none;
-	}
-
-	.lk-logos[data-marquee] .lk-logos-clone {
-		display: none;
-	}
-}
-
-@container (max-width: 720px) {
-	.lk-stats {
-		--_cols: 2 !important;
-	}
-
-	.lk-stat:nth-child(odd) {
-		border-left: 0;
-	}
-
-	.lk-stat:nth-child(n + 3) {
-		border-top: 1px solid var(--_line);
-	}
+.lk-links i {
+	margin-left: 4px;
+	font-size: 0.7em;
 }

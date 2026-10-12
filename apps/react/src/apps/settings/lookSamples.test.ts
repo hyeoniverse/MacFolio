@@ -3,7 +3,15 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { blankProject, parseProjects, PROJECT_LOOKS, PROJECTS_LIMITS } from '@macfolio/desktop-core/site';
 import { parsePeriod } from './projectInputs';
-import { fillWithSample, ICON_LOOKS, LOOK_FIELDS, LOOK_SAMPLES, sampleFor, type SampleLook } from './lookSamples';
+import {
+	fillWithSample,
+	GENERAL_SAMPLE,
+	LANDING_FIELDS,
+	LOOK_FIELDS,
+	LOOK_SAMPLES,
+	sampleFor,
+	type SampleLook,
+} from './lookSamples';
 
 const LOOKS = PROJECT_LOOKS.filter((look): look is SampleLook => look !== 'custom');
 const PUBLIC = resolve(__dirname, '../../../public');
@@ -24,9 +32,17 @@ const filled = (value: unknown) =>
 	Array.isArray(value) ? value.length > 0 : typeof value === 'object' ? value !== null : Boolean(value);
 
 describe('모양별 예시 프로젝트', () => {
-	it('직접 짠 페이지를 뺀 모양마다 하나씩 있다', () => {
+	it('직접 짠 페이지를 뺀 모양마다 하나씩 있고, 네 랜딩 템플릿은 같은 예시를 모양만 바꿔 쓴다', () => {
 		expect(Object.keys(LOOK_SAMPLES).sort()).toEqual([...LOOKS].sort());
-		expect(LOOKS).toHaveLength(13);
+		expect(LOOKS).toEqual(['product', 'friendly', 'paper', 'bento', 'dialogue']);
+		for (const look of ['product', 'friendly', 'paper', 'bento'] as const) {
+			const { look: _look, ...rest } = LOOK_SAMPLES[look];
+			const { look: _general, ...general } = GENERAL_SAMPLE;
+			expect(rest, look).toEqual(general);
+			expect(LOOK_FIELDS[look]).toEqual(LANDING_FIELDS);
+		}
+		// 공통 예시는 새 프로젝트의 기본 모양
+		expect(GENERAL_SAMPLE.look).toBe(blankProject('x').look);
 	});
 
 	it.each(LOOKS)('%s: 서버와 같은 검사를 그대로 통과한다 (버리거나 바뀌는 값이 없다)', (look) => {
@@ -66,7 +82,16 @@ describe('모양별 예시 프로젝트', () => {
 			expect(sample.chapters.length).toBeGreaterThanOrEqual(2);
 			expect(sample.chapters.length).toBeLessThanOrEqual(3);
 		}
-		if (ICON_LOOKS.includes(look)) expect(sample.highlights.every((point) => point.icon)).toBe(true);
+		if (look !== 'dialogue') {
+			// 랜딩 템플릿의 예시는 항목 칸(아이콘·그림·화면 여러 장)과 장 칸(숫자·그림)까지 써 본다
+			expect(sample.highlights.every((point) => point.icon)).toBe(true);
+			expect(sample.highlights.some((point) => point.image && point.imageDark)).toBe(true);
+			expect(sample.highlights.some((point) => point.shots?.length)).toBe(true);
+			expect(sample.build.some((point) => point.image)).toBe(true);
+			expect(sample.chapters?.some((chapter) => chapter.facts?.length && chapter.image)).toBe(true);
+			expect(sample.controls?.length).toBeGreaterThanOrEqual(3);
+			expect(sample.credits?.length).toBeGreaterThanOrEqual(2);
+		}
 		// 기간은 편집 화면의 달력이 읽는 모양이다
 		expect(parsePeriod(sample.period)?.end).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 	});
@@ -103,7 +128,7 @@ describe('예시로 채우기', () => {
 		expect(LOOK_SAMPLES.dialogue.highlights[0].title).not.toBe('고친 제목');
 	});
 
-	it('직접 짠 페이지는 기본 모양의 예시를 쓰고 모양은 그대로 둔다', () => {
-		expect(sampleFor('custom')).toMatchObject({ look: 'custom', name: LOOK_SAMPLES.showcase.name });
+	it('직접 짠 페이지는 공통 예시를 쓰고 모양은 그대로 둔다', () => {
+		expect(sampleFor('custom')).toMatchObject({ look: 'custom', name: GENERAL_SAMPLE.name });
 	});
 });

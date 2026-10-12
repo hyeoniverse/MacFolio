@@ -1,23 +1,9 @@
-// 랜딩 페이지 키트: 템플릿(*Page.tsx)이 함께 쓰는 히어로·구역 조각 (쓰는 법은 README.md)
-export { DeviceFrame, type DeviceFrameProps, type DeviceKind } from './DeviceFrame';
-export { MockScreen, type MockScreenProps } from './MockScreen';
-export { FeatureVisual, type FeatureVisualProps } from './FeatureVisual';
-export { GlowBackdrop, type GlowBackdropProps } from './GlowBackdrop';
-export { StatBand, type StatBandProps } from './StatBand';
-export { LogoStrip, type LogoStripProps } from './LogoStrip';
-export { CtaBand, type CtaBandProps } from './CtaBand';
-export { SectionHeader, type SectionHeaderProps } from './SectionHeader';
-export { BentoGrid, type BentoGridProps } from './BentoGrid';
-export { bentoLayout, BENTO_COLUMNS, type BentoCell } from './bento';
-export {
-	pickMockKind,
-	MOCK_KINDS,
-	FEATURE_VARIANTS,
-	type FeatureVariant,
-	mockSeries,
-	parseFactNumber,
-	shortName,
-	iconOf,
-	type MockKind,
-} from './mock';
+// 랜딩 키트: 네 템플릿(project/templates/*)이 함께 쓰는 공통 내용(content.ts)과 작은 조각. 쓰는 법은 templates/README.md
+import './landing.css';
+
+export * from './content';
+export { useLanding } from './useLanding';
+export { LandingLinks } from './LandingLinks';
+export { Media, PointArt, PointVisual } from './Media';
+export { LandingSections, type SectionRenderer, type SectionRenderers } from './Sections';
 export { accentVars, useLandingAccent } from './accent';
