@@ -45,6 +45,10 @@ export const LOOK_FIELDS: Record<SampleLook, readonly (keyof LookSample)[]> = {
 	friendly: LANDING_FIELDS,
 	paper: LANDING_FIELDS,
 	bento: LANDING_FIELDS,
+	keynote: LANDING_FIELDS,
+	magazine: LANDING_FIELDS,
+	devtool: LANDING_FIELDS,
+	playful: LANDING_FIELDS,
 	// RPG 대화창은 폴더 구조를 읽지 않는다 (대화 상자에 트리를 담기 어렵다)
 	dialogue: [...LANDING_FIELDS.filter((field) => field !== 'structure'), 'art', 'backdrop'],
 };
@@ -358,6 +362,10 @@ export const LOOK_SAMPLES: Record<SampleLook, LookSample> = {
 	friendly: { ...general, look: 'friendly' },
 	paper: { ...general, look: 'paper' },
 	bento: { ...general, look: 'bento' },
+	keynote: { ...general, look: 'keynote' },
+	magazine: { ...general, look: 'magazine' },
+	devtool: { ...general, look: 'devtool' },
+	playful: { ...general, look: 'playful' },
 	dialogue,
 };
 
