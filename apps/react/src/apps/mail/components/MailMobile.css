@@ -437,7 +437,7 @@
 }
 
 .mail-compose.sheet .mail-hint {
-	margin: 6px 0 4px;
+	margin: -6px 0 10px;
 	padding-left: 80px;
 	font-size: 13px;
 }
