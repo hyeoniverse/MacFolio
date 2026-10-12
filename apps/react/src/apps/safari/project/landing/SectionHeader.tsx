@@ -12,7 +12,7 @@ export interface SectionHeaderProps {
 	align?: 'center' | 'start';
 	/** 제목 태그 (구역 안의 작은 머리면 h3) */
 	as?: 'h2' | 'h3';
-	/** 제목 글자에 강조색 그라데이션 */
+	/** @deprecated 제목은 늘 단색 글자 (그라데이션 글자를 걷어 냈다). 넘겨도 무시한다 */
 	gradient?: boolean;
 	/** dark·light: 페이지 테마와 상관없이 그 톤의 글자색 (어두운 히어로 위 등). 없으면 바깥 톤을 따른다 */
 	tone?: 'dark' | 'light';
@@ -27,7 +27,6 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 	lead,
 	align = 'center',
 	as: Heading = 'h2',
-	gradient = false,
 	tone,
 	id,
 	className,
@@ -38,7 +37,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 		data-lk-tone={tone}
 	>
 		{eyebrow && <p className="lk-eyebrow">{eyebrow}</p>}
-		<Heading id={id} className={`lk-section-title${gradient ? ' lk-gradient-text' : ''}`}>
+		<Heading id={id} className="lk-section-title">
 			{title}
 		</Heading>
 		{lead && <p className="lk-section-lead">{lead}</p>}

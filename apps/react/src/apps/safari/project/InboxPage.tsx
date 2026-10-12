@@ -5,7 +5,7 @@ import { Facts, Favicon, Links, Region } from '@/apps/safari/project/parts';
 import { FeatureMedia } from '@/apps/safari/project/CreativeParts';
 import { Shots } from '@/apps/safari/project/CreativeChapters';
 import { Demo } from '@/apps/safari/project/creative/Demo';
-import { CtaBand, DeviceFrame, GlowBackdrop, MockScreen, useLandingAccent } from '@/apps/safari/project/landing';
+import { CtaBand, DeviceFrame, MockScreen, useLandingAccent } from '@/apps/safari/project/landing';
 import '@/apps/safari/project/InboxPage.css';
 
 /** 메일 한 통: 어느 메일함에 들었고, 누가 보냈고, 제목·미리 보기·시각. 본문은 kind에 따라 다르게 그린다 */
@@ -255,14 +255,13 @@ const Body: React.FC<{ mail: Mail; project: Project }> = ({ mail, project }) => 
 
 /**
  * 맨 위 띠: 뉴스레터 서비스 랜딩처럼 큰 한 줄, 소개, 이메일 칸과 구독 단추, 숫자 몇 개.
- * 오른쪽에는 휴대폰 화면(대표 화면, 없으면 데이터로 그린 화면) 위로 주요 기능 메일 알림이 떠 있다
+ * 오른쪽에는 휴대폰 화면(대표 화면, 없으면 데이터로 그린 화면)과 그 위에 내려온 메일 알림 한 장
  */
 const Hero: React.FC<{ project: Project; mails: Mail[] }> = ({ project, mails }) => {
-	const notices = mails.filter((mail) => mail.kind === 'point').slice(0, 3);
+	const notices = mails.filter((mail) => mail.kind === 'point').slice(0, 1);
 	const meta = [project.role, project.period].filter(Boolean).join(' · ');
 	return (
 		<header className="ib-hero">
-			<GlowBackdrop tone="light" pattern="dots" focus="side" />
 			<div className="ib-hero-inner">
 				<div className="ib-hero-text">
 					<p className="ib-eyebrow">
@@ -297,7 +296,7 @@ const Hero: React.FC<{ project: Project; mails: Mail[] }> = ({ project, mails })
 					{meta && <p className="ib-hero-meta">{meta}</p>}
 				</div>
 				<div className="ib-hero-art" aria-hidden="true">
-					<DeviceFrame kind="phone" className="ib-hero-phone" glow>
+					<DeviceFrame kind="phone" className="ib-hero-phone">
 						{project.image ? (
 							<img className="lk-device-media" src={project.image} alt="" />
 						) : (
@@ -305,8 +304,8 @@ const Hero: React.FC<{ project: Project; mails: Mail[] }> = ({ project, mails })
 						)}
 					</DeviceFrame>
 					<ul className="ib-notices">
-						{notices.map((mail, index) => (
-							<li key={mail.id} style={{ '--i': index } as React.CSSProperties}>
+						{notices.map((mail) => (
+							<li key={mail.id}>
 								<Favicon project={project} className="ib-notice-icon" />
 								<div>
 									<span className="ib-notice-head">

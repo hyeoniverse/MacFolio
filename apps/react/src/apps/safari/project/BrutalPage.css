@@ -1,4 +1,4 @@
-/* 브루탈리즘 모양(brutal): 종이(흰)·잉크(검)·형광 세 색. 4px 선, 그림자 없음, 라벨 11px ↔ 이름 160px의 극단적인 크기 대비.
+/* 브루탈리즘 모양(brutal): 종이(흰)·잉크(검)·형광 세 색. 4px 선, 딱딱한 그림자는 제품 창 한 곳만, 라벨 11px ↔ 이름 160px의 극단적인 크기 대비.
    격자는 바탕을 잉크로 칠하고 4px 틈을 두어 블록 사이가 곧 선이 된다 */
 .sp[data-look='brutal'] {
 	--br-paper: #ffffff;
@@ -125,8 +125,6 @@
 	margin: 20px -24px 0;
 	padding: 36px 24px 44px;
 	border-top: var(--br-line) solid var(--br-ink);
-	background-image: radial-gradient(color-mix(in srgb, var(--br-ink) 22%, transparent) 1.2px, transparent 1.2px);
-	background-size: 16px 16px;
 }
 
 .br-hero-copy {
@@ -138,7 +136,6 @@
 	padding: 24px;
 	border: var(--br-line) solid var(--br-ink);
 	background: var(--br-paper);
-	box-shadow: 8px 8px 0 var(--br-ink);
 }
 
 .br .br-hero-lead {
@@ -155,21 +152,20 @@
 	gap: 12px;
 }
 
-/* 굵은 단추: 딱딱한 그림자, 누르면 그림자만큼 내려앉는다 */
+/* 굵은 단추: 평평한 상자, 올리면 형광으로 칠한다 (그림자는 제품 창 한 곳에만) */
 .sp[data-look='brutal'] .br-hero-links .sp-pill,
 .sp[data-look='brutal'] .br-hero-links .sp-link {
 	padding: 14px 18px;
-	box-shadow: 4px 4px 0 var(--br-ink);
 	font-size: 14px;
 	transition:
-		transform 0.08s steps(2),
-		box-shadow 0.08s steps(2);
+		background-color 0.08s steps(2),
+		color 0.08s steps(2);
 }
 
 .sp[data-look='brutal'] .br-hero-links .sp-pill:hover,
 .sp[data-look='brutal'] .br-hero-links .sp-link:hover {
-	transform: translate(4px, 4px);
-	box-shadow: 0 0 0 var(--br-ink);
+	background: var(--br-neon);
+	color: #000000;
 }
 
 /* 숫자 스티커: 형광 원이 상자 모서리에 비스듬히 붙는다 */
@@ -206,11 +202,12 @@
 }
 
 /* 제품 창: 둥근 모서리·부드러운 그림자를 걷고 두꺼운 선과 딱딱한 그림자 */
-.br-window .lk-device-body {
+/* 키트의 브라우저 틀 규칙(.lk-device[data-kind]…)보다 우선하도록 .br로 한 단계 높인다 */
+.br .br-window.lk-device .lk-device-body {
 	border: var(--br-line) solid var(--br-ink);
 	border-radius: 0;
 	background: var(--br-paper);
-	box-shadow: 14px 14px 0 var(--br-ink);
+	box-shadow: 10px 10px 0 var(--br-ink);
 }
 
 .br-window .lk-device-chrome {
@@ -222,6 +219,11 @@
 
 .br-window .lk-device-chrome * {
 	border-radius: 0;
+}
+
+/* 창 단추 세 개도 잉크 한 색 */
+.br .br-window .lk-device-lights i {
+	background: #000000;
 }
 
 .br-window .lk-device-screen {

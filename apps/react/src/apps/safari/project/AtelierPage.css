@@ -1,19 +1,19 @@
-/* 아틀리에(atelier) 모양: 아이보리 바탕·먹색 글·테라코타 하나. 거대한 세리프와 아주 작은 대문자 라벨, 넉넉한 여백, 1px 선 */
+/* 아틀리에(atelier) 모양: 옅은 종이색 바탕·먹색 글·차분한 테라코타 하나. 거대한 세리프와 아주 작은 대문자 라벨, 넉넉한 여백, 1px 선 */
 .sp[data-look='atelier'] {
-	--sp-bg: #f4f1ea;
-	--sp-alt: #ebe7dd;
+	--sp-bg: #f7f5f0;
+	--sp-alt: #efece5;
 	--sp-text: #1c1b19;
 	--sp-muted: #6f6a60;
 	--sp-line: rgba(28, 27, 25, 0.16);
-	--sp-accent: #b5522f;
-	--sp-grad: linear-gradient(90deg, #b5522f, #d58a66);
+	--sp-accent: #a65a3d;
+	--sp-grad: linear-gradient(var(--sp-text), var(--sp-text));
 	--cr-bg: #faf8f3;
 	--cr-ink: #1c1b19;
 	--cr-muted: #6f6a60;
 	--cr-line: rgba(28, 27, 25, 0.16);
-	/* 랜딩 키트 조각이 읽는 색: 테라코타 둘, 바탕·글·선은 페이지 것 (CTA의 light 톤도 페이지 테마를 따른다) */
-	--lk-accent: #b5522f;
-	--lk-accent-2: #d9a07f;
+	/* 랜딩 키트 조각이 읽는 색: 테라코타 하나와 그 옅은 값, 바탕·글·선은 페이지 것 (CTA의 light 톤도 페이지 테마를 따른다) */
+	--lk-accent: #a65a3d;
+	--lk-accent-2: #c9977f;
 	--lk-surface: var(--cr-bg);
 	--lk-surface-2: var(--sp-alt);
 	--lk-ink: var(--sp-text);
@@ -30,19 +30,19 @@
 
 /* 다크는 먹색 바탕 */
 :root[data-theme='dark'] .sp[data-look='atelier'] {
-	--sp-bg: #1a1917;
-	--sp-alt: #22211e;
+	--sp-bg: #121110;
+	--sp-alt: #1b1a18;
 	--sp-text: #ece7dc;
 	--sp-muted: #9b958a;
 	--sp-line: rgba(236, 231, 220, 0.18);
-	--sp-accent: #d4785a;
-	--sp-grad: linear-gradient(90deg, #d4785a, #e9a98f);
-	--cr-bg: #22211e;
+	--sp-accent: #c98066;
+	--sp-grad: linear-gradient(var(--sp-text), var(--sp-text));
+	--cr-bg: #1b1a18;
 	--cr-ink: #ece7dc;
 	--cr-muted: #9b958a;
 	--cr-line: rgba(236, 231, 220, 0.18);
-	--lk-accent: #d4785a;
-	--lk-accent-2: #e9b59a;
+	--lk-accent: #c07359;
+	--lk-accent-2: #d7a893;
 }
 
 .at {
@@ -243,18 +243,6 @@
 	text-align: center;
 }
 
-/* 아침 햇살처럼 위에서 번지는 따뜻한 빛과 아주 옅은 종이 결 */
-.at-hero-light {
-	position: absolute;
-	inset: 0 0 40%;
-	background: radial-gradient(
-		50% 60% at 50% 0%,
-		color-mix(in srgb, var(--sp-accent) 11%, transparent),
-		transparent 75%
-	);
-	pointer-events: none;
-}
-
 .at-hero-text {
 	position: relative;
 	display: flex;
@@ -336,18 +324,6 @@
 .at-hero-shot .at-curtain {
 	transform: translateY(var(--shift, 0px));
 	will-change: transform;
-}
-
-/* 노트북 아래 바닥 그림자 (책상 위에 놓인 듯) */
-.at-hero-shot::after {
-	position: absolute;
-	right: 8%;
-	bottom: 8px;
-	left: 8%;
-	height: 40px;
-	border-radius: 50%;
-	background: radial-gradient(closest-side, rgba(40, 20, 5, 0.22), transparent);
-	content: '';
 }
 
 /* 그림이 없는 항목의 비주얼: 가는 선의 차분한 판 */

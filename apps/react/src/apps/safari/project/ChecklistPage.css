@@ -1,5 +1,5 @@
 /*
- * checklist 모양: 할 일 앱 랜딩 (Todoist·Things처럼). 밝은 히어로(큰 한 줄, 기기 속 화면, 떠 있는 할 일 카드) 아래에
+ * checklist 모양: 할 일 앱 랜딩 (Todoist·Things처럼). 단색 히어로(큰 한 줄, 똑바른 기기 속 화면, 할 일 목록 카드 한 장) 아래에
  * 직접 체크해 보는 할 일 앱 화면. 흰(다크는 검정) 카드, 목록마다 라벨 색, 둥글고 두꺼운 글자
  */
 .sp[data-look='checklist'] {
@@ -16,7 +16,7 @@
 	--ck-purple: #af52de;
 	--ck-teal: #30b0c7;
 	--ck-gray: #8e8e93;
-	--ck-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 40px rgba(0, 0, 0, 0.08);
+	--ck-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
 	--ck-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 	--lk-light-surface: var(--sp-bg);
 	/* 데모 조각의 색 */
@@ -34,14 +34,14 @@
 }
 
 :root[data-theme='dark'] .sp[data-look='checklist'] {
-	--sp-bg: #000000;
+	--sp-bg: #0b0b0c;
 	--sp-alt: #1c1c1e;
 	--sp-text: #f5f5f7;
 	--sp-muted: #98989f;
 	--sp-line: #2c2c2e;
 	--ck-blue: #0a84ff;
 	--ck-green: #30d158;
-	--ck-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 40px rgba(0, 0, 0, 0.5);
+	--ck-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
 	--lk-light-surface-2: #1c1c1e;
 	--lk-light-ink: #f5f5f7;
 	--lk-light-muted: #98989f;
@@ -57,6 +57,7 @@
 .ck-hero {
 	position: relative;
 	overflow: hidden;
+	background: var(--sp-bg);
 }
 
 .ck-hero-inner {
@@ -67,9 +68,8 @@
 	gap: 48px;
 	align-items: center;
 	max-width: 1160px;
-	min-height: 600px;
 	margin: 0 auto;
-	padding: 56px 48px 72px;
+	padding: 88px 48px 96px;
 }
 
 .ck-hero-text {
@@ -86,7 +86,7 @@
 	margin: 0;
 	color: var(--sp-text);
 	font-size: 15px;
-	font-weight: 800;
+	font-weight: 700;
 }
 
 .ck-hero-icon {
@@ -94,7 +94,7 @@
 	height: 34px;
 	border-radius: 10px;
 	object-fit: cover;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 0 0 1px var(--sp-line);
 }
 
 .ck-hero-title {
@@ -102,9 +102,9 @@
 	margin: 0;
 	color: var(--sp-text);
 	font-size: clamp(36px, 4.8cqi, 62px);
-	font-weight: 800;
-	line-height: 1.08;
-	letter-spacing: -0.035em;
+	font-weight: 700;
+	line-height: 1.06;
+	letter-spacing: -0.04em;
 	text-wrap: balance;
 }
 
@@ -128,9 +128,9 @@
 .ck .ck-hero-links .sp-pill,
 .ck .lk-cta-links .sp-pill {
 	padding: 12px 22px;
-	border-radius: 12px;
+	border-radius: 10px;
 	background-color: var(--ck-accent);
-	box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--ck-accent) 80%, transparent);
+	box-shadow: none;
 	color: #ffffff;
 	font-size: 15px;
 }
@@ -143,25 +143,22 @@
 .ck-hero-facts {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
-	margin: 10px 0 0;
-	padding: 0;
+	gap: 10px 28px;
+	margin: 14px 0 0;
+	padding: 16px 0 0;
+	border-top: 1px solid var(--sp-line);
 	list-style: none;
 }
 
 .ck-hero-facts li {
 	display: flex;
 	flex-direction: column;
-	padding: 10px 14px;
-	border-radius: 14px;
-	background-color: var(--sp-alt);
-	box-shadow: var(--ck-shadow);
 }
 
 .ck-hero-facts strong {
 	color: var(--sp-text);
-	font-size: 20px;
-	font-weight: 800;
+	font-size: 22px;
+	font-weight: 700;
 	letter-spacing: -0.02em;
 }
 
@@ -170,26 +167,30 @@
 	font-size: 12px;
 }
 
-/* 기기 속 화면과 그 위로 떠 있는 할 일 카드 */
+/* 기기 속 화면(똑바로)과 그 왼쪽 아래 모서리에 걸친 할 일 목록 카드 한 장 */
 .ck-hero-art {
 	position: relative;
-	padding: 0 0 56px;
+	padding: 0 0 48px;
 }
 
 .ck-hero-device {
 	width: 100%;
+	margin: 0;
 }
 
 .ck-hero-tasks {
 	position: absolute;
 	bottom: 0;
-	left: -36px;
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	width: min(330px, 70%);
+	left: -28px;
+	z-index: 2;
+	width: min(320px, 68%);
 	margin: 0;
-	padding: 0;
+	padding: 4px 0;
+	overflow: hidden;
+	border: 1px solid var(--sp-line);
+	border-radius: 14px;
+	background-color: var(--sp-alt);
+	box-shadow: var(--ck-shadow);
 	list-style: none;
 }
 
@@ -198,15 +199,11 @@
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	padding: 12px 16px;
-	border-radius: 16px;
-	background-color: var(--sp-alt);
-	box-shadow:
-		0 1px 2px rgba(0, 0, 0, 0.06),
-		0 18px 40px -14px rgba(0, 0, 0, 0.3);
-	transform: translateX(calc(var(--i) * 26px));
-	animation: ck-task-in 0.6s var(--ck-bounce) both;
-	animation-delay: calc(0.2s + var(--i) * 0.15s);
+	padding: 10px 16px;
+}
+
+.ck-hero-tasks li + li {
+	border-top: 1px solid var(--sp-line);
 }
 
 .ck-hero-tasks li.tone-blue {
@@ -215,13 +212,6 @@
 
 .ck-hero-tasks li.tone-green {
 	--tone: var(--ck-green);
-}
-
-@keyframes ck-task-in {
-	from {
-		opacity: 0;
-		transform: translateX(calc(var(--i) * 26px)) translateY(16px);
-	}
 }
 
 .ck-hero-box {
@@ -293,7 +283,7 @@
 	max-width: 1120px;
 	margin: 96px auto 0;
 	overflow: hidden;
-	border-radius: 28px;
+	border-radius: 16px;
 }
 
 @container (max-width: 1168px) {
@@ -318,7 +308,8 @@
 	position: relative;
 	max-width: 720px;
 	margin: 0 auto;
-	border-radius: 28px;
+	border: 1px solid var(--sp-line);
+	border-radius: 16px;
 	background-color: var(--sp-alt);
 	box-shadow: var(--ck-shadow);
 	overflow: hidden;
@@ -775,15 +766,18 @@ li[data-checked] .ck-detail p {
 }
 
 .ck-confetti i {
-	--hue: calc(var(--i) * 26deg);
 	position: absolute;
 	top: -12px;
 	left: calc(4% + var(--i) * 6.6%);
 	width: 8px;
 	height: 14px;
 	border-radius: 2px;
-	background-color: hsl(var(--hue) 90% 60%);
+	background-color: var(--ck-accent);
 	animation: ck-fall 1.8s ease-in calc(var(--i) * 70ms) both;
+}
+
+.ck-confetti i:nth-child(even) {
+	background-color: var(--sp-line);
 }
 
 @keyframes ck-fall {
@@ -859,8 +853,7 @@ li[data-checked] .ck-detail p {
 		transition: none;
 	}
 
-	li[data-checked] .ck-check,
-	.ck-hero-tasks li {
+	li[data-checked] .ck-check {
 		animation: none;
 	}
 

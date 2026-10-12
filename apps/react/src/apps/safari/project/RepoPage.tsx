@@ -28,7 +28,6 @@ import {
 	CtaBand,
 	DeviceFrame,
 	FeatureVisual,
-	GlowBackdrop,
 	LogoStrip,
 	MockScreen,
 	StatBand,
@@ -127,7 +126,6 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 	const badge = [project.language, project.context].filter(Boolean).join(' · ');
 	return (
 		<section className="rp-hero" data-lk-tone="dark" aria-label="소개">
-			<GlowBackdrop tone="dark" pattern="grid" focus="top" />
 			<div className="rp-hero-inner">
 				{badge && (
 					<p className="rp-hero-badge">
@@ -150,7 +148,7 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 					</button>
 				</div>
 				<div className="rp-hero-visual">
-					<DeviceFrame kind="browser" url={project.url} glow>
+					<DeviceFrame kind="browser" url={project.url}>
 						<MockScreen project={project} kind="editor" tone="dark" decorative />
 					</DeviceFrame>
 				</div>

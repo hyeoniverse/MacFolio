@@ -155,7 +155,6 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 								url={project.demo}
 								src={project.image || undefined}
 								alt={`${project.name} 화면`}
-								glow
 							>
 								{!project.image && <MockScreen project={project} decorative />}
 							</DeviceFrame>
@@ -305,12 +304,6 @@ const AssistantPage: React.FC<{ project: Project }> = ({ project }) => {
 
 	return (
 		<div className="asst" onKeyDown={onKey}>
-			<div className="asst-sky" aria-hidden="true">
-				<i />
-				<i />
-				<i />
-			</div>
-
 			<div className="asst-window" role="group" aria-label={`${project.name} 설정 도우미`}>
 				<nav className="asst-steps" aria-label="단계">
 					<ol>

@@ -8,7 +8,6 @@ import { FeatureMedia } from '@/apps/safari/project/CreativeParts';
 import {
 	CtaBand,
 	DeviceFrame,
-	GlowBackdrop,
 	MockScreen,
 	SectionHeader,
 	iconOf,
@@ -121,18 +120,17 @@ const Confetti: React.FC = () => (
 	</div>
 );
 
-/** 히어로 오른쪽에 떠 있는 할 일 카드의 라벨 색 (목록 색과 같은 줄) */
+/** 히어로 오른쪽 할 일 목록 카드의 줄마다 라벨 색 (목록 색과 같은 줄) */
 const HERO_TONES = ['orange', 'blue', 'green'] as const;
 
 /**
  * 맨 위 (Todoist·Things 랜딩처럼): 밝은 바탕에 큰 한 줄, 소개, 단추, 숫자 칩.
- * 오른쪽에는 브라우저 틀에 담긴 대표 화면(없으면 데이터로 그린 목록 화면)과 그 위로 떠 있는 할 일 카드 세 장
+ * 오른쪽에는 브라우저 틀에 담긴 대표 화면(없으면 데이터로 그린 목록 화면)과 그 모서리에 걸친 할 일 목록 카드 한 장
  */
 const Hero: React.FC<{ project: Project }> = ({ project }) => {
 	const tasks = project.highlights.slice(0, 3);
 	return (
 		<header className="ck-hero">
-			<GlowBackdrop tone="light" pattern="dots" focus="side" />
 			<div className="ck-hero-inner">
 				<div className="ck-hero-text">
 					<p className="ck-hero-eyebrow">
@@ -154,7 +152,7 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 					)}
 				</div>
 				<div className="ck-hero-art" aria-hidden="true">
-					<DeviceFrame kind="browser" url={project.demo} glow className="ck-hero-device">
+					<DeviceFrame kind="browser" url={project.demo} className="ck-hero-device">
 						{project.image ? (
 							<img className="lk-device-media" src={project.image} alt="" />
 						) : (
@@ -164,12 +162,7 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 					{tasks.length > 0 && (
 						<ul className="ck-hero-tasks">
 							{tasks.map((point, index) => (
-								<li
-									key={point.title}
-									className={`tone-${HERO_TONES[index]}`}
-									data-done={index === 0 ? '' : undefined}
-									style={{ '--i': index } as React.CSSProperties}
-								>
+								<li key={point.title} className={`tone-${HERO_TONES[index]}`} data-done={index === 0 ? '' : undefined}>
 									<span className="ck-hero-box">
 										<svg viewBox="0 0 16 16">
 											<path d="M3.5 8.5l3 3 6-6" />

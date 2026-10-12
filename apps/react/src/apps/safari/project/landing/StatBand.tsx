@@ -8,20 +8,19 @@ export interface StatBandProps {
 	facts: ProjectFact[];
 	/** dark 어두운 띠, light 밝은 띠, 없으면 페이지 테마를 따른다 */
 	tone?: 'dark' | 'light';
-	/** 숫자에 강조색 그라데이션 (기본 켬) */
+	/** @deprecated 숫자는 늘 단색 글자 (그라데이션 글자를 걷어 냈다). 넘겨도 무시한다 */
 	gradient?: boolean;
 	/** 목록 이름 (보조 기술용, 기본 '한눈에') */
 	label?: string;
 	className?: string;
 }
 
-export const StatBand: React.FC<StatBandProps> = ({ facts, tone, gradient = true, label = '한눈에', className }) =>
+export const StatBand: React.FC<StatBandProps> = ({ facts, tone, label = '한눈에', className }) =>
 	facts.length === 0 ? null : (
 		<ul
 			className={`lk-root lk-stats${className ? ` ${className}` : ''}`}
 			data-lk-tone={tone}
 			data-count={Math.min(facts.length, 4)}
-			data-gradient={gradient ? '' : undefined}
 			aria-label={label}
 		>
 			{facts.map((fact) => (
