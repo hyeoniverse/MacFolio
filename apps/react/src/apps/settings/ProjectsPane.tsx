@@ -85,7 +85,11 @@ const LOOKS: Record<ProjectLook, { name: string; note: string }> = {
 	friendly: { name: '카드', note: '밝은 카드와 아이콘' },
 	paper: { name: '문서', note: '토글과 알림 상자' },
 	bento: { name: '벤토', note: '타일 격자' },
-	dialogue: { name: 'RPG 대화창', note: '픽셀 장면' },
+	keynote: { name: '키노트', note: '어두운 무대의 큰 장면' },
+	magazine: { name: '매거진', note: '세리프와 큰 사진' },
+	devtool: { name: '개발자 도구', note: '코드와 고정폭 글꼴' },
+	playful: { name: '놀이', note: '또렷한 색과 둥근 도형' },
+	dialogue: { name: 'RPG 대화창', note: '고전 RPG 대화' },
 	custom: { name: '직접 짠 페이지', note: '코드' },
 };
 
@@ -1191,6 +1195,64 @@ const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> 
 			[6, 70, 27, 22, '#121214', { border: '1px solid #27272a', borderRadius: '8%/14%' }],
 			[36, 70, 27, 22, '#121214', { border: '1px solid #27272a', borderRadius: '8%/14%' }],
 			[66, 70, 28, 22, '#121214', { border: '1px solid #27272a', borderRadius: '8%/14%' }],
+		],
+	},
+	// 키노트: 어두운 무대 가운데 큰 제목과 강조색 한 줄, 아래 빛나지 않는 큰 화면
+	keynote: {
+		bg: '#000000',
+		parts: [
+			[24, 14, 52, 7, '#f5f5f7'],
+			[32, 25, 36, 7, '#f5f5f7'],
+			[40, 37, 20, 3, '#5e5ce6'],
+			[14, 50, 72, 44, '#1c1c1e', { borderRadius: '4%/7%' }],
+			[20, 56, 60, 34, '#2c2c2e', { borderRadius: '3%/5%' }],
+		],
+	},
+	// 매거진: 세리프 큰 제목, 두 단 글, 큰 사진과 인용
+	magazine: {
+		bg: '#faf8f3',
+		parts: [
+			[8, 10, 10, 2.5, '#b23a2b'],
+			[8, 16, 70, 9, '#1a1a1a'],
+			[8, 28, 50, 9, '#1a1a1a'],
+			[8, 44, 40, 2.5, '#6b6b6b'],
+			[8, 49, 40, 2.5, '#6b6b6b'],
+			[8, 54, 34, 2.5, '#6b6b6b'],
+			[54, 42, 38, 48, '#d8d2c4'],
+			[8, 66, 3, 22, '#b23a2b'],
+			[14, 68, 32, 4, '#1a1a1a'],
+			[14, 76, 26, 4, '#1a1a1a'],
+		],
+	},
+	// 개발자 도구: 어두운 바탕, 고정폭 제목, 설치 명령 줄, 코드 창
+	devtool: {
+		bg: '#0a0a0a',
+		parts: [
+			[8, 12, 46, 6, '#ededed'],
+			[8, 22, 34, 6, '#ededed'],
+			[8, 34, 40, 6, '#1a1a1a', { border: '1px solid #333', borderRadius: '4px' }],
+			[11, 36, 3, 2, '#3fb950'],
+			[16, 36, 26, 2, '#a1a1a1'],
+			[58, 12, 34, 50, '#111111', { border: '1px solid #333', borderRadius: '4%/6%' }],
+			[62, 20, 20, 2, '#79c0ff'],
+			[62, 26, 26, 2, '#d2a8ff'],
+			[62, 32, 16, 2, '#a1a1a1'],
+			[8, 70, 84, 20, '#111111', { border: '1px solid #333', borderRadius: '3%/10%' }],
+			[12, 77, 60, 2.5, 'repeating-linear-gradient(90deg, #238636 0 6%, #0e4429 6% 9%, transparent 9% 11%)'],
+		],
+	},
+	// 놀이: 또렷한 색 면과 큰 둥근 도형, 스티커
+	playful: {
+		bg: '#fff8ee',
+		parts: [
+			[8, 12, 50, 8, '#1e1e1e'],
+			[8, 23, 38, 8, '#1e1e1e'],
+			[8, 38, 16, 6, '#ff5c39', round],
+			[60, 8, 34, 34, '#ffc93c', { borderRadius: '50%' }],
+			[70, 30, 20, 20, '#7b61ff', { borderRadius: '30%' }],
+			[8, 56, 26, 34, '#a3e4d7', { borderRadius: '14%' }],
+			[37, 56, 26, 34, '#ffb3c7', { borderRadius: '14%' }],
+			[66, 56, 26, 34, '#c7d2fe', { borderRadius: '14%' }],
 		],
 	},
 	dialogue: {

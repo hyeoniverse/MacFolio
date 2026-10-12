@@ -104,10 +104,25 @@ export interface ProjectChapter {
  * friendly 밝은 카드: 아이콘 색 하나를 강조색으로, 아이콘 달린 기능 카드와 단계 흐름 (새 프로젝트의 기본값: 그림이 없어도 빈약하지 않다).
  * paper 문서: 따뜻한 흰 바탕, 읽기 좋은 본문, 펼치는 토글과 알림 상자.
  * bento 타일 격자: 화면과 숫자 타일을 칸에 맞춰 짜고, 또렷한 선과 고정폭 글자를 쓴다.
+ * keynote 발표 무대: 어두운 무대에 한 화면씩 큰 장면, 강조색 하나 (Linear·Apple 발표).
+ * magazine 케이스 스터디: 세리프 큰 제목, 단 나눔, 인용문, 캡션 달린 큰 사진.
+ * devtool 개발자 도구: 고정폭 글꼴, 코드 블록과 설치 명령, 커밋 그래프 같은 디테일 (Vercel·GitHub).
+ * playful 놀이: 또렷한 색 면, 큰 둥근 도형, 스티커 같은 장식 (Figma·Arc).
  * dialogue RPG 대화창 (같은 내용을 선택지와 대사로 읽는다).
  * custom 프로젝트 id로 등록한 직접 짠 코드 페이지 (apps/safari/project/custom/; 코드의 일곱 프로젝트는 모두 자기 페이지가 있다. 등록이 없으면 기본 모양)
  */
-export const PROJECT_LOOKS = ['product', 'friendly', 'paper', 'bento', 'dialogue', 'custom'] as const;
+export const PROJECT_LOOKS = [
+	'product',
+	'friendly',
+	'paper',
+	'bento',
+	'keynote',
+	'magazine',
+	'devtool',
+	'playful',
+	'dialogue',
+	'custom',
+] as const;
 export type ProjectLook = (typeof PROJECT_LOOKS)[number];
 
 /** 새 프로젝트의 모양: 그림이 없는 처음 상태에서도 카드와 아이콘으로 꽉 차 보인다 */
@@ -119,15 +134,15 @@ export const DEFAULT_LOOK = 'friendly' satisfies ProjectLook;
 export const LEGACY_LOOKS: Readonly<Record<string, ProjectLook>> = {
 	showcase: 'friendly',
 	assistant: 'friendly',
-	cinema: 'product',
+	cinema: 'keynote',
 	phone: 'product',
-	atelier: 'paper',
+	atelier: 'magazine',
 	inbox: 'paper',
 	checklist: 'paper',
 	horizontal: 'bento',
-	repo: 'bento',
-	deck: 'bento',
-	arcade: 'bento',
+	repo: 'devtool',
+	deck: 'keynote',
+	arcade: 'playful',
 	brutal: 'bento',
 };
 
