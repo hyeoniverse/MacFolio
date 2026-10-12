@@ -124,7 +124,7 @@ test.describe('프로젝트 관리', () => {
 		await expect(appWindow(page, 'safari').getByRole('tab', { name: /DevCourse/ })).toHaveCount(0);
 	});
 
-	test('관리자: 새 프로젝트를 앱으로 더하고, 기본값으로 되돌린다', async ({ page }) => {
+	test('관리자: 새 프로젝트를 앱으로 더하고, 화면 모음에 그림을 넣고, 기본값으로 되돌린다', async ({ page }) => {
 		await fakeDemo(page, 'https://what-to-do-chi.vercel.app', '새 앱 첫 화면');
 		const api = await fakeApi(page, { signedIn: true });
 		await enterDesktop(page);
@@ -189,24 +189,50 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('tab', { name: '그림' }).click();
 		await editor.getByRole('combobox', { name: '프로젝트 아이콘 고르기' }).selectOption('/imgs/projects/qru/icon.png');
 		await expect(editor.getByLabel(/글자 로고/)).toHaveCount(0);
-		// 고를 수 있는 폴더는 /imgs/projects 아래뿐 (배경화면 등은 없다)
-		const folderValues = await editor
-			.getByRole('combobox', { name: '폴더' })
+		// 화면 모음은 폴더가 아니라 그림마다 고르거나 올린다 (폴더는 저장소에 넣고 배포한 그림만 되어 JSON에서만)
+		await expect(editor.getByRole('combobox', { name: '폴더' })).toHaveCount(0);
+		const gallery = editor.locator('.projects-editor-form').getByRole('region', { name: '화면 모음' });
+		// ＋로 줄을 더하면 그 줄의 설명 칸에 초점. 고를 수 있는 그림은 /imgs/projects 아래뿐 (배경화면 등은 없다)
+		await gallery.getByRole('button', { name: '더하기' }).click();
+		await expect(editor.getByRole('textbox', { name: '화면 모음 1 설명' })).toBeFocused();
+		const pictureValues = await editor
+			.getByRole('combobox', { name: '화면 모음 1 그림 고르기' })
 			.locator('option')
 			.evaluateAll((options) => options.map((option) => (option as HTMLOptionElement).value).filter(Boolean));
-		expect(folderValues.length).toBeGreaterThan(0);
-		expect(folderValues.every((value) => value.startsWith('/imgs/projects/'))).toBe(true);
-		await editor.getByRole('combobox', { name: '폴더' }).selectOption('/imgs/projects/qru/screens');
-		await expect(editor.getByRole('list', { name: '화면 모음 미리 보기' }).locator('img').first()).toBeVisible();
-		// 화면 모음은 폴더 하나로: 그 폴더의 그림을 모두 쓴다 (고르면 미리 보기)
-		// 내용 탭: 주요 기능 하나 (미리 보기의 벤토에 바로 보인다)
+		expect(pictureValues.length).toBeGreaterThan(0);
+		expect(pictureValues.every((value) => value.startsWith('/imgs/projects/'))).toBe(true);
+		const shots = ['/imgs/projects/qru/screens/card.jpg', '/imgs/projects/qru/screens/create-modal.jpg'];
+		await editor.getByRole('combobox', { name: '화면 모음 1 그림 고르기' }).selectOption(shots[0]);
+		await editor.getByRole('textbox', { name: '화면 모음 1 설명' }).fill('카드 화면');
+		// 둘째 장은 설명을 비워 둔다 (저장할 때 파일 이름에서 짓는다)
+		await gallery.getByRole('button', { name: '더하기' }).click();
+		await editor.getByRole('combobox', { name: '화면 모음 2 그림 고르기' }).selectOption(shots[1]);
+		await expect(gallery.getByRole('row').locator('img')).toHaveCount(2);
+		await expect(editor.getByRole('textbox', { name: '화면 모음 2 주소' })).toHaveValue(shots[1]);
+		// 줄의 그림을 누르면 화면 모음을 차례로 크게 본다
+		await gallery.getByRole('button', { name: '화면 모음 2 그림 크게 보기' }).click();
+		const lightbox = page.getByRole('dialog', { name: '그림 크게 보기' });
+		await expect(lightbox).toContainText('2 / 2');
+		await page.keyboard.press('Escape');
+		await expect(lightbox).toHaveCount(0);
+		// 미리 보기: 첫 그림이 대표 화면이 되어 맨 위에 뜬다
+		const preview = editor.getByRole('complementary', { name: '미리 보기' });
+		await expect(preview.locator('.sc-hero-shot').first()).toHaveAttribute('src', shots[0]);
+		await expect(preview.getByRole('region', { name: '화면 모음' }).locator('img').first()).toHaveAttribute(
+			'src',
+			shots[0]
+		);
+		// 내용 탭: 주요 기능 하나. ＋는 빈 항목을 더하고 그 항목의 시트를 열어 첫 칸에 초점을 둔다 (미리 보기의 벤토에 바로 보인다)
 		await editor.getByRole('tab', { name: '내용' }).click();
 		await editor.getByRole('region', { name: '주요 기능' }).getByRole('button', { name: '더하기' }).click();
-		await editor.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('한 화면');
-		await editor.getByRole('textbox', { name: '주요 기능 1 설명' }).fill('할 일과 메모를 나란히 둔다.');
-		await expect(
-			editor.getByRole('complementary', { name: '미리 보기' }).getByRole('region', { name: '주요 기능' })
-		).toContainText('한 화면');
+		const sheet = settings.getByRole('dialog', { name: '주요 기능 1' });
+		await expect(sheet.getByRole('textbox', { name: '주요 기능 1 제목' })).toBeFocused();
+		await page.keyboard.type('한 화면');
+		await sheet.getByRole('textbox', { name: '주요 기능 1 설명' }).fill('할 일과 메모를 나란히 둔다.');
+		await sheet.getByRole('button', { name: '완료' }).click();
+		await expect(sheet).toHaveCount(0);
+		await expect(editor.getByRole('region', { name: '주요 기능' }).getByRole('row').first()).toBeFocused();
+		await expect(preview.getByRole('region', { name: '주요 기능' })).toContainText('한 화면');
 		await editor.getByRole('tab', { name: '앱' }).click();
 		await editor.getByRole('switch', { name: /이 사이트 안에서 창으로 열기/ }).check();
 		await expect(editor.getByRole('textbox', { name: '앱 이름' })).toHaveValue('사이드 앱');
@@ -235,7 +261,10 @@ test.describe('프로젝트 관리', () => {
 				period: '2025.01.02 – 진행 중',
 				icon: '/imgs/projects/qru/icon.png',
 				highlights: [{ title: '한 화면', body: '할 일과 메모를 나란히 둔다.' }],
-				galleryFolder: '/imgs/projects/qru/screens',
+				gallery: [
+					{ src: shots[0], caption: '카드 화면' },
+					{ src: shots[1], caption: 'create modal' },
+				],
 				app: { label: '사이드 앱', inDock: false, icon: expect.stringMatching(/^http:\/\/api\.test\/files\//) },
 			},
 		});
@@ -246,7 +275,7 @@ test.describe('프로젝트 관리', () => {
 		await expect(dockItem(page, 'side-app')).toHaveCount(0);
 		await openFromDock(page, 'side-app');
 		await expect(page.frameLocator('iframe[title="사이드 앱"]').getByRole('heading')).toHaveText('새 앱 첫 화면');
-		// Safari의 새 프로젝트 페이지에 그 폴더의 그림이 화면 모음으로 보인다
+		// Safari의 새 프로젝트 페이지에 넣은 그림이 화면 모음으로 보인다
 		await dockItem(page, 'safari').click();
 		const safari = appWindow(page, 'safari');
 		await safari.getByRole('tab', { name: /사이드 앱/ }).click();
@@ -255,11 +284,12 @@ test.describe('프로젝트 관리', () => {
 		await expect(panel.locator('.sp[data-look="showcase"]')).toBeVisible();
 		await expect(panel.locator('.sc-hero .sc-logo')).toHaveCount(0);
 		await expect(panel.locator('.sc-hero .sc-tile')).toHaveAttribute('src', '/imgs/projects/qru/icon.png');
-		// 화면 캡처를 비웠으니 화면 모음의 첫 그림이 맨 위의 떠 있는 화면이 된다
-		await expect(panel.locator('.sc-hero-shot').first()).toHaveAttribute('src', /^\/imgs\/projects\/qru\/screens\//);
+		// 대표 화면을 따로 고르지 않았으니 화면 모음의 첫 그림이 맨 위의 떠 있는 화면이 된다
+		await expect(panel.locator('.sc-hero-shot').first()).toHaveAttribute('src', shots[0]);
+		await expect(panel.getByRole('region', { name: '화면 모음' }).locator('img')).toHaveCount(2);
 		await expect(panel.getByRole('region', { name: '화면 모음' }).locator('img').first()).toHaveAttribute(
 			'src',
-			/^\/imgs\/projects\/qru\/screens\//
+			shots[0]
 		);
 		await expect(panel.locator('.sc-hero').getByRole('list', { name: '기술' }).getByRole('listitem')).toHaveText([
 			// 주 언어가 기술 칩 맨 앞에 함께 나온다
@@ -321,15 +351,18 @@ test.describe('프로젝트 관리', () => {
 		await expect(preview.getByRole('dialog', { name: '대화' })).toContainText('오늘도 밭에 물 주러 왔나요?');
 		await expect(preview.locator('.dl')).toHaveAttribute('data-theme', 'farm');
 
-		// 내용 탭: 주요 기능·장·조작법이 예시로 채워져 있다. 항목을 골라 고쳐 쓴다
+		// 내용 탭: 주요 기능·장·조작법이 예시로 채워져 있다. 줄을 두 번 눌러 시트를 열고 고쳐 쓴다
 		await editor.getByRole('tab', { name: '내용' }).click();
 		const form = editor.locator('.projects-editor-form');
 		const highlights = form.getByRole('region', { name: '주요 기능', exact: true });
 		await expect(highlights.getByRole('row')).toHaveCount(4);
-		await highlights.getByRole('row').first().click();
-		await expect(editor.getByRole('textbox', { name: '주요 기능 1 제목' })).toHaveValue('심고, 물 주고, 거두기');
-		await expect(editor.getByRole('textbox', { name: '주요 기능 1 자세히' })).not.toHaveValue('');
-		await editor.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('씨앗부터 수확까지');
+		await highlights.getByRole('row').first().dblclick();
+		const sheet = settings.getByRole('dialog', { name: '주요 기능 1' });
+		await expect(sheet.getByRole('textbox', { name: '주요 기능 1 제목' })).toHaveValue('심고, 물 주고, 거두기');
+		await expect(sheet.getByRole('textbox', { name: '주요 기능 1 자세히' })).not.toHaveValue('');
+		await sheet.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('씨앗부터 수확까지');
+		await sheet.getByRole('button', { name: '완료' }).click();
+		await expect(highlights.getByRole('row').first()).toContainText('씨앗부터 수확까지');
 		await expect(form.getByRole('region', { name: '장', exact: true }).getByRole('row')).toHaveCount(2);
 		// 조작법은 그 모양(RPG 대화창)에서만 쓰는 칸이라 소개 탭의 페이지 모양 아래에 있다
 		await expect(editor.getByRole('textbox', { name: '조작법 1 키' })).toHaveCount(0);
@@ -388,20 +421,26 @@ test.describe('프로젝트 관리', () => {
 		await expect(specRows).toHaveCount(count);
 		await expect(editor.getByRole('textbox', { name: `기술 사양 ${count} 분류` })).not.toHaveValue('시험');
 
-		// 주요 기능: 줄을 누르면 고른 상태가 되고, 아래에 그 항목의 칸이 열린다
+		// 주요 기능: 줄을 누르면 고른 상태만 되고 (시트는 열리지 않는다), ⓘ 단추를 누르면 그 항목의 시트가 열린다
 		const highlights = form.getByRole('region', { name: '주요 기능' });
 		const rows = highlights.getByRole('row');
 		const first = await editor.locator('.projects-point strong').first().textContent();
 		await rows.nth(1).click();
 		await expect(rows.nth(1)).toHaveAttribute('aria-selected', 'true');
-		const second = await editor.getByRole('textbox', { name: '주요 기능 2 제목' }).inputValue();
+		const sheet = settings.getByRole('dialog', { name: '주요 기능 2' });
+		await expect(sheet).toHaveCount(0);
+		await highlights.getByRole('button', { name: '주요 기능 2 편집' }).click();
+		const second = await sheet.getByRole('textbox', { name: '주요 기능 2 제목' }).inputValue();
 		expect(second).not.toBe('');
-		// 그림을 누르면 크게 보고, Esc로 닫는다
-		await highlights.getByRole('button', { name: '주요 기능 2 그림 크게 보기' }).click();
+		// 그림을 누르면 크게 보고, Esc로 그림만 닫는다 (시트는 그대로)
+		await sheet.getByRole('button', { name: '주요 기능 2 그림 크게 보기' }).click();
 		const lightbox = page.getByRole('dialog', { name: '그림 크게 보기' });
 		await expect(lightbox.locator('img')).toBeVisible();
 		await page.keyboard.press('Escape');
 		await expect(lightbox).toHaveCount(0);
+		await expect(sheet).toBeVisible();
+		await sheet.getByRole('button', { name: '완료' }).click();
+		await expect(sheet).toHaveCount(0);
 		// 첫 줄을 끌어 둘째 줄 아래로 놓으면 순서가 바뀐다
 		await rows.nth(0).scrollIntoViewIfNeeded();
 		const from = await rows.nth(0).boundingBox();
@@ -420,6 +459,72 @@ test.describe('프로젝트 관리', () => {
 			highlights?: { title: string }[];
 		};
 		expect(saved.highlights?.slice(0, 2).map((point) => point.title)).toEqual([second, first]);
+	});
+
+	test('관리자: 목록의 항목은 시트에서 고친다. Esc로 닫으면 그 줄로 돌아가고, 장 안 항목은 같은 시트의 다음 페이지로 연다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openProjectsPane(page);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
+		const list = settings.getByRole('list', { name: '프로젝트' });
+		await list.getByRole('listitem').filter({ hasText: 'QRU' }).getByRole('button', { name: '편집' }).click();
+		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
+		await editor.getByRole('tab', { name: '내용' }).click();
+		const form = editor.locator('.projects-editor-form');
+
+		// ⓘ로 연 시트: 제목은 항목 이름, 첫 칸에 초점
+		const highlights = form.getByRole('region', { name: '주요 기능' });
+		await highlights.getByRole('button', { name: '주요 기능 2 편집' }).click();
+		const sheet = settings.getByRole('dialog', { name: '주요 기능 2' });
+		await expect(sheet).toHaveAttribute('aria-modal', 'true');
+		await expect(sheet.getByRole('heading', { name: '주요 기능 2' })).toBeVisible();
+		const title = sheet.getByRole('textbox', { name: '주요 기능 2 제목' });
+		await expect(title).toBeFocused();
+		// 초점은 시트 안을 돈다: 처음에서 ⇧Tab이면 끝의 완료로, 거기서 Tab이면 다시 처음으로
+		await page.keyboard.press('Shift+Tab');
+		await expect(sheet.getByRole('button', { name: '완료' })).toBeFocused();
+		await page.keyboard.press('Tab');
+		await expect(title).toBeFocused();
+		// Esc로 닫으면 연 줄에 초점이 돌아오고, 그 줄에서 Enter로 다시 연다
+		await page.keyboard.press('Escape');
+		await expect(sheet).toHaveCount(0);
+		await expect(highlights.getByRole('row').nth(1)).toBeFocused();
+		await page.keyboard.press('Enter');
+		await expect(title).toBeFocused();
+		await page.keyboard.press('Escape');
+		await expect(sheet).toHaveCount(0);
+
+		// 장의 시트 안에서 장 안 항목을 열면 시트를 겹치지 않고 같은 시트에 다음 페이지를 민다 (왼쪽 위에 뒤로 단추)
+		const chapters = form.getByRole('region', { name: '장', exact: true });
+		await chapters.getByRole('button', { name: '장 1 편집' }).click();
+		const chapterSheet = settings.getByRole('dialog', { name: '장 1' });
+		const points = chapterSheet.getByRole('group', { name: '장 1 항목' });
+		await points.getByRole('button', { name: '장 1 항목 2 편집' }).click();
+		await expect(settings.locator('.projects-sheet')).toHaveCount(1);
+		await expect(chapterSheet.getByRole('heading', { name: '장 1 항목 2' })).toBeVisible();
+		await expect(chapterSheet.getByRole('textbox', { name: '장 1 제목' })).toBeHidden();
+		const pointTitle = chapterSheet.getByRole('textbox', { name: '장 1 항목 2 제목' });
+		await expect(pointTitle).toHaveValue('복합 색인 0개');
+		await expect(pointTitle).toBeFocused();
+		await pointTitle.fill('색인 없이 찾기');
+		// 뒤로: 장의 페이지로 돌아오고, 연 줄에 초점과 고친 제목
+		await chapterSheet.getByRole('button', { name: '뒤로 (장 1)' }).click();
+		await expect(chapterSheet.getByRole('heading', { name: '장 1 항목 2' })).toHaveCount(0);
+		await expect(chapterSheet.getByRole('textbox', { name: '장 1 제목' })).toBeVisible();
+		await expect(points.getByRole('row').nth(1)).toBeFocused();
+		await expect(points.getByRole('row').nth(1)).toContainText('색인 없이 찾기');
+		await chapterSheet.getByRole('button', { name: '완료' }).click();
+		await expect(chapterSheet).toHaveCount(0);
+
+		await editor.getByRole('button', { name: '완료' }).click();
+		await settings.getByRole('button', { name: '완료' }).click();
+		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
+		const saved = api.siteProjects?.items.find((item) => item.id === 'qru')?.override as {
+			chapters: { points: { title: string }[] }[];
+		};
+		expect(saved.chapters[0].points[1].title).toBe('색인 없이 찾기');
 	});
 
 	test('관리자: RPG 대화창의 배경 테마와 배경 그림을 고르면 미리 보기의 장면이 바뀐다', async ({ page }) => {
@@ -504,13 +609,20 @@ test.describe('프로젝트 관리', () => {
 		// 1: 라이트·다크 짝 그림이 있던 항목, 2: 그림 없이 갈래 도식만 있던 항목
 		const picks = ['/imgs/projects/qru/screens/card.jpg', '/imgs/projects/qru/screens/create-modal.jpg'];
 		for (const [i, src] of picks.entries()) {
-			await rows.nth(i).click();
-			await editor.getByRole('combobox', { name: `주요 기능 ${i + 1} 그림 고르기` }).selectOption(src);
+			await rows
+				.nth(i)
+				.getByRole('button', { name: `주요 기능 ${i + 1} 편집` })
+				.click();
+			const sheet = settings.getByRole('dialog', { name: `주요 기능 ${i + 1}` });
+			await sheet.getByRole('combobox', { name: `주요 기능 ${i + 1} 그림 고르기` }).selectOption(src);
+			await sheet.getByRole('button', { name: '완료' }).click();
 			await expect(rows.nth(i).locator('img')).toHaveAttribute('src', src);
 		}
 		// 4: 영상이 있는 항목은 영상이 먼저 보인다고 알려 준다
-		await rows.nth(3).click();
-		await expect(editor).toContainText('영상이 있으면 그림 대신 영상이 보입니다.');
+		await rows.nth(3).getByRole('button', { name: '주요 기능 4 편집' }).click();
+		const videoSheet = settings.getByRole('dialog', { name: '주요 기능 4' });
+		await expect(videoSheet).toContainText('영상이 있으면 그림 대신 영상이 보입니다.');
+		await videoSheet.getByRole('button', { name: '완료' }).click();
 		await editor.getByRole('button', { name: '완료' }).click();
 		await settings.getByRole('button', { name: '완료' }).click();
 		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
