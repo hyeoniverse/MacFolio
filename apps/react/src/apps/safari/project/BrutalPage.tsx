@@ -251,7 +251,7 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 					<MockScreen project={project} kind="dashboard" focus={0} tone="light" tint={false} decorative />
 				</Block>
 				{project.stack.length > 0 && (
-					<Block n={next()} tag="STACK" span={4} tone="ink" className="br-stack">
+					<Block n={next()} tag="STACK" span={4} className="br-stack">
 						<ul aria-label="기술">
 							{project.stack.map((item) => (
 								<li key={item}>{item}</li>

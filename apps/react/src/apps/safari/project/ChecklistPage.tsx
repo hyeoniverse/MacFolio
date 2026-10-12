@@ -343,7 +343,7 @@ const ChecklistPage: React.FC<{ project: Project }> = ({ project }) => {
 					)}
 				</div>
 			</section>
-			<CtaBand project={project} tone="light" className="ck-cta" />
+			<CtaBand project={project} className="ck-cta" />
 		</div>
 	);
 };

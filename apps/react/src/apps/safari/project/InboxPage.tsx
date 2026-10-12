@@ -503,7 +503,7 @@ const InboxPage: React.FC<{ project: Project }> = ({ project }) => {
 					</div>
 				</div>
 			</div>
-			<CtaBand project={project} title="다음 소식은 메일함에서 만나요." lead="" tone="light" className="ib-cta" />
+			<CtaBand project={project} title="다음 소식은 메일함에서 만나요." lead="" className="ib-cta" />
 		</div>
 	);
 };
