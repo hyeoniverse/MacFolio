@@ -233,7 +233,9 @@ test.describe('프로젝트 관리', () => {
 		await sheet.getByRole('textbox', { name: '주요 기능 1 설명' }).fill('할 일과 메모를 나란히 둔다.');
 		await sheet.getByRole('button', { name: '완료' }).click();
 		await expect(sheet).toHaveCount(0);
-		await expect(editor.getByRole('region', { name: '주요 기능' }).getByRole('row').first()).toBeFocused();
+		await expect(
+			editor.getByRole('region', { name: '주요 기능' }).getByRole('button', { name: '주요 기능 1 편집' })
+		).toBeFocused();
 		await expect(preview.getByRole('region', { name: '주요 기능' })).toContainText('한 화면');
 		await editor.getByRole('tab', { name: '앱' }).click();
 		await editor.getByRole('switch', { name: /이 사이트 안에서 창으로 열기/ }).check();
@@ -353,19 +355,19 @@ test.describe('프로젝트 관리', () => {
 		await expect(preview.getByRole('dialog', { name: '대화' })).toContainText('오늘도 밭에 물 주러 왔나요?');
 		await expect(preview.locator('.dl')).toHaveAttribute('data-theme', 'farm');
 
-		// 내용 탭: 주요 기능·장·조작법이 예시로 채워져 있다. 줄을 두 번 눌러 시트를 열고 고쳐 쓴다
+		// 내용 탭: 주요 기능·장·조작법이 예시로 채워져 있다. 줄을 눌러 시트를 열고 고쳐 쓴다
 		await editor.getByRole('tab', { name: '내용' }).click();
 		const form = editor.locator('.projects-editor-form');
 		const highlights = form.getByRole('region', { name: '주요 기능', exact: true });
-		await expect(highlights.getByRole('row')).toHaveCount(4);
-		await highlights.getByRole('row').first().dblclick();
+		await expect(highlights.getByRole('listitem')).toHaveCount(4);
+		await highlights.getByRole('button', { name: '주요 기능 1 편집' }).click();
 		const sheet = settings.getByRole('dialog', { name: '주요 기능 1' });
 		await expect(sheet.getByRole('textbox', { name: '주요 기능 1 제목' })).toHaveValue('심고, 물 주고, 거두기');
 		await expect(sheet.getByRole('textbox', { name: '주요 기능 1 자세히' })).not.toHaveValue('');
 		await sheet.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('씨앗부터 수확까지');
 		await sheet.getByRole('button', { name: '완료' }).click();
-		await expect(highlights.getByRole('row').first()).toContainText('씨앗부터 수확까지');
-		await expect(form.getByRole('region', { name: '장', exact: true }).getByRole('row')).toHaveCount(2);
+		await expect(highlights.getByRole('listitem').first()).toContainText('씨앗부터 수확까지');
+		await expect(form.getByRole('region', { name: '장', exact: true }).getByRole('listitem')).toHaveCount(2);
 		// 조작법은 그 모양(RPG 대화창)에서만 쓰는 칸이라 소개 탭의 페이지 모양 아래에 있다
 		await expect(editor.getByRole('textbox', { name: '조작법 1 키' })).toHaveCount(0);
 		await editor.getByRole('tab', { name: '소개' }).click();
@@ -390,7 +392,7 @@ test.describe('프로젝트 관리', () => {
 		expect('value' in parsed && parsed.value.items[0].override).toEqual(saved?.override);
 	});
 
-	test('관리자: 내용 탭의 목록은 ＋로 더하고, 줄을 끌거나 ⌥↑로 옮기고, −로 빼고, 그림을 크게 본다', async ({
+	test('관리자: 내용 탭의 목록은 ＋로 더하고, 손잡이를 끌거나 ⌥↑로 옮기고, 표는 −로, 항목은 시트의 항목 삭제로 빼고, 그림을 크게 본다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: true });
@@ -423,15 +425,14 @@ test.describe('프로젝트 관리', () => {
 		await expect(specRows).toHaveCount(count);
 		await expect(editor.getByRole('textbox', { name: `기술 사양 ${count} 분류` })).not.toHaveValue('시험');
 
-		// 주요 기능: 줄을 누르면 고른 상태만 되고 (시트는 열리지 않는다), ⓘ 단추를 누르면 그 항목의 시트가 열린다
+		// 주요 기능: 줄 전체가 단추다. 줄을 한 번 누르면 그 항목의 시트가 열린다 (ⓘ 단추는 없다)
 		const highlights = form.getByRole('region', { name: '주요 기능' });
-		const rows = highlights.getByRole('row');
+		const rows = highlights.getByRole('listitem');
+		const total = await rows.count();
 		const first = await editor.locator('.projects-point strong').first().textContent();
+		await expect(highlights.locator('.projects-info-button')).toHaveCount(0);
 		await rows.nth(1).click();
-		await expect(rows.nth(1)).toHaveAttribute('aria-selected', 'true');
 		const sheet = settings.getByRole('dialog', { name: '주요 기능 2' });
-		await expect(sheet).toHaveCount(0);
-		await highlights.getByRole('button', { name: '주요 기능 2 편집' }).click();
 		const second = await sheet.getByRole('textbox', { name: '주요 기능 2 제목' }).inputValue();
 		expect(second).not.toBe('');
 		// 그림을 누르면 크게 보고, Esc로 그림만 닫는다 (시트는 그대로)
@@ -443,24 +444,58 @@ test.describe('프로젝트 관리', () => {
 		await expect(sheet).toBeVisible();
 		await sheet.getByRole('button', { name: '완료' }).click();
 		await expect(sheet).toHaveCount(0);
-		// 첫 줄을 끌어 둘째 줄 아래로 놓으면 순서가 바뀐다
+		await expect(highlights.getByRole('button', { name: '주요 기능 2 편집' })).toBeFocused();
+		// 첫 줄의 ≡ 손잡이를 끌어 둘째 줄 아래로 놓으면 순서가 바뀐다 (시트는 열리지 않는다)
 		await rows.nth(0).scrollIntoViewIfNeeded();
-		const from = await rows.nth(0).boundingBox();
+		const handle = await highlights.getByRole('button', { name: '주요 기능 1 순서 바꾸기' }).boundingBox();
 		const to = await rows.nth(1).boundingBox();
-		await page.mouse.move(from!.x + 40, from!.y + from!.height / 2);
+		await page.mouse.move(handle!.x + handle!.width / 2, handle!.y + handle!.height / 2);
 		await page.mouse.down();
-		await page.mouse.move(from!.x + 40, to!.y + to!.height * 0.9, { steps: 8 });
+		await page.mouse.move(handle!.x + handle!.width / 2, to!.y + to!.height * 0.9, { steps: 8 });
 		await page.mouse.up();
+		await expect(settings.locator('.projects-sheet')).toHaveCount(0);
 		await expect(rows.nth(0).locator('.projects-point strong')).toHaveText(second);
 		await expect(rows.nth(1).locator('.projects-point strong')).toHaveText(first!);
+		// 손잡이에 초점을 두고 ⌥↓·↑: 한 칸씩 옮기고, 초점은 옮긴 줄의 손잡이를 따라간다
+		await highlights.getByRole('button', { name: '주요 기능 1 순서 바꾸기' }).focus();
+		await page.keyboard.press('Alt+ArrowDown');
+		await expect(rows.nth(1).locator('.projects-point strong')).toHaveText(second);
+		await expect(highlights.getByRole('button', { name: '주요 기능 2 순서 바꾸기' })).toBeFocused();
+		await page.keyboard.press('ArrowUp');
+		await expect(rows.nth(0).locator('.projects-point strong')).toHaveText(second);
+		await expect(highlights.getByRole('button', { name: '주요 기능 1 순서 바꾸기' })).toBeFocused();
+		// 줄 단추에서 ⌥↑도 순서를 바꾼다 (초점은 옮긴 줄을 따라간다)
+		await highlights.getByRole('button', { name: '주요 기능 2 편집' }).focus();
+		await page.keyboard.press('Alt+ArrowUp');
+		await expect(rows.nth(0).locator('.projects-point strong')).toHaveText(first!);
+		await expect(highlights.getByRole('button', { name: '주요 기능 1 편집' })).toBeFocused();
+		await page.keyboard.press('Alt+ArrowDown');
+		await expect(rows.nth(0).locator('.projects-point strong')).toHaveText(second);
+		// 목록 아래에는 ＋만 있다 (−는 칸을 바로 고치는 표에만). 마지막 항목은 시트의 항목 삭제로 지우고, 초점은 앞 줄로
+		await expect(highlights.getByRole('button', { name: '빼기' })).toHaveCount(0);
+		await highlights.getByRole('button', { name: `주요 기능 ${total} 편집` }).click();
+		const last = settings.getByRole('dialog', { name: `주요 기능 ${total}` });
+		await last.getByRole('button', { name: '항목 삭제' }).click();
+		await expect(last).toHaveCount(0);
+		await expect(rows).toHaveCount(total - 1);
+		await expect(highlights.getByRole('button', { name: `주요 기능 ${total - 1} 편집` })).toBeFocused();
+		// 비어 있던 쓰는 법: ＋로 더한 항목을 바로 지우면 목록이 비고, 초점은 ＋로
+		const usage = form.getByRole('region', { name: '쓰는 법' });
+		await usage.getByRole('button', { name: '더하기' }).click();
+		await settings.getByRole('dialog', { name: '쓰는 법 1' }).getByRole('button', { name: '항목 삭제' }).click();
+		await expect(usage.getByRole('listitem')).toHaveCount(0);
+		await expect(usage.getByRole('button', { name: '더하기' })).toBeFocused();
 
 		await editor.getByRole('button', { name: '완료' }).click();
 		await settings.getByRole('button', { name: '완료' }).click();
 		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
 		const saved = api.siteProjects?.items.find((item) => item.id === 'qru')?.override as {
 			highlights?: { title: string }[];
+			usage?: unknown[];
 		};
 		expect(saved.highlights?.slice(0, 2).map((point) => point.title)).toEqual([second, first]);
+		expect(saved.highlights).toHaveLength(total - 1);
+		expect(saved.usage).toBeUndefined();
 	});
 
 	test('관리자: 목록의 항목은 시트에서 고친다. Esc로 닫으면 그 줄로 돌아가고, 장 안 항목은 같은 시트의 다음 페이지로 연다', async ({
@@ -476,7 +511,7 @@ test.describe('프로젝트 관리', () => {
 		await editor.getByRole('tab', { name: '내용' }).click();
 		const form = editor.locator('.projects-editor-form');
 
-		// ⓘ로 연 시트: 제목은 항목 이름, 첫 칸에 초점
+		// 줄을 눌러 연 시트: 제목은 항목 이름, 첫 칸에 초점
 		const highlights = form.getByRole('region', { name: '주요 기능' });
 		await highlights.getByRole('button', { name: '주요 기능 2 편집' }).click();
 		const sheet = settings.getByRole('dialog', { name: '주요 기능 2' });
@@ -489,12 +524,21 @@ test.describe('프로젝트 관리', () => {
 		await expect(sheet.getByRole('button', { name: '완료' })).toBeFocused();
 		await page.keyboard.press('Tab');
 		await expect(title).toBeFocused();
-		// Esc로 닫으면 연 줄에 초점이 돌아오고, 그 줄에서 Enter로 다시 연다
+		// Esc로 닫으면 연 줄에 초점이 돌아오고, 그 줄에서 Enter로 다시 연다 (Space도 같다)
 		await page.keyboard.press('Escape');
 		await expect(sheet).toHaveCount(0);
-		await expect(highlights.getByRole('row').nth(1)).toBeFocused();
+		const secondRow = highlights.getByRole('button', { name: '주요 기능 2 편집' });
+		await expect(secondRow).toBeFocused();
 		await page.keyboard.press('Enter');
 		await expect(title).toBeFocused();
+		await page.keyboard.press('Escape');
+		await expect(secondRow).toBeFocused();
+		await page.keyboard.press('Space');
+		await expect(title).toBeFocused();
+		// 아래 막대는 왼쪽에 항목 삭제, 오른쪽에 완료
+		const remove = await sheet.getByRole('button', { name: '항목 삭제' }).boundingBox();
+		const done = await sheet.getByRole('button', { name: '완료' }).boundingBox();
+		expect(remove!.x).toBeLessThan(done!.x);
 		await page.keyboard.press('Escape');
 		await expect(sheet).toHaveCount(0);
 
@@ -515,8 +559,17 @@ test.describe('프로젝트 관리', () => {
 		await chapterSheet.getByRole('button', { name: '뒤로 (장 1)' }).click();
 		await expect(chapterSheet.getByRole('heading', { name: '장 1 항목 2' })).toHaveCount(0);
 		await expect(chapterSheet.getByRole('textbox', { name: '장 1 제목' })).toBeVisible();
-		await expect(points.getByRole('row').nth(1)).toBeFocused();
-		await expect(points.getByRole('row').nth(1)).toContainText('색인 없이 찾기');
+		await expect(points.getByRole('button', { name: '장 1 항목 2 편집' })).toBeFocused();
+		await expect(points.getByRole('listitem').nth(1)).toContainText('색인 없이 찾기');
+		// 밀린 페이지의 항목 삭제는 그 페이지의 항목(장 안 항목)만 지우고 장의 페이지로 돌아온다
+		const pointCount = await points.getByRole('listitem').count();
+		await points.getByRole('button', { name: '더하기' }).click();
+		await expect(chapterSheet.getByRole('heading', { name: `장 1 항목 ${pointCount + 1}` })).toBeVisible();
+		await chapterSheet.getByRole('button', { name: '항목 삭제' }).click();
+		await expect(chapterSheet).toBeVisible();
+		await expect(chapterSheet.getByRole('textbox', { name: '장 1 제목' })).toBeVisible();
+		await expect(points.getByRole('listitem')).toHaveCount(pointCount);
+		await expect(points.getByRole('button', { name: `장 1 항목 ${pointCount} 편집` })).toBeFocused();
 		await chapterSheet.getByRole('button', { name: '완료' }).click();
 		await expect(chapterSheet).toHaveCount(0);
 
@@ -607,7 +660,10 @@ test.describe('프로젝트 관리', () => {
 		await list.getByRole('listitem').filter({ hasText: 'HYEONIVERSE' }).getByRole('button', { name: '편집' }).click();
 		const editor = settings.getByRole('form', { name: 'HYEONIVERSE 편집' });
 		await editor.getByRole('tab', { name: '내용' }).click();
-		const rows = editor.locator('.projects-editor-form').getByRole('region', { name: '주요 기능' }).getByRole('row');
+		const rows = editor
+			.locator('.projects-editor-form')
+			.getByRole('region', { name: '주요 기능' })
+			.getByRole('listitem');
 		// 1: 라이트·다크 짝 그림이 있던 항목, 2: 그림 없이 갈래 도식만 있던 항목
 		const picks = ['/imgs/projects/qru/screens/card.jpg', '/imgs/projects/qru/screens/create-modal.jpg'];
 		for (const [i, src] of picks.entries()) {
