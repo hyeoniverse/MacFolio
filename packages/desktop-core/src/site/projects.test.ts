@@ -96,7 +96,7 @@ describe('parseProjects', () => {
 		});
 		expect('errors' in parsed && parsed.errors).toEqual([
 			'프로젝트 x.name: 지울 수 없는 필드입니다.',
-			'프로젝트 x.look: product, friendly, paper, bento, dialogue, custom 가운데 하나여야 합니다.',
+			'프로젝트 x.look: product, friendly, paper, bento, keynote, magazine, devtool, playful, dialogue, custom 가운데 하나여야 합니다.',
 			'프로젝트 x.highlights[0].body: 꼭 있어야 합니다.',
 			'프로젝트 x.app.icon: 이미지 폴더 기준 경로(projects/…/icon.png)나 https:// 주소여야 합니다.',
 			'프로젝트 x.app.barColor: 색(#rrggbb, rgb())이어야 합니다.',
@@ -111,15 +111,15 @@ describe('parseProjects', () => {
 		expect(LEGACY_LOOKS).toEqual({
 			showcase: 'friendly',
 			assistant: 'friendly',
-			cinema: 'product',
+			cinema: 'keynote',
 			phone: 'product',
-			atelier: 'paper',
+			atelier: 'magazine',
 			inbox: 'paper',
 			checklist: 'paper',
 			horizontal: 'bento',
-			repo: 'bento',
-			deck: 'bento',
-			arcade: 'bento',
+			repo: 'devtool',
+			deck: 'keynote',
+			arcade: 'playful',
 			brutal: 'bento',
 		});
 		// 바꾼 값은 모두 지금 있는 모양이고, 예전 이름과 지금 이름이 겹치지 않는다
@@ -142,7 +142,7 @@ describe('parseProjects', () => {
 		).toEqual({
 			items: [
 				{ id: 'a', override: { look: 'paper' } },
-				{ id: 'b', override: { look: 'product' } },
+				{ id: 'b', override: { look: 'keynote' } },
 			],
 		});
 		// 객체 기본 속성 이름은 예전 이름이 아니다
