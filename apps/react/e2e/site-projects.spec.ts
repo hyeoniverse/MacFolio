@@ -1,6 +1,8 @@
 import { test, expect, enterDesktop, dockItem, appWindow, openFromDock } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
+// 서버와 화면이 함께 쓰는 검사 (빌드 없이 소스를 바로)
+import { parseProjects } from '../../../packages/desktop-core/src/site/projects';
 
 /** 데모 사이트 대신 가짜 페이지 (CSP가 이미 허용하는 데모 출처를 쓴다: vite preview의 CSP는 코드의 데모 주소로 만든다) */
 async function fakeDemo(page: Page, origin: string, text: string) {
@@ -282,6 +284,70 @@ test.describe('프로젝트 관리', () => {
 		await expect(again.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
 		expect(api.siteProjects).toBeNull();
 		await expect(again.getByRole('list', { name: '프로젝트' }).getByRole('listitem')).toHaveCount(7);
+	});
+
+	test('관리자: 새 프로젝트를 고른 페이지 모양의 예시로 채우고, 고쳐 쓰고, 저장한다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		const settings = await openProjectsPane(page);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
+		await settings.getByRole('textbox', { name: '새 프로젝트 id' }).fill('pixel-farm');
+		await settings.getByRole('button', { name: '더하기' }).click();
+		const editor = settings.getByRole('form', { name: '새 프로젝트 편집' });
+		await editor.getByRole('textbox', { name: '저장소' }).fill('https://github.com/hyeoniverse/pixel-farm');
+		await editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { name: 'RPG 대화창' }).click();
+
+		// 이름을 이미 적었으면 예시로 바꿀지 한 번 묻는다
+		await editor.getByRole('textbox', { name: '이름', exact: true }).fill('내 농장');
+		await editor.getByRole('button', { name: '예시로 채우기' }).click();
+		const confirm = page.getByRole('alertdialog', { name: '예시로 채울까요?' });
+		await expect(confirm).toContainText('입력한 내용을 예시로 바꿉니다.');
+		await confirm.getByRole('button', { name: '채우기' }).click();
+
+		// RPG 대화창의 예시: 이름·큰 제목·기간이 채워지고, 저장소와 모양은 그대로
+		await expect(editor.getByRole('textbox', { name: '이름', exact: true })).toHaveValue('픽셀팜 – 농장 경영 게임');
+		await expect(editor.getByRole('textbox', { name: '큰 제목' })).toHaveValue(
+			'어서 와요! 오늘도 밭에 물 주러 왔나요?'
+		);
+		await expect(editor.getByRole('button', { name: /^시작일 2025\. 6\. 2\./ })).toBeVisible();
+		await expect(editor.getByRole('textbox', { name: '저장소' })).toHaveValue(
+			'https://github.com/hyeoniverse/pixel-farm'
+		);
+		await expect(editor.getByRole('radio', { name: 'RPG 대화창' })).toHaveAttribute('aria-checked', 'true');
+		// 미리 보기의 대화창에 예시의 인사(큰 제목)가 보이고, 배경은 예시의 농장
+		const preview = editor.getByRole('complementary', { name: '미리 보기' });
+		await expect(preview.getByRole('dialog', { name: '대화' })).toContainText('오늘도 밭에 물 주러 왔나요?');
+		await expect(preview.locator('.dl')).toHaveAttribute('data-theme', 'farm');
+
+		// 내용 탭: 주요 기능·장·조작법이 예시로 채워져 있다. 항목을 골라 고쳐 쓴다
+		await editor.getByRole('tab', { name: '내용' }).click();
+		const form = editor.locator('.projects-editor-form');
+		const highlights = form.getByRole('region', { name: '주요 기능', exact: true });
+		await expect(highlights.getByRole('row')).toHaveCount(4);
+		await highlights.getByRole('row').first().click();
+		await expect(editor.getByRole('textbox', { name: '주요 기능 1 제목' })).toHaveValue('심고, 물 주고, 거두기');
+		await expect(editor.getByRole('textbox', { name: '주요 기능 1 자세히' })).not.toHaveValue('');
+		await editor.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('씨앗부터 수확까지');
+		await expect(form.getByRole('region', { name: '장', exact: true }).getByRole('row')).toHaveCount(2);
+		await expect(editor.getByRole('textbox', { name: '조작법 1 키' })).toHaveValue('↑, ↓, ←, →');
+
+		await editor.getByRole('button', { name: '완료' }).click();
+		await expect(editor).toBeHidden();
+		await settings.getByRole('button', { name: '완료' }).click();
+		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
+
+		// 저장한 덮어쓰기는 서버와 같은 규칙을 그대로 통과한다
+		const saved = api.siteProjects?.items.find((item) => item.id === 'pixel-farm');
+		expect(saved?.override).toMatchObject({
+			name: '픽셀팜 – 농장 경영 게임',
+			look: 'dialogue',
+			url: 'https://github.com/hyeoniverse/pixel-farm',
+			backdrop: { theme: 'farm' },
+			highlights: expect.arrayContaining([expect.objectContaining({ title: '씨앗부터 수확까지' })]),
+		});
+		const parsed = parseProjects({ items: [saved] });
+		expect('errors' in parsed ? parsed.errors : []).toEqual([]);
+		expect('value' in parsed && parsed.value.items[0].override).toEqual(saved?.override);
 	});
 
 	test('관리자: 내용 탭의 목록은 ＋로 더하고, 줄을 끌거나 ⌥↑로 옮기고, −로 빼고, 그림을 크게 본다', async ({
