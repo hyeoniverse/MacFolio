@@ -31,17 +31,24 @@ const Sheet = ({ label, onClose, variant = 'page', className, style, children }:
 	const overlayExit = useExitMotion<HTMLDivElement>('dim-out');
 	const coverExit = useExitMotion<HTMLDivElement>('sheet-out');
 
+	// Esc는 늘 지금의 onClose를 부른다 (쓰는 쪽이 그릴 때마다 새 함수를 넘겨도 효과를 다시 돌리지 않게)
+	const close = useRef(onClose);
 	useEffect(() => {
-		// 안의 입력 칸이 먼저 초점을 가져갔으면(autoFocus) 그대로 둔다
-		if (!box.current?.contains(document.activeElement)) box.current?.focus();
+		close.current = onClose;
+	}, [onClose]);
+
+	useEffect(() => {
+		// 열 때 한 번 초점을 둔다. 안의 입력 칸이 먼저 초점을 가져갔으면(autoFocus) 그대로 둔다.
+		// preventScroll: 올라오는 중인 시트에 초점을 주면 브라우저가 시트를 보이게 하려고 앱 화면을 스크롤해 화면이 튄다
+		if (!box.current?.contains(document.activeElement)) box.current?.focus({ preventScroll: true });
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.key !== 'Escape') return;
 			event.preventDefault();
-			onClose();
+			close.current();
 		};
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [onClose]);
+	}, []);
 
 	const setBox = (element: HTMLDivElement | null) => {
 		box.current = element;
