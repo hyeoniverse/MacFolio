@@ -24,7 +24,11 @@ describe('landingOf', () => {
 			meta: {},
 			links: [{ kind: 'repo', label: 'GitHub에서 보기', href: 'https://github.com/me/empty' }],
 		});
-		expect(landing.closing).toEqual({ title: '빈 프로젝트', links: landing.hero.links });
+		expect(landing.closing).toEqual({
+			title: '코드와 기록을 살펴볼 수 있습니다.',
+			lead: '빈 프로젝트',
+			links: landing.hero.links,
+		});
 		// 공백만 적은 값도 빈 값으로 본다
 		const blanks = landingOf(empty({ tagline: '  ', role: ' ', structure: '\n', contributions: [' '] }));
 		expect(blanks.sections).toEqual([]);
@@ -186,5 +190,15 @@ describe('landingOf', () => {
 			for (const fact of chapter.facts ?? []) expect(text).toContain(fact.label);
 			if (chapter.image) expect(text).toContain(chapter.image.src);
 		}
+	});
+
+	it('마무리는 첫 화면의 제목을 되풀이하지 않고, 써 볼 곳이 있는지에 따라 권하는 문장을 고른다', () => {
+		const base = { ...blankProject('p'), name: '북클럽', tagline: '같은 책을 읽습니다.' };
+		const repoOnly = landingOf({ ...base, url: 'https://github.com/a/b' });
+		expect(repoOnly.closing.title).toBe('코드와 기록을 살펴볼 수 있습니다.');
+		expect(repoOnly.closing.lead).toBe('북클럽');
+		const withDemo = landingOf({ ...base, url: 'https://github.com/a/b', demo: 'https://example.com' });
+		expect(withDemo.closing.title).toBe('지금 바로 써 볼 수 있습니다.');
+		expect(withDemo.closing.title).not.toBe(withDemo.hero.headline);
 	});
 });
