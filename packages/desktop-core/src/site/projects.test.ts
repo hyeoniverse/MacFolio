@@ -1,10 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { demoOrigins, mergeProjects, overrideOf, parseProjects, readProjects, type Project } from './projects.js';
+import {
+	DEFAULT_LOOK,
+	demoOrigins,
+	LEGACY_LOOKS,
+	mergeProjects,
+	overrideOf,
+	parseProjects,
+	PROJECT_LOOKS,
+	readProjects,
+	type Project,
+} from './projects.js';
 
 const base = (id: string, extra: Partial<Project> = {}): Project => ({
 	id,
 	name: id.toUpperCase(),
-	look: 'cinema',
+	look: 'product',
 	tagline: '한 줄',
 	description: '소개',
 	context: '개인',
@@ -86,7 +96,7 @@ describe('parseProjects', () => {
 		});
 		expect('errors' in parsed && parsed.errors).toEqual([
 			'프로젝트 x.name: 지울 수 없는 필드입니다.',
-			'프로젝트 x.look: showcase, cinema, phone, horizontal, brutal, arcade, atelier, inbox, checklist, repo, dialogue, deck, assistant, custom 가운데 하나여야 합니다.',
+			'프로젝트 x.look: product, friendly, paper, bento, dialogue, custom 가운데 하나여야 합니다.',
 			'프로젝트 x.highlights[0].body: 꼭 있어야 합니다.',
 			'프로젝트 x.app.icon: 이미지 폴더 기준 경로(projects/…/icon.png)나 https:// 주소여야 합니다.',
 			'프로젝트 x.app.barColor: 색(#rrggbb, rgb())이어야 합니다.',
@@ -95,6 +105,49 @@ describe('parseProjects', () => {
 		expect(parseProjects({ items: [{ id: 'x', override: { demo: null, app: null } }] })).toEqual({
 			value: { items: [{ id: 'x', override: { demo: null, app: null } }] },
 		});
+	});
+
+	it('예전 모양 이름은 지금 모양으로 바꿔 받고, 저장해 둔 값을 읽을 때도 바꾼다', () => {
+		expect(LEGACY_LOOKS).toEqual({
+			showcase: 'friendly',
+			assistant: 'friendly',
+			cinema: 'product',
+			phone: 'product',
+			atelier: 'paper',
+			inbox: 'paper',
+			checklist: 'paper',
+			horizontal: 'bento',
+			repo: 'bento',
+			deck: 'bento',
+			arcade: 'bento',
+			brutal: 'bento',
+		});
+		// 바꾼 값은 모두 지금 있는 모양이고, 예전 이름과 지금 이름이 겹치지 않는다
+		for (const [old, look] of Object.entries(LEGACY_LOOKS)) {
+			expect(PROJECT_LOOKS).toContain(look);
+			expect(PROJECT_LOOKS as readonly string[]).not.toContain(old);
+		}
+		const items = Object.keys(LEGACY_LOOKS).map((look, index) => ({ id: `p${index}`, override: { look } }));
+		const parsed = parseProjects({ items });
+		if ('errors' in parsed) throw new Error(parsed.errors.join('\n'));
+		expect(parsed.value.items.map((item) => item.override?.look)).toEqual(Object.values(LEGACY_LOOKS));
+		// 지금 이름은 그대로, DB에 남은 옛 이름도 읽을 때 바뀐다
+		expect(
+			readProjects({
+				items: [
+					{ id: 'a', override: { look: 'paper' } },
+					{ id: 'b', override: { look: 'cinema' } },
+				],
+			})
+		).toEqual({
+			items: [
+				{ id: 'a', override: { look: 'paper' } },
+				{ id: 'b', override: { look: 'product' } },
+			],
+		});
+		// 객체 기본 속성 이름은 예전 이름이 아니다
+		expect('errors' in parseProjects({ items: [{ id: 'x', override: { look: 'toString' } }] })).toBe(true);
+		expect(DEFAULT_LOOK).toBe('friendly');
 	});
 
 	it('허용한 출처(로컬 API)의 http 주소는 받는다 (올린 그림의 /files 주소)', () => {
@@ -205,7 +258,7 @@ describe('mergeProjects', () => {
 		});
 		expect(merged[0].app).toBeUndefined();
 		expect('app' in merged[0]).toBe(false);
-		expect(merged[1]).toMatchObject({ id: 'new', name: '새 프로젝트', look: 'showcase', highlights: [], stack: [] });
+		expect(merged[1]).toMatchObject({ id: 'new', name: '새 프로젝트', look: 'friendly', highlights: [], stack: [] });
 	});
 });
 

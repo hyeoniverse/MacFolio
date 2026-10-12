@@ -174,6 +174,15 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 				})),
 			],
 		},
+		{
+			id: 'credits',
+			label: '누가 도와줬어?',
+			// 빌려 쓴 에셋·글꼴의 출처: 맡은 부분과 이름, 만든 사람과 한 줄 설명
+			lines: (project.credits ?? []).map((c) => ({
+				title: `${c.role} · ${c.name}`,
+				body: [`${c.by}의 것을 빌려 썼어요.`, c.note].filter(Boolean).join(' '),
+			})),
+		},
 		// 장 묶음: 고르면 장마다 하나씩 고르는 두 번째 선택지가 열린다 (lines는 자리만)
 		{ id: MORE_TOPIC, label: '더 들려줄 이야기 있어?', lines: chapters.length > 0 ? [{ body: '' }] : [] },
 		// 화면 모음: 관리자가 넣은 그림을 한 장씩 캡션과 함께

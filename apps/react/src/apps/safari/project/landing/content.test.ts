@@ -1,0 +1,190 @@
+import { describe, expect, it } from 'vitest';
+import { blankProject, type Project } from '@macfolio/desktop-core/site';
+import { GENERAL_SAMPLE } from '@/apps/settings/lookSamples';
+import { iconOf, landingOf, pointOf, SECTION_LABELS, SECTION_ORDER, type LandingSectionKind } from './content';
+
+const empty = (extra: Partial<Project> = {}): Project => ({
+	...blankProject('empty'),
+	name: '빈 프로젝트',
+	url: 'https://github.com/me/empty',
+	...extra,
+});
+
+const sample: Project = { ...structuredClone(GENERAL_SAMPLE), id: 'sample', url: 'https://github.com/me/sample' };
+
+const kinds = (project: Project) => landingOf(project).sections.map((section) => section.kind);
+
+describe('landingOf', () => {
+	it('비어 있는 구역은 모두 빠지고, 첫 화면과 마무리는 언제나 있다', () => {
+		const landing = landingOf(empty());
+		expect(landing.sections).toEqual([]);
+		expect(landing.hero).toEqual({
+			name: '빈 프로젝트',
+			headline: '빈 프로젝트',
+			meta: {},
+			links: [{ kind: 'repo', label: 'GitHub에서 보기', href: 'https://github.com/me/empty' }],
+		});
+		expect(landing.closing).toEqual({ title: '빈 프로젝트', links: landing.hero.links });
+		// 공백만 적은 값도 빈 값으로 본다
+		const blanks = landingOf(empty({ tagline: '  ', role: ' ', structure: '\n', contributions: [' '] }));
+		expect(blanks.sections).toEqual([]);
+		expect(blanks.hero.headline).toBe('빈 프로젝트');
+	});
+
+	it('구역은 정해진 차례로 놓이고, 이름은 화면의 구역 이름과 같다', () => {
+		const landing = landingOf(sample);
+		const present = landing.sections.map((section) => section.kind);
+		expect(present).toEqual(SECTION_ORDER.filter((kind) => present.includes(kind)));
+		// 예시는 모든 구역을 채운다
+		expect(present).toEqual(SECTION_ORDER);
+		for (const section of landing.sections) expect(section.label).toBe(SECTION_LABELS[section.kind]);
+		expect(SECTION_LABELS).toMatchObject({
+			features: '주요 기능',
+			steps: '쓰는 법',
+			built: '만든 방식',
+			tech: '기술 사양',
+			role: '맡은 일',
+			screens: '화면 모음',
+			timeline: '진행 과정',
+		});
+	});
+
+	it('값이 있는 구역만 하나씩 생긴다', () => {
+		const cases: [Partial<Project>, LandingSectionKind][] = [
+			[{ facts: [{ value: '6주', label: '기간' }] }, 'stats'],
+			[{ highlights: [{ title: '기능', body: '설명' }] }, 'features'],
+			[
+				{
+					gallery: [
+						{ src: '/imgs/a.jpg', caption: '가' },
+						{ src: '/imgs/b.jpg', caption: '나' },
+					],
+				},
+				'screens',
+			],
+			[{ usage: [{ title: '단계', body: '설명' }] }, 'steps'],
+			[{ build: [{ title: '방식', body: '설명' }] }, 'built'],
+			[{ chapters: [{ title: '장', points: [] }] }, 'stories'],
+			[{ controls: [{ keys: ['Space'], label: '뛰기' }] }, 'controls'],
+			[{ timeline: [{ date: '2025.01', label: '시작' }] }, 'timeline'],
+			[{ stack: ['React'] }, 'tech'],
+			[{ language: 'Go' }, 'tech'],
+			[{ specs: [{ label: '서버', value: 'Go' }] }, 'tech'],
+			[{ structure: 'src/' }, 'tech'],
+			[{ contributions: ['화면'] }, 'role'],
+			[{ role: '프론트엔드' }, 'role'],
+			[{ credits: [{ role: '글꼴', name: 'Pretendard', by: '길형진' }] }, 'credits'],
+		];
+		for (const [extra, kind] of cases) expect(kinds(empty(extra)), kind).toEqual([kind]);
+	});
+
+	it('첫 화면의 그림: 대표 화면, 없으면 화면 모음의 첫 그림(영상은 건너뛴다), 둘 다 없으면 없음', () => {
+		const gallery = [
+			{ src: '/imgs/clip.mp4', caption: '영상' },
+			{ src: '/imgs/one.jpg', caption: '하나' },
+			{ src: '/imgs/two.jpg', caption: '둘' },
+		];
+		expect(landingOf(empty({ image: '/imgs/hero.jpg', gallery })).hero.image).toEqual({
+			kind: 'image',
+			src: '/imgs/hero.jpg',
+			alt: '빈 프로젝트 화면',
+		});
+		expect(landingOf(empty({ gallery })).hero.image?.src).toBe('/imgs/one.jpg');
+		expect(landingOf(empty()).hero.image).toBeUndefined();
+		// 화면 모음이 첫 화면의 그림 한 장뿐이면 화면 모음 구역은 없다 (같은 그림을 두 번 보이지 않게)
+		expect(kinds(empty({ gallery: [gallery[1]] }))).toEqual([]);
+		expect(kinds(empty({ image: '/imgs/hero.jpg', gallery: [gallery[1]] }))).toEqual(['screens']);
+	});
+
+	it('링크: 앱이 있으면 여기서 열기와 새 탭, 없으면 데모 보기, 저장소는 언제나', () => {
+		const project = empty({ demo: 'https://demo.example' });
+		expect(landingOf(project, { app: 'empty' }).hero.links).toEqual([
+			{ kind: 'app', label: '여기서 열기', app: 'empty' },
+			{ kind: 'demo', label: '새 탭에서 열기', href: 'https://demo.example' },
+			{ kind: 'repo', label: 'GitHub에서 보기', href: 'https://github.com/me/empty' },
+		]);
+		expect(landingOf(project).hero.links.map((link) => link.label)).toEqual(['데모 보기', 'GitHub에서 보기']);
+		const game = { ...project, app: { label: '게임', icon: 'projects/x/icon.png', play: true } };
+		expect(landingOf(game, { app: 'empty' }).hero.links[0].label).toBe('여기서 플레이');
+		// 저장소 주소가 비어 있는 새 프로젝트는 저장소 링크가 없다
+		expect(landingOf(empty({ url: '' })).hero.links).toEqual([]);
+	});
+
+	it('항목의 그림은 영상, 그림(다크 짝과 함께), 화면 여러 장 차례이고 같은 주소는 한 번만', () => {
+		expect(
+			pointOf({
+				title: '기능',
+				body: '설명',
+				image: '/imgs/a.jpg',
+				imageDark: '/imgs/a-dark.jpg',
+				video: '/imgs/a.mp4',
+				shots: [
+					{ src: '/imgs/a.jpg', alt: '같은 그림' },
+					{ src: '/imgs/b.jpg', alt: '' },
+				],
+				icon: 'fa-bolt',
+			})
+		).toEqual({
+			title: '기능',
+			body: '설명',
+			icon: 'fa-bolt',
+			media: [
+				{ kind: 'video', src: '/imgs/a.mp4', alt: '기능 영상' },
+				{ kind: 'image', src: '/imgs/a.jpg', alt: '기능 화면', dark: '/imgs/a-dark.jpg' },
+				{ kind: 'image', src: '/imgs/b.jpg', alt: '기능' },
+			],
+		});
+		expect(iconOf({}, 2)).toMatch(/^fa-/);
+		expect(iconOf({ icon: 'fa-lock' }, 2)).toBe('fa-lock');
+	});
+
+	it('편집 화면이 고치는 칸은 하나도 버리지 않는다 (예시의 값이 모두 랜딩 내용 어딘가에 있다)', () => {
+		const landing = landingOf(sample, { app: 'sample' });
+		const text = JSON.stringify(landing);
+		const section = <K extends LandingSectionKind>(kind: K) =>
+			landing.sections.find((item) => item.kind === kind) as Extract<(typeof landing.sections)[number], { kind: K }>;
+
+		expect(landing.hero).toMatchObject({
+			name: sample.name,
+			icon: sample.icon,
+			headline: sample.tagline,
+			subhead: sample.description,
+			meta: { context: sample.context, role: sample.role, period: sample.period },
+			image: { src: sample.image },
+		});
+		expect(section('stats').facts).toEqual(sample.facts);
+		expect(section('features').items.map((item) => item.title)).toEqual(sample.highlights.map((point) => point.title));
+		expect(section('steps').items).toHaveLength(sample.usage?.length ?? 0);
+		expect(section('built').items).toHaveLength(sample.build.length);
+		expect(section('screens').shots.map((shot) => [shot.src, shot.caption])).toEqual(
+			sample.gallery?.map((shot) => [shot.src, shot.caption])
+		);
+		expect(section('stories').stories.map((story) => story.title)).toEqual(
+			sample.chapters?.map((chapter) => chapter.title)
+		);
+		expect(section('controls').controls).toEqual(sample.controls);
+		expect(section('timeline').entries).toEqual(sample.timeline);
+		expect(section('tech')).toMatchObject({ specs: sample.specs, structure: sample.structure });
+		expect(section('tech').stack).toEqual(expect.arrayContaining([sample.language, ...sample.stack]));
+		expect(section('role').contributions).toEqual(sample.contributions);
+		expect(section('credits').credits).toEqual(sample.credits);
+
+		// 항목 안의 칸(설명·자세히·아이콘·그림·화면 여러 장)도 그대로
+		const points = [
+			...sample.highlights,
+			...sample.build,
+			...(sample.usage ?? []),
+			...(sample.chapters ?? []).flatMap((chapter) => chapter.points),
+		];
+		for (const point of points) {
+			for (const value of [point.title, point.body, point.detail, point.icon, point.image, point.video])
+				if (value) expect(text, value).toContain(JSON.stringify(value).slice(1, -1));
+			for (const shot of point.shots ?? []) expect(text).toContain(shot.src);
+		}
+		for (const chapter of sample.chapters ?? []) {
+			if (chapter.lead) expect(text).toContain(chapter.lead);
+			for (const fact of chapter.facts ?? []) expect(text).toContain(fact.label);
+			if (chapter.image) expect(text).toContain(chapter.image.src);
+		}
+	});
+});

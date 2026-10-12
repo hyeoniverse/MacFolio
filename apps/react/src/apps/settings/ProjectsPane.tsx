@@ -81,19 +81,11 @@ const STACKS = stackOptions(
 
 /** 페이지 모양 카드의 이름과 짧은 설명 */
 const LOOKS: Record<ProjectLook, { name: string; note: string }> = {
-	showcase: { name: '기본', note: '카드' },
-	cinema: { name: '시네마', note: '한 화면씩 장면' },
-	phone: { name: '폰', note: '틀 안의 화면' },
-	horizontal: { name: '가로', note: '옆으로 가는 패널' },
-	brutal: { name: '브루탈', note: '굵은 선·큰 글자' },
-	arcade: { name: '아케이드', note: '네온·CRT' },
-	atelier: { name: '아틀리에', note: '여백·세리프' },
-	inbox: { name: '메일함', note: '3단 화면' },
-	checklist: { name: '할 일 앱', note: '체크 목록' },
-	repo: { name: '저장소', note: '파일 트리·커밋' },
+	product: { name: '제품', note: '큰 화면과 큰 문장' },
+	friendly: { name: '카드', note: '밝은 카드와 아이콘' },
+	paper: { name: '문서', note: '토글과 알림 상자' },
+	bento: { name: '벤토', note: '타일 격자' },
 	dialogue: { name: 'RPG 대화창', note: '픽셀 장면' },
-	deck: { name: '발표 슬라이드', note: '한 장씩' },
-	assistant: { name: '설정 도우미', note: '단계별' },
 	custom: { name: '직접 짠 페이지', note: '코드' },
 };
 
@@ -1135,141 +1127,70 @@ type Part = [number, number, number, number, string, CSSProperties?];
 const round = { borderRadius: '999px' };
 const card = { borderRadius: '8%/12%', boxShadow: '0 1px 2px rgba(0,0,0,0.12)' };
 const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> = {
-	showcase: {
-		bg: 'linear-gradient(160deg, #d9f2ee, #e8e4f7)',
-		parts: [
-			[6, 9, 52, 54, '#ffffff', card],
-			[11, 17, 16, 9, '#2bb3a3', { borderRadius: '2px' }],
-			[11, 33, 40, 6, '#2c2f3a'],
-			[11, 44, 32, 3.5, '#9aa0ad'],
-			[62, 9, 32, 54, '#ffffff', card],
-			[66, 18, 22, 3.5, '#9aa0ad'],
-			[66, 27, 20, 3.5, '#c6cad3'],
-			[66, 36, 23, 3.5, '#c6cad3'],
-			[6, 70, 88, 21, '#ffffff', card],
-			[12, 77, 12, 7, '#2bb3a3'],
-			[44, 77, 12, 7, '#2bb3a3'],
-			[74, 77, 12, 7, '#2bb3a3'],
-		],
-	},
-	cinema: {
-		bg: '#0b0b10',
-		parts: [
-			[0, 0, 100, 74, 'linear-gradient(135deg, #39407a, #c45f7c)'],
-			[0, 38, 100, 36, 'linear-gradient(transparent, #0b0b10)'],
-			[8, 50, 50, 8, '#ffffff'],
-			[8, 63, 34, 3.5, '#b8b8c4'],
-			[8, 81, 16, 6, '#ffffff', round],
-			[40, 83, 20, 2, '#4a4a55', round],
-		],
-	},
-	phone: {
-		bg: '#f3f0ea',
-		parts: [
-			[8, 30, 40, 8, '#24242a'],
-			[8, 44, 34, 3.5, '#8d8a85'],
-			[8, 51, 28, 3.5, '#8d8a85'],
-			[8, 64, 14, 6, '#24242a', round],
-			[60, 6, 25, 88, '#141416', { borderRadius: '18%/10%' }],
-			[62, 10, 21, 80, 'linear-gradient(180deg, #7fb2ff, #c7a4ff)', { borderRadius: '14%/7%' }],
-		],
-	},
-	horizontal: {
-		bg: '#f6f6f4',
-		parts: [
-			[5, 10, 34, 72, '#ffd166', { borderRadius: '3px' }],
-			[42, 10, 34, 72, '#ef476f', { borderRadius: '3px' }],
-			[79, 10, 34, 72, '#118ab2', { borderRadius: '3px' }],
-			[9, 20, 22, 5, '#3b2f00'],
-			[46, 20, 20, 5, '#ffffff'],
-			[5, 88, 90, 2.5, '#d9d9d6', round],
-			[5, 88, 36, 2.5, '#333333', round],
-		],
-	},
-	brutal: {
-		bg: '#fff04d',
-		parts: [
-			[6, 8, 72, 17, '#111111'],
-			[6, 30, 48, 9, '#111111'],
-			[6, 50, 40, 38, '#ffffff', { border: '2px solid #111111' }],
-			[52, 50, 42, 38, '#ff5ca8', { border: '2px solid #111111' }],
-			[10, 57, 24, 4, '#111111'],
-		],
-	},
-	arcade: {
-		bg: '#0b0322',
-		parts: [
-			[0, 58, 100, 42, 'repeating-linear-gradient(90deg, rgba(41,243,255,0.45) 0 1px, transparent 1px 11%)'],
-			[0, 58, 100, 1.5, '#ff2bd6'],
-			[10, 14, 56, 11, '#ff2bd6', { boxShadow: '0 0 8px #ff2bd6' }],
-			[10, 32, 40, 5, '#29f3ff', { boxShadow: '0 0 6px #29f3ff' }],
-			[72, 12, 18, 30, 'transparent', { border: '1.5px solid #29f3ff', boxShadow: '0 0 6px #29f3ff' }],
-			[0, 0, 100, 100, 'repeating-linear-gradient(rgba(255,255,255,0.07) 0 1px, transparent 1px 3px)'],
-		],
-	},
-	atelier: {
-		bg: '#f5f0e6',
-		parts: [
-			[10, 16, 38, 7, '#2b2925'],
-			[10, 30, 32, 2.5, '#8d8271'],
-			[10, 36, 36, 2.5, '#8d8271'],
-			[10, 42, 26, 2.5, '#8d8271'],
-			[58, 14, 32, 58, '#cdbea6'],
-			[10, 82, 80, 1, 'rgba(43,41,37,0.25)'],
-		],
-	},
-	inbox: {
+	// 제품: 흰 바탕 가운데 큰 제목 두 줄, 단추 하나, 아래의 큰 화면
+	product: {
 		bg: '#ffffff',
 		parts: [
-			[0, 0, 20, 100, '#eceef3'],
-			[4, 10, 12, 3.5, '#7b8191'],
-			[4, 18, 10, 3.5, '#a4a9b5'],
-			[20, 0, 30, 100, '#f8f8fa'],
-			[50, 0, 0.8, 100, '#e3e4e8'],
-			[23, 9, 22, 4, '#3d4150'],
-			[23, 16, 18, 3, '#a4a9b5'],
-			[21.5, 27, 27, 17, '#d5e5ff', { borderRadius: '3px' }],
-			[23, 31, 22, 4, '#1d4ed8'],
-			[23, 38, 18, 3, '#6b8fd6'],
-			[23, 52, 22, 4, '#3d4150'],
-			[23, 59, 18, 3, '#a4a9b5'],
-			[55, 10, 34, 6, '#22252e'],
-			[55, 24, 38, 3, '#a4a9b5'],
-			[55, 31, 36, 3, '#a4a9b5'],
-			[55, 38, 30, 3, '#a4a9b5'],
+			[22, 10, 56, 7, '#1d1d1f'],
+			[30, 20, 40, 7, '#1d1d1f'],
+			[38, 31, 24, 3, '#86868b'],
+			[43, 38, 14, 5.5, '#0071e3', round],
+			[10, 50, 80, 50, '#f5f5f7', { borderRadius: '6% 6% 0 0/10% 10% 0 0' }],
+			[18, 58, 64, 42, 'linear-gradient(160deg, #d6e4f5, #eef1f6)', { borderRadius: '4% 4% 0 0/7% 7% 0 0' }],
 		],
 	},
-	checklist: {
-		bg: '#ffffff',
+	// 카드: 왼쪽 글과 단추, 오른쪽 창 틀, 아래 아이콘 카드 셋
+	friendly: {
+		bg: '#f6f9fc',
 		parts: [
-			[10, 9, 42, 8, '#1f1f24'],
-			[10, 28, 6, 9.6, '#34c759', round],
-			[20, 31, 46, 3.5, '#b5b5bb'],
-			[10, 45, 6, 9.6, 'transparent', { ...round, border: '1.5px solid #c7c7cc' }],
-			[20, 48, 58, 3.5, '#4a4a52'],
-			[10, 62, 6, 9.6, 'transparent', { ...round, border: '1.5px solid #c7c7cc' }],
-			[20, 65, 40, 3.5, '#4a4a52'],
-			[10, 79, 6, 9.6, 'transparent', { ...round, border: '1.5px solid #c7c7cc' }],
-			[20, 82, 52, 3.5, '#4a4a52'],
+			[7, 12, 12, 4, '#635bff', round],
+			[7, 21, 38, 6, '#0a2540'],
+			[7, 30, 30, 6, '#0a2540'],
+			[7, 41, 32, 3, '#6b7c93'],
+			[7, 50, 14, 5.5, '#635bff', round],
+			[52, 10, 41, 46, '#ffffff', card],
+			[52, 10, 41, 7, '#eef2f7', { borderRadius: '8% 8% 0 0/40% 40% 0 0' }],
+			[7, 66, 27, 26, '#ffffff', card],
+			[37, 66, 27, 26, '#ffffff', card],
+			[67, 66, 26, 26, '#ffffff', card],
+			[11, 71, 6, 8, '#e8e6ff', { borderRadius: '2px' }],
+			[41, 71, 6, 8, '#e8e6ff', { borderRadius: '2px' }],
+			[71, 71, 6, 8, '#e8e6ff', { borderRadius: '2px' }],
 		],
 	},
-	repo: {
-		bg: '#0d1117',
+	// 문서: 표지, 걸친 아이콘, 제목과 속성, 알림 상자
+	paper: {
+		bg: '#fffefc',
 		parts: [
-			[0, 0, 100, 12, '#161b22'],
-			[4, 4, 18, 4, '#8b949e'],
-			[0, 12, 24, 88, '#0d1117'],
-			[24, 12, 0.8, 88, '#30363d'],
-			[4, 20, 14, 3, '#58a6ff'],
-			[7, 28, 13, 3, '#8b949e'],
-			[7, 36, 11, 3, '#8b949e'],
-			[4, 44, 15, 3, '#58a6ff'],
-			[30, 20, 40, 6, '#e6edf3'],
-			[30, 32, 60, 3, '#8b949e'],
-			[30, 39, 52, 3, '#8b949e'],
-			[30, 50, 64, 34, '#161b22', { border: '1px solid #30363d', borderRadius: '3px' }],
-			[34, 57, 30, 3, '#7ee787'],
-			[34, 64, 40, 3, '#d2a8ff'],
+			[0, 0, 100, 26, 'linear-gradient(120deg, #e9dfcf, #d9e3e6)'],
+			[16, 19, 11, 14, '#ffffff', { borderRadius: '3px', boxShadow: '0 0 0 1px rgba(55,53,47,0.12)' }],
+			[16, 40, 44, 6, '#37352f'],
+			[16, 51, 12, 2.5, '#9b9a97'],
+			[32, 51, 24, 2.5, '#37352f'],
+			[16, 57, 12, 2.5, '#9b9a97'],
+			[32, 57, 18, 2.5, '#37352f'],
+			[16, 67, 68, 16, '#f7f6f3', { borderRadius: '2px' }],
+			[20, 72, 4, 5, '#d9730d'],
+			[28, 73, 40, 2.5, '#787774'],
+			[16, 88, 3, 3, '#37352f'],
+			[22, 88, 40, 2.5, '#9b9a97'],
+		],
+	},
+	// 벤토: 어두운 바탕 위 크기가 다른 타일
+	bento: {
+		bg: '#09090b',
+		parts: [
+			[30, 8, 40, 6, '#fafafa'],
+			[38, 17, 24, 2.5, '#71717a'],
+			[6, 26, 56, 40, '#18181b', { border: '1px solid #27272a', borderRadius: '5%/8%' }],
+			[10, 32, 48, 28, 'linear-gradient(140deg, #312e81, #18181b)', { borderRadius: '4%/7%' }],
+			[65, 26, 29, 19, '#121214', { border: '1px solid #27272a', borderRadius: '8%/14%' }],
+			[69, 31, 14, 7, '#fafafa'],
+			[65, 47, 29, 19, '#121214', { border: '1px solid #27272a', borderRadius: '8%/14%' }],
+			[69, 52, 10, 7, '#a78bfa'],
+			[6, 70, 27, 22, '#121214', { border: '1px solid #27272a', borderRadius: '8%/14%' }],
+			[36, 70, 27, 22, '#121214', { border: '1px solid #27272a', borderRadius: '8%/14%' }],
+			[66, 70, 28, 22, '#121214', { border: '1px solid #27272a', borderRadius: '8%/14%' }],
 		],
 	},
 	dialogue: {
@@ -1283,39 +1204,6 @@ const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> 
 			[11, 70, 50, 4.5, '#ffffff'],
 			[11, 79, 36, 4.5, '#ffffff'],
 			[84, 85, 4, 4, '#ffd166'],
-		],
-	},
-	deck: {
-		bg: '#2b2d31',
-		parts: [
-			[10, 7, 80, 63, '#ffffff', { borderRadius: '2px' }],
-			[16, 17, 40, 8, '#1f2937'],
-			[16, 33, 40, 3, '#9ca3af'],
-			[16, 40, 34, 3, '#9ca3af'],
-			[16, 47, 38, 3, '#9ca3af'],
-			[62, 27, 22, 32, '#5b8def'],
-			[10, 77, 18, 14, '#ffffff', { outline: '1.5px solid #5b8def', outlineOffset: '1px' }],
-			[31, 77, 18, 14, '#6b6e75'],
-			[52, 77, 18, 14, '#6b6e75'],
-			[73, 77, 17, 14, '#6b6e75'],
-		],
-	},
-	assistant: {
-		bg: '#e9e9ec',
-		parts: [
-			[6, 7, 88, 86, '#ffffff', { borderRadius: '5%/8%', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }],
-			[6, 7, 26, 86, '#f2f2f5', { borderRadius: '5% 0 0 5%/8% 0 0 8%' }],
-			[10, 18, 3.6, 5.8, '#007aff', round],
-			[16, 19, 12, 3, '#2c2c30'],
-			[10, 30, 3.6, 5.8, '#c7c7cc', round],
-			[16, 31, 11, 3, '#8e8e93'],
-			[10, 42, 3.6, 5.8, '#c7c7cc', round],
-			[16, 43, 12, 3, '#8e8e93'],
-			[38, 18, 40, 7, '#1f1f24'],
-			[38, 32, 50, 3, '#a1a1a6'],
-			[38, 39, 44, 3, '#a1a1a6'],
-			[62, 78, 13, 8, '#e5e5ea', { borderRadius: '3px' }],
-			[77, 78, 13, 8, '#007aff', { borderRadius: '3px' }],
 		],
 	},
 	custom: {
@@ -1341,16 +1229,25 @@ const LookSketch = ({ look }: { look: ProjectLook }) => {
 };
 
 /** 페이지 모양 고르기: 바탕화면 고르기처럼 작은 그림 카드 격자. ←·→·↑·↓로 옮겨 고른다 (라디오 묶음) */
-const LookPicker = ({ value, onChange }: { value: ProjectLook; onChange: (look: ProjectLook) => void }) => {
+const LookPicker = ({
+	value,
+	looks,
+	onChange,
+}: {
+	value: ProjectLook;
+	/** 고를 수 있는 모양 (직접 짠 페이지는 등록된 프로젝트만) */
+	looks: readonly ProjectLook[];
+	onChange: (look: ProjectLook) => void;
+}) => {
 	const groupRef = useRef<HTMLDivElement>(null);
 	const choose = (index: number) => {
-		const look = PROJECT_LOOKS[(index + PROJECT_LOOKS.length) % PROJECT_LOOKS.length];
+		const look = looks[(index + looks.length) % looks.length];
 		onChange(look);
 		groupRef.current?.querySelector<HTMLElement>(`[data-look="${look}"]`)?.focus();
 	};
 	return (
 		<div className="projects-looks" role="radiogroup" aria-label="페이지 모양" ref={groupRef}>
-			{PROJECT_LOOKS.map((look, index) => {
+			{looks.map((look, index) => {
 				const checked = look === value;
 				return (
 					<button
@@ -2071,7 +1968,7 @@ const LinesEditor = ({
 );
 
 /**
- * 장: 주요 기능과 만든 방식 말고 더 들려줄 이야기 (브루탈·아틀리에·메일함·할 일 앱·RPG 대화창·발표 슬라이드가 그린다).
+ * 장: 주요 기능과 만든 방식 말고 더 들려줄 이야기 (모든 모양이 '더 들려줄 이야기' 구역이나 대화로 그린다).
  * 줄에는 장 제목과 머리말, 고르면 아래에서 제목·머리말·숫자·항목·장 그림을 고친다.
  * 장 모양(look)·테마(palette)·데이터 구조(schema)·전후 비교(compare)는 코드로 짜는 연출이라 JSON에서만 고친다
  */
@@ -2161,11 +2058,11 @@ const ChaptersEditor = ({
 
 type Control = NonNullable<Project['controls']>[number];
 
-/** 조작법 (아케이드·RPG 대화창): 키 여러 개(쉼표로)와 설명. 표의 칸을 바로 고친다 */
+/** 조작법 (게임의 키나 앱의 단축키): 키 여러 개(쉼표로)와 설명. 표의 칸을 바로 고친다 */
 const ControlsEditor = ({ controls, onChange }: { controls: Control[]; onChange: (controls: Control[]) => void }) => (
 	<ListTable<Control>
 		label="조작법"
-		hint="키는 쉼표로 나눠 적습니다 (예: ←, →). 게임을 담은 아케이드·RPG 대화창 모양이 보여 줍니다."
+		hint="게임의 키나 앱의 단축키를 적습니다. 키는 쉼표로 나눠 적습니다 (예: ←, →)."
 		items={controls}
 		onChange={onChange}
 		blank={() => ({ keys: [], label: '' })}
@@ -2197,7 +2094,7 @@ type Credit = NonNullable<Project['credits']>[number];
 const CreditsEditor = ({ credits, onChange }: { credits: Credit[]; onChange: (credits: Credit[]) => void }) => (
 	<ListTable<Credit>
 		label="출처"
-		hint="빌려 쓴 그림·글꼴·소리를 적습니다. 브루탈·아케이드·저장소·발표 슬라이드 모양이 보여 줍니다."
+		hint="빌려 쓴 그림·글꼴·소리를 적습니다. 페이지 끝의 출처 구역에 보입니다."
 		items={credits}
 		onChange={onChange}
 		blank={() => ({ role: '', name: '', by: '' })}
@@ -2492,11 +2389,17 @@ const ProjectEditor = ({
 											draft.look === 'custom'
 												? hasCustomPage(draft.id)
 													? `코드에 등록된 ${draft.id} 전용 페이지로 그립니다.`
-													: `코드에 ${draft.id} 전용 페이지가 없어 기본 (카드)로 그립니다. 저장소의 safari/project/custom/에 등록하세요.`
-												: 'Safari에서 이 프로젝트를 여는 페이지의 모양입니다. 고르면 미리 보기가 바로 바뀝니다.'
+													: `코드에 ${draft.id} 전용 페이지가 없어 기본 모양인 카드로 그립니다. 저장소의 safari/project/custom/에 등록하세요.`
+												: '제품·카드·문서·벤토는 같은 내용을 서로 다른 디자인으로 그립니다. 고르면 미리 보기가 바로 바뀝니다.'
 										}
 									>
-										<LookPicker value={draft.look} onChange={(look) => set({ look })} />
+										<LookPicker
+											value={draft.look}
+											looks={PROJECT_LOOKS.filter(
+												(look) => look !== 'custom' || draft.look === 'custom' || hasCustomPage(draft.id)
+											)}
+											onChange={(look) => set({ look })}
+										/>
 									</Group>
 									{/* 모양 설정: 어떤 모양에서만 쓰는 칸은 그 모양을 골랐을 때만 여기에 보인다 (값은 모양을 바꿔도 남는다) */}
 									{lookUses('art') && (
@@ -2506,7 +2409,7 @@ const ProjectEditor = ({
 												shape="wide"
 												value={draft.art}
 												onChange={(art) => set({ art })}
-												hint="아케이드 모양의 첫 화면과 RPG 대화창 모양의 표지에 대표 화면 대신 크게 보입니다. 없으면 대표 화면을 씁니다."
+												hint="RPG 대화창 모양의 표지에 대표 화면 대신 크게 보입니다. 없으면 대표 화면을 씁니다."
 											/>
 										</Group>
 									)}
@@ -2538,23 +2441,6 @@ const ProjectEditor = ({
 												hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
 											/>
 										</Group>
-									)}
-									{lookUses('controls') && (
-										<ControlsEditor
-											controls={draft.controls ?? []}
-											onChange={(controls) => set({ controls: controls.length ? controls : undefined })}
-										/>
-									)}
-									{lookUses('conventions') && (
-										<PairsEditor
-											label="커밋 규칙"
-											hint="저장소 모양의 Conventions 탭과 커밋 그래프의 색에 쓰입니다."
-											keys={['type', 'description']}
-											names={['타입', '설명']}
-											placeholders={['예: feat', '예: 새 기능']}
-											rows={draft.conventions ?? []}
-											onChange={(conventions) => set({ conventions: conventions.length ? conventions : undefined })}
-										/>
 									)}
 									<Group title="주소와 기술">
 										<TextField
@@ -2647,13 +2533,13 @@ const ProjectEditor = ({
 									/>
 									<PointsEditor
 										label="주요 기능"
-										hint="첫 항목은 크게 보이고, 그림이 있으면 바탕이 됩니다."
+										hint="그림이 있으면 항목과 함께 크게 보이고, 없으면 아이콘으로 그립니다."
 										points={draft.highlights}
 										onChange={(highlights) => set({ highlights })}
 									/>
 									<PointsEditor
 										label="만든 방식"
-										hint="번호가 붙어 좌우로 번갈아 놓이고, 그림이 있으면 옆에 함께 보입니다."
+										hint="구현에서 신경 쓴 점입니다. 그림이 있으면 함께 보입니다."
 										points={draft.build}
 										onChange={(build) => set({ build })}
 									/>
@@ -2666,6 +2552,10 @@ const ProjectEditor = ({
 									<ChaptersEditor
 										chapters={draft.chapters ?? []}
 										onChange={(chapters) => set({ chapters: chapters.length ? chapters : undefined })}
+									/>
+									<ControlsEditor
+										controls={draft.controls ?? []}
+										onChange={(controls) => set({ controls: controls.length ? controls : undefined })}
 									/>
 									<PairsEditor
 										label="진행 과정"
@@ -2688,7 +2578,7 @@ const ProjectEditor = ({
 									/>
 									<Group
 										label="폴더 구조"
-										hint="저장소의 폴더 트리를 그대로 붙여 넣습니다. 브루탈·저장소·발표 슬라이드 모양이 고정폭 글꼴로 보여 줍니다."
+										hint="저장소의 폴더 트리를 그대로 붙여 넣습니다. 기술 사양 구역에 고정폭 글꼴로 보입니다."
 									>
 										<TextField
 											label="폴더 구조"

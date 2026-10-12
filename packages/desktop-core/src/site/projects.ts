@@ -98,31 +98,38 @@ export interface ProjectChapter {
 }
 
 /**
- * 프로젝트 페이지 모양. 모양마다 페이지의 짜임과 읽는 방식이 다르다 (apps/safari/project/).
- * showcase 어떤 프로젝트에나 맞는 카드 모양(새 프로젝트의 기본값).
- * 스크롤 연출: cinema 한 화면씩 고정되는 장면(큰 화면이 스크롤에 따라 움직임), phone 가운데 고정된 폰 틀 안의 화면이 바뀜, horizontal 세로 스크롤이 가로 패널을 밀어 감.
- * 강한 비주얼: brutal 브루탈리즘(굵은 선·큰 고정폭 글자·흐르는 띠), arcade 네온·CRT 아케이드.
- * 차분한: atelier 큰 여백과 세리프의 느린 드러남.
- * 앱 UI 흉내: inbox 메일 클라이언트 3단, checklist 할 일 앱, repo 저장소 페이지(파일 트리·커밋 그래프), dialogue RPG 대화창, deck 발표 슬라이드, assistant 설정 도우미 단계.
- * custom 프로젝트 id로 등록한 직접 짠 코드 페이지 (apps/safari/project/custom/; 코드의 일곱 프로젝트는 모두 자기 페이지가 있다. 등록이 없으면 showcase)
+ * 프로젝트 페이지 모양. 넷은 같은 내용(apps/safari/project/landing/content.ts의 landingOf)을 서로 다른 디자인으로 그리는 랜딩 템플릿이다
+ * (apps/safari/project/templates/).
+ * product 제품 페이지: 흰 바탕, 큰 제품 화면, 짧고 큰 문장, 넉넉한 여백, 큰 숫자.
+ * friendly 밝은 카드: 아이콘 색 하나를 강조색으로, 아이콘 달린 기능 카드와 단계 흐름 (새 프로젝트의 기본값: 그림이 없어도 빈약하지 않다).
+ * paper 문서: 따뜻한 흰 바탕, 읽기 좋은 본문, 펼치는 토글과 알림 상자.
+ * bento 타일 격자: 화면과 숫자 타일을 칸에 맞춰 짜고, 또렷한 선과 고정폭 글자를 쓴다.
+ * dialogue RPG 대화창 (같은 내용을 선택지와 대사로 읽는다).
+ * custom 프로젝트 id로 등록한 직접 짠 코드 페이지 (apps/safari/project/custom/; 코드의 일곱 프로젝트는 모두 자기 페이지가 있다. 등록이 없으면 기본 모양)
  */
-export const PROJECT_LOOKS = [
-	'showcase',
-	'cinema',
-	'phone',
-	'horizontal',
-	'brutal',
-	'arcade',
-	'atelier',
-	'inbox',
-	'checklist',
-	'repo',
-	'dialogue',
-	'deck',
-	'assistant',
-	'custom',
-] as const;
+export const PROJECT_LOOKS = ['product', 'friendly', 'paper', 'bento', 'dialogue', 'custom'] as const;
 export type ProjectLook = (typeof PROJECT_LOOKS)[number];
+
+/** 새 프로젝트의 모양: 그림이 없는 처음 상태에서도 카드와 아이콘으로 꽉 차 보인다 */
+export const DEFAULT_LOOK = 'friendly' satisfies ProjectLook;
+
+/**
+ * 예전 모양 이름 → 지금 모양. 서버에 저장해 둔 옛 이름도 읽을 때와 받을 때 이 표로 바꿔 그대로 쓴다 (parseProjects)
+ */
+export const LEGACY_LOOKS: Readonly<Record<string, ProjectLook>> = {
+	showcase: 'friendly',
+	assistant: 'friendly',
+	cinema: 'product',
+	phone: 'product',
+	atelier: 'paper',
+	inbox: 'paper',
+	checklist: 'paper',
+	horizontal: 'bento',
+	repo: 'bento',
+	deck: 'bento',
+	arcade: 'bento',
+	brutal: 'bento',
+};
 
 /**
  * dialogue 모양(RPG 대화창)의 배경 장면. auto는 배경 그림이 없으면 프로젝트 대표 화면을 픽셀로 바꿔 깐다.
@@ -148,7 +155,7 @@ export const BACKDROP_THEMES = [
 ] as const;
 export type BackdropTheme = (typeof BACKDROP_THEMES)[number];
 
-/** 페이지 배경 (지금은 dialogue 모양만 쓴다) */
+/** 페이지 배경 (dialogue 모양만 쓴다) */
 export interface ProjectBackdrop {
 	/** 장면 테마. 없으면 auto */
 	theme?: BackdropTheme;
@@ -306,7 +313,7 @@ type Rule =
 	| { kind: 'src'; allowEmpty?: boolean }
 	| { kind: 'appIcon' }
 	| { kind: 'color' }
-	| { kind: 'enum'; values: readonly string[] }
+	| { kind: 'enum'; values: readonly string[]; aliases?: Readonly<Record<string, string>> }
 	| { kind: 'number'; min: number; max: number }
 	| { kind: 'bool' }
 	| { kind: 'list'; of: Rule; max: number }
@@ -399,7 +406,7 @@ const APP = object({
 /** 프로젝트의 맨 위 필드. 덮어쓰기는 일부만 보내므로 맨 위는 모두 고를 수 있다 (안쪽 묶음의 필수는 그대로) */
 const PROJECT_FIELDS: Record<keyof Omit<Project, 'id'>, Rule> = {
 	name: text(80),
-	look: { kind: 'enum', values: PROJECT_LOOKS },
+	look: { kind: 'enum', values: PROJECT_LOOKS, aliases: LEGACY_LOOKS },
 	tagline: text(200),
 	description: text(500, true),
 	context: text(200),
@@ -534,6 +541,8 @@ function check(value: unknown, rule: Rule, path: string, errors: string[], allow
 			if (typeof value !== 'string' || !COLOR_VALUE.test(value.trim())) return fail('색(#rrggbb, rgb())이어야 합니다.');
 			return value.trim();
 		case 'enum':
+			// 예전 이름은 지금 이름으로 바꿔 받는다 (저장해 둔 옛 값이 그대로 보이게)
+			if (typeof value === 'string' && rule.aliases && Object.hasOwn(rule.aliases, value)) return rule.aliases[value];
 			if (typeof value !== 'string' || !rule.values.includes(value))
 				return fail(`${rule.values.join(', ')} 가운데 하나여야 합니다.`);
 			return value;
@@ -641,7 +650,7 @@ export function readProjects(stored: unknown, options: ParseProjectsOptions = {}
 export const blankProject = (id: string): Project => ({
 	id,
 	name: id,
-	look: 'showcase',
+	look: DEFAULT_LOOK,
 	tagline: '',
 	description: '',
 	context: '',
