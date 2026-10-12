@@ -463,6 +463,30 @@
 	font-size: 12px;
 }
 
+/* 내용 칸·보내기 실패 오류는 쓰기 창 바닥에 붙지 않게 위아래를 띄운다 (칸 오류는 .mail-compose-row 안) */
+.mail-compose > .mail-error {
+	margin: 6px 0 10px;
+}
+
+/* 사서함을 불러오지 못했을 때: 목록 위의 안내 상자 (칸 오류보다 크게, 위아래 목록과 떨어지게) */
+.mail-load-error {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	margin: 4px 12px 10px;
+	padding: 8px 12px;
+	border-radius: 8px;
+	background-color: color-mix(in srgb, var(--mail-error) 12%, transparent);
+	color: var(--mail-error);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.mail-load-error i {
+	flex: none;
+	margin-top: 2px;
+}
+
 /* 보낸 뒤 */
 .mail-sent {
 	display: flex;
