@@ -423,24 +423,13 @@
 	text-align: left;
 }
 
-/* 칸 오류: 칸 아래 줄에 입력 칸과 맞춰 작은 안내(hint)로. 밑줄은 칠하지 않는다 */
-.mail-compose-row {
-	flex-wrap: wrap;
-}
-
+/* 칸 오류: 칸(구분선) 밖 아래 줄에, 입력 칸 시작선에 맞춘 흐린 안내(hint) */
 .mail-hint {
-	display: flex;
-	flex-basis: 100%;
-	align-items: center;
-	gap: 4px;
-	padding-left: calc(72px + var(--mail-row-gap, 6px));
-	color: var(--mail-error);
+	margin: 4px 0 2px;
+	padding-left: 80px;
+	color: color-mix(in srgb, var(--mail-error) 60%, var(--mail-muted));
 	font-size: 12px;
 	line-height: 1.4;
-}
-
-.mail-hint i {
-	font-size: 11px;
 }
 
 .mail-body-error {
