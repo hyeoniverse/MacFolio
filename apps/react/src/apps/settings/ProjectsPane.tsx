@@ -1,4 +1,6 @@
 import {
+	createContext,
+	useContext,
 	useEffect,
 	useId,
 	useLayoutEffect,
@@ -32,7 +34,7 @@ import { DEFAULT_PROFILE } from '@/shared/site/profileStore';
 import { mergeSuggestions, searchPackages } from './packageSearch';
 import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest, type Period } from './projectInputs';
 import { getSavedProjects, PARSE_OPTIONS, sendProjects } from '@/shared/site/siteContent';
-import { completeProject, groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
+import { captionOf, completeProject, groupedImageFolders, PUBLIC_IMAGES } from '@/shared/site/publicImages';
 import ProjectPage from '@/apps/safari/ProjectPage';
 import { hasCustomPage } from '@/apps/safari/project/custom';
 import { PROJECT_APPS } from '@/apps/manifest';
@@ -42,6 +44,7 @@ import { uploadFile } from '@/apps/memo/writer/attachmentsApi';
 import { appIconUrl } from '@/shared/config/appIcon';
 import { env } from '@/shared/config/env';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import DatePicker from '@/shared/ui/date/DatePicker';
 import { todayIso } from '@/shared/ui/date/calendar';
 import Button from '@/shared/ui/button/Button';
@@ -61,7 +64,7 @@ interface Row {
 
 const DEFAULTS = new Map(DEFAULT_PROJECTS.map((project) => [project.id, project]));
 
-/** 화면 모음 폴더 목록: 프로젝트 폴더(id)별로 묶고, 묶음 이름은 그 프로젝트의 이름 */
+/** 그림 고르기 팝업의 폴더 묶음: 프로젝트 폴더(id)별로 묶고, 묶음 이름은 그 프로젝트의 이름 */
 const FOLDER_GROUPS = groupedImageFolders(
 	(id) => [...PROJECTS, ...DEFAULT_PROJECTS].find((project) => project.id === id)?.name
 );
@@ -232,8 +235,12 @@ function tidy(project: Project): Project {
 			.filter((control) => control.keys.length || control.label.trim()),
 		credits: pairs(project.credits),
 		conventions: pairs(project.conventions),
+		// 화면 모음: 그림이 없는 줄은 빼고, 설명을 비우면 파일 이름에서 지은 설명을 쓴다
+		gallery: project.gallery
+			?.filter((shot) => shot.src.trim())
+			.map((shot) => ({ ...shot, caption: shot.caption.trim() || captionOf(shot.src) })),
 	};
-	for (const key of ['usage', 'chapters', 'timeline', 'controls', 'credits', 'conventions'] as const)
+	for (const key of ['usage', 'chapters', 'timeline', 'controls', 'credits', 'conventions', 'gallery'] as const)
 		if (!next[key]?.length) delete next[key];
 	return next;
 }
@@ -936,6 +943,95 @@ const Lightbox = ({ items, start, onClose }: { items: string[]; start: number; o
 	);
 };
 
+/** 그림 올리기 (POST /files): 올리는 중인지와 실패한 까닭을 함께 둔다. 그림 칸과 화면 목록의 줄이 같이 쓴다 */
+function useImageUpload(onUploaded: (url: string) => void) {
+	const [uploading, setUploading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const upload = async (file: File | undefined) => {
+		if (!file) return;
+		setUploading(true);
+		setError(null);
+		try {
+			const uploaded = await uploadFile(env.apiUrl, file);
+			if (!uploaded.image) throw new Error('그림 파일만 올릴 수 있습니다.');
+			onUploaded(uploaded.url);
+		} catch (cause) {
+			setError(cause instanceof Error ? cause.message : '올리지 못했습니다.');
+		} finally {
+			setUploading(false);
+		}
+	};
+	return { uploading, error, upload };
+}
+
+/** 사이트 안 그림 고르기 팝업: 프로젝트 폴더별로 묶는다. 고른 값이 목록에 있으면 그 이름이 보인다 */
+const PicturePopup = ({
+	id,
+	label,
+	value,
+	prompt,
+	onPick,
+	fromPicked = (src) => src,
+}: {
+	id?: string;
+	label: string;
+	/** 지금 값 (목록에 없는 값이면 prompt가 보인다) */
+	value: string | undefined;
+	/** 아무것도 고르지 않았을 때 보이는 글 */
+	prompt: string;
+	onPick: (value: string | undefined) => void;
+	fromPicked?: (src: string) => string;
+}) => (
+	<Popup
+		id={id}
+		label={label}
+		value={value && ALL_PICTURES.some((src) => fromPicked(src) === value) ? value : ''}
+		onChange={(picked) => onPick(picked ? fromPicked(picked) : undefined)}
+	>
+		<option value="">{prompt}</option>
+		{FOLDER_GROUPS.map((group) => (
+			<optgroup key={group.label} label={group.label}>
+				{group.folders.flatMap((folder) =>
+					PUBLIC_IMAGES[folder.value]
+						.filter((src) => !src.endsWith('.mp4'))
+						.map((src) => (
+							<option key={src} value={fromPicked(src)}>
+								{src.slice(folder.value.length + 1)}
+								{folder.label !== '프로젝트 폴더' ? ` (${folder.label})` : ''}
+							</option>
+						))
+				)}
+			</optgroup>
+		))}
+	</Popup>
+);
+
+/** 올리기 단추: 단추 전체를 덮는 보이지 않는 파일 입력 */
+const UploadButton = ({
+	name,
+	uploading,
+	onFile,
+}: {
+	/** 접근성 이름 ('프로젝트 아이콘 올리기') */
+	name: string;
+	uploading: boolean;
+	onFile: (file: File | undefined) => void;
+}) => (
+	<label className={`projects-button ${uploading ? 'busy' : ''}`}>
+		{uploading ? '올리는 중…' : '올리기…'}
+		<input
+			type="file"
+			accept="image/*"
+			aria-label={name}
+			disabled={uploading}
+			onChange={(event) => {
+				onFile(event.target.files?.[0]);
+				event.target.value = '';
+			}}
+		/>
+	</label>
+);
+
 /**
  * 그림 한 장 고르기: 왼쪽 미리 보기 타일(누르면 크게 보기), 오른쪽에 사이트 안 그림 고르기(폴더별 팝업)·올리기(POST /files)·지우기,
  * 그 아래 주소 칸. 앱 아이콘은 이미지 폴더 기준 경로(projects/…)라 값을 그대로 두고, 보여 줄 때만 주소로 바꾼다
@@ -965,24 +1061,9 @@ const ImageField = ({
 	/** 고른 그림 주소(/imgs/…) → 저장할 값 */
 	fromPicked?: (src: string) => string;
 }) => {
-	const [uploading, setUploading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const { uploading, error, upload } = useImageUpload(onChange);
 	const [zoomed, setZoomed] = useState(false);
 	const id = useId();
-	const upload = async (file: File | undefined) => {
-		if (!file) return;
-		setUploading(true);
-		setError(null);
-		try {
-			const uploaded = await uploadFile(env.apiUrl, file);
-			if (!uploaded.image) throw new Error('그림 파일만 올릴 수 있습니다.');
-			onChange(uploaded.url);
-		} catch (cause) {
-			setError(cause instanceof Error ? cause.message : '올리지 못했습니다.');
-		} finally {
-			setUploading(false);
-		}
-	};
 	return (
 		<FormRow label={label} required={required} htmlFor={id} hint={hint} top>
 			<div className={`projects-image ${shape}`}>
@@ -1002,41 +1083,15 @@ const ImageField = ({
 				)}
 				<div className="projects-image-tools">
 					<div className="projects-image-buttons">
-						<Popup
+						<PicturePopup
 							id={id}
 							label={`${name} 고르기`}
-							value={value && ALL_PICTURES.some((src) => fromPicked(src) === value) ? value : ''}
-							onChange={(picked) => onChange(picked ? fromPicked(picked) : undefined)}
-						>
-							<option value="">{value ? '다른 그림 고르기…' : '그림 고르기…'}</option>
-							{FOLDER_GROUPS.map((group) => (
-								<optgroup key={group.label} label={group.label}>
-									{group.folders.flatMap((folder) =>
-										PUBLIC_IMAGES[folder.value]
-											.filter((src) => !src.endsWith('.mp4'))
-											.map((src) => (
-												<option key={src} value={fromPicked(src)}>
-													{src.slice(folder.value.length + 1)}
-													{folder.label !== '프로젝트 폴더' ? ` (${folder.label})` : ''}
-												</option>
-											))
-									)}
-								</optgroup>
-							))}
-						</Popup>
-						<label className={`projects-button ${uploading ? 'busy' : ''}`}>
-							{uploading ? '올리는 중…' : '올리기…'}
-							<input
-								type="file"
-								accept="image/*"
-								aria-label={`${name} 올리기`}
-								disabled={uploading}
-								onChange={(event) => {
-									void upload(event.target.files?.[0]);
-									event.target.value = '';
-								}}
-							/>
-						</label>
+							value={value}
+							prompt={value ? '다른 그림 고르기…' : '그림 고르기…'}
+							onPick={onChange}
+							fromPicked={fromPicked}
+						/>
+						<UploadButton name={`${name} 올리기`} uploading={uploading} onFile={(file) => void upload(file)} />
 						{value && (
 							<button type="button" className="projects-button" onClick={() => onChange(undefined)}>
 								지우기
@@ -1333,10 +1388,169 @@ const LookPicker = ({ value, onChange }: { value: ProjectLook; onChange: (look: 
 	);
 };
 
+/* ─── 항목 시트 (macOS 시스템 설정의 시트): 목록 항목의 칸은 편집 화면 위에 내려오는 둥근 판에서 고친다 ─── */
+
+/** 시트를 그릴 곳: 편집 화면이 깔아 두는 자리(host)와, 시트가 열린 동안 막아 둘 바탕(background) */
+const SheetHostContext = createContext<{ host: HTMLElement | null; background: HTMLElement | null }>({
+	host: null,
+	background: null,
+});
+
+/** 시트 안의 한 페이지: 안쪽 목록이 항목을 열면 이 페이지를 가리고 그 자리(slot)에 다음 페이지를 민다 */
+interface SheetPageFrame {
+	/** 이 페이지의 제목 (다음 페이지의 뒤로 단추에 쓴다) */
+	title: string;
+	/** 이 페이지 요소 (다음 페이지가 열린 동안 숨긴다) */
+	page: HTMLElement | null;
+	/** 다음 페이지를 그릴 자리 */
+	slot: HTMLElement | null;
+}
+const SheetPageContext = createContext<SheetPageFrame | null>(null);
+
+/** 시트 안에서 초점이 갈 수 있는 것 (숨은 페이지의 것은 뺀다) */
+const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), textarea, select, [tabindex]:not([tabindex="-1"])';
+const focusablesIn = (root: HTMLElement) =>
+	[...root.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((element) => element.getClientRects().length > 0);
+
+/** 페이지가 열리면 첫 입력 칸에 초점을 둔다 (없으면 페이지 안의 첫 컨트롤) */
+const focusFirstField = (page: HTMLElement | null) => {
+	if (!page) return;
+	const field =
+		page.querySelector<HTMLElement>('.projects-sheet-body input:not([type="file"]), .projects-sheet-body textarea') ??
+		focusablesIn(page)[0];
+	field?.focus();
+};
+
+/** 뒤로 단추의 왼쪽 갈매기 */
+const BackChevron = () => (
+	<svg className="projects-sheet-back-glyph" viewBox="0 0 8 14" aria-hidden="true">
+		<path d="M6.5 1.5 1.5 7l5 5.5" />
+	</svg>
+);
+
+/**
+ * 시트의 한 페이지: 머리(뒤로 단추와 제목)와 칸. 다음 페이지가 열리면 이 페이지는 숨고, 닫히면 왼쪽에서 다시 들어온다.
+ * back이 있으면 밀려 들어온 페이지다 (오른쪽에서 들어오고, 연 페이지를 숨긴다)
+ */
+const SheetPage = ({
+	title,
+	back,
+	children,
+}: {
+	title: string;
+	back?: { label: string; onBack: () => void };
+	children: ReactNode;
+}) => {
+	const parent = useContext(SheetPageContext);
+	const [page, setPage] = useState<HTMLDivElement | null>(null);
+	const [slot, setSlot] = useState<HTMLDivElement | null>(null);
+	const frame = useMemo(() => ({ title, page, slot }), [title, page, slot]);
+	// 밀려 들어온 페이지: 연 페이지를 숨기고, 닫히면 다시 보인다 (뒤로 가는 움직임으로).
+	// 숨김은 DOM에 바로 건다: 닫히는 그 순간 앞 페이지가 보여야 목록의 줄로 초점을 돌려줄 수 있다
+	const opener = back ? (parent?.page ?? null) : null;
+	useLayoutEffect(() => {
+		if (!opener) return;
+		opener.toggleAttribute('hidden', true);
+		return () => {
+			opener.toggleAttribute('hidden', false);
+			opener.setAttribute('data-motion', 'back');
+		};
+	}, [opener]);
+	useEffect(() => focusFirstField(page), [page]);
+	return (
+		<>
+			<div ref={setPage} className={`projects-sheet-page${back ? ' pushed' : ''}`}>
+				<header className="projects-sheet-head">
+					{back && (
+						<button
+							type="button"
+							className="projects-sheet-back"
+							aria-label={`뒤로 (${back.label})`}
+							onClick={back.onBack}
+						>
+							<BackChevron />
+							<span>{back.label}</span>
+						</button>
+					)}
+					<h3 className="projects-sheet-title">{title}</h3>
+				</header>
+				<div className="projects-sheet-body">
+					<SheetPageContext.Provider value={frame}>
+						<div className="projects-box">{children}</div>
+					</SheetPageContext.Provider>
+				</div>
+			</div>
+			<div ref={setSlot} className="projects-sheet-slot" />
+		</>
+	);
+};
+
+/**
+ * 항목 시트: 편집 화면을 살짝 어둡게 덮고, 위에서 둥근 판이 내려온다. 칸을 고치는 대로 바로 반영되니 단추는 완료 하나.
+ * Esc·완료로 닫고, 열린 동안 초점은 시트 안을 돈다 (바탕은 inert). 시트는 설정 창 안에 그려 창과 함께 움직인다
+ */
+const ItemSheet = ({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) => {
+	const { host, background } = useContext(SheetHostContext);
+	const sheetRef = useRef<HTMLDivElement>(null);
+	const layer = useExitMotion<HTMLDivElement>('fade-out');
+	// 바탕을 막는다. 닫힐 때(정리) 바로 풀어야 목록의 줄로 초점을 돌려줄 수 있다
+	useLayoutEffect(() => {
+		if (!background) return;
+		background.toggleAttribute('inert', true);
+		return () => {
+			background.toggleAttribute('inert', false);
+		};
+	}, [background]);
+	if (!host) return null;
+	return createPortal(
+		<div ref={layer} className="projects-sheet-layer">
+			<div
+				ref={sheetRef}
+				className="projects-sheet"
+				role="dialog"
+				aria-modal="true"
+				aria-label={title}
+				onKeyDown={(event) => {
+					if (event.key === 'Escape' && !event.defaultPrevented) {
+						event.preventDefault();
+						event.stopPropagation();
+						onClose();
+					} else if (event.key === 'Tab' && sheetRef.current?.contains(event.target as Node)) {
+						// 초점 가두기: 끝에서 Tab이면 처음으로, 처음에서 ⇧Tab이면 끝으로
+						const all = focusablesIn(sheetRef.current);
+						const edge = event.shiftKey ? all[0] : all.at(-1);
+						if (!edge || document.activeElement !== edge) return;
+						event.preventDefault();
+						(event.shiftKey ? all.at(-1) : all[0])?.focus();
+					}
+				}}
+			>
+				<SheetPage title={title}>{children}</SheetPage>
+				<footer className="projects-sheet-foot">
+					<button type="button" className="projects-button primary" onClick={onClose}>
+						완료
+					</button>
+				</footer>
+			</div>
+		</div>,
+		host
+	);
+};
+
+/** 정보 단추 (macOS의 info.circle): 줄의 항목을 시트로 연다 */
+const InfoGlyph = () => (
+	<svg viewBox="0 0 16 16" aria-hidden="true" className="projects-info-glyph">
+		<circle cx="8" cy="8" r="6.6" />
+		<path d="M8 7.2v4" />
+		<circle cx="8" cy="4.9" r="0.55" className="dot" />
+	</svg>
+);
+
 /**
  * 목록 편집 (macOS의 표): 둥근 상자 안의 줄 목록과 아래 ＋/− 막대.
  * 줄을 누르면 고른 상태(강조 바탕)가 되고, 끌거나 ⌥↑·⌥↓로 순서를 바꾸고, −나 Delete로 고른 줄을 뺀다.
- * detail이 있으면 고른 항목의 칸을 목록 아래에 연다 (마스터–디테일). 없으면 줄의 칸을 바로 고친다
+ * detail이 있으면 줄 끝의 ⓘ, 두 번 누르기, Enter로 그 항목의 칸을 시트로 연다 (＋로 더한 항목도 바로 연다).
+ * 시트 안의 목록이면 시트를 겹치지 않고 같은 시트 안에 다음 페이지로 민다. detail이 없으면 줄의 칸을 바로 고친다
  */
 function ListTable<T>({
 	label,
@@ -1350,11 +1564,11 @@ function ListTable<T>({
 	cells,
 	detail,
 }: {
-	/** 목록의 접근성 이름. 항목 칸의 이름 앞부분('주요 기능 1 제목')에도 쓴다 */
+	/** 목록의 접근성 이름. 항목 칸의 이름 앞부분('주요 기능 1 제목')과 시트 제목('주요 기능 1')에도 쓴다 */
 	label: string;
 	/** 목록 위에 보이는 제목 (없으면 label) */
 	title?: string;
-	/** 다른 항목의 상세 칸 안에 든 목록: 영역(region)이 아니라 묶음(group)으로 둔다 (바깥 목록의 영역 이름과 겹치지 않게) */
+	/** 다른 항목의 칸 안에 든 목록: 영역(region)이 아니라 묶음(group)으로 둔다 (바깥 목록의 영역 이름과 겹치지 않게) */
 	nested?: boolean;
 	hint?: string;
 	items: T[];
@@ -1365,36 +1579,45 @@ function ListTable<T>({
 	columns?: string[];
 	/** 줄의 칸들 */
 	cells: (item: T, index: number, update: (next: T) => void) => ReactNode[];
-	/** 고른 항목의 상세 칸 */
+	/** 항목의 칸 (시트에 그린다) */
 	detail?: (item: T, index: number, update: (next: T) => void) => ReactNode;
 }) {
 	const [picked, setPicked] = useState<number | null>(null);
 	const selected = picked !== null && picked < items.length ? picked : null;
+	const [opened, setOpened] = useState<number | null>(null);
+	const open = detail && opened !== null && opened < items.length ? opened : null;
+	/** 이 목록이 시트 안에 있으면 그 페이지 (항목을 다음 페이지로 민다) */
+	const frame = useContext(SheetPageContext);
 	const listRef = useRef<HTMLOListElement>(null);
-	const sectionRef = useRef<HTMLElement>(null);
-	/** 그린 뒤 초점을 줄 곳: 그 줄 자체, 또는 (새로 더한 항목이면) 첫 입력 칸 */
+	/** 그린 뒤 초점을 줄 곳: 그 줄 자체, 또는 (새로 더한 줄이면) 줄의 첫 입력 칸 */
 	const pendingFocus = useRef<{ index: number; input: boolean } | null>(null);
 	useLayoutEffect(() => {
 		const pending = pendingFocus.current;
 		if (!pending) return;
 		pendingFocus.current = null;
 		const row = listRef.current?.children[pending.index] as HTMLElement | undefined;
-		if (!pending.input) return row?.focus();
-		const field =
-			sectionRef.current?.querySelector<HTMLElement>(
-				'.projects-detail input:not([type="file"]), .projects-detail textarea'
-			) ?? row?.querySelector<HTMLElement>('input');
-		field?.focus();
+		if (pending.input) row?.querySelector<HTMLElement>('input:not([type="file"])')?.focus();
+		else row?.focus();
 	});
 	const update = (index: number) => (next: T) => onChange(items.map((item, i) => (i === index ? next : item)));
 	const select = (index: number, focus = true) => {
 		setPicked(index);
 		if (focus) pendingFocus.current = { index, input: false };
 	};
+	const openItem = (index: number) => {
+		setPicked(index);
+		setOpened(index);
+	};
+	/** 시트(또는 밀린 페이지)를 닫고 그 줄로 초점을 돌려준다 */
+	const closeItem = () => {
+		if (open !== null) pendingFocus.current = { index: open, input: false };
+		setOpened(null);
+	};
 	const add = () => {
 		onChange([...items, blank()]);
 		setPicked(items.length);
-		pendingFocus.current = { index: items.length, input: true };
+		if (detail) setOpened(items.length);
+		else pendingFocus.current = { index: items.length, input: true };
 	};
 	const remove = (index: number) => {
 		onChange(items.filter((_, i) => i !== index));
@@ -1408,12 +1631,13 @@ function ListTable<T>({
 		onChange(moveItem(items, index, delta));
 		select(target);
 	};
+	const sheetTitle = open !== null ? `${label} ${open + 1}` : '';
+	const sheetContent = open !== null && detail ? <div key={open}>{detail(items[open], open, update(open))}</div> : null;
 	return (
 		<section
 			className={`projects-group${nested ? ' nested' : ''}`}
 			role={nested ? 'group' : undefined}
 			aria-label={label}
-			ref={sectionRef}
 		>
 			<h3 className="projects-group-title">
 				{title}
@@ -1457,6 +1681,11 @@ function ListTable<T>({
 										select(to);
 									});
 								}}
+								onDoubleClick={(event) => {
+									if (!detail) return;
+									if ((event.target as HTMLElement).closest('input, textarea, select, button, label')) return;
+									openItem(index);
+								}}
 								onKeyDown={(event) => {
 									if (event.target !== event.currentTarget) return;
 									if (event.altKey) {
@@ -1470,6 +1699,9 @@ function ListTable<T>({
 									} else if (event.key === 'Delete' || event.key === 'Backspace') {
 										event.preventDefault();
 										remove(index);
+									} else if (event.key === 'Enter' && detail) {
+										event.preventDefault();
+										openItem(index);
 									}
 								}}
 							>
@@ -1478,6 +1710,20 @@ function ListTable<T>({
 										{cell}
 									</div>
 								))}
+								{detail && (
+									<div role="gridcell" className="projects-table-cell">
+										<button
+											type="button"
+											className="projects-info-button"
+											aria-label={`${label} ${index + 1} 편집`}
+											title="이 항목을 고칩니다."
+											tabIndex={index === (selected ?? 0) ? 0 : -1}
+											onClick={() => openItem(index)}
+										>
+											<InfoGlyph />
+										</button>
+									</div>
+								)}
 							</li>
 						))}
 					</ol>
@@ -1506,15 +1752,20 @@ function ListTable<T>({
 					{hint && <span className="projects-table-note">{hint}</span>}
 				</div>
 			</div>
-			{detail && selected !== null && (
-				<div className="projects-box projects-detail" role="group" aria-label={`${label} ${selected + 1}`}>
-					<p className="projects-detail-title">
-						{`${label} ${selected + 1}`}
-						<span>{`${items.length}개 가운데 ${selected + 1}번째`}</span>
-					</p>
-					<div key={selected}>{detail(items[selected], selected, update(selected))}</div>
-				</div>
-			)}
+			{sheetContent &&
+				(frame ? (
+					frame.slot &&
+					createPortal(
+						<SheetPage title={sheetTitle} back={{ label: frame.title, onBack: closeItem }}>
+							{sheetContent}
+						</SheetPage>,
+						frame.slot
+					)
+				) : (
+					<ItemSheet title={sheetTitle} onClose={closeItem}>
+						{sheetContent}
+					</ItemSheet>
+				))}
 		</section>
 	);
 }
@@ -1535,51 +1786,110 @@ const patchOf = <T extends object>(item: T, change: Partial<T>): T => {
 
 type Shot = NonNullable<ProjectPoint['shots']>[number];
 
-/** 화면 여러 장: 항목의 상세 칸 안에 든 작은 목록. 줄에는 그림과 설명, 고르면 아래에서 그림을 고르고 설명을 적는다 */
+/** 화면 목록의 한 줄: 썸네일(누르면 크게 보기), 설명 칸, 그 아래 주소 칸과 고르기·올리기 */
+const ShotRow = ({
+	name,
+	shot,
+	update,
+	onZoom,
+}: {
+	/** 줄 이름 ('화면 모음 1'): 칸마다 접근성 이름 앞에 붙인다 */
+	name: string;
+	shot: Shot;
+	update: (next: Shot) => void;
+	onZoom: () => void;
+}) => {
+	const { uploading, error, upload } = useImageUpload((src) => update({ ...shot, src }));
+	const video = shot.src.endsWith('.mp4');
+	return (
+		<div className="projects-shot">
+			{shot.src ? (
+				<button type="button" className="projects-shot-thumb" aria-label={`${name} 그림 크게 보기`} onClick={onZoom}>
+					{video ? <video src={shot.src} muted /> : <img src={shot.src} alt="" loading="lazy" />}
+				</button>
+			) : (
+				<span className="projects-shot-thumb empty" aria-hidden="true">
+					<i className="fa-regular fa-image" />
+				</span>
+			)}
+			<div className="projects-shot-fields">
+				<input
+					className="projects-input"
+					aria-label={`${name} 설명`}
+					value={shot.alt}
+					placeholder="설명을 적습니다."
+					onChange={(event) => update({ ...shot, alt: event.target.value })}
+				/>
+				<div className="projects-shot-source">
+					<input
+						className="projects-input mono"
+						aria-label={`${name} 주소`}
+						value={shot.src}
+						placeholder="/imgs/… 또는 https://"
+						spellCheck={false}
+						onChange={(event) => update({ ...shot, src: event.target.value.trim() })}
+					/>
+					<PicturePopup
+						label={`${name} 그림 고르기`}
+						value={undefined}
+						prompt="고르기…"
+						onPick={(src) => src && update({ ...shot, src })}
+					/>
+					<UploadButton name={`${name} 그림 올리기`} uploading={uploading} onFile={(file) => void upload(file)} />
+				</div>
+				{error && <p className="projects-error">{error}</p>}
+			</div>
+		</div>
+	);
+};
+
+/**
+ * 화면 여러 장 (항목 안)과 화면 모음 (그림 탭): 줄마다 그림과 설명을 바로 고친다 (시트를 열지 않는다).
+ * 줄을 끌거나 ⌥↑·⌥↓로 순서를 바꾸고, 썸네일을 누르면 목록의 그림을 차례로 크게 본다
+ */
 const ShotsEditor = ({
 	label,
+	title = '화면 여러 장',
+	nested = true,
+	hint = '글 옆이나 아래에 차례로 보입니다. .mp4 주소는 화면에 보일 때만 도는 영상이 됩니다.',
 	shots,
 	onChange,
 }: {
 	label: string;
+	title?: string;
+	nested?: boolean;
+	hint?: string;
 	shots: Shot[];
 	onChange: (shots: Shot[]) => void;
-}) => (
-	<ListTable<Shot>
-		label={label}
-		title="화면 여러 장"
-		nested
-		hint="글 옆이나 아래에 차례로 보입니다. .mp4 주소는 화면에 보일 때만 도는 영상이 됩니다."
-		items={shots}
-		onChange={onChange}
-		blank={() => ({ src: '', alt: '' })}
-		cells={(shot) => [
-			<span className="projects-point" key="text">
-				<strong className={shot.alt.trim() ? '' : 'placeholder'}>{shot.alt.trim() || '설명 없음'}</strong>
-				<span>{shot.src || '그림을 고르지 않았습니다.'}</span>
-			</span>,
-			<RowThumb key="thumb" src={shot.src && !shot.src.endsWith('.mp4') ? shot.src : undefined} />,
-		]}
-		detail={(shot, index, update) => (
-			<>
-				<ImageField
-					label="그림"
-					name={`${label} ${index + 1} 그림`}
-					shape="wide"
-					value={shot.src || undefined}
-					onChange={(src) => update({ ...shot, src: src ?? '' })}
-				/>
-				<TextField
-					label="설명"
-					ariaLabel={`${label} ${index + 1} 설명`}
-					value={shot.alt}
-					placeholder="예: 첫 화면"
-					onChange={(alt) => update({ ...shot, alt })}
-				/>
-			</>
-		)}
-	/>
-);
+}) => {
+	const [zoomed, setZoomed] = useState<string | null>(null);
+	const sources = shots.map((shot) => shot.src).filter(Boolean);
+	return (
+		<>
+			<ListTable<Shot>
+				label={label}
+				title={title}
+				nested={nested}
+				hint={hint}
+				items={shots}
+				onChange={onChange}
+				blank={() => ({ src: '', alt: '' })}
+				cells={(shot, index, update) => [
+					<ShotRow
+						key="shot"
+						name={`${label} ${index + 1}`}
+						shot={shot}
+						update={update}
+						onZoom={() => setZoomed(shot.src)}
+					/>,
+				]}
+			/>
+			{zoomed !== null && sources.includes(zoomed) && (
+				<Lightbox items={sources} start={sources.indexOf(zoomed)} onClose={() => setZoomed(null)} />
+			)}
+		</>
+	);
+};
 
 /** 항목 하나의 칸: 제목, 설명, 자세히, 그림, 화면 여러 장, 영상, 아이콘 */
 const PointFields = ({
@@ -1943,30 +2253,6 @@ const CreditsEditor = ({ credits, onChange }: { credits: Credit[]; onChange: (cr
 	/>
 );
 
-/** 화면 모음 폴더의 그림 격자 (12장까지). 누르면 크게 보기 */
-const FolderShots = ({ folder }: { folder: string }) => {
-	const [zoomed, setZoomed] = useState<number | null>(null);
-	const all = PUBLIC_IMAGES[folder] ?? [];
-	const shots = all.slice(0, 12);
-	return (
-		<div className="projects-shots">
-			<p className="projects-shots-count">
-				{all.length > 12 ? `${all.length}장 가운데 12장을 미리 봅니다.` : `${all.length}장이 있습니다.`}
-			</p>
-			<ul className="projects-shots-grid" aria-label="화면 모음 미리 보기">
-				{shots.map((src, index) => (
-					<li key={src}>
-						<button type="button" aria-label={`${fileName(src)} 크게 보기`} onClick={() => setZoomed(index)}>
-							{src.endsWith('.mp4') ? <video src={src} muted /> : <img src={src} alt="" loading="lazy" />}
-						</button>
-					</li>
-				))}
-			</ul>
-			{zoomed !== null && <Lightbox items={all} start={zoomed} onClose={() => setZoomed(null)} />}
-		</div>
-	);
-};
-
 /** 오른쪽 패널 단추 모양 (macOS의 sidebar.right) */
 const SidebarRightIcon = () => (
 	<svg viewBox="0 0 18 14" aria-hidden="true" className="projects-toolbar-glyph">
@@ -2000,6 +2286,10 @@ const ProjectEditor = ({
 		if (preview) requestWindowSize('settings', 1280, 740);
 	}, [preview]);
 	const formRef = useRef<HTMLDivElement>(null);
+	/** 목록 항목의 시트를 그릴 자리와, 시트가 열린 동안 막아 둘 편집 화면 */
+	const [sheetHost, setSheetHost] = useState<HTMLDivElement | null>(null);
+	const [editorElement, setEditorElement] = useState<HTMLFormElement | null>(null);
+	const sheetContext = useMemo(() => ({ host: sheetHost, background: editorElement }), [sheetHost, editorElement]);
 	const [json, setJson] = useState('');
 	const [errors, setErrors] = useState<string[]>([]);
 	/** 예시로 채운 횟수: 칸들이 새 값으로 처음부터 다시 그려지게 (기간 칸처럼 처음 값만 읽는 칸이 있다) */
@@ -2069,8 +2359,9 @@ const ProjectEditor = ({
 
 	const app = draft.app;
 	return (
-		<>
+		<SheetHostContext.Provider value={sheetContext}>
 			<form
+				ref={setEditorElement}
 				className="projects-editor"
 				aria-label={`${row.project.name} 편집`}
 				noValidate
@@ -2299,7 +2590,8 @@ const ProjectEditor = ({
 							)}
 							{tab === 'pictures' && (
 								<>
-									{/* 대표 화면(image)은 따로 고르지 않는다: 화면 모음의 첫 그림을 쓴다 (다른 장을 쓰려면 JSON의 image).
+									{/* 대표 화면(image)은 따로 고르지 않는다: 화면 모음의 첫 그림을 쓴다 (completeProject. 다른 장을 쓰려면 JSON의 image).
+								    화면 모음은 그림마다 고르거나 올린다. 폴더(galleryFolder)는 저장소에 넣고 배포한 그림만 되어 JSON에서만 고친다.
 								    글자 로고(logo)도 폼에는 두지 않는다: 쓰는 프로젝트가 드물고 아이콘과 헷갈린다 (필요하면 JSON의 logo) */}
 									<Group title="아이콘" label="그림">
 										<ImageField
@@ -2309,40 +2601,36 @@ const ProjectEditor = ({
 											hint="네모난 앱 아이콘입니다. Safari 탭·Finder·페이지 맨 위에 작게 보이고, 없으면 기본 모양을 씁니다."
 										/>
 									</Group>
-									<Group
+									{draft.galleryFolder && !draft.gallery?.length && (
+										<p className="projects-tab-hint">
+											{`화면 모음은 JSON에 적은 폴더 ${draft.galleryFolder}의 그림을 씁니다. 아래 목록에 그림을 더하면 폴더 대신 목록을 씁니다.`}
+										</p>
+									)}
+									<ShotsEditor
+										label="화면 모음"
 										title="화면 모음"
-										hint="폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은 저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다."
-									>
-										<FormRow label="폴더" htmlFor="projects-gallery-folder" align="end">
-											<Popup
-												id="projects-gallery-folder"
-												value={draft.galleryFolder ?? ''}
-												onChange={(folder) => set({ galleryFolder: optional(folder) })}
-											>
-												<option value="">
-													{draft.gallery?.length ? `직접 적은 화면 ${draft.gallery.length}장` : '없음'}
-												</option>
-												{/* 같은 프로젝트 폴더 아래의 것끼리 묶는다 (묶음 이름은 그 프로젝트 이름) */}
-												{FOLDER_GROUPS.map((group) => (
-													<optgroup key={group.label} label={group.label}>
-														{group.folders.map((folder) => (
-															<option key={folder.value} value={folder.value}>
-																{folder.label} ({PUBLIC_IMAGES[folder.value].length}장)
-															</option>
-														))}
-													</optgroup>
-												))}
-											</Popup>
-										</FormRow>
-										{draft.galleryFolder && <FolderShots key={draft.galleryFolder} folder={draft.galleryFolder} />}
-									</Group>
+										nested={false}
+										hint={
+											draft.image
+												? '대표 화면은 JSON에 적은 그림을 씁니다. 줄을 끌어 순서를 바꿉니다.'
+												: '첫 번째 그림이 대표 화면으로 쓰입니다. 줄을 끌어 순서를 바꿉니다.'
+										}
+										shots={(draft.gallery ?? []).map(({ src, caption }) => ({ src, alt: caption }))}
+										onChange={(shots) =>
+											set({
+												gallery: shots.length ? shots.map(({ src, alt }) => ({ src, caption: alt })) : undefined,
+												// 목록에 그림을 두면 폴더 대신 목록을 쓴다 (폴더가 있으면 화면이 폴더의 그림으로 바뀌므로)
+												galleryFolder: shots.length ? undefined : draft.galleryFolder,
+											})
+										}
+									/>
 								</>
 							)}
 							{tab === 'content' && (
 								<>
 									<p className="projects-tab-hint">
 										목록의 줄을 눌러 고르고, 끌거나 ⌥↑·⌥↓ 키로 순서를 바꿉니다. ＋로 항목을 더하고, −로 고른 항목을
-										뺍니다.
+										뺍니다. 줄 끝의 ⓘ 단추를 누르거나 줄을 두 번 누르면 항목을 고치는 창이 열립니다.
 									</p>
 									<PairsEditor
 										label="한눈에 보는 숫자"
@@ -2507,6 +2795,8 @@ const ProjectEditor = ({
 					)}
 				</div>
 			</form>
+			{/* 항목 시트는 폼 밖, 편집 화면 위에 그린다 (폼의 Enter 제출을 물려받지 않고, 설정 창과 함께 움직이게) */}
+			<div ref={setSheetHost} className="projects-sheet-host" />
 			{/* 확인 창은 폼 밖에 둔다 (폼 안의 단추 모양을 물려받지 않고, 설정 창 한가운데에 뜨게) */}
 			{confirmingSample && (
 				<AlertDialog
@@ -2517,7 +2807,7 @@ const ProjectEditor = ({
 					onCancel={() => setConfirmingSample(false)}
 				/>
 			)}
-		</>
+		</SheetHostContext.Provider>
 	);
 };
 
