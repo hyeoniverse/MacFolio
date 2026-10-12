@@ -1,5 +1,5 @@
 /*
- * 시네마 모양: 순검정 바탕, 흰 글, 전기 파랑→보라 강조. 자간 좁은 거대 산세리프.
+ * 시네마 모양: 순검정 바탕, 흰 글, 강조색은 차분한 파랑 하나. 자간 좁은 거대 산세리프. 빛·그라데이션 글자 없이 타이포와 여백으로.
  * 장면(.cn-scene)은 화면(--view, 스크롤 상자 높이)의 --len배 높이이고, 무대(.cn-stage)는 sticky로 붙어 있다.
  * CinemaPage.tsx가 지나온 만큼을 --p(0~1)로 넣고, 여기서 그 값으로 모양을 정한다 (clamp()로 구간을 나눈다)
  */
@@ -9,23 +9,26 @@
 	--sp-text: #ffffff;
 	--sp-muted: #9a9aa3;
 	--sp-line: rgba(255, 255, 255, 0.14);
-	--sp-accent: #3b82f6;
-	--sp-grad: linear-gradient(90deg, #2f80ff, #a855f7);
+	--sp-accent: #3d84e6;
+	--cn-link: #5b9bf0;
+	/* 공통 조각이 그라데이션 글자로 쓰던 값: 단색으로 (그라데이션 글자 없음) */
+	--sp-grad: linear-gradient(var(--sp-text), var(--sp-text));
+	--cn-num: #5c5c66;
 	/* 데모 조각(Devices·Pipeline)이 읽는 어두운 톤 */
 	--pd-ink: #050507;
 	--pd-ink-2: #101014;
 	--pd-ink-text: #f5f5f7;
 	--pd-ink-muted: #8e8e95;
 	--pd-ink-line: rgba(255, 255, 255, 0.1);
-	--pd-glow: color-mix(in srgb, var(--sp-accent) 70%, transparent);
+	--pd-glow: transparent;
 	--pd-gutter: clamp(20px, 5cqi, 64px);
 	--pd-max: 1040px;
 	--cn-gutter: clamp(20px, 5cqi, 64px);
-	/* 랜딩 키트 조각(기기 틀, 가짜 화면, 벤토, CTA)이 읽는 색: 시네마의 파랑→보라, 검은 바탕 */
-	--lk-accent: #2f80ff;
-	--lk-accent-2: #a855f7;
+	/* 랜딩 키트 조각(기기 틀, 가짜 화면, 벤토, CTA)이 읽는 색: 파랑 하나와 그 옅은 값, 검은 바탕 */
+	--lk-accent: #3d84e6;
+	--lk-accent-2: #7aa6e0;
 	--lk-dark-surface: #000000;
-	--lk-dark-surface-2: #121216;
+	--lk-dark-surface-2: #111113;
 	--lk-dark-line: rgba(255, 255, 255, 0.12);
 	letter-spacing: -0.03em;
 }
@@ -58,9 +61,7 @@
 	display: grid;
 	align-content: start;
 	justify-items: center;
-	background:
-		radial-gradient(50% 40% at 50% 115%, color-mix(in srgb, #2f80ff 45%, transparent), transparent 70%),
-		radial-gradient(40% 35% at 80% 110%, color-mix(in srgb, #a855f7 35%, transparent), transparent 70%), #000;
+	background: #000;
 }
 
 .cn-title {
@@ -107,22 +108,11 @@
 	display: inline-block;
 }
 
-/* 글자마다 순서(--i)대로: 흐릿하고 아래 있던 글자가 선명하게 떠오른다 */
+/* 글자마다 순서(--i)대로: 아래 있던 흰 글자가 차례로 떠오른다 */
 .cn-letter {
 	display: inline-block;
 	animation: cn-letter-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-	animation-delay: calc(0.2s + var(--i) * 55ms);
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
-	background-size: 400% 100%;
-	background-position: calc(var(--i) * 6%) 0;
-}
-
-/* 흰 글자 위에 강조색은 첫 낱말에만 (나머지는 흰색) */
-.cn-word:not(:first-child) .cn-letter {
-	background: none;
+	animation-delay: calc(0.2s + var(--i) * 40ms);
 	color: var(--sp-text);
 }
 
@@ -146,27 +136,25 @@
 
 .cn .cn-hero-links .sp-pill {
 	padding: 11px 24px;
-	background: #2f80ff;
+	background: var(--sp-accent);
 	color: #fff;
 	font-size: 16px;
-	box-shadow: 0 10px 30px -10px rgba(47, 128, 255, 0.8);
+	box-shadow: none;
 }
 
 .cn .cn-hero-links .sp-pill:only-child,
 .cn .cn-hero-links .sp-link {
-	color: #4c9bff;
+	color: var(--cn-link);
 	font-size: 16px;
 }
 
 @keyframes cn-letter-in {
 	from {
 		opacity: 0;
-		filter: blur(10px);
-		transform: translateY(0.35em);
+		transform: translateY(0.3em);
 	}
 	to {
 		opacity: 1;
-		filter: blur(0);
 		transform: none;
 	}
 }
@@ -207,17 +195,11 @@
 	}
 }
 
-.cn-poster .lk-device-glow {
-	opacity: calc(0.6 + var(--up) * 0.4);
-}
-
 /* ─── 기능 장면 ─── */
 .cn-feature .cn-stage {
 	/* 아래서 밀고 들어온다(--in), 끝에서는 작아지며 어두워져 다음 장면에 밀려난다(--out) */
 	--in: clamp(0, calc(var(--p) / 0.22), 1);
 	--out: clamp(0, calc((var(--p) - 0.8) / 0.2), 1);
-	--mx: 0;
-	--my: 0;
 	background: #000;
 	clip-path: inset(calc((1 - var(--in)) * 100%) 0 0 0);
 }
@@ -225,7 +207,6 @@
 .cn-frame {
 	position: absolute;
 	inset: 0;
-	perspective: 1200px;
 	transform: scale(calc(1 - var(--out) * 0.06)) translateY(calc(var(--out) * -4%));
 	filter: brightness(calc(1 - var(--out) * 0.45));
 }
@@ -235,11 +216,10 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	transform: scale(calc(1.18 - var(--in) * 0.18)) rotateY(calc(var(--mx) * 2.5deg)) rotateX(calc(var(--my) * -2.5deg));
-	transition: transform 0.4s ease-out;
+	transform: scale(calc(1.08 - var(--in) * 0.08));
 }
 
-/* 캡션은 그림 아래쪽에 어두운 그라데이션 위로. 그림보다 조금 늦게 떠오르고 함께 나간다 */
+/* 캡션은 그림 아래쪽에 어둡게 깔린 바탕 위로 (글을 읽히게 하는 가림막 하나). 그림보다 조금 늦게 떠오르고 함께 나간다 */
 .cn-caption {
 	--in: clamp(0, calc((var(--p) - 0.18) / 0.2), 1);
 	position: absolute;
@@ -289,10 +269,7 @@
 }
 
 .cn-counter span {
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	color: var(--sp-text);
 	font-size: clamp(28px, 4cqi, 44px);
 	font-weight: 800;
 }
@@ -309,7 +286,7 @@
 	align-items: center;
 	gap: 8px;
 	margin-bottom: 14px;
-	color: #6fa8ff;
+	color: var(--cn-link);
 	font-size: 15px;
 	font-weight: 700;
 	letter-spacing: 0;
@@ -317,13 +294,13 @@
 
 .cn .cn-caption .cn-caption-eyebrow {
 	margin-top: 0;
-	color: #6fa8ff;
+	color: var(--cn-link);
 	font-size: 15px;
 }
 
 /*
  * 그림 없는 기능: 글(왼쪽)과 제품 화면(오른쪽)이 짝. 차례가 홀수면 좌우를 바꾼다.
- * 비주얼은 아래에서 솟고(--in), 글은 조금 늦게 떠오른다(.cn-caption의 --in). 뒤에는 강조색 빛
+ * 비주얼은 아래에서 솟고(--in), 글은 조금 늦게 떠오른다(.cn-caption의 --in). 바탕은 검정 그대로
  */
 .cn-split .cn-stage {
 	display: grid;
@@ -338,19 +315,6 @@
 .cn-split-flip .cn-stage {
 	grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
 	grid-template-areas: 'visual text';
-}
-
-.cn-split-light {
-	position: absolute;
-	inset: 0;
-	background:
-		radial-gradient(42% 55% at 72% 55%, color-mix(in srgb, #2f80ff 30%, transparent), transparent 70%),
-		radial-gradient(30% 40% at 88% 85%, color-mix(in srgb, #a855f7 26%, transparent), transparent 70%);
-	opacity: calc(var(--in) * (1 - var(--out)));
-}
-
-.cn-split-flip .cn-split-light {
-	transform: scaleX(-1);
 }
 
 .cn-split .cn-split-text {
@@ -381,20 +345,17 @@
 	margin: 0 auto;
 }
 
-/* FeatureVisual을 담는 유리 카드: 어두운 판 위 가는 테두리와 위쪽 반사 */
-.cn-glass {
+/* FeatureVisual을 담는 판: 검정보다 한 단계 밝은 단색에 가는 테두리 */
+.cn-panel {
 	position: relative;
 	height: min(calc(var(--cn-view) - 160px), 520px);
 	overflow: hidden;
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	border-radius: 28px;
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 40%), #0c0c10;
-	box-shadow:
-		0 40px 100px -30px rgba(47, 128, 255, 0.45),
-		inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 16px;
+	background: #0f0f11;
 }
 
-.cn-glass .lk-feature {
+.cn-panel .lk-feature {
 	min-height: 100%;
 }
 
@@ -412,7 +373,7 @@
 .cn-numbers .cn-stage {
 	display: grid;
 	place-items: center;
-	background: radial-gradient(45% 45% at 50% 50%, color-mix(in srgb, #2f80ff 22%, transparent), transparent 75%), #000;
+	background: #000;
 }
 
 .cn-numbers ul {
@@ -435,15 +396,11 @@
 	align-items: center;
 	gap: 14px;
 	opacity: var(--on);
-	transform: translateY(calc((1 - var(--on)) * 48px)) scale(calc(0.86 + var(--on) * 0.14));
-	filter: blur(calc((1 - var(--on)) * 6px));
+	transform: translateY(calc((1 - var(--on)) * 48px)) scale(calc(0.92 + var(--on) * 0.08));
 }
 
 .cn-numbers strong {
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	color: var(--sp-text);
 	font-size: clamp(96px, 24cqi, 300px);
 	font-weight: 800;
 	letter-spacing: -0.07em;
@@ -489,9 +446,9 @@
 .cn-block h2::after {
 	display: block;
 	width: 64px;
-	height: 3px;
+	height: 2px;
 	margin-top: 18px;
-	background: var(--sp-grad);
+	background: var(--sp-accent);
 	content: '';
 }
 
@@ -508,7 +465,7 @@
 }
 
 .cn-block .lk-eyebrow {
-	color: #6fa8ff;
+	color: var(--cn-link);
 	font-size: 15px;
 }
 
@@ -518,8 +475,8 @@
 	height: 100%;
 	overflow: hidden;
 	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 24px;
-	background: radial-gradient(80% 60% at 0% 0%, rgba(47, 128, 255, 0.12), transparent 70%), #0f0f13;
+	border-radius: 16px;
+	background: #0f0f11;
 }
 
 .cn-card-visual {
@@ -585,17 +542,14 @@
 .cn-steps li {
 	padding: 28px 28px 30px;
 	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 24px;
-	background: linear-gradient(180deg, #121217, #0a0a0d);
+	border-radius: 16px;
+	background: #0f0f11;
 }
 
 .cn-step-no {
 	display: block;
 	margin-bottom: 18px;
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	color: var(--cn-num);
 	font-size: clamp(56px, 8cqi, 96px);
 	font-weight: 800;
 	letter-spacing: -0.06em;
@@ -617,10 +571,7 @@
 }
 
 .cn-no {
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	color: var(--cn-num);
 	font-size: 28px;
 	font-weight: 800;
 	letter-spacing: -0.04em;
@@ -659,7 +610,7 @@
 	height: 8px;
 	margin-right: 14px;
 	border-radius: 50%;
-	background: var(--sp-grad);
+	background: var(--cn-num);
 	vertical-align: 3px;
 	content: '';
 }
@@ -735,7 +686,7 @@
 }
 
 .cn .cn-cta .lk-cta-links .sp-pill {
-	background: #2f80ff;
+	background: var(--sp-accent);
 	color: #fff;
 }
 
@@ -759,7 +710,7 @@
 		gap: 28px;
 	}
 
-	.cn-glass {
+	.cn-panel {
 		height: min(calc(var(--cn-view) * 0.42), 320px);
 	}
 
@@ -801,7 +752,6 @@
 	.cn-frame-img,
 	.cn-caption,
 	.cn-counter,
-	.cn-split-light,
 	.cn-split-visual,
 	.cn-numbers li {
 		opacity: 1;
@@ -840,7 +790,7 @@
 		position: relative;
 	}
 
-	.cn-glass {
+	.cn-panel {
 		height: 420px;
 	}
 

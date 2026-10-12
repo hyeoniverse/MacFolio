@@ -1,28 +1,29 @@
-/* 설정 도우미 모양(assistant): 흐린 그라데이션 위에 떠 있는 큰 둥근 창, 왼쪽 단계 목록, 한 단계가 한 화면 */
+/* 설정 도우미 모양(assistant): 옅은 회색 단색 바탕 위의 큰 둥근 창(그림자 한 벌), 왼쪽 단계 목록, 한 단계가 한 화면 */
 .sp[data-look='assistant'] {
-	--sp-accent: #0a84ff;
-	--asst-a: #0a84ff;
-	--asst-b: #bf5af2;
-	--asst-c: #ff9f0a;
-	--asst-win: rgba(255, 255, 255, 0.86);
-	--asst-side: rgba(242, 242, 247, 0.9);
+	--sp-accent: #2f7bd6;
+	--sp-grad: linear-gradient(var(--sp-text), var(--sp-text));
+	--asst-a: #2f7bd6;
+	--asst-win: #ffffff;
+	--asst-side: #f7f7f8;
 	--asst-line: rgba(0, 0, 0, 0.08);
-	--asst-shadow: 0 30px 80px rgba(20, 20, 60, 0.28), 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+	--asst-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.07);
 	--cr-bg: transparent;
 	--cr-line: var(--asst-line);
-	/* 랜딩 키트 조각(기기 틀, 가짜 화면, 항목 비주얼, 기술 줄)이 읽는 색: 시스템 파랑과 보라 */
-	--lk-accent: #0a84ff;
-	--lk-accent-2: #bf5af2;
-	--lk-radius: 14px;
-	background: #dfe6f3;
+	/* 랜딩 키트 조각(기기 틀, 가짜 화면, 항목 비주얼, 기술 줄)이 읽는 색: 파랑 하나와 그 옅은 값 */
+	--lk-accent: #2f7bd6;
+	--lk-accent-2: #7ea7da;
+	--lk-radius: 12px;
+	background: #f1f1f3;
 }
 
 :root[data-theme='dark'] .sp[data-look='assistant'] {
-	--asst-win: rgba(34, 34, 40, 0.9);
-	--asst-side: rgba(24, 24, 28, 0.92);
-	--asst-line: rgba(255, 255, 255, 0.1);
-	--asst-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.14);
-	background: #101018;
+	--asst-a: #4a90e2;
+	--asst-win: #161618;
+	--asst-side: #1c1c1f;
+	--asst-line: rgba(255, 255, 255, 0.09);
+	--asst-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+	--lk-accent: #4a90e2;
+	background: #0b0b0c;
 }
 
 .asst {
@@ -31,63 +32,10 @@
 	place-items: center;
 	min-height: 100%;
 	padding: clamp(24px, 5cqi, 64px) clamp(16px, 4cqi, 48px);
-	/* clip: 바탕 빛 덩이가 넘친 만큼 스크롤되지 않게 (hidden이면 단추에 초점이 갈 때 창이 옆으로 밀린다) */
+	/* clip: 창이 나타날 때 넘친 만큼 스크롤되지 않게 (hidden이면 단추에 초점이 갈 때 창이 옆으로 밀린다) */
 	overflow: hidden;
 	overflow: clip;
 	isolation: isolate;
-}
-
-/* ─── 바탕: 강조색 두 개가 천천히 떠다니는 흐린 덩이 ─── */
-.asst-sky {
-	position: absolute;
-	inset: 0;
-	z-index: -1;
-	filter: blur(70px) saturate(1.3);
-}
-
-.asst-sky i {
-	position: absolute;
-	border-radius: 50%;
-	opacity: 0.75;
-	animation: asst-drift 18s ease-in-out infinite alternate;
-}
-
-.asst-sky i:nth-child(1) {
-	top: -10%;
-	left: -10%;
-	width: 60cqi;
-	height: 60cqi;
-	background: var(--asst-a);
-}
-
-.asst-sky i:nth-child(2) {
-	right: -15%;
-	bottom: -20%;
-	width: 70cqi;
-	height: 70cqi;
-	background: var(--asst-b);
-	animation-delay: -6s;
-	animation-duration: 24s;
-}
-
-.asst-sky i:nth-child(3) {
-	top: 40%;
-	left: 40%;
-	width: 30cqi;
-	height: 30cqi;
-	background: var(--asst-c);
-	opacity: 0.45;
-	animation-delay: -12s;
-	animation-duration: 30s;
-}
-
-@keyframes asst-drift {
-	from {
-		transform: translate(0, 0) scale(1);
-	}
-	to {
-		transform: translate(12%, -10%) scale(1.15);
-	}
 }
 
 /* ─── 창 ─── */
@@ -98,18 +46,16 @@
 	max-width: 1060px;
 	min-height: 560px;
 	overflow: hidden;
-	border-radius: 22px;
+	border-radius: 16px;
 	background: var(--asst-win);
 	box-shadow: var(--asst-shadow);
-	backdrop-filter: blur(30px) saturate(1.4);
-	-webkit-backdrop-filter: blur(30px) saturate(1.4);
 	animation: asst-pop 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 @keyframes asst-pop {
 	from {
 		opacity: 0;
-		transform: translateY(24px) scale(0.96);
+		transform: translateY(12px);
 	}
 }
 
@@ -198,8 +144,7 @@
 .asst-steps li[data-state='current'] .asst-dot {
 	border-color: var(--asst-a);
 	color: var(--asst-a);
-	transform: scale(1.25);
-	box-shadow: 0 0 0 5px color-mix(in srgb, var(--asst-a) 18%, transparent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--asst-a) 14%, transparent);
 }
 
 /* ─── 창 본문 ─── */
@@ -308,9 +253,9 @@
 
 .sp .asst-btn.primary {
 	border-color: transparent;
-	background: linear-gradient(180deg, color-mix(in srgb, var(--asst-a) 85%, #ffffff), var(--asst-a));
+	background: var(--asst-a);
 	color: #ffffff;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	box-shadow: none;
 }
 
 /* ─── 환영 ─── */
@@ -364,10 +309,6 @@
 	animation: asst-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s both;
 }
 
-.asst-welcome-device .lk-device {
-	transform: perspective(1400px) rotateY(-8deg);
-}
-
 .asst-finish h2 {
 	max-width: 560px;
 	margin-top: 6px;
@@ -380,27 +321,15 @@
 	height: 112px;
 	margin-bottom: 24px;
 	object-fit: contain;
-	border-radius: 26px;
-	filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.22));
-	animation: asst-float 5s ease-in-out infinite;
+	border-radius: 24px;
 }
 
 .asst-icon.fallback {
 	display: grid;
 	place-items: center;
-	background: linear-gradient(135deg, var(--asst-a), var(--asst-b));
+	background: var(--asst-a);
 	color: #ffffff;
 	font-size: 48px;
-}
-
-@keyframes asst-float {
-	0%,
-	100% {
-		transform: translateY(0) rotate(-1deg);
-	}
-	50% {
-		transform: translateY(-12px) rotate(1deg);
-	}
 }
 
 .asst-hello {
@@ -452,10 +381,7 @@
 }
 
 .asst-facts strong {
-	background: linear-gradient(120deg, var(--asst-a), var(--asst-b));
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	color: var(--sp-text);
 	font-size: clamp(30px, 4.6cqi, 44px);
 	font-weight: 700;
 	letter-spacing: -0.03em;
@@ -634,7 +560,6 @@
 	border: 1px solid var(--asst-line);
 	border-radius: 16px;
 	background: var(--asst-side);
-	box-shadow: 0 10px 30px -12px rgba(20, 20, 60, 0.25);
 }
 
 .asst-detail-media:empty {
@@ -646,7 +571,10 @@
 	display: block;
 	width: 100%;
 	border-radius: 12px;
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+	box-shadow:
+		0 0 0 1px var(--asst-line),
+		0 1px 2px rgba(0, 0, 0, 0.05),
+		0 8px 24px rgba(0, 0, 0, 0.07);
 }
 
 /* ─── 만든 방식·쓰는 법: 약관 읽기처럼 ─── */
@@ -709,7 +637,7 @@
 	bottom: 6px;
 	left: 6px;
 	width: 2px;
-	background: linear-gradient(180deg, var(--asst-a), var(--asst-b));
+	background: var(--asst-line);
 	content: '';
 }
 
@@ -842,7 +770,6 @@
 }
 
 .asst-done-mark path {
-	stroke: var(--asst-b);
 	animation-delay: 0.55s;
 	animation-duration: 0.45s;
 }

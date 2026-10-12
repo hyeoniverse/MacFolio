@@ -310,7 +310,6 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 	return (
 		<div ref={root} className="at">
 			<header className="at-hero">
-				<span className="at-hero-light" aria-hidden="true" />
 				<Lines className="at-hero-text">
 					{project.icon && !project.logo && (
 						<Line as="div" className="at-hero-icon">

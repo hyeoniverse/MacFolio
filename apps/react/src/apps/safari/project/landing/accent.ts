@@ -1,4 +1,4 @@
-// 랜딩 키트의 강조색: 프로젝트 아이콘에서 뽑은 색(dialogue/iconColors.ts의 dominantColors)을 --lk-accent·--lk-accent-2로
+// 랜딩 키트의 강조색: 프로젝트 아이콘에서 뽑은 주된 색(dialogue/iconColors.ts의 dominantColors) 하나를 채도를 낮춰 --lk-accent·--lk-accent-2로
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { dominantColors } from '@/apps/safari/project/dialogue/iconColors';
@@ -10,15 +10,15 @@ const hsl = (h: number, s: number, l: number) =>
 	`hsl(${Math.round(((h % 360) + 360) % 360)} ${Math.round(clamp(s, 0, 1) * 100)}% ${Math.round(clamp(l, 0, 1) * 100)}%)`;
 
 /**
- * 뽑은 색 → 키트의 CSS 변수. 강조색은 흰 글자가 읽히는 밝기로(버튼·막대), 둘째 색은 빛 번짐에 쓰니 조금 밝게.
- * 색이 하나뿐이면 둘째 색은 색상환에서 40° 돌린 이웃 색 (그라데이션이 한 색으로 뭉개지지 않게)
+ * 뽑은 색 → 키트의 CSS 변수. 강조색은 한 가지: 아이콘의 주된 색을 채도를 조금 낮춰(흰 글자가 읽히는 밝기로, 단추·막대).
+ * 둘째 색은 다른 색이 아니라 같은 색상의 한 단계 옅은 값 (그래프의 둘째 점·옅은 칠). 무지개가 되지 않게 둘째로 뽑힌 색은 쓰지 않는다
  */
 export function accentVars(colors: Hsl[]): Record<string, string> {
-	const [main, other] = colors;
-	const second = other ?? { ...main, h: main.h + 40 };
+	const [main] = colors;
+	const s = clamp(main.s, 0.4, 0.62);
 	return {
-		'--lk-accent': hsl(main.h, clamp(main.s, 0.55, 0.85), clamp(main.l, 0.42, 0.52)),
-		'--lk-accent-2': hsl(second.h, clamp(second.s, 0.55, 0.85), clamp(second.l, 0.5, 0.62)),
+		'--lk-accent': hsl(main.h, s, clamp(main.l, 0.42, 0.5)),
+		'--lk-accent-2': hsl(main.h, s * 0.75, 0.62),
 	};
 }
 

@@ -7,21 +7,14 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { cssVars } from '@/shared/lib/cssVars';
 import { PROFILE, type Project, type ProjectChapter, type ProjectPoint } from '@/shared/profile';
 import { Links, Region } from '@/apps/safari/project/parts';
-import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
+import { useReveal } from '@/apps/safari/project/reveal';
 import { scrollParent } from '@/apps/safari/project/scroll';
 import { Bars, Compare, FeatureMedia, ScrollFrames, ZoomImage } from '@/apps/safari/project/CreativeParts';
 import { ChapterFacts, ChapterPoints, Shots } from '@/apps/safari/project/CreativeChapters';
 import { Demo } from '@/apps/safari/project/creative/Demo';
 import { Themes } from '@/apps/safari/project/creative/Themes';
 import { Mascot } from '@/apps/safari/project/creative/Mascot';
-import {
-	DeviceFrame,
-	GlowBackdrop,
-	LogoStrip,
-	MockScreen,
-	StatBand,
-	pickMockKind,
-} from '@/apps/safari/project/landing';
+import { DeviceFrame, LogoStrip, MockScreen, StatBand, pickMockKind } from '@/apps/safari/project/landing';
 import '@/apps/safari/project/DeckPage.css';
 
 /** 슬라이드 원본 크기 (여기 맞춰 그리고, 창에 맞게 축소한다) */
@@ -32,8 +25,8 @@ const PAD_X = 56;
 const CHROME_Y = 96;
 /** 이보다 좁으면(모바일) 슬라이드를 세로로 쌓는다. 기본 Safari 창(약 630px)은 덱으로 */
 const STACK_BELOW = 600;
-/** 부분(표지, 기능, 장…)마다 돌아가며 쓰는 강조 색상(hue) */
-const HUES = [222, 268, 318, 12, 38, 160, 190, 96, 280, 340];
+/** 강조 색상(hue). 장마다 돌려 쓸 수 있게 목록으로 두지만, 절제한 발표 자료라 한 가지 색만 쓴다 */
+const HUES = [218];
 
 type Kind =
 	| 'cover'
@@ -68,18 +61,12 @@ interface Slide {
 
 const two = (n: number) => String(n).padStart(2, '0');
 
-/** 표지: 이름을 거대한 그라데이션 글자로, 한 줄 소개, 발표자(사이트 주인), 링크. 오른쪽에 대표 화면이 마우스를 따라 기운다 */
+/** 표지: 이름을 거대한 단색 글자로, 한 줄 소개, 발표자(사이트 주인), 링크. 오른쪽에 똑바로 선 대표 화면 */
 const Cover: React.FC<{ project: Project; seat: React.RefObject<HTMLDivElement | null>; mascot: boolean }> = ({
 	project,
 	seat,
 	mascot,
 }) => {
-	const tilt = (event: React.PointerEvent<HTMLDivElement>) => {
-		if (prefersReducedMotion()) return;
-		const box = event.currentTarget.getBoundingClientRect();
-		event.currentTarget.style.setProperty('--mx', (((event.clientX - box.left) / box.width) * 2 - 1).toFixed(3));
-		event.currentTarget.style.setProperty('--my', (((event.clientY - box.top) / box.height) * 2 - 1).toFixed(3));
-	};
 	// 이름은 슬라이드 폭(1136px) 한 줄에 들어가게 글자를 줄인다 (한글·한자는 1em, 로마자는 약 0.7em으로 잰다)
 	const width = [...project.name].reduce(
 		(sum, ch) => sum + (/[\u1100-\u11ff\u3000-\u9fff\uac00-\ud7af]/.test(ch) ? 1 : 0.7),
@@ -87,8 +74,7 @@ const Cover: React.FC<{ project: Project; seat: React.RefObject<HTMLDivElement |
 	);
 	const size = Math.min(150, Math.floor(1136 / Math.max(4, width)));
 	return (
-		<div className="dk-cover" onPointerMove={tilt} data-shot="">
-			<GlowBackdrop tone="dark" pattern="grid" focus="side" />
+		<div className="dk-cover" data-shot="">
 			<p className="dk-kicker">
 				{project.icon && <img src={project.icon} alt="" className="dk-cover-icon" />}
 				<span>{project.context}</span>
@@ -108,9 +94,9 @@ const Cover: React.FC<{ project: Project; seat: React.RefObject<HTMLDivElement |
 				<Links project={project} className="dk-links" />
 			</div>
 			<div className="dk-cover-side">
-				{/* 신제품 발표처럼: 노트북 화면에 대표 화면(없으면 데이터로 그린 화면), 바닥에 비친다 */}
+				{/* 신제품 발표처럼: 노트북 화면에 대표 화면(없으면 데이터로 그린 화면) */}
 				<div className="dk-cover-device" aria-hidden="true">
-					<DeviceFrame kind="laptop" src={project.image} glow reflection>
+					<DeviceFrame kind="laptop" src={project.image}>
 						<MockScreen project={project} kind={pickMockKind(project)} tone="dark" tint={false} decorative />
 					</DeviceFrame>
 				</div>
@@ -141,10 +127,10 @@ const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number }
 					</p>
 				)}
 			</div>
-			{/* 화면이 없는 기능: 그 기능을 고른 제품 화면을 기울어진 브라우저 창에 (발표의 기능 소개 장처럼) */}
+			{/* 화면이 없는 기능: 그 기능을 고른 제품 화면을 브라우저 창에 (발표의 기능 소개 장처럼) */}
 			{!media && (
 				<div className="dk-feature-aside" data-reveal="zoom" aria-hidden="true">
-					<DeviceFrame kind="browser" url={project.demo ?? project.url} tilt="right" glow>
+					<DeviceFrame kind="browser" url={project.demo ?? project.url}>
 						<MockScreen
 							project={project}
 							kind={pickMockKind(project)}
@@ -297,7 +283,6 @@ function slidesOf(project: Project): Slide[] {
 			notes: project.facts.map((fact) => `${fact.value} — ${fact.label}`),
 			body: (
 				<div className="dk-facts-wrap">
-					<GlowBackdrop tone="dark" pattern="dots" focus="center" />
 					<p className="dk-eyebrow">한눈에</p>
 					<h2 className="dk-facts-title">{project.tagline}</h2>
 					<StatBand facts={project.facts} tone="dark" label="숫자" className="dk-stats" />
@@ -532,7 +517,6 @@ function slidesOf(project: Project): Slide[] {
 		notes: ['질문을 받습니다', project.url],
 		body: (
 			<div className="dk-end">
-				<GlowBackdrop tone="dark" pattern="dots" focus="center" />
 				{project.icon && <img className="dk-end-icon" src={project.icon} alt="" />}
 				<p className="dk-end-big">
 					<span className="dk-grad">고맙습니다</span>
