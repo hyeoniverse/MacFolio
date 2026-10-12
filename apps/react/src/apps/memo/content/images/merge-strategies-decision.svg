@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#6b7280"/></marker></defs>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">어느 방식을 쓸지 정하는 질문 세 개</text>
+  <!-- Q1 -->
+  <rect x="170" y="50" width="300" height="46" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="320" y="70" text-anchor="middle" font-size="12" fill="#1f2937">PR 안의 커밋 하나하나가 main 기록에 남을 가치가 있는가?</text>
+  <text x="320" y="86" text-anchor="middle" font-size="11" fill="#6b7280">(단계마다 뜻이 있는 커밋 vs "fix", "wip" 같은 임시 커밋)</text>
+  <!-- no -> squash -->
+  <path d="M170 73 L90 73 L90 150" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="110" y="66" font-size="11" fill="#6b7280">아니다</text>
+  <rect x="20" y="156" width="140" height="62" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="90" y="178" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">Squash and merge</text>
+  <text x="90" y="196" text-anchor="middle" font-size="11" fill="#374151">PR = 커밋 하나</text>
+  <text x="90" y="210" text-anchor="middle" font-size="11" fill="#374151">제목에 PR 전체를 적는다</text>
+  <!-- yes -> Q2 -->
+  <path d="M320 96 L320 130" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="330" y="118" font-size="11" fill="#6b7280">그렇다</text>
+  <rect x="170" y="136" width="300" height="46" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="320" y="156" text-anchor="middle" font-size="12" fill="#1f2937">커밋 SHA를 바깥에서 가리키는가?</text>
+  <text x="320" y="172" text-anchor="middle" font-size="11" fill="#6b7280">(배포 태그, 스크린샷 주소, 글·PR 본문의 커밋 링크, 서명)</text>
+  <!-- yes -> merge commit -->
+  <path d="M470 159 L550 159 L550 236" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="490" y="152" font-size="11" fill="#6b7280">그렇다</text>
+  <!-- no -> Q3 -->
+  <path d="M320 182 L320 216" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="330" y="204" font-size="11" fill="#6b7280">아니다</text>
+  <rect x="170" y="222" width="300" height="46" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="320" y="242" text-anchor="middle" font-size="12" fill="#1f2937">브랜치 안에 머지 커밋(main 합치기)이 있는가?</text>
+  <text x="320" y="258" text-anchor="middle" font-size="11" fill="#6b7280">(충돌을 main 병합으로 풀었다면 있다)</text>
+  <!-- yes -> merge commit -->
+  <path d="M470 245 L550 245" stroke="#6b7280" stroke-width="1.5" fill="none"/>
+  <text x="490" y="238" font-size="11" fill="#6b7280">그렇다</text>
+  <!-- no -> rebase -->
+  <path d="M320 268 L320 302" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="330" y="290" font-size="11" fill="#6b7280">아니다</text>
+  <rect x="230" y="308" width="180" height="62" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+  <text x="320" y="330" text-anchor="middle" font-size="12" font-weight="600" fill="#ef4444">Rebase and merge</text>
+  <text x="320" y="348" text-anchor="middle" font-size="11" fill="#374151">직선 기록, 커밋 유지</text>
+  <text x="320" y="362" text-anchor="middle" font-size="11" fill="#374151">SHA는 바뀐다</text>
+  <!-- merge commit box -->
+  <rect x="480" y="242" width="140" height="62" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="550" y="264" text-anchor="middle" font-size="12" font-weight="600" fill="#4f46e5">Create a merge commit</text>
+  <text x="550" y="282" text-anchor="middle" font-size="11" fill="#374151">커밋·SHA 그대로</text>
+  <text x="550" y="296" text-anchor="middle" font-size="11" fill="#374151">PR 경계가 기록에 남는다</text>
+</svg>
