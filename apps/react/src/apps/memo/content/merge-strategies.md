@@ -1,11 +1,11 @@
 ---
 title: GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge
 date: 2026-10-12
-category: 개발기/MacFolio/인프라
-summary: PR의 Merge 단추에는 세 가지 방식이 있다. 같은 PR을 각 방식으로 병합하면 main의 커밋 그래프가 어떻게 달라지는지, 커밋 SHA·머지 커밋·기록의 직선성이 어떻게 바뀌는지 도식으로 정리했다. 선택 기준은 질문 세 개로 요약된다. 커밋 단위가 남을 가치가 있는가, 커밋 SHA를 바깥에서 가리키는가, 브랜치 안에 머지 커밋이 있는가. MacFolio는 배포 태그·스크린샷 주소·충돌 해결 방식이 모두 머지 커밋 SHA에 의존해 Create a merge commit을 쓴다.
+category: 기술 노트/Git
+summary: PR의 Merge 단추에는 세 가지 방식이 있다. 같은 PR을 각 방식으로 병합하면 main의 커밋 그래프가 어떻게 달라지는지, 커밋 SHA·머지 커밋·기록의 직선성이 어떻게 바뀌는지 도식으로 정리했다. 선택 기준은 질문 세 개로 요약된다. 커밋 단위가 남을 가치가 있는가, 커밋 SHA를 바깥에서 가리키는가, 브랜치 안에 머지 커밋이 있는가. 팀의 작업 방식에 따라 보통 어느 쪽으로 가는지, 되돌릴 때는 무엇이 달라지는지도 함께 적었다.
 ---
 
-GitHub PR 페이지의 Merge 단추를 누르면 세 가지 방식 가운데 하나를 고르게 된다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 이 저장소는 처음부터 Create a merge commit만 써 왔는데(병합된 PR 98개 전부), 왜 그렇게 정했는지 다시 설명할 일이 있어 정리한다.
+GitHub PR 페이지의 Merge 단추를 누르면 세 가지 방식 가운데 하나를 고르게 된다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것을 골라야 하는지 물으면 "팀마다 다르다"는 답이 돌아오는데, 무엇이 달라서 다른 답이 나오는지 정리한다.
 
 ## 같은 PR, 세 가지 기록
 
@@ -45,20 +45,28 @@ A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 
 
 팀 단위로 보면 보통 이렇게 나뉜다. 오픈소스나 큰 모노레포는 Squash(기여자의 커밋 습관을 통제할 수 없고, 되돌리기가 커밋 하나로 끝난다). 커밋을 정성껏 쪼개는 팀은 Rebase(직선 기록, `git bisect`에 유리). 배포·태그·문서가 SHA에 묶여 있거나 PR 경계를 기록에 남기고 싶은 곳은 Merge commit.
 
-## MacFolio가 Create a merge commit을 쓰는 이유
+## 되돌릴 때 달라지는 것
 
-![MacFolio에서 머지 커밋 SHA에 매달려 있는 것들](./images/merge-strategies-macfolio.svg 'API 이미지 태그, first-parent 기록, 브랜치 커밋 링크, 충돌 해결 방식')
+병합 뒤 문제가 생겨 PR 하나를 통째로 되돌리는 경우를 보자.
 
-- **API 배포 태그가 머지 커밋 SHA다.** main에 병합되면 API 이미지가 `sha-` + 머지 커밋 7자리로 올라가고, 서버 배포 워크플로가 그 태그를 받는다 (`docs/deployment.md`). Squash나 Rebase라면 태그 기준이 "마지막 커밋"으로 바뀌어 배포 문서와 Run workflow 안내가 달라진다.
-- **PR 본문과 블로그 글이 브랜치 커밋 SHA를 가리킨다.** PR의 도식 이미지는 `chore/pr-screenshots` 브랜치의 커밋 SHA로 주소를 만들고, 글에서 "커밋 `b0387b87`"처럼 적는다. Rebase하면 main에 그 SHA가 없다.
-- **충돌은 브랜치에 main을 merge commit으로 합쳐 푼다.** CONTRIBUTING의 규칙이다. 그러면 브랜치에 머지 커밋이 생기므로 Rebase and merge와 맞지 않는다.
-- **PR 안의 커밋 단위를 남긴다.** #212처럼 "Modal 추출" → "용어 수정" → "도식 글자 수정"이 각각 커밋이고, 글에서 그 순서를 설명한다. Squash는 이것을 하나로 합친다.
-- **PR 제목이 머지 커밋 제목이 된다.** 커밋 제목이 아쉬워도 PR 제목을 고치면 `--first-parent` 기록에는 고친 제목이 남는다. 이미 푸시한 커밋을 force-push로 고치지 않는 규칙과 맞물린다.
+- **Squash**: 커밋 S 하나가 곧 PR이므로 `git revert S`로 끝난다. 가장 단순하다.
+- **Rebase**: A'·B'·C' 세 개를 범위로 되돌린다. `git revert C'~3..C'`처럼 적어야 하고, 사이에 다른 PR의 커밋이 끼어 있으면 범위를 잘라 적어야 한다.
+- **Merge commit**: `git revert -m 1 M3`처럼 어느 부모를 기준으로 할지(`-m 1`은 main 쪽) 지정해야 한다. 한 번 되돌린 머지 커밋을 다시 넣으려면 revert의 revert가 필요하다는 점도 알아 두어야 한다.
 
-대가도 있다. `git log`가 두 갈래로 길어지고, 되돌릴 때 `git revert -m 1 <머지 커밋>`처럼 부모를 지정해야 한다. 이 저장소는 PR을 작게 유지하고 `--first-parent`로 읽으면 되므로 감수한다.
+`git bisect`로 문제 커밋을 찾을 때는 반대로 커밋이 잘게 남은 쪽이 유리하다. Rebase가 가장 좋고, Merge commit은 `--first-parent`를 붙이면 PR 단위로 좁힌 뒤 안으로 들어갈 수 있다. Squash는 PR 단위까지만 좁혀진다.
+
+## 팀 유형별로 보면
+
+![팀의 작업 방식에 따라 보통 고르는 병합 방식](./images/merge-strategies-teams.svg '오픈소스·모노레포는 Squash, 커밋을 쪼개는 팀은 Rebase, SHA·PR 경계에 의존하는 곳은 Merge commit')
+
+- **오픈소스, 큰 모노레포 → Squash.** 기여자의 커밋 습관을 통제할 수 없고, 리뷰 반영 커밋이 많이 쌓인다. PR 하나가 커밋 하나가 되어 되돌리기도 단순하다. 대신 PR 제목과 본문이 곧 커밋 메시지이므로 제목 규칙을 엄격히 둔다.
+- **커밋을 정성껏 쪼개는 팀 → Rebase.** 커밋마다 빌드가 되고 뜻이 있는 팀이라면 직선 기록과 커밋 단위를 둘 다 얻는다. 브랜치에서 `git merge main`을 쓰지 않고 `git rebase main`으로 따라가는 규칙이 같이 필요하다.
+- **배포·태그·문서가 SHA에 묶여 있거나 PR 경계를 기록에 남기고 싶은 곳 → Merge commit.** 배포 이미지 태그를 머지 커밋 SHA로 만들거나, PR 본문과 문서에서 커밋 링크를 쓰거나, 서명된 커밋을 유지해야 하면 SHA가 바뀌지 않는 방식이어야 한다. 충돌을 `git merge main`으로 푸는 팀도 여기에 든다.
+
+어느 쪽이든 한 저장소 안에서는 한 가지로 통일하는 편이 좋다. 섞어 쓰면 기록 모양이 PR마다 달라져 `--first-parent`도 `bisect`도 제대로 쓰기 어렵다.
 
 ## 저장소 설정으로 고정하기
 
-GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식을 각각 켜고 끌 수 있다. MacFolio는 셋 다 켜져 있어 Merge 단추에서 매번 고르게 되어 있는데, Create a merge commit만 남기고 둘을 끄면 실수로 다른 방식을 고를 일이 없다. 같은 화면의 "Automatically delete head branches"를 켜면 병합 뒤 브랜치 삭제(CONTRIBUTING 규칙)도 자동이 된다. 이 둘은 코드가 아니라 설정이라 손으로 바꿔야 한다.
+GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식을 각각 켜고 끌 수 있다. 기본값은 셋 다 켜진 상태라 Merge 단추에서 매번 고르게 되는데, 정한 방식 하나만 남기고 나머지를 끄면 실수로 다른 방식을 고를 일이 없다. 같은 화면의 "Automatically delete head branches"를 켜면 병합 뒤 브랜치 삭제도 자동이 된다. 둘 다 코드가 아니라 저장소 설정이므로 CONTRIBUTING 같은 문서에 적어 두어야 새로 온 사람이 알 수 있다.
 
-#MacFolio #Git #GitHub
+#Git #GitHub
