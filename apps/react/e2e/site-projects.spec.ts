@@ -331,6 +331,9 @@ test.describe('프로젝트 관리', () => {
 		await expect(editor.getByRole('textbox', { name: '주요 기능 1 자세히' })).not.toHaveValue('');
 		await editor.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('씨앗부터 수확까지');
 		await expect(form.getByRole('region', { name: '장', exact: true }).getByRole('row')).toHaveCount(2);
+		// 조작법은 그 모양(RPG 대화창)에서만 쓰는 칸이라 소개 탭의 페이지 모양 아래에 있다
+		await expect(editor.getByRole('textbox', { name: '조작법 1 키' })).toHaveCount(0);
+		await editor.getByRole('tab', { name: '소개' }).click();
 		await expect(editor.getByRole('textbox', { name: '조작법 1 키' })).toHaveValue('↑, ↓, ←, →');
 
 		await editor.getByRole('button', { name: '완료' }).click();
@@ -427,14 +430,15 @@ test.describe('프로젝트 관리', () => {
 		const list = settings.getByRole('list', { name: '프로젝트' });
 		await list.getByRole('listitem').filter({ hasText: 'QRU' }).getByRole('button', { name: '편집' }).click();
 		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
-		// 페이지 모양은 그림 카드에서 고른다 (라디오)
+		// 대화창 배경은 그 모양에서만 쓰는 칸이라, 다른 모양에서는 보이지 않는다
+		await expect(editor.getByRole('combobox', { name: '배경 테마' })).toHaveCount(0);
+		// 페이지 모양은 그림 카드에서 고른다 (라디오). 고르면 그 아래에 그 모양의 칸이 나온다
 		await editor.getByRole('radio', { name: 'RPG 대화창' }).click();
 		await expect(editor.getByRole('radio', { name: 'RPG 대화창' })).toHaveAttribute('aria-checked', 'true');
 		const scene = editor.getByRole('complementary', { name: '미리 보기' }).locator('.dl');
 		// 코드의 기본값: QRU는 사무실
 		await expect(scene).toHaveAttribute('data-theme', 'office');
 
-		await editor.getByRole('tab', { name: '그림' }).click();
 		const theme = editor.getByRole('combobox', { name: '배경 테마' });
 		await expect(theme).toHaveValue('office');
 		await theme.selectOption('sea');

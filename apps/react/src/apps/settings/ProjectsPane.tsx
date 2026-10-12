@@ -48,7 +48,7 @@ import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import { move as moveItem } from '@/apps/settings/showcase';
-import { fillWithSample } from '@/apps/settings/lookSamples';
+import { fillWithSample, LOOK_FIELDS, type LookSample } from '@/apps/settings/lookSamples';
 
 /** 목록의 한 줄: 프로젝트 하나 (코드의 기본값에 덮어쓴 모습) */
 interface Row {
@@ -2010,6 +2010,9 @@ const ProjectEditor = ({
 		setFilled((count) => count + 1);
 		if (tab === 'json') setTab('intro');
 	};
+	/** 지금 고른 모양이 이 필드를 쓰는지 (모양 전용 칸을 보일지) */
+	const lookUses = (field: keyof LookSample) =>
+		draft.look !== 'custom' && (LOOK_FIELDS[draft.look] as readonly string[]).includes(field);
 	const set = (patch: Partial<Project>) => {
 		const next = { ...draft, ...patch };
 		for (const key of Object.keys(patch) as (keyof Project)[]) if (next[key] === undefined) delete next[key];
@@ -2202,6 +2205,64 @@ const ProjectEditor = ({
 									>
 										<LookPicker value={draft.look} onChange={(look) => set({ look })} />
 									</Group>
+									{/* 모양 설정: 어떤 모양에서만 쓰는 칸은 그 모양을 골랐을 때만 여기에 보인다 (값은 모양을 바꿔도 남는다) */}
+									{lookUses('art') && (
+										<Group title="장면 그림" label="장면">
+											<ImageField
+												label="장면 그림"
+												shape="wide"
+												value={draft.art}
+												onChange={(art) => set({ art })}
+												hint="아케이드 모양의 첫 화면과 RPG 대화창 모양의 표지에 대표 화면 대신 크게 보입니다. 없으면 대표 화면을 씁니다."
+											/>
+										</Group>
+									)}
+									{lookUses('backdrop') && (
+										<Group
+											title="대화창 배경"
+											hint="RPG 대화창 모양의 하늘·바닥·소품을 고릅니다. 자동은 배경 그림이 없으면 대표 화면을 픽셀로 바꿔 깔고, 강조색은 언제나 프로젝트 아이콘의 색을 따릅니다."
+										>
+											<FormRow label="배경 테마" htmlFor="projects-backdrop-theme" align="end">
+												<Popup
+													id="projects-backdrop-theme"
+													value={draft.backdrop?.theme ?? 'auto'}
+													onChange={(theme) =>
+														set({ backdrop: tidyBackdrop({ ...draft.backdrop, theme: theme as BackdropTheme }) })
+													}
+												>
+													{BACKDROP_THEMES.map((theme) => (
+														<option key={theme} value={theme}>
+															{BACKDROP_LABEL[theme]}
+														</option>
+													))}
+												</Popup>
+											</FormRow>
+											<ImageField
+												label="배경 그림"
+												shape="wide"
+												value={draft.backdrop?.image}
+												onChange={(image) => set({ backdrop: tidyBackdrop({ ...draft.backdrop, image }) })}
+												hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
+											/>
+										</Group>
+									)}
+									{lookUses('controls') && (
+										<ControlsEditor
+											controls={draft.controls ?? []}
+											onChange={(controls) => set({ controls: controls.length ? controls : undefined })}
+										/>
+									)}
+									{lookUses('conventions') && (
+										<PairsEditor
+											label="커밋 규칙"
+											hint="저장소 모양의 Conventions 탭과 커밋 그래프의 색에 쓰입니다."
+											keys={['type', 'description']}
+											names={['타입', '설명']}
+											placeholders={['예: feat', '예: 새 기능']}
+											rows={draft.conventions ?? []}
+											onChange={(conventions) => set({ conventions: conventions.length ? conventions : undefined })}
+										/>
+									)}
 									<Group title="주소와 기술">
 										<TextField
 											label="저장소"
@@ -2246,15 +2307,6 @@ const ProjectEditor = ({
 											hint="네모난 앱 아이콘입니다. Safari 탭·Finder·페이지 맨 위에 작게 보이고, 없으면 기본 모양을 씁니다."
 										/>
 									</Group>
-									<Group title="장면 그림" label="장면">
-										<ImageField
-											label="장면 그림"
-											shape="wide"
-											value={draft.art}
-											onChange={(art) => set({ art })}
-											hint="아케이드 모양의 첫 화면과 RPG 대화창 모양의 표지에 대표 화면 대신 크게 보입니다. 없으면 대표 화면을 씁니다."
-										/>
-									</Group>
 									<Group
 										title="화면 모음"
 										hint="폴더를 고르면 그 안의 그림을 이름 순으로 모두 화면 모음으로 보여 줍니다 (설명은 파일 이름). 그림은 저장소의 apps/react/public/imgs/projects 아래 폴더에 넣고 배포하면 여기에 나옵니다."
@@ -2281,33 +2333,6 @@ const ProjectEditor = ({
 											</Popup>
 										</FormRow>
 										{draft.galleryFolder && <FolderShots key={draft.galleryFolder} folder={draft.galleryFolder} />}
-									</Group>
-									<Group
-										title="대화창 배경"
-										hint="RPG 대화창 모양의 하늘·바닥·소품을 고릅니다. 자동은 배경 그림이 없으면 대표 화면을 픽셀로 바꿔 깔고, 강조색은 언제나 프로젝트 아이콘의 색을 따릅니다."
-									>
-										<FormRow label="배경 테마" htmlFor="projects-backdrop-theme" align="end">
-											<Popup
-												id="projects-backdrop-theme"
-												value={draft.backdrop?.theme ?? 'auto'}
-												onChange={(theme) =>
-													set({ backdrop: tidyBackdrop({ ...draft.backdrop, theme: theme as BackdropTheme }) })
-												}
-											>
-												{BACKDROP_THEMES.map((theme) => (
-													<option key={theme} value={theme}>
-														{BACKDROP_LABEL[theme]}
-													</option>
-												))}
-											</Popup>
-										</FormRow>
-										<ImageField
-											label="배경 그림"
-											shape="wide"
-											value={draft.backdrop?.image}
-											onChange={(image) => set({ backdrop: tidyBackdrop({ ...draft.backdrop, image }) })}
-											hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
-										/>
 									</Group>
 								</>
 							)}
@@ -2366,10 +2391,6 @@ const ProjectEditor = ({
 										lines={draft.contributions}
 										onChange={(contributions) => set({ contributions })}
 									/>
-									<ControlsEditor
-										controls={draft.controls ?? []}
-										onChange={(controls) => set({ controls: controls.length ? controls : undefined })}
-									/>
 									<Group
 										label="폴더 구조"
 										hint="저장소의 폴더 트리를 그대로 붙여 넣습니다. 브루탈·저장소·발표 슬라이드 모양이 고정폭 글꼴로 보여 줍니다."
@@ -2387,15 +2408,6 @@ const ProjectEditor = ({
 									<CreditsEditor
 										credits={draft.credits ?? []}
 										onChange={(credits) => set({ credits: credits.length ? credits : undefined })}
-									/>
-									<PairsEditor
-										label="커밋 규칙"
-										hint="저장소 모양의 Conventions 탭과 커밋 그래프의 색에 쓰입니다."
-										keys={['type', 'description']}
-										names={['타입', '설명']}
-										placeholders={['예: feat', '예: 새 기능']}
-										rows={draft.conventions ?? []}
-										onChange={(conventions) => set({ conventions: conventions.length ? conventions : undefined })}
 									/>
 								</>
 							)}
