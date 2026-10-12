@@ -184,7 +184,17 @@ test.describe('프로젝트 관리', () => {
 		// 새 프로젝트의 기본 모양은 그림이 없어도 꽉 차 보이는 '카드'. 직접 짠 페이지는 등록된 프로젝트만 고른다
 		const looks = editor.getByRole('radiogroup', { name: '페이지 모양' });
 		await expect(looks.getByRole('radio', { checked: true })).toHaveAccessibleName('카드');
-		await expect(looks.getByRole('radio')).toHaveText([/제품/, /카드/, /문서/, /벤토/, /RPG 대화창/]);
+		await expect(looks.getByRole('radio')).toHaveText([
+			/제품/,
+			/카드/,
+			/문서/,
+			/벤토/,
+			/키노트/,
+			/매거진/,
+			/개발자 도구/,
+			/놀이/,
+			/RPG 대화창/,
+		]);
 		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고른다. 글자 로고 칸은 없다 (필요하면 JSON의 logo)
 		await editor.getByRole('tab', { name: '그림' }).click();
 		await editor.getByRole('combobox', { name: '프로젝트 아이콘 고르기' }).selectOption('/imgs/projects/qru/icon.png');

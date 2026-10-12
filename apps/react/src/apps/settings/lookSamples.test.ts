@@ -34,8 +34,27 @@ const filled = (value: unknown) =>
 describe('모양별 예시 프로젝트', () => {
 	it('직접 짠 페이지를 뺀 모양마다 하나씩 있고, 네 랜딩 템플릿은 같은 예시를 모양만 바꿔 쓴다', () => {
 		expect(Object.keys(LOOK_SAMPLES).sort()).toEqual([...LOOKS].sort());
-		expect(LOOKS).toEqual(['product', 'friendly', 'paper', 'bento', 'dialogue']);
-		for (const look of ['product', 'friendly', 'paper', 'bento'] as const) {
+		expect(LOOKS).toEqual([
+			'product',
+			'friendly',
+			'paper',
+			'bento',
+			'keynote',
+			'magazine',
+			'devtool',
+			'playful',
+			'dialogue',
+		]);
+		for (const look of [
+			'product',
+			'friendly',
+			'paper',
+			'bento',
+			'keynote',
+			'magazine',
+			'devtool',
+			'playful',
+		] as const) {
 			const { look: _look, ...rest } = LOOK_SAMPLES[look];
 			const { look: _general, ...general } = GENERAL_SAMPLE;
 			expect(rest, look).toEqual(general);
