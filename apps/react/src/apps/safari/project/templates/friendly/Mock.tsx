@@ -2,18 +2,7 @@
 // 왼쪽 막대는 주요 기능 제목, 위 카드는 숫자, 아래는 이름에서 뽑은 고정된 꺾은선 그래프. <img>는 쓰지 않는다
 import React from 'react';
 import { iconOf, type Landing } from '@/apps/safari/project/landing';
-
-/** 글자에서 뽑는 고정된 수 (같은 프로젝트는 언제나 같은 그래프) */
-function seeded(text: string) {
-	let h = 2166136261;
-	for (const ch of text) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
-	return () => {
-		h = Math.imul(h ^ (h >>> 15), 2246822507);
-		h = Math.imul(h ^ (h >>> 13), 3266489909);
-		h ^= h >>> 16;
-		return (h >>> 0) / 4294967296;
-	};
-}
+import { seeded } from './seeded';
 
 /** 오른쪽 위로 오르는 꺾은선 (0~100 좌표) */
 function chartPoints(seed: string, count = 12) {

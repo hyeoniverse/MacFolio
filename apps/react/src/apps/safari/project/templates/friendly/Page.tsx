@@ -1,5 +1,6 @@
-// friendly 템플릿: Stripe처럼 밝고 또렷하게. 흰 바탕에 아주 옅은 세로 격자선, 왼쪽 정렬 첫 화면과 오른쪽 브라우저 창,
-// 그 뒤의 강조색 옅은 사선 띠 하나. 아이콘 칸이 달린 기능 격자, 선으로 이은 단계, 큰 숫자, 짙은 남색 마무리 띠.
+// friendly 템플릿: Stripe처럼 밝고 또렷하게. 남색 제목과 회청색 본문, 강조색 하나(탁하면 Stripe 남보라, accent.ts).
+// 첫 화면은 비스듬히 잘린 옅은 색 띠와 그 끝을 따라 놓인 단색 줄무늬, 띠를 넘어 내려오는 큰 창과 그 위에 겹친 작은 UI 카드 둘(Cards.tsx).
+// 아래로는 왼쪽 강조선이 달린 숫자, 아이콘 기능 격자, 선으로 이은 단계 띠, 남색 띠의 만든 방식, 비스듬한 남색 마무리 띠.
 // 그림이 없으면 창 안에 프로젝트 내용으로 만든 앱 화면 모형(Mock.tsx)을 그려 새 프로젝트의 기본 모양으로도 꽉 차 보인다. 계약은 templates/README.md
 import React from 'react';
 import type { Project } from '@/shared/profile';
@@ -18,6 +19,8 @@ import {
 	type LandingSection,
 	type SectionRenderers,
 } from '@/apps/safari/project/landing';
+import { friendlyAccent } from './accent';
+import { HeroCards } from './Cards';
 import { HeroMock } from './Mock';
 import './Page.css';
 
@@ -77,15 +80,16 @@ const IconTile: React.FC<{ point: Pick<LandingPoint, 'icon'>; index: number }> =
 	</span>
 );
 
-/** 6칸 격자에서 한 항목이 차지할 칸 수: 셋씩 놓고, 마지막 줄이 비지 않게 남은 항목을 넓힌다 (넷이면 둘씩) */
+/** 12칸 격자에서 한 항목이 차지할 칸 수: 셋씩 놓고(넷이면 넷 모두 한 줄), 마지막 줄이 비지 않게 남은 항목을 넓힌다 */
 function spanOf(index: number, count: number) {
-	if (count === 1) return 6;
-	if (count === 2 || count === 4) return 3;
+	if (count === 1) return 12;
+	if (count === 2) return 6;
+	if (count === 4) return 3;
 	const rest = count % 3;
-	const lastRow = index >= count - rest;
-	if (rest === 1 && lastRow) return 6;
-	if (rest === 2 && lastRow) return 3;
-	return 2;
+	// 3n+1개: 마지막 네 항목을 둘씩 두 줄로
+	if (rest === 1 && index >= count - 4) return 6;
+	if (rest === 2 && index >= count - 2) return 6;
+	return 4;
 }
 
 /** 그림이 있는 항목: 글과 큰 그림을 나란히 (화면이 여러 장이면 창 여러 개) */
@@ -115,13 +119,41 @@ const FeatureCell: React.FC<{ point: LandingPoint; index: number; span: number }
 	</li>
 );
 
-/** 주요 기능·만든 방식: 그림이 있는 항목은 큰 줄로 먼저, 나머지는 세 칸 격자로 */
-const Features: React.FC<{ items: LandingPoint[]; iconOffset?: number }> = ({ items, iconOffset = 0 }) => {
+/**
+ * 주요 기능·만든 방식: 그림이 있는 항목은 글과 창을 나란히 큰 줄로 먼저, 나머지는 아이콘 격자로.
+ * 그림 있는 항목이 없고 셋 이하면 제목을 왼쪽에, 항목을 오른쪽에 두는 두 단 (짧은 페이지도 빈 여백이 남지 않게)
+ */
+const Features: React.FC<{ section: LandingSection; items: LandingPoint[]; iconOffset?: number }> = ({
+	section,
+	items,
+	iconOffset = 0,
+}) => {
 	const indexed = items.map((point, i) => ({ point, index: i + iconOffset }));
 	const rows = indexed.filter(({ point }) => point.media.length > 0);
 	const cells = indexed.filter(({ point }) => point.media.length === 0);
+	const split = rows.length === 0 && cells.length <= 3;
+	const grid = cells.length > 0 && (
+		<ul className="fr-cells" data-count={cells.length}>
+			{cells.map(({ point, index }, i) => (
+				<FeatureCell
+					key={point.title}
+					point={point}
+					index={index}
+					span={split ? 12 / Math.min(cells.length, 2) : spanOf(i, cells.length)}
+				/>
+			))}
+		</ul>
+	);
+	if (split)
+		return (
+			<div className="fr-split" data-wide={cells.length > 1 ? '' : undefined}>
+				<Head section={section} />
+				{grid}
+			</div>
+		);
 	return (
 		<>
+			<Head section={section} />
 			{rows.length > 0 && (
 				<ul className="fr-rows">
 					{rows.map(({ point, index }, i) => (
@@ -129,13 +161,7 @@ const Features: React.FC<{ items: LandingPoint[]; iconOffset?: number }> = ({ it
 					))}
 				</ul>
 			)}
-			{cells.length > 0 && (
-				<ul className="fr-cells">
-					{cells.map(({ point, index }, i) => (
-						<FeatureCell key={point.title} point={point} index={index} span={spanOf(i, cells.length)} />
-					))}
-				</ul>
-			)}
+			{grid}
 		</>
 	);
 };
@@ -154,12 +180,7 @@ const RENDERERS: SectionRenderers = {
 			</ul>
 		</>
 	),
-	features: ({ section }) => (
-		<>
-			<Head section={section} />
-			<Features items={section.items} />
-		</>
-	),
+	features: ({ section }) => <Features section={section} items={section.items} />,
 	screens: ({ section }) => (
 		<>
 			<Head section={section} />
@@ -184,9 +205,11 @@ const RENDERERS: SectionRenderers = {
 					<li key={point.title} data-reveal="">
 						<span className="fr-step-mark" aria-hidden="true">
 							<span className="fr-step-num">{index + 1}</span>
-							<IconTile point={point} index={index} />
 						</span>
-						<h3>{point.title}</h3>
+						<div className="fr-step-title">
+							<IconTile point={point} index={index} />
+							<h3>{point.title}</h3>
+						</div>
 						<p>{point.body}</p>
 						{point.detail && <p className="fr-detail">{point.detail}</p>}
 						{point.media.map((media) => (
@@ -197,12 +220,7 @@ const RENDERERS: SectionRenderers = {
 			</ol>
 		</>
 	),
-	built: ({ section }) => (
-		<>
-			<Head section={section} />
-			<Features items={section.items} iconOffset={3} />
-		</>
-	),
+	built: ({ section }) => <Features section={section} items={section.items} iconOffset={3} />,
 	stories: ({ section }) => (
 		<>
 			<Head section={section} />
@@ -255,7 +273,7 @@ const RENDERERS: SectionRenderers = {
 		</>
 	),
 	controls: ({ section }) => (
-		<>
+		<div className="fr-split">
 			<Head section={section} />
 			<dl className="fr-controls" data-reveal="">
 				{section.controls.map((control) => (
@@ -269,10 +287,10 @@ const RENDERERS: SectionRenderers = {
 					</div>
 				))}
 			</dl>
-		</>
+		</div>
 	),
 	timeline: ({ section }) => (
-		<>
+		<div className="fr-split">
 			<Head section={section} />
 			<ol className="fr-timeline">
 				{section.entries.map((entry, i) => (
@@ -286,7 +304,7 @@ const RENDERERS: SectionRenderers = {
 					</li>
 				))}
 			</ol>
-		</>
+		</div>
 	),
 	tech: ({ section }) => (
 		<>
@@ -336,7 +354,7 @@ const RENDERERS: SectionRenderers = {
 		</>
 	),
 	role: ({ section }) => (
-		<>
+		<div className="fr-split">
 			<Head section={section} title={section.role} />
 			<div className="fr-role" data-reveal="">
 				{(section.context || section.period) && (
@@ -366,10 +384,10 @@ const RENDERERS: SectionRenderers = {
 					</ul>
 				)}
 			</div>
-		</>
+		</div>
 	),
 	credits: ({ section }) => (
-		<>
+		<div className="fr-split">
 			<Head section={section} />
 			<ul className="fr-credits" data-reveal="">
 				{section.credits.map((credit) => (
@@ -390,78 +408,107 @@ const RENDERERS: SectionRenderers = {
 					</li>
 				))}
 			</ul>
-		</>
+		</div>
 	),
 };
+
+/** 마무리 띠 오른쪽의 짧은 글 둘: 어떤 프로젝트·맡은 일·기간 가운데 앞의 둘 (없으면 띠는 한 단) */
+function closingNotesOf(landing: Landing) {
+	const { meta } = landing.hero;
+	const notes = [
+		meta.context && { icon: 'fa-users', title: '어떤 프로젝트', body: meta.context },
+		meta.role && { icon: 'fa-user-pen', title: '맡은 일', body: meta.role },
+		meta.period && { icon: 'fa-calendar', title: '기간', body: meta.period },
+	].filter((note): note is { icon: string; title: string; body: string } => Boolean(note));
+	return notes.slice(0, 2);
+}
 
 const FriendlyPage: React.FC<{ project: Project }> = ({ project }) => {
 	const landing = useLanding(project);
 	const root = useReveal<HTMLDivElement>();
-	const accent = useLandingAccent(project.icon);
+	const accent = friendlyAccent(useLandingAccent(project.icon));
 	const { hero, closing } = landing;
-	const tech = landing.sections.find((section) => section.kind === 'tech')?.stack ?? [];
 	const address = addressOf(landing);
 	const meta = [
 		hero.meta.role && { label: '맡은 일', value: hero.meta.role },
 		hero.meta.period && { label: '기간', value: hero.meta.period },
 	].filter((item): item is { label: string; value: string } => Boolean(item));
+	const notes = closingNotesOf(landing);
 
 	return (
 		<div ref={root} className="tpl tpl-friendly" style={accent}>
 			<header className="fr-hero">
-				<div className="fr-hero-text">
-					<p className="fr-pill">
-						{hero.icon && <img className="fr-brand-icon" src={hero.icon} alt="" />}
-						{hero.logo ? (
-							<img className="fr-logo" src={hero.logo} alt={hero.name} />
-						) : (
-							<span className="fr-pill-name">{hero.name}</span>
+				{/* 비스듬히 잘린 옅은 띠와 그 끝을 따라 놓인 단색 줄무늬 (장식) */}
+				<span className="fr-sky" aria-hidden="true">
+					<span className="fr-sky-band">
+						<i data-stripe="1" />
+						<i data-stripe="2" />
+						<i data-stripe="3" />
+						<i data-stripe="4" />
+					</span>
+				</span>
+				<div className="fr-hero-inner">
+					<div className="fr-hero-text">
+						<p className="fr-pill">
+							{hero.icon && <img className="fr-brand-icon" src={hero.icon} alt="" />}
+							{hero.logo ? (
+								<img className="fr-logo" src={hero.logo} alt={hero.name} />
+							) : (
+								<span className="fr-pill-name">{hero.name}</span>
+							)}
+							{hero.meta.context && <span className="fr-pill-context">{hero.meta.context}</span>}
+						</p>
+						<h1>{hero.headline}</h1>
+						{hero.subhead && <p className="fr-subhead">{hero.subhead}</p>}
+						<LandingLinks links={hero.links} className="fr-links" />
+						{meta.length > 0 && (
+							<dl className="fr-meta">
+								{meta.map((item) => (
+									<div key={item.label}>
+										<dt>{item.label}</dt>
+										<dd>{item.value}</dd>
+									</div>
+								))}
+							</dl>
 						)}
-						{hero.meta.context && <span className="fr-pill-context">{hero.meta.context}</span>}
-					</p>
-					<h1>{hero.headline}</h1>
-					{hero.subhead && <p className="fr-subhead">{hero.subhead}</p>}
-					<LandingLinks links={hero.links} className="fr-links" />
-					{meta.length > 0 && (
-						<dl className="fr-meta">
-							{meta.map((item) => (
-								<div key={item.label}>
-									<dt>{item.label}</dt>
-									<dd>{item.value}</dd>
-								</div>
-							))}
-						</dl>
-					)}
-					{tech.length > 0 && (
-						<ul className="fr-hero-chips" aria-label="기술">
-							{tech.slice(0, 6).map((item) => (
-								<li key={item}>{item}</li>
-							))}
-						</ul>
-					)}
-				</div>
-				<div className="fr-hero-art" data-reveal="zoom">
-					<span className="fr-band" aria-hidden="true" />
-					{hero.image ? (
-						<Window media={hero.image} eager address={address} />
-					) : (
-						<Frame address={address} className="fr-window-mock">
-							<HeroMock landing={landing} />
-						</Frame>
-					)}
+					</div>
+					<div className="fr-hero-art" data-reveal="zoom">
+						{hero.image ? (
+							<Window media={hero.image} eager address={address} />
+						) : (
+							<Frame address={address} className="fr-window-mock">
+								<HeroMock landing={landing} />
+							</Frame>
+						)}
+						<HeroCards landing={landing} />
+					</div>
 				</div>
 			</header>
 
 			<LandingSections landing={landing} renderers={RENDERERS} className="fr-section" />
 
 			<footer className="fr-closing">
-				<div className="fr-closing-inner" data-reveal="">
+				<div className="fr-closing-inner" data-notes={notes.length ? '' : undefined} data-reveal="">
 					<div className="fr-closing-text">
-						<p className="fr-eyebrow">{hero.name}</p>
-						<h2>{closing.title}</h2>
-						{closing.lead && <p className="fr-closing-lead">{closing.lead}</p>}
+						<div className="fr-closing-title">
+							{closing.lead && <p className="fr-eyebrow">{closing.lead}</p>}
+							<h2>{closing.title}</h2>
+						</div>
+						<LandingLinks links={closing.links} className="fr-links fr-closing-links" />
 					</div>
-					<LandingLinks links={closing.links} className="fr-links fr-closing-links" />
+					{notes.length > 0 && (
+						<ul className="fr-closing-notes">
+							{notes.map((note) => (
+								<li key={note.title}>
+									<span className="fr-icon" aria-hidden="true">
+										<i className={`fa-solid ${note.icon}`} />
+									</span>
+									<strong>{note.title}</strong>
+									<p>{note.body}</p>
+								</li>
+							))}
+						</ul>
+					)}
 				</div>
 			</footer>
 		</div>
