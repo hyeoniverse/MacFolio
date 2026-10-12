@@ -58,6 +58,9 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 		setErrors((prev) => ({ ...prev, [key]: undefined }));
 	};
 
+	// 빈 칸의 오류는 칸 안의 안내 글자(placeholder)로 보여 준다
+	const emptyError = (key: keyof ContactInput) => (errors[key] && !form[key].trim() ? errors[key] : undefined);
+
 	const send = async (event: React.FormEvent) => {
 		event.preventDefault();
 		const { value, errors: found } = validateContact(form);
@@ -125,31 +128,47 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 				{/* 누르면 이메일 주소를 복사한다 */}
 				<CopyAddress className="mail-recipient" />
 			</div>
-			<Row label="이름:" error={errors.name}>
-				<input aria-label="이름" maxLength={LIMITS.name} value={form.name} onChange={field('name')} autoFocus />
+			<Row label="이름:" error={errors.name} empty={!!emptyError('name')}>
+				<input
+					aria-label="이름"
+					aria-invalid={!!errors.name}
+					maxLength={LIMITS.name}
+					placeholder={emptyError('name')}
+					value={form.name}
+					onChange={field('name')}
+					autoFocus
+				/>
 			</Row>
-			<Row label="회신 주소:" error={errors.email}>
+			<Row label="회신 주소:" error={errors.email} empty={!!emptyError('email')}>
 				<input
 					aria-label="회신 주소"
+					aria-invalid={!!errors.email}
 					type="email"
-					placeholder="답장받을 이메일"
+					placeholder={emptyError('email') ?? '답장받을 이메일'}
 					value={form.email}
 					onChange={field('email')}
 				/>
 			</Row>
-			<Row label="제목:" error={errors.subject}>
-				<input aria-label="제목" maxLength={LIMITS.subject} value={form.subject} onChange={field('subject')} />
+			<Row label="제목:" error={errors.subject} empty={!!emptyError('subject')}>
+				<input
+					aria-label="제목"
+					aria-invalid={!!errors.subject}
+					maxLength={LIMITS.subject}
+					placeholder={emptyError('subject')}
+					value={form.subject}
+					onChange={field('subject')}
+				/>
 			</Row>
 			<textarea
 				className="mail-compose-body"
 				aria-label="내용"
 				aria-invalid={!!errors.body}
 				maxLength={LIMITS.body}
-				placeholder="채용 제안, 협업, 피드백 등 편하게 남겨 주세요."
+				placeholder={emptyError('body') ?? '채용 제안, 협업, 피드백 등 편하게 남겨 주세요.'}
 				value={form.body}
 				onChange={field('body')}
 			/>
-			{errors.body && <ErrorHint error={errors.body} className="mail-body-error" />}
+			{errors.body && <ErrorHint error={errors.body} hidden={!!emptyError('body')} className="mail-body-error" />}
 			{siteKey && <Turnstile className="mail-turnstile" siteKey={siteKey} resetKey={widget} onToken={setToken} />}
 			{result?.status === 'failed' && (
 				<p className="mail-error" role="alert">
@@ -160,21 +179,31 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 	);
 };
 
-const Row: React.FC<{ label: string; error?: string; children: React.ReactElement }> = ({ label, error, children }) => (
-	<>
-		<label className={`mail-compose-row ${error ? 'invalid' : ''}`}>
-			<span>{label}</span>
-			{children}
-		</label>
-		{error && <ErrorHint error={error} />}
-	</>
+const Row: React.FC<{ label: string; error?: string; empty: boolean; children: React.ReactElement }> = ({
+	label,
+	error,
+	empty,
+	children,
+}) => (
+	<label className="mail-compose-row">
+		<span>{label}</span>
+		{children}
+		{error && <ErrorHint error={error} hidden={empty} />}
+	</label>
 );
 
-/** 칸 오류: 칸 구분선 아래 별도 줄의 흐린 안내 문구 */
-const ErrorHint: React.FC<{ error: string; className?: string }> = ({ error, className = '' }) => (
-	<p className={`mail-hint ${className}`} role="alert">
+/**
+ * 칸 오류: 빈 칸이면 칸 안의 안내 글자로 이미 보이므로 화면 읽기 프로그램에만 알리고,
+ * 형식·길이 오류는 입력 칸 아래에 작게 적는다
+ */
+const ErrorHint: React.FC<{ error: string; hidden: boolean; className?: string }> = ({
+	error,
+	hidden,
+	className = '',
+}) => (
+	<span className={hidden ? 'visually-hidden' : `mail-hint ${className}`} role="alert">
 		{error}
-	</p>
+	</span>
 );
 
 /** 보낸 뒤: 메일 앱으로 넘긴 경우에는 메일 앱에서 보내기를 눌러야 한다고 안내한다 */
