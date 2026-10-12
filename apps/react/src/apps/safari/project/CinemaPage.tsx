@@ -110,7 +110,7 @@ const Opening: React.FC<{ project: Project }> = ({ project }) => (
 			<Links project={project} className="sp-links cn-hero-links" />
 		</header>
 		<div className="cn-poster">
-			<DeviceFrame kind="laptop" src={project.image} alt={`${project.name} 화면`} glow>
+			<DeviceFrame kind="laptop" src={project.image} alt={`${project.name} 화면`}>
 				{!project.image && <MockScreen project={project} tone="dark" decorative />}
 			</DeviceFrame>
 		</div>
@@ -128,7 +128,7 @@ const Counter: React.FC<{ index: number; total: number }> = ({ index, total }) =
 /**
  * 기능 장면 하나: 앞 장면 위로 아래서부터 밀고 들어온다.
  * 그림이 있으면 무대에 꽉 차고 캡션은 그림 위에. 없으면 글과 제품 화면이 좌우로 짝을 짓는다
- * (짝수 차례는 그 기능을 고른 MockScreen을 창 틀에, 홀수 차례는 그 기능의 FeatureVisual을 유리 카드에. 좌우는 번갈아)
+ * (짝수 차례는 그 기능을 고른 MockScreen을 창 틀에, 홀수 차례는 그 기능의 FeatureVisual을 어두운 판에. 좌우는 번갈아)
  */
 const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number; total: number; image?: string }> = ({
 	project,
@@ -137,19 +137,6 @@ const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number; 
 	total,
 	image,
 }) => {
-	const stage = useRef<HTMLDivElement>(null);
-	// 마우스가 있는 쪽으로 그림이 살짝 기운다 (움직임 줄이기에서는 CSS가 transform을 끈다)
-	const tilt = (event: React.MouseEvent<HTMLDivElement>) => {
-		const node = stage.current;
-		if (!node) return;
-		const box = node.getBoundingClientRect();
-		node.style.setProperty('--mx', (((event.clientX - box.left) / box.width) * 2 - 1).toFixed(3));
-		node.style.setProperty('--my', (((event.clientY - box.top) / box.height) * 2 - 1).toFixed(3));
-	};
-	const rest = () => {
-		stage.current?.style.setProperty('--mx', '0');
-		stage.current?.style.setProperty('--my', '0');
-	};
 	const caption = (
 		<>
 			<p className="cn-caption-eyebrow">
@@ -164,7 +151,7 @@ const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number; 
 	if (image)
 		return (
 			<Scene len={2.2} className="cn-feature">
-				<div className="cn-frame" ref={stage} onMouseMove={tilt} onMouseLeave={rest}>
+				<div className="cn-frame">
 					<Media src={image} alt="" className="cn-frame-img" />
 				</div>
 				<Counter index={index} total={total} />
@@ -173,16 +160,15 @@ const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number; 
 		);
 	return (
 		<Scene len={2.2} className={`cn-feature cn-split${index % 2 ? ' cn-split-flip' : ''}`}>
-			<div className="cn-split-light" aria-hidden="true" />
 			<Counter index={index} total={total} />
 			<div className="cn-split-text cn-caption">{caption}</div>
-			<div className="cn-split-visual" ref={stage} onMouseMove={tilt} onMouseLeave={rest}>
+			<div className="cn-split-visual">
 				{index % 2 === 0 ? (
-					<DeviceFrame kind="browser" url={project.demo} glow tilt={index % 4 === 0 ? 'left' : 'right'}>
+					<DeviceFrame kind="browser" url={project.demo}>
 						<MockScreen project={project} focus={index} tone="dark" decorative />
 					</DeviceFrame>
 				) : (
-					<div className="cn-glass">
+					<div className="cn-panel">
 						<FeatureVisual point={point} index={index} project={project} tone="dark" />
 					</div>
 				)}

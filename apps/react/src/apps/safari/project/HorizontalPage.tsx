@@ -1,5 +1,5 @@
-// 가로 모양: 세로 스크롤이 가로로 늘어선 패널들을 밀어 간다. Linear·Vercel 같은 어두운 제품 투어:
-// 패널마다 빛이 번지는 바탕 위에 큰 제목과 제품 화면(기기 틀)이 놓이고, 글은 배경보다 느리게 따라온다
+// 가로 모양: 세로 스크롤이 가로로 늘어선 패널들을 밀어 간다. Linear·Vercel 같은 절제한 제품 투어:
+// 패널마다 단색 바탕 위에 큰 제목과 똑바로 선 제품 화면(기기 틀)이 놓이고, 글은 배경보다 느리게 따라온다
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { Links, Region } from '@/apps/safari/project/parts';
@@ -8,7 +8,6 @@ import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
 import {
 	CtaBand,
 	DeviceFrame,
-	GlowBackdrop,
 	LogoStrip,
 	MockScreen,
 	SectionHeader,
@@ -71,23 +70,14 @@ const Panel: React.FC<{
 
 /** 표지(히어로): 왼쪽에 제품 이름·큰 한 줄·링크, 오른쪽에 화면 밖으로 걸친 브라우저 창. 아래에 기술 띠 */
 const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
-	const ref = useRef<HTMLDivElement>(null);
 	const tech =
 		project.language && !project.stack.includes(project.language)
 			? [project.language, ...project.stack]
 			: project.stack;
-	const tilt = (event: React.MouseEvent) => {
-		const node = ref.current;
-		if (!node || prefersReducedMotion()) return;
-		const box = node.getBoundingClientRect();
-		node.style.setProperty('--hz-mx', String((event.clientX - box.left) / box.width - 0.5));
-		node.style.setProperty('--hz-my', String((event.clientY - box.top) / box.height - 0.5));
-	};
 	const meta = [project.context, project.contributions.length ? '' : project.role, project.period].filter(Boolean);
 	return (
 		<Panel index={index} className="hz-cover" label="표지" dark>
-			<GlowBackdrop tone="dark" pattern="grid" focus="side" />
-			<div ref={ref} className="hz-cover-inner" onMouseMove={tilt}>
+			<div className="hz-cover-inner">
 				<div className="hz-text">
 					{meta.length > 0 && (
 						<p className="hz-badge">
@@ -112,7 +102,6 @@ const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }
 						url={project.demo ?? project.url}
 						src={project.image}
 						alt={project.image ? `${project.name} 화면` : undefined}
-						glow
 					>
 						<MockScreen project={project} kind={pickMockKind(project)} tone="dark" decorative />
 					</DeviceFrame>
@@ -167,8 +156,6 @@ const HighlightPanel: React.FC<{
 					url={project.demo ?? project.url}
 					src={image}
 					alt={image ? (point.shots?.[0]?.alt ?? `${point.title} 화면`) : undefined}
-					tilt={order % 2 ? 'left' : 'right'}
-					glow
 				>
 					<MockScreen project={project} kind={pickMockKind(project)} focus={order} decorative />
 				</DeviceFrame>
@@ -189,7 +176,7 @@ const Card: React.FC<{ point: ProjectPoint; index: number; step?: boolean }> = (
 	</li>
 );
 
-/** 만든 방식: 아이콘 타일이 달린 유리 카드 격자 */
+/** 만든 방식: 아이콘 타일이 달린 카드 격자 */
 const BuildPanel: React.FC<{ points: ProjectPoint[]; index: number }> = ({ points, index }) => (
 	<Panel index={index} className="hz-build" label="만든 방식">
 		<div className="hz-text">
@@ -203,7 +190,7 @@ const BuildPanel: React.FC<{ points: ProjectPoint[]; index: number }> = ({ point
 	</Panel>
 );
 
-/** 쓰는 법: 빛나는 선으로 이어진 단계 카드 */
+/** 쓰는 법: 가는 선으로 이어진 단계 카드 */
 const UsagePanel: React.FC<{ points: ProjectPoint[]; index: number }> = ({ points, index }) => (
 	<Panel index={index} className="hz-usage" label="쓰는 법">
 		<div className="hz-text">
@@ -217,7 +204,7 @@ const UsagePanel: React.FC<{ points: ProjectPoint[]; index: number }> = ({ point
 	</Panel>
 );
 
-/** 진행 과정: 가로 선 위에 빛나는 점과 날짜 */
+/** 진행 과정: 가로 선 위에 점과 날짜 */
 const TimelinePanel: React.FC<{ project: Project; items: { date: string; label: string }[]; index: number }> = ({
 	project,
 	items,
@@ -274,7 +261,7 @@ const SpecsPanel: React.FC<{ project: Project; index: number }> = ({ project, in
 	</Panel>
 );
 
-/** 끝: 빛나는 행동 유도 띠 */
+/** 끝: 행동 유도 띠 */
 const EndPanel: React.FC<{ project: Project; index: number }> = ({ project, index }) => (
 	<Panel index={index} className="hz-end" label="마무리" dark>
 		<CtaBand project={project} title={project.tagline || project.name} className="hz-cta" />

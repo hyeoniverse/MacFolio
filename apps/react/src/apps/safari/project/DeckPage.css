@@ -1,6 +1,7 @@
 /*
  * deck (발표 슬라이드): 검은 바탕에 흰 글. 16:9 슬라이드(1280×720으로 그려 --s로 축소)가 창 가운데에 놓이고,
- * 장마다 강조 색상(--dk-hue)에서 그라데이션(--sp-grad)과 강조색(--sp-accent)을 뽑는다.
+ * 강조 색상(--dk-hue, 채도를 낮춘 한 가지)에서 강조색(--sp-accent)을 뽑는다. --sp-grad는 공통 조각이 쓰는 이름이라
+ * 남기되 단색이다 (빛 번짐·그라데이션 글자·기울기·유리 효과 없이 절제한 키노트 톤).
  * 위 진행 막대와 n / N, 좌우 화살표, 아래 점, Esc 소터. 좁은 창(data-mode='stack')에서는 세로로 쌓인다
  */
 .sp[data-look='deck'] {
@@ -26,10 +27,10 @@
 
 .dk {
 	--dk-hue: 222;
-	--dk-c1: hsl(var(--dk-hue) 90% 62%);
-	--dk-c2: hsl(calc(var(--dk-hue) + 60) 90% 66%);
+	--dk-c1: hsl(var(--dk-hue) 62% 62%);
+	--dk-c2: var(--dk-c1);
 	--sp-accent: var(--dk-c1);
-	--sp-grad: linear-gradient(100deg, var(--dk-c1), var(--dk-c2));
+	--sp-grad: linear-gradient(var(--dk-c1), var(--dk-c1));
 	--s: 0.6;
 	--vh: 720px;
 	position: relative;
@@ -40,11 +41,9 @@
 	background-color: var(--dk-stage);
 }
 
+/* 예전엔 그라데이션 글자였던 자리: 이제 바탕 글자색 그대로 (굵기와 크기로만 힘을 준다) */
 .dk-grad {
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	color: inherit;
 }
 
 .dk-eyebrow {
@@ -166,15 +165,16 @@
 	background-color: var(--sp-bg);
 	color: var(--sp-text);
 	box-shadow:
-		0 0 0 1px rgba(255, 255, 255, 0.06),
-		0 40px 120px rgba(0, 0, 0, 0.6);
+		0 0 0 1px rgba(255, 255, 255, 0.08),
+		0 1px 2px rgba(0, 0, 0, 0.3),
+		0 8px 24px rgba(0, 0, 0, 0.3);
 	transform: scale(var(--s));
 	transform-origin: top left;
 }
 
 .dk-slide {
-	--lk-accent: hsl(var(--dk-hue) 90% 62%);
-	--lk-accent-2: hsl(calc(var(--dk-hue) + 60) 90% 66%);
+	--lk-accent: var(--dk-c1);
+	--lk-accent-2: var(--dk-c1);
 	--lk-dark-surface: #000000;
 	--lk-dark-surface-2: #121216;
 }
@@ -214,24 +214,7 @@
 	}
 }
 
-/* 표지·맺음말 밖의 장: 위 오른쪽에서 그 장의 색이 아주 옅게 번진다 (발표 무대 조명처럼) */
-.dk-slide:not([data-kind='cover'], [data-kind='end']) {
-	background-image:
-		radial-gradient(60% 55% at 85% 0%, hsl(var(--dk-hue) 90% 55% / 0.14), transparent 70%),
-		radial-gradient(40% 40% at 0% 100%, hsl(calc(var(--dk-hue) + 60) 90% 55% / 0.08), transparent 70%);
-}
-
-/* 장마다 왼쪽 위에 강조 그라데이션 띠, 오른쪽 아래에 큰 번호 */
-.dk-slide::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 6px;
-	background: var(--sp-grad);
-}
-
+/* 장마다 오른쪽 아래에 큰 윤곽 번호 */
 .dk-no {
 	position: absolute;
 	right: 36px;
@@ -278,8 +261,6 @@
 /* ─── 표지 ─── */
 /* 표지: 이름은 폭 전체 한 줄, 그 아래 글(55%)과 그림(45%) 두 열. 그림이 글을 덮지 않는다 */
 .dk-cover {
-	--mx: 0;
-	--my: 0;
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	grid-template-rows: auto auto minmax(0, 1fr);
@@ -303,10 +284,10 @@
 	min-width: 0;
 }
 
-/* 표지·맺음말의 빛은 GlowBackdrop. 글과 화면은 그 위로 */
-.dk-cover > :not(.lk-glow),
-.dk-end > :not(.lk-glow),
-.dk-facts-wrap > :not(.lk-glow) {
+/* 글과 화면은 장 번호(.dk-no) 위로 */
+.dk-cover > *,
+.dk-end > *,
+.dk-facts-wrap > * {
 	position: relative;
 	z-index: 1;
 }
@@ -319,8 +300,6 @@
 	padding: 6px 18px 6px 6px;
 	border: 1px solid rgba(255, 255, 255, 0.12);
 	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.04);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 	color: var(--sp-muted);
 	font-size: 16px;
 	font-weight: 600;
@@ -338,7 +317,7 @@
 	object-fit: contain;
 }
 
-/* 이름: 거대한 그라데이션 글자. 그라데이션이 천천히 흐른다 */
+/* 이름: 거대한 흰 글자 */
 .dk-cover-name {
 	margin-top: 14px;
 	margin-bottom: 20px;
@@ -348,19 +327,6 @@
 	letter-spacing: -0.05em;
 	line-height: 0.95;
 	white-space: nowrap;
-}
-
-.dk-cover-name .dk-grad,
-.dk-end-big .dk-grad {
-	background-image: linear-gradient(100deg, var(--dk-c1), var(--dk-c2), #ffffff, var(--dk-c1));
-	background-size: 300% 100%;
-	animation: dk-shimmer 9s linear infinite;
-}
-
-@keyframes dk-shimmer {
-	to {
-		background-position: 300% 0;
-	}
 }
 
 .dk-cover-tagline {
@@ -418,8 +384,8 @@
 }
 
 .dk-links .sp-pill {
-	background: var(--sp-grad);
-	color: #ffffff;
+	background: #f5f5f7;
+	color: #000000;
 }
 
 /* 오른쪽 열: 그림은 위에, 몽이 자리는 그림 아래 오른쪽 구석에 (겹치지 않게 자리만큼 비운다) */
@@ -433,17 +399,10 @@
 	min-height: 0;
 }
 
-/* 대표 화면: 노트북 틀에 담겨 마우스를 따라 살짝 기울고, 바닥에 비친다 */
+/* 대표 화면: 노트북 틀에 똑바로 */
 .dk-cover-device {
 	width: 100%;
 	max-width: 520px;
-	perspective: 1600px;
-}
-
-.dk-cover-device .lk-device {
-	transform: rotateY(calc(-14deg + var(--mx) * -6deg)) rotateX(calc(4deg + var(--my) * 4deg));
-	transform-origin: center;
-	transition: transform 0.25s ease-out;
 }
 
 /* 몽이가 있으면 노트북 앞 오른쪽 아래에 선다 (자리만큼 노트북을 줄인다) */
@@ -484,9 +443,8 @@
 
 .dk-stats {
 	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 24px;
-	background: rgba(255, 255, 255, 0.03);
-	backdrop-filter: blur(6px);
+	border-radius: 16px;
+	background: #0e0e11;
 }
 
 .dk-stats .lk-stat {
@@ -502,12 +460,6 @@
 
 .dk-stats[data-count='4'] .lk-stat strong {
 	font-size: 64px;
-}
-
-.dk-stats.lk-stats[data-gradient] .lk-stat strong {
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
 }
 
 .dk-stats .lk-stat > span {
@@ -559,25 +511,10 @@
 	display: flex;
 	align-items: center;
 	min-height: 0;
-	perspective: 1600px;
 }
 
 .dk-feature-aside .lk-device {
 	z-index: 1;
-}
-
-/* 화면 뒤로 그 장의 색이 번진다 */
-.dk-feature-aside::before {
-	position: absolute;
-	inset: -20% -10%;
-	background: radial-gradient(
-		closest-side,
-		hsl(var(--dk-hue) 90% 60% / 0.32),
-		hsl(calc(var(--dk-hue) + 60) 90% 60% / 0.12) 55%,
-		transparent
-	);
-	filter: blur(20px);
-	content: '';
 }
 
 .dk-eyebrow-icon {
@@ -809,15 +746,15 @@
 	padding: 36px 14px 0 0;
 }
 
-/* 가로 선: 지나온 만큼 그라데이션으로 그려진다 */
+/* 가로 선: 지나온 만큼 가는 선이 그려진다 */
 .dk-timeline li::before {
 	content: '';
 	position: absolute;
-	top: 11px;
+	top: 12px;
 	left: 0;
 	width: 100%;
-	height: 2px;
-	background: var(--sp-grad);
+	height: 1px;
+	background: rgba(255, 255, 255, 0.22);
 	transform-origin: left;
 	transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) * 120ms);
 }
@@ -1011,9 +948,7 @@
 	height: 88px;
 	margin-bottom: 28px;
 	border-radius: 22%;
-	box-shadow:
-		0 0 0 1px rgba(255, 255, 255, 0.12),
-		0 24px 60px -12px hsl(var(--dk-hue) 90% 60% / 0.7);
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .dk-end-big {
@@ -1086,8 +1021,7 @@
 	overflow-y: auto;
 	border: 1px solid var(--sp-line);
 	border-radius: 14px;
-	background-color: color-mix(in srgb, #0c0c10 92%, transparent);
-	backdrop-filter: blur(12px);
+	background-color: #0c0c10;
 	font-size: 14px;
 	line-height: 1.6;
 	animation: dk-notes-in 0.3s var(--ease-out);
@@ -1159,8 +1093,7 @@
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;
-	background-color: color-mix(in srgb, var(--dk-stage) 94%, transparent);
-	backdrop-filter: blur(16px);
+	background-color: var(--dk-stage);
 	animation: dk-fade 0.25s var(--ease-out);
 }
 
@@ -1229,16 +1162,6 @@
 	transition:
 		border-color var(--duration-fast) var(--ease-out),
 		transform var(--duration-fast) var(--ease-out);
-}
-
-.dk-thumb::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 4px;
-	background: var(--sp-grad);
 }
 
 .dk-thumb b {
@@ -1442,8 +1365,6 @@
 /* ─── 움직임 줄이기: 전환·흐름·흔들림을 끈다 (내용은 모두 그대로 닿는다) ─── */
 @media (prefers-reduced-motion: reduce) {
 	.dk-slide[data-current],
-	.dk-cover-name .dk-grad,
-	.dk-end-big .dk-grad,
 	.dk-notes,
 	.dk-sorter,
 	.dk-sorter li {
@@ -1451,17 +1372,12 @@
 	}
 
 	.dk-progress i,
-	.dk-cover-device .lk-device,
 	.dk-dots button,
 	.dk-timeline li::before,
 	.dk-timeline li i,
 	.dk-thumb,
 	.dk-arrow {
 		transition: none;
-	}
-
-	.dk-cover-device .lk-device {
-		transform: rotateY(-14deg) rotateX(4deg);
 	}
 
 	.dk-timeline li::before,

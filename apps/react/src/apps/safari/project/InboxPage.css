@@ -1,6 +1,6 @@
 /*
- * 메일함 모양(inbox): 뉴스레터 서비스 랜딩. 맨 위 밝은 띠(큰 한 줄, 구독 칸, 떠 있는 메일 알림) 아래에
- * 메일 앱 3단을 제품 데모처럼 창으로 띄운다. 앱은 밝은 회색·흰 패널에 파랑 강조, 다크는 그래파이트. 앱 안의 단은 따로 스크롤한다
+ * 메일함 모양(inbox): 뉴스레터 서비스 랜딩. 맨 위 단색 띠(큰 한 줄, 구독 칸, 휴대폰과 알림 한 장) 아래에
+ * 메일 앱 3단을 제품 데모처럼 창으로 놓는다 (1px 선과 얕은 그림자 한 벌). 앱은 밝은 회색·흰 패널에 파랑 강조, 다크는 그래파이트. 앱 안의 단은 따로 스크롤한다
  */
 .sp[data-look='inbox'] {
 	--sp-bg: #eef0f3;
@@ -8,7 +8,7 @@
 	--sp-text: #1c1c1e;
 	--sp-muted: #6b6f76;
 	--sp-line: #d9dce1;
-	--sp-accent: #1a6dff;
+	--sp-accent: #2f6bd8;
 	--ib-side: #e4e7ec;
 	--ib-hover: #f3f5f8;
 	--ib-selected: #dce9ff;
@@ -27,11 +27,11 @@
 	--sp-text: #ecedef;
 	--sp-muted: #9a9ea8;
 	--sp-line: #3a3d45;
-	--sp-accent: #4c8dff;
+	--sp-accent: #5b8fe6;
 	--ib-side: #15161a;
 	--ib-hover: #2d3037;
 	--ib-selected: #2a3d63;
-	--ib-page: #101114;
+	--ib-page: #0b0b0c;
 	--lk-light-surface-2: #1a1b20;
 	--lk-light-ink: #ecedef;
 	--lk-light-muted: #9a9ea8;
@@ -40,16 +40,22 @@
 
 .ib-page {
 	--ib-accent: var(--lk-accent, var(--sp-accent));
-	--ib-accent-2: var(--lk-accent-2, #7a4dff);
+	--ib-accent-2: var(--lk-accent-2, var(--ib-accent));
+	--ib-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
 	--ib-accent-ink: color-mix(in srgb, var(--ib-accent) 70%, var(--sp-text));
 	container-type: inline-size;
 	padding-bottom: 56px;
+}
+
+:root[data-theme='dark'] .ib-page {
+	--ib-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 /* ─── 맨 위 띠 ─── */
 .ib-hero {
 	position: relative;
 	overflow: hidden;
+	background: var(--ib-page);
 }
 
 .ib-hero-inner {
@@ -62,7 +68,7 @@
 	max-width: 1160px;
 	min-height: 560px;
 	margin: 0 auto;
-	padding: 56px 48px 150px;
+	padding: 80px 48px 150px;
 }
 
 .ib-hero-text {
@@ -77,13 +83,9 @@
 	align-items: center;
 	gap: 9px;
 	margin: 0;
-	padding: 5px 12px 5px 5px;
-	border: 1px solid var(--sp-line);
-	border-radius: 999px;
-	background-color: color-mix(in srgb, var(--sp-alt) 85%, transparent);
 	color: var(--sp-text);
-	font-size: 13px;
-	font-weight: 700;
+	font-size: 14px;
+	font-weight: 600;
 }
 
 .ib-eyebrow-icon {
@@ -95,22 +97,22 @@
 
 .ib-eyebrow em {
 	padding: 1px 8px;
+	border: 1px solid var(--sp-line);
 	border-radius: 999px;
-	background-color: color-mix(in srgb, var(--ib-accent) 13%, transparent);
-	color: var(--ib-accent-ink);
+	color: var(--sp-muted);
 	font-size: 11.5px;
 	font-style: normal;
-	font-weight: 650;
+	font-weight: 500;
 }
 
 .ib-hero-title {
 	max-width: 13em;
 	margin: 0;
 	color: var(--sp-text);
-	font-size: clamp(34px, 4.6cqi, 60px);
-	font-weight: 800;
-	line-height: 1.08;
-	letter-spacing: -0.035em;
+	font-size: clamp(36px, 4.6cqi, 60px);
+	font-weight: 700;
+	line-height: 1.06;
+	letter-spacing: -0.04em;
 	text-wrap: balance;
 }
 
@@ -131,9 +133,8 @@
 	margin-top: 6px;
 	padding: 6px;
 	border: 1px solid var(--sp-line);
-	border-radius: 14px;
+	border-radius: 12px;
 	background-color: var(--sp-alt);
-	box-shadow: 0 10px 30px -14px rgba(20, 30, 60, 0.35);
 }
 
 .ib-hero-field {
@@ -149,9 +150,7 @@
 .ib-hero-form .ib-subscribe {
 	height: 42px;
 	padding: 0 20px;
-	border-radius: 10px;
-	background: linear-gradient(135deg, var(--ib-accent), var(--ib-accent-2));
-	box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--ib-accent) 70%, transparent);
+	border-radius: 8px;
 	font-size: 15px;
 }
 
@@ -192,7 +191,7 @@
 
 .ib-hero-facts strong {
 	color: var(--sp-text);
-	font-weight: 800;
+	font-weight: 700;
 }
 
 .ib-hero-meta {
@@ -201,7 +200,7 @@
 	font-size: 12.5px;
 }
 
-/* 휴대폰과 그 위로 떠 있는 메일 알림 */
+/* 휴대폰과 그 위에 내려온 메일 알림 한 장 (iOS 알림처럼 화면 위쪽에 걸친다) */
 .ib-hero-art {
 	position: relative;
 	display: flex;
@@ -216,36 +215,31 @@
 
 .ib-notices {
 	position: absolute;
-	top: 18%;
+	top: 16%;
 	left: 50%;
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	width: min(330px, 92%);
+	z-index: 2;
+	width: min(300px, 88%);
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	transform: translateX(-62%);
+	transform: translateX(-50%);
 }
 
 .ib-notices li {
 	display: flex;
 	gap: 11px;
 	padding: 12px 14px;
-	border: 1px solid color-mix(in srgb, var(--sp-line) 70%, transparent);
-	border-radius: 16px;
-	background-color: color-mix(in srgb, var(--sp-alt) 88%, transparent);
-	box-shadow: 0 18px 40px -16px rgba(20, 30, 60, 0.35);
-	backdrop-filter: blur(14px);
-	transform: translateX(calc(var(--i) * 44px));
-	animation: ib-notice 0.7s var(--ease-out) both;
-	animation-delay: calc(0.25s + var(--i) * 0.18s);
+	border: 1px solid var(--sp-line);
+	border-radius: 14px;
+	background-color: var(--sp-alt);
+	box-shadow: var(--ib-shadow);
+	animation: ib-notice 0.5s var(--ease-out) 0.3s both;
 }
 
 @keyframes ib-notice {
 	from {
 		opacity: 0;
-		transform: translateX(calc(var(--i) * 44px)) translateY(14px) scale(0.97);
+		transform: translateY(-8px);
 	}
 }
 
@@ -292,7 +286,7 @@
 	white-space: nowrap;
 }
 
-/* ─── 앱 창: 맨 위 띠에 반쯤 걸쳐 떠 있는 제품 데모 ─── */
+/* ─── 앱 창: 맨 위 띠에 반쯤 걸친 제품 데모 ─── */
 .ib-stage {
 	position: relative;
 	z-index: 2;
@@ -301,22 +295,11 @@
 	padding: 0 32px;
 }
 
-.ib-stage::before {
-	content: '';
-	position: absolute;
-	inset: 6% 12% -4%;
-	z-index: -1;
-	border-radius: 40px;
-	background: linear-gradient(120deg, var(--ib-accent), var(--ib-accent-2));
-	filter: blur(60px);
-	opacity: 0.28;
-}
-
 .ib-cta {
 	max-width: 1180px;
 	margin: 96px auto 0;
 	overflow: hidden;
-	border-radius: 28px;
+	border-radius: 16px;
 }
 
 @container (max-width: 1180px) {
@@ -333,9 +316,7 @@
 	border: 1px solid var(--sp-line);
 	border-radius: 16px;
 	background-color: var(--sp-bg);
-	box-shadow:
-		0 1px 2px rgba(0, 0, 0, 0.06),
-		0 40px 80px -30px rgba(20, 30, 60, 0.45);
+	box-shadow: var(--ib-shadow);
 	font-size: 14px;
 	line-height: 1.5;
 }
@@ -454,13 +435,10 @@
 	height: 32px;
 	padding: 0 14px;
 	border-radius: 9px;
-	background: linear-gradient(135deg, var(--sp-accent), #7a4dff);
-	box-shadow: 0 4px 14px color-mix(in srgb, var(--sp-accent) 40%, transparent);
-	font-weight: 700;
+	background: var(--ib-accent, var(--sp-accent));
+	font-weight: 600;
 	text-decoration: none;
-	transition:
-		transform var(--duration-fast) var(--ease-out),
-		filter var(--duration-fast) var(--ease-out);
+	transition: background-color var(--duration-fast) var(--ease-out);
 }
 
 .sp .ib-subscribe {
@@ -468,8 +446,7 @@
 }
 
 .ib-subscribe:hover {
-	transform: translateY(-1px);
-	filter: brightness(1.08);
+	background: color-mix(in srgb, var(--ib-accent, var(--sp-accent)) 88%, #000000);
 }
 
 /* ─── 3단 ─── */

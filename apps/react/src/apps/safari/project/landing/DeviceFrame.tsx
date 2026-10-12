@@ -15,13 +15,13 @@ export interface DeviceFrameProps {
 	children?: React.ReactNode;
 	/** 브라우저 주소 막대의 글 (예: 데모 주소). 없으면 빈 막대 */
 	url?: string;
-	/** 살짝 기울인다: true·'left'는 왼쪽으로, 'right'는 오른쪽으로 (3D 원근) */
+	/** 살짝 기울인다 (기본 끔: 똑바로가 기본). true·'left'는 왼쪽으로, 'right'는 오른쪽으로 */
 	tilt?: boolean | 'left' | 'right';
-	/** 기기 뒤에 강조색 빛이 번진다 */
+	/** 기기 뒤에 강조색 빛이 아주 옅게 번진다 (기본 끔) */
 	glow?: boolean;
 	/** 바닥에 비친 반사 (기본 끔. -webkit-box-reflect를 아는 브라우저만) */
 	reflection?: boolean;
-	/** 그림자 (기본 켬) */
+	/** 얕은 그림자 한 벌 (기본 켬) */
 	shadow?: boolean;
 	className?: string;
 	style?: React.CSSProperties;
@@ -96,7 +96,6 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
 				{kind === 'phone' && <span className="lk-device-island" aria-hidden="true" />}
 				{kind === 'laptop' && <span className="lk-device-notch" aria-hidden="true" />}
 				<div className="lk-device-screen">{screen}</div>
-				{(kind === 'phone' || kind === 'tablet') && <span className="lk-device-glare" aria-hidden="true" />}
 			</div>
 			{kind === 'laptop' && (
 				<div className="lk-device-base" aria-hidden="true">

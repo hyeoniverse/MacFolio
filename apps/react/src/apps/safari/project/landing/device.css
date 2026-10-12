@@ -5,6 +5,9 @@
 	position: relative;
 	width: 100%;
 	margin: 0;
+}
+
+.lk-device[data-tilt] {
 	perspective: 1800px;
 }
 
@@ -40,12 +43,11 @@
 	border-radius: 0;
 }
 
-/* 그림자: 가까운 그림자와 멀리 퍼지는 그림자 두 겹 */
+/* 그림자: 얕은 한 벌 (가까운 1px + 부드러운 8px) */
 .lk-device[data-shadow] .lk-device-body {
 	box-shadow:
-		0 2px 4px rgba(0, 0, 0, 0.06),
-		0 24px 48px -12px rgba(0, 0, 0, 0.28),
-		0 60px 120px -30px rgba(0, 0, 0, 0.35);
+		0 1px 2px rgba(0, 0, 0, 0.08),
+		0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 /* ─── 브라우저 창 ─── */
@@ -137,7 +139,7 @@
 	aspect-ratio: 16 / 10.4;
 	padding: 2.2% 2.2% 2.6%;
 	border-radius: 18px 18px 6px 6px;
-	background: linear-gradient(180deg, #2a2a2f, var(--_bezel) 8%);
+	background: var(--_bezel);
 	box-shadow:
 		inset 0 0 0 1px var(--_frame-edge),
 		inset 0 0 0 2px #000;
@@ -147,7 +149,8 @@
 	box-shadow:
 		inset 0 0 0 1px var(--_frame-edge),
 		inset 0 0 0 2px #000,
-		0 30px 60px -20px rgba(0, 0, 0, 0.45);
+		0 1px 2px rgba(0, 0, 0, 0.08),
+		0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .lk-device[data-kind='laptop'] .lk-device-screen {
@@ -171,8 +174,8 @@
 	height: clamp(10px, 2.2vw, 20px);
 	margin: 0 -6.5%;
 	border-radius: 2px 2px 14px 14px / 2px 2px 10px 10px;
-	background: linear-gradient(180deg, #d7d8dc 0%, #b5b6bb 45%, #8a8b90 100%);
-	box-shadow: 0 18px 30px -12px rgba(0, 0, 0, 0.5);
+	background: #c4c5c9;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .lk-device-base span {
@@ -183,7 +186,7 @@
 	height: 45%;
 	transform: translateX(-50%);
 	border-radius: 0 0 10px 10px;
-	background: linear-gradient(180deg, #9a9ba0, #c3c4c8);
+	background: #a9aaae;
 }
 
 /* ─── 휴대폰 · 태블릿 ─── */
@@ -206,7 +209,8 @@
 	box-shadow:
 		inset 0 0 0 2px var(--_frame-edge),
 		inset 0 0 0 5px #050506,
-		0 40px 80px -24px rgba(0, 0, 0, 0.5);
+		0 1px 2px rgba(0, 0, 0, 0.08),
+		0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .lk-device[data-kind='phone'] .lk-device-screen {
@@ -239,32 +243,23 @@
 	box-shadow:
 		inset 0 0 0 2px var(--_frame-edge),
 		inset 0 0 0 4px #050506,
-		0 40px 80px -24px rgba(0, 0, 0, 0.45);
+		0 1px 2px rgba(0, 0, 0, 0.08),
+		0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .lk-device[data-kind='tablet'] .lk-device-screen {
 	border-radius: 2.6% / 3.4%;
 }
 
-/* 유리에 비친 빛 한 줄기 */
-.lk-device-glare {
-	position: absolute;
-	inset: 0;
-	z-index: 2;
-	border-radius: inherit;
-	background: linear-gradient(115deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0) 32%);
-	pointer-events: none;
-}
-
-/* ─── 기울기 · 빛 · 반사 ─── */
+/* ─── 기울기 · 빛 · 반사 (모두 기본 끔, 켜도 옅게) ─── */
 .lk-device[data-tilt='left'] .lk-device-body,
 .lk-device[data-tilt='left'] .lk-device-base {
-	transform: rotateY(-14deg) rotateX(6deg) rotateZ(1deg);
+	transform: rotateY(-8deg) rotateX(3deg);
 }
 
 .lk-device[data-tilt='right'] .lk-device-body,
 .lk-device[data-tilt='right'] .lk-device-base {
-	transform: rotateY(14deg) rotateX(6deg) rotateZ(-1deg);
+	transform: rotateY(8deg) rotateX(3deg);
 }
 
 .lk-device[data-tilt]:hover .lk-device-body,
@@ -282,16 +277,14 @@
 	inset: 8% 4% -4%;
 	z-index: 0;
 	border-radius: 40%;
-	background:
-		radial-gradient(closest-side at 35% 45%, color-mix(in srgb, var(--_accent) 70%, transparent), transparent),
-		radial-gradient(closest-side at 70% 60%, color-mix(in srgb, var(--_accent-2) 60%, transparent), transparent);
-	filter: blur(48px);
-	opacity: 0.75;
+	background: radial-gradient(closest-side, var(--_accent), transparent);
+	filter: blur(60px);
+	opacity: 0.16;
 	pointer-events: none;
 }
 
 .lk-device[data-reflection] .lk-device-body {
-	-webkit-box-reflect: below 6px linear-gradient(transparent 72%, rgba(255, 255, 255, 0.16));
+	-webkit-box-reflect: below 6px linear-gradient(transparent 82%, rgba(255, 255, 255, 0.06));
 }
 
 @media (prefers-reduced-motion: reduce) {
