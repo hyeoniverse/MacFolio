@@ -5,6 +5,7 @@ import { Facts, Favicon, Links, Region } from '@/apps/safari/project/parts';
 import { FeatureMedia } from '@/apps/safari/project/CreativeParts';
 import { Shots } from '@/apps/safari/project/CreativeChapters';
 import { Demo } from '@/apps/safari/project/creative/Demo';
+import { CtaBand, DeviceFrame, GlowBackdrop, MockScreen, useLandingAccent } from '@/apps/safari/project/landing';
 import '@/apps/safari/project/InboxPage.css';
 
 /** 메일 한 통: 어느 메일함에 들었고, 누가 보냈고, 제목·미리 보기·시각. 본문은 kind에 따라 다르게 그린다 */
@@ -253,6 +254,78 @@ const Body: React.FC<{ mail: Mail; project: Project }> = ({ mail, project }) => 
 };
 
 /**
+ * 맨 위 띠: 뉴스레터 서비스 랜딩처럼 큰 한 줄, 소개, 이메일 칸과 구독 단추, 숫자 몇 개.
+ * 오른쪽에는 휴대폰 화면(대표 화면, 없으면 데이터로 그린 화면) 위로 주요 기능 메일 알림이 떠 있다
+ */
+const Hero: React.FC<{ project: Project; mails: Mail[] }> = ({ project, mails }) => {
+	const notices = mails.filter((mail) => mail.kind === 'point').slice(0, 3);
+	const meta = [project.role, project.period].filter(Boolean).join(' · ');
+	return (
+		<header className="ib-hero">
+			<GlowBackdrop tone="light" pattern="dots" focus="side" />
+			<div className="ib-hero-inner">
+				<div className="ib-hero-text">
+					<p className="ib-eyebrow">
+						<Favicon project={project} className="ib-eyebrow-icon" />
+						<span>{project.name}</span>
+						{project.context && <em>{project.context}</em>}
+					</p>
+					<h2 className="ib-hero-title">{project.tagline || project.name}</h2>
+					{project.description && <p className="ib-hero-lead">{project.description}</p>}
+					{project.demo && (
+						<div className="ib-hero-form">
+							<span className="ib-hero-field" aria-hidden="true">
+								<i className="fa-regular fa-envelope" />
+								이메일 주소
+							</span>
+							<a className="ib-subscribe" href={project.demo} target="_blank" rel="noopener noreferrer">
+								<i className="fa-solid fa-paper-plane" aria-hidden="true" />
+								구독하기
+							</a>
+						</div>
+					)}
+					<Links project={project} className="sp-links ib-hero-links" />
+					{project.facts.length > 0 && (
+						<ul className="ib-hero-facts" aria-label="숫자">
+							{project.facts.slice(0, 3).map((fact) => (
+								<li key={fact.label}>
+									<strong>{fact.value}</strong> {fact.label}
+								</li>
+							))}
+						</ul>
+					)}
+					{meta && <p className="ib-hero-meta">{meta}</p>}
+				</div>
+				<div className="ib-hero-art" aria-hidden="true">
+					<DeviceFrame kind="phone" className="ib-hero-phone" glow>
+						{project.image ? (
+							<img className="lk-device-media" src={project.image} alt="" />
+						) : (
+							<MockScreen project={project} kind="mobile" tone="light" decorative />
+						)}
+					</DeviceFrame>
+					<ul className="ib-notices">
+						{notices.map((mail, index) => (
+							<li key={mail.id} style={{ '--i': index } as React.CSSProperties}>
+								<Favicon project={project} className="ib-notice-icon" />
+								<div>
+									<span className="ib-notice-head">
+										<b>{mail.from}</b>
+										<time>{mail.stamp}</time>
+									</span>
+									<strong>{mail.subject}</strong>
+									<span className="ib-notice-preview">{mail.preview}</span>
+								</div>
+							</li>
+						))}
+					</ul>
+				</div>
+			</div>
+		</header>
+	);
+};
+
+/**
  * 메일함 3단: 왼쪽 메일함 목록(안 읽은 수 뱃지), 가운데 메일 목록(검색으로 거르기, ↑↓로 이동),
  * 오른쪽 본문(누르면 밀려 들어오고 읽음 처리). 좁은 창은 목록 ↔ 본문을 번갈아 보인다
  */
@@ -291,136 +364,147 @@ const InboxPage: React.FC<{ project: Project }> = ({ project }) => {
 		openMail(visible[next].id);
 	};
 
-	// 열린 메일이 목록 밖으로 밀리지 않게 따라간다
+	// 열린 메일이 목록 밖으로 밀리지 않게 목록만 따라 스크롤한다 (페이지 전체는 움직이지 않는다)
 	useEffect(() => {
-		listRef.current?.querySelector<HTMLElement>('[aria-current="true"]')?.scrollIntoView({ block: 'nearest' });
+		const list = listRef.current;
+		const item = list?.querySelector<HTMLElement>('[aria-current="true"]');
+		if (!list || !item) return;
+		const top = item.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+		if (top < list.scrollTop) list.scrollTop = top;
+		else if (top + item.offsetHeight > list.scrollTop + list.clientHeight)
+			list.scrollTop = top + item.offsetHeight - list.clientHeight;
 	}, [openId]);
 
-	const subscribe = project.demo ?? project.url;
+	const accent = useLandingAccent(project.icon);
 
 	return (
-		<div className="ib" data-pane={pane} onKeyDown={onKeyDown}>
-			<div className="ib-toolbar">
-				<div className="ib-lights" aria-hidden="true">
-					<i />
-					<i />
-					<i />
-				</div>
-				<div className="ib-title">
-					<Favicon project={project} className="ib-title-icon" />
-					<span>{project.name}</span>
-					<em>{unread(INBOX) > 0 ? `안 읽음 ${unread(INBOX)}` : '모두 읽음'}</em>
-				</div>
-				<label className="ib-search">
-					<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-					<input
-						type="search"
-						placeholder="검색"
-						aria-label="메일 검색"
-						value={query}
-						onChange={(event) => setQuery(event.target.value)}
-					/>
-				</label>
-				<a className="ib-subscribe" href={subscribe} target="_blank" rel="noopener noreferrer">
-					<i className={`fa-solid ${project.demo ? 'fa-paper-plane' : 'fa-code-branch'}`} aria-hidden="true" />
-					{project.demo ? '구독하기' : 'GitHub'}
-				</a>
-			</div>
+		<div className="ib-page" style={accent}>
+			<Hero project={project} mails={mails} />
+			<div className="ib-stage">
+				<div className="ib" data-pane={pane} onKeyDown={onKeyDown}>
+					<div className="ib-toolbar">
+						<div className="ib-lights" aria-hidden="true">
+							<i />
+							<i />
+							<i />
+						</div>
+						<div className="ib-title">
+							<Favicon project={project} className="ib-title-icon" />
+							<span>{project.name}</span>
+							<em>{unread(INBOX) > 0 ? `안 읽음 ${unread(INBOX)}` : '모두 읽음'}</em>
+						</div>
+						<label className="ib-search">
+							<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+							<input
+								type="search"
+								placeholder="검색"
+								aria-label="메일 검색"
+								value={query}
+								onChange={(event) => setQuery(event.target.value)}
+							/>
+						</label>
+						<span className="ib-compose" aria-hidden="true">
+							<i className="fa-regular fa-pen-to-square" />
+						</span>
+					</div>
 
-			<div className="ib-panes">
-				<nav className="ib-boxes" aria-label="메일함">
-					<ul>
-						{boxes.map((item) => {
-							const count = unread(item.id);
-							return (
-								<li key={item.id}>
-									<button
-										type="button"
-										aria-pressed={box === item.id}
-										onClick={() => {
-											setBox(item.id);
-											setPane('list');
-										}}
-									>
-										<i className={`fa-solid ${item.icon}`} aria-hidden="true" />
-										<span>{item.label}</span>
-										{count > 0 && (
-											<span className="ib-badge" key={count} aria-label={`안 읽음 ${count}`}>
-												{count}
+					<div className="ib-panes">
+						<nav className="ib-boxes" aria-label="메일함">
+							<ul>
+								{boxes.map((item) => {
+									const count = unread(item.id);
+									return (
+										<li key={item.id}>
+											<button
+												type="button"
+												aria-pressed={box === item.id}
+												onClick={() => {
+													setBox(item.id);
+													setPane('list');
+												}}
+											>
+												<i className={`fa-solid ${item.icon}`} aria-hidden="true" />
+												<span>{item.label}</span>
+												{count > 0 && (
+													<span className="ib-badge" key={count} aria-label={`안 읽음 ${count}`}>
+														{count}
+													</span>
+												)}
+											</button>
+										</li>
+									);
+								})}
+							</ul>
+						</nav>
+
+						<Region label="메일 목록" className="ib-list-pane">
+							<header>
+								<h2>{boxes.find((item) => item.id === box)?.label}</h2>
+								<span>{visible.length}통</span>
+							</header>
+							<ul ref={listRef} className="ib-list">
+								{visible.map((mail) => (
+									<li key={mail.id}>
+										<button
+											type="button"
+											className="ib-mail"
+											aria-current={mail.id === openId ? 'true' : undefined}
+											data-unread={read.has(mail.id) ? undefined : ''}
+											onClick={() => openMail(mail.id)}
+										>
+											<span className="ib-dot" aria-hidden="true" />
+											<span className="ib-mail-head">
+												<span className="ib-from">{mail.from}</span>
+												<time>{mail.kind === 'timeline' ? mail.from : mail.stamp}</time>
 											</span>
-										)}
+											<strong>
+												{mail.point?.icon && (
+													<i className={`fa-solid ${mail.point.icon} ib-subject-icon`} aria-hidden="true" />
+												)}
+												{mail.subject}
+											</strong>
+											<span className="ib-preview">{mail.preview}</span>
+										</button>
+									</li>
+								))}
+								{visible.length === 0 && <li className="ib-empty">찾는 메일이 없습니다</li>}
+							</ul>
+						</Region>
+
+						<Region label="본문" className="ib-read-pane">
+							{open ? (
+								<article key={open.id} className="ib-read">
+									<button type="button" className="ib-back" onClick={() => setPane('list')}>
+										<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 목록
 									</button>
-								</li>
-							);
-						})}
-					</ul>
-				</nav>
-
-				<Region label="메일 목록" className="ib-list-pane">
-					<header>
-						<h2>{boxes.find((item) => item.id === box)?.label}</h2>
-						<span>{visible.length}통</span>
-					</header>
-					<ul ref={listRef} className="ib-list">
-						{visible.map((mail) => (
-							<li key={mail.id}>
-								<button
-									type="button"
-									className="ib-mail"
-									aria-current={mail.id === openId ? 'true' : undefined}
-									data-unread={read.has(mail.id) ? undefined : ''}
-									onClick={() => openMail(mail.id)}
-								>
-									<span className="ib-dot" aria-hidden="true" />
-									<span className="ib-mail-head">
-										<span className="ib-from">{mail.from}</span>
-										<time>{mail.kind === 'timeline' ? mail.from : mail.stamp}</time>
-									</span>
-									<strong>
-										{mail.point?.icon && (
-											<i className={`fa-solid ${mail.point.icon} ib-subject-icon`} aria-hidden="true" />
-										)}
-										{mail.subject}
-									</strong>
-									<span className="ib-preview">{mail.preview}</span>
-								</button>
-							</li>
-						))}
-						{visible.length === 0 && <li className="ib-empty">찾는 메일이 없습니다</li>}
-					</ul>
-				</Region>
-
-				<Region label="본문" className="ib-read-pane">
-					{open ? (
-						<article key={open.id} className="ib-read">
-							<button type="button" className="ib-back" onClick={() => setPane('list')}>
-								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 목록
-							</button>
-							<h1>{open.subject}</h1>
-							<div className="ib-sender">
-								<Favicon project={project} className="ib-avatar" />
-								<div>
-									<strong>{open.from}</strong>
-									<span>받는 사람: 나 · {open.kind === 'timeline' ? open.from : open.stamp}</span>
-								</div>
-							</div>
-							<div className="ib-body">
-								<Body mail={open} project={project} />
-							</div>
-							<div className="ib-actions" aria-hidden="true">
-								<span>
-									<i className="fa-solid fa-reply" /> 답장
-								</span>
-								<span>
-									<i className="fa-solid fa-share" /> 전달
-								</span>
-							</div>
-						</article>
-					) : (
-						<p className="ib-none">메일을 고르면 여기에 보입니다</p>
-					)}
-				</Region>
+									<h1>{open.subject}</h1>
+									<div className="ib-sender">
+										<Favicon project={project} className="ib-avatar" />
+										<div>
+											<strong>{open.from}</strong>
+											<span>받는 사람: 나 · {open.kind === 'timeline' ? open.from : open.stamp}</span>
+										</div>
+									</div>
+									<div className="ib-body">
+										<Body mail={open} project={project} />
+									</div>
+									<div className="ib-actions" aria-hidden="true">
+										<span>
+											<i className="fa-solid fa-reply" /> 답장
+										</span>
+										<span>
+											<i className="fa-solid fa-share" /> 전달
+										</span>
+									</div>
+								</article>
+							) : (
+								<p className="ib-none">메일을 고르면 여기에 보입니다</p>
+							)}
+						</Region>
+					</div>
+				</div>
 			</div>
+			<CtaBand project={project} title="다음 소식은 메일함에서 만나요." lead="" tone="light" className="ib-cta" />
 		</div>
 	);
 };

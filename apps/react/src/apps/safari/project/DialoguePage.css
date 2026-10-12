@@ -1344,6 +1344,122 @@
 	border-radius: 22%;
 }
 
+/* ─── 첫 화면(인사): 게임 타이틀 화면. 대표 화면 액자 | 큰 간판, 매단 팻말, 깜빡이는 시작 안내. 뒤로 빛이 번진다 ─── */
+.dl-title-screen {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: clamp(20px, 5cqw, 56px);
+	padding: 0 8px;
+}
+
+.dl-title-screen::before {
+	content: '';
+	position: absolute;
+	inset: 6% 10%;
+	z-index: -1;
+	background: radial-gradient(closest-side, rgba(255, 250, 230, 0.75), rgba(255, 250, 230, 0) 72%);
+	pointer-events: none;
+}
+
+.dl-title-shot {
+	flex: none;
+	transform: rotate(-2deg);
+}
+
+.dl-title-shot .dl-shot-frame > :is(img, video) {
+	max-width: 40cqw;
+	max-height: calc(100cqh - 30px);
+}
+
+.dl-title-card {
+	display: grid;
+	justify-items: center;
+	gap: 22px;
+	min-width: 0;
+}
+
+.dl .dl-logo {
+	max-width: min(100%, calc(100cqw - 28px));
+	padding: clamp(10px, 4cqh, 20px) clamp(18px, 4cqw, 34px);
+	font-size: clamp(22px, min(6cqw, 15cqh), 58px);
+	letter-spacing: 0.01em;
+	animation: dl-title-in 0.6s steps(4) both;
+}
+
+.dl-title-screen[data-cover] .dl-logo {
+	max-width: calc(56cqw - 28px);
+	font-size: clamp(20px, min(4.4cqw, 14cqh), 50px);
+}
+
+/* 긴 이름은 잘라 내지 않고 두 줄까지 */
+.dl-logo span {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-height: 1.15;
+	white-space: normal;
+	text-wrap: balance;
+}
+
+@keyframes dl-title-in {
+	from {
+		transform: translateY(-14px);
+		opacity: 0;
+	}
+}
+
+/* 팻말은 간판에 매단다 (줄이 간판 아래로 이어진다) */
+.dl .dl-title-plank {
+	margin: -4px 0 0;
+	font-size: clamp(12px, 2.6cqh, 15px);
+}
+
+.dl-title-plank::before {
+	height: 22px;
+}
+
+.dl-press {
+	margin: 0;
+	color: #fffaf0;
+	font-size: clamp(12px, 3cqh, 15px);
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-shadow:
+		2px 0 0 var(--dl-edge),
+		-2px 0 0 var(--dl-edge),
+		0 2px 0 var(--dl-edge),
+		0 -2px 0 var(--dl-edge);
+	animation: dl-blink 1.2s steps(2) infinite;
+}
+
+@keyframes dl-blink {
+	50% {
+		opacity: 0.25;
+	}
+}
+
+/* 장면이 좁으면 액자를 빼고 간판만, 낮으면 팻말과 안내도 뺀다 */
+@container (max-width: 620px) {
+	.dl-title-shot {
+		display: none;
+	}
+
+	.dl-title-screen[data-cover] .dl-logo {
+		max-width: calc(100cqw - 28px);
+		font-size: clamp(20px, min(6cqw, 15cqh), 50px);
+	}
+}
+
+@container (max-height: 190px) {
+	.dl-title-plank,
+	.dl-press {
+		display: none;
+	}
+}
+
 /* ─── 대화 상자 ─── */
 .dl-box {
 	grid-area: box;
@@ -1996,6 +2112,8 @@
 
 /* ─── 움직임 줄이기: 타자·들썩임·깜빡임 없이 (자리는 그대로) ─── */
 @media (prefers-reduced-motion: reduce) {
+	.dl-logo,
+	.dl-press,
 	.dl-scene,
 	.dl-scene-main,
 	.dl-face[data-talking] > *,

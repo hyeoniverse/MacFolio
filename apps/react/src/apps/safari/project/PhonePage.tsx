@@ -1,9 +1,10 @@
 // 폰 모양(phone): 앱스토어 미리 보기처럼, 가운데 고정된 폰 틀 안의 화면이 왼쪽 이야기가 흐르는 대로 바뀐다
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
-import { FactValue, Favicon, Links, Region } from '@/apps/safari/project/parts';
+import { Favicon, Links, Region } from '@/apps/safari/project/parts';
 import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
-import { onScrollFrame, scrollParent } from '@/apps/safari/project/scroll';
+import { scrollParent } from '@/apps/safari/project/scroll';
+import { CtaBand, DeviceFrame, MockScreen, SectionHeader, StatBand } from '@/apps/safari/project/landing';
 import '@/apps/safari/project/PhonePage.css';
 
 /** 이야기 한 단계: 폰 화면에 보일 그림과 왼쪽 글 */
@@ -63,6 +64,9 @@ function buildSteps(project: Project): Step[] {
 	return assignImages(steps, pool.length > 1 ? [...pool.slice(1), pool[0]] : pool);
 }
 
+/** 단계가 주요 기능이면 그 차례 (가짜 화면이 그 기능을 고른다). 아니면 첫 기능 */
+const focusOf = (step: Step) => (step.kind === 'highlight' ? Number(step.key.slice(1)) : 0);
+
 const KIND_LABEL: Record<Step['kind'], string> = {
 	intro: '소개',
 	highlight: '주요 기능',
@@ -75,7 +79,8 @@ const KIND_LABEL: Record<Step['kind'], string> = {
  * 폰 틀: 둥근 베젤·다이내믹 아일랜드 안에 지금 단계의 그림이 세로로 밀려 들어온다.
  * 단계가 바뀔 때 폰이 살짝 기울었다 돌아오고, 마우스를 따라 아주 조금 돈다 (움직임 줄이기에서는 둘 다 없음)
  */
-const Phone: React.FC<{ steps: Step[]; active: number; repo: string }> = ({ steps, active, repo }) => {
+const Phone: React.FC<{ project: Project; steps: Step[]; active: number }> = ({ project, steps, active }) => {
+	const repo = project.url;
 	const step = steps[active];
 	const [outgoing, setOutgoing] = useState<Step | null>(null);
 	const [tilting, setTilting] = useState(false);
@@ -135,6 +140,7 @@ const Phone: React.FC<{ steps: Step[]; active: number; repo: string }> = ({ step
 						draggable={false}
 					/>
 				) : (
+					// 그림이 없는 단계: 프로젝트 데이터로 그린 앱 화면 (주요 기능 단계는 그 기능을 고른 화면)
 					<div
 						key={step.key}
 						className="ph-screen-img ph-screen-blank"
@@ -142,7 +148,13 @@ const Phone: React.FC<{ steps: Step[]; active: number; repo: string }> = ({ step
 						aria-label={`폰 화면: ${step.title}`}
 						data-step={active}
 					>
-						<span>{step.title}</span>
+						<MockScreen project={project} kind="mobile" focus={focusOf(step)} decorative />
+						{step.kind !== 'intro' && (
+							<span className="ph-screen-chip" aria-hidden="true">
+								<i className={`fa-solid ${step.point?.icon ?? 'fa-wand-magic-sparkles'}`} />
+								{step.title}
+							</span>
+						)}
 					</div>
 				)}
 				{step.kind === 'specs' && (
@@ -160,28 +172,26 @@ const Phone: React.FC<{ steps: Step[]; active: number; repo: string }> = ({ step
 	);
 };
 
-/** 폰 옆에 떠 있는 숫자 뱃지: 스크롤하면 바깥으로 흩어지며 사라진다 */
-const Badges: React.FC<{ project: Project }> = ({ project }) => {
-	const ref = useRef<HTMLUListElement>(null);
-	useEffect(() => {
-		const node = ref.current;
-		if (!node || prefersReducedMotion()) return;
-		return onScrollFrame(node, (scroller) => {
-			const top = scroller?.scrollTop ?? window.scrollY;
-			// 머리글을 지나 200px쯤 내리면 다 흩어진다
-			node.style.setProperty('--ph-scatter', Math.min(1, top / 480).toFixed(3));
-		});
-	}, []);
-	if (project.facts.length === 0) return null;
+/**
+ * 히어로의 기기 둘: 앞 폰은 대표 화면, 뒤에 비스듬히 선 폰은 화면 모음의 다음 장 (App Store 제품 페이지처럼).
+ * 그림이 없으면 프로젝트 데이터로 그린 앱 화면(첫 기능, 둘째 기능)
+ */
+const HeroDevices: React.FC<{ project: Project }> = ({ project }) => {
+	const shots = [project.image, ...(project.gallery ?? []).map((shot) => shot.src)].filter(
+		(src): src is string => Boolean(src) && !isVideo(src as string)
+	);
+	const front = shots[0];
+	const back = shots.find((src) => src !== front);
 	return (
-		<ul ref={ref} className="ph-badges" aria-label="한눈에">
-			{project.facts.map((fact, index) => (
-				<li key={fact.label} style={{ '--i': index } as React.CSSProperties}>
-					<FactValue text={fact.value} />
-					<span>{fact.label}</span>
-				</li>
-			))}
-		</ul>
+		<div className="ph-hero-devices">
+			<span className="ph-hero-halo" aria-hidden="true" />
+			<DeviceFrame kind="phone" src={back} className="ph-hero-back">
+				{!back && <MockScreen project={project} kind="mobile" focus={1} decorative />}
+			</DeviceFrame>
+			<DeviceFrame kind="phone" src={front} alt={front ? `${project.name} 화면` : undefined} className="ph-hero-front">
+				{!front && <MockScreen project={project} kind="mobile" decorative />}
+			</DeviceFrame>
+		</div>
 	);
 };
 
@@ -235,22 +245,37 @@ const PhonePage: React.FC<{ project: Project }> = ({ project }) => {
 
 	return (
 		<div ref={root} className="ph">
-			<header className="ph-head">
-				<div className="ph-head-name">
-					<Favicon project={project} className="ph-icon" />
-					<span>{project.name}</span>
+			{/* 히어로: App Store 제품 페이지처럼 앱 아이콘·이름, 큰 한 줄, 받기 단추, 오른쪽에 기기 둘. 아래에 정보 띠(숫자) */}
+			<header className="ph-hero">
+				<div className="ph-hero-text">
+					<div className="ph-app">
+						<Favicon project={project} className="ph-app-icon" />
+						<div>
+							<p className="ph-app-name">{project.name}</p>
+							{project.context && <p className="ph-app-sub">{project.context}</p>}
+						</div>
+					</div>
+					<h1>{project.tagline}</h1>
+					<p className="ph-lead">{project.description}</p>
+					<Links project={project} className="ph-links" />
 				</div>
-				<h1>{project.tagline}</h1>
-				<p className="ph-lead">{project.description}</p>
-				<Links project={project} className="ph-links" />
+				<HeroDevices project={project} />
 			</header>
+			<StatBand facts={project.facts} label="한눈에" gradient={false} className="ph-info" />
+
+			<div className="ph-tour-head" data-reveal="">
+				<SectionHeader
+					eyebrow="둘러보기"
+					title="화면을 넘기며 하나씩 살펴보세요."
+					lead="왼쪽 이야기를 내리면 오른쪽 휴대폰의 화면이 그 내용으로 바뀝니다."
+				/>
+			</div>
 
 			<div className="ph-body">
 				{/* 오른쪽(좁은 창은 위) 고정: 폰과 뱃지 */}
 				<div className="ph-stage" data-active={active}>
 					<div className="ph-stage-inner">
-						<Phone steps={steps} active={active} repo={project.url} />
-						<Badges project={project} />
+						<Phone project={project} steps={steps} active={active} />
 					</div>
 				</div>
 
@@ -370,7 +395,9 @@ const PhonePage: React.FC<{ project: Project }> = ({ project }) => {
 			{/* 앱스토어 미리 보기처럼: 화면 모음을 작은 폰 화면으로 나란히 (두 장 이상일 때) */}
 			{gallery.length > 1 && (
 				<Region label="화면 모음" className="ph-gallery">
-					<h2 data-reveal="">화면 모음</h2>
+					<div data-reveal="">
+						<SectionHeader eyebrow="미리 보기" title="화면 모음" />
+					</div>
 					<ul>
 						{gallery.map((shot) => (
 							<li key={shot.src} data-reveal="">
@@ -387,6 +414,8 @@ const PhonePage: React.FC<{ project: Project }> = ({ project }) => {
 					</ul>
 				</Region>
 			)}
+
+			<CtaBand project={project} className="ph-cta" />
 		</div>
 	);
 };

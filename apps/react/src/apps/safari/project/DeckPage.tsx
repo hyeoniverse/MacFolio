@@ -6,7 +6,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { cssVars } from '@/shared/lib/cssVars';
 import { PROFILE, type Project, type ProjectChapter, type ProjectPoint } from '@/shared/profile';
-import { FactValue, Links, Region } from '@/apps/safari/project/parts';
+import { Links, Region } from '@/apps/safari/project/parts';
 import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
 import { scrollParent } from '@/apps/safari/project/scroll';
 import { Bars, Compare, FeatureMedia, ScrollFrames, ZoomImage } from '@/apps/safari/project/CreativeParts';
@@ -14,6 +14,14 @@ import { ChapterFacts, ChapterPoints, Shots } from '@/apps/safari/project/Creati
 import { Demo } from '@/apps/safari/project/creative/Demo';
 import { Themes } from '@/apps/safari/project/creative/Themes';
 import { Mascot } from '@/apps/safari/project/creative/Mascot';
+import {
+	DeviceFrame,
+	GlowBackdrop,
+	LogoStrip,
+	MockScreen,
+	StatBand,
+	pickMockKind,
+} from '@/apps/safari/project/landing';
 import '@/apps/safari/project/DeckPage.css';
 
 /** 슬라이드 원본 크기 (여기 맞춰 그리고, 창에 맞게 축소한다) */
@@ -79,7 +87,8 @@ const Cover: React.FC<{ project: Project; seat: React.RefObject<HTMLDivElement |
 	);
 	const size = Math.min(150, Math.floor(1136 / Math.max(4, width)));
 	return (
-		<div className="dk-cover" onPointerMove={tilt} data-shot={project.image ? '' : undefined}>
+		<div className="dk-cover" onPointerMove={tilt} data-shot="">
+			<GlowBackdrop tone="dark" pattern="grid" focus="side" />
 			<p className="dk-kicker">
 				{project.icon && <img src={project.icon} alt="" className="dk-cover-icon" />}
 				<span>{project.context}</span>
@@ -90,6 +99,7 @@ const Cover: React.FC<{ project: Project; seat: React.RefObject<HTMLDivElement |
 			</p>
 			<div className="dk-cover-text">
 				<h1 className="dk-cover-tagline">{project.tagline}</h1>
+				{project.description && <p className="dk-cover-lead">{project.description}</p>}
 				<p className="dk-presenter">
 					<span>발표</span>
 					<strong>{PROFILE.name}</strong>
@@ -98,11 +108,12 @@ const Cover: React.FC<{ project: Project; seat: React.RefObject<HTMLDivElement |
 				<Links project={project} className="dk-links" />
 			</div>
 			<div className="dk-cover-side">
-				{project.image && (
-					<figure className="dk-cover-shot" aria-hidden="true">
-						<img src={project.image} alt="" />
-					</figure>
-				)}
+				{/* 신제품 발표처럼: 노트북 화면에 대표 화면(없으면 데이터로 그린 화면), 바닥에 비친다 */}
+				<div className="dk-cover-device" aria-hidden="true">
+					<DeviceFrame kind="laptop" src={project.image} glow reflection>
+						<MockScreen project={project} kind={pickMockKind(project)} tone="dark" tint={false} decorative />
+					</DeviceFrame>
+				</div>
 				{/* 몽이가 서는 자리 (몽이는 위 층에 떠서 이 자리에 맞춰 선다). 표지가 아닐 때는 자리를 감춰 몽이가 다른 데로 가게 */}
 				<div className="dk-seat" ref={seat} data-mascot={mascot || undefined} />
 			</div>
@@ -111,33 +122,38 @@ const Cover: React.FC<{ project: Project; seat: React.RefObject<HTMLDivElement |
 };
 
 /** 주요 기능 한 장: 왼쪽 제목·글, 오른쪽에 스크롤 장면·화면·데모·실제 화면 (오른쪽은 장 안에서 스크롤) */
-const Feature: React.FC<{ point: ProjectPoint; index: number }> = ({ point, index }) => {
+const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number }> = ({ project, point, index }) => {
 	const media = point.scrollFrames || point.image || point.video || point.variants || point.demo || point.shots;
 	return (
 		<div className="dk-feature" data-media={media ? '' : undefined}>
 			<div className="dk-feature-text">
-				<p className="dk-eyebrow">주요 기능 {two(index + 1)}</p>
+				<p className="dk-eyebrow">
+					{point.icon && <i className={`dk-eyebrow-icon fa-solid ${point.icon}`} aria-hidden="true" />}
+					주요 기능 {two(index + 1)}
+				</p>
 				<h2 data-reveal="left">{point.title}</h2>
 				<p className="dk-feature-body" data-reveal="left" style={cssVars({ d: 1 })}>
 					{point.body}
 				</p>
-				{media && point.detail && (
+				{point.detail && (
 					<p className="dk-feature-more" data-reveal="left" style={cssVars({ d: 2 })}>
 						{point.detail}
 					</p>
 				)}
 			</div>
-			{/* 화면이 없는 기능: 오른쪽 절반에 큰 번호(또는 아이콘)와 자세히를 둔다 */}
+			{/* 화면이 없는 기능: 그 기능을 고른 제품 화면을 기울어진 브라우저 창에 (발표의 기능 소개 장처럼) */}
 			{!media && (
-				<div className="dk-feature-aside" data-reveal="zoom">
-					<span className="dk-feature-big" aria-hidden="true">
-						{point.icon ? (
-							<i className={`fa-solid ${point.icon}`} />
-						) : (
-							<span className="dk-grad">{two(index + 1)}</span>
-						)}
-					</span>
-					{point.detail && <p>{point.detail}</p>}
+				<div className="dk-feature-aside" data-reveal="zoom" aria-hidden="true">
+					<DeviceFrame kind="browser" url={project.demo ?? project.url} tilt="right" glow>
+						<MockScreen
+							project={project}
+							kind={pickMockKind(project)}
+							focus={index}
+							tone="dark"
+							tint={false}
+							decorative
+						/>
+					</DeviceFrame>
 				</div>
 			)}
 			{media && (
@@ -281,15 +297,10 @@ function slidesOf(project: Project): Slide[] {
 			notes: project.facts.map((fact) => `${fact.value} — ${fact.label}`),
 			body: (
 				<div className="dk-facts-wrap">
+					<GlowBackdrop tone="dark" pattern="dots" focus="center" />
 					<p className="dk-eyebrow">한눈에</p>
-					<ul className="dk-facts" data-count={Math.min(project.facts.length, 6)}>
-						{project.facts.map((fact, i) => (
-							<li key={fact.label} data-reveal="" style={cssVars({ d: i })}>
-								<FactValue text={fact.value} />
-								<span>{fact.label}</span>
-							</li>
-						))}
-					</ul>
+					<h2 className="dk-facts-title">{project.tagline}</h2>
+					<StatBand facts={project.facts} tone="dark" label="숫자" className="dk-stats" />
 				</div>
 			),
 		});
@@ -304,7 +315,7 @@ function slidesOf(project: Project): Slide[] {
 			hue: hue(),
 			fx: 'push',
 			notes: [point.detail ?? point.body],
-			body: <Feature point={point} index={i} />,
+			body: <Feature project={project} point={point} index={i} />,
 		});
 	});
 	if (project.gallery?.length) {
@@ -501,20 +512,11 @@ function slidesOf(project: Project): Slide[] {
 							</div>
 						))}
 					</dl>
-					{(project.stack.length > 0 || project.language) && (
-						<ul className="dk-stack" aria-label="기술">
-							{project.language && (
-								<li className="dk-stack-lang">
-									<i className="fa-solid fa-code" aria-hidden="true" /> {project.language}
-								</li>
-							)}
-							{project.stack
-								.filter((item) => item !== project.language)
-								.map((item) => (
-									<li key={item}>{item}</li>
-								))}
-						</ul>
-					)}
+					<LogoStrip
+						items={[project.language, ...project.stack].filter(Boolean)}
+						caption="만든 기술"
+						className="dk-logos"
+					/>
 				</div>
 			),
 		});
@@ -530,6 +532,8 @@ function slidesOf(project: Project): Slide[] {
 		notes: ['질문을 받습니다', project.url],
 		body: (
 			<div className="dk-end">
+				<GlowBackdrop tone="dark" pattern="dots" focus="center" />
+				{project.icon && <img className="dk-end-icon" src={project.icon} alt="" />}
 				<p className="dk-end-big">
 					<span className="dk-grad">고맙습니다</span>
 				</p>
@@ -676,6 +680,7 @@ const DeckPage: React.FC<{ project: Project }> = ({ project }) => {
 							key={slide.key}
 							label={slide.region ?? slide.title}
 							className="dk-slide"
+							data-lk-tone="dark"
 							data-kind={slide.kind}
 							data-fx={slide.fx}
 							data-dir={dir}

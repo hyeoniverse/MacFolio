@@ -11,12 +11,21 @@
 	--ph-coral: #e8694f;
 	--ph-bezel: #141a3a;
 	--ph-bezel-edge: rgba(255, 255, 255, 0.35);
-	--ph-badge-bg: #ffffff;
 	--ph-num: rgba(20, 26, 58, 0.14);
 	--cr-bg: var(--sp-bg);
 	--cr-ink: var(--sp-text);
 	--cr-muted: var(--sp-muted);
 	--cr-line: var(--sp-line);
+	/* 랜딩 키트 조각(기기 틀, 가짜 화면, 숫자 띠, 구역 머리, CTA)이 읽는 색: 민트·코랄, 페이지 바탕을 따른다 */
+	--lk-accent: #14a58c;
+	--lk-accent-2: var(--ph-coral);
+	--lk-surface: #ffffff;
+	--lk-surface-2: var(--sp-bg);
+	--lk-ink: var(--sp-text);
+	--lk-muted: var(--sp-muted);
+	--lk-line: var(--sp-line);
+	--lk-dark-surface: #141a3a;
+	--lk-dark-surface-2: #1d2450;
 	background-image:
 		radial-gradient(60cqi 60cqi at 85% -10%, rgba(34, 194, 166, 0.18), transparent 70%),
 		radial-gradient(50cqi 50cqi at -10% 30%, rgba(232, 105, 79, 0.14), transparent 70%);
@@ -33,71 +42,83 @@
 	--ph-coral: #ff8a6c;
 	--ph-bezel: #060a1c;
 	--ph-bezel-edge: rgba(255, 255, 255, 0.22);
-	--ph-badge-bg: #1a2150;
 	--ph-num: rgba(238, 240, 255, 0.1);
+	--lk-accent: #2fbfa6;
+	--lk-surface: #141a3a;
+	--lk-dark-surface: #060a1c;
+	--lk-dark-surface-2: #10163a;
 }
 
 .ph {
-	padding-bottom: 96px;
+	padding-bottom: 40px;
 }
 
-/* ─── 머리 ─── */
-.ph-head {
-	max-width: 1100px;
+/* ─── 히어로: 왼쪽 앱 소개, 오른쪽 기기 둘 ─── */
+.ph-hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+	align-items: center;
+	gap: 48px;
+	max-width: 1180px;
+	min-height: 600px;
 	margin: 0 auto;
-	padding: 72px 40px 24px;
+	padding: 56px 40px 40px;
 }
 
-.ph-head-name {
+/* App Store의 앱 머리: 큰 아이콘 타일, 이름과 한 줄 설명 */
+.ph-app {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	font-size: 15px;
-	font-weight: 700;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	color: var(--ph-mint);
+	gap: 16px;
 }
 
-.ph-icon {
-	width: 28px;
-	height: 28px;
-	border-radius: 8px;
-	object-fit: contain;
+.ph-app-icon {
+	width: 76px;
+	height: 76px;
+	flex: none;
+	border-radius: 22%;
+	object-fit: cover;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.06),
+		0 14px 30px -10px rgba(20, 26, 58, 0.35);
 }
 
-.ph-icon.fallback {
+.ph-app-icon.fallback {
 	display: grid;
 	place-items: center;
-	background: var(--sp-alt);
-	color: var(--sp-muted);
-}
-
-.ph-head h1 {
-	max-width: 15ch;
-	margin-top: 18px;
-	font-size: clamp(40px, 7.5cqi, 92px);
-	font-weight: 800;
-	letter-spacing: -0.035em;
-	line-height: 0.98;
-}
-
-.ph-head h1::after {
-	display: block;
-	width: 0.9em;
-	height: 0.08em;
-	margin-top: 0.22em;
-	border-radius: 999px;
 	background: var(--sp-grad);
-	content: '';
+	color: #fff;
+	font-size: 30px;
+}
+
+.ph-app-name {
+	font-size: 17px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.ph-app-sub {
+	margin-top: 3px;
+	color: var(--sp-muted);
+	font-size: 14px;
+}
+
+.ph-hero h1 {
+	max-width: 14ch;
+	margin-top: 30px;
+	font-size: clamp(40px, 5.6cqi, 76px);
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	line-height: 1.02;
+	text-wrap: balance;
 }
 
 .ph-lead {
-	max-width: 46ch;
-	margin-top: 22px;
+	max-width: 40ch;
+	margin-top: 20px;
 	color: var(--sp-muted);
-	font-size: clamp(17px, 2.1cqi, 21px);
-	line-height: 1.5;
+	font-size: clamp(17px, 1.7cqi, 20px);
+	line-height: 1.55;
 }
 
 .ph-links {
@@ -105,8 +126,78 @@
 	flex-wrap: wrap;
 	gap: 14px 24px;
 	align-items: center;
-	margin-top: 26px;
+	margin-top: 30px;
 	font-size: 16px;
+}
+
+/* 받기 단추: App Store처럼 굵은 알약 */
+.sp[data-look='phone'] .ph-links .sp-pill {
+	padding: 12px 28px;
+	font-size: 16px;
+	box-shadow: 0 12px 28px -12px var(--ph-coral);
+}
+
+/* 기기 둘: 앞 폰은 똑바로, 뒤 폰은 비스듬히 뒤에. 뒤에는 민트·코랄 빛 */
+.ph-hero-devices {
+	position: relative;
+	display: grid;
+	place-items: center;
+	min-height: 520px;
+}
+
+.ph-hero-halo {
+	position: absolute;
+	inset: 6% 2%;
+	border-radius: 50%;
+	background:
+		radial-gradient(closest-side, color-mix(in srgb, var(--ph-mint) 42%, transparent), transparent),
+		radial-gradient(40% 40% at 75% 70%, color-mix(in srgb, var(--ph-coral) 35%, transparent), transparent);
+	filter: blur(30px);
+}
+
+.ph-hero-devices .lk-device {
+	position: absolute;
+	width: clamp(170px, 17cqi, 232px);
+}
+
+.ph-hero-front {
+	z-index: 2;
+	transform: translateX(-22%) rotate(-2deg);
+	animation: ph-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.ph-hero-back {
+	z-index: 1;
+	opacity: 0.96;
+	transform: translate(30%, 6%) rotate(7deg) scale(0.9);
+	animation: ph-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s both;
+}
+
+@keyframes ph-rise {
+	from {
+		opacity: 0;
+		translate: 0 60px;
+	}
+}
+
+/* 정보 띠: App Store의 평점·순위 줄처럼 히어로 아래 가는 선 사이 */
+.sp[data-look='phone'] .ph-info {
+	max-width: 1100px;
+	margin: 0 auto 24px;
+}
+
+.sp[data-look='phone'] .ph-info .lk-stat {
+	padding: 26px 20px;
+}
+
+.sp[data-look='phone'] .ph-info strong {
+	font-size: clamp(30px, 3.6cqi, 44px);
+	font-weight: 800;
+	color: var(--sp-text);
+}
+
+.ph-tour-head {
+	padding: 88px 40px 8px;
 }
 
 /* ─── 본문: 왼쪽 이야기 + 오른쪽 고정 폰 ─── */
@@ -259,15 +350,48 @@
 }
 
 .ph-screen-blank {
+	background: var(--sp-bg);
+}
+
+/* 가짜 화면 위에 뜬 알림 카드: 이 단계의 제목 (그 기능을 쓰는 순간처럼) */
+.ph-screen-chip {
+	position: absolute;
+	right: 10px;
+	bottom: 64px;
+	left: 10px;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 14px;
+	border-radius: 18px;
+	background: color-mix(in srgb, var(--sp-bg) 82%, transparent);
+	backdrop-filter: blur(14px);
+	box-shadow: 0 12px 30px -10px rgba(10, 14, 40, 0.45);
+	color: var(--sp-text);
+	font-size: 13px;
+	font-weight: 700;
+	animation: ph-slide-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s both;
+}
+
+.ph-screen-chip i {
 	display: grid;
+	flex: none;
+	width: 28px;
+	height: 28px;
 	place-items: center;
-	padding: 24px;
+	border-radius: 8px;
 	background: var(--sp-grad);
 	color: #fff;
-	font-size: 22px;
-	font-weight: 800;
-	letter-spacing: -0.02em;
-	text-align: center;
+	font-size: 12px;
+}
+
+/* 폰 틀 안의 가짜 화면: 상태 막대가 섬에 가리지 않게 위를 조금 비운다 */
+.ph-screen-blank .lk-mock {
+	width: 100%;
+	height: 100%;
+	aspect-ratio: auto;
+	border-radius: 0;
 }
 
 .ph-home {
@@ -320,84 +444,6 @@
 
 .ph-repo-hint {
 	color: rgba(255, 255, 255, 0.7);
-	font-size: 12px;
-}
-
-/* 숫자 뱃지: 폰 둘레에 떠 있다가 스크롤하면 바깥으로 흩어진다 (--ph-scatter 0→1) */
-.ph-badges {
-	--ph-scatter: 0;
-	position: absolute;
-	inset: 0;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	pointer-events: none;
-}
-
-.ph-badges li {
-	position: absolute;
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-	min-width: 110px;
-	padding: 12px 16px;
-	border-radius: 18px;
-	background: var(--ph-badge-bg);
-	box-shadow:
-		0 10px 30px rgba(10, 14, 40, 0.18),
-		0 0 0 1px var(--sp-line);
-	transform: translate(calc(var(--dx) * var(--ph-scatter)), calc(var(--dy) * var(--ph-scatter)))
-		rotate(calc(var(--rot) * var(--ph-scatter)));
-	opacity: calc(1 - var(--ph-scatter) * 1.15);
-	will-change: transform, opacity;
-}
-
-.ph-badges li:nth-child(1) {
-	--dx: -220px;
-	--dy: -120px;
-	--rot: -18deg;
-	top: 14%;
-	left: -40%;
-}
-
-.ph-badges li:nth-child(2) {
-	--dx: 240px;
-	--dy: -40px;
-	--rot: 14deg;
-	top: 44%;
-	right: -38%;
-}
-
-.ph-badges li:nth-child(3) {
-	--dx: -200px;
-	--dy: 160px;
-	--rot: -10deg;
-	bottom: 12%;
-	left: -34%;
-}
-
-/* 넷 이상은 폰 뒤로 (겹침은 피하되 억지로 자리를 만들지는 않는다) */
-.ph-badges li:nth-child(n + 4) {
-	--dx: 200px;
-	--dy: 160px;
-	--rot: 12deg;
-	right: -30%;
-	bottom: 30%;
-}
-
-.ph-badges strong {
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
-	font-size: 26px;
-	font-weight: 800;
-	letter-spacing: -0.03em;
-	line-height: 1;
-}
-
-.ph-badges li > span {
-	color: var(--sp-muted);
 	font-size: 12px;
 }
 
@@ -538,14 +584,19 @@
 .ph-gallery {
 	max-width: 1100px;
 	margin: 0 auto;
-	padding: 48px 40px 0;
+	padding: 72px 40px 0;
 }
 
-.ph-gallery h2 {
-	margin-bottom: 28px;
-	font-size: clamp(28px, 4cqi, 44px);
-	font-weight: 800;
-	letter-spacing: -0.03em;
+/* 마지막 행동 유도 띠: 둥근 남색 판 */
+.sp[data-look='phone'] .ph-cta {
+	max-width: 1100px;
+	margin: 96px auto 0;
+	border-radius: 36px;
+}
+
+.sp[data-look='phone'] .ph-cta .lk-cta-links .sp-pill {
+	background: var(--ph-coral);
+	color: #fff;
 }
 
 .ph-gallery ul {
@@ -667,8 +718,28 @@
 
 /* ─── 좁은 창: 폰이 위에 작게 붙고 글이 아래로 ─── */
 @container (max-width: 760px) {
-	.ph-head {
-		padding: 48px 20px 16px;
+	.ph-hero {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 24px;
+		min-height: 0;
+		padding: 40px 20px 16px;
+	}
+
+	.ph-hero-devices {
+		min-height: 380px;
+	}
+
+	.ph-hero-devices .lk-device {
+		width: 170px;
+	}
+
+	.ph-tour-head {
+		padding: 56px 20px 0;
+	}
+
+	.sp[data-look='phone'] .ph-cta {
+		margin: 56px 16px 0;
+		border-radius: 24px;
 	}
 
 	.ph-body {
@@ -714,31 +785,9 @@
 		font-size: 11px;
 	}
 
-	.ph-repo-hint {
+	.ph-repo-hint,
+	.ph-screen-chip {
 		display: none;
-	}
-
-	/* 뱃지는 폰 아래 한 줄로 */
-	.ph-badges {
-		position: static;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 8px;
-		margin-top: 12px;
-	}
-
-	.ph-badges li,
-	.ph-badges li:nth-child(n) {
-		position: static;
-		min-width: 0;
-		padding: 8px 12px;
-		transform: none;
-		opacity: 1;
-	}
-
-	.ph-badges strong {
-		font-size: 18px;
 	}
 
 	.ph-story {
@@ -793,13 +842,14 @@
 
 	.ph-screen-img,
 	.ph-screen-out,
+	.ph-screen-chip,
 	.ph-repo {
 		animation: none;
 	}
 
-	.ph-badges li {
-		transform: none;
-		opacity: 1;
+	.ph-hero-front,
+	.ph-hero-back {
+		animation: none;
 	}
 
 	.ph-num,

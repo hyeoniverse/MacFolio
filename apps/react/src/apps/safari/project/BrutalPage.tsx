@@ -7,6 +7,7 @@ import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
 import { onScrollFrame } from '@/apps/safari/project/scroll';
 import { FeatureMedia } from '@/apps/safari/project/CreativeParts';
 import { cssVars } from '@/shared/lib/cssVars';
+import { DeviceFrame, FeatureVisual, MockScreen } from '@/apps/safari/project/landing';
 import '@/apps/safari/project/BrutalPage.css';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -39,13 +40,14 @@ const evenSpans = (count: number) => (count % 3 === 0 ? [4] : count % 2 === 0 ? 
  * 글 블록 묶음(기능, 만든 방식, 쓰는 법): 블록 크기가 번갈아 달라지고, 줄의 남는 칸은 빗금.
  * offset은 같은 줄 앞에 이미 놓인 칸 수 (장 제목 블록처럼)
  */
-const Points: React.FC<{ points: ProjectPoint[]; tag: string; from: number; spans: number[]; offset?: number }> = ({
-	points,
-	tag,
-	from,
-	spans,
-	offset = 0,
-}) => {
+const Points: React.FC<{
+	points: ProjectPoint[];
+	tag: string;
+	from: number;
+	spans: number[];
+	offset?: number;
+	project: Project;
+}> = ({ points, tag, from, spans, offset = 0, project }) => {
 	let used = offset;
 	const cells: React.ReactNode[] = [];
 	points.forEach((point, index) => {
@@ -65,7 +67,11 @@ const Points: React.FC<{ points: ProjectPoint[]; tag: string; from: number; span
 				<p>{point.body}</p>
 				{point.detail && <p className="br-detail">{point.detail}</p>}
 				<div className="br-media">
-					<FeatureMedia point={point} />
+					{point.image || point.video || point.variants ? (
+						<FeatureMedia point={point} />
+					) : (
+						<FeatureVisual point={point} index={from + index} project={project} tone="light" />
+					)}
 				</div>
 			</Block>
 		);
@@ -114,8 +120,11 @@ const Cursor: React.FC<{ root: React.RefObject<HTMLDivElement | null> }> = ({ ro
 	return <div ref={dot} className={`br-cursor ${on ? 'on' : ''}`} aria-hidden="true" />;
 };
 
-/** 맨 위: 이름(화면을 넘치는 크기)과 큰 제목이 스크롤에 따라 서로 반대로 밀린다 */
-const Hero: React.FC<{ project: Project }> = ({ project }) => {
+/**
+ * 맨 위 (Gumroad 같은 브루탈 브랜드 랜딩): 이름(화면을 넘치는 크기)과 큰 제목이 스크롤에 따라 서로 반대로 밀리고,
+ * 그 아래 소개·굵은 단추·숫자 스티커와 두꺼운 선·딱딱한 그림자의 제품 창(대표 화면, 없으면 데이터로 그린 화면)
+ */
+const Hero: React.FC<{ project: Project; image?: string }> = ({ project, image }) => {
 	const head = useRef<HTMLElement>(null);
 	useEffect(() => {
 		const el = head.current;
@@ -125,6 +134,7 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 			el.style.setProperty('--br-shift', `${Math.min(y, 600) * 0.35}px`);
 		});
 	}, []);
+	const sticker = project.facts[0];
 	return (
 		<header ref={head} className="br-hero">
 			<p className="br-tag br-tag-top">
@@ -133,6 +143,27 @@ const Hero: React.FC<{ project: Project }> = ({ project }) => {
 			</p>
 			<h1 className="br-name">{project.name}</h1>
 			<p className="br-tagline">{project.tagline}</p>
+			<div className="br-hero-grid">
+				<div className="br-hero-copy">
+					{project.description && <p className="br-hero-lead">{project.description}</p>}
+					<Links project={project} className="br-links br-hero-links" />
+					{sticker && (
+						<p className="br-sticker" aria-hidden="true">
+							<strong>{sticker.value}</strong>
+							<span>{sticker.label}</span>
+						</p>
+					)}
+				</div>
+				<div className="br-hero-art" aria-hidden="true">
+					<DeviceFrame kind="browser" url={project.demo ?? project.url} shadow={false} className="br-window">
+						{image ? (
+							<img className="lk-device-media" src={image} alt="" />
+						) : (
+							<MockScreen project={project} tone="light" tint={false} decorative />
+						)}
+					</DeviceFrame>
+				</div>
+			</div>
 		</header>
 	);
 };
@@ -169,14 +200,14 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 	return (
 		<div ref={root} className="br">
 			<Cursor root={root} />
-			<Hero project={project} />
+			<Hero project={project} image={image} />
 			<Marquee items={topRow} />
 			<Marquee items={bottomRow} reverse />
 
 			<div className="br-grid">
 				{/* 소개 */}
 				<Block n={next()} tag="INTRO" span={facts.length ? 7 : 12} className="br-intro">
-					<p className="br-lead">{project.description}</p>
+					<p className="br-lead">{project.role ?? project.context}</p>
 					<dl className="br-meta">
 						<div>
 							<dt>CONTEXT</dt>
@@ -201,7 +232,6 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 							</div>
 						)}
 					</dl>
-					<Links project={project} className="br-links" />
 				</Block>
 
 				{/* 숫자 */}
@@ -216,13 +246,11 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 					</Region>
 				)}
 
-				{/* 큰 그림 */}
-				{image && (
-					<Block n={next()} tag="SCREEN" span={8} className="br-shot">
-						<img src={image} alt={`${project.name} 화면`} loading="lazy" />
-					</Block>
-				)}
-				{image && (
+				{/* 제품 화면 (데이터로 그린 화면, 첫 기능에 맞춘다)과 기술 */}
+				<Block n={next()} tag="SCREEN" span={project.stack.length ? 8 : 12} className="br-shot br-mock">
+					<MockScreen project={project} kind="dashboard" focus={0} tone="light" tint={false} decorative />
+				</Block>
+				{project.stack.length > 0 && (
 					<Block n={next()} tag="STACK" span={4} tone="ink" className="br-stack">
 						<ul aria-label="기술">
 							{project.stack.map((item) => (
@@ -241,6 +269,7 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 						<Points
 							points={project.highlights}
 							tag="FEATURE"
+							project={project}
 							from={take(project.highlights.length)}
 							spans={[7, 5, 5, 7, 4, 8]}
 						/>
@@ -256,6 +285,7 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 						<Points
 							points={project.build}
 							tag="BUILD"
+							project={project}
 							from={take(project.build.length)}
 							spans={evenSpans(project.build.length)}
 						/>
@@ -271,6 +301,7 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 						<Points
 							points={project.usage}
 							tag="USAGE"
+							project={project}
 							from={take(project.usage.length)}
 							spans={evenSpans(project.usage.length)}
 						/>
@@ -284,7 +315,14 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 							<h2>{chapter.title}</h2>
 							{chapter.lead && <p>{chapter.lead}</p>}
 						</Block>
-						<Points points={chapter.points} tag="NOTE" from={take(chapter.points.length)} spans={[4]} offset={4} />
+						<Points
+							points={chapter.points}
+							tag="NOTE"
+							from={take(chapter.points.length)}
+							spans={[4]}
+							offset={4}
+							project={project}
+						/>
 					</Region>
 				))}
 
@@ -415,6 +453,7 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 						{project.icon && <img src={project.icon} alt="" className="br-end-icon" />}
 						<p className="br-end-name">{project.name}</p>
 					</div>
+					{project.tagline && <p className="br-end-line">{project.tagline}</p>}
 					<Links project={project} className="br-links" />
 				</Block>
 			</div>
