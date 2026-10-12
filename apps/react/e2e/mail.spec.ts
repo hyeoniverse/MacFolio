@@ -61,8 +61,9 @@ test.describe('메일', () => {
 		await mail.getByRole('button', { name: /보내기/ }).click();
 
 		await expect(mail.getByText('이메일 형식을 확인해주세요.')).toBeVisible();
-		await expect(mail.getByText('제목을 입력해주세요.')).toBeVisible();
-		await expect(mail.getByText('내용을 입력해주세요.')).toBeVisible();
+		// 빈 칸은 '필수' 배지로 보이고, 화면 읽기 프로그램에는 전체 문구를 알린다
+		await expect(mail.getByRole('alert').filter({ hasText: '제목을 입력해주세요.' })).toContainText('필수');
+		await expect(mail.getByRole('alert').filter({ hasText: '내용을 입력해주세요.' })).toContainText('필수');
 		expect(await opened(page)).toEqual([]);
 
 		// 고치면 해당 필드의 오류가 사라진다
