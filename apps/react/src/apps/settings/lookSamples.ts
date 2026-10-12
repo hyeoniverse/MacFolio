@@ -50,6 +50,8 @@ export const LOOK_FIELDS: Record<SampleLook, readonly (keyof LookSample)[]> = {
 };
 
 const WALL = (name: string) => `/imgs/wallpapers/${name}.jpg`;
+/** 예시의 화면: 실제 앱 화면 캡처 (배경화면보다 제품 페이지답게 보인다) */
+const SHOT = (name: string) => `/imgs/projects/${name}.jpg`;
 
 /** 항목 하나 (제목, 설명, 자세히, 아이콘) */
 const pt = (title: string, body: string, detail?: string, icon?: string): ProjectPoint => ({
@@ -84,8 +86,8 @@ const general: LookSample = {
 				'도서 정보는 공공 도서 데이터에서 가져오고, 모임마다 남은 자리와 읽는 속도를 함께 보여 줍니다. 원하는 모임이 없으면 그 자리에서 새 모임을 엽니다.',
 				'fa-magnifying-glass'
 			),
-			image: WALL('ventura-light'),
-			imageDark: WALL('ventura-dark'),
+			image: SHOT('hyeoniverse/shots/home-light'),
+			imageDark: SHOT('hyeoniverse/shots/home-dark'),
 		},
 		{
 			...pt(
@@ -95,8 +97,8 @@ const general: LookSample = {
 				'fa-book-open'
 			),
 			shots: [
-				{ src: WALL('sequoia-light'), alt: '진도에 맞춰 접힌 토론 글' },
-				{ src: WALL('sequoia-dark'), alt: '다 읽은 뒤 펼쳐진 토론 글' },
+				{ src: SHOT('hyeoniverse/shots/cms-posts'), alt: '진도에 맞춰 접힌 토론 글' },
+				{ src: SHOT('hyeoniverse/shots/cms-editor'), alt: '다 읽은 뒤 펼쳐진 토론 글' },
 			],
 		},
 		pt(
@@ -126,7 +128,7 @@ const general: LookSample = {
 				'화면에서만 가리면 개발자 도구로 볼 수 있어, 응답에서부터 본문을 빼고 제목과 쪽수만 남깁니다.',
 				'fa-eye-slash'
 			),
-			image: WALL('tahoe-light'),
+			image: SHOT('newpick/shots/summary'),
 		},
 		pt(
 			'낙관적 업데이트',
@@ -169,7 +171,7 @@ const general: LookSample = {
 				pt('흩어진 대화', '책 이야기, 일정, 밑줄이 서로 다른 앱에 흩어져 있었습니다.'),
 				pt('미리 알게 되는 결말', '먼저 읽은 사람의 글이 늦게 읽는 사람의 재미를 빼앗았습니다.'),
 			],
-			image: { src: WALL('sonoma-dark'), alt: '모임이 쓰던 대화방과 일정표' },
+			image: { src: SHOT('newpick/shots/mail'), alt: '모임이 쓰던 대화방과 일정표' },
 		},
 		{
 			title: '시범 운영 뒤',
@@ -223,12 +225,12 @@ const general: LookSample = {
 		'키보드 사용과 화면 읽기 점검',
 	],
 	icon: '/imgs/memo.png',
-	image: WALL('sonoma-light'),
+	image: SHOT('newpick/screenshot'),
 	gallery: [
-		{ src: WALL('sonoma-light'), caption: '모임 찾기' },
-		{ src: WALL('ventura-light'), caption: '진도별 토론' },
-		{ src: WALL('sequoia-light'), caption: '밑줄 모음' },
-		{ src: WALL('tahoe-light'), caption: '모임 기록' },
+		{ src: SHOT('newpick/shots/categories'), caption: '모임 찾기' },
+		{ src: SHOT('newpick/shots/subscribe'), caption: '진도별 토론' },
+		{ src: SHOT('hyeoniverse/shots/posts'), caption: '밑줄 모음' },
+		{ src: SHOT('qru/screens/home'), caption: '모임 기록' },
 	],
 };
 
