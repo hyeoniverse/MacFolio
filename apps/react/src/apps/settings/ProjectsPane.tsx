@@ -2031,22 +2031,8 @@ const ProjectEditor = ({
 											hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
 											onChange={(on) => setApp({ inDock: on ? undefined : false })}
 										/>
-										<Switch
-											label="게임"
-											checked={Boolean(app.play)}
-											hint="Safari 단추가 '여기서 열기' 대신 '여기서 플레이'가 됩니다."
-											onChange={(on) => setApp({ play: on || undefined })}
-										/>
-										<FormRow label="뜨기 전 창 바탕" htmlFor="projects-app-tone" align="end">
-											<Popup
-												id="projects-app-tone"
-												value={app.tone ?? 'light'}
-												onChange={(tone) => setApp({ tone: tone === 'dark' ? 'dark' : undefined })}
-											>
-												<option value="light">밝게</option>
-												<option value="dark">어둡게</option>
-											</Popup>
-										</FormRow>
+										{/* 게임 표시(play, '여기서 플레이')와 뜨기 전 창 바탕(tone)은 폼에 두지 않는다: 쓰는 프로젝트가 SproutFarm뿐이고
+										    눈에 띄는 차이가 작다. 필요하면 JSON 탭의 app.play·app.tone에 적는다 */}
 										<FormRow label="창 크기" align="end" hint="비워 두면 화면 크기에 맞춘 기본 크기로 엽니다.">
 											<div className="projects-size" role="group" aria-label="창 크기">
 												<input
