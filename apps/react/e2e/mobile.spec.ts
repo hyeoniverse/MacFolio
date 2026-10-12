@@ -1042,6 +1042,12 @@ test.describe('모바일', () => {
 		await expect(sheet.getByRole('slider', { name: '재생 위치' })).toBeVisible();
 		await expect(sheet.getByRole('region', { name: '다음 재생' })).toBeVisible();
 
+		// 옆으로 밀어도 시트는 가로로 움직이지 않는다 (흐린 표지 배경이 시트 밖까지 그려져 있다)
+		await sheet.hover();
+		await page.mouse.wheel(120, 0);
+		await expect.poll(() => sheet.evaluate((el) => el.scrollLeft)).toBe(0);
+		expect(await sheet.evaluate((el) => getComputedStyle(el).overflowX)).toBe('hidden');
+
 		// 닫기는 시트 위에 떠 있는 뒤로 가기 하나
 		await music.locator('.mobile-navbar-home').tap();
 		await expect(sheet).toBeHidden();

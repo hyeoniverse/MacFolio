@@ -25,6 +25,7 @@
 	display: flex;
 	flex-direction: column;
 	height: calc(100% - var(--phone-status, 0px) - 8px);
+	overflow-x: hidden;
 	overflow-y: auto;
 	border-radius: 34px 34px 0 0;
 }
@@ -38,10 +39,13 @@
 }
 
 /* 덮개 없이 화면 전체를 덮는다 */
+/* 시트는 세로로만 스크롤한다. 안에서 넘치게 그린 장식(음악의 흐린 표지 배경 등)이 가로 스크롤을 만들면
+   휴대폰에서 옆으로 밀려 한쪽 여백이 사라진다 */
 .ui-sheet.cover {
 	position: absolute;
 	inset: 0;
 	z-index: var(--ui-sheet-z, 10);
+	overflow-x: hidden;
 	overflow-y: auto;
 }
 
