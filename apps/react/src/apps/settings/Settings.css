@@ -2593,6 +2593,36 @@ button.projects-thumb:focus-visible {
 	font-weight: 400;
 }
 
+/* 상세 칸 안의 작은 목록 (항목의 화면 여러 장, 장 안의 숫자·항목): 줄과 같은 들여쓰기, 위에 줄 사이 선 */
+.projects-group.nested {
+	margin: 0 12px;
+	padding: 10px 0 12px;
+}
+
+.projects-item + .projects-group.nested,
+.projects-group.nested + .projects-item,
+.projects-group.nested + .projects-group.nested {
+	border-top: 1px solid var(--pe-separator);
+}
+
+.projects-group.nested > .projects-group-title {
+	padding: 0;
+	color: var(--color-text);
+	font-size: 13px;
+	font-weight: 400;
+}
+
+/* 폴더 구조: 줄을 맞춰 쓰는 고정폭 여러 줄 칸 */
+textarea.projects-input.mono {
+	height: auto;
+	min-height: 140px;
+	padding: 6px 8px;
+	overflow-x: auto;
+	color: var(--color-text);
+	line-height: 1.5;
+	white-space: pre;
+}
+
 /* JSON: 상자를 가득 채우는 고정폭 글꼴 칸 */
 .projects-json {
 	display: block;
