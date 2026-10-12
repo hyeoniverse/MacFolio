@@ -1,0 +1,673 @@
+/* product 템플릿 (Apple 제품 페이지): 흰·검정 단색 바탕, 큰 문장, 큰 화면, 넉넉한 여백. 효과 없이 강조색 하나 */
+.tpl-product {
+	--pd-bg: #ffffff;
+	--pd-alt: #f5f5f7;
+	--pd-ink: #1d1d1f;
+	--pd-body: #424245;
+	--pd-muted: #6e6e73;
+	--pd-line: #d2d2d7;
+	--pd-radius: 22px;
+	--pd-width: 980px;
+	background-color: var(--pd-bg);
+	color: var(--pd-ink);
+	font-size: 17px;
+	line-height: 1.55;
+}
+
+:root[data-theme='dark'] .tpl-product {
+	--pd-bg: #000000;
+	--pd-alt: #161617;
+	--pd-ink: #f5f5f7;
+	--pd-body: #d2d2d7;
+	--pd-muted: #86868b;
+	--pd-line: #424245;
+}
+
+:where(.tpl-product) :where(h1, h2, h3) {
+	margin: 0;
+	color: var(--pd-ink);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+}
+
+:where(.tpl-product) :where(p) {
+	margin: 0;
+}
+
+:where(.tpl-product) :where(ul, ol, dl) {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tpl-product a {
+	color: var(--tpl-accent);
+}
+
+.pd-detail {
+	margin-top: 10px;
+	color: var(--pd-muted);
+	font-size: 15px;
+}
+
+/* ─── 첫 화면 ─── */
+.pd-hero {
+	padding: 88px 24px 0;
+	text-align: center;
+}
+
+.pd-hero-text {
+	max-width: 760px;
+	margin: 0 auto;
+}
+
+.pd-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 18px;
+	color: var(--pd-ink);
+	font-size: 19px;
+	font-weight: 600;
+}
+
+.pd-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 9px;
+	object-fit: contain;
+}
+
+.pd-icon-large {
+	width: 72px;
+	height: 72px;
+	margin-bottom: 20px;
+	border-radius: 16px;
+}
+
+.pd-logo {
+	height: 28px;
+	width: auto;
+}
+
+.pd-hero h1 {
+	font-size: clamp(40px, 7cqi, 80px);
+	line-height: 1.05;
+	letter-spacing: -0.03em;
+}
+
+.pd-subhead {
+	max-width: 640px;
+	margin: 20px auto 0;
+	color: var(--pd-body);
+	font-size: clamp(19px, 2.4cqi, 24px);
+	line-height: 1.4;
+}
+
+.pd-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 14px 28px;
+	margin-top: 32px;
+	font-size: 17px;
+}
+
+.pd-links a,
+.pd-links button {
+	border: none;
+	background: none;
+	color: var(--tpl-accent);
+	text-decoration: none;
+}
+
+.pd-links a:hover,
+.pd-links button:hover {
+	text-decoration: underline;
+}
+
+.pd-links [data-primary] {
+	padding: 11px 24px;
+	border-radius: 980px;
+	background-color: var(--tpl-accent);
+	color: #ffffff;
+}
+
+.pd-links [data-primary]:hover {
+	text-decoration: none;
+	filter: brightness(1.08);
+}
+
+.pd-meta {
+	margin-top: 22px;
+	color: var(--pd-muted);
+	font-size: 14px;
+}
+
+.pd-hero-shot {
+	max-width: 1120px;
+	margin: 64px auto 0;
+	overflow: hidden;
+	border-radius: var(--pd-radius);
+	background-color: var(--pd-alt);
+}
+
+.pd-hero-shot .lk-media {
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+}
+
+/* ─── 구역 ─── */
+.pd-section {
+	max-width: var(--pd-width);
+	margin: 0 auto;
+	padding: 120px 24px 0;
+}
+
+.pd-head {
+	max-width: 760px;
+	margin: 0 auto 56px;
+	text-align: center;
+}
+
+.pd-eyebrow {
+	margin-bottom: 10px;
+	color: var(--tpl-accent);
+	font-size: 17px;
+	font-weight: 600;
+}
+
+.pd-head h2 {
+	font-size: clamp(32px, 5cqi, 56px);
+	line-height: 1.08;
+}
+
+.pd-lead {
+	margin-top: 18px;
+	color: var(--pd-body);
+	font-size: 21px;
+	line-height: 1.45;
+}
+
+/* 숫자: 크게, 가운데 */
+.pd-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 40px 24px;
+	text-align: center;
+}
+
+.pd-stats strong {
+	display: block;
+	color: var(--pd-ink);
+	font-size: clamp(44px, 6cqi, 64px);
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -0.03em;
+}
+
+.pd-stats span {
+	display: block;
+	margin-top: 10px;
+	color: var(--pd-muted);
+	font-size: 15px;
+}
+
+.pd-stats-small {
+	margin-bottom: 64px;
+}
+
+.pd-stats-small strong {
+	font-size: clamp(36px, 4.5cqi, 48px);
+}
+
+/* 주요 기능: 한 줄에 하나, 글과 큰 그림이 좌우로 번갈아. 글은 그림 옆에 붙어 따라온다 */
+.pd-features {
+	display: grid;
+	gap: 120px;
+}
+
+.pd-feature {
+	display: grid;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+	gap: 56px;
+	align-items: start;
+}
+
+.pd-feature[data-flip] {
+	grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+
+.pd-feature[data-flip] .pd-feature-text {
+	order: 2;
+}
+
+.pd-feature-text {
+	position: sticky;
+	top: 48px;
+	padding-top: 24px;
+}
+
+.pd-feature-text h3 {
+	font-size: clamp(26px, 3.4cqi, 36px);
+	line-height: 1.15;
+}
+
+.pd-feature-text > p:not(.pd-detail) {
+	margin-top: 14px;
+	color: var(--pd-body);
+	font-size: 19px;
+}
+
+.pd-visual {
+	overflow: hidden;
+	border-radius: var(--pd-radius);
+	background-color: var(--pd-alt);
+}
+
+.pd-visual.lk-media {
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+}
+
+.pd-visual.lk-art {
+	aspect-ratio: 4 / 3;
+	min-height: 0;
+	background-color: var(--pd-alt);
+}
+
+.pd-visual .lk-art-icon {
+	font-size: 64px;
+}
+
+.pd-more {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.pd-more .lk-media {
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	border-radius: 12px;
+}
+
+/* 화면 모음: 옆으로 넘기는 큰 화면 줄 */
+.pd-section[data-section='screens'] {
+	max-width: none;
+	padding-right: 0;
+	padding-left: 0;
+}
+
+.pd-screens {
+	display: grid;
+	grid-auto-columns: min(78%, 760px);
+	grid-auto-flow: column;
+	gap: 24px;
+	padding: 0 max(24px, calc((100% - var(--pd-width)) / 2 + 24px)) 12px;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: thin;
+}
+
+.pd-screens li {
+	scroll-snap-align: center;
+}
+
+.pd-screens figure {
+	margin: 0;
+}
+
+.pd-screens .lk-media {
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	border-radius: var(--pd-radius);
+	background-color: var(--pd-alt);
+}
+
+.pd-screens figcaption {
+	margin-top: 14px;
+	color: var(--pd-muted);
+	font-size: 15px;
+	text-align: center;
+}
+
+/* 쓰는 법: 큰 번호의 단계 */
+.pd-steps {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 48px 32px;
+}
+
+.pd-step-num {
+	display: block;
+	margin-bottom: 16px;
+	color: var(--tpl-accent);
+	font-size: 48px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.pd-steps h3,
+.pd-built h3,
+.pd-story-points h3 {
+	font-size: 21px;
+	line-height: 1.3;
+}
+
+.pd-steps p:not(.pd-detail),
+.pd-built p:not(.pd-detail),
+.pd-story-points p:not(.pd-detail) {
+	margin-top: 8px;
+	color: var(--pd-body);
+}
+
+.pd-step-media {
+	margin-top: 18px;
+	border-radius: 14px;
+}
+
+/* 만든 방식: 번호와 글, 그림이 있으면 아래에 */
+.pd-built {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+	gap: 56px 48px;
+}
+
+.pd-built li {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0 20px;
+}
+
+.pd-built-num {
+	color: var(--pd-muted);
+	font-size: 15px;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.9;
+}
+
+.pd-built-media {
+	display: grid;
+	grid-column: 2;
+	gap: 12px;
+	margin-top: 18px;
+}
+
+.pd-built-media .lk-media {
+	border-radius: 14px;
+}
+
+/* 이야기: 장마다 큰 머리와 숫자, 두 칸 글, 큰 그림 */
+.pd-stories {
+	display: grid;
+	gap: 120px;
+}
+
+.pd-story-points {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+	gap: 40px 48px;
+	max-width: 860px;
+	margin: 0 auto;
+}
+
+.pd-story-point-media {
+	margin-top: 16px;
+	border-radius: 14px;
+}
+
+.pd-story-image {
+	margin: 64px 0 0;
+	overflow: hidden;
+	border-radius: var(--pd-radius);
+}
+
+/* 조작법: 키 모양과 설명 */
+.pd-controls {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 28px;
+	text-align: center;
+}
+
+.pd-controls dt {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px;
+}
+
+.pd-controls dd {
+	margin: 12px 0 0;
+	color: var(--pd-body);
+}
+
+.tpl-product kbd {
+	display: inline-grid;
+	place-items: center;
+	min-width: 40px;
+	height: 40px;
+	padding: 0 10px;
+	border: 1px solid var(--pd-line);
+	border-radius: 10px;
+	background-color: var(--pd-alt);
+	color: var(--pd-ink);
+	font: 500 16px/1 var(--sp-mono);
+}
+
+/* 진행 과정: 날짜와 한 일, 가는 선 */
+.pd-timeline {
+	max-width: 720px;
+	margin: 0 auto;
+}
+
+.pd-timeline li {
+	display: grid;
+	grid-template-columns: 140px minmax(0, 1fr);
+	gap: 24px;
+	padding: 18px 0;
+	border-top: 1px solid var(--pd-line);
+}
+
+.pd-timeline li:last-child {
+	border-bottom: 1px solid var(--pd-line);
+}
+
+.pd-timeline time {
+	color: var(--pd-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+/* 기술 사양: Apple 사양 표처럼 이름과 값을 가는 선으로 */
+.pd-stack {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px 28px;
+	max-width: 760px;
+	margin: 0 auto 56px;
+	color: var(--pd-ink);
+	font-size: clamp(19px, 2.6cqi, 26px);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.pd-specs,
+.pd-role-meta {
+	max-width: 760px;
+	margin: 0 auto;
+}
+
+.pd-specs div,
+.pd-role-meta div {
+	display: grid;
+	grid-template-columns: 180px minmax(0, 1fr);
+	gap: 24px;
+	padding: 20px 0;
+	border-top: 1px solid var(--pd-line);
+}
+
+.pd-specs dt,
+.pd-role-meta dt {
+	color: var(--pd-ink);
+	font-weight: 600;
+}
+
+.pd-specs dd,
+.pd-role-meta dd {
+	margin: 0;
+	color: var(--pd-body);
+}
+
+.pd-structure {
+	max-width: 760px;
+	margin: 48px auto 0;
+}
+
+.pd-structure figcaption {
+	margin-bottom: 12px;
+	color: var(--pd-muted);
+	font-size: 14px;
+}
+
+.pd-structure pre {
+	margin: 0;
+	padding: 24px;
+	overflow-x: auto;
+	border-radius: 16px;
+	background-color: var(--pd-alt);
+	color: var(--pd-ink);
+	font: 13px/1.6 var(--sp-mono);
+}
+
+/* 맡은 일 */
+.pd-contributions {
+	display: grid;
+	gap: 14px;
+	max-width: 760px;
+	margin: 40px auto 0;
+}
+
+.pd-contributions li {
+	position: relative;
+	padding-left: 28px;
+	color: var(--pd-body);
+	font-size: 19px;
+}
+
+.pd-contributions li::before {
+	position: absolute;
+	top: 0.72em;
+	left: 4px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: var(--tpl-accent);
+	content: '';
+}
+
+/* 출처 */
+.pd-credits {
+	display: grid;
+	max-width: 760px;
+	margin: 0 auto;
+}
+
+.pd-credits li {
+	display: grid;
+	grid-template-columns: 140px minmax(0, 1fr);
+	gap: 4px 24px;
+	padding: 16px 0;
+	border-top: 1px solid var(--pd-line);
+}
+
+.pd-credit-role {
+	color: var(--pd-muted);
+}
+
+.pd-credit-by {
+	color: var(--pd-muted);
+}
+
+.pd-credit-note {
+	grid-column: 2;
+	color: var(--pd-muted);
+	font-size: 14px;
+}
+
+/* ─── 마무리 ─── */
+.pd-closing {
+	max-width: 760px;
+	margin: 0 auto;
+	padding: 160px 24px 140px;
+	text-align: center;
+}
+
+.pd-closing h2 {
+	font-size: clamp(32px, 5cqi, 56px);
+	line-height: 1.08;
+}
+
+/* ─── 좁은 창: 한 열로, 여백을 줄인다 ─── */
+@container (max-width: 600px) {
+	.pd-hero {
+		padding-top: 56px;
+	}
+
+	.pd-hero-shot {
+		margin-top: 40px;
+		border-radius: 14px;
+	}
+
+	.pd-section {
+		padding-top: 80px;
+	}
+
+	.pd-head {
+		margin-bottom: 36px;
+	}
+
+	.pd-feature,
+	.pd-feature[data-flip] {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 24px;
+	}
+
+	.pd-feature[data-flip] .pd-feature-text {
+		order: 0;
+	}
+
+	.pd-feature-text {
+		position: static;
+		padding-top: 0;
+	}
+
+	.pd-features,
+	.pd-stories {
+		gap: 72px;
+	}
+
+	.pd-screens {
+		grid-auto-columns: 86%;
+	}
+
+	.pd-timeline li,
+	.pd-specs div,
+	.pd-role-meta div,
+	.pd-credits li {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
+	}
+
+	.pd-credit-note {
+		grid-column: 1;
+	}
+
+	.pd-closing {
+		padding: 96px 24px;
+	}
+}
