@@ -26,6 +26,8 @@ import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import FolderSidebar from './components/FolderSidebar';
+import SidebarResizer from './components/SidebarResizer';
+import { loadSidebarWidth, saveSidebarWidth } from './memoStorage';
 import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
 
 import Menu from '@/shared/ui/menu/Menu';
@@ -147,6 +149,9 @@ const Memo: React.FC = () => {
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
 	/** 사용자가 사이드바를 직접 열거나 닫았으면 그 값, 아니면 창 폭으로 정한다 */
 	const [sidebarChoice, setSidebarChoice] = useState<boolean | null>(null);
+	// 사이드바 너비(px): 경계를 끌어 바꾸고 이 브라우저에 남긴다. 끄는 동안은 칸 너비 애니메이션을 끈다
+	const [sidebarWidth, setSidebarWidth] = useState(loadSidebarWidth);
+	const [resizingSidebar, setResizingSidebar] = useState(false);
 	const [view, setView] = useState<View>('list');
 	/** 갤러리에서 카드를 눌러 글을 연 상태 */
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
@@ -535,6 +540,8 @@ const Memo: React.FC = () => {
 				<div
 					className={`memo pane-${pane} view-${view} ${galleryNoteOpen ? 'gallery-note' : ''} ${sidebarOpen ? '' : 'sidebar-closed'}`}
 					data-nav={nav}
+					data-resizing={resizingSidebar || undefined}
+					style={{ '--memo-sidebar-width': `${sidebarWidth}px` } as React.CSSProperties}
 				>
 					<FolderSidebar
 						canEdit={canEdit}
@@ -574,6 +581,14 @@ const Memo: React.FC = () => {
 						tagSelection={tagSelection}
 						onTagsChange={changeTags}
 					/>
+					{sidebarOpen && !compact && (
+						<SidebarResizer
+							width={sidebarWidth}
+							onResize={setSidebarWidth}
+							onCommit={saveSidebarWidth}
+							onDraggingChange={setResizingSidebar}
+						/>
+					)}
 
 					<section className="memo-list" aria-label="글 목록">
 						<div className="memo-toolbar">

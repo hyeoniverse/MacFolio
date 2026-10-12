@@ -37,9 +37,9 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 	{
 		id: 'memo-arrangement',
 		name: '메모 보기 설정',
-		description: '메모 앱 목록의 정렬 기준과 날짜별 묶기',
+		description: '메모 앱 목록의 정렬 기준과 날짜별 묶기, 사이드바 너비',
 		storage: 'local',
-		keys: [STORAGE_KEYS.memoArrangement],
+		keys: [STORAGE_KEYS.memoArrangement, STORAGE_KEYS.memoSidebarWidth],
 		afterClear: '메모 앱을 다음에 열 때부터 처음 설정으로 보입니다',
 	},
 	{

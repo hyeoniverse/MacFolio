@@ -270,3 +270,48 @@ test.describe('메모 (블로그)', () => {
 		expect((await download).suggestedFilename()).toMatch(/\.(jpg|png|webp)$/);
 	});
 });
+
+test('사이드바 너비: 경계를 끌어 바꾸고, 키보드로도 바꾸고, 다시 열어도 남는다', async ({ page }) => {
+	const memo = await openMemo(page);
+	const sidebar = memo.getByRole('navigation', { name: '카테고리' });
+	const handle = memo.getByRole('separator', { name: '사이드바 너비' });
+	const widthOf = async () => (await sidebar.boundingBox())!.width;
+
+	const before = await widthOf();
+	await expect(handle).toHaveAttribute('aria-valuenow', '208');
+
+	// 끌어서 넓힌다
+	const box = (await handle.boundingBox())!;
+	const x = box.x + box.width / 2;
+	const y = box.y + box.height / 2;
+	await page.mouse.move(x, y);
+	await page.mouse.down();
+	await page.mouse.move(x + 40, y, { steps: 4 });
+	await page.mouse.move(x + 80, y, { steps: 4 });
+	await page.mouse.up();
+	await expect(handle).toHaveAttribute('aria-valuenow', '288');
+	await expect.poll(widthOf).toBeCloseTo(before + 80, 0);
+
+	// 키보드: ← 한 번에 8px, Home은 가장 좁게
+	await handle.focus();
+	await page.keyboard.press('ArrowLeft');
+	await expect(handle).toHaveAttribute('aria-valuenow', '280');
+	await page.keyboard.press('Home');
+	await expect(handle).toHaveAttribute('aria-valuenow', '180');
+
+	// 다시 열어도 남는다
+	await page.keyboard.press('End');
+	await expect(handle).toHaveAttribute('aria-valuenow', '360');
+	await page.reload();
+	const again = await openMemo(page);
+	const handleAgain = again.getByRole('separator', { name: '사이드바 너비' });
+	await expect(handleAgain).toHaveAttribute('aria-valuenow', '360');
+
+	// 두 번 누르면 기본 너비
+	await handleAgain.dblclick();
+	await expect(handleAgain).toHaveAttribute('aria-valuenow', '208');
+
+	// 사이드바를 가리면 손잡이도 없다
+	await again.getByRole('button', { name: '사이드바 가리기' }).click();
+	await expect(handleAgain).toHaveCount(0);
+});
