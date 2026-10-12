@@ -40,7 +40,7 @@ export function accentVars(colors: Hsl[]): Record<string, string> {
 }
 
 /**
- * 프로젝트 아이콘에서 색을 뽑아 키트 변수로 (페이지 바탕이나 MockScreen에 style로 단다).
+ * 프로젝트 아이콘에서 색을 뽑아 키트 변수로 (템플릿 바탕에 style로 단다).
  * 못 읽으면(아이콘 없음·다른 출처·흑백) 빈 묶음: 바깥에서 정한 --lk-accent를 그대로 쓴다
  */
 export function useLandingAccent(icon: string | undefined): React.CSSProperties {
