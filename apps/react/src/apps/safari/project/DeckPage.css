@@ -490,6 +490,27 @@
 	color: transparent;
 }
 
+/* 숫자 수에 맞춰: 넷이면 한 줄에 넷(글자를 줄여 한 줄로), 다섯·여섯은 세 열 */
+.dk-facts[data-count='4'] {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dk-facts[data-count='4'] strong {
+	font-size: 64px;
+	white-space: nowrap;
+}
+
+.dk-facts[data-count='5'],
+.dk-facts[data-count='6'] {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 40px 32px;
+}
+
+.dk-facts[data-count='5'] strong,
+.dk-facts[data-count='6'] strong {
+	font-size: 72px;
+}
+
 .dk-facts li > span {
 	display: block;
 	margin-top: 14px;
@@ -516,10 +537,56 @@
 	justify-content: center;
 }
 
-.dk-feature-text p:last-child {
+.dk-feature-text .dk-feature-body {
 	margin-top: 20px;
 	color: var(--sp-muted);
 	font-size: 19px;
+	line-height: 1.6;
+}
+
+.dk-feature-text .dk-feature-more {
+	margin-top: 14px;
+	color: var(--sp-muted);
+	font-size: 15px;
+	line-height: 1.6;
+	opacity: 0.85;
+}
+
+/* 화면이 없는 기능: 글과 오른쪽 절반의 큰 번호(아이콘)·자세히 */
+.dk-feature:not([data-media]) {
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	align-items: center;
+}
+
+.dk-feature-aside {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 28px;
+	min-height: 0;
+	padding: 48px 44px;
+	border: 1px solid var(--sp-line);
+	border-radius: 24px;
+	background: radial-gradient(circle at 85% 15%, hsl(var(--dk-hue) 80% 60% / 0.22), transparent 60%), var(--sp-alt);
+}
+
+.dk-feature-big {
+	font-size: 150px;
+	font-weight: 900;
+	letter-spacing: -0.06em;
+	line-height: 0.9;
+}
+
+.dk-feature-big i {
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: 120px;
+}
+
+.dk-feature-aside p {
+	font-size: 20px;
 	line-height: 1.6;
 }
 
@@ -597,6 +664,96 @@
 
 .dk-content > * + * {
 	margin-top: 36px;
+}
+
+/* 글만 있는 항목: 번호 카드 격자를 슬라이드 가운데에 */
+.dk-plain {
+	display: flex;
+	flex-direction: column;
+	justify-content: safe center;
+}
+
+.dk-plain > * + * {
+	margin-top: 0;
+}
+
+.dk-points {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 20px;
+	list-style: none;
+}
+
+.dk-points[data-count='1'] {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.dk-points[data-count='2'],
+.dk-points[data-count='4'] {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* 다섯: 위 셋, 아래 둘을 넓게 (6칸 격자) */
+.dk-points[data-count='5'] {
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.dk-points[data-count='5'] li {
+	grid-column: span 2;
+}
+
+.dk-points[data-count='5'] li:nth-child(n + 4) {
+	grid-column: span 3;
+}
+
+.dk-points li {
+	display: flex;
+	flex-direction: column;
+	padding: 26px 28px;
+	border: 1px solid var(--sp-line);
+	border-radius: 18px;
+	background: var(--sp-alt);
+}
+
+.dk-points-no {
+	margin-bottom: 18px;
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: 40px;
+	font-weight: 900;
+	letter-spacing: -0.04em;
+	line-height: 1;
+}
+
+.dk-points-no i {
+	font-size: 32px;
+}
+
+.dk-points h3 {
+	font-size: 24px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.25;
+}
+
+.dk-points p {
+	margin-top: 10px;
+	color: var(--sp-muted);
+	font-size: 16px;
+	line-height: 1.6;
+}
+
+.dk-points .dk-points-more {
+	margin-top: auto;
+	padding-top: 14px;
+	border-top: 1px solid var(--sp-line);
+	font-size: 14px;
+}
+
+.dk-points p + .dk-points-more {
+	margin-top: 16px;
 }
 
 /* ─── 장 그림 ─── */
@@ -691,6 +848,10 @@
 	transform: scale(0);
 }
 
+.dk-timeline[data-rows] {
+	row-gap: 44px;
+}
+
 .dk-timeline time {
 	display: block;
 	font-size: 24px;
@@ -779,16 +940,19 @@
 .dk-structure {
 	display: flex;
 	flex-direction: column;
+	justify-content: safe center;
 	height: 100%;
 }
 
+/* 폴더 구조: 글자를 키워 슬라이드를 채우고, 길면 그 안에서 스크롤 */
 .dk-structure pre {
-	flex: 1;
-	padding: 20px 24px;
-	border-radius: 14px;
+	min-height: 0;
+	max-height: 100%;
+	padding: 28px 36px;
+	border-radius: 18px;
 	background-color: var(--sp-alt);
 	font-family: var(--sp-mono);
-	font-size: 14px;
+	font-size: 18px;
 	line-height: 1.6;
 }
 
@@ -796,6 +960,7 @@
 .dk-specs-wrap {
 	display: flex;
 	flex-direction: column;
+	justify-content: safe center;
 	height: 100%;
 }
 
@@ -803,7 +968,7 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 0 48px;
-	flex: 1;
+	min-height: 0;
 	align-content: start;
 }
 
@@ -842,6 +1007,12 @@
 	color: var(--sp-muted);
 	font-size: 13px;
 	font-weight: 600;
+}
+
+.dk-stack .dk-stack-lang {
+	border-color: transparent;
+	background: var(--sp-grad);
+	color: #ffffff;
 }
 
 /* ─── 맺음말 ─── */
@@ -1206,8 +1377,51 @@
 	margin-right: 0;
 }
 
+.dk[data-mode='stack'] .dk-facts[data-count] {
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 24px;
+}
+
 .dk[data-mode='stack'] .dk-facts strong {
+	font-size: 44px;
+	white-space: normal;
+}
+
+.dk[data-mode='stack'] .dk-feature-aside {
+	gap: 16px;
+	padding: 24px;
+}
+
+.dk[data-mode='stack'] .dk-feature-big {
+	font-size: 72px;
+}
+
+.dk[data-mode='stack'] .dk-feature-big i {
 	font-size: 56px;
+}
+
+.dk[data-mode='stack'] .dk-feature-aside p {
+	font-size: 16px;
+}
+
+.dk[data-mode='stack'] .dk-points[data-count] {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 12px;
+}
+
+.dk[data-mode='stack'] .dk-points li {
+	grid-column: auto;
+	padding: 18px 20px;
+}
+
+.dk[data-mode='stack'] .dk-points h3 {
+	font-size: 19px;
+}
+
+.dk[data-mode='stack'] .dk-structure pre {
+	padding: 18px;
+	font-size: 13px;
+	overflow-x: auto;
 }
 
 .dk[data-mode='stack'] .dk-chapter-no {

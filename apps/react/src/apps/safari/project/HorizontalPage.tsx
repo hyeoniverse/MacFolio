@@ -14,6 +14,25 @@ const TONES = 4;
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+/** 칸 n개를 max열 이하 격자에 남는 칸 없이: 열 수와 마지막 칸이 차지할 열 수 */
+function fitGrid(n: number, max: number): { cols: number; last: number } {
+	const cols = n <= max ? Math.max(1, n) : n % max === 0 ? max : n % 3 === 0 && max >= 3 ? 3 : max;
+	const rest = n % cols;
+	return { cols, last: rest === 0 ? 1 : cols - rest + 1 };
+}
+
+/** '2024.07.01'처럼 해가 붙은 날짜는 해를 작게 위로 떼어 낸다 (좁은 칸에서 거대한 날짜가 넘치지 않게) */
+const DateMark: React.FC<{ date: string }> = ({ date }) => {
+	const match = /^(\d{4})[.\-/](.+)$/.exec(date);
+	if (!match) return <time>{date}</time>;
+	return (
+		<time>
+			<small>{match[1]}</small>
+			{match[2]}
+		</time>
+	);
+};
+
 /** 그림이나 짧은 영상 한 장 (트랙이 가로로 밀려 와서 보이므로 lazy로 두면 패널이 닿았을 때 아직 안 떠 있다) */
 const Media: React.FC<{ src: string; alt: string; className?: string }> = ({ src, alt, className }) =>
 	src.endsWith('.mp4') ? (
@@ -47,6 +66,10 @@ const Panel: React.FC<{ index: number; label?: string; className?: string; child
 /** 표지: 거대한 이름, 한 줄 제목, 링크. 대표 화면은 기울어져 오른쪽 밖으로 걸친다 (마우스를 따라 살짝 기운다) */
 const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
 	const ref = useRef<HTMLDivElement>(null);
+	const tech =
+		project.language && !project.stack.includes(project.language)
+			? [project.language, ...project.stack]
+			: project.stack;
 	const tilt = (event: React.MouseEvent) => {
 		const node = ref.current;
 		if (!node || prefersReducedMotion()) return;
@@ -60,11 +83,22 @@ const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }
 				<div className="hz-text">
 					<p className="hz-kicker">
 						{project.icon && <img src={project.icon} alt="" />}
-						<span>{[project.context, project.period].filter(Boolean).join(' · ')}</span>
+						<span>
+							{[project.context, project.contributions.length ? '' : project.role, project.period]
+								.filter(Boolean)
+								.join(' · ')}
+						</span>
 					</p>
 					<h1 className="hz-name">{project.name}</h1>
 					<p className="hz-tagline">{project.tagline}</p>
 					{project.description && <p className="hz-lead">{project.description}</p>}
+					{tech.length > 0 && (
+						<ul className="hz-tech" aria-label="기술">
+							{tech.map((item) => (
+								<li key={item}>{item}</li>
+							))}
+						</ul>
+					)}
 					<Links project={project} className="sp-links hz-links" />
 					<p className="hz-hint" aria-hidden="true">
 						아래로 스크롤 <span>→</span>
@@ -83,7 +117,7 @@ const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }
 /** 숫자 패널: 값이 패널을 꽉 채우듯 거대하다 */
 const FactsPanel: React.FC<{ project: Project; index: number }> = ({ project, index }) => (
 	<Panel index={index} className="hz-facts" label="한눈에 보는 숫자">
-		<ul className="hz-text">
+		<ul className="hz-text" style={cssVars(fitGrid(project.facts.length, 4))}>
 			{project.facts.map((fact, i) => (
 				<li key={fact.label} data-reveal="left" style={cssVars({ d: i })}>
 					<FactValue text={fact.value} />
@@ -94,7 +128,7 @@ const FactsPanel: React.FC<{ project: Project; index: number }> = ({ project, in
 	</Panel>
 );
 
-/** 주요 기능 하나에 패널 하나: 그림 크게, 글은 옆에. 홀수 번째는 그림이 오른쪽 */
+/** 주요 기능 하나에 패널 하나: 그림 크게, 글은 옆에. 홀수 번째는 그림이 오른쪽. 그림이 없으면 그 자리에 거대한 번호(아이콘이 있으면 아이콘) */
 const HighlightPanel: React.FC<{ point: ProjectPoint; index: number; order: number; total: number }> = ({
 	point,
 	index,
@@ -113,10 +147,14 @@ const HighlightPanel: React.FC<{ point: ProjectPoint; index: number; order: numb
 				<p className="hz-body">{point.body}</p>
 				{point.detail && <p className="hz-detail">{point.detail}</p>}
 			</div>
-			{image && (
+			{image ? (
 				<figure className="hz-feature-media" data-reveal="zoom">
 					<Media src={image} alt={point.shots?.[0]?.alt ?? `${point.title} 화면`} />
 				</figure>
+			) : (
+				<span className="hz-feature-mark" aria-hidden="true" data-reveal="zoom">
+					{point.icon ? <i className={`fa-solid ${point.icon}`} /> : pad(order + 1)}
+				</span>
 			)}
 		</Panel>
 	);
@@ -135,9 +173,31 @@ const BuildPanel: React.FC<{ points: ProjectPoint[]; index: number }> = ({ point
 						<span className="hz-card-no">{pad(i + 1)}</span>
 						<h3>{point.title}</h3>
 						<p>{point.body}</p>
+						{point.detail && <p className="hz-card-detail">{point.detail}</p>}
 					</li>
 				))}
 			</ul>
+		</div>
+	</Panel>
+);
+
+/** 쓰는 법: 거대한 단계 번호 아래 짧은 글이 나란히 (넷까지 한 줄, 남는 칸은 마지막 단계가 채운다) */
+const UsagePanel: React.FC<{ points: ProjectPoint[]; index: number }> = ({ points, index }) => (
+	<Panel index={index} className="hz-usage" label="쓰는 법">
+		<div className="hz-text">
+			<h2 className="hz-title">
+				쓰는 법<span>.</span>
+			</h2>
+			<ol className="hz-steps" style={cssVars(fitGrid(points.length, 4))}>
+				{points.map((point, i) => (
+					<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
+						<span className="hz-step-no">{i + 1}</span>
+						<h3>{point.title}</h3>
+						<p>{point.body}</p>
+						{point.detail && <p className="hz-card-detail">{point.detail}</p>}
+					</li>
+				))}
+			</ol>
 		</div>
 	</Panel>
 );
@@ -152,7 +212,7 @@ const TimelinePanel: React.FC<{ items: { date: string; label: string }[]; index:
 			<ol className="hz-rail">
 				{items.map((item, i) => (
 					<li key={`${item.date}-${item.label}`} data-reveal="" style={cssVars({ d: i })}>
-						<time>{item.date}</time>
+						<DateMark date={item.date} />
 						<span>{item.label}</span>
 					</li>
 				))}
@@ -231,11 +291,12 @@ const HorizontalPage: React.FC<{ project: Project }> = ({ project }) => {
 		const cover = next();
 		const facts = project.facts.length ? next() : null;
 		const highlights = project.highlights.map(() => next());
+		const usage = project.usage?.length ? next() : null;
 		const build = project.build.length ? next() : null;
 		const timeline = project.timeline?.length ? next() : null;
 		const specs = project.specs.length || project.contributions.length ? next() : null;
 		const end = next();
-		return { cover, facts, highlights, build, timeline, specs, end, count: n };
+		return { cover, facts, highlights, usage, build, timeline, specs, end, count: n };
 	}, [project]);
 	const { count } = sections;
 
@@ -339,6 +400,7 @@ const HorizontalPage: React.FC<{ project: Project }> = ({ project }) => {
 							))}
 						</Region>
 					)}
+					{sections.usage !== null && project.usage && <UsagePanel points={project.usage} index={sections.usage} />}
 					{sections.build !== null && <BuildPanel points={project.build} index={sections.build} />}
 					{sections.timeline !== null && project.timeline && (
 						<TimelinePanel items={project.timeline} index={sections.timeline} />

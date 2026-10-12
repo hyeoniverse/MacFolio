@@ -295,6 +295,13 @@
 	font-variant-numeric: tabular-nums;
 }
 
+.ck-list-note {
+	margin-top: 6px;
+	color: var(--sp-muted);
+	font-size: 14px;
+	line-height: 1.55;
+}
+
 .ck-list ul {
 	margin-top: 8px;
 	list-style: none;
@@ -485,6 +492,35 @@ li[data-checked] .ck-detail p {
 .ck-shot img {
 	display: block;
 	width: 100%;
+	max-height: 560px;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* ─── 넓은 창: 앱이 넓어지고 목록은 두 단으로 흘러 양옆이 비지 않는다 ─── */
+@container (min-width: 1000px) {
+	.ck-app {
+		max-width: 1120px;
+	}
+
+	.ck-lists {
+		display: block;
+		columns: 2;
+		column-gap: 0;
+		column-rule: 1px solid var(--sp-line);
+	}
+
+	.ck-list {
+		break-inside: avoid;
+	}
+
+	.ck-list:last-child {
+		border-bottom: 1px solid var(--sp-line);
+	}
+
+	.ck-shot {
+		margin-top: 28px;
+	}
 }
 
 /* ─── 다 봤을 때 색종이 ─── */

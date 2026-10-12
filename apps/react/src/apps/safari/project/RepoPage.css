@@ -783,9 +783,16 @@
 	color: var(--sp-accent);
 }
 
-/* ─── README 탭 ─── */
+/* ─── README 탭: 왼쪽 README, 오른쪽 저장소 요약 (GitHub 저장소 첫 화면처럼) ─── */
+.rp-readme-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 280px;
+	gap: 24px;
+	align-items: start;
+}
+
 .rp-readme {
-	max-width: 920px;
+	min-width: 0;
 	border: 1px solid var(--sp-line);
 	border-radius: 8px;
 	overflow: hidden;
@@ -861,6 +868,110 @@
 	font-family: var(--sp-mono);
 	font-size: 12.5px;
 	line-height: 1.5;
+}
+
+.rp-md-icon {
+	width: 1.4em;
+	margin-right: 6px;
+	color: var(--sp-accent);
+	font-size: 0.9em;
+	text-align: center;
+}
+
+.rp-md-detail {
+	display: block;
+	color: var(--sp-muted);
+	font-size: 14px;
+}
+
+.rp-md h3 + p + .rp-md-detail {
+	margin-top: -6px;
+}
+
+.rp-readme-side {
+	display: flex;
+	flex-direction: column;
+	font-size: 14px;
+}
+
+.rp-readme-side section {
+	padding: 16px 0;
+	border-bottom: 1px solid var(--sp-line);
+}
+
+.rp-readme-side section:first-child {
+	padding-top: 4px;
+}
+
+.rp-readme-side section:last-child {
+	border-bottom: 0;
+}
+
+.rp-readme-side h2 {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 10px;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.rp-release {
+	display: flex;
+	gap: 10px;
+}
+
+.rp-release > i {
+	margin-top: 3px;
+	color: var(--rp-green);
+}
+
+.rp-release strong {
+	font-weight: 600;
+}
+
+.rp-release time {
+	display: block;
+	margin-top: 2px;
+	font-size: 12px;
+}
+
+.rp-side-more {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 10px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--sp-accent);
+	font: inherit;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.rp-side-more:hover {
+	text-decoration: underline;
+}
+
+.rp-side-types {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 0;
+	list-style: none;
+}
+
+.rp-lang-bar {
+	display: block;
+	height: 8px;
+	margin-bottom: 10px;
+	border-radius: 999px;
+}
+
+.rp-credit-note {
+	display: block;
+	color: var(--sp-muted);
+	font-size: 12px;
 }
 
 /* ─── Conventions 탭 ─── */
@@ -988,20 +1099,21 @@
 /* 기여 그래프 모양 장식: 칸이 왼쪽부터 차례로 칠해진다 */
 .rp-heat {
 	display: grid;
-	grid-template-rows: repeat(7, 11px);
+	grid-template-rows: repeat(7, auto);
 	grid-auto-flow: column;
-	grid-auto-columns: 11px;
+	grid-auto-columns: minmax(0, 1fr);
 	gap: 3px;
 	overflow: hidden;
 }
 
 .rp-heat i {
 	display: block;
+	aspect-ratio: 1;
 	border-radius: 2px;
 	background: var(--sp-alt);
 	box-shadow: inset 0 0 0 1px rgba(31, 35, 40, 0.06);
 	animation: rp-cell 0.3s var(--ease-out) both;
-	animation-delay: calc(var(--i, 0) * 25ms);
+	animation-delay: calc(var(--i, 0) * 12ms);
 }
 
 @keyframes rp-cell {
@@ -1433,6 +1545,25 @@
 }
 
 /* ─── 좁은 창 ─── */
+/* README 옆 요약은 README 아래로 내려 세 칸으로 나란히 */
+@container (max-width: 860px) {
+	.rp-readme-layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.rp-readme-side {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 0 24px;
+	}
+
+	.rp-readme-side section,
+	.rp-readme-side section:first-child {
+		padding: 12px 0;
+		border-bottom: 0;
+	}
+}
+
 @container (max-width: 600px) {
 	.rp-head {
 		padding: 16px 16px 0;

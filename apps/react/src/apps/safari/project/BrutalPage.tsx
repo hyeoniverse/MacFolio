@@ -32,14 +32,21 @@ const Block: React.FC<
 const Hatch: React.FC<{ span: number }> = ({ span }) =>
 	span > 0 ? <div className="br-hatch" style={cssVars({ span })} aria-hidden="true" /> : null;
 
-/** 글 블록 묶음(기능, 만든 방식, 쓰는 법): 블록 크기가 번갈아 달라지고, 줄의 남는 칸은 빗금 */
-const Points: React.FC<{ points: ProjectPoint[]; tag: string; from: number; spans: number[] }> = ({
+/** 항목 수에 맞춘 고른 칸: 셋으로 나뉘면 4칸씩, 둘로 나뉘면 6칸씩 (남는 마지막 블록은 줄 끝까지 늘어난다) */
+const evenSpans = (count: number) => (count % 3 === 0 ? [4] : count % 2 === 0 ? [6] : [4]);
+
+/**
+ * 글 블록 묶음(기능, 만든 방식, 쓰는 법): 블록 크기가 번갈아 달라지고, 줄의 남는 칸은 빗금.
+ * offset은 같은 줄 앞에 이미 놓인 칸 수 (장 제목 블록처럼)
+ */
+const Points: React.FC<{ points: ProjectPoint[]; tag: string; from: number; spans: number[]; offset?: number }> = ({
 	points,
 	tag,
 	from,
 	spans,
+	offset = 0,
 }) => {
-	let used = 0;
+	let used = offset;
 	const cells: React.ReactNode[] = [];
 	points.forEach((point, index) => {
 		let span = spans[index % spans.length];
@@ -187,6 +194,12 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 								<dd>{project.period}</dd>
 							</div>
 						)}
+						{project.language && (
+							<div>
+								<dt>LANGUAGE</dt>
+								<dd>{project.language}</dd>
+							</div>
+						)}
 					</dl>
 					<Links project={project} className="br-links" />
 				</Block>
@@ -240,7 +253,12 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 						<h2 className="br-h2" style={cssVars({ span: 12 })}>
 							만든 방식 <span>/ BUILD</span>
 						</h2>
-						<Points points={project.build} tag="BUILD" from={take(project.build.length)} spans={[4, 4, 4]} />
+						<Points
+							points={project.build}
+							tag="BUILD"
+							from={take(project.build.length)}
+							spans={evenSpans(project.build.length)}
+						/>
 					</Region>
 				)}
 
@@ -250,7 +268,12 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 						<h2 className="br-h2" style={cssVars({ span: 12 })}>
 							쓰는 법 <span>/ USAGE</span>
 						</h2>
-						<Points points={project.usage} tag="USAGE" from={take(project.usage.length)} spans={[6, 6]} />
+						<Points
+							points={project.usage}
+							tag="USAGE"
+							from={take(project.usage.length)}
+							spans={evenSpans(project.usage.length)}
+						/>
 					</Region>
 				)}
 
@@ -261,7 +284,7 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 							<h2>{chapter.title}</h2>
 							{chapter.lead && <p>{chapter.lead}</p>}
 						</Block>
-						<Points points={chapter.points} tag="NOTE" from={take(chapter.points.length)} spans={[4, 4, 4, 4]} />
+						<Points points={chapter.points} tag="NOTE" from={take(chapter.points.length)} spans={[4]} offset={4} />
 					</Region>
 				))}
 
@@ -377,6 +400,7 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 												<strong>{credit.name}</strong>
 											)}{' '}
 											<em>{credit.by}</em>
+											{credit.note && <small>{credit.note}</small>}
 										</li>
 									))}
 								</ul>
@@ -387,7 +411,10 @@ const BrutalPage: React.FC<{ project: Project }> = ({ project }) => {
 
 				{/* 마무리 */}
 				<Block n={next()} tag="END" span={12} tone="neon" className="br-end">
-					<p className="br-end-name">{project.name}</p>
+					<div className="br-end-head">
+						{project.icon && <img src={project.icon} alt="" className="br-end-icon" />}
+						<p className="br-end-name">{project.name}</p>
+					</div>
 					<Links project={project} className="br-links" />
 				</Block>
 			</div>

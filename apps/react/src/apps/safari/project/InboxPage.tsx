@@ -19,6 +19,10 @@ interface Mail {
 	text: string;
 	kind: 'intro' | 'point' | 'timeline' | 'gallery' | 'specs' | 'contrib';
 	point?: ProjectPoint;
+	/** 장의 첫 메일에 인용으로 붙는 장 머리말 */
+	quote?: string;
+	/** 진행 과정 메일: 몇 번째 일인지 */
+	step?: number;
 }
 
 interface Box {
@@ -50,14 +54,15 @@ function buildMail(project: Project): { boxes: Box[]; mails: Mail[] } {
 			mails.push({ ...item, id: `${box.id}-${index}`, box: box.id, stamp: stampAt(mails.length) })
 		);
 	};
-	const pointMails = (points: ProjectPoint[]) =>
-		points.map((point) => ({
+	const pointMails = (points: ProjectPoint[], lead?: string) =>
+		points.map((point, index) => ({
 			from,
 			subject: point.title,
 			preview: point.body,
-			text: `${point.title} ${point.body} ${point.detail ?? ''}`,
+			text: `${point.title} ${point.body} ${point.detail ?? ''} ${index === 0 ? (lead ?? '') : ''}`,
 			kind: 'point' as const,
 			point,
+			...(index === 0 && lead ? { quote: lead } : {}),
 		}));
 
 	addBox({ id: 'intro', label: '소개', icon: 'fa-envelope-open-text' }, [
@@ -72,14 +77,18 @@ function buildMail(project: Project): { boxes: Box[]; mails: Mail[] } {
 	addBox({ id: 'highlights', label: '주요 기능', icon: 'fa-star' }, pointMails(project.highlights));
 	addBox({ id: 'build', label: '만든 방식', icon: 'fa-screwdriver-wrench' }, pointMails(project.build));
 	project.chapters?.forEach((chapter, index) =>
-		addBox({ id: `chapter-${index}`, label: chapter.title, icon: 'fa-book-open' }, pointMails(chapter.points))
+		addBox(
+			{ id: `chapter-${index}`, label: chapter.title, icon: 'fa-book-open' },
+			pointMails(chapter.points, chapter.lead)
+		)
 	);
 	addBox({ id: 'usage', label: '쓰는 법', icon: 'fa-hand-pointer' }, pointMails(project.usage ?? []));
 	// 진행 과정: 보낸 이가 날짜. 날짜순으로 둔다
 	addBox(
 		{ id: 'timeline', label: '진행 과정', icon: 'fa-calendar-days' },
-		(project.timeline ?? []).map((entry) => ({
+		(project.timeline ?? []).map((entry, index) => ({
 			from: entry.date,
+			step: index,
 			subject: entry.label,
 			preview: `${entry.date} · ${project.name}`,
 			text: `${entry.date} ${entry.label}`,
@@ -108,7 +117,7 @@ function buildMail(project: Project): { boxes: Box[]; mails: Mail[] } {
 						from,
 						subject: '기술 사양',
 						preview: project.stack.join(' · ') || project.specs.map((spec) => spec.value).join(' · '),
-						text: `기술 사양 ${project.specs.map((spec) => `${spec.label} ${spec.value}`).join(' ')}`,
+						text: `기술 사양 ${project.specs.map((spec) => `${spec.label} ${spec.value}`).join(' ')} ${project.stack.join(' ')} ${project.language}`,
 						kind: 'specs' as const,
 					},
 				]
@@ -152,6 +161,7 @@ const Body: React.FC<{ mail: Mail; project: Project }> = ({ mail, project }) => 
 			const point = mail.point!;
 			return (
 				<>
+					{mail.quote && <blockquote className="ib-quote">{mail.quote}</blockquote>}
 					<p className="ib-lead">{point.body}</p>
 					{point.detail && <p>{point.detail}</p>}
 					{point.demo ? (
@@ -172,10 +182,25 @@ const Body: React.FC<{ mail: Mail; project: Project }> = ({ mail, project }) => 
 			);
 		}
 		case 'timeline':
-			return <p className="ib-lead">{mail.from}에 한 일입니다.</p>;
+			// 이 일 하나와 함께 전체 진행 과정을 이어진 편지처럼 보여 주고 지금 메일을 강조한다
+			return (
+				<>
+					<p className="ib-lead">
+						{mail.from}에 한 일은 '{mail.subject}'입니다.
+					</p>
+					<ol className="ib-thread" aria-label="전체 진행 과정">
+						{(project.timeline ?? []).map((entry, index) => (
+							<li key={`${entry.date}-${entry.label}`} aria-current={index === mail.step ? 'step' : undefined}>
+								<time>{entry.date}</time>
+								<span>{entry.label}</span>
+							</li>
+						))}
+					</ol>
+				</>
+			);
 		case 'gallery':
 			return (
-				<ul className="ib-gallery">
+				<ul className="ib-gallery" data-odd={project.gallery!.length % 2 === 1 ? '' : undefined}>
 					{project.gallery!.map((shot) => (
 						<li key={shot.src}>
 							<img src={shot.src} alt={shot.caption} loading="lazy" />
@@ -186,25 +211,43 @@ const Body: React.FC<{ mail: Mail; project: Project }> = ({ mail, project }) => 
 			);
 		case 'specs':
 			return (
-				<dl className="ib-specs">
-					{project.specs.map((spec) => (
-						<div key={spec.label}>
-							<dt>{spec.label}</dt>
-							<dd>{spec.value}</dd>
-						</div>
-					))}
-				</dl>
+				<>
+					<dl className="ib-specs">
+						{project.specs.map((spec) => (
+							<div key={spec.label}>
+								<dt>{spec.label}</dt>
+								<dd>{spec.value}</dd>
+							</div>
+						))}
+						{project.language && (
+							<div>
+								<dt>주 언어</dt>
+								<dd>{project.language}</dd>
+							</div>
+						)}
+					</dl>
+					{project.stack.length > 0 && (
+						<ul className="ib-tags" aria-label="기술">
+							{project.stack.map((item) => (
+								<li key={item}>{item}</li>
+							))}
+						</ul>
+					)}
+				</>
 			);
 		case 'contrib':
 			return (
-				<ul className="ib-checks">
-					{project.contributions.map((item) => (
-						<li key={item}>
-							<i className="fa-solid fa-check" aria-hidden="true" />
-							{item}
-						</li>
-					))}
-				</ul>
+				<>
+					{project.role && <p className="ib-lead">{project.role}</p>}
+					<ul className="ib-checks">
+						{project.contributions.map((item) => (
+							<li key={item}>
+								<i className="fa-solid fa-check" aria-hidden="true" />
+								{item}
+							</li>
+						))}
+					</ul>
+				</>
 			);
 	}
 };
@@ -333,7 +376,12 @@ const InboxPage: React.FC<{ project: Project }> = ({ project }) => {
 										<span className="ib-from">{mail.from}</span>
 										<time>{mail.kind === 'timeline' ? mail.from : mail.stamp}</time>
 									</span>
-									<strong>{mail.subject}</strong>
+									<strong>
+										{mail.point?.icon && (
+											<i className={`fa-solid ${mail.point.icon} ib-subject-icon`} aria-hidden="true" />
+										)}
+										{mail.subject}
+									</strong>
 									<span className="ib-preview">{mail.preview}</span>
 								</button>
 							</li>

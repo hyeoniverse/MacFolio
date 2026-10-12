@@ -262,6 +262,8 @@ test.describe('프로젝트 관리', () => {
 			/^\/imgs\/projects\/qru\/screens\//
 		);
 		await expect(panel.locator('.sc-hero').getByRole('list', { name: '기술' }).getByRole('listitem')).toHaveText([
+			// 주 언어가 기술 칩 맨 앞에 함께 나온다
+			'TypeScript',
 			'React',
 			'Vite',
 			'tiny-qr-kit',
