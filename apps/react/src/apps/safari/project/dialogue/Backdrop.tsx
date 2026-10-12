@@ -7,6 +7,7 @@ import { Pixel } from './Pixel';
 import * as S from './sprites';
 import * as I from './spritesIndoor';
 import * as O from './spritesOutdoor';
+import './Backdrop.css';
 
 /** 가장자리 소품 하나: 왼쪽이나 오른쪽에서 몇 %, 바닥에서 몇 px, 칸 크기 */
 interface Prop {

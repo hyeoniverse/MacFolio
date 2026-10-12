@@ -306,8 +306,10 @@ test.describe('프로젝트 관리', () => {
 			'src',
 			shots[0]
 		);
-		await expect(hero.getByRole('list', { name: '기술' }).getByRole('listitem')).toHaveText([
-			// 주 언어가 기술 칩 맨 앞에 함께 나온다
+		await expect(
+			panel.getByRole('region', { name: '기술 사양' }).getByRole('list', { name: '쓴 기술' }).getByRole('listitem')
+		).toHaveText([
+			// 주 언어가 기술 사양의 쓴 기술 맨 앞에 함께 나온다
 			'TypeScript',
 			'React',
 			'Vite',

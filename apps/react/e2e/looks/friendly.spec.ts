@@ -1,4 +1,4 @@
-// friendly 템플릿 — Stripe처럼: 흰 바탕의 옅은 세로 격자선, 브라우저 창과 사선 띠의 첫 화면, 아이콘 기능 격자, 선으로 이은 단계, 남색 마무리 띠 (새 프로젝트의 기본 모양)
+// friendly 템플릿 — Stripe처럼: 비스듬한 옅은 띠와 단색 줄무늬 위의 창과 겹친 작은 카드, 강조선 달린 숫자, 아이콘 기능 격자, 선으로 이은 단계, 남색 띠, 비스듬한 남색 마무리 띠 (새 프로젝트의 기본 모양)
 import { test, expect } from '../fixtures';
 import { openLook } from './open';
 import {
