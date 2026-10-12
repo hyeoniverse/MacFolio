@@ -455,3 +455,12 @@
 		gap: 0;
 	}
 }
+
+/* 항목에 그림이 있으면 설명 아래에 붙인다 */
+.tm-shot {
+	display: block;
+	width: min(100%, 560px);
+	margin-top: 12px;
+	border-radius: 6px;
+	border: 1px solid #30363d;
+}

@@ -172,6 +172,11 @@ const Body: React.FC<{ mail: Mail; project: Project }> = ({ mail, project }) => 
 						</div>
 					) : point.shots ? (
 						<div className="ib-demo">
+							{(point.image || point.video) && (
+								<div className="ib-attach">
+									<FeatureMedia point={point} />
+								</div>
+							)}
 							<Shots shots={point.shots} />
 						</div>
 					) : (

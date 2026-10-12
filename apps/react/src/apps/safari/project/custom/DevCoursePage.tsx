@@ -86,6 +86,7 @@ const ProjectsList: React.FC<{ project: Project }> = ({ project }) => (
 			<li key={point.title}>
 				<span className="tm-dir">{slug(point.title)}/</span>
 				<p>{point.body}</p>
+				{point.image && <img className="tm-shot" src={point.image} alt={`${point.title} 화면`} loading="lazy" />}
 			</li>
 		))}
 	</ul>
