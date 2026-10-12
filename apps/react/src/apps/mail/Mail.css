@@ -423,28 +423,6 @@
 	text-align: left;
 }
 
-/* 칸 오류: 이름표만 오류 색으로 표시하고, 문구는 평소 안내 글자와 같은 흐린 글자·같은 크기로
-   (빈 칸은 안내 글자(placeholder) 자리에, 내용이 있는 칸은 입력 칸 아래 줄에) */
-.mail-compose-row:has([aria-invalid='true']) > span:first-child {
-	color: var(--mail-error);
-}
-
-.mail-compose-row {
-	flex-wrap: wrap;
-}
-
-.mail-hint {
-	flex-basis: 100%;
-	padding-left: 78px;
-	color: var(--mail-muted);
-}
-
-.mail-body-error {
-	display: block;
-	margin: 6px 2px 10px;
-	padding-left: 0;
-}
-
 .mail-recipient {
 	padding: 1px 8px;
 	border-radius: 10px;

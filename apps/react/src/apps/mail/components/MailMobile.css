@@ -436,20 +436,6 @@
 	color: var(--color-text-secondary);
 }
 
-.mail-compose.sheet .mail-hint {
-	margin: -6px 0 12px;
-	padding-left: 80px;
-	color: var(--color-text-secondary);
-}
-
-.mail-compose.sheet .mail-compose-row:has([aria-invalid='true']) > span:first-child {
-	color: var(--mail-error);
-}
-
-.mail-compose.sheet .mail-body-error {
-	padding-left: 0;
-}
-
 .mail-compose.sheet .mail-compose-row input {
 	font-size: 16px;
 }
