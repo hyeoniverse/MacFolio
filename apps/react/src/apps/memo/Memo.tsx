@@ -26,8 +26,8 @@ import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import FolderSidebar from './components/FolderSidebar';
-import SidebarResizer from './components/SidebarResizer';
-import { loadSidebarWidth, saveSidebarWidth } from './memoStorage';
+import PaneResizer from './components/PaneResizer';
+import { loadPaneWidth, savePaneWidth } from './memoStorage';
 import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
 
 import Menu from '@/shared/ui/menu/Menu';
@@ -61,6 +61,9 @@ import PhoneFoldersBar from './components/PhoneFoldersBar';
 import { useTrash } from './useTrash';
 import { useMemoAppMenus } from './useMemoAppMenus';
 import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
+
+/** 칸을 넓혀도 본문은 이만큼(px) 남긴다 */
+const READER_MIN = 360;
 
 /** 본문 문자열을 메모 본문 모양으로 (편집기의 미리 보기, 버전 기록) */
 const renderMarkdown = (body: string) => <MemoMarkdown>{body}</MemoMarkdown>;
@@ -150,8 +153,15 @@ const Memo: React.FC = () => {
 	/** 사용자가 사이드바를 직접 열거나 닫았으면 그 값, 아니면 창 폭으로 정한다 */
 	const [sidebarChoice, setSidebarChoice] = useState<boolean | null>(null);
 	// 사이드바 너비(px): 경계를 끌어 바꾸고 이 브라우저에 남긴다. 끄는 동안은 칸 너비 애니메이션을 끈다
-	const [sidebarWidth, setSidebarWidth] = useState(loadSidebarWidth);
-	const [resizingSidebar, setResizingSidebar] = useState(false);
+	const [sidebarWidth, setSidebarWidth] = useState(() => loadPaneWidth('sidebar'));
+	const [listWidth, setListWidth] = useState(() => loadPaneWidth('list'));
+	const [resizing, setResizing] = useState(false);
+	const memoRef = useRef<HTMLDivElement>(null);
+	/**
+	 * 칸 하나를 넓힐 수 있는 최대 너비: 창 너비에서 다른 칸과 본문 최소 너비(READER_MIN)를 뺀 값.
+	 * 넓은 창에서는 PANE_WIDTHS의 최대가 먼저 걸린다
+	 */
+	const roomFor = (others: number) => () => (memoRef.current?.clientWidth ?? Infinity) - others - READER_MIN;
 	const [view, setView] = useState<View>('list');
 	/** 갤러리에서 카드를 눌러 글을 연 상태 */
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
@@ -540,8 +550,14 @@ const Memo: React.FC = () => {
 				<div
 					className={`memo pane-${pane} view-${view} ${galleryNoteOpen ? 'gallery-note' : ''} ${sidebarOpen ? '' : 'sidebar-closed'}`}
 					data-nav={nav}
-					data-resizing={resizingSidebar || undefined}
-					style={{ '--memo-sidebar-width': `${sidebarWidth}px` } as React.CSSProperties}
+					ref={memoRef}
+					data-resizing={resizing || undefined}
+					style={
+						{
+							'--memo-sidebar-width': `${sidebarWidth}px`,
+							'--memo-list-width': `${listWidth}px`,
+						} as React.CSSProperties
+					}
 				>
 					<FolderSidebar
 						canEdit={canEdit}
@@ -582,11 +598,25 @@ const Memo: React.FC = () => {
 						onTagsChange={changeTags}
 					/>
 					{sidebarOpen && !compact && (
-						<SidebarResizer
+						<PaneResizer
+							pane="sidebar"
+							label="사이드바 너비"
 							width={sidebarWidth}
+							roomFor={roomFor(view === 'list' ? listWidth : 0)}
 							onResize={setSidebarWidth}
-							onCommit={saveSidebarWidth}
-							onDraggingChange={setResizingSidebar}
+							onCommit={(width) => savePaneWidth('sidebar', width)}
+							onDraggingChange={setResizing}
+						/>
+					)}
+					{view === 'list' && !compact && (
+						<PaneResizer
+							pane="list"
+							label="목록 너비"
+							width={listWidth}
+							roomFor={roomFor(sidebarOpen ? sidebarWidth : 0)}
+							onResize={setListWidth}
+							onCommit={(width) => savePaneWidth('list', width)}
+							onDraggingChange={setResizing}
 						/>
 					)}
 

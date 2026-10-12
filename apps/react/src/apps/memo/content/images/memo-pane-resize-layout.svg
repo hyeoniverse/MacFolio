@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 310" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="310" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">손잡이 두 개는 그리드 칸이 아니라 경계 위에 떠 있다</text>
+  <rect x="20" y="50" width="600" height="170" rx="10" fill="#f3f4f6"/>
+  <rect x="28" y="58" width="140" height="154" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="98" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="#4f46e5">사이드바</text>
+  <text x="98" y="148" text-anchor="middle" font-size="10.5" fill="#374151">--memo-sidebar-width</text>
+  <rect x="180" y="58" width="170" height="154" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="265" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="#4f46e5">목록</text>
+  <text x="265" y="148" text-anchor="middle" font-size="10.5" fill="#374151">--memo-list-width</text>
+  <rect x="362" y="58" width="250" height="154" rx="6" fill="#fff" stroke="#e5e7eb"/>
+  <text x="487" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2937">본문</text>
+  <text x="487" y="148" text-anchor="middle" font-size="10.5" fill="#6b7280">minmax(0, 1fr) · 최소 360px 남김</text>
+  <rect x="168" y="66" width="12" height="138" fill="#fff1f2" stroke="#fda4af" stroke-dasharray="3 2"/>
+  <rect x="350" y="58" width="12" height="154" fill="#fff1f2" stroke="#fda4af" stroke-dasharray="3 2"/>
+  <text x="174" y="240" text-anchor="middle" font-size="11" font-weight="600" fill="#ef4444">사이드바 손잡이</text>
+  <text x="174" y="257" text-anchor="middle" font-size="10.5" fill="#6b7280">180~360px</text>
+  <text x="356" y="240" text-anchor="middle" font-size="11" font-weight="600" fill="#ef4444">목록 손잡이</text>
+  <text x="356" y="257" text-anchor="middle" font-size="10.5" fill="#6b7280">220~440px</text>
+  <text x="320" y="285" text-anchor="middle" font-size="11" fill="#374151">손잡이: position: absolute, 너비 12px · 가리키면 커서만 col-resize · 포커스하면 회색 선</text>
+  <text x="320" y="302" text-anchor="middle" font-size="10.5" fill="#6b7280">사이드바를 가리면 --memo-sidebar-column이 0px이 되어 목록 손잡이가 따라간다</text>
+</svg>

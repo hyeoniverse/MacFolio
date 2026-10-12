@@ -3,11 +3,11 @@ import { DEFAULT_ARRANGEMENT, type Arrangement } from '@macfolio/desktop-core/me
 import {
 	loadArrangement,
 	loadRecentFinds,
-	loadSidebarWidth,
+	loadPaneWidth,
+	PANE_WIDTHS,
 	rememberFind,
 	saveArrangement,
-	saveSidebarWidth,
-	SIDEBAR_WIDTH,
+	savePaneWidth,
 } from './memoStorage';
 
 describe('memoStorage', () => {
@@ -39,21 +39,24 @@ describe('memoStorage', () => {
 		expect(loadRecentFinds()).toEqual(['b', 'a']);
 	});
 
-	it('사이드바 너비: 저장한 값을 읽고, 없거나 잘못되면 기본값, 범위 밖이면 범위 안으로', () => {
-		expect(loadSidebarWidth()).toBe(SIDEBAR_WIDTH.initial);
-		saveSidebarWidth(260);
-		expect(loadSidebarWidth()).toBe(260);
+	it('칸 너비: 저장한 값을 읽고, 없거나 잘못되면 기본값, 범위 밖이면 범위 안으로', () => {
+		expect(loadPaneWidth('sidebar')).toBe(PANE_WIDTHS.sidebar.initial);
+		expect(loadPaneWidth('list')).toBe(PANE_WIDTHS.list.initial);
+		savePaneWidth('sidebar', 260);
+		savePaneWidth('list', 320);
+		expect(loadPaneWidth('sidebar')).toBe(260);
+		expect(loadPaneWidth('list')).toBe(320);
 		localStorage.setItem('macfolio:memo:sidebar-width', 'wide');
-		expect(loadSidebarWidth()).toBe(SIDEBAR_WIDTH.initial);
-		localStorage.setItem('macfolio:memo:sidebar-width', '9999');
-		expect(loadSidebarWidth()).toBe(SIDEBAR_WIDTH.max);
+		expect(loadPaneWidth('sidebar')).toBe(PANE_WIDTHS.sidebar.initial);
+		localStorage.setItem('macfolio:memo:list-width', '9999');
+		expect(loadPaneWidth('list')).toBe(PANE_WIDTHS.list.max);
 		localStorage.setItem('macfolio:memo:sidebar-width', '10');
-		expect(loadSidebarWidth()).toBe(SIDEBAR_WIDTH.min);
+		expect(loadPaneWidth('sidebar')).toBe(PANE_WIDTHS.sidebar.min);
 	});
 
-	it('사이드바 너비를 기본값으로 되돌리면 저장한 값을 지운다', () => {
-		saveSidebarWidth(300);
-		saveSidebarWidth(SIDEBAR_WIDTH.initial);
-		expect(localStorage.getItem('macfolio:memo:sidebar-width')).toBeNull();
+	it('칸 너비를 기본값으로 되돌리면 저장한 값을 지운다', () => {
+		savePaneWidth('list', 300);
+		savePaneWidth('list', PANE_WIDTHS.list.initial);
+		expect(localStorage.getItem('macfolio:memo:list-width')).toBeNull();
 	});
 });

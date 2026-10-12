@@ -16,20 +16,26 @@ export function rememberFind(recent: string[], query: string): string[] {
 	return next;
 }
 
-/** 사이드바 너비(px)의 범위와 기본값 (Memo.css의 13rem) */
-export const SIDEBAR_WIDTH = { min: 180, max: 360, initial: 208 } as const;
+/** 너비를 조절하는 칸: 사이드바(폴더·태그), 목록(글 목록) */
+export type ResizablePane = 'sidebar' | 'list';
 
-export const clampSidebarWidth = (width: number) =>
-	Math.round(Math.min(SIDEBAR_WIDTH.max, Math.max(SIDEBAR_WIDTH.min, width)));
+/** 칸마다 너비(px)의 범위와 기본값 (기본값은 Memo.css의 13rem·17rem), 저장 키 */
+export const PANE_WIDTHS: Record<ResizablePane, { min: number; max: number; initial: number; key: string }> = {
+	sidebar: { min: 180, max: 360, initial: 208, key: STORAGE_KEYS.memoSidebarWidth },
+	list: { min: 220, max: 440, initial: 272, key: STORAGE_KEYS.memoListWidth },
+};
 
-/** 저장된 사이드바 너비. 없거나 숫자가 아니면 기본값, 범위 밖이면 범위 안으로 */
-export function loadSidebarWidth(): number {
-	const value = Number(readString(STORAGE_KEYS.memoSidebarWidth));
-	return Number.isFinite(value) && value > 0 ? clampSidebarWidth(value) : SIDEBAR_WIDTH.initial;
+export const clampPaneWidth = (pane: ResizablePane, width: number) =>
+	Math.round(Math.min(PANE_WIDTHS[pane].max, Math.max(PANE_WIDTHS[pane].min, width)));
+
+/** 저장된 너비. 없거나 숫자가 아니면 기본값, 범위 밖이면 범위 안으로 */
+export function loadPaneWidth(pane: ResizablePane): number {
+	const value = Number(readString(PANE_WIDTHS[pane].key));
+	return Number.isFinite(value) && value > 0 ? clampPaneWidth(pane, value) : PANE_WIDTHS[pane].initial;
 }
 
 /** 기본값이면 지운다 (휴지통의 '내 브라우저 데이터'에 쓸데없이 남지 않게) */
-export function saveSidebarWidth(width: number) {
-	if (width === SIDEBAR_WIDTH.initial) removeKey(STORAGE_KEYS.memoSidebarWidth);
-	else writeString(STORAGE_KEYS.memoSidebarWidth, String(width));
+export function savePaneWidth(pane: ResizablePane, width: number) {
+	if (width === PANE_WIDTHS[pane].initial) removeKey(PANE_WIDTHS[pane].key);
+	else writeString(PANE_WIDTHS[pane].key, String(width));
 }
