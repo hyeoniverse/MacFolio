@@ -161,19 +161,20 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 };
 
 const Row: React.FC<{ label: string; error?: string; children: React.ReactElement }> = ({ label, error, children }) => (
-	<label className={`mail-compose-row ${error ? 'invalid' : ''}`}>
-		<span>{label}</span>
-		{children}
+	<>
+		<label className={`mail-compose-row ${error ? 'invalid' : ''}`}>
+			<span>{label}</span>
+			{children}
+		</label>
 		{error && <ErrorHint error={error} />}
-	</label>
+	</>
 );
 
-/** 칸 오류: 칸 아래 줄의 작은 안내 문구 */
+/** 칸 오류: 칸 구분선 아래 별도 줄의 흐린 안내 문구 */
 const ErrorHint: React.FC<{ error: string; className?: string }> = ({ error, className = '' }) => (
-	<span className={`mail-hint ${className}`} role="alert">
-		<i className="fa-solid fa-circle-exclamation" aria-hidden="true" />
+	<p className={`mail-hint ${className}`} role="alert">
 		{error}
-	</span>
+	</p>
 );
 
 /** 보낸 뒤: 메일 앱으로 넘긴 경우에는 메일 앱에서 보내기를 눌러야 한다고 안내한다 */
