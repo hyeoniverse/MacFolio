@@ -1,4 +1,5 @@
 import { cssVars } from '@/shared/lib/cssVars';
+import Sheet from '@/shared/ui/sheet/Sheet';
 import React, { useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
@@ -153,14 +154,15 @@ const CollectionItem: React.FC<{
 );
 
 /** 모바일: 화면을 덮는 '지금 재생 중'. 닫기는 시트 위에 떠 있는 뒤로 가기로 한다 */
-const NowPlayingSheet: React.FC = () => {
+const NowPlayingSheet: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 	const { track, isPlaying } = useMusic();
 	return (
-		<div
+		<Sheet
+			variant="cover"
+			label="지금 재생 중"
 			className="music-now-playing"
-			role="dialog"
-			aria-label="지금 재생 중"
 			style={cssVars({ artwork: `url('${track.artwork}')` })}
+			onClose={onClose}
 		>
 			{/* 곡이 바뀌면 표지와 제목이 새로 나타난다 */}
 			<img
@@ -177,7 +179,7 @@ const NowPlayingSheet: React.FC = () => {
 			<Transport large />
 			<VolumeBar />
 			<UpNext />
-		</div>
+		</Sheet>
 	);
 };
 
@@ -498,7 +500,7 @@ const Music: React.FC = () => {
 						</div>
 					</footer>
 
-					{nowPlayingOpen && <NowPlayingSheet />}
+					{nowPlayingOpen && <NowPlayingSheet onClose={() => setNowPlayingOpen(false)} />}
 				</div>
 			</div>
 		</AppWindow>
