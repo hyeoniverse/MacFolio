@@ -1620,7 +1620,9 @@ const PointFields = ({
 			name={`${label} 그림`}
 			shape="wide"
 			value={point.image}
-			onChange={(image) => update(patchOf(point, { image }))}
+			hint={point.video ? '영상이 있으면 그림 대신 영상이 보입니다. 그림을 보이려면 영상 칸을 비웁니다.' : undefined}
+			// 다크 테마 그림은 원래 그림과 짝이라, 그림을 바꾸면 함께 지운다 (옛 화면이 밀대 반쪽에 남지 않게)
+			onChange={(image) => update(patchOf(point, { image, imageDark: undefined }))}
 		/>
 		<ShotsEditor
 			label={`${label} 화면`}

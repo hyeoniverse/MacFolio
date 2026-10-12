@@ -69,6 +69,11 @@ const PointMedia: React.FC<{ point: ProjectPoint; index: number; project: Projec
 	if (point.shots)
 		return (
 			<div className="at-demo">
+				{(point.image || point.video) && (
+					<div className="at-media">
+						<FeatureMedia point={point} />
+					</div>
+				)}
 				<Shots shots={point.shots} />
 			</div>
 		);
