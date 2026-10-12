@@ -300,7 +300,7 @@ export function landingOf(project: Project, { app = null }: LandingOptions = {})
 		sections: SECTION_ORDER.map((kind) => candidates[kind]).filter((section): section is LandingSection =>
 			Boolean(section)
 		),
-		closing: { title: hero.headline, ...(description ? { lead: description } : {}), links },
+		closing: closingOf(hero, links),
 	};
 }
 
@@ -349,4 +349,18 @@ export function sectionTitle(section: LandingSection): string {
 		case 'credits':
 			return '빌려 쓴 것들의 출처입니다.';
 	}
+}
+
+/**
+ * 마무리: 첫 화면의 제목과 소개를 되풀이하지 않는다. 써 볼 곳이 있으면 써 보기를, 저장소만 있으면 살펴보기를 권하고
+ * 이름을 덧붙인다. 링크가 하나도 없으면 이름만 둔다 (빈 프로젝트)
+ */
+function closingOf(hero: LandingHero, links: LandingLink[]): Landing['closing'] {
+	if (!links.length) return { title: hero.name, links };
+	const tryable = links.some((link) => link.kind === 'app' || link.kind === 'demo');
+	return {
+		title: tryable ? '지금 바로 써 볼 수 있습니다.' : '코드와 기록을 살펴볼 수 있습니다.',
+		lead: hero.name,
+		links,
+	};
 }

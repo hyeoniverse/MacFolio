@@ -1,5 +1,5 @@
-// product 템플릿 — Apple 제품 페이지처럼: 흰·검정 바탕, 큰 문장, 큰 화면, 큰 숫자
-import { test } from '../fixtures';
+// product 템플릿 — Apple 제품 페이지처럼: 흰·검정 바탕, 큰 문장, 창 테두리의 큰 화면, 회색 타일, 큰 숫자, 옆으로 넘기는 화면 모음
+import { expect, test } from '../fixtures';
 import {
 	expectEmptyRendered,
 	expectLinks,
@@ -14,6 +14,17 @@ test('product: 예시의 모든 구역과 칸을 차례대로 그리고, 링크�
 	const { article } = await openSample(page, 'product');
 	await expectSampleRendered(article);
 	await expectLinks(page, article);
+});
+
+test('product: 화면 모음은 둥근 단추로 앞뒤로 넘긴다', async ({ page }) => {
+	const { article } = await openSample(page, 'product');
+	const screens = article.getByRole('region', { name: '화면 모음', exact: true });
+	await screens.scrollIntoViewIfNeeded();
+	const prev = screens.getByRole('button', { name: '이전 화면' });
+	const next = screens.getByRole('button', { name: '다음 화면' });
+	await expect(prev).toBeDisabled();
+	await next.click();
+	await expect(prev).toBeEnabled();
 });
 
 test('product: 고를 수 있는 칸이 모두 빈 프로젝트도 빈 구역 없이 첫 화면과 마무리를 그린다', async ({ page }) => {

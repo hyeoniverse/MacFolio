@@ -2,14 +2,14 @@
 
 프로젝트 페이지의 모양(look) 가운데 넷은 **같은 내용을 서로 다른 디자인으로 그리는 랜딩 템플릿**이다. 관리자는 시스템 설정 › 프로젝트에서 칸만 채우고, 어떤 템플릿을 골라도 완성된 랜딩 페이지가 나온다.
 
-| id         | 콘셉트 (참고)         | 한 줄                                                                   |
-| ---------- | --------------------- | ----------------------------------------------------------------------- |
-| `product`  | Apple 제품 페이지     | 흰·검정 단색 바탕, 큰 제품 화면, 짧고 큰 문장, 넉넉한 여백, 큰 숫자     |
-| `friendly` | Stripe                | 밝고 친근한 카드, 아이콘 색 하나, 아이콘 달린 기능 격자, 단계 흐름      |
-| `paper`    | Notion                | 따뜻한 흰 문서, 표지와 걸친 아이콘, 속성 표, 토글, 알림 상자, 표        |
-| `bento`    | Framer·Raycast 템플릿 | 크기가 다른 타일 격자, 1px 선, 고정폭 작은 글자, 다크에서 가장 또렷하다 |
+| id         | 콘셉트 (참고)         | 한 줄                                                                                        |
+| ---------- | --------------------- | -------------------------------------------------------------------------------------------- |
+| `product`  | Apple 제품 페이지     | 흰·검정 단색 바탕, 큰 제품 화면, 짧고 큰 문장, 넉넉한 여백, 큰 숫자                          |
+| `friendly` | Stripe                | 옅은 세로 격자선, 창과 사선 띠의 첫 화면, 아이콘 기능 격자, 선으로 이은 단계, 남색 마무리 띠 |
+| `paper`    | Notion                | 따뜻한 흰 문서, 표지와 걸친 아이콘, 속성 표, 토글, 알림 상자, 표                             |
+| `bento`    | Framer·Raycast 템플릿 | 크기가 다른 타일 격자, 1px 선, 고정폭 작은 글자, 다크에서 가장 또렷하다                      |
 
-`friendly`가 새 프로젝트의 기본 모양이다 (`DEFAULT_LOOK`): 그림이 하나도 없는 처음 상태에서도 아이콘 카드로 꽉 차 보인다. `product`는 큰 화면이 있어야 빛난다.
+`friendly`가 새 프로젝트의 기본 모양이다 (`DEFAULT_LOOK`): 그림이 하나도 없는 처음 상태에서도 첫 화면 창에 프로젝트 내용으로 그린 앱 화면 모형이 들어가 꽉 차 보인다. `product`는 큰 화면이 있어야 빛난다.
 
 이 넷 말고 `dialogue`(RPG 대화창, `project/DialoguePage.tsx`)는 같은 내용을 선택지와 대사로 읽는 게임 콘셉트이고, `custom`은 코드의 일곱 프로젝트를 위해 직접 짠 페이지(`project/custom/`)다. 둘 다 이 계약 밖이다.
 
@@ -74,10 +74,10 @@ JSON에서만 고치는 코드 연출(항목의 `demo`·`variants`·`scrollFrame
 ```
 templates/
 ├── index.ts            TEMPLATE_PAGES: id → 페이지
-├── product/Page.tsx    + Page.css
-├── friendly/Page.tsx   + Page.css
-├── paper/Page.tsx      + Page.css
-└── bento/Page.tsx      + Page.css
+├── product/   Page.tsx·Page.css, Gallery.tsx(화면 띠), accent.ts(탁한 강조색이면 파랑)
+├── friendly/  Page.tsx·Page.css, Mock.tsx(그림이 없을 때 첫 화면의 앱 화면 모형)
+├── paper/     Page.tsx·Page.css
+└── bento/     Page.tsx·Page.css, layout.ts(빈칸 없는 타일 배치), Links.tsx(글쇠 표시 링크)
 landing/                템플릿이 함께 쓰는 키트
 ├── content.ts          landingOf, 타입, SECTION_LABELS·SECTION_ORDER, sectionTitle, iconOf
 ├── useLanding.ts       useLanding(project)
@@ -103,3 +103,5 @@ landing/                템플릿이 함께 쓰는 키트
 - 예시: `apps/settings/lookSamples.ts`의 `GENERAL_SAMPLE` 하나를 네 템플릿이 함께 쓴다 ('예시로 채우기'). 모든 구역과 항목 칸(아이콘, 다크 짝이 있는 그림, 화면 여러 장, 장의 숫자와 그림, 조작법, 폴더 구조, 출처)을 채운다.
 - 단위: `landing/content.test.ts`(빈 구역 빠짐, 차례, 첫 화면 그림, 링크, 칸 보존), `lookSamples.test.ts`, desktop-core의 `projects.test.ts`(예전 이름 옮기기).
 - E2E: `e2e/looks/{product,friendly,paper,bento}.spec.ts`.
+
+마무리(`closing`)는 첫 화면의 제목을 되풀이하지 않는다. 써 볼 곳(앱·데모)이 있으면 '지금 바로 써 볼 수 있습니다.', 저장소만 있으면 '코드와 기록을 살펴볼 수 있습니다.'를 제목으로 하고 이름을 덧붙인다.
