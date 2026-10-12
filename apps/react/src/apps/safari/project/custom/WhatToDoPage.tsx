@@ -17,7 +17,7 @@ const LANES: { id: Lane; label: string; status: string }[] = [
 
 const NEXT: Record<Lane, Lane> = { todo: 'doing', doing: 'done', done: 'todo' };
 
-type Card = { id: string; title?: string; body: string; home: Lane };
+type Card = { id: string; title?: string; body: string; image?: string; home: Lane };
 
 /** 처음 자리: 기능은 할 일, 만든 방식은 진행 중, 맡은 일은 완료 */
 const cardsOf = (project: Project): Card[] => [
@@ -25,12 +25,14 @@ const cardsOf = (project: Project): Card[] => [
 		id: `todo:${point.title}`,
 		title: point.title,
 		body: point.body,
+		image: point.image,
 		home: 'todo' as const,
 	})),
 	...project.build.map((point) => ({
 		id: `doing:${point.title}`,
 		title: point.title,
 		body: point.body,
+		image: point.image,
 		home: 'doing' as const,
 	})),
 	...project.contributions.map((item) => ({ id: `done:${item}`, body: item, home: 'done' as const })),
@@ -105,6 +107,15 @@ const Board: React.FC<{ project: Project }> = ({ project }) => {
 										<div className="kb-text">
 											{card.title && <h3>{card.title}</h3>}
 											<p>{card.body}</p>
+											{card.image && (
+												<img
+													className="kb-shot"
+													src={card.image}
+													alt={`${card.title} 화면`}
+													loading="lazy"
+													draggable={false}
+												/>
+											)}
 										</div>
 										<button
 											type="button"
