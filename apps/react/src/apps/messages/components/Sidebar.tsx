@@ -3,6 +3,7 @@ import Avatar from './Avatar';
 import { displayName, formatListTime, type Thread } from '../conversations';
 import IconButton from '@/shared/ui/button/IconButton';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import SearchField from '@/shared/ui/search-field/SearchField';
 
 interface Props {
 	threads: Thread[];
@@ -24,16 +25,13 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 	const others = threads.filter((t) => !t.pinned && matches(t));
 
 	const searchField = (className: string) => (
-		<label className={className}>
-			<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-			<input
-				type="search"
-				placeholder="검색"
-				aria-label="대화 검색"
-				value={query}
-				onChange={(event) => setQuery(event.target.value)}
-			/>
-		</label>
+		<SearchField
+			className={className}
+			label="대화 검색"
+			placeholder="검색"
+			value={query}
+			onChange={(event) => setQuery(event.target.value)}
+		/>
 	);
 
 	return (
