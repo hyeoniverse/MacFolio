@@ -425,6 +425,7 @@
 }
 
 .mail-compose.sheet .mail-compose-row {
+	--mail-row-gap: 8px;
 	gap: 8px;
 	min-height: 48px;
 	padding: 0;
@@ -434,6 +435,12 @@
 
 .mail-compose.sheet .mail-compose-row > span:first-child {
 	color: var(--color-text-secondary);
+}
+
+.mail-compose.sheet .mail-hint {
+	margin-top: -8px;
+	padding-bottom: 10px;
+	font-size: 13px;
 }
 
 .mail-compose.sheet .mail-compose-row input {
