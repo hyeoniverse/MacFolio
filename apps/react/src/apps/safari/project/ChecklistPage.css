@@ -1,4 +1,7 @@
-/* checklist 모양: 할 일 앱 화면. 흰(다크는 검정) 카드, 목록마다 라벨 색, 둥글고 두꺼운 글자 */
+/*
+ * checklist 모양: 할 일 앱 랜딩 (Todoist·Things처럼). 밝은 히어로(큰 한 줄, 기기 속 화면, 떠 있는 할 일 카드) 아래에
+ * 직접 체크해 보는 할 일 앱 화면. 흰(다크는 검정) 카드, 목록마다 라벨 색, 둥글고 두꺼운 글자
+ */
 .sp[data-look='checklist'] {
 	--sp-bg: #f2f2f7;
 	--sp-alt: #ffffff;
@@ -15,6 +18,7 @@
 	--ck-gray: #8e8e93;
 	--ck-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 40px rgba(0, 0, 0, 0.08);
 	--ck-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--lk-light-surface: var(--sp-bg);
 	/* 데모 조각의 색 */
 	--cr-bg: var(--sp-alt);
 	--cr-ink: var(--sp-text);
@@ -38,10 +42,276 @@
 	--ck-blue: #0a84ff;
 	--ck-green: #30d158;
 	--ck-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 40px rgba(0, 0, 0, 0.5);
+	--lk-light-surface-2: #1c1c1e;
+	--lk-light-ink: #f5f5f7;
+	--lk-light-muted: #98989f;
+	--lk-light-line: rgba(255, 255, 255, 0.1);
 }
 
 .ck {
-	padding: 40px 24px 72px;
+	--ck-accent: var(--lk-accent, var(--ck-red));
+	padding-bottom: 64px;
+}
+
+/* ─── 맨 위 ─── */
+.ck-hero {
+	position: relative;
+	overflow: hidden;
+}
+
+.ck-hero-inner {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+	gap: 48px;
+	align-items: center;
+	max-width: 1160px;
+	min-height: 600px;
+	margin: 0 auto;
+	padding: 56px 48px 72px;
+}
+
+.ck-hero-text {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 18px;
+}
+
+.ck-hero-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	color: var(--sp-text);
+	font-size: 15px;
+	font-weight: 800;
+}
+
+.ck-hero-icon {
+	width: 34px;
+	height: 34px;
+	border-radius: 10px;
+	object-fit: cover;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.ck-hero-title {
+	max-width: 12em;
+	margin: 0;
+	color: var(--sp-text);
+	font-size: clamp(36px, 4.8cqi, 62px);
+	font-weight: 800;
+	line-height: 1.08;
+	letter-spacing: -0.035em;
+	text-wrap: balance;
+}
+
+.ck-hero-lead {
+	max-width: 28em;
+	margin: 0;
+	color: var(--sp-muted);
+	font-size: 17.5px;
+	line-height: 1.6;
+}
+
+.ck-hero-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 18px;
+	margin-top: 4px;
+	font-weight: 700;
+}
+
+.ck .ck-hero-links .sp-pill,
+.ck .lk-cta-links .sp-pill {
+	padding: 12px 22px;
+	border-radius: 12px;
+	background-color: var(--ck-accent);
+	box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--ck-accent) 80%, transparent);
+	color: #ffffff;
+	font-size: 15px;
+}
+
+.ck .ck-hero-links .sp-link {
+	color: var(--sp-text);
+	font-size: 14px;
+}
+
+.ck-hero-facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 10px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ck-hero-facts li {
+	display: flex;
+	flex-direction: column;
+	padding: 10px 14px;
+	border-radius: 14px;
+	background-color: var(--sp-alt);
+	box-shadow: var(--ck-shadow);
+}
+
+.ck-hero-facts strong {
+	color: var(--sp-text);
+	font-size: 20px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+}
+
+.ck-hero-facts span {
+	color: var(--sp-muted);
+	font-size: 12px;
+}
+
+/* 기기 속 화면과 그 위로 떠 있는 할 일 카드 */
+.ck-hero-art {
+	position: relative;
+	padding: 0 0 56px;
+}
+
+.ck-hero-device {
+	width: 100%;
+}
+
+.ck-hero-tasks {
+	position: absolute;
+	bottom: 0;
+	left: -36px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: min(330px, 70%);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ck-hero-tasks li {
+	--tone: var(--ck-orange);
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 16px;
+	border-radius: 16px;
+	background-color: var(--sp-alt);
+	box-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.06),
+		0 18px 40px -14px rgba(0, 0, 0, 0.3);
+	transform: translateX(calc(var(--i) * 26px));
+	animation: ck-task-in 0.6s var(--ck-bounce) both;
+	animation-delay: calc(0.2s + var(--i) * 0.15s);
+}
+
+.ck-hero-tasks li.tone-blue {
+	--tone: var(--ck-blue);
+}
+
+.ck-hero-tasks li.tone-green {
+	--tone: var(--ck-green);
+}
+
+@keyframes ck-task-in {
+	from {
+		opacity: 0;
+		transform: translateX(calc(var(--i) * 26px)) translateY(16px);
+	}
+}
+
+.ck-hero-box {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	border: 2px solid var(--tone);
+	border-radius: 50%;
+}
+
+.ck-hero-box svg {
+	width: 14px;
+	fill: none;
+	stroke: #ffffff;
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	opacity: 0;
+}
+
+.ck-hero-tasks li[data-done] .ck-hero-box {
+	background-color: var(--tone);
+}
+
+.ck-hero-tasks li[data-done] .ck-hero-box svg {
+	opacity: 1;
+}
+
+.ck-hero-tasks li[data-done] b {
+	color: var(--sp-muted);
+	text-decoration: line-through;
+}
+
+.ck-hero-task {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.ck-hero-task b {
+	overflow: hidden;
+	color: var(--sp-text);
+	font-size: 14px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ck-hero-task small {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	color: var(--tone);
+	font-size: 11.5px;
+	font-weight: 700;
+}
+
+/* ─── 직접 해 보기 ─── */
+.ck-demo {
+	padding: 72px 24px 0;
+}
+
+.ck-demo .lk-section-head {
+	margin-bottom: 36px;
+}
+
+.ck-cta {
+	max-width: 1120px;
+	margin: 96px auto 0;
+	overflow: hidden;
+	border-radius: 28px;
+}
+
+@container (max-width: 1168px) {
+	.ck-cta {
+		margin-inline: 24px;
+	}
+}
+
+@container (max-width: 860px) {
+	.ck-hero-inner {
+		grid-template-columns: minmax(0, 1fr);
+		min-height: 0;
+		padding: 44px 24px 56px;
+	}
+
+	.ck-hero-tasks {
+		left: 0;
+	}
 }
 
 .ck-app {
@@ -205,33 +475,6 @@
 .ck-app[data-complete] .ck-count {
 	color: var(--ck-green);
 	font-size: 20px;
-}
-
-/* 링크 줄: Links 조각에 sp-links 대신 이 이름만 주므로 flex·간격을 여기서 직접 */
-.ck-links {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 10px 16px;
-	margin-top: 16px;
-	font-size: 14px;
-	font-weight: 600;
-}
-
-.ck .ck-links .sp-pill {
-	padding: 8px 18px;
-	background-color: var(--sp-text);
-	color: var(--sp-alt);
-	font-size: 14px;
-}
-
-.ck .ck-links .sp-link {
-	color: var(--sp-muted);
-	font-size: 13px;
-}
-
-.ck .ck-links .sp-link:hover {
-	color: var(--sp-text);
 }
 
 /* ─── 목록 ─── */
@@ -556,8 +799,24 @@ li[data-checked] .ck-detail p {
 
 /* ─── 좁은 창 ─── */
 @container (max-width: 600px) {
-	.ck {
-		padding: 16px 12px 48px;
+	.ck-demo {
+		padding: 48px 12px 0;
+	}
+
+	.ck-hero-inner {
+		padding: 36px 16px 48px;
+	}
+
+	.ck-hero-tasks {
+		display: none;
+	}
+
+	.ck-hero-art {
+		padding-bottom: 0;
+	}
+
+	.ck-cta {
+		margin: 64px 12px 0;
 	}
 
 	.ck-app {
@@ -600,7 +859,8 @@ li[data-checked] .ck-detail p {
 		transition: none;
 	}
 
-	li[data-checked] .ck-check {
+	li[data-checked] .ck-check,
+	.ck-hero-tasks li {
 		animation: none;
 	}
 

@@ -1,4 +1,7 @@
-/* 메일함 모양(inbox): 밝은 회색·흰 패널에 파랑 강조. 다크는 그래파이트. 페이지 전체가 메일 앱이라 탭 높이에 꽉 채우고 단마다 따로 스크롤한다 */
+/*
+ * 메일함 모양(inbox): 뉴스레터 서비스 랜딩. 맨 위 밝은 띠(큰 한 줄, 구독 칸, 떠 있는 메일 알림) 아래에
+ * 메일 앱 3단을 제품 데모처럼 창으로 띄운다. 앱은 밝은 회색·흰 패널에 파랑 강조, 다크는 그래파이트. 앱 안의 단은 따로 스크롤한다
+ */
 .sp[data-look='inbox'] {
 	--sp-bg: #eef0f3;
 	--sp-alt: #ffffff;
@@ -13,8 +16,9 @@
 	--cr-ink: var(--sp-text);
 	--cr-muted: var(--sp-muted);
 	--cr-line: var(--sp-line);
-	height: 100%;
-	overflow: hidden;
+	--ib-page: #f7f8fb;
+	--lk-light-surface: var(--ib-page);
+	background: var(--ib-page);
 }
 
 :root[data-theme='dark'] .sp[data-look='inbox'] {
@@ -27,14 +31,324 @@
 	--ib-side: #15161a;
 	--ib-hover: #2d3037;
 	--ib-selected: #2a3d63;
+	--ib-page: #101114;
+	--lk-light-surface-2: #1a1b20;
+	--lk-light-ink: #ecedef;
+	--lk-light-muted: #9a9ea8;
+	--lk-light-line: rgba(255, 255, 255, 0.1);
+}
+
+.ib-page {
+	--ib-accent: var(--lk-accent, var(--sp-accent));
+	--ib-accent-2: var(--lk-accent-2, #7a4dff);
+	--ib-accent-ink: color-mix(in srgb, var(--ib-accent) 70%, var(--sp-text));
+	container-type: inline-size;
+	padding-bottom: 56px;
+}
+
+/* ─── 맨 위 띠 ─── */
+.ib-hero {
+	position: relative;
+	overflow: hidden;
+}
+
+.ib-hero-inner {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+	gap: 40px;
+	align-items: center;
+	max-width: 1160px;
+	min-height: 560px;
+	margin: 0 auto;
+	padding: 56px 48px 150px;
+}
+
+.ib-hero-text {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 18px;
+}
+
+.ib-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	margin: 0;
+	padding: 5px 12px 5px 5px;
+	border: 1px solid var(--sp-line);
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--sp-alt) 85%, transparent);
+	color: var(--sp-text);
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.ib-eyebrow-icon {
+	width: 24px;
+	height: 24px;
+	border-radius: 7px;
+	object-fit: cover;
+}
+
+.ib-eyebrow em {
+	padding: 1px 8px;
+	border-radius: 999px;
+	background-color: color-mix(in srgb, var(--ib-accent) 13%, transparent);
+	color: var(--ib-accent-ink);
+	font-size: 11.5px;
+	font-style: normal;
+	font-weight: 650;
+}
+
+.ib-hero-title {
+	max-width: 13em;
+	margin: 0;
+	color: var(--sp-text);
+	font-size: clamp(34px, 4.6cqi, 60px);
+	font-weight: 800;
+	line-height: 1.08;
+	letter-spacing: -0.035em;
+	text-wrap: balance;
+}
+
+.ib-hero-lead {
+	max-width: 30em;
+	margin: 0;
+	color: var(--sp-muted);
+	font-size: 17px;
+	line-height: 1.6;
+}
+
+/* 이메일 칸 + 구독 단추를 한 덩어리로 (칸은 보여 주기만 한다) */
+.ib-hero-form {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: min(100%, 440px);
+	margin-top: 6px;
+	padding: 6px;
+	border: 1px solid var(--sp-line);
+	border-radius: 14px;
+	background-color: var(--sp-alt);
+	box-shadow: 0 10px 30px -14px rgba(20, 30, 60, 0.35);
+}
+
+.ib-hero-field {
+	display: inline-flex;
+	flex: 1;
+	align-items: center;
+	gap: 10px;
+	padding: 0 10px;
+	color: var(--sp-muted);
+	font-size: 14px;
+}
+
+.ib-hero-form .ib-subscribe {
+	height: 42px;
+	padding: 0 20px;
+	border-radius: 10px;
+	background: linear-gradient(135deg, var(--ib-accent), var(--ib-accent-2));
+	box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--ib-accent) 70%, transparent);
+	font-size: 15px;
+}
+
+.ib-hero-links {
+	font-size: 14px;
+}
+
+.ib-hero-links .sp-pill {
+	background-color: var(--sp-text);
+	color: var(--ib-page);
+}
+
+.ib-hero-links .sp-link {
+	color: var(--ib-accent-ink);
+}
+
+.ib-hero-facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 20px;
+	margin: 6px 0 0;
+	padding: 0;
+	color: var(--sp-muted);
+	font-size: 13px;
+	list-style: none;
+}
+
+.ib-hero-facts li::before {
+	content: '';
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin-right: 8px;
+	border-radius: 50%;
+	background-color: var(--ib-accent);
+	vertical-align: middle;
+}
+
+.ib-hero-facts strong {
+	color: var(--sp-text);
+	font-weight: 800;
+}
+
+.ib-hero-meta {
+	margin: 0;
+	color: var(--sp-muted);
+	font-size: 12.5px;
+}
+
+/* 휴대폰과 그 위로 떠 있는 메일 알림 */
+.ib-hero-art {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	padding: 8px 0;
+}
+
+.ib-hero-phone {
+	width: min(250px, 62%);
+	margin: 0;
+}
+
+.ib-notices {
+	position: absolute;
+	top: 18%;
+	left: 50%;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	width: min(330px, 92%);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	transform: translateX(-62%);
+}
+
+.ib-notices li {
+	display: flex;
+	gap: 11px;
+	padding: 12px 14px;
+	border: 1px solid color-mix(in srgb, var(--sp-line) 70%, transparent);
+	border-radius: 16px;
+	background-color: color-mix(in srgb, var(--sp-alt) 88%, transparent);
+	box-shadow: 0 18px 40px -16px rgba(20, 30, 60, 0.35);
+	backdrop-filter: blur(14px);
+	transform: translateX(calc(var(--i) * 44px));
+	animation: ib-notice 0.7s var(--ease-out) both;
+	animation-delay: calc(0.25s + var(--i) * 0.18s);
+}
+
+@keyframes ib-notice {
+	from {
+		opacity: 0;
+		transform: translateX(calc(var(--i) * 44px)) translateY(14px) scale(0.97);
+	}
+}
+
+.ib-notice-icon {
+	flex: none;
+	width: 34px;
+	height: 34px;
+	border-radius: 9px;
+	object-fit: cover;
+}
+
+.ib-notices li > div {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	gap: 1px;
+}
+
+.ib-notice-head {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+	color: var(--sp-muted);
+	font-size: 11px;
+}
+
+.ib-notice-head b {
+	overflow: hidden;
+	color: var(--sp-text);
+	font-weight: 700;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ib-notices strong {
+	font-size: 13px;
+}
+
+.ib-notice-preview {
+	overflow: hidden;
+	color: var(--sp-muted);
+	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* ─── 앱 창: 맨 위 띠에 반쯤 걸쳐 떠 있는 제품 데모 ─── */
+.ib-stage {
+	position: relative;
+	z-index: 2;
+	max-width: 1180px;
+	margin: -112px auto 0;
+	padding: 0 32px;
+}
+
+.ib-stage::before {
+	content: '';
+	position: absolute;
+	inset: 6% 12% -4%;
+	z-index: -1;
+	border-radius: 40px;
+	background: linear-gradient(120deg, var(--ib-accent), var(--ib-accent-2));
+	filter: blur(60px);
+	opacity: 0.28;
+}
+
+.ib-cta {
+	max-width: 1180px;
+	margin: 96px auto 0;
+	overflow: hidden;
+	border-radius: 28px;
+}
+
+@container (max-width: 1180px) {
+	.ib-cta {
+		margin-inline: 32px;
+	}
 }
 
 .ib {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
+	height: 700px;
+	overflow: hidden;
+	border: 1px solid var(--sp-line);
+	border-radius: 16px;
+	background-color: var(--sp-bg);
+	box-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.06),
+		0 40px 80px -30px rgba(20, 30, 60, 0.45);
 	font-size: 14px;
 	line-height: 1.5;
+}
+
+.ib-compose {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 9px;
+	color: var(--sp-muted);
+	font-size: 15px;
 }
 
 /* ─── 도구 막대 ─── */
@@ -743,7 +1057,45 @@
 	}
 }
 
+@container (max-width: 860px) {
+	.ib-hero-inner {
+		grid-template-columns: minmax(0, 1fr);
+		padding: 44px 24px 140px;
+	}
+
+	.ib-hero-art {
+		min-height: 360px;
+	}
+}
+
+@container (max-width: 600px) {
+	.ib-hero-inner {
+		min-height: 0;
+		padding: 36px 16px 120px;
+	}
+
+	.ib-hero-art {
+		display: none;
+	}
+
+	.ib-stage {
+		padding: 0 12px;
+	}
+
+	.ib {
+		height: 640px;
+	}
+
+	.ib-cta {
+		margin: 64px 12px 0;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
+	.ib-notices li {
+		animation: none;
+	}
+
 	.ib-read,
 	.ib-badge {
 		animation: none;

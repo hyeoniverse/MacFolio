@@ -502,7 +502,9 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 
 	const inMenu = mode.kind === 'menu';
 	const progress = mode.kind === 'topic' && current ? `${mode.at + 1} / ${current.lines.length}` : '';
-	const showLinks = mode.kind === 'ending' || (mode.kind === 'topic' && mode.id === LINKS_TOPIC);
+	// 링크 단추: 첫 화면(인사)에서 바로 열 수 있게, 그리고 엔딩과 '링크 줘' 주제에서
+	const showLinks =
+		mode.kind === 'greet' || mode.kind === 'ending' || (mode.kind === 'topic' && mode.id === LINKS_TOPIC);
 	const meta = [project.period, project.language].filter(Boolean).join(' · ');
 	// 선택지가 다섯 개 이상이면 두 열 (위에서 아래로 채운다, ↑·↓가 눈으로 보는 순서와 같게)
 	const rowsOf = (list: Topic[]) => (list.length > 4 ? Math.ceil(list.length / 2) : list.length);
@@ -570,6 +572,36 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 							))}
 						</ol>
 					)}
+				</div>
+			);
+		}
+		if (mode.kind === 'greet') {
+			// 첫 화면은 게임의 타이틀 화면처럼: 큰 간판(아이콘과 이름)과 맥락 팻말, 시작 안내. 옆에는 대표 화면 액자
+			return (
+				<div className="dl-scene dl-title-screen" data-cover={cover ? '' : undefined} aria-hidden="true">
+					{cover && (
+						<figure className="dl-shot dl-title-shot">
+							<div className="dl-shot-frame dl-frame">
+								{isVideo(cover) ? (
+									<video src={cover} muted playsInline preload="metadata" />
+								) : (
+									<img src={cover} alt="" />
+								)}
+							</div>
+						</figure>
+					)}
+					<div className="dl-title-card">
+						<div className="dl-sign dl-frame dl-logo">
+							<Favicon project={project} className="dl-sign-icon" />
+							<span>{project.name}</span>
+						</div>
+						{project.context && (
+							<p className="dl-plank dl-title-plank">
+								<span>{project.context}</span>
+							</p>
+						)}
+						<p className="dl-press">▶ 다음을 누르면 시작합니다.</p>
+					</div>
 				</div>
 			);
 		}
