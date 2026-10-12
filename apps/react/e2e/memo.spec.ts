@@ -1,5 +1,6 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
+import { fakeApi } from './fakeApi';
 
 async function openMemo(page: Page) {
 	await enterDesktop(page);
@@ -269,4 +270,37 @@ test.describe('메모 (블로그)', () => {
 		await button.click();
 		expect((await download).suggestedFilename()).toMatch(/\.(jpg|png|webp)$/);
 	});
+});
+
+test('각주: 번호를 누르면 글 아래 설명으로, 되돌아가기를 누르면 본문 자리로 (새 탭이 아니다)', async ({ page }) => {
+	const api = await fakeApi(page, { signedIn: false });
+	const content = {
+		title: '각주 있는 글',
+		date: '2026-10-09',
+		category: '기술 노트/Git',
+		summary: '',
+		body: [
+			'첫 문단에 각주가 있다.[^a]',
+			...Array.from({ length: 30 }, (_, i) => `채우는 문단 ${i + 1}`),
+			'[^a]: 각주 설명',
+		].join('\n\n'),
+	};
+	api.posts = [{ slug: 'footnote-post', ...content, deleted: false, published: content }];
+	await enterDesktop(page);
+	await dockItem(page, 'memo').click();
+	const memo = appWindow(page, 'memo');
+	await memo.locator('.memo-item', { hasText: '각주 있는 글' }).click();
+	const body = memo.locator('.memo-markdown');
+
+	const ref = body.locator('a[data-footnote-ref]');
+	await expect(ref).not.toHaveAttribute('target', /.+/);
+	await expect(body.getByRole('heading', { name: '각주' })).toBeAttached();
+	const note = body.locator('.footnotes li', { hasText: '각주 설명' });
+	await ref.click();
+	await expect(note).toBeInViewport();
+	await expect(page).not.toHaveURL(/#/);
+
+	await note.getByRole('link', { name: /각주 자리로 돌아가기/ }).click();
+	await expect(ref).toBeInViewport();
+	await expect(ref).toBeFocused();
 });
