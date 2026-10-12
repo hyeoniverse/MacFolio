@@ -2780,6 +2780,71 @@
 	color: var(--memo-accent);
 }
 
+/* 각주 (remark-gfm의 [^1]): 본문의 작은 번호, 글 아래의 목록 */
+.memo-markdown sup {
+	font-size: 0.72em;
+	line-height: 0;
+	vertical-align: super;
+}
+
+.memo-markdown a[data-footnote-ref] {
+	padding: 0 0.15em;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.memo-markdown a[data-footnote-ref]::before {
+	content: '[';
+}
+
+.memo-markdown a[data-footnote-ref]::after {
+	content: ']';
+}
+
+.memo-markdown .footnotes {
+	margin-top: 2.4em;
+	padding-top: 1em;
+	border-top: 1px solid var(--memo-border);
+	font-size: 0.88em;
+	color: var(--memo-muted);
+}
+
+.memo-markdown .footnotes .memo-footnotes-label {
+	margin: 0 0 0.6em;
+	font-size: 1em;
+	font-weight: 600;
+}
+
+.memo-markdown .footnotes li {
+	scroll-margin: 2em;
+}
+
+.memo-markdown a[data-footnote-backref] {
+	margin-left: 0.3em;
+	text-decoration: none;
+}
+
+/* 각주로 가거나 돌아왔을 때 도착한 자리를 잠깐 표시한다 */
+.memo-markdown .memo-anchor-hit {
+	animation: memo-anchor-hit 1.6s ease-out;
+	border-radius: 0.3em;
+}
+
+@keyframes memo-anchor-hit {
+	from {
+		background-color: rgba(250, 204, 21, 0.45);
+	}
+	to {
+		background-color: transparent;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-markdown .memo-anchor-hit {
+		animation: none;
+	}
+}
+
 .memo-markdown code {
 	padding: 0.1em 0.35em;
 	border-radius: 0.3em;
