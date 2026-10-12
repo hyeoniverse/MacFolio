@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#6b7280"/></marker></defs>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">MacFolio에서 머지 커밋 SHA에 매달려 있는 것들</text>
+  <!-- center: merge commit -->
+  <circle cx="320" cy="150" r="30" fill="#1f2937"/>
+  <text x="320" y="146" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">머지 커밋</text>
+  <text x="320" y="161" text-anchor="middle" font-size="11" fill="#fff">91ad7da</text>
+  <!-- 1 API image tag -->
+  <rect x="20" y="60" width="200" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="120" y="82" text-anchor="middle" font-size="12" font-weight="600" fill="#4f46e5">API 이미지 태그</text>
+  <text x="120" y="100" text-anchor="middle" font-size="11" fill="#374151">ghcr …/macfolio-api:sha-91ad7da</text>
+  <path d="M220 95 L292 135" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <!-- 2 first-parent log -->
+  <rect x="20" y="184" width="200" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="120" y="206" text-anchor="middle" font-size="12" font-weight="600" fill="#4f46e5">PR 단위 기록</text>
+  <text x="120" y="224" text-anchor="middle" font-size="11" fill="#374151">git log --first-parent main</text>
+  <path d="M220 205 L292 165" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <!-- 3 branch commits -->
+  <rect x="420" y="60" width="200" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="520" y="82" text-anchor="middle" font-size="12" font-weight="600" fill="#4f46e5">브랜치 커밋 SHA 유지</text>
+  <text x="520" y="100" text-anchor="middle" font-size="11" fill="#374151">PR 본문·블로그 글의 커밋 링크</text>
+  <path d="M420 95 L348 135" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <!-- 4 conflict merges -->
+  <rect x="420" y="184" width="200" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="520" y="206" text-anchor="middle" font-size="12" font-weight="600" fill="#4f46e5">충돌 해결 방식</text>
+  <text x="520" y="224" text-anchor="middle" font-size="11" fill="#374151">브랜치에 main을 merge commit으로</text>
+  <path d="M420 205 L348 165" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="320" y="272" text-anchor="middle" font-size="11" fill="#6b7280">rebase·squash는 왼쪽 둘의 태그·기록 단위를 바꾸고, 오른쪽 둘의 링크·충돌 해결 커밋을 깨뜨린다</text>
+</svg>
