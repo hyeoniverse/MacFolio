@@ -423,13 +423,12 @@
 	text-align: left;
 }
 
-/* 칸 오류: 빈 칸은 안내 글자(placeholder)를 오류 문구로 바꿔 흐린 오류 색으로 */
-.mail-compose-row input[aria-invalid='true']::placeholder,
-.mail-compose-body[aria-invalid='true']::placeholder {
-	color: color-mix(in srgb, var(--mail-error) 70%, var(--mail-muted));
+/* 칸 오류: 이름표만 오류 색으로 표시하고, 문구는 평소 안내 글자와 같은 흐린 글자·같은 크기로
+   (빈 칸은 안내 글자(placeholder) 자리에, 내용이 있는 칸은 입력 칸 아래 줄에) */
+.mail-compose-row:has([aria-invalid='true']) > span:first-child {
+	color: var(--mail-error);
 }
 
-/* 형식·길이 오류: 입력 칸 아래 줄에 작게 (칸 안, 입력 칸 시작선에 맞춤) */
 .mail-compose-row {
 	flex-wrap: wrap;
 }
@@ -437,8 +436,7 @@
 .mail-hint {
 	flex-basis: 100%;
 	padding-left: 78px;
-	color: color-mix(in srgb, var(--mail-error) 70%, var(--mail-muted));
-	font-size: 12px;
+	color: var(--mail-muted);
 }
 
 .mail-body-error {
