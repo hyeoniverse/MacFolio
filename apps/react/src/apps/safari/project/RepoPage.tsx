@@ -24,6 +24,17 @@ import {
 	type Output,
 	type PageView,
 } from '@/apps/safari/project/terminalShell';
+import {
+	CtaBand,
+	DeviceFrame,
+	FeatureVisual,
+	GlowBackdrop,
+	LogoStrip,
+	MockScreen,
+	StatBand,
+	iconOf,
+	useLandingAccent,
+} from '@/apps/safari/project/landing';
 import '@/apps/safari/project/RepoPage.css';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
@@ -96,6 +107,57 @@ const commitsOf = (project: Project): Commit[] => {
 		message: step.label,
 		type: commitType(step.label, types),
 	}));
+};
+
+/* ─── 히어로 띠 ─── */
+
+/** 저장소 머리 위의 랜딩 띠 (개발자 도구 첫 화면처럼): 배지, 큰 한 줄, 설명, 링크와 clone 명령, 편집기 화면, 숫자 띠 */
+const Hero: React.FC<{ project: Project }> = ({ project }) => {
+	const [copied, setCopied] = useState(false);
+	const command = `git clone ${project.url.replace(/\/+$/, '')}.git`;
+	const copy = async () => {
+		try {
+			await navigator.clipboard.writeText(command);
+			setCopied(true);
+			window.setTimeout(() => setCopied(false), 1400);
+		} catch {
+			// 클립보드를 못 쓰는 곳에서는 조용히 넘어간다
+		}
+	};
+	const badge = [project.language, project.context].filter(Boolean).join(' · ');
+	return (
+		<section className="rp-hero" data-lk-tone="dark" aria-label="소개">
+			<GlowBackdrop tone="dark" pattern="grid" focus="top" />
+			<div className="rp-hero-inner">
+				{badge && (
+					<p className="rp-hero-badge">
+						<span className="rp-hero-badge-tag">
+							<i className="fa-brands fa-github" aria-hidden="true" /> Public
+						</span>
+						{badge}
+					</p>
+				)}
+				<p className="rp-hero-title">{project.tagline || project.name}</p>
+				{project.description && <p className="rp-hero-lead">{project.description}</p>}
+				<div className="rp-hero-actions">
+					<Links project={project} className="sp-links rp-hero-links" />
+					<button type="button" className="rp-hero-clone" onClick={copy} aria-label="clone 명령 복사">
+						<span className="rp-hero-prompt" aria-hidden="true">
+							$
+						</span>
+						<code>{command}</code>
+						<i className={copied ? 'fa-solid fa-check' : 'fa-regular fa-copy'} aria-hidden="true" />
+					</button>
+				</div>
+				<div className="rp-hero-visual">
+					<DeviceFrame kind="browser" url={project.url} glow>
+						<MockScreen project={project} kind="editor" tone="dark" decorative />
+					</DeviceFrame>
+				</div>
+			</div>
+			<StatBand facts={project.facts} tone="dark" label="숫자" className="rp-hero-stats" />
+		</section>
+	);
 };
 
 /* ─── 머리 ─── */
@@ -594,12 +656,29 @@ const ReadmeTab: React.FC<{ project: Project; commits: Commit[]; onTab: (id: Tab
 			<div className="rp-md">
 				<h1>{project.tagline || project.name}</h1>
 				{project.description && <p>{project.description}</p>}
+				<LogoStrip items={project.stack} caption="Built with" className="rp-md-logos" />
 				{project.highlights.length > 0 && (
 					<Region label="주요 기능">
 						<h2>주요 기능</h2>
-						<ul>
-							{project.highlights.map((point) => (
-								<ReadmeItem key={point.title} point={point} />
+						<ul className="rp-features" data-odd={project.highlights.length % 2 ? '' : undefined}>
+							{project.highlights.map((point, i) => (
+								<li key={point.title} className="rp-feature">
+									<div className="rp-feature-visual">
+										{point.image ? (
+											<img src={point.image} alt={`${point.title} 화면`} loading="lazy" />
+										) : (
+											<FeatureVisual point={point} index={i} project={project} />
+										)}
+									</div>
+									<div className="rp-feature-text">
+										<h3>
+											<i className={`rp-md-icon fa-solid ${iconOf(point, i)}`} aria-hidden="true" />
+											{point.title}
+										</h3>
+										<p>{point.body}</p>
+										{point.detail && <p className="rp-md-detail">{point.detail}</p>}
+									</div>
+								</li>
 							))}
 						</ul>
 					</Region>
@@ -607,22 +686,24 @@ const ReadmeTab: React.FC<{ project: Project; commits: Commit[]; onTab: (id: Tab
 				{project.build.length > 0 && (
 					<Region label="만든 방식">
 						<h2>만든 방식</h2>
-						{project.build.map((point) => (
-							<React.Fragment key={point.title}>
-								<h3>
-									{point.icon && <i className={`rp-md-icon fa-solid ${point.icon}`} aria-hidden="true" />}
-									{point.title}
-								</h3>
-								<p>{point.body}</p>
-								{point.detail && <p className="rp-md-detail">{point.detail}</p>}
-							</React.Fragment>
-						))}
+						<ul className="rp-build">
+							{project.build.map((point, i) => (
+								<li key={point.title}>
+									<span className="rp-build-icon" aria-hidden="true">
+										<i className={`fa-solid ${iconOf(point, i + 3)}`} />
+									</span>
+									<h3>{point.title}</h3>
+									<p>{point.body}</p>
+									{point.detail && <p className="rp-md-detail">{point.detail}</p>}
+								</li>
+							))}
+						</ul>
 					</Region>
 				)}
 				{project.usage && project.usage.length > 0 && (
 					<Region label="쓰는 법">
 						<h2>쓰는 법</h2>
-						<ol>
+						<ol className="rp-steps">
 							{project.usage.map((point) => (
 								<ReadmeItem key={point.title} point={point} />
 							))}
@@ -1195,9 +1276,11 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 
 	// 움직임 줄이기면 커밋 점·트리 펼침·서랍이 즉시 상태로 (CSS도 막지만 지연 변수를 0으로 두어 확실히)
 	const still = prefersReducedMotion();
+	const accent = useLandingAccent(project.icon);
 
 	return (
-		<div className={`rp${still ? ' still' : ''}`}>
+		<div className={`rp${still ? ' still' : ''}`} style={accent}>
+			<Hero project={project} />
 			<Head project={project} />
 			<Tabs tabs={tabs} active={active} onChange={setActive} />
 			<div
@@ -1213,6 +1296,12 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 				{active === 'conventions' && <ConventionsTab project={project} />}
 				{active === 'about' && <AboutTab project={project} />}
 			</div>
+			<CtaBand
+				project={project}
+				title={`${repoName(project)} 저장소를 직접 열어 보세요.`}
+				lead={project.tagline}
+				className="rp-cta"
+			/>
 			<Drawer project={project} repo={repo} open={drawer} onToggle={() => setDrawer((value) => !value)} />
 		</div>
 	);

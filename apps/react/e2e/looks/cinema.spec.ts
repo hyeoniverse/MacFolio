@@ -44,10 +44,11 @@ test('cinema: 제목이 글자마다 나타나고, 기능마다 한 장면, 숫�
 	await expect(build.getByRole('img', { name: /Cloudflare Tunnel/ })).toBeVisible();
 	await expect(build.getByRole('heading', { level: 3 })).toHaveCount(4);
 
-	// 어두운 평면 표: 맡은 일, 기술 사양, 링크
+	// 어두운 평면 표: 맡은 일, 기술 사양, 링크 (히어로와 마지막 행동 유도 띠에 같은 링크가 있다)
 	await expect(article.getByRole('region', { name: '맡은 일' })).toContainText('NestJS API 서버와 DB 설계');
 	await expect(article.getByRole('region', { name: '기술 사양' })).toContainText('NestJS');
-	await expect(article.getByRole('link', { name: 'GitHub에서 보기' })).toHaveAttribute(
+	await expect(article.getByRole('link', { name: 'GitHub에서 보기' })).toHaveCount(2);
+	await expect(article.getByRole('link', { name: 'GitHub에서 보기' }).last()).toHaveAttribute(
 		'href',
 		'https://github.com/hyeoniverse/MacFolio'
 	);

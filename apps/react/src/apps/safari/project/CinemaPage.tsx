@@ -7,6 +7,16 @@ import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
 import { cssVars } from '@/shared/lib/cssVars';
 import Devices from '@/apps/safari/project/product/Devices';
 import Pipeline from '@/apps/safari/project/product/Pipeline';
+import {
+	BentoGrid,
+	CtaBand,
+	DeviceFrame,
+	FeatureVisual,
+	LogoStrip,
+	MockScreen,
+	SectionHeader,
+	shortName,
+} from '@/apps/safari/project/landing';
 import '@/apps/safari/project/CinemaPage.css';
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
@@ -82,9 +92,12 @@ const Letters: React.FC<{ text: string }> = ({ text }) => {
 	);
 };
 
-/** 첫 장면: 검은 화면에 제목이 글자마다 번지듯 나타나고, 대표 화면이 아래서 솟아 화면을 채운다 */
+/**
+ * 첫 장면 (Apple 제품 페이지의 히어로): 검은 화면 위쪽에 제목이 글자마다 번지듯 나타나고, 아래에서 노트북이 고개를 내밀고 있다.
+ * 스크롤하면 제목이 위로 물러나고 노트북이 솟아 화면 가운데를 채운다. 대표 화면이 없으면 프로젝트 데이터로 그린 화면(MockScreen)
+ */
 const Opening: React.FC<{ project: Project }> = ({ project }) => (
-	<Scene len={2.8} className="cn-opening">
+	<Scene len={2.6} className="cn-opening">
 		<header className="cn-title">
 			<p className="cn-brand">
 				{project.icon && <img src={project.icon} alt="" />}
@@ -94,21 +107,31 @@ const Opening: React.FC<{ project: Project }> = ({ project }) => (
 				<Letters text={project.tagline || project.name} />
 			</h1>
 			{project.description && <p className="cn-lead">{project.description}</p>}
+			<Links project={project} className="sp-links cn-hero-links" />
 		</header>
-		{project.image && (
-			<figure className="cn-poster">
-				<Media src={project.image} alt={`${project.name} 화면`} />
-			</figure>
-		)}
-		<p className="cn-hint" aria-hidden="true">
-			<span>스크롤</span>
-			<i />
-		</p>
+		<div className="cn-poster">
+			<DeviceFrame kind="laptop" src={project.image} alt={`${project.name} 화면`} glow>
+				{!project.image && <MockScreen project={project} tone="dark" decorative />}
+			</DeviceFrame>
+		</div>
 	</Scene>
 );
 
-/** 기능 장면 하나: 그림이 무대에 꽉 차 있고, 앞 장면 위로 아래서부터 밀고 들어온다. 캡션은 그림 위에 */
-const Feature: React.FC<{ point: ProjectPoint; index: number; total: number; image?: string }> = ({
+/** 기능 장면의 번호 (01 / 04) */
+const Counter: React.FC<{ index: number; total: number }> = ({ index, total }) => (
+	<p className="cn-counter" aria-hidden="true">
+		<span>{String(index + 1).padStart(2, '0')}</span>
+		<small>/ {String(total).padStart(2, '0')}</small>
+	</p>
+);
+
+/**
+ * 기능 장면 하나: 앞 장면 위로 아래서부터 밀고 들어온다.
+ * 그림이 있으면 무대에 꽉 차고 캡션은 그림 위에. 없으면 글과 제품 화면이 좌우로 짝을 짓는다
+ * (짝수 차례는 그 기능을 고른 MockScreen을 창 틀에, 홀수 차례는 그 기능의 FeatureVisual을 유리 카드에. 좌우는 번갈아)
+ */
+const Feature: React.FC<{ project: Project; point: ProjectPoint; index: number; total: number; image?: string }> = ({
+	project,
 	point,
 	index,
 	total,
@@ -127,25 +150,42 @@ const Feature: React.FC<{ point: ProjectPoint; index: number; total: number; ima
 		stage.current?.style.setProperty('--mx', '0');
 		stage.current?.style.setProperty('--my', '0');
 	};
-	return (
-		<Scene len={2.2} className={`cn-feature ${image ? '' : 'no-image'}`}>
-			<div className="cn-frame" ref={stage} onMouseMove={tilt} onMouseLeave={rest}>
-				{image ? (
-					<Media src={image} alt="" className="cn-frame-img" />
-				) : (
-					<span className="cn-frame-blank" aria-hidden="true">
-						{point.icon ? <i className={`fa-solid ${point.icon}`} /> : String(index + 1).padStart(2, '0')}
-					</span>
-				)}
-			</div>
-			<p className="cn-counter" aria-hidden="true">
-				<span>{String(index + 1).padStart(2, '0')}</span>
-				<small>/ {String(total).padStart(2, '0')}</small>
+	const caption = (
+		<>
+			<p className="cn-caption-eyebrow">
+				{point.icon && <i className={`fa-solid ${point.icon}`} aria-hidden="true" />}
+				{shortName(project)}
 			</p>
-			<div className="cn-caption">
-				<h3>{point.title}</h3>
-				<p>{point.body}</p>
-				{point.detail && <p className="cn-caption-detail">{point.detail}</p>}
+			<h3>{point.title}</h3>
+			<p>{point.body}</p>
+			{point.detail && <p className="cn-caption-detail">{point.detail}</p>}
+		</>
+	);
+	if (image)
+		return (
+			<Scene len={2.2} className="cn-feature">
+				<div className="cn-frame" ref={stage} onMouseMove={tilt} onMouseLeave={rest}>
+					<Media src={image} alt="" className="cn-frame-img" />
+				</div>
+				<Counter index={index} total={total} />
+				<div className="cn-caption">{caption}</div>
+			</Scene>
+		);
+	return (
+		<Scene len={2.2} className={`cn-feature cn-split${index % 2 ? ' cn-split-flip' : ''}`}>
+			<div className="cn-split-light" aria-hidden="true" />
+			<Counter index={index} total={total} />
+			<div className="cn-split-text cn-caption">{caption}</div>
+			<div className="cn-split-visual" ref={stage} onMouseMove={tilt} onMouseLeave={rest}>
+				{index % 2 === 0 ? (
+					<DeviceFrame kind="browser" url={project.demo} glow tilt={index % 4 === 0 ? 'left' : 'right'}>
+						<MockScreen project={project} focus={index} tone="dark" decorative />
+					</DeviceFrame>
+				) : (
+					<div className="cn-glass">
+						<FeatureVisual point={point} index={index} project={project} tone="dark" />
+					</div>
+				)}
 			</div>
 		</Scene>
 	);
@@ -168,40 +208,62 @@ const Numbers: React.FC<{ project: Project }> = ({ project }) => {
 	);
 };
 
+/** 만든 방식 칸 하나 (벤토): 큰 칸·넓은 칸은 위에 그 항목의 비주얼, 작은 칸은 큰 번호와 글만 */
+const BuildCard: React.FC<{ project: Project; point: ProjectPoint; index: number; size: 'lg' | 'wide' | 'sm' }> = ({
+	project,
+	point,
+	index,
+	size,
+}) => (
+	<article className="cn-card" data-size={size}>
+		{size === 'lg' && (
+			<div className="cn-card-visual">
+				<FeatureVisual point={point} index={index + 1} project={project} tone="dark" />
+			</div>
+		)}
+		<div className="cn-card-text">
+			<span className="cn-no">{String(index + 1).padStart(2, '0')}</span>
+			<h3>{point.title}</h3>
+			<p>{point.body}</p>
+			{point.detail && <p className="cn-detail">{point.detail}</p>}
+		</div>
+	</article>
+);
+
 /**
- * 끝 장면: 어두운 평면 표 (만든 방식, 쓰는 법, 맡은 일, 진행 과정, 기술 사양), 엔딩 크레디트처럼 흐르는 기술 이름, 링크.
- * 만든 방식은 셋으로 나뉘면 세 줄, 아니면 두 줄로 놓고 남는 칸은 마지막 항목이 채운다
+ * 끝 장면: 만든 방식(벤토), 쓰는 법(거대한 번호), 맡은 일·진행 과정, 기술 사양 표, 흐르는 기술 이름, 마지막 행동 유도 띠
  */
 const Credits: React.FC<{ project: Project }> = ({ project }) => {
-	const build = project.build.length % 3 === 0 ? fitGrid(project.build.length, 3) : fitGrid(project.build.length, 2);
 	const usage = project.usage ?? [];
 	const tech =
 		project.language && !project.stack.includes(project.language)
 			? [project.language, ...project.stack]
 			: project.stack;
+	const meta = [project.context, project.role, project.period].filter(Boolean).join(' · ');
 	return (
 		<footer className="cn-credits">
 			{project.build.length > 0 && (
 				<Region label="만든 방식" className="cn-block">
-					<h2 data-reveal="">만든 방식</h2>
+					<div data-reveal="">
+						<SectionHeader eyebrow="설계와 구현" title="만든 방식" align="start" />
+					</div>
 					{project.id === 'macfolio' && <Pipeline />}
-					<ol className="cn-build" style={cssVars(build)}>
-						{project.build.map((point, i) => (
-							<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
-								<span className="cn-no">{String(i + 1).padStart(2, '0')}</span>
-								<div>
-									<h3>{point.title}</h3>
-									<p>{point.body}</p>
-									{point.detail && <p className="cn-detail">{point.detail}</p>}
-								</div>
-							</li>
-						))}
-					</ol>
+					<div data-reveal="">
+						<BentoGrid
+							items={project.build}
+							label="만든 방식 목록"
+							itemKey={(point) => point.title}
+							framed={false}
+							render={(point, cell, i) => <BuildCard project={project} point={point} index={i} size={cell.size} />}
+						/>
+					</div>
 				</Region>
 			)}
 			{usage.length > 0 && (
 				<Region label="쓰는 법" className="cn-block">
-					<h2 data-reveal="">쓰는 법</h2>
+					<div data-reveal="">
+						<SectionHeader eyebrow="시작하기" title="쓰는 법" align="start" />
+					</div>
 					<ol className="cn-steps" style={cssVars(fitGrid(usage.length, 4))}>
 						{usage.map((point, i) => (
 							<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
@@ -218,6 +280,7 @@ const Credits: React.FC<{ project: Project }> = ({ project }) => {
 				{project.contributions.length > 0 && (
 					<Region label="맡은 일" className="cn-block">
 						<h2 data-reveal="">맡은 일</h2>
+						{project.role && <p className="cn-role">{project.role}</p>}
 						<ul className="cn-list">
 							{project.contributions.map((item, i) => (
 								<li key={item} data-reveal="" style={cssVars({ d: i })}>
@@ -255,27 +318,18 @@ const Credits: React.FC<{ project: Project }> = ({ project }) => {
 				</Region>
 			)}
 			<div className="cn-end" data-reveal="">
-				<p className="cn-end-meta">{[project.context, project.role, project.period].filter(Boolean).join(' · ')}</p>
-				<p className="cn-end-title">{project.name}</p>
-				{tech.length > 0 && (
-					<ul className="cn-cast" aria-label="기술">
-						{tech.map((item) => (
-							<li key={item}>{item}</li>
-						))}
-					</ul>
-				)}
-				<Links project={project} className="sp-links cn-links" />
+				{meta && <p className="cn-end-meta">{meta}</p>}
+				<LogoStrip items={tech} caption="만든 기술" marquee />
 			</div>
+			<CtaBand project={project} className="cn-cta" />
 		</footer>
 	);
 };
 
 const CinemaPage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
-	// 기능 그림이 없는 항목은 대표 화면으로 대신하고, 그것도 없으면 글만
-	const fallback = project.image;
 	return (
-		<div className="cn" ref={root}>
+		<div className="cn" ref={root} data-lk-tone="dark">
 			<Opening project={project} />
 			{project.highlights.length > 0 && (
 				<Region label="주요 기능" className="cn-features">
@@ -283,10 +337,11 @@ const CinemaPage: React.FC<{ project: Project }> = ({ project }) => {
 					{project.highlights.map((point, i) => (
 						<Feature
 							key={point.title}
+							project={project}
 							point={point}
 							index={i}
 							total={project.highlights.length}
-							image={point.image ?? point.shots?.[0]?.src ?? (i === 0 ? fallback : undefined)}
+							image={point.image ?? point.shots?.[0]?.src}
 						/>
 					))}
 				</Region>

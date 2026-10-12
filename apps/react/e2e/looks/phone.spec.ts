@@ -6,7 +6,8 @@ test('phone: 이야기 단계를 지나면 폰 화면이 그 단계의 그림으
 	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'phone' });
 
 	await expect(panel.getByRole('heading', { level: 1 })).toHaveText('QR 한 장에 담은 나.');
-	await expect(panel.getByRole('link', { name: /GitHub에서 보기/ })).toBeVisible();
+	// 히어로의 링크 (마지막 행동 유도 띠에도 같은 링크가 있다)
+	await expect(panel.getByRole('link', { name: /GitHub에서 보기/ }).first()).toBeVisible();
 
 	// 이야기 목록은 주요 기능 하나가 한 단계 (profile.ts의 qru highlights 5개)
 	const story = panel.getByRole('list', { name: '이야기' });
@@ -27,7 +28,7 @@ test('phone: 이야기 단계를 지나면 폰 화면이 그 단계의 그림으
 	await expect(screen).toHaveAttribute('src', /mypage/);
 	await expect(last).toHaveClass(/ph-active/);
 
-	// 숫자 뱃지와 기술 사양, 저장소 주소 카드
+	// 숫자 정보 띠와 기술 사양, 저장소 주소 카드
 	await expect(panel.getByRole('list', { name: '한눈에' }).getByRole('listitem')).toHaveCount(3);
 	const specs = panel.getByRole('region', { name: '기술 사양' });
 	await specs.evaluate((el) => el.scrollIntoView({ block: 'center' }));

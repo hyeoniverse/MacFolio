@@ -11,6 +11,20 @@
 	--cr-ink: #1c1b19;
 	--cr-muted: #6f6a60;
 	--cr-line: rgba(28, 27, 25, 0.16);
+	/* 랜딩 키트 조각이 읽는 색: 테라코타 둘, 바탕·글·선은 페이지 것 (CTA의 light 톤도 페이지 테마를 따른다) */
+	--lk-accent: #b5522f;
+	--lk-accent-2: #d9a07f;
+	--lk-surface: var(--cr-bg);
+	--lk-surface-2: var(--sp-alt);
+	--lk-ink: var(--sp-text);
+	--lk-muted: var(--sp-muted);
+	--lk-line: var(--sp-line);
+	--lk-light-surface: var(--sp-alt);
+	--lk-light-surface-2: var(--sp-bg);
+	--lk-light-ink: var(--sp-text);
+	--lk-light-muted: var(--sp-muted);
+	--lk-light-line: var(--sp-line);
+	--lk-radius: 6px;
 	letter-spacing: 0;
 }
 
@@ -27,6 +41,8 @@
 	--cr-ink: #ece7dc;
 	--cr-muted: #9b958a;
 	--cr-line: rgba(236, 231, 220, 0.18);
+	--lk-accent: #d4785a;
+	--lk-accent-2: #e9b59a;
 }
 
 .at {
@@ -179,27 +195,36 @@
 	transition: none;
 }
 
-/* ─── 커튼: clip-path가 아래에서 열리고 그림은 1.1 → 1로 가라앉는다 ─── */
+/*
+ * ─── 커튼: clip-path가 아래에서 열리고 그림은 1.1 → 1로 가라앉는다 ───
+ * clip-path는 커튼 틀(관찰 대상)이 아니라 안쪽 자식에 둔다: Chrome의 IntersectionObserver는 대상의 clip-path까지 잘라 보기 때문에
+ * 틀을 다 가리면 '보인다'가 오지 않아 영영 열리지 않는다
+ */
 .at .at-curtain {
 	margin: 0;
+}
+
+.at .at-curtain > * {
 	clip-path: inset(100% 0 0 0);
 	transition: clip-path 1.4s var(--at-ease);
 }
 
-.at .at-curtain img,
-.at .at-curtain video {
+.at .at-curtain > img,
+.at .at-curtain > video,
+.at .at-curtain .lk-device-media {
 	display: block;
 	width: 100%;
 	transform: scale(1.1);
 	transition: transform 1.6s var(--at-ease);
 }
 
-.at [data-reveal='curtain'][data-shown] {
+.at [data-reveal='curtain'][data-shown] > * {
 	clip-path: inset(0);
 }
 
-.at [data-reveal='curtain'][data-shown] img,
-.at [data-reveal='curtain'][data-shown] video {
+.at [data-reveal='curtain'][data-shown] > img,
+.at [data-reveal='curtain'][data-shown] > video,
+.at [data-reveal='curtain'][data-shown] .lk-device-media {
 	transform: none;
 }
 
@@ -210,59 +235,102 @@
 	font-style: italic;
 }
 
-/* ─── 맨 위 ─── */
+/* ─── 맨 위: 가운데 정렬. 아이콘 타일, 작은 세리프 이름, 거대한 이탤릭 한 줄, 단추, 그 아래 노트북 ─── */
 .at-hero {
-	padding: clamp(72px, 12cqi, 160px) var(--at-gutter) 0;
+	position: relative;
+	padding: clamp(48px, 5.5cqi, 80px) var(--at-gutter) 0;
+	overflow: hidden;
+	text-align: center;
+}
+
+/* 아침 햇살처럼 위에서 번지는 따뜻한 빛과 아주 옅은 종이 결 */
+.at-hero-light {
+	position: absolute;
+	inset: 0 0 40%;
+	background: radial-gradient(
+		50% 60% at 50% 0%,
+		color-mix(in srgb, var(--sp-accent) 11%, transparent),
+		transparent 75%
+	);
+	pointer-events: none;
+}
+
+.at-hero-text {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .at-hero-text > * + * {
-	margin-top: 22px;
+	margin-top: 18px;
 }
 
 .at .at-hero-icon img {
 	display: block;
-	width: 56px;
-	height: 56px;
-	border-radius: 14px;
+	width: 64px;
+	height: 64px;
+	border-radius: 22%;
 	object-fit: contain;
 }
 
 .at .at-logo img {
 	display: block;
-	max-width: min(520px, 60cqi);
-	max-height: 140px;
+	max-width: min(420px, 60cqi);
+	max-height: 96px;
+	margin: 0 auto;
 	object-fit: contain;
-	object-position: left;
 }
 
 .at .at-name {
-	font-size: clamp(56px, 12cqi, 160px);
-	letter-spacing: -0.03em;
-	line-height: 0.98;
+	font-size: clamp(18px, 1.9cqi, 22px);
+	letter-spacing: 0.01em;
+	line-height: 1.3;
 }
 
 .at .at-tagline {
-	max-width: 22ch;
-	font-size: clamp(32px, 6cqi, 72px);
+	max-width: 20ch;
+	font-size: clamp(38px, 5.2cqi, 74px);
 	font-style: italic;
-	letter-spacing: -0.015em;
-	line-height: 1.12;
+	letter-spacing: -0.02em;
+	line-height: 1.04;
+	text-wrap: balance;
 }
 
 .at .at-desc {
-	max-width: 48ch;
+	max-width: 46ch;
 	color: var(--sp-muted);
 	font-size: clamp(16px, 1.8cqi, 19px);
 }
 
 .at .at-hero-links {
-	padding-top: 12px;
+	padding-top: 6px;
 }
 
-/* 대표 화면: 화면 폭 가득. --shift는 HeroShot이 스크롤마다 넣는 패럴랙스 값 */
+.at .at-hero-links .at-links {
+	justify-content: center;
+	align-items: center;
+}
+
+/* 히어로의 첫 단추만 먹색 알약 (나머지는 밑줄 글) */
+.at .at-hero-links .sp-pill {
+	padding: 13px 26px;
+	border-radius: 99px;
+	background: var(--sp-text);
+	color: var(--sp-bg);
+	letter-spacing: 0.16em;
+}
+
+.at .at-hero-meta {
+	padding-top: 6px;
+}
+
+/* 대표 화면: 노트북 틀에 담아 가운데. --shift는 HeroShot이 스크롤마다 넣는 패럴랙스 값 */
 .at-hero-shot {
-	margin: clamp(48px, 8cqi, 112px) 0 0;
-	overflow: hidden;
+	position: relative;
+	max-width: 980px;
+	margin: clamp(36px, 4cqi, 56px) auto 0;
+	padding: 0 0 clamp(32px, 4cqi, 56px);
 }
 
 .at-hero-shot .at-curtain {
@@ -270,10 +338,33 @@
 	will-change: transform;
 }
 
-.at-hero-shot img {
-	max-height: 90vh;
-	object-fit: cover;
-	object-position: top;
+/* 노트북 아래 바닥 그림자 (책상 위에 놓인 듯) */
+.at-hero-shot::after {
+	position: absolute;
+	right: 8%;
+	bottom: 8px;
+	left: 8%;
+	height: 40px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, rgba(40, 20, 5, 0.22), transparent);
+	content: '';
+}
+
+/* 그림이 없는 항목의 비주얼: 가는 선의 차분한 판 */
+.at .at-visual {
+	position: relative;
+	height: clamp(260px, 30cqi, 380px);
+	margin-top: 36px;
+	overflow: hidden;
+	border: 1px solid var(--sp-line);
+	border-radius: 6px;
+	background: var(--cr-bg);
+}
+
+/* 그림이 없는 장의 제품 화면 */
+.at .at-chapter-device {
+	max-width: 880px;
+	margin: 56px auto 0;
 }
 
 /* ─── 숫자 한 줄: 얇은 세리프 거대 숫자 ─── */
@@ -647,12 +738,12 @@
 }
 
 .at-table dl,
-.at-table ul {
+.at-table > ul {
 	list-style: none;
 }
 
 .at-table dl div,
-.at-table ul li {
+.at-table > ul li {
 	display: grid;
 	grid-template-columns: minmax(120px, 0.6fr) minmax(0, 1.4fr);
 	gap: 20px;
@@ -661,7 +752,7 @@
 	font-size: 15px;
 }
 
-.at-table ul li {
+.at-table > ul li {
 	grid-template-columns: 40px minmax(0, 1fr);
 }
 
@@ -670,19 +761,48 @@
 }
 
 .at-stack {
-	padding: 20px 0 0;
+	padding: 12px 0 0;
 }
 
-.at-stack p {
-	margin-top: 10px;
+.at-stack .lk-logos {
+	align-items: flex-start;
+	padding: 16px 0;
+}
+
+.at-stack .lk-logos-caption {
+	color: var(--sp-muted);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+}
+
+/* 마지막 행동 유도 띠: 세리프 이탤릭 큰 문장, 먹색 알약 */
+.at .at-cta {
+	margin-top: clamp(96px, 14cqi, 200px);
+	border-top: 1px solid var(--sp-line);
+}
+
+.at .at-cta .lk-cta-title {
 	font-family: var(--sp-serif);
-	font-size: 17px;
-	line-height: 1.6;
+	font-size: clamp(36px, 6cqi, 72px);
+	font-style: italic;
+	font-weight: 400;
+	letter-spacing: -0.02em;
+}
+
+.at .at-cta .lk-cta-links .sp-pill {
+	background: var(--sp-text);
+	color: var(--sp-bg);
+}
+
+.at .at-cta a {
+	background-image: none;
 }
 
 /* ─── 마무리: 다음 작업처럼 큰 링크 ─── */
 .at-foot {
-	margin-top: clamp(96px, 14cqi, 200px);
+	margin-top: 0;
 	padding: clamp(64px, 9cqi, 120px) var(--at-gutter);
 	border-top: 1px solid var(--sp-line);
 	background: var(--sp-alt);
@@ -789,6 +909,7 @@
 @media (prefers-reduced-motion: reduce) {
 	.at .at-rise,
 	.at .at-curtain,
+	.at .at-curtain > *,
 	.at .at-curtain img,
 	.at .at-curtain video,
 	.at-timeline li::before,

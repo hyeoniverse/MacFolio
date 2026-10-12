@@ -11,6 +11,7 @@ import { ChapterFacts, Shots } from '@/apps/safari/project/CreativeChapters';
 import { Architecture } from '@/apps/safari/project/CreativeArchitecture';
 import { Demo } from '@/apps/safari/project/creative/Demo';
 import { Themes } from '@/apps/safari/project/creative/Themes';
+import { CtaBand, DeviceFrame, FeatureVisual, LogoStrip, MockScreen } from '@/apps/safari/project/landing';
 import '@/apps/safari/project/AtelierPage.css';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
@@ -57,7 +58,7 @@ const Curtain: React.FC<{ src: string; alt: string; className?: string; caption?
 );
 
 /** 항목에 붙는 화면: 만져 보는 데모, 실제 화면 여러 장, 영상·갈래·라이트다크·그림(FeatureMedia) 중 있는 것 */
-const PointMedia: React.FC<{ point: ProjectPoint }> = ({ point }) => {
+const PointMedia: React.FC<{ point: ProjectPoint; index: number; project: Project }> = ({ point, index, project }) => {
 	if (point.demo)
 		return (
 			<div className="at-demo" data-demo={point.demo}>
@@ -73,11 +74,24 @@ const PointMedia: React.FC<{ point: ProjectPoint }> = ({ point }) => {
 		);
 	if (point.image && !point.imageDark && !point.video && !point.variants)
 		return <Curtain src={point.image} alt={`${point.title} 화면`} />;
-	const media = <FeatureMedia point={point} />;
-	return media ? <div className="at-media">{media}</div> : null;
+	if (point.video || point.variants || point.image)
+		return (
+			<div className="at-media">
+				<FeatureMedia point={point} />
+			</div>
+		);
+	// 화면이 없는 항목: 그 항목의 제목을 담은 차분한 비주얼 (빈 자리 대신)
+	return (
+		<div className="at-visual" data-reveal="curtain">
+			<FeatureVisual point={point} index={index} project={project} />
+		</div>
+	);
 };
 
-/** 대표 화면: 화면 폭 가득, 스크롤하면 글보다 느리게 따라온다 (패럴랙스). 움직임 줄이기면 고정 */
+/**
+ * 대표 화면: 노트북 틀에 담아 히어로 아래 가운데. 스크롤하면 글보다 느리게 따라온다 (패럴랙스). 움직임 줄이기면 고정.
+ * 대표 화면이 없으면 프로젝트 데이터로 그린 제품 화면
+ */
 const HeroShot: React.FC<{ project: Project }> = ({ project }) => {
 	const frame = useRef<HTMLDivElement>(null);
 	useEffect(() => {
@@ -86,15 +100,18 @@ const HeroShot: React.FC<{ project: Project }> = ({ project }) => {
 		return onScrollFrame(node, (scroller) => {
 			const view = viewOf(scroller);
 			const box = node.getBoundingClientRect();
-			// 틀의 가운데가 화면 가운데에서 얼마나 떨어졌는지의 18%만큼 그림을 반대로 밀어, 글보다 느리게 보이게
-			const offset = (box.top + box.height / 2 - (view.top + view.height / 2)) * 0.18;
+			// 틀의 가운데가 화면 가운데에서 얼마나 떨어졌는지의 12%만큼 그림을 반대로 밀어, 글보다 느리게 보이게
+			const offset = (box.top + box.height / 2 - (view.top + view.height / 2)) * 0.12;
 			node.style.setProperty('--shift', `${offset.toFixed(1)}px`);
 		});
 	}, []);
-	if (!project.image) return null;
 	return (
 		<div ref={frame} className="at-hero-shot">
-			<Curtain src={project.image} alt={`${project.name} 화면`} />
+			<div className="at-curtain at-hero-device" data-reveal="curtain">
+				<DeviceFrame kind="laptop" src={project.image || undefined} alt={`${project.name} 화면`}>
+					{!project.image && <MockScreen project={project} decorative />}
+				</DeviceFrame>
+			</div>
 		</div>
 	);
 };
@@ -103,7 +120,7 @@ const HeroShot: React.FC<{ project: Project }> = ({ project }) => {
  * 주요 기능: 왼쪽은 번호와 제목 목록(sticky, 지금 읽는 항목에 aria-current), 오른쪽은 글과 그림이 흐른다.
  * 스크롤 상자의 가운데 선을 지난 마지막 항목을 읽는 중으로 본다
  */
-const Highlights: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
+const Highlights: React.FC<{ project: Project; points: ProjectPoint[] }> = ({ project, points }) => {
 	const flow = useRef<HTMLOListElement>(null);
 	const [current, setCurrent] = useState(0);
 	useEffect(() => {
@@ -161,7 +178,7 @@ const Highlights: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 								</p>
 							)}
 						</Lines>
-						<PointMedia point={point} />
+						<PointMedia point={point} index={i} project={project} />
 					</li>
 				))}
 			</ol>
@@ -170,7 +187,11 @@ const Highlights: React.FC<{ points: ProjectPoint[] }> = ({ points }) => {
 };
 
 /** 장 하나: '01 — 제목' 큰 머리, 숫자, 항목이 세로 리듬으로, 끝에 그림·비교 막대·테마 */
-const Chapter: React.FC<{ chapter: ProjectChapter; index: number }> = ({ chapter, index }) => (
+const Chapter: React.FC<{ project: Project; chapter: ProjectChapter; index: number }> = ({
+	project,
+	chapter,
+	index,
+}) => (
 	<Region label={chapter.title} className="at-chapter">
 		<Lines as="header" className="at-chapter-head">
 			<Line className="at-label">Chapter {pad(index)}</Line>
@@ -204,7 +225,9 @@ const Chapter: React.FC<{ chapter: ProjectChapter; index: number }> = ({ chapter
 							</p>
 						)}
 					</Lines>
-					<PointMedia point={point} />
+					{(point.demo || point.shots || point.image || point.video || point.variants) && (
+						<PointMedia point={point} index={i} project={project} />
+					)}
 				</li>
 			))}
 		</ol>
@@ -218,6 +241,14 @@ const Chapter: React.FC<{ chapter: ProjectChapter; index: number }> = ({ chapter
 			) : (
 				<Curtain src={chapter.image.src} alt={chapter.image.alt} caption={chapter.image.alt} />
 			))}
+		{/* 그림·막대·테마가 없는 장은 글만 남지 않게 제품 화면 한 장 (장 차례에 맞춰 다른 기능을 고른 화면) */}
+		{!chapter.image && !chapter.compare && !chapter.palette && chapter.look !== 'architecture' && (
+			<div className="at-curtain at-chapter-device" data-reveal="curtain">
+				<DeviceFrame kind="browser" url={project.demo}>
+					<MockScreen project={project} focus={index + 1} decorative />
+				</DeviceFrame>
+			</div>
+		)}
 	</Region>
 );
 
@@ -279,13 +310,13 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 	return (
 		<div ref={root} className="at">
 			<header className="at-hero">
+				<span className="at-hero-light" aria-hidden="true" />
 				<Lines className="at-hero-text">
 					{project.icon && !project.logo && (
 						<Line as="div" className="at-hero-icon">
 							<img src={project.icon} alt="" />
 						</Line>
 					)}
-					{meta && <Line className="at-label">{meta}</Line>}
 					{project.logo ? (
 						<Line i={1} as="div" className="at-logo">
 							<img src={project.logo} alt={project.name} />
@@ -306,6 +337,11 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 					<Line i={4} as="div" className="at-hero-links">
 						<Links project={project} className="at-links" />
 					</Line>
+					{meta && (
+						<Line i={5} className="at-label at-hero-meta">
+							{meta}
+						</Line>
+					)}
 				</Lines>
 				<HeroShot project={project} />
 			</header>
@@ -333,12 +369,12 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 							<Line i={1}>주요 기능</Line>
 						</h2>
 					</Lines>
-					<Highlights points={project.highlights} />
+					<Highlights project={project} points={project.highlights} />
 				</Region>
 			)}
 
 			{project.chapters?.map((chapter, i) => (
-				<Chapter key={chapter.title} chapter={chapter} index={i} />
+				<Chapter key={chapter.title} project={project} chapter={chapter} index={i} />
 			))}
 
 			{project.gallery && project.gallery.length > 0 && (
@@ -461,11 +497,8 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 								))}
 							</dl>
 							{project.stack.length > 0 && (
-								<div className="at-stack" data-reveal="lines">
-									<Line className="at-label">Tools</Line>
-									<p>
-										<Line i={1}>{project.stack.join(' · ')}</Line>
-									</p>
+								<div className="at-stack">
+									<LogoStrip items={project.stack} caption="Tools" />
 								</div>
 							)}
 						</Region>
@@ -497,6 +530,8 @@ const AtelierPage: React.FC<{ project: Project }> = ({ project }) => {
 					)}
 				</div>
 			)}
+
+			<CtaBand project={project} tone="light" showIcon className="at-cta" />
 
 			<footer className="at-foot">
 				<Lines>

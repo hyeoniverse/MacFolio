@@ -16,6 +16,10 @@
 	--cr-ink: var(--br-ink);
 	--cr-muted: var(--br-ink);
 	--cr-line: var(--br-ink);
+	/* 랜딩 키트 조각(가짜 화면·기능 비주얼)도 잉크와 형광 두 색으로 */
+	--lk-accent: #111111;
+	--lk-accent-2: #c8e000;
+	--lk-radius: 0px;
 	letter-spacing: 0;
 }
 
@@ -110,6 +114,145 @@
 	/* 이름과 반대로 오른쪽으로 밀린다 */
 	transform: translateX(var(--br-shift));
 	will-change: transform;
+}
+
+/* ─── 맨 위 아래쪽: 소개·단추·스티커 | 제품 창 ─── */
+.br-hero-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+	gap: 40px;
+	align-items: center;
+	margin: 20px -24px 0;
+	padding: 36px 24px 44px;
+	border-top: var(--br-line) solid var(--br-ink);
+	background-image: radial-gradient(color-mix(in srgb, var(--br-ink) 22%, transparent) 1.2px, transparent 1.2px);
+	background-size: 16px 16px;
+}
+
+.br-hero-copy {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 22px;
+	padding: 24px;
+	border: var(--br-line) solid var(--br-ink);
+	background: var(--br-paper);
+	box-shadow: 8px 8px 0 var(--br-ink);
+}
+
+.br .br-hero-lead {
+	margin: 0;
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(20px, 2.4cqi, 28px);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1.3;
+}
+
+.br-hero-links {
+	margin-top: 0;
+	gap: 12px;
+}
+
+/* 굵은 단추: 딱딱한 그림자, 누르면 그림자만큼 내려앉는다 */
+.sp[data-look='brutal'] .br-hero-links .sp-pill,
+.sp[data-look='brutal'] .br-hero-links .sp-link {
+	padding: 14px 18px;
+	box-shadow: 4px 4px 0 var(--br-ink);
+	font-size: 14px;
+	transition:
+		transform 0.08s steps(2),
+		box-shadow 0.08s steps(2);
+}
+
+.sp[data-look='brutal'] .br-hero-links .sp-pill:hover,
+.sp[data-look='brutal'] .br-hero-links .sp-link:hover {
+	transform: translate(4px, 4px);
+	box-shadow: 0 0 0 var(--br-ink);
+}
+
+/* 숫자 스티커: 형광 원이 상자 모서리에 비스듬히 붙는다 */
+.br-sticker {
+	position: absolute;
+	right: -30px;
+	bottom: -46px;
+	display: grid;
+	place-content: center;
+	width: 112px;
+	height: 112px;
+	margin: 0;
+	border: var(--br-line) solid #000000;
+	border-radius: 50%;
+	background: var(--br-neon);
+	color: #000000;
+	text-align: center;
+	transform: rotate(12deg);
+}
+
+.br-sticker strong {
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: 26px;
+	font-weight: 900;
+	letter-spacing: -0.04em;
+	line-height: 1;
+}
+
+.br-sticker span {
+	padding: 0 10px;
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+/* 제품 창: 둥근 모서리·부드러운 그림자를 걷고 두꺼운 선과 딱딱한 그림자 */
+.br-window .lk-device-body {
+	border: var(--br-line) solid var(--br-ink);
+	border-radius: 0;
+	background: var(--br-paper);
+	box-shadow: 14px 14px 0 var(--br-ink);
+}
+
+.br-window .lk-device-chrome {
+	border-bottom: var(--br-line) solid var(--br-ink);
+	border-radius: 0;
+	background: var(--br-neon);
+	color: #000000;
+}
+
+.br-window .lk-device-chrome * {
+	border-radius: 0;
+}
+
+.br-window .lk-device-screen {
+	border-radius: 0;
+}
+
+.br-window .lk-device-media {
+	filter: grayscale(1) contrast(1.1);
+	transition: filter 0.2s steps(3);
+}
+
+.br-hero-art:hover .lk-device-media,
+.br-window:hover .lk-device-media {
+	filter: none;
+}
+
+/* 격자 안 제품 화면과 기능 비주얼: 모서리를 걷는다 */
+.br .lk-mock,
+.br .lk-feature {
+	border-radius: 0;
+}
+
+.br-mock .lk-mock {
+	height: 100%;
+	min-height: 320px;
+	border-top: var(--br-line) solid var(--br-ink);
+}
+
+.br .br-media .lk-feature {
+	min-height: 200px;
+	background: var(--br-paper);
 }
 
 /* ─── 흐르는 띠 둘: 위는 왼쪽으로, 아래는 오른쪽으로 ─── */
@@ -463,7 +606,7 @@
 	gap: 0;
 }
 
-.br-shot img {
+.br-shot > img {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -474,7 +617,7 @@
 	transition: filter 0.2s steps(3);
 }
 
-.br-shot:hover img {
+.br-shot:hover > img {
 	filter: none;
 }
 
@@ -687,8 +830,20 @@
 	transition-duration: 0.25s;
 }
 
+/* 마무리 띠의 한 줄 */
+.br .br-block .br-end-line {
+	font-family: 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+	font-size: clamp(20px, 3cqi, 32px);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+}
+
 /* ─── 좁은 창: 블록은 한두 열 ─── */
 @container (max-width: 900px) {
+	.br-hero-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
 	.br-grid > .br-block,
 	.br-sub > .br-block,
 	.br-grid > .br-facts,
@@ -732,6 +887,22 @@
 		padding: 20px 16px 10px;
 	}
 
+	.br-hero-grid {
+		margin-inline: -16px;
+		padding: 28px 16px 36px;
+	}
+
+	.br-sticker {
+		right: -8px;
+		bottom: -40px;
+		width: 88px;
+		height: 88px;
+	}
+
+	.br-sticker strong {
+		font-size: 20px;
+	}
+
 	.br-block {
 		padding: 36px 16px 18px;
 	}
@@ -760,7 +931,10 @@
 	}
 
 	.br-block,
-	.br-shot img {
+	.br-shot > img,
+	.br-window .lk-device-media,
+	.sp[data-look='brutal'] .br-hero-links .sp-pill,
+	.sp[data-look='brutal'] .br-hero-links .sp-link {
 		transition: none;
 	}
 }

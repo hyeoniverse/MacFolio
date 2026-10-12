@@ -1,16 +1,29 @@
-// 가로 모양: 세로 스크롤이 가로로 늘어선 패널들을 밀어 간다. 패널마다 바탕색이 뚜렷하게 바뀌고 글자는 배경보다 느리게 따라온다
+// 가로 모양: 세로 스크롤이 가로로 늘어선 패널들을 밀어 간다. Linear·Vercel 같은 어두운 제품 투어:
+// 패널마다 빛이 번지는 바탕 위에 큰 제목과 제품 화면(기기 틀)이 놓이고, 글은 배경보다 느리게 따라온다
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
-import { FactValue, Links, Region } from '@/apps/safari/project/parts';
+import { Links, Region } from '@/apps/safari/project/parts';
 import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
 import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
+import {
+	CtaBand,
+	DeviceFrame,
+	GlowBackdrop,
+	LogoStrip,
+	MockScreen,
+	SectionHeader,
+	StatBand,
+	iconOf,
+	pickMockKind,
+	useLandingAccent,
+} from '@/apps/safari/project/landing';
 import { cssVars } from '@/shared/lib/cssVars';
 import '@/apps/safari/project/HorizontalPage.css';
 
 /** 이보다 좁으면 가로 트랙을 풀고 세로로 쌓는다 */
 const NARROW = 700;
-/** 패널 바탕 네 가지가 차례로 돈다 (CSS의 --hz-bg-0 … --hz-bg-3) */
-const TONES = 4;
+/** 패널 바탕 두 가지가 번갈아 돈다 (CSS의 data-tone 0·1) */
+const TONES = 2;
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -33,29 +46,22 @@ const DateMark: React.FC<{ date: string }> = ({ date }) => {
 	);
 };
 
-/** 그림이나 짧은 영상 한 장 (트랙이 가로로 밀려 와서 보이므로 lazy로 두면 패널이 닿았을 때 아직 안 떠 있다) */
-const Media: React.FC<{ src: string; alt: string; className?: string }> = ({ src, alt, className }) =>
-	src.endsWith('.mp4') ? (
-		<video className={className} src={src} muted loop playsInline autoPlay aria-label={alt} />
-	) : (
-		<img className={className} src={src} alt={alt} />
-	);
-
 const pointImage = (point: ProjectPoint) =>
-	point.image ?? point.video ?? point.shots?.[0]?.src ?? point.scrollFrames?.[0];
+	point.video ?? point.image ?? point.shots?.[0]?.src ?? point.scrollFrames?.[0];
 
-/** 패널 하나: 번호(i)에 따라 바탕색이 돌고, 글(.hz-text)은 트랙보다 느리게 움직인다 */
-const Panel: React.FC<{ index: number; label?: string; className?: string; children: React.ReactNode }> = ({
-	index,
-	label,
-	className = '',
-	children,
-}) => (
+/** 패널 하나: 번호(i)에 따라 바탕이 번갈고, 글(.hz-text)은 트랙보다 느리게 움직인다 */
+const Panel: React.FC<{
+	index: number;
+	label?: string;
+	className?: string;
+	dark?: boolean;
+	children: React.ReactNode;
+}> = ({ index, label, className = '', dark, children }) => (
 	<section
 		className={`hz-panel ${className}`}
 		data-tone={index % TONES}
 		data-panel={index}
-		data-no={pad(index + 1)}
+		data-lk-tone={dark ? 'dark' : undefined}
 		aria-label={label}
 		style={cssVars({ i: index })}
 	>
@@ -63,7 +69,7 @@ const Panel: React.FC<{ index: number; label?: string; className?: string; child
 	</section>
 );
 
-/** 표지: 거대한 이름, 한 줄 제목, 링크. 대표 화면은 기울어져 오른쪽 밖으로 걸친다 (마우스를 따라 살짝 기운다) */
+/** 표지(히어로): 왼쪽에 제품 이름·큰 한 줄·링크, 오른쪽에 화면 밖으로 걸친 브라우저 창. 아래에 기술 띠 */
 const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const tech =
@@ -77,138 +83,149 @@ const Cover: React.FC<{ project: Project; index: number }> = ({ project, index }
 		node.style.setProperty('--hz-mx', String((event.clientX - box.left) / box.width - 0.5));
 		node.style.setProperty('--hz-my', String((event.clientY - box.top) / box.height - 0.5));
 	};
+	const meta = [project.context, project.contributions.length ? '' : project.role, project.period].filter(Boolean);
 	return (
-		<Panel index={index} className="hz-cover" label="표지">
+		<Panel index={index} className="hz-cover" label="표지" dark>
+			<GlowBackdrop tone="dark" pattern="grid" focus="side" />
 			<div ref={ref} className="hz-cover-inner" onMouseMove={tilt}>
 				<div className="hz-text">
-					<p className="hz-kicker">
+					{meta.length > 0 && (
+						<p className="hz-badge">
+							<span className="hz-badge-dot" aria-hidden="true" />
+							{meta.join(' · ')}
+						</p>
+					)}
+					<h1 className="hz-name">
 						{project.icon && <img src={project.icon} alt="" />}
-						<span>
-							{[project.context, project.contributions.length ? '' : project.role, project.period]
-								.filter(Boolean)
-								.join(' · ')}
-						</span>
-					</p>
-					<h1 className="hz-name">{project.name}</h1>
+						{project.name}
+					</h1>
 					<p className="hz-tagline">{project.tagline}</p>
 					{project.description && <p className="hz-lead">{project.description}</p>}
-					{tech.length > 0 && (
-						<ul className="hz-tech" aria-label="기술">
-							{tech.map((item) => (
-								<li key={item}>{item}</li>
-							))}
-						</ul>
-					)}
 					<Links project={project} className="sp-links hz-links" />
 					<p className="hz-hint" aria-hidden="true">
-						아래로 스크롤 <span>→</span>
+						아래로 스크롤하면 옆으로 넘어갑니다 <span>→</span>
 					</p>
 				</div>
-				{project.image && (
-					<figure className="hz-cover-shot" aria-hidden="true">
-						<Media src={project.image} alt="" />
-					</figure>
-				)}
+				<div className="hz-cover-visual">
+					<DeviceFrame
+						kind="browser"
+						url={project.demo ?? project.url}
+						src={project.image}
+						alt={project.image ? `${project.name} 화면` : undefined}
+						glow
+					>
+						<MockScreen project={project} kind={pickMockKind(project)} tone="dark" decorative />
+					</DeviceFrame>
+				</div>
 			</div>
+			{tech.length > 0 && <LogoStrip items={tech} caption="만든 기술" className="hz-logos" />}
 		</Panel>
 	);
 };
 
-/** 숫자 패널: 값이 패널을 꽉 채우듯 거대하다 */
+/** 숫자 패널: 큰 숫자 띠 하나 */
 const FactsPanel: React.FC<{ project: Project; index: number }> = ({ project, index }) => (
 	<Panel index={index} className="hz-facts" label="한눈에 보는 숫자">
-		<ul className="hz-text" style={cssVars(fitGrid(project.facts.length, 4))}>
-			{project.facts.map((fact, i) => (
-				<li key={fact.label} data-reveal="left" style={cssVars({ d: i })}>
-					<FactValue text={fact.value} />
-					<span>{fact.label}</span>
-				</li>
-			))}
-		</ul>
+		<div className="hz-text">
+			<SectionHeader eyebrow="한눈에 보는 숫자" title="숫자로 본 결과" lead={project.context} />
+			<StatBand facts={project.facts} label="숫자" className="hz-stats" />
+		</div>
 	</Panel>
 );
 
-/** 주요 기능 하나에 패널 하나: 그림 크게, 글은 옆에. 홀수 번째는 그림이 오른쪽. 그림이 없으면 그 자리에 거대한 번호(아이콘이 있으면 아이콘) */
-const HighlightPanel: React.FC<{ point: ProjectPoint; index: number; order: number; total: number }> = ({
-	point,
-	index,
-	order,
-	total,
-}) => {
+/** 주요 기능 하나에 패널 하나: 글과 제품 화면이 좌우로 번갈아 선다. 그림이 없으면 그 기능을 고른 가짜 화면 */
+const HighlightPanel: React.FC<{
+	project: Project;
+	point: ProjectPoint;
+	index: number;
+	order: number;
+	total: number;
+}> = ({ project, point, index, order, total }) => {
 	const image = pointImage(point);
 	return (
-		<Panel index={index} className={`hz-feature ${order % 2 ? 'flip' : ''} ${image ? '' : 'bare'}`}>
+		<Panel index={index} className={`hz-feature ${order % 2 ? 'flip' : ''}`}>
 			<div className="hz-text">
 				<p className="hz-eyebrow">
+					<span className="hz-eyebrow-icon" aria-hidden="true">
+						<i className={`fa-solid ${iconOf(point, order)}`} />
+					</span>
 					주요 기능 <strong>{pad(order + 1)}</strong>
-					<span> / {pad(total)}</span>
+					<span className="hz-eyebrow-total"> / {pad(total)}</span>
 				</p>
 				<h2>{point.title}</h2>
 				<p className="hz-body">{point.body}</p>
-				{point.detail && <p className="hz-detail">{point.detail}</p>}
+				{point.detail && (
+					<p className="hz-detail">
+						<i className="fa-solid fa-circle-check" aria-hidden="true" />
+						<span>{point.detail}</span>
+					</p>
+				)}
 			</div>
-			{image ? (
-				<figure className="hz-feature-media" data-reveal="zoom">
-					<Media src={image} alt={point.shots?.[0]?.alt ?? `${point.title} 화면`} />
-				</figure>
-			) : (
-				<span className="hz-feature-mark" aria-hidden="true" data-reveal="zoom">
-					{point.icon ? <i className={`fa-solid ${point.icon}`} /> : pad(order + 1)}
-				</span>
-			)}
+			<div className="hz-feature-visual" data-reveal="zoom">
+				<DeviceFrame
+					kind="browser"
+					url={project.demo ?? project.url}
+					src={image}
+					alt={image ? (point.shots?.[0]?.alt ?? `${point.title} 화면`) : undefined}
+					tilt={order % 2 ? 'left' : 'right'}
+					glow
+				>
+					<MockScreen project={project} kind={pickMockKind(project)} focus={order} decorative />
+				</DeviceFrame>
+			</div>
 		</Panel>
 	);
 };
 
-/** 만든 방식: 카드가 가로로 한 줄 */
+/** 단계·카드 하나 (쓰는 법·만든 방식이 함께 쓴다) */
+const Card: React.FC<{ point: ProjectPoint; index: number; step?: boolean }> = ({ point, index, step }) => (
+	<li data-reveal="" style={cssVars({ d: index })}>
+		<span className="hz-card-mark" aria-hidden="true">
+			{step ? index + 1 : <i className={`fa-solid ${iconOf(point, index)}`} />}
+		</span>
+		<h3>{point.title}</h3>
+		<p>{point.body}</p>
+		{point.detail && <p className="hz-card-detail">{point.detail}</p>}
+	</li>
+);
+
+/** 만든 방식: 아이콘 타일이 달린 유리 카드 격자 */
 const BuildPanel: React.FC<{ points: ProjectPoint[]; index: number }> = ({ points, index }) => (
 	<Panel index={index} className="hz-build" label="만든 방식">
 		<div className="hz-text">
-			<h2 className="hz-title">
-				만든 방식<span>.</span>
-			</h2>
-			<ul className="hz-cards">
+			<SectionHeader eyebrow="만든 방식" title="속을 이렇게 짰습니다." align="start" />
+			<ul className="hz-cards" style={cssVars(fitGrid(points.length, 3))}>
 				{points.map((point, i) => (
-					<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
-						<span className="hz-card-no">{pad(i + 1)}</span>
-						<h3>{point.title}</h3>
-						<p>{point.body}</p>
-						{point.detail && <p className="hz-card-detail">{point.detail}</p>}
-					</li>
+					<Card key={point.title} point={point} index={i} />
 				))}
 			</ul>
 		</div>
 	</Panel>
 );
 
-/** 쓰는 법: 거대한 단계 번호 아래 짧은 글이 나란히 (넷까지 한 줄, 남는 칸은 마지막 단계가 채운다) */
+/** 쓰는 법: 빛나는 선으로 이어진 단계 카드 */
 const UsagePanel: React.FC<{ points: ProjectPoint[]; index: number }> = ({ points, index }) => (
 	<Panel index={index} className="hz-usage" label="쓰는 법">
 		<div className="hz-text">
-			<h2 className="hz-title">
-				쓰는 법<span>.</span>
-			</h2>
-			<ol className="hz-steps" style={cssVars(fitGrid(points.length, 4))}>
+			<SectionHeader eyebrow="쓰는 법" title={`${points.length}단계면 시작할 수 있습니다.`} align="start" />
+			<ol className="hz-cards hz-steps" style={cssVars(fitGrid(points.length, 4))}>
 				{points.map((point, i) => (
-					<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
-						<span className="hz-step-no">{i + 1}</span>
-						<h3>{point.title}</h3>
-						<p>{point.body}</p>
-						{point.detail && <p className="hz-card-detail">{point.detail}</p>}
-					</li>
+					<Card key={point.title} point={point} index={i} step />
 				))}
 			</ol>
 		</div>
 	</Panel>
 );
 
-/** 진행 과정: 가로 선 위에 날짜가 늘어선다 */
-const TimelinePanel: React.FC<{ items: { date: string; label: string }[]; index: number }> = ({ items, index }) => (
+/** 진행 과정: 가로 선 위에 빛나는 점과 날짜 */
+const TimelinePanel: React.FC<{ project: Project; items: { date: string; label: string }[]; index: number }> = ({
+	project,
+	items,
+	index,
+}) => (
 	<Panel index={index} className="hz-timeline" label="진행 과정">
 		<div className="hz-text">
-			<h2 className="hz-title">
-				진행 과정<span>.</span>
-			</h2>
+			<SectionHeader eyebrow="진행 과정" title={project.period || '걸어온 길'} align="start" />
 			<ol className="hz-rail">
 				{items.map((item, i) => (
 					<li key={`${item.date}-${item.label}`} data-reveal="" style={cssVars({ d: i })}>
@@ -221,15 +238,14 @@ const TimelinePanel: React.FC<{ items: { date: string; label: string }[]; index:
 	</Panel>
 );
 
-/** 기술 사양과 맡은 일을 나란히 */
+/** 기술 사양(표 카드)과 맡은 일(체크 카드)을 나란히 */
 const SpecsPanel: React.FC<{ project: Project; index: number }> = ({ project, index }) => (
 	<Panel index={index} className="hz-specs">
 		<div className="hz-text">
 			{project.specs.length > 0 && (
 				<Region label="기술 사양" className="hz-col">
-					<h2 className="hz-title">
-						기술 사양<span>.</span>
-					</h2>
+					<p className="hz-col-eyebrow">기술 사양</p>
+					<h2 className="hz-col-title">무엇으로 만들었나</h2>
 					<dl>
 						{project.specs.map((spec) => (
 							<div key={spec.label}>
@@ -242,10 +258,8 @@ const SpecsPanel: React.FC<{ project: Project; index: number }> = ({ project, in
 			)}
 			{project.contributions.length > 0 && (
 				<Region label="맡은 일" className="hz-col">
-					<h2 className="hz-title">
-						맡은 일<span>.</span>
-					</h2>
-					{project.role && <p className="hz-role">{project.role}</p>}
+					<p className="hz-col-eyebrow">맡은 일</p>
+					<h2 className="hz-col-title">{project.role || '직접 한 일'}</h2>
 					<ul className="hz-checks">
 						{project.contributions.map((item, i) => (
 							<li key={item} data-reveal="left" style={cssVars({ d: i })}>
@@ -260,16 +274,10 @@ const SpecsPanel: React.FC<{ project: Project; index: number }> = ({ project, in
 	</Panel>
 );
 
-/** 끝: 큰 마침표와 링크 */
+/** 끝: 빛나는 행동 유도 띠 */
 const EndPanel: React.FC<{ project: Project; index: number }> = ({ project, index }) => (
-	<Panel index={index} className="hz-end" label="마무리">
-		<div className="hz-text">
-			<p className="hz-end-word">
-				끝<span>.</span>
-			</p>
-			<p className="hz-lead">{project.tagline}</p>
-			<Links project={project} className="sp-links hz-links" />
-		</div>
+	<Panel index={index} className="hz-end" label="마무리" dark>
+		<CtaBand project={project} title={project.tagline || project.name} className="hz-cta" />
 	</Panel>
 );
 
@@ -280,6 +288,7 @@ const EndPanel: React.FC<{ project: Project; index: number }> = ({ project, inde
  */
 const HorizontalPage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
+	const accent = useLandingAccent(project.icon);
 	const [mode, setMode] = useState<'track' | 'stacked'>('stacked');
 	const [current, setCurrent] = useState(0);
 	const stateRef = useRef({ viewH: 0, mode: 'stacked' as 'track' | 'stacked' });
@@ -356,32 +365,41 @@ const HorizontalPage: React.FC<{ project: Project }> = ({ project }) => {
 	};
 
 	return (
-		<div ref={root} className="hz" data-mode={mode} style={cssVars({ n: count })} tabIndex={0} onKeyDown={onKeyDown}>
+		<div
+			ref={root}
+			className="hz"
+			data-mode={mode}
+			style={{ ...accent, ...cssVars({ n: count }) }}
+			tabIndex={0}
+			onKeyDown={onKeyDown}
+		>
 			<div className="hz-bar" aria-label="패널 이동">
-				<button
-					type="button"
-					className="hz-nav"
-					aria-label="이전"
-					onClick={() => go(current - 1)}
-					disabled={current === 0}
-				>
-					<i className="fa-solid fa-arrow-left" aria-hidden="true" />
-				</button>
-				<span className="hz-count" aria-live="polite">
-					{pad(current + 1)} / {pad(count)}
-				</span>
-				<span className="hz-progress" aria-hidden="true">
-					<span style={cssVars({ fill: `${((current + 1) / count) * 100}%` })} />
-				</span>
-				<button
-					type="button"
-					className="hz-nav"
-					aria-label="다음"
-					onClick={() => go(current + 1)}
-					disabled={current === count - 1}
-				>
-					<i className="fa-solid fa-arrow-right" aria-hidden="true" />
-				</button>
+				<div className="hz-bar-pill">
+					<button
+						type="button"
+						className="hz-nav"
+						aria-label="이전"
+						onClick={() => go(current - 1)}
+						disabled={current === 0}
+					>
+						<i className="fa-solid fa-arrow-left" aria-hidden="true" />
+					</button>
+					<span className="hz-count" aria-live="polite">
+						{pad(current + 1)} / {pad(count)}
+					</span>
+					<span className="hz-progress" aria-hidden="true">
+						<span style={cssVars({ fill: `${((current + 1) / count) * 100}%` })} />
+					</span>
+					<button
+						type="button"
+						className="hz-nav"
+						aria-label="다음"
+						onClick={() => go(current + 1)}
+						disabled={current === count - 1}
+					>
+						<i className="fa-solid fa-arrow-right" aria-hidden="true" />
+					</button>
+				</div>
 			</div>
 			<div className="hz-view">
 				<div className="hz-track">
@@ -391,6 +409,7 @@ const HorizontalPage: React.FC<{ project: Project }> = ({ project }) => {
 						<Region label="주요 기능" className="hz-group">
 							{project.highlights.map((point, i) => (
 								<HighlightPanel
+									project={project}
 									key={point.title}
 									point={point}
 									index={sections.highlights[i]}
@@ -403,7 +422,7 @@ const HorizontalPage: React.FC<{ project: Project }> = ({ project }) => {
 					{sections.usage !== null && project.usage && <UsagePanel points={project.usage} index={sections.usage} />}
 					{sections.build !== null && <BuildPanel points={project.build} index={sections.build} />}
 					{sections.timeline !== null && project.timeline && (
-						<TimelinePanel items={project.timeline} index={sections.timeline} />
+						<TimelinePanel project={project} items={project.timeline} index={sections.timeline} />
 					)}
 					{sections.specs !== null && <SpecsPanel project={project} index={sections.specs} />}
 					<EndPanel project={project} index={sections.end} />

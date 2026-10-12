@@ -1,10 +1,11 @@
 // 아케이드 모양: 네온·CRT. 캐비닛 화면, HIGH SCORE 점수판, 캐릭터 선택 카드, 버튼 조작법, STAGE 목록, 어트랙트 모드 갤러리, 크레딧 롤
 import React, { useEffect, useRef, useState } from 'react';
-import type { Project } from '@/shared/profile';
+import type { Project, ProjectPoint } from '@/shared/profile';
 import { Favicon, FactValue, Links, Region } from '@/apps/safari/project/parts';
 import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
 import { onScrollFrame } from '@/apps/safari/project/scroll';
 import { cssVars } from '@/shared/lib/cssVars';
+import { FeatureVisual, LogoStrip, MockScreen } from '@/apps/safari/project/landing';
 import '@/apps/safari/project/ArcadePage.css';
 
 /** 글자 하나씩 불이 켜지는 네온 간판 (읽는 쪽에는 이름 전체를 준다). 낱말 단위로 묶어 낱말 중간에서 줄이 바뀌지 않게 */
@@ -26,13 +27,8 @@ const NeonSign: React.FC<{ text: string }> = ({ text }) => {
 };
 
 /** 캐릭터 선택 카드: 마우스 위치에 따라 3D로 기울고 네온 테두리가 흐른다 */
-const CharCard: React.FC<{ index: number; title: string; body: string; detail?: string; image?: string }> = ({
-	index,
-	title,
-	body,
-	detail,
-	image,
-}) => {
+const CharCard: React.FC<{ project: Project; point: ProjectPoint; index: number }> = ({ project, point, index }) => {
+	const { title, body, detail, image } = point;
 	const ref = useRef<HTMLLIElement>(null);
 	const tilt = (event: React.MouseEvent<HTMLLIElement>) => {
 		const node = ref.current;
@@ -58,7 +54,7 @@ const CharCard: React.FC<{ index: number; title: string; body: string; detail?: 
 				<img src={image} alt="" className="ac-char-img" />
 			) : (
 				<span className="ac-char-glyph" aria-hidden="true">
-					{String(index + 1).padStart(2, '0')}
+					<FeatureVisual point={point} index={index} project={project} tone="dark" />
 				</span>
 			)}
 			<h3>{title}</h3>
@@ -165,7 +161,7 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 	const specSpans = fillSpans(project.specs.length);
 
 	return (
-		<div ref={root} className={`ac${sprout ? ' ac-sprout' : ''}`}>
+		<div ref={root} className={`ac${sprout ? ' ac-sprout' : ''}`} data-lk-tone="dark">
 			<div className="ac-scanlines" aria-hidden="true" />
 			<div className="ac-vignette" aria-hidden="true" />
 
@@ -173,40 +169,47 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 			<header className="ac-title">
 				<div className="ac-floor" aria-hidden="true" />
 				{sprout && <Sprites />}
-				<p className="ac-coin">INSERT COIN</p>
-				<Favicon project={project} className="ac-icon" />
-				<NeonSign text={project.name} />
-				<p className="ac-tagline">{project.tagline}</p>
-				<p className="ac-meta">
-					<span>{project.context}</span>
-					{project.period && <span>{project.period}</span>}
-					{project.language && <span>{project.language}</span>}
-				</p>
-				<Links project={project} className="ac-links" />
+				<div className="ac-hero-copy">
+					<p className="ac-coin">INSERT COIN</p>
+					<Favicon project={project} className="ac-icon" />
+					<NeonSign text={project.name} />
+					<p className="ac-tagline">{project.tagline}</p>
+					{project.description && <p className="ac-hero-desc">{project.description}</p>}
+					<Links project={project} className="ac-links" />
+					<ul className="ac-meta" aria-label="정보">
+						{[project.context, project.period, project.language].filter(Boolean).map((item) => (
+							<li key={item}>{item}</li>
+						))}
+					</ul>
+				</div>
 
-				{screen && (
-					<figure className="ac-cabinet">
-						<div className="ac-cabinet-top" aria-hidden="true">
-							<span />
-							<span />
-							<span />
-						</div>
-						<div className="ac-cabinet-screen">
+				<figure className="ac-cabinet">
+					<div className="ac-cabinet-top" aria-hidden="true">
+						<span />
+						<span />
+						<span />
+					</div>
+					<div className="ac-cabinet-screen">
+						{screen ? (
 							<img src={screen} alt={screenAlt} />
-						</div>
-						<div className="ac-cabinet-panel" aria-hidden="true">
-							<span className="ac-stick">
-								<span className="ac-stick-ball" />
-							</span>
-							<span className="ac-pads">
-								<span className="ac-pad ac-pad-a" />
-								<span className="ac-pad ac-pad-b" />
-								<span className="ac-pad ac-pad-c" />
-							</span>
-						</div>
-						<figcaption className="visually-hidden">{project.description}</figcaption>
-					</figure>
-				)}
+						) : (
+							<div className="ac-cabinet-mock">
+								<MockScreen project={project} kind="game" tone="dark" tint={false} decorative />
+							</div>
+						)}
+					</div>
+					<div className="ac-cabinet-panel" aria-hidden="true">
+						<span className="ac-stick">
+							<span className="ac-stick-ball" />
+						</span>
+						<span className="ac-pads">
+							<span className="ac-pad ac-pad-a" />
+							<span className="ac-pad ac-pad-b" />
+							<span className="ac-pad ac-pad-c" />
+						</span>
+					</div>
+					<figcaption className="visually-hidden">{project.description}</figcaption>
+				</figure>
 			</header>
 
 			{/* ─── HIGH SCORE: 숫자가 세어 올라간다 ─── */}
@@ -234,14 +237,7 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 					</h2>
 					<ul className="ac-chars">
 						{project.highlights.map((point, i) => (
-							<CharCard
-								key={point.title}
-								index={i}
-								title={point.title}
-								body={point.body}
-								detail={point.detail}
-								image={point.image}
-							/>
+							<CharCard key={point.title} project={project} point={point} index={i} />
 						))}
 					</ul>
 				</Region>
@@ -300,7 +296,13 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 									<p>{point.body}</p>
 									{point.detail && <p className="ac-stage-detail">{point.detail}</p>}
 								</div>
-								{point.image && <img src={point.image} alt="" className="ac-stage-img" />}
+								<span className="ac-stage-visual" aria-hidden="true">
+									{point.image ? (
+										<img src={point.image} alt="" className="ac-stage-img" />
+									) : (
+										<FeatureVisual point={point} index={i + 1} project={project} tone="dark" />
+									)}
+								</span>
 							</li>
 						))}
 					</ol>
@@ -350,11 +352,7 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 							</div>
 						))}
 					</dl>
-					<ul className="ac-stack" aria-label="기술">
-						{project.stack.map((item) => (
-							<li key={item}>{item}</li>
-						))}
-					</ul>
+					<LogoStrip items={project.stack} caption="POWERED BY" marquee className="ac-logos" />
 				</Region>
 			)}
 
@@ -405,7 +403,9 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 			)}
 
 			<footer className="ac-foot">
+				<div className="ac-floor ac-floor-foot" aria-hidden="true" />
 				<p className="ac-coin ac-coin-small">GAME OVER? — CONTINUE</p>
+				<p className="ac-foot-title">{project.tagline || project.name}</p>
 				<Links project={project} className="ac-links" />
 			</footer>
 		</div>

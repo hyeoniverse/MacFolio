@@ -172,6 +172,13 @@
 	transform-origin: top left;
 }
 
+.dk-slide {
+	--lk-accent: hsl(var(--dk-hue) 90% 62%);
+	--lk-accent-2: hsl(calc(var(--dk-hue) + 60) 90% 66%);
+	--lk-dark-surface: #000000;
+	--lk-dark-surface-2: #121216;
+}
+
 .dk-slide[data-current] {
 	display: block;
 	animation: dk-push 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -205,6 +212,13 @@
 		opacity: 0;
 		transform: scale(calc(var(--s) * 0.92));
 	}
+}
+
+/* 표지·맺음말 밖의 장: 위 오른쪽에서 그 장의 색이 아주 옅게 번진다 (발표 무대 조명처럼) */
+.dk-slide:not([data-kind='cover'], [data-kind='end']) {
+	background-image:
+		radial-gradient(60% 55% at 85% 0%, hsl(var(--dk-hue) 90% 55% / 0.14), transparent 70%),
+		radial-gradient(40% 40% at 0% 100%, hsl(calc(var(--dk-hue) + 60) 90% 55% / 0.08), transparent 70%);
 }
 
 /* 장마다 왼쪽 위에 강조 그라데이션 띠, 오른쪽 아래에 큰 번호 */
@@ -284,33 +298,29 @@
 }
 
 .dk-cover-text {
-	align-self: center;
+	align-self: start;
+	margin-top: 12px;
 	min-width: 0;
 }
 
-/* 바탕에 천천히 흐르는 빛 두 덩이 */
-.dk-slide[data-kind='cover'] .dk-slide-body::before,
-.dk-slide[data-kind='end'] .dk-slide-body::before {
-	content: '';
-	position: absolute;
-	inset: -30%;
-	z-index: -1;
-	background:
-		radial-gradient(40% 50% at 30% 30%, color-mix(in srgb, var(--dk-c1) 28%, transparent), transparent 70%),
-		radial-gradient(35% 45% at 75% 75%, color-mix(in srgb, var(--dk-c2) 24%, transparent), transparent 70%);
-	animation: dk-drift 14s ease-in-out infinite alternate;
-}
-
-@keyframes dk-drift {
-	to {
-		transform: translate(6%, -5%) rotate(8deg);
-	}
+/* 표지·맺음말의 빛은 GlowBackdrop. 글과 화면은 그 위로 */
+.dk-cover > :not(.lk-glow),
+.dk-end > :not(.lk-glow),
+.dk-facts-wrap > :not(.lk-glow) {
+	position: relative;
+	z-index: 1;
 }
 
 .dk-kicker {
 	display: flex;
 	align-items: center;
+	justify-self: start;
 	gap: 14px;
+	padding: 6px 18px 6px 6px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.04);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 	color: var(--sp-muted);
 	font-size: 16px;
 	font-weight: 600;
@@ -322,9 +332,9 @@
 }
 
 .dk-cover-icon {
-	width: 34px;
-	height: 34px;
-	border-radius: 9px;
+	width: 30px;
+	height: 30px;
+	border-radius: 999px;
 	object-fit: contain;
 }
 
@@ -359,6 +369,14 @@
 	font-weight: 700;
 	letter-spacing: -0.02em;
 	line-height: 1.25;
+}
+
+.dk-cover-lead {
+	max-width: 600px;
+	margin-top: 16px;
+	color: var(--sp-muted);
+	font-size: 18px;
+	line-height: 1.6;
 }
 
 .dk-presenter {
@@ -415,29 +433,23 @@
 	min-height: 0;
 }
 
-/* 대표 화면: 마우스를 따라 기울고, 아래로 비친다 */
-.dk-cover-shot {
+/* 대표 화면: 노트북 틀에 담겨 마우스를 따라 살짝 기울고, 바닥에 비친다 */
+.dk-cover-device {
 	width: 100%;
-	max-height: 270px;
-	flex: none;
-	margin: 0;
-	border-radius: 14px;
-	overflow: hidden;
-	box-shadow:
-		0 0 0 1px rgba(255, 255, 255, 0.1),
-		0 30px 60px rgba(0, 0, 0, 0.55);
-	transform: perspective(1400px) rotateY(calc(-10deg + var(--mx) * -6deg)) rotateX(calc(var(--my) * 5deg))
-		translateX(calc(var(--mx) * -8px));
-	transition: transform 0.25s ease-out;
-	-webkit-box-reflect: below 10px linear-gradient(transparent 70%, rgba(0, 0, 0, 0.25));
+	max-width: 520px;
+	perspective: 1600px;
 }
 
-.dk-cover-shot img {
-	display: block;
-	width: 100%;
-	max-height: 270px;
-	object-fit: cover;
-	object-position: top;
+.dk-cover-device .lk-device {
+	transform: rotateY(calc(-14deg + var(--mx) * -6deg)) rotateX(calc(4deg + var(--my) * 4deg));
+	transform-origin: center;
+	transition: transform 0.25s ease-out;
+}
+
+/* 몽이가 있으면 노트북 앞 오른쪽 아래에 선다 (자리만큼 노트북을 줄인다) */
+.dk-seat[data-mascot] ~ .dk-cover-device,
+.dk-cover-side:has(.dk-seat[data-mascot]) .dk-cover-device {
+	max-width: 420px;
 }
 
 /* 몽이 자리: 표지에서만 크기가 있다 (몽이는 이 자리에 맞춰 선다). 표지가 아닐 때는 감춰 몽이가 데모 곁으로 */
@@ -465,57 +477,41 @@
 	height: 100%;
 }
 
-.dk-facts {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-	gap: 32px;
-	list-style: none;
+.dk-facts-title {
+	max-width: 900px;
+	margin-bottom: 44px;
 }
 
-.dk-facts li {
-	padding-left: 22px;
-	border-left: 3px solid;
-	border-image: var(--sp-grad) 1;
+.dk-stats {
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 24px;
+	background: rgba(255, 255, 255, 0.03);
+	backdrop-filter: blur(6px);
 }
 
-.dk-facts strong {
-	display: block;
-	font-size: 92px;
-	font-weight: 900;
+.dk-stats .lk-stat {
+	padding: 44px 24px;
+}
+
+.dk-stats .lk-stat strong {
+	font-size: 84px;
+	font-weight: 800;
 	letter-spacing: -0.05em;
-	line-height: 1;
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
-}
-
-/* 숫자 수에 맞춰: 넷이면 한 줄에 넷(글자를 줄여 한 줄로), 다섯·여섯은 세 열 */
-.dk-facts[data-count='4'] {
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.dk-facts[data-count='4'] strong {
-	font-size: 64px;
 	white-space: nowrap;
 }
 
-.dk-facts[data-count='5'],
-.dk-facts[data-count='6'] {
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 40px 32px;
+.dk-stats[data-count='4'] .lk-stat strong {
+	font-size: 64px;
 }
 
-.dk-facts[data-count='5'] strong,
-.dk-facts[data-count='6'] strong {
-	font-size: 72px;
+.dk-stats.lk-stats[data-gradient] .lk-stat strong {
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
 }
 
-.dk-facts li > span {
-	display: block;
-	margin-top: 14px;
-	color: var(--sp-muted);
-	font-size: 18px;
+.dk-stats .lk-stat > span {
+	font-size: 17px;
 }
 
 /* ─── 주요 기능: 왼쪽 글, 오른쪽 화면 ─── */
@@ -552,42 +548,40 @@
 	opacity: 0.85;
 }
 
-/* 화면이 없는 기능: 글과 오른쪽 절반의 큰 번호(아이콘)·자세히 */
+/* 화면이 없는 기능: 글과, 그 기능을 고른 제품 화면. 뒤에 거대한 윤곽 번호(아이콘) */
 .dk-feature:not([data-media]) {
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
 	align-items: center;
 }
 
 .dk-feature-aside {
+	position: relative;
 	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	gap: 28px;
+	align-items: center;
 	min-height: 0;
-	padding: 48px 44px;
-	border: 1px solid var(--sp-line);
-	border-radius: 24px;
-	background: radial-gradient(circle at 85% 15%, hsl(var(--dk-hue) 80% 60% / 0.22), transparent 60%), var(--sp-alt);
+	perspective: 1600px;
 }
 
-.dk-feature-big {
-	font-size: 150px;
-	font-weight: 900;
-	letter-spacing: -0.06em;
-	line-height: 0.9;
+.dk-feature-aside .lk-device {
+	z-index: 1;
 }
 
-.dk-feature-big i {
-	background: var(--sp-grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
-	font-size: 120px;
+/* 화면 뒤로 그 장의 색이 번진다 */
+.dk-feature-aside::before {
+	position: absolute;
+	inset: -20% -10%;
+	background: radial-gradient(
+		closest-side,
+		hsl(var(--dk-hue) 90% 60% / 0.32),
+		hsl(calc(var(--dk-hue) + 60) 90% 60% / 0.12) 55%,
+		transparent
+	);
+	filter: blur(20px);
+	content: '';
 }
 
-.dk-feature-aside p {
-	font-size: 20px;
-	line-height: 1.6;
+.dk-eyebrow-icon {
+	margin-right: 10px;
 }
 
 .dk-feature-media {
@@ -992,27 +986,14 @@
 	line-height: 1.4;
 }
 
-.dk-stack {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	margin-top: 24px;
-	list-style: none;
+.dk-logos {
+	margin-top: 28px;
+	padding: 20px 0 0;
+	border-top: 1px solid var(--sp-line);
 }
 
-.dk-stack li {
-	padding: 6px 14px;
-	border: 1px solid var(--sp-line);
-	border-radius: 999px;
-	color: var(--sp-muted);
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.dk-stack .dk-stack-lang {
-	border-color: transparent;
-	background: var(--sp-grad);
-	color: #ffffff;
+.dk-logos .lk-logos-track {
+	gap: 12px 40px;
 }
 
 /* ─── 맺음말 ─── */
@@ -1023,6 +1004,16 @@
 	justify-content: center;
 	height: 100%;
 	text-align: center;
+}
+
+.dk-end-icon {
+	width: 88px;
+	height: 88px;
+	margin-bottom: 28px;
+	border-radius: 22%;
+	box-shadow:
+		0 0 0 1px rgba(255, 255, 255, 0.12),
+		0 24px 60px -12px hsl(var(--dk-hue) 90% 60% / 0.7);
 }
 
 .dk-end-big {
@@ -1362,46 +1353,34 @@
 
 .dk[data-mode='stack'] .dk-cover-name {
 	font-size: min(var(--size, 120px), 13cqi);
+	white-space: normal;
+	text-wrap: balance;
 }
 
 .dk[data-mode='stack'] .dk-cover-tagline {
 	font-size: 24px;
 }
 
-.dk[data-mode='stack'] .dk-cover-shot {
+.dk[data-mode='stack'] .dk-cover-device .lk-device {
 	transform: none;
-	-webkit-box-reflect: none;
 }
 
 .dk[data-mode='stack'] .dk-seat[data-mascot] {
 	margin-right: 0;
 }
 
-.dk[data-mode='stack'] .dk-facts[data-count] {
-	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-	gap: 24px;
-}
-
-.dk[data-mode='stack'] .dk-facts strong {
-	font-size: 44px;
+.dk[data-mode='stack'] .dk-stats .lk-stat strong {
+	font-size: 40px;
 	white-space: normal;
 }
 
-.dk[data-mode='stack'] .dk-feature-aside {
-	gap: 16px;
-	padding: 24px;
+.dk[data-mode='stack'] .dk-stats .lk-stat {
+	padding: 24px 12px;
 }
 
-.dk[data-mode='stack'] .dk-feature-big {
-	font-size: 72px;
-}
-
-.dk[data-mode='stack'] .dk-feature-big i {
-	font-size: 56px;
-}
-
-.dk[data-mode='stack'] .dk-feature-aside p {
-	font-size: 16px;
+.dk[data-mode='stack'] .dk-end-icon {
+	width: 64px;
+	height: 64px;
 }
 
 .dk[data-mode='stack'] .dk-points[data-count] {
@@ -1460,14 +1439,9 @@
 	font-size: 56px;
 }
 
-.dk[data-mode='stack'] .dk-slide-body::before {
-	animation: none;
-}
-
 /* ─── 움직임 줄이기: 전환·흐름·흔들림을 끈다 (내용은 모두 그대로 닿는다) ─── */
 @media (prefers-reduced-motion: reduce) {
 	.dk-slide[data-current],
-	.dk-slide-body::before,
 	.dk-cover-name .dk-grad,
 	.dk-end-big .dk-grad,
 	.dk-notes,
@@ -1477,7 +1451,7 @@
 	}
 
 	.dk-progress i,
-	.dk-cover-shot,
+	.dk-cover-device .lk-device,
 	.dk-dots button,
 	.dk-timeline li::before,
 	.dk-timeline li i,
@@ -1486,8 +1460,8 @@
 		transition: none;
 	}
 
-	.dk-cover-shot {
-		transform: perspective(1400px) rotateY(-10deg);
+	.dk-cover-device .lk-device {
+		transform: rotateY(-14deg) rotateX(4deg);
 	}
 
 	.dk-timeline li::before,

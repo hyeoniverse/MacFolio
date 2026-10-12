@@ -5,6 +5,15 @@ import type { Project, ProjectPoint } from '@/shared/profile';
 import { Favicon, Links, Region } from '@/apps/safari/project/parts';
 import { useReveal } from '@/apps/safari/project/reveal';
 import { FeatureMedia } from '@/apps/safari/project/CreativeParts';
+import {
+	CtaBand,
+	DeviceFrame,
+	GlowBackdrop,
+	MockScreen,
+	SectionHeader,
+	iconOf,
+	useLandingAccent,
+} from '@/apps/safari/project/landing';
 import '@/apps/safari/project/ChecklistPage.css';
 
 /** 목록 하나의 항목: 제목, 한 줄 설명, 펼치면 보일 것 */
@@ -112,6 +121,77 @@ const Confetti: React.FC = () => (
 	</div>
 );
 
+/** 히어로 오른쪽에 떠 있는 할 일 카드의 라벨 색 (목록 색과 같은 줄) */
+const HERO_TONES = ['orange', 'blue', 'green'] as const;
+
+/**
+ * 맨 위 (Todoist·Things 랜딩처럼): 밝은 바탕에 큰 한 줄, 소개, 단추, 숫자 칩.
+ * 오른쪽에는 브라우저 틀에 담긴 대표 화면(없으면 데이터로 그린 목록 화면)과 그 위로 떠 있는 할 일 카드 세 장
+ */
+const Hero: React.FC<{ project: Project }> = ({ project }) => {
+	const tasks = project.highlights.slice(0, 3);
+	return (
+		<header className="ck-hero">
+			<GlowBackdrop tone="light" pattern="dots" focus="side" />
+			<div className="ck-hero-inner">
+				<div className="ck-hero-text">
+					<p className="ck-hero-eyebrow">
+						<Favicon project={project} className="ck-hero-icon" />
+						<span>{project.name}</span>
+					</p>
+					<h2 className="ck-hero-title">{project.tagline || project.name}</h2>
+					{project.description && <p className="ck-hero-lead">{project.description}</p>}
+					<Links project={project} className="sp-links ck-hero-links" />
+					{project.facts.length > 0 && (
+						<ul className="ck-hero-facts" aria-label="숫자">
+							{project.facts.slice(0, 3).map((fact) => (
+								<li key={fact.label}>
+									<strong>{fact.value}</strong>
+									<span>{fact.label}</span>
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+				<div className="ck-hero-art" aria-hidden="true">
+					<DeviceFrame kind="browser" url={project.demo} glow className="ck-hero-device">
+						{project.image ? (
+							<img className="lk-device-media" src={project.image} alt="" />
+						) : (
+							<MockScreen project={project} kind="list" tone="light" decorative />
+						)}
+					</DeviceFrame>
+					{tasks.length > 0 && (
+						<ul className="ck-hero-tasks">
+							{tasks.map((point, index) => (
+								<li
+									key={point.title}
+									className={`tone-${HERO_TONES[index]}`}
+									data-done={index === 0 ? '' : undefined}
+									style={{ '--i': index } as React.CSSProperties}
+								>
+									<span className="ck-hero-box">
+										<svg viewBox="0 0 16 16">
+											<path d="M3.5 8.5l3 3 6-6" />
+										</svg>
+									</span>
+									<span className="ck-hero-task">
+										<b>{point.title}</b>
+										<small>
+											<i className={`fa-solid ${iconOf(point, index)}`} />
+											주요 기능
+										</small>
+									</span>
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+			</div>
+		</header>
+	);
+};
+
 const ChecklistPage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
 	const lists = useMemo(() => buildLists(project), [project]);
@@ -147,120 +227,130 @@ const ChecklistPage: React.FC<{ project: Project }> = ({ project }) => {
 		[]
 	);
 
+	const accent = useLandingAccent(project.icon);
+
 	return (
-		<div className="ck" ref={root}>
-			<div className="ck-app" data-complete={complete || undefined}>
-				<header className="ck-head">
-					<div className="ck-bar">
-						<span className="ck-today">{today}</span>
-						<div className="ck-sort" role="group" aria-label="정렬">
-							{(['section', 'priority'] as const).map((mode) => (
-								<button key={mode} type="button" aria-pressed={sort === mode} onClick={() => setSort(mode)}>
-									{mode === 'section' ? '섹션' : '우선순위'}
-								</button>
-							))}
+		<div className="ck" ref={root} style={accent}>
+			<Hero project={project} />
+			<section className="ck-demo" aria-label="직접 해 보기">
+				<SectionHeader
+					eyebrow="직접 해 보기"
+					title="하나씩 체크하며 둘러보세요."
+					lead="항목을 체크하면 설명과 화면이 펼쳐지고, 진행 고리가 차오릅니다."
+				/>
+				<div className="ck-app" data-complete={complete || undefined}>
+					<header className="ck-head">
+						<div className="ck-bar">
+							<span className="ck-today">{today}</span>
+							<div className="ck-sort" role="group" aria-label="정렬">
+								{(['section', 'priority'] as const).map((mode) => (
+									<button key={mode} type="button" aria-pressed={sort === mode} onClick={() => setSort(mode)}>
+										{mode === 'section' ? '섹션' : '우선순위'}
+									</button>
+								))}
+							</div>
 						</div>
-					</div>
-					<div className="ck-title">
-						<Favicon project={project} className="ck-icon" />
-						<div className="ck-title-text">
-							<h1>
-								<span className="ck-eyebrow">오늘</span>
-								{project.name}
-							</h1>
-							<p className="ck-note">{project.tagline}</p>
+						<div className="ck-title">
+							<Favicon project={project} className="ck-icon" />
+							<div className="ck-title-text">
+								<h1>
+									<span className="ck-eyebrow">오늘</span>
+									{project.name}
+								</h1>
+								<p className="ck-note">{project.tagline}</p>
+							</div>
+							<Ring done={done} total={total} />
 						</div>
-						<Ring done={done} total={total} />
-					</div>
-					<p className="ck-count" aria-live="polite">
-						{complete ? (
-							<>
-								다 봤어요 <span aria-hidden="true">🎉</span>
-							</>
-						) : (
-							`${done} / ${total} 완료`
-						)}
-					</p>
-					<Links project={project} className="ck-links" />
-					{complete && <Confetti />}
-				</header>
+						<p className="ck-count" aria-live="polite">
+							{complete ? (
+								<>
+									다 봤어요 <span aria-hidden="true">🎉</span>
+								</>
+							) : (
+								`${done} / ${total} 완료`
+							)}
+						</p>
+						{complete && <Confetti />}
+					</header>
 
-				<div className="ck-lists">
-					{ordered.map((list, listIndex) => (
-						<Region key={list.key} label={list.label} className={`ck-list tone-${list.tone}`} data-reveal="">
-							<h2>
-								<i aria-hidden="true" />
-								{list.label}
-								<small>
-									{list.done
-										? '완료'
-										: `${list.items.filter((item) => checked.has(item.key)).length}/${list.items.length}`}
-								</small>
-							</h2>
-							{list.note && <p className="ck-list-note">{list.note}</p>}
-							<ul>
-								{list.items.map((item, i) => {
-									const isChecked = list.done || checked.has(item.key);
-									const titleId = `ck-${project.id}-${item.key}`;
-									const detailId = `${titleId}-detail`;
-									const expandable = Boolean(item.body || item.point);
-									return (
-										<li
-											key={item.key}
-											data-checked={isChecked || undefined}
-											data-reveal=""
-											style={{ '--d': Math.min(i + listIndex, 6) } as React.CSSProperties}
-										>
-											<button
-												type="button"
-												role="checkbox"
-												className="ck-check"
-												aria-checked={isChecked}
-												aria-labelledby={titleId}
-												aria-expanded={expandable && !list.done ? isChecked : undefined}
-												aria-controls={expandable ? detailId : undefined}
-												disabled={list.done}
-												onClick={() => toggle(item.key)}
+					<div className="ck-lists">
+						{ordered.map((list, listIndex) => (
+							<Region key={list.key} label={list.label} className={`ck-list tone-${list.tone}`} data-reveal="">
+								<h2>
+									<i aria-hidden="true" />
+									{list.label}
+									<small>
+										{list.done
+											? '완료'
+											: `${list.items.filter((item) => checked.has(item.key)).length}/${list.items.length}`}
+									</small>
+								</h2>
+								{list.note && <p className="ck-list-note">{list.note}</p>}
+								<ul>
+									{list.items.map((item, i) => {
+										const isChecked = list.done || checked.has(item.key);
+										const titleId = `ck-${project.id}-${item.key}`;
+										const detailId = `${titleId}-detail`;
+										const expandable = Boolean(item.body || item.point);
+										return (
+											<li
+												key={item.key}
+												data-checked={isChecked || undefined}
+												data-reveal=""
+												style={{ '--d': Math.min(i + listIndex, 6) } as React.CSSProperties}
 											>
-												<svg viewBox="0 0 16 16" aria-hidden="true">
-													<path d="M3.5 8.5l3 3 6-6" />
-												</svg>
-											</button>
-											<div className="ck-item-text">
-												<div className="ck-item-head">
-													{item.date && <time>{item.date}</time>}
-													<span id={titleId} className="ck-item-title">
-														{item.title}
-													</span>
-												</div>
-												{expandable && (
-													<div id={detailId} className="ck-detail">
-														<div>
-															{item.body && <p>{item.body}</p>}
-															{isChecked && item.point?.detail && <p className="ck-more">{item.point.detail}</p>}
-															{isChecked && item.point && (
-																<div className="ck-media">
-																	<FeatureMedia point={item.point} />
-																</div>
-															)}
-														</div>
+												<button
+													type="button"
+													role="checkbox"
+													className="ck-check"
+													aria-checked={isChecked}
+													aria-labelledby={titleId}
+													aria-expanded={expandable && !list.done ? isChecked : undefined}
+													aria-controls={expandable ? detailId : undefined}
+													disabled={list.done}
+													onClick={() => toggle(item.key)}
+												>
+													<svg viewBox="0 0 16 16" aria-hidden="true">
+														<path d="M3.5 8.5l3 3 6-6" />
+													</svg>
+												</button>
+												<div className="ck-item-text">
+													<div className="ck-item-head">
+														{item.date && <time>{item.date}</time>}
+														<span id={titleId} className="ck-item-title">
+															{item.title}
+														</span>
 													</div>
-												)}
-											</div>
-										</li>
-									);
-								})}
-							</ul>
-						</Region>
-					))}
-				</div>
+													{expandable && (
+														<div id={detailId} className="ck-detail">
+															<div>
+																{item.body && <p>{item.body}</p>}
+																{isChecked && item.point?.detail && <p className="ck-more">{item.point.detail}</p>}
+																{isChecked && item.point && (
+																	<div className="ck-media">
+																		<FeatureMedia point={item.point} />
+																	</div>
+																)}
+															</div>
+														</div>
+													)}
+												</div>
+											</li>
+										);
+									})}
+								</ul>
+							</Region>
+						))}
+					</div>
 
-				{project.image && (
-					<figure className="ck-shot" data-reveal="zoom">
-						<img src={project.image} alt={`${project.name} 화면`} loading="lazy" />
-					</figure>
-				)}
-			</div>
+					{project.image && (
+						<figure className="ck-shot" data-reveal="zoom">
+							<img src={project.image} alt={`${project.name} 화면`} loading="lazy" />
+						</figure>
+					)}
+				</div>
+			</section>
+			<CtaBand project={project} tone="light" className="ck-cta" />
 		</div>
 	);
 };
