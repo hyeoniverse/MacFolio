@@ -2780,6 +2780,65 @@
 	color: var(--memo-accent);
 }
 
+/* 접기 블록 (markdownPlugins.ts의 remarkDetails): 요약 줄을 누르면 펼친다. › 가 아래로 돈다 */
+.memo-markdown .memo-details {
+	margin: 1.2em 0;
+	padding: 0 0.9em;
+	border: 1px solid var(--memo-border);
+	border-radius: 10px;
+}
+
+.memo-markdown .memo-details[open] {
+	padding-bottom: 0.9em;
+}
+
+.memo-markdown .memo-details > summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0 -0.9em;
+	padding: 0.7em 0.9em;
+	font-weight: 600;
+	cursor: pointer;
+	list-style: none;
+	user-select: none;
+}
+
+.memo-markdown .memo-details > summary::-webkit-details-marker {
+	display: none;
+}
+
+.memo-markdown .memo-details > summary::before {
+	content: '';
+	flex: none;
+	width: 0.45em;
+	height: 0.45em;
+	border-right: 2px solid var(--memo-muted);
+	border-bottom: 2px solid var(--memo-muted);
+	transform: rotate(-45deg);
+	transition: transform 0.2s ease;
+}
+
+.memo-markdown .memo-details[open] > summary::before {
+	transform: rotate(45deg);
+}
+
+.memo-markdown .memo-details > summary:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: -2px;
+	border-radius: 10px;
+}
+
+.memo-markdown .memo-details > :last-child:not(summary) {
+	margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-markdown .memo-details > summary::before {
+		transition: none;
+	}
+}
+
 /* 각주 (remark-gfm의 [^1]): 본문의 작은 번호, 글 아래의 목록 */
 .memo-markdown sup {
 	font-size: 0.72em;
