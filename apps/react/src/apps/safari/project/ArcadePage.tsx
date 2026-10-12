@@ -4,6 +4,7 @@ import type { Project } from '@/shared/profile';
 import { Favicon, FactValue, Links, Region } from '@/apps/safari/project/parts';
 import { prefersReducedMotion, useReveal } from '@/apps/safari/project/reveal';
 import { onScrollFrame } from '@/apps/safari/project/scroll';
+import { cssVars } from '@/shared/lib/cssVars';
 import '@/apps/safari/project/ArcadePage.css';
 
 /** 글자 하나씩 불이 켜지는 네온 간판 (읽는 쪽에는 이름 전체를 준다). 낱말 단위로 묶어 낱말 중간에서 줄이 바뀌지 않게 */
@@ -25,10 +26,11 @@ const NeonSign: React.FC<{ text: string }> = ({ text }) => {
 };
 
 /** 캐릭터 선택 카드: 마우스 위치에 따라 3D로 기울고 네온 테두리가 흐른다 */
-const CharCard: React.FC<{ index: number; title: string; body: string; image?: string }> = ({
+const CharCard: React.FC<{ index: number; title: string; body: string; detail?: string; image?: string }> = ({
 	index,
 	title,
 	body,
+	detail,
 	image,
 }) => {
 	const ref = useRef<HTMLLIElement>(null);
@@ -61,6 +63,7 @@ const CharCard: React.FC<{ index: number; title: string; body: string; image?: s
 			)}
 			<h3>{title}</h3>
 			<p>{body}</p>
+			{detail && <p className="ac-char-detail">{detail}</p>}
 		</li>
 	);
 };
@@ -124,6 +127,21 @@ const Sprites: React.FC = () => (
 	</div>
 );
 
+/** 6칸 격자에서 항목마다 차지할 칸: 한 줄에 셋씩 두고, 마지막 줄에 남는 칸은 남은 항목이 나눠 채운다 */
+const fillSpans = (count: number) =>
+	Array.from({ length: count }, (_, i) => {
+		const left = count % 3;
+		if (left === 0 || i < count - left) return 2;
+		return 6 / left;
+	});
+
+/** 점수판 순위: 1ST, 2ND, 3RD, 4TH … (11·12·13은 TH) */
+const rank = (n: number) => {
+	const teen = n % 100 >= 11 && n % 100 <= 13;
+	const suffix = teen ? 'TH' : (['TH', 'ST', 'ND', 'RD'][n % 10] ?? 'TH');
+	return `${n}${suffix}`;
+};
+
 const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
 	// 스크롤한 만큼을 --ac-scroll로 두어 바닥 격자와 스프라이트가 시차를 두고 움직인다
@@ -140,6 +158,11 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 	const sprout = project.id === 'sproutfarm';
 	const credits = project.credits ?? [];
 	const roll = project.contributions.length + credits.length > 0;
+	const usage = project.usage ?? [];
+	const timeline = project.timeline ?? [];
+	// 진행 과정 지도는 한 줄에 여섯까지, 더 많으면 두 줄로 고르게
+	const mapColumns = timeline.length <= 6 ? timeline.length : Math.ceil(timeline.length / 2);
+	const specSpans = fillSpans(project.specs.length);
 
 	return (
 		<div ref={root} className={`ac${sprout ? ' ac-sprout' : ''}`}>
@@ -157,6 +180,7 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 				<p className="ac-meta">
 					<span>{project.context}</span>
 					{project.period && <span>{project.period}</span>}
+					{project.language && <span>{project.language}</span>}
 				</p>
 				<Links project={project} className="ac-links" />
 
@@ -192,7 +216,7 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 					<ol className="ac-scores">
 						{project.facts.map((fact, i) => (
 							<li key={fact.label}>
-								<span className="ac-rank">{i + 1}ST</span>
+								<span className="ac-rank">{rank(i + 1)}</span>
 								<FactValue text={fact.value} />
 								<span className="ac-score-label">{fact.label}</span>
 							</li>
@@ -210,7 +234,14 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 					</h2>
 					<ul className="ac-chars">
 						{project.highlights.map((point, i) => (
-							<CharCard key={point.title} index={i} title={point.title} body={point.body} image={point.image} />
+							<CharCard
+								key={point.title}
+								index={i}
+								title={point.title}
+								body={point.body}
+								detail={point.detail}
+								image={point.image}
+							/>
 						))}
 					</ul>
 				</Region>
@@ -237,6 +268,23 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 				</Region>
 			)}
 
+			{/* ─── PRESS START: 쓰는 법 ─── */}
+			{usage.length > 0 && (
+				<Region label="쓰는 법" className="ac-start" data-reveal="up">
+					<h2 className="ac-h2 ac-h2-cyan">PRESS START</h2>
+					<ol className="ac-start-list" style={cssVars({ n: Math.min(usage.length, 3) })}>
+						{usage.map((point, i) => (
+							<li key={point.title}>
+								<span className="ac-start-no">STEP {i + 1}</span>
+								<h3>{point.title}</h3>
+								<p>{point.body}</p>
+								{point.detail && <p className="ac-start-detail">{point.detail}</p>}
+							</li>
+						))}
+					</ol>
+				</Region>
+			)}
+
 			{/* ─── STAGE: 만든 방식 ─── */}
 			{project.build.length > 0 && (
 				<Region label="만든 방식" className="ac-stages">
@@ -250,8 +298,32 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 								<div className="ac-stage-text">
 									<h3>{point.title}</h3>
 									<p>{point.body}</p>
+									{point.detail && <p className="ac-stage-detail">{point.detail}</p>}
 								</div>
 								{point.image && <img src={point.image} alt="" className="ac-stage-img" />}
+							</li>
+						))}
+					</ol>
+				</Region>
+			)}
+
+			{/* ─── WORLD MAP: 진행 과정 (레벨 지도처럼 점과 길) ─── */}
+			{timeline.length > 0 && (
+				<Region label="진행 과정" className="ac-map" data-reveal="up">
+					<h2 className="ac-h2 ac-h2-yellow">WORLD MAP</h2>
+					<ol className="ac-map-list" style={cssVars({ n: mapColumns })}>
+						{timeline.map((entry, i) => (
+							<li
+								key={`${entry.date}-${entry.label}`}
+								className={
+									i === timeline.length - 1 ? 'is-goal' : (i + 1) % mapColumns === 0 ? 'is-row-end' : undefined
+								}
+							>
+								<span className="ac-map-dot" aria-hidden="true">
+									{i === timeline.length - 1 ? '★' : i + 1}
+								</span>
+								<time className="ac-map-date">{entry.date}</time>
+								<span className="ac-map-label">{entry.label}</span>
 							</li>
 						))}
 					</ol>
@@ -271,8 +343,8 @@ const ArcadePage: React.FC<{ project: Project }> = ({ project }) => {
 				<Region label="기술 사양" className="ac-specs" data-reveal="up">
 					<h2 className="ac-h2 ac-h2-yellow">SPECS</h2>
 					<dl className="ac-spec-list">
-						{project.specs.map((spec) => (
-							<div key={spec.label}>
+						{project.specs.map((spec, i) => (
+							<div key={spec.label} style={cssVars({ span: specSpans[i] })}>
 								<dt>{spec.label}</dt>
 								<dd>{spec.value}</dd>
 							</div>

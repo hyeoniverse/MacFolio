@@ -34,6 +34,26 @@
 	color: var(--sp-dark-text);
 }
 
+/* 대표 화면이 없으면 글이 가운데에서 폭을 다 쓴다 */
+.sc-hero.solo {
+	grid-template-columns: minmax(0, 1fr);
+	min-height: 440px;
+	text-align: center;
+}
+
+.sc-hero.solo .sc-hero-text {
+	align-items: center;
+}
+
+.sc-hero.solo h1 {
+	max-width: 18em;
+}
+
+.sc-hero.solo .sc-stack,
+.sc-hero.solo .sc-links {
+	justify-content: center;
+}
+
 .sc-hero::after {
 	content: '';
 	position: absolute;
@@ -239,7 +259,8 @@
 .sc-bento {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	grid-auto-rows: 200px;
+	grid-auto-rows: minmax(200px, auto);
+	grid-auto-flow: row dense;
 	gap: 14px;
 	margin: 0;
 	padding: 0;
@@ -257,9 +278,55 @@
 	background: var(--sp-alt);
 }
 
-.sc-bento li.wide {
-	grid-column: span 2;
-	grid-row: span 2;
+.sc-bento li {
+	grid-column: span var(--cols, 1);
+	grid-row: span var(--rows, 1);
+}
+
+/* 그림이 없는 큰 카드: 아이콘이나 번호를 크게 깐다 */
+.sc-bento-mark {
+	position: absolute;
+	top: 22px;
+	left: 24px;
+	background: var(--sp-grad);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: clamp(72px, 12cqi, 132px);
+	font-weight: 800;
+	letter-spacing: -0.05em;
+	line-height: 1;
+	opacity: 0.9;
+}
+
+.sc-bento-mark i {
+	background: inherit;
+	-webkit-background-clip: text;
+	background-clip: text;
+}
+
+.sc-bento li.wide:not(:has(.sc-bento-bg)) {
+	background:
+		radial-gradient(70% 80% at 100% 0%, color-mix(in srgb, var(--sp-accent) 16%, transparent), transparent 70%),
+		var(--sp-alt);
+}
+
+.sc-bento li.wide .sc-bento-text {
+	padding: 24px;
+}
+
+.sc-bento li.wide h3 {
+	font-size: 22px;
+}
+
+.sc-bento li.wide .sc-bento-text > p:not(.sc-bento-detail) {
+	font-size: 15px;
+}
+
+.sc-section .sc-bento-detail {
+	font-size: 13px;
+	line-height: 1.6;
+	opacity: 0.85;
 }
 
 .sc-bento-bg {
@@ -383,31 +450,41 @@
 
 /* ─── 만든 방식: 번갈아 좌우 ─── */
 .sc-zig {
-	display: flex;
-	flex-direction: column;
-	gap: 48px;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
+/* 그림이 없는 항목: 두 칸씩 짝지은 카드 */
 .sc-zig li {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-	gap: 32px;
-	align-items: center;
-}
-
-.sc-zig li:nth-child(even) .sc-zig-text {
-	order: 2;
-}
-
-.sc-zig li:not(:has(.sc-zig-media)) {
-	grid-template-columns: 1fr;
 	padding: 24px 28px;
 	border: 1px solid var(--sc-line);
 	border-radius: 18px;
 	background: var(--sp-alt);
+}
+
+.sc-zig li.solo {
+	grid-column: 1 / -1;
+}
+
+/* 그림이 있는 항목: 한 줄을 다 쓰며 글과 그림이 번갈아 좌우 */
+.sc-zig li.media {
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 32px;
+	align-items: center;
+	margin: 20px 0;
+	padding: 0;
+	border: none;
+	background: none;
+}
+
+.sc-zig li.media.flip .sc-zig-text {
+	order: 2;
 }
 
 .sc-zig-text {
@@ -437,7 +514,7 @@
 /* ─── 쓰는 법 ─── */
 .sc-steps {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
 	gap: 14px;
 	margin: 0;
 	padding: 0;
@@ -451,6 +528,15 @@
 	padding: 18px;
 	border: 1px solid var(--sc-line);
 	border-radius: 16px;
+}
+
+.sc-steps li:last-child {
+	grid-column: span var(--last, 1);
+}
+
+.sc-section .sc-step-detail {
+	margin-top: 6px;
+	font-size: 13px;
 }
 
 .sc-step-num {
@@ -478,7 +564,8 @@
 
 .sc-timeline li {
 	position: relative;
-	flex: 1 0 160px;
+	flex: 1 1 0;
+	min-width: 128px;
 	padding: 18px 14px 0 0;
 	border-top: 2px solid var(--sc-line);
 	font-size: 13px;
@@ -517,6 +604,11 @@
 
 .sc-specs dl {
 	margin: 0;
+}
+
+/* 사양과 맡은 일 가운데 하나만 있으면 그것이 폭을 다 쓴다 */
+.sc-specs > :only-child {
+	grid-column: 1 / -1;
 }
 
 .sc-specs dl > div {
@@ -645,18 +737,37 @@
 
 	.sc-bento {
 		grid-template-columns: 1fr;
-		grid-auto-rows: 180px;
+		grid-auto-rows: minmax(180px, auto);
 	}
 
-	.sc-bento li.wide {
+	.sc-bento li {
 		grid-column: auto;
+		grid-row: auto;
+	}
+
+	.sc-bento li.wide:has(.sc-bento-bg) {
 		grid-row: span 2;
 	}
 
-	.sc-zig li,
-	.sc-zig li:nth-child(even) .sc-zig-text {
-		grid-template-columns: 1fr;
+	.sc-bento li.wide:not(:has(.sc-bento-bg)) .sc-bento-text {
+		padding-top: 110px;
+	}
+
+	.sc-zig,
+	.sc-zig li.media {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.sc-zig li.media.flip .sc-zig-text {
 		order: 0;
+	}
+
+	.sc-steps {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.sc-steps li:last-child {
+		grid-column: auto;
 	}
 
 	.sc-specs {

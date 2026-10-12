@@ -12,6 +12,13 @@ import '@/apps/safari/project/CinemaPage.css';
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const isVideo = (src: string) => src.endsWith('.mp4');
 
+/** 칸 n개를 max열 이하 격자에 남는 칸 없이: 열 수와 마지막 칸이 차지할 열 수 */
+function fitGrid(n: number, max: number): { cols: number; last: number } {
+	const cols = n <= max ? Math.max(1, n) : n % max === 0 ? max : n % 3 === 0 && max >= 3 ? 3 : max;
+	const rest = n % cols;
+	return { cols, last: rest === 0 ? 1 : cols - rest + 1 };
+}
+
 /**
  * 장면 하나: 높이는 화면의 len배, 안쪽 무대는 sticky로 화면에 붙어 있다.
  * 무대가 붙어 있는 동안 지나온 만큼을 --p(0~1)로 넣고, 모양은 CSS가 --p로 정한다. 움직임 줄이기에서는 재지 않는다(CSS가 정적 상태로)
@@ -138,6 +145,7 @@ const Feature: React.FC<{ point: ProjectPoint; index: number; total: number; ima
 			<div className="cn-caption">
 				<h3>{point.title}</h3>
 				<p>{point.body}</p>
+				{point.detail && <p className="cn-caption-detail">{point.detail}</p>}
 			</div>
 		</Scene>
 	);
@@ -160,73 +168,107 @@ const Numbers: React.FC<{ project: Project }> = ({ project }) => {
 	);
 };
 
-/** 끝 장면: 어두운 평면 표 (만든 방식, 맡은 일, 기술 사양, 진행 과정), 링크 */
-const Credits: React.FC<{ project: Project }> = ({ project }) => (
-	<footer className="cn-credits">
-		{project.build.length > 0 && (
-			<Region label="만든 방식" className="cn-block">
-				<h2 data-reveal="">만든 방식</h2>
-				{project.id === 'macfolio' && <Pipeline />}
-				<ol className="cn-build">
-					{project.build.map((point, i) => (
-						<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
-							<span className="cn-no">{String(i + 1).padStart(2, '0')}</span>
-							<div>
-								<h3>{point.title}</h3>
-								<p>{point.body}</p>
-							</div>
-						</li>
-					))}
-				</ol>
-			</Region>
-		)}
-		<div className="cn-sheet">
-			{project.contributions.length > 0 && (
-				<Region label="맡은 일" className="cn-block">
-					<h2 data-reveal="">맡은 일</h2>
-					<ul className="cn-list">
-						{project.contributions.map((item, i) => (
-							<li key={item} data-reveal="" style={cssVars({ d: i })}>
-								{item}
-							</li>
-						))}
-					</ul>
-				</Region>
-			)}
-			{project.timeline && project.timeline.length > 0 && (
-				<Region label="진행 과정" className="cn-block">
-					<h2 data-reveal="">진행 과정</h2>
-					<ol className="cn-timeline">
-						{project.timeline.map((step, i) => (
-							<li key={`${step.date}-${step.label}`} data-reveal="" style={cssVars({ d: i })}>
-								<time>{step.date}</time>
-								<span>{step.label}</span>
+/**
+ * 끝 장면: 어두운 평면 표 (만든 방식, 쓰는 법, 맡은 일, 진행 과정, 기술 사양), 엔딩 크레디트처럼 흐르는 기술 이름, 링크.
+ * 만든 방식은 셋으로 나뉘면 세 줄, 아니면 두 줄로 놓고 남는 칸은 마지막 항목이 채운다
+ */
+const Credits: React.FC<{ project: Project }> = ({ project }) => {
+	const build = project.build.length % 3 === 0 ? fitGrid(project.build.length, 3) : fitGrid(project.build.length, 2);
+	const usage = project.usage ?? [];
+	const tech =
+		project.language && !project.stack.includes(project.language)
+			? [project.language, ...project.stack]
+			: project.stack;
+	return (
+		<footer className="cn-credits">
+			{project.build.length > 0 && (
+				<Region label="만든 방식" className="cn-block">
+					<h2 data-reveal="">만든 방식</h2>
+					{project.id === 'macfolio' && <Pipeline />}
+					<ol className="cn-build" style={cssVars(build)}>
+						{project.build.map((point, i) => (
+							<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
+								<span className="cn-no">{String(i + 1).padStart(2, '0')}</span>
+								<div>
+									<h3>{point.title}</h3>
+									<p>{point.body}</p>
+									{point.detail && <p className="cn-detail">{point.detail}</p>}
+								</div>
 							</li>
 						))}
 					</ol>
 				</Region>
 			)}
-		</div>
-		{project.specs.length > 0 && (
-			<Region label="기술 사양" className="cn-block">
-				<h2 data-reveal="">기술 사양</h2>
-				<dl className="cn-specs">
-					{project.specs.map((spec, i) => (
-						<div key={spec.label} data-reveal="" style={cssVars({ d: i })}>
-							<dt>{spec.label}</dt>
-							<dd>{spec.value}</dd>
-						</div>
-					))}
-				</dl>
-			</Region>
-		)}
-		<div className="cn-end" data-reveal="">
-			<p className="cn-end-meta">{[project.context, project.role, project.period].filter(Boolean).join(' · ')}</p>
-			<p className="cn-end-title">{project.name}</p>
-			<Links project={project} className="sp-links cn-links" />
-		</div>
-	</footer>
-);
+			{usage.length > 0 && (
+				<Region label="쓰는 법" className="cn-block">
+					<h2 data-reveal="">쓰는 법</h2>
+					<ol className="cn-steps" style={cssVars(fitGrid(usage.length, 4))}>
+						{usage.map((point, i) => (
+							<li key={point.title} data-reveal="" style={cssVars({ d: i })}>
+								<span className="cn-step-no">{i + 1}</span>
+								<h3>{point.title}</h3>
+								<p>{point.body}</p>
+								{point.detail && <p className="cn-detail">{point.detail}</p>}
+							</li>
+						))}
+					</ol>
+				</Region>
+			)}
+			<div className="cn-sheet">
+				{project.contributions.length > 0 && (
+					<Region label="맡은 일" className="cn-block">
+						<h2 data-reveal="">맡은 일</h2>
+						<ul className="cn-list">
+							{project.contributions.map((item, i) => (
+								<li key={item} data-reveal="" style={cssVars({ d: i })}>
+									{item}
+								</li>
+							))}
+						</ul>
+					</Region>
+				)}
+				{project.timeline && project.timeline.length > 0 && (
+					<Region label="진행 과정" className="cn-block">
+						<h2 data-reveal="">진행 과정</h2>
+						<ol className="cn-timeline">
+							{project.timeline.map((step, i) => (
+								<li key={`${step.date}-${step.label}`} data-reveal="" style={cssVars({ d: i })}>
+									<time>{step.date}</time>
+									<span>{step.label}</span>
+								</li>
+							))}
+						</ol>
+					</Region>
+				)}
+			</div>
+			{project.specs.length > 0 && (
+				<Region label="기술 사양" className="cn-block">
+					<h2 data-reveal="">기술 사양</h2>
+					<dl className="cn-specs">
+						{project.specs.map((spec, i) => (
+							<div key={spec.label} data-reveal="" style={cssVars({ d: i })}>
+								<dt>{spec.label}</dt>
+								<dd>{spec.value}</dd>
+							</div>
+						))}
+					</dl>
+				</Region>
+			)}
+			<div className="cn-end" data-reveal="">
+				<p className="cn-end-meta">{[project.context, project.role, project.period].filter(Boolean).join(' · ')}</p>
+				<p className="cn-end-title">{project.name}</p>
+				{tech.length > 0 && (
+					<ul className="cn-cast" aria-label="기술">
+						{tech.map((item) => (
+							<li key={item}>{item}</li>
+						))}
+					</ul>
+				)}
+				<Links project={project} className="sp-links cn-links" />
+			</div>
+		</footer>
+	);
+};
 
 const CinemaPage: React.FC<{ project: Project }> = ({ project }) => {
 	const root = useReveal<HTMLDivElement>();
