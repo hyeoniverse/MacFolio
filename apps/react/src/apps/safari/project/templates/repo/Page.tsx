@@ -18,6 +18,7 @@ import {
 	type SectionOf,
 } from '@/apps/safari/project/landing';
 import { loadRepo, type RepoDir } from '@/apps/safari/project/terminalRepo';
+import { scrollParent } from '@/apps/safari/project/scroll';
 import { repoAccent } from './accent';
 import { CopyButton, TypeBadge } from './bits';
 import { Files, type FileSource } from './Files';
@@ -211,7 +212,7 @@ const Tabs: React.FC<{ tabs: Tab[]; active: TabId; onChange: (id: TabId) => void
 		event.preventDefault();
 		const next = tabs[(index + step + tabs.length) % tabs.length];
 		onChange(next.id);
-		list.current?.querySelector<HTMLElement>(`[data-tab="${next.id}"]`)?.focus();
+		list.current?.querySelector<HTMLElement>(`[data-tab="${next.id}"]`)?.focus({ preventScroll: true });
 	};
 
 	return (
@@ -364,7 +365,7 @@ const DocBox = React.forwardRef<
 		event.preventDefault();
 		const next = docs[(index + step + docs.length) % docs.length];
 		onOpen(next, false);
-		nav.current?.querySelector<HTMLElement>(`[data-doc="${next.id}"]`)?.focus();
+		nav.current?.querySelector<HTMLElement>(`[data-doc="${next.id}"]`)?.focus({ preventScroll: true });
 	};
 
 	return (
@@ -594,7 +595,13 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 	const readme = useRef<HTMLDivElement>(null);
 	const openDoc = useCallback((next: RepoDoc, scroll: boolean) => {
 		setDocId(next.id);
-		if (scroll) readme.current?.scrollIntoView({ block: 'start' });
+		// scrollIntoView는 Safari 창을 품은 바깥 상자까지 밀어 올려 터미널 줄 아래가 빈다. 페이지의 스크롤 상자만 움직인다
+		const box = readme.current;
+		const scroller = box && scrollParent(box);
+		if (scroll && box && scroller) {
+			const top = box.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop - 12;
+			scroller.scrollTo({ top: Math.max(0, top) });
+		}
 	}, []);
 	const openPath = useCallback(
 		(path: string[]) => {
