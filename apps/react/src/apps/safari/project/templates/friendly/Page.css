@@ -37,18 +37,19 @@
 }
 
 :root[data-theme='dark'] .tpl-friendly {
-	--fr-bg: #0b1220;
-	--fr-alt: #0f1a2c;
-	--fr-card: #121d30;
-	--fr-ink: #f6f9fc;
-	--fr-body: #adbdcc;
-	--fr-muted: #8496ab;
-	--fr-line: rgba(255, 255, 255, 0.1);
+	/* 다크: 남색 기운을 뺀 중성 그래파이트. 색은 강조색 하나만 남는다 */
+	--fr-bg: #0c0d10;
+	--fr-alt: #111318;
+	--fr-card: #16181d;
+	--fr-ink: #f4f5f7;
+	--fr-body: #a9afba;
+	--fr-muted: #7d8491;
+	--fr-line: rgba(255, 255, 255, 0.08);
 	--fr-shadow: 0 18px 36px -18px rgba(0, 0, 0, 0.7), 0 2px 5px -1px rgba(0, 0, 0, 0.3);
 	--fr-tint: color-mix(in srgb, var(--tpl-accent) 14%, var(--fr-bg));
 	--fr-tint-2: color-mix(in srgb, var(--tpl-accent) 26%, var(--fr-bg));
-	--fr-sky: color-mix(in srgb, var(--tpl-accent) 9%, var(--fr-bg));
-	--fr-navy: #0f2240;
+	--fr-sky: color-mix(in srgb, var(--tpl-accent) 6%, var(--fr-bg));
+	--fr-navy: #15171c;
 }
 
 :where(.tpl-friendly) :where(h1, h2, h3) {
@@ -1520,7 +1521,7 @@
 }
 
 :root[data-theme='dark'] .fr-code {
-	background-color: #0f2240;
+	background-color: #16181d;
 	box-shadow: inset 0 0 0 1px var(--fr-line);
 }
 
