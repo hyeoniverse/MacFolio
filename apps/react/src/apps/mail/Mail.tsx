@@ -298,7 +298,8 @@ const Mail: React.FC = () => {
 								</div>
 							)}
 							{loadError && (
-								<p className="mail-error" role="alert">
+								<p className="mail-load-error" role="alert">
+									<i className="fa-solid fa-circle-exclamation" aria-hidden="true" />
 									{loadError}
 								</p>
 							)}
