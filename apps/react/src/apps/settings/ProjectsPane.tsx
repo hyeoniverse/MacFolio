@@ -14,16 +14,13 @@ import {
 import { createPortal } from 'react-dom';
 import { placeBelow } from '@/shared/ui/popover/placement';
 import {
-	BACKDROP_THEMES,
 	blankProject,
 	mergeProjects,
 	overrideOf,
 	parseProjects,
 	PROJECT_LOOKS,
-	type BackdropTheme,
 	type Project,
 	type ProjectAppInfo,
-	type ProjectBackdrop,
 	type ProjectChapter,
 	type ProjectPoint,
 	type ProjectLook,
@@ -51,7 +48,7 @@ import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import { move as moveItem } from '@/apps/settings/showcase';
-import { fillWithSample, LOOK_FIELDS, type LookSample } from '@/apps/settings/lookSamples';
+import { fillWithSample } from '@/apps/settings/lookSamples';
 
 /** 목록의 한 줄: 프로젝트 하나 (코드의 기본값에 덮어쓴 모습) */
 interface Row {
@@ -90,35 +87,8 @@ const LOOKS: Record<ProjectLook, { name: string; note: string }> = {
 	devtool: { name: '개발자 도구', note: '코드와 고정폭 글꼴' },
 	repo: { name: '저장소', note: 'GitHub 저장소 화면' },
 	playful: { name: '놀이', note: '또렷한 색과 둥근 도형' },
-	dialogue: { name: 'RPG 대화창', note: '고전 RPG 대화' },
+	dialogue: { name: 'RPG 대화창', note: '검은 무대의 대화 상자' },
 	custom: { name: '직접 짠 페이지', note: '코드' },
-};
-
-/** dialogue 모양(RPG 대화창)의 배경 장면 이름 */
-const BACKDROP_LABEL: Record<BackdropTheme, string> = {
-	auto: '자동',
-	farm: '농장',
-	town: '도시 거리',
-	office: '사무실',
-	library: '도서관',
-	space: '우주',
-	sea: '바다',
-	forest: '숲',
-	snow: '설산',
-	cafe: '카페',
-	classroom: '교실',
-	lab: '연구실',
-	arcade: '게임장',
-	rooftop: '밤 옥상',
-	desert: '사막',
-};
-
-/** 배경 묶음을 정리한다: 자동 테마는 적지 않고, 아무것도 없으면 필드째 뺀다 */
-const tidyBackdrop = ({ theme, image }: ProjectBackdrop): ProjectBackdrop | undefined => {
-	const out: ProjectBackdrop = {};
-	if (theme && theme !== 'auto') out.theme = theme;
-	if (image) out.image = image;
-	return out.theme || out.image ? out : undefined;
 };
 
 /** 앱이 쓰는 프로젝트 값 (Dock·Launchpad의 앱 목록은 시작할 때 한 번 정한다: apps/manifest.ts) */
@@ -1298,31 +1268,23 @@ const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> 
 			[66, 56, 26, 34, '#c7d2fe', { borderRadius: '14%' }],
 		],
 	},
-	// RPG 대화창: 위는 테두리 친 장면 창(하늘·땅, 상태 창, 가운데 그림), 아래는 흰 대화 상자와 오른쪽 선택지 창
+	// RPG 대화창: 검은 무대 가운데 흰 테두리 그림 액자, 아래는 흰 테두리 대화 상자 (노란 제목, 빨간 하트 커서), 맨 아래 읽음 막대
 	dialogue: {
-		bg: '#f4f4ec',
+		bg: '#000000',
 		parts: [
-			[6, 6, 88, 52, '#8fd0f2', { border: '2px solid #303848' }],
-			[6, 44, 88, 14, '#7cc456', { borderTop: '2px solid #4b8a2e' }],
-			[10, 11, 24, 12, '#f8f8f8', { border: '1.5px solid #303848' }],
-			[13, 18, 17, 2, '#58d080'],
-			[46, 16, 30, 30, '#f8f8f8', { border: '2px solid #303848' }],
-			[
-				6,
-				63,
-				88,
-				31,
-				'#f8f8f8',
-				{ border: '2px solid #303848', outline: '1.5px solid #a8c0e0', outlineOffset: '-4px' },
-			],
-			[11, 70, 7, 11, '#d8e8f8', { border: '1.5px solid #303848' }],
-			[21, 71, 16, 3.5, '#383838'],
-			[48, 63, 46, 31, '#f8f8f8', { border: '2px solid #303848' }],
-			[53, 70, 3, 4, '#383838'],
-			[58, 70, 14, 3.5, '#383838'],
-			[58, 79, 12, 3.5, '#383838'],
-			[76, 70, 12, 3.5, '#383838'],
-			[76, 79, 14, 3.5, '#383838'],
+			[34, 8, 32, 26, '#d8d8d8', { border: '2px solid #ffffff', outline: '2px solid #000000', outlineOffset: '-4px' }],
+			[8, 42, 84, 38, '#000000', { border: '2.5px solid #ffffff' }],
+			[14, 49, 3, 3.5, '#ffffff'],
+			[20, 49, 26, 3.5, '#ffff00'],
+			[20, 56, 52, 3.5, '#ffffff'],
+			[14, 66, 4, 4, '#ff0000', { borderRadius: '50% 50% 0 50%', transform: 'rotate(45deg)' }],
+			[21, 66, 22, 3.5, '#ffff00'],
+			[52, 66, 22, 3.5, '#ffffff'],
+			[21, 72, 18, 3.5, '#ffffff'],
+			[52, 72, 20, 3.5, '#ffffff'],
+			[8, 86, 22, 4, '#ffffff'],
+			[70, 86, 22, 4, '#3a3a3a'],
+			[70, 86, 10, 4, '#ffff00'],
 		],
 	},
 	custom: {
@@ -2387,9 +2349,6 @@ const ProjectEditor = ({
 		setFilled((count) => count + 1);
 		if (tab === 'json') setTab('intro');
 	};
-	/** 지금 고른 모양이 이 필드를 쓰는지 (모양 전용 칸을 보일지) */
-	const lookUses = (field: keyof LookSample) =>
-		draft.look !== 'custom' && (LOOK_FIELDS[draft.look] as readonly string[]).includes(field);
 	const set = (patch: Partial<Project>) => {
 		const next = { ...draft, ...patch };
 		for (const key of Object.keys(patch) as (keyof Project)[]) if (next[key] === undefined) delete next[key];
@@ -2589,47 +2548,6 @@ const ProjectEditor = ({
 											onChange={(look) => set({ look })}
 										/>
 									</Group>
-									{/* 모양 설정: 어떤 모양에서만 쓰는 칸은 그 모양을 골랐을 때만 여기에 보인다 (값은 모양을 바꿔도 남는다) */}
-									{lookUses('art') && (
-										<Group title="장면 그림" label="장면">
-											<ImageField
-												label="장면 그림"
-												shape="wide"
-												value={draft.art}
-												onChange={(art) => set({ art })}
-												hint="RPG 대화창 모양의 표지에 대표 화면 대신 크게 보입니다. 없으면 대표 화면을 씁니다."
-											/>
-										</Group>
-									)}
-									{lookUses('backdrop') && (
-										<Group
-											title="대화창 배경"
-											hint="RPG 대화창 모양의 하늘·바닥·소품을 고릅니다. 자동은 배경 그림이 없으면 대표 화면을 픽셀로 바꿔 깔고, 강조색은 언제나 프로젝트 아이콘의 색을 따릅니다."
-										>
-											<FormRow label="배경 테마" htmlFor="projects-backdrop-theme" align="end">
-												<Popup
-													id="projects-backdrop-theme"
-													value={draft.backdrop?.theme ?? 'auto'}
-													onChange={(theme) =>
-														set({ backdrop: tidyBackdrop({ ...draft.backdrop, theme: theme as BackdropTheme }) })
-													}
-												>
-													{BACKDROP_THEMES.map((theme) => (
-														<option key={theme} value={theme}>
-															{BACKDROP_LABEL[theme]}
-														</option>
-													))}
-												</Popup>
-											</FormRow>
-											<ImageField
-												label="배경 그림"
-												shape="wide"
-												value={draft.backdrop?.image}
-												onChange={(image) => set({ backdrop: tidyBackdrop({ ...draft.backdrop, image }) })}
-												hint="RPG 대화창 모양의 배경으로 씁니다. 그림은 픽셀 모양으로 바뀌어 보입니다."
-											/>
-										</Group>
-									)}
 									<Group title="주소와 기술">
 										<TextField
 											label="저장소"

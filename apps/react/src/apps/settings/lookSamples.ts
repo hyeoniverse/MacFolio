@@ -1,6 +1,6 @@
 // 시스템 설정 › 프로젝트의 '예시로 채우기'가 넣는 가상의 예시 프로젝트. 실제 회사·서비스가 아니다.
 // 아홉 랜딩 템플릿(제품·카드·문서·벤토·키노트·매거진·개발자 도구·저장소·놀이)은 모두 같은 내용(project/landing/content.ts의 landingOf)을 읽으므로 예시 하나(GENERAL_SAMPLE)를 함께 쓴다.
-// 편집 화면이 고치는 칸을 모두 채워 어떤 템플릿에서도 모든 구역이 보이게 한다. RPG 대화창은 배경·장면 그림이 있어 자기 예시를 둔다.
+// 편집 화면이 고치는 칸을 모두 채워 어떤 템플릿에서도 모든 구역이 보이게 한다. RPG 대화창도 같은 예시를 선택지와 대사로 읽는다.
 // 그림은 사이트에 이미 있는 것(배경화면, 사이트 앱 아이콘)만 쓴다: 칸에 들어간 뒤 관리자가 자기 화면으로 바꾼다는 전제다.
 // 모두 desktop-core의 parseProjects 검사를 통과해야 한다 (lookSamples.test.ts)
 import { DEFAULT_LOOK, type Project, type ProjectLook, type ProjectPoint } from '@macfolio/desktop-core/site';
@@ -36,10 +36,7 @@ export const LANDING_FIELDS = [
 	'gallery',
 ] as const satisfies readonly (keyof LookSample)[];
 
-/**
- * 모양마다 그 페이지가 읽는 맨 위 필드. 예시는 이것을 모두 채운다.
- * 편집 화면은 공통 필드 밖의 것(장면 그림 art, 대화창 배경 backdrop)을 그 모양을 골랐을 때만 보인다
- */
+/** 모양마다 그 페이지가 읽는 맨 위 필드. 예시는 이것을 모두 채운다 */
 export const LOOK_FIELDS: Record<SampleLook, readonly (keyof LookSample)[]> = {
 	product: LANDING_FIELDS,
 	friendly: LANDING_FIELDS,
@@ -51,10 +48,9 @@ export const LOOK_FIELDS: Record<SampleLook, readonly (keyof LookSample)[]> = {
 	repo: LANDING_FIELDS,
 	playful: LANDING_FIELDS,
 	// RPG 대화창은 폴더 구조를 읽지 않는다 (대화 상자에 트리를 담기 어렵다)
-	dialogue: [...LANDING_FIELDS.filter((field) => field !== 'structure'), 'art', 'backdrop'],
+	dialogue: LANDING_FIELDS.filter((field) => field !== 'structure'),
 };
 
-const WALL = (name: string) => `/imgs/wallpapers/${name}.jpg`;
 /** 예시의 화면: 실제 앱 화면 캡처 (배경화면보다 제품 페이지답게 보인다) */
 const SHOT = (name: string) => `/imgs/projects/${name}.jpg`;
 
@@ -242,122 +238,7 @@ const general: LookSample = {
 /** 네 랜딩 템플릿이 함께 쓰는 예시 (모양은 기본 모양) */
 export const GENERAL_SAMPLE: LookSample = general;
 
-const dialogue: LookSample = {
-	name: '픽셀팜 – 농장 경영 게임',
-	look: 'dialogue',
-	tagline: '어서 와요! 오늘도 밭에 물 주러 왔나요?',
-	description: '씨앗을 심고 가꾸고 시장에 팔며 작은 농장을 키우는 픽셀 아트 농장 경영 게임',
-	context: '팀 프로젝트 (3명, 웹 게임)',
-	role: '게임 프로그래밍과 대화 시스템 담당',
-	period: '2025.06.02 – 2025.08.22',
-	language: 'C#',
-	stack: ['Unity', 'C#', 'Tilemap', 'Ink', 'WebGL', 'Firebase'],
-	facts: [
-		{ value: '24종', label: '기를 수 있는 작물' },
-		{ value: '4계절', label: '바뀌는 들판' },
-		{ value: '30분', label: '게임 속 한 해' },
-	],
-	highlights: [
-		pt(
-			'심고, 물 주고, 거두기',
-			'씨앗을 심고 날마다 물을 주면 작물이 자라 거둘 수 있습니다.',
-			'작물마다 자라는 날 수와 좋아하는 계절이 달라 무엇을 언제 심을지 고르는 재미가 있습니다.'
-		),
-		pt(
-			'마을 사람들',
-			'시장 상인, 이웃 농부, 우체부와 대화하며 부탁을 들어줍니다.',
-			'부탁을 들어주면 친밀도가 오르고 새 씨앗이나 도구를 얻습니다.'
-		),
-		pt(
-			'계절과 날씨',
-			'계절이 바뀌면 들판의 색과 자라는 작물이 바뀌고, 비 오는 날은 물을 주지 않아도 됩니다.',
-			'겨울에는 온실에서만 작물을 기를 수 있습니다.'
-		),
-		pt(
-			'시장',
-			'거둔 작물을 시장에 팔아 돈을 모으고 농장을 넓힙니다.',
-			'많이 팔린 작물은 값이 내려가 여러 작물을 고루 기르게 됩니다.'
-		),
-	],
-	build: [
-		pt(
-			'대화 스크립트',
-			'Ink로 대화를 적어 개발자가 아니어도 대사와 선택지를 고칠 수 있습니다.',
-			'대화 중 선택은 게임 변수로 이어져 다음 대화가 달라집니다.'
-		),
-		pt(
-			'자라는 작물',
-			'작물은 하루가 지날 때 한꺼번에 자라도록 계산해 밭이 넓어도 느려지지 않습니다.',
-			'화면에 보이는 칸만 그림을 바꿉니다.'
-		),
-		pt(
-			'저장',
-			'하루가 끝나 잠들 때 농장 상태를 저장하고, 브라우저를 닫아도 이어서 합니다.',
-			'로그인하면 저장을 서버에도 남겨 다른 기기에서 이어 합니다.'
-		),
-	],
-	usage: [
-		pt('시작', '새 게임을 누르고 농장 이름을 지으면 첫날 아침이 밝습니다.'),
-		pt('이어 하기', '이어 하기를 누르면 마지막으로 잠든 날부터 시작합니다.'),
-	],
-	timeline: [
-		{ date: '2025.06.02', label: '게임 규칙과 그림 방향 정하기' },
-		{ date: '2025.06.16', label: '타일맵 농장과 캐릭터 움직임' },
-		{ date: '2025.07.07', label: '작물 성장과 계절' },
-		{ date: '2025.07.21', label: '대화 시스템과 마을 사람들' },
-		{ date: '2025.08.11', label: '시장과 저장' },
-		{ date: '2025.08.22', label: '발표' },
-	],
-	specs: [
-		{ label: '엔진', value: 'Unity, C#' },
-		{ label: '맵', value: 'Tilemap, Rule Tile' },
-		{ label: '대화', value: 'Ink 스크립트' },
-		{ label: '저장', value: '브라우저 저장소, Firebase' },
-		{ label: '배포', value: 'WebGL 빌드, 정적 호스팅' },
-	],
-	contributions: ['대화 시스템과 Ink 연동', '작물 성장과 계절 계산', '저장과 이어 하기', '시장 가격 규칙'],
-	chapters: [
-		{
-			title: '그림 이야기',
-			lead: '16픽셀 칸 하나에 작물의 자라는 단계를 담았습니다. 작물마다 다섯 장씩, 모두 120장을 그렸습니다.',
-			points: [
-				pt('계절 색', '계절마다 같은 타일의 색만 바꿔 그림 수를 줄였습니다.'),
-				pt('작은 움직임', '바람이 불면 작물이 한 칸씩 흔들립니다.'),
-			],
-			image: { src: WALL('ios-earth'), alt: '계절이 바뀐 들판' },
-		},
-		{
-			title: '함께 만든 방법',
-			lead: '세 명이 그림, 기획, 프로그래밍을 나눠 맡고 매주 한 판씩 직접 해 보며 고쳤습니다.',
-			image: { src: WALL('ventura-light'), alt: '매주 금요일 시연 자리' },
-			points: [
-				pt('주간 시연', '금요일마다 그 주에 만든 것을 직접 해 보고 고칠 것을 적었습니다.'),
-				pt('대사 고치기', '기획자가 Ink 파일을 바로 고쳐 빌드 없이 대사를 바꿨습니다.'),
-			],
-		},
-	],
-	controls: [
-		{ keys: ['↑', '↓', '←', '→'], label: '움직이기' },
-		{ keys: ['Space'], label: '심기, 물 주기, 거두기' },
-		{ keys: ['E'], label: '대화하기' },
-		{ keys: ['Tab'], label: '가방 열기' },
-	],
-	credits: [
-		{ role: '대화', name: 'Ink', by: 'inkle', href: 'https://www.inklestudios.com/ink/' },
-		{ role: '효과음', name: '농장 효과음 묶음', by: '팀 사운드 담당', note: '직접 녹음' },
-	],
-	backdrop: { theme: 'farm' },
-	icon: '/imgs/weather.svg',
-	image: WALL('ios-earth'),
-	art: WALL('ios-earth'),
-	gallery: [
-		{ src: WALL('ios-earth'), caption: '봄의 농장' },
-		{ src: WALL('sequoia-light'), caption: '마을 시장' },
-		{ src: WALL('ios-sky-light'), caption: '비 오는 날' },
-	],
-};
-
-/** 모양마다의 예시: 네 랜딩 템플릿은 같은 예시를 모양만 바꿔 쓴다 */
+/** 모양마다의 예시: 모든 모양이 같은 예시를 모양만 바꿔 쓴다 */
 export const LOOK_SAMPLES: Record<SampleLook, LookSample> = {
 	product: { ...general, look: 'product' },
 	friendly: { ...general, look: 'friendly' },
@@ -368,7 +249,8 @@ export const LOOK_SAMPLES: Record<SampleLook, LookSample> = {
 	devtool: { ...general, look: 'devtool' },
 	repo: { ...general, look: 'repo' },
 	playful: { ...general, look: 'playful' },
-	dialogue,
+	// RPG 대화창도 같은 내용을 선택지와 대사로 읽는다
+	dialogue: { ...general, look: 'dialogue' },
 };
 
 /** 이 모양의 예시 (직접 짠 페이지는 공통 예시를 쓰고 모양은 그대로 둔다) */

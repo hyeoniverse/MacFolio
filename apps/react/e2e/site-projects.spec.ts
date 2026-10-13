@@ -354,42 +354,39 @@ test.describe('프로젝트 관리', () => {
 		await expect(confirm).toContainText('입력한 내용을 예시로 바꿉니다.');
 		await confirm.getByRole('button', { name: '채우기' }).click();
 
-		// RPG 대화창의 예시: 이름·큰 제목·기간이 채워지고, 저장소와 모양은 그대로
-		await expect(editor.getByRole('textbox', { name: '이름', exact: true })).toHaveValue('픽셀팜 – 농장 경영 게임');
+		// RPG 대화창도 공통 예시를 쓴다: 이름·큰 제목·기간이 채워지고, 저장소와 모양은 그대로
+		await expect(editor.getByRole('textbox', { name: '이름', exact: true })).toHaveValue('북클럽 – 독서 모임 플랫폼');
 		await expect(editor.getByRole('textbox', { name: '큰 제목' })).toHaveValue(
-			'어서 와요! 오늘도 밭에 물 주러 왔나요?'
+			'같은 책을 읽는 사람들이 한자리에 모입니다.'
 		);
-		await expect(editor.getByRole('button', { name: /^시작일 2025\. 6\. 2\./ })).toBeVisible();
+		await expect(editor.getByRole('button', { name: /^시작일 2025\. 3\. 4\./ })).toBeVisible();
 		await expect(editor.getByRole('textbox', { name: '저장소' })).toHaveValue(
 			'https://github.com/hyeoniverse/pixel-farm'
 		);
 		await expect(editor.getByRole('radio', { name: 'RPG 대화창' })).toHaveAttribute('aria-checked', 'true');
-		// 미리 보기의 대화창에 예시의 인사(큰 제목)가 보이고, 배경은 예시의 농장
+		// 미리 보기의 대화창에 예시의 인사(큰 제목)가 보인다
 		const preview = editor.getByRole('complementary', { name: '미리 보기' });
-		await expect(preview.getByRole('dialog', { name: '대화' })).toContainText('오늘도 밭에 물 주러 왔나요?');
-		await expect(preview.locator('.dl')).toHaveAttribute('data-theme', 'farm');
+		await expect(preview.getByRole('dialog', { name: '대화' })).toContainText('한자리에 모입니다.');
+		// RPG 대화창만 따로 고르는 칸(배경 테마·배경 그림·장면 그림)은 없다
+		await expect(editor.getByRole('combobox', { name: '배경 테마' })).toHaveCount(0);
+		await expect(editor.getByText('장면 그림')).toHaveCount(0);
+		await expect(editor.getByText('배경 그림')).toHaveCount(0);
 
 		// 내용 탭: 주요 기능·장·조작법이 예시로 채워져 있다. 줄을 눌러 시트를 열고 고쳐 쓴다
 		await editor.getByRole('tab', { name: '내용' }).click();
 		const form = editor.locator('.projects-editor-form');
 		const highlights = form.getByRole('region', { name: '주요 기능', exact: true });
-		await expect(highlights.getByRole('listitem')).toHaveCount(4);
+		await expect(highlights.getByRole('listitem')).toHaveCount(5);
 		await highlights.getByRole('button', { name: '주요 기능 1 편집' }).click();
 		const sheet = settings.getByRole('dialog', { name: '주요 기능 1' });
-		await expect(sheet.getByRole('textbox', { name: '주요 기능 1 제목' })).toHaveValue('심고, 물 주고, 거두기');
+		await expect(sheet.getByRole('textbox', { name: '주요 기능 1 제목' })).toHaveValue('책으로 모임 찾기');
 		await expect(sheet.getByRole('textbox', { name: '주요 기능 1 자세히' })).not.toHaveValue('');
-		await sheet.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('씨앗부터 수확까지');
+		await sheet.getByRole('textbox', { name: '주요 기능 1 제목' }).fill('책 제목으로 모임 찾기');
 		await sheet.getByRole('button', { name: '완료' }).click();
-		await expect(highlights.getByRole('listitem').first()).toContainText('씨앗부터 수확까지');
+		await expect(highlights.getByRole('listitem').first()).toContainText('책 제목으로 모임 찾기');
 		await expect(form.getByRole('region', { name: '장', exact: true }).getByRole('listitem')).toHaveCount(2);
 		// 조작법은 어느 모양에서나 그리는 공통 칸이라 내용 탭에 있다
-		await expect(form.getByRole('textbox', { name: '조작법 1 키' })).toHaveValue('↑, ↓, ←, →');
-		// 대화창 배경은 RPG 대화창 모양에서만 쓰는 칸이라 소개 탭의 페이지 모양 아래에만 있다
-		await editor.getByRole('tab', { name: '소개' }).click();
-		await expect(editor.getByRole('combobox', { name: '배경 테마' })).toBeVisible();
-		await editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { name: '문서' }).click();
-		await expect(editor.getByRole('combobox', { name: '배경 테마' })).toHaveCount(0);
-		await editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { name: 'RPG 대화창' }).click();
+		await expect(form.getByRole('textbox', { name: '조작법 1 키' })).toHaveValue('⌘, K');
 
 		await editor.getByRole('button', { name: '완료' }).click();
 		await expect(editor).toBeHidden();
@@ -399,12 +396,12 @@ test.describe('프로젝트 관리', () => {
 		// 저장한 덮어쓰기는 서버와 같은 규칙을 그대로 통과한다
 		const saved = api.siteProjects?.items.find((item) => item.id === 'pixel-farm');
 		expect(saved?.override).toMatchObject({
-			name: '픽셀팜 – 농장 경영 게임',
+			name: '북클럽 – 독서 모임 플랫폼',
 			look: 'dialogue',
 			url: 'https://github.com/hyeoniverse/pixel-farm',
-			backdrop: { theme: 'farm' },
-			highlights: expect.arrayContaining([expect.objectContaining({ title: '씨앗부터 수확까지' })]),
+			highlights: expect.arrayContaining([expect.objectContaining({ title: '책 제목으로 모임 찾기' })]),
 		});
+		expect(saved?.override).not.toHaveProperty('backdrop');
 		const parsed = parseProjects({ items: [saved] });
 		expect('errors' in parsed ? parsed.errors : []).toEqual([]);
 		expect('value' in parsed && parsed.value.items[0].override).toEqual(saved?.override);
@@ -598,47 +595,6 @@ test.describe('프로젝트 관리', () => {
 			chapters: { points: { title: string }[] }[];
 		};
 		expect(saved.chapters[0].points[1].title).toBe('색인 없이 찾기');
-	});
-
-	test('관리자: RPG 대화창의 배경 테마와 배경 그림을 고르면 미리 보기의 장면이 바뀐다', async ({ page }) => {
-		const api = await fakeApi(page, { signedIn: true });
-		await enterDesktop(page);
-		const settings = await openProjectsPane(page);
-		await settings.getByRole('button', { name: '편집', exact: true }).click();
-		const list = settings.getByRole('list', { name: '프로젝트' });
-		await list.getByRole('listitem').filter({ hasText: 'QRU' }).getByRole('button', { name: '편집' }).click();
-		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
-		// 대화창 배경은 그 모양에서만 쓰는 칸이라, 다른 모양에서는 보이지 않는다
-		await expect(editor.getByRole('combobox', { name: '배경 테마' })).toHaveCount(0);
-		// 페이지 모양은 그림 카드에서 고른다 (라디오). 고르면 그 아래에 그 모양의 칸이 나온다
-		await editor.getByRole('radio', { name: 'RPG 대화창' }).click();
-		await expect(editor.getByRole('radio', { name: 'RPG 대화창' })).toHaveAttribute('aria-checked', 'true');
-		const scene = editor.getByRole('complementary', { name: '미리 보기' }).locator('.dl');
-		// 코드의 기본값: QRU는 사무실
-		await expect(scene).toHaveAttribute('data-theme', 'office');
-
-		const theme = editor.getByRole('combobox', { name: '배경 테마' });
-		await expect(theme).toHaveValue('office');
-		await theme.selectOption('sea');
-		await expect(scene).toHaveAttribute('data-theme', 'sea');
-		// 테마를 고르고 배경 그림이 없으면 픽셀 그림을 깔지 않는다
-		await expect(scene.locator('.dl-pixel canvas')).toHaveCount(0);
-
-		// 배경 그림을 고르면 픽셀로 바꿔 하늘 자리에 깐다
-		await editor.getByRole('combobox', { name: '배경 그림 고르기' }).selectOption('/imgs/projects/qru/screenshot.jpg');
-		await expect(scene.locator('.dl-pixel canvas')).toHaveCount(1);
-		await expect(scene).toHaveAttribute('data-pixel', '');
-		await expect(editor.getByRole('textbox', { name: '배경 그림 주소' })).toHaveValue(
-			'/imgs/projects/qru/screenshot.jpg'
-		);
-
-		await editor.getByRole('button', { name: '완료' }).click();
-		await settings.getByRole('button', { name: '완료' }).click();
-		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
-		expect(api.siteProjects?.items.find((item) => item.id === 'qru')?.override).toMatchObject({
-			look: 'dialogue',
-			backdrop: { theme: 'sea', image: '/imgs/projects/qru/screenshot.jpg' },
-		});
 	});
 
 	test('관리자: 페이지 모양만 바꾸면 새로고침 없이 열려 있는 Safari 탭이 바로 바뀐다', async ({ page }) => {
