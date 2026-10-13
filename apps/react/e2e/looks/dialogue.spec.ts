@@ -2,6 +2,7 @@
 import type { Locator } from '@playwright/test';
 import { test, expect } from '../fixtures';
 import { openLook } from './open';
+import { expectTheme } from './landing';
 
 const dialogOf = (panel: Locator) => panel.getByRole('dialog', { name: '대화' });
 const nextOf = (dialog: Locator) => dialog.getByRole('button', { name: '다음' });
@@ -21,7 +22,9 @@ test('dialogue: 인사 → 선택지 → 주요 기능을 한 장씩 → 읽음 
 
 	// 인사: tagline (움직임 줄이기라 타자 없이 바로 다 보인다)
 	await expect(dialog).toContainText('농장에 작은 소동이 생겼어요');
-	await expect(panel.getByRole('list', { name: '숫자' })).toContainText('20마리');
+	// 상태 줄: 이름과 읽은 주제 수 (HP 막대처럼)
+	await expect(panel.locator('.dl-status')).toContainText('SproutFarm');
+	await expect(panel.locator('.dl-hp-count')).toContainText('0 /');
 
 	// 선택지
 	await nextOf(dialog).click();
@@ -72,26 +75,24 @@ test('dialogue: 조작법이 없는 프로젝트(qru)도 깨지지 않는다', a
 	await expect(dialog.getByRole('button', { name: '링크 줘' })).toBeVisible();
 });
 
-test('dialogue: 숫자 판에 무엇의 숫자인지 늘 보이고, 선택지 커서를 옮기면 장면이 그 주제의 그림으로 바뀐다', async ({
-	page,
-}) => {
+test('dialogue: 선택지 커서를 옮기면 무대의 그림이 그 주제의 것으로 바뀌고, 숫자는 대사로 읽는다', async ({ page }) => {
 	const { safari, panel } = await openLook(page, { id: 'sproutfarm', tab: /SproutFarm/, look: 'dialogue' });
-	// 장면과 숫자 판은 창이 넉넉할 때 보인다
+	// 무대는 창이 넉넉할 때 보인다
 	await safari.getByRole('button', { name: '전체 화면' }).click();
 	const dialog = dialogOf(panel);
 
-	// HUD: 값 옆의 설명이 화면에 보인다
-	const stats = panel.getByRole('list', { name: '숫자' });
-	await expect(stats.getByText('자정 전에 데려올 동물')).toBeVisible();
-	await expect(stats.getByText('서버에서 다시 계산하는 랭킹')).toBeVisible();
-
-	// 선택지: 커서를 옮기면 장면 액자의 그림이 바뀐다
+	// 선택지: 커서를 옮기면 액자의 그림이 바뀐다
 	await nextOf(dialog).click();
 	const preview = panel.locator('.dl-preview .dl-shot-frame img');
 	await expect(preview).toBeVisible();
 	const first = await preview.getAttribute('src');
 	await dialog.getByRole('button', { name: '어떻게 만들었어?' }).hover();
 	await expect(preview).not.toHaveAttribute('src', first ?? '');
+
+	// 숫자는 값과 무엇의 숫자인지를 한 장씩
+	await dialog.getByRole('button', { name: '숫자로 보여줘' }).click();
+	await expect(dialog).toContainText('20마리');
+	await expect(dialog).toContainText('자정 전에 데려올 동물');
 });
 
 test('dialogue: 화면 모음 주제는 그림을 한 장씩 캡션과 함께 넘긴다', async ({ page }) => {
@@ -153,39 +154,56 @@ test('dialogue: Z로 넘기고 고르며, →는 옆 열로, X는 장 목록에�
 	await expect(dialog).toContainText('2 / ');
 });
 
-test('dialogue: 배경은 프로젝트에 정한 테마를 따른다', async ({ page }) => {
-	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue' });
-	const scene = panel.locator('.dl');
-	// 코드의 기본값: QRU는 사무실 (그림을 픽셀로 깔지 않는다)
-	await expect(scene).toHaveAttribute('data-theme', 'office');
-	await expect(scene.locator('.dl-pixel canvas')).toHaveCount(0);
+test('dialogue: 라이트·다크 모두 검은 무대이고, 그림은 원래 모습 그대로 흰 액자에 띄운다', async ({ page }) => {
+	await expectTheme(page, 'dialogue', { light: 'rgb(0, 0, 0)', dark: 'rgb(0, 0, 0)' });
+	const { safari, panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue' });
+	await safari.getByRole('button', { name: '전체 화면' }).click();
+	const shot = panel.locator('.dl-stage .dl-shot-frame img');
+	await expect(shot).toBeVisible();
+	// 그림을 픽셀로 바꾸거나 풍경을 깔지 않는다
+	expect(await shot.evaluate((img) => getComputedStyle(img).imageRendering)).toBe('auto');
+	await expect(panel.locator('.dl-stage canvas')).toHaveCount(0);
+	const box = dialogOf(panel);
+	expect(await box.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('6px');
+	expect(await box.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe('rgb(255, 255, 255)');
 });
 
-test('dialogue: 배경 테마가 자동이면 대표 화면을 픽셀로 바꿔 하늘 자리에 깐다', async ({ page }) => {
-	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue', override: { backdrop: null } });
-	const scene = panel.locator('.dl');
-	await expect(scene).toHaveAttribute('data-theme', 'auto');
-	await expect(scene.locator('.dl-pixel canvas')).toHaveCount(1);
-	await expect(scene).toHaveAttribute('data-pixel', '');
-});
-
-test('dialogue: 새 배경 테마(숲)를 고르면 그 장면을 깐다', async ({ page }) => {
-	const { panel } = await openLook(page, {
+test('dialogue: 그림이 하나도 없으면 무대 가운데에 프로젝트 아이콘 하나만 둔다', async ({ page }) => {
+	const { safari, panel } = await openLook(page, {
 		id: 'qru',
 		tab: /QRU/,
 		look: 'dialogue',
-		override: { backdrop: { theme: 'forest' } },
+		override: {
+			image: '',
+			gallery: [],
+			galleryFolder: null,
+			highlights: [{ title: '한 장', body: '그림 없는 기능입니다.' }],
+			build: [],
+			usage: null,
+			chapters: null,
+		},
 	});
-	const scene = panel.locator('.dl');
-	await expect(scene).toHaveAttribute('data-theme', 'forest');
-	await expect(scene.locator('.dl-ground')).toHaveCount(1);
-	await expect(scene.locator('.dl-pixel canvas')).toHaveCount(0);
+	await safari.getByRole('button', { name: '전체 화면' }).click();
+	const dialog = dialogOf(panel);
+	await expect(panel.locator('.dl-stage .dl-sign .dl-sign-icon')).toBeVisible();
+	await expect(panel.locator('.dl-stage .dl-shot-frame')).toHaveCount(0);
+	await nextOf(dialog).click();
+	await dialog.getByRole('button', { name: '주요 기능 알려줘' }).click();
+	await expect(dialog).toContainText('그림 없는 기능입니다.');
+	await expect(panel.locator('.dl-stage .dl-sign-icon')).toBeVisible();
 });
 
-test('dialogue: 자동이면 바닥 타일 없이 픽셀 그림이 화면 전체를 덮는다', async ({ page }) => {
-	const { panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue', override: { backdrop: null } });
-	const scene = panel.locator('.dl');
-	await expect(scene).toHaveAttribute('data-pixel', '');
-	await expect(scene.locator('.dl-ground')).toHaveCount(0);
-	await expect(scene.locator('.dl-pixel[data-full]')).toHaveCount(1);
+test('dialogue: 좁은 창에서는 선택지가 한 열이고 방향 키 ↓로 차례대로 내려간다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'hyeoniverse', tab: /HYEONIVERSE/, look: 'dialogue' });
+	await panel.evaluate((el) => {
+		const win = el.closest('[data-app="safari"]') as HTMLElement | null;
+		if (win) win.style.width = '560px';
+	});
+	const dialog = dialogOf(panel);
+	await nextOf(dialog).click();
+	await expect(dialog.locator('.dl-menu[data-open] .dl-choices')).toHaveAttribute('data-cols', '1');
+	const active = dialog.locator('.dl-menu[data-open] button[data-active]');
+	await expect(active).toContainText('주요 기능 알려줘');
+	await page.keyboard.press('ArrowDown');
+	await expect(active).toContainText('어떻게 만들었어?');
 });
