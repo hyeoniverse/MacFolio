@@ -88,9 +88,19 @@ test('repo: 파일 트리의 docs/ 문서를 누르면 README 상자가 그 문�
 	// README.md 줄은 README로 돌아간다
 	await article.locator('.rp-readme-row').click();
 	await expect(docTabs(article).getByRole('button', { name: 'README' })).toHaveAttribute('aria-current', 'page');
+	// 문서를 열어도 페이지의 스크롤 상자만 움직이고, 창을 품은 바깥 상자는 밀리지 않는다 (터미널 줄 아래가 비지 않는다)
+	const outerScroll = () =>
+		article.evaluate((node) => {
+			const page = node.closest('.safari-page');
+			let sum = 0;
+			for (let el = page?.parentElement; el; el = el.parentElement) sum += el.scrollTop;
+			return sum;
+		});
+	expect(await outerScroll()).toBe(0);
 
 	// 터미널: ls docs와 cat
 	await article.getByRole('button', { name: '터미널' }).click();
+	expect(await outerScroll()).toBe(0);
 	const drawer = article.getByRole('complementary', { name: '터미널' });
 	const input = drawer.getByRole('textbox', { name: '명령 입력' });
 	await input.fill('ls docs');
