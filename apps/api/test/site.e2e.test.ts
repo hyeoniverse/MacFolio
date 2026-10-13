@@ -134,6 +134,12 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 						image: '',
 						galleryFolder: '/imgs/projects/qru/screens',
 						app: { label: '새 앱', icon: 'projects/new-project/app-icon.png' },
+						// 포트폴리오 칸: 트러블슈팅, 팀원, 배포 결과물
+						troubleshooting: [
+							{ title: '느린 첫 화면', problem: '4초', cause: '큰 번들', solution: '나눠 부름', result: '1초' },
+						],
+						team: [{ name: '김현', role: '프론트엔드', url: 'https://github.com/hyeoniverse', me: true }],
+						deployments: [{ label: '웹', url: 'https://new-project.example.com', platform: 'Vercel' }],
 					},
 				},
 			],
@@ -142,11 +148,18 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 		const bad = await request(server)
 			.put('/site/projects')
 			.set('Cookie', adminCookie)
-			.send({ items: [{ id: 'safari' }, { id: 'x', override: { url: 'javascript:alert(1)' } }] })
+			.send({
+				items: [
+					{ id: 'safari' },
+					{ id: 'x', override: { url: 'javascript:alert(1)' } },
+					{ id: 'y', override: { team: [{ name: '김', role: '화면', url: 'javascript:alert(1)' }] } },
+				],
+			})
 			.expect(400);
 		expect(bad.body.message).toEqual([
 			"프로젝트 safari: 'safari'는 이 사이트의 앱 이름이라 쓸 수 없습니다.",
 			'프로젝트 x.url: https:// 주소여야 합니다.',
+			'프로젝트 y.team[0].url: https:// 주소여야 합니다.',
 		]);
 
 		const saved = await request(server).put('/site/projects').set('Cookie', adminCookie).send(projects).expect(200);

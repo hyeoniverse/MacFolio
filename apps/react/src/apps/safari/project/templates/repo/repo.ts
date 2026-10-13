@@ -220,11 +220,14 @@ const DOC_FILES: Record<Exclude<LandingSectionKind, 'stats'>, { file: string; ic
 	screens: { file: 'SCREENSHOTS.md', icon: 'fa-regular fa-images' },
 	steps: { file: 'USAGE.md', icon: 'fa-solid fa-list-ol' },
 	built: { file: 'ARCHITECTURE.md', icon: 'fa-solid fa-sitemap' },
+	troubleshooting: { file: 'TROUBLESHOOTING.md', icon: 'fa-solid fa-bug' },
 	stories: { file: 'STORIES.md', icon: 'fa-regular fa-comments' },
 	controls: { file: 'CONTROLS.md', icon: 'fa-regular fa-keyboard' },
 	timeline: { file: 'CHANGELOG.md', icon: 'fa-solid fa-tag' },
 	tech: { file: 'TECH.md', icon: 'fa-solid fa-microchip' },
+	team: { file: 'TEAM.md', icon: 'fa-solid fa-users' },
 	role: { file: 'CONTRIBUTING.md', icon: 'fa-solid fa-user-check' },
+	deployments: { file: 'DEPLOYMENT.md', icon: 'fa-solid fa-rocket' },
 	credits: { file: 'CREDITS.md', icon: 'fa-solid fa-scale-balanced' },
 };
 
@@ -302,6 +305,34 @@ function sectionText(section: LandingSection): string[] {
 			if (section.period) lines.push(`- **기간**: ${section.period}`);
 			if (section.role || section.context || section.period) lines.push('');
 			lines.push(...section.contributions.map((item) => `- [x] ${item}`));
+			break;
+		case 'troubleshooting':
+			section.items.forEach((item, i) => {
+				if (i > 0) lines.push('');
+				lines.push(`### ${item.title}`, '');
+				lines.push(`- **문제**: ${item.problem}`);
+				if (item.cause) lines.push(`- **원인**: ${item.cause}`);
+				lines.push(`- **해결**: ${item.solution}`);
+				if (item.result) lines.push(`- **결과**: ${item.result}`);
+			});
+			break;
+		case 'team':
+			lines.push('| 이름 | 역할 |', '| --- | --- |');
+			lines.push(
+				...section.members.map(
+					(member) =>
+						`| ${member.url ? `[${member.name}](${member.url})` : member.name}${member.me ? ' (나)' : ''} | ${member.role} |`
+				)
+			);
+			break;
+		case 'deployments':
+			lines.push(
+				...section.items.map((item) => {
+					const name = item.url ? `[${item.label}](${item.url})` : item.label;
+					const extra = [item.platform, item.note].filter(Boolean).join(' — ');
+					return `- ${name}${extra ? `: ${extra}` : ''}`;
+				})
+			);
 			break;
 		case 'credits':
 			lines.push(

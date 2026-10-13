@@ -1,17 +1,23 @@
 // repo 템플릿의 문서(README.md와 docs/*.md): 랜딩 구역을 GitHub가 그리는 마크다운처럼 그린다. 숫자는 README 첫머리의 지표 칸, 기능은 그림 카드,
-// 화면은 스크린숏 표, 쓰는 법은 번호 목록, 만든 방식은 카드, 이야기는 인용과 표, 조작법은 글쇠 표, 진행 과정은 릴리스 목록,
-// 기술은 Built with 주제와 표와 폴더 구조 코드 블록, 맡은 일은 할 일 목록, 출처는 표
+// 화면은 스크린숏 표, 쓰는 법은 번호 목록, 구현 방법은 카드, 이야기는 인용과 표, 조작법은 글쇠 표, 진행 과정은 릴리스 목록,
+// 기술은 Built with 주제와 표와 폴더 구조 코드 블록, 내 역할은 할 일 목록, 출처는 표.
+// 트러블슈팅은 문제·원인·해결·결과를 GitHub 알림 상자(WARNING·NOTE·TIP·IMPORTANT)로, 팀원은 사진 달린 표, 배포 결과물은 Deployments 목록
 import React from 'react';
 import type { ProjectFact } from '@/shared/profile';
 import {
+	FaIcon,
 	iconOf,
 	LandingSections,
-	type Landing,
 	Media,
+	MemberAvatar,
+	troubleIcon,
+	troubleSteps,
+	type Landing,
 	type LandingMedia,
 	type LandingPoint,
 	type LandingSection,
 	type SectionRenderers,
+	type TroubleStepKey,
 } from '@/apps/safari/project/landing';
 import { LANGUAGE_COLORS, tagsOf } from './repo';
 
@@ -81,6 +87,14 @@ const wideOf = (items: LandingPoint[]) =>
 
 /** 링크가 걸린 이름 (새 탭) */
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
+
+/** 트러블슈팅의 단계를 GitHub 알림 상자로: 문제는 WARNING, 원인은 NOTE, 해결은 TIP, 결과는 IMPORTANT */
+const ALERTS: Record<TroubleStepKey, { kind: string; icon: string }> = {
+	problem: { kind: 'warning', icon: 'fa-solid fa-triangle-exclamation' },
+	cause: { kind: 'note', icon: 'fa-solid fa-circle-info' },
+	solution: { kind: 'tip', icon: 'fa-regular fa-lightbulb' },
+	result: { kind: 'important', icon: 'fa-regular fa-message' },
+};
 
 const README_RENDERERS: SectionRenderers = {
 	stats: ({ section }) => (
@@ -182,6 +196,34 @@ const README_RENDERERS: SectionRenderers = {
 			</>
 		);
 	},
+	troubleshooting: ({ section }) => (
+		<>
+			<h2>
+				{section.label}
+				<span className="rp-count">{section.items.length}</span>
+			</h2>
+			<div className="rp-troubles">
+				{section.items.map((item) => (
+					<article key={item.title} className="rp-trouble" aria-label={item.title}>
+						<h3>
+							<FaIcon icon={troubleIcon(item)} className="rp-md-icon" />
+							{item.title}
+						</h3>
+						{troubleSteps(item).map((step) => (
+							<div key={step.key} className="rp-alert" data-alert={ALERTS[step.key].kind}>
+								<p className="rp-alert-title">
+									<i className={ALERTS[step.key].icon} aria-hidden="true" />
+									{step.label}
+								</p>
+								<p>{step.text}</p>
+							</div>
+						))}
+						{item.image && <Shot media={item.image} />}
+					</article>
+				))}
+			</div>
+		</>
+	),
 	stories: ({ section }) => (
 		<>
 			<h2>{section.label}</h2>
@@ -328,6 +370,42 @@ const README_RENDERERS: SectionRenderers = {
 			)}
 		</>
 	),
+	team: ({ section }) => (
+		<>
+			<h2>
+				{section.label}
+				<span className="rp-count">{section.members.length}</span>
+			</h2>
+			<table className="rp-table rp-team">
+				<thead>
+					<tr>
+						<th scope="col">이름</th>
+						<th scope="col">역할</th>
+					</tr>
+				</thead>
+				<tbody>
+					{section.members.map((member) => (
+						<tr key={member.name} data-me={member.me || undefined}>
+							<td>
+								<span className="rp-member">
+									<MemberAvatar member={member} className="rp-avatar" />
+									{member.url ? (
+										<a href={member.url} {...external}>
+											{member.name}
+										</a>
+									) : (
+										<strong>{member.name}</strong>
+									)}
+									{member.me && <span className="rp-latest-badge">나</span>}
+								</span>
+							</td>
+							<td>{member.role}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</>
+	),
 	role: ({ section }) => (
 		<>
 			<h2>{section.label}</h2>
@@ -365,6 +443,46 @@ const README_RENDERERS: SectionRenderers = {
 					))}
 				</ul>
 			)}
+		</>
+	),
+	deployments: ({ section }) => (
+		<>
+			<h2>
+				{section.label}
+				<span className="rp-count">{section.items.length}</span>
+			</h2>
+			<ul className="rp-deploys">
+				{section.items.map((item) => (
+					<li key={item.label} data-image={item.image ? '' : undefined}>
+						<span className="rp-deploy-icon" aria-hidden="true">
+							<FaIcon icon={item.icon} />
+						</span>
+						<div className="rp-deploy-text">
+							<h3>
+								{item.url ? (
+									<a href={item.url} {...external}>
+										{item.label}
+									</a>
+								) : (
+									item.label
+								)}
+								<span className="rp-deploy-state" data-live={item.url ? '' : undefined}>
+									{item.url ? '공개' : '링크 없음'}
+								</span>
+							</h3>
+							{(item.platform || item.host) && (
+								<p className="rp-deploy-meta">
+									{item.platform}
+									{item.platform && item.host && ' · '}
+									{item.host && <code>{item.host}</code>}
+								</p>
+							)}
+							{item.note && <p>{item.note}</p>}
+						</div>
+						{item.image && <Shot media={item.image} />}
+					</li>
+				))}
+			</ul>
 		</>
 	),
 	credits: ({ section }) => (

@@ -1,7 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { blankProject, type Project } from '@macfolio/desktop-core/site';
 import { GENERAL_SAMPLE } from '@/apps/settings/lookSamples';
-import { iconOf, landingOf, pointOf, SECTION_LABELS, SECTION_ORDER, type LandingSectionKind } from './content';
+import {
+	deploymentIcon,
+	faClass,
+	iconOf,
+	initialsOf,
+	landingOf,
+	pointOf,
+	SECTION_LABELS,
+	SECTION_ORDER,
+	troubleSteps,
+	type LandingSectionKind,
+} from './content';
 
 const empty = (extra: Partial<Project> = {}): Project => ({
 	...blankProject('empty'),
@@ -45,12 +56,32 @@ describe('landingOf', () => {
 		expect(SECTION_LABELS).toMatchObject({
 			features: '주요 기능',
 			steps: '쓰는 법',
-			built: '만든 방식',
+			built: '구현 방법',
+			troubleshooting: '트러블슈팅',
 			tech: '기술 사양',
-			role: '맡은 일',
+			team: '팀원',
+			role: '내 역할',
 			screens: '화면 모음',
 			timeline: '진행 과정',
+			deployments: '배포 결과물',
 		});
+		// 포트폴리오를 읽는 차례: 무엇 → 어떻게 → 누가 → 언제 → 어디서
+		expect(SECTION_ORDER).toEqual([
+			'stats',
+			'features',
+			'screens',
+			'steps',
+			'built',
+			'troubleshooting',
+			'stories',
+			'controls',
+			'tech',
+			'team',
+			'role',
+			'timeline',
+			'deployments',
+			'credits',
+		]);
 	});
 
 	it('값이 있는 구역만 하나씩 생긴다', () => {
@@ -78,6 +109,9 @@ describe('landingOf', () => {
 			[{ contributions: ['화면'] }, 'role'],
 			[{ role: '프론트엔드' }, 'role'],
 			[{ credits: [{ role: '글꼴', name: 'Pretendard', by: '길형진' }] }, 'credits'],
+			[{ troubleshooting: [{ title: '문제', problem: '느림', solution: '나눔' }] }, 'troubleshooting'],
+			[{ team: [{ name: '김', role: '화면' }] }, 'team'],
+			[{ deployments: [{ label: '웹' }] }, 'deployments'],
 		];
 		for (const [extra, kind] of cases) expect(kinds(empty(extra)), kind).toEqual([kind]);
 	});
@@ -172,6 +206,18 @@ describe('landingOf', () => {
 		expect(section('tech').stack).toEqual(expect.arrayContaining([sample.language, ...sample.stack]));
 		expect(section('role').contributions).toEqual(sample.contributions);
 		expect(section('credits').credits).toEqual(sample.credits);
+		expect(section('troubleshooting').items).toHaveLength(sample.troubleshooting?.length ?? 0);
+		expect(section('team').members.map((member) => [member.name, member.role, member.url, member.avatar])).toEqual(
+			sample.team?.map((member) => [member.name, member.role, member.url, member.avatar])
+		);
+		expect(section('team').members.filter((member) => member.me)).toHaveLength(1);
+		expect(section('deployments').items.map((item) => [item.label, item.url, item.platform, item.note])).toEqual(
+			sample.deployments?.map((item) => [item.label, item.url, item.platform, item.note])
+		);
+		for (const item of sample.troubleshooting ?? [])
+			for (const value of [item.title, item.problem, item.cause, item.solution, item.result, item.image, item.icon])
+				if (value) expect(text, value).toContain(JSON.stringify(value).slice(1, -1));
+		for (const item of sample.deployments ?? []) if (item.image) expect(text).toContain(item.image);
 
 		// 항목 안의 칸(설명·자세히·아이콘·그림·화면 여러 장)도 그대로
 		const points = [
@@ -190,6 +236,43 @@ describe('landingOf', () => {
 			for (const fact of chapter.facts ?? []) expect(text).toContain(fact.label);
 			if (chapter.image) expect(text).toContain(chapter.image.src);
 		}
+	});
+
+	it('트러블슈팅은 문제 → 원인 → 해결 → 결과 차례로 빈 단계를 빼고, 팀원은 이름 첫 글자, 배포는 올린 곳의 아이콘과 호스트', () => {
+		const landing = landingOf(
+			empty({
+				troubleshooting: [{ title: '느린 첫 화면', problem: '4초', solution: '나눠 불렀다', result: ' ' }],
+				team: [
+					{ name: '김현', role: '화면', me: true },
+					{ name: 'Jane Doe', role: 'API' },
+				],
+				deployments: [
+					{ label: '웹', url: 'https://www.bookclub.vercel.app/x', platform: 'Vercel' },
+					{ label: '앱', url: 'https://apps.apple.com/app/1', platform: 'App Store' },
+					{ label: '패키지', platform: 'npm' },
+				],
+			})
+		);
+		const trouble = landing.sections.find((section) => section.kind === 'troubleshooting');
+		expect(trouble?.kind === 'troubleshooting' && troubleSteps(trouble.items[0]).map((step) => step.label)).toEqual([
+			'문제',
+			'해결',
+		]);
+		const team = landing.sections.find((section) => section.kind === 'team');
+		expect(team?.kind === 'team' && team.members.map((member) => [member.initials, member.me])).toEqual([
+			['김', true],
+			['JD', false],
+		]);
+		expect(initialsOf('  ')).toBe('?');
+		const deployments = landing.sections.find((section) => section.kind === 'deployments');
+		expect(deployments?.kind === 'deployments' && deployments.items.map((item) => [item.icon, item.host])).toEqual([
+			['fa-globe', 'bookclub.vercel.app'],
+			['fa-app-store-ios', 'apps.apple.com'],
+			['fa-npm', undefined],
+		]);
+		expect(faClass('fa-npm')).toBe('fa-brands fa-npm');
+		expect(faClass('fa-globe')).toBe('fa-solid fa-globe');
+		expect(deploymentIcon('Docker · 클라우드 서버', undefined)).toBe('fa-docker');
 	});
 
 	it('마무리는 첫 화면의 제목을 되풀이하지 않고, 써 볼 곳이 있는지에 따라 권하는 문장을 고른다', () => {

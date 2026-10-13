@@ -78,11 +78,14 @@ describe('문서', () => {
 			'docs/SCREENSHOTS.md',
 			'docs/USAGE.md',
 			'docs/ARCHITECTURE.md',
+			'docs/TROUBLESHOOTING.md',
 			'docs/STORIES.md',
 			'docs/CONTROLS.md',
-			'docs/CHANGELOG.md',
 			'docs/TECH.md',
+			'docs/TEAM.md',
 			'docs/CONTRIBUTING.md',
+			'docs/CHANGELOG.md',
+			'docs/DEPLOYMENT.md',
 			'docs/CREDITS.md',
 		]);
 		expect(docs.flatMap((doc) => doc.sections.map((section) => section.kind))).toEqual([...SECTION_ORDER]);
@@ -108,7 +111,26 @@ describe('문서', () => {
 		expect(features).toContain(GENERAL_SAMPLE.highlights[0].title);
 		const tree = docsTree(landing, docs);
 		expect(Object.keys(tree)).toEqual(['README.md', 'docs']);
-		expect(Object.keys(tree.docs as object)).toHaveLength(10);
+		expect(Object.keys(tree.docs as object)).toHaveLength(13);
+	});
+
+	it('트러블슈팅·팀원·배포 결과물의 원문: 단계는 굵은 이름표, 팀원은 표(나 표시), 배포는 링크와 플랫폼', () => {
+		const landing = landingOf(sample);
+		const docs = docsOf(landing);
+		const text = (id: string) =>
+			docText(
+				landing,
+				docs.find((doc) => doc.id === id)!,
+				docs
+			);
+		const trouble = text('troubleshooting');
+		expect(trouble).toContain(`### ${GENERAL_SAMPLE.troubleshooting![0].title}`);
+		expect(trouble).toContain(`- **문제**: ${GENERAL_SAMPLE.troubleshooting![0].problem}`);
+		expect(trouble).toContain('- **결과**:');
+		const team = text('team');
+		expect(team).toContain('| 이름 | 역할 |');
+		expect(team).toContain('| [김현](https://github.com/hyeoniverse) (나) |');
+		expect(text('deployments')).toContain('- [북클럽 웹](https://bookclub-demo.vercel.app): Vercel — ');
 	});
 
 	it('같은 이름의 폴더는 합치고 파일은 문서가 이긴다', () => {

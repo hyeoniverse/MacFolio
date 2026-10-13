@@ -31,6 +31,9 @@ export const LANDING_FIELDS = [
 	'structure',
 	'credits',
 	'contributions',
+	'troubleshooting',
+	'team',
+	'deployments',
 	'icon',
 	'image',
 	'gallery',
@@ -217,6 +220,67 @@ const general: LookSample = {
 		{ role: '아이콘', name: 'Font Awesome Free', by: 'Fonticons', href: 'https://fontawesome.com' },
 		{ role: '도서 정보', name: '공공 도서 데이터', by: '국립 도서관 공개 API', note: '책 제목과 표지' },
 		{ role: '글꼴', name: 'Pretendard', by: '길형진', href: 'https://github.com/orioncactus/pretendard' },
+	],
+	troubleshooting: [
+		{
+			title: '토론 글로 결말이 새어 나가던 문제',
+			problem:
+				'진도보다 앞선 글을 화면에서 접어 두었는데도, 개발자 도구의 네트워크 탭에서 접힌 글의 본문이 그대로 보였습니다.',
+			cause: '서버는 모임의 글을 모두 보내고, 가리는 일은 화면이 맡고 있었습니다.',
+			solution:
+				'글 목록 응답을 만들 때 읽는 사람의 진도를 조회해, 진도보다 앞선 글은 본문을 빼고 제목과 쪽수만 보내도록 바꾸었습니다.',
+			result: '응답 어디에도 앞선 글의 본문이 남지 않게 되었고, 목록 응답 크기도 평균 41% 줄었습니다.',
+			image: SHOT('hyeoniverse/shots/admin-settings'),
+			icon: 'fa-eye-slash',
+		},
+		{
+			title: '일정 투표가 동시에 몰릴 때 집계가 틀리던 문제',
+			problem: '여러 사람이 같은 순간에 투표하면 후보 날짜의 인원 수가 실제보다 적게 저장되었습니다.',
+			cause: '인원 수를 읽고 하나 더한 값을 다시 쓰는 사이에 다른 요청이 끼어들었습니다.',
+			solution:
+				'인원 수를 따로 세지 않고 투표 표에서 바로 세도록 바꾸고, 같은 사람의 중복 투표는 고유 제약으로 막았습니다.',
+			result: '시범 운영 6주 동안 집계가 어긋난 사례가 한 건도 없었습니다.',
+			icon: 'fa-square-poll-vertical',
+		},
+		{
+			title: '긴 토론 목록에서 스크롤이 끊기던 문제',
+			problem: '글이 500개를 넘는 모임에서 스크롤할 때 화면이 자주 멈칫했습니다.',
+			solution: '보이는 글만 그리는 가상 목록을 쓰고, 밑줄 수 같은 무거운 계산은 한 번만 하도록 기억해 두었습니다.',
+			result: '긴 목록에서도 초당 60프레임을 유지했습니다.',
+		},
+	],
+	team: [
+		{
+			name: '김현',
+			role: '프론트엔드 리드, 모임 일정과 토론 화면',
+			url: 'https://github.com/hyeoniverse',
+			avatar: '/imgs/me.png',
+			me: true,
+		},
+		{ name: '이서윤', role: '백엔드, 진도별 글 가리기와 인증', url: 'https://github.com/example-seoyun' },
+		{ name: '박도현', role: '프론트엔드, 밑줄 모음과 모임 기록' },
+		{ name: '최하린', role: '디자인, 디자인 시스템과 사용자 인터뷰' },
+	],
+	deployments: [
+		{
+			label: '북클럽 웹',
+			url: 'https://bookclub-demo.vercel.app',
+			platform: 'Vercel',
+			note: '시범 운영 때 쓰던 웹 서비스입니다. 가입하지 않아도 끝난 모임의 기록을 읽을 수 있습니다.',
+			image: SHOT('hyeoniverse/shots/about-tour'),
+		},
+		{
+			label: 'API 서버',
+			url: 'https://api.bookclub-demo.dev/docs',
+			platform: 'Docker · 클라우드 서버',
+			note: 'Express API와 Swagger 문서입니다.',
+		},
+		{
+			label: '설계 문서',
+			url: 'https://www.notion.so/bookclub-design',
+			platform: 'Notion',
+			note: '화면 설계, 데이터베이스 구조, 회고를 모아 둔 문서입니다.',
+		},
 	],
 	contributions: [
 		'모임 찾기와 모임 상세 화면',

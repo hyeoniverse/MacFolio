@@ -1470,3 +1470,41 @@
 		transition: none;
 	}
 }
+
+/* ─── 트러블슈팅·팀원·배포 결과물: 1px 선의 타일과 고정폭 이름표 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.tpl-bento {
+	--lk-x-ink: var(--bt-ink);
+	--lk-x-body: var(--bt-body);
+	--lk-x-muted: var(--bt-muted);
+	--lk-x-line: var(--bt-line);
+	--lk-x-card: var(--bt-tile);
+	--lk-x-radius: var(--bt-radius);
+	--lk-x-gap: var(--bt-gap);
+	--lk-x-pad: 24px;
+	--lk-x-label: var(--bt-mono);
+}
+
+.bt-trouble,
+.bt-member,
+.bt-deploy {
+	box-shadow: var(--bt-inset), var(--bt-shadow);
+}
+
+.bt-trouble-step dt,
+.bt-deploy-status,
+.bt-deploy-meta {
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.bt-trouble-icon,
+.bt-deploy-icon {
+	border: 1px solid var(--bt-line);
+	background-color: var(--bt-tile-2);
+	color: var(--bt-ink);
+}
+
+.bt-member {
+	flex-direction: row;
+	align-items: center;
+}

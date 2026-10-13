@@ -2002,3 +2002,51 @@
 		padding: 24px;
 	}
 }
+
+/* ─── 트러블슈팅·팀원·배포 결과물: 선으로 나눈 회색 면과 고정폭 이름표 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.tpl-devtool {
+	--lk-x-ink: var(--dv-ink);
+	--lk-x-body: var(--dv-body);
+	--lk-x-muted: var(--dv-muted);
+	--lk-x-line: var(--dv-line);
+	--lk-x-card: var(--dv-bg);
+	--lk-x-radius: var(--dv-radius);
+	--lk-x-gap: 12px;
+	--lk-x-pad: 24px;
+	--lk-x-label: var(--dv-mono);
+}
+
+.dv-trouble-num::before {
+	content: '#';
+}
+
+.dv-trouble-step[data-step='problem'] dt {
+	color: var(--dv-red);
+}
+
+.dv-trouble-step[data-step='result'] dt {
+	color: var(--dv-green);
+}
+
+.dv-trouble-icon,
+.dv-deploy-icon {
+	border: 1px solid var(--dv-line);
+	border-radius: 6px;
+	background-color: var(--dv-surface);
+	color: var(--dv-ink);
+}
+
+.dv-member-text h3,
+.dv-deploy h3 {
+	font-family: var(--dv-mono);
+	font-size: 15px;
+}
+
+.dv-member {
+	flex-direction: row;
+	align-items: center;
+}
+
+.dv-deploy[data-live] .dv-deploy-status::before {
+	background-color: var(--dv-green);
+}
