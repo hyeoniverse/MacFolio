@@ -6,10 +6,13 @@ import React, { useMemo } from 'react';
 import type { Project, ProjectFact } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
 import {
+	DeployList,
 	iconOf,
 	LandingSections,
 	Media,
 	sectionTitle,
+	TeamList,
+	TroubleList,
 	useLanding,
 	useLandingAccent,
 	type LandingMedia,
@@ -269,6 +272,12 @@ const RENDERERS: SectionRenderers = {
 			</div>
 		</>
 	),
+	troubleshooting: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<TroubleList items={section.items} prefix="dv" />
+		</>
+	),
 	stories: ({ section, index }) => (
 		<>
 			<Head section={section} index={index} />
@@ -388,6 +397,12 @@ const RENDERERS: SectionRenderers = {
 			</>
 		);
 	},
+	team: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<TeamList members={section.members} prefix="dv" />
+		</>
+	),
 	role: ({ section, index }) => (
 		<>
 			<Head section={section} index={index} />
@@ -432,6 +447,12 @@ const RENDERERS: SectionRenderers = {
 					</ul>
 				)}
 			</div>
+		</>
+	),
+	deployments: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<DeployList items={section.items} prefix="dv" />
 		</>
 	),
 	credits: ({ section, index }) => (

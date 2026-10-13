@@ -4,11 +4,14 @@ import React from 'react';
 import type { Project, ProjectFact } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
 import {
+	DeployList,
 	iconOf,
 	LandingLinks,
 	LandingSections,
 	Media,
 	sectionTitle,
+	TeamList,
+	TroubleList,
 	useLanding,
 	useLandingAccent,
 	type LandingPoint,
@@ -36,11 +39,14 @@ const SECTION_ICONS: Record<LandingSectionKind, string> = {
 	screens: 'fa-images',
 	steps: 'fa-list-ol',
 	built: 'fa-screwdriver-wrench',
+	troubleshooting: 'fa-bug',
 	stories: 'fa-book-open',
 	controls: 'fa-keyboard',
 	timeline: 'fa-calendar-days',
 	tech: 'fa-code',
+	team: 'fa-users',
 	role: 'fa-user',
+	deployments: 'fa-rocket',
 	credits: 'fa-quote-left',
 };
 
@@ -224,6 +230,12 @@ const RENDERERS: SectionRenderers = {
 			</div>
 		</>
 	),
+	troubleshooting: ({ section }) => (
+		<>
+			<Head section={section} />
+			<TroubleList items={section.items} prefix="pp" />
+		</>
+	),
 	stories: ({ section }) => (
 		<>
 			<Head section={section} />
@@ -374,6 +386,12 @@ const RENDERERS: SectionRenderers = {
 			)}
 		</>
 	),
+	team: ({ section }) => (
+		<>
+			<Head section={section} />
+			<TeamList members={section.members} prefix="pp" />
+		</>
+	),
 	role: ({ section }) => (
 		<>
 			<Head section={section} note={section.role} />
@@ -387,6 +405,12 @@ const RENDERERS: SectionRenderers = {
 					))}
 				</ul>
 			)}
+		</>
+	),
+	deployments: ({ section }) => (
+		<>
+			<Head section={section} />
+			<DeployList items={section.items} prefix="pp" />
 		</>
 	),
 	credits: ({ section }) => (

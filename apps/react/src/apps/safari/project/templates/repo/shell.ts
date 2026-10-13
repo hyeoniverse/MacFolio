@@ -60,11 +60,11 @@ const ALL_PAGE_COMMANDS: (PageCommand & { has: (data: ShellData) => boolean })[]
 	{
 		name: 'cat BUILD.md',
 		aliases: ['build'],
-		help: '만든 방식을 보여 줍니다.',
+		help: '구현 방법을 보여 줍니다.',
 		view: 'build',
 		has: (data) => has(data, 'built'),
 	},
-	{ name: 'whoami', aliases: ['me'], help: '맡은 일을 보여 줍니다.', view: 'whoami', has: (data) => has(data, 'role') },
+	{ name: 'whoami', aliases: ['me'], help: '내 역할을 보여 줍니다.', view: 'whoami', has: (data) => has(data, 'role') },
 	{
 		name: 'cat stack.json',
 		aliases: ['stack'],

@@ -1964,3 +1964,35 @@
 		grid-template-columns: minmax(0, 1fr);
 	}
 }
+
+/* ─── 트러블슈팅·팀원·배포 결과물: 흰 카드와 얕은 그림자 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.tpl-friendly {
+	--lk-x-ink: var(--fr-ink);
+	--lk-x-body: var(--fr-body);
+	--lk-x-muted: var(--fr-muted);
+	--lk-x-line: var(--fr-line);
+	--lk-x-card: var(--fr-card);
+	--lk-x-radius: var(--fr-radius);
+	--lk-x-gap: 20px;
+	--lk-x-pad: 28px;
+}
+
+.fr-trouble,
+.fr-member,
+.fr-deploy {
+	box-shadow: var(--fr-shadow);
+}
+
+.fr-trouble-icon,
+.fr-deploy-icon {
+	background-color: var(--fr-tint);
+}
+
+.fr-member {
+	flex-direction: row;
+	align-items: center;
+}
+
+.fr-member[data-me] {
+	background-color: var(--fr-sky);
+}

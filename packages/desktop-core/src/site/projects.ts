@@ -236,6 +236,50 @@ export interface Project {
 	terminal?: string[];
 	/** 커밋 컨벤션 (타입, 설명) */
 	conventions?: { type: string; description: string }[];
+	/** 트러블슈팅: 부딪힌 문제, 원인, 해결, 결과 */
+	troubleshooting?: ProjectTrouble[];
+	/** 함께 만든 사람들 (me는 나) */
+	team?: ProjectMember[];
+	/** 배포 결과물: 실제로 열어 볼 수 있는 곳 (웹, 스토어, 패키지, 문서) */
+	deployments?: ProjectDeployment[];
+}
+
+/** 트러블슈팅 한 건 */
+export interface ProjectTrouble {
+	title: string;
+	/** 무엇이 문제였는지 */
+	problem: string;
+	/** 왜 그랬는지 */
+	cause?: string;
+	/** 어떻게 풀었는지 */
+	solution: string;
+	/** 풀고 나서 달라진 것 (숫자가 있으면 좋다) */
+	result?: string;
+	image?: string;
+	/** Font Awesome 이름 (예: fa-bug) */
+	icon?: string;
+}
+
+/** 팀원 한 사람 */
+export interface ProjectMember {
+	name: string;
+	role: string;
+	/** GitHub 등 그 사람의 주소 */
+	url?: string;
+	/** 사진. 없으면 이름 첫 글자로 그린다 */
+	avatar?: string;
+	/** 나 (강조해 그린다) */
+	me?: boolean;
+}
+
+/** 배포 결과물 한 곳 */
+export interface ProjectDeployment {
+	label: string;
+	url?: string;
+	/** 올린 곳 (예: Vercel, App Store, npm) */
+	platform?: string;
+	note?: string;
+	image?: string;
 }
 
 export type ProjectOverride = { [K in keyof Omit<Project, 'id'>]?: Project[K] | null };
@@ -320,6 +364,8 @@ const SRC: Rule = { kind: 'src' };
 const COLOR: Rule = { kind: 'color' };
 const BOOL: Rule = { kind: 'bool' };
 
+const ICON: Rule = { kind: 'text', max: 40, pattern: /^fa-[a-z0-9-]+$/ };
+
 const FACT = object({ value: req(text(40)), label: req(text(80)) });
 const POINT = object({
 	title: req(text(120)),
@@ -332,7 +378,7 @@ const POINT = object({
 	variants: list(object({ label: req(text(60)), note: req(text(200)) }), 12),
 	demo: { kind: 'enum', values: POINT_DEMOS },
 	shots: list(object({ src: req(SRC), alt: req(text(200)) }), 20),
-	icon: { kind: 'text', max: 40, pattern: /^fa-[a-z0-9-]+$/ },
+	icon: ICON,
 	group: text(40),
 });
 const SWATCH = object({
@@ -371,6 +417,29 @@ const CHAPTER = object({
 		}),
 		30
 	),
+});
+const TROUBLE = object({
+	title: req(text(120)),
+	problem: req(text(2000, true)),
+	cause: text(2000, true),
+	solution: req(text(2000, true)),
+	result: text(1000, true),
+	image: SRC,
+	icon: ICON,
+});
+const MEMBER = object({
+	name: req(text(60)),
+	role: req(text(120)),
+	url: HREF,
+	avatar: SRC,
+	me: BOOL,
+});
+const DEPLOYMENT = object({
+	label: req(text(120)),
+	url: HREF,
+	platform: text(40),
+	note: text(300),
+	image: SRC,
 });
 const APP = object({
 	label: req(text(40)),
@@ -422,6 +491,9 @@ const PROJECT_FIELDS: Record<keyof Omit<Project, 'id'>, Rule> = {
 	controls: list(object({ keys: req(list(text(20), 8)), label: req(text(80)) }), 20),
 	terminal: list(text(200), 40),
 	conventions: list(object({ type: req(text(30)), description: req(text(200)) }), 20),
+	troubleshooting: list(TROUBLE, 20),
+	team: list(MEMBER, 20),
+	deployments: list(DEPLOYMENT, 12),
 };
 
 /** 꼭 있어야 하는 맨 위 필드 (지울 수 없다) */

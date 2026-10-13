@@ -5,8 +5,11 @@ import React from 'react';
 import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
 import {
+	DeployList,
 	LandingLinks,
 	LandingSections,
+	TeamList,
+	TroubleList,
 	Media,
 	iconOf,
 	sectionTitle,
@@ -236,6 +239,12 @@ const RENDERERS: SectionRenderers = {
 			</ol>
 		</>
 	),
+	troubleshooting: ({ section }) => (
+		<>
+			<Head section={section} />
+			<TroubleList items={section.items} prefix="pd" />
+		</>
+	),
 	stories: ({ section }) => (
 		<div className="pd-stories">
 			{section.stories.map((story, number) => (
@@ -336,6 +345,12 @@ const RENDERERS: SectionRenderers = {
 			</dl>
 		</>
 	),
+	team: ({ section }) => (
+		<>
+			<Head section={section} />
+			<TeamList members={section.members} prefix="pd" />
+		</>
+	),
 	role: ({ section }) => (
 		<>
 			<Head section={section} />
@@ -371,6 +386,12 @@ const RENDERERS: SectionRenderers = {
 					))}
 				</ul>
 			)}
+		</>
+	),
+	deployments: ({ section }) => (
+		<>
+			<Head section={section} />
+			<DeployList items={section.items} prefix="pd" />
 		</>
 	),
 	credits: ({ section }) => (

@@ -1207,3 +1207,104 @@
 		white-space: normal;
 	}
 }
+
+/* ─── 트러블슈팅·팀원·배포 결과물 (공통 짜임은 landing/Extras.tsx·landing.css)
+   트러블슈팅은 알림 상자, 팀원은 사람 카드, 배포 결과물은 문서의 북마크 블록(글 왼쪽, 그림 오른쪽) ─── */
+.tpl-paper {
+	--lk-x-ink: var(--pp-ink);
+	--lk-x-body: var(--pp-body);
+	--lk-x-muted: var(--pp-muted);
+	--lk-x-line: var(--pp-line);
+	--lk-x-card: transparent;
+	--lk-x-radius: 8px;
+	--lk-x-gap: 12px;
+	--lk-x-pad: 20px 24px;
+}
+
+.pp-trouble {
+	border: 0;
+	background-color: var(--pp-block);
+}
+
+.pp-troubles h3,
+.pp-team h3,
+.pp-deploys h3 {
+	font-size: 17px;
+}
+
+.pp-trouble-icon {
+	width: 26px;
+	height: 26px;
+	background: none;
+	color: var(--pp-muted);
+}
+
+.pp-trouble-step dd,
+.pp-deploy-note {
+	font-size: 15px;
+}
+
+.pp-member {
+	flex-direction: row;
+	align-items: center;
+	padding: 16px;
+}
+
+.pp-deploys {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.pp-deploy {
+	flex-direction: row-reverse;
+	border-radius: 4px;
+}
+
+.pp-deploy:hover {
+	background-color: var(--pp-hover);
+}
+
+.pp-deploy-image {
+	flex: 0 0 34%;
+	border-bottom: 0;
+	border-left: 1px solid var(--pp-line);
+}
+
+.pp-deploy-image .lk-media {
+	height: 100%;
+	aspect-ratio: auto;
+}
+
+.pp-deploy-body {
+	gap: 4px;
+	padding: 16px 18px;
+}
+
+.pp-deploy-top {
+	display: none;
+}
+
+.pp-deploy-meta {
+	order: 3;
+}
+
+.pp-deploy-meta::before {
+	margin-right: 6px;
+	font-family: 'Font Awesome 6 Free';
+	font-weight: 900;
+	content: '\f0c1';
+}
+
+.pp-deploy-go {
+	display: none;
+}
+
+@container (max-width: 600px) {
+	.pp-deploy {
+		flex-direction: column;
+	}
+
+	.pp-deploy-image {
+		border-bottom: 1px solid var(--pp-line);
+		border-left: 0;
+	}
+}

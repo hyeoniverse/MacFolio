@@ -1,7 +1,14 @@
 // 랜딩 페이지의 공통 내용: 어떤 프로젝트든 같은 짜임(첫 화면, 차례대로 놓이는 구역들, 마무리)으로 바꾼다.
 // 템플릿(project/templates/*)은 이것만 읽어 자기 디자인으로 그린다. 값이 없는 구역은 아예 빠진다 (빈 구역을 그리지 않게).
 // 화면에 기대지 않는 순수한 함수라 단위 시험으로 확인한다 (content.test.ts). 계약은 templates/README.md
-import type { Project, ProjectFact, ProjectPoint } from '@/shared/profile';
+import type {
+	Project,
+	ProjectDeployment,
+	ProjectFact,
+	ProjectMember,
+	ProjectPoint,
+	ProjectTrouble,
+} from '@/shared/profile';
 
 /** 그림이나 짧은 영상 한 장 */
 export interface LandingMedia {
@@ -13,7 +20,7 @@ export interface LandingMedia {
 	dark?: string;
 }
 
-/** 제목과 설명 한 덩어리 (주요 기능, 쓰는 법, 만든 방식, 이야기 안의 항목) */
+/** 제목과 설명 한 덩어리 (주요 기능, 쓰는 법, 구현 방법, 이야기 안의 항목) */
 export interface LandingPoint {
 	title: string;
 	body: string;
@@ -69,31 +76,77 @@ export const SECTION_LABELS = {
 	features: '주요 기능',
 	screens: '화면 모음',
 	steps: '쓰는 법',
-	built: '만든 방식',
+	built: '구현 방법',
+	troubleshooting: '트러블슈팅',
 	stories: '더 들려줄 이야기',
 	controls: '조작법',
-	timeline: '진행 과정',
 	tech: '기술 사양',
-	role: '맡은 일',
+	team: '팀원',
+	role: '내 역할',
+	timeline: '진행 과정',
+	deployments: '배포 결과물',
 	credits: '출처',
 } as const;
 
 export type LandingSectionKind = keyof typeof SECTION_LABELS;
 
-/** 구역 차례 (첫 화면 다음부터 마무리 앞까지) */
+/**
+ * 구역 차례 (첫 화면 다음부터 마무리 앞까지). 포트폴리오를 읽는 차례를 따른다:
+ * 무엇인지(숫자·기능·화면·쓰는 법) → 어떻게 만들었는지(구현 방법·트러블슈팅·이야기·조작법·기술) →
+ * 누가 만들었는지(팀원·내 역할) → 언제(진행 과정) → 어디서 볼 수 있는지(배포 결과물) → 출처
+ */
 export const SECTION_ORDER: readonly LandingSectionKind[] = [
 	'stats',
 	'features',
 	'screens',
 	'steps',
 	'built',
+	'troubleshooting',
 	'stories',
 	'controls',
-	'timeline',
 	'tech',
+	'team',
 	'role',
+	'timeline',
+	'deployments',
 	'credits',
 ];
+
+/** 트러블슈팅 한 건: 문제 → 원인 → 해결 → 결과 */
+export interface LandingTrouble {
+	title: string;
+	problem: string;
+	cause?: string;
+	solution: string;
+	result?: string;
+	/** Font Awesome 이름. 없으면 템플릿이 fa-bug 같은 기본 아이콘을 쓴다 */
+	icon?: string;
+	image?: LandingMedia;
+}
+
+/** 팀원 한 사람 */
+export interface LandingMember {
+	name: string;
+	role: string;
+	url?: string;
+	avatar?: string;
+	/** 이름 첫 글자 (사진이 없을 때 그리는 동그라미) */
+	initials: string;
+	me: boolean;
+}
+
+/** 배포 결과물 한 곳 */
+export interface LandingDeployment {
+	label: string;
+	url?: string;
+	platform?: string;
+	note?: string;
+	/** 올린 곳에 맞는 아이콘 (Font Awesome) */
+	icon: string;
+	/** 주소에서 뽑은 짧은 호스트 이름 (예: bookclub.vercel.app) */
+	host?: string;
+	image?: LandingMedia;
+}
 
 type Section<K extends LandingSectionKind, T> = { kind: K; label: (typeof SECTION_LABELS)[K] } & T;
 
@@ -103,6 +156,7 @@ export type LandingSection =
 	| Section<'screens', { shots: LandingShot[] }>
 	| Section<'steps', { items: LandingPoint[] }>
 	| Section<'built', { items: LandingPoint[] }>
+	| Section<'troubleshooting', { items: LandingTrouble[] }>
 	| Section<'stories', { stories: LandingStory[] }>
 	| Section<'controls', { controls: { keys: string[]; label: string }[] }>
 	| Section<'timeline', { entries: { date: string; label: string }[] }>
@@ -125,6 +179,8 @@ export type LandingSection =
 				contributions: string[];
 			}
 	  >
+	| Section<'team', { members: LandingMember[] }>
+	| Section<'deployments', { items: LandingDeployment[] }>
 	| Section<'credits', { credits: { role: string; name: string; by: string; href?: string; note?: string }[] }>;
 
 export type SectionOf<K extends LandingSectionKind> = Extract<LandingSection, { kind: K }>;
@@ -201,6 +257,96 @@ export const techOf = (project: Project) => {
 	return language && !stack.includes(language) ? [language, ...stack] : stack;
 };
 
+/** 이름의 첫 글자 (한글은 첫 글자, 영어는 두 낱말의 머리글자) */
+export function initialsOf(name: string): string {
+	const words = name.trim().split(/\s+/).filter(Boolean);
+	if (!words.length) return '?';
+	if (/^[A-Za-z]/.test(words[0]) && words.length > 1) return (words[0][0] + words[1][0]).toUpperCase();
+	return [...words[0]][0].toUpperCase();
+}
+
+/** 올린 곳·주소에 맞는 아이콘 (모르면 지구본) */
+export function deploymentIcon(platform: string | undefined, url: string | undefined): string {
+	const key = `${platform ?? ''} ${url ?? ''}`.toLowerCase();
+	const table: [RegExp, string][] = [
+		[/app ?store|apps\.apple|testflight|ios/, 'fa-app-store-ios'],
+		[/google ?play|play\.google|android/, 'fa-google-play'],
+		[/npm/, 'fa-npm'],
+		[/github|ghcr/, 'fa-github'],
+		[/docker/, 'fa-docker'],
+		[/figma/, 'fa-figma'],
+		[/notion/, 'fa-book-open'],
+		[/vercel|netlify|pages|firebase|web/, 'fa-globe'],
+		[/aws|cloud|server|api|render|fly\.io|railway|ec2/, 'fa-server'],
+		[/docs?|문서|swagger/, 'fa-book-open'],
+	];
+	return table.find(([pattern]) => pattern.test(key))?.[1] ?? 'fa-globe';
+}
+
+const BRAND_ICONS = new Set(['fa-app-store-ios', 'fa-google-play', 'fa-npm', 'fa-github', 'fa-docker', 'fa-figma']);
+
+/** 아이콘 이름 → Font Awesome 클래스 (브랜드 아이콘은 fa-brands) */
+export const faClass = (icon: string) => `${BRAND_ICONS.has(icon) ? 'fa-brands' : 'fa-solid'} ${icon}`;
+
+/** 트러블슈팅의 단계: 문제 → 원인 → 해결 → 결과 (빈 단계는 뺀다) */
+export type TroubleStepKey = 'problem' | 'cause' | 'solution' | 'result';
+export const TROUBLE_STEP_LABELS: Record<TroubleStepKey, string> = {
+	problem: '문제',
+	cause: '원인',
+	solution: '해결',
+	result: '결과',
+};
+export function troubleSteps(item: LandingTrouble): { key: TroubleStepKey; label: string; text: string }[] {
+	return (['problem', 'cause', 'solution', 'result'] as const).flatMap((key) => {
+		const text = item[key];
+		return text ? [{ key, label: TROUBLE_STEP_LABELS[key], text }] : [];
+	});
+}
+
+/** 트러블슈팅의 아이콘: 정해 둔 것, 없으면 벌레 */
+export const troubleIcon = (item: Pick<LandingTrouble, 'icon'>) => item.icon ?? 'fa-bug';
+
+const hostOf = (url: string | undefined) => {
+	if (!url) return undefined;
+	try {
+		return new URL(url).host.replace(/^www\./, '');
+	} catch {
+		return undefined;
+	}
+};
+
+const troubleOf = (item: ProjectTrouble): LandingTrouble => ({
+	title: item.title,
+	problem: item.problem,
+	...(clean(item.cause) ? { cause: item.cause } : {}),
+	solution: item.solution,
+	...(clean(item.result) ? { result: item.result } : {}),
+	...(item.icon ? { icon: item.icon } : {}),
+	...(item.image ? { image: mediaOf(item.image, `${item.title} 화면`) } : {}),
+});
+
+const memberOf = (member: ProjectMember): LandingMember => ({
+	name: member.name,
+	role: member.role,
+	...(member.url ? { url: member.url } : {}),
+	...(member.avatar ? { avatar: member.avatar } : {}),
+	initials: initialsOf(member.name),
+	me: Boolean(member.me),
+});
+
+const deploymentOf = (item: ProjectDeployment): LandingDeployment => {
+	const host = hostOf(item.url);
+	return {
+		label: item.label,
+		...(item.url ? { url: item.url } : {}),
+		...(clean(item.platform) ? { platform: item.platform } : {}),
+		...(clean(item.note) ? { note: item.note } : {}),
+		icon: deploymentIcon(item.platform, item.url),
+		...(host ? { host } : {}),
+		...(item.image ? { image: mediaOf(item.image, `${item.label} 화면`) } : {}),
+	};
+};
+
 /** 프로젝트 → 랜딩 페이지의 공통 내용 */
 export function landingOf(project: Project, { app = null }: LandingOptions = {}): Landing {
 	const links = linksOf(project, app);
@@ -247,6 +393,13 @@ export function landingOf(project: Project, { app = null }: LandingOptions = {})
 		built: project.build.length
 			? { kind: 'built', label: SECTION_LABELS.built, items: project.build.map(pointOf) }
 			: null,
+		troubleshooting: project.troubleshooting?.length
+			? {
+					kind: 'troubleshooting',
+					label: SECTION_LABELS.troubleshooting,
+					items: project.troubleshooting.map(troubleOf),
+				}
+			: null,
 		stories: project.chapters?.length
 			? {
 					kind: 'stories',
@@ -289,6 +442,12 @@ export function landingOf(project: Project, { app = null }: LandingOptions = {})
 						contributions,
 					}
 				: null,
+		team: project.team?.length
+			? { kind: 'team', label: SECTION_LABELS.team, members: project.team.map(memberOf) }
+			: null,
+		deployments: project.deployments?.length
+			? { kind: 'deployments', label: SECTION_LABELS.deployments, items: project.deployments.map(deploymentOf) }
+			: null,
 		credits: project.credits?.length
 			? { kind: 'credits', label: SECTION_LABELS.credits, credits: project.credits }
 			: null,
@@ -336,6 +495,12 @@ export function sectionTitle(section: LandingSection): string {
 				: '이렇게 시작할 수 있습니다.';
 		case 'built':
 			return '보이지 않는 곳까지 다듬었습니다.';
+		case 'troubleshooting':
+			return '부딪힌 문제를 이렇게 풀었습니다.';
+		case 'team':
+			return '함께 만든 사람들입니다.';
+		case 'deployments':
+			return '결과물은 이곳에서 확인할 수 있습니다.';
 		case 'stories':
 			return '더 들려 드릴 이야기가 있습니다.';
 		case 'controls':
@@ -345,7 +510,7 @@ export function sectionTitle(section: LandingSection): string {
 		case 'tech':
 			return '이런 기술로 만들었습니다.';
 		case 'role':
-			return '이 프로젝트에서 맡은 일입니다.';
+			return '이 프로젝트에서 제가 맡은 역할입니다.';
 		case 'credits':
 			return '빌려 쓴 것들의 출처입니다.';
 	}

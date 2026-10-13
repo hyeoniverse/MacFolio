@@ -27,12 +27,12 @@ test('devtool: git clone 명령을 복사하면 알림 줄에 알린다', async 
 	);
 });
 
-test('devtool: 진행 과정은 날짜로 짠 기여 그래프와 함께, 만든 방식은 커밋 해시와 함께 그린다', async ({ page }) => {
+test('devtool: 진행 과정은 날짜로 짠 기여 그래프와 함께, 구현 방법은 커밋 해시와 함께 그린다', async ({ page }) => {
 	const { article } = await openSample(page, 'devtool');
 	const timeline = article.getByRole('region', { name: '진행 과정' });
 	await timeline.scrollIntoViewIfNeeded();
 	await expect(timeline.locator('.dv-graph-cells [data-milestone]')).toHaveCount(7);
-	const built = article.getByRole('region', { name: '만든 방식' });
+	const built = article.getByRole('region', { name: '구현 방법' });
 	await expect(built.locator('.dv-hash').first()).toHaveText(/^[0-9a-f]{7}$/);
 });
 

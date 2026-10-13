@@ -1341,3 +1341,52 @@
 		padding: 88px var(--pd-gutter) 96px;
 	}
 }
+
+/* ─── 트러블슈팅·팀원·배포 결과물: 옅은 회색 타일 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.tpl-product {
+	--lk-x-ink: var(--pd-ink);
+	--lk-x-body: var(--pd-body);
+	--lk-x-muted: var(--pd-muted);
+	--lk-x-line: var(--pd-line);
+	--lk-x-card: var(--pd-tile);
+	--lk-x-radius: 22px;
+	--lk-x-gap: 20px;
+	--lk-x-pad: 32px;
+}
+
+.pd-trouble,
+.pd-member,
+.pd-deploy {
+	border-color: transparent;
+}
+
+.pd-trouble h3 {
+	font-size: 24px;
+	letter-spacing: -0.02em;
+}
+
+.pd-trouble-icon,
+.pd-deploy-icon {
+	border-radius: 24%;
+	background-color: var(--tpl-accent);
+	color: #ffffff;
+}
+
+.pd-member {
+	align-items: center;
+	text-align: center;
+}
+
+.pd-member .lk-avatar {
+	width: 72px;
+	height: 72px;
+	font-size: 26px;
+}
+
+.pd-member-link {
+	justify-content: center;
+}
+
+.pd-deploy h3 {
+	font-size: 22px;
+}

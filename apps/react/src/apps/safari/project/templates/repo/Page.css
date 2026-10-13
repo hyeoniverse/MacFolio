@@ -2659,3 +2659,207 @@ span.rp-crumb:hover {
 		scroll-behavior: auto;
 	}
 }
+
+/* ─── 트러블슈팅: 제목 아래 GitHub 알림 상자 (문제 WARNING, 원인 NOTE, 해결 TIP, 결과 IMPORTANT) ─── */
+.rp-troubles {
+	display: grid;
+	gap: 28px;
+}
+
+.rp-trouble {
+	display: grid;
+	gap: 10px;
+}
+
+.rp-trouble h3 {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 17px;
+}
+
+.rp-alert {
+	--rp-alert: #0969da;
+	padding: 6px 16px;
+	border-left: 4px solid var(--rp-alert);
+}
+
+.rp-alert[data-alert='warning'] {
+	--rp-alert: #9a6700;
+}
+
+.rp-alert[data-alert='tip'] {
+	--rp-alert: #1a7f37;
+}
+
+.rp-alert[data-alert='important'] {
+	--rp-alert: #8250df;
+}
+
+:root[data-theme='dark'] .rp-alert {
+	--rp-alert: #4493f8;
+}
+
+:root[data-theme='dark'] .rp-alert[data-alert='warning'] {
+	--rp-alert: #d29922;
+}
+
+:root[data-theme='dark'] .rp-alert[data-alert='tip'] {
+	--rp-alert: #3fb950;
+}
+
+:root[data-theme='dark'] .rp-alert[data-alert='important'] {
+	--rp-alert: #ab7df8;
+}
+
+.rp-alert-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 2px;
+	color: var(--rp-alert);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.rp-alert p:not(.rp-alert-title) {
+	font-size: 14.5px;
+	line-height: 1.6;
+}
+
+.rp-trouble .rp-shot {
+	max-width: 560px;
+}
+
+/* ─── 팀원: 사진 달린 표, 나는 줄을 옅게 칠한다 ─── */
+.rp-member {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.rp-avatar {
+	width: 28px;
+	height: 28px;
+	border: 1px solid var(--rp-line-soft);
+	font-size: 12px;
+}
+
+.rp-team tbody tr[data-me] td {
+	background: var(--rp-chip);
+}
+
+/* ─── 배포 결과물: Deployments 목록 (아이콘, 이름과 상태, 올린 곳·호스트, 설명, 그림) ─── */
+.rp-deploys {
+	border: 1px solid var(--rp-line);
+	border-radius: 8px;
+}
+
+.rp-deploys > li {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 4px 14px;
+	padding: 16px;
+}
+
+.rp-deploys > li + li {
+	border-top: 1px solid var(--rp-line);
+}
+
+.rp-deploys > li[data-image] {
+	grid-template-columns: auto minmax(0, 1fr) minmax(0, 220px);
+	align-items: start;
+}
+
+.rp-deploy-icon {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border: 1px solid var(--rp-line);
+	border-radius: 8px;
+	background: var(--rp-alt);
+	color: var(--rp-text);
+	font-size: 15px;
+}
+
+.rp-deploy-text h3 {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	font-size: 15px;
+}
+
+.rp-deploy-state {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 0 8px;
+	border: 1px solid var(--rp-line);
+	border-radius: 999px;
+	color: var(--rp-muted);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 20px;
+}
+
+.rp-deploy-state[data-live] {
+	border-color: var(--rp-green);
+	color: var(--rp-green);
+}
+
+.rp-deploy-meta {
+	margin-top: 2px;
+	color: var(--rp-muted);
+	font-size: 13px;
+}
+
+.rp-deploy-text > p:not(.rp-deploy-meta) {
+	margin-top: 4px;
+	font-size: 14.5px;
+	line-height: 1.6;
+}
+
+/* ─── 옆 칸: Deployments 목록과 Contributors 사진 줄 ─── */
+.rp-side-deploys {
+	display: grid;
+	gap: 8px;
+	font-size: 14px;
+}
+
+.rp-side-deploys li {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.rp-side-deploys i {
+	width: 16px;
+	color: var(--rp-muted);
+	text-align: center;
+}
+
+.rp-side-people {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.rp-side-avatar {
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--rp-line-soft);
+	font-size: 13px;
+}
+
+@container (max-width: 600px) {
+	.rp-deploys > li[data-image] {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+
+	.rp-deploys > li[data-image] .rp-shot {
+		grid-column: 1 / -1;
+	}
+}

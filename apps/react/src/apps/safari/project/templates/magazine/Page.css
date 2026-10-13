@@ -1297,3 +1297,73 @@
 		gap: 2px;
 	}
 }
+
+/* ─── 트러블슈팅·팀원·배포 결과물: 판 없이 굵은 괘선과 명조 제목 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.tpl-magazine {
+	--lk-x-ink: var(--mg-ink);
+	--lk-x-body: var(--mg-body);
+	--lk-x-muted: var(--mg-muted);
+	--lk-x-line: var(--mg-line);
+	--lk-x-card: transparent;
+	--lk-x-radius: 0;
+	--lk-x-gap: 40px;
+	--lk-x-pad: 24px 0 0;
+	--lk-x-label: var(--mg-mono);
+}
+
+.mg-trouble,
+.mg-member,
+.mg-deploy {
+	border-width: 1px 0 0;
+	border-color: var(--mg-rule);
+}
+
+.mg-member[data-me] {
+	box-shadow: inset 0 3px 0 var(--tpl-accent);
+	border-color: var(--tpl-accent);
+}
+
+.mg-troubles h3,
+.mg-team h3,
+.mg-deploys h3 {
+	font-family: var(--mg-serif);
+	font-size: 1.45em;
+	font-weight: 600;
+}
+
+.mg-trouble-icon,
+.mg-deploy-icon {
+	width: auto;
+	height: auto;
+	background: none;
+	font-size: 15px;
+}
+
+.mg-trouble-num {
+	color: var(--tpl-accent);
+	font-family: var(--mg-serif);
+	font-size: 22px;
+	font-style: italic;
+}
+
+.mg-trouble-step dt,
+.mg-deploy-status,
+.mg-deploy-meta {
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.mg-trouble-step dd {
+	font-family: var(--mg-serif);
+	font-size: 1em;
+}
+
+.mg-deploy-image,
+.mg-trouble-image {
+	border: 0;
+	background-color: var(--mg-plate);
+}
+
+.mg-deploy-body {
+	padding-inline: 0;
+}

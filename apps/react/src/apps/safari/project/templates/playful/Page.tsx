@@ -6,11 +6,14 @@ import React from 'react';
 import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
 import {
+	DeployList,
+	iconOf,
 	LandingLinks,
 	LandingSections,
 	Media,
-	iconOf,
 	sectionTitle,
+	TeamList,
+	TroubleList,
 	useLanding,
 	useLandingAccent,
 	type Landing,
@@ -373,6 +376,12 @@ const RENDERERS: SectionRenderers = {
 			</ul>
 		</>
 	),
+	troubleshooting: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<TroubleList items={section.items} prefix="pf" />
+		</>
+	),
 	stories: ({ section, index }) => (
 		<>
 			<Head section={section} index={index} />
@@ -507,6 +516,12 @@ const RENDERERS: SectionRenderers = {
 			)}
 		</>
 	),
+	team: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<TeamList members={section.members} prefix="pf" />
+		</>
+	),
 	role: ({ section, index }) => (
 		<div className="pf-role">
 			<Head section={section} index={index} />
@@ -541,6 +556,12 @@ const RENDERERS: SectionRenderers = {
 				)}
 			</div>
 		</div>
+	),
+	deployments: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<DeployList items={section.items} prefix="pf" />
+		</>
 	),
 	credits: ({ section, index }) => (
 		<>
