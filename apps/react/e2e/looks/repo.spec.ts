@@ -217,6 +217,54 @@ test('repo: 주요 기능만 있으면 README와 FEATURES.md 두 문서이고, �
 	await expect(features.locator('.fa-bolt').first()).toBeVisible();
 });
 
+const languagesBox = (scope: Locator) =>
+	scope.locator('.rp-side-box').filter({ has: scope.page().getByRole('heading', { name: 'Languages' }) });
+
+test('repo: 옆 칸의 Languages는 API가 GitHub에서 받은 언어 비율을 차례대로 막대와 목록으로 그린다', async ({
+	page,
+}) => {
+	const { article } = await openSample(page, 'repo', {
+		prepare: (api) => {
+			api.github.languages['hyeoniverse/QRU'] = [
+				{ name: 'TypeScript', bytes: 72_400, percent: 72.4 },
+				{ name: 'CSS', bytes: 20_100, percent: 20.1 },
+				{ name: 'Zig Zag', bytes: 6_000, percent: 6 },
+				{ name: 'Other', bytes: 1_500, percent: 1.5 },
+			];
+		},
+	});
+	const box = languagesBox(article);
+	await expect(box.locator('.rp-lang')).toHaveText(['TypeScript72.4%', 'CSS20.1%', 'Zig Zag6.0%', 'Other1.5%']);
+	// 막대는 언어마다 한 토막이고, 넓이는 비율을 따르며 색은 GitHub의 언어 색이다
+	const segments = box.locator('.rp-lang-bar > span');
+	await expect(segments).toHaveCount(4);
+	await expect(segments.first()).toHaveCSS('background-color', 'rgb(49, 120, 198)');
+	await expect(segments.nth(1)).toHaveCSS('background-color', 'rgb(102, 51, 153)');
+	const widths = await segments.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().width));
+	expect(widths[0]).toBeGreaterThan(widths[1]);
+	expect(widths[1]).toBeGreaterThan(widths[2]);
+});
+
+test('repo: 언어 비율을 받지 못하면(GitHub 장애, 프로젝트 저장소가 아님) 프로젝트의 주 언어 하나로 그린다', async ({
+	page,
+}) => {
+	const down = await openSample(page, 'repo', {
+		prepare: (api) => {
+			api.github.languages['hyeoniverse/QRU'] = null;
+		},
+	});
+	// 서버가 답한 뒤에도 (받는 동안만이 아니라) 주 언어 하나다
+	await expect.poll(() => down.api.github.languageRequests).toEqual(['hyeoniverse/qru']);
+	const box = languagesBox(down.article);
+	await expect(box.locator('.rp-lang')).toHaveText(['TypeScript100.0%']);
+	await expect(box.locator('.rp-lang-bar > span')).toHaveCount(1);
+
+	// 가짜 API에 없는 저장소는 404: 역시 주 언어 하나
+	const missing = await openSample(page, 'repo');
+	await expect.poll(() => missing.api.github.languageRequests).toEqual(['hyeoniverse/qru']);
+	await expect(languagesBox(missing.article).locator('.rp-lang')).toHaveText(['TypeScript100.0%']);
+});
+
 test('repo: 사이트 테마를 따른다', async ({ page }) => {
 	await expectTheme(page, 'repo', { light: 'rgb(255, 255, 255)', dark: 'rgb(13, 17, 23)' });
 });

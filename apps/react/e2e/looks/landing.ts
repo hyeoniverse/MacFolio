@@ -2,7 +2,7 @@
 // 같은 예시(편집 화면의 '예시로 채우기'와 같은 것)로 모든 구역이 보이는지, 빈 프로젝트도 빈 구역 없이 그려지는지, 링크와 테마를 본다
 import type { Locator, Page } from '@playwright/test';
 import { appWindow, expect } from '../fixtures';
-import { openLook } from './open';
+import { openLook, type LookOptions } from './open';
 import { GENERAL_SAMPLE } from '../../src/apps/settings/lookSamples';
 import { SECTION_LABELS, SECTION_ORDER } from '../../src/apps/safari/project/landing/content';
 
@@ -44,8 +44,8 @@ const emptyOverride = (look: string, extra: Record<string, unknown> = {}) => ({
 	...extra,
 });
 
-export async function openSample(page: Page, look: string) {
-	const opened = await openLook(page, { id: 'qru', tab: /북클럽/, override: sampleOverride(look) });
+export async function openSample(page: Page, look: string, options?: LookOptions) {
+	const opened = await openLook(page, { id: 'qru', tab: /북클럽/, override: sampleOverride(look) }, options);
 	const article = opened.panel.getByRole('article', { name: GENERAL_SAMPLE.name });
 	await expect(article).toHaveAttribute('data-look', look);
 	return { ...opened, article };
