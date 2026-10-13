@@ -27,7 +27,7 @@ test('friendly: 주요 기능만 있으면 그 구역 하나만 그린다', asyn
 });
 
 test('friendly: 사이트 테마를 따른다', async ({ page }) => {
-	await expectTheme(page, 'friendly', { light: 'rgb(255, 255, 255)', dark: 'rgb(11, 18, 32)' });
+	await expectTheme(page, 'friendly', { light: 'rgb(255, 255, 255)', dark: 'rgb(12, 13, 16)' });
 });
 
 test('friendly: 예전 기본 모양(showcase)으로 저장해 둔 프로젝트는 이 모양으로 그린다', async ({ page }) => {
