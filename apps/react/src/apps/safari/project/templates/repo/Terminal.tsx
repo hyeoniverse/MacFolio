@@ -268,7 +268,7 @@ export const Terminal: React.FC<{
 	}, [entries]);
 
 	useEffect(() => {
-		if (open) input.current?.focus();
+		if (open) input.current?.focus({ preventScroll: true });
 	}, [open]);
 
 	const onKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
