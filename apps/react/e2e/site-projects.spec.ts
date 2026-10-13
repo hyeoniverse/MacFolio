@@ -597,6 +597,103 @@ test.describe('프로젝트 관리', () => {
 		expect(saved.chapters[0].points[1].title).toBe('색인 없이 찾기');
 	});
 
+	test('관리자: 트러블슈팅·팀원·배포 결과물을 시트에서 더해 저장하면 Safari 페이지에 그 구역이 생긴다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		// 랜딩 템플릿(카드)으로 그린다: 직접 짠 페이지는 이 구역들을 그리지 않는다
+		api.siteProjects = { items: [{ id: 'qru', override: { look: 'friendly' } }] };
+		await enterDesktop(page);
+		const settings = await openProjectsPane(page);
+		await settings.getByRole('button', { name: '편집', exact: true }).click();
+		const list = settings.getByRole('list', { name: '프로젝트' });
+		await list.getByRole('listitem').filter({ hasText: 'QRU' }).getByRole('button', { name: '편집' }).click();
+		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
+		await editor.getByRole('tab', { name: '내용' }).click();
+		const form = editor.locator('.projects-editor-form');
+
+		// 트러블슈팅: 제목·문제·원인·해결·결과
+		await form.getByRole('region', { name: '트러블슈팅' }).getByRole('button', { name: '더하기' }).click();
+		const trouble = settings.getByRole('dialog', { name: '트러블슈팅 1' });
+		await trouble.getByRole('textbox', { name: '트러블슈팅 1 제목' }).fill('카드 저장이 두 번 되던 문제');
+		await trouble
+			.getByRole('textbox', { name: '트러블슈팅 1 문제' })
+			.fill('저장 단추를 빠르게 두 번 누르면 카드가 둘 생겼습니다.');
+		await trouble
+			.getByRole('textbox', { name: '트러블슈팅 1 원인' })
+			.fill('요청이 끝나기 전에 단추가 다시 눌렸습니다.');
+		await trouble
+			.getByRole('textbox', { name: '트러블슈팅 1 해결' })
+			.fill('저장하는 동안 단추를 잠그고 같은 요청을 한 번만 보냈습니다.');
+		await trouble.getByRole('textbox', { name: '트러블슈팅 1 결과' }).fill('중복 카드가 더는 생기지 않습니다.');
+		await trouble.getByRole('button', { name: '완료' }).click();
+
+		// 팀원: 이름·역할·GitHub 주소, 나
+		await form.getByRole('region', { name: '팀원' }).getByRole('button', { name: '더하기' }).click();
+		const member = settings.getByRole('dialog', { name: '팀원 1' });
+		await member.getByRole('textbox', { name: '팀원 1 이름' }).fill('김현');
+		await member.getByRole('textbox', { name: '팀원 1 역할' }).fill('프론트엔드');
+		await member.getByRole('textbox', { name: '팀원 1 GitHub 주소' }).fill('https://github.com/hyeoniverse');
+		await member.getByRole('switch', { name: '나' }).check();
+		await member.getByRole('button', { name: '완료' }).click();
+
+		// 배포 결과물: 이름·주소·플랫폼·설명
+		await form.getByRole('region', { name: '배포 결과물' }).getByRole('button', { name: '더하기' }).click();
+		const deploy = settings.getByRole('dialog', { name: '배포 결과물 1' });
+		await deploy.getByRole('textbox', { name: '배포 결과물 1 이름' }).fill('QRU 웹');
+		await deploy.getByRole('textbox', { name: '배포 결과물 1 주소' }).fill('https://qryou-app.web.app');
+		await deploy.getByRole('textbox', { name: '배포 결과물 1 플랫폼' }).fill('Firebase Hosting');
+		await deploy.getByRole('textbox', { name: '배포 결과물 1 설명' }).fill('누구나 카드를 만들어 볼 수 있습니다.');
+		await deploy.getByRole('button', { name: '완료' }).click();
+
+		await editor.getByRole('button', { name: '완료' }).click();
+		await settings.getByRole('button', { name: '완료' }).click();
+		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
+		const saved = api.siteProjects?.items.find((item) => item.id === 'qru')?.override as {
+			troubleshooting: unknown[];
+			team: unknown[];
+			deployments: unknown[];
+		};
+		expect(saved.troubleshooting).toEqual([
+			{
+				title: '카드 저장이 두 번 되던 문제',
+				problem: '저장 단추를 빠르게 두 번 누르면 카드가 둘 생겼습니다.',
+				cause: '요청이 끝나기 전에 단추가 다시 눌렸습니다.',
+				solution: '저장하는 동안 단추를 잠그고 같은 요청을 한 번만 보냈습니다.',
+				result: '중복 카드가 더는 생기지 않습니다.',
+			},
+		]);
+		expect(saved.team).toEqual([{ name: '김현', role: '프론트엔드', url: 'https://github.com/hyeoniverse', me: true }]);
+		expect(saved.deployments).toEqual([
+			{
+				label: 'QRU 웹',
+				url: 'https://qryou-app.web.app',
+				platform: 'Firebase Hosting',
+				note: '누구나 카드를 만들어 볼 수 있습니다.',
+			},
+		]);
+
+		await dockItem(page, 'safari').click();
+		const safari = appWindow(page, 'safari');
+		await safari.getByRole('tab', { name: /QRU/ }).click();
+		const article = safari.getByRole('tabpanel').getByRole('article', { name: 'QRU 큐알유' });
+		await expect(article).toHaveAttribute('data-look', 'friendly');
+		const troubles = article.getByRole('region', { name: '트러블슈팅' });
+		await troubles.scrollIntoViewIfNeeded();
+		await expect(troubles).toContainText('카드 저장이 두 번 되던 문제');
+		await expect(troubles).toContainText('중복 카드가 더는 생기지 않습니다.');
+		const team = article.getByRole('region', { name: '팀원' });
+		await team.scrollIntoViewIfNeeded();
+		await expect(team).toContainText('김현');
+		await expect(team.locator('[data-me]').first()).toBeVisible();
+		const deployments = article.getByRole('region', { name: '배포 결과물' });
+		await deployments.scrollIntoViewIfNeeded();
+		await expect(deployments.getByRole('link', { name: 'QRU 웹' })).toHaveAttribute(
+			'href',
+			'https://qryou-app.web.app'
+		);
+	});
+
 	test('관리자: 페이지 모양만 바꾸면 새로고침 없이 열려 있는 Safari 탭이 바로 바뀐다', async ({ page }) => {
 		await fakeApi(page, { signedIn: true });
 		await enterDesktop(page);

@@ -202,12 +202,28 @@ function tidy(project: Project): Project {
 			.filter((control) => control.keys.length || control.label.trim()),
 		credits: pairs(project.credits),
 		conventions: pairs(project.conventions),
+		troubleshooting: project.troubleshooting?.filter(
+			(item) => item.title.trim() || item.problem.trim() || item.solution.trim()
+		),
+		team: project.team?.filter((member) => member.name.trim() || member.role.trim()),
+		deployments: project.deployments?.filter((item) => item.label.trim() || item.url?.trim()),
 		// 화면 모음: 그림이 없는 줄은 빼고, 설명을 비우면 파일 이름에서 지은 설명을 쓴다
 		gallery: project.gallery
 			?.filter((shot) => shot.src.trim())
 			.map((shot) => ({ ...shot, caption: shot.caption.trim() || captionOf(shot.src) })),
 	};
-	for (const key of ['usage', 'chapters', 'timeline', 'controls', 'credits', 'conventions', 'gallery'] as const)
+	for (const key of [
+		'usage',
+		'chapters',
+		'timeline',
+		'controls',
+		'credits',
+		'conventions',
+		'gallery',
+		'troubleshooting',
+		'team',
+		'deployments',
+	] as const)
 		if (!next[key]?.length) delete next[key];
 	return next;
 }
@@ -2005,7 +2021,7 @@ const PointFields = ({
 	</>
 );
 
-/** 제목·설명(·그림) 묶음 목록: 주요 기능, 만든 방식, 쓰는 법, 장 안 항목. 줄에는 제목·설명 첫 줄·그림, 고르면 아래에서 고친다 */
+/** 제목·설명(·그림) 묶음 목록: 주요 기능, 구현 방법, 쓰는 법, 장 안 항목. 줄에는 제목·설명 첫 줄·그림, 고르면 아래에서 고친다 */
 const PointsEditor = ({
 	label,
 	title,
@@ -2086,7 +2102,7 @@ const PairsEditor = <K extends string>({
 	/>
 );
 
-/** 한 줄씩: 맡은 일 */
+/** 한 줄씩: 내가 한 일 */
 const LinesEditor = ({
 	label,
 	hint,
@@ -2118,7 +2134,7 @@ const LinesEditor = ({
 );
 
 /**
- * 장: 주요 기능과 만든 방식 말고 더 들려줄 이야기 (모든 모양이 '더 들려줄 이야기' 구역이나 대화로 그린다).
+ * 장: 주요 기능과 구현 방법 말고 더 들려줄 이야기 (모든 모양이 '더 들려줄 이야기' 구역이나 대화로 그린다).
  * 줄에는 장 제목과 머리말, 고르면 아래에서 제목·머리말·숫자·항목·장 그림을 고친다.
  * 장 모양(look)·테마(palette)·데이터 구조(schema)·전후 비교(compare)는 코드로 짜는 연출이라 JSON에서만 고친다
  */
@@ -2131,7 +2147,7 @@ const ChaptersEditor = ({
 }) => (
 	<ListTable<ProjectChapter>
 		label="장"
-		hint="주요 기능·만든 방식 뒤에 이어지는 이야기입니다. 모양마다 그 페이지에 맞는 꼴로 그립니다."
+		hint="주요 기능·구현 방법 뒤에 이어지는 이야기입니다. 모양마다 그 페이지에 맞는 꼴로 그립니다."
 		items={chapters}
 		onChange={onChange}
 		blank={() => ({ title: '', points: [] })}
@@ -2235,6 +2251,216 @@ const ControlsEditor = ({ controls, onChange }: { controls: Control[]; onChange:
 				onChange={(event) => update({ ...control, label: event.target.value })}
 			/>,
 		]}
+	/>
+);
+
+type Trouble = NonNullable<Project['troubleshooting']>[number];
+
+/** 트러블슈팅: 줄에는 제목과 문제 첫 줄·그림, 고르면 아래에서 제목·문제·원인·해결·결과·그림·아이콘을 고친다 */
+const TroubleshootingEditor = ({ items, onChange }: { items: Trouble[]; onChange: (items: Trouble[]) => void }) => (
+	<ListTable<Trouble>
+		label="트러블슈팅"
+		hint="부딪힌 문제와 푼 과정을 적습니다. 문제, 원인, 해결, 결과 차례로 보이고, 그림이 없으면 아이콘과 단계 띠로 그립니다."
+		items={items}
+		onChange={onChange}
+		blank={() => ({ title: '', problem: '', solution: '' })}
+		cells={(item) => [
+			<span className="projects-point" key="text">
+				<strong className={item.title.trim() ? '' : 'placeholder'}>{item.title.trim() || '제목 없음'}</strong>
+				<span>{item.problem.trim() || '문제가 적혀 있지 않습니다.'}</span>
+			</span>,
+			<RowThumb key="thumb" src={item.image} />,
+		]}
+		detail={(item, index, update) => {
+			const name = `트러블슈팅 ${index + 1}`;
+			return (
+				<>
+					<TextField
+						label="제목"
+						ariaLabel={`${name} 제목`}
+						value={item.title}
+						placeholder="예: 긴 목록에서 스크롤이 끊기던 문제"
+						onChange={(title) => update({ ...item, title })}
+					/>
+					<TextField
+						label="문제"
+						multiline
+						ariaLabel={`${name} 문제`}
+						value={item.problem}
+						hint="무엇이 잘못되었는지 적습니다."
+						onChange={(problem) => update({ ...item, problem })}
+					/>
+					<TextField
+						label="원인"
+						multiline
+						ariaLabel={`${name} 원인`}
+						value={item.cause}
+						hint="비워 두면 원인 단계를 그리지 않습니다."
+						onChange={(cause) => update(patchOf(item, { cause: optional(cause) }))}
+					/>
+					<TextField
+						label="해결"
+						multiline
+						ariaLabel={`${name} 해결`}
+						value={item.solution}
+						hint="어떻게 풀었는지 적습니다."
+						onChange={(solution) => update({ ...item, solution })}
+					/>
+					<TextField
+						label="결과"
+						multiline
+						ariaLabel={`${name} 결과`}
+						value={item.result}
+						hint="풀고 나서 달라진 점입니다. 숫자가 있으면 더 잘 전해집니다."
+						onChange={(result) => update(patchOf(item, { result: optional(result) }))}
+					/>
+					<ImageField
+						label="그림"
+						name={`${name} 그림`}
+						shape="wide"
+						value={item.image}
+						hint="고치기 전후의 화면이나 그래프를 곁들입니다."
+						onChange={(image) => update(patchOf(item, { image }))}
+					/>
+					<TextField
+						label="아이콘"
+						ariaLabel={`${name} 아이콘`}
+						value={item.icon}
+						placeholder="예: fa-bug"
+						hint="제목 옆에 보이는 Font Awesome 아이콘 이름입니다. 비워 두면 벌레 아이콘을 씁니다."
+						onChange={(icon) => update(patchOf(item, { icon: optional(icon) }))}
+					/>
+				</>
+			);
+		}}
+	/>
+);
+
+type Member = NonNullable<Project['team']>[number];
+
+/** 팀원: 줄에는 이름과 역할, 고르면 아래에서 이름·역할·GitHub 주소·사진·나를 고친다 */
+const TeamEditor = ({ members, onChange }: { members: Member[]; onChange: (members: Member[]) => void }) => (
+	<ListTable<Member>
+		label="팀원"
+		hint="함께 만든 사람을 적습니다. 사진이 없으면 이름 첫 글자로 그리고, 나로 표시한 사람은 강조해서 보입니다."
+		items={members}
+		onChange={onChange}
+		blank={() => ({ name: '', role: '' })}
+		cells={(member) => [
+			<span className="projects-point" key="text">
+				<strong className={member.name.trim() ? '' : 'placeholder'}>
+					{member.name.trim() || '이름 없음'}
+					{member.me ? ' (나)' : ''}
+				</strong>
+				<span>{member.role.trim() || '역할이 적혀 있지 않습니다.'}</span>
+			</span>,
+			<RowThumb key="thumb" src={member.avatar} />,
+		]}
+		detail={(member, index, update) => {
+			const name = `팀원 ${index + 1}`;
+			return (
+				<>
+					<TextField
+						label="이름"
+						ariaLabel={`${name} 이름`}
+						value={member.name}
+						onChange={(value) => update({ ...member, name: value })}
+					/>
+					<TextField
+						label="역할"
+						ariaLabel={`${name} 역할`}
+						value={member.role}
+						placeholder="예: 백엔드, 인증과 결제"
+						onChange={(role) => update({ ...member, role })}
+					/>
+					<TextField
+						label="GitHub 주소"
+						type="url"
+						ariaLabel={`${name} GitHub 주소`}
+						value={member.url}
+						placeholder="https://github.com/…"
+						onChange={(url) => update(patchOf(member, { url: optional(url) }))}
+					/>
+					<ImageField
+						label="사진"
+						name={`${name} 사진`}
+						value={member.avatar}
+						hint="비워 두면 이름 첫 글자로 그립니다."
+						onChange={(avatar) => update(patchOf(member, { avatar }))}
+					/>
+					<Switch
+						label="나"
+						checked={Boolean(member.me)}
+						hint="이 프로젝트에서 내가 맡은 자리입니다. 강조해서 보입니다."
+						onChange={(me) => update(patchOf(member, { me: me || undefined }))}
+					/>
+				</>
+			);
+		}}
+	/>
+);
+
+type Deployment = NonNullable<Project['deployments']>[number];
+
+/** 배포 결과물: 줄에는 이름과 올린 곳, 고르면 아래에서 이름·주소·올린 곳·설명·그림을 고친다 */
+const DeploymentsEditor = ({ items, onChange }: { items: Deployment[]; onChange: (items: Deployment[]) => void }) => (
+	<ListTable<Deployment>
+		label="배포 결과물"
+		hint="실제로 열어 볼 수 있는 곳을 적습니다. 웹 서비스, 스토어, 패키지, API 문서처럼 올린 곳마다 한 줄씩 적습니다."
+		items={items}
+		onChange={onChange}
+		blank={() => ({ label: '' })}
+		cells={(item) => [
+			<span className="projects-point" key="text">
+				<strong className={item.label.trim() ? '' : 'placeholder'}>{item.label.trim() || '이름 없음'}</strong>
+				<span>{[item.platform, item.url].filter((part) => part?.trim()).join(' · ') || '주소가 없습니다.'}</span>
+			</span>,
+			<RowThumb key="thumb" src={item.image} />,
+		]}
+		detail={(item, index, update) => {
+			const name = `배포 결과물 ${index + 1}`;
+			return (
+				<>
+					<TextField
+						label="이름"
+						ariaLabel={`${name} 이름`}
+						value={item.label}
+						placeholder="예: 웹 서비스"
+						onChange={(label) => update({ ...item, label })}
+					/>
+					<TextField
+						label="주소"
+						type="url"
+						ariaLabel={`${name} 주소`}
+						value={item.url}
+						placeholder="https://"
+						onChange={(url) => update(patchOf(item, { url: optional(url) }))}
+					/>
+					<TextField
+						label="플랫폼"
+						ariaLabel={`${name} 플랫폼`}
+						value={item.platform}
+						placeholder="예: Vercel, App Store, npm"
+						hint="올린 곳에 맞는 아이콘을 고르는 데에도 씁니다."
+						onChange={(platform) => update(patchOf(item, { platform: optional(platform) }))}
+					/>
+					<TextField
+						label="설명"
+						ariaLabel={`${name} 설명`}
+						value={item.note}
+						onChange={(note) => update(patchOf(item, { note: optional(note) }))}
+					/>
+					<ImageField
+						label="그림"
+						name={`${name} 그림`}
+						shape="wide"
+						value={item.image}
+						hint="카드 위에 보이는 화면입니다."
+						onChange={(image) => update(patchOf(item, { image }))}
+					/>
+				</>
+			);
+		}}
 	/>
 );
 
@@ -2645,7 +2871,7 @@ const ProjectEditor = ({
 										onChange={(highlights) => set({ highlights })}
 									/>
 									<PointsEditor
-										label="만든 방식"
+										label="구현 방법"
 										hint="구현에서 신경 쓴 점입니다. 그림이 있으면 함께 보입니다."
 										points={draft.build}
 										onChange={(build) => set({ build })}
@@ -2655,6 +2881,12 @@ const ProjectEditor = ({
 										hint="단계로 보입니다."
 										points={draft.usage ?? []}
 										onChange={(usage) => set({ usage: usage.length ? usage : undefined })}
+									/>
+									<TroubleshootingEditor
+										items={draft.troubleshooting ?? []}
+										onChange={(troubleshooting) =>
+											set({ troubleshooting: troubleshooting.length ? troubleshooting : undefined })
+										}
 									/>
 									<ChaptersEditor
 										chapters={draft.chapters ?? []}
@@ -2678,8 +2910,13 @@ const ProjectEditor = ({
 										rows={draft.specs}
 										onChange={(specs) => set({ specs })}
 									/>
+									<TeamEditor
+										members={draft.team ?? []}
+										onChange={(team) => set({ team: team.length ? team : undefined })}
+									/>
 									<LinesEditor
-										label="맡은 일"
+										label="내가 한 일"
+										hint="내 역할 구역에 목록으로 보입니다."
 										lines={draft.contributions}
 										onChange={(contributions) => set({ contributions })}
 									/>
@@ -2697,6 +2934,10 @@ const ProjectEditor = ({
 											onChange={(structure) => set({ structure: optional(structure) })}
 										/>
 									</Group>
+									<DeploymentsEditor
+										items={draft.deployments ?? []}
+										onChange={(deployments) => set({ deployments: deployments.length ? deployments : undefined })}
+									/>
 									<CreditsEditor
 										credits={draft.credits ?? []}
 										onChange={(credits) => set({ credits: credits.length ? credits : undefined })}

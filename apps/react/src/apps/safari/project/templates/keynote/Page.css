@@ -1457,3 +1457,30 @@
 		transition: none;
 	}
 }
+
+/* ─── 트러블슈팅·팀원·배포 결과물: 어두운 무대 위의 한 단 밝은 판 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.tpl-keynote {
+	--lk-x-ink: var(--kn-text);
+	--lk-x-body: var(--kn-muted);
+	--lk-x-muted: var(--kn-dim);
+	--lk-x-line: var(--kn-line-strong);
+	--lk-x-card: var(--kn-raise);
+	--lk-x-radius: 20px;
+	--lk-x-gap: 16px;
+	--lk-x-pad: 32px;
+	--lk-x-label: var(--kn-mono);
+}
+
+.kn-trouble h3 {
+	font-size: clamp(20px, 2.2cqi, 26px);
+	letter-spacing: -0.02em;
+}
+
+.kn-trouble-step dd {
+	font-size: 15px;
+}
+
+.kn-member .lk-avatar {
+	width: 64px;
+	height: 64px;
+}

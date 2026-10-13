@@ -5,10 +5,13 @@ import React, { useMemo } from 'react';
 import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
 import {
+	DeployList,
 	iconOf,
 	LandingSections,
 	Media,
 	sectionTitle,
+	TeamList,
+	TroubleList,
 	useLanding,
 	useLandingAccent,
 	type Landing,
@@ -351,6 +354,12 @@ const RENDERERS: SectionRenderers = {
 			</div>
 		);
 	},
+	troubleshooting: ({ section, landing, index }) => (
+		<div className="bt-block" style={blockOrder(index)}>
+			<Head section={section} landing={landing} />
+			<TroubleList items={section.items} prefix="bt" />
+		</div>
+	),
 	stories: ({ section, landing, index }) => (
 		<div className="bt-block" style={blockOrder(index)}>
 			<Head section={section} landing={landing} />
@@ -519,6 +528,12 @@ const RENDERERS: SectionRenderers = {
 			</>
 		);
 	},
+	team: ({ section, landing, index }) => (
+		<div className="bt-block" style={blockOrder(index)}>
+			<Head section={section} landing={landing} />
+			<TeamList members={section.members} prefix="bt" />
+		</div>
+	),
 	role: ({ section, landing }) => {
 		const place = placeOf(landing, 'role');
 		return (
@@ -562,6 +577,12 @@ const RENDERERS: SectionRenderers = {
 			</div>
 		);
 	},
+	deployments: ({ section, landing, index }) => (
+		<div className="bt-block" style={blockOrder(index)}>
+			<Head section={section} landing={landing} />
+			<DeployList items={section.items} prefix="bt" />
+		</div>
+	),
 	credits: ({ section, landing, index }) => {
 		const places = packed(section.credits.map(() => 'item'));
 		return (

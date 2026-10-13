@@ -114,6 +114,17 @@ describe('모양별 예시 프로젝트', () => {
 		expect(sample.chapters?.some((chapter) => chapter.facts?.length && chapter.image)).toBe(true);
 		expect(sample.controls?.length).toBeGreaterThanOrEqual(3);
 		expect(sample.credits?.length).toBeGreaterThanOrEqual(2);
+		// 트러블슈팅은 그림이 있는 것과 없는 것, 원인·결과가 빈 것까지 써 본다
+		expect(sample.troubleshooting?.length).toBe(3);
+		expect(sample.troubleshooting?.some((item) => item.image)).toBe(true);
+		expect(sample.troubleshooting?.some((item) => !item.image && !item.icon && !item.cause)).toBe(true);
+		// 팀원은 나 한 사람과 사진이 없는 사람이 있다
+		expect(sample.team?.length).toBe(4);
+		expect(sample.team?.filter((member) => member.me)).toHaveLength(1);
+		expect(sample.team?.some((member) => !member.avatar)).toBe(true);
+		expect(sample.deployments?.length).toBeGreaterThanOrEqual(2);
+		expect(sample.deployments?.length).toBeLessThanOrEqual(3);
+		expect(sample.deployments?.every((item) => item.url && item.platform)).toBe(true);
 		// 기간은 편집 화면의 달력이 읽는 모양이다
 		expect(parsePeriod(sample.period)?.end).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 	});

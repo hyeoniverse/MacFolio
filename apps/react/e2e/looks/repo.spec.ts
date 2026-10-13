@@ -112,6 +112,34 @@ test('repo: 파일 트리의 docs/ 문서를 누르면 README 상자가 그 문�
 	await expect(drawer.locator('.rp-t-pre').last()).toContainText('## 쓰는 법');
 });
 
+test('repo: 옆 칸에 Deployments와 Contributors가 있고, 트러블슈팅 문서는 알림 상자로 그리며 터미널이 원문을 읽는다', async ({
+	page,
+}) => {
+	const { article } = await openSample(page, 'repo');
+	const side = article.locator('.rp-side');
+	await expect(side.getByRole('heading', { name: /Deployments/ })).toContainText('3');
+	await expect(side.getByRole('link', { name: '북클럽 웹' })).toHaveAttribute(
+		'href',
+		'https://bookclub-demo.vercel.app'
+	);
+	const people = side.getByRole('list', { name: '팀원' }).getByRole('listitem');
+	await expect(people).toHaveCount(4);
+	await expect(side.getByRole('link', { name: '김현' })).toHaveAttribute('href', 'https://github.com/hyeoniverse');
+
+	await docTabs(article).getByRole('button', { name: '트러블슈팅' }).click();
+	const troubles = article.getByRole('region', { name: '트러블슈팅' });
+	await expect(troubles.getByRole('article')).toHaveCount(3);
+	await expect(troubles.locator('[data-alert="warning"]')).toHaveCount(3);
+	await expect(article.locator('.rp-doc-blob')).toHaveText('blob/main/docs/TROUBLESHOOTING.md');
+
+	await article.getByRole('button', { name: '터미널' }).click();
+	const drawer = article.getByRole('complementary', { name: '터미널' });
+	const input = drawer.getByRole('textbox', { name: '명령 입력' });
+	await input.fill('cat docs/TEAM.md');
+	await input.press('Enter');
+	await expect(drawer.locator('.rp-t-pre').last()).toContainText('| [김현](https://github.com/hyeoniverse) (나) |');
+});
+
 test('repo: 폴더 구조로 만든 파일 트리를 펼치고, 커밋을 타입으로 거르고, 서랍 터미널에 명령을 친다', async ({
 	page,
 }) => {

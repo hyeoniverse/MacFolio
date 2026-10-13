@@ -43,19 +43,26 @@ interface Landing {
 
 구역 이름(`label`)은 화면의 구역(region) 이름이자 시험과 보조 기술이 찾는 이름이다 (`SECTION_LABELS`). 차례는 `SECTION_ORDER` 그대로다.
 
-| kind       | label            | 데이터                                                          | 생기는 때                                         |
-| ---------- | ---------------- | --------------------------------------------------------------- | ------------------------------------------------- |
-| `stats`    | 한눈에 보는 숫자 | `facts[]` (`value`, `label`)                                    | facts가 있을 때                                   |
-| `features` | 주요 기능        | `items: LandingPoint[]`                                         | highlights가 있을 때                              |
-| `screens`  | 화면 모음        | `shots[]` (`LandingMedia` + `caption`)                          | gallery가 있을 때 (첫 화면 그림 한 장뿐이면 없음) |
-| `steps`    | 쓰는 법          | `items: LandingPoint[]`                                         | usage가 있을 때                                   |
-| `built`    | 만든 방식        | `items: LandingPoint[]`                                         | build가 있을 때                                   |
-| `stories`  | 더 들려줄 이야기 | `stories[]` (`title`, `lead?`, `facts[]`, `points[]`, `image?`) | chapters가 있을 때                                |
-| `controls` | 조작법           | `controls[]` (`keys[]`, `label`) — 게임 키나 앱 단축키          | controls가 있을 때                                |
-| `timeline` | 진행 과정        | `entries[]` (`date`, `label`)                                   | timeline이 있을 때                                |
-| `tech`     | 기술 사양        | `stack[]`(주 언어가 맨 앞), `specs[]`, `structure?`(폴더 트리)  | 셋 가운데 하나라도 있을 때                        |
-| `role`     | 맡은 일          | `role?`, `period?`, `context?`, `contributions[]`               | contributions나 role이 있을 때                    |
-| `credits`  | 출처             | `credits[]` (`role`, `name`, `by`, `href?`, `note?`)            | credits가 있을 때                                 |
+| kind              | label            | 데이터                                                                             | 생기는 때                                         |
+| ----------------- | ---------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `stats`           | 한눈에 보는 숫자 | `facts[]` (`value`, `label`)                                                       | facts가 있을 때                                   |
+| `features`        | 주요 기능        | `items: LandingPoint[]`                                                            | highlights가 있을 때                              |
+| `screens`         | 화면 모음        | `shots[]` (`LandingMedia` + `caption`)                                             | gallery가 있을 때 (첫 화면 그림 한 장뿐이면 없음) |
+| `steps`           | 쓰는 법          | `items: LandingPoint[]`                                                            | usage가 있을 때                                   |
+| `built`           | 구현 방법        | `items: LandingPoint[]`                                                            | build가 있을 때                                   |
+| `troubleshooting` | 트러블슈팅       | `items[]` (`title`, `problem`, `cause?`, `solution`, `result?`, `icon?`, `image?`) | troubleshooting이 있을 때                         |
+| `stories`         | 더 들려줄 이야기 | `stories[]` (`title`, `lead?`, `facts[]`, `points[]`, `image?`)                    | chapters가 있을 때                                |
+| `controls`        | 조작법           | `controls[]` (`keys[]`, `label`) — 게임 키나 앱 단축키                             | controls가 있을 때                                |
+| `tech`            | 기술 사양        | `stack[]`(주 언어가 맨 앞), `specs[]`, `structure?`(폴더 트리)                     | 셋 가운데 하나라도 있을 때                        |
+| `team`            | 팀원             | `members[]` (`name`, `role`, `url?`, `avatar?`, `initials`, `me`)                  | team이 있을 때                                    |
+| `role`            | 내 역할          | `role?`, `period?`, `context?`, `contributions[]`                                  | contributions나 role이 있을 때                    |
+| `timeline`        | 진행 과정        | `entries[]` (`date`, `label`)                                                      | timeline이 있을 때                                |
+| `deployments`     | 배포 결과물      | `items[]` (`label`, `url?`, `platform?`, `note?`, `icon`, `host?`, `image?`)       | deployments가 있을 때                             |
+| `credits`         | 출처             | `credits[]` (`role`, `name`, `by`, `href?`, `note?`)                               | credits가 있을 때                                 |
+
+차례는 포트폴리오를 읽는 순서다. 무엇인지(숫자·기능·화면·쓰는 법) → 어떻게 만들었는지(구현 방법·트러블슈팅·이야기·조작법·기술) → 누가 만들었는지(팀원·내 역할) → 언제(진행 과정) → 어디서 볼 수 있는지(배포 결과물) → 출처.
+
+**트러블슈팅·팀원·배포 결과물**은 짜임을 `landing/Extras.tsx`의 `TroubleList`·`TeamList`·`DeployList` 하나로 함께 쓴다. 템플릿은 자기 구역 머리 아래에 `<TroubleList items prefix="pd" />`처럼 접두사를 넘기고, 공통 클래스(`lk-trouble`…)와 접두사 클래스(`pd-trouble`…)가 함께 붙는다. 모양은 `landing.css`의 공통 짜임 위에 템플릿이 `.tpl-<id>`에서 `--lk-x-ink`·`--lk-x-body`·`--lk-x-muted`·`--lk-x-line`·`--lk-x-card`·`--lk-x-radius`·`--lk-x-gap`·`--lk-x-pad`·`--lk-x-label`(이름표 글꼴)을 정하고 접두사 클래스로 더한다. 그림이 없어도 비지 않게: 트러블슈팅은 아이콘(`troubleIcon`, 기본 fa-bug)과 번호, 문제 → 원인 → 해결 → 결과 단계 띠(`troubleSteps`, 빈 단계는 빠진다), 팀원은 사진이 없으면 이름 첫 글자(`MemberAvatar`, `initialsOf`)와 나의 강조, 배포 결과물은 올린 곳 아이콘(`deploymentIcon`, 브랜드 아이콘은 `faClass`가 fa-brands로)과 공개 상태, 호스트 이름이다. 저장소(`repo`)만 GitHub답게 자기 마크업을 쓴다 (알림 상자, 사진 달린 표, Deployments 목록, 옆 칸의 Deployments·Contributors).
 
 `sectionTitle(section)`은 구역마다 기본 큰 문장(예: '필요한 것을 한곳에 담았습니다.')을 준다. 템플릿은 써도 되고 자기 문장을 써도 된다.
 
@@ -85,11 +92,12 @@ templates/
 ├── bento/     Page.tsx·Page.css, layout.ts(빈칸 없는 타일 배치), Links.tsx(글쇠 표시 링크)
 └── repo/      Page.tsx·Page.css, Files.tsx(파일 상자), Readme.tsx(구역 렌더러), Terminal.tsx·shell.ts(터미널 서랍), repo.ts(커밋·트리·문서와 그 원문)
 landing/                템플릿이 함께 쓰는 키트
-├── content.ts          landingOf, 타입, SECTION_LABELS·SECTION_ORDER, sectionTitle, iconOf
+├── content.ts          landingOf, 타입, SECTION_LABELS·SECTION_ORDER, sectionTitle, iconOf, troubleSteps, deploymentIcon, faClass
 ├── useLanding.ts       useLanding(project)
 ├── Sections.tsx        LandingSections, SectionRenderers
 ├── LandingLinks.tsx    링크 묶음
 ├── Media.tsx           Media, PointArt, PointVisual
+├── Extras.tsx          TroubleList, TeamList, DeployList, MemberAvatar, FaIcon
 ├── accent.ts           useLandingAccent (아이콘 색 → --lk-accent·--lk-dark-accent)
 └── landing.css         .tpl 기본값(--tpl-accent, container), 그림 한 쌍, PointArt
 ```
@@ -106,7 +114,7 @@ landing/                템플릿이 함께 쓰는 키트
 
 ## 예시와 시험
 
-- 예시: `apps/settings/lookSamples.ts`의 `GENERAL_SAMPLE` 하나를 모든 템플릿과 RPG 대화창이 함께 쓴다 ('예시로 채우기'). 모든 구역과 항목 칸(아이콘, 다크 짝이 있는 그림, 화면 여러 장, 장의 숫자와 그림, 조작법, 폴더 구조, 출처)을 채운다.
+- 예시: `apps/settings/lookSamples.ts`의 `GENERAL_SAMPLE` 하나를 모든 템플릿과 RPG 대화창이 함께 쓴다 ('예시로 채우기'). 모든 구역과 항목 칸(아이콘, 다크 짝이 있는 그림, 화면 여러 장, 장의 숫자와 그림, 조작법, 폴더 구조, 출처, 트러블슈팅 세 건(그림이 있는 것과 없는 것), 팀원 네 명(나 한 사람), 배포 결과물 세 곳)을 채운다.
 - 단위: `landing/content.test.ts`(빈 구역 빠짐, 차례, 첫 화면 그림, 링크, 칸 보존), `lookSamples.test.ts`, desktop-core의 `projects.test.ts`(예전 이름 옮기기).
 - E2E: `e2e/looks/{product,friendly,paper,bento,keynote,magazine,devtool,repo,playful,dialogue}.spec.ts`.
 
@@ -118,6 +126,6 @@ landing/                템플릿이 함께 쓰는 키트
 
 `repo`는 GitHub 저장소 화면이다. 다른 템플릿과 달리 랜딩식 첫 화면(가운데 놓인 큰 제목, 단추, 창 속 대표 화면)이 없고 저장소 머리(owner / 이름, Public, Watch·Fork·Star 링크)와 탭 줄(Code · Commits · Conventions)로 바로 열린다. 그래서 첫 화면의 칸은 저장소 화면의 제자리로 간다: 큰 제목(`headline`)은 README 첫머리의 `<h1>`, 소개는 그 아래 글, 대표 화면은 README의 첫 그림, 링크 묶음은 옆 칸 About 안의 GitHub 단추이고, 마무리는 맨 아래의 얇은 줄이다. README가 보이지 않는 동안(다른 문서나 Commits 탭)에는 숨긴 `<h1>`이 같은 제목을 지켜 페이지의 h1이 늘 하나다. Code 탭은 가지 줄(main, 가지·태그 수, clone 주소를 복사하는 초록 Code 단추), 마지막 커밋 줄과 파일 상자, README 상자 차례다.
 
-README 상자는 구역을 한 문서에 몰지 않고 **구역마다 문서 하나**로 나눈다. '모든 구역을 그린다'의 허용된 변형으로, 구역은 모두 있되 상자 위의 문서 탭(`nav aria-label="문서"`와 `aria-current` 단추, 구역 차례)으로 한 번에 한 문서만 보인다. README.md(큰 제목·소개·대표 화면·숫자 구역·목차)는 언제나 있고 처음 열린다. 나머지는 내용이 있는 구역만 `docs/FEATURES.md`(주요 기능), `SCREENSHOTS.md`(화면 모음), `USAGE.md`(쓰는 법), `ARCHITECTURE.md`(만든 방식), `STORIES.md`(더 들려줄 이야기), `CONTROLS.md`(조작법), `CHANGELOG.md`(진행 과정, 릴리스 목록 v0.1.0 … v1.0.0), `TECH.md`(기술 사양, Built with 주제·표·폴더 구조), `CONTRIBUTING.md`(맡은 일, 할 일 목록), `CREDITS.md`(출처)다. 문서의 구역도 `<section aria-label={구역 이름}>`이고, 상자 머리의 경로 줄이 `이름 / docs / FEATURES.md`와 `blob/main/docs/FEATURES.md`를 보여 준다. 파일 상자의 폴더 구조 트리(DevCourse는 실제 저장소 `repo.json` 탐색기라 문서를 더하지 않는다)에는 README.md 줄과 `docs/` 폴더가 더해져, 문서 파일을 누르면 README 상자가 그 문서를 열고 화면이 상자로 내려간다. 터미널 서랍의 셸도 같은 트리를 돌아보아 `ls docs`, `cat docs/USAGE.md`(문서의 마크다운 원문)가 된다. 그래서 E2E는 공통 도우미 `expectSampleRendered` 대신 문서 탭을 차례로 열며 구역의 차례와 내용을 본다(`repo.spec.ts`).
+README 상자는 구역을 한 문서에 몰지 않고 **구역마다 문서 하나**로 나눈다. '모든 구역을 그린다'의 허용된 변형으로, 구역은 모두 있되 상자 위의 문서 탭(`nav aria-label="문서"`와 `aria-current` 단추, 구역 차례)으로 한 번에 한 문서만 보인다. README.md(큰 제목·소개·대표 화면·숫자 구역·목차)는 언제나 있고 처음 열린다. 나머지는 내용이 있는 구역만 `docs/FEATURES.md`(주요 기능), `SCREENSHOTS.md`(화면 모음), `USAGE.md`(쓰는 법), `ARCHITECTURE.md`(구현 방법), `TROUBLESHOOTING.md`(트러블슈팅, GitHub 알림 상자), `STORIES.md`(더 들려줄 이야기), `CONTROLS.md`(조작법), `CHANGELOG.md`(진행 과정, 릴리스 목록 v0.1.0 … v1.0.0), `TECH.md`(기술 사양, Built with 주제·표·폴더 구조), `TEAM.md`(팀원, 사진 달린 표), `CONTRIBUTING.md`(내 역할, 할 일 목록), `DEPLOYMENT.md`(배포 결과물), `CREDITS.md`(출처)다. 문서의 구역도 `<section aria-label={구역 이름}>`이고, 상자 머리의 경로 줄이 `이름 / docs / FEATURES.md`와 `blob/main/docs/FEATURES.md`를 보여 준다. 파일 상자의 폴더 구조 트리(DevCourse는 실제 저장소 `repo.json` 탐색기라 문서를 더하지 않는다)에는 README.md 줄과 `docs/` 폴더가 더해져, 문서 파일을 누르면 README 상자가 그 문서를 열고 화면이 상자로 내려간다. 터미널 서랍의 셸도 같은 트리를 돌아보아 `ls docs`, `cat docs/USAGE.md`(문서의 마크다운 원문)가 된다. 그래서 E2E는 공통 도우미 `expectSampleRendered` 대신 문서 탭을 차례로 열며 구역의 차례와 내용을 본다(`repo.spec.ts`).
 
-옆 칸(About·Releases·Languages)은 첫 화면 내용의 요약이라 구역이 아니다. Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입(커밋 규칙 `conventions`, 없으면 Conventional Commits 기본 타입)으로 거르며, Conventions 탭은 커밋 규칙이 있을 때만 생긴다. 저장소 탭과 문서 탭은 Safari 창의 탭(role=tab)과 섞이지 않게 `nav`와 `aria-current` 단추이고, 터미널 서랍은 구역이 아닌 `aside`(complementary)다.
+옆 칸(About·Releases·Deployments·Contributors·Languages)은 첫 화면 내용의 요약이라 구역이 아니다. Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입(커밋 규칙 `conventions`, 없으면 Conventional Commits 기본 타입)으로 거르며, Conventions 탭은 커밋 규칙이 있을 때만 생긴다. 저장소 탭과 문서 탭은 Safari 창의 탭(role=tab)과 섞이지 않게 `nav`와 `aria-current` 단추이고, 터미널 서랍은 구역이 아닌 `aside`(complementary)다.
