@@ -1,6 +1,7 @@
 // repo 템플릿의 순수한 조각: 저장소 주소에서 owner와 이름, clone 주소, 가짜 커밋 해시, 진행 과정을 커밋으로(타입 뱃지 포함),
-// 폴더 구조 글을 저장소 트리로, 첫 화면 편집기에 쓰는 README 원문. 같은 내용이면 언제나 같은 결과가 나온다. 단위 시험은 repo.test.ts
-import type { Landing } from '@/apps/safari/project/landing';
+// 폴더 구조 글을 저장소 트리로, 구역을 나눠 담는 문서(README.md와 docs/*.md)와 그 마크다운 원문.
+// 같은 내용이면 언제나 같은 결과가 나온다. 단위 시험은 repo.test.ts
+import type { Landing, LandingSection, LandingSectionKind } from '@/apps/safari/project/landing';
 import type { RepoDir } from '@/apps/safari/project/terminalRepo';
 
 /** git log 모양의 가짜 해시: 같은 글이면 늘 같은 일곱 자리 */
@@ -180,27 +181,141 @@ export function structureRepo(text: string): StructureRepo {
 	return { dir, notes };
 }
 
-/* ─── 첫 화면 편집기의 README 원문 ─── */
+/* ─── 문서: 구역을 README.md와 docs/*.md로 나눈다 ─── */
 
-/** 편집기에 보이는 README.md 원문: 이름, 한 줄, 소개, 주요 기능 목록, 쓰는 법, clone 명령 */
-export function readmeSource(landing: Landing, clone?: string): string[] {
+/** 구역 종류마다의 문서 파일 이름과 아이콘 (숫자는 README 첫머리에 남는다) */
+const DOC_FILES: Record<Exclude<LandingSectionKind, 'stats'>, { file: string; icon: string }> = {
+	features: { file: 'FEATURES.md', icon: 'fa-solid fa-wand-magic-sparkles' },
+	screens: { file: 'SCREENSHOTS.md', icon: 'fa-regular fa-images' },
+	steps: { file: 'USAGE.md', icon: 'fa-solid fa-list-ol' },
+	built: { file: 'ARCHITECTURE.md', icon: 'fa-solid fa-sitemap' },
+	stories: { file: 'STORIES.md', icon: 'fa-regular fa-comments' },
+	controls: { file: 'CONTROLS.md', icon: 'fa-regular fa-keyboard' },
+	timeline: { file: 'CHANGELOG.md', icon: 'fa-solid fa-tag' },
+	tech: { file: 'TECH.md', icon: 'fa-solid fa-microchip' },
+	role: { file: 'CONTRIBUTING.md', icon: 'fa-solid fa-user-check' },
+	credits: { file: 'CREDITS.md', icon: 'fa-solid fa-scale-balanced' },
+};
+
+/** README 박스의 문서 하나: 저장소 안의 경로, 탭 이름, 담는 구역 */
+export interface RepoDoc {
+	/** 'readme' 또는 구역 종류 */
+	id: 'readme' | LandingSectionKind;
+	/** 저장소 안의 경로 (['README.md'] 또는 ['docs', 'FEATURES.md']) */
+	path: string[];
+	/** 탭에 보이는 이름 (README 또는 구역 이름) */
+	label: string;
+	icon: string;
+	/** 이 문서가 그리는 구역 (README는 숫자만) */
+	sections: LandingSection[];
+}
+
+export const docPath = (doc: RepoDoc) => doc.path.join('/');
+
+/** 구역 차례대로: README(큰 제목·소개·대표 화면·숫자·목차)는 언제나 먼저, 그 뒤로 내용이 있는 구역마다 docs/의 문서 하나 */
+export function docsOf(landing: Landing): RepoDoc[] {
+	const stats = landing.sections.filter((section) => section.kind === 'stats');
+	const rest = landing.sections.filter((section) => section.kind !== 'stats');
+	return [
+		{ id: 'readme', path: ['README.md'], label: 'README', icon: 'fa-solid fa-book-open', sections: stats },
+		...rest.map((section) => {
+			const { file, icon } = DOC_FILES[section.kind as keyof typeof DOC_FILES];
+			return { id: section.kind, path: ['docs', file], label: section.label, icon, sections: [section] };
+		}),
+	];
+}
+
+/** 구역 하나를 마크다운 원문으로 (터미널의 cat이 읽는 글) */
+function sectionText(section: LandingSection): string[] {
+	const lines = [`## ${section.label}`, ''];
+	const points = (items: { title: string; body: string }[], numbered = false) =>
+		items.map((point, i) => `${numbered ? `${i + 1}.` : '-'} **${point.title}** — ${point.body}`);
+	switch (section.kind) {
+		case 'stats':
+			lines.push(...section.facts.map((fact) => `- **${fact.label}**: ${fact.value}`));
+			break;
+		case 'features':
+		case 'built':
+			lines.push(...points(section.items));
+			break;
+		case 'steps':
+			lines.push(...points(section.items, true));
+			break;
+		case 'screens':
+			lines.push(...section.shots.map((shot) => `- ${shot.caption}`));
+			break;
+		case 'stories':
+			for (const story of section.stories) {
+				lines.push(`### ${story.title}`, '');
+				if (story.lead) lines.push(`> ${story.lead}`, '');
+				lines.push(...story.facts.map((fact) => `- **${fact.label}**: ${fact.value}`));
+				lines.push(...points(story.points), '');
+			}
+			break;
+		case 'controls':
+			lines.push(...section.controls.map((control) => `- \`${control.keys.join(' + ')}\` ${control.label}`));
+			break;
+		case 'timeline': {
+			const tags = tagsOf(section.entries.length);
+			lines.push(...section.entries.map((entry, i) => `- **${tags[i]}** (${entry.date}) ${entry.label}`).reverse());
+			break;
+		}
+		case 'tech':
+			if (section.stack.length) lines.push(`Built with ${section.stack.join(', ')}`, '');
+			lines.push(...section.specs.map((spec) => `- **${spec.label}**: ${spec.value}`));
+			if (section.structure) lines.push('', '```', section.structure.replace(/\s+$/, ''), '```');
+			break;
+		case 'role':
+			if (section.role) lines.push(`- **역할**: ${section.role}`);
+			if (section.context) lines.push(`- **프로젝트**: ${section.context}`);
+			if (section.period) lines.push(`- **기간**: ${section.period}`);
+			if (section.role || section.context || section.period) lines.push('');
+			lines.push(...section.contributions.map((item) => `- [x] ${item}`));
+			break;
+		case 'credits':
+			lines.push(
+				...section.credits.map((credit) => `- ${credit.role}: ${credit.name}${credit.by ? ` (${credit.by})` : ''}`)
+			);
+			break;
+	}
+	while (lines[lines.length - 1] === '') lines.pop();
+	return lines;
+}
+
+/** 문서의 마크다운 원문: README는 이름·한 줄·소개·숫자·목차, 다른 문서는 그 구역 */
+export function docText(landing: Landing, doc: RepoDoc, docs: RepoDoc[] = docsOf(landing)): string {
+	if (doc.id !== 'readme') return sectionText(doc.sections[0]).join('\n') + '\n';
 	const { hero } = landing;
 	const lines = [`# ${hero.name}`, ''];
 	if (hero.headline !== hero.name) lines.push(`> ${hero.headline}`, '');
 	if (hero.subhead) lines.push(hero.subhead, '');
-	const features = landing.sections.find((section) => section.kind === 'features');
-	if (features?.kind === 'features') {
-		lines.push('## 주요 기능', '');
-		for (const point of features.items.slice(0, 4)) lines.push(`- **${point.title}** — ${point.body}`);
-		lines.push('');
-	}
-	const steps = landing.sections.find((section) => section.kind === 'steps');
-	if (steps?.kind === 'steps') {
-		lines.push('## 쓰는 법', '');
-		steps.items.slice(0, 3).forEach((point, i) => lines.push(`${i + 1}. ${point.title}`));
-		lines.push('');
-	}
-	if (clone) lines.push('## 시작하기', '', '```sh', `git clone ${clone}`, '```');
+	for (const section of doc.sections) lines.push(...sectionText(section), '');
+	const others = docs.filter((other) => other.id !== 'readme');
+	if (others.length) lines.push('## 목차', '', ...others.map((other) => `- [${other.label}](${docPath(other)})`));
 	while (lines[lines.length - 1] === '') lines.pop();
-	return lines;
+	return lines.join('\n') + '\n';
+}
+
+/** 저장소 트리에 더할 문서 파일: README.md와 docs/ 폴더 (원문은 docText) */
+export function docsTree(landing: Landing, docs: RepoDoc[] = docsOf(landing)): RepoDir {
+	const tree: RepoDir = {};
+	const folder: RepoDir = {};
+	for (const doc of docs) {
+		const text = docText(landing, doc, docs);
+		if (doc.path.length === 1) tree[doc.path[0]] = text;
+		else folder[doc.path[1]] = text;
+	}
+	if (Object.keys(folder).length) tree.docs = folder;
+	return tree;
+}
+
+/** 저장소 트리에 문서 파일을 더한다: 같은 이름의 폴더는 합치고, 같은 이름의 파일은 문서가 이긴다 */
+export function mergeTree(dir: RepoDir, extra: RepoDir): RepoDir {
+	const out: RepoDir = { ...dir };
+	for (const [name, node] of Object.entries(extra)) {
+		const current = out[name];
+		const both = typeof current === 'object' && current !== null && typeof node === 'object' && node !== null;
+		out[name] = both ? { ...current, ...node } : node;
+	}
+	return out;
 }

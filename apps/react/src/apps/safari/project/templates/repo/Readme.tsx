@@ -1,4 +1,4 @@
-// repo 템플릿의 README: 랜딩 구역을 GitHub가 그리는 마크다운처럼 그린다. 숫자는 README 첫머리의 지표 칸, 기능은 그림 카드,
+// repo 템플릿의 문서(README.md와 docs/*.md): 랜딩 구역을 GitHub가 그리는 마크다운처럼 그린다. 숫자는 README 첫머리의 지표 칸, 기능은 그림 카드,
 // 화면은 스크린숏 표, 쓰는 법은 번호 목록, 만든 방식은 카드, 이야기는 인용과 표, 조작법은 글쇠 표, 진행 과정은 릴리스 목록,
 // 기술은 Built with 주제와 표와 폴더 구조 코드 블록, 맡은 일은 할 일 목록, 출처는 표
 import React from 'react';
@@ -10,6 +10,7 @@ import {
 	Media,
 	type LandingMedia,
 	type LandingPoint,
+	type LandingSection,
 	type SectionRenderers,
 } from '@/apps/safari/project/landing';
 import { LANGUAGE_COLORS, tagsOf } from './repo';
@@ -400,7 +401,7 @@ const README_RENDERERS: SectionRenderers = {
 	),
 };
 
-/** README 안의 구역들 (모든 랜딩 구역을 차례대로) */
-export const ReadmeSections: React.FC<{ landing: Landing }> = ({ landing }) => (
-	<LandingSections landing={landing} renderers={README_RENDERERS} className="rp-section" />
+/** 문서 하나가 담는 구역들 (구역마다 이름 붙은 section) */
+export const DocSections: React.FC<{ landing: Landing; sections: LandingSection[] }> = ({ landing, sections }) => (
+	<LandingSections landing={{ ...landing, sections }} renderers={README_RENDERERS} className="rp-section" />
 );
