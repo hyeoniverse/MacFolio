@@ -3,6 +3,13 @@ import type { Locator, Page } from '@playwright/test';
 import { appWindow, enterDesktop } from '../fixtures';
 import { fakeApi, type FakeApiState } from '../fakeApi';
 
+export interface LookOptions {
+	signedIn?: boolean;
+	viewport?: { width: number; height: number };
+	/** 바탕 화면에 들어가기 전에 가짜 API 상태를 고친다 (예: 저장소의 언어 비율) */
+	prepare?: (api: FakeApiState) => void;
+}
+
 /**
  * 가짜 API에 "이 프로젝트는 이 모양으로"를 두고 바탕 화면에 들어가 Safari의 그 탭을 연다.
  * 돌려주는 것: Safari 창, 탭 안 페이지(.safari-page, 스크롤 상자), 가짜 API 상태
@@ -10,7 +17,7 @@ import { fakeApi, type FakeApiState } from '../fakeApi';
 export async function openLook(
 	page: Page,
 	project: { id: string; tab: RegExp; look?: string; override?: Record<string, unknown> },
-	options: { signedIn?: boolean; viewport?: { width: number; height: number } } = {}
+	options: LookOptions = {}
 ): Promise<{ safari: Locator; panel: Locator; api: FakeApiState }> {
 	if (options.viewport) await page.setViewportSize(options.viewport);
 	const api = await fakeApi(page, { signedIn: options.signedIn ?? false });
@@ -19,6 +26,7 @@ export async function openLook(
 			items: [{ id: project.id, override: { ...(project.look ? { look: project.look } : {}), ...project.override } }],
 		};
 	}
+	options.prepare?.(api);
 	await enterDesktop(page);
 	const safari = appWindow(page, 'safari');
 	await safari.getByRole('tab', { name: project.tab }).click();

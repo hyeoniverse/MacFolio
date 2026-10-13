@@ -68,6 +68,13 @@ export class GithubApiClient {
 		return this.json<Json>(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`);
 	}
 
+	/** 저장소의 언어별 바이트 수 ({ TypeScript: 12345, ... }). 없거나 비공개면 null */
+	languages(owner: string, name: string) {
+		return this.json<Record<string, number>>(
+			`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/languages`
+		);
+	}
+
 	/** 공개 활동 (GitHub가 최근 90일, 300개까지 준다. 첫 100개만 받는다) */
 	async userEvents(login: string) {
 		return (await this.json<Json[]>(`/users/${encodeURIComponent(login)}/events/public?per_page=100`)) ?? [];

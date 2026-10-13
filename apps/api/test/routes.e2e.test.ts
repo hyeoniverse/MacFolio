@@ -98,6 +98,7 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 
 	'GET /github/profile': 'public',
 	'GET /github/activity': 'public',
+	'GET /github/languages/:owner/:name': 'public',
 	'GET /github/candidates': 'admin',
 	'GET /github/repos/:owner/:name': 'admin',
 	'PUT /github/showcase': 'admin',

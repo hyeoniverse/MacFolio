@@ -103,7 +103,21 @@ export interface FakeApiState {
 		saves: number;
 		/** GET /github/activity가 줄 값. null이면 502 (GitHub에 닿지 못함) */
 		activity: { contributions: { total: number; days: FakeDay[] } | null; events: FakeActivity[] } | null;
+		/**
+		 * GET /github/languages/{owner}/{이름}가 줄 언어 비율 (저장소 owner/이름, 대소문자 무관).
+		 * 없는 저장소는 404 (이 사이트의 프로젝트가 아님), null이면 502 (GitHub에 닿지 못함)
+		 */
+		languages: Record<string, FakeLanguage[] | null>;
+		/** 받은 GET /github/languages 요청의 저장소 (owner/이름) */
+		languageRequests: string[];
 	};
+}
+
+/** 저장소의 언어 하나 (apps/api의 RepoLanguage 모양) */
+export interface FakeLanguage {
+	name: string;
+	bytes: number;
+	percent: number;
 }
 
 export interface FakeDay {
@@ -374,6 +388,8 @@ export async function fakeApi(
 				{ ...fakeRepo('someone/Delta', { language: 'Python' }), listed: false },
 			],
 			saves: 0,
+			languages: {},
+			languageRequests: [],
 			activity: {
 				contributions: { total: 1234, days: fakeContributionDays() },
 				events: [
@@ -703,6 +719,21 @@ export async function fakeApi(
 				headers: cors(origin),
 				json: { ...state.github.activity, fetchedAt: new Date().toISOString() },
 			});
+		}
+		const languagesPath = path.match(/^\/github\/languages\/([^/]+)\/([^/]+)$/);
+		if (languagesPath) {
+			const asked = `${decodeURIComponent(languagesPath[1])}/${decodeURIComponent(languagesPath[2])}`.toLowerCase();
+			state.github.languageRequests.push(asked);
+			const entry = Object.entries(state.github.languages).find(([name]) => name.toLowerCase() === asked);
+			if (!entry)
+				return route.fulfill({
+					status: 404,
+					headers: cors(origin),
+					json: { statusCode: 404, message: '이 사이트의 프로젝트 저장소가 아니거나 GitHub에서 찾을 수 없습니다.' },
+				});
+			if (!entry[1])
+				return route.fulfill({ status: 502, headers: cors(origin), json: { message: 'GitHub에 연결할 수 없습니다.' } });
+			return route.fulfill({ headers: cors(origin), json: entry[1] });
 		}
 		if (path === '/github/candidates') {
 			if (!state.signedIn) return route.fulfill(unauthorized);

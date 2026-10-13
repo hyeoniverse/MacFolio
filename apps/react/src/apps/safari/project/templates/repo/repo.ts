@@ -29,7 +29,7 @@ export const cloneUrl = (href: string) => {
 	return /github\.com\/[^/]+\/[^/]+$/.test(url) && !url.endsWith('.git') ? `${url}.git` : url;
 };
 
-/** GitHub가 언어마다 칠하는 점 색 (없는 언어는 강조색) */
+/** GitHub가 언어마다 칠하는 점 색 (github-linguist의 색. 없는 언어는 languageColor가 이름으로 회색 계열을 고른다) */
 export const LANGUAGE_COLORS: Record<string, string> = {
 	JavaScript: '#f1e05a',
 	TypeScript: '#3178c6',
@@ -40,15 +40,46 @@ export const LANGUAGE_COLORS: Record<string, string> = {
 	Java: '#b07219',
 	Kotlin: '#a97bff',
 	Swift: '#f05138',
+	'Objective-C': '#438eff',
 	Dart: '#00b4ab',
 	Go: '#00add8',
 	Rust: '#dea584',
+	Ruby: '#701516',
+	PHP: '#4f5d95',
 	HTML: '#e34c26',
 	CSS: '#663399',
 	SCSS: '#c6538c',
+	Sass: '#a53b70',
+	Less: '#1d365d',
 	Vue: '#41b883',
+	Svelte: '#ff3e00',
+	Astro: '#ff5a03',
+	MDX: '#fcb32c',
 	Shell: '#89e051',
+	PowerShell: '#012456',
+	Dockerfile: '#384d54',
+	Makefile: '#427819',
+	Prisma: '#0c344b',
+	Lua: '#000080',
+	'Jupyter Notebook': '#da5b0b',
+	Solidity: '#aa6746',
+	GLSL: '#5686a5',
+	EJS: '#a91e50',
+	Handlebars: '#f7931e',
+	Pug: '#a86454',
 };
+
+/**
+ * 언어의 점·막대 색. 표에 없는 언어는 이름으로 늘 같은 회색 계열(채도가 낮은 색)을 고르고,
+ * GitHub가 작은 언어를 묶은 Other는 테마를 따르는 옅은 회색
+ */
+export function languageColor(name: string): string {
+	if (name === 'Other') return 'var(--rp-lang-other)';
+	const known = LANGUAGE_COLORS[name];
+	if (known) return known;
+	const hue = parseInt(fakeHash(name).slice(0, 4), 16) % 360;
+	return `hsl(${hue} 12% 52%)`;
+}
 
 /** 파일 이름으로 아이콘 (폴더·글·그림·코드) */
 export const fileIcon = (name: string, dir: boolean, open = false) => {

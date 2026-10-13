@@ -25,6 +25,7 @@
 	--rp-green-hover: #1c8139;
 	--rp-ink: #fd8c73;
 	--rp-folder: #54aeff;
+	--rp-lang-other: #d1d9e0;
 	--rp-chip: color-mix(in srgb, var(--tpl-accent) 10%, var(--rp-bg));
 	--rp-shadow: 0 1px 0 #1f23280a;
 	--rp-term-bg: #0d1117;
@@ -63,6 +64,7 @@
 	--rp-green-hover: #29903b;
 	--rp-shadow: none;
 	--rp-term-bg: #010409;
+	--rp-lang-other: #656c76;
 }
 
 :where(.tpl-repo) :where(h1, h2, h3, h4) {
@@ -1877,17 +1879,40 @@ span.rp-crumb:hover {
 	font-size: 12px;
 }
 
+/* 언어 막대: GitHub처럼 언어마다 한 토막, 토막 사이는 1px 틈 */
 .rp-lang-bar {
-	display: block;
+	display: flex;
+	gap: 1px;
 	height: 8px;
+	overflow: hidden;
 	border-radius: 999px;
+	background: var(--rp-bg);
+}
+
+.rp-lang-bar > span {
+	flex-basis: 0;
+	min-width: 2px;
+}
+
+.rp-langs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
 
 .rp-lang {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	font-size: 13px;
+	gap: 6px;
+	font-size: 12px;
+}
+
+.rp-lang strong {
+	color: var(--rp-text);
+	font-weight: 600;
 }
 
 /* ─── Commits 탭 ─── */
