@@ -13,6 +13,7 @@ import { AdminGuard, CurrentAdmin } from '../auth/admin.guard.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { GithubService } from './github.service.js';
+import { LanguagesService } from './languages.service.js';
 import { MAX_SHOWCASE } from './showcase.js';
 import { RateLimit } from '../common/rate-limit.js';
 
@@ -23,7 +24,10 @@ import { RateLimit } from '../common/rate-limit.js';
 @ApiTags('github')
 @Controller('github')
 export class GithubController {
-	constructor(private readonly github: GithubService) {}
+	constructor(
+		private readonly github: GithubService,
+		private readonly languages: LanguagesService
+	) {}
 
 	@Get('profile')
 	@ApiOkResponse({ description: '프로필, README(Markdown), 고른 저장소. 서버가 한동안 들고 있다가 새로 받는다' })
@@ -37,6 +41,18 @@ export class GithubController {
 	@ApiBadGatewayResponse({ description: 'GitHub에 닿지 못했고 들고 있는 값도 없다' })
 	activity() {
 		return this.github.activity();
+	}
+
+	@Get('languages/:owner/:name')
+	@ApiOkResponse({
+		description:
+			'프로젝트 저장소의 언어 비율 (많은 순서, 비율의 합은 100). 작은 언어는 Other로 묶는다. 서버가 6시간 들고 있다가 새로 받는다',
+		schema: { example: [{ name: 'TypeScript', bytes: 72000, percent: 72 }] },
+	})
+	@ApiNotFoundResponse({ description: '이 사이트의 프로젝트가 가리키는 저장소가 아니거나 GitHub에 없다' })
+	@ApiBadGatewayResponse({ description: 'GitHub에 닿지 못했고 들고 있는 값도 없다' })
+	repoLanguages(@Param('owner') owner: string, @Param('name') name: string) {
+		return this.languages.languages(owner, name);
 	}
 
 	@Get('candidates')

@@ -8,6 +8,7 @@ import { GithubClient } from '../src/auth/github.client.js';
 import { GithubApiClient } from '../src/github/github-api.client.js';
 import { fakeGithubApi } from '../src/github/github-api.fake.js';
 import { GithubService } from '../src/github/github.service.js';
+import { LanguagesService } from '../src/github/languages.service.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 
 process.env.DATABASE_URL ??= 'postgresql://macfolio:macfolio@localhost:5432/macfolio';
@@ -56,6 +57,7 @@ describe('GitHub 앱 (e2e)', () => {
 		await prisma.githubShowcase.deleteMany();
 		// 시험마다 GitHub에서 새로 받게 한다
 		app.get(GithubService).clearCache();
+		app.get(LanguagesService).clearCache();
 	});
 
 	afterAll(async () => {
@@ -153,5 +155,49 @@ describe('GitHub 앱 (e2e)', () => {
 			number: 86,
 			url: 'https://github.com/hyeoniverse/MacFolio/pull/86',
 		});
+	});
+
+	it('누구나 프로젝트 저장소의 언어 비율을 받는다. 프로젝트가 가리키지 않는 저장소는 404', async () => {
+		const response = await request(server()).get('/github/languages/hyeoniverse/QRU').expect(200);
+		expect(response.body.map((item: { name: string; percent: number }) => [item.name, item.percent])).toEqual([
+			['TypeScript', 72],
+			['CSS', 20],
+			['JavaScript', 7],
+			['HTML', 1],
+		]);
+		// 코드의 프로젝트지만 GitHub에 언어가 없다 (가짜 GitHub에 없는 저장소)
+		await request(server()).get('/github/languages/hyeoniverse/SproutFarm').expect(404);
+		// 이 사이트의 프로젝트가 아닌 저장소는 대신 묻지 않는다
+		api.state.languages['someone/Library'] = { Go: 10 };
+		const calls = api.state.calls;
+		await request(server()).get('/github/languages/someone/Library').expect(404);
+		expect(api.state.calls).toBe(calls);
+	});
+
+	it('관리자가 프로젝트 주소를 저장하면 그 저장소의 언어도 받는다', async () => {
+		api.state.languages['someone/Library'] = { Go: 30, Shell: 10 };
+		try {
+			await request(server())
+				.put('/site/projects')
+				.set('Cookie', adminCookie)
+				.send({ items: [{ id: 'qru', override: { url: 'https://github.com/someone/Library' } }] })
+				.expect(200);
+			const response = await request(server()).get('/github/languages/someone/library').expect(200);
+			expect(response.body).toEqual([
+				{ name: 'Go', bytes: 30, percent: 75 },
+				{ name: 'Shell', bytes: 10, percent: 25 },
+			]);
+		} finally {
+			await request(server()).delete('/site/projects').set('Cookie', adminCookie).expect(200);
+		}
+	});
+
+	it('GitHub에 닿지 못하고 들고 있는 언어 비율도 없으면 502', async () => {
+		api.state.down = true;
+		try {
+			await request(server()).get('/github/languages/hyeoniverse/QRU').expect(502);
+		} finally {
+			api.state.down = false;
+		}
 	});
 });
