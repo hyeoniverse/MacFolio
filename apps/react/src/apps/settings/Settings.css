@@ -61,7 +61,8 @@
 	overflow-y: auto;
 }
 
-.settings-panel h2 {
+/* 미리 보기 속 프로젝트 페이지(.sp)의 제목에는 닿지 않는다: 템플릿 제목 색은 :where()라 이 규칙이 이기면 남색 띠 위 글자가 묻힌다 */
+.settings-panel h2:not(.sp *) {
 	margin-bottom: 1rem;
 	color: var(--color-text-strong);
 	font-size: 1.1rem;
