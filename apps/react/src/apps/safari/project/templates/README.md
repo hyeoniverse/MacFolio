@@ -2,17 +2,17 @@
 
 프로젝트 페이지의 모양(look) 가운데 아홉은 **같은 내용을 서로 다른 디자인으로 그리는 랜딩 템플릿**이다. 관리자는 시스템 설정 › 프로젝트에서 칸만 채우고, 어떤 템플릿을 골라도 완성된 랜딩 페이지가 나온다.
 
-| id         | 콘셉트 (참고)         | 한 줄                                                                                                     |
-| ---------- | --------------------- | --------------------------------------------------------------------------------------------------------- |
-| `product`  | Apple 제품 페이지     | 흰·검정 단색 바탕, 큰 제품 화면, 짧고 큰 문장, 넉넉한 여백, 큰 숫자                                       |
-| `friendly` | Stripe                | 비스듬한 단색 띠와 줄무늬, 창과 겹친 작은 카드, 강조선 숫자, 아이콘 기능 격자, 선으로 이은 단계, 남색 띠  |
-| `paper`    | Notion                | 따뜻한 흰 문서, 표지와 걸친 아이콘, 속성 표, 토글, 알림 상자, 표                                          |
-| `bento`    | Framer·Raycast 템플릿 | 크기가 다른 타일 격자, 1px 선, 고정폭 작은 글자, 다크에서 가장 또렷하다                                   |
-| `keynote`  | Linear·Apple 발표     | 어두운 무대(테마와 상관없이), 한 장면씩 큰 제목과 화면, 세어 올라가는 숫자, 발표자 화면 같은 화면 모음    |
-| `magazine` | 잡지 케이스 스터디    | 따뜻한 종이, 명조 제목, 번호 붙은 꼭지와 인용구, 판 위의 큰 사진, 숫자 곁상자, 미주                       |
-| `devtool`  | Vercel·GitHub         | 고정폭 라벨, 복사되는 clone 명령, 편집기 창, 커밋 목록, 기여 그래프, 파일 트리                            |
-| `repo`     | GitHub 저장소 화면    | 저장소 머리와 탭, 파일 트리, README에 모든 구역, 옆 칸, 커밋 그래프와 타입 거르기, 커밋 규칙, 터미널 서랍 |
-| `playful`  | Figma·Arc             | 크림 바탕의 색 면과 둥근 도형, 스티커, 손글씨 물결 밑줄, 구불구불 이은 단계, 붙임쪽지                     |
+| id         | 콘셉트 (참고)         | 한 줄                                                                                                       |
+| ---------- | --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `product`  | Apple 제품 페이지     | 흰·검정 단색 바탕, 큰 제품 화면, 짧고 큰 문장, 넉넉한 여백, 큰 숫자                                         |
+| `friendly` | Stripe                | 비스듬한 단색 띠와 줄무늬, 창과 겹친 작은 카드, 강조선 숫자, 아이콘 기능 격자, 선으로 이은 단계, 남색 띠    |
+| `paper`    | Notion                | 따뜻한 흰 문서, 표지와 걸친 아이콘, 속성 표, 토글, 알림 상자, 표                                            |
+| `bento`    | Framer·Raycast 템플릿 | 크기가 다른 타일 격자, 1px 선, 고정폭 작은 글자, 다크에서 가장 또렷하다                                     |
+| `keynote`  | Linear·Apple 발표     | 어두운 무대(테마와 상관없이), 한 장면씩 큰 제목과 화면, 세어 올라가는 숫자, 발표자 화면 같은 화면 모음      |
+| `magazine` | 잡지 케이스 스터디    | 따뜻한 종이, 명조 제목, 번호 붙은 꼭지와 인용구, 판 위의 큰 사진, 숫자 곁상자, 미주                         |
+| `devtool`  | Vercel·GitHub         | 고정폭 라벨, 복사되는 clone 명령, 편집기 창, 커밋 목록, 기여 그래프, 파일 트리                              |
+| `repo`     | GitHub 저장소 화면    | 첫 화면 없이 저장소 머리와 탭, 파일 트리, 문서 탭(README·docs/), 옆 칸, 커밋 그래프, 커밋 규칙, 터미널 서랍 |
+| `playful`  | Figma·Arc             | 크림 바탕의 색 면과 둥근 도형, 스티커, 손글씨 물결 밑줄, 구불구불 이은 단계, 붙임쪽지                       |
 
 `friendly`가 새 프로젝트의 기본 모양이다 (`DEFAULT_LOOK`): 그림이 하나도 없는 처음 상태에서도 첫 화면 창에 프로젝트 내용으로 그린 앱 화면 모형이 들어가 꽉 차 보인다. `product`는 큰 화면이 있어야 빛난다.
 
@@ -83,7 +83,7 @@ templates/
 ├── friendly/  Page.tsx·Page.css, Mock.tsx(그림이 없을 때 첫 화면의 앱 화면 모형)
 ├── paper/     Page.tsx·Page.css
 ├── bento/     Page.tsx·Page.css, layout.ts(빈칸 없는 타일 배치), Links.tsx(글쇠 표시 링크)
-└── repo/      Page.tsx·Page.css, Files.tsx(파일 상자), Readme.tsx(구역 렌더러), Terminal.tsx·shell.ts(터미널 서랍), repo.ts(커밋·트리·README 원문)
+└── repo/      Page.tsx·Page.css, Files.tsx(파일 상자), Readme.tsx(구역 렌더러), Terminal.tsx·shell.ts(터미널 서랍), repo.ts(커밋·트리·문서와 그 원문)
 landing/                템플릿이 함께 쓰는 키트
 ├── content.ts          landingOf, 타입, SECTION_LABELS·SECTION_ORDER, sectionTitle, iconOf
 ├── useLanding.ts       useLanding(project)
@@ -116,4 +116,8 @@ landing/                템플릿이 함께 쓰는 키트
 
 예시 아이콘처럼 강조색이 노랑~연두로 탁해지면, 여러 템플릿이 자기 폴더의 `accent.ts`에서 그 템플릿의 기본 강조색으로 돌린다(제품 파랑, 카드 남보라, 키노트 남보라, 매거진 빨강, 개발자 도구 파랑, 저장소 GitHub 파랑, 놀이 산호).
 
-`repo`는 GitHub 저장소 화면이다. Code 탭(기본)이 저장소 첫 화면으로 모든 구역을 README 안에 차례대로 그린다: 숫자는 README 첫머리의 지표 칸, 진행 과정은 릴리스 목록(v0.1.0 … v1.0.0), 기술은 Built with 주제·표·폴더 구조 코드 블록, 맡은 일은 할 일 목록, 출처는 표다. 위의 파일 상자는 폴더 구조로 만든 트리(DevCourse는 실제 저장소 `repo.json` 탐색기)이고, 옆 칸(About·Releases·Languages)은 첫 화면 내용의 요약이라 구역이 아니다. Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입(커밋 규칙 `conventions`, 없으면 Conventional Commits 기본 타입)으로 거르며, Conventions 탭은 커밋 규칙이 있을 때만 생긴다. 저장소 탭은 Safari 창의 탭(role=tab)과 섞이지 않게 `nav`와 `aria-current` 단추이고, 터미널 서랍은 구역이 아닌 `aside`(complementary)다.
+`repo`는 GitHub 저장소 화면이다. 다른 템플릿과 달리 랜딩식 첫 화면(가운데 놓인 큰 제목, 단추, 창 속 대표 화면)이 없고 저장소 머리(owner / 이름, Public, Watch·Fork·Star 링크)와 탭 줄(Code · Commits · Conventions)로 바로 열린다. 그래서 첫 화면의 칸은 저장소 화면의 제자리로 간다: 큰 제목(`headline`)은 README 첫머리의 `<h1>`, 소개는 그 아래 글, 대표 화면은 README의 첫 그림, 링크 묶음은 옆 칸 About 안의 GitHub 단추이고, 마무리는 맨 아래의 얇은 줄이다. README가 보이지 않는 동안(다른 문서나 Commits 탭)에는 숨긴 `<h1>`이 같은 제목을 지켜 페이지의 h1이 늘 하나다. Code 탭은 가지 줄(main, 가지·태그 수, clone 주소를 복사하는 초록 Code 단추), 마지막 커밋 줄과 파일 상자, README 상자 차례다.
+
+README 상자는 구역을 한 문서에 몰지 않고 **구역마다 문서 하나**로 나눈다. '모든 구역을 그린다'의 허용된 변형으로, 구역은 모두 있되 상자 위의 문서 탭(`nav aria-label="문서"`와 `aria-current` 단추, 구역 차례)으로 한 번에 한 문서만 보인다. README.md(큰 제목·소개·대표 화면·숫자 구역·목차)는 언제나 있고 처음 열린다. 나머지는 내용이 있는 구역만 `docs/FEATURES.md`(주요 기능), `SCREENSHOTS.md`(화면 모음), `USAGE.md`(쓰는 법), `ARCHITECTURE.md`(만든 방식), `STORIES.md`(더 들려줄 이야기), `CONTROLS.md`(조작법), `CHANGELOG.md`(진행 과정, 릴리스 목록 v0.1.0 … v1.0.0), `TECH.md`(기술 사양, Built with 주제·표·폴더 구조), `CONTRIBUTING.md`(맡은 일, 할 일 목록), `CREDITS.md`(출처)다. 문서의 구역도 `<section aria-label={구역 이름}>`이고, 상자 머리의 경로 줄이 `이름 / docs / FEATURES.md`와 `blob/main/docs/FEATURES.md`를 보여 준다. 파일 상자의 폴더 구조 트리(DevCourse는 실제 저장소 `repo.json` 탐색기라 문서를 더하지 않는다)에는 README.md 줄과 `docs/` 폴더가 더해져, 문서 파일을 누르면 README 상자가 그 문서를 열고 화면이 상자로 내려간다. 터미널 서랍의 셸도 같은 트리를 돌아보아 `ls docs`, `cat docs/USAGE.md`(문서의 마크다운 원문)가 된다. 그래서 E2E는 공통 도우미 `expectSampleRendered` 대신 문서 탭을 차례로 열며 구역의 차례와 내용을 본다(`repo.spec.ts`).
+
+옆 칸(About·Releases·Languages)은 첫 화면 내용의 요약이라 구역이 아니다. Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입(커밋 규칙 `conventions`, 없으면 Conventional Commits 기본 타입)으로 거르며, Conventions 탭은 커밋 규칙이 있을 때만 생긴다. 저장소 탭과 문서 탭은 Safari 창의 탭(role=tab)과 섞이지 않게 `nav`와 `aria-current` 단추이고, 터미널 서랍은 구역이 아닌 `aside`(complementary)다.

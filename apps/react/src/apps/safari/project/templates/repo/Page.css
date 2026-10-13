@@ -208,7 +208,7 @@
 	color: #3fb950;
 }
 
-/* ─── 링크 단추 (첫 화면과 마무리): 첫 링크는 강조색 면, 나머지는 테두리 단추 ─── */
+/* ─── 링크 단추 (옆 칸과 마무리): 첫 링크는 강조색 면, 나머지는 GitHub 테두리 단추 ─── */
 .rp-links {
 	display: flex;
 	flex-wrap: wrap;
@@ -254,247 +254,6 @@
 	background: color-mix(in srgb, var(--tpl-accent) 88%, #000000);
 }
 
-/* ─── 첫 화면 ─── */
-.rp-hero {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: clamp(56px, 8cqi, 104px) var(--rp-pad) 0;
-	text-align: center;
-	overflow: clip;
-}
-
-.rp-hero-badge {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
-	max-width: 100%;
-	padding: 4px 14px 4px 4px;
-	border: 1px solid var(--rp-line);
-	border-radius: 999px;
-	color: var(--rp-muted);
-	font-size: 13px;
-}
-
-.rp-hero-badge-tag {
-	display: inline-flex;
-	flex: none;
-	align-items: center;
-	gap: 6px;
-	padding: 2px 10px;
-	border: 1px solid var(--rp-line);
-	border-radius: 999px;
-	color: var(--rp-text);
-	font-size: 12px;
-	font-weight: 600;
-}
-
-.rp-hero h1 {
-	max-width: 17em;
-	margin-top: 26px;
-	font-size: clamp(34px, 5.2cqi, 64px);
-	font-weight: 600;
-	letter-spacing: -0.025em;
-	line-height: 1.12;
-	text-wrap: balance;
-}
-
-.rp-hero-lead {
-	max-width: 620px;
-	margin-top: 20px;
-	color: var(--rp-muted);
-	font-size: clamp(16px, 1.5cqi, 19px);
-	line-height: 1.65;
-	text-wrap: pretty;
-}
-
-.rp-hero-actions {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: center;
-	gap: 12px;
-	margin-top: 32px;
-}
-
-/* clone 명령: 터미널 한 줄 모양, 오른쪽 끝의 복사 단추 */
-.rp-clone-line {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
-	max-width: 100%;
-	height: 40px;
-	padding: 0 6px 0 14px;
-	border: 1px solid var(--rp-line);
-	border-radius: 6px;
-	background: var(--rp-alt);
-	font-family: var(--rp-mono);
-	font-size: 12.5px;
-}
-
-.rp-clone-prompt {
-	color: var(--rp-green);
-}
-
-.rp-clone-text {
-	overflow: hidden;
-	font: inherit;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.rp-icon-btn {
-	display: inline-grid;
-	flex: none;
-	place-items: center;
-	width: 28px;
-	height: 28px;
-	border: 0;
-	border-radius: 6px;
-	background: none;
-	color: var(--rp-muted);
-	cursor: pointer;
-}
-
-.rp-icon-btn:hover {
-	background: var(--rp-hover);
-	color: var(--rp-text);
-}
-
-/* 브라우저 창: 똑바로 서서 저장소 머리 띠 위에서 잘린다 */
-.rp-window {
-	width: min(1040px, 100%);
-	margin-top: clamp(44px, 6cqi, 72px);
-	border: 1px solid var(--rp-line);
-	border-bottom: 0;
-	border-radius: 12px 12px 0 0;
-	overflow: hidden;
-	background: var(--rp-bg);
-	box-shadow:
-		0 -1px 0 var(--rp-line-soft),
-		0 8px 24px #1f23280f;
-	text-align: left;
-}
-
-:root[data-theme='dark'] .rp-window {
-	box-shadow: none;
-}
-
-.rp-window-bar {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 40px;
-	border-bottom: 1px solid var(--rp-line);
-	background: var(--rp-alt);
-}
-
-.rp-window-dots {
-	position: absolute;
-	left: 16px;
-	display: flex;
-	gap: 7px;
-}
-
-.rp-window-dots span {
-	width: 11px;
-	height: 11px;
-	border-radius: 50%;
-	background: var(--rp-line);
-}
-
-.rp-window-url {
-	display: inline-flex;
-	align-items: center;
-	gap: 7px;
-	max-width: 60%;
-	padding: 3px 16px;
-	overflow: hidden;
-	border-radius: 6px;
-	background: var(--rp-bg);
-	color: var(--rp-muted);
-	font-size: 12px;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-.rp-window-url i {
-	font-size: 10px;
-}
-
-.rp-window-body {
-	height: clamp(240px, 32cqi, 440px);
-	overflow: hidden;
-}
-
-/* 편집기는 README 길이만큼만 (짧으면 빈 창이 남지 않게) */
-.rp-window-body:has(> .rp-editor) {
-	height: auto;
-	max-height: clamp(240px, 32cqi, 440px);
-}
-
-.rp-window-media,
-.rp-window-media img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: top;
-}
-
-/* 그림이 없을 때: README.md를 쓰는 편집기 */
-.rp-editor {
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-	background: var(--rp-bg);
-}
-
-.rp-editor-tabs {
-	display: flex;
-	border-bottom: 1px solid var(--rp-line);
-	background: var(--rp-alt);
-}
-
-.rp-editor-tab {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	margin-bottom: -1px;
-	padding: 8px 18px;
-	border-right: 1px solid var(--rp-line);
-	border-top: 2px solid var(--rp-ink);
-	background: var(--rp-bg);
-	font-size: 12.5px;
-	font-weight: 500;
-}
-
-.rp-editor-tab i {
-	color: var(--rp-muted);
-}
-
-.rp-editor-code {
-	flex: 1;
-	padding: 14px 0 28px;
-	overflow: hidden;
-	font-family: var(--rp-mono);
-	font-size: 13px;
-	line-height: 22px;
-}
-
-.rp-editor-line {
-	display: flex;
-}
-
-.rp-editor-line[data-kind='h'] .rp-lc {
-	color: var(--tpl-accent);
-	font-weight: 700;
-}
-
-.rp-editor-line[data-kind='m'] .rp-lc {
-	color: var(--rp-muted);
-}
-
 .rp-ln {
 	flex: none;
 	width: 56px;
@@ -517,7 +276,6 @@
 .rp-chrome {
 	position: relative;
 	z-index: 1;
-	border-top: 1px solid var(--rp-line);
 	border-bottom: 1px solid var(--rp-line);
 	background: var(--rp-alt);
 }
@@ -564,8 +322,84 @@
 	line-height: 18px;
 }
 
+.rp-head-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	list-style: none;
+}
+
+/* GitHub의 작은 테두리 단추 (Watch·Fork·Star) */
+.rp-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	height: 28px;
+	padding: 0 12px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-bg);
+	color: var(--rp-text);
+	font-size: 12px;
+	font-weight: 500;
+	text-decoration: none;
+	transition: background-color 0.15s;
+}
+
+.tpl-repo a.rp-btn {
+	color: var(--rp-text);
+}
+
+.rp-btn:hover {
+	background: var(--rp-alt);
+	text-decoration: none;
+}
+
+.rp-btn i {
+	color: var(--rp-muted);
+}
+
+/* Code 탭의 가지 줄: main ▾, 가지와 태그 수, 오른쪽 끝의 초록 Code 단추 */
+.rp-branch-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 16px;
+	margin-bottom: -8px;
+}
+
+.rp-branch-pick {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	height: 32px;
+	padding: 0 12px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-alt);
+	font-size: 14px;
+}
+
+.rp-branch-pick i {
+	color: var(--rp-muted);
+	font-size: 12px;
+}
+
+.rp-branch-stat {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--rp-muted);
+	font-size: 14px;
+}
+
+.rp-branch-stat strong {
+	color: var(--rp-text);
+}
+
 .rp-actions {
 	position: relative;
+	margin-left: auto;
 }
 
 .rp-code-btn {
@@ -1049,19 +883,190 @@ span.rp-crumb:hover {
 	scroll-margin-top: 16px;
 }
 
-.rp-readme-bar {
+/* 문서 탭: GitHub README 상자 머리의 README · Code of conduct · License 탭처럼. 고른 탭은 주황 밑줄, 넘치면 가로로 민다 */
+.rp-doc-tabs {
 	display: flex;
+	gap: 2px;
+	padding: 0 32px 0 8px;
+	mask-image: linear-gradient(to left, transparent 0, #000000 32px);
+	border-bottom: 1px solid var(--rp-line);
+	overflow-x: auto;
+	scrollbar-width: none;
+	scroll-behavior: smooth;
+}
+
+.rp-doc-tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.rp-doc-tabs button {
+	position: relative;
+	display: inline-flex;
+	flex: none;
 	align-items: center;
 	gap: 8px;
-	padding: 0 16px;
 	height: 48px;
-	border-bottom: 1px solid var(--rp-line);
+	padding: 0 10px;
+	border: 0;
+	background: none;
+	color: var(--rp-muted);
 	font-size: 14px;
+	white-space: nowrap;
+	cursor: pointer;
+	isolation: isolate;
+}
+
+.rp-doc-tabs button::before {
+	content: '';
+	position: absolute;
+	inset: 8px 0;
+	z-index: -1;
+	border-radius: 6px;
+	transition: background-color 0.15s;
+}
+
+.rp-doc-tabs button:hover {
+	color: var(--rp-text);
+}
+
+.rp-doc-tabs button:hover::before {
+	background: var(--rp-hover);
+}
+
+.rp-doc-tabs button::after {
+	content: '';
+	position: absolute;
+	right: 8px;
+	bottom: 0;
+	left: 8px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--rp-ink);
+	transform: scaleX(0);
+	transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.rp-doc-tabs button[aria-current='page'] {
+	color: var(--rp-text);
 	font-weight: 600;
 }
 
-.rp-readme-bar i {
+.rp-doc-tabs button[aria-current='page']::after {
+	transform: scaleX(1);
+}
+
+.rp-doc-tabs button i {
 	color: var(--rp-muted);
+	font-size: 13px;
+}
+
+.rp-doc-tabs button:focus-visible {
+	outline: 2px solid var(--tpl-accent);
+	outline-offset: -6px;
+	border-radius: 8px;
+}
+
+/* 열린 문서의 경로 줄: 이름 / docs / FEATURES.md 와 blob 주소 */
+.rp-doc-bar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	padding: 6px 16px;
+	border-bottom: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+	font-size: 13px;
+}
+
+.rp-doc-bar > i {
+	color: var(--rp-muted);
+}
+
+.rp-doc-crumbs {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0 6px;
+	min-width: 0;
+}
+
+.rp-doc-crumbs strong {
+	font-weight: 600;
+}
+
+.rp-doc-blob {
+	margin-left: auto;
+	overflow: hidden;
+	color: var(--rp-muted);
+	font-family: var(--rp-mono);
+	font-size: 12px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rp-md[data-doc] {
+	animation: rp-fade 0.2s ease-out;
+}
+
+.rp-md > .rp-section:first-child {
+	margin-top: 0;
+}
+
+/* README 끝의 목차: 다른 문서로 가는 링크 줄 */
+.rp-toc {
+	margin-top: 36px;
+}
+
+.rp-toc ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 8px;
+	list-style: none;
+}
+
+.rp-toc button {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	gap: 2px 10px;
+	width: 100%;
+	padding: 10px 14px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-bg);
+	color: var(--tpl-accent);
+	font-size: 15px;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s;
+}
+
+.rp-toc button:hover {
+	border-color: color-mix(in srgb, var(--tpl-accent) 45%, var(--rp-line));
+	background: var(--rp-chip);
+}
+
+.rp-toc button:hover .rp-toc-label {
+	text-decoration: underline;
+}
+
+.rp-toc button i {
+	grid-row: span 2;
+	width: 18px;
+	color: var(--rp-muted);
+	font-size: 15px;
+	text-align: center;
+}
+
+.rp-toc button code {
+	overflow: hidden;
+	color: var(--rp-muted);
+	font-family: var(--rp-mono);
+	font-size: 12px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .rp-md {
@@ -1084,7 +1089,27 @@ span.rp-crumb:hover {
 	display: block;
 	max-width: 260px;
 	max-height: 48px;
+	margin-bottom: 12px;
 	object-fit: contain;
+}
+
+/* README의 대표 화면: 마크다운 그림처럼 테두리 둘린 한 장 */
+.rp-md-hero {
+	margin-top: 24px;
+	overflow: hidden;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-alt);
+}
+
+.rp-md-hero img,
+.rp-md-hero video {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 460px;
+	object-fit: cover;
+	object-position: top;
 }
 
 .rp-md-lead {
@@ -1770,6 +1795,21 @@ span.rp-crumb:hover {
 	line-height: 1.55;
 }
 
+/* About 안의 랜딩 링크: 한 줄을 다 쓰는 GitHub 단추 */
+.rp-side-links.rp-links {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 8px;
+}
+
+.rp-side-links.rp-links > a,
+.rp-side-links.rp-links > button {
+	justify-content: center;
+	height: 32px;
+	padding: 0 12px;
+	font-size: 14px;
+}
+
 .rp-side-link {
 	display: inline-flex;
 	align-items: center;
@@ -2051,48 +2091,59 @@ span.rp-crumb:hover {
 	width: 140px;
 }
 
-/* ─── 마무리 ─── */
+/* ─── 마무리: 페이지 맨 아래의 얇은 줄 (아이콘, 마무리 문장, 링크 단추) ─── */
 .rp-closing {
 	display: flex;
-	flex-direction: column;
+	flex-wrap: wrap;
 	align-items: center;
+	gap: 16px 20px;
 	width: calc(100% - 2 * var(--rp-pad));
 	max-width: calc(var(--rp-width) - 2 * var(--rp-pad));
-	margin: 8px auto 64px;
-	padding: 56px 32px;
+	margin: 8px auto 48px;
+	padding: 20px 24px;
 	border: 1px solid var(--rp-line);
-	border-radius: 12px;
+	border-radius: 6px;
 	background: var(--rp-alt);
-	text-align: center;
 }
 
 .rp-closing-icon {
 	display: grid;
+	flex: none;
 	place-items: center;
-	width: 52px;
-	height: 52px;
-	margin-bottom: 20px;
+	width: 40px;
+	height: 40px;
 	border: 1px solid var(--rp-line);
-	border-radius: 12px;
+	border-radius: 50%;
 	background: var(--rp-bg);
 	color: var(--rp-text);
-	font-size: 26px;
+	font-size: 20px;
+}
+
+.rp-closing-text {
+	flex: 1;
+	min-width: min(240px, 100%);
 }
 
 .rp-closing h2 {
-	font-size: clamp(24px, 3cqi, 32px);
-	letter-spacing: -0.02em;
-	line-height: 1.25;
+	font-size: 16px;
+	line-height: 1.4;
 }
 
 .rp-closing-lead {
-	margin-top: 8px;
+	margin-top: 2px;
 	color: var(--rp-muted);
-	font-size: 16px;
+	font-size: 14px;
 }
 
 .rp-closing .rp-links {
-	margin-top: 24px;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.rp-closing .rp-links > a,
+.rp-closing .rp-links > button {
+	height: 32px;
+	padding: 0 14px;
 }
 
 /* ─── 상태 줄과 터미널 서랍 (스크롤 상자 맨 아래에 붙어 있다) ─── */
@@ -2452,27 +2503,12 @@ span.rp-crumb:hover {
 		--rp-pad: 16px;
 	}
 
-	.rp-hero h1 {
-		font-size: 32px;
-	}
-
-	.rp-clone-line {
-		width: 100%;
-	}
-
-	.rp-window-body {
-		height: 220px;
-	}
-
-	.rp-window-url {
-		max-width: 64%;
-	}
-
 	.rp-title {
 		font-size: 17px;
 	}
 
-	.rp-latest-meta {
+	.rp-latest-meta,
+	.rp-doc-blob {
 		display: none;
 	}
 
@@ -2563,7 +2599,11 @@ span.rp-crumb:hover {
 	}
 
 	.rp-closing {
-		padding: 40px 20px;
+		padding: 16px;
+	}
+
+	.rp-closing .rp-links {
+		justify-content: flex-start;
 	}
 
 	.rp-t-help div,
@@ -2588,5 +2628,9 @@ span.rp-crumb:hover {
 	.tpl-repo *::after {
 		animation: none !important;
 		transition: none !important;
+	}
+
+	.rp-doc-tabs {
+		scroll-behavior: auto;
 	}
 }

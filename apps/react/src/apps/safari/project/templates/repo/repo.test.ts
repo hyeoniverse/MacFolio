@@ -4,7 +4,21 @@ import { landingOf } from '@/apps/safari/project/landing';
 import { GENERAL_SAMPLE } from '@/apps/settings/lookSamples';
 import type { Project } from '@/shared/profile';
 import { repoAccent } from './accent';
-import { cloneUrl, commitsOf, commitType, fakeHash, readmeSource, repoOf, structureRepo, tagsOf } from './repo';
+import { SECTION_ORDER } from '@/apps/safari/project/landing';
+import {
+	cloneUrl,
+	commitsOf,
+	commitType,
+	docPath,
+	docsOf,
+	docsTree,
+	docText,
+	fakeHash,
+	mergeTree,
+	repoOf,
+	structureRepo,
+	tagsOf,
+} from './repo';
 import { findPage, pageCommands, runRepo, type ShellData } from './shell';
 
 const sample = { ...GENERAL_SAMPLE, id: 'sample', url: 'https://github.com/me/bookclub', demo: '' } as Project;
@@ -55,12 +69,55 @@ describe('structureRepo', () => {
 	});
 });
 
-describe('readmeSource', () => {
-	it('이름, 한 줄, 기능, clone 명령을 마크다운으로', () => {
-		const lines = readmeSource(landingOf(sample), 'https://github.com/me/bookclub.git');
-		expect(lines[0]).toBe(`# ${GENERAL_SAMPLE.name}`);
-		expect(lines).toContain('## 주요 기능');
-		expect(lines).toContain('git clone https://github.com/me/bookclub.git');
+describe('문서', () => {
+	it('README가 먼저, 구역마다 docs/의 문서 하나를 구역 차례대로 둔다', () => {
+		const docs = docsOf(landingOf(sample));
+		expect(docs.map(docPath)).toEqual([
+			'README.md',
+			'docs/FEATURES.md',
+			'docs/SCREENSHOTS.md',
+			'docs/USAGE.md',
+			'docs/ARCHITECTURE.md',
+			'docs/STORIES.md',
+			'docs/CONTROLS.md',
+			'docs/CHANGELOG.md',
+			'docs/TECH.md',
+			'docs/CONTRIBUTING.md',
+			'docs/CREDITS.md',
+		]);
+		expect(docs.flatMap((doc) => doc.sections.map((section) => section.kind))).toEqual([...SECTION_ORDER]);
+	});
+
+	it('내용이 없어도 README는 있고, 주요 기능만 있으면 README와 FEATURES.md', () => {
+		const landing = landingOf(sample);
+		const hero = { ...landing.hero, subhead: undefined };
+		expect(docsOf({ ...landing, hero, sections: [] }).map(docPath)).toEqual(['README.md']);
+		const features = landing.sections.filter((section) => section.kind === 'features');
+		expect(docsOf({ ...landing, hero, sections: features }).map(docPath)).toEqual(['README.md', 'docs/FEATURES.md']);
+	});
+
+	it('README 원문은 소개와 숫자와 목차, 문서 원문은 그 구역', () => {
+		const landing = landingOf(sample);
+		const docs = docsOf(landing);
+		const readme = docText(landing, docs[0], docs);
+		expect(readme).toContain(`# ${GENERAL_SAMPLE.name}`);
+		expect(readme).toContain('## 목차');
+		expect(readme).toContain('- [주요 기능](docs/FEATURES.md)');
+		const features = docText(landing, docs[1], docs);
+		expect(features.startsWith('## 주요 기능')).toBe(true);
+		expect(features).toContain(GENERAL_SAMPLE.highlights[0].title);
+		const tree = docsTree(landing, docs);
+		expect(Object.keys(tree)).toEqual(['README.md', 'docs']);
+		expect(Object.keys(tree.docs as object)).toHaveLength(10);
+	});
+
+	it('같은 이름의 폴더는 합치고 파일은 문서가 이긴다', () => {
+		expect(
+			mergeTree({ docs: { 'a.md': '' }, 'README.md': '설명' }, { docs: { 'B.md': 'b' }, 'README.md': '# x' })
+		).toEqual({
+			docs: { 'a.md': '', 'B.md': 'b' },
+			'README.md': '# x',
+		});
 	});
 });
 
@@ -92,6 +149,15 @@ describe('셸', () => {
 		const cd = runRepo(data, dir, 'cd server', []);
 		expect(cd.cwd).toEqual(['server']);
 		expect(runRepo(data, dir, 'cd nowhere', []).output.kind).toBe('error');
+	});
+
+	it('docs/의 문서를 ls로 보고 cat으로 읽는다', () => {
+		const landing = landingOf(sample);
+		const dir = mergeTree(structureRepo(GENERAL_SAMPLE.structure ?? '').dir, docsTree(landing));
+		const ls = runRepo(data, dir, 'ls docs', []);
+		expect(ls.output.kind === 'list' && ls.output.items.map((item) => item.name)).toContain('USAGE.md');
+		const cat = runRepo(data, dir, 'cat docs/USAGE.md', []);
+		expect(cat.output.kind === 'file' && cat.output.text).toContain('## 쓰는 법');
 	});
 });
 

@@ -1,8 +1,9 @@
-// repo 템플릿: GitHub 저장소 화면을 흉내 낸다. 맨 위는 가벼운 첫 화면(배지, 큰 제목, 링크와 복사되는 clone 명령, 브라우저 창 속 대표 화면,
-// 그림이 없으면 README.md를 쓰는 편집기), 그 아래 저장소 머리(owner / 이름, Public, Code 단추)와 탭 줄(Code · Commits · Conventions).
-// Code 탭은 저장소 첫 화면이다: 마지막 커밋 줄과 파일 트리(DevCourse는 실제 저장소 탐색기, 다른 프로젝트는 폴더 구조), README(모든 랜딩 구역),
-// 옆 칸(About·Releases·Languages). Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입으로 거른다. Conventions 탭은 커밋 규칙 표.
-// 맨 아래 상태 줄의 터미널 단추를 누르면 서랍이 올라온다. Safari 창의 탭(role=tab)과 섞이지 않게 저장소 탭은 nav와 단추(aria-current)다.
+// repo 템플릿: GitHub 저장소 화면 그대로 열린다 (랜딩식 첫 화면 없음). 맨 위는 저장소 머리(owner / 이름, Public, Watch·Fork·Star)와
+// 탭 줄(Code · Commits · Conventions). Code 탭은 저장소 첫 화면이다: 가지 줄(main, 가지·태그 수, 초록 Code 단추와 clone 창),
+// 마지막 커밋 줄과 파일 트리(DevCourse는 실제 저장소 탐색기, 다른 프로젝트는 폴더 구조와 README.md·docs/),
+// README 상자(위의 문서 탭으로 README.md와 docs/*.md를 바꿔 연다. 구역마다 문서 하나, 한 번에 한 문서만 보인다. README 첫머리가 h1),
+// 옆 칸(About·랜딩 링크·Releases·Languages). Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입으로 거른다. Conventions 탭은 커밋 규칙 표.
+// 맨 아래 마무리 줄과 상태 줄의 터미널 단추(누르면 서랍이 올라온다). Safari 창의 탭(role=tab)과 섞이지 않게 저장소 탭과 문서 탭은 nav와 단추(aria-current)다.
 // 계약은 templates/README.md
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { Project } from '@/shared/profile';
@@ -20,19 +21,23 @@ import { loadRepo, type RepoDir } from '@/apps/safari/project/terminalRepo';
 import { repoAccent } from './accent';
 import { CopyButton, TypeBadge } from './bits';
 import { Files, type FileSource } from './Files';
-import { ReadmeSections } from './Readme';
+import { DocSections } from './Readme';
 import { Terminal } from './Terminal';
 import {
 	cloneUrl,
 	commitsOf,
+	docPath,
+	docsOf,
+	docsTree,
 	fakeHash,
 	LANGUAGE_COLORS,
-	readmeSource,
+	mergeTree,
 	repoOf,
 	structureRepo,
 	tagsOf,
 	typeStyle,
 	type Commit,
+	type RepoDoc,
 } from './repo';
 import './Page.css';
 
@@ -44,112 +49,23 @@ const hasRepoTree = (project: Project) => project.id === 'devcourse';
 const find = <K extends LandingSection['kind']>(landing: Landing, kind: K) =>
 	landing.sections.find((section): section is SectionOf<K> => section.kind === kind);
 
-/* ─── 첫 화면 ─── */
-
-/** 그림이 없을 때 첫 화면 창에 보이는 편집기: README.md 원문을 줄 번호와 함께 (장식) */
-const Editor: React.FC<{ lines: string[] }> = ({ lines }) => (
-	<div className="rp-editor" aria-hidden="true">
-		<div className="rp-editor-tabs">
-			<span className="rp-editor-tab">
-				<i className="fa-regular fa-file-lines" />
-				README.md
-			</span>
-		</div>
-		<pre className="rp-editor-code">
-			{lines.map((line, i) => (
-				<span key={i} className="rp-editor-line" data-kind={/^#/.test(line) ? 'h' : /^[->`]/.test(line) ? 'm' : ''}>
-					<span className="rp-ln">{i + 1}</span>
-					<span className="rp-lc">{line || ' '}</span>
-				</span>
-			))}
-		</pre>
-	</div>
-);
-
-const Hero: React.FC<{ landing: Landing; language?: string; host: string; clone?: string }> = ({
-	landing,
-	language,
-	host,
-	clone,
-}) => {
-	const { hero } = landing;
-	const badge = [language, hero.meta.context].filter(Boolean).join(' · ');
-	return (
-		<header className="rp-hero">
-			<p className="rp-hero-badge">
-				<span className="rp-hero-badge-tag">
-					<i className="fa-brands fa-github" aria-hidden="true" /> Public
-				</span>
-				{badge || hero.name}
-			</p>
-			<h1>{hero.headline}</h1>
-			{hero.subhead && <p className="rp-hero-lead">{hero.subhead}</p>}
-			{(hero.links.length > 0 || clone) && (
-				<div className="rp-hero-actions">
-					<LandingLinks links={hero.links} className="rp-links" />
-					{clone && (
-						<span className="rp-clone-line">
-							<span className="rp-clone-prompt" aria-hidden="true">
-								$
-							</span>
-							<code className="rp-clone-text">git clone {clone}</code>
-							<CopyButton text={`git clone ${clone}`} label="clone 명령 복사" className="rp-icon-btn" />
-						</span>
-					)}
-				</div>
-			)}
-			<div className="rp-window" data-reveal="zoom">
-				<div className="rp-window-bar" aria-hidden="true">
-					<span className="rp-window-dots">
-						<span />
-						<span />
-						<span />
-					</span>
-					<span className="rp-window-url">
-						<i className="fa-solid fa-lock" />
-						{host}
-					</span>
-				</div>
-				<div className="rp-window-body">
-					{hero.image ? (
-						<Media media={hero.image} eager className="rp-window-media" />
-					) : (
-						<Editor lines={readmeSource(landing, clone)} />
-					)}
-				</div>
-			</div>
-		</header>
-	);
-};
-
 /* ─── 저장소 머리 ─── */
 
-/** owner / 이름, Public, 'Code ▾' 단추(누르면 clone 주소) */
-const RepoHead: React.FC<{ owner?: string; name: string; icon?: string; href?: string; clone?: string }> = ({
+/** owner / 이름, Public, 그리고 GitHub 저장소면 Watch·Fork·Star (숫자 없이 그 저장소의 해당 화면으로 가는 링크) */
+const RepoHead: React.FC<{ owner?: string; name: string; icon?: string; href?: string }> = ({
 	owner,
 	name,
 	icon,
 	href,
-	clone,
 }) => {
-	const [open, setOpen] = useState(false);
-	const wrap = useRef<HTMLDivElement>(null);
-
-	// 바깥을 누르거나 Esc를 누르면 닫힌다
-	useEffect(() => {
-		if (!open) return;
-		const close = (event: PointerEvent) => {
-			if (!wrap.current?.contains(event.target as Node)) setOpen(false);
-		};
-		const escape = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false);
-		document.addEventListener('pointerdown', close);
-		document.addEventListener('keydown', escape);
-		return () => {
-			document.removeEventListener('pointerdown', close);
-			document.removeEventListener('keydown', escape);
-		};
-	}, [open]);
-
+	const github = owner && href ? href.replace(/\/+$/, '').replace(/\.git$/, '') : undefined;
+	const actions = github
+		? [
+				{ label: 'Watch', icon: 'fa-regular fa-eye', href: `${github}/watchers` },
+				{ label: 'Fork', icon: 'fa-solid fa-code-fork', href: `${github}/fork` },
+				{ label: 'Star', icon: 'fa-regular fa-star', href: `${github}/stargazers` },
+			]
+		: [];
 	return (
 		<div className="rp-head-row">
 			<p className="rp-title">
@@ -179,35 +95,92 @@ const RepoHead: React.FC<{ owner?: string; name: string; icon?: string; href?: s
 				)}
 				<span className="rp-visibility">Public</span>
 			</p>
-			{clone && (
-				<div className="rp-actions" ref={wrap}>
-					<button
-						type="button"
-						className="rp-code-btn"
-						aria-expanded={open}
-						aria-haspopup="dialog"
-						onClick={() => setOpen((value) => !value)}
-					>
-						<i className="fa-solid fa-code" aria-hidden="true" /> Code
-						<i className="fa-solid fa-caret-down" aria-hidden="true" />
-					</button>
-					{open && (
-						<div className="rp-pop" role="dialog" aria-label="저장소 가져오기">
-							<p className="rp-pop-title">
-								<i className="fa-solid fa-terminal" aria-hidden="true" /> Clone
-							</p>
-							<div className="rp-clone">
-								<input value={clone} readOnly aria-label="clone 주소" onFocus={(event) => event.target.select()} />
-								<CopyButton text={clone} label="clone 주소 복사" />
-							</div>
-							<p className="rp-pop-note">HTTPS 주소로 저장소를 내려받을 수 있습니다.</p>
-						</div>
-					)}
+			{actions.length > 0 && (
+				<ul className="rp-head-actions" aria-label="저장소 동작">
+					{actions.map((action) => (
+						<li key={action.label}>
+							<a className="rp-btn" href={action.href} {...external}>
+								<i className={action.icon} aria-hidden="true" />
+								{action.label}
+							</a>
+						</li>
+					))}
+				</ul>
+			)}
+		</div>
+	);
+};
+
+/* ─── Code 탭의 가지 줄 ─── */
+
+/** 초록 'Code ▾' 단추: 누르면 clone 주소와 복사 단추가 든 작은 창. 바깥을 누르거나 Esc를 누르면 닫힌다 */
+const CodeMenu: React.FC<{ clone: string }> = ({ clone }) => {
+	const [open, setOpen] = useState(false);
+	const wrap = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!open) return;
+		const close = (event: PointerEvent) => {
+			if (!wrap.current?.contains(event.target as Node)) setOpen(false);
+		};
+		const escape = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false);
+		document.addEventListener('pointerdown', close);
+		document.addEventListener('keydown', escape);
+		return () => {
+			document.removeEventListener('pointerdown', close);
+			document.removeEventListener('keydown', escape);
+		};
+	}, [open]);
+
+	return (
+		<div className="rp-actions" ref={wrap}>
+			<button
+				type="button"
+				className="rp-code-btn"
+				aria-expanded={open}
+				aria-haspopup="dialog"
+				onClick={() => setOpen((value) => !value)}
+			>
+				<i className="fa-solid fa-code" aria-hidden="true" /> Code
+				<i className="fa-solid fa-caret-down" aria-hidden="true" />
+			</button>
+			{open && (
+				<div className="rp-pop" role="dialog" aria-label="저장소 가져오기">
+					<p className="rp-pop-title">
+						<i className="fa-solid fa-terminal" aria-hidden="true" /> Clone
+					</p>
+					<div className="rp-clone">
+						<input value={clone} readOnly aria-label="clone 주소" onFocus={(event) => event.target.select()} />
+						<CopyButton text={clone} label="clone 주소 복사" />
+					</div>
+					<p className="rp-pop-note">HTTPS 주소로 저장소를 내려받을 수 있습니다.</p>
 				</div>
 			)}
 		</div>
 	);
 };
+
+/** 파일 상자 위의 줄: 가지(main), 가지와 태그 수, Code 단추 */
+const BranchRow: React.FC<{ tags: number; clone?: string }> = ({ tags, clone }) => (
+	<div className="rp-branch-row">
+		<span className="rp-branch-pick">
+			<i className="fa-solid fa-code-branch" aria-hidden="true" />
+			<strong>main</strong>
+			<i className="fa-solid fa-caret-down" aria-hidden="true" />
+		</span>
+		<span className="rp-branch-stat">
+			<i className="fa-solid fa-code-branch" aria-hidden="true" />
+			<strong>1</strong> Branch
+		</span>
+		{tags > 0 && (
+			<span className="rp-branch-stat">
+				<i className="fa-solid fa-tag" aria-hidden="true" />
+				<strong>{tags}</strong> Tags
+			</span>
+		)}
+		{clone && <CodeMenu clone={clone} />}
+	</div>
+);
 
 /* ─── 탭 ─── */
 
@@ -269,7 +242,10 @@ const Tabs: React.FC<{ tabs: Tab[]; active: TabId; onChange: (id: TabId) => void
 
 /* ─── Code 탭의 옆 칸 ─── */
 
-/** GitHub 저장소 첫 화면의 옆 칸: 소개와 주소·주제, 마지막 릴리스, 언어 */
+/**
+ * GitHub 저장소 첫 화면의 옆 칸: About(한 줄 소개, 랜딩 링크 단추, 데모 주소, 주제, 프로젝트·역할·기간), 마지막 릴리스, 언어.
+ * 랜딩 링크(여기서 열기·새 탭·GitHub)는 여기와 맨 아래 마무리 줄에 같은 묶음으로 있다
+ */
 const Side: React.FC<{ landing: Landing; language?: string; demo?: string }> = ({ landing, language, demo }) => {
 	const { hero } = landing;
 	const tech = find(landing, 'tech');
@@ -280,7 +256,9 @@ const Side: React.FC<{ landing: Landing; language?: string; demo?: string }> = (
 		hero.meta.role && { icon: 'fa-regular fa-user', text: hero.meta.role, label: '역할' },
 		hero.meta.period && { icon: 'fa-regular fa-calendar', text: hero.meta.period, label: '기간' },
 	].filter(Boolean) as { icon: string; text: string; label: string }[];
-	const about = Boolean(hero.subhead || demo || topics.length || meta.length);
+	// 설명은 한 줄(tagline), 없으면 소개 글
+	const description = hero.headline !== hero.name ? hero.headline : hero.subhead;
+	const about = Boolean(description || hero.links.length || demo || topics.length || meta.length);
 	const last = timeline?.entries[timeline.entries.length - 1];
 	if (!about && !last && !language) return null;
 	return (
@@ -288,7 +266,8 @@ const Side: React.FC<{ landing: Landing; language?: string; demo?: string }> = (
 			{about && (
 				<div className="rp-side-box">
 					<h2>About</h2>
-					{hero.subhead && <p className="rp-side-desc">{hero.subhead}</p>}
+					{description && <p className="rp-side-desc">{description}</p>}
+					<LandingLinks links={hero.links} className="rp-links rp-side-links" />
 					{demo && (
 						<a className="rp-side-link" href={demo} {...external}>
 							<i className="fa-solid fa-link" aria-hidden="true" />
@@ -357,6 +336,105 @@ const Side: React.FC<{ landing: Landing; language?: string; demo?: string }> = (
 		</div>
 	);
 };
+
+/* ─── README 상자: 문서 탭 ─── */
+
+/** GitHub의 README 상자처럼 위에 문서 탭(README · 주요 기능 · …), 그 아래 파일 경로 줄, 고른 문서 하나의 내용 */
+const DocBox = React.forwardRef<
+	HTMLDivElement,
+	{ landing: Landing; docs: RepoDoc[]; active: RepoDoc; name: string; onOpen: (doc: RepoDoc, scroll: boolean) => void }
+>(({ landing, docs, active, name, onOpen }, ref) => {
+	const { hero } = landing;
+	const nav = useRef<HTMLElement>(null);
+	const others = docs.filter((doc) => doc.id !== 'readme');
+
+	// 고른 탭이 탭 줄 밖에 있으면 가로로만 밀어 보이게 한다 (페이지는 움직이지 않는다)
+	useEffect(() => {
+		const list = nav.current;
+		const node = list?.querySelector<HTMLElement>('[aria-current="page"]');
+		if (!list || !node) return;
+		if (node.offsetLeft < list.scrollLeft) list.scrollLeft = node.offsetLeft - 8;
+		else if (node.offsetLeft + node.offsetWidth > list.scrollLeft + list.clientWidth)
+			list.scrollLeft = node.offsetLeft + node.offsetWidth - list.clientWidth + 8;
+	}, [active.id]);
+
+	const onKey = (event: React.KeyboardEvent, index: number) => {
+		const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+		if (!step) return;
+		event.preventDefault();
+		const next = docs[(index + step + docs.length) % docs.length];
+		onOpen(next, false);
+		nav.current?.querySelector<HTMLElement>(`[data-doc="${next.id}"]`)?.focus();
+	};
+
+	return (
+		<div className="rp-readme" ref={ref}>
+			<nav className="rp-doc-tabs" aria-label="문서" ref={nav}>
+				{docs.map((doc, index) => (
+					<button
+						key={doc.id}
+						type="button"
+						data-doc={doc.id}
+						aria-current={doc.id === active.id ? 'page' : undefined}
+						tabIndex={doc.id === active.id ? 0 : -1}
+						onClick={() => onOpen(doc, false)}
+						onKeyDown={(event) => onKey(event, index)}
+					>
+						<i className={doc.icon} aria-hidden="true" />
+						{doc.label}
+					</button>
+				))}
+			</nav>
+			<p className="rp-doc-bar">
+				<i className="fa-regular fa-file-lines" aria-hidden="true" />
+				<span className="rp-doc-crumbs">
+					<span className="rp-muted">{name}</span>
+					{active.path.map((part, i) => (
+						<React.Fragment key={part}>
+							<span className="rp-slash" aria-hidden="true">
+								/
+							</span>
+							{i === active.path.length - 1 ? <strong>{part}</strong> : <span className="rp-muted">{part}</span>}
+						</React.Fragment>
+					))}
+				</span>
+				<code className="rp-doc-blob">blob/main/{docPath(active)}</code>
+			</p>
+			<div className="rp-md" key={active.id} data-doc={active.id}>
+				{active.id === 'readme' && (
+					<>
+						{hero.logo && <img className="rp-md-logo" src={hero.logo} alt={hero.name} />}
+						<h1 className="rp-md-title">{hero.headline}</h1>
+						{hero.subhead && <p className="rp-md-lead">{hero.subhead}</p>}
+						{hero.image && (
+							<figure className="rp-md-hero">
+								<Media media={hero.image} eager />
+							</figure>
+						)}
+					</>
+				)}
+				<DocSections landing={landing} sections={active.sections} />
+				{active.id === 'readme' && others.length > 0 && (
+					<div className="rp-toc">
+						<h2>목차</h2>
+						<ul>
+							{others.map((doc) => (
+								<li key={doc.id}>
+									<button type="button" onClick={() => onOpen(doc, false)}>
+										<i className={doc.icon} aria-hidden="true" />
+										<span className="rp-toc-label">{doc.label}</span>
+										<code>{docPath(doc)}</code>
+									</button>
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
+			</div>
+		</div>
+	);
+});
+DocBox.displayName = 'DocBox';
 
 /* ─── Commits 탭 ─── */
 
@@ -465,7 +543,6 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 	const demo = demoLink?.kind === 'demo' ? demoLink.href : undefined;
 	const clone = href ? cloneUrl(href) : undefined;
 	const { owner, name } = repoOf(href, hero.name);
-	const host = href ? href.replace(/^https?:\/\//, '').replace(/\/+$/, '') : `github.com/${name}`;
 	const language = project.language?.trim() || undefined;
 	const conventions = useMemo(() => project.conventions ?? [], [project.conventions]);
 	const timeline = find(landing, 'timeline');
@@ -507,19 +584,37 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 	const structureText = tech?.structure;
 	const structure = useMemo(() => (structureText ? structureRepo(structureText) : undefined), [structureText]);
 	const source: FileSource = withTree ? { kind: 'browser', repo, error } : { kind: 'list', structure };
-	const shellRepo = withTree ? repo : (structure?.dir ?? {});
 
+	// 문서: README.md와 구역마다의 docs/*.md. 처음에는 README
+	const docs = useMemo(() => docsOf(landing), [landing]);
+	const files = useMemo(() => docsTree(landing, docs), [landing, docs]);
+	const notes = useMemo(() => Object.fromEntries(docs.map((doc) => [docPath(doc), doc.label])), [docs]);
+	const [docId, setDocId] = useState<RepoDoc['id']>('readme');
+	const doc = docs.find((item) => item.id === docId) ?? docs[0];
 	const readme = useRef<HTMLDivElement>(null);
-	const hasReadme = Boolean(hero.subhead || landing.sections.length);
+	const openDoc = useCallback((next: RepoDoc, scroll: boolean) => {
+		setDocId(next.id);
+		if (scroll) readme.current?.scrollIntoView({ block: 'start' });
+	}, []);
+	const openPath = useCallback(
+		(path: string[]) => {
+			const next = docs.find((item) => docPath(item) === path.join('/'));
+			if (next) openDoc(next, true);
+		},
+		[docs, openDoc]
+	);
+
+	// 터미널은 폴더 구조에 README.md와 docs/를 더한 트리를 돌아본다 (DevCourse는 실제 저장소 그대로)
+	const shellRepo = withTree ? repo : mergeTree(structure?.dir ?? {}, files);
 	const shell = useMemo(() => ({ landing, conventions }), [landing, conventions]);
 
 	return (
 		<div ref={root} className="tpl tpl-repo" style={accent}>
-			<Hero landing={landing} language={language} host={host} clone={clone} />
-
+			{/* 큰 제목(h1)은 README 첫머리에 있다. README가 안 보이는 동안에도 페이지의 h1이 하나 있게 숨긴 제목을 둔다 */}
+			{!(active === 'code' && doc?.id === 'readme') && <h1 className="visually-hidden">{hero.headline}</h1>}
 			<div className="rp-chrome">
 				<div className="rp-chrome-inner">
-					<RepoHead owner={owner} name={name} icon={hero.icon} href={href} clone={clone} />
+					<RepoHead owner={owner} name={name} icon={hero.icon} href={href} />
 					<Tabs tabs={tabs} active={active} onChange={setActive} />
 				</div>
 			</div>
@@ -528,6 +623,7 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 				{active === 'code' && (
 					<div className="rp-home">
 						<div className="rp-home-main">
+							<BranchRow tags={timeline?.entries.length ?? 0} clone={clone} />
 							<Files
 								source={source}
 								owner={owner ?? name}
@@ -537,22 +633,9 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 								latest={latest}
 								count={commits.length}
 								onCommits={commits.length ? () => setActive('commits') : undefined}
-								onReadme={hasReadme ? () => readme.current?.scrollIntoView({ block: 'start' }) : undefined}
+								docs={doc ? { tree: files, notes, current: doc.path, open: openPath } : undefined}
 							/>
-							{hasReadme && (
-								<div className="rp-readme" ref={readme}>
-									<div className="rp-readme-bar">
-										<i className="fa-solid fa-book-open" aria-hidden="true" /> README
-									</div>
-									<div className="rp-md">
-										<p className="rp-md-title">
-											{hero.logo ? <img className="rp-md-logo" src={hero.logo} alt={hero.name} /> : hero.name}
-										</p>
-										{hero.subhead && <p className="rp-md-lead">{hero.subhead}</p>}
-										<ReadmeSections landing={landing} />
-									</div>
-								</div>
-							)}
+							{doc && <DocBox ref={readme} landing={landing} docs={docs} active={doc} name={name} onOpen={openDoc} />}
 						</div>
 						<Side landing={landing} language={language} demo={demo} />
 					</div>
@@ -565,8 +648,10 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 				<span className="rp-closing-icon" aria-hidden="true">
 					<i className="fa-brands fa-github" />
 				</span>
-				<h2>{closing.title}</h2>
-				{closing.lead && <p className="rp-closing-lead">{closing.lead}</p>}
+				<div className="rp-closing-text">
+					<h2>{closing.title}</h2>
+					{closing.lead && <p className="rp-closing-lead">{closing.lead}</p>}
+				</div>
 				<LandingLinks links={closing.links} className="rp-links" />
 			</div>
 
