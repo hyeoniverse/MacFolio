@@ -98,7 +98,7 @@ export interface ProjectChapter {
 }
 
 /**
- * 프로젝트 페이지 모양. 넷은 같은 내용(apps/safari/project/landing/content.ts의 landingOf)을 서로 다른 디자인으로 그리는 랜딩 템플릿이다
+ * 프로젝트 페이지 모양. 아홉은 같은 내용(apps/safari/project/landing/content.ts의 landingOf)을 서로 다른 디자인으로 그리는 랜딩 템플릿이다
  * (apps/safari/project/templates/).
  * product 제품 페이지: 흰 바탕, 큰 제품 화면, 짧고 큰 문장, 넉넉한 여백, 큰 숫자.
  * friendly 밝은 카드: 아이콘 색 하나를 강조색으로, 아이콘 달린 기능 카드와 단계 흐름 (새 프로젝트의 기본값: 그림이 없어도 빈약하지 않다).
@@ -107,6 +107,7 @@ export interface ProjectChapter {
  * keynote 발표 무대: 어두운 무대에 한 화면씩 큰 장면, 강조색 하나 (Linear·Apple 발표).
  * magazine 케이스 스터디: 세리프 큰 제목, 단 나눔, 인용문, 캡션 달린 큰 사진.
  * devtool 개발자 도구: 고정폭 글꼴, 코드 블록과 설치 명령, 커밋 그래프 같은 디테일 (Vercel·GitHub).
+ * repo 저장소: GitHub 저장소 화면 그대로. 탭, 파일 트리, README, 커밋 그래프와 타입 거르기, 커밋 규칙 표, 터미널 서랍.
  * playful 놀이: 또렷한 색 면, 큰 둥근 도형, 스티커 같은 장식 (Figma·Arc).
  * dialogue RPG 대화창 (같은 내용을 선택지와 대사로 읽는다).
  * custom 프로젝트 id로 등록한 직접 짠 코드 페이지 (apps/safari/project/custom/; 코드의 일곱 프로젝트는 모두 자기 페이지가 있다. 등록이 없으면 기본 모양)
@@ -119,6 +120,7 @@ export const PROJECT_LOOKS = [
 	'keynote',
 	'magazine',
 	'devtool',
+	'repo',
 	'playful',
 	'dialogue',
 	'custom',
@@ -140,7 +142,6 @@ export const LEGACY_LOOKS: Readonly<Record<string, ProjectLook>> = {
 	inbox: 'paper',
 	checklist: 'paper',
 	horizontal: 'bento',
-	repo: 'devtool',
 	deck: 'keynote',
 	arcade: 'playful',
 	brutal: 'bento',

@@ -1,21 +1,22 @@
 # 랜딩 템플릿 (`project/templates/`)
 
-프로젝트 페이지의 모양(look) 가운데 여덟은 **같은 내용을 서로 다른 디자인으로 그리는 랜딩 템플릿**이다. 관리자는 시스템 설정 › 프로젝트에서 칸만 채우고, 어떤 템플릿을 골라도 완성된 랜딩 페이지가 나온다.
+프로젝트 페이지의 모양(look) 가운데 아홉은 **같은 내용을 서로 다른 디자인으로 그리는 랜딩 템플릿**이다. 관리자는 시스템 설정 › 프로젝트에서 칸만 채우고, 어떤 템플릿을 골라도 완성된 랜딩 페이지가 나온다.
 
-| id         | 콘셉트 (참고)         | 한 줄                                                                                                    |
-| ---------- | --------------------- | -------------------------------------------------------------------------------------------------------- |
-| `product`  | Apple 제품 페이지     | 흰·검정 단색 바탕, 큰 제품 화면, 짧고 큰 문장, 넉넉한 여백, 큰 숫자                                      |
-| `friendly` | Stripe                | 비스듬한 단색 띠와 줄무늬, 창과 겹친 작은 카드, 강조선 숫자, 아이콘 기능 격자, 선으로 이은 단계, 남색 띠 |
-| `paper`    | Notion                | 따뜻한 흰 문서, 표지와 걸친 아이콘, 속성 표, 토글, 알림 상자, 표                                         |
-| `bento`    | Framer·Raycast 템플릿 | 크기가 다른 타일 격자, 1px 선, 고정폭 작은 글자, 다크에서 가장 또렷하다                                  |
-| `keynote`  | Linear·Apple 발표     | 어두운 무대(테마와 상관없이), 한 장면씩 큰 제목과 화면, 세어 올라가는 숫자, 발표자 화면 같은 화면 모음   |
-| `magazine` | 잡지 케이스 스터디    | 따뜻한 종이, 명조 제목, 번호 붙은 꼭지와 인용구, 판 위의 큰 사진, 숫자 곁상자, 미주                      |
-| `devtool`  | Vercel·GitHub         | 고정폭 라벨, 복사되는 clone 명령, 편집기 창, 커밋 목록, 기여 그래프, 파일 트리                           |
-| `playful`  | Figma·Arc             | 크림 바탕의 색 면과 둥근 도형, 스티커, 손글씨 물결 밑줄, 구불구불 이은 단계, 붙임쪽지                    |
+| id         | 콘셉트 (참고)         | 한 줄                                                                                                     |
+| ---------- | --------------------- | --------------------------------------------------------------------------------------------------------- |
+| `product`  | Apple 제품 페이지     | 흰·검정 단색 바탕, 큰 제품 화면, 짧고 큰 문장, 넉넉한 여백, 큰 숫자                                       |
+| `friendly` | Stripe                | 비스듬한 단색 띠와 줄무늬, 창과 겹친 작은 카드, 강조선 숫자, 아이콘 기능 격자, 선으로 이은 단계, 남색 띠  |
+| `paper`    | Notion                | 따뜻한 흰 문서, 표지와 걸친 아이콘, 속성 표, 토글, 알림 상자, 표                                          |
+| `bento`    | Framer·Raycast 템플릿 | 크기가 다른 타일 격자, 1px 선, 고정폭 작은 글자, 다크에서 가장 또렷하다                                   |
+| `keynote`  | Linear·Apple 발표     | 어두운 무대(테마와 상관없이), 한 장면씩 큰 제목과 화면, 세어 올라가는 숫자, 발표자 화면 같은 화면 모음    |
+| `magazine` | 잡지 케이스 스터디    | 따뜻한 종이, 명조 제목, 번호 붙은 꼭지와 인용구, 판 위의 큰 사진, 숫자 곁상자, 미주                       |
+| `devtool`  | Vercel·GitHub         | 고정폭 라벨, 복사되는 clone 명령, 편집기 창, 커밋 목록, 기여 그래프, 파일 트리                            |
+| `repo`     | GitHub 저장소 화면    | 저장소 머리와 탭, 파일 트리, README에 모든 구역, 옆 칸, 커밋 그래프와 타입 거르기, 커밋 규칙, 터미널 서랍 |
+| `playful`  | Figma·Arc             | 크림 바탕의 색 면과 둥근 도형, 스티커, 손글씨 물결 밑줄, 구불구불 이은 단계, 붙임쪽지                     |
 
 `friendly`가 새 프로젝트의 기본 모양이다 (`DEFAULT_LOOK`): 그림이 하나도 없는 처음 상태에서도 첫 화면 창에 프로젝트 내용으로 그린 앱 화면 모형이 들어가 꽉 차 보인다. `product`는 큰 화면이 있어야 빛난다.
 
-이 여덟 말고 `dialogue`(RPG 대화창, `project/DialoguePage.tsx`)는 같은 내용을 선택지와 대사로 읽는 고전 RPG 콘셉트(라이트는 포켓몬, 다크는 언더테일)이고, `custom`은 코드의 일곱 프로젝트를 위해 직접 짠 페이지(`project/custom/`)다. 둘 다 이 계약 밖이다.
+이 아홉 말고 `dialogue`(RPG 대화창, `project/DialoguePage.tsx`)는 같은 내용을 선택지와 대사로 읽는 고전 RPG 콘셉트(라이트는 포켓몬, 다크는 언더테일)이고, `custom`은 코드의 일곱 프로젝트를 위해 직접 짠 페이지(`project/custom/`)다. 둘 다 이 계약 밖이다.
 
 ## 내용 모델 (`project/landing/content.ts`)
 
@@ -81,7 +82,8 @@ templates/
 ├── product/   Page.tsx·Page.css, Gallery.tsx(화면 띠), accent.ts(탁한 강조색이면 파랑)
 ├── friendly/  Page.tsx·Page.css, Mock.tsx(그림이 없을 때 첫 화면의 앱 화면 모형)
 ├── paper/     Page.tsx·Page.css
-└── bento/     Page.tsx·Page.css, layout.ts(빈칸 없는 타일 배치), Links.tsx(글쇠 표시 링크)
+├── bento/     Page.tsx·Page.css, layout.ts(빈칸 없는 타일 배치), Links.tsx(글쇠 표시 링크)
+└── repo/      Page.tsx·Page.css, Files.tsx(파일 상자), Readme.tsx(구역 렌더러), Terminal.tsx·shell.ts(터미널 서랍), repo.ts(커밋·트리·README 원문)
 landing/                템플릿이 함께 쓰는 키트
 ├── content.ts          landingOf, 타입, SECTION_LABELS·SECTION_ORDER, sectionTitle, iconOf
 ├── useLanding.ts       useLanding(project)
@@ -106,10 +108,12 @@ landing/                템플릿이 함께 쓰는 키트
 
 - 예시: `apps/settings/lookSamples.ts`의 `GENERAL_SAMPLE` 하나를 네 템플릿이 함께 쓴다 ('예시로 채우기'). 모든 구역과 항목 칸(아이콘, 다크 짝이 있는 그림, 화면 여러 장, 장의 숫자와 그림, 조작법, 폴더 구조, 출처)을 채운다.
 - 단위: `landing/content.test.ts`(빈 구역 빠짐, 차례, 첫 화면 그림, 링크, 칸 보존), `lookSamples.test.ts`, desktop-core의 `projects.test.ts`(예전 이름 옮기기).
-- E2E: `e2e/looks/{product,friendly,paper,bento}.spec.ts`.
+- E2E: `e2e/looks/{product,friendly,paper,bento,keynote,magazine,devtool,repo,playful}.spec.ts`.
 
 마무리(`closing`)는 첫 화면의 제목을 되풀이하지 않는다. 써 볼 곳(앱·데모)이 있으면 '지금 바로 써 볼 수 있습니다.', 저장소만 있으면 '코드와 기록을 살펴볼 수 있습니다.'를 제목으로 하고 이름을 덧붙인다.
 
 `keynote`는 무대 콘셉트라 사이트 테마와 상관없이 어두운 바탕을 쓴다. 계약의 '어두운 바탕을 강제하지 않는다'의 유일한 예외다.
 
-예시 아이콘처럼 강조색이 노랑~연두로 탁해지면, 여러 템플릿이 자기 폴더의 `accent.ts`에서 그 템플릿의 기본 강조색으로 돌린다(제품 파랑, 카드 남보라, 키노트 남보라, 매거진 빨강, 개발자 도구 파랑, 놀이 산호).
+예시 아이콘처럼 강조색이 노랑~연두로 탁해지면, 여러 템플릿이 자기 폴더의 `accent.ts`에서 그 템플릿의 기본 강조색으로 돌린다(제품 파랑, 카드 남보라, 키노트 남보라, 매거진 빨강, 개발자 도구 파랑, 저장소 GitHub 파랑, 놀이 산호).
+
+`repo`는 GitHub 저장소 화면이다. Code 탭(기본)이 저장소 첫 화면으로 모든 구역을 README 안에 차례대로 그린다: 숫자는 README 첫머리의 지표 칸, 진행 과정은 릴리스 목록(v0.1.0 … v1.0.0), 기술은 Built with 주제·표·폴더 구조 코드 블록, 맡은 일은 할 일 목록, 출처는 표다. 위의 파일 상자는 폴더 구조로 만든 트리(DevCourse는 실제 저장소 `repo.json` 탐색기)이고, 옆 칸(About·Releases·Languages)은 첫 화면 내용의 요약이라 구역이 아니다. Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입(커밋 규칙 `conventions`, 없으면 Conventional Commits 기본 타입)으로 거르며, Conventions 탭은 커밋 규칙이 있을 때만 생긴다. 저장소 탭은 Safari 창의 탭(role=tab)과 섞이지 않게 `nav`와 `aria-current` 단추이고, 터미널 서랍은 구역이 아닌 `aside`(complementary)다.
