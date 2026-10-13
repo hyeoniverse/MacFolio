@@ -42,6 +42,7 @@ describe('모양별 예시 프로젝트', () => {
 			'keynote',
 			'magazine',
 			'devtool',
+			'repo',
 			'playful',
 			'dialogue',
 		]);
@@ -53,6 +54,7 @@ describe('모양별 예시 프로젝트', () => {
 			'keynote',
 			'magazine',
 			'devtool',
+			'repo',
 			'playful',
 		] as const) {
 			const { look: _look, ...rest } = LOOK_SAMPLES[look];
