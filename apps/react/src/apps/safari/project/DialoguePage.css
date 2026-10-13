@@ -1,14 +1,12 @@
 /*
- * dialogue 모양: 고전 RPG 대화창.
- * 라이트는 포켓몬스터 GBA 시절: 흰 상자에 짙은 테두리와 옅은 안쪽 띠, 한 칸씩 깎은 모서리, 글자에 딱 떨어지는 그림자.
- * 다크는 언더테일: 새까만 무대에 흰 테두리 상자, 흰 글자와 대사 앞의 별표, 노란 선택과 빨간 하트 커서.
- * 위는 장면 창(배경 테마와 지금 이야기하는 그림, 왼쪽 위 상태 창과 오른쪽 아래 숫자 창), 아래는 대화 상자.
- * 선택지는 대화 상자 오른쪽에 겹쳐 여는 따로 된 창이다 (싸운다·가방처럼 두 열).
+ * dialogue 모양: 언더테일 같은 고전 RPG 대화창.
+ * 사이트 테마와 상관없이 새까만 무대 하나. 아래에 흰 테두리(6px, 각진 모서리)의 대화 상자, 그 위 가운데에 지금 이야기하는 그림을
+ * 흰 테두리 액자에 원래 모습 그대로 띄운다 (그림이 없으면 프로젝트 아이콘 하나). 상자 아래 한 줄은 이름과 읽음 막대(HP 막대처럼).
+ * 대사 앞의 별표, 흰 글자, 노란 제목과 고른 줄, 빨간 하트 커서. 그라데이션·빛 번짐·풍경은 쓰지 않는다.
  * 크기가 움직이지 않게: 대화 상자는 모든 장의 글을 같은 칸에 안 보이게 깔아 가장 큰 장에 맞추고, 지금 장은 그 위에 겹친다.
- * 흐린 그림자·그라데이션 없이 4px 격자로만 그린다. 배경 장면은 dialogue/Backdrop.css
  */
 /* 픽셀 글꼴: 갈무리11 (Galmuri, 한글·영문 11px 격자, SIL OFL 1.1 — public/fonts/galmuri/OFL.txt).
-   이 모양이 열릴 때만 받는다. 격자에 맞게 11의 배수(11·22·44px)만 쓴다 */
+   이 모양이 열릴 때만 받는다. 격자에 맞게 11의 배수(11·22px)만 쓴다 */
 @font-face {
 	font-family: 'Galmuri11';
 	font-style: normal;
@@ -25,64 +23,41 @@
 	src: url('/fonts/galmuri/Galmuri11-Bold.woff2') format('woff2');
 }
 
+/* 게임 화면이라 라이트에서도 검은 무대 (키노트처럼 테마의 예외) */
 .sp[data-look='dialogue'] {
-	--sp-bg: #f4f4ec;
-	height: 100%;
-}
-
-:root[data-theme='dark'] .sp[data-look='dialogue'] {
 	--sp-bg: #000000;
+	height: 100%;
 }
 
 .dl {
-	/* 라이트: 포켓몬스터 */
-	--dl-page: #f4f4ec;
-	--dl-win: #f8f8f8;
-	--dl-ink: #383838;
-	/* 글자 오른쪽 아래 한 칸 그림자 (게임보이 어드밴스의 글자처럼) */
-	--dl-ink-shadow: #d8d8d0;
-	--dl-soft: #707070;
-	--dl-line: #303848;
-	--dl-band: #a8c0e0;
-	--dl-title: #2858a8;
-	--dl-active: #383838;
-	--dl-cursor: #383838;
-	--dl-face: #d8e8f8;
-	--dl-u: 4px;
-	/* 한 칸씩 깎은 모서리 */
-	--dl-notch: polygon(
-		var(--dl-u) 0,
-		calc(100% - var(--dl-u)) 0,
-		calc(100% - var(--dl-u)) var(--dl-u),
-		100% var(--dl-u),
-		100% calc(100% - var(--dl-u)),
-		calc(100% - var(--dl-u)) calc(100% - var(--dl-u)),
-		calc(100% - var(--dl-u)) 100%,
-		var(--dl-u) 100%,
-		var(--dl-u) calc(100% - var(--dl-u)),
-		0 calc(100% - var(--dl-u)),
-		0 var(--dl-u),
-		var(--dl-u) var(--dl-u)
-	);
-	/* 대화 상자: 글자 크기 22px(격자 두 배), 선택지 한 줄 높이 */
+	--dl-bg: #000000;
+	--dl-ink: #ffffff;
+	--dl-soft: #8c8c8c;
+	--dl-yellow: #ffff00;
+	--dl-red: #ff0000;
+	--dl-orange: #ff7f27;
+	--dl-border: 6px;
+	/* 글자 22px(격자 두 배), 한 줄 32px */
 	--dl-row: 32px;
-	--dl-pad-y: 20px;
-	--dl-pad-x: 24px;
-	--dl-border: 4px;
+	--dl-pad-y: 22px;
+	--dl-pad-x: 28px;
+	/* 별표 자리: 22px 글자 한 칸 반 */
+	--dl-star: 33px;
 	position: relative;
 	display: grid;
-	grid-template-columns: minmax(0, 1120px);
-	grid-template-rows: minmax(0, 1fr) auto auto;
+	grid-template-columns: minmax(0, 1080px);
+	grid-template-rows: minmax(0, 1fr) auto auto auto;
 	grid-template-areas:
-		'screen'
+		'stage'
 		'box'
+		'status'
 		'keys';
 	justify-content: center;
-	row-gap: 12px;
+	row-gap: 14px;
 	height: 100%;
-	padding: 20px 24px 6px;
+	padding: 28px 32px 10px;
 	overflow: hidden;
-	background: var(--dl-page);
+	background: var(--dl-bg);
 	color: var(--dl-ink);
 	/* 픽셀 글꼴. 받기 전과 없는 글자는 시스템 글꼴로 */
 	font-family:
@@ -101,79 +76,13 @@
 	isolation: isolate;
 }
 
-/* 다크: 언더테일. 새까만 무대, 흰 테두리, 모서리를 깎지 않는다 */
-:root[data-theme='dark'] .dl {
-	--dl-page: #000000;
-	--dl-win: #000000;
-	--dl-ink: #ffffff;
-	--dl-ink-shadow: transparent;
-	--dl-soft: #a8a8a8;
-	--dl-line: #ffffff;
-	--dl-band: #000000;
-	--dl-title: #ffffff;
-	--dl-active: #ffff00;
-	--dl-cursor: #ff0000;
-	--dl-face: #000000;
-	--dl-border: 6px;
-	--dl-notch: none;
-}
-
-/* ─── 창 하나: 짙은 테두리, 안쪽 띠, 깎은 모서리 (상태 창·선택지 창·이름 창이 같이 쓴다) ─── */
-.dl-screen,
-.dl-box,
-.dl-menu,
-.dl-status,
-.dl-sign-name,
-.dl-caption {
-	border: var(--dl-border) solid var(--dl-line);
-	clip-path: var(--dl-notch);
-}
-
-.dl-box,
-.dl-menu,
-.dl-status,
-.dl-sign-name,
-.dl-caption {
-	background: var(--dl-win);
-	color: var(--dl-ink);
-	text-shadow:
-		2px 0 0 var(--dl-ink-shadow),
-		0 2px 0 var(--dl-ink-shadow),
-		2px 2px 0 var(--dl-ink-shadow);
-}
-
-/* 큰 창은 테두리 안쪽에 옅은 띠를 한 줄 더 (라이트만) */
-.dl-box,
-.dl-menu {
-	box-shadow: inset 0 0 0 var(--dl-u) var(--dl-band);
-}
-
-/* ─── 장면 창: 위 줄(하늘)과 아래 줄(땅) 두 줄짜리 격자. 테마의 배경이 그 안에 깔린다 ─── */
-.dl-screen {
-	grid-area: screen;
-	position: relative;
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
-	grid-template-rows: [sky-start] minmax(0, 1fr) [sky-end ground-start] clamp(40px, 22%, 112px) [ground-end];
-	min-height: 0;
-	overflow: hidden;
-	isolation: isolate;
-	container: dl-screen / size;
-	background: #8fd0f2;
-	/* 왼쪽 상태 창 줄의 폭 */
-	--dl-hud-w: min(296px, 30cqw);
-}
-
-/* 지금 이야기하는 그림: 왼쪽 상태 창 줄을 비우고 나머지 자리 가운데, 하늘과 땅에 걸쳐 선다 */
+/* ─── 무대: 지금 이야기하는 그림을 가운데에 ─── */
 .dl-stage {
-	position: relative;
-	z-index: 0;
-	grid-row: 1 / -1;
-	grid-column: 1;
+	grid-area: stage;
 	display: grid;
 	place-items: center;
 	min-height: 0;
-	padding: 16px 24px 16px calc(var(--dl-hud-w) + 36px);
+	container: dl-stage / size;
 }
 
 .dl-scene {
@@ -182,7 +91,7 @@
 	min-width: 0;
 	max-width: 100%;
 	max-height: 100%;
-	animation: dl-in 0.24s steps(3) both;
+	animation: dl-in 0.2s steps(2) both;
 }
 
 @keyframes dl-in {
@@ -191,7 +100,7 @@
 	}
 }
 
-/* 그림 한 장: 테두리 창에 담고, 아래 왼쪽에 작은 이름 창을 단다 */
+/* 그림 한 장: 흰 테두리 액자, 아래 줄에 넘기기 단추와 이름 */
 .dl-shot {
 	display: grid;
 	justify-items: center;
@@ -199,48 +108,45 @@
 }
 
 .dl-shot-frame {
-	position: relative;
-	border: var(--dl-border) solid var(--dl-line);
-	background: var(--dl-win);
+	padding: 4px;
+	border: 4px solid var(--dl-ink);
+	background: var(--dl-bg);
 	line-height: 0;
 }
 
 .dl-shot-frame > :is(img, video) {
 	display: block;
 	width: auto;
-	max-width: calc(100cqw - var(--dl-hud-w) - 64px);
+	max-width: calc(100cqw - 16px);
 	height: auto;
-	max-height: calc(100cqh - 72px);
+	max-height: calc(100cqh - 16px - 36px);
 	object-fit: contain;
 }
 
-/* 이름 창: 그림 테두리 아래에 매단 작은 창 */
-.dl-caption {
-	justify-self: start;
-	max-width: 100%;
-	margin: calc(var(--dl-border) * -1) 0 0 16px;
-	padding: 2px 10px;
-	overflow: hidden;
+.dl-shot-foot {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	max-width: 100cqw;
+	height: 28px;
+	margin-top: 8px;
 	font-size: 11px;
-	font-weight: 700;
 	line-height: 16px;
+}
+
+.dl-caption {
+	min-width: 0;
+	overflow: hidden;
+	color: var(--dl-ink);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-/* 여러 장 넘기기: 그림 아래쪽 안에 ◀ 점 ▶ */
 .dl-flip {
-	position: absolute;
-	left: 50%;
-	bottom: 8px;
-	display: flex;
+	display: inline-flex;
 	align-items: center;
-	gap: 8px;
-	padding: 4px;
-	translate: -50% 0;
-	border: 4px solid var(--dl-line);
-	background: var(--dl-win);
-	line-height: 1;
+	gap: 10px;
 }
 
 .dl-flip button {
@@ -258,36 +164,35 @@
 }
 
 .dl-flip button:hover {
-	background: var(--dl-band);
+	color: var(--dl-yellow);
 }
 
 .dl-flip button:focus-visible {
-	outline: 4px solid var(--dl-title);
-	outline-offset: -4px;
+	outline: 2px solid var(--dl-yellow);
+	outline-offset: -2px;
+	color: var(--dl-yellow);
 }
 
 .dl-dots {
-	display: flex;
-	gap: 4px;
+	display: inline-flex;
+	gap: 6px;
 }
 
 .dl-dots i {
-	width: 8px;
-	height: 8px;
-	background: var(--dl-soft);
+	width: 6px;
+	height: 6px;
+	background: #444444;
 }
 
 .dl-dots i[data-on] {
 	background: var(--dl-ink);
 }
 
-/* 엔딩 앨범: 화면 모음을 격자로 (최대 여섯 장) */
+/* 엔딩의 앨범: 흰 테두리 작은 그림 여러 장 */
 .dl-album {
 	display: grid;
 	grid-template-columns: repeat(3, auto);
-	gap: 4px;
-	border: var(--dl-border) solid var(--dl-line);
-	background: var(--dl-line);
+	gap: 12px;
 }
 
 .dl-album[data-count='2'],
@@ -297,234 +202,55 @@
 
 .dl-album img {
 	display: block;
-	width: min(16cqw, 200px);
+	width: min(200px, calc((100cqw - 24px) / 3 - 8px));
 	height: auto;
-	max-height: calc((100cqh - 96px) / 2);
-	aspect-ratio: 16 / 10;
+	max-height: calc((100cqh - 60px) / 2 - 8px);
+	border: 4px solid var(--dl-ink);
 	object-fit: cover;
+	aspect-ratio: 16 / 10;
 }
 
-/* 그림이 없으면 화자가 선다: 계단 타원 발판 위의 큰 픽셀 아이콘(16칸 × 8배), 아래에 이름 창 */
+/* 그림이 없을 때: 프로젝트 아이콘 하나 (전투 화면의 상대처럼) */
 .dl-sign {
-	position: relative;
 	display: grid;
-	justify-items: center;
-	max-width: calc(100cqw - 48px);
-}
-
-.dl-sign::before {
-	content: '';
-	position: absolute;
-	top: 116px;
-	left: 50%;
-	z-index: -1;
-	width: 224px;
-	height: 24px;
-	translate: -50% 0;
-	background: rgba(24, 32, 40, 0.24);
-	clip-path: polygon(
-		25% 0,
-		75% 0,
-		75% 4px,
-		90% 4px,
-		90% 8px,
-		100% 8px,
-		100% 16px,
-		90% 16px,
-		90% 20px,
-		75% 20px,
-		75% 100%,
-		25% 100%,
-		25% 20px,
-		10% 20px,
-		10% 16px,
-		0 16px,
-		0 8px,
-		10% 8px,
-		10% 4px,
-		25% 4px
-	);
+	place-items: center;
 }
 
 .dl-sign-icon {
-	flex: none;
-	width: 128px;
-	height: 128px;
-	image-rendering: pixelated;
-}
-
-.dl-sign-name {
-	max-width: 100%;
-	margin-top: 20px;
-	padding: 4px 16px;
-	overflow: hidden;
-	font-size: 22px;
-	font-weight: 700;
-	line-height: 32px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.dl-sign-icon.fallback,
-.dl-icon.fallback {
-	display: grid;
-	place-items: center;
-	background: var(--dl-title);
-	color: var(--dl-win);
-	font-size: 22px;
-	text-shadow: none;
+	display: block;
+	width: 96px;
+	height: 96px;
+	object-fit: contain;
 }
 
 .dl-sign-icon.fallback {
+	display: grid;
+	place-items: center;
+	color: var(--dl-ink);
 	font-size: 44px;
 }
 
-/* ─── 상태 창: 왼쪽 위는 이름과 읽은 주제 막대(체력 막대처럼), 오른쪽 아래는 숫자 ─── */
-.dl-status {
-	position: absolute;
-	z-index: 2;
-	margin: 0;
-	padding: 8px 14px 10px;
-	list-style: none;
+/* sproutfarm: char-walk.png(48×48 네 칸) 첫 칸에서 캐릭터가 있는 부분(13×17)만 잘라 픽셀 그대로 키운다 (원본이 작은 픽셀 그림) */
+.dl-sprite {
+	--dl-px: 6px;
+	display: block;
+	width: calc(var(--dl-px) * 13);
+	height: calc(var(--dl-px) * 17);
+	background: url('/imgs/projects/sproutfarm/sprites/char-walk.png') calc(var(--dl-px) * -17) calc(var(--dl-px) * -15) /
+		calc(var(--dl-px) * 192) calc(var(--dl-px) * 48) no-repeat;
+	image-rendering: pixelated;
 }
 
-.dl-quest {
-	top: 12px;
-	left: 12px;
-	display: grid;
-	gap: 6px;
-	width: var(--dl-hud-w);
-	min-width: 224px;
-}
-
-.dl-status-name {
-	display: grid;
-	min-width: 0;
-}
-
-/* 긴 이름은 두 줄까지 */
-.dl-status-name b {
-	display: -webkit-box;
-	overflow: hidden;
-	font-size: 22px;
-	font-weight: 700;
-	line-height: 32px;
-	word-break: keep-all;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
-}
-
-.dl-status-name small {
-	overflow: hidden;
-	color: var(--dl-soft);
-	font-size: 11px;
-	line-height: 16px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.dl-hp {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	align-items: center;
-	gap: 4px 6px;
-}
-
-/* 막대 머리의 작은 이름표 (HP 자리) */
-.dl-hp em {
-	padding: 0 4px;
-	background: #505860;
-	color: #f8d030;
-	font-size: 11px;
-	font-style: normal;
-	font-weight: 700;
-	line-height: 16px;
-	text-shadow: none;
-}
-
-.dl-hp-bar {
-	position: relative;
-	height: 12px;
-	border: 2px solid var(--dl-line);
-	background: #506858;
-}
-
-.dl-hp-bar i {
-	position: absolute;
-	inset: 0 auto 0 0;
-	background: #58d080;
-	box-shadow: inset 0 2px 0 #a8f8c8;
-	transition: width 0.6s steps(6);
-}
-
-.dl-hp-count {
-	grid-column: 2;
-	justify-self: end;
-	font-size: 11px;
-	font-weight: 700;
-	line-height: 16px;
-	font-variant-numeric: tabular-nums;
-}
-
-/* 언더테일: 이름표는 글자만, 막대는 빨간 바탕에 노랑 */
-:root[data-theme='dark'] .dl-hp em {
-	padding: 0;
-	background: none;
-	color: #ffffff;
-}
-
-:root[data-theme='dark'] .dl-hp-bar {
-	border: 0;
-	background: #c00000;
-}
-
-:root[data-theme='dark'] .dl-hp-bar i {
-	background: #ffff00;
-	box-shadow: none;
-}
-
-/* 숫자 창: 값과 무엇의 숫자인지를 한 줄씩. 값끼리 한 열로 맞춘다 */
-.dl-stats {
-	left: 12px;
-	bottom: 12px;
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	column-gap: 12px;
-	width: var(--dl-hud-w);
-	min-width: 224px;
-}
-
-.dl-stats li {
-	display: contents;
-}
-
-.dl-stats strong {
-	font-size: 22px;
-	font-weight: 700;
-	line-height: 32px;
-	font-variant-numeric: tabular-nums;
-	white-space: nowrap;
-}
-
-.dl-stats span {
-	align-self: center;
-	color: var(--dl-soft);
-	font-size: 11px;
-	line-height: 16px;
-	word-break: keep-all;
-}
-
-/* ─── 대화 상자: 왼쪽 초상, 가운데 글. 높이는 가장 긴 장과 선택지 줄 수 중 큰 쪽 ─── */
+/* ─── 대화 상자: 흰 테두리 하나. 높이는 가장 긴 장과 (질문 + 선택지 줄 수) 중 큰 쪽 ─── */
 .dl-box {
 	grid-area: box;
 	position: relative;
 	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	column-gap: 20px;
-	min-height: calc(var(--dl-menu-rows, 4) * var(--dl-row) + 2 * var(--dl-pad-y) + 2 * var(--dl-border));
+	min-height: calc(2 * var(--dl-border) + 2 * var(--dl-pad-y) + (var(--dl-menu-rows, 4) + 1) * var(--dl-row) + 12px);
 	margin: 0;
-	padding: var(--dl-pad-y) var(--dl-pad-x) 12px;
-	container: dl-box / inline-size;
+	padding: var(--dl-pad-y) var(--dl-pad-x) 10px;
+	border: var(--dl-border) solid var(--dl-ink);
+	background: var(--dl-bg);
 }
 
 .dl-text {
@@ -565,117 +291,54 @@
 	visibility: hidden;
 }
 
-.dl-title {
+/* 대사: 줄 앞에 별표. 별표 자리는 안 보이는 장에도 똑같이 비워 둔다 */
+.dl-title,
+.dl-body {
+	position: relative;
 	display: block;
-	margin: 0 0 4px;
-	color: var(--dl-title);
+	margin: 0;
+	padding-left: var(--dl-star);
 	font-size: 22px;
-	font-weight: 700;
-	line-height: 32px;
+	line-height: var(--dl-row);
 	word-break: keep-all;
 	overflow-wrap: anywhere;
+}
+
+.dl-title {
+	margin-bottom: 4px;
+	color: var(--dl-yellow);
+	font-weight: 400;
 }
 
 .dl-body {
-	position: relative;
-	margin: 0;
-	font-size: 22px;
+	color: var(--dl-ink);
 	font-weight: 400;
-	line-height: 32px;
-	word-break: keep-all;
-	overflow-wrap: anywhere;
 	white-space: pre-line;
 }
 
-/* 언더테일: 대사 앞에 별표. 별표 자리는 안 보이는 장에도 똑같이 비워 둔다 */
-:root[data-theme='dark'] .dl-body {
-	padding-left: 33px;
-}
-
-:root[data-theme='dark'] .dl-line > .dl-body::before {
+.dl-line > :is(.dl-title, .dl-body)::before {
 	content: '*';
 	position: absolute;
 	left: 0;
+	color: var(--dl-ink);
 }
 
-:root[data-theme='dark'] .dl-title {
-	padding-left: 33px;
+/* 제목 아래 이어지는 설명은 별표 없이 제목에 붙는다 */
+.dl-line > .dl-title + .dl-body::before {
+	content: none;
 }
 
-/* 선택지 차례의 질문은 선택지 창 왼쪽 자리에서만 */
-.dl[data-mode='menu'] .dl-line {
-	max-width: calc(100cqw - min(62cqw, 700px) - 140px);
-}
-
-/* ─── 초상: 상자 왼쪽 안의 얼굴 칸 ─── */
-.dl-portrait {
-	display: grid;
-	align-content: start;
-	padding-top: 4px;
-}
-
-.dl-face {
-	display: grid;
-	place-items: center;
-	width: 88px;
-	height: 88px;
-	overflow: hidden;
-	border: 4px solid var(--dl-line);
-	background: var(--dl-face);
-}
-
-/* 언더테일의 초상은 테두리 없이 검은 바탕에 */
-:root[data-theme='dark'] .dl-face {
-	border-color: transparent;
-}
-
-.dl[data-id='sproutfarm'] .dl-face {
-	place-items: end center;
-	background: #9cd8f0;
-	box-shadow: inset 0 -24px 0 #6fb84a;
-}
-
-/* char-walk.png(48×48 네 칸) 첫 칸에서 캐릭터가 있는 부분(13×17)만 잘라 픽셀 그대로 키운다 */
-.dl-sprite {
-	--dl-px: 4px;
-	display: block;
-	width: calc(var(--dl-px) * 13);
-	height: calc(var(--dl-px) * 17);
-	margin-bottom: 8px;
-	background: url('/imgs/projects/sproutfarm/sprites/char-walk.png') calc(var(--dl-px) * -17) calc(var(--dl-px) * -15) /
-		calc(var(--dl-px) * 192) calc(var(--dl-px) * 48) no-repeat;
-	image-rendering: pixelated;
-}
-
-.dl-icon {
-	display: block;
-	width: 64px;
-	height: 64px;
-	image-rendering: pixelated;
-}
-
-/* 말하는 동안 4px 들썩인다 */
-.dl-face[data-talking] > * {
-	animation: dl-talk 0.32s steps(1) infinite;
-}
-
-@keyframes dl-talk {
-	50% {
-		translate: 0 -4px;
-	}
-}
-
-/* ─── 선택지 창: 상자 오른쪽에 겹쳐 연다. 두 열이면 위에서 아래로 채운다 ─── */
+/* ─── 선택지: 상자 안, 질문 줄 아래. 두 열이면 위에서 아래로 채운다 ─── */
 .dl-menu {
 	position: absolute;
-	top: calc(var(--dl-border) * -1);
-	right: calc(var(--dl-border) * -1);
-	bottom: calc(var(--dl-border) * -1);
+	top: calc(var(--dl-pad-y) + var(--dl-row) + 12px);
+	right: var(--dl-pad-x);
+	bottom: 10px;
+	left: var(--dl-pad-x);
 	z-index: 2;
 	display: grid;
-	align-content: center;
-	width: min(62cqw, 700px);
-	padding: 12px 16px;
+	align-content: start;
+	background: var(--dl-bg);
 	visibility: hidden;
 }
 
@@ -688,7 +351,7 @@
 	grid-template-rows: repeat(var(--dl-rows), var(--dl-row));
 	grid-auto-flow: column;
 	grid-auto-columns: minmax(0, 1fr);
-	column-gap: 8px;
+	column-gap: 16px;
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -696,63 +359,35 @@
 
 .dl-choices button {
 	display: grid;
-	/* ▶ · 이름 · ✓ : ✓는 이름 바로 뒤에 붙는다 */
-	grid-template-columns: 22px minmax(0, max-content) 22px;
+	/* ♥ · 이름 · ✓ : ✓는 이름 바로 뒤에 붙는다 */
+	grid-template-columns: var(--dl-star) minmax(0, max-content) 26px;
 	justify-content: start;
 	align-items: center;
-	column-gap: 4px;
 	width: 100%;
 	height: var(--dl-row);
-	padding: 0 4px;
+	padding: 0;
 	border: 0;
 	background: transparent;
 	color: var(--dl-ink);
 	font: inherit;
 	font-size: 22px;
-	line-height: 32px;
+	line-height: var(--dl-row);
 	text-align: left;
-	text-shadow: inherit;
 	cursor: pointer;
 }
 
 .dl-choices button:focus-visible {
-	outline: 4px solid var(--dl-band);
-	outline-offset: -4px;
-}
-
-:root[data-theme='dark'] .dl-choices button:focus-visible {
-	outline-color: #ffff00;
+	outline: 2px solid var(--dl-yellow);
+	outline-offset: 0;
 }
 
 .dl-cursor {
-	color: var(--dl-cursor);
-	font-size: 22px;
+	color: var(--dl-red);
 	visibility: hidden;
 }
 
 .dl-choices button[data-active] .dl-cursor {
 	visibility: visible;
-	animation: dl-point 0.8s steps(1) infinite;
-}
-
-@keyframes dl-point {
-	50% {
-		translate: 4px 0;
-	}
-}
-
-/* 언더테일: 커서는 빨간 하트, 고른 줄은 노랑 */
-:root[data-theme='dark'] .dl-cursor {
-	font-size: 0;
-}
-
-:root[data-theme='dark'] .dl-cursor::before {
-	content: '♥';
-	font-size: 22px;
-}
-
-.dl-choices button[data-active] .dl-label {
-	color: var(--dl-active);
 }
 
 .dl-label {
@@ -761,46 +396,46 @@
 	white-space: nowrap;
 }
 
-/* 읽은 주제는 옅게, 끝에 ✓ */
-.dl-choices button[data-read]:not([data-active]) .dl-label {
+.dl-choices button[data-active] .dl-label {
+	color: var(--dl-yellow);
+}
+
+/* 읽은 주제는 회색, 끝에 ✓ */
+.dl-choices button[data-read]:not([data-active]) .dl-label,
+.dl-choices button[data-back]:not([data-active]) .dl-label {
 	color: var(--dl-soft);
 }
 
 .dl-check {
-	color: var(--dl-title);
-	font-size: 22px;
-	font-style: normal;
-	font-weight: 700;
-	text-align: center;
-}
-
-:root[data-theme='dark'] .dl-check {
-	color: #ffff00;
-}
-
-.dl-choices button[data-back] .dl-label {
+	padding-left: 8px;
 	color: var(--dl-soft);
+	font-style: normal;
 }
 
-/* ─── 아래 줄: 왼쪽 진행(또는 링크), 오른쪽 ▼ ─── */
+.dl-choices button[data-active] .dl-check {
+	color: var(--dl-yellow);
+}
+
+/* ─── 상자 아래 줄: 왼쪽 진행(또는 링크), 오른쪽 ▼ ─── */
 .dl-foot {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 16px;
-	min-height: 40px;
+	min-height: 36px;
 	margin-top: 8px;
 }
 
 .dl-count {
+	padding-left: var(--dl-star);
 	color: var(--dl-soft);
 	font-size: 11px;
-	font-weight: 700;
 	line-height: 16px;
 	font-variant-numeric: tabular-nums;
 }
 
 .dl-links-slot {
+	padding-left: var(--dl-star);
 	visibility: hidden;
 }
 
@@ -811,64 +446,38 @@
 .dl-links {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
+	gap: 12px;
 }
 
-/* 링크 단추: 작은 창. 언더테일에서는 주황 테두리의 행동 단추처럼 */
+/* 링크 단추: 전투 화면의 주황 행동 단추처럼. 고르면 노랑 */
 .dl .sp-pill,
 .dl .sp-link {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
-	padding: 4px 12px;
-	border: 4px solid var(--dl-line);
+	padding: 5px 12px;
+	border: 2px solid var(--dl-orange);
 	border-radius: 0;
-	background: var(--dl-win);
-	color: var(--dl-ink);
+	background: var(--dl-bg);
+	color: var(--dl-orange);
 	font: inherit;
 	font-size: 11px;
 	font-weight: 700;
 	line-height: 16px;
 	text-decoration: none;
-	text-shadow: none;
 	cursor: pointer;
-	clip-path: var(--dl-notch);
-}
-
-.dl .sp-pill {
-	background: var(--dl-line);
-	color: var(--dl-win);
-}
-
-.dl .sp-pill:hover,
-.dl .sp-link:hover {
-	background: var(--dl-band);
-	color: var(--dl-ink);
-}
-
-.dl .sp-pill:focus-visible,
-.dl .sp-link:focus-visible {
-	outline: 4px solid var(--dl-title);
-	outline-offset: 0;
 }
 
 .dl .sp-link i {
 	font-size: 9px;
 }
 
-:root[data-theme='dark'] .dl .sp-pill,
-:root[data-theme='dark'] .dl .sp-link {
-	border-color: #ff7f27;
-	background: #000000;
-	color: #ff7f27;
-}
-
-:root[data-theme='dark'] .dl .sp-pill:hover,
-:root[data-theme='dark'] .dl .sp-link:hover,
-:root[data-theme='dark'] .dl .sp-pill:focus-visible,
-:root[data-theme='dark'] .dl .sp-link:focus-visible {
-	border-color: #ffff00;
-	color: #ffff00;
+.dl .sp-pill:hover,
+.dl .sp-link:hover,
+.dl .sp-pill:focus-visible,
+.dl .sp-link:focus-visible {
+	border-color: var(--dl-yellow);
+	color: var(--dl-yellow);
 	outline: none;
 }
 
@@ -876,8 +485,8 @@
 .dl-next {
 	display: grid;
 	place-items: center;
-	width: 36px;
-	height: 36px;
+	width: 32px;
+	height: 32px;
 	margin-left: auto;
 	padding: 0;
 	border: 0;
@@ -886,7 +495,6 @@
 	font: inherit;
 	font-size: 22px;
 	line-height: 1;
-	text-shadow: inherit;
 	cursor: pointer;
 }
 
@@ -905,12 +513,8 @@
 }
 
 .dl-next:focus-visible {
-	outline: 4px solid var(--dl-title);
-	outline-offset: -4px;
-}
-
-:root[data-theme='dark'] .dl-next:focus-visible {
-	outline-color: #ffff00;
+	outline: 2px solid var(--dl-yellow);
+	outline-offset: -2px;
 }
 
 @keyframes dl-blink {
@@ -919,7 +523,75 @@
 	}
 }
 
-/* ─── 키 안내: 상자 바로 아래 한 줄 ─── */
+/* ─── 상태 줄: 이름과 기간, 읽음 막대 (HP 막대처럼 노랑) ─── */
+.dl-status {
+	grid-area: status;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	min-width: 0;
+	padding: 0 4px;
+}
+
+.dl-status-name {
+	display: flex;
+	align-items: baseline;
+	gap: 16px;
+	min-width: 0;
+}
+
+.dl-status-name b {
+	min-width: 0;
+	overflow: hidden;
+	font-size: 22px;
+	font-weight: 400;
+	line-height: var(--dl-row);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dl-status-name small {
+	flex: none;
+	color: var(--dl-soft);
+	font-size: 11px;
+	line-height: 16px;
+	white-space: nowrap;
+}
+
+.dl-hp {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 10px;
+	font-size: 11px;
+	line-height: 16px;
+}
+
+.dl-hp em {
+	font-style: normal;
+}
+
+.dl-hp-bar {
+	position: relative;
+	width: 110px;
+	height: 12px;
+	background: #3a3a3a;
+}
+
+.dl-hp-bar i {
+	position: absolute;
+	inset: 0 auto 0 0;
+	background: var(--dl-yellow);
+	transition: width 0.3s steps(6);
+}
+
+.dl-hp-count {
+	min-width: 48px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* ─── 키 안내: 맨 아래 한 줄 ─── */
 .dl-keys {
 	grid-area: keys;
 	min-width: 0;
@@ -933,77 +605,38 @@
 	white-space: nowrap;
 }
 
-/* ─── 장면 창이 좁으면: 그림은 창 폭까지, 숫자 창은 접고(읽기 프로그램에는 남긴다) 상태 창은 작게 ─── */
-@container dl-screen (max-width: 760px) {
-	.dl-shot-frame > :is(img, video) {
-		max-width: calc(100cqw - 48px);
-		max-height: calc(100cqh - 132px);
-	}
-
-	.dl-stage {
-		padding: 84px 24px 16px;
-	}
-
-	.dl-quest {
-		top: 8px;
-		left: 8px;
-		width: auto;
-		min-width: 0;
-		max-width: calc(100cqw - 16px);
-		grid-template-columns: auto minmax(120px, 200px);
-		align-items: center;
-		column-gap: 16px;
-		padding: 4px 12px 6px;
-	}
-
+/* 상태 줄의 기간·언어는 넓은 창에서만 */
+@container (max-width: 900px) {
 	.dl-status-name small {
 		display: none;
 	}
-
-	.dl-sign::before {
-		top: 86px;
-		width: 160px;
-	}
-
-	.dl-sign-icon {
-		width: 96px;
-		height: 96px;
-	}
-
-	.dl-sign-name {
-		margin-top: 12px;
-	}
-
-	.dl-album img {
-		width: calc((100cqw - 80px) / 3);
-	}
 }
 
-@container dl-screen (max-width: 760px) {
-	.dl-stats {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		clip-path: inset(50%);
-		border: 0;
-	}
+/* ─── 폭이 좁은 창 (JS가 재서 붙인다): 선택지는 한 열, 여백은 좁게 ─── */
+.dl[data-narrow] {
+	--dl-pad-y: 16px;
+	--dl-pad-x: 18px;
+	--dl-star: 28px;
+	padding: 16px 16px 8px;
 }
 
-/* ─── 좁은 창: 장면은 위쪽 4:3, 상자와 키 안내는 그 아래로 이어진다 ─── */
-@container (max-width: 640px) {
+.dl[data-narrow] .dl-status-name small {
+	display: none;
+}
+
+.dl[data-narrow] .dl-hp-bar {
+	width: 64px;
+}
+
+/* 아주 좁은 창(휴대폰): 무대는 위쪽 4:3, 상자와 상태 줄은 그 아래로 이어진다 (페이지가 스크롤된다) */
+@container (max-width: 520px) {
 	.dl {
-		--dl-pad-y: 14px;
-		--dl-pad-x: 16px;
 		height: auto;
 		min-height: 100%;
-		grid-template-rows: auto auto auto;
-		padding: 12px 12px 6px;
+		grid-template-rows: auto auto auto auto;
 	}
 
-	.dl-screen {
+	.dl-stage {
 		aspect-ratio: 4 / 3;
 	}
 
@@ -1012,60 +645,14 @@
 	}
 }
 
-/* 상자가 좁으면: 초상은 작게, 선택지 창은 상자 전체 폭 */
-@container dl-box (max-width: 1000px) {
-	.dl-face {
-		width: 56px;
-		height: 56px;
-	}
-
-	.dl-icon {
-		width: 48px;
-		height: 48px;
-	}
-
-	.dl-sprite {
-		--dl-px: 3px;
-		margin-bottom: 4px;
-	}
-
-	.dl[data-id='sproutfarm'] .dl-face {
-		box-shadow: inset 0 -16px 0 #6fb84a;
-	}
-
-	.dl-menu {
-		left: calc(var(--dl-border) * -1);
-		width: auto;
-		padding: 10px 8px;
-	}
-
-	.dl-choices button {
-		column-gap: 2px;
-	}
-}
-
 /* ─── 높이가 모자란 창 (JS가 스크롤 상자 높이를 재서 붙인다) ─── */
 .dl[data-fit='compact'] {
-	--dl-pad-y: 14px;
-	--dl-row: 32px;
-	padding-top: 12px;
-	row-gap: 8px;
+	--dl-pad-y: 16px;
+	padding-top: 16px;
+	row-gap: 10px;
 }
 
-/* 숫자 창은 설명을 접는 대신 창째 접는다 (읽기 프로그램에는 남긴다) */
-.dl[data-fit='compact'] .dl-stats,
-.dl[data-fit='tiny'] .dl-stats {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	clip-path: inset(50%);
-	border: 0;
-}
-
-.dl[data-fit='compact'] .dl-status-name small {
+.dl[data-fit='compact'] .dl-keys {
 	display: none;
 }
 
@@ -1074,8 +661,11 @@
 	--dl-pad-x: 16px;
 	height: 100%;
 	min-height: 0;
-	grid-template-rows: minmax(0, 1fr);
-	grid-template-areas: 'box';
+	grid-template-rows: minmax(0, 1fr) auto;
+	grid-template-areas:
+		'box'
+		'status';
+	row-gap: 8px;
 	padding: 8px;
 }
 
@@ -1083,14 +673,9 @@
 	display: none;
 }
 
-/* 장면 창은 접되 숫자 창은 읽기 프로그램에 남긴다 */
-.dl[data-fit='tiny'] .dl-screen {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-	clip-path: inset(50%);
-	border: 0;
+/* 무대는 접는다 */
+.dl[data-fit='tiny'] .dl-stage {
+	display: none;
 }
 
 /* 대화 상자가 창 높이에 맞춘다: 글과 선택지는 그 안에서 스크롤 */
@@ -1104,7 +689,6 @@
 }
 
 .dl[data-fit='tiny'] .dl-menu {
-	align-content: start;
 	overflow-y: auto;
 }
 
@@ -1112,26 +696,9 @@
 	overflow-y: auto;
 }
 
-.dl[data-fit='tiny'] .dl-face {
-	width: 56px;
-	height: 56px;
-}
-
-.dl[data-fit='tiny'] .dl-icon {
-	width: 48px;
-	height: 48px;
-}
-
-.dl[data-fit='tiny'] .dl-sprite {
-	--dl-px: 3px;
-	margin-bottom: 4px;
-}
-
-/* ─── 움직임 줄이기: 타자·들썩임·깜빡임 없이 (자리는 그대로) ─── */
+/* ─── 움직임 줄이기: 나타남·깜빡임 없이 (자리는 그대로) ─── */
 @media (prefers-reduced-motion: reduce) {
 	.dl-scene,
-	.dl-face[data-talking] > *,
-	.dl-choices button[data-active] .dl-cursor,
 	.dl-next[data-ready] i {
 		animation: none;
 	}

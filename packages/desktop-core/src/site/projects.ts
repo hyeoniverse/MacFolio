@@ -147,38 +147,6 @@ export const LEGACY_LOOKS: Readonly<Record<string, ProjectLook>> = {
 	brutal: 'bento',
 };
 
-/**
- * dialogue 모양(RPG 대화창)의 배경 장면. auto는 배경 그림이 없으면 프로젝트 대표 화면을 픽셀로 바꿔 깐다.
- * farm 풀밭, town 노을 거리, office 사무실, library 도서관, space 우주, sea 바닷가,
- * forest 깊은 숲, snow 설산, cafe 카페, classroom 교실, lab 연구실, arcade 게임장, rooftop 밤 옥상, desert 사막
- */
-export const BACKDROP_THEMES = [
-	'auto',
-	'farm',
-	'town',
-	'office',
-	'library',
-	'space',
-	'sea',
-	'forest',
-	'snow',
-	'cafe',
-	'classroom',
-	'lab',
-	'arcade',
-	'rooftop',
-	'desert',
-] as const;
-export type BackdropTheme = (typeof BACKDROP_THEMES)[number];
-
-/** 페이지 배경 (dialogue 모양만 쓴다) */
-export interface ProjectBackdrop {
-	/** 장면 테마. 없으면 auto */
-	theme?: BackdropTheme;
-	/** 하늘·벽 자리에 픽셀로 바꿔 깔 그림 (테마의 바닥·소품은 그 위에) */
-	image?: string;
-}
-
 /** 프로젝트 앱의 모양 (Project.app) */
 export interface ProjectAppInfo {
 	/** Dock·Launchpad에 보일 짧은 이름 */
@@ -256,12 +224,10 @@ export interface Project {
 	 * 들어가 Launchpad·터미널 open·Safari의 "여기서 열기"에 나온다. 데모 주소(demo)가 있어야 한다
 	 */
 	app?: ProjectAppInfo;
-	/** 주요 기능 위에 둘 그림 (public/imgs/projects/{id}/scene.png) */
+	/** 직접 짠 페이지가 쓰는 장면 그림 (public/imgs/projects/{id}/scene.png). 편집 화면에는 없고 JSON에서만 고친다 */
 	art?: string;
 	/** 글자 로고 (public/imgs/projects/{id}/logo.png) */
 	logo?: string;
-	/** 페이지 배경 장면 (dialogue 모양) */
-	backdrop?: ProjectBackdrop;
 	/** 화면 캡처 (public/imgs/projects/{id}/screenshot.jpg). 비어 있으면 화면 모음의 첫 그림을 쓴다 */
 	image: string;
 	/** 게임 조작법 */
@@ -451,7 +417,6 @@ const PROJECT_FIELDS: Record<keyof Omit<Project, 'id'>, Rule> = {
 	app: APP,
 	art: SRC,
 	logo: SRC,
-	backdrop: object({ theme: { kind: 'enum', values: BACKDROP_THEMES }, image: SRC }),
 	// 비워도 된다: 화면은 화면 모음의 첫 그림을 쓴다 (apps/react/src/shared/site/publicImages.ts)
 	image: { kind: 'src', allowEmpty: true },
 	controls: list(object({ keys: req(list(text(20), 8)), label: req(text(80)) }), 20),

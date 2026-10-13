@@ -1,14 +1,12 @@
-// dialogue 모양: 고전 RPG 대화창 (라이트는 포켓몬스터 GBA 시절의 흰 상자, 다크는 언더테일의 검은 상자). 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다
+// dialogue 모양: 언더테일 같은 고전 RPG 대화창. 검은 무대 위에 흰 테두리 대화 상자 하나, 그 위에 지금 이야기하는 그림.
+// 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다. 사이트 테마와 상관없이 검은 무대다
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
-import { Links } from '@/apps/safari/project/parts';
+import { Favicon, Links } from '@/apps/safari/project/parts';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
-import { Backdrop } from '@/apps/safari/project/dialogue/Backdrop';
-import { useIconColors } from '@/apps/safari/project/dialogue/iconColors';
-import { PixelIcon } from '@/apps/safari/project/dialogue/PixelIcon';
 import '@/apps/safari/project/DialoguePage.css';
 
-/** 장면 창에 띄우는 그림(또는 영상) 한 장. caption이 있으면 그림 아래 작은 이름 창에 적는다 */
+/** 무대에 띄우는 그림(또는 영상) 한 장. caption이 있으면 그림 아래에 작게 적는다 */
 interface Slide {
 	src: string;
 	caption?: string;
@@ -19,7 +17,7 @@ interface Slide {
 interface Line {
 	title?: string;
 	body: string;
-	/** 장면: 이 장을 말하는 동안 장면 창에 띄울 그림들 (여러 장이면 그 자리에서 넘겨 본다) */
+	/** 이 장을 말하는 동안 무대에 띄울 그림들 (여러 장이면 그 자리에서 넘겨 본다) */
 	media?: Slide[];
 }
 
@@ -28,7 +26,7 @@ interface Topic {
 	id: string;
 	label: string;
 	lines: Line[];
-	/** 선택지에서 커서가 올라오면 장면 창에 미리 보여 줄 그림 */
+	/** 선택지에서 커서가 올라오면 무대에 미리 보여 줄 그림 */
 	thumb?: string;
 }
 
@@ -257,15 +255,6 @@ function useTyped(text: string, speed = 18) {
 	return { shown: text.slice(0, count), done: count >= text.length, finish };
 }
 
-/** 초상: 대화 상자 왼쪽 안의 얼굴 칸. sproutfarm은 픽셀 캐릭터, 다른 프로젝트는 아이콘. 말하는 동안 살짝 들썩인다 */
-const Portrait: React.FC<{ project: Project; talking: boolean }> = ({ project, talking }) => (
-	<div className="dl-portrait" aria-hidden="true">
-		<div className="dl-face" data-talking={talking || undefined}>
-			{project.id === 'sproutfarm' ? <i className="dl-sprite" /> : <PixelIcon project={project} className="dl-icon" />}
-		</div>
-	</div>
-);
-
 const MENU_TITLE = '무엇을 들어 볼까요?';
 const SUB_TITLE = '어떤 이야기를 더 들어 볼까요?';
 const ENDING: Line = {
@@ -274,17 +263,24 @@ const ENDING: Line = {
 };
 
 /**
- * 스크롤 상자(.safari-page) 높이가 모자라면 장면·상태 창을 접는다. @container는 높이로 물을 수 없어 JS로 잰다.
- * 'compact': 숫자 창을 접는다, 'tiny': 대화 상자만 남긴다
+ * 스크롤 상자(.safari-page)의 크기에 맞춘다. @container는 높이로 물을 수 없어 JS로 잰다.
+ * 높이 'compact'는 키 안내를 접고, 'tiny'는 그림 자리를 접어 대화 상자만 남긴다.
+ * 선택지의 열 수(cols)는 폭으로 정한다: 넓으면 세 열(상자가 낮아져 그림 자리가 넓어진다), 보통은 두 열, 좁으면 한 열
  */
 function useFit(ref: React.RefObject<HTMLElement | null>) {
-	const [fit, setFit] = useState<'full' | 'compact' | 'tiny'>('full');
+	const [fit, setFit] = useState<{ height: 'full' | 'compact' | 'tiny'; cols: 1 | 2 | 3 }>({
+		height: 'full',
+		cols: 2,
+	});
 	useEffect(() => {
 		const box = ref.current?.closest('.safari-page') ?? ref.current?.parentElement;
 		if (!box || typeof ResizeObserver === 'undefined') return;
 		const measure = () => {
 			const h = box.clientHeight;
-			setFit(h < 400 ? 'tiny' : h < 620 ? 'compact' : 'full');
+			const height = h < 400 ? 'tiny' : h < 620 ? 'compact' : 'full';
+			const w = box.clientWidth;
+			const cols = w < 600 ? 1 : w < 1150 ? 2 : 3;
+			setFit((prev) => (prev.height === height && prev.cols === cols ? prev : { height, cols }));
 		};
 		measure();
 		const observer = new ResizeObserver(measure);
@@ -294,7 +290,7 @@ function useFit(ref: React.RefObject<HTMLElement | null>) {
 	return fit;
 }
 
-/** 장면 그림 한 장: 그림이나 소리 없이 반복하는 영상을 테두리 창에, caption이 있으면 아래 작은 이름 창에 */
+/** 그림 한 장: 흰 테두리 액자에 원래 모습 그대로. 영상은 소리 없이 반복한다. 액자 아래 줄에 이름(caption)과 넘기기 단추 */
 const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNode }> = ({
 	slide,
 	caption,
@@ -315,11 +311,15 @@ const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNo
 			) : (
 				<img src={slide.src} alt="" />
 			)}
-			{children}
 		</div>
-		{caption && (
-			<figcaption className="dl-caption" aria-hidden="true">
-				{caption}
+		{(caption || children) && (
+			<figcaption className="dl-shot-foot">
+				{children}
+				{caption && (
+					<span className="dl-caption" aria-hidden="true">
+						{caption}
+					</span>
+				)}
 			</figcaption>
 		)}
 	</figure>
@@ -327,29 +327,17 @@ const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNo
 
 const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const { slides: album, fromGallery } = useMemo(() => buildAlbum(project), [project]);
-	const cover = project.art || project.image || album[0]?.src;
+	const cover = project.image || album[0]?.src;
 	const { topics, chapters } = useMemo(
 		() => buildTopics(project, album, fromGallery, cover),
 		[project, album, fromGallery, cover]
 	);
 	const [mode, setMode] = useState<Mode>({ kind: 'greet' });
 	const [read, setRead] = useState<Set<string>>(() => new Set());
-	// 선택지의 ▶ 커서 (마우스를 올리거나 방향 키로 옮긴다). 지금 열린 선택지(처음 또는 장 목록) 안의 차례
+	// 선택지의 ♥ 커서 (마우스를 올리거나 방향 키로 옮긴다). 지금 열린 선택지(처음 또는 장 목록) 안의 차례
 	const [cursor, setCursor] = useState(0);
 	const rootRef = useRef<HTMLDivElement>(null);
 	const fit = useFit(rootRef);
-
-	// 배경: 고른 테마(없으면 auto). 배경 그림이 있으면 그것을, auto면 대표 화면을 픽셀로 바꿔 하늘 자리에 깐다.
-	// 아이콘에서 뽑은 색은 하늘 톤과 바닥에
-	const theme = project.backdrop?.theme ?? 'auto';
-	const pixelSrc =
-		project.backdrop?.image ||
-		(theme === 'auto' ? project.art || project.image || project.gallery?.[0]?.src : undefined) ||
-		undefined;
-	const [pixel, setPixel] = useState<{ src: string; state: 'ok' | 'fail' } | null>(null);
-	const pixelState = pixelSrc && pixel?.src === pixelSrc ? pixel.state : 'loading';
-	const onPixel = useCallback((src: string, state: 'ok' | 'fail') => setPixel({ src, state }), []);
-	const iconColors = useIconColors(project.icon);
 
 	const back: Topic = useMemo(() => ({ id: BACK_TOPIC, label: '처음 선택지로', lines: [] }), []);
 	const subList = useMemo(() => [...chapters, back], [chapters, back]);
@@ -370,7 +358,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		[project, cover]
 	);
 
-	// 지금 보이는 한 장. 선택지 차례에는 질문을 대화 상자에 찍고, 선택지는 오른쪽 창에 연다
+	// 지금 보이는 한 장. 선택지 차례에는 질문을 대화 상자 첫 줄에 찍고, 선택지는 그 아래에 연다
 	const line: Line | null =
 		mode.kind === 'greet'
 			? greet
@@ -395,7 +383,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const titleCount = Math.min(shown.length, title.length);
 	const bodyCount = Math.max(0, shown.length - title.length - 1);
 
-	// 장면 안에서 넘겨 보는 그림의 차례. 장이 바뀌면 처음부터
+	// 그 자리에서 넘겨 보는 그림의 차례. 장이 바뀌면 처음부터
 	const lineKey = mode.kind === 'topic' ? `${mode.id}:${line?.media?.[0]?.src ?? mode.at}` : mode.kind;
 	const [slideAt, setSlideAt] = useState({ key: '', at: 0 });
 	const slides = mode.kind === 'menu' || mode.kind === 'ending' ? [] : (line?.media ?? []);
@@ -461,8 +449,11 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		[backToMenu, read, topics, visible]
 	);
 
-	// 선택지가 다섯 개 이상이면 두 열 (위에서 아래로 채운다, ↑·↓가 눈으로 보는 순서와 같게)
-	const rowsOf = (list: Topic[]) => (list.length > 4 ? Math.ceil(list.length / 2) : list.length);
+	// 선택지는 여러 열 (위에서 아래로 채운다, ↑·↓가 눈으로 보는 순서와 같게). 줄이 적으면 열을 줄인다
+	const rowsOf = (list: Topic[]) => {
+		const cols = list.length <= 4 ? 1 : list.length <= 6 ? Math.min(fit.cols, 2) : fit.cols;
+		return Math.ceil(list.length / cols);
+	};
 	const visibleRows = rowsOf(visible);
 	// 상자 높이는 두 선택지 중 줄이 많은 쪽에 맞춘다 (선택지와 대사를 오가도 상자가 튀지 않게)
 	const menuRows = Math.max(rowsOf(topics), chapters.length > 0 ? rowsOf(subList) : 0);
@@ -478,7 +469,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	);
 
 	// 키보드: Space·Enter·Z는 다음(선택지에서는 커서 줄 고르기), ↑·↓·←·→는 커서, 숫자는 선택지,
-	// X·Esc는 장 목록에서 처음 선택지로, 이야기 중 ←·→는 장면의 그림 넘기기. 글 상자 안에서는 안 받는다
+	// X·Esc는 장 목록에서 처음 선택지로, 이야기 중 ←·→는 그림 넘기기. 글 상자 안에서는 안 받는다
 	useEffect(() => {
 		const root = rootRef.current;
 		if (!root) return;
@@ -487,7 +478,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
 			if (target && target !== document.body && !root.contains(target)) return;
 			if (event.metaKey || event.ctrlKey || event.altKey) return;
-			// 장면의 넘기기 단추는 제 일을 한다
+			// 그림 넘기기 단추는 제 일을 한다
 			if (target?.closest('.dl-flip')) return;
 			const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
 			const confirm = key === ' ' || key === 'Enter' || key === 'z';
@@ -538,7 +529,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		mode.kind === 'greet' || mode.kind === 'ending' || (mode.kind === 'topic' && mode.id === LINKS_TOPIC);
 	const meta = [project.period, project.language].filter(Boolean).join(' · ');
 
-	/** 선택지 한 벌: 대화 상자 오른쪽에 겹쳐 여는 테두리 창. 처음 선택지와 장 목록이 같은 자리에 있고 열린 쪽만 보인다 */
+	/** 선택지 한 벌: 대화 상자 안, 질문 줄 아래에 연다. 처음 선택지와 장 목록이 같은 자리에 있고 열린 쪽만 보인다 */
 	const renderMenu = (list: Topic[], heading: string, open: boolean) => {
 		const rows = rowsOf(list);
 		return (
@@ -546,7 +537,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				<ol
 					className="dl-choices"
 					aria-label={heading}
-					data-cols={rows < list.length ? 2 : 1}
+					data-cols={Math.ceil(list.length / rows)}
 					style={{ ['--dl-rows' as string]: rows }}
 				>
 					{list.map((topic, i) => {
@@ -565,7 +556,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 									onFocus={() => setCursor(i)}
 								>
 									<span className="dl-cursor" aria-hidden="true">
-										▶
+										♥
 									</span>
 									<span className="dl-label">{topic.label}</span>
 									<em className="dl-check">{isRead && <span aria-label="읽음">✓</span>}</em>
@@ -578,15 +569,18 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		);
 	};
 
-	/** 그림이 없을 때 장면 가운데 서는 화자: 발판 위의 큰 픽셀 아이콘과 이름 창 (전투 화면의 상대처럼) */
+	/** 그림이 없을 때 무대 가운데 서는 화자: 프로젝트 아이콘 하나 (전투 화면의 상대처럼). sproutfarm은 게임의 픽셀 캐릭터 */
 	const sign = (
-		<div className="dl-sign">
-			<PixelIcon project={project} className="dl-sign-icon" />
-			<span className="dl-sign-name">{project.name}</span>
+		<div className="dl-sign" aria-hidden="true">
+			{project.id === 'sproutfarm' ? (
+				<i className="dl-sprite" />
+			) : (
+				<Favicon project={project} className="dl-sign-icon" />
+			)}
 		</div>
 	);
 
-	/** 장면: 선택지면 커서 주제의 미리보기, 엔딩이면 앨범, 아니면 지금 장의 그림 (없으면 이름 창) */
+	/** 무대: 선택지면 커서 주제의 미리보기, 엔딩이면 앨범, 아니면 지금 장의 그림 (없으면 아이콘) */
 	const renderScene = () => {
 		if (mode.kind === 'menu') {
 			const focus = visible[cursor];
@@ -608,7 +602,9 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 									<img key={slide.src} src={slide.src} alt="" />
 								))}
 							</div>
-							<figcaption className="dl-caption">{`${project.name} 앨범`}</figcaption>
+							<figcaption className="dl-shot-foot">
+								<span className="dl-caption">{`${project.name} 앨범`}</span>
+							</figcaption>
 						</figure>
 					) : cover ? (
 						<Frame slide={{ src: cover }} />
@@ -624,7 +620,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				{slide ? (
 					<Frame slide={slide} caption={slide.caption}>
 						{slides.length > 1 && (
-							<div className="dl-flip">
+							<span className="dl-flip">
 								<button type="button" aria-label="이전 그림" onClick={() => flip(-1)}>
 									◀
 								</button>
@@ -639,11 +635,11 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 								<button type="button" aria-label="다음 그림" onClick={() => flip(1)}>
 									▶
 								</button>
-							</div>
+							</span>
 						)}
 					</Frame>
 				) : (
-					<div aria-hidden="true">{sign}</div>
+					sign
 				)}
 			</div>
 		);
@@ -653,52 +649,15 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		<div
 			className="dl"
 			data-id={project.id}
-			data-theme={theme}
-			data-pixel={pixelSrc && pixelState === 'ok' ? '' : undefined}
 			data-mode={mode.kind}
-			data-fit={fit}
-			style={iconColors}
+			data-fit={fit.height}
+			data-narrow={fit.cols === 1 || undefined}
 			ref={rootRef}
 		>
-			{/* 장면 창: 위 줄은 하늘(벽)과 지금 이야기하는 그림, 아래 줄은 땅. 두 모서리에 상태 창 */}
-			<div className="dl-screen">
-				<Backdrop theme={theme} pixelSrc={pixelState === 'fail' ? undefined : pixelSrc} onPixel={onPixel} />
-				<div className="dl-stage">{renderScene()}</div>
+			{/* 무대: 지금 이야기하는 그림, 없으면 프로젝트 아이콘 */}
+			<div className="dl-stage">{renderScene()}</div>
 
-				{/* 왼쪽 위 상태 창: 이름과 기간, 읽은 주제 막대 */}
-				<div className="dl-status dl-quest">
-					<span className="dl-status-name">
-						<b>{project.name}</b>
-						{meta && <small>{meta}</small>}
-					</span>
-					{countable.length > 0 && (
-						<span className="dl-hp">
-							<em aria-hidden="true">읽음</em>
-							<span className="dl-hp-bar" aria-hidden="true">
-								<i style={{ width: `${(readCount / countable.length) * 100}%` }} />
-							</span>
-							<span className="dl-hp-count">
-								<span className="visually-hidden">읽은 주제 </span>
-								{readCount} / {countable.length}
-							</span>
-						</span>
-					)}
-				</div>
-
-				{/* 오른쪽 아래 숫자 창: 값과 무엇의 숫자인지 */}
-				{project.facts.length > 0 && (
-					<ul className="dl-status dl-stats" aria-label="숫자">
-						{project.facts.slice(0, 3).map((fact) => (
-							<li key={fact.label}>
-								<strong>{fact.value}</strong>
-								<span>{fact.label}</span>
-							</li>
-						))}
-					</ul>
-				)}
-			</div>
-
-			{/* 대화 상자: 왼쪽 초상, 가운데 글. 선택지 차례에는 오른쪽에 선택지 창이 겹쳐 열린다 */}
+			{/* 대화 상자: * 대사. 선택지 차례에는 질문 아래에 선택지가 열린다 */}
 			<section
 				className="dl-box"
 				role="dialog"
@@ -706,7 +665,6 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				aria-live="polite"
 				style={{ ['--dl-menu-rows' as string]: menuRows }}
 			>
-				<Portrait project={project} talking={!done && !inMenu} />
 				<div className="dl-text" onClick={inMenu ? undefined : next}>
 					<div className="dl-cell">
 						{ghosts.map((g, i) => (
@@ -760,6 +718,26 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				{renderMenu(topics, MENU_TITLE, inMenu && !inSub)}
 				{chapters.length > 0 && renderMenu(subList, SUB_TITLE, inSub)}
 			</section>
+
+			{/* 상태 줄: 이름과 기간, 읽은 주제 막대 (HP 막대처럼) */}
+			<div className="dl-status">
+				<span className="dl-status-name">
+					<b>{project.name}</b>
+					{meta && <small>{meta}</small>}
+				</span>
+				{countable.length > 0 && (
+					<span className="dl-hp">
+						<em aria-hidden="true">읽음</em>
+						<span className="dl-hp-bar" aria-hidden="true">
+							<i style={{ width: `${(readCount / countable.length) * 100}%` }} />
+						</span>
+						<span className="dl-hp-count">
+							<span className="visually-hidden">읽은 주제 </span>
+							{readCount} / {countable.length}
+						</span>
+					</span>
+				)}
+			</div>
 
 			<p className="dl-keys">
 				{inMenu

@@ -1,7 +1,7 @@
-// 랜딩 키트의 강조색: 프로젝트 아이콘에서 뽑은 주된 색(dialogue/iconColors.ts의 dominantColors) 하나를 아이콘 색 그대로의 채도로 --lk-accent·--lk-accent-2·--lk-dark-accent로
+// 랜딩 키트의 강조색: 프로젝트 아이콘에서 뽑은 주된 색(iconColors.ts의 dominantColors) 하나를 아이콘 색 그대로의 채도로 --lk-accent·--lk-accent-2·--lk-dark-accent로
 import { useEffect, useState } from 'react';
 import type React from 'react';
-import { dominantColors } from '@/apps/safari/project/dialogue/iconColors';
+import { dominantColors } from '@/apps/safari/project/landing/iconColors';
 
 type Hsl = NonNullable<ReturnType<typeof dominantColors>>[number];
 

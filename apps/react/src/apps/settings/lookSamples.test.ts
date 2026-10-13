@@ -32,7 +32,7 @@ const filled = (value: unknown) =>
 	Array.isArray(value) ? value.length > 0 : typeof value === 'object' ? value !== null : Boolean(value);
 
 describe('모양별 예시 프로젝트', () => {
-	it('직접 짠 페이지를 뺀 모양마다 하나씩 있고, 네 랜딩 템플릿은 같은 예시를 모양만 바꿔 쓴다', () => {
+	it('직접 짠 페이지를 뺀 모양마다 하나씩 있고, 모든 모양이 같은 예시를 모양만 바꿔 쓴다', () => {
 		expect(Object.keys(LOOK_SAMPLES).sort()).toEqual([...LOOKS].sort());
 		expect(LOOKS).toEqual([
 			'product',
@@ -56,12 +56,15 @@ describe('모양별 예시 프로젝트', () => {
 			'devtool',
 			'repo',
 			'playful',
+			'dialogue',
 		] as const) {
 			const { look: _look, ...rest } = LOOK_SAMPLES[look];
 			const { look: _general, ...general } = GENERAL_SAMPLE;
 			expect(rest, look).toEqual(general);
-			expect(LOOK_FIELDS[look]).toEqual(LANDING_FIELDS);
 		}
+		for (const look of LOOKS.filter((look) => look !== 'dialogue')) expect(LOOK_FIELDS[look]).toEqual(LANDING_FIELDS);
+		// RPG 대화창은 폴더 구조만 읽지 않고, 자기만의 칸(배경·장면 그림)이 없다
+		expect(LOOK_FIELDS.dialogue).toEqual(LANDING_FIELDS.filter((field) => field !== 'structure'));
 		// 공통 예시는 새 프로젝트의 기본 모양
 		expect(GENERAL_SAMPLE.look).toBe(blankProject('x').look);
 	});
@@ -103,16 +106,14 @@ describe('모양별 예시 프로젝트', () => {
 			expect(sample.chapters.length).toBeGreaterThanOrEqual(2);
 			expect(sample.chapters.length).toBeLessThanOrEqual(3);
 		}
-		if (look !== 'dialogue') {
-			// 랜딩 템플릿의 예시는 항목 칸(아이콘·그림·화면 여러 장)과 장 칸(숫자·그림)까지 써 본다
-			expect(sample.highlights.every((point) => point.icon)).toBe(true);
-			expect(sample.highlights.some((point) => point.image && point.imageDark)).toBe(true);
-			expect(sample.highlights.some((point) => point.shots?.length)).toBe(true);
-			expect(sample.build.some((point) => point.image)).toBe(true);
-			expect(sample.chapters?.some((chapter) => chapter.facts?.length && chapter.image)).toBe(true);
-			expect(sample.controls?.length).toBeGreaterThanOrEqual(3);
-			expect(sample.credits?.length).toBeGreaterThanOrEqual(2);
-		}
+		// 예시는 항목 칸(아이콘·그림·화면 여러 장)과 장 칸(숫자·그림)까지 써 본다
+		expect(sample.highlights.every((point) => point.icon)).toBe(true);
+		expect(sample.highlights.some((point) => point.image && point.imageDark)).toBe(true);
+		expect(sample.highlights.some((point) => point.shots?.length)).toBe(true);
+		expect(sample.build.some((point) => point.image)).toBe(true);
+		expect(sample.chapters?.some((chapter) => chapter.facts?.length && chapter.image)).toBe(true);
+		expect(sample.controls?.length).toBeGreaterThanOrEqual(3);
+		expect(sample.credits?.length).toBeGreaterThanOrEqual(2);
 		// 기간은 편집 화면의 달력이 읽는 모양이다
 		expect(parsePeriod(sample.period)?.end).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 	});
@@ -140,8 +141,9 @@ describe('예시로 채우기', () => {
 			app: { label: '사이드 앱' },
 			name: LOOK_SAMPLES.dialogue.name,
 			look: 'dialogue',
-			backdrop: { theme: 'farm' },
 		});
+		expect(filledProject).not.toHaveProperty('backdrop');
+		expect(filledProject).not.toHaveProperty('art');
 		// 예시에 없는 필드(화면 모음 폴더)는 지운다
 		expect(filledProject.galleryFolder).toBeUndefined();
 		// 예시 자체는 고치지 않는다 (고친 칸이 다음 예시에 남지 않게)

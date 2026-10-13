@@ -163,7 +163,7 @@ export async function expectOnlyFeatures(page: Page, look: string) {
 /** 사이트 테마를 따른다: 기기가 다크면 다크 바탕 (처음 방문은 기기의 화면 모드를 따른다) */
 export async function expectTheme(page: Page, look: string, colors: { light: string; dark: string }) {
 	const background = (article: Locator) =>
-		article.locator('.tpl').evaluate((node) => getComputedStyle(node).backgroundColor);
+		article.locator('.tpl, .dl').evaluate((node) => getComputedStyle(node).backgroundColor);
 	const light = await openSample(page, look);
 	await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 	expect(await background(light.article)).toBe(colors.light);
