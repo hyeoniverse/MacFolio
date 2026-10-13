@@ -1,0 +1,2592 @@
+/* repo 템플릿 (GitHub 저장소 화면): 사이트 테마를 따른다. 라이트는 GitHub 라이트(흰 바탕, #f6f8fa 면, #d1d9e0 선, #1f2328 글),
+   다크는 GitHub 다크(#0d1117 바탕, #151b23 면, #3d444d 선). 강조색은 링크·주제·첫 단추에만 쓰고, 초록 Code 단추·주황 탭 밑줄·
+   언어 점·커밋 타입 색은 GitHub 화면의 상태 색이다. 터미널 서랍만 테마와 상관없이 어둡다. 빛 번짐·그라데이션 글자·떠 있는 카드 없음 */
+.tpl.tpl-repo {
+	--lk-accent: #0969da;
+	--lk-dark-accent: #4493f8;
+}
+
+/* 아래 상태 줄이 스크롤 상자 맨 아래에 붙도록 페이지가 창 높이를 채운다 */
+.sp[data-look='repo'] {
+	display: flex;
+	flex-direction: column;
+}
+
+.tpl-repo {
+	--rp-bg: #ffffff;
+	--rp-alt: #f6f8fa;
+	--rp-text: #1f2328;
+	--rp-body: #31363c;
+	--rp-muted: #59636e;
+	--rp-line: #d1d9e0;
+	--rp-line-soft: #d1d9e0b3;
+	--rp-hover: #818b981a;
+	--rp-green: #1f883d;
+	--rp-green-hover: #1c8139;
+	--rp-ink: #fd8c73;
+	--rp-folder: #54aeff;
+	--rp-chip: color-mix(in srgb, var(--tpl-accent) 10%, var(--rp-bg));
+	--rp-shadow: 0 1px 0 #1f23280a;
+	--rp-term-bg: #0d1117;
+	--rp-term-text: #e6edf3;
+	--rp-term-muted: #8b949e;
+	--rp-term-green: #3fb950;
+	--rp-term-blue: #79c0ff;
+	--rp-term-red: #ff7b72;
+	--rp-term-yellow: #e3b341;
+	--rp-mono: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, Consolas, -apple-system, BlinkMacSystemFont, sans-serif;
+	--rp-width: 1280px;
+	--rp-pad: 32px;
+	--reveal-from: translateY(14px);
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	background-color: var(--rp-bg);
+	color: var(--rp-text);
+	font-size: 14px;
+	line-height: 1.5;
+	letter-spacing: 0;
+	word-break: keep-all;
+	font-variant-numeric: tabular-nums;
+}
+
+:root[data-theme='dark'] .tpl-repo {
+	--rp-bg: #0d1117;
+	--rp-alt: #151b23;
+	--rp-text: #f0f6fc;
+	--rp-body: #d1d7e0;
+	--rp-muted: #9198a1;
+	--rp-line: #3d444d;
+	--rp-line-soft: #3d444db3;
+	--rp-hover: #656c7633;
+	--rp-green: #238636;
+	--rp-green-hover: #29903b;
+	--rp-shadow: none;
+	--rp-term-bg: #010409;
+}
+
+:where(.tpl-repo) :where(h1, h2, h3, h4) {
+	margin: 0;
+	color: var(--rp-text);
+	font-weight: 600;
+}
+
+:where(.tpl-repo) :where(p, figure, dd, pre, dl, blockquote) {
+	margin: 0;
+}
+
+:where(.tpl-repo) :where(ul, ol) {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+:where(.tpl-repo) :where(a) {
+	color: var(--tpl-accent);
+	text-decoration: none;
+}
+
+:where(.tpl-repo) :where(a:hover) {
+	text-decoration: underline;
+}
+
+:where(.tpl-repo) :where(button) {
+	font: inherit;
+	color: inherit;
+}
+
+.rp-mono {
+	font-family: var(--rp-mono);
+	font-size: 12px;
+}
+
+.rp-muted {
+	color: var(--rp-muted);
+}
+
+.rp-slash {
+	margin: 0 4px;
+	color: var(--rp-muted);
+}
+
+.rp-count {
+	display: inline-grid;
+	place-items: center;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--rp-muted) 18%, transparent);
+	color: var(--rp-text);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1;
+}
+
+.rp-dot {
+	display: inline-block;
+	flex: none;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	box-shadow: inset 0 0 0 1px #1f232826;
+}
+
+.rp-avatar {
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 6px;
+	object-fit: contain;
+	background: var(--rp-bg);
+	box-shadow: 0 0 0 1px var(--rp-line);
+}
+
+.rp-avatar-sm {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+}
+
+.rp-avatar-xs {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+}
+
+.rp-avatar-blank {
+	color: var(--rp-muted);
+	font-size: 11px;
+}
+
+.rp-empty {
+	padding: 32px 24px;
+	color: var(--rp-muted);
+	text-align: center;
+}
+
+.rp-empty i {
+	margin-right: 4px;
+}
+
+/* 커밋 타입 뱃지: 타입 이름으로 늘 같은 색상(hue) */
+.rp-badge {
+	display: inline-block;
+	margin-right: 8px;
+	padding: 0 8px;
+	border-radius: 999px;
+	background: hsl(var(--rp-hue, 212) 70% 93%);
+	color: hsl(var(--rp-hue, 212) 65% 30%);
+	font-family: var(--rp-mono);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 20px;
+	vertical-align: 1px;
+	white-space: nowrap;
+}
+
+:root[data-theme='dark'] .rp-badge {
+	background: hsl(var(--rp-hue, 212) 45% 20%);
+	color: hsl(var(--rp-hue, 212) 80% 76%);
+}
+
+.rp-latest-badge {
+	display: inline-block;
+	padding: 0 7px;
+	border: 1px solid var(--rp-green);
+	border-radius: 999px;
+	color: var(--rp-green);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 18px;
+}
+
+:root[data-theme='dark'] .rp-latest-badge {
+	border-color: #238636;
+	color: #3fb950;
+}
+
+/* ─── 링크 단추 (첫 화면과 마무리): 첫 링크는 강조색 면, 나머지는 테두리 단추 ─── */
+.rp-links {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px;
+}
+
+.rp-links > a,
+.rp-links > button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 40px;
+	padding: 0 18px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-alt);
+	color: var(--rp-text);
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color var(--duration-fast, 0.15s) ease,
+		border-color var(--duration-fast, 0.15s) ease;
+}
+
+.rp-links > a:hover,
+.rp-links > button:hover {
+	border-color: color-mix(in srgb, var(--rp-muted) 60%, var(--rp-line));
+	background: color-mix(in srgb, var(--rp-alt) 70%, var(--rp-line));
+	text-decoration: none;
+}
+
+.rp-links > [data-primary] {
+	border-color: transparent;
+	background: var(--tpl-accent);
+	color: #ffffff;
+}
+
+.rp-links > [data-primary]:hover {
+	border-color: transparent;
+	background: color-mix(in srgb, var(--tpl-accent) 88%, #000000);
+}
+
+/* ─── 첫 화면 ─── */
+.rp-hero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: clamp(56px, 8cqi, 104px) var(--rp-pad) 0;
+	text-align: center;
+	overflow: clip;
+}
+
+.rp-hero-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	max-width: 100%;
+	padding: 4px 14px 4px 4px;
+	border: 1px solid var(--rp-line);
+	border-radius: 999px;
+	color: var(--rp-muted);
+	font-size: 13px;
+}
+
+.rp-hero-badge-tag {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 6px;
+	padding: 2px 10px;
+	border: 1px solid var(--rp-line);
+	border-radius: 999px;
+	color: var(--rp-text);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.rp-hero h1 {
+	max-width: 17em;
+	margin-top: 26px;
+	font-size: clamp(34px, 5.2cqi, 64px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.12;
+	text-wrap: balance;
+}
+
+.rp-hero-lead {
+	max-width: 620px;
+	margin-top: 20px;
+	color: var(--rp-muted);
+	font-size: clamp(16px, 1.5cqi, 19px);
+	line-height: 1.65;
+	text-wrap: pretty;
+}
+
+.rp-hero-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 32px;
+}
+
+/* clone 명령: 터미널 한 줄 모양, 오른쪽 끝의 복사 단추 */
+.rp-clone-line {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	max-width: 100%;
+	height: 40px;
+	padding: 0 6px 0 14px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-alt);
+	font-family: var(--rp-mono);
+	font-size: 12.5px;
+}
+
+.rp-clone-prompt {
+	color: var(--rp-green);
+}
+
+.rp-clone-text {
+	overflow: hidden;
+	font: inherit;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rp-icon-btn {
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border: 0;
+	border-radius: 6px;
+	background: none;
+	color: var(--rp-muted);
+	cursor: pointer;
+}
+
+.rp-icon-btn:hover {
+	background: var(--rp-hover);
+	color: var(--rp-text);
+}
+
+/* 브라우저 창: 똑바로 서서 저장소 머리 띠 위에서 잘린다 */
+.rp-window {
+	width: min(1040px, 100%);
+	margin-top: clamp(44px, 6cqi, 72px);
+	border: 1px solid var(--rp-line);
+	border-bottom: 0;
+	border-radius: 12px 12px 0 0;
+	overflow: hidden;
+	background: var(--rp-bg);
+	box-shadow:
+		0 -1px 0 var(--rp-line-soft),
+		0 8px 24px #1f23280f;
+	text-align: left;
+}
+
+:root[data-theme='dark'] .rp-window {
+	box-shadow: none;
+}
+
+.rp-window-bar {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 40px;
+	border-bottom: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+}
+
+.rp-window-dots {
+	position: absolute;
+	left: 16px;
+	display: flex;
+	gap: 7px;
+}
+
+.rp-window-dots span {
+	width: 11px;
+	height: 11px;
+	border-radius: 50%;
+	background: var(--rp-line);
+}
+
+.rp-window-url {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	max-width: 60%;
+	padding: 3px 16px;
+	overflow: hidden;
+	border-radius: 6px;
+	background: var(--rp-bg);
+	color: var(--rp-muted);
+	font-size: 12px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rp-window-url i {
+	font-size: 10px;
+}
+
+.rp-window-body {
+	height: clamp(240px, 32cqi, 440px);
+	overflow: hidden;
+}
+
+/* 편집기는 README 길이만큼만 (짧으면 빈 창이 남지 않게) */
+.rp-window-body:has(> .rp-editor) {
+	height: auto;
+	max-height: clamp(240px, 32cqi, 440px);
+}
+
+.rp-window-media,
+.rp-window-media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 그림이 없을 때: README.md를 쓰는 편집기 */
+.rp-editor {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background: var(--rp-bg);
+}
+
+.rp-editor-tabs {
+	display: flex;
+	border-bottom: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+}
+
+.rp-editor-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: -1px;
+	padding: 8px 18px;
+	border-right: 1px solid var(--rp-line);
+	border-top: 2px solid var(--rp-ink);
+	background: var(--rp-bg);
+	font-size: 12.5px;
+	font-weight: 500;
+}
+
+.rp-editor-tab i {
+	color: var(--rp-muted);
+}
+
+.rp-editor-code {
+	flex: 1;
+	padding: 14px 0 28px;
+	overflow: hidden;
+	font-family: var(--rp-mono);
+	font-size: 13px;
+	line-height: 22px;
+}
+
+.rp-editor-line {
+	display: flex;
+}
+
+.rp-editor-line[data-kind='h'] .rp-lc {
+	color: var(--tpl-accent);
+	font-weight: 700;
+}
+
+.rp-editor-line[data-kind='m'] .rp-lc {
+	color: var(--rp-muted);
+}
+
+.rp-ln {
+	flex: none;
+	width: 56px;
+	padding-right: 18px;
+	color: var(--rp-muted);
+	text-align: right;
+	opacity: 0.7;
+	user-select: none;
+}
+
+.rp-lc {
+	flex: 1;
+	min-width: 0;
+	padding-right: 18px;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* ─── 저장소 머리와 탭 줄 ─── */
+.rp-chrome {
+	position: relative;
+	z-index: 1;
+	border-top: 1px solid var(--rp-line);
+	border-bottom: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+}
+
+.rp-chrome-inner {
+	max-width: var(--rp-width);
+	margin: 0 auto;
+	padding: 20px var(--rp-pad) 0;
+}
+
+.rp-head-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 24px;
+}
+
+.rp-title {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	min-width: 0;
+	font-size: 20px;
+	line-height: 1.3;
+}
+
+.rp-title .rp-avatar {
+	margin-right: 10px;
+}
+
+.rp-title .rp-repo {
+	font-weight: 600;
+}
+
+.rp-visibility {
+	margin-left: 10px;
+	padding: 0 7px;
+	border: 1px solid var(--rp-line);
+	border-radius: 999px;
+	color: var(--rp-muted);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 18px;
+}
+
+.rp-actions {
+	position: relative;
+}
+
+.rp-code-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	height: 32px;
+	padding: 0 12px;
+	border: 1px solid #1f23281a;
+	border-radius: 6px;
+	background: var(--rp-green);
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.tpl-repo .rp-code-btn {
+	color: #ffffff;
+}
+
+.rp-code-btn:hover {
+	background: var(--rp-green-hover);
+}
+
+.rp-code-btn .fa-caret-down {
+	font-size: 11px;
+}
+
+.rp-pop {
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	z-index: 6;
+	width: min(360px, 88cqi);
+	padding: 14px;
+	border: 1px solid var(--rp-line);
+	border-radius: 10px;
+	background: var(--rp-bg);
+	box-shadow: 0 8px 24px #1f232826;
+	animation: rp-pop-in 0.16s ease-out;
+}
+
+@keyframes rp-pop-in {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+}
+
+.rp-pop-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 10px;
+	font-weight: 600;
+}
+
+.rp-clone {
+	display: flex;
+}
+
+.rp-clone input {
+	flex: 1;
+	min-width: 0;
+	height: 32px;
+	padding: 0 10px;
+	border: 1px solid var(--rp-line);
+	border-right: 0;
+	border-radius: 6px 0 0 6px;
+	background: var(--rp-alt);
+	color: var(--rp-text);
+	font-family: var(--rp-mono);
+	font-size: 12px;
+}
+
+.rp-clone button {
+	width: 34px;
+	border: 1px solid var(--rp-line);
+	border-radius: 0 6px 6px 0;
+	background: var(--rp-alt);
+	color: var(--rp-muted);
+	cursor: pointer;
+}
+
+.rp-clone button:hover {
+	color: var(--tpl-accent);
+}
+
+.rp-pop-note {
+	margin-top: 8px;
+	color: var(--rp-muted);
+	font-size: 12px;
+}
+
+.rp-tabs {
+	position: relative;
+	display: flex;
+	gap: 4px;
+	margin-top: 16px;
+	margin-inline: -10px;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.rp-tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.rp-tabs button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+	padding: 6px 10px;
+	border: 0;
+	border-radius: 6px;
+	background: none;
+	color: var(--rp-text);
+	font-size: 14px;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.rp-tabs button i {
+	color: var(--rp-muted);
+	font-size: 13px;
+}
+
+.rp-tabs button:hover {
+	background: var(--rp-hover);
+}
+
+.rp-tabs button[aria-current='page'] {
+	font-weight: 600;
+}
+
+.rp-tabs button[aria-current='page'] i {
+	color: var(--rp-text);
+}
+
+/* 고른 탭 밑의 주황 밑줄: 자리를 재서 미끄러진다 */
+.rp-ink {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--rp-ink);
+	transition:
+		transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+		width 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ─── 탭 내용 ─── */
+.rp-main {
+	width: 100%;
+	max-width: var(--rp-width);
+	margin: 0 auto;
+	padding: 24px var(--rp-pad) 48px;
+	animation: rp-fade 0.25s ease-out;
+}
+
+@keyframes rp-fade {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+}
+
+/* Code 탭: 왼쪽 파일 상자와 README, 오른쪽 옆 칸 (GitHub 저장소 첫 화면) */
+.rp-home {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 24px;
+	align-items: start;
+}
+
+.rp-home:has(> .rp-side) {
+	grid-template-columns: minmax(0, 1fr) 296px;
+}
+
+.rp-home-main {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	min-width: 0;
+}
+
+/* ─── 파일 상자 ─── */
+.rp-files {
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	overflow: hidden;
+	background: var(--rp-bg);
+}
+
+.rp-latest {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 12px;
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+	font-size: 13px;
+}
+
+.rp-latest-who {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.rp-latest-msg {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	color: var(--rp-muted);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rp-latest-meta {
+	display: inline-flex;
+	gap: 6px;
+	color: var(--rp-muted);
+	font-size: 12px;
+}
+
+.rp-latest-count {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 2px 8px;
+	border: 0;
+	border-radius: 6px;
+	background: none;
+	color: var(--rp-text);
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.rp-latest-count:hover {
+	background: var(--rp-hover);
+}
+
+.rp-latest-count i {
+	color: var(--rp-muted);
+}
+
+.rp-tree-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.rp-list > .rp-tree-list > li,
+.rp-readme-row {
+	border-bottom: 1px solid var(--rp-line-soft);
+}
+
+.rp-node {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	width: 100%;
+	min-height: 40px;
+	padding: 6px 16px 6px calc(16px + var(--depth, 0) * 20px);
+	border: 0;
+	background: none;
+	color: var(--rp-text);
+	font-size: 14px;
+	text-align: left;
+}
+
+button.rp-node {
+	cursor: pointer;
+}
+
+button.rp-node:hover {
+	background: var(--rp-hover);
+}
+
+.rp-readme-row:disabled {
+	cursor: default;
+}
+
+.rp-node-name {
+	display: inline-flex;
+	flex: 0 1 auto;
+	align-items: center;
+	gap: 8px;
+	width: min(320px, 46%);
+	min-width: 0;
+}
+
+.rp-node-label {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rp-node-note {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	color: var(--rp-muted);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rp-chev {
+	flex: none;
+	width: 10px;
+	color: var(--rp-muted);
+	font-size: 9px;
+	transition: transform 0.2s ease-out;
+}
+
+.rp-chev.open {
+	transform: rotate(90deg);
+}
+
+.rp-file-icon {
+	flex: none;
+	width: 16px;
+	color: var(--rp-muted);
+	text-align: center;
+}
+
+.rp-node .fa-folder,
+.rp-node .fa-folder-open {
+	color: var(--rp-folder);
+}
+
+.rp-tree-children {
+	animation: rp-unfold 0.22s ease-out;
+}
+
+.rp-list .rp-tree-children .rp-tree-list > li {
+	border-top: 1px solid var(--rp-line-soft);
+}
+
+@keyframes rp-unfold {
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+}
+
+/* DevCourse의 저장소 탐색기: 경로, 왼쪽 트리, 오른쪽 파일 내용 */
+.rp-crumbs {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	padding: 10px 16px;
+	border-bottom: 1px solid var(--rp-line);
+	font-size: 14px;
+}
+
+.rp-crumb {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--tpl-accent);
+	cursor: pointer;
+}
+
+.rp-crumb:hover {
+	text-decoration: underline;
+}
+
+span.rp-crumb {
+	color: var(--rp-muted);
+	cursor: default;
+}
+
+span.rp-crumb:hover {
+	text-decoration: none;
+}
+
+.rp-crumb.current {
+	color: var(--rp-text);
+	font-weight: 600;
+}
+
+.rp-browser-grid {
+	display: grid;
+	grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
+}
+
+.rp-tree {
+	max-height: 560px;
+	padding: 8px;
+	overflow: auto;
+	border-right: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+}
+
+.rp-tree .rp-node {
+	gap: 6px;
+	min-height: 30px;
+	padding: 4px 8px 4px calc(8px + var(--depth, 0) * 16px);
+	border-radius: 6px;
+	font-size: 13px;
+}
+
+.rp-tree .rp-node-name {
+	width: auto;
+	gap: 6px;
+}
+
+.rp-node.selected {
+	background: color-mix(in srgb, var(--tpl-accent) 12%, transparent);
+	font-weight: 600;
+}
+
+.rp-file {
+	min-width: 0;
+}
+
+.rp-file-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 16px;
+	border-bottom: 1px solid var(--rp-line);
+	color: var(--rp-muted);
+	font-size: 12px;
+}
+
+.rp-file-text {
+	max-height: 560px;
+	overflow: auto;
+	padding: 8px 0;
+	font-family: var(--rp-mono);
+	font-size: 12px;
+	line-height: 20px;
+	tab-size: 4;
+}
+
+.rp-line {
+	display: flex;
+}
+
+.rp-line:hover {
+	background: var(--rp-hover);
+}
+
+.rp-line.heading .rp-lc {
+	color: var(--tpl-accent);
+	font-weight: 700;
+}
+
+.rp-skeleton {
+	padding: 8px 12px;
+}
+
+.rp-skeleton span {
+	display: block;
+	width: var(--w, 60%);
+	height: 12px;
+	margin: 12px 0;
+	border-radius: 4px;
+	background: linear-gradient(90deg, var(--rp-line) 25%, var(--rp-alt) 50%, var(--rp-line) 75%);
+	background-size: 200% 100%;
+	animation: rp-shimmer 1.4s linear infinite;
+	animation-delay: calc(var(--i, 0) * -0.1s);
+}
+
+@keyframes rp-shimmer {
+	to {
+		background-position: -200% 0;
+	}
+}
+
+/* ─── README ─── */
+.rp-readme {
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	scroll-margin-top: 16px;
+}
+
+.rp-readme-bar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 16px;
+	height: 48px;
+	border-bottom: 1px solid var(--rp-line);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.rp-readme-bar i {
+	color: var(--rp-muted);
+}
+
+.rp-md {
+	padding: 32px 40px 40px;
+	color: var(--rp-text);
+	font-size: 16px;
+	line-height: 1.65;
+}
+
+.rp-md-title {
+	padding-bottom: 10px;
+	border-bottom: 1px solid var(--rp-line-soft);
+	font-size: 32px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.25;
+}
+
+.rp-md-logo {
+	display: block;
+	max-width: 260px;
+	max-height: 48px;
+	object-fit: contain;
+}
+
+.rp-md-lead {
+	margin-top: 16px;
+	color: var(--rp-body);
+}
+
+.rp-section {
+	margin-top: 36px;
+}
+
+.rp-md h2 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 18px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--rp-line-soft);
+	font-size: 24px;
+	letter-spacing: -0.01em;
+	line-height: 1.25;
+}
+
+.rp-md h3 {
+	font-size: 17px;
+	line-height: 1.4;
+}
+
+.rp-md p {
+	color: var(--rp-body);
+}
+
+.rp-md-icon {
+	width: 1.3em;
+	margin-right: 8px;
+	color: var(--tpl-accent);
+	font-size: 0.88em;
+	text-align: center;
+}
+
+.rp-md-icon-end {
+	margin: 0 0 0 8px;
+	color: var(--rp-muted);
+}
+
+.rp-md .rp-md-detail {
+	margin-top: 6px;
+	color: var(--rp-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.rp-shot {
+	overflow: hidden;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-alt);
+}
+
+.rp-shot .lk-media,
+.rp-shot img,
+.rp-shot video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+}
+
+.rp-media {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.rp-media > .rp-shot {
+	aspect-ratio: 16 / 10;
+}
+
+.rp-thumbs {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+	gap: 8px;
+}
+
+.rp-thumbs .rp-shot {
+	aspect-ratio: 16 / 10;
+}
+
+/* 숫자: README 첫머리의 지표 칸 (Insights) */
+.rp-pulse {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.rp-pulse > div {
+	display: flex;
+	flex-direction: column-reverse;
+	justify-content: flex-end;
+	gap: 4px;
+	padding: 18px 20px;
+	box-shadow:
+		-1px 0 0 var(--rp-line-soft),
+		0 -1px 0 var(--rp-line-soft);
+}
+
+.rp-pulse dt {
+	color: var(--rp-muted);
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+.rp-figure {
+	color: var(--rp-text);
+	font-size: 30px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.15;
+}
+
+.rp-figure-unit {
+	margin-left: 2px;
+	color: var(--rp-muted);
+	font-size: 0.55em;
+	font-weight: 500;
+	letter-spacing: 0;
+}
+
+/* 기능: 그림 카드 두 줄, 홀수 개면 첫 카드가 한 줄을 다 쓴다 */
+.rp-features {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.rp-feature {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--rp-line);
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--rp-bg);
+	box-shadow: var(--rp-shadow);
+}
+
+.rp-feature[data-wide] {
+	grid-column: 1 / -1;
+}
+
+/* 그림이 있는 카드: 왼쪽 그림, 오른쪽 글 */
+.rp-feature[data-media] {
+	display: grid;
+	grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+}
+
+.rp-feature-media {
+	padding: 20px 0 0 20px;
+	border-right: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+}
+
+.rp-feature-media .rp-shot {
+	background: var(--rp-bg);
+}
+
+.rp-feature-media > .rp-shot {
+	flex: 1;
+	min-height: 220px;
+	aspect-ratio: auto;
+	border-right: 0;
+	border-bottom: 0;
+	border-radius: 6px 0 0 0;
+}
+
+/* 화면 여러 장: 작은 줄을 위에 두어 큰 그림이 카드 아래 끝에 닿게 */
+.rp-feature-media .rp-thumbs {
+	order: -1;
+	grid-template-columns: repeat(auto-fill, minmax(72px, 96px));
+	padding-right: 20px;
+}
+
+.rp-feature-text {
+	padding: 18px 20px 20px;
+}
+
+.rp-feature[data-media] .rp-feature-text {
+	align-self: center;
+	padding: 28px;
+}
+
+.rp-feature-text h3 {
+	display: flex;
+	align-items: baseline;
+	margin-bottom: 6px;
+}
+
+.rp-feature-text > p:not(.rp-md-detail) {
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+/* 화면 모음: README의 스크린숏 표처럼 두 칸 */
+.rp-screens {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px 16px;
+}
+
+.rp-screens[data-count='1'] {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.rp-screens figure .rp-shot {
+	aspect-ratio: 16 / 10;
+}
+
+.rp-screens figcaption {
+	margin-top: 8px;
+	color: var(--rp-muted);
+	font-size: 13px;
+	text-align: center;
+}
+
+/* 쓰는 법: 번호 동그라미를 세로선으로 잇는다 */
+.rp-steps {
+	counter-reset: rp-step;
+}
+
+.rp-steps > li {
+	position: relative;
+	padding: 2px 0 22px 48px;
+	counter-increment: rp-step;
+}
+
+.rp-steps > li::before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border: 1px solid var(--rp-line);
+	border-radius: 50%;
+	background: var(--rp-alt);
+	color: var(--tpl-accent);
+	font-family: var(--rp-mono);
+	font-size: 13px;
+	font-weight: 600;
+	content: counter(rp-step);
+}
+
+.rp-steps > li:not(:last-child)::after {
+	position: absolute;
+	top: 34px;
+	bottom: 4px;
+	left: 15px;
+	width: 1px;
+	background: var(--rp-line);
+	content: '';
+}
+
+.rp-steps > li:last-child {
+	padding-bottom: 0;
+}
+
+.rp-steps h3 {
+	display: flex;
+	align-items: baseline;
+	margin-bottom: 4px;
+	font-size: 16px;
+}
+
+.rp-steps .rp-media {
+	max-width: 520px;
+	margin-top: 12px;
+}
+
+/* 만든 방식: 아이콘 카드, 그림이 있으면 카드 아래에 */
+.rp-build {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.rp-build > li {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 4px 14px;
+	padding: 18px;
+	border: 1px solid var(--rp-line);
+	border-radius: 8px;
+	background: var(--rp-alt);
+}
+
+.rp-build > li[data-wide] {
+	grid-column: 1 / -1;
+}
+
+.rp-build > li[data-media] {
+	grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+	align-items: start;
+}
+
+.rp-build-icon {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border: 1px solid var(--rp-line);
+	border-radius: 8px;
+	background: var(--rp-bg);
+	color: var(--tpl-accent);
+	font-size: 14px;
+}
+
+.rp-build h3 {
+	margin-bottom: 4px;
+	font-size: 15px;
+}
+
+.rp-build-text > p:not(.rp-md-detail) {
+	font-size: 14.5px;
+	line-height: 1.6;
+}
+
+.rp-build .rp-md-detail {
+	font-size: 13px;
+}
+
+.rp-build-media .rp-shot {
+	background: var(--rp-bg);
+}
+
+/* 더 들려줄 이야기: 장마다 인용문, 숫자 표, 항목, 그림 */
+.rp-stories {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.rp-story h3 {
+	margin-bottom: 12px;
+	font-size: 20px;
+}
+
+.rp-quote {
+	margin-bottom: 16px;
+	padding: 2px 16px;
+	border-left: 4px solid var(--rp-line);
+	color: var(--rp-muted);
+	font-size: 15.5px;
+	line-height: 1.7;
+}
+
+.rp-story-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 24px;
+}
+
+.rp-story-body[data-image] {
+	grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+	align-items: start;
+}
+
+.rp-story-body > .rp-shot {
+	aspect-ratio: 4 / 3;
+}
+
+.rp-story-facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+.rp-story-facts > div {
+	display: flex;
+	flex: 1 1 140px;
+	flex-direction: column-reverse;
+	gap: 2px;
+	padding: 12px 16px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+}
+
+.rp-story-facts dt {
+	color: var(--rp-muted);
+	font-size: 12.5px;
+}
+
+.rp-story-facts .rp-figure {
+	font-size: 22px;
+}
+
+.rp-story-points {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.rp-story-points h4 {
+	display: flex;
+	align-items: baseline;
+	font-size: 15px;
+}
+
+.rp-story-points p {
+	font-size: 14.5px;
+}
+
+.rp-story-points .rp-media {
+	margin-top: 10px;
+}
+
+/* 표 (조작법·기술 사양·출처·커밋 규칙): GitHub 마크다운 표 */
+.rp-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 14.5px;
+}
+
+.rp-table th,
+.rp-table td {
+	padding: 8px 14px;
+	border: 1px solid var(--rp-line);
+	text-align: left;
+	vertical-align: top;
+}
+
+.rp-table thead th {
+	background: var(--rp-alt);
+	font-weight: 600;
+}
+
+.rp-table tbody tr:nth-child(2n) {
+	background: color-mix(in srgb, var(--rp-alt) 60%, transparent);
+}
+
+.rp-table tbody th {
+	width: 120px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.rp-kbd {
+	display: inline-block;
+	min-width: 24px;
+	margin-right: 4px;
+	padding: 1px 6px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-alt);
+	box-shadow: inset 0 -1px 0 var(--rp-line);
+	font-family: var(--rp-mono);
+	font-size: 12px;
+	line-height: 20px;
+	text-align: center;
+}
+
+/* 진행 과정: 릴리스 목록 (최근 것이 위, 맨 위에 Latest) */
+.rp-releases {
+	position: relative;
+}
+
+.rp-releases > li {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 4px 16px;
+	padding: 0 0 18px 30px;
+}
+
+.rp-releases > li:last-child {
+	padding-bottom: 0;
+}
+
+.rp-releases > li:not(:last-child)::after {
+	position: absolute;
+	top: 18px;
+	bottom: 0;
+	left: 7px;
+	width: 2px;
+	background: var(--rp-line);
+	content: '';
+}
+
+.rp-release-dot {
+	position: absolute;
+	top: 5px;
+	left: 2px;
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--rp-bg);
+	border-radius: 50%;
+	background: var(--rp-muted);
+	box-shadow: 0 0 0 1px var(--rp-line);
+}
+
+.rp-releases > li[data-latest] .rp-release-dot {
+	background: var(--rp-green);
+	box-shadow: 0 0 0 1px var(--rp-green);
+}
+
+.rp-release-tag {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--rp-muted);
+	font-size: 13px;
+}
+
+.rp-release-tag code {
+	color: var(--rp-text);
+	font-family: var(--rp-mono);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.rp-md .rp-release-label {
+	color: var(--rp-text);
+	font-size: 15.5px;
+}
+
+.rp-release-date {
+	grid-row: 1;
+	grid-column: 2;
+	color: var(--rp-muted);
+	font-family: var(--rp-mono);
+	font-size: 12.5px;
+}
+
+/* 기술 사양: Built with 주제, 표, 폴더 구조 코드 블록 */
+.rp-topics {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.rp-topics li {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 12px;
+	border-radius: 999px;
+	background: var(--rp-chip);
+	color: var(--tpl-accent);
+	font-size: 12.5px;
+	font-weight: 500;
+	line-height: 26px;
+}
+
+.rp-topics-sm li {
+	padding: 0 10px;
+	font-size: 12px;
+	line-height: 22px;
+}
+
+.rp-md .rp-topics + .rp-table,
+.rp-md .rp-topics + .rp-code-block,
+.rp-md .rp-table + .rp-code-block {
+	margin-top: 16px;
+}
+
+.rp-code-block {
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.rp-code-block figcaption {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 14px;
+	border-bottom: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+	color: var(--rp-muted);
+	font-size: 13px;
+}
+
+.rp-code-block pre {
+	padding: 16px;
+	overflow: auto;
+	background: var(--rp-alt);
+	font-family: var(--rp-mono);
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+/* 맡은 일: 속성 줄과 할 일 목록 (모두 끝냄) */
+.rp-role-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 16px;
+}
+
+.rp-role-meta > div {
+	display: grid;
+	align-items: baseline;
+	grid-template-columns: 88px minmax(0, 1fr);
+	gap: 12px;
+}
+
+.rp-role-meta dt {
+	color: var(--rp-muted);
+	font-size: 14px;
+}
+
+.rp-role-meta dd {
+	color: var(--rp-text);
+}
+
+.rp-tasks {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.rp-tasks li {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	color: var(--rp-body);
+}
+
+.rp-task-box {
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 16px;
+	height: 16px;
+	border-radius: 4px;
+	background: var(--tpl-accent);
+	color: #ffffff;
+	font-size: 10px;
+	transform: translateY(2px);
+}
+
+.rp-credit-note {
+	display: block;
+	color: var(--rp-muted);
+	font-size: 13px;
+}
+
+/* ─── 옆 칸: About, Releases, Languages ─── */
+.rp-side {
+	display: flex;
+	flex-direction: column;
+	font-size: 14px;
+}
+
+.rp-side-box {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 20px 0;
+	border-bottom: 1px solid var(--rp-line-soft);
+}
+
+.rp-side-box:first-child {
+	padding-top: 4px;
+}
+
+.rp-side-box:last-child {
+	border-bottom: 0;
+}
+
+.rp-side h2 {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 16px;
+}
+
+.rp-side-desc {
+	color: var(--rp-text);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.rp-side-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: 600;
+	word-break: break-all;
+}
+
+.rp-side-link i {
+	color: var(--rp-muted);
+	font-size: 12px;
+}
+
+.rp-side-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	color: var(--rp-muted);
+}
+
+.rp-side-meta > div {
+	display: flex;
+	gap: 10px;
+}
+
+.rp-side-meta dt {
+	flex: none;
+	width: 16px;
+	text-align: center;
+}
+
+.rp-side-release {
+	display: flex;
+	gap: 10px;
+}
+
+.rp-side-release > i {
+	margin-top: 4px;
+	color: var(--rp-green);
+}
+
+:root[data-theme='dark'] .rp-side-release > i {
+	color: #3fb950;
+}
+
+.rp-side-release > span {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.rp-side-release-name {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.rp-side-release-label {
+	color: var(--rp-body);
+}
+
+.rp-side-release time {
+	color: var(--rp-muted);
+	font-size: 12px;
+}
+
+.rp-lang-bar {
+	display: block;
+	height: 8px;
+	border-radius: 999px;
+}
+
+.rp-lang {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+}
+
+/* ─── Commits 탭 ─── */
+.rp-commits {
+	max-width: 960px;
+}
+
+.rp-commits-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 16px;
+	margin-bottom: 24px;
+}
+
+.rp-branch {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	height: 30px;
+	padding: 0 12px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-alt);
+	font-family: var(--rp-mono);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.rp-branch i {
+	color: var(--rp-muted);
+}
+
+.rp-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.rp-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 28px;
+	padding: 0 12px;
+	border: 1px solid var(--rp-line);
+	border-radius: 999px;
+	background: var(--rp-bg);
+	color: var(--rp-text);
+	font-family: var(--rp-mono);
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.rp-chip:hover {
+	background: var(--rp-alt);
+}
+
+.rp-chip[aria-pressed='true'] {
+	border-color: transparent;
+	background: hsl(var(--rp-hue, 212) 60% 42%);
+	color: #ffffff;
+}
+
+.rp-chip:not([style])[aria-pressed='true'] {
+	background: var(--rp-text);
+	color: var(--rp-bg);
+}
+
+.rp-chip[aria-pressed='true'] .rp-count {
+	background: #ffffff33;
+	color: inherit;
+}
+
+/* 커밋 그래프: 왼쪽 세로선과 점. 점은 순서대로 그려진다 */
+.rp-log {
+	position: relative;
+	padding-left: 32px;
+}
+
+.rp-log::before {
+	content: '';
+	position: absolute;
+	top: 12px;
+	bottom: 12px;
+	left: 9px;
+	width: 2px;
+	background: var(--rp-line);
+	transform-origin: top;
+	animation: rp-grow 0.6s ease-out both;
+}
+
+@keyframes rp-grow {
+	from {
+		transform: scaleY(0);
+	}
+}
+
+.rp-commit {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 10px;
+	animation: rp-slide 0.35s ease-out both;
+	animation-delay: calc(var(--i, 0) * 60ms + 0.1s);
+}
+
+@keyframes rp-slide {
+	from {
+		opacity: 0;
+		transform: translateX(-10px);
+	}
+}
+
+.rp-graph-dot {
+	position: absolute;
+	top: 50%;
+	left: -29px;
+	width: 14px;
+	height: 14px;
+	border: 3px solid var(--rp-bg);
+	border-radius: 50%;
+	background: var(--tpl-accent);
+	box-shadow: 0 0 0 1.5px var(--tpl-accent);
+	transform: translateY(-50%);
+	animation: rp-dot 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	animation-delay: calc(var(--i, 0) * 60ms + 0.15s);
+}
+
+@keyframes rp-dot {
+	from {
+		transform: translateY(-50%) scale(0);
+	}
+}
+
+.rp-commit-card {
+	flex: 1;
+	min-width: 0;
+	padding: 12px 16px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	background: var(--rp-bg);
+}
+
+.rp-commit:hover .rp-commit-card {
+	background: var(--rp-alt);
+}
+
+.rp-commit-msg {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.rp-commit-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin-top: 6px;
+	color: var(--rp-muted);
+	font-size: 12.5px;
+}
+
+.rp-commit-meta strong {
+	color: var(--rp-text);
+	font-weight: 600;
+}
+
+.rp-hash {
+	flex: none;
+	padding: 3px 8px;
+	border: 1px solid var(--rp-line);
+	border-radius: 6px;
+	color: var(--rp-muted);
+	font-family: var(--rp-mono);
+	font-size: 12px;
+}
+
+/* ─── Conventions 탭 ─── */
+.rp-conventions {
+	max-width: 760px;
+}
+
+.rp-lead {
+	margin-bottom: 16px;
+	color: var(--rp-muted);
+	font-size: 15px;
+}
+
+.rp-lead code {
+	padding: 2px 6px;
+	border-radius: 6px;
+	background: var(--rp-alt);
+	color: var(--rp-text);
+	font-family: var(--rp-mono);
+	font-size: 13px;
+}
+
+.rp-conventions .rp-table td:first-child {
+	width: 140px;
+}
+
+/* ─── 마무리 ─── */
+.rp-closing {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: calc(100% - 2 * var(--rp-pad));
+	max-width: calc(var(--rp-width) - 2 * var(--rp-pad));
+	margin: 8px auto 64px;
+	padding: 56px 32px;
+	border: 1px solid var(--rp-line);
+	border-radius: 12px;
+	background: var(--rp-alt);
+	text-align: center;
+}
+
+.rp-closing-icon {
+	display: grid;
+	place-items: center;
+	width: 52px;
+	height: 52px;
+	margin-bottom: 20px;
+	border: 1px solid var(--rp-line);
+	border-radius: 12px;
+	background: var(--rp-bg);
+	color: var(--rp-text);
+	font-size: 26px;
+}
+
+.rp-closing h2 {
+	font-size: clamp(24px, 3cqi, 32px);
+	letter-spacing: -0.02em;
+	line-height: 1.25;
+}
+
+.rp-closing-lead {
+	margin-top: 8px;
+	color: var(--rp-muted);
+	font-size: 16px;
+}
+
+.rp-closing .rp-links {
+	margin-top: 24px;
+}
+
+/* ─── 상태 줄과 터미널 서랍 (스크롤 상자 맨 아래에 붙어 있다) ─── */
+.rp-footer {
+	position: sticky;
+	bottom: 0;
+	z-index: 5;
+	margin-top: auto;
+}
+
+.rp-statusbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 30px;
+	padding: 0 12px;
+	border-top: 1px solid var(--rp-line);
+	background: var(--rp-alt);
+	color: var(--rp-muted);
+	font-size: 12px;
+}
+
+.rp-term-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	height: 100%;
+	padding: 0 10px;
+	border: 0;
+	background: none;
+	color: var(--rp-text);
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.rp-term-btn:hover {
+	background: var(--rp-hover);
+}
+
+.rp-term-chev {
+	font-size: 10px;
+	transition: transform 0.25s ease-out;
+}
+
+.rp-term-btn[aria-expanded='true'] .rp-term-chev {
+	transform: rotate(180deg);
+}
+
+.rp-status-right {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+/* 서랍: 아래에서 올라온다. 터미널이라 테마와 상관없이 어둡다 */
+.rp-drawer {
+	display: flex;
+	flex-direction: column;
+	height: min(340px, 55vh);
+	border-top: 1px solid #ffffff1f;
+	background: var(--rp-term-bg);
+	color: var(--rp-term-text);
+	font-family: var(--rp-mono);
+	font-size: 12.5px;
+	line-height: 1.6;
+	animation: rp-rise 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.rp-drawer[hidden] {
+	display: none;
+}
+
+@keyframes rp-rise {
+	from {
+		transform: translateY(100%);
+	}
+}
+
+.rp-drawer-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 12px;
+	border-bottom: 1px solid #ffffff14;
+	color: var(--rp-term-muted);
+}
+
+.rp-drawer-x {
+	width: 24px;
+	height: 24px;
+	border: 0;
+	border-radius: 4px;
+	background: none;
+	color: var(--rp-term-muted);
+	cursor: pointer;
+}
+
+.tpl-repo .rp-drawer-x {
+	color: var(--rp-term-muted);
+}
+
+.rp-drawer-x:hover {
+	background: #ffffff1a;
+	color: var(--rp-term-text);
+}
+
+.rp-drawer-body {
+	flex: 1;
+	padding: 10px 14px;
+	overflow: auto;
+}
+
+.rp-t-muted {
+	margin-bottom: 8px;
+	color: var(--rp-term-muted);
+}
+
+.rp-t-entry {
+	margin-bottom: 10px;
+}
+
+.rp-t-prompt,
+.rp-t-form {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0 6px;
+}
+
+.rp-t-path {
+	color: var(--rp-term-blue);
+}
+
+.rp-t-dollar {
+	color: var(--rp-term-green);
+}
+
+.rp-t-form input {
+	flex: 1;
+	min-width: 120px;
+	border: 0;
+	background: none;
+	color: var(--rp-term-text);
+	font: inherit;
+	outline: none;
+	caret-color: var(--rp-term-green);
+}
+
+/* 결과 안의 한글 문장은 본문 글꼴로 */
+.rp-t-out,
+.rp-t-help dd,
+.rp-t-ls p,
+.rp-t-types li > span:last-child,
+.rp-t-list,
+.rp-t-pairs dd,
+.rp-t-log li > span:last-child {
+	font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+.rp-t-out {
+	padding: 6px 0 2px 12px;
+	border-left: 2px solid #ffffff1a;
+}
+
+.rp-t-h {
+	color: var(--rp-term-yellow);
+	font-family: var(--rp-mono);
+	font-weight: 700;
+}
+
+.rp-t-strong {
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.rp-t-err {
+	color: var(--rp-term-red);
+}
+
+.rp-t-pre {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.rp-t-help div,
+.rp-t-pairs div {
+	display: grid;
+	grid-template-columns: 150px minmax(0, 1fr);
+	gap: 12px;
+	padding: 1px 0;
+}
+
+.rp-t-help button,
+.rp-t-history button,
+.rp-t-files button {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--rp-term-blue);
+	text-align: left;
+	cursor: pointer;
+}
+
+.tpl-repo .rp-t-help button,
+.tpl-repo .rp-t-history button,
+.tpl-repo .rp-t-files button {
+	color: var(--rp-term-blue);
+}
+
+.rp-t-help button:hover,
+.rp-t-history button:hover,
+.rp-t-files button:hover {
+	text-decoration: underline;
+}
+
+.rp-t-help dd,
+.rp-t-pairs dd {
+	color: var(--rp-term-muted);
+}
+
+.rp-t-pairs dt {
+	color: var(--rp-term-green);
+}
+
+.rp-t-files {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px 18px;
+}
+
+.tpl-repo .rp-t-files button.dir {
+	color: #54aeff;
+	font-weight: 700;
+}
+
+.rp-t-files button i {
+	margin-right: 2px;
+	color: var(--rp-term-muted);
+}
+
+.rp-t-list li::before {
+	content: '✓ ';
+	color: var(--rp-term-green);
+}
+
+.rp-t-log li {
+	display: grid;
+	grid-template-columns: 70px 100px minmax(0, 1fr);
+	gap: 10px;
+}
+
+.rp-t-hash {
+	color: var(--rp-term-yellow);
+}
+
+.rp-t-date {
+	color: var(--rp-term-green);
+}
+
+.rp-t-dir {
+	color: #54aeff;
+	font-weight: 700;
+}
+
+.rp-t-ls p {
+	margin: 0 0 6px 16px;
+	color: var(--rp-term-muted);
+}
+
+.rp-t-types li {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 2px 0;
+}
+
+.rp-t-key {
+	color: var(--rp-term-blue);
+}
+
+.rp-t-str {
+	color: #a5d6ff;
+}
+
+.rp-t-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 16px;
+	font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+.tpl-repo .rp-t-links a,
+.tpl-repo .rp-t-links button {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--rp-term-blue);
+	cursor: pointer;
+}
+
+.rp-t-chips {
+	display: flex;
+	gap: 6px;
+	padding: 8px 12px;
+	overflow-x: auto;
+	border-top: 1px solid #ffffff14;
+	scrollbar-width: none;
+}
+
+.rp-t-chips button {
+	flex: none;
+	padding: 2px 10px;
+	border: 1px solid #ffffff26;
+	border-radius: 999px;
+	background: #ffffff0a;
+	color: var(--rp-term-text);
+	font-family: var(--rp-mono);
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.tpl-repo .rp-t-chips button {
+	color: var(--rp-term-text);
+}
+
+.rp-t-chips button:hover {
+	background: #ffffff1f;
+}
+
+/* ─── 좁은 창 ─── */
+@container (max-width: 960px) {
+	.rp-home:has(> .rp-side) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* 옆 칸은 README 아래로 내려 나란히 */
+	.rp-side {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 0 24px;
+		order: 2;
+	}
+
+	.rp-side-box,
+	.rp-side-box:first-child {
+		padding: 16px 0;
+		border-bottom: 0;
+	}
+
+	.rp-md {
+		padding: 28px 28px 32px;
+	}
+}
+
+@container (max-width: 600px) {
+	.tpl-repo {
+		--rp-pad: 16px;
+	}
+
+	.rp-hero h1 {
+		font-size: 32px;
+	}
+
+	.rp-clone-line {
+		width: 100%;
+	}
+
+	.rp-window-body {
+		height: 220px;
+	}
+
+	.rp-window-url {
+		max-width: 64%;
+	}
+
+	.rp-title {
+		font-size: 17px;
+	}
+
+	.rp-latest-meta {
+		display: none;
+	}
+
+	.rp-node-name {
+		width: auto;
+		flex: 1;
+	}
+
+	.rp-node-note {
+		display: none;
+	}
+
+	.rp-browser-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.rp-tree {
+		max-height: 240px;
+		border-right: 0;
+		border-bottom: 1px solid var(--rp-line);
+	}
+
+	.rp-md {
+		padding: 20px 16px 24px;
+		font-size: 15px;
+	}
+
+	.rp-md-title {
+		font-size: 26px;
+	}
+
+	.rp-md h2 {
+		font-size: 21px;
+	}
+
+	.rp-features,
+	.rp-feature[data-media],
+	.rp-screens,
+	.rp-build,
+	.rp-build > li[data-media],
+	.rp-story-body[data-image] {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.rp-feature-media {
+		padding: 16px 16px 0;
+		border-right: 0;
+		border-bottom: 1px solid var(--rp-line);
+	}
+
+	.rp-feature-media > .rp-shot {
+		border-right: 1px solid var(--rp-line);
+		border-radius: 6px 6px 0 0;
+	}
+
+	.rp-feature[data-media] .rp-feature-text {
+		padding: 18px 20px 20px;
+	}
+
+	.rp-build > li {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+
+	.rp-build-media {
+		grid-column: 1 / -1;
+	}
+
+	.rp-releases > li {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.rp-release-date {
+		grid-row: auto;
+		grid-column: auto;
+	}
+
+	.rp-table tbody th {
+		width: auto;
+		white-space: normal;
+	}
+
+	.rp-commit {
+		flex-wrap: wrap;
+	}
+
+	.rp-hash {
+		display: none;
+	}
+
+	.rp-closing {
+		padding: 40px 20px;
+	}
+
+	.rp-t-help div,
+	.rp-t-pairs div {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
+	}
+
+	.rp-t-log li {
+		grid-template-columns: 70px minmax(0, 1fr);
+	}
+
+	.rp-t-log li > span:last-child {
+		grid-column: 1 / -1;
+	}
+}
+
+/* ─── 움직임 줄이기: 모두 즉시 ─── */
+@media (prefers-reduced-motion: reduce) {
+	.tpl-repo *,
+	.tpl-repo *::before,
+	.tpl-repo *::after {
+		animation: none !important;
+		transition: none !important;
+	}
+}
