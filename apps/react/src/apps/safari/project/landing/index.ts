@@ -5,5 +5,6 @@ export * from './content';
 export { useLanding } from './useLanding';
 export { LandingLinks } from './LandingLinks';
 export { Media, PointArt, PointVisual } from './Media';
+export { DeployList, FaIcon, MemberAvatar, TeamList, TroubleList } from './Extras';
 export { LandingSections, type SectionRenderer, type SectionRenderers } from './Sections';
 export { accentVars, useLandingAccent } from './accent';

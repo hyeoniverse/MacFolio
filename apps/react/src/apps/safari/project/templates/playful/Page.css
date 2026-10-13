@@ -1786,3 +1786,49 @@
 		transform: none;
 	}
 }
+
+/* ─── 트러블슈팅·팀원·배포 결과물: 굵은 검은 테두리와 납작한 그림자 카드 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.tpl-playful {
+	--lk-x-ink: var(--pf-ink);
+	--lk-x-body: var(--pf-body);
+	--lk-x-muted: var(--pf-muted);
+	--lk-x-line: var(--pf-line);
+	--lk-x-card: var(--pf-card);
+	--lk-x-radius: 24px;
+	--lk-x-gap: 24px;
+	--lk-x-pad: 28px;
+}
+
+.pf-trouble,
+.pf-member,
+.pf-deploy {
+	border-width: 2px;
+	box-shadow: var(--pf-drop);
+}
+
+.pf-trouble-icon,
+.pf-deploy-icon {
+	border: 2px solid var(--pf-line);
+	border-radius: 50%;
+	background-color: var(--tpl-accent);
+	color: #ffffff;
+}
+
+.pf-trouble-step {
+	border-top-width: 3px;
+}
+
+.pf-member .lk-avatar {
+	border: 2px solid var(--pf-line);
+}
+
+.pf-member[data-me] {
+	background-color: var(--pf-soft);
+	box-shadow: var(--pf-drop);
+}
+
+.pf-member-me {
+	border: 2px solid var(--pf-line);
+	color: #ffffff;
+	transform: rotate(-4deg);
+}

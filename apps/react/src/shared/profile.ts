@@ -33,9 +33,12 @@ export type {
 	Project,
 	ProjectAppInfo,
 	ProjectChapter,
+	ProjectDeployment,
 	ProjectFact,
 	ProjectLook,
+	ProjectMember,
 	ProjectPoint,
+	ProjectTrouble,
 	ThemeSwatch,
 } from '@macfolio/desktop-core/site';
 const projectImage = (id: string, file: string) => `/imgs/projects/${id}/${file}`;

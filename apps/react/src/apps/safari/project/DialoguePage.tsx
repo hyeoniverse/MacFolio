@@ -136,6 +136,23 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 	const topics: Topic[] = [
 		{ id: 'highlights', label: '주요 기능 알려줘', lines: points(project.highlights) },
 		{ id: 'build', label: '어떻게 만들었어?', lines: points(project.build) },
+		{
+			id: 'troubleshooting',
+			label: '어려웠던 문제는?',
+			// 한 건을 문제 → 원인 → 해결 → 결과 차례로 한 장씩 (그림은 그 건의 장면)
+			lines: (project.troubleshooting ?? []).flatMap((item) => {
+				const media = item.image ? [{ src: item.image }] : undefined;
+				const steps: [string, string | undefined][] = [
+					['문제', item.problem],
+					['원인', item.cause],
+					['해결', item.solution],
+					['결과', item.result],
+				];
+				return steps
+					.filter((step): step is [string, string] => Boolean(step[1]?.trim()))
+					.map(([label, body]) => ({ title: `${item.title} · ${label}`, body, media }));
+			}),
+		},
 		{ id: 'usage', label: '쓰는 법', lines: points(project.usage ?? []) },
 		{
 			id: 'facts',
@@ -163,6 +180,15 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 			],
 		},
 		{
+			id: 'team',
+			label: '누구랑 만들었어?',
+			// 사진은 띄우지 않는다: 사진이 없는 사람에게 앞사람의 사진이 이어 붙지 않게
+			lines: (project.team ?? []).map((member) => ({
+				title: member.me ? `${member.name} (나)` : member.name,
+				body: member.role,
+			})),
+		},
+		{
 			id: 'contributions',
 			label: '맡은 일',
 			lines: [
@@ -172,6 +198,15 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 					body: c,
 				})),
 			],
+		},
+		{
+			id: 'deployments',
+			label: '어디서 볼 수 있어?',
+			lines: (project.deployments ?? []).map((item) => ({
+				title: item.platform ? `${item.label} · ${item.platform}` : item.label,
+				body: [item.note, item.url?.replace(/^https?:\/\//, '')].filter(Boolean).join(' ') || '링크는 아직 없어요.',
+				media: item.image ? [{ src: item.image }] : undefined,
+			})),
 		},
 		{
 			id: 'credits',

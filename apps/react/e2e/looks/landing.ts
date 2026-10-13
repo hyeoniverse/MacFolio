@@ -1,4 +1,4 @@
-// 네 랜딩 템플릿(product·friendly·paper·bento) 시험이 함께 쓰는 것. 템플릿은 같은 내용(landingOf)을 그리므로
+// 랜딩 템플릿 시험이 함께 쓰는 것. 템플릿은 같은 내용(landingOf)을 그리므로
 // 같은 예시(편집 화면의 '예시로 채우기'와 같은 것)로 모든 구역이 보이는지, 빈 프로젝트도 빈 구역 없이 그려지는지, 링크와 테마를 본다
 import type { Locator, Page } from '@playwright/test';
 import { appWindow, expect } from '../fixtures';
@@ -41,6 +41,9 @@ const emptyOverride = (look: string, extra: Record<string, unknown> = {}) => ({
 	structure: null,
 	logo: null,
 	icon: null,
+	troubleshooting: null,
+	team: null,
+	deployments: null,
 	...extra,
 });
 
@@ -75,7 +78,11 @@ export function sampleRegionTexts(): [string, string[]][] {
 		['주요 기능', sample.highlights.flatMap((point) => [point.title, point.body])],
 		['화면 모음', (sample.gallery ?? []).map((shot) => shot.caption)],
 		['쓰는 법', (sample.usage ?? []).map((point) => point.title)],
-		['만든 방식', sample.build.map((point) => point.title)],
+		['구현 방법', sample.build.map((point) => point.title)],
+		[
+			'트러블슈팅',
+			(sample.troubleshooting ?? []).flatMap((item) => [item.title, item.problem, item.solution, item.result ?? '']),
+		],
 		[
 			'더 들려줄 이야기',
 			(sample.chapters ?? []).flatMap((chapter) => [
@@ -85,9 +92,11 @@ export function sampleRegionTexts(): [string, string[]][] {
 			]),
 		],
 		['조작법', (sample.controls ?? []).map((control) => control.label)],
-		['진행 과정', (sample.timeline ?? []).map((entry) => entry.label)],
 		['기술 사양', [...sample.specs.map((spec) => spec.value), ...sample.stack, 'progress/']],
-		['맡은 일', sample.contributions],
+		['팀원', (sample.team ?? []).flatMap((member) => [member.name, member.role])],
+		['내 역할', sample.contributions],
+		['진행 과정', (sample.timeline ?? []).map((entry) => entry.label)],
+		['배포 결과물', (sample.deployments ?? []).flatMap((item) => [item.label, item.platform ?? ''])],
 		['출처', (sample.credits ?? []).map((credit) => credit.name)],
 	];
 }

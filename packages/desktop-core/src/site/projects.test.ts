@@ -206,6 +206,97 @@ describe('parseProjects', () => {
 		});
 	});
 
+	it('트러블슈팅·팀원·배포 결과물을 받고, 글자는 다듬고 모르는 필드는 버린다', () => {
+		const parsed = parseProjects({
+			items: [
+				{
+					id: 'x',
+					override: {
+						troubleshooting: [
+							{
+								title: ' 느린 첫 화면 ',
+								problem: '첫 화면이 4초 걸렸다',
+								cause: '번들이 컸다',
+								solution: '나눠 불렀다',
+								result: '1.2초',
+								image: '/imgs/a.png',
+								icon: 'fa-bug',
+								secret: 1,
+							},
+							{ title: '그림 없음', problem: 'p', solution: 's' },
+						],
+						team: [
+							{ name: '김', role: '프론트엔드', url: 'https://github.com/kim', avatar: '/imgs/k.png', me: true, x: 1 },
+							{ name: '이', role: '디자인' },
+						],
+						deployments: [
+							{ label: '웹', url: 'https://a.vercel.app', platform: 'Vercel', note: '운영', image: '/imgs/w.png' },
+							{ label: '설계 문서' },
+						],
+					},
+				},
+			],
+		});
+		expect(parsed).toEqual({
+			value: {
+				items: [
+					{
+						id: 'x',
+						override: {
+							troubleshooting: [
+								{
+									title: '느린 첫 화면',
+									problem: '첫 화면이 4초 걸렸다',
+									cause: '번들이 컸다',
+									solution: '나눠 불렀다',
+									result: '1.2초',
+									image: '/imgs/a.png',
+									icon: 'fa-bug',
+								},
+								{ title: '그림 없음', problem: 'p', solution: 's' },
+							],
+							team: [
+								{ name: '김', role: '프론트엔드', url: 'https://github.com/kim', avatar: '/imgs/k.png', me: true },
+								{ name: '이', role: '디자인' },
+							],
+							deployments: [
+								{ label: '웹', url: 'https://a.vercel.app', platform: 'Vercel', note: '운영', image: '/imgs/w.png' },
+								{ label: '설계 문서' },
+							],
+						},
+					},
+				],
+			},
+		});
+	});
+
+	it('트러블슈팅·팀원·배포 결과물의 주소·필수·개수·모양을 본다', () => {
+		const parsed = parseProjects({
+			items: [
+				{
+					id: 'x',
+					override: {
+						troubleshooting: [{ title: 't', problem: 'p', icon: 'bug' }],
+						team: [{ name: 'n', role: 'r', url: 'javascript:alert(1)', avatar: 'javascript:x', me: 'yes' }],
+						deployments: Array.from({ length: 13 }, () => ({ label: 'l' })),
+					},
+				},
+				{ id: 'y', override: { deployments: [{ label: 'l', url: 'javascript:alert(1)' }] } },
+				{ id: 'z', override: { team: Array.from({ length: 21 }, () => ({ name: 'n', role: 'r' })) } },
+			],
+		});
+		expect('errors' in parsed && parsed.errors).toEqual([
+			'프로젝트 x.troubleshooting[0].solution: 꼭 있어야 합니다.',
+			'프로젝트 x.troubleshooting[0].icon: 모양이 맞지 않습니다.',
+			'프로젝트 x.team[0].url: https:// 주소여야 합니다.',
+			'프로젝트 x.team[0].avatar: 사이트 안 경로(/imgs/…)나 https:// 주소여야 합니다.',
+			'프로젝트 x.team[0].me: true나 false여야 합니다.',
+			'프로젝트 x.deployments: 12개까지입니다.',
+			'프로젝트 y.deployments[0].url: https:// 주소여야 합니다.',
+			'프로젝트 z.team: 20개까지입니다.',
+		]);
+	});
+
 	it('너무 길거나 많으면 거절하고, 틀린 값이 DB에 있으면 읽을 때 null', () => {
 		expect(parseProjects({ items: Array.from({ length: 41 }, (_, i) => ({ id: `p${i}` })) })).toEqual({
 			errors: ['프로젝트는 40개까지입니다.'],
