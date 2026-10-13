@@ -59,7 +59,7 @@ export async function openEmpty(page: Page, look: string, extra?: Record<string,
 }
 
 /** 이 구역 안에 이 글들이 모두 있다 (스크롤해 들어오게 한 뒤) */
-async function expectRegion(article: Locator, label: string, texts: string[]) {
+export async function expectRegion(article: Locator, label: string, texts: string[]) {
 	const region = article.getByRole('region', { name: label, exact: true });
 	await region.scrollIntoViewIfNeeded();
 	await expect(region).toBeVisible();
@@ -67,12 +67,49 @@ async function expectRegion(article: Locator, label: string, texts: string[]) {
 	return region;
 }
 
-/** 예시의 모든 구역과 칸이 페이지에 있다 */
-export async function expectSampleRendered(article: Locator) {
+/** 예시의 구역마다 보여야 하는 글 (구역 이름 → 글), 구역 차례대로 */
+export function sampleRegionTexts(): [string, string[]][] {
+	const sample = GENERAL_SAMPLE;
+	return [
+		['한눈에 보는 숫자', sample.facts.flatMap((fact) => [fact.value, fact.label])],
+		['주요 기능', sample.highlights.flatMap((point) => [point.title, point.body])],
+		['화면 모음', (sample.gallery ?? []).map((shot) => shot.caption)],
+		['쓰는 법', (sample.usage ?? []).map((point) => point.title)],
+		['만든 방식', sample.build.map((point) => point.title)],
+		[
+			'더 들려줄 이야기',
+			(sample.chapters ?? []).flatMap((chapter) => [
+				chapter.title,
+				chapter.lead ?? '',
+				...chapter.points.map((p) => p.title),
+			]),
+		],
+		['조작법', (sample.controls ?? []).map((control) => control.label)],
+		['진행 과정', (sample.timeline ?? []).map((entry) => entry.label)],
+		['기술 사양', [...sample.specs.map((spec) => spec.value), ...sample.stack, 'progress/']],
+		['맡은 일', sample.contributions],
+		['출처', (sample.credits ?? []).map((credit) => credit.name)],
+	];
+}
+
+/** 주요 기능 구역이 항목의 그림과 화면 여러 장도 그린다 */
+export async function expectFeatureMedia(features: Locator) {
+	for (const point of GENERAL_SAMPLE.highlights)
+		for (const src of [point.image, ...(point.shots ?? []).map((shot) => shot.src)].filter(Boolean))
+			await expect(features.locator(`img[src="${src}"]`).first()).toBeAttached();
+}
+
+/** 첫 화면: 한 줄이 큰 제목, 소개 글, 대표 그림 */
+export async function expectSampleHero(article: Locator) {
 	const sample = GENERAL_SAMPLE;
 	await expect(article.getByRole('heading', { level: 1 })).toHaveText(sample.tagline);
 	await expect(article).toContainText(sample.description);
 	await expect(article.locator(`img[src="${sample.image}"]`).first()).toBeAttached();
+}
+
+/** 예시의 모든 구역과 칸이 페이지에 있다 */
+export async function expectSampleRendered(article: Locator) {
+	await expectSampleHero(article);
 
 	// 구역은 정해진 차례대로, 빠짐없이
 	const labels = await article
@@ -80,61 +117,10 @@ export async function expectSampleRendered(article: Locator) {
 		.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')));
 	expect(labels).toEqual(SECTION_ORDER.map((kind) => SECTION_LABELS[kind]));
 
-	await expectRegion(
-		article,
-		'한눈에 보는 숫자',
-		sample.facts.flatMap((fact) => [fact.value, fact.label])
-	);
-	const features = await expectRegion(
-		article,
-		'주요 기능',
-		sample.highlights.flatMap((point) => [point.title, point.body])
-	);
-	// 항목의 그림과 화면 여러 장도 그린다
-	for (const point of sample.highlights)
-		for (const src of [point.image, ...(point.shots ?? []).map((shot) => shot.src)].filter(Boolean))
-			await expect(features.locator(`img[src="${src}"]`).first()).toBeAttached();
-	await expectRegion(
-		article,
-		'화면 모음',
-		(sample.gallery ?? []).map((shot) => shot.caption)
-	);
-	await expectRegion(
-		article,
-		'쓰는 법',
-		(sample.usage ?? []).map((point) => point.title)
-	);
-	await expectRegion(
-		article,
-		'만든 방식',
-		sample.build.map((point) => point.title)
-	);
-	await expectRegion(
-		article,
-		'더 들려줄 이야기',
-		(sample.chapters ?? []).flatMap((chapter) => [
-			chapter.title,
-			chapter.lead ?? '',
-			...chapter.points.map((p) => p.title),
-		])
-	);
-	await expectRegion(
-		article,
-		'조작법',
-		(sample.controls ?? []).map((control) => control.label)
-	);
-	await expectRegion(
-		article,
-		'진행 과정',
-		(sample.timeline ?? []).map((entry) => entry.label)
-	);
-	await expectRegion(article, '기술 사양', [...sample.specs.map((spec) => spec.value), ...sample.stack, 'progress/']);
-	await expectRegion(article, '맡은 일', sample.contributions);
-	await expectRegion(
-		article,
-		'출처',
-		(sample.credits ?? []).map((credit) => credit.name)
-	);
+	for (const [label, texts] of sampleRegionTexts()) {
+		const region = await expectRegion(article, label, texts);
+		if (label === '주요 기능') await expectFeatureMedia(region);
+	}
 }
 
 /** 링크: 첫 화면과 마무리에 같은 묶음. GitHub·데모는 새 탭, 여기서 열기는 이 사이트의 앱 창 */

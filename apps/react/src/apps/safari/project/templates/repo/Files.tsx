@@ -1,9 +1,10 @@
 // repo 템플릿의 파일 상자 (GitHub 저장소 첫 화면의 파일 목록): 맨 위에 마지막 커밋 줄, 아래에 파일 트리.
 // DevCourse처럼 저장소 트리(repo.json)가 있으면 왼쪽 트리와 오른쪽 파일 내용으로 나뉜 탐색기, 아니면 폴더 구조로 만든 트리를 펼쳐 본다.
-// 폴더를 누르면 자식이 미끄러져 나오고, 파일을 누르면(탐색기) 내용이 줄 번호와 함께 보인다
+// 폴더를 누르면 자식이 미끄러져 나오고, 파일을 누르면(탐색기) 내용이 줄 번호와 함께 보인다.
+// 폴더 구조 트리에는 README.md 줄과 docs/ 폴더(구역마다의 문서)가 더해지고, 문서 파일을 누르면 아래 README 상자가 그 문서를 연다
 import React, { useState } from 'react';
 import { entries, isDir, nodeAt, type RepoDir, type RepoNode } from '@/apps/safari/project/terminalRepo';
-import { fileIcon, type Commit, type StructureRepo } from './repo';
+import { fileIcon, mergeTree, type Commit, type StructureRepo } from './repo';
 import { TypeBadge } from './bits';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
@@ -15,6 +16,8 @@ type TreeState = {
 	toggle: (path: string[]) => void;
 	/** 없으면 파일은 고를 수 없다 (내용이 없는 폴더 구조 트리) */
 	select?: (path: string[]) => void;
+	/** 있으면 이 경로의 파일만 고를 수 있다 (폴더 구조 트리의 문서 파일) */
+	selectable?: (key: string) => boolean;
 	notes?: Record<string, string>;
 };
 
@@ -33,6 +36,7 @@ const TreeList: React.FC<{ dir: RepoDir; path: string[]; state: TreeState; depth
 			const open = state.expanded.has(key);
 			const selected = state.selected !== null && keyOf(state.selected) === key;
 			const note = state.notes?.[key];
+			const pickable = !entry.dir && Boolean(state.select) && (state.selectable?.(key) ?? true);
 			const inner = (
 				<>
 					<span className="rp-node-name">
@@ -53,9 +57,9 @@ const TreeList: React.FC<{ dir: RepoDir; path: string[]; state: TreeState; depth
 					key={entry.name}
 					role="treeitem"
 					aria-expanded={entry.dir ? open : undefined}
-					aria-selected={state.select ? selected : undefined}
+					aria-selected={pickable || (entry.dir && state.select && !state.selectable) ? selected : undefined}
 				>
-					{entry.dir || state.select ? (
+					{entry.dir || pickable ? (
 						<button
 							type="button"
 							className={`rp-node${selected ? ' selected' : ''}`}
@@ -197,9 +201,9 @@ export const Files: React.FC<{
 	latest: Commit;
 	count: number;
 	onCommits?: () => void;
-	/** README.md 줄을 누르면 (README 상자로 내려간다) */
-	onReadme?: () => void;
-}> = ({ source, owner, icon, name, href, latest, count, onCommits, onReadme }) => {
+	/** 폴더 구조 트리에 더하는 문서: 파일 트리(README.md와 docs/), 지금 열린 문서의 경로, 문서를 여는 함수 (README 상자로 내려간다) */
+	docs?: { tree: RepoDir; notes: Record<string, string>; current: string[]; open: (path: string[]) => void };
+}> = ({ source, owner, icon, name, href, latest, count, onCommits, docs }) => {
 	const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
 	const [picked, setPicked] = useState<string[] | null>(null);
 	const toggle = (path: string[]) =>
@@ -262,7 +266,15 @@ export const Files: React.FC<{
 		);
 	}
 
-	const dir: RepoDir = { ...(source.structure?.dir ?? {}) };
+	// 맨 위 README.md는 따로 한 줄로 두고, docs/ 폴더만 트리에 더한다
+	const { 'README.md': readme, ...docFiles } = docs?.tree ?? {};
+	const dir = mergeTree(source.structure?.dir ?? {}, docFiles);
+	const docKeys = new Set(
+		Object.entries(docFiles).flatMap(([folder, node]) =>
+			isDir(node) ? Object.keys(node).map((file) => `${folder}/${file}`) : [folder]
+		)
+	);
+	const current = docs ? keyOf(docs.current) : '';
 	return (
 		<div className="rp-files">
 			{head}
@@ -271,12 +283,24 @@ export const Files: React.FC<{
 					<TreeList
 						dir={dir}
 						path={[]}
-						state={{ expanded, selected: null, toggle, notes: source.structure?.notes }}
+						state={{
+							expanded,
+							selected: docs?.current ?? null,
+							toggle,
+							notes: { ...source.structure?.notes, ...docs?.notes },
+							select: docs?.open,
+							selectable: (key) => docKeys.has(key),
+						}}
 						depth={0}
 						label="파일"
 					/>
 				)}
-				<button type="button" className="rp-node rp-readme-row" onClick={onReadme} disabled={!onReadme}>
+				<button
+					type="button"
+					className={`rp-node rp-readme-row${current === 'README.md' ? ' selected' : ''}`}
+					onClick={() => docs?.open(['README.md'])}
+					disabled={readme === undefined}
+				>
 					<span className="rp-node-name">
 						<span className="rp-chev" aria-hidden="true" />
 						<i className="rp-file-icon fa-regular fa-file-lines" aria-hidden="true" />
