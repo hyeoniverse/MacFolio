@@ -1685,6 +1685,56 @@
 				]
 			}
 		},
+		"/github/languages/{owner}/{name}": {
+			"get": {
+				"operationId": "GithubController_repoLanguages",
+				"parameters": [
+					{
+						"name": "owner",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "name",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "프로젝트 저장소의 언어 비율 (많은 순서, 비율의 합은 100). 작은 언어는 Other로 묶는다. 서버가 6시간 들고 있다가 새로 받는다",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": [
+										{
+											"name": "TypeScript",
+											"bytes": 72000,
+											"percent": 72
+										}
+									]
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "이 사이트의 프로젝트가 가리키는 저장소가 아니거나 GitHub에 없다"
+					},
+					"502": {
+						"description": "GitHub에 닿지 못했고 들고 있는 값도 없다"
+					}
+				},
+				"tags": [
+					"github"
+				]
+			}
+		},
 		"/github/candidates": {
 			"get": {
 				"operationId": "GithubController_candidates",

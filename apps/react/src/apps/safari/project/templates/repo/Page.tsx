@@ -2,7 +2,7 @@
 // 탭 줄(Code · Commits · Conventions). Code 탭은 저장소 첫 화면이다: 가지 줄(main, 가지·태그 수, 초록 Code 단추와 clone 창),
 // 마지막 커밋 줄과 파일 트리(DevCourse는 실제 저장소 탐색기, 다른 프로젝트는 폴더 구조와 README.md·docs/),
 // README 상자(위의 문서 탭으로 README.md와 docs/*.md를 바꿔 연다. 구역마다 문서 하나, 한 번에 한 문서만 보인다. README 첫머리가 h1),
-// 옆 칸(About·랜딩 링크·Releases·Languages). Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입으로 거른다. Conventions 탭은 커밋 규칙 표.
+// 옆 칸(About·랜딩 링크·Releases·Languages: API가 GitHub에서 받은 실제 언어 비율, 받지 못하면 주 언어 하나). Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입으로 거른다. Conventions 탭은 커밋 규칙 표.
 // 맨 아래 마무리 줄과 상태 줄의 터미널 단추(누르면 서랍이 올라온다). Safari 창의 탭(role=tab)과 섞이지 않게 저장소 탭과 문서 탭은 nav와 단추(aria-current)다.
 // 계약은 templates/README.md
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -31,7 +31,7 @@ import {
 	docsOf,
 	docsTree,
 	fakeHash,
-	LANGUAGE_COLORS,
+	languageColor,
 	mergeTree,
 	repoOf,
 	structureRepo,
@@ -40,6 +40,7 @@ import {
 	type Commit,
 	type RepoDoc,
 } from './repo';
+import { percentText, useRepoLanguages, type RepoLanguage } from './languages';
 import './Page.css';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
@@ -247,8 +248,15 @@ const Tabs: React.FC<{ tabs: Tab[]; active: TabId; onChange: (id: TabId) => void
  * GitHub 저장소 첫 화면의 옆 칸: About(한 줄 소개, 랜딩 링크 단추, 데모 주소, 주제, 프로젝트·역할·기간), 마지막 릴리스, 언어.
  * 랜딩 링크(여기서 열기·새 탭·GitHub)는 여기와 맨 아래 마무리 줄에 같은 묶음으로 있다
  */
-const Side: React.FC<{ landing: Landing; language?: string; demo?: string }> = ({ landing, language, demo }) => {
+const Side: React.FC<{ landing: Landing; language?: string; languages: RepoLanguage[] | null; demo?: string }> = ({
+	landing,
+	language,
+	languages,
+	demo,
+}) => {
 	const { hero } = landing;
+	// GitHub에서 받은 언어 비율. 받는 동안이나 받지 못하면 프로젝트의 주 언어 하나 (100%)
+	const shares = languages ?? (language ? [{ name: language, bytes: 0, percent: 100 }] : []);
 	const tech = find(landing, 'tech');
 	const timeline = find(landing, 'timeline');
 	const topics = tech?.stack ?? [];
@@ -261,7 +269,7 @@ const Side: React.FC<{ landing: Landing; language?: string; demo?: string }> = (
 	const description = hero.headline !== hero.name ? hero.headline : hero.subhead;
 	const about = Boolean(description || hero.links.length || demo || topics.length || meta.length);
 	const last = timeline?.entries[timeline.entries.length - 1];
-	if (!about && !last && !language) return null;
+	if (!about && !last && !shares.length) return null;
 	return (
 		<div className="rp-side">
 			{about && (
@@ -315,23 +323,27 @@ const Side: React.FC<{ landing: Landing; language?: string; demo?: string }> = (
 					</p>
 				</div>
 			)}
-			{language && (
+			{shares.length > 0 && (
 				<div className="rp-side-box">
 					<h2>Languages</h2>
-					<span
-						className="rp-lang-bar"
-						style={{ background: LANGUAGE_COLORS[language] ?? 'var(--tpl-accent)' }}
-						aria-hidden="true"
-					/>
-					<p className="rp-lang">
-						<i
-							className="rp-dot"
-							style={{ background: LANGUAGE_COLORS[language] ?? 'var(--tpl-accent)' }}
-							aria-hidden="true"
-						/>
-						<strong>{language}</strong>
-						<span className="rp-muted">100%</span>
-					</p>
+					<span className="rp-lang-bar" aria-hidden="true">
+						{shares.map((item) => (
+							<span
+								key={item.name}
+								style={{ flexGrow: item.percent, background: languageColor(item.name) }}
+								title={`${item.name} ${percentText(item.percent)}`}
+							/>
+						))}
+					</span>
+					<ul className="rp-langs">
+						{shares.map((item) => (
+							<li key={item.name} className="rp-lang">
+								<i className="rp-dot" style={{ background: languageColor(item.name) }} aria-hidden="true" />
+								<strong>{item.name}</strong>
+								<span className="rp-muted">{percentText(item.percent)}</span>
+							</li>
+						))}
+					</ul>
 				</div>
 			)}
 		</div>
@@ -545,6 +557,7 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 	const clone = href ? cloneUrl(href) : undefined;
 	const { owner, name } = repoOf(href, hero.name);
 	const language = project.language?.trim() || undefined;
+	const languages = useRepoLanguages(href);
 	const conventions = useMemo(() => project.conventions ?? [], [project.conventions]);
 	const timeline = find(landing, 'timeline');
 	const tech = find(landing, 'tech');
@@ -644,7 +657,7 @@ const RepoPage: React.FC<{ project: Project }> = ({ project }) => {
 							/>
 							{doc && <DocBox ref={readme} landing={landing} docs={docs} active={doc} name={name} onOpen={openDoc} />}
 						</div>
-						<Side landing={landing} language={language} demo={demo} />
+						<Side landing={landing} language={language} languages={languages} demo={demo} />
 					</div>
 				)}
 				{active === 'commits' && <CommitsTab commits={commits} owner={owner ?? name} icon={hero.icon} />}
