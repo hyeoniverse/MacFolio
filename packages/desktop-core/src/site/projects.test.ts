@@ -188,30 +188,21 @@ describe('parseProjects', () => {
 			});
 	});
 
-	it('배경: 테마는 정해진 것만, 그림은 사이트 안 경로나 https(허용한 출처)만', () => {
+	it('없어진 대화창 배경(backdrop)을 저장해 둔 값도 받고, 그 필드만 버린다', () => {
 		expect(
-			parseProjects({ items: [{ id: 'x', override: { backdrop: { theme: 'sea', image: '/imgs/bg.png', extra: 1 } } }] })
-		).toEqual({ value: { items: [{ id: 'x', override: { backdrop: { theme: 'sea', image: '/imgs/bg.png' } } }] } });
+			parseProjects({
+				items: [{ id: 'x', override: { name: 'X', backdrop: { theme: 'sea', image: '/imgs/bg.png' } } }],
+			})
+		).toEqual({ value: { items: [{ id: 'x', override: { name: 'X' } }] } });
+		// 예전 규칙에 맞지 않던 값이나 null도 오류 없이 버린다
 		expect(
-			parseProjects(
-				{ items: [{ id: 'x', override: { backdrop: { image: 'http://localhost:3000/files/a' } } }] },
-				{ allowOrigins: ['http://localhost:3000'] }
-			)
-		).toEqual({ value: { items: [{ id: 'x', override: { backdrop: { image: 'http://localhost:3000/files/a' } } }] } });
-		for (const theme of ['forest', 'snow', 'cafe', 'classroom', 'lab', 'arcade', 'rooftop', 'desert'])
-			expect(parseProjects({ items: [{ id: 'x', override: { backdrop: { theme } } }] })).toEqual({
-				value: { items: [{ id: 'x', override: { backdrop: { theme } } }] },
-			});
-		expect(parseProjects({ items: [{ id: 'x', override: { backdrop: { theme: 'jungle' } } }] })).toEqual({
-			errors: [
-				'프로젝트 x.backdrop.theme: auto, farm, town, office, library, space, sea, forest, snow, cafe, classroom, lab, arcade, rooftop, desert 가운데 하나여야 합니다.',
-			],
+			parseProjects({ items: [{ id: 'x', override: { backdrop: { theme: 'jungle', image: 'javascript:1' } } }] })
+		).toEqual({ value: { items: [{ id: 'x' }] } });
+		expect(parseProjects({ items: [{ id: 'x', override: { backdrop: null, art: '/imgs/a.png' } }] })).toEqual({
+			value: { items: [{ id: 'x', override: { art: '/imgs/a.png' } }] },
 		});
-		expect(parseProjects({ items: [{ id: 'x', override: { backdrop: { image: 'javascript:alert(1)' } } }] })).toEqual({
-			errors: ['프로젝트 x.backdrop.image: 사이트 안 경로(/imgs/…)나 https:// 주소여야 합니다.'],
-		});
-		expect(parseProjects({ items: [{ id: 'x', override: { backdrop: null } }] })).toEqual({
-			value: { items: [{ id: 'x', override: { backdrop: null } }] },
+		expect(readProjects({ items: [{ id: 'x', override: { backdrop: { theme: 'farm' } } }] })).toEqual({
+			items: [{ id: 'x' }],
 		});
 	});
 

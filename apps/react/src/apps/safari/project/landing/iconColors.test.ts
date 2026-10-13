@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dominantColors, paletteVars } from './iconColors';
+import { dominantColors } from './iconColors';
 
 /** 색 [r, g, b]를 n칸씩 이어 붙인 RGBA 픽셀 */
 const pixels = (...runs: [number[], number][]) =>
@@ -23,11 +23,5 @@ describe('dominantColors', () => {
 
 	it('흑백 그림이면 null (지금 색 그대로)', () => {
 		expect(dominantColors(pixels([[255, 255, 255], 10], [[0, 0, 0], 10]))).toBeNull();
-	});
-});
-
-describe('paletteVars', () => {
-	it('강조색은 크림색 글자가 읽히게 어둡게', () => {
-		expect(paletteVars([{ h: 200, s: 0.9, l: 0.8 }])['--dl-accent']).toBe('hsl(200 72% 40%)');
 	});
 });

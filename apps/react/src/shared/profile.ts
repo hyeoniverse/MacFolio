@@ -710,8 +710,6 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 			windowSize: { width: 1080, height: 700 },
 		},
 		image: projectImage('hyeoniverse', 'screenshot.jpg'),
-		// dialogue 모양의 배경 장면
-		backdrop: { theme: 'space' },
 	},
 	{
 		id: 'macfolio',
@@ -787,8 +785,6 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 		url: 'https://github.com/hyeoniverse/MacFolio',
 		icon: projectImage('macfolio', 'icon.png'),
 		image: projectImage('macfolio', 'screenshot.jpg'),
-		// dialogue 모양의 배경 장면
-		backdrop: { theme: 'space' },
 	},
 	{
 		id: 'newpick',
@@ -944,8 +940,6 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 		},
 		logo: projectImage('newpick', 'logo.svg'),
 		image: projectImage('newpick', 'screenshot.jpg'),
-		// dialogue 모양의 배경 장면
-		backdrop: { theme: 'town' },
 	},
 	{
 		id: 'qru',
@@ -1104,8 +1098,6 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 			windowSize: { width: 1080, height: 700 },
 		},
 		image: projectImage('qru', 'screenshot.jpg'),
-		// dialogue 모양의 배경 장면
-		backdrop: { theme: 'office' },
 	},
 	{
 		id: 'whattodo',
@@ -1263,8 +1255,6 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 			windowSize: { width: 1080, height: 700 },
 		},
 		image: projectImage('whattodo', 'screenshot.jpg'),
-		// dialogue 모양의 배경 장면
-		backdrop: { theme: 'office' },
 	},
 	{
 		id: 'sproutfarm',
@@ -1377,8 +1367,6 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 			{ src: projectImage('sproutfarm', 'shots/result.jpg'), caption: '결과와 랭킹' },
 		],
 		image: projectImage('sproutfarm', 'screenshot.jpg'),
-		// dialogue 모양의 배경 장면
-		backdrop: { theme: 'farm' },
 	},
 	{
 		id: 'devcourse',
@@ -1475,8 +1463,6 @@ export const DEFAULT_PROJECTS: readonly Project[] = [
 		language: 'JavaScript',
 		url: 'https://github.com/hyeoniverse/DevCourse-FullStack',
 		image: projectImage('devcourse', 'screenshot.jpg'),
-		// dialogue 모양의 배경 장면
-		backdrop: { theme: 'library' },
 	},
 ];
 
