@@ -4,14 +4,15 @@ import { clipboard } from '@milkdown/kit/plugin/clipboard';
 import { history } from '@milkdown/kit/plugin/history';
 import { listener, listenerCtx } from '@milkdown/kit/plugin/listener';
 import { commonmark } from '@milkdown/kit/preset/commonmark';
-import { gfm } from '@milkdown/kit/preset/gfm';
+import { gfm, remarkGFMPlugin, strikethroughInputRule, strikethroughSchema } from '@milkdown/kit/preset/gfm';
+import { markRule } from '@milkdown/kit/prose';
 import type { Node } from '@milkdown/kit/prose/model';
 import { Plugin, TextSelection } from '@milkdown/kit/prose/state';
 import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/view';
 import { isInTable } from '@milkdown/kit/prose/tables';
 import { trailing } from '@milkdown/kit/plugin/trailing';
 import { cursor, dropIndicatorConfig } from '@milkdown/kit/plugin/cursor';
-import { $prose, $remark } from '@milkdown/kit/utils';
+import { $inputRule, $prose, $remark } from '@milkdown/kit/utils';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
@@ -27,6 +28,7 @@ import { editorControls, EMPTY_FORMAT, type Box } from './editorControls';
 import { formatStateOf, runFormat } from './formatCommands';
 import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
 
+import { GFM_OPTIONS } from '../markdownPlugins';
 interface Props {
 	/** 처음 본문 (Markdown) */
 	markdown: string;
@@ -238,6 +240,14 @@ const filesOf = (data: DataTransfer | null) => (data && !data.getData('text/plai
 const cjkFriendly = $remark('cjkFriendly', () => remarkCjkFriendly);
 
 /** 휴대폰에서 커서 줄을 맞출 때 비울 자리 (Memo.css: 위 단추 줄 = 상태 표시줄 + 58px, 아래 서식 막대 = 96px) */
+/**
+ * 취소선은 `~~`만 (읽기 화면의 GFM_OPTIONS와 같게). 기본 규칙은 `~` 하나도 받아서 220~440px 같은 범위가 지워진 글이 된다
+ */
+const strikethroughDoubleTilde = $inputRule((ctx) =>
+	markRule(/(?<![\w:/])~~(.+?)~~(?!\w|\/)$/, strikethroughSchema.type(ctx))
+);
+const gfmWithoutSingleTilde = gfm.filter((plugin) => plugin !== strikethroughInputRule);
+
 const PHONE_CARET_MARGIN = { top: 120, bottom: 110 };
 
 /**
@@ -270,6 +280,7 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 				.config((ctx) => {
 					ctx.set(rootCtx, root);
 					// 저장소 글의 상대 경로 이미지도 편집기 안에서 보이게 한다
+					ctx.set(remarkGFMPlugin.options.key, GFM_OPTIONS);
 					ctx.set(defaultValueCtx, toEditorMarkdown(markdown, CONTENT_IMAGES));
 					// 끌어다 놓을 자리 표시: 굵게 (색은 Memo.css의 .milkdown-drop-indicator)
 					ctx.update(dropIndicatorConfig.key, (config) => ({ ...config, width: 3 }));
@@ -313,7 +324,8 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 					});
 				})
 				.use(commonmark)
-				.use(gfm)
+				.use(gfmWithoutSingleTilde)
+				.use(strikethroughDoubleTilde)
 				.use(cjkFriendly)
 				.use(history)
 				.use(clipboard)
