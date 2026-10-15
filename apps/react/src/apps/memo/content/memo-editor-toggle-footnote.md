@@ -1,0 +1,97 @@
+---
+title: 메모 편집기 손보기 — 토글 목록·각주, ~ 하나짜리 취소선, 사라지는 빈 폴더
+date: 2026-10-15
+category: 개발기/MacFolio/프론트엔드
+summary: 메모 편집기의 서식 메뉴에 토글 목록과 각주 넣기를 더했다. <details> 표기는 편집기에서 날것의 HTML로 보였는데, 이제 토글로 읽고 같은 표기로 저장한다. 220~440px가 취소선이 되던 것, 마지막 글이 떠나면 폴더가 사라지던 것, 긴 요약에 막혀 게시가 안 되던 것도 고쳤다.
+---
+
+메모 앱을 쓰다가 걸린 것 네 가지를 한 번에 손봤다. 셋은 버그였고, 하나는 편집기에 없던 기능이다.
+
+## 요약이 200자를 넘는 글은 게시할 수 없었다
+
+글을 고치면 "요약은 200자까지 입력할 수 있습니다."가 뜨고 저장도 게시도 되지 않았다. 글쓰기 규칙(`validateDraft`)은 요약을 200자까지 받는데, 저장소 글 18개의 머리말 요약이 203~352자였다. 편집 화면에는 요약 칸이 없으니 고칠 방법도 없었다.
+
+요약을 200자 안으로 줄이고, 저장소 글이 모두 글쓰기 규칙을 지키는지 시험으로 확인한다. 개발기 글을 쓸 때 요약을 길게 써도 이제 커밋 전에 걸린다.
+
+```ts
+it.each(Object.entries(files))('%s는 글쓰기 규칙에 맞다', (path, source) => {
+	const post = toPost(path as PostSlug, source);
+	const { title, date, category, summary, body } = post!;
+	expect(validateDraft({ title, date, category, summary, body })).toEqual({});
+});
+```
+
+경고 문구가 날짜·폴더 줄과 겹치던 것도 같이 고쳤다. 저장 상태는 날짜 줄 오른쪽 끝에 `position: absolute`로 띄워 두는데, 편집 칸이 640px보다 넓으면 줄을 내리지 않았다. 경고 문구는 길어서 가운데의 날짜까지 덮었다. 경고가 있을 때는 너비와 관계없이 따로 한 줄로 내리고, 그래도 길면 줄을 바꾼다.
+
+```css
+.memo-writer-meta:has(.memo-writer-status.problem) .memo-writer-actions {
+	position: static;
+	order: -1;
+	width: 100%;
+}
+```
+
+## 220~440px가 취소선이 됐다
+
+메모 칸 너비 글에 적은 "사이드바 180~360px, 목록 220~440px"가 읽기 화면에서 `360px, 목록 220` 부분이 지워진 글로 보였다. remark-gfm은 기본으로 `~` 하나짜리 취소선도 받는다. 한 줄에 `~`가 두 번 나오면 그 사이가 취소선이 된다.
+
+범위를 적을 때 `~`를 쓰는 일은 많고, 취소선은 `~~`로 쓰면 된다. 읽기 화면은 `singleTilde: false`로 바꾸고, 편집기(Milkdown)도 같은 옵션으로 읽는다. 편집기의 입력 규칙은 `~` 하나도 받는 정규식이라, 그 규칙을 빼고 `~~`만 받는 규칙을 넣었다.
+
+```ts
+export const GFM_OPTIONS = { singleTilde: false } as const;
+
+const strikethroughDoubleTilde = $inputRule((ctx) =>
+	markRule(/(?<![\w:/])~~(.+?)~~(?!\w|\/)$/, strikethroughSchema.type(ctx))
+);
+const gfmWithoutSingleTilde = gfm.filter((plugin) => plugin !== strikethroughInputRule);
+```
+
+편집기는 저장할 때 `~`를 `\~`로 적는다. 읽기 화면에는 `~`로 보이지만 목록 미리 보기에는 `\`가 남아서, 미리 보기를 만드는 `excerpt`에서 걷어 낸다.
+
+## 마지막 글이 떠나면 폴더가 사라졌다
+
+폴더 목록은 관리자가 만든 폴더(`organization.folders`)와 글의 폴더(`category`)를 합쳐 그린다. 저장소 글에서 생긴 폴더는 만든 폴더 목록에 없으니, 마지막 글을 옮기거나 지우면 폴더도 목록에서 빠졌다.
+
+글이 폴더를 떠나는 곳은 네 군데다. 끌어 놓기, 여러 개 골라 옮기기, 지우기, 편집 화면의 폴더 바꾸기. 네 곳 모두에서 떠난 폴더를 만든 폴더로 남긴다.
+
+```ts
+export function keepFolder(organization: Organization, path: string): Organization {
+	if (!path || organization.folders.includes(path as FolderPath)) return organization;
+	return { ...organization, folders: [...organization.folders, asPath(path)] };
+}
+```
+
+남긴 폴더는 만든 폴더와 같아서, 비어 있으면 지울 수 있다.
+
+## 편집기에 토글 목록과 각주
+
+읽기 화면은 이미 `<details>`·`<summary>` 표기를 접기 블록으로, `[^1]`을 각주로 그렸다. 편집기에는 둘을 넣을 방법이 없었고, `<details>` 줄은 날것의 HTML 글자로 보였다.
+
+![<details> 표기를 토글 노드로 읽고 되돌리는 과정](./images/memo-details-roundtrip.svg '읽을 때는 HTML 줄 사이를 토글 노드로 감싸고, 저장할 때는 HTML 줄 두 개와 내용 블록으로 되돌린다')
+
+토글은 ProseMirror 노드 두 개로 만들었다. `details_block`(속성 `open`, `id`)은 요약 한 줄과 블록 여러 개를 담고, `details_summary`는 서식 없는 글자만 담는다. 저장할 때는 여는 줄과 닫는 줄을 HTML 노드로 내용 블록과 같은 층에 나란히 쓴다. 그래서 읽기 화면이 읽던 표기 그대로다.
+
+```ts
+runner: (state, node) => {
+	state.addNode('html', undefined, detailsOpenHtml({ summary, open: node.attrs.open, id: node.attrs.id }));
+	state.next(Fragment.from(blocks));
+	state.addNode('html', undefined, '</details>');
+},
+```
+
+처음에는 저장소 글을 열면 `<details>` 줄이 통째로 사라졌다. Milkdown은 맨 위에 놓인 HTML을 문단으로 감싸 두는데, 토글을 찾는 함수가 그 문단 안까지 내려가 문단 안에 토글을 만들었다. 문단은 글줄만 담을 수 있으니 "Cannot create node for paragraph"가 나고 그 줄이 버려졌다. 문단은 들여다보지 않고, 문단 하나가 HTML 한 줄일 때만 여는·닫는 줄로 보게 고쳤다.
+
+쓰는 방법은 이렇다.
+
+- 서식 메뉴(가가)의 **토글 목록**: 지금 줄이 토글의 제목이 되고 커서는 접히는 내용으로 간다. 제목 앞의 › 를 누르면 접고 펼친다. 접은 상태도 저장된다(`<details open>`이 빠진다).
+- 제목에서 Enter를 누르면 내용 첫 줄로 내려가고, 제목 맨 앞에서 Backspace를 누르거나 메뉴를 한 번 더 누르면 토글이 풀린다. 한글을 조합하는 중의 Enter는 건드리지 않는다.
+- **각주 넣기**: 커서 자리에 아직 쓰지 않은 가장 작은 번호로 `[^n]`을 넣고, 글 끝에 각주 내용을 만들어 그리로 간다. 읽기 화면은 GFM 규칙대로 본문에 나온 차례로 번호를 다시 매긴다.
+
+각주 내용을 글 끝에 붙일 때 한 번 걸렸다. 편집기는 글 끝에 늘 빈 문단을 하나 남겨 두는데, 그 뒤에 각주를 붙이면 빈 문단이 글 가운데에 남아 `<br />`로 저장됐다. 그 빈 문단 앞에 넣는다.
+
+## 시험
+
+- 단위: 모든 저장소 글이 글쓰기 규칙에 맞는지, `~` 하나는 글자 그대로이고 `~~`만 취소선인지, 떠난 폴더가 남고 비면 지울 수 있는지, 미리 보기에 토글·각주 표기가 남지 않는지
+- 화면 E2E: 메뉴로 토글을 넣고 접고 펼치고 푸는 것과 그때마다 저장되는 Markdown, 각주 번호와 각주 내용, `<details id>`와 각주가 있는 저장소 글을 고쳐도 표기가 그대로인지, 마지막 글을 지워도 폴더가 남는지
+
+#메모앱 #트러블슈팅 #프론트엔드
