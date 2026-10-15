@@ -6,6 +6,7 @@ import {
 	EMPTY_TAG_SELECTION,
 	isTagSelectionActive,
 	moveFolder,
+	keepFolder,
 	movePost,
 	onlyTag,
 	type Post,
@@ -245,7 +246,7 @@ const Memo: React.FC = () => {
 	const pickedPosts = picked ? organized.filter((post) => picked.has(post.slug)) : [];
 	/** 고른 메모들을 한 폴더로 옮기고 고르기를 끝낸다 */
 	const movePicked = (path: FolderPath) => {
-		edit((prev) => pickedPosts.reduce((next, post) => movePost(next, post.slug, path), prev));
+		edit((prev) => pickedPosts.reduce((next, post) => movePost(next, post.slug, path, post.category), prev));
 		setPicked(null);
 	};
 
@@ -806,6 +807,11 @@ const Memo: React.FC = () => {
 										}
 										onDiscarded={draft.onDiscarded}
 										onDraftChange={newDraft !== null ? draft.setPreview : undefined}
+										onLeaveFolder={
+											newDraft === null && selected
+												? () => edit((prev) => keepFolder(prev, selected.category))
+												: undefined
+										}
 										folders={folderPaths}
 										defaultFolder={newFolder}
 										onSaved={draft.onSaved}
