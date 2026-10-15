@@ -186,6 +186,72 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect.poll(() => api.posts[0]?.body).toContain('![예시 그림](https://images.test/a.png "예시 캡션")');
 	});
 
+	test('가가 메뉴로 토글 목록과 각주를 넣고, <details>·[^1] 표기로 저장한다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('토글 시험');
+		await page.keyboard.press('Enter');
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
+		await page.keyboard.type('목차');
+
+		// 지금 줄이 토글의 제목이 되고, 커서는 접히는 내용으로 간다
+		const panel = page.getByRole('dialog', { name: '서식' });
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await panel.getByRole('menuitemradio', { name: '토글 목록' }).click();
+		await page.keyboard.type('접힌 내용');
+		const details = memo.locator('.ProseMirror .memo-details');
+		await expect(details.locator('.memo-details-summary')).toHaveText('목차');
+		await expect
+			.poll(() => api.posts[0]?.body)
+			.toBe('<details open>\n<summary>목차</summary>\n\n접힌 내용\n\n</details>\n');
+
+		// › 를 누르면 접히고, 접힌 상태로 저장된다
+		await details.locator('.memo-details-summary').click({ position: { x: 6, y: 10 } });
+		await expect(details).toHaveAttribute('data-open', 'false');
+		await expect(details.getByText('접힌 내용')).toBeHidden();
+		await expect.poll(() => api.posts[0]?.body).toContain('<details>\n<summary>목차</summary>');
+
+		// 제목 줄에서 Enter: 펼치고 내용 맨 위에 새 줄
+		await details.locator('.memo-details-summary').click();
+		await page.keyboard.press('End');
+		await page.keyboard.press('Enter');
+		await expect(details).toHaveAttribute('data-open', 'true');
+		await page.keyboard.type('첫 줄');
+		await expect.poll(() => api.posts[0]?.body).toContain('<summary>목차</summary>\n\n첫 줄\n\n접힌 내용');
+
+		// 각주: 커서 자리에 번호, 글 끝에 각주 내용
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await panel.getByRole('menuitem', { name: '각주 넣기' }).click();
+		await page.keyboard.type('각주 설명');
+		await expect(memo.locator('.ProseMirror sup[data-type="footnote_reference"]')).toHaveText('1');
+		await expect.poll(() => api.posts[0]?.body).toContain('첫 줄[^1]');
+		await expect.poll(() => api.posts[0]?.body).toContain('[^1]: 각주 설명');
+		expect(api.posts[0].body).not.toContain('<br />');
+
+		// 토글 안에서 한 번 더 누르면 풀린다 (제목은 문단으로)
+		await details.getByText('첫 줄').click();
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await expect(panel.getByRole('menuitemradio', { name: '토글 목록' })).toBeChecked();
+		await panel.getByRole('menuitemradio', { name: '토글 목록' }).click();
+		await expect(details).toHaveCount(0);
+		await expect.poll(() => api.posts[0]?.body).toMatch(/^목차\n\n첫 줄\[\^1\]\n\n접힌 내용\n/);
+	});
+
+	test('~ 하나는 글자 그대로: 220~440px처럼 써도 취소선이 되지 않는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
+		await page.keyboard.type('범위 시험');
+		await page.keyboard.press('Enter');
+		await expect(memo.locator('.ProseMirror')).toBeFocused();
+		await page.keyboard.type('너비는 220~440px, 380~640px이고 ~예외~ 없음. ~~지움~~');
+		await expect.poll(() => api.posts[0]?.body).toContain('없음.');
+		const editor = memo.locator('.ProseMirror');
+		await expect(editor.locator('del')).toHaveText('지움');
+		await expect(editor).toContainText('220~440px, 380~640px이고 ~예외~ 없음.');
+	});
+
 	test('표: Tab·Enter로 칸을 옮기며 행을 늘리고, 표 편집 메뉴로 열 추가·정렬·삭제한다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
@@ -1053,6 +1119,180 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
 		await expect(memo.getByRole('button', { name: '새 메모', exact: true })).toHaveCount(0);
 		await expect(memo.getByTitle('관리자로 로그인했습니다')).toHaveCount(0);
+	});
+});
+
+test.describe('토글 목록·각주가 있는 글', () => {
+	test('편집기에서 고쳐 저장해도 <details id>·각주 표기가 그대로다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: 'GitHub 병합 방식 세 가지' }).click();
+		const details = memo.locator('.ProseMirror .memo-details');
+		await expect(details.first().locator('.memo-details-summary')).toHaveText('먼저 알아 둘 용어');
+		await expect(details.first()).toHaveAttribute('data-open', 'false');
+		await expect(memo.locator('.ProseMirror sup[data-type="footnote_reference"]').first()).toBeVisible();
+
+		await memo.locator('.ProseMirror > p').first().click();
+		await page.keyboard.press('End');
+		await page.keyboard.type(' 끝.');
+		await expect.poll(() => api.posts[0]?.body).toContain('끝.');
+		const saved = api.posts[0].body;
+		expect(saved).toContain('<details id="terms">\n<summary>먼저 알아 둘 용어</summary>\n\n');
+		expect(saved).toContain('\n\n</details>\n');
+		expect(saved).toContain('`git merge --no-ff`와 같다.[^no-ff]');
+		expect(saved).toMatch(/\n\[\^no-ff\]: main이 브랜치를/);
+	});
+});
+
+test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽기 화면 보기', () => {
+	const post = (title: string, body: string[]) => {
+		const content = { title, date: '2026-10-09', category: '기술 노트/Git', summary: '', body: body.join('\n\n') };
+		return { slug: 'anchor-post', ...content, deleted: false, published: content };
+	};
+	const filler = Array.from({ length: 30 }, (_, i) => `채우는 문단 ${i + 1}`);
+
+	test('각주 번호는 읽기 화면처럼 차례대로 보이고, 누르면 각주 내용으로 갔다가 ↩ 로 돌아온다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.posts = [post('각주 있는 글', ['첫 문단[^b]과 둘째[^a].', ...filler, '[^a]: 에이 설명', '[^b]: 비 설명'])];
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '각주 있는 글' }).click();
+		const editor = memo.locator('.ProseMirror');
+		// 이름(b, a)이 아니라 본문에 나온 차례(1, 2)
+		const refs = editor.locator('sup[data-type="footnote_reference"]');
+		await expect(refs).toHaveText(['1', '2']);
+		await expect(editor.locator('dl[data-type="footnote_definition"] > dt')).toHaveText(['2.', '1.']);
+
+		const note = editor.locator('dl[data-type="footnote_definition"]', { hasText: '비 설명' });
+		await refs.first().click();
+		await expect(note).toBeInViewport();
+		await expect(note).toHaveClass(/memo-anchor-hit/);
+
+		await note.getByRole('button', { name: '본문의 1번 각주 자리로 돌아가기' }).click();
+		await expect(refs.first()).toBeInViewport();
+		await expect(refs.first()).toHaveClass(/memo-anchor-hit/);
+		// 오가기만 해서는 글이 바뀌지 않는다
+		await page.waitForTimeout(1200);
+		expect(api.posts[0].body).toBe(api.posts[0].published?.body);
+	});
+
+	test('글 안 링크(#terms)를 누르면 접힌 블록을 펼치며 그리로 가고, Option을 누른 채 누르면 링크 글자를 고친다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.posts = [
+			post('접기 있는 글', [
+				'<details id="terms">\n<summary>먼저 알아 둘 용어</summary>',
+				'접힌 설명',
+				'</details>',
+				...filler,
+				'자세한 뜻은 [용어 보기](#terms)에 있다.',
+			]),
+		];
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '접기 있는 글' }).click();
+		const details = memo.locator('.ProseMirror .memo-details');
+		await expect(details).toHaveAttribute('data-open', 'false');
+
+		const link = memo.locator('.ProseMirror a[href="#terms"]');
+		await link.scrollIntoViewIfNeeded();
+		await link.click();
+		// 화면에서만 펼친다 (저장한 글의 <details>는 그대로)
+		await expect(details).toHaveClass(/memo-details-revealed/);
+		await expect(details.getByText('접힌 설명')).toBeVisible();
+		await expect(details).toBeInViewport();
+		await expect(details).toHaveClass(/memo-anchor-hit/);
+		// 화면에서만 펼쳤다: › 를 누르면 다시 접히고, 저장한 글은 그대로
+		await details.locator('.memo-details-summary').click({ position: { x: 6, y: 10 } });
+		await expect(details).not.toHaveClass(/memo-details-revealed/);
+		await expect(details).toHaveAttribute('data-open', 'false');
+		await expect(details.getByText('접힌 설명')).toBeHidden();
+
+		await link.scrollIntoViewIfNeeded();
+		await link.click({ modifiers: ['Alt'] });
+		await page.keyboard.type('를');
+		// 링크 글자 안에 들어간다. 링크를 따라가며 펼친 접기 블록은 화면에서만 펼쳐서 저장한 글은 그대로다
+		await expect.poll(() => api.posts[0].body).toMatch(/\[용어[^\]]*를[^\]]*\]\(#terms\)/);
+		expect(api.posts[0].body).toContain('<details id="terms">\n');
+	});
+
+	test('편집 화면의 본문은 읽기 화면과 글자 크기·줄 높이·여백이 같아, 블록마다 같은 자리에 놓인다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		// 문단·제목·목록·표·이미지·코드·접기·각주가 든 글
+		await memo.locator('.memo-item', { hasText: 'GitHub 병합 방식 세 가지' }).click();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+		await page.waitForTimeout(500);
+		/** 본문 블록마다 [본문 맨 위에서의 거리, 높이, 글자 크기]. 각주는 두 화면의 짜임이 달라(구역 하나 ↔ 각주마다) 따로 본다 */
+		const blocks = (selector: string) =>
+			memo.locator(selector).evaluate((root) => {
+				const top = root.getBoundingClientRect().top;
+				return [...root.children]
+					.filter((el) => !el.matches('dl, section.footnotes') && !/^#/.test(el.textContent ?? ''))
+					.map((el) => {
+						const rect = el.getBoundingClientRect();
+						return [Math.round(rect.top - top), Math.round(rect.height), getComputedStyle(el).fontSize];
+					});
+			});
+		const editor = await blocks('.ProseMirror');
+		const editorNotes = await memo
+			.locator('.ProseMirror > dl > dd')
+			.evaluateAll((items) => items.map((el) => Math.round(el.getBoundingClientRect().height)));
+
+		await memo.getByRole('button', { name: '관리자, 읽기 화면으로 보기' }).click();
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+		await page.waitForTimeout(500);
+		expect(await blocks('.memo-reader-body .memo-markdown')).toEqual(editor);
+		expect(
+			await memo
+				.locator('.memo-reader-body .footnotes li')
+				.evaluateAll((items) => items.map((el) => Math.round(el.getBoundingClientRect().height)))
+		).toEqual(editorNotes);
+	});
+
+	test('관리자 표시를 누르면 방문자가 보는 읽기 화면으로, 한 번 더 누르면 편집 화면으로 돌아간다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: 'GitHub 병합 방식 세 가지' }).click();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+
+		const chip = memo.getByRole('button', { name: '관리자, 읽기 화면으로 보기' });
+		await chip.click();
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+		await expect(memo.getByRole('button', { name: '서식', exact: true })).toHaveCount(0);
+		const reader = memo.locator('.memo-reader-body .memo-markdown').first();
+		await expect(reader.locator('details.memo-details > summary')).toHaveText('먼저 알아 둘 용어');
+		await expect(reader.locator('a[data-footnote-ref]').first()).toBeVisible();
+		const back = memo.getByRole('button', { name: '읽기 화면으로 보는 중, 편집 화면으로 돌아가기' });
+		await expect(back).toHaveAttribute('aria-pressed', 'true');
+
+		// 다른 글로 옮겨도 읽기 화면 그대로
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
+		await expect(memo.locator('.memo-reader-body h1')).toHaveText('CRA에서 Vite로 옮기기');
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+
+		await back.click();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+		await expect(memo.getByRole('button', { name: '관리자, 읽기 화면으로 보기' })).toHaveAttribute(
+			'aria-pressed',
+			'false'
+		);
+		expect(api.posts).toEqual([]);
+	});
+});
+
+test.describe('빈 폴더', () => {
+	test('폴더의 마지막 글을 지워도 폴더는 남는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await folders.getByRole('button', { name: /^Git/ }).click();
+		await memo.locator('.memo-item', { hasText: 'GitHub 병합 방식 세 가지' }).click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '메모 삭제' }).click();
+		await expect(memo.locator('.memo-item', { hasText: 'GitHub 병합 방식' })).toHaveCount(0);
+		await expect(folders.getByRole('button', { name: /^Git/ })).toBeVisible();
+		await expect.poll(() => api.organization.folders).toContain('기술 노트/Git');
 	});
 });
 

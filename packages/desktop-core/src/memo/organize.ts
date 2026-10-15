@@ -117,9 +117,19 @@ function relocate(organization: Organization, from: FolderPath, to: FolderPath):
 	};
 }
 
-/** 글을 폴더로 옮긴다 */
-export function movePost(organization: Organization, slug: PostSlug, folder: FolderPath): Organization {
-	return { ...organization, posts: { ...organization.posts, [slug]: folder } };
+/**
+ * 글이 떠난 폴더를 만든 폴더로 남긴다. 글의 category에서만 생긴 폴더는 마지막 글이 떠나면 목록에서 사라지기 때문이다.
+ * 남긴 폴더는 비면 지울 수 있다 (만든 폴더와 같다)
+ */
+export function keepFolder(organization: Organization, path: string): Organization {
+	if (!path || organization.folders.includes(path as FolderPath)) return organization;
+	return { ...organization, folders: [...organization.folders, asPath(path)] };
+}
+
+/** 글을 폴더로 옮긴다. from(글이 있던 폴더)을 주면 그 폴더가 비어도 남는다 */
+export function movePost(organization: Organization, slug: PostSlug, folder: FolderPath, from?: string): Organization {
+	const moved = { ...organization, posts: { ...organization.posts, [slug]: folder } };
+	return from && from !== folder ? keepFolder(moved, from) : moved;
 }
 
 /** 폴더를 만든다 (parent가 ''이면 맨 위) */

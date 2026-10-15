@@ -8,6 +8,8 @@ import IconButton from '@/shared/ui/button/IconButton';
 const ReaderToolbar = ({
 	lead,
 	admin,
+	readerView,
+	onToggleReaderView,
 	searching,
 	tools,
 	moreOpen,
@@ -17,6 +19,9 @@ const ReaderToolbar = ({
 	/** 갤러리에서 연 글: 사이드바 단추와 갤러리로 돌아가기 */
 	lead: ReactNode;
 	admin: boolean;
+	/** 관리자가 읽기 화면으로 보는 중인지. 편집할 수 있을 때만 값이 있고(아니면 null), 관리자 표시를 누르면 바뀐다 */
+	readerView: boolean | null;
+	onToggleReaderView: () => void;
 	searching: boolean;
 	tools: ReactNode;
 	moreOpen: boolean;
@@ -26,12 +31,30 @@ const ReaderToolbar = ({
 }) => (
 	<div className={`memo-toolbar memo-reader-toolbar ${searching ? 'searching' : ''}`}>
 		{lead}
-		{admin && (
-			<span className="memo-admin-chip" title="관리자로 로그인했습니다">
-				<i className="fa-solid fa-key" aria-hidden="true" />
-				<span>관리자</span>
-			</span>
-		)}
+		{admin &&
+			(readerView === null ? (
+				<span className="memo-admin-chip" title="관리자로 로그인했습니다">
+					<i className="fa-solid fa-key" aria-hidden="true" />
+					<span>관리자</span>
+				</span>
+			) : (
+				// 누르면 편집 화면과 방문자가 보는 읽기 화면을 오간다
+				<button
+					type="button"
+					className={`memo-admin-chip ${readerView ? 'reading' : ''}`}
+					aria-pressed={readerView}
+					aria-label={readerView ? '읽기 화면으로 보는 중, 편집 화면으로 돌아가기' : '관리자, 읽기 화면으로 보기'}
+					title={
+						readerView
+							? '방문자가 보는 읽기 화면입니다. 누르면 편집 화면으로 돌아갑니다.'
+							: '관리자로 로그인했습니다. 누르면 방문자가 보는 읽기 화면으로 봅니다.'
+					}
+					onClick={onToggleReaderView}
+				>
+					<i className={readerView ? 'fa-regular fa-eye' : 'fa-solid fa-key'} aria-hidden="true" />
+					<span>{readerView ? '읽기 화면' : '관리자'}</span>
+				</button>
+			))}
 		<span className="memo-toolbar-spacer" />
 		<span className="memo-toolbar-tools" inert={searching || undefined}>
 			<span className="memo-toolbar-tools-inner">{tools}</span>

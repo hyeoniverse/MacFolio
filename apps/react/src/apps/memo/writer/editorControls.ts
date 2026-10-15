@@ -54,6 +54,8 @@ export interface FormatState {
 	/** 커서가 있는 목록 */
 	list: 'bullet' | 'ordered' | 'task' | null;
 	quote: boolean;
+	/** 커서가 토글 목록 안에 있는지 */
+	details: boolean;
 	table: TableState | null;
 	image: ImageState | null;
 	marks: { strong: boolean; emphasis: boolean; strike: boolean; code: boolean };
@@ -64,6 +66,10 @@ export type FormatAction =
 	| { type: 'block'; block: BlockStyle }
 	| { type: 'list'; list: 'bullet' | 'ordered' | 'task' }
 	| { type: 'quote' }
+	/** 토글 목록 켜고 끄기 */
+	| { type: 'details' }
+	/** 커서 자리에 각주 번호를 넣고, 글 끝의 각주 내용으로 간다 */
+	| { type: 'footnote' }
 	| { type: 'table' }
 	| { type: 'tableOp'; op: TableOp }
 	/** 칸 범위 고르기 [행, 열] (고른 테두리의 꼭짓점 점을 끌 때) */
@@ -90,6 +96,7 @@ export const EMPTY_FORMAT: FormatState = {
 	block: 'body',
 	list: null,
 	quote: false,
+	details: false,
 	table: null,
 	image: null,
 	marks: { strong: false, emphasis: false, strike: false, code: false },

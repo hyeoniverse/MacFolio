@@ -4,14 +4,15 @@ import { clipboard } from '@milkdown/kit/plugin/clipboard';
 import { history } from '@milkdown/kit/plugin/history';
 import { listener, listenerCtx } from '@milkdown/kit/plugin/listener';
 import { commonmark } from '@milkdown/kit/preset/commonmark';
-import { gfm } from '@milkdown/kit/preset/gfm';
+import { gfm, remarkGFMPlugin, strikethroughInputRule, strikethroughSchema } from '@milkdown/kit/preset/gfm';
+import { markRule } from '@milkdown/kit/prose';
 import type { Node } from '@milkdown/kit/prose/model';
 import { Plugin, TextSelection } from '@milkdown/kit/prose/state';
 import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/view';
 import { isInTable } from '@milkdown/kit/prose/tables';
 import { trailing } from '@milkdown/kit/plugin/trailing';
 import { cursor, dropIndicatorConfig } from '@milkdown/kit/plugin/cursor';
-import { $prose, $remark } from '@milkdown/kit/utils';
+import { $inputRule, $prose, $remark } from '@milkdown/kit/utils';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import type { ElementContent } from 'hast';
 import { highlightTree } from '../highlight';
@@ -20,12 +21,15 @@ import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tab
 import { tagsInText } from '@macfolio/desktop-core/memo';
 import TableHandles from './TableHandles';
 import { findPlugin } from './findPlugin';
+import { anchorsPlugin, footnoteDefinitionView, footnoteReferenceView } from './anchors';
+import { detailsRemark, detailsSchema, detailsSummarySchema, detailsToggleClick, handleDetailsKey } from './details';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
 import { CONTENT_IMAGES } from '../contentImages';
 import { editorControls, EMPTY_FORMAT, type Box } from './editorControls';
 import { formatStateOf, runFormat } from './formatCommands';
 import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
+import { GFM_OPTIONS } from '../markdownPlugins';
 
 interface Props {
 	/** 처음 본문 (Markdown) */
@@ -237,6 +241,14 @@ const filesOf = (data: DataTransfer | null) => (data && !data.getData('text/plai
 /** 읽기 화면(Memo.tsx)과 같게: 한국어 사이의 `**굵게**`가 문장부호 뒤에서도 끝나게 한다 */
 const cjkFriendly = $remark('cjkFriendly', () => remarkCjkFriendly);
 
+/**
+ * 취소선은 `~~`만 (읽기 화면의 GFM_OPTIONS와 같게). 기본 규칙은 `~` 하나도 받아서 220~440px 같은 범위가 지워진 글이 된다
+ */
+const strikethroughDoubleTilde = $inputRule((ctx) =>
+	markRule(/(?<![\w:/])~~(.+?)~~(?!\w|\/)$/, strikethroughSchema.type(ctx))
+);
+const gfmWithoutSingleTilde = gfm.filter((plugin) => plugin !== strikethroughInputRule);
+
 /** 휴대폰에서 커서 줄을 맞출 때 비울 자리 (Memo.css: 위 단추 줄 = 상태 표시줄 + 58px, 아래 서식 막대 = 96px) */
 const PHONE_CARET_MARGIN = { top: 120, bottom: 110 };
 
@@ -269,6 +281,7 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 			Editor.make()
 				.config((ctx) => {
 					ctx.set(rootCtx, root);
+					ctx.set(remarkGFMPlugin.options.key, GFM_OPTIONS);
 					// 저장소 글의 상대 경로 이미지도 편집기 안에서 보이게 한다
 					ctx.set(defaultValueCtx, toEditorMarkdown(markdown, CONTENT_IMAGES));
 					// 끌어다 놓을 자리 표시: 굵게 (색은 Memo.css의 .milkdown-drop-indicator)
@@ -280,8 +293,8 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 						...options,
 						// 휴대폰: 쓰는 줄을 화면에 맞출 때 위의 떠 있는 단추 줄과 아래 서식 막대에 가리지 않게 그만큼 띄운다
 						handleScrollToSelection: scrollCaretOnPhone,
-						// 표 안의 Enter·Tab (편집기 기본 동작보다 먼저)
-						handleKeyDown: (view, event) => handleTableKey(ctx, view, event),
+						// 표 안의 Enter·Tab, 토글 요약 줄의 Enter·Backspace (편집기 기본 동작보다 먼저)
+						handleKeyDown: (view, event) => handleTableKey(ctx, view, event) || handleDetailsKey(view, event),
 						// 이미지·파일을 붙여넣거나 끌어다 놓으면 올리고 그 자리에 넣는다
 						handlePaste: (_view, event) => {
 							const files = filesOf(event.clipboardData);
@@ -313,12 +326,20 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 					});
 				})
 				.use(commonmark)
-				.use(gfm)
+				.use(gfmWithoutSingleTilde)
+				.use(strikethroughDoubleTilde)
 				.use(cjkFriendly)
 				.use(history)
 				.use(clipboard)
 				.use(listener)
 				.use(imageBlockRemark)
+				.use(detailsRemark)
+				.use(detailsSummarySchema)
+				.use(detailsSchema)
+				.use(detailsToggleClick)
+				.use(anchorsPlugin)
+				.use(footnoteReferenceView)
+				.use(footnoteDefinitionView)
 				.use(imageBlockSchema)
 				.use(imageBlockView)
 				.use(inlineImageView)

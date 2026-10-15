@@ -2,7 +2,7 @@
 title: 보내는 쪽과 받는 쪽 — 분석 이벤트의 모양을 하나로
 date: 2026-10-11
 category: 개발기/MacFolio/인프라
-summary: 트래픽 분석은 사이트가 5초마다 이벤트를 모아 sendBeacon으로 보내고, 서버가 검사해서 그대로 DB에 넣는다. 보내는 모양(AnalyticsEvent)과 받는 모양(parseBatch 55줄)과 활동 상태 보기가 읽는 응답(Summary·LiveVisit)이 세 파일에 각자 있었다. 이벤트 묶음과 응답 모양을 contracts로 옮기고, 요청 머리말과 비밀 키가 필요한 것만 서버에 남겼다.
+summary: 트래픽 분석의 보내는 모양(AnalyticsEvent), 받는 검사(parseBatch 55줄), 활동 상태 보기가 읽는 응답(Summary·LiveVisit)이 세 파일에 각자 있었다. 이벤트 묶음과 응답 모양을 contracts로 옮기고, 요청 머리말과 비밀 키가 필요한 것만 서버에 남겼다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 일곱째 PR. 댓글·글·메시지·연락 메일·배경화면·[파일](/memo/contracts-files)에 이어 트래픽 분석이다. 지금까지 가장 큰 요청 몸통이었다.

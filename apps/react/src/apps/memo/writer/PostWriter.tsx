@@ -49,6 +49,8 @@ interface Props {
 	renderMarkdown: (body: string) => React.ReactNode;
 	/** 쓰는 대로 알린다 (새 메모의 목록 미리 보기) */
 	onDraftChange?: (draft: PostDraft) => void;
+	/** 폴더를 바꿨다: 떠난 폴더가 비어도 목록에 남긴다 */
+	onLeaveFolder?: () => void;
 	ref?: React.Ref<PostWriterHandle>;
 }
 
@@ -118,6 +120,7 @@ const PostWriter = ({
 	onDiscarded,
 	renderMarkdown,
 	onDraftChange,
+	onLeaveFolder,
 	ref,
 }: Props) => {
 	const [draft, setDraft] = useState<PostDraft>(() =>
@@ -289,7 +292,14 @@ const PostWriter = ({
 			<div className="memo-writer-meta">
 				<DatePicker value={draft.date} onChange={(date) => change({ date })} />
 				<span aria-hidden="true">·</span>
-				<FolderPicker value={draft.category} folders={folders} onChange={(category) => change({ category })} />
+				<FolderPicker
+					value={draft.category}
+					folders={folders}
+					onChange={(category) => {
+						if (category !== draft.category) onLeaveFolder?.();
+						change({ category });
+					}}
+				/>
 				<span className="memo-writer-actions">
 					<span
 						className={`memo-writer-status ${status.kind === 'invalid' || status.kind === 'error' ? 'problem' : ''}`}

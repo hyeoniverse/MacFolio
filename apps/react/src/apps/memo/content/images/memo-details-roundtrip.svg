@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+  <rect width="640" height="360" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">편집기는 &lt;details&gt; 표기를 토글 노드로 읽고, 저장할 때 같은 표기로 되돌린다</text>
+
+  <rect x="20" y="50" width="180" height="176" rx="10" fill="#f3f4f6"/>
+  <text x="110" y="72" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f2937">Markdown (저장한 글)</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10.5" fill="#374151">
+    <text x="34" y="98">&lt;details id="terms"&gt;</text>
+    <text x="34" y="116">&lt;summary&gt;용어&lt;/summary&gt;</text>
+    <text x="34" y="140">내용 문단</text>
+    <text x="34" y="164">표, 목록 …</text>
+    <text x="34" y="188">&lt;/details&gt;</text>
+  </g>
+
+  <rect x="230" y="50" width="180" height="176" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="320" y="72" text-anchor="middle" font-size="12.5" font-weight="600" fill="#4f46e5">mdast (remark)</text>
+  <text x="320" y="98" text-anchor="middle" font-size="10.5" fill="#374151">맨 위의 HTML은 문단으로 감싸진다</text>
+  <rect x="244" y="108" width="152" height="22" rx="4" fill="#fff" stroke="#c7d2fe"/>
+  <text x="320" y="123" text-anchor="middle" font-size="10.5" fill="#374151">paragraph › html (여는 줄)</text>
+  <text x="320" y="146" text-anchor="middle" font-size="10.5" fill="#374151">paragraph · table …</text>
+  <rect x="244" y="154" width="152" height="22" rx="4" fill="#fff" stroke="#c7d2fe"/>
+  <text x="320" y="169" text-anchor="middle" font-size="10.5" fill="#374151">paragraph › html (닫는 줄)</text>
+  <text x="320" y="200" text-anchor="middle" font-size="10.5" font-weight="600" fill="#4f46e5">detailsRemark가 사이를 감싼다</text>
+  <text x="320" y="216" text-anchor="middle" font-size="10.5" fill="#374151">→ memoDetailsBlock {summary, open, id}</text>
+
+  <rect x="440" y="50" width="180" height="176" rx="10" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="530" y="72" text-anchor="middle" font-size="12.5" font-weight="600" fill="#047857">ProseMirror 문서</text>
+  <rect x="454" y="86" width="152" height="118" rx="6" fill="#fff" stroke="#a7f3d0"/>
+  <text x="530" y="104" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857">details_block (open, id)</text>
+  <rect x="466" y="114" width="128" height="24" rx="4" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="530" y="130" text-anchor="middle" font-size="10.5" fill="#374151">details_summary "용어"</text>
+  <rect x="466" y="146" width="128" height="24" rx="4" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="530" y="162" text-anchor="middle" font-size="10.5" fill="#374151">block+ (문단, 표 …)</text>
+  <text x="530" y="192" text-anchor="middle" font-size="10" fill="#6b7280">› 를 누르면 open을 바꾼다</text>
+
+  <line x1="202" y1="138" x2="226" y2="138" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="412" y1="138" x2="436" y2="138" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <path d="M530 228 L530 262 L110 262 L110 232" fill="none" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="320" y="256" text-anchor="middle" font-size="10.5" fill="#374151">저장: 여는 줄(html) + 내용 블록 + 닫는 줄(html)을 같은 층에 나란히 쓴다</text>
+
+  <rect x="20" y="284" width="600" height="60" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+  <text x="320" y="306" text-anchor="middle" font-size="11" font-weight="600" fill="#e11d48">처음 실수: 문단 안까지 내려가 감싸기</text>
+  <text x="320" y="326" text-anchor="middle" font-size="10.5" fill="#374151">html을 감싼 문단 안에 토글이 생기면 문단을 만들 수 없어(Cannot create node for paragraph) 그 줄이 사라진다.</text>
+  <text x="320" y="340" text-anchor="middle" font-size="10.5" fill="#374151">문단은 글줄만 담으므로 들여다보지 않고, 문단 하나가 HTML 한 줄일 때만 여는·닫는 줄로 본다.</text>
+</svg>

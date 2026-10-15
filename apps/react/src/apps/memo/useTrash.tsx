@@ -6,6 +6,7 @@ import {
 	type AdminPost,
 	ALL_CATEGORY,
 	folderPath,
+	keepFolder,
 	movePost,
 	type Organization,
 	type Post,
@@ -46,6 +47,8 @@ export function useTrash({
 	/** 지우기: 묻지 않고 '최근 삭제된 항목'으로 옮긴다 (30일 동안 되살릴 수 있다, macOS 메모처럼) */
 	const removePost = async (post: Post) => {
 		if (!(await deletePost(env.apiUrl, post.slug))) return failed('지우지 못함');
+		// 마지막 글을 지워도 폴더는 남는다
+		edit((prev) => keepFolder(prev, post.category));
 		const current = adminPosts?.find((item) => item.slug === post.slug);
 		upsertAdminPost({
 			slug: post.slug,
