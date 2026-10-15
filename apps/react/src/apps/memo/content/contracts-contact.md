@@ -2,7 +2,7 @@
 title: 같은 뜻, 다른 문구 — 연락 메일의 검사 규칙을 하나로
 date: 2026-10-11
 category: 개발기/MacFolio/인프라
-summary: 메일 앱의 연락 메일은 화면(validateContact)과 서버(parseContact)가 같은 규칙을 각자 적고 있었다. 글자 수 상한은 같은데 문구가 달랐고("30자까지 입력할 수 있습니다" / "30자까지입니다"), 서버만 보는 규칙(한 줄, 제어 문자)도 있었다. contracts에 칸마다 규칙 목록을 두고 처음 어긋난 문구 하나만 내게 했다. 화면은 칸 아래에, 서버는 400의 배열로, 같은 issue를 쓴다.
+summary: 메일 앱의 연락 메일은 화면(validateContact)과 서버(parseContact)가 같은 규칙을 각자 적었고, 문구가 달랐으며 서버만 보는 규칙도 있었다. contracts에 칸마다 규칙 목록을 두고 처음 어긋난 문구 하나만 내게 했다. 화면은 칸 아래에, 서버는 400의 배열로 같은 issue를 쓴다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 넷째 PR. [댓글](/memo/contracts-comments), [글](/memo/contracts-posts), [메시지](/memo/contracts-messages)에 이어 메일 앱의 연락 메일을 옮겼다. 이번에는 응답 모양보다 **입력 검사**가 주인공이다.

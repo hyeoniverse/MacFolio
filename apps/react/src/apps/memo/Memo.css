@@ -1460,6 +1460,29 @@
 	}
 }
 
+/* 규칙을 어긴 이유는 길어서 넓은 칸에서도 날짜·폴더와 겹친다: 따로 한 줄로 두고, 그래도 길면 줄을 바꾼다 */
+.memo-writer-meta:has(.memo-writer-status.problem) {
+	flex-wrap: wrap;
+}
+
+.memo-writer-meta:has(.memo-writer-status.problem) .memo-writer-actions {
+	position: static;
+	order: -1;
+	justify-content: flex-end;
+	width: 100%;
+	margin-bottom: 4px;
+}
+
+.memo-writer-status.problem {
+	min-width: 0;
+	text-align: right;
+	white-space: normal;
+}
+
+.memo-writer-actions > button {
+	flex-shrink: 0;
+}
+
 /* 관리자 목록의 게시 상태 */
 .memo-status-badge {
 	display: inline-block;

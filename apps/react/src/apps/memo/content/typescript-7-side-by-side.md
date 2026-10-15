@@ -2,7 +2,7 @@
 title: TypeScript 7로 올리기 — 컴파일러는 7, 린트는 6을 나란히
 date: 2026-10-12
 category: 개발기/MacFolio/인프라
-summary: Dependabot이 TypeScript를 5.9에서 7.0으로 올리는 PR을 열었지만 CI의 린트 단계에서 바로 멈췄다. TypeScript 7은 Go로 새로 작성한 컴파일러라 JavaScript API가 없고, typescript-eslint는 그 API에 기대기 때문이다. 공식 안내대로 typescript 이름에는 TS 6 호환 패키지를, @typescript/native 이름에는 TS 7을 설치해 tsc는 7로, typescript-eslint는 6 API로 돌게 했다. 7에서 사라진 baseUrl 옵션도 tsconfig에서 지웠다.
+summary: Dependabot의 TypeScript 7.0 PR이 린트 단계에서 멈췄다. Go로 새로 쓴 TypeScript 7에는 typescript-eslint가 기대는 JavaScript API가 없다. typescript 이름에는 TS 6 호환 패키지를, @typescript/native에는 TS 7을 설치해 tsc는 7로, 린트는 6 API로 돌게 했다.
 ---
 
 Dependabot이 `typescript`를 `5.9.3`에서 `7.0.2`로 올리는 PR을 열었다. CI는 포맷 검사를 지나 린트 단계에서 멈췄다.
