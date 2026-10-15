@@ -2957,6 +2957,111 @@
 	text-decoration: none;
 }
 
+/* 편집기의 토글 목록 (writer/details.ts): 읽기 화면의 접기 블록과 같은 모양. 요약 앞의 › 를 누르면 접고 펼친다 */
+.memo-inline-editor .memo-details[data-open='true'] {
+	padding-bottom: 0.9em;
+}
+
+.memo-inline-editor .memo-details-summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0 -0.9em;
+	padding: 0.7em 0.9em;
+	font-weight: 600;
+}
+
+.memo-inline-editor .memo-details-summary::before {
+	content: '';
+	flex: none;
+	width: 0.45em;
+	height: 0.45em;
+	margin-right: 0.15em;
+	border-right: 2px solid var(--memo-muted);
+	border-bottom: 2px solid var(--memo-muted);
+	transform: rotate(-45deg);
+	transition: transform 0.2s ease;
+	cursor: pointer;
+}
+
+.memo-inline-editor .memo-details[data-open='true'] > .memo-details-summary::before {
+	transform: rotate(45deg);
+}
+
+.memo-inline-editor .memo-details-summary:has(> br:only-child)::after {
+	content: '토글 제목';
+	color: var(--memo-muted);
+	font-weight: 400;
+	pointer-events: none;
+}
+
+.memo-inline-editor .memo-details[data-open='false'] > :not(.memo-details-summary) {
+	display: none;
+}
+
+.memo-inline-editor .memo-details > :last-child:not(.memo-details-summary) {
+	margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-inline-editor .memo-details-summary::before {
+		transition: none;
+	}
+}
+
+/* 편집기의 각주: 본문의 [번호], 글 끝의 각주 내용 (번호 + 내용) */
+.memo-inline-editor sup[data-type='footnote_reference'] {
+	padding: 0 0.15em;
+	color: var(--memo-accent);
+	font-weight: 600;
+}
+
+.memo-inline-editor sup[data-type='footnote_reference']::before {
+	content: '[';
+}
+
+.memo-inline-editor sup[data-type='footnote_reference']::after {
+	content: ']';
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] {
+	display: flex;
+	gap: 0.5em;
+	margin: 0.4em 0;
+	font-size: 0.88em;
+	color: var(--memo-muted);
+}
+
+/* 첫 각주 위에 읽기 화면처럼 구분선 */
+.memo-inline-editor :not([data-type='footnote_definition']) + dl[data-type='footnote_definition'] {
+	margin-top: 2.4em;
+	padding-top: 1em;
+	border-top: 1px solid var(--memo-border);
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dt {
+	flex: none;
+	font-weight: 600;
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dt::after {
+	content: '.';
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dd {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dd > :first-child {
+	margin-top: 0;
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dd > :last-child {
+	margin-bottom: 0;
+}
+
 /* 각주로 가거나 돌아왔을 때 도착한 자리를 잠깐 표시한다 */
 .memo-markdown .memo-anchor-hit {
 	animation: memo-anchor-hit 1.6s ease-out;

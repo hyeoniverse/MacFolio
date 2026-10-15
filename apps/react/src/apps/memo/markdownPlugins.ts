@@ -60,11 +60,17 @@ export function remarkTags() {
 	return (tree: MdNode) => walk(tree);
 }
 
-const DETAILS_OPEN = /^<details(?:\s+id="([a-z0-9-]+)")?(\s+open)?\s*>\s*(?:<summary>([^<]*)<\/summary>)?\s*$/i;
-const DETAILS_CLOSE = /^<\/details>\s*$/i;
+export const DETAILS_OPEN = /^<details(?:\s+id="([a-z0-9-]+)")?(\s+open)?\s*>\s*(?:<summary>([^<]*)<\/summary>)?\s*$/i;
+export const DETAILS_CLOSE = /^<\/details>\s*$/i;
+
+/** 접기 블록의 여는 줄 (편집기가 저장할 때). 요약의 <, >, &는 엔티티로 바꿔 글자로만 남긴다 */
+export function detailsOpenHtml({ summary, open, id }: { summary: string; open: boolean; id: string }) {
+	const text = summary.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	return `<details${id ? ` id="${id}"` : ''}${open ? ' open' : ''}>\n<summary>${text}</summary>`;
+}
 
 /** 엔티티 몇 개만 글자로 (요약은 글자로만 그린다: HTML로 넣지 않는다) */
-const decodeText = (text: string) =>
+export const decodeText = (text: string) =>
 	text
 		.replace(/&lt;/g, '<')
 		.replace(/&gt;/g, '>')
