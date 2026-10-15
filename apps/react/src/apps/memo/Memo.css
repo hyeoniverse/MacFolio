@@ -2831,6 +2831,8 @@ button.memo-admin-chip {
 	color: var(--memo-body);
 	font-size: 14px;
 	line-height: 1.75;
+	/* 긴 주소·코드는 칸 안에서 줄을 바꾼다 (편집기 .ProseMirror와 같은 규칙이라 두 화면의 줄이 같게 나뉜다) */
+	overflow-wrap: break-word;
 }
 
 /* 문단 사이 간격. 편집기(.ProseMirror)도 같은 규칙을 써서 읽기 화면과 똑같이 보이게 한다 */
@@ -2981,7 +2983,7 @@ button.memo-admin-chip {
 }
 
 /* 편집기의 토글 목록 (writer/details.ts): 읽기 화면의 접기 블록과 같은 모양. 요약 앞의 › 를 누르면 접고 펼친다 */
-.memo-inline-editor .memo-details[data-open='true'] {
+.memo-inline-editor .memo-details:is([data-open='true'], .memo-details-revealed) {
 	padding-bottom: 0.9em;
 }
 
@@ -3007,7 +3009,7 @@ button.memo-admin-chip {
 	cursor: pointer;
 }
 
-.memo-inline-editor .memo-details[data-open='true'] > .memo-details-summary::before {
+.memo-inline-editor .memo-details:is([data-open='true'], .memo-details-revealed) > .memo-details-summary::before {
 	transform: rotate(45deg);
 }
 
@@ -3018,7 +3020,8 @@ button.memo-admin-chip {
 	pointer-events: none;
 }
 
-.memo-inline-editor .memo-details[data-open='false'] > :not(.memo-details-summary) {
+/* 접힌 블록의 내용 (링크를 따라가며 화면에서만 펼친 블록은 보인다: writer/anchors.ts) */
+.memo-inline-editor .memo-details[data-open='false']:not(.memo-details-revealed) > :not(.memo-details-summary) {
 	display: none;
 }
 
@@ -3032,11 +3035,18 @@ button.memo-admin-chip {
 	}
 }
 
-/* 편집기의 각주: 본문의 [번호], 글 끝의 각주 내용 (번호 + 내용) */
+/* 편집기의 각주 (writer/anchors.ts): 읽기 화면의 각주(a[data-footnote-ref], .footnotes)와 같은 번호·크기·여백.
+   번호는 저장한 이름이 아니라 본문에 나온 차례(data-number)로 보인다 */
 .memo-inline-editor sup[data-type='footnote_reference'] {
 	padding: 0 0.15em;
-	color: var(--memo-accent);
+	color: #b8860b;
 	font-weight: 600;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+:root[data-theme='dark'] [data-app='memo'] .memo-inline-editor sup[data-type='footnote_reference'] {
+	color: var(--memo-accent);
 }
 
 .memo-inline-editor sup[data-type='footnote_reference']::before {
@@ -3047,42 +3057,89 @@ button.memo-admin-chip {
 	content: ']';
 }
 
+/* 각주 내용: 읽기 화면의 각주 목록(ol > li)처럼 번호 칸 + 내용 */
 .memo-inline-editor dl[data-type='footnote_definition'] {
-	display: flex;
-	gap: 0.5em;
-	margin: 0.4em 0;
+	display: grid;
+	grid-template-columns: 1.4em minmax(0, 1fr);
+	margin: 0;
 	font-size: 0.88em;
 	color: var(--memo-muted);
 }
 
-/* 첫 각주 위에 읽기 화면처럼 구분선 */
-.memo-inline-editor :not([data-type='footnote_definition']) + dl[data-type='footnote_definition'] {
+/* 각주끼리는 목록 항목 사이 간격(li + li) */
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition'] + dl[data-type='footnote_definition'] {
+	margin-top: 0.3em;
+}
+
+/* 첫 각주 위: 읽기 화면의 각주 구역(.footnotes)처럼 구분선과 '각주' 제목 */
+.memo-inline-editor .ProseMirror > :not([data-type='footnote_definition']) + dl[data-type='footnote_definition'],
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition']:first-child {
 	margin-top: 2.4em;
 	padding-top: 1em;
 	border-top: 1px solid var(--memo-border);
 }
 
-.memo-inline-editor dl[data-type='footnote_definition'] > dt {
-	flex: none;
+.memo-inline-editor
+	.ProseMirror
+	> :not([data-type='footnote_definition'])
+	+ dl[data-type='footnote_definition']::before,
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition']:first-child::before {
+	grid-column: 1 / -1;
+	margin: 0 0 0.6em;
+	color: var(--memo-text);
 	font-weight: 600;
+	content: '각주';
 }
 
-.memo-inline-editor dl[data-type='footnote_definition'] > dt::after {
-	content: '.';
+/* 번호: 이름 글자 대신 '1.' (목록 번호처럼 오른쪽 맞춤) */
+.memo-inline-editor dl[data-type='footnote_definition'] > dt {
+	padding-right: 0.4em;
+	text-align: right;
+	user-select: none;
 }
 
 .memo-inline-editor dl[data-type='footnote_definition'] > dd {
-	flex: 1;
 	min-width: 0;
 	margin: 0;
 }
 
-.memo-inline-editor dl[data-type='footnote_definition'] > dd > :first-child {
-	margin-top: 0;
+.memo-inline-editor dl[data-type='footnote_definition'] > dd > * + * {
+	margin-top: 0.9em;
 }
 
-.memo-inline-editor dl[data-type='footnote_definition'] > dd > :last-child {
-	margin-bottom: 0;
+/* 각주로 왔을 때: 첫 각주 위의 '각주' 제목(::before)까지 칠하지 않게 번호·내용 칸만 칠한다 (읽기 화면은 li만 칠한다) */
+.memo-inline-editor dl.memo-anchor-hit {
+	animation: none;
+}
+
+.memo-inline-editor dl.memo-anchor-hit > :is(dt, dd) {
+	animation: memo-anchor-hit 1.6s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-inline-editor dl.memo-anchor-hit > :is(dt, dd) {
+		animation: none;
+	}
+}
+
+/* ↩ : 읽기 화면의 되돌아가기 링크(a[data-footnote-backref])와 같은 자리·모양 */
+.memo-inline-editor .memo-footnote-backref {
+	margin-left: 0.3em;
+	padding: 0;
+	border: none;
+	background: none;
+	color: #b8860b;
+	font: inherit;
+	cursor: pointer;
+}
+
+:root[data-theme='dark'] [data-app='memo'] .memo-inline-editor .memo-footnote-backref {
+	color: var(--memo-accent);
+}
+
+/* 편집기의 글 안 링크(#이름)는 누르면 그 자리로 간다 (Option을 누른 채 누르면 글자를 고친다) */
+.memo-inline-editor a[href^='#'] {
+	cursor: pointer;
 }
 
 /* 각주로 가거나 돌아왔을 때 도착한 자리를 잠깐 표시한다 */
@@ -3518,13 +3575,6 @@ button.memo-admin-chip {
 
 :where(.memo-shell[data-compact]) .memo-markdown {
 	font-size: 15px;
-}
-
-/* 편집기(.memo-writer)도 컨테이너라, 넓은 창에서도 편집 칸이 700px보다 좁으면 본문 글자를 키운다 (예전부터의 모양) */
-@container (max-width: 700px) {
-	.memo-writer .memo-markdown {
-		font-size: 15px;
-	}
 }
 
 @media (max-width: 767px) {

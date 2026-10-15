@@ -1144,7 +1144,113 @@ test.describe('토글 목록·각주가 있는 글', () => {
 	});
 });
 
-test.describe('관리자 표시로 읽기 화면 보기', () => {
+test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽기 화면 보기', () => {
+	const post = (title: string, body: string[]) => {
+		const content = { title, date: '2026-10-09', category: '기술 노트/Git', summary: '', body: body.join('\n\n') };
+		return { slug: 'anchor-post', ...content, deleted: false, published: content };
+	};
+	const filler = Array.from({ length: 30 }, (_, i) => `채우는 문단 ${i + 1}`);
+
+	test('각주 번호는 읽기 화면처럼 차례대로 보이고, 누르면 각주 내용으로 갔다가 ↩ 로 돌아온다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.posts = [post('각주 있는 글', ['첫 문단[^b]과 둘째[^a].', ...filler, '[^a]: 에이 설명', '[^b]: 비 설명'])];
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '각주 있는 글' }).click();
+		const editor = memo.locator('.ProseMirror');
+		// 이름(b, a)이 아니라 본문에 나온 차례(1, 2)
+		const refs = editor.locator('sup[data-type="footnote_reference"]');
+		await expect(refs).toHaveText(['1', '2']);
+		await expect(editor.locator('dl[data-type="footnote_definition"] > dt')).toHaveText(['2.', '1.']);
+
+		const note = editor.locator('dl[data-type="footnote_definition"]', { hasText: '비 설명' });
+		await refs.first().click();
+		await expect(note).toBeInViewport();
+		await expect(note).toHaveClass(/memo-anchor-hit/);
+
+		await note.getByRole('button', { name: '본문의 1번 각주 자리로 돌아가기' }).click();
+		await expect(refs.first()).toBeInViewport();
+		await expect(refs.first()).toHaveClass(/memo-anchor-hit/);
+		// 오가기만 해서는 글이 바뀌지 않는다
+		await page.waitForTimeout(1200);
+		expect(api.posts[0].body).toBe(api.posts[0].published?.body);
+	});
+
+	test('글 안 링크(#terms)를 누르면 접힌 블록을 펼치며 그리로 가고, Option을 누른 채 누르면 링크 글자를 고친다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.posts = [
+			post('접기 있는 글', [
+				'<details id="terms">\n<summary>먼저 알아 둘 용어</summary>',
+				'접힌 설명',
+				'</details>',
+				...filler,
+				'자세한 뜻은 [용어 보기](#terms)에 있다.',
+			]),
+		];
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '접기 있는 글' }).click();
+		const details = memo.locator('.ProseMirror .memo-details');
+		await expect(details).toHaveAttribute('data-open', 'false');
+
+		const link = memo.locator('.ProseMirror a[href="#terms"]');
+		await link.scrollIntoViewIfNeeded();
+		await link.click();
+		// 화면에서만 펼친다 (저장한 글의 <details>는 그대로)
+		await expect(details).toHaveClass(/memo-details-revealed/);
+		await expect(details.getByText('접힌 설명')).toBeVisible();
+		await expect(details).toBeInViewport();
+		await expect(details).toHaveClass(/memo-anchor-hit/);
+		// 화면에서만 펼쳤다: › 를 누르면 다시 접히고, 저장한 글은 그대로
+		await details.locator('.memo-details-summary').click({ position: { x: 6, y: 10 } });
+		await expect(details).not.toHaveClass(/memo-details-revealed/);
+		await expect(details).toHaveAttribute('data-open', 'false');
+		await expect(details.getByText('접힌 설명')).toBeHidden();
+
+		await link.scrollIntoViewIfNeeded();
+		await link.click({ modifiers: ['Alt'] });
+		await page.keyboard.type('를');
+		// 링크 글자 안에 들어간다. 링크를 따라가며 펼친 접기 블록은 화면에서만 펼쳐서 저장한 글은 그대로다
+		await expect.poll(() => api.posts[0].body).toMatch(/\[용어[^\]]*를[^\]]*\]\(#terms\)/);
+		expect(api.posts[0].body).toContain('<details id="terms">\n');
+	});
+
+	test('편집 화면의 본문은 읽기 화면과 글자 크기·줄 높이·여백이 같아, 블록마다 같은 자리에 놓인다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		// 문단·제목·목록·표·이미지·코드·접기·각주가 든 글
+		await memo.locator('.memo-item', { hasText: 'GitHub 병합 방식 세 가지' }).click();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+		await page.waitForTimeout(500);
+		/** 본문 블록마다 [본문 맨 위에서의 거리, 높이, 글자 크기]. 각주는 두 화면의 짜임이 달라(구역 하나 ↔ 각주마다) 따로 본다 */
+		const blocks = (selector: string) =>
+			memo.locator(selector).evaluate((root) => {
+				const top = root.getBoundingClientRect().top;
+				return [...root.children]
+					.filter((el) => !el.matches('dl, section.footnotes') && !/^#/.test(el.textContent ?? ''))
+					.map((el) => {
+						const rect = el.getBoundingClientRect();
+						return [Math.round(rect.top - top), Math.round(rect.height), getComputedStyle(el).fontSize];
+					});
+			});
+		const editor = await blocks('.ProseMirror');
+		const editorNotes = await memo
+			.locator('.ProseMirror > dl > dd')
+			.evaluateAll((items) => items.map((el) => Math.round(el.getBoundingClientRect().height)));
+
+		await memo.getByRole('button', { name: '관리자, 읽기 화면으로 보기' }).click();
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+		await page.waitForTimeout(500);
+		expect(await blocks('.memo-reader-body .memo-markdown')).toEqual(editor);
+		expect(
+			await memo
+				.locator('.memo-reader-body .footnotes li')
+				.evaluateAll((items) => items.map((el) => Math.round(el.getBoundingClientRect().height)))
+		).toEqual(editorNotes);
+	});
+
 	test('관리자 표시를 누르면 방문자가 보는 읽기 화면으로, 한 번 더 누르면 편집 화면으로 돌아간다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);

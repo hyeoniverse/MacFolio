@@ -21,6 +21,7 @@ import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tab
 import { tagsInText } from '@macfolio/desktop-core/memo';
 import TableHandles from './TableHandles';
 import { findPlugin } from './findPlugin';
+import { anchorsPlugin, footnoteDefinitionView, footnoteReferenceView } from './anchors';
 import { detailsRemark, detailsSchema, detailsSummarySchema, detailsToggleClick, handleDetailsKey } from './details';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
@@ -336,6 +337,9 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 				.use(detailsSummarySchema)
 				.use(detailsSchema)
 				.use(detailsToggleClick)
+				.use(anchorsPlugin)
+				.use(footnoteReferenceView)
+				.use(footnoteDefinitionView)
 				.use(imageBlockSchema)
 				.use(imageBlockView)
 				.use(inlineImageView)
