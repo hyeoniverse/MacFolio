@@ -5,6 +5,7 @@ import { Plugin, TextSelection, type EditorState } from '@milkdown/kit/prose/sta
 import type { EditorView } from '@milkdown/kit/prose/view';
 import { $nodeSchema, $prose, $remark } from '@milkdown/kit/utils';
 import { decodeText, DETAILS_CLOSE, DETAILS_OPEN, detailsOpenHtml } from '../markdownPlugins';
+import { isRevealed, unreveal } from './anchors';
 
 interface MdNode {
 	type: string;
@@ -218,6 +219,12 @@ export const detailsToggleClick = $prose(
 					const detailsPos = view.state.doc.resolve(nodePos).before();
 					const details = view.state.doc.nodeAt(detailsPos);
 					if (!details) return false;
+					// 링크를 따라가며 화면에서만 펼친 블록은 화면에서만 접는다 (저장한 글은 그대로)
+					if (isRevealed(view.state, detailsPos)) {
+						const tr = unreveal(view.state.tr, view.state, detailsPos);
+						view.dispatch(tr.setSelection(TextSelection.create(tr.doc, nodePos + node.nodeSize - 1)));
+						return true;
+					}
 					const open = !details.attrs.open;
 					const tr = view.state.tr.setNodeMarkup(detailsPos, undefined, { ...details.attrs, open });
 					const summaryEnd = nodePos + node.nodeSize - 1;
