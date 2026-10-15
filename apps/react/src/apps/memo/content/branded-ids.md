@@ -2,7 +2,7 @@
 title: 문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입
 date: 2026-10-11
 category: 개발기/MacFolio/인프라
-summary: 글 주소(slug)와 폴더 경로가 어디서나 string이었다. 주소창에서 온 문자열을 그대로 movePost에 넘겨도 컴파일이 됐다. desktop-core에 PostSlug·FolderPath 브랜드 타입을 두고, 바깥에서 온 문자열은 postSlug()·folderPath()를 지나야 그 타입이 되게 했다. 실행 시에는 그냥 문자열이라 동작은 하나도 안 바뀌고, 안쪽 함수에 아무 문자열을 넣는 코드는 이제 tsc가 막는다. 1단계 마지막 항목.
+summary: 글 주소(slug)와 폴더 경로가 어디서나 string이라, 주소창에서 온 문자열을 그대로 movePost에 넘겨도 컴파일이 됐다. desktop-core에 PostSlug·FolderPath 브랜드 타입을 두고, 바깥 문자열은 postSlug()·folderPath()를 지나야 그 타입이 된다. 동작은 그대로이고, 아무 문자열을 넣으면 tsc가 막는다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 마지막 항목 "`any`, 넓은 `string` 대신 쓸 수 있는 유니언·브랜드 타입 정리 (앱 이름, 폴더 경로, 슬러그)". [프로필 나누기](/memo/profile-split) 다음이다.

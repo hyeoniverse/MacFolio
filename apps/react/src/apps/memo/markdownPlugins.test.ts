@@ -19,6 +19,11 @@ describe('REMARK_PLUGINS', () => {
 		expect(render('~~old~~ new')).toBe('<p><del>old</del> new</p>');
 	});
 
+	it('취소선은 ~~만, 범위를 적은 ~ 하나는 글자 그대로다', () => {
+		expect(render('220~440px, 380~640px')).toBe('<p>220~440px, 380~640px</p>');
+		expect(render('~하나~ ~~둘~~')).toBe('<p>~하나~ <del>둘</del></p>');
+	});
+
 	it('#태그는 누를 수 있는 태그로, 코드·링크 안은 그대로', () => {
 		expect(render('오늘 #리팩터링 했다')).toBe(
 			'<p>오늘 <span class="memo-tag" data-tag="리팩터링">#리팩터링</span> 했다</p>'

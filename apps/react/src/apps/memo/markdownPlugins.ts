@@ -3,12 +3,20 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import remarkGfm from 'remark-gfm';
 import { tagsInText } from '@macfolio/desktop-core/memo';
 
+/** 취소선은 `~~`만 쓴다. `~` 하나도 받으면 220~440px, 380~640px처럼 범위를 적은 글이 취소선이 된다 */
+export const GFM_OPTIONS = { singleTilde: false } as const;
+
 /**
  * 글을 읽을 때 쓰는 Markdown 규칙: 표 · 취소선 · 체크 목록(GFM), 그리고 한국어 사이의 굵게·기울임.
  * CommonMark 규칙만으로는 `**취소(cancelled)**가`처럼 문장부호 뒤의 `**`에 조사가 바로 붙으면 굵게가 끝나지 않는다.
  * 편집기(writer/InlineEditor.tsx)에도 같은 규칙을 건다.
  */
-export const REMARK_PLUGINS: Options['remarkPlugins'] = [remarkGfm, remarkCjkFriendly, remarkDetails, remarkTags];
+export const REMARK_PLUGINS: Options['remarkPlugins'] = [
+	[remarkGfm, GFM_OPTIONS],
+	remarkCjkFriendly,
+	remarkDetails,
+	remarkTags,
+];
 
 interface MdNode {
 	type: string;
@@ -52,11 +60,17 @@ export function remarkTags() {
 	return (tree: MdNode) => walk(tree);
 }
 
-const DETAILS_OPEN = /^<details(?:\s+id="([a-z0-9-]+)")?(\s+open)?\s*>\s*(?:<summary>([^<]*)<\/summary>)?\s*$/i;
-const DETAILS_CLOSE = /^<\/details>\s*$/i;
+export const DETAILS_OPEN = /^<details(?:\s+id="([a-z0-9-]+)")?(\s+open)?\s*>\s*(?:<summary>([^<]*)<\/summary>)?\s*$/i;
+export const DETAILS_CLOSE = /^<\/details>\s*$/i;
+
+/** 접기 블록의 여는 줄 (편집기가 저장할 때). 요약의 <, >, &는 엔티티로 바꿔 글자로만 남긴다 */
+export function detailsOpenHtml({ summary, open, id }: { summary: string; open: boolean; id: string }) {
+	const text = summary.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	return `<details${id ? ` id="${id}"` : ''}${open ? ' open' : ''}>\n<summary>${text}</summary>`;
+}
 
 /** 엔티티 몇 개만 글자로 (요약은 글자로만 그린다: HTML로 넣지 않는다) */
-const decodeText = (text: string) =>
+export const decodeText = (text: string) =>
 	text
 		.replace(/&lt;/g, '<')
 		.replace(/&gt;/g, '>')

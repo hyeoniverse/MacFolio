@@ -2,7 +2,7 @@
 title: 서버 저장소와 로컬 저장소가 같은 모양을 쓰게 — 메시지 도메인 옮기기
 date: 2026-10-11
 category: 개발기/MacFolio/인프라
-summary: 메시지 앱의 항목(Thread)·말풍선(Message) 모양이 서버와 화면에 따로 적혀 있었고, 'owner'라는 고정 항목 id도 두 곳에 있었다. contracts로 옮기면서 화면의 mine?: boolean과 서버의 mine: boolean이 어긋나 있던 것도 드러났다. 서버의 요청 검사는 댓글 규칙을 "빌려" 쓰던 것을 MessageInput = CommentInput 한 줄로 적어 두었다.
+summary: 메시지 앱의 항목(Thread)·말풍선(Message) 모양과 'owner'라는 고정 항목 id가 서버와 화면에 따로 적혀 있었다. contracts로 옮기면서 화면의 mine?: boolean과 서버의 mine: boolean이 어긋난 것도 드러났다. 서버의 요청 검사는 MessageInput = CommentInput 한 줄로 적었다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 셋째 PR. [댓글](/memo/contracts-comments), [글](/memo/contracts-posts)에 이어 메시지 앱의 요청·응답 모양을 `@macfolio/contracts`로 옮겼다.

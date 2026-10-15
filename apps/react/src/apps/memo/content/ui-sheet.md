@@ -2,7 +2,7 @@
 title: 휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출
 date: 2026-10-12
 category: 개발기/MacFolio/프론트엔드
-summary: 메일 쓰기·답장, 메일 동작, 음악 지금 재생 중이 아래에서 올라오는 시트를 각자 구현하고 있었다. 오버레이·올라오는 애니메이션·닫기·role을 shared/ui의 Sheet 컴포넌트로 추출하고, 모양 차이는 variant(page·card·cover) 셋으로 나눴다. 닫힐 때는 Modal과 같이 useExitMotion이 복사본에 내려가는 애니메이션을 걸어, 메일의 닫기 타이머와 closing 상태가 없어졌다. 전후 화면은 픽셀 단위로 같다.
+summary: 메일 쓰기·답장, 메일 동작, 음악 지금 재생 중이 아래에서 올라오는 시트를 각자 구현하고 있었다. 오버레이·애니메이션·닫기·role을 shared/ui의 Sheet로 추출하고, 모양 차이는 variant(page·card·cover)로 나눴다. 닫힐 때는 useExitMotion이 애니메이션을 걸어 메일의 닫기 타이머가 없어졌다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 4단계 둘째 항목 "새로 뽑을 것"의 둘째 컴포넌트. [Modal 추출](/memo/ui-modal)에 이어, [공통 UI 부품 목록](/memo/ui-inventory)에서 뽑기로 한 `Sheet`를 진행했다.

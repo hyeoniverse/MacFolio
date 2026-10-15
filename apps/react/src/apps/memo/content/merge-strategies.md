@@ -2,7 +2,7 @@
 title: GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge
 date: 2026-10-12
 category: 기술 노트/Git
-summary: PR의 Merge 단추에는 세 가지 방식이 있다. 같은 PR을 각 방식으로 병합하면 main의 커밋 그래프가 어떻게 달라지는지, 커밋 SHA·머지 커밋·기록의 직선성이 어떻게 바뀌는지 도식으로 정리했다. 선택 기준은 질문 세 개로 요약된다. 커밋 단위가 남을 가치가 있는가, 커밋 SHA를 바깥에서 가리키는가, 브랜치 안에 머지 커밋이 있는가. 팀의 작업 방식에 따라 보통 어느 쪽으로 가는지, 되돌릴 때는 무엇이 달라지는지도 함께 적었다.
+summary: PR의 Merge 단추에 있는 세 방식으로 같은 PR을 병합하면 main의 커밋 그래프, 커밋 SHA, 머지 커밋, 기록의 직선성이 어떻게 달라지는지 도식으로 정리했다. 선택 기준은 커밋 단위가 남을 가치가 있는가, SHA를 바깥에서 가리키는가, 브랜치 안에 머지 커밋이 있는가의 세 질문이다.
 ---
 
 GitHub PR 페이지의 Merge 단추를 누르면 세 가지 방식 가운데 하나를 고르게 된다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것을 골라야 하는지 물으면 "팀마다 다르다"는 답이 돌아오는데, 무엇이 달라서 다른 답이 나오는지 정리한다.
