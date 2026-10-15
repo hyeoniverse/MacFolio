@@ -138,6 +138,8 @@ const Memo: React.FC = () => {
 	} = noteView;
 	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
 	const [findSlug, setFindSlug] = useState<string | null>(null);
+	/** 관리자가 편집 대신 방문자가 보는 읽기 화면으로 보는 중인지 (관리자 표시를 누르면 바뀐다) */
+	const [readerView, setReaderView] = useState(false);
 	/** 휴대폰(모바일 셸) 안인지: 본문을 iOS 메모처럼 떠 있는 단추로 그린다 */
 	const phone = useIsMobile();
 	/** 휴대폰 메모 선택: 고른 메모들 (null = 고르는 중 아님) */
@@ -330,6 +332,8 @@ const Memo: React.FC = () => {
 	const startNewDraft = () => {
 		// 최근 삭제된 항목에서는 새 메모가 들어갈 자리가 없으므로 모든 글로
 		if (inTrash) setCategory(ALL_CATEGORY);
+		// 새 메모는 쓰는 화면에서 시작한다
+		setReaderView(false);
 		setQuery('');
 		draft.start();
 		setPane('reader');
@@ -468,8 +472,8 @@ const Memo: React.FC = () => {
 			</IconButton>
 		);
 
-	/** 편집기를 보이는 중인지 (관리자, 최근 삭제·잠금이 아닌 글이나 새 메모) */
-	const writing = editing && !inTrash && (newDraft !== null || (selected !== null && !selected.locked));
+	/** 편집기를 보이는 중인지 (관리자, 최근 삭제·잠금이 아닌 글이나 새 메모. 읽기 화면으로 보는 중이면 아니다) */
+	const writing = editing && !inTrash && (newDraft !== null || (selected !== null && !selected.locked && !readerView));
 
 	const empty = (
 		<>
@@ -745,6 +749,8 @@ const Memo: React.FC = () => {
 								)
 							}
 							admin={canEdit}
+							readerView={editing ? readerView : null}
+							onToggleReaderView={() => setReaderView((value) => !value)}
 							searching={searching}
 							tools={
 								<>
@@ -762,7 +768,7 @@ const Memo: React.FC = () => {
 							search={search}
 						/>
 						{findSlug !== null && findSlug === selected?.slug && (
-							<FindBar key={findSlug} editing={editing} readerRoot={readerScroll} onClose={() => setFindSlug(null)} />
+							<FindBar key={findSlug} editing={writing} readerRoot={readerScroll} onClose={() => setFindSlug(null)} />
 						)}
 						{/* 휴대폰: 오른쪽 위에 공유·••• 알약, 아래에 서식 알약과 새 메모 (iOS 메모 본문처럼) */}
 						{phone && compact && (
@@ -776,6 +782,8 @@ const Memo: React.FC = () => {
 												inTrash,
 												newDraft: newDraft !== null,
 												onFind: () => setFindSlug(selected.slug),
+												readerView: editing && !selected.locked ? readerView : null,
+												onToggleReaderView: () => setReaderView((value) => !value),
 											})
 										: []
 								}
@@ -820,14 +828,14 @@ const Memo: React.FC = () => {
 									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
 								</div>
 							)}
-							{(!editing || inTrash || (newDraft === null && selected?.locked)) && selected && (
+							{(!editing || inTrash || (newDraft === null && (selected?.locked || readerView))) && selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다. 최근 삭제된 항목의 글과 잠긴 메모는 관리자에게도 읽기 화면
 								<ReaderBody
 									key={selected.slug}
 									post={selected}
 									today={today}
 									views={views}
-									editing={editing}
+									editing={editing && Boolean(selected.locked)}
 									footer={!inTrash && postFooter(selected)}
 									onRestore={() => void restoreDeleted(selected)}
 									onPurge={() => void purgeDeleted(selected)}

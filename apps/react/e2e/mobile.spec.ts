@@ -698,10 +698,24 @@ test.describe('모바일', () => {
 		await expect(bottom.getByRole('button', { name: '체크리스트' })).toBeVisible();
 		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
 
-		// ••• 메뉴: 맨 위에 고정·잠그기, 그 아래 찾기·삭제
+		// ••• 메뉴: 맨 위에 고정·잠그기, 그 아래 찾기·읽기 화면·삭제
 		await top.getByRole('button', { name: '메모 동작' }).tap();
 		const menu = page.getByRole('menu', { name: '메모 동작' });
-		await expect(menu.getByRole('menuitem')).toHaveText(['메모 고정', '잠그기', '메모에서 찾기', '삭제']);
+		await expect(menu.getByRole('menuitem')).toHaveText([
+			'메모 고정',
+			'잠그기',
+			'메모에서 찾기',
+			'읽기 화면으로 보기',
+			'삭제',
+		]);
+		// 방문자가 보는 읽기 화면으로 봤다가 편집 화면으로 돌아온다
+		await menu.getByRole('menuitem', { name: '읽기 화면으로 보기' }).tap();
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+		await expect(memo.locator('.memo-reader-body h1')).toBeVisible();
+		await top.getByRole('button', { name: '메모 동작' }).tap();
+		await menu.getByRole('menuitem', { name: '편집 화면으로 돌아가기' }).tap();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+		await top.getByRole('button', { name: '메모 동작' }).tap();
 		await menu.getByRole('menuitem', { name: '메모에서 찾기' }).tap();
 		await expect(memo.getByRole('search', { name: '메모에서 찾기' })).toBeVisible();
 
