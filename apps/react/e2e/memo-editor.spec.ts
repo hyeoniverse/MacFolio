@@ -1144,6 +1144,38 @@ test.describe('토글 목록·각주가 있는 글', () => {
 	});
 });
 
+test.describe('관리자 표시로 읽기 화면 보기', () => {
+	test('관리자 표시를 누르면 방문자가 보는 읽기 화면으로, 한 번 더 누르면 편집 화면으로 돌아간다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: 'GitHub 병합 방식 세 가지' }).click();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+
+		const chip = memo.getByRole('button', { name: '관리자, 읽기 화면으로 보기' });
+		await chip.click();
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+		await expect(memo.getByRole('button', { name: '서식', exact: true })).toHaveCount(0);
+		const reader = memo.locator('.memo-reader-body .memo-markdown').first();
+		await expect(reader.locator('details.memo-details > summary')).toHaveText('먼저 알아 둘 용어');
+		await expect(reader.locator('a[data-footnote-ref]').first()).toBeVisible();
+		const back = memo.getByRole('button', { name: '읽기 화면으로 보는 중, 편집 화면으로 돌아가기' });
+		await expect(back).toHaveAttribute('aria-pressed', 'true');
+
+		// 다른 글로 옮겨도 읽기 화면 그대로
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
+		await expect(memo.locator('.memo-reader-body h1')).toHaveText('CRA에서 Vite로 옮기기');
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+
+		await back.click();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+		await expect(memo.getByRole('button', { name: '관리자, 읽기 화면으로 보기' })).toHaveAttribute(
+			'aria-pressed',
+			'false'
+		);
+		expect(api.posts).toEqual([]);
+	});
+});
+
 test.describe('빈 폴더', () => {
 	test('폴더의 마지막 글을 지워도 폴더는 남는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
