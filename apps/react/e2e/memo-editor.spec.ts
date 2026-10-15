@@ -1056,6 +1056,20 @@ test.describe('바로 고치기 (관리자)', () => {
 	});
 });
 
+test.describe('빈 폴더', () => {
+	test('폴더의 마지막 글을 지워도 폴더는 남는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		const folders = memo.getByRole('navigation', { name: '카테고리' });
+		await folders.getByRole('button', { name: /^Git/ }).click();
+		await memo.locator('.memo-item', { hasText: 'GitHub 병합 방식 세 가지' }).click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '메모 삭제' }).click();
+		await expect(memo.locator('.memo-item', { hasText: 'GitHub 병합 방식' })).toHaveCount(0);
+		await expect(folders.getByRole('button', { name: /^Git/ })).toBeVisible();
+		await expect.poll(() => api.organization.folders).toContain('기술 노트/Git');
+	});
+});
+
 test.describe('한국어 사이의 굵게', () => {
 	const post = '글 한 편 추가했더니';
 
