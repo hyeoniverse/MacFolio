@@ -63,6 +63,12 @@ describe('excerpt', () => {
 	it('줄 처음의 #태그는 제목 표시가 아니라서 남긴다', () => {
 		expect(excerpt('#리팩터링 #디자인\n## 소제목')).toBe('#리팩터링 #디자인 소제목');
 	});
+
+	it('접기 블록 표기, 각주, 글자로 남긴 \\는 미리 보기에 보이지 않는다', () => {
+		const body =
+			'<details open>\n<summary>화면 너비</summary>\n\n220\\~440px 사이[^1]\n\n</details>\n\n<br />\n\n[^1]: 기준';
+		expect(excerpt(body)).toBe('화면 너비 220~440px 사이');
+	});
 });
 
 describe('toPost', () => {
