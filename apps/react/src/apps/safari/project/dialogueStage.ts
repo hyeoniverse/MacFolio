@@ -398,3 +398,99 @@ export function windowAround(count: number, at: number, size: number): [number, 
 	const start = Math.min(Math.max(0, at - Math.floor((size - 1) / 2)), count - size);
 	return [start, start + size];
 }
+
+// ─── 대화 상자의 글 나누기: 갈무리11 11px의 글자 폭으로 줄을 어림해, 한 장에 두 줄씩 넘긴다 ───
+
+/**
+ * 글자 하나의 폭(게임 칸)을 넉넉하게 어림한다: 한글과 그 밖의 넓은 글자는 11, 빈칸은 4.6, 좁은 글자(.,:il 등)는 4.6,
+ * 넓은 로마자(mwMW@%)는 9.2, 나머지 로마자·숫자는 7.4. 실제 폭보다 작게 잡지 않아 어림한 줄 수가 실제보다 적지 않다
+ */
+export function glyphWidth(ch: string): number {
+	if (ch === ' ') return 4.6;
+	if (ch.charCodeAt(0) > 0x7e) return 11;
+	if (/[.,:;'!|il()[\]`]/.test(ch)) return 4.6;
+	if (/[mwMW@%]/.test(ch)) return 9.2;
+	return 7.4;
+}
+
+/** 글의 폭(게임 칸) */
+export const textWidth = (text: string) => [...text].reduce((sum, ch) => sum + glyphWidth(ch), 0);
+
+/**
+ * 글을 width 칸 폭의 줄로 나눈다 (word-break: keep-all처럼 빈칸에서만 자르고, 한 낱말이 한 줄보다 길면 글자로 자른다).
+ * 브라우저는 같은 자리나 더 뒤에서 줄을 바꾸므로 실제 줄 수는 이보다 많지 않다
+ */
+export function wrapText(text: string, width: number): string[] {
+	const lines: string[] = [];
+	let line = '';
+	for (const word of text.split(/\s+/).filter(Boolean)) {
+		const joined = line ? `${line} ${word}` : word;
+		if (textWidth(joined) <= width) {
+			line = joined;
+			continue;
+		}
+		if (line) lines.push(line);
+		let rest = word;
+		while (textWidth(rest) > width) {
+			let cut = 1;
+			while (cut < rest.length - 1 && textWidth(rest.slice(0, cut + 1)) <= width) cut++;
+			lines.push(rest.slice(0, cut));
+			rest = rest.slice(cut);
+		}
+		line = rest;
+	}
+	if (line || lines.length === 0) lines.push(line);
+	return lines;
+}
+
+/**
+ * 긴 글을 대화 상자 한 장(perPage줄)씩 나눈다. 문장(마침표·물음표 뒤 빈칸)은 되도록 한 장에 이어 담고,
+ * 한 문장이 한 장보다 길면 줄 단위로 나눈다. 빈 글은 빈 장 하나
+ */
+export function paginate(body: string, width: number, perPage = 2): string[] {
+	const text = body.replace(/\s+/g, ' ').trim();
+	if (!text) return [''];
+	const fits = (t: string) => wrapText(t, width).length <= perPage;
+	const pages: string[] = [];
+	let page = '';
+	for (const sentence of text.split(/(?<=[.!?])\s+/)) {
+		const joined = page ? `${page} ${sentence}` : sentence;
+		if (fits(joined)) {
+			page = joined;
+			continue;
+		}
+		if (page) pages.push(page);
+		if (fits(sentence)) {
+			page = sentence;
+			continue;
+		}
+		const lines = wrapText(sentence, width);
+		for (let i = 0; i < lines.length; i += perPage) pages.push(lines.slice(i, i + perPage).join(' '));
+		// 마지막 조각은 다음 문장과 한 장에 이어질 수 있다
+		page = pages.pop() ?? '';
+	}
+	if (page) pages.push(page);
+	return pages;
+}
+
+/** 길잡이·안내 글에 넣는 이름: max자보다 길면 줄임표 */
+export const shorten = (text: string, max: number) =>
+	[...text].length > max ? `${[...text].slice(0, max - 1).join('')}…` : text;
+
+/**
+ * 메뉴에서 다음에 읽을 주제(NEXT): after(방금 다 읽은 주제) 다음부터 차례로 돌아 아직 안 읽은 첫 주제.
+ * after가 목록에 없으면 처음부터. 셀 수 없는 줄(링크, 돌아가기)은 건너뛴다
+ */
+export function nextUnread<T extends { id: string }>(
+	list: readonly T[],
+	read: ReadonlySet<string>,
+	after?: string,
+	skip: ReadonlySet<string> = new Set()
+): T | undefined {
+	const from = after ? list.findIndex((t) => t.id === after) + 1 : 0;
+	for (let k = 0; k < list.length; k++) {
+		const topic = list[(from + k) % list.length];
+		if (!skip.has(topic.id) && !read.has(topic.id)) return topic;
+	}
+	return undefined;
+}

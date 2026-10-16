@@ -17,9 +17,12 @@ import {
 	SCENE_W,
 	scenePalette,
 	sceneRgba,
+	sceneView,
 	signpostRows,
 	TALL_GRASS,
 	TILE,
+	VIEW_H,
+	VIEW_W,
 	WALL_PLANKS,
 	WATER,
 } from './dialogueScenes';
@@ -49,6 +52,17 @@ describe('타일', () => {
 	it('장면은 30×17 타일 크기 (480×272)', () => {
 		expect(SCENE_W).toBe(30 * TILE);
 		expect(SCENE_H).toBe(17 * TILE);
+	});
+
+	it('게임 화면(360×208)에 보이는 창은 장면마다 장면 안에 든다', () => {
+		expect([VIEW_W, VIEW_H]).toEqual([360, 208]);
+		for (const kind of SCENE_KINDS) {
+			const { x, y } = sceneView(kind);
+			expect(x, kind).toBeGreaterThanOrEqual(0);
+			expect(y, kind).toBeGreaterThanOrEqual(0);
+			expect(x + VIEW_W, kind).toBeLessThanOrEqual(SCENE_W);
+			expect(y + VIEW_H, kind).toBeLessThanOrEqual(SCENE_H);
+		}
 	});
 
 	it('소품(표지판, 게시판, 집, 성)은 줄 폭이 같고 소품 팔레트의 색만', () => {

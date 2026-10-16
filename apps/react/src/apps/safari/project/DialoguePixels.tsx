@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { pixelRuns } from '@/apps/safari/project/dialogueStage';
 import { ICON_COLORS, ICONS, pixelate, type IconName } from '@/apps/safari/project/dialogueIcons';
-import { sceneRgba, SCENE_H, SCENE_W } from '@/apps/safari/project/dialogueScenes';
+import { sceneRgba, sceneView, SCENE_H, SCENE_W, VIEW_H, VIEW_W } from '@/apps/safari/project/dialogueScenes';
 import type { SceneKind } from '@/apps/safari/project/dialogueStage';
 
 /** 칸 그림: 한 칸을 scale 칸(게임 화면의 px)으로 키운 사각형들. 가장자리를 흐리지 않는다 */
@@ -48,15 +48,17 @@ const SceneCanvas: React.FC<{ scene: SceneKind; night: boolean }> = ({ scene, ni
 	useEffect(() => {
 		const ctx = ref.current?.getContext('2d');
 		if (!ctx || typeof ImageData === 'undefined') return;
-		ctx.putImageData(new ImageData(new Uint8ClampedArray(sceneRgba(scene, night)), SCENE_W, SCENE_H), 0, 0);
+		// 480×272 장면에서 게임 화면만큼(360×208)을 잘라 올린다
+		const view = sceneView(scene);
+		ctx.putImageData(new ImageData(new Uint8ClampedArray(sceneRgba(scene, night)), SCENE_W, SCENE_H), -view.x, -view.y);
 	}, [scene, night]);
 	return (
 		<canvas
 			ref={ref}
 			className="dl-backdrop"
 			data-night={night || undefined}
-			width={SCENE_W}
-			height={SCENE_H}
+			width={VIEW_W}
+			height={VIEW_H}
 			aria-hidden="true"
 		/>
 	);
