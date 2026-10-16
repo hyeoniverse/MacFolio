@@ -3191,8 +3191,16 @@ const ProjectsPane = () => {
 							</span>
 							{editMode && (
 								<>
+									{/* 줄 전체가 편집 단추 (항목 시트처럼 줄을 누르면 연다). 스위치·손잡이는 그 위에 따로 눌린다 */}
+									<button
+										type="button"
+										className="projects-row-open"
+										aria-label={`${name} 편집`}
+										disabled={busy}
+										onClick={() => setEditing(row)}
+									/>
 									<span className="showcase-actions">
-										{/* 코드에 있는 프로젝트는 숨기기만, 새로 더한 프로젝트는 빼기(⊖) */}
+										{/* 코드에 있는 프로젝트는 보이기 스위치로 숨기고, 새로 더한 프로젝트는 빼기(⊖) */}
 										{row.isNew ? (
 											<IconButton
 												icon="fa-solid fa-circle-minus"
@@ -3202,23 +3210,22 @@ const ProjectsPane = () => {
 												onClick={() => update(rows.filter((other) => other !== row))}
 											/>
 										) : (
-											<IconButton
-												icon={row.hidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}
-												className="projects-visibility"
-												label={row.hidden ? `${name} 보이기` : `${name} 숨기기`}
+											<input
+												type="checkbox"
+												role="switch"
+												className="projects-switch projects-row-switch"
+												aria-label={`${name} 보이기`}
+												title={row.hidden ? '숨긴 프로젝트입니다.' : '보이는 프로젝트입니다.'}
+												checked={!row.hidden}
 												disabled={busy}
-												onClick={() =>
-													update(rows.map((other) => (other === row ? { ...row, hidden: !row.hidden } : other)))
+												onChange={(event) =>
+													update(
+														rows.map((other) => (other === row ? { ...row, hidden: !event.target.checked } : other))
+													)
 												}
 											/>
 										)}
-										<IconButton
-											icon="fa-solid fa-circle-info"
-											className="projects-info"
-											label={`${name} 편집`}
-											disabled={busy}
-											onClick={() => setEditing(row)}
-										/>
+										<RowChevron />
 									</span>
 									{/* ≡ 손잡이 (GitHub 항목·메모 폴더 편집과 같다): 끌거나 ↑·↓ 키로 순서를 바꾼다 */}
 									<button
@@ -3275,9 +3282,9 @@ const ProjectsPane = () => {
 			)}
 
 			<p className="about-pane-hint">
-				편집을 누르면 ≡로 순서를 바꾸고, 눈 모양으로 숨기고, ⓘ로 고치고, 맨 아래 칸에 id를 적어 새 프로젝트를 더합니다.
-				완료를 누르면 저장합니다. 숨긴 프로젝트는 Safari 탭·Finder·터미널·Dock에서 빠집니다. 코드에 있는 프로젝트는 숨길
-				수만 있고, 새로 더한 프로젝트는 지울 수 있습니다.
+				편집을 누르면 ≡로 순서를 바꾸고, 스위치로 보이거나 숨기고, 줄을 눌러 고치고, 맨 아래 칸에 id를 적어 새
+				프로젝트를 더합니다. 완료를 누르면 저장합니다. 숨긴 프로젝트는 Safari 탭·Finder·터미널·Dock에서 빠집니다. 코드에
+				있는 프로젝트는 숨길 수만 있고, 새로 더한 프로젝트는 지울 수 있습니다.
 			</p>
 			{editMode && saved && (
 				<button
