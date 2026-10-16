@@ -1253,13 +1253,54 @@ ol.showcase-list .showcase-row.reordering {
 	font-size: 12px;
 }
 
-/* 프로젝트 편집 모드의 줄 단추: 고치기(ⓘ)는 강조 색, 숨기기(눈)는 회색 */
-.projects-info {
-	color: var(--color-accent);
+/*
+ * 프로젝트 편집 모드의 줄: 줄 전체가 편집 단추(.projects-row-open, 줄 위에 깔린 투명 단추)이고,
+ * 보이기 스위치·⊖·≡ 손잡이는 그 위에 따로 눌린다. 줄 끝 갈매기는 누르면 편집이 열린다는 표시
+ */
+.projects-row {
+	position: relative;
 }
 
-.projects-visibility {
-	color: var(--color-text-secondary);
+.projects-row-open {
+	position: absolute;
+	inset: 0;
+	padding: 0;
+	border: none;
+	border-radius: inherit;
+	background: none;
+	cursor: pointer;
+}
+
+.projects-row-open:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--color-text) 4%, transparent);
+}
+
+.projects-row-open:focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: -2px;
+}
+
+.projects-row .showcase-actions,
+.projects-row .showcase-handle {
+	position: relative;
+}
+
+.projects-row .showcase-actions {
+	gap: 10px;
+	pointer-events: none;
+}
+
+.projects-row .showcase-actions > :not(.projects-nav-chevron) {
+	pointer-events: auto;
+}
+
+.projects-row-switch {
+	--pe-switch-off: rgba(0, 0, 0, 0.1);
+	--pe-focus: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+:root[data-theme='dark'] .projects-row-switch {
+	--pe-switch-off: rgba(255, 255, 255, 0.16);
 }
 
 /*
