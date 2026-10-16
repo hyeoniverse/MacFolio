@@ -1,21 +1,25 @@
 // dialogue 모양: 현대 픽셀 RPG(Celeste, Sea of Stars) 같은 대화창. Safari 페이지 전체가 게임 화면이다.
 // 페이지 높이에 맞춰 정수 배(zoom)를 고르고(게임 칸이 세로 200칸 이상 되는 가장 큰 배수), 게임 화면은 페이지를 그 배수로 나눈 크기
-// (폭·높이가 창마다 다르다). 그 크기 그대로 16×16 타일 장면(sceneOf, dialogueScenes.ts)을 화면 가득 칠하고(낮·밤 팔레트),
-// 창들은 화면 가장자리에 붙여 장면 위에 조용히 얹는다: 왼쪽 위 길잡이(메뉴 ▸ 주제 ▸ n/N 항목, 단계 점, 읽은 주제),
-// 오른쪽 위 메뉴로 단추, 아래 대화 창(이름표, 두 줄 대사, 오른쪽 아래 키 안내와 ▼). 메뉴 차례에는 오른쪽에 번호 붙은 여정 목록이 서고,
-// 커서가 가리키는 주제의 장면과 그림이 바로 미리보기다. 창은 반투명한 짙은 바탕에 1칸 밝은 테두리(모서리 한 칸을 깎는다)라
-// 장면의 색이 비치면서도 글은 늘 짙은 창 안에서 읽힌다. 무대에는 주제마다 게임 화면 하나(DialoguePanels.tsx)를 그려
-// 대사가 말하는 항목을 짚고, 그 장에 그림이 있으면 그림을 액자에 원래 모습 그대로 띄우고 게임 화면은 옆에 작게 둔다
-// 첫 화면은 마을(DialogueTown.tsx, dialogueWorld.ts): 타이틀 다음에 주인공이 입구에 서고, 장소(게시판, 상점, 몬스터, 팀원...)를
-// 살펴보면 그 주제의 대화가 흐른 뒤 마을의 같은 자리로 돌아온다. X·바로 가기는 걷지 않고 모든 주제를 고르는 메뉴(읽기 프로그램의 길)
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+// (폭·높이가 창마다 다르다). 무대 뒤는 늘 마을(DialogueTown.tsx, Ninja Adventure 타일, 낮·밤)이고, 창들은 화면 가장자리에 붙여
+// 그 위에 조용히 얹는다: 왼쪽 위 길잡이(메뉴 ▸ 주제 ▸ n/N 항목, 단계 점, 읽은 주제), 오른쪽 위 메뉴로 단추, 아래 대화 창
+// (이름표, 두 줄 대사, 오른쪽 아래 키 안내와 ▼). 메뉴 차례에는 오른쪽에 번호 붙은 여정 목록이 서고, 카메라는 커서 주제의 장소로 간다.
+// 이야기 중에는 마을을 어둡게 덮고(마을에서 열었으면 주인공이 선 자리, 메뉴에서 열었으면 그 주제의 장소), 무대에 주제마다 게임 화면
+// 하나(DialoguePanels.tsx)를 그려 대사가 말하는 항목을 짚는다. 그 장에 그림이 있으면 그림은 게임 화면 밖의 판(DialoguePhoto.tsx)에
+// 실제 px로 띄운다(정수 배로 키우면 흐려지므로). 누르면 페이지 전체를 덮는 크게 보기가 열린다.
+// 첫 화면은 마을: 타이틀 다음에 주인공이 입구에 서고, 장소(게시판, 상점, 몬스터, 팀원...)를 살펴보면 그 주제의 대화가 흐른 뒤
+// 마을의 같은 자리로 돌아온다. X·바로 가기는 걷지 않고 모든 주제를 고르는 메뉴(읽기 프로그램의 길).
+// 키는 이 페이지가 든 Safari 창 안에서 누른 것만 받는다(dialogueKeys.ts): 탭을 눌러 연 뒤 포커스가 탭에 남아 있어도 바로 먹는다
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { Links } from '@/apps/safari/project/parts';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import type { TroubleStepKey } from '@/apps/safari/project/landing/content';
-import { nextUnread, paginate, sceneOf, shorten, troubleKeys } from '@/apps/safari/project/dialogueStage';
+import { nextUnread, paginate, shorten, troubleKeys, type Box, type Slide } from '@/apps/safari/project/dialogueStage';
 import { TitleScreen, TopicPanel, type PanelFocus } from '@/apps/safari/project/DialoguePanels';
-import { PixelIcon, PixelImage, SceneBackdrop } from '@/apps/safari/project/DialoguePixels';
+import { PixelIcon, PixelImage } from '@/apps/safari/project/DialoguePixels';
+import { acceptsGameKey } from '@/apps/safari/project/dialogueKeys';
+import { TILE } from '@/apps/safari/project/dialogueNinja';
+import { DialoguePhoto, Lightbox, PhotoAlbum } from '@/apps/safari/project/DialoguePhoto';
 import type { IconName } from '@/apps/safari/project/dialogueIcons';
 import DialogueTown, { type PlayerSpot } from '@/apps/safari/project/DialogueTown';
 import {
@@ -27,13 +31,6 @@ import {
 	type Place,
 } from '@/apps/safari/project/dialogueWorld';
 import '@/apps/safari/project/DialoguePage.css';
-
-/** 무대에 띄우는 그림(또는 영상) 한 장. caption이 있으면 그림 아래에 작게 적는다 */
-interface Slide {
-	src: string;
-	caption?: string;
-	video?: boolean;
-}
 
 /** 대화 상자에 한 번에 보이는 한 장 */
 interface Line {
@@ -451,58 +448,12 @@ interface Hint {
 	joined?: boolean;
 }
 
-/** 그림을 받으면 그 비율을 액자에 적는다 (CSS가 무대에 들어가는 가장 큰 크기로 키운다) */
-const noteRatio = (el: HTMLElement, w: number, h: number) => {
-	if (w > 0 && h > 0) el.closest<HTMLElement>('.dl-shot')?.style.setProperty('--dl-ar', String(w / h));
-};
-
-/**
- * 그림 한 장: 얇은 테두리 액자에 원래 모습 그대로, 무대 가운데에 비율을 지켜 가장 크게. 영상은 소리 없이 반복한다.
- * 액자 아래 줄에 이름(caption)과 넘기기 단추
- */
-const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNode }> = ({
-	slide,
-	caption,
-	children,
-}) => (
-	<figure className="dl-shot">
-		<div className="dl-shot-frame">
-			{slide.video ? (
-				<video
-					src={slide.src}
-					muted
-					loop
-					playsInline
-					autoPlay={!prefersReducedMotion()}
-					preload="metadata"
-					aria-hidden="true"
-					onLoadedMetadata={(e) => noteRatio(e.currentTarget, e.currentTarget.videoWidth, e.currentTarget.videoHeight)}
-				/>
-			) : (
-				<img
-					src={slide.src}
-					alt=""
-					onLoad={(e) => noteRatio(e.currentTarget, e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)}
-				/>
-			)}
-		</div>
-		{(caption || children) && (
-			<figcaption className="dl-shot-foot">
-				{children}
-				{caption && (
-					<span className="dl-caption" aria-hidden="true">
-						{caption}
-					</span>
-				)}
-			</figcaption>
-		)}
-	</figure>
-);
-
 const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const { slides: album, fromGallery } = useMemo(() => buildAlbum(project), [project]);
 	const cover = project.image || album[0]?.src;
 	const rootRef = useRef<HTMLDivElement>(null);
+	// 무대에서 그림이 설 자리 (게임 화면 안의 빈 칸). 그 실제 px 사각형에 그림 판을 띄운다
+	const slotRef = useRef<HTMLDivElement>(null);
 	const screen = useScreen(rootRef);
 	// 대화 창의 글 폭(게임 칸): 화면 폭을 따라 한 장에 담는 글의 양이 달라진다
 	const textW = textWidthOf(screen.compact ? Math.min(screen.w, 360) : screen.w);
@@ -641,6 +592,10 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		},
 		[slides.length, lineKey, slideIndex]
 	);
+	// 크게 보기: 연 장(lineKey)에서만 열려 있다 (장이 바뀌면 닫힌다)
+	const [zoomedAt, setZoomedAt] = useState<string | null>(null);
+	const zoomed = zoomedAt === lineKey && slides.length > 0;
+	const closeZoom = useCallback(() => setZoomedAt(null), []);
 
 	/** '다음': 찍히는 중이면 바로 다 보이고, 다 보였으면 다음 장으로. 주제의 마지막 장 다음은 끝맺음 장, 그다음은 메뉴(또는 엔딩) */
 	const next = useCallback(() => {
@@ -801,15 +756,25 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		const root = rootRef.current;
 		if (!root) return;
 		const onKey = (event: KeyboardEvent) => {
+			// 이 페이지가 든 Safari 창 안의 키만 (탭을 눌러 연 뒤 포커스가 탭 단추에 남아 있어도 받는다, dialogueKeys.ts)
+			if (!acceptsGameKey(event, root)) return;
 			const target = event.target as HTMLElement | null;
-			if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
-			if (target && target !== document.body && !root.contains(target)) return;
-			if (event.metaKey || event.ctrlKey || event.altKey) return;
-			// 그림 넘기기 단추는 제 일을 한다
-			if (target?.closest('.dl-flip')) return;
 			const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
 			const confirm = key === ' ' || key === 'Enter' || key === 'z';
 			const leave = key === 'Escape' || key === 'x';
+			// 크게 보기: Esc·X로 닫고 ←·→로 넘긴다 (다른 키는 막 뒤의 대화로 가지 않는다)
+			if (zoomed) {
+				if (leave) {
+					event.preventDefault();
+					closeZoom();
+				} else if ((key === 'ArrowLeft' || key === 'ArrowRight') && slides.length > 1) {
+					event.preventDefault();
+					flip(key === 'ArrowRight' ? 1 : -1);
+				}
+				return;
+			}
+			// 그림 넘기기·크게 보기 단추는 제 일을 한다 (Enter·Space)
+			if ((key === 'Enter' || key === ' ') && target?.closest('.dl-photo')) return;
 			// 마을: 걷기와 살펴보기는 DialogueTown이 받고, X·Esc는 바로 가기 메뉴를 연다
 			if (mode.kind === 'world') {
 				if (leave) {
@@ -855,7 +820,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
-	}, [mode, next, choose, visible, cursor, moveCursor, toMenu, slides.length, flip, openMenu]);
+	}, [mode, next, choose, visible, cursor, moveCursor, toMenu, slides.length, flip, openMenu, zoomed, closeZoom]);
 
 	const inMenu = mode.kind === 'menu';
 	// 링크 단추: 첫 화면(인사)에서 바로 열 수 있게, 그리고 엔딩과 '링크' 주제에서 (무대 아래 창에)
@@ -1015,26 +980,29 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			const plain = !focus || UNCOUNTED.has(id) || id === MORE_TOPIC;
 			const preview = focus?.thumb ?? (id === BACK_TOPIC ? cover : undefined);
 			return (
-				<div className="dl-scene dl-preview" aria-hidden="true" inert key={preview ?? `panel-${id}`}>
-					{preview ? <Frame slide={{ src: preview }} /> : panelOf(plain ? 'title' : { topic: id }, narrowPreview)}
+				<div
+					className="dl-scene dl-preview"
+					aria-hidden="true"
+					inert
+					key={preview ?? `panel-${id}`}
+					ref={preview ? slotRef : undefined}
+					data-photo-slot={preview ? '' : undefined}
+				>
+					{!preview && panelOf(plain ? 'title' : { topic: id }, narrowPreview)}
 				</div>
 			);
 		}
 		if (mode.kind === 'ending') {
-			const shelf = album.slice(0, 4);
+			// 앨범(그림이 둘 이상이면)은 게임 화면 밖의 판에 (자리만 둔다)
+			const shelf = album.slice(0, 4).length > 1;
 			return (
-				<div className="dl-scene" aria-hidden="true">
-					{shelf.length > 1 ? (
-						<figure className="dl-shot">
-							<div className="dl-album" data-count={shelf.length}>
-								{shelf.map((slide) => (
-									<img key={slide.src} src={slide.src} alt="" />
-								))}
-							</div>
-						</figure>
-					) : (
-						panelOf('end', false)
-					)}
+				<div
+					className="dl-scene"
+					aria-hidden="true"
+					ref={shelf ? slotRef : undefined}
+					data-photo-slot={shelf ? '' : undefined}
+				>
+					{!shelf && panelOf('end', false)}
 				</div>
 			);
 		}
@@ -1051,36 +1019,74 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				? { topic: mode.id, item: line?.item, step: line?.step }
 				: 'title';
 		const topicId = mode.kind === 'topic' ? mode.id : '';
-		// 그림이 있으면 그림만 크게 (옆에 게임 화면을 두지 않는다: 어디인지는 길잡이 줄이 말한다)
+		// 그림이 있으면 그림만 크게 (옆에 게임 화면을 두지 않는다: 어디인지는 길잡이 줄이 말한다). 그림은 게임 화면 밖의 판에
+		// 실제 px로 띄우고(DialoguePhoto), 무대에는 그 자리만 둔다
 		return (
-			<div className="dl-scene" key={slide ? lineKey : `panel-${topicId}`}>
-				{slide ? (
-					<Frame slide={slide} caption={topicId === 'gallery' ? undefined : slide.caption}>
-						{slides.length > 1 && (
-							<span className="dl-flip">
-								<button type="button" aria-label="이전 그림" onClick={() => flip(-1)}>
-									◀
-								</button>
-								<span className="dl-dots" aria-hidden="true">
-									{slides.map((s, i) => (
-										<i key={s.src} data-on={i === slideIndex || undefined} />
-									))}
-								</span>
-								<span className="visually-hidden" aria-live="polite">
-									{`그림 ${slideIndex + 1} / ${slides.length}`}
-								</span>
-								<button type="button" aria-label="다음 그림" onClick={() => flip(1)}>
-									▶
-								</button>
-							</span>
-						)}
-					</Frame>
-				) : (
-					panelOf(focus, false)
-				)}
+			<div
+				className="dl-scene"
+				key={slide ? lineKey : `panel-${topicId}`}
+				ref={slide ? slotRef : undefined}
+				data-photo-slot={slide ? '' : undefined}
+			>
+				{!slide && panelOf(focus, false)}
 			</div>
 		);
 	};
+
+	/** 게임 화면 밖의 그림 판: 무대 자리(slotRef)에 실제 px로. 메뉴는 미리보기, 엔딩은 앨범, 이야기 중에는 지금 장의 그림 */
+	const renderPhotos = () => {
+		if (!photoBox) return null;
+		if (mode.kind === 'menu') {
+			const focus = visible[cursor];
+			const preview = focus?.thumb ?? (focus?.id === BACK_TOPIC ? cover : undefined);
+			return preview ? (
+				<DialoguePhoto key={preview} box={photoBox} zoom={screen.zoom} slides={[{ src: preview }]} index={0} />
+			) : null;
+		}
+		if (mode.kind === 'ending') return <PhotoAlbum box={photoBox} slides={album.slice(0, 4)} />;
+		if (ended || slides.length === 0) return null;
+		const topicId = mode.kind === 'topic' ? mode.id : '';
+		return (
+			<DialoguePhoto
+				box={photoBox}
+				zoom={screen.zoom}
+				slides={slides}
+				index={slideIndex}
+				caption={topicId === 'gallery' ? undefined : slides[slideIndex]?.caption}
+				interactive
+				onFlip={flip}
+				onOpen={() => setZoomedAt(lineKey)}
+			/>
+		);
+	};
+
+	// 그림 자리의 실제 px 사각형 (.dl 기준): 그릴 때마다 재고, 바뀌었을 때만 고친다 (게임 화면 크기는 useScreen이 다시 그린다)
+	const [photoBox, setPhotoBox] = useState<Box | null>(null);
+	useLayoutEffect(() => {
+		const slot = slotRef.current;
+		const root = rootRef.current;
+		let next: Box | null = null;
+		if (slot && root) {
+			const r = slot.getBoundingClientRect();
+			const o = root.getBoundingClientRect();
+			// 무대와 창 사이의 틈(게임 칸 8 × zoom)은 그림에는 넓다: 위·아래(링크 창이 없을 때) 12px만 남기고 그림 자리로 쓴다
+			const grow = Math.max(0, 8 * screen.zoom - 12);
+			const top = r.top - o.top - grow;
+			const bottom = r.bottom - o.top + (showLinks ? 0 : grow);
+			next = {
+				x: Math.round(r.left - o.left),
+				y: Math.round(top),
+				w: Math.round(r.width),
+				h: Math.round(bottom - top),
+			};
+		}
+		setPhotoBox((prev) =>
+			prev === next ||
+			(prev && next && prev.x === next.x && prev.y === next.y && prev.w === next.w && prev.h === next.h)
+				? prev
+				: next
+		);
+	}, [screen, mode, cursor, lineKey, ended, slides.length, slideIndex, showLinks]);
 
 	const portrait = mode.kind === 'topic' && !ended ? line?.portrait : undefined;
 	const inVillage = mode.kind === 'world' || mode.kind === 'greet';
@@ -1092,11 +1098,27 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		: front
 			? `마을, 앞에 있는 곳은 ${front.label}입니다. Z를 누르면 ${frontAction(front)}를 합니다.`
 			: '마을입니다. 방향 키로 걷고 Z로 살펴보며, X를 누르면 모든 주제가 있는 바로 가기 메뉴가 열립니다.';
-	// 무대 뒤 장면: 메뉴에서는 커서 주제의 것, 엔딩은 밤하늘
-	const scene =
-		mode.kind === 'ending'
-			? 'night'
-			: sceneOf(mode.kind === 'topic' ? mode.id : mode.kind === 'menu' ? visible[cursor]?.id : undefined);
+	// 무대 뒤는 늘 마을이다. 타이틀은 광장, 걷는 동안과 마을에서 연 주제는 주인공이 선 자리, 메뉴는 커서 주제의 장소,
+	// 메뉴에서 연 주제는 그 주제의 장소(장은 도서관), 메뉴에서 연 엔딩은 북쪽 문 둘레를 보인다. 이야기 중에는 마을을 어둡게 덮는다
+	const viewTopic =
+		mode.kind === 'menu'
+			? visible[cursor]?.id
+			: mode.kind === 'topic' && !fromWorld
+				? mode.id
+				: mode.kind === 'ending' && !fromWorld
+					? ENDING_TOPIC
+					: undefined;
+	const viewKey = viewTopic && (isChapter(viewTopic) || viewTopic === BACK_TOPIC ? MORE_TOPIC : viewTopic);
+	const viewPlace = viewKey ? layout.places.find((p) => p.topic === viewKey) : undefined;
+	const viewX = viewPlace ? (viewPlace.x + viewPlace.w / 2) * TILE : undefined;
+	const viewY = viewPlace ? (viewPlace.y + viewPlace.h / 2) * TILE : undefined;
+	const placeView = useMemo(
+		() => (viewX === undefined || viewY === undefined ? undefined : { x: viewX, y: viewY }),
+		[viewX, viewY]
+	);
+	const camera = mode.kind === 'greet' ? TITLE_VIEW : mode.kind === 'world' ? undefined : placeView;
+	// 그림이 있는 장은 더 어둡게 (그림이 앞에 선다)
+	const dim = inVillage ? undefined : photoBox && mode.kind !== 'menu' ? 'photo' : 'panel';
 
 	return (
 		<div
@@ -1113,28 +1135,27 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			{/* 게임 화면: 페이지를 zoom으로 나눈 크기(게임 칸)를 정수 배로 키워 페이지를 꽉 채운다. 안의 크기는 모두 게임 칸 */}
 			<div
 				className="dl-screen"
+				inert={zoomed}
 				style={screen.compact ? undefined : { zoom: screen.zoom, width: screen.w, height: screen.h }}
 				data-zoom={screen.zoom}
 			>
-				<div className="dl-game" data-scene={inVillage ? 'village' : scene}>
-					{/* 타이틀과 마을 차례는 마을 지도, 그 밖에는 화면 가득한 타일 장면 (낮·밤 두 장 중 테마에 맞는 한 장) */}
-					{inVillage ? (
-						<DialogueTown
-							layout={layout}
-							read={read}
-							gateOpen={allRead}
-							player={player}
-							onMove={moved}
-							onInteract={interact}
-							viewW={screen.compact ? Math.max(1, screen.w - 12) : screen.w}
-							viewH={screen.compact ? 220 : screen.h}
-							walking={mode.kind === 'world'}
-							camera={mode.kind === 'greet' ? TITLE_VIEW : undefined}
-							band={screen.compact ? 0 : CHIP_BAND}
-						/>
-					) : (
-						<SceneBackdrop scene={scene} width={screen.w} height={screen.h} />
-					)}
+				<div className="dl-game" data-dim={dim}>
+					{/* 무대 뒤는 늘 마을 (낮·밤 두 장 중 테마에 맞는 한 장). 이야기 중에는 걷지 않고, 그 위를 어두운 막이 덮는다 */}
+					<DialogueTown
+						layout={layout}
+						read={read}
+						gateOpen={allRead}
+						player={player}
+						onMove={moved}
+						onInteract={interact}
+						viewW={screen.compact ? Math.max(1, screen.w - (inVillage ? 12 : 0)) : screen.w}
+						viewH={screen.compact ? (inVillage ? 220 : screen.h) : screen.h}
+						walking={mode.kind === 'world'}
+						hero={mode.kind !== 'greet'}
+						camera={camera}
+						band={screen.compact ? 0 : CHIP_BAND}
+					/>
+					{dim && <div className="dl-dim" aria-hidden="true" />}
 
 					{/* 왼쪽 위 길잡이: 지금 어디인지(메뉴 ▸ 주제 ▸ n/N 항목), 단계 점, 읽은 주제 */}
 					<div className="dl-hud dl-panel">
@@ -1269,6 +1290,17 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 					</div>
 				</div>
 			</div>
+			{/* 그림 판: 게임 화면 밖에 실제 px로 (정수 배로 키우지 않아 흐려지지 않는다). 크게 보기는 페이지 전체를 덮는다 */}
+			{renderPhotos()}
+			{zoomed && (
+				<Lightbox
+					slides={slides}
+					index={slideIndex}
+					caption={slides[slideIndex]?.caption}
+					onFlip={flip}
+					onClose={closeZoom}
+				/>
+			)}
 		</div>
 	);
 };
