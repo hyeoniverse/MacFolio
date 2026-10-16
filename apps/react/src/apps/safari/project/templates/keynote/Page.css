@@ -1,6 +1,6 @@
-/* keynote 템플릿 (templates/keynote/Page.tsx): 키노트 무대처럼 검은 바탕 위에 장면을 하나씩. 사이트 테마와 상관없이 같은 무대다
-   (무대라는 콘셉트가 어두운 바탕이라서, e2e/looks/keynote.spec.ts가 두 테마의 바탕색을 같은 값으로 확인한다).
-   글자는 또렷하게(#f5f5f7, 본문 #a1a1a6), 강조색은 한 점. 빛 번짐·그라데이션 글자 없이 첫 화면의 옅은 비네트 하나만 둔다 */
+/* keynote 템플릿 (templates/keynote/Page.tsx): 발표 슬라이드. 검은 방 가운데 16:9 무대 하나, 아래 얇은 진행 줄과 조작 막대.
+   사이트 테마와 상관없이 같은 무대다 (e2e/looks/keynote.spec.ts가 두 테마의 바탕색을 같은 값으로 확인한다).
+   무대 안의 글자 크기는 무대 폭(cqw)을 따라 커지고 줄어 어느 창 크기에서도 같은 슬라이드로 보인다. 빛 번짐·그라데이션 글자는 쓰지 않는다 */
 .tpl.tpl-keynote {
 	--lk-accent: #5e6ad2;
 	--lk-accent-2: #a3a9f2;
@@ -8,27 +8,32 @@
 	/* 무대가 언제나 어두워서 강조색도 언제나 밝은 값 */
 	--tpl-accent: var(--lk-dark-accent);
 	--kn-bg: #000000;
-	--kn-raise: #0b0b0d;
-	--kn-raise-2: #161618;
+	--kn-stage: #0b0b0d;
+	--kn-raise: #161618;
+	--kn-raise-2: #222225;
 	--kn-line: rgba(255, 255, 255, 0.1);
-	--kn-line-strong: rgba(255, 255, 255, 0.17);
+	--kn-line-strong: rgba(255, 255, 255, 0.18);
 	--kn-text: #f5f5f7;
 	--kn-muted: #a1a1a6;
 	--kn-dim: #6e6e73;
 	--kn-mono: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace;
-	--kn-wide: 1180px;
-	--kn-gutter: clamp(20px, 5cqi, 72px);
-	--kn-scene: clamp(104px, 13cqi, 184px);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: max(420px, var(--kn-vh, 100vh));
+	min-height: 0;
+	overflow: hidden;
 	background-color: var(--kn-bg);
 	color: var(--kn-text);
 	color-scheme: dark;
 	font-size: 16px;
 	letter-spacing: -0.01em;
+	word-break: keep-all;
 	-webkit-font-smoothing: antialiased;
 }
 
 /* 요소 초기화는 특정도 0으로 (클래스 규칙이 이기게) */
-:where(.tpl-keynote) :where(h1, h2, h3, p, ul, ol, dl, dd, figure, pre) {
+:where(.tpl-keynote) :where(h1, h2, h3, h4, p, ul, ol, dl, dd, figure, pre) {
 	margin: 0;
 	padding: 0;
 }
@@ -37,22 +42,19 @@
 	list-style: none;
 }
 
-:where(.tpl-keynote) :where(h1, h2, h3) {
+:where(.tpl-keynote) :where(h1, h2, h3, h4) {
 	color: var(--kn-text);
+	font-weight: 600;
 	text-wrap: balance;
-}
-
-:where(.tpl-keynote) :where(p) {
-	text-wrap: pretty;
 }
 
 :where(.tpl-keynote) :where(a) {
 	color: inherit;
 }
 
-/* 나타나는 연출: 공통(ProjectPage.css)보다 얕게, 조금 아래에서 제자리로 */
-.tpl-keynote [data-reveal] {
-	--reveal-from: translateY(28px);
+.tpl-keynote :focus-visible {
+	outline: 2px solid var(--tpl-accent);
+	outline-offset: 2px;
 }
 
 /* 다크 짝이 있는 그림은 무대에 맞게 언제나 다크 그림을 보인다. 라이트 그림은 설명(alt)을 읽히도록 보이지 않게만 남긴다 */
@@ -68,53 +70,140 @@
 	display: block;
 }
 
-/* ─── 공통 조각 ─── */
-.kn-eyebrow {
-	color: var(--tpl-accent);
-	font-size: 15px;
-	font-weight: 600;
-	letter-spacing: 0;
+/* ─── 방과 무대: 남은 높이에 맞춘 16:9 ─── */
+.kn-room {
+	display: grid;
+	flex: 1 1 0;
+	place-items: center;
+	min-height: 0;
+	padding: 20px 24px 10px;
+	container-type: size;
 }
 
-.kn-index {
-	color: var(--kn-dim);
-	font-family: var(--kn-mono);
-	font-size: 12px;
-	font-weight: 500;
-	letter-spacing: 0.02em;
-	font-variant-numeric: tabular-nums;
-}
-
-.kn-frame {
+.kn-stage {
+	position: relative;
+	width: min(100cqw, 100cqh * 16 / 9);
+	aspect-ratio: 16 / 9;
 	overflow: hidden;
-	border-radius: 14px;
-	background-color: var(--kn-raise);
-	box-shadow: 0 0 0 1px var(--kn-line-strong);
+	border-radius: 10px;
+	outline: 1px solid var(--kn-line);
+	outline-offset: -1px;
+	background-color: var(--kn-stage);
+	cursor: pointer;
+	container: kn-stage / size;
 }
 
-.kn-frame .kn-frame-media,
-.kn-frame .kn-frame-media img {
-	display: block;
-	width: 100%;
-	height: auto;
+.kn-slide {
+	position: absolute;
+	inset: 0;
+	overflow: auto;
+	cursor: default;
+	animation: kn-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+	scrollbar-width: thin;
 }
 
-.kn-group {
-	margin-bottom: 10px;
+.kn-stage:not(:has(a:hover, button:hover)) .kn-slide {
+	cursor: pointer;
+}
+
+@keyframes kn-in {
+	from {
+		opacity: 0;
+		transform: translateY(1.2cqh);
+	}
+}
+
+.kn-region {
+	height: 100%;
+}
+
+/* 한 장: 무대 안쪽 여백, 왼쪽 위의 작은 구역 이름 */
+.kn-s {
+	position: relative;
+	box-sizing: border-box;
+	min-height: 100%;
+	padding: max(40px, 11cqh) 6cqw max(28px, 7cqh);
+	font-size: max(12px, 1.3cqw);
+	line-height: 1.5;
+}
+
+.kn-tag {
+	position: absolute;
+	top: max(18px, 5cqh);
+	left: 6cqw;
+	display: flex;
+	gap: 1.2cqw;
+	align-items: baseline;
+	color: var(--tpl-accent);
+	font-size: max(11px, 1.1cqw);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+.kn-tag-count {
 	color: var(--kn-dim);
 	font-family: var(--kn-mono);
-	font-size: 12px;
-	letter-spacing: 0.04em;
+	font-weight: 400;
+}
+
+.kn-headline {
+	color: var(--kn-text);
+	font-size: max(20px, 3.3cqw);
+	font-weight: 600;
+	line-height: 1.12;
+	letter-spacing: -0.03em;
+	text-wrap: balance;
+}
+
+.kn-line {
+	margin-top: 1.4cqh;
+	color: var(--kn-muted);
+	font-size: max(14px, 1.65cqw);
+	line-height: 1.45;
 }
 
 .kn-body {
+	margin-top: 0.8cqh;
 	color: var(--kn-muted);
-	line-height: 1.6;
+	line-height: 1.5;
 }
 
-.kn-detail {
+.kn-group {
+	margin-bottom: 1cqh;
 	color: var(--kn-dim);
-	line-height: 1.65;
+	font-size: max(11px, 1.05cqw);
+	font-weight: 600;
+}
+
+/* 얇은 테두리의 화면 틀 */
+.kn-frame {
+	overflow: hidden;
+	border-radius: max(6px, 0.9cqw);
+	outline: 1px solid var(--kn-line-strong);
+	outline-offset: -1px;
+	background-color: var(--kn-raise);
+}
+
+.kn-frame-media,
+.kn-frame-media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top center;
+}
+
+.kn-icon-tile {
+	display: inline-grid;
+	place-items: center;
+	width: 1em;
+	aspect-ratio: 1;
+	border-radius: 24%;
+	background-color: var(--tpl-accent);
+	color: #ffffff;
+}
+
+.kn-icon-tile > i {
+	font-size: 0.44em;
 }
 
 /* ─── 링크: 첫 링크는 흰 알약(검은 글자), 나머지는 강조색 글자 링크 ─── */
@@ -122,22 +211,28 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	justify-content: center;
-	gap: 14px 30px;
+	gap: 1.4cqh 2.4cqw;
+	margin-top: 4cqh;
 }
 
 .kn-links > a,
 .kn-links > button {
 	display: inline-flex;
 	align-items: center;
-	gap: 2px;
+	gap: 4px;
 	padding: 0;
 	border: 0;
 	background: none;
 	color: var(--tpl-accent);
-	font-size: 17px;
+	font: inherit;
+	font-size: max(13px, 1.25cqw);
 	font-weight: 500;
 	text-decoration: none;
+	cursor: pointer;
+}
+
+.kn-links > a i {
+	font-size: 0.7em;
 }
 
 .kn-links > a:hover {
@@ -146,13 +241,11 @@
 }
 
 .kn-links > [data-primary] {
-	padding: 12px 24px;
+	padding: max(8px, 1.1cqw) max(16px, 2cqw);
 	border-radius: 999px;
 	background-color: var(--kn-text);
 	color: #000000;
-	font-size: 16px;
 	font-weight: 600;
-	transition: background-color 0.2s ease;
 }
 
 .kn-links > [data-primary]:hover {
@@ -160,1332 +253,925 @@
 	text-decoration: none;
 }
 
-.kn-links > :focus-visible {
-	outline: 2px solid var(--tpl-accent);
-	outline-offset: 3px;
+/* ─── 표지 ─── */
+.kn-s-title {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: center;
+	gap: 4cqw;
+	padding-top: max(28px, 7cqh);
 }
 
-/* ─── 첫 장면 ─── */
-.kn-hero {
-	padding: clamp(72px, 8cqi, 112px) var(--kn-gutter) 0;
-	/* 무대의 유일한 분위기: 가운데가 아주 조금 밝은 비네트 */
-	background: radial-gradient(ellipse 75% 60% at 50% 28%, #111115 0%, #000000 70%);
-	text-align: center;
-}
-
-.kn-hero-text {
-	display: flex;
-	flex-direction: column;
+.kn-s-title[data-visual] {
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
 	align-items: center;
+	padding-right: 0;
 }
 
 .kn-brand {
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
-	color: var(--kn-text);
-	font-size: 17px;
+	gap: 0.8cqw;
+	margin-bottom: 2.6cqh;
+	color: var(--kn-muted);
+	font-size: max(12px, 1.25cqw);
 	font-weight: 600;
 }
 
 .kn-brand-icon {
-	width: 30px;
-	height: 30px;
-	border-radius: 7px;
-	object-fit: cover;
+	width: max(20px, 2.2cqw);
+	height: max(20px, 2.2cqw);
+	border-radius: 22%;
+	object-fit: contain;
 }
 
 .kn-logo {
-	display: block;
-	height: 28px;
+	height: max(18px, 2cqw);
 	width: auto;
 }
 
-.kn-hero h1 {
-	max-width: 12.5em;
-	margin-top: 26px;
-	font-size: clamp(44px, 7cqi, 100px);
-	font-weight: 600;
-	letter-spacing: -0.035em;
-	line-height: 1.05;
+.kn-s-title h1 {
+	font-size: max(28px, 4.7cqw);
+	line-height: 1.06;
+	letter-spacing: -0.04em;
+}
+
+.kn-s-title:not([data-visual]) h1 {
+	max-width: 15em;
+	font-size: max(32px, 6cqw);
 }
 
 .kn-subhead {
-	max-width: 36em;
-	margin-top: 28px;
+	max-width: 34em;
+	margin-top: 2.4cqh;
 	color: var(--kn-muted);
-	font-size: clamp(17px, 1.7cqi, 21px);
-	line-height: 1.55;
+	font-size: max(13px, 1.45cqw);
+	line-height: 1.5;
 }
 
-.kn-hero .kn-links {
-	margin-top: 40px;
-}
-
-.kn-shot {
-	max-width: var(--kn-wide);
-	margin: clamp(64px, 7cqi, 104px) auto 0;
-}
-
-/* 첫 화면의 큰 화면: 얇은 베젤 안의 화면 */
-.kn-frame-hero {
-	padding: 8px;
-	border-radius: 22px;
-	background-color: #0e0e10;
-}
-
-.kn-frame-hero .kn-frame-media {
-	overflow: hidden;
-	border-radius: 14px;
-}
-
-/* 스크롤에 맞춰 화면이 틀 안으로 떠오른다 (스크롤 연동 애니메이션을 아는 브라우저, 움직임 줄이기가 아닐 때만) */
-@supports (animation-timeline: view()) {
-	@media (prefers-reduced-motion: no-preference) {
-		.tpl-keynote .kn-rise {
-			animation: kn-rise linear both;
-			animation-timeline: view();
-			animation-range: entry 0% cover 42%;
-		}
-	}
-}
-
-@keyframes kn-rise {
-	from {
-		transform: translateY(56px) scale(0.93);
-	}
-
-	to {
-		transform: none;
-	}
-}
-
-/* 그림이 없는 첫 화면: 화면 틀 안의 타이틀 슬라이드 */
-.kn-hero-slide {
-	position: relative;
+.kn-meta {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 48px;
-	aspect-ratio: 16 / 7;
-	padding: 56px 32px;
-	border-radius: 22px;
+	flex-wrap: wrap;
+	gap: 0.6cqh 1.6cqw;
+	margin-top: 5cqh;
+	color: var(--kn-dim);
+	font-size: max(11px, 1cqw);
 }
 
-.kn-hero-slide::before,
-.kn-icon-slide::before {
-	position: absolute;
-	inset: 0;
-	background-image: radial-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1.3px);
-	background-size: 24px 24px;
-	background-position: center;
-	content: '';
-	-webkit-mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, #000 20%, transparent 85%);
-	mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, #000 20%, transparent 85%);
-	pointer-events: none;
+.kn-title-visual .kn-frame {
+	aspect-ratio: 16 / 10;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
 }
 
-.kn-hero-slide > *,
-.kn-icon-slide > * {
-	position: relative;
+.kn-title-art {
+	display: grid;
+	justify-items: center;
+	gap: 4cqh;
+	padding-right: 6cqw;
 }
 
-.kn-hero-icon {
-	width: 112px;
-	height: 112px;
-	border-radius: 26px;
-	object-fit: cover;
-	box-shadow: 0 0 0 1px var(--kn-line);
+.kn-title-icon {
+	width: 12cqw;
+	aspect-ratio: 1;
+	border-radius: 22%;
+	object-fit: contain;
 }
 
 .kn-overview {
 	display: grid;
-	grid-template-columns: repeat(var(--kn-cols, 4), minmax(0, 168px));
-	justify-content: center;
-	gap: 24px clamp(20px, 3.4cqi, 48px);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1.2cqw;
 	width: 100%;
-}
-
-.kn-overview[data-count='1'] {
-	--kn-cols: 1;
-}
-
-.kn-overview[data-count='2'] {
-	--kn-cols: 2;
-}
-
-.kn-overview[data-count='3'] {
-	--kn-cols: 3;
 }
 
 .kn-overview li {
 	display: flex;
-	flex-direction: column;
 	align-items: center;
-	text-align: center;
-}
-
-.kn-overview-index {
-	margin-top: 18px;
-	color: var(--kn-dim);
-	font-family: var(--kn-mono);
-	font-size: 12px;
-}
-
-.kn-overview b {
-	margin-top: 6px;
-	color: var(--kn-text);
-	font-size: 16px;
-	font-weight: 500;
-	line-height: 1.4;
-}
-
-.kn-icon-tile {
-	display: grid;
-	place-items: center;
-	width: 104px;
-	height: 104px;
-	border-radius: 26px;
-	background-color: var(--kn-raise-2);
-	box-shadow: 0 0 0 1px var(--kn-line-strong);
-	color: var(--tpl-accent);
-	font-size: 40px;
+	gap: 1cqw;
+	padding: 1.2cqw;
+	border-radius: 1cqw;
+	background-color: var(--kn-raise);
+	font-size: max(11px, 1.1cqw);
 }
 
 .kn-overview .kn-icon-tile {
-	width: 84px;
-	height: 84px;
-	border-radius: 21px;
-	font-size: 32px;
+	flex: none;
+	font-size: max(24px, 2.8cqw);
 }
 
-/* 앱 아이콘이 없으면 기능 타일이 슬라이드의 주인공 */
-.kn-hero-slide:not(:has(.kn-hero-icon)) .kn-overview .kn-icon-tile {
-	width: 112px;
-	height: 112px;
-	border-radius: 28px;
-	font-size: 42px;
+/* ─── 숫자: 한 장에 숫자 하나 ─── */
+.kn-s-number {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 }
 
-/* 첫 장면 아래의 정보: 프로젝트, 역할, 기간 */
-.kn-meta {
-	display: grid;
-	grid-template-columns: repeat(var(--kn-meta-cols, 3), minmax(0, 1fr));
-	gap: 24px 40px;
-	max-width: var(--kn-wide);
-	margin: clamp(56px, 6cqi, 80px) auto 0;
-	padding-top: 24px;
-	border-top: 1px solid var(--kn-line);
-	text-align: left;
-}
-
-.kn-meta[data-count='1'] {
-	--kn-meta-cols: 1;
-}
-
-.kn-meta[data-count='2'] {
-	--kn-meta-cols: 2;
-}
-
-.kn-meta dt {
-	color: var(--kn-dim);
-	font-size: 13px;
-	font-weight: 500;
-}
-
-.kn-meta dd {
-	margin-top: 6px;
-	color: var(--kn-text);
-	font-size: 15px;
-	line-height: 1.5;
-}
-
-/* ─── 장면 ─── */
-.kn-scene {
-	padding: var(--kn-scene) var(--kn-gutter) 0;
-}
-
-.kn-scene > * {
-	max-width: var(--kn-wide);
-	margin-right: auto;
-	margin-left: auto;
-}
-
-.kn-head {
-	max-width: 840px;
-	margin: 0 auto clamp(56px, 7cqi, 96px);
-	text-align: center;
-}
-
-.kn-head h2 {
-	margin-top: 16px;
-	font-size: clamp(34px, 4.8cqi, 64px);
-	font-weight: 600;
-	letter-spacing: -0.032em;
-	line-height: 1.08;
-}
-
-.kn-lead {
-	margin-top: 22px;
-	color: var(--kn-muted);
-	font-size: clamp(17px, 1.6cqi, 20px);
-	line-height: 1.6;
-}
-
-/* 숫자: 세어 올라가는 큰 숫자 한 줄, 가는 세로선으로 나눈다 */
-.kn-figure {
+.kn-giant {
 	display: block;
 	color: var(--kn-text);
-	font-size: clamp(48px, 6.2cqi, 92px);
-	font-weight: 600;
-	letter-spacing: -0.045em;
-	line-height: 1;
+	font-size: min(19cqw, 40cqh);
+	font-weight: 700;
+	line-height: 0.95;
+	letter-spacing: -0.055em;
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
 }
 
-.kn-unit {
-	margin-left: 0.08em;
-	color: var(--kn-muted);
-	font-size: 0.4em;
-	font-weight: 500;
-	letter-spacing: -0.01em;
-}
-
-.kn-stats-scene {
-	text-align: center;
-}
-
-.kn-stats-scene > .kn-eyebrow {
-	margin-bottom: 40px;
-}
-
-.kn-stats {
-	display: grid;
-	grid-template-columns: repeat(var(--kn-cols, 4), minmax(0, 1fr));
-	border-top: 1px solid var(--kn-line);
-	border-bottom: 1px solid var(--kn-line);
-}
-
-.kn-stats[data-count='1'] {
-	--kn-cols: 1;
-}
-
-.kn-stats[data-count='2'] {
-	--kn-cols: 2;
-}
-
-.kn-stats[data-count='3'] {
-	--kn-cols: 3;
-}
-
-.kn-stats li {
-	padding: clamp(36px, 4.4cqi, 56px) 16px;
-	box-shadow: -1px 0 0 var(--kn-line);
-}
-
-.kn-stats li:nth-child(4n + 1) {
-	box-shadow: none;
-}
-
-.kn-stat-label {
-	display: block;
-	margin-top: 16px;
-	color: var(--kn-muted);
-	font-size: 15px;
-	line-height: 1.45;
-}
-
-/* 기능: 하나가 한 장면. 왼쪽 글은 그림 옆에 머문다 */
-.kn-features {
-	display: grid;
-	gap: clamp(112px, 13cqi, 176px);
-}
-
-.kn-feature {
-	display: grid;
-	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-	gap: clamp(36px, 5.5cqi, 88px);
-	align-items: start;
-}
-
-.kn-feature[data-flip] {
-	grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-}
-
-.kn-feature[data-flip] .kn-feature-text {
-	order: 2;
-}
-
-.kn-feature-text {
-	position: sticky;
-	top: 72px;
-	padding-top: 8px;
-}
-
-.kn-feature-num {
-	margin-bottom: 32px;
+.kn-giant .kn-unit {
+	margin-left: 0.05em;
 	color: var(--tpl-accent);
-	font-size: clamp(56px, 6.6cqi, 96px);
+	font-size: 0.36em;
+	letter-spacing: -0.02em;
+}
+
+.kn-number-label {
+	margin-top: 3cqh;
+	color: var(--kn-muted);
+	font-size: max(16px, 2.4cqw);
 	font-weight: 600;
-	letter-spacing: -0.05em;
-	line-height: 0.9;
-	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.02em;
 }
 
-.kn-feature h3 {
-	font-size: clamp(28px, 3.1cqi, 42px);
-	font-weight: 600;
-	letter-spacing: -0.028em;
-	line-height: 1.15;
-}
-
-.kn-feature .kn-body {
-	margin-top: 18px;
-	font-size: clamp(17px, 1.5cqi, 19px);
-}
-
-.kn-feature .kn-detail {
-	margin-top: 20px;
-	padding-top: 20px;
-	border-top: 1px solid var(--kn-line);
-	font-size: 15px;
-}
-
-.kn-media-set {
+/* ─── 기능: 큰 그림과 한 줄 ─── */
+.kn-s-feature {
 	display: grid;
-	gap: 16px;
+	grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+	align-items: center;
+	gap: 4cqw;
+	padding-right: 5cqw;
 }
 
-.kn-media-more {
-	display: grid;
-	grid-template-columns: repeat(var(--kn-cols, 2), minmax(0, 1fr));
-	gap: 16px;
+.kn-feature-visual .kn-frame {
+	aspect-ratio: 16 / 10;
+	max-height: 76cqh;
 }
 
-.kn-media-more[data-count='1'] {
-	--kn-cols: 1;
+.kn-s-feature h3 {
+	font-size: max(20px, 3cqw);
+	line-height: 1.12;
+	letter-spacing: -0.03em;
 }
 
-.kn-media-more[data-count='3'] {
-	--kn-cols: 3;
+.kn-more {
+	display: flex;
+	gap: 1cqw;
+	margin-top: 3cqh;
 }
 
-/* 항목의 그림은 같은 비율(16:10)로 맞춰 위쪽부터 보인다: 장면마다 크기가 들쭉날쭉하지 않게 */
-.kn-media-set .kn-frame {
+.kn-more li {
+	width: 30%;
+}
+
+.kn-more .kn-frame {
 	aspect-ratio: 16 / 10;
 }
 
-.kn-media-set .kn-frame .kn-frame-media,
-.kn-media-set .kn-frame .kn-frame-media img,
-.kn-story-image .kn-frame .kn-frame-media,
-.kn-story-image .kn-frame .kn-frame-media img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: top;
+/* 그림이 없는 기능: 점 격자 판 위의 큰 아이콘 타일 */
+.kn-icon-art {
+	display: grid;
+	place-items: center;
+	aspect-ratio: 16 / 10;
+	max-height: 76cqh;
+	border-radius: max(6px, 0.9cqw);
+	outline: 1px solid var(--kn-line);
+	outline-offset: -1px;
+	background:
+		radial-gradient(circle, var(--kn-line-strong) 1px, transparent 1.5px) 0 0 / 2.2cqw 2.2cqw,
+		var(--kn-raise);
+	font-size: 15cqw;
+}
+
+/* ─── 화면 한 장 ─── */
+.kn-s-screen {
+	display: grid;
+	place-items: center;
+}
+
+.kn-screen {
+	display: grid;
+	justify-items: center;
+	gap: 2.4cqh;
+}
+
+.kn-screen .kn-frame {
+	height: 68cqh;
+	aspect-ratio: 16 / 10;
+	max-width: 100%;
+}
+
+.kn-screen figcaption {
+	color: var(--kn-text);
+	font-size: max(14px, 1.6cqw);
+	font-weight: 600;
+}
+
+/* ─── 목록 장(쓰는 법·구현 방법·조작법·팀원·진행 과정·배포 결과물·출처): 큰 문장과 그 아래 줄 ─── */
+.kn-s-list {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 5cqh;
+}
+
+.kn-columns {
+	display: grid;
+	grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+	gap: 2.6cqw;
+}
+
+.kn-columns[data-count='1'] {
+	--cols: 1;
+}
+
+.kn-columns[data-count='2'] {
+	--cols: 2;
+}
+
+.kn-columns[data-count='4'] {
+	--cols: 4;
+}
+
+.kn-columns h3,
+.kn-story-points h4 {
+	font-size: max(14px, 1.6cqw);
+	line-height: 1.25;
+	letter-spacing: -0.015em;
+}
+
+.kn-step-num {
+	display: block;
+	margin-bottom: 1.6cqh;
+	color: var(--tpl-accent);
+	font-size: max(28px, 4.4cqw);
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -0.04em;
+}
+
+.kn-columns li {
+	padding-top: 2cqh;
+	border-top: 1px solid var(--kn-line-strong);
+}
+
+.kn-cards li {
+	padding: 2cqw;
+	border-top: 0;
+	border-radius: max(8px, 1.1cqw);
+	background-color: var(--kn-raise);
+}
+
+.kn-glyph {
+	display: block;
+	margin-bottom: 1.6cqh;
+	color: var(--tpl-accent);
+	font-size: max(18px, 2cqw);
+}
+
+.kn-point-media {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 10cqw), 1fr));
+	gap: 0.8cqw;
+	margin-top: 1.6cqh;
+}
+
+.kn-point-media .kn-frame {
+	aspect-ratio: 16 / 10;
+}
+
+/* 조작법: 큰 글쇠 */
+.kn-keys {
+	display: grid;
+	grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+	gap: 2.4cqw;
+}
+
+.kn-keys[data-count='1'] {
+	--cols: 1;
+}
+
+.kn-keys[data-count='2'] {
+	--cols: 2;
+}
+
+.kn-keys[data-count='4'] {
+	--cols: 4;
+}
+
+.kn-keys dt {
+	display: flex;
+	gap: 0.6cqw;
+}
+
+.kn-keys dd {
+	margin-top: 2cqh;
+	color: var(--kn-muted);
+}
+
+.tpl-keynote kbd {
+	display: inline-grid;
+	place-items: center;
+	min-width: max(32px, 4.6cqw);
+	height: max(32px, 4.6cqw);
+	padding: 0 1cqw;
+	border: 1px solid var(--kn-line-strong);
+	border-bottom-width: 3px;
+	border-radius: max(6px, 0.8cqw);
+	background-color: var(--kn-raise);
+	color: var(--kn-text);
+	font-family: inherit;
+	font-size: max(14px, 1.8cqw);
+	font-weight: 600;
+}
+
+/* 진행 과정: 가로 선 위의 점들 */
+.kn-timeline {
+	display: grid;
+	grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr));
+	gap: 3cqh 1.4cqw;
+}
+
+.kn-timeline li {
+	position: relative;
+	display: grid;
+	gap: 0.8cqh;
+	padding-top: 3cqh;
+	border-top: 1px solid var(--kn-line-strong);
+}
+
+.kn-timeline li::before {
+	position: absolute;
+	top: calc(-0.5 * max(9px, 0.9cqw));
+	left: 0;
+	width: max(9px, 0.9cqw);
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background-color: var(--tpl-accent);
+	content: '';
+}
+
+.kn-timeline time {
+	color: var(--kn-dim);
+	font-family: var(--kn-mono);
+	font-size: max(10px, 0.95cqw);
+}
+
+.kn-timeline span {
+	color: var(--kn-text);
+	line-height: 1.35;
+}
+
+/* 출처 */
+.kn-credits {
+	display: grid;
+	border-top: 1px solid var(--kn-line);
+}
+
+.kn-credits li {
+	display: grid;
+	grid-template-columns: minmax(0, 0.7fr) minmax(0, 1fr) minmax(0, 1.4fr);
+	gap: 2cqw;
+	padding: 2cqh 0;
+	border-bottom: 1px solid var(--kn-line);
+}
+
+.kn-credit-role,
+.kn-credit-by {
+	color: var(--kn-muted);
+}
+
+.kn-credit-name a {
+	color: var(--tpl-accent);
+	text-decoration: none;
+}
+
+.kn-credit-name a:hover {
+	text-decoration: underline;
+}
+
+.kn-credit-note {
+	display: block;
+	color: var(--kn-dim);
+}
+
+/* ─── 트러블슈팅: 문제 → 원인 → 해결 → 결과를 하나씩 쌓는다 ─── */
+.kn-s-trouble {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: center;
+	gap: 5cqh 3cqw;
+}
+
+.kn-s-trouble[data-image] {
+	grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+}
+
+.kn-trouble-head {
+	display: flex;
+	gap: 1.6cqw;
+	align-items: center;
+	grid-column: 1 / -1;
+}
+
+.kn-trouble-icon {
+	flex: none;
+	font-size: max(32px, 4cqw);
+}
+
+.kn-trouble-head h3 {
+	font-size: max(18px, 2.7cqw);
+	line-height: 1.15;
+	letter-spacing: -0.03em;
+}
+
+.kn-builds {
+	display: grid;
+	grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+	gap: 3cqh 2cqw;
+}
+
+.kn-builds[data-count='2'] {
+	--cols: 2;
+}
+
+.kn-builds[data-count='3'] {
+	--cols: 3;
+}
+
+.kn-s-trouble[data-image] .kn-builds {
+	--cols: 2;
+}
+
+.kn-builds li {
+	padding-top: 1.6cqh;
+	border-top: 2px solid var(--kn-line-strong);
+	opacity: 0.08;
+	transition:
+		opacity 0.4s ease,
+		border-color 0.4s ease;
+}
+
+.kn-builds li[data-built] {
+	border-top-color: var(--tpl-accent);
+	opacity: 1;
+}
+
+.kn-build-label {
+	display: flex;
+	gap: 0.8cqw;
+	color: var(--tpl-accent);
+	font-size: max(11px, 1.05cqw);
+	font-weight: 600;
+}
+
+.kn-build-label span {
+	color: var(--kn-dim);
+	font-family: var(--kn-mono);
+	font-weight: 400;
+}
+
+.kn-build-text {
+	margin-top: 1cqh;
+	color: var(--kn-text);
+	line-height: 1.45;
+}
+
+.kn-trouble-image .kn-frame {
+	aspect-ratio: 16 / 10;
+}
+
+/* ─── 이야기 한 장 ─── */
+.kn-s-story {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: center;
+	align-items: center;
+	gap: 4cqw;
+}
+
+.kn-s-story[data-image] {
+	grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+}
+
+.kn-s-story h3 {
+	font-size: max(22px, 3.6cqw);
+	line-height: 1.1;
+	letter-spacing: -0.035em;
+}
+
+.kn-story-facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2cqh 4cqw;
+	margin-top: 4cqh;
+}
+
+.kn-story-facts li {
+	display: grid;
+	gap: 0.6cqh;
+}
+
+.kn-story-facts .kn-figure {
+	color: var(--tpl-accent);
+	font-size: max(28px, 4.4cqw);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.04em;
+}
+
+.kn-story-facts .kn-unit {
+	font-size: 0.5em;
+}
+
+.kn-story-facts li > span {
+	color: var(--kn-muted);
+	font-size: max(11px, 1.05cqw);
+}
+
+.kn-story-points {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 2cqh 2.4cqw;
+	margin-top: 4cqh;
 }
 
 .kn-story-image .kn-frame {
 	aspect-ratio: 4 / 3;
 }
 
-/* 그림이 없는 항목: 점 격자 위의 아이콘 슬라이드 */
-.kn-icon-slide {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 26px;
-	aspect-ratio: 16 / 10;
-	overflow: hidden;
-	border-radius: 14px;
-	background-color: var(--kn-raise);
-	box-shadow: 0 0 0 1px var(--kn-line-strong);
-	text-align: center;
-}
-
-.kn-icon-caption b {
-	display: block;
-	margin-top: 10px;
-	color: var(--kn-text);
-	font-size: 18px;
-	font-weight: 600;
-	letter-spacing: -0.015em;
-}
-
-/* 화면 모음: 발표자 화면 (큰 무대 한 장과 아래 슬라이드 목록) */
-.kn-screens {
-	max-width: 1040px;
-}
-
-.kn-screens-stage figcaption {
-	display: flex;
-	align-items: baseline;
-	justify-content: center;
-	gap: 14px;
-	margin-top: 22px;
-	color: var(--kn-text);
-	font-size: 16px;
-	font-weight: 500;
-}
-
-.kn-thumbs {
+/* ─── 두 칸 장(기술 사양·내 역할) ─── */
+.kn-s-split {
 	display: grid;
-	grid-template-columns: repeat(var(--kn-cols, 4), minmax(0, 1fr));
-	gap: 16px;
-	margin-top: 40px;
-}
-
-.kn-thumbs[data-count='2'] {
-	--kn-cols: 2;
-}
-
-.kn-thumbs[data-count='3'] {
-	--kn-cols: 3;
-}
-
-.kn-thumbs[data-count='5'] {
-	--kn-cols: 5;
-}
-
-.kn-thumbs[data-count='6'] {
-	--kn-cols: 6;
-}
-
-.kn-thumbs button {
-	display: block;
-	width: 100%;
-	padding: 0;
-	border: 0;
-	background: none;
-	color: var(--kn-dim);
-	font: inherit;
-	text-align: left;
-	cursor: pointer;
-}
-
-.kn-thumb {
-	display: block;
-	aspect-ratio: 16 / 10;
-	overflow: hidden;
-	border-radius: 8px;
-	background-color: var(--kn-raise);
-	box-shadow: 0 0 0 1px var(--kn-line);
-	transition: box-shadow 0.2s ease;
-}
-
-.kn-thumb .lk-media,
-.kn-thumb .lk-media img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: top;
-}
-
-.kn-thumbs button:hover .kn-thumb {
-	box-shadow: 0 0 0 1px var(--kn-line-strong);
-}
-
-.kn-thumbs button[aria-pressed='true'] {
-	color: var(--kn-text);
-}
-
-.kn-thumbs button[aria-pressed='true'] .kn-thumb {
-	box-shadow: 0 0 0 2px var(--tpl-accent);
-}
-
-.kn-thumbs button:focus-visible {
-	outline: none;
-}
-
-.kn-thumbs button:focus-visible .kn-thumb {
-	box-shadow: 0 0 0 2px var(--kn-text);
-}
-
-.kn-thumb-caption {
-	display: flex;
-	align-items: baseline;
-	gap: 8px;
-	margin-top: 12px;
-	font-size: 14px;
-	font-weight: 500;
-}
-
-/* 쓰는 법: 발표 슬라이드 차례 */
-.kn-slides {
-	display: grid;
-	grid-template-columns: repeat(var(--kn-cols, 3), minmax(0, 1fr));
-	gap: clamp(20px, 2.4cqi, 32px);
-}
-
-.kn-slides[data-count='1'] {
-	--kn-cols: 1;
-	max-width: 640px;
-}
-
-.kn-slides[data-count='2'] {
-	--kn-cols: 2;
-}
-
-.kn-slides[data-count='4'] {
-	--kn-cols: 4;
-}
-
-.kn-slide-screen {
-	position: relative;
-	display: block;
-	aspect-ratio: 16 / 10;
-	overflow: hidden;
-	border-radius: 12px;
-	background-color: var(--kn-raise);
-	box-shadow: 0 0 0 1px var(--kn-line-strong);
-}
-
-.kn-slide-media,
-.kn-slide-media img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: top;
-}
-
-.kn-slide-art {
-	display: grid;
-	place-items: center;
-	height: 100%;
-}
-
-.kn-slide-art i {
-	position: absolute;
-	top: 18px;
-	left: 20px;
-	color: var(--tpl-accent);
-	font-size: 17px;
-}
-
-.kn-slide-art b {
-	color: var(--kn-text);
-	font-size: clamp(72px, 8cqi, 112px);
-	font-weight: 600;
-	letter-spacing: -0.05em;
-	line-height: 1;
-	font-variant-numeric: tabular-nums;
-}
-
-.kn-slide-count {
-	position: absolute;
-	right: 16px;
-	bottom: 14px;
-	color: var(--kn-dim);
-	font-family: var(--kn-mono);
-	font-size: 11px;
-}
-
-.kn-slide-step {
-	margin-top: 24px;
-	color: var(--tpl-accent);
-	font-size: 14px;
-	font-weight: 600;
-}
-
-.kn-slide h3 {
-	margin-top: 8px;
-	font-size: 22px;
-	font-weight: 600;
-	letter-spacing: -0.02em;
-	line-height: 1.3;
-}
-
-.kn-slide .kn-body {
-	margin-top: 10px;
-	font-size: 16px;
-}
-
-.kn-slide .kn-detail {
-	margin-top: 10px;
-	font-size: 14.5px;
-}
-
-.kn-slide .kn-media-more {
-	margin-top: 16px;
-}
-
-/* 만든 방식: 가는 선으로 나눈 두 칸. 그림이 있는 항목은 한 줄을 다 쓴다 */
-.kn-built {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	column-gap: clamp(32px, 5cqi, 72px);
-}
-
-.kn-built[data-cols='3'] {
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.kn-built > li {
-	padding: 36px 0 44px;
-	border-top: 1px solid var(--kn-line);
-}
-
-/* 두 칸에서 그림 없는 항목이 홀수로 남으면 마지막 하나는 한 줄을 다 쓴다 */
-.kn-built[data-cols='2'] > li:not([data-media]):last-child:nth-child(odd of :not([data-media])) {
-	grid-column: 1 / -1;
-}
-
-.kn-built > li[data-media] {
-	display: grid;
-	grid-column: 1 / -1;
-	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-	gap: clamp(32px, 5cqi, 72px);
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+	align-content: center;
 	align-items: start;
+	gap: 4cqw;
 }
 
-.kn-glyph {
-	display: grid;
-	place-items: center;
-	width: 42px;
-	height: 42px;
-	margin-bottom: 22px;
-	border-radius: 11px;
-	background-color: var(--kn-raise-2);
-	box-shadow: 0 0 0 1px var(--kn-line-strong);
-	color: var(--tpl-accent);
-	font-size: 16px;
-}
-
-.kn-built h3 {
-	font-size: 22px;
-	font-weight: 600;
-	letter-spacing: -0.02em;
-	line-height: 1.3;
-}
-
-.kn-built .kn-body {
-	margin-top: 10px;
-	font-size: 16.5px;
-}
-
-.kn-built .kn-detail {
-	margin-top: 12px;
-	font-size: 14.5px;
-}
-
-/* 더 들려줄 이야기: 장마다 한 장면 */
-.kn-stories {
-	display: grid;
-	gap: clamp(120px, 14cqi, 184px);
-}
-
-.kn-story {
-	display: grid;
-	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-	column-gap: clamp(36px, 5.5cqi, 88px);
-	row-gap: 56px;
-	align-items: start;
-}
-
-.kn-story-head h2 {
-	margin-top: 14px;
-	font-size: clamp(32px, 4cqi, 52px);
-	font-weight: 600;
-	letter-spacing: -0.032em;
-	line-height: 1.1;
-}
-
-.kn-story-image {
-	grid-row: span 2;
-}
-
-.kn-story:not([data-image]) {
+.kn-s-split:not([data-tree]):not(:has(.kn-split-side)) {
 	grid-template-columns: minmax(0, 1fr);
-}
-
-.kn-story:not([data-image]) .kn-story-head {
-	max-width: 840px;
-	margin: 0 auto;
-	text-align: center;
-}
-
-.kn-story-facts {
-	display: grid;
-	grid-template-columns: repeat(var(--kn-cols, 2), minmax(0, 1fr));
-	gap: 32px;
-}
-
-.kn-story-facts[data-count='1'] {
-	--kn-cols: 1;
-}
-
-.kn-story-facts[data-count='3'] {
-	--kn-cols: 3;
-}
-
-.kn-story-facts[data-count='4'] {
-	--kn-cols: 4;
-}
-
-.kn-story-facts li {
-	padding-top: 22px;
-	border-top: 1px solid var(--kn-line);
-}
-
-.kn-story-facts .kn-figure {
-	font-size: clamp(40px, 4.4cqi, 64px);
-}
-
-.kn-story:not([data-image]) .kn-story-facts {
-	width: 100%;
-	max-width: 840px;
-	margin: 0 auto;
-}
-
-.kn-story-points {
-	display: grid;
-	grid-column: 1 / -1;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0 clamp(32px, 5cqi, 72px);
-}
-
-.kn-story-points > li {
-	padding: 28px 0 8px;
-	border-top: 1px solid var(--kn-line);
-}
-
-.kn-story-points .kn-index {
-	color: var(--tpl-accent);
-}
-
-.kn-story-points h3 {
-	margin-top: 12px;
-	font-size: 21px;
-	font-weight: 600;
-	letter-spacing: -0.02em;
-	line-height: 1.3;
-}
-
-.kn-story-points .kn-body {
-	margin-top: 10px;
-	font-size: 16.5px;
-}
-
-.kn-story-points .kn-detail {
-	margin-top: 10px;
-	font-size: 14.5px;
-}
-
-.kn-story-points .kn-media-set {
-	margin-top: 20px;
-}
-
-/* 조작법: 큰 글쇠 */
-.kn-keys {
-	display: grid;
-	grid-template-columns: repeat(var(--kn-cols, 4), minmax(0, 1fr));
-	gap: 16px;
-}
-
-.kn-keys[data-count='1'] {
-	--kn-cols: 1;
-	max-width: 320px;
-}
-
-.kn-keys[data-count='2'] {
-	--kn-cols: 2;
-	max-width: 720px;
-}
-
-.kn-keys[data-count='3'] {
-	--kn-cols: 3;
-}
-
-.kn-keys > div {
-	padding: 40px 20px 30px;
-	border-radius: 16px;
-	background-color: var(--kn-raise);
-	box-shadow: 0 0 0 1px var(--kn-line);
-	text-align: center;
-}
-
-.kn-keys dt {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 8px;
-}
-
-.kn-keys kbd {
-	display: inline-grid;
-	place-items: center;
-	min-width: 58px;
-	height: 58px;
-	padding: 0 16px;
-	border-radius: 12px;
-	background-color: #1c1c1f;
-	box-shadow:
-		inset 0 -2px 0 rgba(0, 0, 0, 0.55),
-		0 0 0 1px var(--kn-line-strong);
-	color: var(--kn-text);
-	font-family: inherit;
-	font-size: 22px;
-	font-weight: 500;
-}
-
-.kn-keys dd {
-	margin-top: 24px;
-	color: var(--kn-muted);
-	font-size: 15px;
-	line-height: 1.45;
-}
-
-/* 진행 과정: 가로로 놓인 한 줄의 길, 점 하나마다 날짜 */
-.kn-timeline {
-	display: grid;
-	grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
-	border-top: 1px solid var(--kn-line-strong);
-}
-
-.kn-timeline > li {
-	position: relative;
-	padding: 28px 20px 0 0;
-}
-
-.kn-timeline > li::before {
-	position: absolute;
-	top: -4px;
-	left: 0;
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background-color: var(--kn-muted);
-	content: '';
-}
-
-.kn-timeline > li:last-child::before {
-	background-color: var(--tpl-accent);
-}
-
-.kn-timeline time {
-	display: block;
-	margin-top: 8px;
-	color: var(--kn-text);
-	font-family: var(--kn-mono);
-	font-size: 13px;
-	font-variant-numeric: tabular-nums;
-}
-
-.kn-timeline-label {
-	display: block;
-	margin-top: 10px;
-	color: var(--kn-muted);
-	font-size: 15px;
-	line-height: 1.5;
-}
-
-/* 여덟 개가 넘으면 세로로 */
-.kn-timeline[data-wrap] {
-	grid-template-columns: minmax(0, 1fr);
-	max-width: 720px;
-	border-top: 0;
-	border-left: 1px solid var(--kn-line-strong);
-}
-
-.kn-timeline[data-wrap] > li {
-	padding: 0 0 32px 32px;
-}
-
-.kn-timeline[data-wrap] > li::before {
-	top: 4px;
-	left: -4px;
-}
-
-/* ─── 나눈 장면 (기술 사양, 맡은 일, 출처): 왼쪽 제목은 머물고 오른쪽은 사양표 ─── */
-.kn-split {
-	display: grid;
-	grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-	gap: clamp(36px, 5.5cqi, 88px);
-	align-items: start;
-}
-
-.kn-split > .kn-head {
-	position: sticky;
-	top: 72px;
-	margin: 0;
-	text-align: left;
-}
-
-.kn-split > .kn-head h2 {
-	font-size: clamp(28px, 3.2cqi, 42px);
-	line-height: 1.15;
-}
-
-.kn-sheet {
-	border-bottom: 1px solid var(--kn-line);
-}
-
-.kn-sheet > div {
-	display: grid;
-	grid-template-columns: minmax(120px, 2fr) minmax(0, 5fr);
-	gap: 24px;
-	padding: 24px 0;
-	border-top: 1px solid var(--kn-line);
-}
-
-.kn-sheet dt {
-	color: var(--kn-muted);
-	font-size: 15px;
-	font-weight: 500;
-	line-height: 1.6;
-}
-
-.kn-sheet dd {
-	color: var(--kn-text);
-	font-size: 17px;
-	line-height: 1.6;
 }
 
 .kn-stack {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
+	gap: 0.6cqw;
+	margin-top: 3.4cqh;
 }
 
 .kn-stack li {
-	padding: 4px 12px;
+	padding: 0.4cqw 1cqw;
+	border: 1px solid var(--kn-line-strong);
 	border-radius: 999px;
-	box-shadow: 0 0 0 1px var(--kn-line-strong);
 	color: var(--kn-text);
-	font-size: 14px;
-	line-height: 1.6;
+	font-size: max(11px, 1.05cqw);
 }
 
-/* 주 언어 */
-.kn-stack li:first-child {
-	box-shadow: 0 0 0 1px var(--tpl-accent);
-	color: var(--tpl-accent);
+.kn-sheet {
+	display: grid;
+	margin-top: 3.4cqh;
+	border-top: 1px solid var(--kn-line);
+}
+
+.kn-sheet > div {
+	display: grid;
+	grid-template-columns: minmax(5em, 0.4fr) minmax(0, 1fr);
+	gap: 2cqw;
+	padding: 1.5cqh 0;
+	border-bottom: 1px solid var(--kn-line);
+}
+
+.kn-sheet dt {
+	color: var(--kn-dim);
+}
+
+.kn-side-label {
+	margin-bottom: 1.4cqh;
+	color: var(--kn-dim);
+	font-size: max(11px, 1.05cqw);
 }
 
 .kn-structure {
+	padding: 2cqw;
 	overflow-x: auto;
-	padding: 20px 22px;
-	border-radius: 12px;
+	border-radius: max(8px, 1cqw);
 	background-color: var(--kn-raise);
-	box-shadow: 0 0 0 1px var(--kn-line);
 	color: var(--kn-muted);
 	font-family: var(--kn-mono);
-	font-size: 13px;
-	line-height: 1.75;
-	letter-spacing: 0;
-	white-space: pre;
+	font-size: max(10px, 1.02cqw);
+	line-height: 1.6;
+	cursor: text;
 }
 
-.kn-role {
+.kn-contributions {
 	display: grid;
-	gap: 56px;
+	gap: 1.8cqh;
+	counter-reset: none;
 }
 
-.kn-contributions > li {
+.kn-contributions li {
 	display: grid;
-	grid-template-columns: 52px minmax(0, 1fr);
-	padding: 20px 0;
-	border-top: 1px solid var(--kn-line);
-	color: var(--kn-text);
-	font-size: 17px;
-	line-height: 1.55;
-}
-
-.kn-contributions > li:last-child {
+	grid-template-columns: 3cqw minmax(0, 1fr);
+	gap: 1cqw;
+	padding-bottom: 1.8cqh;
 	border-bottom: 1px solid var(--kn-line);
 }
 
-.kn-contributions .kn-index {
-	padding-top: 4px;
+.kn-contributions span {
 	color: var(--tpl-accent);
+	font-family: var(--kn-mono);
 }
 
-.kn-credits > li {
-	display: grid;
-	grid-template-columns: minmax(100px, 2fr) minmax(0, 3fr) minmax(0, 3fr);
-	gap: 24px;
-	padding: 24px 0;
-	border-top: 1px solid var(--kn-line);
-	line-height: 1.5;
-}
-
-.kn-credits > li:last-child {
-	border-bottom: 1px solid var(--kn-line);
-}
-
-.kn-credit-role {
-	color: var(--kn-muted);
-	font-size: 15px;
-}
-
-.kn-credit-name {
-	color: var(--kn-text);
-	font-size: 17px;
-	font-weight: 500;
-}
-
-.kn-credit-name a {
-	text-decoration: none;
-}
-
-.kn-credit-name a:hover {
-	text-decoration: underline;
-	text-underline-offset: 4px;
-}
-
-.kn-credit-name i {
-	margin-left: 6px;
-	color: var(--tpl-accent);
-	font-size: 0.7em;
-}
-
-.kn-credit-by {
-	color: var(--kn-muted);
-	font-size: 15px;
-}
-
-.kn-credit-note {
-	display: block;
-	margin-top: 4px;
-	color: var(--kn-dim);
-	font-size: 14px;
-}
-
-/* ─── 마무리: 마지막 타이틀 카드 ─── */
-.kn-closing {
-	padding: clamp(160px, 20cqi, 260px) var(--kn-gutter) clamp(140px, 17cqi, 220px);
-	text-align: center;
-}
-
-.kn-closing-card {
+/* ─── 마지막 인사 ─── */
+.kn-s-end {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	max-width: 960px;
-	margin: 0 auto;
+	justify-content: center;
+	padding-top: max(28px, 7cqh);
+	text-align: center;
 }
 
-.kn-closing-icon {
-	width: 72px;
-	height: 72px;
-	margin-bottom: 36px;
-	border-radius: 17px;
-	object-fit: cover;
+.kn-end-icon {
+	width: max(48px, 6.4cqw);
+	aspect-ratio: 1;
+	margin-bottom: 4cqh;
+	border-radius: 22%;
+	object-fit: contain;
 }
 
-.kn-closing h2 {
-	font-size: clamp(40px, 6.4cqi, 88px);
-	font-weight: 600;
-	letter-spacing: -0.038em;
-	line-height: 1.06;
+.kn-thanks {
+	font-size: max(36px, 7cqw);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.05em;
 }
 
-.kn-closing-lead {
-	margin-top: 22px;
+.kn-s-end h2 {
+	margin-top: 3cqh;
 	color: var(--kn-muted);
-	font-size: clamp(17px, 1.7cqi, 21px);
+	font-size: max(16px, 2.1cqw);
+	font-weight: 500;
 }
 
-.kn-closing .kn-links {
-	margin-top: 44px;
+.kn-s-end .kn-subhead {
+	margin-top: 1cqh;
+	color: var(--kn-dim);
 }
 
-/* ─── 좁은 창 ─── */
-@container (max-width: 860px) {
-	.kn-feature,
-	.kn-feature[data-flip],
-	.kn-split,
-	.kn-story,
-	.kn-built > li[data-media] {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.kn-feature {
-		gap: 32px;
-	}
-
-	.kn-feature[data-flip] .kn-feature-text {
-		order: 0;
-	}
-
-	.kn-feature-text,
-	.kn-split > .kn-head {
-		position: static;
-	}
-
-	.kn-feature-num {
-		margin-bottom: 20px;
-	}
-
-	.kn-split {
-		gap: 40px;
-	}
-
-	.kn-story {
-		row-gap: 40px;
-	}
-
-	.kn-story-image {
-		grid-row: auto;
-	}
-
-	.kn-stats {
-		--kn-cols: 2;
-	}
-
-	.kn-stats[data-count='1'] {
-		--kn-cols: 1;
-	}
-
-	.kn-stats li:nth-child(2n + 1) {
-		box-shadow: none;
-	}
-
-	.kn-stats li:nth-child(n + 3) {
-		border-top: 1px solid var(--kn-line);
-	}
-
-	.kn-keys {
-		--kn-cols: 2;
-	}
-
-	.kn-slides[data-count='4'] {
-		--kn-cols: 2;
-	}
-
-	.kn-timeline {
-		grid-template-columns: minmax(0, 1fr);
-		max-width: 640px;
-		border-top: 0;
-		border-left: 1px solid var(--kn-line-strong);
-	}
-
-	.kn-timeline > li {
-		display: grid;
-		grid-template-columns: 110px minmax(0, 1fr);
-		column-gap: 16px;
-		padding: 0 0 28px 28px;
-	}
-
-	.kn-timeline > li::before {
-		top: 6px;
-		left: -4px;
-	}
-
-	.kn-timeline .kn-index {
-		display: none;
-	}
-
-	.kn-timeline time,
-	.kn-timeline-label {
-		margin-top: 0;
-	}
-
-	.kn-hero-slide {
-		aspect-ratio: auto;
-		min-height: 360px;
-	}
-
-	.kn-icon-slide {
-		aspect-ratio: 2 / 1;
-	}
+.kn-s-end .kn-links {
+	justify-content: center;
 }
 
-@container (max-width: 600px) {
-	.kn-built,
-	.kn-built[data-cols='3'],
-	.kn-slides,
-	.kn-slides[data-count='4'],
-	.kn-story-points,
-	.kn-meta {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.kn-slides {
-		--kn-cols: 1;
-	}
-
-	.kn-thumbs {
-		--kn-cols: 2;
-	}
-
-	.kn-overview[data-count] {
-		grid-template-columns: repeat(2, minmax(0, 168px));
-	}
-
-	.kn-thumbs[data-count] {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.kn-keys > div {
-		padding: 28px 12px 22px;
-	}
-
-	.kn-keys kbd {
-		min-width: 48px;
-		height: 48px;
-		font-size: 18px;
-	}
-
-	.kn-sheet > div,
-	.kn-credits > li {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 6px;
-	}
-
-	.kn-timeline > li {
-		grid-template-columns: minmax(0, 1fr);
-		row-gap: 6px;
-	}
-
-	.kn-story-facts {
-		--kn-cols: 2;
-	}
+/* ─── 발표자 노트: 켜면 무대 아래쪽에 판으로 ─── */
+.kn-notes {
+	display: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.tpl-keynote .kn-rise {
-		animation: none;
-	}
-
-	.kn-links > [data-primary],
-	.kn-thumb {
-		transition: none;
-	}
+.tpl-keynote[data-notes] .kn-notes {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+	display: grid;
+	gap: 1cqh;
+	max-height: 40%;
+	padding: 2.4cqh 6cqw 3cqh;
+	overflow: auto;
+	border-top: 1px solid var(--kn-line-strong);
+	background-color: rgba(22, 22, 24, 0.97);
+	color: var(--kn-muted);
+	font-size: max(12px, 1.15cqw);
+	line-height: 1.55;
+	cursor: text;
 }
 
-/* ─── 트러블슈팅·팀원·배포 결과물: 어두운 무대 위의 한 단 밝은 판 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.kn-notes-label {
+	color: var(--tpl-accent);
+	font-size: max(10px, 0.95cqw);
+	font-weight: 600;
+}
+
+.kn-notes b {
+	margin-right: 0.8cqw;
+	color: var(--kn-text);
+}
+
+/* ─── 아래 막대: 진행 줄, 장 이름, 앞뒤 단추와 차례, 노트·목록 단추 ─── */
+.kn-bar {
+	flex: none;
+	padding: 0 24px 12px;
+}
+
+.kn-progress {
+	height: 2px;
+	margin-bottom: 10px;
+	overflow: hidden;
+	border-radius: 2px;
+	background-color: var(--kn-line);
+}
+
+.kn-progress span {
+	display: block;
+	height: 100%;
+	background-color: var(--tpl-accent);
+	transform-origin: left center;
+	transition: transform 0.35s ease;
+}
+
+.kn-bar-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: center;
+	gap: 16px;
+}
+
+.kn-bar-name {
+	overflow: hidden;
+	color: var(--kn-dim);
+	font-size: 13px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.kn-bar-nav {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.kn-counter {
+	min-width: 72px;
+	color: var(--kn-muted);
+	font-family: var(--kn-mono);
+	font-size: 13px;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+}
+
+.kn-bar button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-width: 34px;
+	height: 34px;
+	padding: 0 12px;
+	border: 1px solid var(--kn-line);
+	border-radius: 999px;
+	background-color: var(--kn-raise);
+	color: var(--kn-text);
+	font: inherit;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.kn-bar-nav button {
+	padding: 0;
+}
+
+.kn-bar button:hover:not(:disabled) {
+	background-color: var(--kn-raise-2);
+}
+
+.kn-bar button:disabled {
+	cursor: default;
+	opacity: 0.35;
+}
+
+.kn-bar button[aria-pressed='true'] {
+	border-color: var(--tpl-accent);
+	color: var(--tpl-accent);
+}
+
+.kn-bar-tools {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+/* ─── 슬라이드 목록: 무대 자리에 모든 장의 작은 그림 격자 ─── */
+.tpl-keynote[data-sorter] .kn-room {
+	display: none;
+}
+
+.kn-sorter {
+	flex: 1 1 0;
+	min-height: 0;
+	padding: 24px;
+	overflow: auto;
+}
+
+.kn-sorter ol {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+	gap: 20px 16px;
+}
+
+.kn-sorter button {
+	display: grid;
+	gap: 8px;
+	width: 100%;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--kn-muted);
+	font: inherit;
+	font-size: 12px;
+	text-align: left;
+	cursor: pointer;
+}
+
+.kn-thumb {
+	display: grid;
+	place-items: center;
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	border-radius: 6px;
+	outline: 1px solid var(--kn-line);
+	outline-offset: -1px;
+	background-color: var(--kn-stage);
+	color: var(--kn-dim);
+	font-size: 22px;
+	transition: outline-color 0.2s ease;
+}
+
+.kn-thumb .lk-media,
+.kn-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+}
+
+.kn-sorter button:hover .kn-thumb {
+	outline-color: var(--kn-line-strong);
+}
+
+.kn-sorter button[aria-current] .kn-thumb {
+	outline: 2px solid var(--tpl-accent);
+	outline-offset: 0;
+}
+
+.kn-sorter button[aria-current] {
+	color: var(--kn-text);
+}
+
+.kn-thumb-name {
+	display: flex;
+	gap: 8px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.kn-thumb-num {
+	color: var(--kn-dim);
+	font-family: var(--kn-mono);
+}
+
+/* ─── 트러블슈팅·팀원·배포 결과물의 공통 짜임 (landing/Extras.tsx·landing.css) ─── */
 .tpl-keynote {
 	--lk-x-ink: var(--kn-text);
 	--lk-x-body: var(--kn-muted);
 	--lk-x-muted: var(--kn-dim);
 	--lk-x-line: var(--kn-line-strong);
 	--lk-x-card: var(--kn-raise);
-	--lk-x-radius: 20px;
-	--lk-x-gap: 16px;
-	--lk-x-pad: 32px;
+	--lk-x-radius: 14px;
+	--lk-x-gap: 1.6cqw;
+	--lk-x-pad: 1.8cqw;
 	--lk-x-label: var(--kn-mono);
 }
 
-.kn-trouble h3 {
-	font-size: clamp(20px, 2.2cqi, 26px);
-	letter-spacing: -0.02em;
+.kn-team,
+.kn-deploys {
+	font-size: max(11px, 1.1cqw);
 }
 
-.kn-trouble-step dd {
-	font-size: 15px;
+.kn-member {
+	border-color: transparent;
 }
 
 .kn-member .lk-avatar {
-	width: 64px;
-	height: 64px;
+	width: max(40px, 5cqw);
+	height: max(40px, 5cqw);
 }
 
-/* 배포 결과물: 고정폭 글씨는 넓어 한 줄에 모두 담기 어렵다. 올린 곳과 호스트를 한 줄씩 나누고, 넘치면 말줄임으로 끝낸다 */
+.kn-member h3,
+.kn-deploy h3 {
+	font-size: max(13px, 1.4cqw);
+}
+
+.kn-deploy {
+	border-color: transparent;
+}
+
+.kn-deploy-image .lk-media,
+.kn-deploy-cover {
+	max-height: 18cqh;
+}
+
 .kn-deploy-meta {
 	display: grid;
 	gap: 2px;
@@ -1501,13 +1187,108 @@
 	display: none;
 }
 
-.kn-deploy-host {
-	color: var(--kn-muted);
-}
-
 .kn-deploy-cover {
 	border-color: var(--kn-line-strong);
-	background:
-		radial-gradient(ellipse at 50% 120%, color-mix(in srgb, var(--tpl-accent) 45%, transparent), transparent 70%),
-		var(--kn-raise);
+	background-color: var(--kn-raise-2);
+}
+
+/* ─── 좁은 무대: 한 칸으로 접고, 무대가 남은 높이를 다 쓰며 장 안에서 스크롤한다 ─── */
+@container kn-stage (max-width: 640px) {
+	.kn-s {
+		padding: 52px 20px 28px;
+		font-size: 14px;
+	}
+
+	.kn-tag {
+		top: 20px;
+		left: 20px;
+	}
+
+	.kn-s-title[data-visual],
+	.kn-s-feature,
+	.kn-s-trouble[data-image],
+	.kn-s-story[data-image],
+	.kn-s-split {
+		grid-template-columns: minmax(0, 1fr);
+		padding-right: 20px;
+		gap: 24px;
+	}
+
+	.kn-title-visual .kn-frame {
+		border-radius: 8px;
+	}
+
+	.kn-columns,
+	.kn-keys,
+	.kn-builds,
+	.kn-s-trouble[data-image] .kn-builds,
+	.kn-story-points {
+		--cols: 1;
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.kn-timeline {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.kn-credits li {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2px;
+	}
+
+	.kn-s-list,
+	.kn-s-number,
+	.kn-s-end {
+		justify-content: flex-start;
+	}
+
+	.kn-giant {
+		font-size: 25cqw;
+	}
+}
+
+@container (max-width: 600px) {
+	.kn-room {
+		padding: 12px 12px 8px;
+	}
+
+	.kn-stage {
+		width: 100%;
+		height: 100%;
+		aspect-ratio: auto;
+	}
+
+	.kn-bar {
+		padding: 0 12px 10px;
+	}
+
+	.kn-bar-name {
+		display: none;
+	}
+
+	.kn-bar-row {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+
+	.kn-bar-tools button {
+		width: 34px;
+		padding: 0;
+		font-size: 0;
+	}
+
+	.kn-bar-tools i {
+		font-size: 13px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.kn-slide {
+		animation: none;
+	}
+
+	.kn-builds li,
+	.kn-progress span,
+	.kn-thumb {
+		transition: none;
+	}
 }

@@ -1,112 +1,109 @@
-/* playful 템플릿 (Figma·Arc 출시 페이지): 따뜻한 크림 바탕, 고정 팔레트의 납작한 색 면, 큼직한 둥근 도형, 살짝 기운 스티커,
-   몇몇 카드의 2px 잉크 테두리와 납작한 잉크 그림자 한 벌. 빛 번짐·그라데이션·유리·떠다니는 움직임 없이 색과 모양으로 즐겁게 */
+/* playful 템플릿 (스크랩북 게시판): 점 찍힌 크림 종이 바탕에 물건(폴라로이드, 붙임쪽지, 색인 카드, 우표, 스티커, 입장권, 영수증, 엽서)을
+   핀과 테이프로 붙인다. 물건은 정해진 각도(--tilt)와 어긋남(--nudge)으로 조금씩 기울고, 구역은 점선으로 둘러친 이름표 붙은 자리다.
+   종이 물건은 테마와 상관없이 종이 빛이고 글자는 잉크색이다 (다크에서는 바탕만 어두워지고 종이는 조금 누그러진다).
+   그림자는 종이 아래의 얕은 한 벌, 빛 번짐·그라데이션 글자·유리 효과 없이. 손글씨 느낌은 기기에 있는 글꼴(Noteworthy 등)과 둥근 글꼴로 */
 .tpl-playful {
 	--lk-accent: #e5482a;
 	--lk-dark-accent: #ff7a5c;
 	--pf-bg: #fff8ee;
+	--pf-dot: rgba(60, 45, 30, 0.16);
 	--pf-ink: #1d1a17;
 	--pf-body: #4d463e;
 	--pf-muted: #7a7064;
-	--pf-line: #1d1a17;
-	--pf-card: #fffdf8;
-	--pf-soft: #f6ead8;
-	--pf-on: #1d1a17;
-	--pf-on-body: rgba(29, 26, 23, 0.78);
-	--pf-on-faint: rgba(29, 26, 23, 0.22);
-	--pf-edge: #1d1a17;
-	--pf-drop: 6px 6px 0 var(--pf-line);
-	--pf-violet: #7b61ff;
-	--pf-width: 1160px;
-	--pf-gutter: 40px;
-	/* 지금 글자색 (색 면 위에서는 언제나 어두운 잉크) */
-	--t-ink: var(--pf-ink);
-	--t-body: var(--pf-body);
-	--t-faint: color-mix(in srgb, var(--pf-line) 20%, transparent);
+	--pf-zone-line: rgba(60, 45, 30, 0.22);
+	/* 종이 물건 (테마와 상관없이 종이 빛, 잉크 글자) */
+	--pf-paper: #fffdf8;
+	--pf-paper-ink: #1d1a17;
+	--pf-paper-body: #4a433b;
+	--pf-paper-muted: #857a6c;
+	--pf-rule: rgba(70, 110, 190, 0.22);
+	--pf-margin: rgba(220, 80, 70, 0.45);
+	--pf-kraft: #e8d2a6;
+	--pf-tape: rgba(246, 226, 168, 0.78);
+	--pf-shadow: 0 1px 1px rgba(40, 30, 20, 0.1), 0 12px 16px -12px rgba(40, 30, 20, 0.45);
+	--pf-hand: 'Noteworthy', 'Chalkboard SE', ui-rounded, 'SF Pro Rounded', 'Apple SD Gothic Neo', sans-serif;
+	--pf-round:
+		ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', Pretendard, sans-serif;
+	--pf-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+	padding: 56px 40px 88px;
 	background-color: var(--pf-bg);
+	background-image: radial-gradient(var(--pf-dot) 1.2px, transparent 1.6px);
+	background-size: 22px 22px;
 	color: var(--pf-ink);
 	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Apple SD Gothic Neo', Pretendard, sans-serif;
-	font-size: 17px;
+	font-size: 16px;
 	line-height: 1.55;
 	letter-spacing: -0.01em;
 	word-break: keep-all;
 	-webkit-font-smoothing: antialiased;
+	overflow-x: clip;
 }
 
 :root[data-theme='dark'] .tpl-playful {
 	--pf-bg: #17151a;
+	--pf-dot: rgba(255, 240, 220, 0.12);
 	--pf-ink: #f7f0e6;
 	--pf-body: #c9c0b4;
 	--pf-muted: #978d82;
-	--pf-line: #f2e8da;
-	--pf-card: #221f26;
-	--pf-soft: #26222b;
-	--pf-edge: #17151a;
-	--pf-drop: 6px 6px 0 #000000;
+	--pf-zone-line: rgba(255, 240, 220, 0.2);
+	--pf-paper: #ece5d9;
+	--pf-kraft: #cdb68a;
+	--pf-tape: rgba(220, 200, 150, 0.7);
+	--pf-shadow: 0 1px 1px rgba(0, 0, 0, 0.4), 0 12px 18px -12px rgba(0, 0, 0, 0.9);
 }
 
-/* 팔레트: 색 면(--tone) 위 글자는 언제나 어두운 잉크 */
+/* 종이 색: 색 위 글자는 언제나 잉크 */
 .tpl-playful [data-tone='coral'] {
-	--tone: #ff5c39;
+	--tone: #ff7a5c;
 }
 .tpl-playful [data-tone='sun'] {
-	--tone: #ffc93c;
+	--tone: #ffd560;
 }
 .tpl-playful [data-tone='mint'] {
-	--tone: #a3e4d7;
+	--tone: #aee8dc;
 }
 .tpl-playful [data-tone='pink'] {
-	--tone: #ffb3c7;
+	--tone: #ffc0cf;
 }
 .tpl-playful [data-tone='sky'] {
-	--tone: #c7d2fe;
+	--tone: #c9d4fd;
 }
 .tpl-playful [data-tone='lilac'] {
-	--tone: #cbc0ff;
+	--tone: #d6ccff;
 }
 
 :root[data-theme='dark'] .tpl-playful [data-tone='coral'] {
-	--tone: #ff6a4a;
+	--tone: #ea7458;
 }
 :root[data-theme='dark'] .tpl-playful [data-tone='sun'] {
-	--tone: #f7c24a;
+	--tone: #e8c35a;
 }
 :root[data-theme='dark'] .tpl-playful [data-tone='mint'] {
-	--tone: #93d9cb;
+	--tone: #9fd5ca;
 }
 :root[data-theme='dark'] .tpl-playful [data-tone='pink'] {
-	--tone: #f5a8bc;
+	--tone: #e9b0bf;
 }
 :root[data-theme='dark'] .tpl-playful [data-tone='sky'] {
-	--tone: #b8c4f6;
+	--tone: #b7c2ea;
 }
 :root[data-theme='dark'] .tpl-playful [data-tone='lilac'] {
-	--tone: #bdb1fb;
-}
-
-/* 색 면 위: 글자를 어두운 잉크로 */
-.pf-card,
-.pf-story,
-.pf-note,
-.pf-closing {
-	--t-ink: var(--pf-on);
-	--t-body: var(--pf-on-body);
-	--t-faint: var(--pf-on-faint);
-	color: var(--pf-on);
+	--tone: #c4bbec;
 }
 
 /* ─── 요소 초기화 (특정도 0) ─── */
 :where(.tpl-playful) :where(h1, h2, h3, h4) {
 	margin: 0;
-	color: var(--t-ink);
+	color: inherit;
 	font-weight: 700;
 	letter-spacing: -0.02em;
 }
 
-:where(.tpl-playful) :where(p, figure, pre) {
+:where(.tpl-playful) :where(p, figure, pre, dl, dd) {
 	margin: 0;
 }
 
-:where(.tpl-playful) :where(ul, ol, dl, dd) {
+:where(.tpl-playful) :where(ul, ol) {
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -115,208 +112,173 @@
 :where(.tpl-playful) :where(a) {
 	color: inherit;
 	text-decoration: underline;
-	text-decoration-thickness: 2px;
-	text-decoration-color: color-mix(in srgb, var(--tpl-accent) 70%, transparent);
-	text-underline-offset: 4px;
+	text-decoration-thickness: 1.5px;
+	text-underline-offset: 3px;
 }
 
-/* 나타남: 14px 아래에서 살짝. 움직임 줄이기면 ProjectPage.css가 모두 바로 보이게 한다 */
-.sp .tpl-playful [data-reveal] {
-	--reveal-from: translateY(14px);
-	transition-duration: 0.6s;
-	transition-delay: calc(var(--d, 0) * 70ms);
-}
-
-/* ─── 공통 조각 ─── */
-.pf-sticker {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 6px 14px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 999px;
-	background-color: var(--tone, var(--pf-card));
-	color: var(--pf-on);
-	font-size: 14px;
-	font-weight: 700;
-	line-height: 1.3;
-	letter-spacing: -0.005em;
-	white-space: nowrap;
-	transform: rotate(var(--tilt, 0deg));
-}
-
-.pf-glyph {
-	display: inline-grid;
-	flex: none;
-	place-items: center;
-	width: 56px;
-	height: 56px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 50%;
-	background-color: var(--tone, #fffdf8);
-	color: var(--pf-on);
-	font-size: 21px;
-}
-
-.pf-group {
-	margin-bottom: 8px;
-	color: var(--t-body);
-	font-size: 13px;
-	font-weight: 700;
-}
-
-.pf-point-title {
-	font-size: 22px;
-	line-height: 1.3;
-	letter-spacing: -0.018em;
-}
-
-.pf-body {
-	margin-top: 10px;
-	color: var(--t-body);
-	font-size: 16.5px;
-	line-height: 1.62;
-}
-
-.pf-detail {
-	margin-top: 16px;
-	padding-top: 14px;
-	border-top: 2px dashed var(--t-faint);
-	color: var(--t-body);
-	font-size: 14.5px;
-	line-height: 1.65;
-}
-
-.pf-frame {
-	overflow: hidden;
-	border: 2px solid var(--pf-edge);
-	border-radius: 20px;
-	background-color: var(--pf-card);
-}
-
-.pf-frame .lk-media,
-.pf-frame .lk-media img {
-	aspect-ratio: 16 / 10;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: top center;
-}
-
-.pf-dots {
-	display: inline-flex;
-	gap: 6px;
-}
-
-.pf-dots i {
-	width: 11px;
-	height: 11px;
-	border: 1.5px solid var(--pf-line);
-	border-radius: 50%;
-	background-color: #ff5c39;
-}
-
-.pf-dots i:nth-child(2) {
-	background-color: #ffc93c;
-}
-
-.pf-dots i:nth-child(3) {
-	background-color: #a3e4d7;
-}
-
-/* ─── 링크 단추: 알약, 2px 테두리. 첫 링크는 꽉 찬 잉크 ─── */
-.pf-links {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
-	margin-top: 32px;
-}
-
-.pf-links a,
-.pf-links button {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	height: 50px;
-	padding: 0 24px;
-	border: 2px solid var(--pf-line);
-	border-radius: 999px;
-	background-color: transparent;
-	color: var(--pf-ink);
-	font-size: 16px;
-	font-weight: 700;
-	letter-spacing: -0.01em;
-	text-decoration: none;
-	transition:
-		transform 0.15s ease,
-		background-color 0.15s ease;
-}
-
-.pf-links a:hover,
-.pf-links button:hover {
-	transform: translateY(-2px);
-}
-
-.pf-links a:not([data-primary]):hover,
-.pf-links button:not([data-primary]):hover {
-	background-color: color-mix(in srgb, var(--pf-line) 7%, transparent);
-}
-
-.pf-links [data-primary] {
-	background-color: var(--pf-line);
-	color: var(--pf-bg);
-}
-
-.pf-links a:focus-visible,
-.pf-links button:focus-visible {
-	outline: 3px solid var(--tpl-accent);
+:where(.tpl-playful) :where(a, button):focus-visible {
+	outline: 2.5px solid var(--tpl-accent);
 	outline-offset: 3px;
 }
 
-/* ─── 첫 화면: 왼쪽 큰 제목, 오른쪽 색 도형 위의 화면 ─── */
+/* ─── 붙인 물건의 공통: 기울기와 어긋남, 테이프, 압정 ─── */
+.pf-polaroid,
+.pf-sticky,
+.pf-card,
+.pf-flip,
+.pf-diary,
+.pf-notebook,
+.pf-stamp,
+.pf-ticket,
+.pf-todo,
+.pf-receipt,
+.pf-tag,
+.pf-typed,
+.pf-booth,
+.pf-postcard,
+.pf-keys > div,
+.pf-path-note,
+.pf-label {
+	rotate: var(--tilt, 0deg);
+}
+
+.pf-polaroid,
+.pf-sticky,
+.pf-card,
+.pf-flip,
+.pf-ticket {
+	margin-top: var(--nudge, 0px);
+}
+
+.pf-tape {
+	position: absolute;
+	top: -13px;
+	left: 50%;
+	z-index: 2;
+	width: 92px;
+	height: 26px;
+	margin-left: -46px;
+	background-color: var(--pf-tape);
+	rotate: -4deg;
+	pointer-events: none;
+}
+
+.pf-pin {
+	position: absolute;
+	top: 12px;
+	left: 50%;
+	z-index: 2;
+	width: 14px;
+	height: 14px;
+	margin-left: -7px;
+	border-radius: 50%;
+	background-color: var(--tpl-accent);
+	box-shadow:
+		inset -2px -2px 0 rgba(0, 0, 0, 0.18),
+		0 2px 2px rgba(0, 0, 0, 0.25);
+	pointer-events: none;
+}
+
+/* 손으로 들어 올리듯 (마우스를 올리면 조금 뜬다) */
+.pf-sticky,
+.pf-card,
+.pf-polaroid,
+.pf-ticket,
+.pf-stamp {
+	transition: translate 0.18s ease;
+}
+
+.pf-sticky:hover,
+.pf-card:hover,
+.pf-polaroid:hover,
+.pf-ticket:hover,
+.pf-stamp:hover {
+	translate: 0 -4px;
+}
+
+/* ─── 첫 화면: 포스터 양옆에 폴라로이드와 붙임쪽지 ─── */
 .pf-hero {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
-	align-items: center;
-	gap: 64px;
-	max-width: calc(var(--pf-width) + var(--pf-gutter) * 2);
+	grid-template-columns: minmax(0, 1fr) minmax(0, 620px) minmax(0, 1fr);
+	grid-template-areas: 'photo poster meta';
+	align-items: start;
+	gap: 36px;
+	max-width: 1320px;
 	margin: 0 auto;
-	padding: 64px var(--pf-gutter) 88px;
 }
 
-.pf-brand {
+.pf-hero-photo {
+	grid-area: photo;
+	justify-self: end;
+	--w: 340px;
+	margin-top: 70px;
+}
+
+.pf-poster {
+	position: relative;
+	grid-area: poster;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 20px;
+	padding: 52px 48px 44px;
+	background-color: var(--pf-paper);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
+}
+
+.pf-tape-left {
+	left: 0;
+	margin-left: -18px;
+	rotate: -38deg;
+	top: 4px;
+}
+
+.pf-tape-right {
+	left: auto;
+	right: -18px;
+	margin-left: 0;
+	rotate: 38deg;
+	top: 4px;
+}
+
+/* 이름표: 라벨 테이프처럼 검은 띠에 흰 글자 */
+.pf-nametag {
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
-	padding: 6px 16px;
-	border: 2px solid var(--pf-line);
-	border-radius: 999px;
-	background-color: var(--pf-card);
-	font-size: 14.5px;
-	font-weight: 700;
+	gap: 8px;
+	padding: 5px 12px;
+	background-color: var(--pf-paper-ink);
+	color: var(--pf-paper);
+	font-family: var(--pf-mono);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	rotate: -1.5deg;
 }
 
-.pf-brand:has(.pf-icon) {
-	padding-left: 6px;
+.pf-nametag img {
+	width: 20px;
+	height: 20px;
+	border-radius: 5px;
+	object-fit: cover;
 }
 
-.pf-icon {
-	width: 28px;
-	height: 28px;
-	border-radius: 8px;
+.pf-nametag .pf-logo {
+	width: auto;
+	max-width: 160px;
+	height: 18px;
+	border-radius: 0;
+	object-fit: contain;
 }
 
-.pf-logo {
-	display: block;
-	height: 22px;
-}
-
-.pf-hero h1 {
-	margin-top: 28px;
-	font-size: clamp(40px, 5cqi, 68px);
-	line-height: 1.12;
-	letter-spacing: -0.025em;
-	text-wrap: balance;
+.pf-poster h1 {
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-round);
+	font-size: clamp(36px, 4.4cqi, 54px);
+	font-weight: 800;
+	line-height: 1.18;
+	letter-spacing: -0.035em;
 }
 
 .pf-mark {
@@ -330,1552 +292,1203 @@
 	left: -2%;
 	bottom: -0.16em;
 	width: 104%;
-	height: 0.26em;
+	height: 0.3em;
 	overflow: visible;
 }
 
 .pf-squiggle path {
 	stroke: var(--tpl-accent);
-	stroke-width: 5px;
+	stroke-width: 4;
 	stroke-linecap: round;
-	stroke-linejoin: round;
 }
 
 .pf-subhead {
-	max-width: 32em;
-	margin-top: 28px;
-	color: var(--pf-body);
-	font-size: 19px;
-	line-height: 1.6;
+	color: var(--pf-paper-body);
+	font-size: 17px;
+	line-height: 1.65;
 }
 
-.pf-meta {
+.pf-hero-meta {
+	grid-area: meta;
+	justify-self: start;
+	margin-top: 150px;
+	width: 250px;
+}
+
+.pf-hero-meta div + div {
+	margin-top: 12px;
+}
+
+.pf-hero-meta dt {
+	color: var(--pf-paper-muted);
+	font-family: var(--pf-hand);
+	font-size: 13px;
+}
+
+.pf-hero-meta dd {
+	color: var(--pf-paper-ink);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.45;
+}
+
+/* ─── 링크 ─── */
+.pf-links {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
-	margin-top: 36px;
+	align-items: center;
+	gap: 10px 12px;
 }
 
-.pf-meta li {
+.pf-links a,
+.pf-links button {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
-	padding: 5px 12px;
+	gap: 6px;
+	padding: 10px 18px;
+	border: 2px solid var(--pf-paper-ink);
 	border-radius: 999px;
-	background-color: var(--pf-soft);
-	color: var(--pf-body);
-	font-size: 13.5px;
-	font-weight: 600;
+	background-color: var(--pf-paper);
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-round);
+	font-size: 15px;
+	font-weight: 700;
+	text-decoration: none;
+	cursor: pointer;
+	transition: translate 0.15s ease;
 }
 
-.pf-meta li::before {
-	content: '';
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background-color: var(--tone);
+.pf-links a:hover,
+.pf-links button:hover {
+	translate: 0 -2px;
 }
 
-/* 콜라주: 해바라기 동그라미, 보라 둥근 네모, 민트 알약 위에 창 하나와 스티커 */
-.pf-collage {
+.pf-links [data-primary] {
+	border-color: var(--tpl-accent);
+	background-color: var(--tpl-accent);
+	color: #fff;
+}
+
+/* ─── 게시판과 자리 ─── */
+.pf-board {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 64px 40px;
+	max-width: 1280px;
+	margin: 96px auto 0;
+}
+
+.pf-zone {
 	position: relative;
-	padding: 48px 28px 56px 36px;
+	grid-column: span 2;
+	min-width: 0;
+	padding: 48px 36px 44px;
+	border: 2px dashed var(--pf-zone-line);
+	border-radius: 28px;
 }
 
-.pf-shape {
-	position: absolute;
-	border: 2px solid var(--pf-edge);
+.pf-zone[data-span='half'] {
+	grid-column: span 1;
 }
 
-.pf-shape-sun {
-	top: 0;
-	right: -2%;
-	width: 58%;
-	aspect-ratio: 1;
-	border-radius: 50%;
-	background-color: #ffc93c;
-}
-
-.pf-shape-lilac {
-	bottom: 4%;
-	left: 0;
-	width: 32%;
-	aspect-ratio: 1;
-	border-radius: 34%;
-	background-color: var(--pf-violet);
-	transform: rotate(-8deg);
-}
-
-.pf-shape-mint {
-	right: 8%;
-	bottom: 0;
-	width: 38%;
-	height: 56px;
-	border-radius: 999px;
-	background-color: #a3e4d7;
-}
-
-.pf-window {
-	position: relative;
-	z-index: 1;
-	overflow: hidden;
-	border: 2px solid var(--pf-line);
-	border-radius: 22px;
-	background-color: var(--pf-card);
-	box-shadow: var(--pf-drop);
-}
-
-.pf-window-bar {
+.pf-zone-head {
 	display: flex;
-	align-items: center;
-	height: 36px;
-	padding: 0 14px;
-	border-bottom: 2px solid var(--pf-line);
-	background-color: var(--pf-card);
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+	margin-bottom: 36px;
 }
 
-.pf-window-screen,
-.pf-window-screen img {
-	aspect-ratio: 16 / 10;
+.pf-label {
+	position: absolute;
+	top: -18px;
+	left: 30px;
+	padding: 6px 16px;
+	background-color: color-mix(in srgb, var(--tone) 88%, transparent);
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-round);
+	font-size: 14px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+}
+
+.pf-zone-head h2 {
+	color: var(--pf-ink);
+	font-family: var(--pf-round);
+	font-size: clamp(24px, 2.6cqi, 32px);
+	font-weight: 800;
+	line-height: 1.3;
+	letter-spacing: -0.03em;
+}
+
+.pf-pins {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 40px 44px;
+}
+
+.pf-cluster {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 22px 26px;
+}
+
+/* ─── 폴라로이드 ─── */
+.pf-polaroid {
+	position: relative;
+	flex: none;
+	width: var(--w, 290px);
+	max-width: 100%;
+	padding: 12px 12px 14px;
+	background-color: var(--pf-paper);
+	box-shadow: var(--pf-shadow);
+}
+
+.pf-photo {
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	background-color: #d9d3c8;
+}
+
+.pf-photo .lk-media,
+.pf-photo .lk-media img {
 	width: 100%;
+	height: 100%;
 	object-fit: cover;
 	object-position: top center;
 }
 
-/* 그림이 없는 첫 화면: 큰 둥근 네모에 앱 아이콘, 첫 기능 아이콘, 또는 이름 첫 글자 */
-.pf-collage[data-art] {
-	display: grid;
-	place-items: center;
-	min-height: 440px;
-}
-
-.pf-collage[data-art] .pf-shape-sun {
-	top: 2%;
-	right: 6%;
-	width: 62%;
-}
-
-.pf-hero-art {
-	position: relative;
-	z-index: 1;
-	display: grid;
-	place-items: center;
-	width: min(52%, 260px);
-	aspect-ratio: 1;
-	border: 2px solid var(--pf-line);
-	border-radius: 32%;
-	background-color: var(--pf-card);
-	box-shadow: var(--pf-drop);
-	color: var(--pf-ink);
-	font-size: 92px;
-	transform: rotate(-4deg);
-}
-
-.pf-hero-icon {
-	width: 62%;
-	height: 62%;
-	border-radius: 24%;
-	object-fit: cover;
-}
-
-.pf-initial {
-	font-size: 128px;
-	font-weight: 700;
-	line-height: 1;
-	letter-spacing: -0.04em;
-}
-
-.pf-hero-stickers li {
-	position: absolute;
-	z-index: 2;
-}
-
-.pf-hero-stickers .pf-sticker {
-	padding: 8px 18px;
-	font-size: 15px;
-}
-
-.pf-hero-stickers [data-slot='0'] {
-	top: 14px;
-	left: 0;
-}
-
-.pf-hero-stickers [data-slot='1'] {
-	top: 44%;
-	right: -4px;
-}
-
-.pf-hero-stickers [data-slot='2'] {
-	bottom: 18px;
-	left: 18%;
-}
-
-.pf-collage[data-art] [data-slot='0'] {
-	top: 16%;
-	left: 4%;
-}
-
-.pf-collage[data-art] [data-slot='1'] {
-	top: auto;
-	right: 4%;
-	bottom: 16%;
-}
-
-/* ─── 구역 ─── */
-.pf-section {
-	max-width: calc(var(--pf-width) + var(--pf-gutter) * 2);
-	margin: 0 auto;
-	padding: 72px var(--pf-gutter);
-}
-
-.pf-head {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	margin-bottom: 44px;
-}
-
-.pf-head h2 {
-	max-width: 20em;
-	margin-top: 20px;
-	font-size: clamp(30px, 3.5cqi, 46px);
-	line-height: 1.16;
-	text-wrap: balance;
-}
-
-.pf-lead {
-	max-width: 36em;
-	margin-top: 14px;
-	color: var(--pf-body);
-	font-size: 18px;
-}
-
-/* ─── 숫자: 둥근 배지 ─── */
-.pf-badges {
-	display: grid;
-	grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
-	gap: 24px;
-}
-
-.pf-badges[data-count='1'] {
-	--n: 1;
-}
-.pf-badges[data-count='2'] {
-	--n: 2;
-}
-.pf-badges[data-count='3'] {
-	--n: 3;
-}
-
-.pf-badges li {
-	display: flex;
-	justify-content: center;
-}
-
-.pf-badge {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	width: min(100%, 236px);
-	aspect-ratio: 1;
-	padding: 28px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 50%;
-	background-color: var(--tone);
-	color: var(--pf-on);
+.pf-polaroid figcaption {
+	margin-top: 10px;
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-hand);
+	font-size: 16px;
+	line-height: 1.35;
 	text-align: center;
-	transform: rotate(var(--tilt, 0deg));
 }
 
-.pf-figure {
-	font-size: clamp(40px, 4.4cqi, 58px);
-	font-weight: 700;
-	line-height: 1;
-	letter-spacing: -0.035em;
-	font-variant-numeric: tabular-nums;
+.pf-polaroid-small {
+	--w: 200px;
 }
 
-.pf-unit {
-	margin-left: 2px;
-	font-size: 0.46em;
-	letter-spacing: -0.01em;
-}
-
-.pf-badge-label {
-	max-width: 11em;
-	margin-top: 12px;
+.pf-polaroid-small figcaption {
 	font-size: 14px;
-	font-weight: 600;
+}
+
+/* ─── 붙임쪽지 (기능) ─── */
+.pf-sticky {
+	position: relative;
+	flex: none;
+	width: 270px;
+	min-height: 250px;
+	padding: 30px 24px 24px;
+	background-color: var(--tone);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
+}
+
+.pf-sticky-icon {
+	display: inline-grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	margin-bottom: 12px;
+	border: 2px solid var(--pf-paper-ink);
+	border-radius: 50%;
+	font-size: 16px;
+}
+
+.pf-group {
+	margin-bottom: 4px;
+	color: var(--pf-paper-muted);
+	font-family: var(--pf-hand);
+	font-size: 13px;
+}
+
+.pf-point-title {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	margin-bottom: 8px;
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-round);
+	font-size: 19px;
+	font-weight: 800;
 	line-height: 1.35;
 }
 
-/* ─── 주요 기능: 팔레트 색 카드 ─── */
-.pf-features,
-.pf-cards {
-	display: grid;
-	gap: 24px;
+.pf-point-title i {
+	color: var(--tpl-accent);
+	font-size: 15px;
 }
 
-.pf-cards-grid[data-cols='3'] {
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+.pf-body {
+	color: var(--pf-paper-ink);
+	font-size: 15px;
+	line-height: 1.6;
 }
 
-.pf-cards-grid[data-cols='2'] {
-	grid-template-columns: repeat(2, minmax(0, 1fr));
+.pf-detail {
+	margin-top: 8px;
+	color: var(--pf-paper-body);
+	font-size: 13.5px;
+	line-height: 1.6;
+}
+
+/* ─── 색인 카드 (구현 방법, 트러블슈팅) ─── */
+.pf-card,
+.pf-face {
+	position: relative;
+	padding: 48px 24px 24px;
+	background-color: var(--pf-paper);
+	background-image:
+		linear-gradient(transparent 0 38px, var(--pf-margin) 38px 40px, transparent 40px),
+		repeating-linear-gradient(transparent 0 23px, var(--pf-rule) 23px 24px);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
 }
 
 .pf-card {
-	border: 2px solid var(--pf-edge);
-	border-radius: 32px;
-	background-color: var(--tone);
-}
-
-.pf-card-small {
-	padding: 32px;
-}
-
-.pf-card-small .pf-point-title {
-	margin-top: 24px;
-}
-
-.pf-card-wide {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
-	align-items: center;
-	gap: 48px;
-	padding: 44px;
-}
-
-.pf-card-wide[data-flip] .pf-card-visual {
-	order: -1;
-}
-
-.pf-card-wide .pf-point-title {
-	margin-top: 24px;
-	font-size: 28px;
-}
-
-.pf-card-wide .pf-body {
-	font-size: 17.5px;
-}
-
-.pf-card-visual .pf-frame {
-	box-shadow: 6px 6px 0 var(--pf-on);
-}
-
-:root[data-theme='dark'] .pf-card-visual .pf-frame {
-	box-shadow: none;
-}
-
-.pf-thumbs {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 12px;
-	margin-top: 24px;
-}
-
-.pf-thumbs .pf-frame {
-	border-radius: 14px;
-}
-
-/* 그림이 없는 넓은 카드: 큰 도형과 아이콘 */
-.pf-shape-art {
-	position: relative;
-	display: grid;
-	place-items: center;
-	aspect-ratio: 16 / 10;
-}
-
-.pf-blob {
-	position: absolute;
-	top: 6%;
-	left: 18%;
-	width: 52%;
-	aspect-ratio: 1;
-	border: 2px solid var(--pf-edge);
-	border-radius: 50%;
-	background-color: var(--tone);
-}
-
-.pf-blob-2 {
-	top: auto;
-	right: 12%;
-	bottom: 4%;
-	left: auto;
-	width: 30%;
-	border-radius: 32%;
-	transform: rotate(10deg);
-}
-
-.pf-shape-icon {
-	position: relative;
-	display: grid;
-	place-items: center;
-	width: 116px;
-	height: 116px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 50%;
-	background-color: #fffdf8;
-	color: var(--pf-on);
-	font-size: 46px;
-}
-
-/* ─── 화면 모음: 엇갈린 격자, 액자는 살짝 기울고 아래에 스티커 ─── */
-.pf-screens {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 40px 48px;
-	padding-bottom: 72px;
-}
-
-.pf-screens[data-count='1'] {
-	grid-template-columns: minmax(0, 1fr);
-	max-width: 760px;
-	padding-bottom: 0;
-}
-
-.pf-screens[data-count='3'] {
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.pf-screens li {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-}
-
-/* 엇갈림: 나타남(transform)과 겹치지 않게 top으로 */
-.pf-screens li:nth-child(even) {
-	position: relative;
-	top: 72px;
-}
-
-.pf-screens .pf-frame {
-	width: 100%;
-	box-shadow: var(--pf-drop);
-	transform: rotate(calc(var(--tilt, 0deg) * 0.4));
-}
-
-.pf-caption {
-	position: relative;
-	z-index: 1;
-	margin: -18px 0 0 24px;
-}
-
-/* ─── 쓰는 법: 굽이치는 점선 길 위의 번호 동그라미 ─── */
-.pf-steps-wrap {
-	position: relative;
-}
-
-.pf-path {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 128px;
-	overflow: visible;
-}
-
-.pf-path path {
-	stroke: var(--pf-line);
-	stroke-width: 2.5px;
-	stroke-dasharray: 1 10;
-	stroke-linecap: round;
-}
-
-.pf-steps {
-	position: relative;
-	display: grid;
-	grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
-	gap: 32px;
-}
-
-.pf-steps[data-count='1'] {
-	--n: 1;
-	max-width: 520px;
-}
-.pf-steps[data-count='2'] {
-	--n: 2;
-}
-.pf-steps[data-count='3'] {
-	--n: 3;
-}
-
-.pf-steps li {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-}
-
-.pf-steps li:nth-child(even) {
-	padding-top: 48px;
-}
-
-.pf-step-num {
-	position: relative;
-	display: grid;
 	flex: none;
-	place-items: center;
-	width: 80px;
-	height: 80px;
-	border: 2px solid var(--pf-line);
-	border-radius: 50%;
-	background-color: var(--tone);
-	color: var(--pf-on);
-	font-size: 34px;
-	font-weight: 700;
-	letter-spacing: -0.03em;
-	font-variant-numeric: tabular-nums;
+	width: 320px;
 }
 
-.pf-step-icon {
-	position: absolute;
-	right: -8px;
-	bottom: -6px;
+/* 뒤집는 카드: 두 면이 한 칸에 겹치고, 누르면 뒤로 돈다. 움직임 줄이기면 돌지 않고 바로 바뀐다 */
+.pf-flip {
+	flex: none;
+	width: 340px;
+	perspective: 1400px;
+}
+
+.pf-flip-inner {
 	display: grid;
-	place-items: center;
-	width: 32px;
-	height: 32px;
-	border: 2px solid var(--pf-line);
-	border-radius: 50%;
-	background-color: var(--pf-card);
-	color: var(--pf-ink);
+	transform-style: preserve-3d;
+	transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+
+.pf-flip[data-flipped] .pf-flip-inner {
+	transform: rotateY(180deg);
+}
+
+.pf-face {
+	display: flex;
+	flex-direction: column;
+	grid-area: 1 / 1;
+	backface-visibility: hidden;
+}
+
+.pf-back {
+	background-color: var(--pf-paper);
+	background-image: repeating-linear-gradient(transparent 0 23px, var(--pf-rule) 23px 24px);
+	transform: rotateY(180deg);
+}
+
+.pf-face-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 10px;
+	color: var(--tpl-accent);
+	font-family: var(--pf-hand);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.pf-back-title {
+	margin-bottom: 8px;
+	color: var(--pf-paper-muted);
+	font-family: var(--pf-round);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.pf-detail b,
+.pf-result b {
+	margin-right: 4px;
+	color: var(--pf-paper-ink);
+}
+
+.pf-result {
+	margin-top: 12px;
+	padding: 10px 12px;
+	background-color: color-mix(in srgb, #aee8dc 70%, transparent);
+	color: var(--pf-paper-ink);
+	font-size: 14px;
+	line-height: 1.55;
+}
+
+.pf-flip-button {
+	align-self: flex-start;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: auto;
+	padding: 8px 14px;
+	border: 2px solid var(--pf-paper-ink);
+	border-radius: 999px;
+	background-color: var(--pf-paper);
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-round);
+	font-size: 13.5px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.pf-face > .pf-body,
+.pf-face > .pf-detail,
+.pf-face > .pf-result {
+	margin-bottom: 16px;
+}
+
+.pf-flip-button:hover {
+	background-color: var(--pf-paper-ink);
+	color: var(--pf-paper);
+}
+
+/* ─── 우표 (숫자) ─── */
+.pf-stamps {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 26px 32px;
+}
+
+.pf-stamp {
+	flex: none;
+	width: 210px;
+	margin-top: var(--nudge, 0px);
+	padding: 9px;
+	background-color: var(--pf-paper);
+	/* 톱니 가장자리: 안쪽은 그대로, 가장자리에 반원 구멍 */
+	mask:
+		linear-gradient(#000 0 0) content-box,
+		radial-gradient(circle 5px, transparent 96%, #000) -7px -7px / 14px 14px;
+}
+
+.pf-stamp-in {
+	display: flex;
+	flex-direction: column-reverse;
+	justify-content: flex-end;
+	gap: 4px;
+	height: 100%;
+	min-height: 150px;
+	padding: 18px 16px;
+	outline: 1.5px dashed rgba(29, 26, 23, 0.35);
+	outline-offset: -7px;
+	background-color: var(--tone);
+	color: var(--pf-paper-ink);
+}
+
+.pf-stamp dd {
+	font-family: var(--pf-round);
+	font-size: 40px;
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	line-height: 1.05;
+}
+
+.pf-stamp dt {
+	font-family: var(--pf-hand);
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.pf-stamps[data-small] {
+	justify-content: flex-start;
+	gap: 14px;
+	margin: 14px 0 4px;
+}
+
+.pf-stamps[data-small] .pf-stamp {
+	width: 150px;
+	margin-top: 0;
+	padding: 7px;
+}
+
+.pf-stamps[data-small] .pf-stamp-in {
+	min-height: 0;
+	padding: 12px;
+}
+
+.pf-stamps[data-small] dd {
+	font-size: 26px;
+}
+
+.pf-stamps[data-small] dt {
 	font-size: 12px;
 }
 
-.pf-steps .pf-point-title {
-	margin-top: 24px;
-}
-
-.pf-steps .pf-body {
-	max-width: 24em;
-}
-
-.pf-point-media {
-	display: grid;
-	gap: 12px;
-	width: 100%;
-	margin-top: 20px;
-}
-
-.pf-point-media[data-count='2'] {
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-/* ─── 만든 방식: 테두리만 있는 카드, 색 동그라미 아이콘 ─── */
-.pf-built {
-	display: grid;
-	grid-template-columns: repeat(6, minmax(0, 1fr));
-	gap: 20px;
-}
-
-.pf-built li {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	padding: 30px;
-	border: 2px solid var(--pf-line);
-	border-radius: 28px;
-	background-color: var(--pf-card);
-}
-
-.pf-built li[data-span='third'] {
-	grid-column: span 2;
-}
-
-.pf-built li[data-span='half'] {
-	grid-column: span 3;
-}
-
-.pf-built li[data-span='full'] {
-	grid-column: 1 / -1;
-}
-
-.pf-built-text {
-	margin-top: 22px;
-}
-
-.pf-built li[data-span='full']:has(.pf-point-media) {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-	grid-template-rows: auto 1fr;
-	column-gap: 44px;
-	padding: 36px;
-}
-
-.pf-built li[data-span='full']:has(.pf-point-media) .pf-point-media {
-	grid-row: 1 / span 2;
-	grid-column: 2;
-	align-self: center;
-	margin-top: 0;
-}
-
-.pf-built li[data-span='full']:has(.pf-point-media) .pf-built-text {
-	align-self: start;
-}
-
-/* ─── 더 들려줄 이야기: 색 면의 큰 카드, 그림은 살짝 기운 액자 ─── */
-.pf-stories {
-	display: grid;
-	gap: 28px;
-}
-
-.pf-story {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
-	gap: 48px;
-	align-items: center;
-	padding: 48px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 36px;
-	background-color: var(--tone);
-}
-
-.pf-story[data-image] {
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-}
-
-.pf-story[data-flip] .pf-story-image {
-	order: -1;
-	transform: rotate(-1.5deg);
-}
-
-.pf-story h3 {
-	margin-top: 20px;
-	font-size: 32px;
-	line-height: 1.2;
-}
-
-.pf-story-lead {
-	max-width: 34em;
-	margin-top: 14px;
-	color: var(--t-body);
-	font-size: 17.5px;
-	line-height: 1.62;
-}
-
-.pf-mini-stats {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
-	margin-top: 26px;
-}
-
-.pf-mini-stats li {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	min-width: 140px;
-	padding: 14px 18px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 20px;
-	background-color: #fffdf8;
-	font-size: 13.5px;
-	font-weight: 600;
-	line-height: 1.35;
-}
-
-.pf-mini-figure {
-	font-size: 32px;
-	font-weight: 700;
-	line-height: 1.05;
-	letter-spacing: -0.03em;
-	font-variant-numeric: tabular-nums;
-}
-
-.pf-story-points {
-	display: grid;
-	gap: 20px;
-	margin-top: 30px;
-}
-
-/* 그림이 없는 장: 왼쪽 제목과 머리글, 오른쪽 숫자와 항목 */
-.pf-story:not([data-image]) .pf-story-text {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-	gap: 56px;
-	align-items: start;
-}
-
-.pf-story:not([data-image]) .pf-story-body > :first-child {
-	margin-top: 0;
-}
-
-.pf-story-points > li {
-	display: grid;
-	grid-template-columns: 44px minmax(0, 1fr);
-	gap: 16px;
-	align-items: start;
-}
-
-.pf-story-points .pf-glyph {
-	width: 44px;
-	height: 44px;
-	font-size: 16px;
-}
-
-.pf-story-points .pf-point-title {
-	padding-top: 2px;
-	font-size: 18px;
-}
-
-.pf-story-points .pf-body {
-	margin-top: 6px;
-	font-size: 15.5px;
-}
-
-.pf-story-image {
-	box-shadow: 6px 6px 0 var(--pf-on);
-	transform: rotate(1.5deg);
-}
-
-:root[data-theme='dark'] .pf-story-image {
-	box-shadow: none;
-}
-
-/* ─── 조작법: 사탕색 글쇠 ─── */
-.pf-controls {
-	display: grid;
-	grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
-	gap: 16px;
-}
-
-.pf-controls[data-count='1'] {
-	--n: 1;
-	max-width: 360px;
-}
-.pf-controls[data-count='2'] {
-	--n: 2;
-}
-.pf-controls[data-count='3'] {
-	--n: 3;
-}
-
-.pf-controls > div {
-	padding: 26px;
-	border: 2px solid var(--pf-line);
-	border-radius: 26px;
-	background-color: var(--pf-card);
-}
-
-.pf-controls dt {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-}
-
-.pf-controls kbd {
-	display: inline-grid;
-	place-items: center;
-	min-width: 54px;
-	height: 54px;
-	padding: 0 14px;
-	border: 2px solid var(--pf-line);
-	border-bottom-width: 5px;
-	border-radius: 16px;
-	background-color: var(--tone);
-	color: var(--pf-on);
-	font-family: inherit;
-	font-size: 20px;
-	font-weight: 700;
-}
-
-.pf-controls dd {
-	margin-top: 18px;
-	font-size: 16px;
-	font-weight: 600;
-}
-
-/* ─── 진행 과정: 가운데 굵은 선을 따라 좌우로 번갈아 놓이는 색 동그라미 ─── */
-.pf-timeline {
+/* ─── 공책 (쓰는 법) ─── */
+.pf-notebook,
+.pf-diary,
+.pf-todo {
 	position: relative;
+	padding: 40px 32px 30px 64px;
+	background-color: var(--pf-paper);
+	background-image:
+		linear-gradient(90deg, transparent 0 46px, var(--pf-margin) 46px 48px, transparent 48px),
+		repeating-linear-gradient(transparent 0 27px, var(--pf-rule) 27px 28px);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
+}
+
+.pf-notebook {
+	max-width: 760px;
+	margin: 0 auto;
+}
+
+.pf-steps {
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+}
+
+.pf-steps li {
 	display: grid;
+	grid-template-columns: 38px 1fr;
 	gap: 14px;
 }
 
-.pf-timeline::before {
-	content: '';
-	position: absolute;
-	top: 12px;
-	bottom: 12px;
-	left: calc(50% - 1.5px);
-	width: 3px;
-	border-radius: 3px;
-	background-color: var(--pf-line);
-}
-
-.pf-timeline li {
-	position: relative;
+.pf-step-no {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
-	align-items: center;
-}
-
-.pf-node {
-	display: grid;
-	grid-column: 2;
-	grid-row: 1;
 	place-items: center;
-	justify-self: center;
-	width: 46px;
-	height: 46px;
-	border: 2px solid var(--pf-line);
+	width: 34px;
+	height: 34px;
+	border: 2px solid var(--tpl-accent);
 	border-radius: 50%;
-	background-color: var(--tone);
-	color: var(--pf-on);
+	color: var(--tpl-accent);
+	font-family: var(--pf-hand);
+	font-size: 17px;
+	font-weight: 700;
+	rotate: -6deg;
+}
+
+.pf-steps .pf-polaroid {
+	margin-top: 14px;
+}
+
+/* ─── 일기장 (이야기) ─── */
+.pf-diary {
+	flex: 1 1 460px;
+	max-width: 580px;
+	margin-top: var(--nudge, 0px);
+}
+
+.pf-diary::after {
+	content: '';
+	display: table;
+	clear: both;
+}
+
+.pf-diary > .pf-polaroid {
+	float: right;
+	margin: 0 -8px 16px 18px;
+	--w: 190px;
+}
+
+.pf-diary-no {
+	color: var(--tpl-accent);
+	font-family: var(--pf-hand);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.pf-diary-title {
+	margin: 2px 0 10px;
+	font-family: var(--pf-round);
+	font-size: 24px;
+	font-weight: 800;
+	line-height: 1.3;
+}
+
+.pf-diary-lead {
+	color: var(--pf-paper-ink);
 	font-size: 16px;
-	font-weight: 700;
-	font-variant-numeric: tabular-nums;
-}
-
-.pf-entry {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-	grid-row: 1;
-	padding: 14px 22px;
-	border: 2px solid var(--pf-line);
-	border-radius: 22px;
-	background-color: var(--pf-card);
-}
-
-.pf-timeline li:nth-child(odd) .pf-entry {
-	grid-column: 1;
-	align-items: flex-end;
-	text-align: right;
-}
-
-.pf-timeline li:nth-child(even) .pf-entry {
-	grid-column: 3;
-}
-
-.pf-entry time {
-	color: var(--pf-muted);
-	font-size: 13px;
-	font-weight: 700;
-	font-variant-numeric: tabular-nums;
-}
-
-.pf-entry-label {
-	font-size: 16.5px;
-	font-weight: 600;
-}
-
-/* ─── 기술 사양: 사탕색 칩, 사양 카드, 잉크색 폴더 창 ─── */
-.pf-chips {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
-}
-
-.pf-chips li {
-	padding: 10px 20px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 999px;
-	background-color: var(--tone);
-	color: var(--pf-on);
-	font-size: 16px;
-	font-weight: 700;
-}
-
-.pf-chips li:nth-child(3n + 2) {
-	transform: rotate(-2deg);
-}
-
-.pf-chips li:nth-child(4n) {
-	transform: rotate(1.5deg);
-}
-
-.pf-tech {
-	display: grid;
-	gap: 24px;
-	margin-top: 36px;
-}
-
-.pf-tech[data-split] {
-	grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-	align-items: start;
-}
-
-.pf-specs {
-	padding: 8px 30px;
-	border: 2px solid var(--pf-line);
-	border-radius: 28px;
-	background-color: var(--pf-card);
-}
-
-.pf-specs > div {
-	display: grid;
-	grid-template-columns: 96px minmax(0, 1fr);
-	gap: 16px;
-	padding: 17px 0;
-	border-top: 2px dashed color-mix(in srgb, var(--pf-line) 16%, transparent);
-}
-
-.pf-specs > div:first-child {
-	border-top: 0;
-}
-
-.pf-specs dt {
-	font-size: 14.5px;
-	font-weight: 700;
-}
-
-.pf-specs dd {
-	color: var(--pf-body);
-	font-size: 16px;
-}
-
-.pf-tree {
-	overflow: hidden;
-	border: 2px solid var(--pf-line);
-	border-radius: 28px;
-	background-color: #1d1a17;
-	color: #f2e9dc;
-}
-
-:root[data-theme='dark'] .pf-tree {
-	background-color: #0f0d11;
-}
-
-.pf-tree figcaption {
-	display: flex;
-	align-items: center;
-	gap: 14px;
-	padding: 14px 22px;
-	border-bottom: 1px solid rgba(255, 248, 238, 0.14);
-	font-size: 13px;
-	font-weight: 600;
-	color: rgba(255, 248, 238, 0.7);
-}
-
-.pf-tree .pf-dots i {
-	border-color: #1d1a17;
-}
-
-.pf-tree pre {
-	overflow-x: auto;
-	padding: 22px 26px 26px;
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 13.5px;
 	line-height: 1.75;
 }
 
-/* ─── 맡은 일: 테이프를 붙인 노란 붙임쪽지 ─── */
-.pf-role {
-	display: grid;
-	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
-	gap: 56px;
-	align-items: start;
+.pf-diary-points {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	margin-top: 18px;
+	clear: both;
 }
 
-.pf-note {
-	position: relative;
-	padding: 48px 44px 40px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 8px 8px 36px 8px;
-	background-color: #ffc93c;
-	box-shadow: var(--pf-drop);
-	rotate: -1.5deg;
+.pf-diary-points li {
+	padding-left: 16px;
+	border-left: 3px solid color-mix(in srgb, var(--tpl-accent) 55%, transparent);
 }
 
-:root[data-theme='dark'] .pf-note {
-	background-color: #f7c24a;
+.pf-diary-points .pf-point-title {
+	margin-bottom: 2px;
+	font-size: 16px;
 }
 
-.pf-tape {
-	position: absolute;
-	top: -16px;
-	left: 50%;
-	width: 120px;
-	height: 32px;
-	border-radius: 4px;
-	background-color: rgba(199, 210, 254, 0.85);
-	transform: translateX(-50%) rotate(-3deg);
-}
-
-.pf-note-role {
-	font-size: 24px;
-	font-weight: 700;
-	line-height: 1.35;
-	letter-spacing: -0.018em;
-}
-
-.pf-note-meta {
+/* ─── 글쇠 스티커 (조작법) ─── */
+.pf-keys {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px 28px;
-	margin-top: 16px;
+	gap: 20px 26px;
 }
 
-.pf-note-meta dt {
-	color: var(--t-body);
-	font-size: 12.5px;
+.pf-keys > div {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.pf-keys dt {
+	display: flex;
+	gap: 6px;
+}
+
+.pf-keys kbd {
+	display: inline-grid;
+	place-items: center;
+	min-width: 40px;
+	height: 40px;
+	padding: 0 10px;
+	border: 2px solid var(--pf-paper-ink);
+	border-bottom-width: 5px;
+	border-radius: 10px;
+	background-color: var(--pf-paper);
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-mono);
+	font-size: 15px;
 	font-weight: 700;
 }
 
-.pf-note-meta dd {
+.pf-keys dd {
+	color: var(--pf-ink);
 	font-size: 15px;
 	font-weight: 600;
 }
 
-.pf-checks {
-	display: grid;
-	gap: 12px;
-	margin-top: 26px;
-	padding-top: 24px;
-	border-top: 2px dashed var(--t-faint);
-}
-
-.pf-note > .pf-checks:first-child,
-.pf-tape + .pf-checks {
-	margin-top: 0;
-	padding-top: 0;
-	border-top: 0;
-}
-
-.pf-checks li {
-	display: grid;
-	grid-template-columns: 28px minmax(0, 1fr);
-	gap: 12px;
-	align-items: start;
-	font-size: 16.5px;
-	line-height: 1.5;
-}
-
-.pf-checks i {
-	display: grid;
-	place-items: center;
-	width: 28px;
-	height: 28px;
-	border: 2px solid var(--pf-on);
-	border-radius: 50%;
-	background-color: #fffdf8;
-	font-size: 12px;
-}
-
-/* ─── 출처: 스티커를 붙인 작은 카드 ─── */
-.pf-credits {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-	gap: 16px;
-}
-
-.pf-credits li {
+/* ─── 기술: 스티커, 꼬리표, 타자 쪽지 ─── */
+.pf-tech {
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
-	padding: 24px;
-	border: 2px solid var(--pf-line);
-	border-radius: 24px;
-	background-color: var(--pf-card);
+	gap: 30px;
 }
 
-.pf-credit-name {
-	margin-top: 16px;
-	font-size: 18px;
-	font-weight: 700;
+.pf-stickers ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 10px;
 }
 
-.pf-credit-name i {
-	margin-left: 6px;
-	font-size: 0.7em;
-	vertical-align: 0.1em;
-}
-
-.pf-credit-by {
-	margin-top: 4px;
-	color: var(--pf-muted);
+.pf-stickers li {
+	padding: 7px 16px;
+	border: 4px solid var(--pf-paper);
+	border-radius: 999px;
+	background-color: var(--tone);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-round);
 	font-size: 14.5px;
+	font-weight: 800;
+	rotate: var(--tilt, 0deg);
 }
 
-.pf-credit-note {
-	margin-top: 10px;
-	color: var(--pf-body);
+.pf-tag {
+	position: relative;
+	padding: 22px 26px 22px 60px;
+	background-color: var(--pf-kraft);
+	clip-path: polygon(28px 0, 100% 0, 100% 100%, 28px 100%, 0 calc(100% - 28px), 0 28px);
+	color: var(--pf-paper-ink);
+}
+
+.pf-tag-hole {
+	position: absolute;
+	top: 50%;
+	left: 22px;
+	width: 14px;
+	height: 14px;
+	margin-top: -7px;
+	border: 2px solid rgba(29, 26, 23, 0.4);
+	border-radius: 50%;
+	background-color: var(--pf-bg);
+}
+
+.pf-tag div {
+	display: grid;
+	grid-template-columns: 52px 1fr;
+	gap: 10px;
+	padding: 5px 0;
+	border-bottom: 1px dashed rgba(29, 26, 23, 0.25);
 	font-size: 14px;
 }
 
-/* ─── 마무리: 큰 산호색 면, 모서리의 도형 ─── */
-.pf-closing {
+.pf-tag div:last-child {
+	border-bottom: 0;
+}
+
+.pf-tag dt {
+	font-family: var(--pf-hand);
+	font-weight: 700;
+}
+
+.pf-typed {
 	position: relative;
+	padding: 28px 22px 20px;
+	background-color: var(--pf-paper);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
+}
+
+.pf-typed figcaption {
+	margin-bottom: 8px;
+	color: var(--pf-paper-muted);
+	font-family: var(--pf-hand);
+	font-size: 14px;
+}
+
+.pf-typed pre {
+	overflow-x: auto;
+	font-family: var(--pf-mono);
+	font-size: 12.5px;
+	line-height: 1.65;
+}
+
+/* ─── 사진 부스 띠 (팀원) ─── */
+.pf-booth {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	width: min(100%, 420px);
+	margin: 0 auto;
+	padding: 14px 14px 26px;
+	background-color: var(--pf-paper);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
+}
+
+.pf-booth li {
+	display: grid;
+	grid-template-columns: 128px minmax(0, 1fr);
+	grid-template-rows: auto auto 1fr;
+	align-items: start;
+	column-gap: 16px;
+	row-gap: 4px;
+	min-width: 0;
+}
+
+.pf-booth-shot {
+	display: grid;
+	grid-row: 1 / 4;
+	place-items: center;
+	aspect-ratio: 1;
 	overflow: hidden;
-	max-width: var(--pf-width);
-	margin: 48px auto 0;
-	padding: 96px 64px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 44px;
-	background-color: #ff5c39;
+	background-color: var(--tone);
+}
+
+.pf-booth h3 {
+	margin-top: 10px;
+}
+
+.pf-avatar,
+.pf-avatar.lk-avatar {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	border-radius: 0;
+	filter: grayscale(0.25);
+}
+
+.pf-avatar.lk-avatar-initials,
+.pf-avatar.lk-avatar-initials[data-me] {
+	background: none;
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-round);
+	font-size: 46px;
+	font-weight: 800;
+	filter: none;
+}
+
+.pf-booth h3 {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-family: var(--pf-round);
+	font-size: 17px;
+	font-weight: 800;
+}
+
+.pf-me {
+	padding: 1px 8px;
+	border-radius: 999px;
+	background-color: var(--tpl-accent);
+	color: #fff;
+	font-size: 11px;
+}
+
+.pf-booth p {
+	color: var(--pf-paper-body);
+	font-size: 13.5px;
+	line-height: 1.45;
+}
+
+.pf-booth a {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	margin-top: 2px;
+	color: var(--pf-paper-ink);
+	font-size: 12.5px;
+	overflow-wrap: anywhere;
+}
+
+/* ─── 할 일 쪽지 (내 역할) ─── */
+.pf-todo {
+	max-width: 620px;
+	margin: 0 auto;
+	background-color: var(--tone);
+	background-image: repeating-linear-gradient(transparent 0 27px, rgba(29, 26, 23, 0.12) 27px 28px);
+	padding-left: 32px;
+}
+
+.pf-todo ul {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-top: 14px;
+}
+
+.pf-todo li {
+	display: grid;
+	grid-template-columns: 26px 1fr;
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.pf-todo li i {
+	margin-top: 4px;
+	color: var(--tpl-accent);
+}
+
+/* ─── 점선 길 (진행 과정) ─── */
+.pf-path {
+	position: relative;
+	--row: 128px;
+}
+
+.pf-path-line {
+	position: absolute;
+	top: var(--row);
+	left: 0;
+	width: 100%;
+	height: 40px;
+	overflow: visible;
+}
+
+.pf-path-line path {
+	stroke: var(--pf-ink);
+	stroke-width: 2.5;
+	stroke-dasharray: 9 9;
+	stroke-linecap: round;
+	opacity: 0.55;
+}
+
+.pf-path ol {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+	gap: 10px;
+}
+
+.pf-path li {
+	display: grid;
+	grid-template-rows: var(--row) 40px var(--row);
+	justify-items: center;
+}
+
+.pf-path-dot {
+	grid-row: 2;
+	align-self: center;
+	width: 16px;
+	height: 16px;
+	border: 3px solid var(--pf-bg);
+	border-radius: 50%;
+	background-color: var(--tpl-accent);
+}
+
+.pf-path-note {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	max-width: 100%;
+	padding: 10px 12px;
+	background-color: var(--pf-paper);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
 	text-align: center;
 }
 
-.tpl-playful > .pf-closing {
-	margin-bottom: 96px;
-	margin-inline: max(var(--pf-gutter), calc((100% - var(--pf-width)) / 2));
+.pf-path li[data-side='up'] .pf-path-note {
+	grid-row: 1;
+	align-self: end;
+	margin-bottom: 6px;
 }
 
-:root[data-theme='dark'] .pf-closing {
-	background-color: #ff6a4a;
+.pf-path li[data-side='down'] .pf-path-note {
+	grid-row: 3;
+	align-self: start;
+	margin-top: 6px;
 }
 
-.pf-closing-shape {
-	position: absolute;
-	border: 2px solid var(--pf-edge);
+.pf-path time {
+	color: var(--tpl-accent);
+	font-family: var(--pf-hand);
+	font-size: 14px;
+	font-weight: 700;
 }
 
-.pf-closing-sun {
-	top: -96px;
-	right: -64px;
-	width: 280px;
-	aspect-ratio: 1;
-	border-radius: 50%;
-	background-color: #ffc93c;
+.pf-path-note span {
+	font-size: 13.5px;
+	line-height: 1.4;
 }
 
-.pf-closing-lilac {
-	bottom: -56px;
-	left: -36px;
-	width: 180px;
-	aspect-ratio: 1;
-	border-radius: 34%;
-	background-color: var(--pf-violet);
-	transform: rotate(14deg);
-}
-
-.pf-closing-mint {
-	bottom: 36px;
-	right: 64px;
-	width: 150px;
-	height: 48px;
-	border-radius: 999px;
-	background-color: #a3e4d7;
-}
-
-.pf-closing-text {
+/* ─── 입장권 (배포 결과물) ─── */
+.pf-ticket {
 	position: relative;
 	display: flex;
+	flex: none;
+	width: 340px;
+	max-width: 100%;
+	background-color: var(--tone);
+	color: var(--pf-paper-ink);
+	/* 절취선 위아래의 반원 홈 */
+	mask:
+		radial-gradient(circle 11px at right 104px top 0, transparent 96%, #000) top / 100% 51% no-repeat,
+		radial-gradient(circle 11px at right 104px bottom 0, transparent 96%, #000) bottom / 100% 51% no-repeat;
+}
+
+.pf-ticket-main {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 0;
+	padding: 18px 20px 20px;
+}
+
+.pf-ticket-image {
+	height: 120px;
+	margin-bottom: 6px;
+	overflow: hidden;
+	border: 3px solid var(--pf-paper);
+}
+
+.pf-ticket-image .lk-media,
+.pf-ticket-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top center;
+}
+
+.pf-ticket-meta {
+	font-family: var(--pf-hand);
+	font-size: 13px;
+	overflow-wrap: anywhere;
+}
+
+.pf-ticket h3 {
+	font-family: var(--pf-round);
+	font-size: 21px;
+	font-weight: 800;
+	line-height: 1.3;
+}
+
+.pf-ticket h3 a {
+	text-decoration: none;
+}
+
+.pf-ticket h3 a::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+}
+
+.pf-ticket[data-live]:hover h3 a {
+	text-decoration: underline;
+}
+
+.pf-ticket-note {
+	font-size: 13.5px;
+	line-height: 1.55;
+}
+
+.pf-ticket-stub {
+	display: flex;
+	flex: none;
 	flex-direction: column;
 	align-items: center;
-	max-width: 640px;
-	margin: 0 auto;
-}
-
-.pf-closing h2 {
-	margin-top: 22px;
-	font-size: clamp(34px, 4.6cqi, 58px);
-	line-height: 1.12;
-	text-wrap: balance;
-}
-
-.pf-closing h2:first-child {
-	margin-top: 0;
-}
-
-.pf-closing .pf-links {
 	justify-content: center;
-	margin-top: 36px;
+	gap: 6px;
+	width: 104px;
+	border-left: 2px dashed rgba(29, 26, 23, 0.4);
+	font-family: var(--pf-hand);
+	font-size: 13px;
+	font-weight: 700;
+	text-align: center;
 }
 
-.pf-closing .pf-links a,
-.pf-closing .pf-links button {
-	border-color: var(--pf-on);
-	color: var(--pf-on);
+.pf-ticket-stub i {
+	font-size: 24px;
 }
 
-.pf-closing .pf-links [data-primary] {
-	background-color: var(--pf-on);
-	color: #fff8ee;
+/* ─── 영수증 (출처) ─── */
+.pf-receipt {
+	width: min(440px, 100%);
+	margin: 0 auto;
+	padding: 26px 26px 40px;
+	background-color: var(--pf-paper);
+	color: var(--pf-paper-ink);
+	font-family: var(--pf-mono);
+	font-size: 13px;
+	/* 아래 톱니 */
+	mask: conic-gradient(from -45deg at bottom, transparent, #000 1deg 89deg, transparent 90deg) 50% / 16px 100%;
 }
 
-.pf-closing .pf-links a:focus-visible,
-.pf-closing .pf-links button:focus-visible {
-	outline-color: var(--pf-on);
+.pf-receipt-head,
+.pf-receipt-foot {
+	padding-bottom: 10px;
+	border-bottom: 1.5px dashed rgba(29, 26, 23, 0.4);
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-align: center;
+}
+
+.pf-receipt-foot {
+	margin-top: 10px;
+	padding: 10px 0 0;
+	border-top: 1.5px dashed rgba(29, 26, 23, 0.4);
+	border-bottom: 0;
+}
+
+.pf-receipt ol {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding-top: 12px;
+}
+
+.pf-receipt li {
+	display: grid;
+	grid-template-columns: 80px 1fr;
+	gap: 12px;
+}
+
+.pf-receipt-role {
+	color: var(--pf-paper-muted);
+}
+
+.pf-receipt-name {
+	display: flex;
+	flex-direction: column;
+	text-align: right;
+}
+
+.pf-receipt-name small {
+	color: var(--pf-paper-muted);
+	font-size: 12px;
+}
+
+/* ─── 엽서 (마무리) ─── */
+.pf-postcard {
+	display: grid;
+	grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+	gap: 32px;
+	max-width: 900px;
+	margin: 96px auto 0;
+	padding: 40px 40px 40px 44px;
+	background-color: var(--pf-paper);
+	box-shadow: var(--pf-shadow);
+	color: var(--pf-paper-ink);
+}
+
+.pf-postcard-text {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 16px;
+	padding-right: 32px;
+	border-right: 1.5px solid rgba(29, 26, 23, 0.2);
+}
+
+.pf-postcard h2 {
+	font-family: var(--pf-round);
+	font-size: clamp(26px, 3cqi, 34px);
+	font-weight: 800;
+	line-height: 1.3;
+}
+
+.pf-postcard-side {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.pf-postcard-stamp {
+	display: grid;
+	place-items: center;
+	align-self: flex-end;
+	width: 84px;
+	height: 100px;
+	padding: 7px;
+	background-color: var(--pf-paper);
+	outline: 1.5px dashed rgba(29, 26, 23, 0.35);
+	outline-offset: -4px;
+	background-image: linear-gradient(var(--tone), var(--tone));
+	background-origin: content-box;
+	background-clip: content-box;
+	color: var(--pf-paper-ink);
+	font-size: 26px;
+	rotate: 4deg;
+}
+
+.pf-postcard-stamp img {
+	width: 46px;
+	height: 46px;
+	border-radius: 10px;
+	object-fit: cover;
+}
+
+.pf-postcard-line {
+	min-height: 30px;
+	padding-bottom: 4px;
+	border-bottom: 1.5px solid rgba(29, 26, 23, 0.25);
+	font-family: var(--pf-hand);
+	font-size: 15px;
 }
 
 /* ─── 좁은 창 ─── */
 @container (max-width: 860px) {
 	.tpl-playful {
-		--pf-gutter: 28px;
+		padding: 36px 16px 64px;
 	}
 
 	.pf-hero {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 40px;
-		padding-top: 56px;
-		padding-bottom: 64px;
+		grid-template-areas: 'poster' 'photo' 'meta';
+		gap: 30px;
+		justify-items: center;
 	}
 
-	.pf-collage {
-		width: 100%;
-		max-width: 600px;
-		margin: 0 auto;
+	.pf-hero-photo,
+	.pf-hero-meta {
+		justify-self: center;
+		margin-top: 0;
 	}
 
-	.pf-collage[data-art] {
-		min-height: 360px;
+	.pf-hero-photo {
+		--w: 320px;
 	}
 
-	.pf-badges {
-		--n: 2;
-		gap: 20px;
+	.pf-poster {
+		padding: 44px 28px 32px;
 	}
 
-	.pf-badges[data-count='1'] {
-		--n: 1;
-	}
-
-	.pf-cards-grid[data-cols='3'] {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.pf-cards-grid[data-cols='3'] li:last-child:nth-child(odd) {
-		grid-column: 1 / -1;
-	}
-
-	.pf-card-wide {
+	.pf-board {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 32px;
-		padding: 32px;
+		gap: 52px;
+		margin-top: 64px;
 	}
 
-	.pf-card-wide[data-flip] .pf-card-visual {
-		order: 0;
+	.pf-zone,
+	.pf-zone[data-span='half'] {
+		grid-column: auto;
+		padding: 40px 18px 32px;
 	}
 
-	.pf-built li[data-span='third'] {
-		grid-column: span 3;
+	.pf-path-line {
+		display: none;
 	}
 
-	.pf-built li[data-span='third']:last-child:nth-child(odd of [data-span='third']) {
-		grid-column: 1 / -1;
-	}
-
-	.pf-built li[data-span='full']:has(.pf-point-media) {
-		display: flex;
-		padding: 30px;
-	}
-
-	.pf-built li[data-span='full']:has(.pf-point-media) .pf-point-media {
-		margin-top: 22px;
-	}
-
-	.pf-story,
-	.pf-story[data-image] {
+	.pf-path ol {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 36px;
-		padding: 36px;
+		gap: 16px;
+		margin-left: 10px;
+		padding-left: 22px;
+		border-left: 2.5px dashed color-mix(in srgb, var(--pf-ink) 50%, transparent);
 	}
 
-	.pf-story[data-flip] .pf-story-image {
-		order: 0;
+	.pf-path li {
+		position: relative;
+		display: block;
 	}
 
-	.pf-story:not([data-image]) .pf-story-text {
+	.pf-path-dot {
+		position: absolute;
+		top: 14px;
+		left: -33px;
+	}
+
+	.pf-path li .pf-path-note,
+	.pf-path li[data-side] .pf-path-note {
+		margin: 0;
+		text-align: left;
+	}
+
+	.pf-postcard {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 0;
+		padding: 32px 24px;
 	}
 
-	.pf-story:not([data-image]) .pf-story-body > :first-child {
-		margin-top: 26px;
-	}
-
-	.pf-controls {
-		--n: 2;
-	}
-
-	.pf-tech[data-split] {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.pf-role {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-	}
-
-	.pf-closing {
-		padding: 72px 40px;
+	.pf-postcard-text {
+		padding-right: 0;
+		padding-bottom: 24px;
+		border-right: 0;
+		border-bottom: 1.5px solid rgba(29, 26, 23, 0.2);
 	}
 }
 
 @container (max-width: 600px) {
-	.tpl-playful {
-		--pf-gutter: 20px;
+	.pf-notebook,
+	.pf-diary {
+		padding-left: 52px;
+		padding-right: 20px;
 	}
 
-	.pf-hero h1 {
-		font-size: 38px;
+	.pf-diary > .pf-polaroid {
+		float: none;
+		margin: 0 auto 16px;
 	}
 
-	.pf-subhead {
-		font-size: 17px;
-	}
-
-	.pf-collage {
-		padding: 36px 12px 44px 20px;
-	}
-
-	.pf-hero-stickers .pf-sticker {
-		padding: 6px 14px;
-		font-size: 13px;
-	}
-
-	.pf-section {
-		padding-block: 56px;
-	}
-
-	.pf-head h2 {
-		font-size: 28px;
-	}
-
-	.pf-badges {
-		gap: 14px;
-	}
-
-	.pf-badge {
-		padding: 16px;
-	}
-
-	.pf-figure {
-		font-size: 36px;
-	}
-
-	.pf-badge-label {
-		margin-top: 8px;
-		font-size: 12.5px;
-	}
-
-	.pf-cards-grid[data-cols='3'],
-	.pf-cards-grid[data-cols='2'] {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.pf-card-small,
-	.pf-card-wide {
-		padding: 26px;
-		border-radius: 26px;
-	}
-
-	.pf-screens,
-	.pf-screens[data-count='3'] {
-		grid-template-columns: minmax(0, 1fr);
-		padding-bottom: 0;
-	}
-
-	.pf-screens li:nth-child(even) {
-		top: 0;
-	}
-
-	.pf-path {
-		display: none;
-	}
-
-	.pf-steps,
-	.pf-steps[data-count] {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 28px;
-	}
-
-	.pf-steps li {
-		display: grid;
-		grid-template-columns: 64px minmax(0, 1fr);
-		column-gap: 18px;
-		align-items: start;
-		text-align: left;
-	}
-
-	.pf-steps li:nth-child(even) {
-		padding-top: 0;
-	}
-
-	.pf-steps li > :not(.pf-step-num) {
-		grid-column: 2;
-	}
-
-	.pf-step-num {
-		grid-row: 1 / span 4;
-		width: 64px;
-		height: 64px;
-		font-size: 26px;
-	}
-
-	.pf-steps .pf-point-title {
-		margin-top: 4px;
-	}
-
-	.pf-built li[data-span] {
-		grid-column: 1 / -1;
-	}
-
-	.pf-story,
-	.pf-story[data-image] {
-		padding: 28px 24px;
-		border-radius: 28px;
-	}
-
-	.pf-controls,
-	.pf-controls[data-count] {
-		--n: 1;
-	}
-
-	.pf-timeline::before {
-		left: 22px;
-	}
-
-	.pf-timeline li {
-		grid-template-columns: 46px minmax(0, 1fr);
-		column-gap: 14px;
-	}
-
-	.pf-node {
-		grid-column: 1;
-	}
-
-	.pf-timeline li:nth-child(odd) .pf-entry,
-	.pf-timeline li:nth-child(even) .pf-entry {
-		grid-column: 2;
-		align-items: flex-start;
-		text-align: left;
-	}
-
-	.pf-specs {
-		padding: 6px 22px;
-	}
-
-	.pf-specs > div {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 2px;
-	}
-
-	.pf-note {
-		padding: 40px 26px 30px;
-	}
-
-	.pf-closing {
-		padding: 64px 24px;
-		border-radius: 32px;
-	}
-
-	.pf-closing-sun {
-		width: 180px;
-		top: -80px;
-		right: -70px;
-	}
-
-	.pf-closing-lilac {
-		width: 110px;
-	}
-
-	.pf-closing-mint {
-		display: none;
+	.pf-sticky,
+	.pf-card,
+	.pf-flip {
+		width: min(100%, 320px);
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.sp .tpl-playful [data-reveal] {
-		transition: none;
-	}
-
+	.pf-flip-inner,
+	.pf-sticky,
+	.pf-card,
+	.pf-polaroid,
+	.pf-ticket,
+	.pf-stamp,
 	.pf-links a,
 	.pf-links button {
 		transition: none;
 	}
 
+	.pf-sticky:hover,
+	.pf-card:hover,
+	.pf-polaroid:hover,
+	.pf-ticket:hover,
+	.pf-stamp:hover,
 	.pf-links a:hover,
 	.pf-links button:hover {
-		transform: none;
+		translate: none;
 	}
-}
-
-/* ─── 트러블슈팅·팀원·배포 결과물: 굵은 검은 테두리와 납작한 그림자 카드 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
-.tpl-playful {
-	--lk-x-ink: var(--pf-ink);
-	--lk-x-body: var(--pf-body);
-	--lk-x-muted: var(--pf-muted);
-	--lk-x-line: var(--pf-line);
-	--lk-x-card: var(--pf-card);
-	--lk-x-radius: 24px;
-	--lk-x-gap: 24px;
-	--lk-x-pad: 28px;
-}
-
-.pf-trouble,
-.pf-member,
-.pf-deploy {
-	border-width: 2px;
-	box-shadow: var(--pf-drop);
-}
-
-.pf-trouble-icon,
-.pf-deploy-icon {
-	border: 2px solid var(--pf-line);
-	border-radius: 50%;
-	background-color: var(--tpl-accent);
-	color: #ffffff;
-}
-
-/* 트러블슈팅 단계: 굵은 테두리의 작은 쪽지. 머리말은 알약 이름표, 해결·결과는 강조색 이름표 */
-.tpl-playful .pf-trouble .pf-trouble-steps {
-	gap: 14px;
-}
-
-.tpl-playful .pf-trouble .pf-trouble-step.lk-trouble-step {
-	padding: 14px 16px 16px;
-	border: 2px solid var(--pf-line);
-	border-radius: 16px;
-	background-color: var(--pf-soft);
-}
-
-.tpl-playful .pf-trouble .pf-trouble-step.lk-trouble-step::before {
-	display: none;
-}
-
-.tpl-playful .pf-trouble .pf-trouble-step[data-step='result'] {
-	background-color: color-mix(in srgb, var(--tpl-accent) 14%, var(--pf-card));
-}
-
-.pf-trouble-step dt {
-	display: inline-block;
-	margin-bottom: 10px;
-	padding: 2px 10px;
-	border: 2px solid var(--pf-line);
-	border-radius: 999px;
-	background-color: var(--pf-card);
-	color: var(--pf-ink);
-	font-weight: 800;
-	letter-spacing: 0;
-}
-
-.pf-trouble-step:is([data-step='solution'], [data-step='result']) dt {
-	background-color: var(--tpl-accent);
-	color: #ffffff;
-}
-
-.pf-member .lk-avatar {
-	border: 2px solid var(--pf-line);
-}
-
-.pf-member[data-me] {
-	background-color: var(--pf-soft);
-	box-shadow: var(--pf-drop);
-}
-
-.pf-member-me {
-	border: 2px solid var(--pf-line);
-	color: #ffffff;
-	transform: rotate(-4deg);
-}
-
-.pf-deploy-cover {
-	border-bottom: 2px solid var(--pf-line);
-	background:
-		radial-gradient(circle, color-mix(in srgb, var(--tpl-accent) 35%, transparent) 2px, transparent 2.5px) 0 0 / 18px
-			18px,
-		var(--pf-soft);
-	font-size: 48px;
-}
-
-.pf-deploy-image {
-	border-bottom-width: 2px;
-	border-color: var(--pf-line);
 }
