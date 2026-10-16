@@ -1,7 +1,8 @@
 // playful 템플릿: Figma·Arc 출시 페이지처럼 밝고 즐겁게. 따뜻한 크림 바탕에 고정 팔레트(산호·해바라기·보라·민트·분홍·하늘)의
-// 납작한 색 면, 큼직한 둥근 도형, 살짝 기운 스티커 라벨, 몇몇 카드의 2px 잉크 테두리. 첫 화면은 왼쪽 큰 제목(한 낱말 밑에 손글씨 물결),
-// 오른쪽은 색 도형 위에 얹은 화면과 기술 스티커. 기능은 색 카드, 숫자는 둥근 배지, 단계는 굽이치는 길의 번호 동그라미,
-// 기술은 사탕색 칩, 맡은 일은 붙임쪽지, 마무리는 큰 산호색 면. 그림이 없으면 도형과 큰 아이콘으로 채운다. 계약은 templates/README.md
+// 납작한 색 면, 큼직한 둥근 도형, 살짝 기운 스티커 라벨, 2px 잉크 테두리. 첫 화면은 가운데의 큰 둥근 색 포스터(한 낱말 밑에 손글씨 물결, 단추)와
+// 그 둘레의 기술 스티커, 한쪽 모서리에서 비스듬히 내민 폴라로이드 사진이다. 구역 머리는 색 알약 이름표와 큰 문장, 기능은 엇갈려 쌓인 색 카드,
+// 숫자는 둥근 배지, 단계는 굽이치는 길의 번호 동그라미, 기술은 사탕색 칩, 맡은 일은 붙임쪽지, 마무리는 큰 산호색 면.
+// 그림이 없으면 도형과 큰 아이콘으로 채운다. 계약은 templates/README.md
 import React from 'react';
 import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
@@ -49,7 +50,41 @@ const Sticker: React.FC<{ tone: Tone; index?: number; className?: string; childr
 	</span>
 );
 
-/** 구역 머리: 기운 스티커(구역 이름)와 큰 문장 */
+/** 구역마다 밝은 말투의 큰 문장 (공용 sectionTitle 대신) */
+function playfulTitle(section: LandingSection): string {
+	switch (section.kind) {
+		case 'features':
+			return '즐겁게 쓸 수 있는 기능을 가득 담았습니다.';
+		case 'screens':
+			return '화면을 하나씩 구경해 보세요.';
+		case 'steps':
+			return section.items.length > 1
+				? `${section.items.length}걸음이면 바로 시작할 수 있습니다.`
+				: '한 걸음이면 바로 시작할 수 있습니다.';
+		case 'built':
+			return '보이지 않는 안쪽도 꼼꼼하게 만들었습니다.';
+		case 'troubleshooting':
+			return '막힌 곳을 하나씩 풀어 왔습니다.';
+		case 'stories':
+			return '들려 드리고 싶은 이야기가 더 있습니다.';
+		case 'controls':
+			return '이 키만 알면 충분합니다.';
+		case 'tech':
+			return '이런 재료로 만들었습니다.';
+		case 'team':
+			return '함께 만든 친구들을 소개합니다.';
+		case 'timeline':
+			return '지나온 길을 함께 돌아봅니다.';
+		case 'deployments':
+			return '지금 바로 만나 볼 수 있습니다.';
+		case 'credits':
+			return '고마운 분들의 도움을 받았습니다.';
+		default:
+			return sectionTitle(section);
+	}
+}
+
+/** 구역 머리: 색 알약 이름표(점과 구역 이름)와 왼쪽 정렬의 큰 문장 */
 const Head: React.FC<{ section: LandingSection; index: number; title?: string; lead?: string }> = ({
 	section,
 	index,
@@ -57,10 +92,10 @@ const Head: React.FC<{ section: LandingSection; index: number; title?: string; l
 	lead,
 }) => (
 	<header className="pf-head" data-reveal="">
-		<Sticker tone={toneOf(index, 2)} index={index}>
+		<p className="pf-pill" data-tone={toneOf(index, 2)}>
 			{section.label}
-		</Sticker>
-		<h2>{title ?? sectionTitle(section)}</h2>
+		</p>
+		<h2>{title ?? playfulTitle(section)}</h2>
 		{lead && <p className="pf-lead">{lead}</p>}
 	</header>
 );
@@ -165,94 +200,61 @@ const Thumbs: React.FC<{ point: LandingPoint; media: LandingMedia[] }> = ({ poin
 		</ul>
 	) : null;
 
-/** 그림이 없는 넓은 카드의 오른쪽: 큰 도형 위에 큰 아이콘 */
-const ShapeArt: React.FC<{ point: LandingPoint; index: number; tone: Tone }> = ({ point, index, tone }) => (
-	<div className="pf-shape-art" aria-hidden="true">
-		<span className="pf-blob" data-tone={tone === 'sun' ? 'coral' : 'sun'} />
-		<span className="pf-blob pf-blob-2" data-tone={tone === 'lilac' ? 'mint' : 'lilac'} />
-		<span className="pf-shape-icon">
-			<i className={`fa-solid ${iconOf(point, index)}`} />
-		</span>
-	</div>
-);
-
-/** 넓은 기능 카드: 글과 그림(없으면 도형)이 좌우로, 그림 쪽은 번갈아 */
-const WideCard: React.FC<{ point: LandingPoint; index: number; flip: boolean }> = ({ point, index, flip }) => {
+/** 기능 카드 하나: 팔레트 색 면에 아이콘, 글, 첫 그림은 크게, 나머지는 작은 액자 줄 */
+const FeatureCard: React.FC<{ point: LandingPoint; index: number }> = ({ point, index }) => {
 	const [first, ...more] = point.media;
-	const tone = toneOf(index);
 	return (
-		<li className="pf-card pf-card-wide" data-tone={tone} data-flip={flip ? '' : undefined} data-reveal="">
-			<div className="pf-card-text">
+		<li
+			className="pf-card"
+			data-tone={toneOf(index)}
+			data-media={first ? '' : undefined}
+			data-reveal=""
+			style={delay(index)}
+		>
+			<div className="pf-card-top">
 				<Glyph point={point} index={index} />
-				<PointText point={point} />
-				<Thumbs point={point} media={more} />
+				<span className="pf-card-num" aria-hidden="true">
+					{String(index + 1).padStart(2, '0')}
+				</span>
 			</div>
-			<div className="pf-card-visual">
-				{first ? <Frame media={first} /> : <ShapeArt point={point} index={index} tone={tone} />}
-			</div>
+			<PointText point={point} />
+			{first && <Frame media={first} className="pf-card-frame" />}
+			<Thumbs point={point} media={more} />
 		</li>
 	);
 };
 
-const SmallCard: React.FC<{ point: LandingPoint; index: number; order: number }> = ({ point, index, order }) => (
-	<li className="pf-card pf-card-small" data-tone={toneOf(index)} data-reveal="" style={delay(order)}>
-		<Glyph point={point} index={index} />
-		<PointText point={point} />
-	</li>
-);
-
-type Run =
-	| { kind: 'wide'; point: LandingPoint; index: number }
-	| { kind: 'grid'; items: { point: LandingPoint; index: number }[] };
+/** 카드의 대강의 높이 (그림이 있으면 크게): 두 줄에 고르게 나누는 데 쓴다 */
+const weightOf = (point: LandingPoint) =>
+	2 + (point.media.length ? 4 : 0) + (point.media.length > 1 ? 1.5 : 0) + (point.detail ? 1 : 0);
 
 /**
- * 기능을 줄로 나눈다: 그림이 있는 것은 넓은 카드 하나씩, 그림이 없는 것이 이어지면 작은 카드 격자로.
- * 하나만 남거나 홀수로 남아 줄이 비면 첫 하나를 넓은 카드(도형 그림)로 꺼낸다
+ * 주요 기능: 엇갈려 쌓인 두 줄의 색 카드. 차례를 지키며 지금 더 짧은 줄에 다음 카드를 놓고, 오른쪽 줄은 조금 내려 시작한다.
+ * 줄 안의 차례는 원래 차례 그대로다
  */
-function runsOf(items: LandingPoint[]): Run[] {
-	const runs: Run[] = [];
-	let plain: { point: LandingPoint; index: number }[] = [];
-	const flush = () => {
-		if (plain.length === 0) return;
-		const n = plain.length;
-		if (n === 1 || (n % 2 === 1 && n % 3 !== 0)) {
-			const [head, ...rest] = plain;
-			runs.push({ kind: 'wide', ...head });
-			if (rest.length) runs.push({ kind: 'grid', items: rest });
-		} else runs.push({ kind: 'grid', items: plain });
-		plain = [];
-	};
-	items.forEach((point, index) => {
-		if (point.media.length) {
-			flush();
-			runs.push({ kind: 'wide', point, index });
-		} else plain.push({ point, index });
-	});
-	flush();
-	return runs;
-}
-
 const Features: React.FC<{ items: LandingPoint[] }> = ({ items }) => {
-	let wide = 0;
+	if (items.length === 1)
+		return (
+			<ul className="pf-masonry" data-single="">
+				<FeatureCard point={items[0]} index={0} />
+			</ul>
+		);
+	const columns: { point: LandingPoint; index: number }[][] = [[], []];
+	const heights = [0, 0.8];
+	items.forEach((point, index) => {
+		const target = heights[0] <= heights[1] ? 0 : 1;
+		columns[target].push({ point, index });
+		heights[target] += weightOf(point);
+	});
 	return (
-		<div className="pf-features">
-			{runsOf(items).map((run) =>
-				run.kind === 'wide' ? (
-					<ul key={run.point.title} className="pf-cards">
-						<WideCard point={run.point} index={run.index} flip={wide++ % 2 === 1} />
-					</ul>
-				) : (
-					<ul
-						key={run.items[0].point.title}
-						className="pf-cards pf-cards-grid"
-						data-cols={run.items.length % 3 === 0 ? 3 : 2}
-					>
-						{run.items.map(({ point, index }, order) => (
-							<SmallCard key={point.title} point={point} index={index} order={order} />
-						))}
-					</ul>
-				)
-			)}
+		<div className="pf-masonry">
+			{columns.map((column, c) => (
+				<ul key={c} className="pf-masonry-col">
+					{column.map(({ point, index }) => (
+						<FeatureCard key={point.title} point={point} index={index} />
+					))}
+				</ul>
+			))}
 		</div>
 	);
 };
@@ -602,29 +604,16 @@ const stickersOf = (landing: Landing): string[] => {
 	return [];
 };
 
-/** 첫 화면 오른쪽: 색 도형 위에 화면(없으면 앱 아이콘이나 큰 글자), 둘레에 스티커 */
-const Collage: React.FC<{ hero: LandingHero; stickers: string[]; first?: LandingPoint }> = ({
-	hero,
-	stickers,
-	first,
-}) => (
-	<div className="pf-collage" data-art={hero.image ? undefined : ''} data-reveal="">
-		<span className="pf-shape pf-shape-sun" aria-hidden="true" />
-		<span className="pf-shape pf-shape-lilac" aria-hidden="true" />
-		<span className="pf-shape pf-shape-mint" aria-hidden="true" />
-		{hero.image ? (
-			<figure className="pf-window">
-				<div className="pf-window-bar" aria-hidden="true">
-					<span className="pf-dots">
-						<i />
-						<i />
-						<i />
-					</span>
-				</div>
-				<Media media={hero.image} eager className="pf-window-screen" />
-			</figure>
-		) : (
-			<div className="pf-hero-art" aria-hidden="true">
+/** 첫 화면 모서리의 폴라로이드: 대표 화면(없으면 앱 아이콘, 첫 기능 아이콘, 이름 첫 글자)을 흰 테두리 사진처럼 비스듬히 */
+const Polaroid: React.FC<{ hero: LandingHero; first?: LandingPoint }> = ({ hero, first }) =>
+	hero.image ? (
+		<figure className="pf-polaroid">
+			<Media media={hero.image} eager className="pf-polaroid-photo" />
+			<figcaption>{hero.image.alt}</figcaption>
+		</figure>
+	) : (
+		<div className="pf-polaroid pf-polaroid-art" aria-hidden="true">
+			<div className="pf-hero-art">
 				{hero.icon ? (
 					<img className="pf-hero-icon" src={hero.icon} alt="" />
 				) : first ? (
@@ -633,20 +622,8 @@ const Collage: React.FC<{ hero: LandingHero; stickers: string[]; first?: Landing
 					<span className="pf-initial">{Array.from(hero.name.trim())[0] ?? ''}</span>
 				)}
 			</div>
-		)}
-		{stickers.length > 0 && (
-			<ul className="pf-hero-stickers" aria-hidden="true">
-				{stickers.map((item, index) => (
-					<li key={item} data-slot={index}>
-						<Sticker tone={(['pink', 'sky', 'sun'] as const)[index % 3]} index={index}>
-							{item}
-						</Sticker>
-					</li>
-				))}
-			</ul>
-		)}
-	</div>
-);
+		</div>
+	);
 
 const PlayfulPage: React.FC<{ project: Project }> = ({ project }) => {
 	const landing = useLanding(project);
@@ -656,31 +633,45 @@ const PlayfulPage: React.FC<{ project: Project }> = ({ project }) => {
 	const meta = [hero.meta.context, hero.meta.role, hero.meta.period].filter(Boolean) as string[];
 	const features = landing.sections.find((section) => section.kind === 'features');
 	const firstPoint = features?.kind === 'features' ? features.items[0] : undefined;
+	const stickers = stickersOf(landing);
 
 	return (
 		<div ref={root} className="tpl tpl-playful" style={accent}>
-			<header className="pf-hero">
-				<div className="pf-hero-text" data-reveal="">
-					<p className="pf-brand">
-						{hero.icon && hero.image && <img className="pf-icon" src={hero.icon} alt="" />}
-						{hero.logo ? <img className="pf-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
-					</p>
-					<h1>
-						<Headline text={hero.headline} />
-					</h1>
-					{hero.subhead && <p className="pf-subhead">{hero.subhead}</p>}
-					<LandingLinks links={hero.links} className="pf-links" />
-					{meta.length > 0 && (
-						<ul className="pf-meta" aria-label="프로젝트 정보">
-							{meta.map((item, index) => (
-								<li key={item} data-tone={(['coral', 'lilac', 'mint'] as const)[index]}>
-									{item}
+			<header className="pf-hero" data-image={hero.image ? '' : undefined}>
+				<div className="pf-stage">
+					<div className="pf-poster" data-reveal="">
+						<p className="pf-brand">
+							{hero.icon && hero.image && <img className="pf-icon" src={hero.icon} alt="" />}
+							{hero.logo ? <img className="pf-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
+						</p>
+						<h1>
+							<Headline text={hero.headline} />
+						</h1>
+						{hero.subhead && <p className="pf-subhead">{hero.subhead}</p>}
+						<LandingLinks links={hero.links} className="pf-links" />
+						{meta.length > 0 && (
+							<ul className="pf-meta" aria-label="프로젝트 정보">
+								{meta.map((item, index) => (
+									<li key={item} data-tone={(['coral', 'lilac', 'mint'] as const)[index]}>
+										{item}
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
+					{stickers.length > 0 && (
+						<ul className="pf-hero-stickers" aria-hidden="true">
+							{stickers.map((item, index) => (
+								<li key={item} data-slot={index}>
+									<Sticker tone={(['pink', 'sky', 'mint'] as const)[index % 3]} index={index}>
+										{item}
+									</Sticker>
 								</li>
 							))}
 						</ul>
 					)}
+					<Polaroid hero={hero} first={firstPoint} />
 				</div>
-				<Collage hero={hero} stickers={stickersOf(landing)} first={firstPoint} />
 			</header>
 
 			<LandingSections landing={landing} renderers={RENDERERS} className="pf-section" />

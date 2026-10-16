@@ -1,6 +1,7 @@
-// devtool 템플릿의 순수한 조각: 제목에서 뽑는 커밋 해시, 폴더 구조 글을 트리 줄로, 날짜로 짜는 기여 그래프, 기능 제목으로 만드는 작은 diff.
+// devtool 템플릿의 순수한 조각: 제목에서 뽑는 커밋 해시, 폴더 구조 글을 트리 줄로, 날짜로 짜는 기여 그래프, 기능 제목으로 만드는 작은 diff, 프로젝트 내용으로 쓴 package.json 항목.
 // 같은 내용이면 언제나 같은 결과가 나온다 (무작위 없이 제목·날짜의 해시만 쓴다). 단위 시험은 code.test.ts
 import type React from 'react';
+import type { LandingPoint } from '@/apps/safari/project/landing';
 
 /** FNV-1a 32비트 해시 (같은 글이면 같은 값) */
 export function hashOf(text: string): number {
@@ -180,3 +181,26 @@ export function featureDiff(point: { title: string; body: string; icon?: string 
 
 /** CSS 변수 묶음 (style에 단다) */
 export const vars = (values: Record<string, string | number>) => values as React.CSSProperties;
+
+/* ─── package.json 보기 ─── */
+
+/** package.json의 값: 글자, 글자 목록, 또는 글자 값만 가진 객체 */
+export type JsonValue = string | string[] | { entries: [string, string][] };
+
+/** 프로젝트 내용으로 쓴 package.json 항목 (편집기 창과 터미널이 함께 쓴다) */
+export function packageEntries(p: {
+	name: string;
+	description?: string;
+	language?: string;
+	stack: string[];
+	features: LandingPoint[];
+	repo?: string;
+}): [string, JsonValue][] {
+	const entries: [string, JsonValue][] = [['name', p.name]];
+	if (p.description) entries.push(['description', p.description]);
+	if (p.language) entries.push(['language', p.language]);
+	if (p.stack.length) entries.push(['stack', p.stack.slice(0, 8)]);
+	if (p.features.length) entries.push(['features', p.features.slice(0, 6).map((point) => point.title)]);
+	if (p.repo) entries.push(['repository', p.repo]);
+	return entries;
+}

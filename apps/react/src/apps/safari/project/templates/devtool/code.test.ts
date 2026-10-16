@@ -1,7 +1,7 @@
 import type React from 'react';
 import { describe, expect, it } from 'vitest';
 import { devtoolAccent } from './accent';
-import { cloneCommand, commitHash, contributionGraph, featureDiff, parseDate, parseTree } from './code';
+import { cloneCommand, commitHash, contributionGraph, featureDiff, packageEntries, parseDate, parseTree } from './code';
 
 describe('commitHash', () => {
 	it('같은 제목이면 같은 일곱 자리 16진수다', () => {
@@ -98,5 +98,20 @@ describe('devtoolAccent', () => {
 		expect(devtoolAccent(vars(210))).toEqual(vars(210));
 		expect(devtoolAccent(vars(50))).toEqual({});
 		expect(devtoolAccent({})).toEqual({});
+	});
+});
+
+describe('packageEntries', () => {
+	it('있는 칸만 차례대로 담고, 기술은 여덟 개·기능은 여섯 개까지다', () => {
+		const point = (title: string) => ({ title, body: '', media: [] });
+		const entries = packageEntries({
+			name: '북클럽',
+			stack: Array.from({ length: 10 }, (_, i) => `lib${i}`),
+			features: Array.from({ length: 8 }, (_, i) => point(`기능${i}`)),
+			repo: 'https://github.com/a/b',
+		});
+		expect(entries.map(([key]) => key)).toEqual(['name', 'stack', 'features', 'repository']);
+		expect(entries[1][1]).toHaveLength(8);
+		expect(entries[2][1]).toHaveLength(6);
 	});
 });

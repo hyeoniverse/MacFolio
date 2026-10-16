@@ -1,6 +1,7 @@
-// bento 템플릿: Framer·Raycast의 SaaS 템플릿처럼. 가운데 정렬한 첫 화면(작은 알림 알약, 촘촘한 큰 제목, 단추 둘, 창틀에 담은 큰 화면) 아래에
-// 크기가 다른 타일을 12칸 격자에 빈칸 없이 짜 넣는다 (layout.ts). 주요 기능·숫자·화면 모음·쓴 기술·맡은 일이 한 격자에 섞이고,
-// 나머지 구역은 그 아래에 작은 타일 모양으로 이어진다. 1px 선, 고정폭 작은 라벨, 글쇠 모양 표시. 계약은 templates/README.md
+// bento 템플릿: Framer·Raycast의 SaaS 템플릿처럼. 페이지가 곧바로 타일 격자로 시작한다: 8칸 소개 타일(이름, 큰 제목, 소개, 링크) 옆에
+// 대표 화면 타일과 숫자 타일, 그 아래 나머지 숫자 타일 (OpeningGrid). 그 아래로 크기가 다른 타일을 12칸 격자에 빈칸 없이 짜 넣는다 (layout.ts).
+// 주요 기능·화면 모음·쓴 기술·맡은 일이 한 격자에 섞이고, 나머지 구역은 그 아래에 이어진다. 구역 머리는 큰 문장 대신 고정폭 이름표(02 / 주요 기능).
+// 1px 선, 고정폭 작은 라벨, 글쇠 모양 표시. 계약은 templates/README.md
 import React, { useMemo } from 'react';
 import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
@@ -9,7 +10,6 @@ import {
 	iconOf,
 	LandingSections,
 	Media,
-	sectionTitle,
 	TeamList,
 	TroubleList,
 	useLanding,
@@ -30,6 +30,8 @@ import './Page.css';
 /* ─── 격자 ─── */
 
 /** 첫 격자의 자리: 같은 랜딩이면 한 번만 짠다 */
+/** 숫자를 뺀 아래 구역 목록 → 원래 랜딩 (구역 번호는 원래 차례로 매긴다) */
+const origins = new WeakMap<Landing, Landing>();
 const layouts = new WeakMap<Landing, ReturnType<typeof bentoOf> & { numbers: Map<LandingSectionKind, number> }>();
 function bentoLayout(landing: Landing) {
 	const cached = layouts.get(landing);
@@ -38,11 +40,11 @@ function bentoLayout(landing: Landing) {
 		landing.sections.find((section): section is SectionOf<K> => section.kind === kind);
 	const role = find('role');
 	const tech = find('tech');
-	// 보이는 구역 머리의 번호: 첫 격자의 머리(주요 기능)부터 아래 구역까지 차례로 (첫 격자에 녹아든 구역은 건너뛴다)
+	// 구역 머리의 번호: 보이는 차례대로 (첫 화면의 숫자가 01, 아래 격자의 머리인 주요 기능이 그다음).
+	// 아래 격자에 타일로 녹아든 구역(화면 모음, 맡은 일, 쓴 기술 타일)은 번호 없이 이름만 단다
 	const numbers = new Map<LandingSectionKind, number>();
-	for (const section of landing.sections) {
+	for (const section of (origins.get(landing) ?? landing).sections) {
 		const inGrid =
-			section.kind === 'stats' ||
 			section.kind === 'screens' ||
 			section.kind === 'role' ||
 			(section.kind === 'tech' && !tech?.specs.length && !tech?.structure);
@@ -52,7 +54,8 @@ function bentoLayout(landing: Landing) {
 		numbers,
 		...bentoOf({
 			features: find('features')?.items ?? [],
-			facts: find('stats')?.facts.length ?? 0,
+			// 숫자는 첫 화면 격자로 올라가 아래 격자에는 넣지 않는다
+			facts: 0,
 			screens: Boolean(find('screens')),
 			stack: tech?.stack.length ?? 0,
 			role: role ? { contributions: role.contributions.length } : null,
@@ -177,24 +180,40 @@ const PointText: React.FC<{ point: LandingPoint; index: number; icon?: boolean; 
 	</div>
 );
 
-const Head: React.FC<{ section: LandingSection; landing: Landing; title?: string; level?: 2 | 3 }> = ({
-	section,
-	landing,
-	title,
-	level = 2,
-}) => {
+/** 구역 이름표: 고정폭의 번호와 이름(02 / 주요 기능), 오른쪽으로 이어지는 1px 선. 큰 문장 대신 타일이 내용을 말한다 */
+const Label: React.FC<{
+	section: LandingSection;
+	landing: Landing;
+	name?: string;
+	level?: 2 | 3;
+	/** 격자 속 타일의 이름표는 번호 없이 */
+	bare?: boolean;
+}> = ({ section, landing, name, level = 2, bare = false }) => {
 	const Heading = level === 2 ? 'h2' : 'h3';
-	const number = bentoLayout(landing).numbers.get(section.kind) ?? 1;
+	const number = bare ? undefined : bentoLayout(landing).numbers.get(section.kind);
 	return (
-		<header className="bt-head" data-reveal="">
-			<p className="bt-eyebrow">
-				<span className="bt-eyebrow-num">{String(number).padStart(2, '0')}</span>
-				{section.label}
-			</p>
-			<Heading className="bt-title">{title ?? sectionTitle(section)}</Heading>
-		</header>
+		<Heading className="bt-eyebrow">
+			{number !== undefined && (
+				<>
+					<span className="bt-eyebrow-num" aria-hidden="true">
+						{String(number).padStart(2, '0')}
+					</span>
+					<span className="bt-eyebrow-sep" aria-hidden="true">
+						/
+					</span>
+				</>
+			)}
+			{name ?? section.label}
+		</Heading>
 	);
 };
+
+const Head: React.FC<{ section: LandingSection; landing: Landing; name?: string; level?: 2 | 3 }> = (props) => (
+	<header className="bt-head" data-reveal="">
+		<Label {...props} />
+		<span className="bt-head-rule" aria-hidden="true" />
+	</header>
+);
 
 /* ─── 첫 격자의 타일 ─── */
 
@@ -227,8 +246,17 @@ const FeatureTile: React.FC<{ point: LandingPoint; index: number; place?: Placem
 	);
 };
 
-const StatTile: React.FC<{ fact: ProjectFact; index: number; place?: Placement }> = ({ fact, index, place }) => (
-	<li className="bt-tile bt-cell bt-stat" style={place && placementStyle(place)} data-reveal="">
+const StatTile: React.FC<{ fact: ProjectFact; index: number; place?: Placement; side?: boolean }> = ({
+	fact,
+	index,
+	place,
+	side,
+}) => (
+	<li
+		className={side ? 'bt-tile bt-cell bt-stat bt-side' : 'bt-tile bt-cell bt-stat'}
+		style={place && placementStyle(place)}
+		data-reveal=""
+	>
 		<span className="bt-label">{fact.label}</span>
 		<Value value={fact.value} />
 		<Spark value={fact.value} index={index} />
@@ -238,20 +266,8 @@ const StatTile: React.FC<{ fact: ProjectFact; index: number; place?: Placement }
 /* ─── 구역 ─── */
 
 const RENDERERS: SectionRenderers = {
-	stats: ({ section, landing }) => {
-		const { placements } = bentoLayout(landing);
-		return (
-			<>
-				<h2 className="visually-hidden">{section.label}</h2>
-				{/* 숫자 타일은 첫 격자에 바로 놓인다: 목록 하나로 묶을 수 없어 각 타일이 목록 항목 역할을 한다 */}
-				<ul className="bt-contents" aria-label={section.label}>
-					{section.facts.map((fact, i) => (
-						<StatTile key={fact.label} fact={fact} index={i} place={placements.get(`stat-${i}`)} />
-					))}
-				</ul>
-			</>
-		);
-	},
+	// 숫자는 첫 화면 격자(OpeningGrid)가 이름 붙은 구역으로 직접 그린다. 아래 구역 목록에서는 빠진다
+	stats: () => null,
 	features: ({ section, landing }) => {
 		const { placements, lead } = bentoLayout(landing);
 		return (
@@ -280,10 +296,7 @@ const RENDERERS: SectionRenderers = {
 		return (
 			<div className="bt-tile bt-cell bt-screens" style={place && placementStyle(place)} data-reveal="">
 				<div className="bt-tile-head">
-					<div>
-						<p className="bt-label">{section.label}</p>
-						<h2 className="bt-tile-title">{sectionTitle(section)}</h2>
-					</div>
+					<Label section={section} landing={landing} />
 					<span className="bt-count" aria-hidden="true">
 						{String(section.shots.length).padStart(2, '0')}
 					</span>
@@ -484,7 +497,7 @@ const RENDERERS: SectionRenderers = {
 						<span className="bt-icon" aria-hidden="true">
 							<i className="fa-solid fa-layer-group" />
 						</span>
-						<h2 className="bt-tile-title">{sectionTitle(section)}</h2>
+						<Label section={section} landing={landing} bare />
 						<ul className="bt-stack-list" aria-label="쓴 기술">
 							{section.stack.map((item, i) => (
 								<li key={item}>
@@ -503,7 +516,7 @@ const RENDERERS: SectionRenderers = {
 							section={section}
 							landing={landing}
 							level={hasStack ? 3 : 2}
-							title="사양과 구조를 한눈에 정리했습니다."
+							name={hasStack ? (both ? '사양과 폴더 구조' : section.structure ? '폴더 구조' : '세부 사양') : undefined}
 						/>
 						<div className="bt-grid">
 							{section.specs.length > 0 && (
@@ -541,7 +554,7 @@ const RENDERERS: SectionRenderers = {
 				<span className="bt-icon" aria-hidden="true">
 					<i className="fa-solid fa-user-pen" />
 				</span>
-				<h2 className="bt-tile-title">{sectionTitle(section)}</h2>
+				<Label section={section} landing={landing} />
 				{(section.role || section.period || section.context) && (
 					<dl className="bt-role-meta">
 						{section.role && (
@@ -648,19 +661,88 @@ const Palette: React.FC<{ hero: LandingHero; items: LandingPoint[] }> = ({ hero,
 	</div>
 );
 
-const Window: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-	<figure className="bt-window" data-reveal="zoom">
-		<div className="bt-window-bar" aria-hidden="true">
-			<span className="bt-dots">
-				<span />
-				<span />
-				<span />
-			</span>
-			<span className="bt-window-title">{title}</span>
+/** 첫 화면 격자의 숫자 타일 자리: 첫 숫자는 오른쪽 단의 작은 타일(넓은 폭), 나머지는 그 아래 한 줄에 꽉 차게 */
+function statPlaces(count: number, side: boolean): Placement[] {
+	const all = packSizes(Array.from({ length: count }, () => 'stat' as const));
+	const rest = packSizes(Array.from({ length: Math.max(0, count - (side ? 1 : 0)) }, () => 'stat' as const)).lg;
+	return Array.from({ length: count }, (_, i) => ({
+		id: `stat-${i}`,
+		lg: side ? (i === 0 ? 4 : rest[i - 1]) : rest[i],
+		md: all.md[i],
+		sm: all.sm[i],
+		rows: 1,
+		order: 0,
+	}));
+}
+
+const INTRO = placementStyle({ lg: 8, md: 12, sm: 12, rows: 2, order: 0 });
+const ART = placementStyle({ lg: 4, md: 12, sm: 12, rows: 1, order: 0 });
+
+/**
+ * 첫 화면 격자: 페이지가 곧바로 타일로 시작한다. 왼쪽 8칸 두 줄 높이의 소개 타일(이름, 큰 제목, 소개, 링크) 옆에
+ * 대표 화면 타일과 첫 숫자 타일을 위아래로 쌓고, 나머지 숫자는 그 아래 한 줄에 놓는다. 숫자들은 '한눈에 보는 숫자' 구역이다
+ */
+const OpeningGrid: React.FC<{ landing: Landing; features: LandingPoint[] }> = ({ landing, features }) => {
+	const { hero } = landing;
+	const stats = landing.sections.find((s): s is SectionOf<'stats'> => s.kind === 'stats');
+	const facts = stats?.facts ?? [];
+	const art = hero.image ? 'image' : features.length > 0 ? 'palette' : null;
+	const sideStat = facts.length > 0 ? 1 : 0;
+	const side = (art ? 1 : 0) + sideStat;
+	const places = statPlaces(facts.length, sideStat > 0);
+	const badge = hero.meta.context ?? hero.meta.role;
+	return (
+		<div className="bt-open" data-side={side}>
+			<header className="bt-tile bt-cell bt-intro" style={INTRO}>
+				<div className="bt-intro-top">
+					<p className="bt-brand">
+						{hero.icon ? (
+							<img className="bt-app-icon" src={hero.icon} alt="" />
+						) : (
+							<span className="bt-app-icon bt-app-icon-blank" aria-hidden="true">
+								{hero.name.slice(0, 1)}
+							</span>
+						)}
+						{hero.logo ? <img className="bt-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
+					</p>
+					{hero.meta.period && <span className="bt-badge-tag">{hero.meta.period}</span>}
+				</div>
+				<div className="bt-intro-main">
+					{badge && <p className="bt-intro-context">{badge}</p>}
+					<h1>{hero.headline}</h1>
+					{hero.subhead && <p className="bt-subhead">{hero.subhead}</p>}
+					<BentoLinks links={hero.links} />
+				</div>
+			</header>
+			{art && (
+				<figure className="bt-tile bt-cell bt-side bt-hero-art" style={ART} data-reveal="zoom">
+					<figcaption className="bt-hero-art-bar" aria-hidden="true">
+						<span className="bt-dots">
+							<span />
+							<span />
+							<span />
+						</span>
+						<span className="bt-window-title">{hero.name}</span>
+					</figcaption>
+					<div className="bt-hero-art-body">
+						{hero.image ? <Media media={hero.image} eager /> : <Palette hero={hero} items={features} />}
+					</div>
+				</figure>
+			)}
+			{stats && (
+				<section aria-label={stats.label} className="bt-section" data-section="stats">
+					<h2 className="visually-hidden">{stats.label}</h2>
+					{/* 숫자 타일은 첫 격자에 바로 놓인다: 목록 하나로 묶을 수 없어 각 타일이 목록 항목 역할을 한다 */}
+					<ul className="bt-contents" aria-label={stats.label}>
+						{facts.map((fact, i) => (
+							<StatTile key={fact.label} fact={fact} index={i} place={places[i]} side={i === 0 && sideStat > 0} />
+						))}
+					</ul>
+				</section>
+			)}
 		</div>
-		<div className="bt-window-body">{children}</div>
-	</figure>
-);
+	);
+};
 
 const BentoPage: React.FC<{ project: Project }> = ({ project }) => {
 	const landing = useLanding(project);
@@ -671,46 +753,20 @@ const BentoPage: React.FC<{ project: Project }> = ({ project }) => {
 		() => landing.sections.find((s): s is SectionOf<'features'> => s.kind === 'features')?.items ?? [],
 		[landing]
 	);
-	const badge = hero.meta.context ?? hero.meta.role;
+	// 숫자는 첫 화면 격자에 있으므로 아래 구역 목록에서는 뺀다 (구역 차례는 그대로: 숫자가 맨 앞이다)
+	const below = useMemo(() => {
+		const rest = { ...landing, sections: landing.sections.filter((s) => s.kind !== 'stats') };
+		origins.set(rest, landing);
+		return rest;
+	}, [landing]);
 
 	return (
 		<div ref={root} className="tpl tpl-bento" style={accent}>
-			<header className="bt-hero">
-				<p className="bt-brand">
-					{hero.icon ? (
-						<img className="bt-app-icon" src={hero.icon} alt="" />
-					) : (
-						<span className="bt-app-icon bt-app-icon-blank" aria-hidden="true">
-							{hero.name.slice(0, 1)}
-						</span>
-					)}
-					{hero.logo ? <img className="bt-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
-				</p>
-				{(badge || hero.meta.period) && (
-					<p className="bt-badge">
-						{hero.meta.period && <span className="bt-badge-tag">{hero.meta.period}</span>}
-						{badge && <span>{badge}</span>}
-					</p>
-				)}
-				<h1>{hero.headline}</h1>
-				{hero.subhead && <p className="bt-subhead">{hero.subhead}</p>}
-				<BentoLinks links={hero.links} />
-				{hero.image ? (
-					<Window title={hero.name}>
-						<Media media={hero.image} eager />
-					</Window>
-				) : (
-					features.length > 0 && (
-						<Window title={hero.name}>
-							<Palette hero={hero} items={features} />
-						</Window>
-					)
-				)}
-			</header>
+			<OpeningGrid landing={landing} features={features} />
 
-			{landing.sections.length > 0 && (
+			{below.sections.length > 0 && (
 				<div className="bt-flow">
-					<LandingSections landing={landing} renderers={RENDERERS} className="bt-section" />
+					<LandingSections landing={below} renderers={RENDERERS} className="bt-section" />
 				</div>
 			)}
 
