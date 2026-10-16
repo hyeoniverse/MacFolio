@@ -140,12 +140,14 @@ const MIN_GAME_H = 200;
 const MIN_GAME_W = 340;
 /** 대화 창의 가장 큰 폭(게임 칸). 이보다 넓은 화면에서는 가운데에 둔다 */
 const TALK_MAX = 560;
-/** 대화 창의 글 폭 = 창 폭 − 테두리 1·1 − 안쪽 여백 10·10 */
-const TALK_PAD = 22;
-/** 화면 폭(게임 칸)에서 대화 창의 글 폭: 창은 양옆 4칸 여백을 두고 화면을 가로지른다 */
-const textWidthOf = (screenW: number) => Math.min(screenW - 8, TALK_MAX) - TALK_PAD;
-/** 얼굴 칸(32)과 그 옆 틈 6: 얼굴이 있으면 글이 그만큼 좁다 */
-const PORTRAIT_W = 38;
+/** 대화 창의 글 폭 = 창 폭 − 테두리 1·1 − 안쪽 여백 8·8 − 오른쪽 아래 ▼ 자리 10 (DialoguePage.css) */
+const TALK_PAD = 28;
+/** 화면 폭(게임 칸)에서 대화 창의 글 폭: 창은 양옆 8칸 여백을 두고 화면을 가로지른다 */
+const textWidthOf = (screenW: number) => Math.min(screenW - 16, TALK_MAX) - TALK_PAD;
+/** 얼굴 칸(32)과 그 옆 틈 8: 얼굴이 있으면 글이 그만큼 좁다 */
+const PORTRAIT_W = 40;
+/** 화면 위·아래 띠: 가장자리 8 + 한 줄 창 22 + 틈 8 (DialoguePage.css). 마을 카메라는 지도 끝에서 이만큼 더 넘어간다 */
+const CHIP_BAND = 38;
 /** 메뉴 목록 창의 폭(게임 칸, DialoguePage.css의 --dl-menu-w와 같다) */
 const MENU_W = 184;
 /** 길잡이 줄의 단계 점은 이 수까지만 (더 많으면 n/N만) */
@@ -364,9 +366,6 @@ const TROUBLE_LABELS: Record<TroubleStepKey, string> = {
 	result: '결과',
 };
 
-/** 옆에 게임 화면을 두지 않는 주제: 화면 모음은 그림 자체가 이야기다 */
-const NO_SIDE = new Set(['gallery']);
-
 const MENU_TITLE = '어떤 주제를 볼까요?';
 const SUB_TITLE = '어떤 이야기를 볼까요?';
 const ENDING: Line = {
@@ -452,7 +451,15 @@ interface Hint {
 	joined?: boolean;
 }
 
-/** 그림 한 장: 얇은 테두리 액자에 원래 모습 그대로. 영상은 소리 없이 반복한다. 액자 아래 줄에 이름(caption)과 넘기기 단추 */
+/** 그림을 받으면 그 비율을 액자에 적는다 (CSS가 무대에 들어가는 가장 큰 크기로 키운다) */
+const noteRatio = (el: HTMLElement, w: number, h: number) => {
+	if (w > 0 && h > 0) el.closest<HTMLElement>('.dl-shot')?.style.setProperty('--dl-ar', String(w / h));
+};
+
+/**
+ * 그림 한 장: 얇은 테두리 액자에 원래 모습 그대로, 무대 가운데에 비율을 지켜 가장 크게. 영상은 소리 없이 반복한다.
+ * 액자 아래 줄에 이름(caption)과 넘기기 단추
+ */
 const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNode }> = ({
 	slide,
 	caption,
@@ -469,9 +476,14 @@ const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNo
 					autoPlay={!prefersReducedMotion()}
 					preload="metadata"
 					aria-hidden="true"
+					onLoadedMetadata={(e) => noteRatio(e.currentTarget, e.currentTarget.videoWidth, e.currentTarget.videoHeight)}
 				/>
 			) : (
-				<img src={slide.src} alt="" />
+				<img
+					src={slide.src}
+					alt=""
+					onLoad={(e) => noteRatio(e.currentTarget, e.currentTarget.naturalWidth, e.currentTarget.naturalHeight)}
+				/>
 			)}
 		</div>
 		{(caption || children) && (
@@ -991,14 +1003,6 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			<TopicPanel project={project} focus={focus} side={side} />
 		);
 
-	/** 액자 하나와 그 옆의 작은 게임 화면 */
-	const framed = (frame: React.ReactNode, side: React.ReactNode | null) => (
-		<>
-			{frame}
-			{side && <div className="dl-side">{side}</div>}
-		</>
-	);
-
 	// 메뉴 차례의 무대는 목록 창 왼쪽이라 좁다: 좁으면 게임 화면을 작은 판으로
 	const narrowPreview = screen.compact || screen.w - MENU_W - 24 < 250;
 
@@ -1047,34 +1051,33 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				? { topic: mode.id, item: line?.item, step: line?.step }
 				: 'title';
 		const topicId = mode.kind === 'topic' ? mode.id : '';
-		const withSide = Boolean(slide) && !NO_SIDE.has(topicId);
+		// 그림이 있으면 그림만 크게 (옆에 게임 화면을 두지 않는다: 어디인지는 길잡이 줄이 말한다)
 		return (
-			<div className="dl-scene" data-side={withSide || undefined} key={slide ? lineKey : `panel-${topicId}`}>
-				{slide
-					? framed(
-							<Frame slide={slide} caption={NO_SIDE.has(topicId) ? undefined : slide.caption}>
-								{slides.length > 1 && (
-									<span className="dl-flip">
-										<button type="button" aria-label="이전 그림" onClick={() => flip(-1)}>
-											◀
-										</button>
-										<span className="dl-dots" aria-hidden="true">
-											{slides.map((s, i) => (
-												<i key={s.src} data-on={i === slideIndex || undefined} />
-											))}
-										</span>
-										<span className="visually-hidden" aria-live="polite">
-											{`그림 ${slideIndex + 1} / ${slides.length}`}
-										</span>
-										<button type="button" aria-label="다음 그림" onClick={() => flip(1)}>
-											▶
-										</button>
-									</span>
-								)}
-							</Frame>,
-							withSide ? panelOf(focus, true) : null
-						)
-					: panelOf(focus, false)}
+			<div className="dl-scene" key={slide ? lineKey : `panel-${topicId}`}>
+				{slide ? (
+					<Frame slide={slide} caption={topicId === 'gallery' ? undefined : slide.caption}>
+						{slides.length > 1 && (
+							<span className="dl-flip">
+								<button type="button" aria-label="이전 그림" onClick={() => flip(-1)}>
+									◀
+								</button>
+								<span className="dl-dots" aria-hidden="true">
+									{slides.map((s, i) => (
+										<i key={s.src} data-on={i === slideIndex || undefined} />
+									))}
+								</span>
+								<span className="visually-hidden" aria-live="polite">
+									{`그림 ${slideIndex + 1} / ${slides.length}`}
+								</span>
+								<button type="button" aria-label="다음 그림" onClick={() => flip(1)}>
+									▶
+								</button>
+							</span>
+						)}
+					</Frame>
+				) : (
+					panelOf(focus, false)
+				)}
 			</div>
 		);
 	};
@@ -1127,6 +1130,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 							viewH={screen.compact ? 220 : screen.h}
 							walking={mode.kind === 'world'}
 							camera={mode.kind === 'greet' ? TITLE_VIEW : undefined}
+							band={screen.compact ? 0 : CHIP_BAND}
 						/>
 					) : (
 						<SceneBackdrop scene={scene} width={screen.w} height={screen.h} />

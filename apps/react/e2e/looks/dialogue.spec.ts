@@ -210,6 +210,22 @@ test('dialogue: 게임 화면이 페이지를 꽉 채우고(정수 배), 창은 
 	// 그림을 픽셀로 바꾸거나 무대 안에 풍경을 깔지 않는다
 	expect(await shot.evaluate((img) => getComputedStyle(img).imageRendering)).toBe('auto');
 	await expect(panel.locator('.dl-stage canvas')).toHaveCount(0);
+	// 그림이 있으면 그림만 크게: 옆의 게임 화면이 없고, 액자는 무대 가운데에서 폭이나 높이 한쪽에 닿는다 (비율은 그대로)
+	await expect(panel.locator('.dl-stage .dlp')).toHaveCount(0);
+	await expect
+		.poll(async () =>
+			shot.evaluate((img) => {
+				const stage = img.closest('.dl-scene')!.getBoundingClientRect();
+				const frame = img.closest('.dl-shot-frame')!.getBoundingClientRect();
+				const ratio = (img as HTMLImageElement).naturalWidth / (img as HTMLImageElement).naturalHeight;
+				const shown = img.getBoundingClientRect();
+				const centred = Math.abs(frame.left + frame.width / 2 - (stage.left + stage.width / 2)) <= 2;
+				const fills = frame.width >= stage.width - 2 || frame.height >= stage.height - 2;
+				const keeps = Math.abs(shown.width / shown.height - ratio) < 0.03;
+				return centred && fills && keeps;
+			})
+		)
+		.toBe(true);
 	// 창: 1칸 밝은 테두리와 반투명한 짙은 바탕 (라이트·다크가 같고, 장면이 색을 낸다)
 	const box = dialogOf(panel).locator('.dl-box');
 	expect(await box.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
@@ -302,10 +318,13 @@ test('dialogue: 트러블슈팅은 버그와의 전투(HP가 단계마다 준다
 	// 전투: 몬스터 그림과 HP. 문제 → 원인 → 해결 → 결과로 넘길수록 HP가 줄어 0이 된다
 	await dialog.getByRole('button', { name: '트러블슈팅' }).click();
 	const battle = panel.locator('.dl-stage [data-panel="troubleshooting"]');
-	await expect(battle.locator('svg.dlp-monster')).toBeVisible();
-	// 무대 뒤는 전투 들판, 몬스터는 발판 위에 선다
+	// 몬스터는 Ninja Adventure 묶음의 그림 (코드로 그린 칸 그림이 아니다)
+	const monster = battle.locator('.dlp-monster');
+	await expect(monster).toBeVisible();
+	expect(await monster.evaluate((el) => getComputedStyle(el).backgroundImage)).toContain('/imgs/rpg/ninja/monsters/');
+	// 무대 뒤는 전투 들판, 몬스터는 그림자 위에 선다
 	await expect(panel.locator('.dl-game')).toHaveAttribute('data-scene', 'field');
-	await expect(battle.locator('.dlp-on svg.dlp-platform')).toBeVisible();
+	await expect(battle.locator('.dlp-on .dlp-platform')).toBeVisible();
 	// 장면은 픽셀 타일 그림 캔버스 (낮·밤 두 장 중 테마에 맞는 한 장만 보인다), 아이콘은 Font Awesome이 아닌 픽셀 아이콘
 	await expect(panel.locator('.dl-game > canvas.dl-backdrop')).toHaveCount(2);
 	await expect(panel.locator('.dl-game > canvas.dl-backdrop:visible')).toHaveCount(1);
@@ -490,7 +509,7 @@ test('dialogue: 게임 화면이 한 배도 안 들어가는 좁은 창에서는
 
 // ─── 마을: 주인공을 움직여 장소마다 주제를 연다 ───
 
-test('dialogue 마을: 타이틀에서 Z를 누르면 입구에 주인공이 서고, 방향 키·WASD로 한 칸씩 걸으며 분수·집에 막힌다', async ({
+test('dialogue 마을: 타이틀에서 Z를 누르면 입구에 주인공이 서고, 방향 키·WASD로 한 칸씩 걸으며 돌부처 상·집에 막힌다', async ({
 	page,
 }) => {
 	const { panel } = await openLook(page, { id: 'qru', tab: /북클럽/, override: noImageSample() });
@@ -501,6 +520,11 @@ test('dialogue 마을: 타이틀에서 Z를 누르면 입구에 주인공이 서
 	await expect(panel.locator('.dl-stage [data-panel="title"]')).toContainText('PRESS Z');
 	await expect(panel.locator('.dl-village').first()).toBeAttached();
 	await expect(hero).toBeHidden();
+	// 마을은 Ninja Adventure 타일로 칠한 판 (그림을 받으면 칠한다), 사람·몬스터는 그 묶음의 그림 칸
+	await expect(panel.locator('canvas.dl-village[data-painted]').first()).toBeAttached();
+	const actor = panel.locator('.dl-actor[data-kind="person"] .dl-actor-body').first();
+	await expect(actor).toBeAttached();
+	expect(await actor.evaluate((el) => getComputedStyle(el).backgroundImage)).toContain('/imgs/rpg/ninja/chars/');
 	// 키가 페이지에 닿게 탭 단추의 포커스를 푼다
 	await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
 	for (let i = 0; i < 6 && (await root.getAttribute('data-mode')) === 'greet'; i++) await page.keyboard.press('z');
@@ -515,7 +539,7 @@ test('dialogue 마을: 타이틀에서 Z를 누르면 입구에 주인공이 서
 	await page.keyboard.press('ArrowLeft');
 	await press(page, 'ArrowUp', 8);
 	expect(await spot(panel)).toEqual({ x: 19, y: 13, facing: 'up' });
-	// 분수에 막힌다
+	// 광장 가운데 돌부처 상에 막힌다
 	await page.keyboard.press('ArrowUp');
 	expect(await spot(panel)).toEqual({ x: 19, y: 13, facing: 'up' });
 
@@ -682,7 +706,7 @@ test('dialogue 마을: 모든 주제를 읽으면 북쪽 문이 열리고, 문�
 	await expect(root).toHaveAttribute('data-mode', 'world');
 	await expect(markOf(panel, 'gate')).toHaveAttribute('data-state', 'new');
 
-	// 입구 길로 돌아가 분수를 비켜 북쪽 문 앞까지
+	// 입구 길로 돌아가 돌부처 상을 비켜 북쪽 문 앞까지
 	await press(page, 'ArrowLeft', 2);
 	await press(page, 'ArrowUp', 6);
 	await page.keyboard.press('ArrowLeft');

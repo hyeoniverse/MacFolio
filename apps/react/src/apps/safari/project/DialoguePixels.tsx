@@ -1,9 +1,18 @@
-// RPG 대화창(DialoguePage)의 픽셀 그림 부품: 칸 그림(SVG 사각형), 픽셀 아이콘, 화면 가득한 타일 장면(캔버스), 사진·아이콘을 픽셀로 줄인 그림.
+// RPG 대화창(DialoguePage)의 픽셀 그림 부품: 칸 그림(SVG 사각형), 픽셀 아이콘, 그림 묶음의 한 조각(Sprite), 화면 가득한 타일 장면(캔버스),
+// 사진·아이콘을 픽셀로 줄인 그림.
 // 모두 게임 화면의 칸 단위로 그리고 화면 전체가 정수 배로 커지므로 가장자리가 흐려지지 않는다. 꾸밈이라 읽기 프로그램에는 숨긴다
 import React, { useEffect, useRef, useState } from 'react';
 import { pixelRuns } from '@/apps/safari/project/dialogueStage';
 import { ICON_COLORS, ICONS, pixelate, type IconName } from '@/apps/safari/project/dialogueIcons';
-import { sceneRgba } from '@/apps/safari/project/dialogueScenes';
+import { composeScene } from '@/apps/safari/project/dialogueScenes';
+import {
+	loadSheets,
+	nightOver,
+	paintDraws,
+	sheetSize,
+	sheetUrl,
+	type Sprite as SpriteRect,
+} from '@/apps/safari/project/dialogueNinja';
 import type { SceneKind } from '@/apps/safari/project/dialogueStage';
 
 /** 칸 그림: 한 칸을 scale 칸(게임 화면의 px)으로 키운 사각형들. 가장자리를 흐리지 않는다 */
@@ -42,7 +51,10 @@ export const PixelIcon: React.FC<{ name?: IconName; rows?: readonly string[]; sc
 	className = 'dl-icon',
 }) => <Pixels rows={rows ?? ICONS[name ?? 'star']} colors={ICON_COLORS} scale={scale} className={className} />;
 
-/** 화면 가득한 장면: 낮·밤 두 장을 칠해 두고 CSS가 테마에 맞는 한 장만 보인다 (장면이나 크기가 바뀔 때만 다시 칠한다) */
+/**
+ * 화면 가득한 장면: 낮·밤 두 장을 칠해 두고 CSS가 테마에 맞는 한 장만 보인다 (장면이나 크기가 바뀔 때만 다시 칠한다).
+ * 그림 묶음을 받은 뒤에 칠하고, 밤(또는 늘 밤인 달밤)은 밤 색을 곱하고 불빛을 켠다
+ */
 const SceneCanvas: React.FC<{ scene: SceneKind; night: boolean; width: number; height: number }> = ({
 	scene,
 	night,
@@ -51,9 +63,28 @@ const SceneCanvas: React.FC<{ scene: SceneKind; night: boolean; width: number; h
 }) => {
 	const ref = useRef<HTMLCanvasElement>(null);
 	useEffect(() => {
-		const ctx = ref.current?.getContext('2d');
-		if (!ctx || typeof ImageData === 'undefined') return;
-		ctx.putImageData(new ImageData(new Uint8ClampedArray(sceneRgba(scene, night, width, height)), width, height), 0, 0);
+		const canvas = ref.current;
+		const ctx = canvas?.getContext('2d');
+		if (!canvas || !ctx) return;
+		const art = composeScene(scene, width, height);
+		let alive = true;
+		void loadSheets(art.draws.filter((d) => !d.fill).map((d) => d.sheet)).then((sheets) => {
+			if (!alive) return;
+			ctx.clearRect(0, 0, width, height);
+			paintDraws(ctx, art.draws, sheets);
+			if (night || art.alwaysNight) nightOver(ctx, width, height, art.lights);
+			else if (art.tint) {
+				ctx.save();
+				ctx.globalCompositeOperation = 'multiply';
+				ctx.fillStyle = art.tint;
+				ctx.fillRect(0, 0, width, height);
+				ctx.restore();
+			}
+			canvas.dataset.painted = '';
+		});
+		return () => {
+			alive = false;
+		};
 	}, [scene, night, width, height]);
 	return (
 		<canvas
@@ -77,6 +108,38 @@ export const SceneBackdrop: React.FC<{ scene: SceneKind; width: number; height: 
 		<SceneCanvas scene={scene} night={false} width={width} height={height} />
 		<SceneCanvas scene={scene} night width={width} height={height} />
 	</>
+);
+
+/**
+ * 그림 묶음의 한 조각 (사람·몬스터·상자...): 배경 그림을 scale배로 (image-rendering: pixelated). frames가 있으면
+ * 그 수만큼 아래 칸으로 넘기며 움직인다(움직임 줄이기면 멈춘다, CSS)
+ */
+export const Sprite: React.FC<{
+	sprite: SpriteRect;
+	scale?: number;
+	className: string;
+	frames?: number;
+	style?: React.CSSProperties;
+}> = ({ sprite, scale = 1, className, frames, style }) => (
+	<span
+		className={`dl-sprite-img ${className}`}
+		data-frames={frames || undefined}
+		aria-hidden="true"
+		style={{
+			width: sprite.w * scale,
+			height: sprite.h * scale,
+			backgroundImage: `url(${sheetUrl(sprite.sheet)})`,
+			backgroundSize: sheetSize(sprite.sheet)
+				.map((v) => `${v * scale}px`)
+				.join(' '),
+			backgroundPosition: `${-sprite.x * scale}px ${-sprite.y * scale}px`,
+			['--dl-x0' as string]: `${-sprite.x * scale}px`,
+			['--dl-y0' as string]: `${-sprite.y * scale}px`,
+			['--dl-y1' as string]: `${-(sprite.y + sprite.h * (frames ?? 1)) * scale}px`,
+			['--dl-frames' as string]: frames ?? 1,
+			...style,
+		}}
+	/>
 );
 
 const pixelCache = new Map<string, Promise<string | null>>();
