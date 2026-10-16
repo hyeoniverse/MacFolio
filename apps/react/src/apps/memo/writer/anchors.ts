@@ -9,7 +9,7 @@ import { Decoration, DecorationSet, type EditorView, type ViewMutationRecord } f
 import { footnoteDefinitionSchema, footnoteReferenceSchema } from '@milkdown/kit/preset/gfm';
 import { $prose, $view } from '@milkdown/kit/utils';
 
-/** 도착 표시를 지우기까지 (Memo.css의 memo-anchor-hit 애니메이션 길이) */
+/** 도착 표시를 지우기까지 (styles/markdown.css의 memo-anchor-hit 애니메이션 길이) */
 const HIT_MS = 1600;
 
 /** 각주 이름 → 번호. 본문에 처음 나온 차례로 매기고, 본문에서 쓰지 않은 각주는 그 뒤에 이어 붙인다 */

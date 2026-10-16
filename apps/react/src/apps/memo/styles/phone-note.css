@@ -1,0 +1,194 @@
+/* 메모 앱: 휴대폰 본문의 떠 있는 단추와 아래 도구 */
+
+/* 휴대폰 본문 (iOS 메모처럼): 떠 있는 단추들. 휴대폰의 한 칸 보기에서만 보인다 */
+.memo-phone-top,
+.memo-phone-bottom {
+	display: none;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader {
+	position: relative;
+}
+
+/* 본문 위 도구 줄 대신 떠 있는 단추를 쓴다 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader-compact-bar {
+	display: none;
+}
+
+/* 오른쪽 위: 공유, ••• (뒤로 가기 동그란 단추와 같은 높이) */
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-top {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	position: absolute;
+	top: var(--phone-top);
+	right: 16px;
+	z-index: 5;
+	height: 44px;
+	padding: 0 6px;
+	border-radius: var(--radius-full);
+	background-color: var(--phone-card-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.06),
+		0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-top .ui-icon-button {
+	min-width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	color: var(--memo-text);
+	font-size: 19px;
+}
+
+/* 떠 있는 단추 바로 아래부터 본문, 아래 도구에 가리지 않게 여백 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-scroll {
+	padding-top: calc(var(--phone-top) + 58px);
+	padding-bottom: 96px;
+}
+
+/* 날짜·폴더 줄은 가운데 그대로, 휴대폰에서 읽기 좋은 크기로 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader :is(.memo-reader-date, .memo-writer-meta) {
+	font-size: 14px;
+}
+
+/* 저장 상태·게시는 날짜 줄 위의 따로 한 줄 대신, 떠 있는 단추 줄의 오른쪽 알약 왼쪽에 띄운다.
+	   날짜 줄(position: static)을 건너 .memo-reader에 맞춰 두어 본문을 넘겨도 제자리에 있다 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-meta {
+	position: static;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions {
+	position: absolute;
+	top: var(--phone-top);
+	right: 118px;
+	z-index: 5;
+	width: auto;
+	height: 44px;
+	max-width: calc(100% - 68px - 118px);
+	margin: 0;
+	padding: 0 8px;
+	border-radius: var(--radius-full);
+	background-color: var(--phone-card-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.06),
+		0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* 오른쪽 알약에 •••만 있을 때 (공유가 없는 새 메모) */
+.container.mobile
+	:where(.memo-shell[data-compact])
+	.memo-reader:not(:has(.memo-phone-top > :nth-child(2)))
+	.memo-writer-actions {
+	right: 76px;
+	max-width: calc(100% - 68px - 76px);
+}
+
+/* 옆의 공유·••• 알약과 같은 모양: 채운 단추 대신 알약 안의 글자 단추 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions {
+	gap: 2px;
+	padding: 0 6px;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > button {
+	flex-shrink: 0;
+	height: 40px;
+	padding: 0 10px;
+	border-radius: var(--radius-full);
+	background: none;
+	color: var(--memo-text);
+	font-size: var(--text-callout);
+	font-weight: 600;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > button:active:not(:disabled) {
+	background-color: var(--memo-search-bg);
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > button:disabled {
+	background: none;
+	color: var(--memo-muted);
+}
+
+/* 알약에는 단추만 둔다 (글을 넣으면 알약이 길어져 좁은 화면에 맞지 않는다).
+	   저장 상태 글은 화면 읽기 프로그램에만 알리고, 변경 사항 버리기는 되돌리기 아이콘으로 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-status {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > .memo-writer-discard {
+	width: 40px;
+	padding: 0;
+	font-size: 0;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > .memo-writer-discard::before {
+	font: var(--fa-font-solid);
+	font-size: var(--text-body);
+	content: '\f2ea';
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader > .memo-find {
+	margin-top: calc(var(--phone-top) + 50px);
+}
+
+/* 아래: 왼쪽에 서식 알약, 오른쪽에 새 메모 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-bottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	position: absolute;
+	left: 16px;
+	right: 16px;
+	bottom: 12px;
+	z-index: 5;
+	pointer-events: none;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-bottom > * {
+	pointer-events: auto;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-format {
+	display: inline-flex;
+	gap: 4px;
+	height: 50px;
+	padding: 0 10px;
+	border-radius: var(--radius-full);
+	background-color: var(--phone-card-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.06),
+		0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-format .ui-icon-button {
+	min-width: 40px;
+	height: 40px;
+	color: var(--memo-text);
+	font-size: 18px;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-format .memo-format-quick {
+	display: inline-flex;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-format .memo-format-button {
+	font-size: var(--text-subhead);
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-phone-compose {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background-color: var(--phone-card-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.06),
+		0 4px 14px rgba(0, 0, 0, 0.12);
+	color: var(--memo-text);
+	font-size: var(--text-title3);
+}
