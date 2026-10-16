@@ -16,6 +16,9 @@ interface Props {
 
 const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, loading = false }) => {
 	const [query, setQuery] = useState('');
+	/** 휴대폰 검색 알약에 들어가 있는 동안. 이때 오른쪽 단추는 새 피드백 대신 검색 끝내기(×) */
+	const [focused, setFocused] = useState(false);
+	const searching = focused || query !== '';
 	/** 휴대폰은 iOS 메시지 크기의 아바타 */
 	const phone = useIsMobile();
 	const now = new Date();
@@ -116,11 +119,32 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 				</ul>
 			</aside>
 			{/* 휴대폰: 아래에 떠 있는 검색 알약과 새 피드백 (넘기는 목록 밖에 둔다) */}
-			<div className="messages-phone-bottom">
+			<div
+				className="messages-phone-bottom"
+				onFocus={(event) => setFocused(event.target instanceof HTMLInputElement)}
+				onBlur={() => setFocused(false)}
+			>
 				{searchField('messages-search messages-phone-search')}
-				<button type="button" className="phone-float" aria-label="새 피드백" onClick={onCompose}>
-					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-				</button>
+				{searching ? (
+					<button
+						type="button"
+						className="phone-float"
+						aria-label="검색 닫기"
+						// 누르는 순간 입력 칸이 포커스를 잃어 단추가 바뀌지 않도록
+						onPointerDown={(event) => event.preventDefault()}
+						onClick={() => {
+							setQuery('');
+							setFocused(false);
+							(document.activeElement as HTMLElement | null)?.blur();
+						}}
+					>
+						<i className="fa-solid fa-xmark" aria-hidden="true" />
+					</button>
+				) : (
+					<button type="button" className="phone-float" aria-label="새 피드백" onClick={onCompose}>
+						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+					</button>
+				)}
 			</div>
 		</>
 	);
