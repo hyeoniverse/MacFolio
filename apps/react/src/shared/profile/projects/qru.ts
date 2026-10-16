@@ -4,7 +4,7 @@ import { projectImage } from './projectImage';
 export const QRU: Project = {
 	id: 'qru',
 	name: 'QRU 큐알유',
-	look: 'minimal',
+	look: 'custom',
 	tagline: 'QR 한 장에 담은 나.',
 	description: '내 정보를 담은 QR 디지털 명함을 만들어 공유하고, 공개된 명함을 셔플로 찾아보는 웹 앱',
 	context: '개인 프로젝트',

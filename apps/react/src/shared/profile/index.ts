@@ -6,9 +6,12 @@ export type {
 	Project,
 	ProjectAppInfo,
 	ProjectChapter,
+	ProjectDeployment,
 	ProjectFact,
 	ProjectLook,
+	ProjectMember,
 	ProjectPoint,
+	ProjectTrouble,
 	ThemeSwatch,
 } from './types';
-export { PROJECTS } from './projects';
+export { DEFAULT_PROJECTS, PROJECTS } from './projects';

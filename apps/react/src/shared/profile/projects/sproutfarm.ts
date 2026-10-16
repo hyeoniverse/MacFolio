@@ -4,7 +4,7 @@ import { projectImage } from './projectImage';
 export const SPROUTFARM: Project = {
 	id: 'sproutfarm',
 	name: 'SproutFarm 새싹 농장',
-	look: 'game',
+	look: 'custom',
 	controls: [
 		{ keys: ['↑', '↓', '←', '→'], label: '움직이기' },
 		{ keys: ['Shift'], label: '달리기' },

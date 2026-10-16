@@ -34,7 +34,8 @@
 }
 
 /* 모바일 창의 링크 색보다 앞서도록 한 단계 더 좁힌다 */
-.sp a,
+/* 랜딩 템플릿(data-template, project/templates/)에는 아래의 요소 규칙을 걸지 않는다: 템플릿이 자기 CSS로 정한다 */
+.sp:where(:not([data-template])) a,
 .sp .sp-link {
 	color: var(--sp-accent);
 }
@@ -228,13 +229,13 @@
 	color: var(--sp-dark-muted);
 }
 
-.sp h3 {
+.sp:where(:not([data-template])) h3 {
 	font-size: var(--text-title2);
 	font-weight: 700;
 	letter-spacing: -0.01em;
 }
 
-.sp li > p {
+.sp:where(:not([data-template])) li > p {
 	margin-top: 10px;
 	color: var(--sp-muted);
 	font-size: var(--text-body);

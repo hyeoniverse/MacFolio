@@ -1,26 +1,5 @@
-import ReactDOM from 'react-dom/client';
-import './styles/layers.css';
-import './styles/theme.css';
-import './styles/motion.css';
-import './index.css';
-import App from './App';
-import { initSettings } from '@/shared/settings/settingsStore';
-import { initAdmin } from '@/shared/auth/adminStore';
-import { initClickSound } from '@/shared/sound/clickSound';
-import { checkChosenWallpapers } from '@/shared/settings/customWallpapers';
-import { startAnalytics } from '@/shared/analytics/analytics';
-import { loadSiteProfile } from '@/shared/site/profileStore';
+// 사이트 콘텐츠(관리자가 고친 프로필·프로젝트)를 먼저 합치고, 그다음에 앱을 불러온다.
+// 앱 목록·Safari 탭 같은 모듈이 프로젝트 목록을 불러올 때 한 번 계산해 두기 때문이다 (shared/site/siteContent.ts)
+import { loadSiteContent } from '@/shared/site/siteContent';
 
-initSettings();
-// 관리자가 더한 배경화면을 골라 뒀으면, 그 배경화면이 아직 있는지 확인한다
-checkChosenWallpapers();
-initClickSound();
-// GitHub에서 돌아왔으면 결과를 알리고, 관리자로 로그인했는지 확인한다
-void initAdmin();
-// 관리자가 시스템 설정에서 고친 프로필 (없으면 코드의 기본값 그대로)
-void loadSiteProfile();
-// 트래픽 분석: 페이지 열기와 앱·글·링크를 모아 보낸다 (쿠키 없음, docs/privacy.md)
-startAnalytics();
-
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-root.render(<App />);
+void loadSiteContent().finally(() => import('./boot'));

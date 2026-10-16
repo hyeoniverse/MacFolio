@@ -4,7 +4,7 @@ import { projectImage } from './projectImage';
 export const NEWPICK: Project = {
 	id: 'newpick',
 	name: 'NewPick 뉴픽',
-	look: 'editorial',
+	look: 'custom',
 	tagline: '아침 뉴스, 요약해서 한 통에.',
 	description: '관심사에 맞춰 AI가 요약한 뉴스를 매일 아침 메일로 보내 주는 맞춤형 뉴스레터 서비스',
 	context: '프로그래머스 데브코스 팀 프로젝트 (5인: 프론트엔드 2, 백엔드 3)',

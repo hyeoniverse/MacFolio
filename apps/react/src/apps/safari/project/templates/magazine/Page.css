@@ -1,0 +1,1359 @@
+/* magazine 템플릿 (잡지의 사례 연구 기사): 따뜻한 종이, 검은 잉크, 붉은 잉크 하나. 명조 제목과 고딕 본문, 1px 선과 겹줄,
+   사진은 옅은 판 위에 크게. 그림자·빛 번짐 없이 타이포와 여백, 선으로 짠다.
+   명조는 Noto Serif KR이 기기에 있으면 그것을, 없으면 나눔명조·애플명조를 쓴다 (CSP가 바깥 글꼴을 막아 내려받지 않는다).
+   라틴 글자와 숫자는 Iowan Old Style(맥)·Georgia의 올드스타일 숫자로 */
+.tpl-magazine {
+	--lk-accent: #b23a2b;
+	--lk-accent-2: #d98a7e;
+	--lk-dark-accent: #e8806d;
+	--mg-bg: #faf8f3;
+	--mg-ink: #1a1a1a;
+	--mg-body: #2e2c28;
+	--mg-muted: #6b665d;
+	--mg-faint: #9c968a;
+	--mg-rule: #1a1a1a;
+	--mg-line: rgba(26, 24, 20, 0.14);
+	--mg-line-soft: rgba(26, 24, 20, 0.08);
+	--mg-plate: #efebe1;
+	--mg-tint: #f3f0e8;
+	--mg-serif: 'Iowan Old Style', 'Charter', 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', Georgia, serif;
+	--mg-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+	--mg-measure: 680px;
+	--mg-wide: 1120px;
+	--mg-gutter: 56px;
+	background-color: var(--mg-bg);
+	color: var(--mg-body);
+	font-size: 17px;
+	line-height: 1.75;
+	-webkit-font-smoothing: antialiased;
+	overflow-x: clip;
+}
+
+:root[data-theme='dark'] .tpl-magazine {
+	--mg-bg: #141311;
+	--mg-ink: #efeae0;
+	--mg-body: #d6d0c4;
+	--mg-muted: #a39c8f;
+	--mg-faint: #736d62;
+	--mg-rule: #efeae0;
+	--mg-line: rgba(239, 234, 224, 0.15);
+	--mg-line-soft: rgba(239, 234, 224, 0.08);
+	--mg-plate: #1e1c19;
+	--mg-tint: #1a1916;
+}
+
+/* ─── 요소 초기화 (특정도 0) ─── */
+:where(.tpl-magazine) :where(h1, h2, h3) {
+	margin: 0;
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-weight: 500;
+	font-synthesis: none;
+	letter-spacing: -0.01em;
+	word-break: keep-all;
+}
+
+:where(.tpl-magazine) :where(p, figure, blockquote, pre) {
+	margin: 0;
+}
+
+:where(.tpl-magazine) :where(p, li, dd, dt, figcaption) {
+	word-break: keep-all;
+	overflow-wrap: break-word;
+}
+
+:where(.tpl-magazine) :where(ul, ol, dl) {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+:where(.tpl-magazine) :where(dd) {
+	margin: 0;
+}
+
+:where(.tpl-magazine) :where(a) {
+	color: inherit;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--tpl-accent) 55%, transparent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
+:where(.tpl-magazine) :where(a:hover) {
+	text-decoration-color: var(--tpl-accent);
+}
+
+/* ─── 첫 화면: 제호, 머리말, 제목, 리드, 바이라인, 판 위의 큰 사진 ─── */
+/* 그림 번호: .tpl은 컨테이너(스타일 격리)라 카운터를 그 안의 첫 요소에서 시작한다 (뒤의 형제가 이어받는다) */
+.mg-hero {
+	padding: 0 var(--mg-gutter);
+	counter-reset: mg-fig;
+}
+
+.mg-cover {
+	max-width: var(--mg-wide);
+	margin: 0 auto;
+	padding: 40px 0 48px;
+}
+
+/* 표지 위의 작은 머리줄: 아이콘, '사례 연구', 어떤 프로젝트 */
+.mg-folio {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 14px;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--mg-line);
+	color: var(--tpl-accent);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	line-height: 1.5;
+}
+
+.mg-folio-context {
+	color: var(--mg-muted);
+	font-weight: 500;
+	letter-spacing: 0.06em;
+}
+
+.mg-folio-context::before {
+	content: '';
+	display: inline-block;
+	width: 1px;
+	height: 11px;
+	margin-right: 14px;
+	background-color: var(--mg-line);
+	vertical-align: -1px;
+}
+
+.mg-mast-icon {
+	width: 20px;
+	height: 20px;
+	border-radius: 5px;
+	object-fit: cover;
+}
+
+/* 제호처럼 크게 왼쪽에 세운 이름 */
+.mg-title {
+	margin-top: 36px;
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: clamp(48px, 7.4cqw, 104px);
+	font-weight: 500;
+	line-height: 1.04;
+	letter-spacing: -0.035em;
+	word-break: keep-all;
+	text-wrap: balance;
+}
+
+.mg-logo {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	height: clamp(56px, 7cqw, 96px);
+	margin-top: 36px;
+	object-fit: contain;
+	object-position: left;
+}
+
+/* 제목은 이름 아래의 데크로 (이름이 따로 없으면 그 자리의 큰 제목) */
+.mg-hero h1 {
+	max-width: 30ch;
+	margin-top: 20px;
+	color: var(--mg-body);
+	font-size: clamp(24px, 2.5cqw, 34px);
+	line-height: 1.35;
+	letter-spacing: -0.015em;
+	text-wrap: balance;
+}
+
+.mg-hero h1[data-solo] {
+	max-width: 18ch;
+	margin-top: 36px;
+	color: var(--mg-ink);
+	font-size: clamp(44px, 6cqw, 84px);
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+}
+
+.mg-dek {
+	max-width: 40em;
+	margin-top: 14px;
+	color: var(--mg-muted);
+	font-size: 17px;
+	line-height: 1.7;
+	text-wrap: pretty;
+}
+
+/* 겹줄 아래 바이라인과 글 링크 한 줄 */
+.mg-byline-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px 32px;
+	margin-top: 36px;
+	padding-top: 10px;
+	border-top: 3px double var(--mg-rule);
+}
+
+.mg-byline {
+	color: var(--mg-ink);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.mg-byline .mg-dot {
+	color: var(--mg-faint);
+}
+
+/* 링크: 모두 밑줄 글 링크, 첫 링크는 붉은 잉크 */
+.mg-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0 28px;
+}
+
+.mg-links > a,
+.mg-links > button {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--mg-ink);
+	font: inherit;
+	font-size: 15px;
+	font-weight: 500;
+	text-decoration: underline;
+	text-decoration-color: var(--mg-line);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 5px;
+	cursor: pointer;
+	transition: text-decoration-color 0.15s;
+}
+
+.mg-links > a:hover,
+.mg-links > button:hover {
+	text-decoration-color: var(--tpl-accent);
+}
+
+.mg-links > [data-primary] {
+	color: var(--tpl-accent);
+	font-weight: 600;
+	text-decoration-color: color-mix(in srgb, var(--tpl-accent) 45%, transparent);
+}
+
+.mg-links > :focus-visible {
+	outline: 2px solid var(--tpl-accent);
+	outline-offset: 3px;
+}
+
+/* 대표 사진: 창 폭 가득 옅은 판, 그 위에 큰 그림, 아래에 설명 */
+.mg-lead {
+	margin: 0 calc(var(--mg-gutter) * -1);
+}
+
+.mg-lead .mg-plate {
+	padding: 56px var(--mg-gutter);
+}
+
+.mg-lead .lk-media {
+	max-width: var(--mg-wide);
+	margin: 0 auto;
+}
+
+.mg-lead figcaption {
+	max-width: var(--mg-wide);
+	margin: 0 auto;
+	padding: 12px var(--mg-gutter) 0;
+	box-sizing: content-box;
+}
+
+.mg-plate {
+	background-color: var(--mg-plate);
+	padding: 28px;
+	box-sizing: border-box;
+}
+
+.mg-plate .lk-media {
+	border: 1px solid var(--mg-line-soft);
+	box-sizing: border-box;
+	max-height: 760px;
+	object-fit: contain;
+}
+
+.mg-plate img.lk-media,
+.mg-plate video.lk-media {
+	width: auto;
+	margin: 0 auto;
+}
+
+.mg-plate .lk-media-pair {
+	display: block;
+}
+
+.mg-figure,
+.mg-lead {
+	counter-increment: mg-fig;
+}
+
+.mg-figure figcaption,
+.mg-lead figcaption {
+	color: var(--mg-muted);
+	font-size: 13px;
+	line-height: 1.55;
+}
+
+.mg-figure figcaption {
+	padding-top: 10px;
+}
+
+.mg-figure figcaption::before,
+.mg-lead figcaption::before {
+	content: '그림 ' counter(mg-fig) '.';
+	margin-right: 8px;
+	color: var(--mg-ink);
+	font-weight: 600;
+}
+
+/* ─── 본문 ─── */
+.mg-body {
+	padding: 24px var(--mg-gutter) 0;
+}
+
+.mg-section {
+	max-width: var(--mg-wide);
+	margin: 0 auto;
+	padding: 96px 0 0;
+}
+
+.mg-head {
+	margin-bottom: 48px;
+	padding-bottom: 22px;
+	border-bottom: 1px solid var(--mg-line);
+}
+
+.mg-rubric {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	color: var(--tpl-accent);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: 1.5;
+}
+
+.mg-head h2 {
+	max-width: 24ch;
+	margin-top: 10px;
+	font-size: clamp(30px, 3.4cqw, 46px);
+	line-height: 1.22;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+
+/* 숫자 상자 (한눈에 보는 숫자): 위 굵은 줄, 큰 올드스타일 숫자 */
+.mg-box-title {
+	color: var(--mg-ink);
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+}
+
+.mg-stats {
+	padding-top: 14px;
+	border-top: 3px solid var(--mg-rule);
+	border-bottom: 1px solid var(--mg-rule);
+}
+
+.mg-stats .mg-box-title {
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--mg-line);
+}
+
+.mg-numbers {
+	display: grid;
+	grid-template-columns: repeat(var(--mg-cols, 4), minmax(0, 1fr));
+}
+
+.mg-numbers[data-count='1'] {
+	--mg-cols: 1;
+}
+.mg-numbers[data-count='2'] {
+	--mg-cols: 2;
+}
+.mg-numbers[data-count='3'] {
+	--mg-cols: 3;
+}
+
+.mg-numbers > div {
+	display: flex;
+	flex-direction: column-reverse;
+	justify-content: flex-end;
+	gap: 6px;
+	padding: 26px 28px 30px;
+	border-left: 1px solid var(--mg-line);
+}
+
+.mg-numbers > div:first-child {
+	padding-left: 0;
+	border-left: 0;
+}
+
+.mg-numbers dd {
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: clamp(40px, 4.6cqw, 60px);
+	font-variant-numeric: oldstyle-nums proportional-nums;
+	line-height: 1.05;
+	letter-spacing: -0.02em;
+}
+
+.mg-numbers dt {
+	color: var(--mg-muted);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+/* ─── 주요 기능: 단 사이 가는 줄이 있는 두 단 기사, 사이에 걸친 인용구 ─── */
+.mg-cols {
+	columns: 2;
+	column-gap: 56px;
+	column-rule: 1px solid var(--mg-line);
+}
+
+.mg-item + .mg-item {
+	margin-top: 44px;
+}
+
+.mg-item-kicker {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	break-after: avoid;
+	color: var(--tpl-accent);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: 1.5;
+}
+
+.mg-item-no {
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: 15px;
+	font-variant-numeric: lining-nums;
+	letter-spacing: 0.04em;
+}
+
+.mg-item h3 {
+	margin-top: 8px;
+	break-after: avoid;
+	font-size: clamp(24px, 2.2cqw, 30px);
+	line-height: 1.3;
+	letter-spacing: -0.015em;
+}
+
+.mg-standfirst {
+	margin-top: 14px;
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: 19px;
+	line-height: 1.7;
+}
+
+.mg-prose {
+	margin-top: 12px;
+	color: var(--mg-body);
+	font-size: 16px;
+	line-height: 1.85;
+}
+
+/* 첫 꼭지 첫 문단의 내린 머리글자 */
+[data-dropcap]::first-letter {
+	float: left;
+	margin: 0.08em 0.14em 0 0;
+	color: var(--tpl-accent);
+	font-family: var(--mg-serif);
+	font-size: 3.6em;
+	font-weight: 500;
+	line-height: 0.86;
+}
+
+.mg-item .mg-figure {
+	margin-top: 22px;
+	break-inside: avoid;
+}
+
+.mg-item .mg-plate {
+	padding: 20px;
+}
+
+.mg-item .mg-plate .lk-media {
+	max-height: 420px;
+}
+
+.mg-pullquote {
+	margin: 56px 0;
+	padding: 30px 0 26px;
+	border-top: 3px double var(--mg-rule);
+	border-bottom: 1px solid var(--mg-rule);
+	text-align: center;
+}
+
+.mg-pullquote blockquote {
+	margin: 0;
+}
+
+.mg-pullquote blockquote p {
+	max-width: 30ch;
+	margin: 0 auto;
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: clamp(24px, 2.8cqw, 36px);
+	line-height: 1.45;
+	letter-spacing: -0.015em;
+	text-wrap: balance;
+}
+
+.mg-pullquote blockquote p::before {
+	content: '“';
+	color: var(--tpl-accent);
+}
+
+.mg-pullquote blockquote p::after {
+	content: '”';
+	color: var(--tpl-accent);
+}
+
+.mg-pullquote-src {
+	margin-top: 14px;
+	color: var(--mg-muted);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+}
+
+/* ─── 화면 모음: 첫 장은 크게, 나머지는 사진 면 ─── */
+.mg-portfolio {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 40px 28px;
+}
+
+.mg-portfolio > .mg-figure:first-child {
+	grid-column: 1 / -1;
+}
+
+.mg-portfolio[data-count='2'] {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.mg-portfolio[data-count='3'] {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mg-portfolio .mg-figure[data-size='small'] .mg-plate {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	aspect-ratio: 4 / 3;
+	padding: 20px;
+}
+
+.mg-portfolio .mg-figure[data-size='small'] .lk-media {
+	max-height: 100%;
+	max-width: 100%;
+}
+
+.mg-portfolio .mg-figure[data-size='wide'] .mg-plate {
+	padding: 48px;
+}
+
+/* ─── 쓰는 법: 옅은 바탕의 번호 붙은 곁글 ─── */
+.mg-steps-box {
+	padding: 0 40px 44px;
+	background-color: var(--mg-tint);
+	border-top: 3px solid var(--mg-rule);
+}
+
+.mg-steps-box .mg-head {
+	border-top: 0;
+	padding-top: 22px;
+	margin-bottom: 36px;
+}
+
+.mg-steps-box .mg-head h2 {
+	max-width: none;
+	font-size: clamp(26px, 2.6cqw, 34px);
+}
+
+.mg-steps {
+	display: grid;
+	grid-template-columns: repeat(var(--mg-cols, 3), minmax(0, 1fr));
+	gap: 0;
+	counter-reset: none;
+}
+
+.mg-steps[data-count='1'] {
+	--mg-cols: 1;
+}
+.mg-steps[data-count='2'] {
+	--mg-cols: 2;
+}
+.mg-steps[data-count='4'] {
+	--mg-cols: 4;
+}
+
+.mg-steps > li {
+	padding: 4px 28px 0;
+	border-left: 1px solid var(--mg-line);
+}
+
+.mg-steps > li:first-child {
+	padding-left: 0;
+	border-left: 0;
+}
+
+.mg-step-no {
+	display: block;
+	margin-bottom: 14px;
+	color: var(--tpl-accent);
+	font-family: var(--mg-serif);
+	font-size: 56px;
+	font-variant-numeric: oldstyle-nums;
+	line-height: 1;
+}
+
+.mg-steps h3 {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	font-size: 21px;
+	line-height: 1.4;
+}
+
+.mg-steps h3 i {
+	color: var(--mg-faint);
+	font-size: 14px;
+}
+
+.mg-steps p {
+	margin-top: 8px;
+	font-size: 15.5px;
+	line-height: 1.75;
+}
+
+.mg-steps .mg-step-more {
+	color: var(--mg-muted);
+}
+
+.mg-steps .mg-figure {
+	margin-top: 16px;
+}
+
+/* ─── 두 단 본문 (만든 방식): 굵은 머리 제목이 이어지는 문단 ─── */
+.mg-columns {
+	columns: 2;
+	column-gap: 48px;
+	column-rule: 1px solid var(--mg-line);
+}
+
+.mg-runin {
+	break-inside: avoid;
+	margin-bottom: 30px;
+}
+
+.mg-runin h3 {
+	display: inline;
+	margin-right: 6px;
+	font-family: inherit;
+	font-size: 16.5px;
+	font-weight: 700;
+	line-height: 1.8;
+	letter-spacing: 0;
+}
+
+.mg-runin h3 i {
+	margin-right: 8px;
+	color: var(--tpl-accent);
+	font-size: 13px;
+	vertical-align: 2px;
+}
+
+.mg-runin h3 + p {
+	display: inline;
+}
+
+.mg-runin p {
+	font-size: 16.5px;
+	line-height: 1.8;
+}
+
+.mg-runin .mg-runin-more {
+	margin-top: 10px;
+	color: var(--mg-muted);
+	font-size: 15.5px;
+}
+
+.mg-runin .mg-figure {
+	margin-top: 18px;
+}
+
+.mg-runin .mg-plate {
+	padding: 18px;
+}
+
+.mg-runin .mg-plate .lk-media {
+	max-height: 420px;
+}
+
+/* ─── 이야기: 로마 숫자와 숫자를 둔 여백, 제목, 명조 리드, 이어지는 문단, 사진 ─── */
+.mg-stories {
+	display: flex;
+	flex-direction: column;
+	gap: 80px;
+}
+
+.mg-story {
+	display: grid;
+	grid-template-columns: 220px minmax(0, 1fr);
+	column-gap: 40px;
+}
+
+.mg-story + .mg-story {
+	padding-top: 80px;
+	border-top: 1px solid var(--mg-line);
+}
+
+.mg-story-side {
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+}
+
+.mg-story-no {
+	color: var(--tpl-accent);
+	font-family: var(--mg-serif);
+	font-size: 72px;
+	line-height: 0.9;
+}
+
+.mg-numbers-side {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.mg-numbers-side > div {
+	padding: 14px 0;
+	border-left: 0;
+	border-top: 1px solid var(--mg-line);
+}
+
+.mg-numbers-side > div:first-child {
+	border-top: 1px solid var(--mg-rule);
+}
+
+.mg-numbers-side dd {
+	font-size: 36px;
+}
+
+.mg-numbers-side dt {
+	font-size: 13px;
+}
+
+.mg-story-main {
+	max-width: 760px;
+}
+
+.mg-story h3 {
+	font-size: clamp(28px, 2.8cqw, 36px);
+	line-height: 1.3;
+}
+
+.mg-story-lead {
+	margin-top: 18px;
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: 21px;
+	line-height: 1.7;
+}
+
+.mg-story-points {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0 40px;
+	margin-top: 28px;
+	padding-top: 24px;
+	border-top: 1px solid var(--mg-line);
+}
+
+.mg-story-points .mg-runin h3 {
+	font-size: 15.5px;
+}
+
+.mg-story-points .mg-runin p {
+	font-size: 15.5px;
+}
+
+.mg-story .mg-figure {
+	margin-top: 12px;
+}
+
+/* ─── 조작법: 두 단의 글쇠 표 ─── */
+.mg-keys {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: 48px;
+	border-top: 1px solid var(--mg-rule);
+}
+
+.mg-keys > div {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 16px 0;
+	border-bottom: 1px solid var(--mg-line);
+}
+
+.mg-keys dt {
+	display: flex;
+	gap: 6px;
+	order: 2;
+}
+
+.mg-keys dd {
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: 18px;
+}
+
+.mg-keys kbd {
+	display: inline-grid;
+	place-items: center;
+	min-width: 30px;
+	height: 30px;
+	padding: 0 8px;
+	box-sizing: border-box;
+	border: 1px solid var(--mg-line);
+	border-bottom-width: 2px;
+	border-radius: 4px;
+	background-color: var(--mg-bg);
+	color: var(--mg-ink);
+	font-family: var(--mg-mono);
+	font-size: 13px;
+	line-height: 1;
+}
+
+/* ─── 진행 과정: 날짜 연표 ─── */
+.mg-chrono {
+	border-top: 1px solid var(--mg-rule);
+}
+
+.mg-chrono li {
+	display: grid;
+	grid-template-columns: 160px minmax(0, 1fr);
+	gap: 24px;
+	align-items: baseline;
+	padding: 16px 0;
+	border-bottom: 1px solid var(--mg-line);
+}
+
+.mg-chrono time {
+	color: var(--tpl-accent);
+	font-size: 14px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+.mg-chrono span {
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: 19px;
+	line-height: 1.5;
+}
+
+/* ─── 기술 사양: 가운뎃점으로 이은 기술, 각주처럼 번호 붙은 사양, 폴더 구조 ─── */
+.mg-tech {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 32px 48px;
+}
+
+.mg-stack {
+	grid-column: 1 / -1;
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-size: 22px;
+	line-height: 1.6;
+}
+
+.mg-dot {
+	color: var(--tpl-accent);
+}
+
+.mg-specs {
+	border-top: 1px solid var(--mg-rule);
+}
+
+.mg-specs li {
+	display: grid;
+	grid-template-columns: 22px 64px minmax(0, 1fr);
+	align-items: baseline;
+	padding: 12px 0;
+	border-bottom: 1px solid var(--mg-line);
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+.mg-specs sup {
+	color: var(--tpl-accent);
+	font-family: var(--mg-serif);
+	font-size: 12px;
+	vertical-align: super;
+	line-height: 0;
+}
+
+.mg-spec-label {
+	color: var(--mg-muted);
+}
+
+.mg-spec-value {
+	color: var(--mg-ink);
+}
+
+.mg-tree {
+	border-top: 1px solid var(--mg-rule);
+}
+
+.mg-tree figcaption {
+	padding: 12px 0 10px;
+	color: var(--mg-muted);
+	font-size: 13px;
+	letter-spacing: 0.08em;
+}
+
+.mg-tree pre {
+	overflow-x: auto;
+	padding: 18px 20px;
+	background-color: var(--mg-tint);
+	color: var(--mg-body);
+	font-family: var(--mg-mono);
+	font-size: 12.5px;
+	line-height: 1.75;
+}
+
+/* ─── 맡은 일 ─── */
+.mg-role {
+}
+
+.mg-role-meta {
+	margin-bottom: 20px;
+	color: var(--mg-muted);
+	font-size: 14px;
+	letter-spacing: 0.04em;
+}
+
+.mg-role-list {
+	columns: 2;
+	column-gap: 48px;
+	border-top: 1px solid var(--mg-rule);
+}
+
+.mg-role-list li {
+	display: flex;
+	gap: 14px;
+	break-inside: avoid;
+	padding: 14px 0;
+	border-bottom: 1px solid var(--mg-line);
+	color: var(--mg-ink);
+	font-size: 16px;
+	line-height: 1.6;
+}
+
+.mg-role-list li::before {
+	content: '—';
+	color: var(--tpl-accent);
+}
+
+/* ─── 출처: 미주 ─── */
+.mg-section[data-section='credits'] {
+	padding-top: 72px;
+}
+
+.mg-notes-title {
+	padding-top: 14px;
+	border-top: 1px solid var(--mg-rule);
+	color: var(--mg-ink);
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+}
+
+.mg-notes {
+	margin: 14px 0 0;
+	columns: 2;
+	column-gap: 48px;
+	counter-reset: mg-note;
+}
+
+.mg-notes li {
+	break-inside: avoid;
+	position: relative;
+	padding: 0 0 12px 26px;
+	color: var(--mg-muted);
+	font-size: 14px;
+	line-height: 1.65;
+	counter-increment: mg-note;
+}
+
+.mg-notes li::before {
+	content: counter(mg-note);
+	position: absolute;
+	left: 0;
+	color: var(--tpl-accent);
+	font-family: var(--mg-serif);
+	font-variant-numeric: lining-nums;
+}
+
+.mg-note-role {
+	color: var(--mg-ink);
+	font-weight: 600;
+}
+
+.mg-notes cite {
+	color: var(--mg-ink);
+	font-family: var(--mg-serif);
+	font-style: normal;
+}
+
+/* ─── 마무리: 끝 표시 ■, 큰 문장, 이름, 링크 ─── */
+.mg-closing {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: calc(100% - var(--mg-gutter) * 2);
+	max-width: var(--mg-wide);
+	margin: 120px auto 0;
+	padding: 72px 0 120px;
+	border-top: 3px double var(--mg-rule);
+	text-align: center;
+}
+
+.mg-end {
+	color: var(--tpl-accent);
+	font-size: 14px;
+	line-height: 1;
+}
+
+.mg-closing h2 {
+	max-width: 20ch;
+	margin-top: 28px;
+	font-size: clamp(32px, 4cqw, 52px);
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+
+.mg-closing-lead {
+	margin-top: 16px;
+	color: var(--mg-muted);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+}
+
+/* ─── 좁은 창 ─── */
+@container (max-width: 860px) {
+	.tpl-magazine {
+		--mg-gutter: 28px;
+	}
+
+	.mg-cover {
+		padding: 28px 0 40px;
+	}
+
+	.mg-cols {
+		columns: 1;
+	}
+
+	.mg-pullquote {
+		margin: 44px 0;
+	}
+
+	.mg-story {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.mg-head {
+		margin-bottom: 36px;
+	}
+
+	.mg-numbers,
+	.mg-numbers[data-count] {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.mg-numbers:not(.mg-numbers-side) > div:nth-child(odd) {
+		padding-left: 0;
+		border-left: 0;
+	}
+
+	.mg-numbers:not(.mg-numbers-side) > div:nth-child(n + 3) {
+		border-top: 1px solid var(--mg-line);
+	}
+
+	.mg-section {
+		padding-top: 72px;
+	}
+
+	.mg-columns,
+	.mg-keys,
+	.mg-chrono,
+	.mg-tech,
+	.mg-role,
+	.mg-notes-title,
+	.mg-notes {
+		margin-left: 0;
+	}
+
+	.mg-story-side {
+		flex-direction: row;
+		align-items: flex-start;
+		margin-bottom: 20px;
+	}
+
+	.mg-numbers-side {
+		flex: 1;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 20px;
+	}
+
+	.mg-lead .mg-plate {
+		padding: 28px var(--mg-gutter);
+	}
+
+	.mg-steps-box {
+		padding: 0 24px 32px;
+	}
+
+	.mg-steps,
+	.mg-steps[data-count] {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.mg-steps > li,
+	.mg-steps > li:first-child {
+		display: grid;
+		grid-template-columns: 52px minmax(0, 1fr);
+		column-gap: 8px;
+		padding: 18px 0;
+		border-left: 0;
+		border-top: 1px solid var(--mg-line);
+	}
+
+	.mg-steps > li > :not(.mg-step-no) {
+		grid-column: 2;
+	}
+
+	.mg-step-no {
+		grid-row: 1 / span 4;
+		font-size: 40px;
+	}
+}
+
+@container (max-width: 600px) {
+	.tpl-magazine {
+		--mg-gutter: 20px;
+		font-size: 16px;
+	}
+
+	.mg-title {
+		font-size: 42px;
+	}
+
+	.mg-hero h1[data-solo] {
+		font-size: 38px;
+	}
+
+	.mg-byline-row {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.mg-columns,
+	.mg-role-list,
+	.mg-notes {
+		columns: 1;
+	}
+
+	.mg-keys,
+	.mg-tech,
+	.mg-story-points,
+	.mg-portfolio,
+	.mg-portfolio[data-count] {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.mg-chrono li {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2px;
+	}
+}
+
+/* ─── 트러블슈팅·팀원·배포 결과물: 판 없이 굵은 괘선과 명조 제목 (공통 짜임은 landing/Extras.tsx·landing.css) ─── */
+.tpl-magazine {
+	--lk-x-ink: var(--mg-ink);
+	--lk-x-body: var(--mg-body);
+	--lk-x-muted: var(--mg-muted);
+	--lk-x-line: var(--mg-line);
+	--lk-x-card: transparent;
+	--lk-x-radius: 0;
+	--lk-x-gap: 40px;
+	--lk-x-pad: 24px 0 0;
+	--lk-x-label: var(--mg-mono);
+}
+
+.mg-trouble,
+.mg-member,
+.mg-deploy {
+	border-width: 1px 0 0;
+	border-color: var(--mg-rule);
+}
+
+.mg-member[data-me] {
+	box-shadow: inset 0 3px 0 var(--tpl-accent);
+	border-color: var(--tpl-accent);
+}
+
+.mg-troubles h3,
+.mg-team h3,
+.mg-deploys h3 {
+	font-family: var(--mg-serif);
+	font-size: 1.45em;
+	font-weight: 600;
+}
+
+.mg-trouble-icon,
+.mg-deploy-icon {
+	width: auto;
+	height: auto;
+	background: none;
+	font-size: 15px;
+}
+
+/* 트러블슈팅은 기사 본문처럼: 아이콘 없이 기울인 번호와 명조 제목, 단계는 굵은 머리말로 시작하는 문단을 두 단으로 흘린다 */
+.mg-trouble-icon {
+	display: none;
+}
+
+.tpl-magazine .mg-trouble .mg-trouble-steps {
+	display: block;
+	column-gap: 40px;
+	column-rule: 1px solid var(--mg-line);
+	columns: 2;
+}
+
+.tpl-magazine .mg-trouble[data-image] .mg-trouble-steps {
+	columns: 1;
+}
+
+.tpl-magazine .mg-trouble .mg-trouble-steps .mg-trouble-step.lk-trouble-step {
+	margin: 0 0 16px;
+	padding: 0;
+	border: 0;
+	break-inside: avoid;
+}
+
+.tpl-magazine .mg-trouble .mg-trouble-steps .mg-trouble-step.lk-trouble-step::before {
+	display: none;
+}
+
+.mg-trouble-step dt {
+	display: inline;
+	margin-right: 8px;
+	color: var(--tpl-accent);
+	font-weight: 700;
+}
+
+.mg-trouble-step dd {
+	display: inline;
+	line-height: 1.75;
+}
+
+.mg-trouble-num {
+	color: var(--tpl-accent);
+	font-family: var(--mg-serif);
+	font-size: 22px;
+	font-style: italic;
+}
+
+.mg-trouble-step dt,
+.mg-deploy-status,
+.mg-deploy-meta {
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.mg-trouble-step dd {
+	font-family: var(--mg-serif);
+	font-size: 1em;
+}
+
+.mg-deploy-image,
+.mg-trouble-image {
+	border: 0;
+	background-color: var(--mg-plate);
+}
+
+.mg-deploy-body {
+	padding-inline: 0;
+}
+
+.mg-deploys[data-count='1'] .mg-deploy[data-image] .mg-deploy-body {
+	padding-left: 32px;
+}
+
+/* 배포 결과물: 대문자 고정폭 이름표가 길면 올린 곳과 호스트를 한 줄씩 나눈다 */
+.mg-deploy-meta {
+	display: grid;
+	gap: 2px;
+}
+
+.mg-deploy-meta > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mg-deploy-sep {
+	display: none;
+}
+
+.mg-deploy-cover {
+	border: 0;
+	background: var(--mg-plate);
+	color: var(--mg-ink);
+	font-size: 36px;
+}
+
+@container (max-width: 860px) {
+	.mg-deploys[data-count='1'] .mg-deploy[data-image] .mg-deploy-body {
+		padding-left: 0;
+	}
+}
+
+@container (max-width: 600px) {
+	.tpl-magazine .mg-trouble .mg-trouble-steps {
+		columns: 1;
+	}
+}

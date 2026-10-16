@@ -4,7 +4,7 @@ import { projectImage } from './projectImage';
 export const HYEONIVERSE: Project = {
 	id: 'hyeoniverse',
 	name: 'HYEONIVERSE',
-	look: 'creative',
+	look: 'custom',
 	tagline: '작업물과 글을, 움직이는 화면으로.',
 	description:
 		'작업물과 글을 보여 주는 공개 화면부터, 그 글을 직접 쓰고 고치는 관리자 화면까지 한 저장소에 담은 개인 포트폴리오',

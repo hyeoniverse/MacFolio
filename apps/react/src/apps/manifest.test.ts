@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { APP_MANIFEST, APP_NAMES, PROJECT_APPS, projectAppName } from '@/apps/manifest';
+import { RESERVED_PROJECT_IDS } from '@macfolio/desktop-core/site';
+import { APP_MANIFEST, APP_NAMES, BUILTIN_APP_NAMES, PROJECT_APPS, projectAppName } from '@/apps/manifest';
 import { PROJECTS } from '@/shared/profile';
 
 describe('프로젝트 앱은 PROJECTS에서 만든다', () => {
@@ -22,5 +23,11 @@ describe('프로젝트 앱은 PROJECTS에서 만든다', () => {
 		for (const { id } of PROJECT_APPS) {
 			expect(APP_MANIFEST[projectAppName(id)!]).toMatchObject({ inDock: true, inLaunchpad: false });
 		}
+	});
+});
+
+describe('관리자가 더하는 프로젝트의 id', () => {
+	it('이 사이트의 앱 이름은 모두 프로젝트 id로 쓸 수 없다 (프로젝트 앱 이름이 곧 id)', () => {
+		for (const name of BUILTIN_APP_NAMES) expect(RESERVED_PROJECT_IDS).toContain(name);
 	});
 });

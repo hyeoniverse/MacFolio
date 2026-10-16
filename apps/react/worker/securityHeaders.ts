@@ -6,6 +6,8 @@ const TURNSTILE = 'https://challenges.cloudflare.com';
 
 /** 날씨 앱의 데이터 (Open-Meteo): 일기예보와 장소 찾기 (src/apps/weather/weatherApi.ts) */
 const OPEN_METEO = ['https://api.open-meteo.com', 'https://geocoding-api.open-meteo.com'];
+/** 프로젝트 편집의 기술 칸이 npm 패키지를 찾는다 (apps/settings/packageSearch.ts) */
+const NPM_REGISTRY = 'https://registry.npmjs.org';
 
 export interface SecurityHeaderOptions {
 	/** API 서버 주소 (VITE_API_URL). 비어 있으면 API를 쓰지 않는 빌드다 */
@@ -43,7 +45,7 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 		'img-src': ["'self'", 'data:', 'blob:', 'https:', ...api],
 		'media-src': ["'self'", 'blob:', ...api],
 		'font-src': ["'self'", 'data:'],
-		'connect-src': ["'self'", ...api, TURNSTILE, ...OPEN_METEO],
+		'connect-src': ["'self'", ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY],
 		'frame-src': ["'self'", TURNSTILE, ...origins(frameUrls)],
 		'worker-src': ["'self'", 'blob:'],
 		'object-src': ["'none'"],
