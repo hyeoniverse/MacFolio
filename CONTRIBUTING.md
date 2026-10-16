@@ -87,15 +87,16 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 건강하�
 
 `apps/react/src/apps/<앱>/`은 기능(앱)마다 한 폴더다. 그 안의 파일은 이름이 종류를 말한다. 폴더는 묶을 것이 생겼을 때만 만든다.
 
-| 종류                              | 이름                                | 예                                                |
-| --------------------------------- | ----------------------------------- | ------------------------------------------------- |
-| 서버 호출 (`fetch`)               | `*Api.ts` (하나뿐이면 `<앱>Api.ts`) | `postsApi.ts`, `captionsApi.ts`, `activityApi.ts` |
-| 타입과 순수 계산 (React·DOM 없음) | `model.ts`, 또는 뜻이 드러나는 이름 | `activity/model.ts`, `weather/forecast.ts`        |
-| 훅                                | `use*.ts`                           | `useServerResources.ts`, `usePopover.ts`          |
-| 화면 조각                         | `PascalCase.tsx`                    | `FolderRow.tsx`                                   |
-| 화면 조각이 셋 이상 모이면        | `components/`                       | `memo/components/`, `mail/components/`            |
-| 스타일                            | 컴포넌트와 같은 이름의 `.css`       | `Memo.css`, `PhotosMobile.css`                    |
-| 두 화면이 함께 쓰는 타입          | `model.ts` 또는 `<무엇>.model.ts`   | `mail/model.ts`, `folderSidebar.model.ts`         |
+| 종류                              | 이름                                            | 예                                                |
+| --------------------------------- | ----------------------------------------------- | ------------------------------------------------- |
+| 서버 호출 (`fetch`)               | `*Api.ts` (하나뿐이면 `<앱>Api.ts`)             | `postsApi.ts`, `captionsApi.ts`, `activityApi.ts` |
+| 타입과 순수 계산 (React·DOM 없음) | `model.ts`, 또는 뜻이 드러나는 이름             | `activity/model.ts`, `weather/forecast.ts`        |
+| 훅                                | `use*.ts`                                       | `useServerResources.ts`, `usePopover.ts`          |
+| 화면 조각                         | `PascalCase.tsx`                                | `FolderRow.tsx`                                   |
+| 화면 조각이 셋 이상 모이면        | `components/`                                   | `memo/components/`, `mail/components/`            |
+| 스타일                            | 컴포넌트와 같은 이름의 `.css`                   | `Memo.css`, `PhotosMobile.css`                    |
+| 스타일이 길면 (2,000줄 넘게)      | `styles/`에 나누고 원래 `.css`는 `@import` 목록 | `memo/styles/`, `Memo.css`                        |
+| 두 화면이 함께 쓰는 타입          | `model.ts` 또는 `<무엇>.model.ts`               | `mail/model.ts`, `folderSidebar.model.ts`         |
 
 - 대소문자: 폴더는 소문자(두 낱말이면 `status-bar`처럼 kebab-case), 컴포넌트 파일은 `PascalCase.tsx`, 그 밖의 `.ts`·훅·메뉴 정의는 `camelCase`, CSS는 짝이 되는 컴포넌트와 같은 이름
 - 한 파일에 서버 호출과 순수 계산을 섞지 않는다. 섞이면 순수 계산에 시험을 붙이기 어렵고, 서버 호출을 공통 클라이언트로 옮길 때 파일을 다시 가른다

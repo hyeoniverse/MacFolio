@@ -1,0 +1,207 @@
+/* 메모 앱: 좁은 창의 한 칸 보기, 모바일 공통 */
+
+/* ─── 좁은 창: 폴더 → 목록 → 본문을 한 칸씩 (iOS 메모처럼) ─── */
+.memo-shell {
+	/* 경고창(AlertDialog)이 메모 창 한가운데에 뜨도록 위치 기준 */
+	position: relative;
+	container-type: inline-size;
+	height: 100%;
+}
+
+.memo-back {
+	display: none;
+	align-items: center;
+	gap: 0.35rem;
+	margin: 0.75rem 0.75rem 0;
+	padding: 0.25rem 0;
+	border: none;
+	background: none;
+	color: #b8860b;
+	font-size: var(--text-subhead);
+}
+
+:root[data-theme='dark'] [data-app='memo'] .memo-back {
+	color: var(--memo-accent);
+}
+
+:where(.memo-shell[data-compact]) .memo,
+:where(.memo-shell[data-compact]) .memo.sidebar-closed,
+:where(.memo-shell[data-compact]) .memo.view-gallery,
+:where(.memo-shell[data-compact]) .memo.view-gallery.sidebar-closed {
+	grid-template-columns: 1fr;
+}
+
+/* 도구 막대(여닫기, 보기 방식)와 갤러리는 쓰지 않는다. 늘 목록 */
+:where(.memo-shell[data-compact]) .memo .memo-toolbar,
+:where(.memo-shell[data-compact]) .memo .memo-sidebar-bar,
+:where(.memo-shell[data-compact]) .memo .memo-gallery {
+	display: none;
+}
+
+/* 사이드바는 떠 있는 패널 대신 한 화면 전체 */
+:where(.memo-shell[data-compact]) .memo .memo-folders {
+	margin: 0;
+	border-radius: 0;
+	box-shadow: none;
+	background-color: var(--memo-sidebar-bg);
+	opacity: 1;
+	visibility: visible;
+}
+
+.memo-shell:where([data-compact]) .memo > :is(.memo-folders, .memo-list, .memo-reader) {
+	display: none;
+	border-right: none;
+	/* 신호등 버튼 자리 */
+	padding-top: 44px;
+}
+
+.memo-shell:where([data-compact]) .memo.pane-folders .memo-folders {
+	display: flex;
+}
+
+.memo-shell:where([data-compact]) .memo.pane-list .memo-list,
+.memo-shell:where([data-compact]) .memo.pane-reader .memo-reader {
+	display: flex;
+}
+
+/* 한 칸씩 넘길 때 iOS처럼 옆에서 들어온다 */
+:where(.memo-shell[data-compact]) .memo[data-nav='forward'] > :is(.memo-folders, .memo-list, .memo-reader) {
+	animation: nav-forward var(--duration) var(--ease-out);
+}
+
+:where(.memo-shell[data-compact]) .memo[data-nav='back'] > :is(.memo-folders, .memo-list, .memo-reader) {
+	animation: nav-back var(--duration) var(--ease-out);
+}
+
+:where(.memo-shell[data-compact]) .memo-back {
+	display: flex;
+}
+
+:where(.memo-shell[data-compact]) .memo .compact-only {
+	display: flex;
+}
+
+/* 한 칸씩 볼 때는 폴더가 옆에 없어서 끌어 놓을 수 없다 */
+:where(.memo-shell[data-compact]) .memo-trash-drag-hint {
+	display: none;
+}
+
+/* 본문 위 한 줄: 서식·삭제·고정은 왼쪽, 공유는 오른쪽 끝 (iOS 메모처럼). 단추 크기를 맞춘다 */
+:where(.memo-shell[data-compact]) .memo-reader-compact-bar {
+	justify-content: flex-start;
+	gap: 4px;
+	margin: 0.5rem 0 0.75rem;
+}
+
+:where(.memo-shell[data-compact]) .memo-reader-compact-bar > .ui-icon-button.compact-only {
+	min-width: 36px;
+	height: 34px;
+	font-size: var(--text-body);
+}
+
+:where(.memo-shell[data-compact]) .memo-reader-compact-bar .memo-format-button {
+	height: 30px;
+	font-size: 14px;
+}
+
+:where(.memo-shell[data-compact]) .memo-reader .memo-share.compact-only {
+	margin-left: auto;
+}
+
+/* 목록 위: 검색 칸, 정렬, 새 메모 (관리자) */
+:where(.memo-shell[data-compact]) .memo-compact-tools .memo-compact-new {
+	font-size: var(--text-body);
+}
+
+/* 폴더 화면: 관리자에게는 오른쪽 위에 새로운 폴더 (신호등 자리·여닫기는 없다) */
+:where(.memo-shell[data-compact]) .memo .memo-sidebar-bar:has(.memo-new-folder-button) {
+	display: flex;
+	height: auto;
+	padding: 8px 12px 0;
+}
+
+:where(.memo-shell[data-compact])
+	.memo
+	.memo-sidebar-bar
+	:is(.memo-lights-space, .memo-sidebar-toggle, .memo-new-note-button) {
+	display: none;
+}
+
+:where(.memo-shell[data-compact]) .memo .memo-sidebar-bar .memo-new-folder-button {
+	margin-left: auto;
+	font-size: var(--text-body);
+}
+
+/* 좁은 본문의 표: 낱말 가운데서 줄을 바꾸지 않고, 넘치면 옆으로 민다.
+	   읽기 화면만 (편집기 안은 .memo-writer가 가장 가까운 컨테이너라 넓은 창에서도 여기에 걸린다) */
+:where(.memo-shell[data-compact]) .memo-reader-body > .memo-markdown table {
+	display: block;
+	overflow-x: auto;
+}
+
+:where(.memo-shell[data-compact]) .memo-reader-body > .memo-markdown :is(th, td) {
+	min-width: 7.5em;
+	word-break: keep-all;
+}
+
+:where(.memo-shell[data-compact]) .memo-reader .memo-scroll {
+	padding-right: 1.25rem;
+	padding-left: 1.25rem;
+}
+
+:where(.memo-shell[data-compact]) .memo-reader .memo-back {
+	margin: 0.75rem 0 1rem;
+}
+
+/* 좁은 화면에서는 칸 전체가 들어오므로 본문 떠오르기는 뺀다 */
+:where(.memo-shell[data-compact]) .memo-reader-body {
+	animation: none;
+}
+
+:where(.memo-shell[data-compact]) .memo-folder,
+:where(.memo-shell[data-compact]) .memo-item {
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+}
+
+:where(.memo-shell[data-compact]) .memo-folders {
+	font-size: var(--text-subhead);
+}
+
+:where(.memo-shell[data-compact]) .memo-markdown {
+	font-size: var(--text-subhead);
+}
+
+@media (max-width: 767px) {
+	.memo-lightbox {
+		padding: 1rem;
+	}
+}
+
+/* 모바일: 신호등 버튼이 없으므로 위쪽 자리를 비우지 않는다 */
+
+.container.mobile .memo-shell:where([data-compact]) .memo > :is(.memo-folders, .memo-list, .memo-reader) {
+	padding-top: 0;
+}
+
+/* 모바일에서는 뒤로 가기가 제목 막대에 하나만 있다 (본문 안의 뒤로 가기는 숨긴다) */
+.container.mobile :where(.memo-shell[data-compact]) .memo-back {
+	display: none;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-scroll {
+	padding-top: 12px;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-folder-scroll {
+	padding-top: 12px;
+}
+
+/* 게시 단추는 손가락으로 누를 만한 크기로 */
+.container.mobile
+	:where(.memo-shell[data-compact])
+	.memo-writer-actions
+	:is(.memo-writer-publish, .memo-writer-discard) {
+	padding: 4px 12px;
+	font-size: var(--text-footnote);
+}

@@ -1,0 +1,149 @@
+/* 메모 앱: 색 변수, 떠 있는 칸의 배치, 칸 너비 손잡이, 창 안 단추의 기본값 */
+
+/* macOS 메모 앱 색 */
+[data-app='memo'] {
+	--memo-bg: #ffffff;
+	--memo-sidebar-bg: #f3f4f6;
+	--memo-list-bg: #fafafa;
+	--memo-border: #e5e7eb;
+	--memo-hover: #eceef1;
+	--memo-accent: #edbb4d;
+	--memo-on-accent: #ffffff;
+	--memo-text: #1f2937;
+	--memo-body: #374151;
+	--memo-muted: #6b7280;
+	--memo-search-bg: #eceef1;
+	--memo-code-bg: #f3f4f6;
+	--memo-panel-bg: rgba(243, 244, 246, 0.9);
+	--memo-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 1px 6px rgba(0, 0, 0, 0.08);
+	--memo-danger: #ff3b30;
+	/* 좋아요 하트: Apple의 systemPink (음악 앱의 '좋아요'와 같은 색) */
+	--memo-like: #ff2d55;
+	/* iOS의 채움 색 (tertiarySystemFill): 테두리 없이 옅은 회색 바탕 */
+	--memo-fill: rgba(120, 120, 128, 0.12);
+}
+
+:root[data-theme='dark'] [data-app='memo'] {
+	--memo-bg: #1e1e1e;
+	--memo-sidebar-bg: #252527;
+	--memo-list-bg: #222224;
+	--memo-border: #38383a;
+	--memo-hover: #2f2f31;
+	--memo-text: #f5f5f7;
+	--memo-body: #d1d1d6;
+	--memo-muted: #98989d;
+	--memo-search-bg: #2f2f31;
+	--memo-code-bg: #2c2c2e;
+	--memo-panel-bg: rgba(44, 44, 46, 0.9);
+	--memo-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 1px 6px rgba(0, 0, 0, 0.35);
+	--memo-danger: #ff6961;
+	--memo-like: #ff375f;
+	--memo-fill: rgba(118, 118, 128, 0.24);
+}
+
+/* 공통 단추(shared/ui/button)의 색: 도구 막대 단추는 흐린 글자색, 켜지면 노란 바탕. 글자 단추는 알약 모양 */
+[data-app='memo'] {
+	--ui-tool-color: var(--memo-muted);
+	--ui-tool-hover: var(--memo-hover);
+	--ui-tool-on-bg: color-mix(in srgb, var(--memo-accent) 28%, transparent);
+	--ui-tool-on-color: var(--memo-text);
+	--ui-button-radius: 999px;
+	--ui-button-bg: var(--memo-search-bg);
+	--ui-button-color: var(--memo-text);
+	--ui-accent: var(--memo-accent);
+	--ui-on-accent: #2b2100;
+}
+
+[data-app='memo'].container {
+	border-color: transparent;
+	background-color: var(--memo-bg);
+}
+
+/* 떠 있는 사이드바 · 글 목록 · 본문 (갤러리로 볼 때는 사이드바 · 갤러리) */
+.memo {
+	/* 사이드바 너비는 경계를 끌어 바꾼다 (SidebarResizer, Memo.tsx가 px로 넣는다) */
+	--memo-sidebar-width: 13rem;
+	--memo-list-width: 17rem;
+	/* 사이드바 칸이 실제로 차지하는 너비 (가리면 0): 목록 손잡이의 위치 계산에 쓴다 */
+	--memo-sidebar-column: var(--memo-sidebar-width);
+	display: grid;
+	grid-template-columns: var(--memo-sidebar-column) var(--memo-list-width) minmax(0, 1fr);
+	position: relative;
+	height: 100%;
+	background-color: var(--memo-bg);
+	color: var(--memo-text);
+	font-size: var(--text-footnote);
+	text-align: left;
+	transition: grid-template-columns var(--duration) var(--ease-out);
+}
+
+.memo.sidebar-closed {
+	--memo-sidebar-column: 0px;
+}
+
+.memo.view-gallery {
+	grid-template-columns: var(--memo-sidebar-column) minmax(0, 1fr);
+}
+
+/* 끄는 동안은 손을 따라 바로 바뀌어야 한다 */
+.memo[data-resizing] {
+	transition: none;
+	cursor: col-resize;
+	user-select: none;
+}
+
+/* 칸 오른쪽 경계의 너비 조절 손잡이 (PaneResizer): 경계에 걸친 보이지 않는 띠.
+   그리드 칸을 차지하지 않게 절대 위치로 둔다. macOS처럼 가리키면 커서만 바뀌고,
+   키보드로 포커스했을 때만 가는 회색 선으로 자리를 보인다 */
+.memo-pane-resizer {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 5;
+	width: 12px;
+	cursor: col-resize;
+	touch-action: none;
+}
+
+.memo-pane-resizer-sidebar {
+	top: 16px;
+	bottom: 16px;
+	left: calc(var(--memo-sidebar-width) - 4px);
+}
+
+.memo-pane-resizer-list {
+	left: calc(var(--memo-sidebar-column) + var(--memo-list-width) - 6px);
+}
+
+.memo-pane-resizer::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 5px;
+	width: 2px;
+	border-radius: 1px;
+	background-color: var(--memo-muted);
+	opacity: 0;
+}
+
+.memo-pane-resizer:focus-visible {
+	outline: none;
+}
+
+.memo-pane-resizer:focus-visible::after {
+	opacity: 0.6;
+}
+
+/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
+@layer reset {
+	.memo button {
+		font: inherit;
+		color: inherit;
+		cursor: pointer;
+	}
+}
+
+.memo ul {
+	list-style: none;
+}

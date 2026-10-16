@@ -1,0 +1,484 @@
+/* 메모 앱: 본문 글(마크다운): 문단 간격, 구분선, 접기 블록, 각주, 이미지, 크게 보기 */
+
+/* 글을 바꾸면 본문이 살짝 떠오르며 나타난다 */
+.memo-reader-body {
+	animation: rise-in var(--duration) var(--ease-out);
+}
+
+.memo-reader-date {
+	margin-bottom: 0.5rem;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	text-align: center;
+}
+
+.memo-reader h1 {
+	margin-bottom: 1.25rem;
+	font-size: 1.6rem;
+	line-height: 1.3;
+}
+
+.memo-markdown {
+	color: var(--memo-body);
+	font-size: 14px;
+	line-height: 1.75;
+	/* 긴 주소·코드는 칸 안에서 줄을 바꾼다 (편집기 .ProseMirror와 같은 규칙이라 두 화면의 줄이 같게 나뉜다) */
+	overflow-wrap: break-word;
+}
+
+/* 문단 사이 간격. 편집기(.ProseMirror)도 같은 규칙을 써서 읽기 화면과 똑같이 보이게 한다 */
+.memo-markdown > * + *,
+.memo-markdown :where(.ProseMirror) > * + * {
+	margin-top: 0.9em;
+}
+
+.memo-markdown h2 {
+	margin-top: 1.8em;
+	color: var(--memo-text);
+	font-size: 1.2rem;
+}
+
+.memo-markdown h3 {
+	margin-top: 1.4em;
+	color: var(--memo-text);
+	font-size: 1.05rem;
+}
+
+/* 구분선 (---): 브라우저 기본값(회색 2px 입체 선, 아래 여백 없음) 대신 가는 테두리색 선, 위아래 같은 여백.
+   편집기(.ProseMirror)도 .memo-markdown이라 같은 모양이다 */
+.memo-markdown hr {
+	height: 1px;
+	margin: 1.8em 0;
+	border: none;
+	background-color: var(--memo-border);
+}
+
+/* 편집기에서 구분선을 고르면 (눌러서, 또는 화살표로) 강조색 테두리 */
+.memo-inline-editor hr.ProseMirror-selectednode {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 4px;
+	border-radius: 1px;
+}
+
+.memo-markdown ul,
+.memo-markdown ol {
+	padding-left: 1.4em;
+}
+
+.memo-markdown ul {
+	list-style: disc;
+}
+
+.memo-markdown ol {
+	list-style: decimal;
+}
+
+.memo-markdown li + li {
+	margin-top: 0.3em;
+}
+
+.memo-markdown a {
+	color: #b8860b;
+	text-decoration: underline;
+}
+
+:root[data-theme='dark'] [data-app='memo'] .memo-markdown a {
+	color: var(--memo-accent);
+}
+
+/* 접기 블록 (markdownPlugins.ts의 remarkDetails): 요약 줄을 누르면 펼친다. › 가 아래로 돈다 */
+.memo-markdown .memo-details {
+	margin: 1.2em 0;
+	padding: 0 0.9em;
+	border: 1px solid var(--memo-border);
+	border-radius: 0.6em;
+}
+
+.memo-markdown .memo-details[open] {
+	padding-bottom: 0.9em;
+}
+
+.memo-markdown .memo-details > summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0 -0.9em;
+	padding: 0.7em 0.9em;
+	font-weight: 600;
+	cursor: pointer;
+	list-style: none;
+	user-select: none;
+}
+
+.memo-markdown .memo-details > summary::-webkit-details-marker {
+	display: none;
+}
+
+.memo-markdown .memo-details > summary::before {
+	content: '';
+	flex: none;
+	width: 0.45em;
+	height: 0.45em;
+	border-right: 2px solid var(--memo-muted);
+	border-bottom: 2px solid var(--memo-muted);
+	transform: rotate(-45deg);
+	transition: transform 0.2s ease;
+}
+
+.memo-markdown .memo-details[open] > summary::before {
+	transform: rotate(45deg);
+}
+
+.memo-markdown .memo-details > summary:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: -2px;
+	border-radius: 0.6em;
+}
+
+.memo-markdown .memo-details > :last-child:not(summary) {
+	margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-markdown .memo-details > summary::before {
+		transition: none;
+	}
+}
+
+/* 각주 (remark-gfm의 [^1]): 본문의 작은 번호, 글 아래의 목록 */
+.memo-markdown sup {
+	font-size: 0.72em;
+	line-height: 0;
+	vertical-align: super;
+}
+
+.memo-markdown a[data-footnote-ref] {
+	padding: 0 0.15em;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.memo-markdown a[data-footnote-ref]::before {
+	content: '[';
+}
+
+.memo-markdown a[data-footnote-ref]::after {
+	content: ']';
+}
+
+.memo-markdown .footnotes {
+	margin-top: 2.4em;
+	padding-top: 1em;
+	border-top: 1px solid var(--memo-border);
+	font-size: 0.88em;
+	color: var(--memo-muted);
+}
+
+.memo-markdown .footnotes .memo-footnotes-label {
+	margin: 0 0 0.6em;
+	font-size: 1em;
+	font-weight: 600;
+}
+
+.memo-markdown .footnotes li {
+	scroll-margin: 2em;
+}
+
+.memo-markdown a[data-footnote-backref] {
+	margin-left: 0.3em;
+	text-decoration: none;
+}
+
+/* 편집기의 토글 목록 (writer/details.ts): 읽기 화면의 접기 블록과 같은 모양. 요약 앞의 › 를 누르면 접고 펼친다 */
+.memo-inline-editor .memo-details:is([data-open='true'], .memo-details-revealed) {
+	padding-bottom: 0.9em;
+}
+
+.memo-inline-editor .memo-details-summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0 -0.9em;
+	padding: 0.7em 0.9em;
+	font-weight: 600;
+}
+
+.memo-inline-editor .memo-details-summary::before {
+	content: '';
+	flex: none;
+	width: 0.45em;
+	height: 0.45em;
+	margin-right: 0.15em;
+	border-right: 2px solid var(--memo-muted);
+	border-bottom: 2px solid var(--memo-muted);
+	transform: rotate(-45deg);
+	transition: transform 0.2s ease;
+	cursor: pointer;
+}
+
+.memo-inline-editor .memo-details:is([data-open='true'], .memo-details-revealed) > .memo-details-summary::before {
+	transform: rotate(45deg);
+}
+
+.memo-inline-editor .memo-details-summary:has(> br:only-child)::after {
+	content: '토글 제목';
+	color: var(--memo-muted);
+	font-weight: 400;
+	pointer-events: none;
+}
+
+/* 접힌 블록의 내용 (링크를 따라가며 화면에서만 펼친 블록은 보인다: writer/anchors.ts) */
+.memo-inline-editor .memo-details[data-open='false']:not(.memo-details-revealed) > :not(.memo-details-summary) {
+	display: none;
+}
+
+.memo-inline-editor .memo-details > :last-child:not(.memo-details-summary) {
+	margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-inline-editor .memo-details-summary::before {
+		transition: none;
+	}
+}
+
+/* 편집기의 각주 (writer/anchors.ts): 읽기 화면의 각주(a[data-footnote-ref], .footnotes)와 같은 번호·크기·여백.
+   번호는 저장한 이름이 아니라 본문에 나온 차례(data-number)로 보인다 */
+.memo-inline-editor sup[data-type='footnote_reference'] {
+	padding: 0 0.15em;
+	color: #b8860b;
+	font-weight: 600;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+:root[data-theme='dark'] [data-app='memo'] .memo-inline-editor sup[data-type='footnote_reference'] {
+	color: var(--memo-accent);
+}
+
+.memo-inline-editor sup[data-type='footnote_reference']::before {
+	content: '[';
+}
+
+.memo-inline-editor sup[data-type='footnote_reference']::after {
+	content: ']';
+}
+
+/* 각주 내용: 읽기 화면의 각주 목록(ol > li)처럼 번호 칸 + 내용 */
+.memo-inline-editor dl[data-type='footnote_definition'] {
+	display: grid;
+	grid-template-columns: 1.4em minmax(0, 1fr);
+	margin: 0;
+	font-size: 0.88em;
+	color: var(--memo-muted);
+}
+
+/* 각주끼리는 목록 항목 사이 간격(li + li) */
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition'] + dl[data-type='footnote_definition'] {
+	margin-top: 0.3em;
+}
+
+/* 첫 각주 위: 읽기 화면의 각주 구역(.footnotes)처럼 구분선과 '각주' 제목 */
+.memo-inline-editor .ProseMirror > :not([data-type='footnote_definition']) + dl[data-type='footnote_definition'],
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition']:first-child {
+	margin-top: 2.4em;
+	padding-top: 1em;
+	border-top: 1px solid var(--memo-border);
+}
+
+.memo-inline-editor
+	.ProseMirror
+	> :not([data-type='footnote_definition'])
+	+ dl[data-type='footnote_definition']::before,
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition']:first-child::before {
+	grid-column: 1 / -1;
+	margin: 0 0 0.6em;
+	color: var(--memo-text);
+	font-weight: 600;
+	content: '각주';
+}
+
+/* 번호: 이름 글자 대신 '1.' (목록 번호처럼 오른쪽 맞춤) */
+.memo-inline-editor dl[data-type='footnote_definition'] > dt {
+	padding-right: 0.4em;
+	text-align: right;
+	user-select: none;
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dd {
+	min-width: 0;
+	margin: 0;
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dd > * + * {
+	margin-top: 0.9em;
+}
+
+/* 각주로 왔을 때: 첫 각주 위의 '각주' 제목(::before)까지 칠하지 않게 번호·내용 칸만 칠한다 (읽기 화면은 li만 칠한다) */
+.memo-inline-editor dl.memo-anchor-hit {
+	animation: none;
+}
+
+.memo-inline-editor dl.memo-anchor-hit > :is(dt, dd) {
+	animation: memo-anchor-hit 1.6s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-inline-editor dl.memo-anchor-hit > :is(dt, dd) {
+		animation: none;
+	}
+}
+
+/* ↩ : 읽기 화면의 되돌아가기 링크(a[data-footnote-backref])와 같은 자리·모양 */
+.memo-inline-editor .memo-footnote-backref {
+	margin-left: 0.3em;
+	padding: 0;
+	border: none;
+	background: none;
+	color: #b8860b;
+	font: inherit;
+	cursor: pointer;
+}
+
+:root[data-theme='dark'] [data-app='memo'] .memo-inline-editor .memo-footnote-backref {
+	color: var(--memo-accent);
+}
+
+/* 편집기의 글 안 링크(#이름)는 누르면 그 자리로 간다 (Option을 누른 채 누르면 글자를 고친다) */
+.memo-inline-editor a[href^='#'] {
+	cursor: pointer;
+}
+
+/* 각주로 가거나 돌아왔을 때 도착한 자리를 잠깐 표시한다 */
+.memo-markdown .memo-anchor-hit {
+	animation: memo-anchor-hit 1.6s ease-out;
+	border-radius: 0.3em;
+}
+
+@keyframes memo-anchor-hit {
+	from {
+		background-color: rgba(250, 204, 21, 0.45);
+	}
+	to {
+		background-color: transparent;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-markdown .memo-anchor-hit {
+		animation: none;
+	}
+}
+
+.memo-markdown code {
+	padding: 0.1em 0.35em;
+	border-radius: 0.3em;
+	background-color: var(--memo-code-bg);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 0.88em;
+}
+
+.memo-markdown pre {
+	/* Prettier가 코드 블록을 탭으로 들여 쓰므로 탭 너비를 좁힌다 */
+	tab-size: 2;
+	padding: 0.9em 1em;
+	border-radius: 0.6em;
+	background-color: var(--memo-code-bg);
+	overflow-x: auto;
+	line-height: 1.5;
+}
+
+.memo-markdown pre code {
+	padding: 0;
+	background: none;
+}
+
+.memo-markdown blockquote {
+	padding-left: 1em;
+	border-left: 3px solid var(--memo-accent);
+	color: var(--memo-muted);
+}
+
+.memo-markdown table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--text-footnote);
+}
+
+.memo-markdown th,
+.memo-markdown td {
+	padding: 0.45em 0.6em;
+	border-bottom: 1px solid var(--memo-border);
+	text-align: left;
+}
+
+.memo-markdown th {
+	color: var(--memo-text);
+	font-weight: 600;
+}
+
+/* 본문 이미지 */
+.memo-figure {
+	display: block;
+	margin: 1.2em 0;
+	text-align: center;
+}
+
+.memo-image-button {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: zoom-in;
+}
+
+.memo-figure img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+	border-radius: 0.6em;
+	box-shadow: 0 0 0 1px var(--memo-border);
+}
+
+.memo-caption {
+	display: block;
+	margin-top: 0.5em;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+}
+
+.memo-image-missing {
+	display: block;
+	padding: 1em;
+	border: 1px dashed var(--memo-border);
+	border-radius: 0.6em;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	text-align: center;
+}
+
+/* 이미지 크게 보기 */
+.memo-lightbox {
+	display: grid;
+	place-items: center;
+	position: fixed;
+	inset: 0;
+	z-index: var(--z-menu);
+	padding: 3rem;
+	background-color: rgba(0, 0, 0, 0.75);
+	cursor: zoom-out;
+	animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+.memo-lightbox img {
+	animation: pop-in var(--duration) var(--ease-spring);
+}
+
+.memo-lightbox img {
+	max-width: 100%;
+	max-height: 100%;
+	border-radius: 0.6em;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
