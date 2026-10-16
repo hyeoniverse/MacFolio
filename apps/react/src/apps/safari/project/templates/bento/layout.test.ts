@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { boardOf, COLUMNS, composeBoard, packSizes, packSpans, rowsOf, type TileSize, type TileSpec } from './layout';
+import { bentoOf, COLUMNS, composeBento, packSizes, packSpans, rowsOf, type TileSize, type TileSpec } from './layout';
 
-const SIZES: TileSize[] = ['small', 'stat', 'item', 'wide', 'full'];
+const SIZES: TileSize[] = ['stat', 'item', 'wide', 'full'];
 
 /** 줄마다 꽉 찬다 (마지막 줄까지) */
 const expectFull = (spans: number[]) => {
@@ -12,8 +12,7 @@ const expectFull = (spans: number[]) => {
 function* samples(): Generator<TileSize[]> {
 	let seed = 7;
 	const next = () => (seed = (seed * 1103515245 + 12345) % 2 ** 31);
-	for (let n = 1; n <= 14; n++)
-		for (let k = 0; k < 40; k++) yield Array.from({ length: n }, () => SIZES[next() % SIZES.length]);
+	for (let n = 1; n <= 14; n++) for (let k = 0; k < 40; k++) yield Array.from({ length: n }, () => SIZES[next() % 4]);
 }
 
 describe('packSpans', () => {
@@ -58,11 +57,11 @@ describe('packSizes', () => {
 	});
 });
 
-describe('composeBoard', () => {
+describe('composeBento', () => {
 	const tiles = (sizes: TileSize[]): TileSpec[] => sizes.map((size, i) => ({ id: `t${i}`, size }));
 
-	it('옆 타일이 둘이면 머리 타일은 넓은 폭에서 8칸 두 줄이고 그 둘을 오른쪽에 쌓는다', () => {
-		const placed = composeBoard(tiles(['full', 'item', 'item', 'wide', 'wide', 'small']), 2);
+	it('머리 타일은 넓은 폭에서 8칸 두 줄이고 다음 두 타일을 오른쪽에 쌓는다', () => {
+		const placed = composeBento(tiles(['wide', 'stat', 'stat', 'stat', 'stat', 'wide', 'item']), { lead: true });
 		expect(placed.slice(0, 3).map((p) => [p.lg, p.rows])).toEqual([
 			[8, 2],
 			[4, 1],
@@ -70,70 +69,112 @@ describe('composeBoard', () => {
 		]);
 		expectFull(placed.slice(3).map((p) => p.lg));
 		expect(placed[0].md).toBe(12);
+		expect(placed.map((p) => p.order)).toEqual([1, 2, 3, 4, 5, 6, 7]);
 	});
 
-	it('옆 타일이 하나면 머리 타일과 한 줄, 없으면 전체', () => {
-		expect(composeBoard(tiles(['full', 'item', 'wide']), 1).map((p) => [p.lg, p.rows])).toEqual([
+	it('숫자 타일은 다른 타일과 한 줄에 섞이지 않는다', () => {
+		const placed = composeBento(tiles(['item', 'stat', 'stat', 'item', 'item']));
+		expect(rowsOf(placed.map((p) => p.lg))).toEqual([[12], [6, 6], [6, 6]]);
+	});
+
+	it('비용이 같으면 그림 타일이 넓다', () => {
+		expect(packSpans([6, 4])).toEqual([8, 4]);
+	});
+
+	it('머리 타일 옆에 하나뿐이면 한 줄로, 없으면 전체로', () => {
+		expect(composeBento(tiles(['wide', 'item']), { lead: true }).map((p) => [p.lg, p.rows])).toEqual([
 			[8, 1],
 			[4, 1],
-			[12, 1],
 		]);
-		expect(composeBoard(tiles(['full', 'wide', 'wide']), 0).map((p) => p.lg)).toEqual([12, 6, 6]);
+		expect(composeBento(tiles(['wide']), { lead: true }).map((p) => p.lg)).toEqual([12]);
+		expect(composeBento(tiles(['wide', 'full', 'item']), { lead: true }).map((p) => p.lg)).toEqual([12, 12, 12]);
 	});
 
-	it('어떤 조합이든 머리 타일 아래의 줄이 꽉 찬다', () => {
-		for (const sizes of samples())
-			for (const side of [0, 1, 2] as const) {
-				const placed = composeBoard(tiles(['full', ...sizes]), side);
-				const skip = side && placed.length > side ? side + 1 : 0;
-				expectFull(placed.slice(skip).map((p) => p.lg));
-				expectFull(placed.map((p) => p.md));
-				expectFull(placed.map((p) => p.sm));
-			}
+	it('머리 타일 없이 어떤 조합이든 줄이 꽉 찬다', () => {
+		for (const sizes of samples()) {
+			const placed = composeBento(tiles(sizes));
+			expectFull(placed.map((p) => p.lg));
+			expectFull(placed.map((p) => p.md));
+			expectFull(placed.map((p) => p.sm));
+		}
+	});
+
+	it('머리 타일이 있어도 나머지 줄이 꽉 찬다', () => {
+		for (const sizes of samples()) {
+			const placed = composeBento(tiles(sizes), { lead: true });
+			const sideRows = placed[0].rows === 2 ? 3 : placed[0].lg === 8 ? 2 : 1;
+			expectFull(placed.slice(sideRows).map((p) => p.lg));
+			expectFull(placed.map((p) => p.md));
+		}
 	});
 
 	it('타일이 없으면 빈 목록', () => {
-		expect(composeBoard([])).toEqual([]);
+		expect(composeBento([])).toEqual([]);
 	});
 });
 
-describe('boardOf', () => {
-	const ALL = [
-		'stats',
-		'features',
-		'screens',
-		'steps',
-		'built',
-		'troubleshooting',
-		'stories',
-		'controls',
-		'tech',
-		'team',
-		'role',
-		'timeline',
-		'deployments',
-		'credits',
-	];
-
-	it('예시 전체: 머리 옆에 대표 화면과 숫자, 그 아래 둘·셋·넷씩 꽉 찬 줄, 맨 아래 마무리', () => {
-		const board = boardOf({ shot: true, sections: ALL });
-		const lg = [...board.values()].map((p) => p.lg);
-		expect(lg.slice(0, 3)).toEqual([8, 4, 4]);
-		expect(board.get('hero')?.rows).toBe(2);
-		expect(rowsOf(lg.slice(3))).toEqual([[6, 6], [4, 4, 4], [3, 3, 3, 3], [3, 3, 3, 3], [12]]);
+describe('bentoOf', () => {
+	it('예시의 첫 격자: 그림 있는 머리 기능 옆에 숫자 둘', () => {
+		const { lead, placements } = bentoOf({
+			features: [{ media: [1] }, { media: [1, 2] }, { media: [] }, { media: [] }, { media: [] }],
+			facts: 4,
+			screens: true,
+			stack: 9,
+			role: { contributions: 5 },
+		});
+		expect(lead).toBe(true);
+		// 머리 옆에는 그림 없는 기능 둘, 그 아래 숫자 한 줄, 그림 있는 기능은 8칸
+		expect([...placements.values()].map((p) => [p.id, p.lg])).toEqual([
+			['feature-0', 8],
+			['feature-2', 4],
+			['feature-3', 4],
+			['stat-0', 3],
+			['stat-1', 3],
+			['stat-2', 3],
+			['stat-3', 3],
+			['feature-1', 8],
+			['feature-4', 4],
+			['tech', 6],
+			['role', 6],
+			['screens', 12],
+		]);
 	});
 
-	it('대표 화면이 없으면 숫자만 머리 옆에 한 줄로', () => {
-		const board = boardOf({ shot: false, sections: ALL });
-		expect([board.get('hero')?.lg, board.get('hero')?.rows, board.get('stats')?.lg]).toEqual([8, 1, 4]);
+	it('그림 없는 기능 둘만 있으면 머리 타일 없이 절반씩', () => {
+		const { lead, placements } = bentoOf({
+			features: [{ media: [] }, { media: [] }],
+			facts: 0,
+			screens: false,
+			stack: 0,
+			role: null,
+		});
+		expect(lead).toBe(false);
+		expect([...placements.values()].map((p) => p.lg)).toEqual([6, 6]);
 	});
+});
 
-	it('이름과 기능뿐이면 머리, 기능, 마무리가 한 줄씩', () => {
-		const board = boardOf({ shot: false, sections: ['features'] });
-		expect([...board.values()].map((p) => [p.id, p.lg])).toEqual([
-			['hero', 12],
-			['features', 12],
-			['closing', 12],
+describe('bentoOf: 그림 없는 예시', () => {
+	it('그림이 없어도 기능이 셋 넘으면 머리 타일을 두고 옆에 기능 둘을 쌓는다', () => {
+		const { lead, placements } = bentoOf({
+			features: Array.from({ length: 5 }, () => ({ media: [] })),
+			facts: 4,
+			screens: false,
+			stack: 9,
+			role: { contributions: 5 },
+		});
+		expect(lead).toBe(true);
+		expect([...placements.values()].map((p) => [p.id, p.lg, p.rows])).toEqual([
+			['feature-0', 8, 2],
+			['feature-1', 4, 1],
+			['feature-2', 4, 1],
+			['stat-0', 3, 1],
+			['stat-1', 3, 1],
+			['stat-2', 3, 1],
+			['stat-3', 3, 1],
+			['feature-3', 6, 1],
+			['feature-4', 6, 1],
+			['tech', 6, 1],
+			['role', 6, 1],
 		]);
 	});
 });
