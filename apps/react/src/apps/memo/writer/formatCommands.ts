@@ -35,6 +35,7 @@ export function formatStateOf(state: EditorState): FormatState {
 		image: imageStateOf(state),
 		marks: { ...EMPTY_FORMAT.marks },
 		details: detailsAt(state) !== null,
+		summary: parent.type.name === 'details_summary',
 	};
 	if (parent.type.name === 'heading') result.block = blockOfHeading(parent.attrs.level as number);
 	else if (parent.type.name === 'code_block') result.block = 'mono';
@@ -187,12 +188,20 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			break;
 		}
 		case 'block': {
-			if (action.block === 'body' || current.block === action.block) callCommand(turnIntoTextCommand.key)(ctx);
-			else if (action.block === 'mono') callCommand(createCodeBlockCommand.key)(ctx);
+			// macOS 메모처럼 한 줄에 모양은 하나: 목록이나 토글 제목에서 고르면 그 줄을 꺼내 고른 모양으로 바꾼다
+			const converted = current.summary || current.list !== null;
+			if (current.summary) toggleDetails(view);
+			else if (current.list) leaveList(ctx);
+			if (action.block === 'body' || (!converted && current.block === action.block)) {
+				if (!converted || action.block !== 'body') callCommand(turnIntoTextCommand.key)(ctx);
+			} else if (action.block === 'mono') callCommand(createCodeBlockCommand.key)(ctx);
 			else callCommand(wrapInHeadingCommand.key, HEADING_LEVEL[action.block])(ctx);
 			break;
 		}
 		case 'list': {
+			// 토글 제목은 토글을 풀고, 머리말은 본문으로 바꾼 뒤 목록으로 (목록 항목의 첫 줄은 본문이다)
+			if (current.summary) toggleDetails(view);
+			else if (current.list === null && current.block !== 'body') callCommand(turnIntoTextCommand.key)(ctx);
 			if (current.list === action.list) {
 				if (action.list === 'task') setTask(ctx, null);
 				else leaveList(ctx);
@@ -211,13 +220,17 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			break;
 		}
 		case 'quote': {
+			if (current.summary) toggleDetails(view);
 			if (current.quote) lift(view.state, view.dispatch);
 			else callCommand(wrapInBlockquoteCommand.key)(ctx);
 			break;
 		}
 		case 'details':
 			// 표 칸에는 블록을 넣을 수 없다
-			if (!current.table) toggleDetails(view);
+			if (current.table) break;
+			// 목록 항목은 목록에서 꺼내 토글로 (한 줄에 모양은 하나)
+			if (!current.details && current.list) leaveList(ctx);
+			toggleDetails(view);
 			break;
 		case 'footnote':
 			insertFootnote(view);
