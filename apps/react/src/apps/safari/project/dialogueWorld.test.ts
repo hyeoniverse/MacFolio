@@ -56,7 +56,7 @@ describe('마을 지도', () => {
 		expect(WORLD_PX_H).toBe(384);
 	});
 
-	it('자리는 지도 안에 있고 서로 겹치지 않으며, 막힌 땅(숲·나무·덤불·울타리·물·바위)이나 연못 위에 놓이지 않는다 (동굴 입구와 북쪽 문은 일부러 벼랑·숲 속)', () => {
+	it('자리는 지도 안에 있고 서로 겹치지 않으며, 막힌 땅(숲·나무·덤불·물·바위)이나 연못 위에 놓이지 않는다 (동굴 입구와 북쪽 문은 일부러 벼랑·숲 속)', () => {
 		const taken = new Map<string, string>();
 		for (const slot of SLOTS) {
 			for (let y = slot.y; y < slot.y + slot.h; y++) {
@@ -104,14 +104,14 @@ describe('마을 지도', () => {
 		expect(walkable(layout, monster.x, monster.y)).toBe(true);
 	});
 
-	it('충돌: 숲·나무·덤불·울타리·물·바위·연못·집·장소는 막히고, 길·풀·긴 풀·광장은 걷는다. 지도 밖은 막힌다', () => {
+	it('충돌: 숲·나무·덤불·물·바위·연못·집·장소는 막히고, 길·풀·긴 풀·광장은 걷는다. 지도 밖은 막힌다', () => {
 		const layout = layoutWorld(ALL, ['가람']);
 		expect(walkable(layout, START.x, START.y)).toBe(true);
 		expect(walkable(layout, 0, 5)).toBe(false);
 		expect(walkable(layout, 25, 18)).toBe(false); // 연못
 		expect(walkable(layout, 33, 16)).toBe(false); // 바위 언덕
-		expect(walkable(layout, 4, 15)).toBe(false); // 울타리
-		expect(walkable(layout, 7, 15)).toBe(true); // 울타리 틈
+		expect(walkable(layout, 12, 16)).toBe(false); // 덤불
+		expect(walkable(layout, 7, 15)).toBe(true); // 긴 풀숲 위 풀밭 (울타리 없이 사방에서 들어간다)
 		expect(walkable(layout, FOUNTAIN.x, FOUNTAIN.y)).toBe(false);
 		expect(walkable(layout, 12, 5)).toBe(false); // 여관 벽
 		expect(walkable(layout, 5, 17)).toBe(true); // 긴 풀

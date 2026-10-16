@@ -1,5 +1,5 @@
-// RPG 대화창(DialoguePage) 무대의 주제 그림판이 쓰는 순수한 계산: HP, 장면 고르기, 데이터에서 센 숫자, 글 줄바꿈.
-// (그림은 Ninja Adventure 묶음 dialogueNinja.ts, 픽셀 아이콘은 dialogueIcons.ts, 무대 뒤 타일 장면은 dialogueScenes.ts)
+// RPG 대화창(DialoguePage) 무대의 주제 그림판이 쓰는 순수한 계산: HP, 그림 크기, 데이터에서 센 숫자, 글 줄바꿈.
+// (그림은 Ninja Adventure 묶음 dialogueNinja.ts, 픽셀 아이콘은 dialogueIcons.ts, 무대 뒤는 마을 dialogueVillage.ts)
 // 그림판은 꾸밈이라 숫자는 데이터에 있는 것을 세기만 하고 이름을 그대로 붙인다 (지어낸 레벨·점수는 없다)
 import type { Project, ProjectTrouble } from '@/shared/profile';
 import type { TroubleStepKey } from '@/apps/safari/project/landing/content';
@@ -44,29 +44,34 @@ export function hpLevel(hp: number): 'high' | 'mid' | 'low' {
 	return 'low';
 }
 
-/** 무대 뒤의 장면(색 띠): 주제마다 하나. 해 질 녘, 풀밭, 전투 들판, 마을 광장, 상점, 상태 창, 지도, 동굴, 오락실, 밤하늘 */
-export type SceneKind = 'sunset' | 'meadow' | 'field' | 'plaza' | 'shop' | 'menu' | 'map' | 'cave' | 'arcade' | 'night';
+/** 무대에 띄우는 그림(또는 영상) 한 장. caption이 있으면 그림 아래에 작게 적는다 */
+export interface Slide {
+	src: string;
+	caption?: string;
+	video?: boolean;
+}
 
-const SCENES: Record<string, SceneKind> = {
-	highlights: 'meadow',
-	build: 'meadow',
-	usage: 'meadow',
-	troubleshooting: 'field',
-	team: 'plaza',
-	specs: 'shop',
-	contributions: 'menu',
-	controls: 'menu',
-	timeline: 'map',
-	deployments: 'cave',
-	facts: 'arcade',
-	credits: 'night',
-};
+/** 페이지 위의 사각형 (실제 px) */
+export interface Box {
+	x: number;
+	y: number;
+	w: number;
+	h: number;
+}
 
-/** 주제 id의 장면. 장(chapter-n)은 풀밭, 그 밖(인사, 링크, 화면 모음...)은 해 질 녘의 타이틀 */
-export function sceneOf(topic: string | undefined): SceneKind {
-	if (!topic) return 'sunset';
-	if (/^chapter-\d+$/.test(topic)) return 'meadow';
-	return SCENES[topic] ?? 'sunset';
+/**
+ * 그림이 키울 수 있는 가장 큰 배: 그림은 게임 화면처럼 정수 배로 키우지 않고 실제 px로 띄우므로, 원래 크기보다 많이 키우면
+ * 흐려진다. 작은 그림은 이만큼까지만 키운다
+ */
+export const PHOTO_MAX_UP = 1.5;
+
+/**
+ * 그림(원래 크기 nw×nh)을 maxW×maxH 안에 비율을 지켜 가장 크게 (원래 크기의 up배를 넘지 않는다). 정수 px, 한 변이 0이면 0×0
+ */
+export function fitPhoto(nw: number, nh: number, maxW: number, maxH: number, up = PHOTO_MAX_UP) {
+	if (!(nw > 0 && nh > 0 && maxW > 0 && maxH > 0)) return { w: 0, h: 0 };
+	const scale = Math.min(maxW / nw, maxH / nh, up);
+	return { w: Math.max(1, Math.floor(nw * scale)), h: Math.max(1, Math.floor(nh * scale)) };
 }
 
 /** 칸 그림 한 줄을 같은 색끼리 이어진 칸(x, 너비, 색)으로 (SVG 사각형 수를 줄인다). 모르는 글자는 빈칸 */

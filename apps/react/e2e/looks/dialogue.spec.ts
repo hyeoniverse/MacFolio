@@ -51,6 +51,16 @@ async function spot(panel: Locator) {
 	};
 }
 
+/** 마을의 그것(사람·몬스터)이 게임 화면 안에 보이는지 */
+const inView = (panel: Locator, selector: string) =>
+	panel.locator('.dl-world').evaluate((world, sel) => {
+		const view = world.getBoundingClientRect();
+		return [...world.querySelectorAll(sel)].some((el) => {
+			const r = el.getBoundingClientRect();
+			return r.left >= view.left && r.right <= view.right && r.top >= view.top && r.bottom <= view.bottom;
+		});
+	}, selector);
+
 /** 키를 여러 번 누른다 */
 async function press(page: Page, key: string, times = 1) {
 	for (let i = 0; i < times; i++) await page.keyboard.press(key);
@@ -121,7 +131,8 @@ test('dialogue: 메뉴 커서를 옮기면 무대의 그림이 그 주제의 것
 
 	// 메뉴: 커서를 옮기면 미리보기 액자의 그림이 바뀐다
 	await toMenu(dialog);
-	const preview = panel.locator('.dl-preview .dl-shot-frame img');
+	// 미리보기 그림은 게임 화면 밖의 그림 판에 (누를 수 없는 꾸밈)
+	const preview = panel.locator('.dl-photo:not([data-interactive]) .dl-photo-frame img');
 	await expect(preview).toBeVisible();
 	const first = await preview.getAttribute('src');
 	await dialog.getByRole('button', { name: '만든 방법' }).hover();
@@ -138,7 +149,7 @@ test('dialogue: 화면 모음 주제는 그림을 한 장씩 캡션과 함께 �
 	const dialog = dialogOf(panel);
 	await toMenu(dialog);
 	await dialog.getByRole('button', { name: '화면 모음' }).click();
-	const shot = panel.locator('.dl-stage .dl-shot-frame img');
+	const shot = panel.locator('.dl-photo[data-interactive] .dl-photo-frame img');
 	await expect(dialog).toContainText('시작 — 동물들이 달아났다');
 	await expect(crumbOf(panel)).toContainText('1/8');
 	await expect(shot).toHaveAttribute('src', '/imgs/projects/sproutfarm/shots/intro.jpg');
@@ -161,10 +172,13 @@ test('dialogue: 장 목록에서 항목의 화면 여러 장을 액자 안에서
 	await expect(panel.getByText('그림 1 / 2')).toBeAttached();
 	await flipNext.click();
 	await expect(panel.getByText('그림 2 / 2')).toBeAttached();
-	await expect(panel.locator('.dl-stage .dl-shot-frame img')).toHaveAttribute(
+	await expect(panel.locator('.dl-photo[data-interactive] .dl-photo-frame img')).toHaveAttribute(
 		'src',
 		'/imgs/projects/hyeoniverse/cms/gallery.jpg'
 	);
+	// ←·→로도 넘긴다
+	await page.keyboard.press('ArrowLeft');
+	await expect(panel.getByText('그림 1 / 2')).toBeAttached();
 });
 
 test('dialogue: Z로 넘기고 고르며, ↓·→는 다음 줄로, X는 장 목록에서 처음 메뉴로 돌아간다', async ({ page }) => {
@@ -195,43 +209,82 @@ test('dialogue: Z로 넘기고 고르며, ↓·→는 다음 줄로, X는 장 �
 	await expect(crumbOf(panel)).toContainText('2/');
 });
 
-test('dialogue: 게임 화면이 페이지를 꽉 채우고(정수 배), 창은 반투명한 짙은 바탕에 얇은 테두리, 그림은 원래 모습 그대로 액자에 띄운다', async ({
+test('dialogue: 게임 화면이 페이지를 꽉 채우고(정수 배), 창은 반투명한 짙은 바탕에 얇은 테두리, 그림은 게임 화면 밖에 실제 크기로 띄운다', async ({
 	page,
 }) => {
-	// 장면을 그리기 전 한 순간 보이는 페이지 바탕: 라이트는 옅은 하늘색, 다크는 짙은 남색
+	// 마을을 그리기 전 한 순간 보이는 페이지 바탕: 라이트는 옅은 하늘색, 다크는 짙은 남색
 	await expectTheme(page, 'dialogue', { light: 'rgb(232, 244, 255)', dark: 'rgb(18, 19, 48)' });
 	const { safari, panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue' });
 	await safari.getByRole('button', { name: '전체 화면' }).click();
 	// 그림이 있는 주제를 연다 (바로 가기 메뉴에서)
 	await toMenu(dialogOf(panel));
 	await dialogOf(panel).getByRole('button', { name: '주요 기능' }).click();
-	const shot = panel.locator('.dl-stage .dl-shot-frame img').first();
+	const shot = panel.locator('.dl-photo[data-interactive] .dl-photo-frame img').first();
 	await expect(shot).toBeVisible();
-	// 그림을 픽셀로 바꾸거나 무대 안에 풍경을 깔지 않는다
+	// 그림은 정수 배로 키운 게임 화면 밖에: 픽셀로 바꾸지 않고(부드럽게) 실제 px로
+	expect(await shot.evaluate((img) => img.closest('.dl-screen') === null)).toBe(true);
 	expect(await shot.evaluate((img) => getComputedStyle(img).imageRendering)).toBe('auto');
-	await expect(panel.locator('.dl-stage canvas')).toHaveCount(0);
-	// 그림이 있으면 그림만 크게: 옆의 게임 화면이 없고, 액자는 무대 가운데에서 폭이나 높이 한쪽에 닿는다 (비율은 그대로)
+	expect(await shot.evaluate((img) => getComputedStyle(img).zoom)).toBe('1');
+	// 무대에는 그림 자리만 (옆의 게임 화면이 없다)
 	await expect(panel.locator('.dl-stage .dlp')).toHaveCount(0);
+	await expect(panel.locator('.dl-stage [data-photo-slot]')).toHaveCount(1);
+	// 비율을 지키며 자리에 들어가는 가장 크게(폭이나 높이 한쪽이 닿는다), 원래 크기의 1.5배를 넘지 않고, 넓은 화면에서는 넉넉히 크다
 	await expect
 		.poll(async () =>
 			shot.evaluate((img) => {
-				const stage = img.closest('.dl-scene')!.getBoundingClientRect();
-				const frame = img.closest('.dl-shot-frame')!.getBoundingClientRect();
-				const ratio = (img as HTMLImageElement).naturalWidth / (img as HTMLImageElement).naturalHeight;
+				const image = img as HTMLImageElement;
+				const photo = img.closest('.dl-photo')!.getBoundingClientRect();
+				const frame = img.closest('.dl-photo-frame')!.getBoundingClientRect();
 				const shown = img.getBoundingClientRect();
-				const centred = Math.abs(frame.left + frame.width / 2 - (stage.left + stage.width / 2)) <= 2;
-				const fills = frame.width >= stage.width - 2 || frame.height >= stage.height - 2;
+				const ratio = image.naturalWidth / image.naturalHeight;
+				const centred = Math.abs(frame.left + frame.width / 2 - (photo.left + photo.width / 2)) <= 2;
+				const fills =
+					frame.width >= photo.width - 2 ||
+					frame.height >= photo.height - 2 ||
+					shown.width >= image.naturalWidth * 1.5 - 1;
 				const keeps = Math.abs(shown.width / shown.height - ratio) < 0.03;
-				return centred && fills && keeps;
+				const capped = shown.width <= image.naturalWidth * 1.5 + 1;
+				const big = shown.width >= 400 || shown.height >= 280;
+				return { centred, fills, keeps, capped, big };
 			})
 		)
-		.toBe(true);
-	// 창: 1칸 밝은 테두리와 반투명한 짙은 바탕 (라이트·다크가 같고, 장면이 색을 낸다)
+		.toEqual({ centred: true, fills: true, keeps: true, capped: true, big: true });
+	// 액자: 흰 테두리 3px (게임 화면의 1칸 테두리가 아니다)
+	const frame = panel.locator('.dl-photo[data-interactive] .dl-photo-frame');
+	expect(await frame.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('3px');
+	// 대화 창은 그림 아래에 그대로 보인다
+	const talk = await dialogOf(panel).locator('.dl-box').boundingBox();
+	const photoBox = await frame.boundingBox();
+	expect(photoBox!.y + photoBox!.height).toBeLessThanOrEqual(talk!.y);
+
+	// 그림을 누르면 페이지 전체를 덮는 크게 보기 (원래 크기까지만), Esc로 닫고 포커스는 그림으로 돌아온다
+	await frame.click();
+	const lightbox = panel.getByRole('dialog', { name: '그림 크게 보기' });
+	await expect(lightbox).toBeVisible();
+	const big = lightbox.locator('img');
+	expect(
+		await big.evaluate((img) => img.getBoundingClientRect().width <= (img as HTMLImageElement).naturalWidth + 1)
+	).toBe(true);
+	const lb = await lightbox.boundingBox();
+	const pageBox = await panel.boundingBox();
+	expect(lb!.width).toBeCloseTo(pageBox!.width, 0);
+	await expect(lightbox.getByRole('button', { name: '닫기' })).toBeFocused();
+	await page.keyboard.press('Escape');
+	await expect(lightbox).toHaveCount(0);
+	await expect(frame).toBeFocused();
+	// X로도 닫는다 (막 뒤의 대화는 그대로)
+	await frame.click();
+	await expect(lightbox).toBeVisible();
+	await page.keyboard.press('x');
+	await expect(lightbox).toHaveCount(0);
+	await expect(panel.locator('.dl')).toHaveAttribute('data-mode', 'topic');
+
+	// 창: 1칸 밝은 테두리와 반투명한 짙은 바탕 (라이트·다크가 같고, 마을이 색을 낸다)
 	const box = dialogOf(panel).locator('.dl-box');
 	expect(await box.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
 	expect(await box.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe('rgba(255, 255, 255, 0.85)');
 	expect(await box.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(14, 16, 28, 0.78)');
-	// 화면 전체가 정수 배로 커지고(글자·테두리·그림이 한 격자), 넉넉한 전체 화면에서는 세 배 이상 (대사 글자 33px)
+	// 화면 전체가 정수 배로 커지고(글자·테두리가 한 격자), 넉넉한 전체 화면에서는 세 배 이상 (대사 글자 33px)
 	const screen = panel.locator('.dl-screen');
 	const zoom = Number(await screen.getAttribute('data-zoom'));
 	expect(Number.isInteger(zoom) && zoom >= 3).toBe(true);
@@ -242,10 +295,11 @@ test('dialogue: 게임 화면이 페이지를 꽉 채우고(정수 배), 창은 
 	expect(rect.width).toBeLessThanOrEqual(page_.w + zoom);
 	expect(rect.height).toBeGreaterThanOrEqual(page_.h - 0.5);
 	expect(rect.height).toBeLessThanOrEqual(page_.h + zoom);
-	// 장면 캔버스도 화면 크기 그대로 칠한다
-	const canvas = panel.locator('.dl-game > canvas.dl-backdrop').first();
-	expect(Number(await canvas.getAttribute('width')) * zoom).toBeCloseTo(rect.width, 0);
-	expect(Number(await canvas.getAttribute('height')) * zoom).toBeCloseTo(rect.height, 0);
+	// 무대 뒤는 따로 그린 장면이 아니라 마을 (어두운 막을 덮는다. 그림이 있는 장은 더 어둡게)
+	await expect(panel.locator('canvas.dl-backdrop')).toHaveCount(0);
+	await expect(panel.locator('.dl-game > .dl-world canvas.dl-village:not(.dl-overhead):visible')).toHaveCount(1);
+	await expect(panel.locator('.dl-game')).toHaveAttribute('data-dim', 'photo');
+	await expect(panel.locator('.dl-game > .dl-dim')).toBeVisible();
 });
 
 test('dialogue: 그림이 하나도 없으면 무대에 게임 화면(타이틀, 퀘스트)을 그린다', async ({ page }) => {
@@ -269,7 +323,7 @@ test('dialogue: 그림이 하나도 없으면 무대에 게임 화면(타이틀,
 	const title = panel.locator('.dl-stage [data-panel="title"]');
 	await expect(title.locator('.dl-sign-icon')).toBeVisible();
 	await expect(title).toContainText('PRESS Z');
-	await expect(panel.locator('.dl-stage .dl-shot-frame')).toHaveCount(0);
+	await expect(panel.locator('.dl-photo')).toHaveCount(0);
 	await toMenu(dialog);
 	await dialog.getByRole('button', { name: '주요 기능' }).click();
 	await expect(dialog).toContainText('그림 없는 기능입니다.');
@@ -322,12 +376,14 @@ test('dialogue: 트러블슈팅은 버그와의 전투(HP가 단계마다 준다
 	const monster = battle.locator('.dlp-monster');
 	await expect(monster).toBeVisible();
 	expect(await monster.evaluate((el) => getComputedStyle(el).backgroundImage)).toContain('/imgs/rpg/ninja/monsters/');
-	// 무대 뒤는 전투 들판, 몬스터는 그림자 위에 선다
-	await expect(panel.locator('.dl-game')).toHaveAttribute('data-scene', 'field');
+	// 몬스터는 그림자 위에 선다. 무대 뒤는 마을의 긴 풀숲 둘레 (그 몬스터가 숨어 있던 자리가 보이게 카메라를 옮기고 어둡게 덮는다)
 	await expect(battle.locator('.dlp-on .dlp-platform')).toBeVisible();
-	// 장면은 픽셀 타일 그림 캔버스 (낮·밤 두 장 중 테마에 맞는 한 장만 보인다), 아이콘은 Font Awesome이 아닌 픽셀 아이콘
-	await expect(panel.locator('.dl-game > canvas.dl-backdrop')).toHaveCount(2);
-	await expect(panel.locator('.dl-game > canvas.dl-backdrop:visible')).toHaveCount(1);
+	await expect(panel.locator('.dl-game')).toHaveAttribute('data-dim', 'panel');
+	await expect(panel.locator('canvas.dl-backdrop')).toHaveCount(0);
+	await expect(panel.locator('.dl-game > .dl-world canvas.dl-village:not(.dl-overhead)')).toHaveCount(2);
+	await expect(panel.locator('.dl-game > .dl-world canvas.dl-village:not(.dl-overhead):visible')).toHaveCount(1);
+	await expect.poll(() => inView(panel, '.dl-actor[data-kind="monster"]')).toBe(true);
+	// 아이콘은 Font Awesome이 아닌 픽셀 아이콘
 	await expect(battle.locator('.dlp-battle-menu svg').first()).toBeVisible();
 	await expect(panel.locator('.dl-stage [class*="fa-"]')).toHaveCount(0);
 	await expect(battle.locator('.dlp-hp-track')).toHaveAttribute('data-level', 'high');
@@ -351,7 +407,8 @@ test('dialogue: 트러블슈팅은 버그와의 전투(HP가 단계마다 준다
 	// 파티: 팀원 수만큼 카드, 나는 ★ 나
 	await dialog.getByRole('button', { name: '함께한 사람' }).click();
 	const party = panel.locator('.dl-stage [data-panel="team"]');
-	await expect(panel.locator('.dl-game')).toHaveAttribute('data-scene', 'plaza');
+	// 무대 뒤는 팀원이 선 광장 (마을 사람이 화면 안에 보인다)
+	await expect.poll(() => inView(panel, '.dl-actor[data-kind="person"]')).toBe(true);
 	const team = GENERAL_SAMPLE.team ?? [];
 	await expect(party.locator('.dlp-party > li')).toHaveCount(team.length);
 	await expect(party.locator('li[data-me]')).toHaveCount(1);
@@ -633,6 +690,42 @@ test('dialogue 마을: 화면을 누르면 그 칸까지 걸어가고, 장소를
 	// 떨어진 장소(게시판)를 누르면 길을 찾아 옆까지 걸어가 연다
 	await clickTile(4, -3);
 	await expect(crumbOf(panel)).toContainText('마을▸주요 기능');
+});
+
+test('dialogue 마을: 탭을 눌러 연 뒤 페이지를 누르지 않아도 Z·X·방향 키·Esc가 먹는다 (포커스가 탭 단추에 남아 있어도)', async ({
+	page,
+}) => {
+	// 사용자처럼: Safari에서 프로젝트 탭을 누르고(포커스는 탭 단추에 남는다) 바로 키보드로
+	const { safari, panel } = await openLook(page, { id: 'sproutfarm', tab: /SproutFarm/, look: 'dialogue' });
+	await expect(safari.getByRole('tab', { name: /SproutFarm/ })).toBeFocused();
+	const root = rootOf(panel);
+	const dialog = dialogOf(panel);
+	// Z로 타이틀을 넘겨 마을로
+	for (let i = 0; i < 6 && (await root.getAttribute('data-mode')) === 'greet'; i++) await page.keyboard.press('z');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	// 방향 키로 걷는다
+	const before = await spot(panel);
+	await page.keyboard.press('ArrowLeft');
+	await expect.poll(async () => (await spot(panel)).x).toBe(before.x - 1);
+	// X로 바로 가기 메뉴, Z로 커서 주제를 열고, X로 메뉴에, 한 번 더 X(또는 Esc)로 마을에
+	await page.keyboard.press('x');
+	await expect(dialog.locator('.dl-menu[data-open]')).toBeVisible();
+	await page.keyboard.press('z');
+	await expect(root).toHaveAttribute('data-mode', 'topic');
+	await page.keyboard.press('x');
+	await expect(root).toHaveAttribute('data-mode', 'menu');
+	await page.keyboard.press('Escape');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	// 게임 화면을 한 번 누른 뒤에도 같다
+	await heroOf(panel).click();
+	await page.keyboard.press('x');
+	await expect(dialog.locator('.dl-menu[data-open]')).toBeVisible();
+	await page.keyboard.press('x');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	// 탭 단추에 포커스가 있을 때 Enter는 탭의 것이다 (페이지가 가로채지 않는다)
+	await safari.getByRole('tab', { name: /SproutFarm/ }).focus();
+	await page.keyboard.press('Enter');
+	await expect(root).toHaveAttribute('data-mode', 'world');
 });
 
 test('dialogue 마을: 바로 가기 메뉴(X)로 걷지 않고 모든 주제에 닿고, X로 마을에 돌아온다', async ({ page }) => {

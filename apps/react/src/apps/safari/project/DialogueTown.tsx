@@ -44,6 +44,7 @@ import {
 import { composeVillage, markPoint, VILLAGE_MARGIN } from '@/apps/safari/project/dialogueVillage';
 import { Pixels } from '@/apps/safari/project/DialoguePixels';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
+import { acceptsGameKey } from '@/apps/safari/project/dialogueKeys';
 import '@/apps/safari/project/DialogueTown.css';
 
 /** 한 칸을 걷는 시간(ms): 앞 반은 발을 내딛고 뒤 반은 선다 (두 걸음에 서기·왼발·서기·오른발 네 프레임) */
@@ -196,8 +197,8 @@ const Monster: React.FC<{ x: number; y: number }> = ({ x, y }) => {
 			<i
 				className="dl-actor-grass"
 				style={{
-					backgroundImage: `url(${sheetUrl(GROUND.tallGrass.sheet)})`,
-					backgroundPosition: `${-GROUND.tallGrass.x}px ${-GROUND.tallGrass.y - 7}px`,
+					backgroundImage: `url(${sheetUrl(GROUND.tallGrass[0].sheet)})`,
+					backgroundPosition: `${-GROUND.tallGrass[0].x}px ${-GROUND.tallGrass[0].y - 7}px`,
 				}}
 			/>
 		</span>
@@ -246,6 +247,8 @@ interface Props {
 	viewH: number;
 	/** 걸을 수 있는지 (타이틀에서는 마을만 보인다) */
 	walking: boolean;
+	/** 주인공을 세울지 (타이틀에서는 숨긴다. 주제를 읽는 동안에는 걷지 않고 그 자리에 서 있다) */
+	hero?: boolean;
 	/** 카메라를 고정할 곳 (타이틀: 광장 가운데, 게임 칸). 없으면 주인공을 따라간다 */
 	camera?: { x: number; y: number };
 	/**
@@ -491,6 +494,7 @@ const DialogueTown: React.FC<Props> = ({
 	viewW,
 	viewH,
 	walking,
+	hero = walking,
 	camera: fixedCamera,
 	band = 0,
 }) => {
@@ -544,12 +548,8 @@ const DialogueTown: React.FC<Props> = ({
 	useEffect(() => {
 		if (!walking) return;
 		const root = viewRef.current?.closest('.dl');
-		const accepts = (event: KeyboardEvent) => {
-			const target = event.target as HTMLElement | null;
-			if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return false;
-			if (target && target !== document.body && !root?.contains(target)) return false;
-			return !(event.metaKey || event.ctrlKey || event.altKey);
-		};
+		// 이 페이지가 든 Safari 창 안의 키만 (탭을 눌러 연 뒤 포커스가 탭에 남아 있어도 받는다, dialogueKeys.ts)
+		const accepts = (event: KeyboardEvent) => acceptsGameKey(event, root);
 		const keyOf = (event: KeyboardEvent) => (event.key.length === 1 ? event.key.toLowerCase() : event.key);
 		const onDown = (event: KeyboardEvent) => {
 			const walker = walkerRef.current;
@@ -565,7 +565,7 @@ const DialogueTown: React.FC<Props> = ({
 			}
 			if (key === 'z' || key === 'Enter' || key === ' ') {
 				const target = event.target as HTMLElement | null;
-				// 단추(바로 가기, 살펴보기 안내)에 포커스가 있으면 Enter·Space는 그 단추가 받는다
+				// 단추(바로 가기, 살펴보기 안내, 탭)에 포커스가 있으면 Enter·Space는 그 단추가 받는다
 				if (key !== 'z' && target?.closest('button, a')) return;
 				event.preventDefault();
 				if (walker.moving || event.repeat || !walker.layout) return;
@@ -648,7 +648,7 @@ const DialogueTown: React.FC<Props> = ({
 					data-x={player.x}
 					data-y={player.y}
 					data-facing={player.facing}
-					hidden={!walking}
+					hidden={!hero}
 				/>
 				<OverheadCanvas active={active} gateOpen={gateOpen} night={false} />
 				<OverheadCanvas active={active} gateOpen={gateOpen} night />
