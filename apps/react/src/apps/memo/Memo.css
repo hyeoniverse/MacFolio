@@ -70,7 +70,7 @@
 	height: 100%;
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 	transition: grid-template-columns var(--duration) var(--ease-out);
 }
@@ -185,7 +185,7 @@
 	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-view-switch button[aria-pressed='true'] {
@@ -232,7 +232,7 @@
 	padding-bottom: 8px;
 	border-bottom: 1px solid var(--memo-border);
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.5;
 }
 
@@ -247,13 +247,13 @@
 	border-radius: 12px;
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.5;
 }
 
 .memo-trash-note > i {
 	flex: none;
-	font-size: 16px;
+	font-size: var(--text-callout);
 	line-height: var(--title-line);
 }
 
@@ -265,7 +265,7 @@
 .memo-trash-note strong {
 	display: block;
 	color: var(--memo-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	line-height: var(--title-line);
 }
 
@@ -274,7 +274,7 @@
 }
 
 .memo-trash-note .memo-trash-note-hint {
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	opacity: 0.85;
 }
 
@@ -310,7 +310,7 @@
 	gap: 6px;
 	margin-bottom: 0.75rem;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-locked-note button {
@@ -360,7 +360,7 @@
 .memo-tag-browser h3 {
 	margin: 0;
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 700;
 }
 
@@ -373,7 +373,7 @@
 	border: none;
 	background: none;
 	color: #b07a06;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 	cursor: pointer;
 }
@@ -405,7 +405,7 @@
 	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	cursor: pointer;
 }
 
@@ -435,7 +435,7 @@
 	gap: 6px;
 	margin: 10px 20px 6px;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 700;
 }
 
@@ -447,7 +447,7 @@
 .memo-gallery .memo-section-title {
 	margin: 14px 24px 4px;
 	color: var(--memo-text);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .memo-reader-compact-bar {
@@ -482,7 +482,7 @@
 
 .memo-toolbar-heading h2 {
 	overflow: hidden;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 700;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -490,7 +490,7 @@
 
 .memo-toolbar-heading p {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-toolbar-title {
@@ -498,7 +498,7 @@
 	min-width: 0;
 	margin-left: 4px;
 	overflow: hidden;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -570,7 +570,7 @@
 .memo-folders h2 {
 	margin: 0 0 4px 4px;
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 	letter-spacing: 0.02em;
 }
@@ -618,7 +618,7 @@
 	border: none;
 	border-radius: 9px;
 	background: none;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 }
 
@@ -626,7 +626,7 @@
 	flex: none;
 	width: 16px;
 	color: var(--memo-accent);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: center;
 }
 
@@ -655,7 +655,7 @@
 .memo-count {
 	flex: none;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -727,13 +727,13 @@
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-folder-error {
 	margin: 0 0 4px calc(var(--depth, 0) * var(--row-indent, 16px) + 14px + 29px);
 	color: var(--memo-danger);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 /* ─── 글 목록 ─── */
@@ -814,7 +814,7 @@
 	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 30%, transparent);
 	color: var(--memo-text);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	white-space: nowrap;
 }
 
@@ -876,7 +876,7 @@
 	background: none;
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
@@ -897,7 +897,7 @@
 
 .memo-find-count {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	white-space: nowrap;
 	font-variant-numeric: tabular-nums;
 }
@@ -916,7 +916,7 @@
 	border: none;
 	background: none;
 	color: var(--memo-text);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	cursor: pointer;
 }
 
@@ -938,7 +938,7 @@
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	cursor: pointer;
 }
@@ -954,7 +954,7 @@
 	align-items: center;
 	gap: 5px;
 	color: var(--memo-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	white-space: nowrap;
 	cursor: pointer;
 }
@@ -1040,7 +1040,7 @@
 	display: -webkit-box;
 	overflow: hidden;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.35;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 2;
@@ -1052,7 +1052,7 @@
 
 .memo-item-folder {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-item.active .memo-item-meta,
@@ -1118,7 +1118,7 @@
 }
 
 .memo-like.post i {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .memo-like.post:hover {
@@ -1136,7 +1136,7 @@
 	padding: 2px 7px;
 	margin-left: -7px;
 	border-radius: var(--radius-full);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 500;
 }
 
@@ -1205,7 +1205,7 @@
 	border-radius: 5px;
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-variant-numeric: tabular-nums;
 	vertical-align: 1px;
 }
@@ -1263,13 +1263,13 @@
 
 .memo-post-nav span {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-post-nav strong {
 	overflow: hidden;
 	max-width: 100%;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -1288,7 +1288,7 @@
 	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 22%, transparent);
 	color: var(--memo-text);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
@@ -1394,7 +1394,7 @@ button.memo-admin-chip {
 	gap: 0.3em;
 	margin-bottom: 0.5rem;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 /* 날짜·폴더: 글자처럼 보이다가 올리면 누를 수 있다는 표시 */
@@ -1426,7 +1426,7 @@ button.memo-admin-chip {
 }
 
 .memo-writer-status {
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	white-space: nowrap;
 }
 
@@ -1436,7 +1436,7 @@ button.memo-admin-chip {
 	border: none;
 	border-radius: var(--radius-full);
 	font: inherit;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 	white-space: nowrap;
 	cursor: pointer;
@@ -1547,7 +1547,7 @@ button.memo-admin-chip {
 .memo-revisions-note {
 	margin-bottom: 8px;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.5;
 }
 
@@ -1572,13 +1572,13 @@ button.memo-admin-chip {
 }
 
 .memo-revision-list strong {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-revision-list span {
 	overflow: hidden;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -1588,14 +1588,14 @@ button.memo-admin-chip {
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: 6px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-panel .memo-revision-back {
 	padding: 3px 6px;
 	border-radius: var(--radius-sm);
 	color: #c78b00;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-revision-body {
@@ -1604,7 +1604,7 @@ button.memo-admin-chip {
 	overflow-y: auto;
 	border: 1px solid var(--color-divider);
 	border-radius: var(--radius-lg);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-revision-body h1 {
@@ -1613,7 +1613,7 @@ button.memo-admin-chip {
 }
 
 .memo-revision-body .memo-markdown {
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-panel .memo-revision-restore {
@@ -1623,7 +1623,7 @@ button.memo-admin-chip {
 	border-radius: var(--radius-full);
 	background-color: #edbb4d;
 	color: #2b2100;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
@@ -1693,7 +1693,7 @@ button.memo-admin-chip {
 	flex-shrink: 0;
 	padding: 0 8px;
 	white-space: nowrap;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	letter-spacing: -0.02em;
 }
@@ -1752,7 +1752,7 @@ button.memo-admin-chip {
 	flex: 1;
 	height: 30px;
 	border-radius: 7px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .memo-format-marks button:hover,
@@ -1779,7 +1779,7 @@ button.memo-admin-chip {
 
 .memo-format-marks .mark-code {
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-styles {
@@ -1791,7 +1791,7 @@ button.memo-admin-chip {
 	width: 100%;
 	padding: 5px 10px 5px 28px;
 	border-radius: 7px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 }
 
@@ -1799,18 +1799,18 @@ button.memo-admin-chip {
 .memo-format-styles button[aria-checked='true']::before {
 	position: absolute;
 	left: 10px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	content: '✓' / '';
 }
 
 /* 이름을 그 서식의 모양으로 */
 .memo-format-styles .style-title {
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 800;
 }
 
 .memo-format-styles .style-heading {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 700;
 }
 
@@ -1821,7 +1821,7 @@ button.memo-admin-chip {
 
 .memo-format-styles .style-mono {
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-quote {
@@ -1837,7 +1837,7 @@ button.memo-admin-chip {
 .memo-format-uploading {
 	margin-left: 4px;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	white-space: nowrap;
 }
 
@@ -1847,7 +1847,7 @@ button.memo-admin-chip {
 	left: 9px;
 	top: 50%;
 	width: 12px;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	text-align: center;
 	translate: 0 -50%;
 	opacity: 0.7;
@@ -1884,7 +1884,7 @@ button.memo-admin-chip {
 	flex: 1;
 	padding: 4px 0;
 	border-radius: var(--radius-sm);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-panel .memo-image-tabs button.on {
@@ -1914,16 +1914,16 @@ button.memo-admin-chip {
 
 .memo-image-drop i {
 	color: #c78b00;
-	font-size: 22px;
+	font-size: var(--text-title2);
 }
 
 .memo-image-drop strong {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-image-drop span {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-image-drop input {
@@ -1957,7 +1957,7 @@ button.memo-admin-chip {
 
 .memo-image-details label span {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
@@ -1969,7 +1969,7 @@ button.memo-admin-chip {
 	background: none;
 	color: inherit;
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
@@ -1980,13 +1980,13 @@ button.memo-admin-chip {
 /* 입력칸 아래 안내 */
 .memo-field-hint {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.4;
 }
 
 .memo-image-credit {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-image-credit a {
@@ -2001,7 +2001,7 @@ button.memo-admin-chip {
 }
 
 .memo-format-panel .memo-image-submit {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
@@ -2010,7 +2010,7 @@ button.memo-admin-chip {
 	border-radius: var(--radius-full);
 	background-color: #edbb4d;
 	color: #2b2100;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
@@ -2018,7 +2018,7 @@ button.memo-admin-chip {
 .memo-format-panel .memo-stock-more {
 	padding: 5px 12px;
 	border-radius: var(--radius-full);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-format-panel .memo-image-back:hover,
@@ -2033,7 +2033,7 @@ button.memo-admin-chip {
 
 .memo-image-note {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.5;
 }
 
@@ -2043,7 +2043,7 @@ button.memo-admin-chip {
 
 .memo-image-note code {
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-stock-search {
@@ -2389,7 +2389,7 @@ button.memo-admin-chip {
 	border-radius: var(--radius-md);
 	background-color: var(--memo-code-bg);
 	color: var(--memo-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-decoration: none;
 	overflow-wrap: anywhere;
 }
@@ -2480,7 +2480,7 @@ button.memo-admin-chip {
 		0 10px 30px rgba(0, 0, 0, 0.2);
 	color: var(--color-popover-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	animation: pop-in var(--duration-fast) var(--ease-out);
 	transform-origin: top left;
 }
@@ -2502,7 +2502,7 @@ button.memo-admin-chip {
 	margin-right: auto;
 	padding: 0 6px;
 	color: var(--color-popover-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 700;
 	text-align: left;
 }
@@ -2550,7 +2550,7 @@ button.memo-admin-chip {
 .memo-calendar-weekday {
 	padding: 4px 0;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-calendar-grid button {
@@ -2603,13 +2603,13 @@ button.memo-admin-chip {
 	margin-top: 2rem;
 	padding-top: 1.25rem;
 	border-top: 1px solid var(--memo-border);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-comments h2 {
 	margin-bottom: 0.5rem;
 	color: var(--memo-text);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .memo-comments h2 span {
@@ -2647,7 +2647,7 @@ button.memo-admin-chip {
 	border-radius: 50%;
 	background: linear-gradient(180deg, #b8bcc6, #8e929c);
 	color: #ffffff;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	object-fit: cover;
 }
@@ -2666,12 +2666,12 @@ button.memo-admin-chip {
 }
 
 .memo-comment-head strong {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-comment-head time {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-comment-badge {
@@ -2694,7 +2694,7 @@ button.memo-admin-chip {
 	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	opacity: 0;
 	cursor: pointer;
 	transition: opacity var(--duration-fast) var(--ease-out);
@@ -2795,7 +2795,7 @@ button.memo-admin-chip {
 
 .memo-comment-count {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -2805,7 +2805,7 @@ button.memo-admin-chip {
 
 .memo-comment-error {
 	color: #e5484d;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	list-style: none;
 }
 
@@ -2817,7 +2817,7 @@ button.memo-admin-chip {
 .memo-reader-date {
 	margin-bottom: 0.5rem;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-align: center;
 }
 
@@ -3211,7 +3211,7 @@ button.memo-admin-chip {
 .memo-markdown table {
 	width: 100%;
 	border-collapse: collapse;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-markdown th,
@@ -3255,7 +3255,7 @@ button.memo-admin-chip {
 	display: block;
 	margin-top: 0.5em;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-image-missing {
@@ -3264,7 +3264,7 @@ button.memo-admin-chip {
 	border: 1px dashed var(--memo-border);
 	border-radius: 0.6em;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-align: center;
 }
 
@@ -3345,7 +3345,7 @@ button.memo-admin-chip {
 	border-radius: 7px;
 	background-color: rgba(0, 0, 0, 0.45);
 	color: #fff;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-card-pin i {
@@ -3400,20 +3400,20 @@ button.memo-admin-chip {
 	display: block;
 	margin-bottom: 4px;
 	color: var(--memo-text);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-card > strong {
 	overflow: hidden;
 	max-width: 100%;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .memo-card > time {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 /* 갤러리에서 연 글 */
@@ -3438,7 +3438,7 @@ button.memo-admin-chip {
 	border: none;
 	background: none;
 	color: #b8860b;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 :root[data-theme='dark'] [data-app='memo'] .memo-back {
@@ -3517,7 +3517,7 @@ button.memo-admin-chip {
 :where(.memo-shell[data-compact]) .memo-reader-compact-bar > .ui-icon-button.compact-only {
 	min-width: 36px;
 	height: 34px;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 :where(.memo-shell[data-compact]) .memo-reader-compact-bar .memo-format-button {
@@ -3531,7 +3531,7 @@ button.memo-admin-chip {
 
 /* 목록 위: 검색 칸, 정렬, 새 메모 (관리자) */
 :where(.memo-shell[data-compact]) .memo-compact-tools .memo-compact-new {
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 폴더 화면: 관리자에게는 오른쪽 위에 새로운 폴더 (신호등 자리·여닫기는 없다) */
@@ -3550,7 +3550,7 @@ button.memo-admin-chip {
 
 :where(.memo-shell[data-compact]) .memo .memo-sidebar-bar .memo-new-folder-button {
 	margin-left: auto;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 좁은 본문의 표: 낱말 가운데서 줄을 바꾸지 않고, 넘치면 옆으로 민다.
@@ -3586,11 +3586,11 @@ button.memo-admin-chip {
 }
 
 :where(.memo-shell[data-compact]) .memo-folders {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 :where(.memo-shell[data-compact]) .memo-markdown {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 @media (max-width: 767px) {
@@ -3624,7 +3624,7 @@ button.memo-admin-chip {
 	.memo-writer-actions
 	:is(.memo-writer-publish, .memo-writer-discard) {
 	padding: 4px 12px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 /* 휴대폰 본문 (iOS 메모처럼): 떠 있는 단추들. 휴대폰의 한 칸 보기에서만 보인다 */
@@ -3724,7 +3724,7 @@ button.memo-admin-chip {
 	border-radius: var(--radius-full);
 	background: none;
 	color: var(--memo-text);
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 600;
 }
 
@@ -3756,7 +3756,7 @@ button.memo-admin-chip {
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > .memo-writer-discard::before {
 	font: var(--fa-font-solid);
-	font-size: 17px;
+	font-size: var(--text-body);
 	content: '\f2ea';
 }
 
@@ -3805,7 +3805,7 @@ button.memo-admin-chip {
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-format .memo-format-button {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-compose {
@@ -3817,7 +3817,7 @@ button.memo-admin-chip {
 		0 0 0 0.5px rgba(0, 0, 0, 0.06),
 		0 4px 14px rgba(0, 0, 0, 0.12);
 	color: var(--memo-text);
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 /* 휴대폰의 폴더·목록 화면 (iOS 메모처럼): 떠 있는 단추, 큰 제목, 회색 바탕 위 흰 카드 묶음, 아래 검색 알약 */
@@ -3870,7 +3870,7 @@ button.memo-admin-chip {
 	margin-top: -2px;
 	line-height: 1.3;
 	color: var(--memo-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 400;
 }
 
@@ -3910,7 +3910,7 @@ button.memo-admin-chip {
 .container.mobile :where(.memo-shell[data-compact]) .memo-tag-head h3 {
 	margin: 0;
 	color: var(--memo-text);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 700;
 	letter-spacing: 0;
 }
@@ -3925,7 +3925,7 @@ button.memo-admin-chip {
 	border: none;
 	background: none;
 	color: #b07a06;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 :root[data-theme='dark'] .container.mobile :where(.memo-shell[data-compact]) .memo-folder-group-toggle {
@@ -3975,14 +3975,14 @@ button.memo-admin-chip {
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-disclosure {
 	width: 18px;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder {
 	gap: 12px;
 	padding: 0 16px 0 4px;
 	border-radius: 0;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder .memo-folder-icon {
@@ -3991,7 +3991,7 @@ button.memo-admin-chip {
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder .memo-count {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* 한 칸씩 보므로 고른 폴더를 칠하지 않고, 줄 끝에 › */
@@ -4012,7 +4012,7 @@ button.memo-admin-chip {
 	margin-left: 2px;
 	color: var(--memo-muted);
 	font: var(--fa-font-solid);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	content: '\f054';
 }
 
@@ -4027,7 +4027,7 @@ button.memo-admin-chip {
 	border-radius: var(--radius-lg);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 700;
 	white-space: nowrap;
 }
@@ -4069,7 +4069,7 @@ button.memo-admin-chip {
 	margin: 0 4px 6px;
 	padding: 0;
 	border: none;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* ── 목록 화면 ── */
@@ -4080,7 +4080,7 @@ button.memo-admin-chip {
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-section-title {
 	margin: 22px 4px 8px;
 	color: var(--memo-text);
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-section-title i {
@@ -4105,11 +4105,11 @@ button.memo-admin-chip {
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-item strong {
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-item-meta {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	-webkit-line-clamp: 1;
 }
 
@@ -4118,7 +4118,7 @@ button.memo-admin-chip {
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-item-folder {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 한 칸씩 보므로 고른 메모를 칠하지 않는다. 줄 사이 선은 늘 보인다 */
@@ -4184,7 +4184,7 @@ button.memo-admin-chip {
 	padding: 0 18px;
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list-bottom:not(:has(.memo-phone-compose)) .memo-search {
@@ -4192,7 +4192,7 @@ button.memo-admin-chip {
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list-bottom .memo-search-options {
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 글자 알약 단추 (완료, 메모 선택의 이동·삭제, 폴더 편집) */
@@ -4210,7 +4210,7 @@ button.memo-admin-chip {
 	box-shadow: var(--phone-float-shadow);
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 600;
 }
 
@@ -4237,7 +4237,7 @@ button.memo-admin-chip {
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--memo-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 메모 선택: 줄 왼쪽에 동그라미 */
@@ -4251,7 +4251,7 @@ button.memo-admin-chip {
 	top: 50%;
 	left: 16px;
 	color: var(--memo-muted);
-	font-size: 22px;
+	font-size: var(--text-title2);
 	translate: 0 -50%;
 }
 
@@ -4303,7 +4303,7 @@ button.memo-admin-chip {
 	border: 2px solid var(--memo-accent);
 	background: none;
 	color: #b07a06;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 :root[data-theme='dark'] .container.mobile :where(.memo-shell[data-compact]) .memo-folders.editing .memo-folder-more {
@@ -4337,7 +4337,7 @@ button.memo-admin-chip {
 	border-left: 0.5px solid var(--memo-border);
 	background: none;
 	color: var(--memo-muted);
-	font-size: 17px;
+	font-size: var(--text-body);
 	cursor: grab;
 	touch-action: none;
 }
@@ -4378,7 +4378,7 @@ button.memo-admin-chip {
 	border-radius: var(--radius-full);
 	color: var(--memo-muted);
 	font: inherit;
-	font-size: 17px;
+	font-size: var(--text-body);
 	text-align: left;
 }
 
@@ -4601,7 +4601,7 @@ button.memo-admin-chip {
 	border-radius: var(--radius-md);
 	background-color: rgba(28, 28, 30, 0.55);
 	color: #fff;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	cursor: pointer;
 	opacity: 0;
 	place-items: center;
@@ -4657,7 +4657,7 @@ button.memo-admin-chip {
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.6;
 	text-align: center;
 	resize: none;

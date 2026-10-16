@@ -57,7 +57,7 @@
 .settings-nav-item > .settings-nav-chevron {
 	width: auto;
 	margin-left: auto;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .settings-panel {
@@ -252,7 +252,7 @@
 	border-radius: 50%;
 	background-color: #5a5a5e;
 	color: #ffffff;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	cursor: pointer;
 }
 
@@ -337,7 +337,7 @@
 	color: var(--color-text);
 	/* 16px보다 작으면 iOS Safari가 확대한다 */
 	font: inherit;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .wallpaper-rename input:focus {
@@ -517,14 +517,14 @@
 .privacy-group h3 {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 600;
 }
 
 .privacy-group > p {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.5;
 }
 
@@ -549,18 +549,18 @@
 .privacy-row-text strong {
 	display: block;
 	color: var(--color-text-strong);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 500;
 }
 
 .privacy-row-text span {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .privacy-row-value {
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .privacy-error {
@@ -590,7 +590,7 @@
 .showcase-head h3 {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 600;
 }
 
@@ -618,7 +618,7 @@
 	border: none;
 	background: none;
 	color: var(--color-accent);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
@@ -682,7 +682,7 @@
 .showcase-lines strong {
 	overflow: hidden;
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 500;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -705,7 +705,7 @@
 .showcase-actions .ui-icon-button {
 	width: 30px;
 	height: 30px;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .showcase-remove {
@@ -727,7 +727,7 @@
 	width: 30px;
 	height: 30px;
 	color: var(--color-accent);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* ≡ 손잡이 (메모 폴더 편집과 같은 모양): 끌어서 순서를 바꾼다 (손가락으로 끄는 동안 화면이 넘어가지 않게) */
@@ -813,13 +813,13 @@ ol.showcase-list .showcase-row.reordering {
 	border: none;
 	background: none;
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
 .showcase-lookup .ui-button {
 	--ui-button-padding: 4px 10px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .showcase-error {
@@ -869,7 +869,7 @@ ol.showcase-list .showcase-row.reordering {
 	border-radius: 0;
 	background-color: var(--phone-card-bg);
 	color: var(--color-text);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile .settings-nav-item:first-of-type {
@@ -901,7 +901,7 @@ ol.showcase-list .showcase-row.reordering {
 	border-radius: 7px;
 	background-color: #8e8e93;
 	color: #ffffff;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .container.mobile .settings-nav-item:nth-of-type(2) > i:first-child {
@@ -958,16 +958,16 @@ ol.showcase-list .showcase-row.reordering {
 .container.mobile .showcase-handle {
 	width: 44px;
 	margin-right: -8px;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile .showcase-lines strong {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 400;
 }
 
 .container.mobile .showcase-meta {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .container.mobile .showcase-group h3,
@@ -977,7 +977,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .container.mobile .showcase-text-button {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .container.mobile .showcase-lookup {
@@ -986,7 +986,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .container.mobile .showcase-lookup input {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* 한 화면씩 보므로 고른 항목을 칠하지 않고, 줄 끝에 › */
@@ -999,7 +999,7 @@ ol.showcase-list .showcase-row.reordering {
 	display: block;
 	margin-left: auto;
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .container.mobile .settings-panel {
@@ -1084,20 +1084,20 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-monogram {
 	background: linear-gradient(160deg, #8e8e93, #5a5a5f);
 	color: #ffffff;
-	font-size: 22px;
+	font-size: var(--text-title2);
 	font-weight: 600;
 }
 
 .about-pane-head h3 {
 	color: var(--color-text-strong);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 700;
 }
 
 .about-pane-head p {
 	margin-top: 2px;
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .about-pane-group {
@@ -1109,7 +1109,7 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-group h3 {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 600;
 }
 
@@ -1126,7 +1126,7 @@ ol.showcase-list .showcase-row.reordering {
 	gap: 16px;
 	padding: 9px 14px;
 	border-bottom: 1px solid var(--color-divider);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .about-pane-group dl > div:last-child {
@@ -1204,7 +1204,7 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-hint {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.5;
 }
 
@@ -1214,7 +1214,7 @@ ol.showcase-list .showcase-row.reordering {
 	border-radius: var(--radius-lg);
 	background: color-mix(in srgb, #ff3b30 12%, transparent);
 	color: #d70015;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.6;
 }
 

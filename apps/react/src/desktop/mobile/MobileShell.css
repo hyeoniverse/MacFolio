@@ -64,7 +64,7 @@
 }
 
 .mobile-statusbar-time {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 }
@@ -159,7 +159,7 @@
 	display: flex;
 	align-items: center;
 	gap: 5px;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 	opacity: 0.75;
 }
@@ -173,11 +173,11 @@
 
 .music-widget-title {
 	margin-top: 2px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .music-widget-album {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	opacity: 0.75;
 }
 
@@ -327,7 +327,7 @@
 }
 
 .cc-music .music-widget-album {
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .cc-music .music-widget-seek {
@@ -341,7 +341,7 @@
 .cc-music .music-widget-controls button {
 	width: 32px;
 	height: 28px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* 1칸짜리 버튼: 원 */
@@ -399,7 +399,7 @@
 	height: calc(var(--cc-cell) * 0.56);
 	border-radius: 50%;
 	background-color: #0a84ff;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .cc-wide span {
@@ -409,12 +409,12 @@
 }
 
 .cc-wide strong {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .cc-wide small {
 	overflow: hidden;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	opacity: 0.7;
@@ -496,7 +496,7 @@
 	background-color: rgba(0, 0, 0, 0.35);
 	backdrop-filter: blur(24px);
 	color: rgba(255, 255, 255, 0.85);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	animation: fade-in var(--duration) var(--ease-out);
 }
 

@@ -55,6 +55,6 @@
 		background-color: var(--ui-float-bg);
 		box-shadow: var(--ui-float-shadow);
 		color: var(--ui-float-color, inherit);
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 }

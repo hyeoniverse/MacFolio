@@ -16,7 +16,7 @@
 		0 10px 30px rgba(0, 0, 0, 0.2);
 	color: var(--color-popover-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	animation: pop-in var(--duration-fast) var(--ease-out);
 	transform-origin: top left;
 }
@@ -37,7 +37,7 @@
 
 .ui-menu-item i {
 	width: 14px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-align: center;
 	opacity: 0.8;
 }
@@ -63,7 +63,7 @@
 .ui-menu-heading {
 	padding: 4px 9px 2px;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
@@ -78,14 +78,14 @@
 
 .ui-menu-info i {
 	width: 14px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-align: center;
 }
 
 .ui-menu-note {
 	padding: 4px 9px 2px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 /* 아이콘 위·글자 아래 단추 한 줄 (iOS 메뉴 맨 위) */
@@ -110,7 +110,7 @@
 	background: none;
 	color: inherit;
 	font: inherit;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	cursor: pointer;
 }
 
@@ -134,7 +134,7 @@
 	min-width: 250px;
 	padding: 10px;
 	border-radius: 22px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .ui-menu.touch .ui-menu-item {
@@ -145,7 +145,7 @@
 
 .ui-menu.touch .ui-menu-item i {
 	width: 20px;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .ui-menu.touch .ui-menu-item:hover:not(:disabled) {

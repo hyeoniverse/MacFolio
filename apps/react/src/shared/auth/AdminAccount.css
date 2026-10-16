@@ -38,7 +38,7 @@
 .admin-account-status {
 	margin-top: 2px;
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .admin-account-status[data-status='signed-in']::before {
@@ -67,7 +67,7 @@
 .admin-account-actions .ui-button {
 	gap: 7px;
 	border: 1px solid var(--color-divider);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .admin-account-actions .ui-button.primary {
@@ -78,7 +78,7 @@
 	overflow: hidden;
 	border: 1px solid var(--color-divider);
 	border-radius: var(--radius-lg);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .admin-account-details div {
@@ -104,7 +104,7 @@
 
 .admin-account-note {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 /* 휴대폰: 다른 설정 화면처럼 폭을 꽉 채운 흰 카드 (iOS 설정의 Apple 계정). 데스크톱의 520px 제한과 테두리는 쓰지 않는다 */
@@ -130,7 +130,7 @@
 	min-height: 48px;
 	border: none;
 	border-radius: 16px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .container.mobile .admin-account-actions .ui-button:not(.primary) {
@@ -138,7 +138,7 @@
 }
 
 .container.mobile .admin-account-details {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .container.mobile .admin-account-details div {
@@ -157,5 +157,5 @@
 
 .container.mobile .admin-account-note {
 	padding-inline: 16px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }

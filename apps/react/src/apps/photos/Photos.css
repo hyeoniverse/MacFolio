@@ -16,7 +16,7 @@
 	padding: 8px;
 	background-color: var(--color-window-bg);
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 }
 
@@ -53,7 +53,7 @@
 .photos-sidebar-heading {
 	margin: 14px 10px 4px;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
@@ -72,7 +72,7 @@
 
 .photos-place > i {
 	width: 22px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	text-align: center;
 	color: var(--color-text-secondary);
 }
@@ -111,7 +111,7 @@
 
 .photos-count {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 /* ─── 가운데 ─── */
@@ -141,14 +141,14 @@
 .photos-toolbar-heading h2 {
 	margin: 0;
 	color: var(--color-text-strong);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 700;
 }
 
 .photos-toolbar-heading p {
 	margin: 0;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .photos-toolbar-group {
@@ -179,7 +179,7 @@
 
 .photos-toolbar-title span {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -218,7 +218,7 @@
 
 .photos-segments button {
 	padding: 0 14px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .photos-segments button[aria-pressed='true'] {
@@ -273,7 +273,7 @@
 
 .photos-group h3 {
 	margin: 0 0 10px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .photos-group h3 button {
@@ -286,7 +286,7 @@
 
 .photos-group h3 i {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .photos-thumb {
@@ -326,7 +326,7 @@
 	right: 10%;
 	bottom: 10%;
 	color: #fff;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
@@ -411,7 +411,7 @@
 	background: var(--photos-glass);
 	backdrop-filter: blur(12px);
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	opacity: 0;
 	transform: translateY(-50%);
 	transition: opacity var(--duration-fast) var(--ease-out);
@@ -542,7 +542,7 @@
 
 .photos-view-button i {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .photos.compact {
@@ -659,5 +659,5 @@
 	display: block;
 	margin-top: 4px;
 	color: #ff3b30;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
