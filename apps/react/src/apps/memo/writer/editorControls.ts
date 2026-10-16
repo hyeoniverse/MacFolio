@@ -56,6 +56,8 @@ export interface FormatState {
 	quote: boolean;
 	/** 커서가 토글 목록 안에 있는지 */
 	details: boolean;
+	/** 커서가 토글 목록의 제목 줄에 있는지 */
+	summary: boolean;
 	table: TableState | null;
 	image: ImageState | null;
 	marks: { strong: boolean; emphasis: boolean; strike: boolean; code: boolean };
@@ -97,6 +99,7 @@ export const EMPTY_FORMAT: FormatState = {
 	list: null,
 	quote: false,
 	details: false,
+	summary: false,
 	table: null,
 	image: null,
 	marks: { strong: false, emphasis: false, strike: false, code: false },

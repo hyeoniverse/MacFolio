@@ -165,7 +165,7 @@ const FormatTools = () => {
 									<button
 										type="button"
 										role="menuitemradio"
-										aria-checked={state.block === block && !state.list && !state.quote}
+										aria-checked={state.block === block && !state.list && !state.quote && !state.summary}
 										className={`style-${block}`}
 										onClick={() => act({ type: 'block', block }, true)}
 									>

@@ -2853,6 +2853,22 @@ button.memo-admin-chip {
 	font-size: 1.05rem;
 }
 
+/* 구분선 (---): 브라우저 기본값(회색 2px 입체 선, 아래 여백 없음) 대신 가는 테두리색 선, 위아래 같은 여백.
+   편집기(.ProseMirror)도 .memo-markdown이라 같은 모양이다 */
+.memo-markdown hr {
+	height: 1px;
+	margin: 1.8em 0;
+	border: none;
+	background-color: var(--memo-border);
+}
+
+/* 편집기에서 구분선을 고르면 (눌러서, 또는 화살표로) 강조색 테두리 */
+.memo-inline-editor hr.ProseMirror-selectednode {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 4px;
+	border-radius: 1px;
+}
+
 .memo-markdown ul,
 .memo-markdown ol {
 	padding-left: 1.4em;
