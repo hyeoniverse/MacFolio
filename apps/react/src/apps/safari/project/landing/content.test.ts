@@ -10,6 +10,7 @@ import {
 	pointOf,
 	SECTION_LABELS,
 	SECTION_ORDER,
+	shortLink,
 	troubleSteps,
 	type LandingSectionKind,
 } from './content';
@@ -264,6 +265,9 @@ describe('landingOf', () => {
 			['JD', false],
 		]);
 		expect(initialsOf('  ')).toBe('?');
+		expect(shortLink('https://github.com/hyeoniverse/QRU/tree/main')).toBe('github.com/hyeoniverse');
+		expect(shortLink('https://www.linkedin.com/in/someone/')).toBe('linkedin.com/in/someone');
+		expect(shortLink('github.com/me')).toBe('github.com/me');
 		const deployments = landing.sections.find((section) => section.kind === 'deployments');
 		expect(deployments?.kind === 'deployments' && deployments.items.map((item) => [item.icon, item.host])).toEqual([
 			['fa-globe', 'bookclub.vercel.app'],

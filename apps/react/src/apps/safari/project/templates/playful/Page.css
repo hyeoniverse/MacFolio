@@ -1814,8 +1814,41 @@
 	color: #ffffff;
 }
 
-.pf-trouble-step {
-	border-top-width: 3px;
+/* 트러블슈팅 단계: 굵은 테두리의 작은 쪽지. 머리말은 알약 이름표, 해결·결과는 강조색 이름표 */
+.tpl-playful .pf-trouble .pf-trouble-steps {
+	gap: 14px;
+}
+
+.tpl-playful .pf-trouble .pf-trouble-step.lk-trouble-step {
+	padding: 14px 16px 16px;
+	border: 2px solid var(--pf-line);
+	border-radius: 16px;
+	background-color: var(--pf-soft);
+}
+
+.tpl-playful .pf-trouble .pf-trouble-step.lk-trouble-step::before {
+	display: none;
+}
+
+.tpl-playful .pf-trouble .pf-trouble-step[data-step='result'] {
+	background-color: color-mix(in srgb, var(--tpl-accent) 14%, var(--pf-card));
+}
+
+.pf-trouble-step dt {
+	display: inline-block;
+	margin-bottom: 10px;
+	padding: 2px 10px;
+	border: 2px solid var(--pf-line);
+	border-radius: 999px;
+	background-color: var(--pf-card);
+	color: var(--pf-ink);
+	font-weight: 800;
+	letter-spacing: 0;
+}
+
+.pf-trouble-step:is([data-step='solution'], [data-step='result']) dt {
+	background-color: var(--tpl-accent);
+	color: #ffffff;
 }
 
 .pf-member .lk-avatar {
@@ -1831,4 +1864,18 @@
 	border: 2px solid var(--pf-line);
 	color: #ffffff;
 	transform: rotate(-4deg);
+}
+
+.pf-deploy-cover {
+	border-bottom: 2px solid var(--pf-line);
+	background:
+		radial-gradient(circle, color-mix(in srgb, var(--tpl-accent) 35%, transparent) 2px, transparent 2.5px) 0 0 / 18px
+			18px,
+		var(--pf-soft);
+	font-size: 48px;
+}
+
+.pf-deploy-image {
+	border-bottom-width: 2px;
+	border-color: var(--pf-line);
 }

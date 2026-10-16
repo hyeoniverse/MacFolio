@@ -2042,11 +2042,78 @@
 	font-size: 15px;
 }
 
+/* 팀원: 대시보드의 멤버 목록처럼 테두리 한 상자 안에 한 줄씩 (사진 · 이름 · 역할 · 짧은 주소) */
+.dv-team {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0;
+	overflow: hidden;
+	border: 1px solid var(--dv-line);
+	border-radius: var(--dv-radius);
+	background-color: var(--dv-bg);
+}
+
 .dv-member {
 	flex-direction: row;
 	align-items: center;
+	gap: 14px;
+	padding: 14px 20px;
+	border-width: 0;
+	border-radius: 0;
+}
+
+.dv-member + .dv-member {
+	border-top: 1px solid var(--dv-line);
+}
+
+.dv-member[data-me] {
+	border-color: var(--dv-line);
+	background-color: var(--dv-surface);
+	box-shadow: inset 2px 0 0 var(--tpl-accent);
+}
+
+.dv-member .lk-avatar {
+	width: 36px;
+	height: 36px;
+	font-size: 15px;
+}
+
+.dv-member-text {
+	grid-template-columns: minmax(0, 12em) minmax(0, 1fr) minmax(0, max-content);
+	align-items: center;
+	column-gap: 24px;
+}
+
+.dv-member-link {
+	margin-top: 0;
+	justify-self: end;
+	font-family: var(--dv-mono);
+	font-size: 12.5px;
+}
+
+@container (max-width: 600px) {
+	.dv-member-text {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.dv-member-link {
+		justify-self: start;
+	}
 }
 
 .dv-deploy[data-live] .dv-deploy-status::before {
 	background-color: var(--dv-green);
+}
+
+.dv-deploy-cover {
+	border-color: var(--dv-line);
+	background:
+		linear-gradient(var(--dv-line) 1px, transparent 1px) 0 0 / 24px 24px,
+		linear-gradient(90deg, var(--dv-line) 1px, transparent 1px) 0 0 / 24px 24px,
+		var(--dv-surface);
+	color: var(--dv-ink);
+	font-size: 36px;
+}
+
+.dv-deploy-cover span {
+	font-family: var(--dv-mono);
 }
