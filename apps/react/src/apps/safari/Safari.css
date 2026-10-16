@@ -95,7 +95,7 @@
 	padding: 0 12px;
 	border-radius: 999px;
 	background-color: var(--safari-address-bg);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .safari-address span {
@@ -302,7 +302,7 @@
 
 .safari-start h2 {
 	margin-bottom: 20px;
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 700;
 }
 
@@ -325,7 +325,7 @@
 	background: none;
 	color: var(--safari-text);
 	font: inherit;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	cursor: pointer;
 }
 

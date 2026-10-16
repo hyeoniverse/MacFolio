@@ -14,7 +14,7 @@
 	min-height: 0;
 	background: var(--color-window-bg);
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	/* 창은 글을 가운데로 둔다: 표와 목록은 왼쪽부터 */
 	text-align: left;
 }
@@ -118,17 +118,17 @@
 
 .activity-stat .label {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .activity-stat strong {
 	color: var(--color-text-strong);
-	font-size: 22px;
+	font-size: var(--text-title2);
 	font-variant-numeric: tabular-nums;
 }
 
 .activity-stat .change {
-	font-size: 12px;
+	font-size: var(--text-caption);
 	color: var(--color-text-secondary);
 }
 
@@ -187,7 +187,7 @@
 	justify-content: space-between;
 	margin-top: var(--activity-row);
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .activity-chart .legend i {
@@ -213,7 +213,7 @@
 .activity-live h3 {
 	margin: 0 0 var(--activity-row);
 	line-height: 20px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	color: var(--color-text-strong);
 }
 
@@ -283,7 +283,7 @@
 
 .activity-table td.share {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .activity-table .share-cell {
@@ -383,7 +383,7 @@
 
 .activity-locked h2 {
 	margin: 0;
-	font-size: 17px;
+	font-size: var(--text-body);
 	color: var(--color-text-strong);
 }
 
@@ -524,7 +524,7 @@
 	width: 100%;
 	margin-bottom: var(--activity-gap);
 	border-collapse: collapse;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .server-conditions th,
@@ -536,7 +536,7 @@
 
 .server-conditions th {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 500;
 }
 
@@ -555,7 +555,7 @@
 	justify-content: space-between;
 	margin-bottom: var(--activity-row);
 	line-height: 20px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .server-chart svg {
@@ -572,7 +572,7 @@
 .activity-note {
 	margin: var(--activity-pad) 0 0;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 @container (max-width: 560px) {
@@ -591,12 +591,12 @@
 .server-billing h3 {
 	margin: 0 0 var(--activity-row);
 	line-height: 20px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .server-billing-total {
 	margin: 0 0 var(--activity-pad);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .server-billing-total strong {
@@ -616,7 +616,7 @@
 	display: grid;
 	grid-template-columns: 1fr auto;
 	gap: var(--activity-row) var(--activity-pad);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .server-budget-amount {

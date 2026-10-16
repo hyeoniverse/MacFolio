@@ -115,26 +115,26 @@
 .notification-head strong {
 	flex: 1;
 	overflow: hidden;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .notification-head time {
 	flex: none;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	opacity: 0.55;
 }
 
 .notification-text p {
 	margin-top: 1px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	opacity: 0.85;
 }
 
 .notifications.ios .notification-head strong,
 .notifications.ios .notification-text p {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* macOS: 마우스를 올리면 왼쪽 위 모서리에 닫기 단추 */

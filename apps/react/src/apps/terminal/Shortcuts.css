@@ -68,18 +68,18 @@
 }
 
 .shortcut-tile i {
-	font-size: 22px;
+	font-size: var(--text-title2);
 }
 
 .shortcut-tile-title {
 	margin-top: auto;
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 600;
 }
 
 .shortcut-tile-command {
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	opacity: 0.8;
 }
 
@@ -89,13 +89,13 @@
 	margin: 0 4px 16px;
 	color: var(--color-text-secondary);
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .shortcut-heading {
 	margin: 18px 16px 6px;
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	text-transform: uppercase;
 }
@@ -128,11 +128,11 @@
 
 .shortcut-row dt {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .shortcut-row dd {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	overflow-wrap: anywhere;
 }
 
@@ -146,7 +146,7 @@
 
 a.shortcut-row {
 	color: var(--color-accent);
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .shortcut-item {
@@ -163,13 +163,13 @@ a.shortcut-row {
 }
 
 .shortcut-item strong {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 500;
 }
 
 .shortcut-item small {
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .shortcut-tag {
@@ -178,17 +178,17 @@ a.shortcut-row {
 	border-radius: 10px;
 	background-color: var(--color-sidebar-bg, #f2f2f7);
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .shortcut-item i {
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .shortcut-text {
 	margin: 0 4px 12px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .shortcut-text.error {
