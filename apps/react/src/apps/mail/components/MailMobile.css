@@ -163,6 +163,13 @@
 	-webkit-line-clamp: 2;
 }
 
+/* 휴대폰의 불러오기 오류: 메일상자 묶음과 떨어뜨리고 본문 크기 글자로 */
+.mail-phone .mail-load-error {
+	margin: 16px 0 0;
+	padding: 0 4px;
+	font-size: 15px;
+}
+
 .mail-phone-empty {
 	padding: 40px 0;
 	color: var(--color-text-secondary);

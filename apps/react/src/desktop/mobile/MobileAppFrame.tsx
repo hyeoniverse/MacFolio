@@ -187,6 +187,7 @@ const MobileAppFrame: React.FC<Props> = ({
 					<MobileNavContext.Provider value={setNav}>{children}</MobileNavContext.Provider>
 				</div>
 				<HomeIndicator
+					active={foreground}
 					onHome={onHome}
 					onDrag={followDrag}
 					onSwitcher={() => {

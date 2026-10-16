@@ -65,7 +65,8 @@ export function useNoteDrag({
 			// 끄는 항목의 id는 문자열이라, 글 주소·폴더 경로 모양인지 확인하고 쓴다
 			const slug = postSlug(dragging.id);
 			const folder = folderPath(target);
-			if (slug && folder) edit((prev) => movePost(prev, slug, folder));
+			const from = organized.find((post) => post.slug === dragging.id)?.category;
+			if (slug && folder) edit((prev) => movePost(prev, slug, folder, from));
 		} else {
 			const path = folderPath(dragging.id);
 			if (path) onMoveFolder(path, target);
