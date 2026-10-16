@@ -8,7 +8,7 @@
 		display: grid;
 		place-items: center;
 		inset: 0;
-		z-index: var(--ui-modal-z, 1000);
+		z-index: var(--ui-modal-z, var(--z-dialog));
 		background: var(--ui-modal-dim, var(--color-overlay));
 		animation: fade-in var(--duration-fast) var(--ease-out);
 	}

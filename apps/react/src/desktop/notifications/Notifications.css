@@ -4,7 +4,7 @@
 	flex-direction: column;
 	gap: 8px;
 	position: fixed;
-	z-index: 9000;
+	z-index: var(--z-notifications);
 	pointer-events: none;
 }
 
@@ -20,7 +20,7 @@
 	top: calc(env(safe-area-inset-top) + 8px);
 	right: 8px;
 	left: 8px;
-	z-index: 2200;
+	z-index: var(--z-phone-notifications);
 }
 
 .notification {
