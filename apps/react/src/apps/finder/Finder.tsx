@@ -28,6 +28,7 @@ import FinderIcon from './FinderIcon';
 import FinderMobile from './FinderMobile';
 import '@/apps/finder/Finder.css';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
+import SearchField from '@/shared/ui/search-field/SearchField';
 
 type View = 'icons' | 'list';
 
@@ -330,20 +331,16 @@ const Finder: React.FC = () => {
 									/>
 								</div>
 							)}
-							<label className="finder-search">
-								<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-								<input
-									type="search"
-									placeholder="이름으로 찾기"
-									aria-label="이름으로 찾기"
-									value={query}
-									onChange={(event) => {
-										setQuery(event.target.value);
-										setSelected(null);
-										if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
-									}}
-								/>
-							</label>
+							<SearchField
+								className="finder-search"
+								label="이름으로 찾기"
+								value={query}
+								onChange={(event) => {
+									setQuery(event.target.value);
+									setSelected(null);
+									if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
+								}}
+							/>
 						</div>
 
 						{/* 좁은 창: 사이드바 대신 위치를 한 줄로 */}

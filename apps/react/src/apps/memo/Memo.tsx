@@ -34,7 +34,7 @@ import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoT
 import Menu from '@/shared/ui/menu/Menu';
 import PostWriter, { type PostWriterHandle } from './writer/PostWriter';
 import RevisionsPanel from './components/RevisionsPanel';
-import SearchField from './components/SearchField';
+import MemoSearch from './components/MemoSearch';
 import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/usePopover';
 import type { PostDraft } from './postsApi';
@@ -503,7 +503,7 @@ const Memo: React.FC = () => {
 		onArrange: setArrangement,
 	});
 	const searchBox = (className = '') => (
-		<SearchField
+		<MemoSearch
 			className={className}
 			query={query}
 			onQuery={setQuery}

@@ -9,6 +9,7 @@ import { type Opened, type Tab, VIDEOS, type Viewing, coverOf, keyOf, searchPhot
 import { PhoneViewer } from './PhoneViewer';
 import '@/apps/photos/Photos.css';
 import '@/apps/photos/PhotosMobile.css';
+import SearchField from '@/shared/ui/search-field/SearchField';
 
 /**
  * 사진 (휴대폰): iOS 사진처럼 아래의 떠 있는 탭(보관함·모음)과 검색 단추는 어느 화면에서나 같다.
@@ -180,17 +181,14 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 					)}
 				</div>
 				<div className="photos-phone-bar">
-					<label className="photos-phone-search">
-						<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-						<input
-							type="search"
-							placeholder="보관함 검색…"
-							aria-label="보관함 검색"
-							value={query}
-							autoFocus
-							onChange={(event) => setQuery(event.target.value)}
-						/>
-					</label>
+					<SearchField
+						className="photos-phone-search"
+						label="보관함 검색"
+						placeholder="보관함 검색…"
+						value={query}
+						autoFocus
+						onChange={(event) => setQuery(event.target.value)}
+					/>
 					<button
 						type="button"
 						className="photos-phone-round"

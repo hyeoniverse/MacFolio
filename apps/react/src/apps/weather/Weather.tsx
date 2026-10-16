@@ -19,6 +19,7 @@ import {
 } from './places';
 import { fetchForecast, searchPlaces, type TemperatureUnit } from './weatherApi';
 import './Weather.css';
+import SearchField from '@/shared/ui/search-field/SearchField';
 
 /** 날씨 칸이 이 폭 이하면 iOS 날씨 모양(날씨만, 아래 막대, 덮어 여는 목록)으로 (Weather.css의 [data-compact]) */
 const COMPACT_WIDTH = 640;
@@ -513,25 +514,21 @@ const Weather = () => {
 							<i className="fa-solid fa-ellipsis" aria-hidden="true" />
 						</button>
 					</header>
-					<label className="weather-search">
-						<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-						<input
-							type="search"
-							placeholder="도시 검색"
-							aria-label="도시 검색"
-							value={query}
-							onChange={(event) => {
-								setQuery(event.target.value);
-								// 조합이 끝났다는 신호(compositionend)를 보내지 않는 키보드도 있어서, 입력마다 다시 확인한다
-								setComposing((event.nativeEvent as InputEvent).isComposing ?? false);
-							}}
-							onCompositionStart={() => setComposing(true)}
-							onCompositionEnd={(event) => {
-								setComposing(false);
-								setQuery(event.currentTarget.value);
-							}}
-						/>
-					</label>
+					<SearchField
+						className="weather-search"
+						label="도시 검색"
+						value={query}
+						onChange={(event) => {
+							setQuery(event.target.value);
+							// 조합이 끝났다는 신호(compositionend)를 보내지 않는 키보드도 있어서, 입력마다 다시 확인한다
+							setComposing((event.nativeEvent as InputEvent).isComposing ?? false);
+						}}
+						onCompositionStart={() => setComposing(true)}
+						onCompositionEnd={(event) => {
+							setComposing(false);
+							setQuery(event.currentTarget.value);
+						}}
+					/>
 					{query.trim() ? (
 						<ul className="weather-results" aria-label="검색 결과">
 							{results.map((found) => (
