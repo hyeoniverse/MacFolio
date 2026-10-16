@@ -1,20 +1,19 @@
-// playful 템플릿: 점 찍힌 종이를 깐 큰 게시판(스크랩북)에 물건을 핀과 테이프로 붙여 둔 콜라주.
-// 첫 화면은 가운데 포스터(이름표 테이프, 손글씨 물결이 그어진 큰 제목, 링크)와 그 양옆에 핀으로 꽂은 폴라로이드(대표 화면)와 붙임쪽지(맥락·맡은 일·기간).
-// 구역은 점선으로 둘러친 이름표 붙은 자리(zone)이고, 자리마다 다른 물건을 붙인다: 숫자는 우표, 기능은 붙임쪽지와 폴라로이드, 화면은 폴라로이드 벽,
-// 쓰는 법은 공책 쪽, 구현 방법은 색인 카드, 트러블슈팅은 뒤집는 색인 카드(앞: 문제, 뒤: 해결과 결과), 이야기는 일기장 쪽, 조작법은 글쇠 스티커,
-// 기술은 스티커와 꼬리표, 팀원은 사진 부스 띠, 내 역할은 할 일 쪽지, 진행 과정은 손으로 그은 점선 길, 배포 결과물은 입장권, 출처는 영수증,
-// 마무리는 엽서. 물건은 정해진 각도로 조금씩 기울어 서로 가리지 않게 흐르며 놓인다. 계약은 templates/README.md
-import React, { useEffect, useRef, useState } from 'react';
-import type { Project, ProjectFact } from '@/shared/profile';
+// playful 템플릿: Figma·Arc 출시 페이지처럼 밝고 즐겁게. 따뜻한 크림 바탕에 고정 팔레트(산호·해바라기·보라·민트·분홍·하늘)의
+// 납작한 색 면, 큼직한 둥근 도형, 살짝 기운 스티커 라벨, 몇몇 카드의 2px 잉크 테두리. 첫 화면은 왼쪽 큰 제목(한 낱말 밑에 손글씨 물결),
+// 오른쪽은 색 도형 위에 얹은 화면과 기술 스티커. 기능은 색 카드, 숫자는 둥근 배지, 단계는 굽이치는 길의 번호 동그라미,
+// 기술은 사탕색 칩, 맡은 일은 붙임쪽지, 마무리는 큰 산호색 면. 그림이 없으면 도형과 큰 아이콘으로 채운다. 계약은 templates/README.md
+import React from 'react';
+import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
 import {
-	FaIcon,
+	DeployList,
 	iconOf,
 	LandingLinks,
+	LandingSections,
 	Media,
-	MemberAvatar,
-	shortLink,
-	troubleIcon,
+	sectionTitle,
+	TeamList,
+	TroubleList,
 	useLanding,
 	useLandingAccent,
 	type Landing,
@@ -22,75 +21,49 @@ import {
 	type LandingMedia,
 	type LandingPoint,
 	type LandingSection,
-	type LandingSectionKind,
-	type LandingTrouble,
-	type SectionOf,
+	type SectionRenderers,
 } from '@/apps/safari/project/landing';
 import { playfulAccent } from './accent';
 import './Page.css';
 
-const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
-const pad = (n: number) => String(n).padStart(2, '0');
-
-/** 종이 색 차례: 붙임쪽지·우표·스티커가 돌아가며 쓴다 */
-const TONES = ['sun', 'pink', 'mint', 'sky', 'lilac'] as const;
+/** 팔레트 차례: 카드·배지·칩이 돌아가며 쓴다 (산호는 마무리와 물결에 아껴 둔다) */
+const TONES = ['sun', 'sky', 'pink', 'mint', 'lilac'] as const;
 type Tone = (typeof TONES)[number] | 'coral';
 const toneOf = (index: number, offset = 0): Tone => TONES[(index + offset) % TONES.length];
 
-/** 붙인 물건의 기울기와 위아래 어긋남: 정해진 값을 돌아가며 (매번 같은 자리) */
-const TILTS = [-2.5, 1.8, -1.2, 2.6, -1.8, 1.1, -2.2, 2.2];
-const NUDGES = [0, 22, 6, 30, 12, 26, 2, 18];
-const pinned = (index: number, scale = 1) =>
-	({
-		'--tilt': `${TILTS[index % TILTS.length] * scale}deg`,
-		'--nudge': `${NUDGES[index % NUDGES.length]}px`,
-	}) as React.CSSProperties;
+/** 스티커의 기울기: 3도 안쪽에서 번갈아 */
+const TILTS = [-3, 2, -1.5, 2.5, -2];
+const tilt = (index: number) => ({ '--tilt': `${TILTS[index % TILTS.length]}deg` }) as React.CSSProperties;
 
-/** 구역마다 자리 이름표 아래의 큰 문장 */
-const TITLES: Record<LandingSectionKind, string> = {
-	stats: '숫자를 우표로 모아 붙였습니다.',
-	features: '붙임쪽지에 적어 둔 기능입니다.',
-	screens: '찍어 둔 화면을 한데 꽂았습니다.',
-	steps: '이 차례대로 시작하면 됩니다.',
-	built: '만든 방법을 카드에 적어 두었습니다.',
-	troubleshooting: '카드를 뒤집으면 해결이 보입니다.',
-	stories: '일기장에 남긴 이야기입니다.',
-	controls: '손에 익혀 둘 글쇠입니다.',
-	tech: '쓴 기술을 스티커로 붙였습니다.',
-	team: '함께 만든 사람들의 사진입니다.',
-	role: '제가 맡은 일을 적어 두었습니다.',
-	timeline: '지나온 길을 따라가 봅니다.',
-	deployments: '바로 가 볼 수 있는 입장권입니다.',
-	credits: '고마운 출처를 적어 둡니다.',
-};
+/** 나타나는 차례 (0부터): 목록 안에서 조금씩 늦게 */
+const delay = (index: number) => ({ '--d': Math.min(index, 4) }) as React.CSSProperties;
 
-/** 반쪽 자리: 이웃한 둘이 한 줄에 나란히 선다 (짝이 없으면 한 줄을 다 쓴다) */
-const HALF = new Set<LandingSectionKind>(['steps', 'controls', 'tech', 'team', 'role', 'credits']);
-
-/** 구역마다 자리 폭: 반쪽 자리가 이어지면 둘씩 짝짓는다 */
-function spansOf(sections: LandingSection[]): Record<string, 'half' | 'full'> {
-	const spans: Record<string, 'half' | 'full'> = {};
-	for (let i = 0; i < sections.length; i++) {
-		const kind = sections[i].kind;
-		const next = sections[i + 1]?.kind;
-		if (HALF.has(kind) && next && HALF.has(next)) {
-			spans[kind] = 'half';
-			spans[next] = 'half';
-			i++;
-		} else spans[kind] = 'full';
-	}
-	return spans;
-}
-
-/* ─── 작은 조각 ─── */
-
-/** 테이프 조각 (장식) */
-const Tape: React.FC<{ className?: string }> = ({ className }) => (
-	<span className={['pf-tape', className].filter(Boolean).join(' ')} aria-hidden="true" />
+const Sticker: React.FC<{ tone: Tone; index?: number; className?: string; children: React.ReactNode }> = ({
+	tone,
+	index = 0,
+	className,
+	children,
+}) => (
+	<span className={['pf-sticker', className].filter(Boolean).join(' ')} data-tone={tone} style={tilt(index)}>
+		{children}
+	</span>
 );
 
-/** 압정 (장식) */
-const Pin: React.FC = () => <span className="pf-pin" aria-hidden="true" />;
+/** 구역 머리: 기운 스티커(구역 이름)와 큰 문장 */
+const Head: React.FC<{ section: LandingSection; index: number; title?: string; lead?: string }> = ({
+	section,
+	index,
+	title,
+	lead,
+}) => (
+	<header className="pf-head" data-reveal="">
+		<Sticker tone={toneOf(index, 2)} index={index}>
+			{section.label}
+		</Sticker>
+		<h2>{title ?? sectionTitle(section)}</h2>
+		{lead && <p className="pf-lead">{lead}</p>}
+	</header>
+);
 
 /** 손글씨 물결 (장식): 낱말 밑에 늘어나 붙는다 */
 const Squiggle: React.FC = () => (
@@ -104,7 +77,7 @@ const Squiggle: React.FC = () => (
 );
 
 /**
- * 큰 제목의 낱말 하나에 물결을 긋는다. 우리말 문장이 '~니다.'로 끝나면 그 앞 낱말에, 아니면 마지막 낱말에.
+ * 큰 제목의 낱말 하나에 물결을 긋는다. 우리말 문장이 '~니다.'로 끝나면 그 앞 낱말(문장의 알맹이)에, 아니면 마지막 낱말에.
  * 글은 그대로 두고 그 낱말만 감싼다 (화면 읽기와 시험이 읽는 글은 같다)
  */
 const Headline: React.FC<{ text: string }> = ({ text }) => {
@@ -112,8 +85,10 @@ const Headline: React.FC<{ text: string }> = ({ text }) => {
 	if (words.length < 2) return <>{text}</>;
 	const last = words.length - 1;
 	const pick = words.length >= 3 && /다[.!?]?$/.test(words[last]) ? last - 1 : last;
-	const match = /^(.*?)([.,!?…]*)$/.exec(words[pick]);
-	const core = match?.[1] || words[pick];
+	const word = words[pick];
+	// 물결은 낱말의 글자에만 (끝의 문장 부호는 밖으로)
+	const match = /^(.*?)([.,!?…]*)$/.exec(word);
+	const core = match?.[1] || word;
 	const tail = match?.[1] ? match[2] : '';
 	return (
 		<>
@@ -128,351 +103,544 @@ const Headline: React.FC<{ text: string }> = ({ text }) => {
 	);
 };
 
-/** 폴라로이드: 흰 틀의 사진과 손글씨 설명, 위에 테이프 */
-const Polaroid: React.FC<{
-	media: LandingMedia;
-	caption?: string;
-	index?: number;
-	eager?: boolean;
-	className?: string;
-	reveal?: boolean;
-}> = ({ media, caption, index = 0, eager, className, reveal = true }) => (
-	<figure
-		className={['pf-polaroid', className].filter(Boolean).join(' ')}
-		style={pinned(index)}
-		data-reveal={reveal ? 'drop' : undefined}
-	>
-		<Tape />
-		<div className="pf-photo">
-			<Media media={media} eager={eager} />
-		</div>
-		{caption && <figcaption>{caption}</figcaption>}
-	</figure>
-);
+/** "1,800명", "92%", "4주"를 앞말·숫자·뒷말로 (숫자는 크게, 단위는 작게) */
+const splitValue = (text: string) => {
+	const match = /^(\D*?)([\d.,]+)(\D*)$/.exec(text.trim());
+	return match ? { before: match[1], value: match[2], after: match[3] } : null;
+};
 
-/** 구역 자리의 머리: 테이프 이름표(구역 이름)와 손글씨 큰 문장 */
-const ZoneHead: React.FC<{ section: LandingSection; index: number }> = ({ section, index }) => (
-	<header className="pf-zone-head">
-		<span className="pf-label" data-tone={toneOf(index, 1)} style={pinned(index, 0.6)}>
-			{section.label}
-		</span>
-		<h2>{TITLES[section.kind]}</h2>
-	</header>
-);
+const Figure: React.FC<{ value: string; className?: string }> = ({ value, className = 'pf-figure' }) => {
+	const parts = splitValue(value);
+	if (!parts) return <strong className={className}>{value}</strong>;
+	return (
+		<strong className={className}>
+			{parts.before && <span className="pf-unit">{parts.before}</span>}
+			{parts.value}
+			{parts.after && <span className="pf-unit">{parts.after}</span>}
+		</strong>
+	);
+};
 
-/** 우표 묶음 (숫자 구역, 이야기의 숫자) */
-const Stamps: React.FC<{ facts: ProjectFact[]; small?: boolean; offset?: number }> = ({ facts, small, offset = 0 }) => (
-	<dl className="pf-stamps" data-small={small ? '' : undefined}>
-		{facts.map((fact, index) => (
-			<div
-				key={`${fact.value}-${fact.label}`}
-				className="pf-stamp"
-				data-tone={toneOf(index, offset)}
-				style={pinned(index + offset)}
-				data-reveal={small ? undefined : 'drop'}
-			>
-				<div className="pf-stamp-in">
-					<dd>{fact.value}</dd>
-					<dt>{fact.label}</dt>
-				</div>
-			</div>
-		))}
-	</dl>
+/** 아이콘 동그라미 (장식) */
+const Glyph: React.FC<{ point: LandingPoint; index: number; tone?: Tone; className?: string }> = ({
+	point,
+	index,
+	tone,
+	className,
+}) => (
+	<span className={['pf-glyph', className].filter(Boolean).join(' ')} data-tone={tone} aria-hidden="true">
+		<i className={`fa-solid ${iconOf(point, index)}`} />
+	</span>
 );
 
 /** 항목의 글: 묶음, 제목, 설명, 이어 읽는 설명 */
-const PointText: React.FC<{ point: LandingPoint; icon?: string; level?: 'h3' | 'h4' }> = ({
-	point,
-	icon,
-	level = 'h3',
-}) => {
+const PointText: React.FC<{ point: LandingPoint; level?: 'h3' | 'h4' }> = ({ point, level = 'h3' }) => {
 	const Title = level;
 	return (
 		<>
 			{point.group && <p className="pf-group">{point.group}</p>}
-			<Title className="pf-point-title">
-				{icon && <i className={`fa-solid ${icon}`} aria-hidden="true" />}
-				{point.title}
-			</Title>
+			<Title className="pf-point-title">{point.title}</Title>
 			<p className="pf-body">{point.body}</p>
 			{point.detail && <p className="pf-detail">{point.detail}</p>}
 		</>
 	);
 };
 
-/* ─── 구역 ─── */
-
-type Body<K extends LandingSectionKind> = React.FC<{ section: SectionOf<K>; index: number }>;
-
-const Stats: Body<'stats'> = ({ section }) => <Stamps facts={section.facts} />;
-
-/** 기능: 붙임쪽지 하나와 그 옆에 꽂은 폴라로이드 */
-const Features: Body<'features'> = ({ section }) => (
-	<ul className="pf-pins">
-		{section.items.map((point, index) => (
-			<li key={point.title} className="pf-cluster" data-media={point.media.length ? '' : undefined}>
-				<div className="pf-sticky" data-tone={toneOf(index)} style={pinned(index)} data-reveal="drop">
-					<Tape />
-					<span className="pf-sticky-icon" aria-hidden="true">
-						<i className={`fa-solid ${iconOf(point, index)}`} />
-					</span>
-					<PointText point={point} />
-				</div>
-				{point.media.map((media, m) => (
-					<Polaroid key={media.src} media={media} caption={media.alt} index={index + m + 1} />
-				))}
-			</li>
-		))}
-	</ul>
+/** 둥근 액자에 담긴 그림 */
+const Frame: React.FC<{ media: LandingMedia; className?: string; eager?: boolean }> = ({ media, className, eager }) => (
+	<figure className={['pf-frame', className].filter(Boolean).join(' ')}>
+		<Media media={media} eager={eager} />
+	</figure>
 );
 
-const Screens: Body<'screens'> = ({ section }) => (
-	<ul className="pf-pins pf-wall">
-		{section.shots.map((shot, index) => (
-			<li key={shot.src}>
-				<Polaroid media={shot} caption={shot.caption} index={index} />
-			</li>
-		))}
-	</ul>
-);
-
-/** 쓰는 법: 줄 공책 한 쪽의 번호 목록 */
-const Steps: Body<'steps'> = ({ section, index }) => (
-	<div className="pf-notebook" style={pinned(index, 0.4)} data-reveal="drop">
-		<Tape />
-		<ol className="pf-steps">
-			{section.items.map((point, i) => (
-				<li key={point.title}>
-					<span className="pf-step-no" aria-hidden="true">
-						{i + 1}
-					</span>
-					<div>
-						<PointText point={point} icon={point.icon} />
-						{point.media.map((media, m) => (
-							<Polaroid key={media.src} media={media} caption={media.alt} index={m} className="pf-polaroid-small" />
-						))}
-					</div>
+/** 항목의 둘째 그림부터: 작은 액자 줄 */
+const Thumbs: React.FC<{ point: LandingPoint; media: LandingMedia[] }> = ({ point, media }) =>
+	media.length > 0 ? (
+		<ul className="pf-thumbs" aria-label={`${point.title} 화면 더 보기`}>
+			{media.map((item) => (
+				<li key={item.src}>
+					<Frame media={item} />
 				</li>
 			))}
-		</ol>
+		</ul>
+	) : null;
+
+/** 그림이 없는 넓은 카드의 오른쪽: 큰 도형 위에 큰 아이콘 */
+const ShapeArt: React.FC<{ point: LandingPoint; index: number; tone: Tone }> = ({ point, index, tone }) => (
+	<div className="pf-shape-art" aria-hidden="true">
+		<span className="pf-blob" data-tone={tone === 'sun' ? 'coral' : 'sun'} />
+		<span className="pf-blob pf-blob-2" data-tone={tone === 'lilac' ? 'mint' : 'lilac'} />
+		<span className="pf-shape-icon">
+			<i className={`fa-solid ${iconOf(point, index)}`} />
+		</span>
 	</div>
 );
 
-/** 구현 방법: 압정으로 꽂은 색인 카드, 그림이 있으면 옆에 폴라로이드 */
-const Built: Body<'built'> = ({ section }) => (
-	<ul className="pf-pins">
-		{section.items.map((point, index) => (
-			<li key={point.title} className="pf-cluster">
-				<div className="pf-card" style={pinned(index + 3, 0.7)} data-reveal="drop">
-					<Pin />
-					<PointText point={point} icon={iconOf(point, index + 2)} />
-				</div>
-				{point.media.map((media, m) => (
-					<Polaroid key={media.src} media={media} caption={media.alt} index={index + m + 2} />
-				))}
-			</li>
-		))}
-	</ul>
-);
-
-/** 트러블슈팅 카드 한 장: 앞면은 문제(와 원인), 뒤집으면 해결과 결과. 보이지 않는 면은 inert */
-const FlipCard: React.FC<{ item: LandingTrouble; index: number }> = ({ item, index }) => {
-	const [flipped, setFlipped] = useState(false);
-	const front = useRef<HTMLButtonElement>(null);
-	const back = useRef<HTMLButtonElement>(null);
-	const moved = useRef(false);
-	useEffect(() => {
-		// 뒤집은 뒤에는 초점을 보이는 면의 단추로 옮긴다 (처음 그릴 때는 옮기지 않는다)
-		if (!moved.current) return;
-		(flipped ? back : front).current?.focus();
-	}, [flipped]);
-	const flip = () => {
-		moved.current = true;
-		setFlipped((value) => !value);
-	};
+/** 넓은 기능 카드: 글과 그림(없으면 도형)이 좌우로, 그림 쪽은 번갈아 */
+const WideCard: React.FC<{ point: LandingPoint; index: number; flip: boolean }> = ({ point, index, flip }) => {
+	const [first, ...more] = point.media;
+	const tone = toneOf(index);
 	return (
-		<li className="pf-cluster">
-			<div
-				className="pf-flip"
-				data-flipped={flipped ? '' : undefined}
-				style={pinned(index + 1, 0.6)}
-				data-reveal="drop"
-			>
-				<div className="pf-flip-inner">
-					<div className="pf-face pf-front" inert={flipped}>
-						<Pin />
-						<p className="pf-face-tag">
-							<FaIcon icon={troubleIcon(item)} />
-							문제 {pad(index + 1)}
-						</p>
-						<h3 className="pf-point-title">{item.title}</h3>
-						<p className="pf-body">{item.problem}</p>
-						{item.cause && (
-							<p className="pf-detail">
-								<b>원인</b> {item.cause}
-							</p>
-						)}
-						<button ref={front} type="button" className="pf-flip-button" onClick={flip}>
-							뒤집어서 해결 보기 <i className="fa-solid fa-rotate" aria-hidden="true" />
-						</button>
-					</div>
-					<div className="pf-face pf-back" inert={!flipped}>
-						<Pin />
-						<p className="pf-face-tag">해결 {pad(index + 1)}</p>
-						<p className="pf-back-title">{item.title}</p>
-						<p className="pf-body">{item.solution}</p>
-						{item.result && (
-							<p className="pf-result">
-								<b>결과</b> {item.result}
-							</p>
-						)}
-						<button ref={back} type="button" className="pf-flip-button" onClick={flip}>
-							앞면 다시 보기 <i className="fa-solid fa-rotate-left" aria-hidden="true" />
-						</button>
-					</div>
-				</div>
+		<li className="pf-card pf-card-wide" data-tone={tone} data-flip={flip ? '' : undefined} data-reveal="">
+			<div className="pf-card-text">
+				<Glyph point={point} index={index} />
+				<PointText point={point} />
+				<Thumbs point={point} media={more} />
 			</div>
-			{item.image && <Polaroid media={item.image} caption={item.image.alt || item.title} index={index + 4} />}
+			<div className="pf-card-visual">
+				{first ? <Frame media={first} /> : <ShapeArt point={point} index={index} tone={tone} />}
+			</div>
 		</li>
 	);
 };
 
-const Trouble: Body<'troubleshooting'> = ({ section }) => (
-	<ul className="pf-pins">
-		{section.items.map((item, index) => (
-			<FlipCard key={item.title} item={item} index={index} />
-		))}
-	</ul>
+const SmallCard: React.FC<{ point: LandingPoint; index: number; order: number }> = ({ point, index, order }) => (
+	<li className="pf-card pf-card-small" data-tone={toneOf(index)} data-reveal="" style={delay(order)}>
+		<Glyph point={point} index={index} />
+		<PointText point={point} />
+	</li>
 );
 
-/** 이야기: 줄 그은 일기장 한 쪽씩 */
-const Stories: Body<'stories'> = ({ section }) => (
-	<div className="pf-pins">
-		{section.stories.map((story, index) => (
-			<article
-				key={story.title}
-				className="pf-diary"
-				aria-label={story.title}
-				style={pinned(index + 2, 0.5)}
-				data-reveal="drop"
-			>
-				<Tape />
-				{story.image && (
-					<Polaroid media={story.image} caption={story.image.alt} index={index + 1} className="pf-polaroid-small" />
-				)}
-				<p className="pf-diary-no" aria-hidden="true">
-					{pad(index + 1)}번째 이야기
-				</p>
-				<h3 className="pf-diary-title">{story.title}</h3>
-				{story.lead && <p className="pf-diary-lead">{story.lead}</p>}
-				{story.facts.length > 0 && <Stamps facts={story.facts} small offset={index + 2} />}
-				{story.points.length > 0 && (
-					<ul className="pf-diary-points">
-						{story.points.map((point) => (
-							<li key={point.title}>
-								<PointText point={point} level="h4" />
-								{point.media.map((media, m) => (
-									<Polaroid key={media.src} media={media} caption={media.alt} index={m} className="pf-polaroid-small" />
-								))}
-							</li>
+type Run =
+	| { kind: 'wide'; point: LandingPoint; index: number }
+	| { kind: 'grid'; items: { point: LandingPoint; index: number }[] };
+
+/**
+ * 기능을 줄로 나눈다: 그림이 있는 것은 넓은 카드 하나씩, 그림이 없는 것이 이어지면 작은 카드 격자로.
+ * 하나만 남거나 홀수로 남아 줄이 비면 첫 하나를 넓은 카드(도형 그림)로 꺼낸다
+ */
+function runsOf(items: LandingPoint[]): Run[] {
+	const runs: Run[] = [];
+	let plain: { point: LandingPoint; index: number }[] = [];
+	const flush = () => {
+		if (plain.length === 0) return;
+		const n = plain.length;
+		if (n === 1 || (n % 2 === 1 && n % 3 !== 0)) {
+			const [head, ...rest] = plain;
+			runs.push({ kind: 'wide', ...head });
+			if (rest.length) runs.push({ kind: 'grid', items: rest });
+		} else runs.push({ kind: 'grid', items: plain });
+		plain = [];
+	};
+	items.forEach((point, index) => {
+		if (point.media.length) {
+			flush();
+			runs.push({ kind: 'wide', point, index });
+		} else plain.push({ point, index });
+	});
+	flush();
+	return runs;
+}
+
+const Features: React.FC<{ items: LandingPoint[] }> = ({ items }) => {
+	let wide = 0;
+	return (
+		<div className="pf-features">
+			{runsOf(items).map((run) =>
+				run.kind === 'wide' ? (
+					<ul key={run.point.title} className="pf-cards">
+						<WideCard point={run.point} index={run.index} flip={wide++ % 2 === 1} />
+					</ul>
+				) : (
+					<ul
+						key={run.items[0].point.title}
+						className="pf-cards pf-cards-grid"
+						data-cols={run.items.length % 3 === 0 ? 3 : 2}
+					>
+						{run.items.map(({ point, index }, order) => (
+							<SmallCard key={point.title} point={point} index={index} order={order} />
 						))}
 					</ul>
-				)}
-			</article>
-		))}
-	</div>
-);
+				)
+			)}
+		</div>
+	);
+};
 
-/** 조작법: 글쇠 스티커와 손글씨 설명 */
-const Controls: Body<'controls'> = ({ section }) => (
-	<dl className="pf-keys">
-		{section.controls.map((control, index) => (
-			<div key={control.label} style={pinned(index, 0.5)}>
-				<dt>
-					{control.keys.map((key) => (
-						<kbd key={key}>{key}</kbd>
+/** 단계·만든 방식의 그림들 */
+const PointMedia: React.FC<{ point: LandingPoint }> = ({ point }) =>
+	point.media.length > 0 ? (
+		<div className="pf-point-media" data-count={Math.min(point.media.length, 2)}>
+			{point.media.map((media) => (
+				<Frame key={media.src} media={media} />
+			))}
+		</div>
+	) : null;
+
+/**
+ * 만든 방식 카드의 너비 (여섯 칸 격자): 그림이 있으면 한 줄 가득, 그림이 없는 것은 셋이나 둘씩.
+ * 둘씩 놓다 하나가 남으면 마지막 하나를 가득 채워 줄이 비지 않게 한다
+ */
+const spanOf = (items: LandingPoint[], order: number): 'full' | 'half' | 'third' => {
+	if (items[order].media.length) return 'full';
+	const plain = items.filter((item) => !item.media.length);
+	const nth = plain.indexOf(items[order]);
+	if (plain.length === 1) return 'full';
+	if (plain.length % 3 === 0) return 'third';
+	return plain.length % 2 === 1 && nth === plain.length - 1 ? 'full' : 'half';
+};
+
+/** 굽이치는 길: 번호 동그라미를 위아래로 번갈아 놓고 점선 곡선으로 잇는다 (네 단계까지, 장식) */
+const Path: React.FC<{ count: number }> = ({ count }) => {
+	if (count < 2 || count > 4) return null;
+	// 동그라미 가운데: 가로는 칸의 가운데, 세로는 높은 칸 40·낮은 칸 88 (viewBox 높이 128)
+	const points = Array.from({ length: count }, (_, i) => ({ x: ((i + 0.5) / count) * 100, y: i % 2 ? 88 : 40 }));
+	const d = points
+		.map((p, i) => {
+			if (i === 0) return `M ${p.x} ${p.y}`;
+			const prev = points[i - 1];
+			const mid = (prev.x + p.x) / 2;
+			return `C ${mid} ${prev.y} ${mid} ${p.y} ${p.x} ${p.y}`;
+		})
+		.join(' ');
+	return (
+		<svg className="pf-path" viewBox="0 0 100 128" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+			<path d={d} fill="none" vectorEffect="non-scaling-stroke" />
+		</svg>
+	);
+};
+
+const RENDERERS: SectionRenderers = {
+	stats: ({ section }) => (
+		<>
+			<h2 className="visually-hidden">{section.label}</h2>
+			<ul className="pf-badges" data-count={Math.min(section.facts.length, 4)}>
+				{section.facts.map((fact, index) => (
+					<li key={fact.label} data-reveal="" style={delay(index)}>
+						<span className="pf-badge" data-tone={toneOf(index)} style={tilt(index)}>
+							<Figure value={fact.value} />
+							<span className="pf-badge-label">{fact.label}</span>
+						</span>
+					</li>
+				))}
+			</ul>
+		</>
+	),
+	features: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<Features items={section.items} />
+		</>
+	),
+	screens: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<ul className="pf-screens" data-count={Math.min(section.shots.length, 4)}>
+				{section.shots.map((shot, order) => (
+					<li key={shot.src} data-reveal="" style={{ ...delay(order), ...tilt(order + 1) }}>
+						<Frame media={shot} />
+						<Sticker tone={toneOf(order, 1)} index={order} className="pf-caption">
+							{shot.caption}
+						</Sticker>
+					</li>
+				))}
+			</ul>
+		</>
+	),
+	steps: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<div className="pf-steps-wrap" data-count={section.items.length}>
+				<Path count={section.items.length} />
+				<ol className="pf-steps" data-count={Math.min(section.items.length, 4)}>
+					{section.items.map((point, order) => (
+						<li key={point.title} data-reveal="" style={delay(order)}>
+							<span className="pf-step-num" data-tone={toneOf(order, 3)} aria-hidden="true">
+								{order + 1}
+								<span className="pf-step-icon">
+									<i className={`fa-solid ${iconOf(point, order)}`} />
+								</span>
+							</span>
+							<p className="visually-hidden">{order + 1}단계</p>
+							<PointText point={point} />
+							<PointMedia point={point} />
+						</li>
 					))}
-				</dt>
-				<dd>{control.label}</dd>
+				</ol>
 			</div>
-		))}
-	</dl>
-);
-
-/** 기술: 둥근 스티커(쓴 기술), 꼬리표(사양), 타자로 친 쪽지(폴더 구조) */
-const Tech: Body<'tech'> = ({ section }) => (
-	<div className="pf-tech">
-		{section.stack.length > 0 && (
-			<div className="pf-stickers">
-				<h3 className="visually-hidden">쓴 기술</h3>
-				<ul>
-					{section.stack.map((item, index) => (
-						<li key={item} data-tone={toneOf(index, 2)} style={pinned(index, 1.6)}>
+		</>
+	),
+	built: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<ul className="pf-built">
+				{section.items.map((point, order) => (
+					<li key={point.title} data-reveal="" style={delay(order % 3)} data-span={spanOf(section.items, order)}>
+						<Glyph point={point} index={order} tone={toneOf(order, 1)} />
+						<div className="pf-built-text">
+							<PointText point={point} />
+						</div>
+						<PointMedia point={point} />
+					</li>
+				))}
+			</ul>
+		</>
+	),
+	troubleshooting: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<TroubleList items={section.items} prefix="pf" />
+		</>
+	),
+	stories: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<div className="pf-stories">
+				{section.stories.map((story, number) => (
+					<article
+						key={story.title}
+						className="pf-story"
+						aria-label={story.title}
+						data-tone={toneOf(number, 4)}
+						data-image={story.image ? '' : undefined}
+						data-flip={number % 2 ? '' : undefined}
+						data-reveal=""
+					>
+						<div className="pf-story-text">
+							<div className="pf-story-intro">
+								<Sticker tone="coral" index={number + 1} className="pf-story-num">
+									이야기 {String(number + 1).padStart(2, '0')}
+								</Sticker>
+								<h3>{story.title}</h3>
+								{story.lead && <p className="pf-story-lead">{story.lead}</p>}
+							</div>
+							{(story.facts.length > 0 || story.points.length > 0) && (
+								<div className="pf-story-body">
+									{story.facts.length > 0 && (
+										<ul className="pf-mini-stats">
+											{story.facts.map((fact) => (
+												<li key={fact.label}>
+													<Figure value={fact.value} className="pf-mini-figure" />
+													<span>{fact.label}</span>
+												</li>
+											))}
+										</ul>
+									)}
+									{story.points.length > 0 && (
+										<ul className="pf-story-points">
+											{story.points.map((point, order) => (
+												<li key={point.title}>
+													<Glyph point={point} index={order + 3} />
+													<div>
+														<PointText point={point} level="h4" />
+														<PointMedia point={point} />
+													</div>
+												</li>
+											))}
+										</ul>
+									)}
+								</div>
+							)}
+						</div>
+						{story.image && <Frame media={story.image} className="pf-story-image" />}
+					</article>
+				))}
+			</div>
+		</>
+	),
+	controls: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<dl className="pf-controls" data-count={Math.min(section.controls.length, 4)}>
+				{section.controls.map((control, order) => (
+					<div key={control.label} data-reveal="" style={delay(order)}>
+						<dt>
+							{control.keys.map((key, k) => (
+								<kbd key={key} data-tone={toneOf(order + k, 1)}>
+									{key}
+								</kbd>
+							))}
+						</dt>
+						<dd>{control.label}</dd>
+					</div>
+				))}
+			</dl>
+		</>
+	),
+	timeline: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<ol className="pf-timeline">
+				{section.entries.map((entry, order) => (
+					<li key={`${entry.date}-${entry.label}`} data-reveal="" style={delay(order % 3)}>
+						<span className="pf-node" data-tone={toneOf(order)} aria-hidden="true">
+							{order + 1}
+						</span>
+						<div className="pf-entry">
+							<time>{entry.date}</time>
+							<span className="pf-entry-label">{entry.label}</span>
+						</div>
+					</li>
+				))}
+			</ol>
+		</>
+	),
+	tech: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			{section.stack.length > 0 && (
+				<ul className="pf-chips" aria-label="쓴 기술" data-reveal="">
+					{section.stack.map((item, order) => (
+						<li key={item} data-tone={order === 0 ? 'coral' : toneOf(order - 1)}>
 							{item}
 						</li>
 					))}
 				</ul>
+			)}
+			{(section.specs.length > 0 || section.structure) && (
+				<div className="pf-tech" data-split={section.specs.length > 0 && section.structure ? '' : undefined}>
+					{section.specs.length > 0 && (
+						<dl className="pf-specs" data-reveal="">
+							{section.specs.map((spec) => (
+								<div key={spec.label}>
+									<dt>{spec.label}</dt>
+									<dd>{spec.value}</dd>
+								</div>
+							))}
+						</dl>
+					)}
+					{section.structure && (
+						<figure className="pf-tree" data-reveal="">
+							<figcaption>
+								<span className="pf-dots" aria-hidden="true">
+									<i />
+									<i />
+									<i />
+								</span>
+								폴더 구조
+							</figcaption>
+							<pre>{section.structure}</pre>
+						</figure>
+					)}
+				</div>
+			)}
+		</>
+	),
+	team: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<TeamList members={section.members} prefix="pf" />
+		</>
+	),
+	role: ({ section, index }) => (
+		<div className="pf-role">
+			<Head section={section} index={index} />
+			<div className="pf-note" data-reveal="">
+				<span className="pf-tape" aria-hidden="true" />
+				{section.role && <p className="pf-note-role">{section.role}</p>}
+				{(section.context || section.period) && (
+					<dl className="pf-note-meta">
+						{section.context && (
+							<div>
+								<dt>프로젝트</dt>
+								<dd>{section.context}</dd>
+							</div>
+						)}
+						{section.period && (
+							<div>
+								<dt>기간</dt>
+								<dd>{section.period}</dd>
+							</div>
+						)}
+					</dl>
+				)}
+				{section.contributions.length > 0 && (
+					<ul className="pf-checks">
+						{section.contributions.map((item) => (
+							<li key={item}>
+								<i className="fa-solid fa-check" aria-hidden="true" />
+								<span>{item}</span>
+							</li>
+						))}
+					</ul>
+				)}
+			</div>
+		</div>
+	),
+	deployments: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<DeployList items={section.items} prefix="pf" />
+		</>
+	),
+	credits: ({ section, index }) => (
+		<>
+			<Head section={section} index={index} />
+			<ul className="pf-credits">
+				{section.credits.map((credit, order) => (
+					<li key={`${credit.role}-${credit.name}`} data-reveal="" style={delay(order)}>
+						<Sticker tone={toneOf(order, 3)} index={order}>
+							{credit.role}
+						</Sticker>
+						<p className="pf-credit-name">
+							{credit.href ? (
+								<a href={credit.href} target="_blank" rel="noopener noreferrer">
+									{credit.name}
+									<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
+								</a>
+							) : (
+								credit.name
+							)}
+						</p>
+						<p className="pf-credit-by">{credit.by}</p>
+						{credit.note && <p className="pf-credit-note">{credit.note}</p>}
+					</li>
+				))}
+			</ul>
+		</>
+	),
+};
+
+/** 첫 화면 스티커: 기술 이름 셋, 없으면 기능 제목 둘 */
+const stickersOf = (landing: Landing): string[] => {
+	for (const section of landing.sections) {
+		if (section.kind === 'tech' && section.stack.length) return section.stack.slice(0, 3);
+	}
+	for (const section of landing.sections) {
+		if (section.kind === 'features') return section.items.slice(0, 2).map((item) => item.title);
+	}
+	return [];
+};
+
+/** 첫 화면 오른쪽: 색 도형 위에 화면(없으면 앱 아이콘이나 큰 글자), 둘레에 스티커 */
+const Collage: React.FC<{ hero: LandingHero; stickers: string[]; first?: LandingPoint }> = ({
+	hero,
+	stickers,
+	first,
+}) => (
+	<div className="pf-collage" data-art={hero.image ? undefined : ''} data-reveal="">
+		<span className="pf-shape pf-shape-sun" aria-hidden="true" />
+		<span className="pf-shape pf-shape-lilac" aria-hidden="true" />
+		<span className="pf-shape pf-shape-mint" aria-hidden="true" />
+		{hero.image ? (
+			<figure className="pf-window">
+				<div className="pf-window-bar" aria-hidden="true">
+					<span className="pf-dots">
+						<i />
+						<i />
+						<i />
+					</span>
+				</div>
+				<Media media={hero.image} eager className="pf-window-screen" />
+			</figure>
+		) : (
+			<div className="pf-hero-art" aria-hidden="true">
+				{hero.icon ? (
+					<img className="pf-hero-icon" src={hero.icon} alt="" />
+				) : first ? (
+					<i className={`fa-solid ${iconOf(first, 0)}`} />
+				) : (
+					<span className="pf-initial">{Array.from(hero.name.trim())[0] ?? ''}</span>
+				)}
 			</div>
 		)}
-		{section.specs.length > 0 && (
-			<dl className="pf-tag" style={pinned(5, 0.5)}>
-				<span className="pf-tag-hole" aria-hidden="true" />
-				{section.specs.map((spec) => (
-					<div key={spec.label}>
-						<dt>{spec.label}</dt>
-						<dd>{spec.value}</dd>
-					</div>
-				))}
-			</dl>
-		)}
-		{section.structure && (
-			<figure className="pf-typed" style={pinned(2, 0.4)}>
-				<Tape />
-				<figcaption>폴더 구조</figcaption>
-				<pre>{section.structure}</pre>
-			</figure>
-		)}
-	</div>
-);
-
-/** 팀원: 사진 부스 띠 한 줄. 칸마다 사진(없으면 이름 첫 글자)과 손글씨 이름 */
-const Team: Body<'team'> = ({ section }) => (
-	<ul className="pf-booth" style={pinned(1, 0.6)} data-reveal="drop">
-		{section.members.map((member, index) => (
-			<li key={member.name} data-me={member.me ? '' : undefined}>
-				<div className="pf-booth-shot" data-tone={toneOf(index, 3)}>
-					<MemberAvatar member={member} className="pf-avatar" />
-				</div>
-				<h3>
-					{member.name}
-					{member.me && <span className="pf-me">나</span>}
-				</h3>
-				<p>{member.role}</p>
-				{member.url && (
-					<a href={member.url} title={member.url} {...external}>
-						<FaIcon icon={/github\.com/.test(member.url) ? 'fa-github' : 'fa-link'} />
-						{shortLink(member.url)}
-					</a>
-				)}
-			</li>
-		))}
-	</ul>
-);
-
-/** 내 역할: 할 일 쪽지 */
-const Role: Body<'role'> = ({ section, index }) => (
-	<div className="pf-todo" data-tone="sun" style={pinned(index, 0.5)} data-reveal="drop">
-		<Tape />
-		{section.role && <h3 className="pf-point-title">{section.role}</h3>}
-		{(section.context || section.period) && (
-			<p className="pf-detail">{[section.context, section.period].filter(Boolean).join(' · ')}</p>
-		)}
-		{section.contributions.length > 0 && (
-			<ul>
-				{section.contributions.map((item) => (
-					<li key={item}>
-						<i className="fa-solid fa-check" aria-hidden="true" />
-						{item}
+		{stickers.length > 0 && (
+			<ul className="pf-hero-stickers" aria-hidden="true">
+				{stickers.map((item, index) => (
+					<li key={item} data-slot={index}>
+						<Sticker tone={(['pink', 'sky', 'sun'] as const)[index % 3]} index={index}>
+							{item}
+						</Sticker>
 					</li>
 				))}
 			</ul>
@@ -480,215 +648,57 @@ const Role: Body<'role'> = ({ section, index }) => (
 	</div>
 );
 
-/** 진행 과정: 손으로 그은 점선 길 위에 날짜 쪽지를 위아래로 번갈아 */
-const Timeline: Body<'timeline'> = ({ section }) => (
-	<div className="pf-path">
-		<svg className="pf-path-line" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-			<path
-				d="M0 20 C 60 12, 110 28, 170 20 S 280 12, 340 20 S 450 28, 510 20 S 620 12, 680 20 S 790 28, 850 20 S 960 12, 1000 19"
-				fill="none"
-				vectorEffect="non-scaling-stroke"
-			/>
-		</svg>
-		<ol style={{ '--n': section.entries.length } as React.CSSProperties}>
-			{section.entries.map((entry, index) => (
-				<li key={`${entry.date}-${entry.label}`} data-side={index % 2 ? 'down' : 'up'}>
-					<span className="pf-path-dot" aria-hidden="true" />
-					<div className="pf-path-note" style={pinned(index, 0.6)}>
-						<time>{entry.date}</time>
-						<span>{entry.label}</span>
-					</div>
-				</li>
-			))}
-		</ol>
-	</div>
-);
-
-/** 배포 결과물: 입장권. 주소가 있으면 표 전체가 링크 */
-const Deployments: Body<'deployments'> = ({ section }) => (
-	<ul className="pf-pins pf-tickets">
-		{section.items.map((item, index) => (
-			<li
-				key={item.label}
-				className="pf-ticket"
-				data-tone={toneOf(index, 1)}
-				data-live={item.url ? '' : undefined}
-				style={pinned(index, 0.5)}
-				data-reveal="drop"
-			>
-				<div className="pf-ticket-main">
-					{item.image && (
-						<div className="pf-ticket-image">
-							<Media media={item.image} />
-						</div>
-					)}
-					<p className="pf-ticket-meta">{[item.platform, item.host].filter(Boolean).join(' · ')}</p>
-					<h3>
-						{item.url ? (
-							<a href={item.url} {...external}>
-								{item.label}
-							</a>
-						) : (
-							item.label
-						)}
-					</h3>
-					{item.note && <p className="pf-ticket-note">{item.note}</p>}
-				</div>
-				<div className="pf-ticket-stub" aria-hidden="true">
-					<FaIcon icon={item.icon} />
-					<span>No. {pad(index + 1)}</span>
-					<span>{item.url ? '입장' : '준비 중'}</span>
-				</div>
-			</li>
-		))}
-	</ul>
-);
-
-/** 출처: 영수증 한 장 */
-const Credits: Body<'credits'> = ({ section }) => (
-	<div className="pf-receipt" style={pinned(3, 0.4)}>
-		<p className="pf-receipt-head" aria-hidden="true">
-			출처 영수증
-		</p>
-		<ol>
-			{section.credits.map((credit) => (
-				<li key={`${credit.role}-${credit.name}`}>
-					<span className="pf-receipt-role">{credit.role}</span>
-					<span className="pf-receipt-name">
-						{credit.href ? (
-							<a href={credit.href} {...external}>
-								{credit.name}
-							</a>
-						) : (
-							credit.name
-						)}
-						<small>
-							{credit.by}
-							{credit.note && ` · ${credit.note}`}
-						</small>
-					</span>
-				</li>
-			))}
-		</ol>
-		<p className="pf-receipt-foot" aria-hidden="true">
-			감사합니다
-		</p>
-	</div>
-);
-
-const BODIES: { [K in LandingSectionKind]: Body<K> } = {
-	stats: Stats,
-	features: Features,
-	screens: Screens,
-	steps: Steps,
-	built: Built,
-	troubleshooting: Trouble,
-	stories: Stories,
-	controls: Controls,
-	tech: Tech,
-	team: Team,
-	role: Role,
-	timeline: Timeline,
-	deployments: Deployments,
-	credits: Credits,
-};
-
-/* ─── 첫 화면과 마무리 ─── */
-
-const Hero: React.FC<{ hero: LandingHero }> = ({ hero }) => {
-	const meta = [
-		hero.meta.context && { label: '어떤 프로젝트', value: hero.meta.context },
-		hero.meta.role && { label: '맡은 일', value: hero.meta.role },
-		hero.meta.period && { label: '기간', value: hero.meta.period },
-	].filter(Boolean) as { label: string; value: string }[];
-	return (
-		<header className="pf-hero" data-image={hero.image ? '' : undefined} data-meta={meta.length ? '' : undefined}>
-			{hero.image && (
-				<Polaroid
-					media={hero.image}
-					caption={hero.image.alt}
-					index={0}
-					eager
-					reveal={false}
-					className="pf-hero-photo"
-				/>
-			)}
-			<div className="pf-poster">
-				<Tape className="pf-tape-left" />
-				<Tape className="pf-tape-right" />
-				<p className="pf-nametag">
-					{hero.icon && <img src={hero.icon} alt="" />}
-					{hero.logo ? <img className="pf-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
-				</p>
-				<h1>
-					<Headline text={hero.headline} />
-				</h1>
-				{hero.subhead && <p className="pf-subhead">{hero.subhead}</p>}
-				<LandingLinks links={hero.links} className="pf-links" />
-			</div>
-			{meta.length > 0 && (
-				<dl className="pf-sticky pf-hero-meta" data-tone="sun" style={pinned(1)}>
-					<Pin />
-					{meta.map((item) => (
-						<div key={item.label}>
-							<dt>{item.label}</dt>
-							<dd>{item.value}</dd>
-						</div>
-					))}
-				</dl>
-			)}
-		</header>
-	);
-};
-
-const Postcard: React.FC<{ closing: Landing['closing']; hero: LandingHero }> = ({ closing, hero }) => (
-	<footer className="pf-postcard" style={pinned(2, 0.4)}>
-		<div className="pf-postcard-text">
-			<h2>{closing.title}</h2>
-			{closing.lead && <p className="pf-subhead">{closing.lead}</p>}
-			<LandingLinks links={closing.links} className="pf-links" />
-		</div>
-		<div className="pf-postcard-side" aria-hidden="true">
-			<span className="pf-postcard-stamp" data-tone="coral">
-				{hero.icon ? <img src={hero.icon} alt="" /> : <i className="fa-solid fa-heart" />}
-			</span>
-			<span className="pf-postcard-line">{hero.name}</span>
-			<span className="pf-postcard-line" />
-			<span className="pf-postcard-line" />
-		</div>
-	</footer>
-);
-
 const PlayfulPage: React.FC<{ project: Project }> = ({ project }) => {
 	const landing = useLanding(project);
 	const root = useReveal<HTMLDivElement>();
 	const accent = playfulAccent(useLandingAccent(project.icon));
-	const { hero, closing, sections } = landing;
-	const spans = spansOf(sections);
+	const { hero, closing } = landing;
+	const meta = [hero.meta.context, hero.meta.role, hero.meta.period].filter(Boolean) as string[];
+	const features = landing.sections.find((section) => section.kind === 'features');
+	const firstPoint = features?.kind === 'features' ? features.items[0] : undefined;
 
 	return (
 		<div ref={root} className="tpl tpl-playful" style={accent}>
-			<Hero hero={hero} />
-			{sections.length > 0 && (
-				<div className="pf-board">
-					{sections.map((section, index) => {
-						const Render = BODIES[section.kind] as Body<LandingSection['kind']>;
-						return (
-							<section
-								key={section.kind}
-								className="pf-zone"
-								aria-label={section.label}
-								data-section={section.kind}
-								data-span={spans[section.kind]}
-							>
-								<ZoneHead section={section} index={index} />
-								<Render section={section as never} index={index} />
-							</section>
-						);
-					})}
+			<header className="pf-hero">
+				<div className="pf-hero-text" data-reveal="">
+					<p className="pf-brand">
+						{hero.icon && hero.image && <img className="pf-icon" src={hero.icon} alt="" />}
+						{hero.logo ? <img className="pf-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
+					</p>
+					<h1>
+						<Headline text={hero.headline} />
+					</h1>
+					{hero.subhead && <p className="pf-subhead">{hero.subhead}</p>}
+					<LandingLinks links={hero.links} className="pf-links" />
+					{meta.length > 0 && (
+						<ul className="pf-meta" aria-label="프로젝트 정보">
+							{meta.map((item, index) => (
+								<li key={item} data-tone={(['coral', 'lilac', 'mint'] as const)[index]}>
+									{item}
+								</li>
+							))}
+						</ul>
+					)}
 				</div>
-			)}
-			<Postcard closing={closing} hero={hero} />
+				<Collage hero={hero} stickers={stickersOf(landing)} first={firstPoint} />
+			</header>
+
+			<LandingSections landing={landing} renderers={RENDERERS} className="pf-section" />
+
+			<footer className="pf-closing" data-reveal="">
+				<span className="pf-closing-shape pf-closing-sun" aria-hidden="true" />
+				<span className="pf-closing-shape pf-closing-lilac" aria-hidden="true" />
+				<span className="pf-closing-shape pf-closing-mint" aria-hidden="true" />
+				<div className="pf-closing-text">
+					{closing.lead && (
+						<Sticker tone="sun" index={1}>
+							{closing.lead}
+						</Sticker>
+					)}
+					<h2>{closing.title}</h2>
+					<LandingLinks links={closing.links} className="pf-links" />
+				</div>
+			</footer>
 		</div>
 	);
 };
