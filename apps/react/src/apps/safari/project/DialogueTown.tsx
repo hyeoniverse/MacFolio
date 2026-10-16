@@ -1,11 +1,28 @@
-// RPG 대화창(DialoguePage)의 마을 화면: 마을 판(dialogueVillage.ts)을 캔버스에 한 번 칠하고, 그 위에서 주인공이 칸 단위로 걷는다.
+// RPG 대화창(DialoguePage)의 마을 화면: 마을 그림(dialogueVillage.ts, Ninja Adventure 타일)을 캔버스에 칠하고, 그 위에서 주인공이 칸 단위로 걷는다.
 // 방향 키·WASD로 한 칸씩(16칸을 네 프레임 걸음으로 부드럽게, 움직임 줄이기면 바로), 화면을 누르면 너비 우선 탐색으로 찾은 길로 걸어가고,
 // 장소를 누르면 그 옆까지 걸어가 바로 살펴본다. Z·Enter·Space는 바로 앞 장소를 살펴본다(DialoguePage가 그 주제를 연다).
-// 지도와 사람 판은 바뀔 때만 다시 칠하고, 걷는 동안에만 requestAnimationFrame으로 주인공과 카메라를 옮긴다(멈추면 쉰다).
+// 땅과 집은 바뀔 때만 다시 칠하고(낮·밤 두 장), 팀원·안내인·음유시인·몬스터는 그림 칸 하나씩(가끔 고개를 돌리고, 몬스터는 꿈틀댄다),
+// 주인공은 걷는 동안에만 requestAnimationFrame으로 옮긴다(멈추면 쉰다). 나무 한 그루의 윗가지는 주인공 위 판에 칠해 그 뒤를 지나가게 한다.
 // 그림이라 읽기 프로그램에는 숨기고, 지금 앞에 무엇이 있는지는 DialoguePage의 알림 줄과 바로 가기 메뉴가 대신한다
-import React, { useEffect, useMemo, useRef } from 'react';
-import { pixelRuns, personColors } from '@/apps/safari/project/dialogueStage';
-import { TILE } from '@/apps/safari/project/dialogueScenes';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+	characterFrame,
+	characterOf,
+	drawOf,
+	GROUND,
+	ITEMS,
+	loadSheets,
+	monsterFrame,
+	nightOver,
+	nightTint,
+	NIGHT_RGB,
+	paintDraws,
+	sheetUrl,
+	TILE,
+	type CharacterName,
+	type Draw,
+	type SheetKey,
+} from '@/apps/safari/project/dialogueNinja';
 import {
 	cameraOf,
 	facingPlace,
@@ -24,19 +41,7 @@ import {
 	type Tile,
 	type WorldLayout,
 } from '@/apps/safari/project/dialogueWorld';
-import {
-	BARD_COLORS,
-	GATE_COLORS,
-	gateDoorRows,
-	HERO_COLORS,
-	markPoint,
-	MINI_MONSTER,
-	miniMonsterColors,
-	personRows,
-	TUTOR_COLORS,
-	villageRgba,
-	type WalkFrame,
-} from '@/apps/safari/project/dialogueVillage';
+import { composeVillage, markPoint, VILLAGE_MARGIN } from '@/apps/safari/project/dialogueVillage';
 import { Pixels } from '@/apps/safari/project/DialoguePixels';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import '@/apps/safari/project/DialogueTown.css';
@@ -44,75 +49,174 @@ import '@/apps/safari/project/DialogueTown.css';
 /** 한 칸을 걷는 시간(ms): 앞 반은 발을 내딛고 뒤 반은 선다 (두 걸음에 서기·왼발·서기·오른발 네 프레임) */
 const STEP_MS = 180;
 
+/** 걸음 프레임: 서기, 왼발, 오른발 (사람 그림의 걸음 줄 0·1·3) */
+export type WalkFrame = 'stand' | 'a' | 'b';
+const FRAME_ROW: Record<WalkFrame, number> = { stand: 0, a: 1, b: 3 };
+
+/** 주인공 그림과 그 캔버스 높이 (16칸 그림 아래에 그림자 두 줄) */
+export const HERO: CharacterName = 'boy';
+const HERO_H = 18;
+/** 안내인(쓰는 법)과 음유시인(크레딧) */
+const TUTOR: CharacterName = 'oldman';
+const BARD: CharacterName = 'monk';
+
 export interface PlayerSpot {
 	x: number;
 	y: number;
 	facing: Facing;
 }
 
-/** 칸 그림을 캔버스에 찍는다 (같은 색끼리 이은 사각형) */
-function drawRows(
-	ctx: CanvasRenderingContext2D,
-	rows: readonly string[],
-	colors: Record<string, string>,
-	x: number,
-	y: number
+/** 마을 캔버스의 크기: 지도와 둘레 숲 여백 */
+const CANVAS_W = WORLD_PX_W + 2 * VILLAGE_MARGIN;
+const CANVAS_H = WORLD_PX_H + 2 * VILLAGE_MARGIN;
+
+/** 칠할 것들의 그림을 받아 캔버스에 칠한다 (밤이면 밤 색을 곱한다). 다 칠하면 done */
+function usePainted(
+	ref: React.RefObject<HTMLCanvasElement | null>,
+	draws: readonly Draw[],
+	night: boolean,
+	after?: (ctx: CanvasRenderingContext2D) => void
 ) {
-	for (const run of pixelRuns(rows, colors)) {
-		ctx.fillStyle = run.color;
-		ctx.fillRect(x + run.x, y + run.y, run.w, 1);
-	}
-}
-
-/** 칸 그림을 타일 바닥 가운데에 세운다 (lift만큼 띄운다) */
-function standRows(
-	ctx: CanvasRenderingContext2D,
-	rows: readonly string[],
-	colors: Record<string, string>,
-	tx: number,
-	ty: number,
-	lift = 2
-) {
-	const w = rows[0]?.length ?? 0;
-	drawRows(ctx, rows, colors, tx * TILE + Math.floor((TILE - w) / 2), ty * TILE + TILE - rows.length - lift);
-}
-
-/** 발밑 그림자 (반투명 타원) */
-function shadow(ctx: CanvasRenderingContext2D, cx: number, by: number, rx: number) {
-	ctx.fillStyle = 'rgb(20 40 30 / 28%)';
-	ctx.fillRect(cx - rx + 1, by - 2, rx * 2 - 2, 1);
-	ctx.fillRect(cx - rx, by - 1, rx * 2, 2);
-	ctx.fillRect(cx - rx + 1, by + 1, rx * 2 - 2, 1);
-}
-
-/** 마을 판 (낮·밤 두 장 중 테마에 맞는 한 장) */
-const VillageCanvas: React.FC<{ active: ReadonlySet<string>; night: boolean }> = ({ active, night }) => {
-	const ref = useRef<HTMLCanvasElement>(null);
 	useEffect(() => {
-		const ctx = ref.current?.getContext('2d');
-		if (!ctx || typeof ImageData === 'undefined') return;
-		const data = villageRgba(SLOTS, active, night);
-		ctx.putImageData(new ImageData(new Uint8ClampedArray(data), WORLD_PX_W, WORLD_PX_H), 0, 0);
-	}, [active, night]);
+		const canvas = ref.current;
+		const ctx = canvas?.getContext('2d');
+		if (!canvas || !ctx) return;
+		let alive = true;
+		void loadSheets(draws.filter((d) => !d.fill).map((d) => d.sheet)).then((sheets) => {
+			if (!alive) return;
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			// 칠할 것의 자리는 지도 기준: 둘레 숲 여백만큼 밀어 칠한다
+			ctx.translate(VILLAGE_MARGIN, VILLAGE_MARGIN);
+			paintDraws(ctx, draws, sheets);
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+			if (after) after(ctx);
+			else if (night) nightTint(ctx, canvas.width, canvas.height);
+			canvas.dataset.painted = '';
+		});
+		return () => {
+			alive = false;
+		};
+	}, [ref, draws, night, after]);
+}
+
+/** 마을 판 (낮·밤 두 장 중 테마에 맞는 한 장): 땅과 세운 것, 그리고 사람 위에 덮는 윗가지 판 */
+const VillageCanvas: React.FC<{ active: ReadonlySet<string>; gateOpen: boolean; night: boolean }> = ({
+	active,
+	gateOpen,
+	night,
+}) => {
+	const ref = useRef<HTMLCanvasElement>(null);
+	const art = useMemo(() => composeVillage(SLOTS, active, gateOpen), [active, gateOpen]);
+	const lightUp = useMemo(
+		() =>
+			night
+				? (ctx: CanvasRenderingContext2D) =>
+						nightOver(
+							ctx,
+							CANVAS_W,
+							CANVAS_H,
+							art.lights.map((l) => ({ ...l, x: l.x + VILLAGE_MARGIN, y: l.y + VILLAGE_MARGIN }))
+						)
+				: undefined,
+		[night, art]
+	);
+	usePainted(ref, art.draws, night, lightUp);
 	return (
-		<canvas ref={ref} className="dl-village" data-night={night || undefined} width={WORLD_PX_W} height={WORLD_PX_H} />
+		<canvas
+			ref={ref}
+			className="dl-village"
+			data-night={night || undefined}
+			width={CANVAS_W}
+			height={CANVAS_H}
+			style={{ left: -VILLAGE_MARGIN, top: -VILLAGE_MARGIN }}
+		/>
 	);
 };
 
-/** 장소 위의 표: 아직 안 읽은 곳은 '!' 말풍선, 읽은 곳은 작은 ✓ (12×12 칸 그림) */
-const MARK_NEW = [
-	'.kkkkkkkk.',
-	'kWWWWWWWWk',
-	'kWWWffWWWk',
-	'kWWWffWWWk',
-	'kWWWffWWWk',
-	'kWWWffWWWk',
-	'kWWWWWWWWk',
-	'kWWWffWWWk',
-	'kWWWWWWWWk',
-	'.kkkWWkkk.',
-	'....kk....',
-];
+const OverheadCanvas: React.FC<{ active: ReadonlySet<string>; gateOpen: boolean; night: boolean }> = ({
+	active,
+	gateOpen,
+	night,
+}) => {
+	const ref = useRef<HTMLCanvasElement>(null);
+	const art = useMemo(() => composeVillage(SLOTS, active, gateOpen), [active, gateOpen]);
+	usePainted(ref, art.overhead, night);
+	return (
+		<canvas
+			ref={ref}
+			className="dl-village dl-overhead"
+			data-night={night || undefined}
+			width={CANVAS_W}
+			height={CANVAS_H}
+			style={{ left: -VILLAGE_MARGIN, top: -VILLAGE_MARGIN }}
+		/>
+	);
+};
+
+/** 그림 칸 하나를 배경으로 (사람·몬스터): 칸 자리(왼쪽 위)와 그림 파일 */
+const spriteStyle = (sheet: SheetKey, x: number, y: number): React.CSSProperties => ({
+	left: x,
+	top: y,
+	backgroundImage: `url(${sheetUrl(sheet)})`,
+});
+
+/** 마을에 선 사람 하나: 발밑 그림자, 16×16 그림 칸 (보는 방향의 열, 가끔 고개를 돌린다) */
+const Villager: React.FC<{ name: CharacterName; x: number; y: number; facing: Facing; seed: number }> = ({
+	name,
+	x,
+	y,
+	facing,
+	seed,
+}) => {
+	const frame = characterFrame(name, facing);
+	return (
+		<span
+			className="dl-actor"
+			data-kind="person"
+			style={{ left: x * TILE, top: y * TILE - 3, ['--dl-delay' as string]: `${-((seed * 1.7) % 6)}s` }}
+		>
+			<i className="dl-actor-shadow" style={{ backgroundImage: `url(${sheetUrl('shadow')})` }} />
+			<i
+				className="dl-actor-body"
+				data-facing={facing}
+				style={{ ...spriteStyle(frame.sheet, 0, 0), ['--dl-face' as string]: `${-frame.x}px` }}
+			/>
+		</span>
+	);
+};
+
+/** 긴 풀숲의 몬스터: 꿈틀대는 네 칸, 발은 풀에 묻힌다 */
+const Monster: React.FC<{ x: number; y: number }> = ({ x, y }) => {
+	const frame = monsterFrame('spider');
+	return (
+		<span className="dl-actor" data-kind="monster" style={{ left: x * TILE, top: y * TILE - 3 }}>
+			<i className="dl-actor-shadow" style={{ backgroundImage: `url(${sheetUrl('shadow')})` }} />
+			<i className="dl-actor-body" style={spriteStyle(frame.sheet, 0, 0)} />
+			<i
+				className="dl-actor-grass"
+				style={{
+					backgroundImage: `url(${sheetUrl(GROUND.tallGrass.sheet)})`,
+					backgroundPosition: `${-GROUND.tallGrass.x}px ${-GROUND.tallGrass.y - 7}px`,
+				}}
+			/>
+		</span>
+	);
+};
+
+/** 사람 그림을 밤 색으로 (마을 판과 같은 곱셈): SVG 색 행렬 */
+const NightFilter: React.FC = () => {
+	const [r, g, b] = NIGHT_RGB.map((v) => (v / 255).toFixed(3));
+	return (
+		<svg className="dl-filters" width="0" height="0" aria-hidden="true" focusable="false">
+			<filter id="dl-night" colorInterpolationFilters="sRGB">
+				<feColorMatrix type="matrix" values={`${r} 0 0 0 0  0 ${g} 0 0 0  0 0 ${b} 0 0  0 0 0 1 0`} />
+			</filter>
+		</svg>
+	);
+};
+
+/** 장소 위의 표: 아직 안 읽은 곳은 '!' 말풍선(그림 묶음의 것), 읽은 곳은 작은 ✓ (그림 묶음에 없어 칸 그림으로) */
 const MARK_READ = [
 	'.kkkkkkkk.',
 	'kGGGGGGGGk',
@@ -124,7 +228,7 @@ const MARK_READ = [
 	'kGGGGGGGGk',
 	'.kkkkkkkk.',
 ];
-const MARK_COLORS = { k: '#202028', W: '#ffffff', f: '#e83c3c', G: '#3ca85c' };
+const MARK_COLORS = { k: '#202028', W: '#ffffff', G: '#3ca85c' };
 
 interface Props {
 	layout: WorldLayout;
@@ -144,6 +248,11 @@ interface Props {
 	walking: boolean;
 	/** 카메라를 고정할 곳 (타이틀: 광장 가운데, 게임 칸). 없으면 주인공을 따라간다 */
 	camera?: { x: number; y: number };
+	/**
+	 * 화면 위·아래 띠의 높이(게임 칸): 창(길잡이, 키 안내)이 덮는 띠. 카메라는 지도 끝에서 이만큼 더 넘어가
+	 * 지도 끝의 장소(북쪽 문 등)가 창에 가리지 않는다
+	 */
+	band?: number;
 }
 
 /** 키 → 걷는 방향 */
@@ -176,11 +285,14 @@ class Walker {
 	held: Facing[] = [];
 	raf = 0;
 	hero: HTMLCanvasElement | null = null;
+	/** 주인공 그림 (받은 뒤에 칠한다) */
+	sheets: ReadonlyMap<SheetKey, HTMLImageElement> | null = null;
 	map: HTMLDivElement | null = null;
 	layout: WorldLayout | null = null;
 	viewW = 0;
 	viewH = 0;
 	fixed: { x: number; y: number } | undefined;
+	band = 0;
 	onMove: (spot: PlayerSpot) => void = () => undefined;
 	onInteract: (place: Place) => void = () => undefined;
 
@@ -206,7 +318,7 @@ class Walker {
 	camera() {
 		return this.fixed
 			? cameraOf(this.fixed.x - TILE / 2, this.fixed.y - TILE / 2, this.viewW, this.viewH)
-			: cameraOf(this.px, this.py, this.viewW, this.viewH);
+			: cameraOf(this.px, this.py, this.viewW, this.viewH, this.band);
 	}
 
 	/** 주인공 그림(방향·프레임이 바뀔 때만 다시 칠한다)과 카메라를 지금 자리로 (정수 칸만) */
@@ -214,16 +326,21 @@ class Walker {
 		const hero = this.hero;
 		if (hero) {
 			const key = `${this.facing}:${this.frame}`;
-			if (key !== this.drawn) {
-				const ctx = hero.getContext('2d');
-				if (ctx) {
-					ctx.clearRect(0, 0, hero.width, hero.height);
-					shadow(ctx, 8, 18, 5);
-					drawRows(ctx, personRows('cap', this.facing, this.frame), HERO_COLORS, 1, 0);
-				}
+			const ctx = hero.getContext('2d');
+			if (key !== this.drawn && ctx && this.sheets) {
+				ctx.imageSmoothingEnabled = false;
+				ctx.clearRect(0, 0, hero.width, hero.height);
+				paintDraws(
+					ctx,
+					[
+						drawOf(ITEMS.shadow, 2, HERO_H - ITEMS.shadow.h),
+						drawOf(characterFrame(HERO, this.facing, FRAME_ROW[this.frame]), 0, 0),
+					],
+					this.sheets
+				);
 				this.drawn = key;
 			}
-			hero.style.transform = `translate(${this.px}px, ${this.py - 4}px)`;
+			hero.style.transform = `translate(${this.px}px, ${this.py - 3}px)`;
 		}
 		const cam = this.camera();
 		if (this.map) this.map.style.transform = `translate(${-cam.x}px, ${-cam.y}px)`;
@@ -375,13 +492,24 @@ const DialogueTown: React.FC<Props> = ({
 	viewH,
 	walking,
 	camera: fixedCamera,
+	band = 0,
 }) => {
 	const viewRef = useRef<HTMLDivElement>(null);
 	const mapRef = useRef<HTMLDivElement>(null);
 	const heroRef = useRef<HTMLCanvasElement>(null);
-	const actorsRef = useRef<HTMLCanvasElement>(null);
 	const walkerRef = useRef<Walker | null>(null);
 	const active = useMemo(() => new Set(layout.places.map((p) => p.key)), [layout]);
+	// 주인공 그림: 받으면 걷는 것에 넘기고 다시 칠한다
+	const [heroSheets, setHeroSheets] = useState<ReadonlyMap<SheetKey, HTMLImageElement> | null>(null);
+	useEffect(() => {
+		let alive = true;
+		void loadSheets([`char:${HERO}`, 'shadow']).then((sheets) => {
+			if (alive) setHeroSheets(sheets);
+		});
+		return () => {
+			alive = false;
+		};
+	}, []);
 
 	// 걷기를 맡는 것을 만들고(처음 한 번), 지금 지도·화면 크기·알림 함수를 넘긴 뒤 DialoguePage가 가진 자리에 세운다
 	useEffect(() => {
@@ -392,8 +520,13 @@ const DialogueTown: React.FC<Props> = ({
 		walker.viewW = viewW;
 		walker.viewH = viewH;
 		walker.fixed = fixedCamera;
+		walker.band = band;
 		walker.onMove = onMove;
 		walker.onInteract = onInteract;
+		if (heroSheets && walker.sheets !== heroSheets) {
+			walker.sheets = heroSheets;
+			walker.drawn = '';
+		}
 		walker.place(player);
 		walker.paint();
 		const hero = heroRef.current;
@@ -402,36 +535,10 @@ const DialogueTown: React.FC<Props> = ({
 			hero.dataset.y = String(walker.y);
 			hero.dataset.facing = walker.facing;
 		}
-	}, [player, layout, viewW, viewH, fixedCamera, onMove, onInteract]);
+	}, [player, layout, viewW, viewH, fixedCamera, band, onMove, onInteract, heroSheets]);
 
 	// 화면을 떠나면 걷기를 멈춘다
 	useEffect(() => () => walkerRef.current?.stop(), []);
-
-	// 사람 판: 팀원·안내인·음유시인·몬스터와 북쪽 문짝 (장소나 문이 바뀔 때만 다시 칠한다)
-	useEffect(() => {
-		const ctx = actorsRef.current?.getContext('2d');
-		if (!ctx) return;
-		ctx.clearRect(0, 0, WORLD_PX_W, WORLD_PX_H);
-		for (const place of layout.places) {
-			const cx = place.x * TILE + 8;
-			const by = place.y * TILE + TILE - 1;
-			if (place.kind === 'member') {
-				shadow(ctx, cx, by - 1, 5);
-				standRows(ctx, personRows('hair', 'down'), { ...personColors(place.label), k: '#202028' }, place.x, place.y);
-			} else if (place.kind === 'tutor') {
-				shadow(ctx, cx, by - 1, 5);
-				standRows(ctx, personRows('hair', 'right'), TUTOR_COLORS, place.x, place.y);
-			} else if (place.kind === 'bard') {
-				shadow(ctx, cx, by - 1, 5);
-				standRows(ctx, personRows('cap', 'down'), BARD_COLORS, place.x, place.y);
-			} else if (place.kind === 'monster') {
-				shadow(ctx, cx, by - 1, 7);
-				standRows(ctx, MINI_MONSTER, miniMonsterColors(), place.x, place.y, 1);
-			} else if (place.kind === 'gate') {
-				drawRows(ctx, gateDoorRows(gateOpen), GATE_COLORS, (place.x + 1) * TILE, (place.y + place.h) * TILE - 26);
-			}
-		}
-	}, [layout, gateOpen]);
 
 	// 키보드: 방향 키·WASD로 걷고(누르고 있으면 이어 걷는다), Z·Enter·Space로 앞의 장소를 살펴본다. 글 상자·다른 창의 키는 받지 않는다
 	useEffect(() => {
@@ -512,12 +619,39 @@ const DialogueTown: React.FC<Props> = ({
 		});
 	}, [layout, gateOpen]);
 
+	// 마을에 선 사람과 몬스터 (팀원은 이름마다 같은 사람)
+	const actors = layout.places.flatMap((place, i) => {
+		if (place.kind === 'member')
+			return [
+				<Villager key={place.key} name={characterOf(place.label)} x={place.x} y={place.y} facing="down" seed={i} />,
+			];
+		if (place.kind === 'tutor')
+			return [<Villager key={place.key} name={TUTOR} x={place.x} y={place.y} facing="right" seed={i} />];
+		if (place.kind === 'bard')
+			return [<Villager key={place.key} name={BARD} x={place.x} y={place.y} facing="down" seed={i} />];
+		if (place.kind === 'monster') return [<Monster key={place.key} x={place.x} y={place.y} />];
+		return [];
+	});
+
 	return (
 		<div className="dl-world" ref={viewRef} onClick={onClick} aria-hidden="true" data-walking={walking || undefined}>
+			<NightFilter />
 			<div className="dl-world-map" ref={mapRef} style={{ width: WORLD_PX_W, height: WORLD_PX_H }}>
-				<VillageCanvas active={active} night={false} />
-				<VillageCanvas active={active} night />
-				<canvas ref={actorsRef} className="dl-actors" width={WORLD_PX_W} height={WORLD_PX_H} />
+				<VillageCanvas active={active} gateOpen={gateOpen} night={false} />
+				<VillageCanvas active={active} gateOpen={gateOpen} night />
+				{actors}
+				<canvas
+					ref={heroRef}
+					className="dl-hero"
+					width={TILE}
+					height={HERO_H}
+					data-x={player.x}
+					data-y={player.y}
+					data-facing={player.facing}
+					hidden={!walking}
+				/>
+				<OverheadCanvas active={active} gateOpen={gateOpen} night={false} />
+				<OverheadCanvas active={active} gateOpen={gateOpen} night />
 				{marks.map((place) => {
 					const done = place.kind !== 'gate' && read.has(place.topic);
 					const point = markPoint(place);
@@ -527,22 +661,16 @@ const DialogueTown: React.FC<Props> = ({
 							className="dl-mark"
 							data-place={place.key}
 							data-state={done ? 'read' : 'new'}
-							style={{ left: point.x - 5, top: point.y - (done ? 9 : 11) }}
+							style={done ? { left: point.x - 5, top: point.y - 9 } : { left: point.x - 7, top: point.y - 13 }}
 						>
-							<Pixels rows={done ? MARK_READ : MARK_NEW} colors={MARK_COLORS} scale={1} className="dl-mark-icon" />
+							{done ? (
+								<Pixels rows={MARK_READ} colors={MARK_COLORS} scale={1} className="dl-mark-icon" />
+							) : (
+								<i className="dl-mark-alert" style={{ backgroundImage: `url(${sheetUrl('alert')})` }} />
+							)}
 						</span>
 					);
 				})}
-				<canvas
-					ref={heroRef}
-					className="dl-hero"
-					width={TILE}
-					height={20}
-					data-x={player.x}
-					data-y={player.y}
-					data-facing={player.facing}
-					hidden={!walking}
-				/>
 			</div>
 		</div>
 	);

@@ -1,75 +1,68 @@
 import { describe, expect, it } from 'vitest';
-import { layoutWorld, SLOTS, WORLD_PX_H, WORLD_PX_W } from '@/apps/safari/project/dialogueWorld';
-import {
-	composeVillage,
-	gateDoorRows,
-	markPoint,
-	MINI_MONSTER,
-	PERSON_H,
-	PERSON_W,
-	personRows,
-	villagePalette,
-	villageRgba,
-} from '@/apps/safari/project/dialogueVillage';
+import { sheetSize, TILE, type Draw } from '@/apps/safari/project/dialogueNinja';
+import { layoutWorld, SLOTS, WORLD_H, WORLD_PX_H, WORLD_PX_W, WORLD_W } from '@/apps/safari/project/dialogueWorld';
+import { composeVillage, markPoint, VILLAGE_MARGIN } from '@/apps/safari/project/dialogueVillage';
 
 const activeOf = (topics: string[], members: string[] = []) =>
 	new Set(layoutWorld(topics, members).places.map((p) => p.key));
 
-describe('마을 그림', () => {
-	it('마을 판은 640×384를 빈칸 없이 칠하고, 모든 글자는 낮·밤 팔레트에 있다', () => {
-		const active = activeOf(['highlights', 'specs', 'team', 'deployments', 'links'], ['가람']);
-		const map = composeVillage(SLOTS, active);
-		expect(map.w).toBe(WORLD_PX_W);
-		expect(map.h).toBe(WORLD_PX_H);
-		const used = new Set(map.px);
-		for (const night of [false, true]) {
-			const palette = villagePalette(night);
-			for (const key of used) expect(palette[key], `${key} (${night ? '밤' : '낮'})`).toMatch(/^#[0-9a-f]{6}$/);
+/** 그림 조각이 제 그림 안에서 잘렸는지 */
+const inSheet = (d: Draw) => {
+	if (d.fill) return true;
+	const [w, h] = sheetSize(d.sheet);
+	return d.sx >= 0 && d.sy >= 0 && d.sx + d.sw <= w && d.sy + d.sh <= h && d.sw > 0 && d.sh > 0;
+};
+
+describe('마을 그림 (Ninja Adventure 타일)', () => {
+	const active = activeOf(['highlights', 'specs', 'team', 'deployments', 'links', 'facts', 'gallery'], ['가람']);
+	const art = composeVillage(SLOTS, active, false);
+
+	it('땅은 40×24칸과 둘레 숲 여백을 빈칸 없이 16×16 타일로 덮는다', () => {
+		const covered = new Set<string>();
+		for (const d of art.draws)
+			if (d.sw === TILE && d.sh === TILE && d.dx % TILE === 0 && d.dy % TILE === 0)
+				covered.add(`${d.dx / TILE},${d.dy / TILE}`);
+		const m = VILLAGE_MARGIN / TILE;
+		for (let y = -m; y < WORLD_H + m; y++)
+			for (let x = -m; x < WORLD_W + m; x++) expect(covered.has(`${x},${y}`), `${x},${y}`).toBe(true);
+	});
+
+	it('모든 조각은 제 그림 안에서 자르고, 지도 둘레 숲 여백 밖으로 나가지 않는다', () => {
+		for (const d of [...art.draws, ...art.overhead]) {
+			expect(inSheet(d), JSON.stringify(d)).toBe(true);
+			expect(d.dx).toBeGreaterThan(-VILLAGE_MARGIN - TILE * 2);
+			expect(d.dx).toBeLessThan(WORLD_PX_W + VILLAGE_MARGIN);
+			expect(d.dy).toBeGreaterThan(-VILLAGE_MARGIN - TILE * 2);
+			expect(d.dy).toBeLessThan(WORLD_PX_H + VILLAGE_MARGIN);
 		}
-		const rgba = villageRgba(SLOTS, active, true);
-		expect(rgba.length).toBe(WORLD_PX_W * WORLD_PX_H * 4);
-		for (let i = 3; i < rgba.length; i += 4) if (rgba[i] !== 255) throw new Error(`빈칸 ${(i - 3) / 4}`);
 	});
 
-	it('같은 장소 묶음은 같은 판을 다시 쓰고, 장소가 바뀌면 다른 판을 칠한다', () => {
-		const a = activeOf(['highlights']);
-		expect(composeVillage(SLOTS, a)).toBe(composeVillage(SLOTS, new Set(a)));
-		expect(composeVillage(SLOTS, activeOf(['specs']))).not.toBe(composeVillage(SLOTS, a));
+	it('장소가 된 자리에는 소품이 서고 집에는 불빛이 켜진다. 나무 한 그루의 윗가지는 사람 위 판에', () => {
+		const slot = SLOTS.find((s) => s.key === 'board')!;
+		const near = art.draws.filter(
+			(d) =>
+				d.dx >= slot.x * TILE - 16 &&
+				d.dx < (slot.x + slot.w) * TILE + 16 &&
+				d.dy + d.sh >= slot.y * TILE &&
+				d.dy + d.sh <= (slot.y + 1) * TILE + 2 &&
+				d.sw !== TILE
+		);
+		expect(near.length).toBeGreaterThan(0);
+		// 상점은 장소, 나머지 집 셋은 빈집이지만 밤 불빛은 장소인 집과 돌부처의 구슬에만
+		expect(art.lights.length).toBe(2);
+		expect(art.overhead.length).toBeGreaterThan(3);
 	});
 
-	it('밤에는 창과 가로등이 켜진다 (밤 색이 낮보다 어둡지만 불빛은 그대로)', () => {
-		const day = villagePalette(false);
-		const night = villagePalette(true);
-		expect(night.g).not.toBe(day.g);
-		expect(night.Y).toBe(day.Y);
-		expect(night.L).not.toBe(day.L);
-	});
-
-	it('사람 그림은 방향·걸음마다 같은 크기(외곽선 포함 14×18)이고, 왼쪽은 오른쪽을 뒤집은 것', () => {
-		for (const head of ['cap', 'hair'] as const) {
-			for (const facing of ['up', 'down', 'left', 'right'] as const) {
-				for (const frame of ['stand', 'a', 'b'] as const) {
-					const rows = personRows(head, facing, frame);
-					expect(rows).toHaveLength(PERSON_H);
-					for (const row of rows) expect(row).toHaveLength(PERSON_W);
-				}
-			}
-			const right = personRows(head, 'right');
-			const left = personRows(head, 'left');
-			expect(left).toEqual(right.map((row) => [...row].reverse().join('')));
-		}
-		// 걷는 프레임은 서 있을 때와 다르다 (다리가 엇갈린다)
-		expect(personRows('cap', 'down', 'a')).not.toEqual(personRows('cap', 'down', 'stand'));
-		expect(personRows('cap', 'down', 'a')).not.toEqual(personRows('cap', 'down', 'b'));
-	});
-
-	it('몬스터·문짝 그림의 줄 길이가 고르다', () => {
-		for (const row of MINI_MONSTER) expect(row).toHaveLength(MINI_MONSTER[0].length);
-		for (const open of [false, true]) {
-			const rows = gateDoorRows(open);
-			expect(rows).toHaveLength(26);
-			for (const row of rows) expect(row).toHaveLength(32);
-		}
+	it('같은 묶음은 같은 그림을 다시 쓰고, 장소나 문이 바뀌면 다른 그림을 짠다', () => {
+		expect(composeVillage(SLOTS, new Set(active), false)).toBe(art);
+		expect(composeVillage(SLOTS, active, true)).not.toBe(art);
+		expect(composeVillage(SLOTS, activeOf(['highlights']), false)).not.toBe(art);
+		// 닫힌 문은 울타리 두 칸으로 막고, 열리면 그것이 없다
+		const gate = SLOTS.find((s) => s.key === 'gate')!;
+		const fences = (draws: readonly Draw[]) =>
+			draws.filter((d) => d.dy < (gate.y + gate.h) * TILE && d.dy >= gate.y * TILE && d.sw === TILE && d.sh === TILE)
+				.length;
+		expect(fences(art.draws)).toBeGreaterThan(fences(composeVillage(SLOTS, active, true).draws));
 	});
 
 	it('장소 표는 지도 안, 소품 위에 뜬다', () => {
@@ -77,8 +70,8 @@ describe('마을 그림', () => {
 			const point = markPoint(slot);
 			expect(point.x).toBeGreaterThan(0);
 			expect(point.x).toBeLessThan(WORLD_PX_W);
-			expect(point.y).toBeGreaterThanOrEqual(12);
-			expect(point.y).toBeLessThan((slot.y + slot.h) * 16);
+			expect(point.y).toBeGreaterThanOrEqual(14);
+			expect(point.y).toBeLessThan((slot.y + slot.h) * TILE);
 		}
 	});
 });

@@ -3,21 +3,12 @@ import { blankProject, type Project } from '@macfolio/desktop-core/site';
 import { GENERAL_SAMPLE } from '@/apps/settings/lookSamples';
 import {
 	battleHp,
-	CHEST_CLOSED,
-	CHEST_OPEN,
 	hpLevel,
-	mirror,
-	MONSTERS,
-	monsterColors,
-	monsterOf,
 	nextUnread,
 	outlined,
 	paginate,
-	PERSON,
 	periodDays,
-	personColors,
 	pixelRuns,
-	platformRows,
 	sceneOf,
 	shorten,
 	SPRITE_COLORS,
@@ -32,39 +23,7 @@ import {
 const sample: Project = { ...structuredClone(GENERAL_SAMPLE), id: 'sample', url: 'https://github.com/me/sample' };
 
 describe('칸 그림', () => {
-	/** 줄 폭이 모두 같고 아는 글자만 쓰는지 */
-	const expectGrid = (rows: readonly string[], width: number, height: number, known: Record<string, string>) => {
-		expect(rows).toHaveLength(height);
-		for (const row of rows) {
-			expect(row).toHaveLength(width);
-			for (const ch of row) expect(ch === '.' || ch in known).toBe(true);
-		}
-	};
-
-	it('몬스터는 32×32, 상자는 20×16, 사람은 16×24 격자이고 아는 색 글자만 쓴다', () => {
-		for (const rows of MONSTERS) expectGrid(rows, 32, 32, SPRITE_COLORS);
-		expectGrid(CHEST_CLOSED, 20, 16, SPRITE_COLORS);
-		expectGrid(CHEST_OPEN, 20, 16, SPRITE_COLORS);
-		expectGrid(PERSON, 16, 24, personColors('누구'));
-	});
-
-	it('왼쪽 반을 접어 펼치면 좌우가 같다', () => {
-		expect(mirror(['.WR'])).toEqual(['.WRRW.']);
-		for (const rows of [...MONSTERS, CHEST_CLOSED, PERSON])
-			for (const row of rows) expect([...row].reverse().join('')).toBe(row);
-	});
-
-	it('사람의 색은 이름으로 정해져 같은 이름은 늘 같고, 이름이 다르면 대개 다르다', () => {
-		expect(personColors('김하늘')).toEqual(personColors('김하늘'));
-		const looks = new Set(
-			['김하늘', '이도윤', '박서연', '최민준', '정유나'].map((n) => JSON.stringify(personColors(n)))
-		);
-		expect(looks.size).toBeGreaterThan(3);
-	});
-
-	it('차례대로 돌려 쓰고, 이어진 같은 색은 사각형 하나로 묶는다', () => {
-		expect(monsterOf(0)).toBe(MONSTERS[0]);
-		expect(monsterOf(MONSTERS.length)).toBe(MONSTERS[0]);
+	it('이어진 같은 색은 사각형 하나로 묶는다', () => {
 		expect(pixelRuns(['.WW.R', 'YYYYY'])).toEqual([
 			{ x: 1, y: 0, w: 2, color: SPRITE_COLORS.W },
 			{ x: 4, y: 0, w: 1, color: SPRITE_COLORS.R },
@@ -134,36 +93,12 @@ describe('목록 창', () => {
 describe('밝은 장면', () => {
 	it('outlined는 가장자리에 한 칸씩 늘리고, 칠한 칸에 닿은 빈칸만 외곽선으로', () => {
 		expect(outlined(['.W.'])).toEqual(['..X..', '.XWX.', '..X..']);
-		const person = outlined(PERSON);
-		expect(person).toHaveLength(PERSON.length + 2);
-		for (const row of person) expect(row).toHaveLength(PERSON[0].length + 2);
+		const shape = ['.WW', 'W..'];
+		const lined = outlined(shape);
+		expect(lined).toHaveLength(shape.length + 2);
+		for (const row of lined) expect(row).toHaveLength(shape[0].length + 2);
 		// 칠한 칸은 그대로, 바뀐 것은 빈칸뿐
-		PERSON.forEach((row, y) => expect(person[y + 1].slice(1, -1).replace(/X/g, '.')).toBe(row));
-	});
-
-	it('발판은 납작한 흙 자리: 테두리 A가 둘레를 감싸고, 위 가장자리 풀 D, 밝은 흙 C, 흙 B, 그늘 E', () => {
-		const rows = platformRows(40, 8);
-		expect(rows).toHaveLength(8);
-		for (const row of rows) expect(row).toMatch(/^[.ABCDE]{40}$/);
-		// 모양(칠한 칸)은 좌우·위아래가 같고, 빛 때문에 색은 왼쪽 위가 밝다
-		const shape = rows.map((row) => row.replace(/[^.]/g, '#'));
-		for (const row of shape) expect(row).toBe([...row].reverse().join(''));
-		expect(shape).toEqual([...shape].reverse());
-		// 가운데 줄의 양 끝은 테두리, 모서리는 비어 있다
-		expect(rows[4][0]).toBe('A');
-		expect(rows[0][0]).toBe('.');
-		const all = platformRows(60, 12).join('');
-		for (const key of 'ABCDE') expect(all).toContain(key);
-		// 위 가장자리 바로 아래는 풀
-		expect(rows[1].slice(15, 25)).toMatch(/^D+$/);
-	});
-
-	it('몬스터마다 다른 몸 색, 모든 색 글자를 칠한다', () => {
-		const bodies = MONSTERS.map((_, i) => monsterColors(i).W);
-		expect(new Set(bodies).size).toBe(MONSTERS.length);
-		expect(monsterColors(MONSTERS.length)).toBe(monsterColors(0));
-		for (const [i, rows] of MONSTERS.entries())
-			for (const ch of new Set(outlined(rows).join(''))) if (ch !== '.') expect(monsterColors(i)[ch], ch).toBeTruthy();
+		shape.forEach((row, y) => expect(lined[y + 1].slice(1, -1).replace(/X/g, '.')).toBe(row));
 	});
 
 	it('HP 막대 색: 반 넘게 초록, 5분의 1 넘게 노랑, 그 아래 빨강', () => {
