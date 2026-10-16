@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { MAX_SPEECH_CHARS, SPEECH_PROVIDERS, type SpeechProvider } from '@macfolio/contracts';
 import { cssVars } from '@/shared/lib/cssVars';
 import { env } from '@/shared/config/env';
 import { cheer } from './demoEvent';
 
-type Provider = 'fish' | 'google' | 'edge';
+type Provider = SpeechProvider;
 type ProviderState = 'idle' | 'trying' | 'fail' | 'ok' | 'skip';
-const PROVIDERS: Provider[] = ['fish', 'google', 'edge'];
+const PROVIDERS = SPEECH_PROVIDERS;
 const PROVIDER_NAME: Record<Provider, string> = { fish: 'Fish', google: 'Google', edge: 'Edge' };
 
 const clock = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
 
-/** 음성 만들기: 한 번에 읽는 글자 수 (서버도 같은 값으로 막는다) */
-const MAX_SPEECH_CHARS = 80;
 const SPEECH_DEFAULT = {
 	ko: '지금 들으시는 목소리는 방금 이 글로 만든 음성입니다.',
 	en: 'The voice you hear was generated from this text just now.',
