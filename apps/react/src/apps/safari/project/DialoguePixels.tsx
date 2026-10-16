@@ -1,9 +1,9 @@
-// RPG 대화창(DialoguePage)의 픽셀 그림 부품: 칸 그림(SVG 사각형), 픽셀 아이콘, 무대 뒤 타일 장면(캔버스), 사진·아이콘을 픽셀로 줄인 그림.
+// RPG 대화창(DialoguePage)의 픽셀 그림 부품: 칸 그림(SVG 사각형), 픽셀 아이콘, 화면 가득한 타일 장면(캔버스), 사진·아이콘을 픽셀로 줄인 그림.
 // 모두 게임 화면의 칸 단위로 그리고 화면 전체가 정수 배로 커지므로 가장자리가 흐려지지 않는다. 꾸밈이라 읽기 프로그램에는 숨긴다
 import React, { useEffect, useRef, useState } from 'react';
 import { pixelRuns } from '@/apps/safari/project/dialogueStage';
 import { ICON_COLORS, ICONS, pixelate, type IconName } from '@/apps/safari/project/dialogueIcons';
-import { sceneRgba, sceneView, SCENE_H, SCENE_W, VIEW_H, VIEW_W } from '@/apps/safari/project/dialogueScenes';
+import { sceneRgba } from '@/apps/safari/project/dialogueScenes';
 import type { SceneKind } from '@/apps/safari/project/dialogueStage';
 
 /** 칸 그림: 한 칸을 scale 칸(게임 화면의 px)으로 키운 사각형들. 가장자리를 흐리지 않는다 */
@@ -42,32 +42,40 @@ export const PixelIcon: React.FC<{ name?: IconName; rows?: readonly string[]; sc
 	className = 'dl-icon',
 }) => <Pixels rows={rows ?? ICONS[name ?? 'star']} colors={ICON_COLORS} scale={scale} className={className} />;
 
-/** 무대 뒤 장면: 낮·밤 두 장을 칠해 두고 CSS가 테마에 맞는 한 장만 보인다 (장면이 바뀔 때만 다시 칠한다) */
-const SceneCanvas: React.FC<{ scene: SceneKind; night: boolean }> = ({ scene, night }) => {
+/** 화면 가득한 장면: 낮·밤 두 장을 칠해 두고 CSS가 테마에 맞는 한 장만 보인다 (장면이나 크기가 바뀔 때만 다시 칠한다) */
+const SceneCanvas: React.FC<{ scene: SceneKind; night: boolean; width: number; height: number }> = ({
+	scene,
+	night,
+	width,
+	height,
+}) => {
 	const ref = useRef<HTMLCanvasElement>(null);
 	useEffect(() => {
 		const ctx = ref.current?.getContext('2d');
 		if (!ctx || typeof ImageData === 'undefined') return;
-		// 480×272 장면에서 게임 화면만큼(360×208)을 잘라 올린다
-		const view = sceneView(scene);
-		ctx.putImageData(new ImageData(new Uint8ClampedArray(sceneRgba(scene, night)), SCENE_W, SCENE_H), -view.x, -view.y);
-	}, [scene, night]);
+		ctx.putImageData(new ImageData(new Uint8ClampedArray(sceneRgba(scene, night, width, height)), width, height), 0, 0);
+	}, [scene, night, width, height]);
 	return (
 		<canvas
 			ref={ref}
 			className="dl-backdrop"
 			data-night={night || undefined}
-			width={VIEW_W}
-			height={VIEW_H}
+			width={width}
+			height={height}
 			aria-hidden="true"
 		/>
 	);
 };
 
-export const SceneBackdrop: React.FC<{ scene: SceneKind }> = ({ scene }) => (
+/** 장면 캔버스 둘 (낮·밤). width×height는 게임 칸 */
+export const SceneBackdrop: React.FC<{ scene: SceneKind; width: number; height: number }> = ({
+	scene,
+	width,
+	height,
+}) => (
 	<>
-		<SceneCanvas scene={scene} night={false} />
-		<SceneCanvas scene={scene} night />
+		<SceneCanvas scene={scene} night={false} width={width} height={height} />
+		<SceneCanvas scene={scene} night width={width} height={height} />
 	</>
 );
 
