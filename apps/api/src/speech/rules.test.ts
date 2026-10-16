@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DailyQuota, MAX_SPEECH_CHARS, parseSpeechRequest, SpeechInputError, speechOrder } from './rules.js';
+import { DemoInputError } from '../common/demo.js';
+import { DailyQuota, MAX_SPEECH_CHARS, parseSpeechRequest, speechOrder } from './rules.js';
 
 describe('음성 만들기 요청', () => {
 	it('공백을 정리하고, 언어는 ko가 기본, 모르는 공급자는 버린다', () => {
@@ -12,13 +13,13 @@ describe('음성 만들기 요청', () => {
 	});
 
 	it('비었거나 너무 길거나, 주소·메일·욕설은 받지 않는다', () => {
-		expect(() => parseSpeechRequest({ text: '   ' })).toThrow(SpeechInputError);
+		expect(() => parseSpeechRequest({ text: '   ' })).toThrow(DemoInputError);
 		expect(() => parseSpeechRequest({ text: '가'.repeat(MAX_SPEECH_CHARS + 1) })).toThrow('80자');
 		expect(parseSpeechRequest({ text: '가'.repeat(MAX_SPEECH_CHARS) }).text).toHaveLength(MAX_SPEECH_CHARS);
-		expect(() => parseSpeechRequest({ text: 'https://example.com 읽어 줘' })).toThrow(SpeechInputError);
-		expect(() => parseSpeechRequest({ text: 'me@example.com' })).toThrow(SpeechInputError);
-		expect(() => parseSpeechRequest({ text: 'what the fuck' })).toThrow(SpeechInputError);
-		expect(() => parseSpeechRequest(null)).toThrow(SpeechInputError);
+		expect(() => parseSpeechRequest({ text: 'https://example.com 읽어 줘' })).toThrow(DemoInputError);
+		expect(() => parseSpeechRequest({ text: 'me@example.com' })).toThrow(DemoInputError);
+		expect(() => parseSpeechRequest({ text: 'what the fuck' })).toThrow(DemoInputError);
+		expect(() => parseSpeechRequest(null)).toThrow(DemoInputError);
 	});
 
 	it('차례는 Fish → Google → Edge이고, 막은 공급자는 건너뛴다고 표시한다', () => {

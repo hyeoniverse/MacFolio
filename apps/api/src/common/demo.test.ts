@@ -1,25 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { DemoInputError, demoText, failureLine, pickProviders, ProviderFailure, refuse, tryInOrder } from './demo.js';
-
-const rules = { max: 10, empty: '비었습니다', refused: '안 됩니다' };
+import { DemoInputError, demoInput, failureLine, ProviderFailure, refuse, tryInOrder } from './demo.js';
 
 describe('데모 입력', () => {
-	it('공백을 줄이고, 여러 줄을 받는 칸은 줄바꿈을 남긴다', () => {
-		expect(demoText('  안녕\n 하세요 ', rules)).toBe('안녕 하세요');
-		expect(demoText(' 첫 줄 \r\n\n\n\n 둘째  줄 ', { ...rules, lines: true })).toBe('첫 줄\n\n둘째 줄');
-	});
-
-	it('비었거나 길거나, 제어 문자·주소·욕설은 받지 않는다', () => {
-		expect(() => demoText(undefined, rules)).toThrow('비었습니다');
-		expect(() => demoText('가'.repeat(11), rules)).toThrow('10자');
-		expect(() => demoText('a\u0007b', rules)).toThrow(DemoInputError);
-		expect(() => demoText('www.x.com', rules)).toThrow('안 됩니다');
-		expect(() => demoText('shit', { ...rules, lines: true })).toThrow('안 됩니다');
-	});
-
-	it('아는 공급자만 남긴다', () => {
-		expect(pickProviders(['a', 'b'] as const, ['b', 'z', 3])).toEqual(['b']);
-		expect(pickProviders(['a', 'b'] as const, 'a')).toEqual([]);
+	it('검사 결과에서 값을 꺼내고, 맞지 않으면 첫 이유를 DemoInputError로 던진다', () => {
+		expect(demoInput({ value: 1 })).toBe(1);
+		expect(() => demoInput({ errors: ['비었습니다', '다른 이유'] })).toThrow(new DemoInputError('비었습니다'));
 	});
 });
 
