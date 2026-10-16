@@ -2,7 +2,7 @@
 // 지도는 땅 글자(TERRAIN)와 정해진 자리(SLOTS)로 짠다. 자리는 주제마다 하나씩 정해져 있고, 그 주제가 데이터에 없으면
 // 자리는 대신 꾸밈(장소가 아닌 빈집, 꽃밭, 그냥 풀밭)으로 남아 지도의 짜임새가 늘 같다. 여기에는 그림이 없다
 // (그림은 dialogueVillage.ts). 칸 하나는 16×16 게임 칸이다
-import { TILE } from '@/apps/safari/project/dialogueScenes';
+import { TILE } from '@/apps/safari/project/dialogueNinja';
 
 export const WORLD_W = 40;
 export const WORLD_H = 24;
@@ -10,38 +10,39 @@ export const WORLD_PX_W = WORLD_W * TILE;
 export const WORLD_PX_H = WORLD_H * TILE;
 
 /**
- * 땅 (한 글자가 한 칸): T 숲(막힘), b 덤불(막힘), . 풀, : 흙길, # 돌바닥(광장), , 긴 풀, ~ 물(막힘), ^ 바위 벼랑(막힘).
- * 아래 가운데가 마을 입구, 위 가운데가 북쪽 문, 가운데가 분수 광장이다
+ * 땅 (한 글자가 한 칸): T 숲(막힘), t 나무 한 그루(막힘), b 덤불(막힘), F 울타리(막힘), p 광장 귀퉁이 화분(막힘),
+ * . 풀, : 흙길, # 돌바닥(광장),
+ * , 긴 풀숲, ~ 물(막힘), ^ 바위 언덕(막힘). 아래 가운데가 마을 입구, 위 가운데가 북쪽 문, 가운데가 돌부처 상이 선 광장이다
  */
 export const TERRAIN: readonly string[] = [
 	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
-	'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
-	'TTT..............T.::.T..............TTT',
+	'TTTTTTTTTTTTTTTTTT.::.TTTTTTTTTTTTTTTTTT',
+	'TTTT......t.....TT.::.TT.....t......TTTT',
+	'TT..t..........b...::...b.........t...TT',
 	'TT.................::.................TT',
 	'TT.................::.................TT',
 	'TT.................::.................TT',
-	'TT.......b......b..::..b.......b......TT',
 	'TT...:......:......::......:......:...TT',
-	'TT...:......:......::......:......:...TT',
-	'TT...:..T...:.############.:...T..:...TT',
-	'TTb..:......:.############.:......:..bTT',
+	'TTb..:......:......::......:......:..bTT',
+	'TT...:..t...:.p##########p.:...t..:...TT',
+	'TT...:......:.############.:......:...TT',
 	'TT...:......:.############.:......:...TT',
 	'TT.:::::::::::############:::::::::::.TT',
 	'TT.:::::::::::############:::::::::::.TT',
 	'TT............############............TT',
-	'TT.T..........############.....^^^^^^^TT',
+	'TT.FFFF.FFFF..p##########p.....^^^^^^^TT',
 	'TT.,,,,,,,,,b......::..........^^^^^^^TT',
 	'TT.,,,,,,,,,.......::...~~~~~b.^^^^^^^TT',
 	'TT.,,,,,,,,,.......::...~~~~~b.^^^^^^^TT',
 	'TT.,,,,,,,,,.......::...~~~~~.........TT',
-	'TT...........T.....::...~~~~~..T......TT',
+	'TTt.........t......::...~~~~~..t......TT',
 	'TT.................::..b..............TT',
 	'TTTTTTTTTTTTTTTTTTT::TTTTTTTTTTTTTTTTTTT',
 	'TTTTTTTTTTTTTTTTTTT::TTTTTTTTTTTTTTTTTTT',
 ];
 
 /** 막는 땅 */
-const SOLID_GROUND = new Set(['T', 'b', '~', '^']);
+const SOLID_GROUND = new Set(['T', 't', 'b', 'F', 'p', '~', '^']);
 
 export type Facing = 'up' | 'down' | 'left' | 'right';
 export const STEPS: Record<Facing, readonly [number, number]> = {
@@ -100,15 +101,15 @@ export const ENDING_TOPIC = '@ending';
 export const MEMBER_SLOTS = 6;
 
 /**
- * 정해진 자리들. 집 넷은 북쪽 줄, 광장에는 오락기·이젤·음유시인·팀원, 입구 가까이에 퀘스트 게시판·안내인·조작 안내판·우체통,
+ * 정해진 자리들. 집 넷은 북쪽 줄(5×3칸, 가운데 아래가 문), 광장에는 기록판·그림판·음유시인·팀원, 입구 가까이에 퀘스트 게시판·안내인·조작 안내판·우체통,
  * 서쪽 긴 풀숲에 버그 몬스터, 서쪽 길 끝에 이정표, 동쪽 벼랑에 동굴(보물 상자)
  */
 export const SLOTS: readonly Slot[] = [
 	{ key: 'gate', topic: ENDING_TOPIC, kind: 'gate', name: '북쪽 문', x: 18, y: 1, w: 4, h: 2, fallback: 'none' },
-	{ key: 'shop', topic: 'specs', kind: 'shop', name: '상점', x: 3, y: 3, w: 5, h: 4, fallback: 'house' },
-	{ key: 'inn', topic: 'contributions', kind: 'inn', name: '여관', x: 10, y: 3, w: 5, h: 4, fallback: 'house' },
-	{ key: 'library', topic: 'more', kind: 'library', name: '도서관', x: 25, y: 3, w: 5, h: 4, fallback: 'house' },
-	{ key: 'smithy', topic: 'build', kind: 'smithy', name: '대장간', x: 32, y: 3, w: 5, h: 4, fallback: 'house' },
+	{ key: 'shop', topic: 'specs', kind: 'shop', name: '상점', x: 3, y: 4, w: 5, h: 3, fallback: 'house' },
+	{ key: 'inn', topic: 'contributions', kind: 'inn', name: '여관', x: 10, y: 4, w: 5, h: 3, fallback: 'house' },
+	{ key: 'library', topic: 'more', kind: 'library', name: '도서관', x: 25, y: 4, w: 5, h: 3, fallback: 'house' },
+	{ key: 'smithy', topic: 'build', kind: 'smithy', name: '대장간', x: 32, y: 4, w: 5, h: 3, fallback: 'house' },
 	{
 		key: 'board',
 		topic: 'highlights',
@@ -147,8 +148,8 @@ export const SLOTS: readonly Slot[] = [
 	},
 	{ key: 'cave', topic: 'deployments', kind: 'cave', name: '동굴', x: 34, y: 18, w: 1, h: 1, fallback: 'none' },
 	{ key: 'chest', topic: 'deployments', kind: 'chest', name: '보물 상자', x: 36, y: 19, w: 1, h: 1, fallback: 'none' },
-	{ key: 'arcade', topic: 'facts', kind: 'arcade', name: '오락기', x: 24, y: 9, w: 1, h: 1, fallback: 'flowers' },
-	{ key: 'easel', topic: 'gallery', kind: 'easel', name: '그림 이젤', x: 15, y: 9, w: 1, h: 1, fallback: 'flowers' },
+	{ key: 'arcade', topic: 'facts', kind: 'arcade', name: '기록판', x: 24, y: 9, w: 1, h: 1, fallback: 'flowers' },
+	{ key: 'easel', topic: 'gallery', kind: 'easel', name: '그림판', x: 15, y: 9, w: 1, h: 1, fallback: 'flowers' },
 	{ key: 'bard', topic: 'credits', kind: 'bard', name: '음유시인', x: 15, y: 15, w: 1, h: 1, fallback: 'none' },
 	...[
 		// 광장을 가로지르는 길(가로 12–13줄, 세로 19–20칸)은 비워 둔다
@@ -172,7 +173,7 @@ export const SLOTS: readonly Slot[] = [
 	})),
 ];
 
-/** 분수 (광장 가운데 2×2, 막힘) */
+/** 광장 가운데의 돌부처 상 자리 (2×2, 막힘). 예전 분수 자리라 이름은 그대로 둔다 */
 export const FOUNTAIN = { x: 19, y: 11, w: 2, h: 2 } as const;
 
 /** 타이틀 화면에서 카메라가 보는 곳: 분수 광장 가운데 (게임 칸) */
@@ -355,14 +356,15 @@ export function pathToPlace(layout: WorldLayout, from: Tile, place: Slot): { pat
 
 /**
  * 카메라: 주인공(px, py는 칸 그림의 왼쪽 위, 게임 칸)을 화면 가운데에 두되 지도 밖은 보이지 않게 끝에서 멈춘다.
+ * edgeY만큼은 지도 위·아래 밖까지 넘어가 볼 수 있다(위아래 띠의 창이 지도 끝의 장소를 가리지 않게).
  * 화면이 지도보다 크면 지도를 가운데에 둔다(음수). 늘 정수
  */
-export function cameraOf(px: number, py: number, viewW: number, viewH: number): { x: number; y: number } {
-	const axis = (p: number, view: number, size: number) =>
-		view >= size
+export function cameraOf(px: number, py: number, viewW: number, viewH: number, edgeY = 0): { x: number; y: number } {
+	const axis = (p: number, view: number, size: number, pad: number) =>
+		view >= size + 2 * pad
 			? Math.floor((size - view) / 2)
-			: Math.max(0, Math.min(size - view, Math.round(p + TILE / 2 - view / 2)));
-	return { x: axis(px, viewW, WORLD_PX_W), y: axis(py, viewH, WORLD_PX_H) };
+			: Math.max(-pad, Math.min(size - view + pad, Math.round(p + TILE / 2 - view / 2))) || 0;
+	return { x: axis(px, viewW, WORLD_PX_W, 0), y: axis(py, viewH, WORLD_PX_H, edgeY) };
 }
 
 /** 화면의 점(게임 칸)과 카메라로 지도의 칸 */

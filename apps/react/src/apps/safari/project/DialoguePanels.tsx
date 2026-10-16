@@ -2,7 +2,7 @@
 // 무대는 게임 화면(DialoguePage.css)의 길잡이와 대화 창 사이(높이 100칸쯤, 폭은 화면 폭을 따른다)이고, 크기는 모두 게임 칸(px) 단위다.
 // 주제마다 큰 그림 하나(몬스터, 사람, 상자, 길...)를 가운데에 두고, 글은 짧게(지금 항목과 이웃 둘까지만) 둔다.
 // 어디인지(주제, n/N)는 화면 왼쪽 위 길잡이가 말하므로 그림판에는 머리줄이 없다. 자세한 글은 대화 창에 있으므로 그림판은 꾸밈(aria-hidden)이고,
-// 보물 상자의 링크만 실제로 누르고 읽을 수 있다. 몬스터·파티원·상자·초상은 흙 발판 위에 서고, 그림마다 짙은 외곽선을 둘러 밝은 장면에서도 읽힌다.
+// 보물 상자의 링크만 실제로 누르고 읽을 수 있다. 몬스터·파티원·상자·초상은 Ninja Adventure 그림(dialogueNinja.ts)을 정수 배로 키워 그림자 위에 세운다.
 // 아이콘은 모두 픽셀 아이콘(dialogueIcons.ts)이고, 글은 장면 위에 바로 두지 않고 대화 창과 같은 반투명한 짙은 창(.dlp-win)이나 이름표(.dlp-tag)에 담는다.
 // 지금 항목은 금색과 ▶, 지난 것은 흐린 글과 ✓
 import React from 'react';
@@ -11,24 +11,27 @@ import { PROFILE } from '@/shared/profile';
 import { iconOf, type TroubleStepKey } from '@/apps/safari/project/landing/content';
 import {
 	battleHp,
-	CHEST_CLOSED,
-	CHEST_OPEN,
 	hpLevel,
-	monsterColors,
-	monsterOf,
-	outlined,
-	PERSON,
-	personColors,
-	PLATFORM_COLORS,
-	platformRows,
 	splitScore,
 	statusStats,
 	troubleKeys,
 	windowAround,
 } from '@/apps/safari/project/dialogueStage';
 import { deployPixelIcon, faPixelIcon, slotTile, techTile, type IconName } from '@/apps/safari/project/dialogueIcons';
-import { CASTLE, COTTAGE, PROP_COLORS, questBoardRows, signpostRows } from '@/apps/safari/project/dialogueScenes';
-import { PixelIcon, PixelImage, Pixels } from '@/apps/safari/project/DialoguePixels';
+import {
+	AUTOTILES,
+	BUILDINGS,
+	characterFrame,
+	characterOf,
+	ITEMS,
+	monsterFrame,
+	monsterOf,
+	PROPS,
+	TILE,
+	type CharacterName,
+	type Sprite as SpriteRect,
+} from '@/apps/safari/project/dialogueNinja';
+import { PixelIcon, PixelImage, Sprite } from '@/apps/safari/project/DialoguePixels';
 import '@/apps/safari/project/DialoguePanels.css';
 
 /** 그림판이 짚을 곳: 주제 id, 그 주제 데이터의 몇 번째 항목인지, 트러블슈팅이면 단계 */
@@ -41,33 +44,27 @@ export interface PanelFocus {
 /** side: 그림 액자 옆의 좁은 자리 (큰 그림 하나만 남기고 목록은 접는다) */
 type PanelProps = { project: Project; focus: PanelFocus; side?: boolean };
 
-const PERSON_LINED = outlined(PERSON);
+/** 주인공(나)의 그림: 마을을 걷는 주인공과 같다 */
+const HERO: CharacterName = 'boy';
 
-/** 사람 하나: 이름으로 정한 색의 16×24 픽셀 사람 (짙은 외곽선을 둘러 18×26) */
-const Person: React.FC<{ name: string; scale: number; className?: string }> = ({ name, scale, className }) => (
-	<Pixels rows={PERSON_LINED} colors={personColors(name)} scale={scale} className={className ?? 'dlp-person'} />
+/** 사람 하나: 이름마다 같은 마을 사람(나는 주인공), 앞을 본다 */
+const Person: React.FC<{ name: string; me?: boolean; scale: number; className?: string }> = ({
+	name,
+	me,
+	scale,
+	className,
+}) => (
+	<Sprite
+		sprite={characterFrame(me ? HERO : characterOf(name), 'down')}
+		scale={scale}
+		className={className ?? 'dlp-person'}
+	/>
 );
 
-const platforms = new Map<string, string[]>();
-/** 발판 칸 그림 (크기마다 한 번만 계산) */
-const platformOf = (width: number, height: number) => {
-	const key = `${width}x${height}`;
-	let rows = platforms.get(key);
-	if (!rows) {
-		rows = platformRows(width, height);
-		platforms.set(key, rows);
-	}
-	return rows;
-};
-
-/** 발판 위에 선 그림: width×height 칸(2배)의 타원 발판 위, 발이 발판 가운데쯤에 닿게 */
-const OnPlatform: React.FC<{ width: number; height: number; children: React.ReactNode }> = ({
-	width,
-	height,
-	children,
-}) => (
-	<span className="dlp-on" style={{ ['--dlp-plat-h' as string]: `${height * 2}px` }}>
-		<Pixels rows={platformOf(width, height)} colors={PLATFORM_COLORS} scale={2} className="dlp-platform" />
+/** 그림자 위에 선 그림: 그림자(그림 묶음의 것)를 그림 아래 가운데에, 발이 그림자 가운데에 닿게 */
+const OnPlatform: React.FC<{ scale: number; children: React.ReactNode }> = ({ scale, children }) => (
+	<span className="dlp-on" style={{ ['--dlp-plat-h' as string]: `${ITEMS.shadow.h * scale}px` }}>
+		<Sprite sprite={ITEMS.shadow} scale={scale} className="dlp-platform" />
 		{children}
 	</span>
 );
@@ -102,11 +99,6 @@ const ProjectFace: React.FC<{ project: Project; size?: number; scale?: number; c
 	return <PixelIcon name="book" scale={Math.round((size * scale) / 12)} className={className} />;
 };
 
-/** 타이틀 표지판 (40×30 판과 기둥) */
-const SIGNPOST = signpostRows(40, 30, 10);
-/** 퀘스트 게시판 (52×44) */
-const QUEST_BOARD = questBoardRows(52, 44);
-
 // ─── 타이틀 화면: 왼쪽 표지판에 아이콘, 오른쪽 창에 이름·한 줄 요약·PRESS Z. 인사, 링크, 메뉴의 링크·돌아가기, 끝맺음, 엔딩 ───
 export const TitleScreen: React.FC<{ project: Project; side?: boolean; end?: boolean; badge?: string }> = ({
 	project,
@@ -122,12 +114,16 @@ export const TitleScreen: React.FC<{ project: Project; side?: boolean; end?: boo
 	].filter(Boolean);
 	return (
 		<div className="dlp dlp-title" data-panel="title" data-side={side || undefined} aria-hidden="true">
-			{/* 나무 표지판에 프로젝트 아이콘을 건다 */}
+			{/* 프로젝트 아이콘 액자와 그 옆에 선 주인공 */}
 			<span className="dlp-sign">
-				<Pixels rows={SIGNPOST} colors={PROP_COLORS} scale={side ? 1 : 2} className="dlp-sign-board" />
-				<span className="dlp-title-face">
+				<span className="dlp-title-face dlp-win">
 					<ProjectFace project={project} scale={side ? 1 : 2} />
 				</span>
+				{!side && (
+					<OnPlatform scale={2}>
+						<Sprite sprite={characterFrame(HERO, 'down')} scale={2} className="dlp-person" />
+					</OnPlatform>
+				)}
 			</span>
 			<div className="dlp-title-card dlp-win">
 				<strong className="dlp-title-name">{project.name}</strong>
@@ -149,7 +145,7 @@ const QuestLog: React.FC<PanelProps & { points: ProjectPoint[] }> = ({ points, f
 			<div className="dlp-quest">
 				{point && (
 					<div className="dlp-hero">
-						<Pixels rows={QUEST_BOARD} colors={PROP_COLORS} scale={side ? 1 : 2} className="dlp-board" />
+						<Sprite sprite={PROPS.board} scale={side ? 1 : 2} className="dlp-board" />
 						<PixelIcon name={faPixelIcon(iconOf(point, shown))} scale={side ? 1 : 2} className="dlp-hero-icon" />
 					</div>
 				)}
@@ -220,7 +216,7 @@ const Battle: React.FC<PanelProps> = ({ project, focus, side }) => {
 	const step = focus.step ?? steps[0];
 	const hp = battleHp(steps, step);
 	const defeated = hp === 0;
-	const monster = outlined(monsterOf(at));
+	const monster = monsterFrame(monsterOf(at));
 	return (
 		<Panel kind="troubleshooting" side={side}>
 			<div className="dlp-battle" data-step={step}>
@@ -250,8 +246,8 @@ const Battle: React.FC<PanelProps> = ({ project, focus, side }) => {
 							<i style={{ width: `${hp}%` }} />
 						</span>
 					</div>
-					<OnPlatform width={side ? 30 : 44} height={side ? 6 : 8}>
-						<Pixels rows={monster} colors={monsterColors(at)} scale={side ? 1 : 2} className="dlp-monster" />
+					<OnPlatform scale={side ? 2 : 3}>
+						<Sprite sprite={monster} scale={side ? 2 : 3} frames={defeated ? undefined : 4} className="dlp-monster" />
 					</OnPlatform>
 				</div>
 			</div>
@@ -273,8 +269,8 @@ const Party: React.FC<PanelProps> = ({ project, focus, side }) => {
 					const i = start + k;
 					return (
 						<li key={member.name} data-state={stateOf(i, at)} data-me={member.me || undefined}>
-							<OnPlatform width={side ? 20 : 26} height={side ? 5 : 6}>
-								<Person name={member.name} scale={side ? 1 : 2} />
+							<OnPlatform scale={side ? 2 : 3}>
+								<Person name={member.name} me={member.me} scale={side ? 2 : 3} />
 							</OnPlatform>
 							<b className="dlp-member dlp-tag">
 								{i === at && <span className="dlp-mark">▶</span>}
@@ -345,8 +341,8 @@ const Status: React.FC<PanelProps> = ({ project, focus, side }) => {
 		<Panel kind="contributions" side={side}>
 			<div className="dlp-status">
 				<div className="dlp-portrait">
-					<OnPlatform width={side ? 20 : 34} height={side ? 5 : 8}>
-						<Person name={name} scale={side ? 1 : 3} />
+					<OnPlatform scale={side ? 2 : 4}>
+						<Person name={name} me scale={side ? 2 : 4} />
 					</OnPlatform>
 				</div>
 				<div className="dlp-sheet dlp-win">
@@ -391,12 +387,24 @@ function mapPoints(count: number, width: number): { x: number; y: number }[] {
 	}));
 }
 
-/** 지도의 길: 흙길 한 줄(위·아래 짙은 가장자리, 가운데 밝은 점선) */
-const roadRows = (width: number): string[] =>
-	['A', 'B', 'C', 'B', 'B', 'A'].map((key, y) =>
-		Array.from({ length: width }, (_, x) => (y === 2 && x % 8 > 3 ? 'B' : key)).join('')
+/** 지도의 길: 흙길 한 줄 (흙길 묶음의 가로 조각: 왼쪽 끝, 가운데, 오른쪽 끝) */
+const roadPiece = (col: number): SpriteRect => ({
+	sheet: AUTOTILES.dirt.sheet,
+	x: (AUTOTILES.dirt.col + col) * TILE,
+	y: (AUTOTILES.dirt.row + 3) * TILE,
+	w: TILE,
+	h: TILE,
+});
+const Road: React.FC<{ left: number; width: number; top: number }> = ({ left, width, top }) => {
+	const count = Math.max(2, Math.round(width / TILE) + 1);
+	return (
+		<span className="dlp-path" style={{ left: left - TILE / 2, top: top - TILE / 2, width: count * TILE }}>
+			{Array.from({ length: count }, (_, i) => (
+				<Sprite key={i} sprite={roadPiece(i === 0 ? 0 : i === count - 1 ? 2 : 1)} className="dlp-road" />
+			))}
+		</span>
 	);
-const ROAD_COLORS: Record<string, string> = { A: '#94703c', B: '#e4c48c', C: '#f4dca8' };
+};
 
 const WorldMap: React.FC<PanelProps> = ({ project, focus, side }) => {
 	const nodes = project.timeline ?? [];
@@ -410,13 +418,7 @@ const WorldMap: React.FC<PanelProps> = ({ project, focus, side }) => {
 		<Panel kind="timeline" side={side}>
 			<div className="dlp-map" style={{ width }}>
 				{points.length > 1 && (
-					<Pixels
-						rows={roadRows(points[points.length - 1].x - points[0].x)}
-						colors={ROAD_COLORS}
-						scale={1}
-						className="dlp-path"
-						style={{ left: points[0].x, top: points[0].y - 3 }}
-					/>
+					<Road left={points[0].x} width={points[points.length - 1].x - points[0].x} top={points[0].y} />
 				)}
 				<ol>
 					{shown.map((node, k) => {
@@ -425,11 +427,9 @@ const WorldMap: React.FC<PanelProps> = ({ project, focus, side }) => {
 						const here = i === Math.max(0, at);
 						return (
 							<li key={i} data-state={stateOf(i, at)} style={{ left: p.x, top: p.y }}>
-								{here && <Person name={me} scale={1} className="dlp-walker" />}
-								{i === 0 && !here && <Pixels rows={COTTAGE} colors={PROP_COLORS} scale={1} className="dlp-landmark" />}
-								{i === nodes.length - 1 && !here && (
-									<Pixels rows={CASTLE} colors={PROP_COLORS} scale={1} className="dlp-landmark" />
-								)}
+								{here && <Person name={me} me scale={1} className="dlp-walker" />}
+								{i === 0 && !here && <Sprite sprite={PROPS.signpost} className="dlp-landmark" />}
+								{i === nodes.length - 1 && !here && <Sprite sprite={BUILDINGS.torii} className="dlp-landmark" />}
 								<span className="dlp-node" />
 								<span className="dlp-date dlp-tag">{node.date}</span>
 							</li>
@@ -462,8 +462,8 @@ const Treasure: React.FC<PanelProps> = ({ project, focus, side }) => {
 								<PixelIcon name={deployPixelIcon(current.platform, current.url)} scale={side ? 1 : 2} />
 							</span>
 						)}
-						<OnPlatform width={side ? 28 : 40} height={side ? 6 : 8}>
-							<Pixels rows={open ? CHEST_OPEN : CHEST_CLOSED} scale={side ? 2 : 3} className="dlp-chest" />
+						<OnPlatform scale={side ? 2 : 3}>
+							<Sprite sprite={open ? ITEMS.chestOpen : ITEMS.chestClosed} scale={side ? 2 : 3} className="dlp-chest" />
 						</OnPlatform>
 					</div>
 				)}
