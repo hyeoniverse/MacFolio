@@ -18,7 +18,6 @@ export const SHEETS = {
 	element: 'tiles/element.png',
 	detail: 'tiles/floor-detail.png',
 	ifloor: 'tiles/interior-floor.png',
-	wall: 'tiles/wall.png',
 	relief: 'tiles/relief.png',
 	chest: 'items/chest.png',
 	shadow: 'items/shadow.png',
@@ -64,7 +63,6 @@ const SHEET_SIZES: Record<keyof typeof SHEETS, readonly [number, number]> = {
 	element: [256, 240],
 	detail: [256, 80],
 	ifloor: [352, 272],
-	wall: [160, 176],
 	relief: [320, 192],
 	chest: [32, 14],
 	shadow: [12, 7],
@@ -130,12 +128,10 @@ export const standAt = (sprite: Sprite, cx: number, by: number): Draw =>
 export const GROUND = {
 	grass: [cell('floor', 0, 12), cell('floor', 2, 11), cell('floor', 3, 11), cell('floor', 1, 12), cell('floor', 3, 12)],
 	dirt: [cell('floor', 1, 8), cell('floor', 0, 11), cell('floor', 1, 11)],
-	/** 긴 풀숲 (밟고 지나간다) */
-	tallGrass: cell('nature', 7, 11),
-	/** 안쪽 바닥: 옅은 벽돌(상점), 붉은 벽돌(여관), 무늬 타일(오락실) */
-	brick: cell('ifloor', 1, 1),
-	brickWarm: cell('ifloor', 1, 7),
-	tiles: cell('ifloor', 16, 1),
+	/** 짙은 풀 (긴 풀숲 안쪽 바닥) */
+	darkGrass: cell('floor', 11, 12),
+	/** 긴 풀숲 (밟고 지나간다): 투명한 바탕에 선 긴 풀 포기들. 반 칸씩 겹쳐 세워 풀숲을 짠다 */
+	tallGrass: [cell('nature', 4, 10), cell('nature', 5, 10), cell('nature', 7, 10), cell('nature', 3, 10)],
 } as const;
 
 /** 나무와 수풀 (나무는 32×32, 아래 가운데가 줄기) */
@@ -143,10 +139,10 @@ export const NATURE = {
 	trees: [cell('nature', 0, 0, 2, 2), cell('nature', 16, 0, 2, 2), cell('nature', 18, 0, 2, 2)],
 	pine: cell('nature', 2, 0, 2, 2),
 	blossom: cell('nature', 14, 0, 2, 2),
-	bushes: [cell('nature', 0, 10), cell('nature', 1, 10), cell('nature', 6, 10), cell('nature', 10, 10)],
+	/** 덤불: 짙은 잎 덤불 (옅은 풀밭 위에서도 윤곽이 또렷하다) */
+	bushes: [cell('nature', 4, 11), cell('nature', 5, 11)],
 	flowers: [cell('nature', 0, 11), cell('nature', 1, 11), cell('nature', 3, 11), cell('nature', 6, 11)],
-	tufts: [cell('detail', 0, 2), cell('detail', 1, 2), cell('detail', 3, 2), cell('detail', 5, 2)],
-	stump: cell('nature', 4, 8),
+	tufts: [cell('detail', 0, 2), cell('detail', 2, 2), cell('detail', 3, 2), cell('detail', 5, 2)],
 	rockSmall: [sp('nature', 272, 208, 16, 16), sp('nature', 288, 208, 16, 16), sp('nature', 304, 208, 16, 16)],
 	boulder: sp('nature', 240, 160, 32, 40),
 	boulderBig: sp('nature', 272, 160, 64, 48),
@@ -158,10 +154,8 @@ export const NATURE = {
 
 /** 집과 큰 소품 (아래 가운데가 문) */
 export const BUILDINGS = {
-	thatch: sp('house', 0, 0, 64, 48),
 	beige: sp('house', 64, 0, 64, 48),
 	orange: sp('house', 128, 0, 64, 48),
-	redRoof: sp('house', 192, 0, 64, 48),
 	noodle: sp('house', 256, 0, 48, 48),
 	market: sp('house', 304, 0, 64, 48),
 	stone: sp('house', 368, 0, 48, 48),
@@ -184,12 +178,8 @@ export const PROPS = {
 	notice: cell('house', 21, 18),
 	pot: cell('element', 2, 9),
 	plant: cell('element', 0, 7, 1, 2),
-	stall: sp('house', 256, 256, 96, 32),
 	fenceH: cell('house', 12, 7),
 	fencePost: cell('house', 14, 6),
-	bookshelf: cell('element', 3, 7, 2, 2),
-	shelf: cell('element', 8, 7, 2, 2),
-	drawer: cell('element', 1, 8),
 	table: cell('element', 3, 9),
 	banner: [cell('house', 23, 20, 1, 2), cell('house', 24, 20, 1, 2), cell('house', 26, 20, 1, 2)],
 	board: cell('element', 11, 2, 3, 2),
@@ -284,8 +274,6 @@ export const AUTOTILES = {
 	water: { sheet: 'water', col: 0, row: 6 },
 	/** 테두리 있는 돌바닥 */
 	cobble: { sheet: 'ifloor', col: 0, row: 12 },
-	/** 짙은 흙 (동굴) */
-	darkDirt: { sheet: 'floor', col: 11, row: 14 },
 	/** 모래 */
 	sand: { sheet: 'floor', col: 0, row: 0 },
 } as const satisfies Record<string, AutotileSet>;

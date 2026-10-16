@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { sheetSize, TILE, type Draw } from '@/apps/safari/project/dialogueNinja';
-import { layoutWorld, SLOTS, WORLD_H, WORLD_PX_H, WORLD_PX_W, WORLD_W } from '@/apps/safari/project/dialogueWorld';
+import { GROUND, sheetSize, TILE, type Draw, type Sprite } from '@/apps/safari/project/dialogueNinja';
+import {
+	layoutWorld,
+	SLOTS,
+	TERRAIN,
+	WORLD_H,
+	WORLD_PX_H,
+	WORLD_PX_W,
+	WORLD_W,
+} from '@/apps/safari/project/dialogueWorld';
 import { composeVillage, markPoint, VILLAGE_MARGIN } from '@/apps/safari/project/dialogueVillage';
 
 const activeOf = (topics: string[], members: string[] = []) =>
@@ -73,5 +81,21 @@ describe('마을 그림 (Ninja Adventure 타일)', () => {
 			expect(point.y).toBeGreaterThanOrEqual(14);
 			expect(point.y).toBeLessThan((slot.y + slot.h) * TILE);
 		}
+	});
+
+	it('긴 풀숲은 네모난 덤불 칸을 바둑판으로 깔지 않고, 긴 풀 포기를 반 칸씩 겹쳐 세워 가장자리가 들쭉날쭉하다', () => {
+		const same = (d: Draw, s: Sprite) => d.sheet === s.sheet && d.sx === s.x && d.sy === s.y;
+		const tufts = art.draws.filter((d) => GROUND.tallGrass.some((s) => same(d, s)));
+		const cells = TERRAIN.flatMap((row, y) => [...row].map((ch, x) => (ch === ',' ? `${x},${y}` : ''))).filter(Boolean);
+		// 칸마다 한 포기와, 네 칸이 다 풀숲인 곳의 가운데에 반 칸 밀어 한 포기 더
+		expect(tufts.length).toBeGreaterThan(cells.length);
+		expect(tufts.some((d) => d.dx % TILE === 8 && d.dy % TILE === 8)).toBe(true);
+		// 포기는 여러 생김새
+		expect(new Set(tufts.map((d) => `${d.sx},${d.sy}`)).size).toBeGreaterThan(2);
+		// 풀숲은 직사각형이 아니다 (줄마다 시작과 끝이 다르다)
+		const rows = TERRAIN.filter((row) => row.includes(','));
+		expect(new Set(rows.map((row) => `${row.indexOf(',')}-${row.lastIndexOf(',')}`)).size).toBeGreaterThan(1);
+		// 안쪽 바닥은 짙은 풀
+		expect(art.draws.some((d) => same(d, GROUND.darkGrass))).toBe(true);
 	});
 });
