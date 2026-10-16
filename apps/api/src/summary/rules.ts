@@ -1,23 +1,13 @@
 // AI 요약 데모의 규칙: 받을 글과, 공급자(Groq·Gemini)에 보낼 말·받은 답 읽기. 바깥 호출 없이 시험할 수 있게 여기에 모은다.
-import { demoText, ProviderFailure } from '../common/demo.js';
+import { parse, SummaryInput, type SummaryProvider } from '@macfolio/contracts';
+import { demoInput, ProviderFailure } from '../common/demo.js';
 
-/** 요약 공급자 순서: Groq가 기본, 실패하면 Gemini */
-export const SUMMARY_PROVIDERS = ['groq', 'gemini'] as const;
-export type SummaryProvider = (typeof SUMMARY_PROVIDERS)[number];
+export { MAX_SUMMARY_CHARS, SUMMARY_PROVIDERS, type SummaryProvider } from '@macfolio/contracts';
+
 export const SUMMARY_PROVIDER_NAMES: Record<SummaryProvider, string> = { groq: 'Groq', gemini: 'Gemini' };
 
-/** 한 번에 요약할 글자 수 상한 (데모라 짧게) */
-export const MAX_SUMMARY_CHARS = 800;
-
 /** 몸통을 검사해 요약할 글로 바꾼다 (줄바꿈은 남긴다). 맞지 않으면 사람이 읽을 이유를 던진다 */
-export const parseSummaryRequest = (body: unknown) => ({
-	text: demoText(((body ?? {}) as Record<string, unknown>).text, {
-		max: MAX_SUMMARY_CHARS,
-		empty: '요약할 글을 써 주세요.',
-		refused: '이 글은 요약해 드릴 수 없습니다.',
-		lines: true,
-	}),
-});
+export const parseSummaryRequest = (body: unknown) => demoInput(parse(SummaryInput, body));
 
 /** HYEONIVERSE의 발행 요약과 같은 규칙. 데모라 짧게 한두 문장으로 */
 export const summaryPrompt = (

@@ -2,7 +2,8 @@ import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Log
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { hashIp } from '../comments/rules.js';
 import { ProviderFailure, SpeechClient } from './speech.client.js';
-import { DailyQuota, parseSpeechRequest, SpeechInputError, speechOrder, type SpeechProvider } from './rules.js';
+import { DemoInputError } from '../common/demo.js';
+import { DailyQuota, parseSpeechRequest, speechOrder, type SpeechProvider } from './rules.js';
 
 /** 공급자 하나를 시도한 결과 (화면이 차례대로 그린다) */
 export interface SpeechAttempt {
@@ -40,7 +41,7 @@ export class SpeechService {
 		try {
 			request = parseSpeechRequest(body);
 		} catch (error) {
-			if (error instanceof SpeechInputError) throw new BadRequestException(error.message);
+			if (error instanceof DemoInputError) throw new BadRequestException(error.message);
 			throw error;
 		}
 		const key = this.ipHash(ip);
