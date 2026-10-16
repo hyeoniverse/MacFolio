@@ -52,7 +52,7 @@
 .cm-save-editor textarea {
 	padding: 10px 12px;
 	border: 1px solid var(--cr-line);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--cr-bg);
 	color: var(--cr-ink);
 	font: inherit;
@@ -91,7 +91,7 @@
 	overflow: hidden;
 	padding: 9px 14px;
 	border: 1px solid var(--cr-line);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--cr-bg);
 }
 
@@ -160,7 +160,7 @@
 .cm-life-track li {
 	padding: 8px 4px;
 	border: 1px solid var(--cr-line);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--cr-bg);
 	color: var(--cr-muted);
 	font-size: 12px;
@@ -186,7 +186,7 @@
 	position: relative;
 	padding: 14px 16px;
 	border: 1px solid var(--cr-line);
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	transition: opacity 0.4s;
 }
@@ -253,7 +253,7 @@
 	gap: 8px;
 	padding: 14px 16px;
 	border: 1px solid var(--cr-line);
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 }
 
@@ -302,7 +302,7 @@
 	min-width: 38px;
 	padding: 3px 8px;
 	border: 1px solid var(--cr-line);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: none;
 	font-size: 13px;
 }
@@ -321,7 +321,7 @@
 .cm-mail {
 	overflow: hidden;
 	border: 1px solid var(--cr-line);
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	font-size: 13px;
 }
@@ -338,7 +338,7 @@
 
 .cm-mail-head span {
 	padding: 0 7px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--sp-accent);
 	color: #ffffff;
 	font-size: 11px;
@@ -527,7 +527,7 @@
 	width: 100%;
 	overflow: hidden;
 	border: 1px solid var(--cr-line);
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	border-collapse: separate;
 	border-spacing: 0;
@@ -620,7 +620,7 @@
 	width: 34px;
 	height: 34px;
 	border: 1px solid transparent;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: none;
 	font-size: 20px;
 	line-height: 1;
@@ -740,7 +740,7 @@
 	display: block;
 	height: 4px;
 	overflow: hidden;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--cr-ink) 10%, transparent);
 }
 
@@ -765,7 +765,7 @@
 	height: 28px;
 	padding: 0 6px;
 	border: 1px solid var(--cr-line);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background: none;
 	color: var(--cr-ink);
 	font-size: 11px;
@@ -788,7 +788,7 @@
 .cm-providers-name em {
 	margin-left: 4px;
 	padding: 1px 7px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--sp-accent) 10%, transparent);
 	color: var(--sp-accent);
 	font-size: 10.5px;
