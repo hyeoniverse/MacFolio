@@ -155,8 +155,10 @@ test('dialogue: Z로 넘기고 고르며, →는 옆 열로, X는 장 목록에�
 	await expect(dialog).toContainText('2 / ');
 });
 
-test('dialogue: 라이트·다크 모두 검은 무대이고, 그림은 원래 모습 그대로 흰 액자에 띄운다', async ({ page }) => {
-	await expectTheme(page, 'dialogue', { light: 'rgb(0, 0, 0)', dark: 'rgb(0, 0, 0)' });
+test('dialogue: 라이트는 옅은 하늘색, 다크는 짙은 남색 페이지이고, 그림은 원래 모습 그대로 흰 액자에 띄운다', async ({
+	page,
+}) => {
+	await expectTheme(page, 'dialogue', { light: 'rgb(232, 244, 255)', dark: 'rgb(18, 19, 48)' });
 	const { safari, panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue' });
 	await safari.getByRole('button', { name: '전체 화면' }).click();
 	const shot = panel.locator('.dl-stage .dl-shot-frame img');
@@ -165,9 +167,10 @@ test('dialogue: 라이트·다크 모두 검은 무대이고, 그림은 원래 �
 	expect(await shot.evaluate((img) => getComputedStyle(img).imageRendering)).toBe('auto');
 	await expect(panel.locator('.dl-stage canvas')).toHaveCount(0);
 	const box = dialogOf(panel);
-	// 테두리는 게임 칸 3칸이고, 화면 전체가 정수 배로 커진다 (글자·테두리·그림이 한 격자)
+	// 테두리는 게임 칸 3칸이고(여기는 다크라 밤의 흰 테두리와 남색 바탕), 화면 전체가 정수 배로 커진다 (글자·테두리·그림이 한 격자)
 	expect(await box.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('3px');
-	expect(await box.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe('rgb(255, 255, 255)');
+	expect(await box.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe('rgb(240, 240, 255)');
+	expect(await box.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(35, 38, 90)');
 	const zoom = Number(await panel.locator('.dl-screen').getAttribute('data-zoom'));
 	expect(Number.isInteger(zoom) && zoom >= 1).toBe(true);
 	const width = await panel.locator('.dl-screen').evaluate((el) => el.getBoundingClientRect().width);
@@ -245,10 +248,16 @@ test('dialogue: 트러블슈팅은 버그와의 전투(HP가 단계마다 준다
 	await dialog.getByRole('button', { name: '어려웠던 문제는?' }).click();
 	const battle = panel.locator('.dl-stage [data-panel="troubleshooting"]');
 	await expect(battle.locator('svg.dlp-monster')).toBeVisible();
+	// 무대 뒤는 전투 들판, 몬스터는 발판 위에 선다
+	await expect(panel.locator('.dl-game')).toHaveAttribute('data-scene', 'field');
+	await expect(battle.locator('.dlp-on svg.dlp-platform')).toBeVisible();
+	await expect(battle.locator('.dlp-hp-track')).toHaveAttribute('data-level', 'high');
 	const hp = battle.locator('.dlp-hp');
 	const seen: number[] = [];
 	for (let step = 0; step < 4; step++) {
 		seen.push(Number(await hp.getAttribute('data-hp')));
+		// HP가 다 닳은 막대는 빨강 단계
+		if (seen.at(-1) === 0) await expect(battle.locator('.dlp-hp-track')).toHaveAttribute('data-level', 'low');
 		await nextOf(dialog).click();
 	}
 	expect(seen[0]).toBe(100);
@@ -260,6 +269,7 @@ test('dialogue: 트러블슈팅은 버그와의 전투(HP가 단계마다 준다
 	// 파티: 팀원 수만큼 카드, 나는 ★ 나
 	await dialog.getByRole('button', { name: '누구랑 만들었어?' }).click();
 	const party = panel.locator('.dl-stage [data-panel="team"]');
+	await expect(panel.locator('.dl-game')).toHaveAttribute('data-scene', 'plaza');
 	const team = GENERAL_SAMPLE.team ?? [];
 	await expect(party.locator('.dlp-party > li')).toHaveCount(team.length);
 	await expect(party.locator('li[data-me]')).toHaveCount(1);

@@ -1,6 +1,7 @@
-// dialogue 모양: 언더테일 같은 고전 RPG 대화창. 검은 페이지 가운데에 480×270 게임 화면 하나를 정수 배로 키워 띄운다
-// (글자·테두리·픽셀 그림이 한 격자를 나눠 쓰게). 화면 위쪽은 무대, 아래 1/3은 흰 테두리 대화 상자, 맨 아래 한 줄은 상태 줄.
-// 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다. 사이트 테마와 상관없이 검은 무대다.
+// dialogue 모양: 포켓몬 GBA 전투 화면 같은 밝은 고전 RPG 대화창. 페이지 가운데에 480×270 게임 화면 하나를 정수 배로 키워 띄운다
+// (글자·테두리·픽셀 그림이 한 격자를 나눠 쓰게). 화면 위쪽은 무대, 아래 1/3은 두꺼운 테두리 대화 상자, 맨 아래 한 줄은 상태 줄.
+// 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다. 무대 뒤에는 주제마다 납작한 색 띠 장면(sceneOf)을
+// 깔고, 라이트는 낮, 다크는 밤의 색이다.
 // 무대에는 주제마다 게임 화면 하나(타이틀, 퀘스트, 전투, 파티, 장비...: DialoguePanels.tsx)를 데이터로 그려 대사가 말하는 항목을 짚는다.
 // 그 장에 그림이 있으면 그림을 액자에 원래 모습 그대로 띄우고 게임 화면은 옆에 작게 둔다
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -8,7 +9,7 @@ import type { Project, ProjectPoint } from '@/shared/profile';
 import { Links } from '@/apps/safari/project/parts';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import type { TroubleStepKey } from '@/apps/safari/project/landing/content';
-import { troubleKeys } from '@/apps/safari/project/dialogueStage';
+import { sceneOf, troubleKeys } from '@/apps/safari/project/dialogueStage';
 import { TitleScreen, TopicPanel, type PanelFocus } from '@/apps/safari/project/DialoguePanels';
 import '@/apps/safari/project/DialoguePage.css';
 
@@ -764,6 +765,11 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	};
 
 	const portrait = mode.kind === 'topic' ? line?.portrait : undefined;
+	// 무대 뒤 장면: 선택지에서는 커서 주제의 것, 엔딩은 밤하늘
+	const scene =
+		mode.kind === 'ending'
+			? 'night'
+			: sceneOf(mode.kind === 'topic' ? mode.id : mode.kind === 'menu' ? visible[cursor]?.id : undefined);
 	const hint = inMenu
 		? inSub
 			? '방향 키로 고르고 Enter나 Z를 누릅니다. X나 Esc를 누르면 처음 선택지로 돌아갑니다.'
@@ -783,7 +789,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		>
 			{/* 게임 화면: 480×270을 정수 배(zoom)로 키운다. 안의 크기는 모두 게임 칸 */}
 			<div className="dl-screen" style={screen.compact ? undefined : { zoom: screen.zoom }} data-zoom={screen.zoom}>
-				<div className="dl-game">
+				<div className="dl-game" data-scene={scene}>
 					{/* 무대: 지금 이야기하는 그림, 없으면 주제의 게임 화면 */}
 					<div className="dl-stage">{renderScene()}</div>
 
