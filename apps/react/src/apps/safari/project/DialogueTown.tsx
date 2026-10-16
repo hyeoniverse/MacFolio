@@ -44,7 +44,7 @@ import {
 import { composeVillage, markPoint, VILLAGE_MARGIN } from '@/apps/safari/project/dialogueVillage';
 import { Pixels } from '@/apps/safari/project/DialoguePixels';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
-import { acceptsGameKey } from '@/apps/safari/project/dialogueKeys';
+import { acceptsGameKey, gameKey } from '@/apps/safari/project/dialogueKeys';
 import '@/apps/safari/project/DialogueTown.css';
 
 /** 한 칸을 걷는 시간(ms): 앞 반은 발을 내딛고 뒤 반은 선다 (두 걸음에 서기·왼발·서기·오른발 네 프레임) */
@@ -550,7 +550,7 @@ const DialogueTown: React.FC<Props> = ({
 		const root = viewRef.current?.closest('.dl');
 		// 이 페이지가 든 Safari 창 안의 키만 (탭을 눌러 연 뒤 포커스가 탭에 남아 있어도 받는다, dialogueKeys.ts)
 		const accepts = (event: KeyboardEvent) => acceptsGameKey(event, root);
-		const keyOf = (event: KeyboardEvent) => (event.key.length === 1 ? event.key.toLowerCase() : event.key);
+		const keyOf = gameKey;
 		const onDown = (event: KeyboardEvent) => {
 			const walker = walkerRef.current;
 			if (!walker || !accepts(event)) return;
