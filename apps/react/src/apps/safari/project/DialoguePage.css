@@ -1,13 +1,14 @@
 /*
- * dialogue 모양: 포켓몬 GBA 전투 화면 같은 밝은 고전 RPG 대화창.
- * 옅은 페이지 가운데에 480×270 게임 화면 하나. 화면 안의 크기는 모두 게임 칸(px)이고,
+ * dialogue 모양: 포켓몬 GBA 화면 같은 밝은 고전 RPG 대화창.
+ * 옅은 페이지 가운데에 360×208 게임 화면 하나. 화면 안의 크기는 모두 게임 칸(px)이고,
  * 화면 전체를 들어가는 가장 큰 정수 배(zoom: DialoguePage.tsx의 useScreen)로 키운다. 그래서 글자·테두리·픽셀 그림이 한 격자를 나눠 쓴다.
- * 글자는 갈무리11의 제 크기 11px(큰 제목·숫자만 22px), 테두리는 3칸, 한 줄은 14칸.
- * 틀은 영역마다 하나: 대화 상자(두꺼운 청록 테두리, 계단 모서리, 안쪽 밝은 줄)만 틀이 있고, 무대는 틀 없이 장면 위에 그림을 띄운다.
- * 장면은 주제마다 16×16 타일과 손으로 놓은 소품으로 칠한 픽셀 그림(data-scene, dialogueScenes.ts)을 480×272 캔버스 두 장(낮·밤)으로
- * 깔고, 테마에 맞는 한 장만 보인다. 라이트는 낮(크림색 상자에 먹색 글), 다크는 같은 그림의 밤 팔레트(남색 상자에 흰 글).
+ * 해상도를 낮게 잡아 전체 화면 Safari(1440·1100 폭)에서 세 배: 11px 글자가 33px로 보인다.
+ * 화면은 네 줄: 길잡이 줄(메뉴 ▸ 주제 ▸ n/N 항목, 단계 점, 메뉴로) / 무대 / 이름표와 두 줄 대화 상자 / 키 안내와 읽은 주제.
+ * 메뉴 차례에는 왼쪽에 번호 붙은 여정 목록(대화 상자가 늘어난다), 오른쪽에 커서 주제의 미리보기와 안내 창.
+ * 글은 장면 위에 바로 두지 않고 늘 단단한 창(크림 바탕에 먹색 글, 밤은 남색 바탕에 흰 글) 안에 둔다. 글과 바탕은 WCAG 4.5:1 이상.
+ * 장면은 주제마다 16×16 타일과 소품으로 칠한 픽셀 그림(data-scene, dialogueScenes.ts)을 360×208 캔버스 두 장(낮·밤)으로 깔고,
+ * 테마에 맞는 한 장만 보인다. 그 위에 옅은 막(라이트는 크림, 다크는 남색)을 덮어 창 뒤의 장면을 차분하게 누른다.
  * 그라데이션처럼 번지는 색·빛 번짐·둥근 모서리는 쓰지 않는다.
- * 크기가 움직이지 않게: 대화 상자는 모든 장의 글을 같은 칸에 안 보이게 깔아 가장 큰 장에 맞추고, 지금 장은 그 위에 겹친다.
  */
 /* 픽셀 글꼴: 갈무리11 (Galmuri, 한글·영문 11px 격자, SIL OFL 1.1 — public/fonts/galmuri/OFL.txt).
    이 모양이 열릴 때만 받는다. 격자에 맞게 11의 배수(11·22px)만 쓴다 */
@@ -40,29 +41,35 @@
 .dl {
 	--dl-page: #e8f4ff;
 	--dl-bg: var(--dl-page);
-	/* 무대(장면 위)의 글: 먹색, 흐린 글, 고른 것, 하트 */
+	/* 장면을 누르는 막 */
+	--dl-veil: rgb(248 248 240 / 30%);
+	/* 기본 글: 먹색, 흐린 글, 고른 것, 하트 */
 	--dl-ink: #303030;
-	--dl-soft: #4a5a6a;
-	--dl-pick: #c42a1c;
+	--dl-soft: #5a5a52;
+	--dl-pick: #c0281a;
 	--dl-heart: #e8303a;
-	/* 상자(대화 상자, 이름·HP 상자, 아이템 칸): 크림 바탕, 두꺼운 청록 테두리, 안쪽 밝은 줄, 글 아래 1칸 밝은 그림자 */
+	/* 창(대화 상자, 길잡이 줄, 그림판의 창): 크림 바탕, 두꺼운 청록 테두리, 안쪽 밝은 줄, 글 아래 1칸 밝은 그림자 */
 	--dl-box-bg: #f8f8f0;
 	--dl-box-line: #2f6878;
 	--dl-box-inner: #a8d4dc;
 	--dl-box-ink: #303030;
-	--dl-box-soft: #7a7a70;
-	--dl-box-pick: #d83a28;
-	--dl-box-title: #1f7890;
-	--dl-box-shadow: #d8d8cc;
-	/* 지금 칸(아이템·키)의 바탕 */
+	--dl-box-soft: #5a5a52;
+	--dl-box-pick: #c0281a;
+	--dl-box-shadow: #e0e0d4;
+	/* 이름표: 테두리 색 바탕에 상자 바탕색 글 */
+	--dl-name-bg: var(--dl-box-line);
+	--dl-name-ink: var(--dl-box-bg);
+	/* 메뉴에서 커서가 있는 줄의 바탕, NEXT 표시 */
+	--dl-row-bg: #fbeaa6;
 	--dl-pick-bg: #f8c830;
+	--dl-pick-ink: #303030;
 	/* HP 막대: 남은 만큼 초록 → 노랑 → 빨강, 읽음은 파랑(경험치처럼) */
 	--dl-hp-track: #f0f0e8;
 	--dl-hp-frame: #404850;
 	--dl-hp-high: #48c868;
 	--dl-hp-mid: #f8c030;
 	--dl-hp-low: #f05030;
-	--dl-exp: #40a0f0;
+	--dl-exp: #2f8ae0;
 	/* 그림 액자와 게임 화면의 바깥 줄 */
 	--dl-outline: #303030;
 	/* 발판 (data-scene가 바꾼다): 흙 외곽선, 흙, 밝은 흙, 그늘, 가장자리 풀 */
@@ -71,16 +78,12 @@
 	--dl-plat-hi: #f0d4a0;
 	--dl-plat-shade: #b48c5c;
 	--dl-plat-grass: #78c058;
-	/* 장면 위에 바로 놓는 글의 테두리 (상자 바탕색) */
-	--dl-halo: var(--dl-box-bg);
-	/* 게임 칸: 테두리 3, 한 줄 14, 별표 자리 14 */
+	/* 게임 칸: 대화 상자 테두리 3, 한 줄 14, 하트 자리 10 */
 	--dl-border: 3px;
 	--dl-row: 14px;
-	--dl-star: 14px;
-	--dl-pad-y: 6px;
+	--dl-star: 10px;
+	--dl-pad-y: 4px;
 	--dl-pad-x: 8px;
-	/* 선택지가 한 번에 보이는 줄 수 (더 있으면 상자 안에서 넘어간다) */
-	--dl-menu-rows: 4;
 	position: relative;
 	display: grid;
 	place-items: center;
@@ -107,43 +110,48 @@
 	isolation: isolate;
 }
 
-/* 밤: 남색·쪽빛 상자에 흰 글, 고른 것은 노랑. 발판은 차분한 청보라 */
+/* 밤: 남색 창에 흰 글, 고른 것은 노랑. 발판은 차분한 청보라 */
 :root[data-theme='dark'] .dl {
 	--dl-page: #121330;
+	--dl-veil: rgb(10 12 36 / 38%);
 	--dl-ink: #ffffff;
-	--dl-soft: #b4b8e8;
+	--dl-soft: #c4c8f0;
 	--dl-pick: #ffd84a;
-	--dl-heart: #ff5a6a;
+	--dl-heart: #ff6a78;
 	--dl-box-bg: #23265a;
 	--dl-box-line: #f0f0ff;
 	--dl-box-inner: #6a70c0;
 	--dl-box-ink: #ffffff;
-	--dl-box-soft: #9ca0d8;
+	--dl-box-soft: #c4c8f0;
 	--dl-box-pick: #ffd84a;
-	--dl-box-title: #9fe0ff;
-	--dl-box-shadow: #3a3f88;
+	--dl-box-shadow: #343878;
+	--dl-row-bg: #3c418c;
 	--dl-pick-bg: #ffd84a;
+	--dl-pick-ink: #23265a;
 	--dl-hp-track: #151838;
 	--dl-hp-frame: #c8ccff;
 	--dl-exp: #5ab8ff;
 	--dl-outline: #0c0e28;
 }
 
-/* ─── 게임 화면: 480×270을 zoom으로 정수 배. 안쪽은 무대 / 대화 상자 / 상태 줄 ─── */
+/* ─── 게임 화면: 360×208을 zoom으로 정수 배 ─── */
 .dl-screen {
 	display: grid;
-	width: 480px;
+	width: 360px;
 }
 
-/* 게임 화면: 무대 / 대화 상자 / 상태 줄. 뒤에는 장면 캔버스 (캔버스를 그리기 전에는 상자 바탕색) */
+/* 네 줄: 길잡이 / 무대 / 이름표와 대화 상자 / 키 안내. 뒤에는 장면 캔버스와 그것을 누르는 막 */
 .dl-game {
 	position: relative;
 	display: grid;
-	grid-template-rows: minmax(0, 1fr) auto auto;
-	row-gap: 4px;
-	width: 480px;
-	height: 270px;
-	padding: 6px 8px 3px;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: 16px minmax(0, 1fr) auto 13px;
+	grid-template-areas: 'hud' 'stage' 'talk' 'foot';
+	row-gap: 3px;
+	column-gap: 6px;
+	width: 360px;
+	height: 208px;
+	padding: 3px 6px 2px;
 	overflow: hidden;
 	background: var(--dl-page);
 	box-shadow: 0 0 0 2px var(--dl-outline);
@@ -151,14 +159,24 @@
 	isolation: isolate;
 }
 
-/* 장면 캔버스: 480×272 칸 그대로, 화면과 함께 정수 배로 커진다 (가장자리를 흐리지 않게 pixelated). 낮·밤 중 한 장만 */
+/* 장면을 누르는 막: 캔버스 위, 창들 아래 */
+.dl-game::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--dl-veil);
+	pointer-events: none;
+}
+
+/* 장면 캔버스: 360×208 칸 그대로, 화면과 함께 정수 배로 커진다 (가장자리를 흐리지 않게 pixelated). 낮·밤 중 한 장만 */
 .dl-backdrop {
 	position: absolute;
 	top: 0;
 	left: 0;
 	z-index: -1;
-	width: 480px;
-	height: 272px;
+	width: 360px;
+	height: 208px;
 	image-rendering: pixelated;
 	pointer-events: none;
 }
@@ -263,31 +281,132 @@
 	--dl-plat-grass: #2c4a68;
 }
 
-/* 상자 안은 상자의 색을 쓴다 (대화 상자, 전투의 이름·HP 상자) */
+/* 창 안은 창의 색을 쓴다 (대화 상자, 길잡이 줄, 아래 줄) */
 .dl-box,
-.dlp-hp {
+.dl-hud,
+.dl-foot {
 	--dl-bg: var(--dl-box-bg);
 	--dl-ink: var(--dl-box-ink);
 	--dl-soft: var(--dl-box-soft);
 	--dl-pick: var(--dl-box-pick);
+	background: var(--dl-box-bg);
+	color: var(--dl-box-ink);
 	text-shadow: 1px 1px 0 var(--dl-box-shadow);
 }
 
-/* ─── 무대: 틀 없이 가운데에. 그림이 있으면 액자, 없으면 주제의 게임 화면 (DialoguePanels.css) ─── */
+/* ─── 길잡이 줄: 메뉴 ▸ 주제 ▸ n/N 항목 (마지막 칸이 고른 색), 단계 점, 메뉴로 단추 ─── */
+.dl-hud {
+	grid-area: hud;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	height: 16px;
+	padding: 0 2px 0 6px;
+	box-shadow:
+		0 0 0 1px var(--dl-box-line),
+		inset 0 -1px 0 var(--dl-box-inner);
+}
+
+.dl-crumb {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: center;
+	min-width: 0;
+	margin: 0;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.dl-crumb span {
+	flex: 0 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* 앞 칸(메뉴, 주제)은 줄지 않고, 길면 마지막 칸(항목 이름)이 줄임표로 준다 */
+.dl-crumb span:not([data-last]) {
+	flex-shrink: 0;
+	max-width: 120px;
+}
+
+.dl-crumb span[data-last] {
+	color: var(--dl-pick);
+}
+
+.dl-crumb-sep {
+	flex: none;
+	padding: 0 3px;
+	color: var(--dl-soft);
+	font-style: normal;
+}
+
+/* 단계 점: 지난 것은 채운 칸, 지금은 큰 노랑, 아직은 빈 칸 */
+.dl-pips {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 2px;
+}
+
+.dl-pips i {
+	width: 5px;
+	height: 5px;
+	background: var(--dl-ink);
+	box-shadow: 0 0 0 1px var(--dl-box-line);
+}
+
+.dl-pips i[data-state='todo'] {
+	background: var(--dl-box-bg);
+}
+
+.dl-pips i[data-state='now'] {
+	width: 7px;
+	height: 7px;
+	background: var(--dl-pick-bg);
+}
+
+/* 메뉴로: 이름표처럼 테두리 색 바탕의 작은 단추. 고르면 노랑 */
+.dl-tomenu {
+	flex: none;
+	height: 12px;
+	padding: 0 4px;
+	border: 0;
+	background: var(--dl-name-bg);
+	color: var(--dl-name-ink);
+	font: inherit;
+	line-height: 12px;
+	text-shadow: none;
+	cursor: pointer;
+}
+
+.dl-tomenu:is(:hover, :focus-visible) {
+	outline: none;
+	background: var(--dl-pick-bg);
+	color: var(--dl-pick-ink);
+}
+
+/* ─── 무대: 틀 없이 가운데에. 그림이 있으면 액자, 없으면 주제의 게임 화면 (DialoguePanels.css). 링크 창은 아래에 ─── */
 .dl-stage {
+	grid-area: stage;
 	display: grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+	justify-items: stretch;
+	min-width: 0;
 	min-height: 0;
 	overflow: hidden;
-	container: dl-stage / size;
 }
 
 .dl-scene {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 12px;
+	gap: 8px;
 	min-width: 0;
+	min-height: 0;
 	height: 100%;
+	container: dl-scene / size;
 	animation: dl-in 0.2s steps(2) both;
 }
 
@@ -304,12 +423,12 @@
 /* 액자 옆의 작은 게임 화면 */
 .dl-side {
 	flex: none;
-	width: 176px;
+	width: 120px;
 	height: 100%;
 	min-width: 0;
 }
 
-/* 그림 한 장: 2칸 흰 테두리 액자에 원래 모습 그대로 (픽셀로 바꾸지 않는다). 아래 한 줄에 넘기기와 이름 */
+/* 그림 한 장: 흰 테두리 액자에 원래 모습 그대로 (픽셀로 바꾸지 않는다). 아래 한 줄에 넘기기와 이름 */
 .dl-shot {
 	display: grid;
 	justify-items: center;
@@ -319,7 +438,7 @@
 
 .dl-shot-frame {
 	padding: 1px;
-	border: 3px solid #ffffff;
+	border: 2px solid #ffffff;
 	background: #ffffff;
 	box-shadow: 0 0 0 1px var(--dl-outline);
 	line-height: 0;
@@ -328,30 +447,42 @@
 .dl-shot-frame > :is(img, video) {
 	display: block;
 	width: auto;
-	max-width: calc(100cqw - 10px);
+	max-width: calc(100cqw - 8px);
 	height: auto;
-	max-height: calc(100cqh - 10px - var(--dl-row) - 2px);
+	max-height: calc(100cqh - 8px);
 	object-fit: contain;
 }
 
-.dl-scene[data-side] .dl-shot-frame > :is(img, video) {
-	max-width: calc(100cqw - 176px - 12px - 10px);
+.dl-shot:has(.dl-shot-foot) .dl-shot-frame > :is(img, video) {
+	max-height: calc(100cqh - 8px - var(--dl-row) - 2px);
 }
 
+.dl-scene[data-side] .dl-shot-frame > :is(img, video) {
+	max-width: calc(100cqw - 120px - 8px - 8px);
+}
+
+/* 액자 아래 줄: 넘기기와 이름을 작은 창에 */
 .dl-shot-foot {
+	--dl-ink: var(--dl-box-ink);
+	--dl-soft: var(--dl-box-soft);
+	--dl-pick: var(--dl-box-pick);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 6px;
 	max-width: 100%;
 	height: var(--dl-row);
 	margin-top: 2px;
+	padding: 0 4px;
+	background: var(--dl-box-bg);
+	box-shadow: 0 0 0 1px var(--dl-box-line);
+	color: var(--dl-box-ink);
 }
 
 .dl-caption {
 	min-width: 0;
 	overflow: hidden;
-	color: var(--dl-soft);
+	color: var(--dl-ink);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -360,14 +491,14 @@
 	display: inline-flex;
 	flex: none;
 	align-items: center;
-	gap: 4px;
+	gap: 3px;
 }
 
 .dl-flip button {
 	display: grid;
 	place-items: center;
-	width: 14px;
-	height: 14px;
+	width: 12px;
+	height: 12px;
 	padding: 0;
 	border: 0;
 	background: transparent;
@@ -376,7 +507,7 @@
 	cursor: pointer;
 }
 
-/* 고른 칸은 노랑 (테두리 대신 게임처럼 글자색으로) */
+/* 고른 칸은 고른 색 (테두리 대신 게임처럼 글자색으로) */
 .dl-flip button:is(:hover, :focus-visible) {
 	outline: none;
 	color: var(--dl-pick);
@@ -397,314 +528,42 @@
 	background: var(--dl-pick);
 }
 
-/* 엔딩의 앨범: 2칸 흰 테두리 작은 그림 여러 장 */
+/* 엔딩의 앨범: 2칸 흰 테두리 작은 그림 한 줄 */
 .dl-album {
 	display: grid;
-	grid-template-columns: repeat(3, auto);
+	grid-template-columns: repeat(var(--dl-album, 4), auto);
 	gap: 6px;
 }
 
-.dl-album[data-count='2'],
-.dl-album[data-count='4'] {
-	grid-template-columns: repeat(2, auto);
+.dl-album[data-count='2'] {
+	--dl-album: 2;
+}
+
+.dl-album[data-count='3'] {
+	--dl-album: 3;
 }
 
 .dl-album img {
 	display: block;
-	width: calc((100cqw - 24px) / 3 - 4px);
-	max-width: 120px;
+	width: calc((100cqw - 24px) / 4 - 4px);
 	height: auto;
-	max-height: calc((100cqh - var(--dl-row) - 12px) / 2 - 4px);
+	max-height: calc(100cqh - 8px);
 	border: 2px solid #ffffff;
 	box-shadow: 0 0 0 1px var(--dl-outline);
 	object-fit: cover;
 	aspect-ratio: 16 / 10;
 }
 
-/* 프로젝트 아이콘 (타이틀 화면의 얼굴, DialoguePanels.tsx) */
-.dl-sign-icon {
-	display: block;
-}
-
-/* sproutfarm: char-walk.png(48×48 네 칸) 첫 칸에서 캐릭터가 있는 부분(13×17)만 잘라 픽셀 그대로 세 배 */
-.dl-sprite {
-	--dl-px: 3px;
-	display: block;
-	width: calc(var(--dl-px) * 13);
-	height: calc(var(--dl-px) * 17);
-	background: url('/imgs/projects/sproutfarm/sprites/char-walk.png') calc(var(--dl-px) * -17) calc(var(--dl-px) * -15) /
-		calc(var(--dl-px) * 192) calc(var(--dl-px) * 48) no-repeat;
-	image-rendering: pixelated;
-}
-
-/* ─── 대화 상자: 3칸 두꺼운 테두리(계단 모서리)와 안쪽 밝은 줄. 높이는 가장 긴 장과 (질문 + 선택지 네 줄) 중 큰 쪽 ─── */
-.dl-box {
-	position: relative;
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
-	min-height: calc(2 * var(--dl-border) + 2 * var(--dl-pad-y) + (var(--dl-menu-rows) + 1) * var(--dl-row));
-	margin: 0;
-	padding: var(--dl-pad-y) var(--dl-pad-x);
-	border: var(--dl-border) solid var(--dl-box-line);
-	background: var(--dl-box-bg);
-	box-shadow: inset 0 0 0 2px var(--dl-box-inner);
-	color: var(--dl-ink);
-	/* 네 모서리를 2칸씩 계단으로 깎는다 */
-	clip-path: polygon(
-		0 2px,
-		2px 2px,
-		2px 0,
-		calc(100% - 2px) 0,
-		calc(100% - 2px) 2px,
-		100% 2px,
-		100% calc(100% - 2px),
-		calc(100% - 2px) calc(100% - 2px),
-		calc(100% - 2px) 100%,
-		2px 100%,
-		2px calc(100% - 2px),
-		0 calc(100% - 2px)
-	);
-}
-
-/* 팀원의 장: 왼쪽 얼굴 칸에 사진 (언더테일의 말하는 얼굴처럼), 글은 그 옆으로 */
-.dl-portrait {
-	position: absolute;
-	top: calc(var(--dl-pad-y) + 1px);
-	left: calc(var(--dl-pad-x) + 1px);
-	width: 48px;
-	height: 48px;
-	box-shadow: 0 0 0 1px var(--dl-box-line);
-	object-fit: cover;
-}
-
-/* 픽셀로 줄인 그림 (얼굴 칸, 프로젝트 아이콘): 칸을 흐리지 않고 키운다 */
-.dl img[data-pixel] {
-	image-rendering: pixelated;
-}
-
-.dl-box[data-portrait] .dl-text {
-	padding-left: 58px;
-}
-
-.dl-text {
-	display: grid;
-	grid-template-rows: minmax(0, 1fr) var(--dl-row);
-	min-width: 0;
-	cursor: pointer;
-}
-
-.dl[data-mode='menu'] .dl-text {
-	cursor: default;
-}
-
-/* 모든 장(안 보이는 것)과 지금 장이 같은 칸에 겹친다: 칸 크기 = 가장 큰 것 */
-.dl-cell {
-	display: grid;
-	min-height: calc(var(--dl-menu-rows) * var(--dl-row));
-}
-
-.dl-cell > * {
-	grid-area: 1 / 1;
-	align-self: start;
-	min-width: 0;
-}
-
-.dl-ghost {
-	visibility: hidden;
-	pointer-events: none;
-}
-
-/* 안 보이는 글은 data-text를 그린다 (글 자체가 아니라 찾기·읽기에 잡히지 않는다) */
-.dl-ghost [data-text]::before,
-.dl-rest::before {
-	content: attr(data-text);
-}
-
-.dl-rest {
+/* 링크 창: 무대 아래 가운데. 글이 다 찍히면 보인다 */
+.dl-linkbar {
+	justify-self: center;
+	max-width: 100%;
+	margin-top: 2px;
+	padding: 0 6px;
 	visibility: hidden;
 }
 
-/* 대사: 줄 앞에 별표. 별표 자리는 안 보이는 장에도 똑같이 비워 둔다 */
-.dl-title,
-.dl-body {
-	position: relative;
-	display: block;
-	margin: 0;
-	padding-left: var(--dl-star);
-	font-size: 11px;
-	line-height: var(--dl-row);
-	word-break: keep-all;
-	overflow-wrap: anywhere;
-}
-
-.dl-title {
-	color: var(--dl-box-title);
-	font-weight: 400;
-}
-
-.dl-body {
-	color: var(--dl-ink);
-	font-weight: 400;
-	white-space: pre-line;
-}
-
-.dl-line > :is(.dl-title, .dl-body)::before {
-	content: '*';
-	position: absolute;
-	left: 0;
-	color: var(--dl-ink);
-}
-
-/* 제목 아래 이어지는 설명은 별표 없이 제목에 붙는다 */
-.dl-line > .dl-title + .dl-body::before {
-	content: none;
-}
-
-/* ─── 선택지: 상자 안, 질문 줄 아래. 왼쪽에서 오른쪽으로 채우고, 네 줄보다 길면 줄 단위로 넘어간다 ─── */
-.dl-menu {
-	position: absolute;
-	top: calc(var(--dl-pad-y) + var(--dl-row));
-	right: var(--dl-pad-x);
-	left: var(--dl-pad-x);
-	z-index: 2;
-	height: calc(var(--dl-menu-rows) * var(--dl-row));
-	background: var(--dl-bg);
-	visibility: hidden;
-}
-
-.dl-menu[data-open] {
-	visibility: visible;
-}
-
-.dl-choices {
-	display: grid;
-	grid-template-columns: repeat(var(--dl-cols, 1), minmax(0, 1fr));
-	grid-auto-rows: var(--dl-row);
-	height: 100%;
-	margin: 0;
-	/* ▲·▼ 자리 */
-	padding: 0 8px 0 0;
-	overflow-y: auto;
-	list-style: none;
-	scroll-snap-type: y mandatory;
-	scrollbar-width: none;
-}
-
-.dl-choices::-webkit-scrollbar {
-	display: none;
-}
-
-.dl-choices li {
-	min-width: 0;
-	scroll-snap-align: start;
-}
-
-.dl-choices button {
-	display: grid;
-	/* ♥ · 이름 · ✓ : ✓는 이름 바로 뒤에 붙는다 */
-	grid-template-columns: var(--dl-star) minmax(0, max-content) 10px;
-	justify-content: start;
-	align-items: center;
-	width: 100%;
-	height: var(--dl-row);
-	padding: 0;
-	border: 0;
-	background: transparent;
-	color: var(--dl-ink);
-	font: inherit;
-	line-height: var(--dl-row);
-	text-align: left;
-	cursor: pointer;
-}
-
-/* 포커스는 테두리 대신 게임 커서(♥과 노랑)로 그린다: 포커스가 오면 커서도 그 줄로 온다 */
-.dl-choices button:focus-visible {
-	outline: none;
-}
-
-.dl-cursor {
-	color: var(--dl-heart);
-	visibility: hidden;
-}
-
-.dl-choices button[data-active] .dl-cursor {
-	visibility: visible;
-}
-
-.dl-label {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.dl-choices button[data-active] .dl-label {
-	color: var(--dl-pick);
-}
-
-/* 읽은 주제는 회색, 끝에 ✓ */
-.dl-choices button[data-read]:not([data-active]) .dl-label,
-.dl-choices button[data-back]:not([data-active]) .dl-label {
-	color: var(--dl-soft);
-}
-
-.dl-check {
-	padding-left: 2px;
-	color: var(--dl-soft);
-	font-style: normal;
-}
-
-.dl-choices button[data-active] .dl-check {
-	color: var(--dl-pick);
-}
-
-/* 위·아래에 더 있는 줄: 오른쪽 끝에 ▲·▼ */
-.dl-more {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	width: 8px;
-	font-size: 11px;
-	line-height: var(--dl-row);
-	pointer-events: none;
-}
-
-.dl-more i {
-	font-style: normal;
-	visibility: hidden;
-	transform: scale(0.7);
-}
-
-.dl-more i[data-on] {
-	visibility: visible;
-	animation: dl-blink 1s steps(1) infinite;
-}
-
-/* ─── 상자 아래 줄: 왼쪽 진행(또는 링크), 오른쪽 ▼ ─── */
-.dl-foot {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 8px;
-	height: var(--dl-row);
-}
-
-.dl-count {
-	padding-left: var(--dl-star);
-	color: var(--dl-soft);
-	font-variant-numeric: tabular-nums;
-}
-
-.dl-links-slot {
-	min-width: 0;
-	padding-left: var(--dl-star);
-	visibility: hidden;
-}
-
-.dl-links-slot[data-shown] {
+.dl-linkbar[data-shown] {
 	visibility: visible;
 }
 
@@ -712,13 +571,13 @@
 	display: flex;
 	flex-wrap: nowrap;
 	justify-content: flex-start;
-	gap: 12px;
+	gap: 10px;
 	margin: 0;
 	font-size: 11px;
 	white-space: nowrap;
 }
 
-/* 링크 단추: 선택지처럼 글자만. ▶ 뒤에 이름, 고르면 ♥과 노랑 */
+/* 링크 단추: 메뉴처럼 글자만. ▶ 뒤에 이름, 고르면 ♥과 고른 색 */
 .dl .dl-links :is(.sp-pill, .sp-link) {
 	display: inline-flex;
 	align-items: center;
@@ -756,17 +615,138 @@
 	color: var(--dl-heart);
 }
 
-/* ▼: 글이 다 찍히면 깜빡인다. 찍히는 중에도 자리는 그대로 */
+/* 프로젝트 아이콘 (타이틀 화면의 얼굴, DialoguePanels.tsx) */
+.dl-sign-icon {
+	display: block;
+}
+
+/* sproutfarm: char-walk.png(48×48 네 칸) 첫 칸에서 캐릭터가 있는 부분(13×17)만 잘라 픽셀 그대로 두 배 */
+.dl-sprite {
+	--dl-px: 2px;
+	display: block;
+	width: calc(var(--dl-px) * 13);
+	height: calc(var(--dl-px) * 17);
+	background: url('/imgs/projects/sproutfarm/sprites/char-walk.png') calc(var(--dl-px) * -17) calc(var(--dl-px) * -15) /
+		calc(var(--dl-px) * 192) calc(var(--dl-px) * 48) no-repeat;
+	image-rendering: pixelated;
+}
+
+/* ─── 대화 상자: 위에 이름표, 아래 3칸 두꺼운 테두리(계단 모서리) 상자에 두 줄 ─── */
+.dl-talk {
+	grid-area: talk;
+	position: relative;
+	display: grid;
+	grid-template-rows: 14px 42px;
+	min-width: 0;
+	min-height: 0;
+	margin: 0;
+}
+
+/* 이름표: 말하는 이(항목 이름)를 상자 왼쪽 위에 붙은 짙은 띠에. 없으면 자리만 */
+.dl-name {
+	justify-self: start;
+	max-width: calc(100% - 12px);
+	height: 14px;
+	margin-left: 6px;
+	padding: 0 6px;
+	overflow: hidden;
+	background: var(--dl-name-bg);
+	color: var(--dl-name-ink);
+	font-weight: 700;
+	line-height: 14px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dl-name[data-empty] {
+	visibility: hidden;
+}
+
+.dl-box {
+	position: relative;
+	min-width: 0;
+	min-height: 0;
+	margin: 0;
+	padding: var(--dl-pad-y) 16px var(--dl-pad-y) var(--dl-pad-x);
+	border: var(--dl-border) solid var(--dl-box-line);
+	box-shadow: inset 0 0 0 1px var(--dl-box-inner);
+	cursor: pointer;
+	/* 네 모서리를 2칸씩 계단으로 깎는다 */
+	clip-path: polygon(
+		0 2px,
+		2px 2px,
+		2px 0,
+		calc(100% - 2px) 0,
+		calc(100% - 2px) 2px,
+		100% 2px,
+		100% calc(100% - 2px),
+		calc(100% - 2px) calc(100% - 2px),
+		calc(100% - 2px) 100%,
+		2px 100%,
+		2px calc(100% - 2px),
+		0 calc(100% - 2px)
+	);
+}
+
+.dl[data-mode='menu'] .dl-box {
+	cursor: default;
+}
+
+/* 팀원의 장: 왼쪽 얼굴 칸에 사진 (말하는 얼굴처럼), 글은 그 옆으로 */
+.dl-portrait {
+	position: absolute;
+	top: 1px;
+	left: 4px;
+	width: 32px;
+	height: 32px;
+	box-shadow: 0 0 0 1px var(--dl-box-line);
+	object-fit: cover;
+}
+
+/* 픽셀로 줄인 그림 (얼굴 칸, 프로젝트 아이콘): 칸을 흐리지 않고 키운다 */
+.dl img[data-pixel] {
+	image-rendering: pixelated;
+}
+
+.dl-talk[data-portrait] .dl-box {
+	padding-left: 42px;
+}
+
+/* 대사 두 줄. 찍히는 중에도 안 찍힌 글을 안 보이게 이어 두어 줄바꿈이 끝 모양과 같다 */
+.dl-body {
+	display: -webkit-box;
+	height: calc(2 * var(--dl-row));
+	margin: 0;
+	overflow: hidden;
+	color: var(--dl-ink);
+	line-height: var(--dl-row);
+	word-break: keep-all;
+	overflow-wrap: anywhere;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.dl-rest {
+	visibility: hidden;
+}
+
+.dl-rest::before {
+	content: attr(data-text);
+}
+
+/* ▼: 오른쪽 아래 구석. 글이 다 찍히면 깜빡인다 */
 .dl-next {
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
 	display: grid;
 	place-items: center;
-	width: var(--dl-row);
+	width: 12px;
 	height: var(--dl-row);
-	margin-left: auto;
 	padding: 0;
 	border: 0;
 	background: transparent;
-	color: var(--dl-ink);
+	color: var(--dl-pick);
 	font: inherit;
 	line-height: 1;
 	cursor: pointer;
@@ -788,7 +768,6 @@
 
 .dl-next:focus-visible {
 	outline: none;
-	color: var(--dl-pick);
 }
 
 .dl-next:focus-visible i {
@@ -801,43 +780,229 @@
 	}
 }
 
-/* ─── 상태 줄: 언더테일의 이름·HP 줄처럼. 이름과 기간, 읽음 막대(빨강 위에 노랑) ─── */
-.dl-status {
-	--dl-ink: var(--dl-box-ink);
-	--dl-soft: var(--dl-box-soft);
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	min-width: 0;
+/* ─── 메뉴 차례: 왼쪽 칸 전체가 여정 목록(질문 한 줄 + 번호 붙은 주제), 오른쪽은 미리보기와 안내 창 ─── */
+.dl[data-mode='menu'] .dl-game {
+	grid-template-columns: 176px minmax(0, 1fr);
+	grid-template-rows: 16px minmax(0, 1fr) 13px;
+	grid-template-areas: 'hud hud' 'talk stage' 'foot foot';
+}
+
+.dl[data-mode='menu'] .dl-talk {
+	grid-template-rows: minmax(0, 1fr);
+}
+
+.dl[data-mode='menu'] .dl-name {
+	display: none;
+}
+
+.dl[data-mode='menu'] .dl-body {
 	height: var(--dl-row);
-	padding: 0 4px;
-	background: var(--dl-box-bg);
-	box-shadow: 0 0 0 1px var(--dl-box-line);
 	color: var(--dl-box-ink);
-}
-
-.dl-status-name {
-	display: flex;
-	align-items: baseline;
-	gap: 10px;
-	min-width: 0;
-}
-
-.dl-status-name b {
-	flex: none;
-	max-width: 220px;
-	overflow: hidden;
 	font-weight: 700;
+	-webkit-line-clamp: 1;
+}
+
+.dl-menu {
+	position: absolute;
+	top: calc(var(--dl-pad-y) + var(--dl-row) + 2px);
+	right: 4px;
+	bottom: var(--dl-pad-y);
+	left: 4px;
+	z-index: 2;
+	background: var(--dl-bg);
+	visibility: hidden;
+}
+
+.dl-menu[data-open] {
+	visibility: visible;
+}
+
+/* 줄 단위로만 넘어가게 보이는 높이를 줄 높이의 배수로 */
+.dl-choices {
+	display: grid;
+	grid-auto-rows: var(--dl-row);
+	max-height: round(down, 100%, var(--dl-row));
+	margin: 0;
+	/* ▲·▼ 자리 */
+	padding: 0 9px 0 0;
+	overflow-y: auto;
+	list-style: none;
+	scroll-snap-type: y mandatory;
+	scrollbar-width: none;
+}
+
+.dl-choices::-webkit-scrollbar {
+	display: none;
+}
+
+.dl-choices li {
+	min-width: 0;
+	scroll-snap-align: start;
+}
+
+.dl-choices button {
+	display: grid;
+	/* ♥ · 번호 · 이름 · ✓ · NEXT : ✓와 NEXT는 이름 바로 뒤에 붙는다 */
+	grid-template-columns: 12px 14px minmax(0, max-content) auto auto;
+	justify-content: start;
+	align-items: center;
+	width: 100%;
+	height: var(--dl-row);
+	padding: 0 0 0 2px;
+	border: 0;
+	background: transparent;
+	color: var(--dl-ink);
+	font: inherit;
+	line-height: var(--dl-row);
+	text-align: left;
+	text-shadow: inherit;
+	cursor: pointer;
+}
+
+/* 포커스는 테두리 대신 게임 커서(♥과 줄 바탕)로 그린다: 포커스가 오면 커서도 그 줄로 온다 */
+.dl-choices button:focus-visible {
+	outline: none;
+}
+
+.dl-choices button[data-active] {
+	background: var(--dl-row-bg);
+}
+
+.dl-cursor {
+	color: var(--dl-heart);
+	visibility: hidden;
+}
+
+.dl-choices button[data-active] .dl-cursor {
+	visibility: visible;
+}
+
+.dl-num {
+	color: var(--dl-soft);
+	font-variant-numeric: tabular-nums;
+}
+
+.dl-label {
+	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.dl-status-name small {
+.dl-choices button[data-active] :is(.dl-label, .dl-num) {
+	color: var(--dl-pick);
+}
+
+/* 읽은 주제는 흐린 글, 끝에 ✓ */
+.dl-choices button:is([data-read], [data-back]):not([data-active]) .dl-label {
+	color: var(--dl-soft);
+}
+
+.dl-check {
+	padding-left: 3px;
+	color: var(--dl-soft);
+	font-style: normal;
+}
+
+.dl-check:empty {
+	padding: 0;
+}
+
+/* NEXT: 노랑 바탕의 작은 표 (다음 차례) */
+.dl-next-tag {
+	height: 12px;
+	margin-left: 4px;
+	padding: 0 2px;
+	background: var(--dl-pick-bg);
+	color: var(--dl-pick-ink);
+	font-style: normal;
+	line-height: 12px;
+	text-shadow: none;
+}
+
+/* 위·아래에 더 있는 줄: 오른쪽 끝에 ▲·▼ */
+.dl-more {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 9px;
+	color: var(--dl-pick);
+	line-height: var(--dl-row);
+	pointer-events: none;
+}
+
+.dl-more i {
+	font-style: normal;
+	visibility: hidden;
+	transform: scale(0.8);
+}
+
+.dl-more i[data-on] {
+	visibility: visible;
+	animation: dl-blink 1s steps(1) infinite;
+}
+
+/* 메뉴의 무대: 위에 미리보기(그림 또는 작은 게임 화면), 아래 안내 창(번호·이름, 장 수와 읽음) */
+.dl-preview {
+	display: grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+	align-items: stretch;
+	justify-content: stretch;
+	justify-items: stretch;
+	gap: 4px;
+	width: 100%;
+	container: none;
+}
+
+.dl-preview-art {
+	display: grid;
+	place-items: center;
+	min-height: 0;
+	container: dl-scene / size;
+}
+
+.dl-preview-art > .dlp {
+	width: 100%;
+	height: 100%;
+}
+
+.dl-info {
+	display: grid;
+	min-width: 0;
+}
+
+.dl-info > * {
 	min-width: 0;
 	overflow: hidden;
-	color: var(--dl-soft);
-	font-size: 11px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dl-info b {
+	font-weight: 700;
+}
+
+/* ─── 아래 줄: 지금 누를 수 있는 키(왼쪽), 읽은 주제 수와 막대(오른쪽) ─── */
+.dl-foot {
+	grid-area: foot;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	min-width: 0;
+	height: 13px;
+	padding: 0 4px;
+	box-shadow: 0 0 0 1px var(--dl-box-line);
+	line-height: 13px;
+}
+
+.dl-keys {
+	min-width: 0;
+	margin: 0;
+	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -846,17 +1011,17 @@
 	display: inline-flex;
 	flex: none;
 	align-items: center;
-	gap: 6px;
+	gap: 4px;
 }
 
-.dl-hp em {
-	font-style: normal;
+.dl-hp-count {
+	font-variant-numeric: tabular-nums;
 }
 
 .dl-hp-bar {
 	position: relative;
-	width: 48px;
-	height: 6px;
+	width: 28px;
+	height: 5px;
 	background: var(--dl-hp-track);
 	box-shadow: 0 0 0 1px var(--dl-hp-frame);
 }
@@ -868,35 +1033,9 @@
 	transition: width 0.3s steps(6);
 }
 
-.dl-hp-count {
-	font-variant-numeric: tabular-nums;
-}
-
-/* ─── 키 안내: 화면 아래 한 줄 (같은 배수로 커진다). 자리가 모자라면 읽기 프로그램에만 ─── */
-.dl-keys {
-	height: 18px;
-	margin: 0;
-	padding-top: 4px;
-	overflow: hidden;
-	color: var(--dl-soft);
-	text-align: center;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.dl-keys:not([data-shown]) {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	overflow: hidden;
-	clip-path: inset(50%);
-}
-
 /* ─── 한 배도 안 들어가는 창 (휴대폰처럼 아주 좁거나 낮은 창): 키우지 않고 창 폭에 맞춘다.
-   선택지는 한 열 여섯 줄, 무대는 높이가 될 때만 위쪽에 고정 높이로 ─── */
+   메뉴는 한 열 아홉 줄, 무대는 높이가 될 때만 위쪽에 고정 높이로 ─── */
 .dl[data-fit='compact'] {
-	--dl-menu-rows: 6;
 	place-items: start stretch;
 	height: auto;
 	min-height: 100%;
@@ -908,13 +1047,48 @@
 }
 
 .dl[data-fit='compact'] .dl-game {
-	grid-template-rows: auto auto auto;
+	grid-template-rows: auto auto auto auto;
 	height: auto;
-	padding: 8px;
+	padding: 6px;
 }
 
 .dl[data-fit='compact'] .dl-stage {
-	height: 152px;
+	height: 128px;
+}
+
+.dl[data-fit='compact'] .dl-talk {
+	grid-template-rows: 14px auto;
+}
+
+.dl[data-fit='compact'] .dl-body {
+	display: block;
+	height: auto;
+	min-height: calc(2 * var(--dl-row));
+}
+
+.dl[data-fit='compact'][data-mode='menu'] .dl-game {
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto auto auto;
+	grid-template-areas: 'hud' 'talk' 'foot';
+}
+
+.dl[data-fit='compact'][data-mode='menu'] .dl-stage {
+	display: none;
+}
+
+.dl[data-fit='compact'][data-mode='menu'] .dl-talk {
+	grid-template-rows: minmax(0, 1fr);
+	height: calc(11 * var(--dl-row));
+}
+
+.dl[data-fit='compact'] .dl-foot {
+	flex-wrap: wrap;
+	height: auto;
+	padding: 1px 4px;
+}
+
+.dl[data-fit='compact'] .dl-keys {
+	white-space: normal;
 }
 
 /* 좁은 창: 장면은 한 배 그대로 가운데에 (양옆은 잘린다) */
@@ -924,10 +1098,6 @@
 }
 
 .dl[data-fit='compact']:not([data-stage]) .dl-stage {
-	display: none;
-}
-
-.dl[data-fit='compact'] .dl-status-name small {
 	display: none;
 }
 
