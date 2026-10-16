@@ -194,7 +194,6 @@ test.describe('프로젝트 관리', () => {
 			/개발자 도구/,
 			/저장소/,
 			/놀이/,
-			/RPG 대화창/,
 		]);
 		// 그림 탭: 프로젝트 아이콘은 사이트 안 그림에서 고른다. 글자 로고 칸은 없다 (필요하면 JSON의 logo)
 		await editor.getByRole('tab', { name: '그림' }).click();
@@ -345,7 +344,7 @@ test.describe('프로젝트 관리', () => {
 		await settings.getByRole('button', { name: '더하기' }).click();
 		const editor = settings.getByRole('form', { name: '새 프로젝트 편집' });
 		await editor.getByRole('textbox', { name: '저장소' }).fill('https://github.com/hyeoniverse/pixel-farm');
-		await editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { name: 'RPG 대화창' }).click();
+		await editor.getByRole('radiogroup', { name: '페이지 모양' }).getByRole('radio', { name: '키노트' }).click();
 
 		// 이름을 이미 적었으면 예시로 바꿀지 한 번 묻는다
 		await editor.getByRole('textbox', { name: '이름', exact: true }).fill('내 농장');
@@ -354,7 +353,7 @@ test.describe('프로젝트 관리', () => {
 		await expect(confirm).toContainText('입력한 내용을 예시로 바꿉니다.');
 		await confirm.getByRole('button', { name: '채우기' }).click();
 
-		// RPG 대화창도 공통 예시를 쓴다: 이름·큰 제목·기간이 채워지고, 저장소와 모양은 그대로
+		// 키노트도 공통 예시를 쓴다: 이름·큰 제목·기간이 채워지고, 저장소와 모양은 그대로
 		await expect(editor.getByRole('textbox', { name: '이름', exact: true })).toHaveValue('북클럽 – 독서 모임 플랫폼');
 		await expect(editor.getByRole('textbox', { name: '큰 제목' })).toHaveValue(
 			'같은 책을 읽는 사람들이 한자리에 모입니다.'
@@ -363,14 +362,10 @@ test.describe('프로젝트 관리', () => {
 		await expect(editor.getByRole('textbox', { name: '저장소' })).toHaveValue(
 			'https://github.com/hyeoniverse/pixel-farm'
 		);
-		await expect(editor.getByRole('radio', { name: 'RPG 대화창' })).toHaveAttribute('aria-checked', 'true');
-		// 미리 보기의 대화창에 예시의 인사(큰 제목)가 보인다
+		await expect(editor.getByRole('radio', { name: '키노트' })).toHaveAttribute('aria-checked', 'true');
+		// 미리 보기의 키노트 무대에 예시의 큰 제목이 보인다
 		const preview = editor.getByRole('complementary', { name: '미리 보기' });
-		await expect(preview.getByRole('dialog', { name: '대화' })).toContainText('한자리에 모입니다.');
-		// RPG 대화창만 따로 고르는 칸(배경 테마·배경 그림·장면 그림)은 없다
-		await expect(editor.getByRole('combobox', { name: '배경 테마' })).toHaveCount(0);
-		await expect(editor.getByText('장면 그림')).toHaveCount(0);
-		await expect(editor.getByText('배경 그림')).toHaveCount(0);
+		await expect(preview.locator('.sp[data-look="keynote"]')).toContainText('한자리에 모입니다.');
 
 		// 내용 탭: 주요 기능·장·조작법이 예시로 채워져 있다. 줄을 눌러 시트를 열고 고쳐 쓴다
 		await editor.getByRole('tab', { name: '내용' }).click();
@@ -397,7 +392,7 @@ test.describe('프로젝트 관리', () => {
 		const saved = api.siteProjects?.items.find((item) => item.id === 'pixel-farm');
 		expect(saved?.override).toMatchObject({
 			name: '북클럽 – 독서 모임 플랫폼',
-			look: 'dialogue',
+			look: 'keynote',
 			url: 'https://github.com/hyeoniverse/pixel-farm',
 			highlights: expect.arrayContaining([expect.objectContaining({ title: '책 제목으로 모임 찾기' })]),
 		});
@@ -710,14 +705,14 @@ test.describe('프로젝트 관리', () => {
 		const editor = settings.getByRole('form', { name: 'QRU 큐알유 편집' });
 		await editor
 			.getByRole('radiogroup', { name: '페이지 모양' })
-			.getByRole('radio', { name: /RPG 대화창/ })
+			.getByRole('radio', { name: /키노트/ })
 			.click();
 		await editor.getByRole('button', { name: '완료' }).click();
 		await settings.getByRole('button', { name: '완료' }).click();
 		const saved = settings.getByRole('status').filter({ hasText: '저장했습니다' });
 		await expect(saved).toContainText('모든 화면에 바로 적용했습니다.');
 		await expect(settings.getByRole('button', { name: '지금 새로고침' })).toHaveCount(0);
-		await expect(article).toHaveAttribute('data-look', 'dialogue');
+		await expect(article).toHaveAttribute('data-look', 'keynote');
 	});
 
 	test('관리자: 이미 있는 주요 기능에 그림을 넣으면 다크 그림·갈래 도식 대신 그 그림이 Safari 페이지에 보인다', async ({

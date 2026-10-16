@@ -1,6 +1,6 @@
 // 시스템 설정 › 프로젝트의 '예시로 채우기'가 넣는 가상의 예시 프로젝트. 실제 회사·서비스가 아니다.
 // 아홉 랜딩 템플릿(제품·카드·문서·벤토·키노트·매거진·개발자 도구·저장소·놀이)은 모두 같은 내용(project/landing/content.ts의 landingOf)을 읽으므로 예시 하나(GENERAL_SAMPLE)를 함께 쓴다.
-// 편집 화면이 고치는 칸을 모두 채워 어떤 템플릿에서도 모든 구역이 보이게 한다. RPG 대화창도 같은 예시를 선택지와 대사로 읽는다.
+// 편집 화면이 고치는 칸을 모두 채워 어떤 템플릿에서도 모든 구역이 보이게 한다.
 // 그림은 사이트에 이미 있는 것(배경화면, 사이트 앱 아이콘)만 쓴다: 칸에 들어간 뒤 관리자가 자기 화면으로 바꾼다는 전제다.
 // 모두 desktop-core의 parseProjects 검사를 통과해야 한다 (lookSamples.test.ts)
 import { DEFAULT_LOOK, type Project, type ProjectLook, type ProjectPoint } from '@macfolio/desktop-core/site';
@@ -50,8 +50,6 @@ export const LOOK_FIELDS: Record<SampleLook, readonly (keyof LookSample)[]> = {
 	devtool: LANDING_FIELDS,
 	repo: LANDING_FIELDS,
 	playful: LANDING_FIELDS,
-	// RPG 대화창은 폴더 구조를 읽지 않는다 (대화 상자에 트리를 담기 어렵다)
-	dialogue: LANDING_FIELDS.filter((field) => field !== 'structure'),
 };
 
 /** 예시의 화면: 실제 앱 화면 캡처 (배경화면보다 제품 페이지답게 보인다) */
@@ -313,8 +311,6 @@ export const LOOK_SAMPLES: Record<SampleLook, LookSample> = {
 	devtool: { ...general, look: 'devtool' },
 	repo: { ...general, look: 'repo' },
 	playful: { ...general, look: 'playful' },
-	// RPG 대화창도 같은 내용을 선택지와 대사로 읽는다
-	dialogue: { ...general, look: 'dialogue' },
 };
 
 /** 이 모양의 예시 (직접 짠 페이지는 공통 예시를 쓰고 모양은 그대로 둔다) */

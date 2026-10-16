@@ -109,7 +109,6 @@ export interface ProjectChapter {
  * devtool 개발자 도구: 고정폭 글꼴, 코드 블록과 설치 명령, 커밋 그래프 같은 디테일 (Vercel·GitHub).
  * repo 저장소: GitHub 저장소 화면 그대로. 탭, 파일 트리, README, 커밋 그래프와 타입 거르기, 커밋 규칙 표, 터미널 서랍.
  * playful 놀이: 또렷한 색 면, 큰 둥근 도형, 스티커 같은 장식 (Figma·Arc).
- * dialogue RPG 대화창 (같은 내용을 선택지와 대사로 읽는다).
  * custom 프로젝트 id로 등록한 직접 짠 코드 페이지 (apps/safari/project/custom/; 코드의 일곱 프로젝트는 모두 자기 페이지가 있다. 등록이 없으면 기본 모양)
  */
 export const PROJECT_LOOKS = [
@@ -122,7 +121,6 @@ export const PROJECT_LOOKS = [
 	'devtool',
 	'repo',
 	'playful',
-	'dialogue',
 	'custom',
 ] as const;
 export type ProjectLook = (typeof PROJECT_LOOKS)[number];
@@ -145,6 +143,8 @@ export const LEGACY_LOOKS: Readonly<Record<string, ProjectLook>> = {
 	deck: 'keynote',
 	arcade: 'playful',
 	brutal: 'bento',
+	// RPG 대화창(dialogue)은 빠졌다. 저장해 둔 값은 밝은 카드로 읽는다
+	dialogue: 'friendly',
 };
 
 /** 프로젝트 앱의 모양 (Project.app) */
