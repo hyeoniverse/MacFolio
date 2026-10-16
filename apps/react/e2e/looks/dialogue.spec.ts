@@ -3,6 +3,7 @@ import type { Locator } from '@playwright/test';
 import { test, expect } from '../fixtures';
 import { openLook } from './open';
 import { expectTheme } from './landing';
+import { GENERAL_SAMPLE } from '../../src/apps/settings/lookSamples';
 
 const dialogOf = (panel: Locator) => panel.getByRole('dialog', { name: '대화' });
 const nextOf = (dialog: Locator) => dialog.getByRole('button', { name: '다음' });
@@ -168,7 +169,7 @@ test('dialogue: 라이트·다크 모두 검은 무대이고, 그림은 원래 �
 	expect(await box.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe('rgb(255, 255, 255)');
 });
 
-test('dialogue: 그림이 하나도 없으면 무대 가운데에 프로젝트 아이콘 하나만 둔다', async ({ page }) => {
+test('dialogue: 그림이 하나도 없으면 무대에 게임 화면(타이틀, 퀘스트)을 그린다', async ({ page }) => {
 	const { safari, panel } = await openLook(page, {
 		id: 'qru',
 		tab: /QRU/,
@@ -185,12 +186,91 @@ test('dialogue: 그림이 하나도 없으면 무대 가운데에 프로젝트 �
 	});
 	await safari.getByRole('button', { name: '전체 화면' }).click();
 	const dialog = dialogOf(panel);
-	await expect(panel.locator('.dl-stage .dl-sign .dl-sign-icon')).toBeVisible();
+	// 인사: 타이틀 화면 (프로젝트 아이콘, 이름, PRESS Z)
+	const title = panel.locator('.dl-stage [data-panel="title"]');
+	await expect(title.locator('.dl-sign-icon')).toBeVisible();
+	await expect(title).toContainText('PRESS Z');
 	await expect(panel.locator('.dl-stage .dl-shot-frame')).toHaveCount(0);
 	await nextOf(dialog).click();
 	await dialog.getByRole('button', { name: '주요 기능 알려줘' }).click();
 	await expect(dialog).toContainText('그림 없는 기능입니다.');
-	await expect(panel.locator('.dl-stage .dl-sign-icon')).toBeVisible();
+	// 주요 기능: 퀘스트 목록이 지금 항목을 짚는다
+	const quests = panel.locator('.dl-stage [data-panel="quests"]');
+	await expect(quests.locator('li[data-state="now"]')).toContainText('한 장');
+});
+
+/** 공통 예시(북클럽)에서 그림을 모두 뺀 것: 주제마다 게임 화면이 무대를 채운다 */
+const strip = <T extends object>(item: T) => {
+	const {
+		image: _image,
+		shots: _shots,
+		imageDark: _dark,
+		video: _video,
+		...rest
+	} = item as T & Record<string, unknown>;
+	return rest;
+};
+const noImageSample = () => {
+	const sample = structuredClone(GENERAL_SAMPLE);
+	return {
+		...sample,
+		look: 'dialogue',
+		image: '',
+		gallery: null,
+		galleryFolder: null,
+		logo: null,
+		highlights: sample.highlights.map(strip),
+		build: sample.build.map(strip),
+		troubleshooting: (sample.troubleshooting ?? []).map(strip),
+		deployments: (sample.deployments ?? []).map(strip),
+		team: (sample.team ?? []).map(({ avatar: _avatar, ...member }) => member),
+	};
+};
+
+test('dialogue: 트러블슈팅은 버그와의 전투(HP가 단계마다 준다), 팀원은 파티, 배포 결과물은 실제 링크가 달린 보물', async ({
+	page,
+}) => {
+	const { safari, panel } = await openLook(page, { id: 'qru', tab: /북클럽/, override: noImageSample() });
+	await safari.getByRole('button', { name: '전체 화면' }).click();
+	const dialog = dialogOf(panel);
+	await expect(panel.locator('.dl-stage [data-panel="title"]')).toContainText(GENERAL_SAMPLE.name);
+	await nextOf(dialog).click();
+
+	// 전투: 몬스터 그림과 HP. 문제 → 원인 → 해결 → 결과로 넘길수록 HP가 줄어 0이 된다
+	await dialog.getByRole('button', { name: '어려웠던 문제는?' }).click();
+	const battle = panel.locator('.dl-stage [data-panel="troubleshooting"]');
+	await expect(battle.locator('svg.dlp-monster')).toBeVisible();
+	const hp = battle.locator('.dlp-hp');
+	const seen: number[] = [];
+	for (let step = 0; step < 4; step++) {
+		seen.push(Number(await hp.getAttribute('data-hp')));
+		await nextOf(dialog).click();
+	}
+	expect(seen[0]).toBe(100);
+	expect(seen.at(-1)).toBe(0);
+	for (let i = 1; i < seen.length; i++) expect(seen[i]).toBeLessThan(seen[i - 1]);
+	// 끝까지 읽어 선택지로
+	await readUntil(dialog, dialog.getByRole('button', { name: '누구랑 만들었어?' }), 20);
+
+	// 파티: 팀원 수만큼 카드, 나는 ★ 나
+	await dialog.getByRole('button', { name: '누구랑 만들었어?' }).click();
+	const party = panel.locator('.dl-stage [data-panel="team"]');
+	const team = GENERAL_SAMPLE.team ?? [];
+	await expect(party.locator('.dlp-party > li')).toHaveCount(team.length);
+	await expect(party.locator('li[data-me]')).toHaveCount(1);
+	await expect(party.locator('li[data-me]')).toContainText(team.find((m) => m.me)?.name ?? '');
+	await expect(party.locator('li[data-me]')).toContainText('★ 나');
+	await readUntil(dialog, dialog.getByRole('button', { name: '어디서 볼 수 있어?' }));
+
+	// 보물: 배포 결과물마다 상자 하나, 링크는 실제 주소로 열린다
+	await dialog.getByRole('button', { name: '어디서 볼 수 있어?' }).click();
+	const treasure = panel.locator('.dl-stage [data-panel="deployments"]');
+	for (const item of GENERAL_SAMPLE.deployments ?? []) {
+		if (!item.url) continue;
+		const link = treasure.getByRole('link', { name: new RegExp(item.label) });
+		await expect(link).toHaveAttribute('href', item.url);
+		await expect(link).toHaveAttribute('target', '_blank');
+	}
 });
 
 test('dialogue: 좁은 창에서는 선택지가 한 열이고 방향 키 ↓로 차례대로 내려간다', async ({ page }) => {

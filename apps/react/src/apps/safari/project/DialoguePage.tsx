@@ -1,9 +1,14 @@
 // dialogue 모양: 언더테일 같은 고전 RPG 대화창. 검은 무대 위에 흰 테두리 대화 상자 하나, 그 위에 지금 이야기하는 그림.
-// 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다. 사이트 테마와 상관없이 검은 무대다
+// 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다. 사이트 테마와 상관없이 검은 무대다.
+// 무대에는 주제마다 게임 화면 하나(타이틀, 퀘스트, 전투, 파티, 장비...: DialoguePanels.tsx)를 데이터로 그려 대사가 말하는 항목을 짚는다.
+// 그 장에 그림이 있으면 그림을 액자에 원래 모습 그대로 띄우고 게임 화면은 옆에 작게 둔다
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
-import { Favicon, Links } from '@/apps/safari/project/parts';
+import { Links } from '@/apps/safari/project/parts';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
+import type { TroubleStepKey } from '@/apps/safari/project/landing/content';
+import { troubleKeys } from '@/apps/safari/project/dialogueStage';
+import { TitleScreen, TopicPanel, type PanelFocus } from '@/apps/safari/project/DialoguePanels';
 import '@/apps/safari/project/DialoguePage.css';
 
 /** 무대에 띄우는 그림(또는 영상) 한 장. caption이 있으면 그림 아래에 작게 적는다 */
@@ -19,6 +24,10 @@ interface Line {
 	body: string;
 	/** 이 장을 말하는 동안 무대에 띄울 그림들 (여러 장이면 그 자리에서 넘겨 본다) */
 	media?: Slide[];
+	/** 이 장이 말하는 항목: 주제 데이터의 몇 번째인지 (무대의 게임 화면이 그 항목을 짚는다) */
+	item?: number;
+	/** 트러블슈팅이면 이 장의 단계 */
+	step?: TroubleStepKey;
 }
 
 /** 선택지 하나: 고르면 lines를 '다음'으로 한 장씩 읽는다 */
@@ -113,11 +122,11 @@ function splitBody(body: string): string[] {
 function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cover: string | undefined) {
 	// 항목 하나는 설명 한 장, 자세히가 있으면 이어서 한 장 더 (같은 제목과 장면)
 	const points = (items: ProjectPoint[]): Line[] =>
-		items.flatMap((p) => {
+		items.flatMap((p, item) => {
 			const media = pointMedia(p);
 			return [
-				{ title: p.title, body: p.body, media },
-				...(p.detail ? [{ title: p.title, body: p.detail, media }] : []),
+				{ title: p.title, body: p.body, media, item },
+				...(p.detail ? [{ title: p.title, body: p.detail, media, item }] : []),
 			];
 		});
 	const chapters: Topic[] = (project.chapters ?? [])
@@ -140,81 +149,86 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 			id: 'troubleshooting',
 			label: '어려웠던 문제는?',
 			// 한 건을 문제 → 원인 → 해결 → 결과 차례로 한 장씩 (그림은 그 건의 장면)
-			lines: (project.troubleshooting ?? []).flatMap((item) => {
-				const media = item.image ? [{ src: item.image }] : undefined;
-				const steps: [string, string | undefined][] = [
-					['문제', item.problem],
-					['원인', item.cause],
-					['해결', item.solution],
-					['결과', item.result],
-				];
-				return steps
-					.filter((step): step is [string, string] => Boolean(step[1]?.trim()))
-					.map(([label, body]) => ({ title: `${item.title} · ${label}`, body, media }));
+			lines: (project.troubleshooting ?? []).flatMap((trouble, item) => {
+				const media = trouble.image ? [{ src: trouble.image }] : undefined;
+				return troubleKeys(trouble).map((step) => ({
+					title: `${trouble.title} · ${TROUBLE_LABELS[step]}`,
+					body: trouble[step] ?? '',
+					media,
+					item,
+					step,
+				}));
 			}),
 		},
 		{ id: 'usage', label: '쓰는 법', lines: points(project.usage ?? []) },
 		{
 			id: 'facts',
 			label: '숫자로 보여줘',
-			lines: project.facts.map((f) => ({ title: f.value, body: f.label })),
+			lines: project.facts.map((f, item) => ({ title: f.value, body: f.label, item })),
 		},
 		{
 			id: 'controls',
 			label: '조작법',
 			// 한 줄의 키들은 같은 일을 하는 다른 키다 (Space 또는 ↑): 더하기가 아니라 빗금으로 잇는다
-			lines: (project.controls ?? []).map((c) => ({ title: c.keys.join(' / '), body: c.label })),
+			lines: (project.controls ?? []).map((c, item) => ({ title: c.keys.join(' / '), body: c.label, item })),
 		},
 		{
 			id: 'timeline',
 			label: '진행 과정',
-			lines: (project.timeline ?? []).map((t) => ({ title: t.date, body: t.label })),
+			lines: (project.timeline ?? []).map((t, item) => ({ title: t.date, body: t.label, item })),
 		},
 		{
 			id: 'specs',
 			label: '기술 사양',
 			lines: [
-				...project.specs.map((s) => ({ title: s.label, body: s.value })),
-				// 쓴 기술 묶음은 사양 끝에 한 장으로
-				...(project.stack.length > 0 ? [{ title: '쓴 기술', body: project.stack.join(', ') }] : []),
+				...project.specs.map((s, item) => ({ title: s.label, body: s.value, item })),
+				// 쓴 기술 묶음은 사양 끝에 한 장으로 (게임 화면에서는 가방)
+				...(project.stack.length > 0
+					? [{ title: '쓴 기술', body: project.stack.join(', '), item: project.specs.length }]
+					: []),
 			],
 		},
 		{
 			id: 'team',
 			label: '누구랑 만들었어?',
 			// 사진은 띄우지 않는다: 사진이 없는 사람에게 앞사람의 사진이 이어 붙지 않게
-			lines: (project.team ?? []).map((member) => ({
+			lines: (project.team ?? []).map((member, item) => ({
 				title: member.me ? `${member.name} (나)` : member.name,
 				body: member.role,
+				item,
 			})),
 		},
 		{
 			id: 'contributions',
 			label: '맡은 일',
 			lines: [
-				...(project.role ? [{ title: '맡은 역할', body: project.role }] : []),
+				// 맡은 역할은 상태 창의 직업 칸(-1), 맡은 일은 특기 목록
+				...(project.role ? [{ title: '맡은 역할', body: project.role, item: -1 }] : []),
 				...project.contributions.map((c, i) => ({
 					title: `맡은 일 ${i + 1}/${project.contributions.length}`,
 					body: c,
+					item: i,
 				})),
 			],
 		},
 		{
 			id: 'deployments',
 			label: '어디서 볼 수 있어?',
-			lines: (project.deployments ?? []).map((item) => ({
-				title: item.platform ? `${item.label} · ${item.platform}` : item.label,
-				body: [item.note, item.url?.replace(/^https?:\/\//, '')].filter(Boolean).join(' ') || '링크는 아직 없어요.',
-				media: item.image ? [{ src: item.image }] : undefined,
+			lines: (project.deployments ?? []).map((place, item) => ({
+				title: place.platform ? `${place.label} · ${place.platform}` : place.label,
+				body: [place.note, place.url?.replace(/^https?:\/\//, '')].filter(Boolean).join(' ') || '링크는 아직 없어요.',
+				media: place.image ? [{ src: place.image }] : undefined,
+				item,
 			})),
 		},
 		{
 			id: 'credits',
 			label: '누가 도와줬어?',
 			// 빌려 쓴 에셋·글꼴의 출처: 맡은 부분과 이름, 만든 사람과 한 줄 설명
-			lines: (project.credits ?? []).map((c) => ({
+			lines: (project.credits ?? []).map((c, item) => ({
 				title: `${c.role} · ${c.name}`,
 				body: [`${c.by}의 것을 빌려 썼어요.`, c.note].filter(Boolean).join(' '),
+				item,
 			})),
 		},
 		// 장 묶음: 고르면 장마다 하나씩 고르는 두 번째 선택지가 열린다 (lines는 자리만)
@@ -245,15 +259,7 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 		lines: [{ title: project.name, body: '여기서 더 볼 수 있어요.', media: cover ? [{ src: cover }] : undefined }],
 	});
 
-	// 그림이 없는 장은 같은 주제의 바로 앞 장 그림을 이어 쓴다 (그 이야기와 상관없는 그림을 끌어오지 않는다).
-	// 주제에 그림이 하나도 없으면 장면 자리에는 프로젝트 간판이 선다
-	for (const topic of [...filled, ...chapters]) {
-		let last: Slide[] | undefined;
-		for (const line of topic.lines) {
-			if (line.media?.length) last = line.media;
-			else if (last) line.media = last;
-		}
-	}
+	// 그림이 없는 장은 앞 장의 그림을 이어 쓰지 않는다: 그 자리에는 주제의 게임 화면이 서서 지금 항목을 짚는다
 	// 긴 글은 여러 장으로 (같은 제목과 장면을 이어 쓴다)
 	for (const topic of [...filled, ...chapters]) {
 		topic.lines = topic.lines.flatMap((line) => splitBody(line.body).map((body) => ({ ...line, body })));
@@ -290,6 +296,16 @@ function useTyped(text: string, speed = 18) {
 	return { shown: text.slice(0, count), done: count >= text.length, finish };
 }
 
+const TROUBLE_LABELS: Record<TroubleStepKey, string> = {
+	problem: '문제',
+	cause: '원인',
+	solution: '해결',
+	result: '결과',
+};
+
+/** 옆에 게임 화면을 두지 않는 주제: 화면 모음은 그림 자체가 이야기다 */
+const NO_SIDE = new Set(['gallery']);
+
 const MENU_TITLE = '무엇을 들어 볼까요?';
 const SUB_TITLE = '어떤 이야기를 더 들어 볼까요?';
 const ENDING: Line = {
@@ -323,6 +339,19 @@ function useFit(ref: React.RefObject<HTMLElement | null>) {
 		return () => observer.disconnect();
 	}, [ref]);
 	return fit;
+}
+
+/** 요소의 높이(px)를 잰다 (무대의 게임 화면이 목록을 몇 줄 보일지 정한다) */
+function useHeight(ref: React.RefObject<HTMLElement | null>) {
+	const [height, setHeight] = useState<number | undefined>(undefined);
+	useEffect(() => {
+		const node = ref.current;
+		if (!node || typeof ResizeObserver === 'undefined') return;
+		const observer = new ResizeObserver(() => setHeight(Math.round(node.clientHeight)));
+		observer.observe(node);
+		return () => observer.disconnect();
+	}, [ref]);
+	return height;
 }
 
 /** 그림 한 장: 흰 테두리 액자에 원래 모습 그대로. 영상은 소리 없이 반복한다. 액자 아래 줄에 이름(caption)과 넘기기 단추 */
@@ -373,6 +402,8 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const [cursor, setCursor] = useState(0);
 	const rootRef = useRef<HTMLDivElement>(null);
 	const fit = useFit(rootRef);
+	const stageRef = useRef<HTMLDivElement>(null);
+	const stageHeight = useHeight(stageRef);
 
 	const back: Topic = useMemo(() => ({ id: BACK_TOPIC, label: '처음 선택지로', lines: [] }), []);
 	const subList = useMemo(() => [...chapters, back], [chapters, back]);
@@ -544,8 +575,8 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 					}
 				}
 			} else if (confirm) {
-				// 링크 단추에 포커스가 있으면 Space·Enter는 그 단추가 받는다
-				if (key !== 'z' && target?.closest('.dl-links-slot')) return;
+				// 링크 단추(보물 상자의 링크 포함)에 포커스가 있으면 Space·Enter는 그 단추가 받는다
+				if (key !== 'z' && target?.closest('.dl-links-slot, .dl-stage a')) return;
 				event.preventDefault();
 				next();
 			} else if ((key === 'ArrowLeft' || key === 'ArrowRight') && slides.length > 1) {
@@ -604,25 +635,41 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		);
 	};
 
-	/** 그림이 없을 때 무대 가운데 서는 화자: 프로젝트 아이콘 하나 (전투 화면의 상대처럼). sproutfarm은 게임의 픽셀 캐릭터 */
-	const sign = (
-		<div className="dl-sign" aria-hidden="true">
-			{project.id === 'sproutfarm' ? (
-				<i className="dl-sprite" />
-			) : (
-				<Favicon project={project} className="dl-sign-icon" />
-			)}
-		</div>
+	/** 그림 옆(넓은 무대)이나 그림 대신(그림이 없을 때) 서는 게임 화면 */
+	const panelOf = (focus: PanelFocus | 'title' | 'end', side: boolean) =>
+		focus === 'title' || focus === 'end' ? (
+			<TitleScreen project={project} side={side} end={focus === 'end'} />
+		) : (
+			<TopicPanel project={project} focus={focus} side={side} room={stageHeight} />
+		);
+
+	/** 액자 하나와 그 옆의 작은 게임 화면 (옆 화면은 무대가 좁으면 CSS가 접는다) */
+	const framed = (frame: React.ReactNode, side: React.ReactNode | null) => (
+		<>
+			{frame}
+			{side && <div className="dl-side">{side}</div>}
+		</>
 	);
 
-	/** 무대: 선택지면 커서 주제의 미리보기, 엔딩이면 앨범, 아니면 지금 장의 그림 (없으면 아이콘) */
+	/** 무대: 선택지면 커서 주제의 미리보기, 엔딩이면 앨범, 아니면 지금 장의 그림과 게임 화면 (그림이 없으면 게임 화면만 크게) */
 	const renderScene = () => {
 		if (mode.kind === 'menu') {
 			const focus = visible[cursor];
-			const preview = focus?.thumb ?? (focus?.id === BACK_TOPIC ? cover : undefined);
+			const id = focus?.id ?? '';
+			const plain = !focus || id === LINKS_TOPIC || id === BACK_TOPIC || id === MORE_TOPIC;
+			const preview = focus?.thumb ?? (id === BACK_TOPIC ? cover : undefined);
+			const panel = panelOf(plain ? 'title' : { topic: id }, Boolean(preview));
 			return (
-				<div className="dl-scene dl-preview" aria-hidden="true" key={preview ?? 'sign'}>
-					{preview ? <Frame slide={{ src: preview }} caption={focus?.label} /> : sign}
+				<div
+					className="dl-scene dl-preview"
+					aria-hidden="true"
+					inert
+					data-side={(preview && !NO_SIDE.has(id)) || undefined}
+					key={preview ?? `panel-${id}`}
+				>
+					{preview
+						? framed(<Frame slide={{ src: preview }} caption={focus?.label} />, NO_SIDE.has(id) ? null : panel)
+						: panel}
 				</div>
 			);
 		}
@@ -641,41 +688,46 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 								<span className="dl-caption">{`${project.name} 앨범`}</span>
 							</figcaption>
 						</figure>
-					) : cover ? (
-						<Frame slide={{ src: cover }} />
 					) : (
-						sign
+						panelOf('end', false)
 					)}
 				</div>
 			);
 		}
 		const slide = slides[slideIndex];
+		const focus: PanelFocus | 'title' =
+			mode.kind === 'topic' && mode.id !== LINKS_TOPIC
+				? { topic: mode.id, item: line?.item, step: line?.step }
+				: 'title';
+		const topicId = mode.kind === 'topic' ? mode.id : '';
+		const withSide = Boolean(slide) && !NO_SIDE.has(topicId);
 		return (
-			<div className="dl-scene" key={slide ? lineKey : 'sign'}>
-				{slide ? (
-					<Frame slide={slide} caption={slide.caption}>
-						{slides.length > 1 && (
-							<span className="dl-flip">
-								<button type="button" aria-label="이전 그림" onClick={() => flip(-1)}>
-									◀
-								</button>
-								<span className="dl-dots" aria-hidden="true">
-									{slides.map((s, i) => (
-										<i key={s.src} data-on={i === slideIndex || undefined} />
-									))}
-								</span>
-								<span className="visually-hidden" aria-live="polite">
-									{`그림 ${slideIndex + 1} / ${slides.length}`}
-								</span>
-								<button type="button" aria-label="다음 그림" onClick={() => flip(1)}>
-									▶
-								</button>
-							</span>
-						)}
-					</Frame>
-				) : (
-					sign
-				)}
+			<div className="dl-scene" data-side={withSide || undefined} key={slide ? lineKey : `panel-${topicId}`}>
+				{slide
+					? framed(
+							<Frame slide={slide} caption={slide.caption}>
+								{slides.length > 1 && (
+									<span className="dl-flip">
+										<button type="button" aria-label="이전 그림" onClick={() => flip(-1)}>
+											◀
+										</button>
+										<span className="dl-dots" aria-hidden="true">
+											{slides.map((s, i) => (
+												<i key={s.src} data-on={i === slideIndex || undefined} />
+											))}
+										</span>
+										<span className="visually-hidden" aria-live="polite">
+											{`그림 ${slideIndex + 1} / ${slides.length}`}
+										</span>
+										<button type="button" aria-label="다음 그림" onClick={() => flip(1)}>
+											▶
+										</button>
+									</span>
+								)}
+							</Frame>,
+							withSide ? panelOf(focus, true) : null
+						)
+					: panelOf(focus, false)}
 			</div>
 		);
 	};
@@ -690,7 +742,9 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			ref={rootRef}
 		>
 			{/* 무대: 지금 이야기하는 그림, 없으면 프로젝트 아이콘 */}
-			<div className="dl-stage">{renderScene()}</div>
+			<div className="dl-stage" ref={stageRef}>
+				{renderScene()}
+			</div>
 
 			{/* 대화 상자: * 대사. 선택지 차례에는 질문 아래에 선택지가 열린다 */}
 			<section
