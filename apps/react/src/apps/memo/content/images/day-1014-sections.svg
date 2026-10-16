@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>랜딩 구역 차례</title>
+<rect width="760" height="300" rx="16" fill="#ffffff"/>
+<text x="24" y="38" font-size="16" font-weight="700" fill="#1f2937">랜딩 구역 차례: 포트폴리오를 읽는 순서</text>
+<rect x="24" y="52" width="12" height="12" rx="3" fill="#dcfce7" stroke="#22c55e"/><text x="42" y="62" font-size="11" fill="#6b7280">새 구역</text>
+<rect x="96" y="52" width="12" height="12" rx="3" fill="#e0e7ff" stroke="#6366f1"/><text x="114" y="62" font-size="11" fill="#6b7280">이름을 바꾼 구역 (만든 방식 → 구현 방법, 맡은 일 → 내 역할)</text>
+<text x="92.0" y="88" font-size="12" font-weight="700" fill="#374151" text-anchor="middle">1. 무엇인지</text>
+<rect x="24" y="96" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="92.0" y="113" font-size="12" fill="#374151" text-anchor="middle">한눈에 보는 숫자</text>
+<rect x="24" y="130" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="92.0" y="147" font-size="12" fill="#374151" text-anchor="middle">주요 기능</text>
+<rect x="24" y="164" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="92.0" y="181" font-size="12" fill="#374151" text-anchor="middle">화면 모음</text>
+<rect x="24" y="198" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="92.0" y="215" font-size="12" fill="#374151" text-anchor="middle">쓰는 법</text>
+<path d="M161 105 l8 4 l-8 4z" fill="#9ca3af"/>
+<text x="238.0" y="88" font-size="12" font-weight="700" fill="#374151" text-anchor="middle">2. 어떻게 만들었는지</text>
+<rect x="170" y="96" width="136" height="26" rx="7" fill="#e0e7ff" stroke="#6366f1"/>
+<text x="238.0" y="113" font-size="12" fill="#3730a3" text-anchor="middle">구현 방법</text>
+<rect x="170" y="130" width="136" height="26" rx="7" fill="#dcfce7" stroke="#22c55e"/>
+<text x="238.0" y="147" font-size="12" fill="#166534" text-anchor="middle">트러블슈팅</text>
+<rect x="170" y="164" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="238.0" y="181" font-size="12" fill="#374151" text-anchor="middle">더 들려줄 이야기</text>
+<rect x="170" y="198" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="238.0" y="215" font-size="12" fill="#374151" text-anchor="middle">조작법</text>
+<rect x="170" y="232" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="238.0" y="249" font-size="12" fill="#374151" text-anchor="middle">기술 사양</text>
+<path d="M307 105 l8 4 l-8 4z" fill="#9ca3af"/>
+<text x="384.0" y="88" font-size="12" font-weight="700" fill="#374151" text-anchor="middle">3. 누가</text>
+<rect x="316" y="96" width="136" height="26" rx="7" fill="#dcfce7" stroke="#22c55e"/>
+<text x="384.0" y="113" font-size="12" fill="#166534" text-anchor="middle">팀원</text>
+<rect x="316" y="130" width="136" height="26" rx="7" fill="#e0e7ff" stroke="#6366f1"/>
+<text x="384.0" y="147" font-size="12" fill="#3730a3" text-anchor="middle">내 역할</text>
+<path d="M453 105 l8 4 l-8 4z" fill="#9ca3af"/>
+<text x="530.0" y="88" font-size="12" font-weight="700" fill="#374151" text-anchor="middle">4. 언제</text>
+<rect x="462" y="96" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="530.0" y="113" font-size="12" fill="#374151" text-anchor="middle">진행 과정</text>
+<path d="M599 105 l8 4 l-8 4z" fill="#9ca3af"/>
+<text x="676.0" y="88" font-size="12" font-weight="700" fill="#374151" text-anchor="middle">5. 어디서 볼 수 있는지</text>
+<rect x="608" y="96" width="136" height="26" rx="7" fill="#dcfce7" stroke="#22c55e"/>
+<text x="676.0" y="113" font-size="12" fill="#166534" text-anchor="middle">배포 결과물</text>
+<rect x="608" y="130" width="136" height="26" rx="7" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="676.0" y="147" font-size="12" fill="#374151" text-anchor="middle">출처</text>
+<text x="24" y="284" font-size="10" fill="#8b93a1">첫 화면 다음부터 마무리 앞까지. 비어 있는 구역은 빠진다 (landingOf, SECTION_ORDER)</text>
+</svg>

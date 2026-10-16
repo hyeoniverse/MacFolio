@@ -7,7 +7,7 @@ import SharedSidebarToggle from '@/shared/ui/button/SidebarToggle';
 
 export type View = 'list' | 'gallery';
 
-/** 사이드바 여닫기 (모양은 shared의 SidebarToggle, 크기는 Memo.css) */
+/** 사이드바 여닫기 (모양은 shared의 SidebarToggle, 크기는 styles/toolbar.css) */
 export const SidebarToggle: React.FC<{ open: boolean; onToggle: () => void }> = (props) => (
 	<SharedSidebarToggle className="memo-sidebar-toggle" {...props} />
 );

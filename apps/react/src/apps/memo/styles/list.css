@@ -1,0 +1,332 @@
+/* 메모 앱: 글 목록, 검색 칸·조건, 글 안에서 찾기, 목록 구분선 */
+
+/* ─── 글 목록 ─── */
+.memo-list {
+	border-right: 1px solid var(--memo-border);
+	/* 배경을 칠하지 않는다 (옆의 사이드바 그림자를 가리지 않게) */
+	background: none;
+}
+
+.memo-search {
+	/* 도구 막대 안에서 끌기 영역보다 위 */
+	position: relative;
+	z-index: 4;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin: 0 12px 8px;
+	padding: 0.35rem 0.6rem;
+	border-radius: 0.5rem;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-muted);
+}
+
+.memo-search input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	outline: none;
+}
+
+/* macOS 메모의 검색 칸: 둥근 알약 모양, 누르면 강조 색 테두리 */
+.memo-search {
+	border-radius: var(--radius-full);
+	transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.memo-search:focus-within {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--memo-accent) 55%, transparent);
+}
+
+/* 조건 표가 붙으면 검색 칸을 넓힌다 (표가 입력칸을 가리지 않게) */
+.memo-toolbar .memo-search.filtered {
+	flex-basis: 250px;
+	min-width: 170px;
+}
+
+/* 돋보기 + ⌄: 누르면 검색 조건 */
+.memo-search-options {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 2px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--memo-muted);
+	cursor: pointer;
+}
+
+.memo-search-options .fa-chevron-down {
+	font-size: 7px;
+}
+
+.memo-search-options:hover {
+	color: var(--memo-text);
+}
+
+/* 고른 검색 조건 */
+.memo-search-chip {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 4px;
+	padding: 1px 4px 1px 7px;
+	border-radius: var(--radius-full);
+	background-color: color-mix(in srgb, var(--memo-accent) 30%, transparent);
+	color: var(--memo-text);
+	font-size: var(--text-caption2);
+	white-space: nowrap;
+}
+
+.memo-search-chip button {
+	display: grid;
+	width: 14px;
+	height: 14px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: none;
+	color: var(--memo-muted);
+	font-size: 9px;
+	cursor: pointer;
+	place-items: center;
+}
+
+.memo-search-chip button:hover {
+	background-color: color-mix(in srgb, var(--memo-text) 12%, transparent);
+	color: var(--memo-text);
+}
+
+/* 글 안에서 찾기 막대 (macOS 메모: 찾기 칸, ‹ ›, 완료, 대치) */
+.memo-find {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	gap: 6px;
+	padding: 6px 12px 8px;
+	border-bottom: 1px solid var(--memo-border);
+}
+
+.memo-find-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.memo-find-field {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	padding: 4px 10px;
+	border-radius: var(--radius-full);
+	background-color: var(--memo-search-bg);
+	transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.memo-find-field:focus-within {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--memo-accent) 55%, transparent);
+}
+
+.memo-find-field input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	font-size: var(--text-footnote);
+	outline: none;
+}
+
+.memo-find-options {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--memo-muted);
+	cursor: pointer;
+}
+
+.memo-find-options .fa-chevron-down {
+	font-size: 7px;
+}
+
+.memo-find-count {
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+}
+
+.memo-find-steps {
+	display: flex;
+	overflow: hidden;
+	border-radius: var(--radius-md);
+	background-color: var(--memo-search-bg);
+}
+
+.memo-find-steps button {
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--memo-text);
+	font-size: var(--text-caption2);
+	cursor: pointer;
+}
+
+.memo-find-steps button + button {
+	border-left: 1px solid var(--memo-border);
+}
+
+.memo-find-steps button:disabled {
+	color: var(--memo-muted);
+	opacity: 0.5;
+	cursor: default;
+}
+
+.memo-find-done {
+	flex: none;
+	padding: 4px 12px;
+	border: none;
+	border-radius: var(--radius-md);
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+	font: inherit;
+	font-size: var(--text-footnote);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.memo-find-done:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.memo-find-replace-toggle {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 5px;
+	color: var(--memo-text);
+	font-size: var(--text-footnote);
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.memo-find-replace-toggle input {
+	accent-color: #edbb4d;
+}
+
+/* 찾은 곳 (편집기는 장식, 읽기 화면은 CSS 강조) */
+.memo-find-match {
+	background-color: color-mix(in srgb, #edbb4d 35%, transparent);
+}
+
+.memo-find-current {
+	background-color: #edbb4d;
+	color: #2b2100;
+}
+
+::highlight(memo-find) {
+	background-color: color-mix(in srgb, #edbb4d 35%, transparent);
+}
+
+::highlight(memo-find-current) {
+	background-color: #edbb4d;
+	color: #2b2100;
+}
+
+.memo-list ul {
+	padding: 0 8px 8px;
+}
+
+.memo-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	width: 100%;
+	padding: 0.6rem 0.75rem;
+	border: none;
+	border-radius: 0.5rem;
+	background: none;
+	text-align: left;
+}
+
+/* 메모 사이 구분선: 둥근 모서리를 따라 휘지 않도록 항목과 따로 곧은 선만 그린다 (좌우를 모서리만큼 들인다).
+   고른 메모나 마우스를 올린 메모의 위아래 선은 감춘다 (macOS 메모처럼) */
+.memo-list li + li {
+	position: relative;
+}
+
+.memo-list li + li::before {
+	position: absolute;
+	top: 0;
+	right: 0.75rem;
+	left: 0.75rem;
+	height: 1px;
+	background-color: var(--memo-border);
+	pointer-events: none;
+	content: '';
+}
+
+.memo-list li:has(.memo-item.active, .memo-item:hover)::before,
+.memo-list li:has(.memo-item.active, .memo-item:hover) + li::before {
+	opacity: 0;
+}
+
+.memo-item:hover {
+	background-color: var(--memo-hover);
+}
+
+.memo-item.active {
+	background-color: var(--memo-accent);
+	color: var(--memo-on-accent);
+}
+
+.memo-item strong {
+	overflow: hidden;
+	font-size: 14px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-item-meta {
+	display: -webkit-box;
+	overflow: hidden;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	line-height: 1.35;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.memo-item-meta time {
+	color: var(--memo-text);
+}
+
+.memo-item-folder {
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+}
+
+.memo-item.active .memo-item-meta,
+.memo-item.active .memo-item-meta time,
+.memo-item.active .memo-item-folder {
+	color: var(--memo-on-accent);
+}
+
+.memo-empty {
+	padding: 1.5rem 1rem;
+	color: var(--memo-muted);
+	text-align: center;
+}

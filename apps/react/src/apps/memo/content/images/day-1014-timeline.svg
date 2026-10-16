@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 377" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 14일 작업 흐름</title>
+<rect width="760" height="377" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 14일</text>
+<text x="140" y="42" font-size="12.5" fill="#6b7280">커밋한 시각 기준</text>
+<rect x="420" y="31" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="438" y="41" font-size="11" fill="#8b93a1">main 커밋</text>
+<rect x="510" y="31" width="12" height="12" rx="2" fill="#fcd9a8"/><text x="528" y="41" font-size="11" fill="#8b93a1">#187 커밋</text>
+<rect x="590" y="31" width="12" height="12" rx="2" fill="#bbf7d0"/><text x="608" y="41" font-size="11" fill="#8b93a1">아직 열린 PR 커밋</text>
+<path d="M48.0 64 V335" stroke="#eef0f3"/>
+<text x="48.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 64 V335" stroke="#eef0f3"/>
+<text x="133.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 64 V335" stroke="#eef0f3"/>
+<text x="218.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 64 V335" stroke="#eef0f3"/>
+<text x="303.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 64 V335" stroke="#eef0f3"/>
+<text x="388.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 64 V335" stroke="#eef0f3"/>
+<text x="473.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 64 V335" stroke="#eef0f3"/>
+<text x="558.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 64 V335" stroke="#eef0f3"/>
+<text x="643.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 64 V335" stroke="#eef0f3"/>
+<text x="728.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<rect x="49.7" y="307.0" width="24.9" height="24.0" rx="3" fill="#bbf7d0"/>
+<text x="62.2" y="303.0" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="78.0" y="307.0" width="24.9" height="24.0" rx="3" fill="#bbf7d0"/>
+<text x="90.5" y="303.0" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="106.4" y="307.0" width="24.9" height="24.0" rx="3" fill="#fcd9a8"/>
+<text x="118.8" y="303.0" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="48" y="72" width="205" height="56" rx="9" fill="#e3f6ea" stroke="#4fbf7a"/>
+<text x="57" y="90" font-size="12" font-weight="700" fill="#1f6b3d">회고 글 (#224)</text>
+<text x="57" y="107" font-size="10.5" fill="#1f6b3d">10월 11~13일 회고 셋</text>
+<text x="57" y="122" font-size="10.5" fill="#1f6b3d">시간대별 회고 셋을 주제별로</text>
+<rect x="263" y="72" width="230" height="71" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="272" y="90" font-size="12" font-weight="700" fill="#7a5a12">#187: 포트폴리오 구역 셋</text>
+<text x="272" y="107" font-size="10.5" fill="#7a5a12">트러블슈팅·팀원·배포 결과물</text>
+<text x="272" y="122" font-size="10.5" fill="#7a5a12">구역 이름과 차례를 다시 정함</text>
+<text x="272" y="137" font-size="10.5" fill="#7a5a12">RPG 그래픽은 담당이 멈춰 못 올림</text>
+<rect x="503" y="72" width="225" height="56" rx="9" fill="#fde8ec" stroke="#ec7a92"/>
+<text x="512" y="90" font-size="12" font-weight="700" fill="#8c2338">Cannot PUT /site/projects</text>
+<text x="512" y="107" font-size="10.5" fill="#8c2338">4000번 포트를 잡은 것은</text>
+<text x="512" y="122" font-size="10.5" fill="#8c2338">옛 API 이미지의 Docker 컨테이너</text>
+</svg>

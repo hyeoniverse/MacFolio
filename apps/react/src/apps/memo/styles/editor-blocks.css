@@ -1,0 +1,367 @@
+/* 메모 앱: 편집기의 표·틈 커서·이미지·첨부 파일·체크 항목 */
+
+/* 편집기의 표: 커서가 있는 표는 칸 선과 지금 칸을 보여 준다 (자리를 차지하지 않는 그림자로 그려 읽기 화면과 크기가 같다) */
+.memo-inline-editor {
+	position: relative;
+}
+
+/*
+ * 칸·블록을 고르면(표 칸을 끌어 고르기, Backspace로 표 고르기) 편집기가 ProseMirror-hideselection을 붙인다.
+ * 브라우저의 파란 글자 선택을 감추는 이 규칙도 prosemirror-view의 기본 CSS에만 있어서 여기 적는다.
+ */
+.memo-inline-editor .ProseMirror-hideselection *::selection {
+	background: transparent;
+}
+
+.memo-inline-editor .ProseMirror-hideselection {
+	caret-color: transparent;
+}
+
+/*
+ * 틈 커서 (표·이미지 앞뒤처럼 글자를 쓸 수 없는 자리). prosemirror-gapcursor의 기본 CSS를 불러오지 않아
+ * 자리는 생겨도 보이지 않았다. 기본 모양(그 자리 위의 깜빡이는 가로줄)을 여기서 그린다. 색은 글자색 (다크 모드)
+ */
+.memo-inline-editor .ProseMirror-gapcursor {
+	display: none;
+	position: absolute;
+	pointer-events: none;
+}
+
+.memo-inline-editor .ProseMirror-focused .ProseMirror-gapcursor {
+	display: block;
+}
+
+.memo-inline-editor .ProseMirror-gapcursor::after {
+	content: '';
+	display: block;
+	position: absolute;
+	top: -2px;
+	width: 20px;
+	border-top: 1.5px solid var(--memo-text);
+	animation: memo-gapcursor-blink 1.1s steps(2, start) infinite;
+}
+
+@keyframes memo-gapcursor-blink {
+	to {
+		visibility: hidden;
+	}
+}
+
+/* 표 옆의 틈 커서: 가로줄 대신 표 왼쪽(표 앞)·오른쪽(표 뒤)에 글자 높이의 세로 커서 */
+.memo-inline-editor .ProseMirror-gapcursor:has(+ table)::after,
+.memo-inline-editor table + .ProseMirror-gapcursor::after {
+	width: 0;
+	height: 1.3em;
+	border-top: none;
+	border-left: 1.5px solid var(--memo-text);
+}
+
+.memo-inline-editor .ProseMirror-gapcursor:has(+ table)::after {
+	top: 0.55em;
+	left: -6px;
+}
+
+.memo-inline-editor table + .ProseMirror-gapcursor {
+	left: auto;
+	right: 0;
+}
+
+.memo-inline-editor table + .ProseMirror-gapcursor::after {
+	top: -2.9em;
+	left: 5px;
+}
+
+.memo-inline-editor table.memo-table-active {
+	box-shadow: 0 0 0 1px var(--memo-border);
+}
+
+.memo-inline-editor .memo-table-active :is(td, th) + :is(td, th) {
+	box-shadow: inset 1px 0 0 var(--memo-border);
+}
+
+.memo-inline-editor .memo-cell-current {
+	background-color: color-mix(in srgb, #edbb4d 12%, transparent);
+}
+
+/* 표 손잡이: 지금 열 위, 지금 행 왼쪽의 둥근 알약 (크기는 늘 같다) */
+.memo-table-handle {
+	position: absolute;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: color-mix(in srgb, var(--memo-muted) 22%, transparent);
+	color: var(--memo-muted);
+	font-size: 9px;
+	cursor: pointer;
+	touch-action: none;
+	transition:
+		left var(--duration-fast) var(--ease-out),
+		top var(--duration-fast) var(--ease-out),
+		background-color var(--duration-fast) var(--ease-out);
+}
+
+/* 편집기 바로 아래에 그려서 본문 문단 간격(.memo-markdown > * + *)을 받지 않게 */
+.memo-inline-editor > :is(.memo-table-handle, .memo-table-selection, .memo-table-drop) {
+	margin: 0;
+}
+
+.memo-table-handle:hover {
+	background-color: color-mix(in srgb, var(--memo-muted) 38%, transparent);
+	color: var(--memo-text);
+}
+
+/* 행·열 전체를 고르면 그 폭만큼 펼쳐진 노란 막대가 고른 테두리에 붙는다 (⌄: 메뉴). 끌어서 옮길 수 있다 */
+.memo-table-handle {
+	transition:
+		left var(--duration) var(--ease-out),
+		top var(--duration) var(--ease-out),
+		width var(--duration) var(--ease-out),
+		height var(--duration) var(--ease-out),
+		border-radius var(--duration) var(--ease-out),
+		background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-table-handle.on {
+	background-color: #edbb4d;
+	color: #fff;
+	cursor: grab;
+}
+
+.memo-table-handle.col.on {
+	border-radius: 6px 6px 0 0;
+}
+
+.memo-table-handle.row.on {
+	border-radius: 6px 0 0 6px;
+}
+
+.memo-table-handle-chevron {
+	position: absolute;
+	z-index: 1;
+	display: grid;
+	width: 12px;
+	height: 12px;
+	/* 막대와 같은 색 바탕으로 점(…) 위를 덮는다 (짧은 행에서 겹쳐 보이지 않게) */
+	border-radius: 50%;
+	background-color: #edbb4d;
+	font-size: 9px;
+	opacity: 0;
+	place-items: center;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.memo-table-handle.col .memo-table-handle-chevron {
+	right: 4px;
+}
+
+.memo-table-handle.row .memo-table-handle-chevron {
+	bottom: 3px;
+}
+
+.memo-table-handle.on .memo-table-handle-chevron {
+	opacity: 1;
+}
+
+/* 고른 범위의 대각선 꼭짓점: 끌어서 범위를 늘리고 줄인다 */
+.memo-inline-editor > .memo-table-corner {
+	position: absolute;
+	z-index: 4;
+	width: 12px;
+	height: 12px;
+	margin: -6px 0 0 -6px;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	background-color: #edbb4d;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	cursor: nwse-resize;
+	touch-action: none;
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.memo-inline-editor > .memo-table-corner:hover {
+	transform: scale(1.25);
+}
+
+.memo-table-handle.dragging {
+	cursor: grabbing;
+	transition: none;
+}
+
+/* 고른 행·열의 테두리 */
+.memo-table-selection {
+	position: absolute;
+	z-index: 2;
+	border: 2px solid #edbb4d;
+	pointer-events: none;
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+/* 끄는 동안: 고른 행·열이 손가락을 따라오고, 놓을 자리에 선이 보인다 */
+.memo-table-selection.dragging {
+	background-color: color-mix(in srgb, #edbb4d 18%, transparent);
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+	transition: none;
+}
+
+.memo-table-drop {
+	position: absolute;
+	z-index: 3;
+	border-radius: 2px;
+	background-color: #edbb4d;
+	pointer-events: none;
+}
+
+.memo-table-drop.col {
+	width: 3px;
+	margin-left: -1.5px;
+}
+
+.memo-table-drop.row {
+	height: 3px;
+	margin-top: -1.5px;
+}
+
+.memo-inline-editor .memo-table-active .selectedCell {
+	background-color: color-mix(in srgb, #edbb4d 14%, transparent);
+}
+
+/* 손잡이 메뉴 (macOS 메모의 표 메뉴처럼 글자만) */
+.memo-format-panel.memo-handle-panel {
+	width: auto;
+	min-width: 170px;
+	padding: 6px;
+}
+
+.memo-handle-menu button {
+	padding-left: 12px;
+	font-size: 14px;
+}
+
+/* 편집기의 표: 고른 칸, 열 너비 조절 손잡이 */
+.memo-inline-editor .selectedCell {
+	background-color: color-mix(in srgb, #edbb4d 22%, transparent);
+}
+
+.memo-inline-editor .column-resize-handle {
+	position: absolute;
+	top: 0;
+	right: -2px;
+	bottom: 0;
+	width: 4px;
+	background-color: #edbb4d;
+	pointer-events: none;
+}
+
+.memo-inline-editor td,
+.memo-inline-editor th {
+	position: relative;
+}
+
+.memo-inline-editor.resize-cursor,
+.memo-inline-editor .resize-cursor {
+	cursor: col-resize;
+}
+
+/* 이미지 문단: 편집기가 커서 자리로 넣는 빈 요소가 이미지 위아래에 빈 줄을 만들지 않게 (읽기 화면과 같은 높이) */
+.memo-inline-editor p:has(> .memo-figure) > :is(.ProseMirror-separator, .ProseMirror-trailingBreak) {
+	display: none;
+}
+
+/* 편집기에서 고른 이미지 */
+.memo-inline-editor .memo-figure.selected img {
+	outline: 2px solid #edbb4d;
+	outline-offset: 2px;
+}
+
+/* 첨부 파일 링크 (읽기·편집 화면 같은 모양). 링크 제목 '첨부 파일 · 크기'로 알아본다 */
+.memo-markdown a[title^='첨부 파일'] {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	max-width: 100%;
+	padding: 3px 10px;
+	border: 1px solid var(--memo-border);
+	border-radius: var(--radius-md);
+	background-color: var(--memo-code-bg);
+	color: var(--memo-text);
+	font-size: var(--text-footnote);
+	text-decoration: none;
+	overflow-wrap: anywhere;
+}
+
+.memo-markdown a[title^='첨부 파일']::before {
+	color: var(--memo-muted);
+	font-family: 'Font Awesome 6 Free';
+	font-weight: 900;
+	content: '\f0c6' / '';
+}
+
+.memo-markdown a[title^='첨부 파일']:hover {
+	border-color: var(--memo-accent);
+}
+
+/* 편집기 안의 체크 항목: 왼쪽 네모를 누르면 체크 */
+.memo-inline-editor li[data-item-type='task'] {
+	position: relative;
+	padding-left: 26px;
+	list-style: none;
+}
+
+.memo-inline-editor li[data-item-type='task']::before {
+	position: absolute;
+	top: 0.35em;
+	left: 2px;
+	width: 15px;
+	height: 15px;
+	border: 1.5px solid var(--memo-muted);
+	border-radius: 50%;
+	cursor: pointer;
+	content: '';
+}
+
+.memo-inline-editor li[data-item-type='task'][data-checked='true']::before {
+	border-color: #edbb4d;
+	background: #edbb4d
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+		center / 12px no-repeat;
+}
+
+.memo-inline-editor li[data-item-type='task'][data-checked='true'] > * {
+	color: var(--memo-muted);
+	text-decoration: line-through;
+}
+
+/* 읽기 화면의 체크 항목 (remark-gfm): 편집기와 같은 동그라미 */
+.memo-markdown .task-list-item {
+	position: relative;
+	padding-left: 26px;
+	list-style: none;
+}
+
+.memo-markdown .task-list-item input {
+	position: absolute;
+	top: 0.35em;
+	left: 2px;
+	width: 15px;
+	height: 15px;
+	margin: 0;
+	border: 1.5px solid var(--memo-muted);
+	border-radius: 50%;
+	appearance: none;
+}
+
+.memo-markdown .task-list-item input:checked {
+	border-color: #edbb4d;
+	background: #edbb4d
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+		center / 12px no-repeat;
+}
+
+.memo-markdown .task-list-item:has(> input:checked) {
+	color: var(--memo-muted);
+	text-decoration: line-through;
+}

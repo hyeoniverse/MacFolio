@@ -250,7 +250,7 @@ const strikethroughDoubleTilde = $inputRule((ctx) =>
 );
 const gfmWithoutSingleTilde = gfm.filter((plugin) => plugin !== strikethroughInputRule);
 
-/** 휴대폰에서 커서 줄을 맞출 때 비울 자리 (Memo.css: 위 단추 줄 = 상태 표시줄 + 58px, 아래 서식 막대 = 96px) */
+/** 휴대폰에서 커서 줄을 맞출 때 비울 자리 (styles/phone-note.css: 위 단추 줄 = 상태 표시줄 + 58px, 아래 서식 막대 = 96px) */
 const PHONE_CARET_MARGIN = { top: 120, bottom: 110 };
 
 /**
@@ -288,7 +288,7 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 					ctx.set(remarkGFMPlugin.options.key, GFM_OPTIONS);
 					// 저장소 글의 상대 경로 이미지도 편집기 안에서 보이게 한다
 					ctx.set(defaultValueCtx, toEditorMarkdown(markdown, CONTENT_IMAGES));
-					// 끌어다 놓을 자리 표시: 굵게 (색은 Memo.css의 .milkdown-drop-indicator)
+					// 끌어다 놓을 자리 표시: 굵게 (색은 styles/late.css의 .milkdown-drop-indicator)
 					ctx.update(dropIndicatorConfig.key, (config) => ({ ...config, width: 3 }));
 					// 목록 기호와 구분선은 지금 글들처럼 '-', '---'로 쓴다 (기본값은 '*', '***')
 					ctx.update(remarkStringifyOptionsCtx, (options) => ({

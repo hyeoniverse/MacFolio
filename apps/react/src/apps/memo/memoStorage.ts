@@ -19,7 +19,7 @@ export function rememberFind(recent: string[], query: string): string[] {
 /** 너비를 조절하는 칸: 사이드바(폴더·태그), 목록(글 목록) */
 export type ResizablePane = 'sidebar' | 'list';
 
-/** 칸마다 너비(px)의 범위와 기본값 (기본값은 Memo.css의 13rem·17rem), 저장 키 */
+/** 칸마다 너비(px)의 범위와 기본값 (기본값은 styles/theme.css의 13rem·17rem), 저장 키 */
 export const PANE_WIDTHS: Record<ResizablePane, { min: number; max: number; initial: number; key: string }> = {
 	sidebar: { min: 180, max: 360, initial: 208, key: STORAGE_KEYS.memoSidebarWidth },
 	list: { min: 220, max: 440, initial: 272, key: STORAGE_KEYS.memoListWidth },
