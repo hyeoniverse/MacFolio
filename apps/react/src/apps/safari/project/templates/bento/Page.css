@@ -1504,7 +1504,80 @@
 	color: var(--bt-ink);
 }
 
+/* 트러블슈팅이 셋이면 첫 건은 넓은 타일, 나머지 둘은 반 칸 타일로 나란히 (반 칸은 단계를 위아래로) */
+.bt-troubles[data-count='3'] {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bt-troubles[data-count='3'] > .bt-trouble:first-child {
+	grid-column: 1 / -1;
+}
+
+.bt-troubles[data-count='3'] > .bt-trouble:nth-child(n + 2) {
+	grid-template-columns: minmax(0, 1fr);
+	align-content: start;
+}
+
+.bt-troubles[data-count='3'] > .bt-trouble:nth-child(n + 2) .lk-trouble-steps {
+	grid-template-columns: minmax(0, 1fr);
+	grid-auto-flow: row;
+	gap: 14px;
+}
+
+.bt-troubles[data-count='3'] > .bt-trouble:nth-child(n + 2) .lk-trouble-step {
+	padding: 0 0 0 16px;
+	border-top: 0;
+	border-left: 2px solid var(--bt-line);
+}
+
+.bt-troubles[data-count='3']
+	> .bt-trouble:nth-child(n + 2)
+	.lk-trouble-step:is([data-step='solution'], [data-step='result']) {
+	border-left-color: var(--tpl-accent);
+}
+
+.bt-troubles[data-count='3'] > .bt-trouble:nth-child(n + 2) .lk-trouble-step::before {
+	display: none;
+}
+
+/* 팀원: 사진을 위에 둔 세로 타일 (넷이 한 줄에 들어가도 글 칸이 좁아지지 않는다) */
 .bt-member {
-	flex-direction: row;
-	align-items: center;
+	align-items: flex-start;
+}
+
+.bt-member .lk-avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	font-size: 18px;
+}
+
+.bt-deploy-cover {
+	border-color: var(--bt-line);
+	background:
+		radial-gradient(circle, var(--bt-line) 1px, transparent 1.5px) 0 0 / 14px 14px,
+		var(--bt-tile-2);
+	color: var(--bt-ink);
+}
+
+/* 배포 결과물: 고정폭 대문자 이름표는 올린 곳과 호스트를 한 줄씩 나눈다 */
+.bt-deploy-meta {
+	display: grid;
+	gap: 2px;
+}
+
+.bt-deploy-meta > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bt-deploy-sep {
+	display: none;
+}
+
+@container (max-width: 860px) {
+	.bt-troubles[data-count='3'] {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }

@@ -1988,9 +1988,20 @@
 	background-color: var(--fr-tint);
 }
 
+/* 팀원: 사진 옆에 글이 놓이는 가로 카드라 넷이면 2×2로 놓아 글 칸을 넉넉히 둔다 */
+.fr-team[data-count='4'] {
+	--lk-team-cols: 2;
+}
+
 .fr-member {
 	flex-direction: row;
 	align-items: center;
+	gap: 18px;
+}
+
+.fr-member .lk-avatar {
+	width: 60px;
+	height: 60px;
 }
 
 .fr-member[data-me] {

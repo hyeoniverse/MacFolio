@@ -265,6 +265,22 @@ export function initialsOf(name: string): string {
 	return [...words[0]][0].toUpperCase();
 }
 
+/** 팀원 주소를 짧게: GitHub는 github.com/아이디, 다른 곳은 프로토콜과 www.를 뺀 주소 (끝의 /도 뺀다) */
+export function shortLink(url: string): string {
+	try {
+		const parsed = new URL(url);
+		const host = parsed.host.replace(/^www\./, '');
+		const path = parsed.pathname.replace(/\/+$/, '');
+		if (host === 'github.com') {
+			const user = path.split('/').filter(Boolean)[0];
+			return user ? `${host}/${user}` : host;
+		}
+		return `${host}${path}`;
+	} catch {
+		return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, '');
+	}
+}
+
 /** 올린 곳·주소에 맞는 아이콘 (모르면 지구본) */
 export function deploymentIcon(platform: string | undefined, url: string | undefined): string {
 	const key = `${platform ?? ''} ${url ?? ''}`.toLowerCase();

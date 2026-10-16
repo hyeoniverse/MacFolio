@@ -3,6 +3,7 @@
 import React from 'react';
 import {
 	faClass,
+	shortLink,
 	troubleIcon,
 	troubleSteps,
 	type LandingDeployment,
@@ -51,43 +52,46 @@ export const TroubleList: React.FC<{ items: LandingTrouble[]; prefix?: string; r
 	prefix,
 	reveal = true,
 }) => (
-	<ol className={cx(prefix, 'troubles')}>
-		{items.map((item, index) => (
-			<li
-				key={item.title}
-				className={cx(prefix, 'trouble')}
-				data-image={item.image ? '' : undefined}
-				data-reveal={reveal ? '' : undefined}
-				style={delay(index)}
-			>
-				<div className={cx(prefix, 'trouble-main')}>
-					<header className={cx(prefix, 'trouble-head')}>
-						<span className={cx(prefix, 'trouble-icon')}>
-							<FaIcon icon={troubleIcon(item)} />
-						</span>
-						<span className={cx(prefix, 'trouble-num')}>{String(index + 1).padStart(2, '0')}</span>
-						<h3>{item.title}</h3>
-					</header>
-					<dl className={cx(prefix, 'trouble-steps')}>
-						{troubleSteps(item).map((step) => (
-							<div key={step.key} className={cx(prefix, 'trouble-step')} data-step={step.key}>
-								<dt>{step.label}</dt>
-								<dd>{step.text}</dd>
-							</div>
-						))}
-					</dl>
-				</div>
-				{item.image && (
-					<figure className={cx(prefix, 'trouble-image')}>
-						<Media media={item.image} />
-					</figure>
-				)}
-			</li>
-		))}
+	<ol className={cx(prefix, 'troubles')} data-count={Math.min(items.length, 4)}>
+		{items.map((item, index) => {
+			const steps = troubleSteps(item);
+			return (
+				<li
+					key={item.title}
+					className={cx(prefix, 'trouble')}
+					data-image={item.image ? '' : undefined}
+					data-reveal={reveal ? '' : undefined}
+					style={delay(index)}
+				>
+					<div className={cx(prefix, 'trouble-main')}>
+						<header className={cx(prefix, 'trouble-head')}>
+							<span className={cx(prefix, 'trouble-icon')}>
+								<FaIcon icon={troubleIcon(item)} />
+							</span>
+							<span className={cx(prefix, 'trouble-num')}>{String(index + 1).padStart(2, '0')}</span>
+							<h3>{item.title}</h3>
+						</header>
+						<dl className={cx(prefix, 'trouble-steps')} data-steps={steps.length}>
+							{steps.map((step) => (
+								<div key={step.key} className={cx(prefix, 'trouble-step')} data-step={step.key}>
+									<dt>{step.label}</dt>
+									<dd>{step.text}</dd>
+								</div>
+							))}
+						</dl>
+					</div>
+					{item.image && (
+						<figure className={cx(prefix, 'trouble-image')}>
+							<Media media={item.image} />
+						</figure>
+					)}
+				</li>
+			);
+		})}
 	</ol>
 );
 
-/** 팀원 목록: 사진(없으면 이름 첫 글자), 이름, 역할, 주소. 나는 강조색 테두리와 '나' 표시 */
+/** 팀원 목록: 사진(없으면 이름 첫 글자), 이름, 역할, 짧게 줄인 주소(전체 주소는 title). 나는 강조색 테두리와 '나' 표시 */
 export const TeamList: React.FC<{ members: LandingMember[]; prefix?: string; reveal?: boolean }> = ({
 	members,
 	prefix,
@@ -110,9 +114,9 @@ export const TeamList: React.FC<{ members: LandingMember[]; prefix?: string; rev
 					</h3>
 					<p className={cx(prefix, 'member-role')}>{member.role}</p>
 					{member.url && (
-						<a className={cx(prefix, 'member-link')} href={member.url} {...external}>
+						<a className={cx(prefix, 'member-link')} href={member.url} title={member.url} {...external}>
 							<FaIcon icon={/github\.com/.test(member.url) ? 'fa-github' : 'fa-link'} />
-							<span>{member.url.replace(/^https?:\/\/(www\.)?/, '')}</span>
+							<span>{shortLink(member.url)}</span>
 						</a>
 					)}
 				</div>
@@ -137,10 +141,16 @@ export const DeployList: React.FC<{ items: LandingDeployment[]; prefix?: string;
 				data-reveal={reveal ? '' : undefined}
 				style={delay(index)}
 			>
-				{item.image && (
+				{item.image ? (
 					<figure className={cx(prefix, 'deploy-image')}>
 						<Media media={item.image} />
 					</figure>
+				) : (
+					// 그림이 없는 카드의 표지: 옆 카드에 그림이 있을 때만 보여 줄의 높이를 맞춘다 (landing.css)
+					<div className={cx(prefix, 'deploy-cover')} aria-hidden="true">
+						<FaIcon icon={item.icon} />
+						{item.host && <span>{item.host}</span>}
+					</div>
 				)}
 				<div className={cx(prefix, 'deploy-body')}>
 					<div className={cx(prefix, 'deploy-top')}>
@@ -159,7 +169,11 @@ export const DeployList: React.FC<{ items: LandingDeployment[]; prefix?: string;
 						)}
 					</h3>
 					{(item.platform || item.host) && (
-						<p className={cx(prefix, 'deploy-meta')}>{[item.platform, item.host].filter(Boolean).join(' · ')}</p>
+						<p className={cx(prefix, 'deploy-meta')}>
+							{item.platform && <span className={cx(prefix, 'deploy-platform')}>{item.platform}</span>}
+							{item.platform && item.host && <span className={cx(prefix, 'deploy-sep')}> · </span>}
+							{item.host && <span className={cx(prefix, 'deploy-host')}>{item.host}</span>}
+						</p>
 					)}
 					{item.note && <p className={cx(prefix, 'deploy-note')}>{item.note}</p>}
 					{item.url && (
