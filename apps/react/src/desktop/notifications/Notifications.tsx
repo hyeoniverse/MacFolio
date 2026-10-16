@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { APP_MANIFEST } from '@/apps/manifest';
-import { env } from '@/shared/config/env';
+import { appIconUrl } from '@/shared/config/appIcon';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { dismiss, useNotifications, type Notice } from './notificationStore';
 import '@/desktop/notifications/Notifications.css';
@@ -33,7 +33,7 @@ const Banner = ({ notice, mobile }: { notice: Notice; mobile: boolean }) => {
 					<i className="fa-solid fa-xmark" aria-hidden="true"></i>
 				</button>
 			)}
-			<img className="notification-icon" src={`${env.imageUrl}/${icon}`} alt="" />
+			<img className="notification-icon" src={appIconUrl(icon)} alt="" />
 			<div className="notification-text">
 				<div className="notification-head">
 					<strong>{notice.title}</strong>

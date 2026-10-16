@@ -1,7 +1,12 @@
 // 사이트 주인의 프로필 (apps/api의 /site). 관리자가 시스템 설정에서 고치고, 누구나 읽는다.
 // 타입·한도·GitHub 아이디 규칙은 desktop-core/site에 있고, 여기 스키마가 그 타입대로 검사한다 (서버의 저장·화면의 입력 칸이 같은 규칙)
 import { z } from 'zod';
-import { githubLogin, PROFILE_LIMITS, type SiteProfile as SiteProfileShape } from '@macfolio/desktop-core/site';
+import {
+	githubLogin,
+	PROFILE_LIMITS,
+	type SiteProfile as SiteProfileShape,
+	type SiteProjects,
+} from '@macfolio/desktop-core/site';
 import { parse } from './parse.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -93,10 +98,21 @@ export function readProfile(stored: unknown): SiteProfileShape | null {
 	return 'value' in parsed ? parsed.value : null;
 }
 
-/** GET /site, PUT·DELETE /site/profile의 응답 */
+/**
+ * 관리자가 고친 프로젝트 (순서·숨김·덮어쓸 필드·새 프로젝트). 검사는 desktop-core/site의 parseProjects 하나다:
+ * 서버만 아는 올린 그림 주소(allowOrigins)를 옵션으로 받아서 스키마가 아니라 함수로 두고, 여기서는 모양만 적는다
+ */
+const StoredProjects = z.custom<SiteProjects>(
+	(value) => typeof value === 'object' && value !== null && Array.isArray((value as { items?: unknown }).items),
+	'items 목록을 보내 주세요.'
+);
+
+/** GET /site, PUT·DELETE /site/profile·/site/projects의 응답 */
 export const SiteView = z.object({
 	/** 관리자가 저장한 프로필 (없으면 null: 화면이 코드의 기본값을 쓴다) */
 	profile: ProfileInput.nullable(),
+	/** 관리자가 고친 프로젝트. 없으면 null: 화면이 코드의 기본값을 쓴다 */
+	projects: StoredProjects.nullable(),
 	/** ISO 8601. 저장한 적이 없으면 null */
 	updatedAt: z.string().nullable(),
 });

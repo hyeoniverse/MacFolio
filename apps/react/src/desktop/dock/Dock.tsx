@@ -6,6 +6,7 @@ import '@/desktop/dock/Dock.css';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 
 import { env } from '@/shared/config/env';
+import { appIconUrl } from '@/shared/config/appIcon';
 import { useBinEmpty } from '@/apps/bin/binState';
 import { APP_MANIFEST, DOCK_APPS, LAUNCHPAD_APPS, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
@@ -19,7 +20,7 @@ import {
 } from '@/desktop/dock/dockLayout';
 
 const imgUrl = env.imageUrl;
-const iconOf = (appName: AppName) => `${imgUrl}/${APP_MANIFEST[appName].icon}`;
+const iconOf = (appName: AppName) => appIconUrl(APP_MANIFEST[appName].icon);
 
 const Dock: React.FC = () => {
 	const { launch: handleAppOpen, isActive } = useLaunchApp();

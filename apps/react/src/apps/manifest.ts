@@ -3,7 +3,7 @@
 import { PROJECTS, type Project, type ProjectAppInfo } from '@/shared/profile';
 
 /** 이 사이트에 들어 있는 앱 (프로젝트 앱은 아래에서 PROJECTS로 만든다) */
-const BUILTIN_APP_NAMES = [
+export const BUILTIN_APP_NAMES = [
 	'finder',
 	'music',
 	'safari',

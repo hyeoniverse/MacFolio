@@ -72,7 +72,7 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 	});
 
 	it('처음에는 저장한 프로필이 없다 (화면은 코드의 기본값). 관리자가 쓴 글은 기본 이름', async () => {
-		await request(server).get('/site').expect(200, { profile: null, updatedAt: null });
+		await request(server).get('/site').expect(200, { profile: null, projects: null, updatedAt: null });
 		const comment = await request(server)
 			.post('/posts/cra-to-vite/comments')
 			.set('Cookie', adminCookie)
@@ -117,5 +117,59 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 		expect(reset.body.profile).toBeNull();
 		const after = await request(server).get('/messages/threads').expect(200);
 		expect(after.body[0].title).toBe('김정현');
+	});
+
+	it('프로젝트: 관리자만 저장하고, https가 아닌 링크·앱 이름과 겹치는 id는 이유와 함께 거절한다. 지우면 기본값으로', async () => {
+		const projects = {
+			items: [
+				{ id: 'macfolio', override: { tagline: '웹에서 만나는 Mac' } },
+				{ id: 'devcourse', hidden: true },
+				{
+					id: 'new-project',
+					override: {
+						name: '새 프로젝트',
+						url: 'https://github.com/hyeoniverse/new-project',
+						demo: 'https://new-project.example.com',
+						// 화면 캡처는 비워도 된다 (화면은 화면 모음의 첫 그림을 쓴다)
+						image: '',
+						galleryFolder: '/imgs/projects/qru/screens',
+						app: { label: '새 앱', icon: 'projects/new-project/app-icon.png' },
+						// 포트폴리오 칸: 트러블슈팅, 팀원, 배포 결과물
+						troubleshooting: [
+							{ title: '느린 첫 화면', problem: '4초', cause: '큰 번들', solution: '나눠 부름', result: '1초' },
+						],
+						team: [{ name: '김현', role: '프론트엔드', url: 'https://github.com/hyeoniverse', me: true }],
+						deployments: [{ label: '웹', url: 'https://new-project.example.com', platform: 'Vercel' }],
+					},
+				},
+			],
+		};
+		await request(server).put('/site/projects').send(projects).expect(401);
+		const bad = await request(server)
+			.put('/site/projects')
+			.set('Cookie', adminCookie)
+			.send({
+				items: [
+					{ id: 'safari' },
+					{ id: 'x', override: { url: 'javascript:alert(1)' } },
+					{ id: 'y', override: { team: [{ name: '김', role: '화면', url: 'javascript:alert(1)' }] } },
+				],
+			})
+			.expect(400);
+		expect(bad.body.message).toEqual([
+			"프로젝트 safari: 'safari'는 이 사이트의 앱 이름이라 쓸 수 없습니다.",
+			'프로젝트 x.url: https:// 주소여야 합니다.',
+			'프로젝트 y.team[0].url: https:// 주소여야 합니다.',
+		]);
+
+		const saved = await request(server).put('/site/projects').set('Cookie', adminCookie).send(projects).expect(200);
+		expect(saved.body.projects).toEqual(projects);
+		expect((await request(server).get('/site').expect(200)).body.projects).toEqual(projects);
+		// 프로필과 따로 저장하고 지운다
+		expect(saved.body.profile).toBeNull();
+
+		await request(server).delete('/site/projects').expect(401);
+		const reset = await request(server).delete('/site/projects').set('Cookie', adminCookie).expect(200);
+		expect(reset.body.projects).toBeNull();
 	});
 });

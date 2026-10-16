@@ -73,9 +73,15 @@ describe('사이트 프로필', () => {
 		expect(readProfile(valid)?.name).toBe('김정현');
 		expect(readProfile({ name: '' })).toBeNull();
 		expect(readProfile(null)).toBeNull();
-		expect(parse(SiteView, { profile: null, updatedAt: null })).toEqual({ value: { profile: null, updatedAt: null } });
-		expect(parse(SiteView, { profile: clean, updatedAt: '2026-10-11T00:00:00.000Z' })).toEqual({
-			value: { profile: clean, updatedAt: '2026-10-11T00:00:00.000Z' },
+		expect(parse(SiteView, { profile: null, projects: null, updatedAt: null })).toEqual({
+			value: { profile: null, projects: null, updatedAt: null },
+		});
+		const projects = { items: [{ id: 'qru', hidden: true }] };
+		expect(parse(SiteView, { profile: clean, projects, updatedAt: '2026-10-11T00:00:00.000Z' })).toEqual({
+			value: { profile: clean, projects, updatedAt: '2026-10-11T00:00:00.000Z' },
+		});
+		expect(parse(SiteView, { profile: null, projects: { items: 'x' }, updatedAt: null })).toEqual({
+			errors: ['items 목록을 보내 주세요.'],
 		});
 	});
 });

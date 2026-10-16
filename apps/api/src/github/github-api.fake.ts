@@ -65,6 +65,11 @@ export function fakeGithubApi() {
 			{ date: '2026-09-28', level: 2, count: 3 },
 			{ date: '2026-09-29', level: 4, count: 12 },
 		]) as string | null,
+		/** 저장소마다 언어별 바이트 수 (GET /repos/{owner}/{repo}/languages). 없는 저장소는 404 */
+		languages: {
+			'hyeoniverse/QRU': { TypeScript: 72_000, CSS: 20_000, JavaScript: 7_000, HTML: 1_000 },
+			'Devcourse-NewPick/front': { TypeScript: 90_000, SCSS: 10_000 },
+		} as Record<string, Record<string, number>>,
 		/** true면 기여 달력만 받지 못한다 */
 		contributionsDown: false,
 		events: [
@@ -115,6 +120,12 @@ export function fakeGithubApi() {
 		orgRepos: (org: string) => call(state.orgs[org] ?? []),
 		repo: (fullName: string) =>
 			call(all().find((item) => item.full_name.toLowerCase() === fullName.toLowerCase()) ?? null),
+		languages: (owner: string, name: string) =>
+			call(
+				Object.entries(state.languages).find(
+					([fullName]) => fullName.toLowerCase() === `${owner}/${name}`.toLowerCase()
+				)?.[1] ?? null
+			),
 		profileReadme: () => call(state.readme),
 		userEvents: () => call(state.events),
 		contributionsHtml: () =>

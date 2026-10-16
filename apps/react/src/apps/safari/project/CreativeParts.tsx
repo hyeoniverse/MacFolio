@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { ProjectChapter, ProjectPoint } from '@/shared/profile';
 import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
+import '@/apps/safari/project/CreativeParts.css';
 
 /** 밀대가 혼자 한 번 흔들리는 데 걸리는 시간과, 다음 흔들림까지 쉬는 시간 (ms) */
 const SWAY_MS = 2400;
@@ -238,12 +239,12 @@ export const Clip: React.FC<{ src: string; label: string }> = ({ src, label }) =
 	return <video ref={video} src={src} poster={poster} aria-label={label} muted loop playsInline preload="metadata" />;
 };
 
-/** 기능 하나에 붙는 화면: 영상, 레이아웃 고르기, 라이트·다크 밀대, 그림 중 하나 */
+/** 기능 하나에 붙는 화면: 영상, 라이트·다크 밀대, 그림, 레이아웃 고르기 중 하나 (편집에서 넣은 그림이 갈래 도식보다 먼저) */
 export const FeatureMedia: React.FC<{ point: ProjectPoint }> = ({ point }) => {
 	if (point.video) return <Clip src={point.video} label={`${point.title} 화면 녹화`} />;
-	if (point.variants) return <Layouts variants={point.variants} />;
 	if (point.image && point.imageDark) return <Compare light={point.image} dark={point.imageDark} alt={point.title} />;
 	if (point.image) return <img src={point.image} alt={`${point.title} 화면`} loading="lazy" />;
+	if (point.variants) return <Layouts variants={point.variants} />;
 	return null;
 };
 

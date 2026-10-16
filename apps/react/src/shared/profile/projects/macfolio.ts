@@ -4,7 +4,7 @@ import { projectImage } from './projectImage';
 export const MACFOLIO: Project = {
 	id: 'macfolio',
 	name: 'MacFolio',
-	look: 'product',
+	look: 'custom',
 	tagline: '포트폴리오를, 데스크톱으로.',
 	description:
 		'macOS 데스크톱을 웹으로 옮긴 포트폴리오. 메모 앱은 블로그, 메시지 앱은 방명록, Safari는 프로젝트 소개가 된다',

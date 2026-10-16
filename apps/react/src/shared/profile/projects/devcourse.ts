@@ -4,7 +4,7 @@ import { projectImage } from './projectImage';
 export const DEVCOURSE: Project = {
 	id: 'devcourse',
 	name: 'DevCourse FullStack',
-	look: 'terminal',
+	look: 'custom',
 	terminal: [
 		'$ git clone https://github.com/hyeoniverse/DevCourse-FullStack',
 		'# README.md 수강 목록',

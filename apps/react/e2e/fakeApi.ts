@@ -21,6 +21,8 @@ export interface FakeApiState {
 	signedIn: boolean;
 	/** 관리자가 시스템 설정 › 정보에서 고친 프로필 (GET /site, PUT·DELETE /site/profile). 없으면 null */
 	siteProfile: Record<string, unknown> | null;
+	/** 관리자가 시스템 설정 › 프로젝트에서 고친 프로젝트 (PUT·DELETE /site/projects). 없으면 null */
+	siteProjects: { items: Record<string, unknown>[] } | null;
 	/** 관리자가 고친 사진 캡션 { 사진 주소: 캡션 } (GET·PUT /photos/captions) */
 	photoCaptions: Record<string, string>;
 	/** /health가 돌려줄 상태. blocked는 서버는 응답하지만 이 주소를 CORS로 허용하지 않는 경우 (PR 미리보기) */
@@ -101,7 +103,21 @@ export interface FakeApiState {
 		saves: number;
 		/** GET /github/activity가 줄 값. null이면 502 (GitHub에 닿지 못함) */
 		activity: { contributions: { total: number; days: FakeDay[] } | null; events: FakeActivity[] } | null;
+		/**
+		 * GET /github/languages/{owner}/{이름}가 줄 언어 비율 (저장소 owner/이름, 대소문자 무관).
+		 * 없는 저장소는 404 (이 사이트의 프로젝트가 아님), null이면 502 (GitHub에 닿지 못함)
+		 */
+		languages: Record<string, FakeLanguage[] | null>;
+		/** 받은 GET /github/languages 요청의 저장소 (owner/이름) */
+		languageRequests: string[];
 	};
+}
+
+/** 저장소의 언어 하나 (apps/api의 RepoLanguage 모양) */
+export interface FakeLanguage {
+	name: string;
+	bytes: number;
+	percent: number;
 }
 
 export interface FakeDay {
@@ -329,6 +345,7 @@ export async function fakeApi(
 	const state: FakeApiState = {
 		signedIn,
 		siteProfile: null,
+		siteProjects: null,
 		health: 'ok',
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		saves: 0,
@@ -371,6 +388,8 @@ export async function fakeApi(
 				{ ...fakeRepo('someone/Delta', { language: 'Python' }), listed: false },
 			],
 			saves: 0,
+			languages: {},
+			languageRequests: [],
 			activity: {
 				contributions: { total: 1234, days: fakeContributionDays() },
 				events: [
@@ -557,7 +576,17 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: { profile: state.siteProfile, updatedAt: null },
+				json: { profile: state.siteProfile, projects: state.siteProjects, updatedAt: null },
+			});
+		}
+		if (path === '/site/projects') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			// 검사는 화면이 서버와 같은 규칙(desktop-core의 parseProjects)으로 먼저 한다
+			state.siteProjects = request.method() === 'PUT' ? request.postDataJSON() : null;
+			return route.fulfill({
+				status: 200,
+				headers: cors(origin),
+				json: { profile: state.siteProfile, projects: state.siteProjects, updatedAt: null },
 			});
 		}
 		if (path === '/site/profile') {
@@ -567,7 +596,7 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: { profile: state.siteProfile, updatedAt: null },
+				json: { profile: state.siteProfile, projects: state.siteProjects, updatedAt: null },
 			});
 		}
 		if (path === '/memo/organization') {
@@ -690,6 +719,21 @@ export async function fakeApi(
 				headers: cors(origin),
 				json: { ...state.github.activity, fetchedAt: new Date().toISOString() },
 			});
+		}
+		const languagesPath = path.match(/^\/github\/languages\/([^/]+)\/([^/]+)$/);
+		if (languagesPath) {
+			const asked = `${decodeURIComponent(languagesPath[1])}/${decodeURIComponent(languagesPath[2])}`.toLowerCase();
+			state.github.languageRequests.push(asked);
+			const entry = Object.entries(state.github.languages).find(([name]) => name.toLowerCase() === asked);
+			if (!entry)
+				return route.fulfill({
+					status: 404,
+					headers: cors(origin),
+					json: { statusCode: 404, message: '이 사이트의 프로젝트 저장소가 아니거나 GitHub에서 찾을 수 없습니다.' },
+				});
+			if (!entry[1])
+				return route.fulfill({ status: 502, headers: cors(origin), json: { message: 'GitHub에 연결할 수 없습니다.' } });
+			return route.fulfill({ headers: cors(origin), json: entry[1] });
 		}
 		if (path === '/github/candidates') {
 			if (!state.signedIn) return route.fulfill(unauthorized);

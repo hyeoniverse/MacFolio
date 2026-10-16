@@ -4,7 +4,7 @@ import { projectImage } from './projectImage';
 export const WHATTODO: Project = {
 	id: 'whattodo',
 	name: 'WTD (What To Do)',
-	look: 'playful',
+	look: 'custom',
 	tagline: '할 일은 끌어서. 루틴은 알아서.',
 	description: '할 일과 세부 할 일을 끌어서 정리하고, 매일 반복되는 일은 루틴으로 관리하는 할 일 관리 웹 앱',
 	context: '프로그래머스 데브코스 팀 프로젝트 (4인)',

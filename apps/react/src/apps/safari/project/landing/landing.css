@@ -1,0 +1,625 @@
+/* 랜딩 키트 공통 (project/landing/): 템플릿 바탕(.tpl)의 강조색 기본값, 그림·영상, 그림이 없는 항목의 비주얼.
+   템플릿은 강조색을 var(--tpl-accent) 하나로 쓴다. 아이콘에서 뽑은 색(accent.ts)이 --lk-*를 덮는다 */
+.tpl {
+	--lk-accent: #0071e3;
+	--lk-accent-2: #6aa8f8;
+	--lk-dark-accent: #2997ff;
+	--tpl-accent: var(--lk-accent);
+	container-type: inline-size;
+	min-height: 100%;
+}
+
+:root[data-theme='dark'] .tpl {
+	--tpl-accent: var(--lk-dark-accent);
+}
+
+.lk-media {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-width: 100%;
+}
+
+.lk-media-pair {
+	position: relative;
+}
+
+.lk-media-pair img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: inherit;
+	object-position: inherit;
+}
+
+.lk-media-pair .lk-media-dark,
+:root[data-theme='dark'] .lk-media-pair .lk-media-light {
+	display: none;
+}
+
+:root[data-theme='dark'] .lk-media-pair .lk-media-dark {
+	display: block;
+}
+
+/* 그림이 없는 항목: 아이콘 하나와 제목. 바탕은 강조색을 아주 옅게 */
+.lk-art {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	min-height: 200px;
+	padding: 24px;
+	background-color: color-mix(in srgb, var(--tpl-accent) 7%, transparent);
+	color: var(--tpl-accent);
+	text-align: center;
+}
+
+.lk-art-icon {
+	font-size: 40px;
+	line-height: 1;
+}
+
+.lk-art-title {
+	max-width: 22ch;
+	color: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	opacity: 0.8;
+}
+
+.lk-links button {
+	font: inherit;
+	cursor: pointer;
+}
+
+.lk-links i {
+	margin-left: 4px;
+	font-size: 0.7em;
+}
+
+/* ─── 트러블슈팅·팀원·배포 결과물 (Extras.tsx) ───
+   공통 짜임만 둔다. 템플릿은 .tpl-<id>에서 --lk-x-ink·body·muted·line·card·radius·gap·pad·label 변수를 자기 색으로 정하고, 접두사 클래스(pd-trouble …)로 모양을 더한다 */
+.lk-troubles,
+.lk-team,
+.lk-deploys {
+	display: grid;
+	gap: var(--lk-x-gap, 16px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.lk-trouble,
+.lk-member,
+.lk-deploy {
+	position: relative;
+	min-width: 0;
+	border: 1px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	border-radius: var(--lk-x-radius, 14px);
+	background-color: var(--lk-x-card, color-mix(in srgb, currentColor 3%, transparent));
+}
+
+.lk-troubles h3,
+.lk-team h3,
+.lk-deploys h3 {
+	margin: 0;
+	color: var(--lk-x-ink, currentColor);
+	font-size: 1.1em;
+	line-height: 1.35;
+}
+
+.lk-troubles :where(p, dl, dd, figure),
+.lk-team :where(p),
+.lk-deploys :where(p, figure) {
+	margin: 0;
+}
+
+/* 트러블슈팅: 왼쪽 글(머리와 단계 띠), 그림이 있으면 오른쪽 */
+.lk-trouble {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--lk-x-gap, 16px);
+	padding: var(--lk-x-pad, 24px);
+}
+
+.lk-trouble[data-image] {
+	grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+	align-items: start;
+}
+
+.lk-trouble-head {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 18px;
+}
+
+.lk-trouble-icon {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	background-color: color-mix(in srgb, var(--tpl-accent) 12%, transparent);
+	color: var(--tpl-accent);
+	font-size: 17px;
+}
+
+.lk-trouble-num {
+	color: var(--lk-x-muted, color-mix(in srgb, currentColor 60%, transparent));
+	font-family: var(--lk-x-label, inherit);
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* 단계 띠: 문제 → 원인 → 해결 → 결과가 한 줄로 이어진다 (좁으면 위아래로).
+   네 단계가 모두 있으면 한 줄에 둘씩(2×2) 놓아 칸이 좁아지지 않게 한다 */
+.lk-trouble-steps {
+	display: grid;
+	grid-auto-columns: minmax(0, 1fr);
+	grid-auto-flow: column;
+	gap: 0;
+}
+
+@container (min-width: 601px) {
+	.lk-trouble-steps[data-steps='4'] {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-flow: row;
+		row-gap: 24px;
+	}
+
+	:where(.lk-trouble:not([data-image])) .lk-trouble-steps[data-steps='4'] .lk-trouble-step:nth-child(3) {
+		padding-left: 0;
+	}
+
+	.lk-trouble-steps[data-steps='4'] .lk-trouble-step:nth-child(3)::before {
+		display: none;
+	}
+}
+
+.lk-trouble-step {
+	position: relative;
+	padding: 2px 18px 2px 0;
+	border-top: 2px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	padding-top: 12px;
+}
+
+.lk-trouble-step + .lk-trouble-step {
+	padding-left: 18px;
+}
+
+.lk-trouble-step + .lk-trouble-step::before {
+	position: absolute;
+	top: -9px;
+	left: -7px;
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background-color: var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	content: '';
+}
+
+.lk-trouble-step[data-step='solution'],
+.lk-trouble-step[data-step='result'] {
+	border-top-color: var(--tpl-accent);
+}
+
+.lk-trouble-step[data-step='solution']::before,
+.lk-trouble-step[data-step='result']::before {
+	background-color: var(--tpl-accent);
+}
+
+.lk-trouble-step dt {
+	margin-bottom: 6px;
+	color: var(--lk-x-muted, color-mix(in srgb, currentColor 60%, transparent));
+	font-family: var(--lk-x-label, inherit);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+}
+
+.lk-trouble-step[data-step='result'] dt {
+	color: var(--tpl-accent);
+}
+
+.lk-trouble-step dd {
+	color: var(--lk-x-body, currentColor);
+	font-size: 0.92em;
+	line-height: 1.6;
+}
+
+.lk-trouble-step[data-step='result'] dd {
+	color: var(--lk-x-ink, currentColor);
+	font-weight: 600;
+}
+
+.lk-trouble-image {
+	overflow: hidden;
+	border: 1px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	border-radius: calc(var(--lk-x-radius, 14px) - 6px);
+}
+
+.lk-trouble-image .lk-media {
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 팀원: 카드 격자, 나는 강조색 테두리 */
+.lk-team {
+	grid-template-columns: repeat(var(--lk-team-cols, 4), minmax(0, 1fr));
+}
+
+.lk-team[data-count='1'] {
+	--lk-team-cols: 1;
+}
+
+.lk-team[data-count='2'] {
+	--lk-team-cols: 2;
+}
+
+.lk-team[data-count='3'] {
+	--lk-team-cols: 3;
+}
+
+.lk-member {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	padding: var(--lk-x-pad, 24px);
+}
+
+.lk-member[data-me] {
+	border-color: var(--tpl-accent);
+	box-shadow: inset 0 0 0 1px var(--tpl-accent);
+}
+
+.lk-member .lk-avatar {
+	width: 56px;
+	height: 56px;
+	font-size: 20px;
+}
+
+/* 글 칸은 남는 너비를 모두 쓰고, 긴 주소가 칸을 밀어내지 않게 열을 0까지 줄일 수 있게 한다 */
+.lk-member-text {
+	display: grid;
+	flex: 1 1 auto;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: start;
+	gap: 4px;
+	min-width: 0;
+}
+
+.lk-member-me {
+	display: inline-block;
+	margin-left: 8px;
+	padding: 1px 8px;
+	border-radius: 999px;
+	background-color: var(--tpl-accent);
+	color: #fff;
+	/* 밝은 강조색(노랑 등) 위에서는 검은 글씨로 바꾼다 */
+	color: oklch(from var(--tpl-accent) clamp(0, (0.7 - l) * 1000, 1) 0 0);
+	font-size: 12px;
+	font-weight: 600;
+	vertical-align: 2px;
+}
+
+.lk-member-role {
+	color: var(--lk-x-body, currentColor);
+	font-size: 0.9em;
+	line-height: 1.5;
+}
+
+.lk-member-link {
+	display: inline-flex;
+	align-items: center;
+	justify-self: start;
+	gap: 6px;
+	max-width: 100%;
+	margin-top: 4px;
+	color: var(--lk-x-muted, color-mix(in srgb, currentColor 60%, transparent));
+	font-size: 13px;
+}
+
+.lk-member-link span {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 배포 결과물: 링크 카드. 주소가 있으면 카드 전체가 눌린다 */
+.lk-deploys {
+	grid-template-columns: repeat(var(--lk-deploy-cols, 3), minmax(0, 1fr));
+}
+
+.lk-deploys[data-count='1'] {
+	--lk-deploy-cols: 1;
+}
+
+.lk-deploys[data-count='2'] {
+	--lk-deploy-cols: 2;
+}
+
+.lk-deploy {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.lk-deploy-image {
+	border-bottom: 1px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+}
+
+.lk-deploy-image .lk-media {
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	object-position: top;
+}
+
+/* 배포 결과물이 하나뿐이고 그림이 있으면 넓은 한 장이 되지 않게 그림과 글을 옆으로 나란히 둔다 (좁으면 위아래로) */
+.lk-deploy:where(.lk-deploys[data-count='1'] > [data-image]) {
+	flex-direction: row;
+}
+
+.lk-deploy-image:where(.lk-deploys[data-count='1'] .lk-deploy-image) {
+	flex: 0 0 55%;
+	border-right: 1px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	border-bottom: 0;
+}
+
+.lk-deploy-image:where(.lk-deploys[data-count='1'] .lk-deploy-image) .lk-media {
+	height: 100%;
+}
+
+.lk-deploy-body:where(.lk-deploys[data-count='1'] .lk-deploy-body) {
+	justify-content: center;
+}
+
+/* 그림이 없는 카드의 표지: 같은 목록에 그림 있는 카드가 있을 때만 그림 자리에 아이콘과 주소를 크게 그린다 */
+.lk-deploy-cover {
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	aspect-ratio: 16 / 9;
+	border-bottom: 1px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	background:
+		radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--tpl-accent) 22%, transparent), transparent 60%),
+		color-mix(in srgb, var(--tpl-accent) 8%, transparent);
+	color: var(--tpl-accent);
+	font-size: 44px;
+}
+
+.lk-deploy-cover span {
+	max-width: 85%;
+	overflow: hidden;
+	color: var(--lk-x-muted, color-mix(in srgb, currentColor 60%, transparent));
+	font-family: var(--lk-x-label, inherit);
+	font-size: 13px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.lk-deploys:where(:has(> .lk-deploy[data-image])) .lk-deploy-cover {
+	display: flex;
+}
+
+.lk-deploy-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 8px;
+	padding: var(--lk-x-pad, 24px);
+}
+
+.lk-deploy-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.lk-deploy-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 12px;
+	background-color: color-mix(in srgb, var(--tpl-accent) 12%, transparent);
+	color: var(--tpl-accent);
+	font-size: 20px;
+}
+
+.lk-deploy-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--lk-x-muted, color-mix(in srgb, currentColor 60%, transparent));
+	font-family: var(--lk-x-label, inherit);
+	font-size: 12px;
+}
+
+.lk-deploy-status::before {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background-color: var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	content: '';
+}
+
+.lk-deploy[data-live] .lk-deploy-status::before {
+	background-color: #2da44e;
+}
+
+.lk-deploy-link {
+	color: inherit !important;
+	text-decoration: none !important;
+}
+
+.lk-deploy-link::after {
+	position: absolute;
+	inset: 0;
+	content: '';
+}
+
+.lk-deploy[data-live]:hover {
+	border-color: var(--tpl-accent);
+}
+
+.lk-deploy-link:focus-visible {
+	outline: none;
+}
+
+.lk-deploy:has(.lk-deploy-link:focus-visible) {
+	outline: 2px solid var(--tpl-accent);
+	outline-offset: 2px;
+}
+
+.lk-deploy-meta {
+	color: var(--lk-x-muted, color-mix(in srgb, currentColor 60%, transparent));
+	font-family: var(--lk-x-label, inherit);
+	font-size: 13px;
+}
+
+/* 호스트는 낱말 중간에서 끊지 않는다: 자리가 모자라면 통째로 다음 줄로, 그래도 길면 말줄임 */
+.lk-deploy-host {
+	display: inline-block;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-transform: none;
+	white-space: nowrap;
+	vertical-align: bottom;
+}
+
+.lk-deploy-note {
+	color: var(--lk-x-body, currentColor);
+	font-size: 0.92em;
+	line-height: 1.6;
+}
+
+.lk-deploy-go {
+	margin-top: auto;
+	padding-top: 10px;
+	color: var(--tpl-accent);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.lk-deploy-go i {
+	margin-left: 4px;
+	font-size: 0.8em;
+}
+
+/* 그림이 옆에 붙으면 단계 띠를 세로로 세운다 (글 칸이 좁아지므로) */
+.lk-trouble[data-image] .lk-trouble-steps {
+	grid-template-columns: minmax(0, 1fr);
+	grid-auto-flow: row;
+	gap: 14px;
+}
+
+.lk-trouble[data-image] .lk-trouble-step,
+.lk-trouble[data-image] .lk-trouble-step + .lk-trouble-step {
+	padding: 0 0 0 16px;
+	border-top: 0;
+	border-left: 2px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+}
+
+.lk-trouble[data-image] .lk-trouble-step[data-step='solution'],
+.lk-trouble[data-image] .lk-trouble-step[data-step='result'] {
+	border-left-color: var(--tpl-accent);
+}
+
+.lk-trouble[data-image] .lk-trouble-step + .lk-trouble-step::before {
+	display: none;
+}
+
+@container (max-width: 860px) {
+	.lk-team {
+		--lk-team-cols: 2 !important;
+	}
+
+	.lk-deploys {
+		--lk-deploy-cols: 1 !important;
+	}
+
+	.lk-deploy:where(.lk-deploys[data-count='1'] > [data-image]) {
+		flex-direction: column;
+	}
+
+	.lk-deploy-image:where(.lk-deploys[data-count='1'] .lk-deploy-image) {
+		flex: none;
+		border-right: 0;
+		border-bottom: 1px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	}
+
+	/* 한 줄에 하나씩이면 높이를 맞출 옆 카드가 없으므로 표지를 그리지 않는다 */
+	.lk-deploys:where(:has(> .lk-deploy[data-image])) .lk-deploy-cover {
+		display: none;
+	}
+
+	.lk-trouble[data-image] {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@container (max-width: 600px) {
+	.lk-trouble .lk-trouble-steps {
+		grid-template-columns: minmax(0, 1fr);
+		grid-auto-flow: row;
+		gap: 14px;
+	}
+
+	.lk-trouble .lk-trouble-step,
+	.lk-trouble .lk-trouble-step + .lk-trouble-step {
+		padding: 0 0 0 16px;
+		border-top: 0;
+		border-left: 2px solid var(--lk-x-line, color-mix(in srgb, currentColor 14%, transparent));
+	}
+
+	.lk-trouble .lk-trouble-step[data-step='solution'],
+	.lk-trouble .lk-trouble-step[data-step='result'] {
+		border-left-color: var(--tpl-accent);
+	}
+
+	.lk-trouble .lk-trouble-step + .lk-trouble-step::before {
+		display: none;
+	}
+
+	.lk-team {
+		--lk-team-cols: 1 !important;
+	}
+}
+
+/* 팀원 사진: 둥근 사진, 없으면 이름 첫 글자. 나(data-me)는 강조색 바탕 */
+.lk-avatar {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	object-fit: cover;
+	overflow: hidden;
+}
+
+.lk-avatar-initials {
+	background-color: color-mix(in srgb, var(--tpl-accent) 14%, transparent);
+	color: var(--tpl-accent);
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.lk-avatar-initials[data-me] {
+	background-color: var(--tpl-accent);
+	color: #fff;
+	color: oklch(from var(--tpl-accent) clamp(0, (0.7 - l) * 1000, 1) 0 0);
+}

@@ -47,12 +47,13 @@ describe('보안 헤더', () => {
 		expect(csp['object-src']).toEqual(["'none'"]);
 		expect(csp['base-uri']).toEqual(["'self'"]);
 		expect(csp['frame-ancestors']).toEqual(["'self'"]);
-		// API 주소가 없는 빌드에는 바깥 연결 출처가 Turnstile과 날씨 앱의 Open-Meteo뿐이다
+		// API 주소가 없는 빌드에는 바깥 연결 출처가 Turnstile, 날씨 앱의 Open-Meteo, 기술 칸의 npm 검색뿐이다
 		expect(csp['connect-src']).toEqual([
 			"'self'",
 			'https://challenges.cloudflare.com',
 			'https://api.open-meteo.com',
 			'https://geocoding-api.open-meteo.com',
+			'https://registry.npmjs.org',
 		]);
 	});
 
