@@ -1473,3 +1473,74 @@ test('활동 상태 보기 (휴대폰): 홈으로 가는 단추 없이 탭 줄�
 	// 기간은 오른쪽 끝 (카드 묶음의 오른쪽 선)
 	expect(right(await box(activity.locator('.activity-period')))).toBe(right(cards));
 });
+
+test.describe('상태 표시줄·홈 인디케이터는 밑의 화면에 맞춰 늘 보인다', () => {
+	const WHITE = 'rgb(255, 255, 255)';
+	const BLACK = 'rgb(28, 28, 30)';
+	const seed = (page: Page, settings: Record<string, unknown>) =>
+		page.addInitScript((value) => {
+			if (sessionStorage.getItem('seeded')) return;
+			sessionStorage.setItem('seeded', '1');
+			localStorage.setItem('macfolio:settings', JSON.stringify(value));
+		}, settings);
+	const colors = (page: Page) =>
+		page.evaluate(() => {
+			const bar = document.querySelector('.mobile-statusbar')!;
+			const indicator = [...document.querySelectorAll('.home-indicator')]
+				.filter((el) => el.getBoundingClientRect().height > 0)
+				.at(-1);
+			return {
+				clock: getComputedStyle(bar.querySelector('.mobile-statusbar-time')!).color,
+				icons: getComputedStyle(bar.querySelector('.mobile-statusbar-icons')!).color,
+				indicator: indicator ? getComputedStyle(indicator.querySelector('span')!).backgroundColor : null,
+			};
+		});
+
+	test('홈 화면: 밝은 배경화면 위에서는 시계·아이콘이 검은색, 어두운 배경화면 위에서는 흰색 (배경화면 그림을 읽는다)', async ({
+		page,
+	}) => {
+		await seed(page, { theme: 'light', mobileWallpaper: 'ios18' });
+		await enterHome(page);
+		await expect
+			.poll(async () => {
+				const { clock, icons } = await colors(page);
+				return { clock, icons };
+			})
+			.toEqual({ clock: BLACK, icons: BLACK });
+	});
+
+	test('홈 인디케이터는 보이는 막대 밑만 읽는다 (누르는 자리는 화면 폭 전체라 양 끝의 밝은 곳에 끌려가지 않는다)', async ({
+		page,
+	}) => {
+		// 아래 가운데는 남색·청록, 양 끝은 밝은 청록인 배경화면
+		await seed(page, { theme: 'light', mobileWallpaper: 'kaleidoscope' });
+		await enterHome(page);
+		await page.waitForTimeout(1500);
+		expect((await colors(page)).indicator).toBe(WHITE);
+	});
+
+	test('홈 화면: 어두운 배경화면이면 흰색', async ({ page }) => {
+		await seed(page, { theme: 'dark', mobileWallpaper: 'earth' });
+		await enterHome(page);
+		// 그림을 다 읽고 나서도 흰색 그대로
+		await page.waitForTimeout(1500);
+		expect(await colors(page)).toMatchObject({ clock: WHITE, icons: WHITE, indicator: WHITE });
+	});
+
+	test('앱: 라이트 모드라도 어두운 밤하늘(날씨) 위에서는 홈 인디케이터가 흰색, 밝은 메모 목록 위에서는 검은색', async ({
+		page,
+	}) => {
+		await seed(page, { theme: 'light' });
+		await fakeWeather(page, { night: true });
+		await enterHome(page);
+		await (await homeApp(page, '날씨')).tap();
+		await expect(appWindow(page, 'weather').getByLabel(/현재 기온/)).toBeVisible();
+		// 밑을 다시 읽고 색이 바뀌기까지 조금 걸린다 (셋을 한꺼번에 기다린다)
+		await expect.poll(() => colors(page)).toEqual({ clock: WHITE, icons: WHITE, indicator: WHITE });
+
+		await page.locator('.container.mobile[data-app="weather"] .home-indicator').tap();
+		await (await homeApp(page, '메모')).tap();
+		await expect(appWindow(page, 'memo').locator('.memo-item').first()).toBeVisible();
+		await expect.poll(() => colors(page)).toEqual({ clock: BLACK, icons: BLACK, indicator: BLACK });
+	});
+});
