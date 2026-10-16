@@ -16,7 +16,7 @@
 
 `friendly`가 새 프로젝트의 기본 모양이다 (`DEFAULT_LOOK`): 그림이 하나도 없는 처음 상태에서도 첫 화면 창에 프로젝트 내용으로 그린 앱 화면 모형이 들어가 꽉 차 보인다. `product`는 큰 화면이 있어야 빛난다.
 
-이 아홉 말고 `dialogue`(RPG 대화창, `project/DialoguePage.tsx`)는 같은 내용을 선택지와 대사로 읽는 언더테일 같은 대화 화면이고, `custom`은 코드의 일곱 프로젝트를 위해 직접 짠 페이지(`project/custom/`)다. 둘 다 이 계약 밖이다. `dialogue`도 같은 예시(`GENERAL_SAMPLE`)를 쓰고, 자기만의 편집 칸은 없다 (폴더 구조만 읽지 않는다).
+이 아홉 말고 `custom`은 코드의 일곱 프로젝트를 위해 직접 짠 페이지(`project/custom/`)이고, 이 계약 밖이다. 예전의 `dialogue`(RPG 대화창)는 빠졌고, 저장해 둔 값은 `LEGACY_LOOKS`가 `friendly`로 바꿔 읽는다.
 
 ## 내용 모델 (`project/landing/content.ts`)
 
@@ -114,13 +114,13 @@ landing/                템플릿이 함께 쓰는 키트
 
 ## 예시와 시험
 
-- 예시: `apps/settings/lookSamples.ts`의 `GENERAL_SAMPLE` 하나를 모든 템플릿과 RPG 대화창이 함께 쓴다 ('예시로 채우기'). 모든 구역과 항목 칸(아이콘, 다크 짝이 있는 그림, 화면 여러 장, 장의 숫자와 그림, 조작법, 폴더 구조, 출처, 트러블슈팅 세 건(그림이 있는 것과 없는 것), 팀원 네 명(나 한 사람), 배포 결과물 세 곳)을 채운다.
+- 예시: `apps/settings/lookSamples.ts`의 `GENERAL_SAMPLE` 하나를 모든 템플릿이 함께 쓴다 ('예시로 채우기'). 모든 구역과 항목 칸(아이콘, 다크 짝이 있는 그림, 화면 여러 장, 장의 숫자와 그림, 조작법, 폴더 구조, 출처, 트러블슈팅 세 건(그림이 있는 것과 없는 것), 팀원 네 명(나 한 사람), 배포 결과물 세 곳)을 채운다.
 - 단위: `landing/content.test.ts`(빈 구역 빠짐, 차례, 첫 화면 그림, 링크, 칸 보존), `lookSamples.test.ts`, desktop-core의 `projects.test.ts`(예전 이름 옮기기).
-- E2E: `e2e/looks/{product,friendly,paper,bento,keynote,magazine,devtool,repo,playful,dialogue}.spec.ts`.
+- E2E: `e2e/looks/{product,friendly,paper,bento,keynote,magazine,devtool,repo,playful}.spec.ts`.
 
 마무리(`closing`)는 첫 화면의 제목을 되풀이하지 않는다. 써 볼 곳(앱·데모)이 있으면 '지금 바로 써 볼 수 있습니다.', 저장소만 있으면 '코드와 기록을 살펴볼 수 있습니다.'를 제목으로 하고 이름을 덧붙인다.
 
-`keynote`는 무대 콘셉트라 사이트 테마와 상관없이 어두운 바탕을 쓴다. 계약의 '어두운 바탕을 강제하지 않는다'의 예외다. 계약 밖의 `dialogue`도 게임 화면이라 라이트·다크 모두 검은 무대다(`dialogue.spec.ts`가 두 테마의 바탕이 `rgb(0, 0, 0)`인지 본다). 흰 테두리 대화 상자 하나와 그 위의 그림 액자(원래 모습 그대로, 없으면 프로젝트 아이콘), 이름과 읽음 막대 한 줄뿐이고, 풍경이나 픽셀로 바꾼 그림은 그리지 않는다.
+`keynote`는 무대 콘셉트라 사이트 테마와 상관없이 어두운 바탕을 쓴다. 계약의 '어두운 바탕을 강제하지 않는다'의 예외다.
 
 예시 아이콘처럼 강조색이 노랑~연두로 탁해지면, 여러 템플릿이 자기 폴더의 `accent.ts`에서 그 템플릿의 기본 강조색으로 돌린다(제품 파랑, 카드 남보라, 키노트 남보라, 매거진 빨강, 개발자 도구 파랑, 저장소 GitHub 파랑, 놀이 산호).
 

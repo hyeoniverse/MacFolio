@@ -87,7 +87,6 @@ const LOOKS: Record<ProjectLook, { name: string; note: string }> = {
 	devtool: { name: '개발자 도구', note: '코드와 고정폭 글꼴' },
 	repo: { name: '저장소', note: 'GitHub 저장소 화면' },
 	playful: { name: '놀이', note: '또렷한 색과 둥근 도형' },
-	dialogue: { name: 'RPG 대화창', note: '검은 무대의 대화 상자' },
 	custom: { name: '직접 짠 페이지', note: '코드' },
 };
 
@@ -1282,25 +1281,6 @@ const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> 
 			[8, 56, 26, 34, '#a3e4d7', { borderRadius: '14%' }],
 			[37, 56, 26, 34, '#ffb3c7', { borderRadius: '14%' }],
 			[66, 56, 26, 34, '#c7d2fe', { borderRadius: '14%' }],
-		],
-	},
-	// RPG 대화창: 검은 무대 가운데 흰 테두리 그림 액자, 아래는 흰 테두리 대화 상자 (노란 제목, 빨간 하트 커서), 맨 아래 읽음 막대
-	dialogue: {
-		bg: '#000000',
-		parts: [
-			[34, 8, 32, 26, '#d8d8d8', { border: '2px solid #ffffff', outline: '2px solid #000000', outlineOffset: '-4px' }],
-			[8, 42, 84, 38, '#000000', { border: '2.5px solid #ffffff' }],
-			[14, 49, 3, 3.5, '#ffffff'],
-			[20, 49, 26, 3.5, '#ffff00'],
-			[20, 56, 52, 3.5, '#ffffff'],
-			[14, 66, 4, 4, '#ff0000', { borderRadius: '50% 50% 0 50%', transform: 'rotate(45deg)' }],
-			[21, 66, 22, 3.5, '#ffff00'],
-			[52, 66, 22, 3.5, '#ffffff'],
-			[21, 72, 18, 3.5, '#ffffff'],
-			[52, 72, 20, 3.5, '#ffffff'],
-			[8, 86, 22, 4, '#ffffff'],
-			[70, 86, 22, 4, '#3a3a3a'],
-			[70, 86, 10, 4, '#ffff00'],
 		],
 	},
 	custom: {

@@ -44,7 +44,6 @@ describe('모양별 예시 프로젝트', () => {
 			'devtool',
 			'repo',
 			'playful',
-			'dialogue',
 		]);
 		for (const look of [
 			'product',
@@ -56,15 +55,12 @@ describe('모양별 예시 프로젝트', () => {
 			'devtool',
 			'repo',
 			'playful',
-			'dialogue',
 		] as const) {
 			const { look: _look, ...rest } = LOOK_SAMPLES[look];
 			const { look: _general, ...general } = GENERAL_SAMPLE;
 			expect(rest, look).toEqual(general);
 		}
-		for (const look of LOOKS.filter((look) => look !== 'dialogue')) expect(LOOK_FIELDS[look]).toEqual(LANDING_FIELDS);
-		// RPG 대화창은 폴더 구조만 읽지 않고, 자기만의 칸(배경·장면 그림)이 없다
-		expect(LOOK_FIELDS.dialogue).toEqual(LANDING_FIELDS.filter((field) => field !== 'structure'));
+		for (const look of LOOKS) expect(LOOK_FIELDS[look]).toEqual(LANDING_FIELDS);
 		// 공통 예시는 새 프로젝트의 기본 모양
 		expect(GENERAL_SAMPLE.look).toBe(blankProject('x').look);
 	});
@@ -138,7 +134,7 @@ describe('예시로 채우기', () => {
 	it('id·저장소·데모·앱은 그대로 두고 나머지를 지금 모양의 예시로 바꾼다', () => {
 		const project = {
 			...blankProject('side-app'),
-			look: 'dialogue' as const,
+			look: 'keynote' as const,
 			url: 'https://github.com/example/side-app',
 			demo: 'https://example.com',
 			app: { label: '사이드 앱', icon: 'projects/qru/app-icon.png' },
@@ -150,8 +146,8 @@ describe('예시로 채우기', () => {
 			url: 'https://github.com/example/side-app',
 			demo: 'https://example.com',
 			app: { label: '사이드 앱' },
-			name: LOOK_SAMPLES.dialogue.name,
-			look: 'dialogue',
+			name: LOOK_SAMPLES.keynote.name,
+			look: 'keynote',
 		});
 		expect(filledProject).not.toHaveProperty('backdrop');
 		expect(filledProject).not.toHaveProperty('art');
@@ -159,7 +155,7 @@ describe('예시로 채우기', () => {
 		expect(filledProject.galleryFolder).toBeUndefined();
 		// 예시 자체는 고치지 않는다 (고친 칸이 다음 예시에 남지 않게)
 		filledProject.highlights[0].title = '고친 제목';
-		expect(LOOK_SAMPLES.dialogue.highlights[0].title).not.toBe('고친 제목');
+		expect(LOOK_SAMPLES.keynote.highlights[0].title).not.toBe('고친 제목');
 	});
 
 	it('직접 짠 페이지는 공통 예시를 쓰고 모양은 그대로 둔다', () => {

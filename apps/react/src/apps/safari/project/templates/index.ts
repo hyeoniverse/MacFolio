@@ -11,7 +11,7 @@ import DevtoolPage from './devtool/Page';
 import RepoPage from './repo/Page';
 import PlayfulPage from './playful/Page';
 
-export type TemplateLook = Exclude<ProjectLook, 'dialogue' | 'custom'>;
+export type TemplateLook = Exclude<ProjectLook, 'custom'>;
 
 export const TEMPLATE_PAGES: Record<TemplateLook, React.FC<{ project: Project }>> = {
 	product: ProductPage,

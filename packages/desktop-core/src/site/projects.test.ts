@@ -96,7 +96,7 @@ describe('parseProjects', () => {
 		});
 		expect('errors' in parsed && parsed.errors).toEqual([
 			'프로젝트 x.name: 지울 수 없는 필드입니다.',
-			'프로젝트 x.look: product, friendly, paper, bento, keynote, magazine, devtool, repo, playful, dialogue, custom 가운데 하나여야 합니다.',
+			'프로젝트 x.look: product, friendly, paper, bento, keynote, magazine, devtool, repo, playful, custom 가운데 하나여야 합니다.',
 			'프로젝트 x.highlights[0].body: 꼭 있어야 합니다.',
 			'프로젝트 x.app.icon: 이미지 폴더 기준 경로(projects/…/icon.png)나 https:// 주소여야 합니다.',
 			'프로젝트 x.app.barColor: 색(#rrggbb, rgb())이어야 합니다.',
@@ -120,6 +120,7 @@ describe('parseProjects', () => {
 			deck: 'keynote',
 			arcade: 'playful',
 			brutal: 'bento',
+			dialogue: 'friendly',
 		});
 		// 바꾼 값은 모두 지금 있는 모양이고, 예전 이름과 지금 이름이 겹치지 않는다
 		for (const [old, look] of Object.entries(LEGACY_LOOKS)) {
