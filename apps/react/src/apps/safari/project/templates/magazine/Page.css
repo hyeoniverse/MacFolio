@@ -1339,6 +1339,45 @@
 	font-size: 15px;
 }
 
+/* 트러블슈팅은 기사 본문처럼: 아이콘 없이 기울인 번호와 명조 제목, 단계는 굵은 머리말로 시작하는 문단을 두 단으로 흘린다 */
+.mg-trouble-icon {
+	display: none;
+}
+
+.tpl-magazine .mg-trouble .mg-trouble-steps {
+	display: block;
+	column-gap: 40px;
+	column-rule: 1px solid var(--mg-line);
+	columns: 2;
+}
+
+.tpl-magazine .mg-trouble[data-image] .mg-trouble-steps {
+	columns: 1;
+}
+
+.tpl-magazine .mg-trouble .mg-trouble-steps .mg-trouble-step.lk-trouble-step {
+	margin: 0 0 16px;
+	padding: 0;
+	border: 0;
+	break-inside: avoid;
+}
+
+.tpl-magazine .mg-trouble .mg-trouble-steps .mg-trouble-step.lk-trouble-step::before {
+	display: none;
+}
+
+.mg-trouble-step dt {
+	display: inline;
+	margin-right: 8px;
+	color: var(--tpl-accent);
+	font-weight: 700;
+}
+
+.mg-trouble-step dd {
+	display: inline;
+	line-height: 1.75;
+}
+
 .mg-trouble-num {
 	color: var(--tpl-accent);
 	font-family: var(--mg-serif);
@@ -1366,4 +1405,43 @@
 
 .mg-deploy-body {
 	padding-inline: 0;
+}
+
+.mg-deploys[data-count='1'] .mg-deploy[data-image] .mg-deploy-body {
+	padding-left: 32px;
+}
+
+/* 배포 결과물: 대문자 고정폭 이름표가 길면 올린 곳과 호스트를 한 줄씩 나눈다 */
+.mg-deploy-meta {
+	display: grid;
+	gap: 2px;
+}
+
+.mg-deploy-meta > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mg-deploy-sep {
+	display: none;
+}
+
+.mg-deploy-cover {
+	border: 0;
+	background: var(--mg-plate);
+	color: var(--mg-ink);
+	font-size: 36px;
+}
+
+@container (max-width: 860px) {
+	.mg-deploys[data-count='1'] .mg-deploy[data-image] .mg-deploy-body {
+		padding-left: 0;
+	}
+}
+
+@container (max-width: 600px) {
+	.tpl-magazine .mg-trouble .mg-trouble-steps {
+		columns: 1;
+	}
 }

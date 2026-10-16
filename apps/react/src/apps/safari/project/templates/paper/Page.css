@@ -1244,10 +1244,54 @@
 	font-size: 15px;
 }
 
+/* 팀원: 문서 속 사람 목록. 한 줄에 한 사람(사진 · 이름 · 역할 · 주소)이라 인원이 몇이든 칸이 비지 않는다 */
+.pp-team {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0;
+	border-top: 1px solid var(--pp-line);
+}
+
 .pp-member {
 	flex-direction: row;
 	align-items: center;
-	padding: 16px;
+	gap: 14px;
+	padding: 12px 8px;
+	border-width: 0 0 1px;
+	border-radius: 0;
+}
+
+.pp-member:hover {
+	background-color: var(--pp-hover);
+}
+
+.pp-member[data-me] {
+	border-color: var(--pp-line);
+	box-shadow: inset 3px 0 0 var(--tpl-accent);
+}
+
+.pp-member .lk-avatar {
+	width: 36px;
+	height: 36px;
+	font-size: 15px;
+}
+
+.pp-member-text {
+	grid-template-columns: minmax(0, 11em) minmax(0, 1fr) minmax(0, max-content);
+	align-items: center;
+	column-gap: 20px;
+}
+
+.pp-member-text h3 {
+	font-size: 15px;
+}
+
+.pp-member-role {
+	font-size: 14px;
+}
+
+.pp-member-link {
+	margin-top: 0;
+	justify-self: end;
 }
 
 .pp-deploys {
@@ -1299,6 +1343,14 @@
 }
 
 @container (max-width: 600px) {
+	.pp-member-text {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.pp-member-link {
+		justify-self: start;
+	}
+
 	.pp-deploy {
 		flex-direction: column;
 	}
@@ -1307,4 +1359,9 @@
 		border-bottom: 1px solid var(--pp-line);
 		border-left: 0;
 	}
+}
+
+/* 북마크 블록은 한 줄에 하나라 그림 없는 카드에 표지를 그리지 않는다 */
+.pp-deploys .pp-deploy-cover {
+	display: none;
 }
