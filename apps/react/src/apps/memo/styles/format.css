@@ -1,0 +1,428 @@
+/* 메모 앱: 서식 도구와 메뉴, 표 편집 메뉴, 이미지 넣기 창 */
+
+/* 본문 서식 도구 (도구 막대) */
+.memo-format-tools {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	padding: 0 2px;
+	border-radius: 9px;
+	background-color: var(--memo-search-bg);
+}
+
+.memo-format-tools:empty {
+	display: none;
+}
+
+.memo-format-button {
+	width: auto;
+	flex-shrink: 0;
+	padding: 0 8px;
+	white-space: nowrap;
+	font-size: var(--text-footnote);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+}
+
+/* 좁으면 빠른 단추는 숨기고 가가 메뉴에 모은다 */
+@container (max-width: 560px) {
+	.memo-format-quick {
+		display: none;
+	}
+}
+
+/* 가가 메뉴 (body에 그린다) */
+.memo-format-panel {
+	position: fixed;
+	z-index: var(--z-menu);
+	width: 232px;
+	padding: 8px;
+	border-radius: var(--radius-xl);
+	background-color: var(--color-popover-bg);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.15),
+		0 12px 32px rgba(0, 0, 0, 0.22);
+	color: var(--color-popover-text);
+	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top center;
+}
+
+/* 창 안 단추의 기본값. reset 층이라 공통 단추(components 층)가 이긴다 (styles/layers.css) */
+@layer reset {
+	.memo-format-panel button {
+		border: none;
+		background: none;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+	}
+}
+
+/* 창은 body에 그려서 메모 앱의 색 변수가 닿지 않는다. 글자 단추의 색을 여기서 다시 정한다 */
+.memo-format-panel {
+	--ui-button-radius: 999px;
+	--ui-accent: #edbb4d;
+	--ui-on-accent: #2b2100;
+}
+
+.memo-format-marks {
+	display: flex;
+	gap: 2px;
+	margin-bottom: 6px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid var(--color-divider);
+}
+
+.memo-format-marks button {
+	flex: 1;
+	height: 30px;
+	border-radius: 7px;
+	font-size: var(--text-subhead);
+}
+
+.memo-format-marks button:hover,
+.memo-format-styles button:hover {
+	background-color: color-mix(in srgb, var(--color-popover-text) 8%, transparent);
+}
+
+.memo-format-marks button.on {
+	background-color: color-mix(in srgb, #edbb4d 35%, transparent);
+}
+
+.memo-format-marks .mark-strong {
+	font-weight: 800;
+}
+
+.memo-format-marks .mark-emphasis {
+	font-family: Georgia, serif;
+	font-style: italic;
+}
+
+.memo-format-marks .mark-strike {
+	text-decoration: line-through;
+}
+
+.memo-format-marks .mark-code {
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: var(--text-caption);
+}
+
+.memo-format-styles {
+	list-style: none;
+}
+
+.memo-format-styles button {
+	position: relative;
+	width: 100%;
+	padding: 5px 10px 5px 28px;
+	border-radius: 7px;
+	font-size: var(--text-footnote);
+	text-align: left;
+}
+
+/* 지금 커서 자리의 서식에 체크 */
+.memo-format-styles button[aria-checked='true']::before {
+	position: absolute;
+	left: 10px;
+	font-size: var(--text-caption);
+	content: '✓' / '';
+}
+
+/* 이름을 그 서식의 모양으로 */
+.memo-format-styles .style-title {
+	font-size: var(--text-title3);
+	font-weight: 800;
+}
+
+.memo-format-styles .style-heading {
+	font-size: var(--text-callout);
+	font-weight: 700;
+}
+
+.memo-format-styles .style-subheading {
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.memo-format-styles .style-mono {
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: var(--text-caption);
+}
+
+.memo-format-quote {
+	padding-left: 8px;
+	border-left: 2px solid currentColor;
+}
+
+.memo-format-separator {
+	margin: 5px 6px;
+	border-top: 1px solid var(--color-divider);
+}
+
+.memo-format-uploading {
+	margin-left: 4px;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	white-space: nowrap;
+}
+
+/* 표 편집 메뉴 */
+.memo-format-icon {
+	position: absolute;
+	left: 9px;
+	top: 50%;
+	width: 12px;
+	font-size: var(--text-caption2);
+	text-align: center;
+	translate: 0 -50%;
+	opacity: 0.7;
+}
+
+.memo-format-styles button:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.memo-format-styles button:disabled:hover {
+	background: none;
+}
+
+.memo-format-styles button.danger {
+	color: #e5484d;
+}
+
+/* 이미지 넣기 창 (넓게) */
+.memo-format-panel.memo-format-panel-wide {
+	width: 340px;
+}
+
+.memo-image-tabs {
+	display: flex;
+	gap: 2px;
+	margin-bottom: 8px;
+	padding: 2px;
+	border-radius: var(--radius-md);
+	background-color: color-mix(in srgb, var(--color-popover-text) 7%, transparent);
+}
+
+.memo-format-panel .memo-image-tabs button {
+	flex: 1;
+	padding: 4px 0;
+	border-radius: var(--radius-sm);
+	font-size: var(--text-caption);
+}
+
+.memo-format-panel .memo-image-tabs button.on {
+	background-color: var(--color-popover-bg);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+	font-weight: 600;
+}
+
+/* 내 파일: 누르면 파일 고르기 (입력칸은 숨긴다) */
+.memo-image-drop {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 22px 12px;
+	border: 1.5px dashed var(--color-divider);
+	border-radius: var(--radius-lg);
+	cursor: pointer;
+	text-align: center;
+}
+
+.memo-image-drop:hover,
+.memo-image-drop:focus-within {
+	border-color: #edbb4d;
+	background-color: color-mix(in srgb, #edbb4d 10%, transparent);
+}
+
+.memo-image-drop i {
+	color: #c78b00;
+	font-size: var(--text-title2);
+}
+
+.memo-image-drop strong {
+	font-size: var(--text-footnote);
+}
+
+.memo-image-drop span {
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption2);
+}
+
+.memo-image-drop input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+}
+
+.memo-image-details,
+.memo-image-url,
+.memo-stock {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.memo-image-preview {
+	width: 100%;
+	max-height: 150px;
+	border-radius: var(--radius-md);
+	background-color: color-mix(in srgb, var(--color-popover-text) 6%, transparent);
+	object-fit: contain;
+}
+
+.memo-image-details label {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.memo-image-details label span {
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption2);
+	font-weight: 600;
+}
+
+.memo-format-panel input:not([type='file']) {
+	width: 100%;
+	padding: 6px 9px;
+	border: 1px solid var(--color-divider);
+	border-radius: var(--radius-md);
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: var(--text-footnote);
+	outline: none;
+}
+
+.memo-format-panel input:not([type='file']):focus {
+	border-color: #edbb4d;
+}
+
+/* 입력칸 아래 안내 */
+.memo-field-hint {
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption2);
+	line-height: 1.4;
+}
+
+.memo-image-credit {
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption2);
+}
+
+.memo-image-credit a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.memo-image-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 6px;
+}
+
+.memo-format-panel .memo-image-submit {
+	font-size: var(--text-footnote);
+	font-weight: 600;
+}
+
+.memo-format-panel .memo-stock-search button {
+	padding: 5px 14px;
+	border-radius: var(--radius-full);
+	background-color: #edbb4d;
+	color: #2b2100;
+	font-size: var(--text-footnote);
+	font-weight: 600;
+}
+
+.memo-format-panel .memo-image-back,
+.memo-format-panel .memo-stock-more {
+	padding: 5px 12px;
+	border-radius: var(--radius-full);
+	font-size: var(--text-footnote);
+}
+
+.memo-format-panel .memo-image-back:hover,
+.memo-format-panel .memo-stock-more:hover {
+	background-color: color-mix(in srgb, var(--color-popover-text) 8%, transparent);
+}
+
+.memo-format-panel button:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.memo-image-note {
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption);
+	line-height: 1.5;
+}
+
+.memo-image-note.problem {
+	color: #e5484d;
+}
+
+.memo-image-note code {
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: var(--text-caption2);
+}
+
+.memo-stock-search {
+	display: flex;
+	gap: 6px;
+}
+
+.memo-format-panel .memo-stock-search input {
+	flex: 1;
+	min-width: 0;
+}
+
+.memo-format-panel .memo-stock-search button {
+	flex: none;
+	white-space: nowrap;
+}
+
+.memo-stock-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 4px;
+	max-height: 260px;
+	overflow-y: auto;
+}
+
+.memo-format-panel .memo-stock-grid button {
+	background-color: var(--color, transparent);
+	aspect-ratio: 1;
+	padding: 0;
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+}
+
+.memo-stock-grid img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.memo-stock-grid button:hover img,
+.memo-stock-grid button:focus-visible img {
+	transform: scale(1.06);
+}
+
+/* 캡션 안의 링크 (사진 출처) */
+.memo-caption a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+/* 코드 블록: 오른쪽 위에 복사 단추 (.memo-overlay-button) */
+.memo-code {
+	position: relative;
+}

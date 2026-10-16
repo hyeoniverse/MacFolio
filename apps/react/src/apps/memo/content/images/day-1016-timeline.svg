@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 377" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 16일 작업 흐름</title>
+<rect width="760" height="377" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 16일</text>
+<text x="140" y="42" font-size="12.5" fill="#6b7280">커밋한 시각 기준</text>
+<rect x="420" y="31" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="438" y="41" font-size="11" fill="#8b93a1">main 커밋</text>
+<rect x="510" y="31" width="12" height="12" rx="2" fill="#fcd9a8"/><text x="528" y="41" font-size="11" fill="#8b93a1">#187 커밋</text>
+<rect x="590" y="31" width="12" height="12" rx="2" fill="#bbf7d0"/><text x="608" y="41" font-size="11" fill="#8b93a1">아직 열린 PR 커밋</text>
+<path d="M48.0 64 V335" stroke="#eef0f3"/>
+<text x="48.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 64 V335" stroke="#eef0f3"/>
+<text x="133.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 64 V335" stroke="#eef0f3"/>
+<text x="218.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 64 V335" stroke="#eef0f3"/>
+<text x="303.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 64 V335" stroke="#eef0f3"/>
+<text x="388.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 64 V335" stroke="#eef0f3"/>
+<text x="473.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 64 V335" stroke="#eef0f3"/>
+<text x="558.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 64 V335" stroke="#eef0f3"/>
+<text x="643.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 64 V335" stroke="#eef0f3"/>
+<text x="728.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<rect x="248.0" y="320.2" width="24.9" height="10.8" rx="3" fill="#c7d2fe"/>
+<text x="260.5" y="316.2" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="418.0" y="298.5" width="24.9" height="32.5" rx="3" fill="#c7d2fe"/>
+<text x="430.5" y="294.5" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="446.4" y="211.7" width="24.9" height="119.3" rx="3" fill="#c7d2fe"/>
+<rect x="446.4" y="190.0" width="24.9" height="21.7" rx="3" fill="#bbf7d0"/>
+<text x="458.8" y="186.0" font-size="9.5" fill="#6366f1" text-anchor="middle">13</text>
+<rect x="474.7" y="309.3" width="24.9" height="21.7" rx="3" fill="#fcd9a8"/>
+<rect x="474.7" y="287.6" width="24.9" height="21.7" rx="3" fill="#bbf7d0"/>
+<text x="487.2" y="283.6" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="503.0" y="320.2" width="24.9" height="10.8" rx="3" fill="#c7d2fe"/>
+<rect x="503.0" y="309.3" width="24.9" height="10.8" rx="3" fill="#fcd9a8"/>
+<text x="515.5" y="305.3" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="673.0" y="320.2" width="24.9" height="10.8" rx="3" fill="#fcd9a8"/>
+<text x="685.5" y="316.2" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="701.4" y="320.2" width="24.9" height="10.8" rx="3" fill="#fcd9a8"/>
+<text x="713.8" y="316.2" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="48" y="72" width="300" height="71" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="57" y="90" font-size="12" font-weight="700" fill="#1d4f91">main: 휴대폰 화면 손보기</text>
+<text x="57" y="107" font-size="10.5" fill="#1d4f91">#226 날씨 · #227 구분선 · #228 상태 표시줄</text>
+<text x="57" y="122" font-size="10.5" fill="#1d4f91">#229 활동 상태 · #230 키보드 막대</text>
+<text x="57" y="137" font-size="10.5" fill="#1d4f91">#222·#223 머지 · z-index 층 이름</text>
+<rect x="48" y="160" width="300" height="41" rx="9" fill="#fde8ec" stroke="#ec7a92"/>
+<text x="57" y="178" font-size="12" font-weight="700" fill="#8c2338">CI: ECR Public 한도</text>
+<text x="57" y="195" font-size="10.5" fill="#8c2338">#223·#229와 #225 뒤 main이 이미지 받기에서 멈춤</text>
+<rect x="360" y="72" width="368" height="71" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="369" y="90" font-size="12" font-weight="700" fill="#7a5a12">#187: 새 구역 다듬기, RPG 네 번</text>
+<text x="369" y="107" font-size="10.5" fill="#7a5a12">15:39 데이터로 그린 고전 RPG 화면</text>
+<text x="369" y="122" font-size="10.5" fill="#7a5a12">16:47 480×270 고정 해상도</text>
+<text x="369" y="137" font-size="10.5" fill="#7a5a12">22:56 밝은 낮·밤 장면 → 23:43 16×16 타일</text>
+</svg>
