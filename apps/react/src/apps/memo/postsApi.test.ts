@@ -79,7 +79,7 @@ describe('postsApi', () => {
 		}) as unknown as typeof fetch;
 		await expect(saveDraft('http://api', 'a', DRAFT, offline)).resolves.toEqual({
 			ok: false,
-			errors: ['서버에 연결할 수 없습니다.'],
+			errors: ['서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.'],
 		});
 	});
 

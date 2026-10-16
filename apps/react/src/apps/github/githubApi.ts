@@ -1,11 +1,12 @@
 // GitHub 앱의 값 (apps/api의 /github). 누구나 프로필을 받고, 관리자만 보일 저장소를 고른다.
 import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
+import { api, apiFetch } from '@/shared/api/client';
 import { createStore } from '@macfolio/desktop-core';
 import { GITHUB_SNAPSHOT, type GithubData, type RepoCard } from '@/apps/github/githubProfile';
 
-/** 보일 저장소는 GitHub의 Pinned처럼 6개까지 (서버와 같다) */
-export const MAX_SHOWCASE = 6;
+/** 보일 저장소는 GitHub의 Pinned처럼 6개까지, "owner/이름" 규칙 (서버와 같은 @macfolio/contracts) */
+export { isFullName, MAX_SHOWCASE } from '@macfolio/contracts';
 
 interface State {
 	/** snapshot: 서버 값을 아직 받지 못해 스냅샷을 보여 준다, live: 서버 값 */
@@ -61,7 +62,7 @@ export function loadGithub(apiUrl = env.apiUrl, fetchImpl: typeof fetch = fetch)
 	if (!apiUrl) return Promise.resolve();
 	pending ??= (async () => {
 		try {
-			const response = await fetchImpl(`${apiUrl}/github/profile`);
+			const response = await apiFetch('/github/profile', { apiUrl, fetchImpl });
 			if (!response.ok) return;
 			const data = toGithubData(await response.json());
 			if (data) githubStore.setState({ source: 'live', data });
@@ -74,26 +75,9 @@ export function loadGithub(apiUrl = env.apiUrl, fetchImpl: typeof fetch = fetch)
 	return pending;
 }
 
-/** 관리자 요청. 실패하면 이유를 담은 Error */
-async function adminRequest<T>(path: string, init: RequestInit = {}, apiUrl = env.apiUrl): Promise<T> {
-	let response: Response;
-	try {
-		response = await fetch(`${apiUrl}${path}`, { credentials: 'include', ...init });
-	} catch {
-		throw new Error('서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.');
-	}
-	if (response.status === 401) throw new Error('관리자 로그인이 필요합니다.');
-	if (!response.ok) {
-		const body = (await response.json().catch(() => null)) as { message?: string | string[] } | null;
-		const message = Array.isArray(body?.message) ? body.message.join(' ') : body?.message;
-		throw new Error(message || '요청을 처리하지 못했습니다.');
-	}
-	return (await response.json()) as T;
-}
-
 /** 고를 수 있는 저장소 (고른 것 가운데 목록에 없는 것 → 내 저장소 → 조직 저장소) */
 export async function loadCandidates(): Promise<{ selected: string[]; repos: RepoCard[] }> {
-	const body = await adminRequest<{ selected: string[]; repos: RepoCard[] }>('/github/candidates');
+	const body = await api<{ selected: string[]; repos: RepoCard[] }>('/github/candidates');
 	return {
 		selected: body.selected,
 		repos: body.repos.map(toRepoCard).filter((repo): repo is RepoCard => repo !== null),
@@ -104,7 +88,7 @@ export async function loadCandidates(): Promise<{ selected: string[]; repos: Rep
 export async function lookupRepo(fullName: string): Promise<RepoCard> {
 	const [owner, name] = fullName.split('/');
 	const card = toRepoCard(
-		await adminRequest<RepoCard>(`/github/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`)
+		await api<RepoCard>(`/github/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`)
 	);
 	if (!card) throw new Error('저장소를 찾을 수 없습니다.');
 	return card;
@@ -112,15 +96,7 @@ export async function lookupRepo(fullName: string): Promise<RepoCard> {
 
 /** 보일 저장소를 저장하고, GitHub 앱의 값을 새로 받는다 */
 export async function saveShowcase(repos: string[]): Promise<string[]> {
-	const body = await adminRequest<{ repos: string[] }>('/github/showcase', {
-		method: 'PUT',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ repos }),
-	});
+	const body = await api<{ repos: string[] }>('/github/showcase', { method: 'PUT', json: { repos } });
 	await loadGithub();
 	return body.repos;
 }
-
-/** "owner/이름" 모양인지 (서버와 같은 규칙) */
-export const isFullName = (value: string) =>
-	/^[A-Za-z0-9][A-Za-z0-9-]{0,38}\/[A-Za-z0-9._-]{1,100}$/.test(value) && !/\/\.{1,2}$/.test(value);

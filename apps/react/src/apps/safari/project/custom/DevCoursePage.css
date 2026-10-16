@@ -96,7 +96,7 @@
 .tm-pairs dd {
 	color: var(--tm-text);
 	font-family: var(--tm-sans);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 주차별 기록 */
@@ -119,7 +119,7 @@
 .tm-weeks li > span:last-child {
 	color: var(--tm-out);
 	font-family: var(--tm-sans);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .tm-ls,
@@ -146,7 +146,7 @@
 	margin-top: 4px;
 	color: var(--tm-out);
 	font-family: var(--tm-sans);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.65;
 }
 
@@ -180,7 +180,7 @@
 .tm-list li {
 	color: var(--tm-out);
 	font-family: var(--tm-sans);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.9;
 }
 
@@ -216,7 +216,7 @@
 }
 
 .tm-links .sp-pill {
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: #238636;
 }
 
@@ -342,11 +342,11 @@
 	overflow: auto;
 	padding: 10px 14px;
 	border: 1px solid var(--tm-line);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: #010409;
 	color: var(--tm-out);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	line-height: 1.65;
 	white-space: pre-wrap;
 	word-break: break-word;
@@ -413,10 +413,10 @@
 .tm-chips button {
 	padding: 4px 12px;
 	border: 1px solid var(--tm-line);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: #161b22;
 	color: var(--tm-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	transition:
 		border-color var(--duration-fast) var(--ease-out),
 		color var(--duration-fast) var(--ease-out);
@@ -441,7 +441,7 @@
 @container (max-width: 600px) {
 	.tm {
 		padding: 16px 14px 32px;
-		font-size: 13px;
+		font-size: var(--text-footnote);
 	}
 
 	.tm-help li {

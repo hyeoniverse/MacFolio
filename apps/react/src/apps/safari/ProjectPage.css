@@ -110,7 +110,7 @@
 	justify-content: center;
 	gap: 16px 28px;
 	margin-top: 26px;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .sp-pill {
@@ -136,7 +136,7 @@
 
 .sp-link i {
 	margin-left: 2px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .sp-link:hover {
@@ -165,7 +165,7 @@
 
 .sp-meta {
 	color: var(--sp-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .sp-facts {
@@ -230,7 +230,7 @@
 }
 
 .sp:where(:not([data-template])) h3 {
-	font-size: 22px;
+	font-size: var(--text-title2);
 	font-weight: 700;
 	letter-spacing: -0.01em;
 }
@@ -238,7 +238,7 @@
 .sp:where(:not([data-template])) li > p {
 	margin-top: 10px;
 	color: var(--sp-muted);
-	font-size: 17px;
+	font-size: var(--text-body);
 	line-height: 1.5;
 }
 
@@ -317,7 +317,7 @@
 
 .sp-timeline span {
 	color: var(--sp-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.45;
 }
 
@@ -351,7 +351,7 @@
 	flex: none;
 	margin-top: 5px;
 	color: var(--sp-accent);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .sp-checks.next i {
@@ -373,7 +373,7 @@
 	gap: 16px;
 	padding: 20px 0;
 	border-bottom: 1px solid var(--sp-line);
-	font-size: 17px;
+	font-size: var(--text-body);
 	line-height: 1.45;
 }
 
@@ -437,7 +437,7 @@
 	}
 
 	.sp-checks {
-		font-size: 17px;
+		font-size: var(--text-body);
 	}
 
 	.sp-specs div {

@@ -3,9 +3,10 @@ import { DEFAULT_ARRANGEMENT } from './arrange.js';
 import { filterFor, folderPaths, listPosts, postsInView, selectPost } from './noteView.js';
 import { ALL_CATEGORY, POPULAR_VIEW, TAG_VIEW, type FolderNode, type Post } from './posts.js';
 import { EMPTY_TAG_SELECTION } from './tagFilter.js';
+import { type PostSlug, type FolderPath } from './rules.js';
 
 const post = (slug: string, date: string, extra: Partial<Post> = {}): Post => ({
-	slug,
+	slug: slug as PostSlug,
 	title: slug,
 	date,
 	category: '개발기',
@@ -21,8 +22,13 @@ const c = post('c', '2026-10-02', { pinned: true });
 describe('folderPaths', () => {
 	it('하위 폴더까지 모든 경로', () => {
 		const tree: FolderNode[] = [
-			{ name: '개발기', path: '개발기', count: 0, children: [{ name: 'A', path: '개발기/A', count: 0, children: [] }] },
-			{ name: '일기', path: '일기', count: 0, children: [] },
+			{
+				name: '개발기',
+				path: '개발기' as FolderPath,
+				count: 0,
+				children: [{ name: 'A', path: '개발기/A' as FolderPath, count: 0, children: [] }],
+			},
+			{ name: '일기', path: '일기' as FolderPath, count: 0, children: [] },
 		];
 		expect(folderPaths(tree)).toEqual(['개발기', '개발기/A', '일기']);
 	});

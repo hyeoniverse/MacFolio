@@ -13,7 +13,7 @@
 	right: 0;
 	left: 0;
 	/* 제어 센터(2000)보다 위 */
-	z-index: 2100;
+	z-index: var(--z-phone-statusbar);
 	height: var(--mobile-statusbar-height);
 	padding: env(safe-area-inset-top) 26px 0 34px;
 	color: #fff;
@@ -25,9 +25,24 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
-/* 글자 색은 밑의 화면을 읽어 정한다 (statusBarTone.ts): 밝은 화면 위에는 검은 글자 */
-.mobile-statusbar.dark {
+/* 색은 밑의 화면(앱, 홈 화면의 배경화면)을 읽어 정한다 (statusBarTone.ts): 밝은 화면 위에는 검은색.
+   시계 쪽과 아이콘 쪽을 따로 읽는다 (배경화면은 왼쪽과 오른쪽 밝기가 크게 다를 수 있다) */
+/* 막대 글자색은 시계 쪽을 따르고, 아이콘 쪽만 다르면 아이콘에서 바꾼다 */
+.mobile-statusbar.clock-dark {
 	color: #1c1c1e;
+}
+
+.mobile-statusbar.icons-dark .mobile-statusbar-icons {
+	color: #1c1c1e;
+}
+
+.mobile-statusbar.icons-light .mobile-statusbar-icons {
+	color: #ffffff;
+}
+
+.mobile-statusbar-time,
+.mobile-statusbar-icons {
+	transition: color var(--duration) var(--ease-out);
 }
 
 /* 앱 위: 바탕은 투명하게 두고, 밑으로 지나가는 내용만 아주 약하게 흐려 글자가 읽히게 한다 */
@@ -38,6 +53,7 @@
 /* 화면만 보기 (사진만 보기): 흐려지며 사라진다 */
 .mobile-statusbar {
 	transition:
+		color var(--duration) var(--ease-out),
 		opacity var(--duration) var(--ease-out),
 		visibility var(--duration);
 }
@@ -48,7 +64,7 @@
 }
 
 .mobile-statusbar-time {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 }
@@ -68,7 +84,7 @@
 	margin-left: 2px;
 	padding: 1.5px;
 	border: 1px solid currentColor;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	opacity: 0.95;
 }
 
@@ -143,7 +159,7 @@
 	display: flex;
 	align-items: center;
 	gap: 5px;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 	opacity: 0.75;
 }
@@ -157,11 +173,11 @@
 
 .music-widget-title {
 	margin-top: 2px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .music-widget-album {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	opacity: 0.75;
 }
 
@@ -219,7 +235,7 @@
 .control-center {
 	position: fixed;
 	inset: 0;
-	z-index: 2000;
+	z-index: var(--z-control-center);
 	padding: calc(var(--mobile-statusbar-height) + 16px) 22px 24px;
 	overflow-y: auto;
 	background-color: rgba(0, 0, 0, calc(0.5 * var(--cc-progress)));
@@ -298,7 +314,7 @@
 .cc-music .music-widget-art {
 	width: calc(var(--cc-cell) * 0.6);
 	height: calc(var(--cc-cell) * 0.6);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	box-shadow: none;
 }
 
@@ -311,7 +327,7 @@
 }
 
 .cc-music .music-widget-album {
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .cc-music .music-widget-seek {
@@ -325,7 +341,7 @@
 .cc-music .music-widget-controls button {
 	width: 32px;
 	height: 28px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* 1칸짜리 버튼: 원 */
@@ -383,7 +399,7 @@
 	height: calc(var(--cc-cell) * 0.56);
 	border-radius: 50%;
 	background-color: #0a84ff;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .cc-wide span {
@@ -393,12 +409,12 @@
 }
 
 .cc-wide strong {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .cc-wide small {
 	overflow: hidden;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	opacity: 0.7;
@@ -467,20 +483,20 @@
 .switcher-label img {
 	width: 60px;
 	height: 60px;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 }
 
 /* 전환기 배경: 홈 화면을 흐리게 */
 .app-switcher {
 	position: fixed;
 	inset: 0;
-	z-index: 1400;
+	z-index: var(--z-app-switcher);
 	display: grid;
 	place-items: center;
 	background-color: rgba(0, 0, 0, 0.35);
 	backdrop-filter: blur(24px);
 	color: rgba(255, 255, 255, 0.85);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	animation: fade-in var(--duration) var(--ease-out);
 }
 
@@ -494,6 +510,5 @@
 }
 
 .home-indicator.home-gesture span {
-	background-color: #fff;
-	opacity: 0.6;
+	opacity: 0.75;
 }

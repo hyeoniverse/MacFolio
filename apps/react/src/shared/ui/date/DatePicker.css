@@ -1,7 +1,7 @@
 /* 날짜 고르기 달력 (메모 글 날짜, 프로젝트 기간이 함께 쓴다). body에 그려서 앱 변수 대신 값을 직접 쓴다 */
 .ui-calendar {
 	position: fixed;
-	z-index: 10000;
+	z-index: var(--z-menu);
 	width: 248px;
 	padding: 10px;
 	border-radius: 12px;
@@ -11,7 +11,7 @@
 		0 10px 30px rgba(0, 0, 0, 0.2);
 	color: var(--color-popover-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	animation: pop-in var(--duration-fast) var(--ease-out);
 	transform-origin: top left;
 }
@@ -33,7 +33,7 @@
 	margin-right: auto;
 	padding: 0 6px;
 	color: var(--color-popover-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 700;
 	text-align: left;
 }
@@ -62,7 +62,7 @@
 .ui-calendar-head button {
 	width: 26px;
 	height: 26px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	color: var(--color-text-secondary);
 }
 
@@ -81,7 +81,7 @@
 .ui-calendar-weekday {
 	padding: 4px 0;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .ui-calendar-grid button {
@@ -99,7 +99,7 @@
 
 .ui-calendar-picks button {
 	height: 40px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -139,6 +139,6 @@
 	width: 100%;
 	margin-top: 6px;
 	padding: 5px 0;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	font-weight: 600;
 }

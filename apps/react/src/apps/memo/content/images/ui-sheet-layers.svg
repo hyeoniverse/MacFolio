@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="320" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">Sheet가 맡는 것과 쓰는 쪽이 정하는 것</text>
+  <!-- three phones -->
+  <g>
+    <rect x="30" y="48" width="150" height="200" rx="18" fill="#6b7280"/>
+    <rect x="30" y="74" width="150" height="174" rx="18" fill="#eef2ff" stroke="#a5b4fc"/>
+    <rect x="88" y="80" width="34" height="4" rx="2" fill="#a5b4fc"/>
+    <text x="105" y="160" text-anchor="middle" font-size="13" font-weight="600" fill="#4f46e5">page</text>
+    <text x="105" y="178" text-anchor="middle" font-size="10.5" fill="#374151">메일 쓰기·답장</text>
+    <text x="105" y="266" text-anchor="middle" font-size="10.5" fill="#6b7280">오버레이 + 손잡이 막대</text>
+  </g>
+  <g>
+    <rect x="245" y="48" width="150" height="200" rx="18" fill="#6b7280"/>
+    <rect x="253" y="160" width="134" height="80" rx="16" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="320" y="196" text-anchor="middle" font-size="13" font-weight="600" fill="#4f46e5">card</text>
+    <text x="320" y="214" text-anchor="middle" font-size="10.5" fill="#374151">메일 동작</text>
+    <text x="320" y="266" text-anchor="middle" font-size="10.5" fill="#6b7280">오버레이 + 떠 있는 카드</text>
+  </g>
+  <g>
+    <rect x="460" y="48" width="150" height="200" rx="18" fill="#1f2937"/>
+    <text x="535" y="152" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">cover</text>
+    <text x="535" y="170" text-anchor="middle" font-size="10.5" fill="#f3f4f6">음악 지금 재생 중</text>
+    <text x="535" y="266" text-anchor="middle" font-size="10.5" fill="#6b7280">오버레이 없이 전체를 덮음</text>
+  </g>
+  <rect x="30" y="282" width="285" height="28" rx="6" fill="#eef2ff"/>
+  <text x="172" y="300" text-anchor="middle" font-size="10.5" fill="#4f46e5">Sheet: 오버레이 · 오르내리는 움직임 · 닫기 · role</text>
+  <rect x="325" y="282" width="285" height="28" rx="6" fill="#f3f4f6"/>
+  <text x="467" y="300" text-anchor="middle" font-size="10.5" fill="#374151">쓰는 쪽: 콘텐츠 · 안쪽 여백 · --ui-sheet-bg 등</text>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>shared/profile.ts 1,629줄을 폴더로: profile·skills·types와 프로젝트마다 한 파일. 바깥 import 경로는 그대로</title>
+<defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="640" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937">한 파일 1,629줄을 폴더로, 경로는 그대로</text>
+<!-- before -->
+<text x="32" y="66" font-size="12" font-weight="600" fill="#ef4444">전</text>
+<rect x="56" y="50" width="180" height="230" rx="10" fill="#fff1f2" stroke="#fda4af"/>
+<text x="146" y="72" font-size="12" font-weight="600" fill="#1f2937" text-anchor="middle">shared/profile.ts</text>
+<g font-size="10.5" fill="#374151">
+<text x="72" y="94">PROFILE (9줄)</text>
+<text x="72" y="110">SKILLS · SITE_STACK (16줄)</text>
+<text x="72" y="126">interface ×7 (172줄)</text>
+<text x="72" y="142">projectImage</text>
+<text x="72" y="162" font-weight="600">PROJECTS = [</text>
+<text x="88" y="178">hyeoniverse (665줄)</text>
+<text x="88" y="192">macfolio · newpick · qru</text>
+<text x="88" y="206">whattodo · sproutfarm</text>
+<text x="88" y="220">devcourse</text>
+<text x="72" y="236" font-weight="600">] (1,420줄)</text>
+</g>
+<text x="146" y="266" font-size="10" fill="#6b7280" text-anchor="middle">프로젝트 하나 고치려고 1,629줄을 연다</text>
+<path d="M236 160 H280" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<!-- after -->
+<text x="288" y="66" font-size="12" font-weight="600" fill="#4f46e5">후</text>
+<rect x="312" y="50" width="296" height="230" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="460" y="72" font-size="12" font-weight="600" fill="#4f46e5" text-anchor="middle">shared/profile/</text>
+<g font-size="10.5" fill="#374151">
+<text x="328" y="94">index.ts</text><text x="592" y="94" text-anchor="end" fill="#6b7280">다시 내보내기 (경로 유지)</text>
+<text x="328" y="110">profile.ts</text><text x="592" y="110" text-anchor="end" fill="#6b7280">PROFILE</text>
+<text x="328" y="126">skills.ts</text><text x="592" y="126" text-anchor="end" fill="#6b7280">SKILLS · SITE_STACK</text>
+<text x="328" y="142">types.ts</text><text x="592" y="142" text-anchor="end" fill="#6b7280">Project · ProjectPoint …</text>
+<text x="328" y="162" font-weight="600">projects/</text>
+<text x="344" y="178">index.ts</text><text x="592" y="178" text-anchor="end" fill="#6b7280">PROJECTS = [일곱 개, 이 순서]</text>
+<text x="344" y="194">projectImage.ts</text>
+<text x="344" y="210">hyeoniverse.ts · macfolio.ts · newpick.ts · qru.ts</text>
+<text x="344" y="226">whattodo.ts · sproutfarm.ts · devcourse.ts</text>
+</g>
+<text x="460" y="266" font-size="10" fill="#6b7280" text-anchor="middle">import { PROJECTS, type Project } from '@/shared/profile' 그대로 (27곳)</text>
+<text x="32" y="304" font-size="10.5" fill="#6b7280">내용은 한 글자도 안 바뀌었다: 들여쓰기 한 단 빼고 export const 이름만 붙임. Vitest 336·E2E 터미널·GitHub·Safari 그대로</text>
+</svg>

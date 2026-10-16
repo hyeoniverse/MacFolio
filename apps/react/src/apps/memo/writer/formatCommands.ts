@@ -22,6 +22,7 @@ import { callCommand } from '@milkdown/kit/utils';
 import { moveTablePart, runTableOp, selectCells, tableStateOf } from './tableCommands';
 import { clearFind, replaceFind, setFind } from './findPlugin';
 import { attachmentTitle } from './attachments';
+import { detailsAt, toggleDetails } from './details';
 import { blockOfHeading, EMPTY_FORMAT, HEADING_LEVEL, type FormatAction, type FormatState } from './editorControls';
 
 /** 커서 자리의 서식 */
@@ -33,6 +34,8 @@ export function formatStateOf(state: EditorState): FormatState {
 		table: tableStateOf(state),
 		image: imageStateOf(state),
 		marks: { ...EMPTY_FORMAT.marks },
+		details: detailsAt(state) !== null,
+		summary: parent.type.name === 'details_summary',
 	};
 	if (parent.type.name === 'heading') result.block = blockOfHeading(parent.attrs.level as number);
 	else if (parent.type.name === 'code_block') result.block = 'mono';
@@ -134,6 +137,36 @@ function insertTable(ctx: Ctx) {
 		view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, target + 4)).scrollIntoView());
 }
 
+/** 아직 쓰지 않은 가장 작은 각주 번호 */
+export function nextFootnoteLabel(labels: Iterable<string>) {
+	const used = new Set(labels);
+	let label = 1;
+	while (used.has(String(label))) label++;
+	return String(label);
+}
+
+/**
+ * 각주: 커서 자리(고른 글이 있으면 그 뒤)에 번호를 넣고, 글 끝에 같은 번호의 각주 내용을 만들어 그리로 간다.
+ * 읽기 화면은 GFM 규칙대로 본문에 나온 차례로 번호를 다시 매긴다
+ */
+function insertFootnote(view: EditorView) {
+	const { state } = view;
+	const { schema } = state;
+	const labels: string[] = [];
+	state.doc.descendants((node) => {
+		if (node.type.name === 'footnote_reference' || node.type.name === 'footnote_definition')
+			labels.push(node.attrs.label as string);
+	});
+	const label = nextFootnoteLabel(labels);
+	const tr = state.tr.insert(state.selection.to, schema.nodes.footnote_reference.create({ label }));
+	// 글 끝의 빈 문단(편집기가 늘 남겨 두는 줄) 앞에 넣는다. 뒤에 넣으면 그 빈 문단이 글 가운데에 남아 <br />로 저장된다
+	const last = tr.doc.lastChild;
+	const end = tr.doc.content.size - (last?.type.name === 'paragraph' && last.content.size === 0 ? last.nodeSize : 0);
+	tr.insert(end, schema.nodes.footnote_definition.create({ label }, schema.nodes.paragraph.create()));
+	// 각주 내용 → 문단 → 글자
+	view.dispatch(tr.setSelection(TextSelection.create(tr.doc, end + 2)).scrollIntoView());
+}
+
 /** 도구 막대의 명령을 실행한다. 이미 그 서식이면 푼다 (macOS 메모처럼 누를 때마다 켜고 끈다) */
 export function runFormat(ctx: Ctx, action: FormatAction) {
 	const view = ctx.get(editorViewCtx);
@@ -155,12 +188,20 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			break;
 		}
 		case 'block': {
-			if (action.block === 'body' || current.block === action.block) callCommand(turnIntoTextCommand.key)(ctx);
-			else if (action.block === 'mono') callCommand(createCodeBlockCommand.key)(ctx);
+			// macOS 메모처럼 한 줄에 모양은 하나: 목록이나 토글 제목에서 고르면 그 줄을 꺼내 고른 모양으로 바꾼다
+			const converted = current.summary || current.list !== null;
+			if (current.summary) toggleDetails(view);
+			else if (current.list) leaveList(ctx);
+			if (action.block === 'body' || (!converted && current.block === action.block)) {
+				if (!converted || action.block !== 'body') callCommand(turnIntoTextCommand.key)(ctx);
+			} else if (action.block === 'mono') callCommand(createCodeBlockCommand.key)(ctx);
 			else callCommand(wrapInHeadingCommand.key, HEADING_LEVEL[action.block])(ctx);
 			break;
 		}
 		case 'list': {
+			// 토글 제목은 토글을 풀고, 머리말은 본문으로 바꾼 뒤 목록으로 (목록 항목의 첫 줄은 본문이다)
+			if (current.summary) toggleDetails(view);
+			else if (current.list === null && current.block !== 'body') callCommand(turnIntoTextCommand.key)(ctx);
 			if (current.list === action.list) {
 				if (action.list === 'task') setTask(ctx, null);
 				else leaveList(ctx);
@@ -179,10 +220,21 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			break;
 		}
 		case 'quote': {
+			if (current.summary) toggleDetails(view);
 			if (current.quote) lift(view.state, view.dispatch);
 			else callCommand(wrapInBlockquoteCommand.key)(ctx);
 			break;
 		}
+		case 'details':
+			// 표 칸에는 블록을 넣을 수 없다
+			if (current.table) break;
+			// 목록 항목은 목록에서 꺼내 토글로 (한 줄에 모양은 하나)
+			if (!current.details && current.list) leaveList(ctx);
+			toggleDetails(view);
+			break;
+		case 'footnote':
+			insertFootnote(view);
+			break;
 		case 'table':
 			insertTable(ctx);
 			break;

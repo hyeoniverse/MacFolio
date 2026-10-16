@@ -8,10 +8,9 @@ import ControlCenter from '@/desktop/mobile/ControlCenter';
 import { closeSwitcher, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
 import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
-import { useStatusBarTone } from '@/desktop/mobile/statusBarTone';
+import { CLOCK_SIDE, ICONS_SIDE, useStatusBarTone } from '@/desktop/mobile/statusBarTone';
 import { useImmersiveApp } from '@/desktop/mobile/immersiveStore';
-import { useSettings } from '@/shared/settings/settingsStore';
-import { resolveTheme } from '@/shared/settings/settings';
+import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import '@/desktop/mobile/MobileShell.css';
 
 /**
@@ -29,14 +28,18 @@ const MobileShell = () => {
 
 	const foreground = foregroundApp(apps);
 	const onApp = foreground !== null && !controlCenterOpen && !switcherOpen;
-	// 상태 표시줄 글자 색: 앱 위에서는 그 밑에 실제로 그려진 화면을 읽어 정한다 (iOS처럼). 읽을 수 없으면 화면 모드를 따른다
+	// 상태 표시줄 글자 색: 그 밑에 실제로 그려진 화면(앱, 홈 화면의 배경화면)을 읽어 정한다 (iOS처럼).
+	// 읽을 수 없으면 앱 위에서는 화면 모드를, 홈 화면에서는 흰 글자를 쓴다
 	const statusBar = useRef<HTMLDivElement>(null);
-	const { theme } = useSettings();
-	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
+	const dark = useResolvedTheme() === 'dark';
 	// 화면만 보기 중인 앱 위에서는 상태 표시줄을 숨긴다 (사진만 보기)
 	const immersive = useImmersiveApp();
 	const hidden = onApp && immersive !== null && immersive === foreground;
-	const appTone = useStatusBarTone(statusBar, onApp, dark ? 'light' : 'dark', `${foreground}:${dark}`);
+	// 시계 쪽과 아이콘 쪽은 따로 읽는다 (배경화면은 왼쪽과 오른쪽 밝기가 크게 다를 수 있다)
+	const fallbackTone = onApp && !dark ? 'dark' : 'light';
+	const toneKey = `${foreground}:${dark}:${onApp}:${controlCenterOpen}:${switcherOpen}`;
+	const clockTone = useStatusBarTone(statusBar, true, fallbackTone, toneKey, CLOCK_SIDE);
+	const iconsTone = useStatusBarTone(statusBar, true, fallbackTone, toneKey, ICONS_SIDE);
 
 	// Esc는 위에 열린 것부터 닫는다: 제어 센터, 앱 전환기 (그 아래 앱의 뒤로 가기가 이 Esc를 받지 않게 preventDefault)
 	useEffect(() => {
@@ -68,7 +71,7 @@ const MobileShell = () => {
 			<MobileHome launch={launch} />
 			<MobileStatusBar
 				ref={statusBar}
-				tone={onApp ? appTone : 'light'}
+				tone={{ clock: clockTone, icons: iconsTone }}
 				onApp={onApp}
 				hidden={hidden}
 				onOpen={() => setControlCenterOpen(true)}

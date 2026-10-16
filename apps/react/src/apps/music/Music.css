@@ -41,7 +41,7 @@
 	background-color: var(--music-bg);
 	color: var(--music-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 }
 
@@ -93,14 +93,14 @@
 	border: none;
 	background: none;
 	color: var(--music-accent);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	cursor: pointer;
 }
 
 .music-sidebar-heading {
 	margin: 8px 8px 4px;
 	color: var(--music-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
@@ -110,7 +110,7 @@
 	gap: 8px;
 	width: 100%;
 	padding: 6px 8px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	text-align: left;
 	/* 통합형 창의 끌기 영역보다 위 */
 	position: relative;
@@ -163,7 +163,7 @@
 	width: 180px;
 	aspect-ratio: 1;
 	overflow: hidden;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 	background-color: var(--music-selected);
 }
@@ -191,7 +191,7 @@
 }
 
 .music-header .music-meta {
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .music-header-actions {
@@ -205,7 +205,7 @@
 	align-items: center;
 	gap: 6px;
 	padding: 6px 18px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--music-selected);
 	color: var(--music-accent);
 	font-weight: 600;
@@ -224,7 +224,7 @@
 	gap: 10px;
 	width: 100%;
 	padding: 6px 8px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	text-align: left;
 }
 
@@ -249,7 +249,7 @@
 .music-track img {
 	width: 36px;
 	height: 36px;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	object-fit: cover;
 }
 
@@ -323,13 +323,13 @@
 }
 
 .music-up-next h3 {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .music-up-next p {
 	margin-bottom: 10px;
 	color: var(--music-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .music-up-next button {
@@ -338,7 +338,7 @@
 	gap: 10px;
 	width: 100%;
 	padding: 6px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	text-align: left;
 }
 
@@ -349,7 +349,7 @@
 .music-up-next img {
 	width: 36px;
 	height: 36px;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	object-fit: cover;
 }
 
@@ -382,7 +382,7 @@
 	flex: none;
 	width: 44px;
 	height: 44px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	object-fit: cover;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -419,7 +419,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: 18px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .music-transport button {
@@ -428,7 +428,7 @@
 }
 
 .music-transport .music-play {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .music-toggle {
@@ -463,27 +463,16 @@
 	display: none;
 }
 
-/* ─── 지금 재생 중 (모바일 시트) ─── */
+/* ─── 지금 재생 중 (모바일 시트: shared/ui의 Sheet cover. 덮는 자리·움직임은 Sheet.css) ─── */
 .music-now-playing {
+	--ui-sheet-bg: #1c1c1e;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 16px;
-	position: absolute;
-	inset: 0;
-	z-index: 10;
 	padding: 24px 28px 28px;
-	overflow-y: auto;
-	background-color: #1c1c1e;
 	color: #fff;
 	isolation: isolate;
-	animation: music-sheet-up var(--duration-slow) var(--ease-out);
-}
-
-@keyframes music-sheet-up {
-	from {
-		transform: translateY(100%);
-	}
 }
 
 /* 앨범 표지를 흐리게 깐 배경 */
@@ -500,7 +489,7 @@
 	width: min(76vw, 320px);
 	aspect-ratio: 1;
 	object-fit: cover;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 	transform: scale(0.84);
 	transition: transform 0.45s var(--ease-spring);
@@ -517,11 +506,11 @@
 }
 
 .music-now-info strong {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .music-now-info span {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	opacity: 0.7;
 }
 
@@ -607,7 +596,7 @@
 		gap: 14px;
 		padding: 8px 4px;
 		border-radius: 0;
-		font-size: 17px;
+		font-size: var(--text-body);
 	}
 
 	.music-playlist-link.selected {
@@ -625,7 +614,7 @@
 	.music-sidebar .music-playlist-link .music-cover {
 		display: grid;
 		width: 60px;
-		border-radius: 6px;
+		border-radius: var(--radius-sm);
 		box-shadow: none;
 	}
 
@@ -662,13 +651,13 @@
 		white-space: nowrap;
 		justify-content: center;
 		padding: 10px 18px;
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 
 	.music-track {
 		grid-template-columns: 24px 44px minmax(0, 1fr) 40px;
 		padding: 8px 4px;
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 
 	.music-tracks li:where(:nth-child(odd)) .music-track {
@@ -690,7 +679,7 @@
 		margin: 0 8px 8px;
 		padding: 8px 10px;
 		border: none;
-		border-radius: 14px;
+		border-radius: var(--radius-xl);
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 	}
 
@@ -706,7 +695,7 @@
 	.music-mini-controls {
 		display: flex;
 		gap: 6px;
-		font-size: 20px;
+		font-size: var(--text-title3);
 	}
 
 	.music-mini-controls button {
@@ -750,7 +739,7 @@
 		gap: 10px;
 		width: 100%;
 		margin: 4px 0 20px;
-		font-size: 17px;
+		font-size: var(--text-body);
 		font-weight: 600;
 	}
 
@@ -781,7 +770,7 @@
 		position: relative;
 		width: 100%;
 		padding: 13px 4px;
-		font-size: 20px;
+		font-size: var(--text-title3);
 		text-align: left;
 	}
 
@@ -819,7 +808,7 @@
 	.container.mobile .music-collection .music-cover {
 		display: grid;
 		width: 62px;
-		border-radius: 6px;
+		border-radius: var(--radius-sm);
 		box-shadow: none;
 	}
 
@@ -840,7 +829,7 @@
 	}
 
 	.container.mobile .music-collection-text strong {
-		font-size: 17px;
+		font-size: var(--text-body);
 		font-weight: 400;
 	}
 
@@ -858,11 +847,11 @@
 
 	.container.mobile .music-collection.grid .music-cover {
 		width: 100%;
-		border-radius: 8px;
+		border-radius: var(--radius-md);
 	}
 
 	.container.mobile .music-collection.grid strong {
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 
 	/* 플레이리스트 화면 오른쪽 위: 보기·정렬 */
@@ -899,15 +888,15 @@
 	}
 
 	.container.mobile .music-header h1 {
-		font-size: 22px;
+		font-size: var(--text-title2);
 	}
 
 	.container.mobile .music-header p {
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 
 	.container.mobile .music-header .music-meta {
-		font-size: 13px;
+		font-size: var(--text-footnote);
 	}
 
 	.container.mobile .music-header-actions {
@@ -920,7 +909,7 @@
 		border-radius: 25px;
 		background-color: var(--music-selected);
 		color: var(--music-accent);
-		font-size: 17px;
+		font-size: var(--text-body);
 	}
 
 	.container.mobile .music-pill-shuffle {
@@ -986,7 +975,7 @@
 	}
 
 	.container.mobile .music-track-title strong {
-		font-size: 16px;
+		font-size: var(--text-callout);
 		font-weight: 400;
 	}
 

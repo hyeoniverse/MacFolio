@@ -80,10 +80,11 @@ test.describe('개인정보 보호 및 보안', () => {
 		await expect(form).toContainText('사람 확인 완료');
 
 		await form.getByRole('textbox', { name: '댓글 내용' }).fill('잘 봤어요');
-		await form.getByRole('button', { name: '등록' }).click();
+		await form.getByRole('button', { name: '등록', exact: true }).click();
 		await expect(memo.locator('.memo-comment-body', { hasText: '잘 봤어요' })).toBeVisible();
 		await form.getByRole('textbox', { name: '댓글 내용' }).fill('하나 더');
-		await form.getByRole('button', { name: '등록' }).click();
+		// 새 토큰을 받는 동안은 등록 단추가 꺼져 있다가('확인 중…'), 받으면 켜진다 (click은 켜질 때까지 기다린다)
+		await form.getByRole('button', { name: '등록', exact: true }).click();
 		await expect(memo.locator('.memo-comment-body', { hasText: '하나 더' })).toBeVisible();
 		// 토큰은 한 번만 쓸 수 있어서, 댓글마다 다른 토큰을 보낸다
 		expect(api.humanTokens).toHaveLength(2);

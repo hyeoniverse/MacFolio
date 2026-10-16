@@ -23,3 +23,51 @@ test('모바일: 앱은 아이콘에서 커지고, 홈으로 가면 아이콘으
 		.poll(() => page.locator('.mobile-home').evaluate((el) => getComputedStyle(el).transform))
 		.toMatch(/none|matrix\(1, 0, 0, 1, 0, 0\)/);
 });
+
+test('모바일: 아래에서 올라온 시트는 닫으면 덮개가 걷히며 내려가고, 움직임이 끝나면 남지 않는다', async ({ page }) => {
+	await page.goto('/');
+	const loading = page.locator('.loading-container');
+	await loading.tap();
+	await expect(loading).toBeHidden({ timeout: 20_000 });
+
+	await page.locator('.mobile-home').getByRole('button', { name: '메일', exact: true }).tap();
+	const mail = appWindow(page, 'mail');
+	await mail.getByRole('button', { name: '새로운 메시지' }).tap();
+	const sheet = mail.getByRole('dialog', { name: '새로운 메시지' });
+	await expect(sheet).toBeVisible();
+
+	// 닫으면 시트는 바로 빠지고(시험·화면 읽기 프로그램은 닫힌 뒤를 본다), 겉모습만 남은 복사본이 내려간다
+	await sheet.getByRole('button', { name: '취소' }).tap();
+	await expect(sheet).toHaveCount(0);
+	await expect(mail.locator('[data-exiting="dim-out"] .ui-sheet')).toHaveCount(1);
+	await expect(mail.locator('[data-exiting]')).toHaveCount(0);
+});
+
+test('모바일: 시트가 올라오는 동안 앱 화면이 스크롤되지 않는다 (열 때 주는 초점이 화면을 끌어당기지 않게)', async ({
+	page,
+}) => {
+	await page.goto('/');
+	const loading = page.locator('.loading-container');
+	await loading.tap();
+	await expect(loading).toBeHidden({ timeout: 20_000 });
+
+	await page.locator('.mobile-home').getByRole('button', { name: '음악', exact: true }).tap();
+	const music = appWindow(page, 'music');
+	await music.getByRole('button', { name: '플레이리스트', exact: true }).tap();
+	await music.getByRole('button', { name: /잔잔한 피아노/ }).tap();
+	await music.locator('.music-track', { hasText: 'River Flows in You' }).tap();
+
+	// 올라오는 동안 앱 화면(.music)의 스크롤 위치를 계속 기록한다
+	await music
+		.locator('.music')
+		.first()
+		.evaluate((el) => {
+			const seen: number[] = [];
+			(window as unknown as { __musicScroll: number[] }).__musicScroll = seen;
+			el.addEventListener('scroll', () => seen.push(el.scrollTop));
+		});
+	await music.getByRole('button', { name: '지금 재생 중 열기' }).tap();
+	await expect(music.getByRole('dialog', { name: '지금 재생 중' })).toBeVisible();
+	await page.waitForTimeout(600);
+	expect(await page.evaluate(() => (window as unknown as { __musicScroll: number[] }).__musicScroll)).toEqual([]);
+});

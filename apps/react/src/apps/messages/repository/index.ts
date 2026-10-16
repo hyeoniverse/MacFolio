@@ -1,4 +1,5 @@
 import { env } from '@/shared/config/env';
+import { readString, STORAGE_KEYS, writeString } from '@/shared/lib/storage';
 import { createApiConversationRepository } from './apiConversationRepository';
 import { createLocalConversationRepository } from './localConversationRepository';
 import type { ConversationRepository } from './types';
@@ -6,19 +7,13 @@ import type { ConversationRepository } from './types';
 export type { ConversationRepository, DeleteResult } from './types';
 export { PINNED_THREAD_ID } from './pinned';
 
-const VISITOR_KEY = 'macfolio:messages:visitor';
-
-/** 로컬 저장소에서 사람을 구분하는 브라우저 id. 서버는 방문자 쿠키로 구분한다. */
+/** 로컬 저장소에서 사람을 구분하는 브라우저 id. 서버는 방문자 쿠키로 구분한다. 저장하지 못하면 이번 방문만의 id */
 function visitorId(): string {
-	try {
-		const saved = localStorage.getItem(VISITOR_KEY);
-		if (saved) return saved;
-		const created = crypto.randomUUID();
-		localStorage.setItem(VISITOR_KEY, created);
-		return created;
-	} catch {
-		return crypto.randomUUID();
-	}
+	const saved = readString(STORAGE_KEYS.messagesVisitor);
+	if (saved) return saved;
+	const created = crypto.randomUUID();
+	writeString(STORAGE_KEYS.messagesVisitor, created);
+	return created;
 }
 
 let repository: ConversationRepository | null = null;

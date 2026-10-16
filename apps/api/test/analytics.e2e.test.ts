@@ -2,7 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { AnalyticsService } from '../src/analytics/analytics.service.js';
+import { AnalyticsRollup } from '../src/analytics/analytics-rollup.service.js';
 import { kstDay, shiftDay } from '../src/analytics/rules.js';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
@@ -246,7 +246,7 @@ describe('트래픽 분석 (e2e)', () => {
 				{ type: 'visit', day: day(1), dayHash: 'h', visitId: 'v-new', createdAt: at(1), maskedIp: '203.0.113.x' },
 			],
 		});
-		await app.get(AnalyticsService).maintain(now);
+		await app.get(AnalyticsRollup).maintain(now);
 
 		const rows = await prisma.analyticsEvent.findMany({ orderBy: { createdAt: 'asc' } });
 		expect(rows.map((row) => [row.visitId, row.maskedIp])).toEqual([

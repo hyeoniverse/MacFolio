@@ -13,6 +13,7 @@ import { APP_MANIFEST, APP_NAMES, AppName } from '@/apps/manifest';
 import { isMobileViewport } from '@/desktop/layout';
 import { takeAppsSavedBeforeLeaving, trackApps } from '@/desktop/appsBeforeLeaving';
 import { AppContext } from '@/desktop/useAppState';
+import { getViewport } from '@/shared/hooks/useViewport';
 
 /**
  * 처음 창 상태. 모바일은 홈 화면에서 시작하므로 처음부터 실행되는 앱이 없다.
@@ -20,7 +21,7 @@ import { AppContext } from '@/desktop/useAppState';
  * 로그인하러 떠났다 돌아왔으면 켜 두었던 앱을 그대로
  */
 const createAppWindowStore = (): WindowStore<AppName> => {
-	const mobile = isMobileViewport({ width: window.innerWidth, height: window.innerHeight });
+	const mobile = isMobileViewport(getViewport());
 	const initial = initialWindows(APP_NAMES, {
 		linked: linkedApp(),
 		runningAtStart: (name) => !mobile && (APP_MANIFEST[name].runningAtStart ?? false),
@@ -35,7 +36,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 	const { apps } = state;
 
 	useEffect(() => {
-		trackApps(isMobileViewport({ width: window.innerWidth, height: window.innerHeight }), apps);
+		trackApps(isMobileViewport(getViewport()), apps);
 	}, [apps]);
 
 	// 트래픽 분석 (#102): 새로 연 앱과, 앱이 보여 주는 글·프로젝트. 처음 떠 있는 창은 연 것으로 치지 않는다

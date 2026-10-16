@@ -212,7 +212,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 				</div>
 			)}
 
-			<HomeIndicator className="home-gesture" onSwitcher={openSwitcher} />
+			<HomeIndicator className="home-gesture" fallbackTone="light" onSwitcher={openSwitcher} />
 
 			<nav className="mobile-dock" aria-label="Dock">
 				{MOBILE_DOCK.map((name) => (

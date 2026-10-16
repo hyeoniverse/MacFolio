@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>올린 파일 규칙을 둘로 나눈다: 서버와 화면이 같이 쓰는 것은 contracts, 파일 내용을 보는 것은 서버</title>
+<defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="640" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937">files/rules.ts를 둘로 나눈다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">기준: 화면도 알아야 하는가</text>
+<!-- left: contracts -->
+<rect x="32" y="76" width="280" height="150" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="172" y="98" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">contracts/files.ts · 서버와 화면이 같이</text>
+<g font-size="10.5" fill="#374151">
+<text x="48" y="120">MAX_UPLOAD_BYTES = 10MB</text><text x="300" y="120" text-anchor="end" fill="#6b7280">올리기 전에 본다</text>
+<text x="48" y="138">UPLOAD_ID = /^[\w-]{16}$/</text><text x="300" y="138" text-anchor="end" fill="#6b7280">주소 모양</text>
+<text x="48" y="156">IMAGE_TYPES (png·jpeg·gif·webp)</text><text x="300" y="156" text-anchor="end" fill="#6b7280">accept</text>
+<text x="48" y="174">uploadIdsIn(markdown)</text><text x="300" y="174" text-anchor="end" fill="#6b7280">글이 가리키는 파일</text>
+<text x="48" y="192">Upload · UploadUsage</text><text x="300" y="192" text-anchor="end" fill="#6b7280">응답 모양</text>
+</g>
+<text x="48" y="214" font-size="10" fill="#6b7280">순수 값과 정규식뿐. 브라우저에서도 돈다</text>
+<!-- right: server -->
+<rect x="328" y="76" width="280" height="150" rx="10" fill="#f3f4f6"/>
+<text x="468" y="98" font-size="13" font-weight="600" fill="#374151" text-anchor="middle">api/files/rules.ts · 서버만</text>
+<g font-size="10.5" fill="#374151">
+<text x="344" y="120">sniffImage(bytes)</text><text x="596" y="120" text-anchor="end" fill="#6b7280">매직 바이트로 형식</text>
+<text x="344" y="138">cleanFileName · cleanFileType</text><text x="596" y="138" text-anchor="end" fill="#6b7280">저장할 이름·형식</text>
+<text x="344" y="156">contentDisposition</text><text x="596" y="156" text-anchor="end" fill="#6b7280">내려받기 머리말</text>
+<text x="344" y="174">newUploadId()</text><text x="596" y="174" text-anchor="end" fill="#6b7280">node:crypto</text>
+<text x="344" y="192">stripImageMetadata (metadata.ts)</text><text x="596" y="192" text-anchor="end" fill="#6b7280">EXIF 지우기</text>
+</g>
+<text x="344" y="214" font-size="10" fill="#6b7280">파일 내용·Node API. 화면은 몰라도 된다</text>
+<!-- consumers -->
+<g stroke="#4f46e5" stroke-width="2" fill="none">
+<path d="M120 226 V250" marker-end="url(#ok)"/>
+<path d="M224 226 V250" marker-end="url(#ok)"/>
+</g>
+<g font-size="10" fill="#374151">
+<rect x="32" y="252" width="176" height="52" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="44" y="268" font-weight="600" fill="#1f2937">apps/api</text>
+<text x="44" y="282">rules.ts가 다시 내보낸다</text>
+<text x="44" y="296">(부르는 쪽 import 그대로)</text>
+<rect x="216" y="252" width="392" height="52" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="228" y="268" font-weight="600" fill="#1f2937">apps/react</text>
+<text x="228" y="282">attachments.ts의 10MB · ImagePanel의 accept 문자열 · bin/filesApi의 ServerFile</text>
+<text x="228" y="296">셋이 각자 적던 값을 contracts에서 가져온다</text>
+</g>
+</svg>

@@ -1,10 +1,8 @@
-// 올린 파일 규칙. 이미지는 형식 이름을 믿지 않고 파일 앞부분(매직 넘버)으로 확인한다.
+// 올린 파일 규칙 (서버에서만 하는 것: 파일 내용 보기, 이름·형식 다듬기, 내려받기 머리말).
+// 한도·주소 모양·글에서 id 찾기는 @macfolio/contracts (화면과 같이 쓴다). 이미지는 형식 이름을 믿지 않고 파일 앞부분(매직 넘버)으로 확인한다.
 import { randomBytes } from 'node:crypto';
 
-/** 한 파일 크기 한도 (DB CHECK 제약과 같다) */
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
-
-export const UPLOAD_ID = /^[\w-]{16}$/;
+export { IMAGE_TYPES, MAX_UPLOAD_BYTES, UPLOAD_ID, uploadIdsIn } from '@macfolio/contracts';
 
 /** 짐작할 수 없는 파일 주소 (12바이트 → base64url 16자) */
 export const newUploadId = () => randomBytes(12).toString('base64url');
@@ -43,13 +41,4 @@ export function contentDisposition(kind: 'inline' | 'attachment', name: string):
 		(char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`
 	);
 	return `${kind}; filename="${ascii}"; filename*=UTF-8''${encoded}`;
-}
-
-/** 브라우저가 바로 보여 주는 이미지 형식 (올릴 때 파일 앞부분으로 확인해 type에 적은 값) */
-export const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
-
-/** 글(Markdown)에서 가리키는 파일 id들. 편집기는 이미지·첨부를 `<API 주소>/files/<id>`로 넣는다 */
-export function uploadIdsIn(text: string | null | undefined): string[] {
-	if (!text) return [];
-	return [...new Set([...text.matchAll(/\/files\/([\w-]{16})(?![\w-])/g)].map((match) => match[1]))];
 }

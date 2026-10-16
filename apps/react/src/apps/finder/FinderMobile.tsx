@@ -7,6 +7,7 @@ import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
 import FinderIcon from './FinderIcon';
 import '@/apps/finder/FinderMobile.css';
+import SearchField from '@/shared/ui/search-field/SearchField';
 
 type Tab = 'recents' | 'browse';
 type View = 'icons' | 'list';
@@ -190,16 +191,12 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			<div key={screenKey} className={`files-phone-scroll ${screen ? 'inside' : ''}`} data-motion={motion ?? undefined}>
 				{/* 첫 화면의 큰 제목: 뒤로 가기와 같은 줄 (다른 앱과 같은 phone-title) */}
 				{!screen && <h2 className="phone-title">{title}</h2>}
-				<label className="files-phone-search">
-					<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-					<input
-						type="search"
-						placeholder="검색"
-						aria-label="검색"
-						value={query}
-						onChange={(event) => setQuery(event.target.value)}
-					/>
-				</label>
+				<SearchField
+					className="files-phone-search"
+					label="검색"
+					value={query}
+					onChange={(event) => setQuery(event.target.value)}
+				/>
 
 				{searching || screen || tab === 'recents' ? (
 					items.length > 0 ? (

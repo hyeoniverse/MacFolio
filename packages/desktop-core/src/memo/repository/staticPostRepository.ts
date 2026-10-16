@@ -1,4 +1,5 @@
 import { sortPosts, toPost, type Post } from '../posts.js';
+import { postSlug } from '../rules.js';
 import type { PostRepository } from './types.js';
 
 /**
@@ -13,8 +14,9 @@ export function createStaticPostRepository(
 ): PostRepository {
 	const posts: Post[] = [];
 	for (const [path, source] of Object.entries(files)) {
-		const slug = path.split('/').at(-1)!.replace(/\.md$/, '');
-		const post = toPost(slug, source);
+		// 파일 이름이 글 주소 모양이 아니면(공백·한글 등) 글로 보지 않는다
+		const slug = postSlug(path.split('/').at(-1)!.replace(/\.md$/, ''));
+		const post = slug && toPost(slug, source);
 		if (post) posts.push(post);
 		else onInvalid?.(path);
 	}

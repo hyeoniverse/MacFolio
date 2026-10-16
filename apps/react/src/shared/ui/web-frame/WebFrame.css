@@ -27,7 +27,7 @@
 	gap: 12px;
 	background-color: inherit;
 	color: #6e6e73;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .web-frame.dark .web-frame-loading {

@@ -12,7 +12,7 @@
 	position: fixed;
 	bottom: 2rem;
 	left: 50%;
-	z-index: 1000;
+	z-index: var(--z-dock);
 	height: calc(var(--dock-icon, 64px) + 2rem);
 	background: var(--color-dock-bg);
 	transform: translateX(-50%);
@@ -37,21 +37,10 @@
 
 /* Dock.css */
 .launchpad-modal {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 2000;
-	width: 100%;
-	height: 100%;
-	background: var(--color-overlay);
-	animation: fade-in var(--duration) var(--ease-out);
+	--ui-modal-z: var(--z-launchpad);
 }
 
 .launchpad-content {
-	animation: pop-in var(--duration) var(--ease-spring);
 	display: flex;
 	margin: 2rem;
 
@@ -60,7 +49,7 @@
 	width: 100%;
 	max-width: 26rem;
 	background: var(--color-launchpad-bg);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 }
 
 .hidden-apps {

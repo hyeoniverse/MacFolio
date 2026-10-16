@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>서버 요청: 파일마다 따로 → 공통 클라이언트 하나</title>
+<defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="640" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="40" font-size="17" font-weight="700" fill="#1f2937">전: 파일 22개가 각자 fetch</text>
+<text x="352" y="40" font-size="17" font-weight="700" fill="#1f2937">후: client.ts 하나를 거친다</text>
+<!-- before: four files each with their own fetch block -->
+<g font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">
+<rect x="40" y="68" width="120" height="30" rx="8" fill="#fff1f2" stroke="#fda4af"/><text x="100" y="87">postsApi.ts</text>
+<rect x="180" y="68" width="120" height="30" rx="8" fill="#fff1f2" stroke="#fda4af"/><text x="240" y="87">commentsApi.ts</text>
+<rect x="40" y="150" width="120" height="30" rx="8" fill="#fff1f2" stroke="#fda4af"/><text x="100" y="169">githubApi.ts</text>
+<rect x="180" y="150" width="120" height="30" rx="8" fill="#fff1f2" stroke="#fda4af"/><text x="240" y="169">profileStore.ts</text>
+</g>
+<g font-size="10" fill="#6b7280">
+<text x="46" y="114">credentials · JSON · try/catch</text><text x="46" y="128">401 → "로그인이 필요합니다"</text>
+<text x="186" y="114">credentials · JSON · try/catch</text><text x="186" y="128">429 → "잠시 뒤에"</text>
+<text x="46" y="196">credentials · JSON · try/catch</text><text x="46" y="210">네트워크 → "연결할 수 없습니다"</text>
+<text x="186" y="196">credentials · JSON · try/catch</text><text x="186" y="210">message[] 합치기</text>
+</g>
+<path d="M100 215 V236" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#gray)"/>
+<path d="M240 215 V236" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#gray)"/>
+<rect x="40" y="240" width="260" height="30" rx="8" fill="#f3f4f6"/>
+<text x="170" y="259" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">apps/api</text>
+<text x="170" y="298" font-size="11" fill="#374151" text-anchor="middle">같은 일을 33곳에서 조금씩 다르게 했다</text>
+<!-- after -->
+<g font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">
+<rect x="360" y="68" width="120" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/><text x="420" y="87">postsApi.ts</text>
+<rect x="500" y="68" width="110" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/><text x="555" y="87">commentsApi.ts</text>
+<rect x="360" y="108" width="120" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/><text x="420" y="127">githubApi.ts</text>
+<rect x="500" y="108" width="110" height="30" rx="8" fill="#eef2ff" stroke="#a5b4fc"/><text x="555" y="127">profileStore.ts</text>
+</g>
+<text x="485" y="154" font-size="10" fill="#6b7280" text-anchor="middle">경로와 응답 모양만 적는다</text>
+<path d="M420 140 L470 176" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M555 140 L505 176" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="400" y="180" width="170" height="60" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="485" y="202" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">shared/api/client.ts</text>
+<text x="485" y="222" font-size="10.5" fill="#6b7280" text-anchor="middle">쿠키 · JSON · 시간 제한 · 실패 문구 · 401 알림</text>
+<path d="M485 242 V262" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="360" y="266" width="250" height="26" rx="8" fill="#f3f4f6"/>
+<text x="485" y="283" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">apps/api</text>
+<text x="485" y="310" font-size="11" fill="#374151" text-anchor="middle">바뀌는 것은 한 군데: 346줄 → 179줄</text>
+</svg>

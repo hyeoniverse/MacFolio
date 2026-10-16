@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { githubRepoOf } from '@macfolio/desktop-core/site';
 import { env } from '@/shared/config/env';
+import { apiFetch } from '@/shared/api/client';
 
 /** 언어 하나: 이름, 바이트 수, 비율(%, 소수 첫째 자리까지) */
 export interface RepoLanguage {
@@ -39,14 +40,15 @@ export function fetchRepoLanguages(
 ): Promise<RepoLanguage[] | null> {
 	const repo = githubRepoOf(href);
 	if (!repo || !apiUrl) return Promise.resolve(null);
-	const url = `${apiUrl}/github/languages/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}`;
+	const path = `/github/languages/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}`;
+	const url = `${apiUrl}${path}`;
 	let request = requests.get(url);
 	if (!request) {
 		const retryLater = () => {
 			requests.delete(url);
 			return null;
 		};
-		request = fetchImpl(url)
+		request = apiFetch(path, { apiUrl, fetchImpl })
 			.then((response) => {
 				if (response.ok) return response.json().then(toRepoLanguages);
 				// 404는 이 사이트의 프로젝트 저장소가 아니거나 GitHub에 없다는 답이라 다시 묻지 않는다

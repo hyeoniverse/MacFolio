@@ -8,6 +8,7 @@ import {
 	canAddFolder,
 	type FolderNode,
 	RECENTLY_DELETED,
+	type FolderPath,
 } from '@macfolio/desktop-core/memo';
 import TagChips from './TagChips';
 import { SidebarToggle } from './MemoToolbar';
@@ -61,7 +62,7 @@ const FolderSidebar: React.FC<FolderSidebarProps> = (props) => {
 		return (parent ? (findNode(folders, parent)?.children ?? []) : folders).map((node) => node.path);
 	};
 	/** ↑·↓ 키: 한 칸씩 */
-	const reorderStep = (path: string, delta: number) => {
+	const reorderStep = (path: FolderPath, delta: number) => {
 		const siblings = siblingsOf(path);
 		const from = siblings.indexOf(path);
 		const to = from + delta;
@@ -78,7 +79,7 @@ const FolderSidebar: React.FC<FolderSidebarProps> = (props) => {
 		startPointerReorder(
 			event,
 			(from, to, items) => {
-				const next = items.map((el) => el.dataset.folderPath as string);
+				const next = items.map((el) => el.dataset.folderPath as FolderPath);
 				next.splice(to, 0, ...next.splice(from, 1));
 				props.onReorderFolders?.(next);
 			},

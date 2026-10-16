@@ -3,6 +3,7 @@
 // 사이트는 Cloudflare의 single-page-application 설정으로 어떤 경로든 index.html을 돌려준다.
 // 앱이 시작할 때 이 경로를 읽어 그 앱을 그 항목으로 열고, 쓰는 동안에는 맨 앞 창이 가리키는 곳을 주소 막대에 둔다.
 import { createStore } from '@macfolio/desktop-core';
+import { hasCoarsePointer } from '@/shared/lib/media';
 import { notify } from '@/desktop/notifications/notificationStore';
 
 export const LINKED_APPS = ['memo', 'safari'] as const;
@@ -79,7 +80,7 @@ export function syncAddressBar(front: string | null) {
  */
 export async function shareLink(link: AppLink, title: string) {
 	const url = appUrl(link);
-	if (navigator.share && window.matchMedia?.('(pointer: coarse)').matches) {
+	if (navigator.share && hasCoarsePointer()) {
 		try {
 			await navigator.share({ title, url });
 			return;

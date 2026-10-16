@@ -1,12 +1,13 @@
 import { cssVars } from '@/shared/lib/cssVars';
-import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useState } from 'react';
 import DockItem from '@/desktop/dock/DockItem';
+import Modal from '@/shared/ui/dialog/Modal';
 import '@/desktop/dock/Dock.css';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
 
 import { env } from '@/shared/config/env';
 import { appIconUrl } from '@/shared/config/appIcon';
+import { useBinEmpty } from '@/apps/bin/binState';
 import { APP_MANIFEST, DOCK_APPS, LAUNCHPAD_APPS, type AppName } from '@/apps/manifest';
 import { useViewport } from '@/shared/hooks/useViewport';
 import {
@@ -24,6 +25,8 @@ const iconOf = (appName: AppName) => appIconUrl(APP_MANIFEST[appName].icon);
 const Dock: React.FC = () => {
 	const { launch: handleAppOpen, isActive } = useLaunchApp();
 	const [isLaunchpadOpen, setIsLaunchpadOpen] = useState(false); // 모달 상태 관리
+	// macOS처럼 비었으면 빈 휴지통, 무언가 남아 있으면 종이가 담긴 휴지통
+	const binEmpty = useBinEmpty();
 
 	// Dock에 다 들어가지 않는 앱은 Launchpad로 보낸다. 실행 중이라 나타난 앱도 칸에 세어서 Launchpad·휴지통과 겹치지 않는다
 	const { width } = useViewport();
@@ -40,22 +43,8 @@ const Dock: React.FC = () => {
 		'dock-divider': `${DOCK_DIVIDER}px`,
 	});
 
-	// Launchpad는 닫히면 흐려지며 사라진다
-	const launchpad = useExitMotion<HTMLDivElement>('fade-out');
-
 	const handleLaunchpadClick = () => setIsLaunchpadOpen(!isLaunchpadOpen);
-
-	const closeLaunchpad = () => {
-		setIsLaunchpadOpen(false); // 모달 닫기
-	};
-
-	// 모달 외부 클릭 시 모달을 닫음
-	const handleOutsideClick = (e: React.MouseEvent) => {
-		const target = e.target as Element;
-		if (target.classList.contains('launchpad-modal')) {
-			closeLaunchpad();
-		}
-	};
+	const closeLaunchpad = () => setIsLaunchpadOpen(false);
 
 	return (
 		<div>
@@ -94,7 +83,7 @@ const Dock: React.FC = () => {
 				<div className="dock-divider" aria-hidden="true" />
 				<DockItem
 					label="bin"
-					icon={iconOf('bin')}
+					icon={binEmpty ? `${imgUrl}/bin-empty.png` : iconOf('bin')}
 					isActive={false}
 					isHidden={false}
 					onClick={() => handleAppOpen('bin')}
@@ -103,27 +92,31 @@ const Dock: React.FC = () => {
 
 			{/* Launchpad 모달 */}
 			{isLaunchpadOpen && hiddenItems.length > 0 && (
-				<div ref={launchpad} className="launchpad-modal" onClick={handleOutsideClick}>
-					<div className="launchpad-content">
-						<div className="hidden-apps">
-							{hiddenItems.map((hiddenItem) => (
-								<DockItem
-									key={hiddenItem}
-									label={hiddenItem}
-									icon={iconOf(hiddenItem)}
-									isActive={isActive(hiddenItem)}
-									isHidden={false}
-									onClick={() => {
-										// 앱을 열면 Launchpad는 닫힌다
-										closeLaunchpad();
-										handleAppOpen(hiddenItem);
-									}}
-									disableRadius={APP_MANIFEST[hiddenItem].squareIcon}
-								/>
-							))}
-						</div>
+				<Modal
+					label="Launchpad"
+					scope="screen"
+					onClose={closeLaunchpad}
+					overlayClassName="launchpad-modal"
+					className="launchpad-content"
+				>
+					<div className="hidden-apps">
+						{hiddenItems.map((hiddenItem) => (
+							<DockItem
+								key={hiddenItem}
+								label={hiddenItem}
+								icon={iconOf(hiddenItem)}
+								isActive={isActive(hiddenItem)}
+								isHidden={false}
+								onClick={() => {
+									// 앱을 열면 Launchpad는 닫힌다
+									closeLaunchpad();
+									handleAppOpen(hiddenItem);
+								}}
+								disableRadius={APP_MANIFEST[hiddenItem].squareIcon}
+							/>
+						))}
 					</div>
-				</div>
+				</Modal>
 			)}
 		</div>
 	);

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { openExternal } from '@/shared/analytics/analytics';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
@@ -18,6 +19,27 @@ import {
 } from './places';
 import { fetchForecast, searchPlaces, type TemperatureUnit } from './weatherApi';
 import './Weather.css';
+import SearchField from '@/shared/ui/search-field/SearchField';
+
+/** 날씨 칸이 이 폭 이하면 iOS 날씨 모양(날씨만, 아래 막대, 덮어 여는 목록)으로 (Weather.css의 [data-compact]) */
+const COMPACT_WIDTH = 640;
+
+/**
+ * iOS 날씨 모양으로 볼지. 휴대폰 화면이면 폭과 상관없이 그렇게 본다:
+ * 휴대폰 셸은 767px까지(눕힌 휴대폰은 더 넓다) 쓰는데, 폭만 보면 641~767px에서 넓은 창 모양이 휴대폰 화면 안에 그려졌다
+ */
+function useCompact(ref: React.RefObject<HTMLElement | null>) {
+	const phone = useIsMobile();
+	const [width, setWidth] = useState(Infinity);
+	useEffect(() => {
+		const element = ref.current;
+		if (!element) return;
+		const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+		observer.observe(element);
+		return () => observer.disconnect();
+	}, [ref]);
+	return phone || width <= COMPACT_WIDTH;
+}
 
 /** 날씨를 다시 묻는 간격 (Open-Meteo는 15분마다 새 값을 낸다) */
 const REFRESH_MS = 15 * 60_000;
@@ -374,6 +396,8 @@ const Weather = () => {
 	const [sidebarHidden, setSidebarHidden] = useState(false);
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const swipe = useRef<{ x: number; y: number } | null>(null);
+	const shell = useRef<HTMLDivElement>(null);
+	const compact = useCompact(shell);
 	const { forecastOf, reload } = useForecasts(places, unit);
 	/** 한글을 조합하는 중인지 (조합 중에는 Open-Meteo에 묻지 않는다) */
 	const [composing, setComposing] = useState(false);
@@ -448,21 +472,31 @@ const Weather = () => {
 		<AppWindow title="날씨" appName="weather" chrome="unified">
 			{/* iOS 날씨처럼 홈으로 가는 단추가 없다 (홈 바로 나간다) */}
 			<MobileNavigation hideHome />
-			<div className={`weather sky-${weather?.sky ?? 'cloudy'} ${weather?.day === false ? 'night' : 'day'}`}>
+			<div
+				ref={shell}
+				className={`weather sky-${weather?.sky ?? 'cloudy'} ${weather?.day === false ? 'night' : 'day'}`}
+				data-compact={compact || undefined}
+			>
+				{/*
+				 * 넓은 창의 사이드바 단추. 사이드바 밖에 따로 두어 창 위쪽 끌기 자리(신호등 줄) 위로 올린다:
+				 * 사이드바째 올리면 사이드바가 신호등을 덮는다
+				 */}
+				{!compact && (
+					<button
+						type="button"
+						className={`weather-sidebar-toggle ${sidebarHidden ? 'shown' : ''}`}
+						aria-label={sidebarHidden ? '사이드바 보기' : '사이드바 가리기'}
+						onClick={() => setSidebarHidden((hidden) => !hidden)}
+					>
+						<i className="fa-solid fa-table-columns" aria-hidden="true" />
+					</button>
+				)}
 				<nav
 					className={`weather-sidebar ${listOpen ? 'open' : ''} ${editing ? 'editing' : ''} ${sidebarHidden ? 'hidden' : ''}`}
 					aria-label="장소"
 				>
-					<div className="weather-lights-space">
-						<button
-							type="button"
-							className="weather-sidebar-toggle"
-							aria-label="사이드바 가리기"
-							onClick={() => setSidebarHidden(true)}
-						>
-							<i className="fa-solid fa-table-columns" aria-hidden="true" />
-						</button>
-					</div>
+					{/* 신호등 줄 (넓은 창은 그 오른쪽에 사이드바 단추가 떠 있다) */}
+					<div className="weather-lights-space" />
 					<header className="weather-list-head">
 						<h2>날씨</h2>
 						<button
@@ -480,25 +514,21 @@ const Weather = () => {
 							<i className="fa-solid fa-ellipsis" aria-hidden="true" />
 						</button>
 					</header>
-					<label className="weather-search">
-						<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-						<input
-							type="search"
-							placeholder="도시 검색"
-							aria-label="도시 검색"
-							value={query}
-							onChange={(event) => {
-								setQuery(event.target.value);
-								// 조합이 끝났다는 신호(compositionend)를 보내지 않는 키보드도 있어서, 입력마다 다시 확인한다
-								setComposing((event.nativeEvent as InputEvent).isComposing ?? false);
-							}}
-							onCompositionStart={() => setComposing(true)}
-							onCompositionEnd={(event) => {
-								setComposing(false);
-								setQuery(event.currentTarget.value);
-							}}
-						/>
-					</label>
+					<SearchField
+						className="weather-search"
+						label="도시 검색"
+						value={query}
+						onChange={(event) => {
+							setQuery(event.target.value);
+							// 조합이 끝났다는 신호(compositionend)를 보내지 않는 키보드도 있어서, 입력마다 다시 확인한다
+							setComposing((event.nativeEvent as InputEvent).isComposing ?? false);
+						}}
+						onCompositionStart={() => setComposing(true)}
+						onCompositionEnd={(event) => {
+							setComposing(false);
+							setQuery(event.currentTarget.value);
+						}}
+					/>
 					{query.trim() ? (
 						<ul className="weather-results" aria-label="검색 결과">
 							{results.map((found) => (
@@ -566,16 +596,6 @@ const Weather = () => {
 						if (next >= 0 && next < places.length) setSelected(next);
 					}}
 				>
-					{sidebarHidden && (
-						<button
-							type="button"
-							className="weather-sidebar-toggle shown"
-							aria-label="사이드바 보기"
-							onClick={() => setSidebarHidden(false)}
-						>
-							<i className="fa-solid fa-table-columns" aria-hidden="true" />
-						</button>
-					)}
 					<div className="weather-scroll">
 						{weather ? (
 							<Detail place={place} weather={weather} />

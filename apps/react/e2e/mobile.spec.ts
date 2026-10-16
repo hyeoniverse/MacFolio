@@ -698,10 +698,24 @@ test.describe('모바일', () => {
 		await expect(bottom.getByRole('button', { name: '체크리스트' })).toBeVisible();
 		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
 
-		// ••• 메뉴: 맨 위에 고정·잠그기, 그 아래 찾기·삭제
+		// ••• 메뉴: 맨 위에 고정·잠그기, 그 아래 찾기·읽기 화면·삭제
 		await top.getByRole('button', { name: '메모 동작' }).tap();
 		const menu = page.getByRole('menu', { name: '메모 동작' });
-		await expect(menu.getByRole('menuitem')).toHaveText(['메모 고정', '잠그기', '메모에서 찾기', '삭제']);
+		await expect(menu.getByRole('menuitem')).toHaveText([
+			'메모 고정',
+			'잠그기',
+			'메모에서 찾기',
+			'읽기 화면으로 보기',
+			'삭제',
+		]);
+		// 방문자가 보는 읽기 화면으로 봤다가 편집 화면으로 돌아온다
+		await menu.getByRole('menuitem', { name: '읽기 화면으로 보기' }).tap();
+		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
+		await expect(memo.locator('.memo-reader-body h1')).toBeVisible();
+		await top.getByRole('button', { name: '메모 동작' }).tap();
+		await menu.getByRole('menuitem', { name: '편집 화면으로 돌아가기' }).tap();
+		await expect(memo.locator('.ProseMirror')).toBeVisible();
+		await top.getByRole('button', { name: '메모 동작' }).tap();
 		await menu.getByRole('menuitem', { name: '메모에서 찾기' }).tap();
 		await expect(memo.getByRole('search', { name: '메모에서 찾기' })).toBeVisible();
 
@@ -975,9 +989,8 @@ test.describe('모바일', () => {
 		// 큰 제목은 쓴 제목을 따른다
 		await expect(sheet.getByRole('heading', { name: '안녕하세요' })).toBeVisible();
 
-		// 닫으면 바로 사라지지 않고 내려가는 동안 남아 있다
+		// 닫는다 (내려가는 움직임은 mobile-motion.spec.ts)
 		await sheet.getByRole('button', { name: '취소' }).tap();
-		await expect(mail.locator('.mail-phone-sheet-layer.closing')).toHaveCount(1);
 		await expect(sheet).toBeHidden();
 
 		// 방문자의 답장: 받은 메일에서 답장 → 메일 동작 → 답장은 주인에게 Re: 제목의 새 메일
@@ -1042,6 +1055,12 @@ test.describe('모바일', () => {
 		await expect(sheet).toBeVisible();
 		await expect(sheet.getByRole('slider', { name: '재생 위치' })).toBeVisible();
 		await expect(sheet.getByRole('region', { name: '다음 재생' })).toBeVisible();
+
+		// 옆으로 밀어도 시트는 가로로 움직이지 않는다 (흐린 표지 배경이 시트 밖까지 그려져 있다)
+		await sheet.hover();
+		await page.mouse.wheel(120, 0);
+		await expect.poll(() => sheet.evaluate((el) => el.scrollLeft)).toBe(0);
+		expect(await sheet.evaluate((el) => getComputedStyle(el).overflowX)).toBe('hidden');
 
 		// 닫기는 시트 위에 떠 있는 뒤로 가기 하나
 		await music.locator('.mobile-navbar-home').tap();
@@ -1432,5 +1451,96 @@ test.describe('휴대폰 홈 화면 페이지', () => {
 		await page.mouse.move(60, y, { steps: 8 });
 		await page.mouse.up();
 		await selected('2쪽');
+	});
+});
+
+test('활동 상태 보기 (휴대폰): 홈으로 가는 단추 없이 탭 줄은 카드와 같은 폭, 기간은 오른쪽 끝', async ({ page }) => {
+	await fakeApi(page);
+	await enterHome(page);
+	await (await homeApp(page, '활동 상태 보기')).tap();
+	const activity = appWindow(page, 'activity');
+	await expect(activity.getByRole('tablist', { name: '보기' })).toBeVisible();
+	// iOS의 탭으로 나눈 앱처럼 첫 화면에는 뒤로 가기가 없다 (홈 바로 나간다)
+	await expect(page.locator('.container.mobile[data-app="activity"] .mobile-navbar')).toHaveCount(0);
+	const box = async (locator: ReturnType<typeof activity.locator>) => (await locator.first().boundingBox())!;
+	const cards = await box(activity.locator('.activity-stats'));
+	const right = (rect: { x: number; width: number }) => Math.round(rect.x + rect.width);
+	// 탭 줄은 카드 묶음과 같은 왼쪽·오른쪽 선
+	await expect
+		.poll(async () => Math.round((await box(activity.getByRole('tablist', { name: '보기' }))).x))
+		.toBe(Math.round(cards.x));
+	expect(right(await box(activity.getByRole('tablist', { name: '보기' })))).toBe(right(cards));
+	// 기간은 오른쪽 끝 (카드 묶음의 오른쪽 선)
+	expect(right(await box(activity.locator('.activity-period')))).toBe(right(cards));
+});
+
+test.describe('상태 표시줄·홈 인디케이터는 밑의 화면에 맞춰 늘 보인다', () => {
+	const WHITE = 'rgb(255, 255, 255)';
+	const BLACK = 'rgb(28, 28, 30)';
+	const seed = (page: Page, settings: Record<string, unknown>) =>
+		page.addInitScript((value) => {
+			if (sessionStorage.getItem('seeded')) return;
+			sessionStorage.setItem('seeded', '1');
+			localStorage.setItem('macfolio:settings', JSON.stringify(value));
+		}, settings);
+	const colors = (page: Page) =>
+		page.evaluate(() => {
+			const bar = document.querySelector('.mobile-statusbar')!;
+			const indicator = [...document.querySelectorAll('.home-indicator')]
+				.filter((el) => el.getBoundingClientRect().height > 0)
+				.at(-1);
+			return {
+				clock: getComputedStyle(bar.querySelector('.mobile-statusbar-time')!).color,
+				icons: getComputedStyle(bar.querySelector('.mobile-statusbar-icons')!).color,
+				indicator: indicator ? getComputedStyle(indicator.querySelector('span')!).backgroundColor : null,
+			};
+		});
+
+	test('홈 화면: 밝은 배경화면 위에서는 시계·아이콘이 검은색, 어두운 배경화면 위에서는 흰색 (배경화면 그림을 읽는다)', async ({
+		page,
+	}) => {
+		await seed(page, { theme: 'light', mobileWallpaper: 'ios18' });
+		await enterHome(page);
+		await expect
+			.poll(async () => {
+				const { clock, icons } = await colors(page);
+				return { clock, icons };
+			})
+			.toEqual({ clock: BLACK, icons: BLACK });
+	});
+
+	test('홈 인디케이터는 보이는 막대 밑만 읽는다 (누르는 자리는 화면 폭 전체라 양 끝의 밝은 곳에 끌려가지 않는다)', async ({
+		page,
+	}) => {
+		// 아래 가운데는 남색·청록, 양 끝은 밝은 청록인 배경화면
+		await seed(page, { theme: 'light', mobileWallpaper: 'kaleidoscope' });
+		await enterHome(page);
+		await page.waitForTimeout(1500);
+		expect((await colors(page)).indicator).toBe(WHITE);
+	});
+
+	test('홈 화면: 어두운 배경화면이면 흰색', async ({ page }) => {
+		await seed(page, { theme: 'dark', mobileWallpaper: 'earth' });
+		await enterHome(page);
+		// 그림을 다 읽고 나서도 흰색 그대로
+		await page.waitForTimeout(1500);
+		expect(await colors(page)).toMatchObject({ clock: WHITE, icons: WHITE, indicator: WHITE });
+	});
+
+	test('앱: 라이트 모드라도 어두운 밤하늘(날씨) 위에서는 홈 인디케이터가 흰색, 밝은 메모 목록 위에서는 검은색', async ({
+		page,
+	}) => {
+		await seed(page, { theme: 'light' });
+		await fakeWeather(page, { night: true });
+		await enterHome(page);
+		await (await homeApp(page, '날씨')).tap();
+		await expect(appWindow(page, 'weather').getByLabel(/현재 기온/)).toBeVisible();
+		// 밑을 다시 읽고 색이 바뀌기까지 조금 걸린다 (셋을 한꺼번에 기다린다)
+		await expect.poll(() => colors(page)).toEqual({ clock: WHITE, icons: WHITE, indicator: WHITE });
+
+		await page.locator('.container.mobile[data-app="weather"] .home-indicator').tap();
+		await (await homeApp(page, '메모')).tap();
+		await expect(appWindow(page, 'memo').locator('.memo-item').first()).toBeVisible();
+		await expect.poll(() => colors(page)).toEqual({ clock: BLACK, icons: BLACK, indicator: BLACK });
 	});
 });
