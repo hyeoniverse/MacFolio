@@ -722,6 +722,18 @@ test('dialogue 마을: 탭을 눌러 연 뒤 페이지를 누르지 않아도 Z�
 	await expect(dialog.locator('.dl-menu[data-open]')).toBeVisible();
 	await page.keyboard.press('x');
 	await expect(root).toHaveAttribute('data-mode', 'world');
+	// 한글 입력 상태: X는 'ㅌ', Z는 'ㅋ'(크롬은 'Process')로 오지만 자판 위치(code)로 읽어 똑같이 먹는다
+	await safari.getByRole('tab', { name: /SproutFarm/ }).focus();
+	const hangul = (key: string, code: string) =>
+		page.evaluate(
+			([k, c]) =>
+				document.activeElement?.dispatchEvent(new KeyboardEvent('keydown', { key: k, code: c, bubbles: true })),
+			[key, code]
+		);
+	await hangul('ㅌ', 'KeyX');
+	await expect(dialog.locator('.dl-menu[data-open]')).toBeVisible();
+	await hangul('Process', 'KeyX');
+	await expect(root).toHaveAttribute('data-mode', 'world');
 	// 탭 단추에 포커스가 있을 때 Enter는 탭의 것이다 (페이지가 가로채지 않는다)
 	await safari.getByRole('tab', { name: /SproutFarm/ }).focus();
 	await page.keyboard.press('Enter');

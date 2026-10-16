@@ -39,3 +39,23 @@ function isShown(root: Element) {
 	const rect = root.getBoundingClientRect();
 	return rect.width > 0 && rect.height > 0;
 }
+
+/** 자판 위치(event.code)로 읽는 글쇠: 한글 입력 상태에서는 Z가 'ㅋ'(또는 IME의 'Process')로 오므로 key 대신 위치로 본다 */
+const CODE_KEYS: Readonly<Record<string, string>> = {
+	KeyZ: 'z',
+	KeyX: 'x',
+	KeyW: 'w',
+	KeyA: 'a',
+	KeyS: 's',
+	KeyD: 'd',
+};
+
+/**
+ * 게임이 쓰는 키 이름: Z·X·WASD는 자판 위치로(입력기·자판 배열과 상관없이), 그 밖의 글자는 소문자로, 나머지는 key 그대로
+ * (Enter, Escape, 방향 키, 숫자)
+ */
+export function gameKey(event: KeyboardEvent): string {
+	const byCode = CODE_KEYS[event.code];
+	if (byCode) return byCode;
+	return event.key.length === 1 ? event.key.toLowerCase() : event.key;
+}

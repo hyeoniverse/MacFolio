@@ -17,7 +17,7 @@ import type { TroubleStepKey } from '@/apps/safari/project/landing/content';
 import { nextUnread, paginate, shorten, troubleKeys, type Box, type Slide } from '@/apps/safari/project/dialogueStage';
 import { TitleScreen, TopicPanel, type PanelFocus } from '@/apps/safari/project/DialoguePanels';
 import { PixelIcon, PixelImage } from '@/apps/safari/project/DialoguePixels';
-import { acceptsGameKey } from '@/apps/safari/project/dialogueKeys';
+import { acceptsGameKey, gameKey } from '@/apps/safari/project/dialogueKeys';
 import { TILE } from '@/apps/safari/project/dialogueNinja';
 import { DialoguePhoto, Lightbox, PhotoAlbum } from '@/apps/safari/project/DialoguePhoto';
 import type { IconName } from '@/apps/safari/project/dialogueIcons';
@@ -759,7 +759,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			// 이 페이지가 든 Safari 창 안의 키만 (탭을 눌러 연 뒤 포커스가 탭 단추에 남아 있어도 받는다, dialogueKeys.ts)
 			if (!acceptsGameKey(event, root)) return;
 			const target = event.target as HTMLElement | null;
-			const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+			const key = gameKey(event);
 			const confirm = key === ' ' || key === 'Enter' || key === 'z';
 			const leave = key === 'Escape' || key === 'x';
 			// 크게 보기: Esc·X로 닫고 ←·→로 넘긴다 (다른 키는 막 뒤의 대화로 가지 않는다)
