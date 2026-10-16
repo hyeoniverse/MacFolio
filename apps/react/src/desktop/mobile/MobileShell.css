@@ -13,7 +13,7 @@
 	right: 0;
 	left: 0;
 	/* 제어 센터(2000)보다 위 */
-	z-index: 2100;
+	z-index: var(--z-phone-statusbar);
 	height: var(--mobile-statusbar-height);
 	padding: env(safe-area-inset-top) 26px 0 34px;
 	color: #fff;
@@ -235,7 +235,7 @@
 .control-center {
 	position: fixed;
 	inset: 0;
-	z-index: 2000;
+	z-index: var(--z-control-center);
 	padding: calc(var(--mobile-statusbar-height) + 16px) 22px 24px;
 	overflow-y: auto;
 	background-color: rgba(0, 0, 0, calc(0.5 * var(--cc-progress)));
@@ -490,7 +490,7 @@
 .app-switcher {
 	position: fixed;
 	inset: 0;
-	z-index: 1400;
+	z-index: var(--z-app-switcher);
 	display: grid;
 	place-items: center;
 	background-color: rgba(0, 0, 0, 0.35);

@@ -11,7 +11,7 @@
 	overflow: hidden;
 	/* body에 그리고 left·top은 음량 단추 아래 가운데 (VolumeMenu.tsx의 placeBelow) */
 	position: fixed;
-	z-index: 10000;
+	z-index: var(--z-menu);
 
 	width: 2rem;
 	height: 6rem;

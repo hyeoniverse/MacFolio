@@ -1708,7 +1708,7 @@ button.memo-admin-chip {
 /* 가가 메뉴 (body에 그린다) */
 .memo-format-panel {
 	position: fixed;
-	z-index: 10000;
+	z-index: var(--z-menu);
 	width: 232px;
 	padding: 8px;
 	border-radius: 14px;
@@ -2470,7 +2470,7 @@ button.memo-admin-chip {
 /* 달력 (body에 그려서 메모 변수 대신 값을 직접 쓴다) */
 .memo-calendar {
 	position: fixed;
-	z-index: 10000;
+	z-index: var(--z-menu);
 	width: 248px;
 	padding: 10px;
 	border-radius: 12px;
@@ -3274,7 +3274,7 @@ button.memo-admin-chip {
 	place-items: center;
 	position: fixed;
 	inset: 0;
-	z-index: 10000;
+	z-index: var(--z-menu);
 	padding: 3rem;
 	background-color: rgba(0, 0, 0, 0.75);
 	cursor: zoom-out;
@@ -4685,7 +4685,7 @@ button.memo-admin-chip {
 
 /* 끌어다 놓을 자리 (이미지·문단을 끌 때). body에 그린다 */
 .milkdown-drop-indicator {
-	z-index: 10000;
+	z-index: var(--z-menu);
 	margin: 0;
 	border-radius: 2px;
 	background-color: #edbb4d;

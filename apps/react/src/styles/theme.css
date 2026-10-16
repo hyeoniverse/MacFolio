@@ -5,6 +5,26 @@
 :root {
 	color-scheme: light;
 
+	/*
+	 * 화면 전체에서 겹치는 층(z-index). 값이 클수록 위에 그린다.
+	 * 창(1, 2, …)은 store가 순서를 매기고, 앱 안의 작은 겹침(1~10)은 각 CSS가 정한다.
+	 */
+	--z-dialog: 1000; /* 앱 창 안의 경고창 기본값 (Modal) */
+	--z-dock: 1000;
+	--z-menubar: 1001;
+	--z-app-switcher: 1400; /* 휴대폰 앱 전환기 */
+	--z-about: 1500; /* 이 Mac에 관하여 */
+	--z-launchpad: 2000;
+	--z-control-center: 2000; /* 휴대폰 제어 센터 */
+	--z-phone-statusbar: 2100;
+	--z-phone-notifications: 2200;
+	--z-shortcuts: 3000; /* 키보드 단축키 안내 */
+	--z-notifications: 9000;
+	--z-loading: 9999;
+	--z-menu: 10000; /* 펼친 메뉴·팝오버·라이트박스: 어떤 창보다 위 */
+	--z-app-error: 15000; /* 앱 오류 화면 */
+	--z-login: 20000; /* 로그인: 가장 위 */
+
 	/* 배경화면 (Settings에서 바꾼다) */
 	--wallpaper: url('/imgs/wallpapers/highsierra.jpg');
 	--wallpaper-mobile: url('/imgs/wallpapers/ios-sky-light.jpg');
