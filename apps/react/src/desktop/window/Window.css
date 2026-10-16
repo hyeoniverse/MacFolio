@@ -207,7 +207,7 @@
 .app-error {
 	position: fixed;
 	inset: 0;
-	z-index: 15000;
+	z-index: var(--z-app-error);
 }
 
 /* 통합형 창 (chrome="unified"): 제목 표시줄 없이 신호등 버튼이 내용 위에 떠 있다 */
