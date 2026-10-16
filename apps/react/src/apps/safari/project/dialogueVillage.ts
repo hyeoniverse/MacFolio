@@ -82,16 +82,34 @@ function groundDraws(): Draw[] {
 				case '~':
 					at(autotile(AUTOTILES.water, (dx, dy) => ground(tx + dx, ty + dy) === '~'));
 					break;
-				case ',':
-					at(grassTile(tx, ty));
-					at(GROUND.tallGrass);
-					break;
 				default:
 					at(grassTile(tx, ty));
 			}
 		}
 	}
-	return out;
+	return [...out, ...tallGrass()];
+}
+
+/**
+ * 긴 풀숲 (',' 칸): 풀 위에 긴 풀 포기를 칸마다 하나, 네 칸이 다 풀숲인 곳은 그 가운데에 반 칸 밀어 하나 더 세운다.
+ * 포기마다 생김새가 달라 가장자리가 들쭉날쭉하고, 안쪽은 빽빽하다. 아래 줄의 포기가 위 줄을 덮게 줄 차례로 칠한다
+ */
+function tallGrass(): Draw[] {
+	const out: Draw[] = [];
+	const base: Draw[] = [];
+	const tall = (x: number, y: number) => ground(x, y) === ',';
+	for (let ty = 0; ty < WORLD_H; ty++) {
+		for (let tx = 0; tx < WORLD_W; tx++) {
+			if (!tall(tx, ty)) continue;
+			// 안쪽 칸은 바닥을 짙은 풀로 (가장자리는 포기 사이로 옅은 풀이 비쳐 풀숲이 풀밭에 스며든다)
+			if (tall(tx - 1, ty) && tall(tx + 1, ty) && tall(tx, ty - 1) && tall(tx, ty + 1))
+				base.push(drawOf(GROUND.darkGrass, tx * TILE, ty * TILE));
+			out.push(drawOf(pick(GROUND.tallGrass, tx, ty, 61), tx * TILE, ty * TILE));
+			if (tall(tx + 1, ty) && tall(tx, ty + 1) && tall(tx + 1, ty + 1))
+				out.push(drawOf(pick(GROUND.tallGrass, tx, ty, 62), tx * TILE + 8, ty * TILE + 8));
+		}
+	}
+	return [...base, ...out.sort((a, b) => a.dy - b.dy)];
 }
 
 /** 풀밭의 꽃과 풀 포기 (길·자리 둘레는 피한다) */
@@ -147,7 +165,8 @@ function scattered(): Standing[] {
 				const sprite = noise(tx, ty, 7) < 0.3 ? NATURE.blossom : pick(NATURE.trees, tx, ty, 8);
 				const [crown, trunk] = cut(standAt(sprite, cx, by + 2), by - TILE);
 				out.push({ by, draws: [standAt(ITEMS.shadow, cx, by + 1), trunk], overhead: [crown] });
-			} else if (kind === 'b') out.push({ by, draws: [standAt(pick(NATURE.bushes, tx, ty, 9), cx, by)] });
+			} else if (kind === 'b')
+				out.push({ by, draws: [standAt(ITEMS.shadow, cx, by), standAt(pick(NATURE.bushes, tx, ty, 9), cx, by)] });
 			else if (kind === 'F') out.push({ by, draws: [drawOf(PROPS.fenceH, tx * TILE, ty * TILE)] });
 			else if (kind === 'p') out.push({ by, draws: [standAt(PROPS.plant, cx, by)] });
 		}

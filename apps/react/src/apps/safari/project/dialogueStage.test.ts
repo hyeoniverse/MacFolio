@@ -3,13 +3,14 @@ import { blankProject, type Project } from '@macfolio/desktop-core/site';
 import { GENERAL_SAMPLE } from '@/apps/settings/lookSamples';
 import {
 	battleHp,
+	fitPhoto,
+	PHOTO_MAX_UP,
 	hpLevel,
 	nextUnread,
 	outlined,
 	paginate,
 	periodDays,
 	pixelRuns,
-	sceneOf,
 	shorten,
 	SPRITE_COLORS,
 	splitScore,
@@ -110,19 +111,18 @@ describe('밝은 장면', () => {
 		expect(hpLevel(0)).toBe('low');
 	});
 
-	it('주제마다 장면: 전투는 들판, 파티는 광장, 장은 풀밭, 그 밖은 해 질 녘', () => {
-		expect(sceneOf('troubleshooting')).toBe('field');
-		expect(sceneOf('team')).toBe('plaza');
-		expect(sceneOf('specs')).toBe('shop');
-		expect(sceneOf('contributions')).toBe('menu');
-		expect(sceneOf('timeline')).toBe('map');
-		expect(sceneOf('deployments')).toBe('cave');
-		expect(sceneOf('facts')).toBe('arcade');
-		expect(sceneOf('credits')).toBe('night');
-		expect(sceneOf('highlights')).toBe('meadow');
-		expect(sceneOf('chapter-2')).toBe('meadow');
-		expect(sceneOf('links')).toBe('sunset');
-		expect(sceneOf(undefined)).toBe('sunset');
+	it('그림 크기: 비율을 지켜 자리에 들어가는 가장 크게, 작은 그림은 원래 크기의 1.5배까지만 키운다', () => {
+		// 넓은 그림은 폭에, 높은 그림은 높이에 닿는다
+		expect(fitPhoto(1600, 900, 1200, 600)).toEqual({ w: 1066, h: 600 });
+		expect(fitPhoto(1600, 900, 800, 600)).toEqual({ w: 800, h: 450 });
+		expect(fitPhoto(600, 1200, 1200, 600)).toEqual({ w: 300, h: 600 });
+		// 작은 그림은 1.5배까지
+		expect(PHOTO_MAX_UP).toBe(1.5);
+		expect(fitPhoto(200, 100, 1200, 600)).toEqual({ w: 300, h: 150 });
+		expect(fitPhoto(200, 100, 1200, 600, 1)).toEqual({ w: 200, h: 100 });
+		// 모르는 크기
+		expect(fitPhoto(0, 100, 1200, 600)).toEqual({ w: 0, h: 0 });
+		expect(fitPhoto(100, 100, 0, 600)).toEqual({ w: 0, h: 0 });
 	});
 });
 

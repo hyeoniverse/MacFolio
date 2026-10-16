@@ -242,8 +242,8 @@ button.dl-prompt:is(:hover, :focus-visible) {
 	color: #6ee28a;
 }
 
-/* 한 배도 안 되는 좁은 창: 마을은 무대 자리에 고정 높이로 */
-.dl[data-fit='compact'] .dl-world {
+/* 한 배도 안 되는 좁은 창: 걷는 동안 마을은 무대 자리에 고정 높이로 (이야기 중에는 화면 가득 뒤에 깔린다) */
+.dl[data-fit='compact']:is([data-mode='world'], [data-mode='greet']) .dl-world {
 	position: relative;
 	grid-area: stage;
 	inset: auto;

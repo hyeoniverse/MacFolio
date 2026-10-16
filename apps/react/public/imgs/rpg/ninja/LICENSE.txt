@@ -15,7 +15,6 @@ Files in this folder are unmodified copies from the pack (some renamed):
   tiles/element.png        Backgrounds/Tilesets/TilesetElement.png
   tiles/floor-detail.png   Backgrounds/Tilesets/TilesetFloorDetail.png
   tiles/interior-floor.png Backgrounds/Tilesets/Interior/TilesetInteriorFloor.png
-  tiles/wall.png           Backgrounds/Tilesets/Interior/TilesetWallSimple.png
   tiles/relief.png         Backgrounds/Tilesets/TilesetRelief.png
   chars/<name>.png         Actor/Character/<Name>/SpriteSheet.png
   monsters/spider.png      Actor/Monster/SpiderRed/SpriteSheet.png
