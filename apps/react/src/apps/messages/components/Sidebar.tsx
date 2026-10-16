@@ -3,6 +3,7 @@ import Avatar from './Avatar';
 import { displayName, formatListTime, type Thread } from '../conversations';
 import IconButton from '@/shared/ui/button/IconButton';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import SearchField from '@/shared/ui/search-field/SearchField';
 
 interface Props {
 	threads: Thread[];
@@ -15,6 +16,9 @@ interface Props {
 
 const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, loading = false }) => {
 	const [query, setQuery] = useState('');
+	/** 휴대폰 검색 알약에 들어가 있는 동안. 이때 오른쪽 단추는 새 피드백 대신 검색 끝내기(×) */
+	const [focused, setFocused] = useState(false);
+	const searching = focused || query !== '';
 	/** 휴대폰은 iOS 메시지 크기의 아바타 */
 	const phone = useIsMobile();
 	const now = new Date();
@@ -24,16 +28,13 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 	const others = threads.filter((t) => !t.pinned && matches(t));
 
 	const searchField = (className: string) => (
-		<label className={className}>
-			<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-			<input
-				type="search"
-				placeholder="검색"
-				aria-label="대화 검색"
-				value={query}
-				onChange={(event) => setQuery(event.target.value)}
-			/>
-		</label>
+		<SearchField
+			className={className}
+			label="대화 검색"
+			placeholder="검색"
+			value={query}
+			onChange={(event) => setQuery(event.target.value)}
+		/>
 	);
 
 	return (
@@ -104,21 +105,44 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 					{others.length === 0 && !loading && (
 						<li className="messages-empty">
 							<i
-								className={`messages-empty-icon fa-regular ${query ? 'fa-face-meh' : 'fa-comments'}`}
+								className={`messages-empty-icon ${query ? 'fa-solid fa-magnifying-glass' : 'fa-regular fa-comments'}`}
 								aria-hidden="true"
 							/>
 							<strong>{query ? '검색 결과가 없습니다.' : '아직 남겨진 피드백이 없어요.'}</strong>
-							{!query && <span className="messages-empty-hint">아래의 쓰기 단추로 첫 피드백을 남겨 보세요.</span>}
+							<span className="messages-empty-hint">
+								{query ? '맞춤법을 확인하거나 새로운 검색을 시도하십시오.' : '첫 번째 피드백을 남겨 주세요.'}
+							</span>
 						</li>
 					)}
 				</ul>
 			</aside>
 			{/* 휴대폰: 아래에 떠 있는 검색 알약과 새 피드백 (넘기는 목록 밖에 둔다) */}
-			<div className="messages-phone-bottom">
+			<div
+				className="messages-phone-bottom"
+				onFocus={(event) => setFocused(event.target instanceof HTMLInputElement)}
+				onBlur={() => setFocused(false)}
+			>
 				{searchField('messages-search messages-phone-search')}
-				<button type="button" className="phone-float" aria-label="새 피드백" onClick={onCompose}>
-					<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-				</button>
+				{searching ? (
+					<button
+						type="button"
+						className="phone-float"
+						aria-label="검색 닫기"
+						// 누르는 순간 입력 칸이 포커스를 잃어 단추가 바뀌지 않도록
+						onPointerDown={(event) => event.preventDefault()}
+						onClick={() => {
+							setQuery('');
+							setFocused(false);
+							(document.activeElement as HTMLElement | null)?.blur();
+						}}
+					>
+						<i className="fa-solid fa-xmark" aria-hidden="true" />
+					</button>
+				) : (
+					<button type="button" className="phone-float" aria-label="새 피드백" onClick={onCompose}>
+						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
+					</button>
+				)}
 			</div>
 		</>
 	);
