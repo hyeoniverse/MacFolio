@@ -1,4 +1,5 @@
-// dialogue 모양: 언더테일 같은 고전 RPG 대화창. 검은 무대 위에 흰 테두리 대화 상자 하나, 그 위에 지금 이야기하는 그림.
+// dialogue 모양: 언더테일 같은 고전 RPG 대화창. 검은 페이지 가운데에 480×270 게임 화면 하나를 정수 배로 키워 띄운다
+// (글자·테두리·픽셀 그림이 한 격자를 나눠 쓰게). 화면 위쪽은 무대, 아래 1/3은 흰 테두리 대화 상자, 맨 아래 한 줄은 상태 줄.
 // 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다. 사이트 테마와 상관없이 검은 무대다.
 // 무대에는 주제마다 게임 화면 하나(타이틀, 퀘스트, 전투, 파티, 장비...: DialoguePanels.tsx)를 데이터로 그려 대사가 말하는 항목을 짚는다.
 // 그 장에 그림이 있으면 그림을 액자에 원래 모습 그대로 띄우고 게임 화면은 옆에 작게 둔다
@@ -28,6 +29,8 @@ interface Line {
 	item?: number;
 	/** 트러블슈팅이면 이 장의 단계 */
 	step?: TroubleStepKey;
+	/** 대화 상자 왼쪽의 얼굴 칸에 띄울 사진 (팀원의 사진) */
+	portrait?: string;
 }
 
 /** 선택지 하나: 고르면 lines를 '다음'으로 한 장씩 읽는다 */
@@ -191,11 +194,12 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 		{
 			id: 'team',
 			label: '누구랑 만들었어?',
-			// 사진은 띄우지 않는다: 사진이 없는 사람에게 앞사람의 사진이 이어 붙지 않게
+			// 사진은 무대가 아니라 대화 상자의 얼굴 칸에, 그 사람의 장에서만 (무대에는 픽셀 사람이 선다)
 			lines: (project.team ?? []).map((member, item) => ({
 				title: member.me ? `${member.name} (나)` : member.name,
 				body: member.role,
 				item,
+				portrait: member.avatar || undefined,
 			})),
 		},
 		{
@@ -313,46 +317,47 @@ const ENDING: Line = {
 	body: '다 이야기했어요. 궁금한 게 더 있으면 다시 골라도 돼요.',
 };
 
+/** 게임 화면의 크기(CSS px). 모든 것을 이 칸 단위로 그리고, 화면 전체를 정수 배로 키운다 */
+const SCREEN_W = 480;
+const SCREEN_H = 270;
+/** 화면 아래 키 안내 줄의 높이(게임 칸). 이만큼 더 들어갈 때만 보인다 */
+const HINT_H = 18;
+
 /**
  * 스크롤 상자(.safari-page)의 크기에 맞춘다. @container는 높이로 물을 수 없어 JS로 잰다.
- * 높이 'compact'는 키 안내를 접고, 'tiny'는 그림 자리를 접어 대화 상자만 남긴다.
- * 선택지의 열 수(cols)는 폭으로 정한다: 넓으면 세 열(상자가 낮아져 그림 자리가 넓어진다), 보통은 두 열, 좁으면 한 열
+ * zoom: 480×270이 들어가는 가장 큰 정수 배 (모든 칸이 같은 배수로 커져 픽셀이 고르다).
+ * 한 배도 안 들어가면(아주 좁거나 낮은 창) compact: 키우지 않고 창 폭에 맞춘 단순한 배치. stage는 그때 무대를 둘 높이가 되는지
  */
-function useFit(ref: React.RefObject<HTMLElement | null>) {
-	const [fit, setFit] = useState<{ height: 'full' | 'compact' | 'tiny'; cols: 1 | 2 | 3 }>({
-		height: 'full',
-		cols: 2,
-	});
+function useScreen(ref: React.RefObject<HTMLElement | null>) {
+	const [screen, setScreen] = useState({ zoom: 1, compact: false, hint: true, stage: true });
 	useEffect(() => {
 		const box = ref.current?.closest('.safari-page') ?? ref.current?.parentElement;
 		if (!box || typeof ResizeObserver === 'undefined') return;
 		const measure = () => {
-			const h = box.clientHeight;
-			const height = h < 400 ? 'tiny' : h < 620 ? 'compact' : 'full';
 			const w = box.clientWidth;
-			const cols = w < 600 ? 1 : w < 1150 ? 2 : 3;
-			setFit((prev) => (prev.height === height && prev.cols === cols ? prev : { height, cols }));
+			const h = box.clientHeight;
+			const zoom = Math.floor(Math.min(w / SCREEN_W, h / SCREEN_H));
+			const next =
+				zoom >= 1
+					? { zoom, compact: false, hint: h >= zoom * (SCREEN_H + HINT_H), stage: true }
+					: { zoom: 1, compact: true, hint: false, stage: h >= 420 };
+			setScreen((prev) =>
+				prev.zoom === next.zoom && prev.compact === next.compact && prev.hint === next.hint && prev.stage === next.stage
+					? prev
+					: next
+			);
 		};
 		measure();
 		const observer = new ResizeObserver(measure);
 		observer.observe(box);
 		return () => observer.disconnect();
 	}, [ref]);
-	return fit;
+	return screen;
 }
 
-/** 요소의 높이(px)를 잰다 (무대의 게임 화면이 목록을 몇 줄 보일지 정한다) */
-function useHeight(ref: React.RefObject<HTMLElement | null>) {
-	const [height, setHeight] = useState<number | undefined>(undefined);
-	useEffect(() => {
-		const node = ref.current;
-		if (!node || typeof ResizeObserver === 'undefined') return;
-		const observer = new ResizeObserver(() => setHeight(Math.round(node.clientHeight)));
-		observer.observe(node);
-		return () => observer.disconnect();
-	}, [ref]);
-	return height;
-}
+/** 선택지 한 줄 글의 대략 폭(게임 칸): 갈무리11 11px에서 한글은 11칸, 빈칸은 4칸, 나머지는 7칸쯤 */
+const labelWidth = (text: string) =>
+	[...text].reduce((sum, ch) => sum + (/[가-힣ㄱ-ㅣ]/.test(ch) ? 11 : ch === ' ' ? 4 : 7), 0);
 
 /** 그림 한 장: 흰 테두리 액자에 원래 모습 그대로. 영상은 소리 없이 반복한다. 액자 아래 줄에 이름(caption)과 넘기기 단추 */
 const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNode }> = ({
@@ -401,9 +406,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	// 선택지의 ♥ 커서 (마우스를 올리거나 방향 키로 옮긴다). 지금 열린 선택지(처음 또는 장 목록) 안의 차례
 	const [cursor, setCursor] = useState(0);
 	const rootRef = useRef<HTMLDivElement>(null);
-	const fit = useFit(rootRef);
-	const stageRef = useRef<HTMLDivElement>(null);
-	const stageHeight = useHeight(stageRef);
+	const screen = useScreen(rootRef);
 
 	const back: Topic = useMemo(() => ({ id: BACK_TOPIC, label: '처음 선택지로', lines: [] }), []);
 	const subList = useMemo(() => [...chapters, back], [chapters, back]);
@@ -515,16 +518,16 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		[backToMenu, read, topics, visible]
 	);
 
-	// 선택지는 여러 열 (위에서 아래로 채운다, ↑·↓가 눈으로 보는 순서와 같게). 줄이 적으면 열을 줄인다
-	const rowsOf = (list: Topic[]) => {
-		const cols = list.length <= 4 ? 1 : list.length <= 6 ? Math.min(fit.cols, 2) : fit.cols;
-		return Math.ceil(list.length / cols);
+	// 선택지는 여러 열 (언더테일처럼 왼쪽에서 오른쪽으로 채운다). 열 수는 가장 긴 줄이 들어가는 만큼: 세 열, 두 열, 한 열.
+	// 좁은 창(compact)은 늘 한 열
+	const colsOf = (list: Topic[]) => {
+		if (screen.compact) return 1;
+		const widest = Math.max(0, ...list.map((t) => labelWidth(t.label)));
+		return widest <= 120 ? 3 : widest <= 190 ? 2 : 1;
 	};
-	const visibleRows = rowsOf(visible);
-	// 상자 높이는 두 선택지 중 줄이 많은 쪽에 맞춘다 (선택지와 대사를 오가도 상자가 튀지 않게)
-	const menuRows = Math.max(rowsOf(topics), chapters.length > 0 ? rowsOf(subList) : 0);
+	const cols = colsOf(visible);
 
-	/** 커서를 옮기고, 키보드로 옮겼으면 그 단추에 포커스 */
+	/** 커서를 옮기고, 키보드로 옮겼으면 그 단추에 포커스 (보이는 줄 밖이면 선택지가 그 줄까지 넘어간다) */
 	const moveCursor = useCallback(
 		(index: number) => {
 			const wrapped = (index + visible.length) % visible.length;
@@ -533,6 +536,36 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		},
 		[visible.length]
 	);
+
+	/** 방향 키로 갈 곳: ↑·↓는 같은 열의 윗줄·아랫줄(끝에서는 반대 끝으로), ←·→는 앞뒤 칸 */
+	const stepFrom = useCallback(
+		(from: number, key: string) => {
+			const n = visible.length;
+			if (key === 'ArrowLeft') return from - 1;
+			if (key === 'ArrowRight') return from + 1;
+			const col = from % cols;
+			if (key === 'ArrowDown') return from + cols < n ? from + cols : col;
+			return from - cols >= 0 ? from - cols : col + cols * Math.floor((n - 1 - col) / cols);
+		},
+		[visible.length, cols]
+	);
+
+	// 선택지가 보이는 줄보다 길면 상자 안에서 줄 단위로 넘어간다: 커서 줄이 늘 보이게, 위·아래에 더 있으면 ▲·▼
+	const [more, setMore] = useState({ up: false, down: false });
+	const updateMore = useCallback(() => {
+		const list = rootRef.current?.querySelector<HTMLElement>('.dl-menu[data-open] .dl-choices');
+		if (!list) return;
+		const up = list.scrollTop > 1;
+		const down = list.scrollTop + list.clientHeight < list.scrollHeight - 1;
+		setMore((prev) => (prev.up === up && prev.down === down ? prev : { up, down }));
+	}, []);
+	useEffect(() => {
+		if (mode.kind !== 'menu') return;
+		const button = rootRef.current?.querySelectorAll<HTMLElement>('.dl-menu[data-open] .dl-choices button')[cursor];
+		// 가장 가까운 만큼만 넘긴다 (화면이 창에 들어가 있으면 페이지는 움직이지 않는다)
+		button?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+		updateMore();
+	}, [mode, cursor, cols, screen, updateMore]);
 
 	// 키보드: Space·Enter·Z는 다음(선택지에서는 커서 줄 고르기), ↑·↓·←·→는 커서, 숫자는 선택지,
 	// X·Esc는 장 목록에서 처음 선택지로, 이야기 중 ←·→는 그림 넘기기. 글 상자 안에서는 안 받는다
@@ -549,14 +582,9 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
 			const confirm = key === ' ' || key === 'Enter' || key === 'z';
 			if (mode.kind === 'menu') {
-				if (key === 'ArrowDown' || key === 'ArrowUp') {
+				if (key === 'ArrowDown' || key === 'ArrowUp' || ((key === 'ArrowRight' || key === 'ArrowLeft') && cols > 1)) {
 					event.preventDefault();
-					moveCursor(cursor + (key === 'ArrowDown' ? 1 : -1));
-				} else if ((key === 'ArrowRight' || key === 'ArrowLeft') && visibleRows < visible.length) {
-					// 두 열: 옆 열의 같은 줄로
-					event.preventDefault();
-					const to = cursor + (key === 'ArrowRight' ? visibleRows : -visibleRows);
-					if (to >= 0 && to < visible.length) moveCursor(to);
+					moveCursor(stepFrom(cursor, key));
 				} else if (confirm) {
 					// 다른 단추(링크 등)에 포커스가 있으면 그 단추가 받는다
 					const menu = root.querySelector('.dl-menu[data-open]');
@@ -586,7 +614,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
-	}, [mode, next, choose, visible, visibleRows, cursor, moveCursor, back, slides.length, flip]);
+	}, [mode, next, choose, visible, cols, stepFrom, cursor, moveCursor, back, slides.length, flip]);
 
 	const inMenu = mode.kind === 'menu';
 	const progress = mode.kind === 'topic' && current ? `${mode.at + 1} / ${current.lines.length}` : '';
@@ -596,51 +624,54 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const meta = [project.period, project.language].filter(Boolean).join(' · ');
 
 	/** 선택지 한 벌: 대화 상자 안, 질문 줄 아래에 연다. 처음 선택지와 장 목록이 같은 자리에 있고 열린 쪽만 보인다 */
-	const renderMenu = (list: Topic[], heading: string, open: boolean) => {
-		const rows = rowsOf(list);
-		return (
-			<div className="dl-menu" data-open={open || undefined} inert={!open}>
-				<ol
-					className="dl-choices"
-					aria-label={heading}
-					data-cols={Math.ceil(list.length / rows)}
-					style={{ ['--dl-rows' as string]: rows }}
-				>
-					{list.map((topic, i) => {
-						const isRead = read.has(topic.id);
-						const plain = topic.id === LINKS_TOPIC || topic.id === BACK_TOPIC;
-						return (
-							<li key={topic.id}>
-								<button
-									type="button"
-									data-active={(open && i === cursor) || undefined}
-									data-read={isRead || undefined}
-									data-back={topic.id === BACK_TOPIC || undefined}
-									aria-pressed={plain ? undefined : isRead}
-									onClick={() => choose(topic)}
-									onMouseMove={() => i !== cursor && setCursor(i)}
-									onFocus={() => setCursor(i)}
-								>
-									<span className="dl-cursor" aria-hidden="true">
-										♥
-									</span>
-									<span className="dl-label">{topic.label}</span>
-									<em className="dl-check">{isRead && <span aria-label="읽음">✓</span>}</em>
-								</button>
-							</li>
-						);
-					})}
-				</ol>
-			</div>
-		);
-	};
+	const renderMenu = (list: Topic[], heading: string, open: boolean) => (
+		<div className="dl-menu" data-open={open || undefined} inert={!open}>
+			<ol
+				className="dl-choices"
+				aria-label={heading}
+				data-cols={colsOf(list)}
+				style={{ ['--dl-cols' as string]: colsOf(list) }}
+				onScroll={open ? updateMore : undefined}
+			>
+				{list.map((topic, i) => {
+					const isRead = read.has(topic.id);
+					const plain = topic.id === LINKS_TOPIC || topic.id === BACK_TOPIC;
+					return (
+						<li key={topic.id}>
+							<button
+								type="button"
+								data-active={(open && i === cursor) || undefined}
+								data-read={isRead || undefined}
+								data-back={topic.id === BACK_TOPIC || undefined}
+								aria-pressed={plain ? undefined : isRead}
+								onClick={() => choose(topic)}
+								onMouseMove={() => i !== cursor && setCursor(i)}
+								onFocus={() => setCursor(i)}
+							>
+								<span className="dl-cursor" aria-hidden="true">
+									♥
+								</span>
+								<span className="dl-label">{topic.label}</span>
+								<em className="dl-check">{isRead && <span aria-label="읽음">✓</span>}</em>
+							</button>
+						</li>
+					);
+				})}
+			</ol>
+			{/* 위·아래에 더 있는 줄 */}
+			<span className="dl-more" aria-hidden="true">
+				<i data-on={(open && more.up) || undefined}>▲</i>
+				<i data-on={(open && more.down) || undefined}>▼</i>
+			</span>
+		</div>
+	);
 
 	/** 그림 옆(넓은 무대)이나 그림 대신(그림이 없을 때) 서는 게임 화면 */
 	const panelOf = (focus: PanelFocus | 'title' | 'end', side: boolean) =>
 		focus === 'title' || focus === 'end' ? (
 			<TitleScreen project={project} side={side} end={focus === 'end'} />
 		) : (
-			<TopicPanel project={project} focus={focus} side={side} room={stageHeight} />
+			<TopicPanel project={project} focus={focus} side={side} />
 		);
 
 	/** 액자 하나와 그 옆의 작은 게임 화면 (옆 화면은 무대가 좁으면 CSS가 접는다) */
@@ -732,111 +763,119 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		);
 	};
 
+	const portrait = mode.kind === 'topic' ? line?.portrait : undefined;
+	const hint = inMenu
+		? inSub
+			? '방향 키로 고르고 Enter나 Z를 누릅니다. X나 Esc를 누르면 처음 선택지로 돌아갑니다.'
+			: '방향 키로 고르고 Enter나 Z를 누릅니다. 숫자 키로도 고를 수 있습니다.'
+		: slides.length > 1
+			? 'Space, Enter, Z를 누르면 다음으로 넘어갑니다. ←·→로 그림을 넘겨 봅니다.'
+			: 'Space, Enter, Z를 누르면 다음으로 넘어갑니다.';
+
 	return (
 		<div
 			className="dl"
 			data-id={project.id}
 			data-mode={mode.kind}
-			data-fit={fit.height}
-			data-narrow={fit.cols === 1 || undefined}
+			data-fit={screen.compact ? 'compact' : 'screen'}
+			data-stage={screen.stage || undefined}
 			ref={rootRef}
 		>
-			{/* 무대: 지금 이야기하는 그림, 없으면 프로젝트 아이콘 */}
-			<div className="dl-stage" ref={stageRef}>
-				{renderScene()}
-			</div>
+			{/* 게임 화면: 480×270을 정수 배(zoom)로 키운다. 안의 크기는 모두 게임 칸 */}
+			<div className="dl-screen" style={screen.compact ? undefined : { zoom: screen.zoom }} data-zoom={screen.zoom}>
+				<div className="dl-game">
+					{/* 무대: 지금 이야기하는 그림, 없으면 주제의 게임 화면 */}
+					<div className="dl-stage">{renderScene()}</div>
 
-			{/* 대화 상자: * 대사. 선택지 차례에는 질문 아래에 선택지가 열린다 */}
-			<section
-				className="dl-box"
-				role="dialog"
-				aria-label="대화"
-				aria-live="polite"
-				style={{ ['--dl-menu-rows' as string]: menuRows }}
-			>
-				<div className="dl-text" onClick={inMenu ? undefined : next}>
-					<div className="dl-cell">
-						{ghosts.map((g, i) => (
-							<div key={i} className="dl-ghost" aria-hidden="true">
-								<strong className="dl-title" data-text={g.title ?? ''} />
-								<p className="dl-body" data-text={g.body} />
-							</div>
-						))}
+					{/* 대화 상자: * 대사. 선택지 차례에는 질문 아래에 선택지가 열린다. 팀원의 장이면 왼쪽에 얼굴 칸 */}
+					<section
+						className="dl-box"
+						role="dialog"
+						aria-label="대화"
+						aria-live="polite"
+						data-portrait={Boolean(portrait) || undefined}
+					>
+						{portrait && <img className="dl-portrait" src={portrait} alt="" />}
+						<div className="dl-text" onClick={inMenu ? undefined : next}>
+							<div className="dl-cell">
+								{ghosts.map((g, i) => (
+									<div key={i} className="dl-ghost" aria-hidden="true">
+										<strong className="dl-title" data-text={g.title ?? ''} />
+										<p className="dl-body" data-text={g.body} />
+									</div>
+								))}
 
-						{/* 지금 장: 찍힌 글 뒤에 아직 안 찍힌 글을 안 보이게 이어 두어 줄바꿈이 처음부터 끝 모양과 같다 */}
-						{line && (
-							<div className="dl-line">
-								{title && (
-									<strong className="dl-title">
-										{title.slice(0, titleCount)}
-										<span className="dl-rest" data-text={title.slice(titleCount)} aria-hidden="true" />
-									</strong>
+								{/* 지금 장: 찍힌 글 뒤에 아직 안 찍힌 글을 안 보이게 이어 두어 줄바꿈이 처음부터 끝 모양과 같다 */}
+								{line && (
+									<div className="dl-line">
+										{title && (
+											<strong className="dl-title">
+												{title.slice(0, titleCount)}
+												<span className="dl-rest" data-text={title.slice(titleCount)} aria-hidden="true" />
+											</strong>
+										)}
+										<p className="dl-body">
+											{body.slice(0, bodyCount)}
+											<span className="dl-rest" data-text={body.slice(bodyCount)} aria-hidden="true" />
+										</p>
+									</div>
 								)}
-								<p className="dl-body">
-									{body.slice(0, bodyCount)}
-									<span className="dl-rest" data-text={body.slice(bodyCount)} aria-hidden="true" />
-								</p>
 							</div>
-						)}
-					</div>
 
-					<div className="dl-foot">
-						{showLinks ? (
-							<div className="dl-links-slot" data-shown={done || undefined} onClick={(e) => e.stopPropagation()}>
-								<Links project={project} className="sp-links dl-links" />
+							<div className="dl-foot">
+								{showLinks ? (
+									<div className="dl-links-slot" data-shown={done || undefined} onClick={(e) => e.stopPropagation()}>
+										<Links project={project} className="sp-links dl-links" />
+									</div>
+								) : (
+									<span className="dl-count">{progress}</span>
+								)}
+								<button
+									type="button"
+									className="dl-next"
+									data-hidden={inMenu || undefined}
+									data-ready={done || undefined}
+									onClick={(e) => {
+										e.stopPropagation();
+										next();
+									}}
+								>
+									<span className="visually-hidden">다음</span>
+									<i aria-hidden="true">▼</i>
+								</button>
 							</div>
-						) : (
-							<span className="dl-count">{progress}</span>
+						</div>
+
+						{renderMenu(topics, MENU_TITLE, inMenu && !inSub)}
+						{chapters.length > 0 && renderMenu(subList, SUB_TITLE, inSub)}
+					</section>
+
+					{/* 상태 줄: 이름과 기간, 읽은 주제 막대 (HP 막대처럼) */}
+					<div className="dl-status">
+						<span className="dl-status-name">
+							<b>{project.name}</b>
+							{meta && <small>{meta}</small>}
+						</span>
+						{countable.length > 0 && (
+							<span className="dl-hp">
+								<em aria-hidden="true">읽음</em>
+								<span className="dl-hp-bar" aria-hidden="true">
+									<i style={{ width: `${(readCount / countable.length) * 100}%` }} />
+								</span>
+								<span className="dl-hp-count">
+									<span className="visually-hidden">읽은 주제 </span>
+									{readCount} / {countable.length}
+								</span>
+							</span>
 						)}
-						<button
-							type="button"
-							className="dl-next"
-							data-hidden={inMenu || undefined}
-							data-ready={done || undefined}
-							onClick={(e) => {
-								e.stopPropagation();
-								next();
-							}}
-						>
-							<span className="visually-hidden">다음</span>
-							<i aria-hidden="true">▼</i>
-						</button>
 					</div>
 				</div>
 
-				{renderMenu(topics, MENU_TITLE, inMenu && !inSub)}
-				{chapters.length > 0 && renderMenu(subList, SUB_TITLE, inSub)}
-			</section>
-
-			{/* 상태 줄: 이름과 기간, 읽은 주제 막대 (HP 막대처럼) */}
-			<div className="dl-status">
-				<span className="dl-status-name">
-					<b>{project.name}</b>
-					{meta && <small>{meta}</small>}
-				</span>
-				{countable.length > 0 && (
-					<span className="dl-hp">
-						<em aria-hidden="true">읽음</em>
-						<span className="dl-hp-bar" aria-hidden="true">
-							<i style={{ width: `${(readCount / countable.length) * 100}%` }} />
-						</span>
-						<span className="dl-hp-count">
-							<span className="visually-hidden">읽은 주제 </span>
-							{readCount} / {countable.length}
-						</span>
-					</span>
-				)}
+				{/* 키 안내: 화면 아래 한 줄 (자리가 모자라면 읽기 프로그램에만) */}
+				<p className="dl-keys" data-shown={screen.hint || undefined}>
+					{hint}
+				</p>
 			</div>
-
-			<p className="dl-keys">
-				{inMenu
-					? inSub
-						? '방향 키로 고르고 Enter나 Z를 누릅니다. X나 Esc를 누르면 처음 선택지로 돌아갑니다.'
-						: '방향 키로 고르고 Enter나 Z를 누릅니다. 숫자 키로도 고를 수 있습니다.'
-					: slides.length > 1
-						? 'Space, Enter, Z를 누르면 다음으로 넘어갑니다. ←·→로 그림을 넘겨 봅니다.'
-						: 'Space, Enter, Z를 누르면 다음으로 넘어갑니다.'}
-			</p>
 		</div>
 	);
 };

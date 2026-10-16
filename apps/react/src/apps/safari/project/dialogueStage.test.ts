@@ -6,12 +6,14 @@ import {
 	CHEST_CLOSED,
 	CHEST_OPEN,
 	letterOf,
-	MONSTER_COLORS,
+	mirror,
 	MONSTERS,
 	monsterOf,
+	PERSON,
 	periodDays,
+	personColors,
 	pixelRuns,
-	rowsFor,
+	SPRITE_COLORS,
 	slotIcon,
 	splitScore,
 	statusStats,
@@ -51,26 +53,46 @@ describe('techIcon', () => {
 });
 
 describe('칸 그림', () => {
-	it('몬스터와 상자는 모두 같은 폭의 줄이고, 아는 색 글자만 쓴다', () => {
-		for (const rows of [...MONSTERS, CHEST_CLOSED, CHEST_OPEN]) {
-			const width = rows[0].length;
-			expect(width).toBe(16);
-			for (const row of rows) {
-				expect(row).toHaveLength(width);
-				for (const ch of row) expect(ch === '.' || ch in MONSTER_COLORS).toBe(true);
-			}
+	/** 줄 폭이 모두 같고 아는 글자만 쓰는지 */
+	const expectGrid = (rows: readonly string[], width: number, height: number, known: Record<string, string>) => {
+		expect(rows).toHaveLength(height);
+		for (const row of rows) {
+			expect(row).toHaveLength(width);
+			for (const ch of row) expect(ch === '.' || ch in known).toBe(true);
 		}
-		expect(MONSTERS.every((rows) => rows.length === 16)).toBe(true);
+	};
+
+	it('몬스터는 32×32, 상자는 20×16, 사람은 16×24 격자이고 아는 색 글자만 쓴다', () => {
+		for (const rows of MONSTERS) expectGrid(rows, 32, 32, SPRITE_COLORS);
+		expectGrid(CHEST_CLOSED, 20, 16, SPRITE_COLORS);
+		expectGrid(CHEST_OPEN, 20, 16, SPRITE_COLORS);
+		expectGrid(PERSON, 16, 24, personColors('누구'));
+	});
+
+	it('왼쪽 반을 접어 펼치면 좌우가 같다', () => {
+		expect(mirror(['.WR'])).toEqual(['.WRRW.']);
+		for (const rows of [...MONSTERS, CHEST_CLOSED, PERSON])
+			for (const row of rows) expect([...row].reverse().join('')).toBe(row);
+	});
+
+	it('사람의 색은 이름으로 정해져 같은 이름은 늘 같고, 이름이 다르면 대개 다르다', () => {
+		expect(personColors('김하늘')).toEqual(personColors('김하늘'));
+		const looks = new Set(
+			['김하늘', '이도윤', '박서연', '최민준', '정유나'].map((n) => JSON.stringify(personColors(n)))
+		);
+		expect(looks.size).toBeGreaterThan(3);
 	});
 
 	it('차례대로 돌려 쓰고, 이어진 같은 색은 사각형 하나로 묶는다', () => {
 		expect(monsterOf(0)).toBe(MONSTERS[0]);
 		expect(monsterOf(MONSTERS.length)).toBe(MONSTERS[0]);
 		expect(pixelRuns(['.WW.R', 'YYYYY'])).toEqual([
-			{ x: 1, y: 0, w: 2, color: MONSTER_COLORS.W },
-			{ x: 4, y: 0, w: 1, color: MONSTER_COLORS.R },
-			{ x: 0, y: 1, w: 5, color: MONSTER_COLORS.Y },
+			{ x: 1, y: 0, w: 2, color: SPRITE_COLORS.W },
+			{ x: 4, y: 0, w: 1, color: SPRITE_COLORS.R },
+			{ x: 0, y: 1, w: 5, color: SPRITE_COLORS.Y },
 		]);
+		// 다른 색표를 주면 그 색으로, 색표에 없는 글자는 빈칸
+		expect(pixelRuns(['HQ'], { H: '#123456' })).toEqual([{ x: 0, y: 0, w: 1, color: '#123456' }]);
 	});
 });
 
@@ -127,12 +149,5 @@ describe('목록 창', () => {
 		expect(windowAround(10, 0, 4)).toEqual([0, 4]);
 		expect(windowAround(10, 5, 4)).toEqual([4, 8]);
 		expect(windowAround(10, 9, 4)).toEqual([6, 10]);
-	});
-
-	it('무대 높이에 들어가는 줄 수 (적어도 한 줄, 많아야 max)', () => {
-		expect(rowsFor(undefined, 32, 76, 7)).toBe(7);
-		expect(rowsFor(255, 32, 76, 7)).toBe(5);
-		expect(rowsFor(80, 32, 76, 7)).toBe(1);
-		expect(rowsFor(2000, 32, 76, 7)).toBe(7);
 	});
 });
