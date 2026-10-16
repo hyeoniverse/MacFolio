@@ -13,25 +13,25 @@
 	box-shadow: var(--shadow-window);
 	background: var(--color-window-bg, #fff);
 	color: var(--color-text, inherit);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .keyboard-shortcuts h2 {
 	margin: 0 0 4px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .keyboard-shortcuts-sub,
 .keyboard-shortcuts-empty {
 	margin: 0 0 12px;
 	color: var(--color-text-secondary, #6e6e73);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .keyboard-shortcuts h3 {
 	margin: 12px 0 4px;
 	color: var(--color-text-secondary, #6e6e73);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 

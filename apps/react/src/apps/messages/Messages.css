@@ -65,7 +65,7 @@
 	background-color: var(--messages-window-bg);
 	color: var(--messages-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 }
 
@@ -178,7 +178,7 @@
 	border-radius: var(--radius-xl);
 	background: none;
 	color: var(--messages-meta);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .messages-pinned-item.selected {
@@ -248,7 +248,7 @@
 .messages-thread-top time {
 	flex: none;
 	color: var(--messages-meta);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .messages-thread-preview {
@@ -256,7 +256,7 @@
 	overflow: hidden;
 	margin-top: 2px;
 	color: var(--messages-preview);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	line-height: 1.3;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 2;
@@ -339,12 +339,12 @@
 	background-color: var(--messages-float-bg);
 	box-shadow: var(--messages-float-shadow);
 	color: var(--messages-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .messages-chat-subtitle {
 	color: var(--messages-meta);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .messages-transcript {
@@ -356,7 +356,7 @@
 .messages-time {
 	margin: 12px 0 8px;
 	color: var(--messages-meta);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	text-align: center;
 }
 
@@ -387,7 +387,7 @@
 .messages-sender {
 	margin: 2px 14px 3px;
 	color: var(--messages-meta);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .messages-bubble {
@@ -451,7 +451,7 @@
 .messages-receipt {
 	margin: 3px 4px 0 0;
 	color: var(--messages-meta);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 /* 키보드 사용자를 위한 삭제 버튼 (포커스될 때만 보인다. 마우스는 오른쪽 클릭 메뉴) */
@@ -489,7 +489,7 @@
 .messages-as {
 	padding: 0 6px;
 	color: var(--messages-meta);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .messages-as strong {
@@ -534,7 +534,7 @@
 	border-radius: 50%;
 	background-color: var(--messages-sent);
 	color: #ffffff;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .messages-send[hidden] {
@@ -641,7 +641,7 @@
 	padding: 0;
 	background: none;
 	color: var(--messages-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .container.mobile .messages-phone-title {
@@ -675,14 +675,14 @@
 }
 
 .container.mobile .messages-thread-top time {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .container.mobile .messages-thread-chevron {
 	display: inline;
 	margin-left: 6px;
 	color: var(--messages-meta);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 /* 한 화면씩 보므로 고른 대화를 칠하지 않는다 */
@@ -696,13 +696,13 @@
 }
 
 .container.mobile .messages-thread strong {
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 700;
 }
 
 .container.mobile .messages-thread-preview {
 	margin-top: 3px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.35;
 }
 
@@ -714,7 +714,7 @@
 	gap: 8px;
 	margin-top: 56px;
 	padding: 0 24px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .container.mobile .messages-empty-icon {
@@ -759,11 +759,11 @@
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile .messages-phone-search input {
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 대화: 떠 있는 뒤로 가기와 같은 높이에 상대 이름 */
@@ -790,11 +790,11 @@
 /* 대화 머리와 시간·보낸 이: 넓은 창의 11px는 휴대폰에서 작다 */
 .container.mobile .messages-name-pill {
 	padding: 6px 14px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .container.mobile :is(.messages-chat-subtitle, .messages-time, .messages-sender, .messages-receipt) {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .container.mobile .messages-chat-subtitle {
@@ -811,12 +811,12 @@
 	border-radius: 22px;
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* 말풍선과 입력: iOS 크기. 입력 칸은 16px보다 작으면 iOS가 누를 때 화면을 확대한다 */
 .container.mobile .messages-bubble {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .container.mobile .messages-composer {
@@ -827,7 +827,7 @@
 /* 이름 한 줄: 입력 알약 위, 알약 글자와 같은 안쪽 여백에서 시작 */
 .container.mobile .messages-as {
 	padding: 0 16px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .container.mobile .messages-field {
@@ -838,13 +838,13 @@
 
 .container.mobile .messages-field textarea {
 	padding: 8px 0;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .container.mobile .messages-send {
 	width: 36px;
 	height: 36px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* iOS 메시지 목록: 큰 제목 대신 떠 있는 뒤로 가기와 같은 줄 가운데에 작은 제목, 고정 대화는 크게 */
@@ -864,7 +864,7 @@
 .container.mobile .messages-pinned-item.selected {
 	gap: 6px;
 	color: var(--messages-meta);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 휴대폰: 홈 바가 내용 위에 떠 있어, 아래에 떠 있는 것은 홈 바 높이(--phone-bottom-inset)만큼 올린다 */

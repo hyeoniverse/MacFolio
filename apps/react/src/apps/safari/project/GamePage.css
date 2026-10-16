@@ -88,7 +88,7 @@
 	align-items: center;
 	gap: 10px;
 	margin-bottom: 16px;
-	font-size: 22px;
+	font-size: var(--text-title2);
 	font-weight: 800;
 	letter-spacing: 0.04em;
 }
@@ -286,7 +286,7 @@
 .gm-lead {
 	margin-top: 10px;
 	color: var(--gm-muted);
-	font-size: 16px;
+	font-size: var(--text-callout);
 	line-height: 1.55;
 }
 
@@ -307,7 +307,7 @@
 	border-image: url('/imgs/projects/sproutfarm/sprites/button.png') 8 fill / 12px stretch;
 	background: none;
 	color: var(--gm-wood-dark);
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 800;
 }
 
@@ -382,7 +382,7 @@
 }
 
 .gm-hud span {
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .gm-hud strong {
@@ -492,7 +492,7 @@
 }
 
 .gm-bubble h3 {
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 800;
 }
 
@@ -547,7 +547,7 @@
 	box-shadow: 0 3px 0 var(--gm-wood-dark);
 	color: var(--gm-ink);
 	font-family: var(--sp-mono);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: center;
 }
 
@@ -600,7 +600,7 @@
 	border-width: 12px 12px 15px;
 	border-image: url('/imgs/projects/sproutfarm/sprites/panel.png') 4 4 5 fill / 12px 12px 15px stretch;
 	color: var(--gm-ink);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 700;
 	text-align: center;
 }
@@ -795,7 +795,7 @@
 	background-color: var(--gm-grass-dark);
 	color: #ffffff;
 	font-family: var(--sp-mono);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 700;
 }
 
@@ -923,7 +923,7 @@
 	bottom: 0;
 	color: var(--gm-wood-dark);
 	font-family: var(--sp-mono);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 800;
 }
 
@@ -948,13 +948,13 @@
 .gm-item strong {
 	display: block;
 	color: var(--gm-wood-dark);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 800;
 }
 
 .gm-item p {
 	margin-top: 8px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 	line-height: 1.6;
 }
 
@@ -1044,7 +1044,7 @@
 	gap: 14px;
 	max-width: 520px;
 	margin: 32px auto 0;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .gm-staff div {
@@ -1076,7 +1076,7 @@
 	margin-top: 48px;
 	color: #cdbb98;
 	font-family: var(--sp-mono);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	letter-spacing: 0.4em;
 }
 
@@ -1126,14 +1126,14 @@
 .gm-asset-credits dt {
 	color: var(--gm-grass-dark);
 	font-family: var(--sp-mono);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 800;
 	letter-spacing: 0.3em;
 }
 
 .gm-asset-name {
 	margin-top: 2px;
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 800;
 }
 
@@ -1150,7 +1150,7 @@
 
 .gm-asset-name span {
 	color: var(--gm-muted);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
@@ -1165,7 +1165,7 @@
 	margin-top: 56px;
 	color: #ffe9a8;
 	font-family: var(--sp-mono);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 800;
 	letter-spacing: 0.5em;
 }

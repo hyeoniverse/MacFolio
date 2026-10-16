@@ -54,7 +54,7 @@
 	border-radius: 50%;
 	background: none;
 	color: var(--safari-text);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .safari-phone-address {
@@ -67,7 +67,7 @@
 	/* 탭 단추만큼 오른쪽도 비워 주소가 알약 가운데에 온다 */
 	padding-right: 38px;
 	color: var(--safari-text);
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 600;
 }
 
@@ -79,7 +79,7 @@
 
 .safari-phone-address i {
 	color: var(--safari-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .safari-phone-address.placeholder {
@@ -183,7 +183,7 @@
 	gap: 6px;
 	margin-top: 10px;
 	color: var(--safari-text);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 600;
 }
 
@@ -202,7 +202,7 @@
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--safari-text);
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 600;
 }
 
