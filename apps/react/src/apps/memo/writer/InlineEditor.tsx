@@ -26,6 +26,7 @@ import { detailsRemark, detailsSchema, detailsSummarySchema, detailsToggleClick,
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
 import { CONTENT_IMAGES } from '../contentImages';
+import { keyboardInset } from '@/shared/hooks/useKeyboardInset';
 import { editorControls, EMPTY_FORMAT, type Box } from './editorControls';
 import { formatStateOf, runFormat } from './formatCommands';
 import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
@@ -262,7 +263,10 @@ function scrollCaretOnPhone(view: EditorView): boolean {
 	const caret = view.coordsAtPos(view.state.selection.head);
 	const area = scroller.getBoundingClientRect();
 	const top = area.top + PHONE_CARET_MARGIN.top;
-	const bottom = area.bottom - PHONE_CARET_MARGIN.bottom;
+	// 키보드가 올라와 있으면 보이는 바닥은 키보드 위 (서식 알약도 그 위에 떠 있다)
+	const keyboard = keyboardInset();
+	const visibleBottom = keyboard ? Math.min(area.bottom, window.innerHeight - keyboard) : area.bottom;
+	const bottom = visibleBottom - PHONE_CARET_MARGIN.bottom;
 	if (caret.bottom > bottom) scroller.scrollTop += caret.bottom - bottom;
 	else if (caret.top < top) scroller.scrollTop -= top - caret.top;
 	return true;
