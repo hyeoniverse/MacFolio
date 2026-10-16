@@ -1453,3 +1453,22 @@ test.describe('휴대폰 홈 화면 페이지', () => {
 		await selected('2쪽');
 	});
 });
+
+test('활동 상태 보기 (휴대폰): 홈으로 가는 단추 없이 탭 줄과 기간 줄이 카드와 같은 왼쪽 선에서 시작한다', async ({
+	page,
+}) => {
+	await fakeApi(page);
+	await enterHome(page);
+	await (await homeApp(page, '활동 상태 보기')).tap();
+	const activity = appWindow(page, 'activity');
+	await expect(activity.getByRole('tablist', { name: '보기' })).toBeVisible();
+	// iOS의 탭으로 나눈 앱처럼 첫 화면에는 뒤로 가기가 없다 (홈 바로 나간다)
+	await expect(page.locator('.container.mobile[data-app="activity"] .mobile-navbar')).toHaveCount(0);
+	const left = async (locator: ReturnType<typeof activity.locator>) =>
+		Math.round((await locator.first().boundingBox())!.x);
+	const card = await left(activity.locator('.activity-stat'));
+	await expect.poll(() => left(activity.getByRole('tablist', { name: '보기' }))).toBe(card);
+	expect(await left(activity.locator('.activity-toolbar label, .activity-toolbar select').first())).toBeLessThanOrEqual(
+		card + 1
+	);
+});
