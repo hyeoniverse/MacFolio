@@ -251,6 +251,11 @@ test('dialogue: 트러블슈팅은 버그와의 전투(HP가 단계마다 준다
 	// 무대 뒤는 전투 들판, 몬스터는 발판 위에 선다
 	await expect(panel.locator('.dl-game')).toHaveAttribute('data-scene', 'field');
 	await expect(battle.locator('.dlp-on svg.dlp-platform')).toBeVisible();
+	// 장면은 픽셀 타일 그림 캔버스 (낮·밤 두 장 중 테마에 맞는 한 장만 보인다), 아이콘은 Font Awesome이 아닌 픽셀 아이콘
+	await expect(panel.locator('.dl-game > canvas.dl-backdrop')).toHaveCount(2);
+	await expect(panel.locator('.dl-game > canvas.dl-backdrop:visible')).toHaveCount(1);
+	await expect(battle.locator('.dlp-battle-menu svg').first()).toBeVisible();
+	await expect(panel.locator('.dl-stage [class*="fa-"]')).toHaveCount(0);
 	await expect(battle.locator('.dlp-hp-track')).toHaveAttribute('data-level', 'high');
 	const hp = battle.locator('.dlp-hp');
 	const seen: number[] = [];

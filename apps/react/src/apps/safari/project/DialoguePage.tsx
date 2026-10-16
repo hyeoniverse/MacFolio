@@ -1,7 +1,7 @@
 // dialogue 모양: 포켓몬 GBA 전투 화면 같은 밝은 고전 RPG 대화창. 페이지 가운데에 480×270 게임 화면 하나를 정수 배로 키워 띄운다
 // (글자·테두리·픽셀 그림이 한 격자를 나눠 쓰게). 화면 위쪽은 무대, 아래 1/3은 두꺼운 테두리 대화 상자, 맨 아래 한 줄은 상태 줄.
-// 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다. 무대 뒤에는 주제마다 납작한 색 띠 장면(sceneOf)을
-// 깔고, 라이트는 낮, 다크는 밤의 색이다.
+// 프로젝트가 화자가 되어 소개를 대화로 들려주고, 묻고 싶은 주제를 선택지로 고른다. 무대 뒤에는 주제마다 16×16 타일과 소품으로 칠한
+// 픽셀 장면(sceneOf, dialogueScenes.ts)을 캔버스로 깔고, 라이트는 낮 팔레트, 다크는 같은 그림의 밤 팔레트다.
 // 무대에는 주제마다 게임 화면 하나(타이틀, 퀘스트, 전투, 파티, 장비...: DialoguePanels.tsx)를 데이터로 그려 대사가 말하는 항목을 짚는다.
 // 그 장에 그림이 있으면 그림을 액자에 원래 모습 그대로 띄우고 게임 화면은 옆에 작게 둔다
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -11,6 +11,7 @@ import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import type { TroubleStepKey } from '@/apps/safari/project/landing/content';
 import { sceneOf, troubleKeys } from '@/apps/safari/project/dialogueStage';
 import { TitleScreen, TopicPanel, type PanelFocus } from '@/apps/safari/project/DialoguePanels';
+import { PixelImage, SceneBackdrop } from '@/apps/safari/project/DialoguePixels';
 import '@/apps/safari/project/DialoguePage.css';
 
 /** 무대에 띄우는 그림(또는 영상) 한 장. caption이 있으면 그림 아래에 작게 적는다 */
@@ -790,6 +791,8 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			{/* 게임 화면: 480×270을 정수 배(zoom)로 키운다. 안의 크기는 모두 게임 칸 */}
 			<div className="dl-screen" style={screen.compact ? undefined : { zoom: screen.zoom }} data-zoom={screen.zoom}>
 				<div className="dl-game" data-scene={scene}>
+					{/* 무대 뒤의 타일 장면 (낮·밤 두 장 중 테마에 맞는 한 장) */}
+					<SceneBackdrop scene={scene} />
 					{/* 무대: 지금 이야기하는 그림, 없으면 주제의 게임 화면 */}
 					<div className="dl-stage">{renderScene()}</div>
 
@@ -801,7 +804,8 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 						aria-live="polite"
 						data-portrait={Boolean(portrait) || undefined}
 					>
-						{portrait && <img className="dl-portrait" src={portrait} alt="" />}
+						{/* 얼굴 칸: 사진을 24×24 픽셀 초상으로 줄여 두 배 */}
+						{portrait && <PixelImage src={portrait} size={24} scale={2} cover className="dl-portrait" />}
 						<div className="dl-text" onClick={inMenu ? undefined : next}>
 							<div className="dl-cell">
 								{ghosts.map((g, i) => (
