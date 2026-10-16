@@ -1,10 +1,10 @@
 // RPG 대화창(DialoguePage)의 무대 그림판: 주제마다 고전 게임 화면 하나 (타이틀, 퀘스트, 스킬 트리, 전투, 파티, 장비, 상태, 월드 맵, 보물, 기록...).
-// 무대는 360×208 게임 화면(DialoguePage.css) 안의 가운데 칸(348×100쯤)이고, 크기는 모두 게임 화면의 칸(px) 단위다. 주제마다 큰 그림 하나(몬스터, 사람, 상자, 길...)를
-// 가운데에 두고, 글은 짧게(지금 항목과 이웃 둘까지만) 둔다. 어디인지(주제, n/N)는 화면 위 길잡이 줄이 말하므로 그림판에는 머리줄이 없다.
-// 자세한 글은 대화 상자에 있으므로 그림판은 꾸밈(aria-hidden)이고,
-// 보물 상자의 링크만 실제로 누르고 읽을 수 있다. 틀은 무대에 그리지 않는다 (상자 안의 상자가 되지 않게).
-// 몬스터·파티원·상자·초상은 포켓몬 전투처럼 흙 발판 위에 서고, 그림마다 짙은 외곽선을 둘러 밝은 장면에서도 읽힌다.
-// 아이콘은 모두 픽셀 아이콘(dialogueIcons.ts)이고, 글은 장면 위에 바로 두지 않고 GBA 창처럼 작은 틀 상자(.dlp-win)에 담는다
+// 무대는 게임 화면(DialoguePage.css)의 길잡이와 대화 창 사이(높이 100칸쯤, 폭은 화면 폭을 따른다)이고, 크기는 모두 게임 칸(px) 단위다.
+// 주제마다 큰 그림 하나(몬스터, 사람, 상자, 길...)를 가운데에 두고, 글은 짧게(지금 항목과 이웃 둘까지만) 둔다.
+// 어디인지(주제, n/N)는 화면 왼쪽 위 길잡이가 말하므로 그림판에는 머리줄이 없다. 자세한 글은 대화 창에 있으므로 그림판은 꾸밈(aria-hidden)이고,
+// 보물 상자의 링크만 실제로 누르고 읽을 수 있다. 몬스터·파티원·상자·초상은 흙 발판 위에 서고, 그림마다 짙은 외곽선을 둘러 밝은 장면에서도 읽힌다.
+// 아이콘은 모두 픽셀 아이콘(dialogueIcons.ts)이고, 글은 장면 위에 바로 두지 않고 대화 창과 같은 반투명한 짙은 창(.dlp-win)이나 이름표(.dlp-tag)에 담는다.
+// 지금 항목은 금색과 ▶, 지난 것은 흐린 글과 ✓
 import React from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { PROFILE } from '@/shared/profile';
@@ -159,7 +159,7 @@ const QuestLog: React.FC<PanelProps & { points: ProjectPoint[] }> = ({ points, f
 						const state = stateOf(i, at);
 						return (
 							<li key={i} data-state={state}>
-								<span className="dlp-mark">{state === 'now' ? '♥' : state === 'done' ? '✓' : ''}</span>
+								<span className="dlp-mark">{state === 'now' ? '▶' : state === 'done' ? '✓' : ''}</span>
 								<span className="dlp-text">{p.title}</span>
 							</li>
 						);
@@ -191,7 +191,7 @@ const NodeRow: React.FC<PanelProps & { points: ProjectPoint[]; kind: 'tree' | 's
 								<PixelIcon name={faPixelIcon(iconOf(p, i))} scale={2} />
 							</span>
 							<span className="dlp-node-name">
-								{i === at && <span className="dlp-mark">♥</span>}
+								{i === at && <span className="dlp-mark">▶</span>}
 								{p.title}
 							</span>
 						</li>
@@ -203,7 +203,7 @@ const NodeRow: React.FC<PanelProps & { points: ProjectPoint[]; kind: 'tree' | 's
 };
 
 // ─── 전투: 트러블슈팅 한 건이 버그 몬스터 하나. 문제(등장) → 원인(살피기) → 해결(싸우기) → 결과(쓰러뜨림) ───
-/** 언더테일의 아래 줄처럼 네 칸 (꾸밈): 원인을 살필 때는 '살피기', 해결할 때는 '싸우기'에 하트가 온다 */
+/** 명령 네 칸 (꾸밈): 원인을 살필 때는 '살피기', 해결할 때는 '싸우기'에 커서가 온다 */
 const BATTLE_MENU: { label: string; icon: IconName; on?: TroubleStepKey }[] = [
 	{ label: '싸우기', icon: 'sword', on: 'solution' },
 	{ label: '살피기', icon: 'magnifier', on: 'cause' },
@@ -224,39 +224,42 @@ const Battle: React.FC<PanelProps> = ({ project, focus, side }) => {
 	return (
 		<Panel kind="troubleshooting" side={side}>
 			<div className="dlp-battle" data-step={step}>
-				<div className="dlp-arena" data-defeated={defeated || undefined}>
-					{/* 포켓몬처럼 왼쪽 위에 이름·HP 창, 오른쪽에 발판 위의 몬스터 */}
-					<div className="dlp-hp dlp-win" data-hp={hp}>
-						<b className="dlp-foe-name">{item.title}</b>
-						<em>HP</em>
-						<span className="dlp-hp-track" data-level={hpLevel(hp)}>
-							<i style={{ width: `${hp}%` }} />
-						</span>
-						<span className="dlp-hp-num">{hp}</span>
-					</div>
-					<OnPlatform width={side ? 30 : 44} height={side ? 6 : 8}>
-						<Pixels rows={monster} colors={monsterColors(at)} scale={side ? 1 : 2} className="dlp-monster" />
-					</OnPlatform>
-				</div>
+				{/* 왼쪽 명령 창 (꾸밈): 원인을 살필 때는 '살피기', 해결할 때는 '싸우기'에 커서가 온다 */}
 				{!side && (
 					<ul className="dlp-battle-menu dlp-win">
 						{BATTLE_MENU.map((entry) => {
 							const on = entry.on === step;
 							return (
 								<li key={entry.label} data-on={on || undefined}>
-									{on ? <span className="dlp-heart">♥</span> : <PixelIcon name={entry.icon} />}
+									<span className="dlp-mark">{on ? '▶' : ''}</span>
+									<PixelIcon name={entry.icon} />
 									{entry.label}
 								</li>
 							);
 						})}
 					</ul>
 				)}
+				{/* 발판 위의 몬스터, 그 위에 이름과 가는 HP 막대 */}
+				<div className="dlp-arena" data-defeated={defeated || undefined}>
+					<div className="dlp-hp dlp-win" data-hp={hp}>
+						<span className="dlp-hp-head">
+							<b className="dlp-foe-name">{item.title}</b>
+							<span className="dlp-hp-num">{hp}</span>
+						</span>
+						<span className="dlp-hp-track" data-level={hpLevel(hp)}>
+							<i style={{ width: `${hp}%` }} />
+						</span>
+					</div>
+					<OnPlatform width={side ? 30 : 44} height={side ? 6 : 8}>
+						<Pixels rows={monster} colors={monsterColors(at)} scale={side ? 1 : 2} className="dlp-monster" />
+					</OnPlatform>
+				</div>
 			</div>
 		</Panel>
 	);
 };
 
-// ─── 파티: 팀원이 픽셀 사람으로 한 줄에 선다(넷까지, 지금 사람과 이웃). 지금 사람은 이름표에 ♥, 나는 ★ 나 ───
+// ─── 파티: 팀원이 픽셀 사람으로 한 줄에 선다(넷까지, 지금 사람과 이웃). 지금 사람은 이름표에 ▶, 나는 ★ 나 ───
 const Party: React.FC<PanelProps> = ({ project, focus, side }) => {
 	const team = project.team ?? [];
 	const at = focus.item ?? -1;
@@ -274,7 +277,7 @@ const Party: React.FC<PanelProps> = ({ project, focus, side }) => {
 								<Person name={member.name} scale={side ? 1 : 2} />
 							</OnPlatform>
 							<b className="dlp-member dlp-tag">
-								{i === at && <span className="dlp-mark">♥</span>}
+								{i === at && <span className="dlp-mark">▶</span>}
 								{member.name}
 							</b>
 							{member.me && <em className="dlp-me dlp-tag">★ 나</em>}
@@ -315,7 +318,7 @@ const Equipment: React.FC<PanelProps> = ({ project, focus, side }) => {
 				)}
 				{stack.length > 0 && (
 					<div className="dlp-bag dlp-win" data-on={bag || undefined}>
-						<span className="dlp-mark">{bag ? '♥' : ''}</span>
+						<span className="dlp-mark">{bag ? '▶' : ''}</span>
 						<small>가방</small>
 						<span className="dlp-techs">
 							{stack.slice(0, side ? 4 : 10).map((name) => (
@@ -366,7 +369,7 @@ const Status: React.FC<PanelProps> = ({ project, focus, side }) => {
 					)}
 					{list.length > 0 && (
 						<p className="dlp-skill" data-now={at >= 0 || undefined}>
-							<span className="dlp-mark">{at >= 0 ? '♥' : '✦'}</span>
+							<span className="dlp-mark">{at >= 0 ? '▶' : '✦'}</span>
 							<small>특기</small>
 							<span>{at >= 0 ? `${at + 1} / ${list.length}` : `${list.length}가지`}</span>
 						</p>
@@ -471,7 +474,7 @@ const Treasure: React.FC<PanelProps> = ({ project, focus, side }) => {
 						return (
 							<li key={item.label} data-state={state}>
 								<span className="dlp-mark" aria-hidden="true">
-									{state === 'now' ? '♥' : state === 'done' ? '✓' : ''}
+									{state === 'now' ? '▶' : state === 'done' ? '✓' : ''}
 								</span>
 								{item.url ? (
 									<a href={item.url} target="_blank" rel="noopener noreferrer">
@@ -551,7 +554,7 @@ const Controls: React.FC<PanelProps> = ({ project, focus, side }) => {
 					const i = start + k;
 					return (
 						<li key={control.label} data-state={stateOf(i, at)}>
-							<span className="dlp-mark">{i === at ? '♥' : ''}</span>
+							<span className="dlp-mark">{i === at ? '▶' : ''}</span>
 							<span className="dlp-caps">
 								{control.keys.map((key) => (
 									<kbd key={key}>{key}</kbd>

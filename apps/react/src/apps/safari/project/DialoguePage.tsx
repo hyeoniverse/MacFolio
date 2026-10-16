@@ -1,9 +1,10 @@
-// dialogue 모양: 포켓몬 GBA 전투 화면 같은 밝은 고전 RPG 대화창. 페이지 가운데에 360×208 게임 화면 하나를 정수 배로 키워 띄운다
-// (글자·테두리·픽셀 그림이 한 격자를 나눠 쓰게). 전체 화면 Safari에서 세 배가 되도록 해상도를 낮게 잡아 글자가 크다.
-// 화면은 위에서부터 길잡이 줄(메뉴 ▸ 주제 ▸ n/N 항목, 단계 점, 메뉴로 단추), 무대, 이름표와 두 줄 대화 상자, 키 안내 줄.
-// 프로젝트가 화자가 되어 소개를 대화로 들려주고, 메뉴는 번호 붙은 여정 목록(읽음 ✓, 다음 차례 NEXT)에서 주제를 고른다.
-// 무대 뒤에는 주제마다 16×16 타일과 소품으로 칠한 픽셀 장면(sceneOf, dialogueScenes.ts)을 캔버스로 깔고(낮·밤 팔레트),
-// 글은 장면 위에 바로 두지 않고 늘 단단한 창 안에 둔다. 무대에는 주제마다 게임 화면 하나(DialoguePanels.tsx)를 그려
+// dialogue 모양: 현대 픽셀 RPG(Celeste, Sea of Stars) 같은 대화창. Safari 페이지 전체가 게임 화면이다.
+// 페이지 높이에 맞춰 정수 배(zoom)를 고르고(게임 칸이 세로 200칸 이상 되는 가장 큰 배수), 게임 화면은 페이지를 그 배수로 나눈 크기
+// (폭·높이가 창마다 다르다). 그 크기 그대로 16×16 타일 장면(sceneOf, dialogueScenes.ts)을 화면 가득 칠하고(낮·밤 팔레트),
+// 창들은 화면 가장자리에 붙여 장면 위에 조용히 얹는다: 왼쪽 위 길잡이(메뉴 ▸ 주제 ▸ n/N 항목, 단계 점, 읽은 주제),
+// 오른쪽 위 메뉴로 단추, 아래 대화 창(이름표, 두 줄 대사, 오른쪽 아래 키 안내와 ▼). 메뉴 차례에는 오른쪽에 번호 붙은 여정 목록이 서고,
+// 커서가 가리키는 주제의 장면과 그림이 바로 미리보기다. 창은 반투명한 짙은 바탕에 1칸 밝은 테두리(모서리 한 칸을 깎는다)라
+// 장면의 색이 비치면서도 글은 늘 짙은 창 안에서 읽힌다. 무대에는 주제마다 게임 화면 하나(DialoguePanels.tsx)를 그려
 // 대사가 말하는 항목을 짚고, 그 장에 그림이 있으면 그림을 액자에 원래 모습 그대로 띄우고 게임 화면은 옆에 작게 둔다
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
@@ -12,7 +13,8 @@ import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import type { TroubleStepKey } from '@/apps/safari/project/landing/content';
 import { nextUnread, paginate, sceneOf, shorten, troubleKeys } from '@/apps/safari/project/dialogueStage';
 import { TitleScreen, TopicPanel, type PanelFocus } from '@/apps/safari/project/DialoguePanels';
-import { PixelImage, SceneBackdrop } from '@/apps/safari/project/DialoguePixels';
+import { PixelIcon, PixelImage, SceneBackdrop } from '@/apps/safari/project/DialoguePixels';
+import type { IconName } from '@/apps/safari/project/dialogueIcons';
 import '@/apps/safari/project/DialoguePage.css';
 
 /** 무대에 띄우는 그림(또는 영상) 한 장. caption이 있으면 그림 아래에 작게 적는다 */
@@ -118,18 +120,24 @@ function buildAlbum(project: Project): { slides: Slide[]; fromGallery: boolean }
 	};
 }
 
-/** 게임 화면의 크기(CSS px). 모든 것을 이 칸 단위로 그리고, 화면 전체를 정수 배로 키운다 */
-const SCREEN_W = 360;
-const SCREEN_H = 208;
-/** 대화 상자의 글 폭(게임 칸): 화면 360 − 양옆 여백 6·6 − 테두리 3·3 − 안쪽 여백 8(왼쪽)·16(오른쪽, ▼ 자리) */
-const TEXT_W = 318;
-/** 얼굴 칸(32)과 그 옆 틈: 얼굴이 있으면 글 왼쪽 여백이 8에서 42로 는다 (넉넉히 38을 뺀다) */
+/** 게임 화면의 가장 작은 크기(게임 칸): 세로가 이만큼 되는 가장 큰 정수 배로 키운다 (가로도 이만큼은 되어야 한다) */
+const MIN_GAME_H = 200;
+const MIN_GAME_W = 340;
+/** 대화 창의 가장 큰 폭(게임 칸). 이보다 넓은 화면에서는 가운데에 둔다 */
+const TALK_MAX = 560;
+/** 대화 창의 글 폭 = 창 폭 − 테두리 1·1 − 안쪽 여백 10·10 */
+const TALK_PAD = 22;
+/** 화면 폭(게임 칸)에서 대화 창의 글 폭: 창은 양옆 4칸 여백을 두고 화면을 가로지른다 */
+const textWidthOf = (screenW: number) => Math.min(screenW - 8, TALK_MAX) - TALK_PAD;
+/** 얼굴 칸(32)과 그 옆 틈 6: 얼굴이 있으면 글이 그만큼 좁다 */
 const PORTRAIT_W = 38;
+/** 메뉴 목록 창의 폭(게임 칸, DialoguePage.css의 --dl-menu-w와 같다) */
+const MENU_W = 184;
 /** 길잡이 줄의 단계 점은 이 수까지만 (더 많으면 n/N만) */
 const MAX_PIPS = 12;
 
 /** 긴 글은 두 줄씩 여러 장으로 (같은 제목과 장면을 이어 쓴다). 항목마다 묶음 안의 차례(entry)를 적는다 */
-function paginateTopic(lines: Line[]): Line[] {
+function paginateTopic(lines: Line[], width: number): Line[] {
 	const totals = new Map<string, number>();
 	for (const line of lines) totals.set(line.group ?? '', (totals.get(line.group ?? '') ?? 0) + 1);
 	const seen = new Map<string, number>();
@@ -137,13 +145,13 @@ function paginateTopic(lines: Line[]): Line[] {
 		const key = line.group ?? '';
 		const entry = seen.get(key) ?? 0;
 		seen.set(key, entry + 1);
-		const pages = paginate(line.body, line.portrait ? TEXT_W - PORTRAIT_W : TEXT_W);
+		const pages = paginate(line.body, line.portrait ? width - PORTRAIT_W : width);
 		return pages.map((body) => ({ ...line, body, entry, entries: totals.get(key) }));
 	});
 }
 
 /** 프로젝트 데이터에서 메뉴의 주제를 만든다. 비어 있는 주제는 메뉴에 안 나온다. chapters는 두 번째 메뉴(sub)로 */
-function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cover: string | undefined) {
+function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cover: string | undefined, textW: number) {
 	// 항목 하나는 설명 한 장, 자세히가 있으면 이어서 한 장 더 (같은 제목과 장면)
 	const points = (items: ProjectPoint[]): Line[] =>
 		items.flatMap((p, item) => {
@@ -301,7 +309,7 @@ function buildTopics(project: Project, album: Slide[], fromGallery: boolean, cov
 		],
 	});
 
-	for (const topic of [...filled, ...chapters]) topic.lines = paginateTopic(topic.lines);
+	for (const topic of [...filled, ...chapters]) topic.lines = paginateTopic(topic.lines, textW);
 	const thumbOf = (topic: Topic) => topic.lines.flatMap((l) => l.media ?? []).find((s) => !s.video)?.src;
 	for (const topic of chapters) topic.thumb = thumbOf(topic);
 	filled.forEach((topic) => {
@@ -351,23 +359,46 @@ const ENDING: Line = {
 	body: '모든 주제를 다 봤습니다. 끝까지 들어 주셔서 고맙습니다. 메뉴에서 어떤 주제든 다시 볼 수 있습니다.',
 };
 
+/** 게임 화면의 크기: zoom(정수 배)과 게임 칸 폭·높이. compact면 키우지 않고 페이지 폭에 맞춘 단순한 배치 */
+interface Screen {
+	zoom: number;
+	compact: boolean;
+	/** compact에서 무대를 둘 높이가 되는지 */
+	stage: boolean;
+	w: number;
+	h: number;
+}
+
 /**
- * 스크롤 상자(.safari-page)의 크기에 맞춘다. @container는 높이로 물을 수 없어 JS로 잰다.
- * zoom: 360×208이 들어가는 가장 큰 정수 배 (모든 칸이 같은 배수로 커져 픽셀이 고르다).
- * 한 배도 안 들어가면(아주 좁거나 낮은 창) compact: 키우지 않고 창 폭에 맞춘 단순한 배치. stage는 그때 무대를 둘 높이가 되는지
+ * 스크롤 상자(.safari-page)를 꽉 채운다. @container는 높이로 물을 수 없어 JS로 잰다.
+ * zoom: 게임 칸이 세로 MIN_GAME_H, 가로 MIN_GAME_W 이상 되는 가장 큰 정수 배. 게임 화면은 페이지를 zoom으로 나눠 올림한 크기라
+ * 오른쪽·아래가 많아야 zoom − 1 px 잘린다(모든 칸이 같은 배수로 커져 픽셀이 고르다).
+ * 한 배도 안 되면(아주 좁거나 낮은 창) compact: 키우지 않고 페이지 폭에 맞춘 한 열 배치
  */
-function useScreen(ref: React.RefObject<HTMLElement | null>) {
-	const [screen, setScreen] = useState({ zoom: 1, compact: false, stage: true });
+function useScreen(ref: React.RefObject<HTMLElement | null>): Screen {
+	const [screen, setScreen] = useState<Screen>({ zoom: 1, compact: false, stage: true, w: 360, h: 208 });
 	useEffect(() => {
 		const box = ref.current?.closest('.safari-page') ?? ref.current?.parentElement;
 		if (!box || typeof ResizeObserver === 'undefined') return;
 		const measure = () => {
-			const w = box.clientWidth;
-			const h = box.clientHeight;
-			const zoom = Math.floor(Math.min(w / SCREEN_W, h / SCREEN_H));
-			const next = zoom >= 1 ? { zoom, compact: false, stage: true } : { zoom: 1, compact: true, stage: h >= 420 };
+			// 안쪽 여백(휴대폰 Safari의 상태 막대·아래 막대 자리)을 뺀 크기
+			const style = getComputedStyle(box);
+			const w = box.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+			const h = box.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+			if (w <= 0 || h <= 0) return;
+			const zoom = Math.min(Math.floor(h / MIN_GAME_H), Math.floor(w / MIN_GAME_W));
+			const next: Screen =
+				zoom >= 1
+					? { zoom, compact: false, stage: true, w: Math.ceil(w / zoom), h: Math.ceil(h / zoom) }
+					: { zoom: 1, compact: true, stage: h >= 420, w, h };
 			setScreen((prev) =>
-				prev.zoom === next.zoom && prev.compact === next.compact && prev.stage === next.stage ? prev : next
+				prev.zoom === next.zoom &&
+				prev.compact === next.compact &&
+				prev.stage === next.stage &&
+				prev.w === next.w &&
+				prev.h === next.h
+					? prev
+					: next
 			);
 		};
 		measure();
@@ -378,7 +409,35 @@ function useScreen(ref: React.RefObject<HTMLElement | null>) {
 	return screen;
 }
 
-/** 그림 한 장: 흰 테두리 액자에 원래 모습 그대로. 영상은 소리 없이 반복한다. 액자 아래 줄에 이름(caption)과 넘기기 단추 */
+/** 메뉴 줄의 픽셀 아이콘: 주제마다 하나 (장은 두루마리) */
+const TOPIC_ICONS: Record<string, IconName> = {
+	highlights: 'star',
+	build: 'hammer',
+	troubleshooting: 'bug',
+	usage: 'scroll',
+	facts: 'chart',
+	controls: 'key',
+	timeline: 'map',
+	specs: 'gear',
+	team: 'people',
+	contributions: 'shield',
+	deployments: 'chest',
+	credits: 'book',
+	more: 'bag',
+	gallery: 'monitor',
+	links: 'globe',
+	back: 'flag',
+};
+const topicIcon = (id: string): IconName => TOPIC_ICONS[id] ?? 'scroll';
+
+/** 키 안내 한 묶음: 키 모양들과 하는 일. joined면 키 사이에 (읽기용으로만) 빗금을 넣어 'Z/Enter'로 읽힌다 */
+interface Hint {
+	keys: string[];
+	label: string;
+	joined?: boolean;
+}
+
+/** 그림 한 장: 얇은 테두리 액자에 원래 모습 그대로. 영상은 소리 없이 반복한다. 액자 아래 줄에 이름(caption)과 넘기기 단추 */
 const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNode }> = ({
 	slide,
 	caption,
@@ -416,9 +475,13 @@ const Frame: React.FC<{ slide: Slide; caption?: string; children?: React.ReactNo
 const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const { slides: album, fromGallery } = useMemo(() => buildAlbum(project), [project]);
 	const cover = project.image || album[0]?.src;
+	const rootRef = useRef<HTMLDivElement>(null);
+	const screen = useScreen(rootRef);
+	// 대화 창의 글 폭(게임 칸): 화면 폭을 따라 한 장에 담는 글의 양이 달라진다
+	const textW = textWidthOf(screen.compact ? Math.min(screen.w, 360) : screen.w);
 	const { topics, chapters } = useMemo(
-		() => buildTopics(project, album, fromGallery, cover),
-		[project, album, fromGallery, cover]
+		() => buildTopics(project, album, fromGallery, cover, textW),
+		[project, album, fromGallery, cover, textW]
 	);
 	const [mode, setMode] = useState<Mode>({ kind: 'greet', at: 0 });
 	const [read, setRead] = useState<Set<string>>(() => new Set());
@@ -426,8 +489,6 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const [endingSeen, setEndingSeen] = useState(false);
 	// 메뉴의 ♥ 커서 (마우스를 올리거나 방향 키로 옮긴다). 지금 열린 메뉴(처음 또는 장 목록) 안의 차례
 	const [cursor, setCursor] = useState(0);
-	const rootRef = useRef<HTMLDivElement>(null);
-	const screen = useScreen(rootRef);
 
 	const back: Topic = useMemo(() => ({ id: BACK_TOPIC, label: '처음 메뉴로', lines: [] }), []);
 	const subList = useMemo(() => [...chapters, back], [chapters, back]);
@@ -442,11 +503,11 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const greetLines: Line[] = useMemo(() => {
 		const body = [project.description, project.context].filter(Boolean).join(' · ');
 		const media = cover ? [{ src: cover }] : undefined;
-		return paginate(body, TEXT_W).map((page) => ({ title: project.tagline, body: page, media }));
-	}, [project, cover]);
+		return paginate(body, textW).map((page) => ({ title: project.tagline, body: page, media }));
+	}, [project, cover, textW]);
 	const endingLines: Line[] = useMemo(
-		() => paginate(ENDING.body, TEXT_W).map((page) => ({ title: ENDING.title, body: page })),
-		[]
+		() => paginate(ENDING.body, textW).map((page) => ({ title: ENDING.title, body: page })),
+		[textW]
 	);
 
 	/** 메뉴 목록 안의 자리: 장은 처음 메뉴에서는 '더 많은 이야기' 줄 */
@@ -648,7 +709,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				}
 			} else if (confirm) {
 				// 링크·단추(보물 상자의 링크, 메뉴로 단추 포함)에 포커스가 있으면 Space·Enter는 그 단추가 받는다
-				if (key !== 'z' && target?.closest('.dl-linkbar, .dl-stage a, .dl-hud button')) return;
+				if (key !== 'z' && target?.closest('.dl-linkbar, .dl-stage a, .dl-tomenu')) return;
 				event.preventDefault();
 				next();
 			} else if (leave) {
@@ -702,16 +763,22 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		</span>
 	);
 
-	const hint =
+	// 지금 누를 수 있는 키 (읽으면 'Z/Enter 다음 · X 메뉴로')
+	const confirmKeys: Hint['keys'] = ['Z', 'Enter'];
+	const hints: Hint[] =
 		mode.kind === 'menu'
-			? mode.sub
-				? '↑↓ 고르기 · Z/Enter 보기 · X 처음 메뉴로'
-				: '↑↓ 고르기 · Z/Enter 보기 · 숫자 바로 가기'
+			? [
+					{ keys: ['↑', '↓'], label: '고르기' },
+					{ keys: confirmKeys, label: '보기', joined: true },
+					mode.sub ? { keys: ['X'], label: '처음 메뉴로' } : { keys: ['1–9'], label: '바로 가기' },
+				]
 			: ended || mode.kind === 'ending'
-				? 'Z/Enter 메뉴로 돌아가기'
-				: slides.length > 1
-					? 'Z/Enter 다음 · ←→ 그림 넘기기 · X 메뉴로'
-					: 'Z/Enter 다음 · X 메뉴로';
+				? [{ keys: confirmKeys, label: '메뉴로 돌아가기', joined: true }]
+				: [
+						{ keys: confirmKeys, label: '다음', joined: true },
+						...(slides.length > 1 ? [{ keys: ['←', '→'], label: '그림 넘기기' }] : []),
+						{ keys: ['X'], label: '메뉴로' },
+					];
 
 	/** 메뉴 한 벌: 번호 붙은 여정 목록. 읽은 주제는 ✓, 다음 차례는 NEXT. 처음 메뉴와 장 목록이 같은 자리에 있고 열린 쪽만 보인다 */
 	const renderMenu = (list: Topic[], heading: string, open: boolean) => {
@@ -737,11 +804,12 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 									onFocus={() => setCursor(i)}
 								>
 									<span className="dl-cursor" aria-hidden="true">
-										♥
+										▶
 									</span>
 									<span className="dl-num" aria-hidden="true">
 										{i + 1}
 									</span>
+									<PixelIcon name={isChapter(topic.id) ? 'scroll' : topicIcon(topic.id)} className="dl-row-icon" />
 									<span className="dl-label">{topic.label}</span>
 									<em className="dl-check">{isRead && <span aria-label="읽음">✓</span>}</em>
 									{isNext && (
@@ -764,6 +832,26 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		);
 	};
 
+	/** 메뉴 목록 아래 한 줄: 커서 주제의 장 수와 읽음 (읽기 프로그램에는 단추의 이름과 눌림으로 알린다) */
+	const menuInfo = (() => {
+		if (mode.kind !== 'menu') return '';
+		const focus = visible[cursor];
+		if (!focus) return '';
+		const id = focus.id;
+		const state = UNCOUNTED.has(id)
+			? id === BACK_TOPIC
+				? '처음 메뉴로 돌아갑니다.'
+				: '링크를 모아 둔 곳입니다.'
+			: read.has(id)
+				? '이미 읽은 주제입니다.'
+				: id === nextTopic?.id
+					? '다음에 읽을 차례입니다.'
+					: '아직 읽지 않은 주제입니다.';
+		const size =
+			id === MORE_TOPIC ? `이야기 ${chapters.length}개` : !UNCOUNTED.has(id) ? `${focus.lines.length}장` : '';
+		return [size, state].filter(Boolean).join(' · ');
+	})();
+
 	/** 그림 옆(넓은 무대)이나 그림 대신(그림이 없을 때) 서는 게임 화면 */
 	const panelOf = (focus: PanelFocus | 'title' | 'end', side: boolean) =>
 		focus === 'title' || focus === 'end' ? (
@@ -780,39 +868,20 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		</>
 	);
 
+	// 메뉴 차례의 무대는 목록 창 왼쪽이라 좁다: 좁으면 게임 화면을 작은 판으로
+	const narrowPreview = screen.compact || screen.w - MENU_W - 24 < 250;
+
 	/** 무대: 메뉴면 커서 주제의 미리보기와 안내 창, 엔딩이면 앨범, 아니면 지금 장의 그림과 게임 화면 (그림이 없으면 게임 화면만 크게) */
 	const renderScene = () => {
 		if (mode.kind === 'menu') {
+			// 미리보기: 커서 주제의 그림, 없으면 그 주제의 게임 화면 (뒤의 장면도 그 주제의 것으로 바뀐다)
 			const focus = visible[cursor];
 			const id = focus?.id ?? '';
 			const plain = !focus || UNCOUNTED.has(id) || id === MORE_TOPIC;
 			const preview = focus?.thumb ?? (id === BACK_TOPIC ? cover : undefined);
-			const state = UNCOUNTED.has(id)
-				? id === BACK_TOPIC
-					? '처음 메뉴'
-					: '링크 모음'
-				: read.has(id)
-					? '읽음 ✓'
-					: id === nextTopic?.id
-						? '다음 차례'
-						: '아직 안 읽음';
-			const size =
-				id === MORE_TOPIC
-					? `이야기 ${chapters.length}개`
-					: focus && !UNCOUNTED.has(id)
-						? `${focus.lines.length}장`
-						: '';
 			return (
 				<div className="dl-scene dl-preview" aria-hidden="true" inert key={preview ?? `panel-${id}`}>
-					<div className="dl-preview-art">
-						{preview ? <Frame slide={{ src: preview }} /> : panelOf(plain ? 'title' : { topic: id }, true)}
-					</div>
-					{focus && (
-						<div className="dl-info dlp-win">
-							<b>{`${cursor + 1}. ${focus.label}`}</b>
-							<span>{[size, state].filter(Boolean).join(' · ')}</span>
-						</div>
-					)}
+					{preview ? <Frame slide={{ src: preview }} /> : panelOf(plain ? 'title' : { topic: id }, narrowPreview)}
 				</div>
 			);
 		}
@@ -891,19 +960,25 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			className="dl"
 			data-id={project.id}
 			data-mode={mode.kind}
+			data-sub={inSub || undefined}
 			data-ended={ended || undefined}
 			data-fit={screen.compact ? 'compact' : 'screen'}
 			data-stage={screen.stage || undefined}
+			data-narrow={(!screen.compact && screen.w < 440) || undefined}
 			ref={rootRef}
 		>
-			{/* 게임 화면: 360×208을 정수 배(zoom)로 키운다. 안의 크기는 모두 게임 칸 */}
-			<div className="dl-screen" style={screen.compact ? undefined : { zoom: screen.zoom }} data-zoom={screen.zoom}>
+			{/* 게임 화면: 페이지를 zoom으로 나눈 크기(게임 칸)를 정수 배로 키워 페이지를 꽉 채운다. 안의 크기는 모두 게임 칸 */}
+			<div
+				className="dl-screen"
+				style={screen.compact ? undefined : { zoom: screen.zoom, width: screen.w, height: screen.h }}
+				data-zoom={screen.zoom}
+			>
 				<div className="dl-game" data-scene={scene}>
-					{/* 무대 뒤의 타일 장면 (낮·밤 두 장 중 테마에 맞는 한 장) */}
-					<SceneBackdrop scene={scene} />
+					{/* 화면 가득한 타일 장면 (낮·밤 두 장 중 테마에 맞는 한 장) */}
+					<SceneBackdrop scene={scene} width={screen.w} height={screen.h} />
 
-					{/* 길잡이 줄: 지금 어디인지(메뉴 ▸ 주제 ▸ n/N 항목), 단계 점, 메뉴로 단추 */}
-					<div className="dl-hud">
+					{/* 왼쪽 위 길잡이: 지금 어디인지(메뉴 ▸ 주제 ▸ n/N 항목), 단계 점, 읽은 주제 */}
+					<div className="dl-hud dl-panel">
 						<p className="dl-crumb" aria-hidden="true">
 							{crumbs.map((crumb, i) => (
 								<React.Fragment key={i}>
@@ -912,20 +987,24 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 								</React.Fragment>
 							))}
 						</p>
-						{pips.length > 1 && (
-							<span className="dl-pips" aria-hidden="true">
-								{pips.map((state, i) => (
-									<i key={i} data-state={state} />
-								))}
-							</span>
-						)}
-						{inMenu && progress}
-						{!(mode.kind === 'menu' && !mode.sub) && (
-							<button type="button" className="dl-tomenu" onClick={toMenu}>
-								{mode.kind === 'menu' ? '처음 메뉴로' : '메뉴로'}
-							</button>
-						)}
+						<p className="dl-hud-sub">
+							{pips.length > 1 && (
+								<span className="dl-pips" aria-hidden="true">
+									{pips.map((state, i) => (
+										<i key={i} data-state={state} />
+									))}
+								</span>
+							)}
+							{progress}
+						</p>
 					</div>
+					{/* 오른쪽 위: 메뉴로 (처음 메뉴에서는 없다) */}
+					{!(mode.kind === 'menu' && !mode.sub) && (
+						<button type="button" className="dl-tomenu dl-panel" onClick={toMenu}>
+							<kbd aria-hidden="true">X</kbd>
+							{mode.kind === 'menu' ? '처음 메뉴로' : '메뉴로'}
+						</button>
+					)}
 					{/* 읽기 프로그램에 알리는 지금 자리와 읽은 주제 수 */}
 					<p className="visually-hidden" role="status">
 						{`${crumbs.join(', ')}. ${progressText}.`}
@@ -935,13 +1014,13 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 					<div className="dl-stage">
 						{renderScene()}
 						{showLinks && (
-							<div className="dl-linkbar dlp-win" data-shown={done || undefined}>
+							<div className="dl-linkbar dl-panel" data-shown={done || undefined}>
 								<Links project={project} className="sp-links dl-links" />
 							</div>
 						)}
 					</div>
 
-					{/* 대화 상자: 위에 말하는 이(이름표), 아래 두 줄 대사와 ▼. 메뉴 차례에는 질문 아래에 여정 목록이 열린다 */}
+					{/* 대화 창: 이름표(금색)와 두 줄 대사, ▼. 메뉴 차례에는 오른쪽 목록 창이 되어 질문 아래에 여정 목록과 커서 주제의 설명 */}
 					<section
 						className="dl-talk"
 						role="dialog"
@@ -949,12 +1028,12 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 						aria-live="polite"
 						data-portrait={Boolean(portrait) || undefined}
 					>
-						<strong className="dl-name" data-empty={!title || undefined}>
-							{title}
-						</strong>
-						<div className="dl-box" onClick={inMenu ? undefined : next}>
+						<div className="dl-box dl-panel" onClick={inMenu ? undefined : next}>
 							{/* 얼굴 칸: 사진을 16×16 픽셀 초상으로 줄여 두 배 */}
 							{portrait && <PixelImage src={portrait} size={16} scale={2} cover className="dl-portrait" />}
+							<strong className="dl-name" data-empty={!title || undefined}>
+								{title}
+							</strong>
 							{/* 찍힌 글 뒤에 아직 안 찍힌 글을 안 보이게 이어 두어 줄바꿈이 처음부터 끝 모양과 같다 */}
 							<p className="dl-body">
 								{body.slice(0, bodyCount)}
@@ -975,13 +1054,32 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 							</button>
 							{renderMenu(topics, MENU_TITLE, inMenu && !inSub)}
 							{chapters.length > 0 && renderMenu(subList, SUB_TITLE, inSub)}
+							{inMenu && (
+								<p className="dl-menu-info" aria-hidden="true">
+									{menuInfo}
+								</p>
+							)}
 						</div>
 					</section>
 
-					{/* 아래 줄: 지금 누를 수 있는 키, 읽은 주제 수와 막대 */}
+					{/* 지금 누를 수 있는 키: 대화 창 오른쪽 아래 구석 (메뉴 차례에는 화면 왼쪽 아래) */}
 					<div className="dl-foot">
-						<p className="dl-keys">{hint}</p>
-						{!inMenu && progress}
+						<p className="dl-keys">
+							{hints.map((hint, i) => (
+								<React.Fragment key={hint.label}>
+									{i > 0 && <span className="dl-key-sep"> · </span>}
+									<span className="dl-hint">
+										{hint.keys.map((key, k) => (
+											<React.Fragment key={key}>
+												{k > 0 && hint.joined && <span className="visually-hidden">/</span>}
+												<kbd data-alt={k > 0 && hint.joined ? '' : undefined}>{key}</kbd>
+											</React.Fragment>
+										))}
+										{` ${hint.label}`}
+									</span>
+								</React.Fragment>
+							))}
+						</p>
 					</div>
 				</div>
 			</div>
