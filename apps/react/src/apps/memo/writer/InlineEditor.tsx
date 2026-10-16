@@ -286,8 +286,12 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 					ctx.set(defaultValueCtx, toEditorMarkdown(markdown, CONTENT_IMAGES));
 					// 끌어다 놓을 자리 표시: 굵게 (색은 Memo.css의 .milkdown-drop-indicator)
 					ctx.update(dropIndicatorConfig.key, (config) => ({ ...config, width: 3 }));
-					// 목록 기호는 지금 글들처럼 '-'로 쓴다
-					ctx.update(remarkStringifyOptionsCtx, (options) => ({ ...options, bullet: '-' as const }));
+					// 목록 기호와 구분선은 지금 글들처럼 '-', '---'로 쓴다 (기본값은 '*', '***')
+					ctx.update(remarkStringifyOptionsCtx, (options) => ({
+						...options,
+						bullet: '-' as const,
+						rule: '-' as const,
+					}));
 					// 체크 항목: 네모를 누르면 체크를 켜고 끈다
 					ctx.update(editorViewOptionsCtx, (options) => ({
 						...options,
