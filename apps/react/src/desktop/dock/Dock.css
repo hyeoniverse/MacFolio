@@ -12,7 +12,7 @@
 	position: fixed;
 	bottom: 2rem;
 	left: 50%;
-	z-index: 1000;
+	z-index: var(--z-dock);
 	height: calc(var(--dock-icon, 64px) + 2rem);
 	background: var(--color-dock-bg);
 	transform: translateX(-50%);
@@ -37,7 +37,7 @@
 
 /* Dock.css */
 .launchpad-modal {
-	--ui-modal-z: 2000;
+	--ui-modal-z: var(--z-launchpad);
 }
 
 .launchpad-content {
