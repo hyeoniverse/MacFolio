@@ -30,9 +30,11 @@ const HomeIndicator = ({ onHome, onSwitcher, onDrag, className = '', active = tr
 	const startY = useRef<number | null>(null);
 	const moved = useRef(false);
 	const button = useRef<HTMLButtonElement>(null);
+	/** 보이는 막대. 누르는 자리(button)는 화면 폭 전체라, 색은 이 막대 밑에서만 읽는다 */
+	const pill = useRef<HTMLSpanElement>(null);
 	const theme = useResolvedTheme();
 	const fallback = fallbackTone ?? (theme === 'dark' ? 'light' : 'dark');
-	const tone = useStatusBarTone(button, active, fallback, theme);
+	const tone = useStatusBarTone(button, active, fallback, theme, undefined, pill);
 
 	return (
 		<button
@@ -69,7 +71,7 @@ const HomeIndicator = ({ onHome, onSwitcher, onDrag, className = '', active = tr
 				if (!moved.current) onHome?.();
 			}}
 		>
-			<span></span>
+			<span ref={pill}></span>
 		</button>
 	);
 };

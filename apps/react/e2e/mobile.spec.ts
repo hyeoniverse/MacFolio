@@ -1489,6 +1489,16 @@ test.describe('상태 표시줄·홈 인디케이터는 밑의 화면에 맞춰 
 			.toEqual({ clock: BLACK, icons: BLACK });
 	});
 
+	test('홈 인디케이터는 보이는 막대 밑만 읽는다 (누르는 자리는 화면 폭 전체라 양 끝의 밝은 곳에 끌려가지 않는다)', async ({
+		page,
+	}) => {
+		// 아래 가운데는 남색·청록, 양 끝은 밝은 청록인 배경화면
+		await seed(page, { theme: 'light', mobileWallpaper: 'kaleidoscope' });
+		await enterHome(page);
+		await page.waitForTimeout(1500);
+		expect((await colors(page)).indicator).toBe(WHITE);
+	});
+
 	test('홈 화면: 어두운 배경화면이면 흰색', async ({ page }) => {
 		await seed(page, { theme: 'dark', mobileWallpaper: 'earth' });
 		await enterHome(page);
