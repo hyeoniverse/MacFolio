@@ -110,9 +110,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 							/>
 							<strong>{query ? '검색 결과가 없습니다.' : '아직 남겨진 피드백이 없어요.'}</strong>
 							<span className="messages-empty-hint">
-								{query
-									? '맞춤법을 확인하거나 새로운 검색을 시도하십시오.'
-									: '아래의 쓰기 단추로 첫 피드백을 남겨 보세요.'}
+								{query ? '맞춤법을 확인하거나 새로운 검색을 시도하십시오.' : '첫 번째 피드백을 남겨 주세요.'}
 							</span>
 						</li>
 					)}
