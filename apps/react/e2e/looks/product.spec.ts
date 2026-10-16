@@ -1,4 +1,5 @@
-// product 템플릿 — Apple 제품 페이지처럼: 흰·검정 바탕, 큰 문장, 창 테두리의 큰 화면, 회색 타일, 큰 숫자, 옆으로 넘기는 화면 모음
+// product 템플릿 — Apple 제품 페이지처럼: 흰·검정 바탕, 가운데 제목 바로 아래 큰 화면, 구역 이름 없는 큰 문장, 하나 걸러 회색 띠,
+// 위아래로 쌓은 큰 숫자, 회색 타일, 옆으로 넘기는 화면 모음
 import { expect, test } from '../fixtures';
 import {
 	expectEmptyRendered,

@@ -1,9 +1,10 @@
-// devtool 템플릿의 첫 화면 조각: 링크 단추, 복사되는 git clone 명령 상자, 코드 편집기 모양의 창(파일 트리와 대표 화면, 그림이 없으면 package.json 보기)
+// devtool 템플릿의 조각: 링크 단추, 복사되는 git clone 명령 줄, 첫 화면의 터미널 창(clone·설치·실행 명령과 짧은 출력, 저장소가 없으면 package.json),
+// 코드 편집기 모양의 창(파일 트리와 대표 화면, 그림이 없으면 package.json 보기)
 import React, { useEffect, useRef, useState } from 'react';
 import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import { Media, type LandingHero, type LandingLink, type LandingPoint } from '@/apps/safari/project/landing';
-import { parseTree, type TreeRow } from './code';
+import { packageEntries, parseTree, type JsonValue, type TreeRow } from './code';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -39,7 +40,7 @@ export const DevLinks: React.FC<{ links: LandingLink[]; className?: string }> = 
 };
 
 /** 복사할 수 있는 명령 상자: 단추를 누르면 클립보드에 넣고 알림 줄에 결과를 적는다 */
-export const CommandBox: React.FC<{ command: string }> = ({ command }) => {
+export const CommandBox: React.FC<{ command: string; className?: string }> = ({ command, className }) => {
 	const [status, setStatus] = useState('');
 	const timer = useRef<number | undefined>(undefined);
 	useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -55,7 +56,7 @@ export const CommandBox: React.FC<{ command: string }> = ({ command }) => {
 	};
 	const copied = status === '복사했습니다.';
 	return (
-		<div className="dv-command">
+		<div className={['dv-command', className].filter(Boolean).join(' ')}>
 			<span className="dv-command-prompt" aria-hidden="true">
 				$
 			</span>
@@ -110,10 +111,8 @@ export const Tree: React.FC<{ rows: TreeRow[]; notes?: boolean; className?: stri
 	</ul>
 );
 
-type JsonValue = string | string[];
-
-/** package.json처럼 보이는 줄 (줄 번호, 키는 강조색, 값은 본문색) */
-export const JsonView: React.FC<{ entries: [string, JsonValue][] }> = ({ entries }) => {
+/** package.json처럼 보이는 줄 (줄 번호, 키는 강조색, 글자 값은 문자열 색, 기호는 흐린 색) */
+export const JsonView: React.FC<{ entries: [string, JsonValue][]; className?: string }> = ({ entries, className }) => {
 	const lines: React.ReactNode[] = [<span className="dv-punct">{'{'}</span>];
 	entries.forEach(([key, value], i) => {
 		const comma = i < entries.length - 1 ? ',' : '';
@@ -125,6 +124,36 @@ export const JsonView: React.FC<{ entries: [string, JsonValue][] }> = ({ entries
 					<span className="dv-punct">: </span>
 					<span className="dv-str">&quot;{value}&quot;</span>
 					<span className="dv-punct">{comma}</span>
+				</>
+			);
+			return;
+		}
+		if (!Array.isArray(value)) {
+			lines.push(
+				<>
+					{'  '}
+					<span className="dv-key">&quot;{key}&quot;</span>
+					<span className="dv-punct">{': {'}</span>
+				</>
+			);
+			value.entries.forEach(([name, text], j) =>
+				lines.push(
+					<>
+						{'    '}
+						<span className="dv-key dv-key-inner">&quot;{name}&quot;</span>
+						<span className="dv-punct">: </span>
+						<span className="dv-str">&quot;{text}&quot;</span>
+						<span className="dv-punct">{j < value.entries.length - 1 ? ',' : ''}</span>
+					</>
+				)
+			);
+			lines.push(
+				<>
+					{'  '}
+					<span className="dv-punct">
+						{'}'}
+						{comma}
+					</span>
 				</>
 			);
 			return;
@@ -154,7 +183,7 @@ export const JsonView: React.FC<{ entries: [string, JsonValue][] }> = ({ entries
 	});
 	lines.push(<span className="dv-punct">{'}'}</span>);
 	return (
-		<pre className="dv-code">
+		<pre className={['dv-code', className].filter(Boolean).join(' ')}>
 			{lines.map((line, i) => (
 				<span key={i} className="dv-code-line">
 					<span className="dv-ln" aria-hidden="true">
@@ -167,7 +196,7 @@ export const JsonView: React.FC<{ entries: [string, JsonValue][] }> = ({ entries
 	);
 };
 
-/** 첫 화면 창: 탭 막대, 왼쪽 탐색기(폴더 구조가 있을 때), 가운데 대표 화면이나 package.json, 아래 상태 막대 */
+/** 편집기 창 (주요 기능 구역의 첫 그림): 탭 막대, 왼쪽 탐색기(폴더 구조가 있을 때), 가운데 대표 화면이나 package.json, 아래 상태 막대 */
 export const Editor: React.FC<{
 	hero: LandingHero;
 	language?: string;
@@ -177,14 +206,7 @@ export const Editor: React.FC<{
 	repo?: string;
 }> = ({ hero, language, stack, features, structure, repo }) => {
 	const rows = structure ? parseTree(structure) : [];
-	const json: [string, JsonValue][] = [
-		['name', hero.name],
-		...(hero.subhead ? ([['description', hero.subhead]] as [string, JsonValue][]) : []),
-		...(language ? ([['language', language]] as [string, JsonValue][]) : []),
-		...(stack.length ? ([['stack', stack.slice(0, 8)]] as [string, JsonValue][]) : []),
-		...(features.length ? ([['features', features.slice(0, 6).map((p) => p.title)]] as [string, JsonValue][]) : []),
-		...(repo ? ([['repository', repo]] as [string, JsonValue][]) : []),
-	];
+	const json = packageEntries({ name: hero.name, description: hero.subhead, language, stack, features, repo });
 	const tab = hero.image ? (hero.image.src.split('/').pop() ?? 'preview.png') : 'package.json';
 	return (
 		<figure className="dv-editor" data-reveal="" data-tree={rows.length ? '' : undefined}>
@@ -227,6 +249,91 @@ export const Editor: React.FC<{
 				</span>
 				{language && <span className="dv-status-end">{language}</span>}
 				{hero.meta.period && <span>{hero.meta.period}</span>}
+			</div>
+		</figure>
+	);
+};
+
+/* ─── 첫 화면의 터미널 창 ─── */
+
+/** 저장소 주소의 마지막 이름 (cd로 들어갈 폴더) */
+const folderOf = (href: string) =>
+	href
+		.replace(/\/+$/, '')
+		.split('/')
+		.pop()
+		?.replace(/\.git$/, '') || 'project';
+
+/** 터미널의 명령 한 줄 (장식) */
+const Line: React.FC<{ children: React.ReactNode; out?: boolean }> = ({ children, out }) => (
+	<p className={out ? 'dv-term-out' : 'dv-term-line'}>
+		{!out && (
+			<span className="dv-command-prompt" aria-hidden="true">
+				$
+			</span>
+		)}
+		{children}
+	</p>
+);
+
+/**
+ * 첫 화면 가운데의 넓은 터미널 창. 저장소가 있으면 복사되는 git clone 명령과 폴더 이동·설치·실행 명령, 짧은 출력을 보이고,
+ * 없으면 package.json을 연다. 아래 상태 막대에는 가지, 주 언어, 기간을 적는다
+ */
+export const HeroTerminal: React.FC<{
+	command?: string;
+	repo?: string;
+	json: [string, JsonValue][];
+	language?: string;
+	period?: string;
+}> = ({ command, repo, json, language, period }) => {
+	const folder = repo ? folderOf(repo) : undefined;
+	return (
+		<figure className="dv-hero-term" data-reveal="">
+			<div className="dv-terminal-bar" aria-hidden="true">
+				<span className="dv-dots">
+					<span />
+					<span />
+					<span />
+				</span>
+				<span>{folder ? `zsh — ~/${folder}` : 'zsh — package.json'}</span>
+			</div>
+			<div className="dv-term-body">
+				{command && folder ? (
+					<>
+						<CommandBox command={command} className="dv-command-term" />
+						<div aria-hidden="true">
+							<Line>cd {folder}</Line>
+							<Line>npm install</Line>
+							<Line out>
+								<i className="fa-solid fa-check" />
+								의존성을 모두 설치했습니다.
+							</Line>
+							<Line>npm run dev</Line>
+							<Line out>
+								<i className="fa-solid fa-arrow-right" />
+								개발 서버가 <span className="dv-term-url">http://localhost:5173</span>에서 실행 중입니다.
+							</Line>
+						</div>
+					</>
+				) : (
+					<>
+						<Line>cat package.json</Line>
+						<JsonView entries={json} className="dv-term-json" />
+					</>
+				)}
+			</div>
+			<div className="dv-status" aria-hidden="true">
+				<span>
+					<i className="fa-solid fa-code-branch" />
+					main
+				</span>
+				<span className="dv-status-ok">
+					<i className="fa-solid fa-check" />
+					빌드 통과
+				</span>
+				{language && <span className="dv-status-end">{language}</span>}
+				{period && <span className={language ? undefined : 'dv-status-end'}>{period}</span>}
 			</div>
 		</figure>
 	);

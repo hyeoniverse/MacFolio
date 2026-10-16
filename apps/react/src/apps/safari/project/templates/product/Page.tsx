@@ -1,6 +1,7 @@
-// product 템플릿: Apple 제품 페이지처럼. 흰(다크는 검정) 바탕, 가운데 정렬의 아주 큰 제목과 짧은 한 줄, 알약 단추 둘,
-// 창 테두리에 담긴 큰 제품 화면. 기능은 옅은 회색 타일(그림이 타일 가장자리까지)로, 숫자는 크게, 화면 모음은 옆으로 넘기는 띠로,
-// 기술 사양은 가는 선의 두 칸 표로 그린다. 그림이 없으면 강조색 아이콘 타일과 큰 글자로 채운다. 계약은 templates/README.md
+// product 템플릿: Apple 제품 페이지처럼. 흰(다크는 검정) 바탕, 가운데 정렬의 큰 제목과 짧은 한 줄, 알약 단추,
+// 그 바로 아래 창 테두리에 담긴 아주 큰 제품 화면. 구역 머리는 구역 이름 없이 가운데 큰 한 문장이고, 구역은 하나 걸러 옅은 회색 띠를
+// 창 너비 가득 깐다. 숫자는 아주 큰 숫자와 한 줄 설명을 가운데에 위아래로 쌓고, 기능은 타일(그림이 타일 가장자리까지)로,
+// 화면 모음은 옆으로 넘기는 띠로, 기술 사양은 가는 선의 두 칸 표로 그린다. 그림이 없으면 강조색 아이콘 타일로 채운다. 계약은 templates/README.md
 import React from 'react';
 import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
@@ -12,7 +13,6 @@ import {
 	TroubleList,
 	Media,
 	iconOf,
-	sectionTitle,
 	useLanding,
 	useLandingAccent,
 	type LandingHero,
@@ -27,11 +27,44 @@ import './Page.css';
 /** 나타나는 차례 (0부터): 목록 안에서 조금씩 늦게 */
 const delay = (index: number) => ({ '--d': Math.min(index, 4) }) as React.CSSProperties;
 
-/** 구역 머리: 가운데 큰 문장과 한 줄 설명. 구역 이름은 작은 글자로 위에 */
+/** 구역 머리의 문장: 짧고 단정한 한 문장 (구역 이름은 section의 aria-label이 맡는다) */
+const titleOf = (section: LandingSection): string => {
+	switch (section.kind) {
+		case 'stats':
+			return '숫자가 먼저 말해 줍니다.';
+		case 'features':
+			return '필요한 것은 모두 여기에 있습니다.';
+		case 'screens':
+			return '보는 순간 알 수 있습니다.';
+		case 'steps':
+			return '시작은 간단합니다.';
+		case 'built':
+			return '보이지 않는 곳까지 다듬었습니다.';
+		case 'troubleshooting':
+			return '막힌 곳마다 답을 찾았습니다.';
+		case 'stories':
+			return '이야기는 더 있습니다.';
+		case 'controls':
+			return '키보드만으로 충분합니다.';
+		case 'tech':
+			return '안을 들여다보면 이렇습니다.';
+		case 'team':
+			return '함께 만들었습니다.';
+		case 'role':
+			return '제가 맡은 일입니다.';
+		case 'timeline':
+			return '한 걸음씩 걸어왔습니다.';
+		case 'deployments':
+			return '어디서든 열어 볼 수 있습니다.';
+		case 'credits':
+			return '좋은 재료를 빌려 썼습니다.';
+	}
+};
+
+/** 구역 머리: 구역 이름 없이 가운데 큰 한 문장과 한 줄 설명 */
 const Head: React.FC<{ section: LandingSection; title?: string; lead?: string }> = ({ section, title, lead }) => (
 	<header className="pd-head" data-reveal="">
-		<p className="pd-eyebrow">{section.label}</p>
-		<h2>{title ?? sectionTitle(section)}</h2>
+		<h2>{title ?? titleOf(section)}</h2>
 		{lead && <p className="pd-lead">{lead}</p>}
 	</header>
 );
@@ -54,6 +87,19 @@ const Figure: React.FC<{ value: string }> = ({ value }) => {
 	);
 };
 
+/** 숫자 구역: 아주 큰 숫자 하나와 한 줄 설명을 가운데에 위아래로 쌓는다 */
+const StatStack: React.FC<{ facts: { value: string; label: string }[] }> = ({ facts }) => (
+	<ul className="pd-stat-stack">
+		{facts.map((fact, index) => (
+			<li key={fact.label} data-reveal="" style={delay(index)}>
+				<Figure value={fact.value} />
+				<span className="pd-figure-label">{fact.label}</span>
+			</li>
+		))}
+	</ul>
+);
+
+/** 이야기 안의 숫자: 한 줄로 나란히 */
 const Stats: React.FC<{ facts: { value: string; label: string }[]; small?: boolean }> = ({ facts, small }) => (
 	<ul className="pd-stats" data-small={small ? '' : undefined} data-count={Math.min(facts.length, 4)}>
 		{facts.map((fact, index) => (
@@ -192,8 +238,8 @@ const PointMedia: React.FC<{ point: LandingPoint }> = ({ point }) =>
 const RENDERERS: SectionRenderers = {
 	stats: ({ section }) => (
 		<>
-			<h2 className="visually-hidden">{section.label}</h2>
-			<Stats facts={section.facts} />
+			<Head section={section} />
+			<StatStack facts={section.facts} />
 		</>
 	),
 	features: ({ section }) => (
@@ -247,12 +293,9 @@ const RENDERERS: SectionRenderers = {
 	),
 	stories: ({ section }) => (
 		<div className="pd-stories">
-			{section.stories.map((story, number) => (
+			{section.stories.map((story) => (
 				<article key={story.title} className="pd-story" aria-label={story.title}>
 					<header className="pd-head" data-reveal="">
-						<p className="pd-eyebrow">
-							{section.label} {String(number + 1).padStart(2, '0')}
-						</p>
 						<h2>{story.title}</h2>
 						{story.lead && <p className="pd-lead">{story.lead}</p>}
 					</header>
@@ -313,7 +356,7 @@ const RENDERERS: SectionRenderers = {
 		<>
 			<header className="pd-specs-head" data-reveal="">
 				<h2>{section.label}</h2>
-				<p>{sectionTitle(section)}</p>
+				<p>{titleOf(section)}</p>
 			</header>
 			<dl className="pd-specs">
 				{section.stack.length > 0 && (
@@ -494,15 +537,15 @@ const ProductPage: React.FC<{ project: Project }> = ({ project }) => {
 					<h1>{hero.headline}</h1>
 					{hero.subhead && <p className="pd-subhead">{hero.subhead}</p>}
 					<LandingLinks links={hero.links} className="pd-links" />
-					{meta.length > 0 && (
-						<ul className="pd-meta" aria-label="프로젝트 정보">
-							{meta.map((item) => (
-								<li key={item}>{item}</li>
-							))}
-						</ul>
-					)}
 				</div>
 				{hero.image ? <HeroShot hero={hero} /> : <HeroArt hero={hero} first={firstPoint} />}
+				{meta.length > 0 && (
+					<ul className="pd-meta" aria-label="프로젝트 정보">
+						{meta.map((item) => (
+							<li key={item}>{item}</li>
+						))}
+					</ul>
+				)}
 			</header>
 
 			<LandingSections landing={landing} renderers={RENDERERS} className="pd-section" />

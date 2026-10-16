@@ -1,6 +1,6 @@
 /* keynote 템플릿 (templates/keynote/Page.tsx): 키노트 무대처럼 검은 바탕 위에 장면을 하나씩. 사이트 테마와 상관없이 같은 무대다
    (무대라는 콘셉트가 어두운 바탕이라서, e2e/looks/keynote.spec.ts가 두 테마의 바탕색을 같은 값으로 확인한다).
-   글자는 또렷하게(#f5f5f7, 본문 #a1a1a6), 강조색은 한 점. 빛 번짐·그라데이션 글자 없이 첫 화면의 옅은 비네트 하나만 둔다 */
+   글자는 또렷하게(#f5f5f7, 본문 #a1a1a6), 강조색은 한 점. 빛 번짐·그라데이션 글자 없이, 첫 장면의 글 밑에 옅은 어둠 한 겹만 둔다 */
 .tpl.tpl-keynote {
 	--lk-accent: #5e6ad2;
 	--lk-accent-2: #a3a9f2;
@@ -165,18 +165,98 @@
 	outline-offset: 3px;
 }
 
-/* ─── 첫 장면 ─── */
-.kn-hero {
-	padding: clamp(72px, 8cqi, 112px) var(--kn-gutter) 0;
-	/* 무대의 유일한 분위기: 가운데가 아주 조금 밝은 비네트 */
-	background: radial-gradient(ellipse 75% 60% at 50% 28%, #111115 0%, #000000 70%);
-	text-align: center;
+/* ─── 첫 장면: 창 너비 가득한 영화 같은 화면, 왼쪽 아래에 제목과 링크 ─── */
+.kn-hero-scene {
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	min-height: clamp(520px, 46cqi, 780px);
+	overflow: hidden;
+	background-color: var(--kn-raise);
+	isolation: isolate;
+}
+
+/* 글 밑의 어둠 한 겹: 아래 왼쪽에서 가장 짙고 위로 갈수록 옅어진다. 밝은 화면 그림 위에서도 흰 글자가 읽히게 */
+.kn-hero-scene::after {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		linear-gradient(
+			to top,
+			rgba(0, 0, 0, 0.95) 0%,
+			rgba(0, 0, 0, 0.86) 48%,
+			rgba(0, 0, 0, 0.5) 78%,
+			rgba(0, 0, 0, 0.3) 100%
+		),
+		linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 66%);
+	content: '';
+}
+
+.kn-hero-media.lk-media,
+.kn-hero-media img {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top center;
+}
+
+.kn-hero-media.lk-media-pair img {
+	position: static;
+}
+
+/* 그림이 없는 첫 장면: 점 격자 위 오른쪽에 큰 아이콘. 바탕이 이미 어두워 아이콘을 가리는 어둠은 걷는다 */
+.tpl-keynote[data-hero='stage'] .kn-hero-scene::after {
+	display: none;
+}
+
+.kn-hero-stage {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	display: grid;
+	place-items: center end;
+	padding-right: max(var(--kn-gutter), calc((100% - var(--kn-wide)) / 2 + 40px));
+	background-color: var(--kn-raise);
+}
+
+.kn-hero-stage::before {
+	position: absolute;
+	inset: 0;
+	background-image: radial-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1.3px);
+	background-size: 24px 24px;
+	background-position: center;
+	content: '';
+	-webkit-mask-image: radial-gradient(ellipse 60% 75% at 75% 45%, #000 15%, transparent 80%);
+	mask-image: radial-gradient(ellipse 60% 75% at 75% 45%, #000 15%, transparent 80%);
+}
+
+.kn-hero-icon,
+.kn-hero-stage .kn-hero-tile {
+	position: relative;
+	width: clamp(160px, 19cqi, 280px);
+	height: auto;
+	aspect-ratio: 1;
+	margin-bottom: 8%;
+	border-radius: 23%;
+	object-fit: cover;
+	box-shadow: 0 0 0 1px var(--kn-line);
+}
+
+.kn-hero-stage .kn-hero-tile {
+	font-size: clamp(64px, 7.6cqi, 112px);
 }
 
 .kn-hero-text {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+	position: relative;
+	width: 100%;
+	max-width: calc(var(--kn-wide) + 2 * var(--kn-gutter));
+	margin: 0 auto;
+	padding: 0 var(--kn-gutter) clamp(48px, 5.4cqi, 80px);
 }
 
 .kn-brand {
@@ -202,143 +282,25 @@
 }
 
 .kn-hero h1 {
-	max-width: 12.5em;
-	margin-top: 26px;
-	font-size: clamp(44px, 7cqi, 100px);
+	max-width: 13em;
+	margin-top: 18px;
+	font-size: clamp(38px, 4.8cqi, 72px);
 	font-weight: 600;
 	letter-spacing: -0.035em;
-	line-height: 1.05;
+	line-height: 1.06;
 }
 
 .kn-subhead {
-	max-width: 36em;
-	margin-top: 28px;
-	color: var(--kn-muted);
-	font-size: clamp(17px, 1.7cqi, 21px);
+	max-width: 34em;
+	margin-top: 22px;
+	color: #d1d1d6;
+	font-size: clamp(17px, 1.6cqi, 20px);
 	line-height: 1.55;
 }
 
 .kn-hero .kn-links {
-	margin-top: 40px;
-}
-
-.kn-shot {
-	max-width: var(--kn-wide);
-	margin: clamp(64px, 7cqi, 104px) auto 0;
-}
-
-/* 첫 화면의 큰 화면: 얇은 베젤 안의 화면 */
-.kn-frame-hero {
-	padding: 8px;
-	border-radius: 22px;
-	background-color: #0e0e10;
-}
-
-.kn-frame-hero .kn-frame-media {
-	overflow: hidden;
-	border-radius: 14px;
-}
-
-/* 스크롤에 맞춰 화면이 틀 안으로 떠오른다 (스크롤 연동 애니메이션을 아는 브라우저, 움직임 줄이기가 아닐 때만) */
-@supports (animation-timeline: view()) {
-	@media (prefers-reduced-motion: no-preference) {
-		.tpl-keynote .kn-rise {
-			animation: kn-rise linear both;
-			animation-timeline: view();
-			animation-range: entry 0% cover 42%;
-		}
-	}
-}
-
-@keyframes kn-rise {
-	from {
-		transform: translateY(56px) scale(0.93);
-	}
-
-	to {
-		transform: none;
-	}
-}
-
-/* 그림이 없는 첫 화면: 화면 틀 안의 타이틀 슬라이드 */
-.kn-hero-slide {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 48px;
-	aspect-ratio: 16 / 7;
-	padding: 56px 32px;
-	border-radius: 22px;
-}
-
-.kn-hero-slide::before,
-.kn-icon-slide::before {
-	position: absolute;
-	inset: 0;
-	background-image: radial-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1.3px);
-	background-size: 24px 24px;
-	background-position: center;
-	content: '';
-	-webkit-mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, #000 20%, transparent 85%);
-	mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, #000 20%, transparent 85%);
-	pointer-events: none;
-}
-
-.kn-hero-slide > *,
-.kn-icon-slide > * {
-	position: relative;
-}
-
-.kn-hero-icon {
-	width: 112px;
-	height: 112px;
-	border-radius: 26px;
-	object-fit: cover;
-	box-shadow: 0 0 0 1px var(--kn-line);
-}
-
-.kn-overview {
-	display: grid;
-	grid-template-columns: repeat(var(--kn-cols, 4), minmax(0, 168px));
-	justify-content: center;
-	gap: 24px clamp(20px, 3.4cqi, 48px);
-	width: 100%;
-}
-
-.kn-overview[data-count='1'] {
-	--kn-cols: 1;
-}
-
-.kn-overview[data-count='2'] {
-	--kn-cols: 2;
-}
-
-.kn-overview[data-count='3'] {
-	--kn-cols: 3;
-}
-
-.kn-overview li {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-}
-
-.kn-overview-index {
-	margin-top: 18px;
-	color: var(--kn-dim);
-	font-family: var(--kn-mono);
-	font-size: 12px;
-}
-
-.kn-overview b {
-	margin-top: 6px;
-	color: var(--kn-text);
-	font-size: 16px;
-	font-weight: 500;
-	line-height: 1.4;
+	justify-content: flex-start;
+	margin-top: 32px;
 }
 
 .kn-icon-tile {
@@ -353,31 +315,21 @@
 	font-size: 40px;
 }
 
-.kn-overview .kn-icon-tile {
-	width: 84px;
-	height: 84px;
-	border-radius: 21px;
-	font-size: 32px;
-}
-
-/* 앱 아이콘이 없으면 기능 타일이 슬라이드의 주인공 */
-.kn-hero-slide:not(:has(.kn-hero-icon)) .kn-overview .kn-icon-tile {
-	width: 112px;
-	height: 112px;
-	border-radius: 28px;
-	font-size: 42px;
-}
-
 /* 첫 장면 아래의 정보: 프로젝트, 역할, 기간 */
 .kn-meta {
 	display: grid;
 	grid-template-columns: repeat(var(--kn-meta-cols, 3), minmax(0, 1fr));
 	gap: 24px 40px;
 	max-width: var(--kn-wide);
-	margin: clamp(56px, 6cqi, 80px) auto 0;
-	padding-top: 24px;
-	border-top: 1px solid var(--kn-line);
+	margin: 0 auto;
+	padding: 28px 0 0;
 	text-align: left;
+}
+
+.kn-hero > .kn-meta {
+	max-width: none;
+	padding-right: max(var(--kn-gutter), calc((100% - var(--kn-wide)) / 2));
+	padding-left: max(var(--kn-gutter), calc((100% - var(--kn-wide)) / 2));
 }
 
 .kn-meta[data-count='1'] {
@@ -412,22 +364,45 @@
 	margin-left: auto;
 }
 
+/* 장면 머리: 가는 선 아래 왼쪽에 무대에 가라앉은 큰 번호, 오른쪽에 작은 구역 이름과 큰 문장 */
 .kn-head {
-	max-width: 840px;
-	margin: 0 auto clamp(56px, 7cqi, 96px);
-	text-align: center;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: clamp(20px, 3.4cqi, 48px);
+	align-items: start;
+	margin-bottom: clamp(56px, 6.4cqi, 88px);
+	padding-top: clamp(28px, 3cqi, 40px);
+	border-top: 1px solid var(--kn-line-strong);
+}
+
+.kn-head-num {
+	color: #2c2c2e;
+	font-size: clamp(72px, 9cqi, 136px);
+	font-weight: 600;
+	letter-spacing: -0.05em;
+	line-height: 0.82;
+	font-variant-numeric: tabular-nums;
+}
+
+.kn-head-label {
+	color: var(--kn-muted);
+	font-size: 14px;
+	font-weight: 500;
+	letter-spacing: 0;
 }
 
 .kn-head h2 {
-	margin-top: 16px;
-	font-size: clamp(34px, 4.8cqi, 64px);
+	max-width: 18em;
+	margin-top: 12px;
+	font-size: clamp(30px, 4cqi, 56px);
 	font-weight: 600;
 	letter-spacing: -0.032em;
-	line-height: 1.08;
+	line-height: 1.1;
 }
 
 .kn-lead {
-	margin-top: 22px;
+	max-width: 40em;
+	margin-top: 20px;
 	color: var(--kn-muted);
 	font-size: clamp(17px, 1.6cqi, 20px);
 	line-height: 1.6;
@@ -453,15 +428,8 @@
 	letter-spacing: -0.01em;
 }
 
-.kn-stats-scene {
-	text-align: center;
-}
-
-.kn-stats-scene > .kn-eyebrow {
-	margin-bottom: 40px;
-}
-
 .kn-stats {
+	text-align: center;
 	display: grid;
 	grid-template-columns: repeat(var(--kn-cols, 4), minmax(0, 1fr));
 	border-top: 1px solid var(--kn-line);
@@ -497,17 +465,18 @@
 	line-height: 1.45;
 }
 
-/* 기능: 하나가 한 장면. 왼쪽 글은 그림 옆에 머문다 */
+/* 기능: 넓은 줄 하나가 한 장면. 그림은 창 가장자리까지 닿고, 글 쪽에 아주 큰 번호. 줄마다 좌우가 바뀐다 */
 .kn-features {
+	--kn-bleed: calc((100cqi - min(100cqi - 2 * var(--kn-gutter), var(--kn-wide))) / 2);
 	display: grid;
-	gap: clamp(112px, 13cqi, 176px);
+	gap: clamp(96px, 11cqi, 160px);
 }
 
 .kn-feature {
 	display: grid;
 	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-	gap: clamp(36px, 5.5cqi, 88px);
-	align-items: start;
+	gap: clamp(36px, 5cqi, 80px);
+	align-items: center;
 }
 
 .kn-feature[data-flip] {
@@ -518,20 +487,28 @@
 	order: 2;
 }
 
-.kn-feature-text {
-	position: sticky;
-	top: 72px;
-	padding-top: 8px;
+.kn-feature-num {
+	margin-bottom: clamp(24px, 2.6cqi, 36px);
+	color: var(--tpl-accent);
+	font-size: clamp(96px, 12cqi, 184px);
+	font-weight: 600;
+	letter-spacing: -0.06em;
+	line-height: 0.8;
+	font-variant-numeric: tabular-nums;
 }
 
-.kn-feature-num {
-	margin-bottom: 32px;
-	color: var(--tpl-accent);
-	font-size: clamp(56px, 6.6cqi, 96px);
-	font-weight: 600;
-	letter-spacing: -0.05em;
-	line-height: 0.9;
-	font-variant-numeric: tabular-nums;
+/* 첫 그림(없으면 아이콘 슬라이드)만 창 가장자리까지 넓히고, 바깥쪽 모서리는 각지게 */
+.kn-feature-visual > .kn-media-set > .kn-frame:first-child,
+.kn-feature-visual > .kn-icon-slide {
+	margin-right: calc(-1 * var(--kn-bleed));
+	border-radius: 16px 0 0 16px;
+}
+
+.kn-feature[data-flip] .kn-feature-visual > .kn-media-set > .kn-frame:first-child,
+.kn-feature[data-flip] .kn-feature-visual > .kn-icon-slide {
+	margin-right: 0;
+	margin-left: calc(-1 * var(--kn-bleed));
+	border-radius: 0 16px 16px 0;
 }
 
 .kn-feature h3 {
@@ -904,8 +881,6 @@
 
 .kn-story:not([data-image]) .kn-story-head {
 	max-width: 840px;
-	margin: 0 auto;
-	text-align: center;
 }
 
 .kn-story-facts {
@@ -1100,26 +1075,6 @@
 	left: -4px;
 }
 
-/* ─── 나눈 장면 (기술 사양, 맡은 일, 출처): 왼쪽 제목은 머물고 오른쪽은 사양표 ─── */
-.kn-split {
-	display: grid;
-	grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-	gap: clamp(36px, 5.5cqi, 88px);
-	align-items: start;
-}
-
-.kn-split > .kn-head {
-	position: sticky;
-	top: 72px;
-	margin: 0;
-	text-align: left;
-}
-
-.kn-split > .kn-head h2 {
-	font-size: clamp(28px, 3.2cqi, 42px);
-	line-height: 1.15;
-}
-
 .kn-sheet {
 	border-bottom: 1px solid var(--kn-line);
 }
@@ -1298,7 +1253,6 @@
 @container (max-width: 860px) {
 	.kn-feature,
 	.kn-feature[data-flip],
-	.kn-split,
 	.kn-story,
 	.kn-built > li[data-media] {
 		grid-template-columns: minmax(0, 1fr);
@@ -1312,17 +1266,18 @@
 		order: 0;
 	}
 
-	.kn-feature-text,
-	.kn-split > .kn-head {
-		position: static;
-	}
-
 	.kn-feature-num {
 		margin-bottom: 20px;
 	}
 
-	.kn-split {
-		gap: 40px;
+	/* 한 열이면 그림은 양쪽 모두 창 가장자리까지 */
+	.kn-feature-visual > .kn-media-set > .kn-frame:first-child,
+	.kn-feature-visual > .kn-icon-slide,
+	.kn-feature[data-flip] .kn-feature-visual > .kn-media-set > .kn-frame:first-child,
+	.kn-feature[data-flip] .kn-feature-visual > .kn-icon-slide {
+		margin-right: calc(-1 * var(--kn-bleed));
+		margin-left: calc(-1 * var(--kn-bleed));
+		border-radius: 0;
 	}
 
 	.kn-story {
@@ -1385,11 +1340,6 @@
 		margin-top: 0;
 	}
 
-	.kn-hero-slide {
-		aspect-ratio: auto;
-		min-height: 360px;
-	}
-
 	.kn-icon-slide {
 		aspect-ratio: 2 / 1;
 	}
@@ -1413,8 +1363,20 @@
 		--kn-cols: 2;
 	}
 
-	.kn-overview[data-count] {
-		grid-template-columns: repeat(2, minmax(0, 168px));
+	/* 좁은 창에서는 아이콘을 위 가운데로 올려 아래 글과 겹치지 않게 */
+	.kn-hero-stage {
+		place-items: start center;
+		padding: 56px 0 0;
+	}
+
+	.kn-hero-icon,
+	.kn-hero-stage .kn-hero-tile {
+		width: 120px;
+		margin-bottom: 0;
+	}
+
+	.kn-hero-stage .kn-hero-tile {
+		font-size: 48px;
 	}
 
 	.kn-thumbs[data-count] {
@@ -1448,10 +1410,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.tpl-keynote .kn-rise {
-		animation: none;
-	}
-
 	.kn-links > [data-primary],
 	.kn-thumb {
 		transition: none;
