@@ -5,14 +5,19 @@ import {
 	battleHp,
 	CHEST_CLOSED,
 	CHEST_OPEN,
+	hpLevel,
 	letterOf,
 	mirror,
 	MONSTERS,
+	monsterColors,
 	monsterOf,
+	outlined,
 	PERSON,
 	periodDays,
 	personColors,
 	pixelRuns,
+	platformRows,
+	sceneOf,
 	SPRITE_COLORS,
 	slotIcon,
 	splitScore,
@@ -149,5 +154,61 @@ describe('목록 창', () => {
 		expect(windowAround(10, 0, 4)).toEqual([0, 4]);
 		expect(windowAround(10, 5, 4)).toEqual([4, 8]);
 		expect(windowAround(10, 9, 4)).toEqual([6, 10]);
+	});
+});
+
+describe('밝은 장면', () => {
+	it('outlined는 가장자리에 한 칸씩 늘리고, 칠한 칸에 닿은 빈칸만 외곽선으로', () => {
+		expect(outlined(['.W.'])).toEqual(['..X..', '.XWX.', '..X..']);
+		const person = outlined(PERSON);
+		expect(person).toHaveLength(PERSON.length + 2);
+		for (const row of person) expect(row).toHaveLength(PERSON[0].length + 2);
+		// 칠한 칸은 그대로, 바뀐 것은 빈칸뿐
+		PERSON.forEach((row, y) => expect(person[y + 1].slice(1, -1).replace(/X/g, '.')).toBe(row));
+	});
+
+	it('발판은 납작한 타원: 테두리 A가 둘레를 감싸고, 위쪽에 밝은 면 C가 있다', () => {
+		const rows = platformRows(40, 8);
+		expect(rows).toHaveLength(8);
+		for (const row of rows) expect(row).toMatch(/^[.ABC]{40}$/);
+		// 좌우·위아래가 같다
+		for (const row of rows) expect(row).toBe([...row].reverse().join(''));
+		// 가운데 줄의 양 끝은 테두리, 모서리는 비어 있다
+		expect(rows[4][0]).toBe('A');
+		expect(rows[0][0]).toBe('.');
+		expect(rows.join('')).toContain('C');
+		expect(rows.join('')).toContain('B');
+	});
+
+	it('몬스터마다 다른 몸 색, 모든 색 글자를 칠한다', () => {
+		const bodies = MONSTERS.map((_, i) => monsterColors(i).W);
+		expect(new Set(bodies).size).toBe(MONSTERS.length);
+		expect(monsterColors(MONSTERS.length)).toBe(monsterColors(0));
+		for (const [i, rows] of MONSTERS.entries())
+			for (const ch of new Set(outlined(rows).join(''))) if (ch !== '.') expect(monsterColors(i)[ch], ch).toBeTruthy();
+	});
+
+	it('HP 막대 색: 반 넘게 초록, 5분의 1 넘게 노랑, 그 아래 빨강', () => {
+		expect(hpLevel(100)).toBe('high');
+		expect(hpLevel(67)).toBe('high');
+		expect(hpLevel(50)).toBe('mid');
+		expect(hpLevel(33)).toBe('mid');
+		expect(hpLevel(20)).toBe('low');
+		expect(hpLevel(0)).toBe('low');
+	});
+
+	it('주제마다 장면: 전투는 들판, 파티는 광장, 장은 풀밭, 그 밖은 해 질 녘', () => {
+		expect(sceneOf('troubleshooting')).toBe('field');
+		expect(sceneOf('team')).toBe('plaza');
+		expect(sceneOf('specs')).toBe('shop');
+		expect(sceneOf('contributions')).toBe('menu');
+		expect(sceneOf('timeline')).toBe('map');
+		expect(sceneOf('deployments')).toBe('cave');
+		expect(sceneOf('facts')).toBe('arcade');
+		expect(sceneOf('credits')).toBe('night');
+		expect(sceneOf('highlights')).toBe('meadow');
+		expect(sceneOf('chapter-2')).toBe('meadow');
+		expect(sceneOf('links')).toBe('sunset');
+		expect(sceneOf(undefined)).toBe('sunset');
 	});
 });
