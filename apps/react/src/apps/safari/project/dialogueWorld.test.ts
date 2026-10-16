@@ -56,7 +56,7 @@ describe('마을 지도', () => {
 		expect(WORLD_PX_H).toBe(384);
 	});
 
-	it('자리는 지도 안에 있고 서로 겹치지 않으며, 막힌 땅(숲·물·벼랑)이나 분수 위에 놓이지 않는다 (동굴 입구와 북쪽 문은 일부러 벼랑·숲 속)', () => {
+	it('자리는 지도 안에 있고 서로 겹치지 않으며, 막힌 땅(숲·나무·덤불·울타리·물·바위)이나 연못 위에 놓이지 않는다 (동굴 입구와 북쪽 문은 일부러 벼랑·숲 속)', () => {
 		const taken = new Map<string, string>();
 		for (const slot of SLOTS) {
 			for (let y = slot.y; y < slot.y + slot.h; y++) {
@@ -68,7 +68,7 @@ describe('마을 지도', () => {
 					const inFountain =
 						x >= FOUNTAIN.x && x < FOUNTAIN.x + FOUNTAIN.w && y >= FOUNTAIN.y && y < FOUNTAIN.y + FOUNTAIN.h;
 					expect(inFountain).toBe(false);
-					if (slot.kind !== 'cave' && slot.kind !== 'gate') expect('T~^').not.toContain(TERRAIN[y][x]);
+					if (slot.kind !== 'cave' && slot.kind !== 'gate') expect('TtbFp~^').not.toContain(TERRAIN[y][x]);
 				}
 			}
 		}
@@ -104,12 +104,14 @@ describe('마을 지도', () => {
 		expect(walkable(layout, monster.x, monster.y)).toBe(true);
 	});
 
-	it('충돌: 숲·물·벼랑·분수·집·장소는 막히고, 길·풀·긴 풀·광장은 걷는다. 지도 밖은 막힌다', () => {
+	it('충돌: 숲·나무·덤불·울타리·물·바위·연못·집·장소는 막히고, 길·풀·긴 풀·광장은 걷는다. 지도 밖은 막힌다', () => {
 		const layout = layoutWorld(ALL, ['가람']);
 		expect(walkable(layout, START.x, START.y)).toBe(true);
 		expect(walkable(layout, 0, 5)).toBe(false);
 		expect(walkable(layout, 25, 18)).toBe(false); // 연못
-		expect(walkable(layout, 33, 16)).toBe(false); // 벼랑
+		expect(walkable(layout, 33, 16)).toBe(false); // 바위 언덕
+		expect(walkable(layout, 4, 15)).toBe(false); // 울타리
+		expect(walkable(layout, 7, 15)).toBe(true); // 울타리 틈
 		expect(walkable(layout, FOUNTAIN.x, FOUNTAIN.y)).toBe(false);
 		expect(walkable(layout, 12, 5)).toBe(false); // 여관 벽
 		expect(walkable(layout, 5, 17)).toBe(true); // 긴 풀
@@ -124,7 +126,7 @@ describe('마을 지도', () => {
 		expect(facingPlace(layout, 21, 19, 'up')?.topic).toBe('highlights');
 		expect(facingPlace(layout, 22, 19, 'up')?.topic).toBe('highlights');
 		expect(facingPlace(layout, 21, 19, 'down')).toBeUndefined();
-		// 여관(10–14, 3–6)은 문(12, 6) 앞에서만 살펴본다: 옆벽이나 문 옆 벽을 보면 아무것도 없다
+		// 여관(10–14, 4–6)은 문(12, 6) 앞에서만 살펴본다: 옆벽이나 문 옆 벽을 보면 아무것도 없다
 		expect(facingPlace(layout, 12, 7, 'up')?.topic).toBe('contributions');
 		expect(facingPlace(layout, 11, 7, 'up')).toBeUndefined();
 		expect(facingPlace(layout, 15, 5, 'left')).toBeUndefined();
@@ -157,7 +159,7 @@ describe('길 찾기 (너비 우선 탐색)', () => {
 		expect(isWalk(path ?? [], from)).toBe(true);
 	});
 
-	it('막힌 것을 돌아간다: 입구에서 여관 문 앞까지 (분수와 게시판을 피해)', () => {
+	it('막힌 것을 돌아간다: 입구에서 여관 문 앞까지 (연못과 게시판을 피해)', () => {
 		const from = { x: START.x, y: START.y };
 		const path = findPath(layout, from, [{ x: 12, y: 7 }]);
 		expect(path).not.toBeNull();
@@ -222,6 +224,12 @@ describe('카메라', () => {
 
 	it('화면이 지도보다 크면 지도를 가운데에 둔다 (음수)', () => {
 		expect(cameraOf(100, 100, 700, 400)).toEqual({ x: -30, y: -8 });
+	});
+
+	it('위·아래 띠만큼은 지도 끝 너머까지 넘어가 지도 끝의 장소가 창에 가리지 않는다', () => {
+		expect(cameraOf(0, 0, 360, 208, 38)).toEqual({ x: 0, y: -38 });
+		expect(cameraOf(0, WORLD_PX_H, 360, 208, 38).y).toBe(WORLD_PX_H - 208 + 38);
+		expect(cameraOf(0, 12 * 16, 360, 208, 38).y).toBe(cameraOf(0, 12 * 16, 360, 208).y);
 	});
 
 	it('누른 점은 카메라만큼 옮겨 칸으로 바꾼다', () => {

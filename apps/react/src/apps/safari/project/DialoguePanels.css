@@ -1,7 +1,7 @@
 /*
  * RPG 대화창의 무대 그림판 (DialoguePanels.tsx). 크기는 모두 게임 화면의 칸(px) 단위이고, 화면 전체가 정수 배로 커진다.
  * 무대(길잡이와 대화 창 사이, 높이 100칸쯤. 그림 옆 자리는 120 폭)에는 틀도 머리줄도 그리지 않는다: 주제의 큰 그림 하나를 가운데에 두고, 글은 지금 항목과 이웃 둘까지만.
- * 몬스터·사람·상자는 흙 발판(.dlp-on) 위에 선다. 글은 장면 위에 바로 두지 않고 대화 창과 같은 반투명한 짙은 창(.dlp-win)이나
+ * 몬스터·사람·상자는 Ninja Adventure 그림을 정수 배로 키워 그림자(.dlp-on) 위에 세운다. 글은 장면 위에 바로 두지 않고 대화 창과 같은 반투명한 짙은 창(.dlp-win)이나
  * 이름표(.dlp-tag)에 담는다 (바탕·테두리·모서리는 DialoguePage.css의 창 규칙). 아이콘은 모두 픽셀 아이콘(SVG 칸).
  * 지금 항목은 금색과 ▶, 지난 것은 흐린 글과 ✓. 빨강은 HP에만. 글자는 11px(큰 숫자·이름만 22px)
  */
@@ -67,6 +67,28 @@
 	image-rendering: pixelated;
 }
 
+/* 그림 묶음의 한 조각 (DialoguePixels의 Sprite): 배경 그림을 정수 배로. 칸이 여럿이면 아래 칸으로 넘기며 움직인다 */
+.dl .dl-sprite-img {
+	display: block;
+	flex: none;
+	background-repeat: no-repeat;
+	image-rendering: pixelated;
+}
+
+.dl .dl-sprite-img[data-frames] {
+	animation: dl-frames calc(var(--dl-frames) * 0.2s) steps(var(--dl-frames)) infinite;
+}
+
+@keyframes dl-frames {
+	from {
+		background-position: var(--dl-x0) var(--dl-y0);
+	}
+
+	to {
+		background-position: var(--dl-x0) var(--dl-y1);
+	}
+}
+
 /* 발판 위에 선 그림: 타원 발판을 그림 뒤 아래 가운데에, 발이 발판 가운데에 닿게 */
 .dlp-on {
 	position: relative;
@@ -87,16 +109,16 @@
 
 /* 창 (바탕·테두리는 DialoguePage.css의 창 규칙) */
 .dlp-win {
-	padding: 3px 7px;
+	padding: var(--dl-pad-y) var(--dl-pad-x);
 }
 
 /* 작은 이름표: 한 줄 (이름, 날짜) */
 .dlp-tag {
 	display: inline-block;
 	max-width: 100%;
-	padding: 0 4px;
+	padding: 0 6px;
 	overflow: hidden;
-	line-height: 13px;
+	line-height: 15px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -137,30 +159,30 @@
 	min-width: 0;
 }
 
-/* 나무 표지판: 판(40×30칸을 두 배) 가운데에 아이콘을 건다 */
+/* 프로젝트 아이콘 액자(창)와 그 옆에 선 주인공 */
 .dlp-sign {
 	position: relative;
-	display: block;
+	display: flex;
 	flex: none;
+	align-items: flex-end;
+	gap: var(--dl-gap);
 }
 
 .dlp-title-face {
-	position: absolute;
-	top: 6px;
-	left: 50%;
 	display: grid;
 	place-items: center;
-	height: 48px;
-	transform: translateX(-50%);
+	min-width: 48px;
+	min-height: 48px;
+	padding: 6px;
 }
 
 .dlp-title-card {
 	display: grid;
 	justify-items: start;
-	row-gap: 1px;
+	row-gap: 2px;
 	min-width: 0;
 	max-width: 300px;
-	padding: 3px 10px 5px;
+	padding: var(--dl-pad-y) var(--dl-pad-x);
 }
 
 .dlp-title-name {
@@ -205,8 +227,9 @@
 }
 
 .dlp-title[data-side] .dlp-title-face {
-	top: 3px;
-	height: 24px;
+	min-width: 24px;
+	min-height: 24px;
+	padding: 3px;
 }
 
 .dlp-title[data-side] .dl-sprite {
@@ -245,10 +268,10 @@
 	justify-items: center;
 }
 
-/* 게시판 가운데 종이(18×18칸, 두 배)에 지금 퀘스트의 아이콘 */
+/* 게시판 틀(48×32칸, 두 배) 가운데에 지금 퀘스트의 아이콘 */
 .dlp-hero-icon {
 	position: absolute;
-	top: 21px;
+	top: 18px;
 	left: 50%;
 	transform: translateX(-50%);
 }
@@ -283,7 +306,7 @@
 }
 
 .dlp[data-side] .dlp-hero-icon {
-	top: 10px;
+	top: 9px;
 }
 
 .dlp[data-side] .dlp-list {
@@ -406,17 +429,17 @@
 /* 이름과 HP: 몬스터 머리 위에 뜬 작은 창. 첫 줄 이름(흰색)과 남은 HP 숫자, 둘째 줄 가는 막대 */
 .dl .dlp-hp {
 	display: grid;
-	row-gap: 2px;
-	width: 132px;
+	row-gap: 3px;
+	width: 140px;
 	max-width: 100%;
-	padding: 1px 6px 3px;
+	padding: 3px var(--dl-pad-x) 5px;
 }
 
 .dlp-hp-head {
 	display: flex;
 	gap: 6px;
 	min-width: 0;
-	line-height: 12px;
+	line-height: 14px;
 }
 
 .dlp-foe-name {
@@ -459,9 +482,9 @@
 /* 왼쪽 명령 창: 네 줄. 고른 칸은 ▶과 금색, 나머지는 흐린 색 */
 .dlp-battle-menu {
 	display: grid;
-	grid-auto-rows: 14px;
+	grid-auto-rows: var(--dl-row);
 	align-content: center;
-	padding: 3px 8px 3px 4px;
+	padding: var(--dl-pad-y) var(--dl-pad-x) var(--dl-pad-y) 6px;
 }
 
 .dlp-battle-menu li {
@@ -707,6 +730,7 @@
 
 .dlp-map .dlp-path {
 	position: absolute;
+	display: flex;
 }
 
 .dlp-map ol {
@@ -1032,7 +1056,8 @@
 
 /* ─── 움직임 줄이기 ─── */
 @media (prefers-reduced-motion: reduce) {
-	.dlp-press {
+	.dlp-press,
+	.dl .dl-sprite-img[data-frames] {
 		animation: none;
 	}
 
