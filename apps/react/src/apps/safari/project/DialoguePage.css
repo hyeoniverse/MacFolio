@@ -236,6 +236,7 @@
 /* ─── 창: 반투명한 짙은 바탕, 1칸 밝은 테두리, 모서리 한 칸을 깎고, 안쪽 위에 밝은 줄. 글은 흰색에 1칸 그림자 ─── */
 .dl-panel,
 .dl[data-mode='menu'] .dl-foot,
+.dl[data-mode='world'] .dl-foot,
 .dl[data-fit='compact'] .dl-foot,
 .dl .dlp-win,
 .dl .dlp-tag,
