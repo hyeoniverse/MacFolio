@@ -1454,6 +1454,113 @@ test.describe('휴대폰 홈 화면 페이지', () => {
 	});
 });
 
+test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () => {
+	/**
+	 * 화면 키보드를 흉내 낸다. 브라우저 시험에서는 키보드가 뜨지 않아서, iOS Safari처럼 보이는 곳(visualViewport)만 줄인다
+	 * (window.__keyboard(높이)로 올리고 내린다)
+	 */
+	const fakeKeyboard = (page: Page) =>
+		page.addInitScript(() => {
+			const listeners = new Set<EventListener>();
+			let height = 0;
+			const viewport = {
+				get width() {
+					return window.innerWidth;
+				},
+				get height() {
+					return window.innerHeight - height;
+				},
+				offsetTop: 0,
+				offsetLeft: 0,
+				pageTop: 0,
+				pageLeft: 0,
+				scale: 1,
+				addEventListener: (_type: string, listener: EventListener) => listeners.add(listener),
+				removeEventListener: (_type: string, listener: EventListener) => listeners.delete(listener),
+			};
+			Object.defineProperty(window, 'visualViewport', { value: viewport, configurable: true });
+			(window as unknown as { __keyboard: (next: number) => void }).__keyboard = (next) => {
+				height = next;
+				listeners.forEach((listener) => listener(new Event('resize')));
+			};
+		});
+	const setKeyboard = (page: Page, height: number) =>
+		page.evaluate((next) => (window as unknown as { __keyboard: (h: number) => void }).__keyboard(next), height);
+
+	test('키보드가 올라오면 서식 알약이 키보드 바로 위에 폭 가득 뜨고 새 메모 단추는 숨는다, 내려가면 제자리', async ({
+		page,
+	}) => {
+		await fakeKeyboard(page);
+		await fakeApi(page, { signedIn: true });
+		await enterHome(page);
+		await (await homeApp(page, '메모')).tap();
+		const memo = appWindow(page, 'memo');
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
+		const bottom = memo.locator('.memo-reader .memo-phone-bottom');
+		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
+		const resting = (await bottom.boundingBox())!;
+
+		await memo.locator('.ProseMirror p').first().tap();
+		const viewport = page.viewportSize()!;
+		const keyboard = Math.round(viewport.height * 0.4);
+		await setKeyboard(page, keyboard);
+		await expect(bottom).toHaveClass(/above-keyboard/);
+		await expect(bottom.getByRole('button', { name: '새 메모' })).toHaveCount(0);
+		const lifted = (await bottom.boundingBox())!;
+		// 키보드 위 8px에 붙는다
+		expect(Math.round(lifted.y + lifted.height)).toBe(viewport.height - keyboard - 8);
+		// 폭 가득 (좌우 12px)
+		const pill = (await bottom.locator('.memo-phone-format').boundingBox())!;
+		expect(Math.round(pill.width)).toBe(viewport.width - 24);
+		// 서식 단추는 그대로 누를 수 있다
+		await bottom.getByRole('button', { name: '서식' }).tap();
+		await expect(page.getByRole('dialog', { name: '서식' })).toBeVisible();
+		await page.keyboard.press('Escape');
+
+		await setKeyboard(page, 0);
+		await expect(bottom).not.toHaveClass(/above-keyboard/);
+		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
+		expect(Math.round((await bottom.boundingBox())!.y)).toBe(Math.round(resting.y));
+	});
+
+	test('문단 도구: 서식 막대가 iOS 메모의 문단 막대로 바뀌고, 문단을 위로 옮긴 뒤 닫으면 서식 도구로 돌아온다', async ({
+		page,
+	}) => {
+		await fakeApi(page, { signedIn: true });
+		await enterHome(page);
+		await (await homeApp(page, '메모')).tap();
+		const memo = appWindow(page, 'memo');
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
+		const bottom = memo.locator('.memo-reader .memo-phone-bottom');
+		const blocks = memo.locator('.ProseMirror > *');
+		await blocks.nth(1).tap();
+		const second = await blocks.nth(1).innerText();
+		await bottom.getByRole('button', { name: '문단 도구' }).tap();
+		for (const name of ['내어쓰기', '들여쓰기', '위로 옮기기', '아래로 옮기기', '블록 인용', '구분점 목록'])
+			await expect(bottom.getByRole('button', { name, exact: true })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '서식' })).toHaveCount(0);
+		await bottom.getByRole('button', { name: '위로 옮기기' }).tap();
+		await expect(blocks.first()).toHaveText(second);
+		await bottom.getByRole('button', { name: '문단 도구 닫기' }).tap();
+		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
+	});
+
+	test('주소창이 접히는 정도(120px 미만)로 줄어드는 것은 키보드로 보지 않는다', async ({ page }) => {
+		await fakeKeyboard(page);
+		await fakeApi(page, { signedIn: true });
+		await enterHome(page);
+		await (await homeApp(page, '메모')).tap();
+		const memo = appWindow(page, 'memo');
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
+		const bottom = memo.locator('.memo-reader .memo-phone-bottom');
+		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
+		await setKeyboard(page, 80);
+		await page.waitForTimeout(200);
+		await expect(bottom).not.toHaveClass(/above-keyboard/);
+		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
+	});
+});
+
 test('활동 상태 보기 (휴대폰): 홈으로 가는 단추 없이 탭 줄은 카드와 같은 폭, 기간은 오른쪽 끝', async ({ page }) => {
 	await fakeApi(page);
 	await enterHome(page);

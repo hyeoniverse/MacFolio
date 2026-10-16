@@ -4566,6 +4566,21 @@ button.memo-admin-chip {
 	bottom: calc(12px + var(--phone-bottom-inset));
 }
 
+/* 쓰는 중에 키보드가 올라오면 (PhoneReaderBars): iOS 메모처럼 서식 알약이 키보드 바로 위에 폭 가득 뜬다 */
+.container.mobile .memo-phone-bottom.above-keyboard {
+	bottom: calc(var(--keyboard-inset) + 8px);
+	left: 12px;
+	right: 12px;
+}
+
+.container.mobile .memo-phone-bottom.above-keyboard .memo-phone-format {
+	flex: 1;
+	justify-content: space-between;
+	min-width: 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
 /* ─── 움직임 ─── */
 /* 폴더를 펼치면 하위 폴더가 위에서 내려온다 */
 .memo-subfolders {
