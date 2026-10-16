@@ -88,19 +88,111 @@ export function slotIcon(label: string, value: string): { brand: boolean; icon: 
 }
 
 /**
- * 칸 그림의 색 (글자 하나가 한 칸, '.'은 빈칸). 무대는 검정·하양·노랑·빨강만 쓰고, 색은 그림(스프라이트) 안에서만 쓴다.
- * W 하양, K 검정(하얀 몸 위의 눈·입), R 빨강, Y 노랑, G 회색, D 짙은 회색, B 나무, O 짙은 나무
+ * 칸 그림의 색 (글자 하나가 한 칸, '.'은 빈칸). 밝은 하늘·풀밭 위에서도 읽히게 짙은 외곽선(X)을 두르고 색은 또렷하게.
+ * W 하양, K 짙은 먹색(눈·입), R 빨강, Y 금색, G 회색, D 상자 안쪽, B 나무, O 짙은 나무, X 외곽선
  */
 export const SPRITE_COLORS: Record<string, string> = {
 	W: '#ffffff',
-	K: '#000000',
-	R: '#ff0000',
-	Y: '#ffff00',
-	G: '#8c8c8c',
-	D: '#3a3a3a',
-	B: '#c27c3a',
-	O: '#6b3a12',
+	K: '#282830',
+	R: '#f04040',
+	Y: '#f8c830',
+	G: '#a0a0a8',
+	D: '#6a4024',
+	B: '#d08840',
+	O: '#603418',
+	X: '#282830',
 };
+
+/** 버그 몬스터의 몸 색 (차례로 돌려 쓴다): 무당벌레 빨강, 슬라임 초록, 유령 보라. W 몸, G 무늬, K 눈·입, R 눈동자 */
+const MONSTER_COLORS: readonly Record<string, string>[] = [
+	{ W: '#f05a50', G: '#3a2a3a', K: '#282830', R: '#ffffff', X: '#282830' },
+	{ W: '#6cc85a', G: '#b4ec98', K: '#204028', R: '#f04040', X: '#204028' },
+	{ W: '#c4b0f8', G: '#8466d8', K: '#30205a', R: '#f04040', X: '#30205a' },
+];
+
+/** 차례(index)의 몬스터 색 */
+export const monsterColors = (index: number) =>
+	MONSTER_COLORS[((index % MONSTER_COLORS.length) + MONSTER_COLORS.length) % MONSTER_COLORS.length];
+
+/** 그림 둘레에 한 칸 외곽선(mark)을 두른다: 가장자리에 한 칸씩 늘리고, 칠한 칸과 위·아래·옆으로 닿은 빈칸을 mark로 */
+export function outlined(rows: readonly string[], mark = 'X'): string[] {
+	const width = (rows[0]?.length ?? 0) + 2;
+	const grid = ['.'.repeat(width), ...rows.map((row) => `.${row}.`), '.'.repeat(width)];
+	const filled = (x: number, y: number) => {
+		const ch = grid[y]?.[x];
+		return ch !== undefined && ch !== '.';
+	};
+	return grid.map((row, y) =>
+		[...row]
+			.map((ch, x) =>
+				ch === '.' && (filled(x - 1, y) || filled(x + 1, y) || filled(x, y - 1) || filled(x, y + 1)) ? mark : ch
+			)
+			.join('')
+	);
+}
+
+/**
+ * 포켓몬 전투의 발판: width×height 칸의 납작한 타원. A 테두리, B 바탕, C 위쪽의 밝은 면 (색은 장면이 정한다).
+ * 몬스터·파티원·상자·초상이 그 위에 선다
+ */
+export function platformRows(width: number, height: number): string[] {
+	const inside = (x: number, y: number, rx: number, ry: number, cy: number) =>
+		((x + 0.5 - width / 2) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2 <= 1;
+	const rx = width / 2;
+	const ry = height / 2;
+	return Array.from({ length: height }, (_, y) =>
+		Array.from({ length: width }, (_, x) => {
+			if (!inside(x, y, rx, ry, ry)) return '.';
+			const edge = [
+				[x - 1, y],
+				[x + 1, y],
+				[x, y - 1],
+				[x, y + 1],
+			].some(([nx, ny]) => !inside(nx, ny, rx, ry, ry));
+			if (edge) return 'A';
+			return inside(x, y, rx * 0.72, ry * 0.5, ry * 0.8) ? 'C' : 'B';
+		}).join('')
+	);
+}
+
+/** 발판의 색: 장면의 CSS 변수를 그대로 칠한다 (라이트·다크와 장면마다 바뀐다) */
+export const PLATFORM_COLORS: Record<string, string> = {
+	A: 'var(--dl-plat-rim)',
+	B: 'var(--dl-plat)',
+	C: 'var(--dl-plat-hi)',
+};
+
+/** HP 막대의 색 단계: 반이 넘으면 초록, 5분의 1이 넘으면 노랑, 그 아래는 빨강 (포켓몬처럼) */
+export function hpLevel(hp: number): 'high' | 'mid' | 'low' {
+	if (hp > 50) return 'high';
+	if (hp > 20) return 'mid';
+	return 'low';
+}
+
+/** 무대 뒤의 장면(색 띠): 주제마다 하나. 해 질 녘, 풀밭, 전투 들판, 마을 광장, 상점, 상태 창, 지도, 동굴, 오락실, 밤하늘 */
+export type SceneKind = 'sunset' | 'meadow' | 'field' | 'plaza' | 'shop' | 'menu' | 'map' | 'cave' | 'arcade' | 'night';
+
+const SCENES: Record<string, SceneKind> = {
+	highlights: 'meadow',
+	build: 'meadow',
+	usage: 'meadow',
+	troubleshooting: 'field',
+	team: 'plaza',
+	specs: 'shop',
+	contributions: 'menu',
+	controls: 'menu',
+	timeline: 'map',
+	deployments: 'cave',
+	facts: 'arcade',
+	credits: 'night',
+};
+
+/** 주제 id의 장면. 장(chapter-n)은 풀밭, 그 밖(인사, 링크, 화면 모음...)은 해 질 녘의 타이틀 */
+export function sceneOf(topic: string | undefined): SceneKind {
+	if (!topic) return 'sunset';
+	if (/^chapter-\d+$/.test(topic)) return 'meadow';
+	return SCENES[topic] ?? 'sunset';
+}
 
 /** 왼쪽 반만 그린 줄을 좌우로 접어 펼친다 (몬스터·상자·사람은 좌우가 같다) */
 export const mirror = (half: readonly string[]): string[] => half.map((row) => row + [...row].reverse().join(''));
@@ -288,7 +380,7 @@ export const PERSON: readonly string[] = mirror([
 
 const HAIRS = ['#a0643c', '#e8c35a', '#d9703a', '#c0c0c0', '#6f8fd8', '#e889b8'];
 const SKINS = ['#f6d1b0', '#e9b48a', '#c98d5e'];
-const SHIRTS = ['#4f9de8', '#5bc06a', '#e86fae', '#f0a030', '#9b72e8', '#ffffff'];
+const SHIRTS = ['#4f9de8', '#5bc06a', '#e86fae', '#f0a030', '#9b72e8', '#f05a50'];
 const PANTS = ['#3c4a8c', '#6e6e6e', '#7a5232'];
 
 /** 이름의 간단한 해시 (같은 이름은 같은 수) */
@@ -302,7 +394,15 @@ function hashOf(text: string): number {
 export function personColors(name: string): Record<string, string> {
 	const hash = hashOf(name.trim() || '?');
 	const pick = (list: readonly string[], shift: number) => list[Math.floor(hash / shift) % list.length];
-	return { H: pick(HAIRS, 1), S: pick(SKINS, 7), E: '#000000', T: pick(SHIRTS, 23), P: pick(PANTS, 101), F: '#8c8c8c' };
+	return {
+		H: pick(HAIRS, 1),
+		S: pick(SKINS, 7),
+		E: '#282830',
+		T: pick(SHIRTS, 23),
+		P: pick(PANTS, 101),
+		F: '#5a4a48',
+		X: '#282830',
+	};
 }
 
 /** 칸 그림 한 줄을 같은 색끼리 이어진 칸(x, 너비, 색)으로 (SVG 사각형 수를 줄인다). 모르는 글자는 빈칸 */

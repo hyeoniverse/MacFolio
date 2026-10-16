@@ -1,10 +1,12 @@
 /*
- * dialogue 모양: 언더테일 같은 고전 RPG 대화창.
- * 사이트 테마와 상관없이 새까만 페이지 가운데에 480×270 게임 화면 하나. 화면 안의 크기는 모두 게임 칸(px)이고,
+ * dialogue 모양: 포켓몬 GBA 전투 화면 같은 밝은 고전 RPG 대화창.
+ * 옅은 페이지 가운데에 480×270 게임 화면 하나. 화면 안의 크기는 모두 게임 칸(px)이고,
  * 화면 전체를 들어가는 가장 큰 정수 배(zoom: DialoguePage.tsx의 useScreen)로 키운다. 그래서 글자·테두리·픽셀 그림이 한 격자를 나눠 쓴다.
  * 글자는 갈무리11의 제 크기 11px(큰 제목·숫자만 22px), 테두리는 3칸, 한 줄은 14칸.
- * 틀은 영역마다 하나: 대화 상자(흰 테두리)만 틀이 있고, 무대는 틀 없이 검정 위에 그림을 띄운다.
- * 색은 검정·하양·고른 것의 노랑·하트의 빨강, 그리고 회색 (그림 안에서만 다른 색). 그라데이션·빛 번짐·둥근 모서리는 쓰지 않는다.
+ * 틀은 영역마다 하나: 대화 상자(두꺼운 청록 테두리, 계단 모서리, 안쪽 밝은 줄)만 틀이 있고, 무대는 틀 없이 장면 위에 그림을 띄운다.
+ * 장면은 주제마다 납작한 색 띠 두세 개(하늘·지평선·바닥)와 발판 타원뿐 (data-scene, dialogueStage.ts의 sceneOf).
+ * 라이트는 낮(밝은 하늘과 풀밭, 크림색 상자에 먹색 글), 다크는 밤(남색·쪽빛 띠와 별 몇 개, 남색 상자에 흰 글).
+ * 그라데이션처럼 번지는 색·빛 번짐·둥근 모서리는 쓰지 않는다 (띠는 경계가 딱 떨어지는 linear-gradient).
  * 크기가 움직이지 않게: 대화 상자는 모든 장의 글을 같은 칸에 안 보이게 깔아 가장 큰 장에 맞추고, 지금 장은 그 위에 겹친다.
  */
 /* 픽셀 글꼴: 갈무리11 (Galmuri, 한글·영문 11px 격자, SIL OFL 1.1 — public/fonts/galmuri/OFL.txt).
@@ -25,19 +27,55 @@
 	src: url('/fonts/galmuri/Galmuri11-Bold.woff2') format('woff2');
 }
 
-/* 게임 화면이라 라이트에서도 검은 무대 (키노트처럼 테마의 예외) */
+/* 게임 화면 밖의 페이지: 라이트는 옅은 하늘색, 다크는 짙은 남색 */
 .sp[data-look='dialogue'] {
-	--sp-bg: #000000;
+	--sp-bg: #e8f4ff;
 	height: 100%;
 }
 
+:root[data-theme='dark'] .sp[data-look='dialogue'] {
+	--sp-bg: #121330;
+}
+
 .dl {
-	--dl-bg: #000000;
-	--dl-ink: #ffffff;
-	--dl-soft: #8c8c8c;
-	--dl-dim: #262626;
-	--dl-yellow: #ffff00;
-	--dl-red: #ff0000;
+	--dl-page: #e8f4ff;
+	--dl-bg: var(--dl-page);
+	/* 무대(장면 위)의 글: 먹색, 흐린 글, 고른 것, 하트 */
+	--dl-ink: #303030;
+	--dl-soft: #4a5a6a;
+	--dl-pick: #c42a1c;
+	--dl-heart: #e8303a;
+	/* 상자(대화 상자, 이름·HP 상자, 아이템 칸): 크림 바탕, 두꺼운 청록 테두리, 안쪽 밝은 줄, 글 아래 1칸 밝은 그림자 */
+	--dl-box-bg: #f8f8f0;
+	--dl-box-line: #2f6878;
+	--dl-box-inner: #a8d4dc;
+	--dl-box-ink: #303030;
+	--dl-box-soft: #7a7a70;
+	--dl-box-pick: #d83a28;
+	--dl-box-title: #1f7890;
+	--dl-box-shadow: #d8d8cc;
+	/* 지금 칸(아이템·키)의 바탕 */
+	--dl-pick-bg: #f8c830;
+	/* HP 막대: 남은 만큼 초록 → 노랑 → 빨강, 읽음은 파랑(경험치처럼) */
+	--dl-hp-track: #f0f0e8;
+	--dl-hp-frame: #404850;
+	--dl-hp-high: #48c868;
+	--dl-hp-mid: #f8c030;
+	--dl-hp-low: #f05030;
+	--dl-exp: #40a0f0;
+	/* 그림 액자와 게임 화면의 바깥 줄 */
+	--dl-outline: #303030;
+	/* 장면 (data-scene가 바꾼다): 하늘, 지평선 띠, 바닥, 발판, 지도 길 */
+	--dl-sky: #a8dcf8;
+	--dl-sky2: #d0eefc;
+	--dl-floor: #98d870;
+	--dl-floor-art: none;
+	--dl-deco: none;
+	--dl-plat-rim: #58a040;
+	--dl-plat: #8cd068;
+	--dl-plat-hi: #b8e898;
+	--dl-path: #f8e8a8;
+	--dl-stars: none;
 	/* 게임 칸: 테두리 3, 한 줄 14, 별표 자리 14 */
 	--dl-border: 3px;
 	--dl-row: 14px;
@@ -51,7 +89,7 @@
 	place-items: center;
 	height: 100%;
 	overflow: hidden;
-	background: var(--dl-bg);
+	background: var(--dl-page);
 	color: var(--dl-ink);
 	/* 픽셀 글꼴. 받기 전과 없는 글자는 시스템 글꼴로 */
 	font-family:
@@ -72,13 +110,41 @@
 	isolation: isolate;
 }
 
+/* 밤: 남색·쪽빛 상자에 흰 글, 고른 것은 노랑. 발판은 차분한 청보라 */
+:root[data-theme='dark'] .dl {
+	--dl-page: #121330;
+	--dl-ink: #ffffff;
+	--dl-soft: #b4b8e8;
+	--dl-pick: #ffd84a;
+	--dl-heart: #ff5a6a;
+	--dl-box-bg: #23265a;
+	--dl-box-line: #f0f0ff;
+	--dl-box-inner: #6a70c0;
+	--dl-box-ink: #ffffff;
+	--dl-box-soft: #9ca0d8;
+	--dl-box-pick: #ffd84a;
+	--dl-box-title: #9fe0ff;
+	--dl-box-shadow: #3a3f88;
+	--dl-pick-bg: #ffd84a;
+	--dl-hp-track: #151838;
+	--dl-hp-frame: #c8ccff;
+	--dl-exp: #5ab8ff;
+	--dl-outline: #0c0e28;
+	--dl-path: #c8c890;
+	--dl-stars: block;
+}
+
 /* ─── 게임 화면: 480×270을 zoom으로 정수 배. 안쪽은 무대 / 대화 상자 / 상태 줄 ─── */
 .dl-screen {
 	display: grid;
 	width: 480px;
 }
 
+/* 장면: 위에서부터 하늘(0–78), 지평선 띠(78–92), 바닥. 바닥 무늬와 꾸밈 줄(선반)은 장면이 고른다 */
 .dl-game {
+	--dl-h1: 78px;
+	--dl-h2: 92px;
+	position: relative;
 	display: grid;
 	grid-template-rows: minmax(0, 1fr) auto auto;
 	row-gap: 4px;
@@ -86,7 +152,201 @@
 	height: 270px;
 	padding: 6px 8px 3px;
 	overflow: hidden;
-	background: var(--dl-bg);
+	background:
+		var(--dl-deco),
+		linear-gradient(var(--dl-sky) 0 var(--dl-h1), var(--dl-sky2) var(--dl-h1) var(--dl-h2), transparent var(--dl-h2)),
+		var(--dl-floor-art), var(--dl-floor);
+	box-shadow: 0 0 0 2px var(--dl-outline);
+	color: var(--dl-ink);
+	isolation: isolate;
+}
+
+/* 별 몇 개 (밤과 밤하늘 장면): 1칸 점, 머리줄 아래 하늘 띠 안에만 */
+.dl-game::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+	display: var(--dl-stars);
+	width: 1px;
+	height: 1px;
+	box-shadow:
+		30px 30px #ffffff,
+		118px 46px #ffe88a,
+		176px 26px #ffffff,
+		248px 60px #ffffff,
+		302px 32px #ffe88a,
+		356px 52px #ffffff,
+		420px 36px #ffffff,
+		458px 66px #ffe88a;
+}
+
+/* ─── 장면마다의 색 띠 (라이트 = 낮) ─── */
+/* 타이틀: 해 질 녘 (주황·살구·분홍) */
+.dl-game[data-scene='sunset'] {
+	--dl-sky: #ffa682;
+	--dl-sky2: #ffcf94;
+	--dl-floor: #f4a0b4;
+	--dl-plat-rim: #d06a88;
+	--dl-plat: #f8bccb;
+	--dl-plat-hi: #ffdce4;
+}
+
+/* 퀘스트·스킬·튜토리얼: 풀밭 (기본값) */
+/* 전투: 포켓몬 전투 들판 */
+.dl-game[data-scene='field'] {
+	--dl-sky: #b8e4f8;
+	--dl-sky2: #e0f4fc;
+	--dl-floor: #b0e490;
+	--dl-plat-rim: #68a848;
+	--dl-plat: #98d474;
+	--dl-plat-hi: #c8f0a8;
+}
+
+/* 파티: 마을 광장 (따뜻한 돌바닥 체크) */
+.dl-game[data-scene='plaza'] {
+	--dl-sky: #a8d8f8;
+	--dl-sky2: #f8e4c0;
+	--dl-floor: #ecd6ac;
+	--dl-floor-art: repeating-conic-gradient(#ecd6ac 0 25%, #e4ca9c 0 50%) 0 0 / 16px 16px;
+	--dl-plat-rim: #9a7044;
+	--dl-plat: #c8a070;
+	--dl-plat-hi: #dcb888;
+}
+
+/* 장비: 상점 안 (크림 벽, 나무 선반 한 줄, 나무 바닥) */
+.dl-game[data-scene='shop'] {
+	--dl-sky: #fbecc8;
+	--dl-sky2: #e8c890;
+	--dl-floor: #ecc490;
+	--dl-deco:
+		linear-gradient(#b07840, #b07840) 0 40px / 100% 3px no-repeat,
+		linear-gradient(#d8a468, #d8a468) 0 92px / 100% 2px no-repeat;
+}
+
+/* 상태·조작법: 캐릭터 메뉴 (옅은 파랑 판) */
+.dl-game[data-scene='menu'] {
+	--dl-sky: #cfe4ff;
+	--dl-sky2: #b8d6fc;
+	--dl-floor: #a4c8f4;
+	--dl-plat-rim: #6c98d8;
+	--dl-plat: #a8c8f4;
+	--dl-plat-hi: #d4e6ff;
+}
+
+/* 월드 맵: 온통 초록 지도, 모래색 길 */
+.dl-game[data-scene='map'] {
+	--dl-sky: #a0dc80;
+	--dl-sky2: #94d474;
+	--dl-floor: #88cc68;
+}
+
+/* 보물: 동굴 (라벤더 벽, 청록 바닥) */
+.dl-game[data-scene='cave'] {
+	--dl-sky: #c4b4ec;
+	--dl-sky2: #ac9ae0;
+	--dl-floor: #8cd4cc;
+	--dl-plat-rim: #4a9890;
+	--dl-plat: #74c4bc;
+	--dl-plat-hi: #b0ece4;
+}
+
+/* 기록: 오락실 (보라) */
+.dl-game[data-scene='arcade'] {
+	--dl-sky: #c8acf8;
+	--dl-sky2: #b494f0;
+	--dl-floor: #e2d4ff;
+}
+
+/* 크레딧·엔딩: 밤하늘 (라이트에서도 밤이라 글은 하양) */
+.dl-game[data-scene='night'] {
+	--dl-ink: #ffffff;
+	--dl-soft: #b4b8e8;
+	--dl-pick: #ffd84a;
+	--dl-sky: #283070;
+	--dl-sky2: #34408a;
+	--dl-floor: #3e4a9a;
+	--dl-stars: block;
+}
+
+/* ─── 다크 = 밤: 같은 장면을 짙은 남색·쪽빛으로 ─── */
+:root[data-theme='dark'] .dl-game {
+	--dl-sky: #1b1d3f;
+	--dl-sky2: #23265a;
+	--dl-floor: #24505a;
+	--dl-plat-rim: #3c3f88;
+	--dl-plat: #5a5eb0;
+	--dl-plat-hi: #7a7ed0;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='sunset'] {
+	--dl-sky: #2c2460;
+	--dl-sky2: #5a3478;
+	--dl-floor: #7a4070;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='field'] {
+	--dl-floor: #2c4c6c;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='plaza'] {
+	--dl-sky: #1e2050;
+	--dl-sky2: #3a3466;
+	--dl-floor: #4a4272;
+	--dl-floor-art: repeating-conic-gradient(#4a4272 0 25%, #403866 0 50%) 0 0 / 16px 16px;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='shop'] {
+	--dl-sky: #3a2e5a;
+	--dl-sky2: #4e3a68;
+	--dl-floor: #5a3e58;
+	--dl-deco: linear-gradient(#7a5a96, #7a5a96) 0 40px / 100% 3px no-repeat;
+	--dl-stars: none;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='menu'] {
+	--dl-sky: #23265a;
+	--dl-sky2: #2c3070;
+	--dl-floor: #343a88;
+	--dl-stars: none;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='map'] {
+	--dl-sky: #1f4a48;
+	--dl-sky2: #245450;
+	--dl-floor: #2a5e58;
+	--dl-stars: none;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='cave'] {
+	--dl-sky: #2a2058;
+	--dl-sky2: #33286a;
+	--dl-floor: #1f5058;
+	--dl-stars: none;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='arcade'] {
+	--dl-sky: #2a1650;
+	--dl-sky2: #3a1f6a;
+	--dl-floor: #4a2a80;
+	--dl-stars: none;
+}
+
+:root[data-theme='dark'] .dl-game[data-scene='night'] {
+	--dl-sky: #121640;
+	--dl-sky2: #1b1d50;
+	--dl-floor: #23265a;
+}
+
+/* 상자 안은 상자의 색을 쓴다 (대화 상자, 전투의 이름·HP 상자) */
+.dl-box,
+.dlp-hp {
+	--dl-bg: var(--dl-box-bg);
+	--dl-ink: var(--dl-box-ink);
+	--dl-soft: var(--dl-box-soft);
+	--dl-pick: var(--dl-box-pick);
+	text-shadow: 1px 1px 0 var(--dl-box-shadow);
 }
 
 /* ─── 무대: 틀 없이 가운데에. 그림이 있으면 액자, 없으면 주제의 게임 화면 (DialoguePanels.css) ─── */
@@ -134,23 +394,24 @@
 }
 
 .dl-shot-frame {
-	padding: 2px;
-	border: 2px solid var(--dl-ink);
-	background: var(--dl-bg);
+	padding: 1px;
+	border: 3px solid #ffffff;
+	background: #ffffff;
+	box-shadow: 0 0 0 1px var(--dl-outline);
 	line-height: 0;
 }
 
 .dl-shot-frame > :is(img, video) {
 	display: block;
 	width: auto;
-	max-width: calc(100cqw - 8px);
+	max-width: calc(100cqw - 10px);
 	height: auto;
-	max-height: calc(100cqh - 8px - var(--dl-row) - 2px);
+	max-height: calc(100cqh - 10px - var(--dl-row) - 2px);
 	object-fit: contain;
 }
 
 .dl-scene[data-side] .dl-shot-frame > :is(img, video) {
-	max-width: calc(100cqw - 176px - 12px - 8px);
+	max-width: calc(100cqw - 176px - 12px - 10px);
 }
 
 .dl-shot-foot {
@@ -194,7 +455,7 @@
 /* 고른 칸은 노랑 (테두리 대신 게임처럼 글자색으로) */
 .dl-flip button:is(:hover, :focus-visible) {
 	outline: none;
-	color: var(--dl-yellow);
+	color: var(--dl-pick);
 }
 
 .dl-dots {
@@ -209,7 +470,7 @@
 }
 
 .dl-dots i[data-on] {
-	background: var(--dl-yellow);
+	background: var(--dl-pick);
 }
 
 /* 엔딩의 앨범: 2칸 흰 테두리 작은 그림 여러 장 */
@@ -230,7 +491,8 @@
 	max-width: 120px;
 	height: auto;
 	max-height: calc((100cqh - var(--dl-row) - 12px) / 2 - 4px);
-	border: 2px solid var(--dl-ink);
+	border: 2px solid #ffffff;
+	box-shadow: 0 0 0 1px var(--dl-outline);
 	object-fit: cover;
 	aspect-ratio: 16 / 10;
 }
@@ -261,7 +523,7 @@
 	image-rendering: pixelated;
 }
 
-/* ─── 대화 상자: 3칸 흰 테두리 하나. 높이는 가장 긴 장과 (질문 + 선택지 네 줄) 중 큰 쪽 ─── */
+/* ─── 대화 상자: 3칸 두꺼운 테두리(계단 모서리)와 안쪽 밝은 줄. 높이는 가장 긴 장과 (질문 + 선택지 네 줄) 중 큰 쪽 ─── */
 .dl-box {
 	position: relative;
 	display: grid;
@@ -269,8 +531,25 @@
 	min-height: calc(2 * var(--dl-border) + 2 * var(--dl-pad-y) + (var(--dl-menu-rows) + 1) * var(--dl-row));
 	margin: 0;
 	padding: var(--dl-pad-y) var(--dl-pad-x);
-	border: var(--dl-border) solid var(--dl-ink);
-	background: var(--dl-bg);
+	border: var(--dl-border) solid var(--dl-box-line);
+	background: var(--dl-box-bg);
+	box-shadow: inset 0 0 0 2px var(--dl-box-inner);
+	color: var(--dl-ink);
+	/* 네 모서리를 2칸씩 계단으로 깎는다 */
+	clip-path: polygon(
+		0 2px,
+		2px 2px,
+		2px 0,
+		calc(100% - 2px) 0,
+		calc(100% - 2px) 2px,
+		100% 2px,
+		100% calc(100% - 2px),
+		calc(100% - 2px) calc(100% - 2px),
+		calc(100% - 2px) 100%,
+		2px 100%,
+		2px calc(100% - 2px),
+		0 calc(100% - 2px)
+	);
 }
 
 /* 팀원의 장: 왼쪽 얼굴 칸에 사진 (언더테일의 말하는 얼굴처럼), 글은 그 옆으로 */
@@ -280,6 +559,7 @@
 	left: var(--dl-pad-x);
 	width: 42px;
 	height: 42px;
+	box-shadow: 0 0 0 1px var(--dl-box-line);
 	object-fit: cover;
 }
 
@@ -339,7 +619,7 @@
 }
 
 .dl-title {
-	color: var(--dl-yellow);
+	color: var(--dl-box-title);
 	font-weight: 400;
 }
 
@@ -424,7 +704,7 @@
 }
 
 .dl-cursor {
-	color: var(--dl-red);
+	color: var(--dl-heart);
 	visibility: hidden;
 }
 
@@ -439,7 +719,7 @@
 }
 
 .dl-choices button[data-active] .dl-label {
-	color: var(--dl-yellow);
+	color: var(--dl-pick);
 }
 
 /* 읽은 주제는 회색, 끝에 ✓ */
@@ -455,7 +735,7 @@
 }
 
 .dl-choices button[data-active] .dl-check {
-	color: var(--dl-yellow);
+	color: var(--dl-pick);
 }
 
 /* 위·아래에 더 있는 줄: 오른쪽 끝에 ▲·▼ */
@@ -548,13 +828,13 @@
 
 .dl .dl-links :is(.sp-pill, .sp-link):is(:hover, :focus-visible) {
 	outline: none;
-	color: var(--dl-yellow);
+	color: var(--dl-pick);
 	filter: none;
 }
 
 .dl .dl-links :is(.sp-pill, .sp-link):is(:hover, :focus-visible)::before {
 	content: '♥';
-	color: var(--dl-red);
+	color: var(--dl-heart);
 }
 
 /* ▼: 글이 다 찍히면 깜빡인다. 찍히는 중에도 자리는 그대로 */
@@ -589,7 +869,7 @@
 
 .dl-next:focus-visible {
 	outline: none;
-	color: var(--dl-yellow);
+	color: var(--dl-pick);
 }
 
 .dl-next:focus-visible i {
@@ -652,14 +932,15 @@
 .dl-hp-bar {
 	position: relative;
 	width: 48px;
-	height: 9px;
-	background: var(--dl-red);
+	height: 6px;
+	background: var(--dl-hp-track);
+	box-shadow: 0 0 0 1px var(--dl-hp-frame);
 }
 
 .dl-hp-bar i {
 	position: absolute;
 	inset: 0 auto 0 0;
-	background: var(--dl-yellow);
+	background: var(--dl-exp);
 	transition: width 0.3s steps(6);
 }
 
