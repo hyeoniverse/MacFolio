@@ -1,91 +1,8 @@
-// RPG 대화창(DialoguePage) 무대의 주제 그림판이 쓰는 순수한 계산: 기술 아이콘, 버그 몬스터 그림, HP, 데이터에서 센 숫자.
+// RPG 대화창(DialoguePage) 무대의 주제 그림판이 쓰는 순수한 계산: 버그 몬스터·사람·상자 그림, 발판, HP, 데이터에서 센 숫자.
+// (픽셀 아이콘은 dialogueIcons.ts, 무대 뒤 타일 장면은 dialogueScenes.ts)
 // 그림판은 꾸밈이라 숫자는 데이터에 있는 것을 세기만 하고 이름을 그대로 붙인다 (지어낸 레벨·점수는 없다)
 import type { Project, ProjectTrouble } from '@/shared/profile';
 import type { TroubleStepKey } from '@/apps/safari/project/landing/content';
-
-/** 아는 기술 이름 → Font Awesome 브랜드 아이콘 (FA Free 6에 있는 것만). 앞에서부터 처음 맞는 것 */
-const TECH_ICONS: [RegExp, string][] = [
-	[/^react( native)?$|^react\b/, 'fa-react'],
-	[/^node(\.js)?$|^nodejs$|^express$/, 'fa-node-js'],
-	[/^npm$|^pnpm$/, 'fa-npm'],
-	[/^yarn$/, 'fa-yarn'],
-	[/^javascript$|^js$/, 'fa-js'],
-	[/^python$|^django$|^fastapi$|^flask$/, 'fa-python'],
-	[/^java$|^spring( boot)?$/, 'fa-java'],
-	[/^docker( compose)?$/, 'fa-docker'],
-	[/^aws$|^amazon web services$|^s3$|^ec2$|^lambda$/, 'fa-aws'],
-	[/^github( actions)?$/, 'fa-github'],
-	[/^git$/, 'fa-git-alt'],
-	[/^unity$/, 'fa-unity'],
-	[/^vue(\.js)?$|^nuxt$/, 'fa-vuejs'],
-	[/^angular$/, 'fa-angular'],
-	[/^html5?$/, 'fa-html5'],
-	[/^css3?$/, 'fa-css3-alt'],
-	[/^sass$|^scss$/, 'fa-sass'],
-	[/^less$/, 'fa-less'],
-	[/^figma$/, 'fa-figma'],
-	[/^swift$|^swiftui$/, 'fa-swift'],
-	[/^android$|^kotlin$/, 'fa-android'],
-	[/^ios$/, 'fa-apple'],
-	[/^go$|^golang$/, 'fa-golang'],
-	[/^rust$/, 'fa-rust'],
-	[/^php$/, 'fa-php'],
-	[/^laravel$/, 'fa-laravel'],
-	[/^bootstrap$/, 'fa-bootstrap'],
-	[/^wordpress$/, 'fa-wordpress'],
-	[/^flutter$/, 'fa-flutter'],
-	[/^dart$/, 'fa-dart'],
-	[/^linux$/, 'fa-linux'],
-	[/^ubuntu$/, 'fa-ubuntu'],
-	[/^cloudflare( workers| pages)?$/, 'fa-cloudflare'],
-	[/^gulp$/, 'fa-gulp'],
-	[/^stripe$/, 'fa-stripe'],
-	[/^slack$/, 'fa-slack'],
-	[/^discord(\.js)?$/, 'fa-discord'],
-	[/^google( cloud)?$|^gcp$/, 'fa-google'],
-];
-
-/** 기술 이름을 견주기 좋게: 소문자, 버전 숫자와 괄호 설명은 뺀다 (Unity 6 → unity, React 19 → react) */
-export const techKey = (name: string) =>
-	name
-		.toLowerCase()
-		.replace(/\(.*?\)/g, '')
-		.replace(/\s+v?\d+(\.\d+)*$/, '')
-		.trim();
-
-/** 기술의 브랜드 아이콘 (fa-brands와 함께 쓴다). 모르면 null: 그때는 첫 글자 칸을 그린다 */
-export function techIcon(name: string): string | null {
-	const key = techKey(name);
-	if (!key) return null;
-	return TECH_ICONS.find(([pattern]) => pattern.test(key))?.[1] ?? null;
-}
-
-/** 첫 글자 칸에 쓸 글자 (영어는 대문자) */
-export const letterOf = (name: string) => [...name.trim()][0]?.toUpperCase() ?? '?';
-
-/** 사양 한 줄(분류, 값)의 장비 칸 아이콘: 값의 첫 기술이 아는 것이면 그 브랜드, 아니면 분류 이름으로 고른 기본 아이콘 */
-export function slotIcon(label: string, value: string): { brand: boolean; icon: string } {
-	const first = value.split(/[,·/]/)[0] ?? '';
-	const brand = techIcon(first);
-	if (brand) return { brand: true, icon: brand };
-	const key = label.toLowerCase();
-	const table: [RegExp, string][] = [
-		[/화면|프론트|front|ui|입력/, 'fa-display'],
-		[/서버|백엔드|back|api/, 'fa-server'],
-		[/db|데이터|저장/, 'fa-database'],
-		[/배포|deploy|호스팅/, 'fa-rocket'],
-		[/상태|state/, 'fa-diagram-project'],
-		[/인증|보안|auth/, 'fa-key'],
-		[/스타일|디자인|style/, 'fa-palette'],
-		[/엔진|engine|렌더/, 'fa-gear'],
-		[/ai|인공지능/, 'fa-robot'],
-		[/맵|지도|map/, 'fa-map'],
-		[/언어|lang/, 'fa-code'],
-		[/qr/, 'fa-qrcode'],
-		[/시험|테스트|test/, 'fa-vial'],
-	];
-	return { brand: false, icon: table.find(([pattern]) => pattern.test(key))?.[1] ?? 'fa-cube' };
-}
 
 /**
  * 칸 그림의 색 (글자 하나가 한 칸, '.'은 빈칸). 밝은 하늘·풀밭 위에서도 읽히게 짙은 외곽선(X)을 두르고 색은 또렷하게.
@@ -132,25 +49,27 @@ export function outlined(rows: readonly string[], mark = 'X'): string[] {
 }
 
 /**
- * 포켓몬 전투의 발판: width×height 칸의 납작한 타원. A 테두리, B 바탕, C 위쪽의 밝은 면 (색은 장면이 정한다).
- * 몬스터·파티원·상자·초상이 그 위에 선다
+ * 포켓몬 전투의 발판: width×height 칸의 납작한 흙 자리. A 외곽선, B 흙, C 왼쪽 위의 밝은 흙, D 위 가장자리의 풀,
+ * E 오른쪽 아래 그늘(점 무늬로 섞는다)과 작은 자갈. 색은 장면이 정한다. 몬스터·파티원·상자·초상이 그 위에 선다
  */
 export function platformRows(width: number, height: number): string[] {
-	const inside = (x: number, y: number, rx: number, ry: number, cy: number) =>
-		((x + 0.5 - width / 2) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2 <= 1;
 	const rx = width / 2;
 	const ry = height / 2;
+	const inside = (x: number, y: number) => ((x + 0.5 - rx) / rx) ** 2 + ((y + 0.5 - ry) / ry) ** 2 <= 1;
 	return Array.from({ length: height }, (_, y) =>
 		Array.from({ length: width }, (_, x) => {
-			if (!inside(x, y, rx, ry, ry)) return '.';
-			const edge = [
-				[x - 1, y],
-				[x + 1, y],
-				[x, y - 1],
-				[x, y + 1],
-			].some(([nx, ny]) => !inside(nx, ny, rx, ry, ry));
+			if (!inside(x, y)) return '.';
+			const edge = !inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1);
 			if (edge) return 'A';
-			return inside(x, y, rx * 0.72, ry * 0.5, ry * 0.8) ? 'C' : 'B';
+			// 위 가장자리 두 줄은 풀 (톱니처럼 들쭉날쭉)
+			if (!inside(x, y - 2) || (!inside(x, y - 3) && x % 3 !== 1)) return 'D';
+			const lx = (x + 0.5 - rx) / rx;
+			const ly = (y + 0.5 - ry) / ry;
+			const shade = lx * 0.6 + ly;
+			if (shade > 0.75) return 'E';
+			if (shade > 0.45) return (x + y) % 2 === 0 ? 'E' : 'B';
+			if ((lx + 0.35) ** 2 * 1.4 + (ly + 0.1) ** 2 < 0.12) return 'C';
+			return (x * 7 + y * 13) % 23 === 0 ? 'E' : 'B';
 		}).join('')
 	);
 }
@@ -160,6 +79,8 @@ export const PLATFORM_COLORS: Record<string, string> = {
 	A: 'var(--dl-plat-rim)',
 	B: 'var(--dl-plat)',
 	C: 'var(--dl-plat-hi)',
+	D: 'var(--dl-plat-grass)',
+	E: 'var(--dl-plat-shade)',
 };
 
 /** HP 막대의 색 단계: 반이 넘으면 초록, 5분의 1이 넘으면 노랑, 그 아래는 빨강 (포켓몬처럼) */

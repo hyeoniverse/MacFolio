@@ -6,7 +6,6 @@ import {
 	CHEST_CLOSED,
 	CHEST_OPEN,
 	hpLevel,
-	letterOf,
 	mirror,
 	MONSTERS,
 	monsterColors,
@@ -19,43 +18,13 @@ import {
 	platformRows,
 	sceneOf,
 	SPRITE_COLORS,
-	slotIcon,
 	splitScore,
 	statusStats,
-	techIcon,
 	troubleKeys,
 	windowAround,
 } from './dialogueStage';
 
 const sample: Project = { ...structuredClone(GENERAL_SAMPLE), id: 'sample', url: 'https://github.com/me/sample' };
-
-describe('techIcon', () => {
-	it('아는 기술은 버전과 괄호를 떼고 브랜드 아이콘으로', () => {
-		expect(techIcon('React')).toBe('fa-react');
-		expect(techIcon('React 19')).toBe('fa-react');
-		expect(techIcon('Unity 6')).toBe('fa-unity');
-		expect(techIcon('Node.js')).toBe('fa-node-js');
-		expect(techIcon('Docker')).toBe('fa-docker');
-		expect(techIcon('Python (FastAPI)')).toBe('fa-python');
-		expect(techIcon('GitHub Actions')).toBe('fa-github');
-	});
-
-	it('모르는 기술(FA에 아이콘이 없는 것 포함)은 null: 첫 글자 칸으로 그린다', () => {
-		expect(techIcon('TypeScript')).toBeNull();
-		expect(techIcon('Redis')).toBeNull();
-		expect(techIcon('Next.js')).toBeNull();
-		expect(techIcon('')).toBeNull();
-		expect(letterOf('zustand')).toBe('Z');
-		expect(letterOf('갈무리')).toBe('갈');
-	});
-
-	it('사양 칸: 값의 첫 기술이 아는 것이면 브랜드, 아니면 분류 이름으로', () => {
-		expect(slotIcon('화면', 'React 19, TypeScript, Vite')).toEqual({ brand: true, icon: 'fa-react' });
-		expect(slotIcon('서버', 'Vercel 서버리스 함수, Redis')).toEqual({ brand: false, icon: 'fa-server' });
-		expect(slotIcon('인증', '이메일 로그인')).toEqual({ brand: false, icon: 'fa-key' });
-		expect(slotIcon('기타', '무엇')).toEqual({ brand: false, icon: 'fa-cube' });
-	});
-});
 
 describe('칸 그림', () => {
 	/** 줄 폭이 모두 같고 아는 글자만 쓰는지 */
@@ -167,17 +136,21 @@ describe('밝은 장면', () => {
 		PERSON.forEach((row, y) => expect(person[y + 1].slice(1, -1).replace(/X/g, '.')).toBe(row));
 	});
 
-	it('발판은 납작한 타원: 테두리 A가 둘레를 감싸고, 위쪽에 밝은 면 C가 있다', () => {
+	it('발판은 납작한 흙 자리: 테두리 A가 둘레를 감싸고, 위 가장자리 풀 D, 밝은 흙 C, 흙 B, 그늘 E', () => {
 		const rows = platformRows(40, 8);
 		expect(rows).toHaveLength(8);
-		for (const row of rows) expect(row).toMatch(/^[.ABC]{40}$/);
-		// 좌우·위아래가 같다
-		for (const row of rows) expect(row).toBe([...row].reverse().join(''));
+		for (const row of rows) expect(row).toMatch(/^[.ABCDE]{40}$/);
+		// 모양(칠한 칸)은 좌우·위아래가 같고, 빛 때문에 색은 왼쪽 위가 밝다
+		const shape = rows.map((row) => row.replace(/[^.]/g, '#'));
+		for (const row of shape) expect(row).toBe([...row].reverse().join(''));
+		expect(shape).toEqual([...shape].reverse());
 		// 가운데 줄의 양 끝은 테두리, 모서리는 비어 있다
 		expect(rows[4][0]).toBe('A');
 		expect(rows[0][0]).toBe('.');
-		expect(rows.join('')).toContain('C');
-		expect(rows.join('')).toContain('B');
+		const all = platformRows(60, 12).join('');
+		for (const key of 'ABCDE') expect(all).toContain(key);
+		// 위 가장자리 바로 아래는 풀
+		expect(rows[1].slice(15, 25)).toMatch(/^D+$/);
 	});
 
 	it('몬스터마다 다른 몸 색, 모든 색 글자를 칠한다', () => {
