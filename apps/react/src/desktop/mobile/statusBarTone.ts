@@ -224,9 +224,16 @@ export const ACROSS = [0.15, 0.5, 0.85];
 export const CLOCK_SIDE = [0.08, 0.15, 0.22];
 export const ICONS_SIDE = [0.78, 0.85, 0.92];
 
-/** 막대 밑 몇 군데(points: 막대 폭에 대한 비율)의 바탕색으로 막대의 색을 정한다 */
-export function sampleTone(bar: Element, points: readonly number[] = ACROSS): StatusBarTone | null {
-	const box = bar.getBoundingClientRect();
+/**
+ * 막대 밑 몇 군데(points: 막대 폭에 대한 비율)의 바탕색으로 막대의 색을 정한다.
+ * area를 주면 그 상자 안에서 읽는다 (홈 인디케이터는 누르는 자리가 화면 폭 전체라, 보이는 막대 밑만 읽는다)
+ */
+export function sampleTone(
+	bar: Element,
+	points: readonly number[] = ACROSS,
+	area: Element | null = null
+): StatusBarTone | null {
+	const box = (area ?? bar).getBoundingClientRect();
 	const y = box.top + box.height / 2;
 	return toneFor(points.map((at) => colorAt(document, box.left + box.width * at, y, bar)));
 }
@@ -243,7 +250,8 @@ export function useStatusBarTone(
 	enabled: boolean,
 	fallback: StatusBarTone,
 	key: string,
-	points: readonly number[] = ACROSS
+	points: readonly number[] = ACROSS,
+	area: React.RefObject<Element | null> | null = null
 ): StatusBarTone {
 	const [tone, setTone] = useState<StatusBarTone>(fallback);
 	useEffect(() => {
@@ -252,7 +260,7 @@ export function useStatusBarTone(
 		const update = () => {
 			cancelAnimationFrame(frame);
 			frame = requestAnimationFrame(() => {
-				if (bar.current) setTone(sampleTone(bar.current, points) ?? fallback);
+				if (bar.current) setTone(sampleTone(bar.current, points, area?.current ?? null) ?? fallback);
 			});
 		};
 		update();
@@ -265,6 +273,6 @@ export function useStatusBarTone(
 			window.removeEventListener('resize', update);
 			clearInterval(timer);
 		};
-	}, [bar, enabled, fallback, key, points]);
+	}, [bar, enabled, fallback, key, points, area]);
 	return enabled ? tone : fallback;
 }
