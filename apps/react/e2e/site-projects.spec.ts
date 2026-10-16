@@ -102,7 +102,12 @@ test.describe('프로젝트 관리', () => {
 		await expect(macfolio).toContainText('macfolio · 고침');
 		// ≡ 손잡이에서 ↑ 키로 한 칸 위로 (끌어도 된다)
 		await macfolio.getByRole('button', { name: '순서 바꾸기 (맥폴리오)' }).press('ArrowUp');
-		await list.getByRole('button', { name: 'DevCourse FullStack 숨기기' }).click();
+		// 숨기기는 보이기 스위치를 끈다
+		const devcourse = list.getByRole('switch', { name: 'DevCourse FullStack 보이기' });
+		await expect(devcourse).toBeChecked();
+		await devcourse.click();
+		await expect(devcourse).not.toBeChecked();
+		await expect(list.getByRole('listitem').filter({ hasText: 'DevCourse' })).toContainText('숨김');
 		await expect(list.getByRole('listitem').first()).toContainText('맥폴리오');
 		await settings.getByRole('button', { name: '완료' }).click();
 		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
