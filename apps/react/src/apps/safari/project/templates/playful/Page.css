@@ -273,15 +273,43 @@
 	outline-offset: 3px;
 }
 
-/* ─── 첫 화면: 왼쪽 큰 제목, 오른쪽 색 도형 위의 화면 ─── */
+/* ─── 첫 화면: 가운데의 큰 둥근 색 포스터, 둘레의 스티커, 모서리에서 내민 폴라로이드 ─── */
 .pf-hero {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
-	align-items: center;
-	gap: 64px;
 	max-width: calc(var(--pf-width) + var(--pf-gutter) * 2);
 	margin: 0 auto;
-	padding: 64px var(--pf-gutter) 88px;
+	padding: 72px var(--pf-gutter) 104px;
+}
+
+.pf-stage {
+	position: relative;
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.pf-poster {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 64px 72px 60px;
+	border: 2px solid var(--pf-edge);
+	border-radius: 48px;
+	background-color: #ffd96a;
+	box-shadow: 8px 8px 0 var(--pf-line);
+	color: var(--pf-on);
+	text-align: center;
+	--t-ink: var(--pf-on);
+	--t-body: var(--pf-on-body);
+}
+
+:root[data-theme='dark'] .pf-poster {
+	background-color: #f5c84c;
+	box-shadow: 8px 8px 0 #000000;
+}
+
+.pf-hero[data-image] .pf-poster {
+	padding-bottom: 72px;
 }
 
 .pf-brand {
@@ -289,9 +317,10 @@
 	align-items: center;
 	gap: 10px;
 	padding: 6px 16px;
-	border: 2px solid var(--pf-line);
+	border: 2px solid var(--pf-edge);
 	border-radius: 999px;
-	background-color: var(--pf-card);
+	background-color: #fffdf8;
+	color: var(--pf-on);
 	font-size: 14.5px;
 	font-weight: 700;
 }
@@ -312,9 +341,11 @@
 }
 
 .pf-hero h1 {
+	max-width: 14em;
 	margin-top: 28px;
-	font-size: clamp(40px, 5cqi, 68px);
-	line-height: 1.12;
+	color: var(--pf-on);
+	font-size: clamp(40px, 4.8cqi, 64px);
+	line-height: 1.14;
 	letter-spacing: -0.025em;
 	text-wrap: balance;
 }
@@ -335,25 +366,32 @@
 }
 
 .pf-squiggle path {
-	stroke: var(--tpl-accent);
+	stroke: #e5482a;
 	stroke-width: 5px;
 	stroke-linecap: round;
 	stroke-linejoin: round;
 }
 
 .pf-subhead {
-	max-width: 32em;
-	margin-top: 28px;
-	color: var(--pf-body);
+	max-width: 30em;
+	margin-top: 24px;
+	color: var(--pf-on-body);
 	font-size: 19px;
 	line-height: 1.6;
+}
+
+.pf-poster .pf-links {
+	justify-content: center;
+	margin-top: 32px;
 }
 
 .pf-meta {
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: center;
 	gap: 8px;
-	margin-top: 36px;
+	max-width: 560px;
+	margin-top: 28px;
 }
 
 .pf-meta li {
@@ -362,8 +400,8 @@
 	gap: 8px;
 	padding: 5px 12px;
 	border-radius: 999px;
-	background-color: var(--pf-soft);
-	color: var(--pf-body);
+	background-color: rgba(255, 253, 248, 0.7);
+	color: var(--pf-on-body);
 	font-size: 13.5px;
 	font-weight: 600;
 }
@@ -372,119 +410,12 @@
 	content: '';
 	width: 8px;
 	height: 8px;
+	border: 1.5px solid var(--pf-on);
 	border-radius: 50%;
 	background-color: var(--tone);
 }
 
-/* 콜라주: 해바라기 동그라미, 보라 둥근 네모, 민트 알약 위에 창 하나와 스티커 */
-.pf-collage {
-	position: relative;
-	padding: 48px 28px 56px 36px;
-}
-
-.pf-shape {
-	position: absolute;
-	border: 2px solid var(--pf-edge);
-}
-
-.pf-shape-sun {
-	top: 0;
-	right: -2%;
-	width: 58%;
-	aspect-ratio: 1;
-	border-radius: 50%;
-	background-color: #ffc93c;
-}
-
-.pf-shape-lilac {
-	bottom: 4%;
-	left: 0;
-	width: 32%;
-	aspect-ratio: 1;
-	border-radius: 34%;
-	background-color: var(--pf-violet);
-	transform: rotate(-8deg);
-}
-
-.pf-shape-mint {
-	right: 8%;
-	bottom: 0;
-	width: 38%;
-	height: 56px;
-	border-radius: 999px;
-	background-color: #a3e4d7;
-}
-
-.pf-window {
-	position: relative;
-	z-index: 1;
-	overflow: hidden;
-	border: 2px solid var(--pf-line);
-	border-radius: 22px;
-	background-color: var(--pf-card);
-	box-shadow: var(--pf-drop);
-}
-
-.pf-window-bar {
-	display: flex;
-	align-items: center;
-	height: 36px;
-	padding: 0 14px;
-	border-bottom: 2px solid var(--pf-line);
-	background-color: var(--pf-card);
-}
-
-.pf-window-screen,
-.pf-window-screen img {
-	aspect-ratio: 16 / 10;
-	width: 100%;
-	object-fit: cover;
-	object-position: top center;
-}
-
-/* 그림이 없는 첫 화면: 큰 둥근 네모에 앱 아이콘, 첫 기능 아이콘, 또는 이름 첫 글자 */
-.pf-collage[data-art] {
-	display: grid;
-	place-items: center;
-	min-height: 440px;
-}
-
-.pf-collage[data-art] .pf-shape-sun {
-	top: 2%;
-	right: 6%;
-	width: 62%;
-}
-
-.pf-hero-art {
-	position: relative;
-	z-index: 1;
-	display: grid;
-	place-items: center;
-	width: min(52%, 260px);
-	aspect-ratio: 1;
-	border: 2px solid var(--pf-line);
-	border-radius: 32%;
-	background-color: var(--pf-card);
-	box-shadow: var(--pf-drop);
-	color: var(--pf-ink);
-	font-size: 92px;
-	transform: rotate(-4deg);
-}
-
-.pf-hero-icon {
-	width: 62%;
-	height: 62%;
-	border-radius: 24%;
-	object-fit: cover;
-}
-
-.pf-initial {
-	font-size: 128px;
-	font-weight: 700;
-	line-height: 1;
-	letter-spacing: -0.04em;
-}
-
+/* 포스터 둘레의 스티커 */
 .pf-hero-stickers li {
 	position: absolute;
 	z-index: 2;
@@ -496,29 +427,91 @@
 }
 
 .pf-hero-stickers [data-slot='0'] {
-	top: 14px;
-	left: 0;
+	top: -18px;
+	left: 56px;
 }
 
 .pf-hero-stickers [data-slot='1'] {
-	top: 44%;
-	right: -4px;
+	top: 34%;
+	left: -36px;
 }
 
 .pf-hero-stickers [data-slot='2'] {
-	bottom: 18px;
-	left: 18%;
+	top: -14px;
+	right: 88px;
 }
 
-.pf-collage[data-art] [data-slot='0'] {
-	top: 16%;
-	left: 4%;
+/* 모서리의 폴라로이드: 흰 테두리, 아래가 넓은 여백, 오른쪽 아래에서 비스듬히 */
+.pf-polaroid {
+	position: absolute;
+	z-index: 2;
+	right: -112px;
+	bottom: -88px;
+	width: 248px;
+	padding: 12px 12px 0;
+	border: 2px solid var(--pf-edge);
+	border-radius: 10px;
+	background-color: #fffdf8;
+	box-shadow: 6px 6px 0 var(--pf-line);
+	transform: rotate(6deg);
 }
 
-.pf-collage[data-art] [data-slot='1'] {
-	top: auto;
-	right: 4%;
-	bottom: 16%;
+:root[data-theme='dark'] .pf-polaroid {
+	box-shadow: 6px 6px 0 #000000;
+}
+
+.pf-polaroid-photo,
+.pf-polaroid-photo img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	border-radius: 4px;
+	object-fit: cover;
+	object-position: top center;
+}
+
+.pf-polaroid figcaption {
+	overflow: hidden;
+	padding: 10px 4px 12px;
+	color: #4d463e;
+	font-size: 13.5px;
+	font-weight: 600;
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 그림이 없는 첫 화면: 폴라로이드 자리에 앱 아이콘, 첫 기능 아이콘, 또는 이름 첫 글자 */
+.pf-polaroid-art {
+	right: -40px;
+	bottom: -56px;
+	width: 168px;
+	padding: 12px;
+	transform: rotate(8deg);
+}
+
+.pf-hero-art {
+	display: grid;
+	place-items: center;
+	aspect-ratio: 1;
+	border-radius: 6px;
+	background-color: #c9b8ff;
+	color: #1d1a17;
+	font-size: 64px;
+}
+
+.pf-hero-icon {
+	width: 62%;
+	height: 62%;
+	border-radius: 24%;
+	object-fit: cover;
+}
+
+.pf-initial {
+	font-size: 84px;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.04em;
 }
 
 /* ─── 구역 ─── */
@@ -535,11 +528,36 @@
 	margin-bottom: 44px;
 }
 
+/* 색 알약 이름표: 기울이지 않은 납작한 알약, 앞에 잉크 점 */
+.pf-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 16px 6px 12px;
+	border: 2px solid var(--pf-edge);
+	border-radius: 999px;
+	background-color: var(--tone);
+	color: var(--pf-on);
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.pf-pill::before {
+	content: '';
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: var(--pf-on);
+}
+
 .pf-head h2 {
-	max-width: 20em;
-	margin-top: 20px;
-	font-size: clamp(30px, 3.5cqi, 46px);
-	line-height: 1.16;
+	max-width: 18em;
+	margin-top: 18px;
+	font-size: clamp(34px, 4.2cqi, 54px);
+	font-weight: 800;
+	line-height: 1.12;
+	letter-spacing: -0.03em;
 	text-wrap: balance;
 }
 
@@ -610,61 +628,61 @@
 	line-height: 1.35;
 }
 
-/* ─── 주요 기능: 팔레트 색 카드 ─── */
-.pf-features,
-.pf-cards {
+/* ─── 주요 기능: 엇갈려 쌓인 두 줄의 색 카드 ─── */
+.pf-masonry {
 	display: grid;
-	gap: 24px;
-}
-
-.pf-cards-grid[data-cols='3'] {
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.pf-cards-grid[data-cols='2'] {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
+	align-items: start;
+	gap: 28px;
+}
+
+.pf-masonry[data-single] {
+	grid-template-columns: minmax(0, 1fr);
+	max-width: 720px;
+}
+
+.pf-masonry-col {
+	display: grid;
+	gap: 28px;
+}
+
+/* 오른쪽 줄은 조금 내려 시작해 엇갈리게 */
+.pf-masonry-col + .pf-masonry-col {
+	padding-top: 72px;
 }
 
 .pf-card {
+	padding: 32px;
 	border: 2px solid var(--pf-edge);
 	border-radius: 32px;
 	background-color: var(--tone);
 }
 
-.pf-card-small {
-	padding: 32px;
-}
-
-.pf-card-small .pf-point-title {
-	margin-top: 24px;
-}
-
-.pf-card-wide {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+.pf-card-top {
+	display: flex;
 	align-items: center;
-	gap: 48px;
-	padding: 44px;
+	justify-content: space-between;
 }
 
-.pf-card-wide[data-flip] .pf-card-visual {
-	order: -1;
+.pf-card-num {
+	color: var(--pf-on-faint);
+	font-size: 40px;
+	font-weight: 800;
+	line-height: 1;
+	letter-spacing: -0.04em;
 }
 
-.pf-card-wide .pf-point-title {
-	margin-top: 24px;
-	font-size: 28px;
+.pf-card .pf-point-title {
+	margin-top: 22px;
+	font-size: 25px;
 }
 
-.pf-card-wide .pf-body {
-	font-size: 17.5px;
-}
-
-.pf-card-visual .pf-frame {
+.pf-card-frame {
+	margin-top: 26px;
 	box-shadow: 6px 6px 0 var(--pf-on);
 }
 
-:root[data-theme='dark'] .pf-card-visual .pf-frame {
+:root[data-theme='dark'] .pf-card-frame {
 	box-shadow: none;
 }
 
@@ -672,53 +690,11 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 12px;
-	margin-top: 24px;
+	margin-top: 18px;
 }
 
 .pf-thumbs .pf-frame {
 	border-radius: 14px;
-}
-
-/* 그림이 없는 넓은 카드: 큰 도형과 아이콘 */
-.pf-shape-art {
-	position: relative;
-	display: grid;
-	place-items: center;
-	aspect-ratio: 16 / 10;
-}
-
-.pf-blob {
-	position: absolute;
-	top: 6%;
-	left: 18%;
-	width: 52%;
-	aspect-ratio: 1;
-	border: 2px solid var(--pf-edge);
-	border-radius: 50%;
-	background-color: var(--tone);
-}
-
-.pf-blob-2 {
-	top: auto;
-	right: 12%;
-	bottom: 4%;
-	left: auto;
-	width: 30%;
-	border-radius: 32%;
-	transform: rotate(10deg);
-}
-
-.pf-shape-icon {
-	position: relative;
-	display: grid;
-	place-items: center;
-	width: 116px;
-	height: 116px;
-	border: 2px solid var(--pf-edge);
-	border-radius: 50%;
-	background-color: #fffdf8;
-	color: var(--pf-on);
-	font-size: 46px;
 }
 
 /* ─── 화면 모음: 엇갈린 격자, 액자는 살짝 기울고 아래에 스티커 ─── */
@@ -1477,17 +1453,27 @@
 	margin-top: 36px;
 }
 
+.pf-poster .pf-links a,
+.pf-poster .pf-links button,
 .pf-closing .pf-links a,
 .pf-closing .pf-links button {
 	border-color: var(--pf-on);
 	color: var(--pf-on);
 }
 
+.pf-poster .pf-links a:not([data-primary]):hover,
+.pf-poster .pf-links button:not([data-primary]):hover {
+	background-color: rgba(29, 26, 23, 0.07);
+}
+
+.pf-poster .pf-links [data-primary],
 .pf-closing .pf-links [data-primary] {
 	background-color: var(--pf-on);
 	color: #fff8ee;
 }
 
+.pf-poster .pf-links a:focus-visible,
+.pf-poster .pf-links button:focus-visible,
 .pf-closing .pf-links a:focus-visible,
 .pf-closing .pf-links button:focus-visible {
 	outline-color: var(--pf-on);
@@ -1500,20 +1486,59 @@
 	}
 
 	.pf-hero {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 40px;
-		padding-top: 56px;
+		padding-top: 48px;
 		padding-bottom: 64px;
 	}
 
-	.pf-collage {
-		width: 100%;
-		max-width: 600px;
-		margin: 0 auto;
+	.pf-poster,
+	.pf-hero[data-image] .pf-poster {
+		padding: 52px 36px 48px;
+		border-radius: 40px;
 	}
 
-	.pf-collage[data-art] {
-		min-height: 360px;
+	/* 좁은 창: 스티커는 포스터 위의 한 줄, 폴라로이드는 포스터 아래 가운데에 걸친다 */
+	.pf-hero-stickers {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 10px;
+		margin-top: -18px;
+		position: relative;
+		z-index: 2;
+	}
+
+	.pf-hero-stickers li,
+	.pf-hero-stickers [data-slot] {
+		position: static;
+	}
+
+	.pf-polaroid {
+		position: relative;
+		right: auto;
+		bottom: auto;
+		width: min(320px, 80%);
+		margin: 24px auto 0;
+		transform: rotate(3deg);
+	}
+
+	.pf-polaroid-art {
+		width: 150px;
+	}
+
+	.pf-masonry {
+		gap: 20px;
+	}
+
+	.pf-masonry-col {
+		gap: 20px;
+	}
+
+	.pf-masonry-col + .pf-masonry-col {
+		padding-top: 48px;
+	}
+
+	.pf-card {
+		padding: 28px;
 	}
 
 	.pf-badges {
@@ -1523,24 +1548,6 @@
 
 	.pf-badges[data-count='1'] {
 		--n: 1;
-	}
-
-	.pf-cards-grid[data-cols='3'] {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.pf-cards-grid[data-cols='3'] li:last-child:nth-child(odd) {
-		grid-column: 1 / -1;
-	}
-
-	.pf-card-wide {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 32px;
-		padding: 32px;
-	}
-
-	.pf-card-wide[data-flip] .pf-card-visual {
-		order: 0;
 	}
 
 	.pf-built li[data-span='third'] {
@@ -1611,8 +1618,10 @@
 		font-size: 17px;
 	}
 
-	.pf-collage {
-		padding: 36px 12px 44px 20px;
+	.pf-poster,
+	.pf-hero[data-image] .pf-poster {
+		padding: 40px 22px 36px;
+		border-radius: 32px;
 	}
 
 	.pf-hero-stickers .pf-sticker {
@@ -1625,7 +1634,7 @@
 	}
 
 	.pf-head h2 {
-		font-size: 28px;
+		font-size: 30px;
 	}
 
 	.pf-badges {
@@ -1645,13 +1654,15 @@
 		font-size: 12.5px;
 	}
 
-	.pf-cards-grid[data-cols='3'],
-	.pf-cards-grid[data-cols='2'] {
+	.pf-masonry {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.pf-card-small,
-	.pf-card-wide {
+	.pf-masonry-col + .pf-masonry-col {
+		padding-top: 0;
+	}
+
+	.pf-card {
 		padding: 26px;
 		border-radius: 26px;
 	}

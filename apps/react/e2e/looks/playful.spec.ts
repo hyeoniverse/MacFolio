@@ -1,4 +1,4 @@
-// playful 템플릿 — Figma·Arc 출시 페이지처럼: 크림 바탕, 고정 팔레트의 색 카드, 둥근 숫자 배지, 기운 스티커, 굽이치는 단계, 산호색 마무리
+// playful 템플릿 — Figma·Arc 출시 페이지처럼: 크림 바탕, 가운데의 색 포스터와 모서리의 폴라로이드, 엇갈려 쌓인 색 카드, 둥근 숫자 배지, 기운 스티커, 굽이치는 단계, 산호색 마무리
 import { expect, test } from '../fixtures';
 import {
 	expectEmptyRendered,
@@ -22,6 +22,16 @@ test('playful: 큰 제목의 한 낱말에 물결을 긋고, 글은 그대로 �
 	const title = article.getByRole('heading', { level: 1 });
 	await expect(title).toHaveText(GENERAL_SAMPLE.tagline);
 	await expect(title.locator('.pf-mark svg')).toHaveCount(1);
+});
+
+test('playful: 첫 화면의 대표 화면은 폴라로이드에, 기능은 엇갈린 두 줄의 카드에 담는다', async ({ page }) => {
+	const { article } = await openSample(page, 'playful');
+	await expect(article.locator(`.pf-polaroid img[src="${GENERAL_SAMPLE.image}"]`)).toBeAttached();
+	await expect(article.locator('.pf-poster h1')).toHaveText(GENERAL_SAMPLE.tagline);
+	const features = article.getByRole('region', { name: '주요 기능' });
+	await features.scrollIntoViewIfNeeded();
+	await expect(features.locator('.pf-masonry-col')).toHaveCount(2);
+	await expect(features.locator('.pf-card')).toHaveCount(GENERAL_SAMPLE.highlights.length);
 });
 
 test('playful: 고를 수 있는 칸이 모두 빈 프로젝트도 빈 구역 없이 첫 화면과 마무리를 그린다', async ({ page }) => {

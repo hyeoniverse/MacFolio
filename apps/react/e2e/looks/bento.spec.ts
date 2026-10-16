@@ -1,4 +1,4 @@
-// bento 템플릿 — Framer·Raycast 템플릿처럼: 크기가 다른 타일, 1px 선, 고정폭 글자
+// bento 템플릿 — Framer·Raycast 템플릿처럼: 소개·대표 화면·숫자 타일로 바로 시작하는 첫 격자, 크기가 다른 타일, 1px 선, 고정폭 이름표
 import { test } from '../fixtures';
 import {
 	expectEmptyRendered,
