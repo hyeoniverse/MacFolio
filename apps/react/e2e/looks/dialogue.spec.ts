@@ -165,8 +165,13 @@ test('dialogue: 라이트·다크 모두 검은 무대이고, 그림은 원래 �
 	expect(await shot.evaluate((img) => getComputedStyle(img).imageRendering)).toBe('auto');
 	await expect(panel.locator('.dl-stage canvas')).toHaveCount(0);
 	const box = dialogOf(panel);
-	expect(await box.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('6px');
+	// 테두리는 게임 칸 3칸이고, 화면 전체가 정수 배로 커진다 (글자·테두리·그림이 한 격자)
+	expect(await box.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('3px');
 	expect(await box.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe('rgb(255, 255, 255)');
+	const zoom = Number(await panel.locator('.dl-screen').getAttribute('data-zoom'));
+	expect(Number.isInteger(zoom) && zoom >= 1).toBe(true);
+	const width = await panel.locator('.dl-screen').evaluate((el) => el.getBoundingClientRect().width);
+	expect(Math.round(width)).toBe(480 * zoom);
 });
 
 test('dialogue: 그림이 하나도 없으면 무대에 게임 화면(타이틀, 퀘스트)을 그린다', async ({ page }) => {
@@ -273,12 +278,15 @@ test('dialogue: 트러블슈팅은 버그와의 전투(HP가 단계마다 준다
 	}
 });
 
-test('dialogue: 좁은 창에서는 선택지가 한 열이고 방향 키 ↓로 차례대로 내려간다', async ({ page }) => {
+test('dialogue: 게임 화면이 한 배도 안 들어가는 좁은 창에서는 선택지가 한 열이고 방향 키 ↓로 차례대로 내려간다', async ({
+	page,
+}) => {
 	const { panel } = await openLook(page, { id: 'hyeoniverse', tab: /HYEONIVERSE/, look: 'dialogue' });
 	await panel.evaluate((el) => {
 		const win = el.closest('[data-app="safari"]') as HTMLElement | null;
-		if (win) win.style.width = '560px';
+		if (win) win.style.width = '420px';
 	});
+	await expect(panel.locator('.dl')).toHaveAttribute('data-fit', 'compact');
 	const dialog = dialogOf(panel);
 	await nextOf(dialog).click();
 	await expect(dialog.locator('.dl-menu[data-open] .dl-choices')).toHaveAttribute('data-cols', '1');
