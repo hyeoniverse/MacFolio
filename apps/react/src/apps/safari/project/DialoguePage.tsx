@@ -6,6 +6,8 @@
 // 커서가 가리키는 주제의 장면과 그림이 바로 미리보기다. 창은 반투명한 짙은 바탕에 1칸 밝은 테두리(모서리 한 칸을 깎는다)라
 // 장면의 색이 비치면서도 글은 늘 짙은 창 안에서 읽힌다. 무대에는 주제마다 게임 화면 하나(DialoguePanels.tsx)를 그려
 // 대사가 말하는 항목을 짚고, 그 장에 그림이 있으면 그림을 액자에 원래 모습 그대로 띄우고 게임 화면은 옆에 작게 둔다
+// 첫 화면은 마을(DialogueTown.tsx, dialogueWorld.ts): 타이틀 다음에 주인공이 입구에 서고, 장소(게시판, 상점, 몬스터, 팀원...)를
+// 살펴보면 그 주제의 대화가 흐른 뒤 마을의 같은 자리로 돌아온다. X·바로 가기는 걷지 않고 모든 주제를 고르는 메뉴(읽기 프로그램의 길)
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { Links } from '@/apps/safari/project/parts';
@@ -15,6 +17,15 @@ import { nextUnread, paginate, sceneOf, shorten, troubleKeys } from '@/apps/safa
 import { TitleScreen, TopicPanel, type PanelFocus } from '@/apps/safari/project/DialoguePanels';
 import { PixelIcon, PixelImage, SceneBackdrop } from '@/apps/safari/project/DialoguePixels';
 import type { IconName } from '@/apps/safari/project/dialogueIcons';
+import DialogueTown, { type PlayerSpot } from '@/apps/safari/project/DialogueTown';
+import {
+	ENDING_TOPIC,
+	facingPlace,
+	layoutWorld,
+	START,
+	TITLE_VIEW,
+	type Place,
+} from '@/apps/safari/project/dialogueWorld';
 import '@/apps/safari/project/DialoguePage.css';
 
 /** 무대에 띄우는 그림(또는 영상) 한 장. caption이 있으면 그림 아래에 작게 적는다 */
@@ -56,9 +67,13 @@ interface Topic {
 	thumb?: string;
 }
 
-/** greet·ending의 at은 그 글의 몇 번째 장. topic의 at이 lines.length이면 주제를 다 본 마지막 장(끝맺음) */
+/**
+ * greet·ending의 at은 그 글의 몇 번째 장. topic의 at이 lines.length이면 주제를 다 본 마지막 장(끝맺음).
+ * world는 마을을 걷는 차례(주제는 장소를 살펴보면 열리고, 다 보면 마을의 같은 자리로 돌아온다)
+ */
 type Mode =
 	| { kind: 'greet'; at: number }
+	| { kind: 'world' }
 	| { kind: 'menu'; sub: boolean }
 	| { kind: 'topic'; id: string; at: number }
 	| { kind: 'ending'; at: number };
@@ -489,6 +504,21 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const [endingSeen, setEndingSeen] = useState(false);
 	// 메뉴의 ♥ 커서 (마우스를 올리거나 방향 키로 옮긴다). 지금 열린 메뉴(처음 또는 장 목록) 안의 차례
 	const [cursor, setCursor] = useState(0);
+	// 지금 주제(와 엔딩)를 어디서 열었는지: 마을에서 살펴봤으면 다 보고 마을로, 바로 가기 메뉴에서 골랐으면 메뉴로 돌아간다
+	const [origin, setOrigin] = useState<'world' | 'menu'>('menu');
+	// 마을의 주인공 자리 (주제를 보고 돌아와도 같은 자리), 마을에서 잠깐 띄우는 알림 (닫힌 문)
+	const [player, setPlayer] = useState<PlayerSpot>(() => ({ ...START }));
+	// 알림은 띄운 자리에 서 있는 동안만 보인다 (걸어서 비키면 닫힌다)
+	const [notice, setNotice] = useState<{ text: string; x: number; y: number } | null>(null);
+	const noticeText = notice && notice.x === player.x && notice.y === player.y ? notice.text : null;
+	const layout = useMemo(
+		() =>
+			layoutWorld(
+				topics.map((t) => t.id),
+				(project.team ?? []).map((m) => m.name)
+			),
+		[topics, project.team]
+	);
 
 	const back: Topic = useMemo(() => ({ id: BACK_TOPIC, label: '처음 메뉴로', lines: [] }), []);
 	const subList = useMemo(() => [...chapters, back], [chapters, back]);
@@ -498,16 +528,23 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 
 	const countable = topics.filter((t) => !UNCOUNTED.has(t.id));
 	const readCount = countable.filter((t) => read.has(t.id)).length;
+	// 모든 주제를 읽으면 마을 북쪽 문이 열린다
+	const allRead = countable.every((t) => read.has(t.id));
+	const fromWorld = origin === 'world';
 	const current = mode.kind === 'topic' ? [...topics, ...chapters].find((t) => t.id === mode.id) : undefined;
 
+	// 타이틀: 마을 위에 프로젝트 표지판과 이름, ▶ PRESS Z (그림은 걸지 않는다), 대화 창에 소개
 	const greetLines: Line[] = useMemo(() => {
 		const body = [project.description, project.context].filter(Boolean).join(' · ');
-		const media = cover ? [{ src: cover }] : undefined;
-		return paginate(body, textW).map((page) => ({ title: project.tagline, body: page, media }));
-	}, [project, cover, textW]);
+		return paginate(body, textW).map((page) => ({ title: project.tagline, body: page }));
+	}, [project, textW]);
+	// 엔딩: 마을의 북쪽 문으로 들어왔으면 마을을 걸으며, 메뉴에서 왔으면 메뉴에서 다시 볼 수 있다고 맺는다
 	const endingLines: Line[] = useMemo(
-		() => paginate(ENDING.body, textW).map((page) => ({ title: ENDING.title, body: page })),
-		[textW]
+		() =>
+			paginate(origin === 'world' ? ENDING.body.replace('메뉴에서', '마을을 걸으며') : ENDING.body, textW).map(
+				(page) => ({ title: ENDING.title, body: page })
+			),
+		[textW, origin]
 	);
 
 	/** 메뉴 목록 안의 자리: 장은 처음 메뉴에서는 '더 많은 이야기' 줄 */
@@ -533,6 +570,8 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		[countable, endingSeen, isChapter, nextIn]
 	);
 
+	// 메뉴를 막 열었는지: 열린 뒤 커서 줄에 포커스를 옮긴다 (바로 가기 단추에 남은 포커스가 Enter를 가로채지 않게)
+	const menuOpened = useRef(false);
 	/** 메뉴를 연다. 커서는 focus(돌아온 주제)가 있으면 그 줄, 없으면 NEXT, 그것도 없으면 첫 줄 */
 	const openMenu = useCallback(
 		(sub: boolean, options: { focus?: string } = {}) => {
@@ -541,6 +580,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			const index = target ? list.findIndex((t) => t.id === anchorIn(sub, target)) : -1;
 			setCursor(Math.max(0, index));
 			setMode({ kind: 'menu', sub });
+			menuOpened.current = true;
 		},
 		[subList, topics, nextIn, read, anchorIn]
 	);
@@ -550,13 +590,17 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const endLine: Line | null = useMemo(() => {
 		if (mode.kind !== 'topic' || !current || mode.at < current.lines.length) return null;
 		const after = afterTopic(current.id, read);
-		const body = after.ending
-			? '이 주제를 다 봤습니다. 모든 주제를 다 봤으니 엔딩으로 갑니다.'
-			: after.next
-				? `이 주제를 다 봤습니다. 메뉴로 돌아갑니다. 다음은 '${shorten(after.next.label, 12)}'입니다.`
-				: '이 주제를 다 봤습니다. 메뉴로 돌아갑니다.';
+		const home = fromWorld ? '마을로' : '메뉴로';
+		const body =
+			fromWorld && allRead
+				? '이 주제를 다 봤습니다. 모든 주제를 다 봐서 마을 북쪽 문이 열렸습니다.'
+				: after.ending
+					? '이 주제를 다 봤습니다. 모든 주제를 다 봤으니 엔딩으로 갑니다.'
+					: after.next
+						? `이 주제를 다 봤습니다. ${home} 돌아갑니다. 다음은 '${shorten(after.next.label, 12)}'입니다.`
+						: `이 주제를 다 봤습니다. ${home} 돌아갑니다.`;
 		return { title: `${shorten(current.label, 12)} 완료`, body };
-	}, [mode, current, read, afterTopic]);
+	}, [mode, current, read, afterTopic, fromWorld, allRead]);
 
 	const line: Line | null =
 		mode.kind === 'greet'
@@ -565,7 +609,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				? endingLines[mode.at]
 				: mode.kind === 'menu'
 					? { body: mode.sub ? SUB_TITLE : MENU_TITLE }
-					: current
+					: mode.kind === 'topic' && current
 						? (current.lines[mode.at] ?? endLine)
 						: null;
 
@@ -595,6 +639,8 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		if (mode.kind === 'greet' || mode.kind === 'ending') {
 			const pages = mode.kind === 'greet' ? greetLines : endingLines;
 			if (mode.at + 1 < pages.length) setMode({ ...mode, at: mode.at + 1 });
+			// 타이틀을 넘기면 마을 입구에 선다. 엔딩은 연 곳(마을의 문 또는 메뉴)으로 돌아간다
+			else if (mode.kind === 'greet' || fromWorld) setMode({ kind: 'world' });
 			else openMenu(false);
 			return;
 		}
@@ -603,9 +649,10 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		if (mode.at + 1 < total) {
 			setMode({ kind: 'topic', id: mode.id, at: mode.at + 1 });
 		} else if (mode.at + 1 === total) {
-			// 링크는 셈에 넣지 않아 끝맺음 없이 바로 메뉴로
+			// 링크는 셈에 넣지 않아 끝맺음 없이 바로 메뉴(또는 마을)로
 			if (UNCOUNTED.has(mode.id)) {
-				openMenu(false, { focus: mode.id });
+				if (fromWorld) setMode({ kind: 'world' });
+				else openMenu(false, { focus: mode.id });
 				return;
 			}
 			// 다 읽었다: 읽음 표시를 하고 끝맺음 장 (다음 주제를 알려 준다)
@@ -614,6 +661,9 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			if (isChapter(mode.id) && chapters.every((c) => nowRead.has(c.id))) nowRead.add(MORE_TOPIC);
 			setRead(nowRead);
 			setMode({ kind: 'topic', id: mode.id, at: total });
+		} else if (fromWorld) {
+			// 마을에서 연 주제는 마을의 같은 자리로 (다 읽었으면 북쪽 문이 열려 있다)
+			setMode({ kind: 'world' });
 		} else {
 			const after = afterTopic(mode.id, read);
 			if (after.ending) {
@@ -621,28 +671,83 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				setMode({ kind: 'ending', at: 0 });
 			} else openMenu(after.sub);
 		}
-	}, [done, finish, mode, current, greetLines, endingLines, openMenu, read, isChapter, chapters, afterTopic]);
+	}, [
+		done,
+		finish,
+		mode,
+		current,
+		greetLines,
+		endingLines,
+		openMenu,
+		read,
+		isChapter,
+		chapters,
+		afterTopic,
+		fromWorld,
+	]);
 
 	/** 메뉴로 (X·Esc, 길잡이 줄의 메뉴로 단추). 읽던 주제가 있으면 커서는 그 주제에, 장 목록에서는 처음 메뉴로 */
 	const toMenu = useCallback(() => {
-		if (mode.kind === 'topic') {
+		if (mode.kind === 'topic' && fromWorld) setMode({ kind: 'world' });
+		else if (mode.kind === 'topic') {
 			const sub = isChapter(mode.id) && !read.has(MORE_TOPIC);
 			openMenu(sub, ended ? {} : { focus: mode.id });
 		} else if (mode.kind === 'menu' && mode.sub) openMenu(false, { focus: MORE_TOPIC });
-		else if (mode.kind !== 'menu') openMenu(false);
-	}, [mode, isChapter, read, openMenu, ended]);
+		// 처음 메뉴에서는 마을로 (바로 가기를 닫는다)
+		else if (mode.kind === 'menu') setMode({ kind: 'world' });
+		else openMenu(false);
+	}, [mode, isChapter, read, openMenu, ended, fromWorld]);
 
 	const choose = useCallback(
 		(topic: Topic) => {
 			if (topic.id === MORE_TOPIC) openMenu(true);
 			else if (topic.id === BACK_TOPIC) openMenu(false, { focus: MORE_TOPIC });
 			else {
+				setOrigin('menu');
 				setCursor(Math.max(0, visible.indexOf(topic)));
 				setMode({ kind: 'topic', id: topic.id, at: 0 });
 			}
 		},
 		[openMenu, visible]
 	);
+
+	/** 마을에서 장소를 살펴본다: 그 주제를 연다 (팀원은 그 사람의 장부터, 도서관은 장 목록, 북쪽 문은 열렸으면 엔딩) */
+	const interact = useCallback(
+		(place: Place) => {
+			setNotice(null);
+			if (place.topic === ENDING_TOPIC) {
+				if (!allRead) {
+					setNotice({ text: '북쪽 문이 닫혀 있습니다. 모든 주제를 읽으면 열립니다.', x: player.x, y: player.y });
+					return;
+				}
+				setOrigin('world');
+				setEndingSeen(true);
+				setMode({ kind: 'ending', at: 0 });
+				return;
+			}
+			if (place.topic === MORE_TOPIC) {
+				setOrigin('world');
+				openMenu(true);
+				return;
+			}
+			const topic = topics.find((t) => t.id === place.topic);
+			if (!topic) return;
+			const at = place.member === undefined ? 0 : topic.lines.findIndex((l) => l.item === place.member);
+			setOrigin('world');
+			setCursor(Math.max(0, topics.indexOf(topic)));
+			setMode({ kind: 'topic', id: topic.id, at: Math.max(0, at) });
+		},
+		[allRead, openMenu, topics, player]
+	);
+
+	/** 마을에서 한 칸 걷거나 방향을 바꿨다 */
+	const moved = useCallback((spot: PlayerSpot) => {
+		setPlayer((prev: PlayerSpot) =>
+			prev.x === spot.x && prev.y === spot.y && prev.facing === spot.facing ? prev : spot
+		);
+	}, []);
+	const front = mode.kind === 'world' ? facingPlace(layout, player.x, player.y, player.facing) : undefined;
+	const topicLabel = (id: string) => topics.find((t) => t.id === id)?.label ?? '';
 
 	/** 커서를 옮기고, 키보드로 옮겼으면 그 단추에 포커스 (보이는 줄 밖이면 메뉴가 그 줄까지 넘어간다) */
 	const moveCursor = useCallback(
@@ -668,6 +773,13 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		const button = rootRef.current?.querySelectorAll<HTMLElement>('.dl-menu[data-open] .dl-choices button')[cursor];
 		// 가장 가까운 만큼만 넘긴다 (화면이 창에 들어가 있으면 페이지는 움직이지 않는다)
 		button?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+		// 막 연 메뉴: 포커스가 메뉴 밖의 단추(바로 가기·마을로)에 있으면 커서 줄로 옮긴다
+		if (menuOpened.current) {
+			menuOpened.current = false;
+			const focused = document.activeElement;
+			if (focused instanceof HTMLElement && focused.tagName === 'BUTTON' && !focused.closest('.dl-menu'))
+				button?.focus({ preventScroll: true });
+		}
 		updateMore();
 	}, [mode, cursor, screen, updateMore]);
 
@@ -686,6 +798,14 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 			const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
 			const confirm = key === ' ' || key === 'Enter' || key === 'z';
 			const leave = key === 'Escape' || key === 'x';
+			// 마을: 걷기와 살펴보기는 DialogueTown이 받고, X·Esc는 바로 가기 메뉴를 연다
+			if (mode.kind === 'world') {
+				if (leave) {
+					event.preventDefault();
+					openMenu(false);
+				}
+				return;
+			}
 			if (mode.kind === 'menu') {
 				if (key === 'ArrowDown' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowLeft') {
 					event.preventDefault();
@@ -697,7 +817,8 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 					event.preventDefault();
 					const topic = visible[cursor];
 					if (topic) choose(topic);
-				} else if (leave && mode.sub) {
+				} else if (leave) {
+					// 장 목록에서는 처음 메뉴로, 처음 메뉴에서는 마을로
 					event.preventDefault();
 					toMenu();
 				} else if (/^[1-9]$/.test(key)) {
@@ -722,7 +843,7 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
-	}, [mode, next, choose, visible, cursor, moveCursor, toMenu, slides.length, flip]);
+	}, [mode, next, choose, visible, cursor, moveCursor, toMenu, slides.length, flip, openMenu]);
 
 	const inMenu = mode.kind === 'menu';
 	// 링크 단추: 첫 화면(인사)에서 바로 열 수 있게, 그리고 엔딩과 '링크' 주제에서 (무대 아래 창에)
@@ -733,10 +854,12 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	const crumbs: string[] = (() => {
 		if (mode.kind === 'greet') return ['시작', project.name];
 		if (mode.kind === 'ending') return ['엔딩'];
+		// 마을: 앞에 있는 장소의 이름
+		if (mode.kind === 'world') return ['마을', ...(front ? [front.label] : [])];
 		const moreLabel = topics.find((t) => t.id === MORE_TOPIC)?.label ?? '';
 		if (mode.kind === 'menu') return mode.sub ? ['메뉴', moreLabel] : ['메뉴'];
 		if (!current) return ['메뉴'];
-		const path = ['메뉴', ...(isChapter(current.id) ? [moreLabel] : []), current.label];
+		const path = [fromWorld ? '마을' : '메뉴', ...(isChapter(current.id) ? [moreLabel] : []), current.label];
 		if (ended) return [...path, '끝'];
 		const at = line?.entry ?? 0;
 		const of = line?.entries ?? 1;
@@ -765,20 +888,28 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 
 	// 지금 누를 수 있는 키 (읽으면 'Z/Enter 다음 · X 메뉴로')
 	const confirmKeys: Hint['keys'] = ['Z', 'Enter'];
+	// 주제를 다 보거나 X를 누르면 돌아갈 곳: 마을에서 연 주제(와 엔딩)는 마을, 아니면 메뉴
+	const home = (mode.kind === 'topic' || mode.kind === 'ending') && fromWorld ? '마을로' : '메뉴로';
 	const hints: Hint[] =
-		mode.kind === 'menu'
+		mode.kind === 'world'
 			? [
-					{ keys: ['↑', '↓'], label: '고르기' },
-					{ keys: confirmKeys, label: '보기', joined: true },
-					mode.sub ? { keys: ['X'], label: '처음 메뉴로' } : { keys: ['1–9'], label: '바로 가기' },
+					{ keys: ['←', '↑', '↓', '→'], label: '걷기' },
+					{ keys: ['Z'], label: '살펴보기' },
+					{ keys: ['X'], label: '바로 가기' },
 				]
-			: ended || mode.kind === 'ending'
-				? [{ keys: confirmKeys, label: '메뉴로 돌아가기', joined: true }]
-				: [
-						{ keys: confirmKeys, label: '다음', joined: true },
-						...(slides.length > 1 ? [{ keys: ['←', '→'], label: '그림 넘기기' }] : []),
-						{ keys: ['X'], label: '메뉴로' },
-					];
+			: mode.kind === 'menu'
+				? [
+						{ keys: ['↑', '↓'], label: '고르기' },
+						{ keys: confirmKeys, label: '보기', joined: true },
+						mode.sub ? { keys: ['X'], label: '처음 메뉴로' } : { keys: ['X'], label: '마을로' },
+					]
+				: ended || mode.kind === 'ending'
+					? [{ keys: confirmKeys, label: `${home} 돌아가기`, joined: true }]
+					: [
+							{ keys: confirmKeys, label: '다음', joined: true },
+							...(slides.length > 1 ? [{ keys: ['←', '→'], label: '그림 넘기기' }] : []),
+							{ keys: ['X'], label: home },
+						];
 
 	/** 메뉴 한 벌: 번호 붙은 여정 목록. 읽은 주제는 ✓, 다음 차례는 NEXT. 처음 메뉴와 장 목록이 같은 자리에 있고 열린 쪽만 보인다 */
 	const renderMenu = (list: Topic[], heading: string, open: boolean) => {
@@ -949,6 +1080,15 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 	};
 
 	const portrait = mode.kind === 'topic' && !ended ? line?.portrait : undefined;
+	const inVillage = mode.kind === 'world' || mode.kind === 'greet';
+	/** 장소를 살펴보면 하는 일 (안내 창에 적는다) */
+	const frontAction = (place: Place) =>
+		place.topic === ENDING_TOPIC ? (allRead ? '엔딩 보기' : '닫혀 있음') : `${topicLabel(place.topic)} 보기`;
+	const worldStatus = noticeText
+		? noticeText
+		: front
+			? `마을, 앞에 있는 곳은 ${front.label}입니다. Z를 누르면 ${frontAction(front)}를 합니다.`
+			: '마을입니다. 방향 키로 걷고 Z로 살펴보며, X를 누르면 모든 주제가 있는 바로 가기 메뉴가 열립니다.';
 	// 무대 뒤 장면: 메뉴에서는 커서 주제의 것, 엔딩은 밤하늘
 	const scene =
 		mode.kind === 'ending'
@@ -973,9 +1113,24 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 				style={screen.compact ? undefined : { zoom: screen.zoom, width: screen.w, height: screen.h }}
 				data-zoom={screen.zoom}
 			>
-				<div className="dl-game" data-scene={scene}>
-					{/* 화면 가득한 타일 장면 (낮·밤 두 장 중 테마에 맞는 한 장) */}
-					<SceneBackdrop scene={scene} width={screen.w} height={screen.h} />
+				<div className="dl-game" data-scene={inVillage ? 'village' : scene}>
+					{/* 타이틀과 마을 차례는 마을 지도, 그 밖에는 화면 가득한 타일 장면 (낮·밤 두 장 중 테마에 맞는 한 장) */}
+					{inVillage ? (
+						<DialogueTown
+							layout={layout}
+							read={read}
+							gateOpen={allRead}
+							player={player}
+							onMove={moved}
+							onInteract={interact}
+							viewW={screen.compact ? Math.max(1, screen.w - 12) : screen.w}
+							viewH={screen.compact ? 220 : screen.h}
+							walking={mode.kind === 'world'}
+							camera={mode.kind === 'greet' ? TITLE_VIEW : undefined}
+						/>
+					) : (
+						<SceneBackdrop scene={scene} width={screen.w} height={screen.h} />
+					)}
 
 					{/* 왼쪽 위 길잡이: 지금 어디인지(메뉴 ▸ 주제 ▸ n/N 항목), 단계 점, 읽은 주제 */}
 					<div className="dl-hud dl-panel">
@@ -998,27 +1153,54 @@ const DialoguePage: React.FC<{ project: Project }> = ({ project }) => {
 							{progress}
 						</p>
 					</div>
-					{/* 오른쪽 위: 메뉴로 (처음 메뉴에서는 없다) */}
-					{!(mode.kind === 'menu' && !mode.sub) && (
-						<button type="button" className="dl-tomenu dl-panel" onClick={toMenu}>
-							<kbd aria-hidden="true">X</kbd>
-							{mode.kind === 'menu' ? '처음 메뉴로' : '메뉴로'}
-						</button>
-					)}
-					{/* 읽기 프로그램에 알리는 지금 자리와 읽은 주제 수 */}
+					{/* 오른쪽 위: 마을에서는 바로 가기(모든 주제 메뉴), 처음 메뉴에서는 마을로, 장 목록에서는 처음 메뉴로, 이야기 중에는 돌아가기 */}
+					<button
+						type="button"
+						className="dl-tomenu dl-panel"
+						onClick={mode.kind === 'world' ? () => openMenu(false) : toMenu}
+					>
+						<kbd aria-hidden="true">X</kbd>
+						{mode.kind === 'world' ? '바로 가기' : mode.kind === 'menu' ? (mode.sub ? '처음 메뉴로' : '마을로') : home}
+					</button>
+					{/* 읽기 프로그램에 알리는 지금 자리와 읽은 주제 수 (마을에서는 앞에 있는 곳과 할 수 있는 일) */}
 					<p className="visually-hidden" role="status">
-						{`${crumbs.join(', ')}. ${progressText}.`}
+						{mode.kind === 'world' ? `${worldStatus} ${progressText}.` : `${crumbs.join(', ')}. ${progressText}.`}
 					</p>
 
-					{/* 무대: 지금 이야기하는 그림, 없으면 주제의 게임 화면. 링크 창은 무대 아래에 */}
-					<div className="dl-stage">
-						{renderScene()}
-						{showLinks && (
-							<div className="dl-linkbar dl-panel" data-shown={done || undefined}>
-								<Links project={project} className="sp-links dl-links" />
-							</div>
-						)}
-					</div>
+					{/* 무대: 지금 이야기하는 그림, 없으면 주제의 게임 화면. 링크 창은 무대 아래에 (마을을 걷는 동안은 없다) */}
+					{mode.kind !== 'world' && (
+						<div className="dl-stage">
+							{renderScene()}
+							{showLinks && (
+								<div className="dl-linkbar dl-panel" data-shown={done || undefined}>
+									<Links project={project} className="sp-links dl-links" />
+								</div>
+							)}
+						</div>
+					)}
+
+					{/* 마을: 바로 앞 장소와 살펴보면 열리는 주제 (누르면 살펴본다). 닫힌 문 같은 알림도 이 자리에 */}
+					{mode.kind === 'world' &&
+						(noticeText ? (
+							<p className="dl-prompt dl-panel" aria-hidden="true">
+								<span className="dl-prompt-text">{noticeText}</span>
+							</p>
+						) : (
+							front && (
+								<button type="button" className="dl-prompt dl-panel" onClick={() => interact(front)}>
+									<kbd aria-hidden="true">Z</kbd>
+									<span className="dl-prompt-text">
+										<b>{front.label}</b>
+										{` · ${frontAction(front)}`}
+									</span>
+									{front.topic !== ENDING_TOPIC && read.has(front.topic) && (
+										<span className="dl-prompt-done" aria-label="읽음">
+											✓
+										</span>
+									)}
+								</button>
+							)
+						))}
 
 					{/* 대화 창: 이름표(금색)와 두 줄 대사, ▼. 메뉴 차례에는 오른쪽 목록 창이 되어 질문 아래에 여정 목록과 커서 주제의 설명 */}
 					<section

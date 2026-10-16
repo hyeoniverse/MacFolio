@@ -1,5 +1,6 @@
-// dialogue 모양: 고전 RPG 대화창으로 읽는다 — 인사 → 메뉴(번호 붙은 여정, NEXT) → 주제를 '다음'(▼)으로 한 장씩 → 끝맺음 → 다시 메뉴(읽음 ✓)
-import type { Locator } from '@playwright/test';
+// dialogue 모양: 고전 RPG 대화창으로 읽는다 — 타이틀 → 마을(주인공이 걸어 다니며 장소마다 주제를 연다) 또는
+// 바로 가기 메뉴(번호 붙은 여정, NEXT) → 주제를 '다음'(▼)으로 한 장씩 → 끝맺음 → 연 곳(마을의 같은 자리, 또는 메뉴)으로 돌아온다(읽음 ✓)
+import type { Locator, Page } from '@playwright/test';
 import { test, expect } from '../fixtures';
 import { openLook } from './open';
 import { expectTheme } from './landing';
@@ -19,8 +20,41 @@ async function readUntil(dialog: Locator, target: Locator, limit = 24) {
 	await expect(target).toBeVisible();
 }
 
-/** 인사를 넘겨 메뉴까지 */
-const toMenu = (dialog: Locator) => readUntil(dialog, dialog.locator('.dl-menu[data-open]'));
+const rootOf = (panel: Locator) => panel.locator('.dl');
+const heroOf = (panel: Locator) => panel.locator('canvas.dl-hero');
+const markOf = (panel: Locator, place: string) => panel.locator(`.dl-mark[data-place="${place}"]`);
+
+/** 타이틀을 '다음'(▼)으로 넘겨 마을까지. 주인공이 입구에 선다 */
+async function toVillage(panel: Locator) {
+	const dialog = dialogOf(panel);
+	const root = rootOf(panel);
+	for (let i = 0; i < 6 && (await root.getAttribute('data-mode')) === 'greet'; i++) await nextOf(dialog).click();
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	await expect(heroOf(panel)).toBeVisible();
+}
+
+/** 타이틀을 넘겨 마을에서 바로 가기 메뉴까지 (오른쪽 위 바로 가기 단추) */
+async function toMenu(dialog: Locator) {
+	const panel = dialog.page().locator('[data-app="safari"] .safari-page');
+	await toVillage(panel);
+	await panel.getByRole('button', { name: '바로 가기' }).click();
+	await expect(dialog.locator('.dl-menu[data-open]')).toBeVisible();
+}
+
+/** 주인공의 칸 자리와 보는 쪽 (기다리지 않고 지금 값을 읽는다: 움직임 줄이기에서는 키를 누르는 즉시 옮겨 있다) */
+async function spot(panel: Locator) {
+	const hero = heroOf(panel);
+	return {
+		x: Number(await hero.getAttribute('data-x')),
+		y: Number(await hero.getAttribute('data-y')),
+		facing: await hero.getAttribute('data-facing'),
+	};
+}
+
+/** 키를 여러 번 누른다 */
+async function press(page: Page, key: string, times = 1) {
+	for (let i = 0; i < times; i++) await page.keyboard.press(key);
+}
 
 test('dialogue: 인사 → 메뉴 → 주요 기능을 한 장씩 → 끝맺음 → 읽음 표시, 기술 사양·조작법', async ({ page }) => {
 	const { panel } = await openLook(page, { id: 'sproutfarm', tab: /SproutFarm/, look: 'dialogue' });
@@ -168,7 +202,10 @@ test('dialogue: 게임 화면이 페이지를 꽉 채우고(정수 배), 창은 
 	await expectTheme(page, 'dialogue', { light: 'rgb(232, 244, 255)', dark: 'rgb(18, 19, 48)' });
 	const { safari, panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue' });
 	await safari.getByRole('button', { name: '전체 화면' }).click();
-	const shot = panel.locator('.dl-stage .dl-shot-frame img');
+	// 그림이 있는 주제를 연다 (바로 가기 메뉴에서)
+	await toMenu(dialogOf(panel));
+	await dialogOf(panel).getByRole('button', { name: '주요 기능' }).click();
+	const shot = panel.locator('.dl-stage .dl-shot-frame img').first();
 	await expect(shot).toBeVisible();
 	// 그림을 픽셀로 바꾸거나 무대 안에 풍경을 깔지 않는다
 	expect(await shot.evaluate((img) => getComputedStyle(img).imageRendering)).toBe('auto');
@@ -364,14 +401,17 @@ test('dialogue: 아래 줄은 지금 누를 수 있는 키만 적고, X와 메�
 	const { panel } = await openLook(page, { id: 'qru', tab: /북클럽/, override: noImageSample() });
 	const dialog = dialogOf(panel);
 	await expect(hintOf(panel)).toHaveText('Z/Enter 다음 · X 메뉴로');
-	// 대화 상자를 눌러도 넘어간다
-	await readUntil(dialog, dialog.locator('.dl-menu[data-open]'));
+	// 마을에서는 걷기·살펴보기·바로 가기, 메뉴에서는 고르기·보기·마을로 (오른쪽 위 단추도 마을로)
+	await toVillage(panel);
+	await expect(hintOf(panel)).toHaveText('←↑↓→ 걷기 · Z 살펴보기 · X 바로 가기');
+	await panel.getByRole('button', { name: '바로 가기' }).click();
 	await expect(hintOf(panel)).toContainText('↑↓ 고르기');
-	await expect(panel.locator('.dl-tomenu')).toHaveCount(0);
+	await expect(hintOf(panel)).toContainText('X 마을로');
+	await expect(panel.locator('.dl-tomenu')).toHaveText('X마을로');
 
 	await dialog.getByRole('button', { name: '진행 과정' }).click();
 	await expect(hintOf(panel)).toHaveText('Z/Enter 다음 · X 메뉴로');
-	await dialog.locator('.dl-box').click();
+	await nextOf(dialog).click();
 	await expect(crumbOf(panel)).toContainText('2/');
 	await page.keyboard.press('x');
 	const active = dialog.locator('.dl-menu[data-open] button[data-active]');
@@ -380,6 +420,9 @@ test('dialogue: 아래 줄은 지금 누를 수 있는 키만 적고, X와 메�
 	await expect(active).toHaveAttribute('aria-pressed', 'false');
 
 	await page.keyboard.press('Enter');
+	// 대화 상자를 눌러도 넘어간다
+	await dialog.locator('.dl-box').click();
+	await expect(crumbOf(panel)).toContainText('2/');
 	await panel.getByRole('button', { name: '메뉴로' }).click();
 	await expect(active).toContainText('진행 과정');
 
@@ -443,4 +486,238 @@ test('dialogue: 게임 화면이 한 배도 안 들어가는 좁은 창에서는
 	await expect(active).toContainText('주요 기능');
 	await page.keyboard.press('ArrowDown');
 	await expect(active).toContainText('만든 방법');
+});
+
+// ─── 마을: 주인공을 움직여 장소마다 주제를 연다 ───
+
+test('dialogue 마을: 타이틀에서 Z를 누르면 입구에 주인공이 서고, 방향 키·WASD로 한 칸씩 걸으며 분수·집에 막힌다', async ({
+	page,
+}) => {
+	const { panel } = await openLook(page, { id: 'qru', tab: /북클럽/, override: noImageSample() });
+	const root = rootOf(panel);
+	const hero = heroOf(panel);
+	// 타이틀: 마을 위에 표지판과 ▶ PRESS Z, 주인공은 아직 없다
+	await expect(root).toHaveAttribute('data-mode', 'greet');
+	await expect(panel.locator('.dl-stage [data-panel="title"]')).toContainText('PRESS Z');
+	await expect(panel.locator('.dl-village').first()).toBeAttached();
+	await expect(hero).toBeHidden();
+	// 키가 페이지에 닿게 탭 단추의 포커스를 푼다
+	await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+	for (let i = 0; i < 6 && (await root.getAttribute('data-mode')) === 'greet'; i++) await page.keyboard.press('z');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	await expect(hero).toBeVisible();
+	expect(await spot(panel)).toEqual({ x: 19, y: 21, facing: 'up' });
+	await expect(panel.locator('.dl-hud .dl-hp-count')).toHaveText(/읽은 주제 0\/\d+/);
+
+	// 한 칸씩 (움직임 줄이기라 누르는 즉시)
+	await page.keyboard.press('ArrowRight');
+	expect(await spot(panel)).toEqual({ x: 20, y: 21, facing: 'right' });
+	await page.keyboard.press('ArrowLeft');
+	await press(page, 'ArrowUp', 8);
+	expect(await spot(panel)).toEqual({ x: 19, y: 13, facing: 'up' });
+	// 분수에 막힌다
+	await page.keyboard.press('ArrowUp');
+	expect(await spot(panel)).toEqual({ x: 19, y: 13, facing: 'up' });
+
+	// 서쪽 길을 따라 여관 문 앞까지, 여관 벽에 막힌다 (WASD도 걷는다)
+	await press(page, 'ArrowLeft', 7);
+	await press(page, 'w', 6);
+	expect(await spot(panel)).toEqual({ x: 12, y: 7, facing: 'up' });
+	await page.keyboard.press('w');
+	expect(await spot(panel)).toEqual({ x: 12, y: 7, facing: 'up' });
+	await page.keyboard.press('a');
+	await page.keyboard.press('d');
+	await page.keyboard.press('w');
+	expect(await spot(panel)).toEqual({ x: 12, y: 7, facing: 'up' });
+	// 앞의 장소: 길잡이와 안내 창, 읽기 프로그램 알림
+	await expect(crumbOf(panel)).toHaveText('마을▸여관');
+	await expect(panel.locator('.dl-prompt')).toHaveText('Z여관 · 맡은 일 보기');
+	await expect(panel.getByRole('status').filter({ hasText: '앞에 있는 곳은 여관입니다' })).toBeAttached();
+
+	// Z: 맡은 일을 연다. X는 마을의 같은 자리로 돌아온다
+	await page.keyboard.press('z');
+	await expect(root).toHaveAttribute('data-mode', 'topic');
+	await expect(crumbOf(panel)).toContainText('마을▸맡은 일▸1/');
+	await expect(hintOf(panel)).toContainText('X 마을로');
+	await page.keyboard.press('x');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	expect(await spot(panel)).toEqual({ x: 12, y: 7, facing: 'up' });
+
+	// 북쪽 문: 아직 닫혀 있다는 알림
+	await press(page, 'ArrowRight', 7);
+	await press(page, 'ArrowUp', 5);
+	expect(await spot(panel)).toEqual({ x: 19, y: 3, facing: 'up' });
+	await expect(panel.locator('.dl-prompt')).toContainText('북쪽 문 · 닫혀 있음');
+	await page.keyboard.press('z');
+	await expect(panel.locator('.dl-prompt')).toHaveText('북쪽 문이 닫혀 있습니다. 모든 주제를 읽으면 열립니다.');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+});
+
+test("dialogue 마을: 게시판 앞에서 Z를 누르면 주요 기능을 읽고, 다 읽으면 마을의 그 자리로 돌아와 '!'가 ✓로 바뀐다", async ({
+	page,
+}) => {
+	const { panel } = await openLook(page, { id: 'qru', tab: /북클럽/, override: noImageSample() });
+	const dialog = dialogOf(panel);
+	const root = rootOf(panel);
+	await toVillage(panel);
+	const board = markOf(panel, 'board');
+	await expect(board).toHaveAttribute('data-state', 'new');
+
+	// 게시판(21–22, 18)에 막혀 그 앞에 선다
+	await press(page, 'ArrowRight', 2);
+	await press(page, 'ArrowUp', 3);
+	expect(await spot(panel)).toEqual({ x: 21, y: 19, facing: 'up' });
+	await expect(crumbOf(panel)).toHaveText('마을▸퀘스트 게시판');
+	await expect(panel.locator('.dl-prompt')).toContainText('퀘스트 게시판 · 주요 기능 보기');
+
+	await page.keyboard.press('z');
+	await expect(crumbOf(panel)).toContainText('마을▸주요 기능▸1/');
+	await expect(panel.locator('.dl-stage [data-panel="quests"]')).toBeVisible();
+	await readUntil(dialog, dialog.getByText('이 주제를 다 봤습니다. 마을로 돌아갑니다.'), 40);
+	await expect(hintOf(panel)).toHaveText('Z/Enter 마을로 돌아가기');
+	await page.keyboard.press('z');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	expect(await spot(panel)).toEqual({ x: 21, y: 19, facing: 'up' });
+	await expect(board).toHaveAttribute('data-state', 'read');
+	await expect(panel.locator('.dl-hud .dl-hp-count')).toHaveText(/읽은 주제 1\/\d+/);
+	await expect(panel.locator('.dl-prompt')).toContainText('✓');
+});
+
+test('dialogue 마을: 화면을 누르면 그 칸까지 걸어가고, 장소를 누르면 옆까지 가서 그 주제를 연다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'qru', tab: /북클럽/, override: noImageSample() });
+	const root = rootOf(panel);
+	await toVillage(panel);
+	const hero = heroOf(panel);
+	/** 주인공 칸에서 (dx, dy)칸 떨어진 칸의 가운데를 누른다 (주인공 그림의 폭이 한 칸) */
+	const clickTile = async (dx: number, dy: number) => {
+		const box = await hero.boundingBox();
+		if (!box) throw new Error('주인공이 안 보인다');
+		const tile = box.width;
+		await page.mouse.click(box.x + tile / 2 + dx * tile, box.y + box.height - tile / 2 + dy * tile);
+	};
+	// 풀밭 두 칸 왼쪽 (19, 21) → (17, 21)
+	await clickTile(-2, 0);
+	await expect(hero).toHaveAttribute('data-x', '17');
+	await expect(hero).toHaveAttribute('data-y', '21');
+	// 바로 왼쪽의 조작 안내판(16, 21)을 누르면 그쪽을 보고 조작법을 연다
+	await clickTile(-1, 0);
+	await expect(root).toHaveAttribute('data-mode', 'topic');
+	await expect(crumbOf(panel)).toContainText('마을▸조작법');
+	await page.keyboard.press('x');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	expect(await spot(panel)).toEqual({ x: 17, y: 21, facing: 'left' });
+	// 떨어진 장소(게시판)를 누르면 길을 찾아 옆까지 걸어가 연다
+	await clickTile(4, -3);
+	await expect(crumbOf(panel)).toContainText('마을▸주요 기능');
+});
+
+test('dialogue 마을: 바로 가기 메뉴(X)로 걷지 않고 모든 주제에 닿고, X로 마을에 돌아온다', async ({ page }) => {
+	const { panel } = await openLook(page, { id: 'qru', tab: /북클럽/, override: noImageSample() });
+	const dialog = dialogOf(panel);
+	const root = rootOf(panel);
+	await toVillage(panel);
+	await page.keyboard.press('x');
+	const menu = dialog.locator('.dl-menu[data-open]');
+	await expect(menu).toBeVisible();
+	const labels = await menu.locator('.dl-choices .dl-label').allTextContents();
+	expect(labels.length).toBeGreaterThan(10);
+	for (const label of labels) {
+		await menu.getByRole('button', { name: label }).click();
+		if (label === '더 많은 이야기') {
+			await expect(crumbOf(panel)).toHaveText(`메뉴▸${label}`);
+			await expect(dialog.locator('.dl-menu[data-open] .dl-choices button').first()).toBeVisible();
+		} else {
+			await expect(root).toHaveAttribute('data-mode', 'topic');
+			await expect(crumbOf(panel)).toContainText(`메뉴▸${label}`);
+		}
+		await page.keyboard.press('x');
+		await expect(menu).toBeVisible();
+	}
+	// 처음 메뉴에서 X는 마을로 (주인공은 그 자리 그대로)
+	await page.keyboard.press('x');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	expect(await spot(panel)).toEqual({ x: 19, y: 21, facing: 'up' });
+});
+
+test('dialogue 마을: 모든 주제를 읽으면 북쪽 문이 열리고, 문으로 들어가면 엔딩 뒤 마을로 돌아온다', async ({
+	page,
+}) => {
+	const { panel } = await openLook(page, {
+		id: 'qru',
+		tab: /QRU/,
+		look: 'dialogue',
+		override: {
+			highlights: [{ title: '하나뿐인 기능', body: '이 주제 하나만 읽으면 됩니다.' }],
+			build: [],
+			usage: null,
+			troubleshooting: null,
+			controls: null,
+			timeline: null,
+			team: null,
+			deployments: null,
+			credits: null,
+			chapters: null,
+			gallery: [],
+			galleryFolder: null,
+			facts: [],
+			specs: [],
+			stack: [],
+			contributions: [],
+			role: '',
+		},
+	});
+	const dialog = dialogOf(panel);
+	const root = rootOf(panel);
+	await toVillage(panel);
+	await expect(markOf(panel, 'gate')).toHaveCount(0);
+	// 없는 주제의 자리에는 장소가 없다 (상점은 빈집, 몬스터는 없다)
+	await expect(markOf(panel, 'shop')).toHaveCount(0);
+	await expect(markOf(panel, 'monster')).toHaveCount(0);
+
+	await press(page, 'ArrowRight', 2);
+	await press(page, 'ArrowUp', 2);
+	await page.keyboard.press('z');
+	await readUntil(dialog, dialog.getByText('모든 주제를 다 봐서 마을 북쪽 문이 열렸습니다'), 10);
+	await page.keyboard.press('z');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	await expect(markOf(panel, 'gate')).toHaveAttribute('data-state', 'new');
+
+	// 입구 길로 돌아가 분수를 비켜 북쪽 문 앞까지
+	await press(page, 'ArrowLeft', 2);
+	await press(page, 'ArrowUp', 6);
+	await page.keyboard.press('ArrowLeft');
+	await press(page, 'ArrowUp', 4);
+	await page.keyboard.press('ArrowRight');
+	await press(page, 'ArrowUp', 7);
+	expect(await spot(panel)).toEqual({ x: 19, y: 3, facing: 'up' });
+	await expect(panel.locator('.dl-prompt')).toContainText('북쪽 문 · 엔딩 보기');
+	await page.keyboard.press('z');
+	await expect(crumbOf(panel)).toHaveText('엔딩');
+	await expect(hintOf(panel)).toHaveText('Z/Enter 마을로 돌아가기');
+	for (let i = 0; i < 6 && (await root.getAttribute('data-mode')) === 'ending'; i++) await page.keyboard.press('z');
+	await expect(root).toHaveAttribute('data-mode', 'world');
+	expect(await spot(panel)).toEqual({ x: 19, y: 3, facing: 'up' });
+});
+
+test('dialogue 마을: 움직임을 줄이지 않으면 한 칸을 걸음 프레임으로 걷고, 움직임 줄이기에서는 바로 옮기며 말풍선도 멈춘다', async ({
+	page,
+}) => {
+	const { panel } = await openLook(page, { id: 'qru', tab: /북클럽/, override: noImageSample() });
+	await toVillage(panel);
+	const hero = heroOf(panel);
+	// 움직임 줄이기(시험 기본값): 누르는 즉시 옮기고, '!'는 뛰지 않는다
+	await page.keyboard.press('ArrowRight');
+	expect(await spot(panel)).toMatchObject({ x: 20, y: 21 });
+	expect(await hero.getAttribute('data-moving')).toBeNull();
+	expect(await markOf(panel, 'board').evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
+
+	// 움직임을 켜면: 키를 누른 동안 걷는 중(아직 앞 칸)이다가, 다 걸으면 한 칸 옮겨 멈춘다
+	await page.emulateMedia({ reducedMotion: 'no-preference' });
+	await page.keyboard.down('ArrowLeft');
+	expect(await hero.getAttribute('data-moving')).toBe('');
+	expect(await hero.getAttribute('data-x')).toBe('20');
+	await page.keyboard.up('ArrowLeft');
+	await expect(hero).toHaveAttribute('data-x', '19');
+	await expect(hero).not.toHaveAttribute('data-moving');
+	expect(await markOf(panel, 'board').evaluate((el) => getComputedStyle(el).animationName)).toBe('dl-bob');
 });

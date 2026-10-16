@@ -90,7 +90,7 @@ export function noise(x: number, y: number, seed = 0): number {
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 /** 4×4 바이어 점 무늬의 문턱 (0 이상 1 미만) */
 const bayer = (x: number, y: number) => BAYER[(y & 3) * 4 + (x & 3)] / 16;
-const checker = (x: number, y: number) => (x + y) % 2 === 0;
+export const checker = (x: number, y: number) => (x + y) % 2 === 0;
 
 /** 부드러운 해시 (cell칸 격자의 해시를 이어 붙인다): 풀밭의 짙은 얼룩 같은 큰 무늬에 */
 function smoothNoise(x: number, y: number, cell: number, seed: number): number {
@@ -159,7 +159,7 @@ function hills(
 }
 
 /** 둥근 덩어리(나무 수관, 덤불, 바위, 구름)의 색 글자 */
-interface ClumpKeys {
+export interface ClumpKeys {
 	hi: string;
 	base: string;
 	shade: string;
@@ -173,7 +173,7 @@ interface ClumpKeys {
  * 원 여러 개를 겹친 덩어리: 뒤에서 앞 차례로 겹치고, 원마다 왼쪽 위는 밝게 오른쪽 아래는 그늘(사이는 점 무늬).
  * 앞 원의 아래·오른쪽에 닿은 뒤 원의 칸은 그늘 줄, 덩어리 둘레는 외곽선. floor가 있으면 그 아래는 자른다 (구름의 납작한 밑)
  */
-function clump(map: PixelMap, circles: [cx: number, cy: number, r: number][], keys: ClumpKeys, floor?: number) {
+export function clump(map: PixelMap, circles: [cx: number, cy: number, r: number][], keys: ClumpKeys, floor?: number) {
 	const xs = circles.map(([cx, , r]) => [cx - r - 2, cx + r + 2]);
 	const ys = circles.map(([, cy, r]) => [cy - r - 2, cy + r + 2]);
 	const x0 = Math.floor(Math.min(...xs.map((v) => v[0])));
@@ -222,7 +222,7 @@ function clump(map: PixelMap, circles: [cx: number, cy: number, r: number][], ke
 }
 
 /** 둥근 나무: 줄기와 원 덩어리 수관, 발밑 그림자. (x, y)는 줄기 밑 가운데, size는 수관 반지름 */
-function tree(
+export function tree(
 	map: PixelMap,
 	x: number,
 	y: number,
@@ -259,7 +259,7 @@ function tree(
 }
 
 /** 뾰족한 침엽수 (빛 쪽 반은 밝게). (x, y)는 밑 가운데 */
-function pine(
+export function pine(
 	map: PixelMap,
 	x: number,
 	y: number,
@@ -309,12 +309,12 @@ function cloud(map: PixelMap, x: number, y: number, w: number, keys: { hi: strin
 
 /** 작은 꽃 (꽃잎 글자, 가운데 글자). 바람에 흔들리지 않는 정해진 모양 */
 const FLOWER: Rows = ['.a.', 'aba', '.a.', '.d.'];
-function flower(map: PixelMap, x: number, y: number, petal: string, center: string, stem = 'd') {
+export function flower(map: PixelMap, x: number, y: number, petal: string, center: string, stem = 'd') {
 	map.stamp(FLOWER, x, y, false, { a: petal, b: center, d: stem });
 }
 
 /** 풀 한 포기: 밝은 끝 둘과 그늘 둘 */
-function tuft(map: PixelMap, x: number, y: number, hi: string, shade: string) {
+export function tuft(map: PixelMap, x: number, y: number, hi: string, shade: string) {
 	map.set(x, y, hi);
 	map.set(x + 2, y, hi);
 	map.set(x + 1, y + 1, shade);
@@ -324,7 +324,7 @@ function tuft(map: PixelMap, x: number, y: number, hi: string, shade: string) {
 // ─── 16×16 타일 ───
 
 /** 타일을 판에 찍는다 */
-function tileAt(map: PixelMap, tile: Rows, tx: number, ty: number) {
+export function tileAt(map: PixelMap, tile: Rows, tx: number, ty: number) {
 	map.stamp(tile, tx * TILE, ty * TILE);
 }
 
@@ -517,8 +517,16 @@ export const ARCADE_CARPET: Rows = [
 // ─── 손으로 놓는 소품 ───
 
 /** 집: 기와 지붕(가로 줄), 벽, 창 둘, 문. (x, y)는 지붕 왼쪽 위, w는 벽 너비 */
-function house(map: PixelMap, x: number, y: number, w: number, roofH: number, wallH: number, roof: 'X' | 'A') {
-	const [hi, base, dark] = roof === 'X' ? ['X', 'x', 'y'] : ['A', 'a', 'b'];
+export function house(
+	map: PixelMap,
+	x: number,
+	y: number,
+	w: number,
+	roofH: number,
+	wallH: number,
+	roof: 'X' | 'A' | readonly [string, string, string]
+) {
+	const [hi, base, dark] = roof === 'X' ? ['X', 'x', 'y'] : roof === 'A' ? ['A', 'a', 'b'] : roof;
 	const over = 4;
 	// 지붕: 아래로 갈수록 넓어지는 판, 기와 줄은 4칸마다
 	for (let j = 0; j < roofH; j++) {
@@ -568,7 +576,7 @@ function house(map: PixelMap, x: number, y: number, w: number, roofH: number, wa
 }
 
 /** 분수: 둥근 돌 수반(위 테두리 밝은 돌, 안은 물, 앞면은 돌 벽), 가운데 기둥과 솟는 물줄기. (x, y)는 수반 왼쪽 위, w는 너비 */
-function fountain(map: PixelMap, x: number, y: number, w: number) {
+export function fountain(map: PixelMap, x: number, y: number, w: number) {
 	const rx = w / 2;
 	const ry = Math.round(w / 6);
 	const cx = x + rx;
@@ -651,7 +659,7 @@ function fountain(map: PixelMap, x: number, y: number, w: number) {
 }
 
 /** 울타리 한 줄: 16칸마다 기둥, 가로대 둘 */
-function fence(map: PixelMap, x: number, y: number, w: number) {
+export function fence(map: PixelMap, x: number, y: number, w: number) {
 	for (const ry of [y + 3, y + 8]) {
 		map.rect(x, ry - 1, w, 4, 'N');
 		map.rect(x, ry, w, 2, 'o');
@@ -668,7 +676,7 @@ function fence(map: PixelMap, x: number, y: number, w: number) {
 }
 
 /** 바위: 둥근 덩어리 (돌 글자) */
-function rock(map: PixelMap, x: number, y: number, r: number) {
+export function rock(map: PixelMap, x: number, y: number, r: number) {
 	clump(
 		map,
 		[
@@ -749,7 +757,7 @@ function crystal(map: PixelMap, x: number, y: number, h: number, w: number, tilt
 }
 
 /** 벽 횃불: 나무 손잡이와 불꽃 (Y 밝은 불, E 주황) */
-const TORCH: Rows = [
+export const TORCH: Rows = [
 	'...Y...',
 	'..YY...',
 	'..YEY..',
@@ -814,7 +822,7 @@ function shelf(map: PixelMap, x: number, y: number, w: number, items: IconName[]
 }
 
 /** 아이콘 색 글자 → 장면 팔레트의 아이템 색 글자 (상점 선반의 물건) */
-const ICON_REMAP: Record<string, string> = {
+export const ICON_REMAP: Record<string, string> = {
 	k: '0',
 	w: '%',
 	l: '&',
@@ -839,7 +847,7 @@ const ICON_REMAP: Record<string, string> = {
 };
 
 /** 아이템 색 글자의 색 (상점 선반) */
-const ITEM_COLORS: Record<string, string> = {
+export const ITEM_COLORS: Record<string, string> = {
 	'0': '#1c1c28',
 	'%': '#ffffff',
 	'&': '#c8d0dc',
@@ -913,7 +921,7 @@ interface SceneDef {
 }
 
 /** 바깥 장면의 공통 색 (낮) */
-const OUTDOOR: Record<string, string> = {
+export const OUTDOOR: Record<string, string> = {
 	W: '#ffffff',
 	w: '#d4ecf8',
 	G: '#b0ec80',
@@ -967,7 +975,7 @@ export function nightOf(hex: string, warm = false): string {
 const NIGHT_CLOUDS: Record<string, string> = { W: '#3c4680', w: '#2e366a' };
 
 /** 밤에 켜지는 것: 별, 창 불빛 */
-const NIGHT_LIGHTS: Record<string, string> = {
+export const NIGHT_LIGHTS: Record<string, string> = {
 	Z: '#fff8d0',
 	z: '#8890d8',
 	M: '#fff4c0',
