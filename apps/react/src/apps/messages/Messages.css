@@ -175,7 +175,7 @@
 	gap: 6px;
 	padding: 8px 12px;
 	border: none;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background: none;
 	color: var(--messages-meta);
 	font-size: 12px;
@@ -472,7 +472,7 @@
 	margin-top: 2px;
 	padding: 2px 8px;
 	clip-path: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: var(--messages-search-bg);
 	color: var(--messages-meta);
 }
@@ -756,7 +756,7 @@
 	height: 50px;
 	margin: 0;
 	padding: 0 18px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	font-size: 17px;

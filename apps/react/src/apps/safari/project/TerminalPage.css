@@ -216,7 +216,7 @@
 }
 
 .tm-links .sp-pill {
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: #238636;
 }
 
@@ -342,7 +342,7 @@
 	overflow: auto;
 	padding: 10px 14px;
 	border: 1px solid var(--tm-line);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: #010409;
 	color: var(--tm-out);
 	font: inherit;
@@ -413,7 +413,7 @@
 .tm-chips button {
 	padding: 4px 12px;
 	border: 1px solid var(--tm-line);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: #161b22;
 	color: var(--tm-text);
 	font-size: 13px;

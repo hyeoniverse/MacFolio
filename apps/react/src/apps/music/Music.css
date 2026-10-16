@@ -110,7 +110,7 @@
 	gap: 8px;
 	width: 100%;
 	padding: 6px 8px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	text-align: left;
 	/* 통합형 창의 끌기 영역보다 위 */
 	position: relative;
@@ -163,7 +163,7 @@
 	width: 180px;
 	aspect-ratio: 1;
 	overflow: hidden;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 	background-color: var(--music-selected);
 }
@@ -205,7 +205,7 @@
 	align-items: center;
 	gap: 6px;
 	padding: 6px 18px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--music-selected);
 	color: var(--music-accent);
 	font-weight: 600;
@@ -224,7 +224,7 @@
 	gap: 10px;
 	width: 100%;
 	padding: 6px 8px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	text-align: left;
 }
 
@@ -249,7 +249,7 @@
 .music-track img {
 	width: 36px;
 	height: 36px;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	object-fit: cover;
 }
 
@@ -338,7 +338,7 @@
 	gap: 10px;
 	width: 100%;
 	padding: 6px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	text-align: left;
 }
 
@@ -349,7 +349,7 @@
 .music-up-next img {
 	width: 36px;
 	height: 36px;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	object-fit: cover;
 }
 
@@ -382,7 +382,7 @@
 	flex: none;
 	width: 44px;
 	height: 44px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	object-fit: cover;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -489,7 +489,7 @@
 	width: min(76vw, 320px);
 	aspect-ratio: 1;
 	object-fit: cover;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 	transform: scale(0.84);
 	transition: transform 0.45s var(--ease-spring);
@@ -614,7 +614,7 @@
 	.music-sidebar .music-playlist-link .music-cover {
 		display: grid;
 		width: 60px;
-		border-radius: 6px;
+		border-radius: var(--radius-sm);
 		box-shadow: none;
 	}
 
@@ -679,7 +679,7 @@
 		margin: 0 8px 8px;
 		padding: 8px 10px;
 		border: none;
-		border-radius: 14px;
+		border-radius: var(--radius-xl);
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 	}
 
@@ -808,7 +808,7 @@
 	.container.mobile .music-collection .music-cover {
 		display: grid;
 		width: 62px;
-		border-radius: 6px;
+		border-radius: var(--radius-sm);
 		box-shadow: none;
 	}
 
@@ -847,7 +847,7 @@
 
 	.container.mobile .music-collection.grid .music-cover {
 		width: 100%;
-		border-radius: 8px;
+		border-radius: var(--radius-md);
 	}
 
 	.container.mobile .music-collection.grid strong {

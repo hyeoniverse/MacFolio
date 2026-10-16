@@ -70,7 +70,7 @@
 .activity-period select {
 	padding: 3px 6px;
 	border: 1px solid var(--color-window-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--color-control-bg);
 	color: var(--color-text);
 	font: inherit;
@@ -112,7 +112,7 @@
 	gap: 2px;
 	padding: var(--activity-pad);
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: var(--color-sidebar-bg);
 }
 
@@ -145,7 +145,7 @@
 	margin: 0 0 var(--activity-gap);
 	padding: var(--activity-pad);
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 }
 
 .activity-chart svg {
@@ -585,7 +585,7 @@
 	margin-bottom: var(--activity-gap);
 	padding: var(--activity-pad);
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 }
 
 .server-billing h3 {

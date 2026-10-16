@@ -56,7 +56,7 @@
 	gap: 8px;
 	padding: 5px 8px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--color-text);
 	font-size: 13px;
@@ -138,7 +138,7 @@
 	align-items: center;
 	gap: 2px 12px;
 	padding: 8px 10px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 }
 
 .bin-data:nth-child(even) {
@@ -244,7 +244,7 @@
 	align-items: center;
 	gap: 0 12px;
 	padding: 6px 10px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 }
 
 .bin-file:nth-child(even) {
@@ -255,7 +255,7 @@
 	grid-row: 1 / 4;
 	width: 40px;
 	height: 40px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: var(--color-divider);
 	color: var(--color-text-secondary);
 	font-size: 20px;
