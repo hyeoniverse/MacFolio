@@ -27,23 +27,6 @@ jobs:
       VITE_API_URL: ''
     # 화면 E2E는 e2e 작업으로 나눠 이 작업은 검사·단위·빌드·API e2e만 한다
     timeout-minutes: 25
-    # API e2e 테스트용 PostgreSQL (apps/api/docker-compose.yml과 같은 계정)
-    # 이미지는 Docker Hub가 아니라 AWS ECR Public의 공식 이미지 사본에서 받는다.
-    # Docker Hub는 로그인하지 않으면 받는 횟수를 IP마다 제한해서, GitHub 러너가 그 한도에 걸려 CI가 시작도 못 하고 멈췄다
-    services:
-      postgres:
-        image: public.ecr.aws/docker/library/postgres:17-alpine
-        env:
-          POSTGRES_USER: macfolio
-          POSTGRES_PASSWORD: macfolio
-          POSTGRES_DB: macfolio
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U macfolio"
-          --health-interval 2s
-          --health-timeout 3s
-          --health-retries 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -85,6 +68,33 @@ jobs:
 
       - name: 빌드
         run: pnpm build
+
+      # API e2e 테스트용 PostgreSQL (apps/api/docker-compose.yml과 같은 계정)
+      # services 대신 단계로 띄운다. services는 이미지를 못 받으면 검사·시험을 하나도 돌리지 못하고 작업 전체가 멈췄다.
+      # 받는 곳도 하나에 기대지 않는다. Docker Hub는 로그인하지 않은 받기를 IP마다 제한하고(10월 10일),
+      # 그 대신 쓰던 ECR Public도 같은 한도(toomanyrequests: Data limit exceeded)에 자주 걸렸다(10월 13~17일).
+      # 같은 공식 이미지의 사본을 ECR Public → Google의 Docker Hub 거울(mirror.gcr.io) → Docker Hub 차례로 받는다
+      - name: PostgreSQL 띄우기
+        run: |
+          for image in \
+            public.ecr.aws/docker/library/postgres:17-alpine \
+            mirror.gcr.io/library/postgres:17-alpine \
+            docker.io/library/postgres:17-alpine; do
+            if docker pull -q "$image"; then pulled="$image"; break; fi
+            echo "::warning::$image 를 받지 못해 다음 곳에서 받습니다."
+          done
+          if [ -z "${pulled:-}" ]; then echo "::error::PostgreSQL 이미지를 어디에서도 받지 못했습니다."; exit 1; fi
+          docker run -d --name postgres -p 5432:5432 \
+            -e POSTGRES_USER=macfolio -e POSTGRES_PASSWORD=macfolio -e POSTGRES_DB=macfolio \
+            --health-cmd "pg_isready -U macfolio" --health-interval 2s --health-timeout 3s --health-retries 20 \
+            "$pulled"
+          for i in $(seq 1 30); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' postgres)" = healthy ] && exit 0
+            sleep 2
+          done
+          docker logs postgres
+          echo "::error::PostgreSQL이 60초 안에 준비되지 않았습니다."
+          exit 1
 
       - name: API e2e 테스트
         run: pnpm --filter @macfolio/api test:e2e
