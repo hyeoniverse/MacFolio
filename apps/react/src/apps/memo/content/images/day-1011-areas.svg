@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 436" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 11일 영역별 바뀐 줄</title>
+<rect width="760" height="436" rx="16" fill="#ffffff"/>
+<text x="32" y="38" font-size="16" font-weight="700" fill="#1f2937">어디를 얼마나 고쳤나</text>
+<text x="372" y="60" font-size="11" fill="#c2410c" text-anchor="end">← 지운 줄</text>
+<text x="388" y="60" font-size="11" fill="#15803d">더한 줄 →</text>
+<text x="32" y="88" font-size="12.5" fill="#374151">프로젝트 템플릿 (#187)</text>
+<rect x="270.0" y="74" width="110.0" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="74" width="240.0" height="18" rx="3" fill="#86efac"/>
+<path d="M288 72 l-6 22 M294 72 l-6 22" stroke="#ffffff" stroke-width="3"/>
+<path d="M602 72 l-6 22 M608 72 l-6 22" stroke="#ffffff" stroke-width="3"/>
+<text x="264.0" y="87" font-size="10.5" fill="#9a3412" text-anchor="end">−15,586</text>
+<text x="626.0" y="87" font-size="10.5" fill="#166534">+34,605</text>
+<text x="32" y="118" font-size="12.5" fill="#374151">프로젝트 편집 화면 (#187)</text>
+<rect x="337.5" y="104" width="42.5" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="104" width="240.0" height="18" rx="3" fill="#86efac"/>
+<path d="M602 102 l-6 22 M608 102 l-6 22" stroke="#ffffff" stroke-width="3"/>
+<text x="331.5" y="117" font-size="10.5" fill="#9a3412" text-anchor="end">−701</text>
+<text x="626.0" y="117" font-size="10.5" fill="#166534">+5,244</text>
+<text x="32" y="148" font-size="12.5" fill="#374151">블로그 글</text>
+<rect x="366.3" y="134" width="13.7" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="134" width="190.0" height="18" rx="3" fill="#86efac"/>
+<text x="360.3" y="147" font-size="10.5" fill="#9a3412" text-anchor="end">−227</text>
+<text x="576.0" y="147" font-size="10.5" fill="#166534">+3,137</text>
+<text x="32" y="178" font-size="12.5" fill="#374151">프로필 데이터 나누기</text>
+<rect x="270.0" y="164" width="110.0" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="164" width="103.6" height="18" rx="3" fill="#86efac"/>
+<path d="M288 162 l-6 22 M294 162 l-6 22" stroke="#ffffff" stroke-width="3"/>
+<text x="264.0" y="177" font-size="10.5" fill="#9a3412" text-anchor="end">−1,820</text>
+<text x="489.6" y="177" font-size="10.5" fill="#166534">+1,710</text>
+<text x="32" y="208" font-size="12.5" fill="#374151">Safari 데모 나누기</text>
+<rect x="270.0" y="194" width="110.0" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="194" width="180.1" height="18" rx="3" fill="#86efac"/>
+<path d="M288 192 l-6 22 M294 192 l-6 22" stroke="#ffffff" stroke-width="3"/>
+<text x="264.0" y="207" font-size="10.5" fill="#9a3412" text-anchor="end">−2,857</text>
+<text x="566.1" y="207" font-size="10.5" fill="#166534">+2,974</text>
+<text x="32" y="238" font-size="12.5" fill="#374151">E2E 테스트</text>
+<rect x="352.6" y="224" width="27.4" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="224" width="104.7" height="18" rx="3" fill="#86efac"/>
+<text x="346.6" y="237" font-size="10.5" fill="#9a3412" text-anchor="end">−452</text>
+<text x="490.7" y="237" font-size="10.5" fill="#166534">+1,728</text>
+<text x="32" y="268" font-size="12.5" fill="#374151">contracts</text>
+<rect x="379.9" y="254" width="0.1" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="254" width="76.8" height="18" rx="3" fill="#86efac"/>
+<text x="373.9" y="267" font-size="10.5" fill="#9a3412" text-anchor="end">−2</text>
+<text x="462.8" y="267" font-size="10.5" fill="#166534">+1,268</text>
+<text x="32" y="298" font-size="12.5" fill="#374151">desktop-core</text>
+<rect x="364.0" y="284" width="16.0" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="284" width="63.7" height="18" rx="3" fill="#86efac"/>
+<text x="358.0" y="297" font-size="10.5" fill="#9a3412" text-anchor="end">−264</text>
+<text x="449.7" y="297" font-size="10.5" fill="#166534">+1,052</text>
+<text x="32" y="328" font-size="12.5" fill="#374151">공통 코드·UI 부품</text>
+<rect x="368.6" y="314" width="11.4" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="314" width="64.1" height="18" rx="3" fill="#86efac"/>
+<text x="362.6" y="327" font-size="10.5" fill="#9a3412" text-anchor="end">−188</text>
+<text x="450.1" y="327" font-size="10.5" fill="#166534">+1,058</text>
+<text x="32" y="358" font-size="12.5" fill="#374151">메모·사진·휴지통 등 앱</text>
+<rect x="278.6" y="344" width="101.4" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="344" width="89.1" height="18" rx="3" fill="#86efac"/>
+<text x="272.6" y="357" font-size="10.5" fill="#9a3412" text-anchor="end">−1,674</text>
+<text x="475.1" y="357" font-size="10.5" fill="#166534">+1,471</text>
+<text x="32" y="388" font-size="12.5" fill="#374151">API</text>
+<rect x="347.3" y="374" width="32.7" height="18" rx="3" fill="#fdba74"/>
+<rect x="380" y="374" width="13.3" height="18" rx="3" fill="#86efac"/>
+<text x="341.3" y="387" font-size="10.5" fill="#9a3412" text-anchor="end">−540</text>
+<text x="399.3" y="387" font-size="10.5" fill="#166534">+219</text>
+<path d="M380 66 V400" stroke="#d1d5db"/>
+<text x="32" y="424" font-size="10" fill="#8b93a1">main과 #187 브랜치에서 그날 쓴 커밋. 머지 커밋, 잠금 파일, 그림·글꼴·영상, openapi.json은 빼고 셌다. 끊긴 막대는 줄여 그렸다</text>
+</svg>

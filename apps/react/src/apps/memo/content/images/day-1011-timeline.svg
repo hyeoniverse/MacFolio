@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 395" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 11일 작업 흐름</title>
+<rect width="760" height="395" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 11일</text>
+<text x="140" y="42" font-size="12.5" fill="#6b7280">main 커밋 52개 · #187 브랜치 커밋 22개 · main에 머지한 PR 28개</text>
+<rect x="48" y="370" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="66" y="380" font-size="11" fill="#8b93a1">main 커밋</text>
+<rect x="140" y="370" width="12" height="12" rx="2" fill="#fcd9a8"/><text x="158" y="380" font-size="11" fill="#8b93a1">#187 브랜치 커밋 (아직 열린 PR)</text>
+<path d="M48.0 64 V335" stroke="#eef0f3"/>
+<text x="48.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 64 V335" stroke="#eef0f3"/>
+<text x="133.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 64 V335" stroke="#eef0f3"/>
+<text x="218.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 64 V335" stroke="#eef0f3"/>
+<text x="303.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 64 V335" stroke="#eef0f3"/>
+<text x="388.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 64 V335" stroke="#eef0f3"/>
+<text x="473.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 64 V335" stroke="#eef0f3"/>
+<text x="558.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 64 V335" stroke="#eef0f3"/>
+<text x="643.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 64 V335" stroke="#eef0f3"/>
+<text x="728.0" y="355" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<rect x="49.7" y="275.2" width="24.9" height="55.8" rx="3" fill="#c7d2fe"/>
+<text x="62.2" y="271.2" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="78.0" y="321.7" width="24.9" height="9.3" rx="3" fill="#c7d2fe"/>
+<rect x="78.0" y="312.4" width="24.9" height="9.3" rx="3" fill="#fcd9a8"/>
+<text x="90.5" y="308.4" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="106.4" y="275.2" width="24.9" height="55.8" rx="3" fill="#c7d2fe"/>
+<text x="118.8" y="271.2" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="134.7" y="256.6" width="24.9" height="74.4" rx="3" fill="#c7d2fe"/>
+<text x="147.2" y="252.6" font-size="9.5" fill="#6366f1" text-anchor="middle">8</text>
+<rect x="163.0" y="284.5" width="24.9" height="46.5" rx="3" fill="#c7d2fe"/>
+<text x="175.5" y="280.5" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="191.4" y="256.6" width="24.9" height="74.4" rx="3" fill="#c7d2fe"/>
+<rect x="191.4" y="247.3" width="24.9" height="9.3" rx="3" fill="#fcd9a8"/>
+<text x="203.8" y="243.3" font-size="9.5" fill="#6366f1" text-anchor="middle">9</text>
+<rect x="219.7" y="256.6" width="24.9" height="74.4" rx="3" fill="#c7d2fe"/>
+<rect x="219.7" y="238.0" width="24.9" height="18.6" rx="3" fill="#fcd9a8"/>
+<text x="232.2" y="234.0" font-size="9.5" fill="#6366f1" text-anchor="middle">10</text>
+<rect x="248.0" y="293.8" width="24.9" height="37.2" rx="3" fill="#c7d2fe"/>
+<rect x="248.0" y="256.6" width="24.9" height="37.2" rx="3" fill="#fcd9a8"/>
+<text x="260.5" y="252.6" font-size="9.5" fill="#6366f1" text-anchor="middle">8</text>
+<rect x="276.4" y="303.1" width="24.9" height="27.9" rx="3" fill="#c7d2fe"/>
+<rect x="276.4" y="284.5" width="24.9" height="18.6" rx="3" fill="#fcd9a8"/>
+<text x="288.8" y="280.5" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="304.7" y="321.7" width="24.9" height="9.3" rx="3" fill="#c7d2fe"/>
+<rect x="304.7" y="312.4" width="24.9" height="9.3" rx="3" fill="#fcd9a8"/>
+<text x="317.2" y="308.4" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="333.0" y="293.8" width="24.9" height="37.2" rx="3" fill="#fcd9a8"/>
+<text x="345.5" y="289.8" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="361.4" y="321.7" width="24.9" height="9.3" rx="3" fill="#c7d2fe"/>
+<rect x="361.4" y="312.4" width="24.9" height="9.3" rx="3" fill="#fcd9a8"/>
+<text x="373.8" y="308.4" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="389.7" y="321.7" width="24.9" height="9.3" rx="3" fill="#c7d2fe"/>
+<rect x="389.7" y="293.8" width="24.9" height="27.9" rx="3" fill="#fcd9a8"/>
+<text x="402.2" y="289.8" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="503.0" y="312.4" width="24.9" height="18.6" rx="3" fill="#fcd9a8"/>
+<text x="515.5" y="308.4" font-size="9.5" fill="#6366f1" text-anchor="middle">2</text>
+<rect x="701.4" y="321.7" width="24.9" height="9.3" rx="3" fill="#fcd9a8"/>
+<text x="713.8" y="317.7" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="50" y="68" width="104" height="71" rx="9" fill="#e3f6ea" stroke="#4fbf7a"/>
+<text x="59" y="86" font-size="12" font-weight="700" fill="#1f6b3d">보안·운영</text>
+<text x="59" y="103" font-size="10.5" fill="#1f6b3d">미리보기 CORS</text>
+<text x="59" y="118" font-size="10.5" fill="#1f6b3d">audit.sh</text>
+<text x="59" y="133" font-size="10.5" fill="#1f6b3d">빈 휴지통</text>
+<rect x="110" y="150" width="112" height="71" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="119" y="168" font-size="12" font-weight="700" fill="#1d4f91">구조</text>
+<text x="119" y="185" font-size="10.5" fill="#1d4f91">순환 의존 끊기</text>
+<text x="119" y="200" font-size="10.5" fill="#1d4f91">큰 파일 나누기</text>
+<text x="119" y="215" font-size="10.5" fill="#1d4f91">파일 이름 규칙</text>
+<rect x="162" y="68" width="112" height="56" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="171" y="86" font-size="12" font-weight="700" fill="#1d4f91">공통 기반</text>
+<text x="171" y="103" font-size="10.5" fill="#1d4f91">API 클라이언트</text>
+<text x="171" y="118" font-size="10.5" fill="#1d4f91">저장소·화면 질문</text>
+<rect x="232" y="150" width="118" height="71" rx="9" fill="#efe9fd" stroke="#9b7bea"/>
+<text x="241" y="168" font-size="12" font-weight="700" fill="#4c2a99">contracts</text>
+<text x="241" y="185" font-size="10.5" fill="#4c2a99">여덟 도메인</text>
+<text x="241" y="200" font-size="10.5" fill="#4c2a99">profile 나누기</text>
+<text x="241" y="215" font-size="10.5" fill="#4c2a99">브랜드 타입</text>
+<rect x="300" y="68" width="168" height="71" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="309" y="86" font-size="12" font-weight="700" fill="#7a5a12">프로젝트 편집 (#187)</text>
+<text x="309" y="103" font-size="10.5" fill="#7a5a12">편집 모드·달력·기술 칩</text>
+<text x="309" y="118" font-size="10.5" fill="#7a5a12">페이지 모양 7개 → 12개</text>
+<text x="309" y="133" font-size="10.5" fill="#7a5a12">기술 후보 1,700여 개</text>
+<rect x="598" y="68" width="130" height="41" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="607" y="86" font-size="12" font-weight="700" fill="#7a5a12">기술 칸 (#187)</text>
+<text x="607" y="103" font-size="10.5" fill="#7a5a12">npm 검색</text>
+</svg>
