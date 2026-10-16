@@ -2712,7 +2712,8 @@ span.rp-crumb:hover {
 	--rp-alert: #ab7df8;
 }
 
-.rp-alert-title {
+/* .rp-md p보다 강하게: 알림 제목은 GitHub처럼 알림 색으로 칠한다 */
+.rp-alert .rp-alert-title {
 	display: flex;
 	align-items: center;
 	gap: 8px;

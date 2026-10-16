@@ -1484,3 +1484,30 @@
 	width: 64px;
 	height: 64px;
 }
+
+/* 배포 결과물: 고정폭 글씨는 넓어 한 줄에 모두 담기 어렵다. 올린 곳과 호스트를 한 줄씩 나누고, 넘치면 말줄임으로 끝낸다 */
+.kn-deploy-meta {
+	display: grid;
+	gap: 2px;
+}
+
+.kn-deploy-meta > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.kn-deploy-sep {
+	display: none;
+}
+
+.kn-deploy-host {
+	color: var(--kn-muted);
+}
+
+.kn-deploy-cover {
+	border-color: var(--kn-line-strong);
+	background:
+		radial-gradient(ellipse at 50% 120%, color-mix(in srgb, var(--tpl-accent) 45%, transparent), transparent 70%),
+		var(--kn-raise);
+}
