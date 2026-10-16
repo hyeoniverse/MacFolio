@@ -48,7 +48,7 @@ MacFolio(macfolio.hyeoniverse.com)가 방문자에 대해 서버에 남기는 �
 | 이벤트 (위의 표)                                                  | 90일 뒤 지운다                     |
 | 날마다 모은 숫자 (날짜별 방문 수, 들어온 곳·앱·글·나라·기기별 수) | 계속 둔다. 사람을 가리는 값이 없다 |
 
-서버는 한 시간마다 지난 날을 모으고 기간이 지난 값을 지운다 (`apps/api/src/analytics/analytics.service.ts`의 `maintain`). DB 백업(`ops/backup.sh`)에도 들어간다. 백업은 서버에 7일, 서버 밖(R2)에 30일 두고 지운다 (기본값). 그래서 지운 값도 백업에는 그만큼 더 남는다.
+서버는 한 시간마다 지난 날을 모으고 기간이 지난 값을 지운다 (`apps/api/src/analytics/analytics-rollup.service.ts`의 `maintain`). DB 백업(`ops/backup.sh`)에도 들어간다. 백업은 서버에 7일, 서버 밖(R2)에 30일 두고 지운다 (기본값). 그래서 지운 값도 백업에는 그만큼 더 남는다.
 
 ## 방명록·댓글 (방문자 쿠키)
 
