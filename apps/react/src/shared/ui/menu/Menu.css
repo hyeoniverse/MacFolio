@@ -27,7 +27,7 @@
 	gap: 9px;
 	padding: 5px 9px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -106,7 +106,7 @@
 	gap: 5px;
 	padding: 8px 4px;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -140,7 +140,7 @@
 .ui-menu.touch .ui-menu-item {
 	gap: 14px;
 	padding: 11px 12px;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 }
 
 .ui-menu.touch .ui-menu-item i {

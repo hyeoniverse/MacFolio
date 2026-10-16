@@ -27,7 +27,7 @@
 
 .safari-phone-pill,
 .safari-phone-circle {
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 }
@@ -198,7 +198,7 @@
 	flex: 1;
 	place-items: center;
 	height: 100%;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--safari-text);

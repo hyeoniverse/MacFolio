@@ -103,7 +103,7 @@
 .cr-showcase-live {
 	margin: 0 0 18px;
 	padding: 16px;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
@@ -187,7 +187,7 @@
 .cr-showcase-shot {
 	margin: 0 0 18px;
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
@@ -351,7 +351,7 @@
 .cr-collage figure {
 	margin: 0;
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
 }

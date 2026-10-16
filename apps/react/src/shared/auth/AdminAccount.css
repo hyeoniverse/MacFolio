@@ -77,7 +77,7 @@
 .admin-account-details {
 	overflow: hidden;
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	font-size: 13px;
 }
 
