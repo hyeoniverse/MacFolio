@@ -5,8 +5,8 @@ import { api, apiFetch } from '@/shared/api/client';
 import { createStore } from '@macfolio/desktop-core';
 import { GITHUB_SNAPSHOT, type GithubData, type RepoCard } from '@/apps/github/githubProfile';
 
-/** 보일 저장소는 GitHub의 Pinned처럼 6개까지 (서버와 같다) */
-export const MAX_SHOWCASE = 6;
+/** 보일 저장소는 GitHub의 Pinned처럼 6개까지, "owner/이름" 규칙 (서버와 같은 @macfolio/contracts) */
+export { isFullName, MAX_SHOWCASE } from '@macfolio/contracts';
 
 interface State {
 	/** snapshot: 서버 값을 아직 받지 못해 스냅샷을 보여 준다, live: 서버 값 */
@@ -100,7 +100,3 @@ export async function saveShowcase(repos: string[]): Promise<string[]> {
 	await loadGithub();
 	return body.repos;
 }
-
-/** "owner/이름" 모양인지 (서버와 같은 규칙) */
-export const isFullName = (value: string) =>
-	/^[A-Za-z0-9][A-Za-z0-9-]{0,38}\/[A-Za-z0-9._-]{1,100}$/.test(value) && !/\/\.{1,2}$/.test(value);

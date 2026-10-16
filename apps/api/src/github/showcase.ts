@@ -1,7 +1,9 @@
 // GitHub 앱에 보여 줄 프로필·저장소의 규칙. Nest와 DB에 의존하지 않는다.
 
-/** GitHub의 Pinned처럼 6개까지 */
-export const MAX_SHOWCASE = 6;
+import { isFullName, MAX_SHOWCASE, parse, sameRepo, ShowcaseInput } from '@macfolio/contracts';
+
+/** GitHub의 Pinned처럼 6개까지. 이름 규칙과 몸통 스키마는 @macfolio/contracts */
+export { isFullName, MAX_SHOWCASE, sameRepo };
 
 /** 아직 고른 적이 없을 때 (이 기능 전에 GitHub 앱에 적어 두었던 Pinned) */
 export const DEFAULT_SHOWCASE = [
@@ -12,28 +14,10 @@ export const DEFAULT_SHOWCASE = [
 	'hyeoniverse/DevCourse-FullStack',
 ];
 
-/** "owner/이름". owner는 GitHub 계정·조직 이름 규칙, 이름은 영문·숫자·. _ - */
-const FULL_NAME = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\/[A-Za-z0-9._-]{1,100}$/;
-
-export const isFullName = (value: unknown): value is string =>
-	typeof value === 'string' && FULL_NAME.test(value) && !value.endsWith('/.') && !value.endsWith('/..');
-
-/** 같은 저장소인지 (GitHub 이름은 대소문자를 가리지 않는다) */
-export const sameRepo = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
-
 /** PUT /github/showcase 본문: { repos: ["owner/이름", ...] } */
 export function parseShowcase(input: unknown): { value: string[] } | { errors: string[] } {
-	const repos = (input as { repos?: unknown } | null)?.repos;
-	if (!Array.isArray(repos)) return { errors: ['repos는 "owner/이름" 목록이어야 합니다.'] };
-	const errors: string[] = [];
-	if (repos.length > MAX_SHOWCASE) errors.push(`저장소는 ${MAX_SHOWCASE}개까지 고를 수 있습니다.`);
-	const value: string[] = [];
-	for (const repo of repos) {
-		if (!isFullName(repo)) errors.push(`저장소 이름이 올바르지 않습니다: ${String(repo)}`);
-		else if (value.some((other) => sameRepo(other, repo))) errors.push(`같은 저장소가 두 번 있습니다: ${repo}`);
-		else value.push(repo);
-	}
-	return errors.length ? { errors } : { value };
+	const parsed = parse(ShowcaseInput, input);
+	return 'errors' in parsed ? parsed : { value: parsed.value.repos };
 }
 
 export interface GithubProfile {

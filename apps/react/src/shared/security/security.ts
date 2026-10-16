@@ -6,8 +6,9 @@ import { env } from '@/shared/config/env';
 import { api, reasonsFrom } from '@/shared/api/client';
 import { useAdmin } from '@/shared/auth/adminStore';
 
-export const HUMAN_CHECKS = ['contact', 'comment', 'message'] as const;
-export type HumanCheck = (typeof HUMAN_CHECKS)[number];
+/** 사람 확인을 켜고 끄는 곳 (서버와 같은 @macfolio/contracts) */
+import { HUMAN_CHECKS, type HumanCheck } from '@macfolio/contracts';
+export { HUMAN_CHECKS, type HumanCheck };
 
 export interface SecuritySettings extends Record<HumanCheck, boolean> {
 	/** 서버에 Turnstile 키가 둘 다 있는지. 없으면 켜도 확인하지 않는다 */
