@@ -29,6 +29,19 @@
 	--wallpaper: url('/imgs/wallpapers/highsierra.jpg');
 	--wallpaper-mobile: url('/imgs/wallpapers/ios-sky-light.jpg');
 
+	/*
+	 * 글자 크기. Apple HIG의 글자 스타일 이름을 빌려, 자주 쓰는 여덟 값에 이름을 붙였다
+	 * (14·18px 등 그 밖의 값과 em·rem은 각 CSS에 그대로)
+	 */
+	--text-caption2: 11px;
+	--text-caption: 12px;
+	--text-footnote: 13px;
+	--text-subhead: 15px;
+	--text-callout: 16px;
+	--text-body: 17px;
+	--text-title3: 20px;
+	--text-title2: 22px;
+
 	/* 글자 */
 	--color-text: #333333;
 	--color-text-strong: #000000;

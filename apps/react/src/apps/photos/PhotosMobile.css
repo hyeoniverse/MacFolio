@@ -43,7 +43,7 @@
 .photos-phone-title p {
 	margin: 0;
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 600;
 }
 
@@ -96,7 +96,7 @@
 	right: 6px;
 	bottom: 4px;
 	color: #fff;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
@@ -106,7 +106,7 @@
 .photos-phone-group h3 {
 	margin: 0;
 	padding: 18px 16px 8px;
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .photos-phone-group:first-of-type h3 {
@@ -123,7 +123,7 @@
 
 .photos-phone-group h3 i {
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* ─── 모음: 가로로 넘기는 카드 ─── */
@@ -135,13 +135,13 @@
 	margin: 0 0 10px;
 	padding: 0 20px;
 	color: var(--color-text-strong);
-	font-size: 22px;
+	font-size: var(--text-title2);
 	font-weight: 700;
 }
 
 .photos-shelf h3 i {
 	color: var(--color-text-secondary);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .photos-shelf-row {
@@ -212,7 +212,7 @@
 }
 
 .photos-card-text strong {
-	font-size: 17px;
+	font-size: var(--text-body);
 	line-height: 1.25;
 }
 
@@ -221,13 +221,13 @@
 }
 
 .photos-card-text span {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	opacity: 0.9;
 }
 
 .photos-card.big .photos-card-text span {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* ─── 아래에 떠 있는 탭(보관함·모음)과 검색: 어느 화면에서나 같다 ─── */
@@ -262,7 +262,7 @@
 	backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--color-text-strong);
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .photos-phone-tabs {
@@ -287,7 +287,7 @@
 	border: none;
 	border-radius: 999px;
 	background: none;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 500;
 }
 
@@ -326,7 +326,7 @@
 }
 
 .photos-phone.search .photos-shelf h3 {
-	font-size: 22px;
+	font-size: var(--text-title2);
 }
 
 .photos-phone.search .photos-card {
@@ -349,7 +349,7 @@
 	border-radius: 999px;
 	background: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 500;
 }
 
@@ -357,7 +357,7 @@
 	margin: 0 0 10px;
 	padding: 0 20px;
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .photos-phone-search {
@@ -373,7 +373,7 @@
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .photos-phone-search input {
@@ -425,13 +425,13 @@
 }
 
 .photos-phone-viewer-title strong {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 600;
 }
 
 .photos-phone-viewer-title span {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .photos-phone-viewer-more {
@@ -525,7 +525,7 @@
 	border-bottom: 0.5px solid var(--phone-separator);
 	background: var(--phone-card-bg);
 	color: var(--color-text-secondary);
-	font-size: 17px;
+	font-size: var(--text-body);
 	line-height: 1.35;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -572,7 +572,7 @@
 	gap: 8px;
 	margin: 2px 0 10px;
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 형식 카드: 머리(앨범 · 형식 딱지), 두 줄, 칸 나눈 줄 */
@@ -589,7 +589,7 @@
 	gap: 8px;
 	padding: 10px 12px;
 	border-bottom: 0.5px solid var(--phone-separator);
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .photos-phone-format {
@@ -597,7 +597,7 @@
 	border-radius: 5px;
 	background: var(--color-text-secondary);
 	color: var(--phone-card-bg);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 700;
 }
 
@@ -605,7 +605,7 @@
 	margin: 0;
 	padding: 6px 12px 0;
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .photos-phone-card p:last-of-type {
@@ -619,7 +619,7 @@
 	border-top: 0.5px solid var(--phone-separator);
 	list-style: none;
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
@@ -640,7 +640,7 @@
 	border-radius: 14px;
 	background: var(--color-selected-bg);
 	color: #0a84ff;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 사진 띠: 작은 사진을 촘촘히, 지금 사진은 넓게 (iOS 사진) */
@@ -719,7 +719,7 @@
 	border: none;
 	background: none;
 	color: var(--color-text-strong);
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .photos-phone-pill button[aria-label='좋아요'][aria-pressed='true'] {

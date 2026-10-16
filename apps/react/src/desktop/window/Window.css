@@ -310,7 +310,7 @@
 }
 
 .mobile-navbar-home i {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .mobile-navbar-back-label {
@@ -364,7 +364,7 @@
 .container.mobile .phone-title-sub {
 	margin: -8px 4px 16px;
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 떠 있는 동그란 단추 (새로 쓰기 등)와 알약 */
@@ -379,7 +379,7 @@
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--color-text);
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 /* 앱 바탕: 회색 바탕이 상태 표시줄 뒤까지 잇는다.

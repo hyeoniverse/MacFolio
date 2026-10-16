@@ -26,14 +26,14 @@
 
 	.ui-alert h3 {
 		margin: 0;
-		font-size: 15px;
+		font-size: var(--text-subhead);
 		font-weight: 700;
 		line-height: 1.35;
 	}
 
 	.ui-alert p {
 		margin: 0;
-		font-size: 13px;
+		font-size: var(--text-footnote);
 		line-height: 1.4;
 	}
 

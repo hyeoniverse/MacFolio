@@ -59,7 +59,7 @@
 	padding: 0 16px;
 	border: none;
 	background: none;
-	font-size: 17px;
+	font-size: var(--text-body);
 	text-align: left;
 }
 
@@ -137,7 +137,7 @@
 
 .mail-phone-item-top strong {
 	overflow: hidden;
-	font-size: 17px;
+	font-size: var(--text-body);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -145,7 +145,7 @@
 .mail-phone-item-top time,
 .mail-phone-item-preview {
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .mail-phone-item-top time {
@@ -153,7 +153,7 @@
 }
 
 .mail-phone-item-subject {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .mail-phone-item-preview {
@@ -167,7 +167,7 @@
 .mail-phone .mail-load-error {
 	margin: 16px 0 0;
 	padding: 0 4px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .mail-phone-empty {
@@ -223,12 +223,12 @@
 }
 
 .mail-phone-header strong {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .mail-phone-header p {
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .mail-phone-to {
@@ -237,7 +237,7 @@
 
 .mail-phone-header time {
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .mail-phone-avatar {
@@ -261,7 +261,7 @@
 }
 
 .mail-phone-body {
-	font-size: 17px;
+	font-size: var(--text-body);
 	line-height: 1.6;
 	white-space: pre-wrap;
 }
@@ -336,7 +336,7 @@
 	border-radius: 50%;
 	background-color: var(--phone-page-bg);
 	color: var(--color-text-strong);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	transition:
 		background-color var(--duration-fast) var(--ease-out),
 		color var(--duration-fast) var(--ease-out);
@@ -371,7 +371,7 @@
 	min-height: 48px;
 	padding: 0;
 	border-bottom: 0.5px solid var(--phone-separator);
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .mail-compose.sheet .mail-compose-row > span:first-child {
@@ -379,7 +379,7 @@
 }
 
 .mail-compose.sheet .mail-compose-row input {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .mail-compose.sheet .mail-compose-body {
@@ -387,7 +387,7 @@
 	min-height: 180px;
 	padding: 14px 0;
 	border: none;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .mail-phone-recipient {
@@ -399,7 +399,7 @@
 	padding-left: 12px;
 	border-left: 2px solid #6d7ed1;
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	white-space: pre-wrap;
 }
 
@@ -448,12 +448,12 @@
 	border: none;
 	border-radius: 20px;
 	background-color: var(--phone-page-bg);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 500;
 }
 
 .mail-phone-tiles button i {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .mail-phone-action-list {
@@ -474,7 +474,7 @@
 	padding: 0 18px;
 	border: none;
 	background: none;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 입력·받는 사람은 이름표 옆 남은 폭을 쓰고, 넘치면 말줄임 (오류 문구는 다음 줄로) */

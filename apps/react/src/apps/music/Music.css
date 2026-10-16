@@ -41,7 +41,7 @@
 	background-color: var(--music-bg);
 	color: var(--music-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 }
 
@@ -93,14 +93,14 @@
 	border: none;
 	background: none;
 	color: var(--music-accent);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	cursor: pointer;
 }
 
 .music-sidebar-heading {
 	margin: 8px 8px 4px;
 	color: var(--music-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
@@ -191,7 +191,7 @@
 }
 
 .music-header .music-meta {
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .music-header-actions {
@@ -323,13 +323,13 @@
 }
 
 .music-up-next h3 {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .music-up-next p {
 	margin-bottom: 10px;
 	color: var(--music-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .music-up-next button {
@@ -419,7 +419,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: 18px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .music-transport button {
@@ -428,7 +428,7 @@
 }
 
 .music-transport .music-play {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .music-toggle {
@@ -506,11 +506,11 @@
 }
 
 .music-now-info strong {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .music-now-info span {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	opacity: 0.7;
 }
 
@@ -596,7 +596,7 @@
 		gap: 14px;
 		padding: 8px 4px;
 		border-radius: 0;
-		font-size: 17px;
+		font-size: var(--text-body);
 	}
 
 	.music-playlist-link.selected {
@@ -651,13 +651,13 @@
 		white-space: nowrap;
 		justify-content: center;
 		padding: 10px 18px;
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 
 	.music-track {
 		grid-template-columns: 24px 44px minmax(0, 1fr) 40px;
 		padding: 8px 4px;
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 
 	.music-tracks li:where(:nth-child(odd)) .music-track {
@@ -695,7 +695,7 @@
 	.music-mini-controls {
 		display: flex;
 		gap: 6px;
-		font-size: 20px;
+		font-size: var(--text-title3);
 	}
 
 	.music-mini-controls button {
@@ -739,7 +739,7 @@
 		gap: 10px;
 		width: 100%;
 		margin: 4px 0 20px;
-		font-size: 17px;
+		font-size: var(--text-body);
 		font-weight: 600;
 	}
 
@@ -770,7 +770,7 @@
 		position: relative;
 		width: 100%;
 		padding: 13px 4px;
-		font-size: 20px;
+		font-size: var(--text-title3);
 		text-align: left;
 	}
 
@@ -829,7 +829,7 @@
 	}
 
 	.container.mobile .music-collection-text strong {
-		font-size: 17px;
+		font-size: var(--text-body);
 		font-weight: 400;
 	}
 
@@ -851,7 +851,7 @@
 	}
 
 	.container.mobile .music-collection.grid strong {
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 
 	/* 플레이리스트 화면 오른쪽 위: 보기·정렬 */
@@ -888,15 +888,15 @@
 	}
 
 	.container.mobile .music-header h1 {
-		font-size: 22px;
+		font-size: var(--text-title2);
 	}
 
 	.container.mobile .music-header p {
-		font-size: 15px;
+		font-size: var(--text-subhead);
 	}
 
 	.container.mobile .music-header .music-meta {
-		font-size: 13px;
+		font-size: var(--text-footnote);
 	}
 
 	.container.mobile .music-header-actions {
@@ -909,7 +909,7 @@
 		border-radius: 25px;
 		background-color: var(--music-selected);
 		color: var(--music-accent);
-		font-size: 17px;
+		font-size: var(--text-body);
 	}
 
 	.container.mobile .music-pill-shuffle {
@@ -975,7 +975,7 @@
 	}
 
 	.container.mobile .music-track-title strong {
-		font-size: 16px;
+		font-size: var(--text-callout);
 		font-weight: 400;
 	}
 
