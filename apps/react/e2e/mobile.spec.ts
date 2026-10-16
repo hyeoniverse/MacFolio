@@ -1454,6 +1454,26 @@ test.describe('휴대폰 홈 화면 페이지', () => {
 	});
 });
 
+test('활동 상태 보기 (휴대폰): 홈으로 가는 단추 없이 탭 줄은 카드와 같은 폭, 기간은 오른쪽 끝', async ({ page }) => {
+	await fakeApi(page);
+	await enterHome(page);
+	await (await homeApp(page, '활동 상태 보기')).tap();
+	const activity = appWindow(page, 'activity');
+	await expect(activity.getByRole('tablist', { name: '보기' })).toBeVisible();
+	// iOS의 탭으로 나눈 앱처럼 첫 화면에는 뒤로 가기가 없다 (홈 바로 나간다)
+	await expect(page.locator('.container.mobile[data-app="activity"] .mobile-navbar')).toHaveCount(0);
+	const box = async (locator: ReturnType<typeof activity.locator>) => (await locator.first().boundingBox())!;
+	const cards = await box(activity.locator('.activity-stats'));
+	const right = (rect: { x: number; width: number }) => Math.round(rect.x + rect.width);
+	// 탭 줄은 카드 묶음과 같은 왼쪽·오른쪽 선
+	await expect
+		.poll(async () => Math.round((await box(activity.getByRole('tablist', { name: '보기' }))).x))
+		.toBe(Math.round(cards.x));
+	expect(right(await box(activity.getByRole('tablist', { name: '보기' })))).toBe(right(cards));
+	// 기간은 오른쪽 끝 (카드 묶음의 오른쪽 선)
+	expect(right(await box(activity.locator('.activity-period')))).toBe(right(cards));
+});
+
 test.describe('상태 표시줄·홈 인디케이터는 밑의 화면에 맞춰 늘 보인다', () => {
 	const WHITE = 'rgb(255, 255, 255)';
 	const BLACK = 'rgb(28, 28, 30)';
