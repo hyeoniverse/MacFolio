@@ -15,7 +15,8 @@ import type { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard.js';
 import { AuthService } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
-import { AnalyticsService } from './analytics.service.js';
+import { AnalyticsRecorder } from './analytics-recorder.service.js';
+import { AnalyticsStats } from './analytics-stats.service.js';
 import { RateLimit } from '../common/rate-limit.js';
 
 /**
@@ -26,7 +27,8 @@ import { RateLimit } from '../common/rate-limit.js';
 @Controller('analytics')
 export class AnalyticsController {
 	constructor(
-		private readonly analytics: AnalyticsService,
+		private readonly recorder: AnalyticsRecorder,
+		private readonly stats: AnalyticsStats,
 		private readonly auth: AuthService
 	) {}
 
@@ -54,7 +56,7 @@ export class AnalyticsController {
 	@ApiTooManyRequestsResponse({ description: 'IP마다 1분에 30번까지' })
 	async events(@Body() body: unknown, @Req() request: Request) {
 		const admin = await this.auth.findAdmin(request.cookies?.[SESSION_COOKIE]);
-		await this.analytics.record(body, {
+		await this.recorder.record(body, {
 			ip: request.ip ?? '',
 			userAgent: request.headers['user-agent'],
 			country: request.headers['cf-ipcountry'],
@@ -65,7 +67,7 @@ export class AnalyticsController {
 	@Get('today')
 	@ApiOkResponse({ description: '오늘(한국 시간) 순방문자 수. 누구나 본다 (1분마다 다시 센다)' })
 	today() {
-		return this.analytics.todayVisitors();
+		return this.stats.todayVisitors();
 	}
 
 	@Get('summary')
@@ -79,7 +81,7 @@ export class AnalyticsController {
 	@ApiBadRequestResponse({ description: '기간이 틀렸다 (1~366일)' })
 	async summary(@Query('from') from: unknown, @Query('to') to: unknown, @Req() request: Request) {
 		const admin = await this.auth.findAdmin(request.cookies?.[SESSION_COOKIE]);
-		return this.analytics.summary(from, to, !!admin);
+		return this.stats.summary(from, to, !!admin);
 	}
 
 	@Get('views')
@@ -87,7 +89,7 @@ export class AnalyticsController {
 	@ApiOkResponse({ description: '항목마다 전체 기간 조회수 (한 방문에서 같은 글은 한 번). 누구나 본다' })
 	@ApiBadRequestResponse({ description: 'app이 틀렸다' })
 	views(@Query('app') app: unknown) {
-		return this.analytics.views(app);
+		return this.stats.views(app);
 	}
 
 	@Get('live')
@@ -97,6 +99,6 @@ export class AnalyticsController {
 	@ApiOkResponse({ description: '최근 방문: 나라·기기·들어온 곳·가린 IP(7일)와 연 앱·본 글의 흐름' })
 	@ApiUnauthorizedResponse({ description: '관리자 로그인이 필요하다' })
 	live(@Query('minutes') minutes: unknown) {
-		return this.analytics.live(minutes);
+		return this.stats.live(minutes);
 	}
 }

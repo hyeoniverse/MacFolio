@@ -1,13 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-	cleanFileName,
-	cleanFileType,
-	contentDisposition,
-	newUploadId,
-	sniffImage,
-	UPLOAD_ID,
-	uploadIdsIn,
-} from './rules.js';
+import { cleanFileName, cleanFileType, contentDisposition, newUploadId, sniffImage, UPLOAD_ID } from './rules.js';
 
 const bytes = (...values: number[]) => new Uint8Array(values);
 
@@ -50,14 +42,5 @@ describe('올린 파일 규칙', () => {
 		const id = newUploadId();
 		expect(id).toMatch(UPLOAD_ID);
 		expect(newUploadId()).not.toBe(id);
-	});
-
-	it('글에서 가리키는 파일 id를 찾는다 (전체 주소든 경로든, 같은 id는 한 번)', () => {
-		const a = 'AAAAAAAAAAAAAAAA';
-		const b = 'bbbbbbbbbbbbbbb-';
-		expect(uploadIdsIn(`![](https://api.x/files/${a}) [첨부](/files/${b}) ![](/files/${a})`)).toEqual([a, b]);
-		// 16자보다 길면 파일 주소가 아니다
-		expect(uploadIdsIn(`/files/${a}x`)).toEqual([]);
-		expect(uploadIdsIn(null)).toEqual([]);
 	});
 });

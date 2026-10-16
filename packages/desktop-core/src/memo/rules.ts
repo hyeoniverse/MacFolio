@@ -6,19 +6,29 @@ export const FOLDER_NAME_MAX = 30;
 /** 폴더는 3단까지 (예: 개발기/MacFolio/초안) */
 export const MAX_FOLDER_DEPTH = 3;
 
+declare const postSlugBrand: unique symbol;
+declare const folderPathBrand: unique symbol;
+/**
+ * 글 주소 (POST_SLUG에 맞는 문자열). 파일 이름·서버·주소창에서 온 문자열은 postSlug()로 확인해야 이 타입이 된다.
+ * 넓은 string과 섞이지 않게 표시만 붙인 문자열이다 (실행 시에는 그냥 문자열)
+ */
+export type PostSlug = string & { readonly [postSlugBrand]: true };
+/** 폴더 경로 (folderPathError가 없는 문자열, 예: 개발기/MacFolio). folderPath()로 확인해야 이 타입이 된다 */
+export type FolderPath = string & { readonly [folderPathBrand]: true };
+
 export interface Organization {
 	/** 만든 폴더의 전체 경로 (예: 읽을거리, 개발기/읽을거리) */
-	folders: string[];
+	folders: FolderPath[];
 	/** 옮긴 글: slug → 폴더 경로 */
-	posts: Record<string, string>;
+	posts: Record<PostSlug, FolderPath>;
 	/** 옮긴 폴더 (순서대로 적용한다). 글의 원래 category 경로에 적용된다 */
-	moves: { from: string; to: string }[];
+	moves: { from: FolderPath; to: FolderPath }[];
 	/** 고정을 바꾼 글: slug → 고정 여부 (머리말의 pinned보다 우선) */
-	pins: Record<string, boolean>;
+	pins: Record<PostSlug, boolean>;
 	/** 잠근 글: slug → true. 잠그면 고치거나 지울 수 없다 (실수로 바꾸지 않게) */
-	locks: Record<string, boolean>;
+	locks: Record<PostSlug, boolean>;
 	/** 폴더 순서: 폴더 경로를 보일 순서대로. 같은 층끼리 이 순서를 따르고, 없는 폴더는 뒤에 가나다순 */
-	order: string[];
+	order: FolderPath[];
 }
 
 export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {}, order: [] };
@@ -39,6 +49,10 @@ export const ORGANIZATION_LIMITS = { folders: 200, posts: 500, moves: 200, pins:
 /** 글 주소 (Markdown 파일 이름, 서버에서 만든 글의 날짜-무작위 문자) */
 export const POST_SLUG = /^[\w-]{1,100}$/;
 
+export const isPostSlug = (value: unknown): value is PostSlug => typeof value === 'string' && POST_SLUG.test(value);
+/** 글 주소 모양이면 PostSlug, 아니면 null (바깥에서 온 문자열을 글 주소로 바꾸는 유일한 길) */
+export const postSlug = (value: unknown): PostSlug | null => (isPostSlug(value) ? value : null);
+
 /** 폴더 경로가 규칙에 맞는지. 맞지 않으면 이유 */
 export function folderPathError(path: unknown): string | null {
 	if (typeof path !== 'string') return '폴더 경로는 문자열이어야 합니다';
@@ -50,6 +64,10 @@ export function folderPathError(path: unknown): string | null {
 	}
 	return null;
 }
+
+export const isFolderPath = (value: unknown): value is FolderPath => folderPathError(value) === null;
+/** 폴더 경로 규칙에 맞으면 FolderPath, 아니면 null */
+export const folderPath = (value: unknown): FolderPath | null => (isFolderPath(value) ? value : null);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -130,12 +148,12 @@ export function parseOrganization(input: unknown): { value: Organization } | { e
 	if (errors.length > 0) return { errors };
 	return {
 		value: {
-			folders: folders as string[],
-			posts: posts as Record<string, string>,
-			moves: (moves as { from: string; to: string }[]).map(({ from, to }) => ({ from, to })),
-			pins: pins as Record<string, boolean>,
-			locks: locks as Record<string, boolean>,
-			order: order as string[],
+			folders: folders as FolderPath[],
+			posts: posts as Record<PostSlug, FolderPath>,
+			moves: (moves as { from: FolderPath; to: FolderPath }[]).map(({ from, to }) => ({ from, to })),
+			pins: pins as Record<PostSlug, boolean>,
+			locks: locks as Record<PostSlug, boolean>,
+			order: order as FolderPath[],
 		},
 	};
 }

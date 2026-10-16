@@ -1,9 +1,10 @@
-// 사이트 주인의 프로필. 관리자가 시스템 설정 › 정보에서 고친 값(서버의 GET /site)이 있으면 그 값, 없으면 코드의 기본값.
+// 사이트 주인의 프로필. 관리자가 시스템 설정 › 정보에서 고친 값(서버의 GET /site, 모양은 contracts의 SiteView)이 있으면 그 값, 없으면 코드의 기본값.
 // 프로필을 읽는 곳은 모두 여기를 거친다: 컴포넌트는 useProfile(), 그 밖(메일 보내기 등)은 getProfile()
 import { useSyncExternalStore } from 'react';
 import { createStore } from '@macfolio/desktop-core';
 import { githubLogin, type SiteProfile } from '@macfolio/desktop-core/site';
-import { env } from '@/shared/config/env';
+import { api, type ApiOptions, reasonsFrom } from '@/shared/api/client';
+import type { SiteView } from '@macfolio/contracts';
 import { PROFILE, SITE_STACK, SKILLS } from '@/shared/profile';
 
 export { githubLogin, type SiteProfile };
@@ -31,34 +32,24 @@ export const setSiteProfile = (profile: SiteProfile | null) => apply(profile);
 
 export type SaveResult = { ok: true } | { ok: false; errors: string[] };
 
-async function send(init: RequestInit, path: string): Promise<SaveResult> {
+async function send(options: ApiOptions): Promise<SaveResult> {
 	try {
-		const response = await fetch(`${env.apiUrl}${path}`, { credentials: 'include', ...init });
-		const body = (await response.json().catch(() => null)) as {
-			profile?: SiteProfile | null;
-			message?: string | string[];
-		} | null;
-		if (!response.ok) {
-			const message = body?.message;
-			const errors = Array.isArray(message) ? message : [message ?? `저장하지 못했습니다 (${response.status}).`];
-			return { ok: false, errors };
-		}
+		const body = await api<Partial<SiteView> | null>('/site/profile', {
+			...options,
+			fallback: '저장하지 못했습니다.',
+		});
 		apply(body?.profile ?? null);
 		return { ok: true };
-	} catch {
-		return { ok: false, errors: ['서버에 연결하지 못했습니다.'] };
+	} catch (error) {
+		return { ok: false, errors: reasonsFrom(error) };
 	}
 }
 
 /** 관리자: 프로필을 저장한다. 서버가 규칙을 어긴 이유를 모두 돌려준다 */
-export const saveProfile = (profile: SiteProfile) =>
-	send(
-		{ method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(profile) },
-		'/site/profile'
-	);
+export const saveProfile = (profile: SiteProfile) => send({ method: 'PUT', json: profile });
 
 /** 관리자: 저장한 프로필을 지우고 코드의 기본값으로 돌아간다 */
-export const resetProfile = () => send({ method: 'DELETE' }, '/site/profile');
+export const resetProfile = () => send({ method: 'DELETE' });
 
 export const getProfile = () => profileStore.getState().profile;
 

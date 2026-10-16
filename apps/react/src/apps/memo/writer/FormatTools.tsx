@@ -16,7 +16,7 @@ const STYLES: { block: BlockStyle; label: string }[] = [
 ];
 
 /**
- * 본문 서식 도구 (macOS 메모의 도구 막대처럼): 가가(서식 메뉴), 체크리스트, 표, 이미지, 파일 첨부.
+ * 본문 서식 도구 (macOS 메모의 도구 막대처럼): 가가(서식 메뉴: 글자·문단 모양, 목록, 인용, 토글 목록, 각주), 체크리스트, 표, 이미지, 파일 첨부.
  * 편집기가 열려 있을 때만 보인다. 좁은 도구 막대에서는 가가 메뉴 하나에 모두 모인다.
  */
 const FormatTools = () => {
@@ -165,7 +165,7 @@ const FormatTools = () => {
 									<button
 										type="button"
 										role="menuitemradio"
-										aria-checked={state.block === block && !state.list && !state.quote}
+										aria-checked={state.block === block && !state.list && !state.quote && !state.summary}
 										className={`style-${block}`}
 										onClick={() => act({ type: 'block', block }, true)}
 									>
@@ -201,6 +201,23 @@ const FormatTools = () => {
 									onClick={() => act({ type: 'quote' }, true)}
 								>
 									<span className="memo-format-quote">블록 인용</span>
+								</button>
+							</li>
+							<li role="none">
+								<button
+									type="button"
+									role="menuitemradio"
+									aria-checked={state.details}
+									disabled={table !== null}
+									title={table ? '표 칸에는 토글 목록을 넣을 수 없습니다.' : undefined}
+									onClick={() => act({ type: 'details' }, true)}
+								>
+									<span aria-hidden="true">▸</span> 토글 목록
+								</button>
+							</li>
+							<li role="none">
+								<button type="button" role="menuitem" onClick={() => act({ type: 'footnote' }, true)}>
+									각주 넣기
 								</button>
 							</li>
 							<li role="none">

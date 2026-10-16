@@ -4,39 +4,10 @@
 // 사람은 브라우저로 구분한다: 서버는 방문자 쿠키, 서버가 없을 때는 localStorage의 브라우저 id.
 // 이름도 그 값으로 정한다 (예: 🦊 날쌘 여우). 이름·비밀번호를 따로 받지 않는다.
 
-/** 목록의 항목 하나: 피드백 하나와 그 답글들 (고정 항목은 사이트 주인의 안내) */
-export interface Thread {
-	id: string;
-	/** 피드백을 남긴 사람의 이름 (고정 항목은 사이트 주인) */
-	title: string;
-	/** 남긴 사람 IP의 앞 두 자리 (서버에서만. 예: "211.234") */
-	ipPrefix?: string;
-	createdAt: string;
-	/** 사이드바 맨 위에 고정되는 사이트 주인의 안내 */
-	pinned?: boolean;
-	/** 보고 있는 사람이 남긴 피드백인지 */
-	mine?: boolean;
-	/** 피드백 본문 (첫 메시지). 목록 미리보기에 쓴다 */
-	summary?: string;
-	/** 마지막 활동 (목록 정렬과 시각 표시) */
-	lastMessage?: { text: string; createdAt: string };
-}
+/** 목록의 항목(Thread)과 말풍선(Message)의 모양은 서버와 같은 스키마(@macfolio/contracts). 로컬 저장소도 같은 모양으로 만든다 */
+import type { Message, Thread } from '@macfolio/contracts';
 
-export interface Message {
-	id: string;
-	threadId: string;
-	text: string;
-	/** ISO 8601 */
-	createdAt: string;
-	/** 같은 사람이 쓴 글을 묶는 데 쓰는 불투명한 id (IP나 브라우저 id의 해시) */
-	authorId: string;
-	nickname: string;
-	ipPrefix?: string;
-	/** 사이트 주인이 쓴 글 */
-	fromOwner: boolean;
-	/** 보고 있는 사람이 쓴 글 (오른쪽 말풍선) */
-	mine: boolean;
-}
+export type { Message, Thread };
 
 export interface MessageInput {
 	text: string;

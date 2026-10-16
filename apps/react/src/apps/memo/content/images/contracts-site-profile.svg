@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>사이트 프로필: 타입과 한도는 desktop-core, 검사 스키마와 응답 모양은 contracts, 화면과 서버가 같은 parseProfile</title>
+<defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="640" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937">이미 한 곳이었다, 자리만 옮겼다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">처음부터 화면과 서버가 desktop-core의 parseProfile 하나를 썼다. 1단계의 자리 규칙대로 "검사는 contracts"에</text>
+<!-- desktop-core -->
+<rect x="32" y="80" width="176" height="92" rx="10" fill="#f3f4f6"/>
+<text x="120" y="102" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">desktop-core/site</text>
+<text x="120" y="120" font-size="10.5" fill="#374151" text-anchor="middle">type SiteProfile</text>
+<text x="120" y="135" font-size="10.5" fill="#374151" text-anchor="middle">PROFILE_LIMITS · 그룹 이름</text>
+<text x="120" y="150" font-size="10.5" fill="#374151" text-anchor="middle">githubLogin</text>
+<text x="120" y="166" font-size="10" fill="#6b7280" text-anchor="middle">타입·한도·규칙 (남는다)</text>
+<path d="M208 126 H250" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<!-- contracts -->
+<rect x="252" y="72" width="200" height="108" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="352" y="94" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">contracts/site.ts</text>
+<text x="352" y="112" font-size="10.5" fill="#374151" text-anchor="middle">ProfileInput: ZodType&lt;SiteProfile&gt;</text>
+<text x="352" y="127" font-size="10.5" fill="#374151" text-anchor="middle">parseProfile · readProfile</text>
+<text x="352" y="142" font-size="10.5" fill="#374151" text-anchor="middle">SiteView { profile | null, updatedAt }</text>
+<text x="352" y="162" font-size="10" fill="#6b7280" text-anchor="middle">문구 11개, 순서 그대로 (시험 4개로 고정)</text>
+<path d="M452 112 H494" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M452 148 H494" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<!-- consumers -->
+<rect x="496" y="92" width="112" height="36" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="552" y="107" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">apps/api</text>
+<text x="552" y="121" font-size="9.5" fill="#374151" text-anchor="middle">저장 전 parseProfile</text>
+<rect x="496" y="134" width="112" height="36" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="552" y="149" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">apps/react</text>
+<text x="552" y="163" font-size="9.5" fill="#374151" text-anchor="middle">보내기 전 parseProfile</text>
+<!-- note -->
+<rect x="32" y="200" width="576" height="80" rx="10" fill="#f3f4f6"/>
+<text x="48" y="222" font-size="11" font-weight="600" fill="#1f2937">왜 desktop-core에 두지 않나</text>
+<text x="48" y="240" font-size="10.5" fill="#374151">desktop-core는 타입과 순수 규칙, contracts는 요청·응답의 스키마. 의존은 contracts → desktop-core 한쪽이라</text>
+<text x="48" y="255" font-size="10.5" fill="#374151">readProfile(저장된 JSON 읽기)처럼 스키마가 필요한 것은 contracts에 둬야 순환이 없다.</text>
+<text x="48" y="272" font-size="10" fill="#6b7280">이것으로 "프론트에서 손으로 적은 응답 타입" 여덟 도메인이 모두 contracts로 갔다</text>
+</svg>

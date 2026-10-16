@@ -1,17 +1,10 @@
 /*
- * 앱 안 경고창 (shared/ui/dialog/AlertDialog.tsx).
- * 덮개는 position: absolute라 가장 가까운 위치 기준(앱 창)을 덮고, 경고창은 그 한가운데에 뜬다.
+ * 앱 안 경고창 (shared/ui/dialog/AlertDialog.tsx). 덮개·초점·닫기는 Modal(Modal.css)이고, 여기는 상자의 모양.
  */
 @layer components {
 	.ui-alert-overlay {
-		display: grid;
-		place-items: center;
-		position: absolute;
-		inset: 0;
-		z-index: 1000;
 		/* 앱 안 경고창이라 창을 살짝만 어둡게 */
-		background: rgba(0, 0, 0, 0.12);
-		animation: fade-in var(--duration-fast) var(--ease-out);
+		--ui-modal-dim: rgba(0, 0, 0, 0.12);
 	}
 
 	.ui-alert {
@@ -29,19 +22,18 @@
 		/* 한국어 문장이 낱말 중간(시도해 주/세요)에서 꺾이지 않게 */
 		word-break: keep-all;
 		overflow-wrap: anywhere;
-		animation: pop-in var(--duration) var(--ease-spring);
 	}
 
 	.ui-alert h3 {
 		margin: 0;
-		font-size: 15px;
+		font-size: var(--text-subhead);
 		font-weight: 700;
 		line-height: 1.35;
 	}
 
 	.ui-alert p {
 		margin: 0;
-		font-size: 13px;
+		font-size: var(--text-footnote);
 		line-height: 1.4;
 	}
 

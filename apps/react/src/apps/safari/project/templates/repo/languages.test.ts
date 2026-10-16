@@ -38,7 +38,7 @@ describe('fetchRepoLanguages', () => {
 		expect(await fetchRepoLanguages(`${QRU}.git`, API, fetchImpl)).toHaveLength(1);
 		await fetchRepoLanguages(QRU, API, fetchImpl);
 		expect(fetchImpl).toHaveBeenCalledTimes(1);
-		expect(fetchImpl).toHaveBeenCalledWith(`${API}/github/languages/hyeoniverse/QRU`);
+		expect(fetchImpl).toHaveBeenCalledWith(`${API}/github/languages/hyeoniverse/QRU`, expect.anything());
 	});
 
 	it('404는 다시 묻지 않고, 서버나 GitHub에 닿지 못했으면(502·네트워크) 다음에 다시 묻는다', async () => {

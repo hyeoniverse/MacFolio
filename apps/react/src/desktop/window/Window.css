@@ -207,7 +207,7 @@
 .app-error {
 	position: fixed;
 	inset: 0;
-	z-index: 15000;
+	z-index: var(--z-app-error);
 }
 
 /* 통합형 창 (chrome="unified"): 제목 표시줄 없이 신호등 버튼이 내용 위에 떠 있다 */
@@ -310,7 +310,7 @@
 }
 
 .mobile-navbar-home i {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .mobile-navbar-back-label {
@@ -364,7 +364,7 @@
 .container.mobile .phone-title-sub {
 	margin: -8px 4px 16px;
 	color: var(--color-text-secondary);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 떠 있는 동그란 단추 (새로 쓰기 등)와 알약 */
@@ -379,7 +379,7 @@
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--color-text);
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 /* 앱 바탕: 회색 바탕이 상태 표시줄 뒤까지 잇는다.
@@ -421,6 +421,16 @@
 	border-radius: 3px;
 	background-color: var(--color-text);
 	opacity: 0.85;
+	transition: background-color var(--duration) var(--ease-out);
+}
+
+/* 색은 밑에 그려진 화면을 읽어 정한다 (HomeIndicator, statusBarTone.ts): 어두운 화면 위에는 흰색, 밝은 화면 위에는 검은색 */
+.home-indicator.light span {
+	background-color: #ffffff;
+}
+
+.home-indicator.dark span {
+	background-color: #1c1c1e;
 }
 
 .container.mobile:not(.unified) .content {

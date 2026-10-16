@@ -1,6 +1,6 @@
-import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAdmin } from '@/shared/auth/adminStore';
+import { WALLPAPER_NAME_MAX } from '@macfolio/contracts';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { wallpaperUrl, type ResolvedTheme, type Wallpaper } from '@/shared/settings/settings';
 import {
@@ -15,6 +15,7 @@ import {
 } from '@/shared/settings/customWallpapers';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
+import Modal from '@/shared/ui/dialog/Modal';
 import Menu from '@/shared/ui/menu/Menu';
 
 interface Props {
@@ -25,8 +26,6 @@ interface Props {
 	selected: string;
 }
 
-/** 이름 칸과 같은 한도 (API의 NAME_MAX) */
-const NAME_MAX = 40;
 /** 휴대폰에서 이만큼 누르고 있으면 메뉴 (오른쪽 클릭 대신) */
 const LONG_PRESS_MS = 500;
 
@@ -46,30 +45,18 @@ const RenameDialog = ({
 		input.current?.select();
 	}, []);
 	const canSave = value.trim().length > 0;
-	// 닫히면 바탕은 흐려지고 상자는 작아지며 사라진다 (motion.css)
-	const overlay = useExitMotion<HTMLDivElement>('fade-out');
 	return (
-		<div
-			ref={overlay}
-			className="ui-alert-overlay"
-			onPointerDown={(event) => {
-				if (event.target === event.currentTarget) onCancel();
-			}}
+		<Modal
+			label="배경화면 이름 바꾸기"
+			onClose={onCancel}
+			initialFocus={input}
+			overlayClassName="ui-alert-overlay"
+			className="ui-alert wallpaper-rename"
 		>
 			<form
-				className="ui-alert wallpaper-rename"
-				role="dialog"
-				aria-modal="true"
-				aria-label="배경화면 이름 바꾸기"
 				onSubmit={(event) => {
 					event.preventDefault();
 					if (canSave) onSave(value.trim());
-				}}
-				onKeyDown={(event) => {
-					if (event.key === 'Escape') {
-						event.preventDefault();
-						onCancel();
-					}
 				}}
 			>
 				<h3>배경화면 이름 바꾸기</h3>
@@ -77,7 +64,7 @@ const RenameDialog = ({
 					ref={input}
 					aria-label="배경화면 이름"
 					value={value}
-					maxLength={NAME_MAX}
+					maxLength={WALLPAPER_NAME_MAX}
 					onChange={(event) => setValue(event.target.value)}
 				/>
 				<div className="ui-alert-actions">
@@ -87,7 +74,7 @@ const RenameDialog = ({
 					</Button>
 				</div>
 			</form>
-		</div>
+		</Modal>
 	);
 };
 

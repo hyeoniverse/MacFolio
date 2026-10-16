@@ -1,5 +1,7 @@
 // 직접 짠 페이지: sproutfarm 전용 (처음부터 이 프로젝트를 위해 짠 페이지. custom/index.ts에 등록돼 있고 look이 custom이면 이걸로 그린다)
 import { cssVars } from '@/shared/lib/cssVars';
+import { prefersReducedMotion } from '@/shared/lib/media';
+import { getViewport } from '@/shared/hooks/useViewport';
 // SproutFarm (게임): 게임 화면 흐름. 타이틀 화면 → HUD(숫자) → 퀘스트(기능, 게임 대화창)와 조작법 → 하루(화면 모음)
 // → 흙길을 따라가는 개발 일지 지도(만든 방식) → 인벤토리(기술 사양) → 크레딧(맡은 일).
 // 그림은 게임에 쓴 Sprout Lands 에셋에서 필요한 조각만 잘라 쓴다 (public/imgs/projects/sproutfarm/sprites)
@@ -228,7 +230,7 @@ const SproutFarmPage: React.FC<{ project: Project }> = ({ project }) => {
 		const paint = () => {
 			frame = 0;
 			const view = scroller?.getBoundingClientRect();
-			const center = view ? view.top + view.height / 2 : window.innerHeight / 2;
+			const center = view ? view.top + view.height / 2 : getViewport().height / 2;
 			// 때마다 그 자리가 지금 화면의 어디쯤인지
 			const marks = DAY.map(({ anchor: [selector, ratio] }) => {
 				const box = page.querySelector(selector)?.getBoundingClientRect();
@@ -263,7 +265,7 @@ const SproutFarmPage: React.FC<{ project: Project }> = ({ project }) => {
 	// 소는 그림이 바뀔 때만 몸도 한 걸음(원본 2px, 화면 6px) 나간다. 매끄럽게 밀면 제자리걸음하며 미끄러지는 것처럼 보인다
 	useEffect(() => {
 		const cow = title.current?.querySelector<HTMLElement>('.gm-cow');
-		if (!cow || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+		if (!cow || prefersReducedMotion()) return;
 		let x = 160;
 		let frame = 0;
 		const timer = window.setInterval(() => {
@@ -286,7 +288,7 @@ const SproutFarmPage: React.FC<{ project: Project }> = ({ project }) => {
 		const scroller = scrollParent(box);
 		const source = scroller ?? window;
 		const total = line.getTotalLength();
-		const still = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+		const still = prefersReducedMotion();
 		let frame = 0;
 		let last = 0;
 		let at: number | null = null;
@@ -298,7 +300,7 @@ const SproutFarmPage: React.FC<{ project: Project }> = ({ project }) => {
 			const area = line.ownerSVGElement?.getBoundingClientRect();
 			if (!area || area.height === 0) return null;
 			const view = scroller?.getBoundingClientRect();
-			const center = view ? view.top + view.height / 2 : window.innerHeight / 2;
+			const center = view ? view.top + view.height / 2 : getViewport().height / 2;
 			const y = Math.min(Math.max((center - area.top) / area.height, 0), 1) * stages * 100;
 			let low = 0;
 			let high = total;
@@ -329,7 +331,7 @@ const SproutFarmPage: React.FC<{ project: Project }> = ({ project }) => {
 			last = time;
 			if (at === null || still) at = target.length;
 			// 빠르게 스크롤해 화면 밖으로 멀어졌으면, 먼저 화면 가장자리 바로 바깥까지 옮겨 둔다(오래 사라져 있지 않게)
-			const viewHeight = scroller?.clientHeight ?? window.innerHeight;
+			const viewHeight = scroller?.clientHeight ?? getViewport().height;
 			const edge = (viewHeight * HERO_EDGE) / target.unit;
 			if (Math.abs(target.length - at) > edge) at = target.length - Math.sign(target.length - at) * edge;
 			const left = target.length - at;

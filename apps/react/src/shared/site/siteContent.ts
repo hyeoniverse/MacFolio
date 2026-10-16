@@ -3,7 +3,9 @@
 // 그 모듈을 불러오기 **전에** 서버의 내용을 합친다 (main.tsx가 이것을 기다린 뒤에 앱을 불러온다).
 // 배포한 사이트는 Worker가 HTML에 내용을 넣어 주므로(apps/react/worker) 기다리지 않는다. 로컬·시험은 API에 묻는다
 import { useSyncExternalStore } from 'react';
-import { readProfile, readProjects, mergeProjects, type SiteProjects } from '@macfolio/desktop-core/site';
+import { readProjects, mergeProjects, type SiteProjects } from '@macfolio/desktop-core/site';
+import { readProfile, type SiteView } from '@macfolio/contracts';
+import { api, reasonsFrom } from '@/shared/api/client';
 import { env } from '@/shared/config/env';
 import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { setSiteProfile } from './profileStore';
@@ -79,10 +81,9 @@ export async function loadSiteContent(fetchImpl: typeof fetch = fetch) {
 	if (injected !== undefined) return applySiteContent(injected);
 	if (!env.apiUrl) return;
 	try {
-		const response = await fetchImpl(`${env.apiUrl}/site`, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
-		if (response.ok) applySiteContent(await response.json());
+		applySiteContent(await api<SiteView>('/site', { fetchImpl, timeout: FETCH_TIMEOUT_MS }));
 	} catch {
-		// 기본값 그대로
+		// 서버가 없거나 읽지 못하면 기본값 그대로
 	}
 }
 
@@ -91,25 +92,13 @@ export type SaveResult = { ok: true } | { ok: false; errors: string[] };
 /** 관리자: 프로젝트 내용을 저장(PUT)하거나 지운다(DELETE: 코드의 기본값으로). 서버가 틀린 이유를 모두 돌려준다 */
 export async function sendProjects(projects: SiteProjects | null): Promise<SaveResult> {
 	try {
-		const response = await fetch(`${env.apiUrl}/site/projects`, {
-			method: projects ? 'PUT' : 'DELETE',
-			credentials: 'include',
-			...(projects ? { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(projects) } : {}),
+		const body = await api<Partial<SiteView> | null>('/site/projects', {
+			...(projects ? { method: 'PUT', json: projects } : { method: 'DELETE' }),
+			fallback: '저장하지 못했습니다.',
 		});
-		const body = (await response.json().catch(() => null)) as {
-			projects?: unknown;
-			message?: string | string[];
-		} | null;
-		if (!response.ok) {
-			const message = body?.message;
-			return {
-				ok: false,
-				errors: Array.isArray(message) ? message : [message ?? `저장하지 못했습니다 (${response.status}).`],
-			};
-		}
 		setSavedProjects(readProjects(body?.projects, PARSE_OPTIONS));
 		return { ok: true };
-	} catch {
-		return { ok: false, errors: ['서버에 연결하지 못했습니다.'] };
+	} catch (error) {
+		return { ok: false, errors: reasonsFrom(error) };
 	}
 }

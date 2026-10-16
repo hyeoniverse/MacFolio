@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import { EMPTY_ORGANIZATION } from '@macfolio/desktop-core/memo';
+import { EMPTY_ORGANIZATION, type FolderPath, type Organization, type PostSlug } from '@macfolio/desktop-core/memo';
 import { fetchOrganization, saveOrganization } from './organizationApi';
 
-const ORGANIZATION = {
-	folders: ['읽을거리'],
-	posts: { a: '읽을거리' },
+const ORGANIZATION: Organization = {
+	folders: ['읽을거리' as FolderPath],
+	posts: { a: '읽을거리' } as Record<PostSlug, FolderPath>,
 	moves: [],
-	pins: { a: true },
+	pins: { a: true } as Record<PostSlug, boolean>,
 	locks: {},
 	order: [],
 };
@@ -41,12 +41,15 @@ describe('saveOrganization', () => {
 	it('쿠키와 함께 PUT, 성공 여부를 돌려준다', async () => {
 		const fetchImpl = respond(200, ORGANIZATION);
 		await expect(saveOrganization('http://api', ORGANIZATION, fetchImpl)).resolves.toBe(true);
-		expect(fetchImpl).toHaveBeenCalledWith('http://api/memo/organization', {
-			method: 'PUT',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(ORGANIZATION),
-		});
+		expect(fetchImpl).toHaveBeenCalledWith(
+			'http://api/memo/organization',
+			expect.objectContaining({
+				method: 'PUT',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(ORGANIZATION),
+			})
+		);
 		await expect(saveOrganization('http://api', ORGANIZATION, respond(401))).resolves.toBe(false);
 	});
 });

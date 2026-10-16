@@ -1,6 +1,10 @@
 .settings {
 	display: flex;
 	height: 100%;
+	/* 창 높이 안에 딱 맞춘다: 넘치는 것은 사이드바·패널이 각자 스크롤한다 (창 전체가 한 번 더 스크롤되지 않게) */
+	min-height: 0;
+	overflow: hidden;
+	position: relative;
 	text-align: left;
 }
 
@@ -10,8 +14,11 @@
 	gap: 0.25rem;
 	width: 11rem;
 	padding: 0.75rem 0.5rem;
+	flex: none;
 	border-right: 1px solid var(--color-divider);
 	background-color: var(--color-sidebar-bg);
+	/* 항목이 창보다 많으면 사이드바만 스크롤 (관리자는 항목이 늘어난다) */
+	overflow-y: auto;
 }
 
 .settings-nav-item {
@@ -50,15 +57,21 @@
 .settings-nav-item > .settings-nav-chevron {
 	width: auto;
 	margin-left: auto;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .settings-panel {
 	/* 항목을 바꾸면 살짝 떠오르며 나타난다 */
 	animation: rise-in var(--duration) var(--ease-out);
 	flex: 1;
+	min-width: 0;
+	min-height: 0;
 	padding: 1.25rem 1.5rem;
 	overflow-y: auto;
+	/* 패널 끝에 닿아도 창(바깥)으로 스크롤이 이어지지 않게 */
+	overscroll-behavior: contain;
+	/* 안의 position: absolute 요소(화면 읽기용 숨은 글자 등)도 패널을 기준으로: 창의 콘텐츠 칸을 기준으로 놓이면 그 칸이 늘어나 창 전체가 스크롤된다 */
+	position: relative;
 }
 
 /* 미리 보기 속 프로젝트 페이지(.sp)의 제목에는 닿지 않는다: 템플릿 제목 색은 :where()라 이 규칙이 이기면 남색 띠 위 글자가 묻힌다 */
@@ -240,7 +253,7 @@
 	border-radius: 50%;
 	background-color: #5a5a5e;
 	color: #ffffff;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	cursor: pointer;
 }
 
@@ -310,16 +323,22 @@
 }
 
 /* 이름 바꾸기 창의 입력 칸 */
+/* 상자(Modal)는 div라 칸 사이 간격은 안의 form이 잡는다 (ui-alert의 grid와 같게) */
+.wallpaper-rename form {
+	display: grid;
+	gap: 10px;
+}
+
 .wallpaper-rename input {
 	width: 100%;
 	padding: 7px 10px;
 	border: 1px solid var(--color-divider);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--color-control-bg);
 	color: var(--color-text);
 	/* 16px보다 작으면 iOS Safari가 확대한다 */
 	font: inherit;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .wallpaper-rename input:focus {
@@ -327,37 +346,11 @@
 	outline: none;
 }
 
-/* ─── 좁은 창: 항목을 위쪽 탭으로 ─── */
+/* 창은 사이드바와 패널이 함께 들어가는 크기보다 작아지지 않는다 (apps/manifest.ts의 minSize). 그래서 좁은 창용 탭 모양은 없다 */
 .settings-shell {
-	container-type: inline-size;
 	height: 100%;
 }
 
-@container (max-width: 520px) {
-	.settings {
-		flex-direction: column;
-	}
-
-	.settings-sidebar {
-		flex-direction: row;
-		width: 100%;
-		border-right: none;
-		border-bottom: 1px solid var(--color-divider);
-	}
-
-	.settings-nav-item {
-		flex: 1;
-		justify-content: center;
-		font-size: 15px;
-	}
-
-	/* 좁은 창은 위쪽 탭이라 › 없이 */
-	.settings-nav-item > .settings-nav-chevron {
-		display: none;
-	}
-}
-
-/* 사운드: 켜고 끄는 스위치 (macOS 설정의 토글 모양) */
 .settings-toggle {
 	display: flex;
 	align-items: center;
@@ -365,7 +358,7 @@
 	gap: 1rem;
 	padding: 0.75rem 1rem;
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: var(--color-control-bg);
 	cursor: pointer;
 }
@@ -388,7 +381,7 @@
 	width: 38px;
 	height: 22px;
 	margin: 0;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: var(--color-selected-bg);
 	cursor: pointer;
 	transition: background-color 0.2s;
@@ -525,14 +518,14 @@
 .privacy-group h3 {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 600;
 }
 
 .privacy-group > p {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.5;
 }
 
@@ -557,18 +550,18 @@
 .privacy-row-text strong {
 	display: block;
 	color: var(--color-text-strong);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 500;
 }
 
 .privacy-row-text span {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .privacy-row-value {
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .privacy-error {
@@ -598,7 +591,7 @@
 .showcase-head h3 {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 600;
 }
 
@@ -626,7 +619,7 @@
 	border: none;
 	background: none;
 	color: var(--color-accent);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
@@ -642,7 +635,7 @@
 .showcase-list {
 	overflow: hidden;
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--color-control-bg);
 	list-style: none;
 }
@@ -690,7 +683,7 @@
 .showcase-lines strong {
 	overflow: hidden;
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 500;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -713,7 +706,7 @@
 .showcase-actions .ui-icon-button {
 	width: 30px;
 	height: 30px;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .showcase-remove {
@@ -735,7 +728,7 @@
 	width: 30px;
 	height: 30px;
 	color: var(--color-accent);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* ≡ 손잡이 (메모 폴더 편집과 같은 모양): 끌어서 순서를 바꾼다 (손가락으로 끄는 동안 화면이 넘어가지 않게) */
@@ -806,7 +799,7 @@ ol.showcase-list .showcase-row.reordering {
 	height: 40px;
 	padding: 0 6px 0 12px;
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--color-control-bg);
 }
 
@@ -821,13 +814,13 @@ ol.showcase-list .showcase-row.reordering {
 	border: none;
 	background: none;
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
 .showcase-lookup .ui-button {
 	--ui-button-padding: 4px 10px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .showcase-error {
@@ -877,7 +870,7 @@ ol.showcase-list .showcase-row.reordering {
 	border-radius: 0;
 	background-color: var(--phone-card-bg);
 	color: var(--color-text);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile .settings-nav-item:first-of-type {
@@ -909,7 +902,7 @@ ol.showcase-list .showcase-row.reordering {
 	border-radius: 7px;
 	background-color: #8e8e93;
 	color: #ffffff;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .container.mobile .settings-nav-item:nth-of-type(2) > i:first-child {
@@ -933,7 +926,7 @@ ol.showcase-list .showcase-row.reordering {
 .container.mobile .showcase-list,
 .container.mobile .showcase-lookup {
 	border: none;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--phone-card-bg);
 }
 
@@ -956,7 +949,7 @@ ol.showcase-list .showcase-row.reordering {
 
 .container.mobile ol.showcase-list .showcase-row:only-child,
 .container.mobile ol.showcase-list .showcase-row.reordering {
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 }
 
 .container.mobile .showcase-row + .showcase-row {
@@ -966,16 +959,16 @@ ol.showcase-list .showcase-row.reordering {
 .container.mobile .showcase-handle {
 	width: 44px;
 	margin-right: -8px;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile .showcase-lines strong {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 400;
 }
 
 .container.mobile .showcase-meta {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .container.mobile .showcase-group h3,
@@ -985,7 +978,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .container.mobile .showcase-text-button {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .container.mobile .showcase-lookup {
@@ -994,7 +987,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .container.mobile .showcase-lookup input {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* 한 화면씩 보므로 고른 항목을 칠하지 않고, 줄 끝에 › */
@@ -1007,7 +1000,7 @@ ol.showcase-list .showcase-row.reordering {
 	display: block;
 	margin-left: auto;
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .container.mobile .settings-panel {
@@ -1018,7 +1011,7 @@ ol.showcase-list .showcase-row.reordering {
 
 .container.mobile .settings-toggle {
 	border: none;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--phone-card-bg);
 }
 
@@ -1092,20 +1085,20 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-monogram {
 	background: linear-gradient(160deg, #8e8e93, #5a5a5f);
 	color: #ffffff;
-	font-size: 22px;
+	font-size: var(--text-title2);
 	font-weight: 600;
 }
 
 .about-pane-head h3 {
 	color: var(--color-text-strong);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 700;
 }
 
 .about-pane-head p {
 	margin-top: 2px;
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .about-pane-group {
@@ -1117,14 +1110,14 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-group h3 {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 600;
 }
 
 .about-pane-group dl {
 	margin: 0;
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: var(--color-control-bg);
 }
 
@@ -1134,7 +1127,7 @@ ol.showcase-list .showcase-row.reordering {
 	gap: 16px;
 	padding: 9px 14px;
 	border-bottom: 1px solid var(--color-divider);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .about-pane-group dl > div:last-child {
@@ -1212,17 +1205,17 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-hint {
 	padding: 0 4px;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.5;
 }
 
 .about-pane-errors {
 	margin: 0;
 	padding: 10px 14px 10px 30px;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: color-mix(in srgb, #ff3b30 12%, transparent);
 	color: #d70015;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.6;
 }
 

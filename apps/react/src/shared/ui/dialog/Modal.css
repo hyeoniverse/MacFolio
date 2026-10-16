@@ -1,0 +1,32 @@
+/*
+ * 가운데 뜨는 창의 겉 (shared/ui/dialog/Modal.tsx).
+ * window: 덮개가 가장 가까운 위치 기준(앱 창)을 덮는다 / screen: 화면 전체.
+ * 어둡기와 층은 쓰는 쪽이 --ui-modal-dim·--ui-modal-z로 정한다.
+ */
+@layer components {
+	.ui-modal-overlay {
+		display: grid;
+		place-items: center;
+		inset: 0;
+		z-index: var(--ui-modal-z, var(--z-dialog));
+		background: var(--ui-modal-dim, var(--color-overlay));
+		animation: fade-in var(--duration-fast) var(--ease-out);
+	}
+
+	.ui-modal-overlay.window {
+		position: absolute;
+	}
+
+	.ui-modal-overlay.screen {
+		position: fixed;
+	}
+
+	.ui-modal {
+		animation: pop-in var(--duration) var(--ease-spring);
+	}
+
+	/* 열 때 상자에 초점을 둘 수 있다 (초점 둘 단추가 없는 창). 테두리는 그리지 않는다 */
+	.ui-modal:focus {
+		outline: none;
+	}
+}

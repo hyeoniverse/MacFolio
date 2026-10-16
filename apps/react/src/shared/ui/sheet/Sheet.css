@@ -1,0 +1,67 @@
+/* 아래에서 올라오는 시트 (Sheet.tsx). 위치 기준은 가장 가까운 앱 화면(position: relative)이다.
+   덮개 색·층·시트 바탕은 쓰는 쪽이 CSS 변수로 정한다 */
+.ui-sheet-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: var(--ui-sheet-z, 20);
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	background-color: var(--ui-sheet-dim, rgba(0, 0, 0, 0.32));
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+.ui-sheet {
+	background-color: var(--ui-sheet-bg, var(--phone-card-bg));
+	animation: sheet-in var(--duration-slow) var(--ease-out);
+}
+
+.ui-sheet:focus {
+	outline: none;
+}
+
+/* 화면 높이에 가까운 시트: 상태 표시줄 아래부터, 위 모서리만 둥글게 */
+.ui-sheet.page {
+	display: flex;
+	flex-direction: column;
+	height: calc(100% - var(--phone-status, 0px) - 8px);
+	overflow-x: hidden;
+	overflow-y: auto;
+	border-radius: 34px 34px 0 0;
+}
+
+/* 아래에 떠 있는 카드: 홈 막대 위에 띄우고 네 모서리를 둥글게 */
+.ui-sheet.card {
+	margin: 0 12px calc(var(--phone-bottom-inset, 0px) + 8px);
+	border-radius: 34px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+	animation-timing-function: var(--ease-spring);
+}
+
+/* 덮개 없이 화면 전체를 덮는다 */
+/* 시트는 세로로만 스크롤한다. 안에서 넘치게 그린 장식(음악의 흐린 표지 배경 등)이 가로 스크롤을 만들면
+   휴대폰에서 옆으로 밀려 한쪽 여백이 사라진다 */
+.ui-sheet.cover {
+	position: absolute;
+	inset: 0;
+	z-index: var(--ui-sheet-z, 10);
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+/* 시트를 끌어 내리는 손잡이 모양 막대 (iOS) */
+.ui-sheet-grabber {
+	flex: none;
+	align-self: center;
+	width: 36px;
+	height: 5px;
+	margin-bottom: 8px;
+	border-radius: 3px;
+	background-color: var(--color-divider);
+}
+
+@keyframes sheet-in {
+	from {
+		transform: translateY(100%);
+	}
+}

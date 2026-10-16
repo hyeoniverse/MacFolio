@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { signIn, useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
@@ -337,6 +338,8 @@ const Activity = () => {
 
 	return (
 		<AppWindow title="활동 상태 보기" appName="activity">
+			{/* 휴대폰: iOS의 탭으로 나눈 앱처럼 첫 화면에 홈으로 가는 단추가 없다 (홈 바로 나간다). 탭 줄이 폭을 다 쓴다 */}
+			<MobileNavigation hideHome />
 			<div className="activity">
 				{env.apiUrl && (
 					<div className="activity-toolbar">

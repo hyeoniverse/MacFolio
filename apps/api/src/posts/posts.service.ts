@@ -1,34 +1,13 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { newSlug, parsePostInput, SLUG, type PostInput } from './rules.js';
+import { newSlug, parsePostInput, type PostInput } from './rules.js';
+import { isPostSlug, type PostSlug } from '@macfolio/desktop-core/memo';
+import type { AdminPost, RevisionSummary, ServerPost } from '@macfolio/contracts';
 
-/** 방문자에게 보이는 글. deleted면 저장소의 같은 주소 글도 가린다 (지운 글, 아직 날짜가 안 된 예약 글) */
-export interface PublicPost extends PostInput {
-	slug: string;
-	deleted: boolean;
-}
-
-/** 관리자가 보는 글: 게시한 내용과 임시 저장을 따로 */
-export interface AdminPost {
-	slug: string;
-	published: PostInput | null;
-	publishedAt: string | null;
-	draft: PostInput | null;
-	draftUpdatedAt: string | null;
-	deleted: boolean;
-	/** 지운 때. 있으면 '최근 삭제된 항목'에 있다 (RECENTLY_DELETED_DAYS일 동안) */
-	deletedAt: string | null;
-	revisions: number;
-}
-
-export interface RevisionSummary {
-	id: number;
-	title: string;
-	date: string;
-	createdAt: string;
-	createdBy: string;
-}
+/** 응답 모양은 화면과 같은 스키마(contracts). 방문자에게 보이는 글은 deleted면 저장소의 같은 주소 글도 가린다 */
+export type PublicPost = ServerPost;
+export type { AdminPost, RevisionSummary };
 
 /** 글마다 남기는 버전 수 */
 export const MAX_REVISIONS = 50;
@@ -57,7 +36,8 @@ const draftOf = (row: Row): PostInput | null =>
 			};
 
 const toAdmin = (row: Row): AdminPost => ({
-	slug: row.slug,
+	// DB의 slug는 넣을 때 확인한 값이다
+	slug: row.slug as PostSlug,
 	published: publishedOf(row),
 	publishedAt: row.publishedAt?.toISOString() ?? null,
 	draft: draftOf(row),
@@ -102,8 +82,9 @@ export class PostsService {
 		return parsed.value;
 	}
 
-	private checkSlug(slug: string) {
-		if (!SLUG.test(slug)) throw new NotFoundException('글이 없습니다.');
+	/** 주소의 slug가 글 주소 모양인지. 아니면 404 (맞으면 그 뒤로는 PostSlug로 쓴다) */
+	private checkSlug(slug: string): asserts slug is PostSlug {
+		if (!isPostSlug(slug)) throw new NotFoundException('글이 없습니다.');
 	}
 
 	/**
@@ -117,9 +98,9 @@ export class PostsService {
 		});
 		return rows.map((row) => {
 			const hidden = row.deleted || row.date! > now;
-			if (hidden) return { slug: row.slug, ...EMPTY, deleted: true };
+			if (hidden) return { slug: row.slug as PostSlug, ...EMPTY, deleted: true };
 			return {
-				slug: row.slug,
+				slug: row.slug as PostSlug,
 				title: row.title!,
 				date: row.date!,
 				category: row.category!,

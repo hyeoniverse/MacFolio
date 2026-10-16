@@ -97,7 +97,7 @@
 	padding: 0 6px;
 	border-radius: 2em;
 	background-color: var(--gh-counter-bg);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 500;
 }
 
@@ -132,7 +132,7 @@
 
 .gh-names p {
 	color: var(--gh-muted);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 300;
 	line-height: 24px;
 }
@@ -146,7 +146,7 @@
 	display: block;
 	padding: 5px 16px;
 	border: 1px solid var(--gh-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: var(--gh-button-bg);
 	color: var(--gh-text);
 	font-weight: 500;
@@ -189,12 +189,12 @@
 .gh-readme {
 	padding: 24px;
 	border: 1px solid var(--gh-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 }
 
 .gh-readme-path {
 	margin-bottom: 16px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
@@ -210,7 +210,7 @@
 	justify-content: center;
 	gap: 6px;
 	height: 150px;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	color: #ffffff;
 	text-align: center;
 }
@@ -222,7 +222,7 @@
 }
 
 .gh-banner span {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	opacity: 0.9;
 }
 
@@ -319,9 +319,9 @@
 	gap: 6px;
 	margin: 2px 0;
 	padding: 6px 12px;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	color: #ffffff;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 700;
 	letter-spacing: 0.06em;
 	text-decoration: none;
@@ -338,7 +338,7 @@
 /* 고정 저장소 */
 .gh-pinned h2 {
 	margin-bottom: 8px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 400;
 }
 
@@ -357,7 +357,7 @@
 	gap: 8px;
 	padding: 16px;
 	border: 1px solid var(--gh-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 }
 
 .gh-repo-head {
@@ -389,7 +389,7 @@
 	border: 1px solid var(--gh-border);
 	border-radius: 2em;
 	color: var(--gh-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 500;
 }
 
@@ -398,7 +398,7 @@
 	display: -webkit-box;
 	overflow: hidden;
 	color: var(--gh-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 3;
 	line-clamp: 3;
@@ -414,7 +414,7 @@
 	flex-wrap: wrap;
 	gap: 16px;
 	color: var(--gh-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .gh-repo-meta a {
@@ -461,11 +461,11 @@
 	}
 
 	.gh-names h1 {
-		font-size: 20px;
+		font-size: var(--text-title3);
 	}
 
 	.gh-names p {
-		font-size: 16px;
+		font-size: var(--text-callout);
 	}
 
 	.gh-profile > :not(.gh-avatar, .gh-names) {
@@ -510,14 +510,14 @@
 .gh-contributions h2,
 .gh-activity h2 {
 	margin-bottom: 8px;
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 400;
 }
 
 .gh-graph-box {
 	padding: 12px 16px 10px;
 	border: 1px solid var(--gh-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 }
 
 .gh-graph-scroll {
@@ -533,7 +533,7 @@
 	gap: 3px;
 	width: max-content;
 	color: var(--gh-text);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1;
 }
 
@@ -580,7 +580,7 @@
 	gap: 3px;
 	margin-top: 8px;
 	color: var(--gh-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .gh-graph-legend .gh-day {
@@ -593,7 +593,7 @@
 	align-items: center;
 	gap: 10px;
 	margin: 16px 0 4px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 600;
 }
 
@@ -638,7 +638,7 @@
 	border-radius: 50%;
 	background-color: var(--gh-header-bg);
 	color: var(--gh-muted);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .gh-activity-body {
@@ -653,17 +653,17 @@
 .gh-activity-ref {
 	margin-left: 6px;
 	padding: 0 6px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: var(--gh-counter-bg);
 	color: var(--gh-muted);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .gh-activity-detail {
 	overflow: hidden;
 	color: var(--gh-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -671,7 +671,7 @@
 .gh-activity time {
 	padding-top: 5px;
 	color: var(--gh-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	white-space: nowrap;
 }
 
@@ -704,7 +704,7 @@
 }
 
 .container.mobile .gh-header > strong {
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile .gh-tabs {

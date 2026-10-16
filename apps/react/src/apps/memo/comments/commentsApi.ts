@@ -1,41 +1,16 @@
 // 블로그 댓글 API (apps/api의 /posts/:slug/comments, /comments/:id)
+import type { Comment } from '@macfolio/contracts';
+import { api, apiFetch, reasonsFrom } from '@/shared/api/client';
 
-export interface Comment {
-	id: string;
-	name: string;
-	/** IP 앞 두 자리 (관리자 댓글은 없음) */
-	ipPrefix: string | null;
-	isAdmin: boolean;
-	body: string;
-	createdAt: string;
-	/** 이 브라우저가 쓴 댓글 (지울 수 있다) */
-	mine: boolean;
-	/** 좋아요 수 */
-	likes: number;
-	/** 이 브라우저가 좋아요를 눌렀는지 */
-	liked: boolean;
-}
+/** 댓글 모양은 서버와 같은 스키마(contracts). 서버가 바꾸면 여기 타입도 같이 바뀐다 */
+export type { Comment };
 
 export type CreateResult = { ok: true; comment: Comment } | { ok: false; errors: string[] };
 export type DeleteResult = 'ok' | 'forbidden' | 'not-found' | 'error';
 
-const errorsOf = async (response: Response): Promise<string[]> => {
-	const body = (await response.json().catch(() => ({}))) as { message?: string | string[] };
-	if (response.status === 429) return ['잠시 뒤에 다시 써 주세요.'];
-	return Array.isArray(body.message) ? body.message : [body.message ?? '댓글을 쓰지 못했습니다.'];
-};
-
 /** 글의 댓글 (오래된 것부터). 읽지 못하면 null */
-export async function listComments(apiUrl: string, slug: string, fetchImpl: typeof fetch = fetch) {
-	try {
-		const response = await fetchImpl(`${apiUrl}/posts/${encodeURIComponent(slug)}/comments`, {
-			credentials: 'include',
-		});
-		return response.ok ? ((await response.json()) as Comment[]) : null;
-	} catch {
-		return null;
-	}
-}
+export const listComments = (apiUrl: string, slug: string, fetchImpl: typeof fetch = fetch) =>
+	api<Comment[]>(`/posts/${encodeURIComponent(slug)}/comments`, { apiUrl, fetchImpl }).catch(() => null);
 
 /** 댓글을 쓴다. 이름은 서버가 정한다 (방문자는 쿠키로 정한 이름, 관리자는 김정현) */
 export async function createComment(
@@ -45,16 +20,16 @@ export async function createComment(
 	fetchImpl: typeof fetch = fetch
 ): Promise<CreateResult> {
 	try {
-		const response = await fetchImpl(`${apiUrl}/posts/${encodeURIComponent(slug)}/comments`, {
+		const comment = await api<Comment>(`/posts/${encodeURIComponent(slug)}/comments`, {
 			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(input),
+			json: input,
+			fallback: '댓글을 쓰지 못했습니다.',
+			apiUrl,
+			fetchImpl,
 		});
-		if (response.ok) return { ok: true, comment: (await response.json()) as Comment };
-		return { ok: false, errors: await errorsOf(response) };
-	} catch {
-		return { ok: false, errors: ['서버에 연결할 수 없습니다.'] };
+		return { ok: true, comment };
+	} catch (error) {
+		return { ok: false, errors: reasonsFrom(error) };
 	}
 }
 
@@ -65,10 +40,7 @@ export async function deleteComment(
 	fetchImpl: typeof fetch = fetch
 ): Promise<DeleteResult> {
 	try {
-		const response = await fetchImpl(`${apiUrl}/comments/${encodeURIComponent(id)}`, {
-			method: 'DELETE',
-			credentials: 'include',
-		});
+		const response = await apiFetch(`/comments/${encodeURIComponent(id)}`, { method: 'DELETE', apiUrl, fetchImpl });
 		if (response.ok) return 'ok';
 		if (response.status === 403) return 'forbidden';
 		if (response.status === 404) return 'not-found';

@@ -1,6 +1,7 @@
 import { cssVars } from '@/shared/lib/cssVars';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
+import Sheet from '@/shared/ui/sheet/Sheet';
 import { useProfile } from '@/shared/site/profileStore';
 import ComposeView from './ComposeView';
 import { formatMailDate, TO_OWNER, type ContactInput } from '../contact';
@@ -18,12 +19,8 @@ type Screen =
 /** 화면의 깊이: 더 깊은 곳으로 가면 앞으로(오른쪽에서), 얕은 곳으로 가면 뒤로(왼쪽에서) 넘어간다 */
 const DEPTH: Record<Screen['kind'], number> = { mailboxes: 0, list: 1, mail: 2 };
 
-/** 시트가 내려가며 닫히는 시간 (CSS의 mail-phone-sheet-down과 같다). 움직임 줄이기면 바로 닫는다 */
-const SHEET_CLOSE_MS = 240;
-const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-
 /** 아래에서 올라오는 것: 새로운 메시지, 관리자 답장, 메일 동작 */
-type Sheet =
+type OpenSheet =
 	{ kind: 'compose'; subject?: string } | { kind: 'reply'; mail: ListMail } | { kind: 'actions'; mail: ListMail };
 
 interface Props {
@@ -138,39 +135,14 @@ const MailMobile: React.FC<Props> = ({
 	const [screen, setScreenState] = useState<Screen>({ kind: 'mailboxes' });
 	// 화면이 넘어간 방향: 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 (처음에는 움직이지 않는다)
 	const [direction, setDirection] = useState<'forward' | 'back' | null>(null);
-	const [sheet, setSheetState] = useState<Sheet | null>(null);
-	const [closing, setClosing] = useState(false);
-	const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const [sheet, setSheet] = useState<OpenSheet | null>(null);
 
 	const setScreen = (next: Screen) => {
 		setDirection(DEPTH[next.kind] < DEPTH[screen.kind] ? 'back' : 'forward');
 		setScreenState(next);
 	};
-	/** 시트 열기·바꾸기는 바로, 닫기는 내려가는 애니메이션이 끝난 뒤에 */
-	const setSheet = (next: Sheet | null) => {
-		if (closeTimer.current) clearTimeout(closeTimer.current);
-		if (next || !sheet) {
-			setClosing(false);
-			setSheetState(next);
-			return;
-		}
-		setClosing(true);
-		closeTimer.current = setTimeout(
-			() => {
-				setSheetState(null);
-				setClosing(false);
-			},
-			reducedMotion() ? 0 : SHEET_CLOSE_MS
-		);
-	};
-	useEffect(
-		() => () => {
-			if (closeTimer.current) clearTimeout(closeTimer.current);
-		},
-		[]
-	);
 	// 다른 곳(프로필의 이메일)에서 '새로운 메시지'를 열어 달라고 하면 쓰기 시트를 연다
-	useEffect(() => takeComposeRequest(() => setSheetState({ kind: 'compose' })), []);
+	useEffect(() => takeComposeRequest(() => setSheet({ kind: 'compose' })), []);
 	const listOf = (mailbox: Mailbox) => (mailbox === 'inbox' ? inbox : (sent ?? []));
 	const mailboxes: Mailbox[] = sent ? ['inbox', 'sent'] : ['inbox'];
 
@@ -231,7 +203,8 @@ const MailMobile: React.FC<Props> = ({
 					})}
 				</ul>
 				{loadError && (
-					<p className="mail-error" role="alert">
+					<p className="mail-load-error" role="alert">
+						<i className="fa-solid fa-circle-exclamation" aria-hidden="true" />
 						{loadError}
 					</p>
 				)}
@@ -371,63 +344,65 @@ const MailMobile: React.FC<Props> = ({
 				{screen.kind !== 'mail' && <div className="mail-phone-bar end">{composeButton}</div>}
 			</div>
 
-			{sheet && (
-				<div
-					className={`mail-phone-sheet-layer ${closing ? 'closing' : ''}`}
-					onClick={(event) => event.target === event.currentTarget && setSheet(null)}
-				>
-					{sheet.kind === 'actions' ? (
-						<section className="mail-phone-actions" role="dialog" aria-label="메일 동작">
-							<header>
-								<Avatar name={sheet.mail.fromName} size={44} />
-								<div>
-									<strong>{sheet.mail.fromName}</strong>
-									<p>{sheet.mail.body}</p>
-								</div>
-								<button type="button" className="mail-sheet-circle" aria-label="닫기" onClick={() => setSheet(null)}>
-									<i className="fa-solid fa-xmark" aria-hidden="true" />
-								</button>
-							</header>
-							<div className="mail-phone-tiles">
-								<button type="button" onClick={() => reply(screenMailbox, sheet.mail)}>
-									<i className="fa-solid fa-reply" aria-hidden="true" />
-									답장
-								</button>
+			{/* 닫으면 Sheet가 내려가는 움직임을 보여 준다 (useExitMotion). kind가 바뀌면 새 시트로 다시 올라온다 */}
+			{sheet &&
+				(sheet.kind === 'actions' ? (
+					<Sheet
+						key="actions"
+						variant="card"
+						label="메일 동작"
+						className="mail-phone-actions"
+						onClose={() => setSheet(null)}
+					>
+						<header>
+							<Avatar name={sheet.mail.fromName} size={44} />
+							<div>
+								<strong>{sheet.mail.fromName}</strong>
+								<p>{sheet.mail.body}</p>
 							</div>
-							{!admin && screenMailbox === 'inbox' && (
-								<ul className="mail-phone-action-list">
-									<li>
-										<button
-											type="button"
-											onClick={() => {
-												onRead(sheet.mail.id, false);
-												setSheet(null);
-												setScreen({ kind: 'list', mailbox: 'inbox' });
-											}}
-										>
-											읽지 않음으로 표시
-											<i className="fa-regular fa-envelope" aria-hidden="true" />
-										</button>
-									</li>
-								</ul>
-							)}
-						</section>
-					) : (
-						<div
-							className="mail-phone-sheet"
-							role="dialog"
-							aria-label={sheet.kind === 'reply' ? '답장' : '새로운 메시지'}
-						>
-							<span className="mail-phone-grabber" aria-hidden="true" />
-							{sheet.kind === 'reply' ? (
-								<ReplySheet mail={sheet.mail} onClose={() => setSheet(null)} onReplied={onReplied} />
-							) : (
-								<ComposeView sheet initialSubject={sheet.subject} onSend={onSend} onCancel={() => setSheet(null)} />
-							)}
+							<button type="button" className="mail-sheet-circle" aria-label="닫기" onClick={() => setSheet(null)}>
+								<i className="fa-solid fa-xmark" aria-hidden="true" />
+							</button>
+						</header>
+						<div className="mail-phone-tiles">
+							<button type="button" onClick={() => reply(screenMailbox, sheet.mail)}>
+								<i className="fa-solid fa-reply" aria-hidden="true" />
+								답장
+							</button>
 						</div>
-					)}
-				</div>
-			)}
+						{!admin && screenMailbox === 'inbox' && (
+							<ul className="mail-phone-action-list">
+								<li>
+									<button
+										type="button"
+										onClick={() => {
+											onRead(sheet.mail.id, false);
+											setSheet(null);
+											setScreen({ kind: 'list', mailbox: 'inbox' });
+										}}
+									>
+										읽지 않음으로 표시
+										<i className="fa-regular fa-envelope" aria-hidden="true" />
+									</button>
+								</li>
+							</ul>
+						)}
+					</Sheet>
+				) : (
+					<Sheet
+						key={sheet.kind}
+						variant="page"
+						label={sheet.kind === 'reply' ? '답장' : '새로운 메시지'}
+						className="mail-phone-sheet"
+						onClose={() => setSheet(null)}
+					>
+						{sheet.kind === 'reply' ? (
+							<ReplySheet mail={sheet.mail} onClose={() => setSheet(null)} onReplied={onReplied} />
+						) : (
+							<ComposeView sheet initialSubject={sheet.subject} onSend={onSend} onCancel={() => setSheet(null)} />
+						)}
+					</Sheet>
+				))}
 		</div>
 	);
 };

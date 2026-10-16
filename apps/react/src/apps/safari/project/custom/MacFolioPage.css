@@ -213,7 +213,7 @@
 .pd-bento-text p {
 	margin-top: 10px;
 	color: var(--sp-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.5;
 }
 
@@ -340,7 +340,7 @@
 	background: none;
 	color: var(--sp-text);
 	font: inherit;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 600;
 	cursor: pointer;
 	transition: background-color var(--duration-fast) var(--ease-out);
@@ -348,7 +348,7 @@
 
 .pd-switch button span {
 	color: var(--sp-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 500;
 }
 
@@ -479,7 +479,7 @@
 	left: -40%;
 	width: 180%;
 	height: 0.9cqi;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	background: #c7c9ce;
 }
 
@@ -524,11 +524,11 @@
 .pd-sim-ruler span {
 	position: relative;
 	padding: 2px 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--sp-accent);
 	color: #ffffff;
 	font-family: var(--sp-mono);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -550,7 +550,7 @@
 	padding: 10px 14px 12px;
 	overflow: hidden;
 	border: none;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--sp-alt);
 	color: var(--sp-muted);
 	font: inherit;
@@ -562,12 +562,12 @@
 }
 
 .pd-sim-steps strong {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .pd-sim-steps span {
 	font-family: var(--sp-mono);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .pd-sim-steps button[aria-current] {
@@ -590,7 +590,7 @@
 	min-height: 4.8em;
 	margin-top: 18px;
 	color: var(--sp-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.6;
 	animation: pd-note 0.5s ease-out;
 }
@@ -707,7 +707,7 @@
 
 .pd-edge text {
 	fill: var(--sp-dark-muted);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-anchor: middle;
 	opacity: var(--s);
 }
@@ -715,7 +715,7 @@
 .pd-arch figcaption {
 	margin-top: 16px;
 	color: var(--sp-dark-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	text-align: center;
 }
 

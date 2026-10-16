@@ -6,37 +6,16 @@ import { tokenOf } from '../common/turnstile.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
 import { publicAuthorId } from '../visitors/visitor.js';
-import { hashIp, maskIp, parseBody } from '../comments/rules.js';
+import { hashIp, maskIp } from '../comments/rules.js';
 import { SiteService } from '../site/site.service.js';
+import { type Message, MessageInput, parse, PINNED_THREAD_ID, type Thread } from '@macfolio/contracts';
 
-/** 사이트 주인의 고정 안내. 안내 글은 프론트엔드에 있고, 여기에는 거기 단 답글만 있다 (threadId가 빈 글) */
-export const PINNED_THREAD_ID = 'owner';
+/** 사이트 주인의 고정 안내 항목 (contracts와 화면이 같은 값) */
+export { PINNED_THREAD_ID };
 
-/** 말풍선 하나 (apps/react/src/apps/messages/conversations.ts의 Message와 같은 모양) */
-export interface MessageView {
-	id: string;
-	threadId: string;
-	text: string;
-	createdAt: string;
-	/** 같은 사람의 말풍선을 묶는 값 (저장한 해시를 그대로 내보내지 않는다) */
-	authorId: string;
-	nickname: string;
-	ipPrefix?: string;
-	fromOwner: boolean;
-	mine: boolean;
-}
-
-/** 목록의 항목 하나 (Thread와 같은 모양) */
-export interface ThreadView {
-	id: string;
-	title: string;
-	ipPrefix?: string;
-	createdAt: string;
-	pinned?: boolean;
-	mine: boolean;
-	summary?: string;
-	lastMessage?: { text: string; createdAt: string };
-}
+/** 말풍선 하나·목록의 항목 하나. 모양은 @macfolio/contracts (화면과 같은 스키마) */
+export type MessageView = Message;
+export type ThreadView = Thread;
 
 interface MessageRow {
 	id: string;
@@ -130,7 +109,7 @@ export class MessagesService {
 
 	/** 새 피드백 (쓰기 단추). 목록에 항목이 하나 생긴다 */
 	async createThread(input: unknown, ip: string, visitor: Visitor, admin: AdminIdentity | null) {
-		const parsed = parseBody(input);
+		const parsed = parse(MessageInput, input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
 		// 사람 확인: 관리자가 시스템 설정에서 켜면 (관리자 글은 확인하지 않는다)
 		await this.security.requireHuman('message', tokenOf(input), ip, admin);
@@ -160,7 +139,7 @@ export class MessagesService {
 
 	/** 피드백(이나 주인 안내)에 답글을 단다. 항목은 생기지 않는다 */
 	async post(threadId: string, input: unknown, ip: string, visitor: Visitor, admin: AdminIdentity | null) {
-		const parsed = parseBody(input);
+		const parsed = parse(MessageInput, input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
 		await this.security.requireHuman('message', tokenOf(input), ip, admin);
 		if (threadId !== PINNED_THREAD_ID && !(await this.prisma.messageThread.findUnique({ where: { id: threadId } })))

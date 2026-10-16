@@ -3,12 +3,20 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import remarkGfm from 'remark-gfm';
 import { tagsInText } from '@macfolio/desktop-core/memo';
 
+/** 취소선은 `~~`만 쓴다. `~` 하나도 받으면 220~440px, 380~640px처럼 범위를 적은 글이 취소선이 된다 */
+export const GFM_OPTIONS = { singleTilde: false } as const;
+
 /**
  * 글을 읽을 때 쓰는 Markdown 규칙: 표 · 취소선 · 체크 목록(GFM), 그리고 한국어 사이의 굵게·기울임.
  * CommonMark 규칙만으로는 `**취소(cancelled)**가`처럼 문장부호 뒤의 `**`에 조사가 바로 붙으면 굵게가 끝나지 않는다.
  * 편집기(writer/InlineEditor.tsx)에도 같은 규칙을 건다.
  */
-export const REMARK_PLUGINS: Options['remarkPlugins'] = [remarkGfm, remarkCjkFriendly, remarkTags];
+export const REMARK_PLUGINS: Options['remarkPlugins'] = [
+	[remarkGfm, GFM_OPTIONS],
+	remarkCjkFriendly,
+	remarkDetails,
+	remarkTags,
+];
 
 interface MdNode {
 	type: string;
@@ -50,4 +58,87 @@ export function remarkTags() {
 		});
 	};
 	return (tree: MdNode) => walk(tree);
+}
+
+export const DETAILS_OPEN = /^<details(?:\s+id="([a-z0-9-]+)")?(\s+open)?\s*>\s*(?:<summary>([^<]*)<\/summary>)?\s*$/i;
+export const DETAILS_CLOSE = /^<\/details>\s*$/i;
+
+/** 접기 블록의 여는 줄 (편집기가 저장할 때). 요약의 <, >, &는 엔티티로 바꿔 글자로만 남긴다 */
+export function detailsOpenHtml({ summary, open, id }: { summary: string; open: boolean; id: string }) {
+	const text = summary.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	return `<details${id ? ` id="${id}"` : ''}${open ? ' open' : ''}>\n<summary>${text}</summary>`;
+}
+
+/** 엔티티 몇 개만 글자로 (요약은 글자로만 그린다: HTML로 넣지 않는다) */
+export const decodeText = (text: string) =>
+	text
+		.replace(/&lt;/g, '<')
+		.replace(/&gt;/g, '>')
+		.replace(/&quot;/g, '"')
+		.replace(/&#39;/g, "'")
+		.replace(/&amp;/g, '&')
+		.trim();
+
+/**
+ * 접기(토글) 블록: GitHub와 같은 표기를 `<details>`로 그린다.
+ *
+ * ```md
+ * <details>
+ * <summary>제목</summary>
+ *
+ * 접힌 내용 (Markdown)
+ *
+ * </details>
+ * ```
+ *
+ * 본문의 HTML은 그리지 않는다(안전). 이 플러그인은 위 모양의 여는·닫는 줄만 알아보고 그 사이의 Markdown 노드를 감싼다.
+ * 요약은 글자로만 넣는다. `<details open>`이면 펼친 채로 시작한다. 짝이 없는 줄은 지금처럼 그리지 않는다.
+ * `<details id="terms">`이면 `[링크](#terms)`로 찾아갈 수 있다. 사이트의 다른 id와 겹치지 않게 각주처럼
+ * `user-content-`를 앞에 붙인다 (MarkdownLink가 둘 다 찾는다)
+ */
+export function remarkDetails() {
+	const group = (parent: MdNode) => {
+		if (!parent.children) return;
+		const out: MdNode[] = [];
+		const stack: { node: MdNode; from: MdNode[] }[] = [];
+		let target = out;
+		for (const child of parent.children) {
+			group(child);
+			const html = child.type === 'html' ? (child.value ?? '').trim() : '';
+			const open = html.match(DETAILS_OPEN);
+			if (open) {
+				const [, id, isOpen, summaryText] = open;
+				const summary = decodeText(summaryText ?? '') || '자세히';
+				const node: MdNode = {
+					type: 'memoDetails',
+					data: {
+						hName: 'details',
+						hProperties: {
+							className: ['memo-details'],
+							open: Boolean(isOpen),
+							...(id ? { id: `user-content-${id.toLowerCase()}` } : {}),
+						},
+					},
+					children: [{ type: 'memoSummary', data: { hName: 'summary' }, children: [{ type: 'text', value: summary }] }],
+				};
+				stack.push({ node, from: target });
+				target = node.children!;
+				continue;
+			}
+			if (DETAILS_CLOSE.test(html) && stack.length) {
+				const { node, from } = stack.pop()!;
+				from.push(node);
+				target = from;
+				continue;
+			}
+			target.push(child);
+		}
+		// 닫히지 않은 블록은 글 끝까지를 감싼다
+		while (stack.length) {
+			const { node, from } = stack.pop()!;
+			from.push(node);
+		}
+		parent.children = out;
+	};
+	return (tree: MdNode) => group(tree);
 }

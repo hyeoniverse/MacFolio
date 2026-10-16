@@ -1,26 +1,15 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { Prisma } from '../generated/prisma/client.js';
-import {
-	parseProfile,
-	parseProjects,
-	readProfile,
-	readProjects,
-	type SiteProfile,
-	type SiteProjects,
-} from '@macfolio/desktop-core/site';
+import { parseProfile, readProfile, type SiteView } from '@macfolio/contracts';
+import { parseProjects, readProjects } from '@macfolio/desktop-core/site';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { OWNER_NAME } from '../comments/rules.js';
 
 const ROW_ID = 1;
 
-export interface SiteView {
-	/** 관리자가 저장한 프로필 (없으면 null: 화면이 코드의 기본값을 쓴다) */
-	profile: SiteProfile | null;
-	/** 관리자가 고친 프로젝트 (순서·숨김·덮어쓸 필드·새 프로젝트). 없으면 null: 화면이 코드의 기본값을 쓴다 */
-	projects: SiteProjects | null;
-	updatedAt: string | null;
-}
+/** 응답 모양은 @macfolio/contracts (화면과 같은 스키마) */
+export type { SiteView };
 
 /**
  * 사이트 콘텐츠: 관리자가 시스템 설정에서 고친 사이트 주인의 정보와 프로젝트. 누구나 읽고, 관리자만 바꾼다.

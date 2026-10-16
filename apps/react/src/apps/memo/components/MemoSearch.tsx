@@ -6,7 +6,7 @@ import { POST_FILTERS, type PostFilter } from '@macfolio/desktop-core/memo';
  * 메모 검색 칸 (macOS 메모): 돋보기 옆 ⌄를 누르면 검색 조건(체크리스트가 있는 메모 등)과 '이 메모에서 찾기'.
  * 고른 조건은 검색 칸 안에 작은 표로 붙고, ×나 빈 칸에서 Backspace로 뗀다.
  */
-const SearchField = ({
+const MemoSearch = ({
 	query,
 	onQuery,
 	filter,
@@ -93,4 +93,4 @@ const SearchField = ({
 	);
 };
 
-export default SearchField;
+export default MemoSearch;

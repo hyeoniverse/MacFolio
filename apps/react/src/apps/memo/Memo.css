@@ -59,27 +59,78 @@
 
 /* 떠 있는 사이드바 · 글 목록 · 본문 (갤러리로 볼 때는 사이드바 · 갤러리) */
 .memo {
+	/* 사이드바 너비는 경계를 끌어 바꾼다 (SidebarResizer, Memo.tsx가 px로 넣는다) */
+	--memo-sidebar-width: 13rem;
+	--memo-list-width: 17rem;
+	/* 사이드바 칸이 실제로 차지하는 너비 (가리면 0): 목록 손잡이의 위치 계산에 쓴다 */
+	--memo-sidebar-column: var(--memo-sidebar-width);
 	display: grid;
-	grid-template-columns: 13rem 17rem 1fr;
+	grid-template-columns: var(--memo-sidebar-column) var(--memo-list-width) minmax(0, 1fr);
 	position: relative;
 	height: 100%;
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 	transition: grid-template-columns var(--duration) var(--ease-out);
 }
 
 .memo.sidebar-closed {
-	grid-template-columns: 0 17rem 1fr;
+	--memo-sidebar-column: 0px;
 }
 
 .memo.view-gallery {
-	grid-template-columns: 13rem 1fr;
+	grid-template-columns: var(--memo-sidebar-column) minmax(0, 1fr);
 }
 
-.memo.view-gallery.sidebar-closed {
-	grid-template-columns: 0 1fr;
+/* 끄는 동안은 손을 따라 바로 바뀌어야 한다 */
+.memo[data-resizing] {
+	transition: none;
+	cursor: col-resize;
+	user-select: none;
+}
+
+/* 칸 오른쪽 경계의 너비 조절 손잡이 (PaneResizer): 경계에 걸친 보이지 않는 띠.
+   그리드 칸을 차지하지 않게 절대 위치로 둔다. macOS처럼 가리키면 커서만 바뀌고,
+   키보드로 포커스했을 때만 가는 회색 선으로 자리를 보인다 */
+.memo-pane-resizer {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 5;
+	width: 12px;
+	cursor: col-resize;
+	touch-action: none;
+}
+
+.memo-pane-resizer-sidebar {
+	top: 16px;
+	bottom: 16px;
+	left: calc(var(--memo-sidebar-width) - 4px);
+}
+
+.memo-pane-resizer-list {
+	left: calc(var(--memo-sidebar-column) + var(--memo-list-width) - 6px);
+}
+
+.memo-pane-resizer::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 5px;
+	width: 2px;
+	border-radius: 1px;
+	background-color: var(--memo-muted);
+	opacity: 0;
+}
+
+.memo-pane-resizer:focus-visible {
+	outline: none;
+}
+
+.memo-pane-resizer:focus-visible::after {
+	opacity: 0.6;
 }
 
 /* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
@@ -121,7 +172,7 @@
 	position: relative;
 	z-index: 4;
 	padding: 2px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 }
 
@@ -131,10 +182,10 @@
 	width: 30px;
 	height: 24px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-view-switch button[aria-pressed='true'] {
@@ -181,7 +232,7 @@
 	padding-bottom: 8px;
 	border-bottom: 1px solid var(--memo-border);
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.5;
 }
 
@@ -196,13 +247,13 @@
 	border-radius: 12px;
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.5;
 }
 
 .memo-trash-note > i {
 	flex: none;
-	font-size: 16px;
+	font-size: var(--text-callout);
 	line-height: var(--title-line);
 }
 
@@ -214,7 +265,7 @@
 .memo-trash-note strong {
 	display: block;
 	color: var(--memo-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	line-height: var(--title-line);
 }
 
@@ -223,7 +274,7 @@
 }
 
 .memo-trash-note .memo-trash-note-hint {
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	opacity: 0.85;
 }
 
@@ -259,13 +310,13 @@
 	gap: 6px;
 	margin-bottom: 0.75rem;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-locked-note button {
 	padding: 1px 8px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font-weight: 600;
@@ -309,7 +360,7 @@
 .memo-tag-browser h3 {
 	margin: 0;
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 700;
 }
 
@@ -322,7 +373,7 @@
 	border: none;
 	background: none;
 	color: #b07a06;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 	cursor: pointer;
 }
@@ -351,10 +402,10 @@
 .memo .memo-tag-chip {
 	padding: 3px 9px;
 	border: 1.5px solid transparent;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	cursor: pointer;
 }
 
@@ -384,7 +435,7 @@
 	gap: 6px;
 	margin: 10px 20px 6px;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 700;
 }
 
@@ -396,7 +447,7 @@
 .memo-gallery .memo-section-title {
 	margin: 14px 24px 4px;
 	color: var(--memo-text);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .memo-reader-compact-bar {
@@ -431,7 +482,7 @@
 
 .memo-toolbar-heading h2 {
 	overflow: hidden;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 700;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -439,7 +490,7 @@
 
 .memo-toolbar-heading p {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-toolbar-title {
@@ -447,7 +498,7 @@
 	min-width: 0;
 	margin-left: 4px;
 	overflow: hidden;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -519,7 +570,7 @@
 .memo-folders h2 {
 	margin: 0 0 4px 4px;
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 	letter-spacing: 0.02em;
 }
@@ -567,7 +618,7 @@
 	border: none;
 	border-radius: 9px;
 	background: none;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 }
 
@@ -575,7 +626,7 @@
 	flex: none;
 	width: 16px;
 	color: var(--memo-accent);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: center;
 }
 
@@ -604,7 +655,7 @@
 .memo-count {
 	flex: none;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -676,13 +727,13 @@
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-folder-error {
 	margin: 0 0 4px calc(var(--depth, 0) * var(--row-indent, 16px) + 14px + 29px);
 	color: var(--memo-danger);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 /* ─── 글 목록 ─── */
@@ -718,7 +769,7 @@
 
 /* macOS 메모의 검색 칸: 둥근 알약 모양, 누르면 강조 색 테두리 */
 .memo-search {
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	transition: box-shadow var(--duration-fast) var(--ease-out);
 }
 
@@ -760,10 +811,10 @@
 	align-items: center;
 	gap: 4px;
 	padding: 1px 4px 1px 7px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 30%, transparent);
 	color: var(--memo-text);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	white-space: nowrap;
 }
 
@@ -809,7 +860,7 @@
 	gap: 6px;
 	min-width: 0;
 	padding: 4px 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--memo-search-bg);
 	transition: box-shadow var(--duration-fast) var(--ease-out);
 }
@@ -825,7 +876,7 @@
 	background: none;
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
@@ -846,7 +897,7 @@
 
 .memo-find-count {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	white-space: nowrap;
 	font-variant-numeric: tabular-nums;
 }
@@ -854,7 +905,7 @@
 .memo-find-steps {
 	display: flex;
 	overflow: hidden;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 }
 
@@ -865,7 +916,7 @@
 	border: none;
 	background: none;
 	color: var(--memo-text);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	cursor: pointer;
 }
 
@@ -883,11 +934,11 @@
 	flex: none;
 	padding: 4px 12px;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	cursor: pointer;
 }
@@ -903,7 +954,7 @@
 	align-items: center;
 	gap: 5px;
 	color: var(--memo-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	white-space: nowrap;
 	cursor: pointer;
 }
@@ -989,7 +1040,7 @@
 	display: -webkit-box;
 	overflow: hidden;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.35;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 2;
@@ -1001,7 +1052,7 @@
 
 .memo-item-folder {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-item.active .memo-item-meta,
@@ -1058,7 +1109,7 @@
 	gap: 7px;
 	height: 34px;
 	padding: 0 16px 0 14px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--memo-fill);
 	color: var(--memo-text);
 	font-size: 14px;
@@ -1067,7 +1118,7 @@
 }
 
 .memo-like.post i {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .memo-like.post:hover {
@@ -1084,8 +1135,8 @@
 	min-height: 24px;
 	padding: 2px 7px;
 	margin-left: -7px;
-	border-radius: 999px;
-	font-size: 12px;
+	border-radius: var(--radius-full);
+	font-size: var(--text-caption);
 	font-weight: 500;
 }
 
@@ -1154,7 +1205,7 @@
 	border-radius: 5px;
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-variant-numeric: tabular-nums;
 	vertical-align: 1px;
 }
@@ -1191,7 +1242,7 @@
 	min-width: 0;
 	padding: 10px 12px;
 	border: 1px solid var(--memo-border);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: none;
 	color: var(--memo-text);
 	font: inherit;
@@ -1212,13 +1263,13 @@
 
 .memo-post-nav span {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-post-nav strong {
 	overflow: hidden;
 	max-width: 100%;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -1234,15 +1285,38 @@
 	white-space: nowrap;
 	margin-left: 6px;
 	padding: 2px 9px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 22%, transparent);
 	color: var(--memo-text);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
 .memo-admin-chip i {
 	font-size: 9px;
+}
+
+/* 편집할 수 있는 글에서는 누르는 단추: 편집 화면 ↔ 방문자가 보는 읽기 화면 */
+button.memo-admin-chip {
+	border: none;
+	font-family: inherit;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-toolbar button.memo-admin-chip:hover {
+	background-color: color-mix(in srgb, var(--memo-accent) 38%, transparent);
+}
+
+.memo-toolbar button.memo-admin-chip:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 1px;
+}
+
+/* 읽기 화면으로 보는 중: 눈 아이콘, 강조색 테두리로 지금 편집하지 않는다는 것을 보인다 */
+.memo-toolbar button.memo-admin-chip.reading {
+	background-color: transparent;
+	box-shadow: inset 0 0 0 1.5px var(--memo-accent);
 }
 
 /* 본문 쪽 도구 막대가 좁으면: 관리자 표시는 열쇠만 (글자는 title로), 검색 칸은 줄어든다 */
@@ -1320,7 +1394,7 @@
 	gap: 0.3em;
 	margin-bottom: 0.5rem;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 /* 날짜·폴더: 글자처럼 보이다가 올리면 누를 수 있다는 표시 */
@@ -1328,7 +1402,7 @@
 	margin: 0 -3px;
 	padding: 0 3px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -1352,7 +1426,7 @@
 }
 
 .memo-writer-status {
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	white-space: nowrap;
 }
 
@@ -1360,9 +1434,9 @@
 .memo-writer-publish {
 	padding: 2px 10px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	font: inherit;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 	white-space: nowrap;
 	cursor: pointer;
@@ -1409,12 +1483,35 @@
 	}
 }
 
+/* 규칙을 어긴 이유는 길어서 넓은 칸에서도 날짜·폴더와 겹친다: 따로 한 줄로 두고, 그래도 길면 줄을 바꾼다 */
+.memo-writer-meta:has(.memo-writer-status.problem) {
+	flex-wrap: wrap;
+}
+
+.memo-writer-meta:has(.memo-writer-status.problem) .memo-writer-actions {
+	position: static;
+	order: -1;
+	justify-content: flex-end;
+	width: 100%;
+	margin-bottom: 4px;
+}
+
+.memo-writer-status.problem {
+	min-width: 0;
+	text-align: right;
+	white-space: normal;
+}
+
+.memo-writer-actions > button {
+	flex-shrink: 0;
+}
+
 /* 관리자 목록의 게시 상태 */
 .memo-status-badge {
 	display: inline-block;
 	margin-left: 6px;
 	padding: 0 6px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	font-size: 10px;
 	font-weight: 600;
 	line-height: 16px;
@@ -1450,7 +1547,7 @@
 .memo-revisions-note {
 	margin-bottom: 8px;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.5;
 }
 
@@ -1466,7 +1563,7 @@
 	gap: 1px;
 	width: 100%;
 	padding: 6px 10px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	text-align: left;
 }
 
@@ -1475,13 +1572,13 @@
 }
 
 .memo-revision-list strong {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-revision-list span {
 	overflow: hidden;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -1491,14 +1588,14 @@
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: 6px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-panel .memo-revision-back {
 	padding: 3px 6px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	color: #c78b00;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-revision-body {
@@ -1506,8 +1603,8 @@
 	padding: 10px 12px;
 	overflow-y: auto;
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
-	font-size: 12px;
+	border-radius: var(--radius-lg);
+	font-size: var(--text-caption);
 }
 
 .memo-revision-body h1 {
@@ -1516,17 +1613,17 @@
 }
 
 .memo-revision-body .memo-markdown {
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-panel .memo-revision-restore {
 	width: 100%;
 	margin-top: 8px;
 	padding: 7px 0;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: #edbb4d;
 	color: #2b2100;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
@@ -1596,7 +1693,7 @@
 	flex-shrink: 0;
 	padding: 0 8px;
 	white-space: nowrap;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	letter-spacing: -0.02em;
 }
@@ -1611,10 +1708,10 @@
 /* 가가 메뉴 (body에 그린다) */
 .memo-format-panel {
 	position: fixed;
-	z-index: 10000;
+	z-index: var(--z-menu);
 	width: 232px;
 	padding: 8px;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--color-popover-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.15),
@@ -1655,7 +1752,7 @@
 	flex: 1;
 	height: 30px;
 	border-radius: 7px;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .memo-format-marks button:hover,
@@ -1682,7 +1779,7 @@
 
 .memo-format-marks .mark-code {
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-styles {
@@ -1694,7 +1791,7 @@
 	width: 100%;
 	padding: 5px 10px 5px 28px;
 	border-radius: 7px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-align: left;
 }
 
@@ -1702,18 +1799,18 @@
 .memo-format-styles button[aria-checked='true']::before {
 	position: absolute;
 	left: 10px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	content: '✓' / '';
 }
 
 /* 이름을 그 서식의 모양으로 */
 .memo-format-styles .style-title {
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 800;
 }
 
 .memo-format-styles .style-heading {
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 700;
 }
 
@@ -1724,7 +1821,7 @@
 
 .memo-format-styles .style-mono {
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-format-quote {
@@ -1740,7 +1837,7 @@
 .memo-format-uploading {
 	margin-left: 4px;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	white-space: nowrap;
 }
 
@@ -1750,7 +1847,7 @@
 	left: 9px;
 	top: 50%;
 	width: 12px;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	text-align: center;
 	translate: 0 -50%;
 	opacity: 0.7;
@@ -1779,15 +1876,15 @@
 	gap: 2px;
 	margin-bottom: 8px;
 	padding: 2px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: color-mix(in srgb, var(--color-popover-text) 7%, transparent);
 }
 
 .memo-format-panel .memo-image-tabs button {
 	flex: 1;
 	padding: 4px 0;
-	border-radius: 6px;
-	font-size: 12px;
+	border-radius: var(--radius-sm);
+	font-size: var(--text-caption);
 }
 
 .memo-format-panel .memo-image-tabs button.on {
@@ -1804,7 +1901,7 @@
 	gap: 4px;
 	padding: 22px 12px;
 	border: 1.5px dashed var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	cursor: pointer;
 	text-align: center;
 }
@@ -1817,16 +1914,16 @@
 
 .memo-image-drop i {
 	color: #c78b00;
-	font-size: 22px;
+	font-size: var(--text-title2);
 }
 
 .memo-image-drop strong {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-image-drop span {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-image-drop input {
@@ -1847,7 +1944,7 @@
 .memo-image-preview {
 	width: 100%;
 	max-height: 150px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: color-mix(in srgb, var(--color-popover-text) 6%, transparent);
 	object-fit: contain;
 }
@@ -1860,7 +1957,7 @@
 
 .memo-image-details label span {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
@@ -1868,11 +1965,11 @@
 	width: 100%;
 	padding: 6px 9px;
 	border: 1px solid var(--color-divider);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background: none;
 	color: inherit;
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
@@ -1883,13 +1980,13 @@
 /* 입력칸 아래 안내 */
 .memo-field-hint {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.4;
 }
 
 .memo-image-credit {
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-image-credit a {
@@ -1904,24 +2001,24 @@
 }
 
 .memo-format-panel .memo-image-submit {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
 .memo-format-panel .memo-stock-search button {
 	padding: 5px 14px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: #edbb4d;
 	color: #2b2100;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
 .memo-format-panel .memo-image-back,
 .memo-format-panel .memo-stock-more {
 	padding: 5px 12px;
-	border-radius: 999px;
-	font-size: 13px;
+	border-radius: var(--radius-full);
+	font-size: var(--text-footnote);
 }
 
 .memo-format-panel .memo-image-back:hover,
@@ -1936,7 +2033,7 @@
 
 .memo-image-note {
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.5;
 }
 
@@ -1946,7 +2043,7 @@
 
 .memo-image-note code {
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-stock-search {
@@ -1977,7 +2074,7 @@
 	aspect-ratio: 1;
 	padding: 0;
 	overflow: hidden;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 }
 
 .memo-stock-grid img {
@@ -2096,7 +2193,7 @@
 	justify-content: center;
 	padding: 0;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-muted) 22%, transparent);
 	color: var(--memo-muted);
 	font-size: 9px;
@@ -2289,10 +2386,10 @@
 	max-width: 100%;
 	padding: 3px 10px;
 	border: 1px solid var(--memo-border);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-code-bg);
 	color: var(--memo-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-decoration: none;
 	overflow-wrap: anywhere;
 }
@@ -2375,13 +2472,13 @@
 	margin-top: 2rem;
 	padding-top: 1.25rem;
 	border-top: 1px solid var(--memo-border);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-comments h2 {
 	margin-bottom: 0.5rem;
 	color: var(--memo-text);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .memo-comments h2 span {
@@ -2419,7 +2516,7 @@
 	border-radius: 50%;
 	background: linear-gradient(180deg, #b8bcc6, #8e929c);
 	color: #ffffff;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	object-fit: cover;
 }
@@ -2438,17 +2535,17 @@
 }
 
 .memo-comment-head strong {
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-comment-head time {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-comment-badge {
 	padding: 1px 7px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 25%, transparent);
 	color: var(--memo-text);
 	font-size: 10px;
@@ -2463,10 +2560,10 @@
 	height: 24px;
 	margin-left: auto;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	opacity: 0;
 	cursor: pointer;
 	transition: opacity var(--duration-fast) var(--ease-out);
@@ -2515,7 +2612,7 @@
 	gap: 8px;
 	padding: 12px;
 	border: 1px solid var(--memo-border);
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	transition: border-color var(--duration-fast) var(--ease-out);
 }
 
@@ -2545,7 +2642,7 @@
 	min-width: 0;
 	padding: 7px 10px;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;
@@ -2567,7 +2664,7 @@
 
 .memo-comment-count {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -2577,7 +2674,7 @@
 
 .memo-comment-error {
 	color: #e5484d;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	list-style: none;
 }
 
@@ -2589,7 +2686,7 @@
 .memo-reader-date {
 	margin-bottom: 0.5rem;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-align: center;
 }
 
@@ -2603,6 +2700,8 @@
 	color: var(--memo-body);
 	font-size: 14px;
 	line-height: 1.75;
+	/* 긴 주소·코드는 칸 안에서 줄을 바꾼다 (편집기 .ProseMirror와 같은 규칙이라 두 화면의 줄이 같게 나뉜다) */
+	overflow-wrap: break-word;
 }
 
 /* 문단 사이 간격. 편집기(.ProseMirror)도 같은 규칙을 써서 읽기 화면과 똑같이 보이게 한다 */
@@ -2621,6 +2720,22 @@
 	margin-top: 1.4em;
 	color: var(--memo-text);
 	font-size: 1.05rem;
+}
+
+/* 구분선 (---): 브라우저 기본값(회색 2px 입체 선, 아래 여백 없음) 대신 가는 테두리색 선, 위아래 같은 여백.
+   편집기(.ProseMirror)도 .memo-markdown이라 같은 모양이다 */
+.memo-markdown hr {
+	height: 1px;
+	margin: 1.8em 0;
+	border: none;
+	background-color: var(--memo-border);
+}
+
+/* 편집기에서 구분선을 고르면 (눌러서, 또는 화살표로) 강조색 테두리 */
+.memo-inline-editor hr.ProseMirror-selectednode {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 4px;
+	border-radius: 1px;
 }
 
 .memo-markdown ul,
@@ -2647,6 +2762,290 @@
 
 :root[data-theme='dark'] [data-app='memo'] .memo-markdown a {
 	color: var(--memo-accent);
+}
+
+/* 접기 블록 (markdownPlugins.ts의 remarkDetails): 요약 줄을 누르면 펼친다. › 가 아래로 돈다 */
+.memo-markdown .memo-details {
+	margin: 1.2em 0;
+	padding: 0 0.9em;
+	border: 1px solid var(--memo-border);
+	border-radius: 0.6em;
+}
+
+.memo-markdown .memo-details[open] {
+	padding-bottom: 0.9em;
+}
+
+.memo-markdown .memo-details > summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0 -0.9em;
+	padding: 0.7em 0.9em;
+	font-weight: 600;
+	cursor: pointer;
+	list-style: none;
+	user-select: none;
+}
+
+.memo-markdown .memo-details > summary::-webkit-details-marker {
+	display: none;
+}
+
+.memo-markdown .memo-details > summary::before {
+	content: '';
+	flex: none;
+	width: 0.45em;
+	height: 0.45em;
+	border-right: 2px solid var(--memo-muted);
+	border-bottom: 2px solid var(--memo-muted);
+	transform: rotate(-45deg);
+	transition: transform 0.2s ease;
+}
+
+.memo-markdown .memo-details[open] > summary::before {
+	transform: rotate(45deg);
+}
+
+.memo-markdown .memo-details > summary:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: -2px;
+	border-radius: 0.6em;
+}
+
+.memo-markdown .memo-details > :last-child:not(summary) {
+	margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-markdown .memo-details > summary::before {
+		transition: none;
+	}
+}
+
+/* 각주 (remark-gfm의 [^1]): 본문의 작은 번호, 글 아래의 목록 */
+.memo-markdown sup {
+	font-size: 0.72em;
+	line-height: 0;
+	vertical-align: super;
+}
+
+.memo-markdown a[data-footnote-ref] {
+	padding: 0 0.15em;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.memo-markdown a[data-footnote-ref]::before {
+	content: '[';
+}
+
+.memo-markdown a[data-footnote-ref]::after {
+	content: ']';
+}
+
+.memo-markdown .footnotes {
+	margin-top: 2.4em;
+	padding-top: 1em;
+	border-top: 1px solid var(--memo-border);
+	font-size: 0.88em;
+	color: var(--memo-muted);
+}
+
+.memo-markdown .footnotes .memo-footnotes-label {
+	margin: 0 0 0.6em;
+	font-size: 1em;
+	font-weight: 600;
+}
+
+.memo-markdown .footnotes li {
+	scroll-margin: 2em;
+}
+
+.memo-markdown a[data-footnote-backref] {
+	margin-left: 0.3em;
+	text-decoration: none;
+}
+
+/* 편집기의 토글 목록 (writer/details.ts): 읽기 화면의 접기 블록과 같은 모양. 요약 앞의 › 를 누르면 접고 펼친다 */
+.memo-inline-editor .memo-details:is([data-open='true'], .memo-details-revealed) {
+	padding-bottom: 0.9em;
+}
+
+.memo-inline-editor .memo-details-summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0 -0.9em;
+	padding: 0.7em 0.9em;
+	font-weight: 600;
+}
+
+.memo-inline-editor .memo-details-summary::before {
+	content: '';
+	flex: none;
+	width: 0.45em;
+	height: 0.45em;
+	margin-right: 0.15em;
+	border-right: 2px solid var(--memo-muted);
+	border-bottom: 2px solid var(--memo-muted);
+	transform: rotate(-45deg);
+	transition: transform 0.2s ease;
+	cursor: pointer;
+}
+
+.memo-inline-editor .memo-details:is([data-open='true'], .memo-details-revealed) > .memo-details-summary::before {
+	transform: rotate(45deg);
+}
+
+.memo-inline-editor .memo-details-summary:has(> br:only-child)::after {
+	content: '토글 제목';
+	color: var(--memo-muted);
+	font-weight: 400;
+	pointer-events: none;
+}
+
+/* 접힌 블록의 내용 (링크를 따라가며 화면에서만 펼친 블록은 보인다: writer/anchors.ts) */
+.memo-inline-editor .memo-details[data-open='false']:not(.memo-details-revealed) > :not(.memo-details-summary) {
+	display: none;
+}
+
+.memo-inline-editor .memo-details > :last-child:not(.memo-details-summary) {
+	margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-inline-editor .memo-details-summary::before {
+		transition: none;
+	}
+}
+
+/* 편집기의 각주 (writer/anchors.ts): 읽기 화면의 각주(a[data-footnote-ref], .footnotes)와 같은 번호·크기·여백.
+   번호는 저장한 이름이 아니라 본문에 나온 차례(data-number)로 보인다 */
+.memo-inline-editor sup[data-type='footnote_reference'] {
+	padding: 0 0.15em;
+	color: #b8860b;
+	font-weight: 600;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+:root[data-theme='dark'] [data-app='memo'] .memo-inline-editor sup[data-type='footnote_reference'] {
+	color: var(--memo-accent);
+}
+
+.memo-inline-editor sup[data-type='footnote_reference']::before {
+	content: '[';
+}
+
+.memo-inline-editor sup[data-type='footnote_reference']::after {
+	content: ']';
+}
+
+/* 각주 내용: 읽기 화면의 각주 목록(ol > li)처럼 번호 칸 + 내용 */
+.memo-inline-editor dl[data-type='footnote_definition'] {
+	display: grid;
+	grid-template-columns: 1.4em minmax(0, 1fr);
+	margin: 0;
+	font-size: 0.88em;
+	color: var(--memo-muted);
+}
+
+/* 각주끼리는 목록 항목 사이 간격(li + li) */
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition'] + dl[data-type='footnote_definition'] {
+	margin-top: 0.3em;
+}
+
+/* 첫 각주 위: 읽기 화면의 각주 구역(.footnotes)처럼 구분선과 '각주' 제목 */
+.memo-inline-editor .ProseMirror > :not([data-type='footnote_definition']) + dl[data-type='footnote_definition'],
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition']:first-child {
+	margin-top: 2.4em;
+	padding-top: 1em;
+	border-top: 1px solid var(--memo-border);
+}
+
+.memo-inline-editor
+	.ProseMirror
+	> :not([data-type='footnote_definition'])
+	+ dl[data-type='footnote_definition']::before,
+.memo-inline-editor .ProseMirror > dl[data-type='footnote_definition']:first-child::before {
+	grid-column: 1 / -1;
+	margin: 0 0 0.6em;
+	color: var(--memo-text);
+	font-weight: 600;
+	content: '각주';
+}
+
+/* 번호: 이름 글자 대신 '1.' (목록 번호처럼 오른쪽 맞춤) */
+.memo-inline-editor dl[data-type='footnote_definition'] > dt {
+	padding-right: 0.4em;
+	text-align: right;
+	user-select: none;
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dd {
+	min-width: 0;
+	margin: 0;
+}
+
+.memo-inline-editor dl[data-type='footnote_definition'] > dd > * + * {
+	margin-top: 0.9em;
+}
+
+/* 각주로 왔을 때: 첫 각주 위의 '각주' 제목(::before)까지 칠하지 않게 번호·내용 칸만 칠한다 (읽기 화면은 li만 칠한다) */
+.memo-inline-editor dl.memo-anchor-hit {
+	animation: none;
+}
+
+.memo-inline-editor dl.memo-anchor-hit > :is(dt, dd) {
+	animation: memo-anchor-hit 1.6s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-inline-editor dl.memo-anchor-hit > :is(dt, dd) {
+		animation: none;
+	}
+}
+
+/* ↩ : 읽기 화면의 되돌아가기 링크(a[data-footnote-backref])와 같은 자리·모양 */
+.memo-inline-editor .memo-footnote-backref {
+	margin-left: 0.3em;
+	padding: 0;
+	border: none;
+	background: none;
+	color: #b8860b;
+	font: inherit;
+	cursor: pointer;
+}
+
+:root[data-theme='dark'] [data-app='memo'] .memo-inline-editor .memo-footnote-backref {
+	color: var(--memo-accent);
+}
+
+/* 편집기의 글 안 링크(#이름)는 누르면 그 자리로 간다 (Option을 누른 채 누르면 글자를 고친다) */
+.memo-inline-editor a[href^='#'] {
+	cursor: pointer;
+}
+
+/* 각주로 가거나 돌아왔을 때 도착한 자리를 잠깐 표시한다 */
+.memo-markdown .memo-anchor-hit {
+	animation: memo-anchor-hit 1.6s ease-out;
+	border-radius: 0.3em;
+}
+
+@keyframes memo-anchor-hit {
+	from {
+		background-color: rgba(250, 204, 21, 0.45);
+	}
+	to {
+		background-color: transparent;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-markdown .memo-anchor-hit {
+		animation: none;
+	}
 }
 
 .memo-markdown code {
@@ -2681,7 +3080,7 @@
 .memo-markdown table {
 	width: 100%;
 	border-collapse: collapse;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .memo-markdown th,
@@ -2725,7 +3124,7 @@
 	display: block;
 	margin-top: 0.5em;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .memo-image-missing {
@@ -2734,7 +3133,7 @@
 	border: 1px dashed var(--memo-border);
 	border-radius: 0.6em;
 	color: var(--memo-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-align: center;
 }
 
@@ -2744,7 +3143,7 @@
 	place-items: center;
 	position: fixed;
 	inset: 0;
-	z-index: 10000;
+	z-index: var(--z-menu);
 	padding: 3rem;
 	background-color: rgba(0, 0, 0, 0.75);
 	cursor: zoom-out;
@@ -2815,7 +3214,7 @@
 	border-radius: 7px;
 	background-color: rgba(0, 0, 0, 0.45);
 	color: #fff;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-card-pin i {
@@ -2827,7 +3226,7 @@
 	width: 100%;
 	aspect-ratio: 4 / 3;
 	overflow: hidden;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--memo-list-bg);
 	box-shadow:
 		0 0 0 1px var(--memo-border),
@@ -2870,20 +3269,20 @@
 	display: block;
 	margin-bottom: 4px;
 	color: var(--memo-text);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .memo-card > strong {
 	overflow: hidden;
 	max-width: 100%;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .memo-card > time {
 	color: var(--memo-muted);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 /* 갤러리에서 연 글 */
@@ -2908,7 +3307,7 @@
 	border: none;
 	background: none;
 	color: #b8860b;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 :root[data-theme='dark'] [data-app='memo'] .memo-back {
@@ -2987,7 +3386,7 @@
 :where(.memo-shell[data-compact]) .memo-reader-compact-bar > .ui-icon-button.compact-only {
 	min-width: 36px;
 	height: 34px;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 :where(.memo-shell[data-compact]) .memo-reader-compact-bar .memo-format-button {
@@ -3001,7 +3400,7 @@
 
 /* 목록 위: 검색 칸, 정렬, 새 메모 (관리자) */
 :where(.memo-shell[data-compact]) .memo-compact-tools .memo-compact-new {
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 폴더 화면: 관리자에게는 오른쪽 위에 새로운 폴더 (신호등 자리·여닫기는 없다) */
@@ -3020,7 +3419,7 @@
 
 :where(.memo-shell[data-compact]) .memo .memo-sidebar-bar .memo-new-folder-button {
 	margin-left: auto;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 좁은 본문의 표: 낱말 가운데서 줄을 바꾸지 않고, 넘치면 옆으로 민다.
@@ -3056,18 +3455,11 @@
 }
 
 :where(.memo-shell[data-compact]) .memo-folders {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 :where(.memo-shell[data-compact]) .memo-markdown {
-	font-size: 15px;
-}
-
-/* 편집기(.memo-writer)도 컨테이너라, 넓은 창에서도 편집 칸이 700px보다 좁으면 본문 글자를 키운다 (예전부터의 모양) */
-@container (max-width: 700px) {
-	.memo-writer .memo-markdown {
-		font-size: 15px;
-	}
+	font-size: var(--text-subhead);
 }
 
 @media (max-width: 767px) {
@@ -3101,7 +3493,7 @@
 	.memo-writer-actions
 	:is(.memo-writer-publish, .memo-writer-discard) {
 	padding: 4px 12px;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 /* 휴대폰 본문 (iOS 메모처럼): 떠 있는 단추들. 휴대폰의 한 칸 보기에서만 보인다 */
@@ -3130,7 +3522,7 @@
 	z-index: 5;
 	height: 44px;
 	padding: 0 6px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.06),
@@ -3172,7 +3564,7 @@
 	max-width: calc(100% - 68px - 118px);
 	margin: 0;
 	padding: 0 8px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.06),
@@ -3198,10 +3590,10 @@
 	flex-shrink: 0;
 	height: 40px;
 	padding: 0 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: none;
 	color: var(--memo-text);
-	font-size: 16px;
+	font-size: var(--text-callout);
 	font-weight: 600;
 }
 
@@ -3233,7 +3625,7 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > .memo-writer-discard::before {
 	font: var(--fa-font-solid);
-	font-size: 17px;
+	font-size: var(--text-body);
 	content: '\f2ea';
 }
 
@@ -3263,7 +3655,7 @@
 	gap: 4px;
 	height: 50px;
 	padding: 0 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.06),
@@ -3282,7 +3674,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-format .memo-format-button {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-compose {
@@ -3294,7 +3686,7 @@
 		0 0 0 0.5px rgba(0, 0, 0, 0.06),
 		0 4px 14px rgba(0, 0, 0, 0.12);
 	color: var(--memo-text);
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 /* 휴대폰의 폴더·목록 화면 (iOS 메모처럼): 떠 있는 단추, 큰 제목, 회색 바탕 위 흰 카드 묶음, 아래 검색 알약 */
@@ -3347,7 +3739,7 @@
 	margin-top: -2px;
 	line-height: 1.3;
 	color: var(--memo-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	font-weight: 400;
 }
 
@@ -3387,7 +3779,7 @@
 .container.mobile :where(.memo-shell[data-compact]) .memo-tag-head h3 {
 	margin: 0;
 	color: var(--memo-text);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 700;
 	letter-spacing: 0;
 }
@@ -3402,7 +3794,7 @@
 	border: none;
 	background: none;
 	color: #b07a06;
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 :root[data-theme='dark'] .container.mobile :where(.memo-shell[data-compact]) .memo-folder-group-toggle {
@@ -3421,7 +3813,7 @@
 /* 폴더 카드: 줄마다 아이콘·이름·수·› , 줄 사이 선은 이름부터 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-scroll > ul {
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--phone-card-bg);
 }
 
@@ -3452,14 +3844,14 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-disclosure {
 	width: 18px;
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder {
 	gap: 12px;
 	padding: 0 16px 0 4px;
 	border-radius: 0;
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder .memo-folder-icon {
@@ -3468,7 +3860,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder .memo-count {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 /* 한 칸씩 보므로 고른 폴더를 칠하지 않고, 줄 끝에 › */
@@ -3489,7 +3881,7 @@
 	margin-left: 2px;
 	color: var(--memo-muted);
 	font: var(--fa-font-solid);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	content: '\f054';
 }
 
@@ -3501,10 +3893,10 @@
 /* 태그 칩 (iOS 메모): 둥근 네모에 굵은 글자. 미선택은 회색, 포함은 강조 색에 흰 글자, 제외는 테두리와 취소선 */
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-tag-chip {
 	padding: 7px 14px;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 700;
 	white-space: nowrap;
 }
@@ -3546,7 +3938,7 @@
 	margin: 0 4px 6px;
 	padding: 0;
 	border: none;
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* ── 목록 화면 ── */
@@ -3557,7 +3949,7 @@
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-section-title {
 	margin: 22px 4px 8px;
 	color: var(--memo-text);
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-section-title i {
@@ -3566,7 +3958,7 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-items {
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--phone-card-bg);
 }
 
@@ -3582,11 +3974,11 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-item strong {
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-item-meta {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	-webkit-line-clamp: 1;
 }
 
@@ -3595,7 +3987,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-item-folder {
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 한 칸씩 보므로 고른 메모를 칠하지 않는다. 줄 사이 선은 늘 보인다 */
@@ -3661,7 +4053,7 @@
 	padding: 0 18px;
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list-bottom:not(:has(.memo-phone-compose)) .memo-search {
@@ -3669,7 +4061,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list-bottom .memo-search-options {
-	font-size: 17px;
+	font-size: var(--text-body);
 }
 
 /* 글자 알약 단추 (완료, 메모 선택의 이동·삭제, 폴더 편집) */
@@ -3682,12 +4074,12 @@
 	height: 44px;
 	padding: 0 18px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 17px;
+	font-size: var(--text-body);
 	font-weight: 600;
 }
 
@@ -3710,11 +4102,11 @@
 	justify-content: center;
 	height: 50px;
 	margin: 0 12px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--memo-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 }
 
 /* 메모 선택: 줄 왼쪽에 동그라미 */
@@ -3728,7 +4120,7 @@
 	top: 50%;
 	left: 16px;
 	color: var(--memo-muted);
-	font-size: 22px;
+	font-size: var(--text-title2);
 	translate: 0 -50%;
 }
 
@@ -3780,7 +4172,7 @@
 	border: 2px solid var(--memo-accent);
 	background: none;
 	color: #b07a06;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 :root[data-theme='dark'] .container.mobile :where(.memo-shell[data-compact]) .memo-folders.editing .memo-folder-more {
@@ -3814,7 +4206,7 @@
 	border-left: 0.5px solid var(--memo-border);
 	background: none;
 	color: var(--memo-muted);
-	font-size: 17px;
+	font-size: var(--text-body);
 	cursor: grab;
 	touch-action: none;
 }
@@ -3852,10 +4244,10 @@
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	color: var(--memo-muted);
 	font: inherit;
-	font-size: 17px;
+	font-size: var(--text-body);
 	text-align: left;
 }
 
@@ -4075,10 +4467,10 @@
 	height: 28px;
 	padding: 0;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: rgba(28, 28, 30, 0.55);
 	color: #fff;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	cursor: pointer;
 	opacity: 0;
 	place-items: center;
@@ -4130,11 +4522,11 @@
 	margin: 0.5em auto 0;
 	padding: 5px 10px;
 	border: 1px solid var(--memo-border);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font: inherit;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.6;
 	text-align: center;
 	resize: none;
@@ -4162,7 +4554,7 @@
 
 /* 끌어다 놓을 자리 (이미지·문단을 끌 때). body에 그린다 */
 .milkdown-drop-indicator {
-	z-index: 10000;
+	z-index: var(--z-menu);
 	margin: 0;
 	border-radius: 2px;
 	background-color: #edbb4d;

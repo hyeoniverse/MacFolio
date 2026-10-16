@@ -13,15 +13,16 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@fortawesome/fontawesome-free": "^6.7.2",
+		"@macfolio/contracts": "workspace:*",
+		"@fortawesome/fontawesome-free": "^7.3.1",
 		"@macfolio/desktop-core": "workspace:*",
 		"@milkdown/kit": "7.22.2",
 		"@milkdown/react": "7.22.2",
-		"@scalar/api-reference-react": "^0.9.78",
+		"@scalar/api-reference-react": "^0.9.79",
 		"hast-util-to-text": "^4.0.2",
 		"highlight.js": "^11.12.0",
 		"lowlight": "^3.3.0",
-		"lucide-react": "^1.52.0",
+		"lucide-react": "^1.53.0",
 		"mermaid": "^12.1.0",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
@@ -34,19 +35,20 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
-		"@playwright/test": "^1.63.0",
+		"@playwright/test": "^1.64.0",
 		"@types/hast": "^3.0.5",
 		"@types/node": "^26.6.4",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
+		"@typescript/native": "npm:typescript@~7.0.2",
 		"@vitejs/plugin-react": "^6.1.2",
 		"eslint": "^10.12.0",
 		"eslint-plugin-react-hooks": "^7.1.1",
 		"eslint-plugin-react-refresh": "^0.5.7",
 		"globals": "^17.13.0",
-		"typescript": "~5.9",
+		"typescript": "npm:@typescript/typescript6@^6.0.2",
 		"typescript-eslint": "^8.71.1",
-		"vite": "^8.3.3",
-		"vitest": "^4.1.11"
+		"vite": "^8.3.4",
+		"vitest": "^5.0.3"
 	}
 }

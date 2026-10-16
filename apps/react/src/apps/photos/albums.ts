@@ -19,8 +19,8 @@ export interface Album {
 	photos: Photo[];
 }
 
-/** 캡션 길이 (서버 apps/api/src/photos/rules.ts와 같다) */
-export const CAPTION_MAX = 200;
+/** 캡션 길이 (서버와 같은 @macfolio/contracts) */
+export { CAPTION_MAX } from '@macfolio/contracts';
 
 const isVideo = (src: string) => /\.mp4$/i.test(src);
 /** 사진으로 보여 줄 수 있는 파일 (소리·데이터 파일은 뺀다) */

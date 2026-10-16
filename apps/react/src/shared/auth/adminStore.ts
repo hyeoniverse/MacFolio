@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { createStore } from '@macfolio/desktop-core';
 import { env } from '@/shared/config/env';
+import { apiFetch, onUnauthorized } from '@/shared/api/client';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { saveAppsBeforeLeaving } from '@/desktop/appsBeforeLeaving';
 import { checkAdmin, readLoginResult, type AdminState, type LoginResult } from '@/shared/auth/admin';
@@ -12,6 +13,11 @@ import { checkAdmin, readLoginResult, type AdminState, type LoginResult } from '
 export const adminStore = createStore<AdminState>({ status: env.apiUrl ? 'checking' : 'disabled', login: null });
 
 let expiryTimer: ReturnType<typeof setTimeout> | undefined;
+
+// 어떤 요청이든 401을 받으면 세션이 끝난 것: 만료 시각을 기다리지 않고 바로 로그아웃된 화면으로
+onUnauthorized(() => {
+	if (adminStore.getState().status === 'signed-in') void refreshAdmin();
+});
 
 export async function refreshAdmin() {
 	const state = await checkAdmin(env.apiUrl);
@@ -59,7 +65,7 @@ export function useLoginFlow() {
 
 export async function signOut() {
 	try {
-		await fetch(`${env.apiUrl}/auth/logout`, { method: 'POST', credentials: 'include' });
+		await apiFetch('/auth/logout', { method: 'POST' });
 	} finally {
 		clearTimeout(expiryTimer);
 		adminStore.setState({ status: 'signed-out', login: null });

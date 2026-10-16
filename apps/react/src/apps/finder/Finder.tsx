@@ -8,8 +8,7 @@ import { getPostRepository } from '@/apps/memo/repository';
 import { PROJECTS } from '@/shared/profile';
 import { useProjectsVersion } from '@/shared/site/siteContent';
 import { requestOpen } from '@/shared/lib/openRequest';
-import { useSettings } from '@/shared/settings/settingsStore';
-import { resolveTheme } from '@/shared/settings/settings';
+import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
 import {
@@ -30,6 +29,7 @@ import FinderIcon from './FinderIcon';
 import FinderMobile from './FinderMobile';
 import '@/apps/finder/Finder.css';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
+import SearchField from '@/shared/ui/search-field/SearchField';
 
 type View = 'icons' | 'list';
 
@@ -61,8 +61,7 @@ const dateCell = (item: FinderItem) => (item.kind === 'project' ? (item.period ?
 const Finder: React.FC = () => {
 	const { openApp, bringAppToFront } = useAppState();
 	const { launch } = useLaunchApp();
-	const { theme } = useSettings();
-	const dark = resolveTheme(theme, window.matchMedia('(prefers-color-scheme: dark)').matches) === 'dark';
+	const dark = useResolvedTheme() === 'dark';
 	const mobile = useIsMobile();
 	// 휴대폰에서는 홈 화면 이름처럼 '파일' (manifest.ts의 mobile)
 	const appTitle = mobile ? APP_MANIFEST.finder.mobile!.label : APP_MANIFEST.finder.label;
@@ -336,20 +335,16 @@ const Finder: React.FC = () => {
 									/>
 								</div>
 							)}
-							<label className="finder-search">
-								<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-								<input
-									type="search"
-									placeholder="이름으로 찾기"
-									aria-label="이름으로 찾기"
-									value={query}
-									onChange={(event) => {
-										setQuery(event.target.value);
-										setSelected(null);
-										if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
-									}}
-								/>
-							</label>
+							<SearchField
+								className="finder-search"
+								label="이름으로 찾기"
+								value={query}
+								onChange={(event) => {
+									setQuery(event.target.value);
+									setSelected(null);
+									if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
+								}}
+							/>
 						</div>
 
 						{/* 좁은 창: 사이드바 대신 위치를 한 줄로 */}

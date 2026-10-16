@@ -12,7 +12,7 @@
 
 /* 타일 자신의 제목·글에만 건다 (타일 안에 든 데모의 문단·제목까지 번지면 데모의 줄 맞춤이 어긋난다) */
 :is(.cr-tile > h3, .cr-tile > header > h3) {
-	font-size: 22px;
+	font-size: var(--text-title2);
 	font-weight: 700;
 	letter-spacing: -0.01em;
 	line-height: 1.25;
@@ -21,7 +21,7 @@
 :is(.cr-tile > p, .cr-tile > header > p, .cr-tile > div > p) {
 	margin-top: 8px;
 	color: var(--cr-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.6;
 }
 
@@ -37,7 +37,7 @@
 .cr-eyebrow {
 	margin-bottom: 6px;
 	color: var(--sp-accent);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 700;
 	letter-spacing: 0.08em;
 }
@@ -103,7 +103,7 @@
 .cr-showcase-live {
 	margin: 0 0 18px;
 	padding: 16px;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
@@ -115,7 +115,7 @@
 
 .cr-showcase h4 {
 	font-family: var(--sp-serif);
-	font-size: 20px;
+	font-size: var(--text-title3);
 	font-weight: 700;
 	letter-spacing: -0.01em;
 	line-height: 1.3;
@@ -148,7 +148,7 @@
 }
 
 .cr-showcase-lead p {
-	font-size: 16px;
+	font-size: var(--text-callout);
 }
 
 .cr-showcase-lead .cr-showcase-shot {
@@ -187,7 +187,7 @@
 .cr-showcase-shot {
 	margin: 0 0 18px;
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
@@ -268,7 +268,7 @@
 .cr-split-row header > p:last-child {
 	margin-top: 12px;
 	color: var(--cr-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.65;
 }
 
@@ -337,7 +337,7 @@
 .cr-dashboard-head p {
 	margin-top: 10px;
 	color: var(--cr-muted);
-	font-size: 16px;
+	font-size: var(--text-callout);
 	line-height: 1.65;
 }
 
@@ -351,7 +351,7 @@
 .cr-collage figure {
 	margin: 0;
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
 }
@@ -383,7 +383,7 @@
 .cr-collage figcaption {
 	padding: 8px 12px;
 	color: var(--cr-muted);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .cr-collage .cr-zoom img {
@@ -472,7 +472,7 @@
 
 .cr-gauges li > span:last-child {
 	color: var(--cr-muted);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .cr-gauge {
@@ -500,7 +500,7 @@
 .cr-gauge:not([data-score]) {
 	border: 6px solid color-mix(in srgb, var(--sp-accent) 25%, transparent);
 	color: var(--sp-accent);
-	font-size: 22px;
+	font-size: var(--text-title2);
 }
 
 .cr-numbered {
@@ -565,7 +565,7 @@
 }
 
 .cr-shield h3 {
-	font-size: 20px;
+	font-size: var(--text-title3);
 }
 
 .cr-shield p:last-child {
@@ -603,7 +603,7 @@
 }
 
 .cr-spot-list h3 {
-	font-size: 22px;
+	font-size: var(--text-title2);
 	font-weight: 700;
 	letter-spacing: -0.01em;
 }
@@ -611,7 +611,7 @@
 .cr-spot-list p {
 	margin-top: 8px;
 	color: var(--cr-muted);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	line-height: 1.65;
 }
 
