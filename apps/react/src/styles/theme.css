@@ -5,6 +5,14 @@
 :root {
 	color-scheme: light;
 
+	/* 모서리 둥글기. 자주 쓰는 여섯 값에 이름을 붙였다 (원은 50%, 그 밖의 값은 각 CSS에 그대로) */
+	--radius-xs: 4px;
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 10px;
+	--radius-xl: 14px;
+	--radius-full: 999px; /* 알약 */
+
 	/*
 	 * 화면 전체에서 겹치는 층(z-index). 값이 클수록 위에 그린다.
 	 * 창(1, 2, …)은 store가 순서를 매기고, 앱 안의 작은 겹침(1~10)은 각 CSS가 정한다.

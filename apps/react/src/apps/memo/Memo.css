@@ -172,7 +172,7 @@
 	position: relative;
 	z-index: 4;
 	padding: 2px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 }
 
@@ -182,7 +182,7 @@
 	width: 30px;
 	height: 24px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--memo-muted);
 	font-size: var(--text-caption);
@@ -316,7 +316,7 @@
 .memo-locked-note button {
 	padding: 1px 8px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font-weight: 600;
@@ -402,7 +402,7 @@
 .memo .memo-tag-chip {
 	padding: 3px 9px;
 	border: 1.5px solid transparent;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font-size: var(--text-caption);
@@ -769,7 +769,7 @@
 
 /* macOS 메모의 검색 칸: 둥근 알약 모양, 누르면 강조 색 테두리 */
 .memo-search {
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	transition: box-shadow var(--duration-fast) var(--ease-out);
 }
 
@@ -811,7 +811,7 @@
 	align-items: center;
 	gap: 4px;
 	padding: 1px 4px 1px 7px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 30%, transparent);
 	color: var(--memo-text);
 	font-size: var(--text-caption2);
@@ -860,7 +860,7 @@
 	gap: 6px;
 	min-width: 0;
 	padding: 4px 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--memo-search-bg);
 	transition: box-shadow var(--duration-fast) var(--ease-out);
 }
@@ -905,7 +905,7 @@
 .memo-find-steps {
 	display: flex;
 	overflow: hidden;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 }
 
@@ -934,7 +934,7 @@
 	flex: none;
 	padding: 4px 12px;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;
@@ -1109,7 +1109,7 @@
 	gap: 7px;
 	height: 34px;
 	padding: 0 16px 0 14px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--memo-fill);
 	color: var(--memo-text);
 	font-size: 14px;
@@ -1135,7 +1135,7 @@
 	min-height: 24px;
 	padding: 2px 7px;
 	margin-left: -7px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	font-size: var(--text-caption);
 	font-weight: 500;
 }
@@ -1242,7 +1242,7 @@
 	min-width: 0;
 	padding: 10px 12px;
 	border: 1px solid var(--memo-border);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: none;
 	color: var(--memo-text);
 	font: inherit;
@@ -1285,7 +1285,7 @@
 	white-space: nowrap;
 	margin-left: 6px;
 	padding: 2px 9px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 22%, transparent);
 	color: var(--memo-text);
 	font-size: var(--text-caption2);
@@ -1402,7 +1402,7 @@ button.memo-admin-chip {
 	margin: 0 -3px;
 	padding: 0 3px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -1434,7 +1434,7 @@ button.memo-admin-chip {
 .memo-writer-publish {
 	padding: 2px 10px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	font: inherit;
 	font-size: var(--text-caption2);
 	font-weight: 600;
@@ -1511,7 +1511,7 @@ button.memo-admin-chip {
 	display: inline-block;
 	margin-left: 6px;
 	padding: 0 6px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	font-size: 10px;
 	font-weight: 600;
 	line-height: 16px;
@@ -1563,7 +1563,7 @@ button.memo-admin-chip {
 	gap: 1px;
 	width: 100%;
 	padding: 6px 10px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	text-align: left;
 }
 
@@ -1593,7 +1593,7 @@ button.memo-admin-chip {
 
 .memo-format-panel .memo-revision-back {
 	padding: 3px 6px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	color: #c78b00;
 	font-size: var(--text-caption);
 }
@@ -1603,7 +1603,7 @@ button.memo-admin-chip {
 	padding: 10px 12px;
 	overflow-y: auto;
 	border: 1px solid var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	font-size: var(--text-caption);
 }
 
@@ -1620,7 +1620,7 @@ button.memo-admin-chip {
 	width: 100%;
 	margin-top: 8px;
 	padding: 7px 0;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: #edbb4d;
 	color: #2b2100;
 	font-size: var(--text-footnote);
@@ -1711,7 +1711,7 @@ button.memo-admin-chip {
 	z-index: var(--z-menu);
 	width: 232px;
 	padding: 8px;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--color-popover-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.15),
@@ -1876,14 +1876,14 @@ button.memo-admin-chip {
 	gap: 2px;
 	margin-bottom: 8px;
 	padding: 2px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: color-mix(in srgb, var(--color-popover-text) 7%, transparent);
 }
 
 .memo-format-panel .memo-image-tabs button {
 	flex: 1;
 	padding: 4px 0;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	font-size: var(--text-caption);
 }
 
@@ -1901,7 +1901,7 @@ button.memo-admin-chip {
 	gap: 4px;
 	padding: 22px 12px;
 	border: 1.5px dashed var(--color-divider);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	cursor: pointer;
 	text-align: center;
 }
@@ -1944,7 +1944,7 @@ button.memo-admin-chip {
 .memo-image-preview {
 	width: 100%;
 	max-height: 150px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: color-mix(in srgb, var(--color-popover-text) 6%, transparent);
 	object-fit: contain;
 }
@@ -1965,7 +1965,7 @@ button.memo-admin-chip {
 	width: 100%;
 	padding: 6px 9px;
 	border: 1px solid var(--color-divider);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -2007,7 +2007,7 @@ button.memo-admin-chip {
 
 .memo-format-panel .memo-stock-search button {
 	padding: 5px 14px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: #edbb4d;
 	color: #2b2100;
 	font-size: var(--text-footnote);
@@ -2017,7 +2017,7 @@ button.memo-admin-chip {
 .memo-format-panel .memo-image-back,
 .memo-format-panel .memo-stock-more {
 	padding: 5px 12px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	font-size: var(--text-footnote);
 }
 
@@ -2074,7 +2074,7 @@ button.memo-admin-chip {
 	aspect-ratio: 1;
 	padding: 0;
 	overflow: hidden;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 }
 
 .memo-stock-grid img {
@@ -2193,7 +2193,7 @@ button.memo-admin-chip {
 	justify-content: center;
 	padding: 0;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-muted) 22%, transparent);
 	color: var(--memo-muted);
 	font-size: 9px;
@@ -2386,7 +2386,7 @@ button.memo-admin-chip {
 	max-width: 100%;
 	padding: 3px 10px;
 	border: 1px solid var(--memo-border);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-code-bg);
 	color: var(--memo-text);
 	font-size: var(--text-footnote);
@@ -2531,7 +2531,7 @@ button.memo-admin-chip {
 .memo-calendar-head button {
 	width: 26px;
 	height: 26px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	color: var(--color-text-secondary);
 }
 
@@ -2568,7 +2568,7 @@ button.memo-admin-chip {
 
 .memo-calendar-picks button {
 	height: 40px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -2594,7 +2594,7 @@ button.memo-admin-chip {
 	width: 100%;
 	margin-top: 6px;
 	padding: 5px 0;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	font-weight: 600;
 }
 
@@ -2676,7 +2676,7 @@ button.memo-admin-chip {
 
 .memo-comment-badge {
 	padding: 1px 7px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 25%, transparent);
 	color: var(--memo-text);
 	font-size: 10px;
@@ -2691,7 +2691,7 @@ button.memo-admin-chip {
 	height: 24px;
 	margin-left: auto;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--memo-muted);
 	font-size: var(--text-caption);
@@ -2743,7 +2743,7 @@ button.memo-admin-chip {
 	gap: 8px;
 	padding: 12px;
 	border: 1px solid var(--memo-border);
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	transition: border-color var(--duration-fast) var(--ease-out);
 }
 
@@ -2773,7 +2773,7 @@ button.memo-admin-chip {
 	min-width: 0;
 	padding: 7px 10px;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;
@@ -3357,7 +3357,7 @@ button.memo-admin-chip {
 	width: 100%;
 	aspect-ratio: 4 / 3;
 	overflow: hidden;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--memo-list-bg);
 	box-shadow:
 		0 0 0 1px var(--memo-border),
@@ -3653,7 +3653,7 @@ button.memo-admin-chip {
 	z-index: 5;
 	height: 44px;
 	padding: 0 6px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.06),
@@ -3695,7 +3695,7 @@ button.memo-admin-chip {
 	max-width: calc(100% - 68px - 118px);
 	margin: 0;
 	padding: 0 8px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.06),
@@ -3721,7 +3721,7 @@ button.memo-admin-chip {
 	flex-shrink: 0;
 	height: 40px;
 	padding: 0 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: none;
 	color: var(--memo-text);
 	font-size: var(--text-callout);
@@ -3786,7 +3786,7 @@ button.memo-admin-chip {
 	gap: 4px;
 	height: 50px;
 	padding: 0 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.06),
@@ -3944,7 +3944,7 @@ button.memo-admin-chip {
 /* 폴더 카드: 줄마다 아이콘·이름·수·› , 줄 사이 선은 이름부터 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-scroll > ul {
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--phone-card-bg);
 }
 
@@ -4024,7 +4024,7 @@ button.memo-admin-chip {
 /* 태그 칩 (iOS 메모): 둥근 네모에 굵은 글자. 미선택은 회색, 포함은 강조 색에 흰 글자, 제외는 테두리와 취소선 */
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-tag-chip {
 	padding: 7px 14px;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
 	font-size: var(--text-body);
@@ -4089,7 +4089,7 @@ button.memo-admin-chip {
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-items {
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--phone-card-bg);
 }
 
@@ -4205,7 +4205,7 @@ button.memo-admin-chip {
 	height: 44px;
 	padding: 0 18px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--memo-text);
@@ -4233,7 +4233,7 @@ button.memo-admin-chip {
 	justify-content: center;
 	height: 50px;
 	margin: 0 12px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--memo-muted);
@@ -4375,7 +4375,7 @@ button.memo-admin-chip {
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	color: var(--memo-muted);
 	font: inherit;
 	font-size: var(--text-body);
@@ -4598,7 +4598,7 @@ button.memo-admin-chip {
 	height: 28px;
 	padding: 0;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: rgba(28, 28, 30, 0.55);
 	color: #fff;
 	font-size: var(--text-caption);
@@ -4653,7 +4653,7 @@ button.memo-admin-chip {
 	margin: 0.5em auto 0;
 	padding: 5px 10px;
 	border: 1px solid var(--memo-border);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
 	font: inherit;
