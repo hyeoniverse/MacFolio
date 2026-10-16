@@ -1,7 +1,8 @@
 // RPG 대화창(DialoguePage)의 무대 그림판: 주제마다 고전 게임 화면 하나 (타이틀, 퀘스트, 스킬 트리, 전투, 파티, 장비, 상태, 월드 맵, 보물, 기록...).
 // 무대는 480×270 게임 화면(DialoguePage.css) 안의 위쪽 칸이고, 크기는 모두 게임 화면의 칸(px) 단위다. 주제마다 큰 그림 하나(몬스터, 사람, 상자, 길...)를
 // 가운데에 두고, 글은 짧게(지금 항목과 그 이웃만) 둔다. 자세한 글은 대화 상자에 있으므로 그림판은 꾸밈(aria-hidden)이고,
-// 보물 상자의 링크만 실제로 누르고 읽을 수 있다. 틀은 무대에 그리지 않는다 (상자 안의 상자가 되지 않게)
+// 보물 상자의 링크만 실제로 누르고 읽을 수 있다. 틀은 무대에 그리지 않는다 (상자 안의 상자가 되지 않게).
+// 몬스터·파티원·상자·초상은 포켓몬 전투처럼 납작한 타원 발판 위에 서고, 그림마다 짙은 외곽선을 둘러 밝은 장면에서도 읽힌다
 import React from 'react';
 import type { Project, ProjectPoint } from '@/shared/profile';
 import { PROFILE } from '@/shared/profile';
@@ -11,11 +12,16 @@ import {
 	battleHp,
 	CHEST_CLOSED,
 	CHEST_OPEN,
+	hpLevel,
 	letterOf,
+	monsterColors,
 	monsterOf,
+	outlined,
 	PERSON,
 	personColors,
 	pixelRuns,
+	PLATFORM_COLORS,
+	platformRows,
 	slotIcon,
 	splitScore,
 	statusStats,
@@ -55,15 +61,41 @@ const Pixels: React.FC<{
 			focusable="false"
 		>
 			{pixelRuns(rows, colors).map((run) => (
-				<rect key={`${run.x}-${run.y}`} x={run.x} y={run.y} width={run.w} height={1} fill={run.color} />
+				<rect key={`${run.x}-${run.y}`} x={run.x} y={run.y} width={run.w} height={1} style={{ fill: run.color }} />
 			))}
 		</svg>
 	);
 };
 
-/** 사람 하나: 이름으로 정한 색의 16×24 픽셀 사람 */
+const PERSON_LINED = outlined(PERSON);
+
+/** 사람 하나: 이름으로 정한 색의 16×24 픽셀 사람 (짙은 외곽선을 둘러 18×26) */
 const Person: React.FC<{ name: string; scale: number; className?: string }> = ({ name, scale, className }) => (
-	<Pixels rows={PERSON} colors={personColors(name)} scale={scale} className={className ?? 'dlp-person'} />
+	<Pixels rows={PERSON_LINED} colors={personColors(name)} scale={scale} className={className ?? 'dlp-person'} />
+);
+
+const platforms = new Map<string, string[]>();
+/** 발판 칸 그림 (크기마다 한 번만 계산) */
+const platformOf = (width: number, height: number) => {
+	const key = `${width}x${height}`;
+	let rows = platforms.get(key);
+	if (!rows) {
+		rows = platformRows(width, height);
+		platforms.set(key, rows);
+	}
+	return rows;
+};
+
+/** 발판 위에 선 그림: width×height 칸(2배)의 타원 발판 위, 발이 발판 가운데쯤에 닿게 */
+const OnPlatform: React.FC<{ width: number; height: number; children: React.ReactNode }> = ({
+	width,
+	height,
+	children,
+}) => (
+	<span className="dlp-on" style={{ ['--dlp-plat-h' as string]: `${height * 2}px` }}>
+		<Pixels rows={platformOf(width, height)} colors={PLATFORM_COLORS} scale={2} className="dlp-platform" />
+		{children}
+	</span>
 );
 
 /** 그림판: 머리줄(노란 이름, 오른쪽 회색 셈) 한 줄과 본문. 틀은 없다 */
@@ -220,19 +252,23 @@ const Battle: React.FC<PanelProps> = ({ project, focus, side }) => {
 	const step = focus.step ?? steps[0];
 	const hp = battleHp(steps, step);
 	const defeated = hp === 0;
+	const monster = outlined(monsterOf(at));
 	return (
 		<Panel kind="troubleshooting" title="BATTLE" count={`버그 ${at + 1} / ${items.length}`} side={side}>
 			<div className="dlp-battle" data-step={step}>
 				<div className="dlp-arena" data-defeated={defeated || undefined}>
-					<Pixels rows={monsterOf(at)} scale={side ? 2 : 3} className="dlp-monster" />
-				</div>
-				<div className="dlp-hp" data-hp={hp}>
-					<b className="dlp-foe-name">{item.title}</b>
-					<em>HP</em>
-					<span className="dlp-hp-track">
-						<i style={{ width: `${hp}%` }} />
-					</span>
-					<span className="dlp-hp-num">{hp}</span>
+					{/* 포켓몬처럼 왼쪽 위에 이름·HP 상자, 오른쪽에 발판 위의 몬스터 */}
+					<div className="dlp-hp" data-hp={hp}>
+						<b className="dlp-foe-name">{item.title}</b>
+						<em>HP</em>
+						<span className="dlp-hp-track" data-level={hpLevel(hp)}>
+							<i style={{ width: `${hp}%` }} />
+						</span>
+						<span className="dlp-hp-num">{hp}</span>
+					</div>
+					<OnPlatform width={side ? 40 : 60} height={side ? 8 : 12}>
+						<Pixels rows={monster} colors={monsterColors(at)} scale={side ? 2 : 3} className="dlp-monster" />
+					</OnPlatform>
 				</div>
 				{!side && (
 					<ul className="dlp-battle-menu">
@@ -267,7 +303,9 @@ const Party: React.FC<PanelProps> = ({ project, focus, side }) => {
 					return (
 						<li key={member.name} data-state={stateOf(i, at)} data-me={member.me || undefined}>
 							<span className="dlp-mark">{i === at ? '♥' : ''}</span>
-							<Person name={member.name} scale={side ? 2 : 3} />
+							<OnPlatform width={side ? 20 : 28} height={side ? 5 : 7}>
+								<Person name={member.name} scale={side ? 2 : 3} />
+							</OnPlatform>
 							<b className="dlp-member">{member.name}</b>
 							{member.me && <em className="dlp-me">★ 나</em>}
 						</li>
@@ -335,7 +373,9 @@ const Status: React.FC<PanelProps> = ({ project, focus, side }) => {
 		<Panel kind="contributions" title="STATUS" side={side}>
 			<div className="dlp-status">
 				<div className="dlp-portrait">
-					<Person name={name} scale={side ? 2 : 4} />
+					<OnPlatform width={side ? 24 : 40} height={side ? 6 : 9}>
+						<Person name={name} scale={side ? 2 : 4} />
+					</OnPlatform>
 				</div>
 				<div className="dlp-sheet">
 					<b className="dlp-sheet-name">{name}</b>
@@ -399,9 +439,9 @@ const WorldMap: React.FC<PanelProps> = ({ project, focus, side }) => {
 					<polyline
 						points={points.map((p) => `${p.x},${p.y}`).join(' ')}
 						fill="none"
-						stroke="#8c8c8c"
-						strokeWidth={2}
-						strokeDasharray="4 4"
+						style={{ stroke: 'var(--dl-path)' }}
+						strokeWidth={4}
+						strokeDasharray="6 4"
 						shapeRendering="crispEdges"
 					/>
 				</svg>
@@ -444,7 +484,9 @@ const Treasure: React.FC<PanelProps> = ({ project, focus, side }) => {
 								<i className={faClass(deploymentIcon(current.platform, current.url))} />
 							</span>
 						)}
-						<Pixels rows={open ? CHEST_OPEN : CHEST_CLOSED} scale={side ? 3 : 4} className="dlp-chest" />
+						<OnPlatform width={side ? 36 : 52} height={side ? 8 : 11}>
+							<Pixels rows={open ? CHEST_OPEN : CHEST_CLOSED} scale={side ? 3 : 4} className="dlp-chest" />
+						</OnPlatform>
 					</div>
 				)}
 				<ul className="dlp-chests">
