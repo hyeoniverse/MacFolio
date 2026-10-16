@@ -170,4 +170,83 @@ test.describe('날씨', () => {
 		await weather.getByRole('button', { name: '최소화' }).click();
 		await expect(weather).toBeHidden();
 	});
+
+	test('신호등은 떠 있는 사이드바 위에 보인다 (사이드바가 덮지 않는다)', async ({ page }) => {
+		await fakeWeather(page);
+		const weather = await openWeather(page);
+		await expect(weather.getByRole('navigation', { name: '장소' })).toBeVisible();
+		for (const name of ['닫기', '최소화', '전체 화면']) {
+			const light = weather.getByRole('button', { name, exact: true });
+			const box = (await light.boundingBox())!;
+			// 그 자리에서 맨 위에 그려진 것이 신호등 단추다
+			const top = await page.evaluate(
+				({ x, y }) =>
+					document.elementFromPoint(x, y)?.closest('[role="button"], button')?.getAttribute('aria-label') ?? null,
+				{ x: box.x + box.width / 2, y: box.y + box.height / 2 }
+			);
+			expect(top).toBe(name);
+		}
+		// 사이드바 단추도 그대로 누를 수 있다
+		await weather.getByRole('button', { name: '사이드바 가리기' }).click();
+		await expect(weather.getByRole('navigation', { name: '장소' })).toBeHidden();
+	});
+});
+
+test.describe('날씨 (휴대폰 화면)', () => {
+	/** 휴대폰 셸(로딩 화면을 눌러 홈)에서 날씨를 연다 */
+	async function openOnPhone(page: Page) {
+		await page.goto('/');
+		const loading = page.locator('.loading-container');
+		await expect(loading).toContainText('탭하여');
+		await loading.click();
+		await expect(loading).toBeHidden({ timeout: 20_000 });
+		const home = page.locator('.mobile-home');
+		const pages = home.locator('.mobile-page');
+		const count = await pages.count();
+		for (let index = 0; index < count; index++) {
+			if ((await pages.nth(index).locator('.mobile-app[aria-label="날씨"]').count()) === 0) continue;
+			if (count > 1) await home.getByRole('tab', { name: `${index + 1}쪽` }).click();
+			break;
+		}
+		await home.getByRole('button', { name: '날씨', exact: true }).click();
+		const weather = appWindow(page, 'weather');
+		await expect(weather.getByRole('main', { name: '서울 날씨' }).getByLabel('현재 기온 19도')).toBeVisible();
+		return weather;
+	}
+
+	// 휴대폰 셸은 767px까지, 눕힌 휴대폰은 더 넓다. 날씨 칸이 640px보다 넓어도 iOS 모양이어야 한다
+	for (const [name, width, height] of [
+		['세운 큰 휴대폰 744px', 744, 1000],
+		['눕힌 휴대폰 844×390', 844, 390],
+	] as const) {
+		test(`${name}: 폭과 상관없이 iOS 모양 (목록은 덮어 열고, 사이드바 단추가 상태 표시줄 밑에 깔리지 않는다)`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height });
+			await fakeWeather(page);
+			const weather = await openOnPhone(page);
+			await expect(weather.locator('.weather')).toHaveAttribute('data-compact', 'true');
+			await expect(weather.getByRole('navigation', { name: '장소' })).toBeHidden();
+			await expect(weather.getByRole('button', { name: /사이드바/ })).toHaveCount(0);
+			await weather.getByRole('button', { name: '장소 목록' }).click();
+			await expect(
+				weather.getByRole('navigation', { name: '장소' }).getByRole('heading', { name: '날씨' })
+			).toBeVisible();
+		});
+	}
+
+	test('아래 막대의 목록 단추는 장소가 하나여도 오른쪽, 날씨 칸들과 같은 좌우 여백에 맞춘다', async ({ page }) => {
+		await page.setViewportSize({ width: 390, height: 844 });
+		await fakeWeather(page);
+		const weather = await openOnPhone(page);
+		// 창이 열리는 움직임이 끝난 뒤의 자리로 잰다
+		const rightEdge = async (selector: string) => {
+			const box = (await weather.locator(selector).first().boundingBox())!;
+			return Math.round(box.x + box.width);
+		};
+		await expect
+			.poll(() => rightEdge('.weather-list-toggle'))
+			.toBe(await rightEdge('.weather-scroll > .weather-panel'));
+		expect(await rightEdge('.weather-scroll > .weather-panel')).toBe(390 - 28);
+	});
 });

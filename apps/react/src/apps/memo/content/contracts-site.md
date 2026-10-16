@@ -2,7 +2,7 @@
 title: 이미 한 곳이었다, 자리만 옮겼다 — 사이트 프로필로 1단계 마무리
 date: 2026-10-11
 category: 개발기/MacFolio/인프라
-summary: 사이트 프로필은 처음부터 화면과 서버가 desktop-core의 parseProfile 하나를 썼다. 그래도 옮겼다. 이번 1단계에서 "요청·응답의 검사와 모양은 contracts, 타입과 순수 규칙은 desktop-core"로 자리를 정했기 때문이다. 손으로 적은 if문 58줄을 zod로 옮기면서 문구 열한 개와 순서를 시험으로 고정했다. 이것으로 여덟 도메인이 모두 contracts로 갔다.
+summary: 사이트 프로필은 처음부터 화면과 서버가 parseProfile 하나를 썼지만, "요청·응답의 검사와 모양은 contracts, 타입과 순수 규칙은 desktop-core"로 자리를 정해 옮겼다. 손으로 적은 if문 58줄을 zod로 옮기며 문구 열한 개와 순서를 시험으로 고정했다. 이것으로 여덟 도메인이 모두 contracts로 갔다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 여덟째, 마지막 도메인. 댓글·글·메시지·연락 메일·배경화면·파일·[분석](/memo/contracts-analytics)에 이어 사이트 프로필이다.

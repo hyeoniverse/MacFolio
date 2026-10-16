@@ -3,6 +3,7 @@ import {
 	addFolder,
 	canAddFolder,
 	canMoveFolder,
+	keepFolder,
 	moveFolder,
 	movePost,
 	organizePosts,
@@ -15,7 +16,7 @@ import {
 	normalizeOrganization,
 } from './organize.js';
 import { EMPTY_ORGANIZATION } from './rules.js';
-import type { Post } from './posts.js';
+import { buildFolderTree, type Post } from './posts.js';
 import { type PostSlug, type FolderPath } from './rules.js';
 
 const post = (slug: string, category: string): Post => ({
@@ -58,6 +59,18 @@ describe('글 옮기기', () => {
 	it('글의 폴더만 바뀐다', () => {
 		const result = organizePosts(posts, movePost(EMPTY_ORGANIZATION, 'b' as PostSlug, '회고' as FolderPath));
 		expect(categories(result)).toEqual({ a: '개발기/MacFolio', b: '회고', c: '회고' });
+	});
+	it('마지막 글이 떠나도 있던 폴더는 남고, 비었으니 지울 수 있다', () => {
+		const org = movePost(EMPTY_ORGANIZATION, 'c' as PostSlug, '개발기' as FolderPath, '회고');
+		const tree = buildFolderTree(organizePosts(posts, org), org.folders);
+		expect(tree.find((node) => node.path === '회고')).toMatchObject({ count: 0, custom: true });
+	});
+
+	it('같은 폴더로 옮기거나 이미 남긴 폴더면 그대로다', () => {
+		expect(movePost(EMPTY_ORGANIZATION, 'c' as PostSlug, '회고' as FolderPath, '회고').folders).toEqual([]);
+		const kept = keepFolder(EMPTY_ORGANIZATION, '회고');
+		expect(keepFolder(kept, '회고')).toBe(kept);
+		expect(keepFolder(EMPTY_ORGANIZATION, '')).toBe(EMPTY_ORGANIZATION);
 	});
 });
 

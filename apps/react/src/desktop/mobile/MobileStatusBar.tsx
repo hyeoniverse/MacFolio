@@ -18,8 +18,8 @@ function useClock() {
 
 interface Props {
 	ref?: React.Ref<HTMLDivElement>;
-	/** 글자 색: 흰색(light) 또는 검은색(dark). 앱 위에서는 밑의 화면을 읽어 정한다 (statusBarTone.ts) */
-	tone: StatusBarTone;
+	/** 시계 쪽과 아이콘 쪽의 색: 흰색(light) 또는 검은색(dark). 밑의 화면을 읽어 정한다 (statusBarTone.ts) */
+	tone: { clock: StatusBarTone; icons: StatusBarTone };
 	/** 앱 위: 바탕은 투명하게 두고 밑으로 지나가는 내용만 아주 약하게 흐린다 */
 	onApp: boolean;
 	/** 화면만 보기 (사진만 보기): 흐려지며 사라진다 */
@@ -46,7 +46,7 @@ const MobileStatusBar = ({ ref, tone, onApp, hidden = false, onOpen }: Props) =>
 	return (
 		<div
 			ref={ref}
-			className={`mobile-statusbar ${tone}${onApp ? ' on-app' : ''}${hidden ? ' hidden' : ''}`}
+			className={`mobile-statusbar clock-${tone.clock} icons-${tone.icons}${onApp ? ' on-app' : ''}${hidden ? ' hidden' : ''}`}
 			aria-hidden={hidden || undefined}
 			role="button"
 			aria-label="제어 센터 열기"

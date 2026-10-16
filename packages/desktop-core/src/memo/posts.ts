@@ -62,10 +62,16 @@ export function parseFrontmatter(source: string): { meta: Record<string, string>
 export function excerpt(body: string, length = 80): string {
 	const text = body
 		.replace(/```[\s\S]*?```/g, ' ')
+		// 각주 내용(글 끝의 [^1]: …)과 본문의 각주 번호, 접기 블록의 <details>·<summary>, 빈 줄을 남긴 <br />
+		.replace(/^\[\^[^\]]+\]:.*$/gm, ' ')
+		.replace(/\[\^[^\]]+\]/g, '')
+		.replace(/<\/?(?:details|summary|br)\b[^>]*>/gi, ' ')
 		.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
 		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
 		// 제목 표시(# 뒤에 공백)만 걷는다. 줄 처음의 #태그는 남긴다
 		.replace(/^#{1,6}(\s+|$)/gm, '')
+		// 글자로 남기려고 붙인 \ (편집기는 220~440px를 220\~440px로 저장한다)
+		.replace(/\\([!-/:-@[-`{-~])/g, '$1')
 		.replace(/[*_`>|-]/g, ' ')
 		.replace(/\s+/g, ' ')
 		.trim();

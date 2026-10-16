@@ -68,7 +68,22 @@ export const noteContextItems = (post: Post, actions: NoteActions): MenuItem[] =
 export const phoneNoteItems = (
 	post: Post,
 	actions: NoteActions,
-	{ canEdit, inTrash, newDraft, onFind }: { canEdit: boolean; inTrash: boolean; newDraft: boolean; onFind: () => void }
+	{
+		canEdit,
+		inTrash,
+		newDraft,
+		onFind,
+		readerView = null,
+		onToggleReaderView,
+	}: {
+		canEdit: boolean;
+		inTrash: boolean;
+		newDraft: boolean;
+		onFind: () => void;
+		/** 읽기 화면으로 보는 중인지 (관리자가 편집할 수 있는 글일 때만, 아니면 null) */
+		readerView?: boolean | null;
+		onToggleReaderView?: () => void;
+	}
 ): MenuItem[] =>
 	canEdit && inTrash
 		? [restoreItem(post, actions), purgeItem(post, actions)]
@@ -92,6 +107,15 @@ export const phoneNoteItems = (
 						]
 					: []),
 				{ label: '메모에서 찾기', icon: 'fa-solid fa-magnifying-glass', onSelect: onFind },
+				...(readerView !== null && !newDraft && onToggleReaderView
+					? [
+							{
+								label: readerView ? '편집 화면으로 돌아가기' : '읽기 화면으로 보기',
+								icon: readerView ? 'fa-solid fa-pen' : 'fa-regular fa-eye',
+								onSelect: onToggleReaderView,
+							},
+						]
+					: []),
 				...(canEdit && !newDraft ? [{ ...removeItem(post, actions, '삭제'), destructive: true }] : []),
 			];
 

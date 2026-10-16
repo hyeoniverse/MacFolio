@@ -2,7 +2,7 @@
 title: 화면과 서버가 같은 규칙을 쓰기 - 소스는 Vite가, 빌드 결과는 Node가
 date: 2026-10-09
 category: 개발기/MacFolio/백엔드
-summary: 폴더는 3단까지, 이름은 30자까지, 제목은 100자까지 같은 규칙이 화면 코드와 서버 코드에 따로 적혀 있었다. 이것을 desktop-core 한 곳에 두고 둘이 함께 쓰게 했다. 화면(Vite)은 TypeScript 소스를 바로 읽고, 서버(Node)는 빌드한 JS를 읽게 package.json의 exports 조건으로 나눴다. 배포 이미지에서 서버가 이 규칙을 실제로 불러오는지도 확인했다.
+summary: 폴더는 3단까지, 이름은 30자까지, 제목은 100자까지 같은 규칙이 화면 코드와 서버 코드에 따로 적혀 있었다. 이것을 desktop-core 한 곳에 두고 둘이 함께 쓰게 했다. 화면(Vite)은 TypeScript 소스를, 서버(Node)는 빌드한 JS를 읽게 package.json의 exports 조건으로 나눴다.
 ---
 
 desktop-core로 [창 관리](/memo/desktop-core-windows), [메모](/memo/desktop-core-memo), [음악](/memo/desktop-core-music)을 옮기고 나니 #16에 한 항목이 남았다. "백엔드와 함께 쓸 타입의 위치를 정한다."
