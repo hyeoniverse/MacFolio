@@ -145,7 +145,7 @@
 	height: 26px;
 	padding: 0;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--weather-dim);
 	font-size: var(--text-subhead);
@@ -169,7 +169,7 @@
 	gap: 6px;
 	height: 32px;
 	padding: 0 10px;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: rgba(0, 0, 0, 0.22);
 	color: var(--weather-dim);
 	font-size: var(--text-caption);
@@ -220,7 +220,7 @@
 	padding: 10px 12px;
 	min-height: 92px;
 	border: 3px solid transparent;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: var(--weather-top);
 	background-image: var(--weather-stars), linear-gradient(160deg, var(--weather-top), var(--weather-bottom));
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
@@ -306,7 +306,7 @@
 	width: 100%;
 	padding: 8px 10px;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background: none;
 	text-align: left;
 	cursor: pointer;
@@ -581,7 +581,7 @@
 .weather-day-bar {
 	position: relative;
 	height: 5px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: rgba(0, 0, 0, 0.18);
 }
 
@@ -640,7 +640,7 @@
 .weather-status button {
 	padding: 5px 14px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--weather-panel);
 	cursor: pointer;
 }
@@ -721,7 +721,7 @@
 	margin-top: auto;
 	padding: 0 18px;
 	border: 1px solid rgba(255, 255, 255, 0.12);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: rgba(44, 46, 62, 0.96);
 	font-size: var(--text-callout);
 }
@@ -789,7 +789,7 @@
 	gap: 4px;
 	padding: 10px 14px;
 	border: 1px solid rgba(255, 255, 255, 0.14);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: rgba(30, 40, 70, 0.45);
 	backdrop-filter: blur(16px);
 }
@@ -913,7 +913,7 @@
 	gap: 16px;
 	min-height: 48px;
 	padding: 10px 16px;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 }
 
 .ui-menu.weather-menu-large .ui-menu-item i {
@@ -925,14 +925,14 @@
 .ui-menu.weather-menu-compact {
 	min-width: 0;
 	padding: 4px;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	font-size: 14px;
 }
 
 .ui-menu.weather-menu-compact .ui-menu-item {
 	gap: 8px;
 	padding: 7px 16px 7px 12px;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	font-weight: 500;
 }
 

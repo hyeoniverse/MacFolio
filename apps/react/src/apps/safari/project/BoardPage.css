@@ -79,7 +79,7 @@
 
 .kb-links .sp-pill {
 	border: 3px solid var(--kb-ink);
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background-color: #ff5a5f;
 	box-shadow: 4px 4px 0 var(--kb-ink);
 	font-weight: 700;
@@ -129,7 +129,7 @@
 	gap: 6px;
 	padding: 4px 12px;
 	border: 2px solid var(--kb-ink);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	font-size: var(--text-footnote);
 }
 
@@ -172,7 +172,7 @@
 
 .kb-status {
 	padding: 2px 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--tone);
 	color: #ffffff;
 	font-size: var(--text-caption);
@@ -257,7 +257,7 @@
 	width: 26px;
 	height: 26px;
 	border: 2px solid var(--kb-ink);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background-color: var(--kb-card);
 	color: var(--kb-ink);
 	font-size: var(--text-caption);
@@ -323,7 +323,7 @@
 	gap: 6px;
 	padding: 4px 12px;
 	border: 2px solid var(--kb-ink);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--kb-card);
 	box-shadow: 2px 2px 0 var(--kb-ink);
 	color: var(--kb-ink);
@@ -397,7 +397,7 @@
 .kb-lane h3 {
 	display: inline-block;
 	padding: 2px 12px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--tone);
 	color: #ffffff;
 	font-size: 14px;
@@ -443,7 +443,7 @@
 	position: relative;
 	padding: 22px 18px 18px;
 	border: 3px solid var(--kb-ink);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background-color: color-mix(in srgb, var(--tone) 70%, var(--kb-card));
 	box-shadow: 4px 4px 0 var(--kb-ink);
 	color: #1d1d1f;
@@ -595,14 +595,14 @@
 	gap: 8px;
 	padding: 6px 14px 6px 6px;
 	border: 2px solid var(--kb-ink);
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: var(--kb-card);
 	font-size: 14px;
 }
 
 .kb-labels span {
 	padding: 2px 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: #fff1a8;
 	color: #1d1d1f;
 	font-size: var(--text-caption);

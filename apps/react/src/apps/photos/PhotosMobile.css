@@ -270,7 +270,7 @@
 	gap: 4px;
 	width: min(240px, 66%);
 	padding: 4px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
@@ -285,7 +285,7 @@
 	gap: 2px;
 	height: 52px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: none;
 	font-size: var(--text-caption2);
 	font-weight: 500;
@@ -346,7 +346,7 @@
 .photos-phone-suggestions button {
 	padding: 12px 20px;
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	font-size: var(--text-body);
@@ -369,7 +369,7 @@
 	gap: 10px;
 	height: 52px;
 	padding: 0 18px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
@@ -578,7 +578,7 @@
 /* 형식 카드: 머리(앨범 · 형식 딱지), 두 줄, 칸 나눈 줄 */
 .photos-phone-card {
 	overflow: hidden;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background: var(--color-selected-bg);
 }
 
@@ -637,7 +637,7 @@
 	margin-top: 10px;
 	padding: 11px;
 	border: none;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background: var(--color-selected-bg);
 	color: #0a84ff;
 	font-size: var(--text-body);
@@ -704,7 +704,7 @@
 	display: flex;
 	gap: 6px;
 	padding: 4px 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);

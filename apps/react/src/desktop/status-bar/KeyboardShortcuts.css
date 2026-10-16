@@ -63,7 +63,7 @@
 	margin: 14px 0 0 auto;
 	padding: 4px 14px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--color-accent);
 	color: var(--color-on-accent);
 	font: inherit;

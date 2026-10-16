@@ -175,7 +175,7 @@ a.shortcut-row {
 .shortcut-tag {
 	flex: none;
 	padding: 2px 8px;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background-color: var(--color-sidebar-bg, #f2f2f7);
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption);
