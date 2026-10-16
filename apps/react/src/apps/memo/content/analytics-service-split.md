@@ -2,7 +2,7 @@
 title: 트래픽 분석 서비스를 저장·집계·조회 셋으로 나누기
 date: 2026-10-16
 category: 개발기/MacFolio/백엔드
-summary: 341줄짜리 AnalyticsService 하나가 이벤트 저장, 지난 날 모으기와 오래된 값 지우기, 요약·조회수·최근 방문 조회를 모두 맡고 있었다. 저장(AnalyticsRecorder)·집계(AnalyticsRollup)·조회(AnalyticsStats) 세 서비스로 나눴다. 경로와 응답은 그대로라 API 시험 124개가 집계를 부르는 한 줄만 고쳐 통과한다.
+summary: 341줄짜리 AnalyticsService 하나가 이벤트 저장, 지난 날 모으기·오래된 값 지우기, 요약·조회수·최근 방문 조회를 모두 맡고 있었다. 저장(AnalyticsRecorder)·집계(AnalyticsRollup)·조회(AnalyticsStats) 세 서비스로 나눴다. 경로와 응답은 그대로다.
 ---
 
 트래픽 분석(#102)은 사이트가 보낸 이벤트를 받아 두었다가, 하루가 지나면 날짜별 통계로 모으고, '활동 상태 보기' 앱과 블로그 조회수에 숫자를 내준다. 이 세 가지 일을 `AnalyticsService` 클래스 하나가 했다.
