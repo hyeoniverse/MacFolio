@@ -1,704 +1,728 @@
-// bento 템플릿: 한 화면 대시보드. 긴 구역을 차례로 늘어놓지 않고, 프로젝트 전체를 크기가 다른 타일로 빈칸 없이 짠 보드 하나에 담는다 (layout.ts).
-// 머리 타일(이름·한 줄·링크) 옆에 대표 화면과 작은 꺾은선이 달린 숫자, 그 아래 기능·화면·단계·구현·사례 넘기기 타일, 넷씩 놓인 작은 타일
-// (이야기·단축키·기술·팀·역할·날짜 칸 그래프·상태 점이 달린 배포·출처), 맨 아래 마무리 줄. 타일마다 구역(region)이고,
-// 담지 못한 내용은 '더 보기'로 여는 자세히 보기 창(Sheet.tsx, 모달 dialog)에 둔다. 기능 줄을 누르면 그 기능의 자세히 보기가 열린다.
-// 1px 선, 고정폭 숫자, 짧은 이름표 같은 제목. 사이트 테마를 따르고 다크에서 가장 또렷하다. 계약은 templates/README.md
-import React, { useMemo, useState } from 'react';
+// bento 템플릿: Framer·Raycast의 SaaS 템플릿처럼. 가운데 정렬한 첫 화면(작은 알림 알약, 촘촘한 큰 제목, 단추 둘, 창틀에 담은 큰 화면) 아래에
+// 크기가 다른 타일을 12칸 격자에 빈칸 없이 짜 넣는다 (layout.ts). 주요 기능·숫자·화면 모음·쓴 기술·맡은 일이 한 격자에 섞이고,
+// 나머지 구역은 그 아래에 작은 타일 모양으로 이어진다. 1px 선, 고정폭 작은 라벨, 글쇠 모양 표시. 계약은 templates/README.md
+import React, { useMemo } from 'react';
 import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
 import {
 	DeployList,
-	FaIcon,
 	iconOf,
+	LandingSections,
 	Media,
-	MemberAvatar,
+	sectionTitle,
 	TeamList,
 	TroubleList,
-	troubleIcon,
-	troubleSteps,
 	useLanding,
 	useLandingAccent,
-	type LandingMedia,
+	type Landing,
+	type LandingHero,
 	type LandingPoint,
 	type LandingSection,
 	type LandingSectionKind,
+	type SectionOf,
 	type SectionRenderers,
 } from '@/apps/safari/project/landing';
-import { bentoAccent } from './accent';
-import { Graph, Spark } from './charts';
-import { graphOf } from './graph';
+import type { ProjectFact } from '@/shared/profile';
 import { BentoLinks } from './Links';
-import { boardOf, placementStyle } from './layout';
-import { Sheet } from './Sheet';
+import { bentoOf, packSizes, placementStyle, type Placement, type TileSize } from './layout';
 import './Page.css';
 
-/** 타일 제목: 대시보드의 짧은 이름표 */
-const TILE_TITLES: Record<LandingSectionKind, string> = {
-	stats: '숫자',
-	features: '기능',
-	screens: '화면',
-	steps: '시작하기',
-	built: '구현',
-	troubleshooting: '문제 해결',
-	stories: '이야기',
-	controls: '단축키',
-	tech: '기술',
-	team: '팀',
-	role: '역할',
-	timeline: '타임라인',
-	deployments: '배포',
-	credits: '출처',
+/* ─── 격자 ─── */
+
+/** 첫 격자의 자리: 같은 랜딩이면 한 번만 짠다 */
+const layouts = new WeakMap<Landing, ReturnType<typeof bentoOf> & { numbers: Map<LandingSectionKind, number> }>();
+function bentoLayout(landing: Landing) {
+	const cached = layouts.get(landing);
+	if (cached) return cached;
+	const find = <K extends LandingSection['kind']>(kind: K) =>
+		landing.sections.find((section): section is SectionOf<K> => section.kind === kind);
+	const role = find('role');
+	const tech = find('tech');
+	// 보이는 구역 머리의 번호: 첫 격자의 머리(주요 기능)부터 아래 구역까지 차례로 (첫 격자에 녹아든 구역은 건너뛴다)
+	const numbers = new Map<LandingSectionKind, number>();
+	for (const section of landing.sections) {
+		const inGrid =
+			section.kind === 'stats' ||
+			section.kind === 'screens' ||
+			section.kind === 'role' ||
+			(section.kind === 'tech' && !tech?.specs.length && !tech?.structure);
+		if (!inGrid) numbers.set(section.kind, numbers.size + 1);
+	}
+	const layout = {
+		numbers,
+		...bentoOf({
+			features: find('features')?.items ?? [],
+			facts: find('stats')?.facts.length ?? 0,
+			screens: Boolean(find('screens')),
+			stack: tech?.stack.length ?? 0,
+			role: role ? { contributions: role.contributions.length } : null,
+		}),
+	};
+	layouts.set(landing, layout);
+	return layout;
+}
+
+const placeOf = (landing: Landing, id: string): Placement | undefined => bentoLayout(landing).placements.get(id);
+
+/** 첫 격자 아래에 놓이는 구역 덩어리의 차례 (첫 격자 타일 뒤) */
+const blockOrder = (index: number) => ({ '--order': 100 + index }) as React.CSSProperties;
+
+/** 크기 차례로 짠 안쪽 격자의 타일 자리 (중간 폭만 다른 크기로 짤 수 있다) */
+const packed = (sizes: TileSize[], mdSizes: TileSize[] = sizes) => {
+	const spans = packSizes(sizes);
+	const md = packSizes(mdSizes).md;
+	return sizes.map((_, i) => placementStyle({ lg: spans.lg[i], md: md[i], sm: spans.sm[i], rows: 1, order: 0 }));
 };
 
-const pad = (n: number) => String(n).padStart(2, '0');
+/* ─── 작은 조각 ─── */
 
-/** 타일 머리: 이름표 같은 제목, 개수, 자세히 보기 단추 */
-const TileHead: React.FC<{ section: LandingSection; count?: number; onMore?: () => void }> = ({
-	section,
-	count,
-	onMore,
+const Icon: React.FC<{ point: Pick<LandingPoint, 'icon'>; index: number; className?: string }> = ({
+	point,
+	index,
+	className = 'bt-icon',
 }) => (
-	<header className="bt-tile-head">
-		<h2>{TILE_TITLES[section.kind]}</h2>
-		{count !== undefined && <span className="bt-count">{pad(count)}</span>}
-		{onMore && (
-			<button
-				type="button"
-				className="bt-more"
-				aria-haspopup="dialog"
-				aria-label={`${TILE_TITLES[section.kind]} 더 보기`}
-				onClick={onMore}
-			>
-				더 보기
-				<i className="fa-solid fa-arrow-up-right-and-arrow-down-left-from-center" aria-hidden="true" />
-			</button>
-		)}
-	</header>
+	<span className={className} aria-hidden="true">
+		<i className={`fa-solid ${iconOf(point, index)}`} />
+	</span>
 );
 
-/** 앞뒤로 넘기는 단추 둘 (자세히 보기 창의 머리) */
-const Pager: React.FC<{ index: number; count: number; onMove: (index: number) => void }> = ({
-	index,
-	count,
-	onMove,
-}) =>
-	count > 1 ? (
-		<div className="bt-pager">
-			<span className="bt-mono">
-				{pad(index + 1)} / {pad(count)}
-			</span>
-			<button
-				type="button"
-				className="bt-icon-btn"
-				aria-label="이전"
-				onClick={() => onMove((index - 1 + count) % count)}
-			>
-				<i className="fa-solid fa-chevron-left" aria-hidden="true" />
-			</button>
-			<button type="button" className="bt-icon-btn" aria-label="다음" onClick={() => onMove((index + 1) % count)}>
-				<i className="fa-solid fa-chevron-right" aria-hidden="true" />
-			</button>
-		</div>
-	) : null;
+/** 숫자 값을 숫자와 단위로 (120개 → 120, 개). 숫자로 시작하지 않으면 통째로 */
+function splitValue(value: string): { number: string; unit: string } {
+	const match = /^([+\-−]?[\d.,]+)\s*(.*)$/.exec(value.trim());
+	return match ? { number: match[1], unit: match[2] } : { number: value, unit: '' };
+}
 
-/** 항목 하나의 자세한 내용: 아이콘, 설명, 긴 설명, 그림 전부 */
-const PointDetail: React.FC<{ point: LandingPoint; index: number }> = ({ point, index }) => (
-	<div className="bt-detail">
-		<span className="bt-icon" aria-hidden="true">
+const Value: React.FC<{ value: string; className?: string }> = ({ value, className = 'bt-value' }) => {
+	const { number, unit } = splitValue(value);
+	return (
+		<strong className={className}>
+			{number}
+			{unit && <span className="bt-unit">{unit}</span>}
+		</strong>
+	);
+};
+
+/** 숫자 타일의 작은 그림: 퍼센트면 그만큼 찬 막대, 아니면 오르는 막대 묶음 (장식) */
+const Spark: React.FC<{ value: string; index: number }> = ({ value, index }) => {
+	const percent = /^(\d{1,3}(?:\.\d+)?)\s*%$/.exec(value.trim());
+	if (percent)
+		return (
+			<span className="bt-meter" aria-hidden="true">
+				<span style={{ width: `${Math.min(100, Number(percent[1]))}%` }} />
+			</span>
+		);
+	const shapes = [
+		[30, 42, 36, 54, 48, 66, 78, 100],
+		[52, 40, 60, 46, 70, 64, 82, 100],
+		[24, 30, 44, 40, 58, 72, 70, 100],
+	];
+	return (
+		<span className="bt-bars" aria-hidden="true">
+			{shapes[index % shapes.length].map((height, i) => (
+				<span key={i} style={{ height: `${height}%` }} />
+			))}
+		</span>
+	);
+};
+
+/** 그림이 없는 항목의 면: 1px 모눈 위에 큰 아이콘 하나 (장식) */
+const Art: React.FC<{ point: LandingPoint; index: number }> = ({ point, index }) => (
+	<div className="bt-art" aria-hidden="true">
+		<span className="bt-art-icon">
 			<i className={`fa-solid ${iconOf(point, index)}`} />
 		</span>
-		<p className="bt-detail-body">{point.body}</p>
-		{point.detail && <p className="bt-detail-more">{point.detail}</p>}
-		{point.media.length > 0 && (
-			<div className="bt-detail-media" data-count={Math.min(point.media.length, 2)}>
-				{point.media.map((media) => (
-					<figure key={media.src} className="bt-frame">
-						<Media media={media} />
-					</figure>
-				))}
-			</div>
-		)}
 	</div>
 );
 
-/**
- * 항목 목록 타일 (기능·구현·시작하기): 줄마다 아이콘(시작하기는 번호), 제목, 한 줄 설명. 줄을 누르면 그 항목의 자세히 보기가 열리고
- * 창 안에서 앞뒤로 넘긴다. 창에는 모든 항목을 그려 두고 고른 것만 보인다
- */
-const PointsTile: React.FC<{
-	section: LandingSection;
-	items: LandingPoint[];
-	numbered?: boolean;
-	iconOffset?: number;
-}> = ({ section, items, numbered, iconOffset = 0 }) => {
-	const [open, setOpen] = useState<number | null>(null);
-	const current = open ?? 0;
+/** 그림 없는 타일의 남는 아래 칸: 옆 타일이 더 길어 자리가 남을 때만 큰 아이콘이 보인다 (CSS 컨테이너 높이) */
+const Fill: React.FC<{ point: LandingPoint; index: number }> = ({ point, index }) => (
+	<div className="bt-fill" aria-hidden="true">
+		<i className={`fa-solid ${iconOf(point, index)}`} />
+	</div>
+);
+
+/** 항목의 그림 전부: 첫 장은 크게, 나머지는 작은 줄 */
+const PointMedia: React.FC<{ point: LandingPoint; frame?: boolean }> = ({ point, frame = true }) => {
+	const [first, ...more] = point.media;
+	if (!first) return null;
 	return (
-		<>
-			<TileHead section={section} count={items.length} onMore={() => setOpen(0)} />
-			<ol className="bt-points" data-numbered={numbered ? '' : undefined}>
-				{items.map((point, i) => (
-					<li key={point.title} data-media={point.media.length ? '' : undefined}>
-						<span className="bt-point-mark" aria-hidden="true">
-							{numbered ? pad(i + 1) : <i className={`fa-solid ${iconOf(point, i + iconOffset)}`} />}
-						</span>
-						<div className="bt-point-text">
-							<h3>
-								<button type="button" aria-haspopup="dialog" onClick={() => setOpen(i)}>
-									{point.title}
-								</button>
-							</h3>
-							<p>{point.body}</p>
-						</div>
-						{point.media.length > 0 && (
-							<span className="bt-point-badge" aria-hidden="true">
-								<i className="fa-regular fa-image" />
-								{point.media.length}
-							</span>
-						)}
-					</li>
-				))}
-			</ol>
-			<Sheet
-				open={open !== null}
-				onClose={() => setOpen(null)}
-				kicker={`${TILE_TITLES[section.kind]} ${pad(current + 1)}`}
-				title={items[current].title}
-				tools={<Pager index={current} count={items.length} onMove={setOpen} />}
-			>
-				{items.map((point, i) => (
-					<div key={point.title} hidden={i !== current}>
-						<PointDetail point={point} index={i + iconOffset} />
-					</div>
-				))}
-			</Sheet>
-		</>
-	);
-};
-
-/** 화면 타일: 넉 장까지 작은 격자, 누르면 그 화면을 크게 */
-const ScreensTile: React.FC<{ section: Extract<LandingSection, { kind: 'screens' }> }> = ({ section }) => {
-	const [open, setOpen] = useState<number | null>(null);
-	const current = open ?? 0;
-	const shots = section.shots;
-	return (
-		<>
-			<TileHead section={section} count={shots.length} onMore={() => setOpen(0)} />
-			<ul className="bt-shots" data-count={Math.min(shots.length, 4)}>
-				{shots.map((shot, i) => (
-					<li key={shot.src} hidden={i >= 4 ? true : undefined}>
-						<button type="button" aria-haspopup="dialog" onClick={() => setOpen(i)}>
-							<Media media={shot} />
-							<span className="bt-shot-caption">
-								<span className="bt-mono">{pad(i + 1)}</span>
-								{shot.caption}
-							</span>
-						</button>
-					</li>
-				))}
-			</ul>
-			<Sheet
-				open={open !== null}
-				onClose={() => setOpen(null)}
-				kicker={TILE_TITLES.screens}
-				title={shots[current].caption}
-				tools={<Pager index={current} count={shots.length} onMove={setOpen} />}
-				wide
-			>
-				{open !== null && (
-					<figure className="bt-frame bt-sheet-shot">
-						<Media media={shots[current]} />
-					</figure>
-				)}
-			</Sheet>
-		</>
-	);
-};
-
-/** 사례 타일: 사례 번호를 골라 넘기고, 고른 사례의 문제 → 원인 → 해결 → 결과를 세로 단계로 */
-const TroubleTile: React.FC<{ section: Extract<LandingSection, { kind: 'troubleshooting' }> }> = ({ section }) => {
-	const [active, setActive] = useState(0);
-	const [open, setOpen] = useState(false);
-	return (
-		<>
-			<TileHead section={section} count={section.items.length} onMore={() => setOpen(true)} />
-			{section.items.length > 1 && (
-				<div className="bt-seg" role="group" aria-label="사례 고르기">
-					{section.items.map((item, i) => (
-						<button key={item.title} type="button" aria-pressed={i === active} onClick={() => setActive(i)}>
-							<FaIcon icon={troubleIcon(item)} />
-							<span className="bt-mono">{pad(i + 1)}</span>
-						</button>
-					))}
-				</div>
-			)}
-			{section.items.map((item, i) => (
-				<div key={item.title} className="bt-case" hidden={i !== active}>
-					<h3>{item.title}</h3>
-					<ol className="bt-stepper">
-						{troubleSteps(item).map((step) => (
-							<li key={step.key} data-step={step.key}>
-								<span className="bt-step-label">{step.label}</span>
-								<p>{step.text}</p>
-							</li>
-						))}
-					</ol>
-				</div>
-			))}
-			<Sheet open={open} onClose={() => setOpen(false)} kicker={TILE_TITLES.troubleshooting} title="모든 사례" wide>
-				<TroubleList items={section.items} prefix="bt" reveal={false} />
-			</Sheet>
-		</>
-	);
-};
-
-/** 열고 닫는 자세히 보기 창 하나를 쓰는 타일의 상태 */
-function useSheet() {
-	const [open, setOpen] = useState(false);
-	return { open, show: () => setOpen(true), hide: () => setOpen(false) };
-}
-
-const StoriesTile: SectionRenderers['stories'] = ({ section }) => {
-	const sheet = useSheet();
-	return (
-		<>
-			<TileHead section={section} count={section.stories.length} onMore={sheet.show} />
-			<ul className="bt-rows">
-				{section.stories.map((story, i) => (
-					<li key={story.title}>
-						<span className="bt-mono bt-row-num">{pad(i + 1)}</span>
-						<div>
-							<h3>{story.title}</h3>
-							{story.lead && <p className="bt-clamp">{story.lead}</p>}
-						</div>
-					</li>
-				))}
-			</ul>
-			<Sheet open={sheet.open} onClose={sheet.hide} kicker={TILE_TITLES.stories} title="모든 이야기" wide>
-				<div className="bt-stories">
-					{section.stories.map((story) => (
-						<article key={story.title} className="bt-story" aria-label={story.title}>
-							<h4>{story.title}</h4>
-							{story.lead && <p className="bt-detail-body">{story.lead}</p>}
-							{story.facts.length > 0 && (
-								<ul className="bt-story-facts">
-									{story.facts.map((fact) => (
-										<li key={fact.label}>
-											<strong className="bt-mono">{fact.value}</strong>
-											<span>{fact.label}</span>
-										</li>
-									))}
-								</ul>
-							)}
-							{story.points.length > 0 && (
-								<ul className="bt-checks">
-									{story.points.map((point) => (
-										<li key={point.title}>
-											<i className="fa-solid fa-check" aria-hidden="true" />
-											<div>
-												<strong>{point.title}</strong>
-												<p>{point.body}</p>
-												{point.detail && <p className="bt-detail-more">{point.detail}</p>}
-												{point.media.map((media) => (
-													<figure key={media.src} className="bt-frame">
-														<Media media={media} />
-													</figure>
-												))}
-											</div>
-										</li>
-									))}
-								</ul>
-							)}
-							{story.image && (
-								<figure className="bt-frame">
-									<Media media={story.image} />
-								</figure>
-							)}
-						</article>
-					))}
-				</div>
-			</Sheet>
-		</>
-	);
-};
-
-const CONTROLS_SHOWN = 4;
-
-const ControlsTile: SectionRenderers['controls'] = ({ section }) => {
-	const sheet = useSheet();
-	const rows = (controls: typeof section.controls) => (
-		<dl className="bt-keys">
-			{controls.map((control) => (
-				<div key={control.label}>
-					<dt>
-						{control.keys.map((key) => (
-							<kbd key={key} className="bt-kbd">
-								{key}
-							</kbd>
-						))}
-					</dt>
-					<dd>{control.label}</dd>
-				</div>
-			))}
-		</dl>
-	);
-	const more = section.controls.length > CONTROLS_SHOWN;
-	return (
-		<>
-			<TileHead section={section} count={section.controls.length} onMore={more ? sheet.show : undefined} />
-			{rows(section.controls.slice(0, CONTROLS_SHOWN))}
-			{more && (
-				<Sheet open={sheet.open} onClose={sheet.hide} kicker={TILE_TITLES.controls} title="모든 단축키">
-					{rows(section.controls)}
-				</Sheet>
-			)}
-		</>
-	);
-};
-
-const TechTile: SectionRenderers['tech'] = ({ section }) => {
-	const sheet = useSheet();
-	const more = section.specs.length > 0 || Boolean(section.structure);
-	return (
-		<>
-			<TileHead section={section} count={section.stack.length || undefined} onMore={more ? sheet.show : undefined} />
-			{section.stack.length > 0 ? (
-				<ul className="bt-chips" aria-label="쓴 기술">
-					{section.stack.map((item, i) => (
-						<li key={item} data-main={i === 0 ? '' : undefined}>
-							{item}
+		<div className="bt-media">
+			<div className={frame ? 'bt-shot' : 'bt-shot bt-shot-bare'}>
+				<Media media={first} />
+			</div>
+			{more.length > 0 && (
+				<ul className="bt-thumbs" aria-label={`${point.title} 화면 더 보기`}>
+					{more.map((media) => (
+						<li key={media.src} className="bt-shot">
+							<Media media={media} />
 						</li>
 					))}
 				</ul>
+			)}
+		</div>
+	);
+};
+
+const PointText: React.FC<{ point: LandingPoint; index: number; icon?: boolean; mark?: React.ReactNode }> = ({
+	point,
+	index,
+	icon = true,
+	mark,
+}) => (
+	<div className="bt-text">
+		{mark ?? (icon && <Icon point={point} index={index} />)}
+		<h3>{point.title}</h3>
+		<p className="bt-body">{point.body}</p>
+		{point.detail && <p className="bt-detail">{point.detail}</p>}
+	</div>
+);
+
+const Head: React.FC<{ section: LandingSection; landing: Landing; title?: string; level?: 2 | 3 }> = ({
+	section,
+	landing,
+	title,
+	level = 2,
+}) => {
+	const Heading = level === 2 ? 'h2' : 'h3';
+	const number = bentoLayout(landing).numbers.get(section.kind) ?? 1;
+	return (
+		<header className="bt-head" data-reveal="">
+			<p className="bt-eyebrow">
+				<span className="bt-eyebrow-num">{String(number).padStart(2, '0')}</span>
+				{section.label}
+			</p>
+			<Heading className="bt-title">{title ?? sectionTitle(section)}</Heading>
+		</header>
+	);
+};
+
+/* ─── 첫 격자의 타일 ─── */
+
+const FeatureTile: React.FC<{ point: LandingPoint; index: number; place?: Placement; lead: boolean; art: boolean }> = ({
+	point,
+	index,
+	place,
+	lead,
+	art,
+}) => {
+	const isLead = lead && index === 0;
+	const hasMedia = point.media.length > 0;
+	return (
+		<li
+			className="bt-tile bt-cell bt-feature"
+			data-lead={isLead ? '' : undefined}
+			data-media={hasMedia ? '' : undefined}
+			style={place && placementStyle(place)}
+			data-reveal=""
+		>
+			<PointText point={point} index={index} />
+			{hasMedia ? (
+				<PointMedia point={point} />
+			) : isLead || art ? (
+				<Art point={point} index={index} />
 			) : (
-				<ul className="bt-chips">
-					{section.specs.map((spec) => (
-						<li key={spec.label}>{spec.label}</li>
+				<Fill point={point} index={index} />
+			)}
+		</li>
+	);
+};
+
+const StatTile: React.FC<{ fact: ProjectFact; index: number; place?: Placement }> = ({ fact, index, place }) => (
+	<li className="bt-tile bt-cell bt-stat" style={place && placementStyle(place)} data-reveal="">
+		<span className="bt-label">{fact.label}</span>
+		<Value value={fact.value} />
+		<Spark value={fact.value} index={index} />
+	</li>
+);
+
+/* ─── 구역 ─── */
+
+const RENDERERS: SectionRenderers = {
+	stats: ({ section, landing }) => {
+		const { placements } = bentoLayout(landing);
+		return (
+			<>
+				<h2 className="visually-hidden">{section.label}</h2>
+				{/* 숫자 타일은 첫 격자에 바로 놓인다: 목록 하나로 묶을 수 없어 각 타일이 목록 항목 역할을 한다 */}
+				<ul className="bt-contents" aria-label={section.label}>
+					{section.facts.map((fact, i) => (
+						<StatTile key={fact.label} fact={fact} index={i} place={placements.get(`stat-${i}`)} />
 					))}
 				</ul>
-			)}
-			{more && (
-				<Sheet open={sheet.open} onClose={sheet.hide} kicker={TILE_TITLES.tech} title="기술 사양">
-					{section.specs.length > 0 && (
-						<dl className="bt-table">
-							{section.specs.map((spec) => (
-								<div key={spec.label}>
-									<dt>{spec.label}</dt>
-									<dd>{spec.value}</dd>
+			</>
+		);
+	},
+	features: ({ section, landing }) => {
+		const { placements, lead } = bentoLayout(landing);
+		return (
+			<>
+				<div className="bt-cell bt-bento-head" style={placementStyle({ lg: 12, md: 12, sm: 12, rows: 1, order: 0 })}>
+					<Head section={section} landing={landing} />
+				</div>
+				<ul className="bt-contents" aria-label={section.label}>
+					{section.items.map((point, i) => (
+						<FeatureTile
+							key={point.title}
+							point={point}
+							index={i}
+							lead={lead}
+							// 기능이 셋 이하로 적고 머리 타일이 없으면 타일마다 큰 아이콘 면을 달아 격자가 비어 보이지 않게
+							art={!lead && section.items.length <= 3}
+							place={placements.get(`feature-${i}`)}
+						/>
+					))}
+				</ul>
+			</>
+		);
+	},
+	screens: ({ section, landing }) => {
+		const place = placeOf(landing, 'screens');
+		return (
+			<div className="bt-tile bt-cell bt-screens" style={place && placementStyle(place)} data-reveal="">
+				<div className="bt-tile-head">
+					<div>
+						<p className="bt-label">{section.label}</p>
+						<h2 className="bt-tile-title">{sectionTitle(section)}</h2>
+					</div>
+					<span className="bt-count" aria-hidden="true">
+						{String(section.shots.length).padStart(2, '0')}
+					</span>
+				</div>
+				<ul className="bt-strip" data-count={section.shots.length > 4 ? 'many' : section.shots.length}>
+					{section.shots.map((shot, i) => (
+						<li key={shot.src}>
+							<figure>
+								<div className="bt-shot">
+									<Media media={shot} />
 								</div>
-							))}
-						</dl>
-					)}
-					{section.structure && (
-						<figure className="bt-code">
-							<figcaption className="bt-label">폴더 구조</figcaption>
-							<pre>{section.structure}</pre>
-						</figure>
-					)}
-				</Sheet>
-			)}
-		</>
-	);
-};
-
-const TEAM_SHOWN = 4;
-
-const TeamTile: SectionRenderers['team'] = ({ section }) => {
-	const sheet = useSheet();
-	const { members } = section;
-	return (
-		<>
-			<TileHead section={section} count={members.length} onMore={sheet.show} />
-			<span className="bt-faces" aria-hidden="true">
-				{members.slice(0, 6).map((member) => (
-					<MemberAvatar key={member.name} member={member} className="bt-face" />
-				))}
-			</span>
-			<ul className="bt-people">
-				{members.slice(0, TEAM_SHOWN).map((member) => (
-					<li key={member.name} data-me={member.me ? '' : undefined}>
-						<h3>
-							{member.name}
-							{member.me && <span className="bt-me">나</span>}
-						</h3>
-						<p>{member.role}</p>
-					</li>
-				))}
-			</ul>
-			<Sheet open={sheet.open} onClose={sheet.hide} kicker={TILE_TITLES.team} title="함께 만든 사람">
-				<TeamList members={members} prefix="bt" reveal={false} />
-			</Sheet>
-		</>
-	);
-};
-
-const ROLE_SHOWN = 3;
-
-const RoleTile: SectionRenderers['role'] = ({ section }) => {
-	const sheet = useSheet();
-	const more = section.contributions.length > ROLE_SHOWN || Boolean(section.context || section.period);
-	return (
-		<>
-			<TileHead section={section} onMore={more ? sheet.show : undefined} />
-			{section.role && <h3 className="bt-role">{section.role}</h3>}
-			{section.contributions.length > 0 && (
-				<ul className="bt-checks bt-checks-tight">
-					{section.contributions.slice(0, ROLE_SHOWN).map((item) => (
-						<li key={item}>
-							<i className="fa-solid fa-check" aria-hidden="true" />
-							<span>{item}</span>
+								<figcaption>
+									<span className="bt-num">{String(i + 1).padStart(2, '0')}</span>
+									{shot.caption}
+								</figcaption>
+							</figure>
 						</li>
 					))}
 				</ul>
-			)}
-			{more && (
-				<Sheet open={sheet.open} onClose={sheet.hide} kicker={TILE_TITLES.role} title={section.role ?? '맡은 일'}>
-					{(section.context || section.period) && (
-						<dl className="bt-table">
-							{section.context && (
-								<div>
-									<dt>프로젝트</dt>
-									<dd>{section.context}</dd>
-								</div>
-							)}
-							{section.period && (
-								<div>
-									<dt>기간</dt>
-									<dd>{section.period}</dd>
-								</div>
-							)}
-						</dl>
-					)}
-					{section.contributions.length > 0 && (
-						<ul className="bt-checks">
-							{section.contributions.map((item) => (
-								<li key={item}>
-									<i className="fa-solid fa-check" aria-hidden="true" />
-									<span>{item}</span>
-								</li>
-							))}
-						</ul>
-					)}
-				</Sheet>
-			)}
-		</>
-	);
-};
-
-const TimelineTile: SectionRenderers['timeline'] = ({ section }) => {
-	const sheet = useSheet();
-	const { entries } = section;
-	const graph = useMemo(() => graphOf(entries.map((entry) => entry.date)), [entries]);
-	const latest = entries[entries.length - 1];
-	return (
-		<>
-			<TileHead section={section} count={entries.length} onMore={sheet.show} />
-			{graph && <Graph weeks={graph.weeks} />}
-			<ol className="bt-dates">
-				{entries.slice(graph ? -2 : -3).map((entry) => (
-					<li key={`${entry.date}-${entry.label}`} data-latest={entry === latest ? '' : undefined}>
-						<time className="bt-mono">{entry.date}</time>
-						<span>{entry.label}</span>
-					</li>
-				))}
-			</ol>
-			<Sheet open={sheet.open} onClose={sheet.hide} kicker={TILE_TITLES.timeline} title="진행 과정 전체">
-				<ol className="bt-log">
-					{entries.map((entry) => (
-						<li key={`${entry.date}-${entry.label}`}>
-							<time className="bt-mono">{entry.date}</time>
-							<span>{entry.label}</span>
+			</div>
+		);
+	},
+	steps: ({ section, landing, index }) => {
+		// 단계는 한 줄에 나란히: 넓은 폭은 넷까지, 중간 폭은 셋까지
+		const places = packed(
+			section.items.map(() => (section.items.length > 3 ? 'stat' : 'item')),
+			section.items.map(() => 'stat')
+		);
+		return (
+			<div className="bt-block" style={blockOrder(index)}>
+				<Head section={section} landing={landing} />
+				<ol className="bt-grid bt-steps">
+					{section.items.map((point, i) => (
+						<li key={point.title} className="bt-tile bt-cell bt-step" style={places[i]} data-reveal="">
+							<div className="bt-step-top" aria-hidden="true">
+								<span className="bt-step-num">{String(i + 1).padStart(2, '0')}</span>
+								<Icon point={point} index={i} className="bt-icon bt-icon-quiet" />
+							</div>
+							<PointText point={point} index={i} icon={false} />
+							<PointMedia point={point} />
 						</li>
 					))}
 				</ol>
-			</Sheet>
-		</>
-	);
-};
-
-const DeploymentsTile: SectionRenderers['deployments'] = ({ section }) => {
-	const sheet = useSheet();
-	return (
-		<>
-			<TileHead section={section} count={section.items.length} onMore={sheet.show} />
-			<ul className="bt-status">
-				{section.items.map((item) => (
-					<li key={item.label} data-live={item.url ? '' : undefined}>
-						<span className="bt-dot" aria-hidden="true" />
-						<FaIcon icon={item.icon} className="bt-status-icon" />
-						<h3>
-							{item.url ? (
-								<a href={item.url} target="_blank" rel="noopener noreferrer">
-									{item.label}
-								</a>
-							) : (
-								item.label
+			</div>
+		);
+	},
+	built: ({ section, landing, index }) => {
+		// 그림 있는 항목은 한 줄 전체에 글과 그림을 나란히, 나머지는 아이콘 타일
+		const places = packed(section.items.map((point) => (point.media.length ? 'full' : 'item')));
+		return (
+			<div className="bt-block" style={blockOrder(index)}>
+				<Head section={section} landing={landing} />
+				<ul className="bt-grid">
+					{section.items.map((point, i) => (
+						<li
+							key={point.title}
+							className="bt-tile bt-cell bt-feature"
+							data-media={point.media.length ? '' : undefined}
+							data-side={point.media.length ? '' : undefined}
+							style={places[i]}
+							data-reveal=""
+						>
+							<PointText point={point} index={i + 2} />
+							{point.media.length ? <PointMedia point={point} /> : <Fill point={point} index={i + 2} />}
+						</li>
+					))}
+				</ul>
+			</div>
+		);
+	},
+	troubleshooting: ({ section, landing, index }) => (
+		<div className="bt-block" style={blockOrder(index)}>
+			<Head section={section} landing={landing} />
+			<TroubleList items={section.items} prefix="bt" />
+		</div>
+	),
+	stories: ({ section, landing, index }) => (
+		<div className="bt-block" style={blockOrder(index)}>
+			<Head section={section} landing={landing} />
+			<div className="bt-stories">
+				{section.stories.map((story, n) => {
+					const side = Boolean(story.image || story.points.length);
+					return (
+						<article key={story.title} className="bt-grid bt-story" aria-label={story.title}>
+							<div className="bt-tile bt-cell bt-story-main" style={side ? undefined : WHOLE} data-reveal="">
+								<p className="bt-label">이야기 {String(n + 1).padStart(2, '0')}</p>
+								<h3 className="bt-story-title">{story.title}</h3>
+								{story.lead && <p className="bt-body">{story.lead}</p>}
+								{story.facts.length > 0 && (
+									<dl className="bt-story-facts">
+										{story.facts.map((fact) => (
+											<div key={fact.label}>
+												<dt className="bt-label">{fact.label}</dt>
+												<dd>
+													<Value value={fact.value} className="bt-value bt-value-sm" />
+												</dd>
+											</div>
+										))}
+									</dl>
+								)}
+							</div>
+							{side && (
+								<div className="bt-tile bt-cell bt-story-side" data-reveal="">
+									{story.image && (
+										<div className="bt-shot">
+											<Media media={story.image} />
+										</div>
+									)}
+									{story.points.length > 0 && (
+										<ul className="bt-story-points">
+											{story.points.map((point, i) => (
+												<li key={point.title}>
+													<Icon point={point} index={i} className="bt-icon bt-icon-sm" />
+													<div>
+														<h4>{point.title}</h4>
+														<p>{point.body}</p>
+														{point.detail && <p className="bt-detail">{point.detail}</p>}
+														{point.media.length > 0 && <PointMedia point={point} />}
+													</div>
+												</li>
+											))}
+										</ul>
+									)}
+								</div>
 							)}
-						</h3>
-						{item.platform && <span className="bt-status-meta">{item.platform}</span>}
-					</li>
-				))}
-			</ul>
-			<Sheet open={sheet.open} onClose={sheet.hide} kicker={TILE_TITLES.deployments} title="배포 결과물" wide>
-				<DeployList items={section.items} prefix="bt" reveal={false} />
-			</Sheet>
-		</>
-	);
+						</article>
+					);
+				})}
+			</div>
+		</div>
+	),
+	controls: ({ section, landing, index }) => {
+		const places = packed(section.controls.map(() => 'stat'));
+		return (
+			<div className="bt-block" style={blockOrder(index)}>
+				<Head section={section} landing={landing} />
+				<dl className="bt-grid bt-controls">
+					{section.controls.map((control, i) => (
+						<div key={control.label} className="bt-tile bt-cell bt-control" style={places[i]} data-reveal="">
+							<dt>
+								{control.keys.map((key, k) => (
+									<kbd key={`${key}-${k}`} className="bt-kbd bt-kbd-lg">
+										{key}
+									</kbd>
+								))}
+							</dt>
+							<dd>{control.label}</dd>
+						</div>
+					))}
+				</dl>
+			</div>
+		);
+	},
+	timeline: ({ section, landing, index }) => {
+		const first = section.entries[0];
+		const last = section.entries[section.entries.length - 1];
+		return (
+			<div className="bt-block" style={blockOrder(index)}>
+				<Head section={section} landing={landing} />
+				<div className="bt-grid">
+					<ol className="bt-tile bt-cell bt-rail" style={RAIL} data-reveal="">
+						{section.entries.map((entry, i) => (
+							<li key={`${entry.date}-${entry.label}`} data-last={i === section.entries.length - 1 ? '' : undefined}>
+								<time>{entry.date}</time>
+								<span>{entry.label}</span>
+							</li>
+						))}
+					</ol>
+					<div className="bt-tile bt-cell bt-span" style={RAIL_SIDE} data-reveal="" aria-hidden="true">
+						<span className="bt-label">처음과 끝</span>
+						<span className="bt-span-dates">
+							<span>{first.date}</span>
+							{last !== first && <span>{last.date}</span>}
+						</span>
+						<span className="bt-span-count">
+							<strong className="bt-value">{String(section.entries.length).padStart(2, '0')}</strong>
+							<span className="bt-label">걸음</span>
+						</span>
+						<span className="bt-span-ticks">
+							{section.entries.map((entry, i) => (
+								<span key={`${entry.date}-${i}`} />
+							))}
+						</span>
+					</div>
+				</div>
+			</div>
+		);
+	},
+	tech: ({ section, landing, index }) => {
+		const place = placeOf(landing, 'tech');
+		const hasStack = section.stack.length > 0;
+		const hasBlock = section.specs.length > 0 || Boolean(section.structure);
+		const both = section.specs.length > 0 && Boolean(section.structure);
+		return (
+			<>
+				{hasStack && (
+					<div className="bt-tile bt-cell bt-stack" style={place && placementStyle(place)} data-reveal="">
+						<span className="bt-icon" aria-hidden="true">
+							<i className="fa-solid fa-layer-group" />
+						</span>
+						<h2 className="bt-tile-title">{sectionTitle(section)}</h2>
+						<ul className="bt-stack-list" aria-label="쓴 기술">
+							{section.stack.map((item, i) => (
+								<li key={item}>
+									<span className="bt-num" aria-hidden="true">
+										{String(i + 1).padStart(2, '0')}
+									</span>
+									{item}
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
+				{hasBlock && (
+					<div className="bt-block" style={blockOrder(index)}>
+						<Head
+							section={section}
+							landing={landing}
+							level={hasStack ? 3 : 2}
+							title="사양과 구조를 한눈에 정리했습니다."
+						/>
+						<div className="bt-grid">
+							{section.specs.length > 0 && (
+								<dl className="bt-tile bt-cell bt-specs" style={both ? SPECS : WHOLE} data-reveal="">
+									{section.specs.map((spec) => (
+										<div key={spec.label}>
+											<dt>{spec.label}</dt>
+											<dd>{spec.value}</dd>
+										</div>
+									))}
+								</dl>
+							)}
+							{section.structure && (
+								<figure className="bt-tile bt-cell bt-tree" style={both ? TREE : WHOLE} data-reveal="">
+									<figcaption className="bt-label">폴더 구조</figcaption>
+									<pre>{section.structure}</pre>
+								</figure>
+							)}
+						</div>
+					</div>
+				)}
+			</>
+		);
+	},
+	team: ({ section, landing, index }) => (
+		<div className="bt-block" style={blockOrder(index)}>
+			<Head section={section} landing={landing} />
+			<TeamList members={section.members} prefix="bt" />
+		</div>
+	),
+	role: ({ section, landing }) => {
+		const place = placeOf(landing, 'role');
+		return (
+			<div className="bt-tile bt-cell bt-role" style={place && placementStyle(place)} data-reveal="">
+				<span className="bt-icon" aria-hidden="true">
+					<i className="fa-solid fa-user-pen" />
+				</span>
+				<h2 className="bt-tile-title">{sectionTitle(section)}</h2>
+				{(section.role || section.period || section.context) && (
+					<dl className="bt-role-meta">
+						{section.role && (
+							<div>
+								<dt className="bt-label">역할</dt>
+								<dd>{section.role}</dd>
+							</div>
+						)}
+						{section.context && (
+							<div>
+								<dt className="bt-label">프로젝트</dt>
+								<dd>{section.context}</dd>
+							</div>
+						)}
+						{section.period && (
+							<div>
+								<dt className="bt-label">기간</dt>
+								<dd className="bt-mono">{section.period}</dd>
+							</div>
+						)}
+					</dl>
+				)}
+				{section.contributions.length > 0 && (
+					<ul className="bt-checks">
+						{section.contributions.map((item) => (
+							<li key={item}>
+								<i className="fa-solid fa-check" aria-hidden="true" />
+								{item}
+							</li>
+						))}
+					</ul>
+				)}
+			</div>
+		);
+	},
+	deployments: ({ section, landing, index }) => (
+		<div className="bt-block" style={blockOrder(index)}>
+			<Head section={section} landing={landing} />
+			<DeployList items={section.items} prefix="bt" />
+		</div>
+	),
+	credits: ({ section, landing, index }) => {
+		const places = packed(section.credits.map(() => 'item'));
+		return (
+			<div className="bt-block" style={blockOrder(index)}>
+				<Head section={section} landing={landing} />
+				<ul className="bt-grid bt-credits">
+					{section.credits.map((credit, i) => (
+						<li
+							key={`${credit.role}-${credit.name}`}
+							className="bt-tile bt-cell bt-credit"
+							style={places[i]}
+							data-reveal=""
+						>
+							<span className="bt-label">{credit.role}</span>
+							<strong>
+								{credit.href ? (
+									<a href={credit.href} target="_blank" rel="noopener noreferrer">
+										{credit.name}
+										<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
+									</a>
+								) : (
+									credit.name
+								)}
+							</strong>
+							<span className="bt-muted">{credit.by}</span>
+							{credit.note && <span className="bt-muted">{credit.note}</span>}
+						</li>
+					))}
+				</ul>
+			</div>
+		);
+	},
 };
 
-const CreditsTile: SectionRenderers['credits'] = ({ section }) => (
-	<>
-		<TileHead section={section} count={section.credits.length} />
-		<ul className="bt-credits">
-			{section.credits.map((credit) => (
-				<li key={`${credit.role}-${credit.name}`}>
-					<span className="bt-label">{credit.role}</span>
-					<strong>
-						{credit.href ? (
-							<a href={credit.href} target="_blank" rel="noopener noreferrer">
-								{credit.name}
-								<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
-							</a>
-						) : (
-							credit.name
-						)}
-					</strong>
-					<span className="bt-credit-by">
-						{credit.by}
-						{credit.note && <span className="bt-credit-note"> · {credit.note}</span>}
-					</span>
+const WHOLE = placementStyle({ lg: 12, md: 12, sm: 12, rows: 1, order: 0 });
+const RAIL = placementStyle({ lg: 8, md: 12, sm: 12, rows: 1, order: 0 });
+const RAIL_SIDE = placementStyle({ lg: 4, md: 12, sm: 12, rows: 1, order: 0 });
+const SPECS = placementStyle({ lg: 7, md: 12, sm: 12, rows: 1, order: 0 });
+const TREE = placementStyle({ lg: 5, md: 12, sm: 12, rows: 1, order: 0 });
+
+/* ─── 첫 화면 ─── */
+
+/** 그림이 없을 때 첫 화면의 창: 명령 팔레트처럼 주요 기능을 줄지어 보인다 (장식) */
+const Palette: React.FC<{ hero: LandingHero; items: LandingPoint[] }> = ({ hero, items }) => (
+	<div className="bt-palette" aria-hidden="true">
+		<div className="bt-palette-search">
+			<i className="fa-solid fa-magnifying-glass" />
+			<span>{hero.name}</span>
+			<kbd className="bt-kbd">⌘</kbd>
+			<kbd className="bt-kbd">K</kbd>
+		</div>
+		<p className="bt-palette-group">주요 기능</p>
+		<ul>
+			{items.slice(0, 5).map((point, i) => (
+				<li key={point.title} data-active={i === 0 ? '' : undefined}>
+					<Icon point={point} index={i} className="bt-icon bt-icon-sm" />
+					<span className="bt-palette-title">{point.title}</span>
+					<span className="bt-palette-body">{point.body}</span>
+					{i === 0 && <kbd className="bt-kbd">↵</kbd>}
 				</li>
 			))}
 		</ul>
-	</>
+	</div>
 );
 
-const RENDERERS: SectionRenderers = {
-	stats: ({ section }) => (
-		<>
-			<TileHead section={section} />
-			<ul className="bt-stats" data-count={Math.min(section.facts.length, 4)}>
-				{section.facts.map((fact) => (
-					<li key={fact.label}>
-						<strong className="bt-mono">{fact.value}</strong>
-						<span>{fact.label}</span>
-						<Spark seed={fact.label} />
-					</li>
-				))}
-			</ul>
-		</>
-	),
-	features: ({ section }) => <PointsTile section={section} items={section.items} />,
-	screens: ({ section }) => <ScreensTile section={section} />,
-	steps: ({ section }) => <PointsTile section={section} items={section.items} numbered />,
-	built: ({ section }) => <PointsTile section={section} items={section.items} iconOffset={3} />,
-	troubleshooting: ({ section }) => <TroubleTile section={section} />,
-	stories: StoriesTile,
-	controls: ControlsTile,
-	tech: TechTile,
-	team: TeamTile,
-	role: RoleTile,
-	timeline: TimelineTile,
-	deployments: DeploymentsTile,
-	credits: CreditsTile,
-};
-
-/** 대표 화면 타일: 누르면 크게 */
-const ShotTile: React.FC<{ media: LandingMedia; name: string; style: React.CSSProperties }> = ({
-	media,
-	name,
-	style,
-}) => {
-	const sheet = useSheet();
-	return (
-		<figure className="bt-tile bt-shot" style={style} data-reveal="">
-			<button type="button" className="bt-shot-open" aria-haspopup="dialog" onClick={sheet.show}>
-				<Media media={media} eager />
-				<span className="bt-shot-zoom">
-					<i className="fa-solid fa-expand" aria-hidden="true" />
-					크게 보기
-				</span>
-			</button>
-			<Sheet open={sheet.open} onClose={sheet.hide} kicker="대표 화면" title={name} wide>
-				{sheet.open && (
-					<figure className="bt-frame bt-sheet-shot">
-						<Media media={media} />
-					</figure>
-				)}
-			</Sheet>
-		</figure>
-	);
-};
+const Window: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+	<figure className="bt-window" data-reveal="zoom">
+		<div className="bt-window-bar" aria-hidden="true">
+			<span className="bt-dots">
+				<span />
+				<span />
+				<span />
+			</span>
+			<span className="bt-window-title">{title}</span>
+		</div>
+		<div className="bt-window-body">{children}</div>
+	</figure>
+);
 
 const BentoPage: React.FC<{ project: Project }> = ({ project }) => {
 	const landing = useLanding(project);
 	const root = useReveal<HTMLDivElement>();
-	const accent = bentoAccent(useLandingAccent(project.icon));
-	const { hero, closing, sections } = landing;
-	const board = useMemo(
-		() => boardOf({ shot: Boolean(hero.image), sections: sections.map((section) => section.kind) }),
-		[hero.image, sections]
+	const accent = useLandingAccent(project.icon);
+	const { hero, closing } = landing;
+	const features = useMemo(
+		() => landing.sections.find((s): s is SectionOf<'features'> => s.kind === 'features')?.items ?? [],
+		[landing]
 	);
-	const place = (id: string) => {
-		const p = board.get(id);
-		return p ? placementStyle(p) : undefined;
-	};
-	const meta = [
-		hero.meta.role && { label: '역할', value: hero.meta.role },
-		hero.meta.period && { label: '기간', value: hero.meta.period },
-	].filter((item): item is { label: string; value: string } => Boolean(item));
+	const badge = hero.meta.context ?? hero.meta.role;
 
 	return (
 		<div ref={root} className="tpl tpl-bento" style={accent}>
-			<div className="bt-board">
-				<header className="bt-tile bt-hero" style={place('hero')} data-reveal="">
-					<p className="bt-brand">
-						{hero.icon && <img className="bt-brand-icon" src={hero.icon} alt="" />}
-						{hero.logo ? <img className="bt-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
-						{hero.meta.context && <span className="bt-tag">{hero.meta.context}</span>}
-					</p>
-					<h1>{hero.headline}</h1>
-					{hero.subhead && <p className="bt-subhead">{hero.subhead}</p>}
-					<BentoLinks links={hero.links} />
-					{meta.length > 0 && (
-						<dl className="bt-hero-meta">
-							{meta.map((item) => (
-								<div key={item.label}>
-									<dt className="bt-label">{item.label}</dt>
-									<dd>{item.value}</dd>
-								</div>
-							))}
-						</dl>
+			<header className="bt-hero">
+				<p className="bt-brand">
+					{hero.icon ? (
+						<img className="bt-app-icon" src={hero.icon} alt="" />
+					) : (
+						<span className="bt-app-icon bt-app-icon-blank" aria-hidden="true">
+							{hero.name.slice(0, 1)}
+						</span>
 					)}
-				</header>
-				{hero.image && <ShotTile media={hero.image} name={hero.name} style={place('shot') ?? {}} />}
-				{sections.map((section, index) => {
-					const Render = RENDERERS[section.kind] as React.FC<{
-						section: LandingSection;
-						landing: typeof landing;
-						index: number;
-					}>;
-					return (
-						<section
-							key={section.kind}
-							aria-label={section.label}
-							data-section={section.kind}
-							className="bt-tile"
-							style={place(section.kind)}
-							data-reveal=""
-						>
-							<Render section={section} landing={landing} index={index} />
-						</section>
-					);
-				})}
-				<footer className="bt-tile bt-closing" style={place('closing')} data-reveal="">
-					<div>
-						{closing.lead && <p className="bt-label">{closing.lead}</p>}
-						<h2>{closing.title}</h2>
-					</div>
+					{hero.logo ? <img className="bt-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
+				</p>
+				{(badge || hero.meta.period) && (
+					<p className="bt-badge">
+						{hero.meta.period && <span className="bt-badge-tag">{hero.meta.period}</span>}
+						{badge && <span>{badge}</span>}
+					</p>
+				)}
+				<h1>{hero.headline}</h1>
+				{hero.subhead && <p className="bt-subhead">{hero.subhead}</p>}
+				<BentoLinks links={hero.links} />
+				{hero.image ? (
+					<Window title={hero.name}>
+						<Media media={hero.image} eager />
+					</Window>
+				) : (
+					features.length > 0 && (
+						<Window title={hero.name}>
+							<Palette hero={hero} items={features} />
+						</Window>
+					)
+				)}
+			</header>
+
+			{landing.sections.length > 0 && (
+				<div className="bt-flow">
+					<LandingSections landing={landing} renderers={RENDERERS} className="bt-section" />
+				</div>
+			)}
+
+			<footer className="bt-closing">
+				<div className="bt-closing-tile" data-reveal="">
+					<div className="bt-art bt-closing-art" aria-hidden="true" />
+					{hero.icon && <img className="bt-app-icon bt-app-icon-lg" src={hero.icon} alt="" />}
+					<h2>{closing.title}</h2>
+					{closing.lead && <p className="bt-subhead">{closing.lead}</p>}
 					<BentoLinks links={closing.links} />
-				</footer>
-			</div>
+				</div>
+			</footer>
 		</div>
 	);
 };
