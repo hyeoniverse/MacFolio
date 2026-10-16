@@ -1,0 +1,169 @@
+/*
+ * RPG 대화창의 마을 화면 (DialogueTown.tsx): 게임 화면 가득 마을 판(640×384 게임 칸)을 깔고, 카메라는 판을 정수 칸만큼 옮긴다.
+ * 판 위에 사람 판(팀원·몬스터·문), 장소 표('!' 말풍선과 ✓), 주인공이 차례로 얹힌다. 모두 칸 그림이라 흐리지 않고(pixelated)
+ * 화면과 함께 정수 배로 커진다. 다크는 마을을 밤 팔레트로 칠한 판으로 바꾸고, 사람은 조금 어둡힌다
+ */
+.dl-world {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	/* 판보다 넓은 화면의 바깥: 숲 바닥색 */
+	background: #2e6e40;
+}
+
+:root[data-theme='dark'] .dl-world {
+	background: #142a2c;
+}
+
+.dl-world[data-walking] {
+	cursor: pointer;
+}
+
+.dl-world-map {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.dl-world-map canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	image-rendering: pixelated;
+}
+
+/* 낮·밤 판 중 테마에 맞는 한 장 */
+.dl-village[data-night],
+:root[data-theme='dark'] .dl-village:not([data-night]) {
+	display: none;
+}
+
+:root[data-theme='dark'] .dl-village[data-night] {
+	display: block;
+}
+
+/* 사람과 주인공: 밤에는 달빛 아래처럼 조금 어둡게 */
+:root[data-theme='dark'] :is(.dl-actors, .dl-hero) {
+	filter: brightness(0.78) saturate(0.85);
+}
+
+.dl-world-map canvas.dl-hero {
+	will-change: transform;
+}
+
+.dl-world-map canvas.dl-hero[hidden] {
+	display: none;
+}
+
+/* 장소 표: 안 읽은 곳은 '!' 말풍선이 통통 뛰고, 읽은 곳은 작은 ✓ */
+.dl-mark {
+	position: absolute;
+	display: block;
+	width: 10px;
+	pointer-events: none;
+}
+
+.dl-mark svg {
+	display: block;
+}
+
+.dl-mark[data-state='new'] {
+	animation: dl-bob 0.8s steps(1) infinite;
+}
+
+@keyframes dl-bob {
+	50% {
+		transform: translateY(-2px);
+	}
+}
+
+/* 타이틀: 마을 위에 옅은 막을 덮어 표지판과 이름이 앞에 선다 */
+.dl[data-mode='greet'] .dl-world::after {
+	position: absolute;
+	inset: 0;
+	background: rgb(14 16 28 / 30%);
+	content: '';
+}
+
+/* ─── 마을 차례의 창: 왼쪽 위 길잡이(마을 ▸ 앞의 장소, 읽은 주제), 오른쪽 위 바로 가기, 아래 가운데 살펴보기 안내, 왼쪽 아래 키 안내 ─── */
+.dl:is([data-mode='world'], [data-mode='greet']) .dl-game {
+	background: #2e6e40;
+}
+
+.dl[data-mode='world'] .dl-talk {
+	display: none;
+}
+
+.dl[data-mode='world'] .dl-foot {
+	right: auto;
+	bottom: var(--dl-edge);
+	left: var(--dl-edge);
+	max-width: calc(100% - 2 * var(--dl-edge));
+	padding: 3px 6px;
+}
+
+/* 살펴보기 안내: 길잡이 바로 아래 왼쪽 (주인공이 서는 화면 아래쪽을 가리지 않는다). 누르면 살펴본다 */
+.dl-prompt {
+	position: absolute;
+	top: calc(2 * var(--dl-edge) + var(--dl-hud-h));
+	left: var(--dl-edge);
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	max-width: calc(100% - 2 * var(--dl-edge));
+	min-width: 0;
+	height: 21px;
+	margin: 0;
+	padding: 0 8px 0 5px;
+	font: inherit;
+	line-height: 13px;
+	white-space: nowrap;
+}
+
+button.dl-prompt {
+	cursor: pointer;
+}
+
+button.dl-prompt:is(:hover, :focus-visible) {
+	outline: none;
+	border-color: var(--dl-gold);
+}
+
+.dl-prompt-text {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dl-prompt-text b {
+	color: var(--dl-gold);
+	font-weight: 400;
+}
+
+.dl-prompt-done {
+	color: #6ee28a;
+}
+
+/* 한 배도 안 되는 좁은 창: 마을은 무대 자리에 고정 높이로 */
+.dl[data-fit='compact'] .dl-world {
+	position: relative;
+	grid-area: stage;
+	inset: auto;
+	height: 220px;
+}
+
+.dl[data-fit='compact'][data-mode='world'] .dl-prompt {
+	position: relative;
+	top: auto;
+	left: auto;
+	grid-area: talk;
+	justify-self: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dl-mark[data-state='new'] {
+		animation: none;
+	}
+}
