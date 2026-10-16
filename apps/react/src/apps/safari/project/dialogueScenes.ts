@@ -1,45 +1,68 @@
-// RPG 대화창(DialoguePage) 무대 뒤의 픽셀 장면: 480×272 판 하나를 16×16 타일(30×17)과 손으로 놓은 소품으로 칠하고, 360×208 게임 화면에는 그 가운데를 잘라 보인다.
+// RPG 대화창(DialoguePage) 뒤의 픽셀 장면: 게임 화면 전체(창 크기에 따라 폭·높이가 달라진다)를 16×16 타일과 손으로 놓은 소품으로 칠한다.
+// 장면은 480×272 판을 기준으로 짰고, 다른 크기에서는 늘려 맞춘다: 하늘·땅·바닥 타일 같은 띠는 폭과 높이를 따라 이어 칠하고,
+// 소품은 기준 판의 왼쪽·가운데·오른쪽 중 가까운 쪽에 붙여(map.L·C·R) 넓은 화면과 좁은 화면 모두에서 짜임새가 맞다.
+// 하늘이 있는 바깥 장면은 화면이 높으면 지평선을 조금 내리고 위쪽 하늘을 이어 칠한다(shift).
 // 칸마다 색 대신 팔레트 글자(한 글자)를 두고, 장면마다 낮 팔레트와 밤 팔레트(같은 그림의 색 바꿈)로 칠한다.
 // 규칙: 빛은 왼쪽 위에서 (밝은 면은 왼쪽 위, 그늘은 오른쪽 아래), 외곽선은 채운 색보다 짙게, 흐림 없이 한 칸 단위,
-// 섞이는 곳은 점 무늬(디더)로. 뒤쪽은 대비를 낮춰 차분하게 두고, 그림판(DialoguePanels)의 주인공 그림과 글 상자가 앞에 선다.
-// 모두 정해진 그림이라(난수 없이 칸 좌표의 해시) 같은 장면은 늘 같은 모습이고, 한 번 칠한 장면은 기억해 둔다
+// 섞이는 곳은 점 무늬(디더)로. 모두 정해진 그림이라(난수 없이 칸 좌표의 해시) 같은 장면·크기는 늘 같은 모습이고, 한 번 칠한 장면은 기억해 둔다
 import type { SceneKind } from '@/apps/safari/project/dialogueStage';
 import { GLYPHS, ICONS, type IconName } from '@/apps/safari/project/dialogueIcons';
 
+/** 기준 판의 크기: 소품 자리는 이 판에서 정하고, 다른 크기에서는 왼쪽·가운데·오른쪽에 붙여 옮긴다 */
 export const SCENE_W = 480;
 export const SCENE_H = 272;
 export const TILE = 16;
-/**
- * 게임 화면(360×208)에 보이는 창: 480×272 장면에서 이만큼을 잘라 보인다. 기본은 가운데 폭과 위쪽 (아래는 대화 상자 뒤라 가린다).
- * 장면마다 주인공 소품이 창 안에 들게 왼쪽 끝(x)을 조금씩 옮긴다
- */
-export const VIEW_W = 360;
-export const VIEW_H = 208;
-const VIEW_X: Partial<Record<SceneKind, number>> = {};
-export const sceneView = (kind: SceneKind): { x: number; y: number } => ({
-	x: VIEW_X[kind] ?? (SCENE_W - VIEW_W) / 2,
-	y: 0,
-});
 
 /** 칸 그림 (글자 하나가 한 칸, '.'은 빈칸) */
 type Rows = readonly string[];
 
-/** 팔레트 글자로 칠하는 판 */
+/**
+ * 팔레트 글자로 칠하는 판 (w×h). 소품 자리는 480×272 기준 판의 좌표로 적고 L·C·R로 옮긴다:
+ * L은 왼쪽에 붙인 그대로, C는 가운데를 맞추고, R은 오른쪽 끝을 맞춘다.
+ * shift만큼 그림 전체를 아래로 내린다 (칠하는 y는 그대로 두고 판에 놓을 때 더한다). 그래서 기준 판의 위쪽(top)은 0보다 위, 아래쪽(bottom)은 h − shift
+ */
 export class PixelMap {
 	readonly px: string[];
 	readonly w: number;
 	readonly h: number;
-	constructor(w: number, h: number, fill = '.') {
+	readonly shift: number;
+	constructor(w: number, h: number, fill = '.', shift = 0) {
 		this.w = w;
 		this.h = h;
+		this.shift = shift;
 		this.px = new Array<string>(w * h).fill(fill);
 	}
+	/** 그림 좌표로 본 판의 위 끝과 아래 끝 */
+	get top(): number {
+		return -this.shift;
+	}
+	get bottom(): number {
+		return this.h - this.shift;
+	}
+	/** 판을 덮는 타일 수 (가로, 세로) */
+	get tw(): number {
+		return Math.ceil(this.w / TILE);
+	}
+	get th(): number {
+		return Math.ceil(this.bottom / TILE);
+	}
+	L(x: number): number {
+		return x;
+	}
+	C(x: number): number {
+		return x + Math.round((this.w - SCENE_W) / 2);
+	}
+	R(x: number): number {
+		return x + this.w - SCENE_W;
+	}
 	get(x: number, y: number): string {
-		return x < 0 || y < 0 || x >= this.w || y >= this.h ? '.' : this.px[y * this.w + x];
+		const py = y + this.shift;
+		return x < 0 || py < 0 || x >= this.w || py >= this.h ? '.' : this.px[py * this.w + x];
 	}
 	set(x: number, y: number, key: string) {
-		if (key === '.' || x < 0 || y < 0 || x >= this.w || y >= this.h) return;
-		this.px[y * this.w + x] = key;
+		const py = y + this.shift;
+		if (key === '.' || x < 0 || py < 0 || x >= this.w || py >= this.h) return;
+		this.px[py * this.w + x] = key;
 	}
 	rect(x: number, y: number, w: number, h: number, key: string) {
 		for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) this.set(i, j, key);
@@ -88,7 +111,7 @@ function smoothNoise(x: number, y: number, cell: number, seed: number): number {
 // ─── 그리는 도구 ───
 
 /** 하늘: 위에서부터 띠(글자, 끝 y). 띠 사이 세 줄은 점 무늬로 섞는다 */
-function sky(map: PixelMap, bands: [string, number][], from = 0) {
+function sky(map: PixelMap, bands: [string, number][], from = map.top) {
 	let top = from;
 	bands.forEach(([key, end], b) => {
 		const next = bands[b + 1]?.[0];
@@ -122,7 +145,7 @@ function hills(
 	for (let x = 0; x < map.w; x++) {
 		const t = top(x);
 		const slope = top(x + 4) - t;
-		for (let y = Math.max(0, t); y < bottom; y++) {
+		for (let y = Math.max(map.top, t); y < bottom; y++) {
 			const depth = y - t;
 			let key = keys.fill;
 			if (keys.outline && depth === 0) key = keys.outline;
@@ -972,8 +995,8 @@ function treeLine(map: PixelMap, base: number, height: number, seed: number, key
 
 /** 풀밭 타일을 (줄 from부터) 깔고 풀 포기 무늬 세 가지를 해시로 섞는다 */
 function grassField(map: PixelMap, fromRow: number) {
-	for (let ty = fromRow; ty < SCENE_H / TILE; ty++) {
-		for (let tx = 0; tx < SCENE_W / TILE; tx++) tileAt(map, GRASS_TILES[Math.floor(noise(tx, ty, 2) * 3)], tx, ty);
+	for (let ty = fromRow; ty < map.th; ty++) {
+		for (let tx = 0; tx < map.tw; tx++) tileAt(map, GRASS_TILES[Math.floor(noise(tx, ty, 2) * 3)], tx, ty);
 	}
 }
 
@@ -1050,9 +1073,9 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				['5', 90],
 				['6', 130],
 			]);
-			if (night) stars(map, 4, 70, 0.006, 31);
+			if (night) stars(map, map.top + 4, 70, 0.006, 31);
 			// 해 (밤에는 달): 가로 틈이 난 고전 해
-			const sx = 352;
+			const sx = map.C(352);
 			const sy = 96;
 			const sr = 26;
 			for (let y = -sr; y <= 0; y++) {
@@ -1065,10 +1088,10 @@ const SCENES: Record<SceneKind, SceneDef> = {
 			}
 			// 길쭉한 노을 구름
 			for (const [cx, cy, w] of [
-				[30, 30, 80],
-				[180, 18, 60],
-				[250, 50, 90],
-				[400, 34, 70],
+				[map.L(30), 30, 80],
+				[map.C(180), 18, 60],
+				[map.C(250), 50, 90],
+				[map.R(400), 34, 70],
 			]) {
 				for (let j = 0; j < 4; j++) {
 					const inset = j === 0 ? 6 : j === 3 ? 4 : 0;
@@ -1092,15 +1115,15 @@ const SCENES: Record<SceneKind, SceneDef> = {
 					[10, 240, 60],
 					[3, 90, 0],
 				]),
-				SCENE_H,
+				map.bottom,
 				{ fill: 'j', rim: 'J', shade: 'i', outline: 'e' }
 			);
 			// 언덕 위 작은 나무
 			for (const [x, h] of [
-				[44, 22],
-				[60, 16],
-				[420, 24],
-				[440, 18],
+				[map.L(44), 22],
+				[map.L(60), 16],
+				[map.R(420), 24],
+				[map.R(440), 18],
 			])
 				pine(
 					map,
@@ -1119,14 +1142,14 @@ const SCENES: Record<SceneKind, SceneDef> = {
 					[6, 300, 200],
 					[2, 60, 0],
 				]),
-				SCENE_H,
+				map.bottom,
 				{ fill: 'g', rim: 'G', shade: 'd', outline: 'e' }
 			);
 			// 가운데로 이어지는 흙길 (멀수록 좁다)
-			for (let y = 112; y < SCENE_H; y++) {
+			for (let y = 112; y < map.bottom; y++) {
 				const t = (y - 112) / 60;
 				const half = Math.round(4 + t * 30);
-				const cx = 240 + Math.round(Math.sin(t * 2.4) * 10 * t);
+				const cx = map.C(240) + Math.round(Math.sin(t * 2.4) * 10 * t);
 				for (let x = cx - half; x <= cx + half; x++) {
 					const edge = x === cx - half || x === cx + half;
 					map.set(x, y, edge ? 'q' : noise(x, y, 6) < 0.05 ? 'q' : x < cx - half + 3 ? 'P' : 'p');
@@ -1134,20 +1157,20 @@ const SCENES: Record<SceneKind, SceneDef> = {
 			}
 			// 길가의 꽃과 풀
 			for (const [x, y, c] of [
-				[150, 150, 'f'],
-				[176, 160, 'F'],
-				[300, 152, 'f'],
-				[326, 162, 'W'],
-				[110, 158, 'W'],
-				[370, 156, 'F'],
+				[map.C(150), 150, 'f'],
+				[map.C(176), 160, 'F'],
+				[map.C(300), 152, 'f'],
+				[map.C(326), 162, 'W'],
+				[map.L(110), 158, 'W'],
+				[map.R(370), 156, 'F'],
 			] as [number, number, string][])
 				flower(map, x, y, c, 'F');
 			for (const [x, y] of [
-				[80, 150],
-				[130, 168],
-				[350, 168],
-				[400, 150],
-				[210, 170],
+				[map.L(80), 150],
+				[map.C(130), 168],
+				[map.C(350), 168],
+				[map.R(400), 150],
+				[map.C(210), 170],
 			])
 				tuft(map, x, y, 'G', 'd');
 		},
@@ -1184,10 +1207,10 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				['3', 72],
 				['4', 92],
 			]);
-			if (night) stars(map, 4, 66, 0.006, 11);
-			cloud(map, 60, 22, 54, { hi: 'W', shade: 'w' });
-			cloud(map, 250, 12, 40, { hi: 'W', shade: 'w' });
-			cloud(map, 360, 40, 60, { hi: 'W', shade: 'w' });
+			if (night) stars(map, map.top + 4, 66, 0.006, 11);
+			cloud(map, map.L(60), 22, 54, { hi: 'W', shade: 'w' });
+			cloud(map, map.C(250), 12, 40, { hi: 'W', shade: 'w' });
+			cloud(map, map.R(360), 40, 60, { hi: 'W', shade: 'w' });
 			hills(
 				map,
 				wave(78, [
@@ -1199,7 +1222,7 @@ const SCENES: Record<SceneKind, SceneDef> = {
 			);
 			treeLine(map, 98, 10, 3, { hi: 'J', base: 'j', shade: 'i', line: 'i' });
 			grassField(map, 6);
-			map.rect(0, 96, SCENE_W, 2, 'd');
+			map.rect(0, 96, map.w, 2, 'd');
 			pathBand(
 				map,
 				wave(132, [
@@ -1212,33 +1235,33 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				])
 			);
 			// 양옆의 큰 나무와 덤불
-			tree(map, 26, 122, 26, { hi: 'G', base: 'g', shade: 'd', line: 'd', outline: 'e' }, 'd');
-			tree(map, 456, 124, 28, { hi: 'G', base: 'g', shade: 'd', line: 'd', outline: 'e' }, 'd');
+			tree(map, map.L(26), 122, 26, { hi: 'G', base: 'g', shade: 'd', line: 'd', outline: 'e' }, 'd');
+			tree(map, map.R(456), 124, 28, { hi: 'G', base: 'g', shade: 'd', line: 'd', outline: 'e' }, 'd');
 			clump(
 				map,
 				[
-					[86, 116, 8],
-					[96, 114, 9],
-					[104, 118, 7],
+					[map.L(86), 116, 8],
+					[map.L(96), 114, 9],
+					[map.L(104), 118, 7],
 				],
 				{ hi: 'G', base: 'g', shade: 'd', line: 'd', outline: 'e' }
 			);
-			fence(map, 362, 104, 66);
+			fence(map, map.R(362), 104, 66);
 			// 꽃밭
 			for (const [x, y, c] of [
-				[70, 160, 'f'],
-				[84, 156, 'F'],
-				[98, 162, 'W'],
-				[380, 158, 'f'],
-				[396, 162, 'F'],
-				[150, 112, 'W'],
-				[330, 114, 'f'],
-				[420, 150, 'W'],
-				[44, 150, 'F'],
+				[map.L(70), 160, 'f'],
+				[map.L(84), 156, 'F'],
+				[map.L(98), 162, 'W'],
+				[map.R(380), 158, 'f'],
+				[map.R(396), 162, 'F'],
+				[map.C(150), 112, 'W'],
+				[map.C(330), 114, 'f'],
+				[map.R(420), 150, 'W'],
+				[map.L(44), 150, 'F'],
 			] as [number, number, string][])
 				flower(map, x, y, c, c === 'F' ? 'f' : 'F');
-			rock(map, 140, 158, 5);
-			rock(map, 340, 104, 4);
+			rock(map, map.L(140), 158, 5);
+			rock(map, map.C(340), 104, 4);
 		},
 	},
 
@@ -1267,15 +1290,16 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				['2', 46],
 				['3', 70],
 			]);
-			if (night) stars(map, 4, 44, 0.007, 17);
-			cloud(map, 30, 18, 46, { hi: 'W', shade: 'w' });
-			cloud(map, 190, 28, 36, { hi: 'W', shade: 'w' });
+			if (night) stars(map, map.top + 4, 44, 0.007, 17);
+			cloud(map, map.L(30), 18, 46, { hi: 'W', shade: 'w' });
+			cloud(map, map.C(190), 28, 36, { hi: 'W', shade: 'w' });
+			cloud(map, map.R(400), 12, 40, { hi: 'W', shade: 'w' });
 			// 뒤쪽 숲: 큰 덩어리 두 줄 (뒷줄은 더 짙다)
-			for (let x = -16; x < SCENE_W + 24; x += 22) {
+			for (let x = -16; x < map.w + 24; x += 22) {
 				const n = noise(x, 1, 21);
 				clump(map, [[x, 62 - n * 10, 16 + n * 6]], { hi: 'j', base: 'i', shade: 'I', line: 'I', outline: 'I' });
 			}
-			for (let x = -6; x < SCENE_W + 24; x += 26) {
+			for (let x = -6; x < map.w + 24; x += 26) {
 				const n = noise(x, 2, 23);
 				clump(
 					map,
@@ -1286,25 +1310,25 @@ const SCENES: Record<SceneKind, SceneDef> = {
 					{ hi: 'J', base: 'j', shade: 'i', line: 'i', outline: 'I' }
 				);
 			}
-			map.rect(0, 88, SCENE_W, 8, 'j');
-			for (let x = 0; x < SCENE_W; x++) if (checker(x, 88)) map.set(x, 88, 'i');
+			map.rect(0, 88, map.w, 8, 'j');
+			for (let x = 0; x < map.w; x++) if (checker(x, 88)) map.set(x, 88, 'i');
 			grassField(map, 6);
-			map.rect(0, 96, SCENE_W, 1, 'd');
-			for (let x = 0; x < SCENE_W; x++) if (checker(x, 97)) map.set(x, 97, 'd');
+			map.rect(0, 96, map.w, 1, 'd');
+			for (let x = 0; x < map.w; x++) if (checker(x, 97)) map.set(x, 97, 'd');
 			// 아래의 긴 풀 (두 줄)
-			for (let tx = 0; tx < SCENE_W / TILE; tx++) {
+			for (let tx = 0; tx < map.tw; tx++) {
 				tileAt(map, TALL_GRASS, tx, 9);
 				tileAt(map, TALL_GRASS, tx, 10);
 				tileAt(map, TALL_GRASS, tx, 11);
 			}
-			for (let x = 0; x < SCENE_W; x++) map.set(x, 143, 'e');
+			for (let x = 0; x < map.w; x++) map.set(x, 143, 'e');
 			for (const [x, y] of [
-				[60, 110],
-				[130, 124],
-				[220, 104],
-				[300, 130],
-				[400, 112],
-				[440, 128],
+				[map.L(60), 110],
+				[map.L(130), 124],
+				[map.C(220), 104],
+				[map.C(300), 130],
+				[map.R(400), 112],
+				[map.R(440), 128],
 			])
 				tuft(map, x, y, 'G', 'd');
 		},
@@ -1339,24 +1363,24 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				['1', 20],
 				['2', 64],
 			]);
-			if (night) stars(map, 3, 30, 0.008, 41);
+			if (night) stars(map, map.top + 3, 30, 0.008, 41);
 			// 뒤쪽 산울타리
 			treeLine(map, 60, 9, 8, { hi: 'J', base: 'j', shade: 'i', line: 'i' });
 			// 돌바닥
-			for (let ty = 4; ty < SCENE_H / TILE; ty++) {
-				for (let tx = 0; tx < SCENE_W / TILE; tx++) tileAt(map, COBBLE, tx, ty);
+			for (let ty = 4; ty < map.th; ty++) {
+				for (let tx = 0; tx < map.tw; tx++) tileAt(map, COBBLE, tx, ty);
 			}
 			// 집들 (뒤)
-			house(map, 10, 22, 76, 26, 46, 'X');
-			house(map, 118, 30, 56, 22, 42, 'A');
-			house(map, 306, 30, 56, 22, 42, 'X');
-			house(map, 394, 22, 76, 26, 46, 'A');
+			house(map, map.L(10), 22, 76, 26, 46, 'X');
+			house(map, map.L(118), 30, 56, 22, 42, 'A');
+			house(map, map.R(306), 30, 56, 22, 42, 'X');
+			house(map, map.R(394), 22, 76, 26, 46, 'A');
 			// 가운데 뒤: 큰 나무
-			tree(map, 240, 92, 24, { hi: 'G', base: 'g', shade: 'd', line: 'd', outline: 'e' });
+			tree(map, map.C(240), 92, 24, { hi: 'G', base: 'g', shade: 'd', line: 'd', outline: 'e' });
 			// 분수 (왼쪽 앞)
-			fountain(map, 16, 112, 72);
+			fountain(map, map.L(16), 112, 72);
 			// 가로등 (오른쪽)
-			for (const lx of [200, 440]) {
+			for (const lx of [map.C(200), map.R(440)]) {
 				map.rect(lx, 70, 4, 34, 'k');
 				map.rect(lx + 1, 70, 2, 34, 'R');
 				map.rect(lx - 3, 62, 10, 9, 'k');
@@ -1365,10 +1389,10 @@ const SCENES: Record<SceneKind, SceneDef> = {
 			}
 			// 화단
 			for (const [x, y, c] of [
-				[100, 108, 'f'],
-				[108, 112, 'F'],
-				[370, 108, 'f'],
-				[380, 112, 'W'],
+				[map.L(100), 108, 'f'],
+				[map.L(108), 112, 'F'],
+				[map.R(370), 108, 'f'],
+				[map.R(380), 112, 'W'],
 			] as [number, number, string][])
 				flower(map, x, y, c, 'F', 'e');
 		},
@@ -1393,29 +1417,32 @@ const SCENES: Record<SceneKind, SceneDef> = {
 		glow: '0%&()[]{}<>?!"#$\'*+,-',
 		nightDetails: true,
 		paint(map, night) {
+			const c = map.C(0);
+			const r = map.R(0);
 			// 회벽 (가로 줄무늬 점 무늬)
-			map.rect(0, 0, SCENE_W, 60, 'T');
-			for (let y = 0; y < 60; y += 6) for (let x = 0; x < SCENE_W; x++) if ((x + y) % 4 === 0) map.set(x, y, 't');
+			map.rect(0, 0, map.w, 60, 'T');
+			for (let y = 0; y < 60; y += 6) for (let x = 0; x < map.w; x++) if ((x + y) % 4 === 0) map.set(x, y, 't');
 			// 들보
-			map.rect(0, 0, SCENE_W, 6, 'n');
-			map.rect(0, 5, SCENE_W, 1, 'N');
-			map.rect(0, 1, SCENE_W, 1, 'o');
+			map.rect(0, 0, map.w, 6, 'n');
+			map.rect(0, 5, map.w, 1, 'N');
+			map.rect(0, 1, map.w, 1, 'o');
 			// 판자 벽
-			for (let ty = 0; ty < 4; ty++) for (let tx = 0; tx < 30; tx++) map.stamp(WALL_PLANKS, tx * TILE, 60 + ty * TILE);
-			map.rect(0, 58, SCENE_W, 4, 'N');
-			map.rect(0, 59, SCENE_W, 1, 'O');
+			for (let ty = 0; ty < 4; ty++)
+				for (let tx = 0; tx < map.tw; tx++) map.stamp(WALL_PLANKS, tx * TILE, 60 + ty * TILE);
+			map.rect(0, 58, map.w, 4, 'N');
+			map.rect(0, 59, map.w, 1, 'O');
 			// 창 (가운데 위)
-			map.rect(212, 12, 56, 36, 'N');
-			map.rect(214, 14, 52, 32, 'L');
-			map.rect(239, 14, 2, 32, 'N');
-			map.rect(214, 29, 52, 2, 'N');
+			map.rect(c + 212, 12, 56, 36, 'N');
+			map.rect(c + 214, 14, 52, 32, 'L');
+			map.rect(c + 239, 14, 2, 32, 'N');
+			map.rect(c + 214, 29, 52, 2, 'N');
 			if (!night)
 				for (let i = 0; i < 10; i++) {
-					map.set(220 + i, 26 - i, 'l');
-					map.set(246 + i, 26 - i, 'l');
+					map.set(c + 220 + i, 26 - i, 'l');
+					map.set(c + 246 + i, 26 - i, 'l');
 				}
-			map.rect(208, 46, 64, 4, 'o');
-			map.rect(208, 46, 64, 1, 'O');
+			map.rect(c + 208, 46, 64, 4, 'o');
+			map.rect(c + 208, 46, 64, 1, 'O');
 			// 선반 둘
 			shelf(map, 8, 10, 60, [
 				['potion', 'potion', 'bolt', 'potion'],
@@ -1423,24 +1450,24 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				['coin', 'bag', 'key', 'coin'],
 				['potion', 'heart', 'star', 'heart'],
 			]);
-			shelf(map, 412, 10, 60, [
+			shelf(map, r + 412, 10, 60, [
 				['sword', 'hammer', 'sword', 'sword'],
 				['shield', 'chest', 'shield', 'shield'],
 				['gear', 'clock', 'lock', 'gear'],
 				['bag', 'flag', 'chest', 'bag'],
 			]);
 			// 나무 바닥
-			for (let ty = 7; ty < 17; ty++) for (let tx = 0; tx < 30; tx++) tileAt(map, PLANKS, tx, ty);
-			map.rect(0, 112, SCENE_W, 1, 'N');
+			for (let ty = 7; ty < map.th; ty++) for (let tx = 0; tx < map.tw; tx++) tileAt(map, PLANKS, tx, ty);
+			map.rect(0, 112, map.w, 1, 'N');
 			// 계산대 (앞, 낮게)
-			map.rect(120, 116, 240, 40, 'N');
-			map.rect(121, 117, 238, 6, 'O');
-			map.rect(121, 123, 238, 32, 'o');
-			for (let x = 136; x < 360; x += 28) map.rect(x, 126, 1, 28, 'n');
-			map.rect(121, 123, 238, 1, 'N');
+			map.rect(c + 120, 116, 240, 40, 'N');
+			map.rect(c + 121, 117, 238, 6, 'O');
+			map.rect(c + 121, 123, 238, 32, 'o');
+			for (let x = c + 136; x < c + 360; x += 28) map.rect(x, 126, 1, 28, 'n');
+			map.rect(c + 121, 123, 238, 1, 'N');
 			// 계산대 위의 돈주머니와 종
-			map.stamp(ICONS.coin, 130, 104, false, ICON_REMAP);
-			map.stamp(ICONS.bag, 340, 104, false, ICON_REMAP);
+			map.stamp(ICONS.coin, c + 130, 104, false, ICON_REMAP);
+			map.stamp(ICONS.bag, c + 340, 104, false, ICON_REMAP);
 		},
 	},
 
@@ -1468,9 +1495,11 @@ const SCENES: Record<SceneKind, SceneDef> = {
 		glow: 'YEZz',
 		nightDetails: true,
 		paint(map, night) {
-			for (let ty = 0; ty < 7; ty++) for (let tx = 0; tx < 30; tx++) tileAt(map, WALL_PLANKS, tx, ty);
-			map.rect(0, 0, SCENE_W, 5, 'N');
-			map.rect(0, 1, SCENE_W, 2, 'n');
+			const c = map.C(0);
+			const r = map.R(0);
+			for (let ty = 0; ty < 7; ty++) for (let tx = 0; tx < map.tw; tx++) tileAt(map, WALL_PLANKS, tx, ty);
+			map.rect(0, 0, map.w, 5, 'N');
+			map.rect(0, 1, map.w, 2, 'n');
 			// 창과 커튼 (왼쪽)
 			map.rect(36, 18, 60, 46, 'N');
 			map.rect(38, 20, 56, 42, 'L');
@@ -1497,35 +1526,35 @@ const SCENES: Record<SceneKind, SceneDef> = {
 			}
 			map.rect(26, 12, 80, 3, 'N');
 			// 액자 (오른쪽 위)
-			map.rect(380, 22, 44, 32, 'N');
-			map.rect(382, 24, 40, 28, 'O');
-			map.rect(385, 27, 34, 22, 'L');
-			for (let x = 385; x < 419; x++) {
-				const t = 40 + Math.round(4 * Math.cos((x - 385) / 8));
+			map.rect(r + 380, 22, 44, 32, 'N');
+			map.rect(r + 382, 24, 40, 28, 'O');
+			map.rect(r + 385, 27, 34, 22, 'L');
+			for (let x = r + 385; x < r + 419; x++) {
+				const t = 40 + Math.round(4 * Math.cos((x - r - 385) / 8));
 				for (let y = t; y < 49; y++) map.set(x, y, y === t ? 'G' : 'g');
 			}
 			// 바닥
-			for (let ty = 7; ty < 17; ty++) for (let tx = 0; tx < 30; tx++) tileAt(map, PLANKS, tx, ty);
-			map.rect(0, 110, SCENE_W, 2, 'N');
+			for (let ty = 7; ty < map.th; ty++) for (let tx = 0; tx < map.tw; tx++) tileAt(map, PLANKS, tx, ty);
+			map.rect(0, 110, map.w, 2, 'N');
 			// 깔개 (가운데)
 			for (let j = 0; j < 40; j++) {
 				for (let i = 0; i < 200; i++) {
 					const edge = i < 3 || i > 196 || j < 3 || j > 36;
 					const stripe = (i + j) % 12 < 2;
-					map.set(140 + i, 124 + j, edge ? 'y' : stripe ? 'X' : 'x');
+					map.set(c + 140 + i, 124 + j, edge ? 'y' : stripe ? 'X' : 'x');
 				}
 			}
 			// 침대 (오른쪽)
-			map.rect(402, 70, 72, 76, 'N');
-			map.rect(404, 72, 68, 10, 'o');
-			map.rect(404, 72, 68, 2, 'O');
-			map.rect(406, 84, 64, 60, 'W');
-			map.rect(412, 88, 26, 14, 'W');
-			map.rect(412, 101, 26, 2, 'w');
-			map.rect(406, 104, 64, 40, 'a');
-			map.rect(406, 104, 64, 3, 'A');
-			for (let j = 108; j < 144; j += 6) map.rect(406, j, 64, 1, 'b');
-			map.rect(466, 104, 4, 40, 'b');
+			map.rect(r + 402, 70, 72, 76, 'N');
+			map.rect(r + 404, 72, 68, 10, 'o');
+			map.rect(r + 404, 72, 68, 2, 'O');
+			map.rect(r + 406, 84, 64, 60, 'W');
+			map.rect(r + 412, 88, 26, 14, 'W');
+			map.rect(r + 412, 101, 26, 2, 'w');
+			map.rect(r + 406, 104, 64, 40, 'a');
+			map.rect(r + 406, 104, 64, 3, 'A');
+			for (let j = 108; j < 144; j += 6) map.rect(r + 406, j, 64, 1, 'b');
+			map.rect(r + 466, 104, 4, 40, 'b');
 			// 탁자와 촛불 (왼쪽 아래)
 			map.rect(30, 100, 56, 6, 'N');
 			map.rect(31, 101, 54, 3, 'O');
@@ -1572,8 +1601,8 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				}
 			}
 			// 짙은 풀 얼룩 (경계는 점 무늬)
-			for (let y = 0; y < SCENE_H; y++) {
-				for (let x = 0; x < SCENE_W; x++) {
+			for (let y = 0; y < map.bottom; y++) {
+				for (let x = 0; x < map.w; x++) {
 					if (map.get(x, y) !== 'g') continue;
 					const n = smoothNoise(x, y, 40, 61);
 					if (n > 0.66 || (n > 0.62 && checker(x, y))) map.set(x, y, 'd');
@@ -1595,21 +1624,21 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				}
 			};
 			for (const [mx, my, h] of [
-				[392, -4, 34],
-				[440, -8, 40],
-				[478, 0, 30],
-				[356, 10, 26],
-				[414, 14, 30],
-				[460, 18, 28],
-				[330, 26, 20],
+				[map.R(392), -4, 34],
+				[map.R(440), -8, 40],
+				[map.R(478), 0, 30],
+				[map.R(356), 10, 26],
+				[map.R(414), 14, 30],
+				[map.R(460), 18, 28],
+				[map.R(330), 26, 20],
 			])
 				mountain(mx, my, h);
 			// 언덕 둔덕 (산 아래)
 			for (const [hx, hy] of [
-				[350, 50],
-				[380, 52],
-				[440, 52],
-				[470, 50],
+				[map.R(350), 50],
+				[map.R(380), 52],
+				[map.R(440), 52],
+				[map.R(470), 50],
 			])
 				clump(map, [[hx, hy, 8]], { hi: 'G', base: 'g', shade: 'd', outline: 'e' }, hy + 4);
 			// 숲: 작은 둥근 나무를 뒤 줄부터 겹쳐 심는다
@@ -1621,17 +1650,17 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				for (let r = 0; r < rows; r++)
 					for (let c = 0; c < cols - (r % 2); c++) smallTree(fx + c * 9 + (r % 2) * 5, fy + r * 6);
 			};
-			forest(170, 8, 5, 3);
-			forest(250, 96, 6, 4);
+			forest(map.C(170), 8, 5, 3);
+			forest(map.C(250), 96, 6, 4);
 			forest(10, 112, 4, 4);
-			forest(410, 104, 6, 5);
+			forest(map.R(410), 104, 6, 5);
 			forest(96, 58, 2, 2);
 			// 꽃밭 (빨강·노랑 점)
 			for (const [fx, fy] of [
-				[200, 70],
-				[330, 76],
+				[map.C(200), 70],
+				[map.C(330), 76],
 				[120, 128],
-				[380, 140],
+				[map.R(380), 140],
 			]) {
 				for (let i = 0; i < 9; i++) {
 					const px = fx + Math.floor(noise(i, fx, 3) * 22);
@@ -1673,11 +1702,11 @@ const SCENES: Record<SceneKind, SceneDef> = {
 		night: { '1': '#141230' },
 		glow: 'CcDYEW',
 		paint(map) {
-			map.rect(0, 0, SCENE_W, SCENE_H, '1');
+			map.rect(0, 0, map.w, map.bottom, '1');
 			// 바위 벽: 모난 돌 조각 (위는 한 단 어둡게)
 			rockWall(map, 0, 112, 30, 51, 34);
 			// 위의 고드름 돌
-			for (let x = 8; x < SCENE_W; x += 37) {
+			for (let x = 8; x < map.w; x += 37) {
 				const h = 8 + Math.floor(noise(x, 9, 3) * 10);
 				for (let j = 0; j < h; j++) {
 					const half = Math.round((1 - j / h) * 4);
@@ -1685,8 +1714,8 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				}
 			}
 			// 바닥
-			for (let ty = 7; ty < 17; ty++) for (let tx = 0; tx < 30; tx++) tileAt(map, CAVE_FLOOR, tx, ty);
-			for (let x = 0; x < SCENE_W; x++) {
+			for (let ty = 7; ty < map.th; ty++) for (let tx = 0; tx < map.tw; tx++) tileAt(map, CAVE_FLOOR, tx, ty);
+			for (let x = 0; x < map.w; x++) {
 				const t = 108 + Math.round(2 * Math.sin(x / 13));
 				map.set(x, t, 'R');
 				map.set(x, t + 1, 'r');
@@ -1695,10 +1724,10 @@ const SCENES: Record<SceneKind, SceneDef> = {
 			// 수정 무리
 			for (const [x, y, s] of [
 				[40, 112, 1],
-				[440, 114, 1.2],
+				[map.R(440), 114, 1.2],
 				[120, 96, 0.7],
-				[372, 98, 0.8],
-				[460, 64, 0.6],
+				[map.R(372), 98, 0.8],
+				[map.R(460), 64, 0.6],
 				[18, 70, 0.6],
 			]) {
 				crystal(map, x, y, Math.round(28 * s), Math.round(10 * s), -2);
@@ -1706,7 +1735,7 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				crystal(map, x - Math.round(8 * s), y + 3, Math.round(14 * s), Math.round(6 * s), -4);
 			}
 			// 횃불 (빛 무리는 점 무늬)
-			for (const tx of [150, 324]) {
+			for (const tx of [map.C(150), map.C(324)]) {
 				for (let j = -20; j <= 20; j++)
 					for (let i = -20; i <= 20; i++) {
 						const d = i * i + j * j;
@@ -1722,9 +1751,9 @@ const SCENES: Record<SceneKind, SceneDef> = {
 			// 자갈
 			for (const [x, y] of [
 				[90, 150],
-				[200, 160],
-				[300, 146],
-				[400, 158],
+				[map.C(200), 160],
+				[map.C(300), 146],
+				[map.R(400), 158],
 			])
 				rock(map, x, y, 4);
 		},
@@ -1755,17 +1784,17 @@ const SCENES: Record<SceneKind, SceneDef> = {
 		night: { '1': '#2a1850', '2': '#221444', z: '#1e1240', q: '#140c2c', I: '#101030', J: '#181c48' },
 		glow: 'KVYIJWf',
 		paint(map) {
-			map.rect(0, 0, SCENE_W, 108, '1');
+			map.rect(0, 0, map.w, 108, '1');
 			// 벽 아래 짙은 띠와 네온 줄 두 개
-			map.rect(0, 70, SCENE_W, 38, '2');
-			map.rect(0, 16, SCENE_W, 2, 'K');
-			map.rect(0, 22, SCENE_W, 1, 'V');
-			for (let x = 0; x < SCENE_W; x++) if (checker(x, 18)) map.set(x, 18, 'K');
+			map.rect(0, 70, map.w, 38, '2');
+			map.rect(0, 16, map.w, 2, 'K');
+			map.rect(0, 22, map.w, 1, 'V');
+			for (let x = 0; x < map.w; x++) if (checker(x, 18)) map.set(x, 18, 'K');
 			// 벽 판자 줄 (차분하게)
-			for (let x = 20; x < SCENE_W; x += 40) map.rect(x, 24, 1, 46, '2');
+			for (let x = 20; x < map.w; x += 40) map.rect(x, 24, 1, 46, '2');
 			// 네온 간판: 3×5 픽셀 글자를 두 배로, 분홍 글자에 하늘색 테두리
 			const word = 'ARCADE';
-			const left = Math.round(SCENE_W / 2 - (word.length * 8 - 2));
+			const left = Math.round(map.w / 2 - (word.length * 8 - 2));
 			map.rect(left - 6, 28, word.length * 16 + 8, 18, 'k');
 			map.rect(left - 5, 29, word.length * 16 + 6, 16, 'J');
 			[...word].forEach((ch, i) =>
@@ -1781,19 +1810,19 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				map.rect(px + 1, py + 1, 20, 26, bg);
 				map.stamp(art, px + 4, py + 6, false);
 			};
-			poster(110, 52, ['.KKKK.', 'KWKKWK', 'KKKKKK', 'KKKKKK', 'K.KK.K', '......', 'YYYYYY'], 'I');
-			poster(150, 58, ['..YY..', '.YYYY.', 'YYYYYY', '.YYYY.', '..YY..', '......', 'VVVVVV'], 'b');
-			poster(312, 54, ['.f..f.', 'ffffff', 'ffffff', '.ffff.', '..ff..', '......', 'KKKKKK'], 'I');
-			poster(350, 60, ['V....V', '.V..V.', '..VV..', '..VV..', '.V..V.', '......', 'YYYYYY'], 'b');
+			poster(map.C(110), 52, ['.KKKK.', 'KWKKWK', 'KKKKKK', 'KKKKKK', 'K.KK.K', '......', 'YYYYYY'], 'I');
+			poster(map.C(150), 58, ['..YY..', '.YYYY.', 'YYYYYY', '.YYYY.', '..YY..', '......', 'VVVVVV'], 'b');
+			poster(map.C(312), 54, ['.f..f.', 'ffffff', 'ffffff', '.ffff.', '..ff..', '......', 'KKKKKK'], 'I');
+			poster(map.C(350), 60, ['V....V', '.V..V.', '..VV..', '..VV..', '.V..V.', '......', 'YYYYYY'], 'b');
 			// 카펫
-			for (let ty = 7; ty < 17; ty++) for (let tx = 0; tx < 30; tx++) tileAt(map, ARCADE_CARPET, tx, ty);
-			map.rect(0, 108, SCENE_W, 2, 'k');
-			map.rect(0, 110, SCENE_W, 2, 'b');
+			for (let ty = 7; ty < map.th; ty++) for (let tx = 0; tx < map.tw; tx++) tileAt(map, ARCADE_CARPET, tx, ty);
+			map.rect(0, 108, map.w, 2, 'k');
+			map.rect(0, 110, map.w, 2, 'b');
 			// 오락 기계 (양옆에 둘씩)
 			cabinet(map, 8, 26, 'A', 'K');
 			cabinet(map, 52, 30, 'X', 'V');
-			cabinet(map, 392, 30, 'X', 'K');
-			cabinet(map, 436, 26, 'A', 'V');
+			cabinet(map, map.R(392), 30, 'X', 'K');
+			cabinet(map, map.R(436), 26, 'A', 'V');
 		},
 	},
 
@@ -1835,10 +1864,10 @@ const SCENES: Record<SceneKind, SceneDef> = {
 				['1', 30],
 				['2', 60],
 				['3', 84],
-				['4', 130],
+				['4', 160],
 			]);
-			stars(map, 2, 90, 0.008, 5);
-			moon(map, 396, 34, 16);
+			stars(map, map.top + 2, 90, 0.008, 5);
+			moon(map, map.R(396), 34, 16);
 			hills(
 				map,
 				wave(96, [
@@ -1860,14 +1889,14 @@ const SCENES: Record<SceneKind, SceneDef> = {
 					[10, 260, 120],
 					[3, 70, 0],
 				]),
-				SCENE_H,
+				map.bottom,
 				{ fill: 'j', rim: 'J', shade: 'i', outline: 'e' }
 			);
 			for (const [x, h] of [
 				[30, 26],
 				[50, 18],
-				[430, 22],
-				[452, 30],
+				[map.R(430), 22],
+				[map.R(452), 30],
 			])
 				pine(
 					map,
@@ -1885,17 +1914,17 @@ const SCENES: Record<SceneKind, SceneDef> = {
 					[5, 300, 0],
 					[2, 50, 10],
 				]),
-				SCENE_H,
+				map.bottom,
 				{ fill: 'g', rim: 'G', shade: 'd', outline: 'e' }
 			);
 			// 반딧불
 			for (const [x, y] of [
-				[150, 128],
-				[180, 140],
-				[310, 132],
-				[350, 150],
+				[map.C(150), 128],
+				[map.C(180), 140],
+				[map.C(310), 132],
+				[map.C(350), 150],
 				[90, 150],
-				[400, 126],
+				[map.R(400), 126],
 			]) {
 				map.set(x, y, 'F');
 				map.set(x + 1, y, 'F');
@@ -1917,28 +1946,42 @@ export function scenePalette(kind: SceneKind, night: boolean): Record<string, st
 	return { ...out, ...def.night };
 }
 
+/** 하늘이 있는 바깥 장면: 화면이 높으면 지평선을 내리고 위쪽 하늘을 이어 칠한다 */
+const SKY_SCENES = new Set<SceneKind>(['sunset', 'meadow', 'field', 'plaza', 'night']);
+
+/** 기준 높이보다 높은 화면에서 그림을 내리는 칸 수: 늘어난 높이의 반 (많아야 64칸) */
+export const sceneShift = (kind: SceneKind, h: number) =>
+	SKY_SCENES.has(kind) ? Math.max(0, Math.min(64, Math.round((h - 216) / 2))) : 0;
+
+/** 기억해 두는 판과 그림의 수 (창 크기를 바꾸면 크기마다 새로 칠한다) */
+const CACHE_LIMIT = 24;
+function remember<T>(cache: Map<string, T>, key: string, value: T): T {
+	cache.set(key, value);
+	if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value as string);
+	return value;
+}
+
 const maps = new Map<string, PixelMap>();
 
-/** 장면을 칠한 판 (장면·낮밤마다 한 번만 칠한다) */
-export function composeScene(kind: SceneKind, night: boolean): PixelMap {
-	const key = `${kind}:${night && SCENES[kind].nightDetails ? 'n' : 'd'}`;
-	let map = maps.get(key);
-	if (!map) {
-		map = new PixelMap(SCENE_W, SCENE_H);
-		SCENES[kind].paint(map, night && Boolean(SCENES[kind].nightDetails));
-		maps.set(key, map);
-	}
-	return map;
+/** 장면을 w×h 판에 칠한다 (장면·낮밤·크기마다 한 번만 칠한다) */
+export function composeScene(kind: SceneKind, night: boolean, w = SCENE_W, h = SCENE_H): PixelMap {
+	const lit = night && Boolean(SCENES[kind].nightDetails);
+	const key = `${kind}:${lit ? 'n' : 'd'}:${w}x${h}`;
+	const cached = maps.get(key);
+	if (cached) return cached;
+	const map = new PixelMap(w, h, '.', sceneShift(kind, h));
+	SCENES[kind].paint(map, lit);
+	return remember(maps, key, map);
 }
 
 const images = new Map<string, Uint8ClampedArray>();
 
-/** 장면의 RGBA (캔버스에 그대로 올린다). 빈칸은 투명 */
-export function sceneRgba(kind: SceneKind, night: boolean): Uint8ClampedArray {
-	const key = `${kind}:${night ? 'n' : 'd'}`;
+/** 장면의 RGBA (w×h, 캔버스에 그대로 올린다). 빈칸은 투명 */
+export function sceneRgba(kind: SceneKind, night: boolean, w = SCENE_W, h = SCENE_H): Uint8ClampedArray {
+	const key = `${kind}:${night ? 'n' : 'd'}:${w}x${h}`;
 	const cached = images.get(key);
 	if (cached) return cached;
-	const map = composeScene(kind, night);
+	const map = composeScene(kind, night, w, h);
 	const palette = scenePalette(kind, night);
 	const rgb: Record<string, [number, number, number]> = {};
 	for (const [k, hex] of Object.entries(palette))
@@ -1952,8 +1995,7 @@ export function sceneRgba(kind: SceneKind, night: boolean): Uint8ClampedArray {
 		data[i * 4 + 2] = c[2];
 		data[i * 4 + 3] = 255;
 	});
-	images.set(key, data);
-	return data;
+	return remember(images, key, data);
 }
 
 export const SCENE_KINDS = Object.keys(SCENES) as SceneKind[];

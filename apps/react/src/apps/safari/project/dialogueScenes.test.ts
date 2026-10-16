@@ -17,12 +17,10 @@ import {
 	SCENE_W,
 	scenePalette,
 	sceneRgba,
-	sceneView,
+	sceneShift,
 	signpostRows,
 	TALL_GRASS,
 	TILE,
-	VIEW_H,
-	VIEW_W,
 	WALL_PLANKS,
 	WATER,
 } from './dialogueScenes';
@@ -49,20 +47,21 @@ describe('타일', () => {
 		}
 	});
 
-	it('장면은 30×17 타일 크기 (480×272)', () => {
+	it('기준 판은 30×17 타일 크기 (480×272)', () => {
 		expect(SCENE_W).toBe(30 * TILE);
 		expect(SCENE_H).toBe(17 * TILE);
 	});
 
-	it('게임 화면(360×208)에 보이는 창은 장면마다 장면 안에 든다', () => {
-		expect([VIEW_W, VIEW_H]).toEqual([360, 208]);
-		for (const kind of SCENE_KINDS) {
-			const { x, y } = sceneView(kind);
-			expect(x, kind).toBeGreaterThanOrEqual(0);
-			expect(y, kind).toBeGreaterThanOrEqual(0);
-			expect(x + VIEW_W, kind).toBeLessThanOrEqual(SCENE_W);
-			expect(y + VIEW_H, kind).toBeLessThanOrEqual(SCENE_H);
-		}
+	it('소품 자리는 왼쪽·가운데·오른쪽에 붙여 옮기고, 높은 화면의 바깥 장면은 지평선을 내린다', () => {
+		const wide = composeScene('meadow', false, 640, 214);
+		expect([wide.L(26), wide.C(240), wide.R(456)]).toEqual([26, 320, 616]);
+		const narrow = composeScene('meadow', false, 366, 214);
+		expect([narrow.L(26), narrow.C(240), narrow.R(456)]).toEqual([26, 183, 342]);
+		expect(sceneShift('meadow', 214)).toBe(0);
+		expect(sceneShift('meadow', 300)).toBe(42);
+		expect(sceneShift('meadow', 400)).toBe(64);
+		// 안쪽 장면(상점 등)은 내리지 않고 바닥을 늘린다
+		expect(sceneShift('shop', 300)).toBe(0);
 	});
 
 	it('소품(표지판, 게시판, 집, 성)은 줄 폭이 같고 소품 팔레트의 색만', () => {
@@ -105,6 +104,26 @@ describe('장면', () => {
 				}
 				// 한 장면은 팔레트 몇 가지 색으로 (지나치게 많지 않게)
 				expect(new Set(map.px.map((k) => palette[k])).size, kind).toBeLessThanOrEqual(48);
+			}
+		}
+	});
+
+	it('어떤 화면 크기(넓고 낮은 화면, 좁고 높은 화면)에서도 장면은 화면을 빈칸 없이 채운다', () => {
+		for (const [w, h] of [
+			[366, 214],
+			[534, 247],
+			[640, 205],
+			[390, 321],
+			[1000, 300],
+		]) {
+			for (const kind of SCENE_KINDS) {
+				for (const night of [false, true]) {
+					const rgba = sceneRgba(kind, night, w, h);
+					expect(rgba, `${kind} ${w}×${h}`).toHaveLength(w * h * 4);
+					let holes = 0;
+					for (let i = 3; i < rgba.length; i += 4) if (rgba[i] !== 255) holes++;
+					expect(holes, `${kind} ${night ? '밤' : '낮'} ${w}×${h}`).toBe(0);
+				}
 			}
 		}
 	});

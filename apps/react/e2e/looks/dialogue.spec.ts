@@ -161,28 +161,38 @@ test('dialogue: Z로 넘기고 고르며, ↓·→는 다음 줄로, X는 장 �
 	await expect(crumbOf(panel)).toContainText('2/');
 });
 
-test('dialogue: 라이트는 옅은 하늘색, 다크는 짙은 남색 페이지이고, 그림은 원래 모습 그대로 흰 액자에 띄운다', async ({
+test('dialogue: 게임 화면이 페이지를 꽉 채우고(정수 배), 창은 반투명한 짙은 바탕에 얇은 테두리, 그림은 원래 모습 그대로 액자에 띄운다', async ({
 	page,
 }) => {
+	// 장면을 그리기 전 한 순간 보이는 페이지 바탕: 라이트는 옅은 하늘색, 다크는 짙은 남색
 	await expectTheme(page, 'dialogue', { light: 'rgb(232, 244, 255)', dark: 'rgb(18, 19, 48)' });
 	const { safari, panel } = await openLook(page, { id: 'qru', tab: /QRU/, look: 'dialogue' });
 	await safari.getByRole('button', { name: '전체 화면' }).click();
 	const shot = panel.locator('.dl-stage .dl-shot-frame img');
 	await expect(shot).toBeVisible();
-	// 그림을 픽셀로 바꾸거나 풍경을 깔지 않는다
+	// 그림을 픽셀로 바꾸거나 무대 안에 풍경을 깔지 않는다
 	expect(await shot.evaluate((img) => getComputedStyle(img).imageRendering)).toBe('auto');
 	await expect(panel.locator('.dl-stage canvas')).toHaveCount(0);
+	// 창: 1칸 밝은 테두리와 반투명한 짙은 바탕 (라이트·다크가 같고, 장면이 색을 낸다)
 	const box = dialogOf(panel).locator('.dl-box');
-	// 테두리는 게임 칸 3칸이고(여기는 다크라 밤의 흰 테두리와 남색 바탕), 화면 전체가 정수 배로 커진다 (글자·테두리·그림이 한 격자)
-	expect(await box.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('3px');
-	expect(await box.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe('rgb(240, 240, 255)');
-	expect(await box.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(35, 38, 90)');
-	const zoom = Number(await panel.locator('.dl-screen').getAttribute('data-zoom'));
-	expect(Number.isInteger(zoom) && zoom >= 1).toBe(true);
-	const width = await panel.locator('.dl-screen').evaluate((el) => el.getBoundingClientRect().width);
-	expect(Math.round(width)).toBe(360 * zoom);
-	// 넉넉한 전체 화면에서는 세 배: 대사 글자가 33px로 보인다
-	expect(zoom).toBeGreaterThanOrEqual(3);
+	expect(await box.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe('1px');
+	expect(await box.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe('rgba(255, 255, 255, 0.85)');
+	expect(await box.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(14, 16, 28, 0.78)');
+	// 화면 전체가 정수 배로 커지고(글자·테두리·그림이 한 격자), 넉넉한 전체 화면에서는 세 배 이상 (대사 글자 33px)
+	const screen = panel.locator('.dl-screen');
+	const zoom = Number(await screen.getAttribute('data-zoom'));
+	expect(Number.isInteger(zoom) && zoom >= 3).toBe(true);
+	// 게임 화면이 페이지를 꽉 채운다 (게임 칸으로 올림해 오른쪽·아래가 많아야 zoom − 1 px 넘친다)
+	const page_ = await panel.evaluate((el) => ({ w: el.clientWidth, h: el.clientHeight }));
+	const rect = await screen.evaluate((el) => el.getBoundingClientRect().toJSON() as DOMRect);
+	expect(rect.width).toBeGreaterThanOrEqual(page_.w - 0.5);
+	expect(rect.width).toBeLessThanOrEqual(page_.w + zoom);
+	expect(rect.height).toBeGreaterThanOrEqual(page_.h - 0.5);
+	expect(rect.height).toBeLessThanOrEqual(page_.h + zoom);
+	// 장면 캔버스도 화면 크기 그대로 칠한다
+	const canvas = panel.locator('.dl-game > canvas.dl-backdrop').first();
+	expect(Number(await canvas.getAttribute('width')) * zoom).toBeCloseTo(rect.width, 0);
+	expect(Number(await canvas.getAttribute('height')) * zoom).toBeCloseTo(rect.height, 0);
 });
 
 test('dialogue: 그림이 하나도 없으면 무대에 게임 화면(타이틀, 퀘스트)을 그린다', async ({ page }) => {
