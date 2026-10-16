@@ -1523,6 +1523,28 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 		expect(Math.round((await bottom.boundingBox())!.y)).toBe(Math.round(resting.y));
 	});
 
+	test('문단 도구: 서식 막대가 iOS 메모의 문단 막대로 바뀌고, 문단을 위로 옮긴 뒤 닫으면 서식 도구로 돌아온다', async ({
+		page,
+	}) => {
+		await fakeApi(page, { signedIn: true });
+		await enterHome(page);
+		await (await homeApp(page, '메모')).tap();
+		const memo = appWindow(page, 'memo');
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).tap();
+		const bottom = memo.locator('.memo-reader .memo-phone-bottom');
+		const blocks = memo.locator('.ProseMirror > *');
+		await blocks.nth(1).tap();
+		const second = await blocks.nth(1).innerText();
+		await bottom.getByRole('button', { name: '문단 도구' }).tap();
+		for (const name of ['내어쓰기', '들여쓰기', '위로 옮기기', '아래로 옮기기', '블록 인용', '구분점 목록'])
+			await expect(bottom.getByRole('button', { name, exact: true })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '서식' })).toHaveCount(0);
+		await bottom.getByRole('button', { name: '위로 옮기기' }).tap();
+		await expect(blocks.first()).toHaveText(second);
+		await bottom.getByRole('button', { name: '문단 도구 닫기' }).tap();
+		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
+	});
+
 	test('주소창이 접히는 정도(120px 미만)로 줄어드는 것은 키보드로 보지 않는다', async ({ page }) => {
 		await fakeKeyboard(page);
 		await fakeApi(page, { signedIn: true });
