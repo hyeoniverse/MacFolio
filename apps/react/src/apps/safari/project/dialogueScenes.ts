@@ -1,4 +1,4 @@
-// RPG 대화창(DialoguePage) 무대 뒤의 픽셀 장면: 480×272 게임 화면 하나를 16×16 타일(30×17)과 손으로 놓은 소품으로 칠한다.
+// RPG 대화창(DialoguePage) 무대 뒤의 픽셀 장면: 480×272 판 하나를 16×16 타일(30×17)과 손으로 놓은 소품으로 칠하고, 360×208 게임 화면에는 그 가운데를 잘라 보인다.
 // 칸마다 색 대신 팔레트 글자(한 글자)를 두고, 장면마다 낮 팔레트와 밤 팔레트(같은 그림의 색 바꿈)로 칠한다.
 // 규칙: 빛은 왼쪽 위에서 (밝은 면은 왼쪽 위, 그늘은 오른쪽 아래), 외곽선은 채운 색보다 짙게, 흐림 없이 한 칸 단위,
 // 섞이는 곳은 점 무늬(디더)로. 뒤쪽은 대비를 낮춰 차분하게 두고, 그림판(DialoguePanels)의 주인공 그림과 글 상자가 앞에 선다.
@@ -9,6 +9,17 @@ import { GLYPHS, ICONS, type IconName } from '@/apps/safari/project/dialogueIcon
 export const SCENE_W = 480;
 export const SCENE_H = 272;
 export const TILE = 16;
+/**
+ * 게임 화면(360×208)에 보이는 창: 480×272 장면에서 이만큼을 잘라 보인다. 기본은 가운데 폭과 위쪽 (아래는 대화 상자 뒤라 가린다).
+ * 장면마다 주인공 소품이 창 안에 들게 왼쪽 끝(x)을 조금씩 옮긴다
+ */
+export const VIEW_W = 360;
+export const VIEW_H = 208;
+const VIEW_X: Partial<Record<SceneKind, number>> = {};
+export const sceneView = (kind: SceneKind): { x: number; y: number } => ({
+	x: VIEW_X[kind] ?? (SCENE_W - VIEW_W) / 2,
+	y: 0,
+});
 
 /** 칸 그림 (글자 하나가 한 칸, '.'은 빈칸) */
 type Rows = readonly string[];

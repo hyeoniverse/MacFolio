@@ -10,18 +10,23 @@ import {
 	MONSTERS,
 	monsterColors,
 	monsterOf,
+	nextUnread,
 	outlined,
+	paginate,
 	PERSON,
 	periodDays,
 	personColors,
 	pixelRuns,
 	platformRows,
 	sceneOf,
+	shorten,
 	SPRITE_COLORS,
 	splitScore,
 	statusStats,
+	textWidth,
 	troubleKeys,
 	windowAround,
+	wrapText,
 } from './dialogueStage';
 
 const sample: Project = { ...structuredClone(GENERAL_SAMPLE), id: 'sample', url: 'https://github.com/me/sample' };
@@ -183,5 +188,59 @@ describe('밝은 장면', () => {
 		expect(sceneOf('chapter-2')).toBe('meadow');
 		expect(sceneOf('links')).toBe('sunset');
 		expect(sceneOf(undefined)).toBe('sunset');
+	});
+});
+
+describe('대화 상자의 글 나누기', () => {
+	it('글자 폭은 갈무리11 11px에서 한글 11칸, 빈칸 4.6칸으로 어림한다', () => {
+		expect(textWidth('가나')).toBe(22);
+		expect(textWidth('가 나')).toBeCloseTo(26.6);
+		expect(textWidth('m')).toBeGreaterThan(textWidth('a'));
+	});
+
+	it('빈칸에서만 줄을 바꾸고, 한 줄보다 긴 낱말은 글자로 자른다', () => {
+		expect(wrapText('가나다 라마바 사아자', 71)).toEqual(['가나다 라마바', '사아자']);
+		expect(wrapText('가나다라마바사', 33)).toEqual(['가나다', '라마바', '사']);
+		expect(wrapText('', 100)).toEqual(['']);
+		for (const line of wrapText(GENERAL_SAMPLE.troubleshooting?.[0].solution ?? '', 318))
+			expect(textWidth(line)).toBeLessThanOrEqual(318);
+	});
+
+	it('한 장은 두 줄까지: 문장은 되도록 한 장에 잇고, 긴 문장은 줄 단위로 나눈다', () => {
+		const width = 318;
+		expect(paginate('짧은 글입니다.', width)).toEqual(['짧은 글입니다.']);
+		expect(paginate('', width)).toEqual(['']);
+		const long = Array.from({ length: 6 }, (_, i) => `${i + 1}번째 문장은 대화 상자 한 줄쯤 되는 긴 문장입니다.`).join(
+			' '
+		);
+		const pages = paginate(long, width);
+		expect(pages.length).toBeGreaterThan(2);
+		for (const page of pages) expect(wrapText(page, width).length).toBeLessThanOrEqual(2);
+		// 글자는 빠지거나 늘지 않는다
+		expect(pages.join(' ').replace(/\s+/g, ' ')).toBe(long);
+		const one =
+			'빈칸이 하나도 없는 아주 긴 한 문장이 두 줄을 넘어가면 줄 단위로 끊어서 여러 장으로 넘겨야 합니다 그래야 상자가 커지지 않습니다';
+		for (const page of paginate(one, 120)) expect(wrapText(page, 120).length).toBeLessThanOrEqual(2);
+	});
+
+	it('이름은 max자보다 길면 줄임표', () => {
+		expect(shorten('트러블슈팅', 12)).toBe('트러블슈팅');
+		expect(shorten('가나다라마바', 4)).toBe('가나다…');
+	});
+});
+
+describe('메뉴의 다음 차례(NEXT)', () => {
+	const list = [{ id: 'a' }, { id: 'b' }, { id: 'links' }, { id: 'c' }];
+	const skip = new Set(['links']);
+	it('여정 차례대로 아직 안 읽은 첫 주제, 셀 수 없는 줄은 건너뛴다', () => {
+		expect(nextUnread(list, new Set(), undefined, skip)?.id).toBe('a');
+		expect(nextUnread(list, new Set(['a']), undefined, skip)?.id).toBe('b');
+		expect(nextUnread(list, new Set(['a', 'b']), undefined, skip)?.id).toBe('c');
+		expect(nextUnread(list, new Set(['a', 'b', 'c']), undefined, skip)).toBeUndefined();
+	});
+
+	it('after를 주면 그 다음부터 돌아 찾는다', () => {
+		expect(nextUnread(list, new Set(['b']), 'b', skip)?.id).toBe('c');
+		expect(nextUnread(list, new Set(['c']), 'c', skip)?.id).toBe('a');
 	});
 });
