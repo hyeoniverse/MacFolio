@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MAX_TRANSLATE_CHARS, type TranslateProvider } from '@macfolio/contracts';
 import { cssVars } from '@/shared/lib/cssVars';
 import { useLiveDemo } from './liveDemo';
 import { QuotaChip } from './QuotaChip';
@@ -12,9 +13,6 @@ const FIELDS = [
 	},
 	{ label: '갤러리 대본 4', ko: '방문자가 보는 사이트와, 그 사이트를 운영하는 관리자 CMS를 함께 만들었습니다.' },
 ];
-/** 세 칸을 합친 글자 수 상한 (서버도 같은 값으로 막는다) */
-const MAX_TRANSLATE_CHARS = 200;
-type TranslateProvider = 'deepl' | 'google';
 const TRANSLATE_NAME: Record<TranslateProvider, string> = { deepl: 'DeepL', google: 'Google' };
 
 /**

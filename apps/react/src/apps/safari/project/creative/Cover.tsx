@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
+import { type CoverProvider, type CoverStyle, MAX_COVER_CHARS } from '@macfolio/contracts';
 import { useLiveDemo } from './liveDemo';
 import { QuotaChip } from './QuotaChip';
 
 /** 커버 데모의 스타일: HYEONIVERSE 커버 선택창의 열 가지 가운데 넷 */
-const COVER_STYLES = [
+const COVER_STYLES: readonly { key: CoverStyle; label: string }[] = [
 	{ key: 'abstract', label: 'Abstract' },
 	{ key: 'minimal', label: 'Minimal' },
 	{ key: 'watercolor', label: 'Watercolor' },
 	{ key: '3d-render', label: '3D' },
-] as const;
-type CoverProvider = 'cloudflare' | 'huggingface';
+];
 const COVER_NAME: Record<CoverProvider, string> = { cloudflare: 'Cloudflare', huggingface: 'Hugging Face' };
-/** 제목 글자 수 (서버도 같은 값으로 막는다) */
-const MAX_COVER_CHARS = 60;
 
 /** 커버가 없을 때의 바탕 (HYEONIVERSE처럼 제목으로 고른 그라데이션: 같은 제목은 늘 같은 색) */
 const seededGradient = (seed: string) => {
@@ -28,7 +26,7 @@ const seededGradient = (seed: string) => {
  */
 export const Cover: React.FC = () => {
 	const [title, setTitle] = useState('혼자 설계하고 운영하는 포트폴리오');
-	const [style, setStyle] = useState<(typeof COVER_STYLES)[number]['key']>('abstract');
+	const [style, setStyle] = useState<CoverStyle>('abstract');
 	const [busy, setBusy] = useState(false);
 	const [made, setMade] = useState<{ src: string; title: string; note: string } | null>(null);
 	const [message, setMessage] = useState<string | null>(null);

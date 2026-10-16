@@ -1,40 +1,15 @@
 // 방문자가 실제 AI 서비스를 불러 보는 데모(음성, 번역, 요약, 커버)가 함께 쓰는 규칙: 받을 글, 하루 상한, 공급자 실패.
-// 바깥 호출 없이 시험할 수 있게 여기에 모은다.
-
-/** 주소·메일처럼 데모에 필요 없는 것과, 데모에 어울리지 않는 말 몇 가지 */
-export const BLOCKED = [/https?:\/\//i, /www\./i, /\S+@\S+\.\S+/, /씨발|시발|병신|좆|fuck|shit|bitch/i];
+// 바깥 호출 없이 시험할 수 있게 여기에 모은다. 받을 글의 규칙은 화면과 함께 쓰려고 @macfolio/contracts에 둔다.
+import type { Parsed } from '@macfolio/contracts';
 
 /** 받을 수 없는 입력 (사람이 읽을 이유를 담는다. 400으로 바꾼다) */
 export class DemoInputError extends Error {}
 
-/**
- * 몸통의 글 한 칸을 검사해 정리한다. 맞지 않으면 DemoInputError를 던진다.
- * lines가 아니면 줄바꿈까지 띄어쓰기 하나로 줄이고, lines면 줄바꿈은 남기고 빈 줄만 줄인다
- */
-export function demoText(
-	value: unknown,
-	{ max, empty, refused, lines = false }: { max: number; empty: string; refused: string; lines?: boolean }
-) {
-	const raw = typeof value === 'string' ? value : '';
-	const text = lines
-		? raw
-				.replace(/\r\n?/g, '\n')
-				.replace(/[^\S\n]+/g, ' ')
-				.replace(/ ?\n ?/g, '\n')
-				.replace(/\n{3,}/g, '\n\n')
-				.trim()
-		: raw.replace(/\s+/g, ' ').trim();
-	if (!text) throw new DemoInputError(empty);
-	if ([...text].length > max) throw new DemoInputError(`${max}자까지만 받습니다.`);
-	// 제어 문자는 받지 않는다 (줄바꿈은 위에서 정리했다)
-	if (/[^\P{Cc}\n]/u.test(text)) throw new DemoInputError('읽을 수 없는 글자가 있습니다.');
-	if (BLOCKED.some((pattern) => pattern.test(text))) throw new DemoInputError(refused);
-	return text;
+/** 공유 스키마로 검사한 결과(`parse(CoverInput, body)`)에서 값을 꺼낸다. 맞지 않으면 첫 이유로 DemoInputError를 던진다 */
+export function demoInput<T>(result: Parsed<T>): T {
+	if ('errors' in result) throw new DemoInputError(result.errors[0]);
+	return result.value;
 }
-
-/** 아는 공급자만 남긴다 (화면에서 막아 둔 공급자) */
-export const pickProviders = <P extends string>(all: readonly P[], value: unknown): P[] =>
-	Array.isArray(value) ? all.filter((provider) => (value as unknown[]).includes(provider)) : [];
 
 /**
  * 하루 상한: IP(HMAC)마다 perIp번, 사이트 전체 total번. 날짜(UTC)가 바뀌면 새로 센다.
