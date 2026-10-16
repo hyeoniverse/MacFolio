@@ -255,25 +255,45 @@
 	outline-offset: 2px;
 }
 
-/* ─── 첫 화면 ─── */
-.bt-hero {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	max-width: calc(var(--bt-width) + var(--bt-pad) * 2);
+/* ─── 첫 화면: 곧바로 타일 격자 ─── */
+.bt-open {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: var(--bt-gap);
+	max-width: var(--bt-width);
 	margin: 0 auto;
 	padding: 28px var(--bt-pad) 0;
-	text-align: center;
+	box-sizing: content-box;
+}
+
+/* 소개 타일: 위에 이름과 기간, 아래로 내려앉은 큰 제목·소개·링크 */
+.bt-intro {
+	display: flex;
+	flex-direction: column;
+	gap: 56px;
+	min-height: 440px;
+	padding: 32px 40px 40px;
+}
+
+.bt-intro-top {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.bt-intro-main {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	margin-top: auto;
 }
 
 .bt-brand {
 	display: inline-flex;
-	align-self: stretch;
 	align-items: center;
 	gap: 10px;
-	padding-bottom: 20px;
-	margin-bottom: 72px;
-	border-bottom: 1px solid var(--bt-line);
 	font-size: 14px;
 	font-weight: 600;
 	letter-spacing: -0.01em;
@@ -310,26 +330,6 @@
 	width: auto;
 }
 
-/* 알림 알약: 기간 꼬리표와 프로젝트 맥락 */
-.bt-badge {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
-	max-width: 100%;
-	padding: 4px 14px 4px 4px;
-	border: 1px solid var(--bt-line);
-	border-radius: 999px;
-	background-color: var(--bt-tile);
-	box-shadow: var(--bt-inset), var(--bt-shadow);
-	color: var(--bt-body);
-	font-size: 13px;
-	line-height: 1.4;
-}
-
-.bt-badge:not(:has(.bt-badge-tag)) {
-	padding-left: 14px;
-}
-
 .bt-badge-tag {
 	flex: none;
 	padding: 3px 9px;
@@ -340,55 +340,52 @@
 	letter-spacing: 0;
 }
 
-.bt-hero h1 {
-	max-width: 17ch;
-	margin-top: 28px;
-	font-size: clamp(40px, 6.2cqi, 68px);
+.bt-intro-context {
+	margin-bottom: 14px;
+	color: var(--bt-muted);
+	font: 500 12px/1.5 var(--bt-mono);
+	letter-spacing: 0.02em;
+}
+
+.bt-intro h1 {
+	max-width: 15ch;
+	font-size: clamp(34px, 4.6cqi, 52px);
 	font-weight: 600;
-	line-height: 1.08;
+	line-height: 1.1;
 	letter-spacing: -0.04em;
 	text-wrap: balance;
 }
 
 .bt-subhead {
-	max-width: 54ch;
-	margin-top: 22px;
+	max-width: 46ch;
+	margin-top: 18px;
 	color: var(--bt-body);
-	font-size: 18px;
+	font-size: 17px;
 	line-height: 1.6;
 	text-wrap: pretty;
 }
 
-.bt-hero .bt-links {
-	margin-top: 36px;
+.bt-intro .bt-links {
+	justify-content: flex-start;
+	margin-top: 32px;
 }
 
-/* 창틀: 제목 막대와 1px 선, 얕은 그림자 한 벌 */
-.bt-window {
-	width: 100%;
-	margin-top: 64px;
-	overflow: hidden;
-	border: 1px solid var(--bt-line);
-	border-radius: 14px;
-	background-color: var(--bt-tile);
-	box-shadow:
-		0 1px 2px rgb(9 9 11 / 0.05),
-		0 24px 48px -28px rgb(9 9 11 / 0.22);
-	text-align: left;
+/* 대표 화면 타일: 작은 제목 막대 아래로 화면이 타일 끝까지 차오른다 */
+.bt-hero-art {
+	display: flex;
+	flex-direction: column;
+	min-height: 240px;
+	padding: 0;
 }
 
-:root[data-theme='dark'] .bt-window {
-	box-shadow: 0 24px 48px -28px rgb(0 0 0 / 0.8);
-}
-
-.bt-window-bar {
+.bt-hero-art-bar {
 	position: relative;
 	display: flex;
+	flex: none;
 	align-items: center;
 	height: 38px;
 	padding: 0 14px;
 	border-bottom: 1px solid var(--bt-line);
-	background-color: var(--bt-tile);
 }
 
 .bt-dots {
@@ -406,7 +403,7 @@
 
 .bt-window-title {
 	position: absolute;
-	inset: 0 120px;
+	inset: 0 72px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -416,18 +413,60 @@
 	white-space: nowrap;
 }
 
-.bt-window-body {
+/* 화면 칸은 크기를 내세우지 않는다 (contain): 줄 높이는 소개 타일이 정하고, 팔레트가 길면 아래가 잘린다 */
+.bt-hero-art-body {
+	position: relative;
+	flex: 1;
+	min-height: 200px;
+	overflow: hidden;
+	contain: size;
 	background-color: var(--bt-tile-2);
 }
 
-.bt-window-body:has(.bt-palette) {
-	padding: 48px 24px;
+.bt-hero-art-body > .lk-media {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top center;
+}
+
+.bt-hero-art-body:has(.bt-palette) {
+	padding: 16px;
 	background-image: radial-gradient(var(--bt-line) 1px, transparent 1px);
 	background-size: 16px 16px;
 }
 
-.bt-window-body > .lk-media {
-	display: block;
+/* 넓은 폭: 소개 타일 옆 오른쪽 단에 대표 화면과 첫 숫자를 위아래로 (하나뿐이면 두 줄 높이) */
+@container (min-width: 861px) {
+	.bt-open .bt-intro {
+		grid-column: 1 / span 8;
+		grid-row: 1 / span 2;
+	}
+
+	.bt-open[data-side='0'] .bt-intro {
+		grid-column: 1 / -1;
+		grid-row: auto;
+		min-height: 360px;
+	}
+
+	.bt-open .bt-side {
+		grid-column: 9 / span 4;
+		grid-row: 2;
+	}
+
+	.bt-open .bt-hero-art {
+		grid-row: 1;
+	}
+
+	.bt-open[data-side='1'] .bt-side {
+		grid-row: 1 / span 2;
+	}
+
+	.bt-open .bt-palette-body {
+		display: none;
+	}
 }
 
 /* 그림이 없을 때: 명령 팔레트 */
@@ -516,7 +555,7 @@
 .bt-flow {
 	max-width: var(--bt-width);
 	margin: 0 auto;
-	padding: 120px var(--bt-pad) 0;
+	padding: 96px var(--bt-pad) 0;
 	box-sizing: content-box;
 }
 
@@ -537,49 +576,43 @@
 	grid-column: 1 / -1;
 	gap: 0;
 	order: var(--order, 100);
-	margin-top: 112px;
+	margin-top: 80px;
 }
 
 .bt-bento-head .bt-head {
-	margin-bottom: 20px;
+	margin-bottom: 4px;
 }
 
-/* 구역 머리: 번호와 이름을 고정폭으로, 그 아래 큰 문장 */
+/* 구역 머리: 고정폭 이름표(번호 / 이름)와 오른쪽으로 이어지는 1px 선 */
 .bt-head {
-	display: grid;
-	gap: 14px;
-	margin-bottom: 32px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.bt-head-rule {
+	flex: 1;
+	height: 1px;
+	background-color: var(--bt-line);
 }
 
 .bt-eyebrow {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	color: var(--bt-muted);
-	font: 500 12px/1.4 var(--bt-mono);
-	letter-spacing: 0.04em;
+	gap: 8px;
+	color: var(--bt-ink);
+	font: 500 12.5px/1.4 var(--bt-mono);
+	letter-spacing: 0.02em;
 }
 
 .bt-eyebrow-num {
-	padding: 2px 7px;
-	border: 1px solid var(--bt-line);
-	border-radius: 6px;
-	background-color: var(--bt-tile);
 	color: var(--tpl-accent);
+	font-variant-numeric: tabular-nums;
 }
 
-.bt-title {
-	max-width: 22ch;
-	font-size: clamp(28px, 3.6cqi, 40px);
-	line-height: 1.15;
-	letter-spacing: -0.035em;
-	text-wrap: balance;
-}
-
-.bt-tile-title {
-	font-size: 17px;
-	line-height: 1.35;
-	letter-spacing: -0.02em;
+.bt-eyebrow-sep {
+	color: var(--bt-faint);
 }
 
 /* ─── 기능 타일 ─── */
@@ -910,10 +943,6 @@
 	justify-content: space-between;
 	gap: 16px;
 	padding: 0 28px 24px;
-}
-
-.bt-tile-head .bt-label {
-	margin-bottom: 8px;
 }
 
 .bt-count {
@@ -1346,7 +1375,7 @@
 	}
 
 	.bt-flow {
-		padding-top: 88px;
+		padding-top: 72px;
 	}
 
 	.bt-block,
@@ -1355,19 +1384,27 @@
 	}
 
 	.bt-block {
-		margin-top: 88px;
+		margin-top: 64px;
 	}
 
 	.bt-closing {
 		padding-top: 88px;
 	}
 
-	.bt-brand {
-		margin-bottom: 52px;
+	.bt-intro {
+		min-height: 0;
+		gap: 40px;
+		padding: 28px;
 	}
 
-	.bt-window {
-		margin-top: 48px;
+	.bt-hero-art-body {
+		flex: none;
+		aspect-ratio: 16 / 10;
+		contain: none;
+	}
+
+	.bt-hero-art-body:has(.bt-palette) {
+		aspect-ratio: auto;
 	}
 
 	.bt-feature[data-lead] .bt-media {
@@ -1412,8 +1449,12 @@
 		grid-column: span var(--sm, 12);
 	}
 
-	.bt-hero h1 {
-		font-size: 36px;
+	.bt-intro {
+		padding: 24px;
+	}
+
+	.bt-intro h1 {
+		font-size: 34px;
 	}
 
 	.bt-subhead {

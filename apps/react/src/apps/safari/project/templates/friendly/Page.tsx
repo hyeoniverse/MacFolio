@@ -1,6 +1,8 @@
 // friendly 템플릿: Stripe처럼 밝고 또렷하게. 남색 제목과 회청색 본문, 강조색 하나(탁하면 Stripe 남보라, accent.ts).
 // 첫 화면은 비스듬히 잘린 옅은 색 띠와 그 끝을 따라 놓인 단색 줄무늬, 띠를 넘어 내려오는 큰 창과 그 위에 겹친 작은 UI 카드 둘(Cards.tsx).
-// 아래로는 왼쪽 강조선이 달린 숫자, 아이콘 기능 격자, 선으로 이은 단계 띠, 남색 띠의 만든 방식, 비스듬한 남색 마무리 띠.
+// 첫 화면 아래에는 쓴 기술 이름을 회색 글자 로고처럼 늘어놓은 줄. 구역 머리는 Stripe의 구역 소개처럼 왼쪽에 강조색 구역 이름과 두 줄 제목,
+// 오른쪽 단에 짧은 본문(copy.ts). 주요 기능은 첫 카드가 두 줄 높이로 그림을 담는 3열 아이콘 판, 아래로는 왼쪽 강조선이 달린 숫자,
+// 선으로 이은 단계 띠, 남색 띠의 만든 방식, 비스듬한 남색 마무리 띠.
 // 그림이 없으면 창 안에 프로젝트 내용으로 만든 앱 화면 모형(Mock.tsx)을 그려 새 프로젝트의 기본 모양으로도 꽉 차 보인다. 계약은 templates/README.md
 import React from 'react';
 import type { Project } from '@/shared/profile';
@@ -11,7 +13,6 @@ import {
 	LandingLinks,
 	LandingSections,
 	Media,
-	sectionTitle,
 	TeamList,
 	TroubleList,
 	useLanding,
@@ -20,20 +21,37 @@ import {
 	type LandingMedia,
 	type LandingPoint,
 	type LandingSection,
+	type SectionOf,
 	type SectionRenderers,
 } from '@/apps/safari/project/landing';
 import { friendlyAccent } from './accent';
 import { HeroCards } from './Cards';
+import { headCopyOf } from './copy';
 import { HeroMock } from './Mock';
 import './Page.css';
 
-const Head: React.FC<{ section: LandingSection; title?: string; lead?: string }> = ({ section, title, lead }) => (
-	<header className="fr-head" data-reveal="">
-		<p className="fr-eyebrow">{section.label}</p>
-		<h2>{title ?? sectionTitle(section)}</h2>
-		{lead && <p className="fr-lead">{lead}</p>}
-	</header>
-);
+/**
+ * 구역 머리 (Stripe의 구역 소개): 왼쪽에 강조색의 짧은 구역 이름과 두 줄로 끊은 큰 제목, 오른쪽 단에 짧은 본문.
+ * 두 단 구역(fr-split) 안에서는 한 단으로 쌓인다 (CSS)
+ */
+const Head: React.FC<{ section: LandingSection; title?: string }> = ({ section, title }) => {
+	const copy = headCopyOf(section);
+	return (
+		<header className="fr-head" data-lead={copy.lead ? '' : undefined} data-reveal="">
+			<div className="fr-head-title">
+				<p className="fr-eyebrow">{section.label}</p>
+				<h2>
+					{title ?? (
+						<>
+							<span>{copy.title[0]}</span> <span>{copy.title[1]}</span>
+						</>
+					)}
+				</h2>
+			</div>
+			{copy.lead && <p className="fr-lead">{copy.lead}</p>}
+		</header>
+	);
+};
 
 /** 창 틀 위 막대에 보일 주소: 데모나 저장소의 호스트, 없으면 이름 */
 function addressOf(landing: Landing) {
@@ -169,6 +187,80 @@ const Features: React.FC<{ section: LandingSection; items: LandingPoint[]; iconO
 	);
 };
 
+/**
+ * 주요 기능 판의 자리 (6칸 격자에서 각 칸의 너비): 첫 카드는 두 줄 높이로 왼쪽 3분의 1을 차지하고,
+ * 그 옆 두 줄에 넷까지(2칸씩, 셋이면 아랫줄 하나가 4칸, 둘이면 4칸씩), 그 아래는 셋씩 놓되 마지막 줄이 비지 않게 넓힌다
+ */
+function boardSpansOf(count: number): number[] {
+	const beside = Math.min(count - 1, 4);
+	const spans = beside === 4 ? [2, 2, 2, 2] : beside === 3 ? [2, 2, 4] : beside === 2 ? [4, 4] : [4];
+	const rest = count - 1 - beside;
+	for (let i = 0; i < rest; i++) {
+		const left = rest % 3;
+		const inLast = i >= rest - left;
+		spans.push(inLast ? 6 / left : 2);
+	}
+	return spans.slice(0, count - 1);
+}
+
+/**
+ * 주요 기능 판 (이 템플릿의 대표 구역): 3열 아이콘 격자에 첫 기능은 두 줄 높이의 큰 카드로, 그 기능의 그림(없으면 큰 아이콘 면)을 담는다.
+ * 나머지 카드도 그림이 있으면 카드 아래에 작은 창으로 단다
+ */
+const FeatureBoard: React.FC<{ section: SectionOf<'features'> }> = ({ section }) => {
+	const [lead, ...others] = section.items;
+	const spans = boardSpansOf(section.items.length);
+	return (
+		<>
+			<Head section={section} />
+			<ul className="fr-board">
+				<li className="fr-tile fr-tile-lead" data-reveal="">
+					<div className="fr-tile-text">
+						<IconTile point={lead} index={0} />
+						<h3>{lead.title}</h3>
+						<p className="fr-tile-body">{lead.body}</p>
+						{lead.detail && <p className="fr-detail">{lead.detail}</p>}
+					</div>
+					{lead.media.length > 0 ? (
+						<div className="fr-tile-media" data-count={Math.min(lead.media.length, 3)}>
+							{lead.media.map((media) => (
+								<Window key={media.src} media={media} />
+							))}
+						</div>
+					) : (
+						<span className="fr-tile-art" aria-hidden="true">
+							<i className={`fa-solid ${iconOf(lead, 0)}`} />
+						</span>
+					)}
+				</li>
+				{others.map((point, i) => (
+					<li
+						key={point.title}
+						className="fr-tile"
+						style={{ '--span': spans[i] } as React.CSSProperties}
+						data-media={point.media.length ? '' : undefined}
+						data-reveal=""
+					>
+						<div className="fr-tile-text">
+							<IconTile point={point} index={i + 1} />
+							<h3>{point.title}</h3>
+							<p className="fr-tile-body">{point.body}</p>
+							{point.detail && <p className="fr-detail">{point.detail}</p>}
+						</div>
+						{point.media.length > 0 && (
+							<div className="fr-tile-media" data-count={Math.min(point.media.length, 3)}>
+								{point.media.map((media) => (
+									<Window key={media.src} media={media} />
+								))}
+							</div>
+						)}
+					</li>
+				))}
+			</ul>
+		</>
+	);
+};
+
 const RENDERERS: SectionRenderers = {
 	stats: ({ section }) => (
 		<>
@@ -183,7 +275,12 @@ const RENDERERS: SectionRenderers = {
 			</ul>
 		</>
 	),
-	features: ({ section }) => <Features section={section} items={section.items} />,
+	features: ({ section }) =>
+		section.items.length >= 3 ? (
+			<FeatureBoard section={section} />
+		) : (
+			<Features section={section} items={section.items} />
+		),
 	screens: ({ section }) => (
 		<>
 			<Head section={section} />
@@ -455,6 +552,8 @@ const FriendlyPage: React.FC<{ project: Project }> = ({ project }) => {
 		hero.meta.period && { label: '기간', value: hero.meta.period },
 	].filter((item): item is { label: string; value: string } => Boolean(item));
 	const notes = closingNotesOf(landing);
+	// 첫 화면 아래 로고 줄처럼 늘어놓는 기술 이름 (기술 사양의 쓴 기술과 같은 목록, 여덟 개까지)
+	const stack = (landing.sections.find((s): s is SectionOf<'tech'> => s.kind === 'tech')?.stack ?? []).slice(0, 8);
 
 	return (
 		<div ref={root} className="tpl tpl-friendly" style={accent}>
@@ -505,6 +604,16 @@ const FriendlyPage: React.FC<{ project: Project }> = ({ project }) => {
 					</div>
 				</div>
 			</header>
+			{stack.length > 0 && (
+				<div className="fr-stackline" data-reveal="">
+					<p>이 기술들로 만들었습니다.</p>
+					<ul aria-label="첫 화면의 기술 목록">
+						{stack.map((item) => (
+							<li key={item}>{item}</li>
+						))}
+					</ul>
+				</div>
+			)}
 
 			<LandingSections landing={landing} renderers={RENDERERS} className="fr-section" />
 

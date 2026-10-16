@@ -1,7 +1,8 @@
-// devtool 템플릿: Vercel·GitHub의 개발자 제품 페이지처럼. 1px 선으로 짠 가운데 틀 위에 고정폭 작은 배지, 촘촘한 큰 제목, 단추와 복사되는 git clone 명령,
-// 코드 편집기 모양의 창(탐색기와 대표 화면, 그림이 없으면 package.json)을 둔다. 구역은 개발 도구의 화면으로 그린다: 숫자는 지표 막대,
-// 기능은 features/01 머리의 카드(그림이 없으면 제목으로 만든 diff), 쓰는 법은 터미널, 만든 방식은 커밋 목록, 진행 과정은 기여 그래프,
-// 기술은 package.json과 표와 트리, 맡은 일은 CODEOWNERS, 마무리는 배포 띠. 빛 번짐·그라데이션 글자 없이 선과 단색 면만. 계약은 templates/README.md
+// devtool 템플릿: Vercel·GitHub의 개발자 제품 페이지처럼. 1px 선으로 짠 가운데 틀 위에, 첫 화면은 가운데 정렬한 고정폭 배지와 한 줄 제목, 단추,
+// 그 아래 넓은 터미널 창(복사되는 git clone 명령과 설치·실행 명령, 짧은 출력)이다. 대표 화면은 주요 기능 구역의 첫 그림(편집기 창)으로 옮긴다.
+// 구역 머리는 '/features'처럼 경로 모양의 고정폭 이름과 한 줄 설명이다. 숫자는 지표 막대, 기능은 features/01 머리의 카드(그림이 없으면 diff),
+// 쓰는 법은 터미널, 만든 방식은 커밋 목록, 진행 과정은 기여 그래프와 git log, 기술은 문법 색이 있는 package.json과 트리,
+// 맡은 일은 CODEOWNERS, 마무리는 배포 띠. 빛 번짐·그라데이션 글자 없이 선과 단색 면만. 계약은 templates/README.md
 import React, { useMemo } from 'react';
 import type { Project, ProjectFact } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
@@ -10,7 +11,6 @@ import {
 	iconOf,
 	LandingSections,
 	Media,
-	sectionTitle,
 	TeamList,
 	TroubleList,
 	useLanding,
@@ -18,12 +18,21 @@ import {
 	type LandingMedia,
 	type LandingPoint,
 	type LandingSection,
+	type Landing,
 	type SectionOf,
 	type SectionRenderers,
 } from '@/apps/safari/project/landing';
 import { devtoolAccent } from './accent';
-import { cloneCommand, commitHash, contributionGraph, featureDiff, parseTree } from './code';
-import { CommandBox, DevLinks, Editor, JsonView, Tree } from './Hero';
+import {
+	cloneCommand,
+	commitHash,
+	contributionGraph,
+	featureDiff,
+	packageEntries,
+	parseTree,
+	type JsonValue,
+} from './code';
+import { DevLinks, Editor, HeroTerminal, JsonView, Tree } from './Hero';
 import './Page.css';
 
 /* ─── 작은 조각 ─── */
@@ -56,27 +65,89 @@ const Icon: React.FC<{ point: Pick<LandingPoint, 'icon'>; index: number; classNa
 	</span>
 );
 
-/** 구역 머리: 고정폭 번호와 구역 이름, 큰 제목 */
-const Head: React.FC<{ section: LandingSection; index: number; title?: string; aside?: React.ReactNode }> = ({
-	section,
-	index,
-	title,
-	aside,
-}) => (
+/** 구역마다의 경로 이름 (개발 문서 사이트의 주소처럼) */
+const ROUTES: Record<LandingSection['kind'], string> = {
+	stats: 'stats',
+	features: 'features',
+	screens: 'previews',
+	steps: 'getting-started',
+	built: 'architecture',
+	troubleshooting: 'issues',
+	stories: 'docs',
+	controls: 'keybindings',
+	tech: 'stack',
+	team: 'contributors',
+	role: 'owners',
+	timeline: 'changelog',
+	deployments: 'deployments',
+	credits: 'credits',
+};
+
+/** 구역마다 개발 문서 말투의 한 줄 설명 (공용 sectionTitle 대신) */
+function describe(section: LandingSection): string {
+	switch (section.kind) {
+		case 'features':
+			return '자주 쓰는 기능을 하나씩 살펴봅니다.';
+		case 'screens':
+			return '배포된 화면을 미리 볼 수 있습니다.';
+		case 'steps':
+			return section.items.length > 1
+				? `터미널을 열고 ${section.items.length}단계로 시작합니다.`
+				: '터미널에서 바로 시작합니다.';
+		case 'built':
+			return '내부 구현을 커밋 단위로 정리했습니다.';
+		case 'troubleshooting':
+			return '해결한 이슈와 그 과정을 남겨 두었습니다.';
+		case 'stories':
+			return '설계 문서에 남긴 이야기입니다.';
+		case 'controls':
+			return '단축키로 더 빠르게 다룰 수 있습니다.';
+		case 'tech':
+			return '의존성과 실행 환경을 한 파일에 정리했습니다.';
+		case 'team':
+			return '이 저장소에 기여한 사람들입니다.';
+		case 'role':
+			return '맡은 영역과 기여한 내용을 정리했습니다.';
+		case 'timeline':
+			return '첫 커밋부터 릴리스까지의 기록입니다.';
+		case 'deployments':
+			return '배포된 환경은 다음과 같습니다.';
+		case 'credits':
+			return '빌려 쓴 자료와 그 출처입니다.';
+		default:
+			return '';
+	}
+}
+
+/** 구역 머리: '/features'처럼 경로 모양의 고정폭 이름(h2의 이름은 구역 이름), 아래 한 줄 설명 */
+const Head: React.FC<{ section: LandingSection }> = ({ section }) => (
 	<header className="dv-head" data-reveal="">
-		<div>
-			<p className="dv-eyebrow">
-				<span className="dv-eyebrow-num">{pad(index + 1)}</span>
-				<span className="dv-eyebrow-slash" aria-hidden="true">
-					/
-				</span>
-				{section.label}
-			</p>
-			<h2 className="dv-title">{title ?? sectionTitle(section)}</h2>
-		</div>
-		{aside && <div className="dv-head-aside">{aside}</div>}
+		<h2 className="dv-title">
+			<span className="dv-route" aria-hidden="true">
+				<span className="dv-route-slash">/</span>
+				{ROUTES[section.kind]}
+			</span>
+			<span className="dv-route-label">{section.label}</span>
+		</h2>
+		<p className="dv-desc">{describe(section)}</p>
 	</header>
 );
+
+/** 편집기 창에 넘길 프로젝트 내용 (주 언어는 기술 목록의 맨 앞) */
+function editorProps(landing: Landing) {
+	const tech = landing.sections.find((section): section is SectionOf<'tech'> => section.kind === 'tech');
+	const features = landing.sections.find((section): section is SectionOf<'features'> => section.kind === 'features');
+	const repo = landing.hero.links.find((link) => link.kind === 'repo');
+	const [language, ...stack] = tech?.stack ?? [];
+	return {
+		hero: landing.hero,
+		language,
+		stack,
+		features: features?.items ?? [],
+		structure: tech?.structure,
+		repo: repo?.kind === 'repo' ? repo.href : undefined,
+	};
+}
 
 /** 테두리 상자에 담은 그림 한 장 */
 const Shot: React.FC<{ media: LandingMedia; className?: string }> = ({ media, className }) => (
@@ -166,9 +237,14 @@ const RENDERERS: SectionRenderers = {
 			</ul>
 		</>
 	),
-	features: ({ section, index }) => (
+	features: ({ section, landing }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
+			{landing.hero.image && (
+				<div className="dv-preview-editor">
+					<Editor {...editorProps(landing)} />
+				</div>
+			)}
 			<ul className="dv-cards">
 				{section.items.map((point, i) => (
 					<FeatureCard
@@ -182,9 +258,9 @@ const RENDERERS: SectionRenderers = {
 			</ul>
 		</>
 	),
-	screens: ({ section, index }) => (
+	screens: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<ul className="dv-previews" data-count={section.shots.length}>
 				{section.shots.map((shot, i) => (
 					<li key={shot.src} className="dv-preview" data-reveal="">
@@ -204,9 +280,9 @@ const RENDERERS: SectionRenderers = {
 			</ul>
 		</>
 	),
-	steps: ({ section, index }) => (
+	steps: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<div className="dv-terminal" data-reveal="">
 				<div className="dv-terminal-bar" aria-hidden="true">
 					<span className="dv-dots">
@@ -243,9 +319,9 @@ const RENDERERS: SectionRenderers = {
 			</div>
 		</>
 	),
-	built: ({ section, index }) => (
+	built: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<div className="dv-commits" data-reveal="">
 				<div className="dv-box-head">
 					<i className="fa-solid fa-code-commit" aria-hidden="true" />
@@ -272,15 +348,15 @@ const RENDERERS: SectionRenderers = {
 			</div>
 		</>
 	),
-	troubleshooting: ({ section, index }) => (
+	troubleshooting: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<TroubleList items={section.items} prefix="dv" />
 		</>
 	),
-	stories: ({ section, index }) => (
+	stories: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<div className="dv-stories">
 				{section.stories.map((story, n) => (
 					<article
@@ -333,9 +409,9 @@ const RENDERERS: SectionRenderers = {
 			</div>
 		</>
 	),
-	controls: ({ section, index }) => (
+	controls: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<dl className="dv-keys" data-reveal="">
 				{section.controls.map((control, i) => (
 					<div key={`${control.label}-${i}`}>
@@ -352,36 +428,25 @@ const RENDERERS: SectionRenderers = {
 			</dl>
 		</>
 	),
-	timeline: ({ section, index }) => <Timeline section={section} index={index} />,
-	tech: ({ section, index }) => {
+	timeline: ({ section }) => <Timeline section={section} />,
+	tech: ({ section, landing }) => {
 		const rows = section.structure ? parseTree(section.structure) : [];
+		const entries: [string, JsonValue][] = [['name', landing.hero.name]];
+		if (section.stack.length) entries.push(['dependencies', section.stack]);
+		if (section.specs.length)
+			entries.push(['environment', { entries: section.specs.map((spec) => [spec.label, spec.value]) }]);
 		return (
 			<>
-				<Head section={section} index={index} />
-				<div className="dv-tech" data-reveal="">
-					{section.specs.length > 0 && (
-						<div className="dv-panel dv-panel-specs">
+				<Head section={section} />
+				<div className="dv-tech" data-reveal="" data-tree={section.structure ? '' : undefined}>
+					{(section.stack.length > 0 || section.specs.length > 0) && (
+						<div className="dv-panel dv-panel-json">
 							<div className="dv-box-head">
-								<i className="fa-solid fa-sliders" aria-hidden="true" />
-								<span className="dv-mono">environment</span>
-							</div>
-							<dl className="dv-specs">
-								{section.specs.map((spec) => (
-									<div key={spec.label}>
-										<dt>{spec.label}</dt>
-										<dd>{spec.value}</dd>
-									</div>
-								))}
-							</dl>
-						</div>
-					)}
-					{section.stack.length > 0 && (
-						<div className="dv-panel">
-							<div className="dv-box-head">
-								<i className="fa-solid fa-cube" aria-hidden="true" />
+								<i className="fa-brands fa-npm" aria-hidden="true" />
 								<span className="dv-mono">package.json</span>
+								<span className="dv-muted dv-box-end">JSON</span>
 							</div>
-							<JsonView entries={[['stack', section.stack]]} />
+							<JsonView entries={entries} />
 						</div>
 					)}
 					{section.structure && (
@@ -397,15 +462,15 @@ const RENDERERS: SectionRenderers = {
 			</>
 		);
 	},
-	team: ({ section, index }) => (
+	team: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<TeamList members={section.members} prefix="dv" />
 		</>
 	),
-	role: ({ section, index }) => (
+	role: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<div className="dv-owners" data-reveal="">
 				<div className="dv-box-head">
 					<i className="fa-solid fa-user-shield" aria-hidden="true" />
@@ -449,15 +514,15 @@ const RENDERERS: SectionRenderers = {
 			</div>
 		</>
 	),
-	deployments: ({ section, index }) => (
+	deployments: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<DeployList items={section.items} prefix="dv" />
 		</>
 	),
-	credits: ({ section, index }) => (
+	credits: ({ section }) => (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<ul className="dv-credits" data-reveal="">
 				{section.credits.map((credit) => (
 					<li key={`${credit.role}-${credit.name}`}>
@@ -481,12 +546,12 @@ const RENDERERS: SectionRenderers = {
 	),
 };
 
-/** 진행 과정: 날짜로 짠 기여 그래프와 걸음 목록. 날짜를 읽지 못하면 목록만 */
-const Timeline: React.FC<{ section: SectionOf<'timeline'>; index: number }> = ({ section, index }) => {
+/** 진행 과정: 날짜로 짠 기여 그래프와 git log 모양의 커밋 기록(최근 것이 위, 맨 위에 HEAD 표시). 날짜를 읽지 못하면 기록만 */
+const Timeline: React.FC<{ section: SectionOf<'timeline'> }> = ({ section }) => {
 	const graph = useMemo(() => contributionGraph(section.entries), [section.entries]);
 	return (
 		<>
-			<Head section={section} index={index} />
+			<Head section={section} />
 			<div className="dv-activity" data-reveal="" data-graph={graph ? '' : undefined}>
 				{graph && (
 					<div className="dv-graph" aria-hidden="true">
@@ -525,15 +590,28 @@ const Timeline: React.FC<{ section: SectionOf<'timeline'>; index: number }> = ({
 						</p>
 					</div>
 				)}
-				<ol className="dv-log">
-					{section.entries.map((entry, i) => (
-						<li key={`${entry.date}-${entry.label}`} data-last={i === section.entries.length - 1 || undefined}>
-							<span className="dv-log-dot" aria-hidden="true" />
-							<time>{entry.date}</time>
-							<span className="dv-log-label">{entry.label}</span>
-						</li>
-					))}
-				</ol>
+				<div className="dv-log-box">
+					<p className="dv-log-head" aria-hidden="true">
+						<span className="dv-command-prompt">$</span>
+						git log --oneline
+					</p>
+					<ol className="dv-log" reversed>
+						{[...section.entries].reverse().map((entry, i) => (
+							<li key={`${entry.date}-${entry.label}`}>
+								<code className="dv-hash">{commitHash(`${entry.date}${entry.label}`)}</code>
+								<span className="dv-log-label">
+									{i === 0 && (
+										<span className="dv-log-ref" aria-hidden="true">
+											HEAD → main
+										</span>
+									)}
+									{entry.label}
+								</span>
+								<time>{entry.date}</time>
+							</li>
+						))}
+					</ol>
+				</div>
 			</div>
 		</>
 	);
@@ -570,42 +648,6 @@ const DeployLog: React.FC<{ name: string; href?: string }> = ({ name, href }) =>
 	);
 };
 
-/** 첫 화면 오른쪽의 저장소 정보: GitHub 저장소 옆 칸처럼 맡은 일, 기간, 주제(쓴 기술) */
-const About: React.FC<{ role?: string; period?: string; stack: string[] }> = ({ role, period, stack }) => (
-	<div className="dv-about" data-reveal="">
-		<p className="dv-about-title">정보</p>
-		{(role || period) && (
-			<dl className="dv-about-meta">
-				{role && (
-					<div>
-						<dt>
-							<i className="fa-regular fa-user" aria-hidden="true" />
-							<span className="visually-hidden">역할</span>
-						</dt>
-						<dd>{role}</dd>
-					</div>
-				)}
-				{period && (
-					<div>
-						<dt>
-							<i className="fa-regular fa-calendar" aria-hidden="true" />
-							<span className="visually-hidden">기간</span>
-						</dt>
-						<dd className="dv-mono">{period}</dd>
-					</div>
-				)}
-			</dl>
-		)}
-		{stack.length > 0 && (
-			<ul className="dv-topics" aria-label="쓴 기술">
-				{stack.map((item) => (
-					<li key={item}>{item}</li>
-				))}
-			</ul>
-		)}
-	</div>
-);
-
 const DevtoolPage: React.FC<{ project: Project }> = ({ project }) => {
 	const landing = useLanding(project);
 	const root = useReveal<HTMLDivElement>();
@@ -619,53 +661,62 @@ const DevtoolPage: React.FC<{ project: Project }> = ({ project }) => {
 	const demo = hero.links.find((link) => link.kind === 'demo');
 	const language = project.language?.trim() || undefined;
 	const stack = tech?.stack ?? [];
-	const about = Boolean(hero.meta.role || hero.meta.period || stack.length);
 
 	return (
 		<div ref={root} className="tpl tpl-devtool" style={accent}>
 			<div className="dv-frame">
 				<header className="dv-hero">
-					<div className="dv-hero-top" data-about={about || undefined}>
-						<div className="dv-hero-text">
-							<p className="dv-brand">
-								{hero.icon ? (
-									<img className="dv-app-icon" src={hero.icon} alt="" />
-								) : (
-									<span className="dv-app-icon dv-app-icon-blank" aria-hidden="true">
-										▲
-									</span>
-								)}
-								{hero.logo ? <img className="dv-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
-							</p>
-							{(language || hero.meta.context) && (
-								<p className="dv-badge">
-									<span className="dv-badge-dot" aria-hidden="true" />
-									{language && <span className="dv-mono">{language}</span>}
-									{language && hero.meta.context && (
-										<span className="dv-badge-sep" aria-hidden="true">
-											/
-										</span>
-									)}
-									{hero.meta.context && <span>{hero.meta.context}</span>}
-								</p>
+					<p className="dv-brand">
+						{hero.icon ? (
+							<img className="dv-app-icon" src={hero.icon} alt="" />
+						) : (
+							<span className="dv-app-icon dv-app-icon-blank" aria-hidden="true">
+								▲
+							</span>
+						)}
+						{hero.logo ? <img className="dv-logo" src={hero.logo} alt={hero.name} /> : <span>{hero.name}</span>}
+					</p>
+					{(language || hero.meta.context) && (
+						<p className="dv-badge">
+							<span className="dv-badge-dot" aria-hidden="true" />
+							{language && <span className="dv-mono">{language}</span>}
+							{language && hero.meta.context && (
+								<span className="dv-badge-sep" aria-hidden="true">
+									/
+								</span>
 							)}
-							<h1>{hero.headline}</h1>
-							{hero.subhead && <p className="dv-subhead">{hero.subhead}</p>}
-							<div className="dv-actions">
-								<DevLinks links={hero.links} />
-								{repo && repo.kind === 'repo' && <CommandBox command={cloneCommand(repo.href)} />}
-							</div>
-						</div>
-						{about && <About role={hero.meta.role} period={hero.meta.period} stack={stack} />}
-					</div>
-					<Editor
-						hero={hero}
-						language={language}
-						stack={tech?.stack.filter((item) => item !== language) ?? []}
-						features={features}
-						structure={tech?.structure}
+							{hero.meta.context && <span>{hero.meta.context}</span>}
+						</p>
+					)}
+					<h1>{hero.headline}</h1>
+					{hero.subhead && <p className="dv-subhead">{hero.subhead}</p>}
+					<DevLinks links={hero.links} className="dv-hero-links" />
+					{hero.meta.role && (
+						<p className="dv-hero-role">
+							<i className="fa-regular fa-user" aria-hidden="true" />
+							{hero.meta.role}
+						</p>
+					)}
+					<HeroTerminal
+						command={repo?.kind === 'repo' ? cloneCommand(repo.href) : undefined}
 						repo={repo?.kind === 'repo' ? repo.href : undefined}
+						json={packageEntries({
+							name: hero.name,
+							description: hero.subhead,
+							language,
+							stack: stack.filter((item) => item !== language),
+							features,
+							repo: undefined,
+						})}
+						language={language}
+						period={hero.meta.period}
 					/>
+					{/* 대표 화면은 주요 기능 구역의 첫 그림으로 옮긴다. 그 구역이 없으면 여기에 둔다 */}
+					{hero.image && !find('features') && (
+						<div className="dv-preview-editor">
+							<Editor {...editorProps(landing)} />
+						</div>
+					)}
 				</header>
 
 				<LandingSections landing={landing} renderers={RENDERERS} className="dv-section" />

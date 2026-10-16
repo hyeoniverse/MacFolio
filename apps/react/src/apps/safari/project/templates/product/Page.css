@@ -1,5 +1,5 @@
-/* product 템플릿 (Apple 제품 페이지): 흰·검정 단색 바탕, 아주 큰 가운데 제목, 창 테두리에 담긴 큰 화면, 옅은 회색 타일,
-   큰 숫자, 가는 선의 사양 표. 효과 없이 강조색 하나와 얕은 그림자 한 벌 */
+/* product 템플릿 (Apple 제품 페이지): 흰·검정 단색 바탕, 가운데 큰 제목 바로 아래 아주 큰 화면, 하나 걸러 깔리는 옅은 회색 띠,
+   구역 이름 없는 가운데 큰 문장, 위아래로 쌓은 큰 숫자, 가는 선의 사양 표. 효과 없이 강조색 하나와 얕은 그림자 한 벌 */
 .tpl-product {
 	--pd-bg: #ffffff;
 	--pd-tile: #f5f5f7;
@@ -9,6 +9,8 @@
 	--pd-line: #d2d2d7;
 	--pd-hair: rgba(0, 0, 0, 0.1);
 	--pd-paddle: #e8e8ed;
+	--pd-band: #f5f5f7;
+	--pd-band-tile: #ffffff;
 	--pd-art: color-mix(in srgb, var(--tpl-accent) 8%, var(--pd-bg));
 	--pd-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.18);
 	--pd-width: 1024px;
@@ -33,6 +35,8 @@
 	--pd-line: #38383a;
 	--pd-hair: rgba(255, 255, 255, 0.12);
 	--pd-paddle: #2c2c2e;
+	--pd-band: #161617;
+	--pd-band-tile: #262628;
 	--pd-art: color-mix(in srgb, var(--tpl-accent) 10%, var(--pd-tile));
 	--pd-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.6);
 }
@@ -118,7 +122,7 @@
 
 /* ─── 첫 화면 ─── */
 .pd-hero {
-	padding: 96px var(--pd-gutter) 0;
+	padding: 88px var(--pd-gutter) 0;
 	text-align: center;
 }
 
@@ -151,8 +155,9 @@
 }
 
 .pd-hero h1 {
-	font-size: clamp(42px, 6.6cqi, 92px);
-	line-height: 1.06;
+	text-wrap: balance;
+	font-size: clamp(40px, 5.4cqi, 76px);
+	line-height: 1.08;
 	letter-spacing: -0.03em;
 }
 
@@ -218,7 +223,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	margin-top: 26px;
+	margin-top: 40px;
 	color: var(--pd-muted);
 	font-size: 14px;
 }
@@ -234,8 +239,8 @@
 
 /* 큰 화면: 얇은 창 테두리, 주소 막대, 그림자 한 벌 */
 .pd-window {
-	max-width: 1180px;
-	margin: 72px auto 0;
+	max-width: 1280px;
+	margin: 64px auto 0;
 	overflow: hidden;
 	border-radius: 14px;
 	background-color: var(--pd-tile);
@@ -306,9 +311,9 @@
 	position: relative;
 	display: grid;
 	place-items: center;
-	max-width: 1180px;
-	height: clamp(260px, 34cqi, 440px);
-	margin: 72px auto 0;
+	max-width: 1280px;
+	height: clamp(280px, 38cqi, 500px);
+	margin: 64px auto 0;
 	overflow: hidden;
 	border-radius: 28px;
 	background-color: var(--pd-tile);
@@ -364,31 +369,34 @@
 	font-size: clamp(44px, 4.6cqi, 64px);
 }
 
-/* ─── 구역 ─── */
+/* ─── 구역: 창 너비 가득. 안의 글은 --pd-w 안에 두고, 하나 걸러 옅은 회색 띠를 깐다 ─── */
 .pd-section {
-	max-width: var(--pd-width);
-	margin: 0 auto;
-	padding: 140px var(--pd-gutter) 0;
+	--pd-w: var(--pd-width);
+	padding: 128px max(var(--pd-gutter), calc((100% - var(--pd-w)) / 2));
+}
+
+.pd-hero + .pd-section {
+	margin-top: 32px;
+}
+
+/* 띠 위의 타일은 흰색(다크는 한 단계 밝은 회색)으로 바꿔 띠와 구별되게 한다 */
+.pd-section:nth-of-type(even) {
+	--pd-tile: var(--pd-band-tile);
+	--pd-art: color-mix(in srgb, var(--tpl-accent) 8%, var(--pd-band-tile));
+	--lk-x-card: var(--pd-band-tile);
+	background-color: var(--pd-band);
 }
 
 .pd-head {
-	max-width: var(--pd-text);
-	margin: 0 auto 64px;
+	max-width: 880px;
+	margin: 0 auto 72px;
 	text-align: center;
 }
 
-.pd-eyebrow {
-	margin-bottom: 12px;
-	color: var(--pd-muted);
-	font-size: 17px;
-	font-weight: 600;
-	letter-spacing: -0.01em;
-}
-
 .pd-head h2 {
-	font-size: clamp(34px, 4.6cqi, 60px);
+	font-size: clamp(36px, 5cqi, 64px);
 	line-height: 1.08;
-	letter-spacing: -0.028em;
+	letter-spacing: -0.03em;
 }
 
 .pd-lead {
@@ -399,11 +407,32 @@
 	line-height: 1.45;
 }
 
-/* ─── 숫자: 아주 큰 숫자와 작은 설명, 한 줄 ─── */
-.pd-section[data-section='stats'] {
-	padding-top: 120px;
+/* ─── 숫자: 아주 큰 숫자 하나와 한 줄 설명을 가운데에 위아래로 쌓는다 ─── */
+.pd-stat-stack {
+	display: grid;
+	gap: 56px;
+	text-align: center;
 }
 
+.pd-stat-stack .pd-figure {
+	font-size: clamp(64px, 9.4cqi, 132px);
+	font-weight: 700;
+	letter-spacing: -0.045em;
+}
+
+.pd-stat-stack .pd-unit {
+	font-size: 0.36em;
+}
+
+.pd-stat-stack .pd-figure-label {
+	max-width: 28ch;
+	margin-top: 12px;
+	color: var(--pd-muted);
+	font-size: clamp(17px, 1.7cqi, 21px);
+	font-weight: 500;
+}
+
+/* 이야기 안의 숫자: 한 줄로 나란히 */
 .pd-stats {
 	display: grid;
 	grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
@@ -467,7 +496,7 @@
 
 /* ─── 주요 기능: 옅은 회색 타일. 그림이 있으면 넓게, 그림은 타일 가장자리까지 ─── */
 .pd-section[data-section='features'] {
-	max-width: 1240px;
+	--pd-w: 1240px;
 }
 
 .pd-features {
@@ -640,9 +669,12 @@
 
 /* ─── 화면 모음: 옆으로 넘기는 띠, 아래 설명, 둥근 단추 ─── */
 .pd-section[data-section='screens'] {
-	max-width: none;
 	padding-right: 0;
 	padding-left: 0;
+}
+
+.pd-section[data-section='screens'] .pd-head {
+	padding: 0 var(--pd-gutter);
 }
 
 .pd-gallery-track {
@@ -1096,10 +1128,15 @@
 /* ─── 마무리 ─── */
 .pd-closing {
 	max-width: var(--pd-width);
-	margin: 140px auto 0;
-	padding: 104px var(--pd-gutter) 128px;
+	margin: 0 auto;
+	padding: 112px var(--pd-gutter) 128px;
 	border-top: 1px solid var(--pd-line);
 	text-align: center;
+}
+
+/* 띠 바로 뒤에서는 선 없이 여백만 */
+.pd-section:nth-of-type(even):last-of-type + .pd-closing {
+	border-top: none;
 }
 
 .pd-closing .pd-subhead {
@@ -1246,11 +1283,15 @@
 	}
 
 	.pd-section {
-		padding-top: 96px;
+		padding-block: 88px;
 	}
 
 	.pd-head {
-		margin-bottom: 40px;
+		margin-bottom: 48px;
+	}
+
+	.pd-stat-stack {
+		gap: 48px;
 	}
 
 	.pd-stats[data-count='2'],
@@ -1337,7 +1378,6 @@
 	}
 
 	.pd-closing {
-		margin-top: 96px;
 		padding: 88px var(--pd-gutter) 96px;
 	}
 }
