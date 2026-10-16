@@ -1,139 +1,72 @@
 /*
- * RPG 대화창 무대의 게임 화면 (DialoguePanels.tsx). 고전 RPG 메뉴처럼 검은 바탕에 흰 4px 테두리, 갈무리11을 11의 배수 크기로만.
- * 색은 정해 둔 몇 가지뿐: 흰색, 노랑(지금 항목), 빨강(♥, 버그의 남은 HP 바탕), 초록(HP), 하늘색(지나온 길), 주황(전투 메뉴).
- * 그라데이션·풍경·그림자는 쓰지 않고, 사진은 픽셀로 바꾸지 않는다. 깜빡임은 움직임 줄이기에서 멈춘다
+ * RPG 대화창의 무대 그림판 (DialoguePanels.tsx). 크기는 모두 480×270 게임 화면의 칸(px) 단위이고, 화면 전체가 정수 배로 커진다.
+ * 무대에는 틀을 그리지 않는다: 머리줄 한 줄(회색 이름과 셈) 아래에 주제의 큰 그림 하나를 가운데에 두고, 글은 짧게.
+ * 지금 항목은 노랑과 빨간 ♥, 지난 것은 회색과 ✓, 아직은 하양. 글자는 11px(큰 숫자·이름만 22px)
  */
-.dl {
-	--dl-green: #00e000;
-	--dl-cyan: #00d8ff;
-	--dl-dim: #555555;
-	/* 그림 옆 게임 화면의 폭과 간격 */
-	--dl-side-w: 300px;
-	--dl-side-gap: 24px;
-}
-
-/* ─── 무대 배치: 그림이 있으면 액자 + 옆 화면, 없으면 게임 화면 하나가 무대를 채운다 ─── */
-.dl-scene[data-side] {
-	grid-auto-flow: column;
-	align-items: center;
-	gap: var(--dl-side-gap);
-}
-
-.dl-scene[data-side] .dl-shot-frame > :is(img, video) {
-	max-width: calc(100cqw - 16px - var(--dl-side-w) - var(--dl-side-gap));
-}
-
-.dl-scene[data-side] .dl-shot-foot {
-	max-width: calc(100cqw - var(--dl-side-w) - var(--dl-side-gap));
-}
-
-.dl-side {
-	display: flex;
-	width: var(--dl-side-w);
-	max-height: 100cqh;
-	min-height: 0;
-}
-
-.dl-side > .dlp {
-	width: 100%;
-	max-height: 100cqh;
-}
-
-.dl-scene > .dlp {
-	width: min(100cqw, 920px);
-	height: min(100cqh, 480px);
-}
-
-/* 무대가 좁으면 옆 화면은 접고 그림만 (같은 내용은 대화 상자에 있다) */
-@container dl-stage (max-width: 760px) {
-	.dl-side {
-		display: none;
-	}
-
-	.dl-scene[data-side] .dl-shot-frame > :is(img, video) {
-		max-width: calc(100cqw - 16px);
-	}
-
-	.dl-scene[data-side] .dl-shot-foot {
-		max-width: 100cqw;
-	}
-}
-
-/* ─── 창 하나 ─── */
 .dlp {
-	container: dlp / inline-size;
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
-	box-sizing: border-box;
+	display: grid;
+	grid-template-rows: var(--dl-row) minmax(0, 1fr);
+	width: 100%;
+	height: 100%;
 	min-width: 0;
 	min-height: 0;
-	padding: 14px 20px 18px;
-	border: 4px solid var(--dl-ink);
-	background: var(--dl-bg);
 	color: var(--dl-ink);
-	font-size: 11px;
-	line-height: 16px;
-	text-align: left;
-	overflow: hidden;
 }
 
 .dlp-head {
 	display: flex;
-	flex: none;
-	align-items: baseline;
-	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
 	min-width: 0;
-	padding-bottom: 10px;
-	border-bottom: 4px solid var(--dl-ink);
+	color: var(--dl-soft);
+	white-space: nowrap;
 }
 
 .dlp-head b {
 	min-width: 0;
 	overflow: hidden;
-	color: var(--dl-yellow);
-	font-size: 22px;
 	font-weight: 400;
-	line-height: 22px;
 	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.dlp-head small {
-	flex: none;
-	color: var(--dl-soft);
-	font-size: 11px;
-}
-
-.dlp-head span {
-	flex: none;
-	margin-left: auto;
-	font-variant-numeric: tabular-nums;
 }
 
 .dlp-body {
-	display: flex;
-	flex: 1;
-	flex-direction: column;
-	gap: 14px;
+	position: relative;
+	display: grid;
+	place-items: center;
+	min-width: 0;
 	min-height: 0;
 }
 
-.dlp :is(ol, ul) {
+.dlp ol,
+.dlp ul {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.dlp h4 {
-	margin: 0 0 8px;
-	color: var(--dl-soft);
-	font-size: 11px;
-	font-weight: 400;
+.dlp p {
+	margin: 0;
 }
 
-.dlp-heart,
+.dlp small {
+	color: var(--dl-soft);
+	font-size: 11px;
+}
+
+/* 줄 앞 표시: ♥는 빨강, 나머지(✓·)는 회색 */
 .dlp-mark {
+	display: inline-block;
+	width: var(--dl-star);
+	color: var(--dl-soft);
+	text-align: left;
+}
+
+[data-state='now'] > .dlp-mark {
+	color: var(--dl-red);
+}
+
+.dlp-heart {
 	color: var(--dl-red);
 	font-style: normal;
 }
@@ -145,1079 +78,418 @@
 	white-space: nowrap;
 }
 
-/* 목록 한 줄: 표시(♥·✓) + 이름. 지난 것은 회색, 지금은 노랑 */
-.dlp-list li {
-	display: grid;
-	grid-template-columns: 30px minmax(0, 1fr);
-	align-items: center;
-	height: 32px;
-	font-size: 22px;
-	line-height: 32px;
+/* 픽셀 그림: 칸을 흐리지 않는다 */
+.dlp svg {
+	display: block;
+	flex: none;
+	image-rendering: pixelated;
 }
 
-.dlp-list li[data-state='done'] {
-	color: var(--dl-soft);
-}
-
-.dlp-list li[data-state='done'] .dlp-mark {
-	color: var(--dl-soft);
-}
-
-.dlp-list li[data-state='now'] {
-	color: var(--dl-yellow);
-}
-
-/* 지금 항목의 자세한 칸: 아이콘 칸, 제목, 짧은 설명 */
-.dlp-detail {
-	display: grid;
-	grid-template-columns: 72px minmax(0, 1fr);
-	align-content: start;
-	gap: 16px;
-	min-height: 0;
-	padding: 14px 16px;
-	border: 4px solid var(--dl-ink);
-	overflow: hidden;
-}
-
-.dlp-icon {
-	display: grid;
-	place-items: center;
-	box-sizing: border-box;
-	width: 72px;
-	height: 72px;
-	border: 4px solid var(--dl-yellow);
-	color: var(--dl-yellow);
-	font-size: 33px;
-}
-
-.dlp-detail > div {
-	display: grid;
-	align-content: start;
-	gap: 6px;
-	min-width: 0;
-}
-
-.dlp-detail small {
-	color: var(--dl-yellow);
-}
-
-.dlp-detail b {
-	font-size: 22px;
-	font-weight: 400;
-	line-height: 32px;
-	word-break: keep-all;
-}
-
-.dlp-detail p {
-	display: -webkit-box;
-	margin: 0;
-	overflow: hidden;
-	color: var(--dl-ink);
-	word-break: keep-all;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 5;
-}
-
-/* 기술 칸: 브랜드 아이콘이나 첫 글자 */
-.dlp-techs {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 8px;
-}
-
-.dlp-tech {
-	display: grid;
-	justify-items: center;
-	gap: 4px;
-	min-width: 0;
-}
-
-.dlp-tech-icon {
-	display: grid;
-	place-items: center;
-	box-sizing: border-box;
-	width: 44px;
-	height: 44px;
-	border: 4px solid var(--dl-ink);
-	font-size: 22px;
-	line-height: 1;
-}
-
-.dlp-tech-icon b {
-	font-size: 22px;
-	font-weight: 700;
-}
-
-.dlp-tech-name {
-	max-width: 100%;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-/* ─── 타이틀 화면: 큰 이름, 얼굴, PRESS Z, 파티와 기술 ─── */
+/* ─── 타이틀 화면: 큰 얼굴과 이름, PRESS Z, 한 줄 요약 ─── */
 .dlp-title {
+	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 16px;
-	border-color: transparent;
+	gap: 6px;
 	text-align: center;
 }
 
 .dlp-title-face {
 	display: grid;
 	place-items: center;
+	min-height: 51px;
 }
 
 .dlp-title-name {
-	display: -webkit-box;
 	max-width: 100%;
 	overflow: hidden;
-	font-size: 44px;
-	font-weight: 700;
-	line-height: 55px;
-	word-break: keep-all;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 28px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .dlp-press {
-	margin: 0;
-	color: var(--dl-yellow);
-	font-size: 22px;
-	line-height: 32px;
+	color: var(--dl-ink);
 	animation: dl-blink 1.2s steps(1) infinite;
 }
 
 .dlp-title-meta {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 6px 20px;
-	margin: 0;
+	max-width: 100%;
+	overflow: hidden;
 	color: var(--dl-soft);
-}
-
-.dlp-title-meta span {
+	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.dlp-title[data-side] {
-	gap: 12px;
-	border-color: var(--dl-ink);
-}
-
-.dlp-title[data-side] .dl-sign-icon {
-	width: 64px;
-	height: 64px;
-}
-
-.dlp-title[data-side] .dl-sprite {
-	--dl-px: 4px;
-}
-
 .dlp-title[data-side] .dlp-title-name {
-	font-size: 22px;
-	line-height: 32px;
-}
-
-.dlp-title[data-side] .dlp-tech-icon {
-	width: 33px;
-	height: 33px;
 	font-size: 11px;
+	line-height: var(--dl-row);
 }
 
-.dlp-title[data-side] .dlp-tech-icon b {
-	font-size: 11px;
+.dlp-title[data-side] .dlp-title-meta {
+	display: none;
 }
 
-@container dlp (max-width: 600px) {
-	.dlp-title:not([data-side]) .dlp-title-name {
-		font-size: 33px;
-		line-height: 44px;
-	}
-}
-
-/* ─── 퀘스트 목록: 왼쪽 목록, 오른쪽 지금 퀘스트 ─── */
+/* ─── 퀘스트 목록: 왼쪽 큰 아이콘, 오른쪽 지금 줄과 이웃 ─── */
 .dlp-quest {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-	align-items: start;
-	gap: 20px;
-	min-height: 0;
+	grid-template-columns: 112px minmax(0, 1fr);
+	align-items: center;
+	gap: 16px;
+	width: 100%;
+	padding-right: 24px;
 }
 
-@container dlp (max-width: 560px) {
-	.dlp-quest {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.dlp-quest .dlp-detail {
-		display: none;
-	}
-}
-
-/* ─── 스킬 트리·튜토리얼: 뿌리에서 갈라지는 칸들, 또는 화살표로 잇는 차례 ─── */
-.dlp-tree {
+.dlp-hero {
 	display: grid;
 	justify-items: center;
+	gap: 8px;
 }
 
-.dlp-root {
-	position: relative;
+.dlp-hero i {
+	color: var(--dl-yellow);
+	font-size: 44px;
+	line-height: 48px;
+}
+
+.dlp-list {
 	display: grid;
-	justify-items: center;
-	gap: 4px;
-	padding-bottom: 20px;
+	grid-auto-rows: 20px;
+	align-items: center;
+	min-width: 0;
+}
+
+.dlp-list li {
+	display: grid;
+	grid-template-columns: var(--dl-star) minmax(0, 1fr);
+	align-items: center;
+	min-width: 0;
+}
+
+.dlp-list li[data-state='done'] .dlp-text {
 	color: var(--dl-soft);
 }
 
-.dlp-root::after {
+.dlp-list li[data-state='now'] .dlp-text {
+	color: var(--dl-yellow);
+}
+
+.dlp[data-side] .dlp-quest {
+	grid-template-columns: minmax(0, 1fr);
+	padding: 0;
+	text-align: center;
+}
+
+.dlp[data-side] .dlp-list li:not([data-state='now']) {
+	display: none;
+}
+
+.dlp[data-side] .dlp-list li {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.dlp[data-side] .dlp-list .dlp-mark {
+	display: none;
+}
+
+/* ─── 스킬 트리·튜토리얼: 아이콘 칸을 선으로 잇는다 ─── */
+.dlp-nodes {
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	width: 100%;
+}
+
+.dlp-nodes li {
+	position: relative;
+	display: grid;
+	flex: 0 1 92px;
+	justify-items: center;
+	align-content: start;
+	min-width: 0;
+	row-gap: 4px;
+}
+
+/* 이웃 칸으로 잇는 선 (칸 가운데 높이) */
+.dlp-nodes li:not(:last-child)::after {
 	content: '';
 	position: absolute;
-	bottom: 0;
-	left: 50%;
-	width: 4px;
-	height: 16px;
-	margin-left: -2px;
+	top: calc(var(--dl-row) + 4px + 17px);
+	left: calc(50% + 22px);
+	width: calc(100% - 44px);
+	height: 2px;
+	background: var(--dl-soft);
+}
+
+.dlp-nodes li[data-state='done']:not(:last-child)::after {
 	background: var(--dl-ink);
 }
 
-.dlp-root .dlp-node-icon {
-	border-color: var(--dl-ink);
+.dlp-nodes .dlp-mark {
+	width: auto;
+	height: var(--dl-row);
+	color: var(--dl-red);
+}
+
+.dlp-root::before {
+	content: '';
+	height: var(--dl-row);
+}
+
+.dlp-node-icon {
+	display: grid;
+	place-items: center;
+	width: 36px;
+	height: 36px;
+	background: var(--dl-dim);
+	color: var(--dl-soft);
+	font-size: 16px;
 }
 
 .dlp-root-icon {
 	display: block;
-	width: 32px;
-	height: 32px;
+	width: 22px;
+	height: 22px;
 	object-fit: contain;
 }
 
 .dlp-root-icon.fallback {
 	display: grid;
 	place-items: center;
-	font-size: 22px;
+	color: var(--dl-ink);
+	font-size: 16px;
 }
 
-.dlp-nodes {
-	display: grid;
-	grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-	width: 100%;
+.dlp-nodes li[data-state='done'] .dlp-node-icon {
+	color: var(--dl-ink);
 }
 
-.dlp-node-icon {
-	display: grid;
-	place-items: center;
-	box-sizing: border-box;
-	width: 56px;
-	height: 56px;
-	border: 4px solid var(--dl-ink);
-	background: var(--dl-bg);
-	font-size: 22px;
-}
-
-.dlp-nodes li {
-	position: relative;
-	display: grid;
-	justify-items: center;
-	align-content: start;
-	gap: 8px;
-	min-width: 0;
-	padding: 20px 6px 0;
-	text-align: center;
-}
-
-/* 줄기: 위의 가로줄에서 칸으로 내려오는 세로줄 */
-.dlp-tree[data-kind='tree'] .dlp-nodes li::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 50%;
-	width: 4px;
-	height: 20px;
-	margin-left: -2px;
-	background: var(--dl-ink);
-}
-
-.dlp-tree[data-kind='tree'] .dlp-nodes li::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	height: 4px;
-	background: var(--dl-ink);
-}
-
-.dlp-tree[data-kind='tree'] .dlp-nodes li:first-child::after {
-	left: 50%;
-}
-
-.dlp-tree[data-kind='tree'] .dlp-nodes li:last-child::after {
-	right: 50%;
-}
-
-.dlp-tree[data-kind='tree'] .dlp-nodes li:only-child::after {
-	display: none;
-}
-
-/* 차례: 칸 사이에 ▶ */
-.dlp-tree[data-kind='steps'] .dlp-nodes li {
-	padding-top: 0;
-}
-
-.dlp-tree[data-kind='steps'] .dlp-nodes li + li::before {
-	content: '▶';
-	position: absolute;
-	top: 0;
-	left: -11px;
-	color: var(--dl-soft);
-	font-size: 22px;
-	line-height: 56px;
+.dlp-nodes li[data-state='now'] .dlp-node-icon {
+	background: var(--dl-yellow);
+	color: var(--dl-bg);
 }
 
 .dlp-node-name {
 	display: -webkit-box;
-	max-width: 100%;
+	max-width: 84px;
 	overflow: hidden;
+	color: var(--dl-ink);
+	line-height: var(--dl-row);
+	text-align: center;
 	word-break: keep-all;
+	overflow-wrap: anywhere;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
+	-webkit-line-clamp: 3;
 }
 
 .dlp-node-name small {
 	display: block;
+}
+
+.dlp-nodes li[data-state='todo'] .dlp-node-name {
 	color: var(--dl-soft);
 }
 
-.dlp-nodes li[data-state='todo'] .dlp-node-icon {
-	border-color: var(--dl-dim);
-	color: var(--dl-soft);
-}
-
-.dlp-nodes li[data-state='todo'] {
-	color: var(--dl-soft);
-}
-
-.dlp-tree[data-kind='tree'] .dlp-nodes li[data-state='todo']::before {
-	background: var(--dl-dim);
-}
-
-.dlp-nodes li[data-state='now'] .dlp-node-icon {
-	border-color: var(--dl-yellow);
+.dlp-nodes li[data-state='now'] .dlp-node-name {
 	color: var(--dl-yellow);
 }
 
-.dlp-nodes li[data-state='now'] {
-	color: var(--dl-yellow);
+.dlp[data-side] .dlp-nodes li {
+	flex-basis: 100%;
 }
 
-.dlp-nodes li[data-state='now'] .dlp-node-name small {
-	color: var(--dl-yellow);
+.dlp[data-side] .dlp-node-icon {
+	width: 48px;
+	height: 48px;
+	font-size: 22px;
 }
 
-.dlp-tree + .dlp-detail {
-	margin-top: auto;
+.dlp[data-side] .dlp-node-name {
+	max-width: 160px;
 }
 
-/* 좁으면 세로로: 아이콘 칸과 이름이 한 줄 */
-@container dlp (max-width: 560px) {
-	.dlp-root {
-		display: none;
-	}
-
-	.dlp-tree {
-		justify-items: stretch;
-	}
-
-	.dlp-nodes {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-	}
-
-	.dlp-nodes li {
-		grid-template-columns: 40px minmax(0, 1fr);
-		align-items: center;
-		gap: 12px;
-		padding: 0;
-		text-align: left;
-	}
-
-	.dlp-node-icon {
-		width: 40px;
-		height: 40px;
-		font-size: 11px;
-	}
-
-	.dlp-tree .dlp-nodes li::before,
-	.dlp-tree .dlp-nodes li::after,
-	.dlp-tree[data-kind='steps'] .dlp-nodes li + li::before {
-		display: none;
-	}
-
-	.dlp-tree + .dlp-detail {
-		display: none;
-	}
-}
-
-/* ─── 전투: 몬스터와 HP, 전투 기록, 전투 메뉴 ─── */
+/* ─── 전투: 가운데 큰 몬스터, 아래 이름과 HP(빨강 위에 노랑), 맨 아래 네 칸 ─── */
 .dlp-battle {
 	display: grid;
-	flex: 1;
-	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-	grid-template-rows: auto minmax(0, 1fr) auto;
-	grid-template-areas:
-		'foes foes'
-		'arena log'
-		'menu menu';
-	gap: 12px 24px;
-	min-height: 0;
-}
-
-.dlp-foes {
-	grid-area: foes;
-	display: flex;
-	justify-content: flex-end;
-	gap: 8px;
-}
-
-.dlp-foe-mini {
-	display: block;
-	width: 32px;
-	height: 32px;
-}
-
-.dlp-foes li[data-state='todo'] {
-	opacity: 0.5;
-}
-
-.dlp-foes li[data-state='done'] {
-	position: relative;
-	opacity: 0.35;
-}
-
-.dlp-foes li[data-state='now'] {
-	outline: 4px solid var(--dl-yellow);
-	outline-offset: 2px;
+	grid-template-rows: minmax(0, 1fr) var(--dl-row) var(--dl-row);
+	justify-items: center;
+	row-gap: 4px;
+	width: 100%;
+	height: 100%;
 }
 
 .dlp-arena {
-	grid-area: arena;
-	position: relative;
 	display: grid;
-	justify-items: center;
-	align-content: center;
-	gap: 10px;
-	min-width: 0;
+	place-items: center;
+	min-height: 0;
 }
 
-.dlp-monster {
-	display: block;
-	width: 128px;
-	height: 128px;
-}
-
-/* 등장: 머리 위 느낌표. 원인을 살필 때: 점선 조준 칸. 쓰러뜨리면 흐려진다 */
-.dlp-arena[data-step='problem']::before {
-	content: '!';
-	position: absolute;
-	top: 0;
-	left: calc(50% + 64px);
-	color: var(--dl-yellow);
-	font-size: 44px;
-	font-weight: 700;
-	line-height: 44px;
-}
-
-.dlp-arena[data-step='cause'] .dlp-monster {
-	outline: 4px dashed var(--dl-yellow);
-	outline-offset: 6px;
-}
-
+/* 쓰러뜨리면 흐려진다 */
 .dlp-arena[data-defeated] .dlp-monster {
 	opacity: 0.25;
-}
-
-.dlp-foe-name {
-	display: -webkit-box;
-	margin-top: 6px;
-	max-width: 100%;
-	overflow: hidden;
-	font-weight: 400;
-	text-align: center;
-	word-break: keep-all;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
 }
 
 .dlp-hp {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 6px;
+	max-width: 100%;
+	min-width: 0;
+}
+
+.dlp-foe-name {
+	min-width: 0;
+	max-width: 260px;
+	margin-right: 6px;
+	overflow: hidden;
+	font-weight: 400;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .dlp-hp em {
-	color: var(--dl-ink);
 	font-style: normal;
 }
 
 .dlp-hp-track {
 	position: relative;
-	width: 160px;
-	height: 16px;
+	flex: none;
+	width: 64px;
+	height: 9px;
 	background: var(--dl-red);
 }
 
 .dlp-hp-track i {
 	position: absolute;
 	inset: 0 auto 0 0;
-	background: var(--dl-green);
+	background: var(--dl-yellow);
+	transition: width 0.3s steps(4);
 }
 
 .dlp-hp-num {
-	min-width: 56px;
+	min-width: 20px;
 	font-variant-numeric: tabular-nums;
 }
 
-.dlp-log {
-	grid-area: log;
-	display: grid;
-	align-content: start;
-	gap: 0;
-	min-height: 0;
-	padding: 12px 16px;
-	border: 4px solid var(--dl-ink);
-	overflow: hidden;
-}
-
-.dlp-log li {
-	color: var(--dl-soft);
-	font-size: 22px;
-	line-height: 32px;
-	word-break: keep-all;
-}
-
-.dlp-log li[data-now] {
-	color: var(--dl-ink);
-}
-
+/* 언더테일의 아래 줄처럼 네 칸: 고른 칸은 ♥과 노랑, 나머지는 회색 */
 .dlp-battle-menu {
-	grid-area: menu;
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 16px;
+	width: 100%;
+	max-width: 400px;
 }
 
 .dlp-battle-menu li {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 10px;
-	height: 44px;
-	border: 4px solid var(--dl-orange);
-	color: var(--dl-orange);
-	font-size: 22px;
-	white-space: nowrap;
+	gap: 4px;
+	color: var(--dl-soft);
 }
 
 .dlp-battle-menu li i {
-	font-size: 22px;
+	font-size: 9px;
 }
 
 .dlp-battle-menu li[data-on] {
-	border-color: var(--dl-yellow);
 	color: var(--dl-yellow);
 }
 
-@container dlp (max-width: 560px) {
-	.dlp-battle {
-		grid-template-columns: minmax(0, 1fr);
-		grid-template-areas:
-			'foes'
-			'arena'
-			'log';
-	}
-
-	.dlp-monster {
-		width: 96px;
-		height: 96px;
-	}
-
-	.dlp-arena[data-step='problem']::before {
-		left: calc(50% + 48px);
-	}
-
-	.dlp-battle-menu {
-		display: none;
-	}
-
-	.dlp-log {
-		padding: 8px 12px;
-	}
-
-	.dlp-log li {
-		display: none;
-		font-size: 11px;
-		line-height: 16px;
-	}
-
-	.dlp-log li[data-now] {
-		display: block;
-	}
+.dlp[data-side] .dlp-battle {
+	grid-template-rows: minmax(0, 1fr) var(--dl-row);
 }
 
-/* ─── 파티: 팀원 카드 ─── */
+.dlp[data-side] .dlp-foe-name {
+	display: none;
+}
+
+/* ─── 파티: 픽셀 사람이 한 줄로 선다. 지금 사람 위에 ♥, 이름은 노랑 ─── */
 .dlp-party {
-	display: grid;
-	grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-	align-items: stretch;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
 	gap: 16px;
-	min-height: 0;
+	width: 100%;
 }
 
 .dlp-party li {
-	position: relative;
 	display: grid;
 	justify-items: center;
-	align-content: start;
-	gap: 12px;
+	align-content: end;
 	min-width: 0;
-	padding: 22px 12px 16px;
-	border: 4px solid var(--dl-ink);
-	text-align: center;
-}
-
-.dlp-party li[data-state='now'] {
-	border-color: var(--dl-yellow);
+	row-gap: 2px;
 }
 
 .dlp-party .dlp-mark {
-	position: absolute;
-	top: 4px;
-	left: 8px;
-	font-size: 22px;
-	line-height: 22px;
-}
-
-.dlp-avatar {
-	display: grid;
-	place-items: center;
-	box-sizing: border-box;
-	width: 80px;
-	height: 80px;
-	border: 4px solid var(--dl-ink);
-	overflow: hidden;
-	background: var(--dl-cyan);
-	color: var(--dl-bg);
-}
-
-.dlp-avatar[data-tone='1'] {
-	background: var(--dl-green);
-}
-
-.dlp-avatar[data-tone='2'] {
-	background: var(--dl-yellow);
-}
-
-.dlp-avatar img {
-	display: block;
-	width: 100%;
-	height: 100%;
-	background: var(--dl-bg);
-	object-fit: cover;
-}
-
-.dlp-avatar b {
-	font-size: 33px;
-	font-weight: 700;
-	line-height: 1;
+	width: auto;
+	height: var(--dl-row);
+	color: var(--dl-red);
 }
 
 .dlp-member {
-	display: grid;
-	justify-items: center;
-	gap: 6px;
-	min-width: 0;
-}
-
-.dlp-member > b {
-	font-size: 22px;
+	max-width: 72px;
+	overflow: hidden;
 	font-weight: 400;
-	line-height: 32px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-.dlp-party li[data-state='now'] .dlp-member > b {
+.dlp-party li[data-state='now'] .dlp-member {
 	color: var(--dl-yellow);
 }
 
 .dlp-me {
-	display: block;
 	color: var(--dl-yellow);
-	font-size: 11px;
 	font-style: normal;
-	line-height: 16px;
 }
 
-.dlp-member small,
-.dlp-sheet small {
-	color: var(--dl-soft);
+/* 나 표시가 없는 사람도 같은 높이에 선다 */
+.dlp-party li:not([data-me])::after {
+	content: '';
+	height: var(--dl-row);
 }
 
-.dlp-role {
-	display: -webkit-box;
-	overflow: hidden;
-	word-break: keep-all;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 3;
-}
-
-@container dlp (max-width: 560px) {
-	.dlp-party {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-	}
-
-	.dlp-party li {
-		grid-template-columns: 40px minmax(0, 1fr);
-		align-items: center;
-		justify-items: start;
-		gap: 12px;
-		padding: 6px 10px 6px 30px;
-		text-align: left;
-	}
-
-	.dlp-party .dlp-mark {
-		top: 50%;
-		left: 6px;
-		margin-top: -11px;
-	}
-
-	.dlp-avatar {
-		width: 40px;
-		height: 40px;
-	}
-
-	.dlp-avatar b {
-		font-size: 22px;
-	}
-
-	.dlp-member {
-		justify-items: start;
-		gap: 0;
-	}
-
-	.dlp-member > b {
-		font-size: 11px;
-		line-height: 16px;
-	}
-
-	.dlp-me {
-		display: inline;
-		margin-left: 6px;
-	}
-
-	.dlp-member small {
-		display: none;
-	}
-
-	.dlp-role {
-		-webkit-line-clamp: 1;
-	}
-}
-
-/* ─── 장비: 장착한 사양 칸과 가방(쓴 기술) ─── */
+/* ─── 장비: 큰 아이콘 칸 한 줄, 그 아래 가방(쓴 기술) ─── */
 .dlp-equip {
 	display: grid;
-	grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-	align-items: start;
-	gap: 24px;
-	min-height: 0;
+	justify-items: center;
+	row-gap: 14px;
+	width: 100%;
+}
+
+.dlp-slots {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	max-width: 100%;
 }
 
 .dlp-slots li {
 	display: grid;
-	grid-template-columns: 30px 40px 72px minmax(0, 1fr);
-	align-items: center;
-	gap: 0 10px;
-	height: 48px;
-}
-
-.dlp-slots li::before {
-	content: '';
-}
-
-.dlp-slots li[data-state='now']::before {
-	content: '♥';
-	color: var(--dl-red);
-	font-size: 22px;
+	justify-items: center;
+	row-gap: 4px;
+	width: 64px;
+	min-width: 0;
 }
 
 .dlp-slot-icon {
 	display: grid;
 	place-items: center;
-	box-sizing: border-box;
 	width: 40px;
 	height: 40px;
-	border: 4px solid var(--dl-ink);
-	font-size: 16px;
+	background: var(--dl-dim);
+	font-size: 18px;
 }
 
-.dlp-slots small {
-	overflow: hidden;
-	color: var(--dl-soft);
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.dlp-slots li[data-state='now'] :is(.dlp-slot-icon, small, .dlp-text) {
-	border-color: var(--dl-yellow);
-	color: var(--dl-yellow);
-}
-
-.dlp-bag .dlp-techs {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
-	justify-content: stretch;
-	gap: 12px 8px;
-}
-
-.dlp-bag[data-on] h4 {
-	color: var(--dl-yellow);
-}
-
-.dlp-bag[data-on] .dlp-tech-icon {
-	border-color: var(--dl-yellow);
-	color: var(--dl-yellow);
-}
-
-@container dlp (max-width: 560px) {
-	.dlp-equip {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.dlp-equip[data-focus='slots'] .dlp-bag,
-	.dlp-equip[data-focus='bag'] .dlp-slots {
-		display: none;
-	}
-
-	.dlp-slots li {
-		grid-template-columns: 22px 32px minmax(0, 1fr);
-		grid-template-rows: auto auto;
-		height: auto;
-		padding: 4px 0;
-	}
-
-	.dlp-slots li::before {
-		grid-row: span 2;
-	}
-
-	.dlp-slot-icon {
-		grid-row: span 2;
-		width: 32px;
-		height: 32px;
-	}
-
-	.dlp-bag .dlp-techs {
-		grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-	}
-}
-
-/* ─── 상태: 캐릭터 시트, 능력치, 특기 ─── */
-.dlp-status {
-	display: grid;
-	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-	grid-template-rows: auto minmax(0, 1fr);
-	grid-template-areas:
-		'sheet abil'
-		'stats abil';
-	gap: 16px 28px;
-	min-height: 0;
-}
-
-.dlp-sheet {
-	grid-area: sheet;
-	display: grid;
-	grid-template-columns: 80px minmax(0, 1fr);
-	align-items: center;
-	gap: 16px;
-}
-
-.dlp-sheet > div {
-	display: grid;
-	gap: 6px;
-	min-width: 0;
-}
-
-.dlp-sheet p {
-	display: grid;
-	gap: 2px;
-	margin: 0;
-}
-
-.dlp-sheet-name {
-	font-size: 22px;
-	font-weight: 400;
-	line-height: 32px;
-}
-
-.dlp-sheet[data-now] .dlp-avatar {
-	border-color: var(--dl-yellow);
-}
-
-.dlp-sheet[data-now] .dlp-role {
-	color: var(--dl-yellow);
-}
-
-.dlp-stats {
-	grid-area: stats;
-	display: grid;
-	align-content: start;
-	margin: 0;
-	padding: 10px 16px;
-	border: 4px solid var(--dl-ink);
-}
-
-.dlp-stats div {
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-	gap: 12px;
-	height: 32px;
-}
-
-.dlp-stats dt {
-	color: var(--dl-soft);
-}
-
-.dlp-stats dd {
-	margin: 0;
-	font-size: 22px;
-	line-height: 32px;
-	font-variant-numeric: tabular-nums;
-}
-
-.dlp-abilities {
-	grid-area: abil;
-	min-height: 0;
-}
-
-.dlp-abilities .dlp-list li {
-	grid-template-columns: 22px minmax(0, 1fr);
-	align-items: start;
-	height: auto;
-	padding: 6px 0;
-	font-size: 11px;
-	line-height: 16px;
-}
-
-.dlp-abilities .dlp-text {
-	white-space: normal;
-	word-break: keep-all;
-}
-
-.dlp-abilities .dlp-mark {
-	color: var(--dl-cyan);
-}
-
-.dlp-abilities li[data-state='now'] .dlp-mark {
-	color: var(--dl-red);
-}
-
-.dlp-abilities li[data-state='done'],
-.dlp-abilities li[data-state='done'] .dlp-mark {
-	color: var(--dl-ink);
-}
-
-@container dlp (max-width: 560px) {
-	.dlp-status {
-		grid-template-columns: minmax(0, 1fr);
-		grid-template-areas:
-			'sheet'
-			'abil';
-	}
-
-	.dlp-stats {
-		display: none;
-	}
-
-	.dlp-sheet {
-		grid-template-columns: 48px minmax(0, 1fr);
-	}
-
-	.dlp-sheet .dlp-avatar {
-		width: 48px;
-		height: 48px;
-	}
-
-	.dlp-sheet .dlp-avatar b {
-		font-size: 22px;
-	}
-}
-
-/* ─── 월드 맵: 길 위의 칸들. 지나온 길은 하늘색, 남은 길은 점선 ─── */
-.dlp-map {
-	display: grid;
-	grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-	margin-top: 12px !important;
-}
-
-.dlp-map li {
-	position: relative;
-	display: grid;
-	justify-items: center;
-	gap: 8px;
-	min-width: 0;
-	text-align: center;
-}
-
-/* 앞 칸에서 이 칸까지의 길 (칸 가운데 높이) */
-.dlp-map li::before {
-	content: '';
-	position: absolute;
-	top: 34px;
-	right: 50%;
-	left: -50%;
-	border-top: 4px solid var(--dl-cyan);
-}
-
-.dlp-map li:first-child::before {
-	display: none;
-}
-
-.dlp-map li[data-state='todo']::before {
-	border-top-style: dashed;
-	border-top-color: var(--dl-dim);
-}
-
-.dlp-flag {
-	height: 16px;
-	color: var(--dl-yellow);
-}
-
-.dlp-node {
-	position: relative;
-	z-index: 1;
-	box-sizing: border-box;
-	width: 28px;
-	height: 28px;
-	border: 4px solid var(--dl-soft);
-	background: var(--dl-bg);
-}
-
-.dlp-map li[data-state='done'] .dlp-node {
-	border-color: var(--dl-cyan);
-	background: var(--dl-cyan);
-}
-
-.dlp-map li[data-state='now'] .dlp-node {
-	border-color: var(--dl-yellow);
+.dlp-slots li[data-state='now'] .dlp-slot-icon {
 	background: var(--dl-yellow);
-	animation: dl-blink 1s steps(1) infinite;
+	color: var(--dl-bg);
 }
 
-.dlp-date {
+.dlp-slot-name {
 	max-width: 100%;
 	overflow: hidden;
 	color: var(--dl-soft);
@@ -1225,144 +497,299 @@
 	white-space: nowrap;
 }
 
-.dlp-map li[data-state='done'] .dlp-date {
+.dlp-slots li[data-state='now'] .dlp-slot-name {
+	color: var(--dl-yellow);
+}
+
+.dlp-bag {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	max-width: 100%;
+	min-width: 0;
+}
+
+.dlp-bag .dlp-mark {
+	width: auto;
+	color: var(--dl-red);
+}
+
+.dlp-bag[data-on] small {
+	color: var(--dl-yellow);
+}
+
+.dlp-techs {
+	display: flex;
+	gap: 6px;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.dlp-tech {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 14px;
+	height: var(--dl-row);
 	color: var(--dl-ink);
+	font-size: 11px;
+}
+
+.dlp-tech b {
+	font-weight: 700;
+}
+
+.dlp-bag[data-on] .dlp-tech {
+	color: var(--dl-yellow);
+}
+
+.dlp[data-side] .dlp-slots li:not([data-state='now']) {
+	display: none;
+}
+
+.dlp[data-side] .dlp-equip[data-focus='bag'] .dlp-slots {
+	display: none;
+}
+
+/* ─── 상태: 왼쪽 큰 초상, 오른쪽 이름·직업·능력치 ─── */
+.dlp-status {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	gap: 28px;
+	width: 100%;
+	max-width: 400px;
+}
+
+.dlp-sheet {
+	display: grid;
+	row-gap: 4px;
+	min-width: 0;
+}
+
+.dlp-sheet-name {
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 26px;
+}
+
+.dlp-role,
+.dlp-skill {
+	display: flex;
+	gap: 8px;
+	min-width: 0;
+}
+
+.dlp-role span {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dlp-role[data-now] span,
+.dlp-skill[data-now] span:last-child {
+	color: var(--dl-yellow);
+}
+
+.dlp-skill .dlp-mark {
+	width: auto;
+}
+
+.dlp-skill[data-now] .dlp-mark {
+	color: var(--dl-red);
+}
+
+.dlp-stats {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: 16px;
+	margin: 0;
+}
+
+.dlp-stats div {
+	display: flex;
+	justify-content: space-between;
+	gap: 6px;
+	min-width: 0;
+}
+
+.dlp-stats dt {
+	color: var(--dl-soft);
+	white-space: nowrap;
+}
+
+.dlp-stats dd {
+	margin: 0;
+	white-space: nowrap;
+}
+
+.dlp[data-side] .dlp-status {
+	grid-template-columns: minmax(0, 1fr);
+	justify-items: center;
+	gap: 6px;
+	text-align: center;
+}
+
+.dlp[data-side] .dlp-sheet-name {
+	font-size: 11px;
+	line-height: var(--dl-row);
+}
+
+.dlp[data-side] :is(.dlp-stats, .dlp-role) {
+	display: none;
+}
+
+/* ─── 월드 맵: 점선 길 위의 칸. 지금 칸 위에 내가 서 있고, 날짜는 아래에 두 줄로 엇갈린다 ─── */
+.dlp-map {
+	position: relative;
+	height: 100px;
+	max-width: 100%;
+}
+
+.dlp-path {
+	position: absolute;
+	inset: 0;
+}
+
+.dlp-map ol {
+	position: absolute;
+	inset: 0;
+}
+
+.dlp-map li {
+	position: absolute;
+	width: 0;
+	height: 0;
+}
+
+.dlp-node {
+	position: absolute;
+	top: -4px;
+	left: -4px;
+	width: 8px;
+	height: 8px;
+	background: var(--dl-ink);
+}
+
+.dlp-map li[data-state='todo'] .dlp-node {
+	background: var(--dl-soft);
+}
+
+.dlp-map li[data-state='now'] .dlp-node {
+	top: -5px;
+	left: -5px;
+	width: 10px;
+	height: 10px;
+	background: var(--dl-yellow);
+}
+
+.dlp-walker {
+	position: absolute;
+	bottom: 7px;
+	left: -8px;
+}
+
+.dlp-date,
+.dlp-flag {
+	position: absolute;
+	left: 0;
+	transform: translateX(-50%);
+	white-space: nowrap;
+}
+
+.dlp-date {
+	top: 10px;
+}
+
+.dlp-map li:nth-child(even) .dlp-date {
+	top: 26px;
+}
+
+.dlp-flag {
+	bottom: 8px;
+}
+
+.dlp-map li[data-state='todo'] .dlp-date {
+	color: var(--dl-soft);
 }
 
 .dlp-map li[data-state='now'] .dlp-date {
 	color: var(--dl-yellow);
 }
 
-.dlp-here {
+/* ─── 보물: 왼쪽 큰 상자(열리면 결과물 아이콘이 튀어나온다), 오른쪽 링크 목록 ─── */
+.dlp-treasure {
 	display: grid;
-	gap: 6px;
-	margin-top: auto;
-	padding: 14px 18px;
-	border: 4px solid var(--dl-ink);
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	gap: 28px;
+	width: 100%;
+	max-width: 420px;
 }
 
-.dlp-here small {
-	color: var(--dl-yellow);
-}
-
-.dlp-here b {
-	font-size: 22px;
-	font-weight: 400;
-	line-height: 32px;
-	word-break: keep-all;
-}
-
-/* 좁으면 세로 길 */
-@container dlp (max-width: 560px) {
-	.dlp-map {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 10px;
-		margin-top: 0 !important;
-	}
-
-	.dlp-map li {
-		grid-template-columns: 22px minmax(0, 1fr) auto;
-		align-items: center;
-		justify-items: start;
-		gap: 12px;
-	}
-
-	.dlp-map li::before {
-		top: -14px;
-		right: auto;
-		bottom: 50%;
-		left: 9px;
-		border-top: 0;
-		border-left: 4px solid var(--dl-cyan);
-	}
-
-	.dlp-map li[data-state='todo']::before {
-		border-left-style: dashed;
-		border-left-color: var(--dl-dim);
-	}
-
-	.dlp-flag {
-		grid-column: 3;
-		grid-row: 1;
-	}
-
-	.dlp-node {
-		grid-column: 1;
-		grid-row: 1;
-		width: 22px;
-		height: 22px;
-	}
-
-	.dlp-date {
-		grid-column: 2;
-		grid-row: 1;
-	}
-
-	.dlp-here b {
-		font-size: 11px;
-		line-height: 16px;
-	}
-}
-
-/* ─── 보물: 상자, 올린 곳, 이름, 실제 링크 ─── */
-.dlp-chests {
-	display: grid;
-	grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-	gap: 16px;
-}
-
-.dlp-chests li {
+.dlp-chest-big {
 	position: relative;
 	display: grid;
 	justify-items: center;
-	align-content: start;
-	gap: 10px;
-	min-width: 0;
-	padding: 18px 12px 16px;
-	border: 4px solid var(--dl-ink);
-	text-align: center;
+	padding-top: 30px;
 }
 
-.dlp-chests li[data-state='now'] {
-	border-color: var(--dl-yellow);
-}
-
-.dlp-chests .dlp-mark {
+.dlp-loot {
 	position: absolute;
-	top: 4px;
-	left: 8px;
-	font-size: 22px;
-	line-height: 22px;
-}
-
-.dlp-chest {
-	display: block;
-	width: 96px;
-	height: 72px;
-}
-
-.dlp-plat {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	max-width: 100%;
-	color: var(--dl-soft);
-	white-space: nowrap;
-}
-
-.dlp-plat i {
+	top: 0;
+	left: 50%;
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	transform: translateX(-50%);
 	color: var(--dl-ink);
-	font-size: 11px;
+	font-size: 18px;
+}
+
+/* 반짝이는 칸 두 개 */
+.dlp-loot::before,
+.dlp-loot::after {
+	content: '';
+	position: absolute;
+	width: 3px;
+	height: 3px;
+	background: var(--dl-yellow);
+}
+
+.dlp-loot::before {
+	top: 2px;
+	left: -10px;
+}
+
+.dlp-loot::after {
+	right: -10px;
+	bottom: 4px;
+}
+
+.dlp-chests {
+	display: grid;
+	row-gap: 4px;
+	min-width: 0;
+}
+
+.dlp-chests li {
+	display: grid;
+	grid-template-columns: var(--dl-star) minmax(0, 1fr);
+	min-width: 0;
+}
+
+.dlp-chests li > :not(.dlp-mark) {
+	grid-column: 2;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .dlp-chests b {
-	max-width: 100%;
-	overflow: hidden;
-	font-size: 22px;
 	font-weight: 400;
-	line-height: 32px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 }
 
 .dlp-chests li[data-state='now'] b {
@@ -1370,19 +797,14 @@
 }
 
 .dlp-chests a {
-	max-width: 100%;
-	overflow: hidden;
-	color: var(--dl-cyan);
-	text-decoration: underline;
-	text-underline-offset: 3px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	display: block;
+	color: var(--dl-soft);
+	text-decoration: none;
 }
 
-.dlp-chests a:hover,
-.dlp-chests a:focus-visible {
-	outline: 2px solid var(--dl-yellow);
-	outline-offset: 2px;
+/* 고른 링크는 노랑 (테두리 대신 글자색으로) */
+.dlp-chests a:is(:hover, :focus-visible) {
+	outline: none;
 	color: var(--dl-yellow);
 }
 
@@ -1390,630 +812,186 @@
 	color: var(--dl-soft);
 }
 
-@container dlp (max-width: 560px) {
-	.dlp-chests {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-	}
-
-	.dlp-chests li {
-		grid-template-columns: 48px minmax(0, 1fr);
-		justify-items: start;
-		gap: 0 12px;
-		padding: 8px 10px 8px 30px;
-		text-align: left;
-	}
-
-	.dlp-chests .dlp-mark {
-		top: 50%;
-		left: 6px;
-		margin-top: -11px;
-	}
-
-	.dlp-chest {
-		grid-row: span 3;
-		width: 48px;
-		height: 36px;
-	}
-
-	.dlp-chests b {
-		font-size: 11px;
-		line-height: 16px;
-	}
+.dlp[data-side] .dlp-treasure {
+	grid-template-columns: minmax(0, 1fr);
+	justify-items: center;
+	gap: 6px;
 }
 
-/* ─── 기록: 큰 숫자 점수판 ─── */
-.dlp-scores {
-	display: grid;
-	grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-	gap: 16px;
+.dlp[data-side] .dlp-chests li:not([data-state='now']) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
 }
 
-.dlp-scores li {
+/* ─── 기록: 왼쪽 큰 숫자(22px 노랑), 오른쪽 순위표 ─── */
+.dlp-score {
 	display: grid;
-	align-content: start;
-	gap: 10px;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+	align-items: center;
+	gap: 24px;
+	width: 100%;
+	padding: 0 16px;
+}
+
+.dlp-score-big {
+	display: grid;
+	justify-items: center;
+	row-gap: 6px;
 	min-width: 0;
-	padding: 14px 16px 18px;
-	border: 4px solid var(--dl-ink);
+	text-align: center;
 }
 
-.dlp-scores small {
-	color: var(--dl-soft);
-}
-
-.dlp-scores strong {
+.dlp-score-big strong {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: baseline;
-	gap: 0 4px;
-	min-width: 0;
+	gap: 2px;
+	color: var(--dl-yellow);
 	font-weight: 400;
 }
 
-.dlp-scores strong b {
-	font-size: 44px;
-	font-weight: 700;
-	line-height: 55px;
-	font-variant-numeric: tabular-nums;
-}
-
-.dlp-scores strong span {
+.dlp-score-big strong b {
 	font-size: 22px;
-	line-height: 32px;
+	font-weight: 400;
+	line-height: 28px;
 }
 
-.dlp-scores p {
-	margin: 0;
+.dlp-score-big small {
+	display: -webkit-box;
+	overflow: hidden;
+	color: var(--dl-ink);
 	word-break: keep-all;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
 }
 
-.dlp-scores li[data-state='now'] {
-	border-color: var(--dl-yellow);
+.dlp-ranks {
+	display: grid;
+	grid-auto-rows: 20px;
+	align-items: center;
+	min-width: 0;
 }
 
-.dlp-scores li[data-state='now'] :is(strong, small) {
+.dlp-ranks li {
+	display: grid;
+	grid-template-columns: 22px auto minmax(0, 1fr);
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.dlp-ranks b {
+	font-weight: 400;
+	white-space: nowrap;
+}
+
+.dlp-ranks span {
+	overflow: hidden;
+	color: var(--dl-soft);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dlp-ranks li[data-state='now'] :is(b, span, small) {
 	color: var(--dl-yellow);
 }
 
-@container dlp (max-width: 720px) {
-	.dlp-scores {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
+.dlp[data-side] .dlp-score {
+	grid-template-columns: minmax(0, 1fr);
+	padding: 0;
 }
 
-@container dlp (max-width: 400px) {
-	.dlp-scores {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-	}
-
-	.dlp-scores li {
-		padding: 8px 12px;
-	}
-
-	.dlp-scores strong b {
-		font-size: 22px;
-		line-height: 32px;
-	}
-
-	.dlp-scores strong span {
-		font-size: 11px;
-	}
-}
-
-/* ─── 조작법: 키 모양 칸 ─── */
+/* ─── 조작법: 픽셀 키 모양(흰 칸에 검은 글자)과 하는 일 ─── */
 .dlp-keys {
 	display: grid;
-	align-content: start;
-	gap: 12px;
+	grid-auto-rows: 22px;
+	align-items: center;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .dlp-keys li {
 	display: grid;
-	grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+	grid-template-columns: var(--dl-star) auto minmax(0, 1fr);
 	align-items: center;
-	gap: 20px;
+	gap: 8px;
+	min-width: 0;
+}
+
+.dlp-keys .dlp-mark {
+	color: var(--dl-red);
 }
 
 .dlp-caps {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
+	gap: 4px;
 }
 
 .dlp-caps kbd {
-	display: inline-grid;
-	place-items: center;
-	box-sizing: border-box;
-	min-width: 44px;
-	height: 44px;
-	padding: 0 8px;
-	border: 4px solid var(--dl-ink);
-	border-bottom-width: 8px;
+	display: inline-block;
+	min-width: 14px;
+	height: var(--dl-row);
+	padding: 0 3px;
+	background: var(--dl-ink);
+	box-shadow: 0 2px 0 var(--dl-soft);
+	color: var(--dl-bg);
 	font: inherit;
-	font-size: 22px;
-	line-height: 1;
+	line-height: var(--dl-row);
+	text-align: center;
 }
 
-.dlp-keys .dlp-text {
-	font-size: 22px;
-	line-height: 32px;
-	white-space: normal;
+.dlp-keys li[data-state='now'] kbd {
+	background: var(--dl-yellow);
 }
 
-.dlp-keys li[data-state='now'] :is(kbd, .dlp-text) {
-	border-color: var(--dl-yellow);
+.dlp-keys li[data-state='now'] .dlp-text {
 	color: var(--dl-yellow);
 }
 
-@container dlp (max-width: 560px) {
-	.dlp-caps kbd {
-		min-width: 33px;
-		height: 33px;
-		font-size: 11px;
-		border-bottom-width: 6px;
-	}
-
-	.dlp-keys .dlp-text {
-		font-size: 11px;
-		line-height: 16px;
-	}
+.dlp-keys li[data-state='done'] .dlp-text {
+	color: var(--dl-soft);
 }
 
 /* ─── 크레딧: 가운데 줄 ─── */
 .dlp-roll {
 	display: grid;
-	flex: 1;
-	align-content: center;
-	justify-items: center;
-	gap: 28px;
+	row-gap: 8px;
+	max-width: 100%;
 	text-align: center;
 }
 
 .dlp-roll li {
 	display: grid;
-	gap: 6px;
-	color: var(--dl-soft);
+	min-width: 0;
 }
 
-.dlp-roll small {
-	color: var(--dl-yellow);
+.dlp-roll li > * {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .dlp-roll b {
-	font-size: 22px;
 	font-weight: 400;
-	line-height: 32px;
 }
 
-.dlp-roll li[data-state='now'] {
-	color: var(--dl-ink);
-}
-
-.dlp-roll li[data-state='todo'] small,
-.dlp-roll li[data-state='done'] small {
+.dlp-roll span span {
 	color: var(--dl-soft);
 }
 
-/*
- * ─── 무대가 낮으면 (보통 창: 무대가 넓고 낮다, 250–420px): 세로로 쌓던 것을 옆으로 늘어놓는다 ───
- * 머리줄과 여백을 줄이고, 타이틀·전투·상태·조작법·크레딧은 가로 배치, 목록은 한 줄씩 낮게
- */
-@container dl-stage (max-height: 420px) {
-	.dlp {
-		gap: 10px;
-		padding: 10px 18px 12px;
-	}
-
-	.dlp-head {
-		padding-bottom: 6px;
-	}
-
-	/* 타이틀: 얼굴 왼쪽, 이름과 PRESS Z 오른쪽 */
-	.dlp-title:not([data-side]) {
-		display: grid;
-		grid-template-columns: auto minmax(0, auto);
-		justify-content: center;
-		align-content: center;
-		gap: 8px 40px;
-		text-align: left;
-	}
-
-	.dlp-title:not([data-side]) .dlp-title-face {
-		grid-row: 1 / span 4;
-	}
-
-	.dlp-title:not([data-side]) :is(.dlp-title-meta, .dlp-techs) {
-		justify-content: flex-start;
-	}
-
-	.dlp-title[data-side] .dlp-techs {
-		display: none;
-	}
-
-	.dlp-title[data-side] .dl-sign-icon {
-		width: 48px;
-		height: 48px;
-	}
-
-	.dlp-title[data-side] .dl-sprite {
-		--dl-px: 3px;
-	}
-
-	/* 옆 화면(좁은 창): 몬스터를 줄이고 다른 버그 줄은 접는다 */
-	.dlp[data-side] .dlp-monster {
-		width: 64px;
-		height: 64px;
-	}
-
-	.dlp[data-side] .dlp-foes {
-		display: none;
-	}
-
-	.dlp[data-side] .dlp-arena[data-step='problem']::before {
-		left: calc(50% + 32px);
-		font-size: 22px;
-		line-height: 22px;
-	}
-
-	/* 넓은 창에서만 옆으로 늘어놓는다 (좁은 창은 위의 세로 배치 그대로) */
-	@container dlp (min-width: 561px) {
-		/* 퀘스트: 설명은 세 줄까지 */
-		.dlp-detail {
-			grid-template-columns: 56px minmax(0, 1fr);
-			gap: 14px;
-			padding: 10px 14px;
-		}
-
-		.dlp-icon {
-			width: 56px;
-			height: 56px;
-			font-size: 22px;
-		}
-
-		.dlp-detail b {
-			line-height: 28px;
-		}
-
-		.dlp-detail p {
-			-webkit-line-clamp: 3;
-		}
-
-		/* 스킬 트리: 뿌리는 접고 칸을 낮게, 설명 칸은 아이콘 없이 */
-		.dlp-root {
-			display: none;
-		}
-
-		.dlp-nodes li {
-			gap: 6px;
-			padding-top: 16px;
-		}
-
-		.dlp-tree[data-kind='tree'] .dlp-nodes li::before {
-			height: 16px;
-		}
-
-		.dlp-node-icon {
-			width: 44px;
-			height: 44px;
-		}
-
-		.dlp-tree[data-kind='steps'] .dlp-nodes li + li::before {
-			line-height: 44px;
-		}
-
-		.dlp-node-name {
-			-webkit-line-clamp: 1;
-		}
-
-		.dlp-node-name small {
-			display: inline;
-			margin-right: 6px;
-		}
-
-		.dlp-tree + .dlp-detail {
-			grid-template-columns: minmax(0, 1fr);
-			padding: 8px 14px;
-		}
-
-		.dlp-tree + .dlp-detail .dlp-icon {
-			display: none;
-		}
-
-		.dlp-tree + .dlp-detail > div {
-			gap: 2px;
-		}
-
-		.dlp-tree + .dlp-detail p {
-			-webkit-line-clamp: 2;
-		}
-
-		/* 전투: 몬스터 | 전투 기록 | 메뉴(2×2) */
-		.dlp-battle {
-			grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.3fr) minmax(0, 0.7fr);
-			grid-template-rows: minmax(0, 1fr);
-			grid-template-areas: 'arena log menu';
-			gap: 16px;
-		}
-
-		.dlp-foes {
-			display: none;
-		}
-
-		.dlp-monster {
-			width: 80px;
-			height: 80px;
-		}
-
-		.dlp-arena {
-			gap: 6px;
-		}
-
-		.dlp-arena[data-step='problem']::before {
-			left: calc(50% + 40px);
-			font-size: 33px;
-			line-height: 33px;
-		}
-
-		.dlp-hp-track {
-			width: 112px;
-			height: 12px;
-		}
-
-		.dlp-log {
-			padding: 8px 14px;
-		}
-
-		.dlp-log li {
-			font-size: 11px;
-			line-height: 22px;
-		}
-
-		.dlp-log li[data-now] {
-			font-size: 22px;
-			line-height: 32px;
-		}
-
-		.dlp-battle-menu {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			align-content: center;
-			gap: 10px;
-		}
-
-		.dlp-battle-menu li {
-			gap: 6px;
-			height: 40px;
-			font-size: 11px;
-		}
-
-		.dlp-battle-menu li i {
-			font-size: 11px;
-		}
-
-		/* 파티: 사진을 줄이고 역할은 두 줄 */
-		.dlp-party li {
-			gap: 6px;
-			padding: 14px 10px 10px;
-		}
-
-		.dlp-avatar {
-			width: 56px;
-			height: 56px;
-		}
-
-		.dlp-avatar b {
-			font-size: 22px;
-		}
-
-		.dlp-member {
-			gap: 2px;
-		}
-
-		.dlp-member small {
-			display: none;
-		}
-
-		.dlp-role {
-			-webkit-line-clamp: 2;
-		}
-
-		/* 장비: 칸을 낮게, 제목 줄은 접는다 */
-		.dlp-equip h4 {
-			display: none;
-		}
-
-		.dlp-slots li {
-			grid-template-columns: 26px 32px 72px minmax(0, 1fr);
-			height: 36px;
-		}
-
-		.dlp-slot-icon {
-			width: 32px;
-			height: 32px;
-		}
-
-		.dlp-bag .dlp-techs {
-			gap: 8px;
-		}
-
-		/* 상태: 시트 | 능력치 | 특기 */
-		.dlp-status {
-			grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.8fr) minmax(0, 1.2fr);
-			grid-template-rows: minmax(0, 1fr);
-			grid-template-areas: 'sheet stats abil';
-			gap: 20px;
-		}
-
-		.dlp-sheet {
-			grid-template-columns: minmax(0, 1fr);
-			align-content: start;
-			justify-items: start;
-			gap: 10px;
-		}
-
-		.dlp-sheet .dlp-avatar {
-			width: 56px;
-			height: 56px;
-		}
-
-		.dlp-stats {
-			padding: 6px 14px;
-		}
-
-		.dlp-stats div {
-			height: 28px;
-		}
-
-		.dlp-stats dd {
-			line-height: 28px;
-		}
-
-		.dlp-abilities h4 {
-			margin-bottom: 4px;
-		}
-
-		.dlp-abilities .dlp-list li {
-			padding: 4px 0;
-		}
-
-		.dlp-abilities .dlp-text {
-			white-space: nowrap;
-		}
-
-		/* 월드 맵: 지금 위치 칸을 낮게 */
-		.dlp-map {
-			margin-top: 0 !important;
-		}
-
-		.dlp-here {
-			padding: 8px 14px;
-		}
-
-		/* 보물: 상자를 작게 */
-		.dlp-chests li {
-			gap: 6px;
-			padding: 12px 10px 10px;
-		}
-
-		.dlp-chest {
-			width: 64px;
-			height: 48px;
-		}
-
-		/* 기록 */
-		.dlp-scores li {
-			gap: 6px;
-			padding: 10px 14px 12px;
-		}
-
-		/* 조작법: 두 열 */
-		.dlp-keys {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 12px 24px;
-		}
-
-		/* 크레딧: 옆으로 */
-		.dlp-roll {
-			grid-auto-flow: column;
-			grid-auto-columns: minmax(0, 1fr);
-			gap: 24px;
-		}
-	}
+.dlp-roll li[data-state='now'] b {
+	color: var(--dl-yellow);
 }
 
-/* 무대가 아주 낮으면 (창 높이가 모자랄 때): 설명 칸과 꾸밈을 접는다 */
-@container dl-stage (max-height: 230px) {
-	.dlp-head small,
-	.dlp-title-meta,
-	.dlp-title .dlp-techs,
-	.dlp-detail,
-	.dlp-tree + .dlp-detail,
-	.dlp-here,
-	.dlp-battle-menu,
-	.dlp-role,
-	.dlp-scores p,
-	.dlp-plat {
-		display: none;
-	}
-
-	.dlp-title-name {
-		font-size: 22px;
-		line-height: 32px;
-	}
-
-	.dlp-title .dl-sign-icon {
-		width: 48px;
-		height: 48px;
-	}
-
-	.dlp-title .dl-sprite {
-		--dl-px: 3px;
-	}
-
-	.dlp-battle {
-		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
-		grid-template-areas: 'arena log';
-	}
-
-	.dlp-monster {
-		width: 48px;
-		height: 48px;
-	}
-
-	.dlp-stats,
-	.dlp-sheet p {
-		display: none;
-	}
-
-	/* 점수판은 한 줄로, 숫자를 작게 */
-	.dlp-scores {
-		grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-		gap: 8px;
-	}
-
-	.dlp-scores li {
-		gap: 0;
-		padding: 6px 10px;
-	}
-
-	.dlp-scores strong b {
-		font-size: 22px;
-		line-height: 32px;
-	}
-
-	.dlp-scores strong span {
-		font-size: 11px;
-	}
-}
-
-/* 무대가 손바닥만 하면 (좁고 낮은 창): 머리줄을 접고 칸을 한 줄 높이로 */
-@container dl-stage (max-height: 190px) {
-	.dlp {
-		padding: 6px 12px;
-	}
-
-	.dlp-head,
-	.dlp-chest,
-	.dlp-avatar,
-	.dlp-flag,
-	.dlp-date,
-	.dlp-tech-name,
-	.dlp-party .dlp-mark,
-	.dlp-chests .dlp-mark {
-		display: none !important;
-	}
-
-	.dlp-party li,
-	.dlp-chests li {
-		padding: 6px 8px;
-	}
-}
-
-/* ─── 움직임 줄이기: 깜빡이지 않는다 ─── */
+/* ─── 움직임 줄이기 ─── */
 @media (prefers-reduced-motion: reduce) {
-	.dlp-press,
-	.dlp-map li[data-state='now'] .dlp-node {
+	.dlp-press {
 		animation: none;
+	}
+
+	.dlp-hp-track i {
+		transition: none;
 	}
 }

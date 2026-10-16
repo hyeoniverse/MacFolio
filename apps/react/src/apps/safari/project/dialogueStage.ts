@@ -88,104 +88,228 @@ export function slotIcon(label: string, value: string): { brand: boolean; icon: 
 }
 
 /**
- * 버그 몬스터 그림 세 가지 (16×16 칸). 글자 하나가 한 칸: '.'은 빈칸, W 흰색, R 빨강, Y 노랑.
- * 트러블슈팅의 차례로 돌려 쓴다 (첫 건은 딱정벌레, 다음은 슬라임, 그다음은 유령)
+ * 칸 그림의 색 (글자 하나가 한 칸, '.'은 빈칸). 무대는 검정·하양·노랑·빨강만 쓰고, 색은 그림(스프라이트) 안에서만 쓴다.
+ * W 하양, K 검정(하얀 몸 위의 눈·입), R 빨강, Y 노랑, G 회색, D 짙은 회색, B 나무, O 짙은 나무
+ */
+export const SPRITE_COLORS: Record<string, string> = {
+	W: '#ffffff',
+	K: '#000000',
+	R: '#ff0000',
+	Y: '#ffff00',
+	G: '#8c8c8c',
+	D: '#3a3a3a',
+	B: '#c27c3a',
+	O: '#6b3a12',
+};
+
+/** 왼쪽 반만 그린 줄을 좌우로 접어 펼친다 (몬스터·상자·사람은 좌우가 같다) */
+export const mirror = (half: readonly string[]): string[] => half.map((row) => row + [...row].reverse().join(''));
+
+/**
+ * 버그 몬스터 그림 세 가지 (32×32 칸, 왼쪽 반 16칸을 접어 펼친다). 트러블슈팅의 차례로 돌려 쓴다:
+ * 첫 건은 딱정벌레, 다음은 이빨 난 슬라임, 그다음은 줄무늬 유령
  */
 export const MONSTERS: readonly (readonly string[])[] = [
-	[
-		'................',
-		'...W........W...',
-		'....W......W....',
-		'.....WWWWWW.....',
-		'....WWWWWWWW....',
-		'...WW..WW..WW...',
-		'...WW.RWWR.WW...',
-		'.W.WWWWWWWWWW.W.',
-		'..WWWWWWWWWWWW..',
-		'...WWWWW.WWWW...',
-		'.W.WWWWW.WWWW.W.',
-		'..WWWWWW.WWWWW..',
-		'...WWWWW.WWWW...',
-		'.W..WWWWWWWW..W.',
-		'......WWWW......',
-		'................',
-	],
-	[
+	mirror([
 		'................',
 		'................',
-		'.......YY.......',
-		'......WWWW......',
-		'.....WWWWWW.....',
-		'....WWWWWWWW....',
-		'...WWWWWWWWWW...',
-		'...WW..WW..WW...',
-		'..WWW..WW..WWW..',
-		'..WWWWWWWWWWWW..',
-		'.WWWWWRRRRWWWWW.',
-		'.WWWWWWRRWWWWWW.',
+		'....W...........',
+		'.....W..........',
+		'......W.........',
+		'.......W........',
+		'........W.......',
+		'.........W.WWWWW',
+		'..........WWWWWW',
+		'.........WWWWWWW',
+		'........WWKKWWWW',
+		'........WKRRKWWW',
+		'........WKRRKWWW',
+		'.........WKKWWWW',
+		'..........WWWWWW',
+		'...........WWWWW',
+		'................',
+		'........WWWWWWWK',
+		'......WWWWWWWWWK',
+		'.....WWWWWGGWWWK',
+		'W...WWWWWGGGGWWK',
+		'.W.WWWWWWWGGWWWK',
+		'..WWWWWWWWWWWWWK',
+		'...WWWGGWWWWWWWK',
+		'W..WWGGGGWWWWWWK',
+		'.WWWWWGGWWWWWWWK',
+		'...WWWWWWWWGGWWK',
+		'...WWWWWWWGGGGWK',
+		'W...WWWWWWWGGWWK',
+		'.WW..WWWWWWWWWWK',
+		'.....WWWWWWWWWWW',
+		'........WWWWWWWW',
+	]),
+	mirror([
+		'................',
+		'................',
+		'................',
+		'..............WW',
+		'...........WWWWW',
+		'.........WWWWWWW',
+		'........WWWWWWWW',
+		'.......WWWWWWWWW',
+		'......WWWWWWWWWW',
+		'.....WWWWWWWWWWW',
+		'.....WWWWWKKKWWW',
+		'....WWWWWKKRKKWW',
+		'....WWWWWKRRRKWW',
+		'...WWWWWWKKRKKWW',
+		'...WWWWWWWKKKWWW',
+		'...WWWWWWWWWWWWW',
+		'..WWWWWWWWWWWWWW',
+		'..WWWWWWWWKKKKKK',
+		'..WWWWWWWWKWKKWK',
+		'.WWWWWWWWWWKKKKK',
+		'.WWWWWWWWWWWWWWW',
 		'WWWWWWWWWWWWWWWW',
 		'WWWWWWWWWWWWWWWW',
-		'.WW.WWWWWWWW.WW.',
+		'WWGWWWWWWWWWWWWW',
+		'WGGWWWWWWWWWWWWW',
+		'WWWWWWWWWWWWWWWW',
+		'.WWWWWWWWWWWWWWW',
+		'..WWW.WWWWWW.WWW',
+		'..WWW..WWWW...WW',
+		'...W....WW.....W',
+		'...W............',
 		'................',
-	],
-	[
+	]),
+	mirror([
 		'................',
-		'.....WWWWWW.....',
-		'...WWWWWWWWWW...',
-		'..WWWWWWWWWWWW..',
-		'..WW...WW...WW..',
-		'.WWW.R.WW.R.WWW.',
-		'.WWW...WW...WWW.',
-		'.WWWWWWWWWWWWWW.',
-		'.WWWWWWWWWWWWWW.',
-		'.WWWW.W..W.WWWW.',
-		'.WWWWW.WW.WWWWW.',
-		'.WWWWWWWWWWWWWW.',
-		'.WWWWWWWWWWWWWW.',
-		'.WW.WWW..WWW.WW.',
-		'.W...W....W...W.',
 		'................',
-	],
+		'..........WWWWWW',
+		'.......WWWWWWWWW',
+		'.....WWWWWWWWWWW',
+		'....WWWWWWWWWWWW',
+		'...WWWWWWWWWWWWW',
+		'...WWWWWWWWWWWWW',
+		'..WWWWKKKWWWWWWW',
+		'..WWWKKKKKWWWWWW',
+		'..WWWKKRKKWWWWWW',
+		'..WWWKKKKKWWWWWW',
+		'..WWWWKKKWWWWWWW',
+		'..WWWWWWWWWWWWWW',
+		'..WWWWWWWWWWKKKK',
+		'..WWWWWWWWWKWWWW',
+		'..WWWWWWWWWWWWWW',
+		'..GGGGGGGGGGGGGG',
+		'..WWWWWWWWWWWWWW',
+		'..WWWWWWWWWWWWWW',
+		'..GGGGGGGGGGGGGG',
+		'..WWWWWWWWWWWWWW',
+		'..WWWWWWWWWWWWWW',
+		'..WWWWWWWWWWWWWW',
+		'..WWWWWWWWWWWWWW',
+		'..WWWWWWWWWWWWWW',
+		'..WWW.WWWWW.WWWW',
+		'..WW...WWW...WWW',
+		'..W.....W.....WW',
+		'...............W',
+		'................',
+		'................',
+	]),
 ];
-
-/** 몬스터 칸 색 */
-export const MONSTER_COLORS: Record<string, string> = { W: '#ffffff', R: '#ff0000', Y: '#ffff00' };
 
 /** 차례(index)의 몬스터 그림 */
 export const monsterOf = (index: number) => MONSTERS[((index % MONSTERS.length) + MONSTERS.length) % MONSTERS.length];
 
-/** 보물 상자 그림 (16×12 칸): 닫힌 것과 열린 것. 칸 글자는 몬스터와 같다 */
-export const CHEST_CLOSED: readonly string[] = [
-	'................',
-	'................',
-	'..YYYYYYYYYYYY..',
-	'.YWWWWWWWWWWWWY.',
-	'.YWWWWWWWWWWWWY.',
-	'.YYYYYYYYYYYYYY.',
-	'.YWWWWWYYWWWWWY.',
-	'.YWWWWYRRYWWWWY.',
-	'.YWWWWWYYWWWWWY.',
-	'.YWWWWWWWWWWWWY.',
-	'.YYYYYYYYYYYYYY.',
-	'................',
-];
-export const CHEST_OPEN: readonly string[] = [
-	'..YYYYYYYYYYYY..',
-	'.YWWWWWWWWWWWWY.',
-	'.YYYYYYYYYYYYYY.',
-	'....Y......Y....',
-	'..Y...Y..Y...Y..',
-	'.YYYYYYYYYYYYYY.',
-	'.Y............Y.',
-	'.YYYYYYYYYYYYYY.',
-	'.YWWWWWWWWWWWWY.',
-	'.YWWWWWWWWWWWWY.',
-	'.YYYYYYYYYYYYYY.',
-	'................',
-];
+/** 보물 상자 그림 (20×16 칸): 닫힌 것과 열린 것 (열린 상자는 뚜껑이 뒤로 젖혀지고 안이 빛난다) */
+export const CHEST_CLOSED: readonly string[] = mirror([
+	'..........',
+	'..........',
+	'..........',
+	'..OOOOOOOO',
+	'.OBBBBBBBB',
+	'.OBWBBBBBB',
+	'.OBBBBBBBB',
+	'.OBBBBBBBB',
+	'.OYYYYYYYY',
+	'.OYYYYYYYK',
+	'.OBBBBBBYK',
+	'.OBBBBBBYY',
+	'.OBBBBBBBB',
+	'.OYYBBBBBB',
+	'.OOOOOOOOO',
+	'..........',
+]);
+export const CHEST_OPEN: readonly string[] = mirror([
+	'..OOOOOOOO',
+	'.ODDDDDDDD',
+	'.ODDDDDDDD',
+	'.ODDDDDDDD',
+	'.OOOOOOOOO',
+	'.OKKKKKKKK',
+	'.OKKYKKKKY',
+	'.OKYYYKYYY',
+	'.OYYYYYYYY',
+	'.OYYYYYYYK',
+	'.OBBBBBBYK',
+	'.OBBBBBBYY',
+	'.OBBBBBBBB',
+	'.OYYBBBBBB',
+	'.OOOOOOOOO',
+	'..........',
+]);
 
-/** 칸 그림 한 줄을 같은 색끼리 이어진 칸(x, 너비, 색)으로 (SVG 사각형 수를 줄인다) */
-export function pixelRuns(rows: readonly string[]): { x: number; y: number; w: number; color: string }[] {
+/**
+ * 사람 그림 (16×24 칸, 왼쪽 반 8칸을 펼친다): H 머리카락, S 피부, E 눈, T 옷, P 바지, F 신발.
+ * 색은 이름으로 정해(personColors) 같은 사람은 늘 같은 모습이다
+ */
+export const PERSON: readonly string[] = mirror([
+	'........',
+	'....HHHH',
+	'..HHHHHH',
+	'.HHHHHHH',
+	'.HHHHHHH',
+	'.HHHHHHH',
+	'.HHSHHHS',
+	'.HSSSSSS',
+	'.HSSESSS',
+	'.HSSESSS',
+	'.HSSSSSS',
+	'..SSSSSS',
+	'....SSSS',
+	'......SS',
+	'...TTTTT',
+	'..TTTTTT',
+	'.STTTTTT',
+	'.STTTTTT',
+	'.STTTTTT',
+	'..TTTTTT',
+	'...PPPPP',
+	'...PPPP.',
+	'...PPPP.',
+	'..FFFFF.',
+]);
+
+const HAIRS = ['#a0643c', '#e8c35a', '#d9703a', '#c0c0c0', '#6f8fd8', '#e889b8'];
+const SKINS = ['#f6d1b0', '#e9b48a', '#c98d5e'];
+const SHIRTS = ['#4f9de8', '#5bc06a', '#e86fae', '#f0a030', '#9b72e8', '#ffffff'];
+const PANTS = ['#3c4a8c', '#6e6e6e', '#7a5232'];
+
+/** 이름의 간단한 해시 (같은 이름은 같은 수) */
+function hashOf(text: string): number {
+	let hash = 7;
+	for (const ch of text) hash = (hash * 31 + (ch.codePointAt(0) ?? 0)) >>> 0;
+	return hash;
+}
+
+/** 사람 그림의 색: 이름으로 머리·피부·옷·바지 색을 고른다 (사진이 없어도 사람마다 다르게) */
+export function personColors(name: string): Record<string, string> {
+	const hash = hashOf(name.trim() || '?');
+	const pick = (list: readonly string[], shift: number) => list[Math.floor(hash / shift) % list.length];
+	return { H: pick(HAIRS, 1), S: pick(SKINS, 7), E: '#000000', T: pick(SHIRTS, 23), P: pick(PANTS, 101), F: '#8c8c8c' };
+}
+
+/** 칸 그림 한 줄을 같은 색끼리 이어진 칸(x, 너비, 색)으로 (SVG 사각형 수를 줄인다). 모르는 글자는 빈칸 */
+export function pixelRuns(
+	rows: readonly string[],
+	colors: Record<string, string> = SPRITE_COLORS
+): { x: number; y: number; w: number; color: string }[] {
 	const runs: { x: number; y: number; w: number; color: string }[] = [];
 	rows.forEach((row, y) => {
 		let x = 0;
@@ -193,7 +317,7 @@ export function pixelRuns(rows: readonly string[]): { x: number; y: number; w: n
 			const ch = row[x];
 			let end = x + 1;
 			while (end < row.length && row[end] === ch) end++;
-			if (ch !== '.' && MONSTER_COLORS[ch]) runs.push({ x, y, w: end - x, color: MONSTER_COLORS[ch] });
+			if (ch !== '.' && colors[ch]) runs.push({ x, y, w: end - x, color: colors[ch] });
 			x = end;
 		}
 	});
@@ -252,13 +376,4 @@ export function windowAround(count: number, at: number, size: number): [number, 
 	if (count <= size) return [0, count];
 	const start = Math.min(Math.max(0, at - Math.floor((size - 1) / 2)), count - size);
 	return [start, start + size];
-}
-
-/**
- * 무대 높이(room, px)에 들어가는 목록 줄 수: 창 머리줄과 여백(chrome)을 빼고 한 줄 높이(row)로 나눈다.
- * 적어도 한 줄, 많아야 max줄. 높이를 모르면 max
- */
-export function rowsFor(room: number | undefined, row: number, chrome: number, max: number): number {
-	if (!room || room <= 0) return max;
-	return Math.max(1, Math.min(max, Math.floor((room - chrome) / row)));
 }
