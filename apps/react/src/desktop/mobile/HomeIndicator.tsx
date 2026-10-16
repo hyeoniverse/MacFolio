@@ -1,4 +1,6 @@
 import { useRef } from 'react';
+import { useStatusBarTone, type StatusBarTone } from '@/desktop/mobile/statusBarTone';
+import { useResolvedTheme } from '@/shared/settings/settingsStore';
 
 /** 위로 이만큼 쓸어 올리면 홈으로 간다 */
 const SWIPE_HOME_PX = 24;
@@ -13,20 +15,30 @@ interface Props {
 	/** 쓸어 올리는 중인 거리 (손을 떼면 null). 앱 화면을 손가락을 따라 줄일 때 쓴다 */
 	onDrag?: (distance: number | null) => void;
 	className?: string;
+	/** 밑을 읽을지 (가려진 앱의 인디케이터는 읽지 않는다) */
+	active?: boolean;
+	/** 밑을 읽을 수 없을 때의 색. 없으면 화면 모드를 따른다 (다크면 흰색) */
+	fallbackTone?: StatusBarTone;
 }
 
 /**
  * iOS 화면 아래의 홈 인디케이터.
  * 누르거나 짧게 쓸어 올리면 홈, 길게 쓸어 올리면 앱 전환기.
+ * 색은 상태 표시줄처럼 밑에 그려진 화면을 읽어 정한다: 어두운 화면 위에는 흰색, 밝은 화면 위에는 검은색 (statusBarTone.ts)
  */
-const HomeIndicator = ({ onHome, onSwitcher, onDrag, className = '' }: Props) => {
+const HomeIndicator = ({ onHome, onSwitcher, onDrag, className = '', active = true, fallbackTone }: Props) => {
 	const startY = useRef<number | null>(null);
 	const moved = useRef(false);
+	const button = useRef<HTMLButtonElement>(null);
+	const theme = useResolvedTheme();
+	const fallback = fallbackTone ?? (theme === 'dark' ? 'light' : 'dark');
+	const tone = useStatusBarTone(button, active, fallback, theme);
 
 	return (
 		<button
+			ref={button}
 			type="button"
-			className={`home-indicator ${className}`}
+			className={`home-indicator ${tone} ${className}`}
 			aria-label="홈 화면으로"
 			onPointerDown={(event) => {
 				startY.current = event.clientY;
