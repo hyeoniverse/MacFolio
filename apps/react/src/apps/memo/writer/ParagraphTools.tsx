@@ -1,12 +1,26 @@
+import type React from 'react';
 import { useEditorControls, type FormatAction } from './editorControls';
 import { keepFocus } from './usePopover';
 import IconButton from '@/shared/ui/button/IconButton';
 
-const TOOLS: { label: string; icon: string; action: FormatAction }[] = [
+/**
+ * 문단 옮기기 아이콘: 왼쪽 화살표와 오른쪽 문단 세 줄. 화살표만 있으면 스크롤·커서 이동처럼 보여서 '이 문단을 옮긴다'는 뜻이 드러나게 한다.
+ * 크기와 굵기는 옆의 Font Awesome 아이콘(1em, 들여쓰기·내어쓰기)에 맞춘다
+ */
+const MoveIcon = ({ dir }: { dir: 'up' | 'down' }) => (
+	<svg className="memo-move-icon" viewBox="0 0 20 20" width="1.25em" height="1.25em" aria-hidden="true">
+		<g fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+			{dir === 'up' ? <path d="M5 16.5V3.5M1.5 7 5 3.5 8.5 7" /> : <path d="M5 3.5v13M1.5 13 5 16.5 8.5 13" />}
+			<path d="M12 5h6.5M12 10h6.5M12 15h6.5" />
+		</g>
+	</svg>
+);
+
+const TOOLS: { label: string; icon: string | React.ReactNode; action: FormatAction }[] = [
 	{ label: '내어쓰기', icon: 'fa-solid fa-outdent', action: { type: 'indent', dir: 'out' } },
 	{ label: '들여쓰기', icon: 'fa-solid fa-indent', action: { type: 'indent', dir: 'in' } },
-	{ label: '위로 옮기기', icon: 'fa-solid fa-arrow-up', action: { type: 'moveBlock', dir: 'up' } },
-	{ label: '아래로 옮기기', icon: 'fa-solid fa-arrow-down', action: { type: 'moveBlock', dir: 'down' } },
+	{ label: '위로 옮기기', icon: <MoveIcon dir="up" />, action: { type: 'moveBlock', dir: 'up' } },
+	{ label: '아래로 옮기기', icon: <MoveIcon dir="down" />, action: { type: 'moveBlock', dir: 'down' } },
 ];
 
 /**
@@ -26,8 +40,10 @@ const ParagraphTools = ({ onClose }: { onClose: () => void }) => {
 					label={label}
 					{...quick}
 					onClick={() => run(action)}
-					icon={icon}
-				/>
+					icon={typeof icon === 'string' ? icon : undefined}
+				>
+					{typeof icon === 'string' ? null : icon}
+				</IconButton>
 			))}
 			<IconButton
 				className="memo-format-quick"
