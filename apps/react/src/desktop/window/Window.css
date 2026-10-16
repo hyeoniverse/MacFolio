@@ -421,6 +421,16 @@
 	border-radius: 3px;
 	background-color: var(--color-text);
 	opacity: 0.85;
+	transition: background-color var(--duration) var(--ease-out);
+}
+
+/* 색은 밑에 그려진 화면을 읽어 정한다 (HomeIndicator, statusBarTone.ts): 어두운 화면 위에는 흰색, 밝은 화면 위에는 검은색 */
+.home-indicator.light span {
+	background-color: #ffffff;
+}
+
+.home-indicator.dark span {
+	background-color: #1c1c1e;
 }
 
 .container.mobile:not(.unified) .content {
