@@ -141,7 +141,8 @@ export function detailsAt(state: EditorState) {
 /**
  * 토글 목록을 켜고 끈다.
  * 토글 안이면 풀어서 요약은 문단으로, 내용은 그 아래로 꺼낸다.
- * 아니면 지금 문단을 요약으로 삼는 토글을 만든다 (문단을 바꿀 수 없는 자리면 그 블록 아래에 새로)
+ * 아니면 지금 줄(문단·머리말)을 제목으로 삼는 토글을 만든다. 머리말이면 글자만 제목이 된다 (한 줄에 모양은 하나).
+ * 줄을 바꿀 수 없는 자리면 그 블록 아래에 새로 만든다
  */
 export function toggleDetails(view: EditorView) {
 	const { state } = view;
@@ -161,7 +162,7 @@ export function toggleDetails(view: EditorView) {
 	}
 
 	const { $from } = state.selection;
-	const paragraph = $from.parent.type.name === 'paragraph' ? $from.parent : null;
+	const paragraph = ['paragraph', 'heading'].includes($from.parent.type.name) ? $from.parent : null;
 	const text = paragraph?.textContent ?? '';
 	const summaryNode = schema.nodes.details_summary.create(null, text ? schema.text(text) : null);
 	const details = schema.nodes.details_block.create({ open: true, id: '' }, [

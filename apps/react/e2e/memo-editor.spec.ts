@@ -1282,6 +1282,84 @@ test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽�
 	});
 });
 
+test.describe('한 줄에 모양은 하나 (macOS 메모처럼), 구분선', () => {
+	const seed = (api: FakeApiState, body: string[]) => {
+		const content = {
+			title: '모양 시험',
+			date: '2026-10-16',
+			category: '기술 노트/Git',
+			summary: '',
+			body: body.join('\n\n'),
+		};
+		api.posts = [{ slug: 'style-post', ...content, deleted: false, published: content }];
+	};
+
+	test('목록 항목·토글 제목에서 머리말을 고르면 그 줄을 꺼내 머리말로, 머리말에서 토글을 고르면 그 글자가 토글 제목이 된다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		seed(api, ['첫 문단', '- 목록 항목', '- 둘째 항목']);
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '모양 시험' }).click();
+		const editor = memo.locator('.ProseMirror');
+		const panel = page.getByRole('dialog', { name: '서식' });
+		const pick = async (role: 'menuitemradio', name: string) => {
+			await memo.getByRole('button', { name: '서식', exact: true }).click();
+			await panel.getByRole(role, { name, exact: true }).click();
+		};
+
+		// 목록 항목 → 머리말: 목록에서 빠져 머리말이 된다 (남은 항목은 목록 그대로)
+		await editor.locator('li', { hasText: '목록 항목' }).click();
+		await pick('menuitemradio', '머리말');
+		await expect.poll(() => api.posts[0].body).toBe('첫 문단\n\n### 목록 항목\n\n- 둘째 항목\n');
+
+		// 머리말 → 토글 목록: 머리말 글자가 토글 제목이 된다 (빈 토글을 아래에 새로 만들지 않는다)
+		await editor.locator('h3', { hasText: '목록 항목' }).click();
+		await pick('menuitemradio', '토글 목록');
+		await expect(editor.locator('.memo-details-summary')).toHaveText('목록 항목');
+		await expect(editor.locator('h3')).toHaveCount(0);
+
+		// 토글 제목에서는 본문이 아니라 토글 목록이 골라져 있다
+		await editor.locator('.memo-details-summary').click();
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		await expect(panel.getByRole('menuitemradio', { name: '토글 목록' })).toBeChecked();
+		await expect(panel.getByRole('menuitemradio', { name: '본문', exact: true })).not.toBeChecked();
+		// 토글 제목 → 제목: 토글을 풀고 그 줄이 제목이 된다
+		await panel.getByRole('menuitemradio', { name: '제목', exact: true }).click();
+		await expect(editor.locator('.memo-details')).toHaveCount(0);
+		await expect.poll(() => api.posts[0].body).toBe('첫 문단\n\n## 목록 항목\n\n- 둘째 항목\n');
+
+		// 제목 → 구분점 목록: 본문으로 바꿔 목록에 넣는다
+		await editor.locator('h2', { hasText: '목록 항목' }).click();
+		await pick('menuitemradio', '구분점 목록');
+		await expect.poll(() => api.posts[0].body).toContain('- 목록 항목');
+		expect(api.posts[0].body).not.toContain('#');
+	});
+
+	test('구분선은 가는 테두리색 선에 위아래 같은 여백, 편집기에서 고쳐도 --- 그대로 저장한다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		seed(api, ['구분선 위', '---', '구분선 아래']);
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '모양 시험' }).click();
+		const style = (selector: string) =>
+			memo.locator(selector).evaluate((el) => {
+				const c = getComputedStyle(el);
+				return { border: c.borderTopStyle, height: c.height, top: c.marginTop, bottom: c.marginBottom };
+			});
+		const editorHr = await style('.ProseMirror hr');
+		expect(editorHr).toEqual({ border: 'none', height: '1px', top: editorHr.bottom, bottom: editorHr.bottom });
+
+		await memo.locator('.ProseMirror p', { hasText: '구분선 아래' }).click();
+		await page.keyboard.press('End');
+		await page.keyboard.type('.');
+		await expect.poll(() => api.posts[0].body).toBe('구분선 위\n\n---\n\n구분선 아래.\n');
+
+		// 읽기 화면도 같은 모양
+		await memo.getByRole('button', { name: '관리자, 읽기 화면으로 보기' }).click();
+		expect(await style('.memo-reader-body .memo-markdown hr')).toEqual(editorHr);
+	});
+});
+
 test.describe('빈 폴더', () => {
 	test('폴더의 마지막 글을 지워도 폴더는 남는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
