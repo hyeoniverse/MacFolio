@@ -101,10 +101,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 					))}
 					{others.length === 0 && !loading && (
 						<li className="messages-empty">
-							<i
-								className={`messages-empty-icon fa-regular ${query ? 'fa-face-meh' : 'fa-comments'}`}
-								aria-hidden="true"
-							/>
+							{query && <i className="messages-empty-icon fa-regular fa-face-meh" aria-hidden="true" />}
 							<strong>{query ? '검색 결과가 없습니다.' : '아직 남겨진 피드백이 없어요.'}</strong>
 							{!query && <span className="messages-empty-hint">아래의 쓰기 단추로 첫 피드백을 남겨 보세요.</span>}
 						</li>
