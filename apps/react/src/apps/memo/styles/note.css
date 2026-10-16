@@ -1,0 +1,608 @@
+/* 메모 앱: 본문, 이전·다음 글, 좋아요, 인기글, 관리자 표시, 편집 머리줄, 게시 상태, 버전 기록 */
+
+/* ─── 본문 ─── */
+/* 위쪽 4px: 맨 위의 게시 단추(편집기)가 스크롤 칸 가장자리에 붙어 위쪽이 잘리지 않게 */
+.memo-reader .memo-scroll {
+	padding: 4px 2rem 3rem;
+}
+
+/* 본문 아래 이전 글·다음 글: 두 칸, 다음 글은 오른쪽 정렬 */
+/*
+ * 좋아요 (Apple 스타일): 테두리 없는 옅은 회색 캡슐에 하트와 수. 누르면 systemPink로 차고,
+ * 누르는 동안 살짝 작아졌다가(iOS의 누름) 하트가 스프링처럼 튄다
+ */
+.memo-post-like {
+	display: flex;
+	justify-content: center;
+	margin-top: 2.5rem;
+}
+
+.memo-like {
+	display: inline-flex;
+	align-items: center;
+	border: none;
+	background: none;
+	color: var(--memo-muted);
+	font: inherit;
+	font-variant-numeric: tabular-nums;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.memo-like:active {
+	transform: scale(0.94);
+	transition-duration: 0.08s;
+}
+
+.memo-like.post {
+	gap: 7px;
+	height: 34px;
+	padding: 0 16px 0 14px;
+	border-radius: var(--radius-full);
+	background-color: var(--memo-fill);
+	color: var(--memo-text);
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.memo-like.post i {
+	font-size: var(--text-subhead);
+}
+
+.memo-like.post:hover {
+	background-color: color-mix(in srgb, var(--memo-fill), var(--memo-text) 6%);
+}
+
+.memo-like.post.liked {
+	background-color: color-mix(in srgb, var(--memo-like) 14%, transparent);
+	color: var(--memo-like);
+}
+
+.memo-like.comment {
+	gap: 4px;
+	min-height: 24px;
+	padding: 2px 7px;
+	margin-left: -7px;
+	border-radius: var(--radius-full);
+	font-size: var(--text-caption);
+	font-weight: 500;
+}
+
+.memo-like.comment:hover {
+	background-color: var(--memo-fill);
+}
+
+.memo-like.liked,
+.memo-like.liked i {
+	color: var(--memo-like);
+}
+
+.memo-like.liked i {
+	animation: memo-like-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.memo-like:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 2px;
+}
+
+@keyframes memo-like-pop {
+	0% {
+		transform: scale(0.6);
+	}
+
+	60% {
+		transform: scale(1.18);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-like,
+	.memo-like:active {
+		transform: none;
+		transition: none;
+	}
+
+	.memo-like.liked i {
+		animation: none;
+	}
+}
+
+/* 좋아요 바로 아래의 이전·다음 글은 위 여백을 줄인다 (구분선은 그대로) */
+.memo-post-like + .memo-post-nav {
+	margin-top: 1.25rem;
+}
+
+.memo-comment-actions {
+	display: flex;
+	margin-top: 2px;
+}
+
+/* 인기글 목록: 제목 앞 순위 (1~3위는 강조), 날짜·요약 자리에 조회·댓글·좋아요 */
+.memo-item-rank {
+	display: inline-grid;
+	place-items: center;
+	min-width: 18px;
+	height: 18px;
+	margin-right: 6px;
+	padding: 0 4px;
+	border-radius: 5px;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+	font-variant-numeric: tabular-nums;
+	vertical-align: 1px;
+}
+
+.memo-item-rank.rank-1,
+.memo-item-rank.rank-2,
+.memo-item-rank.rank-3 {
+	background-color: color-mix(in srgb, #ff9f0a 22%, transparent);
+	color: #c76a00;
+}
+
+.memo-item.active .memo-item-rank {
+	background-color: rgba(255, 255, 255, 0.25);
+	color: inherit;
+}
+
+.memo-item-reactions {
+	font-variant-numeric: tabular-nums;
+}
+
+.memo-post-nav {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	margin-top: 2.5rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--memo-border);
+}
+
+.memo-post-nav button {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+	padding: 10px 12px;
+	border: 1px solid var(--memo-border);
+	border-radius: var(--radius-lg);
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-post-nav button:hover {
+	background-color: var(--memo-search-bg);
+}
+
+.memo-post-nav .newer {
+	grid-column: 2;
+	align-items: flex-end;
+	text-align: right;
+}
+
+.memo-post-nav span {
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+}
+
+.memo-post-nav strong {
+	overflow: hidden;
+	max-width: 100%;
+	font-size: var(--text-footnote);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 관리자로 로그인했을 때 도구 막대에 붙는 표시 */
+.memo-admin-chip {
+	display: inline-flex;
+	position: relative;
+	z-index: 4;
+	flex: none;
+	align-items: center;
+	gap: 5px;
+	white-space: nowrap;
+	margin-left: 6px;
+	padding: 2px 9px;
+	border-radius: var(--radius-full);
+	background-color: color-mix(in srgb, var(--memo-accent) 22%, transparent);
+	color: var(--memo-text);
+	font-size: var(--text-caption2);
+	font-weight: 600;
+}
+
+.memo-admin-chip i {
+	font-size: 9px;
+}
+
+/* 편집할 수 있는 글에서는 누르는 단추: 편집 화면 ↔ 방문자가 보는 읽기 화면 */
+button.memo-admin-chip {
+	border: none;
+	font-family: inherit;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-toolbar button.memo-admin-chip:hover {
+	background-color: color-mix(in srgb, var(--memo-accent) 38%, transparent);
+}
+
+.memo-toolbar button.memo-admin-chip:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 1px;
+}
+
+/* 읽기 화면으로 보는 중: 눈 아이콘, 강조색 테두리로 지금 편집하지 않는다는 것을 보인다 */
+.memo-toolbar button.memo-admin-chip.reading {
+	background-color: transparent;
+	box-shadow: inset 0 0 0 1.5px var(--memo-accent);
+}
+
+/* 본문 쪽 도구 막대가 좁으면: 관리자 표시는 열쇠만 (글자는 title로), 검색 칸은 줄어든다 */
+.memo-reader-toolbar {
+	container-type: inline-size;
+}
+
+.memo-toolbar .memo-search {
+	flex: 0 1 200px;
+	/* 도구가 많아 자리가 모자라면 돋보기만 남을 때까지 줄어든다 (누르면 도구를 접고 넓어진다) */
+	min-width: 0;
+}
+
+/* 더 좁으면 검색 칸은 돋보기만 두고, 누르면(초점이 가면) 도구 막대 오른쪽에 펼쳐진다 (macOS 메모처럼).
+   도구 막대가 크기 기준(container)이라 자기 gap은 바꿀 수 없어서, 간격은 항목의 margin으로 준다 */
+.memo-reader-toolbar {
+	position: relative;
+	gap: 0;
+}
+
+.memo-reader-toolbar > * + * {
+	margin-left: 8px;
+}
+
+@container (max-width: 390px) {
+	.memo-reader-toolbar > * + * {
+		margin-left: 4px;
+	}
+
+	.memo-reader-toolbar .memo-search {
+		flex: none;
+		min-width: 0;
+		cursor: pointer;
+	}
+
+	.memo-reader-toolbar .memo-search input {
+		width: 0;
+	}
+
+	.memo-reader-toolbar .memo-search:focus-within,
+	.memo-reader-toolbar .memo-search:has(input:not(:placeholder-shown)) {
+		position: absolute;
+		right: 12px;
+		z-index: 5;
+		width: min(220px, calc(100% - 24px));
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+	}
+
+	.memo-reader-toolbar .memo-search:focus-within input,
+	.memo-reader-toolbar .memo-search:has(input:not(:placeholder-shown)) input {
+		width: auto;
+	}
+}
+
+@container (max-width: 560px) {
+	.memo-admin-chip {
+		width: 24px;
+		height: 24px;
+		justify-content: center;
+		padding: 0;
+	}
+
+	.memo-admin-chip span {
+		display: none;
+	}
+}
+
+/* 관리자가 보는 글: 따로 편집 단추 없이 바로 고친다 (writer/PostWriter.tsx) */
+/* 읽기 화면의 '날짜 · 폴더' 줄과 같은 자리·크기 (저장 상태는 오른쪽 끝에 따로 둬서 가운데를 밀지 않는다) */
+.memo-writer-meta {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.3em;
+	margin-bottom: 0.5rem;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+}
+
+/* 날짜·폴더: 글자처럼 보이다가 올리면 누를 수 있다는 표시 */
+.memo-meta-button {
+	margin: 0 -3px;
+	padding: 0 3px;
+	border: none;
+	border-radius: var(--radius-sm);
+	background: none;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-meta-button:hover,
+.memo-meta-button[aria-expanded='true'] {
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+}
+
+/* 오른쪽 끝: 저장 상태, 변경 사항 버리기, 게시 (가운데의 날짜·폴더를 밀지 않게 따로 둔다) */
+.memo-writer-actions {
+	position: absolute;
+	right: 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.memo-writer-status {
+	font-size: var(--text-caption2);
+	white-space: nowrap;
+}
+
+.memo-writer-discard,
+.memo-writer-publish {
+	padding: 2px 10px;
+	border: none;
+	border-radius: var(--radius-full);
+	font: inherit;
+	font-size: var(--text-caption2);
+	font-weight: 600;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+/* 글자색은 .memo button(color: inherit)보다 앞서도록 .memo-writer-actions를 붙인다 */
+.memo-writer-actions .memo-writer-discard {
+	background: none;
+	color: var(--memo-muted);
+}
+
+.memo-writer-actions .memo-writer-discard:hover:not(:disabled) {
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+}
+
+.memo-writer-actions .memo-writer-publish {
+	background-color: #edbb4d;
+	color: #2b2100;
+}
+
+.memo-writer-actions .memo-writer-publish:disabled {
+	background-color: var(--memo-search-bg);
+	color: var(--memo-muted);
+	cursor: default;
+}
+
+/* 편집 칸이 좁으면 저장 상태·단추를 날짜 줄 위의 따로 한 줄로 (날짜·폴더를 가리지 않게) */
+.memo-writer {
+	container-type: inline-size;
+}
+
+@container (max-width: 640px) {
+	.memo-writer-meta {
+		flex-wrap: wrap;
+	}
+
+	.memo-writer-actions {
+		position: static;
+		order: -1;
+		justify-content: flex-end;
+		width: 100%;
+		margin-bottom: 4px;
+	}
+}
+
+/* 규칙을 어긴 이유는 길어서 넓은 칸에서도 날짜·폴더와 겹친다: 따로 한 줄로 두고, 그래도 길면 줄을 바꾼다 */
+.memo-writer-meta:has(.memo-writer-status.problem) {
+	flex-wrap: wrap;
+}
+
+.memo-writer-meta:has(.memo-writer-status.problem) .memo-writer-actions {
+	position: static;
+	order: -1;
+	justify-content: flex-end;
+	width: 100%;
+	margin-bottom: 4px;
+}
+
+.memo-writer-status.problem {
+	min-width: 0;
+	text-align: right;
+	white-space: normal;
+}
+
+.memo-writer-actions > button {
+	flex-shrink: 0;
+}
+
+/* 관리자 목록의 게시 상태 */
+.memo-status-badge {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 0 6px;
+	border-radius: var(--radius-full);
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 16px;
+	vertical-align: 2px;
+}
+
+.memo-status-badge.draft {
+	background-color: var(--memo-search-bg);
+	color: var(--memo-muted);
+}
+
+.memo-status-badge.scheduled {
+	background-color: color-mix(in srgb, #3b82f6 18%, transparent);
+	color: #2563eb;
+}
+
+.memo-status-dot {
+	display: inline-block;
+	width: 7px;
+	height: 7px;
+	margin-left: 6px;
+	border-radius: 50%;
+	background-color: #edbb4d;
+	vertical-align: 2px;
+}
+
+.memo-item.active .memo-status-badge,
+.memo-item.active .memo-status-dot {
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+/* 버전 기록 */
+.memo-revisions-note {
+	margin-bottom: 8px;
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption2);
+	line-height: 1.5;
+}
+
+.memo-revision-list {
+	max-height: 320px;
+	overflow-y: auto;
+	list-style: none;
+}
+
+.memo-format-panel .memo-revision-list button {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	width: 100%;
+	padding: 6px 10px;
+	border-radius: var(--radius-md);
+	text-align: left;
+}
+
+.memo-format-panel .memo-revision-list button:hover {
+	background-color: color-mix(in srgb, var(--color-popover-text) 8%, transparent);
+}
+
+.memo-revision-list strong {
+	font-size: var(--text-footnote);
+}
+
+.memo-revision-list span {
+	overflow: hidden;
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption2);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-revision-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
+	font-size: var(--text-caption);
+}
+
+.memo-format-panel .memo-revision-back {
+	padding: 3px 6px;
+	border-radius: var(--radius-sm);
+	color: #c78b00;
+	font-size: var(--text-caption);
+}
+
+.memo-revision-body {
+	max-height: 300px;
+	padding: 10px 12px;
+	overflow-y: auto;
+	border: 1px solid var(--color-divider);
+	border-radius: var(--radius-lg);
+	font-size: var(--text-caption);
+}
+
+.memo-revision-body h1 {
+	margin-bottom: 0.6em;
+	font-size: 1.2rem;
+}
+
+.memo-revision-body .memo-markdown {
+	font-size: var(--text-caption);
+}
+
+.memo-format-panel .memo-revision-restore {
+	width: 100%;
+	margin-top: 8px;
+	padding: 7px 0;
+	border-radius: var(--radius-full);
+	background-color: #edbb4d;
+	color: #2b2100;
+	font-size: var(--text-footnote);
+	font-weight: 600;
+}
+
+.memo-writer-status.problem {
+	color: #e5484d;
+}
+
+.memo-writer-title {
+	display: block;
+	width: 100%;
+	margin-bottom: 1.25rem;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	font-size: 1.6rem;
+	font-weight: 700;
+	line-height: 1.3;
+	outline: none;
+	resize: none;
+	field-sizing: content;
+}
+
+.memo-writer-title::placeholder {
+	color: var(--memo-muted);
+	opacity: 0.6;
+}
+
+.memo-inline-editor .ProseMirror {
+	min-height: 240px;
+	outline: none;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+/* 본문이 비었을 때 안내 */
+.memo-inline-editor .ProseMirror:has(> p:only-child > br:only-child)::before {
+	position: absolute;
+	color: var(--memo-muted);
+	opacity: 0.6;
+	pointer-events: none;
+	content: '본문을 쓰세요';
+}
+
+.memo-inline-editor .ProseMirror img {
+	max-width: 100%;
+	border-radius: 0.6em;
+}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { AdminPost, PostSlug } from '@macfolio/desktop-core/memo';
 import type { PostDraft } from './postsApi';
 
-/** 새 메모 자리가 접히며 사라지는 시간 (Memo.css의 memo-new-item-out과 같다) */
+/** 새 메모 자리가 접히며 사라지는 시간 (styles/late.css의 memo-new-item-out과 같다) */
 const NEW_ITEM_LEAVE_MS = 240;
 
 /**
