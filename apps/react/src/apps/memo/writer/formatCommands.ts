@@ -8,6 +8,7 @@ import type { EditorView } from '@milkdown/kit/prose/view';
 import {
 	createCodeBlockCommand,
 	liftListItemCommand,
+	sinkListItemCommand,
 	toggleEmphasisCommand,
 	toggleInlineCodeCommand,
 	toggleStrongCommand,
@@ -85,6 +86,40 @@ const leaveList = (ctx: Ctx) => {
 		if (!callCommand(liftListItemCommand.key)(ctx)) break;
 	}
 };
+
+/** 커서가 있는 문단(목록이면 그 항목, 인용·토글 안이면 그 안의 문단)을 위·아래 이웃 블록과 맞바꾼다 */
+function moveBlock(view: EditorView, dir: 'up' | 'down') {
+	const { state } = view;
+	const { $from } = state.selection;
+	// 목록 항목이 있으면 가장 안쪽 항목, 없으면 글의 맨 위 블록
+	let depth = 1;
+	for (let d = $from.depth; d > 0; d--) {
+		if ($from.node(d).type.name === 'list_item') {
+			depth = d;
+			break;
+		}
+	}
+	if ($from.depth < depth) return;
+	const parent = $from.node(depth - 1);
+	const index = $from.index(depth - 1);
+	const other = dir === 'up' ? index - 1 : index + 1;
+	if (other < 0 || other >= parent.childCount) return;
+	const node = $from.node(depth);
+	const sibling = parent.child(other);
+	const start = $from.before(depth);
+	const offset = state.selection.from - start;
+	const tr = state.tr;
+	if (dir === 'up') {
+		const siblingStart = start - sibling.nodeSize;
+		tr.delete(start, start + node.nodeSize).insert(siblingStart, node);
+		tr.setSelection(TextSelection.create(tr.doc, siblingStart + offset));
+	} else {
+		const end = start + node.nodeSize;
+		tr.delete(end, end + sibling.nodeSize).insert(start, sibling);
+		tr.setSelection(TextSelection.create(tr.doc, start + sibling.nodeSize + offset));
+	}
+	view.dispatch(tr.scrollIntoView());
+}
 
 const IMAGE_NODES = ['image', 'image_block'];
 
@@ -215,6 +250,12 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			else callCommand(wrapInBlockquoteCommand.key)(ctx);
 			break;
 		}
+		case 'indent':
+			callCommand((action.dir === 'in' ? sinkListItemCommand : liftListItemCommand).key)(ctx);
+			break;
+		case 'moveBlock':
+			moveBlock(view, action.dir);
+			break;
 		case 'details':
 			// 표 칸에는 블록을 넣을 수 없다
 			if (!current.table) toggleDetails(view);
