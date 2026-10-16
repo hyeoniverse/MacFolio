@@ -68,6 +68,10 @@ export type FormatAction =
 	| { type: 'block'; block: BlockStyle }
 	| { type: 'list'; list: 'bullet' | 'ordered' | 'task' }
 	| { type: 'quote' }
+	/** 문단 들여쓰기·내어쓰기 (목록 항목을 한 단 안으로·밖으로) */
+	| { type: 'indent'; dir: 'in' | 'out' }
+	/** 커서가 있는 문단(목록이면 그 항목)을 위·아래 이웃과 맞바꾼다 */
+	| { type: 'moveBlock'; dir: 'up' | 'down' }
 	/** 토글 목록 켜고 끄기 */
 	| { type: 'details' }
 	/** 커서 자리에 각주 번호를 넣고, 글 끝의 각주 내용으로 간다 */
