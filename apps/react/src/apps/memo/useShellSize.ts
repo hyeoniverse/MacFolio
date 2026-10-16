@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 /**
- * 이 폭 이하면 한 칸씩 보인다 (Memo.css의 [data-compact] 규칙이 이 값을 따른다).
+ * 이 폭 이하면 한 칸씩 보인다 (styles/compact.css의 [data-compact] 규칙이 이 값을 따른다).
  * 폴더·목록·본문 세 칸을 나란히 두기에 700px보다 좁으면 본문이 너무 좁아진다
  */
 const COMPACT_WIDTH = 700;

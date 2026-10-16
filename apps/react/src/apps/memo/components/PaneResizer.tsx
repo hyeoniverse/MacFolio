@@ -26,7 +26,7 @@ const BIG_STEP = 32;
 /**
  * 칸 오른쪽 경계의 너비 조절 손잡이. macOS 메모처럼 경계를 끌어 왼쪽 칸을 넓히거나 좁힌다.
  * 키보드: ←·→(Shift면 크게), Home·End는 가장 좁게·넓게. 두 번 누르면 기본 너비로 돌아간다.
- * 위치는 Memo.css가 칸 너비 변수로 정하고, 칸이 없을 때(사이드바를 가림, 갤러리, 한 칸 보기)는 Memo.tsx가 그리지 않는다
+ * 위치는 styles/theme.css가 칸 너비 변수로 정하고, 칸이 없을 때(사이드바를 가림, 갤러리, 한 칸 보기)는 Memo.tsx가 그리지 않는다
  */
 const PaneResizer: React.FC<Props> = ({ pane, label, width, roomFor, onResize, onCommit, onDraggingChange }) => {
 	const drag = useRef<{ startX: number; startWidth: number; width: number; max: number } | null>(null);

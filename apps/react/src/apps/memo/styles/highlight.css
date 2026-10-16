@@ -1,0 +1,71 @@
+/* 메모 앱: 코드 문법 강조 */
+
+/* ─── 코드 문법 강조 (highlight.js 토큰, GitHub 색) ─── */
+[data-app='memo'] {
+	--hl-keyword: #cf222e;
+	--hl-string: #0a3069;
+	--hl-number: #0550ae;
+	--hl-function: #8250df;
+	--hl-type: #953800;
+	--hl-comment: #6e7781;
+	--hl-tag: #116329;
+	--hl-attr: #0550ae;
+}
+
+:root[data-theme='dark'] [data-app='memo'] {
+	--hl-keyword: #ff7b72;
+	--hl-string: #a5d6ff;
+	--hl-number: #79c0ff;
+	--hl-function: #d2a8ff;
+	--hl-type: #ffa657;
+	--hl-comment: #8b949e;
+	--hl-tag: #7ee787;
+	--hl-attr: #79c0ff;
+}
+
+.memo-markdown .hljs-keyword,
+.memo-markdown .hljs-built_in,
+.memo-markdown .hljs-literal,
+.memo-markdown .hljs-meta .hljs-keyword {
+	color: var(--hl-keyword);
+}
+
+.memo-markdown .hljs-string,
+.memo-markdown .hljs-regexp,
+.memo-markdown .hljs-meta .hljs-string {
+	color: var(--hl-string);
+}
+
+.memo-markdown .hljs-number,
+.memo-markdown .hljs-variable.constant_,
+.memo-markdown .hljs-attr {
+	color: var(--hl-number);
+}
+
+.memo-markdown .hljs-title,
+.memo-markdown .hljs-title.function_ {
+	color: var(--hl-function);
+}
+
+.memo-markdown .hljs-type,
+.memo-markdown .hljs-title.class_,
+.memo-markdown .hljs-params {
+	color: var(--hl-type);
+}
+
+.memo-markdown .hljs-comment,
+.memo-markdown .hljs-quote {
+	color: var(--hl-comment);
+	font-style: italic;
+}
+
+.memo-markdown .hljs-tag,
+.memo-markdown .hljs-name,
+.memo-markdown .hljs-selector-tag {
+	color: var(--hl-tag);
+}
+
+.memo-markdown .hljs-attribute,
+.memo-markdown .hljs-property {
+	color: var(--hl-attr);
+}

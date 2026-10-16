@@ -549,7 +549,7 @@ const Memo: React.FC = () => {
 							}
 						: {})}
 			/>
-			{/* 한 칸씩 볼 때의 모양은 Memo.css의 [data-compact] 규칙이 그린다 (휴대폰 화면이거나 메모 칸이 700px 이하) */}
+			{/* 한 칸씩 볼 때의 모양은 styles/compact.css의 [data-compact] 규칙이 그린다 (휴대폰 화면이거나 메모 칸이 700px 이하) */}
 			<div ref={shellRef} className="memo-shell" data-compact={compact || undefined}>
 				{trashAlert}
 				<div

@@ -1,0 +1,358 @@
+/* 메모 앱: 도구 막대, 좁은 창의 검색 칸, 최근 삭제·잠금 안내, 태그, 칸마다 스크롤 */
+
+/* ─── 도구 막대: 신호등 버튼과 같은 높이(52px)에 버튼을 차례로 놓는다 ─── */
+.memo-toolbar {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: 8px;
+	height: 52px;
+	padding: 0 12px;
+}
+
+/* 신호등 버튼 자리 (사이드바를 닫았을 때 도구 막대 앞, 사이드바 막대 앞) */
+.memo-lights-space {
+	flex: none;
+	width: 58px;
+}
+
+.memo-sidebar-toggle svg {
+	width: 19px;
+	height: 15px;
+}
+
+.memo-view-switch {
+	display: flex;
+	position: relative;
+	z-index: 4;
+	padding: 2px;
+	border-radius: var(--radius-md);
+	background-color: var(--memo-search-bg);
+}
+
+.memo-view-switch button {
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 24px;
+	border: none;
+	border-radius: var(--radius-sm);
+	background: none;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+}
+
+.memo-view-switch button[aria-pressed='true'] {
+	background-color: var(--memo-bg);
+	color: var(--memo-text);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.memo-toolbar-spacer {
+	flex: 1;
+}
+
+/* 검색 칸은 늘 도구 막대 오른쪽 끝 (목록 보기: 본문 위, 갤러리: 갤러리 위).
+   본문 위 도구 막대는 gap 대신 항목의 margin-left로 간격을 주므로(아래 .memo-reader-toolbar) 왼쪽 여백은 지우지 않는다 */
+.memo-toolbar .memo-search {
+	margin-block: 0;
+	margin-right: 0;
+}
+
+.memo-toolbar:not(.memo-reader-toolbar) .memo-search {
+	margin-left: 0;
+}
+
+/* 좁은 창에서만 보이는 것 (목록 위 검색 칸, 본문 위 고정 단추) */
+.memo .compact-only {
+	display: none;
+}
+
+/* 좁은 창의 목록 위: 검색 칸과 정렬 단추 */
+.memo-compact-tools {
+	align-items: center;
+	gap: 2px;
+	margin: 8px 8px 8px 0;
+}
+
+.memo-compact-tools .memo-search {
+	flex: 1;
+	margin: 0 0 0 12px;
+}
+
+/* 최근 삭제된 항목의 목록 위 안내, 줄마다 남은 날 */
+.memo-trash-banner {
+	margin: 4px 20px 8px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--memo-border);
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+	line-height: 1.5;
+}
+
+/* 최근 삭제된 메모: 본문 위 안내 상자. 아이콘은 첫 줄(제목)의 가운데에 맞추고, 단추는 문구 아래 한 줄에 오른쪽으로 */
+.memo-trash-note {
+	--title-line: 20px;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 1.25rem;
+	padding: 12px 14px;
+	border-radius: 12px;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	line-height: 1.5;
+}
+
+.memo-trash-note > i {
+	flex: none;
+	font-size: var(--text-callout);
+	line-height: var(--title-line);
+}
+
+.memo-trash-note > div {
+	flex: 1;
+	min-width: 0;
+}
+
+.memo-trash-note strong {
+	display: block;
+	color: var(--memo-text);
+	font-size: var(--text-footnote);
+	line-height: var(--title-line);
+}
+
+.memo-trash-note p {
+	margin: 2px 0 0;
+}
+
+.memo-trash-note .memo-trash-note-hint {
+	font-size: var(--text-caption2);
+	opacity: 0.85;
+}
+
+.memo-trash-note-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+/* 회색 상자 위라 기본 단추는 창 바탕색으로 (상자와 같은 회색이면 글자만 떠 보인다) */
+.memo-trash-note-actions .ui-button:not(.danger) {
+	--ui-button-bg: var(--memo-bg);
+}
+
+.memo-item-purge::before {
+	content: '·';
+	margin: 0 4px;
+}
+
+/* 잠긴 메모: 목록 제목 앞의 자물쇠, 본문 위 안내 */
+.memo-item-lock {
+	margin-right: 4px;
+	font-size: 0.85em;
+	opacity: 0.7;
+}
+
+.memo-locked-note {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	margin-bottom: 0.75rem;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+}
+
+.memo-locked-note button {
+	padding: 1px 8px;
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+	font-weight: 600;
+}
+
+.memo-pin i {
+	transform: rotate(45deg);
+}
+
+/* 고정된 메모 / 메모 묶음 이름 */
+/* 본문의 #태그 (읽기 화면은 누르면 그 태그의 글만, 편집기는 칠하기만) */
+.memo-tag {
+	color: #b07a06;
+	font-weight: 600;
+}
+
+:root[data-theme='dark'] .memo-tag {
+	color: var(--memo-accent);
+}
+
+.memo-markdown .memo-tag {
+	cursor: pointer;
+}
+
+.memo-markdown .memo-tag:hover {
+	text-decoration: underline;
+}
+
+/* 사이드바의 태그 묶음 (macOS 메모처럼 폴더 아래) */
+.memo-tag-browser {
+	padding: 12px 12px 14px;
+}
+
+.memo-tag-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 8px 4px;
+}
+
+.memo-tag-browser h3 {
+	margin: 0;
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+	font-weight: 700;
+}
+
+/* 선택된 태그 중 모두/일부 포함 (강조 색 글자 단추) */
+.memo .memo-tag-match {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: #b07a06;
+	font-size: var(--text-caption2);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+/* 위아래 chevron 한 쌍 (macOS 팝업 단추처럼) */
+.memo-tag-match-chevrons {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 1px;
+	font-size: 6px;
+	line-height: 1;
+}
+
+:root[data-theme='dark'] .memo .memo-tag-match {
+	color: var(--memo-accent);
+}
+
+.memo-tag-browser ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	list-style: none;
+}
+
+/* 칩: 미선택은 회색, 포함은 강조 색으로 채움, 제외는 강조 색 테두리와 취소선 */
+.memo .memo-tag-chip {
+	padding: 3px 9px;
+	border: 1.5px solid transparent;
+	border-radius: var(--radius-md);
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+	font-size: var(--text-caption);
+	cursor: pointer;
+}
+
+.memo .memo-tag-chip:hover {
+	background-color: var(--memo-hover);
+}
+
+.memo .memo-tag-chip.include {
+	background-color: var(--memo-accent);
+	color: var(--memo-on-accent);
+}
+
+.memo .memo-tag-chip.exclude {
+	border-color: var(--memo-accent);
+	background-color: transparent;
+	color: #b07a06;
+	text-decoration: line-through;
+}
+
+:root[data-theme='dark'] .memo .memo-tag-chip.exclude {
+	color: var(--memo-accent);
+}
+
+.memo-section-title {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 10px 20px 6px;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	font-weight: 700;
+}
+
+.memo-section-title i {
+	font-size: 10px;
+	transform: rotate(45deg);
+}
+
+.memo-gallery .memo-section-title {
+	margin: 14px 24px 4px;
+	color: var(--memo-text);
+	font-size: var(--text-subhead);
+}
+
+.memo-reader-compact-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+/* 목록·본문·갤러리: 위에 도구 막대, 그 아래만 스크롤한다.
+   (도구 막대를 sticky로 붙이면 새 쌓임 맥락이 생겨 버튼이 창 끌기 영역 아래로 깔린다) */
+.memo-list,
+.memo-reader,
+.memo-gallery {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.memo-scroll {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+.memo-toolbar-heading {
+	flex: 1;
+	min-width: 0;
+	margin-left: 4px;
+	line-height: 1.2;
+}
+
+.memo-toolbar-heading h2 {
+	overflow: hidden;
+	font-size: var(--text-subhead);
+	font-weight: 700;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-toolbar-heading p {
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+}
+
+.memo-toolbar-title {
+	flex: 1;
+	min-width: 0;
+	margin-left: 4px;
+	overflow: hidden;
+	font-size: var(--text-subhead);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

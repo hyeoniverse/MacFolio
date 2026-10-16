@@ -1,0 +1,234 @@
+/* 메모 앱: 폴더 사이드바 */
+
+/* ─── 폴더 사이드바: 창 안에 떠 있는 패널 ─── */
+.memo-folders {
+	/* 폴더 한 줄의 크기. 들여쓰기는 단계(--depth)마다 16px */
+	--row-height: 28px;
+	--row-indent: 16px;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	margin: 8px 0 8px 8px;
+	overflow: hidden;
+	border-radius: 16px;
+	background-color: var(--memo-panel-bg);
+	/* 그림자는 패널 둘레 여백(8px) 안에 들어가도록 작게 (옆 칸과 창 가장자리에 잘리지 않게) */
+	box-shadow: var(--memo-panel-shadow);
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+/* 사이드바를 닫으면 칸이 접히고, 애니메이션이 끝난 뒤 실제로 숨는다 */
+.memo.sidebar-closed .memo-folders {
+	margin-left: 0;
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		opacity var(--duration-fast) var(--ease-out),
+		visibility 0s linear var(--duration);
+}
+
+/* 사이드바 위쪽: 신호등 버튼 자리, 오른쪽 끝에 여닫기 버튼 (패널 위 8px + 36px → 가운데가 신호등과 같은 26px) */
+.memo-sidebar-bar {
+	display: flex;
+	flex: none;
+	align-items: center;
+	height: 36px;
+	padding-right: 6px;
+}
+
+.memo-sidebar-bar .memo-lights-space {
+	/* 패널 왼쪽 8px + 70px = 78px: 접었을 때 도구 막대의 여닫기 단추(12 + 58 + 간격 8)와 같은 자리 */
+	width: 70px;
+}
+
+.memo-sidebar-bar .memo-new-note-button,
+.memo-sidebar-bar .memo-new-folder-button {
+	font-size: 14px;
+}
+
+/* 새 메모·새로운 폴더는 사이드바 오른쪽 끝에 나란히 */
+.memo-sidebar-bar .memo-new-note-button,
+.memo-sidebar-bar .memo-new-folder-button:first-of-type {
+	margin-left: auto;
+}
+
+.memo-sidebar-bar .memo-new-note-button + .memo-new-folder-button {
+	margin-left: 0;
+}
+
+.memo-folder-scroll {
+	flex: 1;
+	min-height: 0;
+	padding: 6px 10px 10px;
+	overflow-y: auto;
+}
+
+/* 묶음 이름 (macOS 메모의 'iCloud') */
+.memo-folders h2 {
+	margin: 0 0 4px 4px;
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+/* 폴더 한 줄: 펼침 단추(14px) + 폴더 */
+.memo-folder-row {
+	display: flex;
+	align-items: center;
+	position: relative;
+	height: var(--row-height);
+	margin-bottom: 1px;
+	padding-left: calc(var(--depth, 0) * var(--row-indent));
+	border-radius: 7px;
+}
+
+.memo-disclosure {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 14px;
+	height: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--memo-muted);
+	font-size: 8px;
+}
+
+.memo-disclosure i {
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.memo-disclosure.open i {
+	transform: rotate(90deg);
+}
+
+.memo-folder {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	gap: 7px;
+	min-width: 0;
+	height: 100%;
+	padding: 0 10px 0 7px;
+	border: none;
+	border-radius: 9px;
+	background: none;
+	font-size: var(--text-footnote);
+	text-align: left;
+}
+
+.memo-folder i {
+	flex: none;
+	width: 16px;
+	color: var(--memo-accent);
+	font-size: var(--text-footnote);
+	text-align: center;
+}
+
+.memo-folder:hover {
+	background-color: var(--memo-hover);
+}
+
+.memo-folder.active {
+	background-color: var(--memo-accent);
+	color: var(--memo-on-accent);
+}
+
+.memo-folder.active i,
+.memo-folder.active .memo-count {
+	color: var(--memo-on-accent);
+}
+
+.memo-folder-name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-count {
+	flex: none;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	font-variant-numeric: tabular-nums;
+}
+
+/* 끌어 놓기: 놓을 수 있는 폴더를 강조하고, 끌고 있는 것은 흐리게 */
+.memo-folder-row.drop-target .memo-folder {
+	box-shadow: inset 0 0 0 2px var(--memo-accent);
+	background-color: color-mix(in srgb, var(--memo-accent) 18%, transparent);
+}
+
+.memo-folder-row.dragging,
+.memo-item.dragging,
+.memo-card.dragging {
+	opacity: 0.4;
+}
+
+/* 폴더에 마우스를 올리면 글 수 앞에 ••• (메뉴) */
+.memo-folder-more {
+	/* 평소에는 투명하게 두어 키보드로도 닿게 한다 (display: none이면 포커스할 수 없다) */
+	display: grid;
+	opacity: 0;
+	place-items: center;
+	position: absolute;
+	right: 34px;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: var(--memo-search-bg);
+	color: var(--memo-text);
+	font-size: 10px;
+}
+
+.memo-folder-row:hover .memo-folder-more,
+.memo-folder-row.menu-open .memo-folder-more,
+.memo-folder-more:focus-visible {
+	opacity: 1;
+}
+
+.memo-folder-row:has(.memo-folder.active) .memo-folder-more {
+	background-color: rgba(255, 255, 255, 0.35);
+	color: var(--memo-on-accent);
+}
+
+/* ••• 단추가 보이는 동안은 이름이 그 앞에서 줄여진다 (긴 이름이 단추 밑에 깔리지 않게) */
+.memo-folder-row:is(:hover, .menu-open, :focus-within):has(.memo-folder-more) .memo-folder-name {
+	margin-right: 38px;
+}
+
+/* 메뉴를 연 폴더는 테두리로 표시 */
+.memo-folder-row.menu-open .memo-folder:not(.active) {
+	box-shadow: inset 0 0 0 2px var(--memo-accent);
+}
+
+/* 폴더 이름 입력 (새 폴더, 이름 바꾸기): 폴더 줄과 같은 모양이라 들여쓰기가 맞는다 */
+.memo-folder.editing {
+	cursor: text;
+}
+
+.memo-folder.editing input {
+	flex: 1;
+	min-width: 0;
+	height: 22px;
+	margin-left: -4px;
+	padding: 0 4px;
+	border: 1px solid var(--memo-accent);
+	border-radius: 5px;
+	outline: none;
+	background-color: var(--memo-bg);
+	color: var(--memo-text);
+	font: inherit;
+	font-size: var(--text-footnote);
+}
+
+.memo-folder-error {
+	margin: 0 0 4px calc(var(--depth, 0) * var(--row-indent, 16px) + 14px + 29px);
+	color: var(--memo-danger);
+	font-size: var(--text-caption2);
+}
