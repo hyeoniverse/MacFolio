@@ -64,7 +64,7 @@ test.describe('음악', () => {
 		await expect(bar).toContainText('Itsumo Nando Demo');
 	});
 
-	test('좁은 창에서는 제목이 신호등 단추 아래에 있고, 곡 목록에서 보관함으로 돌아온다', async ({ page }) => {
+	test('좁은 창에서는 제목이 신호등 버튼 아래에 있고, 곡 목록에서 보관함으로 돌아온다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'music').click();
 		const music = appWindow(page, 'music');
@@ -89,7 +89,7 @@ test.describe('음악', () => {
 	});
 });
 
-test('재생과 일시 정지를 오가도 단추가 움직이지 않는다 (아이콘 폭이 달라도)', async ({ page }) => {
+test('재생과 일시 정지를 오가도 버튼이 움직이지 않는다 (아이콘 폭이 달라도)', async ({ page }) => {
 	await enterDesktop(page);
 	await dockItem(page, 'music').click();
 	const play = page.locator('.music-play');

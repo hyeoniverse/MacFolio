@@ -51,7 +51,7 @@ test.describe('메뉴 막대의 서버 상태 (Wi-Fi 자리)', () => {
 		expect(await window.evaluate((el) => el.scrollTop)).toBe(0);
 	});
 
-	test("서버 주소가 없어도 'API 문서' 앱은 문서를 보여 주고, 요청 단추만 없다", async ({ page }) => {
+	test("서버 주소가 없어도 'API 문서' 앱은 문서를 보여 주고, 요청 버튼만 없다", async ({ page }) => {
 		await enterDesktop(page);
 		await openFromDock(page, 'apidocs');
 		const docs = appWindow(page, 'apidocs').frameLocator('iframe');

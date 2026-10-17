@@ -12,7 +12,7 @@ export interface ModalProps {
 	role?: 'dialog' | 'alertdialog';
 	/** window: 가장 가까운 위치 기준(앱 창)을 덮는다 / screen: 화면 전체를 덮고 body에 그린다 */
 	scope?: 'window' | 'screen';
-	/** 열자마자 초점을 둘 요소 (확인 단추, 입력 칸). 없으면 상자 자신 */
+	/** 열자마자 초점을 둘 요소 (확인 버튼, 입력 칸). 없으면 상자 자신 */
 	initialFocus?: RefObject<HTMLElement | null>;
 	/** 덮개에 덧붙일 이름. 어둡기와 층은 앱 CSS가 --ui-modal-dim·--ui-modal-z로 정한다 */
 	overlayClassName?: string;

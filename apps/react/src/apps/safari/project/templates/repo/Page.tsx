@@ -1,9 +1,9 @@
 // repo 템플릿: GitHub 저장소 화면 그대로 열린다 (랜딩식 첫 화면 없음). 맨 위는 저장소 머리(owner / 이름, Public, Watch·Fork·Star)와
-// 탭 줄(Code · Commits · Conventions). Code 탭은 저장소 첫 화면이다: 가지 줄(main, 가지·태그 수, 초록 Code 단추와 clone 창),
+// 탭 줄(Code · Commits · Conventions). Code 탭은 저장소 첫 화면이다: 가지 줄(main, 가지·태그 수, 초록 Code 버튼과 clone 창),
 // 마지막 커밋 줄과 파일 트리(DevCourse는 실제 저장소 탐색기, 다른 프로젝트는 폴더 구조와 README.md·docs/),
 // README 상자(위의 문서 탭으로 README.md와 docs/*.md를 바꿔 연다. 구역마다 문서 하나, 한 번에 한 문서만 보인다. README 첫머리가 h1),
 // 옆 칸(About·랜딩 링크·Releases·Deployments·Contributors·Languages: API가 GitHub에서 받은 실제 언어 비율, 받지 못하면 주 언어 하나). Commits 탭은 진행 과정을 커밋 그래프로 그리고 타입으로 거른다. Conventions 탭은 커밋 규칙 표.
-// 맨 아래 마무리 줄과 상태 줄의 터미널 단추(누르면 서랍이 올라온다). Safari 창의 탭(role=tab)과 섞이지 않게 저장소 탭과 문서 탭은 nav와 단추(aria-current)다.
+// 맨 아래 마무리 줄과 상태 줄의 터미널 버튼(누르면 서랍이 올라온다). Safari 창의 탭(role=tab)과 섞이지 않게 저장소 탭과 문서 탭은 nav와 버튼(aria-current)다.
 // 계약은 templates/README.md
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { Project } from '@/shared/profile';
@@ -117,7 +117,7 @@ const RepoHead: React.FC<{ owner?: string; name: string; icon?: string; href?: s
 
 /* ─── Code 탭의 가지 줄 ─── */
 
-/** 초록 'Code ▾' 단추: 누르면 clone 주소와 복사 단추가 든 작은 창. 바깥을 누르거나 Esc를 누르면 닫힌다 */
+/** 초록 'Code ▾' 버튼: 누르면 clone 주소와 복사 버튼이 든 작은 창. 바깥을 누르거나 Esc를 누르면 닫힌다 */
 const CodeMenu: React.FC<{ clone: string }> = ({ clone }) => {
 	const [open, setOpen] = useState(false);
 	const wrap = useRef<HTMLDivElement>(null);
@@ -164,7 +164,7 @@ const CodeMenu: React.FC<{ clone: string }> = ({ clone }) => {
 	);
 };
 
-/** 파일 상자 위의 줄: 가지(main), 가지와 태그 수, Code 단추 */
+/** 파일 상자 위의 줄: 가지(main), 가지와 태그 수, Code 버튼 */
 const BranchRow: React.FC<{ tags: number; clone?: string }> = ({ tags, clone }) => (
 	<div className="rp-branch-row">
 		<span className="rp-branch-pick">
@@ -247,7 +247,7 @@ const Tabs: React.FC<{ tabs: Tab[]; active: TabId; onChange: (id: TabId) => void
 /* ─── Code 탭의 옆 칸 ─── */
 
 /**
- * GitHub 저장소 첫 화면의 옆 칸: About(한 줄 소개, 랜딩 링크 단추, 데모 주소, 주제, 프로젝트·역할·기간), 마지막 릴리스, 배포 결과물(Deployments),
+ * GitHub 저장소 첫 화면의 옆 칸: About(한 줄 소개, 랜딩 링크 버튼, 데모 주소, 주제, 프로젝트·역할·기간), 마지막 릴리스, 배포 결과물(Deployments),
  * 팀원 사진(Contributors), 언어.
  * 랜딩 링크(여기서 열기·새 탭·GitHub)는 여기와 맨 아래 마무리 줄에 같은 묶음으로 있다
  */

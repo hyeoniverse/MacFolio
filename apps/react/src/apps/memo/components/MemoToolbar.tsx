@@ -52,7 +52,7 @@ export const ToolbarLead: React.FC<{ sidebarOpen: boolean; onToggleSidebar: () =
 	);
 
 /**
- * 정렬과 그룹화 (macOS 메모의 '정렬 기준', '날짜별로 그룹화'). 누르면 단추 아래에 메뉴가 열린다.
+ * 정렬과 그룹화 (macOS 메모의 '정렬 기준', '날짜별로 그룹화'). 누르면 버튼 아래에 메뉴가 열린다.
  * 날짜별 묶기는 날짜로 정렬할 때만 켤 수 있다.
  */
 export const SortMenu: React.FC<{
@@ -70,7 +70,7 @@ export const SortMenu: React.FC<{
 				label="정렬과 그룹화"
 				aria-haspopup="menu"
 				aria-expanded={anchor !== null}
-				// 메뉴가 열려 있을 때 이 단추를 누르면, 바깥 누르기로 닫힌 뒤 다시 열리지 않게 한다
+				// 메뉴가 열려 있을 때 이 버튼을 누르면, 바깥 누르기로 닫힌 뒤 다시 열리지 않게 한다
 				onPointerDown={(event) => event.stopPropagation()}
 				onClick={(event) => {
 					if (anchor) return close();

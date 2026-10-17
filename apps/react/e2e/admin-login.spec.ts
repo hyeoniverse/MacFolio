@@ -127,7 +127,7 @@ test.describe('관리자 로그인', () => {
 		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeEnabled();
 	});
 
-	test('관리자 서버가 없으면 로그인 단추가 꺼져 있다', async ({ page }) => {
+	test('관리자 서버가 없으면 로그인 버튼이 꺼져 있다', async ({ page }) => {
 		await enterDesktop(page);
 		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeDisabled();

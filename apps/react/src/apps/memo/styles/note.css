@@ -1,7 +1,7 @@
 /* 메모 앱: 본문, 이전·다음 글, 좋아요, 인기글, 관리자 표시, 편집 머리줄, 게시 상태, 버전 기록 */
 
 /* ─── 본문 ─── */
-/* 위쪽 4px: 맨 위의 게시 단추(편집기)가 스크롤 칸 가장자리에 붙어 위쪽이 잘리지 않게 */
+/* 위쪽 4px: 맨 위의 게시 버튼(편집기)가 스크롤 칸 가장자리에 붙어 위쪽이 잘리지 않게 */
 .memo-reader .memo-scroll {
 	padding: 4px 2rem 3rem;
 }
@@ -229,7 +229,7 @@
 	font-size: 9px;
 }
 
-/* 편집할 수 있는 글에서는 누르는 단추: 편집 화면 ↔ 방문자가 보는 읽기 화면 */
+/* 편집할 수 있는 글에서는 누르는 버튼: 편집 화면 ↔ 방문자가 보는 읽기 화면 */
 button.memo-admin-chip {
 	border: none;
 	font-family: inherit;
@@ -317,7 +317,7 @@ button.memo-admin-chip {
 	}
 }
 
-/* 관리자가 보는 글: 따로 편집 단추 없이 바로 고친다 (writer/PostWriter.tsx) */
+/* 관리자가 보는 글: 따로 편집 버튼 없이 바로 고친다 (writer/PostWriter.tsx) */
 /* 읽기 화면의 '날짜 · 폴더' 줄과 같은 자리·크기 (저장 상태는 오른쪽 끝에 따로 둬서 가운데를 밀지 않는다) */
 .memo-writer-meta {
 	position: relative;
@@ -397,7 +397,7 @@ button.memo-admin-chip {
 	cursor: default;
 }
 
-/* 편집 칸이 좁으면 저장 상태·단추를 날짜 줄 위의 따로 한 줄로 (날짜·폴더를 가리지 않게) */
+/* 편집 칸이 좁으면 저장 상태·버튼을 날짜 줄 위의 따로 한 줄로 (날짜·폴더를 가리지 않게) */
 .memo-writer {
 	container-type: inline-size;
 }

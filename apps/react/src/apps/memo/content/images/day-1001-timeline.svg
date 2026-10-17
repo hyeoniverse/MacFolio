@@ -67,7 +67,7 @@
 <text x="385.7" y="120" font-size="10.5" fill="#1d4f91">@layer reset</text>
 <text x="385.7" y="135" font-size="10.5" fill="#1d4f91">메뉴 다섯 → 하나</text>
 <rect x="532.5" y="70" width="104.4" height="86" rx="9" fill="#e3f6ea" stroke="#4fbf7a"/>
-<text x="541.5" y="88" font-size="12" font-weight="700" fill="#1f6b3d">공통 단추·메모</text>
+<text x="541.5" y="88" font-size="12" font-weight="700" fill="#1f6b3d">공통 버튼·메모</text>
 <text x="541.5" y="105" font-size="10.5" fill="#1f6b3d">IconButton</text>
 <text x="541.5" y="120" font-size="10.5" fill="#1f6b3d">Button</text>
 <text x="541.5" y="135" font-size="10.5" fill="#1f6b3d">잠금</text>

@@ -20,7 +20,7 @@ test.describe('앱 항목 주소와 공유', () => {
 		await expect.poll(() => pathOf(page.url())).toBe('/');
 	});
 
-	test('공유 단추는 글 주소를 복사하고 알린다', async ({ page, context }) => {
+	test('공유 버튼은 글 주소를 복사하고 알린다', async ({ page, context }) => {
 		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 		await enterDesktop(page, '/memo/cra-to-vite');
 		const memo = appWindow(page, 'memo');

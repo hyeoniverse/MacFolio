@@ -1,4 +1,4 @@
-// 메시지 앱 (apps/api의 /messages). 쓰기 단추로 남긴 피드백 하나가 목록의 항목(Thread) 하나가 되고, 말풍선(Message)은 거기 단 글이다.
+// 메시지 앱 (apps/api의 /messages). 쓰기 버튼으로 남긴 피드백 하나가 목록의 항목(Thread) 하나가 되고, 말풍선(Message)은 거기 단 글이다.
 // 사람은 브라우저로 구분한다(방문자 쿠키). 이름·비밀번호를 따로 받지 않으므로 요청 몸통은 댓글과 같다
 import { z } from 'zod';
 import { CommentInput } from './comments.js';
@@ -24,7 +24,7 @@ export const Message = z.object({
 	/** IP 앞 두 자리 (주인 글과 로컬 저장소에는 없음) */
 	ipPrefix: z.string().optional(),
 	fromOwner: z.boolean(),
-	/** 보고 있는 브라우저가 쓴 글 (오른쪽 말풍선, 지우기 단추) */
+	/** 보고 있는 브라우저가 쓴 글 (오른쪽 말풍선, 지우기 버튼) */
 	mine: z.boolean(),
 });
 export type Message = z.infer<typeof Message>;

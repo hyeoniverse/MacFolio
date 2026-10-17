@@ -39,7 +39,7 @@ const ReaderBody = ({
 			{views && <span className="memo-reader-views"> · 조회 {(views[post.slug] ?? 0).toLocaleString()}</span>}
 		</p>
 		{post.deletedAt && (
-			// Finder의 휴지통 안내처럼: 왜 고칠 수 없는지, 어떻게 쓰는지, 그 아래 단추
+			// Finder의 휴지통 안내처럼: 왜 고칠 수 없는지, 어떻게 쓰는지, 그 아래 버튼
 			<div className="memo-trash-note" role="note">
 				<i className="fa-regular fa-trash-can" aria-hidden="true" />
 				<div>

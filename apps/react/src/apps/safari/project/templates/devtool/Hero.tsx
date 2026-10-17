@@ -1,4 +1,4 @@
-// devtool 템플릿의 조각: 링크 단추, 복사되는 git clone 명령 줄, 첫 화면의 터미널 창(clone·설치·실행 명령과 짧은 출력, 저장소가 없으면 package.json),
+// devtool 템플릿의 조각: 링크 버튼, 복사되는 git clone 명령 줄, 첫 화면의 터미널 창(clone·설치·실행 명령과 짧은 출력, 저장소가 없으면 package.json),
 // 코드 편집기 모양의 창(파일 트리와 대표 화면, 그림이 없으면 package.json 보기)
 import React, { useEffect, useRef, useState } from 'react';
 import type { AppName } from '@/apps/manifest';
@@ -8,7 +8,7 @@ import { packageEntries, parseTree, type JsonValue, type TreeRow } from './code'
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
-/** 링크 묶음: 첫 링크는 글자색으로 꽉 찬 단추, 나머지는 테두리 단추. 공용 LandingLinks와 같은 차례와 표시(data-link·data-primary) */
+/** 링크 묶음: 첫 링크는 글자색으로 꽉 찬 버튼, 나머지는 테두리 버튼. 공용 LandingLinks와 같은 차례와 표시(data-link·data-primary) */
 export const DevLinks: React.FC<{ links: LandingLink[]; className?: string }> = ({ links, className }) => {
 	const { openApp } = useAppState();
 	if (links.length === 0) return null;
@@ -39,7 +39,7 @@ export const DevLinks: React.FC<{ links: LandingLink[]; className?: string }> = 
 	);
 };
 
-/** 복사할 수 있는 명령 상자: 단추를 누르면 클립보드에 넣고 알림 줄에 결과를 적는다 */
+/** 복사할 수 있는 명령 상자: 버튼을 누르면 클립보드에 넣고 알림 줄에 결과를 적는다 */
 export const CommandBox: React.FC<{ command: string; className?: string }> = ({ command, className }) => {
 	const [status, setStatus] = useState('');
 	const timer = useRef<number | undefined>(undefined);

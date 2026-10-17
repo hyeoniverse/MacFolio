@@ -27,7 +27,7 @@
     <text x="458" y="232" fill="#6b7280">10 · 내용 다름</text>
     <text x="140" y="262" text-anchor="end" fill="#1f2937">SegmentedControl</text>
     <rect x="150" y="250" width="240" height="18" rx="4" fill="#a5b4fc"/>
-    <text x="398" y="264" fill="#6b7280">8 · 뜻이 셋 (탭·라디오·단추)</text>
+    <text x="398" y="264" fill="#6b7280">8 · 뜻이 셋 (탭·라디오·버튼)</text>
     <text x="140" y="294" text-anchor="end" fill="#1f2937">ListRow</text>
     <rect x="150" y="282" width="150" height="18" rx="4" fill="#a5b4fc"/>
     <text x="308" y="296" fill="#6b7280">5 · 줄 안이 다름</text>

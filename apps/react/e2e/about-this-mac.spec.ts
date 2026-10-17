@@ -28,7 +28,7 @@ test.describe('이 Mac에 관하여', () => {
 			await role.evaluate((el) => getComputedStyle(el).color)
 		);
 		await expect(email).toHaveAttribute('href', 'mailto:hyeoniverse.dev@gmail.com');
-		// 메뉴는 닫히고, 닫기 단추에 초점
+		// 메뉴는 닫히고, 닫기 버튼에 초점
 		await expect(menu).toBeHidden();
 		await expect(about.getByRole('button', { name: '닫기' })).toBeFocused();
 		// GitHub은 바깥 링크: ↗ 표시와 함께 새 탭으로 연다
@@ -45,7 +45,7 @@ test.describe('이 Mac에 관하여', () => {
 		await page.keyboard.press('Escape');
 		await expect(about).toBeHidden();
 
-		// 다시 열어 닫기 단추로
+		// 다시 열어 닫기 버튼으로
 		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
 		await menu.getByRole('menuitem', { name: '이 Mac에 관하여' }).click();
 		await about.getByRole('button', { name: '닫기' }).click();

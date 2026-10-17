@@ -408,7 +408,7 @@ echo "===== DEPLOY_SSH_KEY ====="; cat ~/macfolio-deploy
 
 #### 4. 확인
 
-[Actions → API 배포](https://github.com/hyeoniverse/MacFolio/actions/workflows/deploy-api.yml) → 오른쪽 위 **Run workflow** → tag에 지금 태그 (예: `sha-a38ac7e`) → Run. Actions 첫 화면(All workflows)에는 이 단추가 없다. 왼쪽 목록에서 **API 배포**를 눌러야 보인다.
+[Actions → API 배포](https://github.com/hyeoniverse/MacFolio/actions/workflows/deploy-api.yml) → 오른쪽 위 **Run workflow** → tag에 지금 태그 (예: `sha-a38ac7e`) → Run. Actions 첫 화면(All workflows)에는 이 버튼이 없다. 왼쪽 목록에서 **API 배포**를 눌러야 보인다.
 
 로그에 이렇게 나오면 연결이 끝난 것이다.
 

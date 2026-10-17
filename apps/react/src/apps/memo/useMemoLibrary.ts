@@ -37,7 +37,7 @@ export function useMemoLibrary() {
 	/** 관리자용 서버 글 (게시한 내용과 임시 저장). 관리자로 로그인했을 때만 읽는다 */
 	const [adminPosts, setAdminPosts] = useState<AdminPost[] | null>(null);
 	const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 단추를 보이지 않는다 (admin.ts)
+	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 버튼을 보이지 않는다 (admin.ts)
 	const canEdit = useCanEditMemo();
 	/** 관리자 목록을 읽었으면 편집기로 본다 (읽기 전에는 게시한 내용으로 읽기만) */
 	const editing = canEdit && adminPosts !== null;
