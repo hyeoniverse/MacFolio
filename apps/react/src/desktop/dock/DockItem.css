@@ -29,7 +29,6 @@
 	display: none; /* 숨겨진 상태일 때 DockItem을 표시하지 않음 */
 }
 
-.dock-launchpad,
 .launchpad {
 	display: flex;
 	align-items: center;
@@ -55,15 +54,6 @@
 	opacity: 1;
 }
 
-.minimized-container {
-	width: 6rem;
-	height: 4rem;
-	background-image: url('../../public/imgs/minimize.JPG');
-	background-size: cover;
-	border-radius: 0.5rem;
-}
-
-.minimized-container i,
 .dock-item i {
 	display: flex;
 	align-items: center;
@@ -72,7 +62,6 @@
 	height: 100%;
 }
 
-.minimized-container:hover,
 .dock-item:hover {
 	transform: scale(1.1);
 }
