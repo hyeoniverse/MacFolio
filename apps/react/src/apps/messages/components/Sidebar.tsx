@@ -124,24 +124,27 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 			>
 				{searchField('messages-search messages-phone-search')}
 				{searching ? (
-					<button
-						type="button"
+					<IconButton
+						variant="float"
 						className="phone-float"
-						aria-label="검색 닫기"
-						// 누르는 순간 입력 칸이 포커스를 잃어 단추가 바뀌지 않도록
+						label="검색 닫기"
+						icon="fa-solid fa-xmark"
+						// 누르는 순간 입력 칸이 포커스를 잃어 버튼이 바뀌지 않도록
 						onPointerDown={(event) => event.preventDefault()}
 						onClick={() => {
 							setQuery('');
 							setFocused(false);
 							(document.activeElement as HTMLElement | null)?.blur();
 						}}
-					>
-						<i className="fa-solid fa-xmark" aria-hidden="true" />
-					</button>
+					/>
 				) : (
-					<button type="button" className="phone-float" aria-label="새 피드백" onClick={onCompose}>
-						<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-					</button>
+					<IconButton
+						variant="float"
+						className="phone-float"
+						label="새 피드백"
+						icon="fa-regular fa-pen-to-square"
+						onClick={onCompose}
+					/>
 				)}
 			</div>
 		</>

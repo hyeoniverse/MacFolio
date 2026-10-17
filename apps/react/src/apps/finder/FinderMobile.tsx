@@ -8,6 +8,7 @@ import DocView from './DocView';
 import FinderIcon from './FinderIcon';
 import '@/apps/finder/FinderMobile.css';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import IconButton from '@/shared/ui/button/IconButton';
 
 type Tab = 'recents' | 'browse';
 type View = 'icons' | 'list';
@@ -168,20 +169,18 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		<div className="files-phone">
 			{navigation}
 			{/* 오른쪽 위: 보기와 정렬 (iOS 파일의 •••) */}
-			<button
+			<IconButton
 				ref={moreButton}
-				type="button"
 				className="files-phone-more"
-				aria-label="보기 옵션"
+				label="보기 옵션"
+				icon="fa-solid fa-ellipsis"
 				aria-haspopup="menu"
 				aria-expanded={menu !== null}
 				onClick={(event) => {
 					const rect = event.currentTarget.getBoundingClientRect();
 					setMenu(menu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
 				}}
-			>
-				<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-			</button>
+			/>
 			{screen && (
 				<h2 key={`title:${screenKey}`} className="files-phone-bar-title">
 					{title}

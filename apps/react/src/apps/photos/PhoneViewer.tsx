@@ -9,6 +9,7 @@ import { captionOf, useCaptions } from './captionsApi';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import { keyOf } from './photosMobile.model';
+import IconButton from '@/shared/ui/button/IconButton';
 
 const SWIPE_PX = 50;
 const TAP_PX = 8;
@@ -91,20 +92,18 @@ export const PhoneViewer = ({
 				<strong>{photo.album.name}</strong>
 				<span>{caption}</span>
 			</div>
-			<button
+			<IconButton
 				ref={moreButton}
-				type="button"
 				className="photos-phone-viewer-more"
-				aria-label="사진 동작"
+				label="사진 동작"
+				icon="fa-solid fa-ellipsis"
 				aria-haspopup="menu"
 				aria-expanded={menu !== null}
 				onClick={(event) => {
 					const rect = event.currentTarget.getBoundingClientRect();
 					setMenu(menu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
 				}}
-			>
-				<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-			</button>
+			/>
 
 			<div
 				className={`photos-phone-stage ${info ? 'with-info' : ''}`}
@@ -205,9 +204,13 @@ export const PhoneViewer = ({
 			</ul>
 
 			<div className={`photos-phone-viewer-bar ${info ? 'over-info' : ''}`}>
-				<button type="button" className="photos-phone-round" aria-label="공유" onClick={share}>
-					<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
-				</button>
+				<IconButton
+					variant="circle"
+					className="photos-phone-round"
+					label="공유"
+					icon="fa-solid fa-arrow-up-from-bracket"
+					onClick={share}
+				/>
 				<div className="photos-phone-pill">
 					<button type="button" aria-label="좋아요" aria-pressed={liked} onClick={onToggleLike}>
 						<i className={liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} aria-hidden="true" />

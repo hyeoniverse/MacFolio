@@ -10,11 +10,15 @@
 
 .memo-back {
 	display: none;
+	justify-content: normal;
 	align-items: center;
+	min-width: 0;
+	height: auto;
 	gap: 0.35rem;
 	margin: 0.75rem 0.75rem 0;
 	padding: 0.25rem 0;
 	border: none;
+	border-radius: 0;
 	background: none;
 	color: #b8860b;
 	font-size: var(--text-subhead);

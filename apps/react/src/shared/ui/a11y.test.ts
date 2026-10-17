@@ -32,6 +32,22 @@ describe('버튼', () => {
 		html(createElement(IconButton, { icon: 'fa-solid fa-xmark' }));
 	});
 
+	it('동그란 아이콘 버튼(circle): 이름 규칙은 같고, 제출 버튼으로도 쓴다', () => {
+		const out = html(
+			createElement(IconButton, {
+				variant: 'circle',
+				type: 'submit',
+				className: 'mail-sheet-circle send',
+				label: '보내기',
+				icon: 'fa-solid fa-arrow-up',
+			})
+		);
+		expect(out).toContain('class="ui-icon-button circle mail-sheet-circle send"');
+		expect(out).toContain('aria-label="보내기"');
+		expect(out).toContain('type="submit"');
+		expect(out).toContain('<i class="fa-solid fa-arrow-up" aria-hidden="true">');
+	});
+
 	it('글자 버튼: 글자가 이름이고, 앞 아이콘은 읽지 않는다', () => {
 		const out = html(createElement(Button, { icon: 'fa-solid fa-paper-plane', tone: 'primary' }, '보내기'));
 		expect(out).toMatch(
