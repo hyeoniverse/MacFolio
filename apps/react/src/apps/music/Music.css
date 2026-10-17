@@ -61,6 +61,19 @@
 	}
 }
 
+/* 공통 IconButton으로 그린 재생·셔플·반복·뒤로 버튼: 도구 막대 모양(크기·둥근 모서리·바탕·색)을 지우고 위의 기본값을 따른다.
+   :where라 점수가 0이어서 버튼마다 클래스로 적은 값이 늘 이긴다 */
+:where(.music .ui-icon-button) {
+	display: block;
+	justify-content: normal;
+	min-width: 0;
+	height: auto;
+	padding: 0;
+	border-radius: 0;
+	background: none;
+	color: inherit;
+}
+
 .music ul,
 .music ol {
 	list-style: none;

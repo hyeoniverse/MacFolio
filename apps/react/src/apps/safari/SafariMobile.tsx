@@ -4,6 +4,7 @@ import { Favicon } from '@/apps/safari/ProjectPage';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
 import '@/apps/safari/SafariMobile.css';
+import IconButton from '@/shared/ui/button/IconButton';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -132,17 +133,16 @@ const SafariMobile: React.FC<Props> = ({
 				</ul>
 				<div className="safari-phone-bar">
 					<span className="safari-phone-count">{tabs.length}개의 탭</span>
-					<button
-						type="button"
+					<IconButton
+						variant="circle"
 						className="safari-phone-circle"
-						aria-label="새로운 탭"
+						label="새로운 탭"
+						icon="fa-solid fa-plus"
 						onClick={() => {
 							onNewTab();
 							setOverview(false);
 						}}
-					>
-						<i className="fa-solid fa-plus" aria-hidden="true" />
-					</button>
+					/>
 				</div>
 			</div>
 		);
@@ -170,14 +170,13 @@ const SafariMobile: React.FC<Props> = ({
 						event.stopPropagation();
 					}}
 				>
-					<button
-						type="button"
+					<IconButton
+						variant="circle"
 						className="safari-phone-tabs-button"
-						aria-label={`탭 모두 보기 (${tabs.length}개)`}
+						label={`탭 모두 보기 (${tabs.length}개)`}
+						icon="fa-regular fa-clone"
 						onClick={() => setOverview(true)}
-					>
-						<i className="fa-regular fa-clone" aria-hidden="true" />
-					</button>
+					/>
 					{/* 링크 끌어 옮기기는 끈다: 마우스로 끌면 링크를 끌어 가느라 알약 밀기(pointer)가 취소된다 */}
 					{address ? (
 						<a
@@ -194,20 +193,19 @@ const SafariMobile: React.FC<Props> = ({
 						<span className="safari-phone-address placeholder">검색 또는 웹 사이트 이름 입력</span>
 					)}
 				</div>
-				<button
+				<IconButton
 					ref={moreButton}
-					type="button"
+					variant="circle"
 					className="safari-phone-circle"
-					aria-label="Safari 동작"
+					label="Safari 동작"
+					icon="fa-solid fa-ellipsis"
 					aria-haspopup="menu"
 					aria-expanded={menu !== null}
 					onClick={(event) => {
 						const rect = event.currentTarget.getBoundingClientRect();
 						setMenu(menu ? null : { x: rect.right - 250, y: rect.top - 8 });
 					}}
-				>
-					<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-				</button>
+				/>
 			</div>
 			{menu && (
 				<Menu

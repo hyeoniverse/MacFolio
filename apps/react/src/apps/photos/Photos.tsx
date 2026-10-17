@@ -12,6 +12,7 @@ import Menu from '@/shared/ui/menu/Menu';
 import SidebarToggle from '@/shared/ui/button/SidebarToggle';
 import { captionOf, loadCaptions, useCaptions } from './captionsApi';
 import '@/apps/photos/Photos.css';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /** 보는 곳: 보관함(모든 사진), 비디오만, 앨범 하나 */
 type Place = { kind: 'all' } | { kind: 'videos' } | { kind: 'album'; id: string };
@@ -247,17 +248,18 @@ const Photos = () => {
 									</div>
 									<div className="photos-toolbar-group">
 										<div className="photos-capsule">
-											<button type="button" aria-label="축소" disabled={size === 0} onClick={() => zoomGrid(-1)}>
-												<i className="fa-solid fa-minus" aria-hidden="true" />
-											</button>
-											<button
-												type="button"
-												aria-label="확대"
+											<IconButton
+												label="축소"
+												icon="fa-solid fa-minus"
+												disabled={size === 0}
+												onClick={() => zoomGrid(-1)}
+											/>
+											<IconButton
+												label="확대"
+												icon="fa-solid fa-plus"
 												disabled={size === CELL_SIZES.length - 1}
 												onClick={() => zoomGrid(1)}
-											>
-												<i className="fa-solid fa-plus" aria-hidden="true" />
-											</button>
+											/>
 										</div>
 										{place.kind === 'all' && compact && (
 											// 좁은 창: 보기 방식은 팝업 버튼 하나로 (macOS 사진의 "모든 사진 ⌃⌄")
@@ -291,15 +293,13 @@ const Photos = () => {
 									<div className="photos-toolbar-group end">
 										{album &&
 											(compact ? (
-												<button
-													type="button"
+												<IconButton
+													variant="circle"
 													className="photos-circle"
-													aria-label="프로젝트 페이지"
-													title="프로젝트 페이지"
+													label="프로젝트 페이지"
+													icon="fa-regular fa-compass"
 													onClick={() => openProject(album.id)}
-												>
-													<i className="fa-regular fa-compass" aria-hidden="true" />
-												</button>
+												/>
 											) : (
 												<button type="button" className="photos-pill" onClick={() => openProject(album.id)}>
 													프로젝트 페이지
