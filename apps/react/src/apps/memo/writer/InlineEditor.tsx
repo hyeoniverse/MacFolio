@@ -250,7 +250,7 @@ const strikethroughDoubleTilde = $inputRule((ctx) =>
 );
 const gfmWithoutSingleTilde = gfm.filter((plugin) => plugin !== strikethroughInputRule);
 
-/** 휴대폰에서 커서 줄을 맞출 때 비울 자리 (styles/phone-note.css: 위 단추 줄 = 상태 표시줄 + 58px, 아래 서식 막대 = 96px) */
+/** 휴대폰에서 커서 줄을 맞출 때 비울 자리 (styles/phone-note.css: 위 버튼 줄 = 상태 표시줄 + 58px, 아래 서식 막대 = 96px) */
 const PHONE_CARET_MARGIN = { top: 120, bottom: 110 };
 
 /**
@@ -299,7 +299,7 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 					// 체크 항목: 네모를 누르면 체크를 켜고 끈다
 					ctx.update(editorViewOptionsCtx, (options) => ({
 						...options,
-						// 휴대폰: 쓰는 줄을 화면에 맞출 때 위의 떠 있는 단추 줄과 아래 서식 막대에 가리지 않게 그만큼 띄운다
+						// 휴대폰: 쓰는 줄을 화면에 맞출 때 위의 떠 있는 버튼 줄과 아래 서식 막대에 가리지 않게 그만큼 띄운다
 						handleScrollToSelection: scrollCaretOnPhone,
 						// 표 안의 Enter·Tab, 토글 요약 줄의 Enter·Backspace (편집기 기본 동작보다 먼저)
 						handleKeyDown: (view, event) => handleTableKey(ctx, view, event) || handleDetailsKey(view, event),

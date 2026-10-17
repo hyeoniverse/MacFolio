@@ -11,7 +11,7 @@ import './AboutThisMac.css';
 /**
  * Apple 메뉴의 '이 Mac에 관하여': macOS의 같은 창처럼 가운데 작은 창에 그림, 이름, 사양 줄, '추가 정보…'.
  * 이 Mac 대신 만든 사람(사이트 주인)의 프로필을 보여 준다. '추가 정보…'는 macOS처럼 시스템 설정의 '정보'를 연다. 앱이 아니라 시스템 창이라 Dock·Finder에는 없다.
- * 창의 빈 곳을 잡아 옮기고, 닫기 단추나 Esc로 닫는다 (최소화·확대는 macOS처럼 꺼져 있다)
+ * 창의 빈 곳을 잡아 옮기고, 닫기 버튼이나 Esc로 닫는다 (최소화·확대는 macOS처럼 꺼져 있다)
  */
 const AboutThisMac = () => {
 	const open = useAboutOpen();
@@ -42,7 +42,7 @@ const AboutThisMac = () => {
 			aria-label="이 Mac에 관하여"
 			style={{ translate: `${offset.x}px ${offset.y}px` }}
 			onPointerDown={(event) => {
-				// 단추·링크·글자를 고를 때는 옮기지 않는다
+				// 버튼·링크·글자를 고를 때는 옮기지 않는다
 				if ((event.target as Element).closest('button, a, dd')) return;
 				drag.current = { x: event.clientX, y: event.clientY, from: offset };
 				event.currentTarget.setPointerCapture(event.pointerId);

@@ -1,7 +1,7 @@
 import type { Likes } from './likesApi';
 
 /**
- * 좋아요 단추 (Apple 스타일): 하트와 수. 누르면 systemPink로 찬 하트 (다시 누르면 취소).
+ * 좋아요 버튼 (Apple 스타일): 하트와 수. 누르면 systemPink로 찬 하트 (다시 누르면 취소).
  * size: 글 아래(옅은 회색 캡슐, 수는 늘 보인다) 또는 댓글 줄(작은 하트, 0이면 수를 숨긴다)
  */
 const LikeButton = ({

@@ -10,9 +10,9 @@ const iconOf = (volume: number) =>
 	volume === 0 ? 'fa-volume-off' : volume <= 0.5 ? 'fa-volume-low' : 'fa-volume-high';
 
 /**
- * 메뉴 막대의 음량 (Apple 메뉴·서버 상태처럼 단추와 떠 있는 창을 함께 가진 메뉴 막대 항목).
+ * 메뉴 막대의 음량 (Apple 메뉴·서버 상태처럼 버튼과 떠 있는 창을 함께 가진 메뉴 막대 항목).
  * 메뉴 막대는 넘치는 것을 잘라 내므로(overflow: hidden) 창은 body에 그리고,
- * 자리는 다른 떠 있는 창과 같은 공통 함수(placeBelow)로 단추 바로 아래 가운데에 둔다.
+ * 자리는 다른 떠 있는 창과 같은 공통 함수(placeBelow)로 버튼 바로 아래 가운데에 둔다.
  */
 const VolumeMenu = () => {
 	const { volume, setVolume } = useMusic();

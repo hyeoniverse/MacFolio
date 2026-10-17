@@ -1,4 +1,4 @@
-/* 메모 앱: 색 변수, 떠 있는 칸의 배치, 칸 너비 손잡이, 창 안 단추의 기본값 */
+/* 메모 앱: 색 변수, 떠 있는 칸의 배치, 칸 너비 손잡이, 창 안 버튼의 기본값 */
 
 /* macOS 메모 앱 색 */
 [data-app='memo'] {
@@ -41,7 +41,7 @@
 	--memo-fill: rgba(118, 118, 128, 0.24);
 }
 
-/* 공통 단추(shared/ui/button)의 색: 도구 막대 단추는 흐린 글자색, 켜지면 노란 바탕. 글자 단추는 알약 모양 */
+/* 공통 버튼(shared/ui/button)의 색: 도구 막대 버튼은 흐린 글자색, 켜지면 노란 바탕. 글자 버튼은 알약 모양 */
 [data-app='memo'] {
 	--ui-tool-color: var(--memo-muted);
 	--ui-tool-hover: var(--memo-hover);
@@ -135,7 +135,7 @@
 	opacity: 0.6;
 }
 
-/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
+/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 버튼마다 클래스로 적은 값이 늘 이긴다 */
 @layer reset {
 	.memo button {
 		font: inherit;

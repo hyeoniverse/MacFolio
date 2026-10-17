@@ -24,7 +24,7 @@
 	letter-spacing: -0.02em;
 }
 
-/* 좁으면 빠른 단추는 숨기고 가가 메뉴에 모은다 */
+/* 좁으면 빠른 버튼은 숨기고 가가 메뉴에 모은다 */
 @container (max-width: 560px) {
 	.memo-format-quick {
 		display: none;
@@ -48,7 +48,7 @@
 	transform-origin: top center;
 }
 
-/* 창 안 단추의 기본값. reset 층이라 공통 단추(components 층)가 이긴다 (styles/layers.css) */
+/* 창 안 버튼의 기본값. reset 층이라 공통 버튼(components 층)이 이긴다 (styles/layers.css) */
 @layer reset {
 	.memo-format-panel button {
 		border: none;
@@ -59,7 +59,7 @@
 	}
 }
 
-/* 창은 body에 그려서 메모 앱의 색 변수가 닿지 않는다. 글자 단추의 색을 여기서 다시 정한다 */
+/* 창은 body에 그려서 메모 앱의 색 변수가 닿지 않는다. 글자 버튼의 색을 여기서 다시 정한다 */
 .memo-format-panel {
 	--ui-button-radius: 999px;
 	--ui-accent: #edbb4d;
@@ -422,7 +422,7 @@
 	text-decoration: underline;
 }
 
-/* 코드 블록: 오른쪽 위에 복사 단추 (.memo-overlay-button) */
+/* 코드 블록: 오른쪽 위에 복사 버튼 (.memo-overlay-button) */
 .memo-code {
 	position: relative;
 }

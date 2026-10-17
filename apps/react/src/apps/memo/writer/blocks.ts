@@ -1,4 +1,4 @@
-// 편집기 블록: 이미지 블록(이미지만 있는 문단), 복사 단추가 있는 코드 블록.
+// 편집기 블록: 이미지 블록(이미지만 있는 문단), 복사 버튼이 있는 코드 블록.
 // 둘 다 읽기 화면(MarkdownImage, CodeBlock)과 같은 DOM 구조로 그린다.
 import { codeBlockSchema, imageSchema } from '@milkdown/kit/preset/commonmark';
 import type { Node } from '@milkdown/kit/prose/model';
@@ -98,7 +98,7 @@ function renderCaption(caption: HTMLElement, title: string) {
 	caption.hidden = !title;
 }
 
-/** 이미지 내려받기 단추 (읽기 화면과 같은 자리·모양) */
+/** 이미지 내려받기 버튼 (읽기 화면과 같은 자리·모양) */
 function downloadButton(getNode: () => Node) {
 	const button = document.createElement('button');
 	button.type = 'button';
@@ -116,7 +116,7 @@ function downloadButton(getNode: () => Node) {
 }
 
 /**
- * 이미지(블록·글줄 안) 모양: 읽기 화면처럼 가운데 그림 + 아래 캡션, 그림 오른쪽 위에 내려받기 단추.
+ * 이미지(블록·글줄 안) 모양: 읽기 화면처럼 가운데 그림 + 아래 캡션, 그림 오른쪽 위에 내려받기 버튼.
  * 캡션을 누르면 그 자리에서 고친다 (비어 있으면 '캡션 추가'). Enter나 초점을 옮기면 저장, Esc는 취소
  */
 const figureView = (initial: Node, view: EditorView, getPos: () => number | undefined) => {
@@ -213,7 +213,7 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 		selectNode: () => dom.classList.add('selected'),
 		deselectNode: () => dom.classList.remove('selected'),
 		ignoreMutation: () => true,
-		// 캡션 입력칸·내려받기 단추·캡션 링크는 편집기가 가로채지 않게
+		// 캡션 입력칸·내려받기 버튼·캡션 링크는 편집기가 가로채지 않게
 		stopEvent: (event: Event) => {
 			const target = event.target as Element;
 			return Boolean(
@@ -231,7 +231,7 @@ export const imageBlockView = $view(
 );
 export const inlineImageView = $view(imageSchema.node, () => (node, view, getPos) => figureView(node, view, getPos));
 
-/** 복사 단추를 누르면 코드를 클립보드에 넣고 잠깐 체크 표시를 보여 준다 (읽기 화면과 같이) */
+/** 복사 버튼을 누르면 코드를 클립보드에 넣고 잠깐 체크 표시를 보여 준다 (읽기 화면과 같이) */
 export function copyCodeButton(getText: () => string) {
 	const button = document.createElement('button');
 	button.type = 'button';
@@ -258,7 +258,7 @@ export function copyCodeButton(getText: () => string) {
 	return button;
 }
 
-/** 코드 블록: 읽기 화면처럼 오른쪽 위에 복사 단추 */
+/** 코드 블록: 읽기 화면처럼 오른쪽 위에 복사 버튼 */
 export const codeBlockView = $view(codeBlockSchema.node, () => (initial) => {
 	let current = initial;
 	const dom = document.createElement('div');

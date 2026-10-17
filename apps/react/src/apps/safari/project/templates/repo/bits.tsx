@@ -1,4 +1,4 @@
-// repo 템플릿의 작은 조각: 커밋 타입 뱃지, 복사 단추
+// repo 템플릿의 작은 조각: 커밋 타입 뱃지, 복사 버튼
 import React, { useEffect, useRef, useState } from 'react';
 import { typeStyle } from './repo';
 
@@ -8,7 +8,7 @@ export const TypeBadge: React.FC<{ type: string }> = ({ type }) => (
 	</span>
 );
 
-/** 글을 복사하는 단추: 누르면 클립보드에 넣고 알림 줄에 결과를 적는다 */
+/** 글을 복사하는 버튼: 누르면 클립보드에 넣고 알림 줄에 결과를 적는다 */
 export const CopyButton: React.FC<{ text: string; label: string; className?: string; children?: React.ReactNode }> = ({
 	text,
 	label,

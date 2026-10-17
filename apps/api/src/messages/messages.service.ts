@@ -44,7 +44,7 @@ const last = (rows: MessageRow[]) =>
 	rows.at(-1) && { text: rows.at(-1)!.body, createdAt: rows.at(-1)!.createdAt.toISOString() };
 
 /**
- * 메시지 앱: 쓰기 단추로 남긴 피드백 하나가 목록의 항목 하나가 되고, 누구나 어느 피드백(과 주인 안내)에나 답글을 단다.
+ * 메시지 앱: 쓰기 버튼으로 남긴 피드백 하나가 목록의 항목 하나가 되고, 누구나 어느 피드백(과 주인 안내)에나 답글을 단다.
  * 방문자는 쿠키로 정한 이름으로 쓰고 같은 브라우저에서 쓴 글만 지운다. 관리자는 프로필의 이름(기본 김정현)으로 쓰고 무엇이든 지운다.
  */
 @Injectable()
@@ -107,7 +107,7 @@ export class MessagesService {
 		};
 	}
 
-	/** 새 피드백 (쓰기 단추). 목록에 항목이 하나 생긴다 */
+	/** 새 피드백 (쓰기 버튼). 목록에 항목이 하나 생긴다 */
 	async createThread(input: unknown, ip: string, visitor: Visitor, admin: AdminIdentity | null) {
 		const parsed = parse(MessageInput, input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);

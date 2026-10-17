@@ -170,7 +170,7 @@
 	letter-spacing: -0.012em;
 }
 
-/* 알약 단추: 첫 것은 강조색으로 채우고, 나머지는 강조색 테두리 */
+/* 알약 버튼: 첫 것은 강조색으로 채우고, 나머지는 강조색 테두리 */
 .pd-links {
 	display: flex;
 	flex-wrap: wrap;
@@ -667,7 +667,7 @@
 	font-size: 17px;
 }
 
-/* ─── 화면 모음: 옆으로 넘기는 띠, 아래 설명, 둥근 단추 ─── */
+/* ─── 화면 모음: 옆으로 넘기는 띠, 아래 설명, 둥근 버튼 ─── */
 .pd-section[data-section='screens'] {
 	padding-right: 0;
 	padding-left: 0;

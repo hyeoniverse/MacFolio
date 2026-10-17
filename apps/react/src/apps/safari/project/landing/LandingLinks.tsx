@@ -1,4 +1,4 @@
-// 첫 화면과 마무리의 링크 묶음: 이 사이트 안에서 열기(단추), 데모(새 탭), 저장소. 첫 링크에 data-primary가 붙는다 (템플릿이 꽉 찬 단추로 그린다)
+// 첫 화면과 마무리의 링크 묶음: 이 사이트 안에서 열기(버튼), 데모(새 탭), 저장소. 첫 링크에 data-primary가 붙는다 (템플릿이 꽉 찬 버튼으로 그린다)
 import React from 'react';
 import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';

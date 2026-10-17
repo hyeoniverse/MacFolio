@@ -23,7 +23,7 @@ function contrastWithWhite(h: number, s: number, l: number): number {
 
 /**
  * 뽑은 색 → 키트의 CSS 변수. 강조색은 한 가지: 아이콘의 주된 색을 채도 그대로(회색빛이 돌지 않게, 너무 흐린 색만 조금 올린다),
- * 흰 글자가 읽히는 밝기로(단추·링크). 둘째 색은 다른 색이 아니라 같은 색상의 한 단계 옅은 값 (그래프의 둘째 점·옅은 칠).
+ * 흰 글자가 읽히는 밝기로(버튼·링크). 둘째 색은 다른 색이 아니라 같은 색상의 한 단계 옅은 값 (그래프의 둘째 점·옅은 칠).
  * --lk-dark-accent는 어두운 바탕에서 쓰는 같은 색의 밝은 값. 무지개가 되지 않게 둘째로 뽑힌 색은 쓰지 않는다
  */
 export function accentVars(colors: Hsl[]): Record<string, string> {

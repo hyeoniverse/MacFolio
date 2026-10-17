@@ -2,7 +2,7 @@
 title: GitHub 앱을 진짜 GitHub로 - 프로필·README·고른 저장소
 date: 2026-10-02
 category: 개발기/MacFolio/프론트엔드
-summary: GitHub 앱의 팔로워 수, README, 고정 저장소는 손으로 옮겨 적은 값이었다. 이제 API 서버가 GitHub에서 받아 30분(토큰이 있으면 10분) 동안 들고 있다가 내준다. README는 실제 Markdown을 그리되 배지는 앱의 Contact 단추로 바꾸고, 보일 저장소는 관리자가 시스템 설정에서 고른다.
+summary: GitHub 앱의 팔로워 수, README, 고정 저장소는 손으로 옮겨 적은 값이었다. 이제 API 서버가 GitHub에서 받아 30분(토큰이 있으면 10분) 동안 들고 있다가 내준다. README는 실제 Markdown을 그리되 배지는 앱의 Contact 버튼으로 바꾸고, 보일 저장소는 관리자가 시스템 설정에서 고른다.
 ---
 
 GitHub 앱의 프로필(팔로워·팔로잉·소개), 프로필 README, Pinned 저장소는 모두 코드에 적어 둔 값이었다. 방문자마다 GitHub API를 부르면 요청 제한에 걸릴까 봐 고정해 둔 것이다. 그래서 README를 고치거나 팔로워가 늘어도 앱은 그대로였다.
@@ -26,7 +26,7 @@ API 서버에 `/github/profile`을 더했다. 관리자 계정의 프로필, 프
 
 - **상대 주소**: `./profile/stats-light.svg`는 프로필 저장소의 파일로 풀어 준다.
 - **`<picture>`**: 브라우저는 `prefers-color-scheme`으로 OS 설정만 본다. 앱에는 따로 화면 모드 설정이 있으므로, 그 값에 맞는 그림 하나로 바꾼다.
-- **shields.io 배지**: `img.shields.io/badge/Gmail-EA4335?logo=gmail` 주소에서 글자·색·로고를 읽어, 원래 앱에 있던 Contact 단추 모양으로 바꾼다. 배지 그림보다 단추가 더 앱에 어울린다.
+- **shields.io 배지**: `img.shields.io/badge/Gmail-EA4335?logo=gmail` 주소에서 글자·색·로고를 읽어, 원래 앱에 있던 Contact 버튼 모양으로 바꾼다. 배지 그림보다 버튼이 더 앱에 어울린다.
 - **capsule-render 배너**: 주소의 `text`, `desc`, `color`로 CSS 배너를 만든다. 바깥 이미지 서비스가 느리거나 멈춰도 배너는 깨지지 않는다.
 
 README를 GitHub에서 고치면, 서버가 다시 받는 대로 앱에도 보인다.

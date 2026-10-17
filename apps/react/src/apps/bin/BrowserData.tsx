@@ -53,14 +53,14 @@ const BrowserData = () => {
 
 	return (
 		<div className="bin-browser" onPointerEnter={refresh}>
-			{/* macOS Finder의 휴지통처럼: 위쪽 줄에 비우기 단추(비었으면 꺼짐), 아래에 항목 수 */}
+			{/* macOS Finder의 휴지통처럼: 위쪽 줄에 비우기 버튼(비었으면 꺼짐), 아래에 항목 수 */}
 			<div className="bin-files-summary">
 				<span>
 					{stored.length > 0
 						? `이 사이트가 이 브라우저에 남긴 것 ${stored.length}가지 · ${formatSize(stored.reduce((sum, entry) => sum + entry.bytes, 0))}`
 						: '내 브라우저 데이터'}
 				</span>
-				{/* Finder 휴지통의 작은 회색 '비우기' 단추 (비었으면 꺼짐) */}
+				{/* Finder 휴지통의 작은 회색 '비우기' 버튼 (비었으면 꺼짐) */}
 				<button
 					type="button"
 					className="bin-empty-button"

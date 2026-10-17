@@ -1,13 +1,13 @@
 /*
- * 글자가 있는 단추 (shared/ui/button/Button.tsx). components 층 (styles/layers.css).
+ * 글자가 있는 버튼 (shared/ui/button/Button.tsx). components 층 (styles/layers.css).
  *
  * 앱이 [data-app] 등에 정하는 변수
- *   --ui-button-bg·--ui-button-color: 보통 단추      --ui-button-radius·--ui-button-padding: 모양
- *   --ui-accent·--ui-on-accent: primary 단추          --ui-danger: danger 단추
+ *   --ui-button-bg·--ui-button-color: 보통 버튼      --ui-button-radius·--ui-button-padding: 모양
+ *   --ui-accent·--ui-on-accent: primary 버튼          --ui-danger: danger 버튼
  */
 @layer components {
 	.ui-button {
-		/* 상황에 따라 생기는 단추(편집 도구, 되돌려 놓기 등)는 서서히 나타난다 */
+		/* 상황에 따라 생기는 버튼(편집 도구, 되돌려 놓기 등)은 서서히 나타난다 */
 		animation: fade-in var(--duration-fast) var(--ease-out);
 		display: inline-flex;
 		align-items: center;

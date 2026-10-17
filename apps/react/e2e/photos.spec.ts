@@ -8,7 +8,7 @@ const openPhotos = async (page: Page) => {
 	return appWindow(page, 'photos');
 };
 
-/** 정보 판이 스크롤 없이 다 보이고, 끝(프로젝트 페이지 단추)이 아래 막대보다 위에 있다 */
+/** 정보 판이 스크롤 없이 다 보이고, 끝(프로젝트 페이지 버튼)이 아래 막대보다 위에 있다 */
 async function expectInfoFits(viewer: Locator) {
 	const info = viewer.getByRole('complementary', { name: '사진 정보' });
 	await expect.poll(() => info.evaluate((el) => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(0);
@@ -183,7 +183,7 @@ test.describe('사진 (#21)', () => {
 			}
 		};
 
-		// 좁은 창 (760px 아래): 사이드바는 그대로, 보기 방식은 팝업 단추, 격자는 정사각형으로 꽉
+		// 좁은 창 (760px 아래): 사이드바는 그대로, 보기 방식은 팝업 버튼, 격자는 정사각형으로 꽉
 		await shrinkBy(300);
 		await expect(sidebar).toBeVisible();
 		await expect(photos.getByRole('group', { name: '보기 방식' })).toHaveCount(0);
@@ -198,7 +198,7 @@ test.describe('사진 (#21)', () => {
 		expect(Math.round(thumb.width)).toBe(Math.round(cellBox.width));
 		expect(Math.round(thumb.height)).toBe(Math.round(cellBox.height));
 
-		// 사이드바 단추로 접고 편다
+		// 사이드바 버튼으로 접고 편다
 		await sidebar.getByRole('button', { name: '사이드바 가리기' }).click();
 		await expect(sidebar).toBeHidden();
 		await photos.getByRole('button', { name: '사이드바 보기' }).click();
@@ -316,8 +316,8 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		// 좋아요, 정보
 		await viewer.getByRole('button', { name: '좋아요' }).click();
 		await expect(viewer.getByRole('button', { name: '좋아요' })).toHaveAttribute('aria-pressed', 'true');
-		// 정보 (iOS 사진): 사진이 위로 줄고, 형식 딱지와 실제 크기, 프로젝트 페이지 단추. 사진 띠는 숨는다
-		// 정보 단추는 켜도 꺼도 같은 크기 (채움만 바뀐다)
+		// 정보 (iOS 사진): 사진이 위로 줄고, 형식 딱지와 실제 크기, 프로젝트 페이지 버튼. 사진 띠는 숨는다
+		// 정보 버튼은 켜도 꺼도 같은 크기 (채움만 바뀐다)
 		const infoIcon = viewer.getByRole('button', { name: '정보' }).locator('i');
 		const off = await infoIcon.boundingBox();
 		await viewer.getByRole('button', { name: '정보' }).click();
@@ -335,7 +335,7 @@ test.describe('사진: 휴대폰 (iOS 사진)', () => {
 		expect(Math.round(square.height)).toBe(Math.round(square.width));
 		expect(Math.round(square.y)).toBe(Math.round((await viewer.boundingBox())!.y));
 
-		// 아래 막대에는 Safari(프로젝트 페이지) 단추가 없다. 프로젝트 페이지는 정보에서 연다
+		// 아래 막대에는 Safari(프로젝트 페이지) 버튼이 없다. 프로젝트 페이지는 정보에서 연다
 		await expect(viewer.locator('.photos-phone-viewer-bar').getByRole('button')).toHaveCount(3);
 		await info.getByRole('button', { name: 'QRU 큐알유 페이지 열기…' }).click();
 		await expect(appWindow(page, 'safari')).toBeVisible();

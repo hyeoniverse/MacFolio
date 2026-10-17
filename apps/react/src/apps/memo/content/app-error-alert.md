@@ -33,7 +33,7 @@ Chrome은 'Failed to fetch dynamically imported module', Safari는 'Importing a 
 
 ## OS 경고창으로
 
-안내 모양도 바꿨다. 예전 안내는 화면 가운데의 흰 상자에 앱 이름을 코드 이름 그대로(memo) 쓰고 단추 하나만 있었다. 이제 메모를 지울 때 쓰는 공통 경고창(AlertDialog)을 화면 전체 위에 띄운다.
+안내 모양도 바꿨다. 예전 안내는 화면 가운데의 흰 상자에 앱 이름을 코드 이름 그대로(memo) 쓰고 버튼 하나만 있었다. 이제 메모를 지울 때 쓰는 공통 경고창(AlertDialog)을 화면 전체 위에 띄운다.
 
 ![데스크톱 전후](./images/app-error-alert-desktop.jpg '전: memo 앱에서 문제가 발생했습니다 [다시 열기] / 후: 굵은 제목, 설명, [닫기]와 [새로고침] 또는 [다시 열기]')
 

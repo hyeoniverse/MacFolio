@@ -52,7 +52,7 @@ const FormatTools = () => {
 	};
 	const quick = { onPointerDown: keepFocus, onMouseDown: keepFocus };
 	const attach = () => attachInput.current?.click();
-	// 표 안에서는 표 단추가 표 편집 메뉴를 연다
+	// 표 안에서는 표 버튼이 표 편집 메뉴를 연다
 	const table = state.table;
 
 	return (

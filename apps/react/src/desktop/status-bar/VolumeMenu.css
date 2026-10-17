@@ -9,7 +9,7 @@
 	box-shadow: 0 0 0.8rem rgba(0, 0, 0, 0.6);
 
 	overflow: hidden;
-	/* body에 그리고 left·top은 음량 단추 아래 가운데 (VolumeMenu.tsx의 placeBelow) */
+	/* body에 그리고 left·top은 음량 버튼 아래 가운데 (VolumeMenu.tsx의 placeBelow) */
 	position: fixed;
 	z-index: var(--z-menu);
 

@@ -109,12 +109,12 @@
 .menu-item-player {
 	display: flex;
 	align-items: center;
-	/* 재생 단추끼리는 한 묶음이라 조금 더 붙인다 */
+	/* 재생 버튼끼리는 한 묶음이라 조금 더 붙인다 */
 	gap: 0.15rem;
 }
 
-/* 메뉴 막대의 아이콘 단추 (재생·음량): 모두 같은 칸, 같은 글자 크기, 줄 높이 1이라 아이콘의 세로 자리가 같다 */
-/* 단추가 아닌 아이콘 (배터리)도 같은 칸 */
+/* 메뉴 막대의 아이콘 버튼 (재생·음량): 모두 같은 칸, 같은 글자 크기, 줄 높이 1이라 아이콘의 세로 자리가 같다 */
+/* 버튼이 아닌 아이콘 (배터리)도 같은 칸 */
 .macos-statusbar .statusbar-icon,
 .macos-statusbar .statusbar-icon-button {
 	display: grid;
@@ -208,7 +208,7 @@
 	visibility: hidden;
 }
 
-/* Wi-Fi 자리의 서버 상태 단추: 막대 아이콘이라 글자 아이콘보다 조금 크게 */
+/* Wi-Fi 자리의 서버 상태 버튼: 막대 아이콘이라 글자 아이콘보다 조금 크게 */
 .macos-statusbar .server-menu-button {
 	font-size: 0.85rem;
 }

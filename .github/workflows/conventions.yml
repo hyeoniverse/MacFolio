@@ -44,7 +44,7 @@ jobs:
           fi
 
           if [[ ! "$TITLE" =~ $message ]]; then
-            echo "::error::PR 제목이 규칙과 다릅니다: '$TITLE' (예: feat: 이미지 내려받기 단추)"
+            echo "::error::PR 제목이 규칙과 다릅니다: '$TITLE' (예: feat: 이미지 내려받기 버튼)"
             failed=1
           fi
 

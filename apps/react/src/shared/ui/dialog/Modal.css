@@ -25,7 +25,7 @@
 		animation: pop-in var(--duration) var(--ease-spring);
 	}
 
-	/* 열 때 상자에 초점을 둘 수 있다 (초점 둘 단추가 없는 창). 테두리는 그리지 않는다 */
+	/* 열 때 상자에 초점을 둘 수 있다 (초점 둘 버튼이 없는 창). 테두리는 그리지 않는다 */
 	.ui-modal:focus {
 		outline: none;
 	}

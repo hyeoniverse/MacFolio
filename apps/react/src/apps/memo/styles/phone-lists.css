@@ -1,6 +1,6 @@
 /* 메모 앱: 휴대폰 폴더·목록 화면 */
 
-/* 휴대폰의 폴더·목록 화면 (iOS 메모처럼): 떠 있는 단추, 큰 제목, 회색 바탕 위 흰 카드 묶음, 아래 검색 알약 */
+/* 휴대폰의 폴더·목록 화면 (iOS 메모처럼): 떠 있는 버튼, 큰 제목, 회색 바탕 위 흰 카드 묶음, 아래 검색 알약 */
 .memo-phone-title,
 .memo-folder-group-toggle,
 .memo-folders-edit {
@@ -25,7 +25,7 @@
 
 /* 큰 제목: 폴더 화면은 '폴더', 목록은 폴더 이름과 메모 수.
 	   제목 줄은 떠 있는 뒤로 가기와 같은 줄(높이 44px)이고, 그 오른쪽(왼쪽 16 + 44 + 20)에서 시작한다.
-	   오른쪽은 떠 있는 단추(정렬·••• 또는 새로운 폴더) 자리를 비운다 */
+	   오른쪽은 떠 있는 버튼(정렬·••• 또는 새로운 폴더) 자리를 비운다 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-title {
 	display: block;
 	margin: 0 4px 16px;
@@ -59,7 +59,7 @@
 	padding: var(--phone-top) 16px 96px;
 }
 
-/* 새로운 폴더 (관리자): 오른쪽 위의 동그란 단추 */
+/* 새로운 폴더 (관리자): 오른쪽 위의 동그란 버튼 */
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-sidebar-bar:has(.memo-new-folder-button) {
 	position: absolute;
 	top: var(--phone-top);
@@ -78,7 +78,7 @@
 	font-size: 19px;
 }
 
-/* 묶음 이름('블로그')과 오른쪽의 접기 단추 */
+/* 묶음 이름('블로그')과 오른쪽의 접기 버튼 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-group-head {
 	display: flex;
 	align-items: center;
@@ -333,7 +333,7 @@
 	margin: 0 4px 12px;
 }
 
-/* 목록 맨 위의 검색 줄 대신, 넘기는 칸 밖에 떠 있는 단추들을 쓴다 (Memo.tsx의 memo-phone-list-top·memo-list-bottom) */
+/* 목록 맨 위의 검색 줄 대신, 넘기는 칸 밖에 떠 있는 버튼들을 쓴다 (Memo.tsx의 memo-phone-list-top·memo-list-bottom) */
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-compact-tools {
 	display: none;
 }
@@ -375,7 +375,7 @@
 	font-size: var(--text-body);
 }
 
-/* 글자 알약 단추 (완료, 메모 선택의 이동·삭제, 폴더 편집) */
+/* 글자 알약 버튼 (완료, 메모 선택의 이동·삭제, 폴더 편집) */
 .container.mobile :where(.memo-shell[data-compact]) :is(.memo-phone-pill, .memo-folders-edit) {
 	display: inline-flex;
 	flex: none;

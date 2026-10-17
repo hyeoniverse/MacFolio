@@ -8,7 +8,7 @@ test.describe('데스크톱', () => {
 		await enterDesktop(page);
 		const bar = page.locator('.macos-statusbar');
 		const clock = bar.locator('.time-display-now');
-		// 시계 바로 옆(배터리 왼쪽)의 Wi-Fi 자리: 서버 상태 단추
+		// 시계 바로 옆(배터리 왼쪽)의 Wi-Fi 자리: 서버 상태 버튼
 		const wifi = bar.getByRole('button', { name: /^서버 상태/ });
 		await expect(clock).toHaveText('1:11 AM');
 		const before = (await wifi.boundingBox())!;
@@ -19,7 +19,7 @@ test.describe('데스크톱', () => {
 		expect(after.x).toBe(before.x);
 	});
 
-	test('메뉴 막대의 음량 단추를 누르면 음량 창이 그 바로 아래 가운데에 열리고, 바깥을 누르거나 Esc로 닫힌다', async ({
+	test('메뉴 막대의 음량 버튼을 누르면 음량 창이 그 바로 아래 가운데에 열리고, 바깥을 누르거나 Esc로 닫힌다', async ({
 		page,
 	}) => {
 		await enterDesktop(page);
@@ -34,7 +34,7 @@ test.describe('데스크톱', () => {
 		expect(box.y).toBeGreaterThan(buttonBox.y + buttonBox.height);
 		expect(box.y - (buttonBox.y + buttonBox.height)).toBeLessThan(12);
 
-		// 음량을 바꾸면 단추 이름도 바뀐다
+		// 음량을 바꾸면 버튼 이름도 바뀐다
 		await popup.getByRole('slider', { name: '음량' }).fill('0.3');
 		await expect(page.locator('.macos-statusbar').getByRole('button', { name: '음량 30%' })).toBeVisible();
 
@@ -63,7 +63,7 @@ test.describe('데스크톱', () => {
 		await expect(memo.locator('.active-indicator')).toHaveCount(0);
 	});
 
-	test('메뉴 막대의 이전·재생·다음·음량 단추는 같은 크기로 한 줄에 나란히 선다', async ({ page }) => {
+	test('메뉴 막대의 이전·재생·다음·음량 버튼은 같은 크기로 한 줄에 나란히 선다', async ({ page }) => {
 		await enterDesktop(page);
 		const player = page.locator('.macos-statusbar').getByRole('group', { name: '음악' });
 		const buttons = player.getByRole('button');
@@ -269,7 +269,7 @@ test.describe('데스크톱', () => {
 		await expect(notice).toBeVisible();
 		expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(page.url());
 
-		// macOS 알림처럼 마우스를 올리면 닫기 단추가 보인다
+		// macOS 알림처럼 마우스를 올리면 닫기 버튼이 보인다
 		await notice.hover();
 		await notice.getByRole('button', { name: '알림 닫기' }).click();
 		await expect(notice).toBeHidden();

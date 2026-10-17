@@ -137,7 +137,7 @@
 	font-size: var(--text-subhead);
 }
 
-/* macOS: 마우스를 올리면 왼쪽 위 모서리에 닫기 단추 */
+/* macOS: 마우스를 올리면 왼쪽 위 모서리에 닫기 버튼 */
 .notification-close {
 	display: grid;
 	place-items: center;

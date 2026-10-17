@@ -8,7 +8,7 @@
 	--weather-panel: rgba(255, 255, 255, 0.14);
 	--weather-line: rgba(255, 255, 255, 0.22);
 	--weather-dim: rgba(255, 255, 255, 0.72);
-	/* 날씨 칸의 좌우 여백. 아래 막대(장소 점·목록 단추)도 같은 선에 맞춘다 */
+	/* 날씨 칸의 좌우 여백. 아래 막대(장소 점·목록 버튼)도 같은 선에 맞춘다 */
 	--weather-gutter: 28px;
 	/* 밤하늘의 별 (밤일 때만 그린다) */
 	--weather-stars: none;
@@ -115,7 +115,7 @@
 	overflow-y: auto;
 	/*
 	 * 창 위쪽 끌기 자리(신호등 줄, z-index 3)보다 아래에 둔다. 사이드바째 올리면 어두운 사이드바가 신호등을 덮는다.
-	 * 신호등 줄(.weather-lights-space)만 그 밑에 깔리고, 사이드바 단추는 사이드바 밖에서 따로 올린다
+	 * 신호등 줄(.weather-lights-space)만 그 밑에 깔리고, 사이드바 버튼은 사이드바 밖에서 따로 올린다
 	 */
 	position: relative;
 }
@@ -124,15 +124,15 @@
 	display: none;
 }
 
-/* 신호등 줄: 창의 신호등 단추가 이 위에 떠 있다 (오른쪽 끝에 사이드바 단추) */
+/* 신호등 줄: 창의 신호등 버튼이 이 위에 떠 있다 (오른쪽 끝에 사이드바 버튼) */
 .weather-lights-space {
 	flex: none;
 	height: 36px;
 }
 
 /*
- * 사이드바 단추: 사이드바 오른쪽 위(신호등 줄 끝). 창 위쪽 끌기 자리(z-index 3) 위로 올려 누를 수 있게 한다.
- * 자리 = 사이드바 바깥 여백 8 + 너비 250 - 안쪽 여백 10 - 단추 30, 위로는 8 + (36 - 26) / 2
+ * 사이드바 버튼: 사이드바 오른쪽 위(신호등 줄 끝). 창 위쪽 끌기 자리(z-index 3) 위로 올려 누를 수 있게 한다.
+ * 자리 = 사이드바 바깥 여백 8 + 너비 250 - 안쪽 여백 10 - 버튼 30, 위로는 8 + (36 - 26) / 2
  */
 .weather-sidebar-toggle {
 	position: absolute;
@@ -656,14 +656,14 @@
 	color: inherit;
 }
 
-/* 장소 목록 단추: iOS 모양에서만 (넓으면 목록이 늘 보인다) */
+/* 장소 목록 버튼: iOS 모양에서만 (넓으면 목록이 늘 보인다) */
 .weather-bottom-bar {
 	display: none;
 }
 
 /*
  * ─── iOS 모양: 휴대폰 화면이거나 날씨 칸이 640px 이하 (Weather.tsx의 data-compact) ───
- * 날씨만 보이고, 아래 막대에 장소 점과 목록 단추. 목록은 덮어 연다
+ * 날씨만 보이고, 아래 막대에 장소 점과 목록 버튼. 목록은 덮어 연다
  */
 .weather[data-compact] .weather-sidebar {
 	position: absolute;
@@ -692,7 +692,7 @@
 	opacity: 1;
 }
 
-/* 접기는 넓은 창의 것 (iOS 모양은 목록을 덮어 연다. 사이드바 단추도 그리지 않는다) */
+/* 접기는 넓은 창의 것 (iOS 모양은 목록을 덮어 연다. 사이드바 버튼도 그리지 않는다) */
 .weather[data-compact] .weather-sidebar.hidden {
 	display: flex;
 }
@@ -761,7 +761,7 @@
 	padding-bottom: 96px;
 }
 
-/* 좌우는 날씨 칸의 여백과 같은 선 (목록 단추의 바깥 끝이 카드 끝과 맞는다) */
+/* 좌우는 날씨 칸의 여백과 같은 선 (목록 버튼의 바깥 끝이 카드 끝과 맞는다) */
 .weather[data-compact] .weather-bottom-bar {
 	position: absolute;
 	right: var(--weather-gutter);

@@ -95,7 +95,7 @@
 }
 
 .bin-toolbar {
-	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 둔다. 단추가 생기면 단추만 위로 올린다 */
+	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 둔다. 버튼이 생기면 버튼만 위로 올린다 */
 	display: flex;
 	flex: none;
 	align-items: center;
@@ -171,7 +171,7 @@
 	justify-self: end;
 }
 
-/* 사이트가 비울 수 없는 줄: 비우기 단추 자리에 어디서 지우는지 */
+/* 사이트가 비울 수 없는 줄: 비우기 버튼 자리에 어디서 지우는지 */
 .bin-data-elsewhere {
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption2);

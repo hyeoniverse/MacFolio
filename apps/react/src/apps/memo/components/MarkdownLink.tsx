@@ -45,7 +45,7 @@ function scrollToAnchor(link: HTMLAnchorElement, id: string) {
 /**
  * 글 본문의 링크. 이 사이트의 앱 항목(/memo/<글>, /safari/<프로젝트>)은 새 탭이 아니라 사이트 안에서 연다:
  * 메모 글은 지금 메모 앱에서 그 글로, 프로젝트는 Safari의 그 탭으로 (Finder가 여는 것과 같은 길, openRequest).
- * ⌘·Ctrl·Shift를 누르거나 가운데 단추로 누르면 브라우저 기본대로 (새 탭 등). 바깥 링크는 새 탭에서 연다
+ * ⌘·Ctrl·Shift를 누르거나 가운데 버튼으로 누르면 브라우저 기본대로 (새 탭 등). 바깥 링크는 새 탭에서 연다
  */
 const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 	const { openApp } = useAppState();

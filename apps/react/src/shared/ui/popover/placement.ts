@@ -15,7 +15,7 @@ export interface Point {
 	top: number;
 }
 
-/** 기준이 되는 단추 등의 자리 (getBoundingClientRect) */
+/** 기준이 되는 버튼 등의 자리 (getBoundingClientRect) */
 export interface AnchorRect {
 	left: number;
 	top: number;
@@ -45,7 +45,7 @@ export function placeBelow(
 	view: Size = getViewport()
 ): Point {
 	const left = align === 'center' ? anchor.left + anchor.width / 2 - size.width / 2 : anchor.left;
-	// 아래에 자리가 없고 위에는 있으면 위로 연다 (휴대폰 아래 도구 막대의 단추처럼)
+	// 아래에 자리가 없고 위에는 있으면 위로 연다 (휴대폰 아래 도구 막대의 버튼처럼)
 	const below = anchor.bottom + gap;
 	const above = anchor.top - gap - size.height;
 	const top = below + size.height > view.height - EDGE && above >= EDGE ? above : below;
