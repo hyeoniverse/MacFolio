@@ -393,57 +393,6 @@
 	white-space: nowrap;
 }
 
-.cd-voice-script {
-	display: grid;
-	gap: 6px;
-	margin: 0;
-	padding: 10px 12px;
-	border: 1px solid var(--cr-line);
-	border-radius: var(--radius-md);
-	background-color: var(--cr-bg);
-}
-
-.cd-voice-script > div {
-	display: grid;
-	grid-template-columns: 64px minmax(0, 1fr);
-	gap: 8px;
-}
-
-.cd-voice-script dt {
-	color: var(--cr-muted);
-	font-size: var(--text-caption);
-}
-
-.cd-voice-script dd {
-	margin: 0;
-}
-
-.cd-voice-script code {
-	padding: 0 3px;
-	border-radius: var(--radius-xs);
-	background-color: color-mix(in srgb, var(--sp-accent) 12%, transparent);
-	color: var(--sp-accent);
-	font-family: ui-monospace, monospace;
-	font-size: var(--text-caption);
-}
-
-.cd-voice-script mark {
-	padding: 0 2px;
-	border-radius: 3px;
-	background-color: color-mix(in srgb, var(--sp-accent) 18%, transparent);
-	color: inherit;
-}
-
-.cd-voice-script[data-locked] dd {
-	opacity: 0.55;
-}
-
-.cd-lock {
-	display: block;
-	color: var(--sp-accent);
-	font-size: var(--text-caption2);
-}
-
 .cd-lyric {
 	color: var(--cr-muted);
 }

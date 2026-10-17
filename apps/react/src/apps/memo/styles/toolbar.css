@@ -346,13 +346,3 @@
 	color: var(--memo-muted);
 	font-size: var(--text-caption2);
 }
-
-.memo-toolbar-title {
-	flex: 1;
-	min-width: 0;
-	margin-left: 4px;
-	overflow: hidden;
-	font-size: var(--text-subhead);
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
