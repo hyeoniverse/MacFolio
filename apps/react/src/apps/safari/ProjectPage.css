@@ -53,12 +53,6 @@
 	text-align: center;
 }
 
-.sp-hero-main {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
 .sp-app-icon {
 	display: block;
 	width: 72px;
@@ -242,28 +236,6 @@
 	line-height: 1.5;
 }
 
-/* 기능 타일 */
-.sp-tiles {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 20px;
-	list-style: none;
-}
-
-.sp-tiles li {
-	padding: 32px;
-	border-radius: 28px;
-	background-color: var(--sp-alt);
-}
-
-.sp-tiles li.wide {
-	grid-column: span 2;
-}
-
-.sp-tiles li.wide h3 {
-	font-size: 28px;
-}
-
 /* 만든 방식 */
 .sp-points {
 	display: grid;
@@ -279,46 +251,6 @@
 
 .sp .sp-points p {
 	color: var(--sp-dark-muted);
-}
-
-/* 진행 과정 */
-.sp-timeline {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-	gap: 24px 16px;
-	list-style: none;
-}
-
-.sp-timeline li {
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-	position: relative;
-	padding-top: 22px;
-	border-top: 2px solid var(--sp-line);
-}
-
-.sp-timeline li::before {
-	position: absolute;
-	top: -7px;
-	left: 0;
-	width: 12px;
-	height: 12px;
-	border-radius: 50%;
-	background-color: var(--sp-accent);
-	content: '';
-}
-
-.sp-timeline time {
-	font-size: 21px;
-	font-weight: 700;
-	font-variant-numeric: tabular-nums;
-}
-
-.sp-timeline span {
-	color: var(--sp-muted);
-	font-size: var(--text-subhead);
-	line-height: 1.45;
 }
 
 /* 맡은 일: 왼쪽 제목, 오른쪽 목록 */
@@ -413,19 +345,9 @@
 	}
 
 	.sp-facts,
-	.sp-tiles,
 	.sp-points,
 	.sp-split {
 		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.sp-tiles li.wide {
-		grid-column: auto;
-	}
-
-	.sp-tiles li {
-		padding: 24px;
-		border-radius: 22px;
 	}
 
 	.sp-headline {

@@ -240,22 +240,6 @@
 	}
 }
 
-.tm-jump {
-	display: block;
-	margin-top: 14px;
-	padding: 0;
-	border: none;
-	background: none;
-	color: var(--tm-muted);
-	font: inherit;
-	text-align: left;
-	cursor: pointer;
-}
-
-.tm-jump:hover {
-	color: var(--tm-green);
-}
-
 /* ─── 직접 쳐 보기 ─── */
 .tm-shell {
 	cursor: text;
