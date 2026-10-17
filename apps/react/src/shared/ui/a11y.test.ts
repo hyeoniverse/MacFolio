@@ -16,23 +16,23 @@ import ShareIcon from '@/shared/ui/ShareIcon';
 const html = (element: ReactElement) => renderToStaticMarkup(element);
 const noop = () => {};
 
-describe('단추', () => {
-	it('아이콘 단추: label이 이름(aria-label)과 마우스 설명(title)이 되고, 아이콘은 읽지 않는다', () => {
+describe('버튼', () => {
+	it('아이콘 버튼: label이 이름(aria-label)과 마우스 설명(title)이 되고, 아이콘은 읽지 않는다', () => {
 		const out = html(createElement(IconButton, { label: '지우기', icon: 'fa-solid fa-trash-can' }));
 		expect(out).toContain('aria-label="지우기"');
 		expect(out).toContain('title="지우기"');
 		expect(out).toContain('<i class="fa-solid fa-trash-can" aria-hidden="true">');
-		// 폼 안에서도 제출 단추가 되지 않게 기본은 button
+		// 폼 안에서도 제출 버튼이 되지 않게 기본은 button
 		expect(out).toContain('type="button"');
 	});
 
-	it('아이콘 단추: label 없이 쓰려면 보이는 글자가 있어야 한다 (타입이 막는다)', () => {
+	it('아이콘 버튼: label 없이 쓰려면 보이는 글자가 있어야 한다 (타입이 막는다)', () => {
 		expect(html(createElement(IconButton, { children: '‹ 블로그' }))).toContain('‹ 블로그');
 		// @ts-expect-error 아이콘만 있고 이름이 없다
 		html(createElement(IconButton, { icon: 'fa-solid fa-xmark' }));
 	});
 
-	it('글자 단추: 글자가 이름이고, 앞 아이콘은 읽지 않는다', () => {
+	it('글자 버튼: 글자가 이름이고, 앞 아이콘은 읽지 않는다', () => {
 		const out = html(createElement(Button, { icon: 'fa-solid fa-paper-plane', tone: 'primary' }, '보내기'));
 		expect(out).toMatch(
 			/<button type="button" class="ui-button primary"><i class="fa-solid fa-paper-plane" aria-hidden="true"><\/i>보내기<\/button>/
@@ -65,7 +65,7 @@ describe('입력', () => {
 		);
 	});
 
-	it('날짜 고르기: 단추 이름이 고른 날짜와 할 일을 말하고, 달력 창을 연다고 알린다', () => {
+	it('날짜 고르기: 버튼 이름이 고른 날짜와 할 일을 말하고, 달력 창을 연다고 알린다', () => {
 		const empty = html(createElement(DatePicker, { value: '', onChange: noop, label: '게시일' }));
 		expect(empty).toContain('aria-label="게시일 고르기"');
 		expect(empty).toContain('aria-haspopup="dialog"');
@@ -82,7 +82,7 @@ describe('창', () => {
 		expect(out).toMatch(/role="dialog" aria-modal="true" aria-label="사진 정보"/);
 	});
 
-	it('경고창: 역할 alertdialog, 제목이 이름, 확인 단추만 둘 수도 있다', () => {
+	it('경고창: 역할 alertdialog, 제목이 이름, 확인 버튼만 둘 수도 있다', () => {
 		const both = html(
 			createElement(AlertDialog, { title: '삭제할까요?', confirmLabel: '삭제', onConfirm: noop, onCancel: noop })
 		);
