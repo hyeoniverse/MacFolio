@@ -11,7 +11,7 @@ const STAGES: { key: Stage; label: string }[] = [
 
 /**
  * 글 한 편의 일생: 초안을 예약하면 DB 안의 pg_cron이 매분 확인해 발행하고, 저장마다 버전이 오르고, 지우면 휴지통에서
- * 30일(인기 글은 90일) 뒤 매일 03:00 정리 작업이 영구 삭제한다. 단추로 넘기며 칼럼 값이 바뀌는 모습을 본다
+ * 30일(인기 글은 90일) 뒤 매일 03:00 정리 작업이 영구 삭제한다. 버튼으로 넘기며 칼럼 값이 바뀌는 모습을 본다
  */
 export const Lifecycle: React.FC = () => {
 	const [stage, setStage] = useState<Stage>('draft');

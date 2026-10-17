@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-/** 코드 블록: 오른쪽 위의 복사 단추로 코드를 클립보드에 넣는다. 복사하면 잠깐 체크 표시 (편집기의 코드 블록, 이미지 내려받기 단추와 같은 모양) */
+/** 코드 블록: 오른쪽 위의 복사 버튼으로 코드를 클립보드에 넣는다. 복사하면 잠깐 체크 표시 (편집기의 코드 블록, 이미지 내려받기 버튼과 같은 모양) */
 const CodeBlock = ({ children, ...props }: React.ComponentProps<'pre'>) => {
 	const pre = useRef<HTMLPreElement>(null);
 	const [copied, setCopied] = useState(false);

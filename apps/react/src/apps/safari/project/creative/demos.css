@@ -403,7 +403,7 @@
 	background: linear-gradient(transparent 62%, color-mix(in srgb, var(--sp-accent) 22%, transparent) 62%);
 }
 
-/* 만든 음성 듣기: 재생 단추, 끌 수 있는 재생 막대, 시간 */
+/* 만든 음성 듣기: 재생 버튼, 끌 수 있는 재생 막대, 시간 */
 .cd-player {
 	display: flex;
 	align-items: center;

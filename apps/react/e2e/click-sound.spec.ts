@@ -58,7 +58,7 @@ test.describe('클릭 소리', () => {
 		await expect(appWindow(page, 'memo')).toBeVisible();
 		await expect.poll(() => sounds.count()).toBe(2);
 
-		// 오른쪽 단추는 소리 없이
+		// 오른쪽 버튼은 소리 없이
 		await appWindow(page, 'memo').click({ button: 'right', position: { x: 300, y: 300 } });
 		await page.waitForTimeout(200);
 		expect(await sounds.count()).toBe(2);

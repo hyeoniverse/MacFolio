@@ -37,7 +37,7 @@
 	text-align: left;
 }
 
-/* 링크 기본값: reset 층이라 탭·단추(.gh-tab, .gh-button)에 적은 색·밑줄이 이긴다 (styles/layers.css) */
+/* 링크 기본값: reset 층이라 탭·버튼(.gh-tab, .gh-button)에 적은 색·밑줄이 이긴다 (styles/layers.css) */
 @layer reset {
 	.gh a {
 		color: var(--gh-link);
@@ -312,7 +312,7 @@
 	color: var(--gh-muted);
 }
 
-/* shields.io 배지를 바꾼 단추 */
+/* shields.io 배지를 바꾼 버튼 */
 .gh-contact-button {
 	display: inline-flex;
 	align-items: center;
@@ -684,8 +684,8 @@
 	color: #ab7df8;
 }
 
-/* 휴대폰: 제목 막대가 없다. 첫 줄은 왼쪽 위에 떠 있는 뒤로 가기(16~60px) 옆에서 시작하고, 그 단추와 높이를 맞춘다 (Window.css) */
-/* 휴대폰 머리: 첫 줄(로고·이름)은 떠 있는 뒤로 가기와 같은 줄(높이 44px), 그 단추 오른쪽 20px부터.
+/* 휴대폰: 제목 막대가 없다. 첫 줄은 왼쪽 위에 떠 있는 뒤로 가기(16~60px) 옆에서 시작하고, 그 버튼과 높이를 맞춘다 (Window.css) */
+/* 휴대폰 머리: 첫 줄(로고·이름)은 떠 있는 뒤로 가기와 같은 줄(높이 44px), 그 버튼 오른쪽 20px부터.
    탭 줄은 들여 쓰지 않고 화면 폭을 다 쓴다 */
 .container.mobile .gh-header {
 	gap: 0 10px;

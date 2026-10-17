@@ -181,7 +181,7 @@
 	object-position: top left;
 }
 
-/* ─── 단추 ─── */
+/* ─── 버튼 ─── */
 .bt-links {
 	display: flex;
 	flex-wrap: wrap;

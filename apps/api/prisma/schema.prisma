@@ -167,7 +167,7 @@ model Wallpaper {
   @@index([createdAt])
 }
 
-/// 메시지 앱의 피드백 하나 (쓰기 단추로 남긴 것). 목록의 항목 하나가 된다.
+/// 메시지 앱의 피드백 하나 (쓰기 버튼으로 남긴 것). 목록의 항목 하나가 된다.
 /// 사이트 주인의 고정 안내는 여기 없다 (안내 글은 프론트엔드에 있고, 거기 단 답글은 GuestMessage.threadId가 비어 있다)
 model MessageThread {
   id          String         @id @default(cuid())

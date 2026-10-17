@@ -13,7 +13,7 @@ interface Options {
 	onCancel: () => void;
 }
 
-/** 쓸고 난 직후의 click은 버린다 (쓸기를 시작한 단추가 눌리지 않게) */
+/** 쓸고 난 직후의 click은 버린다 (쓸기를 시작한 버튼이 눌리지 않게) */
 const CLICK_AFTER_SWIPE_MS = 500;
 
 /**

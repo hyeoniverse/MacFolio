@@ -13,11 +13,11 @@ summary: 경고창, 배경화면 이름 바꾸기, 키보드 단축키, 로그�
 
 1. 반투명 오버레이를 깔고 그 위에 패널을 가운데 정렬한다
 2. 패널에 `role="dialog"`(또는 `alertdialog`)·`aria-modal`·`aria-label`을 붙인다
-3. 열릴 때 특정 요소(확인 단추, 입력 칸)로 포커스를 옮긴다
+3. 열릴 때 특정 요소(확인 버튼, 입력 칸)로 포커스를 옮긴다
 4. Esc 키나 오버레이 클릭으로 닫는다
 5. 닫힐 때 오버레이는 `fade-out`, 패널은 `pop-out` 애니메이션을 재생한 뒤 DOM에서 제거한다
 
-이 동작이 다섯 파일에 각각 구현되어 있었다. `window.addEventListener('keydown', …)`로 Esc를 처리하는 코드 4곳, `event.target === event.currentTarget`으로 오버레이 클릭을 구분하는 코드 4곳, `useExitMotion('fade-out')` 호출 5곳. 구현마다 차이도 있었다. Launchpad는 Esc를 처리하지 않고 포커스도 옮기지 않았다. 로그인 결과는 Enter 키를 따로 처리했는데, 확인 단추에 포커스가 있으므로 Enter는 단추의 기본 동작으로 충분하다. 이름 바꾸기는 Esc를 `form`의 `onKeyDown`에서만 받아, 포커스가 폼 밖에 있으면 닫히지 않았다.
+이 동작이 다섯 파일에 각각 구현되어 있었다. `window.addEventListener('keydown', …)`로 Esc를 처리하는 코드 4곳, `event.target === event.currentTarget`으로 오버레이 클릭을 구분하는 코드 4곳, `useExitMotion('fade-out')` 호출 5곳. 구현마다 차이도 있었다. Launchpad는 Esc를 처리하지 않고 포커스도 옮기지 않았다. 로그인 결과는 Enter 키를 따로 처리했는데, 확인 버튼에 포커스가 있으므로 Enter는 버튼의 기본 동작으로 충분하다. 이름 바꾸기는 Esc를 `form`의 `onKeyDown`에서만 받아, 포커스가 폼 밖에 있으면 닫히지 않았다.
 
 ![공통 동작은 Modal 컴포넌트에, 콘텐츠는 다이얼로그마다](./images/ui-modal-layers.svg '변경 전에는 다섯 다이얼로그가 공통 동작을 각자 구현했고, 변경 후에는 Modal이 공통 동작을 맡고 다이얼로그는 콘텐츠만 렌더링한다')
 
@@ -48,7 +48,7 @@ summary: 경고창, 배경화면 이름 바꾸기, 키보드 단축키, 로그�
 
 **이 Mac에 관하여**는 가운데에 뜨지만 오버레이가 없고, 빈 영역을 드래그해 이동할 수 있으며, 뒤의 다른 창을 클릭할 수 있다. 모달이 아니라 일반 창이다. `role="dialog"`만 같아서 후보에 넣었다가 코드를 확인하고 제외했다. 포함하려면 "오버레이 없음"·"드래그 이동" 옵션이 필요해진다.
 
-**이름 바꾸기의 form**: Modal의 패널은 `div`이므로 `form`이 그 안에 들어간다. 그러자 패널의 `display: grid; gap`이 `form` 하나에만 적용되어 입력 칸과 단추 사이 간격이 사라졌다. `form`에 같은 grid를 지정해 해결했다. Modal에 `as="form"` prop을 두는 방법도 있지만 호출처가 하나라 추가하지 않았다.
+**이름 바꾸기의 form**: Modal의 패널은 `div`이므로 `form`이 그 안에 들어간다. 그러자 패널의 `display: grid; gap`이 `form` 하나에만 적용되어 입력 칸과 버튼 사이 간격이 사라졌다. `form`에 같은 grid를 지정해 해결했다. Modal에 `as="form"` prop을 두는 방법도 있지만 호출처가 하나라 추가하지 않았다.
 
 ## 검증
 

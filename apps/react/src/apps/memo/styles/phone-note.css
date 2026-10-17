@@ -1,6 +1,6 @@
-/* 메모 앱: 휴대폰 본문의 떠 있는 단추와 아래 도구 */
+/* 메모 앱: 휴대폰 본문의 떠 있는 버튼과 아래 도구 */
 
-/* 휴대폰 본문 (iOS 메모처럼): 떠 있는 단추들. 휴대폰의 한 칸 보기에서만 보인다 */
+/* 휴대폰 본문 (iOS 메모처럼): 떠 있는 버튼들. 휴대폰의 한 칸 보기에서만 보인다 */
 .memo-phone-top,
 .memo-phone-bottom {
 	display: none;
@@ -10,12 +10,12 @@
 	position: relative;
 }
 
-/* 본문 위 도구 줄 대신 떠 있는 단추를 쓴다 */
+/* 본문 위 도구 줄 대신 떠 있는 버튼을 쓴다 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader-compact-bar {
 	display: none;
 }
 
-/* 오른쪽 위: 공유, ••• (뒤로 가기 동그란 단추와 같은 높이) */
+/* 오른쪽 위: 공유, ••• (뒤로 가기 동그란 버튼과 같은 높이) */
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-top {
 	display: flex;
 	align-items: center;
@@ -41,7 +41,7 @@
 	font-size: 19px;
 }
 
-/* 떠 있는 단추 바로 아래부터 본문, 아래 도구에 가리지 않게 여백 */
+/* 떠 있는 버튼 바로 아래부터 본문, 아래 도구에 가리지 않게 여백 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-scroll {
 	padding-top: calc(var(--phone-top) + 58px);
 	padding-bottom: 96px;
@@ -52,7 +52,7 @@
 	font-size: 14px;
 }
 
-/* 저장 상태·게시는 날짜 줄 위의 따로 한 줄 대신, 떠 있는 단추 줄의 오른쪽 알약 왼쪽에 띄운다.
+/* 저장 상태·게시는 날짜 줄 위의 따로 한 줄 대신, 떠 있는 버튼 줄의 오른쪽 알약 왼쪽에 띄운다.
 	   날짜 줄(position: static)을 건너 .memo-reader에 맞춰 두어 본문을 넘겨도 제자리에 있다 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-meta {
 	position: static;
@@ -84,7 +84,7 @@
 	max-width: calc(100% - 68px - 76px);
 }
 
-/* 옆의 공유·••• 알약과 같은 모양: 채운 단추 대신 알약 안의 글자 단추 */
+/* 옆의 공유·••• 알약과 같은 모양: 채운 버튼 대신 알약 안의 글자 버튼 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions {
 	gap: 2px;
 	padding: 0 6px;
@@ -110,7 +110,7 @@
 	color: var(--memo-muted);
 }
 
-/* 알약에는 단추만 둔다 (글을 넣으면 알약이 길어져 좁은 화면에 맞지 않는다).
+/* 알약에는 버튼만 둔다 (글을 넣으면 알약이 길어져 좁은 화면에 맞지 않는다).
 	   저장 상태 글은 화면 읽기 프로그램에만 알리고, 변경 사항 버리기는 되돌리기 아이콘으로 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-status {
 	position: absolute;

@@ -144,7 +144,7 @@ export function followAnchor(view: EditorView, hash: string): boolean {
 	return true;
 }
 
-/** ↩ 단추 (각주 내용 끝, 읽기 화면의 되돌아가기 링크와 같은 자리·모양) */
+/** ↩ 버튼 (각주 내용 끝, 읽기 화면의 되돌아가기 링크와 같은 자리·모양) */
 function backrefWidget(label: string, number: number) {
 	return (view: EditorView) => {
 		const button = document.createElement('button');

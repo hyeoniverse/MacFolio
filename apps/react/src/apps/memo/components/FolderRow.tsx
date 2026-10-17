@@ -27,7 +27,7 @@ type RowProps = Omit<FolderSidebarProps, 'open' | 'onToggle' | 'folders' | 'tota
 	addingUnder: string | null;
 	onStartAdding: (parent: string) => void;
 	newFolderInput: React.ReactNode;
-	/** 휴대폰 폴더 화면의 편집: 줄을 눌러도 열지 않고, ••• 단추로 폴더 추가·이동·이름 변경·삭제 */
+	/** 휴대폰 폴더 화면의 편집: 줄을 눌러도 열지 않고, ••• 버튼으로 폴더 추가·이동·이름 변경·삭제 */
 	editing?: boolean;
 	/** 모든 폴더 경로 ('이 폴더 이동'의 갈 곳) */
 	movePaths?: string[];
@@ -36,7 +36,7 @@ type RowProps = Omit<FolderSidebarProps, 'open' | 'onToggle' | 'folders' | 'tota
 	onReorderStep?: (path: FolderPath, delta: number) => void;
 };
 
-/** 폴더 한 줄: 펼침 단추 + 폴더 + (마우스를 올리면) ••• 메뉴. 끌어서 다른 폴더로 옮긴다 */
+/** 폴더 한 줄: 펼침 버튼 + 폴더 + (마우스를 올리면) ••• 메뉴. 끌어서 다른 폴더로 옮긴다 */
 export const FolderRow: React.FC<RowProps> = (props) => {
 	const { node, depth, current, collapsed, onToggle, onSelect, addingUnder, newFolderInput } = props;
 	/** 메뉴를 연 자리 (null이면 닫힘) */

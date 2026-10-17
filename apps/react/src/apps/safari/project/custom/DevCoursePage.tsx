@@ -447,7 +447,7 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 		}
 	};
 
-	/** 목록의 이름: 폴더는 들어가고 파일은 읽는다 (컴포넌트로 두면 다시 그릴 때마다 단추가 갈려 누른 것이 사라진다) */
+	/** 목록의 이름: 폴더는 들어가고 파일은 읽는다 (컴포넌트로 두면 다시 그릴 때마다 버튼이 갈려 누른 것이 사라진다) */
 	const item = (name: string, dir: boolean, path: string[]) => {
 		const page = path.length === 0 ? PAGE_FILES[name] : undefined;
 		const relative = [...path.slice(cwd.length), name].join('/');
@@ -534,7 +534,7 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 			className="tm-block tm-shell"
 			aria-label="직접 쳐 보기"
 			onClick={(event) => {
-				// 글을 고르거나 단추·링크를 누른 게 아니면 입력칸으로
+				// 글을 고르거나 버튼·링크를 누른 게 아니면 입력칸으로
 				if ((event.target as HTMLElement).closest('a, button') || window.getSelection()?.toString()) return;
 				input.current?.focus();
 			}}

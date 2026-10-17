@@ -14,7 +14,7 @@ import {
 import { CONTENT_IMAGES } from '../contentImages';
 import type { PostDraft } from '../postsApi';
 
-/** 목록·카드를 끌 때 단추에 붙이는 속성 (관리자만) */
+/** 목록·카드를 끌 때 버튼에 붙이는 속성 (관리자만) */
 export type DragProps = {
 	draggable?: boolean;
 	onDragStart?: (event: React.DragEvent) => void;

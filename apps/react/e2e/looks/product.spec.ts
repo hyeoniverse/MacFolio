@@ -17,7 +17,7 @@ test('product: 예시의 모든 구역과 칸을 차례대로 그리고, 링크�
 	await expectLinks(page, article);
 });
 
-test('product: 화면 모음은 둥근 단추로 앞뒤로 넘긴다', async ({ page }) => {
+test('product: 화면 모음은 둥근 버튼으로 앞뒤로 넘긴다', async ({ page }) => {
 	const { article } = await openSample(page, 'product');
 	const screens = article.getByRole('region', { name: '화면 모음', exact: true });
 	await screens.scrollIntoViewIfNeeded();

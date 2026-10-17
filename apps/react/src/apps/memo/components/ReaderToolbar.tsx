@@ -16,7 +16,7 @@ const ReaderToolbar = ({
 	onMore,
 	search,
 }: {
-	/** 갤러리에서 연 글: 사이드바 단추와 갤러리로 돌아가기 */
+	/** 갤러리에서 연 글: 사이드바 버튼과 갤러리로 돌아가기 */
 	lead: ReactNode;
 	admin: boolean;
 	/** 관리자가 읽기 화면으로 보는 중인지. 편집할 수 있을 때만 값이 있고(아니면 null), 관리자 표시를 누르면 바뀐다 */

@@ -20,8 +20,8 @@
 	text-align: left;
 }
 
-/* 창 끌기 영역(위쪽 52px, 통합형 창의 제목 막대 z-index 3)보다 위에 둘 것: 막대의 유리 묶음·단추, 앨범 단추.
-   유리 묶음은 backdrop-filter가 쌓임 맥락을 만들어 안의 단추만 올리면 묻힌다. 묶음째 올린다 */
+/* 창 끌기 영역(위쪽 52px, 통합형 창의 제목 막대 z-index 3)보다 위에 둘 것: 막대의 유리 묶음·버튼, 앨범 버튼.
+   유리 묶음은 backdrop-filter가 쌓임 맥락을 만들어 안의 버튼만 올리면 묻힌다. 묶음째 올린다 */
 .photos-capsule,
 .photos-circle,
 .photos-pill {
@@ -45,7 +45,7 @@
 	overflow-y: auto;
 }
 
-/* 신호등 버튼 자리, 오른쪽에 사이드바 접기 단추 */
+/* 신호등 버튼 자리, 오른쪽에 사이드바 접기 버튼 */
 .photos-sidebar-top {
 	height: 48px;
 }
@@ -183,7 +183,7 @@
 	font-variant-numeric: tabular-nums;
 }
 
-/* 둥근 유리 단추 묶음 */
+/* 둥근 유리 버튼 묶음 */
 .photos-capsule {
 	display: flex;
 	align-items: center;
@@ -331,7 +331,7 @@
 }
 
 /* ─── 크게 보기: 막대 아래를 가득 채운다 ─── */
-/* z-index를 두지 않는다: 쌓임 맥락을 만들면 안의 단추가 창 끌기 영역 아래로 묻힌다 */
+/* z-index를 두지 않는다: 쌓임 맥락을 만들면 안의 버튼이 창 끌기 영역 아래로 묻힌다 */
 .photos-viewer {
 	position: absolute;
 	inset: 0;
@@ -477,7 +477,7 @@
 }
 
 /* 아주 좁은 창에서 연 사이드바: 막대 줄 아래에서 격자 위에 뜬다 (격자 폭은 그대로).
-   막대 줄(창 끌기 영역·신호등 버튼)은 비워 둬야 신호등과 사이드바 단추를 둘 다 누를 수 있다 */
+   막대 줄(창 끌기 영역·신호등 버튼)은 비워 둬야 신호등과 사이드바 버튼을 둘 다 누를 수 있다 */
 .photos.overlay {
 	grid-template-columns: minmax(0, 1fr);
 }
@@ -497,7 +497,7 @@
 	padding-left: 76px;
 }
 
-/* 떠 있는 사이드바의 머리는 신호등 자리가 필요 없다: 접기 단추만 */
+/* 떠 있는 사이드바의 머리는 신호등 자리가 필요 없다: 접기 버튼만 */
 .photos.overlay .photos-sidebar-top {
 	height: 40px;
 }
@@ -554,7 +554,7 @@
 	grid-template-columns: minmax(0, 1fr);
 }
 
-/* 막대: 제목은 남는 폭에서 말줄임, 단추는 오른쪽으로 (가운데 맞춤을 풀어 겹치지 않게) */
+/* 막대: 제목은 남는 폭에서 말줄임, 버튼은 오른쪽으로 (가운데 맞춤을 풀어 겹치지 않게) */
 .photos.compact .photos-toolbar:not(.viewer) {
 	display: flex;
 }

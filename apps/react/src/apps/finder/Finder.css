@@ -50,7 +50,7 @@
 	background-color: var(--finder-sidebar-bg);
 }
 
-/* 신호등 단추 자리 (통합형 창) */
+/* 신호등 버튼 자리 (통합형 창) */
 .finder-lights-space {
 	flex: none;
 	height: 52px;
@@ -101,7 +101,7 @@
 }
 
 .finder-toolbar {
-	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 두고 단추·찾기 칸만 위로 올린다 */
+	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 두고 버튼·찾기 칸만 위로 올린다 */
 	display: flex;
 	flex: none;
 	align-items: center;

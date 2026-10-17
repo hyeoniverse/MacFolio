@@ -29,7 +29,7 @@ export async function uploadFile(apiUrl: string, file: File): Promise<Uploaded> 
 /**
  * 파일을 차례로 올리고 커서 자리에 넣는다. 이미지는 그림으로, 나머지는 첨부 파일 링크로.
  * 도구 막대, 붙여넣기, 끌어다 놓기가 함께 쓴다. 실패하면 알림으로 이유를 보여 준다.
- * @param asImage true면 이미지가 아닌 파일은 넣지 않는다 (이미지 단추로 고른 경우)
+ * @param asImage true면 이미지가 아닌 파일은 넣지 않는다 (이미지 버튼으로 고른 경우)
  */
 export async function uploadAndInsert(
 	files: File[],

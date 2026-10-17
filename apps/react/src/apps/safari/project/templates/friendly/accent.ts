@@ -1,5 +1,5 @@
 // friendly 템플릿의 강조색: 아이콘에서 뽑은 색(useLandingAccent)이 노랑·황토·연두 쪽이면 흰 바탕에서 읽히도록 어둡게 한 값이
-// 탁한 겨자색이 된다. Stripe의 맑은 단추와 띠에 어울리지 않으므로 그런 색상이면 템플릿 기본값(Stripe 남보라, Page.css)을 쓴다
+// 탁한 겨자색이 된다. Stripe의 맑은 버튼과 띠에 어울리지 않으므로 그런 색상이면 템플릿 기본값(Stripe 남보라, Page.css)을 쓴다
 import type React from 'react';
 
 /** 'hsl(48 80% 38%)'에서 색상 각도 (못 읽으면 null) */

@@ -16,7 +16,7 @@ interface Props {
 
 const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, loading = false }) => {
 	const [query, setQuery] = useState('');
-	/** 휴대폰 검색 알약에 들어가 있는 동안. 이때 오른쪽 단추는 새 피드백 대신 검색 끝내기(×) */
+	/** 휴대폰 검색 알약에 들어가 있는 동안. 이때 오른쪽 버튼은 새 피드백 대신 검색 끝내기(×) */
 	const [focused, setFocused] = useState(false);
 	const searching = focused || query !== '';
 	/** 휴대폰은 iOS 메시지 크기의 아바타 */
@@ -128,7 +128,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 						type="button"
 						className="phone-float"
 						aria-label="검색 닫기"
-						// 누르는 순간 입력 칸이 포커스를 잃어 단추가 바뀌지 않도록
+						// 누르는 순간 입력 칸이 포커스를 잃어 버튼이 바뀌지 않도록
 						onPointerDown={(event) => event.preventDefault()}
 						onClick={() => {
 							setQuery('');

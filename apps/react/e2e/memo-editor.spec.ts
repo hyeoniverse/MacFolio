@@ -12,7 +12,7 @@ async function openMemo(page: Page, api: FakeApiState) {
 }
 
 test.describe('바로 고치기 (관리자)', () => {
-	test('글을 열면 편집 단추 없이 제목·본문·날짜·폴더를 바로 고치고, 멈추면 저장된다', async ({ page }) => {
+	test('글을 열면 편집 버튼 없이 제목·본문·날짜·폴더를 바로 고치고, 멈추면 저장된다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true, organization: { folders: ['읽을거리'] } });
 		const memo = await openMemo(page, api);
 		await expect(memo.getByTitle('관리자로 로그인했습니다')).toBeVisible();
@@ -119,7 +119,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		expect(api.posts[0]?.title).toBe('느린 기기');
 	});
 
-	test('가가 메뉴와 빠른 단추로 머리말·굵게·체크리스트·표·이미지를 넣는다', async ({ page }) => {
+	test('가가 메뉴와 빠른 버튼으로 머리말·굵게·체크리스트·표·이미지를 넣는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
@@ -168,7 +168,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await page.keyboard.press('Escape');
 		await expect(imageForm).toBeHidden();
 
-		// 사이드바를 가려 넓어지면 빠른 단추가 나온다: 표
+		// 사이드바를 가려 넓어지면 빠른 버튼이 나온다: 표
 		await memo.getByRole('button', { name: '사이드바 가리기' }).click();
 		await memo.locator('.ProseMirror p').last().click();
 		await memo.getByRole('button', { name: '표', exact: true }).click();
@@ -365,7 +365,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await page.keyboard.type('이미지 다음 줄');
 		await expect.poll(() => api.posts[0]?.body).toMatch(/"캡션 한 줄"\)\n\n이미지 다음 줄\n$/);
 
-		// 이미지를 고르면 이미지 단추로 설명·캡션을 고친다
+		// 이미지를 고르면 이미지 버튼으로 설명·캡션을 고친다
 		await figure.locator('img').click();
 		await memo.getByRole('button', { name: '서식', exact: true }).click();
 		await page.getByRole('dialog', { name: '서식' }).getByRole('menuitem', { name: '이미지 편집…' }).click();
@@ -407,7 +407,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		expect(api.uploads.map((upload) => upload.name)).toEqual(['스크린샷.png', '보고서.pdf', '붙여넣기.png']);
 	});
 
-	test('이미지: 캡션을 눌러 그 자리에서 고치고, 내려받기 단추로 받고, 끌 때 놓을 자리가 보인다', async ({ page }) => {
+	test('이미지: 캡션을 눌러 그 자리에서 고치고, 내려받기 버튼으로 받고, 끌 때 놓을 자리가 보인다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
@@ -905,14 +905,14 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect.poll(() => api.posts[0]?.body).not.toContain('|');
 	});
 
-	test('편집기의 코드 블록에도 읽기 화면과 같은 복사 단추가 있다', async ({ page }) => {
+	test('편집기의 코드 블록에도 읽기 화면과 같은 복사 버튼이 있다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
 		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 		const block = memo.locator('.ProseMirror .memo-code').first();
 		const copy = block.getByRole('button', { name: '코드 복사' });
-		// 이미지 내려받기 단추와 같은 모양 (크기·모서리·바탕·글자색)
+		// 이미지 내려받기 버튼과 같은 모양 (크기·모서리·바탕·글자색)
 		const look = (el: Element) => {
 			const style = getComputedStyle(el);
 			const rect = el.getBoundingClientRect();
@@ -931,7 +931,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		expect(api.posts).toEqual([]);
 	});
 
-	test('새 메모: 사이드바의 새로운 폴더 옆 단추로 시작하면 목록 맨 위에 새로운 메모가 생기고, 쓴 것 없이 떠나면 사라진다', async ({
+	test('새 메모: 사이드바의 새로운 폴더 옆 버튼으로 시작하면 목록 맨 위에 새로운 메모가 생기고, 쓴 것 없이 떠나면 사라진다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: true });
@@ -962,10 +962,10 @@ test.describe('바로 고치기 (관리자)', () => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
 
-		// 휴지통 단추와 우클릭 메뉴로 지운다 (묻지 않는다: 30일 동안 되살릴 수 있다)
+		// 휴지통 버튼과 우클릭 메뉴로 지운다 (묻지 않는다: 30일 동안 되살릴 수 있다)
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
-		// 편집기가 다 열려 서식 도구가 나온 뒤에 누른다. 서식 도구가 나오면 휴지통 단추가 옆으로 밀려서,
-		// 그 사이에 누르면 누른 자리와 뗀 자리의 단추가 달라 눌리지 않는다
+		// 편집기가 다 열려 서식 도구가 나온 뒤에 누른다. 서식 도구가 나오면 휴지통 버튼이 옆으로 밀려서,
+		// 그 사이에 누르면 누른 자리와 뗀 자리의 버튼이 달라 눌리지 않는다
 		await expect(memo.getByRole('button', { name: '서식', exact: true }).first()).toBeVisible();
 		await memo.getByRole('button', { name: '메모 삭제', exact: true }).first().click();
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
@@ -1107,7 +1107,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.locator('.memo-item', { hasText: '서버에만 있는 글' }).click();
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
 		await expect(memo.getByRole('heading', { level: 1 })).toHaveText('서버에만 있는 글');
-		// 코드 블록의 복사 단추
+		// 코드 블록의 복사 버튼
 		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 		const copy = memo.locator('.memo-markdown').getByRole('button', { name: '코드 복사' });
 		await copy.click();

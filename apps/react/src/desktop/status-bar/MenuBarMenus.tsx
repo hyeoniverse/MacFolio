@@ -87,12 +87,12 @@ const MenuBarMenus = () => {
 	return (
 		<div className="menubar-menus" ref={bar} role="group" aria-label="메뉴 막대">
 			{menus.map((menu, index) => {
-				// 항목이 없는 앱 메뉴(바탕화면의 Finder)는 눌러도 열 것이 없다. 그래도 다른 앱 이름과 같은 단추로 그린다:
+				// 항목이 없는 앱 메뉴(바탕화면의 Finder)는 눌러도 열 것이 없다. 그래도 다른 앱 이름과 같은 버튼으로 그린다:
 				// 요소가 바뀌면 글자 자리가 달라지고(수직 정렬) 앱이 바뀔 때마다 새로 그려져 움찔거린다
 				const empty = menu.app && menu.items.length === 0;
 				return (
 					<button
-						// 앱 이름 자리는 앱이 바뀌어도 같은 단추 (새로 그리지 않고 글자만 바꾼다)
+						// 앱 이름 자리는 앱이 바뀌어도 같은 버튼 (새로 그리지 않고 글자만 바꾼다)
 						key={menu.app ? 'app-menu' : menu.title}
 						ref={(element) => {
 							titles.current[index] = element;
@@ -116,7 +116,7 @@ const MenuBarMenus = () => {
 							openAt(index, false)
 						}
 					>
-						{/* 앱이 바뀌면 단추는 그대로 두고 글자만 서서히 바뀐다 */}
+						{/* 앱이 바뀌면 버튼은 그대로 두고 글자만 서서히 바뀐다 */}
 						{menu.app ? (
 							<span key={menu.title} className="menubar-title-text">
 								{menu.title}

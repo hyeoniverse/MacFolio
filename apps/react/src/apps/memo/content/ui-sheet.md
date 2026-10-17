@@ -41,7 +41,7 @@ summary: 메일 쓰기·답장, 메일 동작, 음악 지금 재생 중이 아�
 
 오버레이 색·z-index·시트 바탕은 쓰는 쪽 CSS가 `--ui-sheet-dim`·`--ui-sheet-z`·`--ui-sheet-bg`로 정한다. 음악은 `--ui-sheet-bg: #1c1c1e`로 어두운 바탕을 쓴다. 안쪽 여백과 콘텐츠는 `className`과 children이 정한다.
 
-`cover`는 `aria-modal`을 붙이지 않는다. 음악의 시트는 시트 바깥에 떠 있는 뒤로 가기 단추로 닫는데, `aria-modal`을 붙이면 화면 읽기 프로그램이 그 단추를 가려 버리기 때문이다.
+`cover`는 `aria-modal`을 붙이지 않는다. 음악의 시트는 시트 바깥에 떠 있는 뒤로 가기 버튼으로 닫는데, `aria-modal`을 붙이면 화면 읽기 프로그램이 그 버튼을 가려 버리기 때문이다.
 
 ## 닫기 타이머를 없앤 방법
 
