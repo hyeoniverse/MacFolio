@@ -140,7 +140,7 @@ const Memo: React.FC = () => {
 	const [findSlug, setFindSlug] = useState<string | null>(null);
 	/** 관리자가 편집 대신 방문자가 보는 읽기 화면으로 보는 중인지 (관리자 표시를 누르면 바뀐다) */
 	const [readerView, setReaderView] = useState(false);
-	/** 휴대폰(모바일 셸) 안인지: 본문을 iOS 메모처럼 떠 있는 단추로 그린다 */
+	/** 휴대폰(모바일 셸) 안인지: 본문을 iOS 메모처럼 떠 있는 버튼으로 그린다 */
 	const phone = useIsMobile();
 	/** 휴대폰 메모 선택: 고른 메모들 (null = 고르는 중 아님) */
 	const [picked, setPicked] = useState<Set<string> | null>(null);
@@ -444,7 +444,7 @@ const Memo: React.FC = () => {
 		/>
 	);
 
-	/** 본문의 고정 단추 */
+	/** 본문의 고정 버튼 */
 	const pinButton = (className: string) =>
 		canEdit &&
 		selected &&
@@ -514,9 +514,9 @@ const Memo: React.FC = () => {
 			onFocusChange={setSearchFocused}
 		/>
 	);
-	// 최근 삭제된 항목은 늘 최근에 지운 순서라 정렬 단추가 없다
+	// 최근 삭제된 항목은 늘 최근에 지운 순서라 정렬 버튼이 없다
 	const sortMenu = () => !inTrash && <SortMenu arrangement={arrangement} onChange={setArrangement} />;
-	// 검색 칸은 늘 창 오른쪽 위(도구 막대 끝)에 있다. 좁은 창에서는 도구 막대가 없으므로 목록 위에 정렬 단추와 함께 둔다
+	// 검색 칸은 늘 창 오른쪽 위(도구 막대 끝)에 있다. 좁은 창에서는 도구 막대가 없으므로 목록 위에 정렬 버튼과 함께 둔다
 	const search = searchBox();
 	const compactTools = (
 		<div className="memo-compact-tools compact-only">
@@ -802,7 +802,7 @@ const Memo: React.FC = () => {
 								{shareButton('compact-only')}
 							</div>
 							{writing && (
-								// 관리자: 따로 편집 단추 없이 바로 고친다 (macOS 메모처럼)
+								// 관리자: 따로 편집 버튼 없이 바로 고친다 (macOS 메모처럼)
 								<div key={draft.writerKey(selected?.slug ?? '')} className="memo-reader-body">
 									<PostWriter
 										ref={writerRef}

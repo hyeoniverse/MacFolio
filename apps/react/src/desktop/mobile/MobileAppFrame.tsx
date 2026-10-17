@@ -170,9 +170,9 @@ const MobileAppFrame: React.FC<Props> = ({
 				// 전환기 안에서는 앱을 누를 수 없고 카드 전체가 버튼이다
 				inert={inSwitcher}
 			>
-				{/* iOS처럼 제목 막대가 없다: 뒤로 가기는 내용 위에 떠 있는 동그란 단추 하나 (첫 화면은 홈, 안으로 들어가면 앱이 정한 뒤로 가기).
+				{/* iOS처럼 제목 막대가 없다: 뒤로 가기는 내용 위에 떠 있는 동그란 버튼 하나 (첫 화면은 홈, 안으로 들어가면 앱이 정한 뒤로 가기).
 				    내용은 상태 표시줄 아래부터 화면 끝까지 쓰고, 홈 바도 내용 위에 떠 있다 */}
-				{/* 홈으로 가는 단추를 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다 */}
+				{/* 홈으로 가는 버튼을 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다 */}
 				{(nav?.onBack || !nav?.hideHome) && (
 					<div
 						className={`mobile-navbar ${nav?.placement === 'bottom' ? 'bottom' : ''} ${nav?.immersive ? 'hidden' : ''}`}

@@ -24,7 +24,7 @@ const COMPACT_PX = 760;
 /** 이보다 좁으면 사이드바는 처음에 접혀 있고, 열면 격자 위에 뜬다 (격자가 너무 좁아지지 않게) */
 const OVERLAY_PX = 560;
 
-/** 사진 창의 폭 (컨테이너 질의로 못 하는 것: 사이드바를 접을지, 막대 단추를 무엇으로 그릴지) */
+/** 사진 창의 폭 (컨테이너 질의로 못 하는 것: 사이드바를 접을지, 막대 버튼을 무엇으로 그릴지) */
 function useWidth(element: React.RefObject<HTMLElement | null>) {
 	const [width, setWidth] = useState(Infinity);
 	useLayoutEffect(() => {
@@ -55,7 +55,7 @@ const Photos = () => {
 	const [grouped, setGrouped] = useState(false);
 	const [size, setSize] = useState(1);
 	const [viewing, setViewing] = useState<number | null>(null);
-	// 창 폭에 따라: 좁으면 막대를 줄이고, 더 좁으면 사이드바를 접는다 (macOS 사진). 사이드바 단추로 직접 여닫으면 그것을 따른다
+	// 창 폭에 따라: 좁으면 막대를 줄이고, 더 좁으면 사이드바를 접는다 (macOS 사진). 사이드바 버튼으로 직접 여닫으면 그것을 따른다
 	const shell = useRef<HTMLDivElement>(null);
 	const width = useWidth(shell);
 	const compact = width < COMPACT_PX;
@@ -236,7 +236,7 @@ const Photos = () => {
 									</ul>
 								)}
 							</div>
-							{/* 떠 있는 막대는 격자 뒤에 둔다: z-index 없이도 격자 위에 그려지고, 안의 단추가 창 끌기 영역 위로 올라간다 */}
+							{/* 떠 있는 막대는 격자 뒤에 둔다: z-index 없이도 격자 위에 그려지고, 안의 버튼이 창 끌기 영역 위로 올라간다 */}
 							{viewing === null && (
 								<header className="photos-toolbar">
 									{!sidebarOpen && (
@@ -262,7 +262,7 @@ const Photos = () => {
 											/>
 										</div>
 										{place.kind === 'all' && compact && (
-											// 좁은 창: 보기 방식은 팝업 단추 하나로 (macOS 사진의 "모든 사진 ⌃⌄")
+											// 좁은 창: 보기 방식은 팝업 버튼 하나로 (macOS 사진의 "모든 사진 ⌃⌄")
 											<button
 												ref={viewButton}
 												type="button"

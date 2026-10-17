@@ -130,7 +130,7 @@ export function startAnalytics() {
 		track({ type: 'leave', duration: Math.min(Date.now() - startedAt, 24 * 60 * 60 * 1000) });
 		flush();
 	});
-	// 이 사이트 밖으로 가는 <a> 링크 (글 안의 링크, 프로젝트 페이지의 단추)
+	// 이 사이트 밖으로 가는 <a> 링크 (글 안의 링크, 프로젝트 페이지의 버튼)
 	document.addEventListener(
 		'click',
 		(event) => {

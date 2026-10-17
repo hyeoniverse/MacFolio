@@ -45,7 +45,7 @@ function useCompact(ref: React.RefObject<HTMLElement | null>) {
 
 /** 날씨를 다시 묻는 간격 (Open-Meteo는 15분마다 새 값을 낸다) */
 const REFRESH_MS = 15 * 60_000;
-/** 카드를 왼쪽으로 밀면 드러나는 지우기 단추의 폭 */
+/** 카드를 왼쪽으로 밀면 드러나는 지우기 버튼의 폭 */
 const SWIPE_OPEN = 84;
 
 const keyOf = (place: Place) => `${place.latitude.toFixed(3)},${place.longitude.toFixed(3)}`;
@@ -382,7 +382,7 @@ const Detail = ({ place, weather }: { place: Place; weather: WeatherData }) => {
  * 날씨: macOS·iOS 날씨 앱처럼 장소 카드 목록과, 고른 곳의 하늘 색 배경·큰 기온·시간별·10일 일기예보·상세 칸.
  * 데이터는 Open-Meteo(키 없는 공개 API). 장소와 기온 단위는 이 브라우저에 남긴다 (places.ts).
  * 넓은 창은 왼쪽에 목록이 늘 있다. 좁은 창·휴대폰은 iOS처럼 날씨만 보이고, 아래 막대의 점으로 장소를 넘기고(옆으로 밀어도 된다)
- * 목록 단추로 '날씨' 목록(큰 제목, ••• 메뉴, 아래 검색)을 연다
+ * 목록 버튼으로 '날씨' 목록(큰 제목, ••• 메뉴, 아래 검색)을 연다
  */
 const Weather = () => {
 	const [places, setPlaces] = useState<Place[]>(loadPlaces);
@@ -394,7 +394,7 @@ const Weather = () => {
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	/** 카드의 오른쪽 클릭 메뉴 (넓은 창) */
 	const [cardMenu, setCardMenu] = useState<{ at: number; x: number; y: number } | null>(null);
-	/** 넓은 창: 사이드바를 접었는지 (macOS의 사이드바 단추) */
+	/** 넓은 창: 사이드바를 접었는지 (macOS의 사이드바 버튼) */
 	const [sidebarHidden, setSidebarHidden] = useState(false);
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const swipe = useRef<{ x: number; y: number } | null>(null);
@@ -472,7 +472,7 @@ const Weather = () => {
 
 	return (
 		<AppWindow title="날씨" appName="weather" chrome="unified">
-			{/* iOS 날씨처럼 홈으로 가는 단추가 없다 (홈 바로 나간다) */}
+			{/* iOS 날씨처럼 홈으로 가는 버튼이 없다 (홈 바로 나간다) */}
 			<MobileNavigation hideHome />
 			<div
 				ref={shell}
@@ -480,7 +480,7 @@ const Weather = () => {
 				data-compact={compact || undefined}
 			>
 				{/*
-				 * 넓은 창의 사이드바 단추. 사이드바 밖에 따로 두어 창 위쪽 끌기 자리(신호등 줄) 위로 올린다:
+				 * 넓은 창의 사이드바 버튼. 사이드바 밖에 따로 두어 창 위쪽 끌기 자리(신호등 줄) 위로 올린다:
 				 * 사이드바째 올리면 사이드바가 신호등을 덮는다
 				 */}
 				{!compact && (
@@ -494,7 +494,7 @@ const Weather = () => {
 					className={`weather-sidebar ${listOpen ? 'open' : ''} ${editing ? 'editing' : ''} ${sidebarHidden ? 'hidden' : ''}`}
 					aria-label="장소"
 				>
-					{/* 신호등 줄 (넓은 창은 그 오른쪽에 사이드바 단추가 떠 있다) */}
+					{/* 신호등 줄 (넓은 창은 그 오른쪽에 사이드바 버튼이 떠 있다) */}
 					<div className="weather-lights-space" />
 					<header className="weather-list-head">
 						<h2>날씨</h2>
@@ -618,7 +618,7 @@ const Weather = () => {
 							(CC BY 4.0)
 						</p>
 					</div>
-					{/* 좁은 창·휴대폰의 아래 막대 (iOS 날씨): 가운데 장소 점, 오른쪽 목록 단추 */}
+					{/* 좁은 창·휴대폰의 아래 막대 (iOS 날씨): 가운데 장소 점, 오른쪽 목록 버튼 */}
 					<div className="weather-bottom-bar">
 						<span className="weather-bottom-spacer" />
 						{/* 장소가 둘 이상일 때만 (하나면 넘길 곳이 없다) */}

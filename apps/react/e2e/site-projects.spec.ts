@@ -73,7 +73,7 @@ test.describe('프로젝트 관리', () => {
 		const settings = await openProjectsPane(page);
 		const list = settings.getByRole('list', { name: '프로젝트' });
 		await expect(list.getByRole('listitem')).toHaveCount(7);
-		// GitHub 항목처럼: 편집을 누르기 전에는 줄마다 단추가 없다
+		// GitHub 항목처럼: 편집을 누르기 전에는 줄마다 버튼이 없다
 		await expect(list.getByRole('button')).toHaveCount(0);
 		await settings.getByRole('button', { name: '편집', exact: true }).click();
 		await expect(settings.getByRole('button', { name: '완료' })).toBeVisible();
@@ -440,7 +440,7 @@ test.describe('프로젝트 관리', () => {
 		await expect(specRows).toHaveCount(count);
 		await expect(editor.getByRole('textbox', { name: `기술 사양 ${count} 분류` })).not.toHaveValue('시험');
 
-		// 주요 기능: 줄 전체가 단추다. 줄을 한 번 누르면 그 항목의 시트가 열린다 (ⓘ 단추는 없다)
+		// 주요 기능: 줄 전체가 버튼이다. 줄을 한 번 누르면 그 항목의 시트가 열린다 (ⓘ 버튼은 없다)
 		const highlights = form.getByRole('region', { name: '주요 기능' });
 		const rows = highlights.getByRole('listitem');
 		const total = await rows.count();
@@ -479,7 +479,7 @@ test.describe('프로젝트 관리', () => {
 		await page.keyboard.press('ArrowUp');
 		await expect(rows.nth(0).locator('.projects-point strong')).toHaveText(second);
 		await expect(highlights.getByRole('button', { name: '주요 기능 1 순서 바꾸기' })).toBeFocused();
-		// 줄 단추에서 ⌥↑도 순서를 바꾼다 (초점은 옮긴 줄을 따라간다)
+		// 줄 버튼에서 ⌥↑도 순서를 바꾼다 (초점은 옮긴 줄을 따라간다)
 		await highlights.getByRole('button', { name: '주요 기능 2 편집' }).focus();
 		await page.keyboard.press('Alt+ArrowUp');
 		await expect(rows.nth(0).locator('.projects-point strong')).toHaveText(first!);
@@ -557,7 +557,7 @@ test.describe('프로젝트 관리', () => {
 		await page.keyboard.press('Escape');
 		await expect(sheet).toHaveCount(0);
 
-		// 장의 시트 안에서 장 안 항목을 열면 시트를 겹치지 않고 같은 시트에 다음 페이지를 민다 (왼쪽 위에 뒤로 단추)
+		// 장의 시트 안에서 장 안 항목을 열면 시트를 겹치지 않고 같은 시트에 다음 페이지를 민다 (왼쪽 위에 뒤로 버튼)
 		const chapters = form.getByRole('region', { name: '장', exact: true });
 		await chapters.getByRole('button', { name: '장 1 편집' }).click();
 		const chapterSheet = settings.getByRole('dialog', { name: '장 1' });
@@ -618,13 +618,13 @@ test.describe('프로젝트 관리', () => {
 		await trouble.getByRole('textbox', { name: '트러블슈팅 1 제목' }).fill('카드 저장이 두 번 되던 문제');
 		await trouble
 			.getByRole('textbox', { name: '트러블슈팅 1 문제' })
-			.fill('저장 단추를 빠르게 두 번 누르면 카드가 둘 생겼습니다.');
+			.fill('저장 버튼을 빠르게 두 번 누르면 카드가 둘 생겼습니다.');
 		await trouble
 			.getByRole('textbox', { name: '트러블슈팅 1 원인' })
-			.fill('요청이 끝나기 전에 단추가 다시 눌렸습니다.');
+			.fill('요청이 끝나기 전에 버튼이 다시 눌렸습니다.');
 		await trouble
 			.getByRole('textbox', { name: '트러블슈팅 1 해결' })
-			.fill('저장하는 동안 단추를 잠그고 같은 요청을 한 번만 보냈습니다.');
+			.fill('저장하는 동안 버튼을 잠그고 같은 요청을 한 번만 보냈습니다.');
 		await trouble.getByRole('textbox', { name: '트러블슈팅 1 결과' }).fill('중복 카드가 더는 생기지 않습니다.');
 		await trouble.getByRole('button', { name: '완료' }).click();
 
@@ -657,9 +657,9 @@ test.describe('프로젝트 관리', () => {
 		expect(saved.troubleshooting).toEqual([
 			{
 				title: '카드 저장이 두 번 되던 문제',
-				problem: '저장 단추를 빠르게 두 번 누르면 카드가 둘 생겼습니다.',
-				cause: '요청이 끝나기 전에 단추가 다시 눌렸습니다.',
-				solution: '저장하는 동안 단추를 잠그고 같은 요청을 한 번만 보냈습니다.',
+				problem: '저장 버튼을 빠르게 두 번 누르면 카드가 둘 생겼습니다.',
+				cause: '요청이 끝나기 전에 버튼이 다시 눌렸습니다.',
+				solution: '저장하는 동안 버튼을 잠그고 같은 요청을 한 번만 보냈습니다.',
 				result: '중복 카드가 더는 생기지 않습니다.',
 			},
 		]);

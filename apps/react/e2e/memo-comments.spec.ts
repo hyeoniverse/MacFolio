@@ -42,7 +42,7 @@ test.describe('댓글', () => {
 		await expect(comment).toContainText('🦊 날쌘 여우(127.0)');
 		await expect(comments.getByRole('heading', { name: /댓글/ })).toContainText('2');
 
-		// 남의 댓글에는 지우기 단추가 없다
+		// 남의 댓글에는 지우기 버튼이 없다
 		const other = comments.getByRole('listitem').filter({ hasText: '다른 사람 댓글' });
 		await expect(other.getByRole('button', { name: /댓글 삭제/ })).toHaveCount(0);
 

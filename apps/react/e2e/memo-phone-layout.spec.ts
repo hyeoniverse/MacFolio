@@ -4,7 +4,7 @@ import { fakeApi } from './fakeApi';
 
 const box = async (page: Page, selector: string) => (await page.locator(selector).first().boundingBox())!;
 
-/** 휴대폰 화면(모바일 셸)의 메모 글 화면: 떠 있는 위 단추 줄은 상태 표시줄 아래, 본문은 화면 끝까지, 아래 막대는 본문 위에 뜬다 */
+/** 휴대폰 화면(모바일 셸)의 메모 글 화면: 떠 있는 위 버튼 줄은 상태 표시줄 아래, 본문은 화면 끝까지, 아래 막대는 본문 위에 뜬다 */
 async function expectPhoneReader(page: Page) {
 	const memo = appWindow(page, 'memo');
 	await memo.locator('.memo-item').first().click();
@@ -28,7 +28,7 @@ async function expectPhoneReader(page: Page) {
 test.describe('메모: 휴대폰 화면이면 폭과 상관없이 한 칸씩', () => {
 	test.describe('767px 바로 아래 (메모 칸이 700px보다 넓다)', () => {
 		test.use({ viewport: { width: 760, height: 820 } });
-		test('글 화면은 휴대폰 모양: 위 단추 줄이 상태 표시줄에 가리지 않고, 아래 막대는 본문 위에 뜬다', async ({
+		test('글 화면은 휴대폰 모양: 위 버튼 줄이 상태 표시줄에 가리지 않고, 아래 막대는 본문 위에 뜬다', async ({
 			page,
 		}) => {
 			await fakeApi(page, { signedIn: true });

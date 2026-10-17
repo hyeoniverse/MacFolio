@@ -63,12 +63,12 @@
 	margin-left: 0;
 }
 
-/* 좁은 창에서만 보이는 것 (목록 위 검색 칸, 본문 위 고정 단추) */
+/* 좁은 창에서만 보이는 것 (목록 위 검색 칸, 본문 위 고정 버튼) */
 .memo .compact-only {
 	display: none;
 }
 
-/* 좁은 창의 목록 위: 검색 칸과 정렬 단추 */
+/* 좁은 창의 목록 위: 검색 칸과 정렬 버튼 */
 .memo-compact-tools {
 	align-items: center;
 	gap: 2px;
@@ -90,7 +90,7 @@
 	line-height: 1.5;
 }
 
-/* 최근 삭제된 메모: 본문 위 안내 상자. 아이콘은 첫 줄(제목)의 가운데에 맞추고, 단추는 문구 아래 한 줄에 오른쪽으로 */
+/* 최근 삭제된 메모: 본문 위 안내 상자. 아이콘은 첫 줄(제목)의 가운데에 맞추고, 버튼은 문구 아래 한 줄에 오른쪽으로 */
 .memo-trash-note {
 	--title-line: 20px;
 	display: flex;
@@ -140,7 +140,7 @@
 	margin-top: 10px;
 }
 
-/* 회색 상자 위라 기본 단추는 창 바탕색으로 (상자와 같은 회색이면 글자만 떠 보인다) */
+/* 회색 상자 위라 기본 버튼은 창 바탕색으로 (상자와 같은 회색이면 글자만 떠 보인다) */
 .memo-trash-note-actions .ui-button:not(.danger) {
 	--ui-button-bg: var(--memo-bg);
 }
@@ -218,7 +218,7 @@
 	font-weight: 700;
 }
 
-/* 선택된 태그 중 모두/일부 포함 (강조 색 글자 단추) */
+/* 선택된 태그 중 모두/일부 포함 (강조 색 글자 버튼) */
 .memo .memo-tag-match {
 	display: inline-flex;
 	align-items: center;
@@ -232,7 +232,7 @@
 	cursor: pointer;
 }
 
-/* 위아래 chevron 한 쌍 (macOS 팝업 단추처럼) */
+/* 위아래 chevron 한 쌍 (macOS 팝업 버튼처럼) */
 .memo-tag-match-chevrons {
 	display: inline-flex;
 	flex-direction: column;

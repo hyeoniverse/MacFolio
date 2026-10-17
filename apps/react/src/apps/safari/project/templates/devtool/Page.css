@@ -1,7 +1,7 @@
 /* devtool 템플릿 (Vercel·GitHub 개발자 제품 페이지): 1px 선으로 짠 가운데 틀, 가운데 정렬한 첫 화면과 넓은 터미널 창, 경로 모양의 구역 머리,
    코드 편집기·터미널·커밋 목록 모양의 구역.
    사이트 테마를 따른다: 라이트는 #fff 바탕에 #eaeaea 선, 다크는 #0a0a0a 바탕에 #333 선. 강조색은 링크와 코드의 키에만,
-   꽉 찬 첫 단추는 글자색 면이다. 기여 그래프와 '준비됨' 점은 GitHub식 초록(상태 색)이다. 빛 번짐·그라데이션 글자·떠 있는 카드 없음 */
+   꽉 찬 첫 버튼은 글자색 면이다. 기여 그래프와 '준비됨' 점은 GitHub식 초록(상태 색)이다. 빛 번짐·그라데이션 글자·떠 있는 카드 없음 */
 .tpl.tpl-devtool {
 	--lk-accent: #0068d6;
 	--lk-dark-accent: #52a8ff;
@@ -338,7 +338,7 @@
 	font-size: 12.5px;
 }
 
-/* 터미널 안의 clone 명령 줄: 상자 대신 한 줄, 오른쪽 끝에 복사 단추 */
+/* 터미널 안의 clone 명령 줄: 상자 대신 한 줄, 오른쪽 끝에 복사 버튼 */
 .dv-command.dv-command-term {
 	display: flex;
 	width: 100%;
@@ -387,7 +387,7 @@
 	border-radius: var(--dv-radius);
 }
 
-/* ─── 단추 ─── */
+/* ─── 버튼 ─── */
 .dv-links {
 	display: flex;
 	flex-wrap: wrap;

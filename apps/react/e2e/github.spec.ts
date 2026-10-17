@@ -24,7 +24,7 @@ test.describe('GitHub 앱', () => {
 		await expect(profile).toContainText('8 following');
 		await expect(github.getByRole('link', { name: /Repositories/ })).toContainText('30');
 
-		// README: 실제 내용을 그린다. 배너는 CSS 배너, 배지는 Contact 단추, 상대 주소는 프로필 저장소로
+		// README: 실제 내용을 그린다. 배너는 CSS 배너, 배지는 Contact 버튼, 상대 주소는 프로필 저장소로
 		const readme = github.getByRole('article', { name: 'README' });
 		await expect(readme.getByRole('img', { name: 'Test Banner' })).toHaveClass('gh-banner');
 		await expect(readme.getByRole('heading', { name: '소개' })).toBeVisible();

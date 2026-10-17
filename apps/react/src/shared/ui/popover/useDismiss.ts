@@ -2,8 +2,8 @@ import { useEffect, useRef, type RefObject } from 'react';
 
 /**
  * 떠 있는 창을 닫는 때: 바깥을 누르거나 Esc를 누르면 onDismiss.
- * inside: 눌러도 닫지 않을 요소들 (창 자신, 창을 여는 단추). 여는 단추를 넣어 두면 단추를 다시 눌렀을 때
- * "바깥 누름으로 닫혔다가 단추 click으로 다시 열리는" 일이 없다.
+ * inside: 눌러도 닫지 않을 요소들 (창 자신, 창을 여는 버튼). 여는 버튼을 넣어 두면 버튼을 다시 눌렀을 때
+ * "바깥 누름으로 닫혔다가 버튼 click으로 다시 열리는" 일이 없다.
  * keepOpenInside: 이 선택자 안을 눌러도 닫지 않는다 (예: 표 손잡이 메뉴는 표의 다른 칸을 눌러도 열어 둔다).
  */
 export function useDismiss(

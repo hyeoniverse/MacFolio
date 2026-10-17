@@ -93,7 +93,7 @@ describe('parseCapsule', () => {
 describe('rehypeGithubReadme', () => {
 	const BADGE = 'https://img.shields.io/badge/Gmail-EA4335?style=for-the-badge&logo=gmail';
 
-	it('배지 링크는 Contact 단추로 바꾼다', () => {
+	it('배지 링크는 Contact 버튼으로 바꾼다', () => {
 		const [link] = run([
 			el('a', { href: 'mailto:me@example.com' }, [text('\n  '), el('img', { src: BADGE, alt: 'Gmail' }), text('\n')]),
 		]);

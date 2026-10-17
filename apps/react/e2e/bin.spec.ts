@@ -34,7 +34,7 @@ test.describe('휴지통', () => {
 		// 휴지통 비우기는 묻고 모두 지운다 (쿠키 안내는 남는다)
 		await bin.getByRole('button', { name: '휴지통 비우기' }).click();
 		await bin.getByRole('alertdialog').getByRole('button', { name: '휴지통 비우기' }).click();
-		// 비면 Finder처럼 가운데는 비우고, 비우기 단추는 꺼지고, 아래에 0개의 항목. Dock도 바로 빈 휴지통
+		// 비면 Finder처럼 가운데는 비우고, 비우기 버튼은 꺼지고, 아래에 0개의 항목. Dock도 바로 빈 휴지통
 		await expect(bin.getByRole('status').filter({ hasText: '휴지통이 비어 있습니다' })).toBeAttached();
 		await expect(list).toHaveCount(0);
 		await expect(bin.locator('.bin-browser img')).toHaveCount(0);
@@ -124,7 +124,7 @@ test.describe('휴지통', () => {
 		await expect(row('예전 그림.png')).toContainText('예전 버전에서만: server-post');
 		await expect(row('안 쓰는 그림.png')).toContainText('쓰는 곳 없음');
 		await expect(bin.getByText(/저장소 글\(Markdown\)의 이미지는 사이트와 함께 배포되어/)).toBeVisible();
-		// 쓰는 파일에는 지우기 단추가 없다
+		// 쓰는 파일에는 지우기 버튼이 없다
 		await expect(row('글 그림.png').getByRole('button', { name: '지우기' })).toHaveCount(0);
 		await expect(row('배경.png').getByRole('button', { name: '지우기' })).toHaveCount(0);
 

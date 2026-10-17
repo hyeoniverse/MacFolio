@@ -41,7 +41,7 @@
 	--messages-error: #ff6961;
 }
 
-/* 공통 단추의 색: 떠 있는 원형 단추(새 메시지, 뒤로 가기)와 글자 단추 (shared/ui/button) */
+/* 공통 버튼의 색: 떠 있는 원형 버튼(새 메시지, 뒤로 가기)과 글자 버튼 (shared/ui/button) */
 [data-app='messages'] {
 	--ui-float-bg: var(--messages-float-bg);
 	--ui-float-shadow: var(--messages-float-shadow);
@@ -69,7 +69,7 @@
 	text-align: left;
 }
 
-/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
+/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 버튼마다 클래스로 적은 값이 늘 이긴다 */
 @layer reset {
 	.messages button {
 		font: inherit;
@@ -648,7 +648,7 @@
 	display: flex;
 }
 
-/* 위의 검색 칸과 쓰기 단추 대신 아래에 떠 있는 것을 쓴다 */
+/* 위의 검색 칸과 쓰기 버튼 대신 아래에 떠 있는 것을 쓴다 */
 .container.mobile .messages-sidebar > .messages-search,
 .container.mobile .messages-sidebar-top {
 	display: none;
@@ -771,14 +771,14 @@
 	background-color: var(--messages-window-bg);
 }
 
-/* 이름 알약은 떠 있는 단추 줄 가운데, 그 아래 설명은 단추를 비켜 화면 폭을 다 쓴다.
+/* 이름 알약은 떠 있는 버튼 줄 가운데, 그 아래 설명은 버튼을 비켜 화면 폭을 다 쓴다.
    앱은 상태 표시줄 밑까지 그려지므로 위 여백에 상태 표시줄 높이(--phone-status)를 더한다 */
 .container.mobile .messages-chat-header {
 	gap: 10px;
 	padding: calc(var(--phone-status) + 8px) 16px 12px;
 }
 
-/* 새 피드백: 이름 알약을 떠 있는 단추 줄(상태 표시줄 아래 6~50px) 가운데에 맞추고, 설명은 그 줄 아래로 띄운다 */
+/* 새 피드백: 이름 알약을 떠 있는 버튼 줄(상태 표시줄 아래 6~50px) 가운데에 맞추고, 설명은 그 줄 아래로 띄운다 */
 .container.mobile .messages-chat-header:has(.messages-cancel) {
 	padding-top: calc(var(--phone-status) + 12px);
 }

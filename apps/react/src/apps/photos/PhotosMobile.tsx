@@ -13,7 +13,7 @@ import SearchField from '@/shared/ui/search-field/SearchField';
 import IconButton from '@/shared/ui/button/IconButton';
 
 /**
- * 사진 (휴대폰): iOS 사진처럼 아래의 떠 있는 탭(보관함·모음)과 검색 단추는 어느 화면에서나 같다.
+ * 사진 (휴대폰): iOS 사진처럼 아래의 떠 있는 탭(보관함·모음)과 검색 버튼은 어느 화면에서나 같다.
  * 보관함은 꽉 찬 격자 위에 큰 제목(앨범별·전체는 오른쪽 위 •••), 모음은 추억·고정됨·앨범을 가로로 넘기는 카드.
  * 검색은 최근 항목 카드와 앨범 추천, 아래의 검색 칸. 사진을 누르면 크게 본다
  */

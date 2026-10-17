@@ -43,7 +43,7 @@ const HINTS: Record<DemoKind, string> = {
 	summary: '발행하면 진짜로 요약해요',
 	cover: '제목을 넣고 그려 보세요',
 	autosave: '글을 고치고 3초 기다려 보세요',
-	lifecycle: '단추로 글의 일생을 넘겨 보세요',
+	lifecycle: '버튼으로 글의 일생을 넘겨 보세요',
 	comments: '반응을 누르고 지워 보세요',
 	mailbox: '메일을 눌러 열어 보세요',
 	invite: '누가 들어올 수 있는지 골라 보세요',

@@ -7,7 +7,7 @@ import {
 	type SortOrder,
 } from '@macfolio/desktop-core/memo';
 
-/** 정렬과 그룹화 메뉴 항목 (정렬 단추와, 검색 중 도구를 모은 ••• 메뉴가 함께 쓴다) */
+/** 정렬과 그룹화 메뉴 항목 (정렬 버튼과, 검색 중 도구를 모은 ••• 메뉴가 함께 쓴다) */
 export function sortMenuItems(arrangement: Arrangement, onChange: (arrangement: Arrangement) => void): MenuItem[] {
 	const { sort, order, groupByDate } = arrangement;
 	// 정렬 기준을 바꾸면 그 기준의 기본 순서로 (날짜는 최신 순, 제목은 가나다 순)

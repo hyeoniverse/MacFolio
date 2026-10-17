@@ -123,7 +123,7 @@ const ReplySheet: React.FC<{ mail: ListMail; onClose: () => void; onReplied: (ma
 /**
  * 메일 (휴대폰): iOS 메일처럼 메일상자 → 사서함 목록 → 메일 한 통으로 한 화면씩 들어간다.
  * 메일은 위에 뒤로 가기와 ↑·↓(이전·다음 메일), 아래에 답장 막대. 쓰기·답장은 아래에서 올라오는 시트,
- * 답장 단추는 먼저 메일 동작(답장, 읽지 않음으로 표시)을 띄운다
+ * 답장 버튼은 먼저 메일 동작(답장, 읽지 않음으로 표시)을 띄운다
  */
 const MailMobile: React.FC<Props> = ({
 	admin,

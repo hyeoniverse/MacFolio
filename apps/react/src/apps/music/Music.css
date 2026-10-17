@@ -49,7 +49,7 @@
 	grid-template-columns: 220px 1fr 260px;
 }
 
-/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 단추마다 클래스로 적은 값이 늘 이긴다 */
+/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 버튼마다 클래스로 적은 값이 늘 이긴다 */
 @layer reset {
 	.music button {
 		border: none;
@@ -96,7 +96,7 @@
 	display: none;
 }
 
-/* 좁은 데스크톱 창에서 곡 목록 → 보관함 (메일의 받은 편지함 단추와 같은 모양) */
+/* 좁은 데스크톱 창에서 곡 목록 → 보관함 (메일의 받은 편지함 버튼과 같은 모양) */
 .music-back {
 	display: none;
 	align-items: center;
@@ -587,7 +587,7 @@
 		animation: nav-forward var(--duration) var(--ease-out);
 	}
 
-	/* 위쪽은 신호등 단추(닫기·최소화·확대) 줄 높이만큼 비운다. 휴대폰은 아래에서 --phone-top으로 덮어쓴다 */
+	/* 위쪽은 신호등 버튼(닫기·최소화·확대) 줄 높이만큼 비운다. 휴대폰은 아래에서 --phone-top으로 덮어쓴다 */
 	.music-sidebar {
 		padding: 44px 16px 16px;
 		border: none;
@@ -631,7 +631,7 @@
 		box-shadow: none;
 	}
 
-	/* 위쪽은 신호등 단추 줄 높이만큼 비우고, 그 아래에 뒤로 가기 */
+	/* 위쪽은 신호등 버튼 줄 높이만큼 비우고, 그 아래에 뒤로 가기 */
 	.music-main {
 		padding: 44px 16px 24px;
 	}

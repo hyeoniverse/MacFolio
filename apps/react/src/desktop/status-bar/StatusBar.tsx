@@ -39,7 +39,7 @@ const StatusBar: React.FC = () => {
 			</div>
 
 			<div className="right-section">
-				{/* 재생 단추와 음량 단추는 같은 모양(.statusbar-icon-button)이라 크기·세로 자리가 늘 같다 */}
+				{/* 재생 버튼과 음량 버튼은 같은 모양(.statusbar-icon-button)이라 크기·세로 자리가 늘 같다 */}
 				<div className="menu-item-player" role="group" aria-label="음악">
 					<button type="button" className="statusbar-icon-button" aria-label="이전 곡" onClick={playPreviousTrack}>
 						<i className="fas fa-fast-backward" aria-hidden="true" />

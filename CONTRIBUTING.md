@@ -47,7 +47,7 @@ Dependabot이 여는 의존성 PR은 예외다. 브랜치 이름(`dependabot/npm
 - 범위는 선택이다. 한쪽 패키지만 바꿨을 때 `api`, `react`처럼 붙인다
 
 ```
-feat: 이미지 내려받기 단추, 편집기에서 캡션을 눌러 고치기
+feat: 이미지 내려받기 버튼, 편집기에서 캡션을 눌러 고치기
 fix(api): 예약한 글이 날짜 전에 목록에 보이던 문제
 docs: 배포 문서와 README 새로 쓰기
 test: 글 순서에 기대지 않게 E2E 고침
@@ -105,7 +105,7 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 건강하�
 - 브라우저에 남기는 값(`localStorage`·`sessionStorage`)은 `shared/lib/storage.ts`의 `readJson`/`writeJson`/`readString`/`writeString`을 거치고, 키는 `STORAGE_KEYS`에 둔다. 사생활 보호 창에서 저장소가 던지는 것은 거기서 삼키므로 부르는 쪽에 try/catch를 쓰지 않는다. 새 키는 `bin/siteStorage.ts`의 `BROWSER_DATA`에도 더한다 (시험이 잡는다)
 - 화면 크기는 `shared/hooks/useViewport.ts`(`useViewport` 훅, 훅 밖에서는 `getViewport()`)로 읽고, 모바일 셸 여부는 `desktop/layout.ts`의 `isMobileViewport`(컴포넌트에서는 `useIsMobile`)로 정한다. 움직임 줄이기·어두운 화면 모드·손가락 입력 같은 `matchMedia` 질문은 `shared/lib/media.ts`(`prefersReducedMotion`·`useResolvedTheme` 등)를 거친다. `window.innerWidth`·`matchMedia`를 직접 쓰지 않는다
 - 글 주소와 폴더 경로는 넓은 `string`이 아니라 `@macfolio/desktop-core/memo`의 `PostSlug`·`FolderPath`로 다룬다. 주소창·API 파라미터·파일 이름·끌어 놓는 항목처럼 바깥에서 온 문자열은 `postSlug()`·`folderPath()`(모양이 틀리면 `null`)를 지나야 그 타입이 되고, `movePost`·`Organization`처럼 안쪽 함수와 타입은 그 타입만 받는다. 앱 이름도 같은 식으로 `AppName`(`apps/manifest.ts`)을 쓴다
-- 단추·메뉴·경고창·떠 있는 창처럼 앱 여럿이 같은 모양으로 쓰는 것은 `shared/ui`의 부품(`Button`·`IconButton`·`Menu`·`AlertDialog`·`useDismiss` 등)을 쓴다. 색·모서리는 앱이 `--ui-*` 변수로 정하고, 뜻(role)이 다르면 겉이 같아도 합치지 않는다. 부품 목록과 props, 새로 뽑을 후보는 [docs/ui.md](docs/ui.md)에
+- 버튼·메뉴·경고창·떠 있는 창처럼 앱 여럿이 같은 모양으로 쓰는 것은 `shared/ui`의 부품(`Button`·`IconButton`·`Menu`·`AlertDialog`·`useDismiss` 등)을 쓴다. 색·모서리는 앱이 `--ui-*` 변수로 정하고, 뜻(role)이 다르면 겉이 같아도 합치지 않는다. 부품 목록과 props, 새로 뽑을 후보는 [docs/ui.md](docs/ui.md)에
 - 값을 받아 두는 store와 그것을 읽는 한 줄짜리 훅(`useSyncExternalStore`)은 그 `*Api.ts`에 둬도 된다 (`githubApi.ts`의 `useGithub`)
 - 시험은 대상 파일 옆에 같은 이름으로 (`forecast.ts` ↔ `forecast.test.ts`)
 - 앱이 커져 파일이 열 개를 넘으면 그때 `components/`·`writer/`처럼 묶는다. 작은 앱에 미리 폴더를 파지 않는다
@@ -211,7 +211,7 @@ CI가 실패해도 Merge 버튼이 눌리지 않게, `main`에 필수 검사를 
 
 1. 저장소 → **Settings** → **Advanced Security** (예전 이름 **Code security and analysis**)
 2. **Dependabot** 묶음에서 **Dependabot alerts**와 **Dependabot security updates**를 **Enable**. 알려진 취약점이 있는 의존성이 생기면 알림이 오고, 고친 버전으로 올리는 PR이 저절로 열린다 (주간 버전 올리기는 `.github/dependabot.yml`이 따로 한다)
-3. **Secret Protection**(예전 이름 Secret scanning) 묶음에서 **Secret Protection**을 **Enable**, 그 아래 **Push protection**("Block commits that contain supported secrets")도 **Enable**. 알려진 서비스의 키 모양(GitHub 토큰, AWS 키 등)이 커밋에 들어오면 GitHub이 알려 주고, push protection은 그런 커밋의 push 자체를 막는다. 공개 저장소는 무료이고 둘 다 기본으로 켜져 있는 경우가 많다: 단추가 **Disable**로 보이면 이미 켜진 것이니 그대로 둔다
+3. **Secret Protection**(예전 이름 Secret scanning) 묶음에서 **Secret Protection**을 **Enable**, 그 아래 **Push protection**("Block commits that contain supported secrets")도 **Enable**. 알려진 서비스의 키 모양(GitHub 토큰, AWS 키 등)이 커밋에 들어오면 GitHub이 알려 주고, push protection은 그런 커밋의 push 자체를 막는다. 공개 저장소는 무료이고 둘 다 기본으로 켜져 있는 경우가 많다: 버튼이 **Disable**로 보이면 이미 켜진 것이니 그대로 둔다
 4. 이미 만든 `main` Ruleset(위)을 열어 **Require status checks to pass**의 **Add checks**에서 `secrets`를 더하고 **Save changes**. `secrets`는 `.github/workflows/secrets.yml`(gitleaks)로, PR 한 번은 돌아야 목록에 나타난다
 
 GitHub secret scanning은 GitHub이 아는 서비스의 키만 보고, gitleaks(`secrets` 작업)는 `.gitleaks.toml`의 규칙(이 프로젝트의 Resend·Groq 키, DB 주소의 비밀번호 등)까지 본다. 둘 다 켠다.

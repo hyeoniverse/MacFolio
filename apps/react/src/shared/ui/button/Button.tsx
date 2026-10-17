@@ -10,7 +10,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /**
- * 글자가 있는 단추. 모양과 색은 앱마다 정한 --ui-button-*·--ui-accent 변수를 따른다 (Button.css).
+ * 글자가 있는 버튼. 모양과 색은 앱마다 정한 --ui-button-*·--ui-accent 변수를 따른다 (Button.css).
  * CSS가 components 층이라 앱의 CSS로 여백·글꼴 등을 덧붙여 바꿀 수 있다.
  */
 const Button = ({ tone = 'default', icon, className, type = 'button', children, ref, ...rest }: ButtonProps) => (

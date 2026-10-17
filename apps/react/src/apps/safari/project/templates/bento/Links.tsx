@@ -1,4 +1,4 @@
-// bento의 링크 묶음: 공용 LandingLinks와 같은 링크(차례, data-link·data-primary, 앱은 단추)에 키보드 글쇠 모양의 작은 표시를 단다.
+// bento의 링크 묶음: 공용 LandingLinks와 같은 링크(차례, data-link·data-primary, 앱은 버튼)에 키보드 글쇠 모양의 작은 표시를 단다.
 // 표시는 장식이라 aria-hidden이고 링크 이름에 섞이지 않는다
 import React from 'react';
 import type { AppName } from '@/apps/manifest';
