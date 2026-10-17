@@ -10,6 +10,7 @@ import { PhoneViewer } from './PhoneViewer';
 import '@/apps/photos/Photos.css';
 import '@/apps/photos/PhotosMobile.css';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /**
  * 사진 (휴대폰): iOS 사진처럼 아래의 떠 있는 탭(보관함·모음)과 검색 단추는 어느 화면에서나 같다.
@@ -116,9 +117,13 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 					모음
 				</button>
 			</div>
-			<button type="button" className="photos-phone-round" aria-label="검색" onClick={() => setSearching(true)}>
-				<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-			</button>
+			<IconButton
+				variant="circle"
+				className="photos-phone-round"
+				label="검색"
+				icon="fa-solid fa-magnifying-glass"
+				onClick={() => setSearching(true)}
+			/>
 		</nav>
 	);
 
@@ -189,17 +194,16 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 						autoFocus
 						onChange={(event) => setQuery(event.target.value)}
 					/>
-					<button
-						type="button"
+					<IconButton
+						variant="circle"
 						className="photos-phone-round"
-						aria-label="검색 닫기"
+						label="검색 닫기"
+						icon="fa-solid fa-xmark"
 						onClick={() => {
 							setSearching(false);
 							setQuery('');
 						}}
-					>
-						<i className="fa-solid fa-xmark" aria-hidden="true" />
-					</button>
+					/>
 				</div>
 			</div>
 		);
@@ -211,20 +215,18 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 			<MobileNavigation {...(opened ? { backLabel: '모음', onBack: () => open(null) } : {})} />
 			{/* 보관함의 오른쪽 위: 앨범별·전체 (iOS 사진의 보기 메뉴) */}
 			{tab === 'library' && !opened && (
-				<button
+				<IconButton
 					ref={moreButton}
-					type="button"
 					className="photos-phone-more"
-					aria-label="보기 방식"
+					label="보기 방식"
+					icon="fa-solid fa-ellipsis"
 					aria-haspopup="menu"
 					aria-expanded={menu !== null}
 					onClick={(event) => {
 						const rect = event.currentTarget.getBoundingClientRect();
 						setMenu(menu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
 					}}
-				>
-					<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-				</button>
+				/>
 			)}
 			<div
 				ref={scrollBox}

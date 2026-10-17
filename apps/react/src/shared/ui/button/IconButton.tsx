@@ -6,8 +6,11 @@ interface IconButtonBase extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, '
 	icon?: string;
 	/** 켜진 상태 (고정됨, 서식 창 열림 등). aria-pressed·aria-expanded는 쓰는 곳에서 따로 준다 */
 	on?: boolean;
-	/** tool: 도구 막대의 네모난 버튼 / float: 떠 있는 동그란 버튼 (메일·메시지) */
-	variant?: 'tool' | 'float';
+	/**
+	 * tool: 도구 막대의 네모난 버튼 / float: 떠 있는 동그란 버튼 (메일·메시지) /
+	 * circle: 떠 있지 않은 동그란 버튼 (메일 시트, 사진, Safari 휴대폰). 크기·바탕은 앱의 CSS가 정한다
+	 */
+	variant?: 'tool' | 'float' | 'circle';
 	ref?: Ref<HTMLButtonElement>;
 }
 

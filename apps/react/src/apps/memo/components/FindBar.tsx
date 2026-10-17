@@ -10,6 +10,7 @@ import {
 } from '@macfolio/desktop-core/memo';
 import { loadRecentFinds, rememberFind, saveRecentFinds } from '../memoStorage';
 import { useEditorControls } from '../writer/editorControls';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /** 읽기 화면에서 찾을 곳: 글 제목과 본문 (댓글·단추 글자는 뺀다) */
 const READER_TARGETS = '.memo-reader-body > h1, .memo-reader-body > .memo-markdown';
@@ -196,12 +197,18 @@ const FindBar = ({
 					)}
 				</div>
 				<div className="memo-find-steps" role="group" aria-label="찾은 곳 옮겨 가기">
-					<button type="button" aria-label="이전 찾기" disabled={result.count === 0} onClick={() => step(-1)}>
-						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
-					</button>
-					<button type="button" aria-label="다음 찾기" disabled={result.count === 0} onClick={() => step(1)}>
-						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
-					</button>
+					<IconButton
+						label="이전 찾기"
+						icon="fa-solid fa-chevron-left"
+						disabled={result.count === 0}
+						onClick={() => step(-1)}
+					/>
+					<IconButton
+						label="다음 찾기"
+						icon="fa-solid fa-chevron-right"
+						disabled={result.count === 0}
+						onClick={() => step(1)}
+					/>
 				</div>
 				<button type="button" className="memo-find-done" onClick={close}>
 					완료

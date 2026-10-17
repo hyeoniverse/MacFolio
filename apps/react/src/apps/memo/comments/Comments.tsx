@@ -11,6 +11,7 @@ import Turnstile from '@/shared/ui/turnstile/Turnstile';
 import { useHumanCheck } from '@/shared/security/security';
 import LikeButton from '../likes/LikeButton';
 import { setCommentLike, toggleLike } from '../likes/likesApi';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /** 프로필 동그라미: 작성자는 GitHub 사진, 방문자는 이름 첫 글자 */
 const CommentAvatar = ({ name, owner }: { name: string; owner: boolean }) => {
@@ -60,15 +61,13 @@ const CommentItem = ({
 					{comment.isAdmin && <span className="memo-comment-badge">작성자</span>}
 					<time dateTime={comment.createdAt}>{formatCommentTime(comment.createdAt)}</time>
 					{canDelete && (
-						<button
-							type="button"
+						<IconButton
 							className="memo-comment-delete"
-							aria-label={`${comment.name}의 댓글 삭제`}
+							label={`${comment.name}의 댓글 삭제`}
 							title="삭제"
+							icon="fa-regular fa-trash-can"
 							onClick={() => setAsking((value) => !value)}
-						>
-							<i className="fa-regular fa-trash-can" aria-hidden="true" />
-						</button>
+						/>
 					)}
 				</div>
 				<p className="memo-comment-body">{comment.body}</p>

@@ -17,6 +17,7 @@ import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import Modal from '@/shared/ui/dialog/Modal';
 import Menu from '@/shared/ui/menu/Menu';
+import IconButton from '@/shared/ui/button/IconButton';
 
 interface Props {
 	kind: WallpaperKind;
@@ -253,14 +254,13 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 								</span>
 							</button>
 							{isAdmin && (
-								<button
-									type="button"
+								<IconButton
+									variant="circle"
 									className="wallpaper-remove"
-									aria-label={`${wallpaper.name} 배경화면 삭제`}
+									label={`${wallpaper.name} 배경화면 삭제`}
+									icon="fa-solid fa-xmark"
 									onClick={() => setRemoving(wallpaper)}
-								>
-									<i className="fa-solid fa-xmark" aria-hidden="true" />
-								</button>
+								/>
 							)}
 						</div>
 					))}
