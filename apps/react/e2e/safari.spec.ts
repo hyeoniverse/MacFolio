@@ -47,7 +47,7 @@ test.describe('Safari', () => {
 		await expect(panel.getByRole('article', { name: 'QRU 큐알유' })).toBeVisible();
 	});
 
-	test('이 사이트(MacFolio)도 프로젝트 탭으로 있고, 데모 단추 없이 저장소 주소를 보여준다', async ({ page }) => {
+	test('이 사이트(MacFolio)도 프로젝트 탭으로 있고, 데모 버튼 없이 저장소 주소를 보여준다', async ({ page }) => {
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
 		await safari.getByRole('tab', { name: /MacFolio/ }).click();
@@ -381,7 +381,7 @@ test.describe('Safari', () => {
 		await expect(safari.getByRole('tab', { name: /QRU/ })).toHaveAttribute('aria-selected', 'true');
 	});
 
-	test('닫기 단추: 좁은 창에서도 지금 탭과 올린 탭에 보이고, 제목과 겹치지 않는다', async ({ page }) => {
+	test('닫기 버튼: 좁은 창에서도 지금 탭과 올린 탭에 보이고, 제목과 겹치지 않는다', async ({ page }) => {
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
 		await safari.evaluate((element) => (element.style.width = '560px'));
@@ -474,7 +474,7 @@ test('신문(NewPick): 주요 기능은 머리 사진 기사, 사진 기사, 단
 	await safari.getByRole('tab', { name: /NewPick/ }).click();
 	const panel = safari.getByRole('tabpanel');
 	const articles = panel.getByRole('region', { name: '주요 기능' });
-	// 펼치는 단추 없이 처음부터 다 보인다
+	// 펼치는 버튼 없이 처음부터 다 보인다
 	await expect(articles.getByRole('button')).toHaveCount(0);
 	const lead = articles.locator('.np-story-lead');
 	await expect(lead.getByRole('heading', { name: 'AI 뉴스 요약' })).toBeVisible();

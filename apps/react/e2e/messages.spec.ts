@@ -141,7 +141,7 @@ test.describe('메시지 (감상·의견·피드백)', () => {
 		await expect(transcript(messages)).not.toContainText('지울 메시지');
 		await expect(transcript(messages)).toContainText('남길 메시지');
 
-		// 다른 브라우저에서는 이 글을 지울 수 없다 (메뉴도, 키보드용 삭제 단추도 없다)
+		// 다른 브라우저에서는 이 글을 지울 수 없다 (메뉴도, 키보드용 삭제 버튼도 없다)
 		await becomeVisitor(page, 'visitor-b');
 		messages = await openMessages(page);
 		await messages.locator('.messages-bubble', { hasText: '남길 메시지' }).click({ button: 'right' });

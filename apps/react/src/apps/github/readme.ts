@@ -1,7 +1,7 @@
 // 프로필 README를 GitHub 앱에 맞게 고치는 규칙 (rehype 플러그인). React와 DOM에 의존하지 않는다.
 // - 상대 주소(./profile/stats-light.svg)를 프로필 저장소 주소로
 // - <picture>는 앱의 화면 모드(밝게·어둡게)에 맞는 그림 하나로 (브라우저는 OS 설정만 본다)
-// - shields.io 배지 링크는 앱의 Contact 단추로, capsule-render 배너는 CSS 배너로 (외부 그림이 멈춰도 깨지지 않게)
+// - shields.io 배지 링크는 앱의 Contact 버튼으로, capsule-render 배너는 CSS 배너로 (외부 그림이 멈춰도 깨지지 않게)
 
 export interface HastText {
 	type: 'text';

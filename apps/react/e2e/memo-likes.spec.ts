@@ -70,10 +70,10 @@ test.describe('좋아요', () => {
 		expect(api.comments['cra-to-vite'][1]).toMatchObject({ likes: 1, liked: true });
 	});
 
-	test('서버가 없으면 좋아요 단추도 인기글도 없다', async ({ page }) => {
+	test('서버가 없으면 좋아요 버튼도 인기글도 없다', async ({ page }) => {
 		const memo = await openMemo(page);
 		await memo.locator('.memo-item', { hasText: CRA }).click();
-		// 목록의 글 제목에도 '좋아요'·'인기글'이 있을 수 있어서 단추의 모양으로 찾는다
+		// 목록의 글 제목에도 '좋아요'·'인기글'이 있을 수 있어서 버튼의 모양으로 찾는다
 		await expect(memo.locator('.memo-like')).toHaveCount(0);
 		await expect(memo.locator('.memo-popular-folder')).toHaveCount(0);
 		await expect(memo.locator('.memo-folder')).not.toHaveCount(0);

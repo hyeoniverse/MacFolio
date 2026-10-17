@@ -21,7 +21,7 @@ test.describe('메모 (블로그)', () => {
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(firstTitle);
 	});
 
-	test('본문 위 도구 막대: 목록/갤러리 단추와 검색 칸 사이에 간격이 있다', async ({ page }) => {
+	test('본문 위 도구 막대: 목록/갤러리 버튼과 검색 칸 사이에 간격이 있다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const toolbar = memo.locator('.memo-reader-toolbar');
 		const toggle = await toolbar.getByRole('button', { name: '갤러리로 보기' }).boundingBox();
@@ -259,7 +259,7 @@ test.describe('메모 (블로그)', () => {
 		await expect(page.getByRole('menu')).toHaveCount(0);
 	});
 
-	test('본문 이미지에 올리면 내려받기 단추가 보이고, 누르면 파일로 받는다', async ({ page }) => {
+	test('본문 이미지에 올리면 내려받기 버튼이 보이고, 누르면 파일로 받는다', async ({ page }) => {
 		const memo = await openMemo(page);
 		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
 		const frame = memo.locator('.memo-markdown .memo-figure-frame').first();

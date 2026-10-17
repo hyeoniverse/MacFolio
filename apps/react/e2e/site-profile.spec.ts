@@ -28,7 +28,7 @@ async function openAboutThisMac(page: Page) {
 }
 
 test.describe('사이트 주인의 프로필', () => {
-	test('서버에 저장한 프로필이 있으면 방문자에게 그 프로필이 보이고, 편집 단추는 없다', async ({ page }) => {
+	test('서버에 저장한 프로필이 있으면 방문자에게 그 프로필이 보이고, 편집 버튼은 없다', async ({ page }) => {
 		const api = await fakeApi(page);
 		api.siteProfile = HONG;
 		await enterDesktop(page);

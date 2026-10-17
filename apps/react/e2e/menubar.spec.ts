@@ -128,7 +128,7 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 	test('앱 이름이 Finder로 바뀌어도 같은 자리, 같은 높이 (움찔거리지 않는다)', async ({ page }) => {
 		await enterDesktop(page);
 		await expect(appName(page)).toHaveText('Safari');
-		// 글자의 위·아래 (단추 안에서 가운데)
+		// 글자의 위·아래 (버튼 안에서 가운데)
 		const textBox = () =>
 			appName(page).evaluate((element) => {
 				const range = document.createRange();

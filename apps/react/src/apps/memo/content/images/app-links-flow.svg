@@ -40,7 +40,7 @@
     <text x="340" y="212" fill="#374151">· 직접 고르기 전에는 사이트 주소 그대로</text>
     <text x="340" y="234" fill="#374151">· 창을 닫으면 다음 창의 주소로</text>
 
-    <text x="340" y="276" font-weight="700" fill="#1f2937" font-size="14">공유 단추</text>
+    <text x="340" y="276" font-weight="700" fill="#1f2937" font-size="14">공유 버튼</text>
     <text x="340" y="300" fill="#374151">· 휴대폰: 공유 시트 (navigator.share)</text>
     <text x="340" y="322" fill="#374151">· 그 밖: 주소를 복사하고 알림</text>
   </g>

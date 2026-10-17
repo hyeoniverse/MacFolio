@@ -88,7 +88,7 @@
 	font-size: var(--text-caption);
 }
 
-/* 아이콘 위·글자 아래 단추 한 줄 (iOS 메뉴 맨 위) */
+/* 아이콘 위·글자 아래 버튼 한 줄 (iOS 메뉴 맨 위) */
 .ui-menu-row {
 	display: grid;
 	grid-auto-columns: 1fr;

@@ -37,7 +37,7 @@ export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" /
 
 처음에는 프로젝트 앱을 메일 다음에 두었더니, 1600px 창에서도 공유·터미널·시스템 설정이 Launchpad로 밀려나 시험 스무 개가 깨졌다. Dock에서 시스템 설정을 열던 시험들이다. 사람도 마찬가지로 늘 쓰는 앱이 사라지면 헤맨다. 그래서 프로젝트 앱은 시스템 설정 다음에 두어, 창이 좁으면 프로젝트 앱이 먼저 Launchpad로 가게 했다. 1600px이면 HYEONIVERSE와 NewPick까지 Dock에 있고, 1920px이면 다섯 개가 모두 들어간다. 그리고 고정하지 않은 앱뿐 아니라 넘쳐서 Launchpad로 간 앱도, 실행 중이면 Dock 끝에 아이콘과 실행 중 점이 나타나게 했다. Launchpad에서 QRU를 열면 QRU가 Dock 끝에 보이고, 닫으면 사라진다.
 
-Safari 프로젝트 페이지에는 "여기서 열기" 단추를 두고, 데모 링크는 "새 탭에서 열기"로 옆에 둔다. 게임인 새싹 농장만 "여기서 플레이"다.
+Safari 프로젝트 페이지에는 "여기서 열기" 버튼을 두고, 데모 링크는 "새 탭에서 열기"로 옆에 둔다. 게임인 새싹 농장만 "여기서 플레이"다.
 
 ![Dock에 고정한 프로젝트 앱](./images/project-apps-launchpad.jpg '위: 1920px 창 (다섯 개가 모두 Dock에) / 아래: 1600px 창 (HYEONIVERSE와 NewPick까지, 나머지는 Launchpad)')
 

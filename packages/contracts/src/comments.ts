@@ -26,7 +26,7 @@ export const Comment = z.object({
 	body: z.string(),
 	/** ISO 8601 */
 	createdAt: z.string(),
-	/** 보고 있는 브라우저가 쓴 댓글 (지우기 단추를 보인다) */
+	/** 보고 있는 브라우저가 쓴 댓글 (지우기 버튼을 보인다) */
 	mine: z.boolean(),
 	likes: z.number().int().nonnegative(),
 	/** 보고 있는 브라우저가 좋아요를 눌렀는지 */

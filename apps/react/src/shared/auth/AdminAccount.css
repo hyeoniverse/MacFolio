@@ -57,7 +57,7 @@
 	gap: 8px;
 }
 
-/* 글자 단추 (shared/ui/button/Button): 창 바탕에 테두리 */
+/* 글자 버튼 (shared/ui/button/Button): 창 바탕에 테두리 */
 .admin-account-actions {
 	--ui-button-bg: var(--color-window-bg, transparent);
 	--ui-button-color: var(--color-text);

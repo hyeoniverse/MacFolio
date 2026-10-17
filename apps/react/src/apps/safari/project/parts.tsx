@@ -1,4 +1,4 @@
-// 프로젝트 페이지들이 함께 쓰는 조각: 아이콘, 링크 단추, 숫자, 화면 캡처, 이름 붙은 구역
+// 프로젝트 페이지들이 함께 쓰는 조각: 아이콘, 링크 버튼, 숫자, 화면 캡처, 이름 붙은 구역
 import React from 'react';
 import type { Project } from '@/shared/profile';
 import { projectAppName } from '@/apps/manifest';

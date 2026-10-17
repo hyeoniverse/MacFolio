@@ -27,7 +27,7 @@ const Banner = ({ notice, mobile }: { notice: Notice; mobile: boolean }) => {
 			}}
 			onClick={() => mobile && dismiss(notice.id)}
 		>
-			{/* macOS: 마우스를 올리면 왼쪽 위에 닫기 단추가 보인다 */}
+			{/* macOS: 마우스를 올리면 왼쪽 위에 닫기 버튼이 보인다 */}
 			{!mobile && (
 				<button type="button" className="notification-close" aria-label="알림 닫기" onClick={() => dismiss(notice.id)}>
 					<i className="fa-solid fa-xmark" aria-hidden="true"></i>

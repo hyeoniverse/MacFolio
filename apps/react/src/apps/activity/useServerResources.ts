@@ -15,7 +15,7 @@ export interface Battery {
 	/** 배터리가 찬 정도 (%) */
 	fill: number;
 	tone: 'danger' | 'warning' | null;
-	/** 한 줄 요약 (단추 이름·툴팁) */
+	/** 한 줄 요약 (버튼 이름·툴팁) */
 	summary: string;
 }
 

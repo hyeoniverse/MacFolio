@@ -117,7 +117,7 @@ export const PhoneViewer = ({
 					const dx = event.clientX - start.x;
 					const dy = event.clientY - start.y;
 					if (Math.abs(dx) >= SWIPE_PX && Math.abs(dx) > Math.abs(dy)) move(dx < 0 ? 1 : -1);
-					// 움직이지 않은 탭이면 사진만 보기를 켜고 끈다 (영상은 재생 단추를 눌러야 하니 영상 위의 탭은 빼고)
+					// 움직이지 않은 탭이면 사진만 보기를 켜고 끈다 (영상은 재생 버튼을 눌러야 하니 영상 위의 탭은 빼고)
 					else if (Math.hypot(dx, dy) < TAP_PX && !(event.target instanceof HTMLVideoElement)) {
 						setInfo(false);
 						setFocus(!focus);

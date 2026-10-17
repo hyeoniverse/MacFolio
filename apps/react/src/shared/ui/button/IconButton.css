@@ -1,15 +1,15 @@
 /*
- * 아이콘 단추 (shared/ui/button/IconButton.tsx).
+ * 아이콘 버튼 (shared/ui/button/IconButton.tsx).
  * components 층: reset 층(앱 루트의 `button { color: inherit }`)은 이기고, 앱의 층 밖 규칙에는 진다.
  *
  * 색은 앱이 [data-app]에 정한다.
  *   --ui-tool-color: 아이콘 색          --ui-tool-hover: 올렸을 때 배경
  *   --ui-tool-on-bg: 켜졌을 때 배경      --ui-tool-on-color: 켜졌을 때 아이콘 색
- *   --ui-float-bg·--ui-float-shadow·--ui-float-color: 떠 있는 단추
+ *   --ui-float-bg·--ui-float-shadow·--ui-float-color: 떠 있는 버튼
  */
 @layer components {
 	.ui-icon-button {
-		/* 상황에 따라 생기는 단추(편집 도구, 되돌려 놓기 등)는 서서히 나타난다 */
+		/* 상황에 따라 생기는 버튼(편집 도구, 되돌려 놓기 등)은 서서히 나타난다 */
 		animation: fade-in var(--duration-fast) var(--ease-out);
 		display: inline-flex;
 		align-items: center;
@@ -32,7 +32,7 @@
 		color: var(--ui-tool-color, var(--color-text-secondary));
 	}
 
-	/* :where로 점수를 .on과 같게 둔다. 켜진 단추에 올려도 켜진 색이 이긴다 (뒤에 있어서) */
+	/* :where로 점수를 .on과 같게 둔다. 켜진 버튼에 올려도 켜진 색이 이긴다 (뒤에 있어서) */
 	.ui-icon-button.tool:hover:where(:not(:disabled)) {
 		background-color: var(--ui-tool-hover, var(--color-selected-bg));
 	}

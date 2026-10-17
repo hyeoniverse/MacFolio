@@ -73,7 +73,7 @@ test.describe('모바일', () => {
 		const memo = page.locator('[data-app="memo"]');
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText('CRA에서 Vite로 옮기기');
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toBeInViewport();
-		// 휴대폰에서도 공유 단추가 있다 (공유 시트를 연다)
+		// 휴대폰에서도 공유 버튼이 있다 (공유 시트를 연다)
 		await expect(memo.getByRole('button', { name: '링크 공유' }).first()).toBeVisible();
 	});
 
@@ -198,7 +198,7 @@ test.describe('모바일', () => {
 		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeVisible();
 	});
 
-	test('날씨 (iOS 모양): 홈 단추 없이 날씨만, 아래 막대의 점으로 넘기고, 목록에서 찾아 더하고, ••• 목록 편집으로 지우고, 화씨로', async ({
+	test('날씨 (iOS 모양): 홈 버튼 없이 날씨만, 아래 막대의 점으로 넘기고, 목록에서 찾아 더하고, ••• 목록 편집으로 지우고, 화씨로', async ({
 		page,
 	}) => {
 		await page.addInitScript(() => {
@@ -216,7 +216,7 @@ test.describe('모바일', () => {
 		await (await homeApp(page, '날씨')).tap();
 		const weather = appWindow(page, 'weather');
 		await expect(weather.getByRole('main', { name: '서울 날씨' }).getByLabel('현재 기온 19도')).toBeVisible();
-		// iOS 날씨처럼 홈으로 가는 단추가 없다 (홈 바로 나간다)
+		// iOS 날씨처럼 홈으로 가는 버튼이 없다 (홈 바로 나간다)
 		await expect(page.locator('.mobile-navbar')).toHaveCount(0);
 
 		// 아래 막대의 점으로 다음 장소
@@ -302,7 +302,7 @@ test.describe('모바일', () => {
 		await (await homeApp(page, '날씨')).tap();
 		const weather = appWindow(page, 'weather');
 		await expect(weather.getByLabel('현재 기온 19도')).toBeVisible();
-		// 서울 하나: 넘길 곳이 없으니 점 막대도 없다 (목록 단추만)
+		// 서울 하나: 넘길 곳이 없으니 점 막대도 없다 (목록 버튼만)
 		await expect(weather.getByRole('group', { name: '장소 넘기기' })).toHaveCount(0);
 		await expect(weather.getByRole('button', { name: '장소 목록' })).toBeVisible();
 
@@ -376,7 +376,7 @@ test.describe('모바일', () => {
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
 	});
 
-	test('상태 표시줄은 앱 위에 투명하게 겹친다: 앱은 화면 맨 위부터 그리고, 첫 줄과 떠 있는 단추는 그 아래에서', async ({
+	test('상태 표시줄은 앱 위에 투명하게 겹친다: 앱은 화면 맨 위부터 그리고, 첫 줄과 떠 있는 버튼은 그 아래에서', async ({
 		page,
 	}) => {
 		await enterHome(page);
@@ -387,7 +387,7 @@ test.describe('모바일', () => {
 		expect(await statusBar.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
 		// 앱 내용은 상태 표시줄 밑(화면 맨 위)부터
 		expect((await memo.locator('.content').boundingBox())!.y).toBe(0);
-		// 뒤로 가기, 오른쪽 위 단추, 큰 제목은 상태 표시줄 아래
+		// 뒤로 가기, 오른쪽 위 버튼, 큰 제목은 상태 표시줄 아래
 		for (const element of [
 			memo.locator('.mobile-navbar-home'),
 			memo.locator('.memo-phone-list-top'),
@@ -416,7 +416,7 @@ test.describe('모바일', () => {
 		expect((await frame.boundingBox())!.y).toBe(bar.y + bar.height);
 		expect(await webFrame.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(59, 130, 246)');
 		expect(await look()).toMatchObject({ color: 'rgb(255, 255, 255)', background: 'rgba(0, 0, 0, 0)' });
-		// 페이지를 가리는 홈 단추는 없다 (홈 바가 홈으로 간다)
+		// 페이지를 가리는 홈 버튼은 없다 (홈 바가 홈으로 간다)
 		await expect(page.locator('.container.mobile .mobile-navbar-home')).toHaveCount(0);
 
 		// 다른 앱에서는 투명한 바탕에 아주 약한 흐림, 앱 글자색
@@ -679,7 +679,7 @@ test.describe('모바일', () => {
 		await expect(page.locator('.mobile-home')).toBeVisible();
 	});
 
-	test('관리자 본문은 iOS 메모처럼 떠 있는 단추를 쓰고, 목록 위에서 새 메모·폴더 화면에서 새로운 폴더를 만든다', async ({
+	test('관리자 본문은 iOS 메모처럼 떠 있는 버튼을 쓰고, 목록 위에서 새 메모·폴더 화면에서 새로운 폴더를 만든다', async ({
 		page,
 	}) => {
 		await fakeApi(page, { signedIn: true });
@@ -693,7 +693,7 @@ test.describe('모바일', () => {
 		const top = memo.locator('.memo-phone-top');
 		await expect(top.getByRole('button', { name: '링크 공유' })).toBeVisible();
 		const bottom = memo.locator('.memo-phone-bottom');
-		// 서식 단추는 편집기를 불러온 뒤에 생긴다
+		// 서식 버튼은 편집기를 불러온 뒤에 생긴다
 		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
 		await expect(bottom.getByRole('button', { name: '체크리스트' })).toBeVisible();
 		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
@@ -732,7 +732,7 @@ test.describe('모바일', () => {
 		await expect(folders.getByRole('textbox', { name: '새로운 폴더 이름' })).toBeVisible();
 	});
 
-	test('목록·폴더 화면은 iOS 메모처럼 큰 제목과 카드 묶음, 떠 있는 단추, 아래 검색 알약을 쓴다', async ({ page }) => {
+	test('목록·폴더 화면은 iOS 메모처럼 큰 제목과 카드 묶음, 떠 있는 버튼, 아래 검색 알약을 쓴다', async ({ page }) => {
 		await fakeApi(page, { signedIn: false });
 		await enterHome(page);
 		await (await homeApp(page, '메모')).tap();
@@ -1217,11 +1217,11 @@ test.describe('모바일', () => {
 		await expect(controlCenter).toBeHidden();
 	});
 
-	test('제어 센터의 관리자 단추와 홈 화면의 암호 앱에서 관리자 계정을 본다', async ({ page }) => {
+	test('제어 센터의 관리자 버튼과 홈 화면의 암호 앱에서 관리자 계정을 본다', async ({ page }) => {
 		await enterHome(page);
 		await page.getByRole('button', { name: '제어 센터 열기' }).tap();
 		const controlCenter = page.getByRole('dialog', { name: '제어 센터' });
-		// 관리자 서버가 없으면 암호 앱을 연다 (로그인 단추는 꺼져 있다)
+		// 관리자 서버가 없으면 암호 앱을 연다 (로그인 버튼은 꺼져 있다)
 		await controlCenter.getByRole('button', { name: '관리자 로그인' }).tap();
 		const passwords = appWindow(page, 'passwords');
 		await expect(passwords).toBeVisible();
@@ -1487,7 +1487,7 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 	const setKeyboard = (page: Page, height: number) =>
 		page.evaluate((next) => (window as unknown as { __keyboard: (h: number) => void }).__keyboard(next), height);
 
-	test('키보드가 올라오면 서식 알약이 키보드 바로 위에 폭 가득 뜨고 새 메모 단추는 숨는다, 내려가면 제자리', async ({
+	test('키보드가 올라오면 서식 알약이 키보드 바로 위에 폭 가득 뜨고 새 메모 버튼은 숨는다, 내려가면 제자리', async ({
 		page,
 	}) => {
 		await fakeKeyboard(page);
@@ -1512,7 +1512,7 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 		// 폭 가득 (좌우 12px)
 		const pill = (await bottom.locator('.memo-phone-format').boundingBox())!;
 		expect(Math.round(pill.width)).toBe(viewport.width - 24);
-		// 서식 단추는 그대로 누를 수 있다
+		// 서식 버튼은 그대로 누를 수 있다
 		await bottom.getByRole('button', { name: '서식' }).tap();
 		await expect(page.getByRole('dialog', { name: '서식' })).toBeVisible();
 		await page.keyboard.press('Escape');
@@ -1561,7 +1561,7 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 	});
 });
 
-test('활동 상태 보기 (휴대폰): 홈으로 가는 단추 없이 탭 줄은 카드와 같은 폭, 기간은 오른쪽 끝', async ({ page }) => {
+test('활동 상태 보기 (휴대폰): 홈으로 가는 버튼 없이 탭 줄은 카드와 같은 폭, 기간은 오른쪽 끝', async ({ page }) => {
 	await fakeApi(page);
 	await enterHome(page);
 	await (await homeApp(page, '활동 상태 보기')).tap();

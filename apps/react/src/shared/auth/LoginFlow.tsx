@@ -36,7 +36,7 @@ const LoginFlow = () => {
 	}
 
 	if (!outcome) return null;
-	// Esc·바깥 누르기는 Modal이 닫고, Enter는 초점이 있는 확인 단추가 받는다
+	// Esc·바깥 누르기는 Modal이 닫고, Enter는 초점이 있는 확인 버튼이 받는다
 	return (
 		<Modal
 			label={outcome.title}
