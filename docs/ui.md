@@ -97,6 +97,22 @@
 
 ## 시험과 접근성 이름
 
-- 순수 계산(`placement.ts`, `shortcut.ts`, `direction.ts`)은 옆에 `*.test.ts`가 있다. 컴포넌트는 브라우저 E2E(`apps/react/e2e/`)가 메뉴·경고창·버튼을 누르는 것으로 확인한다
-- 아이콘만 있는 버튼은 반드시 `label`(→ `aria-label`). 글자가 있는 버튼은 글자가 이름이다. 창은 `role="dialog"`·`aria-modal`·`aria-label`을 부품이 붙이고, 쓰는 쪽은 `label`만 준다
-- 메뉴 항목의 단축키는 `aria-keyshortcuts`(`ariaShortcut`)로 읽힌다
+- 순수 계산(`placement.ts`, `shortcut.ts`, `direction.ts`)은 옆에 `*.test.ts`가 있다
+- 부품의 이름·역할은 `shared/ui/a11y.test.ts`가 부품을 HTML로 그려(`renderToStaticMarkup`) 확인한다. 누르기·Esc·초점 이동 같은 동작은 브라우저 E2E(`apps/react/e2e/`)가 맡는다. `Menu`는 body에 그려서(portal) 이 시험에서 빠지고 E2E가 본다
+
+이름 규칙 (부품이 붙이는 것, 쓰는 쪽이 줄 것):
+
+| 부품            | 이름                                                                                                   | 쓰는 쪽이 줄 것                                                                               |
+| --------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `IconButton`    | `label` → `aria-label`·`title`                                                                         | 아이콘만 있으면 `label`이 꼭 있어야 한다 (타입이 막는다). 없으면 보이는 글자를 `children`으로 |
+| `Button`        | 글자(`children`)                                                                                       | 글자. 앞 아이콘은 `aria-hidden`                                                               |
+| `SidebarToggle` | 지금 할 일 ('사이드바 가리기'·'사이드바 보기') + `aria-expanded`                                       | 없음                                                                                          |
+| `SearchField`   | `label` → `aria-label` (placeholder 기본값)                                                            | `label`                                                                                       |
+| `DatePicker`    | '게시일 고르기' / '게시일 2026. 10. 17., 바꾸기' + `aria-haspopup="dialog"`                            | `label`                                                                                       |
+| `Modal`         | `role="dialog"`(경고창은 `alertdialog`)·`aria-modal`·`aria-label`                                      | `label`                                                                                       |
+| `AlertDialog`   | 제목이 이름                                                                                            | `title`                                                                                       |
+| `Sheet`         | `role="dialog"`·`aria-label`, 덮개 없는 `cover`는 `aria-modal` 없음                                    | `label`                                                                                       |
+| `Menu`          | `role="menu"`·`aria-label`, 항목은 `menuitem`(체크는 `menuitemcheckbox`), 단축키는 `aria-keyshortcuts` | `label`                                                                                       |
+
+- 장식 아이콘(Font Awesome `<i>`, 그린 SVG)은 `aria-hidden="true"`. 그린 SVG는 `focusable="false"`도
+- 이름은 할 일을 말한다 ('지우기', '사이드바 보기'). 상태는 이름에 넣지 않고 `aria-pressed`·`aria-expanded`·`aria-checked`로 알린다
