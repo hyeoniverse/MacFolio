@@ -48,7 +48,7 @@
 	transform-origin: top center;
 }
 
-/* 창 안 버튼의 기본값. reset 층이라 공통 버튼(components 층)가 이긴다 (styles/layers.css) */
+/* 창 안 버튼의 기본값. reset 층이라 공통 버튼(components 층)이 이긴다 (styles/layers.css) */
 @layer reset {
 	.memo-format-panel button {
 		border: none;
