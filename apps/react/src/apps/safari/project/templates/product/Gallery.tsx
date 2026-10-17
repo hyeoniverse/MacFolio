@@ -1,4 +1,4 @@
-// product 템플릿의 화면 모음: 옆으로 넘기는 큰 화면 띠. 한 장씩 맞춰 멈추고(scroll snap), 아래 오른쪽의 둥근 단추로 앞뒤로 넘긴다
+// product 템플릿의 화면 모음: 옆으로 넘기는 큰 화면 띠. 한 장씩 맞춰 멈추고(scroll snap), 아래 오른쪽의 둥근 버튼으로 앞뒤로 넘긴다
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import { Media, type LandingShot } from '@/apps/safari/project/landing';

@@ -9,7 +9,7 @@ desktop-core 분리(#16)의 마지막 로직 이동은 음악이다. [창 관리
 
 ## 섞여 있던 두 가지
 
-`MusicContext`의 "다음 곡" 단추는 이랬다.
+`MusicContext`의 "다음 곡" 버튼은 이랬다.
 
 ```ts
 const next = useCallback(() => {

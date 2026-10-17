@@ -68,7 +68,7 @@ test('repo: 문서 탭을 차례로 열면 예시의 모든 구역이 정해진 
 
 test('repo: 파일 트리의 docs/ 문서를 누르면 README 상자가 그 문서를 열고, 터미널도 docs/를 본다', async ({ page }) => {
 	const { article } = await openSample(page, 'repo');
-	// 첫 화면 없이 저장소 화면으로 열리고, 가지 줄의 Code 단추가 clone 주소 창을 연다
+	// 첫 화면 없이 저장소 화면으로 열리고, 가지 줄의 Code 버튼이 clone 주소 창을 연다
 	await expect(article.locator('.rp-branch-row')).toContainText('7 Tags');
 	await article.locator('.rp-branch-row').getByRole('button', { name: 'Code' }).click();
 	await expect(
@@ -145,7 +145,7 @@ test('repo: 폴더 구조로 만든 파일 트리를 펼치고, 커밋을 타입
 }) => {
 	const { article } = await openSample(page, 'repo');
 
-	// Safari 창의 탭과 섞이지 않게 저장소 탭은 단추(aria-current)다
+	// Safari 창의 탭과 섞이지 않게 저장소 탭은 버튼(aria-current)다
 	await expect(tabs(article).getByRole('button', { name: 'Code' })).toHaveAttribute('aria-current', 'page');
 	await expect(article.getByRole('tab')).toHaveCount(0);
 

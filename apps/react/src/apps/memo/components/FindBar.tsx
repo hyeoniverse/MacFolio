@@ -12,7 +12,7 @@ import { loadRecentFinds, rememberFind, saveRecentFinds } from '../memoStorage';
 import { useEditorControls } from '../writer/editorControls';
 import IconButton from '@/shared/ui/button/IconButton';
 
-/** 읽기 화면에서 찾을 곳: 글 제목과 본문 (댓글·단추 글자는 뺀다) */
+/** 읽기 화면에서 찾을 곳: 글 제목과 본문 (댓글·버튼 글자는 뺀다) */
 const READER_TARGETS = '.memo-reader-body > h1, .memo-reader-body > .memo-markdown';
 /** 한 덩어리로 보는 요소 (덩어리를 넘는 자리는 찾지 않는다) */
 const BLOCKS = 'p, li, h1, h2, h3, h4, h5, h6, td, th, pre, figcaption, .memo-caption, blockquote';

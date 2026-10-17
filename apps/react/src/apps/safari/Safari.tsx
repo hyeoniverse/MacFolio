@@ -48,7 +48,7 @@ const StartPage: React.FC<{ onOpen: (id: string) => void }> = ({ onOpen }) => (
  * Safari: 프로젝트마다 탭이 하나씩 열린 브라우저. 탭을 고르면 그 프로젝트를 소개하는 페이지가 보인다.
  * 탭은 닫을 수 있고, + 로 연 새 탭(시작 페이지)에서 다시 연다.
  * 주소창을 누르면 실제 데모(없으면 저장소)를 새 탭에서 연다. 프로젝트는 GitHub 고정 저장소와 같다 (shared/profile.ts).
- * 공유 단추는 이 프로젝트 페이지의 주소(/safari/<프로젝트>)를 보낸다.
+ * 공유 버튼은 이 프로젝트 페이지의 주소(/safari/<프로젝트>)를 보낸다.
  */
 const Safari: React.FC = () => {
 	const mobile = useIsMobile();
@@ -248,7 +248,7 @@ const Safari: React.FC = () => {
 						<IconButton label="새 탭" onClick={newTab} icon="fa-solid fa-plus" />
 					</div>
 
-					{/* 탭 막대: 프로젝트마다 탭 하나. 지금 탭은 넉넉하게, 나머지는 짧게 나눠 갖는다. 올리면 닫기 단추가 보인다 */}
+					{/* 탭 막대: 프로젝트마다 탭 하나. 지금 탭은 넉넉하게, 나머지는 짧게 나눠 갖는다. 올리면 닫기 버튼이 보인다 */}
 					<div ref={tabList} className="safari-tabs" role="tablist" aria-label="프로젝트 탭">
 						{tabs.map((id) => {
 							const project = findProject(id);

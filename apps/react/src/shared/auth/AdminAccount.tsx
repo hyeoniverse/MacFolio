@@ -15,7 +15,7 @@ const STATUS_TEXT: Record<AdminStatus, string> = {
 };
 
 /**
- * 관리자 계정 카드: 로그인 상태와 로그인·로그아웃 단추.
+ * 관리자 계정 카드: 로그인 상태와 로그인·로그아웃 버튼.
  * 설정(계정)과 암호 앱이 함께 쓴다.
  */
 const AdminAccount = () => {

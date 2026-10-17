@@ -161,7 +161,7 @@ test.describe('메모 편집 (관리자)', () => {
 		await expect(memo.getByRole('list', { name: '고정된 메모' })).toContainText(title);
 		await memo.getByRole('button', { name: '목록으로 보기' }).click();
 
-		// 서버에 저장되어 새로고침해도 고정되어 있고, 본문 위 고정 단추로 푼다
+		// 서버에 저장되어 새로고침해도 고정되어 있고, 본문 위 고정 버튼으로 푼다
 		await expect.poll(() => api.organization.pins).toEqual({ 'bugs-found-by-tests': true });
 		await enterDesktop(page);
 		await dockItem(page, 'memo').click();

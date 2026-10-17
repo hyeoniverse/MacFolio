@@ -30,7 +30,7 @@ CSS의 모든 선택자에서 클래스 이름 2,761개를 뽑고, `.ts`·`.tsx`
 | 클래스                                    | 무엇이었나                                             |
 | ----------------------------------------- | ------------------------------------------------------ |
 | `sp-hero-main`, `sp-tiles`, `sp-timeline` | 프로젝트 페이지를 템플릿으로 바꾸기 전의 공통 레이아웃 |
-| `minimized-container`, `dock-launchpad`   | 창 최소화 미리보기와 옛 Launchpad 단추                 |
+| `minimized-container`, `dock-launchpad`   | 창 최소화 미리보기와 옛 Launchpad 버튼                 |
 | `cd-lock`, `cd-voice-script`              | 데모의 옛 잠금 표시와 음성 대본                        |
 | `tm-jump`                                 | DevCourse 터미널의 옛 바로 가기                        |
 | `memo-toolbar-title`                      | 메모 도구 막대의 옛 제목                               |

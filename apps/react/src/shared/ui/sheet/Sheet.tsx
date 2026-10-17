@@ -61,7 +61,7 @@ const Sheet = ({ label, onClose, variant = 'page', className, style, children }:
 			ref={setBox}
 			className={['ui-sheet', variant, className].filter(Boolean).join(' ')}
 			role="dialog"
-			// cover는 닫기 단추가 시트 바깥(떠 있는 뒤로 가기)에 있어 바깥을 가리지 않는다
+			// cover는 닫기 버튼이 시트 바깥(떠 있는 뒤로 가기)에 있어 바깥을 가리지 않는다
 			aria-modal={variant === 'cover' ? undefined : true}
 			aria-label={label}
 			tabIndex={-1}

@@ -64,7 +64,7 @@
 	justify-content: center;
 	gap: 6px;
 	min-width: 0;
-	/* 탭 단추만큼 오른쪽도 비워 주소가 알약 가운데에 온다 */
+	/* 탭 버튼만큼 오른쪽도 비워 주소가 알약 가운데에 온다 */
 	padding-right: 38px;
 	color: var(--safari-text);
 	font-size: var(--text-callout);

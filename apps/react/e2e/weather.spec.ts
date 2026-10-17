@@ -178,7 +178,7 @@ test.describe('날씨', () => {
 		for (const name of ['닫기', '최소화', '전체 화면']) {
 			const light = weather.getByRole('button', { name, exact: true });
 			const box = (await light.boundingBox())!;
-			// 그 자리에서 맨 위에 그려진 것이 신호등 단추다
+			// 그 자리에서 맨 위에 그려진 것이 신호등 버튼이다
 			const top = await page.evaluate(
 				({ x, y }) =>
 					document.elementFromPoint(x, y)?.closest('[role="button"], button')?.getAttribute('aria-label') ?? null,
@@ -186,7 +186,7 @@ test.describe('날씨', () => {
 			);
 			expect(top).toBe(name);
 		}
-		// 사이드바 단추도 그대로 누를 수 있다
+		// 사이드바 버튼도 그대로 누를 수 있다
 		await weather.getByRole('button', { name: '사이드바 가리기' }).click();
 		await expect(weather.getByRole('navigation', { name: '장소' })).toBeHidden();
 	});
@@ -219,7 +219,7 @@ test.describe('날씨 (휴대폰 화면)', () => {
 		['세운 큰 휴대폰 744px', 744, 1000],
 		['눕힌 휴대폰 844×390', 844, 390],
 	] as const) {
-		test(`${name}: 폭과 상관없이 iOS 모양 (목록은 덮어 열고, 사이드바 단추가 상태 표시줄 밑에 깔리지 않는다)`, async ({
+		test(`${name}: 폭과 상관없이 iOS 모양 (목록은 덮어 열고, 사이드바 버튼이 상태 표시줄 밑에 깔리지 않는다)`, async ({
 			page,
 		}) => {
 			await page.setViewportSize({ width, height });
@@ -235,7 +235,7 @@ test.describe('날씨 (휴대폰 화면)', () => {
 		});
 	}
 
-	test('아래 막대의 목록 단추는 장소가 하나여도 오른쪽, 날씨 칸들과 같은 좌우 여백에 맞춘다', async ({ page }) => {
+	test('아래 막대의 목록 버튼은 장소가 하나여도 오른쪽, 날씨 칸들과 같은 좌우 여백에 맞춘다', async ({ page }) => {
 		await page.setViewportSize({ width: 390, height: 844 });
 		await fakeWeather(page);
 		const weather = await openOnPhone(page);

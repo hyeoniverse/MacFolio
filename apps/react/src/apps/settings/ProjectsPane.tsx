@@ -322,14 +322,14 @@ const FormRow = ({
 	</div>
 );
 
-/** 위아래 화살표 (macOS 팝업 단추의 ⌃⌄) */
+/** 위아래 화살표 (macOS 팝업 버튼의 ⌃⌄) */
 const PopupChevrons = () => (
 	<svg className="projects-popup-chevrons" viewBox="0 0 8 12" aria-hidden="true">
 		<path d="M1.5 4.5 4 2l2.5 2.5M1.5 7.5 4 10l2.5-2.5" />
 	</svg>
 );
 
-/** 팝업 단추 (select): 고른 값과 오른쪽 ⌃⌄ */
+/** 팝업 버튼 (select): 고른 값과 오른쪽 ⌃⌄ */
 const Popup = ({
 	id,
 	label,
@@ -585,7 +585,7 @@ const ChoiceInput = ({
 						}
 					}}
 				/>
-				{/* 오른쪽 ⌄: 누르면 후보 전체를 연다 (콤보 상자의 단추) */}
+				{/* 오른쪽 ⌄: 누르면 후보 전체를 연다 (콤보 상자의 버튼) */}
 				<span
 					className="projects-combo-button"
 					aria-hidden="true"
@@ -988,7 +988,7 @@ const PicturePopup = ({
 	</Popup>
 );
 
-/** 올리기 단추: 단추 전체를 덮는 보이지 않는 파일 입력 */
+/** 올리기 버튼: 버튼 전체를 덮는 보이지 않는 파일 입력 */
 const UploadButton = ({
 	name,
 	uploading,
@@ -1117,7 +1117,7 @@ type Part = [number, number, number, number, string, CSSProperties?];
 const round = { borderRadius: '999px' };
 const card = { borderRadius: '8%/12%', boxShadow: '0 1px 2px rgba(0,0,0,0.12)' };
 const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> = {
-	// 제품: 흰 바탕 가운데 큰 제목 두 줄, 단추 하나, 아래의 큰 화면
+	// 제품: 흰 바탕 가운데 큰 제목 두 줄, 버튼 하나, 아래의 큰 화면
 	product: {
 		bg: '#ffffff',
 		parts: [
@@ -1129,7 +1129,7 @@ const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> 
 			[18, 58, 64, 42, 'linear-gradient(160deg, #d6e4f5, #eef1f6)', { borderRadius: '4% 4% 0 0/7% 7% 0 0' }],
 		],
 	},
-	// 카드: 왼쪽 글과 단추, 오른쪽 창 틀, 아래 아이콘 카드 셋
+	// 카드: 왼쪽 글과 버튼, 오른쪽 창 틀, 아래 아이콘 카드 셋
 	friendly: {
 		bg: '#f6f9fc',
 		parts: [
@@ -1194,7 +1194,7 @@ const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> 
 			[20, 56, 60, 34, '#2c2c2e', { borderRadius: '3%/5%' }],
 		],
 	},
-	// 매거진: 가운데 제호와 겹줄, 붉은 머리말, 명조 큰 제목 두 줄, 리드, 잉크색 단추, 아래 판 위의 큰 사진
+	// 매거진: 가운데 제호와 겹줄, 붉은 머리말, 명조 큰 제목 두 줄, 리드, 잉크색 버튼, 아래 판 위의 큰 사진
 	magazine: {
 		bg: '#faf8f3',
 		parts: [
@@ -1210,7 +1210,7 @@ const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> 
 			[16, 71, 68, 29, '#d8d2c4'],
 		],
 	},
-	// 개발자 도구: 흰 바탕에 1px 선의 틀, 고정폭 배지, 왼쪽 큰 제목과 검은 단추·명령 상자, 오른쪽 정보 칸, 아래 탐색기 달린 편집기 창
+	// 개발자 도구: 흰 바탕에 1px 선의 틀, 고정폭 배지, 왼쪽 큰 제목과 검은 버튼·명령 상자, 오른쪽 정보 칸, 아래 탐색기 달린 편집기 창
 	devtool: {
 		bg: '#ffffff',
 		parts: [
@@ -1238,7 +1238,7 @@ const SKETCH: Record<ProjectLook, { bg: string; parts: Part[]; text?: string }> 
 			[36, 81, 30, 2, '#171717'],
 		],
 	},
-	// 저장소: GitHub 저장소 화면. 회색 머리 띠의 저장소 이름과 초록 Code 단추, 주황 밑줄의 탭, 왼쪽 파일 상자와 README, 오른쪽 옆 칸
+	// 저장소: GitHub 저장소 화면. 회색 머리 띠의 저장소 이름과 초록 Code 버튼, 주황 밑줄의 탭, 왼쪽 파일 상자와 README, 오른쪽 옆 칸
 	repo: {
 		bg: '#ffffff',
 		parts: [
@@ -1372,7 +1372,7 @@ const SheetHostContext = createContext<{ host: HTMLElement | null; background: H
 
 /** 시트 안의 한 페이지: 안쪽 목록이 항목을 열면 이 페이지를 가리고 그 자리(slot)에 다음 페이지를 민다 */
 interface SheetPageFrame {
-	/** 이 페이지의 제목 (다음 페이지의 뒤로 단추에 쓴다) */
+	/** 이 페이지의 제목 (다음 페이지의 뒤로 버튼에 쓴다) */
 	title: string;
 	/** 이 페이지 요소 (다음 페이지가 열린 동안 숨긴다) */
 	page: HTMLElement | null;
@@ -1395,7 +1395,7 @@ const focusFirstField = (page: HTMLElement | null) => {
 	field?.focus();
 };
 
-/** 뒤로 단추의 왼쪽 갈매기 */
+/** 뒤로 버튼의 왼쪽 갈매기 */
 const BackChevron = () => (
 	<svg className="projects-sheet-back-glyph" viewBox="0 0 8 14" aria-hidden="true">
 		<path d="M6.5 1.5 1.5 7l5 5.5" />
@@ -1406,7 +1406,7 @@ const BackChevron = () => (
 const SheetCloseContext = createContext<() => void>(() => {});
 
 /**
- * 시트의 한 페이지: 머리(뒤로 단추와 제목), 칸, 아래 막대(왼쪽 항목 삭제 · 오른쪽 완료).
+ * 시트의 한 페이지: 머리(뒤로 버튼과 제목), 칸, 아래 막대(왼쪽 항목 삭제 · 오른쪽 완료).
  * 다음 페이지가 열리면 이 페이지는 막대째 숨고, 닫히면 왼쪽에서 다시 들어온다. 그래서 항목 삭제는 늘 보이는 페이지의 항목을 지운다.
  * back이 있으면 밀려 들어온 페이지다 (오른쪽에서 들어오고, 연 페이지를 숨긴다)
  */
@@ -1478,7 +1478,7 @@ const SheetPage = ({
 };
 
 /**
- * 항목 시트: 편집 화면을 살짝 어둡게 덮고, 위에서 둥근 판이 내려온다. 칸을 고치는 대로 바로 반영되니 오른쪽 단추는 완료 하나,
+ * 항목 시트: 편집 화면을 살짝 어둡게 덮고, 위에서 둥근 판이 내려온다. 칸을 고치는 대로 바로 반영되니 오른쪽 버튼은 완료 하나,
  * 왼쪽에는 항목 삭제. Esc·완료로 닫고, 열린 동안 초점은 시트 안을 돈다 (바탕은 inert). 시트는 설정 창 안에 그려 창과 함께 움직인다
  */
 const ItemSheet = ({
@@ -1547,7 +1547,7 @@ const RowChevron = () => (
 
 /**
  * 목록 편집 (macOS의 표): 둥근 상자 안의 줄 목록과 아래 ＋ 막대.
- * detail이 있으면 macOS 시스템 설정의 이동 목록처럼 줄 전체가 단추다: 누르거나 Enter·Space로 그 항목의 칸을 시트로 연다
+ * detail이 있으면 macOS 시스템 설정의 이동 목록처럼 줄 전체가 버튼이다: 누르거나 Enter·Space로 그 항목의 칸을 시트로 연다
  * (＋로 더한 항목도 바로 연다). 순서는 왼쪽 ≡ 손잡이를 끌거나 ↑·↓(⌥↑·⌥↓) 키로 바꾸고, 항목은 시트 아래의 항목 삭제로 지운다.
  * 시트 안의 목록이면 시트를 겹치지 않고 같은 시트 안에 다음 페이지로 민다.
  * detail이 없으면 줄의 칸을 바로 고치는 표다: 줄을 눌러 고르고, 끌거나 ⌥↑·⌥↓로 순서를 바꾸고, −나 Delete로 고른 줄을 뺀다
@@ -1591,7 +1591,7 @@ function ListTable<T>({
 	const rowId = useId();
 	const listRef = useRef<HTMLOListElement>(null);
 	const addRef = useRef<HTMLButtonElement>(null);
-	/** 그린 뒤 초점을 줄 곳: 줄(이동 목록이면 줄 단추), 줄의 ≡ 손잡이, (새로 더한 줄이면) 줄의 첫 입력 칸, 또는 ＋ 단추 */
+	/** 그린 뒤 초점을 줄 곳: 줄(이동 목록이면 줄 버튼), 줄의 ≡ 손잡이, (새로 더한 줄이면) 줄의 첫 입력 칸, 또는 ＋ 버튼 */
 	const pendingFocus = useRef<{ index: number; target: 'row' | 'handle' | 'input' } | 'add' | null>(null);
 	useLayoutEffect(() => {
 		const pending = pendingFocus.current;
@@ -1669,7 +1669,7 @@ function ListTable<T>({
 				{items.length === 0 ? (
 					<p className="projects-table-empty">항목이 없습니다. ＋를 눌러 더합니다.</p>
 				) : detail ? (
-					// 이동 목록 (macOS 설정의 › 줄): 왼쪽 ≡ 손잡이, 가운데 줄 단추(제목·설명·그림·›)
+					// 이동 목록 (macOS 설정의 › 줄): 왼쪽 ≡ 손잡이, 가운데 줄 버튼(제목·설명·그림·›)
 					<ol className="projects-table-rows nav" aria-label={label} ref={listRef}>
 						{items.map((item, index) => {
 							const name = `${label} ${index + 1}`;
@@ -2506,7 +2506,7 @@ const CreditsEditor = ({ credits, onChange }: { credits: Credit[]; onChange: (cr
 	/>
 );
 
-/** 오른쪽 패널 단추 모양 (macOS의 sidebar.right) */
+/** 오른쪽 패널 버튼 모양 (macOS의 sidebar.right) */
 const SidebarRightIcon = () => (
 	<svg viewBox="0 0 18 14" aria-hidden="true" className="projects-toolbar-glyph">
 		<rect x="0.75" y="0.75" width="16.5" height="12.5" rx="2.5" />
@@ -2532,7 +2532,7 @@ const ProjectEditor = ({
 	const [id, setId] = useState(row.id);
 	const [draft, setDraft] = useState<Project>(row.project);
 	const [tab, setTab] = useState<EditorTab>('intro');
-	/** 오른쪽에 Safari 페이지를 그대로 그려 둔다 (고치는 대로 바뀐다). 단추로 접고 편다 */
+	/** 오른쪽에 Safari 페이지를 그대로 그려 둔다 (고치는 대로 바뀐다). 버튼으로 접고 편다 */
 	const [preview, setPreview] = useState(true);
 	// 폼과 미리 보기가 나란히 들어가게 창을 키운다 (이미 크면 그대로)
 	useEffect(() => {
@@ -2620,7 +2620,7 @@ const ProjectEditor = ({
 					finish();
 				}}
 			>
-				{/* 창 맨 위 도구 막대: 왼쪽 돌아가기와 이름, 가운데 탭(세그먼트), 오른쪽 미리 보기 패널 단추와 완료 */}
+				{/* 창 맨 위 도구 막대: 왼쪽 돌아가기와 이름, 가운데 탭(세그먼트), 오른쪽 미리 보기 패널 버튼과 완료 */}
 				<div className="projects-toolbar">
 					<div className="projects-toolbar-start">
 						<button
@@ -3020,7 +3020,7 @@ const ProjectEditor = ({
 			</form>
 			{/* 항목 시트는 폼 밖, 편집 화면 위에 그린다 (폼의 Enter 제출을 물려받지 않고, 설정 창과 함께 움직이게) */}
 			<div ref={setSheetHost} className="projects-sheet-host" />
-			{/* 확인 창은 폼 밖에 둔다 (폼 안의 단추 모양을 물려받지 않고, 설정 창 한가운데에 뜨게) */}
+			{/* 확인 창은 폼 밖에 둔다 (폼 안의 버튼 모양을 물려받지 않고, 설정 창 한가운데에 뜨게) */}
 			{confirmingSample && (
 				<AlertDialog
 					title="예시로 채울까요?"
@@ -3191,7 +3191,7 @@ const ProjectsPane = () => {
 							</span>
 							{editMode && (
 								<>
-									{/* 줄 전체가 편집 단추 (항목 시트처럼 줄을 누르면 연다). 스위치·손잡이는 그 위에 따로 눌린다 */}
+									{/* 줄 전체가 편집 버튼 (항목 시트처럼 줄을 누르면 연다). 스위치·손잡이는 그 위에 따로 눌린다 */}
 									<button
 										type="button"
 										className="projects-row-open"

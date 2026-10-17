@@ -154,7 +154,7 @@ const Live = ({ visits }: { visits: LiveVisit[] | null }) => {
 	);
 };
 
-/** 관리자만 볼 수 있는 자리: 왜 비었는지와 로그인 단추 */
+/** 관리자만 볼 수 있는 자리: 왜 비었는지와 로그인 버튼 */
 const AdminOnly = ({ what }: { what: string }) => (
 	<div className="activity-locked">
 		<i className="fa-solid fa-lock" aria-hidden="true" />
@@ -338,7 +338,7 @@ const Activity = () => {
 
 	return (
 		<AppWindow title="활동 상태 보기" appName="activity">
-			{/* 휴대폰: iOS의 탭으로 나눈 앱처럼 첫 화면에 홈으로 가는 단추가 없다 (홈 바로 나간다). 탭 줄이 폭을 다 쓴다 */}
+			{/* 휴대폰: iOS의 탭으로 나눈 앱처럼 첫 화면에 홈으로 가는 버튼이 없다 (홈 바로 나간다). 탭 줄이 폭을 다 쓴다 */}
 			<MobileNavigation hideHome />
 			<div className="activity">
 				{env.apiUrl && (

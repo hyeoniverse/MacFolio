@@ -29,7 +29,7 @@ const Composer: React.FC<Props> = ({ onSend, children, autoFocus, placeholder = 
 
 	const submit = async (event?: React.FormEvent) => {
 		event?.preventDefault();
-		// 빈 글은 보내기 단추도 없으므로 Enter도 무시한다
+		// 빈 글은 보내기 버튼도 없으므로 Enter도 무시한다
 		if (sending || !text.trim()) return;
 		setSending(true);
 		try {

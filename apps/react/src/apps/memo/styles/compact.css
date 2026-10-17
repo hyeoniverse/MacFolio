@@ -90,7 +90,7 @@
 	display: none;
 }
 
-/* 본문 위 한 줄: 서식·삭제·고정은 왼쪽, 공유는 오른쪽 끝 (iOS 메모처럼). 단추 크기를 맞춘다 */
+/* 본문 위 한 줄: 서식·삭제·고정은 왼쪽, 공유는 오른쪽 끝 (iOS 메모처럼). 버튼 크기를 맞춘다 */
 :where(.memo-shell[data-compact]) .memo-reader-compact-bar {
 	justify-content: flex-start;
 	gap: 4px;
@@ -201,7 +201,7 @@
 	padding-top: 12px;
 }
 
-/* 게시 단추는 손가락으로 누를 만한 크기로 */
+/* 게시 버튼은 손가락으로 누를 만한 크기로 */
 .container.mobile
 	:where(.memo-shell[data-compact])
 	.memo-writer-actions

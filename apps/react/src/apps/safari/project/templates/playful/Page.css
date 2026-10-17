@@ -224,7 +224,7 @@
 	background-color: #a3e4d7;
 }
 
-/* ─── 링크 단추: 알약, 2px 테두리. 첫 링크는 꽉 찬 잉크 ─── */
+/* ─── 링크 버튼: 알약, 2px 테두리. 첫 링크는 꽉 찬 잉크 ─── */
 .pf-links {
 	display: flex;
 	flex-wrap: wrap;

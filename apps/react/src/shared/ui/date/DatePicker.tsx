@@ -37,10 +37,10 @@ const DatePicker = ({
 	/** YYYY-MM-DD. 비어 있으면 placeholder를 보여 준다 */
 	value: string;
 	onChange: (value: string) => void;
-	/** 단추의 이름 앞부분 (예: 시작일) */
+	/** 버튼의 이름 앞부분 (예: 시작일) */
 	label?: string;
 	placeholder?: string;
-	/** 여는 단추의 모양 (쓰는 앱의 CSS) */
+	/** 여는 버튼의 모양 (쓰는 앱의 CSS) */
 	className?: string;
 	/** 고를 수 있는 날짜의 범위 (YYYY-MM-DD, 그 날 포함). 벗어나는 날·달·해는 눌리지 않는다 */
 	min?: string;

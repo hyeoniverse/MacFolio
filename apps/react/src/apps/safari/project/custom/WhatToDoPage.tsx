@@ -39,7 +39,7 @@ const cardsOf = (project: Project): Card[] => [
 ];
 
 /**
- * 진짜 칸반처럼 카드를 끌어 다른 열에 놓거나, 카드의 화살표 단추로 다음 열로 옮긴다.
+ * 진짜 칸반처럼 카드를 끌어 다른 열에 놓거나, 카드의 화살표 버튼으로 다음 열로 옮긴다.
  * 옮긴 자리는 이 페이지에서만 기억하고, "처음대로"로 되돌린다
  */
 const Board: React.FC<{ project: Project }> = ({ project }) => {

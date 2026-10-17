@@ -158,7 +158,7 @@ const FolderSidebar: React.FC<FolderSidebarProps> = (props) => {
 			</div>
 
 			<div className="memo-folder-scroll">
-				{/* 휴대폰: iOS 메모처럼 큰 제목, 묶음 이름 옆에 접기 단추 */}
+				{/* 휴대폰: iOS 메모처럼 큰 제목, 묶음 이름 옆에 접기 버튼 */}
 				<p className="memo-phone-title" aria-hidden="true">
 					폴더
 				</p>

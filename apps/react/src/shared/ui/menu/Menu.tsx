@@ -28,7 +28,7 @@ export type MenuItem =
 	| { note: string }
 	/** 누를 수 없는 정보 줄: 항목과 같은 글자·아이콘 칸이지만 올려도 칠하지 않는다 (예: Wi-Fi 메뉴의 지금 연결) */
 	| { info: string; icon?: string | React.ReactElement }
-	/** 아이콘 위·글자 아래 단추를 가로로 늘어놓은 한 줄 (iOS 메뉴 맨 위의 고정·잠그기처럼) */
+	/** 아이콘 위·글자 아래 버튼을 가로로 늘어놓은 한 줄 (iOS 메뉴 맨 위의 고정·잠그기처럼) */
 	| { row: { label: string; icon: string; onSelect: () => void; disabled?: boolean }[] }
 	| 'separator';
 
@@ -39,7 +39,7 @@ interface Props {
 	anchor: { x: number; y: number };
 	items: MenuItem[];
 	onClose: () => void;
-	/** 눌러도 닫지 않을 요소 (메뉴를 여는 단추: 다시 누르면 단추가 닫는다) */
+	/** 눌러도 닫지 않을 요소 (메뉴를 여는 버튼: 다시 누르면 버튼이 닫는다) */
 	trigger?: React.RefObject<Element | null>;
 	/** 열자마자 첫 항목에 초점 (키보드로 바로 고르게). 검색 칸처럼 초점을 지켜야 하는 곳에서 열면 끈다 */
 	autoFocus?: boolean;
@@ -55,7 +55,7 @@ const isAction = (item: MenuItem): item is Extract<MenuItem, { onSelect: () => v
 	typeof item === 'object' && 'onSelect' in item;
 
 /**
- * macOS 메뉴 (우클릭, ••• 단추, Apple 메뉴). 창에 잘리지 않게 body에 그리고, 연 자리에 둔다.
+ * macOS 메뉴 (우클릭, ••• 버튼, Apple 메뉴). 창에 잘리지 않게 body에 그리고, 연 자리에 둔다.
  * 바깥을 누르거나 Esc를 누르면 닫히고, ↑·↓·Home·End로 항목을 옮겨 다닌다.
  */
 const Menu: React.FC<Props> = ({

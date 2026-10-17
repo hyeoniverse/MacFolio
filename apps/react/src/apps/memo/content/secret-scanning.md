@@ -50,6 +50,6 @@ PR과 main push마다, 그리고 월요일마다 돈다. 바이너리는 버전(
 1. Settings → Advanced Security(예전 이름 Code security)에서 **Secret Protection**(예전 이름 Secret scanning)과 그 아래 **Push protection**, 그리고 **Dependabot security updates** 켜기
 2. main의 Ruleset에 `secrets`를 필수 검사로 더하기
 
-단추 위치와 순서는 CONTRIBUTING.md의 '저장소 설정 › 비밀 값·의존성'에 적어 두었다. GitHub의 스캐너와 gitleaks는 보는 범위가 다르다. GitHub은 자기가 아는 서비스의 키만, gitleaks는 `.gitleaks.toml`에 적은 이 프로젝트의 키(Resend·Groq, DB 비밀번호)까지 본다. 그래서 둘 다 켠다.
+버튼 위치와 순서는 CONTRIBUTING.md의 '저장소 설정 › 비밀 값·의존성'에 적어 두었다. GitHub의 스캐너와 gitleaks는 보는 범위가 다르다. GitHub은 자기가 아는 서비스의 키만, gitleaks는 `.gitleaks.toml`에 적은 이 프로젝트의 키(Resend·Groq, DB 비밀번호)까지 본다. 그래서 둘 다 켠다.
 
 #MacFolio #보안 #CI #gitleaks

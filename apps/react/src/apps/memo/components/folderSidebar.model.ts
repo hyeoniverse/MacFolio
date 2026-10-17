@@ -18,7 +18,7 @@ export interface FolderSidebarProps {
 	onSelect: (path: string) => void;
 	/** 새 폴더를 이 폴더 아래에 만든다 ('' = 맨 위) */
 	onAddFolder: (parent: string, name: string) => void;
-	/** 새 메모 (관리자). 사이드바 위쪽의 새로운 폴더 단추 왼쪽에 둔다 */
+	/** 새 메모 (관리자). 사이드바 위쪽의 새로운 폴더 버튼 왼쪽에 둔다 */
 	onNewNote?: () => void;
 	onRenameFolder: (path: FolderPath, name: string) => void;
 	onRemoveFolder: (path: FolderPath) => void;

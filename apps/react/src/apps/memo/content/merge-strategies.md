@@ -2,10 +2,10 @@
 title: GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge
 date: 2026-10-12
 category: 기술 노트/Git
-summary: PR의 Merge 단추에 있는 세 방식으로 같은 PR을 병합하면 main의 커밋 그래프, 커밋 SHA, 머지 커밋, 기록의 직선성이 어떻게 달라지는지 도식으로 정리했다. 선택 기준은 커밋 단위가 남을 가치가 있는가, SHA를 바깥에서 가리키는가, 브랜치 안에 머지 커밋이 있는가의 세 질문이다.
+summary: PR의 Merge 버튼에 있는 세 방식으로 같은 PR을 병합하면 main의 커밋 그래프, 커밋 SHA, 머지 커밋, 기록의 직선성이 어떻게 달라지는지 도식으로 정리했다. 선택 기준은 커밋 단위가 남을 가치가 있는가, SHA를 바깥에서 가리키는가, 브랜치 안에 머지 커밋이 있는가의 세 질문이다.
 ---
 
-GitHub PR 페이지의 Merge 단추를 누르면 세 가지 방식 가운데 하나를 고르게 된다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것을 골라야 하는지 물으면 "팀마다 다르다"는 답이 돌아오는데, 무엇이 달라서 다른 답이 나오는지 정리한다.
+GitHub PR 페이지의 Merge 버튼을 누르면 세 가지 방식 가운데 하나를 고르게 된다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것을 골라야 하는지 물으면 "팀마다 다르다"는 답이 돌아오는데, 무엇이 달라서 다른 답이 나오는지 정리한다.
 
 <details id="terms">
 <summary>먼저 알아 둘 용어</summary>
@@ -110,7 +110,7 @@ A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 
 
 ## 저장소 설정으로 고정하기
 
-GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식을 각각 켜고 끌 수 있다. 기본값은 셋 다 켜진 상태라 Merge 단추에서 매번 고르게 되는데, 정한 방식 하나만 남기고 나머지를 끄면 실수로 다른 방식을 고를 일이 없다. 같은 화면의 "Automatically delete head branches"를 켜면 병합 뒤 브랜치 삭제도 자동이 된다. 둘 다 코드가 아니라 저장소 설정이므로 CONTRIBUTING 같은 문서에 적어 두어야 새로 온 사람이 알 수 있다.
+GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식을 각각 켜고 끌 수 있다. 기본값은 셋 다 켜진 상태라 Merge 버튼에서 매번 고르게 되는데, 정한 방식 하나만 남기고 나머지를 끄면 실수로 다른 방식을 고를 일이 없다. 같은 화면의 "Automatically delete head branches"를 켜면 병합 뒤 브랜치 삭제도 자동이 된다. 둘 다 코드가 아니라 저장소 설정이므로 CONTRIBUTING 같은 문서에 적어 두어야 새로 온 사람이 알 수 있다.
 
 [^no-ff]: main이 브랜치를 만든 뒤로 바뀌지 않았다면 Git은 머지 커밋 없이 main 포인터만 브랜치 끝으로 옮긴다(fast-forward). `--no-ff`는 이때도 머지 커밋을 꼭 만들라는 옵션이다. GitHub의 Create a merge commit은 늘 이렇게 동작한다.
 
