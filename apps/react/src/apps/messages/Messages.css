@@ -41,7 +41,7 @@
 	--messages-error: #ff6961;
 }
 
-/* 공통 버튼의 색: 떠 있는 원형 버튼(새 메시지, 뒤로 가기)와 글자 버튼 (shared/ui/button) */
+/* 공통 버튼의 색: 떠 있는 원형 버튼(새 메시지, 뒤로 가기)과 글자 버튼 (shared/ui/button) */
 [data-app='messages'] {
 	--ui-float-bg: var(--messages-float-bg);
 	--ui-float-shadow: var(--messages-float-shadow);

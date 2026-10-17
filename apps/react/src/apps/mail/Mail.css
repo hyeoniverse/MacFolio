@@ -32,7 +32,7 @@
 	--mail-error: #ff6961;
 }
 
-/* 공통 버튼의 색: 떠 있는 원형 버튼(새로운 메시지)와 글자 버튼 (shared/ui/button) */
+/* 공통 버튼의 색: 떠 있는 원형 버튼(새로운 메시지)과 글자 버튼 (shared/ui/button) */
 [data-app='mail'] {
 	--ui-float-bg: var(--mail-float-bg);
 	--ui-float-shadow: var(--mail-float-shadow);

@@ -119,6 +119,6 @@ for (let i = 0; i < count; i++) {
 - 화면 58장: 모두 0.001% 이하 (시계 고정 후 남는 잡음 수준)
 - 계산된 스타일: 바뀐 것은 메시지 새 피드백 버튼의 `z-index`(공통 버튼은 창의 끌기 영역 위에 있게 `z-index: 4`를 준다)와, 같은 상자 크기를 다르게 적은 값들(Safari 버튼의 `width: 30px` → `min-width: 30px` + 여백)뿐이다
 
-다음 단계에서는 글자가 있는 버튼(`Button`), 목록의 줄(`ListRow`), 나눔 버튼(`SegmentedControl`)를 같은 방법으로 옮긴다.
+다음 단계에서는 글자가 있는 버튼(`Button`), 목록의 줄(`ListRow`), 나눔 버튼(`SegmentedControl`)을 같은 방법으로 옮긴다.
 
 #MacFolio #CSS #공통컴포넌트

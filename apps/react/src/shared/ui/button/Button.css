@@ -7,7 +7,7 @@
  */
 @layer components {
 	.ui-button {
-		/* 상황에 따라 생기는 버튼(편집 도구, 되돌려 놓기 등)는 서서히 나타난다 */
+		/* 상황에 따라 생기는 버튼(편집 도구, 되돌려 놓기 등)은 서서히 나타난다 */
 		animation: fade-in var(--duration-fast) var(--ease-out);
 		display: inline-flex;
 		align-items: center;
