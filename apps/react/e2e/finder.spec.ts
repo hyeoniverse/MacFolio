@@ -159,7 +159,7 @@ test.describe('Finder', () => {
 			const doc = preview.getByRole('document', { name: '시험 이력서.pdf' });
 			await expect(doc.getByRole('group', { name: /쪽$/ })).toHaveCount(3);
 			await expect(doc.getByRole('group', { name: '1쪽' }).locator('.textLayer')).toContainText('MacFolio test PDF');
-			await expect(preview.getByText('3페이지 중 1페이지')).toBeVisible();
+			await expect(preview.getByText('1/3페이지')).toBeVisible();
 			// 공유 메뉴: 다운로드(?download=1)·새 탭
 			await preview.getByRole('button', { name: '공유' }).click();
 			const download = page.waitForEvent('download');
@@ -174,12 +174,12 @@ test.describe('Finder', () => {
 			const sidebar = preview.getByRole('navigation', { name: '사이드바' });
 			await expect(sidebar.getByRole('button', { name: /^\d쪽$/ })).toHaveCount(3);
 			await sidebar.getByRole('button', { name: '3쪽' }).click();
-			await expect(preview.getByText('3페이지 중 3페이지')).toBeVisible();
+			await expect(preview.getByText('3/3페이지')).toBeVisible();
 			await expect(sidebar.getByRole('button', { name: '3쪽' })).toHaveAttribute('aria-current', 'page');
 			// ←로 앞 쪽
 			await doc.focus();
 			await page.keyboard.press('ArrowLeft');
-			await expect(preview.getByText('3페이지 중 2페이지')).toBeVisible();
+			await expect(preview.getByText('2/3페이지')).toBeVisible();
 
 			// 찾기: 쪽마다 'Page'가 하나, Enter로 다음 결과
 			const search = preview.getByRole('searchbox', { name: '찾기' });
@@ -242,6 +242,30 @@ test.describe('Finder', () => {
 			await page.keyboard.press('Escape');
 			await sidebar.getByRole('button', { name: '시험 그림.png 닫기' }).click();
 			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('시험 이력서.pdf');
+		});
+
+		test('파일 없이 미리보기를 열면 열기 창: 최근 항목·폴더, 두 번 누르거나 열기로 연다', async ({ page }) => {
+			await fakeFiles(page);
+			await enterDesktop(page);
+			await dockItem(page, 'launchpad').click();
+			await page.locator('.launchpad-modal').getByRole('button', { name: 'preview', exact: true }).click();
+			const preview = appWindow(page, 'preview');
+			const panel = preview.getByRole('dialog', { name: '열기' });
+			await expect(panel).toBeVisible();
+			// 최근 항목: 고친 날이 늦은 순
+			const files = panel.getByRole('listbox', { name: '최근 항목' }).getByRole('option');
+			await expect(files).toHaveText(['시험 이력서.pdf', '시험 그림.png']);
+			// 폴더를 고르면 그 폴더만, 빈 폴더는 안내
+			await panel.getByRole('button', { name: '자격증' }).click();
+			await expect(panel).toContainText('자격증 사본을 준비하고 있습니다.');
+			await panel.getByRole('button', { name: '포트폴리오' }).click();
+			const image = panel.getByRole('option', { name: '시험 그림.png' });
+			await expect(panel.getByRole('button', { name: '열기' })).toBeDisabled();
+			await image.click();
+			await expect(image).toHaveAttribute('aria-selected', 'true');
+			await panel.getByRole('button', { name: '열기' }).click();
+			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('시험 그림.png');
+			await expect(panel).toHaveCount(0);
 		});
 	});
 });

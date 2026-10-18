@@ -9,10 +9,11 @@ import SearchField from '@/shared/ui/search-field/SearchField';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import '@/shared/ui/button/Button.css';
 import { downloadFile, fileUrl, formatSize, openFileInNewTab } from '@/apps/finder/documents';
-import { closeInPreview, selectInPreview, usePreview, type PreviewFile } from './previewStore';
+import { closeInPreview, openInPreview, selectInPreview, usePreview, type PreviewFile } from './previewStore';
 import { countMatches, loadPdf } from './pdf';
 import PdfView, { PdfThumb, type PdfViewHandle } from './PdfView';
 import ImageView from './ImageView';
+import OpenPanel from './OpenPanel';
 import './Preview.css';
 
 /** 배율 단계. 확대·축소는 지금 배율의 다음 단계로 간다 */
@@ -48,6 +49,7 @@ function usePdfDocuments(files: PreviewFile[]) {
  */
 const Preview: React.FC = () => {
 	const { files, current } = usePreview();
+	const { closeApp } = useAppState();
 	const file = files.find((open) => open.key === current) ?? null;
 	const docs = usePdfDocuments(files);
 	const doc =
@@ -228,7 +230,7 @@ const Preview: React.FC = () => {
 		? ''
 		: file.kind === 'pdf'
 			? pages > 0
-				? `${pages}페이지 중 ${page}페이지`
+				? `${page}/${pages}페이지`
 				: 'PDF 문서'
 			: `이미지${file.size !== undefined ? ` · ${formatSize(file.size)}` : ''}`;
 
@@ -243,19 +245,20 @@ const Preview: React.FC = () => {
 					</div>
 					{file && (
 						<div className="preview-tools">
-							<IconButton
-								icon="fa-solid fa-circle-info"
-								label="정보"
-								aria-haspopup="menu"
-								aria-expanded={popup?.kind === 'info'}
-								onClick={openPopup('info')}
-							/>
-							<span className="preview-zoom" role="group" aria-label="배율">
+							{/* macOS 미리보기처럼 버튼을 둥근 칸으로 묶는다: 배율 / 회전 / 정보·공유 */}
+							<span className="preview-group" role="group" aria-label="배율">
 								<IconButton
 									icon="fa-solid fa-magnifying-glass-minus"
 									label="축소"
 									disabled={nextZoom(scale, -1) === null}
 									onClick={() => step(-1)}
+								/>
+								<IconButton
+									icon="fa-solid fa-magnifying-glass"
+									label="크기 조절하여 맞추기"
+									aria-pressed={zoom === null}
+									on={zoom === null}
+									onClick={() => setZoom(null)}
 								/>
 								<IconButton
 									icon="fa-solid fa-magnifying-glass-plus"
@@ -264,18 +267,30 @@ const Preview: React.FC = () => {
 									onClick={() => step(1)}
 								/>
 							</span>
-							<IconButton
-								icon="fa-solid fa-arrow-up-from-bracket"
-								label="공유"
-								aria-haspopup="menu"
-								aria-expanded={popup?.kind === 'share'}
-								onClick={openPopup('share')}
-							/>
-							<IconButton icon="fa-solid fa-rotate-left" label="왼쪽으로 회전" onClick={() => rotate(-90)} />
+							<span className="preview-group">
+								<IconButton icon="fa-solid fa-rotate-left" label="왼쪽으로 회전" onClick={() => rotate(-90)} />
+							</span>
+							<span className="preview-group">
+								<IconButton
+									icon="fa-solid fa-info"
+									label="정보"
+									aria-haspopup="menu"
+									aria-expanded={popup?.kind === 'info'}
+									onClick={openPopup('info')}
+								/>
+								<IconButton
+									icon="fa-solid fa-arrow-up-from-bracket"
+									label="공유"
+									aria-haspopup="menu"
+									aria-expanded={popup?.kind === 'share'}
+									onClick={openPopup('share')}
+								/>
+							</span>
 							{file.kind === 'pdf' && (
 								<div ref={search} className="preview-search">
 									<SearchField
 										label="찾기"
+										placeholder="검색"
 										className="preview-search-field"
 										value={query}
 										onChange={(event) => setQuery(event.target.value)}
@@ -343,7 +358,12 @@ const Preview: React.FC = () => {
 					)}
 					<main className="preview-main" onKeyDown={onKeyDown}>
 						{!file ? (
-							<PreviewEmpty />
+							<OpenPanel
+								onOpen={(entry) =>
+									openInPreview({ key: entry.key, name: entry.name, kind: entry.kind, size: entry.size })
+								}
+								onCancel={() => closeApp('preview')}
+							/>
 						) : file.kind === 'image' ? (
 							<ImageView
 								key={file.key}
@@ -436,26 +456,5 @@ function infoItems(file: PreviewFile, pages: number, scale: number, zoom: number
 		{ note: `배율: ${zoom === null ? `맞춤 (${Math.round(scale * 100)}%)` : `${Math.round(zoom * 100)}%`}` },
 	];
 }
-
-const PreviewEmpty: React.FC = () => {
-	const { openApp, bringAppToFront } = useAppState();
-	return (
-		<div className="preview-empty">
-			<i className="fa-regular fa-images" aria-hidden="true" />
-			<p>열린 파일이 없습니다.</p>
-			<p className="preview-empty-note">Finder의 문서 폴더에서 PDF나 그림을 열면 여기에 보입니다.</p>
-			<button
-				type="button"
-				className="ui-button"
-				onClick={() => {
-					openApp('finder');
-					bringAppToFront('finder');
-				}}
-			>
-				Finder 열기
-			</button>
-		</div>
-	);
-};
 
 export default Preview;
