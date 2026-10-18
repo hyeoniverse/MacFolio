@@ -96,3 +96,17 @@ export {
 	TranslateInput,
 	type TranslateProvider,
 } from './demos.js';
+export {
+	DEFAULT_DESKTOP_ALIASES,
+	EMPTY_FINDER_LAYOUT,
+	FINDER_ALIAS_TARGET,
+	FINDER_BUILTIN_PARENT,
+	FINDER_FILE_ID,
+	FINDER_FOLDER_ID,
+	FINDER_FOLDER_NAME_MAX,
+	FINDER_LIMITS,
+	FinderLayout,
+	finderLayoutErrors,
+	type FinderLayoutValue,
+	finderNameError,
+} from './finder.js';
