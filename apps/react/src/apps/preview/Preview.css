@@ -1,4 +1,4 @@
-/* 미리보기 (macOS 미리보기). 위 도구 막대, 파일이 둘 이상이면 왼쪽 사이드바, 가운데 회색 바탕에 문서 */
+/* 미리보기 (macOS 미리보기). 통합형 창: 위 막대에 신호등·사이드바·이름과 쪽·도구, 아래에 사이드바(쪽 그림)와 회색 바탕의 본문 */
 .preview {
 	display: flex;
 	flex-direction: column;
@@ -7,167 +7,264 @@
 	background-color: var(--color-window-bg);
 }
 
+/* ─── 위 막대 ─── */
 .preview-toolbar {
+	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 버튼·찾기 칸만 그 위로 올린다 */
 	display: flex;
-	flex-wrap: wrap;
+	flex: none;
 	align-items: center;
 	gap: var(--space-8);
-	padding: var(--space-6) var(--space-12);
+	height: 52px;
+	padding: 0 var(--space-12) 0 80px;
 	border-bottom: 1px solid var(--color-divider);
 	background-color: var(--color-titlebar-bg);
 }
 
-.preview-info {
+.preview-toolbar button,
+.preview-toolbar a,
+.preview-search {
+	position: relative;
+	z-index: 4;
+}
+
+.preview-title {
 	flex: 1;
 	min-width: 0;
-	color: var(--color-text-secondary);
-	font-size: 12px;
-	text-align: left;
-	white-space: nowrap;
+	line-height: 1.25;
+}
+
+.preview-title h1 {
+	margin: 0;
 	overflow: hidden;
+	font-size: 13px;
+	font-weight: 700;
 	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.preview-title p {
+	margin: 0;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+}
+
+.preview-tools {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: var(--space-4);
 }
 
 .preview-zoom {
 	display: inline-flex;
-	align-items: center;
-	gap: var(--space-2);
+	gap: 1px;
 }
 
 .preview-zoom-level {
-	min-width: 56px;
+	min-width: 40px;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+.preview-link {
+	text-decoration: none;
+}
+
+.preview-search {
+	display: flex;
+	align-items: center;
+	gap: var(--space-6);
+	margin-left: var(--space-6);
+}
+
+.preview-search-field {
+	display: flex;
+	align-items: center;
+	gap: var(--space-6);
+	width: 150px;
+	height: 28px;
+	padding: 0 var(--space-8);
+	border-radius: 7px;
+	background-color: var(--color-selected-bg);
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.preview-search-field input {
+	flex: 1;
+	min-width: 0;
+	border: 0;
+	outline: 0;
+	background: none;
+	color: var(--color-text);
+	font: inherit;
+}
+
+.preview-search-count {
+	min-width: 34px;
+	color: var(--color-text-secondary);
+	font-size: 11px;
 	font-variant-numeric: tabular-nums;
 }
 
-.preview-action {
-	display: inline-flex;
+/* ─── 사이드바: 쪽 그림 ─── */
+.preview-body {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+}
+
+.preview-sidebar {
+	display: flex;
+	flex: 0 0 148px;
+	flex-direction: column;
+	gap: var(--space-12);
+	padding: var(--space-12) var(--space-8);
+	overflow-y: auto;
+	border-right: 1px solid var(--color-divider);
+	background-color: var(--color-sidebar-bg);
+}
+
+.preview-side-head {
+	display: flex;
 	align-items: center;
-	gap: var(--space-6);
-	text-decoration: none;
+	gap: var(--space-4);
+	padding: 0 var(--space-4) var(--space-4);
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.preview-side-head span {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.preview-body {
-	flex: 1;
-	min-height: 0;
-	display: flex;
+.preview-side-file:not(.current) .preview-side-head {
+	color: var(--color-text-secondary);
 }
 
-/* ─── 사이드바: 열린 파일 ─── */
-.preview-sidebar {
-	flex: 0 0 132px;
+.preview-thumbs {
 	display: flex;
 	flex-direction: column;
-	gap: var(--space-8);
-	padding: var(--space-10) var(--space-8);
-	overflow-y: auto;
-	background-color: var(--color-sidebar-bg);
-	border-right: 1px solid var(--color-divider);
+	align-items: center;
+	gap: var(--space-10);
 }
 
 .preview-thumb {
-	position: relative;
-	border-radius: 8px;
-}
-
-.preview-thumb.active {
-	background-color: var(--color-selected-bg);
-}
-
-.preview-thumb-open {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: var(--space-4);
-	width: 100%;
-	padding: var(--space-8) var(--space-6);
+	padding: var(--space-4);
 	border: 0;
+	border-radius: 6px;
 	background: none;
-	color: var(--color-text);
+	color: var(--color-text-secondary);
 	font: inherit;
 	font-size: 11px;
 	cursor: default;
 }
 
-.preview-thumb-open img {
-	width: 88px;
-	height: 72px;
-	object-fit: contain;
-	box-shadow: var(--shadow-md);
+.preview-thumb canvas,
+.preview-thumb img {
+	display: block;
+	width: 96px;
+	background-color: #fff;
+	box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+	/* 고른 쪽은 파란 테두리 (macOS 미리보기처럼) */
+	outline: 3px solid transparent;
+	outline-offset: 2px;
+	border-radius: 2px;
 }
 
-.preview-thumb-open i {
-	font-size: 48px;
-	line-height: 72px;
+.preview-thumb img {
+	max-height: 96px;
+	object-fit: contain;
+}
+
+.preview-thumb.active canvas,
+.preview-thumb.active img {
+	outline-color: var(--color-accent);
+}
+
+.preview-thumb.active span {
+	color: var(--color-text);
+	font-weight: 600;
+}
+
+.preview-thumb-icon {
+	font-size: 40px;
 	color: var(--color-red);
 }
 
-.preview-thumb-open span {
-	max-width: 100%;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.preview-thumb-close {
-	position: absolute;
-	top: 2px;
-	right: 2px;
-	opacity: 0;
-}
-
-.preview-thumb:hover .preview-thumb-close,
-.preview-thumb-close:focus-visible {
-	opacity: 1;
-}
-
-/* ─── 문서 ─── */
-.preview-content {
+/* ─── 본문 ─── */
+.preview-main {
+	position: relative;
+	display: flex;
 	flex: 1;
 	min-width: 0;
 	min-height: 0;
-	display: flex;
-	animation: fade-in var(--duration) var(--ease-out);
+	/* macOS 미리보기처럼 문서 둘레는 회색 */
+	background-color: color-mix(in srgb, var(--color-text) 10%, var(--color-window-bg));
 }
 
 .preview-pdf {
+	display: flex;
 	flex: 1;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--preview-gap);
+	padding: var(--preview-padding);
+	overflow: auto;
+	outline: none;
+}
+
+.preview-page {
+	position: relative;
+	flex: none;
+	background-color: #fff;
+	box-shadow:
+		0 0 0 1px rgb(0 0 0 / 0.06),
+		0 2px 10px rgb(0 0 0 / 0.22);
+}
+
+.preview-page canvas {
+	position: absolute;
+	inset: 0;
 	width: 100%;
-	border: 0;
-	background-color: #525659;
+	height: 100%;
 }
 
 .preview-image {
-	align-items: center;
-	justify-content: center;
-	padding: var(--space-16);
-	overflow: hidden;
-	/* macOS 미리보기처럼 그림 둘레는 옅은 회색 */
-	background-color: color-mix(in srgb, var(--color-text) 8%, var(--color-window-bg));
+	display: grid;
+	flex: 1;
+	place-items: center;
+	padding: var(--space-24);
+	overflow: auto;
+	outline: none;
+	animation: fade-in var(--duration) var(--ease-out);
 }
 
 .preview-image img {
-	max-width: 100%;
-	max-height: 100%;
-	object-fit: contain;
+	max-width: none;
 	box-shadow: 0 2px 12px rgb(0 0 0 / 0.2);
 }
 
-/* 배율을 고르면 실제 크기 기준으로 그리고, 넘치면 스크롤한다 */
-.preview-image.zoomed {
-	display: block;
-	overflow: auto;
-	text-align: center;
-}
-
-.preview-image.zoomed img {
-	max-width: none;
-	max-height: none;
+.preview-note {
+	margin: auto;
+	color: var(--color-text-secondary);
+	font-size: 13px;
 }
 
 .preview-empty {
-	flex: 1;
 	display: flex;
+	flex: 1;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
@@ -188,4 +285,73 @@
 
 .preview-empty-note {
 	font-size: 12px;
+}
+
+/* ─── 글자 층 (pdf.js TextLayer). 보이지 않는 글자를 그림 위에 겹쳐 고르고 복사한다 ─── */
+.preview-page .textLayer {
+	--min-font-size: 1;
+	--text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+	--min-font-size-inv: calc(1 / var(--min-font-size));
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: clip;
+	line-height: 1;
+	letter-spacing: normal;
+	word-spacing: normal;
+	text-align: initial;
+	text-size-adjust: none;
+	forced-color-adjust: none;
+	transform-origin: 0 0;
+	caret-color: CanvasText;
+}
+
+.preview-page .textLayer :is(span, br) {
+	position: absolute;
+	color: transparent;
+	white-space: pre;
+	cursor: text;
+	transform-origin: 0% 0%;
+	user-select: text;
+}
+
+.preview-page .textLayer > :not(.markedContent),
+.preview-page .textLayer .markedContent span:not(.markedContent) {
+	--font-height: 0;
+	--scale-x: 1;
+	--rotate: 0deg;
+	z-index: 1;
+	font-size: calc(var(--text-scale-factor) * var(--font-height));
+	transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+
+.preview-page .textLayer .markedContent {
+	display: contents;
+}
+
+.preview-page .textLayer ::selection {
+	background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+	color: transparent;
+}
+
+.preview-page .textLayer .endOfContent {
+	position: absolute;
+	inset: 100% 0 0;
+	display: block;
+	z-index: 0;
+	cursor: default;
+	user-select: none;
+}
+
+/* 찾은 말: 노랗게, 고른 결과는 더 진하게 */
+.preview-page .textLayer mark.preview-hit {
+	position: static;
+	border-radius: 2px;
+	background-color: rgb(255 214 10 / 0.45);
+	color: transparent;
+}
+
+.preview-page .textLayer mark.preview-hit.current {
+	background-color: rgb(255 159 10 / 0.7);
+	box-shadow: 0 0 0 2px rgb(255 159 10 / 0.7);
 }

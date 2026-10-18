@@ -8,17 +8,21 @@ export const FAKE_DOCUMENTS: DocumentEntry[] = [
 	{ folder: '포트폴리오', name: '시험 그림.png', key: 'portfolio/test.png', kind: 'image', updated: '2026-09-01' },
 ];
 
-/** 한 쪽짜리 PDF ("MacFolio test PDF") */
-export function tinyPdf(): Buffer {
-	const objects = [
+/** 세 쪽짜리 PDF. 쪽마다 "MacFolio test PDF" 와 "Page N" (찾기 시험: "page"는 쪽마다 하나) */
+export function tinyPdf(pages = 3): Buffer {
+	const font = 3 + pages * 2;
+	const objects: string[] = [
 		'<< /Type /Catalog /Pages 2 0 R >>',
-		'<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-		'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
-		null,
-		'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+		`<< /Type /Pages /Kids [${Array.from({ length: pages }, (_, i) => `${3 + i * 2} 0 R`).join(' ')}] /Count ${pages} >>`,
 	];
-	const stream = 'BT /F1 18 Tf 40 100 Td (MacFolio test PDF) Tj ET';
-	objects[3] = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+	for (let i = 0; i < pages; i++) {
+		const stream = `BT /F1 18 Tf 40 120 Td (MacFolio test PDF) Tj 0 -40 Td (Page ${i + 1}) Tj ET`;
+		objects.push(
+			`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Contents ${4 + i * 2} 0 R /Resources << /Font << /F1 ${font} 0 R >> >> >>`,
+			`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`
+		);
+	}
+	objects.push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
 	let pdf = '%PDF-1.4\n';
 	const offsets = objects.map((body, i) => {
 		const offset = pdf.length;
