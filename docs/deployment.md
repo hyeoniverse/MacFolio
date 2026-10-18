@@ -44,6 +44,82 @@
 4. GitHub Actions 배포가 한 번 성공한 것을 확인한 뒤, Cloudflare의 Git 연결을 끊는다. 두 곳에서 같이 배포하지 않게 하기 위해서다.
    - Workers & Pages → `macfolio` → Settings → **Build** → Git repository → **Disconnect**
 
+### 문서 파일(R2)
+
+이력서·포트폴리오·자격증 파일(PDF, PNG, JPG, WebP, 20MB까지)은 저장소에 넣지 않고 Cloudflare R2 버킷 `macfolio-files`에 둔다. 사이트 Worker(`apps/react/worker/files.ts`)가 같은 주소의 `/files/<키>`로 내주고, Finder에서 열면 미리보기 앱(`apps/react/src/apps/preview`)이 pdf.js로 쪽을 그리거나 그림을 보여 준다(휴대폰은 파일 앱 안에서). 어느 폴더에 무엇이 있는지(목록)는 API의 DB(`Document` 표, `GET /documents`)에 있다.
+
+- 응답: 확장자에 맞는 `Content-Type`, `ETag`(`If-None-Match`가 맞으면 304), `Cache-Control: public, max-age=300`, `X-Content-Type-Options: nosniff`, `Content-Disposition: inline`(`?download=1`이면 `attachment`), 이 사이트 안의 iframe에만 들어가는 CSP(`frame-ancestors 'self'`)
+- 없는 파일, `..` 같은 경로, pdf·png·jpg·jpeg·webp가 아닌 키는 404. GET·HEAD가 아니면 405. 바인딩이 없는 곳(로컬 `pnpm dev`)도 404
+
+**올리기(관리자)**: 관리자로 로그인하고 Finder의 문서 › 이력서·포트폴리오·자격증 폴더 안(또는 그 폴더 아이콘 위)에 파일을 끌어다 놓는다. 파일은 API 서버를 거치지 않는다.
+
+1. 브라우저 → API `POST /documents/uploads` (폴더·이름·크기): API가 관리자인지, 종류·크기가 맞는지 보고 R2에 바로 올릴 **서명 주소**(5분, `Content-Length`가 그 크기여야 받는다)를 준다. 키는 `resume|portfolio|certificates/<무작위>.<확장자>`
+2. 브라우저 → R2 `PUT <서명 주소>` (진행률이 Finder 아래에 보인다)
+3. 브라우저 → API `POST /documents`: API가 R2에 HEAD로 정말 올라갔는지·크기가 맞는지 확인하고 목록에 더한다
+
+이름 바꾸기와 지우기는 파일을 고르고 메뉴 막대의 **파일 → 이름 변경… / 휴지통으로 이동(⌘⌫)**. 지우면 R2에서도 지운다.
+
+#### 소유자가 할 일
+
+1. **버킷**: Cloudflare 대시보드 → **R2 → Create bucket** → 이름 `macfolio-files`. 또는 `npx wrangler r2 bucket create macfolio-files`. 바인딩은 이미 `wrangler.jsonc`에 있다(`FILES` → `macfolio-files`). **버킷을 만들기 전에는 배포(`wrangler deploy`)가 "버킷이 없다"며 실패하므로, 이 변경을 머지하기 전에 먼저 한다**
+2. **API 토큰(S3 키)**: R2 → **Manage R2 API Tokens → Create API Token**
+   - Permissions: **Object Read & Write**
+   - Specify bucket(s): **Apply to specific buckets only** → `macfolio-files`
+   - TTL: Forever (또는 원하는 기간)
+   - 만들면 **Access Key ID**와 **Secret Access Key**가 한 번만 보인다. 계정 ID는 R2 첫 화면 오른쪽(또는 S3 주소 `https://<계정 ID>.r2.cloudflarestorage.com`)에 있다
+3. **서버에 넣기**: 서버의 `~/deploy/api.env`에 네 줄을 더하고 API를 다시 띄운다(`docker compose up -d api`)
+
+   ```bash
+   R2_ACCOUNT_ID=<계정 ID>
+   R2_ACCESS_KEY_ID=<Access Key ID>
+   R2_SECRET_ACCESS_KEY=<Secret Access Key>
+   R2_BUCKET=macfolio-files
+   ```
+
+   세 값이 없으면 목록은 그대로 보이고, 올리기·지우기만 "서버에 파일 저장소(R2)가 설정되지 않았습니다"(503)로 막힌다
+
+4. **버킷 CORS**: 브라우저가 R2에 바로 PUT하므로, 버킷 → **Settings → CORS Policy → Add CORS policy**에 아래를 넣는다(사이트 주소에서 PUT만)
+
+   ```json
+   [
+   	{
+   		"AllowedOrigins": ["https://macfolio.hyeoniverse.com"],
+   		"AllowedMethods": ["PUT"],
+   		"AllowedHeaders": ["content-type"],
+   		"MaxAgeSeconds": 3600
+   	}
+   ]
+   ```
+
+   PR 미리보기 주소에서 올려 보려면 `AllowedOrigins`에 그 주소를 더한다. 이 설정이 없으면 Finder가 "저장소에 연결하지 못했습니다. 버킷의 CORS 설정을 확인해 주세요."를 보인다
+
+5. 올리기 전에 **전화번호, 집 주소, 생년월일, 주민등록번호 같은 신분 번호를 지운다**(자격증 사본의 자격증 번호도 가린다)
+
+#### 로컬에서 올려 보기
+
+로컬 개발 서버에서도 실제 R2에 올려 볼 수 있다. 목록은 로컬 DB에만 남으니 배포한 사이트에는 보이지 않는다(R2에 남은 시험 파일은 Finder에서 지우면 R2에서도 지워진다).
+
+1. `apps/api/.env`에 위 3의 네 줄(`R2_ACCOUNT_ID` 등)을 넣는다. 배포와 같은 키를 써도 된다
+2. 버킷 CORS의 `AllowedOrigins`에 `http://localhost:5173`을 더한다
+3. 관리자 로그인이 되게 개발용 GitHub OAuth App을 쓴다('2. GitHub OAuth App'의 개발용). 그다음
+
+   ```bash
+   echo 'VITE_API_URL=http://localhost:4000' > apps/react/.env.local
+   pnpm dev:all     # 프론트엔드 5173 + API 4000
+   ```
+
+4. http://localhost:5173 에서 관리자로 로그인하고 Finder의 이력서 폴더에 파일을 끌어다 놓는다
+
+로컬 개발 서버에는 사이트 Worker가 없어서 `/files/*`(파일 받기)는 배포한 사이트로 넘긴다(`vite.config.ts`의 `server.proxy`). 배포한 사이트가 같은 버킷을 읽으므로 로컬에서 올린 파일도 미리보기 앱에서 열린다. 다른 곳으로 넘기려면 `apps/react/.env.local`에 `FILES_ORIGIN=https://<PR 미리보기 주소>`를 적거나 명령 앞에 붙인다(`turbo.json`의 `passThroughEnv`로 `pnpm dev:all`에도 넘어간다). PR #255처럼 머지 전이라 배포한 사이트에 `/files`가 아직 없을 때 쓴다.
+
+키 없이 화면만 보려면 E2E가 쓰는 가짜 목록을 쓴다: 개발자 도구 콘솔에서 `window.__MACFOLIO_DOCUMENTS__ = [{ folder: '이력서', name: '시험.pdf', key: 'resume/test.pdf', kind: 'pdf' }]`를 넣고 Finder를 연다(파일 자체는 없어서 미리보기는 "열 수 없습니다"). 업로드 흐름 전체는 `e2e/finder-upload.spec.ts`가 가짜 API·가짜 R2로 시험한다(`pnpm --filter @macfolio/react test:e2e finder-upload`).
+
+사이트 CSP의 `connect-src`에는 `https://*.r2.cloudflarestorage.com`이 있다(서명 주소로 올리기). 서명이 없는 요청은 R2가 받지 않는다.
+
+비용: R2 무료 사용량(저장 10GB, Class A 작업 월 100만 회, Class B 작업 월 1,000만 회, 내보내기 무료) 안에서 충분하다. 문서 몇 개를 읽기만 한다.
+
+CI: 배포(`ci.yml`의 `deploy`, `preview`)는 `CLOUDFLARE_API_TOKEN`으로 `wrangler deploy`·`wrangler versions upload`를 한다. R2 바인딩이 있는 Worker를 올리려면 토큰에 **Account → Workers R2 Storage → Edit** 권한이 있어야 한다. 위 "처음 한 번"의 **Edit Cloudflare Workers** 템플릿에는 이 권한이 들어 있으므로 그 템플릿으로 만든 토큰이면 바꿀 것이 없다. 직접 고른 권한으로 만든 토큰이면 Cloudflare 대시보드 → My Profile → API Tokens에서 그 토큰을 고쳐 이 권한을 더한다. 파일을 올리는 일은 CI가 하지 않는다(관리자가 Finder에서 올린다).
+
 ### API 주소 넣기
 
 `VITE_API_URL`은 **빌드할 때** 코드에 들어간다. 런타임 변수가 아니다. 값은 `ci.yml` 맨 위의 `env`에 있다(`https://macfolio-api.hyeoniverse.com`, 끝에 `/` 없이). 바꾸려면 그 줄을 고쳐 main에 머지한다.

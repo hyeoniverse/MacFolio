@@ -16,6 +16,7 @@ import Activity from '@/apps/activity/Activity';
 import Photos from '@/apps/photos/Photos';
 import Bin from '@/apps/bin/Bin';
 import Weather from '@/apps/weather/Weather';
+import Preview from '@/apps/preview/Preview';
 
 // Markdown 렌더러가 무거워서 메모(블로그)는 처음 열 때 불러온다
 const Memo = lazy(() => import('@/apps/memo/Memo'));
@@ -37,6 +38,7 @@ const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
 	apidocs: ApiDocs,
 	activity: Activity,
 	weather: Weather,
+	preview: Preview,
 	photos: Photos,
 	bin: Bin,
 };

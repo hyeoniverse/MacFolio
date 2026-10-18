@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { fileUrl, type DocumentEntry } from './documents';
 import { buildLocations, countLabel, find, pathTo, recentItems, search, sortItems, type FolderItem } from './files';
 
 const tree = buildLocations({
@@ -14,26 +15,43 @@ const tree = buildLocations({
 		{ app: 'safari', label: 'Safari', icon: 'safari.png' },
 		{ app: 'memo', label: '메모', icon: 'memo.png' },
 	],
+	albums: [
+		{
+			id: 'qru',
+			name: 'QRU',
+			photos: [{ src: '/imgs/projects/qru/home.png' }, { src: '/imgs/projects/qru/demo.mp4' }],
+		},
+		{ id: 'empty', name: '영상만', photos: [{ src: '/imgs/projects/x/a.mp4' }] },
+	],
 });
 
 const names = (folder: FolderItem) => folder.children.map((child) => child.name);
 
 describe('buildLocations', () => {
-	it('즐겨찾기 위치: 문서, 프로젝트, 블로그, 응용 프로그램', () => {
-		expect(tree.map((folder) => folder.name)).toEqual(['문서', '프로젝트', '블로그', '응용 프로그램']);
+	it('즐겨찾기 위치: 문서, 사진, 프로젝트, 블로그, 응용 프로그램', () => {
+		expect(tree.map((folder) => folder.name)).toEqual(['문서', '사진', '프로젝트', '블로그', '응용 프로그램']);
 	});
 
-	it('문서: 폴더(이력서 자리)가 위에, 문서는 이름순', () => {
+	it('사진: 앨범마다 폴더, 그림만 (영상은 빼고, 그림이 없는 앨범도 뺀다). 키는 사이트 주소 그대로', () => {
+		expect(names(tree[1])).toEqual(['QRU']);
+		const photo = find(tree, 'photo:/imgs/projects/qru/home.png');
+		expect(photo).toMatchObject({ kind: 'image', name: 'home.png', key: '/imgs/projects/qru/home.png' });
+		expect(fileUrl('/imgs/projects/qru/home.png')).toBe('/imgs/projects/qru/home.png');
+	});
+
+	it('문서: 폴더(이력서·포트폴리오·자격증)가 위에, 문서는 이름순', () => {
 		const docs = tree[0];
-		expect(names(docs)).toEqual(['이력서', 'deployment.md', 'README.md']);
+		expect(names(docs)).toEqual(['이력서', '자격증', '포트폴리오', 'deployment.md', 'README.md']);
 		const resume = find(tree, 'docs:이력서') as FolderItem;
 		expect(resume.children).toEqual([]);
-		expect(resume.emptyNote).toBeTruthy();
+		expect(resume.emptyNote).toBe('공개용 이력서를 준비하고 있습니다.');
+		expect((find(tree, 'docs:자격증') as FolderItem).emptyNote).toBe('자격증 사본을 준비하고 있습니다.');
+		expect((find(tree, 'docs:포트폴리오') as FolderItem).emptyNote).toBe('포트폴리오 파일을 준비하고 있습니다.');
 		expect(find(tree, 'docs:docs/deployment.md')).toMatchObject({ kind: 'doc', path: 'docs/deployment.md' });
 	});
 
 	it('블로그: 카테고리를 폴더로, 폴더가 위에, 글은 최신순, 폴더 수정일은 가장 최근 글', () => {
-		const blog = tree[2];
+		const blog = tree[3];
 		expect(names(blog)).toEqual(['개발기', '기타']);
 		const macfolio = find(tree, 'blog/개발기/MacFolio') as FolderItem;
 		expect(names(macfolio)).toEqual(['백엔드', '새 글', '예전 글']);
@@ -45,7 +63,44 @@ describe('buildLocations', () => {
 
 	it('프로젝트와 앱', () => {
 		expect(find(tree, 'project:qru')).toMatchObject({ kind: 'project', projectId: 'qru', period: '2025.03 – 2025.05' });
-		expect(names(tree[3])).toEqual(['메모', 'Safari']);
+		expect(names(tree[4])).toEqual(['메모', 'Safari']);
+	});
+});
+
+describe('문서 파일 목록 → 폴더 (시험용 목록)', () => {
+	const files: DocumentEntry[] = [
+		{ folder: '이력서', name: '이력서.pdf', key: 'resume/resume.pdf', kind: 'pdf', size: 1200, updated: '2026-10-01' },
+		{ folder: '자격증', name: 'B 자격증.png', key: 'certs/b.png', kind: 'image', updated: '2026-09-01' },
+		{ folder: '자격증', name: 'A 자격증.jpg', key: 'certs/a.jpg', kind: 'image' },
+	];
+	const withFiles = buildLocations({ docs: [], posts: [], projects: [], apps: [], files });
+
+	it('파일을 그 폴더에 이름순으로, 종류·키·크기·수정일과 함께', () => {
+		expect(names(find(withFiles, 'docs:자격증') as FolderItem)).toEqual(['A 자격증.jpg', 'B 자격증.png']);
+		expect(find(withFiles, 'file:resume/resume.pdf')).toEqual({
+			kind: 'pdf',
+			id: 'file:resume/resume.pdf',
+			name: '이력서.pdf',
+			key: 'resume/resume.pdf',
+			size: 1200,
+			modified: '2026-10-01',
+		});
+		expect(find(withFiles, 'file:certs/a.jpg')).toMatchObject({ kind: 'image', key: 'certs/a.jpg' });
+		expect((find(withFiles, 'docs:포트폴리오') as FolderItem).children).toEqual([]);
+	});
+
+	it('폴더 수정일은 가장 최근 파일, 경로·찾기·최근 항목에도 나온다', () => {
+		expect((find(withFiles, 'docs:이력서') as FolderItem).modified).toBe('2026-10-01');
+		expect(pathTo(withFiles, 'file:certs/b.png').map((item) => item.name)).toEqual(['문서', '자격증', 'B 자격증.png']);
+		expect(search(withFiles, '자격증.').map((item) => item.id)).toEqual(['file:certs/a.jpg', 'file:certs/b.png']);
+		expect(recentItems(withFiles).map((item) => item.name)).toEqual(['이력서.pdf', 'B 자격증.png']);
+	});
+});
+
+describe('파일 주소', () => {
+	it('키의 각 부분을 인코딩하고, 내려받기는 ?download=1', () => {
+		expect(fileUrl('resume/resume.pdf')).toBe('/files/resume/resume.pdf');
+		expect(fileUrl('자격증/a b.png', true)).toBe(`/files/${encodeURIComponent('자격증')}/a%20b.png?download=1`);
 	});
 });
 
@@ -92,6 +147,8 @@ describe('sortItems', () => {
 	it('종류: 폴더가 먼저, 같은 종류는 이름순', () => {
 		expect(sortItems(tree[0].children, 'kind').map((item) => item.name)).toEqual([
 			'이력서',
+			'자격증',
+			'포트폴리오',
 			'deployment.md',
 			'README.md',
 		]);
@@ -102,6 +159,8 @@ describe('sortItems', () => {
 		// 날짜가 하나도 없으면 이름순 그대로
 		expect(sortItems(tree[0].children, 'date').map((item) => item.name)).toEqual([
 			'이력서',
+			'자격증',
+			'포트폴리오',
 			'deployment.md',
 			'README.md',
 		]);
