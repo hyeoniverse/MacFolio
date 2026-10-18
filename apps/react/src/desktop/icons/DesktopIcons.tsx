@@ -4,6 +4,7 @@ import { find, type FinderItem, type FolderItem } from '@/apps/finder/files';
 import { canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
 import { uploadInto } from '@/apps/finder/useDocumentDrop';
 import { addLocalFiles } from '@/apps/finder/localFiles';
+import { canSetWallpaper, setDesktopWallpaper } from '@/apps/finder/setWallpaper';
 import InlineName from '@/apps/finder/InlineName';
 import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from '@/apps/finder/useFinderEdit';
 import { requestFinderFolder } from '@/apps/finder/openDoc';
@@ -79,7 +80,8 @@ const DesktopIcons: React.FC = () => {
 	const items = useMemo(() => desktop?.children ?? [], [desktop]);
 	const ids = useMemo(() => items.map(keyOf), [items]);
 	const byKey = (key: string) => items.find((item) => keyOf(item) === key) ?? null;
-	const edit = useFinderEdit(locations);
+	// 바탕화면에는 창이 없어 경고창을 화면 한가운데, 모든 창 위에 띄운다
+	const edit = useFinderEdit(locations, 'screen');
 	const renaming = useSyncExternalStore(finderRenaming.subscribe, () => finderRenaming.getState().id);
 	/** 놓을 곳으로 강조한 아이콘 (자리 열쇠) */
 	const [hover, setHover] = useState<string | null>(null);
@@ -296,6 +298,9 @@ const DesktopIcons: React.FC = () => {
 		? [
 				{ label: '열기', onSelect: openSelected },
 				{ label: 'Finder에서 보기', onSelect: openSelected },
+				...(canSetWallpaper(menuTarget)
+					? [{ label: '데스크탑 사진 설정', onSelect: () => setDesktopWallpaper(menuTarget) }]
+					: []),
 				'separator',
 				{
 					label: '이름 변경',

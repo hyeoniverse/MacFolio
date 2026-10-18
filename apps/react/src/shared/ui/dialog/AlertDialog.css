@@ -7,6 +7,11 @@
 		--ui-modal-dim: rgba(0, 0, 0, 0.12);
 	}
 
+	/* 화면 한가운데 경고창 (창 밖, 바탕화면에서 띄움): 모든 창·Dock·메뉴 막대 위 */
+	.ui-alert-overlay.screen {
+		--ui-modal-z: var(--z-alert);
+	}
+
 	.ui-alert {
 		display: grid;
 		gap: var(--space-10);
