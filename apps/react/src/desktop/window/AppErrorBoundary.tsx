@@ -26,6 +26,7 @@ export default class AppErrorBoundary extends Component<Props, State> {
 	}
 
 	componentDidCatch(error: Error, info: ErrorInfo) {
+		// nosemgrep: javascript.lang.security.audit.unsafe-formatstring.unsafe-formatstring -- appName은 AppName 유니언(앱 목록 상수)이고 %가 들어갈 수 없다
 		console.error(`[${this.props.appName}] 앱에서 에러가 발생했습니다`, error, info.componentStack);
 	}
 
