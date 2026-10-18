@@ -61,6 +61,14 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		summarize: (raw) => countOf(raw, '도시'),
 	},
 	{
+		id: 'desktop-icons',
+		name: '바탕화면 아이콘 자리',
+		description: '바탕화면에서 끌어 옮긴 폴더 아이콘의 자리',
+		storage: 'local',
+		keys: [STORAGE_KEYS.desktopIcons],
+		afterClear: '새로고침하면 바탕화면 아이콘이 오른쪽 위 처음 자리로 돌아갑니다',
+	},
+	{
 		id: 'local-messages',
 		name: '이 브라우저에 저장한 메시지',
 		description: '서버 없이 띄운 사이트에서 메시지 앱에 쓴 글과, 그 글을 쓴 사람을 가리는 무작위 값',
