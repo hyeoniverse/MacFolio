@@ -109,8 +109,8 @@ describe('프로젝트 폴더', () => {
 			'projects/qru/photos',
 			photo!.id,
 		]);
-		// 사진도 올린 파일도 없으면 프로젝트만
-		expect(names(find(withProjects, 'projects/plain') as FolderItem)).toEqual(['빈 프로젝트']);
+		// 사진도 올린 파일도 없으면 빈 폴더
+		expect(names(find(withProjects, 'projects/plain') as FolderItem)).toEqual([]);
 	});
 
 	it('문서 폴더에는 프로젝트 파일이 없고, 없는 프로젝트의 파일은 보이지 않는다', () => {
