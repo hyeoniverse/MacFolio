@@ -17,7 +17,7 @@
 }
 
 .shortcuts h1 {
-	margin: 4px 4px 2px;
+	margin: var(--space-4) var(--space-4) var(--space-2);
 	font-size: 30px;
 	font-weight: 700;
 }
@@ -42,7 +42,7 @@
 .shortcut-grid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 12px;
+	gap: var(--space-12);
 	list-style: none;
 }
 
@@ -54,7 +54,7 @@
 	align-items: flex-start;
 	width: 100%;
 	aspect-ratio: 1.6;
-	padding: 14px;
+	padding: var(--space-14);
 	border: none;
 	border-radius: 20px;
 	color: #fff;
@@ -103,7 +103,7 @@
 /* iOS 목록 (inset grouped) */
 .shortcut-group {
 	display: block;
-	margin-bottom: 16px;
+	margin-bottom: var(--space-16);
 	overflow: hidden;
 	border-radius: 12px;
 	background-color: var(--color-window-bg);
@@ -113,7 +113,7 @@
 .shortcut-row {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--space-2);
 	width: 100%;
 	padding: 11px 16px;
 	border: none;
@@ -152,7 +152,7 @@ a.shortcut-row {
 .shortcut-item {
 	flex-direction: row;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .shortcut-item > span:first-child {
@@ -174,7 +174,7 @@ a.shortcut-row {
 
 .shortcut-tag {
 	flex: none;
-	padding: 2px 8px;
+	padding: var(--space-2) var(--space-8);
 	border-radius: var(--radius-lg);
 	background-color: var(--color-sidebar-bg, #f2f2f7);
 	color: var(--color-text-secondary);

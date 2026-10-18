@@ -327,7 +327,7 @@
 .container.mobile[data-app] {
 	--phone-page-bg: #f3f4f6;
 	--phone-card-bg: #ffffff;
-	--phone-float-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.12);
+	--phone-float-shadow: var(--shadow-float);
 	--phone-separator: rgba(60, 60, 67, 0.18);
 }
 

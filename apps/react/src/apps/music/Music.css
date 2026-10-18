@@ -100,7 +100,7 @@
 .music-back {
 	display: none;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	margin: 0 0 12px;
 	padding: 4px 0;
 	border: none;
@@ -111,7 +111,7 @@
 }
 
 .music-sidebar-heading {
-	margin: 8px 8px 4px;
+	margin: var(--space-8) var(--space-8) var(--space-4);
 	color: var(--music-muted);
 	font-size: var(--text-caption2);
 	font-weight: 600;
@@ -120,9 +120,9 @@
 .music-playlist-link {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	width: 100%;
-	padding: 6px 8px;
+	padding: var(--space-6) var(--space-8);
 	border-radius: var(--radius-sm);
 	text-align: left;
 	/* 통합형 창의 끌기 영역보다 위 */
@@ -168,7 +168,7 @@
 	display: flex;
 	align-items: flex-end;
 	gap: 22px;
-	margin-bottom: 20px;
+	margin-bottom: var(--space-20);
 }
 
 .music-cover {
@@ -199,7 +199,7 @@
 }
 
 .music-header p {
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	color: var(--music-muted);
 }
 
@@ -209,14 +209,14 @@
 
 .music-header-actions {
 	display: flex;
-	gap: 10px;
-	margin-top: 14px;
+	gap: var(--space-10);
+	margin-top: var(--space-14);
 }
 
 .music-pill {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	padding: 6px 18px;
 	border-radius: var(--radius-md);
 	background-color: var(--music-selected);
@@ -234,9 +234,9 @@
 	display: grid;
 	grid-template-columns: 28px 36px minmax(0, 1.4fr) minmax(0, 1fr) 44px;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	width: 100%;
-	padding: 6px 8px;
+	padding: var(--space-6) var(--space-8);
 	border-radius: var(--radius-sm);
 	text-align: left;
 }
@@ -302,7 +302,7 @@
 .music-bars {
 	display: inline-flex;
 	align-items: flex-end;
-	gap: 2px;
+	gap: var(--space-2);
 	height: 12px;
 	color: var(--music-accent);
 }
@@ -340,7 +340,7 @@
 }
 
 .music-up-next p {
-	margin-bottom: 10px;
+	margin-bottom: var(--space-10);
 	color: var(--music-muted);
 	font-size: var(--text-caption);
 }
@@ -348,9 +348,9 @@
 .music-up-next button {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	width: 100%;
-	padding: 6px;
+	padding: var(--space-6);
 	border-radius: var(--radius-sm);
 	text-align: left;
 }
@@ -376,8 +376,8 @@
 	grid-column: 1 / -1;
 	grid-template-columns: minmax(0, 1fr) minmax(260px, 1.3fr) minmax(0, 1fr);
 	align-items: center;
-	gap: 16px;
-	padding: 8px 16px;
+	gap: var(--space-16);
+	padding: var(--space-8) var(--space-16);
 	border-top: 1px solid var(--music-separator);
 	background-color: var(--music-bar-bg);
 	backdrop-filter: blur(20px);
@@ -386,7 +386,7 @@
 .music-now {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	min-width: 0;
 	text-align: left;
 }
@@ -420,7 +420,7 @@
 .music-bar-center {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--space-2);
 }
 
 .music-bar-center .seek-bar {
@@ -437,7 +437,7 @@
 
 .music-transport button {
 	position: relative;
-	padding: 4px;
+	padding: var(--space-4);
 }
 
 .music-transport .music-play {
@@ -464,7 +464,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
-	gap: 14px;
+	gap: var(--space-14);
 }
 
 .music-bar-right .volume-bar {
@@ -482,7 +482,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 16px;
+	gap: var(--space-16);
 	padding: 24px 28px 28px;
 	color: #fff;
 	isolation: isolate;
@@ -601,13 +601,13 @@
 
 	.music-large-title {
 		display: block;
-		margin: 12px 4px 8px;
+		margin: var(--space-12) var(--space-4) var(--space-8);
 		font-size: 30px;
 	}
 
 	.music-playlist-link {
-		gap: 14px;
-		padding: 8px 4px;
+		gap: var(--space-14);
+		padding: var(--space-8) var(--space-4);
 		border-radius: 0;
 		font-size: var(--text-body);
 	}
@@ -669,7 +669,7 @@
 
 	.music-track {
 		grid-template-columns: 24px 44px minmax(0, 1fr) 40px;
-		padding: 8px 4px;
+		padding: var(--space-8) var(--space-4);
 		font-size: var(--text-subhead);
 	}
 
@@ -690,7 +690,7 @@
 	.music-player-bar {
 		grid-template-columns: minmax(0, 1fr) auto;
 		margin: 0 8px 8px;
-		padding: 8px 10px;
+		padding: var(--space-8) var(--space-10);
 		border: none;
 		border-radius: var(--radius-xl);
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -707,7 +707,7 @@
 
 	.music-mini-controls {
 		display: flex;
-		gap: 6px;
+		gap: var(--space-6);
 		font-size: var(--text-title3);
 	}
 
@@ -749,7 +749,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 10px;
+		gap: var(--space-10);
 		width: 100%;
 		margin: 4px 0 20px;
 		font-size: var(--text-body);
@@ -779,7 +779,7 @@
 		--separator-left: 42px;
 		display: flex;
 		align-items: center;
-		gap: 16px;
+		gap: var(--space-16);
 		position: relative;
 		width: 100%;
 		padding: 13px 4px;
@@ -804,14 +804,14 @@
 	.container.mobile .music-collections.grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 20px 16px;
+		gap: var(--space-20) var(--space-16);
 	}
 
 	.container.mobile .music-collection {
 		--separator-left: 76px;
 		display: flex;
 		align-items: center;
-		gap: 14px;
+		gap: var(--space-14);
 		position: relative;
 		width: 100%;
 		padding: 8px 0;
@@ -854,7 +854,7 @@
 	.container.mobile .music-collection.grid {
 		flex-direction: column;
 		align-items: stretch;
-		gap: 8px;
+		gap: var(--space-8);
 		padding: 0;
 	}
 
@@ -896,8 +896,8 @@
 	}
 
 	.container.mobile .music-header {
-		gap: 14px;
-		margin-bottom: 16px;
+		gap: var(--space-14);
+		margin-bottom: var(--space-16);
 	}
 
 	.container.mobile .music-header h1 {
@@ -914,7 +914,7 @@
 
 	.container.mobile .music-header-actions {
 		align-items: center;
-		margin-top: 16px;
+		margin-top: var(--space-16);
 	}
 
 	.container.mobile .music-pill {
@@ -944,7 +944,7 @@
 	/* 곡 줄: 표지·제목·가수·길이. 재생 중인 곡은 표지 위에 막대 */
 	.container.mobile .music-track {
 		grid-template-columns: 48px minmax(0, 1fr) auto;
-		gap: 14px;
+		gap: var(--space-14);
 		position: relative;
 		padding: 7px 0;
 		border-radius: 0;
@@ -1002,7 +1002,7 @@
 
 	.container.mobile .music-player-bar {
 		margin: 0 12px 8px;
-		padding: 6px 8px 6px 6px;
+		padding: var(--space-6) var(--space-8) var(--space-6) var(--space-6);
 		border-radius: 28px;
 		background-color: var(--phone-card-bg);
 		box-shadow: var(--phone-float-shadow);

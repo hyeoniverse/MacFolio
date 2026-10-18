@@ -63,7 +63,7 @@
 }
 
 .cr-name {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--sp-accent);
 	font-size: var(--text-subhead);
 	font-weight: 700;
@@ -73,7 +73,7 @@
 
 .cr-hero h1 {
 	max-width: 14em;
-	margin-top: 12px;
+	margin-top: var(--space-12);
 	font-size: clamp(36px, 6.4cqi, 72px);
 	font-weight: 700;
 	letter-spacing: -0.035em;
@@ -83,7 +83,7 @@
 
 .cr-lead {
 	max-width: 36em;
-	margin-top: 20px;
+	margin-top: var(--space-20);
 	color: var(--cr-muted);
 	font-size: clamp(16px, 1.7cqi, 20px);
 	line-height: 1.6;
@@ -161,7 +161,7 @@
 	transform-origin: top left;
 	width: 140px;
 	margin: 0;
-	padding-bottom: 12px;
+	padding-bottom: var(--space-12);
 }
 
 /* 자리를 바꿀 때만 통통 튀며 건너간다 (그 밖에는 데모와 함께 스크롤된다) */
@@ -191,7 +191,7 @@
 	width: max-content;
 	max-width: var(--room, calc(320px / var(--s, 1)));
 	text-wrap: balance;
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+	box-shadow: var(--shadow-md);
 	pointer-events: none;
 	animation: cr-bubble 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
 	transform-origin: right bottom;
@@ -276,7 +276,7 @@
 	margin: 0 auto;
 	margin-inline: var(--cr-pad);
 	overflow: hidden;
-	padding: 6px;
+	padding: var(--space-6);
 	border-radius: var(--radius-xl);
 	background: var(--cr-sheen);
 	box-shadow:
@@ -304,7 +304,7 @@
 .cr-facts ul {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 24px;
+	gap: var(--space-24);
 	margin-top: 28px;
 	list-style: none;
 }
@@ -312,7 +312,7 @@
 .cr-facts li {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .cr-facts strong {
@@ -361,7 +361,7 @@
 }
 
 .cr-chapter h2:has(+ .cr-chapter-lead) {
-	margin-bottom: 20px;
+	margin-bottom: var(--space-20);
 }
 
 .cr-features {
@@ -376,7 +376,7 @@
 .cr-feature-text {
 	display: grid;
 	grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-	gap: 24px;
+	gap: var(--space-24);
 }
 
 /* 기능마다 붙는 실제 화면 */
@@ -386,7 +386,7 @@
 	border: 1px solid var(--cr-line);
 	border-radius: var(--radius-xl);
 	background-color: var(--cr-line);
-	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-xl);
 }
 
 .cr-compare-tag {
@@ -408,7 +408,7 @@
 	top: calc(50% - 52px);
 	left: var(--split);
 	z-index: 1;
-	padding: 4px 10px;
+	padding: var(--space-4) var(--space-10);
 	border-radius: var(--radius-full);
 	background-color: rgba(0, 0, 0, 0.7);
 	color: #ffffff;
@@ -436,14 +436,14 @@
 
 .cr-layouts strong {
 	display: block;
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	font-family: var(--sp-serif);
 	font-size: var(--text-subhead);
 }
 
 .cr-layouts li > span {
 	display: block;
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	color: var(--cr-muted);
 	font-size: var(--text-caption);
 	line-height: 1.5;
@@ -469,7 +469,7 @@
 }
 
 .cr-bars-value em {
-	margin-left: 8px;
+	margin-left: var(--space-8);
 	padding: 1px 6px;
 	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--sp-accent) 14%, transparent);
@@ -551,7 +551,7 @@
 }
 
 .cr-figure figcaption {
-	padding: 8px 12px;
+	padding: var(--space-8) var(--space-12);
 	color: var(--cr-muted);
 	font-size: var(--text-caption);
 }
@@ -588,7 +588,7 @@
 	position: relative;
 	display: grid;
 	grid-template-columns: 64px minmax(0, 1fr);
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 10px 0;
 	font-size: var(--text-callout);
 	line-height: 1.5;
@@ -620,7 +620,7 @@
 }
 
 .cr-roles {
-	margin-top: 16px;
+	margin-top: var(--space-16);
 	list-style: none;
 	font-size: var(--text-title3);
 	line-height: 1.5;
@@ -634,7 +634,7 @@
 .cr-specs div {
 	display: grid;
 	grid-template-columns: 180px minmax(0, 1fr);
-	gap: 16px;
+	gap: var(--space-16);
 	padding: 16px 0;
 	border-top: 1px solid var(--cr-line);
 }
@@ -707,7 +707,7 @@
 	.cr-specs div,
 	.cr-facts ul {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
+		gap: var(--space-8);
 	}
 
 	.cr-build article[data-wide]:nth-child(even) :is(.cr-point-shot, .cr-point-demo) {

@@ -7,8 +7,8 @@
 .cd-summary,
 .cd-cover {
 	display: grid;
-	gap: 12px;
-	padding: 16px;
+	gap: var(--space-12);
+	padding: var(--space-16);
 	border: 1px solid var(--cr-line);
 	border-radius: 12px;
 	background-color: color-mix(in srgb, var(--cr-ink) 3%, var(--cr-bg));
@@ -40,13 +40,13 @@
 	display: inline-flex;
 	justify-self: start;
 	width: max-content;
-	padding: 2px;
+	padding: var(--space-2);
 	border-radius: var(--radius-md);
 	background-color: color-mix(in srgb, var(--cr-ink) 8%, transparent);
 }
 
 .cd-seg button {
-	padding: 4px 10px;
+	padding: var(--space-4) var(--space-10);
 	border: none;
 	border-radius: var(--radius-sm);
 	background: none;
@@ -67,7 +67,7 @@
 .cd-primary {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	padding: 7px 14px;
 	border: none;
 	border-radius: var(--radius-md);
@@ -160,7 +160,7 @@
 	flex-wrap: wrap;
 	justify-content: center;
 	align-content: center;
-	gap: 8px;
+	gap: var(--space-8);
 	background-color: rgba(0, 0, 0, 0.35);
 	backdrop-filter: blur(2px);
 }
@@ -206,7 +206,7 @@
 	display: flex;
 	flex-wrap: nowrap;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .cd-slides-bar button {
@@ -214,7 +214,7 @@
 	flex: none;
 	align-items: center;
 	gap: 5px;
-	padding: 4px 10px;
+	padding: var(--space-4) var(--space-10);
 	border: 1px solid var(--cr-line);
 	border-radius: var(--radius-full);
 	background: none;
@@ -245,7 +245,7 @@
 .cd-slides-strip {
 	display: grid;
 	grid-template-columns: repeat(8, minmax(0, 1fr));
-	gap: 6px;
+	gap: var(--space-6);
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -303,7 +303,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 8px 12px;
+	gap: var(--space-8) var(--space-12);
 }
 
 .cd-voice-head p,
@@ -318,14 +318,14 @@
 
 .cd-voice-head i,
 .cd-live-info i {
-	margin-right: 4px;
+	margin-right: var(--space-4);
 	color: var(--sp-accent);
 }
 
 .cd-voice-input {
 	display: grid;
-	gap: 4px;
-	padding: 10px 12px;
+	gap: var(--space-4);
+	padding: var(--space-10) var(--space-12);
 	border: 1px solid var(--cr-line);
 	border-radius: var(--radius-md);
 	background-color: var(--cr-bg);
@@ -407,8 +407,8 @@
 .cd-player {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	padding: 8px 12px;
+	gap: var(--space-10);
+	padding: var(--space-8) var(--space-12);
 	border: 1px solid var(--cr-line);
 	border-radius: var(--radius-full);
 	background-color: var(--cr-bg);
@@ -488,7 +488,7 @@
 .cd-voice-chain button {
 	display: grid;
 	width: 100%;
-	padding: 8px;
+	padding: var(--space-8);
 	border: 1px solid var(--cr-line);
 	border-radius: var(--radius-md);
 	background-color: var(--cr-bg);
@@ -536,7 +536,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .cd-voice-foot p {
@@ -555,7 +555,7 @@
 .cd-wave-tools {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 4px;
+	gap: var(--space-4);
 }
 
 .cd-wave-tools button {
@@ -708,7 +708,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
-	gap: 8px;
+	gap: var(--space-8);
 	margin: 0;
 	color: var(--cr-muted);
 	font-size: var(--text-caption);
@@ -721,7 +721,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 /* 남은 횟수는 머리 오른쪽 끝에 (앞 칩의 글이 바뀌어도 자리를 지킨다) */
@@ -733,7 +733,7 @@
 	display: inline-flex;
 	flex: 1;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	margin: 0;
 	font-weight: 600;
 }
@@ -746,7 +746,7 @@
 .cd-convert-status {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	margin: 0;
 	color: var(--cr-muted);
 	font-variant-numeric: tabular-nums;
@@ -774,7 +774,7 @@
 .cd-convert-grid {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 8px;
+	gap: var(--space-8);
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -845,19 +845,19 @@
 /* 번역 */
 .cd-fields {
 	display: grid;
-	gap: 8px;
+	gap: var(--space-8);
 	margin: 0;
 }
 
 .cd-fields > div {
-	padding: 8px 10px;
+	padding: var(--space-8) var(--space-10);
 	border: 1px solid var(--cr-line);
 	border-radius: var(--radius-md);
 	background-color: var(--cr-bg);
 }
 
 .cd-fields dt {
-	margin-bottom: 2px;
+	margin-bottom: var(--space-2);
 	color: var(--cr-muted);
 	font-size: var(--text-caption2);
 }
@@ -897,7 +897,7 @@
 .cd-live-foot {
 	display: flex;
 	align-items: flex-start;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .cd-live-foot p {
@@ -1084,7 +1084,7 @@
 .cd-themes {
 	display: grid;
 	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-	gap: 20px;
+	gap: var(--space-20);
 	align-items: start;
 	margin-bottom: 32px;
 }
@@ -1093,7 +1093,7 @@
 	--t-muted: color-mix(in srgb, var(--t-text) 60%, var(--t-bg));
 	--t-line: color-mix(in srgb, var(--t-text) 14%, var(--t-bg));
 	display: grid;
-	gap: 14px;
+	gap: var(--space-14);
 	padding: 14px 16px 18px;
 	overflow: hidden;
 	border: 1px solid var(--cr-line);
@@ -1116,8 +1116,8 @@
 .cd-site-bar {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	padding-bottom: 10px;
+	gap: var(--space-12);
+	padding-bottom: var(--space-10);
 	border-bottom: 1px solid var(--t-line);
 	font-size: var(--text-caption2);
 }
@@ -1137,7 +1137,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 }
 
 .cd-site-hero small {
@@ -1158,7 +1158,7 @@
 
 .cd-site-button {
 	display: inline-block;
-	padding: 6px 12px;
+	padding: var(--space-6) var(--space-12);
 	border-radius: var(--radius-full);
 	background-color: var(--t-accent);
 	color: var(--t-on);
@@ -1176,13 +1176,13 @@
 .cd-site-cards {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .cd-site-cards > div {
 	display: grid;
 	gap: 5px;
-	padding: 6px;
+	padding: var(--space-6);
 	border: 1px solid var(--t-line);
 	border-radius: var(--radius-md);
 }
@@ -1221,7 +1221,7 @@
 .cd-themes-side {
 	display: grid;
 	min-width: 0;
-	gap: 14px;
+	gap: var(--space-14);
 }
 
 .cd-themes-top {
@@ -1229,7 +1229,7 @@
 	flex-wrap: wrap;
 	justify-content: space-between;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .cd-themes-name {
@@ -1241,7 +1241,7 @@
 .cd-swatches {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(26px, 1fr));
-	gap: 8px;
+	gap: var(--space-8);
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -1270,7 +1270,7 @@
 
 .cd-themes-five {
 	display: grid;
-	gap: 4px;
+	gap: var(--space-4);
 	margin: 0;
 }
 
@@ -1283,7 +1283,7 @@
 .cd-themes-five dt {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	color: var(--cr-muted);
 }
 
@@ -1302,7 +1302,7 @@
 
 .cd-contrast {
 	display: grid;
-	gap: 6px;
+	gap: var(--space-6);
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -1311,7 +1311,7 @@
 .cd-contrast li {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	font-size: var(--text-caption);
 }
 

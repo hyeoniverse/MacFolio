@@ -53,7 +53,7 @@
 .mail-phone-group button {
 	display: flex;
 	align-items: center;
-	gap: 16px;
+	gap: var(--space-16);
 	width: 100%;
 	min-height: 56px;
 	padding: 0 16px;
@@ -94,9 +94,9 @@
 /* ─── 사서함 목록 ─── */
 .mail-phone-item {
 	display: flex;
-	gap: 8px;
+	gap: var(--space-8);
 	width: 100%;
-	padding: 12px 16px 12px 8px;
+	padding: var(--space-12) var(--space-16) var(--space-12) var(--space-8);
 	border: none;
 	background: none;
 	text-align: left;
@@ -112,7 +112,7 @@
 	flex: none;
 	width: 10px;
 	height: 10px;
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	border-radius: 50%;
 	background-color: #0a84ff;
 }
@@ -125,14 +125,14 @@
 	display: flex;
 	flex: 1;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--space-2);
 	min-width: 0;
 }
 
 .mail-phone-item-top {
 	display: flex;
 	justify-content: space-between;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .mail-phone-item-top strong {
@@ -212,8 +212,8 @@
 .mail-phone-header {
 	display: flex;
 	align-items: flex-start;
-	gap: 12px;
-	padding-bottom: 12px;
+	gap: var(--space-12);
+	padding-bottom: var(--space-12);
 	border-bottom: 0.5px solid var(--phone-separator);
 }
 
@@ -316,7 +316,7 @@
 }
 
 .mail-phone-actions {
-	padding: 16px;
+	padding: var(--space-16);
 }
 
 /* 쓰기·답장 시트의 머리: 왼쪽 ×, 오른쪽 ↑ (다 쓰면 파랗게), 큰 제목 */
@@ -367,7 +367,7 @@
 }
 
 .mail-compose.sheet .mail-compose-row {
-	gap: 8px;
+	gap: var(--space-8);
 	min-height: 48px;
 	padding: 0;
 	border-bottom: 0.5px solid var(--phone-separator);
@@ -396,7 +396,7 @@
 
 .mail-phone-quote {
 	margin: 8px 0 0;
-	padding-left: 12px;
+	padding-left: var(--space-12);
 	border-left: 2px solid #6d7ed1;
 	color: var(--color-text-secondary);
 	font-size: var(--text-subhead);
@@ -404,7 +404,7 @@
 }
 
 .mail-phone-quote p:first-child {
-	margin-bottom: 8px;
+	margin-bottom: var(--space-8);
 	color: #6d7ed1;
 }
 
@@ -412,8 +412,8 @@
 .mail-phone-actions > header {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	margin-bottom: 16px;
+	gap: var(--space-12);
+	margin-bottom: var(--space-16);
 }
 
 .mail-phone-actions > header > div {
@@ -435,7 +435,7 @@
 .mail-phone-tiles {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .mail-phone-tiles button {
@@ -443,7 +443,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
+	gap: var(--space-6);
 	height: 76px;
 	border: none;
 	border-radius: 20px;

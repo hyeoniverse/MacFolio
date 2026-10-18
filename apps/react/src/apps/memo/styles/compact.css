@@ -93,7 +93,7 @@
 /* 본문 위 한 줄: 서식·삭제·고정은 왼쪽, 공유는 오른쪽 끝 (iOS 메모처럼). 버튼 크기를 맞춘다 */
 :where(.memo-shell[data-compact]) .memo-reader-compact-bar {
 	justify-content: flex-start;
-	gap: 4px;
+	gap: var(--space-4);
 	margin: 0.5rem 0 0.75rem;
 }
 
@@ -194,11 +194,11 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-scroll {
-	padding-top: 12px;
+	padding-top: var(--space-12);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-scroll {
-	padding-top: 12px;
+	padding-top: var(--space-12);
 }
 
 /* 게시 버튼은 손가락으로 누를 만한 크기로 */
@@ -206,6 +206,6 @@
 	:where(.memo-shell[data-compact])
 	.memo-writer-actions
 	:is(.memo-writer-publish, .memo-writer-discard) {
-	padding: 4px 12px;
+	padding: var(--space-4) var(--space-12);
 	font-size: var(--text-footnote);
 }

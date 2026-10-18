@@ -203,7 +203,7 @@
 /* 끄는 동안: 고른 행·열이 손가락을 따라오고, 놓을 자리에 선이 보인다 */
 .memo-table-selection.dragging {
 	background-color: color-mix(in srgb, #edbb4d 18%, transparent);
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+	box-shadow: var(--shadow-md);
 	transition: none;
 }
 
@@ -233,11 +233,11 @@
 .memo-format-panel.memo-handle-panel {
 	width: auto;
 	min-width: 170px;
-	padding: 6px;
+	padding: var(--space-6);
 }
 
 .memo-handle-menu button {
-	padding-left: 12px;
+	padding-left: var(--space-12);
 	font-size: 14px;
 }
 
@@ -281,7 +281,7 @@
 .memo-markdown a[title^='첨부 파일'] {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	max-width: 100%;
 	padding: 3px 10px;
 	border: 1px solid var(--memo-border);

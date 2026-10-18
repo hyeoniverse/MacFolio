@@ -10,7 +10,7 @@
 [data-app='memo'] {
 	--phone-page-bg: var(--memo-sidebar-bg);
 	--phone-card-bg: var(--memo-bg);
-	--phone-float-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.12);
+	--phone-float-shadow: var(--shadow-float);
 }
 
 :root[data-theme='dark'] [data-app='memo'] {
@@ -159,7 +159,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder {
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 0 16px 0 4px;
 	border-radius: 0;
 	font-size: var(--text-body);
@@ -189,7 +189,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder::after {
-	margin-left: 2px;
+	margin-left: var(--space-2);
 	color: var(--memo-muted);
 	font: var(--fa-font-solid);
 	font-size: var(--text-footnote);
@@ -222,13 +222,13 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-tag-browser ul {
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 /* 태그 화면: 큰 제목 아래 칩 줄은 한 줄로 옆으로 넘긴다 (화면 끝까지) */
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-tag-chips {
 	display: flex;
-	gap: 8px;
+	gap: var(--space-8);
 	margin: 6px -16px 14px;
 	padding: 0 16px;
 	overflow-x: auto;
@@ -275,12 +275,12 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-phone-title + .memo-items,
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-trash-banner + .memo-items {
-	margin-top: 4px;
+	margin-top: var(--space-4);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-item {
-	gap: 2px;
-	padding: 12px 16px;
+	gap: var(--space-2);
+	padding: var(--space-12) var(--space-16);
 	border-radius: 0;
 }
 
@@ -340,7 +340,7 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-list-top {
 	display: flex;
-	gap: 10px;
+	gap: var(--space-10);
 	position: absolute;
 	top: var(--phone-top);
 	right: 16px;
@@ -459,7 +459,7 @@
 
 /* 폴더 편집 (iOS 메모): 오른쪽 위 '편집' ↔ ✓, 폴더마다 노란 ••• , 고칠 수 없는 줄은 흐리게 */
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-sidebar-bar:has(.memo-new-folder-button) {
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folders-edit.done {
@@ -479,7 +479,7 @@
 	position: static;
 	width: 30px;
 	height: 30px;
-	margin-right: 14px;
+	margin-right: var(--space-14);
 	border: 2px solid var(--memo-accent);
 	background: none;
 	color: #b07a06;
@@ -511,7 +511,7 @@
 	place-items: center;
 	width: 40px;
 	height: 100%;
-	margin-right: 6px;
+	margin-right: var(--space-6);
 	padding: 0;
 	border: none;
 	border-left: 0.5px solid var(--memo-border);
@@ -536,7 +536,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folders.editing .memo-folder-more {
-	margin-right: 8px;
+	margin-right: var(--space-8);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folders.editing .memo-folder-row .memo-folder-name {
@@ -548,9 +548,9 @@
 	display: flex;
 	flex: 1;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	height: 50px;
-	margin-right: 12px;
+	margin-right: var(--space-12);
 	padding: 0 18px;
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);

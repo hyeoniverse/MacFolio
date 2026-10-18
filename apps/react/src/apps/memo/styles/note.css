@@ -64,7 +64,7 @@
 }
 
 .memo-like.comment {
-	gap: 4px;
+	gap: var(--space-4);
 	min-height: 24px;
 	padding: 2px 7px;
 	margin-left: -7px;
@@ -124,7 +124,7 @@
 
 .memo-comment-actions {
 	display: flex;
-	margin-top: 2px;
+	margin-top: var(--space-2);
 }
 
 /* 인기글 목록: 제목 앞 순위 (1~3위는 강조), 날짜·요약 자리에 조회·댓글·좋아요 */
@@ -133,7 +133,7 @@
 	place-items: center;
 	min-width: 18px;
 	height: 18px;
-	margin-right: 6px;
+	margin-right: var(--space-6);
 	padding: 0 4px;
 	border-radius: 5px;
 	background-color: var(--memo-search-bg);
@@ -162,7 +162,7 @@
 .memo-post-nav {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 10px;
+	gap: var(--space-10);
 	margin-top: 2.5rem;
 	padding-top: 1.25rem;
 	border-top: 1px solid var(--memo-border);
@@ -171,9 +171,9 @@
 .memo-post-nav button {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: var(--space-4);
 	min-width: 0;
-	padding: 10px 12px;
+	padding: var(--space-10) var(--space-12);
 	border: 1px solid var(--memo-border);
 	border-radius: var(--radius-lg);
 	background: none;
@@ -216,7 +216,7 @@
 	align-items: center;
 	gap: 5px;
 	white-space: nowrap;
-	margin-left: 6px;
+	margin-left: var(--space-6);
 	padding: 2px 9px;
 	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 22%, transparent);
@@ -271,12 +271,12 @@ button.memo-admin-chip {
 }
 
 .memo-reader-toolbar > * + * {
-	margin-left: 8px;
+	margin-left: var(--space-8);
 }
 
 @container (max-width: 390px) {
 	.memo-reader-toolbar > * + * {
-		margin-left: 4px;
+		margin-left: var(--space-4);
 	}
 
 	.memo-reader-toolbar .memo-search {
@@ -355,7 +355,7 @@ button.memo-admin-chip {
 	right: 0;
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .memo-writer-status {
@@ -365,7 +365,7 @@ button.memo-admin-chip {
 
 .memo-writer-discard,
 .memo-writer-publish {
-	padding: 2px 10px;
+	padding: var(--space-2) var(--space-10);
 	border: none;
 	border-radius: var(--radius-full);
 	font: inherit;
@@ -412,7 +412,7 @@ button.memo-admin-chip {
 		order: -1;
 		justify-content: flex-end;
 		width: 100%;
-		margin-bottom: 4px;
+		margin-bottom: var(--space-4);
 	}
 }
 
@@ -426,7 +426,7 @@ button.memo-admin-chip {
 	order: -1;
 	justify-content: flex-end;
 	width: 100%;
-	margin-bottom: 4px;
+	margin-bottom: var(--space-4);
 }
 
 .memo-writer-status.problem {
@@ -442,7 +442,7 @@ button.memo-admin-chip {
 /* 관리자 목록의 게시 상태 */
 .memo-status-badge {
 	display: inline-block;
-	margin-left: 6px;
+	margin-left: var(--space-6);
 	padding: 0 6px;
 	border-radius: var(--radius-full);
 	font-size: 10px;
@@ -465,7 +465,7 @@ button.memo-admin-chip {
 	display: inline-block;
 	width: 7px;
 	height: 7px;
-	margin-left: 6px;
+	margin-left: var(--space-6);
 	border-radius: 50%;
 	background-color: #edbb4d;
 	vertical-align: 2px;
@@ -478,7 +478,7 @@ button.memo-admin-chip {
 
 /* 버전 기록 */
 .memo-revisions-note {
-	margin-bottom: 8px;
+	margin-bottom: var(--space-8);
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption2);
 	line-height: 1.5;
@@ -495,7 +495,7 @@ button.memo-admin-chip {
 	flex-direction: column;
 	gap: 1px;
 	width: 100%;
-	padding: 6px 10px;
+	padding: var(--space-6) var(--space-10);
 	border-radius: var(--radius-md);
 	text-align: left;
 }
@@ -520,7 +520,7 @@ button.memo-admin-chip {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 6px;
+	margin-bottom: var(--space-6);
 	font-size: var(--text-caption);
 }
 
@@ -537,7 +537,7 @@ button.memo-admin-chip {
 
 .memo-revision-body {
 	max-height: 300px;
-	padding: 10px 12px;
+	padding: var(--space-10) var(--space-12);
 	overflow-y: auto;
 	border: 1px solid var(--color-divider);
 	border-radius: var(--radius-lg);
@@ -555,7 +555,7 @@ button.memo-admin-chip {
 
 .memo-format-panel .memo-revision-restore {
 	width: 100%;
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	padding: 7px 0;
 	border-radius: var(--radius-full);
 	background-color: #edbb4d;

@@ -59,9 +59,9 @@
 .messages {
 	container-type: inline-size;
 	display: flex;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 100%;
-	padding: 8px;
+	padding: var(--space-8);
 	background-color: var(--messages-window-bg);
 	color: var(--messages-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
@@ -139,9 +139,9 @@
 .messages-search {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 36px;
-	margin: 4px 12px 8px;
+	margin: var(--space-4) var(--space-12) var(--space-8);
 	padding: 0 14px;
 	border-radius: 18px;
 	background-color: var(--messages-search-bg);
@@ -163,8 +163,8 @@
 .messages-pinned {
 	display: flex;
 	justify-content: center;
-	gap: 8px;
-	padding: 8px 12px 6px;
+	gap: var(--space-8);
+	padding: var(--space-8) var(--space-12) var(--space-6);
 	list-style: none;
 }
 
@@ -172,8 +172,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 6px;
-	padding: 8px 12px;
+	gap: var(--space-6);
+	padding: var(--space-8) var(--space-12);
 	border: none;
 	border-radius: var(--radius-xl);
 	background: none;
@@ -195,10 +195,10 @@
 .messages-thread {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	position: relative;
 	width: 100%;
-	padding: 10px 10px;
+	padding: var(--space-10) var(--space-10);
 	border: none;
 	border-radius: 12px;
 	background: none;
@@ -233,7 +233,7 @@
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .messages-thread-top strong {
@@ -254,7 +254,7 @@
 .messages-thread-preview {
 	display: -webkit-box;
 	overflow: hidden;
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	color: var(--messages-preview);
 	font-size: var(--text-footnote);
 	line-height: 1.3;
@@ -263,7 +263,7 @@
 }
 
 .messages-empty {
-	padding: 24px 8px;
+	padding: var(--space-24) var(--space-8);
 	color: var(--messages-meta);
 	text-align: center;
 }
@@ -288,7 +288,7 @@
 
 .messages-chat-toolbar {
 	display: flex;
-	gap: 8px;
+	gap: var(--space-8);
 	position: absolute;
 	top: 6px;
 	left: 6px;
@@ -304,7 +304,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 4px;
+	gap: var(--space-4);
 	padding: 6px 60px 8px;
 }
 
@@ -313,7 +313,7 @@
 	z-index: 4;
 	display: inline-flex;
 	align-items: center;
-	gap: 4px;
+	gap: var(--space-4);
 	padding: 5px 12px;
 	border-radius: 16px;
 	background-color: var(--messages-float-bg);
@@ -369,7 +369,7 @@
 	display: flex;
 	flex-direction: column;
 	position: relative;
-	margin-bottom: 2px;
+	margin-bottom: var(--space-2);
 }
 
 .messages-bubble-row.right {
@@ -381,7 +381,7 @@
 }
 
 .messages-bubble-row.tail {
-	margin-bottom: 10px;
+	margin-bottom: var(--space-10);
 }
 
 .messages-sender {
@@ -469,8 +469,8 @@
 	position: static;
 	width: auto;
 	height: auto;
-	margin-top: 2px;
-	padding: 2px 8px;
+	margin-top: var(--space-2);
+	padding: var(--space-2) var(--space-8);
 	clip-path: none;
 	border-radius: var(--radius-sm);
 	background-color: var(--messages-search-bg);
@@ -481,8 +481,8 @@
 .messages-composer {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
-	padding: 6px 14px 10px;
+	gap: var(--space-8);
+	padding: var(--space-6) var(--space-14) var(--space-10);
 }
 
 /* 입력창 위: 이 브라우저의 이름 (이름·비밀번호는 받지 않는다) */
@@ -501,9 +501,9 @@
 .messages-field {
 	display: flex;
 	align-items: flex-end;
-	gap: 4px;
+	gap: var(--space-4);
 	min-height: 36px;
-	padding: 4px 4px 4px 16px;
+	padding: var(--space-4) var(--space-4) var(--space-4) var(--space-16);
 	border-radius: 18px;
 	background-color: var(--messages-float-bg);
 	box-shadow: var(--messages-float-shadow);
@@ -631,13 +631,13 @@
 
 /* 고정 대화: 고른 것을 칠하지 않고 아바타만 크게 */
 .container.mobile .messages-pinned {
-	gap: 20px;
+	gap: var(--space-20);
 	padding: 4px 0 16px;
 }
 
 .container.mobile .messages-pinned-item,
 .container.mobile .messages-pinned-item.selected {
-	gap: 8px;
+	gap: var(--space-8);
 	padding: 0;
 	background: none;
 	color: var(--messages-text);
@@ -680,7 +680,7 @@
 
 .container.mobile .messages-thread-chevron {
 	display: inline;
-	margin-left: 6px;
+	margin-left: var(--space-6);
 	color: var(--messages-meta);
 	font-size: var(--text-caption);
 }
@@ -711,7 +711,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	margin-top: 56px;
 	padding: 0 24px;
 	font-size: var(--text-subhead);
@@ -719,7 +719,7 @@
 
 .container.mobile .messages-empty-icon {
 	display: block;
-	margin-bottom: 6px;
+	margin-bottom: var(--space-6);
 	color: var(--messages-meta);
 	font-size: 40px;
 	opacity: 0.6;
@@ -743,7 +743,7 @@
 .container.mobile .messages:not(.chat-open) .messages-phone-bottom {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	position: absolute;
 	right: 16px;
 	bottom: 12px;
@@ -774,7 +774,7 @@
 /* 이름 알약은 떠 있는 버튼 줄 가운데, 그 아래 설명은 버튼을 비켜 화면 폭을 다 쓴다.
    앱은 상태 표시줄 밑까지 그려지므로 위 여백에 상태 표시줄 높이(--phone-status)를 더한다 */
 .container.mobile .messages-chat-header {
-	gap: 10px;
+	gap: var(--space-10);
 	padding: calc(var(--phone-status) + 8px) 16px 12px;
 }
 
@@ -784,12 +784,12 @@
 }
 
 .container.mobile .messages-chat-header:has(.messages-cancel) .messages-chat-subtitle {
-	margin-top: 12px;
+	margin-top: var(--space-12);
 }
 
 /* 대화 머리와 시간·보낸 이: 넓은 창의 11px는 휴대폰에서 작다 */
 .container.mobile .messages-name-pill {
-	padding: 6px 14px;
+	padding: var(--space-6) var(--space-14);
 	font-size: var(--text-subhead);
 }
 
@@ -820,8 +820,8 @@
 }
 
 .container.mobile .messages-composer {
-	gap: 10px;
-	padding: 8px 12px 10px;
+	gap: var(--space-10);
+	padding: var(--space-8) var(--space-12) var(--space-10);
 }
 
 /* 이름 한 줄: 입력 알약 위, 알약 글자와 같은 안쪽 여백에서 시작 */
@@ -832,7 +832,7 @@
 
 .container.mobile .messages-field {
 	min-height: 44px;
-	padding: 4px 4px 4px 16px;
+	padding: var(--space-4) var(--space-4) var(--space-4) var(--space-16);
 	border-radius: 22px;
 }
 
@@ -862,7 +862,7 @@
 
 .container.mobile .messages-pinned-item,
 .container.mobile .messages-pinned-item.selected {
-	gap: 6px;
+	gap: var(--space-6);
 	color: var(--messages-meta);
 	font-size: var(--text-subhead);
 }

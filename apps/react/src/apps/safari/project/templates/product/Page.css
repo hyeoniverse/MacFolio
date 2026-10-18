@@ -86,19 +86,19 @@
 
 /* ─── 공통 글 ─── */
 .pd-group {
-	margin-bottom: 8px;
+	margin-bottom: var(--space-8);
 	color: var(--pd-muted);
 	font-size: 14px;
 	font-weight: 600;
 }
 
 .pd-body {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	color: var(--pd-body);
 }
 
 .pd-detail {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	color: var(--pd-muted);
 	font-size: 15px;
 	line-height: 1.55;
@@ -134,8 +134,8 @@
 .pd-brand {
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
-	margin-bottom: 14px;
+	gap: var(--space-10);
+	margin-bottom: var(--space-14);
 	color: var(--pd-ink);
 	font-size: 21px;
 	font-weight: 600;
@@ -176,7 +176,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
-	gap: 12px;
+	gap: var(--space-12);
 	margin-top: 34px;
 }
 
@@ -266,7 +266,7 @@
 
 .pd-window-dots {
 	display: flex;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .pd-window-dots i {
@@ -282,7 +282,7 @@
 	gap: 7px;
 	min-width: min(320px, 50cqi);
 	justify-content: center;
-	padding: 4px 14px;
+	padding: var(--space-4) var(--space-14);
 	border-radius: 7px;
 	background-color: var(--pd-tile);
 	color: var(--pd-muted);
@@ -426,7 +426,7 @@
 
 .pd-stat-stack .pd-figure-label {
 	max-width: 28ch;
-	margin-top: 12px;
+	margin-top: var(--space-12);
 	color: var(--pd-muted);
 	font-size: clamp(17px, 1.7cqi, 21px);
 	font-weight: 500;
@@ -452,7 +452,7 @@
 }
 
 .pd-stats li {
-	padding: 4px 20px;
+	padding: var(--space-4) var(--space-20);
 }
 
 .pd-stats li + li {
@@ -501,12 +501,12 @@
 
 .pd-features {
 	display: grid;
-	gap: 20px;
+	gap: var(--space-20);
 }
 
 .pd-tiles {
 	display: grid;
-	gap: 20px;
+	gap: var(--space-20);
 }
 
 .pd-tile {
@@ -521,7 +521,7 @@
 }
 
 .pd-tile .pd-body {
-	margin-top: 14px;
+	margin-top: var(--space-14);
 	font-size: 19px;
 	line-height: 1.45;
 }
@@ -615,7 +615,7 @@
 .pd-thumbs {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-	gap: 10px;
+	gap: var(--space-10);
 	margin-top: 28px;
 }
 
@@ -681,7 +681,7 @@
 	display: grid;
 	grid-auto-columns: min(80%, 880px);
 	grid-auto-flow: column;
-	gap: 24px;
+	gap: var(--space-24);
 	padding: 0 max(var(--pd-gutter), calc((100% - 1180px) / 2)) 8px;
 	overflow-x: auto;
 	scroll-behavior: smooth;
@@ -710,7 +710,7 @@
 .pd-gallery figcaption {
 	display: flex;
 	align-items: baseline;
-	gap: 12px;
+	gap: var(--space-12);
 	margin-top: 18px;
 	color: var(--pd-ink);
 	font-size: 17px;
@@ -727,7 +727,7 @@
 .pd-paddles {
 	display: flex;
 	justify-content: flex-end;
-	gap: 14px;
+	gap: var(--space-14);
 	max-width: 1180px;
 	margin: 20px auto 0;
 	padding: 0 var(--pd-gutter);
@@ -808,8 +808,8 @@
 
 .pd-point-media {
 	display: grid;
-	gap: 12px;
-	margin-top: 24px;
+	gap: var(--space-12);
+	margin-top: var(--space-24);
 }
 
 /* 세로로 긴 화면 캡처도 한 화면 높이를 넘지 않게: 위쪽부터 잘라 보인다 */
@@ -839,12 +839,12 @@
 .pd-built .pd-glyph {
 	justify-content: start;
 	align-self: start;
-	padding-top: 2px;
+	padding-top: var(--space-2);
 	font-size: 26px;
 }
 
 .pd-built .pd-body {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 }
 
 /* ─── 이야기: 장마다 큰 머리, 숫자, 두 칸 글, 큰 그림 ─── */
@@ -883,7 +883,7 @@
 .pd-controls {
 	display: grid;
 	grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
-	gap: 20px;
+	gap: var(--space-20);
 	text-align: center;
 }
 
@@ -915,7 +915,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .pd-controls dd {
@@ -951,7 +951,7 @@
 .pd-timeline li {
 	display: grid;
 	grid-template-columns: 48px 132px minmax(0, 1fr);
-	gap: 16px;
+	gap: var(--space-16);
 	align-items: baseline;
 	padding: 20px 0;
 	border-top: 1px solid var(--pd-line);
@@ -981,8 +981,8 @@
 	flex-wrap: wrap;
 	align-items: baseline;
 	justify-content: space-between;
-	gap: 8px 24px;
-	padding-bottom: 20px;
+	gap: var(--space-8) var(--space-24);
+	padding-bottom: var(--space-20);
 	border-bottom: 1px solid var(--pd-ink);
 }
 
@@ -1000,7 +1000,7 @@
 .pd-specs > div {
 	display: grid;
 	grid-template-columns: minmax(0, 3fr) minmax(0, 8fr);
-	gap: 24px;
+	gap: var(--space-24);
 	padding: 32px 0;
 	border-bottom: 1px solid var(--pd-line);
 }
@@ -1022,7 +1022,7 @@
 .pd-stack {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-	gap: 10px 24px;
+	gap: var(--space-10) var(--space-24);
 }
 
 .pd-stack li:first-child {
@@ -1060,7 +1060,7 @@
 }
 
 .pd-role-meta dd {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--pd-ink);
 	font-size: 19px;
 	line-height: 1.4;
@@ -1098,7 +1098,7 @@
 .pd-credits li {
 	display: grid;
 	grid-template-columns: 160px minmax(0, 1fr) auto;
-	gap: 4px 24px;
+	gap: var(--space-4) var(--space-24);
 	align-items: baseline;
 	padding: 18px 0;
 	border-top: 1px solid var(--pd-line);
@@ -1114,7 +1114,7 @@
 }
 
 .pd-credit-by {
-	margin-left: 10px;
+	margin-left: var(--space-10);
 	color: var(--pd-muted);
 	font-size: 15px;
 }
@@ -1212,7 +1212,7 @@
 	.pd-tiles-grid[data-cols='3'] .pd-tile-icon {
 		display: grid;
 		grid-template-columns: 56px minmax(0, 1fr);
-		gap: 24px;
+		gap: var(--space-24);
 		padding: 36px;
 	}
 
@@ -1230,7 +1230,7 @@
 	.pd-steps li {
 		display: grid;
 		grid-template-columns: 48px minmax(0, 1fr);
-		column-gap: 20px;
+		column-gap: var(--space-20);
 		padding: 28px 0;
 	}
 
@@ -1275,7 +1275,7 @@
 
 	.pd-meta {
 		flex-direction: column;
-		gap: 4px;
+		gap: var(--space-4);
 	}
 
 	.pd-meta li + li::before {
@@ -1346,12 +1346,12 @@
 
 	.pd-gallery-track {
 		grid-auto-columns: 86%;
-		gap: 14px;
+		gap: var(--space-14);
 	}
 
 	.pd-timeline li {
 		grid-template-columns: 36px minmax(0, 1fr);
-		gap: 2px 12px;
+		gap: var(--space-2) var(--space-12);
 	}
 
 	.pd-timeline-label {
@@ -1360,13 +1360,13 @@
 
 	.pd-specs > div {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
+		gap: var(--space-12);
 		padding: 24px 0;
 	}
 
 	.pd-credits li {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 4px;
+		gap: var(--space-4);
 	}
 
 	.pd-credit-note {
