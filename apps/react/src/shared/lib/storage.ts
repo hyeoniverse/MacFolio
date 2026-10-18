@@ -12,6 +12,8 @@ export const STORAGE_KEYS = {
 	memoListWidth: 'macfolio:memo:list-width',
 	weatherPlaces: 'macfolio:weather:places',
 	weatherUnit: 'macfolio:weather:unit',
+	/** 바탕화면 아이콘의 칸 (desktop/icons) */
+	desktopIcons: 'macfolio:desktop:icons',
 	/** 저장 형식 버전이 바뀌면 키를 바꾼다 */
 	messages: 'macfolio:messages:v2',
 	messagesVisitor: 'macfolio:messages:visitor',
