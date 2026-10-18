@@ -346,7 +346,11 @@ function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined)
 	}
 
 	// 바뀐 폴더를 다시 정렬하고, 만든 폴더부터 수정일(안에 든 가장 최근 항목)을 다시 잰다
-	for (const folder of touched) folder.children.sort(byName);
+	// 바탕화면은 가상본을 정한 순서대로 먼저 (아이콘이 그 순서로 오른쪽 위부터 놓인다)
+	const aliasFirst = (a: FinderItem, b: FinderItem) =>
+		Number(b.kind === 'folder' && !!b.aliasOf) - Number(a.kind === 'folder' && !!a.aliasOf) ||
+		(a.kind === 'folder' && a.aliasOf ? 0 : byName(a, b));
+	for (const folder of touched) folder.children.sort(folder === desktop ? aliasFirst : byName);
 	const refresh = (folder: FolderItem): string | undefined => {
 		folder.children.forEach((child) => child.kind === 'folder' && !child.aliasOf && refresh(child));
 		if (folder.id.startsWith('folder:') || touched.has(folder)) folder.modified = latest(folder.children);

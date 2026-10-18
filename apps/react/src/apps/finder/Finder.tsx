@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
@@ -19,10 +19,11 @@ import {
 	type FinderItem,
 	type FolderItem,
 } from './files';
-import { deleteDocument, renameDocument } from './documents';
+import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from './useFinderEdit';
+import { canCreateIn, canMove, canRename, canTrash } from './edit';
+import InlineName from './InlineName';
+import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { useDocumentDrop } from './useDocumentDrop';
-import { messageOf } from '@/shared/api/client';
-import { notify } from '@/desktop/notifications/notificationStore';
 import { DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest, finderFolderRequest } from './openDoc';
@@ -41,6 +42,7 @@ type View = 'icons' | 'list';
 type Place = { folder: string } | { doc: string };
 
 const LOCATION_ICONS: Record<string, string> = {
+	desktop: 'fa-solid fa-display',
 	docs: 'fa-regular fa-file-lines',
 	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
@@ -138,44 +140,45 @@ const Finder: React.FC = () => {
 	};
 	const parent = crumbs.length > 1 ? crumbs[crumbs.length - 2] : null;
 	const selectedItem = items.find((item) => item.id === selected);
-	const selectedDocument =
-		selectedItem && 'documentId' in selectedItem && selectedItem.documentId ? selectedItem : null;
-	const renameSelected = async (item: { name: string; documentId?: string }) => {
-		const name = window.prompt('새 이름 (확장자는 그대로)', item.name)?.trim();
-		if (!name || name === item.name) return;
-		await renameDocument(item.documentId!, name).catch((error) =>
-			notify({ app: 'finder', title: '이름을 바꾸지 못함', body: messageOf(error) })
-		);
+	// 관리자의 편집 (useFinderEdit): 새 폴더, 이름 변경, 끌어서 옮기기, 휴지통으로 이동. 방문자는 메뉴가 흐리고 끌어도 아무 일이 없다
+	const edit = useFinderEdit(locations);
+	const renaming = useSyncExternalStore(finderRenaming.subscribe, () => finderRenaming.getState().id);
+	const startRename = (item: FinderItem | undefined) => {
+		if (edit.admin && item && canRename(item)) finderRenaming.setState({ id: item.id });
 	};
-	const deleteSelected = async (item: { name: string; documentId?: string }) => {
-		if (!window.confirm(`‘${item.name}’을(를) 지울까요? 저장소에서도 지워져 되돌릴 수 없습니다.`)) return;
-		await deleteDocument(item.documentId!).then(
-			() => setSelected(null),
-			(error) => notify({ app: 'finder', title: '지우지 못함', body: messageOf(error) })
-		);
+	const newFolder = () => {
+		const id = edit.newFolder(folder);
+		if (id) setSelected(id);
 	};
+	const trashSelected = () => selectedItem && edit.trash([selectedItem], () => setSelected(null));
+	const [menu, setMenu] = useState<{ anchor: { x: number; y: number }; item: FinderItem | null } | null>(null);
+	const [dropId, setDropId] = useState<string | null>(null);
 	useAppMenus('finder', [
 		{
 			title: '파일',
 			items: [
 				{ label: '새로운 Finder 윈도우', shortcut: { code: 'KeyN', alt: true }, onSelect: () => openApp('finder') },
-				// 관리자: 고른 문서 파일의 이름 바꾸기·지우기 (서버 목록과 R2)
-				...(drop.admin
-					? [
-							'separator' as const,
-							{
-								label: '이름 변경…',
-								disabled: !selectedDocument,
-								onSelect: inFinder(() => selectedDocument && renameSelected(selectedDocument)),
-							},
-							{
-								label: '휴지통으로 이동',
-								disabled: !selectedDocument,
-								shortcut: { code: 'Backspace', mod: true },
-								onSelect: inFinder(() => selectedDocument && deleteSelected(selectedDocument)),
-							},
-						]
-					: []),
+				// 관리자만: 새 폴더, 고른 항목의 이름 바꾸기·휴지통으로 이동. 시스템 항목과 방문자는 흐리게
+				// (⇧⌘N은 브라우저가 가져가서 macOS 단축키 글자 그대로 ⌥⇧N)
+				'separator',
+				{
+					label: '새 폴더',
+					disabled: !edit.admin || !canCreateIn(folder) || searching,
+					shortcut: { code: 'KeyN', alt: true, shift: true },
+					onSelect: inFinder(newFolder),
+				},
+				'separator',
+				{
+					label: '이름 변경…',
+					disabled: !edit.admin || !selectedItem || !canRename(selectedItem),
+					onSelect: inFinder(() => startRename(selectedItem)),
+				},
+				{
+					label: '휴지통으로 이동',
+					disabled: !edit.admin || !selectedItem || !canTrash(selectedItem),
+					shortcut: { code: 'Backspace', mod: true },
+					onSelect: inFinder(trashSelected),
+				},
 			],
 		},
 		{
@@ -229,7 +232,8 @@ const Finder: React.FC = () => {
 	const open = (item: FinderItem) => {
 		switch (item.kind) {
 			case 'folder':
-				go({ folder: item.id });
+				// 바탕화면의 가상본은 원래 폴더로
+				go({ folder: item.aliasOf ?? item.id });
 				return;
 			case 'doc':
 				go({ doc: item.path });
@@ -265,6 +269,12 @@ const Finder: React.FC = () => {
 			go({ folder: crumbs.at(-2)!.id });
 			return;
 		}
+		// macOS처럼 Enter는 이름 변경 (관리자, 바꿀 수 있는 항목). 그 밖에는 연다
+		if (event.key === 'Enter' && edit.admin && current && canRename(current)) {
+			event.preventDefault();
+			startRename(current);
+			return;
+		}
 		if (event.key === 'Enter' || ((event.metaKey || event.ctrlKey) && event.key === 'ArrowDown')) {
 			if (current) {
 				event.preventDefault();
@@ -291,21 +301,123 @@ const Finder: React.FC = () => {
 			?.scrollIntoView({ block: 'nearest' });
 	};
 
+	/** 이미 고른 항목의 이름을 누르면 잠시 뒤 이름 편집 (두 번 누르기와 겹치지 않게 기다린다) */
+	const renameTimer = useRef<number | undefined>(undefined);
+	const nameClick = (item: FinderItem) => (event: React.MouseEvent) => {
+		if (selected !== item.id || !edit.admin || !canRename(item) || event.detail > 1) return;
+		window.clearTimeout(renameTimer.current);
+		renameTimer.current = window.setTimeout(() => startRename(item), 500);
+	};
+	const nameOf = (item: FinderItem) =>
+		renaming === item.id ? (
+			<InlineName
+				name={item.name}
+				select={stemLength(item, item.name)}
+				onCommit={(name) =>
+					void edit.rename(item, name).then((id) => {
+						if (id) setSelected(id);
+						content.current?.focus({ preventScroll: true });
+					})
+				}
+				onCancel={() => {
+					finderRenaming.setState({ id: null });
+					content.current?.focus({ preventScroll: true });
+				}}
+			/>
+		) : (
+			<span className="finder-name" title={item.name} onClick={nameClick(item)}>
+				{item.name}
+			</span>
+		);
+
+	// 끌어서 옮기기 (관리자): 항목을 폴더 아이콘·사이드바 위치·경로 막대·열린 폴더(빈 곳)·바탕화면에 놓는다
+	const targetAt = (event: React.DragEvent) =>
+		(event.target as Element).closest?.('[data-folder-target]')?.getAttribute('data-folder-target') ?? null;
+	const moveHandlers = {
+		onDragOver: (event: React.DragEvent) => {
+			if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;
+			const id = targetAt(event);
+			const ok = edit.canDrop(finderDrag.getState().ids, id ? find(locations, id) : null);
+			setDropId(ok ? id : null);
+			if (!ok) return;
+			event.preventDefault();
+			event.dataTransfer.dropEffect = 'move';
+		},
+		onDragLeave: (event: React.DragEvent) => {
+			if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDropId(null);
+		},
+		onDrop: (event: React.DragEvent) => {
+			setDropId(null);
+			if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;
+			const id = targetAt(event);
+			const target = id ? find(locations, id) : null;
+			if (!target) return;
+			event.preventDefault();
+			edit.move(finderDrag.getState().ids, target);
+		},
+	};
+
 	const itemProps = (item: FinderItem) => ({
 		'data-id': item.id,
+		'data-folder-target': item.kind === 'folder' ? item.id : undefined,
+		draggable: edit.admin && canMove(item) && renaming !== item.id,
+		onDragStart: (event: React.DragEvent) => {
+			event.dataTransfer.setData(FINDER_DRAG_TYPE, JSON.stringify([item.id]));
+			event.dataTransfer.effectAllowed = 'move';
+			finderDrag.setState({ ids: [item.id] });
+			setSelected(item.id);
+		},
+		onDragEnd: () => {
+			finderDrag.setState({ ids: [] });
+			setDropId(null);
+		},
+		onContextMenu: (event: React.MouseEvent) => {
+			event.preventDefault();
+			event.stopPropagation();
+			setSelected(item.id);
+			setMenu({ anchor: { x: event.clientX, y: event.clientY }, item });
+		},
 		// 관리자: 이력서·포트폴리오·자격증 폴더나 프로젝트 폴더 아이콘 위에 파일을 놓아도 올린다
 		'data-drop-folder': uploadFolderOf(item) ?? undefined,
 		className: `finder-item ${item.kind}${selected === item.id ? ' selected' : ''}${
-			drop.target && uploadFolderOf(item) === drop.target && dropFolder !== drop.target ? ' drop-target' : ''
-		}`,
+			(drop.target && uploadFolderOf(item) === drop.target && dropFolder !== drop.target) ||
+			(dropId === item.id && dropId !== folder?.id)
+				? ' drop-target'
+				: ''
+		}${item.kind === 'folder' && item.aliasOf ? ' alias' : ''}${renaming === item.id ? ' renaming' : ''}`,
 		'aria-selected': selected === item.id,
 		role: 'option' as const,
 		onClick: (event: React.MouseEvent) => {
 			event.stopPropagation();
 			setSelected(item.id);
 		},
-		onDoubleClick: () => open(item),
+		onDoubleClick: () => {
+			window.clearTimeout(renameTimer.current);
+			if (renaming !== item.id) open(item);
+		},
 	});
+
+	const menuItems: MenuItem[] = menu?.item
+		? [
+				{ label: '열기', onSelect: () => open(menu.item!) },
+				'separator',
+				{
+					label: '이름 변경',
+					disabled: !edit.admin || !canRename(menu.item),
+					onSelect: () => startRename(menu.item!),
+				},
+				{
+					label: '휴지통으로 이동',
+					disabled: !edit.admin || !canTrash(menu.item),
+					onSelect: () => edit.trash([menu.item!], () => setSelected(null)),
+				},
+			]
+		: [
+				{ label: '새 폴더', disabled: !edit.admin || !canCreateIn(folder) || searching, onSelect: newFolder },
+				'separator',
+				{ label: '아이콘으로 보기', checked: view === 'icons', onSelect: () => setView('icons') },
+				{ label: '목록으로 보기', checked: view === 'list', onSelect: () => setView('list') },
+			];
 
 	const empty = !searching && folder && items.length === 0;
 
@@ -315,7 +427,7 @@ const Finder: React.FC = () => {
 			{mobile ? (
 				<FinderMobile locations={locations} onOpenElsewhere={open} dark={dark} />
 			) : (
-				<div className="finder">
+				<div className="finder" {...moveHandlers}>
 					<nav className="finder-sidebar" aria-label="즐겨찾기">
 						<div className="finder-lights-space" />
 						<h2>즐겨찾기</h2>
@@ -323,7 +435,10 @@ const Finder: React.FC = () => {
 							<button
 								key={item.id}
 								type="button"
-								className={`finder-location${location === item.id && !searching ? ' active' : ''}`}
+								data-folder-target={item.id}
+								className={`finder-location${location === item.id && !searching ? ' active' : ''}${
+									dropId === item.id ? ' drop-target' : ''
+								}`}
 								aria-current={location === item.id && !searching ? 'page' : undefined}
 								onClick={() => go({ folder: item.id })}
 							>
@@ -398,12 +513,23 @@ const Finder: React.FC = () => {
 
 						<div
 							ref={content}
-							className={`finder-content${drop.target && drop.target === dropFolder ? ' drop-target' : ''}`}
+							data-folder-target={'folder' in place && !searching ? folder?.id : undefined}
+							className={`finder-content${
+								(drop.target && drop.target === dropFolder) || (dropId !== null && dropId === folder?.id)
+									? ' drop-target'
+									: ''
+							}`}
 							data-direction={direction ?? undefined}
 							{...drop.handlers}
 							tabIndex={0}
 							onKeyDown={onKeyDown}
 							onClick={() => setSelected(null)}
+							onContextMenu={(event) => {
+								if (!('folder' in place)) return;
+								event.preventDefault();
+								setSelected(null);
+								setMenu({ anchor: { x: event.clientX, y: event.clientY }, item: null });
+							}}
 						>
 							{'doc' in place ? (
 								<DocView path={place.doc} dark={dark} onOpenDoc={(path) => go({ doc: path })} />
@@ -422,9 +548,7 @@ const Finder: React.FC = () => {
 											<span className="finder-icon">
 												<FinderIcon item={item} />
 											</span>
-											<span className="finder-name" title={item.name}>
-												{item.name}
-											</span>
+											{nameOf(item)}
 										</div>
 									))}
 								</div>
@@ -441,9 +565,7 @@ const Finder: React.FC = () => {
 												<span className="finder-icon small">
 													<FinderIcon item={item} />
 												</span>
-												<span className="finder-name" title={item.name}>
-													{item.name}
-												</span>
+												{nameOf(item)}
 											</span>
 											<span className="finder-list-date">{dateCell(item)}</span>
 											<span className="finder-list-kind">{KIND_LABELS[item.kind]}</span>
@@ -477,7 +599,12 @@ const Finder: React.FC = () => {
 									<React.Fragment key={crumb.id}>
 										{i > 0 && <i className="fa-solid fa-chevron-right" aria-hidden="true" />}
 										{crumb.kind === 'folder' && i < crumbs.length - 1 ? (
-											<button type="button" onClick={() => go({ folder: crumb.id })}>
+											<button
+												type="button"
+												data-folder-target={crumb.id}
+												className={dropId === crumb.id ? 'drop-target' : undefined}
+												onClick={() => go({ folder: crumb.id })}
+											>
 												{crumb.name}
 											</button>
 										) : (
@@ -493,6 +620,15 @@ const Finder: React.FC = () => {
 					</div>
 				</div>
 			)}
+			{menu && (
+				<Menu
+					label={menu.item ? '항목 메뉴' : '폴더 메뉴'}
+					anchor={menu.anchor}
+					items={menuItems}
+					onClose={() => setMenu(null)}
+				/>
+			)}
+			{edit.dialog}
 		</AppWindow>
 	);
 };
