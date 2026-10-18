@@ -11,12 +11,6 @@ describe('initialWindows', () => {
 		expect(apps.memo).toMatchObject({ isRunning: true, hasOpened: true });
 		expect(apps.memo.zIndex).toBeGreaterThan(apps.finder.zIndex);
 	});
-
-	it("runningAtStart가 'minimized'면 켜 두되 창은 내려 둔다", () => {
-		const apps = initialWindows(names, { linked: null, runningAtStart: (name) => name === 'music' && 'minimized' });
-		expect(apps.music).toMatchObject({ isRunning: true, isMinimized: true, hasOpened: true });
-		expect(apps.finder).toMatchObject({ isRunning: false, isMinimized: false });
-	});
 });
 
 describe('restoreWindows', () => {

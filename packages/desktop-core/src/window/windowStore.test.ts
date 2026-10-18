@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { initialWindows } from './initialWindows.js';
-import { activeApp, createWindowStore } from './windowStore.js';
+import { activeApp, createWindowStore, isAppRunning } from './windowStore.js';
 
 const names = ['finder', 'memo', 'music'] as const;
 const setup = () =>
@@ -67,5 +67,28 @@ describe('createWindowStore', () => {
 		expect(apps.finder.isMinimized && apps.memo.isMinimized).toBe(true);
 		expect(apps.music.isMinimized).toBe(false);
 		expect(activeApp(store.getState())).toBeNull();
+	});
+
+	it('창 없이도 실행 중(keepAlive): 최소화해도 그대로, 창을 닫거나 종료하면 함께 꺼진다', () => {
+		const store = setup();
+		const running = () => isAppRunning(store.getState(), 'music');
+		expect(running()).toBe(false);
+		store.keepAlive('music', true);
+		expect(running()).toBe(true);
+		expect(store.getState().apps.music.isRunning).toBe(false);
+		// 창을 열고 최소화해도 실행 중
+		store.open('music');
+		store.minimize('music');
+		expect(running()).toBe(true);
+		// 빨간 버튼(close)은 앱을 끈다
+		store.close('music');
+		expect(running()).toBe(false);
+		store.keepAlive('music', true);
+		store.quit('music');
+		expect(running()).toBe(false);
+		// 같은 값이면 상태를 바꾸지 않는다
+		const before = store.getState();
+		store.keepAlive('music', false);
+		expect(store.getState()).toBe(before);
 	});
 });

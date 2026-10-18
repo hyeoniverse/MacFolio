@@ -58,8 +58,8 @@ export interface AppManifest {
 	inDock: boolean;
 	/** Dock에 고정하지 않고 Launchpad에 늘 두는 앱 (실행 중에는 Dock에도 나타난다) */
 	inLaunchpad?: boolean;
-	/** 처음 화면에 들어왔을 때 실행 중인 상태로 시작할지 여부. 'minimized'면 창은 내려 두고 Dock에만 켜짐 표시 */
-	runningAtStart?: boolean | 'minimized';
+	/** 처음 화면에 들어왔을 때 실행 중인 상태로 시작할지 여부 */
+	runningAtStart?: boolean;
 	/** 끌 수 없는 앱 (macOS의 Finder): 창을 닫아도 Dock의 켜짐 표시가 남는다 */
 	alwaysRunning?: boolean;
 	/** Dock 아이콘의 둥근 모서리를 없앨지 여부 */
@@ -86,15 +86,7 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		mobile: { label: '파일', icon: 'files.svg' },
 		windowSize: { width: 820, height: 520 },
 	},
-	// 데스크톱은 로딩 화면을 넘기면 배경 음악을 바로 틀므로, macOS처럼 소리를 내는 앱은 처음부터 실행 중이다.
-	// 창은 내려 두어 처음 화면(맨 앞의 Safari)은 그대로
-	music: {
-		label: '음악',
-		icon: 'music.png',
-		inDock: true,
-		runningAtStart: 'minimized',
-		windowSize: { width: 960, height: 600 },
-	},
+	music: { label: '음악', icon: 'music.png', inDock: true, windowSize: { width: 960, height: 600 } },
 	safari: { label: 'Safari', icon: 'safari.png', inDock: true, runningAtStart: true },
 	photos: { label: '사진', icon: 'photos.png', inDock: true, windowSize: { width: 980, height: 640 } },
 	messages: { label: '메시지', icon: 'messages.png', inDock: true, windowSize: { width: 860, height: 560 } },
