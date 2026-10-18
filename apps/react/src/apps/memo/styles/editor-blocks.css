@@ -295,7 +295,7 @@
 
 .memo-markdown a[title^='첨부 파일']::before {
 	color: var(--memo-muted);
-	font-family: 'Font Awesome 6 Free';
+	font-family: 'Font Awesome 7 Free';
 	font-weight: 900;
 	content: '\f0c6' / '';
 }
