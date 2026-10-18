@@ -16,6 +16,9 @@ const StatTable = ({
 	limit,
 	empty = '아직 없습니다',
 	labelFor,
+	note,
+	onSelect,
+	selected,
 }: {
 	title: string;
 	rows: Row[];
@@ -25,6 +28,11 @@ const StatTable = ({
 	empty?: string;
 	/** 표에 보일 이름을 직접 정한다 (예: 글 주소 → 글 제목). 없으면 metric으로 정한다 */
 	labelFor?: (key: string) => string;
+	/** 제목 아래 작은 설명 (예: 언제부터 센 표인지) */
+	note?: string;
+	/** 있으면 이름을 눌러 줄 하나를 고른다 (다시 누르면 푼다). 고른 줄은 selected */
+	onSelect?: (key: string | null) => void;
+	selected?: string | null;
 }) => {
 	const [sort, setSort] = useState<{ key: SortKey; descending: boolean }>({ key: 'value', descending: true });
 	const total = rows.reduce((sum, row) => sum + row.value, 0);
@@ -63,6 +71,7 @@ const StatTable = ({
 	return (
 		<section className="activity-table">
 			<h3>{title}</h3>
+			{note && <p className="activity-table-note">{note}</p>}
 			{rows.length === 0 ? (
 				<p className="activity-empty">{empty}</p>
 			) : (
@@ -81,9 +90,19 @@ const StatTable = ({
 						{shown.map((row) => {
 							const share = total ? row.value / total : 0;
 							return (
-								<tr key={row.key}>
+								<tr key={row.key} className={selected === row.key ? 'selected' : undefined}>
 									<td className="name" title={row.name}>
-										{row.name}
+										{onSelect ? (
+											<button
+												type="button"
+												aria-pressed={selected === row.key}
+												onClick={() => onSelect(selected === row.key ? null : row.key)}
+											>
+												{row.name}
+											</button>
+										) : (
+											row.name
+										)}
 									</td>
 									<td className="value">{row.value.toLocaleString()}</td>
 									<td className="share">

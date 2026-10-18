@@ -18,7 +18,9 @@ const get = <T>(path: string): Promise<T> =>
 		throw new ActivityError(error instanceof ApiError ? error.status : 0);
 	});
 
-export const fetchSummary = (from: string, to: string) => get<Summary>(`/analytics/summary?from=${from}&to=${to}`);
+/** 요약. utm(조합 키)을 주면 관리자에게 그 조합의 일별 방문(utmTrend)이 더 온다 */
+export const fetchSummary = (from: string, to: string, utm?: string) =>
+	get<Summary>(`/analytics/summary?from=${from}&to=${to}${utm ? `&utm=${encodeURIComponent(utm)}` : ''}`);
 export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?minutes=${minutes}`);
 
 /** 서버 자원 (관리자). 서버의 RESOURCE_MONITOR가 off면 mode만 온다 */

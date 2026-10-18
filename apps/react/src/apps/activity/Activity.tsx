@@ -9,6 +9,7 @@ import { getPostRepository } from '@/apps/memo/repository';
 import LineChart from './LineChart';
 import StatTable from './StatTable';
 import Server from './Server';
+import { UtmBuilder, UtmTables } from './Utm';
 import { requestedTab } from './useServerResources';
 import {
 	ActivityError,
@@ -210,6 +211,13 @@ const Activity = () => {
 		};
 	}, [reloads]);
 	const postTitle = (slug: string) => titles[slug] ?? slug;
+	// 링크 생성기가 고르게 할 사이트 안 경로: 첫 화면, 앱, 블로그 글
+	const sitePaths = [
+		'/',
+		'/memo',
+		'/safari',
+		...Object.keys(titles).map((slug) => `/memo/${encodeURIComponent(slug)}`),
+	];
 	const itemLabel = (key: string) =>
 		key.startsWith('memo/') ? `메모 › ${postTitle(key.slice('memo/'.length))}` : labelOf('item', key);
 
@@ -293,15 +301,14 @@ const Activity = () => {
 			case 'referrers':
 				return (
 					<>
+						{/* 관리자: 캠페인 링크를 만드는 곳 (접혀 있다) */}
+						{summary.scope === 'admin' && <UtmBuilder paths={sitePaths} />}
 						<div className="activity-columns">
 							<StatTable title="묶어 보기" rows={breakdown.referrerGroup} />
 							{summary.scope === 'admin' && <StatTable title="들어온 곳" rows={breakdown.referrer} metric="referrer" />}
 						</div>
 						{summary.scope === 'admin' ? (
-							<div className="activity-columns">
-								<StatTable title="캠페인 (utm_campaign)" rows={breakdown.campaign} metric="campaign" />
-								<StatTable title="출처 (utm_source)" rows={breakdown.source} metric="source" />
-							</div>
+							<UtmTables summary={summary} />
 						) : (
 							<AdminOnly what="들어온 곳의 주소와 캠페인(utm)은 관리자에게만 보입니다. 방문자에게는 검색·소셜·직접·링크 묶음만 보입니다." />
 						)}

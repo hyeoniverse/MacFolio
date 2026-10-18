@@ -5,7 +5,7 @@ import { env } from '@/shared/config/env';
 import { api } from '@/shared/api/client';
 import { isMobileViewport } from '@/desktop/layout';
 import { getViewport } from '@/shared/hooks/useViewport';
-import { MAX_EVENTS, type AppViews, type TodayVisitors } from '@macfolio/contracts';
+import { cleanUtm, MAX_EVENTS, type AppViews, type TodayVisitors } from '@macfolio/contracts';
 
 declare global {
 	/** E2E 테스트가 수집을 켜고 끄는 자리 (로컬 주소에서는 기본으로 보내지 않는다) */
@@ -20,6 +20,8 @@ export type AnalyticsEvent =
 			utmSource?: string;
 			utmMedium?: string;
 			utmCampaign?: string;
+			utmTerm?: string;
+			utmContent?: string;
 			device: 'desktop' | 'mobile';
 			language?: string;
 	  }
@@ -55,11 +57,48 @@ export function referrerHost(referrer: string, ownHost: string): string | undefi
 	}
 }
 
-/** 주소의 utm_source·utm_medium·utm_campaign (100자까지) */
+/**
+ * 주소의 utm_source·utm_medium·utm_campaign·utm_term·utm_content.
+ * 링크 생성기와 서버와 같은 규칙(cleanUtm: 소문자, 공백은 '-', 100자까지)으로 다듬는다
+ */
 export function utmOf(search: string) {
 	const params = new URLSearchParams(search);
-	const value = (name: string) => params.get(name)?.slice(0, 100) || undefined;
-	return { utmSource: value('utm_source'), utmMedium: value('utm_medium'), utmCampaign: value('utm_campaign') };
+	const value = (name: string) => cleanUtm(params.get(name));
+	return {
+		utmSource: value('utm_source'),
+		utmMedium: value('utm_medium'),
+		utmCampaign: value('utm_campaign'),
+		utmTerm: value('utm_term'),
+		utmContent: value('utm_content'),
+	};
+}
+
+/**
+ * 주소에서 utm_*만 뺀 경로·쿼리·조각 (다른 쿼리는 쓴 그대로 둔다). 뺄 것이 없으면 null.
+ * 읽은 뒤 주소창에서 지워, 주소를 복사해 나누거나 새로 고쳐도 같은 캠페인 방문이 다시 세지지 않게 한다 (#211)
+ */
+export function withoutUtm(href: string): string | null {
+	const url = new URL(href);
+	const parts = url.search.slice(1).split('&').filter(Boolean);
+	const kept = parts.filter((part) => {
+		const name = part.split('=')[0].replace(/\+/g, ' ');
+		try {
+			return !/^utm_/i.test(decodeURIComponent(name));
+		} catch {
+			return true;
+		}
+	});
+	if (kept.length === parts.length) return null;
+	return `${url.pathname}${kept.length ? `?${kept.join('&')}` : ''}${url.hash}`;
+}
+
+/**
+ * 페이지를 연 이벤트의 들어온 곳: 바깥 호스트(사이트 안에서 온 것은 비운다 = '직접')와 utm.
+ * 사이트 안에서 온 것이어도 utm이 있으면 utm을 그대로 보낸다 (조합 표는 utm으로 센다)
+ */
+export function entryOf(href: string, referrer: string) {
+	const url = new URL(href);
+	return { referrer: referrerHost(referrer, url.hostname), ...utmOf(url.search) };
 }
 
 /** 바깥 링크를 남기는 이름: 호스트와 경로만 (검색어·조각은 버린다). 바깥 주소가 아니면 null */
@@ -119,11 +158,13 @@ export function startAnalytics() {
 	track({
 		type: 'visit',
 		path: window.location.pathname.slice(0, 300),
-		referrer: referrerHost(document.referrer, window.location.hostname),
-		...utmOf(window.location.search),
+		...entryOf(window.location.href, document.referrer),
 		device: isMobileViewport(getViewport()) ? 'mobile' : 'desktop',
 		language: navigator.language || undefined,
 	});
+	// 읽은 utm은 주소창에서 지운다 (메모 글 주소의 다른 쿼리와 조각은 그대로)
+	const clean = withoutUtm(window.location.href);
+	if (clean) window.history.replaceState(window.history.state, '', clean);
 	window.setInterval(flush, FLUSH_MS);
 	document.addEventListener('visibilitychange', () => {
 		if (document.visibilityState !== 'hidden') return;
