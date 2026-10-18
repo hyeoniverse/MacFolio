@@ -377,3 +377,22 @@
 	gap: normal;
 	animation: none;
 }
+
+/* 버린 항목 (TrashedItems.tsx): Finder의 아이콘 칸을 그대로 쓰고 위에 개수와 비우기 버튼 */
+.bin-trash {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	flex: 1;
+	overflow: auto;
+}
+
+.bin-trash-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-8);
+	padding: 8px 16px;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}

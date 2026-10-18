@@ -29,8 +29,13 @@ let pending: Promise<void> | null = null;
 async function fetchLayout(): Promise<FinderLayoutValue> {
 	if (!env.apiUrl) return EMPTY_FINDER_LAYOUT;
 	try {
-		const { folders = [], files = {}, aliases = null } = await api<Partial<FinderLayoutValue>>('/finder/layout');
-		return { folders, files, aliases };
+		const {
+			folders = [],
+			files = {},
+			aliases = null,
+			trash = {},
+		} = await api<Partial<FinderLayoutValue>>('/finder/layout');
+		return { folders, files, aliases, trash };
 	} catch {
 		return EMPTY_FINDER_LAYOUT;
 	}

@@ -3,18 +3,24 @@ import AppWindow from '@/desktop/window/Window';
 import { useCanEditMemo } from '@/apps/memo/useCanEditMemo';
 import BrowserData from './BrowserData';
 import ServerFiles from './ServerFiles';
+import TrashedItems from './TrashedItems';
+import { structureNow } from '@/apps/finder/structure';
 import { useServerFiles } from './useServerFiles';
 import './Bin.css';
 
 /**
  * 휴지통: 비울 수 있는 것을 모아 둔다.
+ * - 휴지통 (누구나 보기, 관리자만 되돌리기·삭제): Finder에서 휴지통으로 보낸 폴더·파일
  * - 내 브라우저 데이터 (누구나): 이 사이트가 이 브라우저에 남긴 설정·검색어 등. 보고 비운다
  * - 서버 파일 (관리자): 글에서 빼도 서버에 남는 이미지·첨부 중 쓰는 곳이 없는 것
  */
 const Bin: React.FC = () => {
 	const admin = useCanEditMemo();
-	const [section, setSection] = useState<'browser' | 'files'>('browser');
+	const [section, setSection] = useState<'trash' | 'browser' | 'files'>(() =>
+		Object.keys(structureNow().layout.trash ?? {}).length > 0 ? 'trash' : 'browser'
+	);
 	const inFiles = section === 'files' && admin;
+	const inTrash = section === 'trash';
 	const serverFiles = useServerFiles(admin);
 	const removableCount = serverFiles.rows.filter((row) => row.usage.removable).length;
 
@@ -27,8 +33,17 @@ const Bin: React.FC = () => {
 						<h2>휴지통</h2>
 						<button
 							type="button"
-							className={`bin-location${inFiles ? '' : ' active'}`}
-							aria-current={inFiles ? undefined : 'page'}
+							className={`bin-location${inTrash ? ' active' : ''}`}
+							aria-current={inTrash ? 'page' : undefined}
+							onClick={() => setSection('trash')}
+						>
+							<i className="fa-solid fa-trash-can" aria-hidden="true" />
+							<span>버린 항목</span>
+						</button>
+						<button
+							type="button"
+							className={`bin-location${inFiles || inTrash ? '' : ' active'}`}
+							aria-current={inFiles || inTrash ? undefined : 'page'}
 							onClick={() => setSection('browser')}
 						>
 							<i className="fa-solid fa-laptop" aria-hidden="true" />
@@ -50,10 +65,10 @@ const Bin: React.FC = () => {
 
 					<div className="bin-main">
 						<div className="bin-toolbar">
-							<h1 className="bin-title">{inFiles ? '서버 파일' : '내 브라우저 데이터'}</h1>
+							<h1 className="bin-title">{inTrash ? '버린 항목' : inFiles ? '서버 파일' : '내 브라우저 데이터'}</h1>
 							{inFiles && <span className="bin-count">{serverFiles.rows.length}개의 항목</span>}
 						</div>
-						{inFiles ? <ServerFiles files={serverFiles} /> : <BrowserData />}
+						{inTrash ? <TrashedItems /> : inFiles ? <ServerFiles files={serverFiles} /> : <BrowserData />}
 					</div>
 				</div>
 			</div>

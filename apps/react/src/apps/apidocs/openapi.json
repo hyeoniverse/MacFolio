@@ -240,7 +240,7 @@
 											{
 												"id": "folder:p0q2r7",
 												"name": "작업",
-												"parent": "desktop"
+												"parent": "trash"
 											}
 										],
 										"files": {
@@ -251,6 +251,9 @@
 											"docs:포트폴리오",
 											"docs:자격증"
 										],
+										"trash": {
+											"folder:p0q2r7": "desktop"
+										},
 										"updatedAt": null
 									}
 								}
@@ -280,7 +283,7 @@
 										{
 											"id": "folder:p0q2r7",
 											"name": "작업",
-											"parent": "desktop"
+											"parent": "trash"
 										}
 									],
 									"files": {
@@ -290,7 +293,10 @@
 										"docs:이력서",
 										"docs:포트폴리오",
 										"docs:자격증"
-									]
+									],
+									"trash": {
+										"folder:p0q2r7": "desktop"
+									}
 								}
 							}
 						}

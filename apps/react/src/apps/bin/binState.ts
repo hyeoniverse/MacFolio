@@ -1,5 +1,6 @@
-// Dock의 휴지통이 비었는지: 이 사이트가 이 브라우저에 남긴 것이 없으면 빈 휴지통 그림 (macOS처럼)
-import { useSyncExternalStore } from 'react';
+// Dock의 휴지통이 비었는지: 이 사이트가 이 브라우저에 남긴 것도, Finder에서 버린 항목도 없으면 빈 휴지통 그림 (macOS처럼)
+import { useEffect, useSyncExternalStore } from 'react';
+import { loadStructure, useStructure } from '@/apps/finder/structure';
 import { createStore } from '@macfolio/desktop-core';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import { readBrowserData } from './siteStorage';
@@ -27,7 +28,13 @@ function watch() {
 	}, RECHECK_MS);
 }
 
+/** 비었는지: 브라우저 데이터도 없고, Finder에서 휴지통으로 보낸 항목도 없을 때 */
 export function useBinEmpty() {
 	watch();
-	return useSyncExternalStore(binStore.subscribe, () => binStore.getState().empty);
+	const { layout } = useStructure();
+	useEffect(() => {
+		void loadStructure();
+	}, []);
+	const browserEmpty = useSyncExternalStore(binStore.subscribe, () => binStore.getState().empty);
+	return browserEmpty && Object.keys(layout.trash ?? {}).length === 0;
 }

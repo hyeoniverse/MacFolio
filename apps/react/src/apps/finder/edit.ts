@@ -21,7 +21,7 @@ import {
 	type PostSlug,
 } from '@macfolio/desktop-core/memo';
 import type { DocumentFolderValue } from './documents';
-import { find, isFileItem, pathTo, uploadFolderOf, type FinderItem, type FolderItem } from './files';
+import { find, isFileItem, pathTo, TRASH_ID, uploadFolderOf, type FinderItem, type FolderItem } from './files';
 
 /** 편집할 수 있는 항목의 종류. 시스템 항목(프로젝트, 앱, 저장소 문서, 사진 폴더, 위치, 기본 폴더)은 null */
 export type EditKind = 'folder' | 'file' | 'blog-folder' | 'post' | 'alias';
@@ -200,6 +200,15 @@ export function moveChange(
 		return { organization };
 	}
 	let layout = state.layout;
+	// 휴지통으로 끌어 넣으면 원래 자리를 적고, 휴지통에서 끌어 내면 지운다
+	const trash = { ...(layout.trash ?? {}) };
+	for (const item of items) {
+		const from = parentOf(roots, item.id)?.id;
+		if (target.id === TRASH_ID) {
+			if (from && from !== TRASH_ID) trash[item.id] = from;
+		} else delete trash[item.id];
+	}
+	layout = { ...layout, trash };
 	for (const item of items) {
 		if (editKind(item) === 'folder')
 			layout = {
@@ -216,28 +225,29 @@ export function moveChange(
 	return { layout };
 }
 
-/** 휴지통으로: 만든 폴더(안의 폴더까지), 가상본, 빈 블로그 폴더를 구조에서 뺀다. 지울 문서 파일(서버 id)도 모은다 */
+/**
+ * 휴지통으로 이동 (macOS처럼 지우지 않고 휴지통에 넣는다): 만든 폴더·올린 파일은 휴지통(trash)으로 옮기고 원래 폴더를 적어 둔다.
+ * 가상본은 바탕화면에서 빼고, 빈 블로그 폴더는 메모 폴더를 지운다 (둘 다 지울 파일이 없다)
+ */
 export function trashChange(
+	roots: FinderItem[],
 	items: FinderItem[],
 	state: { layout: FinderLayoutValue; organization: Organization }
-): Change & { documents: string[] } {
+): Change {
 	let { layout, organization } = state;
-	const documents: string[] = [];
-	const collect = (item: FinderItem) => {
-		if (isFileItem(item) && item.documentId) documents.push(item.documentId);
-		if (item.kind === 'folder' && !item.aliasOf) item.children.forEach(collect);
-	};
-	const folderIds = new Set<string>();
+	const trash = { ...(layout.trash ?? {}) };
 	for (const item of items) {
 		const kind = editKind(item);
-		collect(item);
+		const from = parentOf(roots, item.id)?.id;
 		if (kind === 'folder') {
-			const walk = (folder: FinderItem) => {
-				if (folder.kind !== 'folder') return;
-				if (folder.id.startsWith('folder:')) folderIds.add(folder.id);
-				folder.children.forEach(walk);
+			if (from) trash[item.id] = from;
+			layout = {
+				...layout,
+				folders: layout.folders.map((folder) => (folder.id === item.id ? { ...folder, parent: TRASH_ID } : folder)),
 			};
-			walk(item);
+		} else if (kind === 'file') {
+			if (from) trash[item.id] = from;
+			layout = { ...layout, files: { ...layout.files, [item.id]: TRASH_ID } };
 		} else if (kind === 'alias' && item.kind === 'folder')
 			layout = {
 				...layout,
@@ -245,11 +255,58 @@ export function trashChange(
 			};
 		else if (kind === 'blog-folder') organization = removeMemoFolder(organization, blogPath(item.id) as FolderPath);
 	}
+	return { layout: { ...layout, trash }, organization };
+}
+
+/** 휴지통의 항목을 원래 폴더로 되돌린다 (그 폴더가 없어졌으면 올린 폴더, 그것도 없으면 데스크탑) */
+export function putBackChange(roots: FinderItem[], items: FinderItem[], state: { layout: FinderLayoutValue }): Change {
+	let { layout } = state;
+	const trash = { ...(layout.trash ?? {}) };
+	for (const item of items) {
+		const saved = trash[item.id];
+		delete trash[item.id];
+		const home = isFileItem(item) ? item.home : undefined;
+		const back = saved && find(roots, saved)?.kind === 'folder' ? saved : (home ?? 'desktop');
+		if (editKind(item) === 'folder')
+			layout = {
+				...layout,
+				folders: layout.folders.map((folder) => (folder.id === item.id ? { ...folder, parent: back } : folder)),
+			};
+		else if (isFileItem(item)) {
+			const { [item.id]: _, ...rest } = layout.files;
+			layout = { ...layout, files: back === home ? rest : { ...rest, [item.id]: back } };
+		}
+	}
+	return { layout: { ...layout, trash } };
+}
+
+/** 영구 삭제 (휴지통 비우기·즉시 삭제): 만든 폴더(안의 폴더까지)를 구조에서 빼고, 지울 문서 파일(서버 id)을 모은다 */
+export function deleteChange(
+	items: FinderItem[],
+	state: { layout: FinderLayoutValue }
+): Change & { documents: string[] } {
+	let { layout } = state;
+	const documents: string[] = [];
+	const folderIds = new Set<string>();
+	const fileIds = new Set<string>();
+	const collect = (item: FinderItem) => {
+		if (isFileItem(item) && item.documentId) {
+			documents.push(item.documentId);
+			fileIds.add(item.id);
+		}
+		if (item.kind === 'folder' && !item.aliasOf) {
+			if (item.id.startsWith('folder:')) folderIds.add(item.id);
+			item.children.forEach(collect);
+		}
+	};
+	items.forEach(collect);
+	const gone = (id: string) => folderIds.has(id) || fileIds.has(id);
 	const files = Object.fromEntries(
-		Object.entries(layout.files).filter(([id, parent]) => !folderIds.has(parent) && !items.some((i) => i.id === id))
+		Object.entries(layout.files).filter(([id, parent]) => !folderIds.has(parent) && !gone(id))
 	);
-	layout = { ...layout, folders: layout.folders.filter((folder) => !folderIds.has(folder.id)), files };
-	return { layout, organization, documents };
+	const trash = Object.fromEntries(Object.entries(layout.trash ?? {}).filter(([id]) => !gone(id)));
+	layout = { ...layout, folders: layout.folders.filter((folder) => !folderIds.has(folder.id)), files, trash };
+	return { layout, documents };
 }
 
 /**

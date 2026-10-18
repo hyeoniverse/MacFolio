@@ -19,6 +19,8 @@ import {
 	renameFolderChange,
 	resolveAlias,
 	trashChange,
+	putBackChange,
+	deleteChange,
 	untitledName,
 } from './edit';
 import { commit, structureNow } from './structure';
@@ -118,30 +120,37 @@ export function useFinderEdit(locations: FolderItem[], scope: 'window' | 'screen
 		return true;
 	};
 
-	/** 휴지통으로 이동: 만든 폴더는 안의 것까지, 올린 파일은 서버에서도 지운다 (확인을 받고) */
+	/** 휴지통으로 이동 (macOS처럼 묻지 않는다): 만든 폴더·올린 파일은 휴지통에 들어가고, 휴지통 앱에서 되돌리거나 영구 삭제한다 */
 	const trash = (items: FinderItem[], onDone?: () => void) => {
 		const targets = items.filter(canTrash);
 		if (!admin || targets.length === 0) return;
-		const change = trashChange(targets, structureNow());
+		const before = structureNow();
+		const change = trashChange(locations, targets, before);
+		const orgChanged = JSON.stringify(change.organization) !== JSON.stringify(before.organization);
+		void commit({ layout: change.layout, organization: orgChanged ? change.organization : undefined });
+		onDone?.();
+	};
+
+	/** 휴지통의 항목을 원래 자리로 (locations에 휴지통도 넣어 부른다) */
+	const putBack = (items: FinderItem[]) => {
+		if (!admin || items.length === 0) return;
+		void commit(putBackChange(locations, items, structureNow()));
+	};
+
+	/** 영구 삭제 (즉시 삭제·휴지통 비우기): 확인을 받고, 올린 파일은 서버(R2)에서도 지운다 */
+	const deleteForever = (items: FinderItem[], title?: string) => {
+		if (!admin || items.length === 0) return;
 		const run = () => {
-			const before = structureNow();
-			const layoutChanged = JSON.stringify(change.layout) !== JSON.stringify(before.layout);
-			const orgChanged = JSON.stringify(change.organization) !== JSON.stringify(before.organization);
-			void commit({
-				layout: layoutChanged ? change.layout : undefined,
-				organization: orgChanged ? change.organization : undefined,
-			});
+			const change = deleteChange(items, structureNow());
+			void commit({ layout: change.layout });
 			for (const id of change.documents)
 				deleteDocument(id).catch((error) => notify({ app: 'finder', title: '지우지 못함', body: messageOf(error) }));
-			onDone?.();
 		};
-		// 지울 파일이 없으면(빈 폴더, 가상본) 묻지 않는다 (macOS도 휴지통으로 바로 보낸다)
-		if (change.documents.length === 0) return run();
-		const label = targets.length === 1 ? `‘${targets[0].name}’` : `${targets.length}개의 항목`;
+		const label = items.length === 1 ? `‘${items[0].name}’` : `${items.length}개의 항목`;
 		setDialog({
 			kind: 'trash',
-			title: `${label}을(를) 휴지통으로 이동하겠습니까?`,
-			message: `안에 있는 파일 ${change.documents.length}개도 저장소에서 지워집니다. 이 동작은 취소할 수 없습니다.`,
+			title: title ?? `${label}을(를) 영구적으로 지우겠습니까?`,
+			message: '이 동작은 취소할 수 없습니다. 올린 파일은 저장소에서도 지워집니다.',
 			run,
 		});
 	};
@@ -150,7 +159,7 @@ export function useFinderEdit(locations: FolderItem[], scope: 'window' | 'screen
 		<AlertDialog
 			title={dialog.title}
 			message={dialog.message}
-			confirmLabel={dialog.kind === 'trash' ? '휴지통으로 이동' : '확인'}
+			confirmLabel={dialog.kind === 'trash' ? '지우기' : '확인'}
 			cancelLabel={dialog.kind === 'trash' ? '취소' : null}
 			onConfirm={() => {
 				if (dialog.kind === 'trash') dialog.run();
@@ -161,5 +170,15 @@ export function useFinderEdit(locations: FolderItem[], scope: 'window' | 'screen
 		/>
 	) : null;
 
-	return { admin, newFolder, rename, canDrop, move, trash, dialog: element as React.ReactElement | null };
+	return {
+		admin,
+		newFolder,
+		rename,
+		canDrop,
+		move,
+		trash,
+		putBack,
+		deleteForever,
+		dialog: element as React.ReactElement | null,
+	};
 }
