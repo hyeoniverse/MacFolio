@@ -151,6 +151,9 @@ export interface TreeRow {
 	folder: boolean;
 }
 
+/** 객체 키로 쓰면 Object.prototype을 건드리는 이름 */
+const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
 /** 줄 앞의 트리 그림 글자 (├── │ └──)와 공백 */
 const PREFIX = /^[\s│├└─|`+\\-]*/;
 
@@ -189,12 +192,21 @@ export function structureRepo(text: string): StructureRepo {
 	const dir: RepoDir = {};
 	const notes: Record<string, string> = {};
 	const stack: { depth: number; path: string[] }[] = [];
+	let skipBelow: number | null = null;
 	for (const row of rows) {
 		while (stack.length && stack[stack.length - 1].depth >= row.depth) stack.pop();
 		const base = stack.length ? stack[stack.length - 1].path : [];
+		if (skipBelow !== null && row.depth > skipBelow) continue;
+		skipBelow = null;
 		const parts = row.name.replace(/\/+$/, '').split('/').filter(Boolean);
 		if (!parts.length) continue;
+		// 트리를 일반 객체로 만들므로 Object.prototype을 가리키는 이름은 그 아래까지 건너뛴다 (Semgrep prototype-pollution-loop)
+		if (parts.some((part) => UNSAFE_KEYS.has(part))) {
+			skipBelow = row.depth;
+			continue;
+		}
 		let at = dir;
+		// nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop -- base는 이미 UNSAFE_KEYS를 거른 이름뿐이다 (repo.test.ts)
 		for (const part of base) at = at[part] as RepoDir;
 		const path = [...base];
 		parts.forEach((part, i) => {
@@ -203,6 +215,7 @@ export function structureRepo(text: string): StructureRepo {
 			if (!last || row.folder) {
 				const next = at[part];
 				if (typeof next !== 'object' || next === null) at[part] = {};
+				// nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop -- part는 위에서 UNSAFE_KEYS를 거른 이름이다 (repo.test.ts)
 				at = at[part] as RepoDir;
 			} else if (at[part] === undefined) at[part] = row.note ?? '';
 		});
