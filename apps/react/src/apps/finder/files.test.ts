@@ -73,7 +73,8 @@ describe('buildLocations', () => {
 	});
 
 	it('프로젝트와 앱', () => {
-		expect(find(tree, 'project:qru')).toMatchObject({ kind: 'project', projectId: 'qru', period: '2025.03 – 2025.05' });
+		// 실행하는 앱(프로젝트)은 프로젝트 폴더에 두지 않는다: 응용 프로그램에만
+		expect(find(tree, 'project:qru')).toBeNull();
 		expect(names(tree[3])).toEqual(['메모', 'Safari']);
 	});
 });
@@ -92,12 +93,12 @@ describe('프로젝트 폴더', () => {
 	const albums = [{ id: 'qru', name: 'QRU', photos: [{ src: '/imgs/projects/qru/home.png' }] }];
 	const withProjects = buildLocations({ docs: [], posts: [], projects, apps: [], files, albums });
 
-	it('프로젝트마다 폴더: 프로젝트가 맨 위, 사진 폴더, 올린 파일은 이름순', () => {
+	it('프로젝트마다 폴더: 사진 폴더, 올린 파일은 이름순 (실행하는 앱은 넣지 않는다)', () => {
 		expect(names(find(withProjects, 'projects') as FolderItem)).toEqual(['QRU', '빈 프로젝트']);
 		const qru = find(withProjects, 'projects/qru') as FolderItem;
 		expect(qru.kind).toBe('folder');
-		expect(names(qru)).toEqual(['QRU', '사진', '구조도.png', '발표.pdf']);
-		expect(qru.children[0]).toMatchObject({ kind: 'project', id: 'project:qru', projectId: 'qru' });
+		expect(names(qru)).toEqual(['사진', '구조도.png', '발표.pdf']);
+		expect(qru.children[0]).toMatchObject({ kind: 'folder', id: 'projects/qru/photos', name: '사진' });
 		expect(qru.modified).toBe('2026-10-02');
 		expect(find(withProjects, 'file:projects/qru/b.pdf')).toMatchObject({ kind: 'pdf', name: '발표.pdf' });
 		const photo = find(withProjects, 'photo:/imgs/projects/qru/home.png');
@@ -108,8 +109,8 @@ describe('프로젝트 폴더', () => {
 			'projects/qru/photos',
 			photo!.id,
 		]);
-		// 사진도 올린 파일도 없으면 프로젝트만
-		expect(names(find(withProjects, 'projects/plain') as FolderItem)).toEqual(['빈 프로젝트']);
+		// 사진도 올린 파일도 없으면 빈 폴더
+		expect(names(find(withProjects, 'projects/plain') as FolderItem)).toEqual([]);
 	});
 
 	it('문서 폴더에는 프로젝트 파일이 없고, 없는 프로젝트의 파일은 보이지 않는다', () => {
