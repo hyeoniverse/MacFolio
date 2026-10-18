@@ -35,7 +35,6 @@ const LOCATION_ICONS: Record<string, string> = {
 	preview: 'fa-solid fa-cloud',
 	desktop: 'fa-solid fa-display',
 	docs: 'fa-regular fa-file-lines',
-	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
 };
 

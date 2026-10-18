@@ -31,7 +31,7 @@ import './DesktopIcons.css';
 const DRAG_THRESHOLD = 4;
 
 /**
- * 아이콘 자리를 저장하는 열쇠. 가상본은 원래 폴더 id (예전에 저장한 이력서·포트폴리오·자격증·프로젝트 자리를 그대로 쓴다)
+ * 아이콘 자리를 저장하는 열쇠. 가상본은 원래 폴더 id (예전에 저장한 이력서·포트폴리오·자격증 자리를 그대로 쓴다)
  */
 const keyOf = (item: FinderItem) => (item.kind === 'folder' && item.aliasOf) || item.id;
 
@@ -71,7 +71,7 @@ const DesktopIcons: React.FC = () => {
 	const viewport = useViewport();
 	const layer = useRef<HTMLDivElement>(null);
 
-	// 바탕화면은 Finder의 데스크탑 폴더와 같다: 기본 폴더의 가상본(이력서·포트폴리오·자격증·프로젝트)과 관리자가 만들거나 옮긴 것
+	// 바탕화면은 Finder의 데스크탑 폴더와 같다: 기본 폴더의 가상본(이력서·포트폴리오·자격증)과 관리자가 만들거나 옮긴 것
 	const desktop = find(locations, 'desktop') as FolderItem | null;
 	const items = useMemo(() => desktop?.children ?? [], [desktop]);
 	const ids = useMemo(() => items.map(keyOf), [items]);

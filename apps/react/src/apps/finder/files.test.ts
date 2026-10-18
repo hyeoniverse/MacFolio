@@ -39,8 +39,8 @@ const tree = buildLocations({
 const names = (folder: FolderItem) => folder.children.map((child) => child.name);
 
 describe('buildLocations', () => {
-	it('즐겨찾기 위치: 데스크탑(맨 앞), 문서, 프로젝트, 블로그, 응용 프로그램 (사진은 프로젝트 폴더 안에만)', () => {
-		expect(tree.map((folder) => folder.name)).toEqual(['데스크탑', '문서', '프로젝트', '블로그', '응용 프로그램']);
+	it('즐겨찾기 위치: 데스크탑(맨 앞), 문서, 블로그, 응용 프로그램 (프로젝트 폴더는 문서 › 포트폴리오 안)', () => {
+		expect(tree.map((folder) => folder.name)).toEqual(['데스크탑', '문서', '블로그', '응용 프로그램']);
 	});
 
 	it('사진: 프로젝트 폴더 안의 사진 폴더에 그림만 (영상은 뺀다). 키는 사이트 주소 그대로', () => {
@@ -93,8 +93,9 @@ describe('프로젝트 폴더', () => {
 	const albums = [{ id: 'qru', name: 'QRU', photos: [{ src: '/imgs/projects/qru/home.png' }] }];
 	const withProjects = buildLocations({ docs: [], posts: [], projects, apps: [], files, albums });
 
-	it('프로젝트마다 폴더: 사진 폴더, 올린 파일은 이름순 (실행하는 앱은 넣지 않는다)', () => {
-		expect(names(find(withProjects, 'projects') as FolderItem)).toEqual(['QRU', '빈 프로젝트']);
+	it('프로젝트마다 폴더가 문서 › 포트폴리오 안에: 사진 폴더, 올린 파일은 이름순 (실행하는 앱은 넣지 않는다)', () => {
+		expect(find(withProjects, 'projects')).toBeNull();
+		expect(names(find(withProjects, 'docs:포트폴리오') as FolderItem)).toEqual(['빈 프로젝트', 'QRU']);
 		const qru = find(withProjects, 'projects/qru') as FolderItem;
 		expect(qru.kind).toBe('folder');
 		expect(names(qru)).toEqual(['사진', '구조도.png', '발표.pdf']);
@@ -104,7 +105,8 @@ describe('프로젝트 폴더', () => {
 		const photo = find(withProjects, 'photo:/imgs/projects/qru/home.png');
 		expect(photo).toMatchObject({ kind: 'image', key: '/imgs/projects/qru/home.png' });
 		expect(pathTo(withProjects, photo!.id).map((item) => item.id)).toEqual([
-			'projects',
+			'docs',
+			'docs:포트폴리오',
 			'projects/qru',
 			'projects/qru/photos',
 			photo!.id,
@@ -126,7 +128,7 @@ describe('프로젝트 폴더', () => {
 		expect(uploadFolderOf(find(withProjects, 'docs:이력서'))).toBe('이력서');
 		expect(uploadFolderOf(find(withProjects, 'projects/qru'))).toBe('project:qru');
 		expect(uploadFolderOf(find(withProjects, 'projects/qru/photos'))).toBeNull();
-		expect(uploadFolderOf(find(withProjects, 'projects'))).toBeNull();
+		expect(uploadFolderOf(find(withProjects, 'docs'))).toBeNull();
 		expect(uploadFolderOf(find(withProjects, 'project:qru'))).toBeNull();
 	});
 });

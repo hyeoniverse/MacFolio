@@ -41,14 +41,18 @@ const names = (item: FolderItem) => item.children.map((child) => child.name);
 const state = (layout = EMPTY_FINDER_LAYOUT, organization = EMPTY_ORGANIZATION) => ({ layout, organization });
 
 describe('폴더 구조 겹치기', () => {
-	it('데스크탑: 처음에는 이력서·포트폴리오·자격증·프로젝트 가상본', () => {
+	it('데스크탑: 처음에는 이력서·포트폴리오·자격증 가상본 (예전 프로젝트 가상본은 건너뛴다)', () => {
 		const desktop = folder(build(), 'desktop');
 		expect(desktop.children.map((item) => (item as FolderItem).aliasOf)).toEqual([
 			'docs:이력서',
 			'docs:포트폴리오',
 			'docs:자격증',
-			'projects',
 		]);
+		// 예전에 저장한 projects 가상본은 없는 폴더라 보이지 않는다
+		const legacy = folder(build({ ...EMPTY_FINDER_LAYOUT, aliases: ['projects', 'docs:이력서'] }), 'desktop');
+		expect(legacy.children.map((item) => item.id)).toEqual(['alias:docs:이력서']);
+		// 프로젝트 폴더는 포트폴리오 안
+		expect(names(folder(build(), 'docs:포트폴리오'))).toEqual(['QRU']);
 		// 가상본은 비어 있고(원래 폴더로 간다) 편집할 수 없지만 휴지통으로 보낼 수는 있다
 		const alias = desktop.children[0];
 		expect(canRename(alias) || canMove(alias)).toBe(false);
@@ -135,7 +139,7 @@ describe('폴더 구조 겹치기', () => {
 			expect(canMove(find(roots, id)!) || canRename(find(roots, id)!)).toBe(false);
 		expect(canDropInto(roots, [find(roots, 'post:a')!], folder(roots, 'docs'))).toBe(false);
 		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'blog'))).toBe(false);
-		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'projects'))).toBe(false);
+		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'projects/qru/photos'))).toBe(false);
 		// 가상본 위에 놓으면 원래 폴더로
 		const alias = folder(roots, 'desktop').children.find((item) => item.id === 'alias:docs:자격증')!;
 		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], alias)).toBe(true);
@@ -176,6 +180,6 @@ describe('폴더 구조 겹치기', () => {
 		expect(trashed.layout).toEqual({ folders: [], files: {}, aliases: null });
 		expect(trashed.documents).toEqual(['d1']);
 		const alias = trashChange([folder(roots, 'desktop').children[0]], state(layout));
-		expect(alias.layout!.aliases).toEqual(['docs:포트폴리오', 'docs:자격증', 'projects']);
+		expect(alias.layout!.aliases).toEqual(['docs:포트폴리오', 'docs:자격증']);
 	});
 });

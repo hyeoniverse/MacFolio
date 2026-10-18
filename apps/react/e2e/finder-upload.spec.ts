@@ -3,6 +3,16 @@ import type { Page } from '@playwright/test';
 import { FAKE_API, fakeApi } from './fakeApi';
 import { tinyPdf } from './fakeFiles';
 
+/** 문서 › 포트폴리오 (프로젝트 폴더가 여기에 있다) */
+async function openPortfolio(finder: ReturnType<typeof appWindow>) {
+	await finder.getByRole('navigation', { name: '즐겨찾기' }).getByRole('button', { name: '문서' }).click();
+	await finder
+		.getByRole('listbox', { name: '문서' })
+		.getByRole('option', { name: '포트폴리오', exact: true })
+		.dblclick();
+	await expect(finder.getByRole('heading', { level: 1 })).toHaveText('포트폴리오');
+}
+
 const R2 = 'https://acc.r2.cloudflarestorage.com';
 
 interface Doc {
@@ -149,9 +159,9 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await enterDesktop(page);
 		await dockItem(page, 'finder').click();
 		const finder = appWindow(page, 'finder');
-		await finder.getByRole('navigation', { name: '즐겨찾기' }).getByRole('button', { name: '프로젝트' }).click();
+		await openPortfolio(finder);
 
-		// 프로젝트 목록에서 MacFolio 폴더 아이콘 위에 놓는다
+		// 포트폴리오 안의 MacFolio 프로젝트 폴더 아이콘 위에 놓는다
 		const pdf = [...tinyPdf()];
 		await dropFile(page, '[data-app="finder"] [data-drop-folder="project:macfolio"]', '발표.pdf', pdf);
 		await expect.poll(() => puts.length).toBe(1);
@@ -159,7 +169,7 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		expect(docs[0]).toMatchObject({ folder: 'project:macfolio', name: '발표.pdf', size: pdf.length });
 
 		await finder
-			.getByRole('listbox', { name: '프로젝트' })
+			.getByRole('listbox', { name: '포트폴리오' })
 			.getByRole('option', { name: 'MacFolio', exact: true })
 			.dblclick();
 		const folder = finder.getByRole('listbox', { name: 'MacFolio' });
