@@ -24,8 +24,8 @@ import {
 } from './layout';
 import './DesktopIcons.css';
 
-/** 바탕화면에 두는 폴더: Finder 문서의 이력서·포트폴리오·자격증, 그리고 사진 */
-const DESKTOP_IDS = ['docs:이력서', 'docs:포트폴리오', 'docs:자격증', 'pictures'];
+/** 바탕화면에 두는 폴더: Finder 문서의 이력서·포트폴리오·자격증, 그리고 프로젝트 */
+const DESKTOP_IDS = ['docs:이력서', 'docs:포트폴리오', 'docs:자격증', 'projects'];
 
 /** 이만큼 움직여야 끌기로 본다 (그보다 작으면 클릭) */
 const DRAG_THRESHOLD = 4;
