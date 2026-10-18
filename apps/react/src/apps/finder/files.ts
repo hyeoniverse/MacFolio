@@ -80,6 +80,8 @@ export interface TreeInput {
 	apps: { app: AppName; label: string; icon: string }[];
 	/** 문서 파일 목록 (documents.ts). 없으면 폴더만 비어 있다 */
 	files?: DocumentEntry[];
+	/** 사진 앱의 앨범 (프로젝트마다). 사진 폴더 아래 앨범 폴더로, 그림은 미리보기에서 연다 */
+	albums?: { id: string; name: string; photos: { src: string }[] }[];
 }
 
 /** 빈 문서 파일 폴더의 안내 */
@@ -132,6 +134,33 @@ function docsFolder(paths: string[], files: DocumentEntry[]): FolderItem {
 	return { kind: 'folder', id: 'docs', name: '문서', children: [...folders, ...docs].sort(byName) };
 }
 
+/** 그림 확장자 (영상·소리는 미리보기가 열지 않는다) */
+const isImage = (src: string) => /\.(jpe?g|png|webp|gif|svg)$/i.test(src.split('?')[0]);
+
+/** 사진 폴더: 사진 앱의 앨범(프로젝트)마다 폴더, 안에는 그 화면 그림. 키는 사이트 주소 그대로 (documents.ts의 fileUrl) */
+function picturesFolder(albums: NonNullable<TreeInput['albums']>): FolderItem {
+	return {
+		kind: 'folder',
+		id: 'pictures',
+		name: '사진',
+		children: albums
+			.map((album): FolderItem => ({
+				kind: 'folder',
+				id: `pictures/${album.id}`,
+				name: album.name,
+				children: album.photos
+					.filter((photo) => isImage(photo.src))
+					.map((photo): FileItem => ({
+						kind: 'image',
+						id: `photo:${photo.src}`,
+						name: photo.src.split('?')[0].split('/').pop() ?? photo.src,
+						key: photo.src,
+					})),
+			}))
+			.filter((folder) => folder.children.length > 0),
+	};
+}
+
 /** 블로그 폴더: 글의 카테고리(프론트엔드/기능)를 폴더로. 같은 폴더 안은 최신 글이 위로 */
 function blogFolder(posts: TreeInput['posts']): FolderItem {
 	const root: FolderItem = { kind: 'folder', id: 'blog', name: '블로그', children: [] };
@@ -174,9 +203,10 @@ function blogFolder(posts: TreeInput['posts']): FolderItem {
 }
 
 /** 사이드바에 보일 위치들 (Finder의 즐겨찾기) */
-export function buildLocations({ docs, posts, projects, apps, files = [] }: TreeInput): FolderItem[] {
+export function buildLocations({ docs, posts, projects, apps, files = [], albums = [] }: TreeInput): FolderItem[] {
 	return [
 		docsFolder(docs, files),
+		picturesFolder(albums),
 		{
 			kind: 'folder',
 			id: 'projects',
@@ -284,7 +314,7 @@ export function sortItems(items: FinderItem[], key: SortKey): FinderItem[] {
 }
 
 /**
- * iCloud의 미리보기 폴더: 트리 안의 PDF·그림 전부를 이름 순으로 (macOS 미리보기의 열기 창이 처음 여는 곳).
+ * iCloud의 미리보기 폴더: 문서 아래 PDF·그림 전부를 이름 순으로 (macOS 미리보기의 열기 창이 처음 여는 곳).
  * 데스크톱 미리보기의 열기 창과 휴대폰 파일 앱의 둘러보기가 같이 쓴다. 파일 id는 원래 자리와 같다
  */
 export function previewFolder(locations: FinderItem[]): FolderItem {
@@ -296,7 +326,10 @@ export function previewFolder(locations: FinderItem[]): FolderItem {
 		kind: 'folder',
 		id: 'preview',
 		name: '미리보기',
-		children: files(locations).sort((a, b) => a.name.localeCompare(b.name, 'ko')),
+		// 올린 문서 파일(R2)만: 사진 폴더의 그림은 iCloud의 미리보기 폴더에 들어 있지 않다
+		children: files(locations.filter((place) => place.id === 'docs')).sort((a, b) =>
+			a.name.localeCompare(b.name, 'ko')
+		),
 		emptyNote: '파일이 없습니다.',
 	};
 }

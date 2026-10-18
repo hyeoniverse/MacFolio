@@ -108,6 +108,20 @@ test.describe('Finder', () => {
 		await expect(appWindow(page, 'terminal')).toBeVisible();
 	});
 
+	test('사진: 사진 앱의 앨범이 폴더로 있고, 그림은 미리보기에서 연다', async ({ page }) => {
+		const finder = await openFinder(page);
+		await sidebar(finder).getByRole('button', { name: '사진' }).click();
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('사진');
+		const albums = finder.getByRole('listbox', { name: '사진' });
+		await albums.getByRole('option', { name: 'MacFolio' }).dblclick();
+		const photo = finder.getByRole('listbox', { name: 'MacFolio' }).getByRole('option').first();
+		const name = (await photo.textContent())!.trim();
+		await photo.dblclick();
+		const preview = appWindow(page, 'preview');
+		await expect(preview.getByRole('heading', { level: 1 })).toHaveText(name);
+		await expect(preview.locator('.preview-image img')).toHaveAttribute('src', /^\/imgs\/projects\/macfolio\//);
+	});
+
 	test('찾는 이름이 없으면 알린다', async ({ page }) => {
 		const finder = await openFinder(page);
 		await finder.getByRole('searchbox', { name: '이름으로 찾기' }).fill('없는이름zzz');

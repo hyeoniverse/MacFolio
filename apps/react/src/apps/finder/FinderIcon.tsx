@@ -1,6 +1,7 @@
 import React from 'react';
 import { env } from '@/shared/config/env';
 import type { FinderItem } from './files';
+import { fileUrl } from './documents';
 
 /** macOS 폴더: 탭이 달린 파란 폴더 */
 const FolderSvg = () => (
@@ -85,16 +86,6 @@ const PdfSvg = () => (
 	</svg>
 );
 
-/** 그림: 산과 해가 있는 사진 */
-const ImageSvg = () => (
-	<svg viewBox="0 0 60 48" aria-hidden="true" className="finder-svg">
-		<rect x="2" y="2" width="56" height="44" rx="4" fill="#ffffff" stroke="#c9c9ce" strokeWidth="1.2" />
-		<rect x="6" y="6" width="48" height="36" rx="2" fill="#9fd3ff" />
-		<circle cx="42" cy="15" r="4.5" fill="#ffd54a" />
-		<path d="M6 42l15-18 10 11 7-7 16 14z" fill="#3fa36b" />
-	</svg>
-);
-
 /** 항목 아이콘. 프로젝트·앱은 그 아이콘 그림, 나머지는 그린 아이콘 */
 const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 	switch (item.kind) {
@@ -109,7 +100,10 @@ const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 		case 'pdf':
 			return <PdfSvg />;
 		case 'image':
-			return <ImageSvg />;
+			// macOS처럼 그림은 그 그림을 작게 (사진 폴더의 사진, 올린 그림)
+			return (
+				<img className="finder-img finder-thumb" src={fileUrl(item.key)} alt="" loading="lazy" draggable={false} />
+			);
 		case 'app':
 			return <img className="finder-img" src={`${env.imageUrl}/${item.icon}`} alt="" draggable={false} />;
 	}

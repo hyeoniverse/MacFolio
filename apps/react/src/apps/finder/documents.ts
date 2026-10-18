@@ -110,9 +110,14 @@ export async function renameDocument(id: string, name: string): Promise<void> {
 	await loadDocuments(true);
 }
 
-/** 파일 주소 (/files/<key>). download면 내려받기(attachment) */
+/**
+ * 파일 주소 (/files/<key>). download면 내려받기(attachment).
+ * 키가 이미 주소(/imgs/…, https://…)면 그대로: 사진 앱의 사진처럼 R2가 아니라 사이트에 있는 파일
+ */
 export const fileUrl = (key: string, download = false) =>
-	`/files/${key.split('/').map(encodeURIComponent).join('/')}${download ? '?download=1' : ''}`;
+	key.startsWith('/') || /^https?:\/\//.test(key)
+		? key
+		: `/files/${key.split('/').map(encodeURIComponent).join('/')}${download ? '?download=1' : ''}`;
 
 /** 파일을 내려받는다 (?download=1이라 브라우저가 저장한다) */
 export function downloadFile(key: string, name: string) {
