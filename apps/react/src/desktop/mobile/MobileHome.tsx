@@ -4,6 +4,7 @@ import { APP_MANIFEST, APP_NAMES, type AppName } from '@/apps/manifest';
 import { WINDOW_APPS } from '@/apps/registry';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
+import WallpaperVideo from '@/desktop/WallpaperVideo';
 import { openSwitcher } from '@/desktop/mobile/switcherStore';
 import { appIconUrl } from '@/shared/config/appIcon';
 import { useProfile } from '@/shared/site/profileStore';
@@ -146,6 +147,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 
 	return (
 		<div className="mobile-home">
+			<WallpaperVideo kind="ios" />
 			<div
 				ref={pagesRef}
 				className="mobile-pages"

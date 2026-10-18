@@ -1,7 +1,16 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { stripImageMetadata } from './metadata.js';
-import { cleanFileName, cleanFileType, IMAGE_TYPES, newUploadId, sniffImage, UPLOAD_ID, uploadIdsIn } from './rules.js';
+import {
+	cleanFileName,
+	cleanFileType,
+	IMAGE_TYPES,
+	newUploadId,
+	sniffImage,
+	sniffVideo,
+	UPLOAD_ID,
+	uploadIdsIn,
+} from './rules.js';
 import type { Upload, UploadUsage } from '@macfolio/contracts';
 
 /** multer가 넘겨주는 파일 (메모리에 받는다) */
@@ -121,6 +130,6 @@ export class FilesService {
 		if (!UPLOAD_ID.test(id)) throw new NotFoundException('파일이 없습니다.');
 		const row = await this.prisma.upload.findUnique({ where: { id } });
 		if (!row) throw new NotFoundException('파일이 없습니다.');
-		return { ...row, image: sniffImage(row.data) !== null };
+		return { ...row, image: sniffImage(row.data) !== null, video: sniffVideo(row.data) !== null };
 	}
 }
