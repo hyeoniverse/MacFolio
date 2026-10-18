@@ -2,9 +2,12 @@ import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
 import { occurrences, pdfjs } from './pdf';
 
-/** 쪽 사이 여백과 바깥 여백 (px) */
+/** 쪽 사이 여백과 바깥 여백 (px, 기본값). 휴대폰은 좁게 쓴다 */
 const GAP = 16;
 const PADDING = 24;
+
+/** 쪽이 원래 돌아가 있는 각도에 보는 사람이 돌린 각도를 더한다 */
+const rotated = (page: { rotate: number }, rotation: number) => (page.rotate + rotation) % 360;
 
 export interface PdfViewHandle {
 	/** n쪽(1부터)으로 간다 */
@@ -25,6 +28,10 @@ interface Props {
 	/** 고른 찾기 결과 (전체에서 몇 번째, 0부터). 없으면 -1 */
 	activeMatch: number;
 	label: string;
+	/** 보는 사람이 돌린 각도 (0·90·180·270) */
+	rotation?: number;
+	/** 바깥 여백 (px). 쪽 사이는 그 2/3 */
+	padding?: number;
 	ref?: React.Ref<PdfViewHandle>;
 }
 
@@ -32,7 +39,20 @@ interface Props {
  * PDF 본문: 회색 바탕에 쪽이 그림자와 함께 세로로 이어진다. 화면 가까이 온 쪽만 그린다.
  * 쪽마다 캔버스(그림)와 글자 층(고르기·복사·찾기 칠하기)을 겹친다
  */
-const PdfView: React.FC<Props> = ({ doc, zoom, onScale, onPage, query, matchCounts, activeMatch, label, ref }) => {
+const PdfView: React.FC<Props> = ({
+	doc,
+	zoom,
+	onScale,
+	onPage,
+	query,
+	matchCounts,
+	activeMatch,
+	label,
+	rotation = 0,
+	padding = PADDING,
+	ref,
+}) => {
+	const gap = Math.round((padding * 2) / 3) || GAP;
 	const scroller = useRef<HTMLDivElement>(null);
 	const [sizes, setSizes] = useState<{ width: number; height: number }[]>([]);
 	const [width, setWidth] = useState(0);
@@ -43,7 +63,7 @@ const PdfView: React.FC<Props> = ({ doc, zoom, onScale, onPage, query, matchCoun
 		Promise.all(
 			Array.from({ length: doc.numPages }, (_, i) =>
 				doc.getPage(i + 1).then((page) => {
-					const { width, height } = page.getViewport({ scale: 1 });
+					const { width, height } = page.getViewport({ scale: 1, rotation: rotated(page, rotation) });
 					return { width, height };
 				})
 			)
@@ -51,7 +71,7 @@ const PdfView: React.FC<Props> = ({ doc, zoom, onScale, onPage, query, matchCoun
 		return () => {
 			alive = false;
 		};
-	}, [doc]);
+	}, [doc, rotation]);
 
 	useEffect(() => {
 		const box = scroller.current;
@@ -62,7 +82,7 @@ const PdfView: React.FC<Props> = ({ doc, zoom, onScale, onPage, query, matchCoun
 	}, []);
 
 	const widest = Math.max(1, ...sizes.map((size) => size.width));
-	const fitScale = width > 0 ? Math.max(0.1, (width - PADDING * 2) / widest) : 1;
+	const fitScale = width > 0 ? Math.max(0.1, (width - padding * 2) / widest) : 1;
 	const scale = zoom ?? fitScale;
 	useEffect(() => onScale(scale), [scale, onScale]);
 
@@ -71,7 +91,7 @@ const PdfView: React.FC<Props> = ({ doc, zoom, onScale, onPage, query, matchCoun
 		goToPage: (n) => {
 			const box = scroller.current;
 			const page = pageAt(n);
-			if (box && page) box.scrollTo({ top: page.offsetTop - PADDING });
+			if (box && page) box.scrollTo({ top: page.offsetTop - padding });
 		},
 	}));
 
@@ -105,9 +125,9 @@ const PdfView: React.FC<Props> = ({ doc, zoom, onScale, onPage, query, matchCoun
 		if (!box || !page) return;
 		const top = page.offsetTop;
 		if (top > box.scrollTop + box.clientHeight || top + page.offsetHeight < box.scrollTop) {
-			box.scrollTo({ top: top - PADDING });
+			box.scrollTo({ top: top - padding });
 		}
-	}, [active.page, activeMatch]);
+	}, [active.page, activeMatch, padding]);
 
 	return (
 		<div
@@ -117,7 +137,7 @@ const PdfView: React.FC<Props> = ({ doc, zoom, onScale, onPage, query, matchCoun
 			aria-label={label}
 			tabIndex={0}
 			onScroll={onScroll}
-			style={{ '--preview-gap': `${GAP}px`, '--preview-padding': `${PADDING}px` } as React.CSSProperties}
+			style={{ '--preview-gap': `${gap}px`, '--preview-padding': `${padding}px` } as React.CSSProperties}
 		>
 			{sizes.map((size, i) => (
 				<PdfPage
@@ -127,6 +147,7 @@ const PdfView: React.FC<Props> = ({ doc, zoom, onScale, onPage, query, matchCoun
 					width={size.width * scale}
 					height={size.height * scale}
 					scale={scale}
+					rotation={rotation}
 					query={query}
 					activeLocal={active.page === i + 1 ? active.local : -1}
 				/>
@@ -175,9 +196,10 @@ const PdfPage: React.FC<{
 	width: number;
 	height: number;
 	scale: number;
+	rotation: number;
 	query: string;
 	activeLocal: number;
-}> = ({ doc, number, width, height, scale, query, activeLocal }) => {
+}> = ({ doc, number, width, height, scale, rotation, query, activeLocal }) => {
 	const box = useRef<HTMLDivElement>(null);
 	const canvas = useRef<HTMLCanvasElement>(null);
 	const textBox = useRef<HTMLDivElement>(null);
@@ -204,7 +226,7 @@ const PdfPage: React.FC<{
 		doc.getPage(number).then((page) => {
 			const target = canvas.current;
 			if (!alive || !target) return;
-			const viewport = page.getViewport({ scale });
+			const viewport = page.getViewport({ scale, rotation: rotated(page, rotation) });
 			const ratio = window.devicePixelRatio || 1;
 			target.width = Math.floor(viewport.width * ratio);
 			target.height = Math.floor(viewport.height * ratio);
@@ -219,7 +241,7 @@ const PdfPage: React.FC<{
 			alive = false;
 			task?.cancel();
 		};
-	}, [doc, number, scale, near]);
+	}, [doc, number, scale, rotation, near]);
 
 	// 글자 층: 보이지 않는 글자를 그림 위에 겹쳐 고르고 복사할 수 있게 한다
 	useEffect(() => {
@@ -230,7 +252,7 @@ const PdfPage: React.FC<{
 			const container = textBox.current;
 			if (!alive || !container) return;
 			container.replaceChildren();
-			const viewport = page.getViewport({ scale });
+			const viewport = page.getViewport({ scale, rotation: rotated(page, rotation) });
 			const text = new lib.TextLayer({ textContentSource: await page.getTextContent(), container, viewport });
 			layer = text;
 			await text.render().catch(() => undefined);
@@ -242,7 +264,7 @@ const PdfPage: React.FC<{
 			alive = false;
 			layer?.cancel();
 		};
-	}, [doc, number, scale, near]);
+	}, [doc, number, scale, rotation, near]);
 
 	// 찾기 칠하기. 고른 결과는 가운데로
 	useEffect(() => {
@@ -267,10 +289,11 @@ const PdfPage: React.FC<{
 export default PdfView;
 
 /** 사이드바의 작은 쪽 그림 (한 번만 그린다) */
-export const PdfThumb: React.FC<{ doc: PDFDocumentProxy; number: number; width: number }> = ({
+export const PdfThumb: React.FC<{ doc: PDFDocumentProxy; number: number; width: number; rotation?: number }> = ({
 	doc,
 	number,
 	width,
+	rotation = 0,
 }) => {
 	const canvas = useRef<HTMLCanvasElement>(null);
 	useEffect(() => {
@@ -279,9 +302,9 @@ export const PdfThumb: React.FC<{ doc: PDFDocumentProxy; number: number; width: 
 		doc.getPage(number).then((page) => {
 			const target = canvas.current;
 			if (!alive || !target) return;
-			const base = page.getViewport({ scale: 1 });
+			const base = page.getViewport({ scale: 1, rotation: rotated(page, rotation) });
 			const ratio = window.devicePixelRatio || 1;
-			const viewport = page.getViewport({ scale: width / base.width });
+			const viewport = page.getViewport({ scale: width / base.width, rotation: rotated(page, rotation) });
 			target.width = Math.floor(viewport.width * ratio);
 			target.height = Math.floor(viewport.height * ratio);
 			target.style.aspectRatio = `${base.width} / ${base.height}`;
@@ -296,6 +319,6 @@ export const PdfThumb: React.FC<{ doc: PDFDocumentProxy; number: number; width: 
 			alive = false;
 			task?.cancel();
 		};
-	}, [doc, number, width]);
+	}, [doc, number, width, rotation]);
 	return <canvas ref={canvas} className="preview-thumb-canvas" />;
 };

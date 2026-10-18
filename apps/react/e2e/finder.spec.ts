@@ -159,26 +159,27 @@ test.describe('Finder', () => {
 			const doc = preview.getByRole('document', { name: '시험 이력서.pdf' });
 			await expect(doc.getByRole('group', { name: /쪽$/ })).toHaveCount(3);
 			await expect(doc.getByRole('group', { name: '1쪽' }).locator('.textLayer')).toContainText('MacFolio test PDF');
-			await expect(preview.getByText('1/3쪽')).toBeVisible();
-			await expect(preview.getByRole('link', { name: '다운로드' })).toHaveAttribute(
-				'href',
-				'/files/resume/test.pdf?download=1'
-			);
-			await expect(preview.getByRole('link', { name: '새 창에서 열기' })).toHaveAttribute(
-				'href',
-				'/files/resume/test.pdf'
-			);
+			await expect(preview.getByText('3페이지 중 1페이지')).toBeVisible();
+			// 공유 메뉴: 다운로드(?download=1)·새 탭
+			await preview.getByRole('button', { name: '공유' }).click();
+			const download = page.waitForEvent('download');
+			await page.getByRole('menu', { name: '공유' }).getByRole('menuitem', { name: '다운로드' }).click();
+			expect((await download).url()).toMatch(/\/files\/resume\/test\.pdf\?download=1$/);
+			// 정보: 종류와 쪽 수
+			await preview.getByRole('button', { name: '정보' }).click();
+			await expect(page.getByRole('menu', { name: '정보' })).toContainText('PDF 문서 · 3페이지');
+			await page.keyboard.press('Escape');
 
 			// 쪽이 여럿이라 사이드바가 열려 있고, 쪽 그림을 누르면 그 쪽으로
 			const sidebar = preview.getByRole('navigation', { name: '사이드바' });
 			await expect(sidebar.getByRole('button', { name: /^\d쪽$/ })).toHaveCount(3);
 			await sidebar.getByRole('button', { name: '3쪽' }).click();
-			await expect(preview.getByText('3/3쪽')).toBeVisible();
+			await expect(preview.getByText('3페이지 중 3페이지')).toBeVisible();
 			await expect(sidebar.getByRole('button', { name: '3쪽' })).toHaveAttribute('aria-current', 'page');
 			// ←로 앞 쪽
 			await doc.focus();
 			await page.keyboard.press('ArrowLeft');
-			await expect(preview.getByText('2/3쪽')).toBeVisible();
+			await expect(preview.getByText('3페이지 중 2페이지')).toBeVisible();
 
 			// 찾기: 쪽마다 'Page'가 하나, Enter로 다음 결과
 			const search = preview.getByRole('searchbox', { name: '찾기' });
@@ -190,12 +191,9 @@ test.describe('Finder', () => {
 			await search.fill('없는 말');
 			await expect(preview.getByText('없음')).toBeVisible();
 
-			// 배율: 맞춤 → 확대 단계
-			const level = preview.getByLabel('지금 배율');
-			await expect(level).toHaveText('맞춤');
+			// 배율: 맞춤 → 축소 단계
 			const before = (await doc.getByRole('group', { name: '1쪽' }).boundingBox())!.width;
 			await preview.getByRole('button', { name: '축소' }).click();
-			await expect(level).not.toHaveText('맞춤');
 			await expect
 				.poll(async () => (await doc.getByRole('group', { name: '1쪽' }).boundingBox())!.width)
 				.toBeLessThan(before);
@@ -224,8 +222,10 @@ test.describe('Finder', () => {
 			// 맞춤은 키우지 않는다(160px), 확대하면 125%
 			await expect.poll(async () => Math.round((await image.boundingBox())!.width)).toBe(160);
 			await preview.getByRole('button', { name: '확대' }).click();
-			await expect(preview.getByLabel('지금 배율')).toHaveText('125%');
 			await expect.poll(async () => Math.round((await image.boundingBox())!.width)).toBe(200);
+			// 왼쪽으로 회전하면 가로세로가 바뀐다 (125%: 125×200)
+			await preview.getByRole('button', { name: '왼쪽으로 회전' }).click();
+			await expect.poll(async () => Math.round((await image.boundingBox())!.width)).toBe(125);
 
 			// PDF를 더 열면 사이드바에 파일 둘, 그림을 고르면 배율이 남아 있고, 닫으면 빠진다
 			await dockItem(page, 'finder').click();
@@ -236,7 +236,10 @@ test.describe('Finder', () => {
 			await expect(sidebar.getByRole('region')).toHaveCount(2);
 			await expect(sidebar.getByRole('button', { name: '시험 이력서.pdf 2쪽' })).toBeVisible();
 			await sidebar.getByRole('button', { name: '시험 그림.png', exact: true }).click();
-			await expect(preview.getByLabel('지금 배율')).toHaveText('125%');
+			// 그림으로 돌아오면 배율이 남아 있다 (정보에서 확인)
+			await preview.getByRole('button', { name: '정보' }).click();
+			await expect(page.getByRole('menu', { name: '정보' })).toContainText('배율: 125%');
+			await page.keyboard.press('Escape');
 			await sidebar.getByRole('button', { name: '시험 그림.png 닫기' }).click();
 			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('시험 이력서.pdf');
 		});

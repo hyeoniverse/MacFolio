@@ -339,6 +339,31 @@
 	background-color: var(--phone-card-bg);
 }
 
-.files-phone.file .finder-file-bar {
-	padding: 8px 12px;
+/* iOS 훑어보기처럼: 회색 바탕에 쪽이 폭에 맞춰 이어지고, 아래 가운데에 지금 쪽 */
+.finder-file-phone {
+	position: relative;
+	display: flex;
+	flex: 1;
+	min-height: 0;
+	background-color: color-mix(in srgb, var(--color-text) 8%, var(--phone-card-bg));
+}
+
+.finder-file-phone .preview-pdf,
+.finder-file-phone .preview-image {
+	-webkit-overflow-scrolling: touch;
+}
+
+.finder-file-page {
+	position: absolute;
+	bottom: 16px;
+	left: 50%;
+	padding: 6px 14px;
+	border-radius: 999px;
+	background-color: rgb(0 0 0 / 0.55);
+	color: #fff;
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	transform: translateX(-50%);
+	backdrop-filter: blur(12px);
+	pointer-events: none;
 }

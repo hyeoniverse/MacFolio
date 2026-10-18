@@ -522,15 +522,20 @@ test.describe('모바일', () => {
 
 		await files.getByRole('button', { name: /^이력서/ }).tap();
 		await files.getByRole('button', { name: /시험 이력서\.pdf/ }).tap();
-		const pdf = files.getByRole('region', { name: '시험 이력서.pdf' });
-		await expect(pdf.locator('iframe')).toHaveAttribute('src', '/files/resume/test.pdf');
-		await expect(pdf.getByRole('link', { name: '다운로드' })).toHaveAttribute(
-			'href',
-			'/files/resume/test.pdf?download=1'
-		);
-		// 전체 화면: 미리 보기가 화면 폭을 채운다
+		// iOS 훑어보기처럼: 브라우저 PDF 보기가 아니라 쪽을 폭에 맞춰 직접 그리고, 아래에 지금 쪽
+		const pdf = files.getByRole('document', { name: '시험 이력서.pdf' });
+		await expect(pdf.getByRole('group', { name: /쪽$/ })).toHaveCount(3);
+		await expect(files.locator('iframe')).toHaveCount(0);
+		await expect(files.getByText('1 / 3')).toBeVisible();
 		const width = page.viewportSize()!.width;
-		expect((await pdf.locator('iframe').boundingBox())!.width).toBeGreaterThan(width - 2);
+		expect((await pdf.getByRole('group', { name: '1쪽' }).boundingBox())!.width).toBeGreaterThan(width - 40);
+		// 공유: 다운로드(?download=1)·새 탭
+		await files.getByRole('button', { name: '공유' }).tap();
+		const share = page.getByRole('menu', { name: '공유' });
+		await expect(share.getByRole('menuitem', { name: '다운로드' })).toBeVisible();
+		const download = page.waitForEvent('download');
+		await share.getByRole('menuitem', { name: '다운로드' }).tap();
+		expect((await download).url()).toMatch(/\/files\/resume\/test\.pdf\?download=1$/);
 	});
 
 	test('파일은 iOS 파일 앱처럼: 최근 항목·둘러보기 탭, 폴더는 한 화면씩, ••• 로 목록 보기', async ({ page }) => {
