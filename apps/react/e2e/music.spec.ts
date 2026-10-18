@@ -9,6 +9,9 @@ async function openMusic(page: Page) {
 	return music;
 }
 
+/** 배경 음악(음악 앱의 audio)이 멈춰 있는지 */
+const audioPaused = (page: Page) => page.evaluate(() => document.querySelector('audio')?.paused ?? true);
+
 test.describe('음악', () => {
 	test('재생 목록을 고르면 곡 목록이 바뀐다', async ({ page }) => {
 		const music = await openMusic(page);
@@ -54,6 +57,79 @@ test.describe('음악', () => {
 		await expect(upNext).toBeVisible();
 		// 지금 곡을 뺀 나머지 6곡
 		await expect(upNext.getByRole('button')).toHaveCount(6);
+	});
+
+	test('배경 음악이 실제로 재생되면 창 없이도 음악 앱이 실행 중이다', async ({ page }) => {
+		await enterDesktop(page);
+		await expect.poll(() => audioPaused(page)).toBe(false);
+		await expect(dockItem(page, 'music').locator('.active-indicator')).toBeVisible();
+		// 창은 없다: 맨 앞은 그대로 Safari, Dock을 누르면 음악 창이 열린다
+		await expect(appWindow(page, 'music')).toHaveCount(0);
+		await dockItem(page, 'music').click();
+		await expect(appWindow(page, 'music')).toBeVisible();
+	});
+
+	test('자동 재생이 막혀 소리가 안 나면 음악 앱은 켜지지 않는다', async ({ page }) => {
+		await page.addInitScript(() => {
+			HTMLMediaElement.prototype.play = () => Promise.reject(new DOMException('막힘', 'NotAllowedError'));
+		});
+		await enterDesktop(page);
+		await page.waitForTimeout(500);
+		expect(await audioPaused(page)).toBe(true);
+		await expect(dockItem(page, 'music').locator('.active-indicator')).toHaveCount(0);
+	});
+
+	test('노란 버튼(최소화)은 계속 재생하고, 빨간 버튼(닫기)은 앱을 끄고 재생도 멈춘다', async ({ page }) => {
+		await enterDesktop(page);
+		await expect.poll(() => audioPaused(page)).toBe(false);
+		await dockItem(page, 'music').click();
+		const music = appWindow(page, 'music');
+		await expect(music).toBeVisible();
+
+		await music.getByRole('button', { name: '최소화', exact: true }).click();
+		await expect(music).toBeHidden();
+		expect(await audioPaused(page)).toBe(false);
+		await expect(dockItem(page, 'music').locator('.active-indicator')).toBeVisible();
+
+		await dockItem(page, 'music').click();
+		await music.getByRole('button', { name: '닫기', exact: true }).click();
+		await expect.poll(() => audioPaused(page)).toBe(true);
+		await expect(dockItem(page, 'music').locator('.active-indicator')).toHaveCount(0);
+	});
+
+	test('셔플 버튼을 여러 번 눌러도 재생 막대에는 지금 곡 하나만 보인다', async ({ page }) => {
+		const music = await openMusic(page);
+		const shuffle = music.locator('.music-pill-shuffle');
+		for (let i = 0; i < 5; i++) await shuffle.click();
+		const now = music.getByRole('button', { name: '지금 재생 중 열기' });
+		await expect(now.locator('img')).toHaveCount(1);
+		await expect(now.locator('strong')).toHaveCount(1);
+	});
+
+	test('지금 재생 중을 열고 다시 그려도 시트가 아래로 내려가는 움직임이 되풀이되지 않는다', async ({ page }) => {
+		// 사라지는 움직임은 움직임 줄이기를 끈 화면에서만 돈다
+		await page.emulateMedia({ reducedMotion: 'no-preference' });
+		const music = await openMusic(page);
+		await music.getByRole('button', { name: '지금 재생 중 열기' }).click();
+		const sheet = music.getByRole('dialog', { name: '지금 재생 중' });
+		await expect(sheet).toBeVisible();
+		// 시트 안의 버튼으로 상태를 바꿔 시트를 다시 그린다 (재생 시간이 바뀔 때와 같다)
+		// 사라지는 움직임의 복사본은 금방 지워지므로, 생기는 순간을 센다
+		await page.evaluate(() => {
+			const win = window as Window & { exitingGhosts?: number };
+			win.exitingGhosts = 0;
+			new MutationObserver((records) => {
+				for (const record of records)
+					for (const node of record.addedNodes)
+						if (node instanceof HTMLElement && node.dataset.exiting) win.exitingGhosts! += 1;
+			}).observe(document.body, { childList: true, subtree: true });
+		});
+		const shuffle = sheet.getByRole('button', { name: '셔플' });
+		await shuffle.click();
+		await shuffle.click();
+		await expect(shuffle).toHaveAttribute('aria-pressed', 'false');
+		expect(await page.evaluate(() => (window as Window & { exitingGhosts?: number }).exitingGhosts)).toBe(0);
+		await expect(sheet).toBeVisible();
 	});
 
 	test('다음 곡 버튼으로 대기열의 다음 곡으로 넘어간다', async ({ page }) => {
