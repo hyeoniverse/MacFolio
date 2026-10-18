@@ -47,9 +47,11 @@ describe('보안 헤더', () => {
 		expect(csp['object-src']).toEqual(["'none'"]);
 		expect(csp['base-uri']).toEqual(["'self'"]);
 		expect(csp['frame-ancestors']).toEqual(["'self'"]);
-		// API 주소가 없는 빌드에는 바깥 연결 출처가 Turnstile, 날씨 앱의 Open-Meteo, 기술 칸의 npm 검색, 문서 올리기의 R2뿐이다
+		// API 주소가 없는 빌드에는 바깥 연결 출처가 Turnstile, 날씨 앱의 Open-Meteo, 기술 칸의 npm 검색, 문서 올리기의 R2뿐이다.
+		// blob:은 이 탭이 만든 주소(방문자가 놓은 PDF)라 바깥 출처가 아니다
 		expect(csp['connect-src']).toEqual([
 			"'self'",
+			'blob:',
 			'https://challenges.cloudflare.com',
 			'https://api.open-meteo.com',
 			'https://geocoding-api.open-meteo.com',
