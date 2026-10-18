@@ -18,7 +18,6 @@ import {
 	KIND_LABELS,
 	pathTo,
 	search,
-	type FileItem,
 	type FinderItem,
 	type FolderItem,
 } from './files';
@@ -27,8 +26,8 @@ import { DOC_PATHS, DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
-import FileView from './FileView';
 import FinderIcon from './FinderIcon';
+import { openInPreview } from '@/apps/preview/previewStore';
 import FinderMobile from './FinderMobile';
 import '@/apps/finder/Finder.css';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
@@ -36,8 +35,8 @@ import SearchField from '@/shared/ui/search-field/SearchField';
 
 type View = 'icons' | 'list';
 
-/** 지나온 곳 하나: 폴더, Finder 안에서 읽는 문서, 또는 미리 보는 파일(PDF·그림, 항목 id) */
-type Place = { folder: string } | { doc: string } | { file: string };
+/** 지나온 곳 하나: 폴더, 또는 Finder 안에서 읽는 문서 */
+type Place = { folder: string } | { doc: string };
 
 const LOCATION_ICONS: Record<string, string> = {
 	docs: 'fa-regular fa-file-lines',
@@ -58,7 +57,7 @@ const dateCell = (item: FinderItem) => (item.kind === 'project' ? (item.period ?
 /**
  * Finder: 사이트에 있는 것들을 파일처럼 둘러본다 (이슈 #20).
  * 왼쪽 즐겨찾기(문서, 프로젝트, 블로그, 응용 프로그램), 아이콘·목록 보기, 이름 찾기, 뒤로·앞으로.
- * 한 번 누르면 고르고, 두 번 누르거나 Enter를 누르면 연다. 문서는 Finder 안에서 읽고, PDF·그림은 Finder 안에서 미리 보고,
+ * 한 번 누르면 고르고, 두 번 누르거나 Enter를 누르면 연다. 문서는 Finder 안에서 읽고, PDF·그림은 미리보기 앱,
  * 프로젝트는 Safari, 글은 메모, 앱은 그 앱을 연다.
  */
 const Finder: React.FC = () => {
@@ -136,20 +135,12 @@ const Finder: React.FC = () => {
 	const placeKey = `${JSON.stringify(place)}|${view}|${searching}`;
 	const direction = useMoveDirection(history.at, undefined, `${view}|${searching}`);
 	const items: FinderItem[] = searching ? search(locations, query) : (folder?.children ?? []);
-	const file = 'file' in place ? (find(locations, place.file) as FileItem | null) : null;
 	const title = searching
 		? `‘${query.trim()}’ 찾기`
-		: 'file' in place
-			? (file?.name ?? 'Finder')
-			: 'doc' in place
-				? place.doc.split('/').at(-1)!
-				: (folder?.name ?? 'Finder');
-	const crumbs =
-		'folder' in place
-			? pathTo(locations, place.folder)
-			: 'file' in place
-				? pathTo(locations, place.file)
-				: pathTo(locations, `docs:${place.doc}`);
+		: 'doc' in place
+			? place.doc.split('/').at(-1)!
+			: (folder?.name ?? 'Finder');
+	const crumbs = 'folder' in place ? pathTo(locations, place.folder) : pathTo(locations, `docs:${place.doc}`);
 	const location = crumbs[0]?.id ?? null;
 
 	// 메뉴 막대의 Finder 메뉴 (#96). 바탕화면을 눌러 Finder가 되었을 때도 보이므로, 고르면 Finder 창을 연다
@@ -223,7 +214,9 @@ const Finder: React.FC = () => {
 				return;
 			case 'pdf':
 			case 'image':
-				go({ file: item.id });
+				openApp('preview');
+				bringAppToFront('preview');
+				openInPreview({ key: item.key, name: item.name, kind: item.kind, size: item.size });
 				return;
 			case 'post':
 				openApp('memo');
@@ -358,7 +351,7 @@ const Finder: React.FC = () => {
 								onChange={(event) => {
 									setQuery(event.target.value);
 									setSelected(null);
-									if (!('folder' in place) && event.target.value) go({ folder: location ?? 'docs' });
+									if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
 								}}
 							/>
 						</div>
@@ -387,12 +380,6 @@ const Finder: React.FC = () => {
 						>
 							{'doc' in place ? (
 								<DocView path={place.doc} dark={dark} onOpenDoc={(path) => go({ doc: path })} />
-							) : 'file' in place ? (
-								file ? (
-									<FileView item={file} />
-								) : (
-									<p className="finder-empty">파일을 찾을 수 없습니다.</p>
-								)
 							) : empty ? (
 								<p className="finder-empty">{folder.emptyNote ?? '비어 있음'}</p>
 							) : searching && items.length === 0 ? (

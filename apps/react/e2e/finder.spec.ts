@@ -142,7 +142,7 @@ test.describe('Finder', () => {
 			}
 		});
 
-		test('PDF는 Finder 안 iframe으로 미리 보고, 다운로드는 ?download=1', async ({ page }) => {
+		test('PDF는 미리보기 앱에서 열리고, 다운로드는 ?download=1', async ({ page }) => {
 			const requests = await fakeFiles(page);
 			const finder = await openFinder(page);
 			await finder
@@ -153,8 +153,10 @@ test.describe('Finder', () => {
 			await expect(pdf).toBeVisible();
 			await pdf.dblclick();
 
-			const preview = finder.getByRole('region', { name: '시험 이력서.pdf' });
-			const frame = preview.locator('iframe');
+			const preview = appWindow(page, 'preview');
+			await expect(preview).toBeVisible();
+			const doc = preview.getByRole('region', { name: '시험 이력서.pdf' });
+			const frame = doc.locator('iframe');
 			await expect(frame).toHaveAttribute('src', '/files/resume/test.pdf');
 			await expect(frame).toHaveAttribute('title', '시험 이력서.pdf');
 			await expect.poll(() => requests).toContain('/files/resume/test.pdf');
@@ -166,21 +168,21 @@ test.describe('Finder', () => {
 				'href',
 				'/files/resume/test.pdf'
 			);
-			await expect(preview).toContainText('PDF 문서 · 2 KB');
-			// 경로 막대: 문서 › 이력서 › 파일, 뒤로 가면 폴더
-			await expect(finder.getByRole('navigation', { name: '경로' })).toHaveText(/문서.*이력서.*시험 이력서\.pdf/);
-			await finder.getByRole('button', { name: '뒤로' }).click();
+			await expect(preview.locator('.preview-toolbar')).toContainText('PDF 문서 · 2 KB');
+			// Finder는 폴더에 그대로 있다
 			await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
 		});
 
-		test('그림은 사진 앱이 아니라 Finder 미리 보기에서 열린다', async ({ page }) => {
+		test('그림도 미리보기 앱에서 열리고, 둘째 파일부터 사이드바에 목록이 생긴다', async ({ page }) => {
 			await fakeFiles(page);
 			const finder = await openFinder(page);
-			await finder.getByRole('listbox', { name: '문서' }).getByRole('option', { name: '포트폴리오' }).dblclick();
+			const docs = finder.getByRole('listbox', { name: '문서' });
+			await docs.getByRole('option', { name: '포트폴리오' }).dblclick();
 			await finder.getByRole('option', { name: '시험 그림.png' }).dblclick();
 
-			const preview = finder.getByRole('region', { name: '시험 그림.png' });
-			const image = preview.getByRole('img', { name: '시험 그림.png' });
+			const preview = appWindow(page, 'preview');
+			const doc = preview.getByRole('region', { name: '시험 그림.png' });
+			const image = doc.getByRole('img', { name: '시험 그림.png' });
 			await expect(image).toHaveAttribute('src', '/files/portfolio/test.png');
 			await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(160);
 			await expect(preview.getByRole('link', { name: '다운로드' })).toHaveAttribute(
@@ -188,13 +190,33 @@ test.describe('Finder', () => {
 				'/files/portfolio/test.png?download=1'
 			);
 			await expect(appWindow(page, 'photos')).toHaveCount(0);
+			await expect(preview.getByRole('navigation', { name: '열린 파일' })).toHaveCount(0);
 
-			// 칸에 맞춰 보이고, 버튼으로 원래 크기와 오간다
-			const pane = (await preview.locator('.finder-file-image').boundingBox())!;
-			const fitted = (await image.boundingBox())!;
-			expect(fitted.width).toBeLessThanOrEqual(pane.width);
-			await preview.getByRole('button', { name: '원래 크기로 보기' }).click();
-			await expect(preview.getByRole('button', { name: '칸에 맞추기' })).toHaveAttribute('aria-pressed', 'true');
+			// 창에 맞춰 보이고, 배율 버튼으로 실제 크기·확대
+			const pane = (await doc.boundingBox())!;
+			expect((await image.boundingBox())!.width).toBeLessThanOrEqual(pane.width);
+			const level = preview.getByRole('group', { name: '배율' });
+			await expect(level).toContainText('맞춤');
+			await level.getByRole('button', { name: '맞춤' }).click();
+			await expect(level).toContainText('100%');
+			await expect.poll(async () => Math.round((await image.boundingBox())!.width)).toBe(160);
+			await level.getByRole('button', { name: '확대' }).click();
+			await expect(level).toContainText('150%');
+			await expect.poll(async () => Math.round((await image.boundingBox())!.width)).toBe(240);
+
+			// 다른 파일을 열면 사이드바에 둘 다, 고르면 바뀌고 닫으면 빠진다 (미리보기 창이 앞에 있으니 Dock으로 Finder를 앞으로)
+			await dockItem(page, 'finder').click();
+			await finder.getByRole('button', { name: '뒤로' }).click();
+			await docs.getByRole('option', { name: '이력서', exact: true }).dblclick();
+			await finder.getByRole('option', { name: '시험 이력서.pdf' }).dblclick();
+			const sidebar = preview.getByRole('navigation', { name: '열린 파일' });
+			await expect(sidebar.getByRole('button', { name: /시험/ })).toHaveCount(4);
+			await expect(preview.getByRole('region', { name: '시험 이력서.pdf' })).toBeVisible();
+			await sidebar.getByRole('button', { name: '시험 그림.png', exact: true }).click();
+			await expect(level).toContainText('150%');
+			await sidebar.getByRole('button', { name: '시험 그림.png 닫기' }).click();
+			await expect(sidebar).toHaveCount(0);
+			await expect(preview.getByRole('region', { name: '시험 이력서.pdf' })).toBeVisible();
 		});
 	});
 });

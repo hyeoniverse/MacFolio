@@ -5,7 +5,7 @@ import { fileUrl, formatSize } from './documents';
 import type { FileItem } from './files';
 
 /**
- * 문서 파일 미리 보기 (PDF·그림). 파일은 R2에 있고 사이트와 같은 주소(/files/<key>)로 온다.
+ * 휴대폰 파일 앱의 문서 파일 미리 보기 (PDF·그림, iOS의 훑어보기처럼 앱 안에서). 데스크톱은 미리보기 앱(apps/preview)이 연다. 파일은 R2에 있고 사이트와 같은 주소(/files/<key>)로 온다.
  * PDF는 브라우저의 PDF 보기를 iframe으로 띄우고 (CSP frame-src 'self'), 그림은 칸에 맞춰 보이며 눌러서 원래 크기로 본다.
  * 위 막대: 이름·크기, 다운로드(?download=1), 새 창에서 열기
  */

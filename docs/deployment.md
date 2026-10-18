@@ -46,7 +46,7 @@
 
 ### 문서 파일(R2)
 
-이력서·포트폴리오·자격증 파일(PDF, PNG, JPG, WebP)은 저장소에 넣지 않고 Cloudflare R2 버킷 `macfolio-files`에 둔다. 사이트 Worker(`apps/react/worker/files.ts`)가 같은 주소의 `/files/<키>`로 내주고, Finder가 그 주소를 iframe(PDF)이나 그림으로 미리 본다. 같은 출처라 CSP `frame-src 'self'`를 그대로 쓴다. 저장소에는 어느 폴더에 무엇을 보일지만 적는다(`apps/react/src/apps/finder/documents.ts`).
+이력서·포트폴리오·자격증 파일(PDF, PNG, JPG, WebP)은 저장소에 넣지 않고 Cloudflare R2 버킷 `macfolio-files`에 둔다. 사이트 Worker(`apps/react/worker/files.ts`)가 같은 주소의 `/files/<키>`로 내주고, Finder에서 열면 미리보기 앱(`apps/react/src/apps/preview`)이 그 주소를 iframe(PDF)이나 그림으로 보여 준다(휴대폰은 파일 앱 안에서). 같은 출처라 CSP `frame-src 'self'`를 그대로 쓴다. 저장소에는 어느 폴더에 무엇을 보일지만 적는다(`apps/react/src/apps/finder/documents.ts`).
 
 - 응답: 확장자에 맞는 `Content-Type`, `ETag`(`If-None-Match`가 맞으면 304), `Cache-Control: public, max-age=300`, `X-Content-Type-Options: nosniff`, `Content-Disposition: inline`(`?download=1`이면 `attachment`), 이 사이트 안의 iframe에만 들어가는 CSP(`frame-ancestors 'self'`)
 - 없는 파일, `..` 같은 경로, pdf·png·jpg·jpeg·webp가 아닌 키는 404. GET·HEAD가 아니면 405. 바인딩이 없는 곳(로컬 `pnpm dev`)도 404

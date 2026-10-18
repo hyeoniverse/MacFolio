@@ -1,0 +1,191 @@
+/* 미리보기 (macOS 미리보기). 위 도구 막대, 파일이 둘 이상이면 왼쪽 사이드바, 가운데 회색 바탕에 문서 */
+.preview {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+	background-color: var(--color-window-bg);
+}
+
+.preview-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-8);
+	padding: var(--space-6) var(--space-12);
+	border-bottom: 1px solid var(--color-divider);
+	background-color: var(--color-titlebar-bg);
+}
+
+.preview-info {
+	flex: 1;
+	min-width: 0;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.preview-zoom {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.preview-zoom-level {
+	min-width: 56px;
+	font-variant-numeric: tabular-nums;
+}
+
+.preview-action {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-6);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.preview-body {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+}
+
+/* ─── 사이드바: 열린 파일 ─── */
+.preview-sidebar {
+	flex: 0 0 132px;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-8);
+	padding: var(--space-10) var(--space-8);
+	overflow-y: auto;
+	background-color: var(--color-sidebar-bg);
+	border-right: 1px solid var(--color-divider);
+}
+
+.preview-thumb {
+	position: relative;
+	border-radius: 8px;
+}
+
+.preview-thumb.active {
+	background-color: var(--color-selected-bg);
+}
+
+.preview-thumb-open {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-4);
+	width: 100%;
+	padding: var(--space-8) var(--space-6);
+	border: 0;
+	background: none;
+	color: var(--color-text);
+	font: inherit;
+	font-size: 11px;
+	cursor: default;
+}
+
+.preview-thumb-open img {
+	width: 88px;
+	height: 72px;
+	object-fit: contain;
+	box-shadow: var(--shadow-md);
+}
+
+.preview-thumb-open i {
+	font-size: 48px;
+	line-height: 72px;
+	color: var(--color-red);
+}
+
+.preview-thumb-open span {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.preview-thumb-close {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	opacity: 0;
+}
+
+.preview-thumb:hover .preview-thumb-close,
+.preview-thumb-close:focus-visible {
+	opacity: 1;
+}
+
+/* ─── 문서 ─── */
+.preview-content {
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	display: flex;
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+.preview-pdf {
+	flex: 1;
+	width: 100%;
+	border: 0;
+	background-color: #525659;
+}
+
+.preview-image {
+	align-items: center;
+	justify-content: center;
+	padding: var(--space-16);
+	overflow: hidden;
+	/* macOS 미리보기처럼 그림 둘레는 옅은 회색 */
+	background-color: color-mix(in srgb, var(--color-text) 8%, var(--color-window-bg));
+}
+
+.preview-image img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	box-shadow: 0 2px 12px rgb(0 0 0 / 0.2);
+}
+
+/* 배율을 고르면 실제 크기 기준으로 그리고, 넘치면 스크롤한다 */
+.preview-image.zoomed {
+	display: block;
+	overflow: auto;
+	text-align: center;
+}
+
+.preview-image.zoomed img {
+	max-width: none;
+	max-height: none;
+}
+
+.preview-empty {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-8);
+	padding: var(--space-24);
+	color: var(--color-text-secondary);
+	text-align: center;
+}
+
+.preview-empty i {
+	font-size: 40px;
+	opacity: 0.5;
+}
+
+.preview-empty p {
+	margin: 0;
+}
+
+.preview-empty-note {
+	font-size: 12px;
+}
