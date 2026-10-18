@@ -1,5 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
+import {
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	ChevronsUpDown,
+	Clock,
+	Folder,
+	FolderOpen,
+	LayoutGrid,
+	Rows3,
+	Search,
+	type LucideIcon,
+} from 'lucide-react';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import {
 	DOCUMENT_FOLDERS,
@@ -38,7 +51,7 @@ const FileThumb: React.FC<{ entry: DocumentEntry }> = ({ entry }) => {
 	return doc ? (
 		<PdfThumb doc={doc} number={1} width={64} />
 	) : (
-		<i className="fa-solid fa-file-pdf preview-open-icon" aria-hidden="true" />
+		<span className="preview-open-blank" aria-hidden="true" />
 	);
 };
 
@@ -68,7 +81,7 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 	const chosen = shown.find((entry) => entry.key === selected) ?? null;
 	const title = place === 'recents' ? '최근 항목' : place;
 
-	const placeButton = (target: Place, icon: string, label: string) => (
+	const placeButton = (target: Place, Icon: LucideIcon, label: string) => (
 		<button
 			type="button"
 			className={`preview-open-place${place === target ? ' active' : ''}`}
@@ -78,7 +91,7 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 				setSelected(null);
 			}}
 		>
-			<i className={icon} aria-hidden="true" />
+			<Icon size={18} strokeWidth={1.5} aria-hidden="true" />
 			{label}
 		</button>
 	);
@@ -86,22 +99,39 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 	return (
 		<div className="preview-open" role="dialog" aria-label="열기">
 			<nav className="preview-open-sidebar" aria-label="위치">
-				{placeButton('recents', 'fa-regular fa-clock', '최근 항목')}
+				{placeButton('recents', Clock, '최근 항목')}
 				<p className="preview-open-heading">문서</p>
 				{DOCUMENT_FOLDERS.map((folder) => (
-					<React.Fragment key={folder}>{placeButton(folder, 'fa-regular fa-folder', folder)}</React.Fragment>
+					<React.Fragment key={folder}>
+						{placeButton(folder, place === folder ? FolderOpen : Folder, folder)}
+					</React.Fragment>
 				))}
 			</nav>
 			<div className="preview-open-main">
+				{/* macOS 열기 창의 위 막대: 뒤로·앞으로, 보기, 위치, 찾기 (보기·이동은 모양만) */}
 				<div className="preview-open-bar">
+					<span className="preview-open-capsule" aria-hidden="true">
+						<ChevronLeft size={18} strokeWidth={1.6} />
+						<ChevronRight size={18} strokeWidth={1.6} />
+					</span>
+					<span className="preview-open-capsule" aria-hidden="true">
+						<LayoutGrid size={16} strokeWidth={1.5} />
+						<ChevronDown size={12} strokeWidth={2} />
+					</span>
+					<span className="preview-open-capsule wide-only" aria-hidden="true">
+						<Rows3 size={16} strokeWidth={1.5} />
+						<ChevronDown size={12} strokeWidth={2} />
+					</span>
 					<span className="preview-open-title">
-						<i className="fa-solid fa-magnifying-glass-plus" aria-hidden="true" />
-						미리보기 — {title}
+						<img src="/imgs/preview.svg" alt="" />
+						<span>미리보기 — {title}</span>
+						<ChevronsUpDown size={14} strokeWidth={1.8} aria-hidden="true" />
 					</span>
 					<SearchField
 						label="파일 이름 찾기"
 						placeholder="검색"
-						className="preview-search-field"
+						className="preview-open-search"
+						icon={<Search size={15} strokeWidth={1.6} aria-hidden="true" />}
 						value={query}
 						onChange={(event) => setQuery(event.target.value)}
 					/>

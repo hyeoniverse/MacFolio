@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
+import { ChevronDown, PanelLeft, RotateCcwSquare, Search, Share, ZoomIn, ZoomOut } from 'lucide-react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import IconButton from '@/shared/ui/button/IconButton';
-import SidebarToggle from '@/shared/ui/button/SidebarToggle';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import '@/shared/ui/button/Button.css';
@@ -19,7 +19,7 @@ import './Preview.css';
 /** 배율 단계. 확대·축소는 지금 배율의 다음 단계로 간다 */
 const ZOOMS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4];
 /** 사이드바 쪽 그림의 폭 */
-const THUMB_WIDTH = 96;
+const THUMB_WIDTH = 112;
 
 const nextZoom = (scale: number, direction: 1 | -1) =>
 	direction > 0
@@ -236,55 +236,67 @@ const Preview: React.FC = () => {
 
 	return (
 		<AppWindow title={file?.name ?? '미리보기'} appName="preview" chrome="unified">
-			<div className={`preview${sidebar ? ' with-sidebar' : ''}`}>
-				<header className="preview-toolbar">
-					{file && <SidebarToggle open={sidebar} onToggle={() => setSidebarChoice(!sidebar)} />}
-					<div className="preview-title">
-						<h1>{file?.name ?? '미리보기'}</h1>
-						{subtitle && <p aria-live="polite">{subtitle}</p>}
-					</div>
-					{file && (
+			{!file ? (
+				<OpenPanel
+					onOpen={(entry) => openInPreview({ key: entry.key, name: entry.name, kind: entry.kind, size: entry.size })}
+					onCancel={() => closeApp('preview')}
+				/>
+			) : (
+				<div className={`preview${sidebar ? ' with-sidebar' : ''}`}>
+					<header className="preview-toolbar">
+						<IconButton
+							className="preview-sidebar-toggle"
+							label={sidebar ? '사이드바 가리기' : '사이드바 보기'}
+							aria-expanded={sidebar}
+							onClick={() => setSidebarChoice(!sidebar)}
+						>
+							<PanelLeft {...LINE} />
+							<ChevronDown {...LINE} size={11} strokeWidth={2} />
+						</IconButton>
+						<div className="preview-title">
+							<h1>{file.name}</h1>
+							{subtitle && <p aria-live="polite">{subtitle}</p>}
+						</div>
 						<div className="preview-tools">
-							{/* macOS 미리보기처럼 버튼을 둥근 칸으로 묶는다: 배율 / 회전 / 정보·공유 */}
-							<span className="preview-group" role="group" aria-label="배율">
+							{/* macOS 미리보기처럼 버튼을 둥근 유리 칸으로 묶는다: 배율 / 회전 / 정보·공유 / 찾기 */}
+							<span className="preview-capsule" role="group" aria-label="배율">
+								<IconButton label="축소" disabled={nextZoom(scale, -1) === null} onClick={() => step(-1)}>
+									<ZoomOut {...LINE} />
+								</IconButton>
 								<IconButton
-									icon="fa-solid fa-magnifying-glass-minus"
-									label="축소"
-									disabled={nextZoom(scale, -1) === null}
-									onClick={() => step(-1)}
-								/>
-								<IconButton
-									icon="fa-solid fa-magnifying-glass"
 									label="크기 조절하여 맞추기"
 									aria-pressed={zoom === null}
 									on={zoom === null}
 									onClick={() => setZoom(null)}
-								/>
-								<IconButton
-									icon="fa-solid fa-magnifying-glass-plus"
-									label="확대"
-									disabled={nextZoom(scale, 1) === null}
-									onClick={() => step(1)}
-								/>
+								>
+									<Search {...LINE} />
+								</IconButton>
+								<IconButton label="확대" disabled={nextZoom(scale, 1) === null} onClick={() => step(1)}>
+									<ZoomIn {...LINE} />
+								</IconButton>
 							</span>
-							<span className="preview-group">
-								<IconButton icon="fa-solid fa-rotate-left" label="왼쪽으로 회전" onClick={() => rotate(-90)} />
+							<span className="preview-capsule">
+								<IconButton label="왼쪽으로 회전" onClick={() => rotate(-90)}>
+									<RotateCcwSquare {...LINE} />
+								</IconButton>
 							</span>
-							<span className="preview-group">
+							<span className="preview-capsule">
 								<IconButton
-									icon="fa-solid fa-info"
 									label="정보"
 									aria-haspopup="menu"
 									aria-expanded={popup?.kind === 'info'}
 									onClick={openPopup('info')}
-								/>
+								>
+									<InfoGlyph />
+								</IconButton>
 								<IconButton
-									icon="fa-solid fa-arrow-up-from-bracket"
 									label="공유"
 									aria-haspopup="menu"
 									aria-expanded={popup?.kind === 'share'}
 									onClick={openPopup('share')}
-								/>
+								>
+									<Share {...LINE} />
+								</IconButton>
 							</span>
 							{file.kind === 'pdf' && (
 								<div ref={search} className="preview-search">
@@ -292,6 +304,12 @@ const Preview: React.FC = () => {
 										label="찾기"
 										placeholder="검색"
 										className="preview-search-field"
+										icon={
+											<span className="preview-search-icon" aria-hidden="true">
+												<Search {...LINE} size={14} />
+												<ChevronDown {...LINE} size={9} strokeWidth={2.2} />
+											</span>
+										}
 										value={query}
 										onChange={(event) => setQuery(event.target.value)}
 										onKeyDown={(event) => {
@@ -311,33 +329,31 @@ const Preview: React.FC = () => {
 								</div>
 							)}
 						</div>
+					</header>
+					{popup && (
+						<Menu
+							label={popup.kind === 'info' ? '정보' : '공유'}
+							anchor={popup}
+							onClose={() => setPopup(null)}
+							items={
+								popup.kind === 'info'
+									? infoItems(file, pages, scale, zoom)
+									: [
+											{
+												label: '다운로드',
+												icon: 'fa-solid fa-download',
+												onSelect: () => downloadFile(file.key, file.name),
+											},
+											{
+												label: '새 탭에서 열기',
+												icon: 'fa-solid fa-arrow-up-right-from-square',
+												onSelect: () => openFileInNewTab(file.key),
+											},
+										]
+							}
+						/>
 					)}
-				</header>
-				{file && popup && (
-					<Menu
-						label={popup.kind === 'info' ? '정보' : '공유'}
-						anchor={popup}
-						onClose={() => setPopup(null)}
-						items={
-							popup.kind === 'info'
-								? infoItems(file, pages, scale, zoom)
-								: [
-										{
-											label: '다운로드',
-											icon: 'fa-solid fa-download',
-											onSelect: () => downloadFile(file.key, file.name),
-										},
-										{
-											label: '새 탭에서 열기',
-											icon: 'fa-solid fa-arrow-up-right-from-square',
-											onSelect: () => openFileInNewTab(file.key),
-										},
-									]
-						}
-					/>
-				)}
 
-				<div className="preview-body">
 					{sidebar && (
 						<nav className="preview-sidebar" aria-label="사이드바">
 							{files.map((open) => (
@@ -357,14 +373,7 @@ const Preview: React.FC = () => {
 						</nav>
 					)}
 					<main className="preview-main" onKeyDown={onKeyDown}>
-						{!file ? (
-							<OpenPanel
-								onOpen={(entry) =>
-									openInPreview({ key: entry.key, name: entry.name, kind: entry.kind, size: entry.size })
-								}
-								onCancel={() => closeApp('preview')}
-							/>
-						) : file.kind === 'image' ? (
+						{file.kind === 'image' ? (
 							<ImageView
 								key={file.key}
 								fileKey={file.key}
@@ -388,16 +397,35 @@ const Preview: React.FC = () => {
 								activeMatch={match}
 								label={file.name}
 								rotation={rotation}
+								padding={12}
 							/>
 						) : (
 							<p className="preview-note">여는 중…</p>
 						)}
 					</main>
 				</div>
-			</div>
+			)}
 		</AppWindow>
 	);
 };
+
+/** 도구 막대 아이콘: SF Symbols처럼 가는 선 */
+const LINE = { size: 17, strokeWidth: 1.5, 'aria-hidden': true } as const;
+
+/** 정보 버튼: macOS 미리보기처럼 동그라미 없는 가는 i */
+const InfoGlyph = () => (
+	<svg width="17" height="17" viewBox="0 0 17 17" aria-hidden="true">
+		<circle cx="8.5" cy="3.6" r="1.1" fill="currentColor" />
+		<path
+			d="M6.8 7h2.2v6.4M6.6 13.4h4"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.4"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+	</svg>
+);
 
 /** 사이드바의 파일 하나: (파일이 여럿이면) 이름 줄, 그리고 쪽 그림 */
 const SidebarFile: React.FC<{
