@@ -4,6 +4,7 @@ import {
 	createWindowStore,
 	foregroundApp,
 	initialWindows,
+	isAppRunning as isAppRunningIn,
 	type WindowStore,
 } from '@macfolio/desktop-core';
 import { track } from '@/shared/analytics/analytics';
@@ -66,11 +67,21 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 			bringAppToFront: store.bringToFront,
 			focusDesktop: store.focusDesktop,
 			goHome: store.goHome,
+			keepAlive: store.keepAlive,
 		}),
 		[store]
 	);
 
 	return (
-		<AppContext.Provider value={{ apps, activeApp: activeAppOf(state), ...actions }}>{children}</AppContext.Provider>
+		<AppContext.Provider
+			value={{
+				apps,
+				activeApp: activeAppOf(state),
+				isAppRunning: (name) => APP_MANIFEST[name].alwaysRunning === true || isAppRunningIn(state, name),
+				...actions,
+			}}
+		>
+			{children}
+		</AppContext.Provider>
 	);
 };

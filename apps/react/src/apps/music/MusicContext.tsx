@@ -133,14 +133,18 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 		setCurrentTime(0);
 	}, [pause]);
 
-	// 음악 앱을 끄면(창 닫기, 모바일 앱 전환기에서 밀어 올리기) 재생도 멈춘다.
-	// 실행 중이다가 꺼질 때만 멈춘다: 데스크톱은 음악 앱이 실행 중인 채로 시작해 로딩 뒤 자동 재생한다.
-	const musicRunning = useAppState().apps.music.isRunning;
+	// 음악 앱은 창과 따로 실행된다: 실제로 소리가 나기 시작하면(audio의 playing) 창이 없어도 실행 중(Dock의 점).
+	// 자동 재생이 막히거나 파일을 못 불러와 소리가 안 나면 켜지지 않는다.
+	// 빨간 버튼으로 닫거나 종료하면(모바일 앱 전환기에서 밀어 올리기 포함) 실행 중이 꺼지고, 그때 재생도 멈춘다.
+	// 최소화(노란 버튼)는 실행 중 그대로라 계속 재생한다
+	const { keepAlive, isAppRunning } = useAppState();
+	const musicRunning = isAppRunning('music');
 	const wasRunning = useRef(musicRunning);
 	useEffect(() => {
 		if (wasRunning.current && !musicRunning) stopAndReset();
 		wasRunning.current = musicRunning;
 	}, [musicRunning, stopAndReset]);
+	const onPlaying = () => keepAlive('music', true);
 
 	// 로딩 화면을 넘기면(사용자가 클릭한 직후라 자동 재생이 된다) 데스크톱에서는 음악을 튼다
 	useEffect(() => {
@@ -186,6 +190,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 				onWaiting={() => setIsBuffering(true)}
 				onCanPlay={() => setIsBuffering(false)}
 				onPlay={() => setIsPlaying(true)}
+				onPlaying={onPlaying}
 				onPause={() => setIsPlaying(false)}
 				onEnded={onEnded}
 			/>
