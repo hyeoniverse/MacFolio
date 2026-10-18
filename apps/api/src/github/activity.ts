@@ -50,6 +50,7 @@ const decode = (value: string) =>
 		.replace(/&quot;/g, '"')
 		.replace(/&#39;/g, "'");
 
+// nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp -- name은 코드에 적은 속성 이름(for·data-date·data-level·id)뿐이다
 const attribute = (tag: string, name: string) => tag.match(new RegExp(`\\s${name}="([^"]*)"`))?.[1] ?? null;
 
 /**
