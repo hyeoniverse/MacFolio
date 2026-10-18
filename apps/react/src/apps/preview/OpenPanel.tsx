@@ -25,7 +25,8 @@ import {
 import { loadPdf } from './pdf';
 import { PdfThumb } from './PdfView';
 
-type Place = 'recents' | DocumentFolder;
+/** preview: 미리보기 폴더(iCloud, 모든 문서), recents: 최근 항목, 그리고 문서 폴더 */
+type Place = 'preview' | 'recents' | DocumentFolder;
 
 const FOLDER_NOTES: Record<DocumentFolder, string> = {
 	이력서: '공개용 이력서를 준비하고 있습니다.',
@@ -57,7 +58,7 @@ const FileThumb: React.FC<{ entry: DocumentEntry }> = ({ entry }) => {
 
 /**
  * 파일 없이 미리보기를 열면 뜨는 '열기' 창 (macOS 미리보기가 처음 뜰 때처럼).
- * 왼쪽은 최근 항목과 문서 폴더(이력서·포트폴리오·자격증), 가운데는 파일 그림. 두 번 누르거나 열기로 연다
+ * 왼쪽은 미리보기 폴더(처음 고른 곳, 모든 문서)·최근 항목과 문서 폴더(이력서·포트폴리오·자격증), 가운데는 파일 그림. 두 번 누르거나 열기로 연다
  */
 const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: () => void }> = ({
 	onOpen,
@@ -67,19 +68,21 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 	useEffect(() => {
 		void loadDocuments();
 	}, []);
-	const [place, setPlace] = useState<Place>('recents');
+	const [place, setPlace] = useState<Place>('preview');
 	const [query, setQuery] = useState('');
 	const [selected, setSelected] = useState<string | null>(null);
 
 	const q = query.trim().toLocaleLowerCase();
 	const shown = entries
-		.filter((entry) => place === 'recents' || entry.folder === place)
+		.filter((entry) => place === 'preview' || place === 'recents' || entry.folder === place)
 		.filter((entry) => !q || entry.name.toLocaleLowerCase().includes(q))
 		.sort((a, b) =>
 			place === 'recents' ? (b.updated ?? '').localeCompare(a.updated ?? '') : a.name.localeCompare(b.name, 'ko')
 		);
 	const chosen = shown.find((entry) => entry.key === selected) ?? null;
-	const title = place === 'recents' ? '최근 항목' : place;
+	const title = place === 'preview' ? '미리보기' : place === 'recents' ? '최근 항목' : place;
+	// 위치 칸: macOS처럼 미리보기 폴더는 'iCloud'에 있다
+	const location = place === 'preview' ? 'iCloud' : title;
 
 	const placeButton = (target: Place, Icon: LucideIcon, label: string) => (
 		<button
@@ -99,8 +102,9 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 	return (
 		<div className="preview-open" role="dialog" aria-label="열기">
 			<nav className="preview-open-sidebar" aria-label="위치">
+				{placeButton('preview', place === 'preview' ? FolderOpen : Folder, '미리보기')}
 				{placeButton('recents', Clock, '최근 항목')}
-				<p className="preview-open-heading">문서</p>
+				<p className="preview-open-heading">즐겨찾기</p>
 				{DOCUMENT_FOLDERS.map((folder) => (
 					<React.Fragment key={folder}>
 						{placeButton(folder, place === folder ? FolderOpen : Folder, folder)}
@@ -124,7 +128,7 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 					</span>
 					<span className="preview-open-title">
 						<img src="/imgs/preview.svg" alt="" />
-						<span>미리보기 — {title}</span>
+						<span>미리보기 — {location}</span>
 						<ChevronsUpDown size={14} strokeWidth={1.8} aria-hidden="true" />
 					</span>
 					<SearchField
@@ -157,7 +161,11 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 					</div>
 				) : (
 					<p className="preview-open-empty">
-						{q ? '찾는 이름이 없습니다.' : place === 'recents' ? '파일이 없습니다.' : FOLDER_NOTES[place]}
+						{q
+							? '찾는 이름이 없습니다.'
+							: place === 'preview' || place === 'recents'
+								? '파일이 없습니다.'
+								: FOLDER_NOTES[place]}
 					</p>
 				)}
 				<div className="preview-open-actions">

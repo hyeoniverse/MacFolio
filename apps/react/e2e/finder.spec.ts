@@ -244,7 +244,9 @@ test.describe('Finder', () => {
 			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('시험 이력서.pdf');
 		});
 
-		test('파일 없이 미리보기를 열면 열기 창: 최근 항목·폴더, 두 번 누르거나 열기로 연다', async ({ page }) => {
+		test('파일 없이 미리보기를 열면 열기 창: 미리보기 폴더·최근 항목·폴더, 두 번 누르거나 열기로 연다', async ({
+			page,
+		}) => {
 			await fakeFiles(page);
 			await enterDesktop(page);
 			await dockItem(page, 'launchpad').click();
@@ -252,7 +254,14 @@ test.describe('Finder', () => {
 			const preview = appWindow(page, 'preview');
 			const panel = preview.getByRole('dialog', { name: '열기' });
 			await expect(panel).toBeVisible();
+			// 처음에는 macOS처럼 iCloud의 미리보기 폴더: 모든 문서를 이름 순으로
+			await expect(panel.getByText('미리보기 — iCloud')).toBeVisible();
+			await expect(panel.getByRole('listbox', { name: '미리보기' }).getByRole('option')).toHaveText([
+				'시험 그림.png',
+				'시험 이력서.pdf',
+			]);
 			// 최근 항목: 고친 날이 늦은 순
+			await panel.getByRole('button', { name: '최근 항목' }).click();
 			const files = panel.getByRole('listbox', { name: '최근 항목' }).getByRole('option');
 			await expect(files).toHaveText(['시험 이력서.pdf', '시험 그림.png']);
 			// 폴더를 고르면 그 폴더만, 빈 폴더는 안내
