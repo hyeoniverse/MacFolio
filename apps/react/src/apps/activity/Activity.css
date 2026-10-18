@@ -4,9 +4,9 @@
 	--activity-green: var(--color-green);
 	--activity-red: var(--color-red);
 	/* 이 앱의 간격은 세 단만 쓴다: 묶음 사이, 카드 안쪽, 줄 안 (#211) */
-	--activity-gap: 16px;
-	--activity-pad: 12px;
-	--activity-row: 6px;
+	--activity-gap: var(--space-16);
+	--activity-pad: var(--space-12);
+	--activity-row: var(--space-6);
 	container-type: inline-size;
 	display: flex;
 	flex-direction: column;
@@ -68,7 +68,7 @@
 }
 
 .activity-period select {
-	padding: 3px 6px;
+	padding: var(--space-2) var(--activity-row);
 	border: 1px solid var(--color-window-border);
 	border-radius: var(--radius-sm);
 	background: var(--color-control-bg);
@@ -207,6 +207,11 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--activity-gap);
+}
+
+/* 두 단이 이어지면(유입 경로) 세로 간격도 가로 간격과 같게 */
+.activity-columns + :is(.activity-columns, .activity-locked, .activity-table, .utm-builder) {
+	margin-top: var(--activity-gap);
 }
 
 .activity-table h3,
@@ -362,7 +367,7 @@
 }
 
 .activity-live ol li {
-	padding: 2px 0;
+	padding: var(--space-2) 0;
 }
 
 /* 방문자가 열었을 때 */
@@ -445,7 +450,7 @@
 
 /* 휴대폰: 제목 막대도 홈으로 가는 버튼도 없다 (iOS의 탭으로 나눈 앱처럼). 탭 줄과 기간 줄은 카드와 같은 좌우 16px에 맞춘다 */
 .container.mobile .activity-toolbar {
-	padding: calc(11px + var(--phone-status)) 16px 10px;
+	padding: calc(var(--activity-pad) + var(--phone-status)) var(--activity-gap) var(--activity-pad);
 }
 
 .container.mobile .activity-tabs button {
