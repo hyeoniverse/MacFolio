@@ -177,3 +177,15 @@ curl -s https://macfolio-api.hyeoniverse.com/health; echo
 - [ ] 끊긴 시간: 약 __초 (업타임 알림: 있음/없음)
 - [ ] 정리: `sha-dead000` 이미지 지움
 ```
+
+## 기록
+
+### 2026-10-18 (첫 서버 훈련, #100 마무리)
+
+- 훈련 전: `API_TAG=sha-7e7eac0`, `/health` version 같음, `(healthy)`
+- 훈련용 이미지 `sha-dead000`을 서버에서 빌드 (4초)
+- Run workflow `sha-dead000` → Actions "API 배포 #2" 실패 (3분, `Process completed with exit code 1`)
+- 로그: `09:04:53Z 이전 버전으로 되돌린다: sha-7e7eac0` → `09:05:34Z 배포 실패, 되돌림: sha-7e7eac0가 다시 떠 있다`. 되돌리는 데 41초
+- 훈련 뒤: `.env`, 컨테이너 이미지, 바깥 `/health` version 모두 `sha-7e7eac0`, `(healthy)`
+- 정리: `sha-dead000` 지움, 남은 이미지 `sha-0f5d74f`, `sha-7e7eac0`
+- 겪은 것: 접속 안내의 `ssh <평소 쓰는 서버 접속>` 자리표시 줄까지 함께 붙여 넣어 `syntax error near unexpected token 'newline'`이 났다. 나머지 줄은 그대로 돌아 결과에는 영향이 없었다. 위 '준비'의 주의대로 자리표시는 붙여 넣지 않는다
