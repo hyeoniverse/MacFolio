@@ -66,14 +66,21 @@ function publicImagesPlugin(): Plugin {
 	};
 }
 
+/** 로컬 개발에서 /files/*를 넘길 사이트 (명령 앞의 환경 변수가 .env.local보다 먼저) */
+const FILES_ORIGIN =
+	process.env.FILES_ORIGIN ||
+	loadEnv('development', fileURLToPath(new URL('.', import.meta.url)), 'FILES_').FILES_ORIGIN ||
+	'https://macfolio.hyeoniverse.com';
+
 export default defineConfig({
 	plugins: [react(), securityHeadersPlugin(), publicImagesPlugin()],
 	// 단위 시험(Vitest)도 desktop-core의 src를 읽는다
 	ssr: { resolve: { conditions: ['source', ...defaultServerConditions] } },
 	// 로컬 개발(pnpm dev)에는 사이트 Worker가 없어 /files/*(R2 문서 파일)를 내줄 곳이 없다. 배포한 사이트로 넘긴다.
-	// 다른 곳을 보려면 FILES_ORIGIN (예: PR 미리보기 주소). E2E(vite preview)는 넘기지 않는다 (시험이 가짜 파일을 준다)
+	// 다른 곳을 보려면 FILES_ORIGIN (예: PR 미리보기 주소): 명령 앞에 붙이거나 apps/react/.env.local에 적는다.
+	// E2E(vite preview)는 넘기지 않는다 (시험이 가짜 파일을 준다)
 	server: {
-		proxy: { '/files': { target: process.env.FILES_ORIGIN || 'https://macfolio.hyeoniverse.com', changeOrigin: true } },
+		proxy: { '/files': { target: FILES_ORIGIN, changeOrigin: true } },
 	},
 	preview: { proxy: {} },
 	build: {

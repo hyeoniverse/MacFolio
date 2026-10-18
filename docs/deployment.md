@@ -110,7 +110,7 @@
 
 4. http://localhost:5173 에서 관리자로 로그인하고 Finder의 이력서 폴더에 파일을 끌어다 놓는다
 
-로컬 개발 서버에는 사이트 Worker가 없어서 `/files/*`(파일 받기)는 배포한 사이트로 넘긴다(`vite.config.ts`의 `server.proxy`). 배포한 사이트가 같은 버킷을 읽으므로 로컬에서 올린 파일도 미리보기 앱에서 열린다. 다른 곳으로 넘기려면 `FILES_ORIGIN=https://<PR 미리보기 주소> pnpm dev`.
+로컬 개발 서버에는 사이트 Worker가 없어서 `/files/*`(파일 받기)는 배포한 사이트로 넘긴다(`vite.config.ts`의 `server.proxy`). 배포한 사이트가 같은 버킷을 읽으므로 로컬에서 올린 파일도 미리보기 앱에서 열린다. 다른 곳으로 넘기려면 `apps/react/.env.local`에 `FILES_ORIGIN=https://<PR 미리보기 주소>`를 적거나 명령 앞에 붙인다(`turbo.json`의 `passThroughEnv`로 `pnpm dev:all`에도 넘어간다). PR #255처럼 머지 전이라 배포한 사이트에 `/files`가 아직 없을 때 쓴다.
 
 키 없이 화면만 보려면 E2E가 쓰는 가짜 목록을 쓴다: 개발자 도구 콘솔에서 `window.__MACFOLIO_DOCUMENTS__ = [{ folder: '이력서', name: '시험.pdf', key: 'resume/test.pdf', kind: 'pdf' }]`를 넣고 Finder를 연다(파일 자체는 없어서 미리보기는 "열 수 없습니다"). 업로드 흐름 전체는 `e2e/finder-upload.spec.ts`가 가짜 API·가짜 R2로 시험한다(`pnpm --filter @macfolio/react test:e2e finder-upload`).
 
