@@ -634,9 +634,9 @@ const Memo: React.FC = () => {
 							</div>
 						</div>
 						<div className="memo-scroll">
-							<button type="button" className="memo-back" onClick={() => setPane('folders')}>
+							<IconButton className="memo-back" onClick={() => setPane('folders')}>
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
-							</button>
+							</IconButton>
 							{/* 휴대폰: iOS 메모처럼 목록 위에 큰 제목 (도구 막대의 제목은 좁은 창에서 숨는다) */}
 							<div className="memo-phone-title">
 								{/* 휴대폰의 태그 화면은 제목이 늘 '태그'이고, 고른 태그는 아래 칩 줄이 보여 준다 (iOS 메모) */}
@@ -794,9 +794,9 @@ const Memo: React.FC = () => {
 						)}
 						<div ref={readerScroll} className="memo-scroll">
 							<div className="memo-reader-compact-bar">
-								<button type="button" className="memo-back" onClick={() => setPane('list')}>
+								<IconButton className="memo-back" onClick={() => setPane('list')}>
 									<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {categoryName}
-								</button>
+								</IconButton>
 								{authorTools('compact-only')}
 								{pinButton('compact-only')}
 								{shareButton('compact-only')}

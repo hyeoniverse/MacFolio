@@ -510,13 +510,17 @@
 /* 목록으로 돌아가기 (좁은 창에서만 보인다) */
 .mail-back {
 	display: none;
+	justify-content: normal;
 	align-items: center;
 	gap: 6px;
 	position: relative;
 	z-index: 4;
+	min-width: 0;
+	height: auto;
 	margin-bottom: 12px;
 	padding: 4px 0;
 	border: none;
+	border-radius: 0;
 	background: none;
 	color: var(--mail-accent);
 	font-size: var(--text-subhead);

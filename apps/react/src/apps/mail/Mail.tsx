@@ -343,9 +343,9 @@ const Mail: React.FC = () => {
 						</section>
 
 						<section className="mail-reader">
-							<button type="button" className="mail-back" onClick={backToList}>
+							<IconButton className="mail-back" onClick={backToList}>
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> {MAILBOX_LABEL[mailbox]}
-							</button>
+							</IconButton>
 							{composing ? (
 								<ComposeView onSend={send} onCancel={backToList} />
 							) : selected ? (

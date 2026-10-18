@@ -174,7 +174,10 @@
 }
 
 .memo-find-steps button {
+	display: block;
 	width: 26px;
+	min-width: 0;
+	border-radius: 0;
 	height: 26px;
 	padding: 0;
 	border: none;

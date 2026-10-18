@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { env } from '@/shared/config/env';
 import { formatPostDate, type PostContent } from '@macfolio/desktop-core/memo';
 import { fetchRevision, fetchRevisions, type RevisionSummary } from '../postsApi';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /** 버전을 남긴 때 (9월 30일 오후 3:04) */
 const formatTime = (iso: string) =>
@@ -52,9 +53,9 @@ const RevisionsPanel = ({
 		return (
 			<div className="memo-revision-preview">
 				<div className="memo-revision-head">
-					<button type="button" className="memo-revision-back" onClick={() => setPreview(null)}>
+					<IconButton className="memo-revision-back" onClick={() => setPreview(null)}>
 						<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 버전 목록
-					</button>
+					</IconButton>
 					<span>{preview.label}</span>
 				</div>
 				<div className="memo-revision-body" role="document" aria-label={`${preview.label} 내용`}>

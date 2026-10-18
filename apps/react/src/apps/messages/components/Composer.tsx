@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import { LIMITS } from '../conversations';
+import IconButton from '@/shared/ui/button/IconButton';
 
 export interface SendResult {
 	sent: boolean;
@@ -68,9 +69,15 @@ const Composer: React.FC<Props> = ({ onSend, children, autoFocus, placeholder = 
 					}}
 				/>
 				{/* 실제 앱처럼 글을 쓰면 보내기 버튼이 나타난다 */}
-				<button type="submit" className="messages-send" aria-label="보내기" disabled={!canSend} hidden={!canSend}>
-					<i className="fa-solid fa-arrow-up" aria-hidden="true" />
-				</button>
+				<IconButton
+					type="submit"
+					variant="circle"
+					className="messages-send"
+					label="보내기"
+					icon="fa-solid fa-arrow-up"
+					disabled={!canSend}
+					hidden={!canSend}
+				/>
 			</div>
 			{error && (
 				<AlertDialog

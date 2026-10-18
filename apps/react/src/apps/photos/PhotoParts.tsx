@@ -9,6 +9,7 @@ import { captionOf, saveCaption, useCaptions } from './captionsApi';
 import { initialSwipe, swipeStep, type SwipeState } from './swipe';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
+import IconButton from '@/shared/ui/button/IconButton';
 
 /** 화면에 보이는 사진 (어느 앨범의 것인지 함께) */
 export type Shown = Photo & { album: Album };
@@ -183,18 +184,18 @@ export const Viewer = ({
 		>
 			<header className="photos-toolbar viewer">
 				<div className="photos-toolbar-group">
-					<button type="button" className="photos-circle" onClick={onClose} aria-label="돌아가기">
-						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
-					</button>
+					<IconButton
+						variant="circle"
+						className="photos-circle"
+						onClick={onClose}
+						label="돌아가기"
+						icon="fa-solid fa-chevron-left"
+					/>
 					{!photo.video && (
 						<div className="photos-capsule photos-zoom">
-							<button
-								type="button"
-								aria-label="축소"
-								onClick={() => setZoom((value) => Math.max(ZOOM.min, value - ZOOM.step))}
-							>
+							<IconButton label="축소" onClick={() => setZoom((value) => Math.max(ZOOM.min, value - ZOOM.step))}>
 								−
-							</button>
+							</IconButton>
 							<input
 								type="range"
 								aria-label="확대"
@@ -204,13 +205,9 @@ export const Viewer = ({
 								value={zoom}
 								onChange={(event) => setZoom(Number(event.target.value))}
 							/>
-							<button
-								type="button"
-								aria-label="확대하기"
-								onClick={() => setZoom((value) => Math.min(ZOOM.max, value + ZOOM.step))}
-							>
+							<IconButton label="확대하기" onClick={() => setZoom((value) => Math.min(ZOOM.max, value + ZOOM.step))}>
 								+
-							</button>
+							</IconButton>
 						</div>
 					)}
 				</div>
@@ -222,22 +219,18 @@ export const Viewer = ({
 				</div>
 				<div className="photos-toolbar-group end">
 					<div className="photos-capsule">
-						<button
-							type="button"
-							aria-label="정보"
+						<IconButton
+							label="정보"
 							aria-pressed={info}
-							className={info ? 'on' : undefined}
+							on={info}
+							icon="fa-solid fa-circle-info"
 							onClick={() => setInfo((value) => !value)}
-						>
-							<i className="fa-solid fa-circle-info" aria-hidden="true" />
-						</button>
-						<button
-							type="button"
-							aria-label="프로젝트 페이지 링크 공유"
+						/>
+						<IconButton
+							label="프로젝트 페이지 링크 공유"
+							icon="fa-solid fa-arrow-up-from-bracket"
 							onClick={() => void shareLink({ app: 'safari', id: photo.album.id }, photo.album.name)}
-						>
-							<i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
-						</button>
+						/>
 					</div>
 					{/* 좁은 창에서는 나침반 동그라미만 (Photos.css) */}
 					<button
