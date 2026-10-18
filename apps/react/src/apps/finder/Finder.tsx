@@ -1,31 +1,20 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
+import { useLocations } from './useLocations';
 import { useLaunchApp } from '@/desktop/useLaunchApp';
-import { APP_MANIFEST, WINDOW_APP_NAMES } from '@/apps/manifest';
-import { getPostRepository } from '@/apps/memo/repository';
-import { PROJECTS } from '@/shared/profile';
-import { useProjectsVersion } from '@/shared/site/siteContent';
+import { APP_MANIFEST } from '@/apps/manifest';
 import { requestOpen } from '@/shared/lib/openRequest';
 import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
-import {
-	buildLocations,
-	countLabel,
-	find,
-	KIND_LABELS,
-	pathTo,
-	search,
-	type FinderItem,
-	type FolderItem,
-} from './files';
-import { deleteDocument, loadDocuments, renameDocument, useDocumentEntries } from './documents';
+import { countLabel, find, KIND_LABELS, pathTo, search, type FinderItem, type FolderItem } from './files';
+import { deleteDocument, renameDocument } from './documents';
 import { useDocumentDrop } from './useDocumentDrop';
 import { messageOf } from '@/shared/api/client';
 import { notify } from '@/desktop/notifications/notificationStore';
-import { DOC_PATHS, DOC_SOURCES } from './docsBundle';
+import { DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
@@ -71,40 +60,7 @@ const Finder: React.FC = () => {
 	// 휴대폰에서는 홈 화면 이름처럼 '파일' (manifest.ts의 mobile)
 	const appTitle = mobile ? APP_MANIFEST.finder.mobile!.label : APP_MANIFEST.finder.label;
 
-	const [posts, setPosts] = useState<{ slug: string; title: string; date: string; category: string }[]>([]);
-	useEffect(() => {
-		let alive = true;
-		getPostRepository()
-			.list()
-			.then((list) => alive && setPosts(list))
-			.catch(() => undefined);
-		return () => {
-			alive = false;
-		};
-	}, []);
-
-	// 시스템 설정에서 프로젝트를 저장하면 프로젝트 폴더도 새로고침 없이 바뀐다
-	const projectsVersion = useProjectsVersion();
-	const documents = useDocumentEntries();
-	useEffect(() => {
-		void loadDocuments();
-	}, []);
-	const locations = useMemo(
-		() =>
-			buildLocations({
-				docs: DOC_PATHS,
-				posts,
-				projects: PROJECTS.map(({ id, name, icon, period }) => ({ id, name, icon, period })),
-				apps: WINDOW_APP_NAMES.filter((name) => name !== 'finder').map((name) => ({
-					app: name,
-					label: APP_MANIFEST[name].label,
-					icon: APP_MANIFEST[name].icon,
-				})),
-				files: documents,
-			}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- PROJECTS는 안만 바뀌는 배열이라 판(version)으로 다시 계산한다
-		[posts, projectsVersion, documents]
-	);
+	const locations = useLocations();
 
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: [{ folder: 'docs' }], at: 0 });
 	const place = history.places[history.at];

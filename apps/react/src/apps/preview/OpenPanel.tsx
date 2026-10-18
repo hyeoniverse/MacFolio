@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import {
 	ChevronDown,
@@ -6,93 +6,124 @@ import {
 	ChevronRight,
 	ChevronsUpDown,
 	Clock,
+	FileText,
 	Folder,
 	FolderOpen,
 	LayoutGrid,
 	Rows3,
 	Search,
+	SquarePen,
 	type LucideIcon,
 } from 'lucide-react';
 import SearchField from '@/shared/ui/search-field/SearchField';
-import {
-	DOCUMENT_FOLDERS,
-	fileUrl,
-	loadDocuments,
-	useDocumentEntries,
-	type DocumentEntry,
-	type DocumentFolder,
-} from '@/apps/finder/documents';
+import { fileUrl } from '@/apps/finder/documents';
+import { find, pathTo, search, type FileItem, type FinderItem } from '@/apps/finder/files';
+import { useLocations } from '@/apps/finder/useLocations';
+import FinderIcon from '@/apps/finder/FinderIcon';
 import { loadPdf } from './pdf';
 import { PdfThumb } from './PdfView';
 
-/** preview: 미리보기 폴더(iCloud, 모든 문서), recents: 최근 항목, 그리고 문서 폴더 */
-type Place = 'preview' | 'recents' | DocumentFolder;
+/**
+ * 고른 곳. preview: iCloud의 미리보기 폴더(올린 문서 파일 전부), recents: 최근 항목,
+ * 그 밖에는 Finder 트리의 폴더 id (docs, docs:이력서, blog/프론트엔드 …)
+ */
+type Place = 'preview' | 'recents' | string;
 
-const FOLDER_NOTES: Record<DocumentFolder, string> = {
-	이력서: '공개용 이력서를 준비하고 있습니다.',
-	포트폴리오: '포트폴리오 파일을 준비하고 있습니다.',
-	자격증: '자격증 사본을 준비하고 있습니다.',
+/** 사이드바 즐겨찾기 아이콘 (Finder의 위치와 같은 순서) */
+const LOCATION_ICONS: Record<string, LucideIcon> = {
+	docs: FileText,
+	projects: Folder,
+	blog: SquarePen,
+	apps: LayoutGrid,
 };
 
-/** 파일 그림: 그림은 그대로, PDF는 첫 쪽 */
-const FileThumb: React.FC<{ entry: DocumentEntry }> = ({ entry }) => {
+/** 미리보기가 열 수 있는 것: PDF와 그림 */
+const isFile = (item: FinderItem): item is FileItem => item.kind === 'pdf' || item.kind === 'image';
+
+/** 트리 안의 PDF·그림 전부 */
+function allFiles(items: FinderItem[]): FileItem[] {
+	return items.flatMap((item) => (item.kind === 'folder' ? allFiles(item.children) : isFile(item) ? [item] : []));
+}
+
+/** 파일 그림: 그림은 그대로, PDF는 첫 쪽, 그 밖은 Finder 아이콘 */
+const ItemThumb: React.FC<{ item: FinderItem }> = ({ item }) => {
 	const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
+	const pdfKey = item.kind === 'pdf' ? item.key : null;
 	useEffect(() => {
-		if (entry.kind !== 'pdf') return;
+		if (!pdfKey) return;
 		let alive = true;
-		loadPdf(fileUrl(entry.key)).then(
+		loadPdf(fileUrl(pdfKey)).then(
 			(loaded) => alive && setDoc(loaded),
 			() => undefined
 		);
 		return () => {
 			alive = false;
 		};
-	}, [entry.key, entry.kind]);
-	if (entry.kind === 'image') return <img src={fileUrl(entry.key)} alt="" draggable={false} />;
-	return doc ? (
-		<PdfThumb doc={doc} number={1} width={64} />
-	) : (
-		<span className="preview-open-blank" aria-hidden="true" />
-	);
+	}, [pdfKey]);
+	if (item.kind === 'image')
+		return <img className="preview-open-paper" src={fileUrl(item.key)} alt="" draggable={false} />;
+	if (item.kind === 'pdf')
+		return doc ? (
+			<PdfThumb doc={doc} number={1} width={64} />
+		) : (
+			<span className="preview-open-blank" aria-hidden="true" />
+		);
+	return <FinderIcon item={item} />;
 };
 
 /**
  * 파일 없이 미리보기를 열면 뜨는 '열기' 창 (macOS 미리보기가 처음 뜰 때처럼).
- * 왼쪽은 미리보기 폴더(처음 고른 곳, 모든 문서)·최근 항목과 문서 폴더(이력서·포트폴리오·자격증), 가운데는 파일 그림. 두 번 누르거나 열기로 연다
+ * Finder와 같은 파일 트리를 둘러본다: 왼쪽은 미리보기(iCloud)·최근 항목과 즐겨찾기(문서·프로젝트·블로그·응용 프로그램),
+ * 폴더는 두 번 눌러 들어가고 뒤로·앞으로로 오간다. 미리보기가 열 수 없는 파일(문서·글·앱)은 흐리게 보이고 고를 수 없다
  */
-const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: () => void }> = ({
-	onOpen,
-	onCancel,
-}) => {
-	const entries = useDocumentEntries();
-	useEffect(() => {
-		void loadDocuments();
-	}, []);
-	const [place, setPlace] = useState<Place>('preview');
+const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => void }> = ({ onOpen, onCancel }) => {
+	const locations = useLocations();
+	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: ['preview'], at: 0 });
+	const place = history.places[history.at];
 	const [query, setQuery] = useState('');
 	const [selected, setSelected] = useState<string | null>(null);
 
-	const q = query.trim().toLocaleLowerCase();
-	const shown = entries
-		.filter((entry) => place === 'preview' || place === 'recents' || entry.folder === place)
-		.filter((entry) => !q || entry.name.toLocaleLowerCase().includes(q))
-		.sort((a, b) =>
-			place === 'recents' ? (b.updated ?? '').localeCompare(a.updated ?? '') : a.name.localeCompare(b.name, 'ko')
-		);
-	const chosen = shown.find((entry) => entry.key === selected) ?? null;
-	const title = place === 'preview' ? '미리보기' : place === 'recents' ? '최근 항목' : place;
-	// 위치 칸: macOS처럼 미리보기 폴더는 'iCloud'에 있다
+	const go = (next: Place) => {
+		setHistory(({ places, at }) => ({ places: [...places.slice(0, at + 1), next], at: at + 1 }));
+		setSelected(null);
+		setQuery('');
+	};
+	const step = (delta: number) => {
+		setHistory((current) => ({ ...current, at: Math.min(current.places.length - 1, Math.max(0, current.at + delta)) }));
+		setSelected(null);
+	};
+
+	const files = useMemo(() => allFiles(locations), [locations]);
+	const folder = place === 'preview' || place === 'recents' ? null : find(locations, place);
+	const q = query.trim();
+	const shown: FinderItem[] = q
+		? search(locations, q)
+		: place === 'preview'
+			? [...files].sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+			: place === 'recents'
+				? [...files].sort((a, b) => (b.modified ?? '').localeCompare(a.modified ?? ''))
+				: folder?.kind === 'folder'
+					? folder.children
+					: [];
+	const chosen = shown.find((item) => item.id === selected) ?? null;
+	const title = place === 'preview' ? '미리보기' : place === 'recents' ? '최근 항목' : (folder?.name ?? '');
+	// 위치 칸: 미리보기 폴더는 macOS처럼 'iCloud'에 있다
 	const location = place === 'preview' ? 'iCloud' : title;
+	// 사이드바에서 칠할 곳: 폴더 안에 들어가 있으면 그 폴더가 든 즐겨찾기
+	const root = place === 'preview' || place === 'recents' ? place : (pathTo(locations, place)[0]?.id ?? place);
+
+	const open = (item: FinderItem) => {
+		if (item.kind === 'folder') go(item.id);
+		else if (isFile(item)) onOpen(item);
+	};
 
 	const placeButton = (target: Place, Icon: LucideIcon, label: string) => (
 		<button
+			key={target}
 			type="button"
-			className={`preview-open-place${place === target ? ' active' : ''}`}
-			aria-current={place === target ? 'true' : undefined}
-			onClick={() => {
-				setPlace(target);
-				setSelected(null);
-			}}
+			className={`preview-open-place${root === target ? ' active' : ''}`}
+			aria-current={root === target ? 'true' : undefined}
+			onClick={() => go(target)}
 		>
 			<Icon size={18} strokeWidth={1.5} aria-hidden="true" />
 			{label}
@@ -102,21 +133,26 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 	return (
 		<div className="preview-open" role="dialog" aria-label="열기">
 			<nav className="preview-open-sidebar" aria-label="위치">
-				{placeButton('preview', place === 'preview' ? FolderOpen : Folder, '미리보기')}
+				{placeButton('preview', root === 'preview' ? FolderOpen : Folder, '미리보기')}
 				{placeButton('recents', Clock, '최근 항목')}
 				<p className="preview-open-heading">즐겨찾기</p>
-				{DOCUMENT_FOLDERS.map((folder) => (
-					<React.Fragment key={folder}>
-						{placeButton(folder, place === folder ? FolderOpen : Folder, folder)}
-					</React.Fragment>
-				))}
+				{locations.map((item) => placeButton(item.id, LOCATION_ICONS[item.id] ?? Folder, item.name))}
 			</nav>
 			<div className="preview-open-main">
-				{/* macOS 열기 창의 위 막대: 뒤로·앞으로, 보기, 위치, 찾기 (보기·이동은 모양만) */}
+				{/* macOS 열기 창의 위 막대: 뒤로·앞으로, 보기, 위치, 찾기 */}
 				<div className="preview-open-bar">
-					<span className="preview-open-capsule" aria-hidden="true">
-						<ChevronLeft size={18} strokeWidth={1.6} />
-						<ChevronRight size={18} strokeWidth={1.6} />
+					<span className="preview-open-capsule">
+						<button type="button" aria-label="뒤로" disabled={history.at === 0} onClick={() => step(-1)}>
+							<ChevronLeft size={18} strokeWidth={1.6} aria-hidden="true" />
+						</button>
+						<button
+							type="button"
+							aria-label="앞으로"
+							disabled={history.at === history.places.length - 1}
+							onClick={() => step(1)}
+						>
+							<ChevronRight size={18} strokeWidth={1.6} aria-hidden="true" />
+						</button>
 					</span>
 					<span className="preview-open-capsule" aria-hidden="true">
 						<LayoutGrid size={16} strokeWidth={1.5} />
@@ -141,43 +177,43 @@ const OpenPanel: React.FC<{ onOpen: (entry: DocumentEntry) => void; onCancel: ()
 					/>
 				</div>
 				{shown.length > 0 ? (
-					<div className="preview-open-grid" role="listbox" aria-label={title}>
-						{shown.map((entry) => (
-							<button
-								key={entry.key}
-								type="button"
-								role="option"
-								aria-selected={entry.key === selected}
-								className={`preview-open-file${entry.key === selected ? ' selected' : ''}`}
-								onClick={() => setSelected(entry.key)}
-								onDoubleClick={() => onOpen(entry)}
-							>
-								<span className="preview-open-thumb">
-									<FileThumb entry={entry} />
-								</span>
-								<span className="preview-open-name">{entry.name}</span>
-							</button>
-						))}
+					<div className="preview-open-grid" role="listbox" aria-label={q ? '찾은 항목' : title}>
+						{shown.map((item) => {
+							// 폴더와 PDF·그림만 고를 수 있다 (macOS 열기 창처럼 나머지는 흐리게)
+							const usable = item.kind === 'folder' || isFile(item);
+							return (
+								<button
+									key={item.id}
+									type="button"
+									role="option"
+									aria-selected={item.id === selected}
+									aria-disabled={!usable || undefined}
+									className={`preview-open-file${item.id === selected ? ' selected' : ''}${usable ? '' : ' unusable'}`}
+									onClick={() => usable && setSelected(item.id)}
+									onDoubleClick={() => open(item)}
+								>
+									<span className="preview-open-thumb">
+										<ItemThumb item={item} />
+									</span>
+									<span className="preview-open-name">{item.name}</span>
+								</button>
+							);
+						})}
 					</div>
 				) : (
 					<p className="preview-open-empty">
 						{q
 							? '찾는 이름이 없습니다.'
-							: place === 'preview' || place === 'recents'
-								? '파일이 없습니다.'
-								: FOLDER_NOTES[place]}
+							: folder?.kind === 'folder'
+								? (folder.emptyNote ?? '비어 있음')
+								: '파일이 없습니다.'}
 					</p>
 				)}
 				<div className="preview-open-actions">
 					<button type="button" className="ui-button" onClick={onCancel}>
 						취소
 					</button>
-					<button
-						type="button"
-						className="ui-button primary"
-						disabled={!chosen}
-						onClick={() => chosen && onOpen(chosen)}
-					>
+					<button type="button" className="ui-button primary" disabled={!chosen} onClick={() => chosen && open(chosen)}>
 						열기
 					</button>
 				</div>
