@@ -319,6 +319,10 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 	it('쿼리·파라미터가 틀리면 400', async () => {
 		await request(server()).get('/analytics/summary').query({ from: '2026-12-31', to: '2026-01-01' }).expect(400);
 		await request(server()).get('/analytics/views').expect(400);
+		await request(server())
+			.get('/analytics/summary')
+			.query({ utm: 'x'.repeat(400) })
+			.expect(400);
 		await request(server()).get('/posts/x/revisions/abc').set('Cookie', adminCookie).expect(400);
 		await request(server()).get('/images/search').set('Cookie', adminCookie).query({ q: '' }).expect(400);
 		await request(server()).post('/images/unsplash/!/download').set('Cookie', adminCookie).expect(400);

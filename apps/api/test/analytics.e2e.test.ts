@@ -152,6 +152,80 @@ describe('트래픽 분석 (e2e)', () => {
 			.expect(400);
 	});
 
+	it('utm (#211): 매체·조합·term·content 표와 조합 하나의 일별 추이(utm=, 관리자만). 값은 소문자로 다듬는다', async () => {
+		const today = kstDay(new Date());
+		const yesterday = shiftDay(today, -1);
+		// 어제 같은 조합으로 온 방문 하나 (받은 날짜를 직접 넣는다)
+		await prisma.analyticsEvent.create({
+			data: {
+				type: 'visit',
+				day: yesterday,
+				dayHash: 'h-utm',
+				visitId: 'v-utm-y',
+				utmSource: 'linkedin',
+				utmMedium: 'social',
+				utmCampaign: 'resume-2026',
+				createdAt: new Date(`${yesterday}T03:00:00Z`),
+			},
+		});
+		await send(
+			visit('v-utm00001', {
+				utmSource: 'LinkedIn',
+				utmMedium: 'Social',
+				utmCampaign: 'Resume 2026',
+				utmTerm: 'frontend',
+				utmContent: 'top',
+			})
+		).expect(204);
+		await send(visit('v-utm00002', { utmSource: 'velog' }), { 'User-Agent': `${CHROME_MAC} Edg/140.0` }).expect(204);
+		expect(await prisma.analyticsEvent.findFirst({ where: { visitId: 'v-utm00001', type: 'visit' } })).toMatchObject({
+			utmSource: 'linkedin',
+			utmMedium: 'social',
+			utmCampaign: 'resume-2026',
+			utmTerm: 'frontend',
+			utmContent: 'top',
+		});
+
+		const key = 'linkedin / social / resume-2026';
+		const range = { from: yesterday, to: today };
+		const admin = await request(server())
+			.get('/analytics/summary')
+			.set('Cookie', adminCookie)
+			.query({ ...range, utm: key })
+			.expect(200);
+		expect(admin.body.breakdown.medium).toEqual([{ key: 'social', value: 2 }]);
+		expect(admin.body.breakdown.utm).toEqual([
+			{ key, value: 2 },
+			{ key: 'velog /  / ', value: 1 },
+		]);
+		expect(admin.body.breakdown.term).toEqual([{ key: 'frontend', value: 1 }]);
+		expect(admin.body.breakdown.content).toEqual([{ key: 'top', value: 1 }]);
+		expect(admin.body.utmTrend).toEqual({
+			key,
+			days: [
+				{ day: yesterday, visits: 1 },
+				{ day: today, visits: 1 },
+			],
+		});
+
+		// 방문자: utm 표는 비고, utm=은 무시한다 (추이가 없다)
+		const visitor = await request(server())
+			.get('/analytics/summary')
+			.query({ ...range, utm: key })
+			.expect(200);
+		for (const metric of ['source', 'medium', 'campaign', 'utm', 'term', 'content'])
+			expect(visitor.body.breakdown[metric], metric).toEqual([]);
+		expect(visitor.body.utmTrend).toBeUndefined();
+		expect(JSON.stringify(visitor.body)).not.toMatch(/linkedin|velog|resume|frontend|social/);
+
+		// 틀린 utm=은 400
+		await request(server())
+			.get('/analytics/summary')
+			.set('Cookie', adminCookie)
+			.query({ ...range, utm: 'x'.repeat(400) })
+			.expect(400);
+	});
+
 	it('글 조회수: 전체 기간, 한 방문에서 같은 글은 한 번. 누구나 본다', async () => {
 		const today = kstDay(new Date());
 		const yesterday = shiftDay(today, -1);

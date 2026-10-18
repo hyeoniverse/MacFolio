@@ -73,15 +73,26 @@ export class AnalyticsController {
 	@Get('summary')
 	@ApiQuery({ name: 'from', required: false, description: 'YYYY-MM-DD (기본: to의 6일 전)' })
 	@ApiQuery({ name: 'to', required: false, description: 'YYYY-MM-DD (기본: 오늘, 한국 시간)' })
+	@ApiQuery({
+		name: 'utm',
+		required: false,
+		description:
+			'출처·매체·캠페인 조합 키 (예: linkedin / social / resume-2026, 빈 칸은 빈 글자). 관리자에게만 그 조합의 일별 방문(utmTrend)을 더한다. 방문자에게는 무시한다',
+	})
 	@ApiOkResponse({
 		description:
 			'일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳(묶음)·앱·글·나라·기기별 표. 누구나 본다. ' +
 			'관리자(scope: admin)에게만 들어온 곳의 호스트와 utm 표가 있다. 방문자에게는 1분 동안 같은 값을 준다',
 	})
-	@ApiBadRequestResponse({ description: '기간이 틀렸다 (1~366일)' })
-	async summary(@Query('from') from: unknown, @Query('to') to: unknown, @Req() request: Request) {
+	@ApiBadRequestResponse({ description: '기간이 틀렸다 (1~366일), utm이 틀렸다' })
+	async summary(
+		@Query('from') from: unknown,
+		@Query('to') to: unknown,
+		@Query('utm') utm: unknown,
+		@Req() request: Request
+	) {
 		const admin = await this.auth.findAdmin(request.cookies?.[SESSION_COOKIE]);
-		return this.stats.summary(from, to, !!admin);
+		return this.stats.summary(from, to, !!admin, new Date(), utm);
 	}
 
 	@Get('views')
