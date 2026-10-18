@@ -164,8 +164,9 @@ const albumPhotos = (album: Album): FileItem[] =>
 		}));
 
 /**
- * 프로젝트 폴더: 프로젝트마다 폴더 하나 (실제 OS처럼). 안에는 프로젝트(Safari로 연다)가 맨 위,
- * 그다음 사진 폴더(그 프로젝트 앨범의 그림), 그다음 관리자가 올린 파일(R2, 폴더 값 project:<id>)을 이름순으로
+ * 프로젝트 폴더: 프로젝트마다 폴더 하나 (실제 OS처럼). 안에는 사진 폴더(그 프로젝트 앨범의 그림),
+ * 그다음 관리자가 올린 파일(R2, 폴더 값 project:<id>)을 이름순으로. 실행하는 앱은 폴더에 두지 않는다
+ * (실제 Mac처럼 응용 프로그램에만 있다)
  */
 function projectsFolder(projects: TreeInput['projects'], files: DocumentEntry[], albums: Album[]): FolderItem {
 	return {
@@ -180,14 +181,6 @@ function projectsFolder(projects: TreeInput['projects'], files: DocumentEntry[],
 				.map(fileItem)
 				.sort(byName);
 			const children: FinderItem[] = [
-				{
-					kind: 'project',
-					id: `project:${project.id}`,
-					name: project.name,
-					projectId: project.id,
-					icon: project.icon,
-					period: project.period,
-				},
 				...(photos.length > 0
 					? [{ kind: 'folder' as const, id: `projects/${project.id}/photos`, name: '사진', children: photos }]
 					: []),
