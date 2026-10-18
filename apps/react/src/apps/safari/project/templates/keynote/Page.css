@@ -100,7 +100,7 @@
 }
 
 .kn-group {
-	margin-bottom: 10px;
+	margin-bottom: var(--space-10);
 	color: var(--kn-dim);
 	font-family: var(--kn-mono);
 	font-size: 12px;
@@ -130,7 +130,7 @@
 .kn-links > button {
 	display: inline-flex;
 	align-items: center;
-	gap: 2px;
+	gap: var(--space-2);
 	padding: 0;
 	border: 0;
 	background: none;
@@ -146,7 +146,7 @@
 }
 
 .kn-links > [data-primary] {
-	padding: 12px 24px;
+	padding: var(--space-12) var(--space-24);
 	border-radius: 999px;
 	background-color: var(--kn-text);
 	color: #000000;
@@ -262,7 +262,7 @@
 .kn-brand {
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	color: var(--kn-text);
 	font-size: 17px;
 	font-weight: 600;
@@ -347,7 +347,7 @@
 }
 
 .kn-meta dd {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--kn-text);
 	font-size: 15px;
 	line-height: 1.5;
@@ -393,7 +393,7 @@
 
 .kn-head h2 {
 	max-width: 18em;
-	margin-top: 12px;
+	margin-top: var(--space-12);
 	font-size: clamp(30px, 4cqi, 56px);
 	font-weight: 600;
 	letter-spacing: -0.032em;
@@ -402,7 +402,7 @@
 
 .kn-lead {
 	max-width: 40em;
-	margin-top: 20px;
+	margin-top: var(--space-20);
 	color: var(--kn-muted);
 	font-size: clamp(17px, 1.6cqi, 20px);
 	line-height: 1.6;
@@ -459,7 +459,7 @@
 
 .kn-stat-label {
 	display: block;
-	margin-top: 16px;
+	margin-top: var(--space-16);
 	color: var(--kn-muted);
 	font-size: 15px;
 	line-height: 1.45;
@@ -524,21 +524,21 @@
 }
 
 .kn-feature .kn-detail {
-	margin-top: 20px;
-	padding-top: 20px;
+	margin-top: var(--space-20);
+	padding-top: var(--space-20);
 	border-top: 1px solid var(--kn-line);
 	font-size: 15px;
 }
 
 .kn-media-set {
 	display: grid;
-	gap: 16px;
+	gap: var(--space-16);
 }
 
 .kn-media-more {
 	display: grid;
 	grid-template-columns: repeat(var(--kn-cols, 2), minmax(0, 1fr));
-	gap: 16px;
+	gap: var(--space-16);
 }
 
 .kn-media-more[data-count='1'] {
@@ -586,7 +586,7 @@
 
 .kn-icon-caption b {
 	display: block;
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	color: var(--kn-text);
 	font-size: 18px;
 	font-weight: 600;
@@ -602,7 +602,7 @@
 	display: flex;
 	align-items: baseline;
 	justify-content: center;
-	gap: 14px;
+	gap: var(--space-14);
 	margin-top: 22px;
 	color: var(--kn-text);
 	font-size: 16px;
@@ -612,7 +612,7 @@
 .kn-thumbs {
 	display: grid;
 	grid-template-columns: repeat(var(--kn-cols, 4), minmax(0, 1fr));
-	gap: 16px;
+	gap: var(--space-16);
 	margin-top: 40px;
 }
 
@@ -685,8 +685,8 @@
 .kn-thumb-caption {
 	display: flex;
 	align-items: baseline;
-	gap: 8px;
-	margin-top: 12px;
+	gap: var(--space-8);
+	margin-top: var(--space-12);
 	font-size: 14px;
 	font-weight: 500;
 }
@@ -762,14 +762,14 @@
 }
 
 .kn-slide-step {
-	margin-top: 24px;
+	margin-top: var(--space-24);
 	color: var(--tpl-accent);
 	font-size: 14px;
 	font-weight: 600;
 }
 
 .kn-slide h3 {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	font-size: 22px;
 	font-weight: 600;
 	letter-spacing: -0.02em;
@@ -777,17 +777,17 @@
 }
 
 .kn-slide .kn-body {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	font-size: 16px;
 }
 
 .kn-slide .kn-detail {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	font-size: 14.5px;
 }
 
 .kn-slide .kn-media-more {
-	margin-top: 16px;
+	margin-top: var(--space-16);
 }
 
 /* 만든 방식: 가는 선으로 나눈 두 칸. 그림이 있는 항목은 한 줄을 다 쓴다 */
@@ -840,12 +840,12 @@
 }
 
 .kn-built .kn-body {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	font-size: 16.5px;
 }
 
 .kn-built .kn-detail {
-	margin-top: 12px;
+	margin-top: var(--space-12);
 	font-size: 14.5px;
 }
 
@@ -864,7 +864,7 @@
 }
 
 .kn-story-head h2 {
-	margin-top: 14px;
+	margin-top: var(--space-14);
 	font-size: clamp(32px, 4cqi, 52px);
 	font-weight: 600;
 	letter-spacing: -0.032em;
@@ -933,7 +933,7 @@
 }
 
 .kn-story-points h3 {
-	margin-top: 12px;
+	margin-top: var(--space-12);
 	font-size: 21px;
 	font-weight: 600;
 	letter-spacing: -0.02em;
@@ -941,24 +941,24 @@
 }
 
 .kn-story-points .kn-body {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	font-size: 16.5px;
 }
 
 .kn-story-points .kn-detail {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	font-size: 14.5px;
 }
 
 .kn-story-points .kn-media-set {
-	margin-top: 20px;
+	margin-top: var(--space-20);
 }
 
 /* 조작법: 큰 글쇠 */
 .kn-keys {
 	display: grid;
 	grid-template-columns: repeat(var(--kn-cols, 4), minmax(0, 1fr));
-	gap: 16px;
+	gap: var(--space-16);
 }
 
 .kn-keys[data-count='1'] {
@@ -987,7 +987,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .kn-keys kbd {
@@ -1008,7 +1008,7 @@
 }
 
 .kn-keys dd {
-	margin-top: 24px;
+	margin-top: var(--space-24);
 	color: var(--kn-muted);
 	font-size: 15px;
 	line-height: 1.45;
@@ -1043,7 +1043,7 @@
 
 .kn-timeline time {
 	display: block;
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--kn-text);
 	font-family: var(--kn-mono);
 	font-size: 13px;
@@ -1052,7 +1052,7 @@
 
 .kn-timeline-label {
 	display: block;
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	color: var(--kn-muted);
 	font-size: 15px;
 	line-height: 1.5;
@@ -1082,7 +1082,7 @@
 .kn-sheet > div {
 	display: grid;
 	grid-template-columns: minmax(120px, 2fr) minmax(0, 5fr);
-	gap: 24px;
+	gap: var(--space-24);
 	padding: 24px 0;
 	border-top: 1px solid var(--kn-line);
 }
@@ -1103,11 +1103,11 @@
 .kn-stack {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .kn-stack li {
-	padding: 4px 12px;
+	padding: var(--space-4) var(--space-12);
 	border-radius: 999px;
 	box-shadow: 0 0 0 1px var(--kn-line-strong);
 	color: var(--kn-text);
@@ -1155,14 +1155,14 @@
 }
 
 .kn-contributions .kn-index {
-	padding-top: 4px;
+	padding-top: var(--space-4);
 	color: var(--tpl-accent);
 }
 
 .kn-credits > li {
 	display: grid;
 	grid-template-columns: minmax(100px, 2fr) minmax(0, 3fr) minmax(0, 3fr);
-	gap: 24px;
+	gap: var(--space-24);
 	padding: 24px 0;
 	border-top: 1px solid var(--kn-line);
 	line-height: 1.5;
@@ -1193,7 +1193,7 @@
 }
 
 .kn-credit-name i {
-	margin-left: 6px;
+	margin-left: var(--space-6);
 	color: var(--tpl-accent);
 	font-size: 0.7em;
 }
@@ -1205,7 +1205,7 @@
 
 .kn-credit-note {
 	display: block;
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	color: var(--kn-dim);
 	font-size: 14px;
 }
@@ -1267,7 +1267,7 @@
 	}
 
 	.kn-feature-num {
-		margin-bottom: 20px;
+		margin-bottom: var(--space-20);
 	}
 
 	/* 한 열이면 그림은 양쪽 모두 창 가장자리까지 */
@@ -1322,7 +1322,7 @@
 	.kn-timeline > li {
 		display: grid;
 		grid-template-columns: 110px minmax(0, 1fr);
-		column-gap: 16px;
+		column-gap: var(--space-16);
 		padding: 0 0 28px 28px;
 	}
 
@@ -1396,12 +1396,12 @@
 	.kn-sheet > div,
 	.kn-credits > li {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 6px;
+		gap: var(--space-6);
 	}
 
 	.kn-timeline > li {
 		grid-template-columns: minmax(0, 1fr);
-		row-gap: 6px;
+		row-gap: var(--space-6);
 	}
 
 	.kn-story-facts {
@@ -1446,7 +1446,7 @@
 /* 배포 결과물: 고정폭 글씨는 넓어 한 줄에 모두 담기 어렵다. 올린 곳과 호스트를 한 줄씩 나누고, 넘치면 말줄임으로 끝낸다 */
 .kn-deploy-meta {
 	display: grid;
-	gap: 2px;
+	gap: var(--space-2);
 }
 
 .kn-deploy-meta > span {

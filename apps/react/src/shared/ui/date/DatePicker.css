@@ -3,12 +3,10 @@
 	position: fixed;
 	z-index: var(--z-menu);
 	width: 248px;
-	padding: 10px;
+	padding: var(--space-10);
 	border-radius: 12px;
 	background-color: var(--color-popover-bg);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.15),
-		0 10px 30px rgba(0, 0, 0, 0.2);
+	box-shadow: var(--shadow-menu);
 	color: var(--color-popover-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	font-size: var(--text-caption);
@@ -19,8 +17,8 @@
 .ui-calendar-head {
 	display: flex;
 	align-items: center;
-	gap: 2px;
-	margin-bottom: 6px;
+	gap: var(--space-2);
+	margin-bottom: var(--space-6);
 	padding: 0 2px;
 }
 
@@ -74,7 +72,7 @@
 .ui-calendar-grid {
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
-	gap: 2px;
+	gap: var(--space-2);
 	text-align: center;
 }
 
@@ -93,7 +91,7 @@
 .ui-calendar-picks {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
-	gap: 4px;
+	gap: var(--space-4);
 	text-align: center;
 }
 
@@ -137,7 +135,7 @@
 
 .ui-calendar-today {
 	width: 100%;
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	padding: 5px 0;
 	border-radius: var(--radius-sm);
 	font-weight: 600;

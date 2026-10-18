@@ -31,7 +31,7 @@
 	display: flex;
 	flex: none;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--space-2);
 	width: 180px;
 	padding: 0 10px 12px;
 	border-right: 1px solid var(--color-divider);
@@ -44,7 +44,7 @@
 }
 
 .bin-sidebar h2 {
-	margin: 4px 8px;
+	margin: var(--space-4) var(--space-8);
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption2);
 	font-weight: 600;
@@ -53,7 +53,7 @@
 .bin-location {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	padding: 5px 8px;
 	border: none;
 	border-radius: var(--radius-sm);
@@ -99,7 +99,7 @@
 	display: flex;
 	flex: none;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	height: 52px;
 	padding: 0 16px;
 	border-bottom: 1px solid var(--color-divider);
@@ -127,7 +127,7 @@
 .bin-data-list {
 	flex: 1;
 	margin: 0;
-	padding: 6px;
+	padding: var(--space-6);
 	overflow-y: auto;
 	list-style: none;
 }
@@ -136,8 +136,8 @@
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: center;
-	gap: 2px 12px;
-	padding: 8px 10px;
+	gap: var(--space-2) var(--space-12);
+	padding: var(--space-8) var(--space-10);
 	border-radius: var(--radius-sm);
 }
 
@@ -200,8 +200,8 @@
 	flex: none;
 	align-items: center;
 	justify-content: space-between;
-	gap: 12px;
-	padding: 10px 16px;
+	gap: var(--space-12);
+	padding: var(--space-10) var(--space-16);
 	border-bottom: 1px solid var(--color-divider);
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption);
@@ -233,7 +233,7 @@
 .bin-file-list {
 	flex: 1;
 	margin: 0;
-	padding: 6px;
+	padding: var(--space-6);
 	overflow-y: auto;
 	list-style: none;
 }
@@ -243,7 +243,7 @@
 	grid-template-columns: 40px minmax(0, 1fr) auto;
 	align-items: center;
 	gap: 0 12px;
-	padding: 6px 10px;
+	padding: var(--space-6) var(--space-10);
 	border-radius: var(--radius-sm);
 }
 
@@ -300,7 +300,7 @@
 /* 아래 상태 막대: 항목 수 (Finder의 'n개의 항목') */
 .bin-statusbar {
 	flex: none;
-	padding: 6px 16px;
+	padding: var(--space-6) var(--space-16);
 	border-top: 1px solid var(--color-divider);
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption2);
@@ -319,7 +319,7 @@
 .bin-files-note {
 	flex: none;
 	margin: 0;
-	padding: 8px 16px;
+	padding: var(--space-8) var(--space-16);
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption);
 	line-height: 1.5;

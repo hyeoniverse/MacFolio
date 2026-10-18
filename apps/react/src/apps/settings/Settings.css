@@ -186,7 +186,7 @@
 	flex-wrap: nowrap;
 	overflow-x: auto;
 	margin: -8px;
-	padding: 8px;
+	padding: var(--space-8);
 	scroll-snap-type: x proximity;
 	/* 칸을 맞추는 자리도 안쪽 여백만큼 들인다 (없으면 첫 칸이 8px 잘린 채로 맞춰진다) */
 	scroll-padding-inline: 8px;
@@ -326,7 +326,7 @@
 /* 상자(Modal)는 div라 칸 사이 간격은 안의 form이 잡는다 (ui-alert의 grid와 같게) */
 .wallpaper-rename form {
 	display: grid;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .wallpaper-rename input {
@@ -445,8 +445,8 @@
 
 .privacy-card {
 	display: flex;
-	gap: 12px;
-	padding: 14px 16px;
+	gap: var(--space-12);
+	padding: var(--space-14) var(--space-16);
 }
 
 .privacy-card p {
@@ -512,7 +512,7 @@
 .privacy-group {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .privacy-group h3 {
@@ -532,9 +532,9 @@
 .privacy-row {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	min-height: 52px;
-	padding: 8px 14px;
+	padding: var(--space-8) var(--space-14);
 	border-bottom: 1px solid var(--color-divider);
 }
 
@@ -572,7 +572,7 @@
 .showcase {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+	gap: var(--space-20);
 	max-width: 560px;
 }
 
@@ -583,7 +583,7 @@
 .showcase-group {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 /* 묶음 제목: 목록 위의 작은 회색 글자 */
@@ -599,18 +599,18 @@
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .showcase-count {
-	margin-left: 4px;
+	margin-left: var(--space-4);
 	font-weight: 400;
 }
 
 .showcase-head-actions {
 	display: flex;
-	gap: 14px;
-	padding-right: 4px;
+	gap: var(--space-14);
+	padding-right: var(--space-4);
 }
 
 /* 편집·취소·완료: 테두리 없는 파란 글자 (macOS·iOS 설정) */
@@ -643,7 +643,7 @@
 .showcase-row {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	min-height: 48px;
 	padding: 0 6px 0 12px;
 }
@@ -660,7 +660,7 @@
 	display: flex;
 	flex: 1;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	min-width: 0;
 	padding: 7px 0;
 }
@@ -795,7 +795,7 @@ ol.showcase-list .showcase-row.reordering {
 .showcase-lookup {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	height: 40px;
 	padding: 0 6px 0 12px;
 	border: 1px solid var(--color-divider);
@@ -827,7 +827,7 @@ ol.showcase-list .showcase-row.reordering {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 /* ─── 휴대폰 (iOS 설정처럼, 메모와 같은 모양) ───
@@ -864,7 +864,7 @@ ol.showcase-list .showcase-row.reordering {
 .container.mobile .settings-nav-item {
 	flex: none;
 	justify-content: flex-start;
-	gap: 14px;
+	gap: var(--space-14);
 	position: relative;
 	padding: 11px 16px;
 	border-radius: 0;
@@ -1068,7 +1068,7 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-head {
 	display: flex;
 	align-items: center;
-	gap: 16px;
+	gap: var(--space-16);
 }
 
 .about-pane-head img,
@@ -1096,7 +1096,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .about-pane-head p {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	color: var(--color-text-secondary);
 	font-size: var(--text-footnote);
 }
@@ -1104,7 +1104,7 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-group {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .about-pane-group h3 {
@@ -1124,7 +1124,7 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-group dl > div {
 	display: flex;
 	justify-content: space-between;
-	gap: 16px;
+	gap: var(--space-16);
 	padding: 9px 14px;
 	border-bottom: 1px solid var(--color-divider);
 	font-size: var(--text-footnote);
@@ -1221,7 +1221,7 @@ ol.showcase-list .showcase-row.reordering {
 
 .about-pane-reset {
 	align-self: flex-start;
-	padding-left: 4px;
+	padding-left: var(--space-4);
 	color: #ff3b30;
 }
 
@@ -1229,7 +1229,7 @@ ol.showcase-list .showcase-row.reordering {
 .projects-pane {
 	display: flex;
 	flex-direction: column;
-	gap: 14px;
+	gap: var(--space-14);
 }
 
 .projects-row .showcase-lines {
@@ -1245,8 +1245,8 @@ ol.showcase-list .showcase-row.reordering {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 12px;
-	padding: 10px 14px;
+	gap: var(--space-12);
+	padding: var(--space-10) var(--space-14);
 	border-radius: 10px;
 	background: color-mix(in srgb, var(--color-accent) 12%, transparent);
 	color: var(--color-text-strong);
@@ -1286,7 +1286,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .projects-row .showcase-actions {
-	gap: 10px;
+	gap: var(--space-10);
 	pointer-events: none;
 }
 
@@ -1377,7 +1377,7 @@ ol.showcase-list .showcase-row.reordering {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	min-height: 48px;
 	padding: 0 14px;
 	border-bottom: 1px solid var(--pe-separator);
@@ -1388,7 +1388,7 @@ ol.showcase-list .showcase-row.reordering {
 .projects-toolbar-end {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	min-width: 0;
 }
 
@@ -1445,7 +1445,7 @@ ol.showcase-list .showcase-row.reordering {
 /* 탭: macOS의 세그먼트 컨트롤 */
 .projects-tabs {
 	display: inline-flex;
-	padding: 2px;
+	padding: var(--space-2);
 	border-radius: 7px;
 	background: var(--pe-segment-bg);
 }
@@ -1512,7 +1512,7 @@ ol.showcase-list .showcase-row.reordering {
 .projects-group {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .projects-group-title {
@@ -1523,7 +1523,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .projects-group-count {
-	margin-left: 6px;
+	margin-left: var(--space-6);
 	font-weight: 400;
 }
 
@@ -1549,7 +1549,7 @@ ol.showcase-list .showcase-row.reordering {
 	display: grid;
 	grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 	align-items: center;
-	column-gap: 16px;
+	column-gap: var(--space-16);
 	min-height: 28px;
 	margin: 0 12px;
 	padding: 8px 0;
@@ -1564,7 +1564,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .projects-item.top .projects-item-label {
-	padding-top: 4px;
+	padding-top: var(--space-4);
 }
 
 .projects-item-label {
@@ -1574,7 +1574,7 @@ ol.showcase-list .showcase-row.reordering {
 .projects-field-label {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	color: var(--color-text);
 	font-size: 13px;
 	word-break: keep-all;
@@ -1778,7 +1778,7 @@ button.projects-popup::after {
 	box-sizing: border-box;
 	width: 16px;
 	height: 16px;
-	padding: 2px 4px;
+	padding: var(--space-2) var(--space-4);
 	border-radius: 4px;
 	background: var(--color-accent);
 	translate: 0 -50%;
@@ -1816,7 +1816,7 @@ button.projects-popup[aria-expanded='true'] {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .projects-date {
@@ -1841,8 +1841,8 @@ button.projects-popup[aria-expanded='true'] {
 .projects-check {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
-	margin-left: 8px;
+	gap: var(--space-6);
+	margin-left: var(--space-8);
 	color: var(--color-text);
 	font-size: 13px;
 	cursor: pointer;
@@ -1896,7 +1896,7 @@ button.projects-popup[aria-expanded='true'] {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 4px;
+	gap: var(--space-4);
 	min-height: 26px;
 	box-sizing: border-box;
 	padding: 3px 4px;
@@ -1910,7 +1910,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-chips {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 4px;
+	gap: var(--space-4);
 	max-width: 100%;
 	margin: 0;
 	padding: 0;
@@ -1920,7 +1920,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-chips li {
 	display: inline-flex;
 	align-items: center;
-	gap: 2px;
+	gap: var(--space-2);
 	height: 20px;
 	padding: 0 2px 0 8px;
 	border-radius: 5px;
@@ -1968,13 +1968,11 @@ button.projects-popup[aria-expanded='true'] {
 	z-index: 10000;
 	max-height: 300px;
 	margin: 0;
-	padding: 4px;
+	padding: var(--space-4);
 	overflow-y: auto;
 	border-radius: 10px;
 	background: var(--color-popover-bg);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.15),
-		0 10px 30px rgba(0, 0, 0, 0.2);
+	box-shadow: var(--shadow-menu);
 	color: var(--color-popover-text);
 	list-style: none;
 	animation: pop-in var(--duration-fast) var(--ease-out);
@@ -1985,7 +1983,7 @@ button.projects-popup[aria-expanded='true'] {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 8px;
+	gap: var(--space-8);
 	padding: 5px 9px;
 	border-radius: 6px;
 	font-size: 13px;
@@ -2062,7 +2060,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-size {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	color: var(--color-text-secondary);
 }
 
@@ -2075,7 +2073,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-image {
 	display: flex;
 	align-items: flex-start;
-	gap: 12px;
+	gap: var(--space-12);
 	min-width: 0;
 }
 
@@ -2119,7 +2117,7 @@ button.projects-thumb:focus-visible {
 	display: flex;
 	flex: 1;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 	min-width: 0;
 }
 
@@ -2127,7 +2125,7 @@ button.projects-thumb:focus-visible {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .projects-image-buttons .projects-popup {
@@ -2152,7 +2150,7 @@ button.projects-thumb:focus-visible {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	max-width: 100%;
 	margin: 0;
 }
@@ -2169,7 +2167,7 @@ button.projects-thumb:focus-visible {
 
 .projects-lightbox figcaption {
 	display: flex;
-	gap: 10px;
+	gap: var(--space-10);
 	color: rgba(255, 255, 255, 0.88);
 	font-size: 13px;
 }
@@ -2222,8 +2220,8 @@ button.projects-thumb:focus-visible {
 .projects-looks {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
-	gap: 16px 14px;
-	padding: 16px 14px 14px;
+	gap: var(--space-16) var(--space-14);
+	padding: var(--space-16) var(--space-14) var(--space-14);
 }
 
 .projects-look {
@@ -2243,7 +2241,7 @@ button.projects-thumb:focus-visible {
 .projects-look-thumb {
 	position: relative;
 	width: 100%;
-	margin-bottom: 6px;
+	margin-bottom: var(--space-6);
 	border-radius: 7px;
 	outline: 3px solid transparent;
 	outline-offset: 2px;
@@ -2341,7 +2339,7 @@ button.projects-thumb:focus-visible {
 .projects-table-head {
 	display: grid;
 	grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 7px 19px 6px;
 	border-bottom: 1px solid var(--pe-separator);
 	color: var(--color-text-secondary);
@@ -2351,7 +2349,7 @@ button.projects-thumb:focus-visible {
 
 .projects-table-rows {
 	margin: 0;
-	padding: 4px;
+	padding: var(--space-4);
 	list-style: none;
 }
 
@@ -2363,7 +2361,7 @@ button.projects-thumb:focus-visible {
 	grid-auto-columns: auto;
 	grid-auto-flow: column;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	min-height: 30px;
 	padding: 3px 8px;
 	border-radius: 6px;
@@ -2428,7 +2426,7 @@ button.projects-thumb:focus-visible {
 .projects-point {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--space-2);
 	min-width: 0;
 	padding: 5px 0;
 }
@@ -2516,8 +2514,8 @@ button.projects-thumb:focus-visible {
 .projects-table-bar {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	padding: 6px 8px;
+	gap: var(--space-10);
+	padding: var(--space-6) var(--space-8);
 	border-top: 1px solid var(--pe-separator);
 	background: var(--pe-bar);
 }
@@ -2652,7 +2650,7 @@ button.projects-thumb:focus-visible {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	min-width: 0;
 	min-height: 36px;
 	padding: 3px 12px 3px 6px;
@@ -2672,7 +2670,7 @@ button.projects-thumb:focus-visible {
 	grid-auto-columns: auto;
 	grid-auto-flow: column;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	min-width: 0;
 }
 
@@ -2697,7 +2695,7 @@ button.projects-thumb:focus-visible {
 	display: grid;
 	grid-template-columns: 88px minmax(0, 1fr);
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 6px 0;
 }
 
@@ -2734,14 +2732,14 @@ button.projects-shot-thumb:focus-visible {
 .projects-shot-fields {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 	min-width: 0;
 }
 
 .projects-shot-source {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	min-width: 0;
 }
 
@@ -2840,7 +2838,7 @@ button.projects-shot-thumb:focus-visible {
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 	align-items: center;
 	min-height: 24px;
-	padding: 14px 16px 4px;
+	padding: var(--space-14) var(--space-16) var(--space-4);
 }
 
 .projects-sheet-title {
@@ -2899,7 +2897,7 @@ button.projects-shot-thumb:focus-visible {
 .projects-sheet-body {
 	flex: 1;
 	min-height: 0;
-	padding: 10px 20px 20px;
+	padding: var(--space-10) var(--space-20) var(--space-20);
 	overflow-y: auto;
 	overscroll-behavior: contain;
 }
@@ -2909,8 +2907,8 @@ button.projects-shot-thumb:focus-visible {
 	display: flex;
 	flex: none;
 	justify-content: flex-end;
-	gap: 8px;
-	padding: 12px 20px;
+	gap: var(--space-8);
+	padding: var(--space-12) var(--space-20);
 	border-top: 1px solid var(--pe-separator);
 	background: var(--pe-canvas);
 }
@@ -2948,7 +2946,7 @@ button.projects-shot-thumb:focus-visible {
 textarea.projects-input.mono {
 	height: auto;
 	min-height: 140px;
-	padding: 6px 8px;
+	padding: var(--space-6) var(--space-8);
 	overflow-x: auto;
 	color: var(--color-text);
 	line-height: 1.5;
@@ -2961,7 +2959,7 @@ textarea.projects-input.mono {
 	box-sizing: border-box;
 	width: 100%;
 	min-height: 460px;
-	padding: 12px 14px;
+	padding: var(--space-12) var(--space-14);
 	border: none;
 	background: none;
 	color: var(--color-text);
@@ -2985,7 +2983,7 @@ textarea.projects-input.mono {
 	display: flex;
 	flex-direction: column;
 	min-height: 0;
-	padding: 16px;
+	padding: var(--space-16);
 	border-left: 1px solid var(--pe-separator);
 	background: var(--pe-inspector);
 }
@@ -3007,8 +3005,8 @@ textarea.projects-input.mono {
 	display: flex;
 	flex: none;
 	align-items: center;
-	gap: 6px;
-	padding: 8px 10px;
+	gap: var(--space-6);
+	padding: var(--space-8) var(--space-10);
 	border-bottom: 1px solid var(--color-divider);
 	background: var(--color-titlebar-bg);
 }
@@ -3022,7 +3020,7 @@ textarea.projects-input.mono {
 
 .projects-preview-chrome em {
 	flex: 1;
-	margin-left: 8px;
+	margin-left: var(--space-8);
 	padding: 3px 10px;
 	overflow: hidden;
 	border-radius: 6px;
@@ -3099,7 +3097,7 @@ textarea.projects-input.mono {
 
 	.projects-item {
 		grid-template-columns: minmax(0, 1fr);
-		row-gap: 6px;
+		row-gap: var(--space-6);
 	}
 
 	.projects-item-control.end {

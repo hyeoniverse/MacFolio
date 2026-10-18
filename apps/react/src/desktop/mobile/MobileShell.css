@@ -72,7 +72,7 @@
 .mobile-statusbar-icons {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	font-size: 14px;
 }
 
@@ -81,7 +81,7 @@
 	position: relative;
 	width: 25px;
 	height: 12px;
-	margin-left: 2px;
+	margin-left: var(--space-2);
 	padding: 1.5px;
 	border: 1px solid currentColor;
 	border-radius: var(--radius-xs);
@@ -118,9 +118,9 @@
 .music-widget {
 	display: flex;
 	align-items: center;
-	gap: 14px;
+	gap: var(--space-14);
 	position: relative;
-	padding: 14px;
+	padding: var(--space-14);
 	overflow: hidden;
 	border-radius: 22px;
 	color: #fff;
@@ -172,7 +172,7 @@
 }
 
 .music-widget-title {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	font-size: var(--text-callout);
 }
 
@@ -182,13 +182,13 @@
 }
 
 .music-widget-seek {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 }
 
 .music-widget-controls {
 	display: flex;
 	justify-content: space-between;
-	margin-top: 4px;
+	margin-top: var(--space-4);
 }
 
 .music-widget-controls button {
@@ -335,7 +335,7 @@
 }
 
 .cc-music .music-widget-controls {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 }
 
 .cc-music .music-widget-controls button {
@@ -386,7 +386,7 @@
 .cc-wide {
 	grid-column: span 3;
 	justify-content: flex-start;
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 0 calc(var(--cc-cell) * 0.2);
 	text-align: left;
 }
@@ -469,11 +469,11 @@
 .switcher-label {
 	display: flex;
 	align-items: center;
-	gap: 16px;
+	gap: var(--space-16);
 	position: absolute;
 	bottom: 100%;
 	left: 8px;
-	margin-bottom: 20px;
+	margin-bottom: var(--space-20);
 	color: #fff;
 	font-size: 28px;
 	font-weight: 600;

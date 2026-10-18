@@ -19,7 +19,7 @@
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-top {
 	display: flex;
 	align-items: center;
-	gap: 2px;
+	gap: var(--space-2);
 	position: absolute;
 	top: var(--phone-top);
 	right: 16px;
@@ -28,9 +28,7 @@
 	padding: 0 6px;
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.06),
-		0 4px 14px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-float);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-top .ui-icon-button {
@@ -70,9 +68,7 @@
 	padding: 0 8px;
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.06),
-		0 4px 14px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-float);
 }
 
 /* 오른쪽 알약에 •••만 있을 때 (공유가 없는 새 메모) */
@@ -86,7 +82,7 @@
 
 /* 옆의 공유·••• 알약과 같은 모양: 채운 버튼 대신 알약 안의 글자 버튼 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions {
-	gap: 2px;
+	gap: var(--space-2);
 	padding: 0 6px;
 }
 
@@ -156,14 +152,12 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-format {
 	display: inline-flex;
-	gap: 4px;
+	gap: var(--space-4);
 	height: 50px;
 	padding: 0 10px;
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.06),
-		0 4px 14px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-float);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-format .ui-icon-button {
@@ -186,9 +180,7 @@
 	height: 50px;
 	border-radius: 50%;
 	background-color: var(--phone-card-bg);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.06),
-		0 4px 14px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-float);
 	color: var(--memo-text);
 	font-size: var(--text-title3);
 }

@@ -94,8 +94,8 @@
 }
 
 .bt-detail {
-	margin-top: 10px;
-	padding-top: 10px;
+	margin-top: var(--space-10);
+	padding-top: var(--space-10);
 	border-top: 1px dashed var(--bt-line);
 	color: var(--bt-muted);
 	font-size: 13px;
@@ -158,7 +158,7 @@
 .bt-tile {
 	position: relative;
 	min-width: 0;
-	padding: 24px;
+	padding: var(--space-24);
 	overflow: hidden;
 	border: 1px solid var(--bt-line);
 	border-radius: var(--bt-radius);
@@ -185,14 +185,14 @@
 .bt-links {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: var(--space-10);
 	justify-content: center;
 }
 
 .bt-btn {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 40px;
 	padding: 0 16px;
 	border: 1px solid var(--bt-line);
@@ -280,7 +280,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: 12px;
+	gap: var(--space-12);
 }
 
 .bt-intro-main {
@@ -293,7 +293,7 @@
 .bt-brand {
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	font-size: 14px;
 	font-weight: 600;
 	letter-spacing: -0.01em;
@@ -321,7 +321,7 @@
 	position: relative;
 	width: 56px;
 	height: 56px;
-	margin-bottom: 24px;
+	margin-bottom: var(--space-24);
 	border-radius: 14px;
 }
 
@@ -341,7 +341,7 @@
 }
 
 .bt-intro-context {
-	margin-bottom: 14px;
+	margin-bottom: var(--space-14);
 	color: var(--bt-muted);
 	font: 500 12px/1.5 var(--bt-mono);
 	letter-spacing: 0.02em;
@@ -433,7 +433,7 @@
 }
 
 .bt-hero-art-body:has(.bt-palette) {
-	padding: 16px;
+	padding: var(--space-16);
 	background-image: radial-gradient(var(--bt-line) 1px, transparent 1px);
 	background-size: 16px 16px;
 }
@@ -483,7 +483,7 @@
 .bt-palette-search {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	height: 56px;
 	padding: 0 18px;
 	border-bottom: 1px solid var(--bt-line);
@@ -492,7 +492,7 @@
 }
 
 .bt-palette-search > i {
-	margin-right: 8px;
+	margin-right: var(--space-8);
 }
 
 .bt-palette-search > span {
@@ -501,7 +501,7 @@
 }
 
 .bt-palette-group {
-	padding: 14px 20px 6px;
+	padding: var(--space-14) var(--space-20) var(--space-6);
 	color: var(--bt-muted);
 	font: 500 11.5px/1.4 var(--bt-mono);
 	letter-spacing: 0.04em;
@@ -509,14 +509,14 @@
 
 .bt-palette ul {
 	display: grid;
-	gap: 2px;
+	gap: var(--space-2);
 	padding: 0 8px 10px;
 }
 
 .bt-palette li {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	min-width: 0;
 	height: 48px;
 	padding: 0 12px;
@@ -580,15 +580,15 @@
 }
 
 .bt-bento-head .bt-head {
-	margin-bottom: 4px;
+	margin-bottom: var(--space-4);
 }
 
 /* 구역 머리: 고정폭 이름표(번호 / 이름)와 오른쪽으로 이어지는 1px 선 */
 .bt-head {
 	display: flex;
 	align-items: center;
-	gap: 16px;
-	margin-bottom: 16px;
+	gap: var(--space-16);
+	margin-bottom: var(--space-16);
 }
 
 .bt-head-rule {
@@ -600,7 +600,7 @@
 .bt-eyebrow {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	color: var(--bt-ink);
 	font: 500 12.5px/1.4 var(--bt-mono);
 	letter-spacing: 0.02em;
@@ -619,17 +619,17 @@
 .bt-feature {
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
+	gap: var(--space-24);
 }
 
 .bt-text {
 	display: grid;
 	align-content: start;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .bt-text .bt-icon {
-	margin-bottom: 14px;
+	margin-bottom: var(--space-14);
 }
 
 .bt-text h3 {
@@ -641,14 +641,14 @@
 .bt-media {
 	display: grid;
 	flex: 1;
-	gap: 10px;
+	gap: var(--space-10);
 	min-height: 0;
 }
 
 .bt-thumbs {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .bt-thumbs .bt-shot {
@@ -789,7 +789,7 @@
 .bt-stat {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 	min-height: 168px;
 }
 
@@ -838,9 +838,9 @@
 .bt-bars {
 	display: flex;
 	align-items: flex-end;
-	gap: 4px;
+	gap: var(--space-4);
 	height: 26px;
-	margin-top: 14px;
+	margin-top: var(--space-14);
 }
 
 .bt-bars span {
@@ -859,26 +859,26 @@
 .bt-role {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: var(--space-12);
 }
 
 .bt-stack .bt-icon,
 .bt-role .bt-icon {
-	margin-bottom: 14px;
+	margin-bottom: var(--space-14);
 }
 
 /* 쓴 기술: 번호 붙은 두 열 목록 (주 언어가 첫 줄) */
 .bt-stack-list {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	column-gap: 20px;
-	margin-top: 4px;
+	column-gap: var(--space-20);
+	margin-top: var(--space-4);
 }
 
 .bt-stack-list li {
 	display: flex;
 	align-items: baseline;
-	gap: 12px;
+	gap: var(--space-12);
 	min-width: 0;
 	padding: 11px 0;
 	border-bottom: 1px dashed var(--bt-line);
@@ -893,8 +893,8 @@
 
 .bt-role-meta {
 	display: grid;
-	gap: 10px;
-	margin-top: 4px;
+	gap: var(--space-10);
+	margin-top: var(--space-4);
 	padding: 14px 0;
 	border-top: 1px solid var(--bt-line-soft);
 	border-bottom: 1px solid var(--bt-line-soft);
@@ -903,7 +903,7 @@
 .bt-role-meta div {
 	display: grid;
 	grid-template-columns: 76px 1fr;
-	gap: 12px;
+	gap: var(--space-12);
 	align-items: baseline;
 }
 
@@ -914,12 +914,12 @@
 
 .bt-checks {
 	display: grid;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .bt-checks li {
 	display: flex;
-	gap: 10px;
+	gap: var(--space-10);
 	color: var(--bt-body);
 	font-size: 14px;
 	line-height: 1.5;
@@ -927,7 +927,7 @@
 
 .bt-checks i {
 	flex: none;
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	color: var(--tpl-accent);
 	font-size: 11px;
 }
@@ -941,7 +941,7 @@
 	display: flex;
 	align-items: flex-end;
 	justify-content: space-between;
-	gap: 16px;
+	gap: var(--space-16);
 	padding: 0 28px 24px;
 }
 
@@ -954,7 +954,7 @@
 .bt-strip {
 	display: grid;
 	grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 0 28px;
 }
 
@@ -991,8 +991,8 @@
 .bt-strip figcaption {
 	display: flex;
 	align-items: baseline;
-	gap: 10px;
-	margin-top: 12px;
+	gap: var(--space-10);
+	margin-top: var(--space-12);
 	color: var(--bt-ink);
 	font-size: 14px;
 	font-weight: 500;
@@ -1044,7 +1044,7 @@
 .bt-story-main {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 32px;
 }
 
@@ -1057,23 +1057,23 @@
 .bt-story-facts {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-	gap: 12px;
+	gap: var(--space-12);
 	margin-top: auto;
-	padding-top: 24px;
+	padding-top: var(--space-24);
 }
 
 .bt-story-facts div {
 	display: flex;
 	flex-direction: column-reverse;
-	gap: 10px;
-	padding-top: 16px;
+	gap: var(--space-10);
+	padding-top: var(--space-16);
 	border-top: 1px solid var(--bt-line);
 }
 
 .bt-story-side {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+	gap: var(--space-20);
 }
 
 .bt-story-side > .bt-shot {
@@ -1082,12 +1082,12 @@
 
 .bt-story-points {
 	display: grid;
-	gap: 16px;
+	gap: var(--space-16);
 }
 
 .bt-story-points li {
 	display: flex;
-	gap: 14px;
+	gap: var(--space-14);
 }
 
 .bt-story-points h4 {
@@ -1096,14 +1096,14 @@
 }
 
 .bt-story-points p {
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	color: var(--bt-body);
 	font-size: 14px;
 	line-height: 1.55;
 }
 
 .bt-story-points .bt-media {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 }
 
 /* ─── 조작법 ─── */
@@ -1117,7 +1117,7 @@
 
 .bt-control dt {
 	display: flex;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .bt-control dd {
@@ -1134,7 +1134,7 @@
 	position: relative;
 	display: grid;
 	grid-template-columns: 112px 1fr;
-	gap: 24px;
+	gap: var(--space-24);
 	padding: 14px 0 14px 28px;
 	border-bottom: 1px solid var(--bt-line-soft);
 }
@@ -1193,13 +1193,13 @@
 .bt-span {
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+	gap: var(--space-16);
 	padding: 28px;
 }
 
 .bt-span-dates {
 	display: grid;
-	gap: 4px;
+	gap: var(--space-4);
 	color: var(--bt-ink);
 	font: 500 14px/1.5 var(--bt-mono);
 }
@@ -1212,13 +1212,13 @@
 .bt-span-count {
 	display: flex;
 	align-items: baseline;
-	gap: 10px;
+	gap: var(--space-10);
 	margin-top: auto;
 }
 
 .bt-span-ticks {
 	display: flex;
-	gap: 4px;
+	gap: var(--space-4);
 }
 
 .bt-span-ticks span {
@@ -1240,7 +1240,7 @@
 .bt-specs div {
 	display: grid;
 	grid-template-columns: 96px 1fr;
-	gap: 16px;
+	gap: var(--space-16);
 	align-items: baseline;
 	padding: 15px 0;
 	border-bottom: 1px dashed var(--bt-line);
@@ -1265,7 +1265,7 @@
 .bt-tree {
 	display: flex;
 	flex-direction: column;
-	gap: 14px;
+	gap: var(--space-14);
 	background-color: var(--bt-tile-2);
 }
 
@@ -1280,12 +1280,12 @@
 .bt-credit {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 	padding: 20px 22px;
 }
 
 .bt-credit strong {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	font-size: 15px;
 	font-weight: 600;
 }
@@ -1293,7 +1293,7 @@
 .bt-credit a {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .bt-credit a i {
@@ -1450,7 +1450,7 @@
 	}
 
 	.bt-intro {
-		padding: 24px;
+		padding: var(--space-24);
 	}
 
 	.bt-intro h1 {
@@ -1480,12 +1480,12 @@
 
 	.bt-rail li {
 		grid-template-columns: 1fr;
-		gap: 2px;
+		gap: var(--space-2);
 	}
 
 	.bt-specs div {
 		grid-template-columns: 1fr;
-		gap: 4px;
+		gap: var(--space-4);
 	}
 
 	.bt-palette-body {
@@ -1562,7 +1562,7 @@
 .bt-troubles[data-count='3'] > .bt-trouble:nth-child(n + 2) .lk-trouble-steps {
 	grid-template-columns: minmax(0, 1fr);
 	grid-auto-flow: row;
-	gap: 14px;
+	gap: var(--space-14);
 }
 
 .bt-troubles[data-count='3'] > .bt-trouble:nth-child(n + 2) .lk-trouble-step {
@@ -1604,7 +1604,7 @@
 /* 배포 결과물: 고정폭 대문자 이름표는 올린 곳과 호스트를 한 줄씩 나눈다 */
 .bt-deploy-meta {
 	display: grid;
-	gap: 2px;
+	gap: var(--space-2);
 }
 
 .bt-deploy-meta > span {
