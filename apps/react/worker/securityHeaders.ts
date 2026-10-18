@@ -28,6 +28,9 @@ export function originOf(url: string): string | null {
 	}
 }
 
+/** R2의 S3 호환 주소 (https://<계정 ID>.r2.cloudflarestorage.com) */
+const R2_ENDPOINT = 'https://*.r2.cloudflarestorage.com';
+
 function origins(urls: readonly (string | undefined)[]): string[] {
 	return [...new Set(urls.map((url) => (url ? originOf(url) : null)).filter((o): o is string => o !== null))].sort();
 }
@@ -45,7 +48,8 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 		'img-src': ["'self'", 'data:', 'blob:', 'https:', ...api],
 		'media-src': ["'self'", 'blob:', ...api],
 		'font-src': ["'self'", 'data:'],
-		'connect-src': ["'self'", ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY],
+		// R2: 관리자가 문서 파일을 서명 주소로 바로 올린다 (계정마다 주소가 달라 * 하나로 연다. 서명이 없으면 쓸 수 없다)
+		'connect-src': ["'self'", ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY, R2_ENDPOINT],
 		'frame-src': ["'self'", TURNSTILE, ...origins(frameUrls)],
 		'worker-src': ["'self'", 'blob:'],
 		'object-src': ["'none'"],
