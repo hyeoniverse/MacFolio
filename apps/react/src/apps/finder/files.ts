@@ -2,7 +2,13 @@
 // 실제 파일이 있는 것은 아니고, 사이트에 있는 것들(저장소 문서, 프로젝트, 블로그 글, 앱)을 폴더와 파일처럼 묶어 보여 준다.
 // 파일을 열면 그 종류에 맞는 곳으로 간다: 문서·PDF·그림은 Finder 안에서 보고, 프로젝트는 Safari, 글은 메모, 앱은 그 앱.
 import type { AppName } from '@/apps/manifest';
-import { DOCUMENT_FOLDERS, type DocumentEntry, type DocumentFolder } from './documents';
+import {
+	DOCUMENT_FOLDERS,
+	type DocumentEntry,
+	type DocumentFolder,
+	type DocumentFolderValue,
+	projectFolderValue,
+} from './documents';
 
 interface ItemBase {
 	/** 트리 안에서 하나뿐인 경로 (예: blog/프론트엔드/기능, docs/deployment.md) */
@@ -82,7 +88,7 @@ export interface TreeInput {
 	apps: { app: AppName; label: string; icon: string }[];
 	/** 문서 파일 목록 (documents.ts). 없으면 폴더만 비어 있다 */
 	files?: DocumentEntry[];
-	/** 사진 앱의 앨범 (프로젝트마다). 사진 폴더 아래 앨범 폴더로, 그림은 미리보기에서 연다 */
+	/** 사진 앱의 앨범 (프로젝트마다). 프로젝트 폴더 안의 사진 폴더로, 그림은 미리보기에서 연다 */
 	albums?: { id: string; name: string; photos: { src: string }[] }[];
 }
 
@@ -100,7 +106,26 @@ const byName = (a: FinderItem, b: FinderItem) =>
 			? 1
 			: a.name.localeCompare(b.name, 'ko');
 
-/** 문서 폴더: 저장소 맨 위 문서와 docs/ 안의 문서, 그리고 이력서·포트폴리오·자격증 (R2의 파일) */
+/** 올린 문서 파일(R2) 하나를 Finder 항목으로 */
+const fileItem = (file: DocumentEntry): FileItem => ({
+	kind: file.kind,
+	id: `file:${file.key}`,
+	name: file.name,
+	key: file.key,
+	size: file.size,
+	modified: file.updated,
+	documentId: file.id,
+});
+
+/** 폴더의 수정일: 안에 든 가장 최근 항목 */
+const latest = (items: FinderItem[]) =>
+	items
+		.map((item) => item.modified)
+		.filter(Boolean)
+		.sort()
+		.at(-1);
+
+/** 문서 폴더: 저장소 맨 위 문서와 docs/ 안의 문서, 그리고 이력서·포트폴리오·자격증 (R2의 파일. 프로젝트 폴더의 파일은 빼고) */
 function docsFolder(paths: string[], files: DocumentEntry[]): FolderItem {
 	const docs: FinderItem[] = paths.map((path) => ({
 		kind: 'doc',
@@ -114,24 +139,12 @@ function docsFolder(paths: string[], files: DocumentEntry[]): FolderItem {
 		name,
 		children: files
 			.filter((file) => file.folder === name)
-			.map((file): FileItem => ({
-				kind: file.kind,
-				id: `file:${file.key}`,
-				name: file.name,
-				key: file.key,
-				size: file.size,
-				modified: file.updated,
-				documentId: file.id,
-			}))
+			.map(fileItem)
 			.sort(byName),
 		emptyNote: FOLDER_NOTES[name],
 	}));
 	folders.forEach((folder) => {
-		folder.modified = folder.children
-			.map((child) => child.modified)
-			.filter(Boolean)
-			.sort()
-			.at(-1);
+		folder.modified = latest(folder.children);
 	});
 	return { kind: 'folder', id: 'docs', name: '문서', children: [...folders, ...docs].sort(byName) };
 }
@@ -139,27 +152,44 @@ function docsFolder(paths: string[], files: DocumentEntry[]): FolderItem {
 /** 그림 확장자 (영상·소리는 미리보기가 열지 않는다) */
 const isImage = (src: string) => /\.(jpe?g|png|webp|gif|svg)$/i.test(src.split('?')[0]);
 
-/** 사진 폴더: 사진 앱의 앨범(프로젝트)마다 폴더, 안에는 그 화면 그림. 키는 사이트 주소 그대로 (documents.ts의 fileUrl) */
-function picturesFolder(albums: NonNullable<TreeInput['albums']>): FolderItem {
+type Album = NonNullable<TreeInput['albums']>[number];
+
+/** 앨범의 그림들 (영상은 빼고). 키는 사이트 주소 그대로 (documents.ts의 fileUrl). 그림은 프로젝트 폴더의 사진 폴더에만 있다 */
+const albumPhotos = (album: Album): FileItem[] =>
+	album.photos
+		.filter((photo) => isImage(photo.src))
+		.map((photo) => ({
+			kind: 'image',
+			id: `photo:${photo.src}`,
+			name: photo.src.split('?')[0].split('/').pop() ?? photo.src,
+			key: photo.src,
+		}));
+
+/**
+ * 프로젝트 폴더: 프로젝트마다 폴더 하나 (실제 OS처럼). 안에는 사진 폴더(그 프로젝트 앨범의 그림),
+ * 그다음 관리자가 올린 파일(R2, 폴더 값 project:<id>)을 이름순으로. 실행하는 앱은 폴더에 두지 않는다
+ * (실제 Mac처럼 응용 프로그램에만 있다)
+ */
+function projectsFolder(projects: TreeInput['projects'], files: DocumentEntry[], albums: Album[]): FolderItem {
 	return {
 		kind: 'folder',
-		id: 'pictures',
-		name: '사진',
-		children: albums
-			.map((album): FolderItem => ({
-				kind: 'folder',
-				id: `pictures/${album.id}`,
-				name: album.name,
-				children: album.photos
-					.filter((photo) => isImage(photo.src))
-					.map((photo): FileItem => ({
-						kind: 'image',
-						id: `photo:${photo.src}`,
-						name: photo.src.split('?')[0].split('/').pop() ?? photo.src,
-						key: photo.src,
-					})),
-			}))
-			.filter((folder) => folder.children.length > 0),
+		id: 'projects',
+		name: '프로젝트',
+		children: projects.map((project): FolderItem => {
+			const album = albums.find((item) => item.id === project.id);
+			const photos = album ? albumPhotos(album) : [];
+			const uploads = files
+				.filter((file) => file.folder === projectFolderValue(project.id))
+				.map(fileItem)
+				.sort(byName);
+			const children: FinderItem[] = [
+				...(photos.length > 0
+					? [{ kind: 'folder' as const, id: `projects/${project.id}/photos`, name: '사진', children: photos }]
+					: []),
+				...uploads,
+			];
+			return { kind: 'folder', id: `projects/${project.id}`, name: project.name, children, modified: latest(uploads) };
+		}),
 	};
 }
 
@@ -218,20 +248,7 @@ export function buildLocations({
 }: TreeInput): FolderItem[] {
 	return [
 		docsFolder(docs, files),
-		picturesFolder(albums),
-		{
-			kind: 'folder',
-			id: 'projects',
-			name: '프로젝트',
-			children: projects.map((project) => ({
-				kind: 'project',
-				id: `project:${project.id}`,
-				name: project.name,
-				projectId: project.id,
-				icon: project.icon,
-				period: project.period,
-			})),
-		},
+		projectsFolder(projects, files, albums),
 		blogFolder(posts, blogFolders),
 		{
 			kind: 'folder',
@@ -248,6 +265,18 @@ export function buildLocations({
 				.sort(byName),
 		},
 	];
+}
+
+/**
+ * 관리자가 파일을 놓아 올릴 수 있는 폴더면 그 API 폴더 값: 문서 › 이력서 → 이력서, 프로젝트 › <프로젝트> → project:<id>.
+ * 다른 폴더(사진 등)와 폴더가 아닌 항목은 null
+ */
+export function uploadFolderOf(item: FinderItem | null | undefined): DocumentFolderValue | null {
+	if (!item || item.kind !== 'folder') return null;
+	if (item.id === `docs:${item.name}` && (DOCUMENT_FOLDERS as readonly string[]).includes(item.name))
+		return item.name as DocumentFolder;
+	const project = /^projects\/([^/]+)$/.exec(item.id);
+	return project ? projectFolderValue(project[1]) : null;
 }
 
 /** id로 항목을 찾는다 */
@@ -326,7 +355,7 @@ export function sortItems(items: FinderItem[], key: SortKey): FinderItem[] {
 }
 
 /**
- * iCloud의 미리보기 폴더: 문서 아래 PDF·그림 전부를 이름 순으로 (macOS 미리보기의 열기 창이 처음 여는 곳).
+ * iCloud의 미리보기 폴더: 올린 문서 파일(R2) 전부, 곧 문서 아래와 프로젝트 폴더의 PDF·그림을 이름 순으로 (macOS 미리보기의 열기 창이 처음 여는 곳).
  * 데스크톱 미리보기의 열기 창과 휴대폰 파일 앱의 둘러보기가 같이 쓴다. 파일 id는 원래 자리와 같다
  */
 export function previewFolder(locations: FinderItem[]): FolderItem {
@@ -338,10 +367,10 @@ export function previewFolder(locations: FinderItem[]): FolderItem {
 		kind: 'folder',
 		id: 'preview',
 		name: '미리보기',
-		// 올린 문서 파일(R2)만: 사진 폴더의 그림은 iCloud의 미리보기 폴더에 들어 있지 않다
-		children: files(locations.filter((place) => place.id === 'docs')).sort((a, b) =>
-			a.name.localeCompare(b.name, 'ko')
-		),
+		// 올린 문서 파일(R2, id가 file:)만: 프로젝트의 사진 폴더 그림은 iCloud의 미리보기 폴더에 들어 있지 않다
+		children: files(locations.filter((place) => place.id === 'docs' || place.id === 'projects'))
+			.filter((item) => item.id.startsWith('file:'))
+			.sort((a, b) => a.name.localeCompare(b.name, 'ko')),
 		emptyNote: '파일이 없습니다.',
 	};
 }

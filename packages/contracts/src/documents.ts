@@ -12,6 +12,25 @@ export const DOCUMENT_FOLDER_KEYS: Record<DocumentFolder, string> = {
 	자격증: 'certificates',
 };
 
+/** 프로젝트 폴더 (Finder › 프로젝트 › <프로젝트>)의 폴더 값: project:<프로젝트 id>. R2 키는 projects/<id>/ 아래 */
+export type ProjectDocumentFolder = `project:${string}`;
+/** 문서 폴더 값: 이력서·포트폴리오·자격증, 또는 프로젝트 폴더 */
+export type DocumentFolderValue = DocumentFolder | ProjectDocumentFolder;
+/** 프로젝트 id 모양 (desktop-core의 프로젝트 목록 규칙과 같다) */
+export const DOCUMENT_PROJECT_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
+const PROJECT_FOLDER = /^project:([a-z0-9][a-z0-9-]{0,39})$/;
+
+/** 폴더 값이 프로젝트 폴더면 그 프로젝트 id, 아니면 null */
+export function documentProjectId(folder: string): string | null {
+	return PROJECT_FOLDER.exec(folder)?.[1] ?? null;
+}
+
+/** 폴더 값의 R2 키 앞부분 (끝에 / 없이). 예: resume, projects/macfolio */
+export function documentFolderKey(folder: DocumentFolderValue): string {
+	const projectId = documentProjectId(folder);
+	return projectId ? `projects/${projectId}` : DOCUMENT_FOLDER_KEYS[folder as DocumentFolder];
+}
+
 /** 받는 파일 종류 (확장자 → 종류). 사이트 Worker의 /files/*가 내주는 종류와 같다 */
 export const DOCUMENT_EXTENSIONS: Record<string, 'pdf' | 'image'> = {
 	pdf: 'pdf',
@@ -43,7 +62,11 @@ export function cleanDocumentName(name: unknown): string | null {
 	return cleaned ? Array.from(cleaned).slice(0, DOCUMENT_NAME_MAX).join('') : null;
 }
 
-const folder = z.enum(DOCUMENT_FOLDERS, { error: '이력서·포트폴리오·자격증 폴더에만 올릴 수 있습니다.' });
+const FOLDER_ERROR = '이력서·포트폴리오·자격증 폴더나 프로젝트 폴더에만 올릴 수 있습니다.';
+/** 폴더: 세 문서 폴더 이름 또는 project:<프로젝트 id> */
+const folder = z.union([z.enum(DOCUMENT_FOLDERS), z.string().regex(PROJECT_FOLDER)], {
+	error: FOLDER_ERROR,
+}) as unknown as z.ZodType<DocumentFolderValue>;
 const name = z.preprocess(
 	cleanDocumentName,
 	z
@@ -80,7 +103,8 @@ export type DocumentRename = z.infer<typeof DocumentRename>;
 /** 목록의 파일 하나 */
 export const DocumentFile = z.object({
 	id: z.string(),
-	folder: z.enum(DOCUMENT_FOLDERS),
+	/** 이력서 | 포트폴리오 | 자격증 | project:<프로젝트 id> */
+	folder,
 	name: z.string(),
 	/** R2 키. 사이트 주소 /files/<key>로 받는다 */
 	key: z.string(),

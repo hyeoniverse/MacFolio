@@ -519,6 +519,18 @@ test.describe('모바일', () => {
 		await expect(files.locator('.files-phone-bar-title')).toHaveText('미리보기');
 		await expect(files.getByRole('button', { name: /시험 그림\.png/ })).toBeVisible();
 		await expect(files.getByRole('button', { name: /시험 이력서\.pdf/ })).toBeVisible();
+		await expect(files.getByRole('button', { name: /MacFolio 발표\.pdf/ })).toBeVisible();
+		await files.locator('.mobile-navbar-home').tap();
+		// 프로젝트마다 폴더: 프로젝트, 사진, 올린 파일
+		await files.getByRole('region', { name: '즐겨찾기' }).getByRole('button', { name: '프로젝트' }).tap();
+		await files
+			.getByRole('button', { name: /^MacFolio/ })
+			.first()
+			.tap();
+		await expect(files.locator('.files-phone-bar-title')).toHaveText('MacFolio');
+		await expect(files.getByRole('button', { name: /^사진/ })).toBeVisible();
+		await expect(files.getByRole('button', { name: /MacFolio 발표\.pdf/ })).toBeVisible();
+		await files.locator('.mobile-navbar-home').tap();
 		await files.locator('.mobile-navbar-home').tap();
 		await files.getByRole('region', { name: '즐겨찾기' }).getByRole('button', { name: '문서' }).tap();
 

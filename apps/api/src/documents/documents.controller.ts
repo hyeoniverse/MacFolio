@@ -19,13 +19,19 @@ import { RateLimit } from '../common/rate-limit.js';
 import { DocumentsService } from './documents.service.js';
 
 const fileFields = {
-	folder: { type: 'string', enum: [...DOCUMENT_FOLDERS] },
+	folder: {
+		description: '이력서·포트폴리오·자격증, 또는 프로젝트 폴더 project:<프로젝트 id>',
+		oneOf: [
+			{ type: 'string', enum: [...DOCUMENT_FOLDERS] },
+			{ type: 'string', pattern: '^project:[a-z0-9][a-z0-9-]{0,39}$', example: 'project:macfolio' },
+		],
+	},
 	name: { type: 'string', maxLength: 100, description: '확장자 포함 (pdf·png·jpg·jpeg·webp)' },
 	size: { type: 'integer', minimum: 1, maximum: MAX_DOCUMENT_BYTES },
 };
 
 /**
- * Finder의 문서 파일 (이력서·포트폴리오·자격증). 누구나 목록을 보고, 관리자만 올리고 이름을 바꾸고 지운다.
+ * Finder의 문서 파일 (이력서·포트폴리오·자격증, 프로젝트 폴더). 누구나 목록을 보고, 관리자만 올리고 이름을 바꾸고 지운다.
  * 파일 자체는 R2에 있고 사이트 주소 /files/<key>로 내려간다 (사이트 Worker)
  */
 @ApiTags('documents')
