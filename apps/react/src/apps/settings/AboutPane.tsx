@@ -16,6 +16,7 @@ import {
 	type SiteProfile,
 } from '@/shared/site/profileStore';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
+import Button from '@/shared/ui/button/Button';
 
 /** 묶음 하나: 작은 회색 제목, 둥근 칸 안에 이름표·값 줄. hint는 칸 아래의 작은 안내 (macOS 설정의 설명 글처럼) */
 const Group = ({
@@ -194,17 +195,17 @@ const AboutPane = () => {
 					<span className="showcase-head-actions about-pane-actions">
 						{draft ? (
 							<>
-								<button type="button" className="showcase-text-button" onClick={cancel} disabled={busy}>
+								<Button className="showcase-text-button" onClick={cancel} disabled={busy}>
 									취소
-								</button>
-								<button type="submit" form="about-pane-form" className="showcase-text-button strong" disabled={busy}>
+								</Button>
+								<Button type="submit" form="about-pane-form" className="showcase-text-button strong" disabled={busy}>
 									완료
-								</button>
+								</Button>
 							</>
 						) : (
-							<button type="button" className="showcase-text-button" onClick={startEditing}>
+							<Button className="showcase-text-button" onClick={startEditing}>
 								편집
-							</button>
+							</Button>
 						)}
 					</span>
 				)}
@@ -250,14 +251,13 @@ const AboutPane = () => {
 						/>
 					))}
 					{custom && (
-						<button
-							type="button"
+						<Button
 							className="showcase-text-button about-pane-reset"
 							onClick={() => setConfirmingReset(true)}
 							disabled={busy}
 						>
 							기본값으로 되돌리기
-						</button>
+						</Button>
 					)}
 				</form>
 			) : (

@@ -649,3 +649,15 @@
 	color: var(--activity-red);
 	font-weight: 600;
 }
+
+/*
+ * 공통 Button(ui-button)으로 옮긴 글자 버튼. 공통 CSS가 더하는 값 가운데 이 앱이 정하지 않던 것을 되돌린다.
+ * :where()라 점수가 0이어서, 위에 적은 이 앱의 규칙이 늘 이긴다.
+ */
+:where(.activity-locked button):where(.ui-button) {
+	display: inline-block;
+	align-items: normal;
+	justify-content: normal;
+	gap: normal;
+	animation: none;
+}

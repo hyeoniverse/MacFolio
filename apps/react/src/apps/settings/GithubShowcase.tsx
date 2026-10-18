@@ -150,27 +150,17 @@ const GithubShowcase: React.FC = () => {
 							<span className="showcase-head-actions">
 								{editing ? (
 									<>
-										<button
-											type="button"
-											className="showcase-text-button"
-											disabled={busy}
-											onClick={() => setDraft(null)}
-										>
+										<Button className="showcase-text-button" disabled={busy} onClick={() => setDraft(null)}>
 											취소
-										</button>
-										<button
-											type="button"
-											className="showcase-text-button strong"
-											disabled={busy}
-											onClick={() => void finish()}
-										>
+										</Button>
+										<Button className="showcase-text-button strong" disabled={busy} onClick={() => void finish()}>
 											완료
-										</button>
+										</Button>
 									</>
 								) : (
-									<button type="button" className="showcase-text-button" onClick={startEditing}>
+									<Button className="showcase-text-button" onClick={startEditing}>
 										편집
-									</button>
+									</Button>
 								)}
 							</span>
 						</div>
