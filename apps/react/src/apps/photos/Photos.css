@@ -11,9 +11,9 @@
 	position: relative;
 	display: grid;
 	grid-template-columns: 220px 1fr;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 100%;
-	padding: 8px;
+	padding: var(--space-8);
 	background-color: var(--color-window-bg);
 	color: var(--color-text);
 	font-size: var(--text-footnote);
@@ -51,7 +51,7 @@
 }
 
 .photos-sidebar-heading {
-	margin: 14px 10px 4px;
+	margin: var(--space-14) var(--space-10) var(--space-4);
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption2);
 	font-weight: 600;
@@ -60,7 +60,7 @@
 .photos-place {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	width: 100%;
 	padding: 5px 10px;
 	border: none;
@@ -132,7 +132,7 @@
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	height: 52px;
 	padding: 0 6px 0 10px;
 	background: linear-gradient(var(--color-window-bg) 30%, transparent);
@@ -154,7 +154,7 @@
 .photos-toolbar-group {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .photos-toolbar-group.end {
@@ -270,7 +270,7 @@
 }
 
 .photos-group + .photos-group {
-	margin-top: 24px;
+	margin-top: var(--space-24);
 }
 
 .photos-group h3 {
@@ -440,7 +440,7 @@
 	animation: panel-in-right var(--duration) var(--ease-out);
 	flex: none;
 	width: 220px;
-	padding: 14px 16px;
+	padding: var(--space-14) var(--space-16);
 	border-left: 1px solid var(--color-divider);
 	overflow-y: auto;
 }
@@ -455,7 +455,7 @@
 .photos-info dl {
 	display: grid;
 	grid-template-columns: auto 1fr;
-	gap: 6px 12px;
+	gap: var(--space-6) var(--space-12);
 	margin: 0;
 }
 
@@ -525,7 +525,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .photos-project-button i {
@@ -539,7 +539,7 @@
 .photos-view-button {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .photos-view-button i {
@@ -582,7 +582,7 @@
 }
 
 .photos.compact .photos-grid {
-	gap: 2px;
+	gap: var(--space-2);
 	grid-template-columns: repeat(auto-fill, minmax(calc(var(--photos-cell) * 0.75), 1fr));
 }
 
@@ -659,7 +659,7 @@
 
 .photos-caption-error {
 	display: block;
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	color: #ff3b30;
 	font-size: var(--text-footnote);
 }

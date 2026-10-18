@@ -33,7 +33,7 @@
 	flex: none;
 	align-items: center;
 	height: 36px;
-	padding-right: 6px;
+	padding-right: var(--space-6);
 }
 
 .memo-sidebar-bar .memo-lights-space {
@@ -59,7 +59,7 @@
 .memo-folder-scroll {
 	flex: 1;
 	min-height: 0;
-	padding: 6px 10px 10px;
+	padding: var(--space-6) var(--space-10) var(--space-10);
 	overflow-y: auto;
 }
 

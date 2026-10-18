@@ -203,7 +203,7 @@
 .pp-tagrow {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .pp-sep {
@@ -250,7 +250,7 @@
 
 .pp-hero h1 {
 	max-width: 17em;
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	font-size: clamp(34px, 5.2cqi, 50px);
 	font-weight: 650;
 	line-height: 1.18;
@@ -285,7 +285,7 @@
 .pp-props > div {
 	display: grid;
 	grid-template-columns: 148px minmax(0, 1fr);
-	gap: 12px;
+	gap: var(--space-12);
 	align-items: start;
 	padding: 6px 0;
 }
@@ -293,7 +293,7 @@
 .pp-props dt {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	color: var(--pp-muted);
 	line-height: 22px;
 }
@@ -314,7 +314,7 @@
 .pp-links {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: var(--space-10);
 	margin-top: 30px;
 }
 
@@ -386,7 +386,7 @@
 
 /* ─── 본문 구역 ─── */
 .pp-body {
-	padding-top: 24px;
+	padding-top: var(--space-24);
 	padding-bottom: 32px;
 }
 
@@ -402,7 +402,7 @@
 .pp-db-title {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	font-size: clamp(26px, 3.2cqi, 30px);
 	line-height: 1.3;
 	letter-spacing: -0.02em;
@@ -424,7 +424,7 @@
 
 .pp-head p {
 	max-width: 40em;
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	padding-left: 44px;
 	color: var(--pp-muted);
 	font-size: 17px;
@@ -432,7 +432,7 @@
 
 /* 숫자: 데이터베이스 한 줄. 이름 칸은 흐린 작은 글, 값은 큰 숫자 */
 .pp-db-title {
-	margin-bottom: 14px;
+	margin-bottom: var(--space-14);
 	font-size: 15px;
 	letter-spacing: 0;
 }
@@ -466,7 +466,7 @@
 	display: flex;
 	flex-direction: column-reverse;
 	justify-content: flex-end;
-	gap: 6px;
+	gap: var(--space-6);
 	padding: 18px 20px 20px;
 	border-left: 1px solid var(--pp-line);
 }
@@ -483,7 +483,7 @@
 .pp-facts dt {
 	display: flex;
 	align-items: baseline;
-	gap: 6px;
+	gap: var(--space-6);
 	color: var(--pp-muted);
 	font-size: 14px;
 	line-height: 1.45;
@@ -506,7 +506,7 @@
 .pp-gallery {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 20px;
+	gap: var(--space-20);
 }
 
 .pp-card {
@@ -570,7 +570,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 8px;
+	gap: var(--space-8);
 	padding: 20px 22px 22px;
 }
 
@@ -582,7 +582,7 @@
 .pp-card h3 {
 	display: flex;
 	align-items: baseline;
-	gap: 10px;
+	gap: var(--space-10);
 	font-size: 18px;
 	line-height: 1.4;
 }
@@ -605,14 +605,14 @@
 
 .pp-card .pp-media {
 	align-self: stretch;
-	margin-top: 4px;
+	margin-top: var(--space-4);
 }
 
 /* 그림 블록 */
 .pp-media {
 	display: grid;
-	gap: 8px;
-	margin-top: 14px;
+	gap: var(--space-8);
+	margin-top: var(--space-14);
 }
 
 .pp-media[data-count='2'] {
@@ -651,15 +651,15 @@
 /* 토글 블록 */
 .pp-toggle {
 	align-self: stretch;
-	margin-top: 2px;
+	margin-top: var(--space-2);
 }
 
 .pp-toggle summary {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	margin-left: -6px;
-	padding: 2px 8px 2px 6px;
+	padding: var(--space-2) var(--space-8) var(--space-2) var(--space-6);
 	border-radius: 5px;
 	color: var(--pp-muted);
 	font-size: 14px;
@@ -697,7 +697,7 @@
 }
 
 .pp-toggle p {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	padding-left: 15px;
 	color: var(--pp-body);
 	font-size: 15px;
@@ -713,7 +713,7 @@
 
 .pp-shots li {
 	display: grid;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .pp-shots .lk-media,
@@ -758,7 +758,7 @@
 .pp-steps h3 {
 	display: flex;
 	align-items: baseline;
-	gap: 10px;
+	gap: var(--space-10);
 	font-size: 18px;
 	line-height: 1.45;
 }
@@ -769,14 +769,14 @@
 }
 
 .pp-steps p {
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	color: var(--pp-body);
 }
 
 /* ─── 알림 상자 ─── */
 .pp-callouts {
 	display: grid;
-	gap: 12px;
+	gap: var(--space-12);
 }
 
 .pp-callout {
@@ -784,8 +784,8 @@
 	--tx: var(--pp-muted);
 	display: grid;
 	grid-template-columns: 26px minmax(0, 1fr);
-	gap: 14px;
-	padding: 20px 24px 20px 20px;
+	gap: var(--space-14);
+	padding: var(--space-20) var(--space-24) var(--space-20) var(--space-20);
 	border-radius: 8px;
 	background-color: var(--tb-bg);
 }
@@ -804,7 +804,7 @@
 }
 
 .pp-callout h3 + p {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	color: var(--pp-body);
 }
 
@@ -828,7 +828,7 @@
 .pp-story > h3 {
 	display: flex;
 	align-items: baseline;
-	gap: 10px;
+	gap: var(--space-10);
 	font-size: 22px;
 	line-height: 1.35;
 }
@@ -844,8 +844,8 @@
 
 .tpl-paper .pp-bullets {
 	display: grid;
-	gap: 8px;
-	padding-left: 24px;
+	gap: var(--space-8);
+	padding-left: var(--space-24);
 	color: var(--pp-body);
 	list-style: disc;
 }
@@ -855,7 +855,7 @@
 }
 
 .pp-bullets li {
-	padding-left: 4px;
+	padding-left: var(--space-4);
 }
 
 .pp-bullets strong {
@@ -870,7 +870,7 @@
 }
 
 .pp-figure figcaption {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--pp-muted);
 	font-size: 14px;
 }
@@ -884,14 +884,14 @@
 
 .pp-table th,
 .pp-table td {
-	padding: 10px 14px;
+	padding: var(--space-10) var(--space-14);
 	border: 1px solid var(--pp-line);
 	text-align: left;
 	vertical-align: middle;
 }
 
 .pp-table thead th {
-	padding-block: 8px;
+	padding-block: var(--space-8);
 	color: var(--pp-muted);
 	font-size: 14px;
 	font-weight: 400;
@@ -900,7 +900,7 @@
 
 .pp-table thead th i,
 .pp-aa {
-	margin-right: 8px;
+	margin-right: var(--space-8);
 	color: var(--pp-faint);
 	font-size: 12px;
 }
@@ -917,7 +917,7 @@
 
 .pp-table tr > :first-child {
 	border-left: none;
-	padding-left: 2px;
+	padding-left: var(--space-2);
 }
 
 .pp-table tr > :last-child {
@@ -944,7 +944,7 @@
 	place-items: center;
 	min-width: 24px;
 	height: 24px;
-	margin-right: 4px;
+	margin-right: var(--space-4);
 	padding: 0 6px;
 	box-sizing: border-box;
 	border: 1px solid var(--pp-line);
@@ -958,8 +958,8 @@
 .pp-stack {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
-	margin-bottom: 24px;
+	gap: var(--space-8);
+	margin-bottom: var(--space-24);
 }
 
 .pp-stack .pp-tag {
@@ -983,7 +983,7 @@
 
 .pp-code pre {
 	margin: 0;
-	padding: 10px 20px 20px;
+	padding: var(--space-10) var(--space-20) var(--space-20);
 	overflow-x: auto;
 	color: var(--pp-ink);
 	font: 13.5px/1.65 var(--sp-mono);
@@ -1013,7 +1013,7 @@
 }
 
 .pp-section[data-section='credits'] .pp-head {
-	margin-bottom: 14px;
+	margin-bottom: var(--space-14);
 	padding-top: 28px;
 	border-top: 1px solid var(--pp-line);
 }
@@ -1025,7 +1025,7 @@
 
 .pp-notes {
 	display: grid;
-	gap: 8px;
+	gap: var(--space-8);
 	padding-left: 38px;
 	color: var(--pp-muted);
 	font-size: 14.5px;
@@ -1054,12 +1054,12 @@
 }
 
 .pp-note-extra {
-	margin-left: 8px;
+	margin-left: var(--space-8);
 	color: var(--pp-faint);
 }
 
 .pp-note-extra::before {
-	margin-right: 8px;
+	margin-right: var(--space-8);
 	content: '·';
 }
 
@@ -1092,7 +1092,7 @@
 
 .pp-closing p {
 	max-width: 34em;
-	margin-top: 14px;
+	margin-top: var(--space-14);
 	color: var(--pp-body);
 	font-size: 17px;
 	text-wrap: pretty;
@@ -1123,7 +1123,7 @@
 
 	.pp-facts > div:nth-child(4n + 1) {
 		border-left: 1px solid var(--pp-line);
-		padding-left: 20px;
+		padding-left: var(--space-20);
 	}
 
 	.pp-facts > div:nth-child(2n + 1) {
@@ -1200,7 +1200,7 @@
 
 	.pp-table th,
 	.pp-table td {
-		padding: 8px 10px;
+		padding: var(--space-8) var(--space-10);
 	}
 
 	.pp-table tbody th {
@@ -1254,8 +1254,8 @@
 .pp-member {
 	flex-direction: row;
 	align-items: center;
-	gap: 14px;
-	padding: 12px 8px;
+	gap: var(--space-14);
+	padding: var(--space-12) var(--space-8);
 	border-width: 0 0 1px;
 	border-radius: 0;
 }
@@ -1278,7 +1278,7 @@
 .pp-member-text {
 	grid-template-columns: minmax(0, 11em) minmax(0, 1fr) minmax(0, max-content);
 	align-items: center;
-	column-gap: 20px;
+	column-gap: var(--space-20);
 }
 
 .pp-member-text h3 {
@@ -1319,7 +1319,7 @@
 }
 
 .pp-deploy-body {
-	gap: 4px;
+	gap: var(--space-4);
 	padding: 16px 18px;
 }
 
@@ -1332,7 +1332,7 @@
 }
 
 .pp-deploy-meta::before {
-	margin-right: 6px;
+	margin-right: var(--space-6);
 	font-family: 'Font Awesome 6 Free';
 	font-weight: 900;
 	content: '\f0c1';

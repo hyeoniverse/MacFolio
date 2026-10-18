@@ -170,13 +170,13 @@
 }
 
 .rp-empty i {
-	margin-right: 4px;
+	margin-right: var(--space-4);
 }
 
 /* 커밋 타입 뱃지: 타입 이름으로 늘 같은 색상(hue) */
 .rp-badge {
 	display: inline-block;
-	margin-right: 8px;
+	margin-right: var(--space-8);
 	padding: 0 8px;
 	border-radius: 999px;
 	background: hsl(var(--rp-hue, 212) 70% 93%);
@@ -215,14 +215,14 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .rp-links > a,
 .rp-links > button {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	height: 40px;
 	padding: 0 18px;
 	border: 1px solid var(--rp-line);
@@ -293,7 +293,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: 12px 24px;
+	gap: var(--space-12) var(--space-24);
 }
 
 .rp-title {
@@ -306,7 +306,7 @@
 }
 
 .rp-title .rp-avatar {
-	margin-right: 10px;
+	margin-right: var(--space-10);
 }
 
 .rp-title .rp-repo {
@@ -314,7 +314,7 @@
 }
 
 .rp-visibility {
-	margin-left: 10px;
+	margin-left: var(--space-10);
 	padding: 0 7px;
 	border: 1px solid var(--rp-line);
 	border-radius: 999px;
@@ -327,7 +327,7 @@
 .rp-head-actions {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
+	gap: var(--space-8);
 	list-style: none;
 }
 
@@ -335,7 +335,7 @@
 .rp-btn {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 28px;
 	padding: 0 12px;
 	border: 1px solid var(--rp-line);
@@ -366,14 +366,14 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 8px 16px;
+	gap: var(--space-8) var(--space-16);
 	margin-bottom: -8px;
 }
 
 .rp-branch-pick {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 32px;
 	padding: 0 12px;
 	border: 1px solid var(--rp-line);
@@ -390,7 +390,7 @@
 .rp-branch-stat {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	color: var(--rp-muted);
 	font-size: 14px;
 }
@@ -407,7 +407,7 @@
 .rp-code-btn {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 32px;
 	padding: 0 12px;
 	border: 1px solid #1f23281a;
@@ -437,7 +437,7 @@
 	right: 0;
 	z-index: 6;
 	width: min(360px, 88cqi);
-	padding: 14px;
+	padding: var(--space-14);
 	border: 1px solid var(--rp-line);
 	border-radius: 10px;
 	background: var(--rp-bg);
@@ -455,8 +455,8 @@
 .rp-pop-title {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	margin-bottom: 10px;
+	gap: var(--space-8);
+	margin-bottom: var(--space-10);
 	font-weight: 600;
 }
 
@@ -492,7 +492,7 @@
 }
 
 .rp-pop-note {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--rp-muted);
 	font-size: 12px;
 }
@@ -500,8 +500,8 @@
 .rp-tabs {
 	position: relative;
 	display: flex;
-	gap: 4px;
-	margin-top: 16px;
+	gap: var(--space-4);
+	margin-top: var(--space-16);
 	margin-inline: -10px;
 	overflow-x: auto;
 	scrollbar-width: none;
@@ -514,9 +514,9 @@
 .rp-tabs button {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
-	margin-bottom: 8px;
-	padding: 6px 10px;
+	gap: var(--space-8);
+	margin-bottom: var(--space-8);
+	padding: var(--space-6) var(--space-10);
 	border: 0;
 	border-radius: 6px;
 	background: none;
@@ -576,7 +576,7 @@
 .rp-home {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
-	gap: 24px;
+	gap: var(--space-24);
 	align-items: start;
 }
 
@@ -587,7 +587,7 @@
 .rp-home-main {
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
+	gap: var(--space-24);
 	min-width: 0;
 }
 
@@ -603,8 +603,8 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 6px 12px;
-	padding: 12px 16px;
+	gap: var(--space-6) var(--space-12);
+	padding: var(--space-12) var(--space-16);
 	border-bottom: 1px solid var(--rp-line);
 	background: var(--rp-alt);
 	font-size: 13px;
@@ -613,7 +613,7 @@
 .rp-latest-who {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .rp-latest-msg {
@@ -627,7 +627,7 @@
 
 .rp-latest-meta {
 	display: inline-flex;
-	gap: 6px;
+	gap: var(--space-6);
 	color: var(--rp-muted);
 	font-size: 12px;
 }
@@ -635,8 +635,8 @@
 .rp-latest-count {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
-	padding: 2px 8px;
+	gap: var(--space-6);
+	padding: var(--space-2) var(--space-8);
 	border: 0;
 	border-radius: 6px;
 	background: none;
@@ -666,7 +666,7 @@
 .rp-node {
 	display: flex;
 	align-items: center;
-	gap: 16px;
+	gap: var(--space-16);
 	width: 100%;
 	min-height: 40px;
 	padding: 6px 16px 6px calc(16px + var(--depth, 0) * 20px);
@@ -693,7 +693,7 @@ button.rp-node:hover {
 	display: inline-flex;
 	flex: 0 1 auto;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	width: min(320px, 46%);
 	min-width: 0;
 }
@@ -757,7 +757,7 @@ button.rp-node:hover {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	padding: 10px 16px;
+	padding: var(--space-10) var(--space-16);
 	border-bottom: 1px solid var(--rp-line);
 	font-size: 14px;
 }
@@ -795,14 +795,14 @@ span.rp-crumb:hover {
 
 .rp-tree {
 	max-height: 560px;
-	padding: 8px;
+	padding: var(--space-8);
 	overflow: auto;
 	border-right: 1px solid var(--rp-line);
 	background: var(--rp-alt);
 }
 
 .rp-tree .rp-node {
-	gap: 6px;
+	gap: var(--space-6);
 	min-height: 30px;
 	padding: 4px 8px 4px calc(8px + var(--depth, 0) * 16px);
 	border-radius: 6px;
@@ -811,7 +811,7 @@ span.rp-crumb:hover {
 
 .rp-tree .rp-node-name {
 	width: auto;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .rp-node.selected {
@@ -827,7 +827,7 @@ span.rp-crumb:hover {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 8px 16px;
+	padding: var(--space-8) var(--space-16);
 	border-bottom: 1px solid var(--rp-line);
 	color: var(--rp-muted);
 	font-size: 12px;
@@ -857,7 +857,7 @@ span.rp-crumb:hover {
 }
 
 .rp-skeleton {
-	padding: 8px 12px;
+	padding: var(--space-8) var(--space-12);
 }
 
 .rp-skeleton span {
@@ -888,7 +888,7 @@ span.rp-crumb:hover {
 /* 문서 탭: GitHub README 상자 머리의 README · Code of conduct · License 탭처럼. 고른 탭은 주황 밑줄, 넘치면 가로로 민다 */
 .rp-doc-tabs {
 	display: flex;
-	gap: 2px;
+	gap: var(--space-2);
 	padding: 0 32px 0 8px;
 	mask-image: linear-gradient(to left, transparent 0, #000000 32px);
 	border-bottom: 1px solid var(--rp-line);
@@ -906,7 +906,7 @@ span.rp-crumb:hover {
 	display: inline-flex;
 	flex: none;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 48px;
 	padding: 0 10px;
 	border: 0;
@@ -972,9 +972,9 @@ span.rp-crumb:hover {
 .rp-doc-bar {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	min-height: 40px;
-	padding: 6px 16px;
+	padding: var(--space-6) var(--space-16);
 	border-bottom: 1px solid var(--rp-line);
 	background: var(--rp-alt);
 	font-size: 13px;
@@ -1022,7 +1022,7 @@ span.rp-crumb:hover {
 .rp-toc ul {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-	gap: 8px;
+	gap: var(--space-8);
 	list-style: none;
 }
 
@@ -1030,9 +1030,9 @@ span.rp-crumb:hover {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	align-items: center;
-	gap: 2px 10px;
+	gap: var(--space-2) var(--space-10);
 	width: 100%;
-	padding: 10px 14px;
+	padding: var(--space-10) var(--space-14);
 	border: 1px solid var(--rp-line);
 	border-radius: 6px;
 	background: var(--rp-bg);
@@ -1079,7 +1079,7 @@ span.rp-crumb:hover {
 }
 
 .rp-md-title {
-	padding-bottom: 10px;
+	padding-bottom: var(--space-10);
 	border-bottom: 1px solid var(--rp-line-soft);
 	font-size: 32px;
 	font-weight: 600;
@@ -1091,13 +1091,13 @@ span.rp-crumb:hover {
 	display: block;
 	max-width: 260px;
 	max-height: 48px;
-	margin-bottom: 12px;
+	margin-bottom: var(--space-12);
 	object-fit: contain;
 }
 
 /* README의 대표 화면: 마크다운 그림처럼 테두리 둘린 한 장 */
 .rp-md-hero {
-	margin-top: 24px;
+	margin-top: var(--space-24);
 	overflow: hidden;
 	border: 1px solid var(--rp-line);
 	border-radius: 6px;
@@ -1115,7 +1115,7 @@ span.rp-crumb:hover {
 }
 
 .rp-md-lead {
-	margin-top: 16px;
+	margin-top: var(--space-16);
 	color: var(--rp-body);
 }
 
@@ -1126,9 +1126,9 @@ span.rp-crumb:hover {
 .rp-md h2 {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	margin-bottom: 18px;
-	padding-bottom: 8px;
+	padding-bottom: var(--space-8);
 	border-bottom: 1px solid var(--rp-line-soft);
 	font-size: 24px;
 	letter-spacing: -0.01em;
@@ -1146,7 +1146,7 @@ span.rp-crumb:hover {
 
 .rp-md-icon {
 	width: 1.3em;
-	margin-right: 8px;
+	margin-right: var(--space-8);
 	color: var(--tpl-accent);
 	font-size: 0.88em;
 	text-align: center;
@@ -1158,7 +1158,7 @@ span.rp-crumb:hover {
 }
 
 .rp-md .rp-md-detail {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--rp-muted);
 	font-size: 14px;
 	line-height: 1.6;
@@ -1183,7 +1183,7 @@ span.rp-crumb:hover {
 .rp-media {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .rp-media > .rp-shot {
@@ -1193,7 +1193,7 @@ span.rp-crumb:hover {
 .rp-thumbs {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .rp-thumbs .rp-shot {
@@ -1213,7 +1213,7 @@ span.rp-crumb:hover {
 	display: flex;
 	flex-direction: column-reverse;
 	justify-content: flex-end;
-	gap: 4px;
+	gap: var(--space-4);
 	padding: 18px 20px;
 	box-shadow:
 		-1px 0 0 var(--rp-line-soft),
@@ -1235,7 +1235,7 @@ span.rp-crumb:hover {
 }
 
 .rp-figure-unit {
-	margin-left: 2px;
+	margin-left: var(--space-2);
 	color: var(--rp-muted);
 	font-size: 0.55em;
 	font-weight: 500;
@@ -1246,7 +1246,7 @@ span.rp-crumb:hover {
 .rp-features {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 16px;
+	gap: var(--space-16);
 }
 
 .rp-feature {
@@ -1292,7 +1292,7 @@ span.rp-crumb:hover {
 .rp-feature-media .rp-thumbs {
 	order: -1;
 	grid-template-columns: repeat(auto-fill, minmax(72px, 96px));
-	padding-right: 20px;
+	padding-right: var(--space-20);
 }
 
 .rp-feature-text {
@@ -1307,7 +1307,7 @@ span.rp-crumb:hover {
 .rp-feature-text h3 {
 	display: flex;
 	align-items: baseline;
-	margin-bottom: 6px;
+	margin-bottom: var(--space-6);
 }
 
 .rp-feature-text > p:not(.rp-md-detail) {
@@ -1319,7 +1319,7 @@ span.rp-crumb:hover {
 .rp-screens {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 20px 16px;
+	gap: var(--space-20) var(--space-16);
 }
 
 .rp-screens[data-count='1'] {
@@ -1331,7 +1331,7 @@ span.rp-crumb:hover {
 }
 
 .rp-screens figcaption {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--rp-muted);
 	font-size: 13px;
 	text-align: center;
@@ -1383,26 +1383,26 @@ span.rp-crumb:hover {
 .rp-steps h3 {
 	display: flex;
 	align-items: baseline;
-	margin-bottom: 4px;
+	margin-bottom: var(--space-4);
 	font-size: 16px;
 }
 
 .rp-steps .rp-media {
 	max-width: 520px;
-	margin-top: 12px;
+	margin-top: var(--space-12);
 }
 
 /* 만든 방식: 아이콘 카드, 그림이 있으면 카드 아래에 */
 .rp-build {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 12px;
+	gap: var(--space-12);
 }
 
 .rp-build > li {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
-	gap: 4px 14px;
+	gap: var(--space-4) var(--space-14);
 	padding: 18px;
 	border: 1px solid var(--rp-line);
 	border-radius: 8px;
@@ -1431,7 +1431,7 @@ span.rp-crumb:hover {
 }
 
 .rp-build h3 {
-	margin-bottom: 4px;
+	margin-bottom: var(--space-4);
 	font-size: 15px;
 }
 
@@ -1456,13 +1456,13 @@ span.rp-crumb:hover {
 }
 
 .rp-story h3 {
-	margin-bottom: 12px;
+	margin-bottom: var(--space-12);
 	font-size: 20px;
 }
 
 .rp-quote {
-	margin-bottom: 16px;
-	padding: 2px 16px;
+	margin-bottom: var(--space-16);
+	padding: var(--space-2) var(--space-16);
 	border-left: 4px solid var(--rp-line);
 	color: var(--rp-muted);
 	font-size: 15.5px;
@@ -1472,7 +1472,7 @@ span.rp-crumb:hover {
 .rp-story-body {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
-	gap: 24px;
+	gap: var(--space-24);
 }
 
 .rp-story-body[data-image] {
@@ -1487,16 +1487,16 @@ span.rp-crumb:hover {
 .rp-story-facts {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 12px;
-	margin-bottom: 16px;
+	gap: var(--space-12);
+	margin-bottom: var(--space-16);
 }
 
 .rp-story-facts > div {
 	display: flex;
 	flex: 1 1 140px;
 	flex-direction: column-reverse;
-	gap: 2px;
-	padding: 12px 16px;
+	gap: var(--space-2);
+	padding: var(--space-12) var(--space-16);
 	border: 1px solid var(--rp-line);
 	border-radius: 6px;
 }
@@ -1513,7 +1513,7 @@ span.rp-crumb:hover {
 .rp-story-points {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: var(--space-12);
 }
 
 .rp-story-points h4 {
@@ -1527,7 +1527,7 @@ span.rp-crumb:hover {
 }
 
 .rp-story-points .rp-media {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 }
 
 /* 표 (조작법·기술 사양·출처·커밋 규칙): GitHub 마크다운 표 */
@@ -1539,7 +1539,7 @@ span.rp-crumb:hover {
 
 .rp-table th,
 .rp-table td {
-	padding: 8px 14px;
+	padding: var(--space-8) var(--space-14);
 	border: 1px solid var(--rp-line);
 	text-align: left;
 	vertical-align: top;
@@ -1563,7 +1563,7 @@ span.rp-crumb:hover {
 .rp-kbd {
 	display: inline-block;
 	min-width: 24px;
-	margin-right: 4px;
+	margin-right: var(--space-4);
 	padding: 1px 6px;
 	border: 1px solid var(--rp-line);
 	border-radius: 6px;
@@ -1584,7 +1584,7 @@ span.rp-crumb:hover {
 	position: relative;
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
-	gap: 4px 16px;
+	gap: var(--space-4) var(--space-16);
 	padding: 0 0 18px 30px;
 }
 
@@ -1622,7 +1622,7 @@ span.rp-crumb:hover {
 .rp-release-tag {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	color: var(--rp-muted);
 	font-size: 13px;
 }
@@ -1651,13 +1651,13 @@ span.rp-crumb:hover {
 .rp-topics {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .rp-topics li {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	padding: 0 12px;
 	border-radius: 999px;
 	background: var(--rp-chip);
@@ -1676,7 +1676,7 @@ span.rp-crumb:hover {
 .rp-md .rp-topics + .rp-table,
 .rp-md .rp-topics + .rp-code-block,
 .rp-md .rp-table + .rp-code-block {
-	margin-top: 16px;
+	margin-top: var(--space-16);
 }
 
 .rp-code-block {
@@ -1688,8 +1688,8 @@ span.rp-crumb:hover {
 .rp-code-block figcaption {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	padding: 8px 14px;
+	gap: var(--space-8);
+	padding: var(--space-8) var(--space-14);
 	border-bottom: 1px solid var(--rp-line);
 	background: var(--rp-alt);
 	color: var(--rp-muted);
@@ -1697,7 +1697,7 @@ span.rp-crumb:hover {
 }
 
 .rp-code-block pre {
-	padding: 16px;
+	padding: var(--space-16);
 	overflow: auto;
 	background: var(--rp-alt);
 	font-family: var(--rp-mono);
@@ -1709,15 +1709,15 @@ span.rp-crumb:hover {
 .rp-role-meta {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
-	margin-bottom: 16px;
+	gap: var(--space-6);
+	margin-bottom: var(--space-16);
 }
 
 .rp-role-meta > div {
 	display: grid;
 	align-items: baseline;
 	grid-template-columns: 88px minmax(0, 1fr);
-	gap: 12px;
+	gap: var(--space-12);
 }
 
 .rp-role-meta dt {
@@ -1732,13 +1732,13 @@ span.rp-crumb:hover {
 .rp-tasks {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .rp-tasks li {
 	display: flex;
 	align-items: baseline;
-	gap: 10px;
+	gap: var(--space-10);
 	color: var(--rp-body);
 }
 
@@ -1771,13 +1771,13 @@ span.rp-crumb:hover {
 .rp-side-box {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 20px 0;
 	border-bottom: 1px solid var(--rp-line-soft);
 }
 
 .rp-side-box:first-child {
-	padding-top: 4px;
+	padding-top: var(--space-4);
 }
 
 .rp-side-box:last-child {
@@ -1787,7 +1787,7 @@ span.rp-crumb:hover {
 .rp-side h2 {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	font-size: 16px;
 }
 
@@ -1801,7 +1801,7 @@ span.rp-crumb:hover {
 .rp-side-links.rp-links {
 	flex-direction: column;
 	align-items: stretch;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .rp-side-links.rp-links > a,
@@ -1815,7 +1815,7 @@ span.rp-crumb:hover {
 .rp-side-link {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	font-weight: 600;
 	word-break: break-all;
 }
@@ -1828,13 +1828,13 @@ span.rp-crumb:hover {
 .rp-side-meta {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: var(--space-8);
 	color: var(--rp-muted);
 }
 
 .rp-side-meta > div {
 	display: flex;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .rp-side-meta dt {
@@ -1845,11 +1845,11 @@ span.rp-crumb:hover {
 
 .rp-side-release {
 	display: flex;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .rp-side-release > i {
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	color: var(--rp-green);
 }
 
@@ -1860,14 +1860,14 @@ span.rp-crumb:hover {
 .rp-side-release > span {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--space-2);
 	min-width: 0;
 }
 
 .rp-side-release-name {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .rp-side-release-label {
@@ -1897,7 +1897,7 @@ span.rp-crumb:hover {
 .rp-langs {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 4px 16px;
+	gap: var(--space-4) var(--space-16);
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -1906,7 +1906,7 @@ span.rp-crumb:hover {
 .rp-lang {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	font-size: 12px;
 }
 
@@ -1924,14 +1924,14 @@ span.rp-crumb:hover {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 12px 16px;
-	margin-bottom: 24px;
+	gap: var(--space-12) var(--space-16);
+	margin-bottom: var(--space-24);
 }
 
 .rp-branch {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 30px;
 	padding: 0 12px;
 	border: 1px solid var(--rp-line);
@@ -1949,13 +1949,13 @@ span.rp-crumb:hover {
 .rp-chips {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .rp-chip {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	height: 28px;
 	padding: 0 12px;
 	border: 1px solid var(--rp-line);
@@ -2015,8 +2015,8 @@ span.rp-crumb:hover {
 	position: relative;
 	display: flex;
 	align-items: center;
-	gap: 16px;
-	margin-bottom: 10px;
+	gap: var(--space-16);
+	margin-bottom: var(--space-10);
 	animation: rp-slide 0.35s ease-out both;
 	animation-delay: calc(var(--i, 0) * 60ms + 0.1s);
 }
@@ -2052,7 +2052,7 @@ span.rp-crumb:hover {
 .rp-commit-card {
 	flex: 1;
 	min-width: 0;
-	padding: 12px 16px;
+	padding: var(--space-12) var(--space-16);
 	border: 1px solid var(--rp-line);
 	border-radius: 6px;
 	background: var(--rp-bg);
@@ -2071,8 +2071,8 @@ span.rp-crumb:hover {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 6px;
-	margin-top: 6px;
+	gap: var(--space-6);
+	margin-top: var(--space-6);
 	color: var(--rp-muted);
 	font-size: 12.5px;
 }
@@ -2098,13 +2098,13 @@ span.rp-crumb:hover {
 }
 
 .rp-lead {
-	margin-bottom: 16px;
+	margin-bottom: var(--space-16);
 	color: var(--rp-muted);
 	font-size: 15px;
 }
 
 .rp-lead code {
-	padding: 2px 6px;
+	padding: var(--space-2) var(--space-6);
 	border-radius: 6px;
 	background: var(--rp-alt);
 	color: var(--rp-text);
@@ -2121,11 +2121,11 @@ span.rp-crumb:hover {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 16px 20px;
+	gap: var(--space-16) var(--space-20);
 	width: calc(100% - 2 * var(--rp-pad));
 	max-width: calc(var(--rp-width) - 2 * var(--rp-pad));
 	margin: 8px auto 48px;
-	padding: 20px 24px;
+	padding: var(--space-20) var(--space-24);
 	border: 1px solid var(--rp-line);
 	border-radius: 6px;
 	background: var(--rp-alt);
@@ -2155,14 +2155,14 @@ span.rp-crumb:hover {
 }
 
 .rp-closing-lead {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	color: var(--rp-muted);
 	font-size: 14px;
 }
 
 .rp-closing .rp-links {
 	justify-content: flex-end;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .rp-closing .rp-links > a,
@@ -2194,7 +2194,7 @@ span.rp-crumb:hover {
 .rp-term-btn {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 100%;
 	padding: 0 10px;
 	border: 0;
@@ -2220,7 +2220,7 @@ span.rp-crumb:hover {
 .rp-status-right {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 /* 서랍: 아래에서 올라온다. 터미널이라 테마와 상관없이 어둡다 */
@@ -2251,7 +2251,7 @@ span.rp-crumb:hover {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 6px 12px;
+	padding: var(--space-6) var(--space-12);
 	border-bottom: 1px solid #ffffff14;
 	color: var(--rp-term-muted);
 }
@@ -2277,17 +2277,17 @@ span.rp-crumb:hover {
 
 .rp-drawer-body {
 	flex: 1;
-	padding: 10px 14px;
+	padding: var(--space-10) var(--space-14);
 	overflow: auto;
 }
 
 .rp-t-muted {
-	margin-bottom: 8px;
+	margin-bottom: var(--space-8);
 	color: var(--rp-term-muted);
 }
 
 .rp-t-entry {
-	margin-bottom: 10px;
+	margin-bottom: var(--space-10);
 }
 
 .rp-t-prompt,
@@ -2357,7 +2357,7 @@ span.rp-crumb:hover {
 .rp-t-pairs div {
 	display: grid;
 	grid-template-columns: 150px minmax(0, 1fr);
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 1px 0;
 }
 
@@ -2405,7 +2405,7 @@ span.rp-crumb:hover {
 }
 
 .rp-t-files button i {
-	margin-right: 2px;
+	margin-right: var(--space-2);
 	color: var(--rp-term-muted);
 }
 
@@ -2417,7 +2417,7 @@ span.rp-crumb:hover {
 .rp-t-log li {
 	display: grid;
 	grid-template-columns: 70px 100px minmax(0, 1fr);
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .rp-t-hash {
@@ -2441,7 +2441,7 @@ span.rp-crumb:hover {
 .rp-t-types li {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	padding: 2px 0;
 }
 
@@ -2456,7 +2456,7 @@ span.rp-crumb:hover {
 .rp-t-links {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 6px 16px;
+	gap: var(--space-6) var(--space-16);
 	font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
@@ -2471,8 +2471,8 @@ span.rp-crumb:hover {
 
 .rp-t-chips {
 	display: flex;
-	gap: 6px;
-	padding: 8px 12px;
+	gap: var(--space-6);
+	padding: var(--space-8) var(--space-12);
 	overflow-x: auto;
 	border-top: 1px solid #ffffff14;
 	scrollbar-width: none;
@@ -2480,7 +2480,7 @@ span.rp-crumb:hover {
 
 .rp-t-chips button {
 	flex: none;
-	padding: 2px 10px;
+	padding: var(--space-2) var(--space-10);
 	border: 1px solid #ffffff26;
 	border-radius: 999px;
 	background: #ffffff0a;
@@ -2557,7 +2557,7 @@ span.rp-crumb:hover {
 	}
 
 	.rp-md {
-		padding: 20px 16px 24px;
+		padding: var(--space-20) var(--space-16) var(--space-24);
 		font-size: 15px;
 	}
 
@@ -2624,7 +2624,7 @@ span.rp-crumb:hover {
 	}
 
 	.rp-closing {
-		padding: 16px;
+		padding: var(--space-16);
 	}
 
 	.rp-closing .rp-links {
@@ -2668,19 +2668,19 @@ span.rp-crumb:hover {
 
 .rp-trouble {
 	display: grid;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .rp-trouble h3 {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	font-size: 17px;
 }
 
 .rp-alert {
 	--rp-alert: #0969da;
-	padding: 6px 16px;
+	padding: var(--space-6) var(--space-16);
 	border-left: 4px solid var(--rp-alert);
 }
 
@@ -2716,8 +2716,8 @@ span.rp-crumb:hover {
 .rp-alert .rp-alert-title {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	margin-bottom: 2px;
+	gap: var(--space-8);
+	margin-bottom: var(--space-2);
 	color: var(--rp-alert);
 	font-size: 14px;
 	font-weight: 600;
@@ -2736,7 +2736,7 @@ span.rp-crumb:hover {
 .rp-member {
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .rp-avatar {
@@ -2759,8 +2759,8 @@ span.rp-crumb:hover {
 .rp-deploys > li {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
-	gap: 4px 14px;
-	padding: 16px;
+	gap: var(--space-4) var(--space-14);
+	padding: var(--space-16);
 }
 
 .rp-deploys > li + li {
@@ -2788,7 +2788,7 @@ span.rp-crumb:hover {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	font-size: 15px;
 }
 
@@ -2811,13 +2811,13 @@ span.rp-crumb:hover {
 }
 
 .rp-deploy-meta {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	color: var(--rp-muted);
 	font-size: 13px;
 }
 
 .rp-deploy-text > p:not(.rp-deploy-meta) {
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	font-size: 14.5px;
 	line-height: 1.6;
 }
@@ -2825,7 +2825,7 @@ span.rp-crumb:hover {
 /* ─── 옆 칸: Deployments 목록과 Contributors 사진 줄 ─── */
 .rp-side-deploys {
 	display: grid;
-	gap: 8px;
+	gap: var(--space-8);
 	font-size: 14px;
 }
 
@@ -2833,7 +2833,7 @@ span.rp-crumb:hover {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .rp-side-deploys i {
@@ -2845,7 +2845,7 @@ span.rp-crumb:hover {
 .rp-side-people {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .rp-side-avatar {

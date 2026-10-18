@@ -164,7 +164,7 @@
 }
 
 .qc-word span {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--qc-muted);
 	font-size: var(--text-footnote);
 	font-weight: 600;
@@ -179,7 +179,7 @@
 }
 
 .qc-front h1 {
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	font-size: clamp(26px, 4cqi, 38px);
 	font-weight: 800;
 	letter-spacing: -0.02em;
@@ -187,7 +187,7 @@
 }
 
 .qc-lead {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	color: var(--qc-muted);
 	font-size: var(--text-subhead);
 	line-height: 1.6;
@@ -195,7 +195,7 @@
 
 /* 뒷면: 기술 사양 */
 .qc-back h2 {
-	padding-bottom: 12px;
+	padding-bottom: var(--space-12);
 	border-bottom: 2px solid var(--qc-teal);
 	color: var(--sp-accent);
 	font-size: 14px;
@@ -206,7 +206,7 @@
 .qc-back div {
 	display: grid;
 	grid-template-columns: 92px minmax(0, 1fr);
-	gap: 10px;
+	gap: var(--space-10);
 	padding: 10px 0;
 	border-bottom: 1px dashed var(--qc-line);
 	font-size: var(--text-footnote);
@@ -227,7 +227,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 12px 24px;
+	gap: var(--space-12) var(--space-24);
 	margin-top: 44px;
 }
 
@@ -266,7 +266,7 @@
 .qc-facts ul {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	list-style: none;
 }
 
@@ -294,7 +294,7 @@
 }
 
 .qc-title {
-	margin-bottom: 20px;
+	margin-bottom: var(--space-20);
 	font-size: clamp(22px, 3.4cqi, 30px);
 	font-weight: 800;
 	letter-spacing: -0.02em;
@@ -398,7 +398,7 @@
 
 .qc-steps p {
 	overflow: hidden;
-	padding-top: 6px;
+	padding-top: var(--space-6);
 	color: var(--qc-muted);
 	font-size: var(--text-subhead);
 	line-height: 1.6;
@@ -417,8 +417,8 @@
 .qc-screen-bar {
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	padding: 10px 14px;
+	gap: var(--space-6);
+	padding: var(--space-10) var(--space-14);
 	border-bottom: 1px solid var(--qc-line);
 }
 
@@ -431,7 +431,7 @@
 
 .qc-screen-bar span {
 	flex: 1;
-	margin-left: 8px;
+	margin-left: var(--space-8);
 	padding: 3px 12px;
 	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--qc-cell) 60%, transparent);
@@ -469,7 +469,7 @@
 	position: absolute;
 	bottom: 14px;
 	left: 50%;
-	padding: 6px 16px;
+	padding: var(--space-6) var(--space-16);
 	border-radius: var(--radius-full);
 	background-color: var(--qc-deep);
 	box-shadow: -3px 5px 10px rgba(0, 0, 0, 0.25);
@@ -517,15 +517,15 @@
 .qc-chips {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 14px;
-	margin-bottom: 24px;
+	gap: var(--space-14);
+	margin-bottom: var(--space-24);
 	list-style: none;
 }
 
 .qc-chips li {
 	display: flex;
 	align-items: baseline;
-	gap: 8px;
+	gap: var(--space-8);
 	padding: 10px 18px;
 	border-radius: var(--radius-full);
 	background-color: var(--qc-surface);
@@ -569,7 +569,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .qc-doc code {
@@ -582,7 +582,7 @@
 .qc-access {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	padding: 3px 12px;
 	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--qc-teal) 18%, transparent);
@@ -603,14 +603,14 @@
 .qc-doc ul {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px;
-	margin-top: 12px;
+	gap: var(--space-8);
+	margin-top: var(--space-12);
 	list-style: none;
 }
 
 /* 필드 칩: 문서가 화면에 들어오면 하나씩 톡 놓인다 */
 .qc-doc li {
-	padding: 4px 12px;
+	padding: var(--space-4) var(--space-12);
 	border-radius: var(--radius-lg);
 	background-color: color-mix(in srgb, var(--qc-cell) 70%, var(--qc-surface));
 	box-shadow: inset 2px -2px 4px rgba(0, 0, 0, 0.08);
@@ -631,7 +631,7 @@
 
 .qc-doc > p,
 .qc-doc-children > p {
-	margin-top: 12px;
+	margin-top: var(--space-12);
 	color: var(--qc-muted);
 	font-size: 14px;
 	line-height: 1.6;
@@ -651,13 +651,13 @@
 .qc-doc-children > div {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 14px;
+	gap: var(--space-14);
 }
 
 .qc-tiles {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 20px;
+	gap: var(--space-20);
 }
 
 .qc-tiles article {
@@ -685,7 +685,7 @@
 .qc-tiles h3 {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	font-size: var(--text-body);
 	font-weight: 800;
 }
@@ -702,7 +702,7 @@
 }
 
 .qc-tiles p {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--qc-muted);
 	font-size: 14px;
 	line-height: 1.65;
@@ -726,7 +726,7 @@
 }
 
 .qc-answer {
-	margin-bottom: 12px;
+	margin-bottom: var(--space-12);
 	padding: 0 22px;
 	border-radius: 18px;
 	background-color: color-mix(in srgb, var(--qc-surface) 86%, transparent);
@@ -852,7 +852,7 @@
 }
 
 .qc-gallery figcaption {
-	padding: 10px 16px;
+	padding: var(--space-10) var(--space-16);
 	color: var(--qc-muted);
 	font-size: var(--text-footnote);
 	font-weight: 700;
@@ -897,7 +897,7 @@
 
 .qc-lists li {
 	display: flex;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .qc-lists i {
@@ -926,7 +926,7 @@
 
 .qc-foot .qc-links {
 	justify-content: center;
-	margin-top: 20px;
+	margin-top: var(--space-20);
 }
 
 @container (max-width: 600px) {
@@ -970,7 +970,7 @@
 
 	.qc-gallery-window {
 		margin: 0 -20px;
-		padding-inline: 20px;
+		padding-inline: var(--space-20);
 		overflow-x: auto;
 		scroll-snap-type: x mandatory;
 		scrollbar-width: none;

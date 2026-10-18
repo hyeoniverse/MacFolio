@@ -41,7 +41,7 @@
 	top: 14px;
 	left: 14px;
 	display: flex;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .about-mac-lights > * {
@@ -75,7 +75,7 @@
 	margin-bottom: 18px;
 	border-radius: 50%;
 	object-fit: cover;
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+	box-shadow: var(--shadow-md);
 }
 
 .about-mac-photo.monogram {
@@ -109,7 +109,7 @@
 .about-mac-specs > div {
 	display: grid;
 	grid-template-columns: 64px 1fr;
-	gap: 10px;
+	gap: var(--space-10);
 	text-align: left;
 }
 
@@ -136,7 +136,7 @@
 }
 
 .about-mac-more {
-	padding: 4px 14px;
+	padding: var(--space-4) var(--space-14);
 	border: 0.5px solid var(--color-window-border);
 	border-radius: var(--radius-sm);
 	background-color: var(--color-control-bg);
@@ -157,7 +157,7 @@
 }
 
 .about-mac-link {
-	margin-top: 16px;
+	margin-top: var(--space-16);
 	padding: 0;
 	border: none;
 	background: none;
@@ -185,7 +185,7 @@
 
 /* 누를 수 있는 프로필 링크(이메일, GitHub)의 ↗ (시스템 설정의 정보에도 쓴다) */
 .profile-external-link i {
-	margin-left: 4px;
+	margin-left: var(--space-4);
 	font-size: 0.75em;
 	opacity: 0.7;
 	vertical-align: 1px;

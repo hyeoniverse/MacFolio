@@ -15,7 +15,7 @@
 .safari-phone-bar {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	position: absolute;
 	right: 16px;
 	bottom: calc(var(--phone-bottom-inset) + 4px);
@@ -62,7 +62,7 @@
 	flex: 1;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
+	gap: var(--space-6);
 	min-width: 0;
 	/* 탭 버튼만큼 오른쪽도 비워 주소가 알약 가운데에 온다 */
 	padding-right: 38px;
@@ -180,8 +180,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
-	margin-top: 10px;
+	gap: var(--space-6);
+	margin-top: var(--space-10);
 	color: var(--safari-text);
 	font-size: var(--text-subhead);
 	font-weight: 600;

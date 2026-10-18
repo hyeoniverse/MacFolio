@@ -43,7 +43,7 @@
 	display: flex;
 	flex: none;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--space-2);
 	width: 180px;
 	padding: 0 10px 12px;
 	border-right: 1px solid var(--color-divider);
@@ -57,7 +57,7 @@
 }
 
 .finder-sidebar h2 {
-	margin: 4px 8px 4px;
+	margin: var(--space-4) var(--space-8) var(--space-4);
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption2);
 	font-weight: 600;
@@ -66,7 +66,7 @@
 .finder-location {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	padding: 5px 8px;
 	border: none;
 	border-radius: var(--radius-sm);
@@ -105,7 +105,7 @@
 	display: flex;
 	flex: none;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	height: 52px;
 	padding: 0 12px;
 	border-bottom: 1px solid var(--color-divider);
@@ -115,7 +115,7 @@
 .finder-views {
 	display: flex;
 	flex: none;
-	gap: 2px;
+	gap: var(--space-2);
 }
 
 .finder-title {
@@ -139,7 +139,7 @@
 	display: flex;
 	flex: 0 1 180px;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	min-width: 110px;
 	height: 28px;
 	padding: 0 8px;
@@ -183,8 +183,8 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
 	align-content: start;
-	gap: 10px 4px;
-	padding: 16px 12px;
+	gap: var(--space-10) var(--space-4);
+	padding: var(--space-16) var(--space-12);
 }
 
 .finder-item {
@@ -196,9 +196,9 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 4px;
+	gap: var(--space-4);
 	min-width: 0;
-	padding: 4px 2px;
+	padding: var(--space-4) var(--space-2);
 }
 
 .finder-icon {
@@ -207,7 +207,7 @@
 	place-items: center;
 	width: 64px;
 	height: 56px;
-	padding: 2px;
+	padding: var(--space-2);
 	border-radius: var(--radius-sm);
 }
 
@@ -261,7 +261,7 @@
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) 140px 110px;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	padding: 0 16px;
 }
 
@@ -296,7 +296,7 @@
 .finder-list-name {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	min-width: 0;
 }
 
@@ -335,7 +335,7 @@
 	display: flex;
 	flex: none;
 	align-items: center;
-	gap: 12px;
+	gap: var(--space-12);
 	height: 26px;
 	padding: 0 12px;
 	border-top: 1px solid var(--color-divider);
@@ -347,7 +347,7 @@
 	display: flex;
 	flex: 1;
 	align-items: center;
-	gap: 4px;
+	gap: var(--space-4);
 	min-width: 0;
 	overflow: hidden;
 	white-space: nowrap;
@@ -494,7 +494,7 @@
 }
 
 .finder-doc pre {
-	padding: 12px 14px;
+	padding: var(--space-12) var(--space-14);
 	overflow: auto;
 	border-radius: var(--radius-md);
 	background-color: var(--color-sidebar-bg);
@@ -512,7 +512,7 @@
 }
 
 .finder-doc :is(th, td) {
-	padding: 6px 12px;
+	padding: var(--space-6) var(--space-12);
 	border: 1px solid var(--color-divider);
 	text-align: left;
 	vertical-align: top;
@@ -587,8 +587,8 @@
 	.finder-chips {
 		display: flex;
 		flex: none;
-		gap: 6px;
-		padding: 8px 12px;
+		gap: var(--space-6);
+		padding: var(--space-8) var(--space-12);
 		overflow-x: auto;
 		border-bottom: 1px solid var(--color-divider);
 		scrollbar-width: none;
@@ -596,7 +596,7 @@
 
 	.finder-chips button {
 		flex: none;
-		padding: 4px 12px;
+		padding: var(--space-4) var(--space-12);
 		border: none;
 		border-radius: var(--radius-full);
 		background-color: var(--color-selected-bg);

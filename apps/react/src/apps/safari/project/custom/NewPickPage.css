@@ -36,8 +36,8 @@
 .np-topline {
 	display: flex;
 	justify-content: space-between;
-	gap: 12px;
-	padding-bottom: 8px;
+	gap: var(--space-12);
+	padding-bottom: var(--space-8);
 	border-bottom: 1px solid var(--np-rule);
 	color: var(--np-muted);
 	font-size: var(--text-caption);
@@ -90,7 +90,7 @@
 }
 
 .np-lead h1 {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	font-size: clamp(32px, 5.4cqi, 52px);
 	font-weight: 800;
 	letter-spacing: -0.02em;
@@ -98,7 +98,7 @@
 }
 
 .np-dek {
-	margin-top: 14px;
+	margin-top: var(--space-14);
 	color: var(--np-muted);
 	font-size: 18px;
 	line-height: 1.55;
@@ -108,8 +108,8 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 12px 24px;
-	margin-top: 20px;
+	gap: var(--space-12) var(--space-24);
+	margin-top: var(--space-20);
 	font-size: var(--text-subhead);
 }
 
@@ -121,7 +121,7 @@
 }
 
 .np-shot {
-	margin-top: 24px;
+	margin-top: var(--space-24);
 	border: 1px solid var(--np-rule);
 }
 
@@ -132,7 +132,7 @@
 }
 
 .np-caption {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--np-muted);
 	font-size: var(--text-caption);
 }
@@ -140,13 +140,13 @@
 .np-side {
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
-	padding-left: 24px;
+	gap: var(--space-24);
+	padding-left: var(--space-24);
 	border-left: 1px solid var(--np-rule);
 }
 
 .np-box h2 {
-	padding-bottom: 6px;
+	padding-bottom: var(--space-6);
 	border-bottom: 2px solid var(--np-rule);
 	font-size: var(--text-body);
 }
@@ -180,7 +180,7 @@
 .np-timeline li {
 	display: grid;
 	grid-template-columns: 52px minmax(0, 1fr);
-	gap: 10px;
+	gap: var(--space-10);
 	padding: 8px 0;
 	border-bottom: 1px dotted color-mix(in srgb, var(--np-rule) 40%, transparent);
 	font-size: 14px;
@@ -193,8 +193,8 @@
 
 /* 섹션 제목: 괘선 위의 작은 머리 */
 .np-section {
-	margin-bottom: 14px;
-	padding-top: 8px;
+	margin-bottom: var(--space-14);
+	padding-top: var(--space-8);
 	border-top: 3px solid var(--np-rule);
 	font-size: var(--text-title3);
 	font-weight: 800;
@@ -212,7 +212,7 @@
 }
 
 .np-story-dek {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--np-ink);
 	font-size: 14px;
 	font-weight: 600;
@@ -220,7 +220,7 @@
 }
 
 .np-story-body {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--np-muted);
 	font-size: 14px;
 	line-height: 1.7;
@@ -231,12 +231,12 @@
 	display: grid;
 	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
 	gap: 28px;
-	padding-bottom: 24px;
+	padding-bottom: var(--space-24);
 	border-bottom: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
 }
 
 .np-story-lead h3 {
-	margin-top: 4px;
+	margin-top: var(--space-4);
 	font-size: clamp(26px, 4cqi, 36px);
 	line-height: 1.15;
 }
@@ -282,7 +282,7 @@
 }
 
 .np-stories .np-photo {
-	margin-bottom: 12px;
+	margin-bottom: var(--space-12);
 }
 
 /* 사진: 신문 사진처럼 살짝 바랜 색, 아래 작은 설명 */
@@ -306,7 +306,7 @@
 }
 
 .np-photo figcaption {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--np-muted);
 	font-size: var(--text-caption);
 }
@@ -316,14 +316,14 @@
 	display: grid;
 	grid-template-columns: auto repeat(2, minmax(0, 1fr));
 	gap: 0 20px;
-	margin-top: 20px;
-	padding: 14px 16px;
+	margin-top: var(--space-20);
+	padding: var(--space-14) var(--space-16);
 	border: 3px double var(--np-rule);
 }
 
 .np-briefs-title {
 	writing-mode: vertical-rl;
-	padding-right: 12px;
+	padding-right: var(--space-12);
 	border-right: 1px solid var(--np-rule);
 	font-family: var(--sp-serif);
 	font-size: var(--text-subhead);
@@ -336,7 +336,7 @@
 }
 
 .np-briefs p {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--np-muted);
 	font-size: var(--text-footnote);
 	line-height: 1.65;
@@ -346,8 +346,8 @@
 .np-ticker {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	margin-top: 10px;
+	gap: var(--space-12);
+	margin-top: var(--space-10);
 	overflow: hidden;
 	border-block: 1px solid var(--np-rule);
 	font-size: var(--text-footnote);
@@ -358,7 +358,7 @@
 	position: relative;
 	z-index: 1;
 	flex: none;
-	padding: 6px 12px;
+	padding: var(--space-6) var(--space-12);
 	background-color: var(--sp-accent);
 	color: #ffffff;
 	font-family: inherit;
@@ -421,7 +421,7 @@
 }
 
 .np-body p {
-	margin-bottom: 12px;
+	margin-bottom: var(--space-12);
 	break-inside: avoid;
 }
 
@@ -443,7 +443,7 @@
 
 .np-feature-dek {
 	max-width: 44em;
-	margin-bottom: 20px;
+	margin-bottom: var(--space-20);
 	font-family: var(--sp-serif);
 	font-size: 18px;
 	font-style: italic;
@@ -459,7 +459,7 @@
 }
 
 .np-feature li {
-	padding-top: 12px;
+	padding-top: var(--space-12);
 	border-top: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
 	counter-increment: feature;
 }
@@ -470,7 +470,7 @@
 }
 
 .np-feature h3::before {
-	margin-right: 8px;
+	margin-right: var(--space-8);
 	color: var(--sp-accent);
 	content: counter(feature, decimal-leading-zero);
 	font-family: var(--sp-mono);
@@ -479,7 +479,7 @@
 }
 
 .np-feature p {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--np-muted);
 	font-size: 14px;
 	line-height: 1.65;
@@ -498,7 +498,7 @@
 }
 
 .np-byline ul {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	padding-left: 1.2em;
 	color: var(--np-muted);
 	font-size: 14px;
@@ -512,7 +512,7 @@
 }
 
 .np-classified div {
-	padding: 10px 12px;
+	padding: var(--space-10) var(--space-12);
 	border-right: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
 	border-bottom: 1px solid color-mix(in srgb, var(--np-rule) 30%, transparent);
 }
@@ -582,7 +582,7 @@
 
 	.np-briefs {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
+		gap: var(--space-12);
 	}
 
 	.np-briefs-title {
