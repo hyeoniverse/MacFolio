@@ -36,6 +36,17 @@ model MemoOrganization {
   updatedBy String
 }
 
+/// Finder의 폴더 구조: 관리자가 만든 폴더, 옮긴 파일(보이는 자리만, R2 키는 그대로), 바탕화면의 가상본.
+/// 한 행만 쓴다 (id = 1). 관리자만 바꾸고 누구나 같은 구조를 본다
+model FinderLayout {
+  id        Int      @id @default(1)
+  /// { folders, files, aliases } (packages/contracts/src/finder.ts의 FinderLayout)
+  data      Json
+  updatedAt DateTime @updatedAt
+  /// 마지막으로 바꾼 관리자 (GitHub 계정 이름)
+  updatedBy String
+}
+
 /// 블로그 글의 댓글. 방문자는 쿠키로 정한 이름(예: 🦊 날쌘 여우)으로 쓰고, 같은 브라우저에서만 지운다.
 /// 관리자는 김정현으로 쓰고 무엇이든 지운다
 model PostComment {

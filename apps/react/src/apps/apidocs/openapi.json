@@ -220,6 +220,105 @@
 				]
 			}
 		},
+		"/finder/layout": {
+			"get": {
+				"operationId": "FinderController_getLayout",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "폴더 구조와 마지막으로 바꾼 시각",
+						"content": {
+							"application/json": {
+								"schema": {
+									"example": {
+										"folders": [
+											{
+												"id": "folder:k3x9a1",
+												"name": "발표 자료",
+												"parent": "docs"
+											},
+											{
+												"id": "folder:p0q2r7",
+												"name": "작업",
+												"parent": "desktop"
+											}
+										],
+										"files": {
+											"file:resume/abc123.pdf": "folder:k3x9a1"
+										},
+										"aliases": [
+											"docs:이력서",
+											"docs:포트폴리오",
+											"docs:자격증",
+											"projects"
+										],
+										"updatedAt": null
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"finder"
+				]
+			},
+			"put": {
+				"operationId": "FinderController_saveLayout",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"folders": [
+										{
+											"id": "folder:k3x9a1",
+											"name": "발표 자료",
+											"parent": "docs"
+										},
+										{
+											"id": "folder:p0q2r7",
+											"name": "작업",
+											"parent": "desktop"
+										}
+									],
+									"files": {
+										"file:resume/abc123.pdf": "folder:k3x9a1"
+									},
+									"aliases": [
+										"docs:이력서",
+										"docs:포트폴리오",
+										"docs:자격증",
+										"projects"
+									]
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "저장한 폴더 구조"
+					},
+					"400": {
+						"description": "규칙을 어겼다 (없는 상위 폴더, 고리, 겹친 이름 등). message에 이유를 모두 담는다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"finder"
+				]
+			}
+		},
 		"/site": {
 			"get": {
 				"operationId": "SiteController_view",
