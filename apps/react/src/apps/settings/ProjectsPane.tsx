@@ -3119,21 +3119,15 @@ const ProjectsPane = () => {
 				<span className="showcase-head-actions">
 					{editMode ? (
 						<>
-							<button type="button" className="showcase-text-button" onClick={cancel} disabled={busy}>
+							<Button className="showcase-text-button" onClick={cancel} disabled={busy}>
 								취소
-							</button>
-							<button
-								type="button"
-								className="showcase-text-button strong"
-								onClick={() => void finish()}
-								disabled={busy}
-							>
+							</Button>
+							<Button className="showcase-text-button strong" onClick={() => void finish()} disabled={busy}>
 								완료
-							</button>
+							</Button>
 						</>
 					) : (
-						<button
-							type="button"
+						<Button
 							className="showcase-text-button"
 							onClick={() => {
 								setEditMode(true);
@@ -3141,7 +3135,7 @@ const ProjectsPane = () => {
 							}}
 						>
 							편집
-						</button>
+						</Button>
 					)}
 				</span>
 			</div>

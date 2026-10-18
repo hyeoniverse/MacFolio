@@ -97,9 +97,9 @@ const Details = ({
 			)}
 			<div className="memo-image-actions">
 				{onBack && (
-					<button type="button" className="memo-image-back" onClick={onBack}>
+					<Button className="memo-image-back" onClick={onBack}>
 						다시 고르기
-					</button>
+					</Button>
 				)}
 				<Button tone="primary" type="submit" className="memo-image-submit">
 					{submit}
@@ -270,9 +270,9 @@ const StockTab = ({
 					autoFocus
 					onChange={(e) => setQuery(e.target.value)}
 				/>
-				<button type="submit" disabled={!query.trim() || loading}>
+				<Button type="submit" disabled={!query.trim() || loading}>
 					찾기
-				</button>
+				</Button>
 			</form>
 			<small id={`${hintId}-search`} className="memo-field-hint">
 				영어로 검색하면 더 많은 사진을 찾을 수 있습니다.
@@ -306,14 +306,9 @@ const StockTab = ({
 				</div>
 			)}
 			{results?.hasMore && (
-				<button
-					type="button"
-					className="memo-stock-more"
-					disabled={loading}
-					onClick={() => void search(results.q, results.page + 1)}
-				>
+				<Button className="memo-stock-more" disabled={loading} onClick={() => void search(results.q, results.page + 1)}>
 					더 보기
-				</button>
+				</Button>
 			)}
 			{loading && (
 				<p className="memo-image-note" role="status">

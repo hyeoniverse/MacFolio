@@ -22,6 +22,7 @@ import './Weather.css';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import IconButton from '@/shared/ui/button/IconButton';
 import SidebarToggle from '@/shared/ui/button/SidebarToggle';
+import Button from '@/shared/ui/button/Button';
 
 /** 날씨 칸이 이 폭 이하면 iOS 날씨 모양(날씨만, 아래 막대, 덮어 여는 목록)으로 (Weather.css의 [data-compact]) */
 const COMPACT_WIDTH = 640;
@@ -601,9 +602,7 @@ const Weather = () => {
 								{loaded?.status === 'error' ? (
 									<>
 										날씨를 불러오지 못했습니다.
-										<button type="button" onClick={reload}>
-											다시 시도
-										</button>
+										<Button onClick={reload}>다시 시도</Button>
 									</>
 								) : (
 									'불러오는 중…'

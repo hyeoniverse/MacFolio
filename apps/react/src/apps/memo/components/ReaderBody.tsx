@@ -64,9 +64,7 @@ const ReaderBody = ({
 			// 도구 막대는 편집 도구로 꽉 차서, 잠금은 메뉴로 걸고 여기서 푼다
 			<p className="memo-locked-note">
 				<i className="fa-solid fa-lock" aria-hidden="true" /> 잠긴 메모입니다.
-				<button type="button" onClick={onUnlock}>
-					잠금 풀기
-				</button>
+				<Button onClick={onUnlock}>잠금 풀기</Button>
 			</p>
 		)}
 		<h1>{post.title}</h1>

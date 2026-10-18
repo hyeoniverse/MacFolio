@@ -3,6 +3,7 @@ import { env } from '@/shared/config/env';
 import { formatPostDate, type PostContent } from '@macfolio/desktop-core/memo';
 import { fetchRevision, fetchRevisions, type RevisionSummary } from '../postsApi';
 import IconButton from '@/shared/ui/button/IconButton';
+import Button from '@/shared/ui/button/Button';
 
 /** 버전을 남긴 때 (9월 30일 오후 3:04) */
 const formatTime = (iso: string) =>
@@ -65,9 +66,9 @@ const RevisionsPanel = ({
 					<h1>{preview.content.title}</h1>
 					<div className="memo-markdown">{renderMarkdown(preview.content.body)}</div>
 				</div>
-				<button type="button" className="memo-revision-restore" onClick={() => onRestore(preview.content)}>
+				<Button className="memo-revision-restore" onClick={() => onRestore(preview.content)}>
 					이 버전으로 되돌리기
-				</button>
+				</Button>
 			</div>
 		);
 

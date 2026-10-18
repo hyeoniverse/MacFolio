@@ -23,6 +23,7 @@ import {
 } from './activityApi';
 import { change, eventLabel, formatDuration, kstToday, labelOf, PERIODS, periodRange, type Period } from './model';
 import '@/apps/activity/Activity.css';
+import Button from '@/shared/ui/button/Button';
 
 const TABS = [
 	{ id: 'overview', label: '개요' },
@@ -160,9 +161,7 @@ const AdminOnly = ({ what }: { what: string }) => (
 		<i className="fa-solid fa-lock" aria-hidden="true" />
 		<h2>관리자만 볼 수 있습니다</h2>
 		<p>{what}</p>
-		<button type="button" onClick={signIn}>
-			관리자 로그인…
-		</button>
+		<Button onClick={signIn}>관리자 로그인…</Button>
 	</div>
 );
 
