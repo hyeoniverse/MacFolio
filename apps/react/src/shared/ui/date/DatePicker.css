@@ -103,7 +103,7 @@
 
 .ui-calendar-picks button:hover,
 .ui-calendar-grid button:hover {
-	background-color: color-mix(in srgb, #edbb4d 25%, transparent);
+	background-color: color-mix(in srgb, var(--color-notes-yellow) 25%, transparent);
 }
 
 /* 범위 밖의 날·달·해 (min·max): 흐리게, 눌리지 않는다 */
@@ -128,8 +128,8 @@
 
 .ui-calendar-picks button.selected,
 .ui-calendar-grid button.selected {
-	background-color: #edbb4d;
-	color: #2b2100;
+	background-color: var(--color-notes-yellow);
+	color: var(--color-on-notes-yellow);
 	font-weight: 700;
 }
 

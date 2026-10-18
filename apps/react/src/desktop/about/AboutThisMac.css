@@ -79,8 +79,8 @@
 }
 
 .about-mac-photo.monogram {
-	background: linear-gradient(160deg, #8e8e93, #5a5a5f);
-	color: #ffffff;
+	background: linear-gradient(160deg, var(--color-gray), #5a5a5f);
+	color: var(--color-white);
 	font-size: 40px;
 	font-weight: 600;
 }

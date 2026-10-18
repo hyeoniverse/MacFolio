@@ -62,8 +62,8 @@
 /* 창은 body에 그려서 메모 앱의 색 변수가 닿지 않는다. 글자 버튼의 색을 여기서 다시 정한다 */
 .memo-format-panel {
 	--ui-button-radius: 999px;
-	--ui-accent: #edbb4d;
-	--ui-on-accent: #2b2100;
+	--ui-accent: var(--color-notes-yellow);
+	--ui-on-accent: var(--color-on-notes-yellow);
 }
 
 .memo-format-marks {
@@ -87,7 +87,7 @@
 }
 
 .memo-format-marks button.on {
-	background-color: color-mix(in srgb, #edbb4d 35%, transparent);
+	background-color: color-mix(in srgb, var(--color-notes-yellow) 35%, transparent);
 }
 
 .memo-format-marks .mark-strong {
@@ -189,7 +189,7 @@
 }
 
 .memo-format-styles button.danger {
-	color: #e5484d;
+	color: var(--color-danger);
 }
 
 /* 이미지 넣기 창 (넓게) */
@@ -234,8 +234,8 @@
 
 .memo-image-drop:hover,
 .memo-image-drop:focus-within {
-	border-color: #edbb4d;
-	background-color: color-mix(in srgb, #edbb4d 10%, transparent);
+	border-color: var(--color-notes-yellow);
+	background-color: color-mix(in srgb, var(--color-notes-yellow) 10%, transparent);
 }
 
 .memo-image-drop i {
@@ -300,7 +300,7 @@
 }
 
 .memo-format-panel input:not([type='file']):focus {
-	border-color: #edbb4d;
+	border-color: var(--color-notes-yellow);
 }
 
 /* 입력칸 아래 안내 */
@@ -334,8 +334,8 @@
 .memo-format-panel .memo-stock-search button {
 	padding: 5px 14px;
 	border-radius: var(--radius-full);
-	background-color: #edbb4d;
-	color: #2b2100;
+	background-color: var(--color-notes-yellow);
+	color: var(--color-on-notes-yellow);
 	font-size: var(--text-footnote);
 	font-weight: 600;
 }
@@ -364,7 +364,7 @@
 }
 
 .memo-image-note.problem {
-	color: #e5484d;
+	color: var(--color-danger);
 }
 
 .memo-image-note code {

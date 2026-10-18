@@ -1,23 +1,23 @@
 /* 음악 앱 (macOS·iOS 음악) */
 [data-app='music'] {
 	--music-accent: #fa2d48;
-	--music-bg: #ffffff;
-	--music-sidebar-bg: #f5f5f7;
+	--music-bg: var(--color-window-bg);
+	--music-sidebar-bg: var(--color-sidebar-bg);
 	--music-bar-bg: rgba(246, 246, 248, 0.92);
 	--music-hover: rgba(0, 0, 0, 0.05);
 	--music-selected: rgba(0, 0, 0, 0.08);
-	--music-text: #1d1d1f;
+	--music-text: var(--color-label);
 	--music-muted: #86868b;
 	--music-separator: rgba(0, 0, 0, 0.08);
 }
 
 :root[data-theme='dark'] [data-app='music'] {
-	--music-bg: #1e1e1e;
-	--music-sidebar-bg: #252527;
+	--music-bg: var(--color-window-bg);
+	--music-sidebar-bg: var(--color-sidebar-bg);
 	--music-bar-bg: rgba(40, 40, 42, 0.92);
 	--music-hover: rgba(255, 255, 255, 0.06);
 	--music-selected: rgba(255, 255, 255, 0.1);
-	--music-text: #f5f5f7;
+	--music-text: var(--color-label);
 	--music-muted: #98989d;
 	--music-separator: rgba(255, 255, 255, 0.1);
 }
@@ -226,7 +226,7 @@
 
 .music-pill.primary {
 	background-color: var(--music-accent);
-	color: #fff;
+	color: var(--color-white);
 }
 
 /* 곡 목록 */
@@ -484,7 +484,7 @@
 	align-items: center;
 	gap: var(--space-16);
 	padding: 24px 28px 28px;
-	color: #fff;
+	color: var(--color-white);
 	isolation: isolate;
 }
 
@@ -542,12 +542,12 @@
 }
 
 .music-now-playing .music-toggle.on {
-	color: #fff;
+	color: var(--color-white);
 }
 
 .music-now-playing .volume-bar {
 	align-self: stretch;
-	color: #fff;
+	color: var(--color-white);
 }
 
 .music-now-playing .music-up-next {
@@ -980,11 +980,11 @@
 		place-items: center;
 		border-radius: 5px;
 		background-color: rgba(0, 0, 0, 0.35);
-		color: #ffffff;
+		color: var(--color-white);
 	}
 
 	.container.mobile .music-track.current .music-bars {
-		color: #ffffff;
+		color: var(--color-white);
 	}
 
 	.container.mobile .music-track-title strong {

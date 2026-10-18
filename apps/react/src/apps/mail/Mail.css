@@ -1,35 +1,35 @@
 /* macOS 26 메일 앱 색 */
 [data-app='mail'] {
-	--mail-window-bg: #ffffff;
-	--mail-panel-bg: #f6f6f6;
+	--mail-window-bg: var(--color-content-bg);
+	--mail-panel-bg: var(--color-panel-bg);
 	--mail-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 6px 18px rgba(0, 0, 0, 0.06);
 	--mail-separator: #e3e3e6;
-	--mail-selected-bg: #0a84ff;
-	--mail-selected-text: #ffffff;
+	--mail-selected-bg: var(--color-blue);
+	--mail-selected-text: var(--color-white);
 	--mail-hover-bg: #ececef;
-	--mail-text: #1d1d1f;
-	--mail-muted: #6e6e73;
-	--mail-accent: #0a84ff;
+	--mail-text: var(--color-label);
+	--mail-muted: var(--color-text-secondary);
+	--mail-accent: var(--color-blue);
 	--mail-avatar: linear-gradient(180deg, #aab2e5 0%, #8b93d0 100%);
-	--mail-float-bg: #ffffff;
+	--mail-float-bg: var(--color-card-bg);
 	--mail-float-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 2px 10px rgba(0, 0, 0, 0.1);
 	--mail-field-border: #e3e3e6;
-	--mail-error: #d70015;
+	--mail-error: var(--color-error);
 }
 
 :root[data-theme='dark'] [data-app='mail'] {
-	--mail-window-bg: #1c1c1e;
-	--mail-panel-bg: #2a2a2c;
+	--mail-window-bg: var(--color-content-bg);
+	--mail-panel-bg: var(--color-panel-bg);
 	--mail-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 18px rgba(0, 0, 0, 0.35);
 	--mail-separator: #3a3a3c;
 	--mail-hover-bg: #333336;
-	--mail-text: #f5f5f7;
-	--mail-muted: #98989d;
+	--mail-text: var(--color-label);
+	--mail-muted: var(--color-text-secondary);
 	--mail-avatar: linear-gradient(180deg, #8f97cf 0%, #6c74b3 100%);
-	--mail-float-bg: #2c2c2e;
+	--mail-float-bg: var(--color-card-bg);
 	--mail-float-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.08), 0 2px 10px rgba(0, 0, 0, 0.4);
 	--mail-field-border: #3a3a3c;
-	--mail-error: #ff6961;
+	--mail-error: var(--color-error);
 }
 
 /* 공통 버튼의 색: 떠 있는 원형 버튼(새로운 메시지)과 글자 버튼 (shared/ui/button) */
@@ -38,7 +38,7 @@
 	--ui-float-shadow: var(--mail-float-shadow);
 	--ui-button-bg: var(--mail-float-bg);
 	--ui-accent: var(--mail-accent);
-	--ui-on-accent: #ffffff;
+	--ui-on-accent: var(--color-white);
 }
 
 [data-app='mail'].container {
@@ -179,7 +179,7 @@
 }
 
 .mail-item.selected .mail-unread {
-	background-color: #ffffff;
+	background-color: var(--color-white);
 }
 
 .mail-item-text {
@@ -236,7 +236,7 @@
 	flex: none;
 	border-radius: 50%;
 	background: var(--mail-avatar);
-	color: #ffffff;
+	color: var(--color-white);
 	font-weight: 600;
 }
 

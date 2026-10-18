@@ -45,7 +45,7 @@
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 	width: 60px;
 	height: 60px;
-	background-color: #ffffff;
+	background-color: var(--color-white);
 	cursor: pointer;
 	-webkit-appearance: none;
 	border-radius: 50%;
@@ -55,7 +55,7 @@
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 	width: 60px;
 	height: 60px;
-	background-color: #ffffff;
+	background-color: var(--color-white);
 	cursor: pointer;
 	border-radius: 50%;
 }

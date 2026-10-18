@@ -213,7 +213,7 @@
 }
 
 .files-phone-section h3 i {
-	color: #0a84ff;
+	color: var(--color-blue);
 	font-size: var(--text-body);
 }
 
@@ -241,7 +241,7 @@
 
 .files-phone-places button > i:first-child {
 	width: 28px;
-	color: #0a84ff;
+	color: var(--color-blue);
 	font-size: var(--text-title2);
 	text-align: center;
 }
@@ -296,7 +296,7 @@
 
 .files-phone-tabs button[aria-current] {
 	background-color: rgba(118, 118, 128, 0.14);
-	color: #0a84ff;
+	color: var(--color-blue);
 }
 
 /* ─── 문서 읽기 ─── */

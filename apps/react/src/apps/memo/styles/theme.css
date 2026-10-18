@@ -2,13 +2,13 @@
 
 /* macOS 메모 앱 색 */
 [data-app='memo'] {
-	--memo-bg: #ffffff;
+	--memo-bg: var(--color-window-bg);
 	--memo-sidebar-bg: #f3f4f6;
 	--memo-list-bg: #fafafa;
 	--memo-border: #e5e7eb;
 	--memo-hover: #eceef1;
-	--memo-accent: #edbb4d;
-	--memo-on-accent: #ffffff;
+	--memo-accent: var(--color-notes-yellow);
+	--memo-on-accent: var(--color-white);
 	--memo-text: #1f2937;
 	--memo-body: #374151;
 	--memo-muted: #6b7280;
@@ -16,7 +16,7 @@
 	--memo-code-bg: #f3f4f6;
 	--memo-panel-bg: rgba(243, 244, 246, 0.9);
 	--memo-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 1px 6px rgba(0, 0, 0, 0.08);
-	--memo-danger: #ff3b30;
+	--memo-danger: var(--color-red);
 	/* 좋아요 하트: Apple의 systemPink (음악 앱의 '좋아요'와 같은 색) */
 	--memo-like: #ff2d55;
 	/* iOS의 채움 색 (tertiarySystemFill): 테두리 없이 옅은 회색 바탕 */
@@ -24,7 +24,7 @@
 }
 
 :root[data-theme='dark'] [data-app='memo'] {
-	--memo-bg: #1e1e1e;
+	--memo-bg: var(--color-window-bg);
 	--memo-sidebar-bg: #252527;
 	--memo-list-bg: #222224;
 	--memo-border: #38383a;
@@ -51,7 +51,7 @@
 	--ui-button-bg: var(--memo-search-bg);
 	--ui-button-color: var(--memo-text);
 	--ui-accent: var(--memo-accent);
-	--ui-on-accent: #2b2100;
+	--ui-on-accent: var(--color-on-notes-yellow);
 }
 
 [data-app='memo'].container {

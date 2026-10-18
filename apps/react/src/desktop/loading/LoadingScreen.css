@@ -11,14 +11,14 @@
 	z-index: var(--z-loading);
 	width: 100vw;
 	height: 100vh;
-	background-color: #000;
+	background-color: var(--color-black);
 }
 
 .loading-icon {
 	margin-bottom: 2rem;
 	font-size: 8rem;
-	color: #fff;
-	filter: drop-shadow(0 0 0.3rem #fff);
+	color: var(--color-white);
+	filter: drop-shadow(0 0 0.3rem var(--color-white));
 }
 
 .progress-bar-container {
@@ -27,18 +27,18 @@
 	height: 0.5rem;
 	background-color: #333;
 	border-radius: 0.5rem;
-	filter: drop-shadow(0 0 0.3rem #fff);
+	filter: drop-shadow(0 0 0.3rem var(--color-white));
 }
 
 .progress-bar {
 	height: 100%;
-	background-color: #fff;
+	background-color: var(--color-white);
 	transition: width 0.1s ease-out;
 }
 
 .loading-text {
 	margin: 1rem;
-	color: #fff;
+	color: var(--color-white);
 }
 
 /* 눌러서 시작하면 안내 문구는 감추고 자리는 남긴다 */
