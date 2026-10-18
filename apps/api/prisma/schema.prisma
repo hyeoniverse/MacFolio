@@ -358,11 +358,11 @@ model SiteContent {
 model Document {
   /// 무작위 (Upload id와 같은 모양)
   id        String   @id
-  /// 이력서 | 포트폴리오 | 자격증
+  /// 이력서 | 포트폴리오 | 자격증 | project:<프로젝트 id>
   folder    String
   /// Finder에 보이는 이름 (확장자 포함)
   name      String
-  /// R2 키 (<폴더 영어 이름>/<무작위>.<확장자>). 사이트 주소 /files/<key>로 받는다
+  /// R2 키 (<폴더 영어 이름>/<무작위>.<확장자>, 프로젝트 폴더는 projects/<프로젝트 id>/<무작위>.<확장자>). 사이트 주소 /files/<key>로 받는다
   key       String   @unique
   /// pdf | image
   kind      String
