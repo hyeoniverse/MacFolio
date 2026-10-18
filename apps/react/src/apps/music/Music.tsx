@@ -416,7 +416,7 @@ const Music: React.FC = () => {
 					{sortMenu && (
 						<Menu
 							label="정렬"
-							className="touch"
+							variant="ios"
 							anchor={sortMenu}
 							trigger={sortButton}
 							onClose={() => setSortMenu(null)}
