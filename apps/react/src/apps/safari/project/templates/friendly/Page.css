@@ -268,7 +268,7 @@
 .fr-links [data-primary]::after {
 	content: '\f054';
 	margin-left: var(--space-8);
-	font-family: 'Font Awesome 6 Free';
+	font-family: 'Font Awesome 7 Free';
 	font-size: 0.7em;
 	font-weight: 900;
 }
