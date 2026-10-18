@@ -11,7 +11,7 @@ export interface FilesObject extends FilesObjectInfo {
 	body: ReadableStream | null;
 }
 export interface FilesBucket {
-	get(key: string): Promise<FilesObject | null>;
+	get(key: string, options?: { range?: { offset: number; length: number } }): Promise<FilesObject | null>;
 	head(key: string): Promise<FilesObjectInfo | null>;
 }
 
@@ -100,6 +100,30 @@ function disposition(key: string, download: boolean): string {
 	return `${download ? 'attachment' : 'inline'}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(name)}`;
 }
 
+/**
+ * Range 머리(bytes=a-b, bytes=a-, bytes=-n)를 파일 크기 안의 [시작, 길이]로. 없으면 null, 맞지 않으면 'invalid'.
+ * 동영상(<video>)은 나눠 받는다: Safari는 206으로 답하지 않으면 재생하지 않고, Chrome도 앞뒤로 옮길 수 없다
+ */
+export function parseRange(header: string | null, size: number): { offset: number; length: number } | null | 'invalid' {
+	if (!header) return null;
+	const match = /^bytes=(\d*)-(\d*)$/.exec(header.trim());
+	if (!match || (!match[1] && !match[2])) return 'invalid';
+	let start: number;
+	let end: number;
+	if (!match[1]) {
+		// 끝에서 n바이트
+		const suffix = Number(match[2]);
+		if (suffix === 0) return 'invalid';
+		start = Math.max(0, size - suffix);
+		end = size - 1;
+	} else {
+		start = Number(match[1]);
+		end = match[2] ? Math.min(Number(match[2]), size - 1) : size - 1;
+	}
+	if (start >= size || end < start) return 'invalid';
+	return { offset: start, length: end - start + 1 };
+}
+
 /** GET·HEAD /files/<키>. 바인딩이 없으면(로컬·미리보기) 404 */
 export async function serveFile(request: Request, bucket: FilesBucket | undefined): Promise<Response> {
 	if (request.method !== 'GET' && request.method !== 'HEAD')
@@ -109,7 +133,17 @@ export async function serveFile(request: Request, bucket: FilesBucket | undefine
 	if (!key || !bucket) return text(404, 'Not Found');
 
 	const head = request.method === 'HEAD';
-	const object: FilesObjectInfo | FilesObject | null = head ? await bucket.head(key) : await bucket.get(key);
+	// Range가 오면 크기를 먼저 알아야 한다 (R2 head는 내용을 받지 않는다)
+	const rangeHeader = request.headers.get('range');
+	const info = rangeHeader && !head ? await bucket.head(key) : null;
+	const range = info ? parseRange(rangeHeader, info.size) : null;
+	if (range === 'invalid')
+		return text(416, 'Range Not Satisfiable', { 'content-range': `bytes */${info!.size}`, 'accept-ranges': 'bytes' });
+	const object: FilesObjectInfo | FilesObject | null = head
+		? await bucket.head(key)
+		: range
+			? await bucket.get(key, { range })
+			: await bucket.get(key);
 	if (!object) return text(404, 'Not Found');
 
 	const headers: Record<string, string> = {
@@ -126,6 +160,7 @@ export async function serveFile(request: Request, bucket: FilesBucket | undefine
 		'x-frame-options': 'SAMEORIGIN',
 		'referrer-policy': 'strict-origin-when-cross-origin',
 		'cross-origin-resource-policy': 'same-origin',
+		'accept-ranges': 'bytes',
 	};
 	if (object.uploaded) headers['last-modified'] = object.uploaded.toUTCString();
 
@@ -133,7 +168,12 @@ export async function serveFile(request: Request, bucket: FilesBucket | undefine
 	if (match && match.split(',').some((tag) => tag.trim() === object.httpEtag || tag.trim() === '*'))
 		return new Response(null, { status: 304, headers });
 
-	headers['content-length'] = String(object.size);
 	const body = head ? null : (object as FilesObject).body;
+	if (range && info) {
+		headers['content-range'] = `bytes ${range.offset}-${range.offset + range.length - 1}/${info.size}`;
+		headers['content-length'] = String(range.length);
+		return new Response(body, { status: 206, headers });
+	}
+	headers['content-length'] = String(object.size);
 	return new Response(body, { status: 200, headers });
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import FinderIcon from '@/apps/finder/FinderIcon';
-import { find, TRASH_ID, type FinderItem, type FolderItem } from '@/apps/finder/files';
+import { find, mediaKind, TRASH_ID, type FinderItem, type FolderItem } from '@/apps/finder/files';
 import { canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
 import { uploadInto } from '@/apps/finder/useDocumentDrop';
 import { addLocalFiles } from '@/apps/finder/localFiles';
@@ -9,6 +9,7 @@ import InlineName from '@/apps/finder/InlineName';
 import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from '@/apps/finder/useFinderEdit';
 import { requestFinderFolder } from '@/apps/finder/openDoc';
 import { downloadFile } from '@/apps/finder/documents';
+import { openInPlayer } from '@/apps/quicktime/playerStore';
 import { useLocations } from '@/apps/finder/useLocations';
 import { openInPreview } from '@/apps/preview/previewStore';
 import { requestedSection } from '@/apps/settings/settingsRequest';
@@ -106,7 +107,11 @@ const DesktopIcons: React.FC = () => {
 
 	const open = (item: FinderItem) => {
 		if (item.kind === 'file') {
-			downloadFile(item.key, item.name);
+			const media = mediaKind(item.name);
+			if (!media) return downloadFile(item.key, item.name);
+			openApp('quicktime');
+			bringAppToFront('quicktime');
+			openInPlayer({ key: item.key, name: item.name, media });
 			return;
 		}
 		if (item.kind === 'pdf' || item.kind === 'image') {
