@@ -39,6 +39,7 @@ export function cpuPercent(before: CpuTimes, after: CpuTimes): number | null {
 
 /** /proc/meminfo로 메모리 사용률 (%): 쓸 수 있는 양(MemAvailable)을 뺀 나머지 */
 export function memoryPercent(meminfo: string): number | null {
+	// nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp -- key는 코드에 적은 MemTotal·MemAvailable뿐이다
 	const value = (key: string) => Number(meminfo.match(new RegExp(`^${key}:\\s+(\\d+)`, 'm'))?.[1]);
 	const total = value('MemTotal');
 	const available = value('MemAvailable');

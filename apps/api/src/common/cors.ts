@@ -15,6 +15,7 @@ export function originClassifier(allowed: string[]): (origin: string | undefined
 	const exact = new Set(allowed.filter((entry) => !entry.includes('*')));
 	const patterns = allowed
 		.filter((entry) => entry.includes('*'))
+		// nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp -- 패턴은 운영자가 정한 CORS_ORIGINS(config.ts)이고 escape()로 메타 문자를 막은 뒤 *만 [a-z0-9-]+로 바꾼다
 		.map((entry) => new RegExp(`^${entry.split('*').map(escape).join('[a-z0-9-]+')}$`));
 	return (origin) => {
 		if (!origin) return null;

@@ -19,6 +19,14 @@ describe('terminalRepo', () => {
 		expect(resolve(repo, [], 'README.md/x')).toBeNull();
 	});
 
+	it('Object.prototype의 이름(__proto__·constructor)은 따라가지 않는다', () => {
+		expect(resolve(repo, [], '__proto__')).toBeNull();
+		expect(resolve(repo, [], 'constructor')).toBeNull();
+		expect(resolve(repo, ['Week01'], 'toString')).toBeNull();
+		expect(nodeAt(repo, ['__proto__'])).toBeUndefined();
+		expect(nodeAt(repo, ['Week01', 'constructor'])).toBeUndefined();
+	});
+
 	it('폴더를 먼저, 이름순으로 늘어놓고 그림 같은 파일은 null', () => {
 		expect(entries(repo).map((entry) => entry.name)).toEqual(['Projects', 'Week01', 'Week02', 'README.md']);
 		expect(nodeAt(repo, ['Week02', '03', 'shot.png'])).toBeNull();
