@@ -137,6 +137,15 @@
 	text-decoration: underline;
 }
 
+/* 발표 자료 보기는 미리보기 앱을 여는 버튼이지만, 옆의 글자 링크(GitHub에서 보기)와 같은 모양으로 */
+button.sp-link {
+	padding: 0;
+	border: none;
+	background: none;
+	font: inherit;
+	cursor: pointer;
+}
+
 .sp-shot {
 	max-width: 880px;
 	margin: 48px auto 0;

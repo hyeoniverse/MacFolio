@@ -217,6 +217,11 @@ export interface Project {
 	url: string;
 	/** 실제로 써 볼 수 있는 주소 */
 	demo?: string;
+	/**
+	 * 발표 자료: Finder 문서(R2)에 올린 PDF의 키 (예: portfolio/abc123.pdf). 있으면 프로젝트 페이지에 "발표 자료 보기" 버튼이 생겨
+	 * 미리보기 앱에서 연다. 키 모양은 SLIDES_KEY
+	 */
+	slides?: string;
 	/** 앱 아이콘 (public/imgs/projects/{id}/icon.png). 없으면 기본 모양을 쓴다 */
 	icon?: string;
 	/**
@@ -331,6 +336,9 @@ export const RESERVED_PROJECT_IDS = [
 ] as const;
 
 const PROJECT_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
+
+/** 발표 자료 키: 문서 폴더(이력서·포트폴리오·자격증)의 PDF 하나. 경로를 벗어나는 ..·슬래시 더하기는 받지 않는다 */
+export const SLIDES_KEY = /^(resume|portfolio|certificates)\/[\w-]{1,64}\.pdf$/;
 
 // --- 검사 규칙: 작은 스키마 ---------------------------------------------------------------
 
@@ -483,6 +491,7 @@ const PROJECT_FIELDS: Record<keyof Omit<Project, 'id'>, Rule> = {
 	language: text(40),
 	url: HREF,
 	demo: HREF,
+	slides: { kind: 'text', max: 100, pattern: SLIDES_KEY },
 	icon: SRC,
 	app: APP,
 	art: SRC,

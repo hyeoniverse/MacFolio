@@ -52,7 +52,9 @@ export interface LandingShot extends LandingMedia {
 export type LandingLink =
 	| { kind: 'app'; label: string; app: string }
 	| { kind: 'demo'; label: string; href: string }
-	| { kind: 'repo'; label: string; href: string };
+	| { kind: 'repo'; label: string; href: string }
+	/** 발표 자료 (Finder 문서의 PDF 키): 미리보기 앱에서 연다 */
+	| { kind: 'slides'; label: string; key: string };
 
 export interface LandingHero {
 	name: string;
@@ -241,6 +243,7 @@ export function linksOf(project: Project, app?: string | null): LandingLink[] {
 	if (app) links.push({ kind: 'app', label: project.app?.play ? '여기서 플레이' : '여기서 열기', app });
 	if (project.demo) links.push({ kind: 'demo', label: app ? '새 탭에서 열기' : '데모 보기', href: project.demo });
 	if (project.url) links.push({ kind: 'repo', label: 'GitHub에서 보기', href: project.url });
+	if (project.slides) links.push({ kind: 'slides', label: '발표 자료 보기', key: project.slides });
 	return links;
 }
 
