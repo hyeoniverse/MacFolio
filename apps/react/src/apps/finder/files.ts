@@ -282,3 +282,21 @@ export function sortItems(items: FinderItem[], key: SortKey): FinderItem[] {
 	};
 	return [...items].sort(compare[key]);
 }
+
+/**
+ * iCloud의 미리보기 폴더: 트리 안의 PDF·그림 전부를 이름 순으로 (macOS 미리보기의 열기 창이 처음 여는 곳).
+ * 데스크톱 미리보기의 열기 창과 휴대폰 파일 앱의 둘러보기가 같이 쓴다. 파일 id는 원래 자리와 같다
+ */
+export function previewFolder(locations: FinderItem[]): FolderItem {
+	const files = (items: FinderItem[]): FileItem[] =>
+		items.flatMap((item) =>
+			item.kind === 'folder' ? files(item.children) : item.kind === 'pdf' || item.kind === 'image' ? [item] : []
+		);
+	return {
+		kind: 'folder',
+		id: 'preview',
+		name: '미리보기',
+		children: files(locations).sort((a, b) => a.name.localeCompare(b.name, 'ko')),
+		emptyNote: '파일이 없습니다.',
+	};
+}

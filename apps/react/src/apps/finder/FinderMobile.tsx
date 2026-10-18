@@ -1,7 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
-import { find, KIND_LABELS, recentItems, search, sortItems, type FinderItem, type SortKey } from './files';
+import {
+	find,
+	KIND_LABELS,
+	previewFolder,
+	recentItems,
+	search,
+	sortItems,
+	type FinderItem,
+	type FolderItem,
+	type SortKey,
+} from './files';
 import FileView from './FileView';
 import { downloadFile, openFileInNewTab } from './documents';
 import { DOC_SOURCES } from './docsBundle';
@@ -21,6 +31,7 @@ const TAB_TITLES: Record<Tab, string> = { recents: '최근 항목', browse: '둘
 
 /** 둘러보기의 위치 아이콘 (iOS 파일의 iCloud Drive·나의 iPhone처럼 파란 선 아이콘) */
 const LOCATION_ICONS: Record<string, string> = {
+	preview: 'fa-solid fa-cloud',
 	docs: 'fa-regular fa-file-lines',
 	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
@@ -59,12 +70,17 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const [query, setQuery] = useState('');
 	const [view, setView] = useState<View>('icons');
 	const [sort, setSort] = useState<SortKey>('date');
-	const [placesOpen, setPlacesOpen] = useState(true);
+	// 둘러보기의 묶음(위치·즐겨찾기)마다 펼침
+	const [closed, setClosed] = useState<Record<string, boolean>>({});
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
 
 	// 화면이 바뀐 방식: 들어가면 오른쪽에서, 돌아오면 왼쪽에서, 탭을 바꾸면 서서히 (처음에는 움직이지 않는다)
 	const [motion, setMotion] = useState<'forward' | 'back' | 'fade' | null>(null);
+
+	// 둘러보기의 '위치'에 iCloud 미리보기 폴더를 더한 트리 (데스크톱 미리보기의 열기 창과 같은 구조). 찾기·최근 항목은 원래 트리로
+	const preview = useMemo(() => previewFolder(locations), [locations]);
+	const roots = useMemo(() => [preview, ...locations], [preview, locations]);
 
 	const screen = stack.at(-1);
 	const push = (next: Screen) => {
@@ -108,10 +124,10 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			? TAB_TITLES[tab]
 			: 'doc' in target
 				? target.doc.split('/').at(-1)!
-				: (find(locations, 'file' in target ? target.file : target.folder)?.name ?? TAB_TITLES[tab]);
+				: (find(roots, 'file' in target ? target.file : target.folder)?.name ?? TAB_TITLES[tab]);
 	const title = titleOf(screen);
 	const searching = query.trim() !== '';
-	const folder = screen && 'folder' in screen ? find(locations, screen.folder) : null;
+	const folder = screen && 'folder' in screen ? find(roots, screen.folder) : null;
 
 	const switchTab = (next: Tab) => {
 		setMotion('fade');
@@ -127,7 +143,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	);
 
 	if (screen && 'file' in screen) {
-		const file = find(locations, screen.file);
+		const file = find(roots, screen.file);
 		const viewable = file && (file.kind === 'pdf' || file.kind === 'image') ? file : null;
 		return (
 			<div className="files-phone file">
@@ -271,27 +287,40 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 						</p>
 					)
 				) : (
-					<section className="files-phone-section" aria-label="위치">
-						<h3>
-							<button type="button" aria-expanded={placesOpen} onClick={() => setPlacesOpen(!placesOpen)}>
-								위치
-								<i className={`fa-solid fa-chevron-${placesOpen ? 'down' : 'right'}`} aria-hidden="true" />
-							</button>
-						</h3>
-						{placesOpen && (
-							<ul className="files-phone-places">
-								{locations.map((place) => (
-									<li key={place.id}>
-										<button type="button" onClick={() => open(place)}>
-											<i className={LOCATION_ICONS[place.id]} aria-hidden="true" />
-											<span>{place.name}</span>
-											<i className="fa-solid fa-chevron-right files-phone-chevron" aria-hidden="true" />
-										</button>
-									</li>
-								))}
-							</ul>
-						)}
-					</section>
+					<>
+						{(
+							[
+								['위치', [preview]],
+								['즐겨찾기', locations],
+							] as [string, FolderItem[]][]
+						).map(([heading, places]) => (
+							<section key={heading} className="files-phone-section" aria-label={heading}>
+								<h3>
+									<button
+										type="button"
+										aria-expanded={!closed[heading]}
+										onClick={() => setClosed((all) => ({ ...all, [heading]: !all[heading] }))}
+									>
+										{heading}
+										<i className={`fa-solid fa-chevron-${closed[heading] ? 'right' : 'down'}`} aria-hidden="true" />
+									</button>
+								</h3>
+								{!closed[heading] && (
+									<ul className="files-phone-places">
+										{places.map((place) => (
+											<li key={place.id}>
+												<button type="button" onClick={() => open(place)}>
+													<i className={LOCATION_ICONS[place.id]} aria-hidden="true" />
+													<span>{place.name}</span>
+													<i className="fa-solid fa-chevron-right files-phone-chevron" aria-hidden="true" />
+												</button>
+											</li>
+										))}
+									</ul>
+								)}
+							</section>
+						))}
+					</>
 				)}
 			</div>
 
