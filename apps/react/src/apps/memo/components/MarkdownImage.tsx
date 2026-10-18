@@ -1,6 +1,5 @@
-import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
+import Modal from '@/shared/ui/dialog/Modal';
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { captionParts, resolveImageSrc } from '@macfolio/desktop-core/memo';
 import { CONTENT_IMAGES } from '../contentImages';
 import { downloadImage } from '../download';
@@ -65,34 +64,25 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 };
 
 /**
- * 이미지 크게 보기. 바깥을 클릭하거나 Esc를 누르면 닫힌다.
- * body에 그린다: 메모 레이아웃이 컨테이너 쿼리를 쓰면 그 안의 position: fixed가 창 기준이 되기 때문이다.
+ * 이미지 크게 보기. 바깥이나 이미지를 누르거나 Esc를 누르면 닫힌다.
+ * 화면 전체를 덮는 Modal(scope="screen", body에 그린다): 메모 레이아웃이 컨테이너 쿼리를 쓰면 그 안의 position: fixed가 창 기준이 되기 때문이다.
+ * 닫히면 초점을 연 버튼으로 돌려준다.
  */
 const Lightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({ src, alt, onClose }) => {
 	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key !== 'Escape') return;
-			event.preventDefault();
-			onClose();
-		};
-		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [onClose]);
-	// 닫히면 흐려지며 사라진다
-	const lightbox = useExitMotion<HTMLDivElement>('fade-out');
-
-	return createPortal(
-		<div
-			ref={lightbox}
-			className="memo-lightbox"
-			role="dialog"
-			aria-modal="true"
-			aria-label={alt || '이미지'}
-			onClick={onClose}
+		const opener = document.activeElement as HTMLElement | null;
+		return () => opener?.focus({ preventScroll: true });
+	}, []);
+	return (
+		<Modal
+			label={alt || '이미지'}
+			onClose={onClose}
+			scope="screen"
+			overlayClassName="memo-lightbox"
+			className="memo-lightbox-box"
 		>
-			<img src={src} alt={alt} />
-		</div>,
-		document.body
+			<img src={src} alt={alt} onClick={onClose} />
+		</Modal>
 	);
 };
 
