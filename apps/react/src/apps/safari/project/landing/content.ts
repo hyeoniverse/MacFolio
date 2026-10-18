@@ -53,8 +53,14 @@ export type LandingLink =
 	| { kind: 'app'; label: string; app: string }
 	| { kind: 'demo'; label: string; href: string }
 	| { kind: 'repo'; label: string; href: string }
-	/** 발표 자료 (Finder 문서의 PDF 키): 미리보기 앱에서 연다 */
-	| { kind: 'slides'; label: string; key: string };
+	/**
+	 * 발표 자료: Finder › 프로젝트 › <프로젝트> 폴더에 올린 PDF (이름순 첫 PDF)를 미리보기 앱에서 연다.
+	 * 문서 목록을 보아야 알 수 있어 언제나 넣어 두고, 그릴 때 PDF가 없으면 뺀다 (slides.ts의 useShownLinks)
+	 */
+	| { kind: 'slides'; label: string; projectId: string };
+
+/** 그릴 때 빠질 수 있는 발표 자료를 뺀 링크가 있는지 */
+export const hasLinks = (links: LandingLink[]) => links.some((link) => link.kind !== 'slides');
 
 export interface LandingHero {
 	name: string;
@@ -243,7 +249,7 @@ export function linksOf(project: Project, app?: string | null): LandingLink[] {
 	if (app) links.push({ kind: 'app', label: project.app?.play ? '여기서 플레이' : '여기서 열기', app });
 	if (project.demo) links.push({ kind: 'demo', label: app ? '새 탭에서 열기' : '데모 보기', href: project.demo });
 	if (project.url) links.push({ kind: 'repo', label: 'GitHub에서 보기', href: project.url });
-	if (project.slides) links.push({ kind: 'slides', label: '발표 자료 보기', key: project.slides });
+	links.push({ kind: 'slides', label: '발표 자료 보기', projectId: project.id });
 	return links;
 }
 
@@ -540,7 +546,7 @@ export function sectionTitle(section: LandingSection): string {
  * 이름을 덧붙인다. 링크가 하나도 없으면 이름만 둔다 (빈 프로젝트)
  */
 function closingOf(hero: LandingHero, links: LandingLink[]): Landing['closing'] {
-	if (!links.length) return { title: hero.name, links };
+	if (!hasLinks(links)) return { title: hero.name, links };
 	const tryable = links.some((link) => link.kind === 'app' || link.kind === 'demo');
 	return {
 		title: tryable ? '지금 바로 써 볼 수 있습니다.' : '코드와 기록을 살펴볼 수 있습니다.',

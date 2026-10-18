@@ -1,7 +1,7 @@
 // repo 템플릿의 맨 아래 상태 줄과 터미널 서랍: 버튼을 누르면 아래에서 터미널이 올라오고, shell.ts의 명령을 받아 결과를 서랍 안에 그린다.
 // 결과는 구역(region)을 만들지 않는다 (페이지의 구역은 랜딩 구역뿐)
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { LandingLinks, type LandingSectionKind, type SectionOf } from '@/apps/safari/project/landing';
+import { hasLinks, LandingLinks, type LandingSectionKind, type SectionOf } from '@/apps/safari/project/landing';
 import type { RepoDir } from '@/apps/safari/project/terminalRepo';
 import { commitsOf, fileIcon } from './repo';
 import {
@@ -197,7 +197,7 @@ const OutputView: React.FC<{ data: ShellData; entry: Entry; run: (text: string) 
 		case 'error':
 			return <p className="rp-t-err">{output.text}</p>;
 		case 'links':
-			return data.landing.hero.links.length ? (
+			return hasLinks(data.landing.hero.links) ? (
 				<LandingLinks links={data.landing.hero.links} className="rp-t-links" />
 			) : (
 				<p className="rp-t-muted">열 수 있는 링크가 없습니다.</p>
