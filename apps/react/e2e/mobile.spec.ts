@@ -514,7 +514,13 @@ test.describe('모바일', () => {
 		await (await homeApp(page, '파일')).tap();
 		const files = appWindow(page, 'finder');
 		await files.getByRole('navigation', { name: '파일 탭' }).getByRole('button', { name: '둘러보기' }).tap();
-		await files.locator('.files-phone-places').getByRole('button', { name: '문서' }).tap();
+		// 데스크톱 미리보기의 열기 창과 같은 구조: 위치에 iCloud 미리보기 폴더(PDF·그림 전부), 즐겨찾기에 Finder 위치
+		await files.getByRole('region', { name: '위치' }).getByRole('button', { name: '미리보기' }).tap();
+		await expect(files.locator('.files-phone-bar-title')).toHaveText('미리보기');
+		await expect(files.getByRole('button', { name: /시험 그림\.png/ })).toBeVisible();
+		await expect(files.getByRole('button', { name: /시험 이력서\.pdf/ })).toBeVisible();
+		await files.locator('.mobile-navbar-home').tap();
+		await files.getByRole('region', { name: '즐겨찾기' }).getByRole('button', { name: '문서' }).tap();
 
 		await files.getByRole('button', { name: /^자격증/ }).tap();
 		await expect(files.getByText('자격증 사본을 준비하고 있습니다.')).toBeVisible();

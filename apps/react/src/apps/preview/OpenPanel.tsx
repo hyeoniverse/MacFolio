@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import { fileUrl } from '@/apps/finder/documents';
-import { find, pathTo, search, type FileItem, type FinderItem } from '@/apps/finder/files';
+import { find, pathTo, previewFolder, search, type FileItem, type FinderItem } from '@/apps/finder/files';
 import { useLocations } from '@/apps/finder/useLocations';
 import FinderIcon from '@/apps/finder/FinderIcon';
 import { loadPdf } from './pdf';
@@ -39,11 +39,6 @@ const LOCATION_ICONS: Record<string, LucideIcon> = {
 
 /** 미리보기가 열 수 있는 것: PDF와 그림 */
 const isFile = (item: FinderItem): item is FileItem => item.kind === 'pdf' || item.kind === 'image';
-
-/** 트리 안의 PDF·그림 전부 */
-function allFiles(items: FinderItem[]): FileItem[] {
-	return items.flatMap((item) => (item.kind === 'folder' ? allFiles(item.children) : isFile(item) ? [item] : []));
-}
 
 /** 파일 그림: 그림은 그대로, PDF는 첫 쪽, 그 밖은 Finder 아이콘 */
 const ItemThumb: React.FC<{ item: FinderItem }> = ({ item }) => {
@@ -93,13 +88,13 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 		setSelected(null);
 	};
 
-	const files = useMemo(() => allFiles(locations), [locations]);
+	const files = useMemo(() => previewFolder(locations).children as FileItem[], [locations]);
 	const folder = place === 'preview' || place === 'recents' ? null : find(locations, place);
 	const q = query.trim();
 	const shown: FinderItem[] = q
 		? search(locations, q)
 		: place === 'preview'
-			? [...files].sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+			? files
 			: place === 'recents'
 				? [...files].sort((a, b) => (b.modified ?? '').localeCompare(a.modified ?? ''))
 				: folder?.kind === 'folder'
