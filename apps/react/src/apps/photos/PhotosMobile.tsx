@@ -320,7 +320,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 			{menu && (
 				<Menu
 					label="보기 방식"
-					className="touch"
+					variant="ios"
 					anchor={menu}
 					trigger={moreButton}
 					onClose={() => setMenu(null)}

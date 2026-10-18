@@ -153,7 +153,7 @@ export const FolderRow: React.FC<RowProps> = (props) => {
 							label={`${node.name} 폴더 메뉴`}
 							anchor={menuAt}
 							onClose={() => setMenuAt(null)}
-							className={props.editing ? 'touch' : undefined}
+							variant={props.editing ? 'ios' : 'mac'}
 							items={
 								props.editing
 									? [
@@ -203,7 +203,7 @@ export const FolderRow: React.FC<RowProps> = (props) => {
 					{moveAt && props.onMoveFolder && (
 						<Menu
 							label={`${node.name} 폴더를 옮길 곳`}
-							className="touch"
+							variant="ios"
 							anchor={moveAt}
 							onClose={() => setMoveAt(null)}
 							items={[

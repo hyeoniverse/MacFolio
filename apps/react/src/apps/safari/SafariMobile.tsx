@@ -210,7 +210,7 @@ const SafariMobile: React.FC<Props> = ({
 			{menu && (
 				<Menu
 					label="Safari 동작"
-					className="touch"
+					variant="ios"
 					anchor={menu}
 					trigger={moreButton}
 					onClose={() => setMenu(null)}

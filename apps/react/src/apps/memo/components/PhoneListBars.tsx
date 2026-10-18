@@ -114,7 +114,7 @@ const PhoneListBars = ({
 			{listMenu && (
 				<Menu
 					label="목록 동작"
-					className="touch"
+					variant="ios"
 					anchor={listMenu}
 					onClose={() => setListMenu(null)}
 					items={[
