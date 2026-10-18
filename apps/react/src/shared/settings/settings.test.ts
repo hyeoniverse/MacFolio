@@ -16,8 +16,29 @@ describe('parseSettings', () => {
 			mobileWallpaper: 'earth',
 			wallpaperImage: null,
 			mobileWallpaperImage: null,
+			wallpaperVideo: null,
+			mobileWallpaperVideo: null,
 			clickSound: false,
 		});
+	});
+
+	it('동영상 배경화면은 포스터 이미지와 함께 있을 때만, 주소가 안전할 때만 읽는다', () => {
+		const poster = 'https://api.test/files/posterposterpost';
+		const video = 'https://api.test/files/videovideovideo1';
+		expect(parseSettings({ wallpaper: 'custom:wave', wallpaperImage: poster, wallpaperVideo: video })).toMatchObject({
+			wallpaper: 'custom:wave',
+			wallpaperImage: poster,
+			wallpaperVideo: video,
+		});
+		expect(
+			parseSettings({ wallpaper: 'custom:wave', wallpaperImage: poster, wallpaperVideo: 'javascript:1' })
+		).toMatchObject({ wallpaper: 'custom:wave', wallpaperVideo: null });
+		// 포스터가 없으면 동영상만으로는 고르지 않는다. 기본 배경화면에 남은 동영상 주소는 버린다
+		expect(parseSettings({ mobileWallpaper: 'custom:wave', mobileWallpaperVideo: video })).toMatchObject({
+			mobileWallpaper: DEFAULT_SETTINGS.mobileWallpaper,
+			mobileWallpaperVideo: null,
+		});
+		expect(parseSettings({ wallpaper: 'sonoma', wallpaperVideo: video }).wallpaperVideo).toBeNull();
 	});
 
 	it('관리자가 더한 배경화면은 이미지 주소가 함께 있을 때만 읽는다', () => {

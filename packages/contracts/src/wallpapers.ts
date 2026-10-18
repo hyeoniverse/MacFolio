@@ -1,5 +1,5 @@
 // 관리자가 더한 배경화면 (apps/api의 /wallpapers). 누구나 목록을 받고, 관리자만 올리고 이름을 바꾸고 지운다.
-// 올리기는 multipart(이미지 두 장 + 이름)라 몸통 스키마가 없고, 이름 다듬기만 여기 규칙을 쓴다
+// 올리기는 multipart(원본 이미지나 MP4 동영상, 썸네일 이미지, 이름)라 몸통 스키마가 없고, 이름 다듬기만 여기 규칙을 쓴다
 import { z } from 'zod';
 import { requestBody } from './parse.js';
 
@@ -13,7 +13,7 @@ export function cleanWallpaperName(name: unknown): string | null {
 		// eslint-disable-next-line no-control-regex
 		.replace(/[\u0000-\u001f\u007f]/g, '')
 		.trim()
-		.replace(/\.(jpe?g|png|gif|webp|heic)$/i, '')
+		.replace(/\.(jpe?g|png|gif|webp|heic|mp4|m4v)$/i, '')
 		.trim();
 	return cleaned ? Array.from(cleaned).slice(0, WALLPAPER_NAME_MAX).join('') : null;
 }
@@ -30,6 +30,8 @@ export const Wallpaper = z.object({
 	name: z.string(),
 	image: z.string(),
 	thumbnail: z.string(),
+	/** image가 MP4 동영상이면 true. 이때 thumbnail은 동영상의 한 장면(포스터)이다. 예전 응답에는 없어 false로 본다 */
+	video: z.boolean().default(false),
 	/** ISO 8601 */
 	createdAt: z.string(),
 });

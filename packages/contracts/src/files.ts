@@ -12,6 +12,12 @@ export const UPLOAD_ID = /^[\w-]{16}$/;
 /** 브라우저가 바로 보여 주는 이미지 형식 (서버가 파일 앞부분으로 확인해 type에 적은 값). 화면의 파일 고르기 accept도 이 목록 */
 export const IMAGE_TYPES: readonly string[] = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
 
+/** 배경화면으로 올릴 수 있는 동영상 형식 (서버가 MP4의 ftyp 상자로 확인한다) */
+export const VIDEO_TYPES: readonly string[] = ['video/mp4'];
+
+/** 배경화면 동영상 한 파일의 크기 한도 (DB CHECK 제약과 같다). 이미지는 그대로 MAX_UPLOAD_BYTES */
+export const MAX_WALLPAPER_VIDEO_BYTES = 30 * 1024 * 1024;
+
 /** 글(Markdown)에서 가리키는 파일 id들. 편집기는 이미지·첨부를 `<API 주소>/files/<id>`로 넣는다 */
 export function uploadIdsIn(text: string | null | undefined): string[] {
 	if (!text) return [];

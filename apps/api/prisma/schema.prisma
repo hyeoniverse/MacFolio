@@ -135,7 +135,7 @@ model Upload {
   id        String   @id
   /// 올린 파일 이름 (내려받을 때 이 이름으로)
   name      String
-  /// MIME 형식. 이미지(PNG·JPEG·GIF·WebP)는 파일 앞부분으로 확인한 값
+  /// MIME 형식. 이미지(PNG·JPEG·GIF·WebP)와 배경화면 동영상(MP4)은 파일 앞부분으로 확인한 값
   type      String
   size      Int
   data      Bytes
