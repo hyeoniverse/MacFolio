@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { AppViews, EventBatch, MAX_EVENTS, Summary, Totals } from './analytics.js';
+import {
+	ADMIN_ONLY_BREAKDOWNS,
+	AppViews,
+	BREAKDOWNS,
+	cleanUtm,
+	EventBatch,
+	MAX_EVENTS,
+	splitUtmKey,
+	Summary,
+	Totals,
+	utmKey,
+} from './analytics.js';
 import { parse } from './parse.js';
 
 describe('이벤트 묶음 검사', () => {
@@ -44,7 +55,7 @@ describe('이벤트 묶음 검사', () => {
 });
 
 describe('응답 모양', () => {
-	it('요약은 표 열두 개를 모두 가진다', () => {
+	it('요약은 표 열여섯 개를 모두 가진다', () => {
 		const totals = { visits: 1, visitors: 1, appOpens: 0, avgDurationSec: null };
 		expect(parse(Totals, totals)).toEqual({ value: totals });
 		const summary = {
@@ -58,7 +69,11 @@ describe('응답 모양', () => {
 				referrerGroup: [{ key: '직접', value: 1 }],
 				referrer: [],
 				source: [],
+				medium: [],
 				campaign: [],
+				utm: [],
+				term: [],
+				content: [],
 				app: [],
 				item: [],
 				link: [],
@@ -74,5 +89,42 @@ describe('응답 모양', () => {
 		expect(parse(AppViews, { app: 'memo', views: { 'my-post': 3 } })).toEqual({
 			value: { app: 'memo', views: { 'my-post': 3 } },
 		});
+	});
+});
+
+describe('utm 다듬기 (#211)', () => {
+	it('소문자로, 앞뒤 공백은 빼고 이어진 공백은 - 하나로, 100자까지. 비면 undefined', () => {
+		expect(cleanUtm('  LinkedIn ')).toBe('linkedin');
+		expect(cleanUtm('Resume  2026\tKR')).toBe('resume-2026-kr');
+		expect(cleanUtm('a'.repeat(150))).toHaveLength(100);
+		expect(cleanUtm('   ')).toBeUndefined();
+		expect(cleanUtm(null)).toBeUndefined();
+	});
+
+	it('받는 쪽(EventInput)도 같은 규칙으로 다듬는다. term·content도 받는다', () => {
+		const parsed = parse(EventBatch, {
+			visitId: 'v-1a2b3c4d',
+			events: [{ type: 'visit', utmSource: 'LinkedIn', utmMedium: 'Social', utmTerm: 'Front End', utmContent: 'Top' }],
+		});
+		expect(parsed).toEqual({
+			value: {
+				visitId: 'v-1a2b3c4d',
+				events: [
+					{ type: 'visit', utmSource: 'linkedin', utmMedium: 'social', utmTerm: 'front-end', utmContent: 'top' },
+				],
+			},
+		});
+	});
+
+	it('조합 키는 출처·매체·캠페인을  / 으로 묶고 되돌린다', () => {
+		expect(utmKey('linkedin', undefined, 'resume-2026')).toBe('linkedin /  / resume-2026');
+		expect(splitUtmKey('linkedin /  / resume-2026')).toEqual(['linkedin', '', 'resume-2026']);
+	});
+
+	it('조합·매체·term·content는 관리자 전용 표다', () => {
+		for (const metric of ['medium', 'utm', 'term', 'content'] as const) {
+			expect(BREAKDOWNS).toContain(metric);
+			expect(ADMIN_ONLY_BREAKDOWNS).toContain(metric);
+		}
 	});
 });

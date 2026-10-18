@@ -150,6 +150,26 @@ describe('하루치 집계', () => {
 		expect(referrerGroup('github.com')).toBe('링크');
 	});
 
+	it('utm: 매체를 세고, 출처·매체·캠페인 조합을 한 키로 센다(셋 다 비면 세지 않는다). term·content는 따로 (#211)', () => {
+		const rows = aggregate([
+			event({ utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'resume-2026', utmTerm: 'frontend' }),
+			event({ visitId: 'v2', utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'resume-2026' }),
+			event({ visitId: 'v3', utmSource: 'velog', utmContent: 'footer' }),
+			event({ visitId: 'v4', referrer: 'github.com' }),
+		]);
+		const of = (metric: string) =>
+			rows.filter((row) => row.metric === metric).map(({ key, value }) => [key, value] as const);
+		expect(of('medium')).toEqual([['social', 2]]);
+		expect(of('utm')).toEqual([
+			['linkedin / social / resume-2026', 2],
+			['velog /  / ', 1],
+		]);
+		expect(of('term')).toEqual([['frontend', 1]]);
+		expect(of('content')).toEqual([['footer', 1]]);
+		// term·content는 조합 키에 붙지 않는다
+		expect(rows.some((row) => row.metric === 'utm' && /frontend|footer/.test(row.key))).toBe(false);
+	});
+
 	it('이벤트가 없는 날도 visits 0을 남긴다 (모았다는 표시)', () => {
 		expect(aggregate([])).toEqual([{ metric: 'visits', key: '', value: 0 }]);
 	});

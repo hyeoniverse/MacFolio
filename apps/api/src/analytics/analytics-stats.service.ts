@@ -11,6 +11,7 @@ import {
 	type Summary as ContractSummary,
 	type TodayVisitors,
 	type Totals as ContractTotals,
+	UTM_FILTER_MAX,
 } from '@macfolio/contracts';
 
 /** 요약에 싣는 표와 응답 모양은 @macfolio/contracts (활동 상태 보기 화면과 같은 스키마) */
@@ -79,9 +80,18 @@ export class AnalyticsStats {
 
 	/**
 	 * 요약: 일별 방문, 합계(앞 기간과 비교), 지표별 표. 관리자가 아니면 들어온 곳의 호스트와 utm을 빼고,
-	 * 같은 기간이면 1분 동안 같은 값을 준다
+	 * 같은 기간이면 1분 동안 같은 값을 준다.
+	 * utm(출처·매체·캠페인 조합 키)을 주면 관리자에게만 그 조합의 일별 방문(utmTrend)을 더한다. 방문자에게는 무시한다
 	 */
-	async summary(fromInput: unknown, toInput: unknown, admin: boolean, now = new Date()): Promise<Summary> {
+	async summary(
+		fromInput: unknown,
+		toInput: unknown,
+		admin: boolean,
+		now = new Date(),
+		utmInput?: unknown
+	): Promise<Summary> {
+		if (utmInput !== undefined && (typeof utmInput !== 'string' || !utmInput || utmInput.length > UTM_FILTER_MAX))
+			throw new BadRequestException(`utm은 ${UTM_FILTER_MAX}자 이하의 조합 키입니다.`);
 		const today = kstDay(now);
 		const day = /^\d{4}-\d{2}-\d{2}$/;
 		const to = typeof toInput === 'string' && day.test(toInput) ? toInput : today;
@@ -89,7 +99,7 @@ export class AnalyticsStats {
 		const length = Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000) + 1;
 		if (!(length >= 1 && length <= MAX_RANGE_DAYS))
 			throw new BadRequestException(`기간은 1~${MAX_RANGE_DAYS}일입니다 (from ≤ to).`);
-		if (admin) return this.computeSummary(from, to, length, today, 'admin', now);
+		if (admin) return this.computeSummary(from, to, length, today, 'admin', now, utmInput);
 		return this.cached(`summary:${from}:${to}`, now, () => this.computeSummary(from, to, length, today, 'public', now));
 	}
 
@@ -99,7 +109,8 @@ export class AnalyticsStats {
 		length: number,
 		today: string,
 		scope: Summary['scope'],
-		now: Date
+		now: Date,
+		utm?: string
 	): Promise<Summary> {
 		// 관리자는 열 때마다 모은다 (드물게 연다). 방문자는 5분에 한 번
 		if (scope === 'admin') await this.rollup.maintain(now);
@@ -130,7 +141,27 @@ export class AnalyticsStats {
 				return [metric, list];
 			})
 		) as Summary['breakdown'];
-		return { scope, from, to, days, totals: totalsOf(rows), previous: totalsOf(previousRows), breakdown };
+		const summary: Summary = {
+			scope,
+			from,
+			to,
+			days,
+			totals: totalsOf(rows),
+			previous: totalsOf(previousRows),
+			breakdown,
+		};
+		// 조합 하나의 일별 방문: utm 지표의 그 키를 날마다 (관리자만)
+		if (scope === 'admin' && utm)
+			summary.utmTrend = {
+				key: utm,
+				days: days.map(({ day }) => ({
+					day,
+					visits: rows
+						.filter((row) => row.day === day && row.metric === 'utm' && row.key === utm)
+						.reduce((sum, row) => sum + row.value, 0),
+				})),
+			};
+		return summary;
 	}
 
 	/**
