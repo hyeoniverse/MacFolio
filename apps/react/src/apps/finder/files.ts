@@ -3,6 +3,11 @@
 // 파일을 열면 그 종류에 맞는 곳으로 간다: 문서·PDF·그림은 Finder 안에서 보고, 프로젝트는 Safari, 글은 메모, 앱은 그 앱.
 import type { AppName } from '@/apps/manifest';
 import {
+	DEFAULT_DESKTOP_ALIASES,
+	FINDER_BUILTIN_PARENT,
+	type FinderLayoutValue,
+} from '@macfolio/contracts';
+import {
 	DOCUMENT_FOLDERS,
 	type DocumentEntry,
 	type DocumentFolder,
@@ -24,6 +29,8 @@ export interface FolderItem extends ItemBase {
 	children: FinderItem[];
 	/** 비어 있을 때 보여 줄 안내 */
 	emptyNote?: string;
+	/** 바탕화면의 가상본(alias)이면 원래 폴더의 id. 가상본은 children이 비어 있고, 열면 원래 폴더로 간다 */
+	aliasOf?: string;
 }
 
 /** 저장소의 Markdown 문서. Finder 안에서 읽는다 */
@@ -63,6 +70,8 @@ export interface FileItem extends ItemBase {
 	size?: number;
 	/** 서버 목록의 id (관리자가 이름을 바꾸거나 지울 때) */
 	documentId?: string;
+	/** 올린 폴더 (기본 자리, 예: docs:이력서, projects/macfolio). 관리자가 옮겨도 R2 키와 이 값은 그대로다 */
+	home?: string;
 }
 
 export type FinderItem = FolderItem | DocItem | PostItem | ProjectItem | AppItem | FileItem;
@@ -90,6 +99,8 @@ export interface TreeInput {
 	files?: DocumentEntry[];
 	/** 사진 앱의 앨범 (프로젝트마다). 프로젝트 폴더 안의 사진 폴더로, 그림은 미리보기에서 연다 */
 	albums?: { id: string; name: string; photos: { src: string }[] }[];
+	/** 관리자가 정한 폴더 구조 (만든 폴더, 옮긴 파일, 바탕화면의 가상본). 없으면 기본 구조 */
+	layout?: FinderLayoutValue;
 }
 
 /** 빈 문서 파일 폴더의 안내 */
@@ -107,15 +118,19 @@ const byName = (a: FinderItem, b: FinderItem) =>
 			: a.name.localeCompare(b.name, 'ko');
 
 /** 올린 문서 파일(R2) 하나를 Finder 항목으로 */
-const fileItem = (file: DocumentEntry): FileItem => ({
-	kind: file.kind,
-	id: `file:${file.key}`,
-	name: file.name,
-	key: file.key,
-	size: file.size,
-	modified: file.updated,
-	documentId: file.id,
-});
+const fileItem = (file: DocumentEntry): FileItem => {
+	const project = /^project:(.+)$/.exec(file.folder);
+	return {
+		kind: file.kind,
+		id: `file:${file.key}`,
+		name: file.name,
+		key: file.key,
+		size: file.size,
+		modified: file.updated,
+		documentId: file.id,
+		home: project ? `projects/${project[1]}` : `docs:${file.folder}`,
+	};
+};
 
 /** 폴더의 수정일: 안에 든 가장 최근 항목 */
 const latest = (items: FinderItem[]) =>
@@ -243,7 +258,7 @@ function blogFolder(posts: TreeInput['posts'], folders: string[] = []): FolderIt
 	return root;
 }
 
-/** 사이드바에 보일 위치들 (Finder의 즐겨찾기) */
+/** 사이드바에 보일 위치들 (Finder의 즐겨찾기). 맨 앞은 macOS처럼 데스크탑 */
 export function buildLocations({
 	docs,
 	posts,
@@ -252,8 +267,10 @@ export function buildLocations({
 	apps,
 	files = [],
 	albums = [],
+	layout,
 }: TreeInput): FolderItem[] {
-	return [
+	const roots: FolderItem[] = [
+		{ kind: 'folder', id: 'desktop', name: '데스크탑', children: [], emptyNote: '바탕화면이 비어 있습니다.' },
 		docsFolder(docs, files),
 		projectsFolder(projects, files, albums),
 		blogFolder(posts, blogFolders),
@@ -272,6 +289,85 @@ export function buildLocations({
 				.sort(byName),
 		},
 	];
+	applyLayout(roots, layout);
+	return roots;
+}
+
+/** 폴더 안 순서: 프로젝트(그 프로젝트 폴더의 맨 위)가 먼저, 그다음 폴더, 그다음 나머지를 이름순 */
+const finderOrder = (a: FinderItem, b: FinderItem) =>
+	a.kind === 'project' ? -1 : b.kind === 'project' ? 1 : byName(a, b);
+
+/**
+ * 관리자가 정한 구조를 기본 트리에 겹친다 (roots를 고친다).
+ * 1) 바탕화면에 가상본, 2) 만든 폴더를 상위 폴더 아래에 (상위가 없거나 고리면 건너뛴다), 3) 옮긴 파일을 그 폴더로 (없는 파일·폴더는 건너뛴다).
+ * 서버가 규칙을 이미 확인하지만, 프로젝트를 지우는 등으로 상위 폴더가 사라질 수 있어 여기서도 조용히 넘긴다
+ */
+function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined) {
+	const folders = new Map<string, FolderItem>();
+	const parents = new Map<string, FolderItem>();
+	const index = (folder: FolderItem) => {
+		folders.set(folder.id, folder);
+		for (const child of folder.children) {
+			parents.set(child.id, folder);
+			if (child.kind === 'folder') index(child);
+		}
+	};
+	roots.forEach(index);
+	const desktop = folders.get('desktop')!;
+	const touched = new Set<FolderItem>([desktop]);
+
+	for (const target of layout?.aliases ?? DEFAULT_DESKTOP_ALIASES) {
+		const real = folders.get(target);
+		if (real && !desktop.children.some((child) => child.id === `alias:${target}`))
+			desktop.children.push({ kind: 'folder', id: `alias:${target}`, name: real.name, aliasOf: target, children: [] });
+	}
+
+	// 만든 폴더: 기본 자리(데스크탑·문서·문서 폴더·프로젝트 폴더)까지 고리 없이 올라갈 수 있는 것만
+	const made = new Map((layout?.folders ?? []).map((folder) => [folder.id, folder]));
+	const reachesRoot = (id: string) => {
+		const seen = new Set<string>();
+		for (let at = made.get(id); at; at = made.get(at.parent)) {
+			if (seen.has(at.id)) return false;
+			seen.add(at.id);
+			if (!made.has(at.parent)) return FINDER_BUILTIN_PARENT.test(at.parent) && folders.has(at.parent);
+		}
+		return false;
+	};
+	const created = [...made.values()]
+		.filter((folder) => reachesRoot(folder.id))
+		.map((folder): [FolderItem, string] => [
+			{ kind: 'folder', id: folder.id, name: folder.name, children: [] },
+			folder.parent,
+		]);
+	for (const [folder] of created) folders.set(folder.id, folder);
+	for (const [folder, parent] of created) {
+		const into = folders.get(parent)!;
+		into.children.push(folder);
+		parents.set(folder.id, into);
+		touched.add(into);
+	}
+
+	// 옮긴 파일: 지금 있는 자리에서 빼서 그 폴더로
+	for (const [id, parent] of Object.entries(layout?.files ?? {})) {
+		const from = parents.get(id);
+		const into = folders.get(parent);
+		const item = from?.children.find((child) => child.id === id);
+		if (!from || !into || !item || from === into) continue;
+		from.children = from.children.filter((child) => child !== item);
+		into.children.push(item);
+		parents.set(id, into);
+		touched.add(from);
+		touched.add(into);
+	}
+
+	// 바뀐 폴더를 다시 정렬하고, 만든 폴더부터 수정일(안에 든 가장 최근 항목)을 다시 잰다
+	for (const folder of touched) folder.children.sort(finderOrder);
+	const refresh = (folder: FolderItem): string | undefined => {
+		folder.children.forEach((child) => child.kind === 'folder' && !child.aliasOf && refresh(child));
+		if (folder.id.startsWith('folder:') || touched.has(folder)) folder.modified = latest(folder.children);
+		return folder.modified;
+	};
+	roots.filter((root) => root.id !== 'blog').forEach(refresh);
 }
 
 /**
@@ -375,7 +471,7 @@ export function previewFolder(locations: FinderItem[]): FolderItem {
 		id: 'preview',
 		name: '미리보기',
 		// 올린 문서 파일(R2, id가 file:)만: 프로젝트의 사진 폴더 그림은 iCloud의 미리보기 폴더에 들어 있지 않다
-		children: files(locations.filter((place) => place.id === 'docs' || place.id === 'projects'))
+		children: files(locations.filter((place) => ['desktop', 'docs', 'projects'].includes(place.id)))
 			.filter((item) => item.id.startsWith('file:'))
 			.sort((a, b) => a.name.localeCompare(b.name, 'ko')),
 		emptyNote: '파일이 없습니다.',
