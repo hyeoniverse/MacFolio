@@ -264,10 +264,19 @@ test.describe('Finder', () => {
 			await panel.getByRole('button', { name: '최근 항목' }).click();
 			const files = panel.getByRole('listbox', { name: '최근 항목' }).getByRole('option');
 			await expect(files).toHaveText(['시험 이력서.pdf', '시험 그림.png']);
-			// 폴더를 고르면 그 폴더만, 빈 폴더는 안내
-			await panel.getByRole('button', { name: '자격증' }).click();
+			// Finder와 같은 트리: 즐겨찾기의 문서 → 폴더를 두 번 눌러 들어가고, 빈 폴더는 안내, 뒤로·앞으로
+			await panel.getByRole('button', { name: '문서', exact: true }).click();
+			const docs = panel.getByRole('listbox', { name: '문서' });
+			await expect(docs.getByRole('option', { name: 'README.md' })).toHaveAttribute('aria-disabled', 'true');
+			await docs.getByRole('option', { name: '자격증', exact: true }).dblclick();
 			await expect(panel).toContainText('자격증 사본을 준비하고 있습니다.');
-			await panel.getByRole('button', { name: '포트폴리오' }).click();
+			await expect(panel.getByText('미리보기 — 자격증')).toBeVisible();
+			await panel.getByRole('button', { name: '뒤로' }).click();
+			await expect(panel.getByRole('listbox', { name: '문서' })).toBeVisible();
+			await panel
+				.getByRole('listbox', { name: '문서' })
+				.getByRole('option', { name: '포트폴리오', exact: true })
+				.dblclick();
 			const image = panel.getByRole('option', { name: '시험 그림.png' });
 			await expect(panel.getByRole('button', { name: '열기' })).toBeDisabled();
 			await image.click();

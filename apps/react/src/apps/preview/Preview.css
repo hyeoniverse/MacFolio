@@ -479,6 +479,20 @@
 	color: var(--color-text-secondary);
 }
 
+.preview-open-capsule button {
+	display: grid;
+	place-items: center;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	cursor: default;
+}
+
+.preview-open-capsule button:disabled {
+	opacity: 0.35;
+}
+
 .preview-open-title {
 	display: flex;
 	flex: 1;
@@ -575,13 +589,26 @@
 }
 
 .preview-open-thumb canvas,
-.preview-open-thumb img {
+.preview-open-thumb .preview-open-paper {
 	max-width: 52px;
 	max-height: 68px;
 	border-radius: 3px;
 	object-fit: contain;
 	background-color: #fff;
 	box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+}
+
+/* 폴더·문서·앱: Finder와 같은 아이콘 */
+.preview-open-thumb .finder-svg,
+.preview-open-thumb .finder-img {
+	width: 60px;
+	height: 60px;
+	object-fit: contain;
+}
+
+/* 미리보기가 열 수 없는 파일(문서·글·앱): macOS 열기 창처럼 흐리게, 고를 수 없다 */
+.preview-open-file.unusable {
+	opacity: 0.4;
 }
 
 /* 쪽을 아직 못 그린 PDF: 흰 종이 */
