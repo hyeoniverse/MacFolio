@@ -8,6 +8,7 @@ import AppErrorBoundary from '@/desktop/window/AppErrorBoundary';
 
 import StatusBar from '@/desktop/status-bar/StatusBar';
 import Dock from '@/desktop/dock/Dock';
+import DesktopIcons from '@/desktop/icons/DesktopIcons';
 import MobileShell from '@/desktop/mobile/MobileShell';
 import Notifications from '@/desktop/notifications/Notifications';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
@@ -72,6 +73,8 @@ const Desktop = () => {
 						</>
 					) : (
 						<DesktopSurface>
+							{/* 바탕화면 아이콘은 가장 아래 층: 창·Dock·메뉴 막대가 덮는다 */}
+							<DesktopIcons />
 							<StatusBar />
 							<OpenedApps />
 							<Dock />

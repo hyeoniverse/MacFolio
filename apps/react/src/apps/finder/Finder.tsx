@@ -25,7 +25,7 @@ import { messageOf } from '@/shared/api/client';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
-import { finderDocRequest } from './openDoc';
+import { finderDocRequest, finderFolderRequest } from './openDoc';
 import DocView from './DocView';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
@@ -99,6 +99,19 @@ const Finder: React.FC = () => {
 		};
 		take();
 		return finderDocRequest.subscribe(take);
+	}, [mobile]);
+
+	// 바탕화면 폴더 아이콘에서 온 폴더 열기 요청 (openDoc.ts의 requestFinderFolder)
+	useEffect(() => {
+		if (mobile) return;
+		const take = () => {
+			const { id } = finderFolderRequest.getState();
+			if (!id) return;
+			finderFolderRequest.setState({ id: null });
+			go({ folder: id });
+		};
+		take();
+		return finderFolderRequest.subscribe(take);
 	}, [mobile]);
 
 	const folder = 'folder' in place ? (find(locations, place.folder) as FolderItem | null) : null;
