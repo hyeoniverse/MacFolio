@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { APP_MANIFEST, WINDOW_APP_NAMES } from '@/apps/manifest';
 import { getPostRepository } from '@/apps/memo/repository';
+import { fetchOrganization } from '@/apps/memo/organizationApi';
+import { organizePosts } from '@macfolio/desktop-core/memo';
+import { env } from '@/shared/config/env';
 import { PROJECTS } from '@/shared/profile';
 import { useProjectsVersion } from '@/shared/site/siteContent';
 import { buildLocations, type FolderItem } from './files';
@@ -14,11 +17,17 @@ import { ALBUMS } from '@/apps/photos/albums';
  */
 export function useLocations(): FolderItem[] {
 	const [posts, setPosts] = useState<{ slug: string; title: string; date: string; category: string }[]>([]);
+	// 메모에서 만든 폴더: 글이 없는 빈 폴더도 블로그 폴더에 보인다
+	const [blogFolders, setBlogFolders] = useState<string[]>([]);
 	useEffect(() => {
 		let alive = true;
-		getPostRepository()
-			.list()
-			.then((list) => alive && setPosts(list))
+		// 메모의 정리 내용(옮긴 글·옮긴 폴더·만든 폴더)을 적용해 메모 사이드바와 같은 폴더로 묶는다
+		Promise.all([getPostRepository().list(), fetchOrganization(env.apiUrl)])
+			.then(([list, organization]) => {
+				if (!alive) return;
+				setPosts(organizePosts(list, organization));
+				setBlogFolders(organization.folders);
+			})
 			.catch(() => undefined);
 		return () => {
 			alive = false;
@@ -36,6 +45,7 @@ export function useLocations(): FolderItem[] {
 			buildLocations({
 				docs: DOC_PATHS,
 				posts,
+				blogFolders,
 				projects: PROJECTS.map(({ id, name, icon, period }) => ({ id, name, icon, period })),
 				apps: WINDOW_APP_NAMES.filter((name) => name !== 'finder').map((name) => ({
 					app: name,
@@ -46,6 +56,6 @@ export function useLocations(): FolderItem[] {
 				albums: ALBUMS,
 			}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- PROJECTS는 안만 바뀌는 배열이라 판(version)으로 다시 계산한다
-		[posts, projectsVersion, documents]
+		[posts, blogFolders, projectsVersion, documents]
 	);
 }

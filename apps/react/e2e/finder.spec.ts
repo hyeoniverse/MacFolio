@@ -1,6 +1,7 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeFiles } from './fakeFiles';
+import { fakeApi } from './fakeApi';
 
 async function openFinder(page: Page) {
 	await enterDesktop(page);
@@ -59,6 +60,16 @@ test.describe('Finder', () => {
 		// 경로 막대로 위 폴더에
 		await finder.getByRole('navigation', { name: '경로' }).getByRole('button', { name: '문서' }).click();
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('문서');
+	});
+
+	test('블로그: 메모에서 만든 빈 폴더도 보인다', async ({ page }) => {
+		await fakeApi(page, { organization: { folders: ['읽을거리'] as never[] } });
+		const finder = await openFinder(page);
+		await sidebar(finder).getByRole('button', { name: '블로그' }).click();
+		const blog = finder.getByRole('listbox', { name: '블로그' });
+		await blog.getByRole('option', { name: /읽을거리/ }).dblclick();
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('읽을거리');
+		await expect(finder.locator('.finder-count')).toHaveText('비어 있음');
 	});
 
 	test('목록 보기, 키보드로 고르고 열기', async ({ page }) => {
