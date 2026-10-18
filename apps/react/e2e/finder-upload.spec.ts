@@ -141,6 +141,34 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		expect(docs).toHaveLength(0);
 	});
 
+	test('만든 폴더나 바탕화면에 놓아도 올라가고 놓은 자리에 보인다 (진짜 폴더처럼)', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const { docs } = await fakeDocuments(page);
+		const finder = await openResumeFolder(page);
+
+		// 이력서 안에 새 폴더를 만들고 그 아이콘 위에 놓는다 → 이력서에 올리고 그 폴더에 둔다
+		await finder.locator('.finder-content').click({ button: 'right', position: { x: 20, y: 20 } });
+		await page.getByRole('menuitem', { name: '새 폴더' }).click();
+		await finder.getByRole('textbox', { name: '이름' }).press('Enter');
+		await expect.poll(() => api.finderLayout.folders.length).toBe(1);
+		const folderId = api.finderLayout.folders[0].id;
+		await dropFile(page, `[data-app="finder"] [data-folder-target="${folderId}"]`, '사본.pdf', [...tinyPdf()]);
+		await expect.poll(() => docs.length).toBe(1);
+		expect(docs[0]).toMatchObject({ folder: '이력서', name: '사본.pdf' });
+		await expect.poll(() => api.finderLayout.files).toEqual({ [`file:${docs[0].key}`]: folderId });
+		await expect(finder.getByRole('option', { name: '사본.pdf' })).toHaveCount(0);
+		await finder.getByRole('option', { name: '이름 없는 폴더' }).dblclick();
+		await expect(finder.getByRole('option', { name: '사본.pdf' })).toBeVisible();
+
+		// 바탕화면 빈 곳에 놓으면 바탕화면에 보인다
+		await dropFile(page, '.desktop-icons', '바탕.pdf', [...tinyPdf()]);
+		await expect.poll(() => docs.length).toBe(2);
+		await expect.poll(() => api.finderLayout.files[`file:${docs[1].key}`]).toBe('desktop');
+		await expect(
+			page.getByRole('listbox', { name: '바탕화면' }).getByRole('option', { name: '바탕.pdf' })
+		).toBeVisible();
+	});
+
 	test('방문자는 끌어다 놓아도 올라가지 않는다', async ({ page }) => {
 		await fakeApi(page);
 		const { puts } = await fakeDocuments(page);
@@ -163,7 +191,7 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 
 		// 포트폴리오 안의 MacFolio 프로젝트 폴더 아이콘 위에 놓는다
 		const pdf = [...tinyPdf()];
-		await dropFile(page, '[data-app="finder"] [data-drop-folder="project:macfolio"]', '발표.pdf', pdf);
+		await dropFile(page, '[data-app="finder"] [data-folder-target="projects/macfolio"]', '발표.pdf', pdf);
 		await expect.poll(() => puts.length).toBe(1);
 		expect(puts[0].url).toContain('/macfolio-files/projects/macfolio/abcdefghijklmnop.pdf');
 		expect(docs[0]).toMatchObject({ folder: 'project:macfolio', name: '발표.pdf', size: pdf.length });
