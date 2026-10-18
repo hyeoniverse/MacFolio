@@ -20,6 +20,7 @@ import { fileUrl } from '@/apps/finder/documents';
 import { find, pathTo, previewFolder, search, type FileItem, type FinderItem } from '@/apps/finder/files';
 import { useLocations } from '@/apps/finder/useLocations';
 import FinderIcon from '@/apps/finder/FinderIcon';
+import AppsGlyph from '@/apps/finder/AppsGlyph';
 import { loadPdf } from './pdf';
 import { PdfThumb } from './PdfView';
 
@@ -30,11 +31,11 @@ import { PdfThumb } from './PdfView';
 type Place = 'preview' | 'recents' | string;
 
 /** 사이드바 즐겨찾기 아이콘 (Finder의 위치와 같은 순서) */
-const LOCATION_ICONS: Record<string, LucideIcon> = {
+const LOCATION_ICONS: Record<string, LucideIcon | typeof AppsGlyph> = {
 	docs: FileText,
 	projects: Folder,
 	blog: SquarePen,
-	apps: LayoutGrid,
+	apps: AppsGlyph,
 };
 
 /** 미리보기가 열 수 있는 것: PDF와 그림 */
@@ -112,7 +113,7 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 		else if (isFile(item)) onOpen(item);
 	};
 
-	const placeButton = (target: Place, Icon: LucideIcon, label: string) => (
+	const placeButton = (target: Place, Icon: LucideIcon | typeof AppsGlyph, label: string) => (
 		<button
 			key={target}
 			type="button"

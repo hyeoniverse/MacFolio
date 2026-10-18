@@ -9,12 +9,22 @@ import SearchField from '@/shared/ui/search-field/SearchField';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import '@/shared/ui/button/Button.css';
 import { downloadFile, fileUrl, formatSize, openFileInNewTab } from '@/apps/finder/documents';
-import { closeInPreview, openInPreview, selectInPreview, usePreview, type PreviewFile } from './previewStore';
+import {
+	closeInPreview,
+	openInPreview,
+	resetPreview,
+	selectInPreview,
+	usePreview,
+	type PreviewFile,
+} from './previewStore';
 import { countMatches, loadPdf } from './pdf';
 import PdfView, { PdfThumb, type PdfViewHandle } from './PdfView';
 import ImageView from './ImageView';
 import OpenPanel from './OpenPanel';
 import './Preview.css';
+
+/** 마운트된 미리보기 창 수 (종료로 내려갔는지 보려고) */
+let mounted = 0;
 
 /** 배율 단계. 확대·축소는 지금 배율의 다음 단계로 간다 */
 const ZOOMS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4];
@@ -49,7 +59,23 @@ function usePdfDocuments(files: PreviewFile[]) {
  */
 const Preview: React.FC = () => {
 	const { files, current } = usePreview();
-	const { closeApp } = useAppState();
+	const { apps, closeApp } = useAppState();
+
+	// 빨간 버튼으로 창을 닫으면(앱은 마운트된 채) 열린 파일을 비운다: 다시 열면 이전 파일이 아니라 열기 창
+	const running = apps.preview.isRunning;
+	const wasRunning = useRef(running);
+	useEffect(() => {
+		if (wasRunning.current && !running) resetPreview();
+		wasRunning.current = running;
+	}, [running]);
+	// 앱을 끄면(종료) 컴포넌트가 내려간다. 개발 모드의 두 번 마운트에 지우지 않게, 다시 마운트되지 않았을 때만 비운다
+	useEffect(() => {
+		mounted += 1;
+		return () => {
+			mounted -= 1;
+			queueMicrotask(() => mounted === 0 && resetPreview());
+		};
+	}, []);
 	const file = files.find((open) => open.key === current) ?? null;
 	const docs = usePdfDocuments(files);
 	const doc =

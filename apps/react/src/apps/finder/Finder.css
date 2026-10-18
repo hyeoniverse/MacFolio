@@ -77,7 +77,8 @@
 	cursor: default;
 }
 
-.finder-location i {
+.finder-location i,
+.finder-location .apps-glyph {
 	width: 16px;
 	color: var(--finder-selected);
 	text-align: center;

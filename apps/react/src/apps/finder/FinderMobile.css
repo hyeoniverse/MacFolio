@@ -244,7 +244,8 @@
 	text-align: left;
 }
 
-.files-phone-places button > i:first-child {
+.files-phone-places button > i:first-child,
+.files-phone-places button > .apps-glyph {
 	width: 28px;
 	color: var(--color-blue);
 	font-size: var(--text-title2);
