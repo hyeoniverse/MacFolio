@@ -4,6 +4,7 @@
 import type { AppName } from '@/apps/manifest';
 import { DEFAULT_DESKTOP_ALIASES, FINDER_BUILTIN_PARENT, type FinderLayoutValue } from '@macfolio/contracts';
 import {
+	DESKTOP_DOCUMENT_FOLDER,
 	DOCUMENT_FOLDERS,
 	type DocumentEntry,
 	type DocumentFolder,
@@ -129,7 +130,11 @@ const fileItem = (file: DocumentEntry): FileItem => {
 		size: file.size,
 		modified: file.updated,
 		documentId: file.id,
-		home: project ? `projects/${project[1]}` : `docs:${file.folder}`,
+		home: project
+			? `projects/${project[1]}`
+			: file.folder === DESKTOP_DOCUMENT_FOLDER
+				? 'desktop'
+				: `docs:${file.folder}`,
 	};
 };
 
@@ -275,7 +280,14 @@ export function buildTree({
 		emptyNote: '휴지통이 비어 있습니다.',
 	};
 	const roots: FolderItem[] = [
-		{ kind: 'folder', id: 'desktop', name: '데스크탑', children: [], emptyNote: '바탕화면이 비어 있습니다.' },
+		{
+			kind: 'folder',
+			id: 'desktop',
+			name: '데스크탑',
+			// 바탕화면에 바로 놓아 올린 파일 (폴더 값 데스크탑, 키 desktop/…)
+			children: files.filter((file) => file.folder === DESKTOP_DOCUMENT_FOLDER).map(fileItem),
+			emptyNote: '바탕화면이 비어 있습니다.',
+		},
 		docsFolder(docs, files, projectFolders(projects, files, albums)),
 		blogFolder(posts, blogFolders),
 		{
@@ -381,6 +393,7 @@ function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined)
  */
 export function uploadFolderOf(item: FinderItem | null | undefined): DocumentFolderValue | null {
 	if (!item || item.kind !== 'folder') return null;
+	if (item.id === 'desktop') return DESKTOP_DOCUMENT_FOLDER;
 	if (item.id === `docs:${item.name}` && (DOCUMENT_FOLDERS as readonly string[]).includes(item.name))
 		return item.name as DocumentFolder;
 	const project = /^projects\/([^/]+)$/.exec(item.id);

@@ -32,7 +32,7 @@ const CHECK_TTL = 60;
 
 /** 이 서버가 만든 키 모양: <폴더 영어 이름>/<무작위 16자>.<확장자>, 프로젝트 폴더는 projects/<프로젝트 id>/<무작위 16자>.<확장자> */
 const KEY = new RegExp(
-	`^(resume|portfolio|certificates|projects/[a-z0-9][a-z0-9-]{0,39})/[\\w-]{16}\\.(${Object.keys(DOCUMENT_EXTENSIONS).join('|')})$`
+	`^(resume|portfolio|certificates|desktop|projects/[a-z0-9][a-z0-9-]{0,39})/[\\w-]{16}\\.(${Object.keys(DOCUMENT_EXTENSIONS).join('|')})$`
 );
 
 /** 목록 순서: 이력서·포트폴리오·자격증 다음 프로젝트 폴더 (프로젝트 id 순) */

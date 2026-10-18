@@ -57,3 +57,8 @@
 	gap: 2rem;
 	flex-wrap: wrap;
 }
+
+/* 휴지통 칸에 Finder·바탕화면 항목을 끌고 있으면 macOS처럼 어둡게 (DockTrashTarget) */
+.dock-item.drop-target img {
+	filter: brightness(0.6);
+}

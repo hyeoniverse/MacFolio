@@ -49,7 +49,9 @@ async function fakeDocuments(page: Page) {
 				? `projects/${folder.slice(8)}`
 				: folder === '이력서'
 					? 'resume'
-					: 'portfolio';
+					: folder === '데스크탑'
+						? 'desktop'
+						: 'portfolio';
 			// 같은 폴더에 두 번째로 올리면 다른 키 (첫 번째는 abcdefghijklmnop)
 			const taken = docs.filter((doc) => doc.key.startsWith(`${prefix}/`)).length;
 			const key = `${prefix}/${taken ? `abcdefghijklmn${String(taken).padStart(2, '0')}` : 'abcdefghijklmnop'}.${name.split('.').pop()}`;
@@ -165,10 +167,21 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		const bin = appWindow(page, 'bin');
 		const trashed = bin.getByRole('listbox', { name: '휴지통 항목' });
 		await expect(trashed.getByRole('option')).toHaveText([/경력기술서.docx/, /새 이력서.pdf/]);
+		await dockItem(page, 'bin').click();
 		await trashed.getByRole('option', { name: '새 이력서.pdf' }).click({ button: 'right' });
 		await page.getByRole('menuitem', { name: '되돌려 놓기' }).click();
 		await expect(trashed.getByRole('option')).toHaveText([/경력기술서.docx/]);
 		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toBeVisible();
+
+		// Finder에서 Dock의 휴지통으로 끌어 놓아도 휴지통으로 (macOS처럼). 휴지통 창은 닫아 Finder를 가리지 않게
+		await bin.getByRole('button', { name: '닫기' }).click();
+		await finder.getByRole('option', { name: '새 이력서.pdf' }).dragTo(page.locator('[data-dock-trash]'));
+		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toHaveCount(0);
+		await dockItem(page, 'bin').click();
+		await expect(trashed.getByRole('option')).toHaveText([/경력기술서.docx/, /새 이력서.pdf/]);
+		await trashed.getByRole('option', { name: '새 이력서.pdf' }).click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '되돌려 놓기' }).click();
+		await expect(trashed.getByRole('option')).toHaveText([/경력기술서.docx/]);
 
 		// 비우기: 묻고 영구 삭제 (서버에서도)
 		await bin.getByRole('button', { name: '비우기' }).click();
@@ -199,7 +212,9 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		// 바탕화면 빈 곳에 놓으면 바탕화면에 보인다
 		await dropFile(page, '.desktop-icons', '바탕.pdf', [...tinyPdf()]);
 		await expect.poll(() => docs.length).toBe(2);
-		await expect.poll(() => api.finderLayout.files[`file:${docs[1].key}`]).toBe('desktop');
+		// 바탕화면에 놓으면 데스크탑 폴더(desktop/)에 올라가고 자리를 따로 적지 않는다
+		expect(docs[1]).toMatchObject({ folder: '데스크탑', key: 'desktop/abcdefghijklmnop.pdf' });
+		expect(api.finderLayout.files[`file:${docs[1].key}`]).toBeUndefined();
 		await expect(
 			page.getByRole('listbox', { name: '바탕화면' }).getByRole('option', { name: '바탕.pdf' })
 		).toBeVisible();
@@ -207,16 +222,22 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		// 바탕화면의 파일 아이콘 위에 놓아도 바탕화면으로 (브라우저가 파일을 열지 않는다)
 		await dropFile(page, `[data-desktop-icon="file:${docs[1].key}"]`, '하나 더.pdf', [...tinyPdf()]);
 		await expect.poll(() => docs.length).toBe(3);
-		await expect.poll(() => api.finderLayout.files[`file:${docs[2].key}`]).toBe('desktop');
+		expect(docs[2]).toMatchObject({ folder: '데스크탑' });
 		// 가상본(자격증) 위에 놓으면 원래 폴더로
 		await dropFile(page, '[data-desktop-icon="docs:자격증"]', '자격.pdf', [...tinyPdf()]);
 		await expect.poll(() => docs.length).toBe(4);
 		expect(docs[3]).toMatchObject({ folder: '자격증', name: '자격.pdf' });
 
 		// 바탕화면에서 휴지통으로: 묻지 않고 바로 휴지통에 (바탕화면에서 사라진다)
+		// 바탕화면 아이콘을 Dock의 휴지통으로 끌어 놓는다
 		const desk = page.getByRole('listbox', { name: '바탕화면' });
-		await desk.getByRole('option', { name: '바탕.pdf' }).click({ button: 'right' });
-		await page.getByRole('menuitem', { name: '휴지통으로 이동' }).click();
+		const icon = (await desk.getByRole('option', { name: '바탕.pdf' }).boundingBox())!;
+		const bin = (await page.locator('[data-dock-trash]').boundingBox())!;
+		await page.mouse.move(icon.x + icon.width / 2, icon.y + 20);
+		await page.mouse.down();
+		await page.mouse.move(icon.x - 40, icon.y + 60, { steps: 4 });
+		await page.mouse.move(bin.x + bin.width / 2, bin.y + bin.height / 2, { steps: 12 });
+		await page.mouse.up();
 		await expect(desk.getByRole('option', { name: '바탕.pdf' })).toHaveCount(0);
 		await expect.poll(() => api.finderLayout.trash?.[`file:${docs[1].key}`]).toBe('desktop');
 

@@ -63,8 +63,8 @@ describe('폴더 구조 겹치기', () => {
 			target: custom.id,
 			place: custom.id,
 		});
-		expect(uploadPlan(roots, find(roots, 'desktop'))).toMatchObject({ folder: '포트폴리오', place: 'desktop' });
-		expect(uploadPlan(roots, find(roots, onDesk.id))).toMatchObject({ folder: '포트폴리오', place: onDesk.id });
+		expect(uploadPlan(roots, find(roots, 'desktop'))).toMatchObject({ folder: '데스크탑', place: null });
+		expect(uploadPlan(roots, find(roots, onDesk.id))).toMatchObject({ folder: '데스크탑', place: onDesk.id });
 		// 바탕화면의 가상본에 놓으면 원래 폴더로
 		expect(uploadPlan(roots, find(roots, 'alias:docs:자격증'))).toMatchObject({ folder: '자격증', place: null });
 		expect(uploadPlan(roots, find(roots, 'blog'))).toBeNull();

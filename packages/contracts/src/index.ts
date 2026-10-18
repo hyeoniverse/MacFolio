@@ -29,6 +29,8 @@ export {
 	type DocumentFolderValue,
 	DOCUMENT_PROJECT_ID,
 	DOCUMENT_TYPE_ERROR,
+	DESKTOP_DOCUMENT_FOLDER,
+	type DesktopDocumentFolder,
 	documentProjectId,
 	DocumentRename,
 	DocumentUploadRequest,

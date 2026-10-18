@@ -311,7 +311,7 @@ export function deleteChange(
 
 /**
  * 관리자가 컴퓨터의 파일을 이 폴더에 놓았을 때: 올릴 문서 폴더 값(R2)과, 그 폴더가 아닌 곳이면 Finder 구조에 적어 둘 자리.
- * 놓은 폴더에서 위로 올라가며 처음 만나는 이력서·포트폴리오·자격증·프로젝트 폴더에 올리고, 그런 폴더가 없으면(데스크탑, 문서 맨 위, 그 안의 만든 폴더) 포트폴리오에 올린다.
+ * 놓은 폴더에서 위로 올라가며 처음 만나는 이력서·포트폴리오·자격증·데스크탑·프로젝트 폴더에 올리고(바탕화면은 데스크탑 폴더, 키 desktop/…), 그런 폴더가 없으면(문서 맨 위, 그 안의 만든 폴더) 포트폴리오에 올린다.
  * 그래서 만든 폴더·바탕화면에 놓아도 놓은 자리에 보인다. 받을 수 없는 폴더(블로그·사진·앱)면 null
  */
 export function uploadPlan(
@@ -322,6 +322,7 @@ export function uploadPlan(
 	if (!target || containerKind(target) !== 'fs') return null;
 	const path = pathTo(roots, target.id);
 	const home = [...(path.length ? path : [target])].reverse().find((step) => uploadFolderOf(step));
+	// 위에 문서 폴더가 없으면(문서 맨 위, 그 안의 만든 폴더) 포트폴리오. 바탕화면과 그 안의 폴더는 데스크탑 폴더(desktop/)
 	const folder = uploadFolderOf(home) ?? '포트폴리오';
 	return { folder, target: target.id, place: home?.id === target.id ? null : target.id };
 }
