@@ -1784,14 +1784,15 @@
 								],
 								"properties": {
 									"folder": {
-										"description": "이력서·포트폴리오·자격증, 또는 프로젝트 폴더 project:<프로젝트 id>",
+										"description": "이력서·포트폴리오·자격증, 데스크탑(바탕화면), 또는 프로젝트 폴더 project:<프로젝트 id>",
 										"oneOf": [
 											{
 												"type": "string",
 												"enum": [
 													"이력서",
 													"포트폴리오",
-													"자격증"
+													"자격증",
+													"데스크탑"
 												]
 											},
 											{
@@ -1861,14 +1862,15 @@
 								],
 								"properties": {
 									"folder": {
-										"description": "이력서·포트폴리오·자격증, 또는 프로젝트 폴더 project:<프로젝트 id>",
+										"description": "이력서·포트폴리오·자격증, 데스크탑(바탕화면), 또는 프로젝트 폴더 project:<프로젝트 id>",
 										"oneOf": [
 											{
 												"type": "string",
 												"enum": [
 													"이력서",
 													"포트폴리오",
-													"자격증"
+													"자격증",
+													"데스크탑"
 												]
 											},
 											{

@@ -3,6 +3,7 @@
 // 올리기 전에 전화번호·주소·생년월일·주민등록번호 같은 번호를 지운다.
 import { useSyncExternalStore } from 'react';
 import {
+	DESKTOP_DOCUMENT_FOLDER,
 	DOCUMENT_FOLDERS,
 	documentExtension,
 	DOCUMENT_TYPE_ERROR,
@@ -18,7 +19,7 @@ import { createStore } from '@macfolio/desktop-core';
 import { api } from '@/shared/api/client';
 import { env } from '@/shared/config/env';
 
-export { DOCUMENT_FOLDERS, type DocumentFolder, type DocumentFolderValue, documentProjectId };
+export { DESKTOP_DOCUMENT_FOLDER, DOCUMENT_FOLDERS, type DocumentFolder, type DocumentFolderValue, documentProjectId };
 
 /** 프로젝트 폴더의 폴더 값 (project:<프로젝트 id>) */
 export const projectFolderValue = (projectId: string): ProjectDocumentFolder => `project:${projectId}`;
