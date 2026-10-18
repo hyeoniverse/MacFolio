@@ -93,11 +93,11 @@ describe('프로젝트 폴더', () => {
 	const albums = [{ id: 'qru', name: 'QRU', photos: [{ src: '/imgs/projects/qru/home.png' }] }];
 	const withProjects = buildLocations({ docs: [], posts: [], projects, apps: [], files, albums });
 
-	it('프로젝트마다 폴더: 프로젝트가 맨 위, 사진 폴더, 올린 파일은 이름순', () => {
+	it('프로젝트마다 폴더: 사진 폴더, 올린 파일은 이름순 (실행하는 앱은 넣지 않는다)', () => {
 		expect(names(find(withProjects, 'projects') as FolderItem)).toEqual(['QRU', '빈 프로젝트']);
 		const qru = find(withProjects, 'projects/qru') as FolderItem;
 		expect(qru.kind).toBe('folder');
-		expect(names(qru)).toEqual(['QRU', '사진', '구조도.png', '발표.pdf']);
+		expect(names(qru)).toEqual(['사진', '구조도.png', '발표.pdf']);
 		expect(qru.children[0]).toMatchObject({ kind: 'folder', id: 'projects/qru/photos', name: '사진' });
 		expect(qru.modified).toBe('2026-10-02');
 		expect(find(withProjects, 'file:projects/qru/b.pdf')).toMatchObject({ kind: 'pdf', name: '발표.pdf' });
@@ -128,6 +128,22 @@ describe('프로젝트 폴더', () => {
 		expect(uploadFolderOf(find(withProjects, 'projects/qru/photos'))).toBeNull();
 		expect(uploadFolderOf(find(withProjects, 'projects'))).toBeNull();
 		expect(uploadFolderOf(find(withProjects, 'project:qru'))).toBeNull();
+	});
+});
+
+describe('블로그의 빈 폴더', () => {
+	it('메모에서 만든 폴더는 글이 없어도 블로그 아래에 폴더로 보인다 (하위 폴더까지)', () => {
+		const withFolders = buildLocations({
+			docs: [],
+			posts: [{ slug: 'a', title: '글', date: '2026-10-01', category: '개발기' }],
+			blogFolders: ['읽을거리', '개발기/회고'],
+			projects: [],
+			apps: [],
+		});
+		const blog = find(withFolders, 'blog') as FolderItem;
+		expect(names(blog)).toEqual(['개발기', '읽을거리']);
+		expect(names(find(withFolders, 'blog/개발기') as FolderItem)).toEqual(['회고', '글']);
+		expect((find(withFolders, 'blog/읽을거리') as FolderItem).children).toEqual([]);
 	});
 });
 

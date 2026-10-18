@@ -82,6 +82,8 @@ export interface TreeInput {
 	/** 저장소 문서 경로 (예: README.md, docs/deployment.md) */
 	docs: string[];
 	posts: { slug: string; title: string; date: string; category: string }[];
+	/** 메모에서 만든 폴더 경로 (예: 개발기/읽을거리). 글이 없어도 블로그 아래에 폴더로 보인다 */
+	blogFolders?: string[];
 	projects: { id: string; name: string; icon?: string; period?: string }[];
 	apps: { app: AppName; label: string; icon: string }[];
 	/** 문서 파일 목록 (documents.ts). 없으면 폴더만 비어 있다 */
@@ -192,7 +194,7 @@ function projectsFolder(projects: TreeInput['projects'], files: DocumentEntry[],
 }
 
 /** 블로그 폴더: 글의 카테고리(프론트엔드/기능)를 폴더로. 같은 폴더 안은 최신 글이 위로 */
-function blogFolder(posts: TreeInput['posts']): FolderItem {
+function blogFolder(posts: TreeInput['posts'], folders: string[] = []): FolderItem {
 	const root: FolderItem = { kind: 'folder', id: 'blog', name: '블로그', children: [] };
 	const folderAt = (path: string[]): FolderItem => {
 		let current = root;
@@ -207,6 +209,8 @@ function blogFolder(posts: TreeInput['posts']): FolderItem {
 		});
 		return current;
 	};
+	// 빈 폴더도 보이게 만든 폴더부터 (글이 있는 폴더는 아래에서 다시 찾는다)
+	for (const path of folders) folderAt(path.split('/').filter(Boolean));
 	[...posts]
 		.sort((a, b) => b.date.localeCompare(a.date))
 		.forEach((post) => {
@@ -233,11 +237,19 @@ function blogFolder(posts: TreeInput['posts']): FolderItem {
 }
 
 /** 사이드바에 보일 위치들 (Finder의 즐겨찾기) */
-export function buildLocations({ docs, posts, projects, apps, files = [], albums = [] }: TreeInput): FolderItem[] {
+export function buildLocations({
+	docs,
+	posts,
+	blogFolders = [],
+	projects,
+	apps,
+	files = [],
+	albums = [],
+}: TreeInput): FolderItem[] {
 	return [
 		docsFolder(docs, files),
 		projectsFolder(projects, files, albums),
-		blogFolder(posts),
+		blogFolder(posts, blogFolders),
 		{
 			kind: 'folder',
 			id: 'apps',
