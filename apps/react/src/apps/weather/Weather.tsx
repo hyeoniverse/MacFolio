@@ -20,6 +20,8 @@ import {
 import { fetchForecast, searchPlaces, type TemperatureUnit } from './weatherApi';
 import './Weather.css';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import IconButton from '@/shared/ui/button/IconButton';
+import SidebarToggle from '@/shared/ui/button/SidebarToggle';
 
 /** 날씨 칸이 이 폭 이하면 iOS 날씨 모양(날씨만, 아래 막대, 덮어 여는 목록)으로 (Weather.css의 [data-compact]) */
 const COMPACT_WIDTH = 640;
@@ -482,14 +484,11 @@ const Weather = () => {
 				 * 사이드바째 올리면 사이드바가 신호등을 덮는다
 				 */}
 				{!compact && (
-					<button
-						type="button"
+					<SidebarToggle
 						className={`weather-sidebar-toggle ${sidebarHidden ? 'shown' : ''}`}
-						aria-label={sidebarHidden ? '사이드바 보기' : '사이드바 가리기'}
-						onClick={() => setSidebarHidden((hidden) => !hidden)}
-					>
-						<i className="fa-solid fa-table-columns" aria-hidden="true" />
-					</button>
+						open={!sidebarHidden}
+						onToggle={() => setSidebarHidden((hidden) => !hidden)}
+					/>
 				)}
 				<nav
 					className={`weather-sidebar ${listOpen ? 'open' : ''} ${editing ? 'editing' : ''} ${sidebarHidden ? 'hidden' : ''}`}
@@ -499,20 +498,18 @@ const Weather = () => {
 					<div className="weather-lights-space" />
 					<header className="weather-list-head">
 						<h2>날씨</h2>
-						<button
+						<IconButton
 							ref={moreButton}
-							type="button"
 							className="weather-more"
-							aria-label="더 보기"
+							label="더 보기"
+							icon="fa-solid fa-ellipsis"
 							aria-haspopup="menu"
 							aria-expanded={menu !== null}
 							onClick={(event) => {
 								const rect = event.currentTarget.getBoundingClientRect();
 								setMenu(menu ? null : { x: rect.right - 260, y: rect.bottom + 8 });
 							}}
-						>
-							<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-						</button>
+						/>
 					</header>
 					<SearchField
 						className="weather-search"

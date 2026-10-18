@@ -12,6 +12,7 @@ import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import SeekBar from './SeekBar';
 import VolumeBar from './VolumeBar';
 import '@/apps/music/Music.css';
+import IconButton from '@/shared/ui/button/IconButton';
 
 const PLAYLIST_ICONS: Record<string, string> = {
 	all: 'fa-solid fa-music',
@@ -47,43 +48,27 @@ const Transport: React.FC<{ large?: boolean }> = ({ large = false }) => {
 	const repeatLabel = { off: '반복 끔', all: '전체 반복', one: '한 곡 반복' }[repeat];
 	return (
 		<div className={`music-transport ${large ? 'large' : ''}`}>
-			<button
-				type="button"
-				className={`music-toggle ${shuffle ? 'on' : ''}`}
-				aria-label="셔플"
+			<IconButton
+				className="music-toggle"
+				on={shuffle}
+				label="셔플"
 				aria-pressed={shuffle}
+				icon="fa-solid fa-shuffle"
 				onClick={toggleShuffle}
-			>
-				<i className="fa-solid fa-shuffle" aria-hidden="true"></i>
-			</button>
-			<button type="button" aria-label="이전 곡" onClick={previous}>
-				<i className="fa-solid fa-backward" aria-hidden="true"></i>
-			</button>
-			<button
-				type="button"
-				className="music-play"
-				aria-label={isPlaying ? '일시 정지' : '재생'}
-				onClick={togglePlayPause}
-			>
+			/>
+			<IconButton label="이전 곡" icon="fa-solid fa-backward" onClick={previous} />
+			<IconButton className="music-play" label={isPlaying ? '일시 정지' : '재생'} onClick={togglePlayPause}>
 				<i
 					key={isPlaying ? 'pause' : 'play'}
 					className={`music-play-icon fa-solid fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`}
 					aria-hidden="true"
 				></i>
-			</button>
-			<button type="button" aria-label="다음 곡" onClick={next}>
-				<i className="fa-solid fa-forward" aria-hidden="true"></i>
-			</button>
-			<button
-				type="button"
-				className={`music-toggle ${repeat !== 'off' ? 'on' : ''}`}
-				aria-label={repeatLabel}
-				title={repeatLabel}
-				onClick={cycleRepeat}
-			>
+			</IconButton>
+			<IconButton label="다음 곡" icon="fa-solid fa-forward" onClick={next} />
+			<IconButton className="music-toggle" on={repeat !== 'off'} label={repeatLabel} onClick={cycleRepeat}>
 				<i className="fa-solid fa-repeat" aria-hidden="true"></i>
 				{repeat === 'one' && <span className="music-repeat-one">1</span>}
-			</button>
+			</IconButton>
 		</div>
 	);
 };
@@ -350,10 +335,10 @@ const Music: React.FC = () => {
 
 					<section key={selectedId} className="music-main" aria-label={playlist.name}>
 						{/* 좁은 데스크톱 창의 뒤로 가기 (휴대폰은 떠 있는 뒤로 가기를 쓴다). 넓은 창에서는 보이지 않는다 */}
-						<button type="button" className="music-back" onClick={() => setView(openedFrom)}>
+						<IconButton className="music-back" onClick={() => setView(openedFrom)}>
 							<i className="fa-solid fa-chevron-left" aria-hidden="true" />{' '}
 							{openedFrom === 'library' ? '보관함' : PHONE_LIST_TITLES[openedFrom]}
-						</button>
+						</IconButton>
 						<header className="music-header">
 							<Cover playlist={playlist} />
 							<div>
@@ -475,28 +460,25 @@ const Music: React.FC = () => {
 						</div>
 						<div className="music-bar-right">
 							<VolumeBar />
-							<button
-								type="button"
-								className={`music-toggle ${upNextOpen ? 'on' : ''}`}
-								aria-label="다음 재생"
+							<IconButton
+								className="music-toggle"
+								on={upNextOpen}
+								label="다음 재생"
 								aria-pressed={upNextOpen}
+								icon="fa-solid fa-list-ul"
 								onClick={() => setUpNextOpen((open) => !open)}
-							>
-								<i className="fa-solid fa-list-ul" aria-hidden="true"></i>
-							</button>
+							/>
 						</div>
 						{/* 미니 플레이어 버튼 (좁은 창) */}
 						<div className="music-mini-controls">
-							<button type="button" aria-label={isPlaying ? '일시 정지' : '재생'} onClick={togglePlayPause}>
+							<IconButton label={isPlaying ? '일시 정지' : '재생'} onClick={togglePlayPause}>
 								<i
 									key={isPlaying ? 'pause' : 'play'}
 									className={`music-play-icon fa-solid fa-fw ${isPlaying ? 'fa-pause' : 'fa-play'}`}
 									aria-hidden="true"
 								></i>
-							</button>
-							<button type="button" aria-label="다음 곡" onClick={next}>
-								<i className="fa-solid fa-forward" aria-hidden="true"></i>
-							</button>
+							</IconButton>
+							<IconButton label="다음 곡" icon="fa-solid fa-forward" onClick={next} />
 						</div>
 					</footer>
 

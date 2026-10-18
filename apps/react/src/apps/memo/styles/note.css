@@ -525,7 +525,11 @@ button.memo-admin-chip {
 }
 
 .memo-format-panel .memo-revision-back {
+	display: inline-block;
+	min-width: 0;
+	height: auto;
 	padding: 3px 6px;
+	background: none;
 	border-radius: var(--radius-sm);
 	color: #c78b00;
 	font-size: var(--text-caption);

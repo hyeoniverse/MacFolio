@@ -197,12 +197,14 @@
 }
 
 .photos-capsule button {
+	display: block;
 	min-width: 32px;
 	height: 28px;
 	padding: 0 8px;
 	border: none;
 	border-radius: var(--radius-full);
 	background: none;
+	color: inherit;
 	font-size: 14px;
 }
 

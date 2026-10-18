@@ -90,8 +90,10 @@
 	display: grid;
 	place-items: center;
 	width: 24px;
+	min-width: 0;
 	height: 24px;
 	margin-left: auto;
+	padding: 0;
 	border: none;
 	border-radius: var(--radius-sm);
 	background: none;

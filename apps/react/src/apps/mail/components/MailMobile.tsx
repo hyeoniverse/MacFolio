@@ -10,6 +10,7 @@ import type { SendOptions, SendResult } from '../sender';
 import { MAILBOX_LABEL, type ListMail, type Mailbox } from '../model';
 import { takeComposeRequest } from '../composeRequest';
 import '@/apps/mail/components/MailMobile.css';
+import IconButton from '@/shared/ui/button/IconButton';
 
 const MAILBOX_ICON: Record<Mailbox, string> = { inbox: 'fa-solid fa-inbox', sent: 'fa-regular fa-paper-plane' };
 
@@ -71,17 +72,21 @@ const ReplySheet: React.FC<{ mail: ListMail; onClose: () => void; onReplied: (ma
 	return (
 		<form className="mail-compose sheet" aria-label="답장 쓰기" onSubmit={send}>
 			<header className="mail-sheet-head">
-				<button type="button" className="mail-sheet-circle" aria-label="취소" onClick={onClose}>
-					<i className="fa-solid fa-xmark" aria-hidden="true" />
-				</button>
-				<button
+				<IconButton
+					variant="circle"
+					className="mail-sheet-circle"
+					label="취소"
+					icon="fa-solid fa-xmark"
+					onClick={onClose}
+				/>
+				<IconButton
 					type="submit"
+					variant="circle"
 					className={`mail-sheet-circle send ${body.trim() ? 'ready' : ''}`}
-					aria-label="답장 보내기"
+					label="답장 보내기"
+					icon="fa-solid fa-arrow-up"
 					disabled={sending}
-				>
-					<i className="fa-solid fa-arrow-up" aria-hidden="true" />
-				</button>
+				/>
 			</header>
 			<h2 className="mail-sheet-title">Re: {mail.subject}</h2>
 			<div className="mail-compose-row">
@@ -169,14 +174,13 @@ const MailMobile: React.FC<Props> = ({
 		);
 
 	const composeButton = (
-		<button
-			type="button"
+		<IconButton
+			variant="float"
 			className="mail-phone-compose-button"
-			aria-label="새로운 메시지"
+			label="새로운 메시지"
+			icon="fa-regular fa-pen-to-square"
 			onClick={() => setSheet({ kind: 'compose' })}
-		>
-			<i className="fa-regular fa-pen-to-square" aria-hidden="true" />
-		</button>
+		/>
 	);
 
 	let body: React.ReactNode;
@@ -360,9 +364,13 @@ const MailMobile: React.FC<Props> = ({
 								<strong>{sheet.mail.fromName}</strong>
 								<p>{sheet.mail.body}</p>
 							</div>
-							<button type="button" className="mail-sheet-circle" aria-label="닫기" onClick={() => setSheet(null)}>
-								<i className="fa-solid fa-xmark" aria-hidden="true" />
-							</button>
+							<IconButton
+								variant="circle"
+								className="mail-sheet-circle"
+								label="닫기"
+								icon="fa-solid fa-xmark"
+								onClick={() => setSheet(null)}
+							/>
 						</header>
 						<div className="mail-phone-tiles">
 							<button type="button" onClick={() => reply(screenMailbox, sheet.mail)}>

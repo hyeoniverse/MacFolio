@@ -8,6 +8,7 @@ import { env } from '@/shared/config/env';
 import Turnstile from '@/shared/ui/turnstile/Turnstile';
 import Button from '@/shared/ui/button/Button';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
+import IconButton from '@/shared/ui/button/IconButton';
 
 interface Props {
 	onSend: (input: ContactInput, options?: SendOptions) => Promise<SendResult>;
@@ -105,17 +106,21 @@ const ComposeView: React.FC<Props> = ({ onSend, onCancel, sheet = false, initial
 				<>
 					{/* iOS 메일: 왼쪽 위 ×, 오른쪽 위 ↑ (다 쓰면 파랗게), 그 아래 큰 제목(쓴 제목, 없으면 새로운 메시지) */}
 					<header className="mail-sheet-head">
-						<button type="button" className="mail-sheet-circle" aria-label="취소" onClick={onCancel}>
-							<i className="fa-solid fa-xmark" aria-hidden="true" />
-						</button>
-						<button
+						<IconButton
+							variant="circle"
+							className="mail-sheet-circle"
+							label="취소"
+							icon="fa-solid fa-xmark"
+							onClick={onCancel}
+						/>
+						<IconButton
 							type="submit"
+							variant="circle"
 							className={`mail-sheet-circle send ${filled ? 'ready' : ''}`}
-							aria-label="보내기"
+							label="보내기"
+							icon="fa-solid fa-arrow-up"
 							disabled={!filled || sending}
-						>
-							<i className="fa-solid fa-arrow-up" aria-hidden="true" />
-						</button>
+						/>
 					</header>
 					<h2 className="mail-sheet-title">{form.subject.trim() || '새로운 메시지'}</h2>
 				</>
