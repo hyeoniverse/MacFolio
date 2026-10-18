@@ -142,24 +142,24 @@ test.describe('Finder', () => {
 			}
 		});
 
-		test('PDF는 미리보기 앱에서 열리고, 다운로드는 ?download=1', async ({ page }) => {
+		test('PDF는 미리보기 앱이 직접 그린다: 쪽 그림 사이드바, 쪽 넘기기, 찾기, 다운로드', async ({ page }) => {
 			const requests = await fakeFiles(page);
 			const finder = await openFinder(page);
 			await finder
 				.getByRole('listbox', { name: '문서' })
 				.getByRole('option', { name: '이력서', exact: true })
 				.dblclick();
-			const pdf = finder.getByRole('option', { name: '시험 이력서.pdf' });
-			await expect(pdf).toBeVisible();
-			await pdf.dblclick();
+			await finder.getByRole('option', { name: '시험 이력서.pdf' }).dblclick();
 
 			const preview = appWindow(page, 'preview');
-			await expect(preview).toBeVisible();
-			const doc = preview.getByRole('region', { name: '시험 이력서.pdf' });
-			const frame = doc.locator('iframe');
-			await expect(frame).toHaveAttribute('src', '/files/resume/test.pdf');
-			await expect(frame).toHaveAttribute('title', '시험 이력서.pdf');
+			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('시험 이력서.pdf');
 			await expect.poll(() => requests).toContain('/files/resume/test.pdf');
+			// 브라우저 PDF 보기(iframe)가 아니라 쪽마다 캔버스와 글자 층
+			await expect(preview.locator('iframe')).toHaveCount(0);
+			const doc = preview.getByRole('document', { name: '시험 이력서.pdf' });
+			await expect(doc.getByRole('group', { name: /쪽$/ })).toHaveCount(3);
+			await expect(doc.getByRole('group', { name: '1쪽' }).locator('.textLayer')).toContainText('MacFolio test PDF');
+			await expect(preview.getByText('1/3쪽')).toBeVisible();
 			await expect(preview.getByRole('link', { name: '다운로드' })).toHaveAttribute(
 				'href',
 				'/files/resume/test.pdf?download=1'
@@ -168,12 +168,44 @@ test.describe('Finder', () => {
 				'href',
 				'/files/resume/test.pdf'
 			);
-			await expect(preview.locator('.preview-toolbar')).toContainText('PDF 문서 · 2 KB');
-			// Finder는 폴더에 그대로 있다
-			await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
+
+			// 쪽이 여럿이라 사이드바가 열려 있고, 쪽 그림을 누르면 그 쪽으로
+			const sidebar = preview.getByRole('navigation', { name: '사이드바' });
+			await expect(sidebar.getByRole('button', { name: /^\d쪽$/ })).toHaveCount(3);
+			await sidebar.getByRole('button', { name: '3쪽' }).click();
+			await expect(preview.getByText('3/3쪽')).toBeVisible();
+			await expect(sidebar.getByRole('button', { name: '3쪽' })).toHaveAttribute('aria-current', 'page');
+			// ←로 앞 쪽
+			await doc.focus();
+			await page.keyboard.press('ArrowLeft');
+			await expect(preview.getByText('2/3쪽')).toBeVisible();
+
+			// 찾기: 쪽마다 'Page'가 하나, Enter로 다음 결과
+			const search = preview.getByRole('searchbox', { name: '찾기' });
+			await search.fill('page');
+			await expect(preview.getByText('1/3', { exact: true })).toBeVisible();
+			await expect(doc.locator('mark.preview-hit.current')).toHaveText('Page');
+			await search.press('Enter');
+			await expect(preview.getByText('2/3', { exact: true })).toBeVisible();
+			await search.fill('없는 말');
+			await expect(preview.getByText('없음')).toBeVisible();
+
+			// 배율: 맞춤 → 확대 단계
+			const level = preview.getByLabel('지금 배율');
+			await expect(level).toHaveText('맞춤');
+			const before = (await doc.getByRole('group', { name: '1쪽' }).boundingBox())!.width;
+			await preview.getByRole('button', { name: '축소' }).click();
+			await expect(level).not.toHaveText('맞춤');
+			await expect
+				.poll(async () => (await doc.getByRole('group', { name: '1쪽' }).boundingBox())!.width)
+				.toBeLessThan(before);
+
+			// 사이드바 가리기
+			await preview.getByRole('button', { name: '사이드바 가리기' }).click();
+			await expect(sidebar).toHaveCount(0);
 		});
 
-		test('그림도 미리보기 앱에서 열리고, 둘째 파일부터 사이드바에 목록이 생긴다', async ({ page }) => {
+		test('그림도 미리보기 앱에서 열리고, 파일을 더 열면 사이드바에 파일마다 묶인다', async ({ page }) => {
 			await fakeFiles(page);
 			const finder = await openFinder(page);
 			const docs = finder.getByRole('listbox', { name: '문서' });
@@ -181,42 +213,32 @@ test.describe('Finder', () => {
 			await finder.getByRole('option', { name: '시험 그림.png' }).dblclick();
 
 			const preview = appWindow(page, 'preview');
-			const doc = preview.getByRole('region', { name: '시험 그림.png' });
-			const image = doc.getByRole('img', { name: '시험 그림.png' });
+			const view = preview.getByRole('region', { name: '시험 그림.png' });
+			const image = view.getByRole('img', { name: '시험 그림.png' });
 			await expect(image).toHaveAttribute('src', '/files/portfolio/test.png');
 			await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(160);
-			await expect(preview.getByRole('link', { name: '다운로드' })).toHaveAttribute(
-				'href',
-				'/files/portfolio/test.png?download=1'
-			);
 			await expect(appWindow(page, 'photos')).toHaveCount(0);
-			await expect(preview.getByRole('navigation', { name: '열린 파일' })).toHaveCount(0);
+			// 한 장이라 사이드바는 처음에 닫혀 있다
+			await expect(preview.getByRole('navigation', { name: '사이드바' })).toHaveCount(0);
 
-			// 창에 맞춰 보이고, 배율 버튼으로 실제 크기·확대
-			const pane = (await doc.boundingBox())!;
-			expect((await image.boundingBox())!.width).toBeLessThanOrEqual(pane.width);
-			const level = preview.getByRole('group', { name: '배율' });
-			await expect(level).toContainText('맞춤');
-			await level.getByRole('button', { name: '맞춤' }).click();
-			await expect(level).toContainText('100%');
+			// 맞춤은 키우지 않는다(160px), 확대하면 125%
 			await expect.poll(async () => Math.round((await image.boundingBox())!.width)).toBe(160);
-			await level.getByRole('button', { name: '확대' }).click();
-			await expect(level).toContainText('150%');
-			await expect.poll(async () => Math.round((await image.boundingBox())!.width)).toBe(240);
+			await preview.getByRole('button', { name: '확대' }).click();
+			await expect(preview.getByLabel('지금 배율')).toHaveText('125%');
+			await expect.poll(async () => Math.round((await image.boundingBox())!.width)).toBe(200);
 
-			// 다른 파일을 열면 사이드바에 둘 다, 고르면 바뀌고 닫으면 빠진다 (미리보기 창이 앞에 있으니 Dock으로 Finder를 앞으로)
+			// PDF를 더 열면 사이드바에 파일 둘, 그림을 고르면 배율이 남아 있고, 닫으면 빠진다
 			await dockItem(page, 'finder').click();
 			await finder.getByRole('button', { name: '뒤로' }).click();
 			await docs.getByRole('option', { name: '이력서', exact: true }).dblclick();
 			await finder.getByRole('option', { name: '시험 이력서.pdf' }).dblclick();
-			const sidebar = preview.getByRole('navigation', { name: '열린 파일' });
-			await expect(sidebar.getByRole('button', { name: /시험/ })).toHaveCount(4);
-			await expect(preview.getByRole('region', { name: '시험 이력서.pdf' })).toBeVisible();
+			const sidebar = preview.getByRole('navigation', { name: '사이드바' });
+			await expect(sidebar.getByRole('region')).toHaveCount(2);
+			await expect(sidebar.getByRole('button', { name: '시험 이력서.pdf 2쪽' })).toBeVisible();
 			await sidebar.getByRole('button', { name: '시험 그림.png', exact: true }).click();
-			await expect(level).toContainText('150%');
+			await expect(preview.getByLabel('지금 배율')).toHaveText('125%');
 			await sidebar.getByRole('button', { name: '시험 그림.png 닫기' }).click();
-			await expect(sidebar).toHaveCount(0);
-			await expect(preview.getByRole('region', { name: '시험 이력서.pdf' })).toBeVisible();
+			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('시험 이력서.pdf');
 		});
 	});
 });

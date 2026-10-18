@@ -1,167 +1,415 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
 import AppWindow from '@/desktop/window/Window';
-import IconButton from '@/shared/ui/button/IconButton';
-import '@/shared/ui/button/Button.css';
 import { useAppState } from '@/desktop/useAppState';
+import { useAppMenus } from '@/desktop/status-bar/appMenus';
+import IconButton from '@/shared/ui/button/IconButton';
+import SidebarToggle from '@/shared/ui/button/SidebarToggle';
+import SearchField from '@/shared/ui/search-field/SearchField';
+import '@/shared/ui/button/Button.css';
 import { fileUrl, formatSize } from '@/apps/finder/documents';
 import { closeInPreview, selectInPreview, usePreview, type PreviewFile } from './previewStore';
+import { countMatches, loadPdf } from './pdf';
+import PdfView, { PdfThumb, type PdfViewHandle } from './PdfView';
 import './Preview.css';
 
-/** 그림 배율. null이면 창에 맞춘다 */
-const ZOOMS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
+/** 배율 단계. 확대·축소는 지금 배율의 다음 단계로 간다 */
+const ZOOMS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4];
+/** 사이드바 쪽 그림의 폭 */
+const THUMB_WIDTH = 96;
+
+const nextZoom = (scale: number, direction: 1 | -1) =>
+	direction > 0
+		? (ZOOMS.find((step) => step > scale + 0.001) ?? null)
+		: ([...ZOOMS].reverse().find((step) => step < scale - 0.001) ?? null);
+
+/** 열린 PDF 문서들 (사이드바와 본문이 같이 쓴다) */
+function usePdfDocuments(files: PreviewFile[]) {
+	const [docs, setDocs] = useState<Record<string, PDFDocumentProxy | 'error'>>({});
+	useEffect(() => {
+		for (const file of files) {
+			if (file.kind !== 'pdf' || docs[file.key]) continue;
+			loadPdf(fileUrl(file.key)).then(
+				(doc) => setDocs((all) => ({ ...all, [file.key]: doc })),
+				() => setDocs((all) => ({ ...all, [file.key]: 'error' }))
+			);
+		}
+	}, [files, docs]);
+	return docs;
+}
 
 /**
  * 미리보기 (macOS 미리보기). Finder의 문서 파일(PDF·그림)을 연다. 파일은 R2에 있고 사이트와 같은 주소(/files/<key>)로 온다.
- * - PDF는 브라우저의 PDF 보기를 iframe으로 (CSP frame-src 'self'). 확대·쪽 넘기기는 그 보기가 한다
- * - 그림은 창에 맞춰 보이고, 도구 막대로 확대·축소·실제 크기
- * - 파일을 둘 이상 열면 왼쪽 사이드바에 목록이 생긴다
+ * - PDF는 pdf.js로 쪽을 직접 그린다: 쪽이 세로로 이어지고, 글자를 고르고 복사하고 찾을 수 있다
+ * - 위 막대: 사이드바, 이름과 쪽, 축소·확대, 찾기, 다운로드·새 창. 메뉴 막대의 보기·이동에도 같은 일이 있다
+ * - 왼쪽 사이드바: 쪽 그림 (파일을 여럿 열면 파일마다 묶는다)
  */
 const Preview: React.FC = () => {
 	const { files, current } = usePreview();
 	const file = files.find((open) => open.key === current) ?? null;
-	const [sidebar, setSidebar] = useState(true);
-	// 그림 배율은 파일마다 따로 기억한다 (없으면 창에 맞춤)
+	const docs = usePdfDocuments(files);
+	const doc =
+		file && file.kind === 'pdf' && typeof docs[file.key] === 'object' ? (docs[file.key] as PDFDocumentProxy) : null;
+
+	// 파일마다 배율을 기억한다 (null이면 맞춤)
 	const [zooms, setZooms] = useState<Record<string, number | null>>({});
 	const zoom = file ? (zooms[file.key] ?? null) : null;
-	const setZoom = (next: number | null) => file && setZooms({ ...zooms, [file.key]: next });
-	const showSidebar = sidebar && files.length > 1;
+	const [scale, setScale] = useState(1);
+	const setZoom = (next: number | null) => file && setZooms((all) => ({ ...all, [file.key]: next }));
+	const step = (direction: 1 | -1) => {
+		const next = nextZoom(scale, direction);
+		if (next !== null) setZoom(next);
+	};
+
+	const [page, setPage] = useState(1);
+	const pages = doc?.numPages ?? 0;
+	const pdfView = useRef<PdfViewHandle>(null);
+	const goToPage = (n: number) => pdfView.current?.goToPage(Math.min(Math.max(1, n), pages));
+
+	// 사이드바: 처음에는 쪽이 여럿이거나 파일이 여럿일 때 보인다. 버튼으로 고르면 그대로 둔다
+	const [sidebarChoice, setSidebarChoice] = useState<boolean | null>(null);
+	const sidebar = file !== null && (sidebarChoice ?? (files.length > 1 || pages > 1));
+
+	// 찾기
+	const search = useRef<HTMLDivElement>(null);
+	const [query, setQuery] = useState('');
+	const q = query.trim();
+	// 쪽마다 찾은 개수. 지금 문서·찾는 말의 결과만 쓴다 (늦게 온 옛 결과는 버린다)
+	const [found, setFound] = useState<{ doc: PDFDocumentProxy | null; query: string; counts: number[] }>({
+		doc: null,
+		query: '',
+		counts: [],
+	});
+	const matchCounts = found.doc === doc && found.query === q ? found.counts : [];
+	const total = matchCounts.reduce((sum, n) => sum + n, 0);
+	useEffect(() => {
+		if (!doc || !q) return;
+		let alive = true;
+		const timer = setTimeout(() => {
+			countMatches(doc, q).then((counts) => alive && setFound({ doc, query: q, counts }));
+		}, 150);
+		return () => {
+			alive = false;
+			clearTimeout(timer);
+		};
+	}, [doc, q]);
+	// 고른 결과: 찾는 말이 바뀌면 첫 결과부터
+	const [picked, setPicked] = useState({ query: '', index: 0 });
+	const match = total === 0 ? -1 : picked.query === q ? picked.index % total : 0;
+	const moveMatch = (direction: 1 | -1) =>
+		total > 0 && setPicked({ query: q, index: (match + direction + total) % total });
+
+	// 다른 파일로 가면 쪽·찾기를 처음부터 (그리는 중에 맞춘다)
+	const [shown, setShown] = useState(current);
+	if (shown !== current) {
+		setShown(current);
+		setPage(1);
+		setQuery('');
+	}
+
+	const onScale = useCallback((value: number) => setScale(value), []);
+
+	useAppMenus('preview', [
+		{
+			title: '편집',
+			items: [
+				{
+					label: '찾기…',
+					disabled: !doc,
+					shortcut: { code: 'KeyF', mod: true },
+					onSelect: () => search.current?.querySelector('input')?.focus(),
+				},
+				{
+					label: '다음 찾기',
+					disabled: total === 0,
+					shortcut: { code: 'KeyG', mod: true },
+					onSelect: () => moveMatch(1),
+				},
+				{
+					label: '이전 찾기',
+					disabled: total === 0,
+					shortcut: { code: 'KeyG', mod: true, shift: true },
+					onSelect: () => moveMatch(-1),
+				},
+			],
+		},
+		{
+			title: '보기',
+			items: [
+				{
+					label: sidebar ? '사이드바 가리기' : '사이드바 보기',
+					disabled: !file,
+					shortcut: { code: 'KeyS', mod: true, alt: true },
+					onSelect: () => setSidebarChoice(!sidebar),
+				},
+				'separator',
+				{
+					label: '실제 크기',
+					disabled: !file,
+					checked: zoom === 1,
+					shortcut: { code: 'Digit0', mod: true },
+					onSelect: () => setZoom(1),
+				},
+				{
+					label: '크기 조절하여 맞추기',
+					disabled: !file,
+					checked: file !== null && zoom === null,
+					shortcut: { code: 'Digit9', mod: true },
+					onSelect: () => setZoom(null),
+				},
+				{
+					label: '확대',
+					disabled: !file || nextZoom(scale, 1) === null,
+					shortcut: { code: 'Equal', mod: true },
+					onSelect: () => step(1),
+				},
+				{
+					label: '축소',
+					disabled: !file || nextZoom(scale, -1) === null,
+					shortcut: { code: 'Minus', mod: true },
+					onSelect: () => step(-1),
+				},
+			],
+		},
+		{
+			title: '이동',
+			items: [
+				{
+					label: '이전 페이지',
+					disabled: page <= 1,
+					shortcut: { code: 'ArrowUp', mod: true, alt: true },
+					onSelect: () => goToPage(page - 1),
+				},
+				{
+					label: '다음 페이지',
+					disabled: page >= pages,
+					shortcut: { code: 'ArrowDown', mod: true, alt: true },
+					onSelect: () => goToPage(page + 1),
+				},
+				{ label: '처음 페이지', disabled: pages === 0, onSelect: () => goToPage(1) },
+				{ label: '마지막 페이지', disabled: pages === 0, onSelect: () => goToPage(pages) },
+			],
+		},
+	]);
+
+	/** 본문의 키: ←→로 쪽을 넘기고, Home·End로 처음·끝 */
+	const onKeyDown = (event: React.KeyboardEvent) => {
+		if (!doc || event.metaKey || event.ctrlKey || event.altKey) return;
+		const moves: Record<string, number> = { ArrowLeft: page - 1, ArrowRight: page + 1, Home: 1, End: pages };
+		if (event.key in moves) {
+			event.preventDefault();
+			goToPage(moves[event.key]);
+		}
+	};
+
+	const subtitle = !file
+		? ''
+		: file.kind === 'pdf'
+			? pages > 0
+				? `${page}/${pages}쪽`
+				: 'PDF 문서'
+			: `이미지${file.size !== undefined ? ` · ${formatSize(file.size)}` : ''}`;
 
 	return (
-		<AppWindow title={file?.name ?? '미리보기'} appName="preview">
-			<div className="preview">
-				<PreviewToolbar
-					file={file}
-					zoom={zoom}
-					onZoom={setZoom}
-					count={files.length}
-					sidebar={showSidebar}
-					onToggleSidebar={() => setSidebar(!sidebar)}
-				/>
-				<div className="preview-body">
-					{showSidebar && (
-						<nav className="preview-sidebar" aria-label="열린 파일">
-							{files.map((open) => (
-								<div key={open.key} className={`preview-thumb${open.key === current ? ' active' : ''}`}>
-									<button
-										type="button"
-										className="preview-thumb-open"
-										aria-current={open.key === current ? 'true' : undefined}
-										onClick={() => selectInPreview(open.key)}
-									>
-										{open.kind === 'image' ? (
-											<img src={fileUrl(open.key)} alt="" draggable={false} />
-										) : (
-											<i className="fa-solid fa-file-pdf" aria-hidden="true" />
-										)}
-										<span>{open.name}</span>
-									</button>
-									<IconButton
-										className="preview-thumb-close"
-										icon="fa-solid fa-xmark"
-										label={`${open.name} 닫기`}
-										onClick={() => closeInPreview(open.key)}
+		<AppWindow title={file?.name ?? '미리보기'} appName="preview" chrome="unified">
+			<div className={`preview${sidebar ? ' with-sidebar' : ''}`}>
+				<header className="preview-toolbar">
+					{file && <SidebarToggle open={sidebar} onToggle={() => setSidebarChoice(!sidebar)} />}
+					<div className="preview-title">
+						<h1>{file?.name ?? '미리보기'}</h1>
+						{subtitle && <p aria-live="polite">{subtitle}</p>}
+					</div>
+					{file && (
+						<div className="preview-tools">
+							<span className="preview-zoom" role="group" aria-label="배율">
+								<IconButton
+									icon="fa-solid fa-magnifying-glass-minus"
+									label="축소"
+									disabled={nextZoom(scale, -1) === null}
+									onClick={() => step(-1)}
+								/>
+								<IconButton
+									icon="fa-solid fa-magnifying-glass-plus"
+									label="확대"
+									disabled={nextZoom(scale, 1) === null}
+									onClick={() => step(1)}
+								/>
+							</span>
+							<span className="preview-zoom-level" aria-label="지금 배율">
+								{zoom === null ? '맞춤' : `${Math.round(zoom * 100)}%`}
+							</span>
+							<a
+								className="ui-icon-button tool preview-link"
+								href={fileUrl(file.key, true)}
+								download={file.name}
+								aria-label="다운로드"
+								title="다운로드"
+							>
+								<i className="fa-solid fa-download" aria-hidden="true" />
+							</a>
+							<a
+								className="ui-icon-button tool preview-link"
+								href={fileUrl(file.key)}
+								target="_blank"
+								rel="noopener noreferrer"
+								aria-label="새 창에서 열기"
+								title="새 창에서 열기"
+							>
+								<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
+							</a>
+							{file.kind === 'pdf' && (
+								<div ref={search} className="preview-search">
+									<SearchField
+										label="찾기"
+										className="preview-search-field"
+										value={query}
+										onChange={(event) => setQuery(event.target.value)}
+										onKeyDown={(event) => {
+											if (event.key === 'Enter') {
+												event.preventDefault();
+												moveMatch(event.shiftKey ? -1 : 1);
+											} else if (event.key === 'Escape') {
+												setQuery('');
+											}
+										}}
 									/>
+									{q && (
+										<span className="preview-search-count" aria-live="polite">
+											{total === 0 ? '없음' : `${match + 1}/${total}`}
+										</span>
+									)}
 								</div>
+							)}
+						</div>
+					)}
+				</header>
+
+				<div className="preview-body">
+					{sidebar && (
+						<nav className="preview-sidebar" aria-label="사이드바">
+							{files.map((open) => (
+								<SidebarFile
+									key={open.key}
+									file={open}
+									doc={docs[open.key]}
+									current={open.key === current}
+									currentPage={open.key === current ? page : 0}
+									showHeader={files.length > 1}
+									onPick={(n) => {
+										if (open.key !== current) selectInPreview(open.key);
+										else if (n) goToPage(n);
+									}}
+								/>
 							))}
 						</nav>
 					)}
-					{file ? <PreviewContent key={file.key} file={file} zoom={zoom} /> : <PreviewEmpty />}
+					<main className="preview-main" onKeyDown={onKeyDown}>
+						{!file ? (
+							<PreviewEmpty />
+						) : file.kind === 'image' ? (
+							<ImageView key={file.key} file={file} zoom={zoom} onScale={onScale} />
+						) : docs[file.key] === 'error' ? (
+							<p className="preview-note">PDF를 열 수 없습니다.</p>
+						) : doc ? (
+							<PdfView
+								key={file.key}
+								ref={pdfView}
+								doc={doc}
+								zoom={zoom}
+								onScale={onScale}
+								onPage={setPage}
+								query={q}
+								matchCounts={matchCounts}
+								activeMatch={match}
+								label={file.name}
+							/>
+						) : (
+							<p className="preview-note">여는 중…</p>
+						)}
+					</main>
 				</div>
 			</div>
 		</AppWindow>
 	);
 };
 
-const PreviewToolbar: React.FC<{
-	file: PreviewFile | null;
-	zoom: number | null;
-	onZoom: (zoom: number | null) => void;
-	count: number;
-	sidebar: boolean;
-	onToggleSidebar: () => void;
-}> = ({ file, zoom, onZoom, count, sidebar, onToggleSidebar }) => (
-	<div className="preview-toolbar">
-		{count > 1 && (
-			<IconButton
-				icon="fa-solid fa-table-columns"
-				label={sidebar ? '사이드바 가리기' : '사이드바 보기'}
-				aria-pressed={sidebar}
-				on={sidebar}
-				onClick={onToggleSidebar}
-			/>
+/** 사이드바의 파일 하나: (파일이 여럿이면) 이름 줄, 그리고 쪽 그림 */
+const SidebarFile: React.FC<{
+	file: PreviewFile;
+	doc: PDFDocumentProxy | 'error' | undefined;
+	current: boolean;
+	currentPage: number;
+	showHeader: boolean;
+	onPick: (page: number) => void;
+}> = ({ file, doc, current, currentPage, showHeader, onPick }) => (
+	<section className={`preview-side-file${current ? ' current' : ''}`} aria-label={file.name}>
+		{showHeader && (
+			<div className="preview-side-head">
+				<span>{file.name}</span>
+				<IconButton icon="fa-solid fa-xmark" label={`${file.name} 닫기`} onClick={() => closeInPreview(file.key)} />
+			</div>
 		)}
-		<span className="preview-info">
-			{file && (
-				<>
-					{file.kind === 'pdf' ? 'PDF 문서' : '이미지'}
-					{file.size !== undefined && ` · ${formatSize(file.size)}`}
-				</>
+		<div className="preview-thumbs">
+			{file.kind === 'image' ? (
+				<button
+					type="button"
+					className={`preview-thumb${current ? ' active' : ''}`}
+					aria-label={file.name}
+					aria-current={current ? 'true' : undefined}
+					onClick={() => onPick(0)}
+				>
+					<img src={fileUrl(file.key)} alt="" draggable={false} />
+				</button>
+			) : typeof doc === 'object' ? (
+				Array.from({ length: doc.numPages }, (_, i) => (
+					<button
+						key={i}
+						type="button"
+						className={`preview-thumb${current && currentPage === i + 1 ? ' active' : ''}`}
+						aria-label={showHeader ? `${file.name} ${i + 1}쪽` : `${i + 1}쪽`}
+						aria-current={current && currentPage === i + 1 ? 'page' : undefined}
+						onClick={() => onPick(i + 1)}
+					>
+						<PdfThumb doc={doc} number={i + 1} width={THUMB_WIDTH} />
+						<span>{i + 1}</span>
+					</button>
+				))
+			) : (
+				<i className="fa-solid fa-file-pdf preview-thumb-icon" aria-hidden="true" />
 			)}
-		</span>
-		{file && (
-			<>
-				{file.kind === 'image' && <ZoomControls zoom={zoom} onZoom={onZoom} />}
-				<a className="ui-button preview-action" href={fileUrl(file.key, true)} download={file.name}>
-					<i className="fa-solid fa-download" aria-hidden="true" />
-					다운로드
-				</a>
-				<a className="ui-button preview-action" href={fileUrl(file.key)} target="_blank" rel="noopener noreferrer">
-					<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />새 창에서 열기
-				</a>
-			</>
-		)}
-	</div>
+		</div>
+	</section>
 );
 
-const ZoomControls: React.FC<{ zoom: number | null; onZoom: (zoom: number | null) => void }> = ({ zoom, onZoom }) => {
-	const level = zoom ?? 1;
-	const smaller = [...ZOOMS].reverse().find((step) => step < level - 0.001);
-	const larger = ZOOMS.find((step) => step > level + 0.001);
+/** 그림: 맞춤이면 창 안에 들어오게(키우지는 않는다), 배율이면 실제 크기 기준으로 */
+const ImageView: React.FC<{ file: PreviewFile; zoom: number | null; onScale: (scale: number) => void }> = ({
+	file,
+	zoom,
+	onScale,
+}) => {
+	const box = useRef<HTMLElement>(null);
+	const [natural, setNatural] = useState<{ width: number; height: number } | null>(null);
+	const [area, setArea] = useState({ width: 0, height: 0 });
+	useEffect(() => {
+		const el = box.current;
+		if (!el) return;
+		const observer = new ResizeObserver(() => setArea({ width: el.clientWidth, height: el.clientHeight }));
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, []);
+	const fit =
+		natural && area.width > 0 ? Math.min(1, (area.width - 48) / natural.width, (area.height - 48) / natural.height) : 1;
+	const scale = zoom ?? fit;
+	useEffect(() => onScale(scale), [scale, onScale]);
 	return (
-		<span className="preview-zoom" role="group" aria-label="배율">
-			<IconButton
-				icon="fa-solid fa-magnifying-glass-minus"
-				label="축소"
-				disabled={!smaller}
-				onClick={() => smaller && onZoom(smaller)}
-			/>
-			<button
-				type="button"
-				className="ui-button preview-zoom-level"
-				aria-pressed={zoom === null}
-				title={zoom === null ? '실제 크기로 보기' : '창에 맞추기'}
-				onClick={() => onZoom(zoom === null ? 1 : null)}
-			>
-				{zoom === null ? '맞춤' : `${Math.round(zoom * 100)}%`}
-			</button>
-			<IconButton
-				icon="fa-solid fa-magnifying-glass-plus"
-				label="확대"
-				disabled={!larger}
-				onClick={() => larger && onZoom(larger)}
-			/>
-		</span>
-	);
-};
-
-const PreviewContent: React.FC<{ file: PreviewFile; zoom: number | null }> = ({ file, zoom }) => {
-	const src = fileUrl(file.key);
-	if (file.kind === 'pdf') {
-		return (
-			<section className="preview-content" aria-label={file.name}>
-				<iframe className="preview-pdf" src={src} title={file.name} />
-			</section>
-		);
-	}
-	return (
-		<section className={`preview-content preview-image${zoom === null ? '' : ' zoomed'}`} aria-label={file.name}>
+		<section ref={box} className="preview-image" aria-label={file.name} tabIndex={0}>
 			<img
-				src={src}
+				src={fileUrl(file.key)}
 				alt={file.name}
 				draggable={false}
-				style={zoom === null ? undefined : { width: `calc(var(--natural-width) * ${zoom})` }}
+				style={natural ? { width: natural.width * scale, height: natural.height * scale } : undefined}
 				onLoad={(event) =>
-					event.currentTarget.style.setProperty('--natural-width', `${event.currentTarget.naturalWidth}px`)
+					setNatural({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })
 				}
 			/>
 		</section>
