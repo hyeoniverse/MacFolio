@@ -10,6 +10,7 @@ import IconButton from '@/shared/ui/button/IconButton';
 import Turnstile from '@/shared/ui/turnstile/Turnstile';
 import { useHumanCheck } from '@/shared/security/security';
 import { env } from '@/shared/config/env';
+import Button from '@/shared/ui/button/Button';
 
 interface Props {
 	/** null이면 새 피드백을 남기는 화면 */
@@ -121,9 +122,9 @@ const ChatView: React.FC<Props> = ({
 				<header className="messages-chat-header">
 					<span className="messages-name-pill">새 피드백</span>
 					<span className="messages-chat-subtitle">감상, 의견, 피드백을 남겨 주세요. 보내면 목록에 올라가요</span>
-					<button type="button" className="messages-cancel" onClick={onCancelNew}>
+					<Button className="messages-cancel" onClick={onCancelNew}>
 						취소
-					</button>
+					</Button>
 				</header>
 			)}
 

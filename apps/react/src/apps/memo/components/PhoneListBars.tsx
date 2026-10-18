@@ -4,6 +4,7 @@ import Menu from '@/shared/ui/menu/Menu';
 import type { FolderPath, Post } from '@macfolio/desktop-core/memo';
 import type { View } from './MemoToolbar';
 import FolderPickMenu from './FolderPickMenu';
+import Button from '@/shared/ui/button/Button';
 
 /**
  * 휴대폰 목록의 떠 있는 막대 (iOS 메모): 오른쪽 위에 정렬·••• (메모 선택 중이면 완료),
@@ -51,9 +52,9 @@ const PhoneListBars = ({
 		<>
 			<div className="memo-phone-list-top">
 				{picked ? (
-					<button type="button" className="memo-phone-pill" onClick={onStopPicking}>
+					<Button className="memo-phone-pill" onClick={onStopPicking}>
 						완료
-					</button>
+					</Button>
 				) : (
 					<>
 						{sort}
@@ -74,8 +75,7 @@ const PhoneListBars = ({
 			<div className="memo-phone-bottom memo-list-bottom">
 				{picked ? (
 					<>
-						<button
-							type="button"
+						<Button
 							className="memo-phone-pill"
 							disabled={pickedPosts.length === 0}
 							onClick={(event) => {
@@ -84,18 +84,17 @@ const PhoneListBars = ({
 							}}
 						>
 							이동
-						</button>
+						</Button>
 						<span className="memo-pick-count" role="status">
 							{pickedPosts.length > 0 ? `${pickedPosts.length}개 선택됨` : '메모 선택'}
 						</span>
-						<button
-							type="button"
+						<Button
 							className="memo-phone-pill destructive"
 							disabled={pickedPosts.every((post) => post.locked)}
 							onClick={onDeletePicked}
 						>
 							삭제
-						</button>
+						</Button>
 					</>
 				) : (
 					<>

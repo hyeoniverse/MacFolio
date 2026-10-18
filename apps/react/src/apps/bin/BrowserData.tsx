@@ -7,6 +7,7 @@ import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import { clearBrowserData, readBrowserData, type BrowserDataItem } from './siteStorage';
 import { formatSize } from './filesApi';
 import { refreshBin } from './binState';
+import Button from '@/shared/ui/button/Button';
 
 /** 지운다. 설정은 앱이 들고 있는 값도 처음 설정으로 돌린다 (돌리면 저장소에 다시 쓰므로 그 뒤에 지운다) */
 function clear(item: BrowserDataItem) {
@@ -61,15 +62,14 @@ const BrowserData = () => {
 						: '내 브라우저 데이터'}
 				</span>
 				{/* Finder 휴지통의 작은 회색 '비우기' 버튼 (비었으면 꺼짐) */}
-				<button
-					type="button"
+				<Button
 					className="bin-empty-button"
 					aria-label="휴지통 비우기"
 					onClick={() => setConfirm(true)}
 					disabled={stored.length === 0}
 				>
 					비우기
-				</button>
+				</Button>
 			</div>
 			{stored.length > 0 ? (
 				<ul className="bin-data-list" aria-label="내 브라우저 데이터">
@@ -78,8 +78,7 @@ const BrowserData = () => {
 							<span className="bin-data-name">{item.name}</span>
 							<span className="bin-data-meta">{[summary, formatSize(bytes)].filter(Boolean).join(' · ')}</span>
 							<span className="bin-data-description">{item.description}</span>
-							<button
-								type="button"
+							<Button
 								className="bin-empty-button bin-data-clear"
 								title={item.afterClear}
 								onClick={() => {
@@ -88,7 +87,7 @@ const BrowserData = () => {
 								}}
 							>
 								비우기
-							</button>
+							</Button>
 						</li>
 					))}
 					<CookieNote />

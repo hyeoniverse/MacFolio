@@ -11,6 +11,7 @@ import {
 import { discardDraft, publishPost, saveDraft, type PostDraft } from '../postsApi';
 import { env } from '@/shared/config/env';
 import DatePicker from '@/shared/ui/date/DatePicker';
+import Button from '@/shared/ui/button/Button';
 
 // 편집기(Milkdown)는 관리자에게만 필요해서 처음 쓸 때 불러온다
 const InlineEditor = lazy(() => import('./InlineEditor'));
@@ -308,12 +309,11 @@ const PostWriter = ({
 						{statusText}
 					</span>
 					{unpublished && hasPublished && (
-						<button type="button" className="memo-writer-discard" disabled={busy} onClick={discard}>
+						<Button className="memo-writer-discard" disabled={busy} onClick={discard}>
 							변경 사항 버리기
-						</button>
+						</Button>
 					)}
-					<button
-						type="button"
+					<Button
 						className="memo-writer-publish"
 						disabled={!unpublished || busy}
 						title={
@@ -326,7 +326,7 @@ const PostWriter = ({
 						onClick={publish}
 					>
 						{scheduled ? '예약' : '게시'}
-					</button>
+					</Button>
 				</span>
 			</div>
 			<textarea
