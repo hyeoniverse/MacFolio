@@ -96,6 +96,49 @@
 	box-sizing: border-box;
 }
 
+/* 관리자가 끌어 놓을 폴더: 그림 판을 진하게 (macOS의 폴더 강조) */
+.desktop-icon.drop-target .desktop-icon-image {
+	background: rgb(0 0 0 / 0.32);
+	border-color: rgb(255 255 255 / 0.45);
+}
+
+/* 가상본(alias) 화살표: 아이콘 왼쪽 아래 */
+.desktop-icon-image {
+	position: relative;
+}
+
+.desktop-icon-image .finder-alias-badge {
+	position: absolute;
+	bottom: 6px;
+	left: 8px;
+	width: 17px;
+	height: 17px;
+	filter: drop-shadow(0 0.5px 1px rgb(0 0 0 / 0.35));
+	pointer-events: none;
+}
+
+/* 이름 편집 칸 (새 폴더, 이름 변경) */
+.desktop-rename {
+	box-sizing: border-box;
+	width: 92px;
+	margin-top: 3px;
+	padding: 1px 4px;
+	overflow: hidden;
+	border: none;
+	border-radius: 3px;
+	outline: 3px solid color-mix(in srgb, var(--color-accent) 60%, transparent);
+	background: var(--color-content-bg);
+	color: var(--color-text);
+	font: inherit;
+	font-size: 12px;
+	line-height: 15px;
+	text-align: center;
+	resize: none;
+	field-sizing: content;
+	user-select: text;
+	-webkit-user-select: text;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.desktop-icon {
 		transition: none;

@@ -45,8 +45,8 @@ describe('폴더 구조 겹치기', () => {
 		const desktop = folder(build(), 'desktop');
 		expect(desktop.children.map((item) => (item as FolderItem).aliasOf)).toEqual([
 			'docs:이력서',
-			'docs:자격증',
 			'docs:포트폴리오',
+			'docs:자격증',
 			'projects',
 		]);
 		// 가상본은 비어 있고(원래 폴더로 간다) 편집할 수 없지만 휴지통으로 보낼 수는 있다

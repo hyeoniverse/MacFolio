@@ -86,11 +86,49 @@ const PdfSvg = () => (
 	</svg>
 );
 
+/** 가상본(alias) 표시: macOS처럼 아이콘 왼쪽 아래의 작은 흰 상자와 휘어 올라가는 검은 화살표 */
+const AliasBadge = () => (
+	<svg viewBox="0 0 16 16" aria-hidden="true" className="finder-alias-badge">
+		<rect
+			x="0.75"
+			y="0.75"
+			width="14.5"
+			height="14.5"
+			rx="3"
+			fill="#ffffff"
+			stroke="rgba(0,0,0,0.25)"
+			strokeWidth="0.75"
+		/>
+		<path
+			d="M4.5 12.2V9.4a3.4 3.4 0 0 1 3.4-3.4h2.6"
+			fill="none"
+			stroke="#1d1d1f"
+			strokeWidth="1.7"
+			strokeLinecap="round"
+		/>
+		<path
+			d="M9.2 3.4 12 6l-2.8 2.6"
+			fill="none"
+			stroke="#1d1d1f"
+			strokeWidth="1.7"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+	</svg>
+);
+
 /** 항목 아이콘. 프로젝트·앱은 그 아이콘 그림, 나머지는 그린 아이콘 */
 const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 	switch (item.kind) {
 		case 'folder':
-			return <FolderSvg />;
+			return item.aliasOf ? (
+				<>
+					<FolderSvg />
+					<AliasBadge />
+				</>
+			) : (
+				<FolderSvg />
+			);
 		case 'doc':
 			return <PageSvg variant="doc" />;
 		case 'post':
