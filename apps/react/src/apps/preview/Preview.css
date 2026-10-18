@@ -664,3 +664,101 @@
 .preview-capsule .ui-icon-button.on:not(:hover) {
 	background: none;
 }
+
+/* ─── 슬라이드쇼 (보기 › 슬라이드쇼): 검은 화면에 한 쪽씩, 아래에 잠깐 뜨는 조절 막대 ─── */
+.slideshow {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: grid;
+	background: #000000;
+	outline: none;
+	user-select: none;
+}
+
+.slideshow.idle {
+	cursor: none;
+}
+
+.slideshow-stage {
+	display: grid;
+	place-items: center;
+	overflow: hidden;
+}
+
+.slideshow-page {
+	display: block;
+	max-width: 100vw;
+	max-height: 100vh;
+	background: #ffffff;
+}
+
+.slideshow-controls {
+	position: absolute;
+	bottom: 36px;
+	left: 50%;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 6px 10px;
+	border: 1px solid rgb(255 255 255 / 12%);
+	border-radius: 14px;
+	background: rgb(40 40 40 / 78%);
+	color: #ffffff;
+	box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
+	transform: translateX(-50%);
+	backdrop-filter: blur(20px) saturate(160%);
+	transition: opacity 0.4s ease;
+}
+
+.slideshow.idle .slideshow-controls {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.slideshow-controls button {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 30px;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+}
+
+.slideshow-controls button:hover:not(:disabled) {
+	background: rgb(255 255 255 / 14%);
+}
+
+.slideshow-controls button:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.slideshow-controls button:focus-visible {
+	outline: 2px solid var(--color-accent, #0a84ff);
+	outline-offset: 1px;
+}
+
+.slideshow-count {
+	min-width: 64px;
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+.slideshow-divider {
+	width: 1px;
+	height: 18px;
+	margin: 0 4px;
+	background: rgb(255 255 255 / 22%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.slideshow-controls {
+		transition: none;
+	}
+}

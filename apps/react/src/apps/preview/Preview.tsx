@@ -21,6 +21,7 @@ import { countMatches, loadPdf } from './pdf';
 import PdfView, { PdfThumb, type PdfViewHandle } from './PdfView';
 import ImageView from './ImageView';
 import OpenPanel from './OpenPanel';
+import Slideshow from './Slideshow';
 import './Preview.css';
 
 /** 마운트된 미리보기 창 수 (종료로 내려갔는지 보려고) */
@@ -56,6 +57,7 @@ function usePdfDocuments(files: PreviewFile[]) {
  * - PDF는 pdf.js로 쪽을 직접 그린다: 쪽이 세로로 이어지고, 글자를 고르고 복사하고 찾을 수 있다
  * - 위 막대: 사이드바, 이름과 쪽, 축소·확대, 찾기, 다운로드·새 창. 메뉴 막대의 보기·이동에도 같은 일이 있다
  * - 왼쪽 사이드바: 쪽 그림 (파일을 여럿 열면 파일마다 묶는다)
+ * - 보기 › 슬라이드쇼(⇧⌘F): 지금 쪽부터 검은 화면에 한 쪽씩 (Slideshow.tsx). 끝내면 끝낸 쪽을 보인다
  */
 const Preview: React.FC = () => {
 	const { files, current } = usePreview();
@@ -152,6 +154,15 @@ const Preview: React.FC = () => {
 
 	const onScale = useCallback((value: number) => setScale(value), []);
 
+	// 슬라이드쇼: PDF는 다 읽은 뒤, 그림은 한 장짜리로
+	const [slideshow, setSlideshow] = useState(false);
+	const canSlideshow = file !== null && (file.kind === 'image' || doc !== null);
+	const endSlideshow = useCallback((last: number) => {
+		setSlideshow(false);
+		// 미리보기 창이 끝낸 쪽을 보인다 (그린 뒤에 스크롤)
+		requestAnimationFrame(() => pdfView.current?.goToPage(last));
+	}, []);
+
 	useAppMenus('preview', [
 		{
 			title: '편집',
@@ -211,6 +222,13 @@ const Preview: React.FC = () => {
 					disabled: !file || nextZoom(scale, -1) === null,
 					shortcut: { code: 'Minus', mod: true },
 					onSelect: () => step(-1),
+				},
+				'separator',
+				{
+					label: '슬라이드쇼',
+					disabled: !canSlideshow,
+					shortcut: { code: 'KeyF', mod: true, shift: true },
+					onSelect: () => setSlideshow(true),
 				},
 			],
 		},
@@ -375,6 +393,12 @@ const Preview: React.FC = () => {
 												icon: 'fa-solid fa-arrow-up-right-from-square',
 												onSelect: () => openFileInNewTab(file.key),
 											},
+											{
+												label: '슬라이드쇼',
+												icon: 'fa-solid fa-display',
+												disabled: !canSlideshow,
+												onSelect: () => setSlideshow(true),
+											},
 										]
 							}
 						/>
@@ -429,6 +453,19 @@ const Preview: React.FC = () => {
 							<p className="preview-note">여는 중…</p>
 						)}
 					</main>
+					{slideshow &&
+						canSlideshow &&
+						(doc ? (
+							<Slideshow doc={doc} startPage={page} rotation={rotation} label={file.name} onClose={endSlideshow} />
+						) : (
+							<Slideshow
+								image={fileUrl(file.key)}
+								startPage={1}
+								rotation={rotation}
+								label={file.name}
+								onClose={endSlideshow}
+							/>
+						))}
 				</div>
 			)}
 		</AppWindow>
