@@ -21,7 +21,10 @@ import {
 	type FinderItem,
 	type FolderItem,
 } from './files';
-import { documentEntries } from './documents';
+import { deleteDocument, loadDocuments, renameDocument, useDocumentEntries } from './documents';
+import { useDocumentDrop } from './useDocumentDrop';
+import { messageOf } from '@/shared/api/client';
+import { notify } from '@/desktop/notifications/notificationStore';
 import { DOC_PATHS, DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest } from './openDoc';
@@ -82,6 +85,10 @@ const Finder: React.FC = () => {
 
 	// 시스템 설정에서 프로젝트를 저장하면 프로젝트 폴더도 새로고침 없이 바뀐다
 	const projectsVersion = useProjectsVersion();
+	const documents = useDocumentEntries();
+	useEffect(() => {
+		void loadDocuments();
+	}, []);
 	const locations = useMemo(
 		() =>
 			buildLocations({
@@ -93,10 +100,10 @@ const Finder: React.FC = () => {
 					label: APP_MANIFEST[name].label,
 					icon: APP_MANIFEST[name].icon,
 				})),
-				files: documentEntries(),
+				files: documents,
 			}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- PROJECTS는 안만 바뀌는 배열이라 판(version)으로 다시 계산한다
-		[posts, projectsVersion]
+		[posts, projectsVersion, documents]
 	);
 
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: [{ folder: 'docs' }], at: 0 });
@@ -130,6 +137,7 @@ const Finder: React.FC = () => {
 	}, [mobile]);
 
 	const folder = 'folder' in place ? (find(locations, place.folder) as FolderItem | null) : null;
+	const drop = useDocumentDrop(folder && folder.id === `docs:${folder.name}` ? folder.name : null);
 	const searching = query.trim() !== '';
 	// 다른 폴더·문서·보기로 가면 내용을 새로 그린다 (motion.css의 motion-swap). 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다
 	const placeKey = `${JSON.stringify(place)}|${view}|${searching}`;
@@ -149,11 +157,45 @@ const Finder: React.FC = () => {
 		action();
 	};
 	const parent = crumbs.length > 1 ? crumbs[crumbs.length - 2] : null;
+	const selectedItem = items.find((item) => item.id === selected);
+	const selectedDocument =
+		selectedItem && 'documentId' in selectedItem && selectedItem.documentId ? selectedItem : null;
+	const renameSelected = async (item: { name: string; documentId?: string }) => {
+		const name = window.prompt('새 이름 (확장자는 그대로)', item.name)?.trim();
+		if (!name || name === item.name) return;
+		await renameDocument(item.documentId!, name).catch((error) =>
+			notify({ app: 'finder', title: '이름을 바꾸지 못함', body: messageOf(error) })
+		);
+	};
+	const deleteSelected = async (item: { name: string; documentId?: string }) => {
+		if (!window.confirm(`‘${item.name}’을(를) 지울까요? 저장소에서도 지워져 되돌릴 수 없습니다.`)) return;
+		await deleteDocument(item.documentId!).then(
+			() => setSelected(null),
+			(error) => notify({ app: 'finder', title: '지우지 못함', body: messageOf(error) })
+		);
+	};
 	useAppMenus('finder', [
 		{
 			title: '파일',
 			items: [
 				{ label: '새로운 Finder 윈도우', shortcut: { code: 'KeyN', alt: true }, onSelect: () => openApp('finder') },
+				// 관리자: 고른 문서 파일의 이름 바꾸기·지우기 (서버 목록과 R2)
+				...(drop.admin
+					? [
+							'separator' as const,
+							{
+								label: '이름 변경…',
+								disabled: !selectedDocument,
+								onSelect: inFinder(() => selectedDocument && renameSelected(selectedDocument)),
+							},
+							{
+								label: '휴지통으로 이동',
+								disabled: !selectedDocument,
+								shortcut: { code: 'Backspace', mod: true },
+								onSelect: inFinder(() => selectedDocument && deleteSelected(selectedDocument)),
+							},
+						]
+					: []),
 			],
 		},
 		{
@@ -271,7 +313,13 @@ const Finder: React.FC = () => {
 
 	const itemProps = (item: FinderItem) => ({
 		'data-id': item.id,
-		className: `finder-item ${item.kind}${selected === item.id ? ' selected' : ''}`,
+		// 관리자: 이력서·포트폴리오·자격증 폴더 아이콘 위에 파일을 놓아도 올린다
+		'data-drop-folder': item.kind === 'folder' && item.id === `docs:${item.name}` ? item.name : undefined,
+		className: `finder-item ${item.kind}${selected === item.id ? ' selected' : ''}${
+			drop.target && item.kind === 'folder' && item.name === drop.target && folder?.name !== drop.target
+				? ' drop-target'
+				: ''
+		}`,
 		'aria-selected': selected === item.id,
 		role: 'option' as const,
 		onClick: (event: React.MouseEvent) => {
@@ -282,6 +330,7 @@ const Finder: React.FC = () => {
 	});
 
 	const empty = !searching && folder && items.length === 0;
+	const dropFolder = folder && folder.id === `docs:${folder.name}` ? folder.name : null;
 
 	return (
 		<AppWindow title={appTitle} appName="finder" chrome="unified">
@@ -372,8 +421,9 @@ const Finder: React.FC = () => {
 
 						<div
 							ref={content}
-							className="finder-content"
+							className={`finder-content${drop.target && drop.target === dropFolder ? ' drop-target' : ''}`}
 							data-direction={direction ?? undefined}
+							{...drop.handlers}
 							tabIndex={0}
 							onKeyDown={onKeyDown}
 							onClick={() => setSelected(null)}
@@ -381,7 +431,11 @@ const Finder: React.FC = () => {
 							{'doc' in place ? (
 								<DocView path={place.doc} dark={dark} onOpenDoc={(path) => go({ doc: path })} />
 							) : empty ? (
-								<p className="finder-empty">{folder.emptyNote ?? '비어 있음'}</p>
+								<p className="finder-empty">
+									{drop.admin && dropFolder
+										? '파일을 여기에 끌어다 놓으면 올라갑니다 (PDF·PNG·JPG·WebP, 20MB까지).'
+										: (folder.emptyNote ?? '비어 있음')}
+								</p>
 							) : searching && items.length === 0 ? (
 								<p className="finder-empty">찾는 이름이 없습니다.</p>
 							) : view === 'icons' ? (
@@ -421,6 +475,19 @@ const Finder: React.FC = () => {
 								</div>
 							)}
 						</div>
+
+						{drop.uploads.length > 0 && (
+							<ul className="finder-uploads" aria-label="올리는 중">
+								{drop.uploads.map((upload) => (
+									<li key={upload.id}>
+										<span>
+											{upload.folder} › {upload.name}
+										</span>
+										<progress value={upload.progress} max={1} aria-label={`${upload.name} 올리는 중`} />
+									</li>
+								))}
+							</ul>
+						)}
 
 						{/* 경로 막대: 눌러서 위 폴더로 */}
 						<div className="finder-pathbar">

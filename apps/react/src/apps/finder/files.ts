@@ -49,12 +49,14 @@ export interface AppItem extends ItemBase {
 	icon: string;
 }
 
-/** 문서 파일 (PDF·그림). R2에 있고 Finder 안에서 미리 본다 (documents.ts) */
+/** 문서 파일 (PDF·그림). R2에 있고 미리보기 앱에서 연다 (documents.ts) */
 export interface FileItem extends ItemBase {
 	kind: 'pdf' | 'image';
 	/** R2 키. 주소는 /files/<key> */
 	key: string;
 	size?: number;
+	/** 서버 목록의 id (관리자가 이름을 바꾸거나 지울 때) */
+	documentId?: string;
 }
 
 export type FinderItem = FolderItem | DocItem | PostItem | ProjectItem | AppItem | FileItem;
@@ -115,6 +117,7 @@ function docsFolder(paths: string[], files: DocumentEntry[]): FolderItem {
 				key: file.key,
 				size: file.size,
 				modified: file.updated,
+				documentId: file.id,
 			}))
 			.sort(byName),
 		emptyNote: FOLDER_NOTES[name],

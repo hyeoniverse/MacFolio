@@ -718,3 +718,48 @@
 	max-height: none;
 	cursor: zoom-out;
 }
+
+/* ─── 관리자: 끌어다 놓아 올리기 (useDocumentDrop) ─── */
+.finder-content.drop-target {
+	outline: 3px solid var(--color-accent);
+	outline-offset: -3px;
+	background-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+.finder-item.drop-target .finder-icon {
+	border-radius: 8px;
+	background-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
+}
+
+.finder-uploads {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	gap: var(--space-4);
+	margin: 0;
+	padding: var(--space-6) var(--space-12);
+	border-top: 1px solid var(--color-divider);
+	list-style: none;
+	font-size: 11px;
+}
+
+.finder-uploads li {
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+}
+
+.finder-uploads span {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	color: var(--color-text-secondary);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.finder-uploads progress {
+	flex: 0 0 120px;
+	height: 6px;
+	accent-color: var(--color-accent);
+}
