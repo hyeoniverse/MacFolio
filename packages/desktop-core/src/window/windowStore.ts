@@ -1,4 +1,6 @@
-// 창 상태: 어떤 앱이 켜져 있고, 최소화됐고, 어떤 순서로 쌓였는지. 창 위치·크기는 각 창이 따로 다룬다
+// 창 상태: 어떤 앱이 켜져 있고, 최소화됐고, 어떤 순서로 쌓였는지. 창 위치·크기는 각 창이 따로 다룬다.
+// AppWindow.isRunning은 '창이 있다'는 뜻이다. 앱이 실행 중인지(Dock의 점)는 창과 따로, isAppRunning으로 본다:
+// 음악처럼 창을 열기 전부터 소리를 내는 앱은 창 없이도 실행 중이다. 창을 닫거나(빨간 버튼) 종료하면 함께 꺼진다
 import { createStore } from '../store.js';
 import { bringToFront, foregroundApp, minimizeAll } from './stack.js';
 
@@ -16,7 +18,13 @@ export interface WindowState<Name extends string> {
 	apps: AppWindows<Name>;
 	/** 창 밖(바탕화면·메뉴 막대·Dock)을 눌렀는지. 창을 누르거나 앱을 열면 다시 false */
 	desktopFocused: boolean;
+	/** 창 없이도 실행 중인 앱 (음악 재생 등). 앱이 keepAlive로 켜고, 창을 닫거나(close) 종료(quit)하면 꺼진다 */
+	alive: Partial<Record<Name, true>>;
 }
+
+/** 앱이 실행 중인지: 창이 있거나, 창 없이 살아 있다 (Dock의 점) */
+export const isAppRunning = <Name extends string>(state: WindowState<Name>, name: Name): boolean =>
+	state.apps[name].isRunning || state.alive[name] === true;
 
 /**
  * 지금 쓰고 있는 앱 (메뉴 막대의 앱 이름). 맨 앞 창의 앱이고, 창이 없거나 창 밖을 누른 뒤에는 null
@@ -25,10 +33,17 @@ export interface WindowState<Name extends string> {
 export const activeApp = <Name extends string>(state: WindowState<Name>): Name | null =>
 	state.desktopFocused ? null : foregroundApp(state.apps);
 
+const without = <Name extends string>(alive: Partial<Record<Name, true>>, name: Name) => {
+	const next = { ...alive };
+	delete next[name];
+	return next;
+};
+
 export function createWindowStore<Name extends string>(apps: AppWindows<Name>) {
-	const store = createStore<WindowState<Name>>({ apps, desktopFocused: false });
+	const store = createStore<WindowState<Name>>({ apps, desktopFocused: false, alive: {} });
 	const update = (change: (apps: AppWindows<Name>) => AppWindows<Name>, desktopFocused?: boolean) =>
 		store.setState((state) => ({
+			...state,
 			apps: change(state.apps),
 			desktopFocused: desktopFocused ?? state.desktopFocused,
 		}));
@@ -53,12 +68,32 @@ export function createWindowStore<Name extends string>(apps: AppWindows<Name>) {
 				return { ...fronted, [name]: { ...fronted[name], isRunning: true, hasOpened: true } };
 			}, false),
 		/** 창만 닫는다. 앱 상태(입력 중인 글 등)는 남는다 */
-		close: (name: Name) => patch(name, { isRunning: false }),
+		close: (name: Name) =>
+			store.setState((state) => ({
+				...state,
+				alive: without(state.alive, name),
+				apps: { ...state.apps, [name]: { ...state.apps[name], isRunning: false } },
+			})),
 		/**
 		 * 앱을 완전히 끈다 (모바일 앱 전환기에서 밀어 올려 닫기). close와 달리 앱을 내려서 입력 중인 글 같은 상태도
 		 * 사라진다. 다음에 열면 처음부터 시작한다
 		 */
-		quit: (name: Name) => patch(name, { isRunning: false, isMinimized: false, hasOpened: false }),
+		quit: (name: Name) =>
+			store.setState((state) => ({
+				...state,
+				alive: without(state.alive, name),
+				apps: {
+					...state.apps,
+					[name]: { ...state.apps[name], isRunning: false, isMinimized: false, hasOpened: false },
+				},
+			})),
+		/** 창이 없어도 실행 중으로 둔다 (on) / 그만둔다. 창을 닫거나 종료하면 저절로 꺼진다 */
+		keepAlive: (name: Name, on: boolean) =>
+			store.setState((state) =>
+				(state.alive[name] === true) === on
+					? state
+					: { ...state, alive: on ? { ...state.alive, [name]: true } : without(state.alive, name) }
+			),
 		minimize: (name: Name) => patch(name, { isMinimized: true }),
 		restore: (name: Name) => patch(name, { isMinimized: false }),
 		/** 창을 맨 앞으로 (최소화돼 있었으면 되살린다) */
