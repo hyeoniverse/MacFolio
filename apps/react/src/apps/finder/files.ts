@@ -58,9 +58,9 @@ export interface AppItem extends ItemBase {
 	icon: string;
 }
 
-/** 문서 파일 (PDF·그림). R2에 있고 미리보기 앱에서 연다 (documents.ts) */
+/** 문서 파일. R2에 있다 (documents.ts). PDF·그림은 미리보기 앱에서 열고, 그 밖의 파일(file)은 받아서 연다 */
 export interface FileItem extends ItemBase {
-	kind: 'pdf' | 'image';
+	kind: 'pdf' | 'image' | 'file';
 	/** R2 키. 주소는 /files/<key> */
 	key: string;
 	size?: number;
@@ -81,7 +81,12 @@ export const KIND_LABELS: Record<FinderItem['kind'], string> = {
 	app: '응용 프로그램',
 	pdf: 'PDF 문서',
 	image: '이미지',
+	file: '파일',
 };
+
+/** 올린 파일(PDF·그림·그 밖의 파일)인지 */
+export const isFileItem = (item: FinderItem): item is FileItem =>
+	item.kind === 'pdf' || item.kind === 'image' || item.kind === 'file';
 
 export interface TreeInput {
 	/** 저장소 문서 경로 (예: README.md, docs/deployment.md) */

@@ -5,10 +5,11 @@ import { organizePosts, type Post } from '@macfolio/desktop-core/memo';
 import { loadStructure, useStructure } from './structure';
 import { PROJECTS } from '@/shared/profile';
 import { useProjectsVersion } from '@/shared/site/siteContent';
-import { buildLocations, type FolderItem } from './files';
+import { buildLocations, find, type FolderItem } from './files';
 import { loadDocuments, useDocumentEntries } from './documents';
 import { DOC_PATHS } from './docsBundle';
 import { ALBUMS } from '@/apps/photos/albums';
+import { useLocalFiles } from './localFiles';
 
 /**
  * Finder의 위치들(데스크탑, 문서, 블로그, 응용 프로그램. 프로젝트 폴더는 문서 › 포트폴리오 안, 사진은 프로젝트 폴더 안에)과 그 안의 트리.
@@ -39,23 +40,28 @@ export function useLocations(): FolderItem[] {
 	useEffect(() => {
 		void loadDocuments();
 	}, []);
-	return useMemo(
-		() =>
-			buildLocations({
-				docs: DOC_PATHS,
-				posts,
-				blogFolders,
-				projects: PROJECTS.map(({ id, name, icon, period }) => ({ id, name, icon, period })),
-				apps: WINDOW_APP_NAMES.filter((name) => name !== 'finder').map((name) => ({
-					app: name,
-					label: APP_MANIFEST[name].label,
-					icon: APP_MANIFEST[name].icon,
-				})),
-				files: documents,
-				albums: ALBUMS,
-				layout,
-			}),
+	const localFiles = useLocalFiles();
+	return useMemo(() => {
+		const roots = buildLocations({
+			docs: DOC_PATHS,
+			posts,
+			blogFolders,
+			projects: PROJECTS.map(({ id, name, icon, period }) => ({ id, name, icon, period })),
+			apps: WINDOW_APP_NAMES.filter((name) => name !== 'finder').map((name) => ({
+				app: name,
+				label: APP_MANIFEST[name].label,
+				icon: APP_MANIFEST[name].icon,
+			})),
+			files: documents,
+			albums: ALBUMS,
+			layout,
+		});
+		// 방문자가 놓은 파일 (이 브라우저에서만): 놓은 폴더 안에
+		for (const { parent, ...file } of localFiles) {
+			const folder = find(roots, parent);
+			if (folder?.kind === 'folder') folder.children.push(file);
+		}
+		return roots;
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- PROJECTS는 안만 바뀌는 배열이라 판(version)으로 다시 계산한다
-		[posts, blogFolders, projectsVersion, documents, layout]
-	);
+	}, [posts, blogFolders, projectsVersion, documents, layout, localFiles]);
 }

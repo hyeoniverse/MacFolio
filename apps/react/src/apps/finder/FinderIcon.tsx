@@ -86,6 +86,31 @@ const PdfSvg = () => (
 	</svg>
 );
 
+/** 그 밖의 파일: 회색 확장자 딱지가 붙은 종이 (DOCX, ZIP, MP4 …) */
+const FileSvg: React.FC<{ ext: string }> = ({ ext }) => (
+	<svg viewBox="0 0 48 60" aria-hidden="true" className="finder-svg">
+		<path
+			d="M6 2h26l12 12v40a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+			fill="#ffffff"
+			stroke="#c9c9ce"
+			strokeWidth="1.2"
+		/>
+		<path d="M32 2v8a4 4 0 0 0 4 4h8" fill="#e9e9ee" stroke="#c9c9ce" strokeWidth="1.2" />
+		<rect x="7" y="42" width="30" height="12" rx="2.5" fill="#8e8e93" />
+		<text
+			x="22"
+			y="51"
+			textAnchor="middle"
+			fontSize={ext.length > 3 ? 6.5 : 8}
+			fontWeight="700"
+			fill="#ffffff"
+			fontFamily="system-ui, sans-serif"
+		>
+			{ext}
+		</text>
+	</svg>
+);
+
 /** 가상본(alias) 표시: macOS처럼 아이콘 왼쪽 아래의 작은 흰 상자와 휘어 올라가는 검은 화살표 */
 const AliasBadge = () => (
 	<svg viewBox="0 0 16 16" aria-hidden="true" className="finder-alias-badge">
@@ -137,6 +162,8 @@ const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 			return item.icon ? <img className="finder-img" src={item.icon} alt="" draggable={false} /> : <FolderSvg />;
 		case 'pdf':
 			return <PdfSvg />;
+		case 'file':
+			return <FileSvg ext={item.name.split('.').pop()?.toUpperCase().slice(0, 4) ?? ''} />;
 		case 'image':
 			// macOS처럼 그림은 그 그림을 작게 (사진 폴더의 사진, 올린 그림)
 			return (

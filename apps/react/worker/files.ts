@@ -17,20 +17,49 @@ export interface FilesBucket {
 
 export const FILES_PREFIX = '/files/';
 
-/** 내주는 확장자와 그 Content-Type. 이 밖의 키는 404 */
+/** 내주는 확장자와 그 Content-Type. 이 밖의 키는 404 (contracts의 DOCUMENT_EXTENSIONS와 같은 목록) */
 export const FILE_TYPES: Record<string, string> = {
 	pdf: 'application/pdf',
 	png: 'image/png',
 	jpg: 'image/jpeg',
 	jpeg: 'image/jpeg',
 	webp: 'image/webp',
+	gif: 'image/gif',
+	avif: 'image/avif',
+	txt: 'text/plain; charset=utf-8',
+	md: 'text/plain; charset=utf-8',
+	csv: 'text/plain; charset=utf-8',
+	json: 'text/plain; charset=utf-8',
+	rtf: 'application/rtf',
+	doc: 'application/msword',
+	docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	xls: 'application/vnd.ms-excel',
+	xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	ppt: 'application/vnd.ms-powerpoint',
+	pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+	hwp: 'application/x-hwp',
+	hwpx: 'application/haansofthwpx',
+	key: 'application/vnd.apple.keynote',
+	pages: 'application/vnd.apple.pages',
+	numbers: 'application/vnd.apple.numbers',
+	mp4: 'video/mp4',
+	mov: 'video/quicktime',
+	webm: 'video/webm',
+	mp3: 'audio/mpeg',
+	m4a: 'audio/mp4',
+	wav: 'audio/wav',
+	zip: 'application/zip',
 };
+
+/** 브라우저 안에서 보여 줄 종류 (PDF·그림·글자·영상·소리). 나머지는 늘 받기(attachment)로 내준다 */
+const INLINE = /^(application\/pdf|image\/|text\/plain|video\/|audio\/)/;
 
 /**
  * 파일 응답에만 붙이는 CSP. 사이트 안(같은 출처)의 iframe에만 들어간다.
- * 스크립트·연결 등은 열지 않는다 (PDF·그림뿐이다). sandbox는 Chrome의 PDF 보기를 막아 쓰지 않는다
+ * 스크립트·연결 등은 열지 않는다 (PDF·그림·글자·영상·소리만 바로 보이고, 나머지는 받기). sandbox는 Chrome의 PDF 보기를 막아 쓰지 않는다
  */
-export const FILE_CSP = "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; frame-ancestors 'self'";
+export const FILE_CSP =
+	"default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; frame-ancestors 'self'";
 
 const text = (status: number, body: string, extra: Record<string, string> = {}) =>
 	new Response(body, {
@@ -87,7 +116,11 @@ export async function serveFile(request: Request, bucket: FilesBucket | undefine
 		'content-type': FILE_TYPES[key.slice(key.lastIndexOf('.') + 1).toLowerCase()],
 		etag: object.httpEtag,
 		'cache-control': 'public, max-age=300',
-		'content-disposition': disposition(key, url.searchParams.get('download') === '1'),
+		'content-disposition': disposition(
+			key,
+			url.searchParams.get('download') === '1' ||
+				!INLINE.test(FILE_TYPES[key.slice(key.lastIndexOf('.') + 1).toLowerCase()])
+		),
 		'content-security-policy': FILE_CSP,
 		'x-content-type-options': 'nosniff',
 		'x-frame-options': 'SAMEORIGIN',

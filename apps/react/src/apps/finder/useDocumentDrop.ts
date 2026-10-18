@@ -6,6 +6,7 @@ import { uploadDocument, uploadProblem } from './documents';
 import { placeFileChange, uploadPlan } from './edit';
 import { find, type FinderItem } from './files';
 import { commit, structureNow } from './structure';
+import { addLocalFiles } from './localFiles';
 
 export interface UploadRow {
 	id: number;
@@ -52,7 +53,7 @@ export async function uploadInto(
 /**
  * 관리자가 컴퓨터의 파일을 Finder에 끌어다 놓아 올린다 (macOS처럼 파일을 받을 수 있는 폴더면 어디든: 문서·데스크탑·프로젝트·만든 폴더).
  * 놓을 곳은 포인터 아래의 폴더 아이콘(data-folder-target), 없으면 지금 연 폴더. target은 놓을 Finder 폴더 id.
- * 여러 개를 놓으면 차례로 올리고, 올리는 동안 진행률을 보인다. 관리자가 아니면 아무 일도 하지 않는다
+ * 여러 개를 놓으면 차례로 올리고, 올리는 동안 진행률을 보인다. 관리자가 아니면 서버에 올리지 않고 이 브라우저에서만 그 자리에 둔다
  */
 export function useDocumentDrop(roots: FinderItem[], currentFolder: string | null) {
 	const admin = useCanEditMemo();
@@ -68,29 +69,30 @@ export function useDocumentDrop(roots: FinderItem[], currentFolder: string | nul
 		return plan ? id : null;
 	};
 
-	const handlers = admin
-		? {
-				onDragOver: (event: DragEvent) => {
-					if (!hasFiles(event)) return;
-					// 받을 수 없는 곳이어도 막는다 (브라우저가 파일을 열어 사이트를 떠나지 않게)
-					event.preventDefault();
-					const folder = folderAt(event);
-					setTarget(folder);
-					event.dataTransfer.dropEffect = folder ? 'copy' : 'none';
-				},
-				onDragLeave: (event: DragEvent) => {
-					if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setTarget(null);
-				},
-				onDrop: (event: DragEvent) => {
-					if (!hasFiles(event)) return;
-					event.preventDefault();
-					const folder = folderAt(event);
-					setTarget(null);
-					if (!folder) return;
-					void uploadInto(roots, folder, [...event.dataTransfer.files], setUploads);
-				},
-			}
-		: {};
+	// 관리자는 서버(R2)에 올리고, 방문자는 이 브라우저에서만 놓은 자리에 둔다 (localFiles.ts)
+	const handlers = {
+		onDragOver: (event: DragEvent) => {
+			if (!hasFiles(event)) return;
+			// 받을 수 없는 곳이어도 막는다 (브라우저가 파일을 열어 사이트를 떠나지 않게)
+			event.preventDefault();
+			const folder = folderAt(event);
+			setTarget(folder);
+			event.dataTransfer.dropEffect = folder ? 'copy' : 'none';
+		},
+		onDragLeave: (event: DragEvent) => {
+			if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setTarget(null);
+		},
+		onDrop: (event: DragEvent) => {
+			if (!hasFiles(event)) return;
+			event.preventDefault();
+			const folder = folderAt(event);
+			setTarget(null);
+			if (!folder) return;
+			const files = [...event.dataTransfer.files];
+			if (admin) void uploadInto(roots, folder, files, setUploads);
+			else addLocalFiles(folder, files);
+		},
+	};
 
 	return {
 		admin,

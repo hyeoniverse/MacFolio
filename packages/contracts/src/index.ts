@@ -28,6 +28,7 @@ export {
 	documentFolderKey,
 	type DocumentFolderValue,
 	DOCUMENT_PROJECT_ID,
+	DOCUMENT_TYPE_ERROR,
 	documentProjectId,
 	DocumentRename,
 	DocumentUploadRequest,
