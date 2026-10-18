@@ -326,14 +326,14 @@
    앱마다 이 값으로 바탕·카드·그림자를 칠한다 */
 .container.mobile[data-app] {
 	--phone-page-bg: #f3f4f6;
-	--phone-card-bg: #ffffff;
+	--phone-card-bg: var(--color-card-bg);
 	--phone-float-shadow: var(--shadow-float);
 	--phone-separator: rgba(60, 60, 67, 0.18);
 }
 
 :root[data-theme='dark'] .container.mobile[data-app] {
 	--phone-page-bg: #1e1e1e;
-	--phone-card-bg: #2c2c2e;
+	--phone-card-bg: var(--color-card-bg);
 	--phone-separator: rgba(255, 255, 255, 0.12);
 }
 
@@ -426,7 +426,7 @@
 
 /* 색은 밑에 그려진 화면을 읽어 정한다 (HomeIndicator, statusBarTone.ts): 어두운 화면 위에는 흰색, 밝은 화면 위에는 검은색 */
 .home-indicator.light span {
-	background-color: #ffffff;
+	background-color: var(--color-white);
 }
 
 .home-indicator.dark span {

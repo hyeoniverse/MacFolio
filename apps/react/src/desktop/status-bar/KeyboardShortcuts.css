@@ -11,7 +11,7 @@
 	border: 1px solid var(--color-window-border);
 	border-radius: 12px;
 	box-shadow: var(--shadow-window);
-	background: var(--color-window-bg, #fff);
+	background: var(--color-window-bg, var(--color-white));
 	color: var(--color-text, inherit);
 	font-size: var(--text-footnote);
 }

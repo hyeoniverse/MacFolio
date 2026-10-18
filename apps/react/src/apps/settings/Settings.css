@@ -139,7 +139,7 @@
 }
 
 .theme-preview-light {
-	background: linear-gradient(#f2f2f7 0 25%, #ffffff 25%);
+	background: linear-gradient(var(--color-gray-6) 0 25%, var(--color-white) 25%);
 }
 
 .theme-preview-dark {
@@ -147,7 +147,9 @@
 }
 
 .theme-preview-system {
-	background: linear-gradient(90deg, transparent 50%, #1e1e1e 50%), linear-gradient(#f2f2f7 0 25%, #ffffff 25%);
+	background:
+		linear-gradient(90deg, transparent 50%, #1e1e1e 50%),
+		linear-gradient(var(--color-gray-6) 0 25%, var(--color-white) 25%);
 }
 
 /* 배경화면 선택 */
@@ -252,7 +254,7 @@
 	border: 2.5px solid var(--wallpaper-page-bg, var(--color-window-bg));
 	border-radius: 50%;
 	background-color: #5a5a5e;
-	color: #ffffff;
+	color: var(--color-white);
 	font-size: var(--text-caption2);
 	cursor: pointer;
 }
@@ -396,7 +398,7 @@
 	width: 18px;
 	height: 18px;
 	border-radius: 50%;
-	background: #ffffff;
+	background: var(--color-white);
 	box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
 	transition: transform 0.2s;
 }
@@ -482,7 +484,7 @@
 	width: 28px;
 	height: 28px;
 	border-radius: 7px;
-	color: #ffffff;
+	color: var(--color-white);
 	font-size: 14px;
 }
 
@@ -565,7 +567,7 @@
 }
 
 .privacy-error {
-	color: #e5484d;
+	color: var(--color-danger);
 }
 
 /* GitHub (관리자): GitHub 앱의 Pinned에 보일 저장소. macOS 설정의 묶음 목록 모양 */
@@ -710,11 +712,11 @@
 }
 
 .showcase-remove {
-	color: #ff3b30;
+	color: var(--color-red);
 }
 
 .showcase-add {
-	color: #34c759;
+	color: var(--color-green);
 }
 
 .showcase-add:disabled {
@@ -900,8 +902,8 @@ ol.showcase-list .showcase-row.reordering {
 	width: 30px;
 	height: 30px;
 	border-radius: 7px;
-	background-color: #8e8e93;
-	color: #ffffff;
+	background-color: var(--color-gray);
+	color: var(--color-white);
 	font-size: var(--text-callout);
 }
 
@@ -1083,8 +1085,8 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .about-pane-monogram {
-	background: linear-gradient(160deg, #8e8e93, #5a5a5f);
-	color: #ffffff;
+	background: linear-gradient(160deg, var(--color-gray), #5a5a5f);
+	color: var(--color-white);
 	font-size: var(--text-title2);
 	font-weight: 600;
 }
@@ -1213,7 +1215,7 @@ ol.showcase-list .showcase-row.reordering {
 	margin: 0;
 	padding: 10px 14px 10px 30px;
 	border-radius: var(--radius-lg);
-	background: color-mix(in srgb, #ff3b30 12%, transparent);
+	background: color-mix(in srgb, var(--color-red) 12%, transparent);
 	color: #d70015;
 	font-size: var(--text-caption);
 	line-height: 1.6;
@@ -1222,7 +1224,7 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-reset {
 	align-self: flex-start;
 	padding-left: var(--space-4);
-	color: #ff3b30;
+	color: var(--color-red);
 }
 
 /* 시스템 설정 › 프로젝트 (관리자): 목록 */
@@ -1312,12 +1314,12 @@ ol.showcase-list .showcase-row.reordering {
 .projects-editor,
 .projects-sheet-layer {
 	--pe-canvas: #f0f0f2;
-	--pe-box: #ffffff;
+	--pe-box: var(--color-white);
 	--pe-box-border: rgba(0, 0, 0, 0.08);
 	--pe-separator: rgba(0, 0, 0, 0.08);
-	--pe-field-bg: #ffffff;
+	--pe-field-bg: var(--color-white);
 	--pe-field-border: rgba(0, 0, 0, 0.16);
-	--pe-button-bg: #ffffff;
+	--pe-button-bg: var(--color-white);
 	--pe-button-border: rgba(0, 0, 0, 0.13);
 	--pe-button-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.14);
 	--pe-toolbar: #f7f7f9;
@@ -1583,8 +1585,8 @@ ol.showcase-list .showcase-row.reordering {
 .projects-required {
 	padding: 0 5px;
 	border-radius: 4px;
-	background: color-mix(in srgb, #ff3b30 14%, transparent);
-	color: #ff3b30;
+	background: color-mix(in srgb, var(--color-red) 14%, transparent);
+	color: var(--color-red);
 	font-size: 10px;
 	font-style: normal;
 	font-weight: 600;
@@ -1616,7 +1618,7 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .projects-error {
-	color: #ff3b30;
+	color: var(--color-red);
 	font-size: 11px;
 }
 
@@ -1705,7 +1707,7 @@ textarea.projects-input {
 	min-width: 64px;
 	background: var(--color-accent);
 	box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.2);
-	color: #ffffff;
+	color: var(--color-white);
 	font-weight: 500;
 }
 
@@ -1787,7 +1789,7 @@ button.projects-popup::after {
 
 .projects-popup-chevrons {
 	fill: none;
-	stroke: #ffffff;
+	stroke: var(--color-white);
 	stroke-linecap: round;
 	stroke-linejoin: round;
 	stroke-width: 1.5;
@@ -2003,13 +2005,13 @@ button.projects-popup[aria-expanded='true'] {
 
 .projects-suggestions li[aria-selected='true'] .projects-suggestion-source {
 	background: rgba(255, 255, 255, 0.25);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .projects-suggestions li[aria-selected='true'],
 .projects-suggestions li:hover {
 	background: var(--color-accent);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .projects-suggestions li[data-current] {
@@ -2038,7 +2040,7 @@ button.projects-popup[aria-expanded='true'] {
 	width: 15px;
 	height: 15px;
 	border-radius: 50%;
-	background: #ffffff;
+	background: var(--color-white);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 	transition: transform 0.2s;
 }
@@ -2188,7 +2190,7 @@ button.projects-thumb:focus-visible {
 	border: none;
 	border-radius: 50%;
 	background: rgba(255, 255, 255, 0.14);
-	color: #ffffff;
+	color: var(--color-white);
 	font-size: 15px;
 	cursor: pointer;
 }
@@ -2269,7 +2271,7 @@ button.projects-thumb:focus-visible {
 	inset: 0;
 	display: grid;
 	place-items: center;
-	color: #8e8e93;
+	color: var(--color-gray);
 	font:
 		600 20px ui-monospace,
 		SFMono-Regular,
@@ -2309,7 +2311,7 @@ button.projects-thumb:focus-visible {
 	border-radius: 50%;
 	background: var(--color-accent);
 	box-shadow: 0 0 0 2px var(--pe-box);
-	color: #ffffff;
+	color: var(--color-white);
 	font-size: 9px;
 }
 
@@ -2403,7 +2405,7 @@ button.projects-thumb:focus-visible {
 
 .projects-table-row[aria-selected='true']:focus {
 	background: var(--color-accent);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .projects-table-row:focus-visible:not([aria-selected='true']) {

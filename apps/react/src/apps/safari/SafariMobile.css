@@ -171,7 +171,7 @@
 	border: none;
 	border-radius: 50%;
 	background-color: rgba(120, 120, 128, 0.32);
-	color: #ffffff;
+	color: var(--color-white);
 	font-size: 14px;
 	backdrop-filter: blur(12px);
 }

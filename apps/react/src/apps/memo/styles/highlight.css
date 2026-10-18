@@ -2,25 +2,25 @@
 
 /* ─── 코드 문법 강조 (highlight.js 토큰, GitHub 색) ─── */
 [data-app='memo'] {
-	--hl-keyword: #cf222e;
-	--hl-string: #0a3069;
-	--hl-number: #0550ae;
-	--hl-function: #8250df;
-	--hl-type: #953800;
-	--hl-comment: #6e7781;
-	--hl-tag: #116329;
-	--hl-attr: #0550ae;
+	--hl-keyword: var(--color-code-keyword);
+	--hl-string: var(--color-code-string);
+	--hl-number: var(--color-code-number);
+	--hl-function: var(--color-code-function);
+	--hl-type: var(--color-code-type);
+	--hl-comment: var(--color-code-comment);
+	--hl-tag: var(--color-code-tag);
+	--hl-attr: var(--color-code-number);
 }
 
 :root[data-theme='dark'] [data-app='memo'] {
-	--hl-keyword: #ff7b72;
-	--hl-string: #a5d6ff;
-	--hl-number: #79c0ff;
-	--hl-function: #d2a8ff;
-	--hl-type: #ffa657;
-	--hl-comment: #8b949e;
-	--hl-tag: #7ee787;
-	--hl-attr: #79c0ff;
+	--hl-keyword: var(--color-code-keyword);
+	--hl-string: var(--color-code-string);
+	--hl-number: var(--color-code-number);
+	--hl-function: var(--color-code-function);
+	--hl-type: var(--color-code-type);
+	--hl-comment: var(--color-code-comment);
+	--hl-tag: var(--color-code-tag);
+	--hl-attr: var(--color-code-number);
 }
 
 .memo-markdown .hljs-keyword,

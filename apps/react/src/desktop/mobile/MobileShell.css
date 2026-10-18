@@ -16,7 +16,7 @@
 	z-index: var(--z-phone-statusbar);
 	height: var(--mobile-statusbar-height);
 	padding: env(safe-area-inset-top) 26px 0 34px;
-	color: #fff;
+	color: var(--color-white);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	cursor: pointer;
 	touch-action: none;
@@ -37,7 +37,7 @@
 }
 
 .mobile-statusbar.icons-light .mobile-statusbar-icons {
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .mobile-statusbar-time,
@@ -111,7 +111,7 @@
 }
 
 .mobile-battery.danger span {
-	background-color: var(--color-danger, #e5484d);
+	background-color: var(--color-danger);
 }
 
 /* ─── 음악 위젯 (홈 화면, 제어 센터) ─── */
@@ -123,7 +123,7 @@
 	padding: var(--space-14);
 	overflow: hidden;
 	border-radius: 22px;
-	color: #fff;
+	color: var(--color-white);
 	text-align: left;
 	cursor: pointer;
 	isolation: isolate;
@@ -240,7 +240,7 @@
 	overflow-y: auto;
 	background-color: rgba(0, 0, 0, calc(0.5 * var(--cc-progress)));
 	backdrop-filter: blur(calc(28px * var(--cc-progress))) saturate(calc(100% + 60% * var(--cc-progress)));
-	color: #fff;
+	color: var(--color-white);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	touch-action: none;
 	transition:
@@ -351,8 +351,8 @@
 }
 
 .cc-toggle.on {
-	background-color: #fff;
-	color: #000;
+	background-color: var(--color-white);
+	color: var(--color-black);
 }
 
 /* 음량: 1×2 알약 */
@@ -371,14 +371,14 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
-	background-color: #fff;
+	background-color: var(--color-white);
 	pointer-events: none;
 }
 
 /* 흰 막대 위에서도 보이도록 */
 .cc-slider i {
 	position: relative;
-	color: #8e8e93;
+	color: var(--color-gray);
 	pointer-events: none;
 }
 
@@ -398,7 +398,7 @@
 	width: calc(var(--cc-cell) * 0.56);
 	height: calc(var(--cc-cell) * 0.56);
 	border-radius: 50%;
-	background-color: #0a84ff;
+	background-color: var(--color-blue);
 	font-size: var(--text-body);
 }
 
@@ -474,7 +474,7 @@
 	bottom: 100%;
 	left: 8px;
 	margin-bottom: var(--space-20);
-	color: #fff;
+	color: var(--color-white);
 	font-size: 28px;
 	font-weight: 600;
 	text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);

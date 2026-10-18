@@ -1,8 +1,8 @@
 /* 활동 상태 보기 (#102). 색은 테마 변수만 쓴다 (다크 모드는 styles/theme.css가 바꾼다).
    창 폭에 따라(휴대폰, 좁힌 창) 표가 한 줄로 쌓이게 컨테이너 질의를 쓴다 */
 .activity {
-	--activity-green: #34c759;
-	--activity-red: #ff3b30;
+	--activity-green: var(--color-green);
+	--activity-red: var(--color-red);
 	/* 이 앱의 간격은 세 단만 쓴다: 묶음 사이, 카드 안쪽, 줄 안 (#211) */
 	--activity-gap: 16px;
 	--activity-pad: 12px;

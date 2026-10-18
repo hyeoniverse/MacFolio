@@ -80,7 +80,7 @@
 }
 
 .memo-inline-editor .memo-cell-current {
-	background-color: color-mix(in srgb, #edbb4d 12%, transparent);
+	background-color: color-mix(in srgb, var(--color-notes-yellow) 12%, transparent);
 }
 
 /* 표 손잡이: 지금 열 위, 지금 행 왼쪽의 둥근 알약 (크기는 늘 같다) */
@@ -126,8 +126,8 @@
 }
 
 .memo-table-handle.on {
-	background-color: #edbb4d;
-	color: #fff;
+	background-color: var(--color-notes-yellow);
+	color: var(--color-white);
 	cursor: grab;
 }
 
@@ -147,7 +147,7 @@
 	height: 12px;
 	/* 막대와 같은 색 바탕으로 점(…) 위를 덮는다 (짧은 행에서 겹쳐 보이지 않게) */
 	border-radius: 50%;
-	background-color: #edbb4d;
+	background-color: var(--color-notes-yellow);
 	font-size: 9px;
 	opacity: 0;
 	place-items: center;
@@ -173,9 +173,9 @@
 	width: 12px;
 	height: 12px;
 	margin: -6px 0 0 -6px;
-	border: 2px solid #fff;
+	border: 2px solid var(--color-white);
 	border-radius: 50%;
-	background-color: #edbb4d;
+	background-color: var(--color-notes-yellow);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 	cursor: nwse-resize;
 	touch-action: none;
@@ -195,14 +195,14 @@
 .memo-table-selection {
 	position: absolute;
 	z-index: 2;
-	border: 2px solid #edbb4d;
+	border: 2px solid var(--color-notes-yellow);
 	pointer-events: none;
 	transition: transform var(--duration-fast) var(--ease-out);
 }
 
 /* 끄는 동안: 고른 행·열이 손가락을 따라오고, 놓을 자리에 선이 보인다 */
 .memo-table-selection.dragging {
-	background-color: color-mix(in srgb, #edbb4d 18%, transparent);
+	background-color: color-mix(in srgb, var(--color-notes-yellow) 18%, transparent);
 	box-shadow: var(--shadow-md);
 	transition: none;
 }
@@ -211,7 +211,7 @@
 	position: absolute;
 	z-index: 3;
 	border-radius: 2px;
-	background-color: #edbb4d;
+	background-color: var(--color-notes-yellow);
 	pointer-events: none;
 }
 
@@ -226,7 +226,7 @@
 }
 
 .memo-inline-editor .memo-table-active .selectedCell {
-	background-color: color-mix(in srgb, #edbb4d 14%, transparent);
+	background-color: color-mix(in srgb, var(--color-notes-yellow) 14%, transparent);
 }
 
 /* 손잡이 메뉴 (macOS 메모의 표 메뉴처럼 글자만) */
@@ -243,7 +243,7 @@
 
 /* 편집기의 표: 고른 칸, 열 너비 조절 손잡이 */
 .memo-inline-editor .selectedCell {
-	background-color: color-mix(in srgb, #edbb4d 22%, transparent);
+	background-color: color-mix(in srgb, var(--color-notes-yellow) 22%, transparent);
 }
 
 .memo-inline-editor .column-resize-handle {
@@ -252,7 +252,7 @@
 	right: -2px;
 	bottom: 0;
 	width: 4px;
-	background-color: #edbb4d;
+	background-color: var(--color-notes-yellow);
 	pointer-events: none;
 }
 
@@ -273,7 +273,7 @@
 
 /* 편집기에서 고른 이미지 */
 .memo-inline-editor .memo-figure.selected img {
-	outline: 2px solid #edbb4d;
+	outline: 2px solid var(--color-notes-yellow);
 	outline-offset: 2px;
 }
 
@@ -324,7 +324,7 @@
 }
 
 .memo-inline-editor li[data-item-type='task'][data-checked='true']::before {
-	border-color: #edbb4d;
+	border-color: var(--color-notes-yellow);
 	background: #edbb4d
 		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
 		center / 12px no-repeat;
@@ -355,7 +355,7 @@
 }
 
 .memo-markdown .task-list-item input:checked {
-	border-color: #edbb4d;
+	border-color: var(--color-notes-yellow);
 	background: #edbb4d
 		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
 		center / 12px no-repeat;
