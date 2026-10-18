@@ -1,7 +1,8 @@
 // Finder의 파일 트리. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 실제 파일이 있는 것은 아니고, 사이트에 있는 것들(저장소 문서, 프로젝트, 블로그 글, 앱)을 폴더와 파일처럼 묶어 보여 준다.
-// 파일을 열면 그 종류에 맞는 곳으로 간다: 문서는 Finder 안에서 읽고, 프로젝트는 Safari, 글은 메모, 앱은 그 앱.
+// 파일을 열면 그 종류에 맞는 곳으로 간다: 문서·PDF·그림은 Finder 안에서 보고, 프로젝트는 Safari, 글은 메모, 앱은 그 앱.
 import type { AppName } from '@/apps/manifest';
+import { DOCUMENT_FOLDERS, type DocumentEntry, type DocumentFolder } from './documents';
 
 interface ItemBase {
 	/** 트리 안에서 하나뿐인 경로 (예: blog/프론트엔드/기능, docs/deployment.md) */
@@ -48,7 +49,15 @@ export interface AppItem extends ItemBase {
 	icon: string;
 }
 
-export type FinderItem = FolderItem | DocItem | PostItem | ProjectItem | AppItem;
+/** 문서 파일 (PDF·그림). R2에 있고 Finder 안에서 미리 본다 (documents.ts) */
+export interface FileItem extends ItemBase {
+	kind: 'pdf' | 'image';
+	/** R2 키. 주소는 /files/<key> */
+	key: string;
+	size?: number;
+}
+
+export type FinderItem = FolderItem | DocItem | PostItem | ProjectItem | AppItem | FileItem;
 
 /** 목록 보기의 '종류' 칸 */
 export const KIND_LABELS: Record<FinderItem['kind'], string> = {
@@ -57,6 +66,8 @@ export const KIND_LABELS: Record<FinderItem['kind'], string> = {
 	post: '블로그 글',
 	project: '프로젝트',
 	app: '응용 프로그램',
+	pdf: 'PDF 문서',
+	image: '이미지',
 };
 
 export interface TreeInput {
@@ -65,7 +76,16 @@ export interface TreeInput {
 	posts: { slug: string; title: string; date: string; category: string }[];
 	projects: { id: string; name: string; icon?: string; period?: string }[];
 	apps: { app: AppName; label: string; icon: string }[];
+	/** 문서 파일 목록 (documents.ts). 없으면 폴더만 비어 있다 */
+	files?: DocumentEntry[];
 }
+
+/** 빈 문서 파일 폴더의 안내 */
+const FOLDER_NOTES: Record<DocumentFolder, string> = {
+	이력서: '공개용 이력서를 준비하고 있습니다.',
+	포트폴리오: '포트폴리오 파일을 준비하고 있습니다.',
+	자격증: '자격증 사본을 준비하고 있습니다.',
+};
 
 const byName = (a: FinderItem, b: FinderItem) =>
 	a.kind === 'folder' && b.kind !== 'folder'
@@ -74,22 +94,39 @@ const byName = (a: FinderItem, b: FinderItem) =>
 			? 1
 			: a.name.localeCompare(b.name, 'ko');
 
-/** 문서 폴더: 저장소 맨 위 문서와 docs/ 안의 문서, 그리고 이력서 자리 */
-function docsFolder(paths: string[]): FolderItem {
+/** 문서 폴더: 저장소 맨 위 문서와 docs/ 안의 문서, 그리고 이력서·포트폴리오·자격증 (R2의 파일) */
+function docsFolder(paths: string[], files: DocumentEntry[]): FolderItem {
 	const docs: FinderItem[] = paths.map((path) => ({
 		kind: 'doc',
 		id: `docs:${path}`,
 		name: path.split('/').at(-1)!,
 		path,
 	}));
-	const resume: FolderItem = {
+	const folders = DOCUMENT_FOLDERS.map((name): FolderItem => ({
 		kind: 'folder',
-		id: 'docs:이력서',
-		name: '이력서',
-		children: [],
-		emptyNote: '공개용 이력서를 준비하고 있습니다.',
-	};
-	return { kind: 'folder', id: 'docs', name: '문서', children: [resume, ...docs].sort(byName) };
+		id: `docs:${name}`,
+		name,
+		children: files
+			.filter((file) => file.folder === name)
+			.map((file): FileItem => ({
+				kind: file.kind,
+				id: `file:${file.key}`,
+				name: file.name,
+				key: file.key,
+				size: file.size,
+				modified: file.updated,
+			}))
+			.sort(byName),
+		emptyNote: FOLDER_NOTES[name],
+	}));
+	folders.forEach((folder) => {
+		folder.modified = folder.children
+			.map((child) => child.modified)
+			.filter(Boolean)
+			.sort()
+			.at(-1);
+	});
+	return { kind: 'folder', id: 'docs', name: '문서', children: [...folders, ...docs].sort(byName) };
 }
 
 /** 블로그 폴더: 글의 카테고리(프론트엔드/기능)를 폴더로. 같은 폴더 안은 최신 글이 위로 */
@@ -134,9 +171,9 @@ function blogFolder(posts: TreeInput['posts']): FolderItem {
 }
 
 /** 사이드바에 보일 위치들 (Finder의 즐겨찾기) */
-export function buildLocations({ docs, posts, projects, apps }: TreeInput): FolderItem[] {
+export function buildLocations({ docs, posts, projects, apps, files = [] }: TreeInput): FolderItem[] {
 	return [
-		docsFolder(docs),
+		docsFolder(docs, files),
 		{
 			kind: 'folder',
 			id: 'projects',
@@ -223,7 +260,7 @@ export function recentItems(roots: FinderItem[], limit = 30): FinderItem[] {
 
 export type SortKey = 'name' | 'kind' | 'date';
 
-const KIND_ORDER: FinderItem['kind'][] = ['folder', 'doc', 'post', 'project', 'app'];
+const KIND_ORDER: FinderItem['kind'][] = ['folder', 'doc', 'pdf', 'image', 'post', 'project', 'app'];
 
 /** 정렬 (휴대폰 파일 앱의 ••• 메뉴): 이름순, 종류(폴더 먼저)마다 이름순, 날짜는 최신이 위로(날짜 없는 것은 아래에 이름순) */
 export function sortItems(items: FinderItem[], key: SortKey): FinderItem[] {

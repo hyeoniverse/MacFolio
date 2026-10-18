@@ -648,3 +648,73 @@
 .finder-doc img {
 	animation: fade-in var(--duration) var(--ease-out);
 }
+
+/* ─── 파일 미리 보기 (PDF·그림, FileView) ─── */
+.finder-file {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+}
+
+.finder-file-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border-bottom: 1px solid var(--color-divider);
+}
+
+.finder-file-info {
+	flex: 1;
+	min-width: 0;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+}
+
+.finder-file-action {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.finder-file-pdf {
+	flex: 1;
+	width: 100%;
+	min-height: 0;
+	border: 0;
+	background-color: #525659;
+}
+
+.finder-file-image {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	overflow: hidden;
+	background-color: var(--color-divider);
+}
+
+.finder-file-image img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	cursor: zoom-in;
+	box-shadow: 0 2px 12px rgb(0 0 0 / 0.2);
+}
+
+.finder-file-image.zoomed {
+	display: block;
+	overflow: auto;
+}
+
+.finder-file-image.zoomed img {
+	max-width: none;
+	max-height: none;
+	cursor: zoom-out;
+}

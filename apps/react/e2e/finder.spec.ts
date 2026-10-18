@@ -1,5 +1,6 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
+import { fakeFiles } from './fakeFiles';
 
 async function openFinder(page: Page) {
 	await enterDesktop(page);
@@ -122,5 +123,78 @@ test.describe('Finder', () => {
 		// 버튼은 그대로 눌린다
 		await finder.getByRole('button', { name: '목록으로 보기' }).click();
 		await expect(finder.locator('.finder-list-head')).toBeVisible();
+	});
+
+	test.describe('문서 파일 (R2)', () => {
+		test('빈 이력서·포트폴리오·자격증 폴더는 폴더마다 안내를 보인다', async ({ page }) => {
+			await fakeFiles(page, []);
+			const finder = await openFinder(page);
+			const docs = finder.getByRole('listbox', { name: '문서' });
+			for (const [name, note] of [
+				['이력서', '공개용 이력서를 준비하고 있습니다.'],
+				['포트폴리오', '포트폴리오 파일을 준비하고 있습니다.'],
+				['자격증', '자격증 사본을 준비하고 있습니다.'],
+			]) {
+				await docs.getByRole('option', { name, exact: true }).dblclick();
+				await expect(finder.getByRole('heading', { level: 1 })).toHaveText(name);
+				await expect(finder.getByText(note)).toBeVisible();
+				await finder.getByRole('button', { name: '뒤로' }).click();
+			}
+		});
+
+		test('PDF는 Finder 안 iframe으로 미리 보고, 다운로드는 ?download=1', async ({ page }) => {
+			const requests = await fakeFiles(page);
+			const finder = await openFinder(page);
+			await finder
+				.getByRole('listbox', { name: '문서' })
+				.getByRole('option', { name: '이력서', exact: true })
+				.dblclick();
+			const pdf = finder.getByRole('option', { name: '시험 이력서.pdf' });
+			await expect(pdf).toBeVisible();
+			await pdf.dblclick();
+
+			const preview = finder.getByRole('region', { name: '시험 이력서.pdf' });
+			const frame = preview.locator('iframe');
+			await expect(frame).toHaveAttribute('src', '/files/resume/test.pdf');
+			await expect(frame).toHaveAttribute('title', '시험 이력서.pdf');
+			await expect.poll(() => requests).toContain('/files/resume/test.pdf');
+			await expect(preview.getByRole('link', { name: '다운로드' })).toHaveAttribute(
+				'href',
+				'/files/resume/test.pdf?download=1'
+			);
+			await expect(preview.getByRole('link', { name: '새 창에서 열기' })).toHaveAttribute(
+				'href',
+				'/files/resume/test.pdf'
+			);
+			await expect(preview).toContainText('PDF 문서 · 2 KB');
+			// 경로 막대: 문서 › 이력서 › 파일, 뒤로 가면 폴더
+			await expect(finder.getByRole('navigation', { name: '경로' })).toHaveText(/문서.*이력서.*시험 이력서\.pdf/);
+			await finder.getByRole('button', { name: '뒤로' }).click();
+			await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
+		});
+
+		test('그림은 사진 앱이 아니라 Finder 미리 보기에서 열린다', async ({ page }) => {
+			await fakeFiles(page);
+			const finder = await openFinder(page);
+			await finder.getByRole('listbox', { name: '문서' }).getByRole('option', { name: '포트폴리오' }).dblclick();
+			await finder.getByRole('option', { name: '시험 그림.png' }).dblclick();
+
+			const preview = finder.getByRole('region', { name: '시험 그림.png' });
+			const image = preview.getByRole('img', { name: '시험 그림.png' });
+			await expect(image).toHaveAttribute('src', '/files/portfolio/test.png');
+			await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(160);
+			await expect(preview.getByRole('link', { name: '다운로드' })).toHaveAttribute(
+				'href',
+				'/files/portfolio/test.png?download=1'
+			);
+			await expect(appWindow(page, 'photos')).toHaveCount(0);
+
+			// 칸에 맞춰 보이고, 버튼으로 원래 크기와 오간다
+			const pane = (await preview.locator('.finder-file-image').boundingBox())!;
+			const fitted = (await image.boundingBox())!;
+			expect(fitted.width).toBeLessThanOrEqual(pane.width);
+			await preview.getByRole('button', { name: '원래 크기로 보기' }).click();
+			await expect(preview.getByRole('button', { name: '칸에 맞추기' })).toHaveAttribute('aria-pressed', 'true');
+		});
 	});
 });
