@@ -34,7 +34,12 @@ async function fakeDocuments(page: Page) {
 			return route.fulfill({ headers: cors(origin), json: docs });
 		if (path === '/documents/uploads') {
 			const { folder, name } = request.postDataJSON();
-			const key = `${folder === '이력서' ? 'resume' : 'portfolio'}/abcdefghijklmnop.${name.split('.').pop()}`;
+			const prefix = folder.startsWith('project:')
+				? `projects/${folder.slice(8)}`
+				: folder === '이력서'
+					? 'resume'
+					: 'portfolio';
+			const key = `${prefix}/abcdefghijklmnop.${name.split('.').pop()}`;
 			return route.fulfill({
 				status: 201,
 				headers: cors(origin),
@@ -133,5 +138,42 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await dropFile(page, '[data-app="finder"] .finder-content', '새 이력서.pdf', [...tinyPdf()]);
 		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toHaveCount(0);
 		expect(puts).toHaveLength(0);
+	});
+
+	test('프로젝트 폴더 아이콘 위나 그 안에 놓으면 project:<id> 폴더로 올라가고, 이름 바꾸기·지우기도 된다', async ({
+		page,
+	}) => {
+		await fakeApi(page, { signedIn: true });
+		const { docs, puts } = await fakeDocuments(page);
+		await enterDesktop(page);
+		await dockItem(page, 'finder').click();
+		const finder = appWindow(page, 'finder');
+		await finder.getByRole('navigation', { name: '즐겨찾기' }).getByRole('button', { name: '프로젝트' }).click();
+
+		// 프로젝트 목록에서 MacFolio 폴더 아이콘 위에 놓는다
+		const pdf = [...tinyPdf()];
+		await dropFile(page, '[data-app="finder"] [data-drop-folder="project:macfolio"]', '발표.pdf', pdf);
+		await expect.poll(() => puts.length).toBe(1);
+		expect(puts[0].url).toContain('/macfolio-files/projects/macfolio/abcdefghijklmnop.pdf');
+		expect(docs[0]).toMatchObject({ folder: 'project:macfolio', name: '발표.pdf', size: pdf.length });
+
+		await finder
+			.getByRole('listbox', { name: '프로젝트' })
+			.getByRole('option', { name: 'MacFolio', exact: true })
+			.dblclick();
+		const folder = finder.getByRole('listbox', { name: 'MacFolio' });
+		await expect(folder.getByRole('option', { name: '발표.pdf' })).toBeVisible();
+
+		// 폴더 안에 놓아도 같은 폴더로
+		await dropFile(page, '[data-app="finder"] .finder-content', '구조도.pdf', pdf);
+		await expect(folder.getByRole('option', { name: '구조도.pdf' })).toBeVisible();
+		expect(docs[1]).toMatchObject({ folder: 'project:macfolio', key: 'projects/macfolio/abcdefghijklmnop.pdf' });
+
+		// 관리자 메뉴: 고르고 ⌘⌫로 지운다
+		page.once('dialog', (dialog) => dialog.accept());
+		await folder.getByRole('option', { name: '구조도.pdf' }).click();
+		await finder.locator('.finder-content').press('ControlOrMeta+Backspace');
+		await expect(folder.getByRole('option', { name: '구조도.pdf' })).toHaveCount(0);
+		expect(docs.map((doc) => doc.name)).toEqual(['발표.pdf']);
 	});
 });

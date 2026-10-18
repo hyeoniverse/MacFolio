@@ -1681,11 +1681,21 @@
 								],
 								"properties": {
 									"folder": {
-										"type": "string",
-										"enum": [
-											"이력서",
-											"포트폴리오",
-											"자격증"
+										"description": "이력서·포트폴리오·자격증, 또는 프로젝트 폴더 project:<프로젝트 id>",
+										"oneOf": [
+											{
+												"type": "string",
+												"enum": [
+													"이력서",
+													"포트폴리오",
+													"자격증"
+												]
+											},
+											{
+												"type": "string",
+												"pattern": "^project:[a-z0-9][a-z0-9-]{0,39}$",
+												"example": "project:macfolio"
+											}
 										]
 									},
 									"name": {
@@ -1748,11 +1758,21 @@
 								],
 								"properties": {
 									"folder": {
-										"type": "string",
-										"enum": [
-											"이력서",
-											"포트폴리오",
-											"자격증"
+										"description": "이력서·포트폴리오·자격증, 또는 프로젝트 폴더 project:<프로젝트 id>",
+										"oneOf": [
+											{
+												"type": "string",
+												"enum": [
+													"이력서",
+													"포트폴리오",
+													"자격증"
+												]
+											},
+											{
+												"type": "string",
+												"pattern": "^project:[a-z0-9][a-z0-9-]{0,39}$",
+												"example": "project:macfolio"
+											}
 										]
 									},
 									"name": {

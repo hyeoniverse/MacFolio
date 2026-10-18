@@ -51,7 +51,14 @@ export function fileKey(pathname: string): string | null {
 	// 경로 바꾸기(.., 빈 칸, 백슬래시)와 제어 문자를 막는다
 	// eslint-disable-next-line no-control-regex
 	if (/[\u0000-\u001f\u007f\\]/.test(key)) return null;
-	if (key.split('/').some((part) => part === '' || part === '.' || part === '..')) return null;
+	const parts = key.split('/');
+	if (parts.some((part) => part === '' || part === '.' || part === '..')) return null;
+	// 키는 <폴더>/<파일>, 프로젝트 폴더만 projects/<프로젝트 id>/<파일>. 더 깊은 경로는 받지 않는다
+	if (
+		parts.length > 3 ||
+		(parts.length === 3 && (parts[0] !== 'projects' || !/^[a-z0-9][a-z0-9-]{0,39}$/.test(parts[1])))
+	)
+		return null;
 	const dot = key.lastIndexOf('.');
 	if (dot < 0) return null;
 	return key.slice(dot + 1).toLowerCase() in FILE_TYPES ? key : null;

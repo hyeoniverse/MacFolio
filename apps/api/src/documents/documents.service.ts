@@ -7,12 +7,14 @@ import {
 } from '@nestjs/common';
 import {
 	DOCUMENT_EXTENSIONS,
-	DOCUMENT_FOLDER_KEYS,
 	DOCUMENT_FOLDERS,
 	DocumentCreate,
 	documentExtension,
 	type DocumentFile,
 	type DocumentFolder,
+	documentFolderKey,
+	type DocumentFolderValue,
+	documentProjectId,
 	DocumentRename,
 	DocumentUploadRequest,
 	type DocumentUploadTicket,
@@ -28,8 +30,17 @@ export const UPLOAD_TTL = 300;
 /** 서버가 R2에 묻는(HEAD·DELETE) 서명 주소의 유효 시간 (초) */
 const CHECK_TTL = 60;
 
-/** 이 서버가 만든 키 모양: <폴더 영어 이름>/<무작위 16자>.<확장자> */
-const KEY = /^(resume|portfolio|certificates)\/[\w-]{16}\.(pdf|png|jpg|jpeg|webp)$/;
+/** 이 서버가 만든 키 모양: <폴더 영어 이름>/<무작위 16자>.<확장자>, 프로젝트 폴더는 projects/<프로젝트 id>/<무작위 16자>.<확장자> */
+const KEY = /^(resume|portfolio|certificates|projects\/[a-z0-9][a-z0-9-]{0,39})\/[\w-]{16}\.(pdf|png|jpg|jpeg|webp)$/;
+
+/** 목록 순서: 이력서·포트폴리오·자격증 다음 프로젝트 폴더 (프로젝트 id 순) */
+const folderOrder = (a: string, b: string) => {
+	const rank = (folder: string) => {
+		const index = DOCUMENT_FOLDERS.indexOf(folder as DocumentFolder);
+		return index < 0 ? DOCUMENT_FOLDERS.length : index;
+	};
+	return rank(a) - rank(b) || (documentProjectId(a) ?? '').localeCompare(documentProjectId(b) ?? '');
+};
 
 type Row = {
 	id: string;
@@ -43,7 +54,7 @@ type Row = {
 
 const view = (row: Row): DocumentFile => ({
 	id: row.id,
-	folder: row.folder as DocumentFolder,
+	folder: row.folder as DocumentFolderValue,
 	name: row.name,
 	key: row.key,
 	kind: row.kind as DocumentFile['kind'],
@@ -77,16 +88,16 @@ export class DocumentsService {
 		return r2;
 	}
 
-	/** 폴더 순서, 그 안에서 올린 순서 */
+	/** 폴더 순서 (세 문서 폴더, 그다음 프로젝트 폴더를 id 순으로), 그 안에서 올린 순서 */
 	async list(): Promise<DocumentFile[]> {
 		const rows = await this.prisma.document.findMany({ orderBy: { createdAt: 'asc' } });
-		return rows.map(view).sort((a, b) => DOCUMENT_FOLDERS.indexOf(a.folder) - DOCUMENT_FOLDERS.indexOf(b.folder));
+		return rows.map(view).sort((a, b) => folderOrder(a.folder, b.folder));
 	}
 
 	uploadTicket(input: unknown): DocumentUploadTicket {
 		const { folder, name, size } = valid(parse(DocumentUploadRequest, input));
 		const r2 = this.r2;
-		const key = `${DOCUMENT_FOLDER_KEYS[folder]}/${newUploadId()}.${documentExtension(name)}`;
+		const key = `${documentFolderKey(folder)}/${newUploadId()}.${documentExtension(name)}`;
 		const url = r2Url(r2, 'PUT', key, UPLOAD_TTL, { 'content-length': String(size) });
 		return { key, url, expiresIn: UPLOAD_TTL };
 	}
@@ -94,7 +105,7 @@ export class DocumentsService {
 	async create(input: unknown, admin: string): Promise<DocumentFile> {
 		const { folder, name, key, size } = valid(parse(DocumentCreate, input));
 		const ext = documentExtension(name)!;
-		if (!KEY.test(key) || !key.startsWith(`${DOCUMENT_FOLDER_KEYS[folder]}/`) || !key.endsWith(`.${ext}`)) {
+		if (!KEY.test(key) || !key.startsWith(`${documentFolderKey(folder)}/`) || !key.endsWith(`.${ext}`)) {
 			throw new BadRequestException('올린 파일의 키가 맞지 않습니다.');
 		}
 		const head = await this.fetch(r2Url(this.r2, 'HEAD', key, CHECK_TTL), { method: 'HEAD' });

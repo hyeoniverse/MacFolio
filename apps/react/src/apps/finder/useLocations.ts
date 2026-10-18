@@ -9,7 +9,7 @@ import { DOC_PATHS } from './docsBundle';
 import { ALBUMS } from '@/apps/photos/albums';
 
 /**
- * Finder의 위치들(문서, 사진, 프로젝트, 블로그, 응용 프로그램)과 그 안의 트리.
+ * Finder의 위치들(문서, 프로젝트, 블로그, 응용 프로그램. 사진은 프로젝트 폴더 안에)과 그 안의 트리.
  * Finder와 미리보기의 열기 창이 같은 트리를 본다: 글 목록·프로젝트·올린 문서 파일이 바뀌면 둘 다 바뀐다
  */
 export function useLocations(): FolderItem[] {
