@@ -2,17 +2,19 @@ import type { AppWindow, AppWindows } from './windowStore.js';
 
 /**
  * 처음 창 상태. linked(앱 항목 주소로 들어온 앱)는 맨 앞에 열어 두고, 나머지는 runningAtStart가 참인 앱만 켠다.
+ * runningAtStart가 'minimized'인 앱은 켜 두되 창은 내려 둔다 (macOS에서 창 없이 소리만 내는 앱처럼 Dock에만 켜짐 표시).
  * 모바일은 홈 화면에서 시작하므로 runningAtStart가 늘 거짓이다
  */
 export function initialWindows<Name extends string>(
 	names: readonly Name[],
-	{ linked, runningAtStart }: { linked: Name | null; runningAtStart: (name: Name) => boolean }
+	{ linked, runningAtStart }: { linked: Name | null; runningAtStart: (name: Name) => boolean | 'minimized' }
 ): AppWindows<Name> {
 	return Object.fromEntries(
 		names.map((name): [Name, AppWindow] => {
 			if (name === linked) return [name, { isRunning: true, isMinimized: false, zIndex: 2, hasOpened: true }];
-			const running = runningAtStart(name);
-			return [name, { isRunning: running, isMinimized: false, zIndex: 1, hasOpened: running }];
+			const start = runningAtStart(name);
+			const running = start !== false;
+			return [name, { isRunning: running, isMinimized: start === 'minimized', zIndex: 1, hasOpened: running }];
 		})
 	) as AppWindows<Name>;
 }

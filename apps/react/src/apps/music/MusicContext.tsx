@@ -134,7 +134,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 	}, [pause]);
 
 	// 음악 앱을 끄면(창 닫기, 모바일 앱 전환기에서 밀어 올리기) 재생도 멈춘다.
-	// 실행 중이다가 꺼질 때만 멈춘다: 데스크톱은 음악 창 없이 시작해도 로딩 뒤 자동 재생한다.
+	// 실행 중이다가 꺼질 때만 멈춘다: 데스크톱은 음악 앱이 실행 중인 채로 시작해 로딩 뒤 자동 재생한다.
 	const musicRunning = useAppState().apps.music.isRunning;
 	const wasRunning = useRef(musicRunning);
 	useEffect(() => {
