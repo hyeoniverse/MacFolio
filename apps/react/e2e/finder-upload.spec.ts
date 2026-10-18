@@ -122,10 +122,11 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect(page.getByText('PDF, PNG, JPG, WebP 파일만 올릴 수 있습니다.')).toBeVisible();
 		expect(puts).toHaveLength(1);
 
-		// 고르고 ⌘⌫(휴지통으로 이동) → 확인하면 목록에서 빠진다
-		page.once('dialog', (dialog) => dialog.accept());
+		// 고르고 ⌘⌫(휴지통으로 이동) → 경고창에서 확인하면 목록에서 빠진다
 		await finder.getByRole('option', { name: '새 이력서.pdf' }).click();
 		await finder.locator('.finder-content').press('ControlOrMeta+Backspace');
+		// macOS 경고창: 저장소에서도 지워진다고 알리고 확인을 받는다
+		await page.getByRole('alertdialog').getByRole('button', { name: '휴지통으로 이동' }).click();
 		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toHaveCount(0);
 		expect(docs).toHaveLength(0);
 	});
@@ -170,9 +171,10 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		expect(docs[1]).toMatchObject({ folder: 'project:macfolio', key: 'projects/macfolio/abcdefghijklmnop.pdf' });
 
 		// 관리자 메뉴: 고르고 ⌘⌫로 지운다
-		page.once('dialog', (dialog) => dialog.accept());
 		await folder.getByRole('option', { name: '구조도.pdf' }).click();
 		await finder.locator('.finder-content').press('ControlOrMeta+Backspace');
+		// macOS 경고창: 저장소에서도 지워진다고 알리고 확인을 받는다
+		await page.getByRole('alertdialog').getByRole('button', { name: '휴지통으로 이동' }).click();
 		await expect(folder.getByRole('option', { name: '구조도.pdf' })).toHaveCount(0);
 		expect(docs.map((doc) => doc.name)).toEqual(['발표.pdf']);
 	});
