@@ -67,6 +67,14 @@ describe('structureRepo', () => {
 		const { dir } = structureRepo('a/\n├── scripts/run.py   # 실행\n└── tests/');
 		expect(dir).toEqual({ scripts: { 'run.py': '실행' }, tests: {} });
 	});
+
+	it('Object.prototype을 가리키는 이름은 트리에 넣지 않는다', () => {
+		const { dir } = structureRepo(
+			'a/\n├── __proto__/\n│   └── polluted   # x\n├── constructor/\n│   └── prototype\n└── ok.txt'
+		);
+		expect(dir).toEqual({ 'ok.txt': '' });
+		expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+	});
 });
 
 describe('문서', () => {
