@@ -198,6 +198,20 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await dropFile(page, '[data-desktop-icon="docs:자격증"]', '자격.pdf', [...tinyPdf()]);
 		await expect.poll(() => docs.length).toBe(4);
 		expect(docs[3]).toMatchObject({ folder: '자격증', name: '자격.pdf' });
+
+		// 바탕화면에서 휴지통으로: 경고창은 창이 아니라 화면 한가운데, 모든 창 위 (body에 그린다)
+		await page
+			.getByRole('listbox', { name: '바탕화면' })
+			.getByRole('option', { name: '바탕.pdf' })
+			.click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '휴지통으로 이동' }).click();
+		const alert = page.getByRole('alertdialog');
+		await expect(alert).toBeVisible();
+		expect(await alert.evaluate((box) => box.closest('.ui-modal-overlay')?.parentElement === document.body)).toBe(true);
+		expect(
+			Number(await alert.evaluate((box) => getComputedStyle(box.closest('.ui-modal-overlay')!).zIndex))
+		).toBeGreaterThan(1001);
+		await alert.getByRole('button', { name: '취소' }).click();
 	});
 
 	test('사이드바에 이력서·포트폴리오·자격증이 있고, 그 위에 놓아도 올라간다', async ({ page }) => {
@@ -242,6 +256,16 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect(
 			page.getByRole('listbox', { name: '바탕화면' }).getByRole('option', { name: '사진.gif' })
 		).toBeVisible();
+
+		// 그림은 오른쪽 클릭 › 데스크탑 사진 설정으로 바로 바탕화면에
+		await page
+			.getByRole('listbox', { name: '바탕화면' })
+			.getByRole('option', { name: '사진.gif' })
+			.click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '데스크탑 사진 설정' }).click();
+		await expect
+			.poll(() => page.evaluate(() => document.documentElement.style.getPropertyValue('--wallpaper')))
+			.toContain('blob:');
 
 		expect(puts).toHaveLength(0);
 		expect(docs).toHaveLength(0);

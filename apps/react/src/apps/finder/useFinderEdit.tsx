@@ -43,7 +43,7 @@ export const stemLength = (item: FinderItem, name: string) =>
  * 관리자의 Finder 편집 (새 폴더, 이름 변경, 끌어서 옮기기, 휴지통으로 이동). Finder 창과 바탕화면이 함께 쓴다.
  * 이름이 겹치는 등 문제가 있으면 macOS처럼 경고창(alert)을 띄운다. 관리자가 아니면 모든 동작이 아무 일도 하지 않는다
  */
-export function useFinderEdit(locations: FolderItem[]) {
+export function useFinderEdit(locations: FolderItem[], scope: 'window' | 'screen' = 'window') {
 	const admin = useCanEditMemo();
 	const [dialog, setDialog] = useState<
 		| { kind: 'alert'; title: string; message?: string }
@@ -157,6 +157,7 @@ export function useFinderEdit(locations: FolderItem[]) {
 				setDialog(null);
 			}}
 			onCancel={() => setDialog(null)}
+			scope={scope}
 		/>
 	) : null;
 

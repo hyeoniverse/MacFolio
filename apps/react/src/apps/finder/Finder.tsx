@@ -16,6 +16,7 @@ import InlineName from './InlineName';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { useDocumentDrop } from './useDocumentDrop';
 import { downloadFile } from './documents';
+import { canSetWallpaper, setDesktopWallpaper } from './setWallpaper';
 import { DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest, finderFolderRequest } from './openDoc';
@@ -402,6 +403,9 @@ const Finder: React.FC = () => {
 	const menuItems: MenuItem[] = menu?.item
 		? [
 				{ label: '열기', onSelect: () => open(menu.item!) },
+				...(canSetWallpaper(menu.item)
+					? [{ label: '데스크탑 사진 설정', onSelect: () => setDesktopWallpaper(menu.item!) }]
+					: []),
 				'separator',
 				{
 					label: '이름 변경',
