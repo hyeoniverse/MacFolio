@@ -334,9 +334,30 @@
 .files-phone.file .files-phone-scroll {
 	display: flex;
 	flex-direction: column;
-	padding: calc(var(--phone-top) + 54px) 0 var(--phone-bottom-inset);
+	padding: 0;
 	overflow: hidden;
-	background-color: var(--phone-card-bg);
+	background-color: color-mix(in srgb, var(--color-text) 8%, var(--phone-card-bg));
+}
+
+/* 쪽은 위 버튼 줄과 홈 표시줄 밑으로도 지나간다 (iOS 훑어보기처럼 화면 끝까지). 위는 흐린 막으로 버튼 줄을 읽히게 한다 */
+.files-phone.file::before {
+	content: '';
+	position: absolute;
+	inset: 0 0 auto;
+	z-index: 3;
+	height: calc(var(--phone-top) + 54px);
+	background-color: color-mix(in srgb, var(--phone-card-bg) 78%, transparent);
+	backdrop-filter: blur(18px);
+	pointer-events: none;
+}
+
+.files-phone.file .preview-pdf {
+	padding-top: calc(var(--phone-top) + 54px + 12px);
+	padding-bottom: calc(var(--phone-bottom-inset) + 56px);
+}
+
+.files-phone.file .preview-image {
+	padding: calc(var(--phone-top) + 54px) 0 var(--phone-bottom-inset);
 }
 
 /* iOS 훑어보기처럼: 회색 바탕에 쪽이 폭에 맞춰 이어지고, 아래 가운데에 지금 쪽 */
@@ -355,7 +376,7 @@
 
 .finder-file-page {
 	position: absolute;
-	bottom: 16px;
+	bottom: calc(var(--phone-bottom-inset) + 12px);
 	left: 50%;
 	padding: 6px 14px;
 	border-radius: 999px;
