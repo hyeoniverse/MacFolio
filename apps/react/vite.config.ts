@@ -70,6 +70,12 @@ export default defineConfig({
 	plugins: [react(), securityHeadersPlugin(), publicImagesPlugin()],
 	// 단위 시험(Vitest)도 desktop-core의 src를 읽는다
 	ssr: { resolve: { conditions: ['source', ...defaultServerConditions] } },
+	// 로컬 개발(pnpm dev)에는 사이트 Worker가 없어 /files/*(R2 문서 파일)를 내줄 곳이 없다. 배포한 사이트로 넘긴다.
+	// 다른 곳을 보려면 FILES_ORIGIN (예: PR 미리보기 주소). E2E(vite preview)는 넘기지 않는다 (시험이 가짜 파일을 준다)
+	server: {
+		proxy: { '/files': { target: process.env.FILES_ORIGIN || 'https://macfolio.hyeoniverse.com', changeOrigin: true } },
+	},
+	preview: { proxy: {} },
 	build: {
 		rollupOptions: {
 			// api-docs.html: 'API 문서' 앱이 iframe으로 띄우는 페이지 (Scalar가 주소·CSS를 직접 써서 사이트와 떼어 둔다)

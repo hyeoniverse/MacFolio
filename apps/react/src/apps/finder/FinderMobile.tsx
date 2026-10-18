@@ -3,6 +3,7 @@ import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
 import { find, KIND_LABELS, recentItems, search, sortItems, type FinderItem, type SortKey } from './files';
 import FileView from './FileView';
+import { downloadFile, openFileInNewTab } from './documents';
 import { DOC_SOURCES } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
@@ -127,18 +128,51 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 
 	if (screen && 'file' in screen) {
 		const file = find(locations, screen.file);
+		const viewable = file && (file.kind === 'pdf' || file.kind === 'image') ? file : null;
 		return (
 			<div className="files-phone file">
 				{navigation}
+				{/* 오른쪽 위: 공유 (iOS 훑어보기의 공유 버튼) */}
+				{viewable && (
+					<IconButton
+						ref={moreButton}
+						className="files-phone-more"
+						label="공유"
+						icon="fa-solid fa-arrow-up-from-bracket"
+						aria-haspopup="menu"
+						aria-expanded={menu !== null}
+						onClick={(event) => {
+							const rect = event.currentTarget.getBoundingClientRect();
+							setMenu(menu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
+						}}
+					/>
+				)}
+				{viewable && menu && (
+					<Menu
+						label="공유"
+						variant="ios"
+						anchor={menu}
+						trigger={moreButton}
+						onClose={() => setMenu(null)}
+						items={[
+							{
+								label: '다운로드',
+								icon: 'fa-solid fa-download',
+								onSelect: () => downloadFile(viewable.key, viewable.name),
+							},
+							{
+								label: '새 탭에서 열기',
+								icon: 'fa-solid fa-arrow-up-right-from-square',
+								onSelect: () => openFileInNewTab(viewable.key),
+							},
+						]}
+					/>
+				)}
 				<h2 key={`title:${screenKey}`} className="files-phone-bar-title">
 					{title}
 				</h2>
 				<div key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
-					{file && (file.kind === 'pdf' || file.kind === 'image') ? (
-						<FileView item={file} />
-					) : (
-						<p className="files-phone-empty">파일을 찾을 수 없습니다.</p>
-					)}
+					{viewable ? <FileView item={viewable} /> : <p className="files-phone-empty">파일을 찾을 수 없습니다.</p>}
 				</div>
 			</div>
 		);

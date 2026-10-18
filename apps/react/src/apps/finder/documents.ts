@@ -114,6 +114,19 @@ export async function renameDocument(id: string, name: string): Promise<void> {
 export const fileUrl = (key: string, download = false) =>
 	`/files/${key.split('/').map(encodeURIComponent).join('/')}${download ? '?download=1' : ''}`;
 
+/** 파일을 내려받는다 (?download=1이라 브라우저가 저장한다) */
+export function downloadFile(key: string, name: string) {
+	const link = document.createElement('a');
+	link.href = fileUrl(key, true);
+	link.download = name;
+	document.body.append(link);
+	link.click();
+	link.remove();
+}
+
+/** 파일을 브라우저의 새 탭에서 연다 */
+export const openFileInNewTab = (key: string) => window.open(fileUrl(key), '_blank', 'noopener,noreferrer');
+
 /** 크기 보기 (예: 1.2 MB) */
 export function formatSize(bytes: number): string {
 	if (bytes < 1024) return `${bytes} B`;

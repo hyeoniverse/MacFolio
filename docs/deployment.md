@@ -95,6 +95,25 @@
 
 5. 올리기 전에 **전화번호, 집 주소, 생년월일, 주민등록번호 같은 신분 번호를 지운다**(자격증 사본의 자격증 번호도 가린다)
 
+#### 로컬에서 올려 보기
+
+로컬 개발 서버에서도 실제 R2에 올려 볼 수 있다. 목록은 로컬 DB에만 남으니 배포한 사이트에는 보이지 않는다(R2에 남은 시험 파일은 Finder에서 지우면 R2에서도 지워진다).
+
+1. `apps/api/.env`에 위 3의 네 줄(`R2_ACCOUNT_ID` 등)을 넣는다. 배포와 같은 키를 써도 된다
+2. 버킷 CORS의 `AllowedOrigins`에 `http://localhost:5173`을 더한다
+3. 관리자 로그인이 되게 개발용 GitHub OAuth App을 쓴다('2. GitHub OAuth App'의 개발용). 그다음
+
+   ```bash
+   echo 'VITE_API_URL=http://localhost:4000' > apps/react/.env.local
+   pnpm dev:all     # 프론트엔드 5173 + API 4000
+   ```
+
+4. http://localhost:5173 에서 관리자로 로그인하고 Finder의 이력서 폴더에 파일을 끌어다 놓는다
+
+로컬 개발 서버에는 사이트 Worker가 없어서 `/files/*`(파일 받기)는 배포한 사이트로 넘긴다(`vite.config.ts`의 `server.proxy`). 배포한 사이트가 같은 버킷을 읽으므로 로컬에서 올린 파일도 미리보기 앱에서 열린다. 다른 곳으로 넘기려면 `FILES_ORIGIN=https://<PR 미리보기 주소> pnpm dev`.
+
+키 없이 화면만 보려면 E2E가 쓰는 가짜 목록을 쓴다: 개발자 도구 콘솔에서 `window.__MACFOLIO_DOCUMENTS__ = [{ folder: '이력서', name: '시험.pdf', key: 'resume/test.pdf', kind: 'pdf' }]`를 넣고 Finder를 연다(파일 자체는 없어서 미리보기는 "열 수 없습니다"). 업로드 흐름 전체는 `e2e/finder-upload.spec.ts`가 가짜 API·가짜 R2로 시험한다(`pnpm --filter @macfolio/react test:e2e finder-upload`).
+
 사이트 CSP의 `connect-src`에는 `https://*.r2.cloudflarestorage.com`이 있다(서명 주소로 올리기). 서명이 없는 요청은 R2가 받지 않는다.
 
 비용: R2 무료 사용량(저장 10GB, Class A 작업 월 100만 회, Class B 작업 월 1,000만 회, 내보내기 무료) 안에서 충분하다. 문서 몇 개를 읽기만 한다.

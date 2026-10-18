@@ -31,6 +31,8 @@
 	flex: 1;
 	min-width: 0;
 	line-height: 1.25;
+	/* macOS 미리보기처럼 이름은 사이드바 버튼 옆에 왼쪽 정렬 */
+	text-align: left;
 }
 
 .preview-title h1 {
@@ -53,24 +55,12 @@
 	display: flex;
 	flex: none;
 	align-items: center;
-	gap: var(--space-4);
+	gap: var(--space-6);
 }
 
 .preview-zoom {
 	display: inline-flex;
 	gap: 1px;
-}
-
-.preview-zoom-level {
-	min-width: 40px;
-	color: var(--color-text-secondary);
-	font-size: 11px;
-	font-variant-numeric: tabular-nums;
-	text-align: center;
-}
-
-.preview-link {
-	text-decoration: none;
 }
 
 .preview-search {
@@ -161,7 +151,7 @@
 	flex-direction: column;
 	align-items: center;
 	gap: var(--space-4);
-	padding: var(--space-4);
+	padding: var(--space-8) var(--space-10) var(--space-4);
 	border: 0;
 	border-radius: 6px;
 	background: none;
@@ -177,10 +167,6 @@
 	width: 96px;
 	background-color: #fff;
 	box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
-	/* 고른 쪽은 파란 테두리 (macOS 미리보기처럼) */
-	outline: 3px solid transparent;
-	outline-offset: 2px;
-	border-radius: 2px;
 }
 
 .preview-thumb img {
@@ -188,9 +174,9 @@
 	object-fit: contain;
 }
 
-.preview-thumb.active canvas,
-.preview-thumb.active img {
-	outline-color: var(--color-accent);
+/* 고른 쪽: macOS 미리보기처럼 쪽 그림 둘레가 둥근 회색 칸으로 칠해지고 번호가 진해진다 */
+.preview-thumb.active {
+	background-color: var(--color-selected-bg);
 }
 
 .preview-thumb.active span {
@@ -245,15 +231,24 @@
 	display: grid;
 	flex: 1;
 	place-items: center;
-	padding: var(--space-24);
 	overflow: auto;
 	outline: none;
 	animation: fade-in var(--duration) var(--ease-out);
 }
 
+/* 돌린 그림이 차지하는 칸. 그림은 칸 가운데에서 돈다 */
+.preview-image-frame {
+	position: relative;
+	flex: none;
+}
+
 .preview-image img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
 	max-width: none;
 	box-shadow: 0 2px 12px rgb(0 0 0 / 0.2);
+	transition: transform var(--duration) var(--ease-out);
 }
 
 .preview-note {

@@ -6,11 +6,13 @@ import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import IconButton from '@/shared/ui/button/IconButton';
 import SidebarToggle from '@/shared/ui/button/SidebarToggle';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import '@/shared/ui/button/Button.css';
-import { fileUrl, formatSize } from '@/apps/finder/documents';
+import { downloadFile, fileUrl, formatSize, openFileInNewTab } from '@/apps/finder/documents';
 import { closeInPreview, selectInPreview, usePreview, type PreviewFile } from './previewStore';
 import { countMatches, loadPdf } from './pdf';
 import PdfView, { PdfThumb, type PdfViewHandle } from './PdfView';
+import ImageView from './ImageView';
 import './Preview.css';
 
 /** 배율 단계. 확대·축소는 지금 배율의 다음 단계로 간다 */
@@ -59,6 +61,19 @@ const Preview: React.FC = () => {
 	const step = (direction: 1 | -1) => {
 		const next = nextZoom(scale, direction);
 		if (next !== null) setZoom(next);
+	};
+
+	// 파일마다 돌린 각도 (도구 막대의 회전, 왼쪽으로 90도씩)
+	const [rotations, setRotations] = useState<Record<string, number>>({});
+	const rotation = file ? (rotations[file.key] ?? 0) : 0;
+	const rotate = (by: 90 | -90) =>
+		file && setRotations((all) => ({ ...all, [file.key]: ((all[file.key] ?? 0) + by + 360) % 360 }));
+
+	// 도구 막대의 정보(ⓘ)·공유 메뉴
+	const [popup, setPopup] = useState<{ kind: 'info' | 'share'; x: number; y: number } | null>(null);
+	const openPopup = (kind: 'info' | 'share') => (event: React.MouseEvent<HTMLButtonElement>) => {
+		const rect = event.currentTarget.getBoundingClientRect();
+		setPopup(popup?.kind === kind ? null : { kind, x: rect.left, y: rect.bottom + 6 });
 	};
 
 	const [page, setPage] = useState(1);
@@ -172,6 +187,13 @@ const Preview: React.FC = () => {
 			],
 		},
 		{
+			title: '도구',
+			items: [
+				{ label: '왼쪽으로 회전', disabled: !file, onSelect: () => rotate(-90) },
+				{ label: '오른쪽으로 회전', disabled: !file, onSelect: () => rotate(90) },
+			],
+		},
+		{
 			title: '이동',
 			items: [
 				{
@@ -206,7 +228,7 @@ const Preview: React.FC = () => {
 		? ''
 		: file.kind === 'pdf'
 			? pages > 0
-				? `${page}/${pages}쪽`
+				? `${pages}페이지 중 ${page}페이지`
 				: 'PDF 문서'
 			: `이미지${file.size !== undefined ? ` · ${formatSize(file.size)}` : ''}`;
 
@@ -221,6 +243,13 @@ const Preview: React.FC = () => {
 					</div>
 					{file && (
 						<div className="preview-tools">
+							<IconButton
+								icon="fa-solid fa-circle-info"
+								label="정보"
+								aria-haspopup="menu"
+								aria-expanded={popup?.kind === 'info'}
+								onClick={openPopup('info')}
+							/>
 							<span className="preview-zoom" role="group" aria-label="배율">
 								<IconButton
 									icon="fa-solid fa-magnifying-glass-minus"
@@ -235,28 +264,14 @@ const Preview: React.FC = () => {
 									onClick={() => step(1)}
 								/>
 							</span>
-							<span className="preview-zoom-level" aria-label="지금 배율">
-								{zoom === null ? '맞춤' : `${Math.round(zoom * 100)}%`}
-							</span>
-							<a
-								className="ui-icon-button tool preview-link"
-								href={fileUrl(file.key, true)}
-								download={file.name}
-								aria-label="다운로드"
-								title="다운로드"
-							>
-								<i className="fa-solid fa-download" aria-hidden="true" />
-							</a>
-							<a
-								className="ui-icon-button tool preview-link"
-								href={fileUrl(file.key)}
-								target="_blank"
-								rel="noopener noreferrer"
-								aria-label="새 창에서 열기"
-								title="새 창에서 열기"
-							>
-								<i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
-							</a>
+							<IconButton
+								icon="fa-solid fa-arrow-up-from-bracket"
+								label="공유"
+								aria-haspopup="menu"
+								aria-expanded={popup?.kind === 'share'}
+								onClick={openPopup('share')}
+							/>
+							<IconButton icon="fa-solid fa-rotate-left" label="왼쪽으로 회전" onClick={() => rotate(-90)} />
 							{file.kind === 'pdf' && (
 								<div ref={search} className="preview-search">
 									<SearchField
@@ -283,6 +298,29 @@ const Preview: React.FC = () => {
 						</div>
 					)}
 				</header>
+				{file && popup && (
+					<Menu
+						label={popup.kind === 'info' ? '정보' : '공유'}
+						anchor={popup}
+						onClose={() => setPopup(null)}
+						items={
+							popup.kind === 'info'
+								? infoItems(file, pages, scale, zoom)
+								: [
+										{
+											label: '다운로드',
+											icon: 'fa-solid fa-download',
+											onSelect: () => downloadFile(file.key, file.name),
+										},
+										{
+											label: '새 탭에서 열기',
+											icon: 'fa-solid fa-arrow-up-right-from-square',
+											onSelect: () => openFileInNewTab(file.key),
+										},
+									]
+						}
+					/>
+				)}
 
 				<div className="preview-body">
 					{sidebar && (
@@ -307,7 +345,14 @@ const Preview: React.FC = () => {
 						{!file ? (
 							<PreviewEmpty />
 						) : file.kind === 'image' ? (
-							<ImageView key={file.key} file={file} zoom={zoom} onScale={onScale} />
+							<ImageView
+								key={file.key}
+								fileKey={file.key}
+								name={file.name}
+								zoom={zoom}
+								rotation={rotation}
+								onScale={onScale}
+							/>
 						) : docs[file.key] === 'error' ? (
 							<p className="preview-note">PDF를 열 수 없습니다.</p>
 						) : doc ? (
@@ -322,6 +367,7 @@ const Preview: React.FC = () => {
 								matchCounts={matchCounts}
 								activeMatch={match}
 								label={file.name}
+								rotation={rotation}
 							/>
 						) : (
 							<p className="preview-note">여는 중…</p>
@@ -381,40 +427,15 @@ const SidebarFile: React.FC<{
 	</section>
 );
 
-/** 그림: 맞춤이면 창 안에 들어오게(키우지는 않는다), 배율이면 실제 크기 기준으로 */
-const ImageView: React.FC<{ file: PreviewFile; zoom: number | null; onScale: (scale: number) => void }> = ({
-	file,
-	zoom,
-	onScale,
-}) => {
-	const box = useRef<HTMLElement>(null);
-	const [natural, setNatural] = useState<{ width: number; height: number } | null>(null);
-	const [area, setArea] = useState({ width: 0, height: 0 });
-	useEffect(() => {
-		const el = box.current;
-		if (!el) return;
-		const observer = new ResizeObserver(() => setArea({ width: el.clientWidth, height: el.clientHeight }));
-		observer.observe(el);
-		return () => observer.disconnect();
-	}, []);
-	const fit =
-		natural && area.width > 0 ? Math.min(1, (area.width - 48) / natural.width, (area.height - 48) / natural.height) : 1;
-	const scale = zoom ?? fit;
-	useEffect(() => onScale(scale), [scale, onScale]);
-	return (
-		<section ref={box} className="preview-image" aria-label={file.name} tabIndex={0}>
-			<img
-				src={fileUrl(file.key)}
-				alt={file.name}
-				draggable={false}
-				style={natural ? { width: natural.width * scale, height: natural.height * scale } : undefined}
-				onLoad={(event) =>
-					setNatural({ width: event.currentTarget.naturalWidth, height: event.currentTarget.naturalHeight })
-				}
-			/>
-		</section>
-	);
-};
+/** 정보(ⓘ) 메뉴: 이름, 종류, 크기, 쪽 수, 배율 */
+function infoItems(file: PreviewFile, pages: number, scale: number, zoom: number | null): MenuItem[] {
+	return [
+		{ heading: file.name },
+		{ note: file.kind === 'pdf' ? `PDF 문서${pages > 0 ? ` · ${pages}페이지` : ''}` : '이미지' },
+		...(file.size !== undefined ? [{ note: `크기: ${formatSize(file.size)}` }] : []),
+		{ note: `배율: ${zoom === null ? `맞춤 (${Math.round(scale * 100)}%)` : `${Math.round(zoom * 100)}%`}` },
+	];
+}
 
 const PreviewEmpty: React.FC = () => {
 	const { openApp, bringAppToFront } = useAppState();
