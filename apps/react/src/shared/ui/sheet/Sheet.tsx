@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import '@/shared/ui/sheet/Sheet.css';
 
@@ -50,11 +50,16 @@ const Sheet = ({ label, onClose, variant = 'page', className, style, children }:
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, []);
 
-	const setBox = (element: HTMLDivElement | null) => {
-		box.current = element;
-		// 덮개가 없는 cover는 시트 자신이 내려가며 사라진다 (덮개가 있으면 덮개의 복사본 안에서 내려간다)
-		return variant === 'cover' ? coverExit(element) : undefined;
-	};
+	// ref 함수는 한 번만 만든다: 그릴 때마다 새 함수면 React가 옛 ref를 정리하며 사라지는 움직임을 돌려,
+	// 재생 시간이 바뀔 때마다 시트 복사본이 아래로 내려가는 움직임이 끝없이 되풀이된다
+	const setBox = useCallback(
+		(element: HTMLDivElement | null) => {
+			box.current = element;
+			// 덮개가 없는 cover는 시트 자신이 내려가며 사라진다 (덮개가 있으면 덮개의 복사본 안에서 내려간다)
+			return variant === 'cover' ? coverExit(element) : undefined;
+		},
+		[variant, coverExit]
+	);
 
 	const sheet = (
 		<div

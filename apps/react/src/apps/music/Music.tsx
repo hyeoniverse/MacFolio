@@ -150,13 +150,14 @@ const NowPlayingSheet: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 			onClose={onClose}
 		>
 			{/* 곡이 바뀌면 표지와 제목이 새로 나타난다 */}
+			{/* 형제끼리 key가 같으면 React가 옛 요소를 지우지 못해 곡이 바뀔 때마다 쌓인다. 그래서 key에 자리 이름을 붙인다 */}
 			<img
-				key={track.id}
+				key={`art-${track.id}`}
 				className={`music-now-art ${isPlaying ? 'playing' : ''}`}
 				src={track.artwork}
 				alt={`${track.album} 앨범 표지`}
 			/>
-			<div key={track.id} className="music-now-info music-track-swap">
+			<div key={`info-${track.id}`} className="music-now-info music-track-swap">
 				<strong>{track.title}</strong>
 				<span>{track.artist}</span>
 			</div>
@@ -446,8 +447,9 @@ const Music: React.FC = () => {
 							aria-label="지금 재생 중 열기"
 							onClick={() => setNowPlayingOpen(true)}
 						>
-							<img key={track.id} className="music-track-swap" src={track.artwork} alt="" />
-							<span key={track.id} className="music-track-swap">
+							{/* 형제끼리 key가 같으면 곡이 바뀔 때 옛 표지·제목이 지워지지 않고 쌓인다 */}
+							<img key={`art-${track.id}`} className="music-track-swap" src={track.artwork} alt="" />
+							<span key={`title-${track.id}`} className="music-track-swap">
 								<strong>{track.title}</strong>
 								<small>
 									{track.artist} — {track.album}
