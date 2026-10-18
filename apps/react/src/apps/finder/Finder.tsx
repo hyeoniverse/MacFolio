@@ -9,7 +9,16 @@ import { requestOpen } from '@/shared/lib/openRequest';
 import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
-import { countLabel, find, KIND_LABELS, pathTo, search, type FinderItem, type FolderItem } from './files';
+import {
+	countLabel,
+	find,
+	KIND_LABELS,
+	pathTo,
+	search,
+	uploadFolderOf,
+	type FinderItem,
+	type FolderItem,
+} from './files';
 import { deleteDocument, renameDocument } from './documents';
 import { useDocumentDrop } from './useDocumentDrop';
 import { messageOf } from '@/shared/api/client';
@@ -33,7 +42,6 @@ type Place = { folder: string } | { doc: string };
 
 const LOCATION_ICONS: Record<string, string> = {
 	docs: 'fa-regular fa-file-lines',
-	pictures: 'fa-regular fa-image',
 	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
 };
@@ -94,7 +102,9 @@ const Finder: React.FC = () => {
 	}, [mobile]);
 
 	const folder = 'folder' in place ? (find(locations, place.folder) as FolderItem | null) : null;
-	const drop = useDocumentDrop(folder && folder.id === `docs:${folder.name}` ? folder.name : null);
+	// 관리자가 파일을 놓아 올릴 폴더 값 (이력서·포트폴리오·자격증 또는 project:<프로젝트 id>)
+	const dropFolder = uploadFolderOf(folder);
+	const drop = useDocumentDrop(dropFolder);
 	const searching = query.trim() !== '';
 	// 다른 폴더·문서·보기로 가면 내용을 새로 그린다 (motion.css의 motion-swap). 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다
 	const placeKey = `${JSON.stringify(place)}|${view}|${searching}`;
@@ -270,12 +280,10 @@ const Finder: React.FC = () => {
 
 	const itemProps = (item: FinderItem) => ({
 		'data-id': item.id,
-		// 관리자: 이력서·포트폴리오·자격증 폴더 아이콘 위에 파일을 놓아도 올린다
-		'data-drop-folder': item.kind === 'folder' && item.id === `docs:${item.name}` ? item.name : undefined,
+		// 관리자: 이력서·포트폴리오·자격증 폴더나 프로젝트 폴더 아이콘 위에 파일을 놓아도 올린다
+		'data-drop-folder': uploadFolderOf(item) ?? undefined,
 		className: `finder-item ${item.kind}${selected === item.id ? ' selected' : ''}${
-			drop.target && item.kind === 'folder' && item.name === drop.target && folder?.name !== drop.target
-				? ' drop-target'
-				: ''
+			drop.target && uploadFolderOf(item) === drop.target && dropFolder !== drop.target ? ' drop-target' : ''
 		}`,
 		'aria-selected': selected === item.id,
 		role: 'option' as const,
@@ -287,7 +295,6 @@ const Finder: React.FC = () => {
 	});
 
 	const empty = !searching && folder && items.length === 0;
-	const dropFolder = folder && folder.id === `docs:${folder.name}` ? folder.name : null;
 
 	return (
 		<AppWindow title={appTitle} appName="finder" chrome="unified">
@@ -438,7 +445,11 @@ const Finder: React.FC = () => {
 								{drop.uploads.map((upload) => (
 									<li key={upload.id}>
 										<span>
-											{upload.folder} › {upload.name}
+											{/* 프로젝트 폴더는 project:<id> 대신 프로젝트 이름으로 */}
+											{upload.folder.startsWith('project:')
+												? (find(locations, `projects/${upload.folder.slice(8)}`)?.name ?? upload.folder.slice(8))
+												: upload.folder}{' '}
+											› {upload.name}
 										</span>
 										<progress value={upload.progress} max={1} aria-label={`${upload.name} 올리는 중`} />
 									</li>

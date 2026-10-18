@@ -34,6 +34,18 @@ describe('fileKey', () => {
 			expect(fileKey(path)).toBeNull();
 	});
 
+	it('프로젝트 폴더 키 (projects/<프로젝트 id>/<파일>)까지만, 더 깊은 경로는 막는다', () => {
+		expect(fileKey('/files/projects/macfolio/slides.pdf')).toBe('projects/macfolio/slides.pdf');
+		for (const path of [
+			'/files/projects/macfolio/x/slides.pdf',
+			'/files/resume/x/a.pdf',
+			'/files/projects/Mac/a.pdf',
+			'/files/projects/%2E%2E/a.pdf',
+			'/files/projects/../resume/a.pdf',
+		])
+			expect(fileKey(path)).toBeNull();
+	});
+
 	it('경로 바꾸기를 막는다', () => {
 		for (const path of [
 			'/files/../secret.pdf',

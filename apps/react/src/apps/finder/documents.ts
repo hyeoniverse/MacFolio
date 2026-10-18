@@ -7,6 +7,9 @@ import {
 	documentExtension,
 	type DocumentFile,
 	type DocumentFolder,
+	type DocumentFolderValue,
+	documentProjectId,
+	type ProjectDocumentFolder,
 	type DocumentUploadTicket,
 	MAX_DOCUMENT_BYTES,
 } from '@macfolio/contracts';
@@ -14,7 +17,10 @@ import { createStore } from '@macfolio/desktop-core';
 import { api } from '@/shared/api/client';
 import { env } from '@/shared/config/env';
 
-export { DOCUMENT_FOLDERS, type DocumentFolder };
+export { DOCUMENT_FOLDERS, type DocumentFolder, type DocumentFolderValue, documentProjectId };
+
+/** 프로젝트 폴더의 폴더 값 (project:<프로젝트 id>) */
+export const projectFolderValue = (projectId: string): ProjectDocumentFolder => `project:${projectId}`;
 
 /** Finder에 보일 파일 하나. 시험용 목록은 id·크기·날짜를 빼도 된다 */
 export type DocumentEntry = Pick<DocumentFile, 'folder' | 'name' | 'key' | 'kind'> &
@@ -80,11 +86,11 @@ function put(url: string, file: File, onProgress: (ratio: number) => void): Prom
 }
 
 /**
- * 관리자: 파일 하나를 폴더에 올린다. 서버에서 서명 주소를 받아 R2에 바로 올리고, 다 올리면 목록에 더한다.
+ * 관리자: 파일 하나를 폴더(이력서·포트폴리오·자격증 또는 project:<프로젝트 id>)에 올린다. 서버에서 서명 주소를 받아 R2에 바로 올리고, 다 올리면 목록에 더한다.
  * 실패하면 까닭을 담은 Error
  */
 export async function uploadDocument(
-	folder: DocumentFolder,
+	folder: DocumentFolderValue,
 	file: File,
 	onProgress: (ratio: number) => void = () => undefined
 ): Promise<DocumentFile> {
