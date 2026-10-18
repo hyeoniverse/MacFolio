@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { change, eventLabel, formatDuration, kstToday, labelOf, periodRange } from './model';
+import { buildUtmUrl, change, eventLabel, formatDuration, kstToday, labelOf, periodRange, utmLabel } from './model';
 
 describe('활동 상태 보기의 값 바꾸기', () => {
 	it('기간은 오늘(한국 시간)까지', () => {
@@ -40,5 +40,33 @@ describe('활동 상태 보기의 값 바꾸기', () => {
 		expect(eventLabel({ type: 'link', app: null, item: 'github.com/hyeoniverse', at })).toBe(
 			'github.com/hyeoniverse 누름'
 		);
+	});
+});
+
+describe('utm (#211)', () => {
+	const empty = { source: '', medium: '', campaign: '', term: '', content: '' };
+	const origin = 'https://macfolio.hyeoniverse.com';
+
+	it('조합 표의 이름은 출처 / 매체 / 캠페인, 빈 칸은 -', () => {
+		expect(utmLabel('linkedin / social / resume-2026')).toBe('linkedin / social / resume-2026');
+		expect(utmLabel('velog /  / ')).toBe('velog / - / -');
+		expect(labelOf('utm', ' / email / ')).toBe('- / email / -');
+	});
+
+	it('링크 생성기: 값은 소문자·공백은 -로 다듬고 빈 칸은 붙이지 않는다', () => {
+		expect(buildUtmUrl('/', { ...empty, source: 'LinkedIn', medium: 'social', campaign: 'Resume 2026' }, origin)).toBe(
+			`${origin}/?utm_source=linkedin&utm_medium=social&utm_campaign=resume-2026`
+		);
+		expect(buildUtmUrl('/memo/branded-ids', { ...empty, source: 'velog', term: 'Front End' }, origin)).toBe(
+			`${origin}/memo/branded-ids?utm_source=velog&utm_term=front-end`
+		);
+	});
+
+	it('링크 생성기: 다른 쿼리는 두고, 있던 utm은 바꾼다. 전체 주소도 받는다. http가 아니면 null', () => {
+		expect(buildUtmUrl(`${origin}/memo/a?q=1&utm_source=old#h`, { ...empty, source: 'github' }, origin)).toBe(
+			`${origin}/memo/a?q=1&utm_source=github#h`
+		);
+		expect(buildUtmUrl('', { ...empty, campaign: 'x' }, origin)).toBe(`${origin}/?utm_campaign=x`);
+		expect(buildUtmUrl('javascript:alert(1)', empty, origin)).toBeNull();
 	});
 });

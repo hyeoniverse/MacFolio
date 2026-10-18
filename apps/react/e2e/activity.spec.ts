@@ -26,7 +26,11 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		]);
 		await expect(activity.getByRole('table', { name: '들어온 곳' })).toHaveCount(0);
 		await expect(activity.getByRole('table', { name: '캠페인 (utm_campaign)' })).toHaveCount(0);
+		await expect(activity.getByRole('table', { name: '출처 / 매체 / 캠페인' })).toHaveCount(0);
+		await expect(activity.getByText('UTM 링크 만들기')).toHaveCount(0);
 		await expect(activity.getByRole('heading', { name: '관리자만 볼 수 있습니다' })).toBeVisible();
+		// 방문자 화면 어디에도 utm 값이 없다
+		await expect(activity).not.toContainText(/resume|recruit|kakao-2026|linkedin \/|footer/);
 
 		await activity.getByRole('tab', { name: '실시간' }).click();
 		await expect(activity.getByRole('heading', { name: '관리자만 볼 수 있습니다' })).toBeVisible();
@@ -92,6 +96,86 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await activity.getByRole('tab', { name: '지역·기기' }).click();
 		await expect(activity.getByRole('table', { name: '나라' })).toContainText('대한민국 (KR)');
 		await expect(activity.getByRole('table', { name: '기기' })).toContainText('모바일');
+	});
+
+	test('관리자 (#211): 매체·조합 표, 조합을 누르면 일별 추이, term·content는 값이 있을 때만', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '유입 경로' }).click();
+
+		const combos = activity.getByRole('table', { name: '출처 / 매체 / 캠페인' });
+		await expect(combos.locator('tbody tr')).toHaveText([
+			/^resume \/ recruit \/ kakao-202625/,
+			/^resume \/ - \/ -15/,
+			/^linkedin \/ social \/ -12/,
+		]);
+		await expect(activity.getByRole('table', { name: '매체 (utm_medium)' })).toContainText('recruit25');
+		await expect(activity.getByText('이 기능을 배포한 날부터 셉니다').first()).toBeVisible();
+		await expect(activity.getByRole('table', { name: '내용 (utm_content)' })).toContainText('footer3');
+		await expect(activity.getByRole('table', { name: '검색어 (utm_term)' })).toHaveCount(0);
+
+		await combos.getByRole('button', { name: 'resume / recruit / kakao-2026' }).click();
+		await expect(combos.getByRole('button', { name: 'resume / recruit / kakao-2026' })).toHaveAttribute(
+			'aria-pressed',
+			'true'
+		);
+		const trend = activity.getByRole('region', { name: 'resume / recruit / kakao-2026 일별 방문' });
+		await expect(
+			trend.getByRole('img', { name: /^resume \/ recruit \/ kakao-2026 일별 방문: 2026-10-01 0회/ })
+		).toBeVisible();
+		expect(api.analyticsQueries.at(-1)).toContain(`utm=${encodeURIComponent('resume / recruit / kakao-2026')}`);
+		// 다시 누르면 접힌다
+		await combos.getByRole('button', { name: 'resume / recruit / kakao-2026' }).click();
+		await expect(trend).toHaveCount(0);
+	});
+
+	test('관리자 (#211): UTM 링크 만들기로 만든 주소를 열면 그 조합이 표에 1 늘어난다', async ({ page, context }) => {
+		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '유입 경로' }).click();
+		const combos = activity.getByRole('table', { name: '출처 / 매체 / 캠페인' });
+		await expect(combos.locator('tbody tr', { hasText: 'linkedin / social / -' })).toContainText('12');
+
+		await activity.getByText('UTM 링크 만들기').click();
+		const builder = activity.locator('.utm-builder');
+		const copy = activity.getByRole('button', { name: '복사', exact: true });
+		await expect(copy).toBeDisabled();
+		await builder.getByLabel('대상 주소').fill('/memo/cra-to-vite');
+		await builder.getByLabel('출처 (utm_source)').fill('LinkedIn');
+		await builder.getByLabel('매체 (utm_medium)').fill('Social');
+		const output = activity.getByRole('status', { name: '완성된 주소' });
+		await expect(output).toHaveText(/\/memo\/cra-to-vite\?utm_source=linkedin&utm_medium=social$/);
+		await copy.click();
+		await expect(activity.getByRole('button', { name: '복사함' })).toBeVisible();
+		const link = await page.evaluate(() => navigator.clipboard.readText());
+		expect(link).toBe(await output.textContent());
+
+		// 방문자가 그 주소를 연다 (같은 가짜 서버로 보낸다)
+		const visitor = await context.newPage();
+		const other = await fakeApi(visitor);
+		other.analytics = api.analytics;
+		await visitor.addInitScript(() => {
+			window.__MACFOLIO_ANALYTICS__ = true;
+		});
+		const url = new URL(link);
+		await enterDesktop(visitor, `${url.pathname}${url.search}`);
+		await expect.poll(() => new URL(visitor.url()).search).toBe('');
+		await visitor.evaluate(() => {
+			Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+			document.dispatchEvent(new Event('visibilitychange'));
+		});
+		await expect.poll(() => api.analytics.length).toBeGreaterThan(0);
+
+		// 다시 물으면 그 조합이 1 늘었다
+		await activity.getByLabel('기간').selectOption('30d');
+		await expect(combos.locator('tbody tr', { hasText: 'linkedin / social / -' })).toContainText('13');
 	});
 
 	test('관리자: 실시간에서 방문을 누르면 흐름(들어옴 → 앱 열기 → 글 보기 → 링크)이 펼쳐진다', async ({ page }) => {

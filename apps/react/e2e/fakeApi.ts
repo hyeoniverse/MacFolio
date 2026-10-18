@@ -504,10 +504,40 @@ export async function fakeApi(
 		// 요약은 누구나: 방문자에게는 들어온 곳의 호스트·utm을 뺀 공개용 (서버와 같다)
 		if (path === '/analytics/summary') {
 			state.analyticsQueries.push(new URL(request.url()).search);
-			const summary = state.analyticsSummary as { breakdown: Record<string, unknown> };
-			const json = state.signedIn
-				? summary
-				: { ...summary, scope: 'public', breakdown: { ...summary.breakdown, referrer: [], source: [], campaign: [] } };
+			const summary = state.analyticsSummary as {
+				days: { day: string; visits: number }[];
+				breakdown: Record<string, { key: string; value: number }[]>;
+			};
+			if (!state.signedIn) {
+				const hidden = ['referrer', 'source', 'medium', 'campaign', 'utm', 'term', 'content'];
+				const json = {
+					...summary,
+					scope: 'public',
+					breakdown: { ...summary.breakdown, ...Object.fromEntries(hidden.map((metric) => [metric, []])) },
+				};
+				return route.fulfill({ status: 200, headers: cors(origin), json });
+			}
+			// 관리자: 사이트가 보낸 방문의 utm 조합을 표에 더한다 (서버의 aggregate처럼). utm=이면 그 조합의 일별 방문
+			const utm = new Map(summary.breakdown.utm.map((row) => [row.key, row.value]));
+			for (const event of state.analytics.flatMap((batch) => batch.events)) {
+				if (event.type !== 'visit' || !(event.utmSource || event.utmMedium || event.utmCampaign)) continue;
+				const key = [event.utmSource, event.utmMedium, event.utmCampaign].map((part) => part ?? '').join(' / ');
+				utm.set(key, (utm.get(key) ?? 0) + 1);
+			}
+			const filter = new URL(request.url()).searchParams.get('utm');
+			const json = {
+				...summary,
+				breakdown: {
+					...summary.breakdown,
+					utm: [...utm].map(([key, value]) => ({ key, value })).sort((a, b) => b.value - a.value),
+				},
+				...(filter && {
+					utmTrend: {
+						key: filter,
+						days: summary.days.map(({ day }, index) => ({ day, visits: utm.has(filter) ? (index * 3) % 7 : 0 })),
+					},
+				}),
+			};
 			return route.fulfill({ status: 200, headers: cors(origin), json });
 		}
 		if (path === '/resources') {
@@ -1203,8 +1233,23 @@ function fakeAnalyticsSummary() {
 				{ key: 'www.linkedin.com', value: 188 },
 				{ key: 'www.google.com', value: 90 },
 			],
-			source: [{ key: 'resume', value: 40 }],
+			source: [
+				{ key: 'resume', value: 40 },
+				{ key: 'linkedin', value: 12 },
+			],
+			medium: [
+				{ key: 'recruit', value: 25 },
+				{ key: 'social', value: 12 },
+			],
 			campaign: [{ key: 'kakao-2026', value: 25 }],
+			// 출처 / 매체 / 캠페인 조합 (빈 칸은 '')
+			utm: [
+				{ key: 'resume / recruit / kakao-2026', value: 25 },
+				{ key: 'resume /  / ', value: 15 },
+				{ key: 'linkedin / social / ', value: 12 },
+			],
+			term: [],
+			content: [{ key: 'footer', value: 3 }],
 			app: [
 				{ key: 'memo', value: 900 },
 				{ key: 'safari', value: 700 },

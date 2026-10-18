@@ -16,6 +16,31 @@ export const APP_NAME = /^[a-z][a-z0-9-]{0,31}$/;
 const HOST = /^[a-z0-9.-]{1,253}$/;
 const LANGUAGE = /^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$/;
 
+/** utm 값 하나의 상한 (글자 수) */
+export const UTM_MAX = 100;
+
+/**
+ * utm 값을 다듬는다: 앞뒤 공백을 빼고 소문자로, 이어진 공백은 '-' 하나로, 100자까지. 비면 undefined.
+ * 링크 생성기(분석 앱)와 받는 쪽(사이트의 utmOf, 서버의 EventInput)이 같은 규칙을 쓴다 (#211)
+ */
+export function cleanUtm(value: string | null | undefined): string | undefined {
+	const cleaned = (value ?? '').trim().toLowerCase().replace(/\s+/g, '-').slice(0, UTM_MAX);
+	return cleaned || undefined;
+}
+
+/**
+ * 조합 표(utm)의 키: 출처·매체·캠페인을 ' / '로 묶는다. 빈 칸은 ''.
+ * cleanUtm이 공백을 '-'로 바꾸므로 값에는 ' / '가 없다. PostgreSQL의 글자 열은 \u0000을 받지 않아 그것으로 묶지 않는다
+ */
+export const UTM_KEY_SEPARATOR = ' / ';
+export const utmKey = (source?: string | null, medium?: string | null, campaign?: string | null) =>
+	[source ?? '', medium ?? '', campaign ?? ''].join(UTM_KEY_SEPARATOR);
+/** 조합 키를 [출처, 매체, 캠페인]으로 */
+export const splitUtmKey = (key: string): [string, string, string] => {
+	const [source = '', medium = '', campaign = ''] = key.split(UTM_KEY_SEPARATOR);
+	return [source, medium, campaign];
+};
+
 /** 비었으면(undefined·null·'') 없는 것으로, 길이가 맞는 글자면 그대로 */
 const text = (max: number, name: string) =>
 	z.preprocess(
@@ -36,9 +61,12 @@ export const EventInput = z.object({
 	referrer: text(253, 'referrer')
 		.transform((referrer) => referrer?.toLowerCase())
 		.refine((referrer) => !referrer || HOST.test(referrer), 'referrer는 호스트만 받습니다.'),
-	utmSource: text(100, 'utmSource'),
-	utmMedium: text(100, 'utmMedium'),
-	utmCampaign: text(100, 'utmCampaign'),
+	/** utm 값은 cleanUtm으로 다듬어 저장한다 (소문자, 공백은 '-') */
+	utmSource: text(UTM_MAX, 'utmSource').transform(cleanUtm),
+	utmMedium: text(UTM_MAX, 'utmMedium').transform(cleanUtm),
+	utmCampaign: text(UTM_MAX, 'utmCampaign').transform(cleanUtm),
+	utmTerm: text(UTM_MAX, 'utmTerm').transform(cleanUtm),
+	utmContent: text(UTM_MAX, 'utmContent').transform(cleanUtm),
 	device: z.enum(['desktop', 'mobile'], { error: 'device는 desktop, mobile입니다.' }).optional(),
 	language: text(35, 'language').refine(
 		(language) => !language || LANGUAGE.test(language),
@@ -84,7 +112,11 @@ export const BREAKDOWNS = [
 	'referrerGroup',
 	'referrer',
 	'source',
+	'medium',
 	'campaign',
+	'utm',
+	'term',
+	'content',
 	'app',
 	'item',
 	'link',
@@ -95,8 +127,14 @@ export const BREAKDOWNS = [
 	'language',
 ] as const;
 export type Breakdown = (typeof BREAKDOWNS)[number];
-/** 방문자에게는 감추는 표: 들어온 곳의 호스트와 utm (지원한 곳 이름이 드러날 수 있다) */
-export const ADMIN_ONLY_BREAKDOWNS = ['referrer', 'source', 'campaign'] as const;
+/**
+ * 방문자에게는 감추는 표: 들어온 곳의 호스트와 utm (지원한 곳 이름이 드러날 수 있다).
+ * utm은 출처·매체·캠페인 조합 (키는 utmKey), term·content는 조합에 붙이지 않고 따로 센다
+ */
+export const ADMIN_ONLY_BREAKDOWNS = ['referrer', 'source', 'medium', 'campaign', 'utm', 'term', 'content'] as const;
+
+/** 요약의 utm= 거르기의 상한 (출처·매체·캠페인 셋과 구분자 둘) */
+export const UTM_FILTER_MAX = UTM_MAX * 3 + UTM_KEY_SEPARATOR.length * 2;
 
 export const Totals = z.object({
 	visits: z.number().int(),
@@ -122,6 +160,10 @@ export const Summary = z.object({
 	totals: Totals,
 	/** 바로 앞의 같은 길이 기간 (비교용) */
 	previous: Totals,
+	/** 관리자가 utm=(조합 키)로 물었을 때만: 그 조합의 일별 방문 */
+	utmTrend: z
+		.object({ key: z.string(), days: z.array(z.object({ day: z.string(), visits: z.number().int() })) })
+		.optional(),
 	breakdown: z.object(
 		Object.fromEntries(BREAKDOWNS.map((metric) => [metric, z.array(StatRow)])) as Record<
 			Breakdown,
