@@ -74,7 +74,7 @@ test.describe('Finder 파일 시스템 (관리자)', () => {
 		const api = await fakeApi(page, { signedIn: true });
 		await fakeFiles(page, DOCUMENTS);
 		await enterDesktop(page);
-		await expect(desktop(page).locator('.finder-alias-badge')).toHaveCount(4);
+		await expect(desktop(page).locator('.finder-alias-badge')).toHaveCount(3);
 
 		// 빈 곳 오른쪽 클릭 › 새 폴더
 		const size = page.viewportSize()!;
@@ -95,7 +95,7 @@ test.describe('Finder 파일 시스템 (관리자)', () => {
 		await expect(finder.getByRole('listbox', { name: '데스크탑' }).getByRole('option', { name: '작업' })).toBeVisible();
 
 		// 바탕화면의 작업 폴더를 Finder 사이드바의 문서 위로 끈다
-		await sidebar(finder).getByRole('button', { name: '프로젝트' }).click();
+		await sidebar(finder).getByRole('button', { name: '블로그' }).click();
 		const box = (await work.boundingBox())!;
 		const target = (await sidebar(finder).getByRole('button', { name: '문서' }).boundingBox())!;
 		await page.mouse.move(box.x + box.width / 2, box.y + 30);

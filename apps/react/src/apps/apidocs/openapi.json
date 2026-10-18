@@ -249,8 +249,7 @@
 										"aliases": [
 											"docs:이력서",
 											"docs:포트폴리오",
-											"docs:자격증",
-											"projects"
+											"docs:자격증"
 										],
 										"updatedAt": null
 									}
@@ -290,8 +289,7 @@
 									"aliases": [
 										"docs:이력서",
 										"docs:포트폴리오",
-										"docs:자격증",
-										"projects"
+										"docs:자격증"
 									]
 								}
 							}

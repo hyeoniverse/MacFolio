@@ -44,7 +44,6 @@ type Place = { folder: string } | { doc: string };
 const LOCATION_ICONS: Record<string, string> = {
 	desktop: 'fa-solid fa-display',
 	docs: 'fa-regular fa-file-lines',
-	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
 };
 
@@ -59,7 +58,7 @@ const dateCell = (item: FinderItem) => (item.kind === 'project' ? (item.period ?
 
 /**
  * Finder: 사이트에 있는 것들을 파일처럼 둘러본다 (이슈 #20).
- * 왼쪽 즐겨찾기(문서, 프로젝트, 블로그, 응용 프로그램), 아이콘·목록 보기, 이름 찾기, 뒤로·앞으로.
+ * 왼쪽 즐겨찾기(데스크탑, 문서, 블로그, 응용 프로그램. 프로젝트 폴더는 문서 › 포트폴리오 안), 아이콘·목록 보기, 이름 찾기, 뒤로·앞으로.
  * 한 번 누르면 고르고, 두 번 누르거나 Enter를 누르면 연다. 문서는 Finder 안에서 읽고, PDF·그림은 미리보기 앱,
  * 프로젝트는 Safari, 글은 메모, 앱은 그 앱을 연다.
  */

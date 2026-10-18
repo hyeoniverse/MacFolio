@@ -19,7 +19,7 @@ const LAYOUT_EXAMPLE = {
 		{ id: 'folder:p0q2r7', name: '작업', parent: 'desktop' },
 	],
 	files: { 'file:resume/abc123.pdf': 'folder:k3x9a1' },
-	aliases: ['docs:이력서', 'docs:포트폴리오', 'docs:자격증', 'projects'],
+	aliases: ['docs:이력서', 'docs:포트폴리오', 'docs:자격증'],
 };
 
 /**

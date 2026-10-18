@@ -8,17 +8,20 @@ import { requestBody } from './parse.js';
 export const FINDER_FOLDER_ID = /^folder:[a-z0-9]{4,24}$/;
 /**
  * 관리자 폴더·파일을 둘 수 있는 기본 폴더: 데스크탑, 문서, 문서의 이력서·포트폴리오·자격증, 프로젝트마다의 폴더.
- * 프로젝트 맨 위(projects)·블로그·응용 프로그램·사진 폴더에는 둘 수 없다
+ * 블로그·응용 프로그램·사진 폴더에는 둘 수 없다. 프로젝트 폴더는 문서 › 포트폴리오 안에 있다
  */
 export const FINDER_BUILTIN_PARENT =
 	/^(desktop|docs|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39})$/;
 /** 옮긴 파일의 Finder id: file:<R2 키> (예: file:resume/abc.pdf) */
 export const FINDER_FILE_ID = /^file:[A-Za-z0-9][\w./-]{0,199}$/;
-/** 바탕화면 가상본으로 둘 수 있는 기본 폴더 (위치와 그 안의 기본 폴더) */
+/**
+ * 바탕화면 가상본으로 둘 수 있는 기본 폴더 (위치와 그 안의 기본 폴더).
+ * projects는 예전 프로젝트 위치(지금은 포트폴리오 안으로 합쳤다): 예전에 저장한 값도 받고, 화면은 없는 폴더라 건너뛴다
+ */
 export const FINDER_ALIAS_TARGET =
 	/^(docs|projects|blog|apps|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39})$/;
-/** 처음 바탕화면에 있는 가상본: 이력서·포트폴리오·자격증·프로젝트 */
-export const DEFAULT_DESKTOP_ALIASES = ['docs:이력서', 'docs:포트폴리오', 'docs:자격증', 'projects'] as const;
+/** 처음 바탕화면에 있는 가상본: 이력서·포트폴리오·자격증 */
+export const DEFAULT_DESKTOP_ALIASES = ['docs:이력서', 'docs:포트폴리오', 'docs:자격증'] as const;
 
 export const FINDER_FOLDER_NAME_MAX = 60;
 export const FINDER_LIMITS = { folders: 200, files: 500, aliases: 20, depth: 8 } as const;
