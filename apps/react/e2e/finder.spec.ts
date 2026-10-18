@@ -201,6 +201,13 @@ test.describe('Finder', () => {
 			// 사이드바 가리기
 			await preview.getByRole('button', { name: '사이드바 가리기' }).click();
 			await expect(sidebar).toHaveCount(0);
+
+			// 빨간 버튼으로 닫고 다시 열면 이전 파일이 아니라 열기 창 (macOS 미리보기처럼)
+			await preview.locator('.traffic-lights').getByRole('button', { name: '닫기' }).click();
+			await expect(preview).toBeHidden();
+			await dockItem(page, 'launchpad').click();
+			await page.locator('.launchpad-modal').getByRole('button', { name: 'preview', exact: true }).click();
+			await expect(preview.getByRole('dialog', { name: '열기' })).toBeVisible();
 		});
 
 		test('그림도 미리보기 앱에서 열리고, 파일을 더 열면 사이드바에 파일마다 묶인다', async ({ page }) => {

@@ -19,6 +19,7 @@ import { docTitle } from './repoDocs';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
 import FinderIcon from './FinderIcon';
+import AppsGlyph from './AppsGlyph';
 import { openInPreview } from '@/apps/preview/previewStore';
 import FinderMobile from './FinderMobile';
 import '@/apps/finder/Finder.css';
@@ -34,7 +35,6 @@ const LOCATION_ICONS: Record<string, string> = {
 	docs: 'fa-regular fa-file-lines',
 	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
-	apps: 'fa-solid fa-table-cells-large',
 };
 
 const formatDate = (date?: string) => {
@@ -306,7 +306,7 @@ const Finder: React.FC = () => {
 								aria-current={location === item.id && !searching ? 'page' : undefined}
 								onClick={() => go({ folder: item.id })}
 							>
-								<i className={LOCATION_ICONS[item.id]} aria-hidden="true" />
+								{item.id === 'apps' ? <AppsGlyph /> : <i className={LOCATION_ICONS[item.id]} aria-hidden="true" />}
 								{item.name}
 							</button>
 						))}

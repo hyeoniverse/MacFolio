@@ -18,6 +18,7 @@ import { DOC_SOURCES } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
 import FinderIcon from './FinderIcon';
+import AppsGlyph from './AppsGlyph';
 import '@/apps/finder/FinderMobile.css';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import IconButton from '@/shared/ui/button/IconButton';
@@ -35,7 +36,6 @@ const LOCATION_ICONS: Record<string, string> = {
 	docs: 'fa-regular fa-file-lines',
 	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
-	apps: 'fa-solid fa-table-cells-large',
 };
 
 const formatDate = (date: string) => {
@@ -310,7 +310,11 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 										{places.map((place) => (
 											<li key={place.id}>
 												<button type="button" onClick={() => open(place)}>
-													<i className={LOCATION_ICONS[place.id]} aria-hidden="true" />
+													{place.id === 'apps' ? (
+														<AppsGlyph />
+													) : (
+														<i className={LOCATION_ICONS[place.id]} aria-hidden="true" />
+													)}
 													<span>{place.name}</span>
 													<i className="fa-solid fa-chevron-right files-phone-chevron" aria-hidden="true" />
 												</button>

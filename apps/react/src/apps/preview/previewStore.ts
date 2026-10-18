@@ -41,3 +41,6 @@ export const selectInPreview = (key: string) => store.setState({ current: key })
 export function usePreview(): PreviewState {
 	return useSyncExternalStore(store.subscribe, store.getState);
 }
+
+/** 열린 파일을 모두 뺀다. 창을 닫거나 앱을 끄면 다음에 열 때 열기 창부터 (macOS 미리보기처럼) */
+export const resetPreview = () => store.setState({ files: [], current: null });
