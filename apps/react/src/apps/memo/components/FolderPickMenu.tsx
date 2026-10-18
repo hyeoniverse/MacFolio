@@ -15,7 +15,7 @@ const FolderPickMenu = ({
 }) => (
 	<Menu
 		label="옮길 폴더"
-		className="touch"
+		variant="ios"
 		anchor={anchor}
 		onClose={onClose}
 		items={[

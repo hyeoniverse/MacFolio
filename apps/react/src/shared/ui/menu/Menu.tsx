@@ -4,6 +4,7 @@ import { placeAtPoint } from '@/shared/ui/popover/placement';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
 import { useExitMotionRef } from '@/shared/ui/motion/useExitMotion';
 import { ariaShortcut, formatShortcut, isMacPlatform, type Shortcut } from '@/shared/ui/menu/shortcut';
+import { menuVariantClass, type MenuVariant } from '@/shared/ui/menu/variant';
 import '@/shared/ui/menu/Menu.css';
 
 export type MenuItem =
@@ -43,7 +44,9 @@ interface Props {
 	trigger?: React.RefObject<Element | null>;
 	/** 열자마자 첫 항목에 초점 (키보드로 바로 고르게). 검색 칸처럼 초점을 지켜야 하는 곳에서 열면 끈다 */
 	autoFocus?: boolean;
-	/** 모양을 덧붙일 이름 (예: 휴대폰에서 iOS처럼 크게) */
+	/** 모양: 'mac'은 데스크톱 메뉴(기본), 'ios'는 휴대폰에서 iOS 메뉴처럼 크고 둥글게 */
+	variant?: MenuVariant;
+	/** 모양을 덧붙일 이름 (쓰는 쪽 위치 조정용). 데스크톱·휴대폰 모양은 variant로 고른다 */
 	className?: string;
 	/** ←·→를 누르면 부른다 (메뉴 막대에서 옆 메뉴로 넘어간다) */
 	onNavigate?: (direction: -1 | 1) => void;
@@ -65,6 +68,7 @@ const Menu: React.FC<Props> = ({
 	onClose,
 	trigger,
 	autoFocus = false,
+	variant = 'mac',
 	className,
 	onNavigate,
 	appMenu = false,
@@ -130,7 +134,7 @@ const Menu: React.FC<Props> = ({
 	return createPortal(
 		<div
 			ref={exitRef}
-			className={['ui-menu', className].filter(Boolean).join(' ')}
+			className={['ui-menu', menuVariantClass(variant), className].filter(Boolean).join(' ')}
 			role="menu"
 			aria-label={label}
 			data-app-menu={appMenu || undefined}

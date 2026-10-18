@@ -88,7 +88,7 @@ const PhoneReaderBars = ({
 				</div>
 			)}
 			{menu && hasNote && (
-				<Menu label="메모 동작" className="touch" anchor={menu} onClose={() => setMenu(null)} items={menuItems()} />
+				<Menu label="메모 동작" variant="ios" anchor={menu} onClose={() => setMenu(null)} items={menuItems()} />
 			)}
 		</>
 	);
