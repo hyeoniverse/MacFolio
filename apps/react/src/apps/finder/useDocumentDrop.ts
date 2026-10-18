@@ -62,7 +62,8 @@ export function useDocumentDrop(roots: FinderItem[], currentFolder: string | nul
 	/** 포인터 아래의 폴더 아이콘, 없으면 지금 연 폴더 (파일을 받을 수 있는 곳만) */
 	const folderAt = (event: DragEvent): string | null => {
 		const icon = (event.target as Element).closest?.('[data-folder-target]')?.getAttribute('data-folder-target');
-		const id = icon ?? currentFolder;
+		// 사이드바의 빈 곳은 아무 데도 아니다 (열린 폴더로 올리지 않는다)
+		const id = icon ?? ((event.target as Element).closest?.('nav') ? null : currentFolder);
 		const plan = id ? uploadPlan(roots, find(roots, id)) : null;
 		return plan ? id : null;
 	};
@@ -71,20 +72,21 @@ export function useDocumentDrop(roots: FinderItem[], currentFolder: string | nul
 		? {
 				onDragOver: (event: DragEvent) => {
 					if (!hasFiles(event)) return;
+					// 받을 수 없는 곳이어도 막는다 (브라우저가 파일을 열어 사이트를 떠나지 않게)
+					event.preventDefault();
 					const folder = folderAt(event);
 					setTarget(folder);
-					if (!folder) return;
-					event.preventDefault();
-					event.dataTransfer.dropEffect = 'copy';
+					event.dataTransfer.dropEffect = folder ? 'copy' : 'none';
 				},
 				onDragLeave: (event: DragEvent) => {
 					if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setTarget(null);
 				},
 				onDrop: (event: DragEvent) => {
+					if (!hasFiles(event)) return;
+					event.preventDefault();
 					const folder = folderAt(event);
 					setTarget(null);
-					if (!folder || !hasFiles(event)) return;
-					event.preventDefault();
+					if (!folder) return;
 					void uploadInto(roots, folder, [...event.dataTransfer.files], setUploads);
 				},
 			}
