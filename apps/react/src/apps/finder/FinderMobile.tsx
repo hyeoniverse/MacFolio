@@ -5,6 +5,7 @@ import {
 	find,
 	KIND_LABELS,
 	previewFolder,
+	mediaKind,
 	recentItems,
 	search,
 	sortItems,
@@ -117,7 +118,8 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const open = (item: FinderItem) => {
 		if (item.kind === 'folder') push({ folder: item.aliasOf ?? item.id });
 		else if (item.kind === 'doc') push({ doc: item.path });
-		else if (item.kind === 'pdf' || item.kind === 'image') push({ file: item.id });
+		else if (item.kind === 'pdf' || item.kind === 'image' || (item.kind === 'file' && mediaKind(item.name)))
+			push({ file: item.id });
 		else if (item.kind === 'file') downloadFile(item.key, item.name);
 		else onOpenElsewhere(item);
 	};
@@ -147,7 +149,10 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 
 	if (screen && 'file' in screen) {
 		const file = find(roots, screen.file);
-		const viewable = file && (file.kind === 'pdf' || file.kind === 'image') ? file : null;
+		const viewable =
+			file && (file.kind === 'pdf' || file.kind === 'image' || (file.kind === 'file' && mediaKind(file.name)))
+				? file
+				: null;
 		return (
 			<div className="files-phone file">
 				{navigation}

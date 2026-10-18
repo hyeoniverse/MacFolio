@@ -85,6 +85,14 @@ export const KIND_LABELS: Record<FinderItem['kind'], string> = {
 	file: '파일',
 };
 
+/** 동영상·소리 파일이면 그 종류 (QuickTime Player가 연다). 이름의 확장자로 본다 */
+export function mediaKind(name: string): 'video' | 'audio' | null {
+	const ext = /\.([a-z0-9]+)$/i.exec(name)?.[1]?.toLowerCase() ?? '';
+	if (['mp4', 'mov', 'webm', 'm4v'].includes(ext)) return 'video';
+	if (['mp3', 'm4a', 'wav', 'aac', 'ogg'].includes(ext)) return 'audio';
+	return null;
+}
+
 /** 올린 파일(PDF·그림·그 밖의 파일)인지 */
 export const isFileItem = (item: FinderItem): item is FileItem =>
 	item.kind === 'pdf' || item.kind === 'image' || item.kind === 'file';

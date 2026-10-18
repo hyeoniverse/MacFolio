@@ -1,6 +1,6 @@
 import React from 'react';
 import { env } from '@/shared/config/env';
-import type { FinderItem } from './files';
+import { mediaKind, type FinderItem } from './files';
 import { fileUrl } from './documents';
 
 /** macOS 폴더: 탭이 달린 파란 폴더 */
@@ -163,6 +163,14 @@ const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 		case 'pdf':
 			return <PdfSvg />;
 		case 'file':
+			// 동영상은 macOS처럼 첫 장면을 작게 (재생 표시를 얹는다)
+			if (mediaKind(item.name) === 'video')
+				return (
+					<span className="finder-video-thumb">
+						<video src={`${fileUrl(item.key)}#t=0.5`} preload="metadata" muted playsInline aria-hidden="true" />
+						<i className="fa-solid fa-play" aria-hidden="true" />
+					</span>
+				);
 			return <FileSvg ext={item.name.split('.').pop()?.toUpperCase().slice(0, 4) ?? ''} />;
 		case 'image':
 			// macOS처럼 그림은 그 그림을 작게 (사진 폴더의 사진, 올린 그림)

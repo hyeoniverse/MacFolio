@@ -9,13 +9,14 @@ import { requestOpen } from '@/shared/lib/openRequest';
 import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
-import { countLabel, find, KIND_LABELS, pathTo, search, type FinderItem, type FolderItem } from './files';
+import { countLabel, find, KIND_LABELS, mediaKind, pathTo, search, type FinderItem, type FolderItem } from './files';
 import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from './useFinderEdit';
 import { canCreateIn, canMove, canRename, canTrash } from './edit';
 import InlineName from './InlineName';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { useDocumentDrop } from './useDocumentDrop';
 import { downloadFile } from './documents';
+import { openInPlayer } from '@/apps/quicktime/playerStore';
 import { canSetWallpaper, setDesktopWallpaper } from './setWallpaper';
 import { DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
@@ -240,10 +241,16 @@ const Finder: React.FC = () => {
 			case 'doc':
 				go({ doc: item.path });
 				return;
-			case 'file':
-				// 미리보기가 열 수 없는 파일은 macOS에서 다른 앱으로 열듯 받아서 연다
-				downloadFile(item.key, item.name);
+			case 'file': {
+				// 동영상·소리는 QuickTime Player, 그 밖은 macOS에서 다른 앱으로 열듯 받아서 연다
+				const media = mediaKind(item.name);
+				if (media) {
+					openApp('quicktime');
+					bringAppToFront('quicktime');
+					openInPlayer({ key: item.key, name: item.name, media });
+				} else downloadFile(item.key, item.name);
 				return;
+			}
 			case 'pdf':
 			case 'image':
 				openApp('preview');

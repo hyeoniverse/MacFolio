@@ -293,6 +293,17 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await finder.getByRole('option', { name: '새 이력서.pdf' }).dblclick();
 		await expect(appWindow(page, 'preview')).toBeVisible();
 
+		// 동영상은 첫 장면 아이콘으로 보이고, 열면 QuickTime Player가 재생한다
+		await dockItem(page, 'finder').click();
+		await dropFile(page, '[data-app="finder"] .finder-content', '데모.mp4', [1, 2, 3]);
+		const clip = finder.getByRole('option', { name: '데모.mp4' });
+		await expect(clip.locator('.finder-video-thumb video')).toHaveAttribute('src', /^blob:.*#t=0\.5$/);
+		await clip.dblclick();
+		const player = appWindow(page, 'quicktime');
+		await expect(player).toBeVisible();
+		await expect(player.locator('video')).toHaveAttribute('src', /^blob:/);
+		await expect(player.locator('video')).toHaveAttribute('aria-label', '데모.mp4');
+
 		// 바탕화면에 놓아도 그 자리에
 		await dropFile(page, '.desktop-icons', '사진.gif', [1, 2, 3]);
 		await expect(

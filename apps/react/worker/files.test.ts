@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DOCUMENT_EXTENSIONS } from '@macfolio/contracts';
-import { FILE_CSP, FILE_TYPES, fileKey, serveFile, type FilesBucket } from './files';
+import { FILE_CSP, FILE_TYPES, fileKey, parseRange, serveFile, type FilesBucket } from './files';
 import worker from './index';
 
 /** 메모리 R2: 키 → 내용 */
@@ -13,10 +13,12 @@ function bucket(files: Record<string, string>): FilesBucket & { gets: string[] }
 	});
 	return {
 		gets,
-		async get(key) {
+		async get(key, options) {
 			gets.push(key);
 			if (!(key in files)) return null;
-			return { ...info(key), body: new Response(files[key]).body };
+			const range = options?.range;
+			const content = range ? files[key].slice(range.offset, range.offset + range.length) : files[key];
+			return { ...info(key), body: new Response(content).body };
 		},
 		async head(key) {
 			return key in files ? info(key) : null;
@@ -41,6 +43,34 @@ describe('파일 종류', () => {
 		expect((await serveFile(req('/files/resume/a.txt'), files)).headers.get('content-type')).toBe(
 			'text/plain; charset=utf-8'
 		);
+	});
+});
+
+describe('Range (동영상을 나눠 받기)', () => {
+	it('bytes=a-b, a-, -n을 파일 안의 [시작, 길이]로, 맞지 않으면 invalid', () => {
+		expect(parseRange(null, 10)).toBeNull();
+		expect(parseRange('bytes=0-3', 10)).toEqual({ offset: 0, length: 4 });
+		expect(parseRange('bytes=4-', 10)).toEqual({ offset: 4, length: 6 });
+		expect(parseRange('bytes=-3', 10)).toEqual({ offset: 7, length: 3 });
+		expect(parseRange('bytes=5-99', 10)).toEqual({ offset: 5, length: 5 });
+		expect(parseRange('bytes=10-', 10)).toBe('invalid');
+		expect(parseRange('items=0-1', 10)).toBe('invalid');
+	});
+
+	it('Range가 오면 206과 그 부분만, 넘치면 416', async () => {
+		const files = bucket({ 'desktop/a.mp4': '0123456789' });
+		const part = await serveFile(req('/files/desktop/a.mp4', { headers: { range: 'bytes=2-5' } }), files);
+		expect(part.status).toBe(206);
+		expect(await part.text()).toBe('2345');
+		expect(part.headers.get('content-range')).toBe('bytes 2-5/10');
+		expect(part.headers.get('content-length')).toBe('4');
+		expect(part.headers.get('accept-ranges')).toBe('bytes');
+		const whole = await serveFile(req('/files/desktop/a.mp4'), files);
+		expect(whole.status).toBe(200);
+		expect(whole.headers.get('accept-ranges')).toBe('bytes');
+		const bad = await serveFile(req('/files/desktop/a.mp4', { headers: { range: 'bytes=20-' } }), files);
+		expect(bad.status).toBe(416);
+		expect(bad.headers.get('content-range')).toBe('bytes */10');
 	});
 });
 
