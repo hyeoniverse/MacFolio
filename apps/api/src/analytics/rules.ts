@@ -2,7 +2,7 @@
 // 이벤트 묶음의 모양·검사와 응답 모양은 @macfolio/contracts (사이트와 같은 스키마)
 import { createHmac } from 'node:crypto';
 
-import { EventBatch, parse } from '@macfolio/contracts';
+import { EventBatch, parse, utmKey } from '@macfolio/contracts';
 
 export { EVENT_TYPES, type EventType, MAX_EVENTS, type EventInput, type EventBatch } from '@macfolio/contracts';
 
@@ -86,7 +86,10 @@ export interface StoredEvent {
 	item?: string | null;
 	referrer?: string | null;
 	utmSource?: string | null;
+	utmMedium?: string | null;
 	utmCampaign?: string | null;
+	utmTerm?: string | null;
+	utmContent?: string | null;
 	country?: string | null;
 	device?: string | null;
 	browser?: string | null;
@@ -101,8 +104,24 @@ export interface StatRow {
 	value: number;
 }
 
-/** 방문(visit)마다 세는 지표: 들어온 곳, 나라, 기기 … */
-const PER_VISIT = ['referrer', 'source', 'campaign', 'country', 'device', 'browser', 'os', 'language'] as const;
+/**
+ * 방문(visit)마다 세는 지표: 들어온 곳, utm, 나라, 기기 …
+ * utm은 출처·매체·캠페인 조합(셋 다 비면 세지 않는다). term·content는 값이 많아 조합에 붙이지 않고 따로 센다 (#211)
+ */
+const PER_VISIT = [
+	'referrer',
+	'source',
+	'medium',
+	'campaign',
+	'utm',
+	'term',
+	'content',
+	'country',
+	'device',
+	'browser',
+	'os',
+	'language',
+] as const;
 
 /**
  * 하루치 이벤트를 (지표, 키, 값) 행으로 모은다. 날마다 DailyStat에 저장하고, 오늘 것은 화면을 열 때 바로 계산한다.
@@ -125,7 +144,14 @@ export function aggregate(events: StoredEvent[]): StatRow[] {
 			const values: Record<(typeof PER_VISIT)[number], string | null | undefined> = {
 				referrer: event.referrer ?? '',
 				source: event.utmSource,
+				medium: event.utmMedium,
 				campaign: event.utmCampaign,
+				utm:
+					event.utmSource || event.utmMedium || event.utmCampaign
+						? utmKey(event.utmSource, event.utmMedium, event.utmCampaign)
+						: undefined,
+				term: event.utmTerm,
+				content: event.utmContent,
 				country: event.country ?? '',
 				device: event.device ?? '',
 				browser: event.browser ?? '',
@@ -156,8 +182,9 @@ export function aggregate(events: StoredEvent[]): StatRow[] {
 		add('durationVisits', '', durations.size);
 	}
 	return [...counts].map(([id, value]) => {
-		const [metric, key] = id.split('\u0000');
-		return { metric, key, value };
+		// 키에 구분자가 섞여도 깨지지 않게 처음 것에서만 나눈다
+		const cut = id.indexOf('\u0000');
+		return { metric: id.slice(0, cut), key: id.slice(cut + 1), value };
 	});
 }
 

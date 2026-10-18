@@ -4,9 +4,9 @@
 	--activity-green: var(--color-green);
 	--activity-red: var(--color-red);
 	/* 이 앱의 간격은 세 단만 쓴다: 묶음 사이, 카드 안쪽, 줄 안 (#211) */
-	--activity-gap: 16px;
-	--activity-pad: 12px;
-	--activity-row: 6px;
+	--activity-gap: var(--space-16);
+	--activity-pad: var(--space-12);
+	--activity-row: var(--space-6);
 	container-type: inline-size;
 	display: flex;
 	flex-direction: column;
@@ -68,7 +68,7 @@
 }
 
 .activity-period select {
-	padding: 3px 6px;
+	padding: var(--space-2) var(--activity-row);
 	border: 1px solid var(--color-window-border);
 	border-radius: var(--radius-sm);
 	background: var(--color-control-bg);
@@ -207,6 +207,11 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--activity-gap);
+}
+
+/* 묶음(두 단·표)이 이어지면(유입 경로) 세로 간격도 두 단의 가로 간격과 같게 */
+.activity-body > :is(.activity-columns, .activity-table) + :is(.activity-columns, .activity-locked, .activity-table) {
+	margin-top: var(--activity-gap);
 }
 
 .activity-table h3,
@@ -362,7 +367,7 @@
 }
 
 .activity-live ol li {
-	padding: 2px 0;
+	padding: var(--space-2) 0;
 }
 
 /* 방문자가 열었을 때 */
@@ -445,7 +450,7 @@
 
 /* 휴대폰: 제목 막대도 홈으로 가는 버튼도 없다 (iOS의 탭으로 나눈 앱처럼). 탭 줄과 기간 줄은 카드와 같은 좌우 16px에 맞춘다 */
 .container.mobile .activity-toolbar {
-	padding: calc(11px + var(--phone-status)) 16px 10px;
+	padding: calc(var(--activity-pad) + var(--phone-status)) var(--activity-gap) var(--activity-pad);
 }
 
 .container.mobile .activity-tabs button {
@@ -660,4 +665,102 @@
 	justify-content: normal;
 	gap: normal;
 	animation: none;
+}
+
+/* ─── utm (#211) ─── */
+.activity-table-note {
+	margin: 0 0 var(--activity-row);
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption);
+}
+
+/* 고를 수 있는 줄(조합 표): 이름이 버튼 */
+.activity-table td.name button {
+	max-width: 100%;
+	overflow: hidden;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--color-accent);
+	font: inherit;
+	text-align: left;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.activity-table tbody tr.selected {
+	background: var(--color-selected-bg);
+}
+
+.activity-table tbody tr.selected td.name button {
+	font-weight: 600;
+}
+
+.utm-trend .activity-chart {
+	margin: 0;
+}
+
+.utm-builder {
+	margin-bottom: var(--activity-gap);
+	padding: var(--activity-pad);
+	border: 1px solid var(--color-divider);
+	border-radius: var(--radius-lg);
+	background: var(--color-sidebar-bg);
+}
+
+.utm-builder summary {
+	line-height: 20px;
+	color: var(--color-text-strong);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.utm-builder-form {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--activity-pad);
+	margin-top: var(--activity-pad);
+}
+
+.utm-builder-form label {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	color: var(--color-text-secondary);
+	font-size: var(--text-caption);
+}
+
+.utm-builder-form input {
+	padding: var(--activity-row);
+	border: 1px solid var(--color-window-border);
+	border-radius: var(--radius-sm);
+	background: var(--color-control-bg);
+	color: var(--color-text);
+	font: inherit;
+	font-size: var(--text-footnote);
+}
+
+.utm-builder-result {
+	display: flex;
+	align-items: center;
+	gap: var(--activity-pad);
+	margin: var(--activity-pad) 0 var(--activity-row);
+}
+
+.utm-builder-result output {
+	flex: 1;
+	min-width: 0;
+	padding: var(--activity-row);
+	border-radius: var(--radius-sm);
+	background: var(--color-window-bg);
+	font-family: var(--font-mono, ui-monospace, monospace);
+	font-size: var(--text-caption);
+	overflow-wrap: anywhere;
+}
+
+@container (max-width: 640px) {
+	.utm-builder-form {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }

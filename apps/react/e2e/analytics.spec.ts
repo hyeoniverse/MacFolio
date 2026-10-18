@@ -62,6 +62,42 @@ test.describe('트래픽 분석 수집 (#102)', () => {
 		expect(JSON.stringify(api.analytics)).not.toMatch(/cookie|userAgent|ip"/i);
 	});
 
+	test('utm_*는 읽은 뒤 주소창에서 지운다 (다른 쿼리·조각은 그대로). 새로 고쳐도 같은 utm이 다시 가지 않는다 (#211)', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page);
+		await enableAnalytics(page);
+		await enterDesktop(page, '/memo/cra-to-vite?utm_source=Velog&utm_medium=referral&utm_term=vite&keep=1#top');
+		await expect(appWindow(page, 'memo').getByRole('article').getByRole('heading', { level: 1 })).toHaveText(
+			'CRA에서 Vite로 옮기기'
+		);
+		const url = new URL(page.url());
+		expect(url.search).toBe('?keep=1');
+		expect(url.hash).toBe('#top');
+		expect(url.pathname).toBe('/memo/cra-to-vite');
+
+		await hideTab(page);
+		await expect.poll(() => api.analytics.length).toBeGreaterThan(0);
+		expect(api.analytics[0].events[0]).toMatchObject({
+			type: 'visit',
+			path: '/memo/cra-to-vite',
+			utmSource: 'velog',
+			utmMedium: 'referral',
+			utmTerm: 'vite',
+		});
+
+		// 새로 고침: 주소에 utm이 없으니 utm 없는 방문이다
+		const sent = api.analytics.length;
+		await page.reload();
+		await page.locator('.loading-container').click();
+		await expect(page.locator('.loading-container')).toBeHidden({ timeout: 20_000 });
+		await hideTab(page);
+		await expect.poll(() => api.analytics.length).toBeGreaterThan(sent);
+		const visits = api.analytics.flatMap((batch) => batch.events).filter((event) => event.type === 'visit');
+		expect(visits).toHaveLength(2);
+		expect(visits[1].utmSource).toBeUndefined();
+	});
+
 	test('로컬 주소(개발·화면 테스트)와 Global Privacy Control에서는 보내지 않는다', async ({ page }) => {
 		const api = await fakeApi(page);
 		await enterDesktop(page);
