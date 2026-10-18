@@ -9,7 +9,6 @@ import {
 	FileText,
 	Folder,
 	FolderOpen,
-	Image as ImageIcon,
 	LayoutGrid,
 	Rows3,
 	Search,
@@ -34,7 +33,6 @@ type Place = 'preview' | 'recents' | string;
 /** 사이드바 즐겨찾기 아이콘 (Finder의 위치와 같은 순서) */
 const LOCATION_ICONS: Record<string, LucideIcon | typeof AppsGlyph> = {
 	docs: FileText,
-	pictures: ImageIcon,
 	projects: Folder,
 	blog: SquarePen,
 	apps: AppsGlyph,

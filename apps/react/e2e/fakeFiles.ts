@@ -6,6 +6,8 @@ import type { DocumentEntry } from '../src/apps/finder/documents';
 export const FAKE_DOCUMENTS: DocumentEntry[] = [
 	{ folder: '이력서', name: '시험 이력서.pdf', key: 'resume/test.pdf', kind: 'pdf', size: 2048, updated: '2026-10-01' },
 	{ folder: '포트폴리오', name: '시험 그림.png', key: 'portfolio/test.png', kind: 'image', updated: '2026-09-01' },
+	// 프로젝트 폴더 (Finder › 프로젝트 › MacFolio)에 올린 발표 자료
+	{ folder: 'project:macfolio', name: 'MacFolio 발표.pdf', key: 'projects/macfolio/slides.pdf', kind: 'pdf' },
 ];
 
 /** 세 쪽짜리 PDF. 쪽마다 "MacFolio test PDF" 와 "Page N" (찾기 시험: "page"는 쪽마다 하나) */

@@ -25,10 +25,15 @@ export {
 	documentExtension,
 	DocumentFile,
 	type DocumentFolder,
+	documentFolderKey,
+	type DocumentFolderValue,
+	DOCUMENT_PROJECT_ID,
+	documentProjectId,
 	DocumentRename,
 	DocumentUploadRequest,
 	DocumentUploadTicket,
 	MAX_DOCUMENT_BYTES,
+	type ProjectDocumentFolder,
 } from './documents.js';
 export { IMAGE_TYPES, MAX_UPLOAD_BYTES, Upload, UPLOAD_ID, uploadIdsIn, UploadUsage } from './files.js';
 export {
