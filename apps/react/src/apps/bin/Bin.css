@@ -1,12 +1,12 @@
 /* 휴지통: 왼쪽 사이드바 + 오른쪽 목록과 정보 (Finder와 같은 모양) */
 [data-app='bin'] {
-	--bin-accent: #0063e1;
+	--bin-accent: var(--color-selected-content-bg);
 	--bin-accent-soft: rgba(0, 99, 225, 0.14);
 	--bin-deleted: #c4352b;
 }
 
 :root[data-theme='dark'] [data-app='bin'] {
-	--bin-accent: #0a84ff;
+	--bin-accent: var(--color-selected-content-bg);
 	--bin-accent-soft: rgba(10, 132, 255, 0.24);
 	--bin-deleted: #ff7b72;
 }

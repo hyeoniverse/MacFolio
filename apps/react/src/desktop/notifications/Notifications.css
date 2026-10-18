@@ -35,7 +35,7 @@
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.12),
 		0 10px 30px rgba(0, 0, 0, 0.18);
-	color: #1d1d1f;
+	color: var(--color-label);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	text-align: left;
 	pointer-events: auto;
@@ -47,7 +47,7 @@
 	box-shadow:
 		0 0 0 0.5px rgba(255, 255, 255, 0.12),
 		0 10px 30px rgba(0, 0, 0, 0.4);
-	color: #f5f5f7;
+	color: var(--color-label);
 }
 
 .notifications.ios .notification {

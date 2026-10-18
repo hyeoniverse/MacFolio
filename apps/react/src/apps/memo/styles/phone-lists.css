@@ -15,7 +15,7 @@
 
 :root[data-theme='dark'] [data-app='memo'] {
 	--phone-page-bg: var(--memo-bg);
-	--phone-card-bg: #2c2c2e;
+	--phone-card-bg: var(--color-card-bg);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo :is(.memo-folders, .memo-list) {
@@ -214,7 +214,7 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-tag-chip.include {
 	background-color: var(--memo-accent);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-tag-chip.exclude {
@@ -395,7 +395,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-pill.destructive {
-	color: #e5484d;
+	color: var(--color-danger);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-pill:disabled {

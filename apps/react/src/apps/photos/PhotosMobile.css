@@ -1,7 +1,7 @@
 /* 사진 (휴대폰): iOS 사진처럼 꽉 찬 격자 위의 큰 제목, 가로로 넘기는 모음 카드, 아래에 떠 있는 유리 탭과 검색.
    떠 있는 뒤로 가기가 왼쪽 위에 있어 제목은 그 오른쪽에서 시작한다 (.phone-title과 같다) */
 .photos-phone {
-	--photos-phone-glass: color-mix(in srgb, var(--phone-card-bg, #fff) 78%, transparent);
+	--photos-phone-glass: color-mix(in srgb, var(--phone-card-bg, var(--color-white)) 78%, transparent);
 	position: relative;
 	height: 100%;
 	background: var(--phone-page-bg, var(--color-window-bg));
@@ -60,7 +60,7 @@
 
 .photos-phone-title.overlay h2,
 .photos-phone-title.overlay p {
-	color: #fff;
+	color: var(--color-white);
 	text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
@@ -95,7 +95,7 @@
 	position: absolute;
 	right: 6px;
 	bottom: 4px;
-	color: #fff;
+	color: var(--color-white);
 	font-size: var(--text-footnote);
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
@@ -208,7 +208,7 @@
 	flex-direction: column;
 	padding: 40px 16px 14px;
 	background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
-	color: #fff;
+	color: var(--color-white);
 }
 
 .photos-card-text strong {
@@ -639,7 +639,7 @@
 	border: none;
 	border-radius: var(--radius-xl);
 	background: var(--color-selected-bg);
-	color: #0a84ff;
+	color: var(--color-blue);
 	font-size: var(--text-body);
 }
 
@@ -723,7 +723,7 @@
 }
 
 .photos-phone-pill button[aria-label='좋아요'][aria-pressed='true'] {
-	color: #ff3b30;
+	color: var(--color-red);
 }
 
 /* 정보 버튼: 켜도 꺼도 같은 크기의 동그라미 (꺼지면 테두리만, 켜지면 채운 동그라미에 빈 i).
@@ -789,7 +789,7 @@
 }
 
 .photos-phone-viewer[data-focus] {
-	background-color: #000000;
+	background-color: var(--color-black);
 }
 
 .photos-phone-viewer

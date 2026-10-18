@@ -327,7 +327,7 @@
 	position: absolute;
 	right: 10%;
 	bottom: 10%;
-	color: #fff;
+	color: var(--color-white);
 	font-size: var(--text-caption);
 	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
@@ -660,6 +660,6 @@
 .photos-caption-error {
 	display: block;
 	margin-top: var(--space-4);
-	color: #ff3b30;
+	color: var(--color-red);
 	font-size: var(--text-footnote);
 }

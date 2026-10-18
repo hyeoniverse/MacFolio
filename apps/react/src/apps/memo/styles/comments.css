@@ -48,7 +48,7 @@
 	height: 32px;
 	border-radius: 50%;
 	background: linear-gradient(180deg, #b8bcc6, #8e929c);
-	color: #ffffff;
+	color: var(--color-white);
 	font-size: var(--text-footnote);
 	font-weight: 600;
 	object-fit: cover;
@@ -117,7 +117,7 @@
 
 .memo-comment-delete:hover {
 	background-color: var(--memo-search-bg);
-	color: #e5484d;
+	color: var(--color-danger);
 }
 
 .memo-comment-body {
@@ -208,7 +208,7 @@
 }
 
 .memo-comment-error {
-	color: #e5484d;
+	color: var(--color-danger);
 	font-size: var(--text-caption);
 	list-style: none;
 }

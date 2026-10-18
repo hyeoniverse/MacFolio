@@ -1,31 +1,31 @@
 /* Finder: 왼쪽 즐겨찾기 사이드바 + 오른쪽 도구 막대·내용·경로 막대 (macOS Finder) */
 [data-app='finder'] {
 	--finder-sidebar-bg: var(--color-sidebar-bg);
-	--finder-selected: #0063e1;
+	--finder-selected: var(--color-selected-content-bg);
 	--finder-selected-soft: rgba(0, 99, 225, 0.14);
 	--finder-row-alt: rgba(0, 0, 0, 0.03);
-	--hl-keyword: #cf222e;
-	--hl-string: #0a3069;
-	--hl-number: #0550ae;
-	--hl-function: #8250df;
-	--hl-type: #953800;
-	--hl-comment: #6e7781;
-	--hl-tag: #116329;
-	--hl-attr: #0550ae;
+	--hl-keyword: var(--color-code-keyword);
+	--hl-string: var(--color-code-string);
+	--hl-number: var(--color-code-number);
+	--hl-function: var(--color-code-function);
+	--hl-type: var(--color-code-type);
+	--hl-comment: var(--color-code-comment);
+	--hl-tag: var(--color-code-tag);
+	--hl-attr: var(--color-code-number);
 }
 
 :root[data-theme='dark'] [data-app='finder'] {
-	--finder-selected: #0a84ff;
+	--finder-selected: var(--color-selected-content-bg);
 	--finder-selected-soft: rgba(10, 132, 255, 0.24);
 	--finder-row-alt: rgba(255, 255, 255, 0.035);
-	--hl-keyword: #ff7b72;
-	--hl-string: #a5d6ff;
-	--hl-number: #79c0ff;
-	--hl-function: #d2a8ff;
-	--hl-type: #ffa657;
-	--hl-comment: #8b949e;
-	--hl-tag: #7ee787;
-	--hl-attr: #79c0ff;
+	--hl-keyword: var(--color-code-keyword);
+	--hl-string: var(--color-code-string);
+	--hl-number: var(--color-code-number);
+	--hl-function: var(--color-code-function);
+	--hl-type: var(--color-code-type);
+	--hl-comment: var(--color-code-comment);
+	--hl-tag: var(--color-code-tag);
+	--hl-attr: var(--color-code-number);
 }
 
 .finder {
@@ -247,7 +247,7 @@
 
 .finder-grid .finder-item.selected .finder-name {
 	background-color: var(--finder-selected);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 /* ─── 목록 보기 ─── */
@@ -290,7 +290,7 @@
 
 .finder-list .finder-item.selected {
 	background-color: var(--finder-selected);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .finder-list-name {
@@ -606,7 +606,7 @@
 
 	.finder-chips button.active {
 		background-color: var(--finder-selected);
-		color: #ffffff;
+		color: var(--color-white);
 	}
 
 	.finder-list-head,

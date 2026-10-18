@@ -1,6 +1,6 @@
 /* GitHub 프로필 화면 (Primer 색) */
 [data-app='github'] {
-	--gh-bg: #ffffff;
+	--gh-bg: var(--color-white);
 	--gh-header-bg: #f6f8fa;
 	--gh-border: #d1d9e0;
 	--gh-text: #1f2328;
@@ -211,7 +211,7 @@
 	gap: var(--space-6);
 	height: 150px;
 	border-radius: var(--radius-xl);
-	color: #ffffff;
+	color: var(--color-white);
 	text-align: center;
 }
 
@@ -320,7 +320,7 @@
 	margin: 2px 0;
 	padding: var(--space-6) var(--space-12);
 	border-radius: var(--radius-xs);
-	color: #ffffff;
+	color: var(--color-white);
 	font-size: var(--text-caption);
 	font-weight: 700;
 	letter-spacing: 0.06em;
@@ -331,7 +331,7 @@
 
 .gh-readme-body .gh-contact-button,
 .gh-readme-body .gh-contact-button:hover {
-	color: #ffffff;
+	color: var(--color-white);
 	text-decoration: none;
 }
 

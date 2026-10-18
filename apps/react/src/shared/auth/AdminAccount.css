@@ -30,8 +30,8 @@
 .admin-account-avatar.placeholder {
 	display: grid;
 	place-items: center;
-	background: linear-gradient(#b8b8be, #8e8e93);
-	color: #ffffff;
+	background: linear-gradient(#b8b8be, var(--color-gray));
+	color: var(--color-white);
 	font-size: 24px;
 }
 
@@ -47,7 +47,7 @@
 	height: 7px;
 	margin-right: var(--space-6);
 	border-radius: 50%;
-	background-color: #34c759;
+	background-color: var(--color-green);
 	vertical-align: 1px;
 	content: '';
 }

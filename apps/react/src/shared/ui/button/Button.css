@@ -28,8 +28,8 @@
 	}
 
 	.ui-button.danger {
-		background-color: var(--ui-danger, #e5484d);
-		color: #ffffff;
+		background-color: var(--ui-danger, var(--color-danger));
+		color: var(--color-white);
 	}
 
 	.ui-button:disabled {

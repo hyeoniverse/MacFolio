@@ -2,11 +2,11 @@
 .web-frame {
 	position: relative;
 	height: 100%;
-	background-color: #ffffff;
+	background-color: var(--color-white);
 }
 
 .web-frame.dark {
-	background-color: #000000;
+	background-color: var(--color-black);
 }
 
 .web-frame iframe {
@@ -43,7 +43,7 @@
 }
 
 .web-frame-loading a {
-	color: #0a84ff;
+	color: var(--color-blue);
 	text-decoration: none;
 }
 
@@ -64,9 +64,9 @@
 .container.mobile .web-frame {
 	box-sizing: border-box;
 	padding-top: var(--phone-status);
-	background-color: var(--web-bar-color, #ffffff);
+	background-color: var(--web-bar-color, var(--color-white));
 }
 
 .container.mobile .web-frame.dark {
-	background-color: var(--web-bar-color, #000000);
+	background-color: var(--web-bar-color, var(--color-black));
 }
