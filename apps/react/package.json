@@ -13,8 +13,8 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@macfolio/contracts": "workspace:*",
 		"@fortawesome/fontawesome-free": "^7.3.1",
+		"@macfolio/contracts": "workspace:*",
 		"@macfolio/desktop-core": "workspace:*",
 		"@milkdown/kit": "7.22.2",
 		"@milkdown/react": "7.22.2",
@@ -24,6 +24,7 @@
 		"lowlight": "^3.3.0",
 		"lucide-react": "^1.53.0",
 		"mermaid": "^12.1.0",
+		"pdfjs-dist": "^6.4.299",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
 		"react-markdown": "^10.1.0",

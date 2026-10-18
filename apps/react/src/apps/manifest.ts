@@ -19,6 +19,7 @@ export const BUILTIN_APP_NAMES = [
 	'apidocs',
 	'activity',
 	'weather',
+	'preview',
 	'bin',
 ] as const;
 
@@ -135,6 +136,16 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		inDock: false,
 		inLaunchpad: true,
 		windowSize: { width: 1080, height: 720 },
+	},
+	// PDF·그림 보기 (macOS 미리보기). Finder의 문서 파일을 열면 뜬다. 휴대폰에서는 파일 앱 안에서 바로 보여 주므로 홈 화면에 두지 않는다
+	preview: {
+		label: '미리보기',
+		icon: 'preview.svg',
+		inDock: false,
+		inLaunchpad: true,
+		desktopOnly: true,
+		windowSize: { width: 760, height: 620 },
+		minSize: { width: 420, height: 320 },
 	},
 	// 이 사이트에서 버린 기능과, 관리자에게는 지운 메모. Dock 오른쪽 끝에 따로 있고 휴대폰 홈 화면에는 두지 않는다
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false, desktopOnly: true, windowSize: { width: 860, height: 540 } },
