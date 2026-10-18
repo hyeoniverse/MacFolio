@@ -34,6 +34,7 @@ const TAB_TITLES: Record<Tab, string> = { recents: '최근 항목', browse: '둘
 const LOCATION_ICONS: Record<string, string> = {
 	preview: 'fa-solid fa-cloud',
 	docs: 'fa-regular fa-file-lines',
+	pictures: 'fa-regular fa-image',
 	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
 };

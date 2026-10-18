@@ -15,13 +15,28 @@ const tree = buildLocations({
 		{ app: 'safari', label: 'Safari', icon: 'safari.png' },
 		{ app: 'memo', label: '메모', icon: 'memo.png' },
 	],
+	albums: [
+		{
+			id: 'qru',
+			name: 'QRU',
+			photos: [{ src: '/imgs/projects/qru/home.png' }, { src: '/imgs/projects/qru/demo.mp4' }],
+		},
+		{ id: 'empty', name: '영상만', photos: [{ src: '/imgs/projects/x/a.mp4' }] },
+	],
 });
 
 const names = (folder: FolderItem) => folder.children.map((child) => child.name);
 
 describe('buildLocations', () => {
-	it('즐겨찾기 위치: 문서, 프로젝트, 블로그, 응용 프로그램', () => {
-		expect(tree.map((folder) => folder.name)).toEqual(['문서', '프로젝트', '블로그', '응용 프로그램']);
+	it('즐겨찾기 위치: 문서, 사진, 프로젝트, 블로그, 응용 프로그램', () => {
+		expect(tree.map((folder) => folder.name)).toEqual(['문서', '사진', '프로젝트', '블로그', '응용 프로그램']);
+	});
+
+	it('사진: 앨범마다 폴더, 그림만 (영상은 빼고, 그림이 없는 앨범도 뺀다). 키는 사이트 주소 그대로', () => {
+		expect(names(tree[1])).toEqual(['QRU']);
+		const photo = find(tree, 'photo:/imgs/projects/qru/home.png');
+		expect(photo).toMatchObject({ kind: 'image', name: 'home.png', key: '/imgs/projects/qru/home.png' });
+		expect(fileUrl('/imgs/projects/qru/home.png')).toBe('/imgs/projects/qru/home.png');
 	});
 
 	it('문서: 폴더(이력서·포트폴리오·자격증)가 위에, 문서는 이름순', () => {
@@ -36,7 +51,7 @@ describe('buildLocations', () => {
 	});
 
 	it('블로그: 카테고리를 폴더로, 폴더가 위에, 글은 최신순, 폴더 수정일은 가장 최근 글', () => {
-		const blog = tree[2];
+		const blog = tree[3];
 		expect(names(blog)).toEqual(['개발기', '기타']);
 		const macfolio = find(tree, 'blog/개발기/MacFolio') as FolderItem;
 		expect(names(macfolio)).toEqual(['백엔드', '새 글', '예전 글']);
@@ -48,7 +63,7 @@ describe('buildLocations', () => {
 
 	it('프로젝트와 앱', () => {
 		expect(find(tree, 'project:qru')).toMatchObject({ kind: 'project', projectId: 'qru', period: '2025.03 – 2025.05' });
-		expect(names(tree[3])).toEqual(['메모', 'Safari']);
+		expect(names(tree[4])).toEqual(['메모', 'Safari']);
 	});
 });
 

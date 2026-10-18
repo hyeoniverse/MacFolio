@@ -6,9 +6,10 @@ import { useProjectsVersion } from '@/shared/site/siteContent';
 import { buildLocations, type FolderItem } from './files';
 import { loadDocuments, useDocumentEntries } from './documents';
 import { DOC_PATHS } from './docsBundle';
+import { ALBUMS } from '@/apps/photos/albums';
 
 /**
- * Finder의 위치들(문서, 프로젝트, 블로그, 응용 프로그램)과 그 안의 트리.
+ * Finder의 위치들(문서, 사진, 프로젝트, 블로그, 응용 프로그램)과 그 안의 트리.
  * Finder와 미리보기의 열기 창이 같은 트리를 본다: 글 목록·프로젝트·올린 문서 파일이 바뀌면 둘 다 바뀐다
  */
 export function useLocations(): FolderItem[] {
@@ -42,6 +43,7 @@ export function useLocations(): FolderItem[] {
 					icon: APP_MANIFEST[name].icon,
 				})),
 				files: documents,
+				albums: ALBUMS,
 			}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- PROJECTS는 안만 바뀌는 배열이라 판(version)으로 다시 계산한다
 		[posts, projectsVersion, documents]

@@ -33,6 +33,7 @@ type Place = { folder: string } | { doc: string };
 
 const LOCATION_ICONS: Record<string, string> = {
 	docs: 'fa-regular fa-file-lines',
+	pictures: 'fa-regular fa-image',
 	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
 };

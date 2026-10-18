@@ -1,8 +1,8 @@
 /**
- * 응용 프로그램 위치 아이콘: macOS Finder 사이드바처럼 연필·붓·자로 짠 'A' (SF Symbols의 app.dashed가 아니라 응용 프로그램 폴더 모양).
- * 글자색(currentColor)을 따르고, 크기는 글자 크기(1em) 또는 size
+ * 응용 프로그램 위치 아이콘: macOS Finder 사이드바처럼 막대 세 개가 엇갈린 'A' (App Store 모양).
+ * 두 다리는 위에서 서로 지나쳐 엇갈리고, 가로 막대는 다리 밖까지 나간다. 글자색(currentColor)을 따르고, 크기는 1em 또는 size
  */
-const AppsGlyph = ({ size = '1em', strokeWidth = 1.6 }: { size?: number | string; strokeWidth?: number }) => (
+const AppsGlyph = ({ size = '1em', strokeWidth = 2.1 }: { size?: number | string; strokeWidth?: number }) => (
 	<svg
 		className="apps-glyph"
 		width={size}
@@ -12,17 +12,11 @@ const AppsGlyph = ({ size = '1em', strokeWidth = 1.6 }: { size?: number | string
 		stroke="currentColor"
 		strokeWidth={strokeWidth}
 		strokeLinecap="round"
-		strokeLinejoin="round"
 		aria-hidden="true"
 	>
-		{/* 왼쪽 다리: 연필 (끝이 뾰족) */}
-		<path d="M9 2.2 3.4 15.6" />
-		<path d="m2.9 13.4 1 2.8 2.2-1.9" />
-		{/* 오른쪽 다리: 붓 */}
-		<path d="M9 2.2 14.6 15.6" />
-		{/* 가로대: 자 (눈금) */}
-		<path d="M3.2 11.2h11.6" />
-		<path d="M6.2 11.2v1.3M9 11.2v1.3M11.8 11.2v1.3" strokeWidth={strokeWidth * 0.7} />
+		<path d="M10.6 2.6 4.2 15.4" />
+		<path d="M7.4 2.6 13.8 15.4" />
+		<path d="M2.6 11.6h12.8" />
 	</svg>
 );
 
