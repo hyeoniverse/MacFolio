@@ -32,6 +32,7 @@ describe('loadConfig', () => {
 				perIpPerDay: 3,
 				totalPerDay: 50,
 			},
+			documents: { r2: undefined },
 			cover: {
 				cloudflareAccountId: undefined,
 				cloudflareAiToken: undefined,
@@ -132,4 +133,12 @@ it('서버 자원 감시: 모드·shape·대역폭, 알림 주소는 없으면 �
 		region: 'r',
 	});
 	expect(loadConfig({ ...base, ...oci, OCI_REGION: '' }).resources.oci).toBeUndefined();
+});
+
+it('R2 키 세 개가 다 있어야 문서 올리기가 켜지고, 버킷 이름은 기본 macfolio-files', () => {
+	const DATABASE_URL = 'postgresql://u:p@localhost:5432/db';
+	expect(loadConfig({ DATABASE_URL, R2_ACCOUNT_ID: 'acc', R2_ACCESS_KEY_ID: 'AK' }).documents.r2).toBeUndefined();
+	expect(
+		loadConfig({ DATABASE_URL, R2_ACCOUNT_ID: 'acc', R2_ACCESS_KEY_ID: 'AK', R2_SECRET_ACCESS_KEY: 'SK' }).documents.r2
+	).toEqual({ accountId: 'acc', accessKeyId: 'AK', secretAccessKey: 'SK', bucket: 'macfolio-files' });
 });

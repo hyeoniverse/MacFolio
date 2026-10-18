@@ -1,6 +1,7 @@
 // 환경 변수를 읽어 검사한다. 잘못되었으면 서버를 띄우지 않고 바로 알린다.
 
 import type { OciCredentials } from './resources/oci.js';
+import type { R2Credentials } from './documents/r2.js';
 import { RATE_LIMIT_DEFAULTS, type RateLimitName } from './common/rate-limit.js';
 import { parseMonitorMode, type MonitorMode } from './resources/rules.js';
 
@@ -111,6 +112,11 @@ export interface AppConfig {
 		 */
 		oci?: OciCredentials;
 	};
+	/**
+	 * Finder의 문서 파일을 올릴 R2 버킷 (S3 호환 API 키). 계정 ID·키 ID·비밀 키가 다 있어야 켜진다.
+	 * 없으면 목록은 그대로 보이고 올리기·지우기만 503
+	 */
+	documents: { r2?: R2Credentials };
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -196,6 +202,17 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			geminiModel: env.GEMINI_MODEL || 'gemini-flash-latest',
 			perIpPerDay: Number(env.SUMMARY_PER_IP_PER_DAY ?? 3) || 3,
 			totalPerDay: Number(env.SUMMARY_TOTAL_PER_DAY ?? 50) || 50,
+		},
+		documents: {
+			r2:
+				env.R2_ACCOUNT_ID && env.R2_ACCESS_KEY_ID && env.R2_SECRET_ACCESS_KEY
+					? {
+							accountId: env.R2_ACCOUNT_ID,
+							accessKeyId: env.R2_ACCESS_KEY_ID,
+							secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+							bucket: env.R2_BUCKET || 'macfolio-files',
+						}
+					: undefined,
 		},
 		cover: {
 			cloudflareAccountId: env.CLOUDFLARE_ACCOUNT_ID || undefined,

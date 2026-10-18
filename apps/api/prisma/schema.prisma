@@ -353,3 +353,24 @@ model SiteContent {
   updatedAt DateTime @updatedAt
   updatedBy String?
 }
+
+/// Finder의 문서 파일 (이력서·포트폴리오·자격증). 파일은 R2 버킷에 있고 여기에는 목록만 둔다
+model Document {
+  /// 무작위 (Upload id와 같은 모양)
+  id        String   @id
+  /// 이력서 | 포트폴리오 | 자격증
+  folder    String
+  /// Finder에 보이는 이름 (확장자 포함)
+  name      String
+  /// R2 키 (<폴더 영어 이름>/<무작위>.<확장자>). 사이트 주소 /files/<key>로 받는다
+  key       String   @unique
+  /// pdf | image
+  kind      String
+  size      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  /// 올린 관리자 (GitHub 계정 이름)
+  createdBy String
+
+  @@index([folder, createdAt])
+}

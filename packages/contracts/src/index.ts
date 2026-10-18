@@ -15,6 +15,21 @@ export {
 	ReplyInput,
 } from './contact.js';
 export { cleanWallpaperName, Wallpaper, WALLPAPER_NAME_MAX, WallpaperRename } from './wallpapers.js';
+export {
+	cleanDocumentName,
+	DOCUMENT_EXTENSIONS,
+	DOCUMENT_FOLDER_KEYS,
+	DOCUMENT_FOLDERS,
+	DOCUMENT_NAME_MAX,
+	DocumentCreate,
+	documentExtension,
+	DocumentFile,
+	type DocumentFolder,
+	DocumentRename,
+	DocumentUploadRequest,
+	DocumentUploadTicket,
+	MAX_DOCUMENT_BYTES,
+} from './documents.js';
 export { IMAGE_TYPES, MAX_UPLOAD_BYTES, Upload, UPLOAD_ID, uploadIdsIn, UploadUsage } from './files.js';
 export {
 	ADMIN_ONLY_BREAKDOWNS,

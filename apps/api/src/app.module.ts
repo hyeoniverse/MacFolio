@@ -16,6 +16,7 @@ import { PostsModule } from './posts/posts.module.js';
 import { FilesModule } from './files/files.module.js';
 import { ImagesModule } from './images/images.module.js';
 import { WallpapersModule } from './wallpapers/wallpapers.module.js';
+import { DocumentsModule } from './documents/documents.module.js';
 import { GithubModule } from './github/github.module.js';
 import { PhotosModule } from './photos/photos.module.js';
 import { LikesModule } from './likes/likes.module.js';
@@ -50,6 +51,7 @@ import { ContactModule } from './contact/contact.module.js';
 		FilesModule,
 		ImagesModule,
 		WallpapersModule,
+		DocumentsModule,
 		GithubModule,
 		PhotosModule,
 		SpeechModule,
