@@ -91,8 +91,7 @@ export function canDropInto(roots: FinderItem[], items: FinderItem[], targetItem
 		if (itemSide !== side) return false;
 		if (targetPath.includes(item.id)) return false;
 		if (parentOf(roots, item.id)?.id === target.id) return false;
-		if (kind === 'blog-folder')
-			return canMoveFolder(blogPath(item.id), blogPath(target.id), blogFolderPaths(roots));
+		if (kind === 'blog-folder') return canMoveFolder(blogPath(item.id), blogPath(target.id), blogFolderPaths(roots));
 		return true;
 	});
 }
@@ -169,7 +168,9 @@ export function renameFolderChange(
 	return {
 		layout: {
 			...state.layout,
-			folders: state.layout.folders.map((folder) => (folder.id === item.id ? { ...folder, name: name.trim() } : folder)),
+			folders: state.layout.folders.map((folder) =>
+				folder.id === item.id ? { ...folder, name: name.trim() } : folder
+			),
 		},
 	};
 }

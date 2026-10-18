@@ -10,7 +10,7 @@ import {
 	type PostStats,
 	type ServerPost,
 } from '@macfolio/desktop-core/memo';
-import { fetchOrganization, saveOrganization } from './organizationApi';
+import { fetchOrganization, organizationEvents, publishOrganization, saveOrganization } from './organizationApi';
 import { fetchAdminPosts, fetchServerPosts } from './postsApi';
 import { getPostRepository } from './repository';
 import { useCanEditMemo } from './useCanEditMemo';
@@ -126,8 +126,13 @@ export function useMemoLibrary() {
 		fetchOrganization(env.apiUrl).then((loaded) => {
 			if (!cancelled && !unsaved.current) setOrganization(loaded);
 		});
+		// Finder가 저장한 정리 내용(블로그 폴더를 옮기거나 이름을 바꿈)을 따라간다
+		const unsubscribe = organizationEvents.subscribe(({ organization: next, source }) => {
+			if (next && source === 'finder' && !unsaved.current) setOrganization(next);
+		});
 		return () => {
 			cancelled = true;
+			unsubscribe();
 		};
 	}, []);
 
@@ -139,7 +144,11 @@ export function useMemoLibrary() {
 		unsaved.current = false;
 		const snapshot = organization;
 		saveQueue.current = saveQueue.current.then(async () => {
-			if (await saveOrganization(env.apiUrl, snapshot)) return;
+			if (await saveOrganization(env.apiUrl, snapshot)) {
+				// Finder의 블로그 폴더도 따라가게 알린다
+				publishOrganization(snapshot, 'memo');
+				return;
+			}
 			notify({ app: 'memo', title: '저장하지 못함', body: '메모 정리를 저장하지 못했습니다. 다시 로그인해 주세요.' });
 			setOrganization(await fetchOrganization(env.apiUrl));
 		});
