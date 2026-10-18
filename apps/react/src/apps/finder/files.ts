@@ -2,11 +2,7 @@
 // 실제 파일이 있는 것은 아니고, 사이트에 있는 것들(저장소 문서, 프로젝트, 블로그 글, 앱)을 폴더와 파일처럼 묶어 보여 준다.
 // 파일을 열면 그 종류에 맞는 곳으로 간다: 문서·PDF·그림은 Finder 안에서 보고, 프로젝트는 Safari, 글은 메모, 앱은 그 앱.
 import type { AppName } from '@/apps/manifest';
-import {
-	DEFAULT_DESKTOP_ALIASES,
-	FINDER_BUILTIN_PARENT,
-	type FinderLayoutValue,
-} from '@macfolio/contracts';
+import { DEFAULT_DESKTOP_ALIASES, FINDER_BUILTIN_PARENT, type FinderLayoutValue } from '@macfolio/contracts';
 import {
 	DOCUMENT_FOLDERS,
 	type DocumentEntry,
@@ -286,10 +282,6 @@ export function buildLocations({
 	return roots;
 }
 
-/** 폴더 안 순서: 프로젝트(그 프로젝트 폴더의 맨 위)가 먼저, 그다음 폴더, 그다음 나머지를 이름순 */
-const finderOrder = (a: FinderItem, b: FinderItem) =>
-	a.kind === 'project' ? -1 : b.kind === 'project' ? 1 : byName(a, b);
-
 /**
  * 관리자가 정한 구조를 기본 트리에 겹친다 (roots를 고친다).
  * 1) 바탕화면에 가상본, 2) 만든 폴더를 상위 폴더 아래에 (상위가 없거나 고리면 건너뛴다), 3) 옮긴 파일을 그 폴더로 (없는 파일·폴더는 건너뛴다).
@@ -354,7 +346,7 @@ function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined)
 	}
 
 	// 바뀐 폴더를 다시 정렬하고, 만든 폴더부터 수정일(안에 든 가장 최근 항목)을 다시 잰다
-	for (const folder of touched) folder.children.sort(finderOrder);
+	for (const folder of touched) folder.children.sort(byName);
 	const refresh = (folder: FolderItem): string | undefined => {
 		folder.children.forEach((child) => child.kind === 'folder' && !child.aliasOf && refresh(child));
 		if (folder.id.startsWith('folder:') || touched.has(folder)) folder.modified = latest(folder.children);
@@ -406,6 +398,8 @@ export function search(roots: FinderItem[], query: string): FinderItem[] {
 	const found: FinderItem[] = [];
 	const walk = (items: FinderItem[]) =>
 		items.forEach((item) => {
+			// 바탕화면의 가상본은 원래 폴더와 겹치므로 뺀다
+			if (item.kind === 'folder' && item.aliasOf) return;
 			if (item.name.toLowerCase().includes(needle)) found.push(item);
 			if (item.kind === 'folder') walk(item.children);
 		});

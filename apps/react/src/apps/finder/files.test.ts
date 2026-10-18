@@ -39,8 +39,8 @@ const tree = buildLocations({
 const names = (folder: FolderItem) => folder.children.map((child) => child.name);
 
 describe('buildLocations', () => {
-	it('즐겨찾기 위치: 문서, 프로젝트, 블로그, 응용 프로그램 (사진은 프로젝트 폴더 안에만)', () => {
-		expect(tree.map((folder) => folder.name)).toEqual(['문서', '프로젝트', '블로그', '응용 프로그램']);
+	it('즐겨찾기 위치: 데스크탑(맨 앞), 문서, 프로젝트, 블로그, 응용 프로그램 (사진은 프로젝트 폴더 안에만)', () => {
+		expect(tree.map((folder) => folder.name)).toEqual(['데스크탑', '문서', '프로젝트', '블로그', '응용 프로그램']);
 	});
 
 	it('사진: 프로젝트 폴더 안의 사진 폴더에 그림만 (영상은 뺀다). 키는 사이트 주소 그대로', () => {
@@ -51,7 +51,7 @@ describe('buildLocations', () => {
 	});
 
 	it('문서: 폴더(이력서·포트폴리오·자격증)가 위에, 문서는 이름순', () => {
-		const docs = tree[0];
+		const docs = find(tree, 'docs') as FolderItem;
 		expect(names(docs)).toEqual(['이력서', '자격증', '포트폴리오', 'deployment.md', 'README.md']);
 		const resume = find(tree, 'docs:이력서') as FolderItem;
 		expect(resume.children).toEqual([]);
@@ -62,7 +62,7 @@ describe('buildLocations', () => {
 	});
 
 	it('블로그: 카테고리를 폴더로, 폴더가 위에, 글은 최신순, 폴더 수정일은 가장 최근 글', () => {
-		const blog = tree[2];
+		const blog = find(tree, 'blog') as FolderItem;
 		expect(names(blog)).toEqual(['개발기', '기타']);
 		const macfolio = find(tree, 'blog/개발기/MacFolio') as FolderItem;
 		expect(names(macfolio)).toEqual(['백엔드', '새 글', '예전 글']);
@@ -75,7 +75,7 @@ describe('buildLocations', () => {
 	it('프로젝트와 앱', () => {
 		// 실행하는 앱(프로젝트)은 프로젝트 폴더에 두지 않는다: 응용 프로그램에만
 		expect(find(tree, 'project:qru')).toBeNull();
-		expect(names(tree[3])).toEqual(['메모', 'Safari']);
+		expect(names(find(tree, 'apps') as FolderItem)).toEqual(['메모', 'Safari']);
 	});
 });
 
@@ -157,7 +157,7 @@ describe('문서 파일 목록 → 폴더 (시험용 목록)', () => {
 
 	it('파일을 그 폴더에 이름순으로, 종류·키·크기·수정일과 함께', () => {
 		expect(names(find(withFiles, 'docs:자격증') as FolderItem)).toEqual(['A 자격증.jpg', 'B 자격증.png']);
-		expect(find(withFiles, 'file:resume/resume.pdf')).toEqual({
+		expect(find(withFiles, 'file:resume/resume.pdf')).toMatchObject({
 			kind: 'pdf',
 			id: 'file:resume/resume.pdf',
 			name: '이력서.pdf',
@@ -225,7 +225,7 @@ describe('sortItems', () => {
 	});
 
 	it('종류: 폴더가 먼저, 같은 종류는 이름순', () => {
-		expect(sortItems(tree[0].children, 'kind').map((item) => item.name)).toEqual([
+		expect(sortItems((find(tree, 'docs') as FolderItem).children, 'kind').map((item) => item.name)).toEqual([
 			'이력서',
 			'자격증',
 			'포트폴리오',
@@ -237,7 +237,7 @@ describe('sortItems', () => {
 	it('날짜: 최신이 위로, 날짜 없는 것은 아래에 이름순', () => {
 		expect(sortItems(macfolio.children, 'date').map((item) => item.name)).toEqual(['새 글', '백엔드', '예전 글']);
 		// 날짜가 하나도 없으면 이름순 그대로
-		expect(sortItems(tree[0].children, 'date').map((item) => item.name)).toEqual([
+		expect(sortItems((find(tree, 'docs') as FolderItem).children, 'date').map((item) => item.name)).toEqual([
 			'이력서',
 			'자격증',
 			'포트폴리오',

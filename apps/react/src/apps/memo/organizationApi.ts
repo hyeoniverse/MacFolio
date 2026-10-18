@@ -1,6 +1,20 @@
 // 메모 정리 내용을 API에서 읽고 쓴다. 누구나 읽고, 관리자만 쓴다 (서버가 세션으로 확인한다).
 import { EMPTY_ORGANIZATION, normalizeOrganization, type Organization } from '@macfolio/desktop-core/memo';
+import { createStore } from '@macfolio/desktop-core';
 import { api, apiFetch } from '@/shared/api/client';
+
+/**
+ * 메모와 Finder가 함께 보는 정리 내용의 알림. 한쪽이 저장하면 다른 쪽이 새로고침 없이 따라간다
+ * (Finder에서 블로그 폴더 이름을 바꾸면 열린 메모 사이드바도 바뀐다). source는 저장한 쪽
+ */
+export const organizationEvents = createStore<{
+	organization: Organization | null;
+	source: 'memo' | 'finder' | null;
+}>({ organization: null, source: null });
+
+/** 저장한 정리 내용을 알린다 */
+export const publishOrganization = (organization: Organization, source: 'memo' | 'finder') =>
+	organizationEvents.setState({ organization, source });
 
 /** 정리 내용을 읽는다. API가 없거나 읽지 못하면 빈 정리 내용 (글은 원래 폴더대로 보인다) */
 export async function fetchOrganization(apiUrl: string, fetchImpl: typeof fetch = fetch): Promise<Organization> {
