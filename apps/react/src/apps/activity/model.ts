@@ -1,5 +1,6 @@
 // '활동 상태 보기'의 순수 계산: 기간, 비교, 표에 보이는 이름. 서버 호출은 activityApi.ts
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
+import { cleanUtm, splitUtmKey } from '@macfolio/contracts';
 import type { Breakdown, LiveVisit } from './activityApi';
 
 export const PERIODS = [
@@ -52,6 +53,7 @@ export function labelOf(metric: Breakdown, key: string): string {
 	}
 	if (metric === 'app') return APP_MANIFEST[key as AppName]?.label ?? key;
 	if (metric === 'device') return key === 'mobile' ? '모바일' : key === 'desktop' ? '데스크톱' : key;
+	if (metric === 'utm') return utmLabel(key);
 	if (metric === 'item') {
 		const [app, ...rest] = key.split('/');
 		return `${APP_MANIFEST[app as AppName]?.label ?? app} › ${rest.join('/')}`;
@@ -74,4 +76,38 @@ export function eventLabel(event: LiveVisit['events'][number]): string {
 		default:
 			return event.type;
 	}
+}
+
+/** 조합 표의 이름: linkedin / social / resume-2026. 빈 칸은 - */
+export const utmLabel = (key: string) =>
+	splitUtmKey(key)
+		.map((part) => part || '-')
+		.join(' / ');
+
+/** 링크 생성기의 칸 (utm_ 뒤 이름 → 값) */
+export const UTM_FIELDS = ['source', 'medium', 'campaign', 'term', 'content'] as const;
+export type UtmFields = Record<(typeof UTM_FIELDS)[number], string>;
+
+/** 자주 쓰는 출처·매체 (링크 생성기의 후보) */
+export const UTM_SOURCES = ['linkedin', 'github', 'velog', 'email', 'resume'] as const;
+export const UTM_MEDIUMS = ['social', 'referral', 'email', 'recruit', 'cpc'] as const;
+
+/**
+ * 링크 생성기: 대상(사이트 안 경로나 전체 주소)에 utm_* 를 붙인 주소. 값은 받는 쪽과 같은 규칙(cleanUtm)으로 다듬고
+ * 빈 칸은 붙이지 않는다. 대상에 이미 있던 utm_*는 바꾼다. 대상이 주소가 아니면 null
+ */
+export function buildUtmUrl(target: string, fields: UtmFields, origin: string): string | null {
+	let url: URL;
+	try {
+		url = new URL(target.trim() || '/', origin);
+	} catch {
+		return null;
+	}
+	if (!/^https?:$/.test(url.protocol)) return null;
+	for (const name of UTM_FIELDS) {
+		const value = cleanUtm(fields[name]);
+		if (value) url.searchParams.set(`utm_${name}`, value);
+		else url.searchParams.delete(`utm_${name}`);
+	}
+	return url.toString();
 }
