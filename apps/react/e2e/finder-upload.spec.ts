@@ -49,7 +49,9 @@ async function fakeDocuments(page: Page) {
 				: folder === '이력서'
 					? 'resume'
 					: 'portfolio';
-			const key = `${prefix}/abcdefghijklmnop.${name.split('.').pop()}`;
+			// 같은 폴더에 두 번째로 올리면 다른 키 (첫 번째는 abcdefghijklmnop)
+			const taken = docs.filter((doc) => doc.key.startsWith(`${prefix}/`)).length;
+			const key = `${prefix}/${taken ? `abcdefghijklmn${String(taken).padStart(2, '0')}` : 'abcdefghijklmnop'}.${name.split('.').pop()}`;
 			return route.fulfill({
 				status: 201,
 				headers: cors(origin),
@@ -167,6 +169,40 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect(
 			page.getByRole('listbox', { name: '바탕화면' }).getByRole('option', { name: '바탕.pdf' })
 		).toBeVisible();
+
+		// 바탕화면의 파일 아이콘 위에 놓아도 바탕화면으로 (브라우저가 파일을 열지 않는다)
+		await dropFile(page, `[data-desktop-icon="file:${docs[1].key}"]`, '하나 더.pdf', [...tinyPdf()]);
+		await expect.poll(() => docs.length).toBe(3);
+		await expect.poll(() => api.finderLayout.files[`file:${docs[2].key}`]).toBe('desktop');
+		// 가상본(자격증) 위에 놓으면 원래 폴더로
+		await dropFile(page, '[data-desktop-icon="docs:자격증"]', '자격.pdf', [...tinyPdf()]);
+		await expect.poll(() => docs.length).toBe(4);
+		expect(docs[3]).toMatchObject({ folder: '자격증', name: '자격.pdf' });
+	});
+
+	test('사이드바에 이력서·포트폴리오·자격증이 있고, 그 위에 놓아도 올라간다', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
+		const { docs } = await fakeDocuments(page);
+		const finder = await openResumeFolder(page);
+		const sidebar = finder.getByRole('navigation', { name: '즐겨찾기' });
+		await expect(sidebar.getByRole('button')).toHaveText([
+			'데스크탑',
+			'문서',
+			'이력서',
+			'포트폴리오',
+			'자격증',
+			'블로그',
+			'응용 프로그램',
+		]);
+		await expect(sidebar.getByRole('button', { name: '이력서' })).toHaveAttribute('aria-current', 'page');
+		await dropFile(page, '[data-app="finder"] .finder-sidebar [data-folder-target="docs:자격증"]', '자격.pdf', [
+			...tinyPdf(),
+		]);
+		await expect.poll(() => docs.length).toBe(1);
+		expect(docs[0]).toMatchObject({ folder: '자격증', name: '자격.pdf' });
+		await sidebar.getByRole('button', { name: '자격증' }).click();
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('자격증');
+		await expect(finder.getByRole('option', { name: '자격.pdf' })).toBeVisible();
 	});
 
 	test('방문자는 끌어다 놓아도 올라가지 않는다', async ({ page }) => {
@@ -206,7 +242,7 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		// 폴더 안에 놓아도 같은 폴더로
 		await dropFile(page, '[data-app="finder"] .finder-content', '구조도.pdf', pdf);
 		await expect(folder.getByRole('option', { name: '구조도.pdf' })).toBeVisible();
-		expect(docs[1]).toMatchObject({ folder: 'project:macfolio', key: 'projects/macfolio/abcdefghijklmnop.pdf' });
+		expect(docs[1]).toMatchObject({ folder: 'project:macfolio', key: 'projects/macfolio/abcdefghijklmn01.pdf' });
 
 		// 관리자 메뉴: 고르고 ⌘⌫로 지운다
 		await folder.getByRole('option', { name: '구조도.pdf' }).click();

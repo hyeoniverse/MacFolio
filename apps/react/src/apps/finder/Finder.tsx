@@ -38,6 +38,9 @@ const LOCATION_ICONS: Record<string, string> = {
 	blog: 'fa-regular fa-pen-to-square',
 };
 
+/** 즐겨찾기에 함께 두는 문서 폴더 (macOS에서 자주 쓰는 폴더를 사이드바에 끌어 둔 것처럼, 문서 바로 아래) */
+const FAVORITE_FOLDERS = ['docs:이력서', 'docs:포트폴리오', 'docs:자격증'];
+
 const formatDate = (date?: string) => {
 	if (!date) return '—';
 	const [y, m, d] = date.split('-').map(Number);
@@ -121,7 +124,14 @@ const Finder: React.FC = () => {
 			? place.doc.split('/').at(-1)!
 			: (folder?.name ?? 'Finder');
 	const crumbs = 'folder' in place ? pathTo(locations, place.folder) : pathTo(locations, `docs:${place.doc}`);
-	const location = crumbs[0]?.id ?? null;
+	// 사이드바에서 칠할 곳: 경로에서 가장 안쪽의 즐겨찾기 (이력서 안이면 이력서, 그 밖의 문서면 문서)
+	const location =
+		[...crumbs].reverse().find((crumb) => FAVORITE_FOLDERS.includes(crumb.id))?.id ?? crumbs[0]?.id ?? null;
+	const favorites = locations.flatMap((item) =>
+		item.id === 'docs'
+			? [item, ...FAVORITE_FOLDERS.map((id) => find(locations, id)).filter((found): found is FinderItem => !!found)]
+			: [item]
+	);
 
 	// 메뉴 막대의 Finder 메뉴 (#96). 바탕화면을 눌러 Finder가 되었을 때도 보이므로, 고르면 Finder 창을 연다
 	const inFinder = (action: () => void) => () => {
@@ -415,21 +425,25 @@ const Finder: React.FC = () => {
 				<FinderMobile locations={locations} onOpenElsewhere={open} dark={dark} />
 			) : (
 				<div className="finder" {...moveHandlers}>
-					<nav className="finder-sidebar" aria-label="즐겨찾기">
+					<nav className="finder-sidebar" aria-label="즐겨찾기" {...drop.handlers}>
 						<div className="finder-lights-space" />
 						<h2>즐겨찾기</h2>
-						{locations.map((item) => (
+						{favorites.map((item) => (
 							<button
 								key={item.id}
 								type="button"
 								data-folder-target={item.id}
 								className={`finder-location${location === item.id && !searching ? ' active' : ''}${
-									dropId === item.id ? ' drop-target' : ''
+									dropId === item.id || (drop.target === item.id && dropFolder !== item.id) ? ' drop-target' : ''
 								}`}
 								aria-current={location === item.id && !searching ? 'page' : undefined}
 								onClick={() => go({ folder: item.id })}
 							>
-								{item.id === 'apps' ? <AppsGlyph /> : <i className={LOCATION_ICONS[item.id]} aria-hidden="true" />}
+								{item.id === 'apps' ? (
+									<AppsGlyph />
+								) : (
+									<i className={LOCATION_ICONS[item.id] ?? 'fa-regular fa-folder'} aria-hidden="true" />
+								)}
 								{item.name}
 							</button>
 						))}

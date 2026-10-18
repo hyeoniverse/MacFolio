@@ -320,6 +320,15 @@ const DesktopIcons: React.FC = () => {
 
 	const bandRect = band && rectFrom(band.start, band.end);
 
+	/** 컴퓨터의 파일을 놓을 곳: 폴더 아이콘(가상본이면 원래 폴더) 위면 그 폴더, 파일·앱 아이콘이나 빈 곳이면 바탕화면 (macOS처럼) */
+	const fileDropAt = (element: EventTarget) => {
+		const key = (element as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon') ?? null;
+		const onFolder = key ? uploadPlan(locations, byKey(key)) : null;
+		if (onFolder) return { ...onFolder, key };
+		const plan = uploadPlan(locations, desktop);
+		return plan && { ...plan, key: null };
+	};
+
 	return (
 		<div
 			ref={layer}
@@ -335,14 +344,12 @@ const DesktopIcons: React.FC = () => {
 			onKeyDown={onKeyDown}
 			onContextMenu={onContextMenu}
 			onDragOver={(event) => {
-				// 관리자: 컴퓨터의 파일을 바탕화면이나 폴더 아이콘 위에 놓으면 그 자리에 올린다
-				if (edit.admin && event.dataTransfer.types.includes('Files')) {
-					const key = (event.target as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon');
-					const ok = !!uploadPlan(locations, key ? byKey(key) : desktop);
-					setHover(ok && key ? key : null);
-					if (!ok) return;
+				// 컴퓨터의 파일: 브라우저가 파일을 열어 사이트를 떠나지 않게 늘 받는다. 관리자면 그 자리에 올린다
+				if (event.dataTransfer.types.includes('Files')) {
 					event.preventDefault();
-					event.dataTransfer.dropEffect = 'copy';
+					const plan = edit.admin ? fileDropAt(event.target) : null;
+					setHover(plan?.key ?? null);
+					event.dataTransfer.dropEffect = plan ? 'copy' : 'none';
 					return;
 				}
 				if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;
@@ -359,12 +366,10 @@ const DesktopIcons: React.FC = () => {
 			}}
 			onDrop={(event) => {
 				setHover(null);
-				if (edit.admin && event.dataTransfer.types.includes('Files')) {
-					const key = (event.target as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon');
-					const plan = uploadPlan(locations, key ? byKey(key) : desktop);
-					if (!plan) return;
+				if (event.dataTransfer.types.includes('Files')) {
 					event.preventDefault();
-					void uploadInto(locations, plan.target, [...event.dataTransfer.files]);
+					const plan = edit.admin ? fileDropAt(event.target) : null;
+					if (plan) void uploadInto(locations, plan.target, [...event.dataTransfer.files]);
 					return;
 				}
 				if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;
