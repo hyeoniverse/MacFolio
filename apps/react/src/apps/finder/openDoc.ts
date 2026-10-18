@@ -6,3 +6,9 @@ export const finderDocRequest = createStore<{ path: string | null }>({ path: nul
 
 /** Finder에 문서를 열어 달라고 요청한다. 창을 여는 일(openApp)은 부르는 쪽이 한다 */
 export const requestFinderDoc = (path: string) => finderDocRequest.setState({ path });
+
+// 바탕화면 폴더 아이콘을 열면 Finder에 그 폴더를 보여 달라는 요청 (desktop/icons). 문서 요청과 같은 방식이다
+export const finderFolderRequest = createStore<{ id: string | null }>({ id: null });
+
+/** Finder에 폴더를 열어 달라고 요청한다 (폴더 id: docs:이력서, pictures…). 창을 여는 일은 부르는 쪽이 한다 */
+export const requestFinderFolder = (id: string) => finderFolderRequest.setState({ id });
