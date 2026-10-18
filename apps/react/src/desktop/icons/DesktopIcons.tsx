@@ -356,7 +356,7 @@ const DesktopIcons: React.FC = () => {
 	return (
 		<div
 			ref={layer}
-			className="desktop-icons"
+			className={`desktop-icons${offset ? ' moving' : ''}`}
 			role="listbox"
 			aria-label="바탕화면"
 			aria-multiselectable="true"
