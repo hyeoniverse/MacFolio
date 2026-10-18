@@ -5,6 +5,7 @@ import { analyticsEnabled } from '@/shared/analytics/analytics';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
 import { saveSecurity, useSecurity, type HumanCheck } from '@/shared/security/security';
+import Button from '@/shared/ui/button/Button';
 
 /** 사람 확인을 켜고 끄는 곳 (macOS 설정처럼 색 아이콘과 설명) */
 const CHECKS: { id: HumanCheck; label: string; note: string; icon: string; color: string }[] = [
@@ -42,8 +43,7 @@ const PrivacyPane = () => {
 					<p>
 						이 사이트가 무엇을 모으고 얼마나 두는지, 글을 쓸 때 사람인지 확인할지 정합니다. 방문 분석은 쿠키 없이 하루
 						단위로만 셉니다.{' '}
-						<button
-							type="button"
+						<Button
 							className="privacy-more"
 							onClick={() => {
 								requestFinderDoc('docs/privacy.md');
@@ -51,7 +51,7 @@ const PrivacyPane = () => {
 							}}
 						>
 							더 알아보기…
-						</button>
+						</Button>
 					</p>
 				</div>
 			</section>

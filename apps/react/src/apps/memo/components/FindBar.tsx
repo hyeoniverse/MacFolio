@@ -11,6 +11,7 @@ import {
 import { loadRecentFinds, rememberFind, saveRecentFinds } from '../memoStorage';
 import { useEditorControls } from '../writer/editorControls';
 import IconButton from '@/shared/ui/button/IconButton';
+import Button from '@/shared/ui/button/Button';
 
 /** 읽기 화면에서 찾을 곳: 글 제목과 본문 (댓글·버튼 글자는 뺀다) */
 const READER_TARGETS = '.memo-reader-body > h1, .memo-reader-body > .memo-markdown';
@@ -210,9 +211,9 @@ const FindBar = ({
 						onClick={() => step(1)}
 					/>
 				</div>
-				<button type="button" className="memo-find-done" onClick={close}>
+				<Button className="memo-find-done" onClick={close}>
 					완료
-				</button>
+				</Button>
 				{useEditor && (
 					<label className="memo-find-replace-toggle">
 						<input type="checkbox" checked={replacing} onChange={(event) => setReplacing(event.target.checked)} />
@@ -237,22 +238,20 @@ const FindBar = ({
 							}}
 						/>
 					</div>
-					<button
-						type="button"
+					<Button
 						className="memo-find-done"
 						disabled={result.count === 0}
 						onClick={() => run({ type: 'replace', replacement, all: true })}
 					>
 						모두
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
 						className="memo-find-done"
 						disabled={result.count === 0}
 						onClick={() => run({ type: 'replace', replacement, all: false })}
 					>
 						대치
-					</button>
+					</Button>
 				</div>
 			)}
 			{menu && (

@@ -7,6 +7,7 @@ import { profileRows } from './profileInfo';
 import ProfileLink from './ProfileLink';
 import { closeAbout, useAboutOpen } from './aboutStore';
 import './AboutThisMac.css';
+import Button from '@/shared/ui/button/Button';
 
 /**
  * Apple 메뉴의 '이 Mac에 관하여': macOS의 같은 창처럼 가운데 작은 창에 그림, 이름, 사양 줄, '추가 정보…'.
@@ -81,8 +82,7 @@ const AboutThisMac = () => {
 				))}
 			</dl>
 
-			<button
-				type="button"
+			<Button
 				className="about-mac-more"
 				onClick={() => {
 					// macOS처럼 시스템 설정의 정보로 (만든 사람의 기술 전부, 이 사이트를 만든 기술)
@@ -92,7 +92,7 @@ const AboutThisMac = () => {
 				}}
 			>
 				추가 정보…
-			</button>
+			</Button>
 			{/* macOS에서 이 자리는 '규제 인증서'. 이 사이트에서 그에 맞는 문서는 개인정보 처리 방침이다 (Apple 메뉴와 같은 문서) */}
 			<button
 				type="button"
