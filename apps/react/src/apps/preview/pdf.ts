@@ -59,3 +59,6 @@ export async function countMatches(doc: PDFDocumentProxy, query: string): Promis
 	}
 	return counts;
 }
+
+/** 쪽이 원래 돌아가 있는 각도에 보는 사람이 돌린 각도를 더한다 */
+export const rotated = (page: { rotate: number }, rotation: number) => (page.rotate + rotation) % 360;
