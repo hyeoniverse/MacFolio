@@ -4,7 +4,7 @@ import type { Project } from '@/shared/profile';
 import { projectAppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import { splitNumber, useCountUp } from '@/apps/safari/project/reveal';
-import { useOpenSlides, useSlidesEntry } from '@/apps/safari/project/landing/slides';
+import { useOpenSlides, useProjectSlides } from '@/apps/safari/project/landing/slides';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -21,13 +21,13 @@ export const Favicon: React.FC<{ project?: Project; className?: string }> = ({
 		</span>
 	);
 
-/** 여기서 실행, 데모, GitHub 링크, 발표 자료 (문서 목록에 있는 PDF일 때만) */
+/** 여기서 실행, 데모, GitHub 링크, 발표 자료 (프로젝트 폴더에 PDF가 있을 때만) */
 export const Links: React.FC<{ project: Project; className?: string }> = ({ project, className = 'sp-links' }) => {
 	const { openApp } = useAppState();
 	// 이 사이트 안에서 바로 열 수 있는 프로젝트 (데모를 창으로 띄우는 앱, shared/profile.ts의 app)
 	const app = projectAppName(project.id);
 	const playable = Boolean(app);
-	const slides = useSlidesEntry(project.slides);
+	const slides = useProjectSlides(project.id);
 	const openSlides = useOpenSlides();
 
 	return (

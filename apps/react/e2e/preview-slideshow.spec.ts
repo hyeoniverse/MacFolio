@@ -1,6 +1,6 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
-import { fakeFiles } from './fakeFiles';
+import { FAKE_DOCUMENTS, fakeFiles } from './fakeFiles';
 import { fakeApi } from './fakeApi';
 
 /** Finder › 이력서에서 시험 PDF를 미리보기로 연다 */
@@ -65,19 +65,18 @@ test.describe('미리보기 슬라이드쇼', () => {
 });
 
 test.describe('프로젝트 발표 자료', () => {
-	test('발표 자료를 붙인 프로젝트는 Safari에 버튼이 있고, 누르면 미리보기에서 연다', async ({ page }) => {
-		await fakeFiles(page);
-		const api = await fakeApi(page);
-		api.siteProjects = {
-			items: [
-				{ id: 'qru', override: { slides: 'resume/test.pdf' } },
-				// 지운 파일: 버튼이 없다
-				{ id: 'newpick', override: { slides: 'portfolio/gone.pdf' } },
-			],
-		};
+	test('프로젝트 폴더에 PDF가 있으면 Safari에 버튼이 있고, 이름순 첫 PDF를 미리보기에서 연다', async ({ page }) => {
+		await fakeFiles(page, [
+			...FAKE_DOCUMENTS,
+			// 이름순으로 뒤라 열리지 않는다
+			{ folder: 'project:macfolio', name: 'Z 부록.pdf', key: 'projects/macfolio/extra.pdf', kind: 'pdf' },
+			// 그림만 있는 프로젝트 폴더: 버튼이 없다
+			{ folder: 'project:qru', name: '구조도.png', key: 'projects/qru/a.png', kind: 'image' },
+		]);
+		await fakeApi(page);
 		await enterDesktop(page);
 		const safari = appWindow(page, 'safari');
-		await safari.getByRole('tab', { name: /NewPick/ }).click();
+		await safari.getByRole('tab', { name: /QRU/i }).click();
 		await expect(
 			safari
 				.getByRole('tabpanel')
@@ -86,7 +85,7 @@ test.describe('프로젝트 발표 자료', () => {
 		).toBeVisible();
 		await expect(safari.getByRole('button', { name: /발표 자료 보기/ })).toHaveCount(0);
 
-		await safari.getByRole('tab', { name: /QRU/i }).click();
+		await safari.getByRole('tab', { name: /MacFolio/ }).click();
 		const button = safari
 			.getByRole('tabpanel')
 			.getByRole('button', { name: /발표 자료 보기/ })
@@ -94,30 +93,25 @@ test.describe('프로젝트 발표 자료', () => {
 		await expect(button).toBeVisible();
 		await button.click();
 		const preview = appWindow(page, 'preview');
-		await expect(preview.getByRole('heading', { level: 1 })).toHaveText('시험 이력서.pdf');
+		await expect(preview.getByRole('heading', { level: 1 })).toHaveText('MacFolio 발표.pdf');
 		await expect(preview.getByText('1/3페이지')).toBeVisible();
 	});
 
-	test('관리자: 시스템 설정의 프로젝트 편집에서 문서 PDF를 발표 자료로 고르면 저장된다', async ({ page }) => {
-		await fakeFiles(page);
-		const api = await fakeApi(page, { signedIn: true });
+	test('프로젝트 폴더에 PDF가 없으면 버튼이 없다', async ({ page }) => {
+		await fakeFiles(
+			page,
+			FAKE_DOCUMENTS.filter((entry) => !entry.folder.startsWith('project:'))
+		);
+		await fakeApi(page);
 		await enterDesktop(page);
-		await dockItem(page, 'settings').click();
-		const settings = appWindow(page, 'settings');
-		await settings.getByRole('button', { name: '프로젝트', exact: true }).click();
-		await settings.getByRole('button', { name: '편집', exact: true }).click();
-		const list = settings.getByRole('list', { name: '프로젝트' });
-		await list.getByRole('listitem').filter({ hasText: 'MacFolio' }).getByRole('button', { name: '편집' }).click();
-		const editor = settings.getByRole('form', { name: 'MacFolio 편집' });
-		const field = editor.getByRole('combobox', { name: '발표 자료' });
-		// PDF만 고를 수 있다 (그림은 빠진다)
-		await expect(field.getByRole('option')).toHaveText(['없음', '이력서 / 시험 이력서.pdf']);
-		await field.selectOption({ label: '이력서 / 시험 이력서.pdf' });
-		await editor.getByRole('button', { name: '완료' }).click();
-		await settings.getByRole('button', { name: '완료' }).click();
-		await expect(settings.getByRole('status').filter({ hasText: '저장했습니다' })).toBeVisible();
-		expect(api.siteProjects?.items.find((item) => item.id === 'macfolio')).toMatchObject({
-			override: { slides: 'resume/test.pdf' },
-		});
+		const safari = appWindow(page, 'safari');
+		await safari.getByRole('tab', { name: /MacFolio/ }).click();
+		await expect(
+			safari
+				.getByRole('tabpanel')
+				.getByRole('link', { name: /GitHub에서 보기/ })
+				.first()
+		).toBeVisible();
+		await expect(safari.getByRole('button', { name: /발표 자료 보기/ })).toHaveCount(0);
 	});
 });

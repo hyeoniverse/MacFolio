@@ -70,19 +70,6 @@ describe('parseProjects', () => {
 		]);
 	});
 
-	it('발표 자료(slides)는 문서 폴더의 PDF 키만 받는다', () => {
-		expect(parseProjects({ items: [{ id: 'x', override: { slides: 'portfolio/abcDEF_123-x.pdf' } }] })).toEqual({
-			value: { items: [{ id: 'x', override: { slides: 'portfolio/abcDEF_123-x.pdf' } }] },
-		});
-		expect(parseProjects({ items: [{ id: 'x', override: { slides: null } }] })).toEqual({
-			value: { items: [{ id: 'x', override: { slides: null } }] },
-		});
-		for (const bad of ['portfolio/a.png', 'etc/a.pdf', '../resume/a.pdf', 'resume/a/b.pdf', 'https://x.dev/a.pdf']) {
-			const parsed = parseProjects({ items: [{ id: 'x', override: { slides: bad } }] });
-			expect('errors' in parsed && parsed.errors).toEqual(['프로젝트 x.slides: 모양이 맞지 않습니다.']);
-		}
-	});
-
 	it('id 규칙: 모양, 앱 이름과 겹침, 같은 id 두 번', () => {
 		const parsed = parseProjects({ items: [{ id: 'Bad Id' }, { id: 'safari' }, { id: 'ok' }, { id: 'ok' }] });
 		expect('errors' in parsed && parsed.errors).toEqual([
