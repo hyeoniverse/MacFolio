@@ -108,4 +108,39 @@ describe('문서 파일 올리기', () => {
 		expect(calls.at(-1)?.method).toBe('DELETE');
 		expect(rows.size).toBe(0);
 	});
+
+	it('프로젝트 폴더: projects/<프로젝트 id>/ 아래 키, 다른 프로젝트·문서 폴더의 키는 받지 않는다', async () => {
+		const { service } = setup();
+		const { key } = service.uploadTicket({ folder: 'project:macfolio', name: '발표.pdf', size: 1234 });
+		expect(key).toMatch(/^projects\/macfolio\/[\w-]{16}\.pdf$/);
+		await expect(service.create({ folder: 'project:other', name: '발표.pdf', key, size: 1234 }, 'h')).rejects.toThrow(
+			BadRequestException
+		);
+		await expect(service.create({ folder: '이력서', name: '발표.pdf', key, size: 1234 }, 'h')).rejects.toThrow(
+			BadRequestException
+		);
+		await expect(
+			service.create(
+				{ folder: 'project:macfolio', name: 'a.pdf', key: 'projects/macfolio/x/aaaaaaaaaaaaaaaa.pdf', size: 1234 },
+				'h'
+			)
+		).rejects.toThrow(BadRequestException);
+		expect(() => service.uploadTicket({ folder: 'project:../x', name: 'a.pdf', size: 1 })).toThrow(BadRequestException);
+		const file = await service.create({ folder: 'project:macfolio', name: '발표.pdf', key, size: 1234 }, 'h');
+		expect(file).toMatchObject({ folder: 'project:macfolio', kind: 'pdf', key });
+	});
+
+	it('목록: 이력서·포트폴리오·자격증 다음 프로젝트 폴더를 id 순으로, 그 안은 올린 순서', async () => {
+		const { service } = setup();
+		const add = async (folder: string, name: string) => {
+			const { key } = service.uploadTicket({ folder, name, size: 1234 });
+			await service.create({ folder, name, key, size: 1234 }, 'h');
+		};
+		await add('project:zeta', 'z.pdf');
+		await add('project:alpha', 'a1.pdf');
+		await add('자격증', 'c.pdf');
+		await add('project:alpha', 'a2.pdf');
+		await add('이력서', 'r.pdf');
+		expect((await service.list()).map((file) => file.name)).toEqual(['r.pdf', 'c.pdf', 'a1.pdf', 'a2.pdf', 'z.pdf']);
+	});
 });
