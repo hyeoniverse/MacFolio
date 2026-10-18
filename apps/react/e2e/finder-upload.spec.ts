@@ -1,6 +1,7 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
 import { FAKE_API, fakeApi } from './fakeApi';
+import { DOCUMENT_EXTENSIONS } from '@macfolio/contracts';
 import { tinyPdf } from './fakeFiles';
 
 /** 문서 › 포트폴리오 (프로젝트 폴더가 여기에 있다) */
@@ -20,7 +21,7 @@ interface Doc {
 	folder: string;
 	name: string;
 	key: string;
-	kind: 'pdf' | 'image';
+	kind: 'pdf' | 'image' | 'file';
 	size: number;
 	updated: string;
 }
@@ -60,7 +61,12 @@ async function fakeDocuments(page: Page) {
 		}
 		if (path === '/documents' && request.method() === 'POST') {
 			const body = request.postDataJSON();
-			const doc: Doc = { id: `doc-${docs.length + 1}-000000000`, ...body, kind: 'pdf', updated: '2026-10-18' };
+			const doc: Doc = {
+				id: `doc-${docs.length + 1}-000000000`,
+				...body,
+				kind: DOCUMENT_EXTENSIONS[body.name.split('.').pop().toLowerCase()],
+				updated: '2026-10-18',
+			};
 			docs.push(doc);
 			return route.fulfill({ status: 201, headers: cors(origin), json: doc });
 		}
@@ -130,9 +136,23 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		expect(docs[0]).toMatchObject({ folder: '이력서', name: '새 이력서.pdf', size: pdf.length });
 
 		// 받지 않는 종류는 올리지 않고 알린다
-		await dropFile(page, '[data-app="finder"] .finder-content', '메모.txt', [1, 2, 3]);
-		await expect(page.getByText('PDF, PNG, JPG, WebP 파일만 올릴 수 있습니다.')).toBeVisible();
+		await dropFile(page, '[data-app="finder"] .finder-content', '설치.exe', [1, 2, 3]);
+		await expect(page.getByText('올릴 수 없는 파일 종류입니다')).toBeVisible();
 		expect(puts).toHaveLength(1);
+
+		// 문서·영상 같은 다른 파일도 올라가고, 열면 받는다 (회색 확장자 딱지)
+		await dropFile(page, '[data-app="finder"] .finder-content', '경력기술서.docx', [1, 2, 3]);
+		const docx = finder.getByRole('option', { name: '경력기술서.docx' });
+		await expect(docx).toBeVisible();
+		expect(docs[1]).toMatchObject({ kind: 'file', name: '경력기술서.docx' });
+		await expect(docx.locator('text')).toHaveText('DOCX');
+		const download = page.waitForEvent('download');
+		await docx.dblclick();
+		expect((await download).url()).toContain('download=1');
+		await docx.click();
+		await finder.locator('.finder-content').press('ControlOrMeta+Backspace');
+		await page.getByRole('alertdialog').getByRole('button', { name: '휴지통으로 이동' }).click();
+		await expect(docx).toHaveCount(0);
 
 		// 고르고 ⌘⌫(휴지통으로 이동) → 경고창에서 확인하면 목록에서 빠진다
 		await finder.getByRole('option', { name: '새 이력서.pdf' }).click();
@@ -205,14 +225,32 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect(finder.getByRole('option', { name: '자격.pdf' })).toBeVisible();
 	});
 
-	test('방문자는 끌어다 놓아도 올라가지 않는다', async ({ page }) => {
-		await fakeApi(page);
-		const { puts } = await fakeDocuments(page);
+	test('방문자가 놓은 파일은 서버에 올리지 않고 내 화면에만 보인다 (새로고침하면 사라진다)', async ({ page }) => {
+		const api = await fakeApi(page);
+		const { puts, docs } = await fakeDocuments(page);
 		const finder = await openResumeFolder(page);
 		await expect(finder.getByText('공개용 이력서를 준비하고 있습니다.')).toBeVisible();
 		await dropFile(page, '[data-app="finder"] .finder-content', '새 이력서.pdf', [...tinyPdf()]);
-		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toHaveCount(0);
+		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toBeVisible();
+		await expect(page.getByText('내 화면에만 추가됨')).toBeVisible();
+		// 미리보기로 열린다 (blob 주소)
+		await finder.getByRole('option', { name: '새 이력서.pdf' }).dblclick();
+		await expect(appWindow(page, 'preview')).toBeVisible();
+
+		// 바탕화면에 놓아도 그 자리에
+		await dropFile(page, '.desktop-icons', '사진.gif', [1, 2, 3]);
+		await expect(
+			page.getByRole('listbox', { name: '바탕화면' }).getByRole('option', { name: '사진.gif' })
+		).toBeVisible();
+
 		expect(puts).toHaveLength(0);
+		expect(docs).toHaveLength(0);
+		expect(api.finderLayout.files).toEqual({});
+		await page.reload();
+		await enterDesktop(page);
+		await expect(page.getByRole('listbox', { name: '바탕화면' }).getByRole('option', { name: '사진.gif' })).toHaveCount(
+			0
+		);
 	});
 
 	test('프로젝트 폴더 아이콘 위나 그 안에 놓으면 project:<id> 폴더로 올라가고, 이름 바꾸기·지우기도 된다', async ({

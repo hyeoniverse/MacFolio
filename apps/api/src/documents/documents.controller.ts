@@ -26,7 +26,11 @@ const fileFields = {
 			{ type: 'string', pattern: '^project:[a-z0-9][a-z0-9-]{0,39}$', example: 'project:macfolio' },
 		],
 	},
-	name: { type: 'string', maxLength: 100, description: '확장자 포함 (pdf·png·jpg·jpeg·webp)' },
+	name: {
+		type: 'string',
+		maxLength: 100,
+		description: '확장자 포함 (pdf·그림·문서·영상·소리·zip, contracts의 DOCUMENT_EXTENSIONS)',
+	},
 	size: { type: 'integer', minimum: 1, maximum: MAX_DOCUMENT_BYTES },
 };
 

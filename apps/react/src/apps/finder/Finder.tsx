@@ -15,6 +15,7 @@ import { canCreateIn, canMove, canRename, canTrash } from './edit';
 import InlineName from './InlineName';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { useDocumentDrop } from './useDocumentDrop';
+import { downloadFile } from './documents';
 import { DOC_SOURCES } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest, finderFolderRequest } from './openDoc';
@@ -237,6 +238,10 @@ const Finder: React.FC = () => {
 				return;
 			case 'doc':
 				go({ doc: item.path });
+				return;
+			case 'file':
+				// 미리보기가 열 수 없는 파일은 macOS에서 다른 앱으로 열듯 받아서 연다
+				downloadFile(item.key, item.name);
 				return;
 			case 'pdf':
 			case 'image':
@@ -537,7 +542,7 @@ const Finder: React.FC = () => {
 							) : empty ? (
 								<p className="finder-empty">
 									{drop.admin && dropFolder
-										? '파일을 여기에 끌어다 놓으면 올라갑니다 (PDF·PNG·JPG·WebP, 20MB까지).'
+										? '파일을 여기에 끌어다 놓으면 올라갑니다 (PDF·그림·문서·영상·소리·ZIP, 20MB까지).'
 										: (folder.emptyNote ?? '비어 있음')}
 								</p>
 							) : searching && items.length === 0 ? (

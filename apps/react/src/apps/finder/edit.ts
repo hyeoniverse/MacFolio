@@ -21,7 +21,7 @@ import {
 	type PostSlug,
 } from '@macfolio/desktop-core/memo';
 import type { DocumentFolderValue } from './documents';
-import { find, pathTo, uploadFolderOf, type FinderItem, type FolderItem } from './files';
+import { find, isFileItem, pathTo, uploadFolderOf, type FinderItem, type FolderItem } from './files';
 
 /** 편집할 수 있는 항목의 종류. 시스템 항목(프로젝트, 앱, 저장소 문서, 사진 폴더, 위치, 기본 폴더)은 null */
 export type EditKind = 'folder' | 'file' | 'blog-folder' | 'post' | 'alias';
@@ -33,7 +33,7 @@ export function editKind(item: FinderItem): EditKind | null {
 		if (item.id.startsWith('blog/')) return 'blog-folder';
 		return null;
 	}
-	if ((item.kind === 'pdf' || item.kind === 'image') && item.id.startsWith('file:') && item.documentId) return 'file';
+	if (isFileItem(item) && item.id.startsWith('file:') && item.documentId) return 'file';
 	if (item.kind === 'post') return 'post';
 	return null;
 }
@@ -209,7 +209,7 @@ export function moveChange(
 		else {
 			// 원래 올린 폴더로 돌아가면 적어 둔 자리를 지운다
 			const { [item.id]: _, ...rest } = layout.files;
-			const home = item.kind === 'pdf' || item.kind === 'image' ? item.home : undefined;
+			const home = isFileItem(item) ? item.home : undefined;
 			layout = { ...layout, files: home === target.id ? rest : { ...rest, [item.id]: target.id } };
 		}
 	}
@@ -224,7 +224,7 @@ export function trashChange(
 	let { layout, organization } = state;
 	const documents: string[] = [];
 	const collect = (item: FinderItem) => {
-		if ((item.kind === 'pdf' || item.kind === 'image') && item.documentId) documents.push(item.documentId);
+		if (isFileItem(item) && item.documentId) documents.push(item.documentId);
 		if (item.kind === 'folder' && !item.aliasOf) item.children.forEach(collect);
 	};
 	const folderIds = new Set<string>();

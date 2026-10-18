@@ -31,14 +31,48 @@ export function documentFolderKey(folder: DocumentFolderValue): string {
 	return projectId ? `projects/${projectId}` : DOCUMENT_FOLDER_KEYS[folder as DocumentFolder];
 }
 
-/** 받는 파일 종류 (확장자 → 종류). 사이트 Worker의 /files/*가 내주는 종류와 같다 */
-export const DOCUMENT_EXTENSIONS: Record<string, 'pdf' | 'image'> = {
+/**
+ * 받는 파일 종류 (확장자 → 종류). 사이트 Worker의 /files/*가 내주는 종류와 같다 (worker/files.ts의 FILE_TYPES).
+ * pdf·image는 미리보기 앱이 열고, file은 받아서(다운로드) 연다. SVG·HTML처럼 사이트 주소에서 스크립트가 돌 수 있는 종류는 받지 않는다
+ */
+export const DOCUMENT_EXTENSIONS: Record<string, 'pdf' | 'image' | 'file'> = {
 	pdf: 'pdf',
 	png: 'image',
 	jpg: 'image',
 	jpeg: 'image',
 	webp: 'image',
+	gif: 'image',
+	avif: 'image',
+	// 문서
+	txt: 'file',
+	md: 'file',
+	csv: 'file',
+	json: 'file',
+	rtf: 'file',
+	doc: 'file',
+	docx: 'file',
+	xls: 'file',
+	xlsx: 'file',
+	ppt: 'file',
+	pptx: 'file',
+	hwp: 'file',
+	hwpx: 'file',
+	key: 'file',
+	pages: 'file',
+	numbers: 'file',
+	// 영상·소리
+	mp4: 'file',
+	mov: 'file',
+	webm: 'file',
+	mp3: 'file',
+	m4a: 'file',
+	wav: 'file',
+	// 묶음
+	zip: 'file',
 };
+
+/** 받지 않는 종류일 때의 안내 */
+export const DOCUMENT_TYPE_ERROR = '올릴 수 없는 파일 종류입니다 (PDF·그림·문서·영상·소리·ZIP).';
 
 /** 파일 하나의 최대 크기 (20MB) */
 export const MAX_DOCUMENT_BYTES = 20 * 1024 * 1024;
@@ -71,7 +105,7 @@ const name = z.preprocess(
 	cleanDocumentName,
 	z
 		.string({ error: '파일 이름이 필요합니다.' })
-		.refine((value) => documentExtension(value) !== null, 'PDF, PNG, JPG, WebP 파일만 올릴 수 있습니다.')
+		.refine((value) => documentExtension(value) !== null, DOCUMENT_TYPE_ERROR)
 );
 const size = z
 	.number({ error: '파일 크기가 필요합니다.' })
@@ -108,7 +142,7 @@ export const DocumentFile = z.object({
 	name: z.string(),
 	/** R2 키. 사이트 주소 /files/<key>로 받는다 */
 	key: z.string(),
-	kind: z.enum(['pdf', 'image']),
+	kind: z.enum(['pdf', 'image', 'file']),
 	size: z.number(),
 	/** YYYY-MM-DD */
 	updated: z.string(),

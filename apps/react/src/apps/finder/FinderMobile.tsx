@@ -118,6 +118,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		if (item.kind === 'folder') push({ folder: item.aliasOf ?? item.id });
 		else if (item.kind === 'doc') push({ doc: item.path });
 		else if (item.kind === 'pdf' || item.kind === 'image') push({ file: item.id });
+		else if (item.kind === 'file') downloadFile(item.key, item.name);
 		else onOpenElsewhere(item);
 	};
 

@@ -3,9 +3,11 @@ import FinderIcon from '@/apps/finder/FinderIcon';
 import { find, type FinderItem, type FolderItem } from '@/apps/finder/files';
 import { canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
 import { uploadInto } from '@/apps/finder/useDocumentDrop';
+import { addLocalFiles } from '@/apps/finder/localFiles';
 import InlineName from '@/apps/finder/InlineName';
 import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from '@/apps/finder/useFinderEdit';
 import { requestFinderFolder } from '@/apps/finder/openDoc';
+import { downloadFile } from '@/apps/finder/documents';
 import { useLocations } from '@/apps/finder/useLocations';
 import { openInPreview } from '@/apps/preview/previewStore';
 import { requestedSection } from '@/apps/settings/settingsRequest';
@@ -98,6 +100,10 @@ const DesktopIcons: React.FC = () => {
 	const pending = useRef<Pending | null>(null);
 
 	const open = (item: FinderItem) => {
+		if (item.kind === 'file') {
+			downloadFile(item.key, item.name);
+			return;
+		}
 		if (item.kind === 'pdf' || item.kind === 'image') {
 			openApp('preview');
 			bringAppToFront('preview');
@@ -347,7 +353,7 @@ const DesktopIcons: React.FC = () => {
 				// 컴퓨터의 파일: 브라우저가 파일을 열어 사이트를 떠나지 않게 늘 받는다. 관리자면 그 자리에 올린다
 				if (event.dataTransfer.types.includes('Files')) {
 					event.preventDefault();
-					const plan = edit.admin ? fileDropAt(event.target) : null;
+					const plan = fileDropAt(event.target);
 					setHover(plan?.key ?? null);
 					event.dataTransfer.dropEffect = plan ? 'copy' : 'none';
 					return;
@@ -368,8 +374,11 @@ const DesktopIcons: React.FC = () => {
 				setHover(null);
 				if (event.dataTransfer.types.includes('Files')) {
 					event.preventDefault();
-					const plan = edit.admin ? fileDropAt(event.target) : null;
-					if (plan) void uploadInto(locations, plan.target, [...event.dataTransfer.files]);
+					const plan = fileDropAt(event.target);
+					const files = [...event.dataTransfer.files];
+					// 관리자는 서버에 올리고, 방문자는 이 브라우저에서만 바탕화면(또는 그 폴더)에 둔다
+					if (plan && edit.admin) void uploadInto(locations, plan.target, files);
+					else if (plan) addLocalFiles(plan.target, files);
 					return;
 				}
 				if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { FILE_CSP, fileKey, serveFile, type FilesBucket } from './files';
+import { DOCUMENT_EXTENSIONS } from '@macfolio/contracts';
+import { FILE_CSP, FILE_TYPES, fileKey, serveFile, type FilesBucket } from './files';
 import worker from './index';
 
 /** 메모리 R2: 키 → 내용 */
@@ -24,6 +25,24 @@ function bucket(files: Record<string, string>): FilesBucket & { gets: string[] }
 }
 
 const req = (path: string, init?: RequestInit) => new Request(`https://macfolio.example${path}`, init);
+
+describe('파일 종류', () => {
+	it('API가 받는 확장자와 Worker가 내주는 확장자가 같다', () => {
+		expect(Object.keys(FILE_TYPES).sort()).toEqual(Object.keys(DOCUMENT_EXTENSIONS).sort());
+	});
+
+	it('문서·묶음은 늘 받기로, 글자·영상은 바로 보인다', async () => {
+		const files = bucket({ 'resume/a.docx': 'PK', 'resume/a.txt': 'hi', 'resume/a.mp4': 'v' });
+		const disposition = async (path: string) =>
+			(await serveFile(req(path), files)).headers.get('content-disposition')?.split(';')[0];
+		expect(await disposition('/files/resume/a.docx')).toBe('attachment');
+		expect(await disposition('/files/resume/a.txt')).toBe('inline');
+		expect(await disposition('/files/resume/a.mp4')).toBe('inline');
+		expect((await serveFile(req('/files/resume/a.txt'), files)).headers.get('content-type')).toBe(
+			'text/plain; charset=utf-8'
+		);
+	});
+});
 
 describe('fileKey', () => {
 	it('허용한 확장자의 키만', () => {
