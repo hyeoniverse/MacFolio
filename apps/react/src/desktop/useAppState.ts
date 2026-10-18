@@ -17,6 +17,13 @@ export interface AppContextType {
 	 */
 	quitApp: (appName: AppName) => void;
 	openApp: (appName: AppName) => void;
+	/**
+	 * 앱이 실행 중인지 (Dock의 점): 끌 수 없는 앱(Finder), 창이 있는 앱, 창 없이 살아 있는 앱(keepAlive).
+	 * apps[name].isRunning은 '창이 있다'는 뜻이라 실행 중인지는 이것으로 본다
+	 */
+	isAppRunning: (appName: AppName) => boolean;
+	/** 창 없이도 실행 중으로 둔다 (음악이 재생을 시작하면). 빨간 버튼으로 닫거나 종료하면 꺼진다 */
+	keepAlive: (appName: AppName, on: boolean) => void;
 
 	minimizeApp: (appName: AppName) => void;
 	maximizeApp: (appName: AppName) => void;

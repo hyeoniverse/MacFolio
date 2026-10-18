@@ -12,7 +12,7 @@ const SHARING_MS = 3500;
  * 링크 앱은 새 탭을 열고, 공유 앱은 주소를 복사하고, 나머지는 창을 연다.
  */
 export function useLaunchApp() {
-	const { apps, openApp, maximizeApp, bringAppToFront } = useAppState();
+	const { apps, openApp, maximizeApp, bringAppToFront, isAppRunning } = useAppState();
 	const [isSharing, setIsSharing] = useState(false);
 
 	const launch = (appName: AppName) => {
@@ -45,8 +45,8 @@ export function useLaunchApp() {
 	const isActive = (appName: AppName) =>
 		APP_MANIFEST[appName].action?.type === 'share'
 			? isSharing
-			: // Finder처럼 끌 수 없는 앱은 창이 없어도 늘 켜짐
-				APP_MANIFEST[appName].alwaysRunning === true || apps[appName].isRunning;
+			: // Finder처럼 끌 수 없는 앱, 창 없이 재생 중인 음악도 켜짐 (useAppState의 isAppRunning)
+				isAppRunning(appName);
 
 	return { launch, isActive };
 }

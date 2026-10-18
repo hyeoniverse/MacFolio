@@ -376,6 +376,8 @@ check(시험) ─▶ api-image: 이미지 빌드(amd64) → GHCR (sha-<커밋>, 
 - 마이그레이션은 컨테이너가 시작할 때 적용된다. 되돌리기는 **이미지만** 되돌리므로, 마이그레이션은 이전 버전 코드와 함께 돌 수 있게 만든다 (CONTRIBUTING의 '마이그레이션')
 - 서버의 배포 기록: `~/deploy/deploy.log`. 배포 직전 백업: `~/backups`
 
+**되돌리기 훈련:** 헬스 체크가 실패하는 버전을 서버에 일부러 배포해 되돌리기를 확인하는 절차는 [rollback-drill.md](rollback-drill.md)에 있다.
+
 **손으로 배포·되돌리기:** GitHub → Actions → **API 배포** → Run workflow → 태그(`sha-…`). 예전 태그를 넣으면 되돌리기다. 서버에서 바로 하려면 `~/macfolio/ops/deploy.sh sha-…`.
 
 **급할 때 서버에서 빌드:** GitHub Actions를 쓸 수 없을 때만. 1GB라 10분 넘게 걸리고 swap이 있어야 한다.

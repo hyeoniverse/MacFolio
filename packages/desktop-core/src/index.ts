@@ -11,6 +11,7 @@ export {
 export {
 	activeApp,
 	createWindowStore,
+	isAppRunning,
 	type AppWindow,
 	type AppWindows,
 	type WindowState,
