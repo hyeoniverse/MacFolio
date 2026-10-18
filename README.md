@@ -297,6 +297,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 - [공통 UI 부품](docs/ui.md): `shared/ui`의 부품과 props, 쓰는 곳, 새로 뽑을 후보
 - [배포](docs/deployment.md): Cloudflare Workers, Oracle VM, Cloudflare Tunnel, GitHub OAuth
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
+- [보안 점검](docs/security-scan.md): Semgrep·pnpm audit·osv-scanner 결과와 항목별 판정, 라이선스, CI 기준
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
 - 개발기: 사이트의 메모 앱 → 개발기 폴더 (`apps/react/src/apps/memo/content/`)
 
