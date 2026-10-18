@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import FinderIcon from '@/apps/finder/FinderIcon';
 import { find, type FinderItem, type FolderItem } from '@/apps/finder/files';
-import { canMove, canRename, canTrash } from '@/apps/finder/edit';
+import { canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
+import { uploadInto } from '@/apps/finder/useDocumentDrop';
 import InlineName from '@/apps/finder/InlineName';
 import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from '@/apps/finder/useFinderEdit';
 import { requestFinderFolder } from '@/apps/finder/openDoc';
@@ -334,6 +335,16 @@ const DesktopIcons: React.FC = () => {
 			onKeyDown={onKeyDown}
 			onContextMenu={onContextMenu}
 			onDragOver={(event) => {
+				// 관리자: 컴퓨터의 파일을 바탕화면이나 폴더 아이콘 위에 놓으면 그 자리에 올린다
+				if (edit.admin && event.dataTransfer.types.includes('Files')) {
+					const key = (event.target as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon');
+					const ok = !!uploadPlan(locations, key ? byKey(key) : desktop);
+					setHover(ok && key ? key : null);
+					if (!ok) return;
+					event.preventDefault();
+					event.dataTransfer.dropEffect = 'copy';
+					return;
+				}
 				if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;
 				const key = (event.target as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon');
 				const target = key ? byKey(key) : desktop;
@@ -348,6 +359,14 @@ const DesktopIcons: React.FC = () => {
 			}}
 			onDrop={(event) => {
 				setHover(null);
+				if (edit.admin && event.dataTransfer.types.includes('Files')) {
+					const key = (event.target as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon');
+					const plan = uploadPlan(locations, key ? byKey(key) : desktop);
+					if (!plan) return;
+					event.preventDefault();
+					void uploadInto(locations, plan.target, [...event.dataTransfer.files]);
+					return;
+				}
 				if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;
 				const key = (event.target as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon');
 				const target = key ? byKey(key) : desktop;

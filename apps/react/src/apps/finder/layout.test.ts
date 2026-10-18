@@ -14,6 +14,8 @@ import {
 	renameFolderChange,
 	trashChange,
 	untitledName,
+	uploadPlan,
+	placeFileChange,
 } from './edit';
 
 const files: DocumentEntry[] = [
@@ -41,6 +43,33 @@ const names = (item: FolderItem) => item.children.map((child) => child.name);
 const state = (layout = EMPTY_FINDER_LAYOUT, organization = EMPTY_ORGANIZATION) => ({ layout, organization });
 
 describe('폴더 구조 겹치기', () => {
+	it('파일 끌어다 놓기: 어느 폴더든 가장 가까운 문서 폴더에 올리고 놓은 자리에 둔다', () => {
+		const custom = { id: 'folder:abcd1234', name: '발표 자료', parent: 'projects/qru' };
+		const onDesk = { id: 'folder:desk0001', name: '모음', parent: 'desktop' };
+		const roots = build({ ...EMPTY_FINDER_LAYOUT, folders: [custom, onDesk] });
+		expect(uploadPlan(roots, find(roots, 'docs:이력서'))).toEqual({
+			folder: '이력서',
+			target: 'docs:이력서',
+			place: null,
+		});
+		expect(uploadPlan(roots, find(roots, custom.id))).toEqual({
+			folder: 'project:qru',
+			target: custom.id,
+			place: custom.id,
+		});
+		expect(uploadPlan(roots, find(roots, 'desktop'))).toMatchObject({ folder: '포트폴리오', place: 'desktop' });
+		expect(uploadPlan(roots, find(roots, onDesk.id))).toMatchObject({ folder: '포트폴리오', place: onDesk.id });
+		// 바탕화면의 가상본에 놓으면 원래 폴더로
+		expect(uploadPlan(roots, find(roots, 'alias:docs:자격증'))).toMatchObject({ folder: '자격증', place: null });
+		expect(uploadPlan(roots, find(roots, 'blog'))).toBeNull();
+		expect(uploadPlan(roots, find(roots, 'apps'))).toBeNull();
+		// 올린 뒤 놓은 자리에 보인다
+		const placed = placeFileChange(state().layout, 'projects/qru/b.pdf', custom.id).layout!;
+		const after = build({ ...placed, folders: [custom, onDesk] });
+		expect(names(folder(after, custom.id))).toEqual(['발표.pdf']);
+		expect(names(folder(after, 'projects/qru'))).not.toContain('발표.pdf');
+	});
+
 	it('데스크탑: 처음에는 이력서·포트폴리오·자격증 가상본 (예전 프로젝트 가상본은 건너뛴다)', () => {
 		const desktop = folder(build(), 'desktop');
 		expect(desktop.children.map((item) => (item as FolderItem).aliasOf)).toEqual([

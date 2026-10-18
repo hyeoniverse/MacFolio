@@ -9,16 +9,7 @@ import { requestOpen } from '@/shared/lib/openRequest';
 import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
-import {
-	countLabel,
-	find,
-	KIND_LABELS,
-	pathTo,
-	search,
-	uploadFolderOf,
-	type FinderItem,
-	type FolderItem,
-} from './files';
+import { countLabel, find, KIND_LABELS, pathTo, search, type FinderItem, type FolderItem } from './files';
 import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from './useFinderEdit';
 import { canCreateIn, canMove, canRename, canTrash } from './edit';
 import InlineName from './InlineName';
@@ -116,9 +107,9 @@ const Finder: React.FC = () => {
 	}, [mobile]);
 
 	const folder = 'folder' in place ? (find(locations, place.folder) as FolderItem | null) : null;
-	// 관리자가 파일을 놓아 올릴 폴더 값 (이력서·포트폴리오·자격증 또는 project:<프로젝트 id>)
-	const dropFolder = uploadFolderOf(folder);
-	const drop = useDocumentDrop(dropFolder);
+	// 관리자가 컴퓨터의 파일을 놓아 올릴 수 있는 폴더 (문서·데스크탑·프로젝트·만든 폴더)
+	const drop = useDocumentDrop(locations, folder?.id ?? null);
+	const dropFolder = drop.canUpload(folder?.id) ? folder!.id : null;
 	const searching = query.trim() !== '';
 	// 다른 폴더·문서·보기로 가면 내용을 새로 그린다 (motion.css의 motion-swap). 들어가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다
 	const placeKey = `${JSON.stringify(place)}|${view}|${searching}`;
@@ -376,11 +367,8 @@ const Finder: React.FC = () => {
 			setSelected(item.id);
 			setMenu({ anchor: { x: event.clientX, y: event.clientY }, item });
 		},
-		// 관리자: 이력서·포트폴리오·자격증 폴더나 프로젝트 폴더 아이콘 위에 파일을 놓아도 올린다
-		'data-drop-folder': uploadFolderOf(item) ?? undefined,
 		className: `finder-item ${item.kind}${selected === item.id ? ' selected' : ''}${
-			(drop.target && uploadFolderOf(item) === drop.target && dropFolder !== drop.target) ||
-			(dropId === item.id && dropId !== folder?.id)
+			(drop.target === item.id && dropFolder !== item.id) || (dropId === item.id && dropId !== folder?.id)
 				? ' drop-target'
 				: ''
 		}${item.kind === 'folder' && item.aliasOf ? ' alias' : ''}${renaming === item.id ? ' renaming' : ''}`,
@@ -579,11 +567,7 @@ const Finder: React.FC = () => {
 								{drop.uploads.map((upload) => (
 									<li key={upload.id}>
 										<span>
-											{/* 프로젝트 폴더는 project:<id> 대신 프로젝트 이름으로 */}
-											{upload.folder.startsWith('project:')
-												? (find(locations, `projects/${upload.folder.slice(8)}`)?.name ?? upload.folder.slice(8))
-												: upload.folder}{' '}
-											› {upload.name}
+											{upload.place} › {upload.name}
 										</span>
 										<progress value={upload.progress} max={1} aria-label={`${upload.name} 올리는 중`} />
 									</li>
