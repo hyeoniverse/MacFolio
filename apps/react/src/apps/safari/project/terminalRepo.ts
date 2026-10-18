@@ -40,8 +40,10 @@ export function resolve(repo: RepoDir, cwd: string[], target: string): string[] 
 		}
 		const dir = nodeAt(repo, at);
 		if (!isDir(dir)) return null;
-		const name =
-			dir[part] !== undefined ? part : Object.keys(dir).find((key) => key.toLowerCase() === part.toLowerCase());
+		// 자기 이름만 본다: `__proto__`·`constructor` 같은 이름이 Object.prototype을 따라가지 않게 (Semgrep prototype-pollution-loop)
+		const name = Object.hasOwn(dir, part)
+			? part
+			: Object.keys(dir).find((key) => key.toLowerCase() === part.toLowerCase());
 		if (name === undefined) return null;
 		at = [...at, name];
 	}
@@ -51,7 +53,8 @@ export function resolve(repo: RepoDir, cwd: string[], target: string): string[] 
 export function nodeAt(repo: RepoDir, path: string[]): RepoNode | undefined {
 	let node: RepoNode | undefined = repo;
 	for (const name of path) {
-		if (!isDir(node)) return undefined;
+		if (!isDir(node) || !Object.hasOwn(node, name)) return undefined;
+		// nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop -- 읽기만 하고, 바로 위에서 Object.hasOwn으로 자기 키만 따라간다
 		node = node[name];
 	}
 	return node;
