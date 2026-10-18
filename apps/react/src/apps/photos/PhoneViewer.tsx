@@ -226,7 +226,7 @@ export const PhoneViewer = ({
 			{menu && (
 				<Menu
 					label="사진 동작"
-					className="touch"
+					variant="ios"
 					anchor={menu}
 					trigger={moreButton}
 					onClose={() => setMenu(null)}

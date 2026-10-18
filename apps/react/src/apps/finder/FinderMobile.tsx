@@ -247,7 +247,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			{menu && (
 				<Menu
 					label="보기 옵션"
-					className="touch"
+					variant="ios"
 					anchor={menu}
 					trigger={moreButton}
 					onClose={() => setMenu(null)}
