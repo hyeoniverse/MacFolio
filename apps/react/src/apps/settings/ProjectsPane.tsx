@@ -35,6 +35,7 @@ import { captionOf, completeProject, groupedImageFolders, PUBLIC_IMAGES } from '
 import ProjectPage from '@/apps/safari/ProjectPage';
 import { hasCustomPage } from '@/apps/safari/project/custom';
 import { PROJECT_APPS } from '@/apps/manifest';
+import { loadDocuments, useDocumentEntries } from '@/apps/finder/documents';
 import { ALBUMS, albumsOf } from '@/apps/photos/albums';
 import { requestWindowSize } from '@/desktop/window/windowSizeRequest';
 import { uploadFile } from '@/apps/memo/writer/attachmentsApi';
@@ -403,6 +404,44 @@ const TextField = ({
 			) : (
 				<input {...common} type={type} onChange={(event) => onChange(event.target.value)} />
 			)}
+		</FormRow>
+	);
+};
+
+/**
+ * 발표 자료: Finder 문서(R2)에 올린 PDF 하나를 고른다. 고르면 프로젝트 페이지에 "발표 자료 보기" 버튼이 생긴다.
+ * 목록에 없는 키(지운 파일)는 "찾을 수 없는 파일"로 남겨 두어 저장해도 몰래 지워지지 않는다
+ */
+const SlidesField = ({
+	value,
+	onChange,
+}: {
+	value: string | undefined;
+	onChange: (value: string | undefined) => void;
+}) => {
+	const id = useId();
+	const hintId = `${id}-hint`;
+	const pdfs = useDocumentEntries().filter((entry) => entry.kind === 'pdf');
+	useEffect(() => {
+		void loadDocuments();
+	}, []);
+	const missing = value && !pdfs.some((entry) => entry.key === value);
+	return (
+		<FormRow
+			label="발표 자료"
+			htmlFor={id}
+			hint="Finder의 문서 폴더에 올린 PDF입니다. 고르면 프로젝트 페이지에 발표 자료 보기 버튼이 생기고 미리보기에서 열립니다."
+			hintId={hintId}
+		>
+			<Popup id={id} value={value ?? ''} onChange={(key) => onChange(key || undefined)}>
+				<option value="">없음</option>
+				{missing && <option value={value}>찾을 수 없는 파일 ({value})</option>}
+				{pdfs.map((entry) => (
+					<option key={entry.key} value={entry.key}>
+						{entry.folder} / {entry.name}
+					</option>
+				))}
+			</Popup>
 		</FormRow>
 	);
 };
@@ -2770,6 +2809,7 @@ const ProjectEditor = ({
 											onChange={(demo) => set({ demo: optional(demo) })}
 											placeholder="https://"
 										/>
+										<SlidesField value={draft.slides} onChange={(slides) => set({ slides })} />
 										<ChoiceInput
 											label="주 언어"
 											value={draft.language}
