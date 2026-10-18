@@ -329,3 +329,16 @@
 .files-phone-places {
 	animation: rise-in var(--duration) var(--ease-out);
 }
+
+/* ─── 파일 미리 보기 (PDF·그림): 위 버튼 줄 아래를 꽉 채운다 ─── */
+.files-phone.file .files-phone-scroll {
+	display: flex;
+	flex-direction: column;
+	padding: calc(var(--phone-top) + 54px) 0 var(--phone-bottom-inset);
+	overflow: hidden;
+	background-color: var(--phone-card-bg);
+}
+
+.files-phone.file .finder-file-bar {
+	padding: 8px 12px;
+}

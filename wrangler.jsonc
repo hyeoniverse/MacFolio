@@ -21,6 +21,8 @@
 		"run_worker_first": ["/", "/index.html"],
 	},
 	// Worker가 사이트 콘텐츠(GET /site)를 묻는 API 주소 (ci.yml의 VITE_API_URL과 같다)
+	// 문서 파일(이력서·포트폴리오·자격증)을 두는 R2 버킷. Worker가 /files/<키>로 내준다 (apps/react/worker/files.ts, docs/deployment.md '문서 파일(R2)')
+	"r2_buckets": [{ "binding": "FILES", "bucket_name": "macfolio-files" }],
 	"vars": {
 		"API_URL": "https://macfolio-api.hyeoniverse.com",
 	},

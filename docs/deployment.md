@@ -44,6 +44,40 @@
 4. GitHub Actions 배포가 한 번 성공한 것을 확인한 뒤, Cloudflare의 Git 연결을 끊는다. 두 곳에서 같이 배포하지 않게 하기 위해서다.
    - Workers & Pages → `macfolio` → Settings → **Build** → Git repository → **Disconnect**
 
+### 문서 파일(R2)
+
+이력서·포트폴리오·자격증 파일(PDF, PNG, JPG, WebP)은 저장소에 넣지 않고 Cloudflare R2 버킷 `macfolio-files`에 둔다. 사이트 Worker(`apps/react/worker/files.ts`)가 같은 주소의 `/files/<키>`로 내주고, Finder가 그 주소를 iframe(PDF)이나 그림으로 미리 본다. 같은 출처라 CSP `frame-src 'self'`를 그대로 쓴다. 저장소에는 어느 폴더에 무엇을 보일지만 적는다(`apps/react/src/apps/finder/documents.ts`).
+
+- 응답: 확장자에 맞는 `Content-Type`, `ETag`(`If-None-Match`가 맞으면 304), `Cache-Control: public, max-age=300`, `X-Content-Type-Options: nosniff`, `Content-Disposition: inline`(`?download=1`이면 `attachment`), 이 사이트 안의 iframe에만 들어가는 CSP(`frame-ancestors 'self'`)
+- 없는 파일, `..` 같은 경로, pdf·png·jpg·jpeg·webp가 아닌 키는 404. GET·HEAD가 아니면 405. 바인딩이 없는 곳(로컬 `pnpm dev`)도 404
+
+#### 소유자가 할 일
+
+1. 버킷을 만든다. Cloudflare 대시보드 → **R2 → Create bucket** → 이름 `macfolio-files`. 또는 `npx wrangler r2 bucket create macfolio-files`
+2. 바인딩은 이미 `wrangler.jsonc`에 있다(`r2_buckets`: `FILES` → `macfolio-files`). 따로 할 일은 없다. 단, **버킷을 만들기 전에는 배포(`wrangler deploy`)와 PR 미리보기가 "버킷이 없다"며 실패하므로, 이 변경을 머지하기 전에 1을 먼저 한다**
+3. 파일을 올린다. 올리기 전에 **전화번호, 집 주소, 생년월일, 주민등록번호 같은 신분 번호를 지운다**(자격증 사본의 자격증 번호도 가린다)
+
+   ```bash
+   npx wrangler r2 object put macfolio-files/resume/resume.pdf --file ./resume.pdf --content-type application/pdf --remote
+   ```
+
+   대시보드의 버킷 화면에서 **Upload**로 올려도 된다. 키(경로)는 영문 소문자로 짓는 것이 좋다(예: `resume/resume.pdf`, `certs/sqld.png`, `portfolio/macfolio.pdf`)
+
+4. `apps/react/src/apps/finder/documents.ts`의 `DOCUMENTS`에 한 줄을 더하고 PR을 연다
+
+   ```ts
+   { folder: '이력서', name: '이력서.pdf', key: 'resume/resume.pdf', kind: 'pdf', updated: '2026-10-18' },
+   ```
+
+   `folder`는 `'이력서' | '포트폴리오' | '자격증'`, `kind`는 `'pdf' | 'image'`. 머지되면 Finder의 그 폴더에 보인다
+
+5. 바꾸기: 같은 키로 다시 올린다(3의 명령). 목록은 그대로 두고 `updated`만 고친다. 브라우저와 Cloudflare 캐시가 최대 5분 동안 옛 파일을 보여 줄 수 있다
+6. 지우기: 먼저 `documents.ts`에서 그 줄을 지우고 머지한 뒤, `npx wrangler r2 object delete macfolio-files/resume/resume.pdf --remote`(또는 대시보드의 Delete)로 버킷에서 지운다
+
+비용: R2 무료 사용량(저장 10GB, Class A 작업 월 100만 회, Class B 작업 월 1,000만 회, 내보내기 무료) 안에서 충분하다. 문서 몇 개를 읽기만 한다.
+
+CI: 배포(`ci.yml`의 `deploy`, `preview`)는 `CLOUDFLARE_API_TOKEN`으로 `wrangler deploy`·`wrangler versions upload`를 한다. R2 바인딩이 있는 Worker를 올리려면 토큰에 **Account → Workers R2 Storage → Edit** 권한이 있어야 한다. 위 "처음 한 번"의 **Edit Cloudflare Workers** 템플릿에는 이 권한이 들어 있으므로 그 템플릿으로 만든 토큰이면 바꿀 것이 없다. 직접 고른 권한으로 만든 토큰이면 Cloudflare 대시보드 → My Profile → API Tokens에서 그 토큰을 고쳐 이 권한을 더한다. 파일을 올리는 일은 CI가 하지 않는다(소유자가 직접 올린다).
+
 ### API 주소 넣기
 
 `VITE_API_URL`은 **빌드할 때** 코드에 들어간다. 런타임 변수가 아니다. 값은 `ci.yml` 맨 위의 `env`에 있다(`https://macfolio-api.hyeoniverse.com`, 끝에 `/` 없이). 바꾸려면 그 줄을 고쳐 main에 머지한다.

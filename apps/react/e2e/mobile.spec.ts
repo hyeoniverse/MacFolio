@@ -1,6 +1,7 @@
 import { test, expect, appWindow, storeMessagesOnServer } from './fixtures';
 import { fakeApi } from './fakeApi';
 import { fakeWeather } from './fakeWeather';
+import { fakeFiles } from './fakeFiles';
 import type { Page } from '@playwright/test';
 
 /** 로딩 화면을 탭해 넘기고 홈 화면에 들어간다. */
@@ -503,6 +504,33 @@ test.describe('모바일', () => {
 		await safari.getByRole('button', { name: /탭 모두 보기/ }).tap();
 		await safari.locator('.mobile-navbar-home').tap();
 		await expect(safari.getByRole('list', { name: '열린 탭' })).toBeHidden();
+	});
+
+	test('파일: 이력서 PDF와 포트폴리오 그림을 전체 화면으로 미리 보고, 빈 자격증 폴더는 안내를 보인다', async ({
+		page,
+	}) => {
+		await fakeFiles(page);
+		await enterHome(page);
+		await (await homeApp(page, '파일')).tap();
+		const files = appWindow(page, 'finder');
+		await files.getByRole('navigation', { name: '파일 탭' }).getByRole('button', { name: '둘러보기' }).tap();
+		await files.locator('.files-phone-places').getByRole('button', { name: '문서' }).tap();
+
+		await files.getByRole('button', { name: /^자격증/ }).tap();
+		await expect(files.getByText('자격증 사본을 준비하고 있습니다.')).toBeVisible();
+		await files.locator('.mobile-navbar-home').tap();
+
+		await files.getByRole('button', { name: /^이력서/ }).tap();
+		await files.getByRole('button', { name: /시험 이력서\.pdf/ }).tap();
+		const pdf = files.getByRole('region', { name: '시험 이력서.pdf' });
+		await expect(pdf.locator('iframe')).toHaveAttribute('src', '/files/resume/test.pdf');
+		await expect(pdf.getByRole('link', { name: '다운로드' })).toHaveAttribute(
+			'href',
+			'/files/resume/test.pdf?download=1'
+		);
+		// 전체 화면: 미리 보기가 화면 폭을 채운다
+		const width = page.viewportSize()!.width;
+		expect((await pdf.locator('iframe').boundingBox())!.width).toBeGreaterThan(width - 2);
 	});
 
 	test('파일은 iOS 파일 앱처럼: 최근 항목·둘러보기 탭, 폴더는 한 화면씩, ••• 로 목록 보기', async ({ page }) => {

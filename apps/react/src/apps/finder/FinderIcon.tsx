@@ -57,6 +57,44 @@ const PageSvg: React.FC<{ variant: 'doc' | 'post' }> = ({ variant }) => (
 	</svg>
 );
 
+/** PDF: 빨간 PDF 딱지가 붙은 종이 */
+const PdfSvg = () => (
+	<svg viewBox="0 0 48 60" aria-hidden="true" className="finder-svg">
+		<path
+			d="M6 2h26l12 12v40a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+			fill="#ffffff"
+			stroke="#c9c9ce"
+			strokeWidth="1.2"
+		/>
+		<path d="M32 2v8a4 4 0 0 0 4 4h8" fill="#e9e9ee" stroke="#c9c9ce" strokeWidth="1.2" />
+		{[20, 26, 32].map((y) => (
+			<rect key={y} x="9" y={y} width={y === 32 ? 18 : 30} height="2" rx="1" fill="#d6d6dc" />
+		))}
+		<rect x="9" y="42" width="26" height="12" rx="2.5" fill="#e5483f" />
+		<text
+			x="22"
+			y="51"
+			textAnchor="middle"
+			fontSize="8"
+			fontWeight="700"
+			fill="#ffffff"
+			fontFamily="system-ui, sans-serif"
+		>
+			PDF
+		</text>
+	</svg>
+);
+
+/** 그림: 산과 해가 있는 사진 */
+const ImageSvg = () => (
+	<svg viewBox="0 0 60 48" aria-hidden="true" className="finder-svg">
+		<rect x="2" y="2" width="56" height="44" rx="4" fill="#ffffff" stroke="#c9c9ce" strokeWidth="1.2" />
+		<rect x="6" y="6" width="48" height="36" rx="2" fill="#9fd3ff" />
+		<circle cx="42" cy="15" r="4.5" fill="#ffd54a" />
+		<path d="M6 42l15-18 10 11 7-7 16 14z" fill="#3fa36b" />
+	</svg>
+);
+
 /** 항목 아이콘. 프로젝트·앱은 그 아이콘 그림, 나머지는 그린 아이콘 */
 const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 	switch (item.kind) {
@@ -68,6 +106,10 @@ const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 			return <PageSvg variant="post" />;
 		case 'project':
 			return item.icon ? <img className="finder-img" src={item.icon} alt="" draggable={false} /> : <FolderSvg />;
+		case 'pdf':
+			return <PdfSvg />;
+		case 'image':
+			return <ImageSvg />;
 		case 'app':
 			return <img className="finder-img" src={`${env.imageUrl}/${item.icon}`} alt="" draggable={false} />;
 	}

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
 import { find, KIND_LABELS, recentItems, search, sortItems, type FinderItem, type SortKey } from './files';
+import FileView from './FileView';
 import { DOC_SOURCES } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
@@ -12,8 +13,8 @@ import IconButton from '@/shared/ui/button/IconButton';
 
 type Tab = 'recents' | 'browse';
 type View = 'icons' | 'list';
-/** 들어간 곳: 폴더, 또는 앱 안에서 읽는 문서 */
-type Screen = { folder: string } | { doc: string };
+/** 들어간 곳: 폴더, 앱 안에서 읽는 문서, 또는 미리 보는 파일(PDF·그림, 항목 id) */
+type Screen = { folder: string } | { doc: string } | { file: string };
 
 const TAB_TITLES: Record<Tab, string> = { recents: '최근 항목', browse: '둘러보기' };
 
@@ -74,7 +75,13 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		setMotion('back');
 		setStack((current) => current.slice(0, -1));
 	};
-	const screenKey = screen ? ('doc' in screen ? `doc:${screen.doc}` : `folder:${screen.folder}`) : `tab:${tab}`;
+	const screenKey = screen
+		? 'doc' in screen
+			? `doc:${screen.doc}`
+			: 'file' in screen
+				? `file:${screen.file}`
+				: `folder:${screen.folder}`
+		: `tab:${tab}`;
 
 	// 바깥에서 온 문서 열기 요청 (Apple 메뉴의 개인정보 처리 방침 등). 묶어 둔 문서만 연다
 	useEffect(() => {
@@ -91,6 +98,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const open = (item: FinderItem) => {
 		if (item.kind === 'folder') push({ folder: item.id });
 		else if (item.kind === 'doc') push({ doc: item.path });
+		else if (item.kind === 'pdf' || item.kind === 'image') push({ file: item.id });
 		else onOpenElsewhere(item);
 	};
 
@@ -99,7 +107,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			? TAB_TITLES[tab]
 			: 'doc' in target
 				? target.doc.split('/').at(-1)!
-				: (find(locations, target.folder)?.name ?? TAB_TITLES[tab]);
+				: (find(locations, 'file' in target ? target.file : target.folder)?.name ?? TAB_TITLES[tab]);
 	const title = titleOf(screen);
 	const searching = query.trim() !== '';
 	const folder = screen && 'folder' in screen ? find(locations, screen.folder) : null;
@@ -116,6 +124,25 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	) : (
 		<MobileNavigation />
 	);
+
+	if (screen && 'file' in screen) {
+		const file = find(locations, screen.file);
+		return (
+			<div className="files-phone file">
+				{navigation}
+				<h2 key={`title:${screenKey}`} className="files-phone-bar-title">
+					{title}
+				</h2>
+				<div key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
+					{file && (file.kind === 'pdf' || file.kind === 'image') ? (
+						<FileView item={file} />
+					) : (
+						<p className="files-phone-empty">파일을 찾을 수 없습니다.</p>
+					)}
+				</div>
+			</div>
+		);
+	}
 
 	if (screen && 'doc' in screen)
 		return (
