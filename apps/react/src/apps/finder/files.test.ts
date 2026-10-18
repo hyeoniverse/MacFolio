@@ -67,6 +67,22 @@ describe('buildLocations', () => {
 	});
 });
 
+describe('블로그의 빈 폴더', () => {
+	it('메모에서 만든 폴더는 글이 없어도 블로그 아래에 폴더로 보인다 (하위 폴더까지)', () => {
+		const withFolders = buildLocations({
+			docs: [],
+			posts: [{ slug: 'a', title: '글', date: '2026-10-01', category: '개발기' }],
+			blogFolders: ['읽을거리', '개발기/회고'],
+			projects: [],
+			apps: [],
+		});
+		const blog = find(withFolders, 'blog') as FolderItem;
+		expect(names(blog)).toEqual(['개발기', '읽을거리']);
+		expect(names(find(withFolders, 'blog/개발기') as FolderItem)).toEqual(['회고', '글']);
+		expect((find(withFolders, 'blog/읽을거리') as FolderItem).children).toEqual([]);
+	});
+});
+
 describe('문서 파일 목록 → 폴더 (시험용 목록)', () => {
 	const files: DocumentEntry[] = [
 		{ folder: '이력서', name: '이력서.pdf', key: 'resume/resume.pdf', kind: 'pdf', size: 1200, updated: '2026-10-01' },
