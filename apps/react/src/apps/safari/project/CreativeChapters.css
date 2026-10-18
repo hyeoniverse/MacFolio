@@ -19,7 +19,7 @@
 }
 
 :is(.cr-tile > p, .cr-tile > header > p, .cr-tile > div > p) {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--cr-muted);
 	font-size: var(--text-subhead);
 	line-height: 1.6;
@@ -35,7 +35,7 @@
 }
 
 .cr-eyebrow {
-	margin-bottom: 6px;
+	margin-bottom: var(--space-6);
 	color: var(--sp-accent);
 	font-size: var(--text-footnote);
 	font-weight: 700;
@@ -44,7 +44,7 @@
 
 /* 타일 안 데모는 타일 위에 그대로 놓는다 (데모의 테두리·바탕은 지운다) */
 .cr-tile .cr-point-demo {
-	margin-top: 20px;
+	margin-top: var(--space-20);
 }
 
 .cr-tile .cr-point-demo > :first-child:not(.cr-shots) {
@@ -54,7 +54,7 @@
 }
 
 .cr-tile .cr-point-shot {
-	margin-top: 20px;
+	margin-top: var(--space-20);
 	border: none;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
@@ -67,7 +67,7 @@
 
 .cr-showcase-group {
 	display: grid;
-	gap: 16px;
+	gap: var(--space-16);
 }
 
 .cr-showcase-name {
@@ -82,7 +82,7 @@
 }
 
 .cr-showcase-name p {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--cr-muted);
 	font-size: clamp(15px, 1.6cqi, 18px);
 }
@@ -102,7 +102,7 @@
 /* 직접 만져 보는 도식이 들어간 칸 */
 .cr-showcase-live {
 	margin: 0 0 18px;
-	padding: 16px;
+	padding: var(--space-16);
 	border-radius: var(--radius-xl);
 	background-color: var(--cr-bg);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -122,7 +122,7 @@
 }
 
 .cr-showcase :is(.cr-tile > p, .cr-tile > header > p, .cr-tile > div > p) {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 }
 
 /* 큰 칸: 화면 7 : 글 5, 묶음마다 좌우를 바꾼다 */
@@ -153,14 +153,14 @@
 
 .cr-showcase-lead .cr-showcase-shot {
 	margin: 0;
-	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-xl);
 }
 
 /* 작은 칸: 둘이면 반씩, 셋이면 셋으로 */
 .cr-showcase-rest {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 16px;
+	gap: var(--space-16);
 }
 
 .cr-showcase-rest[data-count='3'] {
@@ -176,11 +176,11 @@
 }
 
 .cr-showcase-rest .cr-tile {
-	padding: 16px 16px 24px;
+	padding: var(--space-16) var(--space-16) var(--space-24);
 }
 
 .cr-showcase-rest .cr-tile > :not(figure) {
-	padding-inline: 8px;
+	padding-inline: var(--space-8);
 }
 
 /* 화면 자리는 늘 16:10이라 그림이 늦게 와도 아래가 밀리지 않는다 */
@@ -214,7 +214,7 @@
 /* stage (발표 갤러리와 음성): 데모마다 큰 무대 */
 .cr-stage {
 	display: grid;
-	gap: 20px;
+	gap: var(--space-20);
 }
 
 .cr-stage .cr-tile {
@@ -232,7 +232,7 @@
 /* bento (AI 번역·요약·커버): 글 4 : 데모 8의 큰 줄, 줄마다 좌우를 바꾸고 글은 줄 안에서 붙어 따라온다 */
 .cr-split {
 	display: grid;
-	gap: 20px;
+	gap: var(--space-20);
 }
 
 .cr-split-row {
@@ -266,7 +266,7 @@
 }
 
 .cr-split-row header > p:last-child {
-	margin-top: 12px;
+	margin-top: var(--space-12);
 	color: var(--cr-muted);
 	font-size: var(--text-subhead);
 	line-height: 1.65;
@@ -288,7 +288,7 @@
 .cr-split-media .cr-point-shot {
 	margin: 0;
 	border: none;
-	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-xl);
 }
 
 /* dashboard (트래픽 분석): 어두운 계기판 숫자, 겹친 화면, 옆으로 넘기는 카드 */
@@ -335,7 +335,7 @@
 }
 
 .cr-dashboard-head p {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	color: var(--cr-muted);
 	font-size: var(--text-callout);
 	line-height: 1.65;
@@ -381,7 +381,7 @@
 }
 
 .cr-collage figcaption {
-	padding: 8px 12px;
+	padding: var(--space-8) var(--space-12);
 	color: var(--cr-muted);
 	font-size: var(--text-caption);
 }
@@ -395,14 +395,14 @@
 /* 옆으로 넘기는 카드 */
 .cr-rail-wrap {
 	display: grid;
-	gap: 14px;
+	gap: var(--space-14);
 }
 
 .cr-rail {
 	display: grid;
 	grid-auto-columns: minmax(260px, 30%);
 	grid-auto-flow: column;
-	gap: 16px;
+	gap: var(--space-16);
 	margin: 0;
 	padding: 0 0 6px;
 	overflow-x: auto;
@@ -430,7 +430,7 @@
 
 .cr-rail-nav {
 	display: flex;
-	gap: 10px;
+	gap: var(--space-10);
 	justify-content: flex-end;
 }
 
@@ -454,7 +454,7 @@
 .cr-gauges {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-	gap: 16px;
+	gap: var(--space-16);
 	margin: 0 0 28px;
 	padding: 0;
 	list-style: none;
@@ -463,8 +463,8 @@
 .cr-gauges li {
 	display: grid;
 	justify-items: center;
-	gap: 10px;
-	padding: 24px 12px;
+	gap: var(--space-10);
+	padding: var(--space-24) var(--space-12);
 	border-radius: 20px;
 	background-color: var(--cr-tile);
 	text-align: center;
@@ -506,7 +506,7 @@
 .cr-numbered {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 16px;
+	gap: var(--space-16);
 	margin: 28px 0 0;
 	padding: 0;
 	list-style: none;
@@ -516,7 +516,7 @@
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	gap: 18px;
-	padding: 24px;
+	padding: var(--space-24);
 	border-radius: 20px;
 	background-color: var(--cr-tile);
 }
@@ -535,7 +535,7 @@
 }
 
 .cr-numbered p {
-	margin-top: 6px;
+	margin-top: var(--space-6);
 	color: var(--cr-muted);
 	font-size: 14px;
 	line-height: 1.6;
@@ -545,7 +545,7 @@
 .cr-shield {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 16px;
+	gap: var(--space-16);
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -561,7 +561,7 @@
 }
 
 .cr-shield .cr-eyebrow {
-	margin-bottom: 4px;
+	margin-bottom: var(--space-4);
 }
 
 .cr-shield h3 {
@@ -609,14 +609,14 @@
 }
 
 .cr-spot-list p {
-	margin-top: 8px;
+	margin-top: var(--space-8);
 	color: var(--cr-muted);
 	font-size: var(--text-subhead);
 	line-height: 1.65;
 }
 
 .cr-spot-list .cr-tile-icon {
-	margin-bottom: 12px;
+	margin-bottom: var(--space-12);
 }
 
 /* 넓은 창에서는 항목 아래 화면을 숨기고 오른쪽 붙은 화면이 대신 보여 준다 */
@@ -640,9 +640,9 @@
 	grid-area: 1 / 1;
 	/* 화면이 둘이면 위아래로 나눠 둔다 */
 	grid-auto-rows: minmax(0, 1fr);
-	gap: 8px;
+	gap: var(--space-8);
 	margin: 0;
-	padding: 8px;
+	padding: var(--space-8);
 	opacity: 0;
 	transform: scale(1.03);
 	transition:
@@ -681,7 +681,7 @@
 
 	.cr-showcase-lead,
 	.cr-showcase-lead[data-flip] {
-		padding: 16px 16px 24px;
+		padding: var(--space-16) var(--space-16) var(--space-24);
 	}
 
 	.cr-showcase-lead[data-flip] > :first-child,
@@ -690,7 +690,7 @@
 	}
 
 	.cr-split-row {
-		gap: 20px;
+		gap: var(--space-20);
 		padding: 22px;
 	}
 
@@ -708,7 +708,7 @@
 	}
 
 	.cr-collage {
-		gap: 12px;
+		gap: var(--space-12);
 		padding: 0;
 	}
 
@@ -734,8 +734,8 @@
 
 	.cr-spot-inline {
 		display: grid;
-		gap: 8px;
-		margin-top: 14px;
+		gap: var(--space-8);
+		margin-top: var(--space-14);
 	}
 
 	.cr-tile,

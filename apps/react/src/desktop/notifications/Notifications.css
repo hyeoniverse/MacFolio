@@ -2,7 +2,7 @@
 .notifications {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: var(--space-8);
 	position: fixed;
 	z-index: var(--z-notifications);
 	pointer-events: none;
@@ -109,7 +109,7 @@
 .notification-head {
 	display: flex;
 	align-items: baseline;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .notification-head strong {

@@ -53,7 +53,7 @@
 .memo-toolbar-tools-inner {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	min-width: 0;
 	/* 접힐 때 넘친 버튼을 자르되, 버튼의 초점 테두리는 보이게 여유를 둔다 */
 	margin: -3px;
@@ -92,7 +92,7 @@
 .memo-reader-toolbar.searching .memo-toolbar-more {
 	max-width: 30px;
 	width: 30px;
-	margin-left: 8px;
+	margin-left: var(--space-8);
 	opacity: 1;
 }
 

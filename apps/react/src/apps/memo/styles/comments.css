@@ -15,7 +15,7 @@
 }
 
 .memo-comments h2 span {
-	margin-left: 2px;
+	margin-left: var(--space-2);
 	color: var(--memo-muted);
 	font-weight: 500;
 }
@@ -32,7 +32,7 @@
 
 .memo-comment {
 	display: flex;
-	gap: 10px;
+	gap: var(--space-10);
 	padding: 12px 0;
 }
 
@@ -62,7 +62,7 @@
 .memo-comment-head {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--space-6);
 	min-height: 20px;
 	color: var(--memo-text);
 }
@@ -121,7 +121,7 @@
 }
 
 .memo-comment-body {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	color: var(--memo-body);
 	line-height: 1.6;
 	white-space: pre-wrap;
@@ -131,8 +131,8 @@
 .memo-comment-confirm {
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	margin-top: 8px;
+	gap: var(--space-6);
+	margin-top: var(--space-8);
 	color: var(--memo-muted);
 }
 
@@ -144,8 +144,8 @@
 .memo-comment-form {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
-	padding: 12px;
+	gap: var(--space-8);
+	padding: var(--space-12);
 	border: 1px solid var(--memo-border);
 	border-radius: var(--radius-xl);
 	transition: border-color var(--duration-fast) var(--ease-out);
@@ -158,7 +158,7 @@
 .memo-comment-as {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	color: var(--memo-muted);
 }
 
@@ -185,7 +185,7 @@
 }
 
 .memo-comments textarea {
-	padding: 4px 2px;
+	padding: var(--space-4) var(--space-2);
 	background: none;
 	line-height: 1.6;
 	resize: none;

@@ -57,8 +57,8 @@
 	display: block;
 	width: 72px;
 	height: 72px;
-	margin-bottom: 14px;
-	padding: 10px;
+	margin-bottom: var(--space-14);
+	padding: var(--space-10);
 	border-radius: 18px;
 	background-color: #ffffff;
 	box-shadow:
@@ -129,7 +129,7 @@
 }
 
 .sp-link i {
-	margin-left: 2px;
+	margin-left: var(--space-2);
 	font-size: var(--text-caption);
 }
 
@@ -165,15 +165,15 @@
 .sp-facts {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 24px;
-	margin-top: 24px;
+	gap: var(--space-24);
+	margin-top: var(--space-24);
 	list-style: none;
 }
 
 .sp-facts li {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--space-6);
 }
 
 .sp-facts strong {
@@ -230,7 +230,7 @@
 }
 
 .sp:where(:not([data-template])) li > p {
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	color: var(--sp-muted);
 	font-size: var(--text-body);
 	line-height: 1.5;
@@ -245,7 +245,7 @@
 }
 
 .sp-points li {
-	padding-top: 20px;
+	padding-top: var(--space-20);
 	border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
@@ -276,7 +276,7 @@
 
 .sp-checks li {
 	display: flex;
-	gap: 12px;
+	gap: var(--space-12);
 }
 
 .sp-checks i {
@@ -292,7 +292,7 @@
 
 /* 기술 사양 */
 .sp-specs-title {
-	padding-bottom: 20px;
+	padding-bottom: var(--space-20);
 	border-bottom: 1px solid var(--sp-line);
 	font-size: clamp(28px, 4.6cqi, 40px);
 	font-weight: 700;
@@ -302,7 +302,7 @@
 .sp-specs div {
 	display: grid;
 	grid-template-columns: 200px minmax(0, 1fr);
-	gap: 16px;
+	gap: var(--space-16);
 	padding: 20px 0;
 	border-bottom: 1px solid var(--sp-line);
 	font-size: var(--text-body);
@@ -364,7 +364,7 @@
 
 	.sp-specs div {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 4px;
+		gap: var(--space-4);
 	}
 }
 

@@ -2,7 +2,7 @@
 .admin-account {
 	display: flex;
 	flex-direction: column;
-	gap: 14px;
+	gap: var(--space-14);
 	max-width: 520px;
 	text-align: left;
 }
@@ -10,7 +10,7 @@
 .admin-account-head {
 	display: flex;
 	align-items: center;
-	gap: 14px;
+	gap: var(--space-14);
 }
 
 .admin-account-head strong {
@@ -36,7 +36,7 @@
 }
 
 .admin-account-status {
-	margin-top: 2px;
+	margin-top: var(--space-2);
 	color: var(--color-text-secondary);
 	font-size: var(--text-footnote);
 }
@@ -45,7 +45,7 @@
 	display: inline-block;
 	width: 7px;
 	height: 7px;
-	margin-right: 6px;
+	margin-right: var(--space-6);
 	border-radius: 50%;
 	background-color: #34c759;
 	vertical-align: 1px;
@@ -54,7 +54,7 @@
 
 .admin-account-actions {
 	display: flex;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 /* 글자 버튼 (shared/ui/button/Button): 창 바탕에 테두리 */
@@ -84,7 +84,7 @@
 .admin-account-details div {
 	display: flex;
 	justify-content: space-between;
-	gap: 16px;
+	gap: var(--space-16);
 	padding: 9px 12px;
 }
 
@@ -121,7 +121,7 @@
 }
 
 .container.mobile .admin-account-head {
-	padding: 14px 16px;
+	padding: var(--space-14) var(--space-16);
 }
 
 .container.mobile .admin-account-actions .ui-button {
@@ -156,6 +156,6 @@
 }
 
 .container.mobile .admin-account-note {
-	padding-inline: 16px;
+	padding-inline: var(--space-16);
 	font-size: var(--text-footnote);
 }

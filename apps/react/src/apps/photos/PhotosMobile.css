@@ -146,7 +146,7 @@
 
 .photos-shelf-row {
 	display: flex;
-	gap: 12px;
+	gap: var(--space-12);
 	padding: 0 20px 6px;
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
@@ -240,7 +240,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 10px;
+	gap: var(--space-10);
 	pointer-events: none;
 }
 
@@ -267,9 +267,9 @@
 
 .photos-phone-tabs {
 	display: flex;
-	gap: 4px;
+	gap: var(--space-4);
 	width: min(240px, 66%);
-	padding: 4px;
+	padding: var(--space-4);
 	border-radius: var(--radius-full);
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
@@ -282,7 +282,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 2px;
+	gap: var(--space-2);
 	height: 52px;
 	border: none;
 	border-radius: var(--radius-full);
@@ -322,7 +322,7 @@
 
 /* ─── 검색: 큰 제목, 최근 항목 카드, 앨범 추천, 아래의 검색 칸 ─── */
 .photos-phone.search .photos-phone-title {
-	padding-left: 20px;
+	padding-left: var(--space-20);
 }
 
 .photos-phone.search .photos-shelf h3 {
@@ -337,14 +337,14 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 10px;
+	gap: var(--space-10);
 	margin: 26px 0 0;
 	padding: 0 20px;
 	list-style: none;
 }
 
 .photos-phone-suggestions button {
-	padding: 12px 20px;
+	padding: var(--space-12) var(--space-20);
 	border: none;
 	border-radius: var(--radius-full);
 	background: var(--phone-card-bg);
@@ -366,7 +366,7 @@
 	/* 입력 칸의 기본 너비만큼 버티지 않고 줄어들어, 옆의 닫기(×)가 화면 밖으로 밀리지 않게 */
 	min-width: 0;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 	height: 52px;
 	padding: 0 18px;
 	border-radius: var(--radius-full);
@@ -520,7 +520,7 @@
 /* 정보 판의 높이는 어떤 사진이든 같다: 캡션도 다른 줄처럼 한 줄 (길면 말줄임) */
 .photos-phone-caption {
 	margin: 0;
-	padding: 12px 20px;
+	padding: var(--space-12) var(--space-20);
 	overflow: hidden;
 	border-bottom: 0.5px solid var(--phone-separator);
 	background: var(--phone-card-bg);
@@ -535,7 +535,7 @@
 .photos-caption-field.photos-phone-caption {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 }
 
 .photos-phone-caption .photos-caption-error {
@@ -569,7 +569,7 @@
 .photos-phone-file {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-8);
 	margin: 2px 0 10px;
 	color: var(--color-text-secondary);
 	font-size: var(--text-subhead);
@@ -586,8 +586,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 8px;
-	padding: 10px 12px;
+	gap: var(--space-8);
+	padding: var(--space-10) var(--space-12);
 	border-bottom: 0.5px solid var(--phone-separator);
 	font-size: var(--text-callout);
 }
@@ -609,7 +609,7 @@
 }
 
 .photos-phone-card p:last-of-type {
-	padding-bottom: 10px;
+	padding-bottom: var(--space-10);
 }
 
 .photos-phone-stats {
@@ -634,7 +634,7 @@
 
 .photos-phone-info-action {
 	width: 100%;
-	margin-top: 10px;
+	margin-top: var(--space-10);
 	padding: 11px;
 	border: none;
 	border-radius: var(--radius-xl);
@@ -654,7 +654,7 @@
 	display: flex;
 	flex: none;
 	align-items: center;
-	gap: 2px;
+	gap: var(--space-2);
 	height: 48px;
 	margin: auto 0 12px;
 	padding: 0 50%;
@@ -702,8 +702,8 @@
 
 .photos-phone-pill {
 	display: flex;
-	gap: 6px;
-	padding: 4px 10px;
+	gap: var(--space-6);
+	padding: var(--space-4) var(--space-10);
 	border-radius: var(--radius-full);
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);

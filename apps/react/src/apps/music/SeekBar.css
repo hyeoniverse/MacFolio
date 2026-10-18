@@ -75,7 +75,7 @@
 .volume-bar {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: var(--space-10);
 }
 
 .volume-bar .seek-bar-track {

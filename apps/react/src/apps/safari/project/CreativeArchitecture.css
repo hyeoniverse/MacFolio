@@ -121,7 +121,7 @@
 }
 
 .cr-arch figcaption {
-	margin-top: 14px;
+	margin-top: var(--space-14);
 	color: var(--cr-muted);
 	font-size: 14px;
 	text-align: center;
@@ -140,7 +140,7 @@
 	}
 
 	.cr-arch {
-		padding: 20px 14px 16px;
+		padding: var(--space-20) var(--space-14) var(--space-16);
 	}
 }
 

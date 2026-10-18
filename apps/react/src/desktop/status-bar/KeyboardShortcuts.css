@@ -61,7 +61,7 @@
 .keyboard-shortcuts-close {
 	display: block;
 	margin: 14px 0 0 auto;
-	padding: 4px 14px;
+	padding: var(--space-4) var(--space-14);
 	border: none;
 	border-radius: var(--radius-sm);
 	background: var(--color-accent);
