@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EMPTY_FINDER_LAYOUT, type FinderLayoutValue } from '@macfolio/contracts';
 import { EMPTY_ORGANIZATION, organizePosts, type Organization, type Post } from '@macfolio/desktop-core/memo';
 import type { DocumentEntry } from './documents';
-import { buildLocations, find, type FinderItem, type FolderItem } from './files';
+import { buildLocations, buildTree, find, type TreeInput, type FinderItem, type FolderItem } from './files';
 import {
 	canDropInto,
 	canMove,
@@ -13,6 +13,8 @@ import {
 	nameProblem,
 	renameFolderChange,
 	trashChange,
+	putBackChange,
+	deleteChange,
 	untitledName,
 	uploadPlan,
 	placeFileChange,
@@ -27,17 +29,21 @@ const posts = [
 	{ slug: 'b', title: '글 B', date: '2026-09-02', category: '기타' },
 ];
 
-const build = (layout: FinderLayoutValue = EMPTY_FINDER_LAYOUT, organization: Organization = EMPTY_ORGANIZATION) =>
-	buildLocations({
-		docs: ['README.md'],
-		posts: organizePosts(posts as Post[], organization),
-		blogFolders: organization.folders,
-		projects: [{ id: 'qru', name: 'QRU' }],
-		apps: [{ app: 'memo', label: '메모', icon: 'memo.png' }],
-		files,
-		albums: [{ id: 'qru', name: 'QRU', photos: [{ src: '/imgs/q.png' }] }],
-		layout,
-	});
+const input = (
+	layout: FinderLayoutValue = EMPTY_FINDER_LAYOUT,
+	organization: Organization = EMPTY_ORGANIZATION
+): TreeInput => ({
+	docs: ['README.md'],
+	posts: organizePosts(posts as Post[], organization),
+	blogFolders: organization.folders,
+	projects: [{ id: 'qru', name: 'QRU' }],
+	apps: [{ app: 'memo', label: '메모', icon: 'memo.png' }],
+	files,
+	albums: [{ id: 'qru', name: 'QRU', photos: [{ src: '/imgs/q.png' }] }],
+	layout,
+});
+const build = (layout?: FinderLayoutValue, organization?: Organization) => buildLocations(input(layout, organization));
+const TREE_INPUT = input();
 const folder = (roots: FinderItem[], id: string) => find(roots, id) as FolderItem;
 const names = (item: FolderItem) => item.children.map((child) => child.name);
 const state = (layout = EMPTY_FINDER_LAYOUT, organization = EMPTY_ORGANIZATION) => ({ layout, organization });
@@ -205,10 +211,31 @@ describe('폴더 구조 겹치기', () => {
 		expect(nameProblem(folder(roots, 'docs').children, '발표')).toMatch(/이미 사용 중/);
 		expect(nameProblem(folder(roots, 'docs').children, '발표', 'folder:aaaa')).toBeNull();
 		expect(nameProblem([], 'a/b')).not.toBeNull();
-		const trashed = trashChange([folder(roots, 'folder:aaaa')], state(layout));
-		expect(trashed.layout).toEqual({ folders: [], files: {}, aliases: null });
-		expect(trashed.documents).toEqual(['d1']);
-		const alias = trashChange([folder(roots, 'desktop').children[0]], state(layout));
+		// 휴지통으로: 지우지 않고 휴지통 폴더로 옮기고 원래 자리를 적는다
+		const trashed = trashChange(roots, [folder(roots, 'folder:aaaa')], state(layout)).layout!;
+		expect(trashed.folders[0]).toMatchObject({ id: 'folder:aaaa', parent: 'trash' });
+		expect(trashed.trash).toEqual({ 'folder:aaaa': 'docs' });
+		const { roots: after, trash } = buildTree({ ...TREE_INPUT, layout: trashed });
+		expect(find(after, 'folder:aaaa')).toBeNull();
+		expect(trash.children.map((item) => item.name)).toEqual(['발표']);
+		// 되돌려 놓기: 원래 폴더로
+		const back = putBackChange([...after, trash], trash.children, state(trashed)).layout!;
+		expect(back.folders[0].parent).toBe('docs');
+		expect(back.trash).toEqual({});
+		// 파일을 휴지통으로 보냈다가 되돌리면 올린 폴더(적어 둔 자리 없음)로
+		const fileTrashed = trashChange(build(), [find(build(), 'file:resume/r.pdf')!], state()).layout!;
+		expect(fileTrashed.files).toEqual({ 'file:resume/r.pdf': 'trash' });
+		const fileTree = buildTree({ ...TREE_INPUT, layout: fileTrashed });
+		expect(
+			putBackChange([...fileTree.roots, fileTree.trash], fileTree.trash.children, state(fileTrashed)).layout!.files
+		).toEqual({});
+		// 영구 삭제: 안의 폴더·파일까지 구조에서 빼고 서버에서 지울 파일을 모은다
+		const removed = deleteChange(trash.children, state(trashed));
+		expect(removed.layout!.folders).toEqual([]);
+		expect(removed.layout!.files).toEqual({});
+		expect(removed.layout!.trash).toEqual({});
+		expect(removed.documents).toEqual(['d1']);
+		const alias = trashChange(roots, [folder(roots, 'desktop').children[0]], state(layout));
 		expect(alias.layout!.aliases).toEqual(['docs:포트폴리오', 'docs:자격증']);
 	});
 });

@@ -8,10 +8,11 @@ import { requestBody } from './parse.js';
 export const FINDER_FOLDER_ID = /^folder:[a-z0-9]{4,24}$/;
 /**
  * 관리자 폴더·파일을 둘 수 있는 기본 폴더: 데스크탑, 문서, 문서의 이력서·포트폴리오·자격증, 프로젝트마다의 폴더.
- * 블로그·응용 프로그램·사진 폴더에는 둘 수 없다. 프로젝트 폴더는 문서 › 포트폴리오 안에 있다
+ * 블로그·응용 프로그램·사진 폴더에는 둘 수 없다. 프로젝트 폴더는 문서 › 포트폴리오 안에 있다.
+ * trash는 휴지통: 휴지통으로 보낸 만든 폴더·파일은 여기 있다가, 비우면 지워지고 되돌리면 원래 자리로 간다
  */
 export const FINDER_BUILTIN_PARENT =
-	/^(desktop|docs|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39})$/;
+	/^(trash|desktop|docs|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39})$/;
 /** 옮긴 파일의 Finder id: file:<R2 키> (예: file:resume/abc.pdf) */
 export const FINDER_FILE_ID = /^file:[A-Za-z0-9][\w./-]{0,199}$/;
 /**
@@ -24,7 +25,7 @@ export const FINDER_ALIAS_TARGET =
 export const DEFAULT_DESKTOP_ALIASES = ['docs:이력서', 'docs:포트폴리오', 'docs:자격증'] as const;
 
 export const FINDER_FOLDER_NAME_MAX = 60;
-export const FINDER_LIMITS = { folders: 200, files: 500, aliases: 20, depth: 8 } as const;
+export const FINDER_LIMITS = { folders: 200, files: 500, aliases: 20, depth: 8, trash: 500 } as const;
 
 /** 폴더 이름 검사 (화면도 같은 문구로 알린다). 문제가 없으면 null */
 export function finderNameError(name: string): string | null {
@@ -57,6 +58,11 @@ const layoutShape = {
 		.record(z.string().regex(FINDER_FILE_ID, '파일 id가 맞지 않습니다.'), z.string().max(80))
 		.refine((value) => Object.keys(value).length <= FINDER_LIMITS.files, `파일은 ${FINDER_LIMITS.files}개까지입니다.`)
 		.default({}),
+	/** 휴지통에 있는 항목 (만든 폴더 id 또는 file:<R2 키>) → 휴지통으로 보내기 전 폴더. 되돌려 놓을 때 쓴다 */
+	trash: z
+		.record(z.string().max(220), z.string().max(80))
+		.refine((value) => Object.keys(value).length <= FINDER_LIMITS.trash, `휴지통은 ${FINDER_LIMITS.trash}개까지입니다.`)
+		.default({}),
 	/** 바탕화면의 가상본 (순서대로). null이면 처음 것 (DEFAULT_DESKTOP_ALIASES) */
 	aliases: z
 		.array(z.string().regex(FINDER_ALIAS_TARGET, '가상본으로 둘 수 없는 폴더입니다.'))
@@ -69,6 +75,8 @@ export interface FinderLayoutValue {
 	folders: { id: string; name: string; parent: string }[];
 	files: Record<string, string>;
 	aliases: string[] | null;
+	/** 휴지통 항목 → 보내기 전 폴더 (예전에 저장한 값에는 없을 수 있다) */
+	trash?: Record<string, string>;
 }
 
 /**
@@ -115,4 +123,4 @@ export const FinderLayout = requestBody(layoutShape).superRefine((value, ctx) =>
 });
 export type FinderLayout = z.infer<typeof FinderLayout>;
 
-export const EMPTY_FINDER_LAYOUT: FinderLayoutValue = { folders: [], files: {}, aliases: null };
+export const EMPTY_FINDER_LAYOUT: FinderLayoutValue = { folders: [], files: {}, aliases: null, trash: {} };

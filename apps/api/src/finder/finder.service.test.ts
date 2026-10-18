@@ -20,7 +20,13 @@ function setup() {
 
 describe('Finder 폴더 구조', () => {
 	it('저장한 적 없으면 빈 구조', async () => {
-		expect(await setup().service.getLayout()).toEqual({ folders: [], files: {}, aliases: null, updatedAt: null });
+		expect(await setup().service.getLayout()).toEqual({
+			folders: [],
+			files: {},
+			aliases: null,
+			trash: {},
+			updatedAt: null,
+		});
 	});
 
 	it('관리자가 저장하면 누구나 같은 구조를 읽는다', async () => {

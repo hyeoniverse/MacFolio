@@ -250,8 +250,14 @@ function blogFolder(posts: TreeInput['posts'], folders: string[] = []): FolderIt
 	return root;
 }
 
+/** 사이드바에 보일 위치들 (휴지통은 빼고). 휴지통까지 필요하면 buildTree */
+export const buildLocations = (input: TreeInput): FolderItem[] => buildTree(input).roots;
+
+/** 휴지통 폴더 id (Finder 구조에서 휴지통으로 보낸 만든 폴더·파일의 상위) */
+export const TRASH_ID = 'trash';
+
 /** 사이드바에 보일 위치들 (Finder의 즐겨찾기). 맨 앞은 macOS처럼 데스크탑 */
-export function buildLocations({
+export function buildTree({
 	docs,
 	posts,
 	blogFolders = [],
@@ -260,7 +266,14 @@ export function buildLocations({
 	files = [],
 	albums = [],
 	layout,
-}: TreeInput): FolderItem[] {
+}: TreeInput): { roots: FolderItem[]; trash: FolderItem } {
+	const trash: FolderItem = {
+		kind: 'folder',
+		id: TRASH_ID,
+		name: '휴지통',
+		children: [],
+		emptyNote: '휴지통이 비어 있습니다.',
+	};
 	const roots: FolderItem[] = [
 		{ kind: 'folder', id: 'desktop', name: '데스크탑', children: [], emptyNote: '바탕화면이 비어 있습니다.' },
 		docsFolder(docs, files, projectFolders(projects, files, albums)),
@@ -280,8 +293,9 @@ export function buildLocations({
 				.sort(byName),
 		},
 	];
-	applyLayout(roots, layout);
-	return roots;
+	// 휴지통도 구조를 겹칠 때는 위치처럼 다룬다 (휴지통으로 보낸 폴더·파일이 그 안에 들어간다). 사이드바에는 보이지 않는다
+	applyLayout([...roots, trash], layout);
+	return { roots, trash };
 }
 
 /**

@@ -16,10 +16,12 @@ import { FinderService } from './finder.service.js';
 const LAYOUT_EXAMPLE = {
 	folders: [
 		{ id: 'folder:k3x9a1', name: '발표 자료', parent: 'docs' },
-		{ id: 'folder:p0q2r7', name: '작업', parent: 'desktop' },
+		{ id: 'folder:p0q2r7', name: '작업', parent: 'trash' },
 	],
 	files: { 'file:resume/abc123.pdf': 'folder:k3x9a1' },
 	aliases: ['docs:이력서', 'docs:포트폴리오', 'docs:자격증'],
+	// 휴지통에 있는 항목 → 보내기 전 폴더 (되돌려 놓기)
+	trash: { 'folder:p0q2r7': 'desktop' },
 };
 
 /**

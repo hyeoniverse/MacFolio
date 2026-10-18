@@ -151,16 +151,30 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		expect((await download).url()).toContain('download=1');
 		await docx.click();
 		await finder.locator('.finder-content').press('ControlOrMeta+Backspace');
-		await page.getByRole('alertdialog').getByRole('button', { name: '휴지통으로 이동' }).click();
 		await expect(docx).toHaveCount(0);
 
-		// 고르고 ⌘⌫(휴지통으로 이동) → 경고창에서 확인하면 목록에서 빠진다
+		// 고르고 ⌘⌫(휴지통으로 이동): macOS처럼 묻지 않고 휴지통에 들어간다 (서버에서는 아직 지우지 않는다)
 		await finder.getByRole('option', { name: '새 이력서.pdf' }).click();
 		await finder.locator('.finder-content').press('ControlOrMeta+Backspace');
-		// macOS 경고창: 저장소에서도 지워진다고 알리고 확인을 받는다
-		await page.getByRole('alertdialog').getByRole('button', { name: '휴지통으로 이동' }).click();
 		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toHaveCount(0);
-		expect(docs).toHaveLength(0);
+		expect(docs).toHaveLength(2);
+
+		// Dock의 휴지통 › 버린 항목: 되돌려 놓기는 원래 폴더로
+		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin\.png$/);
+		await dockItem(page, 'bin').click();
+		const bin = appWindow(page, 'bin');
+		const trashed = bin.getByRole('listbox', { name: '휴지통 항목' });
+		await expect(trashed.getByRole('option')).toHaveText([/경력기술서.docx/, /새 이력서.pdf/]);
+		await trashed.getByRole('option', { name: '새 이력서.pdf' }).click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '되돌려 놓기' }).click();
+		await expect(trashed.getByRole('option')).toHaveText([/경력기술서.docx/]);
+		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toBeVisible();
+
+		// 비우기: 묻고 영구 삭제 (서버에서도)
+		await bin.getByRole('button', { name: '비우기' }).click();
+		await bin.getByRole('alertdialog').getByRole('button', { name: '지우기' }).click();
+		await expect(bin.getByText('휴지통이 비어 있습니다.')).toBeVisible();
+		await expect.poll(() => docs.map((doc) => doc.name)).toEqual(['새 이력서.pdf']);
 	});
 
 	test('만든 폴더나 바탕화면에 놓아도 올라가고 놓은 자리에 보인다 (진짜 폴더처럼)', async ({ page }) => {
@@ -199,19 +213,26 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect.poll(() => docs.length).toBe(4);
 		expect(docs[3]).toMatchObject({ folder: '자격증', name: '자격.pdf' });
 
-		// 바탕화면에서 휴지통으로: 경고창은 창이 아니라 화면 한가운데, 모든 창 위 (body에 그린다)
-		await page
-			.getByRole('listbox', { name: '바탕화면' })
-			.getByRole('option', { name: '바탕.pdf' })
-			.click({ button: 'right' });
+		// 바탕화면에서 휴지통으로: 묻지 않고 바로 휴지통에 (바탕화면에서 사라진다)
+		const desk = page.getByRole('listbox', { name: '바탕화면' });
+		await desk.getByRole('option', { name: '바탕.pdf' }).click({ button: 'right' });
 		await page.getByRole('menuitem', { name: '휴지통으로 이동' }).click();
+		await expect(desk.getByRole('option', { name: '바탕.pdf' })).toHaveCount(0);
+		await expect.poll(() => api.finderLayout.trash?.[`file:${docs[1].key}`]).toBe('desktop');
+
+		// 바탕화면에서 띄운 경고창(같은 이름)은 창이 아니라 화면 한가운데, 모든 창 위 (body에 그린다)
+		const size = page.viewportSize()!;
+		await page.mouse.click(size.width - 400, size.height - 260, { button: 'right' });
+		await page.getByRole('menuitem', { name: '새 폴더' }).click();
+		await page.getByRole('textbox', { name: '이름' }).fill('이력서');
+		await page.getByRole('textbox', { name: '이름' }).press('Enter');
 		const alert = page.getByRole('alertdialog');
 		await expect(alert).toBeVisible();
 		expect(await alert.evaluate((box) => box.closest('.ui-modal-overlay')?.parentElement === document.body)).toBe(true);
 		expect(
 			Number(await alert.evaluate((box) => getComputedStyle(box.closest('.ui-modal-overlay')!).zIndex))
 		).toBeGreaterThan(1001);
-		await alert.getByRole('button', { name: '취소' }).click();
+		await alert.getByRole('button', { name: '확인' }).click();
 	});
 
 	test('사이드바에 이력서·포트폴리오·자격증이 있고, 그 위에 놓아도 올라간다', async ({ page }) => {
@@ -309,9 +330,13 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		// 관리자 메뉴: 고르고 ⌘⌫로 지운다
 		await folder.getByRole('option', { name: '구조도.pdf' }).click();
 		await finder.locator('.finder-content').press('ControlOrMeta+Backspace');
-		// macOS 경고창: 저장소에서도 지워진다고 알리고 확인을 받는다
-		await page.getByRole('alertdialog').getByRole('button', { name: '휴지통으로 이동' }).click();
 		await expect(folder.getByRole('option', { name: '구조도.pdf' })).toHaveCount(0);
-		expect(docs.map((doc) => doc.name)).toEqual(['발표.pdf']);
+		// 휴지통에서 즉시 삭제하면 서버에서도 지워진다
+		await dockItem(page, 'bin').click();
+		const bin = appWindow(page, 'bin');
+		await bin.getByRole('option', { name: '구조도.pdf' }).click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '즉시 삭제…' }).click();
+		await bin.getByRole('alertdialog').getByRole('button', { name: '지우기' }).click();
+		await expect.poll(() => docs.map((doc) => doc.name)).toEqual(['발표.pdf']);
 	});
 });

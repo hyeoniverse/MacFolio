@@ -41,6 +41,7 @@ export interface FakeApiState {
 		folders: { id: string; name: string; parent: string }[];
 		files: Record<string, string>;
 		aliases: string[] | null;
+		trash?: Record<string, string>;
 	};
 	/** 받은 PUT /finder/layout 수 */
 	layoutSaves: number;
@@ -356,7 +357,7 @@ export async function fakeApi(
 		siteProjects: null,
 		health: 'ok',
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
-		finderLayout: { folders: [], files: {}, aliases: null },
+		finderLayout: { folders: [], files: {}, aliases: null, trash: {} },
 		layoutSaves: 0,
 		saves: 0,
 		comments: {},
