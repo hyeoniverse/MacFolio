@@ -90,7 +90,7 @@ test.describe('태그', () => {
 		await expect(titles).toHaveCount(3);
 
 		// #다를 제외하면 #다가 있는 글은 빠진다
-		const da = browser.getByRole('button', { name: '#다' });
+		const da = browser.getByRole('button', { name: '#다', exact: true });
 		await da.click();
 		await da.click();
 		await expect(titles).toHaveCount(2);
@@ -155,15 +155,15 @@ test.describe('태그: 휴대폰 (iOS 메모)', () => {
 		expect(new Set(tops).size).toBe(1);
 
 		// #다를 고르면 그 글만, 제목은 그대로 '태그'
-		await chips.getByRole('button', { name: '#다' }).click();
+		await chips.getByRole('button', { name: '#다', exact: true }).click();
 		await expect(titles).toHaveText([/태그 글 셋/]);
 		await expect(list.locator('.memo-phone-title h2')).toHaveText('태그');
 		await expect(chips.getByRole('button', { name: '모든 태그' })).toHaveAttribute('aria-pressed', 'false');
 
 		// 한 번 더 누르면 제외, 또 누르면 풀리고, 다 풀리면 모든 태그 (태그 화면에 머문다)
-		await chips.getByRole('button', { name: '#다' }).click();
-		await expect(chips.getByRole('button', { name: '#다' })).toHaveAttribute('data-state', 'exclude');
-		await chips.getByRole('button', { name: '#다' }).click();
+		await chips.getByRole('button', { name: '#다', exact: true }).click();
+		await expect(chips.getByRole('button', { name: '#다', exact: true })).toHaveAttribute('data-state', 'exclude');
+		await chips.getByRole('button', { name: '#다', exact: true }).click();
 		await expect(chips.getByRole('button', { name: '모든 태그' })).toHaveAttribute('aria-pressed', 'true');
 		await expect(list.locator('.memo-phone-title h2')).toHaveText('태그');
 		// '모든 태그'를 다시 눌러도 태그 화면에 머문다
