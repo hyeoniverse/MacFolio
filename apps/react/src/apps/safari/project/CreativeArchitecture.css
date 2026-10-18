@@ -82,13 +82,13 @@
 /* 아이콘은 Font Awesome 글자 (브랜드는 브랜드 글꼴) */
 .cr-node-icon {
 	fill: color-mix(in srgb, var(--sp-accent) calc(var(--s) * 100%), var(--cr-muted));
-	font-family: 'Font Awesome 6 Free';
+	font-family: 'Font Awesome 7 Free';
 	font-size: 18px;
 	font-weight: 900;
 }
 
 .cr-node-icon.brand {
-	font-family: 'Font Awesome 6 Brands';
+	font-family: 'Font Awesome 7 Brands';
 	font-weight: 400;
 }
 
