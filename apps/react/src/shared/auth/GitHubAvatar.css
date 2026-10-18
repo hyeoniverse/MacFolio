@@ -6,8 +6,8 @@
 	flex: none;
 	overflow: hidden;
 	border-radius: 50%;
-	background: linear-gradient(#b8b8be, #8e8e93);
-	color: #ffffff;
+	background: linear-gradient(#b8b8be, var(--color-gray));
+	color: var(--color-white);
 }
 
 .github-avatar > i {

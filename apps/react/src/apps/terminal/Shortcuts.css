@@ -2,7 +2,7 @@
 .shortcuts {
 	min-height: 100%;
 	padding: 8px 16px 32px;
-	background-color: var(--color-sidebar-bg, #f2f2f7);
+	background-color: var(--color-sidebar-bg, var(--color-gray-6));
 	color: var(--color-text);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	text-align: left;
@@ -57,7 +57,7 @@
 	padding: var(--space-14);
 	border: none;
 	border-radius: 20px;
-	color: #fff;
+	color: var(--color-white);
 	text-align: left;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 	transition: transform 0.15s ease;
@@ -176,7 +176,7 @@ a.shortcut-row {
 	flex: none;
 	padding: var(--space-2) var(--space-8);
 	border-radius: var(--radius-lg);
-	background-color: var(--color-sidebar-bg, #f2f2f7);
+	background-color: var(--color-sidebar-bg, var(--color-gray-6));
 	color: var(--color-text-secondary);
 	font-size: var(--text-caption);
 }
@@ -192,7 +192,7 @@ a.shortcut-row {
 }
 
 .shortcut-text.error {
-	color: #ff3b30;
+	color: var(--color-red);
 }
 
 /* 다크 모드: iOS처럼 배경보다 목록이 밝다 */

@@ -146,7 +146,7 @@
 .memo-item-rank.rank-1,
 .memo-item-rank.rank-2,
 .memo-item-rank.rank-3 {
-	background-color: color-mix(in srgb, #ff9f0a 22%, transparent);
+	background-color: color-mix(in srgb, var(--color-orange) 22%, transparent);
 	color: #c76a00;
 }
 
@@ -387,8 +387,8 @@ button.memo-admin-chip {
 }
 
 .memo-writer-actions .memo-writer-publish {
-	background-color: #edbb4d;
-	color: #2b2100;
+	background-color: var(--color-notes-yellow);
+	color: var(--color-on-notes-yellow);
 }
 
 .memo-writer-actions .memo-writer-publish:disabled {
@@ -467,7 +467,7 @@ button.memo-admin-chip {
 	height: 7px;
 	margin-left: var(--space-6);
 	border-radius: 50%;
-	background-color: #edbb4d;
+	background-color: var(--color-notes-yellow);
 	vertical-align: 2px;
 }
 
@@ -558,14 +558,14 @@ button.memo-admin-chip {
 	margin-top: var(--space-8);
 	padding: 7px 0;
 	border-radius: var(--radius-full);
-	background-color: #edbb4d;
-	color: #2b2100;
+	background-color: var(--color-notes-yellow);
+	color: var(--color-on-notes-yellow);
 	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
 .memo-writer-status.problem {
-	color: #e5484d;
+	color: var(--color-danger);
 }
 
 .memo-writer-title {

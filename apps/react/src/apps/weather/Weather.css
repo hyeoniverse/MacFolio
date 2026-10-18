@@ -18,7 +18,7 @@
 	/* macOS 날씨처럼 하늘 색이 창 전체에 깔리고, 사이드바는 그 위에 떠 있다 */
 	background-color: var(--weather-top);
 	background-image: var(--weather-stars), linear-gradient(180deg, var(--weather-top), var(--weather-bottom));
-	color: #ffffff;
+	color: var(--color-white);
 	text-align: left;
 	container: weather / inline-size;
 	font-variant-numeric: tabular-nums;
@@ -186,7 +186,7 @@
 	border: none;
 	outline: none;
 	background: none;
-	color: #ffffff;
+	color: var(--color-white);
 	font: inherit;
 	font-size: var(--text-footnote);
 }
@@ -255,8 +255,8 @@
 	padding: 0;
 	border: none;
 	border-radius: 50%;
-	background-color: #ff3b30;
-	color: #ffffff;
+	background-color: var(--color-red);
+	color: var(--color-white);
 	font-size: var(--text-title3);
 	opacity: 0;
 	transform: translateY(-50%) scale(0.6);
@@ -302,7 +302,7 @@
 	justify-content: space-between;
 	gap: var(--space-6);
 	margin-top: var(--space-10);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .weather-results button {
@@ -606,7 +606,7 @@
 	height: 7px;
 	border: 1.5px solid rgba(0, 0, 0, 0.35);
 	border-radius: 50%;
-	background-color: #ffffff;
+	background-color: var(--color-white);
 	transform: translate(-50%, -50%);
 }
 
@@ -810,7 +810,7 @@
 }
 
 .weather[data-compact] .weather-pages button.active {
-	background-color: #ffffff;
+	background-color: var(--color-white);
 }
 
 /* 늘 오른쪽 칸. 장소가 하나면 가운데 점이 없어서, 칸을 정하지 않으면 가운데 칸 왼쪽으로 밀려온다 */
@@ -887,13 +887,13 @@
 	box-shadow:
 		0 18px 48px rgba(0, 0, 0, 0.45),
 		inset 0 1px 0 rgba(255, 255, 255, 0.06);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .ui-menu.weather-menu .ui-menu-item:hover:not(:disabled),
 .ui-menu.weather-menu .ui-menu-item:focus-visible {
 	background-color: rgba(255, 255, 255, 0.12);
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 .ui-menu.weather-menu .ui-menu-item i {
@@ -942,7 +942,7 @@
 }
 
 .ui-menu.weather-menu-compact .ui-menu-item.destructive {
-	color: #ffffff;
+	color: var(--color-white);
 }
 
 /*
