@@ -2,6 +2,7 @@ import {
 	Controller,
 	Delete,
 	Get,
+	Headers,
 	HttpCode,
 	Param,
 	Post,
@@ -30,7 +31,7 @@ import { AdminGuard, CurrentAdmin } from '../auth/admin.guard.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { FilesService, type IncomingFile } from './files.service.js';
-import { contentDisposition, MAX_UPLOAD_BYTES } from './rules.js';
+import { contentDisposition, MAX_UPLOAD_BYTES, parseRange } from './rules.js';
 import { RateLimit } from '../common/rate-limit.js';
 
 /**
@@ -80,22 +81,41 @@ export class FilesController {
 	}
 
 	@Get(':id')
-	@ApiOkResponse({ description: '파일. 이미지는 바로 보이고, 나머지는 내려받는다' })
+	@ApiOkResponse({
+		description: '파일. 이미지·MP4는 바로 보이고, 나머지는 내려받는다. Range 요청이면 206으로 그 구간만',
+	})
 	@ApiNotFoundResponse({ description: '파일이 없다' })
-	async download(@Param('id') id: string, @Res() res: Response) {
+	async download(@Param('id') id: string, @Headers('range') range: string | undefined, @Res() res: Response) {
 		const file = await this.files.find(id);
 		res.set({
 			'Content-Type': file.type,
-			'Content-Length': String(file.size),
-			// 이미지만 바로 보여 주고, 나머지(HTML·SVG 등)는 내려받게 해서 이 주소에서 실행되지 않게 한다
-			'Content-Disposition': contentDisposition(file.image ? 'inline' : 'attachment', file.name),
+			// 이미지와 배경화면 동영상(MP4)만 바로 보여 주고, 나머지(HTML·SVG 등)는 내려받게 해서 이 주소에서 실행되지 않게 한다
+			'Content-Disposition': contentDisposition(file.image || file.video ? 'inline' : 'attachment', file.name),
 			'X-Content-Type-Options': 'nosniff',
 			'Content-Security-Policy': "default-src 'none'; sandbox",
-			// 다른 주소(프론트엔드)의 <img>에서 불러올 수 있게 (helmet 기본값은 same-origin)
+			// 다른 주소(프론트엔드)의 <img>·<video>에서 불러올 수 있게 (helmet 기본값은 same-origin)
 			'Cross-Origin-Resource-Policy': 'cross-origin',
 			// 같은 주소의 파일은 바뀌지 않는다
 			'Cache-Control': 'public, max-age=31536000, immutable',
+			// <video>는 앞부분만 받고 나머지를 이어 받는다 (Safari는 이것 없이는 틀지 않는다)
+			'Accept-Ranges': 'bytes',
 		});
-		res.end(Buffer.from(file.data));
+		const data = Buffer.from(file.data);
+		const part = parseRange(range, file.size);
+		if (part === 'unsatisfiable') {
+			res.status(416).set('Content-Range', `bytes */${file.size}`).end();
+			return;
+		}
+		if (part) {
+			const [start, end] = part;
+			res.status(206).set({
+				'Content-Range': `bytes ${start}-${end}/${file.size}`,
+				'Content-Length': String(end - start + 1),
+			});
+			res.end(data.subarray(start, end + 1));
+			return;
+		}
+		res.set('Content-Length', String(file.size));
+		res.end(data);
 	}
 }

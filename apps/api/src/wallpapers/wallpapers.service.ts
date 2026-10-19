@@ -1,8 +1,16 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, PayloadTooLargeException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { IncomingFile } from '../files/files.service.js';
 import { stripImageMetadata } from '../files/metadata.js';
-import { cleanFileName, newUploadId, sniffImage, UPLOAD_ID } from '../files/rules.js';
+import {
+	cleanFileName,
+	MAX_UPLOAD_BYTES,
+	MAX_WALLPAPER_VIDEO_BYTES,
+	newUploadId,
+	sniffImage,
+	sniffVideo,
+	UPLOAD_ID,
+} from '../files/rules.js';
 import { cleanWallpaperName, parse, type Wallpaper, WallpaperRename } from '@macfolio/contracts';
 
 /** 밖으로 내보내는 배경화면. 모양은 @macfolio/contracts (화면과 같은 스키마) */
@@ -14,13 +22,24 @@ export interface WallpaperInput {
 	thumbnail?: IncomingFile;
 }
 
-type Row = { id: string; name: string; imageId: string; thumbId: string; createdAt: Date };
+type Row = {
+	id: string;
+	name: string;
+	imageId: string;
+	thumbId: string;
+	createdAt: Date;
+	image: { type: string };
+};
+
+/** 원본의 형식을 함께 읽는다 (동영상인지) */
+const WITH_TYPE = { image: { select: { type: true } } } as const;
 
 const view = (row: Row): WallpaperView => ({
 	id: row.id,
 	name: row.name,
 	image: `/files/${row.imageId}`,
 	thumbnail: `/files/${row.thumbId}`,
+	video: row.image.type.startsWith('video/'),
 	createdAt: row.createdAt.toISOString(),
 });
 
@@ -30,23 +49,31 @@ export class WallpapersService {
 
 	/** 올린 순서대로 (기본 배경화면 뒤에 이어 붙는다) */
 	async list(): Promise<WallpaperView[]> {
-		const rows = await this.prisma.wallpaper.findMany({ orderBy: { createdAt: 'asc' } });
+		const rows = await this.prisma.wallpaper.findMany({ orderBy: { createdAt: 'asc' }, include: WITH_TYPE });
 		return rows.map(view);
 	}
 
 	async create(input: WallpaperInput, admin: string): Promise<WallpaperView> {
 		const { image, thumbnail } = input;
 		if (!image || !thumbnail) throw new BadRequestException('배경화면과 썸네일 이미지가 모두 필요합니다.');
-		const imageType = sniffImage(image.buffer);
+		// 원본은 이미지나 MP4 동영상, 썸네일(동영상이면 포스터)은 이미지여야 한다
+		const imageType = sniffImage(image.buffer) ?? sniffVideo(image.buffer);
 		const thumbType = sniffImage(thumbnail.buffer);
-		if (!imageType || !thumbType) throw new BadRequestException('PNG·JPEG·GIF·WebP 이미지만 올릴 수 있습니다.');
+		if (!imageType || !thumbType) {
+			throw new BadRequestException('PNG·JPEG·GIF·WebP 이미지나 MP4 동영상만 올릴 수 있습니다.');
+		}
+		// 받을 때의 한도는 동영상에 맞춰 30MB라, 이미지는 여기서 10MB를 다시 본다
+		const limit = imageType.startsWith('video/') ? MAX_WALLPAPER_VIDEO_BYTES : MAX_UPLOAD_BYTES;
+		if (image.buffer.byteLength > limit || thumbnail.buffer.byteLength > MAX_UPLOAD_BYTES) {
+			throw new PayloadTooLargeException('파일이 너무 큽니다.');
+		}
 		const fileName = cleanFileName(Buffer.from(image.originalname, 'latin1').toString('utf8'));
 		const name = cleanWallpaperName(input.name) ?? cleanWallpaperName(fileName) ?? '배경화면';
 
 		const imageId = newUploadId();
 		const thumbId = newUploadId();
 		const upload = (id: string, file: IncomingFile, type: string, fileNameForDownload: string) => {
-			// 브라우저에서 줄인 그림이라 보통 메타데이터가 없지만, 원본을 그대로 올려도 EXIF는 남기지 않는다
+			// 브라우저에서 줄인 그림이라 보통 메타데이터가 없지만, 원본을 그대로 올려도 EXIF는 남기지 않는다 (동영상·GIF는 그대로)
 			const data = new Uint8Array(stripImageMetadata(file.buffer, type));
 			return this.prisma.upload.create({
 				data: { id, name: fileNameForDownload, type, size: data.byteLength, data, createdBy: admin },
@@ -57,6 +84,7 @@ export class WallpapersService {
 			upload(thumbId, thumbnail, thumbType, `thumb-${fileName}`),
 			this.prisma.wallpaper.create({
 				data: { id: newUploadId(), name, imageId, thumbId, createdBy: admin },
+				include: WITH_TYPE,
 			}),
 		]);
 		return view(row);
@@ -70,7 +98,7 @@ export class WallpapersService {
 		const cleaned = parsed.value.name;
 		const found = await this.prisma.wallpaper.findUnique({ where: { id }, select: { id: true } });
 		if (!found) throw new NotFoundException('배경화면이 없습니다.');
-		return view(await this.prisma.wallpaper.update({ where: { id }, data: { name: cleaned } }));
+		return view(await this.prisma.wallpaper.update({ where: { id }, data: { name: cleaned }, include: WITH_TYPE }));
 	}
 
 	/** 배경화면과 그 이미지 두 장을 함께 지운다 */

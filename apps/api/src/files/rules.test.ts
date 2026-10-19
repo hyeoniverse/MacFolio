@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { cleanFileName, cleanFileType, contentDisposition, newUploadId, sniffImage, UPLOAD_ID } from './rules.js';
+import {
+	cleanFileName,
+	cleanFileType,
+	contentDisposition,
+	newUploadId,
+	parseRange,
+	sniffImage,
+	sniffVideo,
+	UPLOAD_ID,
+} from './rules.js';
 
 const bytes = (...values: number[]) => new Uint8Array(values);
 
@@ -13,6 +22,31 @@ describe('올린 파일 규칙', () => {
 		expect(sniffImage(new TextEncoder().encode('<svg xmlns="http://www.w3.org/2000/svg"/>'))).toBeNull();
 		expect(sniffImage(new TextEncoder().encode('RIFF\0\0\0\0WAVE'))).toBeNull();
 		expect(sniffImage(bytes())).toBeNull();
+	});
+
+	it('MP4는 ftyp 상자와 주 브랜드로 확인한다', () => {
+		const mp4 = (brand: string, size = 0x20) =>
+			new Uint8Array([0, 0, 0, size, ...new TextEncoder().encode(`ftyp${brand}`), 0, 0, 2, 0]);
+		expect(sniffVideo(mp4('isom'))).toBe('video/mp4');
+		expect(sniffVideo(mp4('mp42'))).toBe('video/mp4');
+		// QuickTime(MOV)·이상한 상자 크기·너무 짧은 파일·이미지는 받지 않는다
+		expect(sniffVideo(mp4('qt  '))).toBeNull();
+		expect(sniffVideo(mp4('isom', 4))).toBeNull();
+		expect(sniffVideo(new TextEncoder().encode('\0\0\0\x20ftyp'))).toBeNull();
+		expect(sniffVideo(new TextEncoder().encode('GIF89a......'))).toBeNull();
+		expect(sniffImage(mp4('isom'))).toBeNull();
+	});
+
+	it('Range 머리말은 한 구간만 읽고, 파일 밖이면 416', () => {
+		expect(parseRange(undefined, 100)).toBeNull();
+		expect(parseRange('bytes=0-', 100)).toEqual([0, 99]);
+		expect(parseRange('bytes=0-1', 100)).toEqual([0, 1]);
+		expect(parseRange('bytes=90-500', 100)).toEqual([90, 99]);
+		expect(parseRange('bytes=-10', 100)).toEqual([90, 99]);
+		expect(parseRange('bytes=100-', 100)).toBe('unsatisfiable');
+		expect(parseRange('bytes=5-2', 100)).toBe('unsatisfiable');
+		expect(parseRange('bytes=0-1,5-6', 100)).toBeNull();
+		expect(parseRange('items=0-1', 100)).toBeNull();
 	});
 
 	it('파일 이름에서 경로와 제어 문자를 뺀다', () => {

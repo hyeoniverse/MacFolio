@@ -132,7 +132,7 @@ test.describe('관리자가 더한 배경화면', () => {
 		expect(nameBox!.height).toBeLessThan(30);
 	});
 
-	test('사진 추가… 칸은 더한 배경화면 앞에 있고, ×는 왼쪽 위에 있다', async ({ page }) => {
+	test('사진·동영상 추가… 칸은 더한 배경화면 앞에 있고, ×는 왼쪽 위에 있다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		api.wallpapers.push({
 			id: 'wallpaper0000001',
@@ -144,7 +144,7 @@ test.describe('관리자가 더한 배경화면', () => {
 		const settings = await openWallpapers(page);
 		const grid = settings.getByRole('radiogroup', { name: '추가한 배경화면' });
 		const add = grid.getByRole('button', { name: 'macOS 배경화면 추가' });
-		await expect(add).toContainText('사진 추가…');
+		await expect(add).toContainText('사진·동영상 추가…');
 		const tile = grid.getByRole('radio', { name: '노을' });
 		const [addBox, tileBox, removeBox] = await Promise.all([
 			add.boundingBox(),

@@ -10,6 +10,7 @@ import StatusBar from '@/desktop/status-bar/StatusBar';
 import Dock from '@/desktop/dock/Dock';
 import DesktopIcons from '@/desktop/icons/DesktopIcons';
 import MobileShell from '@/desktop/mobile/MobileShell';
+import WallpaperVideo from '@/desktop/WallpaperVideo';
 import Notifications from '@/desktop/notifications/Notifications';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
@@ -73,6 +74,8 @@ const Desktop = () => {
 						</>
 					) : (
 						<DesktopSurface>
+							{/* 동영상 배경화면 (고른 배경화면이 MP4일 때만) */}
+							<WallpaperVideo kind="mac" />
 							{/* 바탕화면 아이콘은 가장 아래 층: 창·Dock·메뉴 막대가 덮는다 */}
 							<DesktopIcons />
 							<StatusBar />
