@@ -36,6 +36,25 @@ export function resolveLink(from: string, href: string, docs: ReadonlySet<string
 	return { type: 'external', url: `${REPO_URL}/blob/main/${encodeURI(target)}${hash ? `#${hash}` : ''}` };
 }
 
+/** Finder에 묶어 두는 문서의 모양 (docsBundle.ts의 glob과 같다): README.md, CONTRIBUTING.md, docs/<이름>.md */
+const BUNDLED_DOC = /^(README\.md|CONTRIBUTING\.md|docs\/[^/]+\.md)$/;
+
+/**
+ * 글 안 링크가 GitHub의 저장소 문서(…/blob/main/docs/a.md)를 가리키면 그 문서 경로. 아니면 null.
+ * 메모 글의 문서 링크를 새 탭 대신 Finder에서 열 때 쓴다. 문서 안 #제목 링크는 GitHub에서 연다 (Finder 본문에는 제목 앵커가 없다)
+ */
+export function bundledDocOf(href: string | undefined): string | null {
+	const prefix = `${REPO_URL}/blob/main/`;
+	if (!href?.startsWith(prefix) || href.includes('#') || href.includes('?')) return null;
+	let path: string | null;
+	try {
+		path = normalizePath(decodeURI(href.slice(prefix.length)));
+	} catch {
+		return null;
+	}
+	return path && BUNDLED_DOC.test(path) ? path : null;
+}
+
 /** 문서 안 그림 주소. 묶어 둔 그림이면 그 주소, 아니면 GitHub의 원본 파일 */
 export function resolveImage(from: string, src: string, images: Readonly<Record<string, string>>): string {
 	if (/^[a-z][a-z0-9+.-]*:/i.test(src) || src.startsWith('//')) return src;
