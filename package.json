@@ -16,8 +16,8 @@
 	},
 	"devDependencies": {
 		"madge": "8.0.0",
-		"prettier": "^3.9.9",
-		"turbo": "^2.11.7",
-		"wrangler": "^4.148.0"
+		"prettier": "^3.9.10",
+		"turbo": "^2.11.8",
+		"wrangler": "^4.151.0"
 	}
 }
