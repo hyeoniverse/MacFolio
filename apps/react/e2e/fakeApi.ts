@@ -243,6 +243,8 @@ export interface FakeWallpaper {
 	name: string;
 	image: string;
 	thumbnail: string;
+	/** 원본이 MP4 동영상이면 true (실제 API처럼 썸네일은 포스터) */
+	video?: boolean;
 }
 
 /** multipart 본문을 칸마다 나눈다 (글자 칸은 value, 파일 칸은 filename·type·data) */
@@ -869,6 +871,7 @@ export async function fakeApi(
 				name: field('name')?.data.toString('utf8') || 'wallpaper',
 				image: save(image),
 				thumbnail: save(thumbnail),
+				video: image.type === 'video/mp4',
 			};
 			state.wallpapers.push(wallpaper);
 			return route.fulfill({ status: 201, headers: cors(origin), json: wallpaper });

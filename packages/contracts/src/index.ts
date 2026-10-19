@@ -38,7 +38,16 @@ export {
 	MAX_DOCUMENT_BYTES,
 	type ProjectDocumentFolder,
 } from './documents.js';
-export { IMAGE_TYPES, MAX_UPLOAD_BYTES, Upload, UPLOAD_ID, uploadIdsIn, UploadUsage } from './files.js';
+export {
+	IMAGE_TYPES,
+	MAX_UPLOAD_BYTES,
+	MAX_WALLPAPER_VIDEO_BYTES,
+	VIDEO_TYPES,
+	Upload,
+	UPLOAD_ID,
+	uploadIdsIn,
+	UploadUsage,
+} from './files.js';
 export {
 	ADMIN_ONLY_BREAKDOWNS,
 	APP_NAME,

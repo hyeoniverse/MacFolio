@@ -1,10 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { IMAGE_TYPES, MAX_UPLOAD_BYTES, Upload, UPLOAD_ID, uploadIdsIn, UploadUsage } from './files.js';
+import {
+	IMAGE_TYPES,
+	MAX_UPLOAD_BYTES,
+	MAX_WALLPAPER_VIDEO_BYTES,
+	VIDEO_TYPES,
+	Upload,
+	UPLOAD_ID,
+	uploadIdsIn,
+	UploadUsage,
+} from './files.js';
 import { parse } from './parse.js';
 
 describe('올린 파일', () => {
 	it('한도는 10MB, 주소는 16자', () => {
 		expect(MAX_UPLOAD_BYTES).toBe(10 * 1024 * 1024);
+		expect(MAX_WALLPAPER_VIDEO_BYTES).toBe(30 * 1024 * 1024);
+		expect(VIDEO_TYPES).toEqual(['video/mp4']);
 		expect('AAAAAAAAAAAAAAAA').toMatch(UPLOAD_ID);
 		expect('AAAAAAAAAAAAAAA').not.toMatch(UPLOAD_ID);
 		expect('AAAAAAAAAAAAAAA/').not.toMatch(UPLOAD_ID);

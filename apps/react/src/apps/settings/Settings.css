@@ -226,8 +226,36 @@
 	white-space: nowrap;
 }
 
-.wallpaper-thumbnail.portrait + .wallpaper-name {
+.wallpaper-thumbnail.portrait + .wallpaper-name,
+.wallpaper-thumbnail-frame:has(.portrait) + .wallpaper-name {
 	max-width: 4.6rem;
+}
+
+/* 동영상 배경화면 썸네일: 가운데에 재생 표시 */
+.wallpaper-thumbnail-frame {
+	position: relative;
+	display: block;
+}
+
+.wallpaper-video-badge {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	pointer-events: none;
+}
+
+.wallpaper-video-badge i {
+	display: grid;
+	place-items: center;
+	width: 1.8rem;
+	height: 1.8rem;
+	padding-left: 0.15rem;
+	border-radius: 50%;
+	background: rgb(0 0 0 / 45%);
+	color: var(--color-white);
+	font-size: 0.75rem;
+	backdrop-filter: blur(6px);
 }
 
 /* 관리자가 더한 배경화면 (macOS 설정의 '사용자의 사진'처럼). 서버에서 받는 동안 썸네일 자리를 회색으로 */
@@ -279,7 +307,7 @@
 	}
 }
 
-/* 사진 추가… 칸: 회색으로 채운 썸네일 자리 안에 사진 아이콘(+)과 글자 */
+/* 사진·동영상 추가… 칸: 회색으로 채운 썸네일 자리 안에 사진 아이콘(+)과 글자 */
 .wallpaper-add .wallpaper-thumbnail {
 	display: flex;
 	flex-direction: column;
@@ -1022,7 +1050,7 @@ ol.showcase-list .showcase-row.reordering {
 	--wallpaper-page-bg: var(--phone-page-bg);
 }
 
-/* 휴대폰: 바탕이 회색이라 사진 추가… 칸과 받는 중인 썸네일은 흰 카드 색으로 */
+/* 휴대폰: 바탕이 회색이라 사진·동영상 추가… 칸과 받는 중인 썸네일은 흰 카드 색으로 */
 .container.mobile .wallpaper-add .wallpaper-thumbnail,
 .container.mobile .wallpaper-custom .wallpaper-thumbnail,
 .container.mobile .wallpaper-add-plus {
@@ -1047,7 +1075,8 @@ ol.showcase-list .showcase-row.reordering {
 	border-radius: 1rem;
 }
 
-.container.mobile .wallpaper-thumbnail.portrait + .wallpaper-name {
+.container.mobile .wallpaper-thumbnail.portrait + .wallpaper-name,
+.wallpaper-thumbnail-frame:has(.portrait) + .wallpaper-name {
 	max-width: 100%;
 }
 

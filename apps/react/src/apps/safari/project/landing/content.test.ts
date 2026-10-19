@@ -34,7 +34,11 @@ describe('landingOf', () => {
 			name: '빈 프로젝트',
 			headline: '빈 프로젝트',
 			meta: {},
-			links: [{ kind: 'repo', label: 'GitHub에서 보기', href: 'https://github.com/me/empty' }],
+			// 발표 자료는 언제나 끝에 두고, 그릴 때 프로젝트 폴더에 PDF가 없으면 뺀다
+			links: [
+				{ kind: 'repo', label: 'GitHub에서 보기', href: 'https://github.com/me/empty' },
+				{ kind: 'slides', label: '발표 자료 보기', projectId: 'empty' },
+			],
 		});
 		expect(landing.closing).toEqual({
 			title: '코드와 기록을 살펴볼 수 있습니다.',
@@ -141,12 +145,19 @@ describe('landingOf', () => {
 			{ kind: 'app', label: '여기서 열기', app: 'empty' },
 			{ kind: 'demo', label: '새 탭에서 열기', href: 'https://demo.example' },
 			{ kind: 'repo', label: 'GitHub에서 보기', href: 'https://github.com/me/empty' },
+			{ kind: 'slides', label: '발표 자료 보기', projectId: 'empty' },
 		]);
-		expect(landingOf(project).hero.links.map((link) => link.label)).toEqual(['데모 보기', 'GitHub에서 보기']);
+		expect(landingOf(project).hero.links.map((link) => link.label)).toEqual([
+			'데모 보기',
+			'GitHub에서 보기',
+			'발표 자료 보기',
+		]);
 		const game = { ...project, app: { label: '게임', icon: 'projects/x/icon.png', play: true } };
 		expect(landingOf(game, { app: 'empty' }).hero.links[0].label).toBe('여기서 플레이');
 		// 저장소 주소가 비어 있는 새 프로젝트는 저장소 링크가 없다
-		expect(landingOf(empty({ url: '' })).hero.links).toEqual([]);
+		const bare = landingOf(empty({ url: '' }));
+		expect(bare.hero.links).toEqual([{ kind: 'slides', label: '발표 자료 보기', projectId: 'empty' }]);
+		expect(bare.closing).toEqual({ title: '빈 프로젝트', links: bare.hero.links });
 	});
 
 	it('항목의 그림은 영상, 그림(다크 짝과 함께), 화면 여러 장 차례이고 같은 주소는 한 번만', () => {

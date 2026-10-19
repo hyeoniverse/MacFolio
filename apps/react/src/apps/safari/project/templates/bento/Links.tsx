@@ -4,6 +4,7 @@ import React from 'react';
 import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import type { LandingLink } from '@/apps/safari/project/landing';
+import { useShownLinks } from '@/apps/safari/project/landing/slides';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -13,6 +14,8 @@ const Hint: React.FC<{ kind: LandingLink['kind'] }> = ({ kind }) =>
 		<kbd className="bt-kbd bt-btn-kbd" aria-hidden="true">
 			↵
 		</kbd>
+	) : kind === 'slides' ? (
+		<i className="fa-regular fa-file-powerpoint" aria-hidden="true" />
 	) : (
 		<i
 			className={kind === 'repo' ? 'fa-brands fa-github' : 'fa-solid fa-arrow-up-right-from-square'}
@@ -20,8 +23,9 @@ const Hint: React.FC<{ kind: LandingLink['kind'] }> = ({ kind }) =>
 		/>
 	);
 
-export const BentoLinks: React.FC<{ links: LandingLink[]; className?: string }> = ({ links, className }) => {
+export const BentoLinks: React.FC<{ links: LandingLink[]; className?: string }> = ({ links: all, className }) => {
 	const { openApp } = useAppState();
+	const { links, openSlides } = useShownLinks(all);
 	if (links.length === 0) return null;
 	return (
 		<div className={['bt-links', className].filter(Boolean).join(' ')}>
@@ -35,6 +39,11 @@ export const BentoLinks: React.FC<{ links: LandingLink[]; className?: string }> 
 					<button key={link.kind} type="button" {...marks} onClick={() => openApp(link.app as AppName)}>
 						{link.label}
 						<Hint kind={link.kind} />
+					</button>
+				) : link.kind === 'slides' ? (
+					<button key={link.kind} type="button" {...marks} onClick={openSlides}>
+						<Hint kind="slides" />
+						{link.label}
 					</button>
 				) : (
 					<a key={link.kind} href={link.href} {...external} {...marks}>

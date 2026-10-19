@@ -5,6 +5,7 @@ import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { wallpaperUrl, type ResolvedTheme, type Wallpaper } from '@/shared/settings/settings';
 import {
 	addCustomWallpaper,
+	chooseCustomWallpaper,
 	chooseWallpaper,
 	loadCustomWallpapers,
 	removeCustomWallpaper,
@@ -141,7 +142,7 @@ const WallpaperRow = ({
  * 지금 화면(데스크톱이면 macOS, 휴대폰이면 iOS)의 배경화면. 위에 관리자가 더한 배경화면, 아래에 기본 배경화면을 따로 둔다.
  * 더한 배경화면은 데스크톱·휴대폰 어디서나 고르고, 썸네일은 그 화면 비율로 가운데를 잘라 보여 준다.
  * 기본 배경화면의 썸네일은 지금 화면 모드의 버전이다.
- * 관리자에게만 '사진 추가…' 칸과, 더한 배경화면의 지우기(×)·메뉴(이름 바꾸기, 삭제)가 보인다 (macOS 설정의 '사용자의 사진'처럼).
+ * 관리자에게만 '사진·동영상 추가…' 칸과, 더한 배경화면의 지우기(×)·메뉴(이름 바꾸기, 삭제)가 보인다 (macOS 설정의 '사용자의 사진'처럼).
  * 메뉴는 오른쪽 클릭, 휴대폰에서는 길게 눌러 연다. 기본 배경화면은 지울 수 없다.
  */
 const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, selected }) => {
@@ -173,7 +174,7 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 		setAdding(true);
 		await run(async () => {
 			const added = await addCustomWallpaper(file);
-			chooseWallpaper(kind, added.id, added.image);
+			chooseCustomWallpaper(kind, added);
 		}, '배경화면을 올리지 못했습니다.');
 		setAdding(false);
 	};
@@ -211,7 +212,7 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 			{(isAdmin || custom.length > 0) && (
 				<WallpaperRow
 					label="추가한 배경화면"
-					hint="관리자가 올린 사진입니다. 데스크톱과 휴대폰 어디서나 고를 수 있습니다."
+					hint="관리자가 올린 사진·GIF·동영상입니다. 데스크톱과 휴대폰 어디서나 고를 수 있습니다."
 					count={custom.length}
 				>
 					{isAdmin && (
@@ -227,7 +228,7 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 									<i className={adding ? 'fa-solid fa-spinner fa-spin' : 'fa-regular fa-image'} />
 									{!adding && <i className="fa-solid fa-circle-plus wallpaper-add-plus" />}
 								</span>
-								<span className="wallpaper-add-label">{adding ? '올리는 중…' : '사진 추가…'}</span>
+								<span className="wallpaper-add-label">{adding ? '올리는 중…' : '사진·동영상 추가…'}</span>
 							</span>
 						</button>
 					)}
@@ -244,14 +245,23 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 										longPress.current = null;
 										return;
 									}
-									chooseWallpaper(kind, wallpaper.id, wallpaper.image);
+									chooseCustomWallpaper(kind, wallpaper);
 								}}
 								{...menuHandlers(wallpaper)}
 							>
-								<img className={thumbnailClass} src={wallpaper.thumbnail} alt="" loading="lazy" />
+								<span className="wallpaper-thumbnail-frame">
+									<img className={thumbnailClass} src={wallpaper.thumbnail} alt="" loading="lazy" />
+									{/* 동영상 배경화면: 썸네일은 멈춘 한 장면이라 재생 표시를 얹는다 */}
+									{wallpaper.video && (
+										<span className="wallpaper-video-badge" aria-hidden="true">
+											<i className="fa-solid fa-play" />
+										</span>
+									)}
+								</span>
 								<span className="wallpaper-name" title={wallpaper.name}>
 									{wallpaper.name}
 								</span>
+								{wallpaper.video && <span className="visually-hidden">(동영상)</span>}
 							</button>
 							{isAdmin && (
 								<IconButton
@@ -284,7 +294,7 @@ const WallpaperGroup: React.FC<Props> = ({ kind, label, hint, wallpapers, select
 			<input
 				ref={fileInput}
 				type="file"
-				accept="image/*"
+				accept="image/*,video/mp4"
 				hidden
 				aria-label={`${label} 배경화면 파일`}
 				onChange={(event) => {
