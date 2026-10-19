@@ -256,5 +256,21 @@ test.describe('메일', () => {
 			]);
 			await expect(mail.getByRole('button', { name: /받은 편지함/ }).locator('.mail-badge')).toHaveCount(0);
 		});
+
+		test('관리자: 환영 메일은 자기가 보낸 메일이라 보낸 편지함에 보인다', async ({ page }) => {
+			await fakeApi(page, { signedIn: true });
+			const mail = await openMail(page);
+			await expect(
+				mail
+					.getByRole('region', { name: '받은 편지함' })
+					.locator('.mail-item', { hasText: '방문해 주셔서 감사합니다!' })
+			).toHaveCount(0);
+			await mail.getByRole('button', { name: '보낸 편지함' }).click();
+			const sent = mail.getByRole('region', { name: '보낸 편지함' });
+			await sent.locator('.mail-item', { hasText: '방문해 주셔서 감사합니다!' }).click();
+			const article = mail.getByRole('article', { name: '방문해 주셔서 감사합니다!' });
+			await expect(article).toContainText('방문자님');
+			await expect(article.getByRole('form', { name: '답장 쓰기' })).toHaveCount(0);
+		});
 	});
 });

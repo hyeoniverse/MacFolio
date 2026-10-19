@@ -85,7 +85,7 @@ const ReplyBox: React.FC<{ mail: ListMail; onReplied: (mail: ContactMail) => voi
 /**
  * 메일: 방문자가 사이트 주인에게 연락 메일을 보내는 앱. macOS 메일처럼 메일상자 · 목록 · 읽기 세 칸.
  * - 방문자: 받은 편지함(환영 메일), 보낸 편지함(이 브라우저가 보낸 메일과 주인의 답장. 서버가 방문자 쿠키로 거른다)
- * - 관리자: 받은 편지함에 받은 모든 메일. 읽기 칸에서 바로 답장한다 (#25)
+ * - 관리자: 받은 편지함에 받은 모든 메일. 읽기 칸에서 바로 답장한다 (#25). 환영 메일은 관리자가 보낸 것이라 보낸 편지함에 보인다
  * 보내기는 MailSender가 맡는다 (서버에 메일 설정이 없으면 방문자의 메일 앱을 연다)
  */
 const Mail: React.FC = () => {
@@ -134,7 +134,9 @@ const Mail: React.FC = () => {
 	}, [admin, refreshes]);
 
 	const inbox = admin ? (received ?? []) : welcome;
-	const mails = mailbox === 'inbox' ? inbox : (sent ?? []);
+	// 관리자에게 환영 메일은 자기가 방문자에게 보낸 메일이라 보낸 편지함 맨 아래(가장 오래된 것)에 보인다
+	const outbox = admin ? [...(sent ?? []), ...welcome] : (sent ?? []);
+	const mails = mailbox === 'inbox' ? inbox : outbox;
 	const selected = mails.find((mail) => mail.id === selectedId) ?? null;
 	// 안 읽은 메일: 관리자는 아직 답장하지 않은 메일, 방문자는 열어 보지 않은 메일
 	const isUnread = (mail: ListMail) => (admin ? mail.replies.length === 0 : !readIds.has(mail.id));
@@ -172,7 +174,7 @@ const Mail: React.FC = () => {
 
 	const showMailbox = (next: Mailbox) => {
 		setMailbox(next);
-		setSelectedId((next === 'inbox' ? inbox : (sent ?? []))[0]?.id ?? null);
+		setSelectedId((next === 'inbox' ? inbox : outbox)[0]?.id ?? null);
 		backToList();
 	};
 
@@ -224,7 +226,7 @@ const Mail: React.FC = () => {
 				<MailMobile
 					admin={admin}
 					inbox={inbox}
-					sent={env.apiUrl ? (sent ?? []) : null}
+					sent={env.apiUrl ? outbox : null}
 					loading={admin && received === null && !loadError}
 					loadError={loadError}
 					isUnread={isUnread}
