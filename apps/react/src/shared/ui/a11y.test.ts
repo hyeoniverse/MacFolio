@@ -12,6 +12,7 @@ import Modal from '@/shared/ui/dialog/Modal';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import Sheet from '@/shared/ui/sheet/Sheet';
 import Switch from '@/shared/ui/switch/Switch';
+import TabList from '@/shared/ui/tabs/TabList';
 import ShareIcon from '@/shared/ui/ShareIcon';
 
 const html = (element: ReactElement) => renderToStaticMarkup(element);
@@ -102,6 +103,17 @@ describe('입력', () => {
 		expect(html(createElement(Switch, { checked: false, onChange: noop, size: 'small' }))).toContain(
 			'class="ui-switch small"'
 		);
+	});
+
+	it('탭 목록: tablist 이름과 tab 역할, 고른 탭은 aria-selected이고 Tab 순서에는 고른 탭만 든다', () => {
+		const items = [
+			{ id: 'a', label: '개요' },
+			{ id: 'b', label: '유입 경로' },
+		] as const;
+		const out = html(createElement(TabList<'a' | 'b'>, { label: '보기', items, value: 'b', onChange: noop }));
+		expect(out).toContain('role="tablist" aria-label="보기"');
+		expect(out).toContain('role="tab" aria-selected="false" tabindex="-1">개요');
+		expect(out).toContain('role="tab" aria-selected="true" tabindex="0">유입 경로');
 	});
 });
 

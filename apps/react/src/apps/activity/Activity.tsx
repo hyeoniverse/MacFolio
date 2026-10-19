@@ -25,6 +25,7 @@ import {
 import { change, eventLabel, formatDuration, kstToday, labelOf, PERIODS, periodRange, type Period } from './model';
 import '@/apps/activity/Activity.css';
 import Button from '@/shared/ui/button/Button';
+import TabList from '@/shared/ui/tabs/TabList';
 
 const TABS = [
 	{ id: 'overview', label: '개요' },
@@ -349,13 +350,7 @@ const Activity = () => {
 			<div className="activity">
 				{env.apiUrl && (
 					<div className="activity-toolbar">
-						<div className="activity-tabs" role="tablist" aria-label="보기">
-							{TABS.map(({ id, label }) => (
-								<button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>
-									{label}
-								</button>
-							))}
-						</div>
+						<TabList className="activity-tabs" label="보기" items={TABS} value={tab} onChange={setTab} />
 						{tab !== 'live' && tab !== 'server' && (
 							<label className="activity-period">
 								기간

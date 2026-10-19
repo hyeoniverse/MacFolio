@@ -47,6 +47,7 @@ import { todayIso } from '@/shared/ui/date/calendar';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
 import Switch from '@/shared/ui/switch/Switch';
+import TabList from '@/shared/ui/tabs/TabList';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import { move as moveItem } from '@/apps/settings/showcase';
 import { fillWithSample } from '@/apps/settings/lookSamples';
@@ -1101,12 +1102,12 @@ const ImageField = ({
 const optional = (value: string) => (value.trim() ? value : undefined);
 
 type EditorTab = 'intro' | 'pictures' | 'content' | 'app' | 'json';
-const TABS: [EditorTab, string][] = [
-	['intro', '소개'],
-	['pictures', '그림'],
-	['content', '내용'],
-	['app', '앱'],
-	['json', 'JSON'],
+const TABS: { id: EditorTab; label: string }[] = [
+	{ id: 'intro', label: '소개' },
+	{ id: 'pictures', label: '그림' },
+	{ id: 'content', label: '내용' },
+	{ id: 'app', label: '앱' },
+	{ id: 'json', label: 'JSON' },
 ];
 
 /**
@@ -2634,30 +2635,25 @@ const ProjectEditor = ({
 						</button>
 						<h3 className="projects-toolbar-title">{draft.name.trim() || '새 프로젝트'}</h3>
 					</div>
-					<div className="projects-tabs" role="tablist" aria-label="편집 항목">
-						{TABS.map(([key, label]) => (
-							<button
-								key={key}
-								type="button"
-								role="tab"
-								aria-selected={tab === key}
-								onClick={() => {
-									if (tab === key) return;
-									if (tab === 'json') {
-										const project = readJson();
-										if (!project) return;
-										setDraft(project);
-										setErrors([]);
-									}
-									if (key === 'json') openJson();
-									else setTab(key);
-									formRef.current?.scrollTo({ top: 0 });
-								}}
-							>
-								{label}
-							</button>
-						))}
-					</div>
+					<TabList
+						className="projects-tabs"
+						label="편집 항목"
+						items={TABS}
+						value={tab}
+						onChange={(key) => {
+							if (tab === key) return;
+							// JSON에서 나갈 때는 고친 JSON을 먼저 읽는다 (틀렸으면 머문다)
+							if (tab === 'json') {
+								const project = readJson();
+								if (!project) return;
+								setDraft(project);
+								setErrors([]);
+							}
+							if (key === 'json') openJson();
+							else setTab(key);
+							formRef.current?.scrollTo({ top: 0 });
+						}}
+					/>
 					<div className="projects-toolbar-end">
 						{/* 새 프로젝트만: 지금 고른 페이지 모양의 예시 내용을 칸에 채운다 (lookSamples.ts) */}
 						{row.isNew && (

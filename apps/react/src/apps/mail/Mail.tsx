@@ -18,6 +18,7 @@ import { MAILBOX_LABEL, type ListMail, type Mailbox } from './model';
 import '@/apps/mail/Mail.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
+import TabList from '@/shared/ui/tabs/TabList';
 
 const fromServer = (mail: ContactMail, replyable: boolean): ListMail => ({
 	id: mail.id,
@@ -285,19 +286,13 @@ const Mail: React.FC = () => {
 							</header>
 							{/* 휴대폰: 사이드바 대신 사서함을 위에서 고른다 */}
 							{env.apiUrl && (
-								<div className="mail-mailbox-tabs" role="tablist" aria-label="사서함">
-									{(['inbox', 'sent'] as const).map((entry) => (
-										<button
-											key={entry}
-											type="button"
-											role="tab"
-											aria-selected={mailbox === entry}
-											onClick={() => showMailbox(entry)}
-										>
-											{MAILBOX_LABEL[entry]}
-										</button>
-									))}
-								</div>
+								<TabList
+									className="mail-mailbox-tabs"
+									label="사서함"
+									items={(['inbox', 'sent'] as const).map((id) => ({ id, label: MAILBOX_LABEL[id] }))}
+									value={mailbox}
+									onChange={showMailbox}
+								/>
 							)}
 							{loadError && (
 								<p className="mail-load-error" role="alert">
