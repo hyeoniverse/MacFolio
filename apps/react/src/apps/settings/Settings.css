@@ -1351,7 +1351,7 @@ ol.showcase-list .showcase-row.reordering {
 	--pe-button-bg: var(--color-white);
 	--pe-button-border: rgba(0, 0, 0, 0.13);
 	--pe-button-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.14);
-	--pe-toolbar: #f7f7f9;
+	--pe-toolbar: var(--color-sidebar-bg);
 	--pe-inspector: #e8e8eb;
 	--pe-bar: #fafafb;
 	--pe-hover: rgba(0, 0, 0, 0.05);
@@ -1382,7 +1382,7 @@ ol.showcase-list .showcase-row.reordering {
 	--pe-button-bg: #48484b;
 	--pe-button-border: rgba(255, 255, 255, 0.06);
 	--pe-button-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.45);
-	--pe-toolbar: #262628;
+	--pe-toolbar: var(--color-sidebar-bg);
 	--pe-inspector: #18181a;
 	--pe-bar: #2e2e30;
 	--pe-hover: rgba(255, 255, 255, 0.06);
