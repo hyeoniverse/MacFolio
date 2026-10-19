@@ -20,6 +20,7 @@ export const BUILTIN_APP_NAMES = [
 	'activity',
 	'weather',
 	'preview',
+	'quicktime',
 	'bin',
 ] as const;
 
@@ -146,6 +147,16 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		desktopOnly: true,
 		windowSize: { width: 760, height: 620 },
 		minSize: { width: 420, height: 320 },
+	},
+	// 동영상·소리 재생 (macOS QuickTime Player). Finder의 mp4·mov·mp3 등을 열면 뜬다. 휴대폰에서는 파일 앱 안에서 바로 재생한다
+	quicktime: {
+		label: 'QuickTime Player',
+		icon: 'quicktime.svg',
+		inDock: false,
+		inLaunchpad: true,
+		desktopOnly: true,
+		windowSize: { width: 820, height: 520 },
+		minSize: { width: 360, height: 240 },
 	},
 	// 이 사이트에서 버린 기능과, 관리자에게는 지운 메모. Dock 오른쪽 끝에 따로 있고 휴대폰 홈 화면에는 두지 않는다
 	bin: { label: '휴지통', icon: 'bin.png', inDock: false, desktopOnly: true, windowSize: { width: 860, height: 540 } },

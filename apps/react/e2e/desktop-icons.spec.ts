@@ -14,10 +14,10 @@ async function centerOf(page: Page, name: string) {
 }
 
 test.describe('바탕화면 아이콘', () => {
-	test('오른쪽 위에 이력서·포트폴리오·자격증·프로젝트이 위에서 아래로 놓인다', async ({ page }) => {
+	test('오른쪽 위에 이력서·포트폴리오·자격증이 위에서 아래로 놓인다', async ({ page }) => {
 		await enterDesktop(page);
 		const width = page.viewportSize()!.width;
-		const names = ['이력서', '포트폴리오', '자격증', '프로젝트'];
+		const names = ['이력서', '포트폴리오', '자격증'];
 		let lastY = 0;
 		for (const name of names) {
 			await expect(icon(page, name)).toBeVisible();
@@ -32,18 +32,18 @@ test.describe('바탕화면 아이콘', () => {
 		await enterDesktop(page);
 		await icon(page, '이력서').click();
 		await expect(icon(page, '이력서')).toHaveAttribute('aria-selected', 'true');
-		await expect(icon(page, '프로젝트')).toHaveAttribute('aria-selected', 'false');
+		await expect(icon(page, '자격증')).toHaveAttribute('aria-selected', 'false');
 
-		await icon(page, '프로젝트').click({ modifiers: ['Meta'] });
+		await icon(page, '자격증').click({ modifiers: ['Meta'] });
 		await expect(icon(page, '이력서')).toHaveAttribute('aria-selected', 'true');
-		await expect(icon(page, '프로젝트')).toHaveAttribute('aria-selected', 'true');
+		await expect(icon(page, '자격증')).toHaveAttribute('aria-selected', 'true');
 
 		await page.mouse.click(emptySpot(page).x, emptySpot(page).y);
 		await expect(desktop(page).getByRole('option', { selected: true })).toHaveCount(0);
 
 		await icon(page, '자격증').click();
 		await page.keyboard.press('ControlOrMeta+A');
-		await expect(desktop(page).getByRole('option', { selected: true })).toHaveCount(4);
+		await expect(desktop(page).getByRole('option', { selected: true })).toHaveCount(3);
 		await page.keyboard.press('Escape');
 		await expect(desktop(page).getByRole('option', { selected: true })).toHaveCount(0);
 	});
@@ -65,20 +65,20 @@ test.describe('바탕화면 아이콘', () => {
 
 	test('끌어 옮기면 칸에 맞춰 놓이고, 새로고침해도 그 자리다', async ({ page }) => {
 		await enterDesktop(page);
-		const start = await centerOf(page, '프로젝트');
+		const start = await centerOf(page, '자격증');
 		await page.mouse.move(start.x, start.y);
 		await page.mouse.down();
 		await page.mouse.move(start.x - 300, start.y + 20, { steps: 10 });
 		await page.mouse.up();
-		await expect.poll(async () => (await icon(page, '프로젝트').boundingBox())!.x).toBeLessThan(start.box.x - 200);
-		const moved = (await icon(page, '프로젝트').boundingBox())!;
+		await expect.poll(async () => (await icon(page, '자격증').boundingBox())!.x).toBeLessThan(start.box.x - 200);
+		const moved = (await icon(page, '자격증').boundingBox())!;
 		// 칸에 맞춘다: 가로로는 96px 칸 몇 개만큼, 세로로는 원래 줄
 		expect(Math.round(start.box.x - moved.x) % 96).toBe(0);
 		expect(moved.y).toBe(start.box.y);
 
 		await enterDesktop(page);
-		await expect(icon(page, '프로젝트')).toBeVisible();
-		const after = (await icon(page, '프로젝트').boundingBox())!;
+		await expect(icon(page, '자격증')).toBeVisible();
+		const after = (await icon(page, '자격증').boundingBox())!;
 		expect(after.x).toBe(moved.x);
 		expect(after.y).toBe(moved.y);
 	});

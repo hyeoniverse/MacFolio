@@ -5,7 +5,7 @@ import PdfView from '@/apps/preview/PdfView';
 import ImageView from '@/apps/preview/ImageView';
 import '@/apps/preview/Preview.css';
 import { fileUrl } from './documents';
-import type { FileItem } from './files';
+import { mediaKind, type FileItem } from './files';
 
 /**
  * 휴대폰 파일 앱의 문서 파일 보기 (iOS의 훑어보기처럼 앱 안에서 화면을 채운다). 데스크톱은 미리보기 앱(apps/preview)이 연다.
@@ -28,6 +28,20 @@ const FileView: React.FC<{ item: FileItem }> = ({ item }) => {
 	}, [item.key, item.kind]);
 	const ignoreScale = useCallback(() => undefined, []);
 
+	// 동영상·소리: 화면 안에서 바로 재생 (iOS 훑어보기처럼)
+	const media = item.kind === 'file' ? mediaKind(item.name) : null;
+	if (media === 'video')
+		return (
+			<div className="finder-file-phone">
+				<video className="finder-file-video" src={fileUrl(item.key)} controls playsInline aria-label={item.name} />
+			</div>
+		);
+	if (media === 'audio')
+		return (
+			<div className="finder-file-phone">
+				<audio src={fileUrl(item.key)} controls aria-label={item.name} />
+			</div>
+		);
 	if (item.kind === 'image')
 		return (
 			<div className="finder-file-phone">

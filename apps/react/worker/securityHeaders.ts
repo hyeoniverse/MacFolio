@@ -49,7 +49,8 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 		'media-src': ["'self'", 'blob:', ...api],
 		'font-src': ["'self'", 'data:'],
 		// R2: 관리자가 문서 파일을 서명 주소로 바로 올린다 (계정마다 주소가 달라 * 하나로 연다. 서명이 없으면 쓸 수 없다)
-		'connect-src': ["'self'", ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY, R2_ENDPOINT],
+		// blob:: 방문자가 놓은 PDF(이 탭의 blob 주소)를 pdf.js가 fetch로 읽는다 (Finder localFiles)
+		'connect-src': ["'self'", 'blob:', ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY, R2_ENDPOINT],
 		'frame-src': ["'self'", TURNSTILE, ...origins(frameUrls)],
 		'worker-src': ["'self'", 'blob:'],
 		'object-src': ["'none'"],

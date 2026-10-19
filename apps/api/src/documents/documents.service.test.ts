@@ -56,7 +56,7 @@ describe('문서 파일 올리기', () => {
 		);
 		const { service } = setup();
 		expect(() => service.uploadTicket({ folder: '사진', name: 'a.pdf', size: 1 })).toThrow(BadRequestException);
-		expect(() => service.uploadTicket({ folder: '이력서', name: 'a.zip', size: 1 })).toThrow(BadRequestException);
+		expect(() => service.uploadTicket({ folder: '이력서', name: 'a.svg', size: 1 })).toThrow(BadRequestException);
 	});
 
 	it('다 올리면 HEAD로 크기를 확인하고 목록에 더한다', async () => {

@@ -1,5 +1,6 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import React, { useState } from 'react';
+import { useDockTrashDrop } from '@/desktop/dock/DockTrashTarget';
 import DockItem from '@/desktop/dock/DockItem';
 import Modal from '@/shared/ui/dialog/Modal';
 import '@/desktop/dock/Dock.css';
@@ -27,6 +28,7 @@ const Dock: React.FC = () => {
 	const [isLaunchpadOpen, setIsLaunchpadOpen] = useState(false); // 모달 상태 관리
 	// macOS처럼 비었으면 빈 휴지통, 무언가 남아 있으면 종이가 담긴 휴지통
 	const binEmpty = useBinEmpty();
+	const trashDrop = useDockTrashDrop();
 
 	// Dock에 다 들어가지 않는 앱은 Launchpad로 보낸다. 실행 중이라 나타난 앱도 칸에 세어서 Launchpad·휴지통과 겹치지 않는다
 	const { width } = useViewport();
@@ -81,12 +83,14 @@ const Dock: React.FC = () => {
 					onClick={handleLaunchpadClick}
 				/>
 				<div className="dock-divider" aria-hidden="true" />
+				{/* Finder·바탕화면의 항목을 끌어다 놓으면 휴지통으로 이동 */}
 				<DockItem
 					label="bin"
 					icon={binEmpty ? `${imgUrl}/bin-empty.png` : iconOf('bin')}
 					isActive={false}
 					isHidden={false}
 					onClick={() => handleAppOpen('bin')}
+					extra={trashDrop}
 				/>
 			</div>
 

@@ -26,6 +26,8 @@
 	--z-control-center: 2000; /* 휴대폰 제어 센터 */
 	--z-phone-statusbar: 2100;
 	--z-phone-notifications: 2200;
+	--z-drag: 2400; /* 바탕화면 아이콘을 끄는 동안 그 층 (창·Dock 위) */
+	--z-alert: 2500; /* 화면 한가운데 경고창 (바탕화면에서 띄운 AlertDialog): 창·Dock·메뉴 막대 위 */
 	--z-shortcuts: 3000; /* 키보드 단축키 안내 */
 	--z-notifications: 9000;
 	--z-loading: 9999;

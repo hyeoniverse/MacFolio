@@ -15,7 +15,11 @@ export const DOCUMENT_FOLDER_KEYS: Record<DocumentFolder, string> = {
 /** 프로젝트 폴더 (Finder › 프로젝트 › <프로젝트>)의 폴더 값: project:<프로젝트 id>. R2 키는 projects/<id>/ 아래 */
 export type ProjectDocumentFolder = `project:${string}`;
 /** 문서 폴더 값: 이력서·포트폴리오·자격증, 또는 프로젝트 폴더 */
-export type DocumentFolderValue = DocumentFolder | ProjectDocumentFolder;
+/** 바탕화면(데스크탑)에 바로 놓은 파일의 폴더 값. R2 키는 desktop/ 아래. 문서 폴더 목록(DOCUMENT_FOLDERS)에는 없다 */
+export const DESKTOP_DOCUMENT_FOLDER = '데스크탑';
+export type DesktopDocumentFolder = typeof DESKTOP_DOCUMENT_FOLDER;
+/** 문서 폴더 값: 이력서·포트폴리오·자격증, 데스크탑, 또는 프로젝트 폴더 */
+export type DocumentFolderValue = DocumentFolder | DesktopDocumentFolder | ProjectDocumentFolder;
 /** 프로젝트 id 모양 (desktop-core의 프로젝트 목록 규칙과 같다) */
 export const DOCUMENT_PROJECT_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const PROJECT_FOLDER = /^project:([a-z0-9][a-z0-9-]{0,39})$/;
@@ -28,17 +32,52 @@ export function documentProjectId(folder: string): string | null {
 /** 폴더 값의 R2 키 앞부분 (끝에 / 없이). 예: resume, projects/macfolio */
 export function documentFolderKey(folder: DocumentFolderValue): string {
 	const projectId = documentProjectId(folder);
-	return projectId ? `projects/${projectId}` : DOCUMENT_FOLDER_KEYS[folder as DocumentFolder];
+	if (projectId) return `projects/${projectId}`;
+	return folder === DESKTOP_DOCUMENT_FOLDER ? 'desktop' : DOCUMENT_FOLDER_KEYS[folder as DocumentFolder];
 }
 
-/** 받는 파일 종류 (확장자 → 종류). 사이트 Worker의 /files/*가 내주는 종류와 같다 */
-export const DOCUMENT_EXTENSIONS: Record<string, 'pdf' | 'image'> = {
+/**
+ * 받는 파일 종류 (확장자 → 종류). 사이트 Worker의 /files/*가 내주는 종류와 같다 (worker/files.ts의 FILE_TYPES).
+ * pdf·image는 미리보기 앱이 열고, file은 받아서(다운로드) 연다. SVG·HTML처럼 사이트 주소에서 스크립트가 돌 수 있는 종류는 받지 않는다
+ */
+export const DOCUMENT_EXTENSIONS: Record<string, 'pdf' | 'image' | 'file'> = {
 	pdf: 'pdf',
 	png: 'image',
 	jpg: 'image',
 	jpeg: 'image',
 	webp: 'image',
+	gif: 'image',
+	avif: 'image',
+	// 문서
+	txt: 'file',
+	md: 'file',
+	csv: 'file',
+	json: 'file',
+	rtf: 'file',
+	doc: 'file',
+	docx: 'file',
+	xls: 'file',
+	xlsx: 'file',
+	ppt: 'file',
+	pptx: 'file',
+	hwp: 'file',
+	hwpx: 'file',
+	key: 'file',
+	pages: 'file',
+	numbers: 'file',
+	// 영상·소리
+	mp4: 'file',
+	mov: 'file',
+	webm: 'file',
+	mp3: 'file',
+	m4a: 'file',
+	wav: 'file',
+	// 묶음
+	zip: 'file',
 };
+
+/** 받지 않는 종류일 때의 안내 */
+export const DOCUMENT_TYPE_ERROR = '올릴 수 없는 파일 종류입니다 (PDF·그림·문서·영상·소리·ZIP).';
 
 /** 파일 하나의 최대 크기 (20MB) */
 export const MAX_DOCUMENT_BYTES = 20 * 1024 * 1024;
@@ -62,16 +101,16 @@ export function cleanDocumentName(name: unknown): string | null {
 	return cleaned ? Array.from(cleaned).slice(0, DOCUMENT_NAME_MAX).join('') : null;
 }
 
-const FOLDER_ERROR = '이력서·포트폴리오·자격증 폴더나 프로젝트 폴더에만 올릴 수 있습니다.';
+const FOLDER_ERROR = '이력서·포트폴리오·자격증·데스크탑 폴더나 프로젝트 폴더에만 올릴 수 있습니다.';
 /** 폴더: 세 문서 폴더 이름 또는 project:<프로젝트 id> */
-const folder = z.union([z.enum(DOCUMENT_FOLDERS), z.string().regex(PROJECT_FOLDER)], {
+const folder = z.union([z.enum([...DOCUMENT_FOLDERS, DESKTOP_DOCUMENT_FOLDER]), z.string().regex(PROJECT_FOLDER)], {
 	error: FOLDER_ERROR,
 }) as unknown as z.ZodType<DocumentFolderValue>;
 const name = z.preprocess(
 	cleanDocumentName,
 	z
 		.string({ error: '파일 이름이 필요합니다.' })
-		.refine((value) => documentExtension(value) !== null, 'PDF, PNG, JPG, WebP 파일만 올릴 수 있습니다.')
+		.refine((value) => documentExtension(value) !== null, DOCUMENT_TYPE_ERROR)
 );
 const size = z
 	.number({ error: '파일 크기가 필요합니다.' })
@@ -108,7 +147,7 @@ export const DocumentFile = z.object({
 	name: z.string(),
 	/** R2 키. 사이트 주소 /files/<key>로 받는다 */
 	key: z.string(),
-	kind: z.enum(['pdf', 'image']),
+	kind: z.enum(['pdf', 'image', 'file']),
 	size: z.number(),
 	/** YYYY-MM-DD */
 	updated: z.string(),

@@ -11,9 +11,19 @@ interface DockItemProps {
 	isHidden: boolean;
 	disableRadius?: boolean;
 	onClick: () => void;
+	/** 칸에 더할 속성 (휴지통 칸의 끌어 놓기 처리·data-dock-trash, drop-target 이름) */
+	extra?: React.HTMLAttributes<HTMLDivElement> & { 'data-dock-trash'?: string };
 }
 
-const DockItem: React.FC<DockItemProps> = ({ label, icon, isActive, isHidden, onClick, disableRadius = false }) => {
+const DockItem: React.FC<DockItemProps> = ({
+	label,
+	icon,
+	isActive,
+	isHidden,
+	onClick,
+	disableRadius = false,
+	extra,
+}) => {
 	const iconRef = useRef<HTMLImageElement>(null);
 	const wasActive = useRef(isActive);
 	const indicator = useExitMotion<HTMLDivElement>('fade-out');
@@ -38,7 +48,14 @@ const DockItem: React.FC<DockItemProps> = ({ label, icon, isActive, isHidden, on
 	if (isHidden) return null;
 
 	return (
-		<div className="dock-item" role="button" aria-label={label} title={label} onClick={onClick}>
+		<div
+			{...extra}
+			className={`dock-item${extra?.className ? ` ${extra.className}` : ''}`}
+			role="button"
+			aria-label={label}
+			title={label}
+			onClick={onClick}
+		>
 			{/* 네모난 아이콘(직접 모서리를 그린 그림)은 모서리를 깎지 않는다 */}
 			<img ref={iconRef} src={icon} alt={label} className={disableRadius ? 'square' : undefined} />
 			{/* 켜짐 표시는 앱을 열면 톡 나타나고, 끄면 흐려지며 사라진다 */}

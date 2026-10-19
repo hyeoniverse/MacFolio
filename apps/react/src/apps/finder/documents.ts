@@ -3,8 +3,10 @@
 // 올리기 전에 전화번호·주소·생년월일·주민등록번호 같은 번호를 지운다.
 import { useSyncExternalStore } from 'react';
 import {
+	DESKTOP_DOCUMENT_FOLDER,
 	DOCUMENT_FOLDERS,
 	documentExtension,
+	DOCUMENT_TYPE_ERROR,
 	type DocumentFile,
 	type DocumentFolder,
 	type DocumentFolderValue,
@@ -17,7 +19,7 @@ import { createStore } from '@macfolio/desktop-core';
 import { api } from '@/shared/api/client';
 import { env } from '@/shared/config/env';
 
-export { DOCUMENT_FOLDERS, type DocumentFolder, type DocumentFolderValue, documentProjectId };
+export { DESKTOP_DOCUMENT_FOLDER, DOCUMENT_FOLDERS, type DocumentFolder, type DocumentFolderValue, documentProjectId };
 
 /** 프로젝트 폴더의 폴더 값 (project:<프로젝트 id>) */
 export const projectFolderValue = (projectId: string): ProjectDocumentFolder => `project:${projectId}`;
@@ -64,7 +66,7 @@ export function useDocumentEntries(): DocumentEntry[] {
 
 /** 올릴 수 있는 파일인지. 안 되면 까닭 */
 export function uploadProblem(file: File): string | null {
-	if (!documentExtension(file.name)) return `${file.name}: PDF, PNG, JPG, WebP 파일만 올릴 수 있습니다.`;
+	if (!documentExtension(file.name)) return `${file.name}: ${DOCUMENT_TYPE_ERROR}`;
 	if (file.size === 0) return `${file.name}: 빈 파일입니다.`;
 	if (file.size > MAX_DOCUMENT_BYTES) return `${file.name}: 20MB까지 올릴 수 있습니다.`;
 	return null;
@@ -118,10 +120,10 @@ export async function renameDocument(id: string, name: string): Promise<void> {
 
 /**
  * 파일 주소 (/files/<key>). download면 내려받기(attachment).
- * 키가 이미 주소(/imgs/…, https://…)면 그대로: 사진 앱의 사진처럼 R2가 아니라 사이트에 있는 파일
+ * 키가 이미 주소(/imgs/…, https://…, blob:…)면 그대로: 사진 앱의 사진처럼 R2가 아니라 사이트에 있는 파일, 방문자가 놓은 파일(localFiles.ts)
  */
 export const fileUrl = (key: string, download = false) =>
-	key.startsWith('/') || /^https?:\/\//.test(key)
+	key.startsWith('/') || /^(https?|blob):/.test(key)
 		? key
 		: `/files/${key.split('/').map(encodeURIComponent).join('/')}${download ? '?download=1' : ''}`;
 
