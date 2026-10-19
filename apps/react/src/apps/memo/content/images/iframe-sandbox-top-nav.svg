@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="330" fill="#fff"/>
+  <text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">sandbox가 막는 것은 맨 위 창을 옮기는 클릭이다</text>
+<rect x="30" y="50" width="420" height="230" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="46" y="72" font-size="12" fill="#374151" text-anchor="start" font-weight="600">MacFolio (맨 위 창)</text>
+<rect x="60" y="90" width="360" height="160" rx="8" fill="#fff" stroke="#a5b4fc"/>
+<text x="76" y="112" font-size="11" fill="#4f46e5" text-anchor="start" font-weight="600">프로젝트 앱의 iframe (다른 출처)</text>
+<rect x="90" y="135" width="300" height="40" rx="8" fill="#ffffff" stroke="#d1d5db"/>
+<text x="240.0" y="158.8" font-size="10.5" fill="#374151" text-anchor="middle" font-weight="600">&lt;a target=&quot;_top&quot;&gt; 클릭</text>
+<rect x="90" y="195" width="300" height="40" rx="8" fill="#ffffff" stroke="#d1d5db"/>
+<text x="240.0" y="218.8" font-size="10.5" fill="#374151" text-anchor="middle" font-weight="600">스크립트로 top.location 바꾸기 (클릭 없이)</text>
+<rect x="500" y="60" width="240" height="70" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="620.0" y="91.0" font-size="11" fill="#e11d48" text-anchor="middle" font-weight="600">sandbox 없음</text>
+<text x="620.0" y="107.0" font-size="10.5" fill="#4b5563" text-anchor="middle">맨 위 창이 그 주소로 바뀜</text>
+<rect x="500" y="150" width="240" height="60" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="620.0" y="176.0" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">sandbox (allow-top-navigation 뺌)</text>
+<text x="620.0" y="191.5" font-size="10.0" fill="#4b5563" text-anchor="middle">막힘</text>
+<rect x="500" y="225" width="240" height="50" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="620.0" y="254.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">Chrome이 원래 막는다</text>
+<line x1="390" y1="150" x2="498" y2="95" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="390" y1="160" x2="498" y2="180" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="390" y1="215" x2="498" y2="250" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="380" y="310" font-size="11" fill="#6b7280" text-anchor="middle">그래서 시험은 클릭으로 짰다. sandbox 없이는 실패, 있으면 통과</text>
+</svg>

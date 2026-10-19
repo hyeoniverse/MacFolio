@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 290" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="720" height="290" fill="#fff"/>
+  <text x="360.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">이름이 없는 글꼴을 고르면 브라우저는 기본 글꼴로 그린다</text>
+<rect x="30" y="60" width="300" height="110" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="180.0" y="95.0" font-size="11" fill="#e11d48" text-anchor="middle" font-weight="600">전: SVG &lt;text&gt; 아이콘</text>
+<text x="180.0" y="111.0" font-size="10.5" fill="#4b5563" text-anchor="middle">font-family: &#x27;Font Awesome 6 Free&#x27;</text>
+<text x="180.0" y="127.0" font-size="10.5" fill="#4b5563" text-anchor="middle">설치된 것은 7.x → 이 이름의 글꼴 없음</text>
+<text x="180.0" y="143.0" font-size="10.5" fill="#4b5563" text-anchor="middle">기본 글꼴에 \f0ac가 없어 네모</text>
+<rect x="390" y="60" width="300" height="110" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="540.0" y="95.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">후: 다섯 곳 모두 7로</text>
+<text x="540.0" y="111.0" font-size="10.5" fill="#4b5563" text-anchor="middle">&#x27;Font Awesome 7 Free&#x27; / &#x27;… 7 Brands&#x27;</text>
+<text x="540.0" y="127.0" font-size="10.5" fill="#4b5563" text-anchor="middle">코드 포인트는 6과 7이 같다</text>
+<text x="540.0" y="143.0" font-size="10.5" fill="#4b5563" text-anchor="middle">\f0ac → 지구 아이콘</text>
+<rect x="160" y="190" width="40" height="40" fill="none" stroke="#e11d48" stroke-width="2"/>
+<circle cx="540" cy="210" r="19" fill="none" stroke="#4f46e5" stroke-width="2"/><ellipse cx="540" cy="210" rx="8" ry="19" fill="none" stroke="#4f46e5" stroke-width="2"/><line x1="521" y1="210" x2="559" y2="210" stroke="#4f46e5" stroke-width="2"/>
+<text x="360" y="270" font-size="11" fill="#6b7280" text-anchor="middle">&lt;i class=&quot;fa-solid …&quot;&gt; 아이콘은 Font Awesome의 CSS가 이름을 정해서 멀쩡했다</text>
+</svg>

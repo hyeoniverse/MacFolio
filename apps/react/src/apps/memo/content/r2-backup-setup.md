@@ -9,6 +9,8 @@ summary: 백업 스크립트를 실제 서버에 거는 순서. R2 버킷과 키
 
 비밀 값(키)은 처음부터 끝까지 **서버의 `~/deploy/backup.env`에만** 둔다. 저장소에도, 채팅에도, 스크린샷에도 남기지 않는다.
 
+![backup.sh가 pg_dump부터 R2 올리기, healthchecks 알림까지 하는 순서](./images/r2-backup-setup-pipeline.svg '아래 1~8은 이 그림의 각 칸이 실제 서버에서 돌게 하는 준비다')
+
 ## 1. 버킷: Standard, 비공개
 
 Cloudflare 대시보드의 R2에서 `macfolio-backups` 버킷을 만든다.

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>GET /files는 글의 게시 내용, 임시 저장, 예전 버전, 배경화면에서 /files/id 주소를 찾아 쓰는 곳을 정하고, 지금 글과 배경화면은 지울 수 없고 예전 버전에서만 쓰거나 안 쓰는 파일은 지울 수 있다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="780" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">파일마다 어디서 쓰는지 찾아 지울 수 있는지 정한다</text>
+<rect x="32" y="60" width="200" height="180" rx="10" fill="#f3f4f6"/>
+<text x="132.0" y="103.5" font-size="12.5" font-weight="600" fill="#374151" text-anchor="middle">모든 글을 훑는다</text>
+<text x="132.0" y="122.25" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">게시한 내용</text>
+<text x="132.0" y="136.75" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">임시 저장</text>
+<text x="132.0" y="151.25" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">예전 버전</text>
+<text x="132.0" y="165.75" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">(최근 삭제된 글 포함)</text>
+<text x="132.0" y="180.25" font-size="10" font-weight="400" fill="#374151" text-anchor="middle"></text>
+<text x="132.0" y="194.75" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">uploadIdsIn(text)</text>
+<text x="132.0" y="209.25" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">/files/&lt;16자 id&gt;</text>
+<rect x="290" y="60" width="180" height="38" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="380.0" y="76.0" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">지금 글</text>
+<text x="380.0" y="93.25" font-size="9" font-weight="400" fill="#374151" text-anchor="middle">게시·임시 저장</text>
+<rect x="500" y="60" width="250" height="38" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="625.0" y="82.0" font-size="10.5" font-weight="400" fill="#7f1d1d" text-anchor="middle">지울 수 없음 (409)</text>
+<path d="M232 150 L288 79" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M470 79 H498" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="290" y="106" width="180" height="38" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="380.0" y="122.0" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">배경화면</text>
+<text x="380.0" y="139.25" font-size="9" font-weight="400" fill="#374151" text-anchor="middle">원본·썸네일</text>
+<rect x="500" y="106" width="250" height="38" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="625.0" y="128.0" font-size="10.5" font-weight="400" fill="#7f1d1d" text-anchor="middle">배경화면 설정에서</text>
+<path d="M232 150 L288 125" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M470 125 H498" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="290" y="152" width="180" height="38" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="380.0" y="168.0" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">예전 버전에서만</text>
+<text x="380.0" y="185.25" font-size="9" font-weight="400" fill="#374151" text-anchor="middle">지금은 뺐다</text>
+<rect x="500" y="152" width="250" height="38" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="625.0" y="174.0" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">지울 수 있음</text>
+<path d="M232 150 L288 171" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M470 171 H498" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="290" y="198" width="180" height="38" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="380.0" y="220.75" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">없음</text>
+<rect x="500" y="198" width="250" height="38" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="625.0" y="220.0" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">지울 수 있음</text>
+<path d="M232 150 L288 217" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M470 217 H498" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<text x="32" y="266" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">저장소 Markdown 글이 가리키는 파일은 서버가 모르므로, 휴지통 화면이 한 번 더 찾아 지우기 버튼을 감춘다.</text>
+<text x="32" y="288" font-size="10.5" font-weight="400" fill="#6b7280" text-anchor="start">DELETE /files/:id도 같은 규칙. 목록은 파일 내용(최대 10MB) 없이 읽는다.</text>
+</svg>

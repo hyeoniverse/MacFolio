@@ -24,6 +24,8 @@ export function keyboardInset(): number {
 }
 ```
 
+![레이아웃 뷰포트와 보이는 곳, 키보드 높이](./images/memo-keyboard-toolbar-viewport.svg '키보드가 가린 높이를 CSS 변수로 넘겨 서식 알약을 그만큼 올린다')
+
 `offsetTop`을 더하는 것은 키보드가 올라올 때 Safari가 보이는 곳을 아래로 밀어 커서를 보여 주는 경우가 있어서다. 주소창이 접히고 펴질 때도 보이는 곳의 높이가 조금 바뀌므로, 120px보다 작은 차이는 키보드로 보지 않는다.
 
 `visualViewport`의 `resize`·`scroll`을 들어 이 값을 다시 읽는다(`useKeyboardInset`). 편집기가 열려 있을 때만 듣는다.

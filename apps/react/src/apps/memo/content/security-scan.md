@@ -21,6 +21,8 @@ summary: Semgrep, pnpm audit, osv-scanner로 코드와 의존성을 점검했다
 
 Dependency-Check는 받아서 실행까지 했지만 NVD 데이터 받기에서 `Invalid API Key, length of 0`으로 멈췄다. 지금 버전은 API 키 없이는 NVD를 받지 않는다. 그래서 잠금 파일의 정확한 버전을 OSV 데이터베이스와 맞추는 osv-scanner로 대신했다. `pnpm audit`과 같은 데이터를 보는 만큼 둘 다 0건으로 결과가 맞았다. 0건인 이유는 앞서 운영 의존성 취약점 6건을 `overrides`로 올리고 Dependabot을 매주 돌린 덕이다.
 
+![Semgrep 7건을 오탐 4건과 영향 없음 3건으로 판정하고 처리한 흐름](./images/security-scan-triage.svg '7건 모두 규칙을 끄지 않고 그 줄에 사유를 적어 억제했다')
+
 ## 오탐 넷: 값이 어디서 오는가
 
 네 건은 모두 "정규식이나 서식 문자열을 변수로 만든다"는 패턴 규칙이었다. 규칙은 값의 모양만 보고 출처는 모른다. 그래서 판정은 값이 어디서 오는지 따라가는 일이 된다.

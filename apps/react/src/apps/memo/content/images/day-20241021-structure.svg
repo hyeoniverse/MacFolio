@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>2024년 10월 22일 메모 저장 흐름</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="340" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">메모를 MySQL에 저장하던 구조</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">2024년 10월 22일 10:53 커밋 기준</text>
+<rect x="32" y="96" width="180" height="170" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="44" y="117" font-size="12.5" font-weight="700" fill="#1d4f91">client</text>
+<text x="44" y="136" font-size="11" fill="#1d4f91">MemoContext</text>
+<text x="44" y="152" font-size="11" fill="#1d4f91">  axios로 서버 호출</text>
+<text x="44" y="168" font-size="11" fill="#1d4f91">Memo.tsx</text>
+<text x="44" y="184" font-size="11" fill="#1d4f91">  FolderList, MemoItem,</text>
+<text x="44" y="200" font-size="11" fill="#1d4f91">  MemoTools, SearchInput</text>
+<rect x="262" y="96" width="220" height="170" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="274" y="117" font-size="12.5" font-weight="700" fill="#7a5a12">server (Express + TS)</text>
+<text x="274" y="136" font-size="11" fill="#7a5a12">routes/memo.ts</text>
+<text x="274" y="152" font-size="11" fill="#7a5a12">  → controllers</text>
+<text x="274" y="168" font-size="11" fill="#7a5a12">  → models (mysql2)</text>
+<text x="274" y="184" font-size="11" fill="#7a5a12">PUT·DELETE 앞에</text>
+<text x="274" y="200" font-size="11" fill="#7a5a12">  validatePassword (bcrypt)</text>
+<rect x="532" y="96" width="196" height="170" rx="9" fill="#e3f6ea" stroke="#5cc489"/>
+<text x="544" y="117" font-size="12.5" font-weight="700" fill="#1f6b3f">MySQL</text>
+<text x="544" y="136" font-size="11" fill="#1f6b3f">folders 표</text>
+<text x="544" y="152" font-size="11" fill="#1f6b3f">memos 표</text>
+<text x="544" y="168" font-size="11" fill="#1f6b3f">  메모마다 password 해시</text>
+<text x="544" y="184" font-size="11" fill="#1f6b3f">timezone: +09:00</text>
+<path d="M212 181 L262 181" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<text x="237.0" y="175.0" font-size="10.5" fill="#6b7280" text-anchor="middle">/memos</text>
+<path d="M482 181 L532 181" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<text x="507.0" y="175.0" font-size="10.5" fill="#6b7280" text-anchor="middle">pool</text>
+<text x="32" y="300" font-size="11.5" fill="#4b5563" text-anchor="start">편집 권한은 사람이 아니라 메모에 붙었다: 메모 비밀번호를 아는 사람이면 누구나 고치고 지울 수 있었다.</text>
+</svg>

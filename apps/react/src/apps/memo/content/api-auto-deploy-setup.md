@@ -7,6 +7,8 @@ summary: 로컬에서 다 시험한 자동 배포를 실제 서버에 걸면서 
 
 [API 자동 배포](/memo/api-auto-deploy)는 로컬 레지스트리로 성공·실패·되돌리기까지 시험한 뒤 머지했다. 남은 일은 서버에 거는 것이었다: 서버 `compose.yml`을 이미지로 바꾸고, 첫 배포를 하고, 배포 전용 열쇠를 만들어 GitHub Secrets에 넣는 것. 생각보다 많이 막혔다.
 
+![막힌 여섯 곳](./images/api-auto-deploy-setup-blockers.svg '0~6. 빨강은 배포가 실패하거나 빠진 곳, 노랑은 사람이 헷갈린 곳')
+
 ## 0. 이미지는 처음부터 공개였다
 
 머지하자 Actions가 첫 이미지(`sha-a38ac7e`)를 GHCR에 올렸다. 처음 만든 패키지는 비공개라 공개로 바꿔야 한다고 문서에 적어 두었는데, 로그인 없이 받아 보니 바로 받혔다(200). 공개 저장소에 연결된 패키지라 처음부터 공개였다. 문서의 이 단계를 "확인하고, 아니면 바꾼다"로 고쳤다.
@@ -19,7 +21,7 @@ error while interpolating services.api.image: required variable API_TAG is missi
 백업 실패: pg_dump
 ```
 
-서버 `compose.yml`은 태그가 없으면 멈추게 `${API_TAG:?…}`로 썼는데, 첫 배포에는 `.env`에 태그가 아직 없다. 배포 직전 백업도 `docker compose`로 DB에 붙어서, compose가 파일을 읽다가 거부했다. 로컬 시험의 compose 파일에는 이 `:?`가 없었다. 스크립트가 부르는 compose가 늘 태그를 알게 고쳤다(#107). 그날은 `API_TAG=sha-a38ac7e ops/deploy.sh sha-a38ac7e`로 넘어갔다.
+첫 배포에는 `.env`에 `API_TAG`가 없는데, 서버 `compose.yml`의 `${API_TAG:?…}` 때문에 배포 직전 백업(`docker compose exec db pg_dump`)까지 거부됐다. 원인과 고친 방법은 [API 자동 배포](/memo/api-auto-deploy)의 '서버에서 처음 돌리자 백업에서 멈췄다'에 적었다(#107). 그날은 `API_TAG=sha-a38ac7e ops/deploy.sh sha-a38ac7e`로 넘어갔다.
 
 ## 2. `<태그>`를 그대로 붙여 넣었다
 

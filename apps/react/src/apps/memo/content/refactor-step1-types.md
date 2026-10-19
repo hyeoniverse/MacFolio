@@ -32,6 +32,8 @@ summary: 리팩터링 계획 1단계를 돌아본다. API 응답 타입을 화�
 
 방식은 하나다. 요청·응답의 모양은 `@macfolio/contracts`에 zod 스키마로 두고, 서버는 `parse()`로 검증하고, 화면은 `import type`으로 같은 타입을 쓴다. 타입과 순수 규칙은 `desktop-core`에 남는다. 여덟 도메인이 모두 이 자리로 옮겨 갔다.
 
+![desktop-core, contracts, api, react의 관계와 contracts 밖에 남긴 것](./images/refactor-step1-types-contracts.svg '1단계가 끝난 뒤 요청·응답 모양이 흐르는 길')
+
 ## 전후
 
 |                     | 전                    | 후                                                               |

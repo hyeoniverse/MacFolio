@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>RateLimit을 UseGuards(AdminGuard) 위에 적으면 AdminGuard가 먼저 돌아 401 요청이 세지지 않는다. 아래로 옮기면 ThrottlerGuard가 먼저 돌아 쿠키 없는 요청도 센다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="780" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">데코레이터는 아래부터 붙는다: 가드 순서가 횟수를 바꾼다</text>
+<text x="32" y="62" font-size="12.5" font-weight="700" fill="#9f1239" text-anchor="start">처음 (틀림)</text>
+<rect x="32" y="72" width="338" height="78" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="46" y="94" font-size="11" font-weight="400" fill="#1f2937" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">@Post()</text>
+<text x="46" y="114" font-size="11" font-weight="400" fill="#1f2937" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">@RateLimit('write')</text>
+<text x="46" y="134" font-size="11" font-weight="400" fill="#1f2937" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">@UseGuards(AdminGuard)</text>
+<text x="32" y="176" font-size="10" font-weight="600" fill="#6b7280" text-anchor="start">실제로 도는 순서</text>
+<rect x="32" y="186" width="130" height="38" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="97.0" y="208.5" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">AdminGuard</text>
+<rect x="182" y="186" width="130" height="38" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="247.0" y="208.5" font-size="11" font-weight="600" fill="#4f46e5" text-anchor="middle">ThrottlerGuard</text>
+<path d="M162 205 H180" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="32" y="240" width="338" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="201.0" y="263.0" font-size="10.5" font-weight="400" fill="#7f1d1d" text-anchor="middle">쿠키 없는 요청은 401로 끝나 세지 않음</text>
+<text x="410" y="62" font-size="12.5" font-weight="700" fill="#065f46" text-anchor="start">고친 뒤</text>
+<rect x="410" y="72" width="338" height="78" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="424" y="94" font-size="11" font-weight="400" fill="#1f2937" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">@Post()</text>
+<text x="424" y="114" font-size="11" font-weight="400" fill="#1f2937" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">@UseGuards(AdminGuard)</text>
+<text x="424" y="134" font-size="11" font-weight="400" fill="#1f2937" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">@RateLimit('write')</text>
+<text x="410" y="176" font-size="10" font-weight="600" fill="#6b7280" text-anchor="start">실제로 도는 순서</text>
+<rect x="410" y="186" width="130" height="38" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="475.0" y="208.5" font-size="11" font-weight="600" fill="#4f46e5" text-anchor="middle">ThrottlerGuard</text>
+<rect x="560" y="186" width="130" height="38" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="625.0" y="208.5" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">AdminGuard</text>
+<path d="M540 205 H558" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="410" y="240" width="338" height="40" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="579.0" y="263.0" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">모든 요청을 세고, 넘으면 세션 조회 전에 429</text>
+<text x="32" y="306" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">경로 표 시험이 지킨다: GET 아닌 경로 33개 모두 제한 · 관리자 경로에서 ThrottlerGuard가 AdminGuard보다 앞</text>
+</svg>

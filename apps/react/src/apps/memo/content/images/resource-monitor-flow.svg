@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>API 컨테이너가 1분마다 /proc를 읽어 표본을 남기고, 1시간마다 7일 위험을 계산해 회수 위험이면 Resend로 메일을 보낸다. 마지막 알림은 ResourceAlert에 남겨 3일 안에는 다시 보내지 않는다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="800" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">1분마다 재고, 1시간마다 판정하고, 3일에 한 번까지 알린다</text>
+<rect x="32" y="62" width="170" height="96" rx="10" fill="#f3f4f6"/>
+<text x="117.0" y="91.5" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">/proc 읽기 (1분)</text>
+<text x="117.0" y="110.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">stat → CPU</text>
+<text x="117.0" y="125.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">meminfo → 메모리</text>
+<text x="117.0" y="140.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">net/dev → Mbps (lo 제외)</text>
+<rect x="242" y="62" width="150" height="96" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="317.0" y="93.0" font-size="12" font-weight="600" fill="#1f2937" text-anchor="middle">표본 (DB)</text>
+<text x="317.0" y="111.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">두 번 읽은 차이</text>
+<text x="317.0" y="125.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">첫 값 · 거꾸로 간 값 버림</text>
+<text x="317.0" y="139.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">14일 지나면 지움</text>
+<rect x="432" y="62" width="160" height="96" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="512.0" y="93.0" font-size="12" font-weight="600" fill="#4f46e5" text-anchor="middle">위험 계산 (1시간)</text>
+<text x="512.0" y="111.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">7일 기준</text>
+<text x="512.0" y="125.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">모두 &lt; 20% → 회수 위험</text>
+<text x="512.0" y="139.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">모두 &lt; 30% → 주의</text>
+<rect x="632" y="62" width="140" height="96" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="702.0" y="93.0" font-size="12" font-weight="600" fill="#92400e" text-anchor="middle">알림 메일</text>
+<text x="702.0" y="111.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">Resend</text>
+<text x="702.0" y="125.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">회수 위험일 때만</text>
+<text x="702.0" y="139.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">3일에 한 번까지</text>
+<path d="M202 110 H240" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M392 110 H430" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M592 110 H630" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="632" y="186" width="140" height="48" rx="10" fill="#f3f4f6"/>
+<text x="702.0" y="206.5" font-size="11" font-weight="600" fill="#374151" text-anchor="middle">ResourceAlert</text>
+<text x="702.0" y="224.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">마지막으로 보낸 때</text>
+<path d="M702 158 V184" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#gray)"/>
+<text x="32" y="206" font-size="11" font-weight="600" fill="#1f2937" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">RESOURCE_MONITOR</text>
+<rect x="32" y="218" width="176" height="40" rx="10" fill="#f3f4f6"/>
+<text x="120.0" y="234.75" font-size="11.5" font-weight="600" fill="#374151" text-anchor="middle">off</text>
+<text x="120.0" y="252.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">기본: 재지 않는다</text>
+<rect x="222" y="218" width="176" height="40" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="310.0" y="234.75" font-size="11.5" font-weight="600" fill="#4f46e5" text-anchor="middle">free</text>
+<text x="310.0" y="252.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">재고, 판정하고, 알린다</text>
+<rect x="412" y="218" width="176" height="40" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="500.0" y="234.75" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">payg</text>
+<text x="500.0" y="252.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">재고 보여 주기만</text>
+<text x="32" y="290" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">메모리에 두지 않고 DB에 남기는 까닭: 배포마다 컨테이너가 다시 떠서, 메모리면 배포마다 같은 메일이 다시 간다.</text>
+</svg>

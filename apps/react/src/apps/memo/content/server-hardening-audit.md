@@ -11,6 +11,8 @@ summary: "SSH는 키로만, 열린 포트는 22뿐, 컨테이너는 root가 아�
 
 MacFolio의 API 서버는 Oracle 무료 VM 한 대다. 밖에서 닿는 길은 SSH(22) 하나뿐이다. API는 Cloudflare Tunnel이 서버에서 **밖으로** 연결을 걸고 요청이 그 연결을 타고 들어오므로 80·443을 열 필요가 없다. `compose.yml`에는 `ports:`가 하나도 없어서 DB도 API도 호스트 포트를 열지 않는다. 그러니 지킬 것은 넷으로 줄어든다.
 
+![서버에 닿는 길은 SSH 22번뿐이고 API는 밖으로 건 터널로 요청을 받는 구조](./images/server-hardening-audit-exposure.svg '80·443이 닫혀 있어도 API가 도는 까닭은 터널이 서버에서 밖으로 연결을 걸기 때문이다')
+
 1. SSH는 키로만 (비밀번호 없음)
 2. 바깥에서 듣는 포트는 22뿐
 3. 컨테이너는 root가 아닌 사용자로

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>태그는 옮겨지고, 커밋 SHA는 옮겨지지 않는다</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">태그는 옮겨지고, 커밋 SHA는 옮겨지지 않는다</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">uses: 뒤에 무엇을 적느냐에 따라 실행할 때 받는 코드가 달라질 수 있다</text>
+  <rect x="32" y="100" width="200" height="46" rx="8" fill="#fee2e2"/>
+  <text x="132.0" y="127.5" font-size="13" text-anchor="middle" fill="#b91c1c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">uses: …@v7</text>
+  <line x1="234" y1="123" x2="300" y2="123" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="267.0" y="117.0" font-size="11" fill="#6b7280" text-anchor="middle">v7 태그</text>
+  <rect x="304" y="100" width="120" height="46" rx="8" fill="#f3f4f6"/>
+  <text x="364.0" y="127.2" font-size="12" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">커밋 A</text>
+  <rect x="470" y="100" width="120" height="46" rx="8" fill="#fee2e2"/>
+  <text x="530.0" y="127.2" font-size="12" text-anchor="middle" fill="#b91c1c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">커밋 B (?)</text>
+  <line x1="424" y1="123" x2="466" y2="123" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)" stroke-dasharray="5 4"/>
+  <text x="445.0" y="117.0" font-size="11" fill="#6b7280" text-anchor="middle">옮김</text>
+  <text x="610" y="128" font-size="12" fill="#b91c1c" text-anchor="start">쓰기 권한이면 어디로나</text>
+  <rect x="32" y="180" width="200" height="46" rx="8" fill="#dcfce7"/>
+  <text x="132.0" y="198.8" font-size="11" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">uses: …@3d3c42e5…</text>
+  <text x="132.0" y="214.8" font-size="11" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"># v7.0.1</text>
+  <line x1="234" y1="203" x2="300" y2="203" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="267.0" y="197.0" font-size="11" fill="#6b7280" text-anchor="middle">내용 해시</text>
+  <rect x="304" y="180" width="120" height="46" rx="8" fill="#dcfce7"/>
+  <text x="364.0" y="207.2" font-size="12" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">커밋 A</text>
+  <text x="440" y="208" font-size="12" fill="#15803d" text-anchor="start">같은 해시는 늘 같은 코드. 올리는 일은 Dependabot PR로</text>
+  <text x="32" y="266" font-size="12" fill="#6b7280" text-anchor="start">ci.yml 액션 17곳(9종)을 고정, permissions는 contents: read 또는 {}로 줄였다.</text>
+</svg>

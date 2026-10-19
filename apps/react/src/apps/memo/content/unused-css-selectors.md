@@ -35,6 +35,8 @@ CSS의 모든 선택자에서 클래스 이름 2,761개를 뽑고, `.ts`·`.tsx`
 | `tm-jump`                                 | DevCourse 터미널의 옛 바로 가기                        |
 | `memo-toolbar-title`                      | 메모 도구 막대의 옛 제목                               |
 
+![클래스 2,761개에서 150개, 9개로 줄이고 규칙 24개를 지운 단계](./images/unused-css-selectors-funnel.svg '단계마다 남은 수')
+
 ## 지우기
 
 CSS 파서(postcss)로 이 클래스만 쓰는 규칙 24개를 지우고, 다른 선택자와 함께 묶인 곳(`.minimized-container i, .dock-item i`)은 그 선택자만 뺐다. `minimized-container`만 쓰던 배경 그림(`imgs/minimize.JPG`, 58KB)도 지웠다.

@@ -11,6 +11,8 @@ Finder에서 그림을 오른쪽 클릭해 '데스크탑 사진 설정'을 누�
 
 문제는 앱을 열 때 도는 확인이었다. 관리자가 올린 배경화면(`custom:서버 id`)은 서버에서 지워졌을 수 있어서, 고른 것이 `custom:`으로 시작하면 서버 목록을 받아 맞춰 보고 없으면 기본값으로 돌린다. Finder에서 고른 배경화면도 `custom:`으로 시작하니 같은 확인을 탔고, 서버 목록에는 당연히 없으니 매번 기본값으로 돌아갔다.
 
+![배경화면 id 확인 순서](./images/finder-wallpaper-persist-check.svg 'custom:finder-를 먼저 걸러 서버 목록과 맞춰 보지 않는다')
+
 Finder에서 고른 것은 `custom:finder-`로 시작한다는 것을 이름으로 두고(`FINDER_WALLPAPER_PREFIX`), 서버 목록과 맞춰 보지 않게 했다. 시험도 두 가지를 적었다. Finder에서 고른 것은 빈 서버 목록을 받아도 그대로이고, 서버에서 지워진 배경화면은 여전히 기본값으로 돌아간다.
 
 ## MP4도 바탕화면으로
@@ -20,6 +22,8 @@ Finder에서 고른 것은 `custom:finder-`로 시작한다는 것을 이름으�
 ## QuickTime Player의 열기 창
 
 파일 없이 QuickTime Player를 열면 동영상·소리 파일을 한 줄씩 늘어놓은 목록이 떴다. macOS에서는 미리보기와 같은 열기 창이 뜨고, 열 수 없는 파일은 흐리게 보인다.
+
+![QuickTime Player의 열기 창](./images/finder-wallpaper-persist-quicktime.jpg '파일 없이 연 QuickTime Player. 미리보기와 같은 열기 창이고 맨 위 자리가 QuickTime Player 폴더다 (API 없는 미리보기 서버라 파일이 없다)')
 
 미리보기의 열기 창(`OpenPanel`)에 어느 앱이 띄웠는지(이름·아이콘·열 수 있는 파일)를 받게 해서 QuickTime도 같은 창을 쓴다. 맨 위 자리는 'QuickTime Player' 폴더로, 올린 파일 중 동영상·소리만 모아 보여 준다. 다른 폴더에 들어가면 PDF·그림은 흐리게 보이고 고를 수 없다. 동영상은 Finder처럼 0.5초 뒤 장면을 그림으로 보여 준다.
 

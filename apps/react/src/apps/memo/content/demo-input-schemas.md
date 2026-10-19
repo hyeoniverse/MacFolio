@@ -37,6 +37,8 @@ export const SpeechInput = body({
 
 서버의 검사 함수는 한 줄이 되었다. `parseSpeechRequest(body)`는 `demoInput(parse(SpeechInput, body))`이고, `demoInput`은 첫 이유를 `DemoInputError`로 던진다. 음성만 쓰던 `SpeechInputError`는 없앴다.
 
+![데모 입력 스키마를 서버와 화면이 함께 쓰는 구조](./images/demo-input-schemas-shared.svg '규칙은 contracts 한 곳, 서버는 검사에, 화면은 상한과 이름에 쓴다')
+
 ## 옮기며 맞춘 두 가지
 
 - **칸이 없을 때**: zod는 `transform`이 붙은 칸이 몸통에 없으면 "값이 없다"는 영어 문구를 낸다. 옛 코드는 칸이 없으면 빈 글로 보고 "번역할 글을 써 주세요."를 알렸다. 칸을 `optional()`로 받은 뒤 `transform`에서 빈 글로 바꿔 옛 문구를 지켰다.

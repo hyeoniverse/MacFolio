@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>Mail과 MailMobile의 순환은 mail/model.ts로, registry와 Finder의 순환은 manifest.ts로 풀었다. 파일 이름 규칙 Api.ts model.ts use*.ts PascalCase.tsx</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="780" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">2단계: 순환 둘을 끊고, 파일 이름이 역할을 말하게</text>
+<rect x="32" y="62" width="130" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="97.0" y="85.75" font-size="11.5" font-weight="600" fill="#9f1239" text-anchor="middle">Mail.tsx</text>
+<rect x="242" y="62" width="130" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="307.0" y="85.75" font-size="11.5" font-weight="600" fill="#9f1239" text-anchor="middle">MailMobile.tsx</text>
+<path d="M162 76 H240" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<path d="M242 90 H164" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<rect x="137" y="140" width="130" height="40" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="202.0" y="163.75" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="middle">mail/model.ts</text>
+<path d="M97 102 V160 H135" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<path d="M307 102 V160 H269" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<rect x="400" y="62" width="130" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="465.0" y="85.75" font-size="11.5" font-weight="600" fill="#9f1239" text-anchor="middle">registry.ts</text>
+<rect x="610" y="62" width="130" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="675.0" y="85.75" font-size="11.5" font-weight="600" fill="#9f1239" text-anchor="middle">Finder</text>
+<path d="M530 76 H608" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<path d="M610 90 H532" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<rect x="505" y="140" width="130" height="40" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="570.0" y="163.75" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="middle">manifest.ts</text>
+<path d="M465 102 V160 H503" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<path d="M675 102 V160 H637" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<text x="400" y="196" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="start">WINDOW_APP_NAMES</text>
+<text x="32" y="226" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">파일 이름 규칙 (셋 이상이면 components/로 묶는다)</text>
+<rect x="32" y="238" width="170" height="48" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="117.0" y="258.75" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">*Api.ts</text>
+<text x="117.0" y="276.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">서버 호출</text>
+<rect x="216" y="238" width="170" height="48" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="301.0" y="258.75" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">model.ts</text>
+<text x="301.0" y="276.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">순수 계산</text>
+<rect x="400" y="238" width="170" height="48" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="485.0" y="258.75" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">use*.ts</text>
+<text x="485.0" y="276.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">훅</text>
+<rect x="584" y="238" width="170" height="48" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="669.0" y="258.75" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">PascalCase.tsx</text>
+<text x="669.0" y="276.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">화면 조각</text>
+<text x="32" y="308" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="start">pnpm cycles(madge)가 check에 들어가, 순환이 다시 생기면 CI가 실패한다.</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>Worker가 index.html을 줄 때 GET /site를 받아 script type=application/json으로 넣고 CSP frame-src에 데모 주소를 더한다. main.tsx는 그 콘텐츠를 PROJECTS에 합친 뒤 boot.tsx를 불러와 앱 목록을 계산한다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="800" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">앱 목록이 정해지기 전에 합친다</text>
+<rect x="32" y="70" width="160" height="120" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="112.0" y="102.8" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">Cloudflare Worker</text>
+<text x="112.0" y="118.3" font-size="10.5" fill="#374151" text-anchor="middle">GET /site (1분 재사용,</text>
+<text x="112.0" y="133.8" font-size="10.5" fill="#374151" text-anchor="middle">1.5초면 포기)</text>
+<text x="112.0" y="149.3" font-size="10.5" fill="#374151" text-anchor="middle">HTML에 JSON 넣기</text>
+<text x="112.0" y="164.8" font-size="10.5" fill="#374151" text-anchor="middle">CSP frame-src 다시 만듦</text>
+<path d="M194 130 H220" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<rect x="222" y="70" width="160" height="120" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="302.0" y="110.5" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">main.tsx</text>
+<text x="302.0" y="126.0" font-size="10.5" fill="#374151" text-anchor="middle">#site-content 읽기</text>
+<text x="302.0" y="141.5" font-size="10.5" fill="#374151" text-anchor="middle">없으면 API 2.5초까지</text>
+<text x="302.0" y="157.0" font-size="10.5" fill="#374151" text-anchor="middle">PROJECTS.splice로 채움</text>
+<path d="M384 130 H410" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<rect x="412" y="70" width="160" height="120" rx="8" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="492.0" y="110.5" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">import(&#x27;./boot&#x27;)</text>
+<text x="492.0" y="126.0" font-size="10.5" fill="#374151" text-anchor="middle">apps/manifest.ts</text>
+<text x="492.0" y="141.5" font-size="10.5" fill="#374151" text-anchor="middle">PROJECT_APPS · APP_NAMES</text>
+<text x="492.0" y="157.0" font-size="10.5" fill="#374151" text-anchor="middle">이때 한 번 계산</text>
+<path d="M574 130 H600" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<rect x="602" y="70" width="160" height="120" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="682.0" y="110.5" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">화면</text>
+<text x="682.0" y="126.0" font-size="10.5" fill="#374151" text-anchor="middle">Dock · Launchpad</text>
+<text x="682.0" y="141.5" font-size="10.5" fill="#374151" text-anchor="middle">Safari · Finder</text>
+<text x="682.0" y="157.0" font-size="10.5" fill="#374151" text-anchor="middle">터미널 · 사진 앨범</text>
+<text x="32" y="222" font-size="10.5" fill="#6b7280">로컬·E2E에는 Worker가 없으므로 API에 직접 묻고, 그래도 안 되면 코드의 기본값으로 연다. 저장한 내용은 새로고침하면 적용된다.</text>
+</svg>

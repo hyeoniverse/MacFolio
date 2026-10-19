@@ -24,6 +24,8 @@ interface ProjectEntry {
 - 코드에 없는 id는 새 프로젝트다. 빈 바탕에 덮어쓸 값을 채운다.
 - 저장할 때는 기본값과 **다른 필드만** 남긴다(`overrideOf`). 이름 하나만 바꾸면 `{ id: 'macfolio', override: { name: '…' } }` 한 줄이다.
 
+![코드의 프로젝트 목록과 서버의 덮어쓸 값을 합쳐 보이는 목록을 만드는 예](./images/site-projects-editing-merge.svg '서버 목록 순서대로, 숨긴 것은 빼고, 새 id는 새 프로젝트로')
+
 ## 검사: 링크는 https만
 
 이 값은 링크(`<a href>`)와 iframe 주소, 그림 주소가 된다. 서버와 화면이 함께 쓰는 `parseProjects()`(desktop-core)가 작은 스키마로 모든 필드를 검사한다.
@@ -81,6 +83,8 @@ void loadSiteContent().finally(() => import('./boot'));
 ```
 frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.app … https://stub-demo.example.com …
 ```
+
+![Worker가 HTML에 콘텐츠를 넣고, main.tsx가 PROJECTS를 채운 뒤 boot를 불러 앱 목록을 계산한다](./images/site-projects-editing-boot.svg '앱 목록을 계산하기 전에 서버의 내용을 합치는 순서')
 
 ## 어디에나 맞는 페이지 모양
 

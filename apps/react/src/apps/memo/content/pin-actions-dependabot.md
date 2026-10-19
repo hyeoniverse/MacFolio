@@ -11,6 +11,8 @@ summary: 워크플로의 `actions/checkout@v7` 같은 태그는 언제든 다른
 
 워크플로에 `uses: actions/checkout@v7`이라고 적으면 GitHub은 실행할 때마다 `v7` **태그**가 가리키는 커밋을 받아 돈다. 태그는 가지(branch)처럼 옮길 수 있다. 액션 저장소가 새 버전을 내면 `v7`을 그쪽으로 옮기고, 누군가 그 저장소의 쓰기 권한을 얻으면 아무 커밋으로나 옮길 수 있다. 2025년 3월 `tj-actions/changed-files`가 그렇게 바뀌어, 그 액션을 쓰는 수천 저장소의 CI가 비밀 값을 로그에 찍었다. 이 저장소의 CI에는 Cloudflare 토큰과 서버 배포 키가 있다.
 
+![태그와 커밋 SHA로 액션을 적었을 때의 차이](./images/pin-actions-dependabot-sha.svg '태그는 옮길 수 있지만 커밋 해시는 늘 같은 코드를 가리킨다')
+
 ## 용어
 
 - **커밋 SHA 고정**: `uses: actions/checkout@3d3c42e5…`처럼 40자리 커밋 해시로 적는 것. 해시는 내용에서 나오므로 같은 해시는 늘 같은 코드다. 뒤에 `# v7.0.1`을 주석으로 적어 사람이 읽게 한다

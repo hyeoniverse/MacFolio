@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 290" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>서버 요청 코드 346줄에서 179줄, 저장소 코드 134줄에서 53줄로 줄었다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="720" height="290" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">3단계: 기반 코드 줄 수 (전 → 후)</text>
+<text x="32" y="70" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">서버 요청 (client.ts)</text>
+<text x="690" y="70" font-size="10" font-weight="400" fill="#6b7280" text-anchor="end">fetch 12파일 → api() 사용처 19곳</text>
+<rect x="32" y="80" width="588.1999999999999" height="22" rx="4" fill="#d1d5db"/>
+<text x="626.1999999999999" y="96" font-size="10.5" font-weight="600" fill="#374151" text-anchor="start">346줄 전</text>
+<rect x="32" y="108" width="304.3" height="22" rx="4" fill="#4f46e5"/>
+<text x="342.3" y="124" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="start">179줄 후</text>
+<text x="32" y="166" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">저장소 (storage)</text>
+<text x="690" y="166" font-size="10" font-weight="400" fill="#6b7280" text-anchor="end">localStorage 11파일 → 사용처 7곳</text>
+<rect x="32" y="176" width="227.79999999999998" height="22" rx="4" fill="#d1d5db"/>
+<text x="265.79999999999995" y="192" font-size="10.5" font-weight="600" fill="#374151" text-anchor="start">134줄 전</text>
+<rect x="32" y="204" width="90.1" height="22" rx="4" fill="#4f46e5"/>
+<text x="128.1" y="220" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="start">53줄 후</text>
+<text x="32" y="262" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">matchMedia·innerWidth 직접 사용 25곳 (네 가지 표기, 모바일 기준 둘) → media.ts · getViewport()</text>
+</svg>

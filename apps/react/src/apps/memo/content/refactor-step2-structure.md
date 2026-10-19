@@ -25,6 +25,8 @@ summary: 리팩터링 계획 2단계를 돌아본다. 앱 안의 파일은 폴�
 
 순환은 둘이었다. 메일의 공통 타입·함수는 셋째 파일 `mail/model.ts`로, registry↔Finder는 `manifest.ts`의 `WINDOW_APP_NAMES`로 풀었다. 루트의 `pnpm cycles`(madge, react·api·desktop-core)가 `check`에 들어가 다시 생기면 CI가 실패한다.
 
+![두 순환 의존을 셋째 파일로 푼 모양과 파일 이름 규칙 네 가지](./images/refactor-step2-structure-cycles.svg '서로 import하던 짝은 공통 부분을 셋째 파일로 꺼내 한 방향으로 만들었다')
+
 파일 규칙은 폴더 대신 이름으로 정했다. 서버 호출은 `*Api.ts`, 순수 계산은 `model.ts`, 훅은 `use*.ts`, 화면 조각은 `PascalCase.tsx`이고, 셋 이상이면 `components/`로 묶는다. 어긋난 파일 아홉 개의 이름을 맞췄다.
 
 ## 전후

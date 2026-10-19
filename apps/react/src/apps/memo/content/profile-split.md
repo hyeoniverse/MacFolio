@@ -20,7 +20,7 @@ summary: shared/profile.ts에 프로필·기술·타입 일곱 개·프로젝트
 
 HYEONIVERSE 하나가 665줄이다. 프로젝트 페이지의 장(chapter), 갤러리, 크레딧, 타임라인이 다 여기 들어 있어서다. SproutFarm의 조작법 한 줄을 고치려면 1,629줄짜리 파일을 열고 1,421번째 줄로 가야 했다.
 
-![전: profile.ts 한 파일에 PROFILE·SKILLS·타입·PROJECTS 1,420줄. 후: profile/ 폴더에 profile.ts·skills.ts·types.ts와 projects/ 아래 프로젝트마다 한 파일, index.ts가 다시 내보낸다](images/profile-split-tree.svg)
+![전: profile.ts 한 파일에 PROFILE·SKILLS·타입·PROJECTS 1,420줄. 후: profile/ 폴더에 profile.ts·skills.ts·types.ts와 projects/ 아래 프로젝트마다 한 파일, index.ts가 다시 내보낸다](./images/profile-split-tree.svg '프로젝트 하나 고치려면 그 프로젝트 파일 하나만 연다')
 
 ## 어떻게 나눴나
 

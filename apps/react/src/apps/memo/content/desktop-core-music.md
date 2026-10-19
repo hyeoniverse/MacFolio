@@ -54,6 +54,8 @@ interface PlayerState {
 
 `previous`가 지금 재생 시간을 인자로 받는 것도 같은 이유다. store는 audio를 모르니, 몇 초를 들었는지는 React가 `audio.currentTime`에서 읽어 넘긴다.
 
+![플레이어 store의 결과와 React의 처리](./images/desktop-core-music-flow.svg 'store가 돌려준 결과를 보고 React가 audio를 다룬다')
+
 React 쪽은 이렇게 바뀌었다.
 
 ```ts

@@ -28,6 +28,8 @@ z-index에 이름을 붙인 다음 차례는 모서리 둥글기(`border-radius`
 
 원(50%)을 뺀 위의 여섯 값만으로 239곳, 전체의 40%가 넘는다.
 
+![border-radius 값별 사용 횟수 막대 그래프](./images/radius-tokens-counts.svg '색칠한 여섯 값에 이름을 붙였다. 원은 이미 뜻이 분명해 그대로 두었다')
+
 ## 이름 붙이기
 
 `styles/theme.css`에 여섯 이름을 두었다.

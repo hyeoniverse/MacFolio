@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>2024년 10월 14일 창 상태</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">Container가 창 하나를 다루는 방법</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">2024년 10월 14일 06:42 커밋 기준</text>
+<rect x="32" y="86" width="220" height="200" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="44" y="107" font-size="12.5" font-weight="700" fill="#1d4f91">AppContext (앱마다)</text>
+<text x="44" y="126" font-size="11" fill="#1d4f91">isRunning</text>
+<text x="44" y="142" font-size="11" fill="#1d4f91">isMinimized</text>
+<text x="44" y="158" font-size="11" fill="#1d4f91">zIndex</text>
+<text x="44" y="174" font-size="11" fill="#1d4f91"></text>
+<text x="44" y="190" font-size="11" fill="#1d4f91">→ 창이 보이는지와</text>
+<text x="44" y="206" font-size="11" fill="#1d4f91">   앱이 켜졌는지가 한 값</text>
+<rect x="270" y="86" width="220" height="200" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="282" y="107" font-size="12.5" font-weight="700" fill="#7a5a12">Container (창마다)</text>
+<text x="282" y="126" font-size="11" fill="#7a5a12">position: localStorage</text>
+<text x="282" y="142" font-size="11" fill="#7a5a12">  containerPosition_&lt;앱&gt;</text>
+<text x="282" y="158" font-size="11" fill="#7a5a12">isMinimizing: 0.5초 동안</text>
+<text x="282" y="174" font-size="11" fill="#7a5a12">  translate + scale(0)</text>
+<text x="282" y="190" font-size="11" fill="#7a5a12">최대화: 크기를 화면에</text>
+<rect x="508" y="86" width="220" height="200" rx="9" fill="#e3f6ea" stroke="#5cc489"/>
+<text x="520" y="107" font-size="12.5" font-weight="700" fill="#1f6b3f">MusicContext</text>
+<text x="520" y="126" font-size="11" fill="#1f6b3f">audio 하나, 곡 2개</text>
+<text x="520" y="142" font-size="11" fill="#1f6b3f">isPlaying, currentTime</text>
+<text x="520" y="158" font-size="11" fill="#1f6b3f">volume 0~1 (새로)</text>
+<text x="520" y="174" font-size="11" fill="#1f6b3f">상태 막대 VolumeModal에서</text>
+<text x="520" y="190" font-size="11" fill="#1f6b3f">  볼륨 조절</text>
+<path d="M252 186 L270 186" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<path d="M490 186 L508 186" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+</svg>

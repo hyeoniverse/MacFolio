@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>2024년 8월 27일 첫 커밋의 구조</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">첫 커밋: 파일 세 개와 그림·글꼴·음악</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">빌드 도구 없이 브라우저가 바로 여는 정적 페이지</text>
+<rect x="32" y="86" width="220" height="100" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="44" y="107" font-size="12.5" font-weight="700" fill="#1d4f91">main.html (177줄)</text>
+<text x="44" y="126" font-size="11" fill="#1d4f91">상태 막대, Dock 13칸</text>
+<text x="44" y="142" font-size="11" fill="#1d4f91">Safari 창 하나</text>
+<text x="44" y="158" font-size="11" fill="#1d4f91">프로젝트 카드 3개</text>
+<rect x="270" y="86" width="220" height="100" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="282" y="107" font-size="12.5" font-weight="700" fill="#7a5a12">script.js (455줄)</text>
+<text x="282" y="126" font-size="11" fill="#7a5a12">창 닫기·최소화·전체 화면·끌기</text>
+<text x="282" y="142" font-size="11" fill="#7a5a12">시계, 첫 클릭에 배경 음악</text>
+<text x="282" y="158" font-size="11" fill="#7a5a12">jQuery 음악 플레이어</text>
+<rect x="508" y="86" width="220" height="100" rx="9" fill="#e3f6ea" stroke="#5cc489"/>
+<text x="520" y="107" font-size="12.5" font-weight="700" fill="#1f6b3f">style.css (400줄)</text>
+<text x="520" y="126" font-size="11" fill="#1f6b3f">데스크톱·Dock·창 모양</text>
+<text x="520" y="142" font-size="11" fill="#1f6b3f">CDN: jQuery 3.6, Font Awesome 6</text>
+<rect x="32" y="206" width="220" height="96" rx="9" fill="#f1f2f4" stroke="#b4b9c2"/>
+<text x="44" y="227" font-size="12.5" font-weight="700" fill="#3f4652">fonts/ 9개, 33.0MB</text>
+<text x="44" y="246" font-size="11" fill="#3f4652">Apple SD Gothic Neo</text>
+<text x="44" y="262" font-size="11" fill="#3f4652">굵기마다 한 파일</text>
+<rect x="270" y="206" width="220" height="96" rx="9" fill="#f1f2f4" stroke="#b4b9c2"/>
+<text x="282" y="227" font-size="12.5" font-weight="700" fill="#3f4652">img/ 24개, 13.8MB</text>
+<text x="282" y="246" font-size="11" fill="#3f4652">앱 아이콘, 앨범 표지</text>
+<text x="282" y="262" font-size="11" fill="#3f4652">배경 그림 한 장이 12.5MB</text>
+<rect x="508" y="206" width="220" height="96" rx="9" fill="#f1f2f4" stroke="#b4b9c2"/>
+<text x="520" y="227" font-size="12.5" font-weight="700" fill="#3f4652">mp3/ 3곡, 14.6MB</text>
+<text x="520" y="246" font-size="11" fill="#3f4652">배경 음악</text>
+<text x="520" y="262" font-size="11" fill="#3f4652">저장소에 그대로</text>
+</svg>

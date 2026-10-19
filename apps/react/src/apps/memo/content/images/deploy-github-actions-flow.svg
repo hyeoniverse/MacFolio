@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="340" fill="#fff"/>
+  <text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">시험과 배포를 한 줄로 묶었다</text>
+<text x="190" y="58" font-size="13" fill="#e11d48" text-anchor="middle" font-weight="600">전</text>
+<text x="570" y="58" font-size="13" fill="#4f46e5" text-anchor="middle" font-weight="600">후</text>
+<rect x="30" y="75" width="140" height="48" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="100.0" y="95.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">GitHub Actions</text>
+<text x="100.0" y="111.0" font-size="10.5" fill="#4b5563" text-anchor="middle">check</text>
+<rect x="210" y="75" width="140" height="48" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="280.0" y="95.0" font-size="11" fill="#e11d48" text-anchor="middle" font-weight="600">Cloudflare</text>
+<text x="280.0" y="111.0" font-size="10.5" fill="#4b5563" text-anchor="middle">Workers Builds</text>
+<text x="190" y="148" font-size="10.5" fill="#6b7280" text-anchor="middle">push</text>
+<line x1="120" y1="140" x2="100" y2="125" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="260" y1="140" x2="280" y2="125" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="210" y="170" width="140" height="48" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="280.0" y="198.0" font-size="11" fill="#e11d48" text-anchor="middle" font-weight="600">배포</text>
+<line x1="280" y1="123" x2="280" y2="168" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="190" y="250" font-size="11" fill="#e11d48" text-anchor="middle">check 결과와 상관없이 따로 빌드·배포</text>
+<text x="190" y="268" font-size="11" fill="#6b7280" text-anchor="middle">로그는 Cloudflare 대시보드에만</text>
+<line x1="380" y1="45" x2="380" y2="290" stroke="#e5e7eb"/>
+<rect x="500" y="75" width="140" height="48" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="570.0" y="95.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">check</text>
+<text x="570.0" y="111.0" font-size="10.5" fill="#4b5563" text-anchor="middle">빌드 · 린트 · E2E</text>
+<rect x="410" y="170" width="150" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="485.0" y="186.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">deploy (main)</text>
+<text x="485.0" y="202.0" font-size="10.5" fill="#4b5563" text-anchor="middle">needs: check</text>
+<text x="485.0" y="218.0" font-size="10.5" fill="#4b5563" text-anchor="middle">wrangler deploy</text>
+<rect x="590" y="170" width="150" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="665.0" y="186.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">preview (PR)</text>
+<text x="665.0" y="202.0" font-size="10.5" fill="#4b5563" text-anchor="middle">versions upload</text>
+<text x="665.0" y="218.0" font-size="10.5" fill="#4b5563" text-anchor="middle">--preview-alias 브랜치</text>
+<line x1="540" y1="123" x2="490" y2="168" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="600" y1="123" x2="660" y2="168" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="570" y="250" font-size="11" fill="#4f46e5" text-anchor="middle">시험을 통과한 main 커밋만 사이트에 올라간다</text>
+<text x="570" y="268" font-size="11" fill="#6b7280" text-anchor="middle">PR 댓글 하나에 미리보기 주소, 새 커밋마다 고침</text>
+<text x="380" y="320" font-size="11" fill="#6b7280" text-anchor="middle">빌드도 한 번만 하고, 실패 이유가 GitHub에 남는다</text>
+</svg>

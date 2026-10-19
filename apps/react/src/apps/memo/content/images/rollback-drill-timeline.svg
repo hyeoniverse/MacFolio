@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 260" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>09시 03분 22초 훈련용 컨테이너가 뜨고 120초를 기다린 뒤 09시 04분 53초 되돌리기 시작, 09시 05분 34초 sha-7e7eac0가 다시 떴다. 되돌리는 데 41초</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="800" height="260" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">2026-10-18 되돌리기 훈련: sha-dead000 배포에서 복구까지</text>
+<line x1="60.0" y1="130" x2="705.0" y2="130" stroke="#d1d5db" stroke-width="4" stroke-linecap="round"/>
+<rect x="154.6" y="118" width="391.29999999999995" height="24" rx="4" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="350.25" y="134" font-size="10" font-weight="500" fill="#92400e" text-anchor="middle">healthy를 120초 기다림 (앱은 응답, 헬스 체크만 false)</text>
+<rect x="545.9" y="118" width="176.29999999999995" height="24" rx="4" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="634.05" y="134" font-size="10" font-weight="600" fill="#065f46" text-anchor="middle">되돌림 41초</text>
+<circle cx="154.6" cy="130" r="6" fill="#d97706"/>
+<text x="154.6" y="100" font-size="11.5" font-weight="700" fill="#d97706" text-anchor="middle">09:03:22</text>
+<text x="154.6" y="172" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">훈련용 Nest 시작</text>
+<circle cx="545.9" cy="130" r="6" fill="#4f46e5"/>
+<text x="545.9" y="100" font-size="11.5" font-weight="700" fill="#4f46e5" text-anchor="middle">09:04:53</text>
+<text x="545.9" y="172" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">이전 버전으로 되돌린다</text>
+<circle cx="722.1999999999999" cy="130" r="6" fill="#059669"/>
+<text x="730.1999999999999" y="100" font-size="11.5" font-weight="700" fill="#059669" text-anchor="end">09:05:34</text>
+<text x="730.1999999999999" y="172" font-size="10" font-weight="400" fill="#374151" text-anchor="end">sha-7e7eac0 다시 healthy</text>
+<text x="32" y="214" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">Actions "API 배포 #2": 3분 만에 빨간 X, 메일. .env API_TAG · 컨테이너 이미지 · 바깥 /health version 모두 sha-7e7eac0.</text>
+<text x="32" y="236" font-size="10.5" font-weight="400" fill="#6b7280" text-anchor="start">훈련용 이미지는 층 하나(HEALTHCHECK CMD false)라 4초 만에 만들었고, 끝나고 지웠다.</text>
+</svg>

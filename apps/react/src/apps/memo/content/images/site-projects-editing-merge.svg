@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>코드의 프로젝트를 기본값으로 두고 서버에는 바꾼 필드만 둔다. 서버 목록 순서대로 합치고, 서버에 없는 코드의 프로젝트는 끝에, 코드에 없는 id는 새 프로젝트</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="800" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">코드의 기본값 + 서버의 덮어쓸 값 = 보이는 목록</text>
+<text x="32" y="66" font-size="12" fill="#1f2937" font-weight="700">코드 (PROJECTS)</text>
+<rect x="32" y="76" width="160" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="112.0" y="92.8" font-size="10.5" fill="#374151" text-anchor="middle">macfolio</text>
+<rect x="32" y="110" width="160" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="112.0" y="126.8" font-size="10.5" fill="#374151" text-anchor="middle">newpick</text>
+<rect x="32" y="144" width="160" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="112.0" y="160.8" font-size="10.5" fill="#374151" text-anchor="middle">hyeoniverse</text>
+<rect x="32" y="178" width="160" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="112.0" y="194.8" font-size="10.5" fill="#374151" text-anchor="middle">sproutfarm</text>
+<text x="250" y="66" font-size="12" fill="#1f2937" font-weight="700">서버 (ProjectEntry[])</text>
+<rect x="250" y="76" width="270" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="385.0" y="92.8" font-size="10.5" fill="#374151" text-anchor="middle">{ id: &#x27;newpick&#x27; }</text>
+<rect x="250" y="110" width="270" height="26" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="385.0" y="126.8" font-size="10.5" fill="#374151" text-anchor="middle">{ id: &#x27;macfolio&#x27;, override: { name } }</text>
+<rect x="250" y="144" width="270" height="26" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="385.0" y="160.8" font-size="10.5" fill="#374151" text-anchor="middle">{ id: &#x27;hyeoniverse&#x27;, hidden: true }</text>
+<rect x="250" y="178" width="270" height="26" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="385.0" y="194.8" font-size="10.5" fill="#374151" text-anchor="middle">{ id: &#x27;mypick&#x27;, override: {…} }</text>
+<text x="586" y="66" font-size="12" fill="#1f2937" font-weight="700">보이는 목록</text>
+<rect x="586" y="76" width="190" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="681.0" y="92.8" font-size="10.5" fill="#374151" text-anchor="middle">newpick</text>
+<rect x="586" y="110" width="190" height="26" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="681.0" y="126.8" font-size="10.5" fill="#374151" text-anchor="middle">macfolio (이름만 바뀜)</text>
+<rect x="586" y="144" width="190" height="26" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="681.0" y="160.8" font-size="10.5" fill="#374151" text-anchor="middle">mypick (새 프로젝트)</text>
+<rect x="586" y="178" width="190" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="681.0" y="194.8" font-size="10.5" fill="#374151" text-anchor="middle">sproutfarm (끝에 붙음)</text>
+<path d="M522 160 H584" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<text x="250" y="230" font-size="10.5" fill="#6b7280">hyeoniverse는 숨김이라 빠진다. 저장할 때는 기본값과 다른 필드만 남긴다 (overrideOf).</text>
+<text x="250" y="248" font-size="10.5" fill="#6b7280">이름 하나만 바꾸면 { id: &quot;macfolio&quot;, override: { name: &quot;…&quot; } } 한 줄이다.</text>
+<text x="32" y="278" font-size="10.5" fill="#6b7280">override의 null은 고를 수 있는 필드를 지운다 (예: 프로젝트 앱을 끈다).</text>
+</svg>

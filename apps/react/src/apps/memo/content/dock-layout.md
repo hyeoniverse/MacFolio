@@ -24,6 +24,8 @@ Dock은 이렇게 생겨 있었다.
 
 macOS Dock처럼 **한 줄로 내용만큼 넓어지고 가운데 놓이게** 했다. 앱 → Launchpad → 구분선 → 휴지통이 모두 같은 flex 줄에 있다. 절대 위치가 없으니 앞의 칸이 늘어나면 뒤의 칸은 밀려날 뿐 겹치지 않는다.
 
+![Dock 구조 전후](./images/dock-layout-before-after.svg '전: 절대 위치의 Launchpad 밑으로 실행 중인 앱이 파고듦 / 후: 한 줄의 flex')
+
 남은 문제는 화면 폭을 넘지 않게 하는 것이다. 몇 칸이 들어가는지는 `dockLayout.ts` 한 곳에서 센다.
 
 ```ts
@@ -50,6 +52,8 @@ while (shown > 0 && shown + runningOf(shown).length > capacity) shown -= 1;
 ```
 
 900px 화면에서는 앱 8칸이 있다. Launchpad에서 터미널을 열면 터미널이 Dock 끝에 나타나고, 그 칸만큼 메일이 Launchpad로 간다. 칸 수는 8 그대로다.
+
+![화면 폭에 따른 Dock](./images/dock-layout-widths.jpg '1440px와 900px의 Dock. 좁은 화면에서는 들어가는 칸만큼만 Dock에 둔다')
 
 단위 테스트는 여러 화면 폭에서 "앱 칸 + Launchpad·휴지통 + 구분선이 화면 여백 안에 들어가고, 한 칸 더 넣으면 넘친다"를 확인한다. 화면 테스트는 Dock의 칸들이 화면 안에 있고 서로 겹치지 않는지를, Launchpad에서 앱을 연 뒤에도 다시 확인한다.
 

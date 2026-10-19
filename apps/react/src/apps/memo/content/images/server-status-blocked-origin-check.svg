@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>fetch /health가 실패하면 no-cors로 한 번 더 보낸다. no-cors가 성공하면 서버는 켜져 있지만 이 주소를 허용하지 않는 것이고, 둘 다 실패하면 서버에 연결할 수 없다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="760" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">막힌 것과 꺼진 것을 가리는 두 번째 요청</text>
+<rect x="32" y="70" width="180" height="50" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="122.0" y="92.0" font-size="12" font-weight="600" fill="#4f46e5" text-anchor="middle">fetch(/health)</text>
+<text x="122.0" y="110.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">CORS 요청</text>
+<rect x="32" y="170" width="180" height="50" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="122.0" y="191.75" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="middle">정상 · 느림 · DB 오류</text>
+<text x="122.0" y="209.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">응답을 읽어 막대로</text>
+<path d="M122 120 V168" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<text x="132" y="148" font-size="9.5" font-weight="400" fill="#059669" text-anchor="start">응답을 읽음</text>
+<rect x="282" y="70" width="200" height="50" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="382.0" y="92.0" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">fetch(/health, no-cors)</text>
+<text x="382.0" y="109.25" font-size="9" font-weight="400" fill="#374151" text-anchor="middle">응답은 못 읽지만 CORS 검사 없음</text>
+<path d="M212 95 H280" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<text x="246" y="86" font-size="9.5" font-weight="400" fill="#e11d48" text-anchor="middle">TypeError</text>
+<rect x="540" y="40" width="190" height="58" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="635.0" y="58.75" font-size="11.5" font-weight="600" fill="#92400e" text-anchor="middle">이 주소에서는 쓸 수 없음</text>
+<text x="635.0" y="76.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">서버는 켜져 있음</text>
+<text x="635.0" y="90.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">막대 비움, 사선 없음</text>
+<rect x="540" y="120" width="190" height="58" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="635.0" y="145.75" font-size="11.5" font-weight="600" fill="#9f1239" text-anchor="middle">서버에 연결할 수 없음</text>
+<text x="635.0" y="163.5" font-size="9.5" font-weight="400" fill="#7f1d1d" text-anchor="middle">막대 없음 + 사선</text>
+<path d="M482 88 L538 70" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#warn)"/>
+<text x="510" y="64" font-size="9.5" font-weight="400" fill="#d97706" text-anchor="middle">성공</text>
+<path d="M482 104 L538 146" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<text x="506" y="140" font-size="9.5" font-weight="400" fill="#e11d48" text-anchor="middle">실패</text>
+<text x="282" y="214" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="start">서버 쪽: CORS_ORIGINS에 *를 허용</text>
+<text x="282" y="236" font-size="10.5" font-weight="400" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">https://*-macfolio.hyeoniverse.workers.dev</text>
+<text x="282" y="258" font-size="10" font-weight="400" fill="#374151" text-anchor="start">* = 점 없는 이름 한 칸 [a-z0-9-]+, 처음부터 끝까지 맞아야 한다</text>
+<text x="282" y="278" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">x.evil-macfolio…, …dev/경로, http://, 이름 없는 주소는 막는다</text>
+</svg>

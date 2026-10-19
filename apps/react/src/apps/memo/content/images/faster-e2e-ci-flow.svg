@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="380" fill="#fff"/>
+  <text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">같은 트리는 e2e를 다시 돌리지 않는다</text>
+<rect x="20" y="55" width="200" height="56" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="120.0" y="79.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">PR CI (머지 미리보기)</text>
+<text x="120.0" y="95.0" font-size="10.5" fill="#4b5563" text-anchor="middle">e2e --shard 1/6 … 6/6</text>
+<rect x="250" y="55" width="74" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="287.0" y="79.0" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">칸 1</text>
+<text x="287.0" y="94.5" font-size="10.0" fill="#4b5563" text-anchor="middle">통과</text>
+<rect x="332" y="55" width="74" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="369.0" y="79.0" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">칸 2</text>
+<text x="369.0" y="94.5" font-size="10.0" fill="#4b5563" text-anchor="middle">통과</text>
+<rect x="414" y="55" width="74" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="451.0" y="79.0" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">칸 3</text>
+<text x="451.0" y="94.5" font-size="10.0" fill="#4b5563" text-anchor="middle">통과</text>
+<rect x="496" y="55" width="74" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="533.0" y="79.0" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">칸 4</text>
+<text x="533.0" y="94.5" font-size="10.0" fill="#4b5563" text-anchor="middle">통과</text>
+<rect x="578" y="55" width="74" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="615.0" y="79.0" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">칸 5</text>
+<text x="615.0" y="94.5" font-size="10.0" fill="#4b5563" text-anchor="middle">통과</text>
+<rect x="660" y="55" width="74" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="697.0" y="79.0" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">칸 6</text>
+<text x="697.0" y="94.5" font-size="10.0" fill="#4b5563" text-anchor="middle">통과</text>
+<line x1="220" y1="83" x2="248" y2="83" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="500" y="135" font-size="11" fill="#047857" text-anchor="middle">칸마다 아티팩트 e2e-ok-&lt;트리&gt;-&lt;칸&gt;을 남긴다</text>
+<rect x="20" y="170" width="200" height="56" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="120.0" y="194.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">main에 push</text>
+<text x="120.0" y="210.0" font-size="10.5" fill="#4b5563" text-anchor="middle">HEAD^{tree}</text>
+<rect x="260" y="165" width="220" height="66" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="370.0" y="186.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">e2e-reuse</text>
+<text x="370.0" y="202.0" font-size="10.5" fill="#4b5563" text-anchor="middle">이 트리의 아티팩트</text>
+<text x="370.0" y="218.0" font-size="10.5" fill="#4b5563" text-anchor="middle">6개가 모두 있나?</text>
+<line x1="220" y1="198" x2="258" y2="198" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="500" y1="111" x2="420" y2="163" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)" stroke-dasharray="4 3"/>
+<rect x="530" y="150" width="210" height="50" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="635.0" y="171.0" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">예 → e2e 건너뜀</text>
+<text x="635.0" y="186.5" font-size="10.0" fill="#4b5563" text-anchor="middle">바로 API 이미지 · 사이트 배포</text>
+<rect x="530" y="215" width="210" height="50" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="635.0" y="236.0" font-size="10.5" fill="#b45309" text-anchor="middle" font-weight="600">아니오 → e2e 6칸 다 돌림</text>
+<text x="635.0" y="251.5" font-size="10.0" fill="#4b5563" text-anchor="middle">통과하면 배포</text>
+<line x1="480" y1="188" x2="528" y2="175" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="480" y1="210" x2="528" y2="240" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="380" y="300" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">배포 조건: e2e 성공  또는  e2e-reuse가 같은 트리의 통과 기록을 찾음</text>
+<text x="380" y="320" font-size="11" fill="#6b7280" text-anchor="middle">e2e가 &quot;건너뛰어졌다&quot;는 것만으로는 배포하지 않는다</text>
+<text x="380" y="350" font-size="11" fill="#6b7280" text-anchor="middle">트리가 다른 경우: 그사이 다른 PR이 먼저 머지됐거나, PR 없이 main에 push했을 때</text>
+</svg>

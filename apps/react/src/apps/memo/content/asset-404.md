@@ -59,7 +59,9 @@ export const isAppRoute = (pathname: string) => {
 - 앱 주소(마지막 조각에 점이 없음): `index.html`을 200으로
 - `/assets/…`이거나 확장자가 있는 주소: 404
 
-`wrangler dev`로 로컬에서 같은 Worker를 띄워 확인했다.
+![요청 나누기](./images/asset-404-routing.svg '있는 파일은 Cloudflare가 바로, 없는 주소만 Worker가 받는다')
+
+`wrangler dev`로 로컬에서 같은 Worker를 띄워 확인했다(#103).
 
 | 주소                                                                       | 결과            |
 | -------------------------------------------------------------------------- | --------------- |

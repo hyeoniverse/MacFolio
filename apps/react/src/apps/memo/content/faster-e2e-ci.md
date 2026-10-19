@@ -20,7 +20,19 @@ PR의 CI는 PR 브랜치를 그때의 main 위에 합친 코드(머지 미리보
 - 6개가 다 있으면 같은 코드가 이미 모든 칸을 통과한 것이라 e2e를 건너뛰고 바로 API 이미지와 사이트 배포로 간다.
 - 하나라도 없으면(그사이 다른 PR이 먼저 머지되어 코드가 달라졌거나, PR 없이 main에 바로 push했다) 지금처럼 e2e를 다 돌린다.
 
+![e2e 결과를 트리로 다시 쓰는 흐름](./images/faster-e2e-ci-flow.svg 'PR에서 칸마다 남긴 통과 기록을 main의 같은 트리가 찾으면 e2e를 건너뛴다')
+
 배포 작업은 원래 `e2e`가 성공해야 돌았다. 이제는 "e2e가 성공했거나, 건너뛴 이유가 같은 트리의 통과 기록"일 때 돈다. e2e가 건너뛰어진 것만으로는 배포하지 않게, 조건을 `e2e-reuse`의 결과에 묶었다.
+
+```yaml
+api-image:
+  needs: [check, e2e-reuse, e2e, api-changes]
+  if: >-
+    !cancelled() && needs.api-changes.outputs.api == 'true' && needs.check.result == 'success' &&
+    (needs.e2e.result == 'success' || needs.e2e-reuse.outputs.reuse == 'true')
+```
+
+`e2e`가 `e2e-reuse`에 걸려 건너뛰어지면 그 뒤 작업도 기본으로는 건너뛰어진다. 그래서 `!cancelled()`로 늘 평가하게 하고, 실제로 돌지는 위 조건이 정한다.
 
 시험을 빼거나 줄인 것은 없다. 같은 코드를 두 번 시험하지 않을 뿐이다.
 

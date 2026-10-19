@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>2024년 10월 12일 CRA 앱 구조</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">CRA로 옮긴 뒤의 src/</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">2024년 10월 12일 07:29 커밋 기준</text>
+<rect x="32" y="86" width="200" height="70" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="44" y="107" font-size="12.5" font-weight="700" fill="#1d4f91">index.tsx → App.tsx</text>
+<text x="44" y="126" font-size="11" fill="#1d4f91">StatusBar, MusicPlayer, Dock</text>
+<rect x="32" y="176" width="200" height="150" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="44" y="197" font-size="12.5" font-weight="700" fill="#7a5a12">components/common</text>
+<text x="44" y="216" font-size="11" fill="#7a5a12">Dock.tsx (12칸 목록을 직접)</text>
+<text x="44" y="232" font-size="11" fill="#7a5a12">DockItem.tsx</text>
+<text x="44" y="248" font-size="11" fill="#7a5a12">StatusBar.tsx</text>
+<text x="44" y="264" font-size="11" fill="#7a5a12">MacOSTitlebar.tsx</text>
+<rect x="252" y="176" width="200" height="150" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="264" y="197" font-size="12.5" font-weight="700" fill="#7a5a12">components/apps</text>
+<text x="264" y="216" font-size="11" fill="#7a5a12">MusicPlayer.tsx (282줄)</text>
+<text x="264" y="232" font-size="11" fill="#7a5a12">Safari.tsx (App에는 아직 없음)</text>
+<text x="264" y="248" font-size="11" fill="#7a5a12">(창 열고 닫기는</text>
+<text x="264" y="264" font-size="11" fill="#7a5a12">  앱마다 따로)</text>
+<rect x="472" y="86" width="256" height="110" rx="9" fill="#e3f6ea" stroke="#5cc489"/>
+<text x="484" y="107" font-size="12.5" font-weight="700" fill="#1f6b3f">Dock의 상태</text>
+<text x="484" y="126" font-size="11" fill="#1f6b3f">activeItems: 앱 13개의 켜짐 여부</text>
+<text x="484" y="142" font-size="11" fill="#1f6b3f">dockWidth: 폭에 따라 95·85·70%</text>
+<text x="484" y="158" font-size="11" fill="#1f6b3f">공유 = 주소 복사 + 토스트</text>
+<rect x="472" y="216" width="256" height="110" rx="9" fill="#f1f2f4" stroke="#b4b9c2"/>
+<text x="484" y="237" font-size="12.5" font-weight="700" fill="#3f4652">바깥에 둔 것</text>
+<text x="484" y="256" font-size="11" fill="#3f4652">REACT_APP_IMAGE_URL로 그림 주소</text>
+<text x="484" y="272" font-size="11" fill="#3f4652">GitHub·블로그·노션·메일은 링크</text>
+<text x="484" y="288" font-size="11" fill="#3f4652">시험: CRA 기본 App.test.tsx 하나</text>
+<path d="M132 156 L132 176" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<path d="M232 121 L472 141" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+</svg>

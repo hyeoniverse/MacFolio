@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="380" fill="#fff"/>
+  <text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">여덟 이름과 그 값이 쓰이던 곳 (font-size 958곳 중)</text>
+<text x="30" y="66.4" font-size="11" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--text-caption2</text>
+<text x="190" y="66.4" font-size="11" fill="#6b7280" text-anchor="start">11px</text>
+<text x="240" y="66.4" font-size="11" fill="#1f2937" text-anchor="start">가나다 Aa 본문 글자</text>
+<rect x="500" y="56" width="114" height="14" rx="3" fill="#a5b4fc"/>
+<text x="620.4" y="67" font-size="10.5" fill="#6b7280" text-anchor="start">88곳</text>
+<text x="30" y="102.8" font-size="11" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--text-caption</text>
+<text x="190" y="102.8" font-size="11" fill="#6b7280" text-anchor="start">12px</text>
+<text x="240" y="102.8" font-size="12" fill="#1f2937" text-anchor="start">가나다 Aa 본문 글자</text>
+<rect x="500" y="92" width="203" height="14" rx="3" fill="#a5b4fc"/>
+<text x="708.8" y="103" font-size="10.5" fill="#6b7280" text-anchor="start">156곳</text>
+<text x="30" y="139.2" font-size="11" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--text-footnote</text>
+<text x="190" y="139.2" font-size="11" fill="#6b7280" text-anchor="start">13px</text>
+<text x="240" y="139.2" font-size="13" fill="#1f2937" text-anchor="start">가나다 Aa 본문 글자</text>
+<rect x="500" y="128" width="169" height="14" rx="3" fill="#a5b4fc"/>
+<text x="675.0" y="139" font-size="10.5" fill="#6b7280" text-anchor="start">130곳</text>
+<text x="30" y="176.0" font-size="11" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--text-subhead</text>
+<text x="190" y="176.0" font-size="11" fill="#6b7280" text-anchor="start">15px</text>
+<text x="240" y="176.0" font-size="15" fill="#1f2937" text-anchor="start">가나다 Aa 본문 글자</text>
+<rect x="500" y="164" width="129" height="14" rx="3" fill="#a5b4fc"/>
+<text x="634.7" y="175" font-size="10.5" fill="#6b7280" text-anchor="start">99곳</text>
+<text x="30" y="212.4" font-size="11" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--text-callout</text>
+<text x="190" y="212.4" font-size="11" fill="#6b7280" text-anchor="start">16px</text>
+<text x="240" y="212.4" font-size="16" fill="#1f2937" text-anchor="start">가나다 Aa 본문 글자</text>
+<rect x="500" y="200" width="74" height="14" rx="3" fill="#a5b4fc"/>
+<text x="580.1" y="211" font-size="10.5" fill="#6b7280" text-anchor="start">57곳</text>
+<text x="30" y="248.8" font-size="11" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--text-body</text>
+<text x="190" y="248.8" font-size="11" fill="#6b7280" text-anchor="start">17px</text>
+<text x="240" y="248.8" font-size="17" fill="#1f2937" text-anchor="start">가나다 Aa 본문 글자</text>
+<rect x="500" y="236" width="78" height="14" rx="3" fill="#a5b4fc"/>
+<text x="584.0" y="247" font-size="10.5" fill="#6b7280" text-anchor="start">60곳</text>
+<text x="30" y="286.0" font-size="11" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--text-title3</text>
+<text x="190" y="286.0" font-size="11" fill="#6b7280" text-anchor="start">20px</text>
+<text x="240" y="286.0" font-size="20" fill="#1f2937" text-anchor="start">가나다 Aa 본문 글자</text>
+<rect x="500" y="272" width="51" height="14" rx="3" fill="#a5b4fc"/>
+<text x="556.7" y="283" font-size="10.5" fill="#6b7280" text-anchor="start">39곳</text>
+<text x="30" y="322.8" font-size="11" fill="#4f46e5" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--text-title2</text>
+<text x="190" y="322.8" font-size="11" fill="#6b7280" text-anchor="start">22px</text>
+<text x="240" y="322.8" font-size="22" fill="#1f2937" text-anchor="start">가나다 Aa 본문 글자</text>
+<rect x="500" y="308" width="20" height="14" rx="3" fill="#a5b4fc"/>
+<text x="525.5" y="319" font-size="10.5" fill="#6b7280" text-anchor="start">15곳</text>
+<text x="380" y="358" font-size="10.5" fill="#6b7280" text-anchor="middle">막대: 바꾸기 전 그 px 값이 나온 곳 수. 이 중 font-size에 값 하나만 적힌 645곳을 이름으로 바꿨다</text>
+</svg>

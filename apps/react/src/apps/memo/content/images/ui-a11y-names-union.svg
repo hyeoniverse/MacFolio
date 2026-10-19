@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 230" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>IconButton props를 두 경우의 유니언으로 나눠, 이름(label)도 보이는 글자(children)도 없으면 타입 검사에서 막힌다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="760" height="230" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">아이콘 버튼은 이름이 있거나, 글자가 있거나</text>
+<rect x="32" y="70" width="220" height="54" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="142.0" y="93.0" font-size="10.5" fill="#374151" text-anchor="middle">&lt;IconButton label=&quot;지우기&quot; icon=… /&gt;</text>
+<text x="142.0" y="108.5" font-size="10.5" fill="#6b7280" text-anchor="middle">· aria-label=&quot;지우기&quot;</text>
+<rect x="270" y="70" width="220" height="54" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="380.0" y="93.0" font-size="10.5" fill="#374151" text-anchor="middle">&lt;IconButton icon=…&gt;‹ 블로그&lt;/IconButton&gt;</text>
+<text x="380.0" y="108.5" font-size="10.5" fill="#6b7280" text-anchor="middle">· 보이는 글자가 이름</text>
+<rect x="508" y="70" width="220" height="54" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="618.0" y="93.0" font-size="10.5" fill="#374151" text-anchor="middle">&lt;IconButton icon=&quot;fa-xmark&quot; /&gt;</text>
+<text x="618.0" y="108.5" font-size="10.5" fill="#6b7280" text-anchor="middle">· tsc 오류</text>
+<text x="142" y="146" font-size="12" fill="#059669" font-weight="700" text-anchor="middle">통과</text>
+<text x="380" y="146" font-size="12" fill="#059669" font-weight="700" text-anchor="middle">통과</text>
+<text x="618" y="146" font-size="12" fill="#ef4444" font-weight="700" text-anchor="middle">막힘 (그냥 &quot;버튼&quot;으로 읽힘)</text>
+<text x="32" y="190" font-size="10.5" fill="#6b7280">사이트의 IconButton 44곳 중 label이 없는 곳은 글자가 함께 있는 한 곳뿐이라 그대로 통과했다.</text>
+</svg>

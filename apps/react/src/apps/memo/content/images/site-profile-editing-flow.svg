@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>프로필은 SiteContent 표 한 줄에 저장되고 GET /site로 내려와 createStore 저장소에 들어간다. 컴포넌트는 useProfile, 컴포넌트 밖은 쓰는 순간 getProfile로 읽는다. 저장한 값이 없으면 코드의 상수가 기본값</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="800" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">프로필이 화면까지 가는 길</text>
+<rect x="32" y="70" width="170" height="96" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="117.0" y="98.5" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">SiteContent 표</text>
+<text x="117.0" y="114.0" font-size="10.5" fill="#374151" text-anchor="middle">id = 1 한 줄</text>
+<text x="117.0" y="129.5" font-size="10.5" fill="#374151" text-anchor="middle">profile Json?</text>
+<text x="117.0" y="145.0" font-size="10.5" fill="#374151" text-anchor="middle">updatedBy</text>
+<rect x="32" y="196" width="170" height="70" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="117.0" y="212.1" font-size="11" fill="#1f2937" font-weight="600" text-anchor="middle">관리자</text>
+<text x="117.0" y="227.1" font-size="10" fill="#374151" text-anchor="middle">PUT /site/profile</text>
+<text x="117.0" y="242.1" font-size="10" fill="#374151" text-anchor="middle">DELETE /site/profile</text>
+<text x="117.0" y="257.1" font-size="10" fill="#6b7280" text-anchor="middle">· parseProfile()로 검사</text>
+<rect x="252" y="70" width="180" height="96" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="342.0" y="98.5" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">SiteService</text>
+<text x="342.0" y="114.0" font-size="10.5" fill="#374151" text-anchor="middle">GET /site (누구나)</text>
+<text x="342.0" y="129.5" font-size="10.5" fill="#374151" text-anchor="middle">서비스가 메모리에 들고</text>
+<text x="342.0" y="145.0" font-size="10.5" fill="#374151" text-anchor="middle">저장·삭제 때 비움</text>
+<rect x="482" y="70" width="150" height="96" rx="8" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="557.0" y="98.5" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">프로필 저장소</text>
+<text x="557.0" y="114.0" font-size="10.5" fill="#374151" text-anchor="middle">createStore</text>
+<text x="557.0" y="129.5" font-size="10.5" fill="#374151" text-anchor="middle">없으면 shared/</text>
+<text x="557.0" y="145.0" font-size="10.5" fill="#374151" text-anchor="middle">profile.ts 상수</text>
+<rect x="668" y="52" width="112" height="60" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="724.0" y="70.6" font-size="11" fill="#1f2937" font-weight="600" text-anchor="middle">useProfile()</text>
+<text x="724.0" y="85.6" font-size="10" fill="#374151" text-anchor="middle">이 Mac에 관하여</text>
+<text x="724.0" y="100.6" font-size="10" fill="#374151" text-anchor="middle">정보 · 위젯</text>
+<rect x="668" y="126" width="112" height="60" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="724.0" y="144.6" font-size="11" fill="#1f2937" font-weight="600" text-anchor="middle">getProfile()</text>
+<text x="724.0" y="159.6" font-size="10" fill="#374151" text-anchor="middle">메일 보내기</text>
+<text x="724.0" y="174.6" font-size="10" fill="#374151" text-anchor="middle">터미널 · 메시지</text>
+<path d="M117 194 V168" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#ag)"/>
+<path d="M202 118 H250" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<path d="M432 118 H480" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<path d="M632 104 L666 84" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#an)"/>
+<path d="M632 132 L666 154" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#an)"/>
+<rect x="252" y="196" width="380" height="70" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="442.0" y="219.3" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">SiteService.ownerName()</text>
+<text x="442.0" y="234.8" font-size="10.5" fill="#374151" text-anchor="middle">관리자 댓글 이름, 메시지 고정 항목 제목</text>
+<text x="442.0" y="250.3" font-size="10.5" fill="#374151" text-anchor="middle">하드코딩 &#x27;김정현&#x27; 대신 저장한 이름, 없으면 상수</text>
+<text x="32" y="300" font-size="10.5" fill="#6b7280">모듈을 읽을 때 계산하던 상수(OWNER_ADDRESS, PINNED_MESSAGES, INBOX)는 ownerAddress(profile)·pinnedMessages()·inboxOf(profile) 함수로 바꿨다.</text>
+</svg>

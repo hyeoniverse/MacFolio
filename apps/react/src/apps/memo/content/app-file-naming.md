@@ -33,6 +33,8 @@ summary: 앱마다 components/·hooks/·api/를 파는 대신, 파일 이름이 
 - 서버 호출 둘의 이름: `captions.ts` → `captionsApi.ts`, `githubActivity.ts` → `githubActivityApi.ts`
 - 시험 파일은 대상을 따라 이름을 바꿨다
 
+![이름 바꾸기](./images/app-file-naming-renames.svg '섞인 파일 하나를 둘로 가르고, 훅 넷과 서버 호출 둘의 이름을 규칙에 맞췄다')
+
 동작은 바뀌지 않았다. `tsc`·ESLint·단위 시험 97개·E2E로 확인했다.
 
 ## 한 가지 예외

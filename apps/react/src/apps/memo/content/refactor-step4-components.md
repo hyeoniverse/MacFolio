@@ -40,6 +40,8 @@ summary: 리팩터링 계획 4단계를 돌아본다. 공통 부품을 먼저 �
 | 접근성 이름        | 규칙 없음     | 시험 10개, 아이콘만 있는 `IconButton`은 `label` 없이 타입 오류               |
 | '단추'             | 255파일 949곳 | 모두 '버튼'                                                                  |
 
+![직접 쓴 button 265곳의 구성 막대](./images/refactor-step4-components-buttons.svg '남은 버튼은 대부분 일부러 다르게 그린 Safari 데모와 앱 고유의 버튼이다')
+
 ## 일부러 남긴 것
 
 - 후보 여섯(`ListRow`, `SegmentedControl`, `Switch`, `EmptyState`, `Toolbar`, `Sidebar`)은 수가 많아도 모양이나 뜻이 달라 보류했다.

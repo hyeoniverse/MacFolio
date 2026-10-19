@@ -23,6 +23,8 @@ await tryInOrder(SUMMARY_PROVIDERS, [], (name) =>
 );
 ```
 
+![요약 공급자를 차례로 시도하는 흐름](./images/groq-summary-fallback.svg 'Groq가 실패하면 Gemini, 둘 다 실패하면 502')
+
 둘 다 실패하면 오류 메시지에 공급자마다의 이유가 함께 실린다: `요약을 만들지 못했습니다 (Groq: 키가 없습니다 · Gemini: 키가 없습니다).` 쓴 횟수는 돌려준다.
 
 ## Groq 부르기

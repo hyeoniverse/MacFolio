@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>인기글: 서버는 수만, 순위는 화면이 매긴다</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">인기글: 서버는 수만, 순위는 화면이 매긴다</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">서버는 저장소의 Markdown 글을 모르므로 글마다 수만 돌려준다</text>
+  <rect x="32" y="100" width="220" height="46" rx="8" fill="#f3f4f6"/>
+  <text x="142.0" y="118.8" font-size="11" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GET /analytics/views?app=memo</text>
+  <text x="142.0" y="134.8" font-size="11" text-anchor="middle" fill="#374151">조회수</text>
+  <rect x="32" y="160" width="220" height="46" rx="8" fill="#f3f4f6"/>
+  <text x="142.0" y="178.8" font-size="11" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GET /posts/stats</text>
+  <text x="142.0" y="194.8" font-size="11" text-anchor="middle" fill="#374151">댓글 수 · 좋아요 수</text>
+  <line x1="254" y1="123" x2="326" y2="150" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="254" y1="183" x2="326" y2="160" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="330" y="110" width="250" height="90" rx="8" fill="#eef0ff"/>
+  <text x="455.0" y="134.8" font-size="11" text-anchor="middle" fill="#3f46c7" font-weight="600">popularPosts() · desktop-core</text>
+  <text x="455.0" y="150.8" font-size="10" text-anchor="middle" fill="#3f46c7">조회 × 1 + 좋아요 × 3 + 댓글 × 5</text>
+  <text x="455.0" y="166.8" font-size="10" text-anchor="middle" fill="#3f46c7">동점: 좋아요 → 댓글 → 조회 → 최근</text>
+  <text x="455.0" y="182.8" font-size="10" text-anchor="middle" fill="#3f46c7">반응 0인 글은 뺀다</text>
+  <line x1="582" y1="155" x2="620" y2="155" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="624" y="120" width="146" height="70" rx="8" fill="#dcfce7"/>
+  <text x="697.0" y="142.2" font-size="12" text-anchor="middle" fill="#15803d" font-weight="600">인기글 폴더</text>
+  <text x="697.0" y="159.2" font-size="11" text-anchor="middle" fill="#15803d">상위 10개</text>
+  <text x="697.0" y="176.2" font-size="11" text-anchor="middle" fill="#15803d">순위 그대로</text>
+  <text x="32" y="248" font-size="12" fill="#374151" text-anchor="start" font-weight="600">점수 무게</text>
+  <text x="32" y="274" font-size="11" fill="#374151" text-anchor="start">조회</text>
+  <rect x="90" y="262" width="60" height="14" rx="4" fill="#f3f4f6" stroke="#374151" stroke-opacity="0.4"/>
+  <text x="156" y="274" font-size="11" fill="#6b7280" text-anchor="start">× 1</text>
+  <text x="32" y="294" font-size="11" fill="#374151" text-anchor="start">좋아요</text>
+  <rect x="90" y="282" width="180" height="14" rx="4" fill="#eef0ff" stroke="#3f46c7" stroke-opacity="0.4"/>
+  <text x="276" y="294" font-size="11" fill="#6b7280" text-anchor="start">× 3</text>
+  <text x="32" y="314" font-size="11" fill="#374151" text-anchor="start">댓글</text>
+  <rect x="90" y="302" width="300" height="14" rx="4" fill="#dcfce7" stroke="#15803d" stroke-opacity="0.4"/>
+  <text x="396" y="314" font-size="11" fill="#6b7280" text-anchor="start">× 5</text>
+  <text x="470" y="280" font-size="12" fill="#6b7280" text-anchor="start">흔한 반응은 가볍게, 손이 많이 가는 반응은 무겁게</text>
+</svg>

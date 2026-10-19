@@ -32,6 +32,8 @@ Build failed to initialize and was timed out
 - **deploy**: main에 push되면 `check`가 통과한 뒤에만 돈다(`needs: check`). `wrangler deploy`가 `wrangler.jsonc`의 빌드 명령으로 `apps/react/dist`를 만들고 올린다.
 - **preview**: PR마다 `wrangler versions upload --preview-alias <브랜치>`로 미리보기 버전을 올린다. 실제 사이트는 바뀌지 않는다. 별칭이 브랜치 이름이라 커밋을 더 올려도 주소가 같고, 주소는 PR 댓글 하나에 적고 새 커밋마다 그 댓글을 고친다.
 
+![배포 구조 전후](./images/deploy-github-actions-flow.svg '전: Cloudflare가 시험과 따로 빌드 / 후: check를 통과한 뒤 GitHub Actions가 배포')
+
 `VITE_API_URL`은 빌드할 때 코드에 들어가는 값이라 배포 빌드에만 넣는다. `check`의 E2E는 가짜 API 주소를 쓰므로 거기서는 비운다. 비밀 값이 아니어서 워크플로 맨 위에 적어 두었다. 예전에는 Cloudflare 대시보드의 빌드 변수에 넣어야 했고, 실행 변수 칸에 잘못 넣으면 빌드에 들어가지 않는 함정이 있었는데 그것도 사라졌다.
 
 Cloudflare에는 API 토큰(Workers 편집 권한)과 계정 ID만 GitHub Secrets로 넘긴다. 토큰이 아직 없으면 미리보기는 건너뛰고, 배포는 실패로 알린다.

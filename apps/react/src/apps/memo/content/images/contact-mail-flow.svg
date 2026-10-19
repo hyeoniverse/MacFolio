@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>쓰기 화면에서 Turnstile 토큰과 함께 POST /contact를 부르면 서버가 다시 검사하고 하루 상한을 본 뒤 Resend로 보낸다. 설정이 없으면 503을 받고 방문자의 메일 앱을 연다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">서버가 메일을 보낸다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">받는 사람은 늘 한 명, 방문자 주소는 Reply-To</text>
+<rect x="32" y="86" width="170" height="92" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="44" y="105" font-size="12" fill="#1f2937" font-weight="600">메일 앱 '새로운 메시지'</text>
+<text x="44" y="122" font-size="10.5" fill="#374151">이름·주소·제목·내용</text>
+<text x="44" y="137.0" font-size="10.5" fill="#374151">Turnstile 토큰</text>
+<text x="44" y="152.0" font-size="10.5" fill="#374151">MailSender.send()</text>
+<rect x="240" y="86" width="200" height="92" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="252" y="105" font-size="12" fill="#4f46e5" font-weight="600">POST /contact</text>
+<text x="252" y="122" font-size="10.5" fill="#374151">① Turnstile 토큰 확인</text>
+<text x="252" y="137.0" font-size="10.5" fill="#374151">② 같은 규칙으로 다시 검사</text>
+<text x="252" y="152.0" font-size="10.5" fill="#374151">   + 이름·제목은 한 줄</text>
+<text x="252" y="167.0" font-size="10.5" fill="#374151">③ 하루 상한 IP 5 · 전체 50</text>
+<path d="M202 132 H236" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="478" y="86" width="160" height="92" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="490" y="105" font-size="12" fill="#4f46e5" font-weight="600">Resend API</text>
+<text x="490" y="122" font-size="10.5" fill="#374151">HTTPS (SMTP 포트 없이)</text>
+<text x="490" y="137.0" font-size="10.5" fill="#374151">무료: 월 3,000</text>
+<text x="490" y="152.0" font-size="10.5" fill="#374151">하루 100통</text>
+<path d="M440 132 H474" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="676" y="86" width="152" height="92" rx="9" fill="#ecfdf5" stroke="#86efac" stroke-width="1"/>
+<text x="688" y="105" font-size="12" fill="#15803d" font-weight="600">받은 편지함</text>
+<text x="688" y="122" font-size="10.5" fill="#374151">From contact@…</text>
+<text x="688" y="137.0" font-size="10.5" fill="#374151">To CONTACT_TO</text>
+<text x="688" y="152.0" font-size="10.5" fill="#374151">Reply-To 방문자</text>
+<text x="688" y="167.0" font-size="10.5" fill="#374151">[MacFolio] 제목</text>
+<path d="M638 132 H672" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+<rect x="240" y="214" width="200" height="52" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="252" y="233" font-size="12" fill="#b45309" font-weight="600">설정이 없으면 503</text>
+<text x="252" y="250" font-size="10.5" fill="#374151">키·받는 주소·보내는 주소</text>
+<rect x="32" y="214" width="170" height="52" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="44" y="233" font-size="12" fill="#b45309" font-weight="600">mailto: 로</text>
+<text x="44" y="250" font-size="10.5" fill="#374151">방문자의 메일 앱 (예전처럼)</text>
+<path d="M340 178 V210" stroke="#b45309" stroke-width="1.8" fill="none" marker-end="url(#a-amber)"/>
+<path d="M240 240 H206" stroke="#b45309" stroke-width="1.8" fill="none" marker-end="url(#a-amber)"/>
+<rect x="478" y="214" width="350" height="52" rx="9" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+<text x="490" y="233" font-size="12" fill="#b91c1c" font-weight="600">Resend가 실패하면 502</text>
+<text x="490" y="250" font-size="10.5" fill="#374151">쓴 횟수를 돌려준다 · 토큰은 한 번만 → 칸을 새로 그림</text>
+<path d="M558 178 V210" stroke="#b91c1c" stroke-width="1.8" fill="none" marker-end="url(#a-red)"/>
+<text x="32" y="300" font-size="10.5" fill="#6b7280">Turnstile 사이트 키는 GET /contact로 받는다: 키를 바꿔도 사이트를 다시 빌드하지 않는다</text>
+</svg>

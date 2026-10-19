@@ -50,6 +50,8 @@ EOF
 - Actions "API 배포 #2"는 3분 만에 빨간 X로 끝났고, 메일이 왔다
 - `.env`의 `API_TAG`, 컨테이너 이미지, 바깥 `/health`의 version이 모두 `sha-7e7eac0`, `(healthy)`
 
+![되돌리기 훈련의 시각별 타임라인](./images/rollback-drill-timeline.svg '120초를 기다리고, 되돌리는 데 41초. Actions는 3분 만에 실패로 끝났다')
+
 끝나고 `docker image rm …:sha-dead000`으로 훈련용 이미지를 지웠다. 이것으로 #100의 마지막 완료 기준, "헬스 체크가 실패하는 버전은 이전 버전으로 돌아가고 Actions가 실패로 알린다"를 진짜 서버에서 확인하고 이슈를 닫았다.
 
 막힌 곳은 하나였다. 접속 안내와 1단계 명령을 통째로 붙여 넣다가 `ssh <평소 쓰는 서버 접속>` 자리표시 줄까지 들어가 `syntax error near unexpected token 'newline'`이 났다. 나머지 줄은 그대로 실행돼 결과에는 영향이 없었지만, 문서의 기록에 남겼다. 자리표시는 사람이 채우는 칸이지 명령이 아니다.

@@ -18,6 +18,8 @@ summary: pnpm audit --prod에서 운영 의존성 취약점 6건(high 3)이 나�
 
 여섯 개 모두 `package.json`에 직접 적은 패키지가 아니다. 위 패키지(prisma, milkdown, Scalar)는 이미 최신 안정 버전이라, 위 패키지를 올리는 방법으로는 고칠 수 없었다.
 
+![취약한 패키지가 들어온 경로와 overrides](./images/dependency-vulnerabilities-tree.svg '여섯 건 모두 직접 설치하지 않은 하위 패키지였다')
+
 ## overrides로 하위 패키지만 올리기
 
 pnpm은 `pnpm-workspace.yaml`의 `overrides`로 의존성 트리 어디에 있든 특정 패키지의 버전을 정할 수 있다.

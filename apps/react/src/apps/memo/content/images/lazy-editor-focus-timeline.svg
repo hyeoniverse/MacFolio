@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>Enter 뒤 초점: 편집기가 아직 없을 때</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="350" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">Enter 뒤 초점: 편집기가 아직 없을 때</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">본문 편집기(Milkdown)는 React.lazy로 처음 쓸 때 불러온다</text>
+  <text x="32" y="108" font-size="13" fill="#b91c1c" text-anchor="start" font-weight="600">고치기 전</text>
+  <rect x="32" y="120" width="150" height="44" rx="8" fill="#f3f4f6"/>
+  <text x="107.0" y="146.6" font-size="13" text-anchor="middle" fill="#374151">제목에서 Enter</text>
+  <line x1="184" y1="142" x2="214" y2="142" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="218" y="120" width="190" height="44" rx="8" fill="#fee2e2"/>
+  <text x="313.0" y="137.8" font-size="11" text-anchor="middle" fill="#b91c1c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">.ProseMirror 없음</text>
+  <text x="313.0" y="153.8" font-size="11" text-anchor="middle" fill="#b91c1c">?.focus() → 아무 일 없음</text>
+  <line x1="410" y1="142" x2="440" y2="142" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="444" y="120" width="150" height="44" rx="8" fill="#fee2e2"/>
+  <text x="519.0" y="146.6" font-size="13" text-anchor="middle" fill="#b91c1c">초점은 제목에</text>
+  <line x1="596" y1="142" x2="626" y2="142" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="630" y="120" width="140" height="44" rx="8" fill="#fee2e2"/>
+  <text x="700.0" y="137.7" font-size="12" text-anchor="middle" fill="#b91c1c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">###</text>
+  <text x="700.0" y="154.7" font-size="12" text-anchor="middle" fill="#b91c1c">본문 글자 빠짐</text>
+  <text x="32" y="214" font-size="13" fill="#15803d" text-anchor="start" font-weight="600">고친 뒤</text>
+  <rect x="32" y="226" width="150" height="44" rx="8" fill="#f3f4f6"/>
+  <text x="107.0" y="252.6" font-size="13" text-anchor="middle" fill="#374151">제목에서 Enter</text>
+  <line x1="184" y1="248" x2="214" y2="248" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="218" y="226" width="190" height="44" rx="8" fill="#eef0ff"/>
+  <text x="313.0" y="243.7" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">bodyFocusPending</text>
+  <text x="313.0" y="260.7" font-size="12" text-anchor="middle" fill="#3f46c7">= true 로 기억</text>
+  <line x1="410" y1="248" x2="440" y2="248" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="444" y="226" width="150" height="44" rx="8" fill="#eef0ff"/>
+  <text x="519.0" y="243.7" font-size="12" text-anchor="middle" fill="#3f46c7">편집기 준비</text>
+  <text x="519.0" y="260.7" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">loading → false</text>
+  <line x1="596" y1="248" x2="626" y2="248" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="630" y="226" width="140" height="44" rx="8" fill="#dcfce7"/>
+  <text x="700.0" y="243.7" font-size="12" text-anchor="middle" fill="#15803d">onReady에서</text>
+  <text x="700.0" y="260.7" font-size="12" text-anchor="middle" fill="#15803d">본문으로 focus</text>
+  <text x="32" y="312" font-size="12" fill="#6b7280" text-anchor="start">시험: page.route로 InlineEditor-*.js 응답을 붙잡아 두었다가 Enter 뒤에 풀어 이 순서를 만든다.</text>
+</svg>

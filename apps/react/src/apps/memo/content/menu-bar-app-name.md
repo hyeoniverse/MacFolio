@@ -22,6 +22,8 @@ const activeApp = APP_MANIFEST[foregroundApp(apps) ?? 'finder'].label;
 
 이름은 Dock·Launchpad와 같은 앱 정보(`manifest.ts`)의 이름을 쓴다. 그래서 macOS 한국어판처럼 '메모', '음악', '시스템 설정'으로 보인다.
 
+![사진 창과 메일 창을 앞에 두었을 때의 메뉴 막대](./images/menu-bar-app-name-strip.jpg '맨 앞 창에 따라 앱 이름과 메뉴가 바뀐다')
+
 ## 화면 테스트
 
 - 처음에는 Safari 창이 떠 있어서 'Safari'
@@ -44,6 +46,8 @@ macOS에서 바탕화면을 누르면 창은 그대로 둔 채 Finder가 앞으�
 	<Dock />
 </div>
 ```
+
+![바탕화면 판과 창의 캡처 핸들러 순서](./images/menu-bar-app-name-capture.svg '판이 먼저 Finder로 바꾸고, 창 안이면 창이 다시 자기 앱으로 바꾼다')
 
 캡처 단계는 바깥에서 안쪽으로 내려간다. 어디를 누르든 바탕화면 판이 먼저 "바탕화면"으로 바꾸고, 누른 곳이 창 안이면 바로 이어서 창이 "내 앱"으로 바꾼다. 메뉴 막대·Dock·바탕화면에는 창이 없으니 바탕화면으로 남는다.
 

@@ -7,6 +7,8 @@ summary: 브랜치·커밋·PR 규칙을 새로 만들지 않고 지금까지 �
 
 작업 규칙을 적어 두자고 마음먹고 보니 문서만으로는 부족했다. 규칙을 적어 두어도 급할 때는 안 지킨다. 저장소의 옛 커밋에는 `Chore: npm install`, `STYLE: strong h2`, `REFACTOR`처럼 제각각인 메시지가 섞여 있다. 그래서 규칙은 문서(`CONTRIBUTING.md`)로 남기고, **지켰는지는 CI가 본다.**
 
+![검사 흐름](./images/commit-conventions-ci-flow.svg 'conventions가 이름·제목·커밋을 보고, Ruleset이 check와 함께 머지를 막는다')
+
 ## 규칙은 기록에서 뽑았다
 
 새 규칙을 만들면 지금까지의 기록과 어긋난다. 먼저 `main`의 커밋 앞머리를 세어 봤다.

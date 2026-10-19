@@ -31,6 +31,20 @@ API의 `CORS_ORIGINS`는 `https://macfolio.hyeoniverse.com,https://*-macfolio.hy
 1. **CORS 응답**: `exact`에만 `Access-Control-Allow-Credentials: true`. `pattern`은 `Allow-Origin`만 주고 credentials는 주지 않는다. NestJS의 `enableCors`는 요청마다 옵션을 정하는 함수를 받을 수 있어서, Origin을 보고 `{ origin, credentials }`를 그때 정한다
 2. **관리자 가드**: 요청에 `Origin` 헤더가 있는데 `exact`가 아니면 세션이 맞아도 403. Origin이 없는 요청(같은 사이트 이동, curl)은 CORS 밖이라 그대로 둔다. 브라우저가 어떤 이유로 쿠키를 붙여 보내더라도 관리자 기능은 열리지 않는다
 
+CORS 쪽은 이 세 줄이 전부다.
+
+```ts
+const classifyOrigin = originClassifier(config.corsOrigins);
+app.enableCors((req, callback) => {
+	const match = classifyOrigin(req.headers.origin);
+	callback(null, { origin: match !== null, credentials: match === 'exact' });
+});
+```
+
+`originClassifier`는 `*`가 없는 주소를 `Set`에 넣어 그대로 비교하고, `*`가 든 주소는 나머지 글자를 이스케이프한 뒤 `*`만 `[a-z0-9-]+`로 바꾼 정규식으로 만든다. 관리자 가드는 같은 분류 함수로 `cookiesAllowedFrom`을 만들어 쓴다.
+
+![Origin을 exact, pattern, null로 나누고 CORS 응답과 관리자 가드가 각각 다르게 답하는 도식](./images/preview-cors-read-only-origin.svg 'exact만 쿠키를 받고 관리자 API를 지난다. *에 맞은 미리보기는 읽기만')
+
 미리보기에서 바뀌는 것은 없다. 원래 읽기만 됐고 지금도 읽기만 된다. 관리자 기능을 미리보기에서 확인하려면 로컬에서 한다.
 
 ## 확인

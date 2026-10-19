@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>숨은 글자(position: absolute)는 가장 가까운 position 조상을 기준으로 놓인다. 패널에 position이 없을 때는 창의 콘텐츠 칸을 늘렸고, 패널을 relative로 하자 패널 안에 갇혔다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="760" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">숨은 글자는 어느 상자를 기준으로 놓이나</text>
+<text x="32" y="68" font-size="13" fill="#ef4444" font-weight="700">고치기 전</text>
+<rect x="32" y="80" width="330" height="260" rx="10" fill="#f9fafb" stroke="#9ca3af"/>
+<text x="44" y="100" font-size="10" fill="#6b7280">.content  (창의 콘텐츠 칸, position: relative, overflow: scroll)</text>
+<rect x="48" y="112" width="298" height="150" rx="8" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="60" y="132" font-size="10.5" fill="#4f46e5" font-weight="600">.settings-panel  (position 없음)</text>
+<rect x="60" y="142" width="274" height="18" rx="4" fill="#ffffff" stroke="#c7d2fe"/>
+<rect x="60" y="166" width="274" height="18" rx="4" fill="#ffffff" stroke="#c7d2fe"/>
+<rect x="60" y="190" width="274" height="18" rx="4" fill="#ffffff" stroke="#c7d2fe"/>
+<rect x="60" y="214" width="274" height="18" rx="4" fill="#ffffff" stroke="#c7d2fe"/>
+<text x="68" y="227" font-size="10" fill="#374151">이메일  hyeoniverse.dev@…  ↗</text>
+<rect x="232" y="272" width="100" height="18" rx="4" fill="#fffbeb" stroke="#d97706" stroke-dasharray="3 2"/>
+<text x="282" y="285" font-size="9.5" fill="#d97706" text-anchor="middle">(새 탭) 숨은 글자</text>
+<path d="M282 248 V270" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<text x="44" y="322" font-size="10" fill="#ef4444">기준이 콘텐츠 칸이라 scrollHeight 736px → 창 전체가 한 번 더 스크롤</text>
+<text x="400" y="68" font-size="13" fill="#059669" font-weight="700">고친 뒤</text>
+<rect x="400" y="80" width="330" height="260" rx="10" fill="#f9fafb" stroke="#9ca3af"/>
+<text x="412" y="100" font-size="10" fill="#6b7280">.content  (창의 콘텐츠 칸, position: relative, overflow: scroll)</text>
+<rect x="416" y="112" width="298" height="150" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="428" y="132" font-size="10.5" fill="#4f46e5" font-weight="600">.settings-panel  position: relative</text>
+<rect x="428" y="142" width="274" height="18" rx="4" fill="#ffffff" stroke="#c7d2fe"/>
+<rect x="428" y="166" width="274" height="18" rx="4" fill="#ffffff" stroke="#c7d2fe"/>
+<rect x="428" y="190" width="274" height="18" rx="4" fill="#ffffff" stroke="#c7d2fe"/>
+<rect x="428" y="214" width="274" height="18" rx="4" fill="#ffffff" stroke="#c7d2fe"/>
+<text x="436" y="227" font-size="10" fill="#374151">이메일  hyeoniverse.dev@…  ↗</text>
+<rect x="600" y="230" width="100" height="18" rx="4" fill="#fffbeb" stroke="#d97706" stroke-dasharray="3 2"/>
+<text x="650" y="243" font-size="9.5" fill="#d97706" text-anchor="middle">(새 탭) 숨은 글자</text>
+<text x="412" y="306" font-size="10.5" fill="#059669" font-weight="600">숨은 글자도 패널 안에서 함께 스크롤된다</text>
+<text x="412" y="322" font-size="10.5" fill="#059669">창의 콘텐츠 칸은 넘치지 않는다</text>
+</svg>

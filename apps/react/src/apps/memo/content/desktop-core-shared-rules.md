@@ -57,6 +57,8 @@ React 앱은 Vite가 TypeScript를 그 자리에서 바꿔 주니 문제가 없�
 
 서버는 이 조건을 모르니 `types`와 `default`, 즉 빌드한 결과를 읽는다. React 쪽은 개발 서버를 띄울 때 core를 따로 빌드하지 않아도 되고, 고치면 바로 반영된다. `dist`를 지운 상태에서 React의 타입 검사·빌드·시험을 돌려 실제로 소스만 읽는 것도 확인했다.
 
+![exports 조건으로 나눈 입구](./images/desktop-core-shared-rules-exports.svg 'source 조건을 켠 React 앱은 소스를, 서버는 dist를 읽는다')
+
 ## Node가 읽을 수 있는 JS
 
 core를 빌드하려면 Node의 ESM 규칙을 지켜야 한다. Node는 `import './store'`를 `./store.js`로 찾아 주지 않는다. core의 `tsconfig`를 `module: NodeNext`로 바꾸면 확장자 없는 상대 경로는 타입 검사에서 오류가 된다. 스크립트로 import 문에 `.js`를 붙였는데, 시험 파일 안의 `import('./posts')` 타입 두 곳을 놓쳐서 이렇게 걸렸다.

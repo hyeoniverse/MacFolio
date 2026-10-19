@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 270" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>npm 별칭으로 typescript 이름에는 TS 6 API 호환 패키지를, @typescript/native에는 TS 7을 단다. typescript-eslint는 6 API를, tsc 명령은 7을 쓴다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="760" height="270" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">TypeScript 6과 7을 나란히</text>
+<rect x="32" y="76" width="190" height="60" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="127.0" y="102.0" font-size="10.5" fill="#374151" text-anchor="middle">typescript-eslint</text>
+<text x="127.0" y="117.5" font-size="10.5" fill="#374151" text-anchor="middle">import &#x27;typescript&#x27;</text>
+<rect x="32" y="166" width="190" height="60" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="127.0" y="192.0" font-size="10.5" fill="#374151" text-anchor="middle">pnpm typecheck · API 빌드</text>
+<text x="127.0" y="207.5" font-size="10.5" fill="#374151" text-anchor="middle">tsc 실행 파일</text>
+<rect x="272" y="76" width="220" height="60" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="382.0" y="102.0" font-size="10.5" fill="#374151" text-anchor="middle">&quot;typescript&quot;</text>
+<text x="382.0" y="117.5" font-size="10.5" fill="#374151" text-anchor="middle">npm:@typescript/typescript6@^6.0.2</text>
+<rect x="272" y="166" width="220" height="60" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="382.0" y="192.0" font-size="10.5" fill="#374151" text-anchor="middle">&quot;@typescript/native&quot;</text>
+<text x="382.0" y="207.5" font-size="10.5" fill="#374151" text-anchor="middle">npm:typescript@~7.0.2</text>
+<rect x="542" y="76" width="186" height="60" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="635.0" y="102.0" font-size="10.5" fill="#374151" text-anchor="middle">TS 6 JavaScript API</text>
+<text x="635.0" y="117.5" font-size="10.5" fill="#6b7280" text-anchor="middle">· 실행 파일은 tsc6</text>
+<rect x="542" y="166" width="186" height="60" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="635.0" y="192.0" font-size="10.5" fill="#374151" text-anchor="middle">TS 7 (Go로 새로 작성)</text>
+<text x="635.0" y="207.5" font-size="10.5" fill="#6b7280" text-anchor="middle">· tsc 7.0.2</text>
+<path d="M224 106 H270" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<path d="M494 106 H540" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<path d="M224 196 H270" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#an)"/>
+<path d="M494 196 H540" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#an)"/>
+<text x="32" y="252" font-size="10.5" fill="#6b7280">React 앱, API, contracts, desktop-core 네 패키지에 같은 두 줄. typescript-eslint가 7을 지원하면 별칭을 지운다.</text>
+</svg>

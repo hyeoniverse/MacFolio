@@ -42,6 +42,8 @@ summary: 메모 글, GitHub README, Finder 문서는 Markdown과 HTML을 그린�
 - **README**: 단위 시험으로 `GithubReadme`를 HTML 문자열로 그려 본다. 안전한 HTML(`<p align="center"><b>…</b></p>`)은 남아야 한다
 - **메모 글**: 메모 글은 사이트 안 링크를 여는 데 앱 상태가 필요해서 E2E로 본다. 가짜 서버에 이 본문의 글을 넣고 열어서 DOM을 직접 센다. 실제로 실행되었는지도 `window.__pwned`로 확인한다
 
+![공격 문자열이 지나는 두 길과 시험](./images/markdown-xss-tests-paths.svg '메모 글은 E2E로, README는 단위 시험으로 본다')
+
 시험이 제 역할을 하는지 보려고 일부러 막는 설정을 빼 봤다. README에서 `rehypeSanitize`를 빼면 단위 시험이, 메모에 `rehype-raw`를 더하고 주소 거르기를 끄면 E2E가 실패했다.
 
 #MacFolio #보안 #XSS #Markdown #테스트

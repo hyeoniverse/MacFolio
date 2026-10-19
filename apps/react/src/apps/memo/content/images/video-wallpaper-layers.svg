@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 290" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>관리자가 MP4나 GIF를 고르면 원본 그대로 올리고, 브라우저가 0.5초 장면으로 1280px JPEG 포스터를 만든다. 화면에는 포스터를 --wallpaper로 깔고 그 위에 muted loop video를 둔다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="780" height="290" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">동영상 배경화면: 올리기와 깔기</text>
+<text x="32" y="64" font-size="12" fill="#1f2937" font-weight="700">올리기 (관리자 브라우저)</text>
+<rect x="32" y="74" width="160" height="60" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="112.0" y="100.0" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">createObjectURL</text>
+<text x="112.0" y="115.5" font-size="10.5" fill="#374151" text-anchor="middle">&lt;video&gt;에 넣기</text>
+<path d="M194 104 H216" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<rect x="218" y="74" width="160" height="60" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="298.0" y="100.0" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">loadeddata</text>
+<text x="298.0" y="115.5" font-size="10.5" fill="#374151" text-anchor="middle">0.5초로 옮김</text>
+<path d="M380 104 H402" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<rect x="404" y="74" width="160" height="60" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="484.0" y="92.3" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">seeked</text>
+<text x="484.0" y="107.8" font-size="10.5" fill="#374151" text-anchor="middle">캔버스에 그려</text>
+<text x="484.0" y="123.3" font-size="10.5" fill="#374151" text-anchor="middle">JPEG 1,280px</text>
+<path d="M566 104 H588" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<rect x="590" y="74" width="160" height="60" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="670.0" y="92.3" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">POST /files</text>
+<text x="670.0" y="107.8" font-size="10.5" fill="#374151" text-anchor="middle">원본 MP4 30MB까지</text>
+<text x="670.0" y="123.3" font-size="10.5" fill="#374151" text-anchor="middle">+ 포스터</text>
+<text x="32" y="166" font-size="12" fill="#1f2937" font-weight="700">깔기 (방문자 화면, 위가 앞)</text>
+<rect x="32" y="176" width="520" height="28" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="292.0" y="193.8" font-size="10.5" fill="#374151" text-anchor="middle">창 · 아이콘 · Dock</text>
+<rect x="32" y="210" width="520" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="292.0" y="227.8" font-size="10.5" fill="#374151" text-anchor="middle">&lt;video muted loop autoplay playsinline&gt; z-index -1, object-fit cover</text>
+<rect x="32" y="244" width="520" height="28" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="292.0" y="261.8" font-size="10.5" fill="#374151" text-anchor="middle">--wallpaper = 포스터 JPEG (불러오는 동안·동작 줄이기)</text>
+<text x="572" y="194" font-size="10.5" fill="#374151">서버: 앞부분 ftyp 브랜드로 MP4 판별</text>
+<text x="572" y="212" font-size="10.5" fill="#374151">(QuickTime 거절)</text>
+<text x="572" y="236" font-size="10.5" fill="#374151">/files/:id가 Range를 받아 206</text>
+<text x="572" y="254" font-size="10.5" fill="#374151">(Safari는 206이 없으면 안 튼다)</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>Oracle API 요청 서명</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">Oracle API 요청 서명</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">SDK 대신 직접 만들고, 문서의 시험 키·서명 문자열과 한 글자씩 맞춰 확인했다</text>
+  <rect x="32" y="100" width="320" height="110" rx="8" fill="#f3f4f6"/>
+  <text x="192.0" y="126.8" font-size="11" text-anchor="middle" fill="#374151" font-weight="600">서명할 문자열</text>
+  <text x="192.0" y="142.8" font-size="10" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">date: …</text>
+  <text x="192.0" y="158.8" font-size="10" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">(request-target): get /…</text>
+  <text x="192.0" y="174.8" font-size="10" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">host: …</text>
+  <text x="192.0" y="190.8" font-size="10" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">(POST) content-length · type · x-content-sha256</text>
+  <line x1="354" y1="155" x2="380" y2="155" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="384" y="120" width="130" height="70" rx="8" fill="#eef0ff"/>
+  <text x="449.0" y="150.7" font-size="12" text-anchor="middle" fill="#3f46c7" font-weight="600">RSA-SHA256</text>
+  <text x="449.0" y="167.7" font-size="11" text-anchor="middle" fill="#3f46c7">개인 키(PEM)</text>
+  <line x1="516" y1="155" x2="540" y2="155" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="544" y="110" width="224" height="90" rx="8" fill="#dcfce7"/>
+  <text x="656.0" y="134.8" font-size="11" text-anchor="middle" fill="#15803d" font-weight="600">Authorization 머리글</text>
+  <text x="656.0" y="150.8" font-size="10" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Signature version="1",</text>
+  <text x="656.0" y="166.8" font-size="10" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">keyId, algorithm,</text>
+  <text x="656.0" y="182.8" font-size="10" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">headers="…", signature="…"</text>
+  <text x="32" y="248" font-size="13" fill="#374151" text-anchor="start" font-weight="600">예산 알림 (한 시간마다)</text>
+  <rect x="32" y="262" width="736" height="20" rx="6" fill="#dcfce7"/>
+  <rect x="621" y="262" width="147" height="20" fill="#fef3c7"/>
+  <text x="620.8000000000001" y="302" font-size="12" fill="#b45309" text-anchor="middle">80%: 한 번</text>
+  <text x="760" y="302" font-size="12" fill="#b91c1c" text-anchor="end">100%: 한 번</text>
+  <line x1="621" y1="258" x2="621" y2="286" stroke="#b45309" stroke-width="2"/>
+  <line x1="766" y1="258" x2="766" y2="286" stroke="#b91c1c" stroke-width="2"/>
+  <text x="32" y="302" font-size="11" fill="#6b7280" text-anchor="start">기록 키: budget-near:2026-10:월 1달러 → 같은 달에는 다시 보내지 않음</text>
+</svg>

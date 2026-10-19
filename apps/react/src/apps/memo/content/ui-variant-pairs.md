@@ -26,6 +26,8 @@ summary: 같은 부품이 macOS와 iOS 모양을 고르는 곳을 찾았다. var
 - `FinderMobile`·`PhotosMobile`·`SafariMobile`: 부품이 아니라 화면 전체가 다르다. 안쪽 부품은 이미 `variant`를 쓴다.
 - `Button`과 목록 줄: 휴대폰 전용 모양을 고르는 곳이 없다.
 
+![Menu는 className touch에서 variant ios로 바뀌었고, 나머지 짝은 그대로 둔 이유](./images/ui-variant-pairs-menu.svg '바꾼 것과 그대로 둔 것')
+
 ## 확인
 
 데스크톱과 iPhone, 밝은 화면과 어두운 화면에서 메뉴를 열고 바꾸기 전과 후의 계산된 스타일을 비교했다. 차이는 없었다.

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>PR이 열리거나 바뀌면 conventions 작업이 브랜치 이름·PR 제목·커밋 메시지를 정규식으로 보고, Rulesets가 check와 conventions가 초록일 때만 머지를 허락한다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">규칙은 문서로, 지켰는지는 CI가</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">.github/workflows/conventions.yml + main의 Ruleset</text>
+<rect x="32" y="90" width="160" height="70" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="112.0" y="109" font-size="12" fill="#1f2937" font-weight="600" text-anchor="middle">PR 이벤트</text>
+<text x="112.0" y="126" font-size="10.5" fill="#374151" text-anchor="middle">opened · edited</text>
+<text x="112.0" y="141.0" font-size="10.5" fill="#374151" text-anchor="middle">synchronize</text>
+<rect x="232" y="76" width="330" height="120" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="244" y="95" font-size="12" fill="#4f46e5" font-weight="600">conventions 작업</text>
+<text x="244" y="112" font-size="10.5" fill="#374151">브랜치  ^(타입)/[a-z0-9][a-z0-9-]*$</text>
+<text x="244" y="127.0" font-size="10.5" fill="#374151">PR 제목 · 커밋  ^(타입)(\(범위\))?!?: .+</text>
+<text x="244" y="142.0" font-size="10.5" fill="#374151">타입 9개: feat fix docs refactor test</text>
+<text x="244" y="157.0" font-size="10.5" fill="#374151">style perf chore ci</text>
+<text x="244" y="172.0" font-size="10.5" fill="#374151">틀린 것을 모두 모아 한 번에 알린다</text>
+<path d="M192 125 H228" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="600" y="76" width="228" height="52" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="714.0" y="95" font-size="12" fill="#1f2937" font-weight="600" text-anchor="middle">check</text>
+<text x="714.0" y="112" font-size="10.5" fill="#374151" text-anchor="middle">format · lint · 시험</text>
+<rect x="600" y="144" width="228" height="52" rx="9" fill="#ecfdf5" stroke="#86efac" stroke-width="1"/>
+<text x="714.0" y="163" font-size="12" fill="#15803d" font-weight="600" text-anchor="middle">Ruleset (main)</text>
+<text x="714.0" y="180" font-size="10.5" fill="#374151" text-anchor="middle">둘 다 초록이어야 Merge 버튼</text>
+<path d="M562 160 H596" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+<path d="M714 128 V140" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+<rect x="32" y="216" width="380" height="66" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="44" y="235" font-size="12" fill="#b45309" font-weight="600">제목은 env로 넘긴다</text>
+<text x="44" y="252" font-size="10.5" fill="#374151">TITLE: ${{ github.event.pull_request.title }}</text>
+<text x="44" y="267.0" font-size="10.5" fill="#374151">run: [[ "$TITLE" =~ $message ]]  — 셸이 실행하지 않음</text>
+<rect x="448" y="216" width="380" height="66" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="460" y="235" font-size="12" fill="#4f46e5" font-weight="600">기록 전체와 merge 커밋</text>
+<text x="460" y="252" font-size="10.5" fill="#374151">fetch-depth: 0 → git log base..head</text>
+<text x="460" y="267.0" font-size="10.5" fill="#374151">--no-merges로 Merge … 커밋은 뺀다</text>
+</svg>

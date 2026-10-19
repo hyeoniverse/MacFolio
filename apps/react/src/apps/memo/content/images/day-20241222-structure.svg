@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>Firebase 전후 구조</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">2024년 12월 23일: 서버를 걷고 Firebase로</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">왼쪽은 12월 22일, 오른쪽은 12월 23일 커밋</text>
+<rect x="32" y="86" width="330" height="210" rx="9" fill="#f1f2f4" stroke="#b4b9c2"/>
+<text x="44" y="107" font-size="12.5" font-weight="700" fill="#3f4652">전: client/ + server/</text>
+<text x="44" y="126" font-size="11" fill="#3f4652">client (CRA) → axios</text>
+<text x="44" y="142" font-size="11" fill="#3f4652">server: Express + TypeScript</text>
+<text x="44" y="158" font-size="11" fill="#3f4652">  routes → controllers → models</text>
+<text x="44" y="174" font-size="11" fill="#3f4652">DB: MySQL (Google Cloud SQL)</text>
+<text x="44" y="190" font-size="11" fill="#3f4652">메모 수정·삭제는 비밀번호</text>
+<text x="44" y="206" font-size="11" fill="#3f4652">node_modules 파일 60,798개 추적</text>
+<rect x="398" y="86" width="330" height="210" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="410" y="107" font-size="12.5" font-weight="700" fill="#1d4f91">후: 저장소 루트 하나</text>
+<text x="410" y="126" font-size="11" fill="#1d4f91">src/ (client/src를 올림)</text>
+<text x="410" y="142" font-size="11" fill="#1d4f91">src/services/firebase.ts</text>
+<text x="410" y="158" font-size="11" fill="#1d4f91">  Realtime Database 연결</text>
+<text x="410" y="174" font-size="11" fill="#1d4f91">MemoContext가 ref·onValue로</text>
+<text x="410" y="190" font-size="11" fill="#1d4f91">  memos/&lt;폴더&gt;/&lt;id&gt;를 읽고 씀</text>
+<text x="410" y="206" font-size="11" fill="#1d4f91">node_modules 추적 1,478개</text>
+<path d="M362 191 L398 191" stroke="#9ca3af" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+</svg>

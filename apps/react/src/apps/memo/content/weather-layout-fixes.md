@@ -50,6 +50,8 @@ function useCompact(ref: React.RefObject<HTMLElement | null>) {
 
 CSS는 컨테이너 질의 안에 있던 규칙마다 앞에 `.weather[data-compact]`를 붙였다.
 
+![사이트의 휴대폰 구간과 날씨의 iOS 모양 구간이 641~767px에서 어긋난 모습](./images/weather-layout-fixes-ranges.svg '두 기준이 어긋난 641~767px')
+
 ## 장소가 하나면 목록 버튼이 왼쪽으로 밀려났다
 
 iOS 모양의 아래 막대는 세 칸 그리드다(`48px 1fr 48px`). 왼쪽은 빈 칸, 가운데는 장소 점, 오른쪽은 목록 버튼이다. 장소가 하나면 넘길 곳이 없어서 장소 점을 그리지 않는다. 그러면 목록 버튼이 비어 있는 가운데 칸으로 들어가, 가운데 칸 왼쪽 끝에 붙었다.

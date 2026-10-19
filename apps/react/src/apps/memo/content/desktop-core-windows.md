@@ -60,6 +60,8 @@ React 쪽에 남긴 것은 브라우저와 닿는 일이다.
 
 실제로 `import { useState } from 'react'`와 `window.innerWidth`를 넣어 보니 `tsc`가 `Cannot find module 'react'`, `Cannot find name 'window'`로 멈췄고, lint도 react import를 오류로 잡았다.
 
+![desktop-core와 React의 나눔](./images/desktop-core-windows-layers.svg '창 규칙은 core에, 브라우저와 닿는 일은 React에. core가 React를 쓰면 세 곳에서 막힌다')
+
 ## 시험
 
 core에는 Vitest 시험 23개가 있다. 렌더링 없이 store를 만들고 함수를 부른 뒤 상태를 확인한다.

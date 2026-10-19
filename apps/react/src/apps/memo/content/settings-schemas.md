@@ -32,6 +32,8 @@ export const ShowcaseInput = z.object({
 
 서버의 검사 함수는 이제 한 줄이다. `parseShowcase(input)`는 `parse(ShowcaseInput, input)`을 불러 결과만 돌려준다. 화면은 `MAX_SHOWCASE`와 `isFullName`을 같은 패키지에서 불러온다.
 
+![contracts의 settings.ts 한 곳에 규칙을 두고 API와 관리자 설정 화면이 함께 불러 쓴다](./images/settings-schemas-shared.svg '규칙은 한 곳에서, 서버와 화면이 같은 값을 쓴다')
+
 ## 문구를 그대로 두기
 
 검사 방법은 바꾸되 사용자에게 보이는 거절 문구는 바꾸지 않았다. 기존 단위 시험이 문구를 그대로 비교하기 때문이다. 한 곳에서 차이가 났다.

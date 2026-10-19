@@ -45,6 +45,8 @@ securityHeaders({
 
 `/memo/<글>` 같은 앱 주소는 파일이 아니라 Worker가 `index.html`을 대신 준다([없는 코드 파일에 index.html을 주던 문제](/memo/asset-404)). 이 응답에도 헤더가 붙는지 `wrangler dev`로 확인했다. Worker가 정적 자산 바인딩에서 받은 응답의 헤더를 그대로 넘기기 때문에 같은 헤더가 붙는다.
 
+![PROJECTS와 API 주소에서 CSP를 만들어 빌드와 E2E 서버에 같이 붙이는 흐름](./images/security-headers-build.svg '배포와 E2E가 같은 CSP를 쓰니, 빠뜨린 출처는 시험에서 먼저 드러난다')
+
 ## E2E를 CSP를 켠 채로
 
 CSP는 빠뜨린 출처가 하나라도 있으면 그 기능만 조용히 멈춘다. 그래서 E2E가 배포와 같은 CSP를 켠 채로 돌게 했다.

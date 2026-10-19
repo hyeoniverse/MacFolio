@@ -34,6 +34,8 @@ POST는 여기에 `content-length`, `content-type`, `x-content-sha256`(본문의
 Signature version="1",keyId="<테넌시>/<사용자>/<지문>",algorithm="rsa-sha256",headers="date (request-target) host",signature="..."
 ```
 
+![요청 서명과 예산 알림 단계](./images/oci-billing-signing.svg '서명 문자열을 개인 키로 서명해 Authorization 머리글에 담는다')
+
 ## 진짜 키 없이 맞는지 확인하기
 
 내 계정의 키로 직접 불러 볼 수 없으니, Oracle 문서의 시험 값으로 확인했다. 문서에는 시험용 개인 키·공개 키와, GET·POST 요청마다 서명할 문자열이 그대로 나온다.

@@ -40,6 +40,8 @@ TypeScript 팀은 이런 도구를 위해 TS 6 API를 다시 내보내는 패키
 
 React 앱, API, `contracts`, `desktop-core` 네 패키지에 같은 두 줄을 넣었다.
 
+![typescript 이름에는 TS 6 호환 패키지, @typescript/native에는 TS 7을 달아 린트와 tsc가 각자 맞는 버전을 쓴다](./images/typescript-7-side-by-side-alias.svg 'npm 별칭으로 두 버전을 나란히')
+
 ## baseUrl 지우기
 
 `baseUrl`은 `paths`의 기준 폴더를 정하던 옵션이다. 7에서는 `paths`를 tsconfig 파일 위치 기준의 상대 경로로 적는다.

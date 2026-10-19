@@ -25,6 +25,8 @@ export type IconButtonProps = IconButtonBase &
 
 이제 `<IconButton icon="fa-solid fa-xmark" />`처럼 이름도 글자도 없으면 타입 검사에서 막힌다. 사이트 안의 44곳을 세어 보니 이름 없는 곳은 '‹ 블로그'처럼 글자가 함께 있는 한 곳뿐이라 그대로 통과했다.
 
+![label이 있거나 글자가 있으면 통과, 둘 다 없으면 타입 오류](./images/ui-a11y-names-union.svg '이름 없는 아이콘 버튼은 타입 검사에서 막힌다')
+
 ## 그려 보고 확인하기
 
 브라우저 없이 부품을 HTML 문자열로 그리는 `renderToStaticMarkup`으로 시험 10개를 만들었다. 그린 HTML에 이름·역할·숨김이 들어 있는지 본다.

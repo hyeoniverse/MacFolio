@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="300" fill="#fff"/>
+  <text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">절대 위치를 없애고 한 줄의 flex로</text>
+<text x="30" y="62" font-size="12" fill="#e11d48" text-anchor="start" font-weight="600">전: 폭 85% 막대 + 오른쪽에 박아 둔 Launchpad · 휴지통</text>
+<rect x="30" y="75" width="600" height="44" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<rect x="40" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="74" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="108" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="142" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="176" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="210" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="244" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="278" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="312" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="346" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="380" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="414" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="448" y="84" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="482" y="84" width="26" height="26" rx="6" fill="#fda4af"/>
+<rect x="470" y="80" width="40" height="34" rx="6" fill="#fde68a" fill-opacity="0.8"/>
+<text x="490" y="101" font-size="10" fill="#b45309" text-anchor="middle" font-weight="600">LP</text>
+<rect x="594" y="84" width="26" height="26" rx="6" fill="#e5e7eb"/>
+<text x="470" y="140" font-size="10.5" fill="#b45309" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">right: 10rem</text>
+<text x="560" y="140" font-size="10.5" fill="#e11d48" text-anchor="start">실행 중인 앱이 밑으로 파고듦</text>
+<text x="30" y="182" font-size="12" fill="#4f46e5" text-anchor="start" font-weight="600">후: 앱 → Launchpad → 구분선 → 휴지통이 같은 줄, 내용만큼 넓어지고 가운데</text>
+<rect x="80" y="195" width="600" height="44" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<rect x="90" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="124" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="158" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="192" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="226" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="260" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="294" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="328" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="362" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="396" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="430" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="464" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="498" y="204" width="26" height="26" rx="6" fill="#c7d2fe"/>
+<rect x="532" y="204" width="26" height="26" rx="6" fill="#a5b4fc"/>
+<rect x="566" y="204" width="26" height="26" rx="6" fill="#fde68a"/>
+<text x="579" y="221" font-size="10" fill="#b45309" text-anchor="middle" font-weight="600">LP</text>
+<line x1="604" y1="204" x2="604" y2="230" stroke="#9ca3af"/>
+<rect x="614" y="204" width="26" height="26" rx="6" fill="#e5e7eb"/>
+<text x="380" y="268" font-size="11" fill="#6b7280" text-anchor="middle">칸 수는 dockAppCapacity(화면 폭)가 아이콘 64px(휴대폰 56px) + 간격 16px로 센다</text>
+<text x="380" y="286" font-size="11" fill="#6b7280" text-anchor="middle">같은 값을 CSS 변수(--dock-icon, --dock-gap)로 넘겨 세는 크기와 그리는 크기가 같다</text>
+</svg>

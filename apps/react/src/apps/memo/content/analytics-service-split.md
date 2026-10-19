@@ -21,15 +21,7 @@ summary: 341줄짜리 AnalyticsService 하나가 이벤트 저장, 지난 날 �
 
 NestJS에서 서비스(`@Injectable`)는 다른 서비스를 생성자로 받아 쓸 수 있다. 이 성질로 일을 나눴다.
 
-```mermaid
-flowchart LR
-  C["AnalyticsController"] --> R["AnalyticsRecorder<br/>저장: record"]
-  C --> S["AnalyticsStats<br/>조회: today · summary · views · live"]
-  S --> U["AnalyticsRollup<br/>집계: maintain · rowsBetween"]
-  R --> DB[("PostgreSQL")]
-  U --> DB
-  S --> DB
-```
+![AnalyticsService를 셋으로](./images/analytics-service-split-classes.svg '컨트롤러는 저장과 조회를 부르고, 조회는 모으기를 집계에 맡긴다')
 
 - **AnalyticsRecorder (저장, 68줄)**: 이벤트 묶음을 검사하고, IP마다 1분에 30번까지 받고, 로봇과 관리자를 빼고 저장한다.
 - **AnalyticsRollup (집계, 80줄)**: 한 시간마다(그리고 요약을 열 때) 지난 날의 이벤트를 날짜별 통계로 모으고, 90일 지난 이벤트와 7일 지난 가린 IP를 지운다. 기간의 행을 돌려주는 `rowsBetween`도 여기 둔다. 지난 날은 모은 통계에서, 오늘은 이벤트에서 바로 읽는 규칙이 집계의 일이기 때문이다.

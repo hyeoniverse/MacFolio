@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="330" fill="#fff"/>
+  <text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">R2와 문서 표는 두고 &quot;보이는 자리&quot;만 겹친다</text>
+<rect x="20" y="60" width="220" height="80" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="130.0" y="88.0" font-size="11" fill="#b45309" text-anchor="middle" font-weight="600">R2 · Document 표</text>
+<text x="130.0" y="104.0" font-size="10.5" fill="#4b5563" text-anchor="middle">resume/abc123.pdf</text>
+<text x="130.0" y="120.0" font-size="10.5" fill="#4b5563" text-anchor="middle">폴더 값 = 올린 폴더 (CHECK)</text>
+<rect x="20" y="170" width="220" height="80" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="130.0" y="198.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">기본 트리</text>
+<text x="130.0" y="214.0" font-size="10.5" fill="#4b5563" text-anchor="middle">데스크탑 · 문서 · 블로그</text>
+<text x="130.0" y="230.0" font-size="10.5" fill="#4b5563" text-anchor="middle">응용 프로그램</text>
+<rect x="280" y="100" width="220" height="110" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="390.0" y="135.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">FinderLayout (한 행 JSON)</text>
+<text x="390.0" y="151.0" font-size="10.5" fill="#4b5563" text-anchor="middle">folders: 만든 폴더</text>
+<text x="390.0" y="167.0" font-size="10.5" fill="#4b5563" text-anchor="middle">files: 파일 → 옮긴 폴더</text>
+<text x="390.0" y="183.0" font-size="10.5" fill="#4b5563" text-anchor="middle">aliases: 바탕화면 가상본</text>
+<rect x="540" y="100" width="200" height="110" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="640.0" y="135.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">buildLocations()</text>
+<text x="640.0" y="151.0" font-size="10.5" fill="#4b5563" text-anchor="middle">기본 트리 + 구조</text>
+<text x="640.0" y="167.0" font-size="10.5" fill="#4b5563" text-anchor="middle">없는 폴더 · 지운 파일</text>
+<text x="640.0" y="183.0" font-size="10.5" fill="#4b5563" text-anchor="middle">자리는 조용히 건너뜀</text>
+<line x1="240" y1="100" x2="278" y2="130" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="240" y1="210" x2="278" y2="180" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="500" y1="155" x2="538" y2="155" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="380" y="265" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">파일 주소 /files/&lt;키&gt;는 그대로라 공유한 링크도 그대로 열린다</text>
+<text x="380" y="285" font-size="11" fill="#6b7280" text-anchor="middle">규칙(상위 폴더 있음, 고리 없음, 같은 폴더 안 이름 겹침 없음)은 contracts의 zod 스키마 하나로</text>
+<text x="380" y="305" font-size="11" fill="#6b7280" text-anchor="middle">블로그 폴더를 옮기면 FinderLayout이 아니라 메모의 정리 내용을 바꾼다</text>
+</svg>

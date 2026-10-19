@@ -25,6 +25,8 @@ summary: 서버 메뉴의 'API 문서 열기'가 새 탭 대신 사이트 안의
 2. 단위 테스트 `openapi.test.ts`가 이 문서를 `apps/react/src/apps/apidocs/openapi.json`과 비교한다. Vitest의 `toMatchFileSnapshot`이라, 컨트롤러나 DTO를 바꾸고 파일을 다시 만들지 않으면 CI가 실패한다. 다시 만드는 명령은 `pnpm --filter @macfolio/api openapi`
 3. 'API 문서' 앱이 이 파일을 Scalar로 그린다
 
+![문서 구조](./images/api-docs-app-structure.svg 'API 코드 → 스냅숏 시험 → openapi.json → 따로 된 페이지 → iframe')
+
 문서를 만드는 데 DB는 필요 없다. `PrismaService`는 처음 쿼리할 때 연결하므로, 앱 모듈만 만들고 문서를 뽑은 뒤 닫는다. 그래서 DB 없이 도는 단위 테스트에 넣을 수 있었다.
 
 서버의 보안 헤더 예외는 되돌렸다. 서버의 `/docs`는 그대로 두어 새 탭으로 여는 용도로 남는다.
@@ -46,6 +48,8 @@ Scalar의 'Test Request'는 문서 안에서 서버로 요청을 보낸다. 이 
 - 같은 사이트 주소라서 문서 페이지가 사이트의 `<html data-theme>`을 지켜보고 다크 모드를 따라간다
 
 iframe 안에서 쌓은 방문 기록은 사이트의 뒤로 가기에 섞인다. 이 사이트에서 뒤로 가기는 "사이트 밖으로"여야 해서, 문서 페이지 안에서만 `pushState`를 `replaceState`로 바꿨다. 화면 테스트는 목차를 눌러도 사이트 주소와 `history.length`가 그대로인지 확인한다.
+
+![API 문서 앱](./images/api-docs-app-window.jpg '사이트 안의 창으로 연 API 문서. 목차를 눌러도 사이트 주소는 그대로다')
 
 ## 창 틀이 밀려 올라갔다
 

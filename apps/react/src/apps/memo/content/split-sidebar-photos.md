@@ -22,6 +22,8 @@ memo/components/
 
 `DragItem`을 밖에서 쓰는 곳(`useNoteDrag.ts`)은 경로만 바꿨다.
 
+![그냥 나누면 FolderSidebar와 FolderRow가 서로 import하고, 타입을 model 파일로 빼면 순환이 없다](./images/split-sidebar-photos-cycle.svg '함께 쓰는 타입을 셋째 파일에 두어 순환을 피했다')
+
 ## 휴대폰 사진 앱
 
 `PhotosMobile.tsx` 662줄에는 크게 보기 화면(`PhoneViewer`, 236줄)과 격자·선반·카드, 본체가 있었다. 크게 보기는 본체와 상태를 주고받지만 안쪽은 독립이라 `PhoneViewer.tsx`로, 격자·선반·카드는 `PhotoGrid.tsx`로, 셋이 함께 쓰는 타입과 목록 계산(`VIDEOS`, `keyOf`, `searchPhotos`)은 `photosMobile.model.ts`로.

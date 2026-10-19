@@ -46,6 +46,8 @@ model SecuritySetting {
 - 관리자이거나, 그곳이 꺼져 있거나, 서버에 키가 없으면 그냥 지나간다
 - 아니면 토큰을 Cloudflare(`siteverify`)에 묻고, 사람이 아니면 400
 
+![쓰기 요청이 입력 검사 뒤 requireHuman에서 관리자, 꺼짐, 키 없음이면 통과하고 아니면 siteverify에 묻는 흐름](./images/privacy-security-settings-flow.svg '설정 한 줄을 메모리에 두고, 쓰기마다 세 질문을 지나 Cloudflare에 묻는다')
+
 메일 서비스 안에 있던 Turnstile 확인 코드는 `common/turnstile.ts`로 꺼내 함께 쓴다. 메일의 `GET /contact`도 이제 설정을 따른다. 메일의 사람 확인을 끄면 사이트 키를 주지 않아서, 화면에 위젯이 생기지 않는다.
 
 ## 화면

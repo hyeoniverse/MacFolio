@@ -46,6 +46,8 @@ summary: 요청 제한이 로그인·댓글은 ThrottlerGuard, AI 데모는 하�
 
 처음에는 `@RateLimit`를 `@UseGuards(AdminGuard)` 위에 적었다. 그러자 로그인하지 않은 요청이 횟수에 들지 않았다. 데코레이터는 아래부터 적용되니 `AdminGuard`가 가드 목록에 먼저 들어가고, 401로 끝난 요청은 `ThrottlerGuard`까지 오지 않았던 것이다. 관리자 경로 16개에서 `@RateLimit`를 `@UseGuards(AdminGuard)` 아래로 옮겼다. 이제 쿠키 없는 요청도 세고, 제한을 넘으면 세션 조회 전에 막는다.
 
+![RateLimit 데코레이터 위치에 따라 AdminGuard와 ThrottlerGuard가 도는 순서가 바뀌는 비교](./images/rate-limit-all-writes-guard-order.svg '소스에서 아래에 적은 가드가 먼저 돈다')
+
 이 순서는 사람이 지키기 어려운 규칙이라 시험에 넣었다. 경로 표 시험에 세 가지를 더했다.
 
 1. GET이 아닌 경로 33개에 모두 제한이 있다 (새 쓰기 경로에 빠뜨리면 여기서 깨진다)

@@ -45,6 +45,8 @@ event.currentTarget.closest('.memo-writer')?.querySelector<HTMLElement>('.ProseM
 
 시험만의 문제가 아니다. 느린 휴대폰이나 느린 네트워크에서 새 메모를 열자마자 제목을 쓰고 Enter를 누르면, 사람도 같은 일을 겪는다.
 
+![고치기 전과 후의 Enter 처리 순서](./images/lazy-editor-focus-timeline.svg '편집기가 아직 없으면 옮길 일을 기억해 두었다가 준비되면 옮긴다')
+
 ## 고친 것
 
 Enter를 눌렀는데 편집기가 아직 없으면 "본문으로 옮기기"를 기억해 두고, 편집기가 다 만들어지면 그때 옮긴다.

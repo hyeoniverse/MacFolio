@@ -9,13 +9,7 @@ API를 올리려면 서버에 SSH로 들어가 `git pull`하고 `docker compose 
 
 이제 main에 머지하면 알아서 된다.
 
-```
-check(시험) ─▶ api-image   API가 바뀐 커밋만: 이미지 빌드(amd64) → GHCR (sha-<커밋>)
-              └▶ api-deploy  SSH → 서버의 ops/deploy.sh sha-<커밋>
-                               백업 → 받기 → 교체 → healthy·버전 확인, 안 되면 되돌리기
-              └▶ 바깥 /health의 version이 이번 커밋인지
-         └▶ deploy(프론트엔드)  API 배포가 끝난 뒤에
-```
+![자동 배포 흐름](./images/api-auto-deploy-pipeline.svg 'check 뒤에 API가 바뀐 커밋만 이미지를 만들고, 서버의 deploy.sh가 백업·교체·확인·되돌리기를 한다. 프론트엔드는 그 뒤에')
 
 ## 서버에서 빌드하지 않는다
 

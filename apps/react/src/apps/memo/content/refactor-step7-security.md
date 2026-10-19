@@ -40,6 +40,8 @@ API에는 helmet, `httpOnly`·`SameSite=Lax`·`Secure` 쿠키, 해시로 저장�
 | 비밀 값 스캔              | #170 | [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](/memo/secret-scanning)           |
 | 서버 하드닝 점검          | #183 | [서버 하드닝은 문서가 아니라 스크립트로](/memo/server-hardening-audit)               |
 
+![사이트, API, 서버, CI의 겹마다 붙인 보안 설정과 PR 번호](./images/refactor-step7-security-layers.svg '한 겹이 놓쳐도 다음 겹이 막도록 겹마다 따로 붙였다')
+
 ## 전후
 
 |                    | 전           | 후                                                                                    |

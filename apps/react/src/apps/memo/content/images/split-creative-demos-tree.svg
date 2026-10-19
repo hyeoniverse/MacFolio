@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 290" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>CreativeDemos.tsx 1,861줄을 creative/ 폴더의 데모별 파일과 공유 모듈로 나눴다. 한 데모만 쓰는 것은 그 데모 안에, 둘 이상이 쓰는 것은 따로</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="760" height="290" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">한 파일 1,861줄 → 데모마다 한 파일</text>
+<rect x="32" y="70" width="170" height="190" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="117.0" y="122.3" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">CreativeDemos.tsx</text>
+<text x="117.0" y="137.8" font-size="10.5" fill="#374151" text-anchor="middle">발표 갤러리 · 음성</text>
+<text x="117.0" y="153.3" font-size="10.5" fill="#374151" text-anchor="middle">파형 · 변환 · 번역</text>
+<text x="117.0" y="168.8" font-size="10.5" fill="#374151" text-anchor="middle">요약 · 커버 · 테마</text>
+<text x="117.0" y="184.3" font-size="10.5" fill="#374151" text-anchor="middle">색 계산</text>
+<text x="117.0" y="199.8" font-size="10.5" fill="#374151" text-anchor="middle">몽이 이벤트</text>
+<text x="117.0" y="215.3" font-size="10.5" fill="#374151" text-anchor="middle">남은 횟수 칩 …</text>
+<text x="117" y="278" font-size="11" fill="#ef4444" font-weight="600" text-anchor="middle">1,861줄</text>
+<path d="M206 165 H246" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<text x="252" y="66" font-size="11.5" fill="#1f2937" font-weight="700">데모 하나만 쓰는 것</text>
+<rect x="252" y="76" width="84" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="294.0" y="93.6" font-size="10" fill="#374151" text-anchor="middle">Slides.tsx</text>
+<rect x="344" y="76" width="84" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="386.0" y="93.6" font-size="10" fill="#374151" text-anchor="middle">Voice.tsx</text>
+<rect x="436" y="76" width="84" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="478.0" y="93.6" font-size="10" fill="#374151" text-anchor="middle">Wave.tsx</text>
+<rect x="528" y="76" width="84" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="570.0" y="93.6" font-size="10" fill="#374151" text-anchor="middle">Convert.tsx</text>
+<rect x="252" y="112" width="84" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="294.0" y="129.6" font-size="10" fill="#374151" text-anchor="middle">Translate.tsx</text>
+<rect x="344" y="112" width="84" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="386.0" y="129.6" font-size="10" fill="#374151" text-anchor="middle">Summary.tsx</text>
+<rect x="436" y="112" width="84" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="478.0" y="129.6" font-size="10" fill="#374151" text-anchor="middle">Cover.tsx</text>
+<rect x="528" y="112" width="84" height="28" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="570.0" y="129.6" font-size="10" fill="#374151" text-anchor="middle">Themes.tsx</text>
+<text x="252" y="168" font-size="11.5" fill="#1f2937" font-weight="700">둘 이상이 쓰는 것</text>
+<rect x="252" y="178" width="116" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="310.0" y="192.1" font-size="10" fill="#374151" text-anchor="middle">slideDeck.ts</text>
+<text x="310.0" y="207.1" font-size="10" fill="#6b7280" text-anchor="middle">· Slides·Convert</text>
+<rect x="376" y="178" width="116" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="434.0" y="192.1" font-size="10" fill="#374151" text-anchor="middle">liveDemo.ts</text>
+<text x="434.0" y="207.1" font-size="10" fill="#6b7280" text-anchor="middle">· 서버 호출·횟수</text>
+<rect x="500" y="178" width="116" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="558.0" y="192.1" font-size="10" fill="#374151" text-anchor="middle">QuotaChip.tsx</text>
+<text x="558.0" y="207.1" font-size="10" fill="#6b7280" text-anchor="middle">· 남은 횟수 칩</text>
+<rect x="252" y="222" width="116" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="310.0" y="236.1" font-size="10" fill="#374151" text-anchor="middle">demoEvent.ts</text>
+<text x="310.0" y="251.1" font-size="10" fill="#6b7280" text-anchor="middle">· 몽이에 알림</text>
+<rect x="376" y="222" width="116" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="434.0" y="236.1" font-size="10" fill="#374151" text-anchor="middle">useInView.ts</text>
+<text x="434.0" y="251.1" font-size="10" fill="#6b7280" text-anchor="middle">· 화면 안인지</text>
+<rect x="500" y="222" width="116" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="558.0" y="236.1" font-size="10" fill="#374151" text-anchor="middle">color.ts</text>
+<text x="558.0" y="251.1" font-size="10" fill="#6b7280" text-anchor="middle">· + 시험 7개</text>
+<text x="632" y="92" font-size="11" fill="#4f46e5" font-weight="600">Demo.tsx</text>
+<text x="632" y="108" font-size="10" fill="#6b7280">종류 → 데모</text>
+<text x="632" y="196" font-size="11" fill="#4f46e5" font-weight="600">cms/ 도식 8개</text>
+<text x="632" y="212" font-size="10" fill="#6b7280">CreativeCms 970줄</text>
+<text x="632" y="226" font-size="10" fill="#6b7280">→ 50~337줄씩</text>
+</svg>
