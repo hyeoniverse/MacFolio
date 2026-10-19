@@ -56,7 +56,7 @@ const Head: React.FC<{ section: LandingSection; title?: string }> = ({ section, 
 /** 창 틀 위 막대에 보일 주소: 데모나 저장소의 호스트, 없으면 이름 */
 function addressOf(landing: Landing) {
 	for (const link of landing.hero.links) {
-		if (link.kind === 'app') continue;
+		if (link.kind === 'app' || link.kind === 'slides') continue;
 		try {
 			return new URL(link.href).host;
 		} catch {
