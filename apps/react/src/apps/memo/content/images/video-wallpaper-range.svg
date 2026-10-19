@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 260" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>video 요소가 /files/:id에 Range 요청을 보내고 서버가 parseRange 결과에 따라 206, 200, 416으로 답하는 흐름</title>
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="800" height="260" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">&lt;video&gt;는 파일을 나눠 받는다 (/files/:id)</text>
+<rect x="32" y="70" width="170" height="60" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="117" y="96" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">&lt;video&gt;</text>
+<text x="117" y="114" font-size="10.5" fill="#374151" text-anchor="middle">Range: bytes=0-</text>
+<rect x="262" y="70" width="190" height="60" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="357" y="96" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">parseRange(header, size)</text>
+<text x="357" y="114" font-size="10.5" fill="#6b7280" text-anchor="middle">files/rules.ts</text>
+<path d="M204 100 H260" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="520" y="56" width="248" height="40" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="644" y="80" font-size="10.5" fill="#1f2937" text-anchor="middle">[시작, 끝] → 206 Partial Content</text>
+<rect x="520" y="104" width="248" height="40" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="644" y="128" font-size="10.5" fill="#1f2937" text-anchor="middle">null (없음·여러 구간) → 200 전체</text>
+<rect x="520" y="152" width="248" height="40" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="644" y="176" font-size="10.5" fill="#1f2937" text-anchor="middle">'unsatisfiable' (파일 밖) → 416</text>
+<path d="M454 92 L518 76" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M454 104 L518 124" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M454 116 L518 168" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="32" y="220" font-size="10.5" fill="#374151">Safari는 206으로 답하지 않으면 동영상을 틀지 않는다</text>
+</svg>

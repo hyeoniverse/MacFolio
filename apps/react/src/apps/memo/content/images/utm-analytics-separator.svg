@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>조합 키 구분자를 정한 과정. 널 문자로 묶었더니 단위 시험에서 키가 잘렸고, 처음 것에서만 나누게 고치자 PostgreSQL이 널 문자를 받지 않아 500이 났다. 공백 슬래시 공백으로 바꿔 끝냈다</title>
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="800" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">조합 키 구분자: 두 번 깨지고 세 번째에 정했다</text>
+<rect x="32" y="62" width="230" height="140" rx="10" fill="#fff1f2" stroke="#fda4af"/>
+<text x="147" y="86" font-size="12" fill="#1f2937" font-weight="700" text-anchor="middle">1. \u0000으로 묶기</text>
+<text x="147" y="112" font-size="10.5" fill="#374151" text-anchor="middle">'utm\0linkedin\0social\0…'</text>
+<text x="147" y="136" font-size="10.5" fill="#374151" text-anchor="middle">split('\0')이 키를 잘랐다</text>
+<text x="147" y="176" font-size="10.5" fill="#b91c1c" text-anchor="middle">단위 시험 실패</text>
+<rect x="286" y="62" width="230" height="140" rx="10" fill="#fff7ed" stroke="#fdba74"/>
+<text x="401" y="86" font-size="12" fill="#1f2937" font-weight="700" text-anchor="middle">2. 처음 것에서만 나누기</text>
+<text x="401" y="112" font-size="10.5" fill="#374151" text-anchor="middle">indexOf('\0')로 한 번만</text>
+<text x="401" y="136" font-size="10.5" fill="#374151" text-anchor="middle">DailyStat.key 저장에서</text>
+<text x="401" y="176" font-size="10.5" fill="#c2410c" text-anchor="middle">API e2e 500 (PostgreSQL)</text>
+<rect x="540" y="62" width="230" height="140" rx="10" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="655" y="86" font-size="12" fill="#1f2937" font-weight="700" text-anchor="middle">3. ' / '로 묶기</text>
+<text x="655" y="112" font-size="10.5" fill="#374151" text-anchor="middle">linkedin / social / resume-2026</text>
+<text x="655" y="136" font-size="10.5" fill="#374151" text-anchor="middle">cleanUtm이 공백을 '-'로</text>
+<text x="655" y="176" font-size="10.5" fill="#047857" text-anchor="middle">화면에 보이는 모양 = 키</text>
+<path d="M264 132 H284" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M518 132 H538" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="32" y="230" font-size="10.5" fill="#6b7280">지표와 키 사이의 \u0000은 메모리에서만 쓰고 저장하지 않으므로 그대로 둔다</text>
+</svg>

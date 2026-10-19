@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>API 요청 하나가 지나가는 층 (위에서 아래로)</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="420" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">API 요청 하나가 지나가는 층 (위에서 아래로)</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">하나라도 걸리면 그 층에서 답하고, 처리 함수까지 가지 않는다</text>
+<rect x="120" y="76" width="560" height="36" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="400.0" y="98.0" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">Cloudflare Tunnel  —  바깥 포트 없음. cloudflared가 먼저 연결</text>
+<line x1="400" y1="112" x2="400" y2="118" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<rect x="120" y="118" width="560" height="36" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="400.0" y="140.0" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">trust proxy  —  실제 방문자 IP</text>
+<line x1="400" y1="154" x2="400" y2="160" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<rect x="120" y="160" width="560" height="36" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="400.0" y="182.0" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">helmet · CORS  —  허용한 사이트 주소만 쿠키와 함께</text>
+<rect x="720" y="162" width="80" height="32" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="760.0" y="182.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">403</text>
+<line x1="400" y1="196" x2="400" y2="202" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<rect x="120" y="202" width="560" height="36" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="400.0" y="224.0" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">ValidationPipe · 스키마  —  정해 두지 않은 필드는 거절</text>
+<rect x="720" y="204" width="80" height="32" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="760.0" y="224.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">400</text>
+<line x1="400" y1="238" x2="400" y2="244" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<rect x="120" y="244" width="560" height="36" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="400.0" y="266.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">AdminGuard  —  관리자 경로: 세션을 DB에서</text>
+<rect x="720" y="246" width="80" height="32" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="760.0" y="266.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">401</text>
+<line x1="400" y1="280" x2="400" y2="286" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<rect x="120" y="286" width="560" height="36" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="400.0" y="308.0" font-size="13" fill="#b45309" font-weight="700" text-anchor="middle">요청 제한  —  쓰기 경로마다 IP별 1분 단위</text>
+<rect x="720" y="288" width="80" height="32" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="760.0" y="308.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">429</text>
+<line x1="400" y1="322" x2="400" y2="328" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<rect x="120" y="328" width="560" height="36" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="400.0" y="350.0" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">처리 함수 → Prisma → PostgreSQL  —  규칙은 rules.ts, DB에는 CHECK 제약</text>
+<line x1="400" y1="364" x2="400" y2="370" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<rect x="120" y="370" width="560" height="36" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="400.0" y="392.0" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">전역 예외 필터  —  에러 모양 하나, 예상 못 한 에러는 감춤</text>
+<rect x="720" y="372" width="80" height="32" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="760.0" y="392.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">500</text>
+</svg>

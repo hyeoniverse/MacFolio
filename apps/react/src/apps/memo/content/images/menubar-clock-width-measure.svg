@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>시간 글자 너비 재기</title>
+  <rect width="720" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="40" font-size="18" font-weight="700" fill="#1f2937">시간 글자 너비 (px, 12.8px 글꼴)</text>
+  <text x="32" y="62" font-size="12" fill="#6b7280">Linux Chromium 미리보기, 대체 글꼴 Liberation Sans. 하루 1,440개 시간 중 가장 좁은·넓은 것</text>
+  <g font-size="13" fill="#374151">
+    <text x="32" y="106">1:11 PM</text>
+    <text x="32" y="146">12:00 PM</text>
+    <text x="32" y="186">12:00 AM</text>
+    <text x="32" y="226">10:00 AM</text>
+  </g>
+  <g>
+    <rect x="130" y="92" width="380" height="20" rx="4" fill="#e5e7eb"/>
+    <rect x="130" y="92" width="268.8" height="20" rx="4" fill="#9ca3af"/>
+    <rect x="130" y="132" width="366.5" height="20" rx="4" fill="#818cf8"/>
+    <rect x="130" y="172" width="371.3" height="20" rx="4" fill="#4f46e5"/>
+    <rect x="130" y="212" width="380" height="20" rx="4" fill="#f97316"/>
+  </g>
+  <g font-size="12" fill="#1f2937">
+    <text x="520" y="106">37.97 (가장 좁음)</text>
+    <text x="520" y="146">51.78 (예약)</text>
+    <text x="520" y="186">52.45 (예약, 칸 너비)</text>
+    <text x="520" y="226">53.69 (+1.23)</text>
+  </g>
+  <line x1="501.3" y1="84" x2="501.3" y2="244" stroke="#4f46e5" stroke-dasharray="4 3"/>
+  <text x="32" y="272" font-size="12" fill="#374151">칸 너비는 예약한 두 시간 중 넓은 쪽(52.45). 이 글꼴에서는 10:00 AM이 1.23px 더 넓어 그때만 칸이 늘어난다</text>
+</svg>

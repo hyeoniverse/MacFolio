@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="250" fill="#fff"/>
+<text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">데스크탑 사진 설정이 설정에 넣는 값</text>
+<rect x="30" y="50" width="700" height="30" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="40" y="70" font-size="11" fill="#374151" text-anchor="start" font-weight="600">고른 파일</text>
+<text x="200" y="70" font-size="11" fill="#374151" text-anchor="start" font-weight="600">wallpaper</text>
+<text x="400" y="70" font-size="11" fill="#374151" text-anchor="start" font-weight="600">wallpaperImage</text>
+<text x="580" y="70" font-size="11" fill="#374151" text-anchor="start" font-weight="600">wallpaperVideo</text>
+<text x="40" y="105" font-size="11" fill="#4b5563" text-anchor="start">그림 (jpg·png·gif)</text>
+<text x="200" y="105" font-size="11" fill="#4b5563" text-anchor="start" font-family="ui-monospace, Menlo, monospace">custom:finder-해시</text>
+<text x="400" y="105" font-size="11" fill="#4b5563" text-anchor="start">파일 주소</text>
+<text x="580" y="105" font-size="11" fill="#4b5563" text-anchor="start">null</text>
+<text x="40" y="141" font-size="11" fill="#4b5563" text-anchor="start">동영상 (mp4 등)</text>
+<text x="200" y="141" font-size="11" fill="#4b5563" text-anchor="start" font-family="ui-monospace, Menlo, monospace">custom:finder-해시</text>
+<text x="400" y="141" font-size="11" fill="#4b5563" text-anchor="start">파일 주소 (같은 값)</text>
+<text x="580" y="141" font-size="11" fill="#4b5563" text-anchor="start">파일 주소</text>
+<text x="40" y="177" font-size="11" fill="#4b5563" text-anchor="start">방문자가 놓은 파일</text>
+<text x="200" y="177" font-size="11" fill="#4b5563" text-anchor="start" font-family="ui-monospace, Menlo, monospace">custom:finder-해시</text>
+<text x="400" y="177" font-size="11" fill="#4b5563" text-anchor="start">blob: 주소</text>
+<text x="580" y="177" font-size="11" fill="#4b5563" text-anchor="start">동영상이면 blob:</text>
+<text x="380" y="225" font-size="11" fill="#6b7280" text-anchor="middle">blob: 주소는 그 탭에서만 살아 있어서 새로고침하면 그림을 못 그리고 기본 배경으로 돌아간다</text>
+</svg>

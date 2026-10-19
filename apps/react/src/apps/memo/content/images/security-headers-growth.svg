@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>CSP의 connect-src에 출처가 더해진 날짜: 10월 9일 처음, 10일 날씨 앱 Open-Meteo, 11일 npm 레지스트리, 18일 R2 업로드와 blob 주소</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="860" height="320" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">connect-src가 자란 기록 (worker/securityHeaders.ts)</text>
+<path d="M80 70 L80 280" stroke="#c7d2fe" stroke-width="3" fill="none"/>
+<circle cx="80" cy="82" r="7" fill="#4f46e5"/>
+<text x="32" y="86" font-size="10.5" font-weight="700" fill="#4f46e5" text-anchor="start">09일</text>
+<text x="100" y="80" font-size="12" font-weight="700" fill="#1f2937" text-anchor="start">처음</text>
+<text x="100" y="96" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">CSP를 붙인 커밋</text>
+<text x="300" y="87" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="start">'self' · API · Turnstile</text>
+<circle cx="80" cy="126" r="7" fill="#4f46e5"/>
+<text x="32" y="130" font-size="10.5" font-weight="700" fill="#4f46e5" text-anchor="start">10일</text>
+<text x="100" y="124" font-size="12" font-weight="700" fill="#1f2937" text-anchor="start">날씨 앱</text>
+<text x="100" y="140" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">날씨 앱 커밋에서 함께</text>
+<text x="300" y="131" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="start">+ api.open-meteo.com · geocoding-api…</text>
+<circle cx="80" cy="170" r="7" fill="#4f46e5"/>
+<text x="32" y="174" font-size="10.5" font-weight="700" fill="#4f46e5" text-anchor="start">11일</text>
+<text x="100" y="168" font-size="12" font-weight="700" fill="#1f2937" text-anchor="start">기술 칸 검색</text>
+<text x="100" y="184" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">npm 검색 커밋에서 함께</text>
+<text x="300" y="175" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="start">+ registry.npmjs.org</text>
+<circle cx="80" cy="214" r="7" fill="#4f46e5"/>
+<text x="32" y="218" font-size="10.5" font-weight="700" fill="#4f46e5" text-anchor="start">18일</text>
+<text x="100" y="212" font-size="12" font-weight="700" fill="#1f2937" text-anchor="start">문서 올리기</text>
+<text x="100" y="228" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">R2 업로드 커밋에서 함께</text>
+<text x="300" y="219" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="start">+ *.r2.cloudflarestorage.com</text>
+<circle cx="80" cy="258" r="7" fill="#4f46e5"/>
+<text x="32" y="262" font-size="10.5" font-weight="700" fill="#4f46e5" text-anchor="start">18일</text>
+<text x="100" y="256" font-size="12" font-weight="700" fill="#1f2937" text-anchor="start">PDF 읽기</text>
+<text x="100" y="272" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">따로 고친 커밋</text>
+<text x="300" y="263" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="start">+ blob:</text>
+<text x="32" y="306" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">출처 목록을 코드에 두었기 때문에, 바깥 서비스를 붙이는 커밋이 CSP 한 줄을 함께 바꾼다. 빠뜨리면 그 기능의 E2E가 CSP 위반으로 실패한다.</text>
+</svg>

@@ -2,10 +2,20 @@
 title: R2에 DB 백업 걸기 - 대시보드부터 cron까지
 date: 2026-10-05
 category: 개발기/MacFolio/인프라
-summary: 백업 스크립트를 실제 서버에 거는 순서. R2 버킷과 키, 실패를 알려 줄 주소, rclone 버전, 연결 확인, cron, 되살리기 시험까지. 단계마다 그렇게 하는 까닭을 함께 적었다.
+summary: DB 백업 스크립트를 실제 서버에 거는 순서를 까닭과 함께 적었다. R2 Standard 비공개 버킷, 버킷 하나짜리 키, healthchecks 알림, rclone 1.59, 연결 확인, UTC cron, 8GB 상한, 다른 DB에 되살리기까지.
 ---
 
 [백업 스크립트](/memo/db-backup)는 저장소에 들어갔지만, 서버에 걸기 전까지는 아무 일도 하지 않는다. 걸 때 고를 것이 생각보다 많았다. 순서와 까닭을 같이 적어 둔다. 명령만 필요하면 `docs/deployment.md`의 '백업'을 보면 된다.
+
+## 배경
+
+API 서버는 Oracle Cloud의 무료 VM 한 대이고, PostgreSQL도 그 안의 Docker 컨테이너다. 서버 디스크에만 백업을 두면, 서버가 회수되거나 디스크가 망가질 때 백업도 같이 사라진다. 그래서 서버 밖 한 곳에 하루 한 번 올리기로 했다.
+
+| 서버 밖 저장소        | 좋은 점                                                                | 문제                                                      |
+| --------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| Oracle Object Storage | 같은 클라우드라 빠르다                                                 | 같은 계정이 회수되거나 잠기면 함께 막힌다                 |
+| GitHub Actions 산출물 | 이미 쓰고 있다                                                         | 보관 기간이 짧고, 서버가 GitHub에 쓰는 토큰을 가져야 한다 |
+| Cloudflare R2 (고름)  | 프론트엔드 배포로 이미 쓰는 계정. 무료 한도 10GB. 내보내기 요금이 없다 | 청구 전에 멈추는 설정이 없다 (아래 6번)                   |
 
 비밀 값(키)은 처음부터 끝까지 **서버의 `~/deploy/backup.env`에만** 둔다. 저장소에도, 채팅에도, 스크린샷에도 남기지 않는다.
 
@@ -63,6 +73,18 @@ rclone deletefile r2:macfolio-backups/connection-test.txt
 
 R2에는 청구되기 전에 멈추는 설정이 없다. 그래서 스크립트가 올리기 전에 버킷 크기를 재고, 오늘 백업을 더해 상한을 넘으면 올리지 않고 실패로 알린다. 무료 한도인 10GB보다 낮은 8GB에서 먼저 멈춘다.
 
+```bash
+remote_bytes="$(rclone size --json "$BACKUP_REMOTE" | grep -o '"bytes":[0-9]*' | cut -d: -f2)" ||
+	fail "서버 밖 저장소의 크기를 재지 못했다 ($BACKUP_REMOTE)"
+file_bytes="$(wc -c <"$file" | tr -d ' ')"
+limit_bytes=$((MAX_REMOTE_GB * 1024 * 1024 * 1024))
+if ((remote_bytes + file_bytes > limit_bytes)); then
+	fail "서버 밖 저장소가 상한(${MAX_REMOTE_GB}GB)을 넘게 된다 … 올리지 않았다"
+fi
+```
+
+![백업이 남는 곳과 기간](./images/r2-backup-setup-retention.svg '서버에는 7일, R2에는 30일을 남기고, R2 전체가 8GB를 넘을 것 같으면 올리지 않는다')
+
 ## 7. cron은 UTC
 
 ```bash
@@ -104,5 +126,25 @@ docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restore
 | 연결부터 확인              | 문제를 덤프와 섞지 않고 찾는다        |
 | 저장소 상한 8GB            | R2에는 청구 전에 멈추는 설정이 없다   |
 | 다른 DB에 되살리기         | 되살려 보지 않은 백업은 백업이 아니다 |
+
+## 그 뒤
+
+- 같은 날 서버 배포 스크립트(`ops/deploy.sh`)가 새 버전으로 바꾸기 전에 이 백업 스크립트를 먼저 돌리게 했다(`BACKUP_LOCAL_ONLY=1`, 서버에만 남긴다). 첫 배포에서 compose가 `API_TAG`를 몰라 이 백업 단계가 멈췄고, 바로 고쳤다([PR #107](https://github.com/hyeoniverse/MacFolio/pull/107)).
+- 뒤에 [되돌리기 훈련](/memo/rollback-drill)에서 일부러 실패하는 이미지를 올려 볼 때도, 배포 직전 백업이 평소처럼 하나 생겼다.
+
+이 글과 스크립트는 [PR #94](https://github.com/hyeoniverse/MacFolio/pull/94)(스크립트), [PR #98](https://github.com/hyeoniverse/MacFolio/pull/98)(8GB 상한), [PR #99](https://github.com/hyeoniverse/MacFolio/pull/99)(연결 확인과 첫 결과)로 나뉘어 들어갔다.
+
+## 남은 것·배운 것
+
+- 백업 파일은 하루 한 번이라, 최악에는 하루치 글을 잃는다. 글은 저장소의 Markdown에도 있지만 서버에서 고친 글·댓글·메시지는 DB에만 있다.
+- 되살리기 시험은 "한 달에 한 번쯤"으로 적어 두었을 뿐, 저절로 돌지 않는다.
+- 연결 확인에서 `rclone lsd`가 403을 낸 것처럼, 권한을 좁힌 키는 "안 되는 것이 맞는" 명령이 생긴다. 문서의 확인 명령은 그 키로 되어야 하는 것만 적어야 한다.
+- 문서에 `<파일>` 같은 자리표시를 두면 그대로 붙여 넣는 일이 생긴다. 명령이 스스로 값을 고르게(`ls -t | head -1`) 하는 편이 안전했다.
+
+## 관련 글
+
+- [글이 DB에만 있게 되어서 백업을 붙였다](/memo/db-backup)
+- [되돌리기 훈련 - 헬스 체크가 실패하는 이미지를 서버에 일부러 올렸다](/memo/rollback-drill)
+- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
 
 #MacFolio #서버 #백업 #Cloudflare

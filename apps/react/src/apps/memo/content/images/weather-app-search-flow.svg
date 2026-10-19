@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>장소 찾기 흐름. 글자를 치면 내장 도시 211곳에서 바로 찾아 보여 주고, 한글 조합이 끝나고 두 글자 이상에서 0.25초 멈추면 Open-Meteo에 묻는다. 기억한 답이 있으면 다시 묻지 않고, 8초가 넘으면 그만둔다. 두 결과를 합쳐 같은 곳은 한 번만 보인다</title>
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="820" height="270" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">장소 찾기: 기다리지 않는 쪽을 먼저</text>
+<rect x="32" y="110" width="130" height="50" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="97" y="132" font-size="11.5" fill="#1f2937" text-anchor="middle">글자 입력</text>
+<text x="97" y="149" font-size="10" fill="#6b7280" text-anchor="middle">'노원'</text>
+<rect x="210" y="62" width="220" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="320" y="85" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">matchCities (내장 211곳)</text>
+<text x="320" y="103" font-size="10" fill="#374151" text-anchor="middle">바로 · 시작 → 포함 → 지역 순</text>
+<rect x="210" y="150" width="220" height="80" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+<text x="320" y="172" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">Open-Meteo 지오코딩</text>
+<text x="320" y="190" font-size="10" fill="#374151" text-anchor="middle">조합 끝 · 2글자 이상 · 0.25초 멈춤</text>
+<text x="320" y="206" font-size="10" fill="#374151" text-anchor="middle">기억한 답이면 묻지 않음</text>
+<text x="320" y="222" font-size="10" fill="#b45309" text-anchor="middle">1~10초 · 8초 넘으면 그만</text>
+<path d="M164 128 L208 94" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M164 142 L208 180" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="490" y="110" width="160" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="570" y="133" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">mergePlaces</text>
+<text x="570" y="151" font-size="10" fill="#374151" text-anchor="middle">약 500m 안이면 한 번만</text>
+<path d="M432 92 L488 126" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M432 186 L488 152" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="690" y="110" width="100" height="56" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="740" y="133" font-size="11" fill="#1f2937" text-anchor="middle">목록</text>
+<text x="740" y="151" font-size="10" fill="#6b7280" text-anchor="middle">'더 찾는 중…'</text>
+<path d="M652 138 H688" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+</svg>

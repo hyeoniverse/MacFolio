@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="780" height="300" fill="#fff"/>
+<text x="390.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">제목 표시줄 없는 창의 위쪽 52px</text>
+<rect x="60" y="55" width="660" height="200" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+<rect x="60" y="55" width="660" height="52" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-dasharray="4 3"/>
+<text x="390" y="74" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">.macos-titlebar  투명한 끌기 자리 (z-index 3)</text>
+<circle cx="82" cy="81" r="5" fill="#ff5f57"/>
+<circle cx="98" cy="81" r="5" fill="#febc2e"/>
+<circle cx="114" cy="81" r="5" fill="#28c840"/>
+<rect x="300" y="84" width="300" height="18" rx="4" fill="#ffffff" stroke="#fca5a5"/>
+<text x="450" y="97" font-size="10" fill="#b91c1c" text-anchor="middle">보낸 사람: hyeoniverse.dev@gmail.com</text>
+<text x="390" y="140" font-size="11" fill="#6b7280" text-anchor="middle">읽기 칸 (보낸 사람 줄이 마침 끌기 자리 높이에 있다)</text>
+<rect x="110" y="170" width="260" height="60" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="240.0" y="196.5" font-size="11" fill="#b91c1c" text-anchor="middle" font-weight="600">전: 버튼 z-index 없음</text>
+<text x="240.0" y="211.5" font-size="10" fill="#4b5563" text-anchor="middle">누르면 끌기 자리가 받는다 → 시험 시간 초과</text>
+<rect x="410" y="170" width="260" height="60" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="540.0" y="196.5" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">후: .mail-copy-address z-index 4</text>
+<text x="540.0" y="211.5" font-size="10" fill="#4b5563" text-anchor="middle">끌기 자리 위로 올라와 눌린다</text>
+<text x="390" y="285" font-size="11" fill="#6b7280" text-anchor="middle">Window.css의 규칙: 이 높이에 두는 버튼은 z-index를 올린다</text>
+</svg>

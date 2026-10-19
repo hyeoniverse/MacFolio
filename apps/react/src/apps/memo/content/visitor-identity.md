@@ -2,7 +2,7 @@
 title: 이름·비밀번호 없이 쓰는 메시지와 댓글 - 방문자 쿠키로 정하는 이름
 date: 2026-10-02
 category: 개발기/MacFolio/백엔드
-summary: 메시지 앱과 블로그 댓글은 쓸 때마다 이름과 비밀번호를 받았다. 이제 서버가 처음 온 브라우저에 쿠키를 주고, 그 값으로 "🦊 날쌘 여우" 같은 이름을 정한다. 같은 브라우저면 언제 와도 같은 이름이고, 자기 글은 그 브라우저에서 지운다. 메시지 앱도 처음으로 서버에 저장한다.
+summary: 메시지와 댓글에서 이름·비밀번호 칸을 없앴다. 서버가 처음 온 브라우저에 httpOnly 쿠키를 주고 그 HMAC 해시로 "🦊 날쌘 여우" 같은 이름(720가지)을 정한다. 지우기 권한도 쿠키를 따르고, 메시지 앱은 처음으로 서버에 저장한다.
 ---
 
 메시지 앱(감상·의견·피드백)과 블로그 댓글은 글을 쓸 때마다 이름과 비밀번호를 받았다. 비밀번호는 나중에 자기 글을 지울 때 쓰는 것이었다. 휴대폰에서 보니 이 두 칸이 입력창보다 더 눈에 띄었고, 여백을 아무리 다듬어도 혼자 튀었다. 한 줄 남기려는 사람에게 이름과 비밀번호까지 정하게 하는 것도 번거롭다.
@@ -37,6 +37,10 @@ export const hashVisitor = (token: string, secret: string) =>
 	createHmac('sha256', secret).update(`visitor:${token}`).digest('hex');
 ```
 
+`visitor:`라는 앞말을 붙인 것은 같은 비밀 키를 다른 용도의 해시에도 쓸 때 값이 겹치지 않게 하려는 것이다. 쿠키 값도 아무 글자나 받지 않는다. `randomToken(24)`가 만드는 모양이 아니면 없는 것으로 보고 새 토큰을 준다.
+
+![쿠키 토큰, DB의 해시, 응답의 authorId, 이름이 만들어지는 관계](./images/visitor-identity-hash-chain.svg '토큰은 브라우저에만 있다')
+
 ## 해시에서 이름 만들기
 
 해시의 앞 8자리로 꾸밈말을, 그다음 8자리로 동물을 고른다. 꾸밈말 30개와 동물 24마리라 720가지다. 같은 해시면 늘 같은 이름이다.
@@ -70,5 +74,45 @@ repository = env.apiUrl ? createApiConversationRepository(env.apiUrl) : createLo
 서버는 피드백(`MessageThread`)과 말풍선(`GuestMessage`)을 저장한다. 사이트 주인의 고정 안내 글은 프론트엔드에 그대로 두고, 서버에는 거기 단 답글만 둔다(`threadId`가 빈 글). 서버 주소가 없을 때는 예전처럼 브라우저에 저장하는데, 이때도 이름은 브라우저 id로 같은 방식으로 정한다. 그래서 이름 재료 목록이 서버와 프론트엔드 두 곳에 있다.
 
 메시지와 댓글이 같은 쿠키를 쓰니, 메시지 앱에서 "🦊 날쌘 여우"였던 사람은 블로그 댓글에서도 "🦊 날쌘 여우"다.
+
+## 구현 순서
+
+서버 쪽은 한 커밋(19파일, 889줄 추가·205줄 삭제)으로 들어갔다.
+
+1. `apps/api/src/visitors/`: 토큰 만들기·읽기, `hashVisitor`, `visitorName`(87줄)과 `GET /visitor`
+2. 마이그레이션 `20261002110000_visitor_messages`: 댓글에 `visitorHash` 열, 메시지용 `MessageThread`·`GuestMessage` 표와 CHECK 제약
+3. `comments/`: 이름·비밀번호 검사를 `rules.ts`에서 빼고 쿠키에서 이름과 해시를 정한다
+4. `messages/`: 컨트롤러와 서비스(177줄)를 새로 만들었다
+5. 화면: 이름·비밀번호 칸을 지우고, 메시지 앱 저장소를 서버 구현으로 바꿨다
+
+댓글의 CHECK 제약은 이렇게 바뀌었다. 예전 댓글(비밀번호가 있는 것)도, 새 댓글(방문자 해시가 있는 것)도, 관리자 댓글도 모두 통과한다.
+
+```sql
+CHECK (
+  length(btrim("name")) BETWEEN 1 AND 20
+  AND length(btrim("body")) BETWEEN 1 AND 500
+  AND ("isAdmin" OR "passwordHash" IS NOT NULL OR "visitorHash" IS NOT NULL)
+)
+```
+
+## 확인
+
+- 단위 시험 `apps/api/src/visitors/visitor.test.ts` 4개: "같은 토큰이면 늘 같은 이름, 키가 다르면 다른 해시", "이름은 \"이모지 꾸밈말 동물\" 모양이고, 해시에 따라 골고루 나온다", "토큰 모양: randomToken(24)만 받는다", "밖으로 내보내는 글쓴이 값은 저장한 해시와 다르다"
+- API e2e `apps/api/test/messages.e2e.test.ts`(새로 169줄): 쿠키로 이름이 정해지는지, 같은 사람의 말풍선이 같은 `authorId`로 묶이는지, "같은 브라우저에서 쓴 글만 지우고, 관리자는 김정현으로 쓰고 무엇이든 지운다", 피드백을 지우면 답글도 함께 지워지는지
+- API e2e `comments.e2e.test.ts`: 이름·비밀번호 없이 쓰고, 다른 쿠키로는 지우지 못하는지
+
+## 남은 것·배운 것
+
+- 쿠키를 지우면 새 이름이 되고, 예전 글은 더 이상 지울 수 없다. 그때는 관리자에게 부탁해야 한다. 한 줄 남기는 곳에서는 받아들일 만한 값이라고 봤다.
+- 이름 재료 목록이 서버(`visitors/visitor.ts`)와 화면(`apps/messages/conversations.ts`) 두 곳에 있다. 서버 없이 돌 때도 같은 방식으로 이름을 정하려는 것인데, 한쪽만 고치면 이름이 어긋난다. 나중에 contracts 패키지로 옮길 후보다.
+- "누구인지 알아보기"와 "권한 주기"를 같은 값으로 하면 그 값이 쉽게 바뀌지 않아야 한다. IP는 알아보기에는 그럭저럭이지만 권한에는 맞지 않았다.
+- 입력 칸 하나를 없애는 일이 화면만의 일이 아니었다. 권한 모델, DB 제약, 저장 위치까지 함께 바뀌었다.
+
+## 관련 글
+
+- 블로그 댓글을 처음 만든 일: /memo/post-comments
+- 메시지 규칙을 contracts로 옮긴 일: /memo/contracts-messages
+- 서버 없이도 메시지를 쓰는 일: /memo/messages-offline
+- PR: https://github.com/hyeoniverse/MacFolio/pull/69
 
 #MacFolio #백엔드 #메시지 #댓글

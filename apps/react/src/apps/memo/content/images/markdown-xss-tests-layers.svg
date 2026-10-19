@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="300" fill="#fff"/>
+<text x="400.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">공격 문자열이 스크립트가 되기까지 넘어야 할 겹</text>
+<rect x="40" y="55" width="720" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="400.0" y="79.5" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">① 그리는 단계</text>
+<text x="400.0" y="94.5" font-size="10" fill="#4b5563" text-anchor="middle">react-markdown: HTML을 그리지 않고 위험한 주소를 지운다 / README: rehype-sanitize</text>
+<rect x="40" y="125" width="720" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="400.0" y="149.5" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">② 브라우저 단계 (CSP)</text>
+<text x="400.0" y="164.5" font-size="10" fill="#4b5563" text-anchor="middle">script-src 'self' + Turnstile: 인라인 &lt;script&gt;·onerror는 실행되지 않는다</text>
+<line x1="400" y1="111" x2="400" y2="123" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="40" y="195" width="720" height="56" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="400.0" y="219.5" font-size="11" fill="#b45309" text-anchor="middle" font-weight="600">③ 시험</text>
+<text x="400.0" y="234.5" font-size="10" fill="#4b5563" text-anchor="middle">readmeSafety.test.ts (단위) · markdown-safety.spec.ts (E2E, CSP 켠 미리보기)</text>
+<line x1="400" y1="181" x2="400" y2="193" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="400" y="280" font-size="11" fill="#6b7280" text-anchor="middle">①이 깨지면 ②가 막고, E2E는 CSP에 막힌 것이 있으면 그 자체로 실패한다 (fixtures.ts)</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>후보를 정한 순서. 따로 만든 곳이 둘 이상인가, 겉모습과 동작이 같은가, 스크린 리더에게 뜻이 같은가를 차례로 묻고, 모두 예면 뽑고 하나라도 아니면 보류한다</title>
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="800" height="270" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">수가 아니라 "같은가"로 정했다</text>
+<rect x="32" y="70" width="190" height="60" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="127" y="96" font-size="11.5" fill="#1f2937" text-anchor="middle">따로 만든 곳이</text>
+<text x="127" y="114" font-size="11.5" fill="#1f2937" text-anchor="middle">둘 이상인가</text>
+<rect x="272" y="70" width="190" height="60" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="367" y="96" font-size="11.5" fill="#1f2937" text-anchor="middle">겉모습·동작이</text>
+<text x="367" y="114" font-size="11.5" fill="#1f2937" text-anchor="middle">같은가 (안은 children)</text>
+<rect x="512" y="70" width="190" height="60" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="607" y="96" font-size="11.5" fill="#1f2937" text-anchor="middle">스크린 리더에게</text>
+<text x="607" y="114" font-size="11.5" fill="#1f2937" text-anchor="middle">뜻이 같은가</text>
+<path d="M224 100 H270" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M464 100 H510" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="247" y="92" font-size="10" fill="#047857" text-anchor="middle">예</text>
+<text x="487" y="92" font-size="10" fill="#047857" text-anchor="middle">예</text>
+<path d="M704 100 H740 V150" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+<rect x="660" y="152" width="120" height="44" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="720" y="172" font-size="11.5" fill="#047857" font-weight="700" text-anchor="middle">뽑는다</text>
+<text x="720" y="188" font-size="9.5" fill="#374151" text-anchor="middle">Sheet·Modal·SearchField</text>
+<rect x="32" y="190" width="560" height="56" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+<text x="48" y="212" font-size="11.5" fill="#c2410c" font-weight="700">아니오 → 보류</text>
+<text x="48" y="232" font-size="10.5" fill="#374151">Switch(한 곳뿐) · Toolbar·Sidebar·EmptyState(앱마다 다름) · SegmentedControl·ListRow(뜻이 다름)</text>
+<path d="M127 132 V188" stroke="#d97706" stroke-width="1.2" stroke-dasharray="4 3"/>
+<path d="M367 132 V188" stroke="#d97706" stroke-width="1.2" stroke-dasharray="4 3"/>
+<path d="M607 132 V170 H592" stroke="#d97706" stroke-width="1.2" stroke-dasharray="4 3" fill="none"/>
+</svg>

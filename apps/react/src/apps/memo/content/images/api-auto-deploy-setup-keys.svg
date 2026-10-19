@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>열쇠 등록을 서버에서 한 번에 (여러 번 해도 같은 결과)</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">열쇠 등록을 서버에서 한 번에 (여러 번 해도 같은 결과)</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">내 컴퓨터와 서버 사이에 옮길 것이 없다. 출력된 세 값을 GitHub Secrets에 붙인다</text>
+<rect x="32" y="100" width="148" height="80" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="106.0" y="135.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">1. 예전 줄 지우기</text>
+<text x="106.0" y="152.5" font-size="11" fill="#374151" text-anchor="middle">sed /github-actions-deploy/d</text>
+<line x1="180" y1="140" x2="196" y2="140" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<rect x="196" y="100" width="148" height="80" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="270.0" y="135.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">2. 새 열쇠</text>
+<text x="270.0" y="152.5" font-size="11" fill="#374151" text-anchor="middle">ssh-keygen ed25519</text>
+<line x1="344" y1="140" x2="360" y2="140" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<rect x="360" y="100" width="148" height="80" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="434.0" y="135.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">3. 제한 붙여 등록</text>
+<text x="434.0" y="152.5" font-size="11" fill="#374151" text-anchor="middle">restrict,command=deploy.sh</text>
+<line x1="508" y1="140" x2="524" y2="140" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<rect x="524" y="100" width="148" height="80" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="598.0" y="135.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">4. 개수 확인</text>
+<text x="598.0" y="152.5" font-size="11" fill="#374151" text-anchor="middle">등록된 배포 열쇠 수: 1</text>
+<line x1="672" y1="140" x2="688" y2="140" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<rect x="688" y="100" width="148" height="80" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="762.0" y="135.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">5. 세 값 출력</text>
+<text x="762.0" y="152.5" font-size="11" fill="#374151" text-anchor="middle">IP · 호스트 키 · 비밀 열쇠</text>
+<rect x="32" y="210" width="796" height="56" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="430.0" y="242.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">전에는 &quot;이미 있으면 넣지 않는다&quot; → 첫 열쇠만 서버에, 둘째 열쇠는 GitHub에 → Permission denied (publickey)</text>
+</svg>

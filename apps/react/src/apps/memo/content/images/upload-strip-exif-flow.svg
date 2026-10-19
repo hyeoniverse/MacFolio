@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 230" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>사진이 올라가는 길. 글 편집기와 배경화면 설정이 보낸 파일은 API에서 형식을 확인한 뒤 stripImageMetadata를 거쳐 DB에 저장되고, 내려줄 때는 지운 뒤의 크기를 쓴다</title>
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="800" height="230" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">사진이 저장되기까지</text>
+<rect x="32" y="62" width="150" height="48" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="107" y="83" font-size="11" fill="#1f2937" text-anchor="middle">글 편집기</text>
+<text x="107" y="99" font-size="10" fill="#6b7280" text-anchor="middle">원본 그대로</text>
+<rect x="32" y="130" width="150" height="48" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="107" y="151" font-size="11" fill="#1f2937" text-anchor="middle">배경화면 설정</text>
+<text x="107" y="167" font-size="10" fill="#6b7280" text-anchor="middle">캔버스로 줄인 그림</text>
+<rect x="222" y="96" width="150" height="48" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="297" y="117" font-size="11" fill="#1f2937" text-anchor="middle">형식 확인</text>
+<text x="297" y="133" font-size="10" fill="#6b7280" text-anchor="middle">파일 앞부분 바이트</text>
+<rect x="412" y="96" width="170" height="48" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="497" y="117" font-size="11" fill="#1f2937" font-weight="600" text-anchor="middle">stripImageMetadata</text>
+<text x="497" y="133" font-size="10" fill="#6b7280" text-anchor="middle">files/metadata.ts</text>
+<rect x="622" y="96" width="146" height="48" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="695" y="117" font-size="11" fill="#1f2937" text-anchor="middle">DB 저장</text>
+<text x="695" y="133" font-size="10" fill="#6b7280" text-anchor="middle">size = 지운 뒤 크기</text>
+<path d="M184 86 L220 112" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M184 154 L220 128" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M374 120 H410" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M584 120 H620" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="412" y="176" font-size="10.5" fill="#374151">JPEG · PNG · WebP만 손댄다. GIF·깨진 파일은 그대로</text>
+<text x="412" y="194" font-size="10.5" fill="#374151">files.service.ts와 wallpapers.service.ts 두 곳에서 부른다</text>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>공통 Modal이 층을 정하는 순서. 쓰는 쪽이 --ui-modal-z를 주면 그 값, 없으면 --z-dialog 1000을 쓴다</title>
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="760" height="240" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">Modal의 층: 쓰는 쪽이 이름으로 고른다</text>
+<rect x="32" y="64" width="220" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="142" y="88" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">Launchpad.css</text>
+<text x="142" y="106" font-size="10.5" fill="#374151" text-anchor="middle">--ui-modal-z: var(--z-launchpad)</text>
+<rect x="32" y="128" width="220" height="40" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="142" y="152" font-size="10.5" fill="#374151" text-anchor="middle">KeyboardShortcuts: var(--z-shortcuts)</text>
+<rect x="32" y="176" width="220" height="40" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="142" y="200" font-size="10.5" fill="#374151" text-anchor="middle">LoginFlow: var(--z-login)</text>
+<rect x="320" y="104" width="240" height="64" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="440" y="130" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">Modal.css</text>
+<text x="440" y="150" font-size="10.5" fill="#374151" text-anchor="middle">z-index: var(--ui-modal-z, var(--z-dialog))</text>
+<path d="M254 92 L318 128" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+<path d="M254 148 H318" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+<path d="M254 196 L318 158" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+<rect x="600" y="104" width="130" height="64" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="665" y="130" font-size="11" fill="#1f2937" text-anchor="middle">값이 없으면</text>
+<text x="665" y="148" font-size="11" fill="#1f2937" text-anchor="middle">--z-dialog (1000)</text>
+<path d="M562 136 H598" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+</svg>

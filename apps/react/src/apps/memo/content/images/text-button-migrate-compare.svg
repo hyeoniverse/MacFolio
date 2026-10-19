@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>모양이 같은지 확인하는 방법. E2E가 지나가는 동안 보이는 ui-button마다 계산된 스타일을 읽고, ui-button 클래스를 잠깐 떼고 다시 읽어 비교한다. 64가지가 모두 같았다</title>
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="800" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">클래스를 떼어 보고 비교한다</text>
+<rect x="32" y="66" width="170" height="64" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="117" y="92" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">E2E가 지나가며</text>
+<text x="117" y="110" font-size="10.5" fill="#374151" text-anchor="middle">기본 · hover · 비활성</text>
+<rect x="244" y="66" width="200" height="64" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="344" y="92" font-size="11.5" fill="#1f2937" text-anchor="middle">getComputedStyle (붙인 채)</text>
+<text x="344" y="110" font-size="10.5" fill="#6b7280" text-anchor="middle">= 옮긴 뒤</text>
+<rect x="244" y="146" width="200" height="64" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="344" y="172" font-size="11.5" fill="#1f2937" text-anchor="middle">ui-button을 떼고 다시 읽기</text>
+<text x="344" y="190" font-size="10.5" fill="#6b7280" text-anchor="middle">= 옮기기 전 &lt;button&gt;</text>
+<path d="M204 98 H242" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M204 110 L242 168" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="490" y="104" width="130" height="64" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+<text x="555" y="132" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">속성마다 비교</text>
+<text x="555" y="150" font-size="10.5" fill="#6b7280" text-anchor="middle">다른 것만 기록</text>
+<path d="M446 98 L488 126" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M446 178 L488 148" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="660" y="74" width="120" height="50" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="720" y="96" font-size="10.5" fill="#1f2937" text-anchor="middle">처음: 모두 다름</text>
+<text x="720" y="112" font-size="10" fill="#6b7280" text-anchor="middle">display·gap·모서리…</text>
+<rect x="660" y="148" width="120" height="50" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="720" y="170" font-size="10.5" fill="#1f2937" text-anchor="middle">:where 규칙 뒤</text>
+<text x="720" y="186" font-size="10" fill="#047857" text-anchor="middle">64가지 모두 같음</text>
+<path d="M622 128 L658 104" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M622 144 L658 168" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="32" y="236" font-size="10.5" fill="#6b7280">:where 규칙도 .ui-button에 걸려 있어서 떼면 함께 빠진다. 그래서 "뗀 상태"가 옮기기 전과 같다</text>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>webpack 캐시가 커밋에 들어온 경로</title>
+<rect width="760" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">캐시가 커밋에 들어온 경로</text>
+<g font-size="13" fill="#1f2937">
+<rect x="32" y="70" width="210" height="70" rx="10" fill="#fee2e2" stroke="#fca5a5"/>
+<text x="137" y="98" text-anchor="middle" font-weight="600">10월 26일</text>
+<text x="137" y="120" text-anchor="middle">.gitignore에서 node_modules 삭제</text>
+<rect x="275" y="70" width="210" height="70" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="380" y="98" text-anchor="middle" font-weight="600">node_modules 전체 추적</text>
+<text x="380" y="120" text-anchor="middle">패키지 파일이 커밋 대상</text>
+<rect x="518" y="70" width="210" height="70" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="623" y="98" text-anchor="middle" font-weight="600">CRA 개발 서버</text>
+<text x="623" y="120" text-anchor="middle">node_modules/.cache에 캐시를 씀</text>
+<rect x="518" y="190" width="210" height="70" rx="10" fill="#fef3c7" stroke="#fcd34d"/>
+<text x="623" y="218" text-anchor="middle" font-weight="600">05:02 "npm install"</text>
+<text x="623" y="240" text-anchor="middle">실제로는 webpack 캐시</text>
+<rect x="275" y="190" width="210" height="70" rx="10" fill="#fef3c7" stroke="#fcd34d"/>
+<text x="380" y="218" text-anchor="middle" font-weight="600">05:49 "remove cache"</text>
+<text x="380" y="240" text-anchor="middle">캐시 지움 + client/build 72개</text>
+<rect x="32" y="190" width="210" height="70" rx="10" fill="#dcfce7" stroke="#86efac"/>
+<text x="137" y="218" text-anchor="middle" font-weight="600">05:54 .gitignore</text>
+<text x="137" y="240" text-anchor="middle">.cache 한 줄만 무시</text>
+</g>
+<g stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#a)">
+<path d="M242 105 H270"/><path d="M485 105 H513"/><path d="M623 140 V185"/><path d="M518 225 H490"/><path d="M275 225 H247"/>
+</g>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<text x="32" y="300" font-size="12.5" fill="#6b7280">근본 원인(첫 상자)은 그대로 두고 증상 하나(.cache)만 막았다. node_modules와 build는 계속 추적되었다.</text>
+</svg>

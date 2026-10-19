@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>프로젝트 목록의 출처</title>
+  <rect width="780" height="320" rx="16" fill="#ffffff"/>
+  <text x="32" y="40" font-size="18" font-weight="700" fill="#1f2937">전: 목록 두 개 / 후: PROJECTS 하나</text>
+  <text x="32" y="62" font-size="12" fill="#6b7280">GitHub 앱의 스냅샷(서버에 닿지 않을 때의 값)만 따로 적혀 있었다</text>
+  <g font-size="12">
+    <text x="32" y="96" font-weight="600" fill="#b91c1c">전</text>
+    <rect x="32" y="106" width="150" height="40" rx="8" fill="#eef0ff"/><text x="44" y="130" fill="#3f46c7">PROJECTS</text>
+    <rect x="32" y="160" width="150" height="40" rx="8" fill="#fee2e2"/><text x="44" y="184" fill="#b91c1c">스냅샷 저장소 목록</text>
+    <rect x="210" y="98" width="130" height="24" rx="6" fill="#f3f4f6"/><text x="220" y="115" fill="#374151">Safari 탭</text>
+    <rect x="210" y="126" width="130" height="24" rx="6" fill="#f3f4f6"/><text x="220" y="143" fill="#374151">Finder · 터미널</text>
+    <rect x="210" y="168" width="130" height="24" rx="6" fill="#f3f4f6"/><text x="220" y="185" fill="#374151">GitHub 고정 저장소</text>
+    <path d="M182 120 H206 M182 132 H206 M182 180 H206" stroke="#9ca3af" stroke-width="1.4"/>
+    <text x="32" y="230" fill="#b91c1c">MacFolio를 스냅샷에만 넣으면</text>
+    <text x="32" y="248" fill="#b91c1c">Safari·Finder에는 없다</text>
+    <line x1="380" y1="86" x2="380" y2="296" stroke="#e5e7eb"/>
+    <text x="410" y="96" font-weight="600" fill="#15803d">후</text>
+    <rect x="410" y="134" width="150" height="40" rx="8" fill="#eef0ff"/><text x="422" y="158" fill="#3f46c7">PROJECTS (7개)</text>
+    <rect x="590" y="98" width="160" height="24" rx="6" fill="#f3f4f6"/><text x="600" y="115" fill="#374151">Safari 탭</text>
+    <rect x="590" y="126" width="160" height="24" rx="6" fill="#f3f4f6"/><text x="600" y="143" fill="#374151">Finder · 터미널</text>
+    <rect x="590" y="154" width="160" height="24" rx="6" fill="#dcfce7"/><text x="600" y="171" fill="#15803d">스냅샷: 앞 6개, 같은 순서</text>
+    <rect x="590" y="182" width="160" height="24" rx="6" fill="#f3f4f6"/><text x="600" y="199" fill="#374151">프로젝트 앱 · 사진</text>
+    <path d="M560 150 L586 110 M560 152 L586 138 M560 154 H586 M560 156 L586 194" stroke="#9ca3af" stroke-width="1.4" fill="none"/>
+    <text x="410" y="236" fill="#374151">따로 두는 것: 서버가 보여 주는 고정 저장소는</text>
+    <text x="410" y="254" fill="#374151">관리자가 시스템 설정에서 고른다 (DB)</text>
+    <text x="410" y="282" fill="#6b7280">githubProfile.test.ts가 두 목록의 순서를 비교한다</text>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>쌓임 맥락 안에 갇힌 버튼</title>
+  <rect width="780" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">z-index는 같은 쌓임 맥락 안에서만 겨룬다</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">통합형 창: 위쪽 52px의 투명한 끌기 영역(.macos-titlebar, z-index 3)이 내용 위에 떠 있다</text>
+  <g font-size="12">
+    <text x="32" y="98" font-weight="600" fill="#b91c1c">전: 크게 보기에 z-index: 1</text>
+    <rect x="32" y="110" width="340" height="180" rx="12" fill="#f3f4f6"/>
+    <rect x="44" y="120" width="316" height="36" rx="8" fill="#fde68a" fill-opacity="0.6" stroke="#f59e0b" stroke-dasharray="4 3"/>
+    <text x="56" y="143" fill="#92400e">끌기 영역 z 3</text>
+    <rect x="44" y="166" width="316" height="112" rx="8" fill="#e0e7ff" stroke="#6366f1"/>
+    <text x="56" y="186" fill="#3f46c7">크게 보기 z 1 (쌓임 맥락)</text>
+    <rect x="220" y="128" width="128" height="22" rx="6" fill="#fee2e2" stroke="#ef4444"/>
+    <text x="230" y="144" fill="#b91c1c">버튼 z 4 → 사실상 1</text>
+    <text x="56" y="214" fill="#374151">안에서 z 4여도 바깥에서는</text>
+    <text x="56" y="232" fill="#374151">크게 보기(1)로 겨룬다 → 3 아래</text>
+    <text x="56" y="262" fill="#b91c1c">"intercepts pointer events"</text>
+    <text x="410" y="98" font-weight="600" fill="#15803d">후: 맥락을 만들지 않는다</text>
+    <rect x="410" y="110" width="340" height="180" rx="12" fill="#f3f4f6"/>
+    <rect x="422" y="120" width="316" height="36" rx="8" fill="#fde68a" fill-opacity="0.6" stroke="#f59e0b" stroke-dasharray="4 3"/>
+    <text x="434" y="143" fill="#92400e">끌기 영역 z 3</text>
+    <rect x="422" y="166" width="316" height="112" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+    <text x="434" y="186" fill="#374151">크게 보기 (z-index 없음)</text>
+    <rect x="598" y="128" width="128" height="22" rx="6" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="610" y="144" fill="#15803d">버튼 z 4 &gt; 3</text>
+    <text x="434" y="214" fill="#374151">backdrop-filter 묶음도 맥락을 만든다</text>
+    <text x="434" y="232" fill="#374151">→ 버튼 대신 묶음째 z 4</text>
+    <text x="434" y="262" fill="#374151">뒤 격자의 버튼은 크게 보는 동안 그리지 않음</text>
+  </g>
+</svg>

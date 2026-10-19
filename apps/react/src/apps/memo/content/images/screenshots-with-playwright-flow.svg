@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 250" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>가짜 API를 붙이고, 데스크톱에 들어가 앱을 열고, 장면을 만들고, 창 크기를 맞춘 뒤 필요한 부분만 잘라 JPEG로 저장하는 순서</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="860" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">사진 한 장을 찍는 순서</text>
+<rect x="32" y="70" width="148" height="60" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="106.0" y="96.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">fakeApi(page)</text>
+<text x="106.0" y="111.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">관리자·글·댓글 흉내</text>
+<rect x="196" y="70" width="148" height="60" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="270.0" y="96.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">enterDesktop</text>
+<text x="270.0" y="111.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">로딩 화면 한 번 클릭</text>
+<path d="M182 100 L194 100" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="360" y="70" width="148" height="60" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="434.0" y="96.5" font-size="12" font-weight="600" fill="#92400e" text-anchor="middle">장면 만들기</text>
+<text x="434.0" y="111.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">고치기 → 새 메모 → 예약</text>
+<path d="M346 100 L358 100" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="524" y="70" width="148" height="60" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="598.0" y="96.5" font-size="12" font-weight="600" fill="#92400e" text-anchor="middle">창 크기 맞추기</text>
+<text x="598.0" y="111.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">el.style.width·height</text>
+<path d="M510 100 L522 100" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="688" y="70" width="148" height="60" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="762.0" y="96.5" font-size="12" font-weight="600" fill="#065f46" text-anchor="middle">shot(…)</text>
+<text x="762.0" y="111.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">요소만 잘라 JPEG</text>
+<path d="M674 100 L686 100" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<text x="32" y="166" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">설정: 1600×1000, deviceScaleFactor 2 (레티나처럼 두 배 픽셀), reducedMotion은 no-preference (사진은 실제 움직임대로)</text>
+<text x="32" y="186" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">바깥 요청: github.com/&lt;계정&gt;.png는 page.route로 가로채 미리 받은 사진을 돌려준다</text>
+<text x="32" y="206" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">저장소에는 찍은 이미지만 커밋하고, 찍는 시험 파일과 브라우저 경로를 덮은 설정 파일은 넣지 않았다</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>Dependabot PR이 규칙 검사를 지나는 길</title>
+  <rect width="800" height="290" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">Dependabot PR은 제목·커밋은 규칙대로, 브랜치 이름만 예외</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">.github/dependabot.yml의 commit-message.prefix + conventions.yml의 SKIP_BRANCH</text>
+  <g font-size="12">
+    <rect x="32" y="96" width="170" height="92" rx="12" fill="#f3f4f6"/>
+    <text x="48" y="120" font-weight="600" fill="#1f2937">Dependabot (월 09:00)</text>
+    <text x="48" y="142" fill="#374151" font-family="ui-monospace, Menlo, monospace" font-size="10">dependabot/github_actions/…</text>
+    <text x="48" y="160" fill="#374151" font-family="ui-monospace, Menlo, monospace" font-size="10">ci(deps): bump the actions</text>
+    <text x="48" y="174" fill="#374151" font-family="ui-monospace, Menlo, monospace" font-size="10">group with 4 updates</text>
+    <rect x="236" y="96" width="250" height="92" rx="12" fill="#eef0ff"/>
+    <text x="252" y="120" font-weight="600" fill="#3f46c7">conventions 워크플로</text>
+    <text x="252" y="142" fill="#374151">제목·커밋: 타입(범위): 설명 → 통과</text>
+    <text x="252" y="160" fill="#374151">브랜치 이름: PR 작성자가</text>
+    <text x="252" y="176" fill="#374151">dependabot[bot]이면 건너뜀</text>
+    <rect x="520" y="96" width="120" height="92" rx="12" fill="#eef0ff"/>
+    <text x="536" y="120" font-weight="600" fill="#3f46c7">CI</text>
+    <text x="536" y="142" fill="#374151">빌드·시험·E2E</text>
+    <text x="536" y="160" fill="#374151">고정한 SHA로</text>
+    <rect x="672" y="96" width="96" height="92" rx="12" fill="#dcfce7"/>
+    <text x="688" y="120" font-weight="600" fill="#15803d">병합</text>
+    <text x="688" y="142" fill="#374151">손으로</text>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.6" fill="none"><path d="M202 142 H230"/><path d="M486 142 H514"/><path d="M640 142 H666"/></g>
+  <rect x="32" y="212" width="736" height="56" rx="10" fill="#fff7ed"/>
+  <text x="48" y="236" font-size="12" fill="#9a3412" font-weight="600">처음에는 github.actor로 봤다</text>
+  <text x="48" y="254" font-size="12" fill="#374151">사람이 Dependabot 브랜치에 커밋을 올리면 actor가 사람으로 바뀌어 예외가 풀렸다 → pull_request.user.login으로 (1be4522fb)</text>
+</svg>

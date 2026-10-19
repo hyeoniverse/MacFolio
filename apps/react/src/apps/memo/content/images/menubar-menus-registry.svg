@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>앱이 등록하고 메뉴 막대가 합친다</title>
+  <rect width="820" height="340" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">상태는 앱 안에 두고, 메뉴만 등록한다</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">status-bar/appMenus.ts · menuBar.ts · MenuBarMenus.tsx</text>
+  <g font-size="12">
+    <rect x="32" y="96" width="170" height="44" rx="10" fill="#f3f4f6"/><text x="48" y="123" fill="#1f2937">메모 · useAppMenus</text>
+    <rect x="32" y="150" width="170" height="44" rx="10" fill="#f3f4f6"/><text x="48" y="177" fill="#1f2937">Safari · useAppMenus</text>
+    <rect x="32" y="204" width="170" height="44" rx="10" fill="#f3f4f6"/><text x="48" y="231" fill="#1f2937">음악 · Finder · …</text>
+    <rect x="252" y="140" width="150" height="64" rx="10" fill="#eef0ff"/>
+    <text x="327" y="166" text-anchor="middle" font-weight="600" fill="#3f46c7">menuStore</text>
+    <text x="327" y="186" text-anchor="middle" fill="#374151">앱 이름 → 메뉴들</text>
+    <rect x="452" y="128" width="170" height="88" rx="10" fill="#eef0ff"/>
+    <text x="537" y="154" text-anchor="middle" font-weight="600" fill="#3f46c7">buildMenuBar</text>
+    <text x="537" y="174" text-anchor="middle" fill="#374151">activeApp의 메뉴 + 공통</text>
+    <text x="537" y="192" text-anchor="middle" fill="#374151">빈 제목은 뺀다</text>
+    <rect x="672" y="140" width="120" height="64" rx="10" fill="#dcfce7"/>
+    <text x="732" y="166" text-anchor="middle" font-weight="600" fill="#15803d">메뉴 막대</text>
+    <text x="732" y="186" text-anchor="middle" fill="#374151">MenuBarMenus</text>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.6" fill="none">
+    <path d="M202 118 L248 160"/><path d="M202 172 H248"/><path d="M202 226 L248 186"/>
+    <path d="M402 172 H448"/><path d="M622 172 H668"/>
+  </g>
+  <rect x="32" y="270" width="760" height="48" rx="10" fill="#fff7ed"/>
+  <text x="48" y="292" font-size="12" fill="#9a3412" font-weight="600">항목을 고르면</text>
+  <text x="48" y="309" font-size="12" fill="#374151">앱 항목: 앱 안의 함수를 바로 부른다 · 윈도우 닫기·최소화: 창에 명령만 보내고 창이 신호등 버튼과 같은 함수(애니메이션 포함)로 처리</text>
+</svg>

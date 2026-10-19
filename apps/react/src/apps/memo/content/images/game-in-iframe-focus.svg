@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="780" height="330" fill="#fff"/>
+<text x="390.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">iframe 안을 눌렀을 때 바깥 문서가 알 수 있는 것</text>
+<rect x="30" y="50" width="340" height="230" rx="6" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="200" y="72" font-size="12" fill="#374151" text-anchor="middle" font-weight="600">바깥 문서 (MacFolio)</text>
+<rect x="410" y="50" width="340" height="230" rx="6" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="580" y="72" font-size="12" fill="#0369a1" text-anchor="middle" font-weight="600">iframe 안 문서 (게임)</text>
+<rect x="440" y="95" width="280" height="46" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="580.0" y="114.5" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">pointerdown</text>
+<text x="580.0" y="129.5" font-size="10" fill="#4b5563" text-anchor="middle">iframe 문서에서 끝난다</text>
+<rect x="60" y="95" width="280" height="46" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="200.0" y="114.5" font-size="11" fill="#b91c1c" text-anchor="middle" font-weight="600">창 틀의 onPointerDownCapture</text>
+<text x="200.0" y="129.5" font-size="10" fill="#4b5563" text-anchor="middle">오지 않는다 → 앞으로 안 나옴</text>
+<line x1="438" y1="118" x2="342" y2="118" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)" stroke-dasharray="4 3"/>
+<text x="380" y="110" font-size="10" fill="#6b7280">✕</text>
+<rect x="440" y="170" width="280" height="46" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="580.0" y="189.5" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">포커스가 iframe으로</text>
+<text x="580.0" y="204.5" font-size="10" fill="#4b5563" text-anchor="middle"></text>
+<rect x="60" y="170" width="280" height="46" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="200.0" y="189.5" font-size="11" fill="#b45309" text-anchor="middle" font-weight="600">window 'blur'</text>
+<text x="200.0" y="204.5" font-size="10" fill="#4b5563" text-anchor="middle">document.activeElement === iframe ?</text>
+<line x1="438" y1="193" x2="342" y2="193" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="60" y="236" width="280" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="200.0" y="258.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">bringAppToFront(appName)</text>
+<line x1="200" y1="216" x2="200" y2="234" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="390" y="310" font-size="11" fill="#6b7280" text-anchor="middle">처음에는 SproutFarm.tsx에, 지금은 프로젝트 앱 공통 틀(WebFrame.tsx)에 같은 코드가 있다</text>
+</svg>

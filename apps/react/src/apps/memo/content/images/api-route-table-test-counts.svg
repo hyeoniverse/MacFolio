@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>표가 지킨 경로 수: 처음과 지금</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">표가 지킨 경로 수: 처음과 지금</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">10월 9일 64개 → 10월 18일 85개. 경로를 더할 때마다 표에 권한을 적고 들어왔다</text>
+<text x="32" y="100" font-size="12" fill="#374151" text-anchor="start">10/09 전체</text>
+<rect x="182" y="87" width="451.8" height="20" rx="4" fill="#374151"/>
+<text x="641.7647058823529" y="102" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">64개</text>
+<text x="32" y="134" font-size="12" fill="#374151" text-anchor="start">10/09 admin</text>
+<rect x="182" y="121" width="204.7" height="20" rx="4" fill="#b91c1c"/>
+<text x="394.7058823529412" y="136" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">29개</text>
+<text x="32" y="168" font-size="12" fill="#374151" text-anchor="start">지금 전체</text>
+<rect x="182" y="155" width="600.0" height="20" rx="4" fill="#374151"/>
+<text x="790.0" y="170" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">85개</text>
+<text x="32" y="202" font-size="12" fill="#374151" text-anchor="start">지금 admin</text>
+<rect x="182" y="189" width="275.3" height="20" rx="4" fill="#b91c1c"/>
+<text x="465.29411764705884" y="204" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">39개</text>
+<text x="32" y="236" font-size="12" fill="#374151" text-anchor="start">지금 public</text>
+<rect x="182" y="223" width="247.1" height="20" rx="4" fill="#4f46e5"/>
+<text x="437.05882352941177" y="238" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">35개</text>
+<text x="32" y="270" font-size="12" fill="#374151" text-anchor="start">지금 visitor</text>
+<rect x="182" y="257" width="77.6" height="20" rx="4" fill="#15803d"/>
+<text x="267.6470588235294" y="272" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">11개</text>
+</svg>

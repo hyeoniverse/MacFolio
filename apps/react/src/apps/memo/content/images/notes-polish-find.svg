@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>찾기 규칙 하나, 칠하기 두 벌</title>
+  <rect width="780" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">찾는 규칙은 하나, 칠하는 곳만 두 벌</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">packages/desktop-core/src/memo/find.ts → FindBar.tsx</text>
+  <rect x="290" y="96" width="200" height="86" rx="12" fill="#eef0ff"/>
+  <text x="390" y="122" font-size="14" font-weight="700" fill="#3f46c7" text-anchor="middle">findInBlocks</text>
+  <text x="390" y="144" font-size="11" fill="#374151" text-anchor="middle">덩어리(문단·칸)마다 findMatches</text>
+  <text x="390" y="162" font-size="11" fill="#374151" text-anchor="middle">→ [덩어리, 시작, 끝]</text>
+  <rect x="32" y="206" width="330" height="70" rx="12" fill="#f3f4f6"/>
+  <text x="48" y="230" font-size="13" font-weight="600" fill="#1f2937">편집기 (관리자)</text>
+  <text x="48" y="250" font-size="11" fill="#374151">ProseMirror decoration으로 칠하기</text>
+  <text x="48" y="266" font-size="11" fill="#374151">대치는 트랜잭션, 뒤에서부터 바꾼다</text>
+  <rect x="418" y="206" width="330" height="70" rx="12" fill="#f3f4f6"/>
+  <text x="434" y="230" font-size="13" font-weight="600" fill="#1f2937">읽기 화면</text>
+  <text x="434" y="250" font-size="11" fill="#374151">DOM은 그대로, Range로 되돌려 CSS.highlights</text>
+  <text x="434" y="266" font-size="11" fill="#374151">memo-find (옅게) · memo-find-current (진하게)</text>
+  <g stroke="#9ca3af" stroke-width="1.6" fill="none"><path d="M340 182 L230 204"/><path d="M440 182 L560 204"/></g>
+  <g font-size="11" fill="#6b7280">
+    <text x="32" y="104">옵션</text>
+    <text x="32" y="122">ignoreCase · wrap</text>
+    <text x="32" y="140">contains · startsWith · wholeWord</text>
+    <text x="560" y="122">단어 글자: [\p{L}\p{N}_]</text>
+    <text x="560" y="140">한글도 단어 경계를 안다</text>
+  </g>
+</svg>

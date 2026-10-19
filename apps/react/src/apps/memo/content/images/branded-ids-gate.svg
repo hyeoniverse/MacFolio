@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>문자열 하나가 PostSlug가 되기까지</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">문자열 하나가 PostSlug가 되기까지</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">검사는 실행 시에 한 번, 표시는 타입에만 남는다 (번들에는 아무것도 더해지지 않는다)</text>
+<rect x="32" y="100" width="170" height="70" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="117.0" y="122.0" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">바깥 string</text>
+<text x="117.0" y="139.0" font-size="11" fill="#374151" text-anchor="middle">&quot;/memo/cra-to-vite&quot;</text>
+<text x="117.0" y="156.0" font-size="11" fill="#374151" text-anchor="middle">에서 뽑은 &quot;cra-to-vite&quot;</text>
+<line x1="202" y1="135" x2="250" y2="135" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<rect x="254" y="100" width="190" height="70" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="349.0" y="130.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">postSlug(value)</text>
+<text x="349.0" y="147.5" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">POST_SLUG.test()</text>
+<line x1="444" y1="120" x2="500" y2="100" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<text x="472.0" y="98" font-size="11" fill="#15803d" text-anchor="middle">맞음</text>
+<line x1="444" y1="150" x2="500" y2="190" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#a-red)"/>
+<text x="472.0" y="186" font-size="11" fill="#b91c1c" text-anchor="middle">틀림</text>
+<rect x="504" y="70" width="150" height="56" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="579.0" y="93.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">PostSlug</text>
+<text x="579.0" y="110.5" font-size="11" fill="#374151" text-anchor="middle">(같은 문자열)</text>
+<rect x="504" y="166" width="150" height="56" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="579.0" y="189.5" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">null</text>
+<text x="579.0" y="206.5" font-size="11" fill="#374151" text-anchor="middle">열 글이 없음</text>
+<line x1="654" y1="98" x2="690" y2="98" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<rect x="694" y="60" width="140" height="76" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="764.0" y="85.0" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">movePost(</text>
+<text x="764.0" y="102.0" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">  org, slug, …)</text>
+<text x="764.0" y="119.0" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">안쪽 함수</text>
+<rect x="32" y="220" width="622" height="50" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="343.0" y="249.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">movePost(org, location.pathname.slice(6), …)  →  tsc: string은 PostSlug에 넣을 수 없다</text>
+</svg>

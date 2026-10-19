@@ -2,7 +2,7 @@
 title: 움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기
 date: 2026-10-20
 category: 개발기/MacFolio/프론트엔드
-summary: macOS의 움직이는 배경화면처럼, 관리자가 MP4 동영상이나 움직이는 GIF를 배경화면으로 올릴 수 있게 했다. 동영상은 소리 없이 반복 재생하고, 포스터는 브라우저가 첫 장면을 그려 만든다. 움직임 줄이기를 켜거나 탭이 가려지면 멈춘다.
+summary: 관리자가 MP4나 움직이는 GIF를 배경화면으로 올릴 수 있게 했다. 포스터는 서버에 ffmpeg을 넣지 않고 브라우저가 0.5초 장면을 그려 만들고, 서버는 MP4를 앞부분으로 확인하고 Range(206)로 내려 준다.
 ---
 
 관리자가 더한 배경화면은 지금까지 사진만 됐다. 사진을 고르면 브라우저가 긴 변 2,560px로 줄여 JPEG로 바꾼 뒤 올렸다. 그래서 움직이는 GIF를 골라도 첫 장면 한 장만 남았다. macOS의 움직이는 배경화면처럼 바다가 출렁이는 화면을 깔고 싶어서, MP4 동영상과 움직이는 GIF를 배경화면으로 쓸 수 있게 했다.
@@ -27,9 +27,40 @@ summary: macOS의 움직이는 배경화면처럼, 관리자가 MP4 동영상이
 
 설정에는 `wallpaperVideo`(휴대폰은 `mobileWallpaperVideo`) 값이 새로 생겼다. 다음에 사이트를 열 때 서버에 목록을 묻기 전에도 바로 동영상을 깔 수 있다. 서버에서 그 배경화면이 지워졌으면 지금처럼 기본 배경화면으로 돌아간다.
 
+코드로는 `desktop/WallpaperVideo.tsx`(59줄) 하나다. 그리는 조건과 탭 가림 처리가 핵심이다.
+
+```tsx
+const show = src !== null && !reducedMotion && failed !== src;
+
+useEffect(() => {
+	const element = video.current;
+	if (!show || !element) return;
+	// React의 muted 속성은 HTML 속성으로 쓰이지 않아, 자동 재생 규칙에 맞게 직접 켠다
+	element.muted = true;
+	const sync = () => {
+		if (document.hidden) element.pause();
+		else void element.play().catch(() => {});
+	};
+	sync();
+	document.addEventListener('visibilitychange', sync);
+	return () => document.removeEventListener('visibilitychange', sync);
+}, [show, src]);
+```
+
+`element.muted = true`를 직접 적은 데는 이유가 있다. JSX에 `muted`를 써도 React는 이것을 HTML 속성으로 내보내지 않고 DOM 속성으로만 다룬다. 브라우저의 자동 재생 규칙은 첫 재생 시점에 소리가 꺼져 있는지를 보므로, 효과 안에서 한 번 더 확실히 꺼 둔다. 재생이 실패하면(`onError`) 그 주소를 `failed`에 적어 다시 그리지 않는다. 그러면 포스터만 남는다.
+
 ## 포스터를 브라우저에서 만드는 이유
 
 서버(NestJS)에는 동영상을 푸는 도구(ffmpeg 같은 것)가 없다. 이것 하나 때문에 서버 이미지에 ffmpeg을 넣기보다, 이미 동영상을 풀 줄 아는 브라우저에서 만들기로 했다.
+
+| 방법                              | 장점                          | 단점                                                   |
+| --------------------------------- | ----------------------------- | ------------------------------------------------------ |
+| 서버에서 ffmpeg으로 포스터 만들기 | 어떤 코덱이든 같은 결과       | 서버 이미지가 커지고, 올릴 때마다 프로세스를 띄운다    |
+| 포스터 없이 동영상만              | 할 일이 없다                  | 불러오는 동안 빈 화면, 움직임 줄이기에서는 배경이 없다 |
+| 관리자가 포스터 그림을 따로 올림  | 서버·브라우저 모두 단순       | 올릴 때마다 손이 두 번 간다                            |
+| 브라우저가 캔버스에 그려 만들기   | 의존성 없음, 올리는 순간 자동 | 브라우저가 못 푸는 코덱은 대신 그림을 쓴다             |
+
+관리자는 나 한 사람이고, 내가 쓰는 브라우저는 내가 올릴 동영상을 당연히 푼다. 브라우저에서 만드는 쪽의 단점이 거의 없었다.
 
 1. 고른 파일을 `URL.createObjectURL`로 `<video>`에 넣는다.
 2. 첫 데이터가 오면(`loadeddata`) 0.5초 지점으로 옮긴다. 처음이 검은 화면인 영상이 많아서다.
@@ -47,9 +78,30 @@ summary: macOS의 움직이는 배경화면처럼, 관리자가 MP4 동영상이
 - QuickTime(`qt  `)은 받지 않는다. 브라우저마다 틀기도 하고 못 틀기도 해서다.
 - 썸네일은 늘 이미지여야 한다.
 
-크기 한도는 사진 10MB, 동영상 30MB다. 올린 파일 표의 DB 제약(CHECK)이 10MB였기 때문에, 새 마이그레이션을 만들어 30MB로 늘렸다. 이미 배포한 마이그레이션은 고치지 않는다. 10MB 한도는 API가 그대로 지키고, 30MB까지는 배경화면 동영상만 받는다.
+```ts
+// apps/api/src/files/rules.ts
+const MP4_BRANDS = new Set(['isom', 'iso2', 'iso4', 'iso5', 'iso6', 'mp41', 'mp42', 'avc1', 'M4V ', 'dash', 'mmp4']);
+```
+
+크기 한도는 사진 10MB, 동영상 30MB다. 올린 파일 표의 DB 제약(CHECK)이 10MB였기 때문에, 새 마이그레이션(`20261020100000_wallpaper_video`)을 만들어 30MB(31,457,280바이트)로 늘렸다.
+
+```sql
+ALTER TABLE "Upload" DROP CONSTRAINT "Upload_required_fields";
+ALTER TABLE "Upload" ADD CONSTRAINT "Upload_required_fields" CHECK (
+  length(btrim("name")) BETWEEN 1 AND 200
+  AND length("type") > 0
+  AND "size" BETWEEN 1 AND 31457280
+  AND octet_length("data") = "size"
+);
+```
+
+이미 배포한 마이그레이션은 고치지 않는다. 10MB 한도는 API가 그대로 지키고, 30MB까지는 배경화면 동영상만 받는다.
 
 파일을 내려 주는 `/files/:id`는 이제 `Range` 요청을 받는다. `<video>`는 파일을 앞부분부터 나눠 받는데, Safari는 서버가 `206 Partial Content`로 답하지 않으면 동영상을 틀지 않는다. 동영상도 이미지처럼 `inline`으로 내려 준다.
+
+Range 머리말은 `bytes=시작-끝` 한 구간만 받는다. 여러 구간(`bytes=0-1,5-9`)은 `<video>`가 보내지 않으므로, 그때는 그냥 전체를 보낸다. `bytes=-500`(끝에서 500바이트)도 처리한다. 파일 밖을 달라고 하면 416이다.
+
+![video가 Range 요청을 보내고 서버가 206·200·416으로 답하는 흐름](./images/video-wallpaper-range.svg '/files/:id의 Range 처리')
 
 사이트의 보안 정책(CSP)에는 이미 `media-src`에 API 주소가 들어 있어서 따로 고칠 것이 없었다.
 
@@ -60,6 +112,30 @@ summary: macOS의 움직이는 배경화면처럼, 관리자가 MP4 동영상이
 - 화면 단위 시험: 설정에서 동영상 주소를 읽고, 안전하지 않은 주소는 버리기
 - Playwright: 관리자가 MP4를 올리면 원본 그대로 가고 포스터가 JPEG로 만들어지는지, 방문자가 고르면 배경에서 재생되는지, 탭을 가리면 멈추는지, 움직임 줄이기에서 포스터만 보이는지, 휴대폰 홈 화면에서도 깔리는지
 
-시험용 Chromium은 H.264를 풀지 못한다. 그래서 시험에서는 브라우저의 `MediaRecorder`로 색이 바뀌는 캔버스를 1초 녹화해 VP9을 담은 MP4를 만들어 썼다.
+시험용 Chromium은 H.264를 풀지 못한다. 그래서 시험에서는 브라우저의 `MediaRecorder`로 색이 바뀌는 캔버스를 1초 녹화해 VP9을 담은 MP4를 만들어 썼다. 시험 파일을 저장소에 넣지 않고 시험 안에서 만드니, 코덱이 다른 브라우저에서도 그 브라우저가 만들 수 있는 형식으로 시험한다.
+
+Playwright 시험(`apps/react/e2e/wallpaper-video.spec.ts`, 197줄)의 이름은 이렇다.
+
+- 관리자가 MP4를 올리면 원본 그대로 보내고, 포스터를 만들어 썸네일로 쓰며 바로 배경에서 튼다
+- 움직이는 GIF는 줄이지 않고 원본 그대로 올린다 (줄이면 첫 장면만 남는다)
+- 방문자도 고를 수 있고, 탭이 가려지면 멈췄다가 다시 보이면 이어서 튼다
+- 움직임 줄이기를 켜면 동영상 대신 멈춘 포스터만 보인다
+- 휴대폰 홈 화면에서도 동영상 배경화면을 아이콘 아래에 깐다
+
+전체 변경은 28파일, 861줄 추가와 82줄 삭제였다. 가장 많이 바뀐 곳은 올리기를 맡는 `shared/settings/customWallpapers.ts`(174줄 변경)다.
+
+## 남은 것·배운 것
+
+- 동영상은 줄이지 않고 원본을 올린다. 30MB 한도 안이면 그대로 내려 주므로, 휴대폰 데이터로 처음 열면 무겁다. 해상도별로 나눠 두는 일은 서버에 동영상 도구가 생기면 다시 본다.
+- QuickTime(`.mov`)은 받지 않는다. 아이폰으로 찍은 영상은 MP4로 내보내서 올려야 한다.
+- 브라우저는 생각보다 많은 일을 한다. 서버에 도구를 넣기 전에 "이미 그 일을 할 줄 아는 쪽이 어디인가"를 먼저 본다.
+- 이미 배포한 마이그레이션은 고치지 않고 새 마이그레이션으로 제약을 바꾼다. 운영 DB에 적용된 기록과 파일이 어긋나지 않게 하려는 것이다.
+
+## 관련 글
+
+- 관리자가 배경화면을 더하게 한 일: /memo/custom-wallpapers
+- 배경화면 고른 것을 남기는 일: /memo/finder-wallpaper-persist
+- 올린 사진의 EXIF를 지운 일: /memo/upload-strip-exif
+- PR: https://github.com/hyeoniverse/MacFolio/pull/264
 
 #MacFolio #프론트엔드 #배경화면 #동영상 #시스템설정

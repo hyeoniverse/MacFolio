@@ -2,7 +2,7 @@
 title: 남은 시트와 창을 찾아 보니 — Modal로 옮긴 것은 하나
 date: 2026-10-18
 category: 개발기/MacFolio/프론트엔드
-summary: 앱마다 따로 만든 시트와 가운데 창을 다시 찾았다. 공통 Modal과 뜻이 같은 것은 메모의 이미지 크게 보기 하나였고, 계산된 스타일과 화면이 같은 것을 확인하고 옮겼다. 나머지는 동작이 달라 그대로 두었다.
+summary: 앱마다 따로 만든 시트와 가운데 창을 다시 찾았다. 공통 Modal과 뜻이 같은 것은 메모의 이미지 크게 보기 하나라 계산된 스타일과 화면이 같은 것을 확인하고 옮겼고, Esc 처리·구조가 다른 나머지는 그대로 두었다.
 ---
 
 버튼 다음은 시트와 창이다. 리팩터링 계획 4단계의 마지막 항목은 "앱마다 따로 만든 버튼·시트·목록을 공통 컴포넌트로 바꾸기"다. 버튼은 `IconButton` 45곳과 `Button` 30곳을 옮겨 끝냈다. 이번에는 아래에서 올라오는 시트(`Sheet`)와 가운데 뜨는 창(`Modal`)을 본다.
@@ -26,6 +26,47 @@ summary: 앱마다 따로 만든 시트와 가운데 창을 다시 찾았다. �
 
 본문 이미지를 누르면 화면 전체를 어둡게 덮고 가운데에 이미지를 크게 보인다. 덮개가 `role="dialog"`였고, Esc 처리와 닫힐 때의 흐려짐을 직접 적었다. `Modal`의 `scope="screen"`과 하는 일이 같다.
 
+코드로는 직접 쓰던 포털·Esc 처리·사라지는 움직임이 `Modal` 하나로 바뀌었다(`apps/react/src/apps/memo/components/MarkdownImage.tsx`).
+
+```tsx
+// 전
+return createPortal(
+	<div
+		ref={lightbox}
+		className="memo-lightbox"
+		role="dialog"
+		aria-modal="true"
+		aria-label={alt || '이미지'}
+		onClick={onClose}
+	>
+		<img src={src} alt={alt} />
+	</div>,
+	document.body
+);
+
+// 후
+return (
+	<Modal
+		label={alt || '이미지'}
+		onClose={onClose}
+		scope="screen"
+		overlayClassName="memo-lightbox"
+		className="memo-lightbox-box"
+	>
+		<img src={src} alt={alt} onClick={onClose} />
+	</Modal>
+);
+```
+
+닫힐 때 초점을 돌려주는 것은 효과 하나로 했다. 열리는 순간의 초점(연 버튼)을 기억해 두었다가 정리할 때 돌려준다.
+
+```ts
+useEffect(() => {
+	const opener = document.activeElement as HTMLElement | null;
+	return () => opener?.focus({ preventScroll: true });
+}, []);
+```
+
 옮기면서 맞춘 것은 셋이다.
 
 - **덮개의 색과 층**: 앱 CSS에서 `--ui-modal-dim`을 `rgba(0, 0, 0, 0.75)`로, `--ui-modal-z`를 메뉴와 같은 층으로 정했다. 안쪽 여백과 `zoom-out` 커서는 그대로 덮개에 둔다.
@@ -40,14 +81,47 @@ summary: 앱마다 따로 만든 시트와 가운데 창을 다시 찾았다. �
 
 설정 프로젝트의 그림 크게 보기는 겉모양만 보면 같다. 그러나 Esc를 자기 요소에서 받아 전파를 막는다. 뒤에 프로젝트 시트가 열려 있고, 그 시트도 Esc로 닫히기 때문이다. `Modal`의 Esc는 `window`에서 받으므로 옮기면 Esc 한 번에 둘이 함께 닫힌다. ←·→ 버튼과 닫기 버튼도 그림 상자 바깥에 있어 구조를 바꿔야 한다. 그래서 그대로 두었다.
 
+![그림 보기가 Esc를 자기 요소에서 받을 때와 Modal처럼 window에서 받을 때의 차이](./images/sheet-modal-migrate-escape.svg 'Esc를 어디서 받느냐가 갈랐다')
+
 설정의 프로젝트 시트는 데스크톱 창 안에서 열리는 시트다. 바탕을 `inert`로 막고 초점을 가둔다. 휴대폰 전용인 `Sheet`와 뜻이 다르다. 사진의 크게 보기는 덮개가 없는 전체 화면이고 Esc나 바깥 누르기로 닫지 않는다. 창이라기보다 화면이다.
 
 ## 확인
 
 E2E를 돌리며 이미지 크게 보기를 연 상태에서 덮개와 이미지의 계산된 스타일(위치, 층, 여백, 바탕색, 커서, 크기, 둥근 모서리, 그림자)을 옮기기 전과 뒤에 기록해 비교했다. 값은 모두 같았고, 화면을 찍은 그림도 픽셀 단위로 같았다. 접근 가능한 이름(이미지 설명)과 `aria-modal`도 같다.
 
+## 고른 방법과 버린 방법
+
+옮기지 않은 셋을 억지로 맞추는 방법도 있었다.
+
+| 방법                                     | 결과                                                           |
+| ---------------------------------------- | -------------------------------------------------------------- |
+| `Modal`에 `escapeScope="self"` 같은 옵션 | 한 곳을 위한 옵션이 공통 부품에 생긴다                         |
+| 설정 그림 보기의 구조를 바꿔 맞춘다      | 화면 밖의 ←·→·닫기 버튼 배치를 다시 짜야 한다. 화면이 바뀐다   |
+| 그대로 두고 이유를 `docs/ui.md`에 적는다 | 공통 부품은 단순하게 남고, 다음 사람이 같은 고민을 하지 않는다 |
+
+이번 일의 원칙은 "화면은 그대로, 뜻이 같은 것만 옮긴다"였다. 그래서 세 번째를 골랐다.
+
 ## 버튼 수 다시 세기
 
 `docs/ui.md`의 "직접 쓴 `<button>` 220곳"은 다시 셌다. 처음 89파일 295곳을 잰 방법은 `apps/react/src`의 `.tsx`에서 `<button`이 있는 줄을 세되, 시험 파일과 공통 부품 `shared/ui`를 빼는 것이었다. 같은 방법으로 지금을 세면 91파일 265곳이다. 앞의 수가 맞지 않았던 까닭은, 처음 잰 뒤에 Safari 프로젝트 페이지와 앱이 늘어 옮기기 직전에는 이미 340곳이었는데 처음 수에서 옮긴 수만 뺐기 때문이다. 265곳 가운데 91곳은 Safari 프로젝트 데모 페이지다.
+
+## 숫자
+
+- 바뀐 파일 4개, 98줄 추가와 47줄 삭제. 그중 코드는 `MarkdownImage.tsx`(42줄 변경)와 `markdown.css`(21줄 변경)이고 나머지는 `docs/ui.md`와 이 글이다.
+- 이로써 `Modal`을 쓰는 다이얼로그는 여섯이 됐다(경고창, 이름 바꾸기, 단축키, 로그인 결과, Launchpad, 메모 이미지 크게 보기).
+
+## 남은 것·배운 것
+
+- 계획에 "앱마다 따로 만든 시트·창"이라고 적었던 것의 대부분은 이미 앞 PR에서 옮겨져 있었다. 계획 문서의 목록은 실행 직전에 다시 세야 한다(/memo/ui-inventory).
+- 겉모양이 같아도 키 처리(Esc를 어디서 받는가)가 다르면 같은 부품이 아니다. 공통 부품으로 옮길지 정할 때는 키보드 동작부터 본다.
+- 버튼 수는 세는 방법을 문서에 함께 적는다. 이번에 수가 맞지 않았던 까닭이 바로 "처음 수에서 옮긴 수만 뺀" 계산이었다.
+
+## 관련 글
+
+- Modal을 처음 뽑은 일: /memo/ui-modal
+- Sheet를 처음 뽑은 일: /memo/ui-sheet
+- 같은 단계의 글자 버튼 옮기기: /memo/text-button-migrate
+- 리팩터링 4단계 정리: /memo/refactor-step4-components
+- PR: https://github.com/hyeoniverse/MacFolio/pull/247
 
 #MacFolio #React #CSS #리팩터링

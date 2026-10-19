@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 422" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>shared/profile 파일별 줄 수</title>
+  <rect width="760" height="422" rx="16" fill="#ffffff"/>
+  <text x="32" y="40" font-size="18" font-weight="700" fill="#1f2937">지금 shared/profile/ 파일별 줄 수 (합계 1,533줄)</text>
+  <text x="32" y="62" font-size="12" fill="#6b7280">나누기 전에는 이 모두가 profile.ts 한 파일, 1,629줄이었다 (2026-10-19 wc -l)</text>
+  <text x="32" y="100" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">hyeoniverse.ts</text>
+  <rect x="170" y="89" width="480.0" height="14" rx="3" fill="#4f46e5"/>
+  <text x="658.0" y="100" font-size="12" fill="#1f2937">668</text>
+  <text x="32" y="122" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">qru.ts</text>
+  <rect x="170" y="111" width="115.7" height="14" rx="3" fill="#4f46e5"/>
+  <text x="293.7" y="122" font-size="12" fill="#1f2937">161</text>
+  <text x="32" y="144" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">whattodo.ts</text>
+  <rect x="170" y="133" width="115.0" height="14" rx="3" fill="#4f46e5"/>
+  <text x="293.0" y="144" font-size="12" fill="#1f2937">160</text>
+  <text x="32" y="166" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">newpick.ts</text>
+  <rect x="170" y="155" width="113.5" height="14" rx="3" fill="#4f46e5"/>
+  <text x="291.5" y="166" font-size="12" fill="#1f2937">158</text>
+  <text x="32" y="188" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">sproutfarm.ts</text>
+  <rect x="170" y="177" width="82.6" height="14" rx="3" fill="#4f46e5"/>
+  <text x="260.6" y="188" font-size="12" fill="#1f2937">115</text>
+  <text x="32" y="210" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">devcourse.ts</text>
+  <rect x="170" y="199" width="71.1" height="14" rx="3" fill="#4f46e5"/>
+  <text x="249.1" y="210" font-size="12" fill="#1f2937">99</text>
+  <text x="32" y="232" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">macfolio.ts</text>
+  <rect x="170" y="221" width="56.0" height="14" rx="3" fill="#4f46e5"/>
+  <text x="234.0" y="232" font-size="12" fill="#1f2937">78</text>
+  <text x="32" y="254" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">projects/index.ts</text>
+  <rect x="170" y="243" width="23.0" height="14" rx="3" fill="#9ca3af"/>
+  <text x="201.0" y="254" font-size="12" fill="#1f2937">32</text>
+  <text x="32" y="276" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">skills.ts</text>
+  <rect x="170" y="265" width="12.9" height="14" rx="3" fill="#9ca3af"/>
+  <text x="190.9" y="276" font-size="12" fill="#1f2937">18</text>
+  <text x="32" y="298" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">index.ts</text>
+  <rect x="170" y="287" width="12.2" height="14" rx="3" fill="#9ca3af"/>
+  <text x="190.2" y="298" font-size="12" fill="#1f2937">17</text>
+  <text x="32" y="320" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">types.ts</text>
+  <rect x="170" y="309" width="10.1" height="14" rx="3" fill="#9ca3af"/>
+  <text x="188.1" y="320" font-size="12" fill="#1f2937">14</text>
+  <text x="32" y="342" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">profile.ts</text>
+  <rect x="170" y="331" width="7.9" height="14" rx="3" fill="#9ca3af"/>
+  <text x="185.9" y="342" font-size="12" fill="#1f2937">11</text>
+  <text x="32" y="364" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">projectImage.ts</text>
+  <rect x="170" y="353" width="2.0" height="14" rx="3" fill="#9ca3af"/>
+  <text x="180.0" y="364" font-size="12" fill="#1f2937">2</text>
+  <text x="32" y="404" font-size="12" fill="#374151">보라: 프로젝트 하나에 파일 하나 · 회색: 다시 내보내기·순서·도우미</text>
+</svg>

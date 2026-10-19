@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>옛 코드 파일 요청 하나의 응답: 전과 후</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">옛 코드 파일 요청 하나의 응답: 전과 후</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">GET /assets/Memo-doesnotexist.js</text>
+<rect x="32" y="80" width="380" height="180" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="44" y="131.5" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="start">전: not_found_handling = single-page-application</text>
+<text x="44" y="148.5" font-size="11" fill="#374151" text-anchor="start">200  content-type: text/html</text>
+<text x="44" y="165.5" font-size="11" fill="#374151" text-anchor="start">cache-control: max-age=31536000, immutable</text>
+<text x="44" y="182.5" font-size="11" fill="#374151" text-anchor="start"></text>
+<text x="44" y="199.5" font-size="11" fill="#374151" text-anchor="start">브라우저: &quot;코드가 아니다&quot; (MIME 거절)</text>
+<text x="44" y="216.5" font-size="11" fill="#374151" text-anchor="start">그 이름에 HTML을 1년 동안 들고 있을 수 있다</text>
+<rect x="448" y="80" width="380" height="180" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="460" y="131.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="start">후: none + 없는 주소만 Worker</text>
+<text x="460" y="148.5" font-size="11" fill="#374151" text-anchor="start">404  content-type: text/plain</text>
+<text x="460" y="165.5" font-size="11" fill="#374151" text-anchor="start">_headers의 immutable이 붙지 않는다</text>
+<text x="460" y="182.5" font-size="11" fill="#374151" text-anchor="start"></text>
+<text x="460" y="199.5" font-size="11" fill="#374151" text-anchor="start">브라우저: 코드 불러오기 실패 → 새로고침 안내</text>
+<text x="460" y="216.5" font-size="11" fill="#374151" text-anchor="start">다음 요청에서 새로 묻는다</text>
+</svg>

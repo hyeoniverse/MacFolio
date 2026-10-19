@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>쪽을 화면에 맞추고 픽셀 비율만큼 촘촘히</title>
+  <rect width="760" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="40" font-size="18" font-weight="700" fill="#1f2937">scale = min(화면 폭 ÷ 쪽 폭, 화면 높이 ÷ 쪽 높이)</text>
+  <text x="32" y="62" font-size="12" fill="#6b7280">Slideshow.tsx: 보이는 크기는 CSS px, 캔버스 버퍼는 devicePixelRatio배</text>
+  <rect x="32" y="84" width="320" height="180" rx="8" fill="#111827"/>
+  <rect x="64" y="84" width="256" height="180" fill="#f9fafb"/>
+  <text x="192" y="170" font-size="12" text-anchor="middle" fill="#374151">4:3 쪽 → 높이에 맞춤</text>
+  <text x="192" y="188" font-size="11" text-anchor="middle" fill="#6b7280">양옆은 검은 여백</text>
+  <text x="192" y="282" font-size="11" text-anchor="middle" fill="#6b7280">16:10 화면</text>
+  <g font-size="12" fill="#374151">
+    <text x="390" y="104" font-weight="600" fill="#1f2937">레티나(ratio 2)에서 한 쪽</text>
+    <rect x="390" y="116" width="150" height="100" rx="6" fill="#eef0ff" stroke="#6366f1"/>
+    <text x="465" y="160" text-anchor="middle" fill="#3f46c7">style 1000×750</text>
+    <text x="465" y="178" text-anchor="middle" fill="#3f46c7">(CSS px)</text>
+    <rect x="560" y="116" width="168" height="112" rx="6" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="644" y="166" text-anchor="middle" fill="#15803d">canvas 2000×1500</text>
+    <text x="644" y="184" text-anchor="middle" fill="#15803d">(기기 픽셀)</text>
+    <text x="390" y="252">render(… transform: [ratio, 0, 0, ratio, 0, 0])</text>
+    <text x="390" y="272" fill="#6b7280">비율이 1이면 transform 없이 그린다</text>
+  </g>
+</svg>

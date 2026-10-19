@@ -2,7 +2,7 @@
 title: 문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입
 date: 2026-10-11
 category: 개발기/MacFolio/인프라
-summary: 글 주소(slug)와 폴더 경로가 어디서나 string이라, 주소창에서 온 문자열을 그대로 movePost에 넘겨도 컴파일이 됐다. desktop-core에 PostSlug·FolderPath 브랜드 타입을 두고, 바깥 문자열은 postSlug()·folderPath()를 지나야 그 타입이 된다. 동작은 그대로이고, 아무 문자열을 넣으면 tsc가 막는다.
+summary: 글 주소와 폴더 경로가 어디서나 string이라 주소창 문자열을 그대로 movePost에 넘겨도 컴파일이 됐다. PostSlug·FolderPath 브랜드 타입을 두고 바깥 문자열은 다섯 문을 지나야 그 타입이 되게 했다. 다른 방법과 비교, 브랜드하지 않은 것, 비용을 적었다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 마지막 항목 "`any`, 넓은 `string` 대신 쓸 수 있는 유니언·브랜드 타입 정리 (앱 이름, 폴더 경로, 슬러그)". [프로필 나누기](/memo/profile-split) 다음이다.
@@ -13,7 +13,18 @@ summary: 글 주소(slug)와 폴더 경로가 어디서나 string이라, 주소�
 
 남은 것은 글 주소(slug)와 폴더 경로였다. 둘 다 어디서나 `string`이다. `Post.slug: string`, `Organization.posts: Record<string, string>`, `movePost(org, slug: string, folder: string)`. 주소창에서 온 문자열, 끌어 놓는 항목의 id, API 파라미터가 아무 검사 없이 그대로 들어갈 수 있었다. 서버는 `SLUG.test()`로, 화면은 암묵적으로 믿었다.
 
-![바깥의 string 다섯 곳(주소창, API 파라미터, 파일 이름, 끌기 id, 요청 몸통)이 desktop-core의 postSlug()·folderPath() 문을 지나 안쪽의 PostSlug·FolderPath가 된다. 문을 거치지 않은 문자열은 tsc 오류](images/branded-ids-boundary.svg)
+![바깥의 string 다섯 곳이 문을 지나 안쪽 타입이 된다](./images/branded-ids-boundary.svg '주소창, API 파라미터, 파일 이름, 끌기 id, 요청 몸통이 postSlug()·folderPath()를 지나 PostSlug·FolderPath가 된다. 문을 거치지 않은 문자열은 tsc 오류')
+
+## 방법 비교
+
+| 방법                                | 실행 시 비용 | 막는 정도                                | 문제                                               |
+| ----------------------------------- | ------------ | ---------------------------------------- | -------------------------------------------------- |
+| 그대로 `string`, 서버에서만 정규식  | 없음         | 서버 한 곳만                             | 화면 안에서는 아무 문자열이나 오간다               |
+| 타입 별칭 `type PostSlug = string`  | 없음         | 없다 (`string`과 똑같이 취급된다)        | 읽는 사람에게 힌트일 뿐                            |
+| 클래스로 감싸기 (`new Slug(value)`) | 객체 하나씩  | 확실하다                                 | `Record`의 키, JSON, URL에 넣을 때마다 풀어야 한다 |
+| 브랜드 타입 (고른 방법)             | 없음         | 문을 거치지 않은 `string`은 tsc가 막는다 | 시험 픽스처에 `as`가 붙는다                        |
+
+slug는 `Record<PostSlug, FolderPath>`의 키로도 쓰이고 JSON으로 서버를 오간다. 실행 시에는 그냥 문자열이어야 했다.
 
 ## 브랜드 타입
 
@@ -27,6 +38,8 @@ export const isPostSlug = (value: unknown): value is PostSlug => typeof value ==
 export const postSlug = (value: unknown): PostSlug | null => (isPostSlug(value) ? value : null);
 export const folderPath = (value: unknown): FolderPath | null => (isFolderPath(value) ? value : null);
 ```
+
+![문을 지나는 길](./images/branded-ids-gate.svg '검사를 통과하면 같은 문자열에 표시만 붙는다. 통과하지 못하면 null')
 
 `unique symbol`로 표시를 붙인 문자열이다. 실행 시에는 그냥 문자열이라 번들에 아무것도 안 들어가고 동작도 안 바뀐다. 다른 점은 하나다. `string`을 `PostSlug` 자리에 넣으면 컴파일이 안 된다. `PostSlug`를 만드는 길은 `postSlug()`뿐이고, 그 함수는 `POST_SLUG` 정규식을 본다.
 
@@ -61,5 +74,15 @@ export const folderPath = (value: unknown): FolderPath | null => (isFolderPath(v
 | 동작 변화                 |                  | 없음 (Vitest 336·E2E 메모 그대로) |
 
 이것으로 1단계 "타입과 데이터 구조" 네 항목이 끝났다. 다음은 4단계 공통 컴포넌트.
+
+작업은 PR [#209](https://github.com/hyeoniverse/MacFolio/pull/209)의 커밋 하나다. 27개 파일에서 331줄을 더하고 129줄을 지웠다. 가장 많이 바뀐 곳은 `packages/desktop-core/src/memo/rules.ts`(42줄)다.
+
+## 남은 것, 배운 것
+
+- 지금 소스에서 `as PostSlug`로 표시를 직접 붙인 곳은 4곳, 시험 파일에서는 28줄이다. 픽스처를 만드는 작은 함수(`slug('a')`)를 두면 `as`를 줄일 수 있지만, 시험이 "검사 없이 믿는다"는 것을 숨기게 되어 그대로 두었다.
+- 문이 다섯이면 다섯 군데에서 `null`을 다뤄야 한다. 주소창의 잘못된 slug는 고른 글이 없는 것으로, API는 404(글이 없습니다)로, 끌기는 아무 일도 하지 않는 것으로 다르게 처리한다. 브랜드 타입이 그 갈림을 각 문에서 정하게 만들었다.
+- 타입으로 막는 것은 "검사를 했는가"이지 "값이 맞는가"가 아니다. 검사 함수 자체가 틀리면 브랜드도 틀린 값을 믿는다. 정규식이 맞는지는 API e2e(`posts.e2e.test.ts` 등)가 이상한 주소를 실제로 보내 확인한다.
+
+관련 글: [프로필 나누기](/memo/profile-split), [리팩터링 1 - 타입](/memo/refactor-step1-types), [글 주소에 앱 화면 붙이기](/memo/app-links), [메모 정리 API](/memo/memo-organization-api)
 
 #MacFolio #리팩터링 #TypeScript

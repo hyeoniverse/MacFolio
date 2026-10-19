@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>본문 하나에서 태그 세 곳으로</title>
+  <rect width="780" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">태그는 본문에서 읽는다 — 저장하는 곳이 없다</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">packages/desktop-core/src/memo/tags.ts의 tagsInText를 세 곳이 함께 쓴다</text>
+  <rect x="32" y="96" width="180" height="200" rx="12" fill="#f3f4f6"/>
+  <text x="122" y="122" font-size="14" font-weight="700" fill="#1f2937" text-anchor="middle">Markdown 본문</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#374151">
+    <text x="48" y="152">글 … #CSS</text>
+    <text x="48" y="174">```css</text>
+    <text x="48" y="196" fill="#9ca3af">color: #edbb4d;</text>
+    <text x="48" y="218">```</text>
+    <text x="48" y="240" fill="#9ca3af">#115의 API</text>
+    <text x="48" y="262">#MacFolio</text>
+  </g>
+  <rect x="262" y="140" width="200" height="110" rx="12" fill="#eef0ff"/>
+  <text x="362" y="168" font-size="14" font-weight="700" fill="#3f46c7" text-anchor="middle">tagsInText</text>
+  <text x="362" y="192" font-size="12" fill="#374151" text-anchor="middle">TAG_PATTERN으로 찾고</text>
+  <text x="362" y="212" font-size="12" fill="#374151" text-anchor="middle">isTagName으로 거른다</text>
+  <text x="362" y="232" font-size="11" fill="#6b7280" text-anchor="middle">숫자·숫자+조사·16진수 색 제외</text>
+  <path d="M212 195 H256" stroke="#9ca3af" stroke-width="1.6"/><path d="M256 195 l-8 -5 m8 5 l-8 5" stroke="#9ca3af" stroke-width="1.6" fill="none"/>
+  <g stroke="#9ca3af" stroke-width="1.6" fill="none">
+    <path d="M462 170 L520 120"/><path d="M462 195 H520"/><path d="M462 220 L520 270"/>
+  </g>
+  <g font-size="12">
+    <rect x="524" y="96" width="224" height="50" rx="10" fill="#dcfce7"/>
+    <text x="540" y="117" font-weight="600" fill="#15803d">사이드바 태그 묶음</text>
+    <text x="540" y="135" fill="#374151">tagsOf → collectTags (글 수 순)</text>
+    <rect x="524" y="170" width="224" height="50" rx="10" fill="#dcfce7"/>
+    <text x="540" y="191" font-weight="600" fill="#15803d">읽기 화면</text>
+    <text x="540" y="209" fill="#374151">remark 플러그인 → span.memo-tag</text>
+    <rect x="524" y="244" width="224" height="50" rx="10" fill="#dcfce7"/>
+    <text x="540" y="265" font-weight="600" fill="#15803d">편집기</text>
+    <text x="540" y="283" fill="#374151">ProseMirror decoration (칠하기만)</text>
+  </g>
+</svg>

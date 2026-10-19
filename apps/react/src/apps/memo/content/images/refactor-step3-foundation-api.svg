@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>앱의 Api 파일이 api()를 부르면 주소·쿠키·시간 제한을 붙여 보내고, 닿지 못하면 ApiError 0, 401이면 로그아웃 알림, 실패면 서버 이유를 읽어 ApiError, 성공이면 JSON</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="840" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">api() 한 번이 거치는 길 (shared/api/client.ts)</text>
+<rect x="32" y="70" width="150" height="64" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="107.0" y="98.5" font-size="12.5" font-weight="600" fill="#374151" text-anchor="middle">앱의 *Api.ts</text>
+<text x="107.0" y="113.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">경로와 응답 모양만</text>
+<rect x="220" y="70" width="180" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="310.0" y="98.5" font-size="12.5" font-weight="600" fill="#3730a3" text-anchor="middle">apiFetch()</text>
+<text x="310.0" y="113.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">기본 주소 · 쿠키 · 15초</text>
+<path d="M182 102 L218 102" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="450" y="58" width="170" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="535.0" y="74.5" font-size="11.5" font-weight="600" fill="#9f1239" text-anchor="middle">닿지 못함</text>
+<text x="535.0" y="89.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">ApiError(0, 연결 문구)</text>
+<rect x="450" y="112" width="170" height="40" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="535.0" y="128.5" font-size="11.5" font-weight="600" fill="#92400e" text-anchor="middle">401</text>
+<text x="535.0" y="143.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">onUnauthorized → 로그아웃</text>
+<rect x="450" y="166" width="170" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="535.0" y="182.5" font-size="11.5" font-weight="600" fill="#9f1239" text-anchor="middle">그 밖의 실패</text>
+<text x="535.0" y="197.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">reasonsOf → ApiError</text>
+<rect x="450" y="220" width="170" height="40" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="535.0" y="236.5" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="middle">성공</text>
+<text x="535.0" y="251.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">JSON을 돌려준다</text>
+<path d="M400 102 L448 78" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M400 102 L448 132" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M400 102 L448 186" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M400 102 L448 240" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="660" y="112" width="150" height="94" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="735.0" y="140.5" font-size="11.5" font-weight="600" fill="#374151" text-anchor="middle">reasonsOf()</text>
+<text x="735.0" y="155.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">서버가 적은 한국어 이유</text>
+<text x="735.0" y="170.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">없으면 401·429 문구</text>
+<text x="735.0" y="185.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">그래도 없으면 fallback</text>
+<path d="M620 186 L658 170" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<text x="32" y="296" font-size="10.5" font-weight="500" fill="#9f1239" text-anchor="start">전: 12개 파일이 fetch·credentials·타임아웃·오류 읽기를 각자 적음 (346줄)</text>
+<text x="32" y="314" font-size="10.5" font-weight="500" fill="#065f46" text-anchor="start">후: client.ts 한 곳 (지금 111줄), 사용처는 api()·apiFetch() 한 번</text>
+</svg>

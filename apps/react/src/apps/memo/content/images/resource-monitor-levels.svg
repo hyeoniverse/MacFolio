@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>CPU 95퍼센타일과 네트워크 평균(A1은 메모리 평균도)이 모두 20% 아래면 회수 위험, 모두 30% 아래면 주의, 하나라도 30% 이상이면 안전</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="840" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">회수 위험 세 단계: 기준마다 7일 값을 20%와 30%에 대 본다</text>
+<path d="M200.0 66 L200.0 214" stroke="#f3f4f6" stroke-width="1" fill="none"/>
+<text x="200.0" y="230" font-size="10" font-weight="500" fill="#6b7280" text-anchor="middle">0%</text>
+<path d="M293.3333333333333 66 L293.3333333333333 214" stroke="#f3f4f6" stroke-width="1" fill="none"/>
+<text x="293.3333333333333" y="230" font-size="10" font-weight="500" fill="#6b7280" text-anchor="middle">10%</text>
+<path d="M386.66666666666663 66 L386.66666666666663 214" stroke="#f3f4f6" stroke-width="1" fill="none"/>
+<text x="386.66666666666663" y="230" font-size="10" font-weight="500" fill="#6b7280" text-anchor="middle">20%</text>
+<path d="M480.0 66 L480.0 214" stroke="#f3f4f6" stroke-width="1" fill="none"/>
+<text x="480.0" y="230" font-size="10" font-weight="500" fill="#6b7280" text-anchor="middle">30%</text>
+<path d="M573.3333333333333 66 L573.3333333333333 214" stroke="#f3f4f6" stroke-width="1" fill="none"/>
+<text x="573.3333333333333" y="230" font-size="10" font-weight="500" fill="#6b7280" text-anchor="middle">40%</text>
+<path d="M666.6666666666667 66 L666.6666666666667 214" stroke="#f3f4f6" stroke-width="1" fill="none"/>
+<text x="666.6666666666667" y="230" font-size="10" font-weight="500" fill="#6b7280" text-anchor="middle">50%</text>
+<path d="M760.0 66 L760.0 214" stroke="#f3f4f6" stroke-width="1" fill="none"/>
+<text x="760.0" y="230" font-size="10" font-weight="500" fill="#6b7280" text-anchor="middle">60%</text>
+<rect x="200.0" y="66" width="186.66666666666663" height="148" fill="#fff1f2"/>
+<rect x="386.66666666666663" y="66" width="93.33333333333337" height="148" fill="#fffbeb"/>
+<rect x="480.0" y="66" width="280.0" height="148" fill="#ecfdf5"/>
+<text x="293.3333333333333" y="82" font-size="10.5" font-weight="700" fill="#9f1239" text-anchor="middle">회수 위험 구간</text>
+<text x="433.3333333333333" y="82" font-size="10.5" font-weight="700" fill="#92400e" text-anchor="middle">주의</text>
+<text x="620.0" y="82" font-size="10.5" font-weight="700" fill="#065f46" text-anchor="middle">안전</text>
+<path d="M386.66666666666663 66 L386.66666666666663 214" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+<path d="M480.0 66 L480.0 214" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+<text x="188" y="108" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="end">CPU (95퍼센타일)</text>
+<text x="188" y="122" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="end">/proc/stat 1분 표본</text>
+<text x="188" y="144" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="end">네트워크 (평균)</text>
+<text x="188" y="158" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="end">50Mbps 대비</text>
+<text x="188" y="180" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="end">메모리 (평균)</text>
+<text x="188" y="194" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="end">A1 shape만</text>
+<text x="32" y="262" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">모든 기준이 20% 아래 → 회수 위험(메일), 모든 기준이 30% 아래 → 주의, 하나라도 30% 이상 → 안전.</text>
+<text x="32" y="280" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">E2.1.Micro는 메모리를 보지 않는다. 7일치가 쌓이기 전에는 그동안의 표본으로 미리 본다.</text>
+</svg>

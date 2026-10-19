@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="300" fill="#fff"/>
+<text x="400.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">그 뒤의 뿌리 고침: .memo button을 reset 층으로 (#57)</text>
+<rect x="40" y="60" width="220" height="170" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="150.0" y="119.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">@layer reset</text>
+<text x="150.0" y="134.0" font-size="10" fill="#4b5563" text-anchor="middle">.memo button</text>
+<text x="150.0" y="149.0" font-size="10" fill="#4b5563" text-anchor="middle">font: inherit</text>
+<text x="150.0" y="164.0" font-size="10" fill="#4b5563" text-anchor="middle">color: inherit</text>
+<text x="150.0" y="179.0" font-size="10" fill="#4b5563" text-anchor="middle">(0,1,1)이라도 진다</text>
+<rect x="290" y="60" width="220" height="170" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="400.0" y="119.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">@layer components</text>
+<text x="400.0" y="134.0" font-size="10" fill="#4b5563" text-anchor="middle">.ui-button</text>
+<text x="400.0" y="149.0" font-size="10" fill="#4b5563" text-anchor="middle">.ui-icon-button</text>
+<text x="400.0" y="164.0" font-size="10" fill="#4b5563" text-anchor="middle">reset은 이기고</text>
+<text x="400.0" y="179.0" font-size="10" fill="#4b5563" text-anchor="middle">층 밖에는 진다</text>
+<rect x="540" y="60" width="220" height="170" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="650.0" y="119.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">층 밖 (앱 CSS)</text>
+<text x="650.0" y="134.0" font-size="10" fill="#4b5563" text-anchor="middle">.memo-writer-publish</text>
+<text x="650.0" y="149.0" font-size="10" fill="#4b5563" text-anchor="middle">color: #2b2100</text>
+<text x="650.0" y="164.0" font-size="10" fill="#4b5563" text-anchor="middle">(0,1,0)이어도 이긴다</text>
+<text x="650.0" y="179.0" font-size="10" fill="#4b5563" text-anchor="middle"></text>
+<line x1="262" y1="145" x2="288" y2="145" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="512" y1="145" x2="538" y2="145" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="400" y="262" font-size="10.5" fill="#6b7280" text-anchor="middle">층 사이의 순서는 선택자 점수보다 먼저 따진다. 그래서 점수를 올리는 손질(.memo-writer-actions)이 필요 없어졌다</text>
+<text x="400" y="282" font-size="10.5" fill="#6b7280" text-anchor="middle">지금은 층 순서를 index.html에서 가장 먼저 정한다 (#221)</text>
+</svg>

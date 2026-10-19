@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>Playwright 프로젝트 셋</title>
+  <rect width="780" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">한 빌드, 프로젝트 셋, 엔진은 모두 Chromium</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">apps/react/playwright.config.ts — vite preview로 빌드 결과를 띄우고, 기본은 reducedMotion: 'reduce'</text>
+  <rect x="32" y="96" width="160" height="150" rx="12" fill="#f3f4f6"/>
+  <text x="112" y="122" font-size="13" font-weight="700" fill="#1f2937" text-anchor="middle">vite preview</text>
+  <text x="112" y="144" font-size="11" fill="#374151" text-anchor="middle">빌드 결과 하나</text>
+  <text x="112" y="162" font-size="11" fill="#374151" text-anchor="middle">배포와 같은 CSP</text>
+  <text x="112" y="196" font-size="11" fill="#6b7280" text-anchor="middle">병렬로 몰리면</text>
+  <text x="112" y="212" font-size="11" fill="#6b7280" text-anchor="middle">로딩이 늦다 → 20초</text>
+  <g stroke="#9ca3af" stroke-width="1.6" fill="none"><path d="M192 140 L246 118"/><path d="M192 170 H246"/><path d="M192 200 L246 222"/></g>
+  <g font-size="12">
+    <rect x="250" y="96" width="250" height="44" rx="10" fill="#eef0ff"/>
+    <text x="266" y="116" font-weight="600" fill="#3f46c7">desktop-chromium</text>
+    <text x="266" y="132" fill="#374151">1600×1000 · mobile*.spec 제외</text>
+    <rect x="250" y="150" width="250" height="44" rx="10" fill="#eef0ff"/>
+    <text x="266" y="170" font-weight="600" fill="#3f46c7">mobile-iphone</text>
+    <text x="266" y="186" fill="#374151">iPhone 13 정보 + chromium</text>
+    <rect x="250" y="204" width="250" height="44" rx="10" fill="#eef0ff"/>
+    <text x="266" y="224" font-weight="600" fill="#3f46c7">mobile-android</text>
+    <text x="266" y="240" fill="#374151">Pixel 7</text>
+  </g>
+  <g font-size="12" fill="#374151">
+    <text x="530" y="116" font-weight="600" fill="#1f2937">기본: 움직임 줄이기</text>
+    <text x="530" y="136">위치·크기를 재는 시험이</text>
+    <text x="530" y="152">애니메이션 중간 값을 읽지 않게</text>
+    <text x="530" y="186" font-weight="600" fill="#1f2937">예외: motion.spec · mobile-motion.spec</text>
+    <text x="530" y="206">test.use({ reducedMotion:</text>
+    <text x="530" y="222">'no-preference' })</text>
+    <text x="530" y="240">getAnimations().length → 0 기다림</text>
+  </g>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>설정 프로젝트 그림 크게 보기를 Modal로 옮기지 않은 이유. 그림 보기는 Esc를 자기 요소에서 받아 전파를 막아 뒤의 프로젝트 시트가 남는다. Modal은 window에서 Esc를 받으므로 옮기면 Esc 한 번에 둘이 함께 닫힌다</title>
+<rect width="800" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">Esc를 어디서 받느냐가 갈랐다</text>
+<text x="40" y="70" font-size="12" fill="#047857" font-weight="600">지금: 그림 보기가 Esc를 자기 요소에서 받고 멈춘다</text>
+<rect x="40" y="82" width="340" height="120" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="56" y="102" font-size="10.5" fill="#6b7280">프로젝트 시트 (Esc로 닫힘)</text>
+<rect x="80" y="112" width="260" height="78" rx="8" fill="#ffffff" stroke="#059669"/>
+<text x="210" y="146" font-size="11" fill="#1f2937" text-anchor="middle">그림 크게 보기</text>
+<text x="210" y="166" font-size="10" fill="#047857" text-anchor="middle">Esc → 그림만 닫힘 (stopPropagation)</text>
+<text x="420" y="70" font-size="12" fill="#b91c1c" font-weight="600">Modal로 옮기면: window에서 받는다</text>
+<rect x="420" y="82" width="340" height="120" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="436" y="102" font-size="10.5" fill="#6b7280">프로젝트 시트 (Esc로 닫힘)</text>
+<rect x="460" y="112" width="260" height="78" rx="8" fill="#ffffff" stroke="#dc2626"/>
+<text x="590" y="146" font-size="11" fill="#1f2937" text-anchor="middle">그림 크게 보기 (Modal)</text>
+<text x="590" y="166" font-size="10" fill="#b91c1c" text-anchor="middle">Esc 한 번 → 둘 다 닫힘</text>
+<text x="40" y="232" font-size="10.5" fill="#6b7280">겉모양이 같아도 키 처리가 다르면 같은 부품이 아니다</text>
+</svg>

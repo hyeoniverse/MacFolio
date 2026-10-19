@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>신호등과 겹치는지 보는 시험</title>
+  <rect width="760" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">앱 9개 × 창 폭 5가지, 신호등 상자와 겹치는 요소를 찾는다</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">e2e/narrow-window.spec.ts — button, a, input, h1~h3, [role=tab] 중 보이는 것</text>
+  <rect x="40" y="88" width="300" height="180" rx="12" fill="#f3f4f6" stroke="#d1d5db"/>
+  <rect x="52" y="98" width="62" height="22" rx="6" fill="#fde68a" stroke="#f59e0b"/>
+  <circle cx="64" cy="109" r="5" fill="#ef4444"/><circle cx="83" cy="109" r="5" fill="#f59e0b"/><circle cx="102" cy="109" r="5" fill="#22c55e"/>
+  <rect x="58" y="104" width="120" height="26" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-dasharray="4 3"/>
+  <text x="66" y="122" font-size="12" fill="#b91c1c">보관함 (전)</text>
+  <rect x="58" y="140" width="120" height="26" rx="6" fill="#dcfce7" stroke="#22c55e"/>
+  <text x="66" y="158" font-size="12" fill="#15803d">보관함 (후, 위 44px)</text>
+  <text x="190" y="122" font-size="11" fill="#b91c1c">← 상자가 겹침</text>
+  <g font-size="12" fill="#374151">
+    <text x="380" y="104" font-weight="600" fill="#1f2937">겹친다 = 두 상자가 가로·세로 모두 겹침</text>
+    <text x="380" y="126" font-family="ui-monospace, Menlo, monospace" font-size="11">box.right &gt; lights.left &amp;&amp; box.left &lt; lights.right</text>
+    <text x="380" y="144" font-family="ui-monospace, Menlo, monospace" font-size="11">&amp;&amp; box.bottom &gt; lights.top &amp;&amp; box.top &lt; lights.bottom</text>
+    <text x="380" y="180" font-weight="600" fill="#1f2937">창 폭</text>
+    <text x="380" y="200">700 · 560 · 460 · 380 · 320 px</text>
+    <text x="380" y="232" font-weight="600" fill="#1f2937">고치기 전에 걸린 것</text>
+    <text x="380" y="252">음악 560px 이하 · Safari 380px 이하</text>
+  </g>
+</svg>

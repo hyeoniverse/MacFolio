@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="860" height="300" fill="#fff"/>
+<text x="430.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">README가 화면에 그려지기까지 (readme.ts)</text>
+<rect x="20" y="70" width="150" height="64" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="95.0" y="98.5" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">README.md</text>
+<text x="95.0" y="113.5" font-size="10" fill="#4b5563" text-anchor="middle">Markdown + HTML</text>
+<rect x="188" y="70" width="150" height="64" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="263.0" y="98.5" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">react-markdown</text>
+<text x="263.0" y="113.5" font-size="10" fill="#4b5563" text-anchor="middle">Markdown → HAST</text>
+<line x1="172" y1="102" x2="186" y2="102" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="356" y="70" width="150" height="64" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="431.0" y="98.5" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">rehype-raw</text>
+<text x="431.0" y="113.5" font-size="10" fill="#4b5563" text-anchor="middle">HTML을 살린다</text>
+<line x1="340" y1="102" x2="354" y2="102" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="524" y="70" width="150" height="64" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="599.0" y="98.5" font-size="11" fill="#b45309" text-anchor="middle" font-weight="600">rehype-sanitize</text>
+<text x="599.0" y="113.5" font-size="10" fill="#4b5563" text-anchor="middle">GitHub 규칙으로 거른다</text>
+<line x1="508" y1="102" x2="522" y2="102" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="692" y="70" width="150" height="64" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="767.0" y="98.5" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">직접 만든 플러그인</text>
+<text x="767.0" y="113.5" font-size="10" fill="#4b5563" text-anchor="middle">주소·picture·배지·배너</text>
+<line x1="676" y1="102" x2="690" y2="102" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="40" y="190" width="180" height="50" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="130.0" y="211.5" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">상대 주소</text>
+<text x="130.0" y="226.5" font-size="10" fill="#4b5563" text-anchor="middle">프로필 저장소 파일로</text>
+<line x1="767" y1="134" x2="130" y2="188" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)" stroke-dasharray="4 3"/>
+<rect x="240" y="190" width="180" height="50" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="330.0" y="211.5" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">&lt;picture&gt;</text>
+<text x="330.0" y="226.5" font-size="10" fill="#4b5563" text-anchor="middle">앱 화면 모드의 그림 하나</text>
+<line x1="767" y1="134" x2="330" y2="188" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)" stroke-dasharray="4 3"/>
+<rect x="440" y="190" width="180" height="50" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="530.0" y="211.5" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">shields.io 배지</text>
+<text x="530.0" y="226.5" font-size="10" fill="#4b5563" text-anchor="middle">Contact 버튼</text>
+<line x1="767" y1="134" x2="530" y2="188" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)" stroke-dasharray="4 3"/>
+<rect x="640" y="190" width="180" height="50" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="730.0" y="211.5" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">capsule-render</text>
+<text x="730.0" y="226.5" font-size="10" fill="#4b5563" text-anchor="middle">CSS 배너</text>
+<line x1="767" y1="134" x2="730" y2="188" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)" stroke-dasharray="4 3"/>
+<text x="430" y="280" font-size="10.5" fill="#6b7280" text-anchor="middle">거른 뒤에 바꾸므로, 플러그인이 만든 버튼·배너는 sanitize 규칙과 상관없이 앱이 정한 모양만 나온다</text>
+</svg>

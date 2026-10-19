@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>CRA에서 Vite로 바뀐 자리</title>
+<rect width="760" height="380" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">CRA에서 Vite로 바뀐 자리</text>
+<text x="140" y="80" font-size="14" font-weight="600" fill="#6b7280" text-anchor="middle">전 (react-scripts 5.0.1)</text>
+<text x="560" y="80" font-size="14" font-weight="600" fill="#6b7280" text-anchor="middle">후 (vite 6.2.1)</text>
+<g font-size="13" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">
+<rect x="32" y="96" width="250" height="40" rx="8" fill="#f3f4f6"/><text x="157" y="121" text-anchor="middle">public/index.html</text>
+<rect x="432" y="96" width="250" height="40" rx="8" fill="#e0e7ff"/><text x="557" y="121" text-anchor="middle">index.html (루트)</text>
+<rect x="32" y="150" width="250" height="40" rx="8" fill="#f3f4f6"/><text x="157" y="175" text-anchor="middle">src/index.tsx</text>
+<rect x="432" y="150" width="250" height="40" rx="8" fill="#e0e7ff"/><text x="557" y="175" text-anchor="middle">src/main.tsx</text>
+<rect x="32" y="204" width="250" height="40" rx="8" fill="#f3f4f6"/><text x="157" y="229" text-anchor="middle">process.env.REACT_APP_*</text>
+<rect x="432" y="204" width="250" height="40" rx="8" fill="#e0e7ff"/><text x="557" y="229" text-anchor="middle">import.meta.env.VITE_APP_*</text>
+<rect x="32" y="258" width="250" height="40" rx="8" fill="#f3f4f6"/><text x="157" y="283" text-anchor="middle">start / build / eject</text>
+<rect x="432" y="258" width="250" height="40" rx="8" fill="#e0e7ff"/><text x="557" y="283" text-anchor="middle">dev / build / preview</text>
+</g>
+<g stroke="#6b7280" stroke-width="2" marker-end="url(#a)"><path d="M290 116 H424"/><path d="M290 170 H424"/><path d="M290 224 H424"/><path d="M290 278 H424"/></g>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<text x="357" y="250" font-size="11.5" fill="#6b7280" text-anchor="middle">환경 변수 11개</text>
+<text x="32" y="340" font-size="12.5" fill="#6b7280">vite.config 없이 기본값으로 옮겼다. 바뀐 파일 1,190개의 대부분은 추적하던 node_modules가 빠진 것이다.</text>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 250" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>줄 수: 나누기 전과 후 (커밋 8a35ac38b 시점)</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">줄 수: 나누기 전과 후 (커밋 8a35ac38b 시점)</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">합은 351줄로 10줄 늘었지만, 한 파일에서 읽어야 하는 양은 절반 넘게 줄었다</text>
+<text x="32" y="96" font-size="12" fill="#374151" text-anchor="start">AnalyticsService (전)</text>
+<rect x="182" y="83" width="600.0" height="20" rx="4" fill="#b91c1c"/>
+<text x="790.0" y="98" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">341줄</text>
+<text x="32" y="134" font-size="12" fill="#374151" text-anchor="start">AnalyticsRecorder</text>
+<rect x="182" y="121" width="119.6" height="20" rx="4" fill="#4f46e5"/>
+<text x="309.6480938416422" y="136" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">68줄</text>
+<text x="32" y="172" font-size="12" fill="#374151" text-anchor="start">AnalyticsRollup</text>
+<rect x="182" y="159" width="140.8" height="20" rx="4" fill="#4f46e5"/>
+<text x="330.7624633431085" y="174" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">80줄</text>
+<text x="32" y="210" font-size="12" fill="#374151" text-anchor="start">AnalyticsStats</text>
+<rect x="182" y="197" width="357.2" height="20" rx="4" fill="#4f46e5"/>
+<text x="547.1847507331379" y="212" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">203줄</text>
+</svg>

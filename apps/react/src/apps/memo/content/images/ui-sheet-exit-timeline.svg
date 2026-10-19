@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>닫기를 누른 뒤 240ms 동안. 전에는 closing 상태로 실제 시트가 남아 있어 시험과 스크린 리더가 열린 시트를 봤다. 후에는 실제 시트는 바로 사라지고 복사본만 내려간다</title>
+<rect width="800" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">닫기를 누른 뒤 0~240ms: DOM에 무엇이 있나</text>
+<line x1="200" y1="62" x2="740" y2="62" stroke="#d1d5db"/>
+<text x="200" y="56" font-size="10" fill="#6b7280">0ms (닫기)</text>
+<text x="740" y="56" font-size="10" fill="#6b7280" text-anchor="end">240ms</text>
+<text x="32" y="98" font-size="12" fill="#b91c1c" font-weight="600">전: closing + setTimeout</text>
+<rect x="200" y="80" width="540" height="30" rx="6" fill="#fee2e2" stroke="#fca5a5"/>
+<text x="470" y="100" font-size="10.5" fill="#1f2937" text-anchor="middle">실제 시트 (role="dialog", 열린 상태로 보인다)</text>
+<text x="200" y="128" font-size="10" fill="#6b7280">상태 · 시험 · 스크린 리더가 240ms 동안 "열림"을 본다</text>
+<text x="32" y="170" font-size="12" fill="#047857" font-weight="600">후: useExitMotion</text>
+<rect x="200" y="152" width="6" height="30" rx="2" fill="#6ee7b7"/>
+<text x="214" y="172" font-size="10" fill="#047857">실제 시트는 바로 떼어 낸다</text>
+<rect x="380" y="152" width="360" height="30" rx="6" fill="#f3f4f6" stroke="#d1d5db" stroke-dasharray="5 4"/>
+<text x="560" y="172" font-size="10.5" fill="#374151" text-anchor="middle">겉모습 복사본 (data-exiting, dim-out · sheet-out)</text>
+<text x="200" y="208" font-size="10" fill="#6b7280">복사본은 aria-hidden·inert이고 role·이름을 지워 시험과 스크린 리더에 보이지 않는다. 애니메이션이 끝나면 지운다</text>
+</svg>

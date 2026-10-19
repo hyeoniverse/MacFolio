@@ -2,10 +2,12 @@
 title: 사라질 때도 움직이게 - 복사본으로 하는 퇴장 애니메이션
 date: 2026-10-08
 category: 개발기/MacFolio/프론트엔드
-summary: 메뉴·경고창·팝업은 나타날 때만 움직이고 사라질 때는 뚝 끊겼다. 여는 쪽 코드를 하나도 고치지 않고, React가 요소를 떼어 내기 직전에 겉모습만 복사해 두고 그 복사본을 사라지게 했다. 화면이 바뀌는 칸과 버튼의 색 바뀜도 공통 규칙으로 맞췄다.
+summary: 메뉴·경고창·팝업은 사라질 때 뚝 끊겼다. 여는 쪽 코드를 고치지 않고, React가 요소를 떼어 내기 직전 ref 정리 함수에서 겉모습만 복사해 그 복사본을 사라지게 했다. 바뀌는 칸, 동작마다의 움직임, 버튼 색 전환도 공통 규칙으로 맞췄다.
 ---
 
-메뉴, 경고창, 단축키 창, 편집기의 서식 창은 열 때 `pop-in`으로 살짝 커지며 나타났다. 닫을 때는 그냥 사라졌다. 열 때 부드러운 만큼 닫을 때 끊기는 게 더 눈에 띄었다.
+메뉴, 경고창, 단축키 창, 편집기의 서식 창은 열 때 `pop-in`으로 살짝 커지며 나타났다. 닫을 때는 그냥 사라졌다. 열 때 부드러운 만큼 닫을 때 끊기는 게 더 눈에 띄었다. 실제 macOS는 메뉴도 경고창도 사라질 때 짧게 흐려진다.
+
+작업은 10월 8일 두 커밋으로 main에 넣었다. 첫 커밋은 사라지는 움직임의 틀(`shared/ui/motion/useExitMotion.ts`)과 바뀌는 칸·버튼 규칙이고, 둘째 커밋은 앱마다 동작 하나하나에 움직임을 붙인 것이다.
 
 ## 사라지는 움직임이 어려운 까닭
 
@@ -20,7 +22,9 @@ summary: 메뉴·경고창·팝업은 나타날 때만 움직이고 사라질 �
 - **닫기를 늦춘다.** `onClose`를 140ms 뒤에 부른다. 그러면 그동안 메뉴는 열린 것으로 남는다. 버튼의 `aria-expanded`, 초점 돌려주기, "닫혔는지" 보는 시험이 모두 140ms씩 늦어진다.
 - **여는 쪽마다 "닫히는 중" 상태를 둔다.** 메뉴를 여는 곳이 수십 군데라 모두 고쳐야 한다.
 
-둘 다 마음에 들지 않았다. 닫기는 바로 끝나야 하고, 여는 쪽은 그대로 두고 싶었다.
+- **애니메이션 라이브러리(Framer Motion의 `AnimatePresence` 등)를 쓴다.** 사라지는 요소를 대신 들고 있어 주지만, 여는 쪽을 모두 그 컴포넌트로 감싸야 하고 번들에 라이브러리가 하나 더 들어간다.
+
+셋 다 마음에 들지 않았다. 닫기는 바로 끝나야 하고, 여는 쪽은 그대로 두고 싶었다.
 
 ## 지우기 직전에 겉모습만 복사한다
 
@@ -35,6 +39,27 @@ export function useExitMotion(motion = 'pop-out') {
 		},
 		[motion]
 	);
+}
+```
+
+![닫을 때 일어나는 일](./images/global-motion-timeline.svg '상태와 원래 요소는 바로 닫히고, 사라지는 모습은 복사본이 맡는다')
+
+복사하는 쪽(`playExit`)의 핵심은 이렇다.
+
+```ts
+export function playExit(element: HTMLElement, motion: ExitMotion) {
+	if (!element.isConnected || !element.parentNode || prefersReducedMotion()) return;
+	const ghost = element.cloneNode(true) as HTMLElement;
+	ghost.setAttribute('aria-hidden', 'true');
+	ghost.setAttribute('data-exiting', motion);
+	ghost.inert = true;
+	ghost.style.pointerEvents = 'none';
+	ghost.style.animation = `${motion} ${DURATION[motion]}ms var(--ease-in) forwards`;
+	element.parentNode.insertBefore(ghost, element.nextSibling);
+	const remove = () => ghost.remove();
+	ghost.addEventListener('animationend', remove, { once: true });
+	// 애니메이션이 돌지 않아도(숨은 탭 등) 남지 않게
+	window.setTimeout(remove, DURATION[motion] + 100);
 }
 ```
 
@@ -135,5 +160,24 @@ Finder에서 처음에는 방향이 남아 있어서, 보기(아이콘·목록)�
 - 메뉴 막대 버튼은 색이 전환되고, Dock 아이콘은 자기 전환(`transform`)을 그대로 쓴다
 
 움직임을 켠 채로 전체 시험을 돌려 보기도 했다. 이번 변경 전의 main에서도 31개가 실패했다. 창이 열리는 움직임이 끝나기 전에 위치나 크기를 재는 시험들이다. 이 시험들은 움직임 줄이기를 전제로 쓴 것이라 이번에는 고치지 않았다.
+
+움직임 시험은 `e2e/motion.spec.ts`와 `e2e/mobile-motion.spec.ts`에 있다. 첫 시험의 이름이 이 일의 요점을 그대로 말한다. "메뉴는 닫히면 바로 닫히고(역할 없음), 겉모습만 잠깐 남아 작아지며 사라진다".
+
+## 그 뒤
+
+지금 `useExitMotion`·`playExit`는 17개 파일에서 쓴다. 뒤에 만든 공통 부품인 `Modal`(모달 다이얼로그), `Sheet`(휴대폰 시트), `DatePicker`도 처음부터 이 ref를 건다. 그래서 새로 만드는 창은 따로 생각하지 않아도 사라질 때 움직인다. `motion-swap`은 18곳에 달려 있다.
+
+## 남은 것·배운 것
+
+- 복사본은 겉모습만 복사한다. `<canvas>`나 재생 중인 `<video>`처럼 DOM 밖에 그림이 있는 요소는 복사본에서 비어 보인다. 지금 붙인 곳에는 그런 요소가 없다.
+- 움직임을 켠 채로 실패하는 31개 시험은 그대로다. 시험이 움직임 줄이기에 기대고 있다는 것을 알고 쓰는 편이 낫다.
+- "닫힌 상태"와 "사라지는 모습"을 떼어 생각하면 쉬워진다. 상태는 바로 바뀌고, 모습은 따로 늦게 사라져도 된다. 접근성과 시험은 상태를 보고, 사람의 눈은 모습을 본다.
+
+## 관련 글
+
+- [모달 다이얼로그를 Modal 하나로](/memo/ui-modal)
+- [휴대폰 시트를 Sheet 하나로](/memo/ui-sheet)
+- [메뉴·팝오버를 공통 Menu로](/memo/shared-menu)
+- [Playwright로 휴대폰 화면과 움직임 시험](/memo/playwright-mobile-and-motion)
 
 #MacFolio #공통컴포넌트 #애니메이션

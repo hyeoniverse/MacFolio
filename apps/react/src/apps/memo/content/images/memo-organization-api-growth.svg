@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="860" height="300" fill="#fff"/>
+<text x="430.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">정리 내용(Organization)이 자란 길</text>
+<rect x="20" y="80" width="190" height="80" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="115.0" y="109.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">9/30 #42</text>
+<text x="115.0" y="124.0" font-size="10" fill="#4b5563" text-anchor="middle">folders · posts</text>
+<text x="115.0" y="139.0" font-size="10" fill="#4b5563" text-anchor="middle">moves · pins</text>
+<rect x="230" y="80" width="190" height="80" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="325.0" y="109.0" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">10/1 #63</text>
+<text x="325.0" y="124.0" font-size="10" fill="#4b5563" text-anchor="middle">+ locks</text>
+<text x="325.0" y="139.0" font-size="10" fill="#4b5563" text-anchor="middle">메모 잠금</text>
+<line x1="212" y1="120" x2="228" y2="120" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="440" y="80" width="190" height="80" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="535.0" y="109.0" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">10/2 #68</text>
+<text x="535.0" y="124.0" font-size="10" fill="#4b5563" text-anchor="middle">+ order</text>
+<text x="535.0" y="139.0" font-size="10" fill="#4b5563" text-anchor="middle">폴더 순서</text>
+<line x1="422" y1="120" x2="438" y2="120" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="650" y="80" width="190" height="80" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="745.0" y="109.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">10/9</text>
+<text x="745.0" y="124.0" font-size="10" fill="#4b5563" text-anchor="middle">desktop-core/memo</text>
+<text x="745.0" y="139.0" font-size="10" fill="#4b5563" text-anchor="middle">화면·서버가 함께</text>
+<line x1="632" y1="120" x2="648" y2="120" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="430" y="210" font-size="11" fill="#6b7280" text-anchor="middle">칸이 늘 때마다 "예전 JSON에는 이 칸이 없다"를 서버 검사·서버 읽기·화면 받기에서 빈 값으로 채웠다</text>
+<text x="430" y="232" font-size="11" fill="#6b7280" text-anchor="middle">같은 날 #44로 서버 글쓰기도 붙었다. 서버 글은 같은 주소의 Markdown 글보다 우선하고, 정리 내용은 둘 위에 겹친다</text>
+</svg>

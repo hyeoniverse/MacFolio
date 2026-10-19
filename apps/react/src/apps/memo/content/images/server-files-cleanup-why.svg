@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>글의 버전 1에 그림을 넣고 버전 2에서 뺀 뒤 그 파일을 바로 지우면, 버전 1로 되돌릴 때 그림 자리가 비고, 최근 삭제된 글을 되살릴 때도 그림이 깨진다</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">저장할 때 빠진 그림을 바로 지우면 생기는 일</text>
+<rect x="32" y="70" width="170" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="117.0" y="98.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">버전 1 게시</text>
+<text x="117.0" y="113.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">본문에 /files/aB3…</text>
+<rect x="242" y="70" width="170" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="327.0" y="98.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">버전 2 게시</text>
+<text x="327.0" y="113.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">그 줄을 지움</text>
+<rect x="452" y="70" width="170" height="64" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="537.0" y="98.5" font-size="12" font-weight="600" fill="#9f1239" text-anchor="middle">바로 지우면</text>
+<text x="537.0" y="113.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">Upload 행 삭제</text>
+<rect x="662" y="70" width="170" height="64" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="747.0" y="98.5" font-size="12" font-weight="600" fill="#9f1239" text-anchor="middle">버전 1로 되돌리기</text>
+<text x="747.0" y="113.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">그림 자리가 빈다</text>
+<path d="M202 102 L240 102" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M412 102 L450 102" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<path d="M622 102 L660 102" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<rect x="452" y="170" width="170" height="56" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="537.0" y="194.5" font-size="12" font-weight="600" fill="#92400e" text-anchor="middle">글을 지움</text>
+<text x="537.0" y="209.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">30일 동안 되살릴 수 있다</text>
+<rect x="662" y="170" width="170" height="56" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="747.0" y="194.5" font-size="12" font-weight="600" fill="#9f1239" text-anchor="middle">되살리기</text>
+<text x="747.0" y="209.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">그림이 깨진다</text>
+<path d="M622 198 L660 198" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<text x="32" y="262" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">그래서 자동으로 지우지 않는다. GET /files가 파일마다 쓰는 곳(지금 글, 예전 버전, 배경화면)을 알려 주고, 관리자가 고른다.</text>
+<text x="32" y="282" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">지금 글(최근 삭제 포함)과 배경화면이 쓰는 파일은 DELETE /files/:id가 409로 막는다.</text>
+</svg>

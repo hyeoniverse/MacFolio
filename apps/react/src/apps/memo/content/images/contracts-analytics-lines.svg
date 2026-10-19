@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>줄이 옮겨 간 자리 (커밋 650fe2612, 글·그림 제외)</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">줄이 옮겨 간 자리 (커밋 650fe2612, 글·그림 제외)</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">지운 줄은 세 곳에 흩어져 있었고, 더한 줄은 contracts 한 곳에 모였다 (git show --numstat)</text>
+<text x="32" y="96" font-size="12" fill="#374151" text-anchor="start">서버 rules.ts −</text>
+<rect x="182" y="83" width="357.8" height="20" rx="4" fill="#b91c1c"/>
+<text x="547.7639751552795" y="98" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">96줄</text>
+<text x="32" y="132" font-size="12" fill="#374151" text-anchor="start">서버 analytics.service −</text>
+<rect x="182" y="119" width="219.9" height="20" rx="4" fill="#b91c1c"/>
+<text x="409.87577639751555" y="134" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">59줄</text>
+<text x="32" y="168" font-size="12" fill="#374151" text-anchor="start">화면 activityApi −</text>
+<rect x="182" y="155" width="190.1" height="20" rx="4" fill="#b91c1c"/>
+<text x="380.0621118012422" y="170" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">51줄</text>
+<text x="32" y="204" font-size="12" fill="#374151" text-anchor="start">contracts analytics.ts +</text>
+<rect x="182" y="191" width="600.0" height="20" rx="4" fill="#15803d"/>
+<text x="790.0" y="206" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">161줄</text>
+<text x="32" y="240" font-size="12" fill="#374151" text-anchor="start">contracts 시험 +</text>
+<rect x="182" y="227" width="290.7" height="20" rx="4" fill="#15803d"/>
+<text x="480.6832298136646" y="242" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">78줄</text>
+<text x="32" y="284" font-size="11" fill="#6b7280" text-anchor="start">모두 합치면 297줄을 더하고 236줄을 지웠다</text>
+</svg>

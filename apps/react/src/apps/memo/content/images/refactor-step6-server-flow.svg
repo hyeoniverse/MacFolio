@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>브라우저가 보낸 이벤트를 Recorder가 저장하고, Rollup이 한 시간마다 지난 날을 DailyStat으로 모으고 오래된 것을 지우며, Stats가 지난 날은 DailyStat, 오늘은 이벤트에서 읽는다</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="840" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">이벤트 한 묶음이 숫자가 되기까지</text>
+<rect x="32" y="80" width="130" height="56" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="97.0" y="104.5" font-size="12.5" font-weight="600" fill="#374151" text-anchor="middle">브라우저</text>
+<text x="97.0" y="119.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">5초마다 sendBeacon</text>
+<rect x="200" y="80" width="150" height="56" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="275.0" y="104.5" font-size="12.5" font-weight="600" fill="#3730a3" text-anchor="middle">AnalyticsRecorder</text>
+<text x="275.0" y="119.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">검사 · IP마다 1분 30번</text>
+<path d="M162 108 L198 108" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<text x="180.0" y="102.0" font-size="10" font-weight="500" fill="#4b5563" text-anchor="middle">POST /events</text>
+<rect x="390" y="60" width="160" height="44" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="470.0" y="78.5" font-size="11.5" font-weight="600" fill="#374151" text-anchor="middle">AnalyticsEvent</text>
+<text x="470.0" y="93.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">90일 보관</text>
+<rect x="390" y="170" width="160" height="44" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="470.0" y="188.5" font-size="11.5" font-weight="600" fill="#374151" text-anchor="middle">DailyStat</text>
+<text x="470.0" y="203.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">날짜별 통계</text>
+<path d="M350 100 L388 84" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="200" y="170" width="150" height="56" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="275.0" y="194.5" font-size="12.5" font-weight="600" fill="#92400e" text-anchor="middle">AnalyticsRollup</text>
+<text x="275.0" y="209.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">1시간마다 · 열 때 5분에 한 번</text>
+<path d="M390 96 L350 184" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#warn)"/>
+<text x="370.0" y="134.0" font-size="10" font-weight="500" fill="#4b5563" text-anchor="middle">지난 날</text>
+<path d="M350 198 L388 194" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#warn)"/>
+<rect x="600" y="110" width="200" height="64" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="700.0" y="131.0" font-size="12.5" font-weight="600" fill="#065f46" text-anchor="middle">AnalyticsStats</text>
+<text x="700.0" y="146.0" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">요약 · 조회수 · 최근 방문</text>
+<text x="700.0" y="161.0" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">누구나 부르는 값은 1분 캐시</text>
+<path d="M550 190 L598 160" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<text x="574.0" y="169.0" font-size="10" font-weight="500" fill="#4b5563" text-anchor="middle">지난 날</text>
+<path d="M550 82 L598 124" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<text x="574.0" y="97.0" font-size="10" font-weight="500" fill="#4b5563" text-anchor="middle">오늘</text>
+<path d="M700 174 L700 240 L275 240 L275 228" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#gray)"/>
+<text x="490" y="234" font-size="10" font-weight="500" fill="#4b5563" text-anchor="middle">요약을 열 때 모으기가 밀렸으면 맡긴다</text>
+<text x="32" y="280" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">Recorder 68줄 · Rollup 80줄 · Stats 203줄 (#233 머지 때). 경로·응답·캐시 시간은 그대로, e2e는 집계를 부르는 한 줄만 고쳤다.</text>
+</svg>

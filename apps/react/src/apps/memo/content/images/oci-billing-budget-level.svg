@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>예산 단계와 알림 기록</title>
+  <rect width="760" height="290" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">예산 단계는 셋, 알림은 단계·달·예산 이름마다 한 번</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">oci.ts의 budgetLevel, resources.service.ts의 alertBudget</text>
+  <rect x="40" y="96" width="680" height="28" rx="6" fill="#e5e7eb"/>
+  <rect x="40" y="96" width="400" height="28" rx="6" fill="#dcfce7"/>
+  <rect x="440" y="96" width="100" height="28" fill="#fef3c7"/>
+  <rect x="540" y="96" width="180" height="28" rx="6" fill="#fee2e2"/>
+  <g font-size="12" text-anchor="middle">
+    <text x="240" y="115" fill="#15803d">ok</text>
+    <text x="490" y="115" fill="#a16207">near</text>
+    <text x="630" y="115" fill="#b91c1c">over</text>
+    <text x="40" y="142" fill="#6b7280">0</text>
+    <text x="440" y="142" fill="#6b7280">80%</text>
+    <text x="540" y="142" fill="#6b7280">100%</text>
+  </g>
+  <g font-size="12" fill="#374151">
+    <text x="40" y="180" font-weight="600" fill="#1f2937">ResourceAlert.kind (unique)</text>
+    <text x="40" y="202" font-family="ui-monospace, Menlo, monospace">budget-near:2026-10:월 1달러</text>
+    <text x="40" y="222" font-family="ui-monospace, Menlo, monospace">budget-over:2026-10:월 1달러</text>
+    <text x="400" y="180" font-weight="600" fill="#1f2937">한 시간마다 다시 읽을 때</text>
+    <text x="400" y="202">같은 kind가 있으면 보내지 않는다</text>
+    <text x="400" y="222">다음 달에는 달이 바뀌어 새로 알린다</text>
+    <text x="40" y="262" fill="#6b7280">한도(amount)가 0 이하이면 늘 ok · 메일 설정이 없으면 알리지 않는다</text>
+  </g>
+</svg>

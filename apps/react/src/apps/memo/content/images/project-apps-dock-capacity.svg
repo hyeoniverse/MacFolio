@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>창 폭에 따라 Dock에 들어가는 앱</title>
+  <rect width="780" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="40" font-size="18" font-weight="700" fill="#1f2937">Dock 칸 수 = (창 폭 − 300) ÷ 100 (2026-10-04 기준)</text>
+  <text x="32" y="62" font-size="12" fill="#6b7280">내장 앱 11개 뒤에 프로젝트 앱 5개. 넘치는 뒤쪽 앱은 Launchpad로 가고, 실행 중에는 Dock 끝에 다시 보인다</text>
+  <text x="32" y="122" font-size="13" font-weight="600" fill="#1f2937">1600px</text>
+  <text x="32" y="140" font-size="11" fill="#6b7280">13칸</text>
+  <rect x="100" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="140" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="180" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="220" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="260" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="300" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="340" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="380" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="420" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="460" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="500" y="96" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="540" y="96" width="34" height="34" rx="8" fill="#c7d2fe" stroke="#9ca3af"/>
+  <text x="557" y="118" font-size="10" text-anchor="middle" fill="#3f46c7">HY</text>
+  <rect x="580" y="96" width="34" height="34" rx="8" fill="#c7d2fe" stroke="#9ca3af"/>
+  <text x="597" y="118" font-size="10" text-anchor="middle" fill="#3f46c7">NP</text>
+  <rect x="620" y="96" width="34" height="34" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-dasharray="3 3"/>
+  <text x="637" y="118" font-size="10" text-anchor="middle" fill="#9ca3af">QR</text>
+  <rect x="660" y="96" width="34" height="34" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-dasharray="3 3"/>
+  <text x="677" y="118" font-size="10" text-anchor="middle" fill="#9ca3af">WT</text>
+  <rect x="700" y="96" width="34" height="34" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-dasharray="3 3"/>
+  <text x="717" y="118" font-size="10" text-anchor="middle" fill="#9ca3af">농</text>
+  <text x="624" y="148" font-size="11" fill="#9a3412">→ Launchpad</text>
+  <text x="32" y="212" font-size="13" font-weight="600" fill="#1f2937">1920px</text>
+  <text x="32" y="230" font-size="11" fill="#6b7280">16칸</text>
+  <rect x="100" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="140" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="180" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="220" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="260" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="300" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="340" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="380" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="420" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="460" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="500" y="186" width="34" height="34" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="540" y="186" width="34" height="34" rx="8" fill="#c7d2fe" stroke="#9ca3af"/>
+  <text x="557" y="208" font-size="10" text-anchor="middle" fill="#3f46c7">HY</text>
+  <rect x="580" y="186" width="34" height="34" rx="8" fill="#c7d2fe" stroke="#9ca3af"/>
+  <text x="597" y="208" font-size="10" text-anchor="middle" fill="#3f46c7">NP</text>
+  <rect x="620" y="186" width="34" height="34" rx="8" fill="#c7d2fe" stroke="#9ca3af"/>
+  <text x="637" y="208" font-size="10" text-anchor="middle" fill="#3f46c7">QR</text>
+  <rect x="660" y="186" width="34" height="34" rx="8" fill="#c7d2fe" stroke="#9ca3af"/>
+  <text x="677" y="208" font-size="10" text-anchor="middle" fill="#3f46c7">WT</text>
+  <rect x="700" y="186" width="34" height="34" rx="8" fill="#c7d2fe" stroke="#9ca3af"/>
+  <text x="717" y="208" font-size="10" text-anchor="middle" fill="#3f46c7">농</text>
+  <rect x="100" y="270" width="14" height="14" rx="3" fill="#e5e7eb"/><text x="120" y="282" font-size="11" fill="#374151">내장 앱 (Finder~시스템 설정)</text>
+  <rect x="300" y="270" width="14" height="14" rx="3" fill="#c7d2fe"/><text x="320" y="282" font-size="11" fill="#374151">프로젝트 앱 (HYEONIVERSE·NewPick·QRU·WTD·새싹 농장)</text>
+</svg>

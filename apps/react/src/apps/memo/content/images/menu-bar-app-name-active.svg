@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>지금 쓰는 앱을 정하는 규칙</title>
+  <rect width="760" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">창 순서(zIndex)와 "지금 쓰는 앱"을 나눴다</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">AppStateContext: activeApp = desktopFocused ? null : foregroundApp(apps)</text>
+  <g font-size="13">
+    <rect x="32" y="92" width="220" height="64" rx="10" fill="#f3f4f6"/>
+    <text x="48" y="118" font-weight="600" fill="#1f2937">desktopFocused?</text>
+    <text x="48" y="140" font-size="12" fill="#6b7280">창 밖(바탕화면)을 눌렀나</text>
+    <rect x="320" y="92" width="200" height="64" rx="10" fill="#eef0ff"/>
+    <text x="336" y="118" font-weight="600" fill="#3f46c7">예 → null</text>
+    <text x="336" y="140" font-size="12" fill="#374151">메뉴 막대: Finder</text>
+    <rect x="320" y="176" width="200" height="64" rx="10" fill="#f3f4f6"/>
+    <text x="336" y="202" font-weight="600" fill="#1f2937">아니오 → foregroundApp</text>
+    <text x="336" y="224" font-size="12" fill="#374151">실행 중·최소화 아님·zIndex 최대</text>
+    <rect x="560" y="176" width="168" height="64" rx="10" fill="#dcfce7"/>
+    <text x="576" y="202" font-weight="600" fill="#15803d">그 앱의 이름</text>
+    <text x="576" y="224" font-size="12" fill="#374151">없으면 Finder</text>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.6" fill="none">
+    <path d="M252 124 H314"/><path d="M314 124 l-8 -5 m8 5 l-8 5"/>
+    <path d="M142 156 V208 H314"/><path d="M314 208 l-8 -5 m8 5 l-8 5"/>
+    <path d="M520 208 H554"/><path d="M554 208 l-8 -5 m8 5 l-8 5"/>
+  </g>
+  <text x="32" y="270" font-size="12" fill="#374151">true로: focusDesktop (바탕화면 판의 캡처 핸들러)  ·  false로: bringAppToFront, openApp (창을 누르거나 앱을 열 때)</text>
+</svg>

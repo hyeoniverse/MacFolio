@@ -2,10 +2,10 @@
 title: 게시 버튼 글자가 흐렸던 이유 - 선택자 우선순위에 진 색
 date: 2026-10-01
 category: 개발기/MacFolio/프론트엔드
-summary: 노란 게시 버튼의 글자가 회색으로 흐렸다. 색을 정한 규칙은 있었는데 다른 규칙이 이기고 있었다. 우선순위를 확인한 방법과, 그 김에 모양이 제각각이던 코드 복사·이미지 내려받기 버튼과 캡션 입력칸을 다듬은 기록.
+summary: 노란 게시 버튼의 글자가 회색으로 흐렸다. .memo button(0,1,1)이 버튼 클래스(0,1,0)를 이기고 있었다. 우선순위를 찾은 방법, 코드 복사·이미지 내려받기 버튼과 캡션 입력칸 손질, 그 뒤 CSS 층으로 뿌리를 고친 기록.
 ---
 
-메모 편집기 오른쪽 위의 **게시** 버튼은 고친 내용이 있으면 노란 바탕으로 켜진다. 그런데 켜진 버튼의 글자가 흐려서 잘 안 읽혔다.
+메모 편집기 오른쪽 위의 **게시** 버튼은 고친 내용이 있으면 노란 바탕으로 켜진다. 그런데 켜진 버튼의 글자가 흐려서 잘 안 읽혔다. 편집기를 다듬는 PR([#55](https://github.com/hyeoniverse/MacFolio/pull/55))에서 함께 고쳤다.
 
 ![고치기 전 게시 버튼](./images/memo-publish-before.jpg '노란 바탕 위 글자가 회색이라 흐리다')
 
@@ -60,12 +60,13 @@ for (const sheet of document.styleSheets)
 
 ## 고친 방법
 
-방법은 두 가지였다.
+| 방법                                               | 좋은 점          | 걸리는 점                                                     |
+| -------------------------------------------------- | ---------------- | ------------------------------------------------------------- |
+| `.memo button`을 `:where(.memo) button`으로 낮춘다 | 뿌리를 고친다    | 그동안 덮여 있던 버튼 글꼴이 한꺼번에 살아난다                |
+| 게시 버튼에 `!important`                           | 한 단어          | 다음에 이 버튼 색을 바꾸려는 규칙도 `!important`가 필요해진다 |
+| **게시 버튼 규칙의 점수를 올린다**                 | 이 버튼만 바뀐다 | 부모 클래스를 붙이는 손질이 버튼마다 필요하다                 |
 
-1. `.memo button`을 `:where(.memo) button`으로 바꿔 우선순위를 (0, 0, 1)로 낮춘다
-2. 게시 버튼 규칙의 우선순위를 올린다
-
-1번이 뿌리를 고치는 쪽이라 먼저 따져 봤다. 그런데 `.memo button`의 `font: inherit`은 **`font-size`·`font-weight`까지 함께 덮는** 줄임 속성이다. 실제로 게시 버튼도 `font-size: 11px; font-weight: 600`으로 적었지만, 계산된 값은 부모를 따른 `12px`, `400`이었다. 버튼마다 클래스로 적은 글꼴이 이렇게 덮여 있을 수 있다. 이 규칙을 약하게 만들면 그동안 덮여 있던 크기·굵기가 한꺼번에 살아나 앱 곳곳의 버튼 모양이 바뀐다. 이번 일은 게시 버튼 하나라서 2번으로 했다.
+첫 번째가 뿌리를 고치는 쪽이라 먼저 따져 봤다. 그런데 `.memo button`의 `font: inherit`은 **`font-size`·`font-weight`까지 함께 덮는** 줄임 속성이다. 실제로 게시 버튼도 `font-size: 11px; font-weight: 600`으로 적었지만, 계산된 값은 부모를 따른 `12px`, `400`이었다. 버튼마다 클래스로 적은 글꼴이 이렇게 덮여 있을 수 있다. 이 규칙을 약하게 만들면 그동안 덮여 있던 크기·굵기가 한꺼번에 살아나 앱 곳곳의 버튼 모양이 바뀐다. 이번 일은 게시 버튼 하나라서 세 번째로 했다.
 
 ```css
 /* 글자색은 .memo button(color: inherit)보다 앞서도록 .memo-writer-actions를 붙인다 */
@@ -136,8 +137,38 @@ input.addEventListener('input', () => {
 
 ![고친 뒤 캡션 입력칸](./images/memo-caption-after.jpg '긴 캡션도 줄을 바꿔 다 보이고, 커서는 글 끝에')
 
-## 남은 것
+## 남은 것: 그 뒤에 뿌리를 고쳤다
 
-`.memo button`은 그대로 두었다. 언젠가 `:where(.memo) button`으로 낮추면 버튼마다 클래스로 적은 크기·색이 제대로 먹는다. 다만 지금 화면이 그 덮인 값에 맞춰져 있어서, 한 번에 바꾸면 앱 곳곳의 버튼이 바뀐다. 바꾼다면 화면별로 스크린샷을 비교하며 따로 해야 한다.
+이 글을 쓸 때는 `.memo button`을 그대로 두었다. 지금 화면이 그 덮인 값에 맞춰져 있어서, 한 번에 바꾸면 앱 곳곳의 버튼이 바뀌기 때문이다.
+
+며칠 뒤 공통 컴포넌트를 만들기 시작하면서 이 일을 먼저 했다([#57](https://github.com/hyeoniverse/MacFolio/pull/57)). `:where()`로 점수를 낮추는 대신 CSS 층(cascade layer)을 썼다. 앱 루트의 기본값은 `@layer reset`에, 공통 컴포넌트는 `@layer components`에 넣는다. 층에 든 규칙은 층 밖의 규칙에 선택자 점수와 상관없이 진다.
+
+```css
+/* memo/styles/theme.css (지금) */
+@layer reset {
+	.memo button {
+		font: inherit;
+		color: inherit;
+		cursor: pointer;
+	}
+}
+```
+
+![CSS 층 순서](./images/memo-button-specificity-layers.svg '층 사이 순서가 점수보다 먼저라, 버튼 클래스 하나로도 reset을 이긴다')
+
+이제 게시 버튼 규칙은 `.memo-writer-publish` 하나로도 이긴다. 다만 이번에 붙인 `.memo-writer-actions .memo-writer-publish`는 지금도 그대로 남아 있다. 이겨도 해가 없고, 주석으로 이유를 적어 두었다. 층 순서를 어디서 처음 정하느냐에 따라 공통 버튼 여백이 사라진 일도 있었다. 그 이야기는 [CSS 층 순서 고침](/memo/css-layer-order-fix)에 있다.
+
+## 배운 것
+
+- "적은 값이 안 먹는다"는 대개 다른 규칙이 이기고 있다는 뜻이다. 계산된 값을 읽고, 그 요소에 걸리는 규칙을 모두 뽑아 보면 이긴 쪽이 바로 보인다. 위의 `document.styleSheets` 스크립트는 개발자 도구의 "Computed" 탭이 하는 일을 코드로 한 것이다.
+- `font`·`background`·`border` 같은 줄임 속성은 적지 않은 하위 속성까지 덮는다. 앱 루트의 기본값에 줄임 속성을 쓰면 그 영향이 넓다.
+- 같은 자리에 뜨는 버튼은 같은 클래스로 묶고, "모양이 같다"를 시험으로 고정해 두면 다시 갈라지지 않는다.
+
+## 관련 글
+
+- [앱 루트 기본값을 @layer reset으로](/memo/css-layer-reset)
+- [CSS 층 순서를 index.html에서 정하기](/memo/css-layer-order-fix)
+- [!important를 지우고 아이콘 버튼을 IconButton으로](/memo/shared-button)
+- [Memo.css를 구역마다 한 파일로](/memo/memo-css-split)
 
 #MacFolio #메모앱 #CSS #트러블슈팅

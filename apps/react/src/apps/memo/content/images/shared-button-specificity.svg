@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>선택자 점수 비교. .memo-tool:hover:not(:disabled)는 0,3,0이라 .memo-tool.on 0,2,0을 이겼다. :where로 감싸면 0,2,0이 되어 뒤에 있는 켜진 규칙이 이긴다</title>
+<rect width="800" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">:not()은 안의 점수를 더하고, :where()는 0으로 만든다</text>
+<g font-size="11.5" fill="#1f2937">
+<text x="40" y="80">.memo-tool:hover:not(:disabled)</text>
+<rect x="330" y="66" width="60" height="20" rx="4" fill="#fee2e2"/><text x="360" y="80" text-anchor="middle">0,3,0</text>
+<text x="410" y="80" fill="#b91c1c">← 이겼다 (켜진 버튼이 회색)</text>
+<text x="40" y="112">.memo-tool.on</text>
+<rect x="330" y="98" width="60" height="20" rx="4" fill="#f3f4f6"/><text x="360" y="112" text-anchor="middle">0,2,0</text>
+<line x1="40" y1="134" x2="760" y2="134" stroke="#e5e7eb"/>
+<text x="40" y="164">.memo-tool:hover:where(:not(:disabled))</text>
+<rect x="330" y="150" width="60" height="20" rx="4" fill="#f3f4f6"/><text x="360" y="164" text-anchor="middle">0,2,0</text>
+<text x="40" y="196">.memo-tool.on (파일에서 뒤)</text>
+<rect x="330" y="182" width="60" height="20" rx="4" fill="#d1fae5"/><text x="360" y="196" text-anchor="middle">0,2,0</text>
+<text x="410" y="196" fill="#047857">← 점수가 같으면 뒤가 이긴다</text>
+</g>
+<text x="40" y="232" font-size="10.5" fill="#6b7280">!important가 이 차이를 덮고 있어서, 지우기 전에는 보이지 않았다</text>
+</svg>

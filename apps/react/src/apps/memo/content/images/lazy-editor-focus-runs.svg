@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 260" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="720" height="260" fill="#fff"/>
+<text x="360.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">같은 시험 세 개를 10개 동시로 14번씩 돌린 결과</text>
+<text x="172" y="85.0" font-size="11" fill="#374151" text-anchor="end">고치기 전: 실패</text>
+<rect x="180" y="70" width="7.076923076923077" height="22" rx="4" fill="#fca5a5"/>
+<text x="193.07692307692307" y="85.0" font-size="11" fill="#b91c1c" text-anchor="start" font-weight="600">2</text>
+<text x="172" y="119.0" font-size="11" fill="#374151" text-anchor="end">고치기 전: 통과</text>
+<rect x="180" y="104" width="120.3076923076923" height="22" rx="4" fill="#d1d5db"/>
+<text x="306.3076923076923" y="119.0" font-size="11" fill="#374151" text-anchor="start" font-weight="600">34</text>
+<text x="172" y="153.0" font-size="11" fill="#374151" text-anchor="end">고친 뒤: 실패</text>
+<rect x="180" y="138" width="2" height="22" rx="4" fill="#fca5a5"/>
+<text x="188" y="153.0" font-size="11" fill="#b91c1c" text-anchor="start" font-weight="600">0</text>
+<text x="172" y="187.0" font-size="11" fill="#374151" text-anchor="end">고친 뒤: 통과</text>
+<rect x="180" y="172" width="445.84615384615387" height="22" rx="4" fill="#6ee7b7"/>
+<text x="631.8461538461538" y="187.0" font-size="11" fill="#047857" text-anchor="start" font-weight="600">126</text>
+<text x="360" y="240" font-size="11" fill="#6b7280" text-anchor="middle">고치기 전 36번 중 2번(약 6%) 실패. 한 번 돌려서는 거의 보이지 않는 비율이다</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>다섯 그림자 토큰을 같은 카드에 적용해 비교한 그림. float와 menu는 0.5px 테두리 그림자가 함께 있고, xl이 가장 멀리 퍼진다</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+<filter id="f0" x="-50%" y="-50%" width="200%" height="220%"><feDropShadow dx="0" dy="4" stdDeviation="7.0" flood-color="#000" flood-opacity="0.12"/></filter><filter id="f1" x="-50%" y="-50%" width="200%" height="220%"><feDropShadow dx="0" dy="10" stdDeviation="15.0" flood-color="#000" flood-opacity="0.2"/></filter><filter id="f2" x="-50%" y="-50%" width="200%" height="220%"><feDropShadow dx="0" dy="6" stdDeviation="9.0" flood-color="#000" flood-opacity="0.18"/></filter><filter id="f3" x="-50%" y="-50%" width="200%" height="220%"><feDropShadow dx="0" dy="8" stdDeviation="15.0" flood-color="#000" flood-opacity="0.18"/></filter><filter id="f4" x="-50%" y="-50%" width="200%" height="220%"><feDropShadow dx="0" dy="18" stdDeviation="20.0" flood-color="#000" flood-opacity="0.12"/></filter>
+</defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">그림자 다섯 이름 (값은 그대로, 이름만)</text>
+<rect x="40" y="80" width="130" height="90" rx="12" fill="#ffffff" filter="url(#f0)" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+<text x="105" y="198" font-size="11.5" font-weight="700" fill="#1f2937" text-anchor="middle">--shadow-float</text>
+<text x="105" y="216" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="middle">0 4px 14px .12 + 0.5px 테두리</text>
+<text x="105" y="234" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="middle">6곳</text>
+<rect x="202" y="80" width="130" height="90" rx="12" fill="#ffffff" filter="url(#f1)" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>
+<text x="267" y="198" font-size="11.5" font-weight="700" fill="#1f2937" text-anchor="middle">--shadow-menu</text>
+<text x="267" y="216" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="middle">0 10px 30px .2 + 0.5px 테두리</text>
+<text x="267" y="234" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="middle">3곳</text>
+<rect x="364" y="80" width="130" height="90" rx="12" fill="#ffffff" filter="url(#f2)"/>
+<text x="429" y="198" font-size="11.5" font-weight="700" fill="#1f2937" text-anchor="middle">--shadow-md</text>
+<text x="429" y="216" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="middle">0 6px 18px .18</text>
+<text x="429" y="234" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="middle">3곳</text>
+<rect x="526" y="80" width="130" height="90" rx="12" fill="#ffffff" filter="url(#f3)"/>
+<text x="591" y="198" font-size="11.5" font-weight="700" fill="#1f2937" text-anchor="middle">--shadow-lg</text>
+<text x="591" y="216" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="middle">0 8px 30px .18</text>
+<text x="591" y="234" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="middle">3곳</text>
+<rect x="688" y="80" width="130" height="90" rx="12" fill="#ffffff" filter="url(#f4)"/>
+<text x="753" y="198" font-size="11.5" font-weight="700" fill="#1f2937" text-anchor="middle">--shadow-xl</text>
+<text x="753" y="216" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="middle">0 18px 40px .12</text>
+<text x="753" y="234" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="middle">4곳</text>
+<text x="32" y="276" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">라이트·다크에서 같은 값을 쓰는 것만 골랐다. 창·팝오버처럼 테마마다 다른 그림자는 --shadow-window·--shadow-popover가 맡는다.</text>
+</svg>

@@ -2,10 +2,24 @@
 title: 메모 앱처럼 다듬기 - 표 손잡이, 찾기·대치, 넓어지는 검색 칸
 date: 2026-09-30
 category: 개발기/MacFolio/프론트엔드
-summary: macOS 메모의 표 손잡이, 글 안에서 찾기·대치, 도구를 접고 넓어지는 검색 칸을 붙였다. 손잡이가 엉뚱한 자리에 붙은 이유는 본문 문단 간격 규칙이었다.
+summary: macOS 메모를 옆에 두고 표 손잡이, 글 안에서 찾기·대치, 도구를 접고 넓어지는 검색 칸, 이미지 캡션·내려받기, Safari 탭을 맞췄다. 손잡이가 13px 어긋난 원인은 본문 문단 간격 규칙이었다.
 ---
 
 편집기가 돌아가기 시작하자, 쓰다 보면 걸리는 곳이 하나씩 보였다. macOS 메모를 옆에 띄워 두고 하나씩 맞췄다.
+
+## 배경
+
+9월 말에 메모 앱에서 블로그 글을 직접 쓰기 시작했다. 글을 몇 편 쓰자 걸리는 곳이 한꺼번에 드러났다.
+
+| 걸린 곳   | 재현                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------ |
+| 표        | 표를 넣고 열을 더하거나 옮기려면 Markdown 원문을 고쳐야 했다. 글 맨 앞의 표 앞에는 글을 쓸 수 없었다   |
+| 찾기      | 긴 글에서 낱말 하나를 바꾸려면 눈으로 찾아야 했다. 브라우저의 ⌘F는 편집기 안의 고치기를 해 주지 않는다 |
+| 검색 칸   | 관리자로 로그인하면 도구가 늘어 검색 칸이 도구 막대 밖으로 22px 넘쳐 잘렸다                            |
+| 이미지    | 넣은 뒤에는 캡션을 고치기 어려웠고, 내려받기가 다른 주소의 그림에서 듣지 않았다                        |
+| Safari 탭 | 좁은 창에서 탭이 가로로 넘쳐 밀어야 보였다                                                             |
+
+9월 30일과 10월 1일 이틀에 걸쳐 기능마다 커밋을 나눠 고쳤고, 일부는 [PR #55](https://github.com/hyeoniverse/MacFolio/pull/55)로 묶였다.
 
 ## 표 손잡이
 
@@ -39,10 +53,49 @@ Markdown 표는 첫 행이 늘 머리글이다. 그래서 행을 맨 위로 옮�
 
 ![글 안에서 찾기](./images/notes-find-bar.jpg '찾은 곳은 옅게, 지금 찾은 곳은 진하게 칠한다. ⌄ 메뉴에서 옵션과 최근 검색을 고른다')
 
-찾기 규칙은 순수 함수 하나로 두고, 칠하는 곳만 두 벌이다.
+![찾기 규칙 하나, 칠하기 두 벌](./images/notes-polish-find.svg '편집기와 읽기 화면이 같은 findInBlocks 결과를 각자 방식으로 칠한다')
+
+찾기 규칙은 순수 함수 하나로 두고, 칠하는 곳만 두 벌이다. 이 함수는 지금 `packages/desktop-core/src/memo/find.ts`에 있다.
+
+```ts
+export function findMatches(text: string, query: string, options: FindOptions): [number, number][] {
+	if (!query) return [];
+	const haystack = options.ignoreCase ? text.toLowerCase() : text;
+	const needle = options.ignoreCase ? query.toLowerCase() : query;
+	const matches: [number, number][] = [];
+	let from = 0;
+	while (from <= haystack.length - needle.length) {
+		const at = haystack.indexOf(needle, from);
+		if (at === -1) break;
+		const end = at + needle.length;
+		const startsWord = !isWordChar(text[at - 1]);
+		const endsWord = !isWordChar(text[end]);
+		const ok = options.mode === 'contains' || (startsWord && (options.mode === 'startsWith' || endsWord));
+		if (ok) {
+			matches.push([at, end]);
+			from = end;
+		} else from = at + 1;
+	}
+	return matches;
+}
+```
+
+단어 글자는 `[\p{L}\p{N}_]`라 한글도 단어 경계를 안다. 덩어리(문단, 표의 칸, 제목)를 넘는 자리는 찾지 않는다.
 
 - **편집기**: ProseMirror 장식으로 칠하고, 대치는 트랜잭션으로 한다. 뒤에서부터 바꿔야 앞 자리가 밀리지 않는다
 - **읽기 화면**: DOM을 바꾸지 않고 CSS Custom Highlight API(`::highlight()`)로 칠한다. 글을 문단·칸 단위로 모아 찾고, 찾은 자리를 DOM 범위로 되돌린다
+
+읽기 화면을 칠하는 방법은 둘을 놓고 골랐다.
+
+| 방법                            | 문제                                                                                             |
+| ------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 찾은 자리를 `<mark>`로 감싼다   | React가 그린 DOM을 바깥에서 바꾸게 된다. 다음 렌더링에서 React가 모르는 노드가 생기거나 사라진다 |
+| CSS Custom Highlight API (고름) | 지원하지 않는 브라우저에서는 칠해지지 않는다. 그때도 개수와 옮겨 다니기는 된다                   |
+
+```ts
+registry.set('memo-find', new Highlight(...ranges.filter((_, i) => i !== current)));
+registry.set('memo-find-current', new Highlight(...(current >= 0 ? [ranges[current]] : [])));
+```
 
 ⌘F는 처음에 메모 창 요소에 걸었는데, 본문 글자를 눌러도 초점이 창 안으로 들어가지 않아 동작하지 않았다. 메모가 맨 앞 창일 때 window에서 받게 바꿨다.
 
@@ -69,5 +122,23 @@ Markdown 표는 첫 행이 늘 머리글이다. 그래서 행을 맨 위로 옮�
 ![좁은 창의 Safari 탭](./images/safari-tabs.jpg '지금 탭은 제목이 다 보이고, 다른 탭은 짧게 줄어든다. 좁아도 주소창은 그대로 있다')
 
 처음에는 좁은 창에서만 이 모양을 쓰고 주소창을 숨겼는데, 두 모양이 따로 놀고 좁을 때 주소를 볼 수 없었다. 이제 어느 폭에서나 같은 탭 모양(둥근 막대 안의 알약)을 쓰고, 주소창도 늘 있다. 닫기 버튼은 탭 왼쪽에 제 자리를 갖고 제목 쪽은 오른쪽에 같은 폭을 비워, 제목과 겹치지 않고 가운데도 맞는다. 자리는 지금 탭과 올린 탭에서만 펴서, 좁을 때 다른 탭은 그만큼 제목을 더 보인다.
+
+## 확인
+
+- `e2e/memo-editor.spec.ts`: "표 손잡이: 열·행 전체를 골라 메뉴로 추가·삭제하고, Backspace로 칸을 비운다", "표: 행·열 전체를 고른 뒤 손잡이를 끌어 옮긴다 (맨 위로 옮기면 머리글이 된다)", "표 앞뒤에 커서를 두고, 뒤에서 Backspace를 한 번 누르면 표가 지워진다", "이미지: 캡션을 눌러 그 자리에서 고치고, 내려받기 버튼으로 받고, 끌 때 놓을 자리가 보인다".
+- `e2e/memo-find.spec.ts`: "검색 칸에 초점이 가면 도구가 ••• 로 접히고 검색 칸이 왼쪽으로 넓어진다", "검색 칸에서 나오면 도구가 다시 펼쳐진다", "읽기 화면: ⌘F로 찾기 막대를 열고, 찾은 곳을 옮겨 다니고, 옵션을 바꾼다", "편집기: 검색 칸 메뉴의 "이 메모에서 찾기"로 열고, 하나씩·모두 대치한다".
+- 이미지 끌기 E2E는 처음에 레이아웃에 따라 가끔 실패해 두 번 고쳤다(`41b6e6cd3`, `52686c9ac`).
+
+## 남은 것·배운 것
+
+- 손잡이가 13px 어긋난 것처럼, "본문의 모든 형제에 간격" 같은 넓은 선택자는 나중에 끼워 넣는 요소까지 잡는다. 편집기 위에 그리는 장식은 본문 흐름 밖(포털이나 절대 위치)에 두는 편이 안전하다.
+- `position: fixed`는 `container-type`을 가진 조상 안에서 창 기준이 된다. 끌어다 놓을 자리 표시를 body로 옮긴 것도 이 때문이었다. 컨테이너 쿼리를 쓰는 앱 안에 고정 위치 요소를 둘 때는 늘 확인해야 한다.
+- ⌘F는 뒤에 [메뉴 막대의 메뉴](/memo/menubar-menus)에서 메뉴의 '찾기…' 단축키로 옮겼고, 메모 안에서 따로 듣던 코드는 지웠다.
+
+## 관련 글
+
+- [메모 칸 너비 조절](/memo/memo-pane-resize)
+- [메모에 태그 붙이기](/memo/memo-tags)
+- [메뉴 막대의 파일·보기·윈도우가 실제로 열린다](/memo/menubar-menus)
 
 #MacFolio #메모앱
