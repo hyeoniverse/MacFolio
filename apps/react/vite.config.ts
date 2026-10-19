@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import { appendFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
@@ -66,18 +67,41 @@ function publicImagesPlugin(): Plugin {
 	};
 }
 
-/** 로컬 개발에서 /files/*를 넘길 사이트 (명령 앞의 환경 변수가 .env.local보다 먼저) */
+/**
+ * 지금 브랜치의 PR 미리보기 주소 (ci.yml의 preview 작업과 같은 별칭 규칙). main이거나 git을 읽지 못하면 null.
+ * 브랜치에서 바꾼 /files/*(새 파일 종류, Range)는 배포한 사이트에 아직 없어서, 그 브랜치의 미리보기 Worker가 내줘야 한다
+ */
+function branchPreviewOrigin(): string | null {
+	try {
+		const branch = execSync('git rev-parse --abbrev-ref HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+			.toString()
+			.trim();
+		if (!branch || branch === 'main' || branch === 'HEAD') return null;
+		const alias = branch
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-+|-+$/g, '')
+			.slice(0, 40)
+			.replace(/-+$/, '');
+		return `https://${alias}-macfolio.hyeoniverse-dev.workers.dev`;
+	} catch {
+		return null;
+	}
+}
+
+/** 로컬 개발에서 /files/*를 넘길 사이트: FILES_ORIGIN(명령 앞의 환경 변수가 .env.local보다 먼저) → 이 브랜치의 PR 미리보기 → 배포한 사이트 */
 const FILES_ORIGIN =
 	process.env.FILES_ORIGIN ||
 	loadEnv('development', fileURLToPath(new URL('.', import.meta.url)), 'FILES_').FILES_ORIGIN ||
+	branchPreviewOrigin() ||
 	'https://macfolio.hyeoniverse.com';
 
 export default defineConfig({
 	plugins: [react(), securityHeadersPlugin(), publicImagesPlugin()],
 	// 단위 시험(Vitest)도 desktop-core의 src를 읽는다
 	ssr: { resolve: { conditions: ['source', ...defaultServerConditions] } },
-	// 로컬 개발(pnpm dev)에는 사이트 Worker가 없어 /files/*(R2 문서 파일)를 내줄 곳이 없다. 배포한 사이트로 넘긴다.
-	// 다른 곳을 보려면 FILES_ORIGIN (예: PR 미리보기 주소): 명령 앞에 붙이거나 apps/react/.env.local에 적는다.
+	// 로컬 개발(pnpm dev)에는 사이트 Worker가 없어 /files/*(R2 문서 파일)를 내줄 곳이 없다. main이 아닌 브랜치면 그 PR 미리보기로, main이면 배포한 사이트로 넘긴다.
+	// 다른 곳을 보려면 FILES_ORIGIN: 명령 앞에 붙이거나 apps/react/.env.local에 적는다.
 	// E2E(vite preview)는 넘기지 않는다 (시험이 가짜 파일을 준다)
 	server: {
 		proxy: { '/files': { target: FILES_ORIGIN, changeOrigin: true } },

@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/useAppState';
 import { fileUrl } from '@/apps/finder/documents';
 import { isFileItem, mediaKind, type FileItem, type FinderItem } from '@/apps/finder/files';
 import { useLocations } from '@/apps/finder/useLocations';
 import FinderIcon from '@/apps/finder/FinderIcon';
-import { openInPlayer, resetPlayer, usePlayer } from './playerStore';
+import { openInPlayer, resetPlayer, usePlayer, type PlayerFile } from './playerStore';
+import PlayerControls from './PlayerControls';
 import './QuickTime.css';
 
 /** 트리 안의 동영상·소리 파일 (파일 고르기 칸) */
@@ -18,8 +19,61 @@ const mediaFiles = (items: FinderItem[]): FileItem[] =>
 				: []
 	);
 
+/** 재생 화면: 영상(소리는 음표)과 떠 있는 재생 막대. 마우스를 움직이면 막대가 나오고, 재생 중 2.5초 가만히 있으면 사라진다. 화면을 누르면 재생·멈춤 */
+const Stage: React.FC<{ file: PlayerFile }> = ({ file }) => {
+	const [media, setMedia] = useState<HTMLMediaElement | null>(null);
+	const [active, setActive] = useState(true);
+	const timer = useRef<number | undefined>(undefined);
+	const wake = () => {
+		setActive(true);
+		window.clearTimeout(timer.current);
+		timer.current = window.setTimeout(() => setActive(false), 2500);
+	};
+	useEffect(() => () => window.clearTimeout(timer.current), []);
+	// 멈춰 있으면 막대를 늘 보인다
+	const [paused, setPaused] = useState(true);
+	useEffect(() => {
+		if (!media) return;
+		const sync = () => setPaused(media.paused);
+		sync();
+		media.addEventListener('play', sync);
+		media.addEventListener('pause', sync);
+		return () => {
+			media.removeEventListener('play', sync);
+			media.removeEventListener('pause', sync);
+		};
+	}, [media]);
+	const toggle = () => media && (media.paused ? void media.play().catch(() => undefined) : media.pause());
+	return (
+		<div
+			className={`quicktime-stage${active || paused ? '' : ' idle'}`}
+			onPointerMove={wake}
+			onPointerLeave={() => setActive(false)}
+			onClick={toggle}
+		>
+			{file.media === 'video' ? (
+				<video
+					ref={setMedia}
+					className="quicktime-video"
+					src={fileUrl(file.key)}
+					autoPlay
+					playsInline
+					aria-label={file.name}
+				/>
+			) : (
+				<div className="quicktime-audio">
+					<i className="fa-solid fa-music" aria-hidden="true" />
+					<p>{file.name}</p>
+					<audio ref={setMedia} src={fileUrl(file.key)} autoPlay aria-label={file.name} />
+				</div>
+			)}
+			<PlayerControls media={media} fileKey={file.key} name={file.name} visible={active || paused} />
+		</div>
+	);
+};
+
 /**
- * QuickTime Player (macOS처럼): Finder·바탕화면에서 연 동영상·소리 파일을 재생한다. 검은 바탕에 브라우저 기본 재생 막대(재생·멈춤·시간·소리·전체 화면).
+ * QuickTime Player (macOS처럼): Finder·바탕화면에서 연 동영상·소리 파일을 재생한다. 검은 바탕에 macOS처럼 떠 있는 재생 막대(소리·뒤로·재생·앞으로·PIP·공유·속도, 시간 막대).
  * 파일 없이 열면 올린 동영상·소리 파일을 골라 연다. 창을 닫으면 비운다 (다음에 열면 고르기부터)
  */
 const QuickTime: React.FC = () => {
@@ -42,22 +96,8 @@ const QuickTime: React.FC = () => {
 	return (
 		<AppWindow title={file?.name ?? 'QuickTime Player'} appName="quicktime">
 			<div className={`quicktime${file ? ' playing' : ''}`}>
-				{file?.media === 'video' ? (
-					<video
-						key={file.key}
-						className="quicktime-video"
-						src={fileUrl(file.key)}
-						controls
-						autoPlay
-						playsInline
-						aria-label={file.name}
-					/>
-				) : file?.media === 'audio' ? (
-					<div className="quicktime-audio">
-						<i className="fa-solid fa-music" aria-hidden="true" />
-						<p>{file.name}</p>
-						<audio key={file.key} src={fileUrl(file.key)} controls autoPlay aria-label={file.name} />
-					</div>
+				{file ? (
+					<Stage key={file.key} file={file} />
 				) : (
 					<div className="quicktime-pick">
 						<p className="quicktime-pick-title">재생할 파일을 고르세요</p>
