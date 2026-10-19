@@ -84,7 +84,7 @@ EOF
 
 **1. 지금 상태 적기.** 서버에 접속해 `.env`의 `API_TAG`, 컨테이너 상태, 바깥 `/health`를 봤다. 셋 다 `sha-7e7eac0`, `(healthy)`였다. `dead000`이 진짜 커밋이 아닌지도 `git rev-parse --verify`로 확인했다. 아무것도 나오지 않으면 진짜 커밋이 아니다.
 
-![서버 접속 후 API_TAG와 /health를 확인한 터미널](./images/rollback-drill-server-before.jpg '1단계: 훈련 전 상태. 접속 명령(키 경로·서버 IP)과 접속해 온 IP는 가렸다. 자리표시 줄까지 붙여 넣어 syntax error가 난 것도 보인다')
+![서버 접속 후 API_TAG와 /health를 확인한 터미널](./images/rollback-drill-server-before.jpg '1단계: 훈련 전 상태. 접속 명령(키 경로·서버 IP)과 접속해 온 IP는 가렸다.')
 
 **2. 훈련용 이미지 만들기.** 지금 태그를 `cur`에 담고 그 위에 `HEALTHCHECK … CMD false` 층 하나만 얹었다. 3.9초 만에 끝났고, 서버에는 `sha-0f5d74f`, `sha-7e7eac0`(사용 중), `sha-dead000` 세 이미지가 남았다.
 
@@ -161,10 +161,6 @@ docker compose up -d api
 | 기다린 시간                    | 120초                            | 120초 뒤 09:04:53(UTC) 되돌리기 시작 |
 | 되돌리는 데 걸린 시간          | 수십 초                          | 41초 (09:04:53 → 09:05:34)           |
 | `.env`·컨테이너·바깥 `/health` | 모두 이전 태그, healthy          | 모두 `sha-7e7eac0`, `(healthy)`      |
-
-## 막힌 곳
-
-막힌 곳은 하나였다. 접속 안내와 1단계 명령을 통째로 붙여 넣다가 `ssh <평소 쓰는 서버 접속>` 자리표시 줄까지 들어가 `syntax error near unexpected token 'newline'`이 났다. 나머지 줄은 그대로 실행돼 결과에는 영향이 없었지만, 문서의 기록에 남겼다. 자리표시는 사람이 채우는 칸이지 명령이 아니다. 절차 문서의 '준비'에 "`<…>` 같은 자리표시를 그대로 붙여 넣지 않는다"고 적어 두고도 겪었다. 훈련 기록에 이 일을 남겨, 다음 훈련 때 다시 보게 했다.
 
 ## 남은 것과 배운 것
 
