@@ -17,15 +17,16 @@ import {
 } from 'lucide-react';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import { fileUrl } from '@/apps/finder/documents';
-import { find, pathTo, previewFolder, search, type FileItem, type FinderItem } from '@/apps/finder/files';
+import { find, mediaKind, pathTo, previewFolder, search, type FileItem, type FinderItem } from '@/apps/finder/files';
 import { useLocations } from '@/apps/finder/useLocations';
 import FinderIcon from '@/apps/finder/FinderIcon';
 import AppsGlyph from '@/apps/finder/AppsGlyph';
 import { loadPdf } from './pdf';
 import { PdfThumb } from './PdfView';
+import './Preview.css';
 
 /**
- * 고른 곳. preview: iCloud의 미리보기 폴더(올린 문서 파일 전부), recents: 최근 항목,
+ * 고른 곳. preview: iCloud의 앱 폴더(이 앱이 여는 파일 전부), recents: 최근 항목,
  * 그 밖에는 Finder 트리의 폴더 id (docs, docs:이력서, blog/프론트엔드 …)
  */
 type Place = 'preview' | 'recents' | string;
@@ -38,8 +39,27 @@ const LOCATION_ICONS: Record<string, LucideIcon | typeof AppsGlyph> = {
 };
 
 /** 미리보기가 열 수 있는 것: PDF와 그림 */
-type Openable = FileItem & { kind: 'pdf' | 'image' };
-const isFile = (item: FinderItem): item is Openable => item.kind === 'pdf' || item.kind === 'image';
+const canPreview = (item: FileItem) => item.kind === 'pdf' || item.kind === 'image';
+
+/** 이 열기 창을 띄운 앱. 기본은 미리보기 */
+export interface OpenPanelApp {
+	name: string;
+	icon: string;
+	/** 열 수 있는 파일인지 (그 밖의 파일은 흐리게, 고를 수 없다) */
+	canOpen: (item: FileItem) => boolean;
+}
+
+const PREVIEW_APP: OpenPanelApp = { name: '미리보기', icon: '/imgs/preview.svg', canOpen: canPreview };
+
+/** 올린 파일 전부 (폴더를 따라 내려간다, 같은 파일은 한 번) */
+const allFiles = (items: FinderItem[], seen = new Set<string>()): FileItem[] =>
+	items.flatMap((item) => {
+		if (item.kind === 'folder') return item.aliasOf ? [] : allFiles(item.children, seen);
+		if (item.kind !== 'pdf' && item.kind !== 'image' && item.kind !== 'file') return [];
+		if (seen.has(item.key)) return [];
+		seen.add(item.key);
+		return [item];
+	});
 
 /** 파일 그림: 그림은 그대로, PDF는 첫 쪽, 그 밖은 Finder 아이콘 */
 const ItemThumb: React.FC<{ item: FinderItem }> = ({ item }) => {
@@ -56,6 +76,11 @@ const ItemThumb: React.FC<{ item: FinderItem }> = ({ item }) => {
 			alive = false;
 		};
 	}, [pdfKey]);
+	if (item.kind === 'file' && mediaKind(item.name) === 'video')
+		// 첫 장면 (Finder처럼 0.5초 뒤. 처음이 검은 화면인 영상이 많다)
+		return (
+			<video className="preview-open-paper" src={`${fileUrl(item.key)}#t=0.5`} preload="metadata" muted playsInline />
+		);
 	if (item.kind === 'image')
 		return <img className="preview-open-paper" src={fileUrl(item.key)} alt="" draggable={false} />;
 	if (item.kind === 'pdf')
@@ -72,8 +97,14 @@ const ItemThumb: React.FC<{ item: FinderItem }> = ({ item }) => {
  * Finder와 같은 파일 트리를 둘러본다: 왼쪽은 미리보기(iCloud)·최근 항목과 즐겨찾기(문서·프로젝트·블로그·응용 프로그램),
  * 폴더는 두 번 눌러 들어가고 뒤로·앞으로로 오간다. 미리보기가 열 수 없는 파일(문서·글·앱)은 흐리게 보이고 고를 수 없다
  */
-const OpenPanel: React.FC<{ onOpen: (file: Openable) => void; onCancel: () => void }> = ({ onOpen, onCancel }) => {
+const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => void; app?: OpenPanelApp }> = ({
+	onOpen,
+	onCancel,
+	app = PREVIEW_APP,
+}) => {
 	const locations = useLocations();
+	const isFile = (item: FinderItem): item is FileItem =>
+		(item.kind === 'pdf' || item.kind === 'image' || item.kind === 'file') && app.canOpen(item);
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: ['preview'], at: 0 });
 	const place = history.places[history.at];
 	const [query, setQuery] = useState('');
@@ -89,7 +120,13 @@ const OpenPanel: React.FC<{ onOpen: (file: Openable) => void; onCancel: () => vo
 		setSelected(null);
 	};
 
-	const files = useMemo(() => previewFolder(locations).children as Openable[], [locations]);
+	const files = useMemo(
+		() =>
+			app === PREVIEW_APP
+				? (previewFolder(locations).children as FileItem[])
+				: allFiles(locations).filter((item) => app.canOpen(item)),
+		[locations, app]
+	);
 	const folder = place === 'preview' || place === 'recents' ? null : find(locations, place);
 	const q = query.trim();
 	const shown: FinderItem[] = q
@@ -102,7 +139,7 @@ const OpenPanel: React.FC<{ onOpen: (file: Openable) => void; onCancel: () => vo
 					? folder.children
 					: [];
 	const chosen = shown.find((item) => item.id === selected) ?? null;
-	const title = place === 'preview' ? '미리보기' : place === 'recents' ? '최근 항목' : (folder?.name ?? '');
+	const title = place === 'preview' ? app.name : place === 'recents' ? '최근 항목' : (folder?.name ?? '');
 	// 위치 칸: 미리보기 폴더는 macOS처럼 'iCloud'에 있다
 	const location = place === 'preview' ? 'iCloud' : title;
 	// 사이드바에서 칠할 곳: 폴더 안에 들어가 있으면 그 폴더가 든 즐겨찾기
@@ -129,7 +166,7 @@ const OpenPanel: React.FC<{ onOpen: (file: Openable) => void; onCancel: () => vo
 	return (
 		<div className="preview-open" role="dialog" aria-label="열기">
 			<nav className="preview-open-sidebar" aria-label="위치">
-				{placeButton('preview', root === 'preview' ? FolderOpen : Folder, '미리보기')}
+				{placeButton('preview', root === 'preview' ? FolderOpen : Folder, app.name)}
 				{placeButton('recents', Clock, '최근 항목')}
 				<p className="preview-open-heading">즐겨찾기</p>
 				{locations.map((item) => placeButton(item.id, LOCATION_ICONS[item.id] ?? Folder, item.name))}
@@ -159,8 +196,10 @@ const OpenPanel: React.FC<{ onOpen: (file: Openable) => void; onCancel: () => vo
 						<ChevronDown size={12} strokeWidth={2} />
 					</span>
 					<span className="preview-open-title">
-						<img src="/imgs/preview.svg" alt="" />
-						<span>미리보기 — {location}</span>
+						<img src={app.icon} alt="" />
+						<span>
+							{app.name} — {location}
+						</span>
 						<ChevronsUpDown size={14} strokeWidth={1.8} aria-hidden="true" />
 					</span>
 					<SearchField
@@ -175,7 +214,7 @@ const OpenPanel: React.FC<{ onOpen: (file: Openable) => void; onCancel: () => vo
 				{shown.length > 0 ? (
 					<div className="preview-open-grid" role="listbox" aria-label={q ? '찾은 항목' : title}>
 						{shown.map((item) => {
-							// 폴더와 PDF·그림만 고를 수 있다 (macOS 열기 창처럼 나머지는 흐리게)
+							// 폴더와 이 앱이 여는 파일만 고를 수 있다 (macOS 열기 창처럼 나머지는 흐리게)
 							const usable = item.kind === 'folder' || isFile(item);
 							return (
 								<button

@@ -74,12 +74,15 @@ export function chooseCustomWallpaper(kind: WallpaperKind, wallpaper: CustomWall
 	settingsStore.setState({ [field.id]: wallpaper.id, [field.image]: image, [field.video]: video } as Partial<Settings>);
 }
 
+/** Finder에서 '데스크탑 사진 설정'으로 고른 배경화면의 id 앞부분. 서버 목록에 없으니 맞춰 보지 않는다 */
+export const FINDER_WALLPAPER_PREFIX = 'custom:finder-';
+
 /** 고른 더한 배경화면이 서버에서 지워졌으면 기본값으로 돌린다 */
 function reconcile(list: CustomWallpaper[]) {
 	const settings = settingsStore.getState();
 	for (const kind of ['mac', 'ios'] as const) {
 		const selected = settings[FIELDS[kind].id];
-		if (!isCustomWallpaperId(selected)) continue;
+		if (!isCustomWallpaperId(selected) || selected.startsWith(FINDER_WALLPAPER_PREFIX)) continue;
 		const found = list.find((wallpaper) => wallpaper.id === selected);
 		if (!found) {
 			chooseWallpaper(kind, DEFAULT_SETTINGS[FIELDS[kind].id]);
@@ -120,7 +123,8 @@ export function loadCustomWallpapers(apiUrl = env.apiUrl, fetchImpl: typeof fetc
 /** 앱을 열 때: 더한 배경화면을 골라 둔 사람만 목록을 받아 지워졌는지 확인한다 */
 export function checkChosenWallpapers() {
 	const settings = settingsStore.getState();
-	if (isCustomWallpaperId(settings.wallpaper) || isCustomWallpaperId(settings.mobileWallpaper)) {
+	const fromServer = (id: string) => isCustomWallpaperId(id) && !id.startsWith(FINDER_WALLPAPER_PREFIX);
+	if (fromServer(settings.wallpaper) || fromServer(settings.mobileWallpaper)) {
 		void loadCustomWallpapers();
 	}
 }

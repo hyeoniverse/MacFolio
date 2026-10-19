@@ -41,7 +41,7 @@ const WallpaperVideo = ({ kind }: { kind: WallpaperKind }) => {
 			key={src}
 			className={`wallpaper-video wallpaper-video-${kind}`}
 			src={src}
-			poster={poster ?? undefined}
+			poster={poster && poster !== src ? poster : undefined}
 			muted
 			loop
 			autoPlay

@@ -282,7 +282,7 @@ const Preview: React.FC = () => {
 		<AppWindow title={file?.name ?? '미리보기'} appName="preview" chrome="unified">
 			{!file ? (
 				<OpenPanel
-					onOpen={(entry) => openInPreview({ key: entry.key, name: entry.name, kind: entry.kind, size: entry.size })}
+					onOpen={(entry) => openInPreview({ key: entry.key, name: entry.name, kind: entry.kind as 'pdf' | 'image', size: entry.size })}
 					onCancel={() => closeApp('preview')}
 				/>
 			) : (
