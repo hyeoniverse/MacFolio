@@ -39,3 +39,24 @@ export function savePaneWidth(pane: ResizablePane, width: number) {
 	if (width === PANE_WIDTHS[pane].initial) removeKey(PANE_WIDTHS[pane].key);
 	else writeString(PANE_WIDTHS[pane].key, String(width));
 }
+
+/** 읽기 화면 글자 크기 단계 (배율). 글 자체는 그대로 두고 보는 사람 화면에서만 키우거나 줄인다 */
+export const TEXT_SCALES = [0.85, 1, 1.15, 1.3, 1.5] as const;
+
+/** 저장된 글자 크기 단계. 없거나 목록에 없는 값이면 기본(1) */
+export function loadTextScale(): number {
+	const value = Number(readString(STORAGE_KEYS.memoTextScale));
+	return (TEXT_SCALES as readonly number[]).includes(value) ? value : 1;
+}
+
+/** 기본값이면 지운다 */
+export function saveTextScale(scale: number) {
+	if (scale === 1) removeKey(STORAGE_KEYS.memoTextScale);
+	else writeString(STORAGE_KEYS.memoTextScale, String(scale));
+}
+
+/** 한 단계 키우거나(+1) 줄인 배율. 끝이면 그대로 */
+export function stepTextScale(scale: number, step: 1 | -1): number {
+	const index = (TEXT_SCALES as readonly number[]).indexOf(scale);
+	return TEXT_SCALES[Math.min(TEXT_SCALES.length - 1, Math.max(0, (index < 0 ? 1 : index) + step))];
+}

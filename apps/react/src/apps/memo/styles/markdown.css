@@ -483,3 +483,8 @@
 	border-radius: 0.6em;
 	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
+
+/* 읽기 화면 글자 크기 (− / +): 본문을 통째로 확대해서 제목·이미지·여백이 함께 커진다 */
+.memo-text-scale {
+	zoom: var(--memo-text-scale, 1);
+}
