@@ -2,10 +2,10 @@
 title: MacFolio 백엔드 한 장으로 보기 - 구성도와 설계 결정
 date: 2026-10-03
 category: 개발기/MacFolio/백엔드
-summary: 기능마다 따로 써 온 서버 이야기를 한곳에 모았다. 요청이 어디를 지나 DB까지 가는지 그림 한 장으로 그리고, 인증·방문자·데이터·외부 연동·배포에서 무엇을 골랐고 무엇을 막으려 했는지 표로 정리했다.
+summary: 기능마다 따로 써 온 서버 이야기를 한곳에 모았다. 요청이 DB까지 지나는 길과 층, 인증·방문자·데이터·외부 연동·배포에서 무엇을 막으려고 무엇을 골랐는지 표로 정리하고, 이 글 뒤 2주 동안 바뀐 것을 덧붙였다.
 ---
 
-MacFolio의 서버는 기능을 붙일 때마다 조금씩 자랐다. 관리자 로그인, 글쓰기, 댓글, 메시지, 업로드, 배경화면, GitHub 연동까지 모듈이 11개가 됐고, 글도 기능마다 따로 남겼다. 그러다 보니 전체 모양은 어디에도 없었다. 이 글은 그 전체 모양이다. 저장소에도 같은 내용을 [docs/backend-design.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md)로 두었다.
+MacFolio의 서버는 기능을 붙일 때마다 조금씩 자랐다. 관리자 로그인, 글쓰기, 댓글, 메시지, 업로드, 배경화면, GitHub 연동까지 모듈이 11개가 됐고, 글도 기능마다 따로 남겼다. 그러다 보니 전체 모양은 어디에도 없었다. 이 글은 그 전체 모양이다. 저장소에도 같은 내용을 [docs/backend-design.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md)로 두었다(PR [#84](https://github.com/hyeoniverse/MacFolio/pull/84)).
 
 ## 조건
 
@@ -38,6 +38,8 @@ API에 들어온 요청은 모두 같은 층을 차례로 지난다.
 | `AdminGuard`     | 관리자 전용 경로에서 요청마다 세션을 DB에서 확인한다         |
 | `ThrottlerGuard` | 로그인, 댓글·메시지 쓰기에 IP마다 1분 단위 제한              |
 | 전역 예외 필터   | 에러 모양을 하나로 맞추고, 예상 못 한 에러는 내용을 감춘다   |
+
+![요청이 지나가는 층](./images/backend-design-layers.svg '각 층이 막을 때 내는 상태 코드. 처리 함수까지 온 요청은 앞의 검사를 모두 통과한 것이다')
 
 화면에서 편집 버튼을 숨기는 것과 서버가 막는 것은 별개다. 버튼이 안 보여도 요청은 보낼 수 있으니, 막는 일은 늘 서버가 한다.
 
@@ -75,6 +77,28 @@ API에 들어온 요청은 모두 같은 층을 차례로 지난다.
 
 두 종류를 합쳐 API 쪽 시험만 120개가 넘는다. 이 시험이 main에 들어오는 모든 커밋에서 돌고, 통과해야 배포된다.
 
+## 이 글 뒤로 바뀐 것
+
+글을 쓰고 2주가 지나는 동안 같은 구조 위에 기능이 많이 붙었다. 구조(터널, 같은 사이트 쿠키, 층)는 그대로였고, 층 안의 방식이 몇 군데 바뀌었다.
+
+![10월 3일과 지금](./images/backend-design-growth.svg '기능 모듈은 11개에서 24개로, API 시험은 120여 개에서 309개로')
+
+| 바뀐 곳        | 10월 3일                                      | 지금                                                                                               |
+| -------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 요청 제한      | 로그인, 댓글·메시지 쓰기에만 `ThrottlerGuard` | 모든 쓰기 경로에 `@RateLimit` 하나로 ([쓰기 경로에 요청 제한](/memo/rate-limit-all-writes))        |
+| 입력 모양      | 서버의 DTO와 화면의 타입을 따로 적음          | `packages/contracts`의 zod 스키마를 서버·화면이 함께 쓴다 ([분석 계약](/memo/contracts-analytics)) |
+| 권한 확인      | 경로마다 `@UseGuards`를 사람이 확인           | 경로 85개를 표 하나와 비교하는 시험 ([API 경로를 표 하나로](/memo/api-route-table-test))           |
+| 배포           | 서버에서 `git pull` + 빌드                    | Actions가 이미지를 만들고 서버는 바꿔 끼우기만 ([API 자동 배포](/memo/api-auto-deploy))            |
+| 새로 생긴 모듈 | —                                             | 트래픽 분석, 서버 자원, 문서 파일(R2), Finder 폴더, 사이트 프로필, 좋아요, 번역·요약 등            |
+
+시험 수는 지금 e2e 131개(파일 23개)와 단위 178개다. DB 표(Prisma 모델)는 23개다.
+
+## 남은 것, 배운 것
+
+- 파일을 DB에 두는 결정은 아직 그대로다. 다만 이력서·자격증 같은 문서 파일은 R2 버킷에 두고, 프론트엔드 Worker가 사이트와 같은 주소(`/files/<키>`)로 준다. 같은 출처라야 Finder가 PDF를 iframe에 띄울 수 있어서다. 관리자가 올리는 글 이미지와는 쓰는 곳도, 바뀌는 빈도도 달랐다.
+- 서버 한 대라서 캐시(GitHub, 방문자용 요약)와 집계 타이머를 모두 서버 메모리에 둔다. 서버가 둘이 되면 가장 먼저 다시 봐야 할 곳이다.
+- 설계 문서를 기능이 11개일 때 쓴 것이 좋았다. 그 뒤 붙은 기능은 대부분 "이 표의 어느 칸에 들어가나"로 정할 수 있었다. 표에 없는 결정(문서 파일을 R2에)이 나왔을 때 그것이 예외라는 것도 바로 보였다.
+
 ## 기능별 글
 
 각 결정의 자세한 과정은 기능별 글에 있다.
@@ -87,5 +111,22 @@ API에 들어온 요청은 모두 같은 층을 차례로 지난다.
 - [GitHub 앱을 진짜 GitHub로](/memo/github-live-profile)
 - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
 - [프론트엔드 배포를 GitHub Actions로](/memo/deploy-github-actions)
+- [트래픽 분석 1 - 쿠키 없이 순방문자 세기](/memo/analytics-api)
+- [API 경로 64개를 표 하나로 고정하기](/memo/api-route-table-test)
+
+## 직접 띄워 보기
+
+이 구성을 내 컴퓨터에서 띄우는 순서는 [README.md](https://github.com/hyeoniverse/MacFolio/blob/main/README.md)에 있다.
+
+```bash
+pnpm install
+cp apps/api/.env.example apps/api/.env
+pnpm --filter @macfolio/api db:up      # PostgreSQL (Docker)
+pnpm dev:all                           # 화면 5173 + API 4000, 시작할 때 마이그레이션
+open http://localhost:4000/docs         # Swagger
+pnpm --filter @macfolio/api test:e2e   # HTTP 경계 시험
+```
+
+서버에 올리는 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md), 이 글의 원본 문서는 [docs/backend-design.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md)다. 쓰는 도구의 공식 문서: [NestJS](https://docs.nestjs.com/), [Prisma Migrate](https://www.prisma.io/docs/orm/prisma-migrate), [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/), [Oracle Always Free](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm).
 
 #MacFolio #백엔드 #설계

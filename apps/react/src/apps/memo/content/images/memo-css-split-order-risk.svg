@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="820" height="330" fill="#fff"/>
+<text x="410.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">모으기와 자르기: 같은 선택자 두 규칙의 차례</text>
+<text x="205" y="60" font-size="12" fill="#b91c1c" text-anchor="middle" font-weight="600">규칙을 주제별로 모으면</text>
+<text x="615" y="60" font-size="12" fill="#047857" text-anchor="middle" font-weight="600">구역 경계에서 자르면</text>
+<rect x="60" y="75" width="290" height="40" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="205.0" y="99.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">sidebar.css: .memo-folder { padding: 6px }</text>
+<rect x="60" y="125" width="290" height="40" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="205.0" y="149.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">phone-lists.css: .memo-folder { padding: 12px }</text>
+<rect x="60" y="175" width="290" height="40" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="205.0" y="199.0" font-size="11" fill="#b91c1c" text-anchor="middle" font-weight="600">late.css → sidebar.css로 옮긴 .memo-folder 규칙</text>
+<text x="205" y="240" font-size="10.5" fill="#6b7280" text-anchor="middle">옮긴 규칙이 휴대폰 규칙보다 앞으로 가서</text>
+<text x="205" y="256" font-size="10.5" fill="#b91c1c" text-anchor="middle">휴대폰에서 진다 → 화면이 바뀐다</text>
+<rect x="470" y="75" width="290" height="40" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="615.0" y="99.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">… sidebar.css (원래 자리) …</text>
+<rect x="470" y="125" width="290" height="40" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="615.0" y="149.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">… phone-lists.css (원래 자리) …</text>
+<rect x="470" y="175" width="290" height="40" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="615.0" y="199.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">late.css (맨 뒤 그대로)</text>
+<text x="615" y="240" font-size="10.5" fill="#6b7280" text-anchor="middle">파일 경계만 생기고 규칙 차례는 그대로</text>
+<text x="615" y="256" font-size="10.5" fill="#047857" text-anchor="middle">빌드한 CSS가 바이트까지 같다</text>
+<text x="410" y="305" font-size="10" fill="#6b7280" text-anchor="middle">왼쪽 예의 선택자와 값은 설명을 위한 것이다. 실제 확인은 빌드한 CSS의 md5로 했다</text>
+</svg>

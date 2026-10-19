@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>사이트가 보낸 이벤트 묶음을 검사하고 값을 붙여 이벤트 표에 90일 두고, 한 시간마다 날짜별 숫자로 모아 계속 둔다. 요약은 지난 날은 DailyStat, 오늘은 이벤트에서 바로 센다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">이벤트는 90일, 모은 숫자는 계속</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">원래 IP와 User-Agent 원문은 어디에도 남지 않는다</text>
+<rect x="32" y="80" width="150" height="76" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="44" y="99" font-size="12" fill="#1f2937" font-weight="600">사이트</text>
+<text x="44" y="116" font-size="10.5" fill="#374151">sendBeacon</text>
+<text x="44" y="131.0" font-size="10.5" fill="#374151">text/plain · 5초마다</text>
+<rect x="214" y="80" width="190" height="76" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="226" y="99" font-size="12" fill="#4f46e5" font-weight="600">POST /analytics/events</text>
+<text x="226" y="116" font-size="10.5" fill="#374151">parseBatch: 하나라도 틀리면</text>
+<text x="226" y="131.0" font-size="10.5" fill="#374151">묶음 전체 거절 (400)</text>
+<rect x="436" y="80" width="392" height="76" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="448" y="99" font-size="12" fill="#4f46e5" font-weight="600">받은 뒤 붙이는 값</text>
+<text x="448" y="116" font-size="10.5" fill="#374151">나라 CF-IPCountry · 브라우저·OS 종류만</text>
+<text x="448" y="131.0" font-size="10.5" fill="#374151">하루 해시 HMAC(날짜+IP+UA, 비밀 키) · 가린 IP 203.0.113.x</text>
+<path d="M182 118 H210" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<path d="M404 118 H432" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="560" y="172" width="268" height="54" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="572" y="189" font-size="10.5" fill="#374151">로봇·링크 미리보기·관리자 세션은</text>
+<text x="572" y="204.0" font-size="10.5" fill="#374151">받기만 하고 저장 안 함 · IP마다 1분 30번</text>
+<rect x="214" y="246" width="240" height="70" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="226" y="265" font-size="12" fill="#1f2937" font-weight="600">AnalyticsEvent (원본)</text>
+<text x="226" y="282" font-size="10.5" fill="#374151">90일 뒤 지움</text>
+<text x="226" y="297.0" font-size="10.5" fill="#374151">가린 IP는 7일 뒤 비움</text>
+<rect x="588" y="246" width="240" height="70" rx="9" fill="#ecfdf5" stroke="#86efac" stroke-width="1"/>
+<text x="600" y="265" font-size="12" fill="#15803d" font-weight="600">DailyStat (날짜·지표·키·값)</text>
+<text x="600" y="282" font-size="10.5" fill="#374151">사람을 가리는 값 없음</text>
+<text x="600" y="297.0" font-size="10.5" fill="#374151">계속 둔다</text>
+<path d="M480 156 V200 H334 V242" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<path d="M454 281 H584" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+<text x="519" y="273" font-size="10" fill="#15803d" font-weight="600" text-anchor="middle">한 시간마다 aggregate</text>
+<rect x="214" y="336" width="614" height="44" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="226" y="353" font-size="10.5" fill="#374151">GET /analytics/summary = 지난 날은 DailyStat + 오늘은 이벤트에서 바로 (같은 aggregate 함수)</text>
+<path d="M334 316 V332" stroke="#374151" stroke-width="1.8" fill="none" marker-end="url(#a-gray)"/>
+<path d="M708 316 V332" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>같은 GET /analytics/summary 요청에 서버가 관리자 세션을 보고 방문자에게는 주소·utm을 빈 목록으로, 관리자에게는 전부를 준다. 실시간은 관리자만</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">같은 요약, 서버가 나눠 준다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">화면에서 감추면 개발자 도구로 보인다. 그래서 응답에서 뺀다</text>
+<rect x="32" y="120" width="170" height="80" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="117.0" y="139" font-size="12" fill="#4f46e5" font-weight="600" text-anchor="middle">GET</text>
+<text x="117.0" y="156" font-size="10.5" fill="#374151" text-anchor="middle">/analytics/summary</text>
+<text x="117.0" y="171.0" font-size="10.5" fill="#374151" text-anchor="middle">?from=…&amp;to=…</text>
+<rect x="244" y="120" width="150" height="80" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="319.0" y="139" font-size="12" fill="#1f2937" font-weight="600" text-anchor="middle">AdminGuard?</text>
+<text x="319.0" y="156" font-size="10.5" fill="#374151" text-anchor="middle">세션 쿠키로</text>
+<text x="319.0" y="171.0" font-size="10.5" fill="#374151" text-anchor="middle">관리자인지 본다</text>
+<path d="M202 160 H240" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="436" y="76" width="392" height="108" rx="9" fill="#ecfdf5" stroke="#86efac" stroke-width="1"/>
+<text x="448" y="95" font-size="12" fill="#15803d" font-weight="600">방문자 · scope: "public"</text>
+<text x="448" y="112" font-size="10.5" fill="#374151">개요 숫자·그래프, 앱·글, 나라·기기·브라우저·OS·언어</text>
+<text x="448" y="127.0" font-size="10.5" fill="#374151">들어온 곳의 묶음 (검색·소셜·직접·링크)</text>
+<text x="448" y="142.0" font-size="10.5" fill="#374151">들어온 곳 주소, utm_source·utm_campaign → 빈 목록</text>
+<text x="448" y="157.0" font-size="10.5" fill="#374151">같은 기간이면 1분 동안 같은 값 · 모으기는 5분에 한 번</text>
+<rect x="436" y="200" width="392" height="72" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="448" y="219" font-size="12" fill="#4f46e5" font-weight="600">관리자 · scope: "admin"</text>
+<text x="448" y="236" font-size="10.5" fill="#374151">위의 전부 + 들어온 곳 주소 + utm 표</text>
+<text x="448" y="251.0" font-size="10.5" fill="#374151">열 때마다 지난 날을 모은다</text>
+<path d="M394 150 H432" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+<text x="413" y="142" font-size="10" fill="#15803d" font-weight="600" text-anchor="middle">아님</text>
+<path d="M394 175 C414 175 414 236 432 236" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<text x="404" y="222" font-size="10" fill="#4f46e5" font-weight="600" text-anchor="middle">맞음</text>
+<rect x="32" y="290" width="796" height="28" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="430.0" y="307" font-size="10.5" fill="#374151" text-anchor="middle">/analytics/live (실시간: 방문 하나하나의 흐름·가린 IP)는 그대로 관리자만. 방문자 화면은 묻지도 않는다</text>
+</svg>

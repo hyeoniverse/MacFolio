@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>DiscoveryService로 실제 경로와 가드를 읽어 파일 안의 ACCESS 표와 비교하고, 관리자 경로는 로그인 없이 401, 몸통 경로는 틀린 값에 400인지 실제로 부른다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">시험 하나에 네 가지</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">test/routes.e2e.test.ts — 실제 서버를 띄워 데코레이터 메타데이터를 읽는다</text>
+<rect x="32" y="86" width="230" height="84" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="44" y="105" font-size="12" fill="#1f2937" font-weight="600">실제 서버</text>
+<text x="44" y="122" font-size="10.5" fill="#374151">DiscoveryService로 컨트롤러 찾기</text>
+<text x="44" y="137.0" font-size="10.5" fill="#374151">메서드·경로·가드 읽기</text>
+<text x="44" y="152.0" font-size="10.5" fill="#374151">→ 경로 64개</text>
+<rect x="32" y="196" width="230" height="84" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="44" y="215" font-size="12" fill="#4f46e5" font-weight="600">ACCESS 표 (시험 파일 안)</text>
+<text x="44" y="232" font-size="10.5" fill="#374151">'GET /posts': 'public'</text>
+<text x="44" y="247.0" font-size="10.5" fill="#374151">'POST /posts': 'admin'</text>
+<text x="44" y="262.0" font-size="10.5" fill="#374151">'… /comments': 'visitor'</text>
+<rect x="330" y="80" width="498" height="48" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="346" y="109" font-size="14" fill="#4f46e5" font-weight="700">1</text>
+<text x="372" y="101" font-size="11.5" fill="#1f2937" font-weight="600">실제 경로 목록 = 표</text>
+<text x="372" y="118" font-size="10.5" fill="#374151">경로를 더하면 표도 고쳐야 통과</text>
+<path d="M262 180 C296 180 296 104 326 104" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="330" y="138" width="498" height="48" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="346" y="167" font-size="14" fill="#4f46e5" font-weight="700">2</text>
+<text x="372" y="159" font-size="11.5" fill="#1f2937" font-weight="600">'admin'에만 AdminGuard</text>
+<text x="372" y="176" font-size="10.5" fill="#374151">빠뜨려도, 잘못 붙여도 깨진다</text>
+<path d="M262 180 C296 180 296 162 326 162" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="330" y="196" width="498" height="48" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="346" y="225" font-size="14" fill="#4f46e5" font-weight="700">3</text>
+<text x="372" y="217" font-size="11.5" fill="#1f2937" font-weight="600">관리자 경로 29개 → 401</text>
+<text x="372" y="234" font-size="10.5" fill="#374151">틀린 몸통을 보내도 400이 아니라 401</text>
+<path d="M262 238 C296 238 296 220 326 220" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="330" y="254" width="498" height="48" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="346" y="283" font-size="14" fill="#4f46e5" font-weight="700">4</text>
+<text x="372" y="275" font-size="11.5" fill="#1f2937" font-weight="600">몸통 경로 19개 → 400</text>
+<text x="372" y="292" font-size="10.5" fill="#374151">500이면 검사 없이 처리 함수까지 감</text>
+<path d="M262 238 C296 238 296 278 326 278" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+</svg>

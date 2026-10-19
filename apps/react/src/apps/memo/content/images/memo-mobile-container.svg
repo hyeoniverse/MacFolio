@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="820" height="320" fill="#fff"/>
+<text x="410.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">@container는 가장 가까운 컨테이너를 잰다</text>
+<rect x="30" y="55" width="370" height="220" rx="6" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="215" y="75" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">.memo (컨테이너, 넓은 창 1200px)</text>
+<rect x="50" y="90" width="330" height="170" rx="6" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="215" y="110" font-size="11" fill="#b45309" text-anchor="middle" font-weight="600">.memo-writer (컨테이너, 본문 칸 &lt; 700px)</text>
+<rect x="80" y="130" width="270" height="50" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="215.0" y="151.5" font-size="11" fill="#b91c1c" text-anchor="middle" font-weight="600">편집기 안의 table</text>
+<text x="215.0" y="166.5" font-size="10" fill="#4b5563" text-anchor="middle">.memo-markdown table → display:block</text>
+<text x="215" y="215" font-size="10.5" fill="#b91c1c" text-anchor="middle">@container (max-width: 700px)가 여기서 참</text>
+<text x="215" y="235" font-size="10.5" fill="#b91c1c" text-anchor="middle">→ 넓은 창인데도 표가 휴대폰 모양</text>
+<rect x="430" y="55" width="360" height="220" rx="6" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="610" y="75" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">고친 선택자</text>
+<rect x="460" y="110" width="300" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="610.0" y="134.5" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">.memo-reader-body &gt; .memo-markdown table</text>
+<text x="610.0" y="149.5" font-size="10" fill="#4b5563" text-anchor="middle">읽기 화면의 본문만</text>
+<text x="610" y="200" font-size="10.5" fill="#047857" text-anchor="middle">편집기(.memo-writer)는 선택자에 걸리지 않는다</text>
+<text x="610" y="220" font-size="10.5" fill="#047857" text-anchor="middle">표 편집 시험이 다시 통과</text>
+<text x="410" y="302" font-size="10.5" fill="#6b7280" text-anchor="middle">편집기를 컨테이너로 만든 까닭은 날짜 줄 배치였다. 컨테이너가 하나 늘면 그 안의 @container 규칙의 기준이 바뀐다</text>
+</svg>

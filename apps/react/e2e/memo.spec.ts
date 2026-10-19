@@ -35,7 +35,7 @@ test.describe('메모 (블로그)', () => {
 
 		const article = memo.getByRole('article', { name: 'CRA에서 Vite로 옮기기' });
 		await expect(article.getByRole('heading', { name: '왜 옮겼나' })).toBeVisible();
-		await expect(article.getByRole('table')).toContainText('dev 서버 시작');
+		await expect(article.getByRole('table').filter({ hasText: 'dev 서버 시작' })).toBeVisible();
 		await expect(article.locator('code').first()).toBeVisible();
 	});
 
@@ -49,8 +49,9 @@ test.describe('메모 (블로그)', () => {
 		await expect(items).not.toHaveCount(0);
 
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('Fast Refresh');
-		await expect(items).toHaveCount(1);
-		await expect(items.first()).toContainText('CRA에서 Vite로 옮기기');
+		// 다른 인프라 글도 Fast Refresh를 말할 수 있어 개수 대신 그 글이 남는지 본다
+		await expect(items.filter({ hasText: 'CRA에서 Vite로 옮기기' })).toHaveCount(1);
+		await expect(items.filter({ hasText: '글에서 지운 이미지는 서버에 남는다' })).toHaveCount(0);
 
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('존재하지 않는 검색어');
 		await expect(memo.getByText('검색 결과가 없습니다.')).toBeVisible();
@@ -72,7 +73,7 @@ test.describe('메모 (블로그)', () => {
 		const imageBox = (await image.boundingBox())!;
 		const readerBox = (await memo.locator('.memo-markdown').boundingBox())!;
 		expect(imageBox.width).toBeLessThanOrEqual(readerBox.width + 1);
-		await expect(memo.locator('.memo-caption')).toHaveText('dev 서버 시작과 프로덕션 빌드 시간 (초)');
+		await expect(memo.locator('.memo-caption').first()).toHaveText('dev 서버 시작과 프로덕션 빌드 시간 (초)');
 
 		await memo.getByRole('button', { name: 'CRA와 Vite의 빌드 시간 비교 그래프 크게 보기' }).click();
 		const lightbox = page.getByRole('dialog', { name: 'CRA와 Vite의 빌드 시간 비교 그래프' });
@@ -262,7 +263,8 @@ test.describe('메모 (블로그)', () => {
 	test('본문 이미지에 올리면 내려받기 버튼이 보이고, 누르면 파일로 받는다', async ({ page }) => {
 		const memo = await openMemo(page);
 		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
-		const frame = memo.locator('.memo-markdown .memo-figure-frame').first();
+		// 사진(JPEG) 그림: 도식(SVG)은 받을 파일 이름이 다르다
+		const frame = memo.locator('.memo-markdown .memo-figure-frame', { has: page.locator('img[src*=".jpg"]') }).first();
 		await frame.hover();
 		const button = frame.getByRole('button', { name: '이미지 내려받기' });
 		await expect(button).toBeVisible();

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="780" height="330" fill="#fff"/>
+<text x="390.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">바깥 사이트를 띄울 때 겹쳐 둔 세 겹</text>
+<rect x="40" y="60" width="700" height="56" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="390.0" y="84.5" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">① CSP frame-src (worker/securityHeaders.ts)</text>
+<text x="390.0" y="99.5" font-size="10" fill="#4b5563" text-anchor="middle">iframe에 넣을 수 있는 주소: 'self', Turnstile, 프로젝트 데모 주소만</text>
+<rect x="40" y="136" width="700" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="390.0" y="160.5" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">② iframe sandbox (WebFrame.tsx의 FRAME_SANDBOX)</text>
+<text x="390.0" y="175.5" font-size="10" fill="#4b5563" text-anchor="middle">스크립트·자기 저장소·폼·새 창은 주고, allow-top-navigation은 주지 않는다</text>
+<rect x="40" y="212" width="700" height="56" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="390.0" y="236.5" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">③ iframe allow (ProjectApp.tsx)</text>
+<text x="390.0" y="251.5" font-size="10" fill="#4b5563" text-anchor="middle">autoplay · fullscreen · gamepad · clipboard-write 만</text>
+<line x1="390" y1="116" x2="390" y2="134" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="390" y1="192" x2="390" y2="210" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="390" y="300" font-size="11" fill="#6b7280" text-anchor="middle">반대 방향은 frame-ancestors 'self': 다른 사이트가 MacFolio를 iframe에 넣지 못한다</text>
+</svg>

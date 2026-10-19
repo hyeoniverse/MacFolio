@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>직접 쓴 button 265곳 중 Safari 데모 91, 앱 고유 172, 일부러 남긴 2</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="760" height="240" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">4단계: 직접 쓴 &lt;button&gt; 265곳은 어디에 남았나</text>
+<rect x="32" y="70" width="239.00377358490567" height="40" fill="#a5b4fc"/>
+<text x="151.50188679245284" y="95" font-size="11.5" font-weight="600" fill="#1f2937" text-anchor="middle">Safari 데모 91</text>
+<rect x="271.0037735849057" y="70" width="451.7433962264151" height="40" fill="#4f46e5"/>
+<text x="496.8754716981132" y="95" font-size="11.5" font-weight="600" fill="#ffffff" text-anchor="middle">앱 고유 172</text>
+<rect x="722.7471698113208" y="70" width="5.252830188679245" height="40" fill="#f59e0b"/>
+<text x="728" y="128" font-size="10" font-weight="400" fill="#92400e" text-anchor="end">일부러 남긴 2</text>
+<text x="32" y="160" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">공통 부품으로 옮긴 것: 아이콘 버튼 45곳 → IconButton, 글자 버튼 30곳 → Button, 모달 5개 → Modal, 휴대폰 시트 3곳 → Sheet</text>
+<text x="32" y="184" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">처음 센 295곳은 세는 방법을 정해 다시 세어 265곳이 됐다.</text>
+<text x="32" y="218" font-size="10.5" font-weight="600" fill="#4f46e5" text-anchor="start">후보 아홉 중 같은 뜻으로 되풀이되는 것은 셋(Sheet · Modal · SearchField), 여섯은 보류.</text>
+</svg>

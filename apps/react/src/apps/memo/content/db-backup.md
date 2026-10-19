@@ -2,12 +2,22 @@
 title: 글이 DB에만 있게 되어서 백업을 붙였다
 date: 2026-10-05
 category: 개발기/MacFolio/인프라
-summary: 블로그 글·임시 저장·버전·올린 이미지가 모두 1GB 무료 서버의 DB에만 있다. 매일 덤프해 서버 밖(R2)에 남기고, 되살려 보는 것까지 스크립트로 만들었다.
+summary: 블로그 글·임시 저장·버전·올린 이미지가 모두 1GB 무료 서버의 DB에만 있게 됐다. 매일 pg_dump로 덤프해 끝까지 쓰였는지 확인하고, 서버에 7일·R2에 30일 남기고, R2 무료 한도 전에 스스로 멈추게 했다. 되살리기도 스크립트로 시험했다.
 ---
 
 처음 블로그 글은 저장소의 Markdown 파일이었다. 서버가 날아가도 글은 git에 남았다. 지금은 다르다. 관리자 편집기로 쓴 글, 임시 저장, 게시할 때마다 남는 버전, 올린 이미지와 첨부 파일이 **모두 서버의 DB에만** 있다.
 
-그 서버는 Oracle Cloud의 1GB 무료 VM이다. 디스크가 망가지거나, 오래 한가하면 회수될 수 있다. 그런데 백업은 문서에 적힌 수동 명령 한 줄뿐이었다. 기능을 더 붙이기 전에 이것부터 했다.
+그 서버는 Oracle Cloud의 1GB 무료 VM이다. 디스크가 망가지거나, 오래 한가하면 회수될 수 있다. 그런데 백업은 문서에 적힌 수동 명령 한 줄뿐이었다. 기능을 더 붙이기 전에 이것부터 했다. 스크립트는 [#94](https://github.com/hyeoniverse/MacFolio/pull/94), 저장 크기 상한은 [#98](https://github.com/hyeoniverse/MacFolio/pull/98)에서 붙였다.
+
+## 무엇으로 백업할까
+
+| 방법                                  | 좋은 점                          | 나쁜 점                                                                    |
+| ------------------------------------- | -------------------------------- | -------------------------------------------------------------------------- |
+| VM 디스크 스냅숏 (클라우드 기능)      | 서버째 되살린다                  | 같은 클라우드 계정 안에 남는다. 계정이나 VM이 회수되면 같이 사라질 수 있다 |
+| `pg_basebackup` + WAL 보관            | 원하는 시각으로 되돌린다         | 1GB 서버에서 WAL을 계속 내보내는 것은 무겁다. 이 규모엔 과하다             |
+| **`pg_dump` → gzip → 서버 밖 저장소** | SQL 파일 하나. 어디서든 되살린다 | 하루 한 번이라 마지막 백업 뒤에 쓴 글은 잃을 수 있다                       |
+
+글을 하루에 몇 편 쓰는 블로그라, 하루치를 잃을 수 있는 대신 단순한 셋째를 골랐다. 덤프 파일은 SQL 글이라 다른 Postgres 어디에나 넣을 수 있고, 클라우드 계정과 상관없이 남는다.
 
 ## 무엇을 하나
 
@@ -18,6 +28,25 @@ summary: 블로그 글·임시 저장·버전·올린 이미지가 모두 1GB �
 3. 서버에 7일, 서버 밖(Cloudflare R2)에 30일 남기고 오래된 것은 지운다. R2는 도메인이 이미 Cloudflare에 있어서 계정을 새로 만들 필요가 없었다
 4. 끝나면 알림 주소(healthchecks.io 같은 곳)를 부른다. 실패하면 `/fail`을 부르고 1로 끝난다. cron은 실패해도 아무 말이 없어서, 백업이 몇 주째 멈춰 있어도 모를 수 있다
 
+핵심은 "끝까지 쓰인 파일만 백업으로 인정한다"는 부분이다.
+
+```bash
+partial="$file.partial"
+trap 'rm -f "$partial"' EXIT
+
+docker compose -f "$COMPOSE_FILE" exec -T "$DB_SERVICE" \
+	pg_dump -U "$DB_USER" -d "$DB_NAME" --clean --if-exists --no-owner |
+	gzip -9 >"$partial" || fail "pg_dump"
+
+gzip -t "$partial" || fail "압축 파일이 깨졌다"
+gunzip -c "$partial" | tail -n 5 | grep -q 'PostgreSQL database dump complete' || fail "덤프가 끝까지 쓰이지 않았다"
+mv "$partial" "$file"
+```
+
+덤프는 먼저 `.partial` 이름으로 쓰고, 검사를 모두 지난 뒤에야 진짜 이름으로 바꾼다. 중간에 실패하면 `trap`이 `.partial`을 지운다. 그래서 백업 폴더에 있는 `.sql.gz`는 모두 온전한 파일이다. `set -euo pipefail` 덕에 파이프 앞쪽(`pg_dump`)이 실패해도 `gzip`의 성공에 묻히지 않는다.
+
+![백업 스크립트의 단계](./images/db-backup-flow.svg '덤프 → 확인 → 서버 7일 → 용량 상한 확인 → R2 30일 → 알림')
+
 ### R2 요금이 생기지 않게
 
 R2는 매달 저장 10GB, 쓰기 100만 번, 읽기 1000만 번까지 무료이고 다운로드 트래픽은 늘 무료다. 하루 한 번 올리고 30일치를 남기니 작업 횟수는 한 달에 수백 번이라 상관없고, 남는 것은 저장 크기다. 블로그 이미지가 DB에 들어 있어서 DB가 커지면 30개를 합친 크기가 10GB를 넘을 수 있다.
@@ -25,6 +54,15 @@ R2는 매달 저장 10GB, 쓰기 100만 번, 읽기 1000만 번까지 무료이�
 R2에는 "청구되기 전에 멈추는" 설정이 없다. 그래서 스크립트가 먼저 멈춘다. 오래된 백업을 지운 뒤 `rclone size`로 버킷 전체 크기를 재고, 오늘 백업을 더해 상한(`MAX_REMOTE_GB`, 기본 8GB)을 넘으면 올리지 않고 실패로 알린다. 오늘 백업은 서버에는 남는다. 알림을 받으면 남기는 날 수를 줄이거나 상한을 올리면 된다.
 
 버킷은 공개하지 않고, 키는 이 버킷 하나에만 읽기·쓰기 권한을 준다. 다른 사람이 파일을 읽어 작업 횟수를 늘릴 수 없고, 키가 새어도 다른 버킷이나 서비스는 건드릴 수 없다.
+
+![서버에는 7일, R2에는 30일. R2 전체가 8GB를 넘게 되면 올리지 않고 알린다](./images/db-backup-retention.svg '남기는 기간과 크기 상한. 상한은 R2 무료 10GB보다 낮게 잡았다')
+
+```bash
+limit_bytes=$((MAX_REMOTE_GB * 1024 * 1024 * 1024))
+if ((remote_bytes + file_bytes > limit_bytes)); then
+	fail "서버 밖 저장소가 상한(${MAX_REMOTE_GB}GB)을 넘게 된다 … 올리지 않았다"
+fi
+```
 
 R2 키는 저장소 밖의 `~/deploy/backup.env`에만 둔다. rclone 설정도 `RCLONE_CONFIG_R2_*` 환경 변수로 넣어서 설정 파일이 따로 없다.
 
@@ -43,6 +81,66 @@ R2 키는 저장소 밖의 `~/deploy/backup.env`에만 둔다. rclone 설정도 
 - 서버 밖으로 올리기가 실패하면 1로 끝나고, 서버 쪽 백업은 남는지 (rclone을 흉내 내서)
 - 저장소가 상한을 넘게 되면 올리지 않고 1로 끝나며 알림 주소의 `/fail`을 부르는지, 상한 값이 숫자가 아니면 멈추는지 (같은 방법으로)
 
-서버에 적용하는 순서(R2 버킷과 키, rclone, cron)는 `docs/deployment.md`의 '백업'에, 단계마다의 까닭은 [R2에 DB 백업 걸기](/memo/r2-backup-setup)에 적었다.
+`restore.sh`도 `trap`으로 뒷정리를 한다. R2에서 받아 온 임시 파일을 지우고, 멈춘 API를 성공이든 실패든 다시 띄운다. 되살리다 실패했는데 API가 멈춘 채로 남는 일이 없게 했다.
+
+## 숫자
+
+| 항목                         | 값                                                 |
+| ---------------------------- | -------------------------------------------------- |
+| `ops/backup.sh`              | 94줄 (지금. 처음 PR 뒤 상한·배포 전 백업이 더해짐) |
+| `ops/restore.sh`             | 62줄                                               |
+| 서버에서 처음 돌린 백업 하나 | 1007KB (글과 올린 이미지를 gzip -9)                |
+| 30일치 R2                    | 30MB 남짓 (상한 8GB, 무료 10GB)                    |
+| 남기는 기간                  | 서버 7일, R2 30일                                  |
+
+## 그 뒤에 쓴 곳
+
+백업 스크립트는 매일 cron 말고 한 곳에서 더 쓴다. 서버 배포 스크립트 `ops/deploy.sh`가 새 API로 바꾸기 직전에 `BACKUP_LOCAL_ONLY=1`로 부른다. 이주(migration)가 DB를 망가뜨려도 바로 앞 상태로 되돌릴 수 있게 하려는 것이다. 이때는 R2에 올리지도, 알림 주소를 부르지도 않는다. 매일 백업과 배포 전 백업이 섞여 R2 상한을 먹지 않게 했다.
+
+첫 배포에서는 compose가 `API_TAG`를 몰라 이 배포 전 백업이 멈춘 일이 있었다([#107](https://github.com/hyeoniverse/MacFolio/pull/107)). 백업이 실패하면 배포도 멈추게 해 두었기 때문에 드러난 문제였다.
+
+## 남은 것과 배운 것
+
+- 하루 한 번이라 마지막 백업 이후 쓴 글은 잃을 수 있다. 지금 쓰는 양에서는 받아들일 만하다.
+- 되살리기 시험은 손으로 한다. 정기적으로 R2의 가장 최근 백업을 다른 DB 이름으로 되살려 행 수를 맞춰 보는 일을 cron에 걸 수도 있다.
+- 올린 이미지가 DB 안에 바이트로 들어 있어서 백업 크기는 이미지 양을 따라 커진다. 이미지를 나중에 R2 같은 파일 저장소로 옮기면 백업도 가벼워진다.
+
+배운 것: 백업에서 가장 위험한 것은 "실패했는데 아무도 모르는 것"이다. cron은 실패해도 말이 없고, 중간에 끊긴 덤프도 파일로는 남는다. 그래서 끝까지 쓰였는지 보는 검사와 실패하면 부르는 알림 주소가 스크립트의 절반을 차지한다.
+
+서버에 적용하는 순서(R2 버킷과 키, rclone, cron)는 `docs/deployment.md`의 '백업'에, 단계마다의 까닭은 [R2에 DB 백업 걸기](/memo/r2-backup-setup)에 적었다. 서버를 처음 올린 이야기는 [API 서버를 Oracle과 터널로 배포하기](/memo/deploy-api-oracle-tunnel)에 있다.
+
+## 실제로 겪은 것
+
+자동 백업을 만들기 전, DB 백업은 문서에 적힌 한 줄(`cd ~/deploy && docker compose exec -T db pg_dump -U macfolio macfolio > ~/backup-$(date +%F).sql`)뿐이었다. 10월 2일 메시지 기능을 서버에 반영하기 전 이 줄을 쳤더니 `cd: no such file or directory: /Users/…/deploy`가 났다. 서버가 아니라 내 Mac 터미널이었다. 다음 날 서버에 들어가 업데이트 순서를 붙여 넣었을 때는 `pg_dump` 명령이 없다고 했다. Postgres는 컨테이너 안에만 있으니 서버에서 바로 `pg_dump`를 부를 수 없고, `docker compose exec`로 컨테이너 안에서 불러야 한다.
+
+두 번 다 "어디서 치는가"를 사람이 기억해야 해서 생긴 일이다. 그래서 `ops/backup.sh`는 compose 파일 위치를 스스로 알고(`~/deploy/compose.yml`), 컨테이너 안의 `pg_dump`를 부르고, cron이 부르게 했다.
+
+## 따라 하기
+
+준비물: Cloudflare R2 버킷과 그 버킷 하나에만 권한을 준 API 토큰, 서버의 [rclone](https://rclone.org/s3/#cloudflare-r2) 1.59 이상. 전체 순서(10단계)는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '백업'에 있다.
+
+```bash
+# 서버에서. 한 번 돌려 보기
+~/macfolio/ops/backup.sh
+# … 백업 완료: /home/ubuntu/backups/macfolio-…sql.gz
+# … 올림: r2:macfolio-backups/macfolio-…sql.gz (저장소 …MB / 상한 8GB)
+
+# 매일 03:30 UTC (12:30 KST)
+crontab -e
+30 3 * * * /home/ubuntu/macfolio/ops/backup.sh >> /home/ubuntu/deploy/backup.log 2>&1
+```
+
+되살리기 시험은 실제 DB를 건드리지 않게 다른 이름으로 한다.
+
+```bash
+cd ~/deploy
+latest=$(ls -t ~/backups/macfolio-*.sql.gz | head -1)
+DB_NAME=restoretest ~/macfolio/ops/restore.sh "$latest"
+docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
+docker compose exec -T db psql -U macfolio -d macfolio    -c 'select count(*) from "Post"'   # 같아야 한다
+docker compose exec -T db psql -U macfolio -d postgres    -c 'drop database restoretest'
+```
+
+실제로 되돌릴 때는 `~/macfolio/ops/restore.sh <파일 또는 r2:경로>`. 확인을 받고, 그동안 API를 멈췄다가 다시 띄운다. 스크립트: [ops/backup.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/backup.sh), [ops/restore.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/restore.sh). `pg_dump` 옵션은 [PostgreSQL 문서](https://www.postgresql.org/docs/current/app-pgdump.html), R2 요금 한도는 [R2 가격 문서](https://developers.cloudflare.com/r2/pricing/)를 봤다.
 
 #MacFolio #서버 #백업

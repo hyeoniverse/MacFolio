@@ -2,10 +2,10 @@
 title: Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기
 date: 2026-10-18
 category: 개발기/MacFolio/프론트엔드
-summary: Finder의 문서 아래에 이력서·포트폴리오·자격증 폴더를 두고, PDF와 그림은 macOS처럼 따로 뜨는 미리보기 앱에서 연다. 관리자는 파일을 끌어다 놓아 R2에 바로 올린다. 파일은 저장소가 아니라 Cloudflare R2에 두고, 사이트 Worker가 같은 주소(/files/)로 내준다.
+summary: Finder 문서 아래에 이력서·포트폴리오·자격증 폴더를 두고, PDF와 그림은 macOS처럼 따로 뜨는 미리보기 앱에서 연다. 파일은 저장소가 아니라 Cloudflare R2에 두고 사이트 Worker가 같은 주소(/files/)로 내준다. 관리자는 끌어다 놓아 R2에 바로 올린다.
 ---
 
-Finder는 사이트에 있는 것(저장소 문서, 프로젝트, 블로그 글, 앱)을 파일처럼 보여 준다. 그런데 포트폴리오 사이트에서 가장 먼저 찾을 파일인 이력서는 없었다. 빈 이력서 폴더에 "준비하고 있습니다"라는 안내만 있었다. 이번에 PDF와 그림을 열 수 있는 길을 만들었다.
+Finder는 사이트에 있는 것(저장소 문서, 프로젝트, 블로그 글, 앱)을 파일처럼 보여 준다. 그런데 포트폴리오 사이트에서 가장 먼저 찾을 파일인 이력서는 없었다. 빈 이력서 폴더에 "준비하고 있습니다"라는 안내만 있었다. 이번에 PDF와 그림을 열 수 있는 길을 만들었다. PR은 [#255](https://github.com/hyeoniverse/MacFolio/pull/255)이고, 커밋 18개, 파일 60개, +4,897/−111이다.
 
 ## 파일을 어디에 두나
 
@@ -29,6 +29,16 @@ Worker는 다음을 지킨다.
 - `Content-Disposition`은 기본이 `inline`이고 `?download=1`이면 `attachment`다. 한글 이름은 `filename*`에 넣는다
 - 파일 응답에는 따로 좁은 CSP(`default-src 'none'; frame-ancestors 'self'`)를 붙여 이 사이트 안의 iframe에만 들어가게 한다. `sandbox`는 Chrome의 PDF 보기를 막아서 쓰지 않았다
 - 바인딩이 없는 곳(로컬 개발)에서는 오류 대신 404
+
+![/files/<키> 요청이 Worker에서 거르는 순서: 메서드 → 키 모양 → 버킷 → ETag → Range](./images/finder-files-worker-checks.svg '키가 이상하면 버킷을 읽기 전에 끝낸다')
+
+```ts
+// apps/react/worker/files.ts (키 거르기 일부)
+if (!key || key.length > 512) return null;
+if (/[\u0000-\u001f\u007f\\]/.test(key)) return null; // 제어 문자·백슬래시
+if (parts.some((part) => part === '' || part === '.' || part === '..')) return null; // 경로 바꾸기
+return key.slice(dot + 1).toLowerCase() in FILE_TYPES ? key : null; // 허용한 확장자만
+```
 
 ## Finder에서 열면 미리보기 앱이 뜬다
 
@@ -61,6 +71,12 @@ Worker는 다음을 지킨다.
   - 앱 아이콘도 macOS 26처럼 파란 둥근 네모 위의 보석 감정용 루페로 다시 그렸다. 다른 앱 아이콘처럼 그림을 꽉 채운다
 - Finder와 미리보기는 작은 저장소(`previewStore`) 하나로 이어진다. 창이 아직 한 번도 뜨지 않았어도 연 파일이 남아 있다가 창이 뜨면 보인다
 
+![macOS 미리보기에서 PDF를 연 화면. 왼쪽 사이드바에 쪽 썸네일, 위에 둥근 도구 막대](./images/finder-files-macos-preview.jpg '참고한 macOS 미리보기 화면. 둥근 사이드바의 쪽 썸네일과 위쪽 도구 막대 묶음을 이 화면에 맞췄다')
+
+![macOS 미리보기를 켜면 뜨는 열기 창. 사이드바와 미리보기 — iCloud 폴더의 파일](./images/finder-files-macos-open-panel.jpg '참고한 macOS 화면. 미리보기를 파일 없이 켜면 최근 파일이 아니라 이 열기 창이 뜬다(개인 폴더 이름은 가렸다)')
+
+![파일 없이 연 미리보기: 사이드바에 미리보기·최근 항목·즐겨찾기, 아래에 취소·열기](./images/finder-files-preview-open-panel.jpg '파일 없이 열면 창 전체가 열기 창이 된다. 서버 없이 띄운 화면이라 파일 목록은 비어 있다')
+
 휴대폰에는 미리보기 앱이 없다. iOS의 파일 앱은 앱 안에서 바로 훑어보기를 띄우므로, 휴대폰에서는 파일 앱 안에서 화면을 채워 보여 준다.
 
 ## 관리자는 끌어다 놓아 올린다
@@ -80,9 +96,58 @@ Worker는 다음을 지킨다.
 2. 브라우저가 그 주소로 R2에 올린다. `XMLHttpRequest`의 `upload.onprogress`로 Finder 아래에 진행률을 보인다 (fetch는 올리는 진행률을 주지 않는다)
 3. 다 올리면 API가 R2에 HEAD로 물어 정말 있는지, 크기가 같은지 확인하고 목록(DB의 `Document` 표)에 더한다
 
+![서명 주소로 R2에 바로 올리는 흐름](./images/finder-files-upload.svg 'API는 확인과 서명만, 파일은 브라우저에서 R2로 바로 간다')
+
 서명 주소는 AWS 서명 버전 4를 `node:crypto`로 직접 만들었다. SDK를 들이기엔 쓰는 곳이 서명 하나뿐이다. AWS 문서의 예시 값으로 같은 서명이 나오는지 시험해 두었다. 서명에 `content-length`를 넣어서, 말한 크기와 다른 파일은 R2가 받지 않는다. 키는 서버가 `resume/<무작위>.pdf`처럼 짓기 때문에 브라우저가 경로를 고를 수 없다.
 
 목록도 코드에서 서버로 옮겼다. Finder는 `GET /documents`를 읽고, 시험에서는 전처럼 가짜 목록을 넣는다. 이름 바꾸기와 지우기는 파일을 고르고 메뉴 막대의 파일 메뉴(⌘⌫)에서 한다. 지우면 R2에서도 지운다.
+
+## 실제로 만들며 바뀐 것
+
+10월 18일 오전, 이력서 PDF를 Finder 안에서 보여 주는 첫 안을 보고 진짜 Mac처럼 미리보기 앱을 따로 두기로 했다. 파일은 R2에 두는 방식으로 정했다. 그날 밤까지 고친 순서는 이렇다.
+
+1. 로컬에서 PDF를 올렸더니 미리보기가 "열 수 없습니다"를 띄웠다. `curl -v http://localhost:4000/documents`로 보니 목록에는 파일(`portfolio/….pdf`, 약 11.7MB)이 있었다. 목록이 아니라 파일을 내주는 쪽을 봐야 했다.
+2. 첫 미리보기 화면은 macOS와 전혀 비슷하지 않았고 아이콘도 달랐다. 내 Mac의 미리보기 화면(위 사진)을 옆에 두고 다시 맞췄다.
+3. 파일 없이 켜면 최근에 연 파일을 보여 줬다. macOS처럼 열기 창을 띄우게 바꿨다.
+4. 열기 창에 폴더가 3개만 보였다. Finder와 같은 트리를 쓰게 했고, 휴대폰 파일 앱도 같은 구조로 맞췄다. 미리보기 아이콘만 작아 보여서 그림을 꽉 채웠다.
+5. 파일을 열었다가 닫고 다시 켜면 이전 파일이 그대로 열렸다. 닫을 때 열린 파일을 비우게 했다.
+
+## 따라 하기: R2 버킷 붙이기
+
+전체 절차는 저장소의 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md) "문서 파일(R2)" 절에 있다. R2 자체는 [Cloudflare R2 문서](https://developers.cloudflare.com/r2/), PDF를 그리는 라이브러리는 [PDF.js](https://mozilla.github.io/pdf.js/)를 본다. 준비물은 Cloudflare 계정, API 서버에 SSH로 들어갈 수 있는 권한이다.
+
+1. 버킷을 만든다. 이름이 이미 쓰이고 있다고 나오면 예전에 만든 버킷이 있는지 R2 목록부터 본다(내 경우가 그랬다).
+
+```bash
+npx wrangler r2 bucket create macfolio-files
+```
+
+2. R2 → Manage R2 API Tokens에서 Object Read & Write 토큰을 만들고, 서버의 `~/deploy/api.env`에 네 줄을 넣은 뒤 API를 다시 띄운다.
+
+```bash
+R2_ACCOUNT_ID=<계정 ID>
+R2_ACCESS_KEY_ID=<Access Key ID>
+R2_SECRET_ACCESS_KEY=<Secret Access Key>
+R2_BUCKET=macfolio-files
+```
+
+3. 버킷 Settings → CORS Policy에 사이트 주소의 PUT을 허용하고, 서버에서 미리 요청(preflight)을 보내 확인한다. `api.env`를 `source`로 읽으면 공백이 든 값(`CONTACT_FROM=MacFolio <…>`)에서 문법 오류가 나므로 `grep`으로 꺼낸다.
+
+```bash
+cd ~/deploy
+A=$(grep '^R2_ACCOUNT_ID=' api.env | cut -d= -f2-)
+B=$(grep '^R2_BUCKET=' api.env | cut -d= -f2-)
+curl -si -X OPTIONS "https://$A.r2.cloudflarestorage.com/$B/desktop/test.gif" \
+  -H "Origin: https://macfolio.hyeoniverse.com" \
+  -H "Access-Control-Request-Method: PUT" \
+  -H "Access-Control-Request-Headers: content-type" | head -8
+```
+
+기대 출력은 `HTTP/1.1 204 No Content`와 `Access-Control-Allow-Origin: https://macfolio.hyeoniverse.com`, `Access-Control-Allow-Methods: PUT`이다. 내 서버에서도 이렇게 나왔다.
+
+4. 그래도 올리기가 실패하면 키를 의심한다. `curl --aws-sigv4 "aws:amz:auto:s3" --user "$KEY:$SECRET" -T 파일 "$주소"`로 직접 올려 보고, `SignatureDoesNotMatch`가 나오면 키를 다시 만들어 넣는다. 키 길이는 보통 32자와 64자다.
+
+되돌리려면 `api.env`에서 네 줄을 지우고 API를 다시 띄운다. 목록은 그대로 보이고 올리기·지우기만 "서버에 파일 저장소(R2)가 설정되지 않았습니다"로 막힌다.
 
 ## 시험
 
@@ -91,6 +156,28 @@ Worker는 다음을 지킨다.
 - 화면 시험은 Finder에서 열면 미리보기 창이 뜨는지, 배율과 사이드바가 맞는지 본다. `window.__MACFOLIO_DOCUMENTS__`로 시험용 목록을 넣고, `page.route`로 `/files/*`에 시험 중에 만든 작은 PDF·PNG를 준다
 - 올리기 시험은 가짜 API(`/documents`)와 가짜 R2 주소를 두고, Finder에 파일을 놓으면 R2에 PUT이 한 번 가고 목록에 생기는지, 받지 않는 종류는 막는지, 방문자는 올라가지 않는지 본다
 - 서버는 서명 주소(AWS 예시 값), 키 모양, HEAD 확인, 확장자 지키기, 지울 때 R2 오류를 시험한다
+
+- Worker 단위 시험(`apps/react/worker/files.test.ts`)는 지금 17개다. "허용한 확장자의 키만", "경로 바꾸기를 막는다", "PDF를 그 종류·캐시·ETag와 inline으로 준다", "사이트 안 iframe에만 들어가고, 그 밖은 막는다", "?download=1이면 attachment, 한글 이름은 filename*에", "If-None-Match가 맞으면 304", "없는 파일, 허용하지 않는 키는 404 (버킷을 읽지 않는다)", "GET·HEAD가 아니면 405", "바인딩이 없으면(로컬·미리보기) 404" 등이다. Range(206·416) 시험은 뒤에 동영상을 위해 더해졌다.
+
+## 숫자
+
+| 항목                                       | 줄 수           |
+| ------------------------------------------ | --------------- |
+| 미리보기 앱 `Preview.tsx`·`Preview.css`    | 514 · 666       |
+| PDF 보기 `PdfView.tsx`                     | 324             |
+| 열기 창 `OpenPanel.tsx`                    | 223             |
+| Worker `files.ts` (지금)                   | 179             |
+| API `documents/` (서비스·컨트롤러·R2 서명) | 151 · 109 · 104 |
+
+## 남은 것과 배운 것
+
+- 미리보기는 PDF·그림만 연다. Markdown·글은 macOS처럼 열지 않고 흐리게 둔다. 동영상은 뒤에 QuickTime Player 앱이 맡았다.
+- R2 공개 주소를 쓰지 않으니 파일 응답이 모두 Worker를 거친다. 지금은 파일이 적고 캐시(`max-age=300`, ETag 304)가 있어 문제가 없다. 큰 파일이 늘면 R2 사용자 지정 도메인을 따로 두는 것도 생각할 수 있다. 그러면 CSP에 출처를 하나 더 열어야 한다.
+- 서명 주소는 5분짜리다. 아주 느린 연결에서 20MB를 올리면 시간이 모자랄 수 있다. 아직 그런 경우는 없었다.
+
+배운 것: "공개 저장소에 무엇을 두지 않을 것인가"를 먼저 정하니 파일 위치(R2)와 주소(같은 출처)가 따라 정해졌다. 같은 출처로 내주면 CSP를 넓히지 않아도 된다. 그리고 큰 파일은 API 서버를 거치지 않게 하는 것이 1GB 서버에 맞는 방식이었다. 서버는 "누가, 어디에, 얼마나"만 확인하고 서명해 준다.
+
+관련 글: [Finder 앱](/memo/finder-app), [Finder 폴더를 데스크톱처럼](/memo/finder-filesystem), [올린 파일 규칙을 둘로 나누기](/memo/contracts-files).
 
 올릴 때는 전화번호, 주소, 생년월일, 신분 번호를 지운 공개용 파일만 올린다.
 

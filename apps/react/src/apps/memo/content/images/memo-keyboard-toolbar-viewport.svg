@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 480" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>키보드가 가린 높이 = innerHeight − (보이는 높이 + offsetTop)</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="480" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">키보드가 가린 높이 = innerHeight − (보이는 높이 + offsetTop)</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">iOS Safari는 키보드가 올라와도 레이아웃 뷰포트를 줄이지 않는다</text>
+  <rect x="60" y="90" width="200" height="340" rx="22" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5"/>
+  <rect x="66" y="96" width="188" height="196" rx="16" fill="#eef0ff" stroke="#3f46c7" stroke-opacity="0.5"/>
+  <text x="160" y="190" font-size="12" fill="#3f46c7" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">visualViewport</text>
+  <text x="160" y="208" font-size="11" fill="#3f46c7" text-anchor="middle">(보이는 곳)</text>
+  <rect x="72" y="248" width="176" height="36" rx="18" fill="#ffffff" stroke="#15803d"/>
+  <text x="160" y="271" font-size="11" fill="#15803d" text-anchor="middle">서식 알약 (above-keyboard)</text>
+  <rect x="66" y="298" width="188" height="126" rx="12" fill="#e5e7eb"/>
+  <text x="160" y="366" font-size="13" fill="#374151" text-anchor="middle">화면 키보드</text>
+  <line x1="280" y1="90" x2="280" y2="430" stroke="#374151" stroke-width="1.2"/>
+  <text x="60" y="458" font-size="12" fill="#374151" text-anchor="start">검은 선: window.innerHeight (키보드가 올라와도 그대로)</text>
+  <line x1="320" y1="298" x2="320" y2="424" stroke="#b91c1c" stroke-width="2"/>
+  <text x="330" y="366" font-size="12" fill="#b91c1c" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">--keyboard-inset</text>
+  <text x="330" y="384" font-size="11" fill="#6b7280" text-anchor="start">120px보다 작으면 0 (주소창 접힘)</text>
+  <line x1="320" y1="96" x2="320" y2="292" stroke="#3f46c7" stroke-width="2"/>
+  <text x="330" y="190" font-size="12" fill="#3f46c7" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">height + offsetTop</text>
+  <rect x="510" y="110" width="220" height="96" rx="8" fill="#fee2e2"/>
+  <text x="620.0" y="137.8" font-size="11" text-anchor="middle" fill="#b91c1c" font-weight="600">처음 실수</text>
+  <text x="620.0" y="153.8" font-size="10" text-anchor="middle" fill="#b91c1c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">cssVars({'--keyboard-inset'})</text>
+  <text x="620.0" y="169.8" font-size="10" text-anchor="middle" fill="#b91c1c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">→ ----keyboard-inset</text>
+  <text x="620.0" y="185.8" font-size="10" text-anchor="middle" fill="#b91c1c">bottom 값 전체가 무효</text>
+  <rect x="510" y="230" width="220" height="60" rx="8" fill="#dcfce7"/>
+  <text x="620.0" y="247.8" font-size="11" text-anchor="middle" fill="#15803d" font-weight="600">고친 뒤</text>
+  <text x="620.0" y="263.9" font-size="10" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">bottom: calc(</text>
+  <text x="620.0" y="279.9" font-size="10" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">  var(--keyboard-inset) + 8px)</text>
+</svg>

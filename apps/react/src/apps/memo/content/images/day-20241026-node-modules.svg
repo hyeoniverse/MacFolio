@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>node_modules 추적 파일 수</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">git이 추적한 node_modules 파일 수</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">커밋마다 센 값. 10월 27일 하루에 일곱 번 커밋해 6만 개가 되었다</text>
+<text x="90.0" y="264.0" font-size="10" fill="#4b5563" text-anchor="middle">0</text>
+<text x="90.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">2024-10-26</text>
+<rect x="126.0" y="253.7" width="48.0" height="16.3" rx="3" fill="#fcd9a8"/>
+<text x="150.0" y="247.7" font-size="10" fill="#4b5563" text-anchor="middle">5,560</text>
+<text x="150.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">10-27 09:00</text>
+<rect x="186.0" y="238.1" width="48.0" height="31.9" rx="3" fill="#fcd9a8"/>
+<text x="210.0" y="232.1" font-size="10" fill="#4b5563" text-anchor="middle">10,886</text>
+<text x="210.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">10:20</text>
+<rect x="246.0" y="208.8" width="48.0" height="61.2" rx="3" fill="#fcd9a8"/>
+<text x="270.0" y="202.8" font-size="10" fill="#4b5563" text-anchor="middle">20,885</text>
+<text x="270.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">12:23</text>
+<rect x="306.0" y="179.6" width="48.0" height="90.4" rx="3" fill="#fcd9a8"/>
+<text x="330.0" y="173.6" font-size="10" fill="#4b5563" text-anchor="middle">30,885</text>
+<text x="330.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">17:02</text>
+<rect x="366.0" y="150.3" width="48.0" height="119.7" rx="3" fill="#fcd9a8"/>
+<text x="390.0" y="144.3" font-size="10" fill="#4b5563" text-anchor="middle">40,885</text>
+<text x="390.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">17:46</text>
+<rect x="426.0" y="121.0" width="48.0" height="149.0" rx="3" fill="#fcd9a8"/>
+<text x="450.0" y="115.0" font-size="10" fill="#4b5563" text-anchor="middle">50,885</text>
+<text x="450.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">22:05</text>
+<rect x="486.0" y="92.0" width="48.0" height="178.0" rx="3" fill="#fcd9a8"/>
+<text x="510.0" y="86.0" font-size="10" fill="#4b5563" text-anchor="middle">60,791</text>
+<text x="510.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">22:59</text>
+<rect x="546.0" y="265.7" width="48.0" height="4.3" rx="3" fill="#c7d2fe"/>
+<text x="570.0" y="259.7" font-size="10" fill="#4b5563" text-anchor="middle">1,478</text>
+<text x="570.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">2024-12-23</text>
+<rect x="606.0" y="269.0" width="48.0" height="1.0" rx="3" fill="#c7d2fe"/>
+<text x="630.0" y="263.0" font-size="10" fill="#4b5563" text-anchor="middle">340</text>
+<text x="630.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">2025-03-23</text>
+<text x="690.0" y="264.0" font-size="10" fill="#4b5563" text-anchor="middle">0</text>
+<text x="690.0" y="288" font-size="9.5" fill="#9ca3af" text-anchor="middle">2026-09-28</text>
+<path d="M60 270 H720" stroke="#d1d5db"/>
+<text x="570.0" y="310" font-size="10.5" fill="#6b7280" text-anchor="middle">Firebase로 옮기며 서버 쪽이 빠짐 · Vite · 추적에서 뺌</text>
+</svg>

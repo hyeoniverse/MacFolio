@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="300" fill="#fff"/>
+<text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">열기 창 하나를 두 앱이 나눠 쓴다</text>
+<rect x="40" y="60" width="200" height="60" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="140.0" y="86.5" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">미리보기</text>
+<text x="140.0" y="101.5" font-size="10" fill="#4b5563" text-anchor="middle">app 없이 (PREVIEW_APP)</text>
+<rect x="40" y="180" width="200" height="60" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="140.0" y="206.5" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">QuickTime Player</text>
+<text x="140.0" y="221.5" font-size="10" fill="#4b5563" text-anchor="middle">app = OPEN_APP</text>
+<rect x="300" y="110" width="180" height="90" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="390.0" y="144.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">OpenPanel</text>
+<text x="390.0" y="159.0" font-size="10" fill="#4b5563" text-anchor="middle">name · icon</text>
+<text x="390.0" y="174.0" font-size="10" fill="#4b5563" text-anchor="middle">canOpen(item)</text>
+<line x1="240" y1="90" x2="298" y2="140" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="240" y1="210" x2="298" y2="175" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="540" y="50" width="190" height="55" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="635.0" y="66.5" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">맨 위 자리</text>
+<text x="635.0" y="81.5" font-size="10" fill="#4b5563" text-anchor="middle">미리보기: 올린 PDF·그림</text>
+<text x="635.0" y="96.5" font-size="10" fill="#4b5563" text-anchor="middle">QuickTime: 동영상·소리</text>
+<rect x="540" y="125" width="190" height="55" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="635.0" y="141.5" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">다른 폴더</text>
+<text x="635.0" y="156.5" font-size="10" fill="#4b5563" text-anchor="middle">canOpen이 거짓이면</text>
+<text x="635.0" y="171.5" font-size="10" fill="#4b5563" text-anchor="middle">흐리게, 고를 수 없음</text>
+<rect x="540" y="200" width="190" height="55" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="635.0" y="216.5" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">썸네일</text>
+<text x="635.0" y="231.5" font-size="10" fill="#4b5563" text-anchor="middle">그림·PDF 첫 쪽</text>
+<text x="635.0" y="246.5" font-size="10" fill="#4b5563" text-anchor="middle">동영상은 #t=0.5 장면</text>
+<line x1="480" y1="155" x2="538" y2="77" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="480" y1="155" x2="538" y2="152" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="480" y1="155" x2="538" y2="227" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="380" y="285" font-size="11" fill="#6b7280" text-anchor="middle">고치기 전 QuickTime은 파일 이름을 한 줄씩 늘어놓은 자기 목록을 따로 그렸다</text>
+</svg>

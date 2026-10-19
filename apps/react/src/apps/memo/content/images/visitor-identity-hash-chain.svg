@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>방문자 쿠키 토큰은 브라우저에만 있고, DB에는 비밀 키로 HMAC한 해시만, 응답에는 그 해시를 한 번 더 해시한 값만 나간다. 이름은 저장한 해시에서 만든다</title>
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="820" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">토큰은 어디에 어떤 모양으로 있나</text>
+<rect x="32" y="70" width="170" height="64" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="117" y="94" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">브라우저 쿠키</text>
+<text x="117" y="112" font-size="10.5" fill="#374151" text-anchor="middle">무작위 토큰 (httpOnly)</text>
+<rect x="250" y="70" width="190" height="64" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+<text x="345" y="94" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">DB: visitorHash</text>
+<text x="345" y="112" font-size="10.5" fill="#374151" text-anchor="middle">HMAC(비밀 키, 토큰)</text>
+<rect x="488" y="70" width="150" height="64" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="563" y="94" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">응답: authorId</text>
+<text x="563" y="112" font-size="10.5" fill="#374151" text-anchor="middle">해시를 한 번 더</text>
+<rect x="670" y="70" width="120" height="64" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="730" y="94" font-size="11" fill="#1f2937" text-anchor="middle">말풍선 묶기</text>
+<text x="730" y="112" font-size="10.5" fill="#6b7280" text-anchor="middle">같은 사람끼리</text>
+<path d="M204 102 H248" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M442 102 H486" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M640 102 H668" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="250" y="160" width="190" height="56" rx="8" fill="#fdf4ff" stroke="#e9a8fb"/>
+<text x="345" y="182" font-size="11" fill="#1f2937" text-anchor="middle">visitorName(해시)</text>
+<text x="345" y="200" font-size="10.5" fill="#374151" text-anchor="middle">앞 8자리 꾸밈말 · 다음 8자리 동물</text>
+<path d="M345 136 V158" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="470" y="186" font-size="10.5" fill="#374151">"🦊 날쌘 여우" (30 × 24 = 720가지)</text>
+<text x="470" y="204" font-size="10.5" fill="#6b7280">DB가 새어도 쿠키를 만들 수 없고, 응답에서 해시를 알 수 없다</text>
+</svg>

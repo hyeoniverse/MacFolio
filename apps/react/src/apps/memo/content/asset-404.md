@@ -2,10 +2,10 @@
 title: 없는 코드 파일에 index.html을 주던 문제
 date: 2026-10-05
 category: 개발기/MacFolio/인프라
-summary: 사이트는 없는 주소에 늘 첫 화면(index.html)을 200으로 줬다. 앱 주소에는 맞지만, 배포로 사라진 옛 코드 파일에도 그랬다. 없는 주소만 받는 작은 Worker를 두어 앱 주소는 첫 화면, 파일 주소는 404로 나눴다.
+summary: 사이트는 없는 주소에 늘 index.html을 200으로, 그것도 1년 캐시 헤더와 함께 줬다. 배포로 사라진 옛 코드 파일에도 그랬다. 없는 주소만 받는 11줄짜리 Worker 함수로 앱 주소는 첫 화면, 파일 주소는 404로 나눴다.
 ---
 
-로그아웃 상태에서 메모 앱이 열리지 않는다는 이야기를 듣고 원인을 찾다가, 사이트가 **없는 코드 파일에도 200을 준다**는 것을 알았다.
+로그아웃 상태에서 메모 앱이 열리지 않는 일이 있었다. 원인을 찾다가, 사이트가 **없는 코드 파일에도 200을 준다**는 것을 알았다.
 
 ```text
 GET /assets/Memo-doesnotexist.js  →  200 text/html
@@ -33,6 +33,16 @@ cache-control: public, max-age=31536000, immutable
 
 Worker가 주는 404에는 이 헤더가 붙지 않는다(`_headers`는 정적 파일 응답에만 붙는다). 그래서 다음에 다시 요청하면 그때는 새 파일을 받는다.
 
+![전과 후의 응답](./images/asset-404-before-after.svg '같은 요청에 HTML과 1년 캐시 대신 404가 간다')
+
+## 고칠 방법
+
+| 방법                                              | 좋은 점                                       | 문제                                                               |
+| ------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| `_headers`에서 HTML에는 캐시를 빼기               | 설정 한 줄                                    | `_headers`는 경로로만 고른다. `/assets/*`에 온 HTML을 가를 수 없다 |
+| 해시 라우팅(`/#/memo/…`)으로 바꾸고 SPA 설정 끄기 | Worker가 필요 없다                            | 공유 링크 주소가 바뀐다. 이미 퍼진 `/memo/<글>` 링크가 깨진다      |
+| 없는 주소만 받는 Worker (고른 방법)               | 있는 파일은 그대로 빠르다. 주소 모양은 그대로 | Worker 스크립트를 처음 둔다                                        |
+
 ## 없는 주소만 받는 Worker
 
 설정을 이렇게 바꿨다.
@@ -59,7 +69,9 @@ export const isAppRoute = (pathname: string) => {
 - 앱 주소(마지막 조각에 점이 없음): `index.html`을 200으로
 - `/assets/…`이거나 확장자가 있는 주소: 404
 
-`wrangler dev`로 로컬에서 같은 Worker를 띄워 확인했다.
+![요청 나누기](./images/asset-404-routing.svg '있는 파일은 Cloudflare가 바로, 없는 주소만 Worker가 받는다')
+
+`wrangler dev`로 로컬에서 같은 Worker를 띄워 확인했다(PR [#103](https://github.com/hyeoniverse/MacFolio/pull/103)). 고친 것은 6개 파일에 60줄이다. 판단 함수(`worker/notFound.ts`)는 11줄이고, 단위 시험(`worker/notFound.test.ts`) 두 개(**앱 주소는 첫 화면으로**, **빌드 결과와 파일 주소는 404**)가 함께 들어갔다.
 
 | 주소                                                                       | 결과            |
 | -------------------------------------------------------------------------- | --------------- |
@@ -67,6 +79,33 @@ export const isAppRoute = (pathname: string) => {
 | 있는 코드·이미지 (`/assets/main-….js`, `/imgs/apidocs.svg`, `/robots.txt`) | 200, 원래 형식  |
 | `/assets/Memo-doesnotexist.js`, `/assets/Memo-old.css`, `/imgs/nope.png`   | **404**         |
 
-메모 앱이 열리지 않던 일은 이것 말고 다른 원인도 있는지 더 보고 있다.
+## 그 뒤의 Worker
+
+이 Worker는 "없는 주소만 받는 작은 함수"로 시작했지만 자리가 생기자 일이 늘었다.
+
+- 10월 11일: 첫 화면을 줄 때 관리자가 고친 프로필·프로젝트를 API에서 받아 HTML에 넣고, 새 프로젝트의 데모 주소를 CSP `frame-src`에 더한다(`worker/siteHtml.ts`). 다시 빌드하지 않아도 새 프로젝트 앱의 iframe이 막히지 않는다.
+- 10월 18일: `/files/<키>`는 R2 버킷의 문서 파일(PDF·그림)을 준다(`worker/files.ts`). Finder의 이력서·자격증 폴더가 쓴다.
+
+지금 `worker/index.ts`의 순서는 `/files/` → 앱 주소가 아니면 404 → 첫 화면이다. 404 판단은 처음 그대로다.
+
+## 남은 것, 배운 것
+
+- 판단은 "마지막 조각에 점이 있나"뿐이다. 글 주소에 점이 들어가면(`/memo/v1.2-release`) 404가 된다. 지금 글 주소에는 점이 없고, 생기면 글 주소 규칙을 먼저 바꾼다.
+- 로그아웃 상태에서 메모가 안 열리던 일의 원인이 이것 하나뿐인지는 확인하지 못했다.
+- "없으면 첫 화면"은 SPA에 편한 기본값이지만, 정적 파일 서버가 404를 줄 줄 모르게 만든다. 캐시 헤더와 겹치면 틀린 답을 오래 들고 있게 된다. 응답을 볼 때 상태 코드만이 아니라 `content-type`과 `cache-control`까지 함께 보는 습관이 이 문제를 찾게 했다.
+
+## 직접 확인하기
+
+없는 코드 파일을 요청해서 상태 코드와 캐시 헤더를 본다.
+
+```bash
+curl -sI https://macfolio.hyeoniverse.com/assets/does-not-exist.js | grep -iE '^(HTTP|cache-control|content-type)'
+# 404여야 한다. 200 + text/html이면 index.html로 떨어지는 것
+curl -sI https://macfolio.hyeoniverse.com/memo/asset-404 | head -1   # 화면 주소는 200 (SPA)
+```
+
+Worker 시험은 `cd apps/react && npx vitest run worker/notFound.test.ts`다. 설정은 루트의 [wrangler.jsonc](https://github.com/hyeoniverse/MacFolio/blob/main/wrangler.jsonc)에 있고, `not_found_handling`과 Worker를 먼저 부르는 범위는 [Workers 정적 자산 문서](https://developers.cloudflare.com/workers/static-assets/routing/)에 있다. 배포는 [GitHub Actions로 배포](/memo/deploy-github-actions)의 `wrangler deploy`가 한다. 되돌리려면 이 Worker를 빼고 다시 배포하면 예전처럼 모든 없는 주소에 `index.html`을 준다.
+
+관련 글: [배포 직후 메모가 안 열리던 까닭](/memo/app-error-alert), [앱 안의 화면에 주소 붙이기](/memo/app-links), [보안 헤더](/memo/security-headers), [프로젝트 앱](/memo/project-apps)
 
 #MacFolio #배포 #Cloudflare #트러블슈팅

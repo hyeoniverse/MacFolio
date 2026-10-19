@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>이름 쓰는 곳과 다시 생긴 숫자</title>
+  <rect width="760" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="40" font-size="18" font-weight="700" fill="#1f2937">사흘 뒤: 이름은 246곳, 같은 값의 숫자가 다시 115곳</text>
+  <text x="32" y="62" font-size="12" fill="#6b7280">apps/react/src 아래 CSS, border-radius 한 값 줄을 셈 (바꾼 날 2026-10-16 → 2026-10-19)</text>
+  <text x="32" y="102" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">var(--radius-full)</text>
+  <rect x="200" y="90" width="246" height="16" rx="3" fill="#4f46e5"/>
+  <text x="454" y="103" font-size="12" fill="#1f2937">77</text>
+  <text x="32" y="130" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">var(--radius-sm)</text>
+  <rect x="200" y="118" width="157" height="16" rx="3" fill="#4f46e5"/>
+  <text x="365" y="131" font-size="12" fill="#1f2937">49</text>
+  <text x="32" y="158" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">var(--radius-md)</text>
+  <rect x="200" y="146" width="131" height="16" rx="3" fill="#4f46e5"/>
+  <text x="339" y="159" font-size="12" fill="#1f2937">41</text>
+  <text x="32" y="186" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">var(--radius-xl)</text>
+  <rect x="200" y="174" width="109" height="16" rx="3" fill="#4f46e5"/>
+  <text x="317" y="187" font-size="12" fill="#1f2937">34</text>
+  <text x="32" y="214" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">var(--radius-lg)</text>
+  <rect x="200" y="202" width="96" height="16" rx="3" fill="#4f46e5"/>
+  <text x="304" y="215" font-size="12" fill="#1f2937">30</text>
+  <text x="32" y="242" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">var(--radius-xs)</text>
+  <rect x="200" y="230" width="48" height="16" rx="3" fill="#4f46e5"/>
+  <text x="256" y="243" font-size="12" fill="#1f2937">15</text>
+  <text x="32" y="282" font-size="12" font-weight="600" fill="#9a3412">다시 생긴 숫자</text>
+  <text x="32" y="304" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">6px</text>
+  <rect x="200" y="292" width="163" height="16" rx="3" fill="#f97316"/>
+  <text x="371" y="305" font-size="12" fill="#1f2937">51</text>
+  <text x="32" y="328" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">999px</text>
+  <rect x="200" y="316" width="106" height="16" rx="3" fill="#f97316"/>
+  <text x="314" y="329" font-size="12" fill="#1f2937">33</text>
+  <text x="32" y="352" font-size="12" fill="#374151" font-family="ui-monospace, Menlo, monospace">8px</text>
+  <rect x="200" y="340" width="99" height="16" rx="3" fill="#f97316"/>
+  <text x="307" y="353" font-size="12" fill="#1f2937">31</text>
+  <text x="520" y="290" font-size="11" fill="#6b7280">바꾼 날에는 0곳 → 대부분 뒤에 더한 apps/safari</text>
+</svg>

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="820" height="360" fill="#fff"/>
+<text x="410.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">그리드 줄 높이와 언어 줄 자리</text>
+<text x="200" y="58" font-size="12" fill="#b91c1c" text-anchor="middle" font-weight="600">전: 줄마다 따로 (grid-auto-rows: auto)</text>
+<rect x="40" y="72" width="150" height="60" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="50" y="82" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="50" y="98" width="78.0" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="116" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<rect x="210" y="72" width="150" height="60" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="220" y="82" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="220" y="98" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="220" y="108" width="78.0" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="220" y="116" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<rect x="40" y="142" width="150" height="120" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="50" y="152" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="50" y="168" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="178" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="188" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="198" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="208" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="218" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="228" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="238" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="248" width="78.0" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="50" y="246" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<rect x="210" y="142" width="150" height="120" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="220" y="152" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="220" y="172" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<rect x="40" y="272" width="150" height="50" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="50" y="282" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="50" y="302" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<text x="610" y="58" font-size="12" fill="#047857" text-anchor="middle" font-weight="600">후: grid-auto-rows: 1fr + 세 줄 + margin-top: auto</text>
+<rect x="450" y="72" width="150" height="70" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="460" y="82" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="460" y="98" width="78.0" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="460" y="126" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<rect x="620" y="72" width="150" height="70" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="630" y="82" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="630" y="98" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="630" y="108" width="78.0" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="630" y="126" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<rect x="450" y="152" width="150" height="70" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="460" y="162" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="460" y="178" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="460" y="188" width="130" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="460" y="198" width="78.0" height="5" rx="2" fill="#e5e7eb" stroke="#e5e7eb"/>
+<rect x="460" y="206" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<rect x="620" y="152" width="150" height="70" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="630" y="162" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="630" y="206" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<rect x="450" y="232" width="150" height="70" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<rect x="460" y="242" width="75.0" height="8" rx="3" fill="#a5b4fc" stroke="#a5b4fc"/>
+<rect x="460" y="286" width="82.5" height="7" rx="2" fill="#fcd34d" stroke="#fcd34d"/>
+<text x="410" y="345" font-size="10.5" fill="#6b7280" text-anchor="middle">노란 막대가 언어·별·데모 줄. 전에는 설명이 없는 카드에서만 위로 떠 있었고, 긴 설명 하나가 그 줄 전체를 키웠다</text>
+</svg>

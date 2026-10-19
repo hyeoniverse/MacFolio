@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>메뉴 막대 배터리가 관리자에게는 유휴 회수 위험을, 방문자에게는 앞 7일보다 최근 7일 방문이 얼마나 늘었는지를 보여 준다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">배터리 하나, 보는 사람에 따라 두 뜻</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">그림은 SVG(ServerBattery) 하나, fill(%)만 바꾼다</text>
+<rect x="32" y="76" width="390" height="236" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="44" y="95" font-size="12" fill="#4f46e5" font-weight="600">관리자: 유휴 회수에서 얼마나 먼가</text>
+<rect x="48" y="110" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="94" y="116" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="51" y="113" width="38.0" height="14" rx="2.5" fill="#1f2937"/>
+<text x="112" y="124" font-size="10.5" fill="#1f2937" font-weight="600">안전</text>
+<text x="408" y="124" font-size="10.5" fill="#6b7280" text-anchor="end">가득</text>
+<rect x="48" y="148" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="94" y="154" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="51" y="151" width="9.5" height="14" rx="2.5" fill="#ff9f0a"/>
+<text x="112" y="162" font-size="10.5" fill="#1f2937" font-weight="600">주의 · 모든 기준 30% 미만</text>
+<text x="408" y="162" font-size="10.5" fill="#6b7280" text-anchor="end">1/4, 주황</text>
+<rect x="48" y="186" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="94" y="192" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="51" y="189" width="1.5" height="14" rx="2.5" fill="#ff453a"/>
+<text x="112" y="200" font-size="10.5" fill="#1f2937" font-weight="600">회수 위험 · 모든 기준 20% 미만</text>
+<text x="408" y="200" font-size="10.5" fill="#6b7280" text-anchor="end">비어 있음, 빨강</text>
+<rect x="48" y="224" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="94" y="230" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="51" y="227" width="19.0" height="14" rx="2.5" fill="#1f2937"/>
+<text x="112" y="238" font-size="10.5" fill="#1f2937" font-weight="600">아직 모름</text>
+<text x="408" y="238" font-size="10.5" fill="#6b7280" text-anchor="end">절반</text>
+<rect x="48" y="262" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="94" y="268" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="51" y="265" width="28.5" height="14" rx="2.5" fill="#1f2937"/>
+<text x="112" y="276" font-size="10.5" fill="#1f2937" font-weight="600">종량제 · 감시 꺼짐</text>
+<text x="408" y="276" font-size="10.5" fill="#6b7280" text-anchor="end">평소 모양 3/4</text>
+<rect x="438" y="76" width="390" height="236" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="450" y="95" font-size="12" fill="#4f46e5" font-weight="600">방문자: 최근 7일 vs 앞 7일</text>
+<rect x="454" y="110" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="500" y="116" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="457" y="113" width="38.0" height="14" rx="2.5" fill="#1f2937"/>
+<text x="518" y="124" font-size="10.5" fill="#1f2937" font-weight="600">+100% 이상</text>
+<text x="814" y="124" font-size="10.5" fill="#6b7280" text-anchor="end">가득</text>
+<rect x="454" y="148" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="500" y="154" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="457" y="151" width="28.5" height="14" rx="2.5" fill="#1f2937"/>
+<text x="518" y="162" font-size="10.5" fill="#1f2937" font-weight="600">+50%</text>
+<text x="814" y="162" font-size="10.5" fill="#6b7280" text-anchor="end">3/4</text>
+<rect x="454" y="186" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="500" y="192" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="457" y="189" width="19.0" height="14" rx="2.5" fill="#1f2937"/>
+<text x="518" y="200" font-size="10.5" fill="#1f2937" font-weight="600">같음</text>
+<text x="814" y="200" font-size="10.5" fill="#6b7280" text-anchor="end">절반</text>
+<rect x="454" y="224" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="500" y="230" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="457" y="227" width="9.5" height="14" rx="2.5" fill="#1f2937"/>
+<text x="518" y="238" font-size="10.5" fill="#1f2937" font-weight="600">-50%</text>
+<text x="814" y="238" font-size="10.5" fill="#6b7280" text-anchor="end">1/4</text>
+<rect x="454" y="262" width="44" height="20" rx="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+<rect x="500" y="268" width="3" height="8" rx="1.5" fill="#9ca3af"/>
+<rect x="457" y="265" width="1.9" height="14" rx="2.5" fill="#1f2937"/>
+<text x="518" y="276" font-size="10.5" fill="#1f2937" font-weight="600">-100%</text>
+<text x="814" y="276" font-size="10.5" fill="#6b7280" text-anchor="end">거의 빔 (5%)</text>
+<text x="454" y="302" font-size="10" fill="#4f46e5" font-weight="600">fill = clamp(50 + 늘어난 비율/2, 5, 100) · 색은 칠하지 않는다</text>
+</svg>

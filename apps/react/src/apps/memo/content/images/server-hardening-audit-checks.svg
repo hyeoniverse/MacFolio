@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>점검 스크립트의 네 영역과 각 영역이 읽는 명령: SSH는 sshd -T와 passwd -Sa, 포트는 ss·docker ps·방화벽, 컨테이너는 docker inspect와 docker.sock 마운트, 업데이트는 unattended-upgrades와 reboot-required</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="860" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">ops/audit.sh가 읽는 것 (아무것도 바꾸지 않는다)</text>
+<rect x="32" y="62" width="190" height="40" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="127.0" y="86.0" font-size="12.5" font-weight="600" fill="#3730a3" text-anchor="middle">[SSH] 키로만</text>
+<rect x="32" y="110" width="190" height="140" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.2"/>
+<text x="44" y="134" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">sudo sshd -T</text>
+<text x="44" y="156" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">PasswordAuthentication</text>
+<text x="44" y="178" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">PermitRootLogin</text>
+<text x="44" y="200" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">KbdInteractiveAuthentication</text>
+<text x="44" y="222" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">passwd -Sa (P인 계정)</text>
+<rect x="236" y="62" width="190" height="40" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="331.0" y="86.0" font-size="12.5" font-weight="600" fill="#92400e" text-anchor="middle">[포트] 22뿐</text>
+<rect x="236" y="110" width="190" height="140" rx="10" fill="#ffffff" stroke="#fcd34d" stroke-width="1.2"/>
+<text x="248" y="134" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">ss -Hlntu (루프백·docker 제외)</text>
+<text x="248" y="156" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">docker ps의 0.0.0.0 포트</text>
+<text x="248" y="178" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">ufw → iptables → nft 차례</text>
+<text x="248" y="200" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">Security List는 콘솔에서</text>
+<rect x="440" y="62" width="190" height="40" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="535.0" y="86.0" font-size="12.5" font-weight="600" fill="#065f46" text-anchor="middle">[컨테이너] root 아님</text>
+<rect x="440" y="110" width="190" height="140" rx="10" fill="#ffffff" stroke="#6ee7b7" stroke-width="1.2"/>
+<text x="452" y="134" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">docker inspect .Config.User</text>
+<text x="452" y="156" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">65532 → nonroot</text>
+<text x="452" y="178" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">privileged 아님</text>
+<text x="452" y="200" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">docker.sock 마운트 없음</text>
+<rect x="644" y="62" width="190" height="40" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="739.0" y="86.0" font-size="12.5" font-weight="600" fill="#374151" text-anchor="middle">[업데이트] 자동</text>
+<rect x="644" y="110" width="190" height="140" rx="10" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="656" y="134" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">unattended-upgrades 설치</text>
+<text x="656" y="156" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">20auto-upgrades = "1"</text>
+<text x="656" y="178" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">/var/run/reboot-required</text>
+<text x="32" y="280" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">항목마다 OK / 확인을 찍고, 확인이 하나라도 있으면 1로 끝난다. 고치는 방법은 확인 줄에 같이 적는다 (예: rpcbind 끄는 명령).</text>
+<text x="32" y="300" font-size="10.5" font-weight="400" fill="#6b7280" text-anchor="start">96줄 bash. 서버에서 ~/macfolio/ops/audit.sh로 돌린다.</text>
+</svg>

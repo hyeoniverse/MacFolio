@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>사진 캡션·사람 확인 설정·GitHub 앱 저장소 규칙을 contracts의 zod 스키마 한 곳에 두고, API는 parse로 검사하고 화면은 같은 상수와 함수를 불러 쓴다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="760" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">규칙은 한 곳, 서버와 화면이 함께 불러 쓴다</text>
+<rect x="260" y="64" width="240" height="150" rx="8" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="380.0" y="103.0" font-size="12" fill="#4f46e5" font-weight="600" text-anchor="middle">packages/contracts/src/settings.ts</text>
+<text x="380.0" y="119.0" font-size="11" fill="#374151" text-anchor="middle">CaptionsInput · SecurityInput</text>
+<text x="380.0" y="135.0" font-size="11" fill="#374151" text-anchor="middle">ShowcaseInput (zod)</text>
+<text x="380.0" y="151.0" font-size="11" fill="#374151" text-anchor="middle">CAPTION_MAX = 200</text>
+<text x="380.0" y="167.0" font-size="11" fill="#374151" text-anchor="middle">MAX_SHOWCASE = 6</text>
+<text x="380.0" y="183.0" font-size="11" fill="#374151" text-anchor="middle">isFullName(), HUMAN_CHECKS</text>
+<rect x="32" y="80" width="180" height="118" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="122.0" y="111.8" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">API (NestJS)</text>
+<text x="122.0" y="127.3" font-size="10.5" fill="#374151" text-anchor="middle">PUT /photos/captions</text>
+<text x="122.0" y="142.8" font-size="10.5" fill="#374151" text-anchor="middle">PUT /security</text>
+<text x="122.0" y="158.3" font-size="10.5" fill="#374151" text-anchor="middle">PUT /github/showcase</text>
+<text x="122.0" y="173.8" font-size="10.5" fill="#6b7280" text-anchor="middle">· parse(Schema, body) 한 줄</text>
+<rect x="548" y="80" width="180" height="118" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="638.0" y="111.8" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">관리자 설정 화면</text>
+<text x="638.0" y="127.3" font-size="10.5" fill="#374151" text-anchor="middle">캡션 칸 maxLength</text>
+<text x="638.0" y="142.8" font-size="10.5" fill="#374151" text-anchor="middle">저장소 6개 제한</text>
+<text x="638.0" y="158.3" font-size="10.5" fill="#374151" text-anchor="middle">저장소 이름 검사</text>
+<text x="638.0" y="173.8" font-size="10.5" fill="#6b7280" text-anchor="middle">· 같은 값을 import</text>
+<path d="M258 139 H214" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<path d="M502 139 H546" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#an)"/>
+<rect x="32" y="232" width="696" height="44" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="380.0" y="257.8" font-size="10.5" fill="#374151" text-anchor="middle">전: 서버는 if 문, 화면은 같은 숫자·정규식을 따로 적고 &quot;서버와 같다&quot;는 주석으로 약속했다 → 한쪽만 바꾸면 화면은 받고 서버는 거절</text>
+</svg>

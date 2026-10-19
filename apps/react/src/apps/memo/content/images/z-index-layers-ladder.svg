@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>theme.css의 --z-* 이름과 값: dock 1000, menubar 1001, 이 Mac에 관하여 1500, Launchpad 2000, 단축키 3000, 알림 9000, 로딩 9999, 메뉴 10000, 앱 오류 15000, 로그인 20000</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="760" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">화면 전체에서 겹치는 층 (위가 앞)</text>
+<rect x="32" y="58" width="70" height="26" rx="6" fill="#4f46e5" stroke="none"/>
+<text x="67" y="75" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">20000</text>
+<rect x="112" y="58" width="330" height="26" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="122" y="74.8" font-size="10.5" fill="#374151">로그인</text>
+<rect x="32" y="90" width="70" height="26" rx="6" fill="#4f46e5" stroke="none"/>
+<text x="67" y="107" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">15000</text>
+<rect x="112" y="90" width="330" height="26" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="122" y="106.8" font-size="10.5" fill="#374151">앱 오류 화면</text>
+<rect x="32" y="122" width="70" height="26" rx="6" fill="#4f46e5" stroke="none"/>
+<text x="67" y="139" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">10000</text>
+<rect x="112" y="122" width="330" height="26" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="122" y="138.8" font-size="10.5" fill="#374151">펼친 메뉴 · 팝오버 · 라이트박스 (6곳)</text>
+<rect x="32" y="154" width="70" height="26" rx="6" fill="#818cf8" stroke="none"/>
+<text x="67" y="171" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">9999</text>
+<rect x="112" y="154" width="330" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="122" y="170.8" font-size="10.5" fill="#374151">로딩 화면</text>
+<rect x="32" y="186" width="70" height="26" rx="6" fill="#818cf8" stroke="none"/>
+<text x="67" y="203" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">9000</text>
+<rect x="112" y="186" width="330" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="122" y="202.8" font-size="10.5" fill="#374151">알림</text>
+<rect x="32" y="218" width="70" height="26" rx="6" fill="#818cf8" stroke="none"/>
+<text x="67" y="235" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">3000</text>
+<rect x="112" y="218" width="330" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="122" y="234.8" font-size="10.5" fill="#374151">키보드 단축키 안내</text>
+<rect x="32" y="250" width="70" height="26" rx="6" fill="#818cf8" stroke="none"/>
+<text x="67" y="267" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">2000</text>
+<rect x="112" y="250" width="330" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="122" y="266.8" font-size="10.5" fill="#374151">Launchpad</text>
+<rect x="32" y="282" width="70" height="26" rx="6" fill="#818cf8" stroke="none"/>
+<text x="67" y="299" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">1500</text>
+<rect x="112" y="282" width="330" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="122" y="298.8" font-size="10.5" fill="#374151">이 Mac에 관하여</text>
+<rect x="32" y="314" width="70" height="26" rx="6" fill="#818cf8" stroke="none"/>
+<text x="67" y="331" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">1001</text>
+<rect x="112" y="314" width="330" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="122" y="330.8" font-size="10.5" fill="#374151">메뉴 막대 (&quot;Dock보다 위&quot;)</text>
+<rect x="32" y="346" width="70" height="26" rx="6" fill="#818cf8" stroke="none"/>
+<text x="67" y="363" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">1000</text>
+<rect x="112" y="346" width="330" height="26" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="122" y="362.8" font-size="10.5" fill="#374151">Dock · 경고창 기본값</text>
+<text x="470" y="80" font-size="10.5" fill="#374151">숫자만으로는 1001이 &quot;Dock 위&quot;라는</text>
+<text x="470" y="96" font-size="10.5" fill="#374151">뜻이 보이지 않았다.</text>
+<text x="470" y="130" font-size="10.5" fill="#374151">10000은 여섯 곳에 같은 숫자라</text>
+<text x="470" y="146" font-size="10.5" fill="#374151">하나만 바꾸면 메뉴끼리 어긋났다.</text>
+<text x="470" y="186" font-size="10.5" fill="#4f46e5" font-weight="600">→ :root의 --z-dock, --z-menubar,</text>
+<text x="470" y="202" font-size="10.5" fill="#4f46e5" font-weight="600">   --z-menu, --z-login … 값은 그대로</text>
+<text x="470" y="242" font-size="10.5" fill="#6b7280">창 순서(1, 2, 3…)와 앱 안의 1~10은</text>
+<text x="470" y="258" font-size="10.5" fill="#6b7280">이름을 붙이지 않았다.</text>
+</svg>

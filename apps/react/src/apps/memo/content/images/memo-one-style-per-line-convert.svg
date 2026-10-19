@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>한 줄에 모양은 하나: 먼저 꺼내고 바꾼다</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">한 줄에 모양은 하나: 먼저 꺼내고 바꾼다</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">목록 항목의 첫 줄은 늘 문단(paragraph block*)이라, 그 자리에서 머리말로 바꾸는 명령은 실패했다</text>
+  <text x="32" y="108" font-size="13" fill="#374151" text-anchor="start" font-weight="600">목록 항목에서 머리말</text>
+  <rect x="32" y="120" width="150" height="60" rx="8" fill="#f3f4f6"/>
+  <text x="107.0" y="137.2" font-size="12" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">- 사과</text>
+  <text x="107.0" y="154.2" font-size="12" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">- 배   ← 커서</text>
+  <text x="107.0" y="171.2" font-size="12" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">- 감</text>
+  <line x1="184" y1="150" x2="264" y2="150" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="224.0" y="144.0" font-size="11" fill="#6b7280" text-anchor="middle">leaveList</text>
+  <rect x="268" y="120" width="150" height="60" rx="8" fill="#eef0ff"/>
+  <text x="343.0" y="137.2" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">- 사과</text>
+  <text x="343.0" y="154.2" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">배</text>
+  <text x="343.0" y="171.2" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">- 감</text>
+  <line x1="420" y1="150" x2="500" y2="150" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="460.0" y="144.0" font-size="11" fill="#6b7280" text-anchor="middle">모양 바꾸기</text>
+  <rect x="504" y="120" width="150" height="60" rx="8" fill="#dcfce7"/>
+  <text x="579.0" y="137.2" font-size="12" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">- 사과</text>
+  <text x="579.0" y="154.2" font-size="12" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">## 배</text>
+  <text x="579.0" y="171.2" font-size="12" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">- 감</text>
+  <text x="670" y="145" font-size="12" fill="#6b7280" text-anchor="start">남은 항목은</text>
+  <text x="670" y="163" font-size="12" fill="#6b7280" text-anchor="start">목록 그대로</text>
+  <text x="32" y="220" font-size="13" fill="#374151" text-anchor="start" font-weight="600">토글 제목에서 목록</text>
+  <rect x="32" y="232" width="150" height="60" rx="8" fill="#f3f4f6"/>
+  <text x="107.0" y="257.7" font-size="12" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">▸ 제목  ← 커서</text>
+  <text x="107.0" y="274.7" font-size="12" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">   내용</text>
+  <line x1="184" y1="262" x2="264" y2="262" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="224.0" y="256.0" font-size="11" fill="#6b7280" text-anchor="middle">toggleDetails</text>
+  <rect x="268" y="232" width="150" height="60" rx="8" fill="#eef0ff"/>
+  <text x="343.0" y="257.7" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">제목</text>
+  <text x="343.0" y="274.7" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">내용</text>
+  <line x1="420" y1="262" x2="500" y2="262" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="460.0" y="256.0" font-size="11" fill="#6b7280" text-anchor="middle">목록으로</text>
+  <rect x="504" y="232" width="150" height="60" rx="8" fill="#dcfce7"/>
+  <text x="579.0" y="257.7" font-size="12" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">- 제목</text>
+  <text x="579.0" y="274.7" font-size="12" text-anchor="middle" fill="#15803d" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">내용</text>
+  <text x="670" y="257" font-size="12" fill="#6b7280" text-anchor="start">내용은</text>
+  <text x="670" y="275" font-size="12" fill="#6b7280" text-anchor="start">아래에 그대로</text>
+</svg>

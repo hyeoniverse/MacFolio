@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>PROJECTS의 데모 주소와 VITE_API_URL을 securityHeaders가 받아 헤더를 만들고 Vite 플러그인이 dist/_headers와 vite preview에 붙인다. E2E fixture는 CSP 위반이 하나라도 있으면 실패</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="800" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">CSP 출처 목록은 코드에서 만들고, E2E도 같은 CSP로 돈다</text>
+<rect x="32" y="64" width="170" height="44" rx="10" fill="#f3f4f6"/>
+<text x="117.0" y="82.75" font-size="11.5" font-weight="600" fill="#374151" text-anchor="middle">PROJECTS</text>
+<text x="117.0" y="100.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">demo 주소 5곳</text>
+<rect x="32" y="124" width="170" height="44" rx="10" fill="#f3f4f6"/>
+<text x="117.0" y="142.75" font-size="11.5" font-weight="600" fill="#374151" text-anchor="middle">VITE_API_URL</text>
+<text x="117.0" y="160.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">API 서버</text>
+<rect x="252" y="74" width="200" height="84" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="352.0" y="105.75" font-size="11.5" font-weight="600" fill="#4f46e5" text-anchor="middle">worker/securityHeaders.ts</text>
+<text x="352.0" y="123.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">출처(https://host)만 남기고</text>
+<text x="352.0" y="137.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">http(s) 아닌 값은 버림</text>
+<path d="M202 86 H250" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M202 146 H250" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="502" y="58" width="260" height="44" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="632.0" y="83.5" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">vite build → dist/_headers 끝에 /*</text>
+<rect x="502" y="130" width="260" height="44" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="632.0" y="155.5" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">vite preview (E2E 서버)에도 같은 헤더</text>
+<path d="M452 104 L500 80" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M452 130 L500 152" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="502" y="206" width="260" height="62" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="632.0" y="226.75" font-size="11.5" font-weight="600" fill="#92400e" text-anchor="middle">E2E fixture</text>
+<text x="632.0" y="244.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">콘솔의 CSP 위반을 모아</text>
+<text x="632.0" y="258.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">하나라도 있으면 시험 실패</text>
+<path d="M632 174 V204" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="32" y="206" width="420" height="62" rx="10" fill="#f3f4f6"/>
+<text x="44" y="225.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="start">script-src: self + Turnstile (인라인·eval 막음)</text>
+<text x="44" y="239.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="start">connect-src: self · API · Turnstile   frame-src: self · Turnstile · 데모 5곳</text>
+<text x="44" y="253.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="start">img-src https:   object-src none   frame-ancestors self</text>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 250" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>서버가 확인 직후에 죽으면 다음 확인까지 최대 10분, 그 뒤 네 번 시도(각 15초 한도)와 세 번의 30초 기다림 2분 30초를 더해 12분 30초 뒤 실행이 실패한다. 예약 실행이 늦으면 더 걸린다</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="860" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">서버가 죽은 뒤 메일이 오기까지, 가장 늦은 경우</text>
+<rect x="40.0" y="80" width="624.0" height="34" fill="#c7d2fe"/>
+<text x="352.0" y="104" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">다음 확인까지 최대 10:00</text>
+<rect x="664.0" y="80" width="62.4" height="34" fill="#fda4af"/>
+<text x="668.0" y="154" font-size="10.5" font-weight="600" fill="#1f2937" text-anchor="start">시도 ×4 (15초 한도)</text>
+<rect x="726.4" y="80" width="93.6" height="34" fill="#fcd34d"/>
+<text x="730.4" y="170" font-size="10.5" font-weight="600" fill="#1f2937" text-anchor="start">기다림 ×3 (30초)</text>
+<path d="M40 70 L40 124" stroke="#e11d48" stroke-width="2" fill="none"/>
+<text x="40" y="64" font-size="10.5" font-weight="700" fill="#9f1239" text-anchor="start">서버가 죽음</text>
+<path d="M820.0 70 L820.0 124" stroke="#059669" stroke-width="2" fill="none"/>
+<text x="820.0" y="64" font-size="10.5" font-weight="700" fill="#065f46" text-anchor="end">12:30 실행 실패 → 메일</text>
+<text x="40" y="200" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">curl --max-time 15 --retry 3 --retry-delay 30 --retry-all-errors. 배포로 1분 반 안쪽 끊긴 것은 다시 시도 안에서 지나간다.</text>
+<text x="40" y="220" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">GitHub 예약 실행은 몇 분씩 늦게 돌 수 있어 실제로는 이보다 더 걸릴 수 있다. 하루 144번, 공개 저장소라 실행 시간은 무료다.</text>
+</svg>

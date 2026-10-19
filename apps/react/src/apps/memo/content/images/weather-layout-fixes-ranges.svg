@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 230" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>사이트는 767px까지 휴대폰(눕힌 휴대폰은 1023px까지)인데 날씨는 640px 이하만 iOS 모양이라 641~767px에서 넓은 창 모양이 휴대폰 안에 그려졌다. useCompact가 휴대폰이면 폭과 상관없이 iOS 모양을 고른다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="780" height="230" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">두 기준이 어긋난 구간</text>
+<text x="32" y="66" font-size="11" fill="#1f2937" font-weight="700">사이트</text>
+<rect x="40.0" y="74" width="506.22" height="22" rx="4" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="290.8" y="89" font-size="10" fill="#374151" text-anchor="middle">휴대폰 화면 (≤ 767px)</text>
+<rect x="546.88" y="74" width="168.30000000000007" height="22" rx="4" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="630.7" y="89" font-size="10" fill="#374151" text-anchor="middle">눕힌 휴대폰은 ≤ 1023px</text>
+<text x="32" y="120" font-size="11" fill="#1f2937" font-weight="700">날씨 (전)</text>
+<rect x="40.0" y="128" width="422.40000000000003" height="22" rx="4" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="251.20000000000002" y="143" font-size="10" fill="#374151" text-anchor="middle">iOS 모양 (@container ≤ 640px)</text>
+<rect x="463.06" y="128" width="83.16000000000003" height="22" rx="4" fill="#fff1f2" stroke="#fda4af"/>
+<text x="504.64000000000004" y="143" font-size="10" fill="#ef4444" font-weight="600" text-anchor="middle">넓은 창 모양</text>
+<path d="M40.0 156 V164" stroke="#9ca3af" stroke-width="1" fill="none"/>
+<text x="40.0" y="178" font-size="10" fill="#6b7280" text-anchor="middle">0px</text>
+<path d="M462.40000000000003 156 V164" stroke="#9ca3af" stroke-width="1" fill="none"/>
+<text x="462.40000000000003" y="178" font-size="10" fill="#6b7280" text-anchor="middle">640px</text>
+<path d="M546.22 156 V164" stroke="#9ca3af" stroke-width="1" fill="none"/>
+<text x="546.22" y="178" font-size="10" fill="#6b7280" text-anchor="middle">767px</text>
+<path d="M715.1800000000001 156 V164" stroke="#9ca3af" stroke-width="1" fill="none"/>
+<text x="715.1800000000001" y="178" font-size="10" fill="#6b7280" text-anchor="middle">1023px</text>
+<text x="32" y="210" font-size="10.5" fill="#374151">후: data-compact = useIsMobile() || 날씨 칸 폭 ≤ 640 (ResizeObserver). 휴대폰이면 폭과 상관없이 iOS 모양.</text>
+</svg>

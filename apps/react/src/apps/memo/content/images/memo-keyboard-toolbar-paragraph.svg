@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="820" height="300" fill="#fff"/>
+<text x="410.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">서식 막대의 두 모양 (휴대폰, 쓰는 중)</text>
+<rect x="60" y="60" width="700" height="60" rx="30" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="80" y="95" font-size="11" fill="#374151" text-anchor="start" font-weight="600">서식 도구</text>
+<rect x="160" y="72" width="86" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="203.0" y="94.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">가가</text>
+<rect x="256" y="72" width="86" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="299.0" y="94.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">체크리스트</text>
+<rect x="352" y="72" width="86" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="395.0" y="94.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">표</text>
+<rect x="448" y="72" width="86" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="491.0" y="94.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">이미지</text>
+<rect x="544" y="72" width="86" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="587.0" y="94.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">첨부</text>
+<rect x="640" y="72" width="86" height="36" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="683.0" y="94.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">문단 도구 ¶</text>
+<rect x="60" y="170" width="700" height="60" rx="30" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="80" y="205" font-size="11" fill="#374151" text-anchor="start" font-weight="600">문단 도구</text>
+<rect x="150" y="182" width="78" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="189.0" y="204.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">내어쓰기</text>
+<rect x="236" y="182" width="78" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="275.0" y="204.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">들여쓰기</text>
+<rect x="322" y="182" width="78" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="361.0" y="204.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">위로 옮기기</text>
+<rect x="408" y="182" width="78" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="447.0" y="204.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">아래로 옮기기</text>
+<rect x="494" y="182" width="78" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="533.0" y="204.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">블록 인용</text>
+<rect x="580" y="182" width="78" height="36" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="619.0" y="204.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">구분점 목록</text>
+<rect x="666" y="182" width="78" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="705.0" y="204.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">닫기 ×</text>
+<line x1="712" y1="110" x2="712" y2="168" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="720" y="145" font-size="10" fill="#6b7280">¶</text>
+<line x1="745" y1="182" x2="745" y2="122" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)" stroke-dasharray="4 3"/>
+<text x="750" y="150" font-size="10" fill="#6b7280">×</text>
+<text x="410" y="275" font-size="11" fill="#6b7280" text-anchor="middle">옮기기 아이콘은 화살표만이면 스크롤처럼 보여서, 화살표 옆에 문단 세 줄을 그렸다</text>
+</svg>

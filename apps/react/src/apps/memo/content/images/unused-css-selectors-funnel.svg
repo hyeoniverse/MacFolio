@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>쓰지 않는 클래스 찾기: CSS의 클래스 2,761개 → 소스에 글자가 없는 것 150개 → 조립하는 이름과 라이브러리 클래스를 빼면 9개 → 하나씩 읽어 확인하고 규칙 24개를 지웠다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="760" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">2,761개에서 9개까지</text>
+<rect x="40" y="62" width="680" height="34" rx="6" fill="#a5b4fc" stroke="none"/>
+<text x="52" y="84" font-size="13" fill="#ffffff" font-weight="700">2,761개</text>
+<text x="440" y="77" font-size="10.5" fill="#ffffff" font-weight="600">CSS의 클래스 이름</text>
+<text x="440" y="91" font-size="10" fill="#ffffff">모든 선택자에서 뽑음</text>
+<rect x="40" y="106" width="420" height="34" rx="6" fill="#818cf8" stroke="none"/>
+<text x="52" y="128" font-size="13" fill="#ffffff" font-weight="700">150개</text>
+<text x="472" y="121" font-size="10.5" fill="#1f2937" font-weight="600">.ts·.tsx·.md에 글자가 없음</text>
+<text x="472" y="135" font-size="10" fill="#6b7280">1단계: 글자로 찾기</text>
+<rect x="40" y="150" width="240" height="34" rx="6" fill="#4f46e5" stroke="none"/>
+<text x="52" y="172" font-size="13" fill="#ffffff" font-weight="700">9개</text>
+<text x="292" y="165" font-size="10.5" fill="#1f2937" font-weight="600">조립·라이브러리 이름을 뺌</text>
+<text x="292" y="179" font-size="10" fill="#6b7280">2단계: 이름-${…} · cx(prefix, …) 꼴</text>
+<rect x="40" y="194" width="240" height="34" rx="6" fill="#059669" stroke="none"/>
+<text x="52" y="216" font-size="13" fill="#ffffff" font-weight="700">24개 규칙</text>
+<text x="292" y="209" font-size="10.5" fill="#1f2937" font-weight="600">지운 규칙</text>
+<text x="292" y="223" font-size="10" fill="#6b7280">3단계: 하나씩 읽고 postcss로</text>
+</svg>

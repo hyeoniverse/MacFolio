@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>로그아웃 뒤 같은 쿠키를 다시 보내면</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">로그아웃 뒤 같은 쿠키를 다시 보내면</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">서명한 쿠키(JWT)는 서버가 기억하는 것이 없어 만료까지 통한다. DB 세션은 행이 없어 바로 막힌다</text>
+<rect x="32" y="90" width="380" height="170" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="44" y="145.0" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="start">서명한 쿠키 (JWT)</text>
+<text x="44" y="162.0" font-size="11" fill="#374151" text-anchor="start">로그인: 서명한 토큰을 쿠키로</text>
+<text x="44" y="179.0" font-size="11" fill="#374151" text-anchor="start">로그아웃: 브라우저 쿠키만 지움</text>
+<text x="44" y="196.0" font-size="11" fill="#374151" text-anchor="start">훔친 사본: 서명이 맞으니 통과</text>
+<text x="44" y="213.0" font-size="11" fill="#374151" text-anchor="start">막으려면 차단 목록을 따로 둬야 함</text>
+<rect x="448" y="90" width="380" height="170" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="460" y="145.0" font-size="13" fill="#15803d" font-weight="700" text-anchor="start">DB 세션 (고른 방법)</text>
+<text x="460" y="162.0" font-size="11" fill="#374151" text-anchor="start">로그인: 무작위 토큰, DB에는 해시</text>
+<text x="460" y="179.0" font-size="11" fill="#374151" text-anchor="start">로그아웃: adminSession 행 삭제</text>
+<text x="460" y="196.0" font-size="11" fill="#374151" text-anchor="start">훔친 사본: 행이 없어 401</text>
+<text x="460" y="213.0" font-size="11" fill="#374151" text-anchor="start">대가: 요청마다 DB 조회 1번 (관리자 API만)</text>
+</svg>

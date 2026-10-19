@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>왼쪽은 sticky 도구 막대가 스크롤 상자 안에 있어 쌓임 맥락이 생긴 구조, 오른쪽은 도구 막대를 스크롤 밖에 두고 memo-scroll만 스크롤하는 구조</title>
+<rect width="760" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">무엇이 스크롤하나</text>
+<text x="40" y="66" font-size="12" fill="#b91c1c" font-weight="600">전: 본문 전체가 스크롤, 도구 막대는 sticky</text>
+<rect x="40" y="78" width="300" height="190" rx="10" fill="#fff1f2" stroke="#fda4af"/>
+<rect x="40" y="78" width="300" height="40" rx="10" fill="none" stroke="#ef4444" stroke-dasharray="5 4"/>
+<text x="190" y="72" font-size="10" fill="#ef4444" text-anchor="middle"></text>
+<rect x="52" y="86" width="276" height="26" rx="6" fill="#ffe4e6" stroke="#fb7185"/>
+<text x="190" y="103" font-size="10.5" fill="#1f2937" text-anchor="middle">도구 막대 (sticky → 새 쌓임 맥락)</text>
+<text x="190" y="134" font-size="10" fill="#b91c1c" text-anchor="middle">끌기 영역(z 3)이 막대 전체를 덮는다</text>
+<rect x="52" y="146" width="276" height="110" rx="6" fill="#ffffff" stroke="#fda4af"/>
+<text x="190" y="196" font-size="10.5" fill="#6b7280" text-anchor="middle">글 목록 / 본문</text>
+<text x="190" y="212" font-size="10.5" fill="#6b7280" text-anchor="middle">(overflow-y: auto, 도구 막대와 함께)</text>
+<text x="420" y="66" font-size="12" fill="#047857" font-weight="600">후: 도구 막대 고정, 아래만 스크롤</text>
+<rect x="420" y="78" width="300" height="190" rx="10" fill="#ecfdf5" stroke="#6ee7b7"/>
+<rect x="432" y="86" width="276" height="26" rx="6" fill="#d1fae5" stroke="#34d399"/>
+<text x="570" y="103" font-size="10.5" fill="#1f2937" text-anchor="middle">도구 막대 (보통 흐름, 버튼 z 4)</text>
+<text x="570" y="134" font-size="10" fill="#047857" text-anchor="middle">버튼 4 &gt; 끌기 영역 3 → 눌린다</text>
+<rect x="432" y="146" width="276" height="110" rx="6" fill="#ffffff" stroke="#6ee7b7"/>
+<text x="570" y="190" font-size="10.5" fill="#374151" text-anchor="middle">.memo-scroll</text>
+<text x="570" y="206" font-size="10.5" fill="#6b7280" text-anchor="middle">flex: 1 · min-height: 0</text>
+<text x="570" y="222" font-size="10.5" fill="#6b7280" text-anchor="middle">overflow-y: auto</text>
+</svg>

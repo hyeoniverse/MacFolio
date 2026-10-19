@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>백업이 남는 곳과 기간</title>
+  <rect width="780" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="40" font-size="18" font-weight="700" fill="#1f2937">서버에 7일, R2에 30일, R2 전체는 8GB까지</text>
+  <text x="32" y="62" font-size="12" fill="#6b7280">ops/backup.sh의 KEEP_LOCAL_DAYS · KEEP_REMOTE_DAYS · MAX_REMOTE_GB 기본값</text>
+  <g font-size="12">
+    <text x="32" y="104" fill="#1f2937" font-weight="600">서버 ~/backups</text>
+    <g fill="#c7d2fe">
+      <rect x="160" y="90" width="16" height="20" rx="3"/><rect x="180" y="90" width="16" height="20" rx="3"/><rect x="200" y="90" width="16" height="20" rx="3"/><rect x="220" y="90" width="16" height="20" rx="3"/><rect x="240" y="90" width="16" height="20" rx="3"/><rect x="260" y="90" width="16" height="20" rx="3"/><rect x="280" y="90" width="16" height="20" rx="3"/>
+    </g>
+    <text x="310" y="104" fill="#374151">7개 (find -mtime +7 -delete)</text>
+    <text x="32" y="154" fill="#1f2937" font-weight="600">R2 macfolio-backups</text>
+    <g fill="#bbf7d0">
+      <rect x="160" y="140" width="16" height="20" rx="3"/><rect x="180" y="140" width="16" height="20" rx="3"/><rect x="200" y="140" width="16" height="20" rx="3"/><rect x="220" y="140" width="16" height="20" rx="3"/><rect x="240" y="140" width="16" height="20" rx="3"/><rect x="260" y="140" width="16" height="20" rx="3"/><rect x="280" y="140" width="16" height="20" rx="3"/>
+      <rect x="300" y="140" width="16" height="20" rx="3"/><rect x="320" y="140" width="16" height="20" rx="3"/><rect x="340" y="140" width="16" height="20" rx="3"/>
+    </g>
+    <text x="364" y="155" fill="#6b7280">… 30개 (rclone delete --min-age 30d)</text>
+    <rect x="160" y="196" width="560" height="22" rx="6" fill="#f3f4f6"/>
+    <rect x="160" y="196" width="2" height="22" fill="#15803d"/>
+    <rect x="608" y="196" width="2" height="22" fill="#b91c1c"/>
+    <text x="32" y="212" fill="#1f2937" font-weight="600">R2 용량</text>
+    <text x="166" y="238" fill="#15803d">첫 실행: 1007KB × 30 ≈ 30MB</text>
+    <text x="560" y="238" fill="#b91c1c">상한 8GB</text>
+    <text x="680" y="238" fill="#6b7280">무료 10GB</text>
+    <text x="32" y="276" fill="#374151">올리기 전에 rclone size로 잰 크기 + 오늘 파일이 8GB를 넘으면 올리지 않고 /fail 알림 (오늘 파일은 서버에 남는다)</text>
+  </g>
+</svg>

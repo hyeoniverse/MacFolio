@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>같은 공격 문자열, 두 갈래의 막는 길</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="360" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">같은 공격 문자열, 두 갈래의 막는 길</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">시험은 그린 결과의 DOM을 직접 세어 script·iframe·on…·위험한 주소가 0개인지 본다</text>
+  <rect x="32" y="150" width="170" height="70" rx="8" fill="#fee2e2"/>
+  <text x="117.0" y="172.2" font-size="12" text-anchor="middle" fill="#b91c1c" font-weight="600">공격 목록</text>
+  <text x="117.0" y="189.2" font-size="11" text-anchor="middle" fill="#b91c1c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">javascript:</text>
+  <text x="117.0" y="206.2" font-size="11" text-anchor="middle" fill="#b91c1c" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">&lt;img onerror&gt;</text>
+  <rect x="280" y="100" width="230" height="60" rx="8" fill="#eef0ff"/>
+  <text x="395.0" y="125.8" font-size="11" text-anchor="middle" fill="#3f46c7" font-weight="600">메모 글: react-markdown</text>
+  <text x="395.0" y="141.8" font-size="10" text-anchor="middle" fill="#3f46c7">HTML은 그리지 않음 · 위험 주소 링크 제거</text>
+  <rect x="280" y="210" width="230" height="60" rx="8" fill="#eef0ff"/>
+  <text x="395.0" y="235.8" font-size="11" text-anchor="middle" fill="#3f46c7" font-weight="600">README: rehype-raw</text>
+  <text x="395.0" y="251.8" font-size="10" text-anchor="middle" fill="#3f46c7">→ rehype-sanitize가 태그·속성 제거</text>
+  <line x1="204" y1="175" x2="276" y2="135" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="204" y1="195" x2="276" y2="235" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="590" y="100" width="180" height="60" rx="8" fill="#dcfce7"/>
+  <text x="680.0" y="125.7" font-size="12" text-anchor="middle" fill="#15803d" font-weight="600">E2E</text>
+  <text x="680.0" y="142.7" font-size="11" text-anchor="middle" fill="#15803d">DOM 검사 + window.__pwned</text>
+  <rect x="590" y="210" width="180" height="60" rx="8" fill="#dcfce7"/>
+  <text x="680.0" y="235.7" font-size="12" text-anchor="middle" fill="#15803d" font-weight="600">단위 시험</text>
+  <text x="680.0" y="252.7" font-size="11" text-anchor="middle" fill="#15803d">HTML 문자열로 그려 검사</text>
+  <line x1="512" y1="130" x2="586" y2="130" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="512" y1="240" x2="586" y2="240" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="32" y="312" font-size="12" fill="#6b7280" text-anchor="start">시험이 일을 하는지: README에서 rehypeSanitize를 빼면 단위 시험이,</text>
+  <text x="32" y="332" font-size="12" fill="#6b7280" text-anchor="start">메모에 rehype-raw를 더하고 주소 거르기를 끄면 E2E가 실패하는 것을 확인했다.</text>
+</svg>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>댓글 메시지 메일 쓰기가 입력 검사 뒤 requireHuman을 지나며 관리자, 설정 꺼짐, 키 없음이면 통과하고 아니면 Cloudflare siteverify에 묻는다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="760" height="340" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">requireHuman(곳, 토큰, IP, 관리자): 쓰기 하나가 지나는 길</text>
+<rect x="32" y="70" width="130" height="56" rx="10" fill="#f3f4f6"/>
+<text x="97.0" y="94.5" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">쓰기 요청</text>
+<text x="97.0" y="113.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">댓글 · 메시지 · 메일</text>
+<rect x="32" y="150" width="130" height="56" rx="10" fill="#f3f4f6"/>
+<text x="97.0" y="174.5" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">입력 검사</text>
+<text x="97.0" y="193.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">zod 스키마</text>
+<path d="M97 126 V148" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="220" y="66" width="170" height="44" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="305.0" y="91.25" font-size="11" font-weight="400" fill="#374151" text-anchor="middle">관리자인가?</text>
+<rect x="220" y="126" width="170" height="44" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="305.0" y="151.25" font-size="11" font-weight="400" fill="#374151" text-anchor="middle">그곳이 꺼져 있나?</text>
+<rect x="220" y="186" width="170" height="44" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="305.0" y="211.25" font-size="11" font-weight="400" fill="#374151" text-anchor="middle">서버에 키가 없나?</text>
+<path d="M162 178 H196 V90 H218" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M305 110 V124" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M305 170 V184" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="450" y="46" width="150" height="40" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="525.0" y="69.75" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="middle">그냥 지나간다</text>
+<path d="M390 88 H420 V66 H448" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<path d="M390 148 H420 V66 H448" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<path d="M390 208 H420 V66 H448" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<text x="430" y="120" font-size="10" font-weight="600" fill="#059669" text-anchor="start">예</text>
+<rect x="220" y="262" width="170" height="48" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="305.0" y="282.75" font-size="11.5" font-weight="600" fill="#4f46e5" text-anchor="middle">Cloudflare siteverify</text>
+<text x="305.0" y="300.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">토큰 + IP를 묻는다</text>
+<path d="M305 230 V260" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<text x="318" y="248" font-size="9.5" font-weight="400" fill="#6b7280" text-anchor="start">모두 아니오</text>
+<rect x="450" y="240" width="130" height="36" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="515.0" y="261.5" font-size="11" font-weight="600" fill="#065f46" text-anchor="middle">사람 → 계속</text>
+<rect x="450" y="284" width="130" height="36" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="515.0" y="305.5" font-size="11" font-weight="600" fill="#9f1239" text-anchor="middle">아니면 → 400</text>
+<path d="M390 280 H420 V258 H448" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<path d="M390 290 H420 V302 H448" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<rect x="612" y="110" width="120" height="130" rx="10" fill="#f3f4f6"/>
+<text x="672.0" y="136.5" font-size="11" font-weight="600" fill="#374151" text-anchor="middle">SecuritySetting</text>
+<text x="672.0" y="154.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">한 줄짜리 표</text>
+<text x="672.0" y="168.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">contact: true</text>
+<text x="672.0" y="182.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">comment: false</text>
+<text x="672.0" y="196.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">message: false</text>
+<text x="672.0" y="210.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">메모리에 두고</text>
+<text x="672.0" y="224.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">PUT 때 새로 읽음</text>
+<path d="M610 175 H392" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#gray)"/>
+</svg>

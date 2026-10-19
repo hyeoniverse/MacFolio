@@ -2,7 +2,7 @@
 title: '!important 66개 지우기와 공통 아이콘 버튼'
 date: 2026-10-01
 category: 개발기/MacFolio/프론트엔드
-summary: 앱 기본값을 CSS 층으로 내린 덕분에 남은 !important를 모두 지울 수 있었다. 지우면서 생긴 차이는 화면 비교와 계산된 스타일 비교로 찾았다. 그리고 앱마다 따로 있던 아이콘 버튼을 공통 IconButton 하나로 합쳤다.
+summary: 앱 기본값을 CSS 층으로 내린 덕분에 남은 !important 66개를 모두 지웠다. 화면 58장과 계산된 스타일 약 1,200건을 비교해 차이 셋을 찾아 고쳤고, 앱마다 따로 있던 아이콘 버튼 4벌을 IconButton 하나로 합쳤다.
 ---
 
 공통 컴포넌트로 옮기는 세 번째 단계다. '!important 72개의 뿌리' 글에서 앱 루트의 기본값(`.memo button`)을 `reset` 층으로 내렸다. 그때 `!important`는 일부러 남겨 두었다. 버튼마다 다른 상태와 겨루고 있을 수 있어서 하나씩 확인해야 했기 때문이다. 이번에 그 확인을 했다.
@@ -41,6 +41,8 @@ for (let i = 0; i < count; i++) {
 .memo-tool:hover:not(:disabled) { … } /* (0,3,0) — :not() 안의 :disabled도 센다 */
 .memo-tool.on { … }                   /* (0,2,0) */
 ```
+
+![:not과 :where가 점수를 바꾸는 방식](./images/shared-button-specificity.svg '점수 비교')
 
 `:not(:disabled)`은 안에 든 선택자의 점수를 그대로 더한다. 그래서 올렸을 때 규칙이 켜진 규칙보다 점수가 높았다. 그동안은 켜진 규칙의 `!important`가 이 차이를 덮고 있었다. `:where(:not(:disabled))`로 바꿔 점수를 같게 하고, 뒤에 있는 켜진 규칙이 이기게 했다.
 
@@ -88,6 +90,16 @@ for (let i = 0; i < count; i++) {
 - `on`은 켜진 모양만 준다. `aria-pressed`(고정)인지 `aria-expanded`(창 열림)인지는 쓰는 곳에서 정한다
 - 색은 앱이 정한다. 버튼 CSS는 `--ui-tool-color` 같은 변수만 쓴다
 
+색을 어떻게 앱에 맡길지는 세 가지를 놓고 골랐다.
+
+| 방법                                       | 장점                         | 단점                                                     |
+| ------------------------------------------ | ---------------------------- | -------------------------------------------------------- |
+| `color`·`hoverColor` 같은 props            | 타입이 값을 안다             | 다크 모드·켜진 상태마다 props가 늘고, 색이 JS로 넘어온다 |
+| 앱마다 클래스로 덮어쓴다(`.memo .ui-tool`) | 익숙하다                     | 점수 싸움이 다시 시작된다. `!important`가 돌아올 길이다  |
+| 앱 루트에 CSS 변수(`--ui-tool-*`)          | 다크 모드는 앱 변수가 알아서 | 변수 이름을 문서로 알려야 한다                           |
+
+앱의 색은 이미 `--memo-muted`처럼 앱 변수로 되어 있고 다크 모드도 그 변수가 바꾼다. 버튼은 그 변수를 한 번 더 이어 받기만 하면 되므로 CSS 변수를 골랐다.
+
 ```css
 [data-app='memo'] {
 	--ui-tool-color: var(--memo-muted);
@@ -119,6 +131,23 @@ for (let i = 0; i < count; i++) {
 - 화면 58장: 모두 0.001% 이하 (시계 고정 후 남는 잡음 수준)
 - 계산된 스타일: 바뀐 것은 메시지 새 피드백 버튼의 `z-index`(공통 버튼은 창의 끌기 영역 위에 있게 `z-index: 4`를 준다)와, 같은 상자 크기를 다르게 적은 값들(Safari 버튼의 `width: 30px` → `min-width: 30px` + 여백)뿐이다
 
+바뀐 파일은 24개, 483줄 추가와 335줄 삭제였다.
+
 다음 단계에서는 글자가 있는 버튼(`Button`), 목록의 줄(`ListRow`), 나눔 버튼(`SegmentedControl`)을 같은 방법으로 옮긴다.
+
+## 남은 것·배운 것
+
+- 이 글 뒤로 `ListRow`와 `SegmentedControl`은 만들지 않기로 했다. 겉은 같아도 앱마다 뜻이 달랐다(/memo/shared-text-button).
+- 지금 CSS의 `!important`는 23개다. 움직임 줄이기(`motion.css`)와 층 설정, 그리고 이후에 더한 Safari 프로젝트 페이지(다른 사이트 모양을 흉내 내는 곳)에 있다. 앱 화면에는 다시 생기지 않았다.
+- `!important`는 다른 규칙의 점수 문제를 덮는다. 지우면 덮여 있던 버그(켜진 버튼 hover, 한 번도 쓰이지 않던 고정 버튼 규칙)가 드러난다.
+- 화면 비교는 찍은 순간만 본다. 상태(hover, 켜짐)가 많은 곳은 계산된 스타일을 상태별로 적어 비교해야 한다. 이 방법은 나중에 버튼 옮기기(/memo/text-button-migrate)에서도 그대로 썼다.
+- 층 밖의 규칙은 점수와 상관없이 층 안의 규칙을 이긴다. `*`나 `a` 같은 전역 규칙도 층 안에 넣어야 층이 뜻대로 돈다(/memo/css-layer-order-fix).
+
+## 관련 글
+
+- 1단계, 앱 기본값을 CSS 층으로 내린 일: /memo/css-layer-reset
+- 공통 버튼의 여백이 사라진 이유: /memo/css-layer-order-fix
+- 글자 버튼 공통 부품: /memo/shared-text-button
+- PR: https://github.com/hyeoniverse/MacFolio/pull/60
 
 #MacFolio #CSS #공통컴포넌트

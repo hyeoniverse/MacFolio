@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 260" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>JPEG는 세그먼트의 나열이다. APP1(EXIF·XMP), APP3~13·15, COM을 빼고 APP0·APP2(ICC)·APP14와 그림 데이터는 그대로 둔다. 방향 값이 1이 아니면 Orientation 하나만 든 36바이트 APP1을 맨 앞에 넣는다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="780" height="260" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">JPEG에서 조각만 빼고 이어 붙이기</text>
+<text x="32" y="62" font-size="12" fill="#1f2937" font-weight="700">올린 파일</text>
+<rect x="32" y="70" width="40" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="52.0" y="89.6" font-size="10" fill="#374151" text-anchor="middle">SOI</text>
+<rect x="76" y="70" width="80" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="116.0" y="89.6" font-size="10" fill="#374151" text-anchor="middle">APP0 JFIF</text>
+<rect x="160" y="70" width="150" height="32" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="235.0" y="89.6" font-size="10" fill="#374151" text-anchor="middle">APP1 EXIF (GPS·기기)</text>
+<rect x="314" y="70" width="80" height="32" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="354.0" y="89.6" font-size="10" fill="#374151" text-anchor="middle">APP1 XMP</text>
+<rect x="398" y="70" width="70" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="433.0" y="89.6" font-size="10" fill="#374151" text-anchor="middle">APP2 ICC</text>
+<rect x="472" y="70" width="50" height="32" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="497.0" y="89.6" font-size="10" fill="#374151" text-anchor="middle">COM</text>
+<rect x="526" y="70" width="90" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="571.0" y="89.6" font-size="10" fill="#374151" text-anchor="middle">DQT·SOF…</text>
+<rect x="620" y="70" width="140" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="690.0" y="89.6" font-size="10" fill="#374151" text-anchor="middle">SOS 그림 데이터 …</text>
+<text x="32" y="136" font-size="12" fill="#1f2937" font-weight="700">저장하는 파일</text>
+<rect x="32" y="144" width="40" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="52.0" y="163.6" font-size="10" fill="#374151" text-anchor="middle">SOI</text>
+<rect x="76" y="144" width="110" height="32" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="131.0" y="163.6" font-size="10" fill="#374151" text-anchor="middle">APP1 방향만 36B</text>
+<rect x="190" y="144" width="80" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="230.0" y="163.6" font-size="10" fill="#374151" text-anchor="middle">APP0 JFIF</text>
+<rect x="274" y="144" width="70" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="309.0" y="163.6" font-size="10" fill="#374151" text-anchor="middle">APP2 ICC</text>
+<rect x="348" y="144" width="90" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="393.0" y="163.6" font-size="10" fill="#374151" text-anchor="middle">DQT·SOF…</text>
+<rect x="442" y="144" width="140" height="32" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="512.0" y="163.6" font-size="10" fill="#374151" text-anchor="middle">SOS 그림 데이터 …</text>
+<text x="32" y="206" font-size="10.5" fill="#6b7280">빨간 조각을 빼고 이어 붙이므로 그림 데이터는 1바이트도 바뀌지 않는다. ICC 색 프로필은 개인정보가 아니라 둔다.</text>
+<text x="32" y="224" font-size="10.5" fill="#6b7280">PNG는 eXIf·tEXt·zTXt·iTXt·tIME 청크를, WebP는 EXIF·XMP 청크와 VP8X의 깃발을 뺀다. sharp 없이 files/metadata.ts 150줄.</text>
+</svg>

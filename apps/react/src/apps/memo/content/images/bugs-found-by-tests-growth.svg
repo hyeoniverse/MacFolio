@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 220" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>E2E 시험 수: 처음 붙인 날과 지금</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="220" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">E2E 시험 수: 처음 붙인 날과 지금</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">9월 28일 파일 2개·10개 → 10월 19일 파일 47개·432개</text>
+<text x="32" y="100" font-size="12" fill="#374151" text-anchor="start">9/28 처음 (df12012dd)</text>
+<rect x="182" y="87" width="13.9" height="20" rx="4" fill="#374151"/>
+<text x="203.88888888888889" y="102" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">10개</text>
+<text x="32" y="140" font-size="12" fill="#374151" text-anchor="start">10/19 지금</text>
+<rect x="182" y="127" width="600.0" height="20" rx="4" fill="#4f46e5"/>
+<text x="790.0" y="142" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">432개</text>
+</svg>

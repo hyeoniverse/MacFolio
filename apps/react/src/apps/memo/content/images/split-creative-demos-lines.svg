@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>나눈 직후 파일별 줄 수. Wave 401, Voice 287, Slides 270, Themes 171, Translate 149, Cover 134, Summary 118, Convert 91, color 80, 발표 장 목록 69, liveDemo 61, Demo 43, useInView 20, demoEvent 8, QuotaChip 7. 원래는 한 파일 1,861줄</title>
+<rect width="800" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">CreativeDemos.tsx 1,861줄 → 15개 파일 (나눈 직후)</text>
+<g font-size="10.5" fill="#374151">
+<text x="150" y="70" text-anchor="end">Wave.tsx</text><rect x="160" y="60" width="401" height="13" rx="3" fill="#4f46e5"/><text x="568" y="70">401</text>
+<text x="150" y="88" text-anchor="end">Voice.tsx</text><rect x="160" y="78" width="287" height="13" rx="3" fill="#4f46e5"/><text x="454" y="88">287</text>
+<text x="150" y="106" text-anchor="end">Slides.tsx</text><rect x="160" y="96" width="270" height="13" rx="3" fill="#4f46e5"/><text x="437" y="106">270</text>
+<text x="150" y="124" text-anchor="end">Themes.tsx</text><rect x="160" y="114" width="171" height="13" rx="3" fill="#4f46e5"/><text x="338" y="124">171</text>
+<text x="150" y="142" text-anchor="end">Translate.tsx</text><rect x="160" y="132" width="149" height="13" rx="3" fill="#4f46e5"/><text x="316" y="142">149</text>
+<text x="150" y="160" text-anchor="end">Cover.tsx</text><rect x="160" y="150" width="134" height="13" rx="3" fill="#4f46e5"/><text x="301" y="160">134</text>
+<text x="150" y="178" text-anchor="end">Summary.tsx</text><rect x="160" y="168" width="118" height="13" rx="3" fill="#4f46e5"/><text x="285" y="178">118</text>
+<text x="150" y="196" text-anchor="end">Convert.tsx</text><rect x="160" y="186" width="91" height="13" rx="3" fill="#4f46e5"/><text x="258" y="196">91</text>
+<text x="150" y="214" text-anchor="end">color.ts</text><rect x="160" y="204" width="80" height="13" rx="3" fill="#059669"/><text x="247" y="214">80</text>
+<text x="150" y="232" text-anchor="end">발표 장 목록</text><rect x="160" y="222" width="69" height="13" rx="3" fill="#059669"/><text x="236" y="232">69</text>
+<text x="150" y="250" text-anchor="end">liveDemo.ts</text><rect x="160" y="240" width="61" height="13" rx="3" fill="#059669"/><text x="228" y="250">61</text>
+<text x="150" y="268" text-anchor="end">Demo.tsx</text><rect x="160" y="258" width="43" height="13" rx="3" fill="#059669"/><text x="210" y="268">43</text>
+<text x="150" y="286" text-anchor="end">useInView · 이벤트 · 칩</text><rect x="160" y="276" width="35" height="13" rx="3" fill="#059669"/><text x="202" y="286">20 · 8 · 7</text>
+</g>
+<rect x="600" y="64" width="12" height="12" fill="#4f46e5"/><text x="618" y="74" font-size="10.5" fill="#374151">데모 하나</text>
+<rect x="600" y="84" width="12" height="12" fill="#059669"/><text x="618" y="94" font-size="10.5" fill="#374151">둘 이상이 쓰는 것</text>
+<text x="32" y="316" font-size="10.5" fill="#6b7280">가장 큰 파일도 401줄. 데모 하나를 고칠 때 그 파일만 연다</text>
+</svg>

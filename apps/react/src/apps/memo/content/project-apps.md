@@ -2,12 +2,22 @@
 title: 프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기
 date: 2026-10-03
 category: 개발기/MacFolio/프론트엔드
-summary: 새싹 농장만 앱 창에서 바로 해 볼 수 있었다. HYEONIVERSE, NewPick, WTD, QRU도 배포한 사이트를 창 안에 띄우는 앱으로 만들었다. 다섯 앱이 한 컴포넌트를 쓰고, 앱 목록은 프로젝트 목록에서 만들며, 모두 Dock에 고정한다.
+summary: 새싹 농장만 창에서 해 볼 수 있던 것을 HYEONIVERSE·NewPick·WTD·QRU까지 넓혔다. 다섯 앱이 ProjectApp 한 컴포넌트를 쓰고, 앱 목록은 PROJECTS의 app 칸에서 만들며, Dock에 고정하되 창이 좁으면 프로젝트 앱부터 Launchpad로 보낸다.
 ---
 
 포트폴리오 프로젝트 중 배포한 사이트가 있는 것은 다섯이다. HYEONIVERSE, NewPick, QRU, WTD, 새싹 농장. 그런데 이 사이트 안에서 바로 써 볼 수 있는 것은 새싹 농장 게임뿐이었다. 나머지는 Safari 프로젝트 페이지에서 "새 탭에서 열기"를 눌러 사이트 밖으로 나가야 했다.
 
 ![프로젝트 앱 창](./images/project-apps.jpg '배포한 사이트를 창 안에 띄운다. 실행 중이면 Dock 끝에 아이콘이 나타난다')
+
+10월 3일 밤, 데스크톱 화면을 실제 Mac처럼 채우는 작업을 하다가 프로젝트마다 배포한 사이트가 있으면 iframe으로 띄우는 앱을 만들기로 했다. 다음 날 PR #87을 정리하면서는 앱 목록을 따로 적지 말고 `PROJECTS`를 읽게 바꿨다. 프로젝트 앱을 Dock에 고정하는 일도 Projects 목록에 있으면 저절로 되어야 맞다고 보고 그렇게 됐는지 확인했다.
+
+## 무엇으로 보여 줄까
+
+| 방법                                           | 좋은 점                       | 문제                                                                                             |
+| ---------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| 링크로 새 탭에서 연다 (원래)                   | 할 일이 없다                  | 사이트 밖으로 나간다. 포트폴리오를 보던 흐름이 끊긴다                                            |
+| 화면 녹화·캡처로 보여 준다                     | 바깥 사이트가 내려가도 보인다 | 직접 눌러 볼 수 없다                                                                             |
+| 배포한 사이트를 창 안 iframe으로 띄운다 (고름) | 사이트 안에서 바로 써 본다    | 바깥 사이트가 iframe을 막으면 빈 화면이다. 바깥 페이지가 이 사이트를 건드리지 못하게 막아야 한다 |
 
 ## 한 컴포넌트로 다섯 앱
 
@@ -21,7 +31,18 @@ export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" /
 
 그런데 주소, 이름, 아이콘은 이미 프로젝트 정보(`shared/profile.ts`의 `PROJECTS`)에 있고, Safari 탭·Finder·터미널·GitHub 앱도 모두 그 목록을 읽는다. 앱 목록만 따로 적어 두면 프로젝트를 더할 때 빠뜨리기 쉽다. 그래서 프로젝트에 `app` 칸(Dock·Launchpad에 보일 이름, 아이콘, 창 크기, 게임인지)을 두고, 앱 목록(`apps/manifest.ts`)이 데모 주소와 `app`이 있는 프로젝트를 읽어 앱을 만든다. 새 프로젝트를 배포하면 그 프로젝트에 `app`만 적으면 Dock, 터미널 `open`, Safari의 "여기서 열기"에 한꺼번에 나온다.
 
-앱 이름은 타입으로 정해 둔 목록(`'safari' | 'memo' | …`)이었다. 프로젝트 앱 이름은 실행할 때 정해지므로, 프로젝트 id 문자열에 표시를 붙인 타입(`ProjectAppName`)으로 두었다. 내장 앱 이름은 그대로 오타를 잡고, 프로젝트 앱은 `projectAppName(id)`를 거쳐야만 앱 이름이 된다. 이 사이트 자체인 MacFolio와 데모가 없는 DevCourse는 앱이 아니다.
+앱 이름은 타입으로 정해 둔 목록(`'safari' | 'memo' | …`)이었다. 프로젝트 앱 이름은 실행할 때 정해지므로, 프로젝트 id 문자열에 표시를 붙인 타입(`ProjectAppName`)으로 두었다.
+
+```ts
+declare const projectApp: unique symbol;
+export type ProjectAppName = string & { readonly [projectApp]: true };
+export type AppName = BuiltinAppName | ProjectAppName;
+
+export const projectAppName = (id: string): ProjectAppName | null =>
+	PROJECT_APPS.some((project) => project.id === id) ? (id as ProjectAppName) : null;
+```
+
+내장 앱 이름은 그대로 오타를 잡고, 프로젝트 앱은 `projectAppName(id)`를 거쳐야만 앱 이름이 된다. 이 사이트 자체인 MacFolio와 데모가 없는 DevCourse는 앱이 아니다.
 
 `ProjectApp`이 맡는 일은 셋이다.
 
@@ -34,6 +55,8 @@ export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" /
 앱이 다섯 늘면 Dock 아이콘이 16개가 된다. 이 사이트의 Dock은 화면 폭에 들어가지 않는 앱을 Launchpad로 보낸다(아이콘 하나에 100px, 양옆 여백 300px).
 
 처음에는 macOS의 "Dock에 유지하지 않은 앱"처럼, 새 앱은 Dock에 고정하지 않고 Launchpad에 두었다가 실행하는 동안만 Dock 끝에 나타나게 했다. 그런데 프로젝트 앱은 이 사이트에서 보여 주고 싶은 것들이라, 눈에 띄는 Dock에 두는 편이 낫다고 보았다. 그래서 `PROJECTS`에서 앱이 된 프로젝트는 기본으로 Dock에 고정한다. 굳이 빼고 싶은 프로젝트만 `app.inDock`을 `false`로 둔다.
+
+![창 폭에 따라 Dock에 들어가는 앱](./images/project-apps-dock-capacity.svg '1600px이면 13칸이라 프로젝트 앱은 둘까지, 1920px이면 16칸이라 다섯 모두')
 
 처음에는 프로젝트 앱을 메일 다음에 두었더니, 1600px 창에서도 공유·터미널·시스템 설정이 Launchpad로 밀려나 시험 스무 개가 깨졌다. Dock에서 시스템 설정을 열던 시험들이다. 사람도 마찬가지로 늘 쓰는 앱이 사라지면 헤맨다. 그래서 프로젝트 앱은 시스템 설정 다음에 두어, 창이 좁으면 프로젝트 앱이 먼저 Launchpad로 가게 했다. 1600px이면 HYEONIVERSE와 NewPick까지 Dock에 있고, 1920px이면 다섯 개가 모두 들어간다. 그리고 고정하지 않은 앱뿐 아니라 넘쳐서 Launchpad로 간 앱도, 실행 중이면 Dock 끝에 아이콘과 실행 중 점이 나타나게 했다. Launchpad에서 QRU를 열면 QRU가 Dock 끝에 보이고, 닫으면 사라진다.
 
@@ -50,5 +73,29 @@ Safari 프로젝트 페이지에는 "여기서 열기" 버튼을 두고, 데모 
 - **로고 그림자**: 로고를 살짝 위로 올리고, 그 아래에 번진 그림자를 깔았다.
 
 Safari 탭은 원래 로고를 그대로 쓴다. HYEONIVERSE는 프로젝트 아이콘(`icon.svg`)에 이미 그라데이션과 그림자를 넣어 두었는데, Dock에서 보니 별이 뭉툭하고 흐렸다. 별을 눈대중으로 그린 곡선이었기 때문이다. 그 사이트의 로고 그림을 재 보니 별의 네 변은 바깥 네 귀퉁이를 중심으로 한 반지름 143.5px의 사분원이고, 점은 (358.5, 149.5)에 반지름 21px이었다. 그 치수대로 호(`A`) 네 개로 다시 그리고, Dock에는 다른 앱처럼 512px PNG(`app-icon.png`)를 쓴다. Dock 아이콘은 마우스를 올리면 커지는데, SVG를 그대로 두면 커질 때 흐려 보였다.
+
+## 확인
+
+- `apps/react/e2e/project-apps.spec.ts`: "Dock에 고정되어 있고, 열면 배포한 사이트를 창 안에 띄운다", "Dock에 다 들어가지 않아 Launchpad로 간 앱도 실행 중에는 Dock 끝에 나타난다", "Safari 프로젝트 페이지의 '여기서 열기'로 그 앱을 연다". 바깥 사이트에 실제로 나가지 않게 `page.route`로 배포 주소를 가짜 HTML로 바꿔 띄운다.
+- 앱을 만든 [PR #87](https://github.com/hyeoniverse/MacFolio/pull/87)과 Dock 고정·넘친 앱 표시를 한 [PR #91](https://github.com/hyeoniverse/MacFolio/pull/91)로 나눠 들어갔다.
+
+## 그 뒤
+
+- 엿새 뒤 iframe에 `sandbox`를 걸었다(`4e0604324`). 안에 띄운 사이트의 `target="_top"` 링크가 이 사이트 자체를 다른 주소로 바꿀 수 있었기 때문이다. `allow-scripts`·`allow-same-origin`은 주고 `allow-top-navigation`은 주지 않는다. 시험 "안에 띄운 사이트의 링크가 이 사이트를 다른 주소로 바꾸지 못한다"가 가짜 페이지의 링크를 눌러 주소가 그대로인지 본다. 자세한 것은 [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)에 적었다.
+- `ProjectApp`의 iframe 부분은 API 문서 앱과 함께 쓰는 `shared/ui/web-frame/WebFrame.tsx`로 옮겼다.
+- 프로젝트와 프로젝트 앱은 뒤에 시스템 설정에서 코드 없이 더하고 고칠 수 있게 되었다([코드를 고치지 않고 프로젝트와 앱 관리하기](/memo/site-projects-editing)). 서버에는 덮어쓸 값만 두고, 새 앱의 주소는 CSP에도 넣는다.
+
+## 남은 것·배운 것
+
+- 바깥 사이트가 `X-Frame-Options`나 CSP `frame-ancestors`로 막으면 8초 뒤 "새 탭에서 열기"를 띄우는 것이 할 수 있는 전부다. iframe 안의 실패 이유는 바깥에서 읽을 수 없다.
+- 앱 목록을 프로젝트 목록에서 만드니 프로젝트를 더할 때 빠뜨릴 곳이 하나로 줄었다. 대신 앱 이름이 실행할 때 정해져, 표시를 붙인 타입(`ProjectAppName`)으로 내장 앱 이름의 오타 검사를 지켰다.
+- Dock 순서를 바꿀 때는 시험이 Dock에서 무엇을 누르는지까지 따져야 했다. 시험이 깨진 자리가 곧 사람이 헤맬 자리였다.
+
+## 관련 글
+
+- [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)
+- [앱이 많아지자 Dock이 Launchpad와 겹쳤다](/memo/dock-layout)
+- [사진 앱 - 프로젝트 화면을 앨범으로](/memo/photos-app)
+- [1,629줄 한 파일을 폴더로](/memo/profile-split)
 
 #MacFolio #프로젝트앱 #Dock

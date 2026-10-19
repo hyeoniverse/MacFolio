@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 280" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>7건 중 4건은 값의 출처를 따라가 보니 오탐, 3건은 약점은 맞지만 영향 없음이었고 3건 모두 고쳤다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="760" height="280" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">Semgrep --config auto 7건을 하나씩 판정하면</text>
+<rect x="32" y="70" width="130" height="120" rx="10" fill="#f3f4f6"/>
+<text x="97.0" y="117.0" font-size="20" font-weight="600" fill="#374151" text-anchor="middle">7건</text>
+<text x="97.0" y="139.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">--config auto</text>
+<text x="97.0" y="153.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">규칙 266개</text>
+<text x="97.0" y="167.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">WARNING·INFO</text>
+<rect x="222" y="56" width="240" height="70" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="342.0" y="81.5" font-size="13" font-weight="600" fill="#065f46" text-anchor="middle">오탐 4</text>
+<text x="342.0" y="100.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">정규식·서식 문자열을 변수로 만든다는 규칙</text>
+<text x="342.0" y="114.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">재료가 운영자 설정·코드 상수·유니언 타입</text>
+<rect x="222" y="140" width="240" height="70" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="342.0" y="165.5" font-size="13" font-weight="600" fill="#92400e" text-anchor="middle">영향 없음 3 (고침)</text>
+<text x="342.0" y="184.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">prototype-pollution-loop</text>
+<text x="342.0" y="198.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">__proto__ 건너뛰기 · Object.hasOwn</text>
+<path d="M162 110 L220 91" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M162 150 L220 175" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="512" y="56" width="216" height="70" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="620.0" y="81.0" font-size="12" font-weight="600" fill="#1f2937" text-anchor="middle">억제 주석</text>
+<text x="620.0" y="99.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">nosemgrep: 규칙 ID -- 사유</text>
+<text x="620.0" y="113.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">grep nosemgrep으로 모두 찾는다</text>
+<rect x="512" y="140" width="216" height="70" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="620.0" y="165.0" font-size="12" font-weight="600" fill="#1f2937" text-anchor="middle">시험 추가 후 억제</text>
+<text x="620.0" y="183.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">고쳐도 같은 줄을 다시 잡는다</text>
+<text x="620.0" y="197.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">막는 것과 시험 위치를 적음</text>
+<path d="M462 91 H510" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<path d="M462 175 H510" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<text x="32" y="240" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">지정 묶음 4개(규칙 112개)·pnpm audit·osv-scanner(1,268개)는 0건. CI는 ERROR만 실패로 친다.</text>
+<text x="32" y="262" font-size="10.5" font-weight="400" fill="#6b7280" text-anchor="start">규칙이 못 본 곳: dangerouslySetInnerHTML(Mermaid) · innerHTML(아이콘) 두 곳은 손으로 다시 확인.</text>
+</svg>

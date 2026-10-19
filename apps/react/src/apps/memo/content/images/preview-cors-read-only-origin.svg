@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>요청의 Origin을 exact, pattern, 없음으로 나누고 CORS 응답과 관리자 가드가 각각 다르게 답한다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="760" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">Origin이 어떻게 맞았는지에 따라 달라지는 두 대답</text>
+<rect x="32" y="60" width="150" height="150" rx="10" fill="#f3f4f6"/>
+<text x="107.0" y="111.0" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">요청의 Origin</text>
+<text x="107.0" y="129.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">macfolio.hyeoniverse.com</text>
+<text x="107.0" y="143.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">*-macfolio…workers.dev</text>
+<text x="107.0" y="157.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">다른 사이트</text>
+<text x="107.0" y="171.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">(없음: curl, 같은 사이트)</text>
+<rect x="222" y="60" width="150" height="150" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="297.0" y="111.0" font-size="12" font-weight="600" fill="#4f46e5" text-anchor="middle">classify(origin)</text>
+<text x="297.0" y="129.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">common/cors.ts</text>
+<text x="297.0" y="143.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle"></text>
+<text x="297.0" y="157.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">허용 목록과 비교해</text>
+<text x="297.0" y="171.0" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">어떻게 맞았는지 돌려준다</text>
+<path d="M182 135 H220" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<text x="420" y="56" font-size="10" font-weight="600" fill="#6b7280" text-anchor="start">분류</text>
+<text x="560" y="56" font-size="10" font-weight="600" fill="#6b7280" text-anchor="start">CORS 응답</text>
+<text x="690" y="56" font-size="10" font-weight="600" fill="#6b7280" text-anchor="middle">AdminGuard</text>
+<rect x="410" y="66" width="120" height="40" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="470.0" y="83.0" font-size="11.5" font-weight="600" fill="#065f46" text-anchor="middle">exact</text>
+<text x="470.0" y="100.25" font-size="9" font-weight="400" fill="#374151" text-anchor="middle">그대로 적은 사이트 주소</text>
+<rect x="540" y="66" width="140" height="40" rx="10" fill="#f3f4f6"/>
+<text x="610.0" y="88.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">Allow-Origin + Credentials</text>
+<rect x="688" y="66" width="60" height="40" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="718.0" y="88.75" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">통과</text>
+<path d="M372 135 L408 86" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="410" y="116" width="120" height="40" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="470.0" y="133.0" font-size="11.5" font-weight="600" fill="#92400e" text-anchor="middle">pattern</text>
+<text x="470.0" y="150.25" font-size="9" font-weight="400" fill="#374151" text-anchor="middle">* 에 맞은 PR 미리보기</text>
+<rect x="540" y="116" width="140" height="40" rx="10" fill="#f3f4f6"/>
+<text x="610.0" y="138.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">Allow-Origin만 (쿠키 X)</text>
+<rect x="688" y="116" width="60" height="40" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="718.0" y="138.75" font-size="10" font-weight="400" fill="#374151" text-anchor="middle">403</text>
+<path d="M372 135 L408 136" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="410" y="166" width="120" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="470.0" y="183.0" font-size="11.5" font-weight="600" fill="#9f1239" text-anchor="middle">null</text>
+<text x="470.0" y="200.25" font-size="9" font-weight="400" fill="#7f1d1d" text-anchor="middle">허용 목록 밖</text>
+<rect x="540" y="166" width="140" height="40" rx="10" fill="#f3f4f6"/>
+<text x="610.0" y="188.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">CORS 헤더 없음</text>
+<rect x="688" y="166" width="60" height="40" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="718.0" y="188.75" font-size="10" font-weight="400" fill="#7f1d1d" text-anchor="middle">403</text>
+<path d="M372 135 L408 186" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<text x="32" y="250" font-size="11" font-weight="400" fill="#374151" text-anchor="start">Origin이 없는 요청은 CORS 밖이라 가드가 그대로 두고, 세션만 본다.</text>
+<text x="32" y="272" font-size="11" font-weight="400" fill="#374151" text-anchor="start">세션 쿠키는 SameSite=Lax라 *.workers.dev에서 부른 fetch에는 애초에 붙지 않는다.</text>
+<text x="32" y="294" font-size="11" font-weight="600" fill="#4f46e5" text-anchor="start">→ 브라우저 규칙이 첫 겹, 서버의 exact 검사가 둘째 겹.</text>
+</svg>

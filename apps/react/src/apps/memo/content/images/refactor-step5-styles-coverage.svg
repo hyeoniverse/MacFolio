@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>border-radius 576곳 중 239곳, 글자 크기 958곳 중 645곳, 앱 CSS hex 색 513곳 중 288곳을 토큰 이름으로 바꿨다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="760" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">5단계: 값은 그대로, 이름으로 바꾼 비율</text>
+<text x="32" y="66" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">모서리 border-radius</text>
+<text x="728" y="66" font-size="10.5" font-weight="500" fill="#4f46e5" text-anchor="end">239 / 576곳 (41%) → --radius-*</text>
+<rect x="32" y="76" width="696" height="24" rx="5" fill="#e5e7eb"/>
+<rect x="32" y="76" width="288.8" height="24" rx="5" fill="#4f46e5"/>
+<text x="32" y="128" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">글자 크기 font-size</text>
+<text x="728" y="128" font-size="10.5" font-weight="500" fill="#4f46e5" text-anchor="end">645 / 958곳 (67%) → --text-*</text>
+<rect x="32" y="138" width="696" height="24" rx="5" fill="#e5e7eb"/>
+<rect x="32" y="138" width="468.6" height="24" rx="5" fill="#4f46e5"/>
+<text x="32" y="190" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">앱 CSS의 hex 색</text>
+<text x="728" y="190" font-size="10.5" font-weight="500" fill="#4f46e5" text-anchor="end">288 / 513곳 (56%) → --color-*</text>
+<rect x="32" y="200" width="696" height="24" rx="5" fill="#e5e7eb"/>
+<rect x="32" y="200" width="390.7" height="24" rx="5" fill="#4f46e5"/>
+<text x="32" y="262" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">확인은 "같은지 보기": Memo.css는 빌드한 CSS를 바이트까지, 중복 제거는 라이트·다크 × 데스크톱·휴대폰의 계산된 스타일을.</text>
+<text x="32" y="284" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">프로젝트 페이지 브랜드 색과 rgb()·rgba() 425곳은 범위 밖, 같은 뜻의 z-index 합치기는 그리는 순서가 바뀔 수 있어 보류.</text>
+</svg>

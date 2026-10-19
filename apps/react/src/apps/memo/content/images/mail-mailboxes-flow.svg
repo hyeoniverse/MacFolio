@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>보낸 편지함은 서버가 쿠키로 거른다</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="820" height="400" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">보낸 편지함은 서버가 쿠키로 거른다</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">방문자 쿠키(httpOnly, 1년)의 HMAC만 DB에 두고, 요청마다 같은 HMAC의 메일만 돌려준다</text>
+  <rect x="32" y="100" width="170" height="60" rx="8" fill="#f3f4f6"/>
+  <text x="117.0" y="125.5" font-size="13" text-anchor="middle" fill="#374151" font-weight="600">방문자 브라우저</text>
+  <text x="117.0" y="143.6" font-size="12" text-anchor="middle" fill="#374151">쿠키 macfolio_visitor</text>
+  <rect x="32" y="280" width="170" height="60" rx="8" fill="#f3f4f6"/>
+  <text x="117.0" y="305.6" font-size="13" text-anchor="middle" fill="#374151" font-weight="600">관리자</text>
+  <text x="117.0" y="323.6" font-size="12" text-anchor="middle" fill="#374151">세션 + AdminGuard</text>
+  <rect x="320" y="96" width="210" height="34" rx="8" fill="#eef0ff"/>
+  <text x="425.0" y="117.2" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">POST /contact</text>
+  <rect x="320" y="140" width="210" height="34" rx="8" fill="#eef0ff"/>
+  <text x="425.0" y="161.2" font-size="12" text-anchor="middle" fill="#3f46c7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GET /contact/mine</text>
+  <rect x="320" y="272" width="210" height="34" rx="8" fill="#fef3c7"/>
+  <text x="425.0" y="293.2" font-size="12" text-anchor="middle" fill="#b45309" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GET /contact/inbox</text>
+  <rect x="320" y="316" width="210" height="34" rx="8" fill="#fef3c7"/>
+  <text x="425.0" y="337.2" font-size="12" text-anchor="middle" fill="#b45309" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">POST /contact/:id/reply</text>
+  <line x1="204" y1="120" x2="316" y2="113" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="204" y1="140" x2="316" y2="157" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="204" y1="300" x2="316" y2="289" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="204" y1="320" x2="316" y2="333" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="620" y="170" width="170" height="80" rx="8" fill="#f3f4f6"/>
+  <text x="705.0" y="197.2" font-size="12" text-anchor="middle" fill="#374151" font-weight="600">DB 메일</text>
+  <text x="705.0" y="214.2" font-size="11" text-anchor="middle" fill="#374151">보낸 브라우저 HMAC</text>
+  <text x="705.0" y="231.2" font-size="11" text-anchor="middle" fill="#374151">1년 지나면 지움</text>
+  <line x1="532" y1="113" x2="616" y2="190" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="600" y="138" font-size="11" fill="#6b7280" text-anchor="middle">저장</text>
+  <line x1="532" y1="157" x2="616" y2="205" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="560" y="200" font-size="11" fill="#6b7280" text-anchor="middle">내 HMAC만</text>
+  <line x1="532" y1="289" x2="616" y2="232" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="596" y="280" font-size="11" fill="#6b7280" text-anchor="middle">모두</text>
+  <line x1="532" y1="333" x2="616" y2="345" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="620" y="322" width="170" height="46" rx="8" fill="#dcfce7"/>
+  <text x="705.0" y="340.7" font-size="12" text-anchor="middle" fill="#15803d">Resend로 메일 먼저</text>
+  <text x="705.0" y="357.7" font-size="12" text-anchor="middle" fill="#15803d">성공하면 답장 저장</text>
+  <line x1="705" y1="320" x2="705" y2="254" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)" stroke-dasharray="5 4"/>
+  <text x="32" y="384" font-size="12" fill="#6b7280" text-anchor="start">메일 하나를 번호로 읽는 경로는 만들지 않았다. 응답에는 HMAC을 담지 않는다.</text>
+</svg>

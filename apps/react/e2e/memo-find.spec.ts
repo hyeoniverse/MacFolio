@@ -10,6 +10,9 @@ async function openMemo(page: Page) {
 	return memo;
 }
 
+/** 표가 없는 글 (표 조건으로 거르면 빠져야 한다) */
+const NO_TABLE = '배포 직후 메모가 안 열리던 까닭';
+
 test.describe('검색 칸과 글 안에서 찾기', () => {
 	test('검색 조건: ⌄ 메뉴에서 고르면 칸에 붙고 목록을 거른다. ×나 Backspace로 뗀다', async ({ page }) => {
 		const memo = await openMemo(page);
@@ -21,12 +24,13 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await menu.getByRole('menuitem', { name: '표가 있는 메모' }).click();
 
 		await expect(memo.locator('.memo-search-chip:visible')).toHaveText('표');
-		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toBeVisible();
-		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toHaveCount(0);
+		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' })).toBeVisible();
+		// 표가 없는 글은 빠진다
+		await expect(memo.locator('.memo-item', { hasText: NO_TABLE })).toHaveCount(0);
 
 		await memo.getByRole('button', { name: '표 조건 지우기' }).click();
 		await expect(memo.locator('.memo-search-chip:visible')).toHaveCount(0);
-		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toBeVisible();
+		await expect(memo.locator('.memo-item', { hasText: NO_TABLE })).toHaveCount(1);
 
 		// 빈 칸에서 Backspace
 		await memo.getByRole('button', { name: '검색 조건' }).first().click();

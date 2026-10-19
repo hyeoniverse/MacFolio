@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 260" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 1일에 만들지 않기로 한 다섯 후보를 10월 11일에 다시 쟀다. SearchField는 쓰는 곳이 여섯으로 늘어 뽑았고, 나머지 넷은 여전히 보류였다</title>
+<rect width="800" height="260" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">"만들지 않음"은 그날의 수로 정한 것</text>
+<text x="40" y="70" font-size="12" fill="#374151" font-weight="600">10월 1일 (이 글)</text>
+<text x="440" y="70" font-size="12" fill="#374151" font-weight="600">10월 11일 (다시 잼, /memo/ui-inventory)</text>
+<g font-size="11">
+<rect x="40" y="84" width="330" height="28" rx="6" fill="#f3f4f6"/><text x="52" y="103" fill="#1f2937">SearchField — 메모·메시지 둘, 서로 다름</text>
+<rect x="440" y="84" width="330" height="28" rx="6" fill="#d1fae5"/><text x="452" y="103" fill="#065f46">뽑는다 — type="search" 여섯 곳, 다섯이 같다</text>
+<rect x="40" y="118" width="330" height="28" rx="6" fill="#f3f4f6"/><text x="52" y="137" fill="#1f2937">Switch — 설정 하나</text>
+<rect x="440" y="118" width="330" height="28" rx="6" fill="#fef3c7"/><text x="452" y="137" fill="#92400e">보류 — 설정 둘</text>
+<rect x="40" y="152" width="330" height="28" rx="6" fill="#f3f4f6"/><text x="52" y="171" fill="#1f2937">SegmentedControl — 뜻이 다름</text>
+<rect x="440" y="152" width="330" height="28" rx="6" fill="#fef3c7"/><text x="452" y="171" fill="#92400e">보류 — 탭 5, 라디오 2, 눌린 버튼 1</text>
+<rect x="40" y="186" width="330" height="28" rx="6" fill="#f3f4f6"/><text x="52" y="205" fill="#1f2937">ListRow · EmptyState — 감쌀 것이 없음</text>
+<rect x="440" y="186" width="330" height="28" rx="6" fill="#fef3c7"/><text x="452" y="205" fill="#92400e">보류 — 앱마다 다름</text>
+</g>
+<text x="40" y="242" font-size="10.5" fill="#6b7280">기준(같은가)은 그대로였고, 바뀐 것은 코드의 수였다</text>
+</svg>

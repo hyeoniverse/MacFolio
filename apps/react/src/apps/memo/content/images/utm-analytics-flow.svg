@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 280" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>cleanUtm 하나를 링크 생성기, 사이트의 utmOf, 서버의 EventInput이 함께 쓴다. 다듬은 값에는 공백이 없어 출처 / 매체 / 캠페인을 &quot; / &quot;로 묶어 DailyStat key에 저장한다</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef4444"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker><marker id="an" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker></defs>
+<rect width="780" height="280" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">utm 값이 표의 한 줄이 되기까지</text>
+<rect x="32" y="70" width="160" height="64" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="112.0" y="90.3" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">링크 생성기</text>
+<text x="112.0" y="105.8" font-size="10.5" fill="#374151" text-anchor="middle">출처·매체·캠페인 입력</text>
+<text x="112.0" y="121.3" font-size="10.5" fill="#374151" text-anchor="middle">복사 버튼</text>
+<rect x="32" y="158" width="160" height="64" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="112.0" y="178.3" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">사이트</text>
+<text x="112.0" y="193.8" font-size="10.5" fill="#374151" text-anchor="middle">utmOf(첫 주소)</text>
+<text x="112.0" y="209.3" font-size="10.5" fill="#374151" text-anchor="middle">replaceState로 utm_* 지움</text>
+<rect x="250" y="110" width="180" height="70" rx="8" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="340.0" y="133.3" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">cleanUtm() (contracts)</text>
+<text x="340.0" y="148.8" font-size="10.5" fill="#374151" text-anchor="middle">앞뒤 공백 빼기 · 소문자</text>
+<text x="340.0" y="164.3" font-size="10.5" fill="#374151" text-anchor="middle">이어진 공백 → -</text>
+<rect x="490" y="70" width="260" height="64" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="620.0" y="90.3" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">서버</text>
+<text x="620.0" y="105.8" font-size="10.5" fill="#374151" text-anchor="middle">EventInput 스키마도 cleanUtm</text>
+<text x="620.0" y="121.3" font-size="10.5" fill="#374151" text-anchor="middle">aggregate(): medium · utm · term · content</text>
+<rect x="490" y="158" width="260" height="64" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="620.0" y="178.3" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">DailyStat</text>
+<text x="620.0" y="193.8" font-size="10.5" fill="#374151" text-anchor="middle">key = &#x27;linkedin / social / resume-2026&#x27;</text>
+<text x="620.0" y="209.3" font-size="10.5" fill="#6b7280" text-anchor="middle">· 관리자 전용 표</text>
+<path d="M194 102 L248 132" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<path d="M194 190 L248 160" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<path d="M432 136 L488 104" stroke="#4f46e5" stroke-width="2" fill="none" marker-end="url(#ab)"/>
+<path d="M620 136 V156" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#an)"/>
+<text x="32" y="254" font-size="10.5" fill="#6b7280">처음엔 구분자로 \u0000을 썼다가 PostgreSQL 글자 열이 받지 않아 500이 났다. &quot; / &quot;는 다듬은 값 안에 나올 수 없다.</text>
+</svg>

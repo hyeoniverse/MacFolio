@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>접근성 이름을 세 겹으로 지킨다. 타입 검사는 이름 없는 아이콘 버튼을, 정적 HTML 단위 시험은 이름과 역할을, 브라우저 E2E는 누르기와 Esc와 초점 이동을 본다</title>
+<rect width="760" height="250" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">세 겹의 확인: 무엇을 어디서 잡나</text>
+<rect x="32" y="62" width="220" height="150" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="142" y="86" font-size="12.5" fill="#1f2937" font-weight="700" text-anchor="middle">1. 타입 검사 (tsc)</text>
+<text x="142" y="112" font-size="10.5" fill="#374151" text-anchor="middle">IconButton의 label | children</text>
+<text x="142" y="130" font-size="10.5" fill="#374151" text-anchor="middle">이름도 글자도 없으면 오류</text>
+<text x="142" y="164" font-size="10" fill="#6b7280" text-anchor="middle">편집기에서 바로 보인다</text>
+<text x="142" y="180" font-size="10" fill="#6b7280" text-anchor="middle">시험을 돌리기 전</text>
+<rect x="270" y="62" width="220" height="150" rx="10" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="380" y="86" font-size="12.5" fill="#1f2937" font-weight="700" text-anchor="middle">2. 단위 시험 (vitest)</text>
+<text x="380" y="112" font-size="10.5" fill="#374151" text-anchor="middle">renderToStaticMarkup → HTML</text>
+<text x="380" y="130" font-size="10.5" fill="#374151" text-anchor="middle">aria-label · role · aria-hidden</text>
+<text x="380" y="164" font-size="10" fill="#6b7280" text-anchor="middle">a11y.test.ts, 브라우저 없음</text>
+<text x="380" y="180" font-size="10" fill="#6b7280" text-anchor="middle">body에 그리는 Menu는 제외</text>
+<rect x="508" y="62" width="220" height="150" rx="10" fill="#fff7ed" stroke="#fdba74"/>
+<text x="618" y="86" font-size="12.5" fill="#1f2937" font-weight="700" text-anchor="middle">3. E2E (Playwright)</text>
+<text x="618" y="112" font-size="10.5" fill="#374151" text-anchor="middle">getByRole(..., { name })</text>
+<text x="618" y="130" font-size="10.5" fill="#374151" text-anchor="middle">누르기 · Esc · 초점 이동</text>
+<text x="618" y="164" font-size="10" fill="#6b7280" text-anchor="middle">실제 브라우저, 메뉴 포함</text>
+<text x="618" y="180" font-size="10" fill="#6b7280" text-anchor="middle">가장 느리고 가장 넓다</text>
+<text x="32" y="236" font-size="10.5" fill="#6b7280">왼쪽일수록 빠르고 좁다. 이번에 1과 2를 더했다</text>
+</svg>

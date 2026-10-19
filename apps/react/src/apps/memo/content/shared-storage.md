@@ -2,7 +2,7 @@
 title: try/catch 열두 개를 하나로 — 브라우저 저장소 모듈
 date: 2026-10-10
 category: 개발기/MacFolio/인프라
-summary: localStorage·sessionStorage를 쓰는 파일 일곱 개가 저마다 키 문자열, JSON.parse, try/catch를 들고 있었다. shared/lib/storage.ts에 키 목록(STORAGE_KEYS)과 readJson·writeJson을 두고 실패를 거기서 삼키게 했다. 134줄이 53줄이 됐고, 부르는 쪽에는 모양 검사만 남았다.
+summary: 브라우저 저장소를 쓰는 파일 7개가 저마다 키 문자열, JSON.parse, try/catch(12개)를 들고 있었다. storage.ts에 키 목록과 readJson·writeJson을 두고 실패를 거기서 삼키게 해, 부르는 쪽에는 모양 검사만 남았다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 3단계의 둘째 항목. 첫째는 [공통 API 클라이언트](/memo/shared-api-client)였다.
@@ -23,7 +23,19 @@ try {
 
 왜 try/catch가 필요한가. Safari의 사생활 보호 창은 `localStorage.setItem`에서 `QuotaExceededError`를 던지고, 일부 설정에서는 `localStorage`에 손대는 순간 `SecurityError`가 난다. 그래서 저장은 늘 "되면 좋고 안 돼도 화면은 그대로"여야 한다. 그 규칙이 한 곳에 있지 않으니, 새 키를 더할 때마다 다섯 줄을 다시 베껴 썼다.
 
-![세 층: 쓰는 곳 → storage.ts → 브라우저](images/shared-storage-layers.svg)
+![세 층: 쓰는 곳 → storage.ts → 브라우저](./images/shared-storage-layers.svg)
+
+![저장소가 실패하는 세 경우와 storage.ts가 돌려주는 값](./images/shared-storage-failures.svg '실패는 한 곳에서 삼킨다')
+
+## 고른 방법과 버린 방법
+
+| 방법                                        | 장점                             | 단점                                                           |
+| ------------------------------------------- | -------------------------------- | -------------------------------------------------------------- |
+| 상태 도구의 저장 기능(예: persist 미들웨어) | 상태와 저장이 함께 간다          | 이 사이트는 자체 `createStore`를 쓴다. 도구를 바꾸는 일이 된다 |
+| IndexedDB 감싸개(idb-keyval 등)             | 큰 값, 비동기                    | 지금 값은 모두 작다. 첫 화면을 그릴 때 동기로 읽어야 한다      |
+| 동기 `localStorage` 위에 얇은 함수          | 의존성 0, 옮기는 일이 기계적이다 | 큰 값에는 맞지 않는다(지금은 없다)                             |
+
+설정은 첫 화면을 그리기 전에 읽어야 깜빡임이 없다. 동기로 읽는 `localStorage`가 맞고, 필요한 것은 실패를 한 곳에서 다루는 얇은 함수뿐이었다.
 
 ## storage.ts
 
@@ -67,6 +79,19 @@ export const settingsStore = createStore<Settings>(parseSettings(readJson(STORAG
 
 `public/theme-boot.js`만 예외다. React가 뜨기 전에 테마를 읽어 깜빡임을 막는 다섯 줄짜리 스크립트라 모듈을 가져올 수 없고, 키를 글자 그대로 적는다. `STORAGE_KEYS.settings` 옆에 그렇게 주석을 달았다.
 
+## 확인
+
+`apps/react/src/shared/lib/storage.test.ts`에 시험 6개를 두었다. 가짜 저장소를 넣어 실패를 흉내 낸다.
+
+- "JSON으로 쓰고 읽는다. 없으면 null"
+- "JSON이 아니면 null"
+- "local과 session을 가른다"
+- "takeJson은 읽고 지운다"
+- "저장소가 던지면 조용히 실패한다"
+- "저장소 접근 자체가 막히면 null"
+
+마지막 둘이 이 모듈이 있는 이유다. 전에는 파일마다 이 경우를 다뤘지만 시험한 곳은 없었다.
+
 ## 숫자
 
 | 항목                              | 전  | 후                 |
@@ -76,6 +101,36 @@ export const settingsStore = createStore<Settings>(parseSettings(readJson(STORAG
 | 키 문자열이 적힌 파일             | 6   | 1 (+theme-boot.js) |
 | 바뀐 파일의 줄 수                 | 134 | 53                 |
 
+PR 전체로는 14파일, 322줄 추가와 134줄 삭제였다. 늘어난 줄은 새 `storage.ts`와 시험이다.
+
+## 남은 것·배운 것
+
+- 이 글을 쓰며 다시 찾아보니 지금도 `localStorage`를 실제로 만지는 파일은 `storage.ts` 하나다. 다른 파일에 나오는 `localStorage`는 모두 주석이다. 키 목록은 그사이 12개로 늘었다(바탕화면 아이콘 자리, 메모 사이드바·목록 폭 등). 새 키도 모두 이 객체에 더해졌다.
+- 실패를 삼키는 코드는 한 곳에 있어야 시험할 수 있다. 열두 곳에 흩어진 try/catch는 아무도 시험하지 않았다.
+- 키 문자열을 한 객체로 모으면 "이 사이트가 브라우저에 무엇을 남기나"라는 질문에 파일 하나로 답할 수 있다. 개인정보 안내(휴지통의 '내 브라우저 데이터')와도 맞물린다.
+- 모듈을 가져올 수 없는 곳(`theme-boot.js`)은 예외로 두고 양쪽에 주석을 단다. 억지로 하나로 만들려다 첫 화면이 늦어지면 손해다.
+
 다음은 같은 단계의 마지막, 화면 크기 판단(`matchMedia`·`innerWidth` 25곳)을 `useIsMobile`·`useViewport`로 통일.
+
+## 쓰는 방법
+
+브라우저 저장소는 [apps/react/src/shared/lib/storage.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/lib/storage.ts)로만 읽고 쓴다. 사생활 보호 창처럼 저장소가 막힌 브라우저에서도 앱이 깨지지 않게 try/catch가 거기 한 번 있다.
+
+```bash
+cd apps/react
+npx vitest run src/shared/lib/storage.test.ts
+grep -rn "localStorage\|sessionStorage" src | grep -v "shared/lib/storage\|\.test\."   # 새 직접 사용이 없는지
+```
+
+손으로 확인할 때는 개발자 도구 Application → Local Storage에서 값을 지우거나 망가뜨린 뒤 새로 고침해, 앱이 기본값으로 뜨는지 본다. 휴지통의 '내 브라우저 데이터'와 맞물리는 방식은 위 절에 있다.
+
+참고 문서: [MDN Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API).
+
+## 관련 글
+
+- 3단계 첫 항목, 공통 API 클라이언트: /memo/shared-api-client
+- 3단계 마지막 항목, 화면 질문 모듈: /memo/shared-media
+- 설정 값의 모양 검사: /memo/settings-schemas
+- PR: https://github.com/hyeoniverse/MacFolio/pull/198
 
 #MacFolio #리팩터링 #React #localStorage

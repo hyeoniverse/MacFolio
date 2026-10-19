@@ -2,10 +2,10 @@
 title: 서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게
 date: 2026-10-10
 category: 개발기/MacFolio/인프라
-summary: madge로 재 보니 순환 의존이 둘 있었다. 메일의 데스크톱·휴대폰 화면이 서로를 import했고, 앱 목록(registry)과 Finder가 서로를 읽었다. 공통 타입은 셋째 파일(model.ts)로, 창 앱 이름 목록은 manifest로 옮겨 풀고, pnpm cycles를 CI에 넣어 다시 생기면 실패하게 했다.
+summary: madge로 재 보니 순환 의존이 둘 있었다. 메일의 두 화면이 서로를, 앱 목록(registry)과 Finder가 서로를 읽었다. 공통 타입은 셋째 파일로, 앱 이름 목록은 manifest로 옮겨 풀고, pnpm cycles를 CI에 넣었다. 도구 비교와 지금 재는 파일 수를 더했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 2단계 "폴더 구조와 의존"의 첫 PR. 순환 의존을 끊고, CI에서 막는다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 2단계 "폴더 구조와 의존"의 첫 PR [#188](https://github.com/hyeoniverse/MacFolio/pull/188)이다. 순환 의존을 끊고, CI에서 막는다. 11개 파일에서 772줄을 더했는데, 그중 689줄은 madge를 들이며 바뀐 `pnpm-lock.yaml`이다. 코드는 80줄 남짓 바뀌었다.
 
 ## 용어
 
@@ -19,6 +19,16 @@ summary: madge로 재 보니 순환 의존이 둘 있었다. 메일의 데스크
 ![순환 의존이 undefined를 만드는 순서](./images/break-import-cycles-init-order.svg 'a.ts를 읽다 b.ts로 들어갔는데, b.ts가 아직 만들어지지 않은 a.ts의 값을 쓴다')
 
 실행이 되더라도 두 가지가 더 나쁘다. 파일 구조는 "이 파일은 저 파일 위에 쌓여 있다"는 층을 말해 줘야 하는데, 서로 의존하면 층이 사라져 둘 중 하나만 떼어 시험하거나 옮길 수 없다. 그리고 Finder처럼 처음 열 때 불러오는(lazy) 파일이 자기를 불러온 쪽을 다시 읽으면, 번들러가 둘을 떼어 놓지 못한다.
+
+## 무엇으로 잴까
+
+| 도구                         | 좋은 점                              | 문제                                                        |
+| ---------------------------- | ------------------------------------ | ----------------------------------------------------------- |
+| ESLint `import/no-cycle`     | 편집기에서 바로 보인다               | 파일마다 그래프를 다시 따라가 린트가 크게 느려진다          |
+| TypeScript만으로             | 더할 것이 없다                       | 순환을 오류로 보지 않는다                                   |
+| madge `--circular` (고른 것) | 한 번에 전체 그래프, 순환이면 1로 끝 | 의존성 하나가 는다. 경로 별칭은 `--ts-config`로 알려야 한다 |
+
+순환은 저장소 전체를 한 번 보면 되는 검사라, 따로 한 번 도는 도구가 맞았다.
 
 ## 재 보니 둘
 
@@ -43,10 +53,52 @@ API는 Prisma가 생성한 코드끼리만 순환이라(우리 코드가 아니�
 
 ![registry와 Finder의 순환: 전과 후](./images/break-import-cycles-registry.svg 'Finder가 registry의 컴포넌트 표를 다시 읽던 것을, manifest의 이름 목록을 읽게')
 
-이름은 React를 모르는 `manifest.ts`가 이미 다 갖고 있다. 거기에 `WINDOW_APP_NAMES`(action이 없는 앱, 즉 창으로 열리는 앱)를 두고, Finder는 그것을 읽는다. `registry.ts`도 같은 목록에서 컴포넌트를 찾되, 목록에 있는데 컴포넌트가 없으면 조용히 빠지는 대신 바로 에러를 내게 바꿨다. 전에는 `flatMap`으로 빠져서 앱을 추가하고 컴포넌트 연결을 잊으면 Dock에 아이콘만 있고 창이 안 열리는 채로 지나갈 수 있었다.
+이름은 React를 모르는 `manifest.ts`가 이미 다 갖고 있다.
+
+```ts
+// manifest.ts
+export const WINDOW_APP_NAMES = APP_NAMES.filter((name) => APP_MANIFEST[name].action === undefined);
+
+// registry.ts
+export const WINDOW_APPS = WINDOW_APP_NAMES.map((name) => {
+	const Component = APP_COMPONENTS[name];
+	if (!Component) throw new Error(`창으로 여는 앱인데 컴포넌트가 없다: ${name} (apps/registry.ts)`);
+	return { name, Component };
+});
+```
+
+거기에 `WINDOW_APP_NAMES`(action이 없는 앱, 즉 창으로 열리는 앱)를 두고, Finder는 그것을 읽는다. `registry.ts`도 같은 목록에서 컴포넌트를 찾되, 목록에 있는데 컴포넌트가 없으면 조용히 빠지는 대신 바로 에러를 내게 바꿨다. 전에는 `flatMap`으로 빠져서 앱을 추가하고 컴포넌트 연결을 잊으면 Dock에 아이콘만 있고 창이 안 열리는 채로 지나갈 수 있었다.
 
 ## CI
 
-루트에 `pnpm cycles`를 두고(`apps/react`, `apps/api`(generated 제외), `packages/desktop-core` 셋), `check` 작업의 린트 다음에 넣었다. 순환이 하나라도 생기면 PR이 빨개진다.
+루트에 `pnpm cycles`를 두고(`apps/react`, `apps/api`(generated 제외), `packages/desktop-core` 셋), `check` 작업의 린트 다음에 넣었다. 순환이 하나라도 생기면 PR이 빨개진다. 그 뒤 `packages/contracts`가 생기면서 넷째 묶음으로 더했다.
+
+![pnpm cycles가 읽는 파일 수](./images/break-import-cycles-files.svg '지금 네 묶음에서 738개 파일을 읽는다')
+
+지금 로컬에서 돌리면 react 507개 파일에 4.8초, api 158개에 1.3초, desktop-core 46개, contracts 27개에 각각 1초가 안 걸린다. 네 묶음 모두 "No circular dependency found!"다. 규칙("두 화면이 같은 타입을 쓰면 셋째 파일에")은 `CONTRIBUTING.md`에 적어 두었다.
+
+## 남은 것, 배운 것
+
+- madge는 `import type`도 그래프에 넣는다. 메일의 순환이 실행에는 아무 문제가 없던 타입 import였다. 실행 순서 문제만 막으려면 타입 import를 빼고 볼 수도 있지만, 층을 지키려는 목적에는 타입까지 보는 쪽이 맞아 그대로 두었다.
+- 순환을 끊는 방법은 거의 늘 같았다. 둘이 함께 쓰는 것을 셋째 파일로 내리거나(메일), 필요한 것이 더 작은 것인지 보고 그쪽을 읽게 하거나(Finder는 컴포넌트가 아니라 이름만 필요했다).
+- 끊으면서 `flatMap`으로 조용히 빠지던 곳을 `throw`로 바꾼 것이 덤이었다. 앱을 더하고 연결을 잊으면 이제 첫 화면에서 바로 터진다.
+
+## 따라 해 보기
+
+순환은 [madge](https://github.com/pahen/madge)로 잰다. 루트 스크립트 하나가 화면·서버·두 패키지를 모두 본다.
+
+```bash
+pnpm cycles
+# ✔ No circular dependency found!  (네 번)
+```
+
+순환이 나오면 madge가 `a.ts > b.ts > a.ts`처럼 고리를 적어 준다. 이 글에서 쓴 두 가지 풀이 중 맞는 것을 고른다.
+
+- 둘이 같은 타입을 나눠 쓰느라 서로를 읽는다 → 그 타입을 셋째 파일(`model.ts`)로 옮긴다
+- 목록이 화면을 읽고 화면이 목록을 읽는다 → 이름 같은 데이터만 따로(`manifest.ts`) 두고 화면은 그것만 읽는다
+
+CI의 `check` 작업에도 같은 명령이 있어서([.github/workflows/ci.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/ci.yml)), 순환을 새로 만든 PR은 머지되지 않는다.
+
+관련 글: [리팩터링 2 - 구조](/memo/refactor-step2-structure), [폴더 대신 이름으로](/memo/app-file-naming), [메일 앱](/memo/contact-mail), [Finder 앱](/memo/finder-app)
 
 #MacFolio #리팩터링 #madge #순환의존

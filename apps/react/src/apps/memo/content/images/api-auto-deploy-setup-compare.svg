@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 340" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>API를 배포할지: 직전 push와 비교 → 서버에 떠 있는 버전과 비교</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="340" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">API를 배포할지: 직전 push와 비교 → 서버에 떠 있는 버전과 비교</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">#115의 API 변경은 실행이 실패하며 묻혔고, 다음 #116은 API를 안 바꿨다</text>
+<text x="32" y="96" font-size="12" fill="#374151" font-weight="700" text-anchor="start">main</text>
+<line x1="80" y1="110" x2="820" y2="110" stroke="#9ca3af" stroke-width="2"/>
+<circle cx="140" cy="110" r="9" fill="#15803d"/>
+<text x="140" y="140" font-size="13" fill="#1f2937" font-weight="700" text-anchor="middle">a38ac7e</text>
+<text x="140" y="158" font-size="11" fill="#6b7280" text-anchor="middle">서버에 떠 있음</text>
+<circle cx="400" cy="110" r="9" fill="#b91c1c"/>
+<text x="400" y="140" font-size="13" fill="#1f2937" font-weight="700" text-anchor="middle">#115</text>
+<text x="400" y="158" font-size="11" fill="#6b7280" text-anchor="middle">API 변경 · 실행 실패</text>
+<circle cx="660" cy="110" r="9" fill="#4f46e5"/>
+<text x="660" y="140" font-size="13" fill="#1f2937" font-weight="700" text-anchor="middle">#116</text>
+<text x="660" y="158" font-size="11" fill="#6b7280" text-anchor="middle">테스트만 고침 · CI 통과</text>
+<rect x="32" y="190" width="380" height="110" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="44" y="223.5" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="start">전: 직전 push(#115)와 #116 비교</text>
+<text x="44" y="240.5" font-size="11" fill="#374151" text-anchor="start">apps/api 바뀐 것 없음 → api=false</text>
+<text x="44" y="257.5" font-size="11" fill="#374151" text-anchor="start">이미지 빌드·배포 건너뜀</text>
+<text x="44" y="274.5" font-size="11" fill="#374151" text-anchor="start">서버는 계속 a38ac7e</text>
+<rect x="448" y="190" width="380" height="110" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="460" y="223.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="start">후: /health의 version과 #116 비교</text>
+<text x="460" y="240.5" font-size="11" fill="#374151" text-anchor="start">a38ac7e..#116 사이에 apps/api 변경</text>
+<text x="460" y="257.5" font-size="11" fill="#374151" text-anchor="start">→ api=true, 이미지 빌드·배포</text>
+<text x="460" y="274.5" font-size="11" fill="#374151" text-anchor="start">실패한 실행이 빠뜨린 것도 따라잡는다</text>
+</svg>

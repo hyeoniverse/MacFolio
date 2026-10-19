@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>2024년 10월 13일 저장소 구조</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="380" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">client/와 server/로 나눈 날</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">2024년 10월 13일 17:40 커밋 기준</text>
+<rect x="32" y="86" width="330" height="160" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="44" y="107" font-size="12.5" font-weight="700" fill="#1d4f91">client/ (CRA, React 18)</text>
+<text x="44" y="126" font-size="11" fill="#1d4f91">AppContext: 앱 13개마다</text>
+<text x="44" y="142" font-size="11" fill="#1d4f91">  { isRunning, isMinimized, zIndex }</text>
+<text x="44" y="158" font-size="11" fill="#1d4f91">MusicContext: 재생 상태</text>
+<text x="44" y="174" font-size="11" fill="#1d4f91">Container: 창 틀(끌기·신호등)</text>
+<text x="44" y="190" font-size="11" fill="#1d4f91">앱: Safari, MusicPlayer, Blog, Mail</text>
+<rect x="398" y="86" width="330" height="160" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="410" y="107" font-size="12.5" font-weight="700" fill="#7a5a12">server/ (Express 생성기)</text>
+<text x="410" y="126" font-size="11" fill="#7a5a12">app.js, bin/www, jade 템플릿</text>
+<text x="410" y="142" font-size="11" fill="#7a5a12">routes/mail.js:</text>
+<text x="410" y="158" font-size="11" fill="#7a5a12">  nodemailer로 Gmail SMTP</text>
+<text x="410" y="174" font-size="11" fill="#7a5a12">  from = 방문자 주소</text>
+<text x="410" y="190" font-size="11" fill="#7a5a12">routes/users.js (생성기 기본)</text>
+<rect x="32" y="266" width="330" height="86" rx="9" fill="#e3f6ea" stroke="#5cc489"/>
+<text x="44" y="287" font-size="12.5" font-weight="700" fill="#1f6b3f">Blog 앱</text>
+<text x="44" y="306" font-size="11" fill="#1f6b3f">codingkirby.github.io를 iframe으로</text>
+<text x="44" y="322" font-size="11" fill="#1f6b3f">창 안에 그대로 띄움</text>
+<rect x="398" y="266" width="330" height="86" rx="9" fill="#fde8ec" stroke="#ec7a92"/>
+<text x="410" y="287" font-size="12.5" font-weight="700" fill="#8c2338">Mail 앱</text>
+<text x="410" y="306" font-size="11" fill="#8c2338">받은편지함은 환영 메일 한 통</text>
+<text x="410" y="322" font-size="11" fill="#8c2338">17:05부터 쓰기는 mailto: 링크, 서버는 안 부름</text>
+</svg>

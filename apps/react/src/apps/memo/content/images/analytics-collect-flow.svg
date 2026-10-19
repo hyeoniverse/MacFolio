@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>다섯 종류의 이벤트를 큐에 모았다가 5초마다, 탭이 숨으면 바로 sendBeacon으로 보낸다. 로컬 주소, Global Privacy Control, 서버 주소 없는 빌드에서는 보내지 않는다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="380" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">사이트에서 모아 보내기</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">모으는 곳은 이미 있던 상태를 구독할 뿐이다</text>
+<rect x="32" y="76" width="270" height="40" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="46" y="101" font-size="12" fill="#4f46e5" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">visit</text>
+<text x="100" y="101" font-size="10.5" fill="#374151">페이지를 열 때 한 번</text>
+<path d="M302 96 H346" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="32" y="126" width="270" height="40" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="46" y="151" font-size="12" fill="#4f46e5" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">app</text>
+<text x="100" y="151" font-size="10.5" fill="#374151">AppStateContext: 꺼짐 → 실행</text>
+<path d="M302 146 H346" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="32" y="176" width="270" height="40" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="46" y="201" font-size="12" fill="#4f46e5" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">item</text>
+<text x="100" y="201" font-size="10.5" fill="#374151">appAddresses (주소 막대 값)</text>
+<path d="M302 196 H346" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="32" y="226" width="270" height="40" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="46" y="251" font-size="12" fill="#4f46e5" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">link</text>
+<text x="100" y="251" font-size="10.5" fill="#374151">&lt;a&gt; 클릭 · openExternal(url)</text>
+<path d="M302 246 H346" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="32" y="276" width="270" height="40" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="46" y="301" font-size="12" fill="#4f46e5" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">leave</text>
+<text x="100" y="301" font-size="10.5" fill="#374151">visibilitychange → hidden</text>
+<path d="M302 296 H346" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="350" y="76" width="170" height="240" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="362" y="95" font-size="12" fill="#4f46e5" font-weight="600">큐</text>
+<text x="362" y="112" font-size="10.5" fill="#374151">메모리에 모은다</text>
+<text x="362" y="127.0" font-size="10.5" fill="#374151"></text>
+<text x="362" y="142.0" font-size="10.5" fill="#374151">같은 visitId로</text>
+<text x="362" y="157.0" font-size="10.5" fill="#374151">묶는다</text>
+<rect x="560" y="76" width="268" height="110" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="572" y="95" font-size="12" fill="#4f46e5" font-weight="600">보내기</text>
+<text x="572" y="112" font-size="10.5" fill="#374151">5초마다 한 번에</text>
+<text x="572" y="127.0" font-size="10.5" fill="#374151">탭이 숨으면 leave를 넣고 바로</text>
+<text x="572" y="142.0" font-size="10.5" fill="#374151">sendBeacon(url, 글자) → text/plain</text>
+<text x="572" y="157.0" font-size="10.5" fill="#374151">실패하면 fetch keepalive</text>
+<path d="M520 130 H556" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="560" y="206" width="268" height="110" rx="9" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+<text x="572" y="225" font-size="12" fill="#b91c1c" font-weight="600">보내지 않는 때</text>
+<text x="572" y="242" font-size="10.5" fill="#374151">localhost · 127.0.0.1</text>
+<text x="572" y="257.0" font-size="10.5" fill="#374151">navigator.globalPrivacyControl</text>
+<text x="572" y="272.0" font-size="10.5" fill="#374151">서버 주소가 없는 빌드</text>
+<text x="572" y="287.0" font-size="10.5" fill="#374151">(시험만 __MACFOLIO_ANALYTICS__로 켬)</text>
+<rect x="32" y="336" width="796" height="30" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="430.0" y="353" font-size="10.5" fill="#374151" text-anchor="middle">link 주소는 호스트와 경로만 남기고 검색어·# 뒤는 버린다 · 들어온 곳(referrer)은 호스트만</text>
+</svg>

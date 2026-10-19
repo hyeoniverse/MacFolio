@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>AnalyticsService 341줄을 저장 Recorder 68줄, 집계 Rollup 80줄, 조회 Stats 203줄로 나눴다</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="760" height="260" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">6단계: AnalyticsService 341줄을 일 셋으로</text>
+<rect x="32" y="70" width="180" height="120" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="122.0" y="111.75" font-size="12.5" font-weight="600" fill="#9f1239" text-anchor="middle">AnalyticsService</text>
+<text x="122.0" y="131.0" font-size="10.5" font-weight="400" fill="#7f1d1d" text-anchor="middle">341줄</text>
+<text x="122.0" y="146.0" font-size="10.5" font-weight="400" fill="#7f1d1d" text-anchor="middle">저장 + 모으기·지우기</text>
+<text x="122.0" y="161.0" font-size="10.5" font-weight="400" fill="#7f1d1d" text-anchor="middle">+ 요약·조회수·최근 방문</text>
+<rect x="290" y="58" width="170" height="40" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="375.0" y="74.75" font-size="11.5" font-weight="600" fill="#4f46e5" text-anchor="middle">AnalyticsRecorder</text>
+<text x="375.0" y="92.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">이벤트 저장</text>
+<rect x="476" y="70" width="81.6" height="16" rx="3" fill="#a5b4fc"/>
+<text x="565.6" y="83" font-size="10.5" font-weight="600" fill="#1f2937" text-anchor="start">68줄</text>
+<path d="M212 130 L288 78" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="290" y="108" width="170" height="40" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="375.0" y="124.75" font-size="11.5" font-weight="600" fill="#4f46e5" text-anchor="middle">AnalyticsRollup</text>
+<text x="375.0" y="142.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">지난 날 모으기 · 오래된 값 지우기</text>
+<rect x="476" y="120" width="96.0" height="16" rx="3" fill="#a5b4fc"/>
+<text x="580.0" y="133" font-size="10.5" font-weight="600" fill="#1f2937" text-anchor="start">80줄</text>
+<path d="M212 130 L288 128" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="290" y="158" width="170" height="40" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="375.0" y="174.75" font-size="11.5" font-weight="600" fill="#4f46e5" text-anchor="middle">AnalyticsStats</text>
+<text x="375.0" y="192.5" font-size="9.5" font-weight="400" fill="#374151" text-anchor="middle">요약 · 조회수 · 최근 방문</text>
+<rect x="476" y="170" width="243.6" height="16" rx="3" fill="#a5b4fc"/>
+<text x="727.6" y="183" font-size="10.5" font-weight="600" fill="#1f2937" text-anchor="start">203줄</text>
+<path d="M212 130 L288 178" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<text x="32" y="226" font-size="10" font-weight="400" fill="#374151" text-anchor="start">함께 한 일: 설정·데모의 손 검사(if문)를 contracts/settings.ts · demos.ts 스키마로. 거절 문구와 400은 그대로, API e2e 124개 통과.</text>
+</svg>

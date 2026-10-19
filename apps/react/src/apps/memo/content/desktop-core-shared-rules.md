@@ -2,7 +2,7 @@
 title: 화면과 서버가 같은 규칙을 쓰기 - 소스는 Vite가, 빌드 결과는 Node가
 date: 2026-10-09
 category: 개발기/MacFolio/백엔드
-summary: 폴더는 3단까지, 이름은 30자까지, 제목은 100자까지 같은 규칙이 화면 코드와 서버 코드에 따로 적혀 있었다. 이것을 desktop-core 한 곳에 두고 둘이 함께 쓰게 했다. 화면(Vite)은 TypeScript 소스를, 서버(Node)는 빌드한 JS를 읽게 package.json의 exports 조건으로 나눴다.
+summary: 폴더 3단·이름 30자·제목 100자 같은 규칙이 화면 코드와 서버 코드에 따로 적혀 있었다. desktop-core 한 곳에 두고 둘이 함께 쓰게 했다. 화면(Vite)은 TypeScript 소스를, 서버(Node)는 빌드한 JS를 읽게 package.json exports 조건으로 나눴다.
 ---
 
 desktop-core로 [창 관리](/memo/desktop-core-windows), [메모](/memo/desktop-core-memo), [음악](/memo/desktop-core-music)을 옮기고 나니 #16에 한 항목이 남았다. "백엔드와 함께 쓸 타입의 위치를 정한다."
@@ -19,6 +19,17 @@ desktop-core로 [창 관리](/memo/desktop-core-windows), [메모](/memo/desktop
 | 있는 날짜인지 (2026-02-30 거절) | `postRules.ts`의 `isDate`                    | `posts/rules.ts`의 `isDate` (한 글자도 안 다름) |
 
 주석에는 "서버와 같은 규칙"이라고 적혀 있었지만, 그걸 지키는 건 사람의 기억이었다. 폴더를 4단까지 늘리려면 두 파일을 같이 고쳐야 하고, 한쪽만 고치면 화면은 통과시키고 서버는 거절하는 상태가 된다.
+
+## 어떻게 함께 쓸까
+
+| 방법                                               | 좋은 점                                | 나쁜 점                                                                           |
+| -------------------------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
+| 지금처럼 두 곳에 적고 시험으로 같은지 본다         | 패키지 구조를 안 바꾼다                | 같은지 보는 시험이 화면·서버 두 앱을 다 불러야 한다. 결국 한쪽이 다른 쪽을 import |
+| 서버를 `tsx`처럼 TS를 바로 돌리는 도구로 실행      | core를 빌드하지 않아도 된다            | 운영 서버(1GB)에서 시작할 때마다 변환한다. 배포 이미지가 커진다                   |
+| 서버를 번들러로 묶어 core를 안에 넣는다            | 서버 이미지에 core가 따로 없다         | NestJS·Prisma를 묶는 설정이 까다롭다. 데코레이터 메타데이터 문제                  |
+| **core가 `dist`를 만들고 exports 조건으로 나눈다** | 화면은 소스, 서버는 JS. 표준 Node 방식 | 빌드 순서(core 먼저)를 여러 곳에 적어야 한다                                      |
+
+넷째를 골랐다. 화면 쪽 개발 경험(고치면 바로 반영)은 그대로 두고, 서버만 빌드 결과를 읽게 하는 방법이다.
 
 ## 한 곳에 두기
 
@@ -57,6 +68,8 @@ React 앱은 Vite가 TypeScript를 그 자리에서 바꿔 주니 문제가 없�
 
 서버는 이 조건을 모르니 `types`와 `default`, 즉 빌드한 결과를 읽는다. React 쪽은 개발 서버를 띄울 때 core를 따로 빌드하지 않아도 되고, 고치면 바로 반영된다. `dist`를 지운 상태에서 React의 타입 검사·빌드·시험을 돌려 실제로 소스만 읽는 것도 확인했다.
 
+![exports 조건으로 나눈 입구](./images/desktop-core-shared-rules-exports.svg 'source 조건을 켠 React 앱은 소스를, 서버는 dist를 읽는다')
+
 ## Node가 읽을 수 있는 JS
 
 core를 빌드하려면 Node의 ESM 규칙을 지켜야 한다. Node는 `import './store'`를 `./store.js`로 찾아 주지 않는다. core의 `tsconfig`를 `module: NodeNext`로 바꾸면 확장자 없는 상대 경로는 타입 검사에서 오류가 된다. 스크립트로 import 문에 `.js`를 붙였는데, 시험 파일 안의 `import('./posts')` 타입 두 곳을 놓쳐서 이렇게 걸렸다.
@@ -91,5 +104,32 @@ app module ok [ 'AppModule' ]
 ```
 
 서버의 글 검사가 core의 날짜·폴더 규칙으로 거절하고, 서버 전체 모듈도 불러와졌다. 시험은 core 127개, 화면 290개, 서버 128개(7개가 core로 옮겨 갔다), Playwright 352개가 통과했다.
+
+![core를 먼저 빌드하고, 서버는 dist를, 화면은 src를 읽는 순서](./images/desktop-core-shared-rules-build-order.svg 'Turborepo의 ^build가 core를 먼저 만든다. CI는 core가 바뀌어도 API 이미지를 새로 만든다')
+
+커밋은 파일 41개, +251/−144다. 바뀐 파일 대부분은 core 안의 상대 경로 import에 `.js`를 붙인 것이다.
+
+## 남은 것과 배운 것
+
+- 이 뒤에 [API 요청·응답 모양을 zod 스키마로 모은 contracts 패키지](/memo/contracts-posts)가 생겼다. contracts도 같은 `source`/`dist` 조건을 쓴다. 이 글에서 정한 방법이 두 번째 공유 패키지의 틀이 됐다.
+- `source`는 이 저장소에서 만든 조건 이름이다. 새 도구(예: 다른 시험 도구)를 붙이면 그 도구에도 조건을 알려 줘야 한다. 알려 주지 않으면 그 도구는 `dist`를 읽고, `dist`가 오래됐으면 옛 규칙으로 돈다.
+- 화면 쪽은 `dist`가 없어도 된다는 것을 확인했지만, 서버 쪽은 `dist`가 오래된 채로 남으면 조용히 옛 규칙을 쓴다. Turborepo의 `^build`가 이것을 막는다.
+
+배운 것: "규칙을 한 곳에"는 코드를 옮기는 것으로 끝나지 않는다. 그 한 곳이 바뀌었을 때 쓰는 모든 쪽이 다시 빌드되고 배포되는지까지 확인해야 한다. CI의 변경 감지 경로 한 줄을 빼먹었다면, 규칙은 한 곳에 있는데 서버와 화면이 다른 버전을 쓰는 상태가 됐을 것이다.
+
+## 따라 해 보기
+
+규칙을 바꿀 때는 `packages/desktop-core/src/memo/rules.ts` 한 곳을 고친다. 서버는 빌드된 JS를 읽으므로 빌드까지 해야 서버 쪽에 반영된다.
+
+```bash
+pnpm --filter @macfolio/desktop-core test
+pnpm --filter @macfolio/desktop-core build    # 서버(Node)가 읽는 dist
+pnpm typecheck
+pnpm --filter @macfolio/api test:e2e test/posts.e2e.test.ts   # DB가 필요하다 (db:up)
+```
+
+화면(Vite)은 소스를 바로 읽어서 빌드 없이도 바뀐다. 그래서 서버만 옛 규칙으로 남는 일을 막으려고 API 이미지 빌드에서도 패키지를 먼저 빌드한다([apps/api/Dockerfile](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/Dockerfile)). 워크스페이스 구성은 [pnpm workspace 문서](https://pnpm.io/workspaces)를 봤다.
+
+관련 글: [창 관리를 React 밖으로](/memo/desktop-core-windows), [메모 로직을 desktop-core로](/memo/desktop-core-memo), [타입은 desktop-core에, 스키마는 contracts에](/memo/contracts-posts).
 
 #MacFolio #백엔드 #리팩터링 #배포

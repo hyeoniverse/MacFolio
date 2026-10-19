@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="320" fill="#fff"/>
+  <text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">버튼마다 공통 클래스를 떼고 붙여 계산된 스타일을 비교했다</text>
+<rect x="20" y="60" width="200" height="90" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="120.0" y="93.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">E2E가 지나가는 화면마다</text>
+<text x="120.0" y="109.0" font-size="10.5" fill="#4b5563" text-anchor="middle">휴대폰 · 데스크톱</text>
+<text x="120.0" y="125.0" font-size="10.5" fill="#4b5563" text-anchor="middle">켜짐 · 꺼짐 · 비활성 · 올림</text>
+<rect x="260" y="50" width="220" height="50" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="370.0" y="71.0" font-size="10.5" fill="#4f46e5" text-anchor="middle" font-weight="600">.ui-icon-button tool …</text>
+<text x="370.0" y="86.5" font-size="10.0" fill="#4b5563" text-anchor="middle">getComputedStyle 기록</text>
+<rect x="260" y="115" width="220" height="50" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="370.0" y="136.0" font-size="10.5" fill="#b45309" text-anchor="middle" font-weight="600">공통 클래스를 잠깐 뗌</text>
+<text x="370.0" y="151.5" font-size="10.0" fill="#4b5563" text-anchor="middle">= 옮기기 전 &lt;button&gt;</text>
+<line x1="220" y1="90" x2="258" y2="75" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="220" y1="120" x2="258" y2="140" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="520" y="70" width="220" height="80" rx="8" fill="#ffffff" stroke="#d1d5db"/>
+<text x="630.0" y="114.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">차이</text>
+<line x1="480" y1="75" x2="518" y2="95" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="480" y1="140" x2="518" y2="125" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="30" y="200" width="340" height="80" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="200.0" y="220.5" font-size="10.5" fill="#e11d48" text-anchor="middle" font-weight="600">처음 차이</text>
+<text x="200.0" y="236.0" font-size="10.0" fill="#4b5563" text-anchor="middle">음악 재생: 회색 글자 · 높이 28px</text>
+<text x="200.0" y="251.5" font-size="10.0" fill="#4b5563" text-anchor="middle">찾기 이전·다음: 폭 24·26 → 30px</text>
+<text x="200.0" y="267.0" font-size="10.0" fill="#4b5563" text-anchor="middle">뒤로 가기: 높이 28px · 가운데 정렬</text>
+<rect x="400" y="200" width="340" height="80" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="570.0" y="220.5" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">앱 CSS로 되돌린 뒤</text>
+<text x="570.0" y="236.0" font-size="10.0" fill="#4b5563" text-anchor="middle">크기 · 색 · 여백 · 모서리 모두 같음</text>
+<text x="570.0" y="251.5" font-size="10.0" fill="#4b5563" text-anchor="middle">남은 차이는 화면에 안 보이는 값</text>
+<text x="570.0" y="267.0" font-size="10.0" fill="#4b5563" text-anchor="middle">(gap · justify-content · z-index …)</text>
+<line x1="630" y1="150" x2="570" y2="198" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/>
+</svg>

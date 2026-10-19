@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>GitHub Actions 예약 실행이 10분마다 /health와 사이트를 부르고, 실패하면 30초 간격으로 세 번 더 시도해 1분 반 넘게 안 되어야 실패로 메일이 온다. 로그는 컨테이너마다 10MB 3개</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="780" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">10분마다 바깥에서 묻고, 1분 반을 참는다</text>
+<line x1="60.0" y1="110" x2="528.0" y2="110" stroke="#e5e7eb" stroke-width="4"/>
+<rect x="60.0" y="96" width="62.400000000000006" height="28" rx="4" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="91.2" y="88" font-size="9.5" font-weight="400" fill="#92400e" text-anchor="middle">배포로 몇 초 끊김</text>
+<circle cx="60.0" cy="110" r="7" fill="#e11d48"/>
+<text x="60.0" y="144" font-size="10.5" font-weight="600" fill="#374151" text-anchor="middle">시도</text>
+<circle cx="216.0" cy="110" r="7" fill="#a5b4fc"/>
+<text x="216.0" y="144" font-size="10.5" font-weight="600" fill="#374151" text-anchor="middle">+30초</text>
+<circle cx="372.0" cy="110" r="7" fill="#a5b4fc"/>
+<text x="372.0" y="144" font-size="10.5" font-weight="600" fill="#374151" text-anchor="middle">+60초</text>
+<circle cx="528.0" cy="110" r="7" fill="#a5b4fc"/>
+<text x="528.0" y="144" font-size="10.5" font-weight="600" fill="#374151" text-anchor="middle">+90초</text>
+<text x="294.0" y="166" font-size="10" font-weight="400" fill="#059669" text-anchor="middle">다시 시도 3번: 한 번이라도 조건을 채우면 통과</text>
+<text x="538.0" y="88" font-size="10" font-weight="400" fill="#e11d48" text-anchor="end">끝까지 실패 → 실행 실패, 메일</text>
+<text x="32" y="206" font-size="10" font-weight="400" fill="#374151" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">curl --retry 3 --retry-delay 30 --retry-all-errors   /health: status ok · database up · 사이트 첫 화면</text>
+<text x="32" y="240" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">로그 로테이션 (x-logging 앵커를 db · api · tunnel이 같이 씀)</text>
+<rect x="32" y="252" width="80" height="30" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="72.0" y="270.5" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">10MB</text>
+<rect x="122" y="252" width="80" height="30" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="162.0" y="270.5" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">10MB</text>
+<rect x="212" y="252" width="80" height="30" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="252.0" y="270.5" font-size="11" font-weight="600" fill="#1f2937" text-anchor="middle">10MB</text>
+<text x="310" y="272" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">= 컨테이너마다 최대 30MB, 넘으면 가장 오래된 파일부터 지운다</text>
+</svg>

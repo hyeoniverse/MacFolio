@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>막대 밑을 두 군데 읽고, 대비로 색을 고른다</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="800" height="360" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">막대 밑을 두 군데 읽고, 대비로 색을 고른다</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">시계 쪽(폭의 8–22%)과 아이콘 쪽(78–92%)을 따로 읽는다</text>
+  <defs><linearGradient id="sky" x1="0" x2="1"><stop offset="0" stop-color="#a7e3dd"/><stop offset="1" stop-color="#1e2a5a"/></linearGradient></defs>
+  <rect x="32" y="90" width="736" height="60" rx="10" fill="url(#sky)"/>
+  <rect x="91" y="94" width="103" height="52" rx="6" fill="none" stroke="#b91c1c" stroke-width="2" stroke-dasharray="4 3"/>
+  <rect x="606" y="94" width="103" height="52" rx="6" fill="none" stroke="#b91c1c" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="142.39999999999998" y="126" font-size="16" fill="#1c1c1e" text-anchor="middle" font-weight="600">9:41</text>
+  <text x="657.6" y="126" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="600">신호 Wi-Fi 배터리</text>
+  <text x="32" y="174" font-size="12" fill="#6b7280" text-anchor="start">Sky 배경화면: 왼쪽은 옅은 청록 → 검은 시계, 오른쪽은 짙은 남색 → 흰 아이콘</text>
+  <text x="32" y="214" font-size="13" fill="#374151" text-anchor="start" font-weight="600">바탕 휘도에 따라 고르는 색</text>
+  <defs><linearGradient id="lum" x1="0" x2="1"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#fff"/></linearGradient></defs>
+  <rect x="32" y="228" width="736" height="24" rx="6" fill="url(#lum)" stroke="#d1d5db"/>
+  <line x1="209" y1="222" x2="209" y2="262" stroke="#15803d" stroke-width="2"/>
+  <line x1="326" y1="222" x2="326" y2="262" stroke="#b91c1c" stroke-width="2"/>
+  <circle cx="205" cy="240" r="4" fill="#f59e0b"/>
+  <circle cx="253" cy="240" r="4" fill="#f59e0b"/>
+  <text x="202.64" y="282" font-size="12" fill="#15803d" text-anchor="end">← 흰 글자 · 지금 기준 ≈ 0.24</text>
+  <text x="214.64" y="282" font-size="12" fill="#15803d" text-anchor="start">검은 글자 →</text>
+  <text x="332.40000000000003" y="302" font-size="12" fill="#b91c1c" text-anchor="start">예전 기준 0.4: 회갈색(≈0.3)도 흰 글자가 되어 흐렸다</text>
+  <text x="32" y="338" font-size="12" fill="#6b7280" text-anchor="start">점: iOS 파랑 0.235(흰 글자), 셀로시아 회갈색 ≈ 0.3(검은 글자, 대비 5 이상)</text>
+</svg>

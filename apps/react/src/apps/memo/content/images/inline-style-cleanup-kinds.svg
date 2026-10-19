@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>인라인 스타일을 세 갈래로 나눴다</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">인라인 스타일을 세 갈래로 나눴다</text>
+  <text x="32" y="68" font-size="12" fill="#6b7280">값이 언제 정해지는지에 따라 규칙이 사는 곳이 달라진다</text>
+  <rect x="32" y="96" width="216" height="64" rx="8" fill="#f3f4f6"/>
+  <text x="140.0" y="114.5" font-size="13" text-anchor="middle" fill="#374151" font-weight="600">늘 같은 값</text>
+  <text x="140.0" y="132.6" font-size="12" text-anchor="middle" fill="#374151">width: 100%</text>
+  <text x="140.0" y="150.6" font-size="12" text-anchor="middle" fill="#374151">cursor: grab</text>
+  <line x1="140" y1="162" x2="140" y2="192" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="32" y="196" width="216" height="40" rx="8" fill="#dcfce7"/>
+  <text x="140.0" y="220.6" font-size="13" text-anchor="middle" fill="#15803d">CSS 파일로</text>
+  <rect x="32" y="248" width="216" height="54" rx="8" fill="#ffffff" stroke="#374151" stroke-opacity="0.35"/>
+  <text x="140.0" y="270.9" font-size="11" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">.window-titlebar {</text>
+  <text x="140.0" y="286.9" font-size="11" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">  cursor: grab }</text>
+  <rect x="272" y="96" width="216" height="64" rx="8" fill="#f3f4f6"/>
+  <text x="380.0" y="123.5" font-size="13" text-anchor="middle" fill="#374151" font-weight="600">데이터마다 다른 값</text>
+  <text x="380.0" y="141.6" font-size="12" text-anchor="middle" fill="#374151">언어 색, 아바타 크기</text>
+  <line x1="380" y1="162" x2="380" y2="192" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="272" y="196" width="216" height="40" rx="8" fill="#eef0ff"/>
+  <text x="380.0" y="220.6" font-size="13" text-anchor="middle" fill="#3f46c7">cssVars()로 변수만</text>
+  <rect x="272" y="248" width="216" height="54" rx="8" fill="#ffffff" stroke="#374151" stroke-opacity="0.35"/>
+  <text x="380.0" y="270.9" font-size="11" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">style={cssVars({ color })}</text>
+  <text x="380.0" y="286.9" font-size="11" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">→ var(--color, 기본)</text>
+  <rect x="512" y="96" width="216" height="64" rx="8" fill="#f3f4f6"/>
+  <text x="620.0" y="123.5" font-size="13" text-anchor="middle" fill="#374151" font-weight="600">매번 계산되는 좌표</text>
+  <text x="620.0" y="141.6" font-size="12" text-anchor="middle" fill="#374151">메뉴 left/top, z-index</text>
+  <line x1="620" y1="162" x2="620" y2="192" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="512" y="196" width="216" height="40" rx="8" fill="#fef3c7"/>
+  <text x="620.0" y="220.6" font-size="13" text-anchor="middle" fill="#b45309">인라인에 둔다</text>
+  <rect x="512" y="248" width="216" height="54" rx="8" fill="#ffffff" stroke="#374151" stroke-opacity="0.35"/>
+  <text x="620.0" y="278.9" font-size="11" text-anchor="middle" fill="#374151" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">style={{ left, top }}</text>
+</svg>

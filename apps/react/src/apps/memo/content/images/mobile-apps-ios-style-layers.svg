@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>휴대폰 셸의 층</title>
+  <rect width="760" height="420" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">앱은 화면 전체를 쓰고, 셸의 것은 위에 겹친다</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">전: 제목 막대·홈 바 띠가 앱 높이를 깎음 / 후: 떠 있는 뒤로 가기, 겹쳐 그린 상태 표시줄·홈 바</text>
+  <g>
+    <text x="110" y="96" font-size="13" font-weight="600" fill="#6b7280" text-anchor="middle">전</text>
+    <rect x="40" y="106" width="140" height="290" rx="22" fill="#f3f4f6" stroke="#d1d5db"/>
+    <rect x="40" y="106" width="140" height="22" rx="10" fill="#e5e7eb"/><text x="110" y="121" font-size="10" fill="#374151" text-anchor="middle">상태 표시줄</text>
+    <rect x="40" y="128" width="140" height="30" fill="#ffffff" stroke="#e5e7eb"/><text x="110" y="147" font-size="10" fill="#374151" text-anchor="middle">&lt; 홈 | 앱 이름</text>
+    <rect x="48" y="166" width="124" height="198" fill="#ffffff"/><text x="110" y="268" font-size="11" fill="#6b7280" text-anchor="middle">앱</text>
+    <rect x="40" y="372" width="140" height="22" rx="10" fill="#e5e7eb"/><text x="110" y="387" font-size="10" fill="#374151" text-anchor="middle">홈 바 22px 띠</text>
+  </g>
+  <g>
+    <text x="330" y="96" font-size="13" font-weight="600" fill="#6b7280" text-anchor="middle">후</text>
+    <rect x="260" y="106" width="140" height="290" rx="22" fill="#f3f4f6" stroke="#d1d5db"/>
+    <rect x="270" y="168" width="120" height="70" rx="10" fill="#ffffff"/>
+    <rect x="270" y="246" width="120" height="70" rx="10" fill="#ffffff"/>
+    <circle cx="282" cy="146" r="13" fill="#ffffff" stroke="#d1d5db"/><text x="282" y="150" font-size="12" fill="#374151" text-anchor="middle">‹</text>
+    <text x="304" y="151" font-size="13" font-weight="700" fill="#1f2937">큰 제목</text>
+    <circle cx="372" cy="356" r="14" fill="#ffffff" stroke="#d1d5db"/><text x="372" y="361" font-size="13" fill="#374151" text-anchor="middle">✎</text>
+    <rect x="300" y="384" width="60" height="4" rx="2" fill="#1f2937"/>
+    <text x="330" y="121" font-size="10" fill="#374151" text-anchor="middle">9:41 (겹침)</text>
+  </g>
+  <g font-size="12" fill="#374151">
+    <text x="440" y="124" font-weight="600" fill="#1f2937">셸 공통 값 (Window.css)</text>
+    <text x="440" y="146">--phone-page-bg  회색 바탕 #f3f4f6</text>
+    <text x="440" y="166">--phone-card-bg  흰 카드 #ffffff</text>
+    <text x="440" y="186">--phone-float-shadow  떠 있는 버튼 그림자</text>
+    <text x="440" y="206">--phone-separator  줄 사이 선</text>
+    <text x="440" y="240" font-weight="600" fill="#1f2937">겹쳐 그리는 것</text>
+    <text x="440" y="262">뒤로 가기 44px 동그라미 (첫 줄은 왼쪽 64px 비움)</text>
+    <text x="440" y="282">상태 표시줄: 밑의 화면을 읽어 글자 색</text>
+    <text x="440" y="302">홈 바: 아래 떠 있는 것은 --phone-bottom-inset만큼 위로</text>
+    <text x="440" y="336" font-weight="600" fill="#1f2937">공통 클래스</text>
+    <text x="440" y="358">.phone-title  높이 44px, 왼쪽 64px</text>
+  </g>
+</svg>

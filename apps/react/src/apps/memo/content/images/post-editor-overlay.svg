@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>저장소 글 위에 서버 글을 겹친다</title>
+  <rect width="780" height="320" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">파일은 그대로 두고, 서버는 바뀐 것만 든다</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">목록 = 저장소 글(slug별) ← 서버 글로 덮어쓰기 · 지운 표시는 빼기 · 새 글은 더하기</text>
+  <g font-size="12">
+    <text x="32" y="98" font-weight="600" fill="#6b7280">저장소 Markdown</text>
+    <rect x="32" y="108" width="180" height="30" rx="7" fill="#f3f4f6"/><text x="44" y="128" fill="#1f2937">a.md</text>
+    <rect x="32" y="144" width="180" height="30" rx="7" fill="#f3f4f6"/><text x="44" y="164" fill="#1f2937">b.md</text>
+    <rect x="32" y="180" width="180" height="30" rx="7" fill="#f3f4f6"/><text x="44" y="200" fill="#1f2937">c.md</text>
+    <text x="280" y="98" font-weight="600" fill="#6b7280">서버 (Post 표)</text>
+    <rect x="280" y="144" width="200" height="30" rx="7" fill="#eef0ff"/><text x="292" y="164" fill="#3f46c7">b — 고친 내용</text>
+    <rect x="280" y="180" width="200" height="30" rx="7" fill="#fee2e2"/><text x="292" y="200" fill="#b91c1c">c — deleted</text>
+    <rect x="280" y="216" width="200" height="30" rx="7" fill="#eef0ff"/><text x="292" y="236" fill="#3f46c7">2026-09-29-a1b2c3 — 새 글</text>
+    <text x="560" y="98" font-weight="600" fill="#6b7280">방문자가 보는 목록</text>
+    <rect x="560" y="108" width="190" height="30" rx="7" fill="#dcfce7"/><text x="572" y="128" fill="#15803d">a (파일)</text>
+    <rect x="560" y="144" width="190" height="30" rx="7" fill="#dcfce7"/><text x="572" y="164" fill="#15803d">b (서버가 대신)</text>
+    <rect x="560" y="180" width="190" height="30" rx="7" fill="#f3f4f6" stroke="#d1d5db" stroke-dasharray="4 3"/><text x="572" y="200" fill="#9ca3af">c (가림)</text>
+    <rect x="560" y="216" width="190" height="30" rx="7" fill="#dcfce7"/><text x="572" y="236" fill="#15803d">새 글 (서버에만)</text>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.4" fill="none">
+    <path d="M212 123 H554"/><path d="M480 159 H554"/><path d="M480 195 H554"/><path d="M480 231 H554"/>
+  </g>
+  <text x="32" y="286" font-size="12" fill="#374151">서버가 내려가 있으면 서버 쪽이 빈 목록이 되어, 저장소 글 a·b·c가 그대로 보인다</text>
+</svg>

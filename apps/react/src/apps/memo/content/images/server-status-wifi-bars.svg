@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>막대 셋은 300ms보다 빠름, 둘은 1초 안, 하나는 1초보다 느림, 주황 하나는 DB 연결 안 됨, 없음과 사선은 연결할 수 없음</title><defs>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="760" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">Wi-Fi 막대가 말하는 서버 상태</text>
+<rect x="32" y="66" width="420" height="34" rx="8" fill="#f9fafb"/>
+<path d="M58 93 L53.8 88.8 A6 6 0 0 1 62.2 88.8 Z" fill="#1f2937"/>
+<path d="M49.5 84.5 A12 12 0 0 1 66.5 84.5" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M45.3 80.3 A18 18 0 0 1 70.7 80.3" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/>
+<text x="92" y="88" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">정상</text>
+<text x="250" y="88" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">300ms보다 빠르게 응답</text>
+<rect x="32" y="108" width="420" height="34" rx="8" fill="#f9fafb"/>
+<path d="M58 135 L53.8 130.8 A6 6 0 0 1 62.2 130.8 Z" fill="#1f2937"/>
+<path d="M49.5 126.5 A12 12 0 0 1 66.5 126.5" fill="none" stroke="#1f2937" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M45.3 122.3 A18 18 0 0 1 70.7 122.3" fill="none" stroke="#d1d5db" stroke-width="3.2" stroke-linecap="round"/>
+<text x="92" y="130" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">정상</text>
+<text x="250" y="130" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">1초 안에 응답</text>
+<rect x="32" y="150" width="420" height="34" rx="8" fill="#f9fafb"/>
+<path d="M58 177 L53.8 172.8 A6 6 0 0 1 62.2 172.8 Z" fill="#1f2937"/>
+<path d="M49.5 168.5 A12 12 0 0 1 66.5 168.5" fill="none" stroke="#d1d5db" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M45.3 164.3 A18 18 0 0 1 70.7 164.3" fill="none" stroke="#d1d5db" stroke-width="3.2" stroke-linecap="round"/>
+<text x="92" y="172" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">응답 느림</text>
+<text x="250" y="172" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">1초보다 오래 걸림</text>
+<rect x="32" y="192" width="420" height="34" rx="8" fill="#f9fafb"/>
+<path d="M58 219 L53.8 214.8 A6 6 0 0 1 62.2 214.8 Z" fill="#d97706"/>
+<path d="M49.5 210.5 A12 12 0 0 1 66.5 210.5" fill="none" stroke="#d1d5db" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M45.3 206.3 A18 18 0 0 1 70.7 206.3" fill="none" stroke="#d1d5db" stroke-width="3.2" stroke-linecap="round"/>
+<text x="92" y="214" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">DB 연결 안 됨</text>
+<text x="250" y="214" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">/health가 503 + DB 메시지</text>
+<rect x="32" y="234" width="420" height="34" rx="8" fill="#f9fafb"/>
+<path d="M58 261 L53.8 256.8 A6 6 0 0 1 62.2 256.8 Z" fill="#d1d5db"/>
+<path d="M49.5 252.5 A12 12 0 0 1 66.5 252.5" fill="none" stroke="#d1d5db" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M45.3 248.3 A18 18 0 0 1 70.7 248.3" fill="none" stroke="#d1d5db" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M44 241 L72 263" stroke="#e11d48" stroke-width="2.4" stroke-linecap="round"/>
+<text x="92" y="256" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">서버에 연결할 수 없음</text>
+<text x="250" y="256" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">응답 없음 · 502 · 530</text>
+<text x="480" y="80" font-size="12" font-weight="600" fill="#1f2937" text-anchor="start">언제 묻나</text>
+<text x="480" y="104" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">· 30초마다 (탭이 숨으면 건너뜀)</text>
+<text x="480" y="126" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">· 탭을 다시 볼 때 · online 이벤트</text>
+<text x="480" y="148" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">· 메뉴를 열 때 한 번 더</text>
+<text x="480" y="170" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">· offline이면 묻지 않고 "인터넷 연결 없음"</text>
+<text x="480" y="192" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">· 묻는 중에 또 부르면 같은 결과를 기다림</text>
+<text x="32" y="300" font-size="10" font-weight="400" fill="#6b7280" text-anchor="start">결과를 상태로 나누는 부분은 순수 함수라 단위 시험으로, 화면은 가짜 /health를 정상 → DB 오류 → 끊김 → 복구로 바꿔 가며 본다.</text>
+</svg>

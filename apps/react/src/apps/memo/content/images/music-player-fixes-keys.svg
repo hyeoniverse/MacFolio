@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>형제끼리 같은 key</title>
+  <rect width="760" height="300" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">형제끼리 key가 같으면 React가 지울 것을 맞추지 못한다</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">재생 막대의 '지금 곡' 버튼 안: 표지 img와 제목 span</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace">
+    <text x="32" y="100" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-weight="600" fill="#b91c1c">전: key={track.id}</text>
+    <rect x="32" y="112" width="150" height="34" rx="8" fill="#fee2e2"/><text x="44" y="134" fill="#374151">img  key="a"</text>
+    <rect x="190" y="112" width="150" height="34" rx="8" fill="#fee2e2"/><text x="202" y="134" fill="#374151">span key="a"</text>
+    <text x="32" y="170" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" fill="#374151">셔플로 곡 b →</text>
+    <rect x="130" y="156" width="68" height="26" rx="6" fill="#f3f4f6"/><text x="138" y="174" fill="#374151">img a</text>
+    <rect x="204" y="156" width="68" height="26" rx="6" fill="#f3f4f6"/><text x="212" y="174" fill="#374151">img b</text>
+    <rect x="278" y="156" width="68" height="26" rx="6" fill="#f3f4f6"/><text x="286" y="174" fill="#374151">span b</text>
+    <text x="32" y="206" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-size="12" fill="#b91c1c">옛 요소가 남아 누를 때마다 하나씩 쌓인다</text>
+    <text x="420" y="100" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-weight="600" fill="#15803d">후: 자리 이름을 붙인 key</text>
+    <rect x="420" y="112" width="150" height="34" rx="8" fill="#dcfce7"/><text x="432" y="134" fill="#374151">img  "art-a"</text>
+    <rect x="578" y="112" width="150" height="34" rx="8" fill="#dcfce7"/><text x="590" y="134" fill="#374151">span "title-a"</text>
+    <text x="420" y="170" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" fill="#374151">곡 b →</text>
+    <rect x="470" y="156" width="96" height="26" rx="6" fill="#dcfce7"/><text x="478" y="174" fill="#374151">img art-b</text>
+    <rect x="572" y="156" width="110" height="26" rx="6" fill="#dcfce7"/><text x="580" y="174" fill="#374151">span title-b</text>
+    <text x="420" y="206" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-size="12" fill="#15803d">옛 둘이 빠지고 새 둘이 들어온다 (사라짐·나타남 움직임도 정상)</text>
+  </g>
+  <text x="32" y="260" font-size="12" fill="#374151">key는 형제 사이에서만 유일하면 된다. 곡 id 하나를 두 형제에 그대로 쓴 것이 원인이었다</text>
+</svg>

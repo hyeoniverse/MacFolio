@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 340" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>배포 스크립트 흐름: 태그 검사, 잠금, 배포 직전 백업, API_TAG 바꾸기, 이미지 없으면 받기, up 후 120초 healthy 확인. 성공이면 이미지 정리, 받기 실패면 env만 되돌림, healthy 실패면 이전 태그로 되돌리고 1로 끝남</title><defs>
+<marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+<marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e11d48"/></marker>
+<marker id="good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#059669"/></marker>
+<marker id="warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+</defs>
+<rect width="860" height="340" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937" text-anchor="start">ops/deploy.sh가 갈라지는 세 길</text>
+<rect x="32" y="64" width="116" height="52" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="90.0" y="86.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">태그 검사</text>
+<text x="90.0" y="101.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">sha- + 16진 7~40자</text>
+<rect x="162" y="64" width="116" height="52" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="220.0" y="86.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">잠금</text>
+<text x="220.0" y="101.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">flock 10분</text>
+<path d="M148 90 L160 90" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="292" y="64" width="116" height="52" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="350.0" y="86.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">배포 직전 백업</text>
+<text x="350.0" y="101.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">서버에만</text>
+<path d="M278 90 L290 90" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="422" y="64" width="116" height="52" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="480.0" y="86.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">API_TAG 바꾸기</text>
+<text x="480.0" y="101.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">.env 한 줄</text>
+<path d="M408 90 L420 90" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="552" y="64" width="116" height="52" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="610.0" y="86.5" font-size="12" font-weight="600" fill="#3730a3" text-anchor="middle">up</text>
+<text x="610.0" y="101.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">없으면 pull</text>
+<path d="M538 90 L550 90" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="682" y="64" width="150" height="52" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="757.0" y="86.5" font-size="12" font-weight="600" fill="#92400e" text-anchor="middle">healthy 기다리기</text>
+<text x="757.0" y="101.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">3초마다, 최대 120초</text>
+<path d="M668 90 L680 90" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="32" y="190" width="230" height="66" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+<text x="147.0" y="219.5" font-size="12" font-weight="600" fill="#065f46" text-anchor="middle">성공 → exit 0</text>
+<text x="147.0" y="234.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">지금·이전 이미지만 남기고 정리</text>
+<rect x="300" y="190" width="230" height="66" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="415.0" y="219.5" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">이미지를 받지 못함 → exit 1</text>
+<text x="415.0" y="234.5" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">.env만 되돌림, 컨테이너 그대로</text>
+<rect x="568" y="190" width="264" height="66" rx="10" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+<text x="700.0" y="212.0" font-size="12" font-weight="600" fill="#9f1239" text-anchor="middle">healthy가 아님 → exit 1</text>
+<text x="700.0" y="227.0" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">로그 40줄 → 이전 태그로 up</text>
+<text x="700.0" y="242.0" font-size="10.5" font-weight="400" fill="#374151" text-anchor="middle">"배포 실패, 되돌림"</text>
+<path d="M757 116 L700 188" fill="none" stroke="#e11d48" stroke-width="2" marker-end="url(#bad)"/>
+<text x="728.5" y="146.0" font-size="10" font-weight="500" fill="#4b5563" text-anchor="middle">훈련은 이 길</text>
+<path d="M682 110 L147 188" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#good)"/>
+<path d="M560 90 L415 188" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<text x="32" y="296" font-size="10.5" font-weight="500" fill="#374151" text-anchor="start">훈련용 태그 sha-dead000도 16진 글자(d·e·a·0)만 써서 태그 검사를 그대로 통과한다. 새 입력 없이 진짜 길을 탄다.</text>
+<text x="32" y="316" font-size="10.5" font-weight="400" fill="#374151" text-anchor="start">되돌리기도 같은 up 함수를 부르므로, 이전 이미지가 서버에 남아 있으면 다시 받지 않는다.</text>
+</svg>

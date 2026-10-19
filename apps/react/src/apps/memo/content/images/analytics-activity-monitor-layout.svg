@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>활동 상태 보기 앱의 화면 구성: 위에 탭 다섯과 기간, 숫자 칸 넷, SVG 그래프, 정렬되는 표 StatTable</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="420" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">활동 상태 보기의 화면 구성</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">모든 탭이 같은 표(StatTable)와 같은 그래프를 쓴다</text>
+<rect x="32" y="74" width="796" height="326" rx="12" fill="#f9fafb" stroke="#d1d5db"/>
+<circle cx="52" cy="94" r="6" fill="#ff5f57"/>
+<circle cx="70" cy="94" r="6" fill="#febc2e"/>
+<circle cx="88" cy="94" r="6" fill="#28c840"/>
+<rect x="260" y="82" width="80" height="24" rx="6" fill="#4f46e5" stroke="#d1d5db"/>
+<text x="300.0" y="98" font-size="11" fill="#ffffff" font-weight="600" text-anchor="middle">개요</text>
+<rect x="344" y="82" width="80" height="24" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<text x="384.0" y="98" font-size="11" fill="#374151" font-weight="600" text-anchor="middle">유입 경로</text>
+<rect x="428" y="82" width="80" height="24" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<text x="468.0" y="98" font-size="11" fill="#374151" font-weight="600" text-anchor="middle">앱·글</text>
+<rect x="512" y="82" width="80" height="24" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<text x="552.0" y="98" font-size="11" fill="#374151" font-weight="600" text-anchor="middle">지역·기기</text>
+<rect x="596" y="82" width="80" height="24" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<text x="636.0" y="98" font-size="11" fill="#374151" font-weight="600" text-anchor="middle">실시간</text>
+<rect x="696" y="82" width="116" height="24" rx="6" fill="#ffffff" stroke="#d1d5db"/>
+<text x="754" y="98" font-size="10.5" fill="#374151" text-anchor="middle">오늘 · 7 · 30 · 90일</text>
+<rect x="48" y="122" width="182" height="54" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="60" y="142" font-size="10.5" fill="#6b7280">방문</text>
+<text x="60" y="164" font-size="14" fill="#1f2937" font-weight="700">—</text>
+<text x="218" y="164" font-size="10.5" fill="#15803d" font-weight="600" text-anchor="end">▲ 12%</text>
+<rect x="242" y="122" width="182" height="54" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="254" y="142" font-size="10.5" fill="#6b7280">순방문자</text>
+<text x="254" y="164" font-size="14" fill="#1f2937" font-weight="700">—</text>
+<text x="412" y="164" font-size="10.5" fill="#15803d" font-weight="600" text-anchor="end">▲ 5%</text>
+<rect x="436" y="122" width="182" height="54" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="448" y="142" font-size="10.5" fill="#6b7280">앱 열기</text>
+<text x="448" y="164" font-size="14" fill="#1f2937" font-weight="700">—</text>
+<text x="606" y="164" font-size="10.5" fill="#b91c1c" font-weight="600" text-anchor="end">▼ 3%</text>
+<rect x="630" y="122" width="182" height="54" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="642" y="142" font-size="10.5" fill="#6b7280">평균 머문 시간</text>
+<text x="642" y="164" font-size="14" fill="#1f2937" font-weight="700">—</text>
+<text x="800" y="164" font-size="10.5" fill="#15803d" font-weight="600" text-anchor="end">▲ 8%</text>
+<rect x="48" y="188" width="764" height="92" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+<path d="M60 260 L140 240 L220 250 L300 215 L380 230 L460 205 L540 220 L620 200 L700 212 L800 196 L800 270 L60 270 Z" fill="#dcfce7"/>
+<path d="M60 260 L140 240 L220 250 L300 215 L380 230 L460 205 L540 220 L620 200 L700 212 L800 196" stroke="#16a34a" stroke-width="2" fill="none"/>
+<path d="M60 265 L140 252 L220 258 L300 236 L380 244 L460 228 L540 238 L620 226 L700 232 L800 222" stroke="#2563eb" stroke-width="1.6" stroke-dasharray="4 3" fill="none"/>
+<text x="60" y="204" font-size="10.5" fill="#6b7280">일별 방문(초록) · 순방문자(파란 점선) — &lt;svg&gt; 하나, non-scaling-stroke</text>
+<rect x="48" y="292" width="376" height="96" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="60" y="310" font-size="10.5" fill="#1f2937" font-weight="600">가장 많이 연 앱   이름 ⇅   방문 ⇅</text>
+<rect x="60" y="322" width="316" height="14" rx="3" fill="#e0e7ff"/>
+<rect x="60" y="342" width="211" height="14" rx="3" fill="#e0e7ff"/>
+<rect x="60" y="362" width="123" height="14" rx="3" fill="#e0e7ff"/>
+<text x="68" y="333" font-size="10" fill="#374151">비율 막대 · 머리를 누르면 정렬 (aria-sort)</text>
+<rect x="436" y="292" width="376" height="96" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="448" y="310" font-size="10.5" fill="#1f2937" font-weight="600">가장 많이 들어온 곳   이름 ⇅   방문 ⇅</text>
+<rect x="448" y="322" width="316" height="14" rx="3" fill="#e0e7ff"/>
+<rect x="448" y="342" width="211" height="14" rx="3" fill="#e0e7ff"/>
+<rect x="448" y="362" width="123" height="14" rx="3" fill="#e0e7ff"/>
+<text x="456" y="333" font-size="10" fill="#374151">비율 막대 · 머리를 누르면 정렬 (aria-sort)</text>
+</svg>

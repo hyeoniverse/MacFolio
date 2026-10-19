@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>방문 추이 → 배터리가 찬 정도</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">방문 추이 → 배터리가 찬 정도</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">fill = clamp(5, 50 + 늘어난 비율 ÷ 2, 100)  (visitBattery, useVisitTrend.ts)</text>
+<line x1="120" y1="300" x2="740" y2="300" stroke="#9ca3af"/><line x1="120" y1="300" x2="120" y2="80" stroke="#9ca3af"/>
+<text x="120.0" y="318" font-size="11" fill="#6b7280" text-anchor="middle">-150%</text>
+<text x="223.33333333333331" y="318" font-size="11" fill="#6b7280" text-anchor="middle">-100%</text>
+<text x="326.66666666666663" y="318" font-size="11" fill="#6b7280" text-anchor="middle">-50%</text>
+<text x="430.0" y="318" font-size="11" fill="#6b7280" text-anchor="middle">0%</text>
+<text x="533.3333333333333" y="318" font-size="11" fill="#6b7280" text-anchor="middle">+50%</text>
+<text x="636.6666666666667" y="318" font-size="11" fill="#6b7280" text-anchor="middle">+100%</text>
+<text x="740.0" y="318" font-size="11" fill="#6b7280" text-anchor="middle">+150%</text>
+<text x="110" y="304.0" font-size="11" fill="#6b7280" text-anchor="end">0%</text>
+<line x1="120" y1="300.0" x2="740" y2="300.0" stroke="#e5e7eb"/>
+<text x="110" y="249.0" font-size="11" fill="#6b7280" text-anchor="end">25%</text>
+<line x1="120" y1="245.0" x2="740" y2="245.0" stroke="#e5e7eb"/>
+<text x="110" y="194.0" font-size="11" fill="#6b7280" text-anchor="end">50%</text>
+<line x1="120" y1="190.0" x2="740" y2="190.0" stroke="#e5e7eb"/>
+<text x="110" y="139.0" font-size="11" fill="#6b7280" text-anchor="end">75%</text>
+<line x1="120" y1="135.0" x2="740" y2="135.0" stroke="#e5e7eb"/>
+<text x="110" y="84.0" font-size="11" fill="#6b7280" text-anchor="end">100%</text>
+<line x1="120" y1="80.0" x2="740" y2="80.0" stroke="#e5e7eb"/>
+<polyline fill="none" stroke="#4f46e5" stroke-width="3" points="120.0,289.0 244.0,289.0 636.7,80.0 740.0,80.0"/>
+<circle cx="430.0" cy="190.0" r="5" fill="#15803d"/>
+<text x="438.0" y="182.0" font-size="11" fill="#15803d" text-anchor="start">같음 → 절반</text>
+<circle cx="454.8" cy="176.8" r="5" fill="#15803d"/>
+<text x="462.8" y="168.79999999999998" font-size="11" fill="#15803d" text-anchor="start">+12% → 56%</text>
+<circle cx="636.7" cy="80.0" r="5" fill="#15803d"/>
+<text x="644.6666666666667" y="72.0" font-size="11" fill="#15803d" text-anchor="start">두 배 → 가득</text>
+<circle cx="223.3" cy="289.0" r="5" fill="#15803d"/>
+<text x="231.33333333333331" y="281.0" font-size="11" fill="#15803d" text-anchor="start">-100% → 5%</text>
+<text x="430.0" y="340" font-size="12" fill="#374151" text-anchor="middle">최근 7일 방문이 앞 7일보다 늘어난 비율</text>
+</svg>

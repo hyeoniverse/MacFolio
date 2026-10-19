@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>mac 메뉴와 ios 메뉴의 크기 차이. 최소 폭 180px과 250px, 바깥 여백 5px과 10px, 모서리 12px과 22px, 항목 여백 5×9px과 11×12px</title>
+<rect width="760" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">같은 Menu, 두 모양 (Menu.css)</text>
+<text x="32" y="70" font-size="12" fill="#374151" font-weight="600">variant="mac" (기본)</text>
+<rect x="32" y="82" width="180" height="96" rx="12" fill="#f3f4f6" stroke="#9ca3af"/>
+<rect x="37" y="87" width="170" height="22" rx="4" fill="#dbeafe"/>
+<text x="46" y="102" font-size="11" fill="#1f2937">이름 바꾸기</text>
+<text x="46" y="126" font-size="11" fill="#1f2937">옮기기</text>
+<text x="46" y="150" font-size="11" fill="#1f2937">삭제</text>
+<text x="32" y="200" font-size="10.5" fill="#6b7280">min-width 180px · padding 5px</text>
+<text x="32" y="216" font-size="10.5" fill="#6b7280">border-radius 12px · 항목 5px 9px</text>
+<text x="330" y="70" font-size="12" fill="#374151" font-weight="600">variant="ios" → class touch</text>
+<rect x="330" y="82" width="250" height="150" rx="22" fill="#f3f4f6" stroke="#9ca3af"/>
+<rect x="340" y="92" width="230" height="40" rx="10" fill="#e5e7eb"/>
+<text x="356" y="117" font-size="13" fill="#1f2937">이름 바꾸기</text>
+<text x="356" y="160" font-size="13" fill="#1f2937">옮기기</text>
+<text x="356" y="200" font-size="13" fill="#1f2937">삭제</text>
+<text x="330" y="254" font-size="10.5" fill="#6b7280">min-width 250px · padding var(--space-10)</text>
+<text x="330" y="270" font-size="10.5" fill="#6b7280">border-radius 22px · 항목 11px 12px · 글자 callout</text>
+<text x="610" y="110" font-size="10.5" fill="#374151">손가락으로 누를 곳이</text>
+<text x="610" y="126" font-size="10.5" fill="#374151">커지고, hover 색은</text>
+<text x="610" y="142" font-size="10.5" fill="#374151">선택 배경으로 바뀐다</text>
+</svg>

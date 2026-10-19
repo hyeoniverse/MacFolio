@@ -2,10 +2,18 @@
 title: 커밋 규칙을 문서 대신 CI로 지키기
 date: 2026-10-01
 category: 개발기/MacFolio/인프라
-summary: 브랜치·커밋·PR 규칙을 새로 만들지 않고 지금까지 써 온 모양에서 뽑아냈다. 그리고 PR마다 CI가 확인하게 했다. PR 제목을 스크립트에 그대로 넣으면 생기는 문제와, 검사 스크립트를 로컬에서 시험한 방법.
+summary: 브랜치·커밋·PR 규칙을 지금까지 써 온 모양에서 뽑아내고, PR마다 CI가 확인하고 Rulesets로 머지를 막게 했다. PR 제목 스크립트 주입을 피한 방법, 로컬 시험, 그리고 그 뒤 커밋 733개가 모두 규칙을 지킨 결과까지.
 ---
 
-작업 규칙을 적어 두자고 마음먹고 보니 문서만으로는 부족했다. 규칙을 적어 두어도 급할 때는 안 지킨다. 저장소의 옛 커밋에는 `Chore: npm install`, `STYLE: strong h2`, `REFACTOR`처럼 제각각인 메시지가 섞여 있다. 그래서 규칙은 문서(`CONTRIBUTING.md`)로 남기고, **지켰는지는 CI가 본다.**
+작업 규칙을 적어 두자고 마음먹고 보니 문서만으로는 부족했다. 규칙을 적어 두어도 급할 때는 안 지킨다. 저장소의 옛 커밋에는 `Chore: npm install`, `STYLE: strong h2`, `REFACTOR`처럼 제각각인 메시지가 섞여 있다. 그래서 규칙은 문서(`CONTRIBUTING.md`)로 남기고, **지켰는지는 CI가 본다.** 규칙, 템플릿, 검사 워크플로(`.github/workflows/conventions.yml`, 지금 64줄)는 PR [#48](https://github.com/hyeoniverse/MacFolio/pull/48)에 함께 들어갔다.
+
+| 방법                                     | 좋은 점                   | 문제                                                     |
+| ---------------------------------------- | ------------------------- | -------------------------------------------------------- |
+| 문서만                                   | 할 일이 없다              | 급할 때 안 지킨다. 옛 커밋이 그 증거였다                 |
+| commitlint + husky (로컬 커밋 훅)        | 커밋하는 순간 막는다      | 훅을 설치해야 돈다. GitHub 웹에서 고친 커밋은 지나간다   |
+| PR에서 CI가 검사 + 머지 막기 (고른 방법) | 어디서 만든 커밋이든 본다 | 커밋한 뒤에야 알 수 있다. 고치려면 기록을 다시 써야 한다 |
+
+![검사 흐름](./images/commit-conventions-ci-flow.svg 'conventions가 이름·제목·커밋을 보고, Ruleset이 check와 함께 머지를 막는다')
 
 ## 규칙은 기록에서 뽑았다
 
@@ -107,5 +115,44 @@ BRANCH=my-branch TITLE='Update stuff' BASE_SHA=<첫 커밋> HEAD_SHA=… bash co
 - 예전의 브랜치 보호 규칙(Branch protection rules) 대신 Rulesets를 썼다. 규칙을 켜고 끄기(Active/Disabled)가 쉽고, 여러 브랜치에 같은 규칙을 이름 붙여 걸 수 있다
 - **Require a pull request before merging**에 승인 수는 걸지 않았다. 혼자 하는 저장소에서는 내 PR을 내가 승인할 수 없어서, 걸면 아무것도 머지하지 못한다
 - 검사 이름은 워크플로 파일의 **job 이름**(`check`, `conventions`)이다. job 이름을 바꾸면 규칙의 검사 이름도 같이 바꿔야 한다. 안 그러면 이미 사라진 검사를 영영 기다린다
+
+## 그 뒤 3주
+
+규칙을 둔 날(9월 30일)까지 `main`에는 병합 커밋을 빼고 205개 커밋이 있었다. 10월 1일부터 오늘(10월 19일)까지 733개가 더 들어왔고, 그중 규칙에 맞지 않는 메시지는 하나도 없다.
+
+![커밋 앞머리](./images/commit-conventions-ci-types.svg '옛 형식 49개는 모두 규칙 전의 것이다')
+
+앞머리를 보면 `docs`가 181개로 셋째다. PR 템플릿의 "블로그 글·문서를 같이 고쳤는가" 칸이 실제로 글을 쓰게 만든 셈이다.
+
+## 남은 것, 배운 것
+
+- 커밋 메시지의 설명이 한국어인지는 보지 않는다. 정규식은 `타입(범위): ` 뒤에 무언가 있는지만 본다.
+- 범위는 자유다. 그래서 `react`처럼 넓은 이름과 `memo`·`finder`처럼 좁은 이름이 섞여 있다.
+- 새 규칙을 만들기보다 이미 하던 것을 규칙으로 적는 쪽이 지키기 쉬웠다. 처음 돌린 날 이미 최근 커밋이 모두 통과했으니, 규칙 때문에 일하는 방식을 바꿀 필요가 없었다.
+- `${{ }}`를 `run:` 안에 그대로 쓰지 않는다는 것은 이 워크플로 하나의 문제가 아니었다. 이 뒤로 만든 워크플로도 바깥 값은 모두 `env:`로 넘긴다.
+
+## 따라 하기
+
+이 작업은 9월 30일, 저장소에 브랜치·이슈·커밋 규칙이 하나도 적혀 있지 않다는 것을 알아차리고 시작했다. 규칙 원문은 [CONTRIBUTING.md](https://github.com/hyeoniverse/MacFolio/blob/main/CONTRIBUTING.md), 검사는 [.github/workflows/conventions.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/conventions.yml)다.
+
+브랜치와 커밋은 이렇게 만든다.
+
+```bash
+git switch -c fix/mail-phone-spacing            # <타입>/<영문 소문자-이름>
+git commit -m "fix(mail): 휴대폰에서 오류 문구가 목록에 붙지 않게"   # <타입>(범위): 설명
+```
+
+타입은 `feat|fix|docs|refactor|test|style|perf|chore|ci` 중 하나다([Conventional Commits](https://www.conventionalcommits.org/ko/v1.0.0/)를 따랐다). PR을 열면 `conventions` 작업이 브랜치 이름·PR 제목·PR의 모든 커밋을 보고, 하나라도 어긋나면 실패한다. 같은 PR에 새 커밋을 올리면 앞의 검사는 취소되고 새 검사만 돈다(Actions 로그에 "Canceling since a higher priority waiting request for conventions-80 exists"가 남는 것이 그 때문이다).
+
+어긋났을 때 고치는 법:
+
+```bash
+git commit --amend -m "fix(mail): …"        # 마지막 커밋 메시지
+git push --force-with-lease
+```
+
+머지 버튼까지 막는 것은 저장소 설정의 Ruleset이다(CONTRIBUTING의 '저장소 설정', [GitHub Rulesets 문서](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)).
+
+관련 글: [GitHub Actions 고정과 Dependabot](/memo/pin-actions-dependabot), [머지 방식](/memo/merge-strategies), [프론트엔드 배포를 GitHub Actions로](/memo/deploy-github-actions), [비밀 값 검사](/memo/secret-scanning)
 
 #MacFolio #CI #깃

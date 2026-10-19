@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>Dock의 휴지통이 비었는지 다시 보는 때 (binState.ts)</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">Dock의 휴지통이 비었는지 다시 보는 때 (binState.ts)</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">같은 탭에서 localStorage에 쓴 것은 storage 이벤트로 알려 주지 않는다</text>
+<rect x="32" y="80" width="220" height="46" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="142.0" y="98.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">휴지통에서 비움</text>
+<text x="142.0" y="115.5" font-size="11" fill="#374151" text-anchor="middle">refreshBin() 바로</text>
+<line x1="252" y1="103" x2="340" y2="190" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<rect x="32" y="136" width="220" height="46" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="142.0" y="154.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">설정 바꿈</text>
+<text x="142.0" y="171.5" font-size="11" fill="#374151" text-anchor="middle">settingsStore 구독</text>
+<line x1="252" y1="159" x2="340" y2="190" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<rect x="32" y="192" width="220" height="46" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="142.0" y="210.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">다른 탭에서 씀</text>
+<text x="142.0" y="227.5" font-size="11" fill="#374151" text-anchor="middle">window storage 이벤트</text>
+<line x1="252" y1="215" x2="340" y2="190" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<rect x="32" y="248" width="220" height="46" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="142.0" y="266.5" font-size="13" fill="#b45309" font-weight="700" text-anchor="middle">그 밖</text>
+<text x="142.0" y="283.5" font-size="11" fill="#374151" text-anchor="middle">보이는 동안 2초마다</text>
+<line x1="252" y1="271" x2="340" y2="190" stroke="#b45309" stroke-width="1.8" marker-end="url(#a-amber)"/>
+<rect x="344" y="150" width="200" height="80" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="444.0" y="177.0" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">readBrowserData()</text>
+<text x="444.0" y="194.0" font-size="11" fill="#374151" text-anchor="middle">남은 키 목록</text>
+<text x="444.0" y="211.0" font-size="11" fill="#374151" text-anchor="middle">length === 0 ?</text>
+<line x1="544" y1="190" x2="600" y2="190" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<rect x="604" y="110" width="224" height="70" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="716.0" y="140.5" font-size="13" fill="#b45309" font-weight="700" text-anchor="middle">binStore { empty }</text>
+<text x="716.0" y="157.5" font-size="11" fill="#374151" text-anchor="middle">바뀔 때만 setState</text>
+<rect x="604" y="200" width="224" height="70" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="716.0" y="230.5" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">+ Finder 휴지통</text>
+<text x="716.0" y="247.5" font-size="11" fill="#374151" text-anchor="middle">layout.trash가 비었나 (10/18~)</text>
+<text x="604" y="300" font-size="12" fill="#15803d" font-weight="700" text-anchor="start">둘 다 비면 bin-empty.png</text>
+</svg>

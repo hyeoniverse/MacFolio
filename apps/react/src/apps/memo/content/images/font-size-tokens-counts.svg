@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="300" fill="#fff"/>
+<text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">여덟 값의 font-size: 숫자로 쓴 곳과 이름으로 쓴 곳</text>
+<text x="40" y="62" font-size="12" fill="#374151" text-anchor="start" font-weight="600">#234 직전 (10월 16일)</text>
+<text x="202" y="87.0" font-size="11" fill="#374151" text-anchor="end">숫자 (11·12·13…px)</text>
+<rect x="210" y="72" width="423.85714285714283" height="22" rx="4" fill="#fcd34d"/>
+<text x="639.8571428571429" y="87.0" font-size="11" fill="#b45309" text-anchor="start" font-weight="600">645</text>
+<text x="202" y="121.0" font-size="11" fill="#374151" text-anchor="end">var(--text-*)</text>
+<rect x="210" y="106" width="2" height="22" rx="4" fill="#6ee7b7"/>
+<text x="218" y="121.0" font-size="11" fill="#047857" text-anchor="start" font-weight="600">0</text>
+<text x="40" y="162" font-size="12" fill="#374151" text-anchor="start" font-weight="600">#234 직후</text>
+<text x="202" y="187.0" font-size="11" fill="#374151" text-anchor="end">숫자</text>
+<rect x="210" y="172" width="2" height="22" rx="4" fill="#fcd34d"/>
+<text x="218" y="187.0" font-size="11" fill="#b45309" text-anchor="start" font-weight="600">0</text>
+<text x="202" y="221.0" font-size="11" fill="#374151" text-anchor="end">var(--text-*)</text>
+<rect x="210" y="206" width="423.85714285714283" height="22" rx="4" fill="#6ee7b7"/>
+<text x="639.8571428571429" y="221.0" font-size="11" fill="#047857" text-anchor="start" font-weight="600">645</text>
+<text x="380" y="262" font-size="10.5" fill="#6b7280" text-anchor="middle">지금(10월 19일): 이름 646곳, 숫자 375곳. 같은 무렵 다른 브랜치에서 만든 Safari 템플릿·설정 CSS가 나중에 합쳐지며 숫자로 들어왔다</text>
+<text x="380" y="282" font-size="10.5" fill="#6b7280" text-anchor="middle">(숫자 375곳 중 253곳이 템플릿 다섯 개와 Settings.css)</text>
+</svg>

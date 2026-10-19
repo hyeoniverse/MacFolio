@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>하루 해시: 같은 날에는 같은 값, 날이 바뀌면 다른 값</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">하루 해시: 같은 날에는 같은 값, 날이 바뀌면 다른 값</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">HMAC-SHA256(비밀 키, &quot;analytics:&quot; + 날짜 + IP + User-Agent)</text>
+<rect x="32" y="90" width="170" height="60" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="117.0" y="115.5" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">월 09:10 방문</text>
+<text x="117.0" y="132.5" font-size="11" fill="#374151" text-anchor="middle">IP A · Chrome/macOS</text>
+<rect x="32" y="170" width="170" height="60" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="117.0" y="195.5" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">월 21:40 방문</text>
+<text x="117.0" y="212.5" font-size="11" fill="#374151" text-anchor="middle">IP A · Chrome/macOS</text>
+<rect x="32" y="250" width="170" height="60" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="117.0" y="275.5" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">화 08:05 방문</text>
+<text x="117.0" y="292.5" font-size="11" fill="#374151" text-anchor="middle">IP A · Chrome/macOS</text>
+<rect x="300" y="120" width="200" height="80" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="400.0" y="147.0" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">dayHash</text>
+<text x="400.0" y="164.0" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">9f3c… (월)</text>
+<text x="400.0" y="181.0" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">두 방문이 같은 값</text>
+<rect x="300" y="250" width="200" height="60" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="400.0" y="275.5" font-size="13" fill="#b45309" font-weight="700" text-anchor="middle">dayHash</text>
+<text x="400.0" y="292.5" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">41a7… (화)</text>
+<line x1="202" y1="120" x2="296" y2="150" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<line x1="202" y1="200" x2="296" y2="170" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<line x1="202" y1="280" x2="296" y2="280" stroke="#b45309" stroke-width="1.8" marker-end="url(#a-amber)"/>
+<rect x="600" y="120" width="228" height="80" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="714.0" y="155.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">월 순방문자 1명</text>
+<text x="714.0" y="172.5" font-size="11" fill="#374151" text-anchor="middle">visitors = 서로 다른 dayHash 수</text>
+<rect x="600" y="250" width="228" height="60" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="714.0" y="275.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">화 순방문자 1명</text>
+<text x="714.0" y="292.5" font-size="11" fill="#374151" text-anchor="middle">월·화 합계는 2명</text>
+<line x1="500" y1="160" x2="596" y2="160" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<line x1="500" y1="280" x2="596" y2="280" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<text x="32" y="345" font-size="11" fill="#6b7280" text-anchor="start">키가 없으면 해시에서 IP를 되짚을 수 없고, 날짜가 들어가 날을 넘겨 한 사람을 따라갈 수 없다</text>
+</svg>

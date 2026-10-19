@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>CSS의 hex 1,171곳 가운데 theme.css 32곳과 프로젝트 소개 626곳을 뺀 513곳이 대상이었고, 그중 288곳(56%)을 이름 있는 변수로 바꿨다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="820" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">hex 1,171곳에서 288곳을 바꾸기까지</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">rgb()·rgba() 425곳과 TS·TSX 안의 hex 403곳은 범위 밖</text>
+<text x="32" y="92" font-size="11" fill="#1f2937" font-weight="600">전체 1,171곳</text>
+<rect x="32.0" y="100" width="20.7" height="34" fill="#d1d5db" stroke="#ffffff"/>
+<rect x="52.7" y="100" width="404.1" height="34" fill="#e5e7eb" stroke="#ffffff"/>
+<text x="254.732707087959" y="122" font-size="10.5" fill="#1f2937" font-weight="600" text-anchor="middle">프로젝트 소개 (브랜드 색) 626</text>
+<rect x="456.8" y="100" width="331.2" height="34" fill="#a5b4fc" stroke="#ffffff"/>
+<text x="622.403074295474" y="122" font-size="10.5" fill="#1f2937" font-weight="600" text-anchor="middle">앱·데스크톱·공통 UI 513</text>
+<text x="32" y="152" font-size="10" fill="#6b7280">theme.css 32곳은 이미 변수의 값</text>
+<text x="32" y="196" font-size="11" fill="#1f2937" font-weight="600">대상 513곳</text>
+<rect x="32.0" y="204" width="424.4" height="34" fill="#4f46e5" stroke="#ffffff"/>
+<text x="244.21052631578948" y="226" font-size="11" fill="#ffffff" font-weight="600" text-anchor="middle">바꿈 288 (56%)</text>
+<rect x="456.4" y="204" width="331.6" height="34" fill="#e5e7eb" stroke="#ffffff"/>
+<text x="622.2105263157895" y="226" font-size="11" fill="#1f2937" font-weight="600" text-anchor="middle">그대로 225</text>
+<text x="32" y="262" font-size="10.5" fill="#374151">바꿈: 테마와 상관없는 이름 11개 · 라이트·다크 짝 · 이미 있던 변수 10곳</text>
+<text x="32" y="280" font-size="10.5" fill="#374151">그대로: 한 앱만 쓰는 값 103 · 짝이 맞지 않음 39 · 한 곳 36 · GitHub 26 · Safari 19 · data URL 2</text>
+</svg>

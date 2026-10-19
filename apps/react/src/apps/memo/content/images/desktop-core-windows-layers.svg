@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="760" height="380" fill="#fff"/>
+  <text x="380.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">창 규칙은 core에, 브라우저와 닿는 일은 React에</text>
+<rect x="30" y="55" width="330" height="150" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="195.0" y="102.0" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="600">packages/desktop-core</text>
+<text x="195.0" y="118.0" font-size="10.5" fill="#4b5563" text-anchor="middle">store.ts — getState · setState · subscribe</text>
+<text x="195.0" y="134.0" font-size="10.5" fill="#4b5563" text-anchor="middle">window/stack.ts — 쌓임 순서</text>
+<text x="195.0" y="150.0" font-size="10.5" fill="#4b5563" text-anchor="middle">window/windowStore.ts — open · close · minimize …</text>
+<text x="195.0" y="166.0" font-size="10.5" fill="#4b5563" text-anchor="middle">window/initialWindows.ts — 처음 상태 · 되살리기</text>
+<rect x="400" y="55" width="330" height="150" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="565.0" y="102.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">apps/react — AppStateProvider</text>
+<text x="565.0" y="118.0" font-size="10.5" fill="#4b5563" text-anchor="middle">useSyncExternalStore로 구독</text>
+<text x="565.0" y="134.0" font-size="10.5" fill="#4b5563" text-anchor="middle">useAppState() 모양은 그대로</text>
+<text x="565.0" y="150.0" font-size="10.5" fill="#4b5563" text-anchor="middle">화면 폭 · 주소 · sessionStorage</text>
+<text x="565.0" y="166.0" font-size="10.5" fill="#4b5563" text-anchor="middle">방문 통계 · 주소 막대</text>
+<line x1="398" y1="110" x2="362" y2="110" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/><text x="366" y="102" font-size="10.5" fill="#6b7280" text-anchor="start">구독</text>
+<line x1="362" y1="150" x2="398" y2="150" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ah)"/><text x="366" y="166" font-size="10.5" fill="#6b7280" text-anchor="start">상태</text>
+<text x="380" y="240" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">core가 React · 브라우저를 쓰면 막는 세 곳</text>
+<rect x="30" y="255" width="220" height="70" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="140.0" y="278.0" font-size="11" fill="#e11d48" text-anchor="middle" font-weight="600">tsconfig.json</text>
+<text x="140.0" y="294.0" font-size="10.5" fill="#4b5563" text-anchor="middle">lib: ES2022, types: []</text>
+<text x="140.0" y="310.0" font-size="10.5" fill="#4b5563" text-anchor="middle">→ window를 모른다</text>
+<rect x="270" y="255" width="220" height="70" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="380.0" y="278.0" font-size="11" fill="#e11d48" text-anchor="middle" font-weight="600">package.json</text>
+<text x="380.0" y="294.0" font-size="10.5" fill="#4b5563" text-anchor="middle">react가 의존성에 없다</text>
+<text x="380.0" y="310.0" font-size="10.5" fill="#4b5563" text-anchor="middle">→ import 못 찾음</text>
+<rect x="510" y="255" width="220" height="70" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+<text x="620.0" y="278.0" font-size="11" fill="#e11d48" text-anchor="middle" font-weight="600">eslint</text>
+<text x="620.0" y="294.0" font-size="10.5" fill="#4b5563" text-anchor="middle">no-restricted-imports</text>
+<text x="620.0" y="310.0" font-size="10.5" fill="#4b5563" text-anchor="middle">react* · vue* · @/*</text>
+<text x="380" y="355" font-size="11" fill="#6b7280" text-anchor="middle">시험은 렌더링 없이 store 함수를 부르고 상태를 본다 (core 23개, Playwright 354개 그대로 통과)</text>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+  <rect width="720" height="300" fill="#fff"/>
+<text x="360.0" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">Font Awesome 7.3.1의 all.min.css가 선언하는 글꼴 이름</text>
+<rect x="60" y="55" width="360" height="32" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="240.0" y="75.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">"Font Awesome 7 Free"</text>
+<rect x="440" y="55" width="220" height="32" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="550.0" y="75.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">있음 (지금 이름)</text>
+<rect x="60" y="97" width="360" height="32" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="240.0" y="117.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">"Font Awesome 7 Brands"</text>
+<rect x="440" y="97" width="220" height="32" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="550.0" y="117.0" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">있음 (지금 이름)</text>
+<rect x="60" y="139" width="360" height="32" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="240.0" y="159.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">"Font Awesome 5 Free" / "5 Brands"</text>
+<rect x="440" y="139" width="220" height="32" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="550.0" y="159.0" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">있음 (옛 이름 호환)</text>
+<rect x="60" y="181" width="360" height="32" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="240.0" y="201.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">"FontAwesome"</text>
+<rect x="440" y="181" width="220" height="32" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+<text x="550.0" y="201.0" font-size="11" fill="#0369a1" text-anchor="middle" font-weight="600">있음 (4 호환)</text>
+<rect x="60" y="223" width="360" height="32" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="240.0" y="243.0" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">"Font Awesome 6 Free" / "6 Brands"</text>
+<rect x="440" y="223" width="220" height="32" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="550.0" y="243.0" font-size="11" fill="#b91c1c" text-anchor="middle" font-weight="600">없음</text>
+<text x="360" y="285" font-size="11" fill="#6b7280" text-anchor="middle">5와 4 이름은 남겨 두었지만 6 이름은 없다. 그래서 6을 적은 CSS만 기본 글꼴로 떨어졌다</text>
+</svg>

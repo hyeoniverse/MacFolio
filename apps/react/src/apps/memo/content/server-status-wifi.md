@@ -2,10 +2,32 @@
 title: 메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기
 date: 2026-10-05
 category: 개발기/MacFolio/프론트엔드
-summary: 장식이던 Wi-Fi 아이콘을 이 사이트 API 서버의 상태로 바꿨다. /health를 주기적으로 불러 응답 시간과 DB 상태를 막대 수로 보여 준다.
+summary: 장식이던 메뉴 막대의 Wi-Fi 아이콘을 이 사이트 API 서버의 상태로 바꿨다. /health를 30초마다 불러 응답 시간과 DB 상태를 막대 수로 보여 준다. 메뉴가 화면 끝에서 잘리던 것과 음량 창 자리가 어긋나던 것도 함께 고쳤다.
 ---
 
 메뉴 막대 오른쪽의 Wi-Fi 아이콘은 macOS처럼 보이려고 둔 장식이었다. 서버를 배포하고 나니 이 자리가 아까웠다. 서버가 살아 있는지 확인하려면 `/health`를 직접 열어 봐야 했기 때문이다. 그래서 Wi-Fi 막대가 **이 사이트 서버(API)의 상태**를 보여 주게 했다.
+
+## 고른 방법과 버린 방법
+
+| 방법                                        | 좋은 점                                   | 걸린 점                                                             |
+| ------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
+| 바깥 상태 페이지(업타임 서비스)로 링크      | 기록과 그래프가 이미 있다                 | 방문자가 사이트를 떠나야 하고, 지금 이 브라우저에서의 상태는 아니다 |
+| 앱마다 실패할 때만 "서버 오류"를 띄우기     | 따로 요청이 없다                          | 쓰기 전에는 서버 상태를 모른다                                      |
+| 메뉴 막대에서 `/health`를 주기적으로 (고름) | 사이트 어디서든 보이고, macOS 모양 그대로 | 30초마다 요청이 하나씩 간다                                         |
+
+`/health`는 이미 있었다. 서버가 DB에 `SELECT 1`을 보내 보고, 되면 `status`·`database`·`version`을, 안 되면 503과 "DB에 연결할 수 없습니다."를 돌려준다. 프론트엔드 로딩 화면이 서버를 미리 깨우는 데 쓰던 경로라, 같은 것을 주기적으로 부르기만 하면 됐다.
+
+```ts
+// apps/api/src/health/health.controller.ts
+async check(): Promise<HealthResponse> {
+	try {
+		await this.prisma.$queryRaw`SELECT 1`;
+	} catch {
+		throw new ServiceUnavailableException('DB에 연결할 수 없습니다.');
+	}
+	return { status: 'ok', database: 'up', version: this.config.version };
+}
+```
 
 ## 막대가 뜻하는 것
 
@@ -17,7 +39,25 @@ summary: 장식이던 Wi-Fi 아이콘을 이 사이트 API 서버의 상태로 �
 | 하나 (주황) | DB 연결 안 됨         | 서버는 응답하지만 `/health`가 503과 DB 메시지를 돌려줌      |
 | 없음 + 사선 | 서버에 연결할 수 없음 | 응답이 없거나 다른 오류 (터널이 서버에 닿지 못하면 502·530) |
 
+![Wi-Fi 막대 수와 색으로 나타내는 서버 상태 다섯 가지와 확인 주기](./images/server-status-wifi-bars.svg '막대 수는 응답 시간, 주황은 DB, 사선은 연결할 수 없음')
+
 막대를 누르면 macOS Wi-Fi 메뉴처럼 상태, 응답 시간, 마지막으로 확인한 때, 서버 주소가 보이고, '지금 확인'과 'API 문서 열기'가 있다.
+
+![정상, DB 연결 안 됨, 서버에 연결할 수 없음의 세 메뉴](./images/server-status-wifi-menus.jpg '가짜 API로 세 상태를 만들어 찍었다. 막대 색과 사선, 메뉴 폭이 다르다')
+
+막대 수를 정하는 것은 작은 순수 함수다.
+
+```ts
+// apps/react/src/shared/server/serverStatus.ts
+export const SLOW_MS = 1000;
+export const FAST_MS = 300;
+
+export function barsOf({ state, latency }: Pick<ServerStatus, 'state' | 'latency'>): number {
+	if (state === 'online') return latency !== null && latency < FAST_MS ? 3 : 2;
+	if (state === 'slow' || state === 'database') return 1;
+	return 0;
+}
+```
 
 ## 언제 확인하나
 
@@ -25,6 +65,9 @@ summary: 장식이던 Wi-Fi 아이콘을 이 사이트 API 서버의 상태로 �
 - 탭을 다시 보거나 인터넷이 돌아오면(`online` 이벤트) 바로 확인한다. 인터넷이 끊기면(`offline`) 서버에 묻지 않고 '인터넷 연결 없음'으로 바꾼다
 - 메뉴를 열 때도 한 번 더 확인해서 최신 상태를 보여 준다
 - 한 번에 하나만 묻는다. 확인하는 중에 또 부르면 그 결과를 같이 기다린다
+- 6초 안에 답이 없으면 끊는다
+
+메뉴 막대와 휴대폰 상태 표시줄이 같은 상태를 본다. 보는 곳이 몇 개든 타이머는 하나만 돈다. 지켜보는 수를 세어 처음 하나가 생길 때 타이머를 걸고, 마지막 하나가 사라질 때 멈춘다.
 
 결과를 상태로 나누는 부분은 순수 함수로 두고 단위 테스트로 확인했다. 화면 테스트는 가짜 API의 `/health`를 정상 → DB 오류 → 연결 끊김 → 복구로 바꿔 가며 막대 수와 메뉴 글자를 확인한다.
 
@@ -32,7 +75,16 @@ summary: 장식이던 Wi-Fi 아이콘을 이 사이트 API 서버의 상태로 �
 
 Wi-Fi 메뉴는 화면 오른쪽 끝에서 열린다. 메뉴는 열 때 크기를 재서 화면 안쪽으로 당기는데, 이 메뉴는 열면서 서버를 다시 확인한다. '정상'이던 글이 '서버에 연결할 수 없음'으로 길어지면, 이미 정해 둔 자리에서 폭이 눌려 글자가 줄바꿈되고 끝이 잘렸다. 처음 잰 폭은 188px, 다 펴면 252px였다.
 
-공통 메뉴가 `ResizeObserver`로 자기 크기를 지켜보다가 커지면 다시 당기게 했다. 크기는 `getBoundingClientRect` 대신 `offsetWidth`로 잰다. 메뉴가 나타나는 애니메이션(scale) 중에 재면 실제보다 작게 재지기 때문이다. `offsetWidth`는 소수점을 반올림하므로(252.25 → 252) 1px 올려 잡는다. Apple 메뉴, 우클릭 메뉴처럼 같은 메뉴를 쓰는 곳이 모두 함께 고쳐졌다.
+공통 메뉴가 `ResizeObserver`로 자기 크기를 지켜보다가 커지면 다시 당기게 했다.
+
+```ts
+// apps/react/src/shared/ui/menu/Menu.tsx
+const resize = new ResizeObserver(place);
+resize.observe(menu);
+return () => resize.disconnect();
+```
+
+위 캡처의 세 메뉴도 폭이 다르다. 오른쪽의 '서버에 연결할 수 없음'이 가장 넓다. 크기는 `getBoundingClientRect` 대신 `offsetWidth`로 잰다. 메뉴가 나타나는 애니메이션(scale) 중에 재면 실제보다 작게 재지기 때문이다. `offsetWidth`는 소수점을 반올림하므로(252.25 → 252) 1px 올려 잡는다. Apple 메뉴, 우클릭 메뉴처럼 같은 메뉴를 쓰는 곳이 모두 함께 고쳐졌다.
 
 Wi-Fi 자리를 바꾸자 음량 창이 음량 아이콘에서 비켜나 열렸다. 음량 창의 자리가 CSS에 `right: 8.5rem`으로 박혀 있어서, 오른쪽 아이콘의 폭이 바뀌면 어긋나는 구조였다. 처음에는 누를 때 아이콘 자리를 재서 넘기게 고쳤는데, 숫자 대신 잰 값을 넣었을 뿐 구조는 그대로였다.
 
@@ -42,10 +94,25 @@ Wi-Fi 자리를 바꾸자 음량 창이 음량 아이콘에서 비켜나 열렸�
 
 메뉴 막대는 넘치는 것을 잘라 내서(`overflow: hidden`) 음량 창을 아이콘 안에 두고 CSS만으로 띄울 수는 없다. 그래서 Apple 메뉴·서버 상태처럼 **버튼과 떠 있는 창을 함께 가진 메뉴 막대 항목**(`VolumeMenu`)으로 바꿨다. 창은 body에 그리고, 자리는 다른 떠 있는 창들과 같은 공통 함수(`placeBelow`)로, 닫기는 공통 `useDismiss`(바깥 누르기, Esc)로 한다. 메뉴 막대는 이제 `<VolumeMenu />` 한 줄만 둔다.
 
-김에 메뉴 막대 글자 굵기도 macOS처럼 맞췄다. 막대 전체가 굵게(700) 되어 있던 것을 보통 굵기로 바꾸고, 맨 앞 앱 이름(Finder)만 굵게 둔다.
+같은 PR에서 메뉴 막대 글자 굵기도 macOS처럼 맞췄다. 막대 전체가 굵게(700) 되어 있던 것을 보통 굵기로 바꾸고, 맨 앞 앱 이름(Finder)만 굵게 둔다.
 
 ## 맥에서만 깨지던 빌드
 
 작업하다가 타입 검사가 맥에서만 실패했다. GitHub 앱이 `GithubActivity.tsx`(화면)와 `githubActivity.ts`(데이터)를 함께 쓰는데, 두 파일 이름이 대소문자만 다르다. 리눅스(CI)에서는 서로 다른 파일이지만, 대소문자를 가리지 않는 맥의 파일 시스템에서는 `'@/apps/github/GithubActivity'`가 `.ts`를 먼저 찾아 데이터 파일을 가져왔다. 화면 파일 이름을 `GithubContributions.tsx`로 바꿨다.
+
+## 확인
+
+- 단위(`shared/server/serverStatus.test.ts`): 응답 코드·시간·DB로 상태 나누기, 막대 수, `checkServer`가 `/health` 응답을 상태로 남기는지
+- E2E(`e2e/server-status.spec.ts`): 정상이면 막대가 차고 메뉴에 상태·응답 시간·주소가 보이는지, 'API 문서 열기'가 사이트 안의 API 문서 앱으로 열리는지, 가짜 API의 `/health`를 DB 오류 → 연결 끊김 → 복구로 바꿔 가며 막대와 글자가 따라 바뀌는지
+- 위 캡처는 미리보기 빌드에 가짜 API를 붙여 세 상태를 차례로 만들어 찍었다
+
+## 남은 것과 배운 것
+
+- **이 브라우저에서 본 상태다.** 방문자의 네트워크가 느리면 서버가 멀쩡해도 '응답 느림'이 된다. 서버가 죽었는지를 알리는 일은 따로 업타임 감시가 맡는다([서버가 죽으면 알려 주기](/memo/server-uptime-and-logs)).
+- **PR 미리보기에서는 늘 "연결할 수 없음"이었다.** 서버가 그 주소를 CORS로 허용하지 않아서였다. 이것은 다음 글에서 '이 주소에서는 쓸 수 없음'으로 가렸다([서버는 켜져 있는데 "서버에 연결할 수 없음"](/memo/server-status-blocked-origin)).
+- **고정 위치는 옆이 바뀌면 어긋난다.** 음량 창의 `right: 8.5rem`처럼 이웃의 폭에 기대는 숫자는, 이웃이 바뀌는 날 버그가 된다. 떠 있는 창은 기준 요소를 재서 놓는 공통 함수 하나로 모으는 것이 낫다.
+- **대소문자만 다른 파일 이름은 두지 않는다.** CI(리눅스)에서는 통과하고 맥에서만 깨진다.
+
+관련 글: [메뉴 막대의 배터리로 서버 자원과 방문 추이 보기](/memo/battery-server-resources) · [서버는 켜져 있는데 "서버에 연결할 수 없음"](/memo/server-status-blocked-origin). PR: [#90](https://github.com/hyeoniverse/MacFolio/pull/90).
 
 #MacFolio #데스크톱 #메뉴막대 #서버

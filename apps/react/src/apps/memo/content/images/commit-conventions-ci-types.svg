@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 470" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>main의 커밋 앞머리 (병합 커밋 제외 963개, 2026-10-19 기준)</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="470" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">main의 커밋 앞머리 (병합 커밋 제외 963개, 2026-10-19 기준)</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">기타 49개는 모두 10월 1일 전 커밋. 그 뒤 733개 중 규칙을 어긴 것은 0개</text>
+<text x="32" y="96" font-size="12" fill="#374151" text-anchor="start">feat</text>
+<rect x="182" y="83" width="600.0" height="20" rx="4" fill="#4f46e5"/>
+<text x="790.0" y="98" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">315개</text>
+<text x="32" y="132" font-size="12" fill="#374151" text-anchor="start">fix</text>
+<rect x="182" y="119" width="381.0" height="20" rx="4" fill="#4f46e5"/>
+<text x="570.952380952381" y="134" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">200개</text>
+<text x="32" y="168" font-size="12" fill="#374151" text-anchor="start">docs</text>
+<rect x="182" y="155" width="344.8" height="20" rx="4" fill="#4f46e5"/>
+<text x="534.7619047619048" y="170" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">181개</text>
+<text x="32" y="204" font-size="12" fill="#374151" text-anchor="start">refactor</text>
+<rect x="182" y="191" width="133.3" height="20" rx="4" fill="#4f46e5"/>
+<text x="323.33333333333337" y="206" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">70개</text>
+<text x="32" y="240" font-size="12" fill="#374151" text-anchor="start">style</text>
+<rect x="182" y="227" width="118.1" height="20" rx="4" fill="#4f46e5"/>
+<text x="308.0952380952381" y="242" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">62개</text>
+<text x="32" y="276" font-size="12" fill="#374151" text-anchor="start">chore</text>
+<rect x="182" y="263" width="74.3" height="20" rx="4" fill="#4f46e5"/>
+<text x="264.2857142857143" y="278" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">39개</text>
+<text x="32" y="312" font-size="12" fill="#374151" text-anchor="start">test</text>
+<rect x="182" y="299" width="51.4" height="20" rx="4" fill="#4f46e5"/>
+<text x="241.42857142857144" y="314" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">27개</text>
+<text x="32" y="348" font-size="12" fill="#374151" text-anchor="start">ci</text>
+<rect x="182" y="335" width="34.3" height="20" rx="4" fill="#4f46e5"/>
+<text x="224.28571428571428" y="350" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">18개</text>
+<text x="32" y="384" font-size="12" fill="#374151" text-anchor="start">perf</text>
+<rect x="182" y="371" width="3.8" height="20" rx="4" fill="#4f46e5"/>
+<text x="193.8095238095238" y="386" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">2개</text>
+<text x="32" y="420" font-size="12" fill="#374151" text-anchor="start">기타 (옛 형식)</text>
+<rect x="182" y="407" width="93.3" height="20" rx="4" fill="#b91c1c"/>
+<text x="283.3333333333333" y="422" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">49개</text>
+</svg>

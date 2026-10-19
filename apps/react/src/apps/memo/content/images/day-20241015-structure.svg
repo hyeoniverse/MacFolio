@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>2024년 10월 15일 메모 앱 첫판</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">메모 앱 첫판: 데이터가 코드 안에 있었다</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">2024년 10월 15일 11:42 커밋 기준</text>
+<rect x="32" y="86" width="330" height="180" rx="9" fill="#e6f0fd" stroke="#5b9bf0"/>
+<text x="44" y="107" font-size="12.5" font-weight="700" fill="#1d4f91">client: Memo.tsx (133줄)</text>
+<text x="44" y="126" font-size="11" fill="#1d4f91">folders: useState에 5개</text>
+<text x="44" y="142" font-size="11" fill="#1d4f91">  모든 iCloud 메모, 메모, 공부 …</text>
+<text x="44" y="158" font-size="11" fill="#1d4f91">notes: useState에 3개</text>
+<text x="44" y="174" font-size="11" fill="#1d4f91">  파스타 레시피, 책 읽기 …</text>
+<text x="44" y="190" font-size="11" fill="#1d4f91">새로고침하면 처음으로</text>
+<rect x="398" y="86" width="330" height="180" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
+<text x="410" y="107" font-size="12.5" font-weight="700" fill="#7a5a12">server: routes/memo.js (24줄)</text>
+<text x="410" y="126" font-size="11" fill="#7a5a12">let memos = []  (메모리 배열)</text>
+<text x="410" y="142" font-size="11" fill="#7a5a12">GET·POST /api/memos</text>
+<text x="410" y="158" font-size="11" fill="#7a5a12">PORT 5000, 따로 띄우는 app</text>
+<text x="410" y="174" font-size="11" fill="#7a5a12">client는 아직 부르지 않음</text>
+<text x="410" y="190" font-size="11" fill="#7a5a12">같은 커밋에서 mail.js 39줄 지움</text>
+</svg>
