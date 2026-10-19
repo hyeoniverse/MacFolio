@@ -83,6 +83,21 @@ test.describe('창', () => {
 		const restored = (await github.boundingBox())!;
 		expect(restored).toEqual(before);
 	});
+
+	test('최대화한 창도 모서리를 끌면 최대화가 풀리며 크기가 바뀐다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+		await github.getByRole('button', { name: '전체 화면' }).click();
+		const maximized = (await github.boundingBox())!;
+
+		await dragBy(page, github.locator('.resize-handle.bottom-right'), -300, -200, { x: 0.25, y: 0.25 });
+
+		const after = (await github.boundingBox())!;
+		expect(maximized.width - after.width).toBeCloseTo(300, -1);
+		expect(maximized.height - after.height).toBeCloseTo(200, -1);
+		expect(after.x).toBeCloseTo(maximized.x, 0);
+	});
 });
 
 test.describe('팝업', () => {

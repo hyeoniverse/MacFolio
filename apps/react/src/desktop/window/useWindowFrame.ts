@@ -59,7 +59,9 @@ export function useWindowFrame(appName: AppName) {
 
 	const begin = (event: React.PointerEvent, next: GestureKind) => {
 		// 최대화 중에는 옮기지 않고, 제목 표시줄 안의 버튼(닫기 등)을 누른 경우도 무시한다
-		if (isMaximized || (event.target as Element).closest('button, [role="button"]')) return;
+		if ((isMaximized && next.kind === 'move') || (event.target as Element).closest('button, [role="button"]')) return;
+		// 최대화 중에 크기를 조절하면 최대화를 풀고 지금(꽉 찬) 크기에서부터 조절한다 (macOS처럼)
+		if (isMaximized) setIsMaximized(false);
 		event.preventDefault();
 		event.stopPropagation();
 		event.currentTarget.setPointerCapture(event.pointerId);
