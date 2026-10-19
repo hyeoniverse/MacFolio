@@ -283,6 +283,11 @@ button.memo-admin-chip {
 	.memo-reader-toolbar .memo-toolbar-tools-inner {
 		gap: var(--space-4);
 	}
+
+	/* 검색 칸 앞은 그대로 띄워 도구와 구분한다 */
+	.memo-reader-toolbar > .memo-search {
+		margin-left: var(--space-8);
+	}
 }
 
 @container (max-width: 390px) {
