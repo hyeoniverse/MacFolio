@@ -1365,7 +1365,7 @@
 				],
 				"responses": {
 					"200": {
-						"description": "파일. 이미지는 바로 보이고, 나머지는 내려받는다"
+						"description": "파일. 이미지·MP4는 바로 보이고, 나머지는 내려받는다. Range 요청이면 206으로 그 구간만"
 					},
 					"404": {
 						"description": "파일이 없다"
@@ -1544,13 +1544,13 @@
 						"description": "더한 배경화면"
 					},
 					"400": {
-						"description": "이미지가 없거나 이미지가 아니다"
+						"description": "파일이 없거나 이미지·MP4가 아니다"
 					},
 					"401": {
 						"description": "관리자로 로그인하지 않았다"
 					},
 					"413": {
-						"description": "이미지 한 장이 10MB를 넘는다"
+						"description": "이미지가 10MB, 동영상이 30MB를 넘는다"
 					}
 				},
 				"security": [

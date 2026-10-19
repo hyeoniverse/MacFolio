@@ -22,6 +22,13 @@ const fakeGithub: Partial<GithubClient> = {
 
 const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
 const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 4, 5, 6]);
+/** ftyp 상자(주 브랜드 isom)로 시작하는 MP4. 뒤에 크기를 채운다 */
+const mp4 = (size = 64) => {
+	const data = Buffer.alloc(size, 7);
+	Buffer.from([0, 0, 0, 0x20, ...Buffer.from('ftypisom'), 0, 0, 2, 0]).copy(data);
+	return data;
+};
+const MB = 1024 * 1024;
 
 describe('배경화면 (e2e)', () => {
 	let app: INestApplication;
@@ -136,5 +143,55 @@ describe('배경화면 (e2e)', () => {
 		expect(await prisma.upload.count()).toBe(0);
 		await request(server()).get(created.body.image).expect(404);
 		await request(server()).delete(`/wallpapers/${created.body.id}`).set('Cookie', adminCookie).expect(404);
+	});
+
+	it('MP4 동영상도 올린다: video가 true이고, Range 요청에는 206으로 그 구간만 보낸다', async () => {
+		const video = mp4(1000);
+		const created = await request(server())
+			.post('/wallpapers')
+			.set('Cookie', adminCookie)
+			.attach('image', video, { filename: '파도.mp4', contentType: 'video/mp4' })
+			.attach('thumbnail', JPEG, { filename: 'poster.jpg', contentType: 'image/jpeg' })
+			.expect(201);
+		expect(created.body).toMatchObject({ name: '파도', video: true });
+		expect((await request(server()).get('/wallpapers').expect(200)).body[0].video).toBe(true);
+
+		const whole = await request(server()).get(created.body.image).expect(200);
+		expect(whole.headers['content-type']).toBe('video/mp4');
+		expect(whole.headers['accept-ranges']).toBe('bytes');
+		expect(whole.headers['content-disposition']).toMatch(/^inline/);
+		const part = await request(server()).get(created.body.image).set('Range', 'bytes=0-11').expect(206);
+		expect(part.headers['content-range']).toBe('bytes 0-11/1000');
+		expect(Buffer.from(part.body).equals(video.subarray(0, 12))).toBe(true);
+		await request(server()).get(created.body.image).set('Range', 'bytes=5000-').expect(416);
+	});
+
+	it('동영상은 30MB까지, 이미지는 10MB까지. 포스터가 이미지가 아니면 400', async () => {
+		await request(server())
+			.post('/wallpapers')
+			.set('Cookie', adminCookie)
+			.attach('image', mp4(12 * MB), { filename: '긴 파도.mp4', contentType: 'video/mp4' })
+			.attach('thumbnail', JPEG, 'poster.jpg')
+			.expect(201);
+		const bigJpeg = Buffer.concat([JPEG, Buffer.alloc(11 * MB)]);
+		await request(server())
+			.post('/wallpapers')
+			.set('Cookie', adminCookie)
+			.attach('image', bigJpeg, 'big.jpg')
+			.attach('thumbnail', JPEG, 'poster.jpg')
+			.expect(413);
+		await request(server())
+			.post('/wallpapers')
+			.set('Cookie', adminCookie)
+			.attach('image', mp4(31 * MB), 'huge.mp4')
+			.attach('thumbnail', JPEG, 'poster.jpg')
+			.expect(413);
+		await request(server())
+			.post('/wallpapers')
+			.set('Cookie', adminCookie)
+			.attach('image', mp4(), 'a.mp4')
+			.attach('thumbnail', mp4(), 'b.mp4')
+			.expect(400);
+		expect(await prisma.wallpaper.count()).toBe(1);
 	});
 });
