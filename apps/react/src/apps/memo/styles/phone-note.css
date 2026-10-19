@@ -184,3 +184,8 @@
 	color: var(--memo-text);
 	font-size: var(--text-title3);
 }
+
+/* 휴대폰: 아래쪽 버튼 줄(새 메모·서식) 위로 올린다 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-text-size {
+	bottom: 74px;
+}

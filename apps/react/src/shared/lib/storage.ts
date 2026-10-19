@@ -10,6 +10,7 @@ export const STORAGE_KEYS = {
 	memoRecentFinds: 'macfolio:memo:recent-finds',
 	memoSidebarWidth: 'macfolio:memo:sidebar-width',
 	memoListWidth: 'macfolio:memo:list-width',
+	memoTextScale: 'macfolio:memo:text-scale',
 	weatherPlaces: 'macfolio:weather:places',
 	weatherUnit: 'macfolio:weather:unit',
 	/** 바탕화면 아이콘의 칸 (desktop/icons) */

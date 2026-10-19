@@ -28,7 +28,8 @@ import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import FolderSidebar from './components/FolderSidebar';
 import PaneResizer from './components/PaneResizer';
-import { loadPaneWidth, savePaneWidth } from './memoStorage';
+import { loadPaneWidth, loadTextScale, savePaneWidth, saveTextScale, stepTextScale, TEXT_SCALES } from './memoStorage';
+import { cssVars } from '@/shared/lib/cssVars';
 import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
 
 import Menu from '@/shared/ui/menu/Menu';
@@ -158,6 +159,8 @@ const Memo: React.FC = () => {
 	// 사이드바 너비(px): 경계를 끌어 바꾸고 이 브라우저에 남긴다. 끄는 동안은 칸 너비 애니메이션을 끈다
 	const [sidebarWidth, setSidebarWidth] = useState(() => loadPaneWidth('sidebar'));
 	const [listWidth, setListWidth] = useState(() => loadPaneWidth('list'));
+	/** 읽기 화면 글자 크기 (보는 사람마다 이 브라우저에 남는다) */
+	const [textScale, setTextScale] = useState(loadTextScale);
 	const [resizing, setResizing] = useState(false);
 	const memoRef = useRef<HTMLDivElement>(null);
 	/**
@@ -474,6 +477,44 @@ const Memo: React.FC = () => {
 
 	/** 편집기를 보이는 중인지 (관리자, 최근 삭제·잠금이 아닌 글이나 새 메모. 읽기 화면으로 보는 중이면 아니다) */
 	const writing = editing && !inTrash && (newDraft !== null || (selected !== null && !selected.locked && !readerView));
+
+	/** 읽기 화면 글자 크기: 본문 오른쪽 아래에 떠 있는 가− / 가+ 알약 (편집기를 보이는 중에는 뺀다) */
+	const textSizeControl = () => {
+		const change = (step: 1 | -1) => {
+			const next = stepTextScale(textScale, step);
+			setTextScale(next);
+			saveTextScale(next);
+		};
+		return (
+			selected &&
+			!writing && (
+				<div className="memo-text-size" role="group" aria-label="글자 크기">
+					<button
+						type="button"
+						aria-label="글자 작게"
+						title="글자 작게"
+						disabled={textScale === TEXT_SCALES[0]}
+						onClick={() => change(-1)}
+					>
+						<span className="small" aria-hidden="true">
+							가
+						</span>
+					</button>
+					<button
+						type="button"
+						aria-label="글자 크게"
+						title="글자 크게"
+						disabled={textScale === TEXT_SCALES.at(-1)}
+						onClick={() => change(1)}
+					>
+						<span className="large" aria-hidden="true">
+							가
+						</span>
+					</button>
+				</div>
+			)
+		);
+	};
 
 	const empty = (
 		<>
@@ -829,19 +870,22 @@ const Memo: React.FC = () => {
 							)}
 							{(!editing || inTrash || (newDraft === null && (selected?.locked || readerView))) && selected && (
 								// 글이 바뀌면 새로 그려서 나타나는 애니메이션이 다시 돈다. 최근 삭제된 항목의 글과 잠긴 메모는 관리자에게도 읽기 화면
-								<ReaderBody
-									key={selected.slug}
-									post={selected}
-									today={today}
-									views={views}
-									editing={editing && Boolean(selected.locked)}
-									footer={!inTrash && postFooter(selected)}
-									onRestore={() => void restoreDeleted(selected)}
-									onPurge={() => void purgeDeleted(selected)}
-									onUnlock={() => toggleLock(selected)}
-								/>
+								<div className="memo-text-scale" style={cssVars({ 'memo-text-scale': textScale })}>
+									<ReaderBody
+										key={selected.slug}
+										post={selected}
+										today={today}
+										views={views}
+										editing={editing && Boolean(selected.locked)}
+										footer={!inTrash && postFooter(selected)}
+										onRestore={() => void restoreDeleted(selected)}
+										onPurge={() => void purgeDeleted(selected)}
+										onUnlock={() => toggleLock(selected)}
+									/>
+								</div>
 							)}
 						</div>
+						{textSizeControl()}
 					</article>
 
 					{revisionsOpen &&

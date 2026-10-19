@@ -29,6 +29,24 @@ test.describe('메모 (블로그)', () => {
 		expect(search!.x - (toggle!.x + toggle!.width)).toBeGreaterThanOrEqual(8);
 	});
 
+	test('읽기 화면의 − / + 로 글자 크기를 바꾸고, 새로 열어도 유지된다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const heading = memo.getByRole('article').getByRole('heading', { level: 1 });
+		const before = (await heading.boundingBox())!.height;
+
+		await memo.getByRole('button', { name: '글자 크게' }).click();
+		await memo.getByRole('button', { name: '글자 크게' }).click();
+		await expect.poll(async () => (await heading.boundingBox())!.height).toBeGreaterThan(before * 1.2);
+
+		await enterDesktop(page);
+		await dockItem(page, 'memo').click();
+		await expect.poll(async () => (await heading.boundingBox())!.height).toBeGreaterThan(before * 1.2);
+
+		// 가장 작은 단계에서는 더 줄일 수 없다
+		for (let i = 0; i < 4; i++) await memo.getByRole('button', { name: '글자 작게' }).click({ force: true });
+		await expect(memo.getByRole('button', { name: '글자 작게' })).toBeDisabled();
+	});
+
 	test('글을 고르면 Markdown 본문(제목, 표, 코드)이 렌더링된다', async ({ page }) => {
 		const memo = await openMemo(page);
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
