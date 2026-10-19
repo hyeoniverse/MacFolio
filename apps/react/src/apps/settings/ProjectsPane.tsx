@@ -46,6 +46,7 @@ import DatePicker from '@/shared/ui/date/DatePicker';
 import { todayIso } from '@/shared/ui/date/calendar';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
+import Switch from '@/shared/ui/switch/Switch';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import { move as moveItem } from '@/apps/settings/showcase';
 import { fillWithSample } from '@/apps/settings/lookSamples';
@@ -818,7 +819,7 @@ const TagInput = ({
 };
 
 /** 켜고 끄는 줄: 왼쪽 이름(아래 설명), 오른쪽 토글 */
-const Switch = ({
+const SwitchRow = ({
 	label,
 	checked,
 	onChange,
@@ -832,14 +833,13 @@ const Switch = ({
 	const id = useId();
 	return (
 		<FormRow label={label} htmlFor={id} hint={hint} hintId={`${id}-hint`} align="end">
-			<input
+			<Switch
 				id={id}
-				type="checkbox"
-				role="switch"
+				size="small"
 				className="projects-switch"
 				aria-describedby={hint ? `${id}-hint` : undefined}
 				checked={checked}
-				onChange={(event) => onChange(event.target.checked)}
+				onChange={onChange}
 			/>
 		</FormRow>
 	);
@@ -2368,7 +2368,7 @@ const TeamEditor = ({ members, onChange }: { members: Member[]; onChange: (membe
 						hint="비워 두면 이름 첫 글자로 그립니다."
 						onChange={(avatar) => update(patchOf(member, { avatar }))}
 					/>
-					<Switch
+					<SwitchRow
 						label="나"
 						checked={Boolean(member.me)}
 						hint="이 프로젝트에서 내가 맡은 자리입니다. 강조해서 보입니다."
@@ -2927,7 +2927,7 @@ const ProjectEditor = ({
 							{tab === 'app' && (
 								<>
 									<Group title="앱">
-										<Switch
+										<SwitchRow
 											label="이 사이트 안에서 창으로 열기"
 											checked={Boolean(app)}
 											hint="데모를 창 안(iframe)에 띄우는 앱을 만듭니다. Dock·Launchpad·터미널 open에 나옵니다."
@@ -2955,7 +2955,7 @@ const ProjectEditor = ({
 												fromPicked={(src) => src.replace(/^\/imgs\//, '')}
 												hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘입니다 (이미지 폴더 기준 경로 또는 올린 그림)."
 											/>
-											<Switch
+											<SwitchRow
 												label="Dock에 고정"
 												checked={app.inDock !== false}
 												hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
@@ -3204,18 +3204,15 @@ const ProjectsPane = () => {
 												onClick={() => update(rows.filter((other) => other !== row))}
 											/>
 										) : (
-											<input
-												type="checkbox"
-												role="switch"
+											<Switch
+												size="small"
 												className="projects-switch projects-row-switch"
 												aria-label={`${name} 보이기`}
 												title={row.hidden ? '숨긴 프로젝트입니다.' : '보이는 프로젝트입니다.'}
 												checked={!row.hidden}
 												disabled={busy}
-												onChange={(event) =>
-													update(
-														rows.map((other) => (other === row ? { ...row, hidden: !event.target.checked } : other))
-													)
+												onChange={(on) =>
+													update(rows.map((other) => (other === row ? { ...row, hidden: !on } : other)))
 												}
 											/>
 										)}

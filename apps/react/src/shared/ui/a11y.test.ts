@@ -11,6 +11,7 @@ import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Modal from '@/shared/ui/dialog/Modal';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import Sheet from '@/shared/ui/sheet/Sheet';
+import Switch from '@/shared/ui/switch/Switch';
 import ShareIcon from '@/shared/ui/ShareIcon';
 
 const html = (element: ReactElement) => renderToStaticMarkup(element);
@@ -88,6 +89,18 @@ describe('입력', () => {
 		expect(empty).toContain('aria-expanded="false"');
 		expect(html(createElement(DatePicker, { value: '2026-10-17', onChange: noop, label: '게시일' }))).toContain(
 			'aria-label="게시일 2026. 10. 17., 바꾸기"'
+		);
+	});
+
+	it('스위치: 켜짐·꺼짐을 읽는 switch 역할이고, 이름은 aria-label이나 감싼 label로 준다', () => {
+		const out = html(createElement(Switch, { checked: true, onChange: noop, 'aria-label': '클릭 소리' }));
+		expect(out).toContain('type="checkbox"');
+		expect(out).toContain('role="switch"');
+		expect(out).toContain('aria-label="클릭 소리"');
+		expect(out).toContain('checked=""');
+		expect(out).toContain('class="ui-switch regular"');
+		expect(html(createElement(Switch, { checked: false, onChange: noop, size: 'small' }))).toContain(
+			'class="ui-switch small"'
 		);
 	});
 });
