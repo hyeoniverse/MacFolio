@@ -128,8 +128,6 @@
 	--color-danger: #e5484d; /* 지우기·오류 글자 (Menu·Button이 이 이름을 먼저 찾던 값) */
 	--color-notes-yellow: #fcb827; /* macOS 메모 앱의 노란 강조 (라이트·다크 같은 값, Digital Color Meter로 잼). 날짜 고르기도 같이 쓴다 */
 	--color-on-notes-yellow: #2b2100; /* 노란 바탕 위 글자 */
-	/* 노란 글자: 태그·링크·각주·뒤로 (macOS 메모처럼 강조색 그대로) */
-	--color-notes-yellow-text: var(--color-notes-yellow);
 
 	/*
 	 * 라이트·다크 값이 짝으로 되풀이되던 색. 앱마다 [data-app]과 :root[data-theme='dark'] [data-app]에

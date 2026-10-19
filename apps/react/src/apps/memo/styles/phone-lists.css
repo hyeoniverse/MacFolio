@@ -104,7 +104,7 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	font-size: var(--text-callout);
 }
 
@@ -478,7 +478,7 @@
 	margin-right: var(--space-14);
 	border: 2px solid var(--memo-accent);
 	background: none;
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	font-size: var(--text-footnote);
 }
 

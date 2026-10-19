@@ -183,7 +183,7 @@
 /* 고정된 메모 / 메모 묶음 이름 */
 /* 본문의 #태그 (읽기 화면은 누르면 그 태그의 글만, 편집기는 칠하기만) */
 .memo-tag {
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	font-weight: 600;
 }
 
@@ -222,7 +222,7 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	font-size: var(--text-caption2);
 	font-weight: 600;
 	cursor: pointer;
@@ -267,7 +267,7 @@
 .memo .memo-tag-chip.exclude {
 	border-color: var(--memo-accent);
 	background-color: transparent;
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	text-decoration: line-through;
 }
 

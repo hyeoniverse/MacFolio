@@ -78,7 +78,7 @@
 }
 
 .memo-markdown a {
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	text-decoration: underline;
 }
 
@@ -242,7 +242,7 @@
    번호는 저장한 이름이 아니라 본문에 나온 차례(data-number)로 보인다 */
 .memo-inline-editor sup[data-type='footnote_reference'] {
 	padding: 0 0.15em;
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	font-weight: 600;
 	text-decoration: underline;
 	cursor: pointer;
@@ -327,7 +327,7 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	font: inherit;
 	cursor: pointer;
 }

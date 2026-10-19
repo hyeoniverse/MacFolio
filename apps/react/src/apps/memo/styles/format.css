@@ -239,7 +239,7 @@
 }
 
 .memo-image-drop i {
-	color: var(--color-notes-yellow-text);
+	color: var(--memo-accent);
 	font-size: var(--text-title2);
 }
 

@@ -122,7 +122,7 @@
 
 .ui-calendar-picks button.today,
 .ui-calendar-grid button.today {
-	color: var(--color-notes-yellow-text);
+	color: var(--color-notes-yellow);
 	font-weight: 700;
 }
 
