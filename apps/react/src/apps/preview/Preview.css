@@ -15,11 +15,6 @@
 /* ─── 위 막대 ─── */
 .preview-toolbar {
 	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 버튼·찾기 칸만 그 위로 올린다 */
-	display: flex;
-	flex: none;
-	align-items: center;
-	gap: var(--space-8);
-	height: 52px;
 	padding: 0 var(--space-10) 0 76px;
 }
 

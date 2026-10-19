@@ -53,7 +53,7 @@
 /* 신호등 버튼 자리 (통합형 창) */
 .finder-lights-space {
 	flex: none;
-	height: 52px;
+	height: var(--toolbar-height);
 }
 
 .finder-sidebar h2 {
@@ -103,11 +103,6 @@
 
 .finder-toolbar {
 	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 두고 버튼·찾기 칸만 위로 올린다 */
-	display: flex;
-	flex: none;
-	align-items: center;
-	gap: var(--space-8);
-	height: 52px;
 	padding: 0 12px;
 	border-bottom: 1px solid var(--color-divider);
 }

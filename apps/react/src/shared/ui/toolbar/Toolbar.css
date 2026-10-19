@@ -1,0 +1,13 @@
+/*
+ * 도구 막대 (shared/ui/toolbar/Toolbar.tsx).
+ * components 층: 앱의 층 밖 규칙에는 진다. 여백·테두리·바탕, 다른 간격은 앱이 정한다
+ */
+@layer components {
+	.ui-toolbar {
+		display: flex;
+		flex: none;
+		align-items: center;
+		gap: var(--space-8);
+		height: var(--toolbar-height);
+	}
+}

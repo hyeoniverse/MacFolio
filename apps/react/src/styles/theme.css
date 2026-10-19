@@ -96,6 +96,7 @@
 	--color-divider: #e5e5ea;
 	--color-control-bg: #ffffff;
 	--shadow-window: 10px 10px 10px rgba(0, 0, 0, 0.5);
+	--toolbar-height: 52px; /* 창 제목 막대·도구 막대 높이 (통합형 창) */
 
 	/* 팝업·알림 */
 	--color-popover-bg: #ffffff;

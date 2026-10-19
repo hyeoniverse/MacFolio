@@ -7,6 +7,7 @@ import TrashedItems from './TrashedItems';
 import { structureNow } from '@/apps/finder/structure';
 import { useServerFiles } from './useServerFiles';
 import './Bin.css';
+import Toolbar from '@/shared/ui/toolbar/Toolbar';
 
 /**
  * 휴지통: 비울 수 있는 것을 모아 둔다.
@@ -64,10 +65,10 @@ const Bin: React.FC = () => {
 					</nav>
 
 					<div className="bin-main">
-						<div className="bin-toolbar">
+						<Toolbar className="bin-toolbar">
 							<h1 className="bin-title">{inTrash ? '버린 항목' : inFiles ? '서버 파일' : '내 브라우저 데이터'}</h1>
 							{inFiles && <span className="bin-count">{serverFiles.rows.length}개의 항목</span>}
-						</div>
+						</Toolbar>
 						{inTrash ? <TrashedItems /> : inFiles ? <ServerFiles files={serverFiles} /> : <BrowserData />}
 					</div>
 				</div>

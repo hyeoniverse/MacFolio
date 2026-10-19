@@ -23,6 +23,7 @@ import ImageView from './ImageView';
 import OpenPanel from './OpenPanel';
 import Slideshow from './Slideshow';
 import './Preview.css';
+import Toolbar from '@/shared/ui/toolbar/Toolbar';
 
 /** 마운트된 미리보기 창 수 (종료로 내려갔는지 보려고) */
 let mounted = 0;
@@ -289,7 +290,7 @@ const Preview: React.FC = () => {
 				/>
 			) : (
 				<div className={`preview${sidebar ? ' with-sidebar' : ''}`}>
-					<header className="preview-toolbar">
+					<Toolbar as="header" className="preview-toolbar">
 						<IconButton
 							className="preview-sidebar-toggle"
 							label={sidebar ? '사이드바 가리기' : '사이드바 보기'}
@@ -375,7 +376,7 @@ const Preview: React.FC = () => {
 								</div>
 							)}
 						</div>
-					</header>
+					</Toolbar>
 					{popup && (
 						<Menu
 							label={popup.kind === 'info' ? '정보' : '공유'}

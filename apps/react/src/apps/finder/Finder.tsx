@@ -29,6 +29,7 @@ import FinderMobile from './FinderMobile';
 import '@/apps/finder/Finder.css';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import Toolbar from '@/shared/ui/toolbar/Toolbar';
 
 type View = 'icons' | 'list';
 
@@ -466,7 +467,7 @@ const Finder: React.FC = () => {
 					</nav>
 
 					<div className="finder-main">
-						<div className="finder-toolbar">
+						<Toolbar className="finder-toolbar">
 							<div className="finder-nav">
 								<IconButton
 									icon="fa-solid fa-chevron-left"
@@ -512,7 +513,7 @@ const Finder: React.FC = () => {
 									if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
 								}}
 							/>
-						</div>
+						</Toolbar>
 
 						{/* 좁은 창: 사이드바 대신 위치를 한 줄로 */}
 						<div className="finder-chips" role="group" aria-label="위치">
