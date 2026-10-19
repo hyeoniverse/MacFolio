@@ -1,23 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/useAppState';
 import { fileUrl } from '@/apps/finder/documents';
-import { isFileItem, mediaKind, type FileItem, type FinderItem } from '@/apps/finder/files';
-import { useLocations } from '@/apps/finder/useLocations';
-import FinderIcon from '@/apps/finder/FinderIcon';
+import { mediaKind } from '@/apps/finder/files';
+import OpenPanel, { type OpenPanelApp } from '@/apps/preview/OpenPanel';
 import { openInPlayer, resetPlayer, usePlayer, type PlayerFile } from './playerStore';
 import PlayerControls from './PlayerControls';
 import './QuickTime.css';
-
-/** 트리 안의 동영상·소리 파일 (파일 고르기 칸) */
-const mediaFiles = (items: FinderItem[]): FileItem[] =>
-	items.flatMap((item) =>
-		item.kind === 'folder' && !item.aliasOf
-			? mediaFiles(item.children)
-			: isFileItem(item) && mediaKind(item.name)
-				? [item]
-				: []
-	);
 
 /** 재생 화면: 영상(소리는 음표)과 떠 있는 재생 막대. 마우스를 움직이면 막대가 나오고, 재생 중 2.5초 가만히 있으면 사라진다. 화면을 누르면 재생·멈춤 */
 const Stage: React.FC<{ file: PlayerFile }> = ({ file }) => {
@@ -72,18 +61,20 @@ const Stage: React.FC<{ file: PlayerFile }> = ({ file }) => {
 	);
 };
 
+/** 열기 창: 동영상·소리 파일만 열 수 있다 */
+const OPEN_APP: OpenPanelApp = {
+	name: 'QuickTime Player',
+	icon: '/imgs/quicktime.svg',
+	canOpen: (item) => item.kind === 'file' && mediaKind(item.name) !== null,
+};
+
 /**
  * QuickTime Player (macOS처럼): Finder·바탕화면에서 연 동영상·소리 파일을 재생한다. 검은 바탕에 macOS처럼 떠 있는 재생 막대(소리·뒤로·재생·앞으로·PIP·공유·속도, 시간 막대).
- * 파일 없이 열면 올린 동영상·소리 파일을 골라 연다. 창을 닫으면 비운다 (다음에 열면 고르기부터)
+ * 파일 없이 열면 미리보기와 같은 열기 창이 뜬다 (동영상·소리가 아닌 파일은 흐리게). 창을 닫으면 비운다 (다음에 열면 고르기부터)
  */
 const QuickTime: React.FC = () => {
 	const file = usePlayer();
-	const { apps } = useAppState();
-	const locations = useLocations();
-	const choices = useMemo(() => {
-		const seen = new Set<string>();
-		return mediaFiles(locations).filter((item) => !seen.has(item.key) && seen.add(item.key));
-	}, [locations]);
+	const { apps, closeApp } = useAppState();
 
 	// 빨간 버튼으로 닫으면 비운다 (미리보기와 같다)
 	const running = apps.quicktime.isRunning;
@@ -93,37 +84,21 @@ const QuickTime: React.FC = () => {
 		wasRunning.current = running;
 	}, [running]);
 
+	if (!file)
+		return (
+			<AppWindow title="QuickTime Player" appName="quicktime" chrome="unified">
+				<OpenPanel
+					app={OPEN_APP}
+					onOpen={(item) => openInPlayer({ key: item.key, name: item.name, media: mediaKind(item.name)! })}
+					onCancel={() => closeApp('quicktime')}
+				/>
+			</AppWindow>
+		);
+
 	return (
-		<AppWindow title={file?.name ?? 'QuickTime Player'} appName="quicktime">
-			<div className={`quicktime${file ? ' playing' : ''}`}>
-				{file ? (
-					<Stage key={file.key} file={file} />
-				) : (
-					<div className="quicktime-pick">
-						<p className="quicktime-pick-title">재생할 파일을 고르세요</p>
-						{choices.length === 0 ? (
-							<p className="quicktime-pick-empty">
-								올린 동영상·소리 파일이 없습니다. Finder에 mp4·mov·mp3 등을 끌어다 놓으세요.
-							</p>
-						) : (
-							<ul className="quicktime-pick-list" aria-label="동영상·소리 파일">
-								{choices.map((item) => (
-									<li key={item.id}>
-										<button
-											type="button"
-											onClick={() => openInPlayer({ key: item.key, name: item.name, media: mediaKind(item.name)! })}
-										>
-											<span className="quicktime-pick-icon">
-												<FinderIcon item={item} />
-											</span>
-											{item.name}
-										</button>
-									</li>
-								))}
-							</ul>
-						)}
-					</div>
-				)}
+		<AppWindow title={file.name} appName="quicktime">
+			<div className="quicktime playing">
+				<Stage key={file.key} file={file} />
 			</div>
 		</AppWindow>
 	);

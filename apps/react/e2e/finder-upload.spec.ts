@@ -281,6 +281,29 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect(finder.getByRole('option', { name: '자격.pdf' })).toBeVisible();
 	});
 
+	test('QuickTime Player를 파일 없이 열면 열기 창이 뜨고, 동영상·소리가 아닌 파일은 고를 수 없다', async ({ page }) => {
+		await fakeApi(page);
+		await fakeDocuments(page);
+		await openResumeFolder(page);
+		await dropFile(page, '[data-app="finder"] .finder-content', '이력서.pdf', [...tinyPdf()]);
+		await dropFile(page, '[data-app="finder"] .finder-content', '소개 영상.mp4', [1, 2, 3]);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'quicktime', exact: true }).click();
+
+		const player = appWindow(page, 'quicktime');
+		const panel = player.getByRole('dialog', { name: '열기' });
+		await expect(panel.getByRole('button', { name: 'QuickTime Player' })).toHaveAttribute('aria-current', 'true');
+		await panel.getByRole('button', { name: '문서' }).click();
+		await panel.getByRole('option', { name: '이력서', exact: true }).dblclick();
+		await expect(panel.getByRole('option', { name: '이력서.pdf' })).toHaveAttribute('aria-disabled', 'true');
+		const clip = panel.getByRole('option', { name: '소개 영상.mp4' });
+		await expect(clip).not.toHaveAttribute('aria-disabled', 'true');
+		await clip.click();
+		if (process.env.SHOT) await player.screenshot({ path: process.env.SHOT });
+		await panel.getByRole('button', { name: '열기' }).click();
+		await expect(player.locator('video')).toHaveAttribute('aria-label', '소개 영상.mp4');
+	});
+
 	test('방문자가 놓은 파일은 서버에 올리지 않고 내 화면에만 보인다 (새로고침하면 사라진다)', async ({ page }) => {
 		const api = await fakeApi(page);
 		const { puts, docs } = await fakeDocuments(page);
@@ -303,6 +326,15 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect(player).toBeVisible();
 		await expect(player.locator('video')).toHaveAttribute('src', /^blob:/);
 		await expect(player.locator('video')).toHaveAttribute('aria-label', '데모.mp4');
+
+		// 동영상도 오른쪽 클릭 › 데스크탑 사진 설정으로 움직이는 바탕화면이 된다
+		await dockItem(page, 'finder').click();
+		await clip.click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '데스크탑 사진 설정' }).click();
+		// (시험은 움직임 줄이기라 동영상은 그리지 않는다: 설정에 들어갔는지 본다)
+		await expect
+			.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('macfolio:settings') ?? '{}').wallpaperVideo))
+			.toMatch(/^blob:/);
 
 		// 바탕화면에 놓아도 그 자리에
 		await dropFile(page, '.desktop-icons', '사진.gif', [1, 2, 3]);
