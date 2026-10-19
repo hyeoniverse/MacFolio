@@ -156,6 +156,25 @@ RESOURCE_MONITOR=payg   # 종량제: 재고 보여 주기만 한다
 
 종량제일 때 요금과 예산 한도를 보여 주는 것은 Oracle의 요금 API를 불러야 해서 다음 단계로 나눴다.
 
+## 따라 하는 방법
+
+처음 서버를 만들 때 "Oracle 서버가 정말 무료인가"부터 확인했다. Always Free는 무료지만, 7일 동안 거의 놀면 회수 대상이 된다는 조건이 붙어 있다. 그래서 숫자를 재고 위험하면 메일을 받도록 했다. 켜는 법은 서버 `api.env`에 몇 줄을 더하는 것이다([apps/api/.env.example](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/.env.example)의 설명 그대로).
+
+```bash
+# ~/deploy/api.env
+RESOURCE_MONITOR=free
+OCI_SHAPE=VM.Standard.E2.1.Micro
+RESOURCE_ALERT_TO=받을 메일 주소       # 비우면 CONTACT_TO. 보내는 데는 RESEND_API_KEY·CONTACT_FROM을 쓴다
+```
+
+```bash
+cd ~/deploy && docker compose up -d api
+```
+
+확인은 관리자로 활동 상태 앱의 서버 탭을 열어 CPU·메모리·네트워크 그래프와 위험 표시가 나오는지 본다. 끄려면 `RESOURCE_MONITOR` 줄을 지우고 다시 띄운다. 회수 규칙과 대응은 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '유휴 회수', 계산은 [apps/api/src/resources/rules.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/resources/rules.ts).
+
+참고 문서: [Oracle Always Free 리소스(유휴 회수 조건)](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm), [Resend 문서](https://resend.com/docs).
+
 ## 남은 것과 배운 것
 
 - **잰 값은 Oracle의 값이 아니다.** 컨테이너의 네트워크는 API 컨테이너가 주고받은 양뿐이고, 네트워크·메모리는 평균으로 잰다. 그래서 일찍 알리는 쪽으로 계산했지만, 실제로 회수된 적이 없어 얼마나 일찍인지는 모른다.

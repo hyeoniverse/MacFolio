@@ -134,4 +134,17 @@ contracts에서는 `MessageInput = CommentInput` 한 줄로 적었다. 같은 �
 
 다음은 [연락 메일](/memo/contracts-contact)·[배경화면](/memo/contracts-wallpapers)·[파일](/memo/contracts-files)·[분석](/memo/contracts-analytics) 순으로 같은 방식을 이어 갔다.
 
+## 따라 해 보기
+
+계약을 바꿀 때는 `packages/contracts`를 먼저 고치고, 서버와 화면이 둘 다 따라오는지 본다.
+
+```bash
+pnpm --filter @macfolio/contracts test          # 스키마 시험
+pnpm --filter @macfolio/contracts build         # 서버는 빌드된 JS를 읽는다
+pnpm typecheck                                  # 화면·서버가 새 모양을 따르는지
+cd apps/react && npx playwright test e2e/messages.spec.ts --project=desktop-chromium
+```
+
+필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 같이 깨진다. 이게 이 작업으로 얻은 것이다. 확인한 뒤 되돌린다. 스키마는 [Zod](https://zod.dev/)로 쓰고, 패키지를 나눈 까닭은 [댓글 계약](/memo/contracts-comments)에 있다.
+
 #MacFolio #리팩터링 #zod #TypeScript

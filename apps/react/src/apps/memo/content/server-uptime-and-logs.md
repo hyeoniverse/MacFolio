@@ -97,6 +97,23 @@ docker inspect --format '{{.Name}} {{.HostConfig.LogConfig.Config}}' $(docker co
 
 마지막 줄이 확인이다. 컨테이너마다 실제로 적용된 로그 설정을 찍어, 셋 다 `max-size:10m`인지 본다.
 
+## 따라 하는 방법
+
+**업타임 감시**는 [.github/workflows/uptime.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/uptime.yml)이 10분마다 돈다. 바로 한 번 돌리려면 저장소의 Actions → uptime → Run workflow. 실패 메일은 GitHub Settings → Notifications → Actions에서 켜져 있어야 온다. 저장소에 60일 동안 활동이 없으면 예약 실행이 멈추니 그때 다시 켠다.
+
+**로그 로테이션**은 서버 `compose.yml`의 `x-logging`이다. 설정이 없던 서버라면 넣고 이렇게 확인한다.
+
+```bash
+cd ~/deploy
+docker compose config --quiet && echo OK
+docker compose up -d
+docker inspect --format '{{.Name}} {{.HostConfig.LogConfig.Config}}' $(docker compose ps -q)   # 셋 다 max-size:10m
+```
+
+로그를 볼 때는 `docker compose logs --tail=100 api`. 되돌리려면 `logging:` 줄을 지우고 `docker compose up -d`. 전체는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '로그와 상태'.
+
+참고 문서: [GitHub Actions schedule](https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule), [Docker json-file 로그 드라이버](https://docs.docker.com/engine/logging/drivers/json-file/).
+
 ## 남은 것과 배운 것
 
 - **알림은 cron을 마지막으로 바꾼 사람에게 간다.** 혼자 쓰는 저장소라 문제가 없지만, 사람이 늘면 알림 받을 사람을 따로 정해야 한다. GitHub 설정의 Notifications → Actions에서 실패 알림이 켜져 있어야 한다.

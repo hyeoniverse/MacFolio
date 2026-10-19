@@ -131,6 +131,20 @@ Cross-Origin-Opener-Policy: same-origin-allow-popups
 
 날씨 앱(Open-Meteo), 프로젝트 편집의 기술 칸 검색(npm 레지스트리), 관리자 문서 올리기(R2)는 기능 커밋에서 함께 더했고, 방문자가 놓은 PDF를 pdf.js가 `blob:` 주소로 읽는 것은 나중에 따로 고쳤다.
 
+## 직접 확인하는 방법
+
+헤더는 빌드가 `dist/_headers`에 쓰고 Cloudflare가 그대로 붙인다. 배포 전에는 미리보기 서버로, 배포 뒤에는 실제 주소로 본다.
+
+```bash
+cd apps/react && pnpm build
+grep -A3 '^/\*' dist/_headers | head
+curl -sI https://macfolio.hyeoniverse.com/ | grep -iE 'content-security-policy|strict-transport|x-content-type'
+```
+
+브라우저에서는 개발자 도구 Console에 `Refused to load …`가 없는지 본다. 새 바깥 출처를 쓰게 되면 [apps/react/worker/securityHeaders.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.ts)의 목록에 더하고 [apps/react/worker/securityHeaders.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.test.ts)로 확인한다. E2E는 CSP를 켠 채로 돈다(`playwright.config.ts`의 `CSP_TEST_API_URL`).
+
+참고 문서: [MDN CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [Cloudflare Workers 정적 자산 헤더(_headers)](https://developers.cloudflare.com/workers/static-assets/headers/), [CSP Evaluator](https://csp-evaluator.withgoogle.com/).
+
 ## 남은 것과 배운 것
 
 - **`style-src 'unsafe-inline'`은 남았다.** React의 `style` 속성과 Mermaid·Scalar가 만드는 `<style>` 때문이다. 스타일 주입은 스크립트보다 위험이 작지만, 라이브러리가 nonce를 받게 되면 닫을 수 있다.

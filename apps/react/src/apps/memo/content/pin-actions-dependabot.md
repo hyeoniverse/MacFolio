@@ -79,6 +79,23 @@ SHA는 `git ls-remote --tags`로 태그가 가리키는 커밋을 읽어 적었�
 - GitHub Actions의 `actor`는 "이 실행을 일으킨 사람"이지 "PR을 연 사람"이 아니다. 봇 예외를 둘 때는 무엇이 바뀌지 않는 값인지 따져야 한다.
 - Dependabot PR에도 CI 전체가 돈다. 화면이 바뀌지 않는 PR에 미리보기를 올리는 것은 CI 시간과 PR 댓글만 늘려서, PR 미리보기 배포는 Dependabot PR에서 건너뛰게 했다(`c8b5c0f8d`).
 
+## 따라 하는 방법
+
+액션 하나를 커밋으로 고정하는 순서다. 태그가 가리키는 커밋을 읽어 `uses:`에 넣고, 사람이 읽을 태그는 주석으로 남긴다.
+
+```bash
+git ls-remote https://github.com/actions/checkout 'refs/tags/v7.0.1*'
+# 'refs/tags/v7.0.1^{}' 줄이 있으면 그 줄의 SHA가 커밋이다 (없으면 'refs/tags/v7.0.1' 줄)
+```
+
+```yaml
+- uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+```
+
+그다음 [.github/dependabot.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/dependabot.yml)에 `github-actions` 생태계를 두면 Dependabot이 새 버전의 SHA와 주석을 함께 올리는 PR을 연다. 확인은 저장소의 Insights → Dependency graph → Dependabot에서 마지막 확인 시각을 보거나, `grep -rn "uses:" .github/workflows | grep -v "@[0-9a-f]\{40\}"`가 아무것도 내지 않는 것으로 한다. 되돌리려면 `uses:`를 태그로 바꾸면 되지만 권하지 않는다.
+
+참고 문서: [GitHub Actions 보안 강화(SHA 고정)](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions), [dependabot.yml 옵션](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference).
+
 ## 관련 글
 
 - [커밋 규칙을 문서 대신 CI로 지키기](/memo/commit-conventions-ci)

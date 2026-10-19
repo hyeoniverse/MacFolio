@@ -108,6 +108,16 @@ API 시험 이름은 "처음에는 메일만 확인한다. 누구나 읽고, 바
 - 가짜 Turnstile이 "확인 완료"를 토큰보다 먼저 보인 일처럼, 시험용 가짜도 진짜와 같은 순서를 지켜야 시험이 믿을 만하다. 가짜가 거짓말을 하면 앱이 맞게 막아도 시험이 실패한다.
 - 쓰기를 막는 장치는 사람 확인 말고도 요청 제한이 있다. 둘은 같이 쓴다([쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)).
 
+## 따라 하는 방법
+
+1. Cloudflare 대시보드 → Turnstile에서 위젯을 하나 만들고 사이트 주소를 넣는다. 사이트 키와 비밀 키가 나온다
+2. 서버 `~/deploy/api.env`에 `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`를 넣고 `docker compose up -d api`
+3. 관리자로 시스템 설정 → 개인정보 보호 및 보안에서 메일·댓글·메시지마다 켠다
+
+확인은 로그아웃한 창에서 댓글을 써 보는 것이다. 입력 칸 아래에 사람 확인 위젯이 보이고, 확인이 끝나기 전에 보내면 기다려 달라는 안내가 나와야 한다. 되돌리려면 설정에서 끄거나, 두 키를 비우면 서버가 확인 자체를 하지 않는다. 서버 쪽은 [apps/api/src/common/turnstile.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/turnstile.ts), 시험은 `cd apps/react && npx playwright test e2e/privacy.spec.ts`와 [apps/api/test/security.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/security.e2e.test.ts). 무엇을 모으는지는 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
+
+참고 문서: [Cloudflare Turnstile 시작하기](https://developers.cloudflare.com/turnstile/get-started/), [서버 쪽 검증](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
+
 ## 관련 글
 
 - [쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)

@@ -130,6 +130,20 @@ export const parseSpeechRequest = (body: unknown): SpeechRequest => demoInput(pa
 - 데모 PR(#236): `packages/contracts/src/demos.test.ts`에 시험 5개(공백 정리, 빈 글·긴 글·제어 문자·주소·욕설 거절, 객체가 아닌 몸통, 모르는 값은 기본값, 번역의 칸 수와 합친 상한)를 더했다. 음성의 기존 단위 시험 `speech/rules.test.ts`는 기대하는 오류 클래스만 `SpeechInputError`에서 `DemoInputError`로 바꿨고, 문구("80자")는 그대로 통과했다.
 - 개인정보 처리 안내(`docs/privacy.md`)의 "지난 날을 모으는 곳" 경로도 새 파일로 바꿨다.
 
+## 직접 확인하는 방법
+
+서버 리팩터링은 바깥에서 보이는 응답이 같아야 한다. 확인은 시험 셋이다.
+
+```bash
+pnpm --filter @macfolio/api typecheck
+pnpm --filter @macfolio/api test
+pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야 한다
+```
+
+나눈 서비스는 [apps/api/src/analytics/analytics-stats.service.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/analytics/analytics-stats.service.ts)처럼 같은 폴더에 있다. 데모 공용 규칙은 [packages/contracts/src/demos.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/contracts/src/demos.ts)에 두었고 화면과 서버가 같이 쓴다. 서버 구조 전체는 [docs/backend-design.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md).
+
+참고 문서: [NestJS 모듈](https://docs.nestjs.com/modules), [NestJS 프로바이더](https://docs.nestjs.com/providers).
+
 ## 남은 것과 배운 것
 
 - 조회 서비스는 그 뒤 기능이 붙어 지금 234줄이다. 다음에 나눌 곳이 생기면 요약과 실시간을 가르는 것이 먼저다.

@@ -120,6 +120,19 @@ await page.mouse.move(target.x + 41, target.y + 3);
 - Playwright의 끌기는 사람의 끌기와 이벤트 순서가 다를 수 있다. 라이브러리가 어떤 이벤트에 기대는지 먼저 읽으면 테스트가 채워 줘야 할 조건이 보인다
 - 아직 남은 것: 다른 끌기 시험에도 같은 "제자리 한 걸음"을 넣을지는 보지 않았다. 지금은 흔들리지 않아서 그대로 두었다
 
+## 따라 해 보기
+
+흔들리는 시험은 한 번 통과로는 고쳤는지 알 수 없다. 같은 시험을 여러 번 돌려 본다.
+
+```bash
+cd apps/react
+npx playwright test e2e/memo-editor.spec.ts --project=desktop-chromium --repeat-each=20
+npx playwright test e2e/memo-editor.spec.ts --trace=on      # 실패하면
+npx playwright show-trace test-results/…/trace.zip          # 이벤트·화면을 한 단계씩
+```
+
+이 글에서처럼 이벤트 순서를 보려면 시험 안에서 `page.on('console', …)`로 화면의 로그를 받아 찍는다. trace와 반복 실행은 [Playwright Trace viewer](https://playwright.dev/docs/trace-viewer)와 [CLI 문서](https://playwright.dev/docs/test-cli)에 있다.
+
 ## 관련 글
 
 - [Playwright로 휴대폰 화면과 움직임 시험](/memo/playwright-mobile-and-motion)

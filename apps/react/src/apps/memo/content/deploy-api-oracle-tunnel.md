@@ -152,4 +152,38 @@ swap 4GB는 지금도 남겨 두었다. 평소에는 GitHub Actions가 빌드하
 - 정적 사이트의 "환경 변수"는 실행 중에 읽는 값이 아니라 빌드 때 코드에 박히는 문자열이다. 대시보드에 변수 넣는 곳이 두 군데면, 어느 쪽이 빌드 단계인지부터 본다.
 - 쿠키로 로그인하는 API는 프론트엔드와 같은 사이트(등록 가능한 도메인)에 두는 것이 가장 덜 아프다. `SameSite`와 서드파티 쿠키 차단을 피할 수 있다.
 
+## 실제로 한 순서
+
+9월 30일 하루에 했다. 저녁 9시 56분(한국 시간)에 "배포 환경에서 OAuth를 확인하려면 무엇을 해야 하나"에서 시작해, 밤 11시 49분에 로그인이 됐다.
+
+1. 처음에는 서버도 없이 내 Mac에서 `docker run … --env-file /etc/macfolio/api.env macfolio-api`를 쳤다. `--env-file: no such file or directory`. 서버에 둘 파일을 내 컴퓨터에서 찾은 것이다
+2. Oracle Always Free가 정말 무료인지부터 확인하고 VM을 만들었다. 접속해 보니 `x86_64`, `free -h`의 Mem total이 954Mi였다. A1이 아니라 E2.1.Micro였다
+3. 내려받은 열쇠를 `mv ~/Downloads/ssh-key-*.key ~/.ssh/server.key`로 옮기는데, 저장소 폴더가 아닌 곳에서 쳤다. 경로를 모두 `~`로 적었으니 어디서 쳐도 결과는 같았다. 오히려 열쇠가 레포 밖에 있어야 커밋될 일이 없다
+4. Cloudflare에서 터널을 만들 때 운영체제를 묻는다. Docker를 골랐다. 나오는 `docker run` 명령은 실행하지 않고 토큰만 쓴다
+5. `~/deploy/.env`가 프로젝트 폴더 안이냐는 데서 한 번 멈췄다. 아니다. 코드(`~/macfolio`)와 설정(`~/deploy`)을 나눈 것이 이 구성의 요점이다. clone은 56,048개 객체, 182MB였다
+6. 서버와 터널이 뜨고 `/docs`가 열렸는데, 사이트는 "관리자 서버가 아직 연결되지 않았습니다". 빌드 변수 `VITE_API_URL`을 넣고 다시 빌드해 해결했다
+
+끝나고 이 순서를 `docs/deployment.md`와 README에 정리했다. 그 문서가 아래 따라 하기의 원본이다. 문서를 쓰면서 이날 막힌 곳(1·6)은 '문제 해결' 표에 한 줄씩 남겼다.
+
+## 따라 하기
+
+준비물: Oracle Cloud 계정, Cloudflare에 있는 도메인, GitHub OAuth App(배포용). 전체 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 2~7단계다.
+
+```bash
+# 내 Mac: 열쇠를 레포 밖에 두고 접속
+mv ~/Downloads/ssh-key-*.key ~/.ssh/server.key && chmod 600 ~/.ssh/server.key
+ssh -i ~/.ssh/server.key ubuntu@<공인 IP>
+
+# 서버: swap(1GB 서버), Docker, 코드
+sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker ubuntu   # 다시 접속
+git clone https://github.com/hyeoniverse/MacFolio.git ~/macfolio && mkdir -p ~/deploy
+# ~/deploy에 .env, api.env, compose.yml을 cat > 파일 <<'EOF' … EOF 로 만든다 (문서 6단계)
+cd ~/deploy && docker compose up -d && docker compose logs -f api
+```
+
+확인은 넷이다: `/health`가 응답한다, `/docs`에 Swagger가 뜬다, `/auth/github`가 GitHub로 넘어간다(503이면 OAuth 값이 없다), 사이트에서 로그인하면 `?admin=signed-in`으로 돌아온다. 되돌리는 법: `docker compose down`이면 서비스가 내려가고 DB 볼륨은 남는다. 터널을 지우면 바깥 주소가 바로 끊긴다.
+
+공식 문서: [Oracle Always Free 자원](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm), [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/), [Docker 설치](https://docs.docker.com/engine/install/ubuntu/), [Vite 환경 변수](https://vite.dev/guide/env-and-mode).
+
 #MacFolio #배포 #서버 #Cloudflare

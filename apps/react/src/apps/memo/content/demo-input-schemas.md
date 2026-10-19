@@ -117,6 +117,19 @@ texts: z
 
 배운 것: zod로 옮길 때 가장 손이 많이 간 것은 규칙이 아니라 "옛 함수가 무엇을 먼저 보는가"였다. 사용자에게 보이는 첫 이유가 바뀌면 동작이 바뀐 것이다. 기존 시험이 문구까지 적어 두어서 그 차이를 바로 잡았다.
 
+## 따라 해 보기
+
+상한을 바꾸고 싶으면 `packages/contracts/src/demos.ts`의 숫자 하나만 고친다. 서버의 검사와 화면의 글자 수 표시가 같이 바뀐다.
+
+```bash
+pnpm --filter @macfolio/contracts test          # demos.test.ts
+pnpm --filter @macfolio/contracts build
+pnpm --filter @macfolio/api test -- src/common/demo.test.ts
+pnpm typecheck
+```
+
+서버가 실제로 막는지는 상한을 넘는 글을 보내 본다. 400과 함께 어느 칸이 왜 틀렸는지가 온다. 정확한 경로와 몸통은 [Swagger](https://macfolio-api.hyeoniverse.com/docs)에 있다. 데모가 쓰는 유료 API를 왜 이렇게 아끼는지는 [요청 제한](/memo/rate-limit-all-writes)에 적었다.
+
 관련 글: [관리자 설정 스키마](/memo/settings-schemas), [글 도메인 옮기기](/memo/contracts-posts), [사이트 프로필로 1단계 마무리](/memo/contracts-site).
 
 #MacFolio #zod #NestJS #리팩터링

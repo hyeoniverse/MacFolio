@@ -117,6 +117,19 @@ desktop-core에는 `SiteProfile` 타입, `PROFILE_LIMITS`, `SKILL_GROUPS`, `gith
 
 배운 것은 두 가지다. 하나, 이미 잘 돌아가는 코드도 "자리 규칙"을 맞추려고 옮길 가치가 있다. 여덟 중 하나만 다르면 다음 사람이 그 하나 때문에 규칙을 의심한다. 둘, 손으로 적은 `if`를 스키마로 옮길 때는 문구와 순서를 시험으로 먼저 고정하고 옮긴다. 그래야 "동작 변화 없음"을 말할 수 있다.
 
+## 따라 해 보기
+
+계약을 바꿀 때는 `packages/contracts`를 먼저 고치고, 서버와 화면이 둘 다 따라오는지 본다.
+
+```bash
+pnpm --filter @macfolio/contracts test          # 스키마 시험
+pnpm --filter @macfolio/contracts build         # 서버는 빌드된 JS를 읽는다
+pnpm typecheck                                  # 화면·서버가 새 모양을 따르는지
+cd apps/react && npx playwright test e2e/site-profile.spec.ts --project=desktop-chromium
+```
+
+필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 같이 깨진다. 이게 이 작업으로 얻은 것이다. 확인한 뒤 되돌린다. 스키마는 [Zod](https://zod.dev/)로 쓰고, 패키지를 나눈 까닭은 [댓글 계약](/memo/contracts-comments)에 있다.
+
 관련 글: [글 도메인](/memo/contracts-posts), [파일 도메인](/memo/contracts-files), [메시지 도메인](/memo/contracts-messages).
 
 #MacFolio #리팩터링 #zod #TypeScript

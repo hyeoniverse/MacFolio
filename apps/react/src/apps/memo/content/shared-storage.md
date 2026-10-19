@@ -112,6 +112,20 @@ PR 전체로는 14파일, 322줄 추가와 134줄 삭제였다. 늘어난 줄은
 
 다음은 같은 단계의 마지막, 화면 크기 판단(`matchMedia`·`innerWidth` 25곳)을 `useIsMobile`·`useViewport`로 통일.
 
+## 쓰는 방법
+
+브라우저 저장소는 [apps/react/src/shared/lib/storage.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/lib/storage.ts)로만 읽고 쓴다. 사생활 보호 창처럼 저장소가 막힌 브라우저에서도 앱이 깨지지 않게 try/catch가 거기 한 번 있다.
+
+```bash
+cd apps/react
+npx vitest run src/shared/lib/storage.test.ts
+grep -rn "localStorage\|sessionStorage" src | grep -v "shared/lib/storage\|\.test\."   # 새 직접 사용이 없는지
+```
+
+손으로 확인할 때는 개발자 도구 Application → Local Storage에서 값을 지우거나 망가뜨린 뒤 새로 고침해, 앱이 기본값으로 뜨는지 본다. 휴지통의 '내 브라우저 데이터'와 맞물리는 방식은 위 절에 있다.
+
+참고 문서: [MDN Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API).
+
 ## 관련 글
 
 - 3단계 첫 항목, 공통 API 클라이언트: /memo/shared-api-client

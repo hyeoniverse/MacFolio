@@ -125,6 +125,20 @@ size: data.byteLength,
 - 파일 형식은 대부분 "조각의 나열"이다. 다시 인코딩하지 않고 조각만 걸러 내면 의존성도, 화질 손실도 없다. 다만 바이트를 직접 다루는 코드는 시험 픽스처를 손으로 만들어 두어야 믿을 수 있다.
 - 지울 때는 "무엇을 남겨야 하는가"를 먼저 정한다. 이번에는 방향과 색 프로필이었다. 둘을 빼면 사진이 눕거나 색이 바랜다.
 
+## 직접 확인하는 방법
+
+휴대폰으로 찍은 사진을 올린 뒤, 받은 파일에 위치가 남았는지 본다.
+
+```bash
+exiftool 원본.jpg | grep -iE 'gps|model|orientation'     # 위치·기기·방향
+curl -s -o 받은.jpg <올린 그림 주소>
+exiftool 받은.jpg | grep -iE 'gps|model|orientation'     # Orientation만 남아야 한다
+```
+
+시험은 `pnpm --filter @macfolio/api test -- src/files/metadata.test.ts`와 [apps/api/test/files.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/files.e2e.test.ts)다. 코드는 [apps/api/src/files/metadata.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/files/metadata.ts).
+
+참고 문서: [ExifTool](https://exiftool.org/), [JPEG·EXIF Orientation(MDN image-orientation)](https://developer.mozilla.org/en-US/docs/Web/CSS/image-orientation).
+
 ## 관련 글
 
 - 쓰는 곳이 없는 올린 파일을 찾는 일: /memo/server-files-cleanup

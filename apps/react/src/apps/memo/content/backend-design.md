@@ -114,4 +114,19 @@ API에 들어온 요청은 모두 같은 층을 차례로 지난다.
 - [트래픽 분석 1 - 쿠키 없이 순방문자 세기](/memo/analytics-api)
 - [API 경로 64개를 표 하나로 고정하기](/memo/api-route-table-test)
 
+## 직접 띄워 보기
+
+이 구성을 내 컴퓨터에서 띄우는 순서는 [README.md](https://github.com/hyeoniverse/MacFolio/blob/main/README.md)에 있다.
+
+```bash
+pnpm install
+cp apps/api/.env.example apps/api/.env
+pnpm --filter @macfolio/api db:up      # PostgreSQL (Docker)
+pnpm dev:all                           # 화면 5173 + API 4000, 시작할 때 마이그레이션
+open http://localhost:4000/docs         # Swagger
+pnpm --filter @macfolio/api test:e2e   # HTTP 경계 시험
+```
+
+서버에 올리는 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md), 이 글의 원본 문서는 [docs/backend-design.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md)다. 쓰는 도구의 공식 문서: [NestJS](https://docs.nestjs.com/), [Prisma Migrate](https://www.prisma.io/docs/orm/prisma-migrate), [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/), [Oracle Always Free](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm).
+
 #MacFolio #백엔드 #설계

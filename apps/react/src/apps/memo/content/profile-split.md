@@ -82,6 +82,21 @@ Vitest 336개는 이 커밋 시점의 단위 시험 수다. 커밋 하나(`8c429
 - 폴더에 `index.ts`를 두어 원래 파일 이름과 같은 경로를 만들면, 바깥을 건드리지 않고 안쪽을 마음대로 나눌 수 있다. 큰 파일을 나눌 때 가장 먼저 쓸 수 있는 수다.
 - 내용을 손으로 옮기지 않고 스크립트로 자른 것이 "한 글자도 안 바꿨다"를 보장하는 방법이었다. 리뷰할 것은 잘린 경계와 `export` 줄뿐이었다.
 
+## 같은 방식으로 나눌 때
+
+내용을 바꾸지 않고 파일만 나누는 일이라, 확인은 "전과 같다"를 보는 명령 넷이다.
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm cycles        # madge로 순환 import가 없는지
+```
+
+`pnpm cycles`는 루트 [package.json](https://github.com/hyeoniverse/MacFolio/blob/main/package.json)에 있는 스크립트다. 경로를 그대로 두려고 옛 파일 자리에 `index.ts`를 두고 다시 내보내기만 했으니, 바깥 import는 고칠 필요가 없다. 되돌릴 때도 폴더를 지우고 한 파일로 합치면 된다.
+
+참고 문서: [madge](https://github.com/pahen/madge), [TypeScript 모듈 해석](https://www.typescriptlang.org/docs/handbook/modules/reference.html).
+
 ## 관련 글
 
 - [이미 한 곳이었다, 자리만 옮겼다 — 사이트 프로필로 1단계 마무리](/memo/contracts-site)

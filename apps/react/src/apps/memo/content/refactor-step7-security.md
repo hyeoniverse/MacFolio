@@ -121,6 +121,24 @@ overrides:
 - 경로: 경로 64개를 표 하나에 적고, 관리자 경로 29개가 로그인 없이 401인지, 쓰기 경로마다 요청 제한 이름이 있는지 본다. 그 뒤 경로가 늘어 지금 API 코드에는 `@RateLimit(`이 46곳 있다.
 - 비밀 값: 791커밋·392MB를 gitleaks로 훑는 데 15초쯤 걸리고, 걸린 것은 Oracle 문서의 시험용 키 4건뿐이었다.
 
+## 직접 확인하는 방법
+
+```bash
+# 사이트 헤더: 미리보기 서버에 붙는지
+cd apps/react && pnpm build && npx vite preview --port 4173 &
+curl -sI http://localhost:4173/ | grep -iE 'content-security-policy|x-frame-options|referrer-policy'
+
+# 프로젝트 앱 iframe sandbox
+npx playwright test e2e/project-apps.spec.ts
+
+# 서버 하드닝 (서버에서)
+~/macfolio/ops/audit.sh      # 모두 OK
+```
+
+각 항목의 자세한 글은 [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers), [서버 하드닝은 문서가 아니라 스크립트로](/memo/server-hardening-audit), [쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)에 있다. 코드: [apps/react/worker/securityHeaders.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.ts), [apps/react/src/shared/ui/web-frame/WebFrame.tsx](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/ui/web-frame/WebFrame.tsx), [ops/audit.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/audit.sh).
+
+참고 문서: [MDN CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [MDN iframe sandbox](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox).
+
 ## 일부러 남긴 것
 
 - `localStorage`의 값은 이미 휴지통의 '내 브라우저 데이터'가 전체 목록이고 민감한 값이 없어 코드를 바꾸지 않았다.

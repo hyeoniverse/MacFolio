@@ -119,6 +119,19 @@ await this.prisma.contactMail.deleteMany({ where: { createdAt: { lt: new Date(no
 - 쿠키 이름 하나를 메시지·댓글·메일이 함께 쓰니, 방문자 식별을 한 곳(`visitors`)에서 고치면 세 기능이 같이 따라온다.
 - 휴대폰 화면의 클래스 이름이 데스크톱 클래스와 겹쳐 깨진 일은 CSS 이름을 앱마다 접두어로 나누는 것만으로는 막지 못한다. 같은 앱 안에서도 겹친다. 상태는 `data-*` 속성에 두는 편이 안전하다.
 
+## 그 뒤: 관리자에게 환영 메일이 사라졌다
+
+10월 19일, 관리자로 로그인해 메일 앱을 열었더니 방문자에게 보이는 환영 메일("방문해 주셔서 감사합니다!")이 어디에도 없었다. 받은 편지함은 관리자에게는 방문자가 보낸 실제 메일만 보여 주기 때문이다. 환영 메일은 사이트 주인이 방문자에게 보낸 메일이니, 관리자에게는 보낸 편지함 맨 아래(가장 오래된 메일)에 두는 게 맞다고 봤다. `Mail.tsx`에서 관리자일 때만 보낸 편지함 목록 뒤에 환영 메일을 붙였고, 답장 칸은 붙지 않는다. `e2e/mail.spec.ts`에 "관리자: 환영 메일은 자기가 보낸 메일이라 보낸 편지함에 보인다"를 더해, 받은 편지함에는 없고 보낸 편지함에서 열리며 답장 칸이 없는지를 본다.
+
+## 직접 확인하기
+
+```bash
+pnpm --filter @macfolio/api test:e2e test/contact.e2e.test.ts   # 남의 메일이 안 보이는지, 관리자 가드
+cd apps/react && npx playwright test e2e/mail.spec.ts --project=desktop-chromium
+```
+
+배포된 사이트에서는 방문자로 메일을 한 통 보낸 뒤, 다른 브라우저(쿠키가 다른)로 보낸 편지함을 열어 비어 있는지 본다. 쿠키는 개발자 도구 → Application → Cookies에서 지우면 "다른 사람"이 된다. 메일 보내기 설정은 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '연락 메일', 1년 보관은 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)의 '연락 메일'에 있다.
+
 ## 관련 글
 
 - [메일 앱에서 진짜로 메일 보내기](/memo/contact-mail)

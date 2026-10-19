@@ -86,6 +86,20 @@ export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves:
 - 떠나는 페이지에서 JSON을 보내는 것은 CORS 확인 요청 때문에 안 된다. 한 번씩 누르는 동작은 바로 보내고, 줄을 세워 차례를 지키는 편이 단순하다.
 - "옮기지 않는" 결정은 나중에 옮길 때도 도움이 된다. 겹치기 함수가 원래 글을 바꾸지 않으니, 정리 내용을 비우면 글은 원래 자리로 돌아간다.
 
+## 직접 확인하는 방법
+
+폴더 정리 규칙은 서버와 화면이 함께 쓰는 [packages/desktop-core/src/memo/rules.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/desktop-core/src/memo/rules.ts)에 있다. 서버 없이 화면만 볼 때는 E2E가 쓰는 가짜 API([apps/react/e2e/fakeApi.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/e2e/fakeApi.ts))로 충분하다.
+
+```bash
+pnpm --filter @macfolio/api test          # 서버 단위 시험
+cd apps/react && npx vitest run src/apps/memo
+npx playwright test e2e/memo-admin.spec.ts --project=desktop-chromium
+```
+
+로컬에서 서버까지 띄워 보려면 루트에서 `pnpm dev:all`로 API와 사이트를 함께 띄우고 관리자로 로그인한다. 정리한 결과는 DB에 남고 글 파일(`content/*.md`)은 그대로인지 `git status`로 본다.
+
+참고 문서: [NestJS 문서](https://docs.nestjs.com/), [Prisma 문서](https://www.prisma.io/docs).
+
 ## 관련 글
 
 - [관리자 로그인 (GitHub OAuth)](/memo/admin-login-github-oauth)

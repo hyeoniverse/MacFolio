@@ -110,6 +110,20 @@ if (kept.length === parts.length) return null;
 - 보내는 쪽과 받는 쪽이 같은 규칙을 써야 하는 값은 한 패키지에 함수로 둔다. 문서로 "소문자로 적자"고 약속하는 것보다 확실하다.
 - 메모리에서 쓰는 구분자와 DB에 저장하는 구분자는 다르게 볼 것. 널 문자는 메모리에서는 안전하지만 PostgreSQL 글자 열에는 들어가지 않는다.
 
+## 이 기능을 만들게 된 일
+
+지원서에 낼 링크로 어디서 들어왔는지 보고 싶었다. 먼저 UTM 기능이 있는지 확인해 보니, 집계는 이미 출처만 세고 있었다. 생성기가 없어도 주소 뒤에 붙이기만 하면 분석은 된다는 것을 확인했고, 실제로 채용 지원에 낼 홈 화면 링크를 `?utm_source=…&utm_medium=…&utm_campaign=…` 꼴로 만들어 열어 보니 잘 잡혔다. 그 김에 활동 상태 앱의 여백·간격 손질까지 계획에 넣었고, 이 글이 그 계획의 결과다.
+
+## 쓰는 방법
+
+1. 관리자로 활동 상태 앱 → 유입 경로 탭을 연다
+2. 위쪽 "UTM 링크 만들기"를 펼쳐 대상 주소, 출처(`linkedin`), 매체(`social`), 캠페인(`resume-2026`)을 넣는다
+3. 복사 버튼으로 주소를 복사해 쓴다
+
+그 링크로 들어온 방문은 조합 표에 `linkedin / social / resume-2026` 한 줄로 잡힌다. 시험은 `cd apps/react && npx playwright test e2e/activity.spec.ts e2e/analytics.spec.ts`. 무엇을 남기는지는 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)의 '트래픽 분석'.
+
+참고 문서: [Google Analytics UTM 매개변수](https://support.google.com/analytics/answer/10917952).
+
 ## 관련 글
 
 - 사이트가 utm을 처음 읽어 보낸 일: /memo/analytics-collect

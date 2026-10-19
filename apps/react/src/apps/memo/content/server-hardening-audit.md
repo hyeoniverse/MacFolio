@@ -93,6 +93,26 @@ user="${user%%:*}"
 - fail2ban이나 SSH 포트 바꾸기는 두지 않았다. 키로만 받으면 무작위 시도는 로그만 남긴다
 - 컨테이너가 `privileged`로 뜨지 않았는지, `docker.sock`을 마운트한 컨테이너가 없는지도 본다. 둘 다 컨테이너 안에서 호스트 root와 같은 힘을 갖게 한다
 
+## 처음 돌렸을 때
+
+서버에서 `cd ~/macfolio && git pull && ops/audit.sh`를 처음 돌리자 두 항목이 `확인`으로 나왔다.
+
+- **[포트]** 111번(rpcbind)이 바깥에서 듣고 있었다. Oracle Ubuntu 이미지가 NFS용으로 켜 두는 것이다. `sudo systemctl disable --now rpcbind.socket rpcbind.service`를 하자 "triggering units are still active"라는 경고가 나와서 꺼진 것인지 헷갈렸고, `sudo reboot`로 다시 띄운 뒤 `docker compose ps`로 컨테이너 셋이 다시 healthy인지 봤다
+- **[컨테이너]** cloudflared의 사용자가 `?`로 나오고 `exec: "sh": executable file not found`가 찍혔다. 셸이 없는 distroless 이미지라 그렇다. 이것이 위 '첫 실행에서 고친 두 곳'의 두 번째다
+
+방화벽은 `sudo iptables -S INPUT`으로 22번 허용 규칙이 있는 것을 같이 봤다. 스크립트를 고친 PR을 받은 뒤 다시 돌려 **모두 OK**를 확인했다.
+
+## 따라 하는 방법
+
+```bash
+cd ~/macfolio && git pull
+ops/audit.sh             # 확인 항목이 있으면 1로 끝난다
+```
+
+`확인`이 나오면 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '서버 하드닝 점검' 표대로 손보고 다시 돌린다. 스크립트가 못 보는 Oracle 쪽 방화벽은 콘솔의 VCN → Subnet → Security Lists → Ingress Rules에서 `22/tcp` 하나만 열려 있는지 본다. 출력에는 계정 이름과 듣는 주소가 들어 있으니 어디에도 올리지 않는다. 스크립트: [ops/audit.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/audit.sh).
+
+참고 문서: [OCI Security Lists](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm), [Ubuntu 자동 보안 업데이트](https://documentation.ubuntu.com/server/how-to/software/automatic-updates/), [Docker 보안](https://docs.docker.com/engine/security/).
+
 ## 남은 것과 배운 것
 
 - **Security List는 스크립트가 못 본다.** Oracle 콘솔의 방화벽은 서버 밖에 있다. 스크립트는 "콘솔에서 22만 여는지 확인한다"는 안내만 찍는다. Oracle API로 읽으려면 이 점검을 위한 API 키가 하나 더 필요하다.

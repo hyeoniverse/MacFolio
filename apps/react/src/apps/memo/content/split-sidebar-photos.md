@@ -80,6 +80,19 @@ photos/
 - 두 파일이 서로 필요한 것이 생기면 둘 중 하나에 두지 말고 셋째 파일로 뺀다. 이 규칙은 지난 글(/memo/break-import-cycles)에서 정한 것이다.
 - 기계적인 일(import 계산)은 스크립트에 맡기고, 사람은 "어디서 자를지"만 정한다. 스크립트가 틀린 곳은 `tsc`와 ESLint가 잡아 준다.
 
+## 같은 방식으로 나눌 때
+
+화면 코드는 상태 계산(`*.model.ts`)과 그리기(컴포넌트)로 먼저 가르고, model은 React 없이 단위 시험한다. 확인은 이 순서다.
+
+```bash
+pnpm typecheck && pnpm lint
+cd apps/react && npx vitest run src/apps/memo src/apps/photos
+npx playwright test e2e/memo.spec.ts e2e/photos.spec.ts
+cd ../.. && pnpm cycles      # model ↔ 컴포넌트 순환이 없는지
+```
+
+참고 문서: [madge](https://github.com/pahen/madge), [React: 상태 로직을 리듀서로 옮기기](https://react.dev/learn/extracting-state-logic-into-a-reducer).
+
 ## 관련 글
 
 - 2단계 첫 번째, 데모 파일 나누기: /memo/split-creative-demos

@@ -83,6 +83,16 @@ export const folderPath = (value: unknown): FolderPath | null => (isFolderPath(v
 - 문이 다섯이면 다섯 군데에서 `null`을 다뤄야 한다. 주소창의 잘못된 slug는 고른 글이 없는 것으로, API는 404(글이 없습니다)로, 끌기는 아무 일도 하지 않는 것으로 다르게 처리한다. 브랜드 타입이 그 갈림을 각 문에서 정하게 만들었다.
 - 타입으로 막는 것은 "검사를 했는가"이지 "값이 맞는가"가 아니다. 검사 함수 자체가 틀리면 브랜드도 틀린 값을 믿는다. 정규식이 맞는지는 API e2e(`posts.e2e.test.ts` 등)가 이상한 주소를 실제로 보내 확인한다.
 
+## 써 보기
+
+바깥 문자열이 글 주소가 되는 길은 정해진 함수 하나뿐이다. 문을 지나지 않은 값을 넘기면 타입 검사에서 막힌다.
+
+```bash
+pnpm typecheck        # 브랜드를 지키지 않은 곳이 있으면 여기서 실패
+```
+
+일부러 주소창 문자열을 `movePost`에 그대로 넘기는 줄을 써 보면 `string is not assignable to PostSlug` 같은 에러가 난다. 확인한 뒤 지운다. 브랜드 타입은 TypeScript의 교차 타입으로 만든 관례라, 런타임 비용이 없다([TypeScript 핸드북: Intersection Types](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types)). 문 함수의 시험은 `pnpm --filter @macfolio/desktop-core test`다.
+
 관련 글: [프로필 나누기](/memo/profile-split), [리팩터링 1 - 타입](/memo/refactor-step1-types), [글 주소에 앱 화면 붙이기](/memo/app-links), [메모 정리 API](/memo/memo-organization-api)
 
 #MacFolio #리팩터링 #TypeScript

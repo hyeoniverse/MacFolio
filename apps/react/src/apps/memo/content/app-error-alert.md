@@ -82,6 +82,19 @@ const chunk = isChunkLoadError(error);
 - 옛 빌드 파일을 몇 번의 배포 동안 남겨 두면 경고창조차 필요 없다. 정적 자산을 통째로 바꾸는 지금 배포 방식에서는 따로 보관할 곳이 필요해서 아직 하지 않았다.
 - 지연 로딩(`React.lazy`)을 쓰면 "나중에 받을 파일이 없어질 수 있다"는 실패가 함께 온다. 첫 화면을 가볍게 하려고 나눈 코드는, 나눈 만큼 배포와의 경합도 생긴다.
 
+## 직접 재현하기
+
+배포 직후의 상황은 로컬에서 쉽게 만든다. 메모 코드 파일 요청을 막고 메모를 열면 된다.
+
+```bash
+cd apps/react
+npx playwright test e2e/app-error.spec.ts --project=desktop-chromium
+```
+
+손으로 보려면 개발자 도구 → Network → 요청을 오른쪽 클릭 → **Block request URL**로 `Memo-*.js`를 막고 메모를 연다. "새 버전이 있습니다"와 [새로고침]이 뜨면 된다. 막은 것을 풀고 [새로고침]을 누르면 열린다.
+
+문구로 가르는 함수의 시험은 `npx vitest run src/shared/lib/chunkLoadError.test.ts`다. 지연 로딩과 Vite가 내는 미리 불러오기 에러는 [Vite 문서의 Load Error Handling](https://vite.dev/guide/build#load-error-handling)에 설명이 있다.
+
 관련 글: [없는 코드 파일에 index.html을 주던 문제](/memo/asset-404), [공용 경고창](/memo/ui-modal), [CRA에서 Vite로](/memo/cra-to-vite), [z-index 층](/memo/z-index-layers)
 
 #MacFolio #배포 #트러블슈팅

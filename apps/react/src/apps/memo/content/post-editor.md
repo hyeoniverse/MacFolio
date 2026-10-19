@@ -160,6 +160,17 @@ Markdown 표는 머리글 한 행과 본문 한 행 이상이 있어야 한다. 
 - 편집기는 `React.lazy`로 관리자에게만 불러와서 방문자가 받는 파일 크기는 그대로다. 관리자 기능을 붙일 때는 방문자 쪽 번들에 무엇이 새는지부터 보는 것이 좋았다.
 - "보이는 그대로 고친다"를 말로만 두지 않고 두 화면의 문단 위치를 숫자로 비교하니, 눈으로는 몰랐던 이미지 문단의 80px 차이가 드러났다.
 
+## 직접 확인하는 방법
+
+```bash
+pnpm dev:all                                 # API(4000)와 사이트를 함께 띄운다
+cd apps/react && npx playwright test e2e/memo-editor.spec.ts e2e/memo-publish.spec.ts
+```
+
+로컬에서 관리자로 쓰려면 `apps/api/.env`에 GitHub OAuth App 값을 넣고 메뉴 막대에서 로그인한다(만드는 법은 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 'GitHub OAuth App'). 서버에 쓴 글은 같은 slug의 Markdown 파일을 덮어 보이고, 서버 글을 지우면 파일 글로 돌아온다. 서버 설계는 [docs/backend-design.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md).
+
+참고 문서: [GitHub OAuth App 만들기](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app), [NestJS 문서](https://docs.nestjs.com/).
+
 ## 관련 글
 
 - [바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions)

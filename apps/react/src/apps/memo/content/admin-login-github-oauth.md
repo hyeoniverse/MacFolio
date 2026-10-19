@@ -148,6 +148,32 @@ Test.createTestingModule({ imports: [AppModule] })
 - 처음에 계정 이름으로 비교한 것은 "바뀌지 않는 값으로 사람을 가린다"는 기본을 놓친 것이다. 외부 서비스의 사용자를 가릴 때는 이름·이메일이 아니라 그 서비스가 주는 바뀌지 않는 ID를 쓴다.
 - 바깥 서비스(GitHub)에 닿는 코드를 클래스 하나로 모아 둔 덕에, 시험에서 그 클래스만 바꿔 끼우고 나머지는 실제 DB로 돌릴 수 있었다.
 
+## 직접 붙여 보기
+
+준비물은 GitHub 계정과 로컬 PostgreSQL(Docker)이다. 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '2. GitHub OAuth App'과 [README.md](https://github.com/hyeoniverse/MacFolio/blob/main/README.md)의 로컬 실행에 있다.
+
+1. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App. 콜백 주소는 개발용이 `http://localhost:4000/auth/github/callback`, 배포용이 `https://macfolio-api.hyeoniverse.com/auth/github/callback`이다. OAuth App 하나에 콜백이 하나라 둘을 따로 만든다([GitHub 문서](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app))
+2. Client ID와 secret을 `apps/api/.env`의 `GITHUB_CLIENT_ID`·`GITHUB_CLIENT_SECRET`에 넣는다. 관리자는 숫자 ID(`ADMIN_GITHUB_ID`)로 가린다
+3. 띄우고 확인한다
+
+```bash
+pnpm --filter @macfolio/api db:up
+pnpm dev:all
+curl -si http://localhost:4000/auth/github | head -3   # 302면 GitHub로 넘어간다, 503이면 OAuth 값이 없다
+```
+
+브라우저에서 Apple 메뉴 → 관리자 로그인을 누르고, `?admin=signed-in`으로 돌아와 시스템 설정 → 계정에 "GitHub로 로그인됨"이 뜨면 된다. 로그인 경로 시험은 GitHub 없이 돈다.
+
+```bash
+cp apps/api/.env.example apps/api/.env       # 처음 한 번
+pnpm --filter @macfolio/api db:up            # 로컬 PostgreSQL (Docker)
+pnpm --filter @macfolio/api test:e2e test/auth.e2e.test.ts
+```
+
+되돌리는 법: OAuth App을 지우면(또는 secret을 새로 발급하면) 그 즉시 로그인 길이 닫힌다. DB의 세션 줄을 지우면 이미 로그인한 브라우저도 다음 요청부터 방문자가 된다.
+
+배포 환경에 처음 붙일 때 실제로 막힌 곳은 따로 있었다. 서버용 명령(`docker run --env-file /etc/macfolio/api.env …`)을 내 컴퓨터에서 쳐서 `no such file or directory`가 났고, 서버를 다 띄운 뒤에도 사이트가 "관리자 서버가 아직 연결되지 않았습니다"를 보여 로그인 버튼이 꺼져 있었다. 원인은 빌드할 때 들어가는 `VITE_API_URL`이었고, 그 과정은 [API 서버를 무료로 띄우기](/memo/deploy-api-oracle-tunnel)에 적었다. 두 증상 모두 `docs/deployment.md`의 '문제 해결' 표에 남겼다.
+
 관련 글: [메모 편집을 관리자만 하게 한 이유](/memo/read-only-memo), [백엔드 설계](/memo/backend-design), [모든 쓰기 경로에 요청 제한](/memo/rate-limit-all-writes), [미리보기 주소는 읽기만](/memo/preview-cors-read-only)
 
 #MacFolio #백엔드 #로그인 #보안

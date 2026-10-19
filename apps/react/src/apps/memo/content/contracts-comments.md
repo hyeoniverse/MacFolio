@@ -88,6 +88,19 @@ export type Comment = z.infer<typeof Comment>;
 - 첫 PR을 한 도메인으로 작게 자른 것이 나머지 일곱 PR을 하루에 끝낼 수 있게 했다. 첫 PR에서 패키지 구조, Dockerfile, CI, `requestBody()`·`parse()` 도우미가 정해졌고, 뒤의 PR은 스키마만 옮기면 됐다.
 - 스키마가 "값이면서 타입"이라는 점이 핵심이었다. 타입만 공유하면 규칙이 서버에 남고, 규칙만 공유하면 타입이 따로 논다.
 
+## 따라 해 보기
+
+계약을 바꿀 때는 `packages/contracts`를 먼저 고치고, 서버와 화면이 둘 다 따라오는지 본다.
+
+```bash
+pnpm --filter @macfolio/contracts test          # 스키마 시험
+pnpm --filter @macfolio/contracts build         # 서버는 빌드된 JS를 읽는다
+pnpm typecheck                                  # 화면·서버가 새 모양을 따르는지
+pnpm --filter @macfolio/api test:e2e test/comments.e2e.test.ts
+```
+
+필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 같이 깨진다. 이게 이 작업으로 얻은 것이다. 확인한 뒤 되돌린다. 스키마는 [Zod](https://zod.dev/)로 쓰고, HTTP 경계 시험을 돌리려면 먼저 `pnpm --filter @macfolio/api db:up`으로 DB를 띄운다.
+
 관련 글: [공통 API 클라이언트](/memo/shared-api-client), [분석 계약](/memo/contracts-analytics), [연락 메일 계약](/memo/contracts-contact), [글 계약](/memo/contracts-posts)
 
 #MacFolio #리팩터링 #zod #TypeScript

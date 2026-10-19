@@ -5,7 +5,7 @@ category: 개발기/MacFolio/인프라
 summary: 화면 E2E를 3칸에서 6칸으로 나눠 PR 시험 시간을 반쯤으로 줄이고, PR에서 이미 통과한 코드와 트리가 같은 main 커밋은 e2e를 다시 돌리지 않고 바로 배포하게 했다. 시험을 빼거나 줄인 것은 없다.
 ---
 
-PR을 머지하고 실제 사이트에 반영되기까지 15분쯤 걸렸다. PR은 [#266](https://github.com/hyeoniverse/MacFolio/pull/266)이다. 시간을 재 보니 CI의 준비(설치·빌드·브라우저)는 1분 남짓이고, 나머지 8~9분이 화면 E2E였다. 시험이 늘면서 3칸으로 나눈 것으로는 모자랐다. 게다가 main에 들어온 커밋은 PR에서 이미 통과한 시험을 처음부터 다시 돌린 뒤에야 배포했다.
+10월 19일 새벽, 파일 올리기 기능을 머지해 놓고 배포 환경에서 확인하려고 기다렸는데 한참이 지나도 사이트가 그대로였다. 몇 분 걸리는 게 정상인지부터 의심했고, Actions를 열어 보니 배포는 E2E가 끝나기를 기다리고 있었다. PR을 머지하고 실제 사이트에 반영되기까지 15분쯤 걸렸다. PR은 [#266](https://github.com/hyeoniverse/MacFolio/pull/266)이다. 시간을 재 보니 CI의 준비(설치·빌드·브라우저)는 1분 남짓이고, 나머지 8~9분이 화면 E2E였다. 시험이 늘면서 3칸으로 나눈 것으로는 모자랐다. 게다가 main에 들어온 커밋은 PR에서 이미 통과한 시험을 처음부터 다시 돌린 뒤에야 배포했다.
 
 ## 배경: 이틀 전에 3칸으로 나눴다
 
@@ -88,6 +88,24 @@ api-image:
 - 칸마다 준비(설치·빌드·브라우저) 1분이 그대로 붙는다. 칸을 더 늘리면 기다리는 시간보다 준비 시간이 더 커지는 지점이 온다. 지금은 6칸에서 멈췄다.
 
 배운 것: CI를 빠르게 하는 가장 쉬운 방법은 시험을 빼는 것이지만, 그러면 CI가 지켜 주던 것이 사라진다. "같은 것을 두 번 하지 않는다"는 쪽으로 찾으니 빼는 것 없이 빨라졌다. 그리고 "같은 코드"를 따질 때는 커밋이 아니라 트리를 봐야 한다.
+
+## 따라 해 보기
+
+칸 나누기는 Playwright의 `--shard`다([Playwright Sharding 문서](https://playwright.dev/docs/test-sharding)). 내 컴퓨터에서 CI의 한 칸과 같은 범위를 돌릴 수 있다.
+
+```bash
+cd apps/react
+npx playwright test --shard=1/6     # 6칸 중 첫째
+npx playwright test --list | tail -1  # 전체 시험 수
+```
+
+main에서 다시 돌리지 않는 조건은 "PR에서 통과한 커밋과 트리가 같은가"다. 같은지 보는 값은 이것이다.
+
+```bash
+git rev-parse HEAD^{tree}     # PR 브랜치와 머지된 main 커밋에서 같으면 다시 돌리지 않는다
+```
+
+확인: main에 머지한 뒤 Actions 실행 그래프에서 `e2e-reuse`가 통과하고 `e2e` 칸 여섯이 건너뛰어진 채 `deploy`로 넘어가면 다시 돌리지 않은 것이다. 되돌리는 법: `ci.yml`에서 `e2e-reuse`를 `deploy`의 `needs`와 조건에서 빼면 예전처럼 늘 돈다. 워크플로는 [.github/workflows/ci.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/ci.yml).
 
 관련 글: [프론트엔드 배포를 GitHub Actions로](/memo/deploy-github-actions), [Playwright로 휴대폰과 움직임 시험하기](/memo/playwright-mobile-and-motion).
 

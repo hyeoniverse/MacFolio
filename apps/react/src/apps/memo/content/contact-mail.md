@@ -87,6 +87,31 @@ Resend 키·받는 주소·보내는 주소 셋이 다 있어야 서버가 보�
 - 받는 사람이 늘 나 한 명이라, 이 경로가 뚫려도 다른 사람에게 스팸을 보내는 데 쓸 수는 없다. 이것이 연락 폼을 열어 두는 가장 큰 안전장치였다.
 - 바깥 서비스를 붙일 때 "설정이 없으면 예전처럼"을 먼저 만들었다. 키를 넣기 전에 배포해도 깨지지 않으니, 배포와 설정의 순서를 신경 쓰지 않아도 됐다.
 
+## 따라 하기: 메일 보내기 켜기
+
+설정이 없으면 예전처럼 메일 앱(`mailto:`)이 열리므로, 아래를 하기 전에 배포해도 된다. 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '연락 메일 (Resend, Turnstile)'이다.
+
+1. [Resend](https://resend.com/docs)에 도메인을 더하고, 나오는 MX·TXT 레코드를 Cloudflare DNS에 그대로 넣는다(프록시 끔). Verified가 되면 API 키를 만든다
+2. (선택) [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/)에 위젯을 만들고 사이트 키와 비밀 키를 받는다
+3. 서버 `~/deploy/api.env`에 넣고 api만 다시 띄운다
+
+```bash
+# api.env에 더할 것: RESEND_API_KEY, CONTACT_TO, CONTACT_FROM, TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY
+cd ~/deploy && docker compose up -d api
+curl -s https://macfolio-api.hyeoniverse.com/contact; echo
+# {"enabled":true,"turnstileSiteKey":"…"}
+```
+
+사이트의 메일 앱에서 한 통 보내고, `CONTACT_TO`로 오는지, 받은 메일에서 답장하면 방문자 주소로 가는지 본다. 로컬에서는 키 없이 시험한다.
+
+```bash
+cp apps/api/.env.example apps/api/.env       # 처음 한 번
+pnpm --filter @macfolio/api db:up            # 로컬 PostgreSQL (Docker)
+pnpm --filter @macfolio/api test:e2e test/contact.e2e.test.ts
+```
+
+되돌리는 법: `api.env`에서 `RESEND_API_KEY`를 지우고 `docker compose up -d api`. `/contact`가 `enabled:false`를 돌려주고 사이트는 다시 `mailto:`로 돌아간다.
+
 관련 글: [메일 앱의 편지함](/memo/mail-mailboxes), [연락 메일 계약](/memo/contracts-contact), [개인정보 보호 및 보안 설정](/memo/privacy-security-settings), [이 Mac에 관하여](/memo/about-this-mac)
 
 #MacFolio #백엔드 #메일

@@ -122,6 +122,29 @@ CI는 같은 브랜치에 새 커밋이 오면 이전 실행을 취소한다. �
 - 스크립트의 버그 셋(`pipefail`과 `grep`, 한글 앞 변수 이름, 받지 못했는데 되돌리기)은 모두 "실패하는 길"에서 나왔다. 성공하는 길만 돌려 봤다면 셋 다 실제 배포에서 처음 만났을 것이다. 실패를 일부러 만드는 시험이 가장 값졌다.
 - 그래도 서버의 `compose.yml`(`${API_TAG:?…}`)과 로컬 시험의 것(`${API_TAG}`)이 한 글자 달라서 첫 배포 버그를 놓쳤다. 시험 환경의 설정 파일은 실제 것을 그대로 복사해 쓴다.
 
+## 손으로 하던 배포
+
+자동 배포 전에는 서버에 들어가 손으로 올렸다. 10월 3일 아침, 적어 둔 업데이트 순서(`pg_dump … > backup.sql`, `git pull`, `docker compose up -d --build api`)를 서버에 그대로 붙여 넣었더니 세 줄이 모두 실패했다. 서버에는 `pg_dump`가 없었고(DB는 컨테이너 안에 있다), 홈 폴더는 git 저장소가 아니었고(코드는 `~/macfolio`), compose 파일은 `~/deploy`에 있었다. 폴더를 옮겨 다시 하니 `docker compose logs -f api`에 "11 migrations found"가 찍히며 올라갔지만, 1GB 서버에서 빌드까지 하느라 오래 걸렸다. 사람이 순서와 위치를 기억해야 하는 배포는 언젠가 틀린다고 보고, 이 글의 구조로 옮겼다.
+
+## 따라 하기
+
+처음 한 번 하는 설정은 [자동 배포를 실제 서버에 걸기](/memo/api-auto-deploy-setup)와 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '자동 배포 설정'에 있다. 그 뒤에는 이렇게 쓴다.
+
+```bash
+# 평소: API를 바꾼 PR을 main에 머지하면 끝. 진행은 Actions의 ci 실행에서 본다
+# 지금 서버 버전
+curl -s https://macfolio-api.hyeoniverse.com/health; echo
+# 서버에서 직접 특정 태그로 (되돌리기도 같은 명령)
+~/macfolio/ops/deploy.sh sha-7e7eac0
+tail -20 ~/deploy/deploy.log     # 배포 기록
+```
+
+- 손으로: GitHub → Actions → **API 배포** → Run workflow → 태그. 예전 태그를 넣으면 되돌리기다
+- 실패하면: 새 이미지가 120초 안에 healthy가 아니면 스크립트가 이전 태그로 돌리고 실패로 끝난다. 실제 서버에서 일부러 실패시켜 본 기록은 [되돌리기 훈련](/memo/rollback-drill)에 있다
+- 기다리는 시간: 머지한 뒤 사이트에 반영되기까지 E2E가 대부분을 차지했다. 10월 19일 "머지는 했는데 배포가 안 된다"고 느낀 것이 [E2E와 CI를 빠르게](/memo/faster-e2e-ci)로 이어졌다
+
+스크립트: [ops/deploy.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/deploy.sh), 워크플로: [.github/workflows/deploy-api.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/deploy-api.yml). 이미지 저장소는 [GHCR 문서](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), compose는 [Docker Compose 문서](https://docs.docker.com/compose/)를 봤다.
+
 관련 글: [자동 배포를 실제 서버에 걸기](/memo/api-auto-deploy-setup), [되돌리기 훈련](/memo/rollback-drill), [DB 백업](/memo/db-backup), [Oracle 서버와 터널](/memo/deploy-api-oracle-tunnel)
 
 #MacFolio #배포 #CI #서버

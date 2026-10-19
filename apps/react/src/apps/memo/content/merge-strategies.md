@@ -48,6 +48,8 @@ a1b2c3d Merge pull request #12
 
 </details>
 
+이 글은 10월 12일 아침 "Rebase and merge와 Create a merge commit은 무엇이 다른가"를 직접 찾아보다가 쓰게 됐다. 처음 초안은 MacFolio 저장소를 기준으로 썼는데, 다른 저장소에서도 읽을 수 있게 일반론으로 고치고 폴더도 새로 만들었다. first-parent, bisect처럼 낯선 용어는 부연 설명을 각주로 달고, 글 앞의 "먼저 알아 둘 용어"는 토글로 접었다. 이 저장소에서도 PR #183이 "This branch cannot be rebased due to conflicts"로 막힌 적이 있어, Rebase 방식의 충돌 이야기는 실제로 겪은 일이다.
+
 ## 같은 PR, 세 가지 기록
 
 커밋 A·B·C가 든 feature 브랜치를 main(M1·M2)에 병합한다고 하자.
@@ -111,6 +113,15 @@ A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 
 ## 저장소 설정으로 고정하기
 
 GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식을 각각 켜고 끌 수 있다. 기본값은 셋 다 켜진 상태라 Merge 버튼에서 매번 고르게 되는데, 정한 방식 하나만 남기고 나머지를 끄면 실수로 다른 방식을 고를 일이 없다. 같은 화면의 "Automatically delete head branches"를 켜면 병합 뒤 브랜치 삭제도 자동이 된다. 둘 다 코드가 아니라 저장소 설정이므로 CONTRIBUTING 같은 문서에 적어 두어야 새로 온 사람이 알 수 있다.
+
+따라 하는 순서는 이렇다(저장소 관리자 권한 필요).
+
+1. 저장소 Settings → General → Pull Requests로 간다.
+2. 쓸 방식 하나만 체크해 두고 나머지 둘은 끈다.
+3. "Automatically delete head branches"를 켠다.
+4. 확인: 아무 PR을 열면 Merge 버튼 옆 ▾에 고른 방식 하나만 보인다. 되돌리려면 같은 칸을 다시 체크한다.
+
+공식 문서: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github), [Managing the automatic deletion of branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches).
 
 ## MacFolio 저장소에서는
 

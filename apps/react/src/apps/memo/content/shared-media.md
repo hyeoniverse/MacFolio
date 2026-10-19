@@ -92,6 +92,20 @@ const dark = useResolvedTheme() === 'dark';
 
 이것으로 3단계(공통 기반 코드)가 끝났다. 다음은 1단계, API 요청·응답 타입을 zod 스키마로 모으는 일.
 
+## 쓰는 방법
+
+화면 질문은 [apps/react/src/shared/lib/media.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/lib/media.ts)(한 번 묻기)와 [apps/react/src/shared/hooks/useViewport.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/hooks/useViewport.ts)(바뀔 때 다시 그리기)를 쓴다. 직접 `matchMedia`를 부르는 새 코드가 없는지는 이렇게 본다.
+
+```bash
+cd apps/react
+grep -rn "matchMedia" src | grep -v "shared/lib/media\|shared/hooks/useViewport\|\.test\."
+npx vitest run src/shared/lib/media.test.ts
+```
+
+브라우저에서 확인할 때는 개발자 도구의 Rendering 탭에서 `prefers-reduced-motion`, `prefers-color-scheme`을 바꿔 본다.
+
+참고 문서: [MDN matchMedia](https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia), [Chrome DevTools 미디어 기능 흉내](https://developer.chrome.com/docs/devtools/rendering/emulate-css).
+
 ## 관련 글
 
 - 3단계 첫 항목, 공통 API 클라이언트: /memo/shared-api-client

@@ -103,6 +103,21 @@ export const SecurityUpdate = z
 - 화면에서 "서버와 같다"고 주석으로 약속하던 값 셋(캡션 길이, 저장소 수, 사람 확인 목록)과 저장소 이름 정규식을 같은 패키지에서 불러온다.
 - API 시험 단위 157개·e2e 124개, 계약 패키지 시험 37개(새로 더한 설정 스키마 시험 포함)가 통과한다.
 
+## 같은 방식으로 옮길 때
+
+스키마는 [packages/contracts/src/settings.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/contracts/src/settings.ts)에 두고 서버와 화면이 같은 것을 import한다. 옮길 때 순서는 이렇다.
+
+1. 지금 서버가 내는 오류 문구를 시험으로 먼저 고정한다(문구가 바뀌면 화면이 깨진다)
+2. zod 스키마를 만들고 서버의 if 문을 `safeParse`로 바꾼다
+3. 화면의 입력 검사도 같은 스키마로 바꾼다
+
+```bash
+pnpm test
+pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야 한다
+```
+
+참고 문서: [Zod](https://zod.dev/), [NestJS 파이프와 검증](https://docs.nestjs.com/pipes).
+
 ## 배운 것
 
 - **주석의 "같다"는 약속이 아니다.** 같아야 하는 값은 한 곳에 두고 양쪽이 불러야 한다.

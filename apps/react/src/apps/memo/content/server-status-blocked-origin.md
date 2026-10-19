@@ -141,6 +141,20 @@ export function cookiesAllowedFrom(classify: (origin: string | undefined) => Ori
 
 `*`로 맞은 주소는 읽기 요청만 받고 쿠키를 주지 않으며, 관리자 API는 그 Origin을 403으로 거절한다([PR 미리보기 주소에는 CORS로 읽기만 열고 관리자 쿠키는 주지 않기](/memo/preview-cors-read-only)). 서버 상태 표시는 `/health`만 부르므로 그대로 "정상"이다.
 
+## 따라 하는 방법
+
+메뉴 막대가 "서버에 연결할 수 없음"을 띄우면 먼저 서버가 정말 꺼졌는지, 주소가 막혔는지를 가른다.
+
+```bash
+curl -s https://macfolio-api.hyeoniverse.com/health; echo            # 서버 자체
+curl -s -o /dev/null -w '%{http_code}\n' -H "Origin: <사이트 주소>" \
+  https://macfolio-api.hyeoniverse.com/health                          # 그 주소를 허용하는지
+```
+
+첫 줄이 `{"status":"ok",…}`인데 화면이 연결할 수 없다고 하면 CORS다. 서버 `api.env`의 `CORS_ORIGINS`에 그 주소를 더하고 `docker compose up -d api`. 로컬이면 `apps/api/.env`의 `CORS_ORIGINS`에 `http://localhost:5173`이 있는지 본다. 판정 코드는 [apps/react/src/shared/server/serverStatus.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/server/serverStatus.ts), 시험은 `cd apps/react && npx playwright test e2e/server-status.spec.ts`.
+
+참고 문서: [MDN CORS 오류](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors).
+
 ## 배운 것
 
 - **브라우저는 이유를 숨긴다.** CORS 실패와 연결 실패는 페이지에서 같은 `TypeError`다. 다른 길(no-cors)로 한 번 더 물어야 둘을 가를 수 있었다.

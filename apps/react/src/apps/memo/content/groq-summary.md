@@ -100,6 +100,25 @@ fetch('https://api.groq.com/openai/v1/chat/completions', {
 - 실패한 시도가 화면에 드러나지 않는다. Groq가 매번 실패하고 Gemini가 매번 살려 주면 사용자는 모른다. 서버 로그의 경고를 봐야 한다.
 - "차례대로 시도"를 처음 만들 때 공급자 수를 하나로 고정하지 않고 목록으로 받게 해 둔 덕분에, 이번 일은 목록에 이름 하나를 더하는 일이었다.
 
+## 직접 붙여 보기
+
+준비물: [Groq 콘솔](https://console.groq.com/docs)에서 만든 API 키. 서버에 넣고 api만 다시 띄운다.
+
+```bash
+# 서버 ~/deploy/api.env (로컬은 apps/api/.env)
+GROQ_API_KEY=gsk_…
+cd ~/deploy && docker compose up -d api
+```
+
+키가 없으면 그 공급자는 건너뛰고 다음 차례로 간다. 그래서 키를 지우는 것이 되돌리기다. 차례대로 시도하는 동작은 시험이 확인한다.
+
+```bash
+pnpm --filter @macfolio/api test -- src/summary/summary.service.test.ts
+cd apps/react && npx playwright test e2e/safari.spec.ts --project=desktop-chromium
+```
+
+요약 경로의 몸통과 응답은 [Swagger](https://macfolio-api.hyeoniverse.com/docs)에 있다. 비밀 값을 바꾸는 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '비밀 값 바꾸기'를 따른다.
+
 ## 관련 글
 
 - [API 자동 배포](/memo/api-auto-deploy)

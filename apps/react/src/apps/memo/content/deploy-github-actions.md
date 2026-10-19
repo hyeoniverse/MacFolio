@@ -19,7 +19,11 @@ Initializing build environment...
 Build failed to initialize and was timed out
 ```
 
-코드를 받기도 전에 빌드 서버가 뜨지 못한 것이다. 빌드 시간 한도는 3,000분 중 150분만 썼으니 한도 때문도 아니었다.
+코드를 받기도 전에 빌드 서버가 뜨지 못한 것이다. 10월 3일 오후, 두 번 "Initializing build environment..."를 찍고 5분씩 기다리다 끝났다. 먼저 무료 한도에 걸린 것인지 의심해 Cloudflare 대시보드의 사용량을 열었다.
+
+![Cloudflare Workers 사용량 화면. 이번 달 빌드 시간 150/3,000분, 오늘 요청 0/100,000](./images/deploy-github-actions-workers-usage.jpg '빌드가 실패한 날 확인한 Workers 사용량. 빌드 시간은 3,000분 중 150분만 썼다')
+
+빌드 시간 한도는 3,000분 중 150분만 썼으니 한도 때문도 아니었다. 이 PR을 그냥 머지해도 되는지 고민하다가, 차라리 빌드를 GitHub Actions로 옮기기로 했다.
 
 ## 원래도 아쉬웠던 점
 
@@ -92,6 +96,25 @@ Cloudflare에는 API 토큰(Workers 편집 권한)과 계정 ID만 GitHub Secret
 - 배포가 실패하면 GitHub 알림으로만 안다. 사이트가 실제로 바뀌었는지(배포된 JS의 해시)를 확인하는 단계는 없다.
 
 배운 것: "시험"과 "배포"가 다른 곳에서 따로 빌드하면, 시험한 것과 배포된 것이 같다는 보장이 없다. 한 파이프라인에서 시험이 통과한 뒤에 배포하게 묶어야 그 보장이 생긴다. 이번 실패는 그 구조를 바꿀 계기였다.
+
+## 따라 하기
+
+준비물: Cloudflare API 토큰(Edit Cloudflare Workers 템플릿)과 계정 ID. 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '1. 프론트엔드'에 있다.
+
+1. Cloudflare → My Profile → API Tokens → Create Token → **Edit Cloudflare Workers**. 이미 있던 다른 토큰을 쓰지 않고 이 일만 하는 토큰을 새로 만들었다. 토큰은 한 번만 보인다
+2. GitHub 저장소 → Settings → Secrets and variables → Actions에 `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`를 넣는다
+3. main에 머지해 `deploy` 작업이 한 번 성공한 것을 본다
+4. Cloudflare → Workers & Pages → `macfolio` → Settings → Build → Git repository → **Disconnect**. 두 곳에서 같이 배포하지 않게
+
+내 컴퓨터에서 같은 일을 손으로 하려면 이렇게 한다.
+
+```bash
+pnpm install
+CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ACCOUNT_ID=… pnpm exec wrangler deploy                      # 실제 사이트
+CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ACCOUNT_ID=… pnpm exec wrangler versions upload --preview-alias my-branch   # 미리보기만
+```
+
+확인: Actions 실행의 `deploy` 로그 끝에 배포된 주소와 버전 ID가 찍힌다. PR에는 `미리보기` 댓글이 하나 달린다. 되돌리는 법: Cloudflare 대시보드의 Deployments에서 이전 버전을 고르거나 `pnpm exec wrangler rollback`. 워크플로는 [.github/workflows/ci.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/ci.yml), 명령 설명은 [wrangler 명령 문서](https://developers.cloudflare.com/workers/wrangler/commands/)와 [GitHub Actions 문서](https://docs.github.com/en/actions)에 있다.
 
 관련 글: [API 서버를 무료로 띄우기](/memo/deploy-api-oracle-tunnel), [API 자동 배포](/memo/api-auto-deploy), [E2E와 CI를 빠르게](/memo/faster-e2e-ci).
 

@@ -94,6 +94,18 @@ export const isAppRoute = (pathname: string) => {
 - 로그아웃 상태에서 메모가 안 열리던 일의 원인이 이것 하나뿐인지는 확인하지 못했다.
 - "없으면 첫 화면"은 SPA에 편한 기본값이지만, 정적 파일 서버가 404를 줄 줄 모르게 만든다. 캐시 헤더와 겹치면 틀린 답을 오래 들고 있게 된다. 응답을 볼 때 상태 코드만이 아니라 `content-type`과 `cache-control`까지 함께 보는 습관이 이 문제를 찾게 했다.
 
+## 직접 확인하기
+
+없는 코드 파일을 요청해서 상태 코드와 캐시 헤더를 본다.
+
+```bash
+curl -sI https://macfolio.hyeoniverse.com/assets/does-not-exist.js | grep -iE '^(HTTP|cache-control|content-type)'
+# 404여야 한다. 200 + text/html이면 index.html로 떨어지는 것
+curl -sI https://macfolio.hyeoniverse.com/memo/asset-404 | head -1   # 화면 주소는 200 (SPA)
+```
+
+Worker 시험은 `cd apps/react && npx vitest run worker/notFound.test.ts`다. 설정은 루트의 [wrangler.jsonc](https://github.com/hyeoniverse/MacFolio/blob/main/wrangler.jsonc)에 있고, `not_found_handling`과 Worker를 먼저 부르는 범위는 [Workers 정적 자산 문서](https://developers.cloudflare.com/workers/static-assets/routing/)에 있다. 배포는 [GitHub Actions로 배포](/memo/deploy-github-actions)의 `wrangler deploy`가 한다. 되돌리려면 이 Worker를 빼고 다시 배포하면 예전처럼 모든 없는 주소에 `index.html`을 준다.
+
 관련 글: [배포 직후 메모가 안 열리던 까닭](/memo/app-error-alert), [앱 안의 화면에 주소 붙이기](/memo/app-links), [보안 헤더](/memo/security-headers), [프로젝트 앱](/memo/project-apps)
 
 #MacFolio #배포 #Cloudflare #트러블슈팅

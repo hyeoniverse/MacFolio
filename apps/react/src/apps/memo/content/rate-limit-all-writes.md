@@ -91,6 +91,27 @@ export function RateLimit(name: RateLimitName) {
 - "데코레이터는 아래부터 적용된다"처럼 사람이 지키기 어려운 규칙은 문서보다 시험에 두는 편이 낫다. 한 번 틀린 자리가 16곳이었다.
 - 요청 제한과 사람 확인은 막는 대상이 다르다. 사람 확인은 [시스템 설정에서 사람 확인을 켜고 끄기](/memo/privacy-security-settings)에서 곳마다 켠다.
 
+## 서버에서 해야 하는 일
+
+요청 제한은 IP로 센다. API 앞에 Cloudflare Tunnel이 있어서, 서버가 `X-Forwarded-For`를 믿지 않으면 모든 방문자가 터널 하나의 IP로 보여 한 사람이 걸리면 모두가 걸린다. 이 PR을 머지하기 전에 환경 변수를 고쳐야 하는지 물었고, 배포 서버의 `api.env`에 `TRUST_PROXY=1`이 있는지부터 확인했다. 이 값은 이번 변경만이 아니라 기존 로그인·댓글 제한에도 필요하다.
+
+```bash
+grep '^TRUST_PROXY=' ~/deploy/api.env     # TRUST_PROXY=1
+```
+
+없으면 한 줄 더하고 `docker compose up -d api`로 다시 띄운다. 변수 설명은 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 `api.env` 표에 있다.
+
+## 직접 확인하는 방법
+
+```bash
+pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야 한다
+# write-throttle.e2e.test.ts: 쓰기 경로 33개가 모두 429를 내는지
+```
+
+제한 값과 데코레이터는 [apps/api/src/common/rate-limit.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/rate-limit.ts) 한 곳에 있다. 새 쓰기 경로를 만들면 [apps/api/test/routes.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/routes.e2e.test.ts)가 제한이 빠진 경로를 찾아 실패한다.
+
+참고 문서: [NestJS 요청 제한](https://docs.nestjs.com/security/rate-limiting), [Express trust proxy](https://expressjs.com/en/guide/behind-proxies.html).
+
 ## 관련 글
 
 - [API 경로 64개를 표 하나로 고정하기](/memo/api-route-table-test)

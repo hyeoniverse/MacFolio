@@ -109,4 +109,38 @@ R2 키는 저장소 밖의 `~/deploy/backup.env`에만 둔다. rclone 설정도 
 
 서버에 적용하는 순서(R2 버킷과 키, rclone, cron)는 `docs/deployment.md`의 '백업'에, 단계마다의 까닭은 [R2에 DB 백업 걸기](/memo/r2-backup-setup)에 적었다. 서버를 처음 올린 이야기는 [API 서버를 Oracle과 터널로 배포하기](/memo/deploy-api-oracle-tunnel)에 있다.
 
+## 실제로 겪은 것
+
+자동 백업을 만들기 전, DB 백업은 문서에 적힌 한 줄(`cd ~/deploy && docker compose exec -T db pg_dump -U macfolio macfolio > ~/backup-$(date +%F).sql`)뿐이었다. 10월 2일 메시지 기능을 서버에 반영하기 전 이 줄을 쳤더니 `cd: no such file or directory: /Users/…/deploy`가 났다. 서버가 아니라 내 Mac 터미널이었다. 다음 날 서버에 들어가 업데이트 순서를 붙여 넣었을 때는 `pg_dump` 명령이 없다고 했다. Postgres는 컨테이너 안에만 있으니 서버에서 바로 `pg_dump`를 부를 수 없고, `docker compose exec`로 컨테이너 안에서 불러야 한다.
+
+두 번 다 "어디서 치는가"를 사람이 기억해야 해서 생긴 일이다. 그래서 `ops/backup.sh`는 compose 파일 위치를 스스로 알고(`~/deploy/compose.yml`), 컨테이너 안의 `pg_dump`를 부르고, cron이 부르게 했다.
+
+## 따라 하기
+
+준비물: Cloudflare R2 버킷과 그 버킷 하나에만 권한을 준 API 토큰, 서버의 [rclone](https://rclone.org/s3/#cloudflare-r2) 1.59 이상. 전체 순서(10단계)는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '백업'에 있다.
+
+```bash
+# 서버에서. 한 번 돌려 보기
+~/macfolio/ops/backup.sh
+# … 백업 완료: /home/ubuntu/backups/macfolio-…sql.gz
+# … 올림: r2:macfolio-backups/macfolio-…sql.gz (저장소 …MB / 상한 8GB)
+
+# 매일 03:30 UTC (12:30 KST)
+crontab -e
+30 3 * * * /home/ubuntu/macfolio/ops/backup.sh >> /home/ubuntu/deploy/backup.log 2>&1
+```
+
+되살리기 시험은 실제 DB를 건드리지 않게 다른 이름으로 한다.
+
+```bash
+cd ~/deploy
+latest=$(ls -t ~/backups/macfolio-*.sql.gz | head -1)
+DB_NAME=restoretest ~/macfolio/ops/restore.sh "$latest"
+docker compose exec -T db psql -U macfolio -d restoretest -c 'select count(*) from "Post"'
+docker compose exec -T db psql -U macfolio -d macfolio    -c 'select count(*) from "Post"'   # 같아야 한다
+docker compose exec -T db psql -U macfolio -d postgres    -c 'drop database restoretest'
+```
+
+실제로 되돌릴 때는 `~/macfolio/ops/restore.sh <파일 또는 r2:경로>`. 확인을 받고, 그동안 API를 멈췄다가 다시 띄운다. 스크립트: [ops/backup.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/backup.sh), [ops/restore.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/restore.sh). `pg_dump` 옵션은 [PostgreSQL 문서](https://www.postgresql.org/docs/current/app-pgdump.html), R2 요금 한도는 [R2 가격 문서](https://developers.cloudflare.com/r2/pricing/)를 봤다.
+
 #MacFolio #서버 #백업

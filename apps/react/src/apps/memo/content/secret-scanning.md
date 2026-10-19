@@ -115,6 +115,21 @@ PR과 main push마다, 그리고 월요일마다 돈다. 월요일에도 도는 
 2. 서버의 `~/deploy/api.env`나 GitHub Secrets의 값을 바꾼다
 3. 시험용 가짜 값이었다면 `.gitleaks.toml`에 규칙과 파일을 좁혀 예외로 적는다
 
+## 저장소 설정을 실제로 켠 과정
+
+코드 쪽을 머지한 뒤 남은 두 가지(비밀 값 검사 켜기, `secrets`를 필수 검사로)를 했는지 다시 확인했고, 하는 방법을 문서와 PR에 남기게 했다. 설정 화면에 들어가 보니 안내와 이름이 달랐다. "Secret scanning"이 아니라 **Secret Protection**이라는 이름이었고, 이미 켜져 있었다. 안내에 있던 Push protection의 "Block commits that contain supported secrets" 문구는 화면에서 찾지 못했다. 그래서 문서에 예전 이름과 지금 이름을 함께 적었다.
+
+## 따라 하는 방법
+
+```bash
+# 내 컴퓨터에서 기록 전체를 훑기 (CI와 같은 명령)
+gitleaks git --redact --verbose --exit-code 1 .
+```
+
+설정 순서는 [CONTRIBUTING.md](https://github.com/hyeoniverse/MacFolio/blob/main/CONTRIBUTING.md)의 '저장소 설정 › 비밀 값·의존성', CI는 [.github/workflows/secrets.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/secrets.yml), 규칙은 [.gitleaks.toml](https://github.com/hyeoniverse/MacFolio/blob/main/.gitleaks.toml). 걸리면 먼저 그 키를 서비스에서 폐기하고 새로 만든다. 기록에서 지우는 것만으로는 이미 복제된 저장소에 남는다.
+
+참고 문서: [gitleaks](https://github.com/gitleaks/gitleaks), [GitHub Secret scanning](https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning), [Push protection](https://docs.github.com/en/code-security/secret-scanning/introduction/about-push-protection).
+
 ## 남은 것과 배운 것
 
 - **기본 규칙은 유명한 서비스 위주다.** 이 프로젝트가 실제로 쓰는 키 모양은 직접 적어야 했다. 새 서비스를 붙이면 규칙도 함께 더한다.

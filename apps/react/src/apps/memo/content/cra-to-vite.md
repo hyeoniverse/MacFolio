@@ -97,6 +97,25 @@ Vite로 바꾼 첫 커밋은 2025년 3월의 "chore: vite로 변경"이다. `rea
 
 전부 "잘 되는 것처럼 보이는" 문제였다. 에러가 나지 않으니 1년 반 동안 아무도 몰랐다. 이 경험 이후로 빌드가 된다고 끝내지 않고, 배포 결과를 직접 열어 보고 자동 시험으로 확인하는 습관을 들였다. 저장소에 설치 결과·빌드 결과를 넣지 않는 것도 이때 정했다. 넣어 두면 지금처럼 "어느 빌드가 올라가는지"가 흐려진다.
 
+## 따라 하기
+
+옮기는 과정과 측정 방법은 저장소의 [docs/migration-cra-to-vite.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/migration-cra-to-vite.md)에 있다. 같은 숫자를 다시 재려면 이렇게 한다.
+
+```bash
+cd apps/react
+time npx vite build                    # 빌드 시간
+npx vite --port 5173                   # 터미널에 'ready in …ms'가 dev 시작 시간
+```
+
+CRA에서 옮길 때 손대는 곳은 대략 넷이다.
+
+1. `react-scripts`를 빼고 `vite`, `@vitejs/plugin-react`를 넣는다. `vite.config.ts`를 만든다
+2. `public/index.html`을 루트의 `index.html`로 옮기고 `<script type="module" src="/src/main.tsx">`를 넣는다
+3. 환경 변수 `process.env.REACT_APP_*`를 `import.meta.env.VITE_*`로 바꾼다. 빌드할 때 문자열로 들어간다는 점은 같다([Vite 문서: Env Variables](https://vite.dev/guide/env-and-mode))
+4. Jest 시험은 [Vitest](https://vitest.dev/guide/)로 옮긴다
+
+되돌리는 법: 옮긴 PR을 revert하면 된다. 다만 조용히 깨져 있던 것(위의 '옮기면서 조용히 깨져 있던 것')은 CRA에서도 깨져 있던 것이라 되돌려도 고쳐지지 않는다. 공식 안내는 [Vite 시작하기](https://vite.dev/guide/)에 있다.
+
 관련 글: [GitHub Actions로 배포하기](/memo/deploy-github-actions), [의존성 취약점 정리](/memo/dependency-vulnerabilities).
 
 #MacFolio #Vite #성능

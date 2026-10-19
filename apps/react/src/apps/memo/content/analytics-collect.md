@@ -102,6 +102,18 @@ Apple 메뉴 맨 위에 "오늘 방문자 N명"을 붙였다. 메뉴를 열 때�
 
 다음은 이 숫자를 보는 화면, [활동 상태 보기](/memo/analytics-activity-monitor) 앱이다.
 
+## 직접 확인하기
+
+개발자 도구 Network 탭에서 `analytics/events`로 거르고 사이트에서 앱을 몇 개 연다. 5초쯤 뒤, 또는 탭을 다른 탭으로 바꾸는 순간 요청이 하나 나간다. 종류가 `ping`(sendBeacon)으로 보인다([MDN: sendBeacon](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon)).
+
+```bash
+cd apps/react
+npx vitest run src/shared/analytics           # 묶어 보내기·보내지 않는 때
+npx playwright test e2e/analytics.spec.ts --project=desktop-chromium
+```
+
+관리자로 로그인한 브라우저와 `VITE_API_URL`이 없는 빌드에서는 보내지 않는다. 그래서 내 컴퓨터에서 `pnpm dev`만 띄웠을 때 요청이 안 보이는 것이 정상이다. 무엇을 모으는지는 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
+
 관련 글: [트래픽 분석 1 - API](/memo/analytics-api), [트래픽 분석 3 - 활동 상태 보기](/memo/analytics-activity-monitor), [트래픽 분석 5 - UTM](/memo/utm-analytics), [앱 링크와 주소 막대](/memo/app-links)
 
 #MacFolio #트래픽분석

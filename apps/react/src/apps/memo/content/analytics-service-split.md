@@ -105,6 +105,24 @@ await app.get(AnalyticsRollup).maintain(now); // 전: app.get(AnalyticsService)
 - 클래스를 나눌 때 "메서드가 무슨 일을 하나"보다 "어느 상태를 만지나"를 먼저 봤다. 같은 상태를 쓰는 메서드끼리 묶으면 나눈 뒤 서비스 사이에 오가는 값이 적다.
 - 리팩터링 커밋에서 시험은 한 줄만 바뀌어야 한다. 경로와 응답을 그대로 둔 덕에 e2e가 안전망이 됐다.
 
+## 따라 해 보기
+
+나누기 전후가 같은 일을 하는지는 HTTP 경계의 시험으로 본다. 서비스 이름이 바뀌어도 경로와 응답은 그대로라 시험을 고치지 않고 통과해야 한다.
+
+```bash
+cp apps/api/.env.example apps/api/.env       # 처음 한 번
+pnpm --filter @macfolio/api db:up            # 로컬 PostgreSQL (Docker)
+pnpm --filter @macfolio/api test:e2e test/analytics.e2e.test.ts
+```
+
+순환 의존이 생기지 않았는지도 같이 본다. 저장·집계·조회가 서로를 부르지 않게 나눴으므로 여기서 0이 나와야 한다.
+
+```bash
+pnpm cycles     # madge, 서버·화면·패키지 모두
+```
+
+NestJS에서 서비스 여러 개를 한 모듈의 providers로 묶는 방법은 [NestJS 모듈 문서](https://docs.nestjs.com/modules)에 있다. 지금 서버 구조는 [docs/backend-design.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md)에 있다.
+
 관련 글: [트래픽 분석 1 - API](/memo/analytics-api), [트래픽 분석 4 - 공개](/memo/analytics-public), [백엔드 설계](/memo/backend-design), [리팩터링 6 - 서버](/memo/refactor-step6-server)
 
 #MacFolio #NestJS #리팩터링 #트래픽분석

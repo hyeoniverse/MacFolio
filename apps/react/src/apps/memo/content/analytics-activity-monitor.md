@@ -127,6 +127,23 @@ const y = (value: number) => HEIGHT - (value / max) * (HEIGHT - 12) - 2;
 - 실시간은 10초마다 다시 묻는다(폴링). 관리자 한 명만 보므로 서버 부담은 작지만, 창을 띄워 둔 채 두면 계속 요청한다.
 - "관리자 전용"으로 시작했다가 몇 시간 만에 열었다. 처음부터 "어떤 숫자가 정말 비밀인가"를 나눠 봤다면 잠금 화면을 두 번 만들지 않았을 것이다. 감출 것은 주소·캠페인·실시간 흐름처럼 사람을 짐작할 수 있는 값뿐이었다.
 
+## 직접 열어 보기
+
+활동 상태 보기는 서버 없이도 가짜 데이터로 열린다. E2E가 쓰는 가짜 API(`apps/react/e2e/fakeApi.ts`)가 요약 응답을 돌려준다.
+
+```bash
+cd apps/react
+npx playwright test e2e/activity.spec.ts --project=desktop-chromium
+```
+
+실제 사이트에서는 Launchpad(또는 휴대폰 홈)에서 '활동 상태 보기'를 연다. 같은 숫자를 API로 직접 볼 수도 있다. 방문자로 부르면 묶음만, 관리자 쿠키가 있으면 호스트와 UTM 표까지 온다.
+
+```bash
+curl -s "https://macfolio-api.hyeoniverse.com/analytics/summary?from=2026-10-01&to=2026-10-07" | head -c 300; echo
+```
+
+그래프 숫자가 맞는지는 표의 합계와 탭 위 합계가 같은지로 본다. 화면 규칙(정렬·비율 막대)은 `src/apps/activity/model.test.ts`가 맡는다(`npx vitest run src/apps/activity`). API 문서는 [Swagger](https://macfolio-api.hyeoniverse.com/docs)의 analytics 묶음에 있다.
+
 관련 글: [트래픽 분석 1 - API](/memo/analytics-api), [트래픽 분석 2 - 수집](/memo/analytics-collect), [트래픽 분석 4 - 공개](/memo/analytics-public), [서버 자원 보기](/memo/resource-monitor)
 
 #MacFolio #트래픽분석 #데스크톱

@@ -71,6 +71,10 @@ return key.slice(dot + 1).toLowerCase() in FILE_TYPES ? key : null; // 허용한
   - 앱 아이콘도 macOS 26처럼 파란 둥근 네모 위의 보석 감정용 루페로 다시 그렸다. 다른 앱 아이콘처럼 그림을 꽉 채운다
 - Finder와 미리보기는 작은 저장소(`previewStore`) 하나로 이어진다. 창이 아직 한 번도 뜨지 않았어도 연 파일이 남아 있다가 창이 뜨면 보인다
 
+![macOS 미리보기에서 PDF를 연 화면. 왼쪽 사이드바에 쪽 썸네일, 위에 둥근 도구 막대](./images/finder-files-macos-preview.jpg '참고한 macOS 미리보기 화면. 둥근 사이드바의 쪽 썸네일과 위쪽 도구 막대 묶음을 이 화면에 맞췄다')
+
+![macOS 미리보기를 켜면 뜨는 열기 창. 사이드바와 미리보기 — iCloud 폴더의 파일](./images/finder-files-macos-open-panel.jpg '참고한 macOS 화면. 미리보기를 파일 없이 켜면 최근 파일이 아니라 이 열기 창이 뜬다(개인 폴더 이름은 가렸다)')
+
 ![파일 없이 연 미리보기: 사이드바에 미리보기·최근 항목·즐겨찾기, 아래에 취소·열기](./images/finder-files-preview-open-panel.jpg '파일 없이 열면 창 전체가 열기 창이 된다. 서버 없이 띄운 화면이라 파일 목록은 비어 있다')
 
 휴대폰에는 미리보기 앱이 없다. iOS의 파일 앱은 앱 안에서 바로 훑어보기를 띄우므로, 휴대폰에서는 파일 앱 안에서 화면을 채워 보여 준다.
@@ -97,6 +101,53 @@ return key.slice(dot + 1).toLowerCase() in FILE_TYPES ? key : null; // 허용한
 서명 주소는 AWS 서명 버전 4를 `node:crypto`로 직접 만들었다. SDK를 들이기엔 쓰는 곳이 서명 하나뿐이다. AWS 문서의 예시 값으로 같은 서명이 나오는지 시험해 두었다. 서명에 `content-length`를 넣어서, 말한 크기와 다른 파일은 R2가 받지 않는다. 키는 서버가 `resume/<무작위>.pdf`처럼 짓기 때문에 브라우저가 경로를 고를 수 없다.
 
 목록도 코드에서 서버로 옮겼다. Finder는 `GET /documents`를 읽고, 시험에서는 전처럼 가짜 목록을 넣는다. 이름 바꾸기와 지우기는 파일을 고르고 메뉴 막대의 파일 메뉴(⌘⌫)에서 한다. 지우면 R2에서도 지운다.
+
+## 실제로 만들며 바뀐 것
+
+10월 18일 오전, 이력서 PDF를 Finder 안에서 보여 주는 첫 안을 보고 진짜 Mac처럼 미리보기 앱을 따로 두기로 했다. 파일은 R2에 두는 방식으로 정했다. 그날 밤까지 고친 순서는 이렇다.
+
+1. 로컬에서 PDF를 올렸더니 미리보기가 "열 수 없습니다"를 띄웠다. `curl -v http://localhost:4000/documents`로 보니 목록에는 파일(`portfolio/….pdf`, 약 11.7MB)이 있었다. 목록이 아니라 파일을 내주는 쪽을 봐야 했다.
+2. 첫 미리보기 화면은 macOS와 전혀 비슷하지 않았고 아이콘도 달랐다. 내 Mac의 미리보기 화면(위 사진)을 옆에 두고 다시 맞췄다.
+3. 파일 없이 켜면 최근에 연 파일을 보여 줬다. macOS처럼 열기 창을 띄우게 바꿨다.
+4. 열기 창에 폴더가 3개만 보였다. Finder와 같은 트리를 쓰게 했고, 휴대폰 파일 앱도 같은 구조로 맞췄다. 미리보기 아이콘만 작아 보여서 그림을 꽉 채웠다.
+5. 파일을 열었다가 닫고 다시 켜면 이전 파일이 그대로 열렸다. 닫을 때 열린 파일을 비우게 했다.
+
+## 따라 하기: R2 버킷 붙이기
+
+전체 절차는 저장소의 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md) "문서 파일(R2)" 절에 있다. R2 자체는 [Cloudflare R2 문서](https://developers.cloudflare.com/r2/), PDF를 그리는 라이브러리는 [PDF.js](https://mozilla.github.io/pdf.js/)를 본다. 준비물은 Cloudflare 계정, API 서버에 SSH로 들어갈 수 있는 권한이다.
+
+1. 버킷을 만든다. 이름이 이미 쓰이고 있다고 나오면 예전에 만든 버킷이 있는지 R2 목록부터 본다(내 경우가 그랬다).
+
+```bash
+npx wrangler r2 bucket create macfolio-files
+```
+
+2. R2 → Manage R2 API Tokens에서 Object Read & Write 토큰을 만들고, 서버의 `~/deploy/api.env`에 네 줄을 넣은 뒤 API를 다시 띄운다.
+
+```bash
+R2_ACCOUNT_ID=<계정 ID>
+R2_ACCESS_KEY_ID=<Access Key ID>
+R2_SECRET_ACCESS_KEY=<Secret Access Key>
+R2_BUCKET=macfolio-files
+```
+
+3. 버킷 Settings → CORS Policy에 사이트 주소의 PUT을 허용하고, 서버에서 미리 요청(preflight)을 보내 확인한다. `api.env`를 `source`로 읽으면 공백이 든 값(`CONTACT_FROM=MacFolio <…>`)에서 문법 오류가 나므로 `grep`으로 꺼낸다.
+
+```bash
+cd ~/deploy
+A=$(grep '^R2_ACCOUNT_ID=' api.env | cut -d= -f2-)
+B=$(grep '^R2_BUCKET=' api.env | cut -d= -f2-)
+curl -si -X OPTIONS "https://$A.r2.cloudflarestorage.com/$B/desktop/test.gif" \
+  -H "Origin: https://macfolio.hyeoniverse.com" \
+  -H "Access-Control-Request-Method: PUT" \
+  -H "Access-Control-Request-Headers: content-type" | head -8
+```
+
+기대 출력은 `HTTP/1.1 204 No Content`와 `Access-Control-Allow-Origin: https://macfolio.hyeoniverse.com`, `Access-Control-Allow-Methods: PUT`이다. 내 서버에서도 이렇게 나왔다.
+
+4. 그래도 올리기가 실패하면 키를 의심한다. `curl --aws-sigv4 "aws:amz:auto:s3" --user "$KEY:$SECRET" -T 파일 "$주소"`로 직접 올려 보고, `SignatureDoesNotMatch`가 나오면 키를 다시 만들어 넣는다. 키 길이는 보통 32자와 64자다.
+
+되돌리려면 `api.env`에서 네 줄을 지우고 API를 다시 띄운다. 목록은 그대로 보이고 올리기·지우기만 "서버에 파일 저장소(R2)가 설정되지 않았습니다"로 막힌다.
 
 ## 시험
 

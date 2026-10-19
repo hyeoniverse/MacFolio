@@ -100,6 +100,26 @@ if (!this.cookiesAllowed(request.headers.origin))
 - 브라우저 규칙(SameSite)이 막아 주는 것과 서버가 막는 것은 다른 겹이다. 한 겹이 이미 막고 있어도, 그 겹은 설정 한 줄로 사라질 수 있어서 서버 쪽에 같은 뜻을 한 번 더 적어 두었다.
 - 허용 목록을 "맞다/아니다"가 아니라 "어떻게 맞았나"로 돌려주게 바꾸자, 같은 함수를 CORS와 가드 두 곳에서 서로 다른 뜻으로 쓸 수 있었다.
 
+## 따라 하는 방법
+
+허용 주소는 서버의 `api.env` 한 줄이다. 그대로 적은 주소는 쿠키까지, `*`로 맞은 주소는 읽기만 된다.
+
+```bash
+# ~/deploy/api.env
+CORS_ORIGINS=https://macfolio.hyeoniverse.com,https://*-macfolio.hyeoniverse.workers.dev
+```
+
+```bash
+cd ~/deploy && docker compose up -d api
+# 미리보기 주소로는 관리자 확인이 403이어야 한다
+curl -s -o /dev/null -w '%{http_code}\n' -H 'Origin: https://feat-x-macfolio.hyeoniverse.workers.dev' \
+  https://macfolio-api.hyeoniverse.com/auth/me
+```
+
+규칙은 [apps/api/src/common/cors.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/cors.ts), 시험은 `pnpm --filter @macfolio/api test -- src/common/cors.test.ts`. 미리보기에서 관리자 화면이 꼭 필요하면 그 주소를 `*` 없이 그대로 적어 넣고, 끝나면 지운다.
+
+참고 문서: [MDN CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), [NestJS CORS](https://docs.nestjs.com/security/cors).
+
 ## 관련 글
 
 - [쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)

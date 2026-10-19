@@ -101,6 +101,24 @@ for (const { metatype, instance } of discovery.getControllers()) {
 - 요청 검증을 zod 스키마로 모으는 일은 공유 타입과 함께 할 때 의미가 있어서 미뤘다. 검사 코드가 세 가지 모양(`{ errors }` 반환, 예외 던지기, 문자열 반환)으로 흩어져 있던 것은 그 뒤 `packages/contracts`로 옮기며 정리했다([분석 계약](/memo/contracts-analytics), [댓글 계약](/memo/contracts-comments)).
 - 지금 급한 것은 "검사가 있다"를 고정하는 것이었고, 그것은 시험 하나로 됐다. 규칙을 코드 곳곳에 강제하기 어려울 때는, 규칙을 표로 적고 실제 상태와 비교하는 시험이 가장 싸다. 망가뜨려서 정말 깨지는지 본 것도 중요했다. 늘 통과하는 시험은 아무것도 지키지 않는다.
 
+## 따라 해 보기
+
+경로를 하나 더하면 이 시험이 먼저 깨진다. 그게 의도다.
+
+```bash
+cp apps/api/.env.example apps/api/.env       # 처음 한 번
+pnpm --filter @macfolio/api db:up            # 로컬 PostgreSQL (Docker)
+pnpm --filter @macfolio/api test:e2e test/routes.e2e.test.ts
+```
+
+새 경로를 만들었을 때 할 일:
+
+1. 컨트롤러에 경로를 만든다. 관리자 전용이면 `@UseGuards(AdminGuard)`를 단다
+2. 시험을 돌리면 "표에 없는 경로"로 실패한다. `test/routes.e2e.test.ts`의 표에 한 줄(방법, 경로, 가드)을 더한다
+3. 관리자 경로라면 로그인 없이 401, 몸통 검사가 가드보다 먼저 돌지 않는지까지 시험이 자동으로 본다
+
+시험이 정말 잡는지는 일부러 가드 한 줄을 지우고 돌려 보면 안다. 실패를 본 뒤 되돌린다(`git checkout -- <파일>`). 가드의 동작은 [NestJS Guards 문서](https://docs.nestjs.com/guards)에 있다.
+
 관련 글: [관리자 로그인](/memo/admin-login-github-oauth), [쓰기 경로에 요청 제한](/memo/rate-limit-all-writes), [리팩터링 7 - 보안](/memo/refactor-step7-security), [테스트가 찾은 버그](/memo/bugs-found-by-tests)
 
 #MacFolio #보안 #API #NestJS #테스트

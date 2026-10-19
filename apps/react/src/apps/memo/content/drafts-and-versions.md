@@ -122,6 +122,21 @@ API e2e `apps/api/test/posts.e2e.test.ts`가 실제 Postgres로 이 흐름을 �
 
 배운 것: SQL의 CHECK는 "참이어야 통과"가 아니라 "거짓이 아니면 통과"다. NULL이 섞일 수 있는 칸은 `IS NOT NULL`을 먼저 따져야 한다. 이것을 알게 해 준 것은 "틀린 행을 넣으면 거절되는가"를 묻는 시험이었다. 맞는 행만 넣어 보는 시험이었다면 몰랐을 것이다.
 
+## 직접 써 보기
+
+관리자로 로그인해야 하는 기능이라 로컬에서 띄워 본다([관리자 로그인 붙이기](/memo/admin-login-github-oauth)의 개발용 OAuth App이 필요하다).
+
+```bash
+pnpm --filter @macfolio/api db:up
+pnpm dev:all
+```
+
+1. 메모 앱에서 새 글을 쓴다. 저장하면 임시 저장이라 방문자 창(시크릿 창)에는 보이지 않는다
+2. 게시한다. 시크릿 창을 새로고침하면 보인다
+3. 고쳐서 다시 게시하고, 버전 기록에서 앞 버전을 고른다. 되돌리기는 그 버전 내용을 새 버전으로 게시하는 것이라 기록이 지워지지 않는다
+
+같은 흐름을 시험으로 돌리려면 `pnpm --filter @macfolio/api test:e2e test/posts.e2e.test.ts`. 두 벌의 내용을 지키는 DB CHECK 제약은 [Prisma 마이그레이션](https://www.prisma.io/docs/orm/prisma-migrate)으로 넣었다.
+
 관련 글: [타입은 desktop-core에, 스키마는 contracts에](/memo/contracts-posts), [글이 DB에만 있게 되어서 백업을 붙였다](/memo/db-backup).
 
 #MacFolio #백엔드 #메모앱

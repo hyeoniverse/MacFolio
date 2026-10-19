@@ -133,6 +133,28 @@ fi
 - "여러 번 해도 같은 결과"는 스크립트만이 아니라 사람이 따라 하는 설정 절차에도 필요했다. 한 번에 성공한다고 가정한 안내는 두 번째 시도에서 조용히 어긋났다.
 - "무엇이 바뀌었나"를 정할 때는 직전 실행이 아니라 실제 상태와 비교한다. 실행은 실패하거나 건너뛸 수 있지만 서버에 떠 있는 버전은 거짓말을 하지 않는다.
 
+## 따라 하기: 처음 한 번
+
+전체 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '자동 배포 설정 (한 번)'이다. 줄 맨 앞이 `ubuntu@…`인 명령은 서버, 나머지는 내 컴퓨터나 GitHub 화면이다.
+
+| 단계 | 어디서 | 할 일                                                                              | 확인                            |
+| ---- | ------ | ---------------------------------------------------------------------------------- | ------------------------------- |
+| 1    | 서버   | `compose.yml`의 api를 `image:`로 바꾸고 `~/macfolio/ops/deploy.sh sha-…`로 첫 배포 | `.env`에 `API_TAG=`가 생긴다    |
+| 2    | 서버   | 배포 전용 열쇠를 만들고 `restrict,command=…`로 등록                                | `등록된 배포 열쇠 수: 1`        |
+| 3    | GitHub | Secrets에 `DEPLOY_HOST`·`DEPLOY_KNOWN_HOSTS`·`DEPLOY_SSH_KEY`                      | 서버의 열쇠 파일을 지운다       |
+| 4    | GitHub | Actions → API 배포 → Run workflow (지금 태그)                                      | 로그에 "이미 이 버전이 떠 있다" |
+
+태그는 자리표시(`<태그>`)가 아니라 실제 값(`sha-` + 7자리)을 넣는다. 지금 서버 버전은 바깥에서 본다.
+
+```bash
+curl -s https://macfolio-api.hyeoniverse.com/health; echo
+# {"status":"ok","database":"up","version":"sha-7e7eac0"}
+```
+
+되돌리는 법: Run workflow에 예전 태그를 넣으면 그 이미지로 바뀐다. 열쇠를 거두려면 서버의 `~/.ssh/authorized_keys`에서 `github-actions-deploy`로 끝나는 줄을 지운다(`sed -i '/github-actions-deploy/d' ~/.ssh/authorized_keys`). 되돌리기가 실제로 도는지는 [되돌리기 훈련](/memo/rollback-drill)에서 확인했다.
+
+SSH 열쇠의 `command=`·`restrict` 옵션은 [OpenSSH authorized_keys 설명](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT), Secrets는 [GitHub Actions 문서](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)에 있다.
+
 관련 글: [API 자동 배포](/memo/api-auto-deploy), [GitHub Actions로 배포](/memo/deploy-github-actions), [되돌리기 연습](/memo/rollback-drill), [Oracle 서버와 터널](/memo/deploy-api-oracle-tunnel)
 
 #MacFolio #배포 #서버 #트러블슈팅

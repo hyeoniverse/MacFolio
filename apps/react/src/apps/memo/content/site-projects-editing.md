@@ -237,6 +237,17 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 - "모듈이 불러올 때 계산하는 값"을 런타임 데이터로 바꿀 때는, 모두 반응형으로 바꾸기보다 **불러오기 전에 채우기**(동적 `import`)가 훨씬 싸다. 배열을 갈아 끼우지 않고 `splice`로 안을 채우면 먼저 읽은 쪽도 안전하다.
 - 검사 규칙을 화면과 서버가 함께 쓰는 패키지 하나에 두면, 화면이 통과시킨 값을 서버가 거절하는 일이 없다. 코드의 기본값도 같은 검사에 넣어 보면 규칙의 한도가 맞는지 바로 드러난다.
 
+## 따라 하는 방법
+
+1. 관리자로 로그인하고 시스템 설정 → 프로젝트를 연다
+2. 프로젝트를 고르거나 더한다. 배포된 주소가 있으면 넣는다(프로젝트 앱이 그 주소를 iframe으로 띄운다)
+3. 주 언어·기술은 칩에서 검색해 고르고, 아이콘·대표 화면을 올린다
+4. 저장한다
+
+시험은 `cd apps/react && npx playwright test e2e/site-projects.spec.ts`, 화면 없이 가짜 API로 돈다([apps/react/e2e/fakeApi.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/e2e/fakeApi.ts)).
+
+참고 문서: [MDN iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), [MDN frame-ancestors](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors).
+
 ## 관련 글
 
 - [프로필을 코드에서 꺼내기](/memo/site-profile-editing): 같은 방식의 앞선 작업

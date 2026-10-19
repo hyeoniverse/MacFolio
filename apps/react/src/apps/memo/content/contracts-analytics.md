@@ -92,6 +92,19 @@ export const EventBatch = z.preprocess(
 - 서버에만 남긴 것(User-Agent 줄이기, IP 가리기, 하루 해시)의 기준은 "화면도 알아야 하는가"였다. 이 질문 하나로 contracts에 넣을지 말지가 거의 다 갈렸다.
 - 가장 큰 몸통을 옮겼는데도 서버 e2e가 그대로 통과한 것은, 400 문구를 스키마의 `error` 메시지로 옮겨 둔 덕이다. 검사 규칙을 옮길 때는 실패 문구까지 같이 옮긴다.
 
+## 따라 해 보기
+
+계약을 바꿀 때는 `packages/contracts`를 먼저 고치고, 서버와 화면이 둘 다 따라오는지 본다.
+
+```bash
+pnpm --filter @macfolio/contracts test          # 스키마 시험
+pnpm --filter @macfolio/contracts build         # 서버는 빌드된 JS를 읽는다
+pnpm typecheck                                  # 화면·서버가 새 모양을 따르는지
+pnpm --filter @macfolio/api test:e2e test/analytics.e2e.test.ts
+```
+
+필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 같이 깨진다. 이게 이 작업으로 얻은 것이다. 확인한 뒤 되돌린다. 스키마는 [Zod](https://zod.dev/)로 쓰고, 패키지를 나눈 까닭은 [댓글 계약](/memo/contracts-comments)에 있다.
+
 관련 글: [트래픽 분석 1 - API](/memo/analytics-api), [트래픽 분석 2 - 수집](/memo/analytics-collect), [댓글 계약](/memo/contracts-comments), [파일 계약](/memo/contracts-files)
 
 #MacFolio #리팩터링 #zod #TypeScript

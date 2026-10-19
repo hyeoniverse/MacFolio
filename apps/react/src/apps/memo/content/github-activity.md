@@ -11,6 +11,8 @@ GitHub 앱은 [서버가 받은 프로필](/memo/github-live-profile)을 보여 
 
 ![GitHub 앱의 기여 달력과 활동 기록](./images/github-activity.jpg '고정 저장소 아래의 기여 달력과 달마다 묶은 활동 기록 (가짜 API 값)')
 
+10월 3일 오후, 고정 저장소를 6개로 줄이면서 GitHub 앱 아래에 기여 기록(contribution)과 활동 기록(history)도 보이게 하기로 했다. 실제 GitHub 프로필을 옆에 열어 두고 보니, 고정 저장소만 있는 화면은 프로필의 절반만 옮긴 것처럼 보였다.
+
 ## 달력은 HTML에서 읽는다
 
 기여 달력은 GraphQL API의 `contributionsCollection`으로 받을 수 있지만, GraphQL은 토큰 없이는 부를 수 없다. 서버는 토큰 없이도 돌아가게 만들어 두었고(있으면 요청 한도만 늘어난다), 그 원칙을 달력 하나 때문에 깨고 싶지 않았다.

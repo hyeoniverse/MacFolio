@@ -117,4 +117,17 @@ DB CHECK 제약의 `10485760`은 아직 SQL 이주 파일에 따로 있다. 이�
 
 다음은 [분석(analytics)](/memo/contracts-analytics)과 [사이트 프로필](/memo/contracts-site). 그러면 손으로 적은 응답 타입이 없어진다.
 
+## 따라 해 보기
+
+계약을 바꿀 때는 `packages/contracts`를 먼저 고치고, 서버와 화면이 둘 다 따라오는지 본다.
+
+```bash
+pnpm --filter @macfolio/contracts test          # 스키마 시험
+pnpm --filter @macfolio/contracts build         # 서버는 빌드된 JS를 읽는다
+pnpm typecheck                                  # 화면·서버가 새 모양을 따르는지
+pnpm --filter @macfolio/api test -- src/files/rules.test.ts
+```
+
+필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 같이 깨진다. 이게 이 작업으로 얻은 것이다. 확인한 뒤 되돌린다. 스키마는 [Zod](https://zod.dev/)로 쓰고, 패키지를 나눈 까닭은 [댓글 계약](/memo/contracts-comments)에 있다.
+
 #MacFolio #리팩터링 #zod #TypeScript

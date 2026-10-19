@@ -87,6 +87,18 @@ API 응답에는 이 해시도, 비밀번호 해시도 담지 않는다. 필요�
 - 응답 칸을 `select`로 고르고 시험이 칸 목록을 정확히 비교하게 한 것이 가장 값싼 안전장치였다. 칸이 늘어나면 시험이 먼저 깨진다.
 - 요청 제한은 뒤에 쓰기 경로 전체로 넓혔다([쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)).
 
+## 직접 확인하는 방법
+
+```bash
+pnpm --filter @macfolio/api test -- src/comments/rules.test.ts
+pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야 한다
+cd apps/react && npx playwright test e2e/memo-comments.spec.ts
+```
+
+서버 E2E는 [apps/api/test/comments.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/comments.e2e.test.ts)에서 해시만 남는지, 요청 제한이 걸리는지를 본다. 배포 서버에서는 `api.env`의 `IP_HASH_SECRET`이 없으면 서버가 뜨지 않는다(`openssl rand -hex 32`로 만든다, [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 `api.env` 표).
+
+참고 문서: [Node.js crypto.scrypt](https://nodejs.org/api/crypto.html#cryptoscryptpassword-salt-keylen-options-callback), [NestJS 요청 제한](https://docs.nestjs.com/security/rate-limiting).
+
 ## 관련 글
 
 - [이름·비밀번호 없이 쓰는 메시지와 댓글](/memo/visitor-identity)

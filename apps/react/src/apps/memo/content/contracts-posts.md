@@ -134,6 +134,20 @@ export const parsePostInput = (input: unknown, today: string) => parse(postInput
 
 배운 것: 동작을 바꾸지 않는 리팩터링이라면 기존 시험을 고치지 않고 통과시키는 것이 가장 강한 증거다. 이번에는 숫자 날짜처럼 사소한 경우까지 기존 시험이 이미 적어 두어서, 새 스키마가 같은 답을 내는지 바로 알 수 있었다.
 
+## 따라 해 보기
+
+계약을 바꿀 때는 `packages/contracts`를 먼저 고치고, 서버와 화면이 둘 다 따라오는지 본다.
+
+```bash
+pnpm --filter @macfolio/contracts test          # 스키마 시험
+pnpm --filter @macfolio/contracts build         # 서버는 빌드된 JS를 읽는다
+pnpm typecheck                                  # 화면·서버가 새 모양을 따르는지
+pnpm --filter @macfolio/api test -- src/posts/rules.test.ts
+pnpm --filter @macfolio/desktop-core test
+```
+
+필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 같이 깨진다. 이게 이 작업으로 얻은 것이다. 확인한 뒤 되돌린다. 스키마는 [Zod](https://zod.dev/)로 쓰고, 패키지를 나눈 까닭은 [댓글 계약](/memo/contracts-comments)에 있다.
+
 관련 글: [글 임시 저장과 버전](/memo/drafts-and-versions), [desktop-core에 메모 규칙 모으기](/memo/desktop-core-memo). 다음은 [메시지](/memo/contracts-messages)·[연락 메일](/memo/contracts-contact)·[배경화면](/memo/contracts-wallpapers)·[파일](/memo/contracts-files)·[분석](/memo/contracts-analytics) 순으로 같은 방식.
 
 #MacFolio #리팩터링 #zod #TypeScript

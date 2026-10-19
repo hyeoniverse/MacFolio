@@ -122,6 +122,28 @@ export function budgetLevel(budget: Budget): 'over' | 'near' | 'ok' {
 - 서명처럼 "맞으면 조용하고 틀리면 401만 돌아오는" 코드는 공개된 시험 벡터로 한 글자씩 비교하는 것이 가장 빠른 확인이다. 진짜 키를 시험에 넣지 않아도 되므로 CI에서도 돈다.
 - `docs/deployment.md`에는 키를 줄 사용자를 따로 만들고 `read usage-budgets`, `read usage-report` 정책만 주도록 권했다. 그런 키로는 요금·예산을 읽을 수만 있다.
 
+## 따라 하는 방법
+
+서버 탭에 요금을 띄우려면 Oracle 계정에 읽기 전용 API 키를 하나 만들고 서버의 `api.env`에 넣는다. 순서는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '종량제 요금·예산 보기 (OCI API 키)'에 있다. 넣는 값은 다섯 개다.
+
+```bash
+# ~/deploy/api.env
+OCI_TENANCY_OCID=ocid1.tenancy.oc1..…
+OCI_USER_OCID=ocid1.user.oc1..…
+OCI_FINGERPRINT=aa:bb:cc:…
+OCI_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----"
+OCI_REGION=ap-chuncheon-1
+```
+
+```bash
+cd ~/deploy && docker compose up -d api      # 바뀐 api.env를 읽게 다시 만든다
+docker compose logs --tail 50 api            # 서명 오류가 없는지
+```
+
+확인은 관리자로 활동 상태 앱의 서버 탭을 열어 이번 달 요금과 예산이 보이는지 본다. 비워 두면 그 칸만 숨는다. 되돌릴 때는 다섯 줄을 지우고 같은 명령으로 다시 띄운 뒤, Oracle 콘솔에서 그 API 키를 지운다. 서명 코드와 시험은 [apps/api/src/resources/oci.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/resources/oci.ts), [apps/api/src/resources/oci.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/resources/oci.test.ts).
+
+참고 문서: [OCI 요청 서명](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/signingrequests.htm), [OCI API 키 만들기](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm), [OCI 예산](https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm).
+
 ## 관련 글
 
 - [무료 서버가 회수되기 전에](/memo/resource-monitor)

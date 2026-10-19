@@ -126,6 +126,27 @@ export const dayHash = (day: string, ip: string, userAgent: string, secret: stri
 - 집계는 서버 안의 `setInterval`이라 서버가 여러 대가 되면 같은 날을 두 번 모을 수 있다. 지금은 한 대라 문제가 없고, 모은 날에는 `visits` 행을 꼭 남겨 다시 모으지 않게 했다.
 - 원본을 오래 두지 않고 "날마다 모은 숫자"만 남기는 설계는, 개인정보와 서버 크기라는 두 제약을 한 번에 풀었다. 지울 날짜를 먼저 정하고 표를 나누니 설계가 쉬웠다.
 
+## 직접 확인하기
+
+모으는 것·모으지 않는 것·두는 기간은 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 표로 있다. 로컬에서 이벤트를 하나 보내고 요약에 잡히는지 본다.
+
+```bash
+pnpm --filter @macfolio/api db:up && pnpm dev:api
+curl -s -X POST http://localhost:4000/analytics/events -H 'Content-Type: application/json' \
+  -d '{"events":[{"type":"visit","path":"/"}]}' -o /dev/null -w '%{http_code}\n'
+curl -s http://localhost:4000/analytics/today; echo     # 오늘 순방문자
+```
+
+몸통 모양은 계약(`packages/contracts/src/analytics.ts`)이 정하므로, 틀린 몸통은 400이 나는 것이 맞다. 정확한 필드는 [Swagger](https://macfolio-api.hyeoniverse.com/docs)에서 본다. 하루 해시·90일 삭제·날마다 모으기는 시험이 확인한다.
+
+```bash
+cp apps/api/.env.example apps/api/.env       # 처음 한 번
+pnpm --filter @macfolio/api db:up            # 로컬 PostgreSQL (Docker)
+pnpm --filter @macfolio/api test:e2e test/analytics.e2e.test.ts
+```
+
+되돌리는 법: 이벤트는 90일 뒤 지워지고 숫자 표만 남는다. 지금 바로 비우려면 DB에서 이벤트 표를 비우면 되지만, 이미 모은 일별 숫자는 남는다.
+
 관련 글: [트래픽 분석 2 - 수집](/memo/analytics-collect), [트래픽 분석 3 - 활동 상태 보기](/memo/analytics-activity-monitor), [분석 계약](/memo/contracts-analytics), [트래픽 분석 4 - 공개](/memo/analytics-public)
 
 #MacFolio #트래픽분석 #백엔드 #개인정보

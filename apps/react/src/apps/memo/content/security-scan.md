@@ -123,6 +123,24 @@ echo "Semgrep: 전체 $(jq '.results | length' semgrep.json)건, ERROR ${errors}
 
 `--config auto`는 CI에 쓰지 않았다. 저장소 정보를 Semgrep에 보내야 하고, 규칙 목록이 실행마다 달라질 수 있어 같은 커밋이 어제는 통과하고 오늘은 실패할 수 있다. 사람이 판정할 때만 돌린다.
 
+## Dependency-Check를 다시 시도한 일
+
+점검 뒤 Dependency-Check를 마저 돌리려고 NVD API 키를 받으려 했다. NVD 사이트의 신청 양식을 채우고 보냈는데 메일이 오지 않고 화면이 멈춰 있었다. 안내받은 방법 세 가지를 차례로 해 봐도 같았다. 그래서 Dependency-Check는 osv-scanner로 대신한다는 지금 판단을 그대로 두고, 그 내용을 정리해 이슈를 닫았다.
+
+## 다시 돌리는 방법
+
+```bash
+pip install semgrep==1.181.0
+semgrep scan --config p/owasp-top-ten --config p/typescript --config p/nodejs --config p/javascript \
+  --metrics=off apps/react apps/api packages
+pnpm audit --prod
+osv-scanner scan source --lockfile pnpm-lock.yaml
+```
+
+제외 목록까지 포함한 전체 명령과 판정 표는 [docs/security-scan.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/security-scan.md), CI는 [.github/workflows/sast.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/sast.yml)에 있다. 새 발견 항목이 나오면 문서 표에 한 줄을 더하고, 값이 어디서 오고 무엇이 막는지를 판정 근거로 적는다.
+
+참고 문서: [Semgrep](https://semgrep.dev/docs/), [osv-scanner](https://google.github.io/osv-scanner/), [pnpm audit](https://pnpm.io/cli/audit), [NVD API 키 신청](https://nvd.nist.gov/developers/request-an-api-key).
+
 ## 남은 것과 배운 것
 
 - **Dependency-Check는 키를 받으면 다시 돌린다.** 같은 명령에 `--nvdApiKey`만 더하면 된다.

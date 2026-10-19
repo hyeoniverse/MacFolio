@@ -107,6 +107,20 @@ function partsOf(date: Date, timeZone?: string): DateParts {
 - 로직을 React에서 떼어 순수 함수로 만들면 테스트가 쉬워지고, 이런 버그가 숨을 자리가 줄어든다.
 - 콘솔 에러를 시험 실패로 바꾸는 장치 하나가, 화면만 보는 시험이 놓치는 것을 잡는다.
 
+## 시험 돌려 보기
+
+이 글의 시험은 모두 `apps/react/e2e/`에 있다. 처음 받으면 브라우저부터 설치한다([Playwright 설치 문서](https://playwright.dev/docs/intro)).
+
+```bash
+cd apps/react
+npx playwright install chromium
+npx playwright test --project=desktop-chromium          # 데스크톱만
+npx playwright test --project=mobile-iphone             # 휴대폰 설정
+npx playwright show-report                              # 실패한 시험의 화면·trace
+```
+
+CI에서만 '오전'이 'AM'이 된 일처럼, 내 컴퓨터와 CI가 다르게 도는 것은 로케일·시간대 설정이 원인이었다. 그래서 설정은 [apps/react/playwright.config.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/playwright.config.ts)에서 고정한다. 실패를 고쳤는지는 같은 시험을 `--repeat-each=5`로 여러 번 돌려 본다.
+
 관련 글: [Playwright로 화면 찍기](/memo/screenshots-with-playwright), [z-index 층](/memo/z-index-layers), [창 코드 desktop-core로](/memo/desktop-core-windows), [음악 앱 고침](/memo/music-player-fixes)
 
 #MacFolio #테스트 #Playwright

@@ -108,6 +108,21 @@ CHECK (
 - "누구인지 알아보기"와 "권한 주기"를 같은 값으로 하면 그 값이 쉽게 바뀌지 않아야 한다. IP는 알아보기에는 그럭저럭이지만 권한에는 맞지 않았다.
 - 입력 칸 하나를 없애는 일이 화면만의 일이 아니었다. 권한 모델, DB 제약, 저장 위치까지 함께 바뀌었다.
 
+## 바꾸게 된 일
+
+메시지 앱의 이름·비밀번호 입력칸이 다른 화면과 너무 달라 보였다. 다음 날 메모에 댓글을 써 보려 하니 "이름을 입력해주세요", "비밀번호는 4~20자로" 오류만 나오고 입력칸은 보이지 않았다. 화면은 이름 칸을 지웠는데 서버는 아직 받으려 했던 것이다. 그래서 서버까지 같은 방식(방문자 쿠키)으로 맞췄다.
+
+## 직접 확인하는 방법
+
+```bash
+pnpm dev:all
+pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야 한다
+```
+
+브라우저 두 개(또는 일반 창과 시크릿 창)로 같은 글에 댓글을 단다. 같은 창에서는 이름이 그대로이고 자기 댓글만 지울 수 있어야 하며, 다른 창에서는 다른 이름이 나와야 한다. 개발자 도구 Application → Cookies에서 방문자 쿠키가 `HttpOnly`인지 본다. 코드는 [apps/api/src/visitors/visitor.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/visitors/visitor.ts), 시험은 [apps/api/test/messages.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/messages.e2e.test.ts).
+
+참고 문서: [MDN Set-Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie), [Node.js crypto.createHmac](https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options).
+
 ## 관련 글
 
 - 블로그 댓글을 처음 만든 일: /memo/post-comments

@@ -117,6 +117,19 @@ app module ok [ 'AppModule' ]
 
 배운 것: "규칙을 한 곳에"는 코드를 옮기는 것으로 끝나지 않는다. 그 한 곳이 바뀌었을 때 쓰는 모든 쪽이 다시 빌드되고 배포되는지까지 확인해야 한다. CI의 변경 감지 경로 한 줄을 빼먹었다면, 규칙은 한 곳에 있는데 서버와 화면이 다른 버전을 쓰는 상태가 됐을 것이다.
 
+## 따라 해 보기
+
+규칙을 바꿀 때는 `packages/desktop-core/src/memo/rules.ts` 한 곳을 고친다. 서버는 빌드된 JS를 읽으므로 빌드까지 해야 서버 쪽에 반영된다.
+
+```bash
+pnpm --filter @macfolio/desktop-core test
+pnpm --filter @macfolio/desktop-core build    # 서버(Node)가 읽는 dist
+pnpm typecheck
+pnpm --filter @macfolio/api test:e2e test/posts.e2e.test.ts   # DB가 필요하다 (db:up)
+```
+
+화면(Vite)은 소스를 바로 읽어서 빌드 없이도 바뀐다. 그래서 서버만 옛 규칙으로 남는 일을 막으려고 API 이미지 빌드에서도 패키지를 먼저 빌드한다([apps/api/Dockerfile](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/Dockerfile)). 워크스페이스 구성은 [pnpm workspace 문서](https://pnpm.io/workspaces)를 봤다.
+
 관련 글: [창 관리를 React 밖으로](/memo/desktop-core-windows), [메모 로직을 desktop-core로](/memo/desktop-core-memo), [타입은 desktop-core에, 스키마는 contracts에](/memo/contracts-posts).
 
 #MacFolio #백엔드 #리팩터링 #배포

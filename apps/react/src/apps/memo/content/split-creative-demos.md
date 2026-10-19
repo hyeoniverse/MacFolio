@@ -83,6 +83,21 @@ it('모자라면 바탕 반대쪽으로 명도를 옮겨 4.5를 넘기고, 색�
 - 린트 규칙은 파일 경계에서 비로소 작동하는 것이 있다. `only-export-components`는 한 파일일 때는 걸릴 일이 없었다.
 - 나누는 기준을 하나("한 데모만 쓰면 그 안에, 둘 이상이면 따로")로 정해 두니 상수 하나하나를 어디 둘지 고민할 일이 줄었다.
 
+## 같은 방식으로 나눌 때
+
+큰 파일을 나눌 때는 동작이 같다는 것을 시험으로 보이면서 한 단계씩 간다.
+
+```bash
+pnpm typecheck && pnpm lint
+cd apps/react && npx vitest run src/apps/safari
+npx playwright test e2e/safari.spec.ts
+cd ../.. && pnpm cycles
+```
+
+대소문자만 다른 파일 이름은 macOS에서 한 파일로 보이니, 이름을 바꿀 때는 `git mv Slides.tsx tmp && git mv tmp slides.ts`처럼 두 번에 나눈다.
+
+참고 문서: [git mv](https://git-scm.com/docs/git-mv), [React 코드 나누기(lazy)](https://react.dev/reference/react/lazy).
+
 ## 관련 글
 
 - 2단계 두 번째, 폴더 사이드바와 휴대폰 사진 앱: /memo/split-sidebar-photos

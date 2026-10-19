@@ -97,6 +97,27 @@ E2E 시험은 API 주소를 바꾸던 자리(`__MACFOLIO_API_URL__`) 옆에 `__M
 - 저장소 기본값을 "주소가 있으면 서버"에서 "늘 서버, `local`일 때만 브라우저"로 바꾼 것이 가장 중요한 변경이었다. 배포 설정이 빠졌을 때 조용히 다른 곳에 저장하는 것보다, 앱이 열리지 않아 바로 알아채는 쪽이 낫다.
 - 이 저장소 두 개는 뒤에 `packages/contracts`의 같은 `Thread`·`Message` 모양을 쓰게 정리했다([서버 저장소와 로컬 저장소가 같은 모양을 쓰게](/memo/contracts-messages)).
 
+## 실제로 겪은 순서
+
+처음에는 메시지 앱의 빈 목록 화면과 이름·비밀번호 칸이 붙어 있는 여백을 손보는 데 집중했다. 그런데 서버 없이 띄운 화면을 다시 보니 불러오기도, 남기기도 안 되는 상태에서 앱이 쓸 수 있는 척을 하고 있었다. 메모는 코드를 못 불러오면 경고창으로 실행을 막는데, 메시지만 그러지 않았다. 그래서 실행 단계에서 막도록 다시 요청했고, 이 글의 방식이 그 결과다.
+
+## 직접 확인하는 방법
+
+```bash
+# 1. 서버 없이 사이트만 띄운다 → 메시지 앱을 열면 경고창이 뜨고 앱이 열리지 않아야 한다
+pnpm dev
+
+# 2. 서버 없이 화면만 만들 때는 저장소를 브라우저로 바꾼다 (apps/react/.env)
+VITE_MESSAGES_STORE=local
+
+# 3. 서버와 함께
+pnpm dev:all
+```
+
+`VITE_MESSAGES_STORE`를 비우거나 `server`로 두면 배포 기본값(서버)이다. 변수 설명은 [apps/react/.env.example](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/.env.example), 읽는 곳은 [apps/react/src/shared/config/env.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/config/env.ts)다. 화면 시험은 `cd apps/react && npx playwright test e2e/messages.spec.ts`.
+
+참고 문서: [Vite 환경 변수](https://vite.dev/guide/env-and-mode).
+
 ## 관련 글
 
 - [이름·비밀번호 없이 쓰는 메시지와 댓글](/memo/visitor-identity)

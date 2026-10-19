@@ -55,7 +55,7 @@ API는 Prisma가 생성한 코드끼리만 순환이라(우리 코드가 아니�
 
 이름은 React를 모르는 `manifest.ts`가 이미 다 갖고 있다.
 
-````ts
+```ts
 // manifest.ts
 export const WINDOW_APP_NAMES = APP_NAMES.filter((name) => APP_MANIFEST[name].action === undefined);
 
@@ -65,7 +65,9 @@ export const WINDOW_APPS = WINDOW_APP_NAMES.map((name) => {
 	if (!Component) throw new Error(`창으로 여는 앱인데 컴포넌트가 없다: ${name} (apps/registry.ts)`);
 	return { name, Component };
 });
-``` 거기에 `WINDOW_APP_NAMES`(action이 없는 앱, 즉 창으로 열리는 앱)를 두고, Finder는 그것을 읽는다. `registry.ts`도 같은 목록에서 컴포넌트를 찾되, 목록에 있는데 컴포넌트가 없으면 조용히 빠지는 대신 바로 에러를 내게 바꿨다. 전에는 `flatMap`으로 빠져서 앱을 추가하고 컴포넌트 연결을 잊으면 Dock에 아이콘만 있고 창이 안 열리는 채로 지나갈 수 있었다.
+```
+
+거기에 `WINDOW_APP_NAMES`(action이 없는 앱, 즉 창으로 열리는 앱)를 두고, Finder는 그것을 읽는다. `registry.ts`도 같은 목록에서 컴포넌트를 찾되, 목록에 있는데 컴포넌트가 없으면 조용히 빠지는 대신 바로 에러를 내게 바꿨다. 전에는 `flatMap`으로 빠져서 앱을 추가하고 컴포넌트 연결을 잊으면 Dock에 아이콘만 있고 창이 안 열리는 채로 지나갈 수 있었다.
 
 ## CI
 
@@ -81,7 +83,22 @@ export const WINDOW_APPS = WINDOW_APP_NAMES.map((name) => {
 - 순환을 끊는 방법은 거의 늘 같았다. 둘이 함께 쓰는 것을 셋째 파일로 내리거나(메일), 필요한 것이 더 작은 것인지 보고 그쪽을 읽게 하거나(Finder는 컴포넌트가 아니라 이름만 필요했다).
 - 끊으면서 `flatMap`으로 조용히 빠지던 곳을 `throw`로 바꾼 것이 덤이었다. 앱을 더하고 연결을 잊으면 이제 첫 화면에서 바로 터진다.
 
+## 따라 해 보기
+
+순환은 [madge](https://github.com/pahen/madge)로 잰다. 루트 스크립트 하나가 화면·서버·두 패키지를 모두 본다.
+
+```bash
+pnpm cycles
+# ✔ No circular dependency found!  (네 번)
+```
+
+순환이 나오면 madge가 `a.ts > b.ts > a.ts`처럼 고리를 적어 준다. 이 글에서 쓴 두 가지 풀이 중 맞는 것을 고른다.
+
+- 둘이 같은 타입을 나눠 쓰느라 서로를 읽는다 → 그 타입을 셋째 파일(`model.ts`)로 옮긴다
+- 목록이 화면을 읽고 화면이 목록을 읽는다 → 이름 같은 데이터만 따로(`manifest.ts`) 두고 화면은 그것만 읽는다
+
+CI의 `check` 작업에도 같은 명령이 있어서([.github/workflows/ci.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/ci.yml)), 순환을 새로 만든 PR은 머지되지 않는다.
+
 관련 글: [리팩터링 2 - 구조](/memo/refactor-step2-structure), [폴더 대신 이름으로](/memo/app-file-naming), [메일 앱](/memo/contact-mail), [Finder 앱](/memo/finder-app)
 
 #MacFolio #리팩터링 #madge #순환의존
-````

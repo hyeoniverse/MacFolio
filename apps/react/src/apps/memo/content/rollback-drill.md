@@ -80,17 +80,77 @@ EOF
 
 ## 해 보니 (2026-10-18)
 
-훈련 전 서버는 `sha-7e7eac0`이었다. 훈련용 이미지는 층 하나라 4초 만에 만들어졌고, Run workflow 버튼으로 `sha-dead000`을 배포했다.
+절차 문서를 만든 뒤 훈련을 일으키는 방법을 단계별로 더 자세히 적게 했고, 그 순서대로 서버에 들어가 직접 했다. 시각은 모두 UTC다.
+
+**1. 지금 상태 적기.** 서버에 접속해 `.env`의 `API_TAG`, 컨테이너 상태, 바깥 `/health`를 봤다. 셋 다 `sha-7e7eac0`, `(healthy)`였다. `dead000`이 진짜 커밋이 아닌지도 `git rev-parse --verify`로 확인했다. 아무것도 나오지 않으면 진짜 커밋이 아니다.
+
+![서버 접속 후 API_TAG와 /health를 확인한 터미널](./images/rollback-drill-server-before.jpg '1단계: 훈련 전 상태. 접속 명령(키 경로·서버 IP)과 접속해 온 IP는 가렸다. 자리표시 줄까지 붙여 넣어 syntax error가 난 것도 보인다')
+
+**2. 훈련용 이미지 만들기.** 지금 태그를 `cur`에 담고 그 위에 `HEALTHCHECK … CMD false` 층 하나만 얹었다. 3.9초 만에 끝났고, 서버에는 `sha-0f5d74f`, `sha-7e7eac0`(사용 중), `sha-dead000` 세 이미지가 남았다.
+
+![sha-dead000 이미지를 만든 터미널](./images/rollback-drill-build-dead-image.jpg '2단계: 지금 이미지 위에 HEALTHCHECK false 층만 얹어 sha-dead000을 만들었다')
+
+**3. Actions에서 배포.** GitHub의 Actions → "API 배포" → Run workflow에 태그 `sha-dead000`을 넣고 실행한 뒤, 서버에서 `deploy.log`를 지켜봤다.
 
 - 09:03:22 훈련용 컨테이너의 Nest가 정상으로 떴다. 앱은 멀쩡하고 헬스 체크만 거짓말을 한다
 - 120초를 기다린 뒤 09:04:53 `이전 버전으로 되돌린다: sha-7e7eac0`
 - 09:05:34 `배포 실패, 되돌림: sha-7e7eac0가 다시 떠 있다`. 되돌리는 데 41초
-- Actions "API 배포 #2"는 3분 만에 빨간 X로 끝났고, 메일이 왔다
-- `.env`의 `API_TAG`, 컨테이너 이미지, 바깥 `/health`의 version이 모두 `sha-7e7eac0`, `(healthy)`
+
+![서버 로그에서 되돌림이 찍힌 부분](./images/rollback-drill-server-log.jpg '3단계: 서버 로그. Nest가 뜬 뒤 09:04:53 되돌리기 시작, 09:05:34 되돌림 완료')
+
+**4. 결과 확인.** Actions "API 배포 #2"는 3분 0초 만에 Failure로 끝났고(`Process completed with exit code 1`), 실패 메일이 왔다. 다른 창에서 `watch`로 보던 `docker compose ps api`에는 `sha-7e7eac0`이 `(healthy)`로 남아 있었다. 바깥 `/health`의 version까지 이전 태그인 것을 보고 성공으로 기록했다.
+
+![GitHub Actions의 API 배포 #2 실패 화면](./images/rollback-drill-actions-failed.jpg '4단계: 수동 실행한 API 배포 #2가 3분 만에 Failure로 끝났다. 바라던 결과다')
+
+![watch로 본 docker compose ps api](./images/rollback-drill-compose-healthy.jpg '4단계: 되돌린 뒤 컨테이너는 sha-7e7eac0, (healthy)')
 
 ![되돌리기 훈련의 시각별 타임라인](./images/rollback-drill-timeline.svg '120초를 기다리고, 되돌리는 데 41초. Actions는 3분 만에 실패로 끝났다')
 
 끝나고 `docker image rm …:sha-dead000`으로 훈련용 이미지를 지웠다. 서버에는 지금 버전과 되돌릴 이전 버전(`sha-0f5d74f`, `sha-7e7eac0`)만 남았다. 이것으로 #100의 마지막 완료 기준, "헬스 체크가 실패하는 버전은 이전 버전으로 돌아가고 Actions가 실패로 알린다"를 진짜 서버에서 확인하고 이슈를 닫았다.
+
+## 따라 하는 방법
+
+전체 절차는 [docs/rollback-drill.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/rollback-drill.md)에 있다. 자동 배포를 처음 켜는 법은 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '자동 배포 설정', 실제로 도는 코드는 [ops/deploy.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/deploy.sh)와 [.github/workflows/deploy-api.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/deploy-api.yml)이다.
+
+**준비물**: 서버 SSH 접속, 저장소의 Actions 실행 권한, 방문이 적은 시간. 문서의 `<…>` 자리표시는 붙여 넣지 않는다.
+
+```bash
+# 1. 지금 상태 (서버) — 이 태그를 적어 둔다
+cd ~/deploy
+grep '^API_TAG=' .env                  # API_TAG=sha-xxxxxxx
+docker compose ps api                  # STATUS가 Up … (healthy)
+curl -s https://macfolio-api.hyeoniverse.com/health; echo
+
+# 2. 훈련용 이미지 (서버)
+cur=$(grep '^API_TAG=' ~/deploy/.env | cut -d= -f2)
+docker build -t ghcr.io/hyeoniverse/macfolio-api:sha-dead000 - <<EOF
+FROM ghcr.io/hyeoniverse/macfolio-api:$cur
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=1 CMD false
+EOF
+
+# 3. GitHub → Actions → API 배포 → Run workflow, 태그에 sha-dead000
+
+# 4. 지켜보기 (서버, 창 두 개)
+tail -f deploy.log
+watch -n 3 docker compose ps api
+```
+
+**기대 결과**: 2분쯤 뒤 `deploy.log`에 `이전 버전으로 되돌린다` → `배포 실패, 되돌림: …가 다시 떠 있다`가 찍힌다. Actions는 실패, '바깥에서 버전 확인' 단계는 건너뛴다. `.env`·컨테이너·바깥 `/health`의 version이 모두 1단계의 태그다.
+
+**정리**: `docker image rm ghcr.io/hyeoniverse/macfolio-api:sha-dead000`
+
+**되돌리기마저 실패하면** 손으로 되돌린다. 이전 이미지는 서버에 남아 있다.
+
+```bash
+cd ~/deploy
+docker compose ps api; docker compose logs --tail 100 api   # 원인부터 본다
+~/macfolio/ops/deploy.sh sha-xxxxxxx                         # 1단계에서 적은 태그
+# 스크립트가 안 되면 .env를 직접 고친다
+sed -i 's/^API_TAG=.*/API_TAG=sha-xxxxxxx/' .env
+docker compose up -d api
+```
+
+참고 문서: [Dockerfile HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck), [docker compose up](https://docs.docker.com/reference/cli/docker/compose/up/), [GitHub Actions 수동 실행](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
 
 ## 확인한 것
 

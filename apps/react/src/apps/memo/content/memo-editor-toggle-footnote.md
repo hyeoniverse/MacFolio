@@ -65,6 +65,8 @@ export function keepFolder(organization: Organization, path: string): Organizati
 
 ![폴더 목록의 두 출처](./images/memo-editor-toggle-footnote-folders.svg '글의 폴더에서만 온 폴더는 마지막 글이 떠나면 사라졌다. 떠날 때 만든 폴더로 남긴다')
 
+토글과 각주가 필요해진 것은 10월 12일 [병합 방식 글](/memo/merge-strategies)을 다듬을 때였다. first-parent, bisect처럼 낯선 용어에 부연 설명을 붙이려니 본문이 길어져서 설명을 각주로 빼고 싶었고, 글 앞의 "먼저 알아 둘 용어"는 ▸ 토글로 접어 두고 싶었다. 저장소 Markdown에는 쓸 수 있었지만 메모 편집기에는 둘 다 없었다. 접기 토글을 넣고 나서는 그 모서리 둥글기가 다른 곳과 같은지도 확인했다([모서리 둥글기에 이름 붙이기](/memo/radius-tokens)).
+
 ## 편집기에 토글 목록과 각주
 
 읽기 화면은 이미 `<details>`·`<summary>` 표기를 접기 블록으로, `[^1]`을 각주로 그렸다. 편집기에는 둘을 넣을 방법이 없었고, `<details>` 줄은 날것의 HTML 글자로 보였다.

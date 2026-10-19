@@ -133,6 +133,31 @@ README의 데스크톱 화면, 로그인 전후 계정 화면, Swagger, 그리�
 - **실제 데이터가 나오지 않는다.** 가짜 서버의 글과 댓글만 보인다
 - **장면이 곧 사용 흐름이다.** 사진 한 장을 만들려고 적은 순서(글 고치기 → 새 메모 → 예약)가 그대로 관리자가 쓰는 순서라, 찍다가 어색한 곳이 보이면 그게 고칠 곳이다
 
+## 따라 하는 방법
+
+스크린샷도 E2E와 같은 가짜 API([apps/react/e2e/fakeApi.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/e2e/fakeApi.ts))를 쓰니 서버 없이 찍힌다. 기본 흐름은 이렇다.
+
+```bash
+cd apps/react
+pnpm build
+npx vite preview --port 4380 &           # 빌드 결과를 띄운다
+node shot.mjs                            # 아래처럼 쓴 스크립트
+```
+
+```js
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
+await page.goto('http://localhost:4380/');
+await page.mouse.click(720, 450); // 로딩 화면을 한 번 눌러야 데스크톱이 나온다 (e2e/fixtures.ts의 enterDesktop)
+await page.screenshot({ path: 'shot.png' });
+await browser.close();
+```
+
+휴대폰은 `viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true`로 연다. 글에 넣을 때는 JPEG 품질 80, 가로 1200px 이하로 줄인다(블로그 규칙은 [CONTRIBUTING.md](https://github.com/hyeoniverse/MacFolio/blob/main/CONTRIBUTING.md)의 '블로그 글 › 이미지').
+
+참고 문서: [Playwright 스크린샷](https://playwright.dev/docs/screenshots), [page.route로 응답 바꾸기](https://playwright.dev/docs/network#modify-responses).
+
 ## 남은 것과 배운 것
 
 - **찍는 파일은 저장소 밖에 있다.** CI에 넣지 않으려고 커밋하지 않았는데, 그래서 같은 장면을 다시 찍으려면 그날의 코드를 다시 적어야 한다. 장면이 늘면 `e2e` 옆에 찍기 전용 폴더를 두고 CI에서만 빼는 쪽이 낫다.

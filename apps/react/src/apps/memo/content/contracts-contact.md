@@ -88,6 +88,20 @@ export const ContactInput = requestBody({
 - "화면이 먼저 거르니 서버 문구는 아무도 안 본다"는 생각이 두 문구를 어긋난 채 두게 했다. 그러나 API는 누구나 부를 수 있고, 사이트 밖 클라이언트가 보는 문구는 서버 문구다.
 - 화면이 서버만 보던 규칙(한 줄, 제어 문자)을 같이 보게 된 것이 덤이었다. 규칙을 한 곳에 두면 "어느 쪽이 더 엄격한가"를 따질 일이 없어진다.
 
+## 따라 해 보기
+
+계약을 바꿀 때는 `packages/contracts`를 먼저 고치고, 서버와 화면이 둘 다 따라오는지 본다.
+
+```bash
+pnpm --filter @macfolio/contracts test          # 스키마 시험
+pnpm --filter @macfolio/contracts build         # 서버는 빌드된 JS를 읽는다
+pnpm typecheck                                  # 화면·서버가 새 모양을 따르는지
+pnpm --filter @macfolio/api test:e2e test/contact.e2e.test.ts
+cd apps/react && npx playwright test e2e/mail.spec.ts --project=desktop-chromium
+```
+
+필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 같이 깨진다. 이게 이 작업으로 얻은 것이다. 확인한 뒤 되돌린다. 스키마는 [Zod](https://zod.dev/)로 쓰고, 패키지를 나눈 까닭은 [댓글 계약](/memo/contracts-comments)에 있다.
+
 관련 글: [메일 앱에서 진짜로 메일 보내기](/memo/contact-mail), [댓글 계약](/memo/contracts-comments), [분석 계약](/memo/contracts-analytics), [메일 앱의 편지함](/memo/mail-mailboxes)
 
 #MacFolio #리팩터링 #zod #TypeScript

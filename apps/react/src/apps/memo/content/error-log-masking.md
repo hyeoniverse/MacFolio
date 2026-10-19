@@ -114,6 +114,27 @@ export const redact = (text: string) =>
 
 배운 것: "처음 보는 오류는 500으로 감춘다"는 안전한 기본값이지만, 그 "처음 보는" 안에 방문자 탓인 4xx가 섞여 있었다. 감추기 전에 먼저 요청을 보내 보고 표로 만들자 문제가 두 줄로 좁혀졌다. 그리고 로그 마스킹은 쓰는 곳마다가 아니라 나가는 곳 하나에서 해야 빠뜨리지 않는다.
 
+## 직접 확인하기
+
+이 글의 시작처럼 큰 몸통을 직접 보내 본다.
+
+```bash
+pnpm --filter @macfolio/api db:up && pnpm dev:api
+python3 -c "print('{\"name\":\"' + 'a' * 200000 + '\"}')" > /tmp/big.json
+curl -s -o /dev/null -w '%{http_code}\n' -X POST http://localhost:4000/contact \
+  -H 'Content-Type: application/json' --data-binary @/tmp/big.json
+# 413이어야 한다. 서버 로그에 스택이나 몸통 내용이 남지 않아야 한다
+```
+
+시험으로는 이렇게 본다.
+
+```bash
+pnpm --filter @macfolio/api test -- src/common/redact.test.ts src/common/safe-logger.test.ts
+pnpm --filter @macfolio/api test:e2e test/errors.e2e.test.ts
+```
+
+배포된 서버의 로그는 `docker compose logs --tail=100 api`로 본다([docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '로그와 상태'). 예외 필터와 로거는 [NestJS Exception filters](https://docs.nestjs.com/exception-filters), [NestJS Logger](https://docs.nestjs.com/techniques/logger) 문서를 봤다.
+
 관련 글: [서버 가동 시간과 로그](/memo/server-uptime-and-logs), [API 서버를 무료로 띄우기](/memo/deploy-api-oracle-tunnel).
 
 #MacFolio #보안 #API #NestJS #로그

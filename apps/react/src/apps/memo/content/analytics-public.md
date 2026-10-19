@@ -94,6 +94,24 @@ private async cached<T>(key: string, now: Date, compute: () => Promise<T>): Prom
 - 캐시는 서버 메모리라 서버를 다시 띄우면 비고, 서버가 여러 대면 서로 다른 값을 줄 수 있다. 한 대라 문제는 없다.
 - 공개할지 말지는 "합계인가, 사람 단위인가"와 "적은 값이 무엇을 드러내는가"로 나누면 쉬웠다. 캠페인 이름은 합계여도 어디에 지원했는지를 드러낸다.
 
+## 직접 확인하기
+
+같은 요약 경로를 방문자와 관리자로 불러 응답을 비교한다. 방문자 응답에는 `scope`가 관리자가 아니고, 들어온 곳은 묶음 이름만 있다.
+
+```bash
+curl -s "https://macfolio-api.hyeoniverse.com/analytics/summary" | head -c 400; echo
+curl -s "https://macfolio-api.hyeoniverse.com/analytics/views?app=memo" | head -c 200; echo   # 글 조회수
+```
+
+관리자 쪽은 브라우저에서 로그인한 채 활동 상태 보기를 열어 호스트·UTM 표가 보이는지 본다. 나누는 규칙은 서버 시험이 확인한다.
+
+```bash
+pnpm --filter @macfolio/api test -- src/analytics/rules.test.ts
+pnpm --filter @macfolio/api test:e2e test/analytics.e2e.test.ts
+```
+
+경로 설명은 [Swagger](https://macfolio-api.hyeoniverse.com/docs), 공개하는 숫자의 범위는 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
+
 관련 글: [트래픽 분석 1 - API](/memo/analytics-api), [트래픽 분석 3 - 활동 상태 보기](/memo/analytics-activity-monitor), [트래픽 분석 5 - UTM](/memo/utm-analytics), [분석 계약](/memo/contracts-analytics)
 
 #MacFolio #트래픽분석

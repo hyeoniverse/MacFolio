@@ -75,6 +75,28 @@ export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?min
 - memo(77개)와 safari(101개)는 이미 폴더로 나뉘어 있다. 이 둘은 "조각이 셋 이상이면 `components/`"에 맞아서 손대지 않았다.
 - 구조를 맞출 때 "모두 같은 모양"보다 "같이 바뀌는 것을 가까이"가 먼저였다. 겉모양을 맞추는 규칙은 작은 앱에 빈 상자를 만들고, 실제로 헷갈리던 곳(이름)은 그대로 둔다.
 
+## 규칙 적용하기
+
+규칙의 원문은 [CONTRIBUTING.md](https://github.com/hyeoniverse/MacFolio/blob/main/CONTRIBUTING.md)의 '프론트엔드 파일 이름'이다. 새 파일을 만들 때는 이렇게 고른다.
+
+| 파일에 들어갈 것 | 이름                           | 예                  |
+| ---------------- | ------------------------------ | ------------------- |
+| 화면(컴포넌트)   | `PascalCase.tsx`               | `Weather.tsx`       |
+| 서버 호출        | `<무엇>Api.ts`                 | `postsApi.ts`       |
+| React 없는 계산  | `model.ts` (+ `model.test.ts`) | `activity/model.ts` |
+| 훅               | `use<무엇>.ts`                 |                     |
+
+지키고 있는지는 이름으로 찾아 보면 된다.
+
+```bash
+cd apps/react/src/apps
+ls */components */hooks */api 2>/dev/null     # 아무것도 안 나와야 한다
+find . -name '*Api.ts' | head                  # 서버 호출 파일
+pnpm cycles                                    # 이름을 바꾸다 순환이 생기지 않았는지
+```
+
+옮길 때는 `git mv`로 옮겨야 기록이 이어진다. 되돌리기도 같은 `git mv`를 거꾸로 하면 된다.
+
 관련 글: [리팩터링 2 - 구조](/memo/refactor-step2-structure), [리팩터링 3 - 기반](/memo/refactor-step3-foundation), [공용 API 클라이언트](/memo/shared-api-client), [import 순환 끊기](/memo/break-import-cycles)
 
 #MacFolio #리팩터링 #React

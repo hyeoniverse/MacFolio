@@ -105,6 +105,25 @@ React 앱, API, `contracts`, `desktop-core` 네 패키지에 같은 두 줄을 �
 - 6과 7이 같은 코드를 다르게 판단할 수 있다는 점은 기억해 둔다. 위에서 두 실행 파일을 돌렸을 때는 둘 다 오류 없이 끝났다.
 - 메이저 버전 PR이 실패하면 "올릴까 말까"만 고르지 않는다. 도구마다 필요한 버전이 다르면 나란히 두는 길이 있는지 먼저 본다. npm 별칭(`npm:패키지@버전`)은 그럴 때 쓰기 좋다.
 
+## 따라 하는 방법
+
+[apps/react/package.json](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/package.json)처럼 두 버전을 별명으로 함께 둔다. 컴파일러는 7, typescript-eslint가 읽는 `typescript`는 6이다.
+
+```json
+"@typescript/native": "npm:typescript@~7.0.2",
+"typescript": "npm:@typescript/typescript6@^6.0.2"
+```
+
+```bash
+pnpm install
+pnpm typecheck      # TS 7
+pnpm lint           # typescript-eslint는 TS 6을 읽는다
+```
+
+typescript-eslint가 7을 지원하면 `typescript` 별명을 7로 바꾸고 `@typescript/native`를 지운다. 되돌릴 때도 이 두 줄만 고치면 된다.
+
+참고 문서: [TypeScript 릴리스 노트](https://www.typescriptlang.org/docs/handbook/release-notes/overview.html), [typescript-eslint 지원 버전](https://typescript-eslint.io/users/dependency-versions/), [pnpm 별명 설치](https://pnpm.io/aliases).
+
 ## 관련 글
 
 - 같은 날 의존성 PR을 합친 방식: /memo/merge-strategies

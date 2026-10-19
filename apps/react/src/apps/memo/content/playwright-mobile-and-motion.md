@@ -128,6 +128,23 @@ await expect(loading).toBeHidden({ timeout: 20_000 });
 - 기기 정보의 `viewport`와 `screen`은 다르다. 좌표는 숫자를 외우지 말고 `page.viewportSize()`에서 읽는다.
 - 기다리는 곳을 한 함수(`enterDesktop`)로 모아 두면, 환경이 바뀌었을 때 한 줄만 고치면 된다.
 
+## 따라 하는 방법
+
+프로젝트는 [apps/react/playwright.config.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/playwright.config.ts)에 셋이다: `desktop-chromium`, `mobile-iphone`, `mobile-android`. 시험 서버는 `vite preview`라 먼저 빌드해야 한다.
+
+```bash
+cd apps/react
+npx playwright install chromium          # 처음 한 번, 또는 Playwright를 올린 뒤
+pnpm build
+npx playwright test --project=mobile-iphone e2e/mobile.spec.ts
+npx playwright test e2e/motion.spec.ts e2e/mobile-motion.spec.ts
+npx playwright show-report               # 실패하면 스크린샷·trace를 본다
+```
+
+Playwright를 올린 뒤 `npx playwright install`을 빼먹으면 `browserType.launch: Executable doesn't exist`로 모든 시험이 실패한다. 내 컴퓨터에서 Finder 업로드 시험을 돌리다 실제로 이 오류로 두 시험이 실패했다. 실패한 시험 하나를 자세히 볼 때는 `npx playwright show-trace test-results/…/trace.zip`.
+
+참고 문서: [Playwright 기기 흉내](https://playwright.dev/docs/emulation), [reducedMotion 옵션](https://playwright.dev/docs/api/class-testoptions#test-options-reduced-motion), [Trace viewer](https://playwright.dev/docs/trace-viewer).
+
 ## 관련 글
 
 - [머지하고 배포까지 15분에서 5분으로](/memo/faster-e2e-ci)

@@ -141,6 +141,17 @@ docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restore
 - 연결 확인에서 `rclone lsd`가 403을 낸 것처럼, 권한을 좁힌 키는 "안 되는 것이 맞는" 명령이 생긴다. 문서의 확인 명령은 그 키로 되어야 하는 것만 적어야 한다.
 - 문서에 `<파일>` 같은 자리표시를 두면 그대로 붙여 넣는 일이 생긴다. 명령이 스스로 값을 고르게(`ls -t | head -1`) 하는 편이 안전했다.
 
+## 이 순서를 만든 까닭
+
+처음 서버를 업데이트할 때는 안내받은 명령을 그대로 붙여 넣었다. 10월 2일에는 `cd ~/deploy && docker compose exec -T db pg_dump …`를 서버가 아니라 내 맥 터미널에서 돌려 `no such file or directory`가 났고, 다음 날 서버에서 `pg_dump ... > backup.sql`을 돌렸더니 이번에는 호스트에 `pg_dump`가 없다고 했다(`Command 'pg_dump' not found`). DB는 컨테이너 안에 있으니 `docker compose exec`로 컨테이너의 `pg_dump`를 불러야 했다. 손으로 하는 백업은 이렇게 틀리기 쉬워서, 명령을 `ops/backup.sh` 하나로 묶고 cron에 맡겼다.
+
+## 문서와 스크립트
+
+- 절차 원문: [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '백업' (8. cron, 9. 되살리기 시험, 10. 사용량 알림)
+- 스크립트: [ops/backup.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/backup.sh), [ops/restore.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/restore.sh)
+
+참고 문서: [Cloudflare R2 시작하기](https://developers.cloudflare.com/r2/get-started/), [R2 API 토큰](https://developers.cloudflare.com/r2/api/tokens/), [rclone S3(R2) 설정](https://rclone.org/s3/#cloudflare-r2), [pg_dump](https://www.postgresql.org/docs/current/app-pgdump.html), [Healthchecks.io 문서](https://healthchecks.io/docs/).
+
 ## 관련 글
 
 - [글이 DB에만 있게 되어서 백업을 붙였다](/memo/db-backup)

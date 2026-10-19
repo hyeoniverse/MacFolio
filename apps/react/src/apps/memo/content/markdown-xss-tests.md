@@ -92,6 +92,20 @@ expect(found).toEqual({ scripts: 0, handlers: 0, badLinks: [] });
 - 공격 목록은 내가 아는 것만 담는다. 목록을 늘리는 것보다, 거르기를 GitHub 기본 규칙 같은 검증된 허용 목록에 맡기는 쪽이 더 넓게 막는다. 시험은 그 허용 목록이 자리에 있는지를 지킨다.
 - 보안 설정은 "지금 안전하다"보다 "다음에 바꾸는 사람도 안전하게 바꾼다"가 어렵다. 그 사람이 나라도 그렇다. 깨지는 시험이 그 사람에게 말을 건다.
 
+## 직접 확인하는 방법
+
+위험한 링크가 막히는지는 시험 두 벌로 본다. 단위 시험은 README를 그리는 규칙을, E2E는 실제 화면에 그려진 결과를 본다.
+
+```bash
+cd apps/react
+npx vitest run src/apps/github/readmeSafety.test.ts
+npx playwright test e2e/markdown-safety.spec.ts --project=desktop-chromium
+```
+
+기대 결과는 모두 통과다. 새 위험 패턴(예: 다른 스킴의 링크)을 막고 싶으면 먼저 `markdown-safety.spec.ts`에 그 글을 넣어 실패하는 것을 보고, 그다음 규칙을 고친다. 시험 파일: [apps/react/src/apps/github/readmeSafety.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/apps/github/readmeSafety.test.ts), [apps/react/e2e/markdown-safety.spec.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/e2e/markdown-safety.spec.ts).
+
+참고 문서: [OWASP XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html), [Playwright 문서](https://playwright.dev/docs/intro).
+
 ## 관련 글
 
 - [리팩터링 7단계: 보안](/memo/refactor-step7-security)

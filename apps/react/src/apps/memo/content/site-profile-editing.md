@@ -126,6 +126,18 @@ export const PINNED_MESSAGES = [{ text: '안녕하세요, 김정현입니다 �
 - 검사 규칙을 서버와 화면이 함께 쓰니, 화면은 보내기 전에 같은 이유를 보여 주고 서버는 같은 이유로 막는다. 둘이 어긋날 일이 없다.
 - 표 이름을 `SiteContent`로 넓게 지은 것은 바로 다음 일에서 값을 했다. 프로젝트 내용도 같은 표에 들어갔다(/memo/site-projects-editing).
 
+## 따라 하는 방법
+
+이 저장소를 가져다 쓰는 사람이 자기 프로필로 바꾸는 순서다.
+
+1. 서버를 띄우고(`pnpm dev:all` 또는 배포 서버) 자기 GitHub 숫자 ID를 `api.env`의 `ADMIN_GITHUB_ID`에 넣는다(기본값은 저장소 주인의 ID다)
+2. 메뉴 막대에서 GitHub로 로그인한다
+3. 시스템 설정 › 정보에서 이름·이메일·GitHub 주소를 고치고 저장한다
+
+저장하면 화면의 상수 열다섯 곳이 서버 값으로 바뀐다. 서버를 쓰지 않으면 코드의 기본값([packages/desktop-core/src/site/profile.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/desktop-core/src/site/profile.ts))이 그대로 쓰인다. 시험은 `cd apps/react && npx playwright test e2e/site-profile.spec.ts`.
+
+참고 문서: [GitHub 사용자 ID 찾기(REST users API)](https://docs.github.com/en/rest/users/users#get-a-user).
+
 ## 관련 글
 
 - 프로젝트 내용도 화면에서 고치게 한 일: /memo/site-projects-editing

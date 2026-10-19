@@ -98,6 +98,17 @@ if (posts?.size) throw new ConflictException(`글에서 쓰는 파일입니다: 
 - API e2e(`apps/api/test/files.e2e.test.ts`): "파일마다 지금 글, 예전 버전, 배경화면 중 어디에서 쓰는지 알려 준다", "안 쓰는 파일과 예전 버전에서만 쓰는 파일은 지우고, 지금 글이나 배경화면이 쓰는 파일은 409", "관리자가 아니면 목록을 보거나 지울 수 없다 (401)". 정리하면 지금 글·예전 버전·배경화면을 구별하는지, 안 쓰는 파일과 예전 버전만 쓰는 파일은 지우고 나머지는 409, 관리자가 아니면 401
 - 화면 E2E(`apps/react/e2e/bin.spec.ts`): 가짜 서버에 네 가지 파일을 두고, 쓰는 파일에는 지우기 버튼이 없고 나머지를 하나씩·한 번에 지우는지
 
+## 직접 확인하는 방법
+
+```bash
+pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야 한다
+cd apps/react && npx playwright test e2e/bin.spec.ts
+```
+
+관리자로 로그인해 휴지통에서 서버 파일을 본다(위 '휴지통에서'). 지우기 전에 파일 이름으로 글을 한 번 찾아보고, 지운 뒤 그 글을 열어 그림이 깨지지 않았는지 본다. 지운 서버 파일은 되살릴 수 없으므로, 걱정되면 지우기 전에 [R2 백업](/memo/r2-backup-setup)이 최근에 돌았는지 본다. 응답 모양은 [packages/contracts/src/files.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/contracts/src/files.ts), 시험은 [apps/api/test/files.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/files.e2e.test.ts).
+
+참고 문서: [Prisma 문서](https://www.prisma.io/docs).
+
 ## 남은 것과 배운 것
 
 - **목록은 모든 글을 읽는다.** 글과 버전이 늘면 목록을 여는 시간이 늘어난다. 지금은 관리자 한 사람이 가끔 여는 화면이라 그대로 두었다. 느려지면 그때 참조 표를 두고, 지금의 훑기를 그 표가 맞는지 확인하는 시험으로 바꾸면 된다.

@@ -96,6 +96,23 @@ const FRAME_SANDBOX = [
 - `allow-same-origin`은 안의 사이트가 같은 출처일 때 위험해진다. 지금은 프로젝트 사이트가 모두 다른 도메인이지만, 언젠가 같은 도메인 아래로 옮기면 이 목록을 다시 봐야 한다.
 - 고정된 0.5초 기다림은 느린 CI에서 이동이 늦게 일어나면 놓칠 수 있다. 실패를 놓치는 쪽이라 시험이 흔들리지는 않지만, 그만큼 덜 엄격하다.
 
+## 직접 확인하기
+
+프로젝트 앱을 열고 개발자 도구 Elements에서 `iframe`을 찾으면 `sandbox` 속성이 보인다. 콘솔에서 바로 확인할 수도 있다.
+
+```js
+[...document.querySelectorAll('iframe')].map((f) => f.getAttribute('sandbox'));
+```
+
+`allow-top-navigation`이 없어야 한다. 안의 사이트가 `target="_top"` 링크를 눌러도 MacFolio가 다른 주소로 바뀌지 않는지는 E2E가 본다.
+
+```bash
+cd apps/react
+npx playwright test e2e/project-apps.spec.ts --project=desktop-chromium
+```
+
+권한을 더하거나 빼려면 `apps/react/src/shared/ui/web-frame/WebFrame.tsx` 한 곳을 고친다. 각 토큰의 뜻은 [MDN: iframe sandbox](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox)에 있다.
+
 ## 관련 글
 
 - 계획: [리팩터링 계획 #150](https://github.com/hyeoniverse/MacFolio/issues/150), [7단계 보안](/memo/refactor-step7-security)

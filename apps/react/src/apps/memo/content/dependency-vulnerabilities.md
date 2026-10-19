@@ -115,6 +115,24 @@ No known vulnerabilities found
 
 배운 것: 하위 의존성 취약점은 "위 패키지가 고칠 일"로 미루기 쉽다. 하지만 위 패키지가 이미 최신이면 아무도 고치지 않는다. 직접 고칠 수단(`overrides`)이 있다면 쓰고, 그 결정의 이유를 코드 옆에 남겨야 나중에 되돌릴 수 있다.
 
+## 따라 하기
+
+```bash
+pnpm audit --prod                       # 운영 의존성 전체 (low까지)
+pnpm audit --prod --audit-level=high    # CI와 같은 기준. 없으면 "No known vulnerabilities found"
+pnpm why <패키지>                        # 누가 그 하위 패키지를 끌어오는지
+```
+
+위 패키지가 이미 최신인데 하위 패키지가 취약하면 루트 `package.json`의 `pnpm.overrides`에 고친 버전을 적고 `pnpm install`한 뒤 다시 `pnpm audit`을 돌린다. 줄마다 왜 넣었는지와 언제 지울지를 주석으로 남긴다. 되돌리는 법은 그 줄을 지우고 `pnpm install`이다. 명령 설명은 [pnpm audit](https://pnpm.io/cli/audit), 자동 업데이트 PR은 [Dependabot 문서](https://docs.github.com/en/code-security/dependabot)와 [.github/dependabot.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/dependabot.yml)에 있다.
+
+## 그 뒤: 다른 도구로 한 번 더
+
+10월 18일 보안 점검을 하면서 같은 일을 다른 도구로도 돌렸다([docs/security-scan.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/security-scan.md)). OWASP Dependency-Check는 첫 실행에서 NVD 데이터를 받다가 `Invalid API Key`로 멈췄다. 13.0.0부터 NVD API 키 없이는 데이터를 받지 않는다. 키를 받으려 [NVD 신청 양식](https://nvd.nist.gov/developers/request-an-api-key)을 채워 보냈지만 메일이 오지 않았고, 안내대로 몇 가지를 더 해 봐도 마찬가지였다. 그래서 키 없이 잠금 파일의 정확한 버전으로 OSV 데이터베이스와 맞추는 osv-scanner로 대신하고, 그 이유를 문서에 남긴 뒤 그 항목을 닫았다. osv-scanner는 `pnpm audit`과 같은 결과를 냈다.
+
+```bash
+osv-scanner scan source --lockfile pnpm-lock.yaml
+```
+
 관련 글: [GitHub Actions로 배포하기](/memo/deploy-github-actions), [E2E와 CI를 빠르게](/memo/faster-e2e-ci).
 
 #MacFolio #보안 #의존성 #pnpm #CI

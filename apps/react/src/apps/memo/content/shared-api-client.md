@@ -118,6 +118,17 @@ async function send(fetchImpl, apiUrl, path, method, json) {
 
 다음은 같은 단계의 `localStorage` 접근과 화면 크기 판단(`useIsMobile`·`useViewport`) 통일.
 
+## 쓰는 방법
+
+새로 서버를 부를 때는 `fetch`를 쓰지 말고 [apps/react/src/shared/api/client.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/api/client.ts)를 거친다. 쿠키, JSON 머리말, 오류 모양, 401 처리가 한 곳에 있다. 시험은 [apps/react/src/shared/api/client.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/api/client.test.ts).
+
+```bash
+cd apps/react && npx vitest run src/shared/api
+grep -rn "fetch(" src --include=*.ts --include=*.tsx | grep -v shared/api   # 새로 생긴 직접 호출이 없는지
+```
+
+참고 문서: [MDN Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), [credentials 옵션](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#credentials).
+
 ## 관련 글
 
 - 이어서 localStorage 접근을 모은 일: /memo/shared-storage
