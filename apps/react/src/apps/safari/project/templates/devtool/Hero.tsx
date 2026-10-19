@@ -4,13 +4,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import { Media, type LandingHero, type LandingLink, type LandingPoint } from '@/apps/safari/project/landing';
+import { useShownLinks } from '@/apps/safari/project/landing/slides';
 import { packageEntries, parseTree, type JsonValue, type TreeRow } from './code';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
 /** 링크 묶음: 첫 링크는 글자색으로 꽉 찬 버튼, 나머지는 테두리 버튼. 공용 LandingLinks와 같은 차례와 표시(data-link·data-primary) */
-export const DevLinks: React.FC<{ links: LandingLink[]; className?: string }> = ({ links, className }) => {
+export const DevLinks: React.FC<{ links: LandingLink[]; className?: string }> = ({ links: all, className }) => {
 	const { openApp } = useAppState();
+	const { links, openSlides } = useShownLinks(all);
 	if (links.length === 0) return null;
 	return (
 		<div className={['dv-links', className].filter(Boolean).join(' ')}>
@@ -23,6 +25,11 @@ export const DevLinks: React.FC<{ links: LandingLink[]; className?: string }> = 
 				return link.kind === 'app' ? (
 					<button key={link.kind} type="button" {...marks} onClick={() => openApp(link.app as AppName)}>
 						<i className="fa-solid fa-play" aria-hidden="true" />
+						{link.label}
+					</button>
+				) : link.kind === 'slides' ? (
+					<button key={link.kind} type="button" {...marks} onClick={openSlides}>
+						<i className="fa-regular fa-file-powerpoint" aria-hidden="true" />
 						{link.label}
 					</button>
 				) : (

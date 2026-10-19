@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import type { Project } from '@/shared/profile';
 import { useReveal } from '@/apps/safari/project/reveal';
 import {
+	hasLinks,
 	FaIcon,
 	LandingLinks,
 	Media,
@@ -270,7 +271,7 @@ const Side: React.FC<{ landing: Landing; language?: string; languages: RepoLangu
 	].filter(Boolean) as { icon: string; text: string; label: string }[];
 	// 설명은 한 줄(tagline), 없으면 소개 글
 	const description = hero.headline !== hero.name ? hero.headline : hero.subhead;
-	const about = Boolean(description || hero.links.length || demo || topics.length || meta.length);
+	const about = Boolean(description || hasLinks(hero.links) || demo || topics.length || meta.length);
 	const last = timeline?.entries[timeline.entries.length - 1];
 	const team = find(landing, 'team');
 	const deployments = find(landing, 'deployments');
