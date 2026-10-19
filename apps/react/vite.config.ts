@@ -1,9 +1,10 @@
 import { execSync } from 'node:child_process';
-import { appendFileSync, readdirSync } from 'node:fs';
+import { appendFileSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import { defaultClientConditions, defaultServerConditions, defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { seoPosts, sitemapXml } from './seo/posts';
 import { DEFAULT_PROJECTS } from './src/shared/profile';
 import { headersFileBlock, securityHeaders } from './worker/securityHeaders';
 
@@ -36,6 +37,35 @@ function securityHeadersPlugin(): Plugin {
 				`${options.dir}/_headers`,
 				`\n# 보안 헤더 (vite.config.ts가 빌드할 때 더한다)\n${headersFileBlock(headers)}`
 			);
+		},
+	};
+}
+
+/**
+ * 검색엔진용 파일 (seo/posts.ts). 빌드하면 저장소의 글을 HTML로 그린 seo/posts.json(Worker가 글 주소의 첫 화면에 넣는다)과
+ * sitemap.xml(첫 화면, 모든 글, 모든 프로젝트)을 dist에 둔다
+ */
+function seoPlugin(): Plugin {
+	const contentDir = fileURLToPath(new URL('./src/apps/memo/content', import.meta.url));
+	return {
+		name: 'macfolio-seo',
+		apply: 'build',
+		async generateBundle() {
+			const files = Object.fromEntries(
+				readdirSync(contentDir)
+					.filter((name) => name.endsWith('.md'))
+					.map((name) => [`./content/${name}`, readFileSync(join(contentDir, name), 'utf8')])
+			);
+			const posts = await seoPosts(files);
+			this.emitFile({ type: 'asset', fileName: 'seo/posts.json', source: JSON.stringify(posts) });
+			this.emitFile({
+				type: 'asset',
+				fileName: 'sitemap.xml',
+				source: sitemapXml(
+					posts,
+					DEFAULT_PROJECTS.map((project) => project.id)
+				),
+			});
 		},
 	};
 }
@@ -97,7 +127,7 @@ const FILES_ORIGIN =
 	'https://macfolio.hyeoniverse.com';
 
 export default defineConfig({
-	plugins: [react(), securityHeadersPlugin(), publicImagesPlugin()],
+	plugins: [react(), securityHeadersPlugin(), publicImagesPlugin(), seoPlugin()],
 	// 단위 시험(Vitest)도 desktop-core의 src를 읽는다
 	ssr: { resolve: { conditions: ['source', ...defaultServerConditions] } },
 	// 로컬 개발(pnpm dev)에는 사이트 Worker가 없어 /files/*(R2 문서 파일)를 내줄 곳이 없다. main이 아닌 브랜치면 그 PR 미리보기로, main이면 배포한 사이트로 넘긴다.

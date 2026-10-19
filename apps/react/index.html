@@ -22,6 +22,20 @@
 			html.booting body {
 				background: #000 !important;
 			}
+
+			/*
+			 * 검색엔진이 읽을 내용 (Worker가 #root 안에 넣는다: worker/seo.ts). 화면과 같은 내용이지만 스크립트를 받는 동안
+			 * 글자가 비치지 않게 숨기고, 화면 읽기 프로그램에는 남긴다. 앱이 그리기 시작하면 React가 #root 안을 바꾼다
+			 */
+			.seo-content {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+				clip: rect(0 0 0 0);
+				clip-path: inset(50%);
+				white-space: nowrap;
+			}
 		</style>
 		<!-- 첫 화면이 그려지기 전에 테마를 적용한다. CSP가 인라인 스크립트를 막아서 파일로 둔다 -->
 		<script src="/theme-boot.js"></script>
