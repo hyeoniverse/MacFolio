@@ -1,13 +1,10 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
-import { occurrences, pdfjs } from './pdf';
+import { occurrences, pdfjs, rotated } from './pdf';
 
 /** 쪽 사이 여백과 바깥 여백 (px, 기본값). 휴대폰은 좁게 쓴다 */
 const GAP = 16;
 const PADDING = 24;
-
-/** 쪽이 원래 돌아가 있는 각도에 보는 사람이 돌린 각도를 더한다 */
-const rotated = (page: { rotate: number }, rotation: number) => (page.rotate + rotation) % 360;
 
 export interface PdfViewHandle {
 	/** n쪽(1부터)으로 간다 */

@@ -43,7 +43,7 @@ export const isCustomWallpaperId = (id: unknown): id is CustomWallpaperId =>
 	typeof id === 'string' && /^custom:[\w-]{1,64}$/.test(id);
 
 /**
- * CSS url('…')에 그대로 넣어도 되는 이미지 주소 (따옴표·괄호·공백이 없는 http(s)).
+ * CSS url('…')에 그대로 넣어도 되는 이미지(동영상) 주소 (따옴표·괄호·공백이 없는 http(s)).
  * blob:은 Finder에서 방문자가 놓은 그림을 바탕화면으로 둘 때 (이 탭에서만. 저장한 설정을 읽을 때는 받지 않는다)
  */
 export const isSafeImageUrl = (url: unknown): url is string =>
@@ -61,6 +61,12 @@ export interface Settings {
 	 */
 	wallpaperImage: string | null;
 	mobileWallpaperImage: string | null;
+	/**
+	 * 더한 배경화면이 MP4 동영상이면 그 주소 (이때 wallpaperImage는 포스터 이미지라 동영상을 못 틀 때 대신 보인다).
+	 * 사진이나 기본 배경화면이면 null
+	 */
+	wallpaperVideo: string | null;
+	mobileWallpaperVideo: string | null;
 	/** 누르고 뗄 때 딸깍 소리 */
 	clickSound: boolean;
 }
@@ -71,6 +77,8 @@ export const DEFAULT_SETTINGS: Settings = {
 	mobileWallpaper: 'sky',
 	wallpaperImage: null,
 	mobileWallpaperImage: null,
+	wallpaperVideo: null,
+	mobileWallpaperVideo: null,
 	clickSound: true,
 };
 
@@ -80,22 +88,31 @@ function pickWallpaper<Id extends string>(
 	list: readonly { id: Id }[],
 	id: unknown,
 	image: unknown,
+	video: unknown,
 	fallback: Id
-): { id: Id | CustomWallpaperId; image: string | null } {
-	if (isCustomWallpaperId(id) && isSafeImageUrl(image) && !image.startsWith('blob:')) return { id, image };
-	if (list.some((wallpaper) => wallpaper.id === id)) return { id: id as Id, image: null };
-	return { id: fallback, image: null };
+): { id: Id | CustomWallpaperId; image: string | null; video: string | null } {
+	if (isCustomWallpaperId(id) && isSafeImageUrl(image) && !image.startsWith('blob:'))
+		return { id, image, video: isSafeImageUrl(video) ? video : null };
+	if (list.some((wallpaper) => wallpaper.id === id)) return { id: id as Id, image: null, video: null };
+	return { id: fallback, image: null, video: null };
 }
 
 /** 저장된 값이 깨졌거나 예전 형식이어도 안전한 설정을 돌려준다. */
 export function parseSettings(raw: unknown): Settings {
 	const value = (typeof raw === 'object' && raw !== null ? raw : {}) as Partial<Record<keyof Settings, unknown>>;
 	// 더한 배경화면은 이미지 주소가 함께 있어야 그린다. 예전 배경화면(그라데이션)처럼 없는 id는 기본값으로
-	const desktop = pickWallpaper(MAC_WALLPAPERS, value.wallpaper, value.wallpaperImage, DEFAULT_SETTINGS.wallpaper);
+	const desktop = pickWallpaper(
+		MAC_WALLPAPERS,
+		value.wallpaper,
+		value.wallpaperImage,
+		value.wallpaperVideo,
+		DEFAULT_SETTINGS.wallpaper
+	);
 	const mobile = pickWallpaper(
 		IOS_WALLPAPERS,
 		value.mobileWallpaper,
 		value.mobileWallpaperImage,
+		value.mobileWallpaperVideo,
 		DEFAULT_SETTINGS.mobileWallpaper
 	);
 	return {
@@ -104,6 +121,8 @@ export function parseSettings(raw: unknown): Settings {
 		mobileWallpaper: mobile.id,
 		wallpaperImage: desktop.image,
 		mobileWallpaperImage: mobile.image,
+		wallpaperVideo: desktop.video,
+		mobileWallpaperVideo: mobile.video,
 		clickSound: typeof value.clickSound === 'boolean' ? value.clickSound : DEFAULT_SETTINGS.clickSound,
 	};
 }

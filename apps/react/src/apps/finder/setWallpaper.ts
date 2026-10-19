@@ -22,5 +22,9 @@ export function setDesktopWallpaper(item: FinderItem) {
 	if (item.kind !== 'image') return;
 	const url = fileUrl(item.key);
 	const image = url.startsWith('blob:') ? url : new URL(url, window.location.origin).href;
-	settingsStore.setState({ wallpaper: `custom:finder-${hash(item.key)}`, wallpaperImage: image } as Partial<Settings>);
+	settingsStore.setState({
+		wallpaper: `custom:finder-${hash(item.key)}`,
+		wallpaperImage: image,
+		wallpaperVideo: null,
+	} as Partial<Settings>);
 }

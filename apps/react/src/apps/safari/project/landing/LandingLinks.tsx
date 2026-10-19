@@ -3,11 +3,13 @@ import React from 'react';
 import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import type { LandingLink } from './content';
+import { useShownLinks } from './slides';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
-export const LandingLinks: React.FC<{ links: LandingLink[]; className?: string }> = ({ links, className }) => {
+export const LandingLinks: React.FC<{ links: LandingLink[]; className?: string }> = ({ links: all, className }) => {
 	const { openApp } = useAppState();
+	const { links, openSlides } = useShownLinks(all);
 	if (links.length === 0) return null;
 	return (
 		<div className={['lk-links', className].filter(Boolean).join(' ')}>
@@ -16,6 +18,11 @@ export const LandingLinks: React.FC<{ links: LandingLink[]; className?: string }
 				return link.kind === 'app' ? (
 					<button key={link.kind} type="button" {...marks} onClick={() => openApp(link.app as AppName)}>
 						{link.label}
+					</button>
+				) : link.kind === 'slides' ? (
+					<button key={link.kind} type="button" {...marks} onClick={openSlides}>
+						{link.label}
+						{index > 0 && <i className="fa-solid fa-chevron-right" aria-hidden="true" />}
 					</button>
 				) : (
 					<a key={link.kind} href={link.href} {...external} {...marks}>
