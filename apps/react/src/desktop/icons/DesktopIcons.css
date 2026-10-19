@@ -33,6 +33,23 @@
 	z-index: 1;
 }
 
+/*
+ * 아이콘을 끄는 동안: macOS처럼 끄는 아이콘이 창·Dock 위로 지나간다. 층을 올리되 층 자체와 끄는 아이콘은 포인터를 받지 않아
+ * (포인터는 잡아 둔 채라 계속 온다) 놓을 곳 찾기(elementsFromPoint)가 그 아래의 창·Dock 휴지통·다른 아이콘을 찾는다
+ */
+.desktop-icons.moving {
+	z-index: var(--z-drag);
+	pointer-events: none;
+}
+
+.desktop-icons.moving .desktop-icon {
+	pointer-events: auto;
+}
+
+.desktop-icons.moving .desktop-icon.dragging {
+	pointer-events: none;
+}
+
 .desktop-icon-image {
 	width: 70px;
 	height: 66px;
@@ -94,6 +111,49 @@
 	background: rgb(255 255 255 / 0.16);
 	border: 1px solid rgb(255 255 255 / 0.55);
 	box-sizing: border-box;
+}
+
+/* 관리자가 끌어 놓을 폴더: 그림 판을 진하게 (macOS의 폴더 강조) */
+.desktop-icon.drop-target .desktop-icon-image {
+	background: rgb(0 0 0 / 0.32);
+	border-color: rgb(255 255 255 / 0.45);
+}
+
+/* 가상본(alias) 화살표: 아이콘 왼쪽 아래 */
+.desktop-icon-image {
+	position: relative;
+}
+
+.desktop-icon-image .finder-alias-badge {
+	position: absolute;
+	bottom: 6px;
+	left: 8px;
+	width: 17px;
+	height: 17px;
+	filter: drop-shadow(0 0.5px 1px rgb(0 0 0 / 0.35));
+	pointer-events: none;
+}
+
+/* 이름 편집 칸 (새 폴더, 이름 변경) */
+.desktop-rename {
+	box-sizing: border-box;
+	width: 92px;
+	margin-top: 3px;
+	padding: 1px 4px;
+	overflow: hidden;
+	border: none;
+	border-radius: 3px;
+	outline: 3px solid color-mix(in srgb, var(--color-accent) 60%, transparent);
+	background: var(--color-content-bg);
+	color: var(--color-text);
+	font: inherit;
+	font-size: 12px;
+	line-height: 15px;
+	text-align: center;
+	resize: none;
+	field-sizing: content;
+	user-select: text;
+	-webkit-user-select: text;
 }
 
 @media (prefers-reduced-motion: reduce) {

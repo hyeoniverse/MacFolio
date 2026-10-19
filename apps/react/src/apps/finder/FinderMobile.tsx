@@ -5,6 +5,7 @@ import {
 	find,
 	KIND_LABELS,
 	previewFolder,
+	mediaKind,
 	recentItems,
 	search,
 	sortItems,
@@ -33,8 +34,8 @@ const TAB_TITLES: Record<Tab, string> = { recents: '최근 항목', browse: '둘
 /** 둘러보기의 위치 아이콘 (iOS 파일의 iCloud Drive·나의 iPhone처럼 파란 선 아이콘) */
 const LOCATION_ICONS: Record<string, string> = {
 	preview: 'fa-solid fa-cloud',
+	desktop: 'fa-solid fa-display',
 	docs: 'fa-regular fa-file-lines',
-	projects: 'fa-regular fa-folder',
 	blog: 'fa-regular fa-pen-to-square',
 };
 
@@ -45,13 +46,15 @@ const formatDate = (date: string) => {
 
 /** 이름 아래 한 줄: 폴더는 항목 수, 파일은 날짜(없으면 종류) */
 const summary = (item: FinderItem) =>
-	item.kind === 'folder'
-		? `${item.children.length}개의 항목`
-		: item.modified
-			? formatDate(item.modified)
-			: item.kind === 'project'
-				? (item.period ?? KIND_LABELS.project)
-				: KIND_LABELS[item.kind];
+	item.kind === 'folder' && item.aliasOf
+		? '가상본'
+		: item.kind === 'folder'
+			? `${item.children.length}개의 항목`
+			: item.modified
+				? formatDate(item.modified)
+				: item.kind === 'project'
+					? (item.period ?? KIND_LABELS.project)
+					: KIND_LABELS[item.kind];
 
 interface Props {
 	locations: FinderItem[];
@@ -113,9 +116,11 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	}, []);
 
 	const open = (item: FinderItem) => {
-		if (item.kind === 'folder') push({ folder: item.id });
+		if (item.kind === 'folder') push({ folder: item.aliasOf ?? item.id });
 		else if (item.kind === 'doc') push({ doc: item.path });
-		else if (item.kind === 'pdf' || item.kind === 'image') push({ file: item.id });
+		else if (item.kind === 'pdf' || item.kind === 'image' || (item.kind === 'file' && mediaKind(item.name)))
+			push({ file: item.id });
+		else if (item.kind === 'file') downloadFile(item.key, item.name);
 		else onOpenElsewhere(item);
 	};
 
@@ -144,7 +149,10 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 
 	if (screen && 'file' in screen) {
 		const file = find(roots, screen.file);
-		const viewable = file && (file.kind === 'pdf' || file.kind === 'image') ? file : null;
+		const viewable =
+			file && (file.kind === 'pdf' || file.kind === 'image' || (file.kind === 'file' && mediaKind(file.name)))
+				? file
+				: null;
 		return (
 			<div className="files-phone file">
 				{navigation}

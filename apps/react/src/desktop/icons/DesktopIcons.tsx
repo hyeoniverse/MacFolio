@@ -1,7 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import FinderIcon from '@/apps/finder/FinderIcon';
-import type { FinderItem } from '@/apps/finder/files';
+import { find, mediaKind, TRASH_ID, type FinderItem, type FolderItem } from '@/apps/finder/files';
+import { canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
+import { uploadInto } from '@/apps/finder/useDocumentDrop';
+import { addLocalFiles } from '@/apps/finder/localFiles';
+import { canSetWallpaper, setDesktopWallpaper } from '@/apps/finder/setWallpaper';
+import InlineName from '@/apps/finder/InlineName';
+import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from '@/apps/finder/useFinderEdit';
 import { requestFinderFolder } from '@/apps/finder/openDoc';
+import { downloadFile } from '@/apps/finder/documents';
+import { openInPlayer } from '@/apps/quicktime/playerStore';
 import { useLocations } from '@/apps/finder/useLocations';
 import { openInPreview } from '@/apps/preview/previewStore';
 import { requestedSection } from '@/apps/settings/settingsRequest';
@@ -24,22 +32,16 @@ import {
 } from './layout';
 import './DesktopIcons.css';
 
-/** 바탕화면에 두는 폴더: Finder 문서의 이력서·포트폴리오·자격증, 그리고 프로젝트 */
-const DESKTOP_IDS = ['docs:이력서', 'docs:포트폴리오', 'docs:자격증', 'projects'];
-
 /** 이만큼 움직여야 끌기로 본다 (그보다 작으면 클릭) */
 const DRAG_THRESHOLD = 4;
 
-function findItem(items: FinderItem[], id: string): FinderItem | null {
-	for (const item of items) {
-		if (item.id === id) return item;
-		if (item.kind === 'folder') {
-			const found = findItem(item.children, id);
-			if (found) return found;
-		}
-	}
-	return null;
-}
+/**
+ * 아이콘 자리를 저장하는 열쇠. 가상본은 원래 폴더 id (예전에 저장한 이력서·포트폴리오·자격증 자리를 그대로 쓴다)
+ */
+const keyOf = (item: FinderItem) => (item.kind === 'folder' && item.aliasOf) || item.id;
+
+/** Dock의 휴지통에 놓을 때의 표시 (트리의 휴지통 폴더와 같은 id) */
+const TRASH_TARGET: FinderItem = { kind: 'folder', id: TRASH_ID, name: '휴지통', children: [] };
 
 const viewportNow = (): Viewport => ({ width: window.innerWidth, height: window.innerHeight });
 
@@ -77,11 +79,18 @@ const DesktopIcons: React.FC = () => {
 	const viewport = useViewport();
 	const layer = useRef<HTMLDivElement>(null);
 
-	const items = useMemo(
-		() => DESKTOP_IDS.map((id) => findItem(locations, id)).filter((item): item is FinderItem => item !== null),
-		[locations]
-	);
-	const ids = useMemo(() => items.map((item) => item.id), [items]);
+	// 바탕화면은 Finder의 데스크탑 폴더와 같다: 기본 폴더의 가상본(이력서·포트폴리오·자격증)과 관리자가 만들거나 옮긴 것
+	const desktop = find(locations, 'desktop') as FolderItem | null;
+	const items = useMemo(() => desktop?.children ?? [], [desktop]);
+	const ids = useMemo(() => items.map(keyOf), [items]);
+	const byKey = (key: string) => items.find((item) => keyOf(item) === key) ?? null;
+	// 바탕화면에는 창이 없어 경고창을 화면 한가운데, 모든 창 위에 띄운다
+	const edit = useFinderEdit(locations, 'screen');
+	const renaming = useSyncExternalStore(finderRenaming.subscribe, () => finderRenaming.getState().id);
+	/** 놓을 곳으로 강조한 아이콘 (자리 열쇠) */
+	const [hover, setHover] = useState<string | null>(null);
+	/** Finder 창 안에서 강조한 요소 (바탕화면 아이콘을 Finder 폴더로 끌 때) */
+	const finderHover = useRef<Element | null>(null);
 
 	const [saved, setSaved] = useState<Record<string, Cell>>(() => parseSaved(readJson(STORAGE_KEYS.desktopIcons)));
 	const cells = useMemo(() => arrange(ids, saved, viewport), [ids, saved, viewport]);
@@ -97,18 +106,26 @@ const DesktopIcons: React.FC = () => {
 	const pending = useRef<Pending | null>(null);
 
 	const open = (item: FinderItem) => {
+		if (item.kind === 'file') {
+			const media = mediaKind(item.name);
+			if (!media) return downloadFile(item.key, item.name);
+			openApp('quicktime');
+			bringAppToFront('quicktime');
+			openInPlayer({ key: item.key, name: item.name, media });
+			return;
+		}
 		if (item.kind === 'pdf' || item.kind === 'image') {
 			openApp('preview');
 			bringAppToFront('preview');
 			openInPreview({ key: item.key, name: item.name, kind: item.kind, size: item.size });
 			return;
 		}
-		// 폴더 (나중에 다른 종류가 바탕화면에 와도 Finder에서 그 자리를 보여 준다)
-		requestFinderFolder(item.id);
+		// 폴더 (가상본은 원래 폴더). 다른 종류는 Finder에서 그 자리를 보여 준다
+		requestFinderFolder(item.kind === 'folder' ? (item.aliasOf ?? item.id) : item.id);
 		openApp('finder');
 		bringAppToFront('finder');
 	};
-	const openSelected = () => items.filter((item) => selected.includes(item.id)).forEach(open);
+	const openSelected = () => items.filter((item) => selected.includes(keyOf(item))).forEach(open);
 
 	const pointOf = (event: React.PointerEvent | React.MouseEvent): Point => ({ x: event.clientX, y: event.clientY });
 
@@ -146,6 +163,7 @@ const DesktopIcons: React.FC = () => {
 			if (!current.moved) event.currentTarget.setPointerCapture?.(event.pointerId);
 			current.moved = true;
 			setOffset(delta);
+			if (edit.admin) highlight(dropTargetAt(point, current.id));
 			return;
 		}
 		setBand({ start: current.start, end: point });
@@ -154,11 +172,79 @@ const DesktopIcons: React.FC = () => {
 		setSelected([...new Set([...current.base, ...hit])]);
 	};
 
-	const onLayerPointerUp = () => {
+	/** 끈 아이콘들 (자리 열쇠) */
+	const movingKeys = (id: string) => (selected.includes(id) ? selected : [id]);
+
+	/**
+	 * 포인터 아래의 놓을 곳: 다른 바탕화면 폴더 아이콘, 또는 Finder 창의 폴더(아이콘·사이드바·경로 막대·열린 폴더).
+	 * 옮길 수 있는 것(관리자, 만든 폴더·올린 파일)을 받을 수 있을 때만
+	 */
+	const dropTargetAt = (
+		point: Point,
+		id: string
+	): { desktop: string } | { finder: Element; target: FinderItem } | null => {
+		const moving = movingKeys(id);
+		const movingItems = moving.map(byKey).filter((item): item is FinderItem => item !== null);
+		// Dock의 휴지통 위: 휴지통으로 보낼 수 있는 것(가상본 포함)이면 휴지통으로
+		const bin = document.elementsFromPoint(point.x, point.y).find((element) => element.closest('[data-dock-trash]'));
+		if (bin)
+			return movingItems.length > 0 && movingItems.every(canTrash)
+				? { finder: bin.closest('[data-dock-trash]')!, target: TRASH_TARGET }
+				: null;
+		if (!movingItems.every(canMove)) return null;
+		const movingIds = movingItems.map((item) => item.id);
+		for (const element of document.elementsFromPoint(point.x, point.y)) {
+			const icon = element.closest('[data-desktop-icon]');
+			if (icon && layer.current?.contains(icon)) {
+				const key = icon.getAttribute('data-desktop-icon')!;
+				if (moving.includes(key)) continue;
+				const target = byKey(key);
+				return target && edit.canDrop(movingIds, target) ? { desktop: key } : null;
+			}
+			if (element === layer.current || layer.current?.contains(element)) return null;
+			const finder = element.closest('[data-folder-target]');
+			if (finder) {
+				const target = find(locations, finder.getAttribute('data-folder-target')!);
+				return target && edit.canDrop(movingIds, target) ? { finder, target } : null;
+			}
+			// 창이 덮은 곳은 그 아래 바탕화면이 아니다
+			if (element.closest('[data-app], [role="dialog"]')) return null;
+		}
+		return null;
+	};
+	const highlight = (target: ReturnType<typeof dropTargetAt>) => {
+		setHover(target && 'desktop' in target ? target.desktop : null);
+		const element = target && 'finder' in target ? target.finder : null;
+		if (finderHover.current !== element) {
+			finderHover.current?.classList.remove('drop-target');
+			element?.classList.add('drop-target');
+			finderHover.current = element;
+		}
+	};
+
+	const onLayerPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
 		const current = pending.current;
 		pending.current = null;
 		setBand(null);
 		if (current?.kind !== 'icon') return;
+		// 관리자: 폴더 아이콘이나 Finder 창의 폴더 위에 놓으면 그 폴더로 옮긴다 (자리를 바꾸지 않고)
+		const target = current.moved && edit.admin ? dropTargetAt(pointOf(event), current.id) : null;
+		highlight(null);
+		if (target) {
+			const into = 'desktop' in target ? byKey(target.desktop)! : target.target;
+			const items = movingKeys(current.id)
+				.map(byKey)
+				.filter((item): item is FinderItem => item !== null);
+			if (into === TRASH_TARGET) edit.trash(items);
+			else
+				edit.move(
+					items.map((item) => item.id),
+					into
+				);
+			setOffset(null);
+			setSelected([]);
+			return;
+		}
 		if (!current.moved) {
 			// 여럿을 고른 채 하나를 그냥 눌렀다 떼면 그것만 남는다 (끌지 않았을 때)
 			if (current.plain) setSelected([current.id]);
@@ -183,6 +269,19 @@ const DesktopIcons: React.FC = () => {
 		if (command && event.code === 'KeyA') {
 			event.preventDefault();
 			setSelected(ids);
+		} else if (event.key === 'Enter' && selected.length === 1) {
+			// macOS처럼 Enter는 이름 변경 (관리자, 바꿀 수 있는 항목)
+			const item = byKey(selected[0]);
+			if (edit.admin && item && canRename(item)) {
+				event.preventDefault();
+				finderRenaming.setState({ id: item.id });
+			}
+		} else if (command && event.key === 'Backspace') {
+			event.preventDefault();
+			edit.trash(
+				selected.map(byKey).filter((item): item is FinderItem => item !== null),
+				() => setSelected([])
+			);
 		} else if (event.key === 'Escape') {
 			setSelected([]);
 		} else if (command && (event.code === 'KeyO' || event.key === 'ArrowDown')) {
@@ -201,14 +300,39 @@ const DesktopIcons: React.FC = () => {
 		setMenu({ anchor: pointOf(event), target });
 	};
 
-	const byName = [...items].sort((a, b) => a.name.localeCompare(b.name, 'ko')).map((item) => item.id);
-	const menuItems: MenuItem[] = menu?.target
+	const byName = [...items].sort((a, b) => a.name.localeCompare(b.name, 'ko')).map(keyOf);
+	const menuTarget = menu?.target ? byKey(menu.target) : null;
+	/** 새 폴더: 오른쪽 클릭한 자리에 놓고 바로 이름 편집 (관리자) */
+	const newFolder = () => {
+		const id = edit.newFolder(desktop);
+		if (!id || !menu) return;
+		save({
+			...cells,
+			...drop(cells, { [id]: { x: menu.anchor.x - CELL.width / 2, y: menu.anchor.y - 30 } }, viewport),
+		});
+		setSelected([id]);
+	};
+	const menuItems: MenuItem[] = menuTarget
 		? [
 				{ label: '열기', onSelect: openSelected },
 				{ label: 'Finder에서 보기', onSelect: openSelected },
+				...(canSetWallpaper(menuTarget)
+					? [{ label: '데스크탑 사진 설정', onSelect: () => setDesktopWallpaper(menuTarget) }]
+					: []),
+				'separator',
+				{
+					label: '이름 변경',
+					disabled: !edit.admin || !canRename(menuTarget),
+					onSelect: () => finderRenaming.setState({ id: menuTarget.id }),
+				},
+				{
+					label: '휴지통으로 이동',
+					disabled: !edit.admin || !canTrash(menuTarget),
+					onSelect: () => edit.trash([menuTarget], () => setSelected([])),
+				},
 			]
 		: [
-				{ label: '새 폴더', onSelect: () => undefined, disabled: true },
+				{ label: '새 폴더', onSelect: newFolder, disabled: !edit.admin || !desktop },
 				'separator',
 				{ label: '정리하기', onSelect: () => save(cleanUp(ids, viewport)) },
 				{ label: '이름순으로 정리', onSelect: () => save(cleanUp(byName, viewport)) },
@@ -225,10 +349,19 @@ const DesktopIcons: React.FC = () => {
 
 	const bandRect = band && rectFrom(band.start, band.end);
 
+	/** 컴퓨터의 파일을 놓을 곳: 폴더 아이콘(가상본이면 원래 폴더) 위면 그 폴더, 파일·앱 아이콘이나 빈 곳이면 바탕화면 (macOS처럼) */
+	const fileDropAt = (element: EventTarget) => {
+		const key = (element as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon') ?? null;
+		const onFolder = key ? uploadPlan(locations, byKey(key)) : null;
+		if (onFolder) return { ...onFolder, key };
+		const plan = uploadPlan(locations, desktop);
+		return plan && { ...plan, key: null };
+	};
+
 	return (
 		<div
 			ref={layer}
-			className="desktop-icons"
+			className={`desktop-icons${offset ? ' moving' : ''}`}
 			role="listbox"
 			aria-label="바탕화면"
 			aria-multiselectable="true"
@@ -239,30 +372,98 @@ const DesktopIcons: React.FC = () => {
 			onPointerCancel={onLayerPointerUp}
 			onKeyDown={onKeyDown}
 			onContextMenu={onContextMenu}
+			onDragOver={(event) => {
+				// 컴퓨터의 파일: 브라우저가 파일을 열어 사이트를 떠나지 않게 늘 받는다. 관리자면 그 자리에 올린다
+				if (event.dataTransfer.types.includes('Files')) {
+					event.preventDefault();
+					const plan = fileDropAt(event.target);
+					setHover(plan?.key ?? null);
+					event.dataTransfer.dropEffect = plan ? 'copy' : 'none';
+					return;
+				}
+				if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;
+				const key = (event.target as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon');
+				const target = key ? byKey(key) : desktop;
+				const ok = edit.canDrop(finderDrag.getState().ids, target);
+				setHover(ok && key ? key : null);
+				if (!ok) return;
+				event.preventDefault();
+				event.dataTransfer.dropEffect = 'move';
+			}}
+			onDragLeave={(event) => {
+				if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHover(null);
+			}}
+			onDrop={(event) => {
+				setHover(null);
+				if (event.dataTransfer.types.includes('Files')) {
+					event.preventDefault();
+					const plan = fileDropAt(event.target);
+					const files = [...event.dataTransfer.files];
+					// 관리자는 서버에 올리고, 방문자는 이 브라우저에서만 바탕화면(또는 그 폴더)에 둔다
+					if (plan && edit.admin) void uploadInto(locations, plan.target, files);
+					else if (plan) addLocalFiles(plan.target, files);
+					return;
+				}
+				if (!event.dataTransfer.types.includes(FINDER_DRAG_TYPE)) return;
+				const key = (event.target as Element).closest('[data-desktop-icon]')?.getAttribute('data-desktop-icon');
+				const target = key ? byKey(key) : desktop;
+				const ids = finderDrag.getState().ids;
+				if (!target || !edit.canDrop(ids, target)) return;
+				event.preventDefault();
+				// 바탕화면 빈 곳에 놓으면 놓은 자리에 아이콘을 둔다
+				if (edit.move(ids, target) && !key)
+					save({
+						...cells,
+						...drop(
+							cells,
+							Object.fromEntries(ids.map((id) => [id, { x: event.clientX - CELL.width / 2, y: event.clientY - 30 }])),
+							viewport
+						),
+					});
+			}}
 		>
 			{items.map((item) => {
-				const isSelected = selected.includes(item.id);
-				const point = cellToPoint(cells[item.id], viewport);
+				const key = keyOf(item);
+				const isSelected = selected.includes(key);
+				const point = cellToPoint(cells[key], viewport);
 				const dragging = offset && isSelected;
 				return (
 					<div
-						key={item.id}
+						key={key}
 						role="option"
 						aria-selected={isSelected}
 						aria-label={item.name}
 						tabIndex={0}
-						data-desktop-icon={item.id}
-						className={`desktop-icon${isSelected ? ' selected' : ''}${dragging ? ' dragging' : ''}`}
+						data-desktop-icon={key}
+						className={`desktop-icon${isSelected ? ' selected' : ''}${dragging ? ' dragging' : ''}${
+							hover === key ? ' drop-target' : ''
+						}`}
 						style={{
 							transform: `translate(${point.x + (dragging ? offset.x : 0)}px, ${point.y + (dragging ? offset.y : 0)}px)`,
 						}}
 						onDoubleClick={() => open(item)}
-						onFocus={() => !isSelected && pending.current === null && setSelected([item.id])}
+						onFocus={() => !isSelected && pending.current === null && setSelected([key])}
 					>
 						<span className="desktop-icon-image">
 							<FinderIcon item={item} />
 						</span>
-						<span className="desktop-icon-label">{item.name}</span>
+						{renaming === item.id ? (
+							<InlineName
+								name={item.name}
+								select={stemLength(item, item.name)}
+								className="desktop-rename"
+								onCommit={(name) => {
+									void edit.rename(item, name);
+									layer.current?.focus({ preventScroll: true });
+								}}
+								onCancel={() => {
+									finderRenaming.setState({ id: null });
+									layer.current?.focus({ preventScroll: true });
+								}}
+							/>
+						) : (
+							<span className="desktop-icon-label">{item.name}</span>
+						)}
 					</div>
 				);
 			})}
@@ -286,6 +487,7 @@ const DesktopIcons: React.FC = () => {
 					onClose={() => setMenu(null)}
 				/>
 			)}
+			{edit.dialog}
 		</div>
 	);
 };

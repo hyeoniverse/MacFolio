@@ -10,10 +10,13 @@ import {
 } from './documents.js';
 
 describe('문서 파일 규칙', () => {
-	it('PDF·PNG·JPG·WebP만, 대소문자는 가리지 않는다', () => {
+	it('PDF·그림·문서·영상·소리·ZIP만, 대소문자는 가리지 않는다 (스크립트가 돌 수 있는 종류는 받지 않는다)', () => {
 		expect(documentExtension('이력서.PDF')).toBe('pdf');
 		expect(documentExtension('a.jpeg')).toBe('jpeg');
-		expect(documentExtension('a.gif')).toBeNull();
+		expect(documentExtension('a.gif')).toBe('gif');
+		expect(documentExtension('경력.docx')).toBe('docx');
+		expect(documentExtension('데모.MP4')).toBe('mp4');
+		for (const name of ['a.svg', 'a.html', 'a.js', 'a.exe']) expect(documentExtension(name)).toBeNull();
 		expect(documentExtension('pdf')).toBeNull();
 	});
 

@@ -78,6 +78,7 @@ flowchart LR
 | messages   | `GET·POST /messages/threads`, `DELETE /messages/:id`                         | 방문자 (요청 제한, 자기 글만 지움)    |
 | visitors   | `GET /visitor`                                                               | 방문자 쿠키를 주고 이름을 알려 줌     |
 | memo       | `GET·PUT /memo/organization`                                                 | 읽기는 누구나, 바꾸기는 관리자        |
+| finder     | `GET·PUT /finder/layout`                                                     | 읽기는 누구나, 바꾸기는 관리자        |
 | files      | `POST /files`, `GET /files/:id`                                              | 올리기는 관리자, 받기는 누구나        |
 | wallpapers | `GET·POST·PATCH·DELETE /wallpapers`                                          | 읽기는 누구나, 나머지는 관리자        |
 | images     | `GET /images/search` 등                                                      | 관리자 (Unsplash·Pexels 검색)         |
@@ -155,6 +156,10 @@ erDiagram
         int id PK "한 행"
         json data
     }
+    FinderLayout {
+        int id PK "한 행"
+        json data
+    }
     GithubShowcase {
         int id PK "한 행"
         json repos
@@ -163,7 +168,7 @@ erDiagram
 
 - **블로그 글은 두 곳에 있습니다.** 저장소의 Markdown 파일이 기본이고, 관리자가 쓰거나 고친 글은 `Post`에 둡니다. 주소(slug)가 같으면 `Post`가 파일을 대신합니다. 파일 글을 지우면 `deleted` 표시만 남겨 다시 보이지 않게 합니다.
 - **한 행에 게시본과 임시 저장을 같이 둡니다.** 고치는 동안에는 `draft*`만 바뀌어 방문자에게 보이지 않고, 게시하면 게시본으로 옮기고 `PostRevision`을 남깁니다. 날짜가 오늘보다 뒤면 그날까지 방문자에게 보이지 않습니다(예약 발행).
-- **설정 같은 값은 한 행 JSON입니다.** 메모 폴더 정리(`MemoOrganization`)와 GitHub 앱에 보일 저장소(`GithubShowcase`)는 통째로 읽고 쓰는 값이라 행 하나에 둡니다.
+- **설정 같은 값은 한 행 JSON입니다.** 메모 폴더 정리(`MemoOrganization`), Finder 폴더 구조(`FinderLayout`: 만든 폴더, 옮긴 파일의 보이는 자리, 바탕화면의 가상본)와 GitHub 앱에 보일 저장소(`GithubShowcase`)는 통째로 읽고 쓰는 값이라 행 하나에 둡니다.
 
 ## 설계 결정
 

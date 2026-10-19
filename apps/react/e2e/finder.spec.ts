@@ -3,6 +3,16 @@ import type { Page } from '@playwright/test';
 import { fakeFiles } from './fakeFiles';
 import { fakeApi } from './fakeApi';
 
+/** 문서 › 포트폴리오 (프로젝트 폴더가 여기에 있다) */
+async function openPortfolio(finder: ReturnType<typeof appWindow>) {
+	await finder.getByRole('navigation', { name: '즐겨찾기' }).getByRole('button', { name: '문서' }).click();
+	await finder
+		.getByRole('listbox', { name: '문서' })
+		.getByRole('option', { name: '포트폴리오', exact: true })
+		.dblclick();
+	await expect(finder.getByRole('heading', { level: 1 })).toHaveText('포트폴리오');
+}
+
 async function openFinder(page: Page) {
 	await enterDesktop(page);
 	await dockItem(page, 'finder').click();
@@ -98,9 +108,9 @@ test.describe('Finder', () => {
 		await expect(memo.getByRole('article', { name: 'CRA에서 Vite로 옮기기' })).toBeVisible();
 
 		await dockItem(page, 'finder').click();
-		await sidebar(finder).getByRole('button', { name: '프로젝트' }).click();
+		await openPortfolio(finder);
 		// 프로젝트마다 폴더: 안에는 사진과 올린 파일만 (실행하는 앱은 응용 프로그램에만)
-		await finder.getByRole('listbox', { name: '프로젝트' }).getByRole('option', { name: /QRU/ }).dblclick();
+		await finder.getByRole('listbox', { name: '포트폴리오' }).getByRole('option', { name: /QRU/ }).dblclick();
 		await expect(
 			finder.getByRole('listbox', { name: /QRU/ }).getByRole('option', { name: 'QRU', exact: true })
 		).toHaveCount(0);
@@ -114,13 +124,15 @@ test.describe('Finder', () => {
 		await expect(appWindow(page, 'terminal')).toBeVisible();
 	});
 
-	test('사진: 프로젝트 › MacFolio › 사진 폴더에 사진 앱의 그림이 있고, 미리보기에서 연다', async ({ page }) => {
+	test('사진: 문서 › 포트폴리오 › MacFolio › 사진 폴더에 사진 앱의 그림이 있고, 미리보기에서 연다', async ({
+		page,
+	}) => {
 		const finder = await openFinder(page);
 		// 사진은 따로 된 위치가 없다 (프로젝트 폴더 안에만)
 		await expect(sidebar(finder).getByRole('button', { name: '사진' })).toHaveCount(0);
-		await sidebar(finder).getByRole('button', { name: '프로젝트' }).click();
+		await openPortfolio(finder);
 		await finder
-			.getByRole('listbox', { name: '프로젝트' })
+			.getByRole('listbox', { name: '포트폴리오' })
 			.getByRole('option', { name: 'MacFolio', exact: true })
 			.dblclick();
 		await finder
@@ -154,13 +166,12 @@ test.describe('Finder', () => {
 	});
 
 	test.describe('문서 파일 (R2)', () => {
-		test('빈 이력서·포트폴리오·자격증 폴더는 폴더마다 안내를 보인다', async ({ page }) => {
+		test('빈 이력서·자격증 폴더는 폴더마다 안내를 보이고, 포트폴리오에는 프로젝트 폴더가 있다', async ({ page }) => {
 			await fakeFiles(page, []);
 			const finder = await openFinder(page);
 			const docs = finder.getByRole('listbox', { name: '문서' });
 			for (const [name, note] of [
 				['이력서', '공개용 이력서를 준비하고 있습니다.'],
-				['포트폴리오', '포트폴리오 파일을 준비하고 있습니다.'],
 				['자격증', '자격증 사본을 준비하고 있습니다.'],
 			]) {
 				await docs.getByRole('option', { name, exact: true }).dblclick();
@@ -168,6 +179,11 @@ test.describe('Finder', () => {
 				await expect(finder.getByText(note)).toBeVisible();
 				await finder.getByRole('button', { name: '뒤로' }).click();
 			}
+			// 포트폴리오는 파일이 없어도 프로젝트 폴더가 있어 비어 있지 않다
+			await docs.getByRole('option', { name: '포트폴리오', exact: true }).dblclick();
+			await expect(
+				finder.getByRole('listbox', { name: '포트폴리오' }).getByRole('option', { name: 'MacFolio', exact: true })
+			).toBeVisible();
 		});
 
 		test('PDF는 미리보기 앱이 직접 그린다: 쪽 그림 사이드바, 쪽 넘기기, 찾기, 다운로드', async ({ page }) => {
@@ -329,9 +345,14 @@ test.describe('Finder', () => {
 			await page.locator('.launchpad-modal').getByRole('button', { name: 'preview', exact: true }).click();
 			const preview = appWindow(page, 'preview');
 			const panel = preview.getByRole('dialog', { name: '열기' });
-			await panel.getByRole('button', { name: '프로젝트', exact: true }).click();
+			// 프로젝트 폴더는 문서 › 포트폴리오 안
+			await panel.getByRole('button', { name: '문서', exact: true }).click();
 			await panel
-				.getByRole('listbox', { name: '프로젝트' })
+				.getByRole('listbox', { name: '문서' })
+				.getByRole('option', { name: '포트폴리오', exact: true })
+				.dblclick();
+			await panel
+				.getByRole('listbox', { name: '포트폴리오' })
 				.getByRole('option', { name: 'MacFolio', exact: true })
 				.dblclick();
 			const folder = panel.getByRole('listbox', { name: 'MacFolio' });
@@ -345,9 +366,9 @@ test.describe('Finder', () => {
 		test('프로젝트마다 폴더: 사진, 올린 파일. PDF는 미리보기에서 연다', async ({ page }) => {
 			const requests = await fakeFiles(page);
 			const finder = await openFinder(page);
-			await sidebar(finder).getByRole('button', { name: '프로젝트' }).click();
+			await openPortfolio(finder);
 			await finder
-				.getByRole('listbox', { name: '프로젝트' })
+				.getByRole('listbox', { name: '포트폴리오' })
 				.getByRole('option', { name: 'MacFolio', exact: true })
 				.dblclick();
 			await expect(finder.getByRole('heading', { level: 1 })).toHaveText('MacFolio');

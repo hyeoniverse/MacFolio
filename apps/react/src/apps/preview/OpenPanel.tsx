@@ -33,13 +33,13 @@ type Place = 'preview' | 'recents' | string;
 /** 사이드바 즐겨찾기 아이콘 (Finder의 위치와 같은 순서) */
 const LOCATION_ICONS: Record<string, LucideIcon | typeof AppsGlyph> = {
 	docs: FileText,
-	projects: Folder,
 	blog: SquarePen,
 	apps: AppsGlyph,
 };
 
 /** 미리보기가 열 수 있는 것: PDF와 그림 */
-const isFile = (item: FinderItem): item is FileItem => item.kind === 'pdf' || item.kind === 'image';
+type Openable = FileItem & { kind: 'pdf' | 'image' };
+const isFile = (item: FinderItem): item is Openable => item.kind === 'pdf' || item.kind === 'image';
 
 /** 파일 그림: 그림은 그대로, PDF는 첫 쪽, 그 밖은 Finder 아이콘 */
 const ItemThumb: React.FC<{ item: FinderItem }> = ({ item }) => {
@@ -72,7 +72,7 @@ const ItemThumb: React.FC<{ item: FinderItem }> = ({ item }) => {
  * Finder와 같은 파일 트리를 둘러본다: 왼쪽은 미리보기(iCloud)·최근 항목과 즐겨찾기(문서·프로젝트·블로그·응용 프로그램),
  * 폴더는 두 번 눌러 들어가고 뒤로·앞으로로 오간다. 미리보기가 열 수 없는 파일(문서·글·앱)은 흐리게 보이고 고를 수 없다
  */
-const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => void }> = ({ onOpen, onCancel }) => {
+const OpenPanel: React.FC<{ onOpen: (file: Openable) => void; onCancel: () => void }> = ({ onOpen, onCancel }) => {
 	const locations = useLocations();
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: ['preview'], at: 0 });
 	const place = history.places[history.at];
@@ -89,7 +89,7 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 		setSelected(null);
 	};
 
-	const files = useMemo(() => previewFolder(locations).children as FileItem[], [locations]);
+	const files = useMemo(() => previewFolder(locations).children as Openable[], [locations]);
 	const folder = place === 'preview' || place === 'recents' ? null : find(locations, place);
 	const q = query.trim();
 	const shown: FinderItem[] = q

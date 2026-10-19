@@ -36,6 +36,15 @@ export interface FakeApiState {
 		locks?: Record<string, boolean>;
 		order?: string[];
 	};
+	/** 서버에 저장된 Finder 폴더 구조 (GET·PUT /finder/layout) */
+	finderLayout: {
+		folders: { id: string; name: string; parent: string }[];
+		files: Record<string, string>;
+		aliases: string[] | null;
+		trash?: Record<string, string>;
+	};
+	/** 받은 PUT /finder/layout 수 */
+	layoutSaves: number;
 	/** 받은 PUT 요청 수 */
 	saves: number;
 	/** 글마다 댓글 (가짜 서버는 비밀번호를 그대로 들고 있다) */
@@ -333,7 +342,7 @@ export interface FakeMessage {
 /**
  * 가짜 API (apps/api와 같은 경로). 실제 서버처럼
  * - /auth/github는 로그인을 마친 뒤 사이트로 돌려보내고(?admin=signed-in | denied), 그 뒤로 /auth/me는 관리자를 알려 준다
- * - /memo/organization은 누구나 읽고, 로그인했을 때만 바꿀 수 있다
+ * - /memo/organization과 /finder/layout은 누구나 읽고, 로그인했을 때만 바꿀 수 있다
  * 쿠키 대신 테스트 안의 변수로 로그인 상태를 기억한다. 새로고침해도 routes와 상태는 남는다.
  */
 export async function fakeApi(
@@ -350,6 +359,8 @@ export async function fakeApi(
 		siteProjects: null,
 		health: 'ok',
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
+		finderLayout: { folders: [], files: {}, aliases: null, trash: {} },
+		layoutSaves: 0,
 		saves: 0,
 		comments: {},
 		postLikes: {},
@@ -639,6 +650,14 @@ export async function fakeApi(
 			state.organization = request.postDataJSON();
 			state.saves += 1;
 			return route.fulfill({ status: 200, headers: cors(origin), json: state.organization });
+		}
+		if (path === '/finder/layout') {
+			if (request.method() === 'GET')
+				return route.fulfill({ status: 200, headers: cors(origin), json: { ...state.finderLayout, updatedAt: null } });
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			state.finderLayout = request.postDataJSON();
+			state.layoutSaves += 1;
+			return route.fulfill({ status: 200, headers: cors(origin), json: state.finderLayout });
 		}
 		// 파일: 관리자만 올리고, 누구나 받는다. 이미지는 PNG 첫 바이트로 알아본다
 		if (path === '/files' && request.method() === 'POST') {

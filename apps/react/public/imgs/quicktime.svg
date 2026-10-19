@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 100 824 824">
+	<!-- QuickTime Player (macOS): 다른 앱처럼 둥근 네모 판. 짙은 회색 판 위에 은빛 고리와 파란 유리 렌즈의 Q, 고리 오른쪽 아래로 빠진 은빛 꼬리 -->
+	<defs>
+		<linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#4a4d55"/>
+			<stop offset="0.5" stop-color="#26282e"/>
+			<stop offset="1" stop-color="#121317"/>
+		</linearGradient>
+		<radialGradient id="tileShine" cx="0.5" cy="0" r="0.9">
+			<stop offset="0" stop-color="#fff" stop-opacity="0.18"/>
+			<stop offset="1" stop-color="#fff" stop-opacity="0"/>
+		</radialGradient>
+		<linearGradient id="chrome" x1="0.15" y1="0" x2="0.85" y2="1">
+			<stop offset="0" stop-color="#ffffff"/>
+			<stop offset="0.3" stop-color="#d9dee6"/>
+			<stop offset="0.55" stop-color="#8e97a5"/>
+			<stop offset="0.75" stop-color="#e6eaf0"/>
+			<stop offset="1" stop-color="#6f7886"/>
+		</linearGradient>
+		<radialGradient id="lens" cx="0.45" cy="0.3" r="0.8">
+			<stop offset="0" stop-color="#e3f6ff"/>
+			<stop offset="0.25" stop-color="#7fd0ff"/>
+			<stop offset="0.6" stop-color="#1b78e8"/>
+			<stop offset="1" stop-color="#0a2f86"/>
+		</radialGradient>
+		<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#fff" stop-opacity="0.85"/>
+			<stop offset="1" stop-color="#fff" stop-opacity="0"/>
+		</linearGradient>
+		<filter id="drop" x="-20%" y="-20%" width="140%" height="150%">
+			<feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity="0.55"/>
+		</filter>
+	</defs>
+
+	<!-- 판 -->
+	<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)"/>
+	<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tileShine)"/>
+	<rect x="101.5" y="101.5" width="821" height="821" rx="183.5" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="3"/>
+
+	<g filter="url(#drop)">
+		<!-- 꼬리: 고리에 붙은 짧고 굵은 쐐기 (돋보기 손잡이처럼 길지 않다) -->
+		<path d="M668 600 L772 704 Q790 722 772 740 L742 770 Q724 788 706 770 L602 666 Z" fill="url(#chrome)"/>
+		<!-- 굵은 은빛 고리 -->
+		<circle cx="500" cy="500" r="290" fill="url(#chrome)"/>
+		<circle cx="500" cy="500" r="290" fill="none" stroke="#3c434e" stroke-opacity="0.45" stroke-width="4"/>
+		<!-- 렌즈 -->
+		<circle cx="500" cy="500" r="196" fill="url(#lens)"/>
+		<circle cx="500" cy="500" r="196" fill="none" stroke="#0a1f4d" stroke-opacity="0.7" stroke-width="10"/>
+		<circle cx="500" cy="522" r="128" fill="none" stroke="#bfe9ff" stroke-opacity="0.35" stroke-width="14"/>
+		<ellipse cx="488" cy="392" rx="138" ry="60" fill="url(#gloss)"/>
+	</g>
+</svg>

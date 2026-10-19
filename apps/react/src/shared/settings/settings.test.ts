@@ -49,6 +49,10 @@ describe('parseSettings', () => {
 		});
 		// 주소가 없거나, CSS를 깰 수 있는 글자가 있으면 기본값
 		expect(parseSettings({ wallpaper: 'custom:abc' }).wallpaper).toBe(DEFAULT_SETTINGS.wallpaper);
+		// Finder에서 방문자가 놓은 그림(blob:)은 이 탭에서만: 저장한 설정을 읽을 때는 기본값으로
+		expect(parseSettings({ wallpaper: 'custom:finder-a', wallpaperImage: 'blob:https://x/1234' }).wallpaper).toBe(
+			DEFAULT_SETTINGS.wallpaper
+		);
 		expect(parseSettings({ mobileWallpaper: 'custom:abc', mobileWallpaperImage: "https://x/a.jpg') ;" })).toMatchObject(
 			{ mobileWallpaper: DEFAULT_SETTINGS.mobileWallpaper, mobileWallpaperImage: null }
 		);

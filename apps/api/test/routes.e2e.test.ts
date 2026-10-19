@@ -75,6 +75,8 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 
 	'GET /memo/organization': 'public',
 	'PUT /memo/organization': 'admin',
+	'GET /finder/layout': 'public',
+	'PUT /finder/layout': 'admin',
 
 	'GET /messages/threads': 'public',
 	'GET /messages/threads/:id': 'public',

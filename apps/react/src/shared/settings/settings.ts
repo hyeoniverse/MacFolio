@@ -42,9 +42,12 @@ export type CustomWallpaperId = `custom:${string}`;
 export const isCustomWallpaperId = (id: unknown): id is CustomWallpaperId =>
 	typeof id === 'string' && /^custom:[\w-]{1,64}$/.test(id);
 
-/** CSS url('…')에 그대로 넣어도 되는 이미지(동영상) 주소 (따옴표·괄호·공백이 없는 http(s)) */
+/**
+ * CSS url('…')에 그대로 넣어도 되는 이미지(동영상) 주소 (따옴표·괄호·공백이 없는 http(s)).
+ * blob:은 Finder에서 방문자가 놓은 그림을 바탕화면으로 둘 때 (이 탭에서만. 저장한 설정을 읽을 때는 받지 않는다)
+ */
 export const isSafeImageUrl = (url: unknown): url is string =>
-	typeof url === 'string' && /^https?:\/\/[^\s'"()\\]+$/.test(url);
+	typeof url === 'string' && /^(blob:)?https?:\/\/[^\s'"()\\]+$/.test(url);
 
 export interface Settings {
 	theme: ThemePreference;
@@ -88,7 +91,7 @@ function pickWallpaper<Id extends string>(
 	video: unknown,
 	fallback: Id
 ): { id: Id | CustomWallpaperId; image: string | null; video: string | null } {
-	if (isCustomWallpaperId(id) && isSafeImageUrl(image))
+	if (isCustomWallpaperId(id) && isSafeImageUrl(image) && !image.startsWith('blob:'))
 		return { id, image, video: isSafeImageUrl(video) ? video : null };
 	if (list.some((wallpaper) => wallpaper.id === id)) return { id: id as Id, image: null, video: null };
 	return { id: fallback, image: null, video: null };

@@ -70,6 +70,7 @@ test.describe('휴지통', () => {
 		await dockItem(page, 'bin').click();
 		const bin = appWindow(page, 'bin');
 		await expect(bin.getByRole('navigation', { name: '휴지통' }).getByRole('button')).toHaveText([
+			/버린 항목/,
 			/내 브라우저 데이터/,
 		]);
 	});
