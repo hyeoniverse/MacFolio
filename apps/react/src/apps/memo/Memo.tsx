@@ -756,8 +756,7 @@ const Memo: React.FC = () => {
 								<>
 									{authorTools('')}
 									{pinButton('')}
-									{/* 편집 중에는 서식 도구로 도구 막대가 꽉 차서 공유는 ••• 메뉴에만 */}
-									{!editing && shareButton('')}
+									{shareButton('')}
 									{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
 									{sortMenu()}
 									<ViewSwitch view={view} onChange={changeView} />
