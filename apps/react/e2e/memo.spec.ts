@@ -419,3 +419,13 @@ test('접기 블록: 처음엔 접혀 있고, 요약을 누르거나 본문 링�
 	await expect(summary).toBeFocused();
 	await expect(page).not.toHaveURL(/#/);
 });
+
+test('글 안의 저장소 문서 링크(GitHub의 docs/*.md)는 Finder에서 그 문서를 연다', async ({ page }) => {
+	const memo = await openMemo(page);
+	await memo.locator('.memo-item', { hasText: 'MacFolio 백엔드 한 장으로 보기' }).click();
+	const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
+	await memo.locator('.memo-markdown').getByRole('link', { name: 'docs/backend-design.md' }).first().click();
+	const finder = appWindow(page, 'finder');
+	await expect(finder.getByRole('article', { name: 'backend-design.md' })).toBeVisible();
+	expect(await popup).toBeNull();
+});

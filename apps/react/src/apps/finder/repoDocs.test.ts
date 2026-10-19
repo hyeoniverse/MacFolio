@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { docTitle, normalizePath, repoPath, resolveImage, resolveLink, REPO_URL } from './repoDocs';
+import { bundledDocOf, docTitle, normalizePath, repoPath, resolveImage, resolveLink, REPO_URL } from './repoDocs';
 
 const docs = new Set(['README.md', 'CONTRIBUTING.md', 'docs/deployment.md', 'docs/backend-design.md']);
 
@@ -60,4 +60,15 @@ describe('resolveImage', () => {
 it('docTitle: 첫 # 제목, 없으면 파일 이름', () => {
 	expect(docTitle('docs/deployment.md', '머리말\n\n# 배포\n\n## 하나')).toBe('배포');
 	expect(docTitle('docs/x.md', '제목 없음')).toBe('x.md');
+});
+
+it('bundledDocOf: GitHub의 저장소 문서 주소면 Finder에서 열 경로, 아니면 null', () => {
+	expect(bundledDocOf(`${REPO_URL}/blob/main/docs/rollback-drill.md`)).toBe('docs/rollback-drill.md');
+	expect(bundledDocOf(`${REPO_URL}/blob/main/README.md`)).toBe('README.md');
+	expect(bundledDocOf(`${REPO_URL}/blob/main/docs/a.md#제목`)).toBeNull();
+	expect(bundledDocOf(`${REPO_URL}/blob/main/ops/deploy.sh`)).toBeNull();
+	expect(bundledDocOf(`${REPO_URL}/blob/main/docs/images/a.md`)).toBeNull();
+	expect(bundledDocOf(`${REPO_URL}/blob/dev/docs/a.md`)).toBeNull();
+	expect(bundledDocOf('https://example.com/docs/a.md')).toBeNull();
+	expect(bundledDocOf(undefined)).toBeNull();
 });
