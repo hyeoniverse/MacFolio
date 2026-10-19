@@ -10,7 +10,6 @@
 	min-width: 0;
 	margin: 8px 0 8px 8px;
 	overflow: hidden;
-	border-radius: 16px;
 	background-color: var(--memo-panel-bg);
 	/* 그림자는 패널 둘레 여백(8px) 안에 들어가도록 작게 (옆 칸과 창 가장자리에 잘리지 않게) */
 	box-shadow: var(--memo-panel-shadow);

@@ -19,6 +19,7 @@ import '@/apps/mail/Mail.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
 import TabList from '@/shared/ui/tabs/TabList';
+import Sidebar from '@/shared/ui/sidebar/Sidebar';
 
 const fromServer = (mail: ContactMail, replyable: boolean): ListMail => ({
 	id: mail.id,
@@ -245,7 +246,7 @@ const Mail: React.FC = () => {
 			) : (
 				<div className="mail-shell">
 					<div className={`mail ${detailOpen ? 'detail-open' : ''}`} data-nav={nav}>
-						<aside className="mail-sidebar" aria-label="메일상자">
+						<Sidebar variant="floating" as="aside" className="mail-sidebar" aria-label="메일상자">
 							<div className="mail-sidebar-top" />
 							<p className="mail-sidebar-heading">메일상자</p>
 							<button
@@ -269,7 +270,7 @@ const Mail: React.FC = () => {
 									<span>보낸 편지함</span>
 								</button>
 							)}
-						</aside>
+						</Sidebar>
 
 						<section className="mail-list" aria-label={MAILBOX_LABEL[mailbox]}>
 							<header className="mail-list-toolbar">

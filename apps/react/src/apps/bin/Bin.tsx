@@ -8,6 +8,7 @@ import { structureNow } from '@/apps/finder/structure';
 import { useServerFiles } from './useServerFiles';
 import './Bin.css';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
+import Sidebar from '@/shared/ui/sidebar/Sidebar';
 
 /**
  * 휴지통: 비울 수 있는 것을 모아 둔다.
@@ -29,7 +30,7 @@ const Bin: React.FC = () => {
 		<AppWindow title="휴지통" appName="bin" chrome="unified">
 			<div className="bin">
 				<div className="bin-body">
-					<nav className="bin-sidebar" aria-label="휴지통">
+					<Sidebar variant="flat" className="bin-sidebar" aria-label="휴지통">
 						<div className="bin-lights-space" />
 						<h2>휴지통</h2>
 						<button
@@ -62,7 +63,7 @@ const Bin: React.FC = () => {
 								{removableCount > 0 && <span className="bin-location-count">{removableCount}</span>}
 							</button>
 						)}
-					</nav>
+					</Sidebar>
 
 					<div className="bin-main">
 						<Toolbar className="bin-toolbar">

@@ -30,6 +30,7 @@ import '@/apps/finder/Finder.css';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
+import Sidebar from '@/shared/ui/sidebar/Sidebar';
 
 type View = 'icons' | 'list';
 
@@ -442,7 +443,7 @@ const Finder: React.FC = () => {
 				<FinderMobile locations={locations} onOpenElsewhere={open} dark={dark} />
 			) : (
 				<div className="finder" {...moveHandlers}>
-					<nav className="finder-sidebar" aria-label="즐겨찾기" {...drop.handlers}>
+					<Sidebar variant="flat" className="finder-sidebar" aria-label="즐겨찾기" {...drop.handlers}>
 						<div className="finder-lights-space" />
 						<h2>즐겨찾기</h2>
 						{favorites.map((item) => (
@@ -464,7 +465,7 @@ const Finder: React.FC = () => {
 								{item.name}
 							</button>
 						))}
-					</nav>
+					</Sidebar>
 
 					<div className="finder-main">
 						<Toolbar className="finder-toolbar">

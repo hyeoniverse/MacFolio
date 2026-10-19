@@ -15,6 +15,7 @@ import ProjectsPane from '@/apps/settings/ProjectsPane';
 import { requestedSection } from '@/apps/settings/settingsRequest';
 import Switch from '@/shared/ui/switch/Switch';
 import '@/apps/settings/Settings.css';
+import Sidebar from '@/shared/ui/sidebar/Sidebar';
 
 type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'privacy' | 'about' | 'github' | 'projects';
 
@@ -83,7 +84,7 @@ const Settings: React.FC = () => {
 			<MobileNavigation {...(phoneOpen ? { backLabel: '설정', onBack: () => setPhoneOpen(false) } : {})} />
 			<div className="settings-shell">
 				<div className={`settings ${phoneOpen ? 'phone-open' : ''}`}>
-					<nav className="settings-sidebar" aria-label="설정 항목">
+					<Sidebar variant="flat" className="settings-sidebar" aria-label="설정 항목">
 						<h2 className="settings-phone-title phone-title">설정</h2>
 						{sections.map((item) => (
 							<button
@@ -101,7 +102,7 @@ const Settings: React.FC = () => {
 								<i className="fa-solid fa-chevron-right settings-nav-chevron" aria-hidden="true" />
 							</button>
 						))}
-					</nav>
+					</Sidebar>
 
 					<section key={section} className="settings-panel">
 						{section === 'account' && (

@@ -4,6 +4,7 @@ import { displayName, formatListTime, type Thread } from '../conversations';
 import IconButton from '@/shared/ui/button/IconButton';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import SidebarPanel from '@/shared/ui/sidebar/Sidebar';
 
 interface Props {
 	threads: Thread[];
@@ -39,7 +40,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 
 	return (
 		<>
-			<aside className="messages-sidebar" aria-label="대화 목록">
+			<SidebarPanel variant="floating" as="aside" className="messages-sidebar" aria-label="대화 목록">
 				{/* 신호등 버튼 자리. 좁은 창에서는 새 피드백 버튼이 여기로 온다 */}
 				<div className="messages-sidebar-top">
 					<IconButton
@@ -115,7 +116,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 						</li>
 					)}
 				</ul>
-			</aside>
+			</SidebarPanel>
 			{/* 휴대폰: 아래에 떠 있는 검색 알약과 새 피드백 (넘기는 목록 밖에 둔다) */}
 			<div
 				className="messages-phone-bottom"

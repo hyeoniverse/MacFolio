@@ -23,6 +23,7 @@ import SearchField from '@/shared/ui/search-field/SearchField';
 import IconButton from '@/shared/ui/button/IconButton';
 import SidebarToggle from '@/shared/ui/button/SidebarToggle';
 import Button from '@/shared/ui/button/Button';
+import Sidebar from '@/shared/ui/sidebar/Sidebar';
 
 /** 날씨 칸이 이 폭 이하면 iOS 날씨 모양(날씨만, 아래 막대, 덮어 여는 목록)으로 (Weather.css의 [data-compact]) */
 const COMPACT_WIDTH = 640;
@@ -491,7 +492,8 @@ const Weather = () => {
 						onToggle={() => setSidebarHidden((hidden) => !hidden)}
 					/>
 				)}
-				<nav
+				<Sidebar
+					variant="floating"
 					className={`weather-sidebar ${listOpen ? 'open' : ''} ${editing ? 'editing' : ''} ${sidebarHidden ? 'hidden' : ''}`}
 					aria-label="장소"
 				>
@@ -570,7 +572,7 @@ const Weather = () => {
 							</p>
 						</>
 					)}
-				</nav>
+				</Sidebar>
 
 				<main
 					className="weather-main"

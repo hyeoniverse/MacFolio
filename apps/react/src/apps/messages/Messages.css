@@ -114,7 +114,6 @@
 	flex-direction: column;
 	flex: none;
 	width: 300px;
-	border-radius: 18px;
 	background-color: var(--messages-panel-bg);
 	box-shadow: var(--messages-panel-shadow);
 	overflow-y: auto;

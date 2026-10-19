@@ -1,0 +1,17 @@
+/*
+ * 사이드바 (shared/ui/sidebar/Sidebar.tsx).
+ * components 층: 앱의 층 밖 규칙(폭, 여백, 좁은 화면·휴대폰 모양)에는 진다
+ */
+@layer components {
+	.ui-sidebar.flat {
+		display: flex;
+		flex: none;
+		flex-direction: column;
+		border-right: 1px solid var(--color-divider);
+		background-color: var(--color-sidebar-bg);
+	}
+
+	.ui-sidebar.floating {
+		border-radius: var(--radius-panel);
+	}
+}

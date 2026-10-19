@@ -9,14 +9,9 @@
 }
 
 .settings-sidebar {
-	display: flex;
-	flex-direction: column;
 	gap: 0.25rem;
 	width: 11rem;
 	padding: 0.75rem 0.5rem;
-	flex: none;
-	border-right: 1px solid var(--color-divider);
-	background-color: var(--color-sidebar-bg);
 	/* 항목이 창보다 많으면 사이드바만 스크롤 (관리자는 항목이 늘어난다) */
 	overflow-y: auto;
 }
