@@ -102,10 +102,10 @@ describe('Worker', () => {
 			ASSETS: assets,
 			API_URL: 'https://api.test',
 		});
-		expect(await response.text()).toBe(INDEX);
+		expect(await response.text()).not.toContain('id="site-content"');
 		expect(frameSrc(response)).not.toContain('new-app.example.com');
 		const noApi = await worker.fetch(new Request('https://macfolio.test/'), { ASSETS: assets });
-		expect(await noApi.text()).toBe(INDEX);
+		expect(await noApi.text()).not.toContain('id="site-content"');
 	});
 
 	it('옛 코드 파일 주소는 404', async () => {

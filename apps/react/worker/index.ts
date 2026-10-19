@@ -1,5 +1,6 @@
 import { FILES_PREFIX, serveFile, type FilesBucket } from './files';
 import { isAppRoute } from './notFound';
+import { applySeo, fetchSeoPosts, isPreviewHost, seoPage, siteDataOf } from './seo';
 import { fetchSiteContent, siteHtmlResponse } from './siteHtml';
 
 /** Workers 정적 자산 바인딩 (wrangler.jsonc의 assets.binding)과 변수 (vars) */
@@ -15,6 +16,7 @@ interface Env {
  * 프론트엔드 Worker. 있는 파일은 Cloudflare가 이 Worker를 거치지 않고 바로 준다 (wrangler.jsonc).
  * 여기에는 첫 화면(/, /index.html: run_worker_first)과 **없는 주소만** 온다.
  * - 첫 화면과 앱 주소(/memo/<글>)는 index.html에 사이트 콘텐츠를 넣고 CSP를 맞춰 준다 (worker/siteHtml.ts)
+ *   주소마다 검색엔진이 읽을 제목·설명·본문도 넣는다 (worker/seo.ts)
  * - 문서 파일(/files/<키>)은 R2 버킷에서 (worker/files.ts)
  * - 파일 주소(/assets/…)는 404 (worker/notFound.ts)
  */
@@ -27,7 +29,14 @@ export default {
 		}
 		const index = await env.ASSETS.fetch(new URL('/', url));
 		if (!index.ok) return index;
-		const content = env.API_URL ? await fetchSiteContent(env.API_URL) : null;
-		return siteHtmlResponse(index, content, env.API_URL);
+		const [content, posts] = await Promise.all([
+			env.API_URL ? fetchSiteContent(env.API_URL) : null,
+			fetchSeoPosts(env.ASSETS, url.origin),
+		]);
+		const page = seoPage(url.pathname, siteDataOf(content, posts, env.API_URL));
+		const html = applySeo(await index.text(), page);
+		const response = await siteHtmlResponse(new Response(html, index), content, env.API_URL);
+		if (isPreviewHost(url.hostname)) response.headers.set('X-Robots-Tag', 'noindex');
+		return response;
 	},
 };
