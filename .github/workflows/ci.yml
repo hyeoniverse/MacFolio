@@ -102,7 +102,39 @@ jobs:
           DATABASE_URL: postgresql://macfolio:macfolio@localhost:5432/macfolio
 
   # 화면 E2E(Playwright): 시험이 500개를 넘어 한 작업에서 돌리면 check의 시간 한도에 걸린다. 세 조각으로 나눠 동시에 돌린다
+  # main push: PR에서 이미 6칸 모두 통과한 코드와 트리가 같으면(PR 브랜치가 main 최신 위였으면 머지 결과가 같다) e2e를 다시 돌리지 않는다.
+  # 트리가 다르거나(그사이 main이 바뀜) PR을 거치지 않은 push면 지금처럼 다 돌린다
+  e2e-reuse:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      reuse: ${{ steps.find.outputs.reuse }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: find
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tree=$(git rev-parse HEAD^{tree})
+          for shard in 1 2 3 4 5 6; do
+            found=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=e2e-ok-$tree-$shard" --jq '[.artifacts[] | select(.expired | not)] | length')
+            if [ "$found" -eq 0 ]; then
+              echo "칸 $shard: 이 트리($tree)로 통과한 기록이 없다. e2e를 다시 돌린다"
+              echo "reuse=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "PR에서 같은 트리($tree)로 6칸 모두 통과했다. e2e를 건너뛴다"
+          echo "reuse=true" >> "$GITHUB_OUTPUT"
+
   e2e:
+    needs: [e2e-reuse]
+    # PR에서는 e2e-reuse가 건너뛰어지므로 !cancelled()로 늘 돈다
+    if: ${{ !cancelled() && needs.e2e-reuse.outputs.reuse != 'true' }}
     runs-on: ubuntu-latest
     env:
       # 시험 빌드에는 API 주소를 넣지 않는다 (E2E가 가짜 API 주소를 넣는다)
@@ -111,7 +143,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        # 시험이 많아 6칸으로 나눠 돌린다 (칸마다 준비가 1분쯤 붙지만 전체 시간은 반쯤으로 준다)
+        shard: [1, 2, 3, 4, 5, 6]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -137,8 +170,8 @@ jobs:
       - name: Playwright 브라우저 설치
         run: pnpm --filter @macfolio/react exec playwright install --with-deps chromium
 
-      - name: E2E 테스트 (${{ matrix.shard }}/3)
-        run: pnpm --filter @macfolio/react test:e2e --shard=${{ matrix.shard }}/3
+      - name: E2E 테스트 (${{ matrix.shard }}/6)
+        run: pnpm --filter @macfolio/react test:e2e --shard=${{ matrix.shard }}/6
 
       - name: 실패 시 Playwright 리포트 업로드
         if: failure()
@@ -148,6 +181,17 @@ jobs:
           path: |
             apps/react/playwright-report
             apps/react/test-results
+          retention-days: 7
+
+      # 이 칸이 통과한 코드(트리)를 적어 둔다. main에 같은 코드가 들어오면 e2e-reuse가 이것을 보고 다시 돌리지 않는다
+      - name: 통과한 트리 기록
+        id: tree
+        run: echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+      - name: 통과 표시 업로드
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: e2e-ok-${{ steps.tree.outputs.tree }}-${{ matrix.shard }}
+          path: .node-version
           retention-days: 7
 
   # 서버에 떠 있는 API와 이 커밋 사이에 API에 영향이 있는 파일이 바뀌었는지 (main push). 바뀌었으면 이미지를 만들어 배포한다 (#100).
@@ -180,8 +224,10 @@ jobs:
 
   # API 이미지: 서버(1GB)에서 빌드하지 않고 여기서 만들어 GHCR에 올린다. 서버가 amd64라 amd64만
   api-image:
-    needs: [check, e2e, api-changes]
-    if: needs.api-changes.outputs.api == 'true'
+    needs: [check, e2e-reuse, e2e, api-changes]
+    if: >-
+      !cancelled() && needs.api-changes.outputs.api == 'true' && needs.check.result == 'success' &&
+      (needs.e2e.result == 'success' || needs.e2e-reuse.outputs.reuse == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -222,10 +268,11 @@ jobs:
   # API가 바뀐 커밋은 API 배포가 끝난 뒤에 (새 API를 쓰는 화면이 옛 API에 먼저 닿지 않게). API가 그대로면 api-deploy는 건너뛴다
   # (이미지 빌드가 실패하면 api-deploy는 skipped가 되므로 api-image도 함께 본다)
   deploy:
-    needs: [check, e2e, api-image, api-deploy]
+    needs: [check, e2e-reuse, e2e, api-image, api-deploy]
     if: >-
       always() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
-      needs.check.result == 'success' && needs.e2e.result == 'success' &&
+      needs.check.result == 'success' &&
+      (needs.e2e.result == 'success' || needs.e2e-reuse.outputs.reuse == 'true') &&
       (needs.api-image.result == 'success' || needs.api-image.result == 'skipped') &&
       (needs.api-deploy.result == 'success' || needs.api-deploy.result == 'skipped')
     runs-on: ubuntu-latest
