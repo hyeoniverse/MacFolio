@@ -325,7 +325,7 @@
 /* 휴대폰 앱의 공통 모양 (iOS처럼, 메모와 같게): 회색 바탕 위 흰 카드 묶음, 떠 있는 버튼, 큰 제목.
    앱마다 이 값으로 바탕·카드·그림자를 칠한다 */
 .container.mobile[data-app] {
-	--phone-page-bg: #f3f4f6;
+	--phone-page-bg: var(--color-sidebar-bg);
 	--phone-card-bg: var(--color-card-bg);
 	--phone-float-shadow: var(--shadow-float);
 	--phone-separator: rgba(60, 60, 67, 0.18);

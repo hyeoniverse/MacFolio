@@ -104,12 +104,8 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: #b07a06;
+	color: var(--color-notes-yellow-text);
 	font-size: var(--text-callout);
-}
-
-:root[data-theme='dark'] .container.mobile :where(.memo-shell[data-compact]) .memo-folder-group-toggle {
-	color: var(--memo-accent);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-group-toggle i {
@@ -482,12 +478,8 @@
 	margin-right: var(--space-14);
 	border: 2px solid var(--memo-accent);
 	background: none;
-	color: #b07a06;
+	color: var(--color-notes-yellow-text);
 	font-size: var(--text-footnote);
-}
-
-:root[data-theme='dark'] .container.mobile :where(.memo-shell[data-compact]) .memo-folders.editing .memo-folder-more {
-	color: var(--memo-accent);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folders.editing .memo-folder:is(:disabled) {

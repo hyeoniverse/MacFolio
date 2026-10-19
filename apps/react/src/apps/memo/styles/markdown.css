@@ -78,12 +78,8 @@
 }
 
 .memo-markdown a {
-	color: #b8860b;
+	color: var(--color-notes-yellow-text);
 	text-decoration: underline;
-}
-
-:root[data-theme='dark'] [data-app='memo'] .memo-markdown a {
-	color: var(--memo-accent);
 }
 
 /* 접기 블록 (markdownPlugins.ts의 remarkDetails): 요약 줄을 누르면 펼친다. › 가 아래로 돈다 */
@@ -246,14 +242,10 @@
    번호는 저장한 이름이 아니라 본문에 나온 차례(data-number)로 보인다 */
 .memo-inline-editor sup[data-type='footnote_reference'] {
 	padding: 0 0.15em;
-	color: #b8860b;
+	color: var(--color-notes-yellow-text);
 	font-weight: 600;
 	text-decoration: underline;
 	cursor: pointer;
-}
-
-:root[data-theme='dark'] [data-app='memo'] .memo-inline-editor sup[data-type='footnote_reference'] {
-	color: var(--memo-accent);
 }
 
 .memo-inline-editor sup[data-type='footnote_reference']::before {
@@ -335,13 +327,9 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: #b8860b;
+	color: var(--color-notes-yellow-text);
 	font: inherit;
 	cursor: pointer;
-}
-
-:root[data-theme='dark'] [data-app='memo'] .memo-inline-editor .memo-footnote-backref {
-	color: var(--memo-accent);
 }
 
 /* 편집기의 글 안 링크(#이름)는 누르면 그 자리로 간다 (Option을 누른 채 누르면 글자를 고친다) */

@@ -547,7 +547,7 @@ button.memo-admin-chip {
 	padding: 3px 6px;
 	background: none;
 	border-radius: var(--radius-sm);
-	color: #c78b00;
+	color: var(--color-notes-yellow-text);
 	font-size: var(--text-caption);
 }
 
