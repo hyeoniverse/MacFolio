@@ -49,14 +49,6 @@
 	opacity: 0.7;
 }
 
-
-
-
-
-
-
-
-
 /* ─── 떠 있는 재생 막대 (PlayerControls, macOS QuickTime) ─── */
 .qt-controls {
 	position: absolute;
