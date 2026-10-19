@@ -488,3 +488,57 @@
 .memo-text-scale {
 	zoom: var(--memo-text-scale, 1);
 }
+
+/* 글자 크기 알약: 본문 칸 오른쪽 아래에 떠 있다 (본문을 넘겨도 그 자리) */
+.memo-reader {
+	position: relative;
+}
+
+.memo-text-size {
+	position: absolute;
+	right: 16px;
+	bottom: 16px;
+	z-index: 10;
+	display: flex;
+	padding: 2px;
+	border-radius: var(--radius-full);
+	background-color: var(--memo-bg);
+	box-shadow: var(--memo-panel-shadow);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.memo-text-size button {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 28px;
+	border: none;
+	border-radius: var(--radius-full);
+	background: none;
+	color: var(--memo-text);
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.memo-text-size button + button {
+	box-shadow: -0.5px 0 0 var(--memo-border);
+}
+
+.memo-text-size button:hover:not(:disabled) {
+	background-color: var(--memo-search-bg);
+}
+
+.memo-text-size button:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.memo-text-size .small {
+	font-size: 11px;
+}
+
+.memo-text-size .large {
+	font-size: 16px;
+}

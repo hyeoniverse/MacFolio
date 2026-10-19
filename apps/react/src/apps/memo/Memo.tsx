@@ -478,8 +478,8 @@ const Memo: React.FC = () => {
 	/** 편집기를 보이는 중인지 (관리자, 최근 삭제·잠금이 아닌 글이나 새 메모. 읽기 화면으로 보는 중이면 아니다) */
 	const writing = editing && !inTrash && (newDraft !== null || (selected !== null && !selected.locked && !readerView));
 
-	/** 읽기 화면 글자 크기: − / + (편집 화면에서는 빼서 서식 도구 자리를 비운다) */
-	const textSizeButtons = (className: string) => {
+	/** 읽기 화면 글자 크기: 본문 오른쪽 아래에 떠 있는 가− / 가+ 알약 (편집기를 보이는 중에는 뺀다) */
+	const textSizeControl = () => {
 		const change = (step: 1 | -1) => {
 			const next = stepTextScale(textScale, step);
 			setTextScale(next);
@@ -488,22 +488,30 @@ const Memo: React.FC = () => {
 		return (
 			selected &&
 			!writing && (
-				<>
-					<IconButton
-						className={`memo-text-size ${className}`}
-						label="글자 작게"
+				<div className="memo-text-size" role="group" aria-label="글자 크기">
+					<button
+						type="button"
+						aria-label="글자 작게"
+						title="글자 작게"
 						disabled={textScale === TEXT_SCALES[0]}
 						onClick={() => change(-1)}
-						icon="fa-solid fa-minus"
-					/>
-					<IconButton
-						className={`memo-text-size ${className}`}
-						label="글자 크게"
+					>
+						<span className="small" aria-hidden="true">
+							가
+						</span>
+					</button>
+					<button
+						type="button"
+						aria-label="글자 크게"
+						title="글자 크게"
 						disabled={textScale === TEXT_SCALES.at(-1)}
 						onClick={() => change(1)}
-						icon="fa-solid fa-plus"
-					/>
-				</>
+					>
+						<span className="large" aria-hidden="true">
+							가
+						</span>
+					</button>
+				</div>
 			)
 		);
 	};
@@ -791,7 +799,6 @@ const Memo: React.FC = () => {
 									{pinButton('')}
 									{/* 편집 중에는 서식 도구로 도구 막대가 꽉 차서 공유는 ••• 메뉴에만 */}
 									{!editing && shareButton('')}
-									{textSizeButtons('')}
 									{/* 정렬·보기 방식은 늘 검색 칸 왼쪽 (사이드바를 여닫아도 움직이지 않는다) */}
 									{sortMenu()}
 									<ViewSwitch view={view} onChange={changeView} />
@@ -834,7 +841,6 @@ const Memo: React.FC = () => {
 								{authorTools('compact-only')}
 								{pinButton('compact-only')}
 								{shareButton('compact-only')}
-								{textSizeButtons('compact-only')}
 							</div>
 							{writing && (
 								// 관리자: 따로 편집 버튼 없이 바로 고친다 (macOS 메모처럼)
@@ -880,6 +886,7 @@ const Memo: React.FC = () => {
 								</div>
 							)}
 						</div>
+						{textSizeControl()}
 					</article>
 
 					{revisionsOpen &&
