@@ -33,16 +33,13 @@ test.describe('앱 항목 주소와 공유', () => {
 		);
 	});
 
-	test('관리자가 고치는 중에는 공유가 ••• 메뉴에 있다 (도구 막대는 서식 도구로 꽉 찬다)', async ({ page, context }) => {
+	test('관리자가 고치는 중에도 도구 막대의 공유 버튼으로 주소를 복사한다', async ({ page, context }) => {
 		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 		await fakeApi(page, { signedIn: true });
 		await enterDesktop(page, '/memo/cra-to-vite');
 		const memo = appWindow(page, 'memo');
 		await expect(memo.locator('.ProseMirror')).toBeVisible();
-		await expect(memo.locator('.memo-reader-toolbar').getByRole('button', { name: '링크 공유' })).toHaveCount(0);
-		await memo.getByRole('searchbox', { name: '글 검색' }).focus();
-		await memo.getByRole('button', { name: '도구 더 보기' }).click();
-		await page.getByRole('menu', { name: '도구 더 보기' }).getByRole('menuitem', { name: '링크 공유' }).click();
+		await memo.locator('.memo-reader-toolbar').getByRole('button', { name: '링크 공유' }).click();
 		expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
 			`${new URL(page.url()).origin}/memo/cra-to-vite`
 		);

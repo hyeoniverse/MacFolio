@@ -274,6 +274,17 @@ button.memo-admin-chip {
 	margin-left: var(--space-8);
 }
 
+/* 좁은 본문 칸(기본 창 크기)에서 관리자 도구가 다 들어오게 간격을 줄인다 */
+@container (max-width: 480px) {
+	.memo-reader-toolbar > * + * {
+		margin-left: var(--space-4);
+	}
+
+	.memo-reader-toolbar .memo-toolbar-tools-inner {
+		gap: var(--space-4);
+	}
+}
+
 @container (max-width: 390px) {
 	.memo-reader-toolbar > * + * {
 		margin-left: var(--space-4);
