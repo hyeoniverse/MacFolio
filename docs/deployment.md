@@ -555,7 +555,7 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 | 업데이트 | `unattended-upgrades` 켜짐, 재부팅 대기 없음                                                                                                     | `sudo apt install unattended-upgrades && sudo dpkg-reconfigure -plow unattended-upgrades`. `/var/run/reboot-required`가 있으면 한가한 때 `sudo reboot`                                                                                                                                           |
 
 - 배포용 SSH 키(`macfolio-deploy`)는 `authorized_keys`의 `restrict,command=`로 `ops/deploy.sh`만 돌릴 수 있다 ([자동 배포 설정](#자동-배포-설정-한-번)). `audit.sh`는 이 키를 보지 않는다
-- `ubuntu` 계정이 `docker` 그룹이라 그 계정으로 들어오면 호스트 root와 같다. 그래서 SSH 키 관리가 곧 서버 전체의 열쇠 관리다. 비밀 키(`~/.ssh/oracle-macfolio.key`)와 그 암호는 비밀번호 관리자처럼 컴퓨터 밖에도 둔다. 잃어버리면 [SSH 키를 잃어버렸을 때](#ssh-키를-잃어버렸을-때)
+- `ubuntu` 계정이 `docker` 그룹이라 그 계정으로 들어오면 호스트 root와 같다. 그래서 SSH 키 관리가 곧 서버 전체의 열쇠 관리다. 비밀 키(`~/.ssh/oracle-macfolio.key`)와 그 암호는 비밀번호 관리자처럼 컴퓨터 밖에도 둔다. 컴퓨터를 초기화하기 전에는 `~/.ssh`부터 백업한다. 잃어버리면 [SSH 키를 잃어버렸을 때](#ssh-키를-잃어버렸을-때)
 - 점검은 분기마다 한 번, 그리고 서버 설정을 손댄 뒤에 돌린다
 
 #### 처음 한 번 (스크립트를 넣은 뒤)
