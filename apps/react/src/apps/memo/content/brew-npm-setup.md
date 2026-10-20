@@ -282,7 +282,7 @@ $ ./global/bin/corepack --version
 0.36.0
 ```
 
-`--prefix` 없이 `npm install -g corepack`을 하면 brew의 prefix(`/opt/homebrew`)에 깔리고, `/opt/homebrew/bin/corepack`이 생겨 바로 PATH에서 보인다. 그다음 `corepack enable`을 하면 `package.json`의 `"packageManager": "pnpm@10.34.5"`대로 pnpm을 받는다. 다만 이 저장소의 CI와 Docker 이미지는 Node 22로 돌기 때문에, 로컬에서도 22를 쓰는 편이 결과가 같다.
+`--prefix` 없이 `npm install -g corepack`을 하면 brew의 prefix(`/opt/homebrew`)에 깔리고, `/opt/homebrew/bin/corepack`이 생겨 바로 PATH에서 보인다. 그다음 `corepack enable`을 하면 `package.json`의 `"packageManager": "pnpm@10.34.5"`대로 pnpm을 받는다. 다만 이 저장소의 CI와 Docker 이미지는 Node 22로 돌기 때문에, 로컬에서도 22를 쓰는 편이 결과가 같다. pnpm이 없을 때 `npm install`로 버티면 생기는 일은 [zsh: command not found: pnpm](/memo/pnpm-command-not-found)에 따로 적었다.
 
 ## 정리
 
