@@ -16,7 +16,7 @@
 	width: 2rem;
 	height: 6rem;
 
-	background: rgba(0, 0, 0, 0.6);
+	background: var(--color-scrim-strong);
 
 	border-radius: 0.8rem;
 }
@@ -27,7 +27,7 @@
 	z-index: 10;
 	width: 100%;
 
-	background-color: rgba(255, 255, 255, 0.9);
+	background-color: var(--color-on-media-label);
 }
 
 .volume-slider {
@@ -67,7 +67,7 @@
 
 	z-index: 20;
 	font-size: 1rem;
-	color: #00aaff;
+	color: var(--color-control-accent);
 	transition:
 		transform 0.3s ease,
 		opacity 0.3s ease;

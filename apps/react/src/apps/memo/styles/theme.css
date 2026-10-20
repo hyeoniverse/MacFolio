@@ -2,6 +2,9 @@
 
 /* macOS 메모 앱 색 */
 [data-app='memo'] {
+	--memo-rank-bronze: #c76a00;
+	--memo-scheduled-bg: #3b82f6;
+	--memo-scheduled-text: #2563eb;
 	--memo-bg: var(--color-text-background);
 	--memo-sidebar-bg: var(--sidebar-background);
 	--memo-list-bg: #fafafa;

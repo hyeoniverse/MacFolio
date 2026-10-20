@@ -147,11 +147,11 @@
 .memo-item-rank.rank-2,
 .memo-item-rank.rank-3 {
 	background-color: color-mix(in srgb, var(--color-system-orange) 22%, transparent);
-	color: #c76a00;
+	color: var(--memo-rank-bronze);
 }
 
 .memo-item.active .memo-item-rank {
-	background-color: rgba(255, 255, 255, 0.25);
+	background-color: var(--color-on-media-fill-strong);
 	color: inherit;
 }
 
@@ -473,8 +473,8 @@ button.memo-admin-chip {
 }
 
 .memo-status-badge.scheduled {
-	background-color: color-mix(in srgb, #3b82f6 18%, transparent);
-	color: #2563eb;
+	background-color: color-mix(in srgb, var(--memo-scheduled-bg) 18%, transparent);
+	color: var(--memo-scheduled-text);
 }
 
 .memo-status-dot {

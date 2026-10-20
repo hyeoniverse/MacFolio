@@ -130,7 +130,7 @@
 	padding: 0;
 	border: none;
 	border-radius: var(--radius-8);
-	background-color: rgba(28, 28, 30, 0.55);
+	background-color: var(--color-material-hud-subtle);
 	color: var(--color-white);
 	font-size: var(--text-caption);
 	cursor: pointer;
@@ -149,7 +149,7 @@
 }
 
 .memo .memo-overlay-button:hover {
-	background-color: rgba(28, 28, 30, 0.75);
+	background-color: var(--color-material-hud);
 }
 
 @media (hover: none) {

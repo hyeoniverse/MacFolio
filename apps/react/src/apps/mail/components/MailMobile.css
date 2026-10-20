@@ -395,7 +395,7 @@
 .mail-phone-quote {
 	margin: 8px 0 0;
 	padding-left: var(--space-12);
-	border-left: 2px solid #6d7ed1;
+	border-left: 2px solid var(--mail-quote);
 	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 	white-space: pre-wrap;
@@ -403,7 +403,7 @@
 
 .mail-phone-quote p:first-child {
 	margin-bottom: var(--space-8);
-	color: #6d7ed1;
+	color: var(--mail-quote);
 }
 
 /* 메일 동작 시트 */

@@ -192,15 +192,15 @@
 }
 
 .macos-titlebar .traffic-lights .close {
-	background-color: #ff605c;
+	background-color: var(--color-window-close);
 }
 
 .macos-titlebar .traffic-lights .minimize {
-	background-color: #ffbd44;
+	background-color: var(--color-window-minimize);
 }
 
 .macos-titlebar .traffic-lights .fullscreen {
-	background-color: #00ca4e;
+	background-color: var(--color-window-zoom);
 }
 
 /* 앱 에러 경고창 (AppErrorBoundary). 앱 창이 아니라 화면 전체를 덮고 그 한가운데에 뜬다 (알림 위, 로그인 아래) */
@@ -430,7 +430,7 @@
 }
 
 .home-indicator.dark span {
-	background-color: #1c1c1e;
+	background-color: var(--color-on-bright-media);
 }
 
 .container.mobile:not(.unified) .content {

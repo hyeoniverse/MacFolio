@@ -53,7 +53,7 @@
 }
 
 .about-mac-lights .close {
-	background-color: #ff5f57;
+	background-color: var(--color-window-close);
 	cursor: pointer;
 }
 

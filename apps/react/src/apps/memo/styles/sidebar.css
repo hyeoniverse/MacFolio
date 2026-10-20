@@ -192,7 +192,7 @@
 }
 
 .memo-folder-row:has(.memo-folder.active) .memo-folder-more {
-	background-color: rgba(255, 255, 255, 0.35);
+	background-color: var(--color-on-media-fill-strong);
 	color: var(--memo-on-accent);
 }
 

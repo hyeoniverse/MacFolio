@@ -345,7 +345,7 @@
 
 @keyframes memo-anchor-hit {
 	from {
-		background-color: rgba(250, 204, 21, 0.45);
+		background-color: var(--color-find-highlight);
 	}
 	to {
 		background-color: transparent;
