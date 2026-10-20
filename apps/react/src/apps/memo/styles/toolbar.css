@@ -40,7 +40,7 @@
 .memo-view-switch button[aria-pressed='true'] {
 	background-color: var(--memo-bg);
 	color: var(--memo-text);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+	box-shadow: var(--shadow-raised);
 }
 
 .memo-toolbar-spacer {

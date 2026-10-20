@@ -1,0 +1,227 @@
+/* 프로젝트 편집기의 항목 시트, 폴더 구조·JSON 칸 */
+
+/*
+ * ─── 항목 시트 (macOS 시스템 설정의 시트) ───
+ * 편집 화면 전체를 살짝 어둡게 덮고, 도구 막대 아래에서 둥근 판이 내려온다.
+ * 판 안은 편집 화면과 같은 회색 바탕 위 둥근 상자, 아래 막대에 완료. 안쪽 목록의 항목은 같은 판 안에서 다음 페이지로 민다
+ */
+.projects-sheet-host {
+	display: contents;
+}
+
+.projects-sheet-layer {
+	position: absolute;
+	z-index: 40;
+	inset: 0;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 56px 24px 24px;
+	background: var(--color-scrim-subtle);
+	animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+:root[data-theme='dark'] .projects-sheet-layer {
+	background: var(--color-scrim);
+}
+
+.projects-sheet {
+	display: flex;
+	flex-direction: column;
+	width: min(560px, 100%);
+	max-height: 100%;
+	overflow: hidden;
+	border-radius: var(--radius-14);
+	background: var(--pe-canvas);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.18),
+		0 12px 36px rgba(0, 0, 0, 0.2),
+		0 2px 6px rgba(0, 0, 0, 0.08);
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	animation: projects-sheet-in var(--duration) var(--ease-out);
+}
+
+:root[data-theme='dark'] .projects-sheet {
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.6),
+		inset 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+		0 16px 44px rgba(0, 0, 0, 0.5);
+}
+
+/* 위에서 살짝 내려오며 나타난다 (움직임 줄이기를 켜면 motion.css가 끈다) */
+@keyframes projects-sheet-in {
+	from {
+		opacity: 0;
+		transform: translateY(-14px);
+	}
+}
+
+.projects-sheet-page {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.projects-sheet-page[hidden] {
+	display: none;
+}
+
+.projects-sheet-page.pushed {
+	animation: nav-forward var(--duration) var(--ease-out);
+}
+
+.projects-sheet-page[data-motion='back'] {
+	animation: nav-back var(--duration) var(--ease-out);
+}
+
+.projects-sheet-slot {
+	display: contents;
+}
+
+/* 머리: 가운데 제목, 밀린 페이지면 왼쪽에 뒤로 버튼 */
+.projects-sheet-head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: center;
+	min-height: 24px;
+	padding: var(--space-14) var(--space-16) var(--space-4);
+}
+
+.projects-sheet-title {
+	grid-column: 2;
+	overflow: hidden;
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	font-weight: 700;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.projects-sheet-back {
+	display: inline-flex;
+	grid-column: 1;
+	align-items: center;
+	justify-self: start;
+	gap: 5px;
+	max-width: 100%;
+	height: 24px;
+	padding: 0 8px 0 6px;
+	border: none;
+	border-radius: var(--radius-6);
+	background: none;
+	color: var(--color-label);
+	font: inherit;
+	font-size: var(--text-footnote);
+	cursor: pointer;
+}
+
+.projects-sheet-back span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.projects-sheet-back:hover {
+	background: var(--pe-hover);
+}
+
+.projects-sheet-back:focus-visible {
+	outline: 3px solid var(--pe-focus);
+}
+
+.projects-sheet-back-glyph {
+	flex: none;
+	width: 7px;
+	height: 12px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 1.6;
+}
+
+.projects-sheet-body {
+	flex: 1;
+	min-height: 0;
+	padding: var(--space-10) var(--space-20) var(--space-20);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+/* 아래 막대: 왼쪽 끝에 항목 삭제, 오른쪽 끝에 완료 */
+.projects-sheet-foot {
+	display: flex;
+	flex: none;
+	justify-content: flex-end;
+	gap: var(--space-8);
+	padding: var(--space-12) var(--space-20);
+	border-top: 1px solid var(--pe-separator);
+	background: var(--pe-canvas);
+}
+
+.projects-sheet-foot .destructive {
+	margin-right: auto;
+}
+
+/* 시트 안 목록의 썸네일은 작게 (판의 폭이 좁다) */
+.projects-group.nested .projects-row-thumb {
+	width: 72px;
+	border-radius: 5px;
+}
+
+/* 시트 안의 작은 목록 (항목의 화면 여러 장, 장 안의 숫자·항목): 줄과 같은 들여쓰기, 위에 줄 사이 선 */
+.projects-group.nested {
+	margin: 0 12px;
+	padding: 10px 0 12px;
+}
+
+.projects-item + .projects-group.nested,
+.projects-group.nested + .projects-item,
+.projects-group.nested + .projects-group.nested {
+	border-top: 1px solid var(--pe-separator);
+}
+
+.projects-group.nested > .projects-group-title {
+	padding: 0;
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	font-weight: 400;
+}
+
+/* 폴더 구조: 줄을 맞춰 쓰는 고정폭 여러 줄 칸 */
+textarea.projects-input.mono {
+	height: auto;
+	min-height: 140px;
+	padding: var(--space-6) var(--space-8);
+	overflow-x: auto;
+	color: var(--color-label);
+	line-height: 1.5;
+	white-space: pre;
+}
+
+/* JSON: 상자를 가득 채우는 고정폭 글꼴 칸 */
+.projects-json {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 460px;
+	padding: var(--space-12) var(--space-14);
+	border: none;
+	background: none;
+	color: var(--color-label);
+	font:
+		12px/1.55 ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+	resize: vertical;
+	outline: none;
+}
+
+.projects-box:has(> .projects-json:focus) {
+	box-shadow:
+		0 0 0 1px var(--color-control-accent),
+		0 0 0 4px var(--pe-focus);
+}

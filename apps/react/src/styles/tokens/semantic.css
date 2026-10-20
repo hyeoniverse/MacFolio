@@ -118,8 +118,11 @@
 	--radius-window: var(--radius-22); /* 창·터치 메뉴처럼 큰 모서리 */
 
 	/* 그림자 쓰임새 */
-	--shadow-float: var(--shadow-1); /* 휴대폰 떠 있는 버튼 */
-	--shadow-menu: var(--shadow-5); /* 메뉴·날짜 고르기 */
+	--shadow-raised: var(--shadow-1); /* 스위치 손잡이·칩·썸네일처럼 바탕에 살짝 얹힌 것 */
+	--shadow-float: var(--shadow-2); /* 휴대폰 떠 있는 버튼 */
+	--shadow-card: var(--shadow-3); /* 떠 있는 카드·타일·끄는 줄 */
+	--shadow-menu: var(--shadow-6); /* 메뉴·날짜 고르기·떠 있는 판 */
+	--shadow-modal: var(--shadow-7); /* 대화상자·라이트박스·시트 */
 	--shadow-window: 10px 10px 10px rgba(0, 0, 0, 0.5);
 	--shadow-popover: 0 4px 10px rgba(0, 0, 0, 0.2);
 
