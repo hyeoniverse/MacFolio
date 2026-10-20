@@ -15,7 +15,7 @@
 	border: 1px solid var(--cr-line);
 	border-radius: 14px;
 	background-color: var(--cr-line);
-	box-shadow: var(--shadow-xl);
+	box-shadow: var(--shadow-4);
 }
 
 .cr-feature-media > img,

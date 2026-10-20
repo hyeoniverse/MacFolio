@@ -479,7 +479,7 @@
 	left: -40%;
 	width: 180%;
 	height: 0.9cqi;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	background: #c7c9ce;
 }
 
@@ -550,7 +550,7 @@
 	padding: var(--space-10) var(--space-14) var(--space-12);
 	overflow: hidden;
 	border: none;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--sp-alt);
 	color: var(--sp-muted);
 	font: inherit;

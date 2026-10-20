@@ -169,7 +169,7 @@
 .memo-find-steps {
 	display: flex;
 	overflow: hidden;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--memo-search-bg);
 }
 
@@ -201,7 +201,7 @@
 	flex: none;
 	padding: var(--space-4) var(--space-12);
 	border: none;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;

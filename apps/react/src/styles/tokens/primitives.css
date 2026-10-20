@@ -51,22 +51,22 @@
 	--palette-code-gray-dark: #8b949e;
 	--palette-code-green-dark: #7ee787;
 
-	/* 모서리: 크기 이름 (쓰임새 별칭은 semantic.css) */
-	--radius-xs: 4px;
-	--radius-sm: 6px;
-	--radius-md: 8px;
-	--radius-lg: 10px;
-	--radius-xl: 14px;
-	--radius-2xl: 18px;
-	--radius-3xl: 22px;
+	/* 모서리: px 그대로 숫자 이름 (쓰임새 별칭은 semantic.css) */
+	--radius-4: 4px;
+	--radius-6: 6px;
+	--radius-8: 8px;
+	--radius-10: 10px;
+	--radius-14: 14px;
+	--radius-18: 18px;
+	--radius-22: 22px;
 	--radius-full: 999px; /* 알약 */
 
-	/* 그림자: 크기 이름 (쓰임새 별칭은 semantic.css) */
-	--shadow-sm: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.12);
-	--shadow-md: 0 6px 18px rgba(0, 0, 0, 0.18);
-	--shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.18);
-	--shadow-xl: 0 18px 40px rgba(0, 0, 0, 0.12);
-	--shadow-2xl: 0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.2);
+	/* 그림자: 높이 단계 1~5. 숫자가 클수록 떠 보인다 (쓰임새 별칭은 semantic.css) */
+	--shadow-1: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.12);
+	--shadow-2: 0 6px 18px rgba(0, 0, 0, 0.18);
+	--shadow-3: 0 8px 30px rgba(0, 0, 0, 0.18);
+	--shadow-4: 0 18px 40px rgba(0, 0, 0, 0.12);
+	--shadow-5: 0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.2);
 
 	/*
 	 * 글자 크기. Apple HIG의 글자 스타일 이름 (14·18px 등 그 밖의 값과 em·rem은 각 CSS에 그대로)

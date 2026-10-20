@@ -611,7 +611,7 @@
 /* 필드 칩: 문서가 화면에 들어오면 하나씩 톡 놓인다 */
 .qc-doc li {
 	padding: var(--space-4) var(--space-12);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: color-mix(in srgb, var(--qc-cell) 70%, var(--qc-surface));
 	box-shadow: inset 2px -2px 4px rgba(0, 0, 0, 0.08);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

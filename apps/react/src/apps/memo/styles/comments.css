@@ -95,7 +95,7 @@
 	margin-left: auto;
 	padding: 0;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: none;
 	color: var(--memo-muted);
 	font-size: var(--text-caption);
@@ -147,7 +147,7 @@
 	gap: var(--space-8);
 	padding: var(--space-12);
 	border: 1px solid var(--memo-border);
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	transition: border-color var(--duration-fast) var(--ease-out);
 }
 
@@ -177,7 +177,7 @@
 	min-width: 0;
 	padding: 7px 10px;
 	border: none;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;
