@@ -19,7 +19,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding-top: 2px;
+	padding-top: var(--space-2);
 	box-sizing: border-box;
 	outline: none;
 	cursor: default;
@@ -74,7 +74,7 @@
 	max-width: 92px;
 	padding: 1px 5px;
 	border-radius: var(--radius-xs);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 15px;
 	font-weight: 500;
 	color: #fff;
@@ -147,7 +147,7 @@
 	background: var(--color-content-bg);
 	color: var(--color-text);
 	font: inherit;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 15px;
 	text-align: center;
 	resize: none;

@@ -1223,10 +1223,10 @@ ol.showcase-list .showcase-row.reordering {
 	justify-content: space-between;
 	gap: var(--space-12);
 	padding: var(--space-10) var(--space-14);
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: color-mix(in srgb, var(--color-accent) 12%, transparent);
 	color: var(--color-text-strong);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 /*
@@ -1313,7 +1313,7 @@ ol.showcase-list .showcase-row.reordering {
 	height: 100%;
 	background: var(--pe-canvas);
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 :root[data-theme='dark'] .projects-editor,
@@ -1389,10 +1389,10 @@ ol.showcase-list .showcase-row.reordering {
 	height: 26px;
 	padding: 0;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--color-text-secondary);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
@@ -1434,7 +1434,7 @@ ol.showcase-list .showcase-row.reordering {
 	background: none;
 	color: var(--color-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
@@ -1479,7 +1479,7 @@ ol.showcase-list .showcase-row.reordering {
 .projects-tab-hint {
 	padding: 0 10px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.5;
 	word-break: keep-all;
 }
@@ -1494,7 +1494,7 @@ ol.showcase-list .showcase-row.reordering {
 .projects-group-title {
 	padding: 0 10px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	font-weight: 600;
 }
 
@@ -1506,14 +1506,14 @@ ol.showcase-list .showcase-row.reordering {
 .projects-group-hint {
 	padding: 0 10px;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.5;
 	word-break: keep-all;
 }
 
 .projects-box {
 	overflow: hidden;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: var(--pe-box);
 	box-shadow:
 		0 0 0 0.5px var(--pe-box-border),
@@ -1552,13 +1552,13 @@ ol.showcase-list .showcase-row.reordering {
 	align-items: center;
 	gap: var(--space-6);
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	word-break: keep-all;
 }
 
 .projects-required {
 	padding: 0 5px;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	background: color-mix(in srgb, var(--color-red) 14%, transparent);
 	color: var(--color-red);
 	font-size: 10px;
@@ -1586,14 +1586,14 @@ ol.showcase-list .showcase-row.reordering {
 	grid-column: 1 / -1;
 	margin-top: 5px;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.5;
 	word-break: keep-all;
 }
 
 .projects-error {
 	color: var(--color-red);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 }
 
 /* 글자 칸: 둥근 테두리 칸 (macOS의 NSTextField) */
@@ -1604,11 +1604,11 @@ ol.showcase-list .showcase-row.reordering {
 	height: 26px;
 	padding: 0 8px;
 	border: 1px solid var(--pe-field-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--pe-field-bg);
 	color: var(--color-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 	transition: box-shadow var(--duration-fast) var(--ease-out);
 }
@@ -1661,14 +1661,14 @@ textarea.projects-input {
 	height: 24px;
 	padding: 0 12px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--pe-button-bg);
 	box-shadow:
 		0 0 0 0.5px var(--pe-button-border),
 		var(--pe-button-shadow);
 	color: var(--color-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	white-space: nowrap;
 	cursor: pointer;
 }
@@ -1720,14 +1720,14 @@ textarea.projects-input {
 	max-width: 100%;
 	height: 24px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--pe-button-bg);
 	box-shadow:
 		0 0 0 0.5px var(--pe-button-border),
 		var(--pe-button-shadow);
 	color: var(--color-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
@@ -1755,7 +1755,7 @@ button.projects-popup::after {
 	width: 16px;
 	height: 16px;
 	padding: var(--space-2) var(--space-4);
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	background: var(--color-accent);
 	translate: 0 -50%;
 	pointer-events: none;
@@ -1820,7 +1820,7 @@ button.projects-popup[aria-expanded='true'] {
 	gap: var(--space-6);
 	margin-left: var(--space-8);
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
@@ -1839,7 +1839,7 @@ button.projects-popup[aria-expanded='true'] {
 	height: 26px;
 	overflow: hidden;
 	border: 1px solid var(--pe-field-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--pe-field-bg);
 	transition: box-shadow var(--duration-fast) var(--ease-out);
 }
@@ -1852,7 +1852,7 @@ button.projects-popup[aria-expanded='true'] {
 	background: none;
 	color: var(--color-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
@@ -1877,7 +1877,7 @@ button.projects-popup[aria-expanded='true'] {
 	box-sizing: border-box;
 	padding: 3px 4px;
 	border: 1px solid var(--pe-field-border);
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--pe-field-bg);
 	cursor: text;
 	transition: box-shadow var(--duration-fast) var(--ease-out);
@@ -1902,7 +1902,7 @@ button.projects-popup[aria-expanded='true'] {
 	border-radius: 5px;
 	background: color-mix(in srgb, var(--color-accent) 16%, transparent);
 	color: var(--color-text-strong);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	cursor: default;
 }
 
@@ -1913,7 +1913,7 @@ button.projects-popup[aria-expanded='true'] {
 	height: 16px;
 	padding: 0;
 	border: none;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	background: none;
 	color: var(--color-text-secondary);
 	font-size: 9px;
@@ -1934,19 +1934,19 @@ button.projects-popup[aria-expanded='true'] {
 	background: none;
 	color: var(--color-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
 /* 후보 목록 (주 언어·기술): 칸 아래에 떠 있다 (body에 portal) */
 .projects-suggestions {
 	position: fixed;
-	z-index: 10000;
+	z-index: var(--z-menu);
 	max-height: 300px;
 	margin: 0;
 	padding: var(--space-4);
 	overflow-y: auto;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: var(--color-popover-bg);
 	box-shadow: var(--shadow-menu);
 	color: var(--color-popover-text);
@@ -1961,8 +1961,8 @@ button.projects-popup[aria-expanded='true'] {
 	justify-content: space-between;
 	gap: var(--space-8);
 	padding: 5px 9px;
-	border-radius: 6px;
-	font-size: 13px;
+	border-radius: var(--radius-sm);
+	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
@@ -1970,7 +1970,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-suggestion-source {
 	flex: none;
 	padding: 0 6px;
-	border-radius: 4px;
+	border-radius: var(--radius-xs);
 	background: color-mix(in srgb, #cb3837 16%, transparent);
 	color: #cb3837;
 	font-size: 10px;
@@ -2028,7 +2028,7 @@ button.projects-popup[aria-expanded='true'] {
 	padding: 0;
 	overflow: hidden;
 	border: none;
-	border-radius: 14px;
+	border-radius: var(--radius-xl);
 	background: var(--pe-thumb-empty);
 	box-shadow: inset 0 0 0 0.5px var(--pe-box-border);
 	color: var(--color-text-secondary);
@@ -2038,7 +2038,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-image.wide .projects-thumb {
 	width: 128px;
 	height: 80px;
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 }
 
 button.projects-thumb {
@@ -2101,7 +2101,7 @@ button.projects-thumb:focus-visible {
 .projects-lightbox video {
 	max-width: min(1200px, 100%);
 	max-height: calc(100vh - 150px);
-	border-radius: 8px;
+	border-radius: var(--radius-md);
 	background: #111111;
 	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 	object-fit: contain;
@@ -2111,7 +2111,7 @@ button.projects-thumb:focus-visible {
 	display: flex;
 	gap: var(--space-10);
 	color: rgba(255, 255, 255, 0.88);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 }
 
 .projects-lightbox figcaption span {
@@ -2131,7 +2131,7 @@ button.projects-thumb:focus-visible {
 	border-radius: 50%;
 	background: rgba(255, 255, 255, 0.14);
 	color: var(--color-white);
-	font-size: 15px;
+	font-size: var(--text-subhead);
 	cursor: pointer;
 }
 
@@ -2258,7 +2258,7 @@ button.projects-thumb:focus-visible {
 .projects-look-name {
 	max-width: 100%;
 	overflow: hidden;
-	font-size: 12px;
+	font-size: var(--text-caption);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -2272,7 +2272,7 @@ button.projects-thumb:focus-visible {
 	max-width: 100%;
 	overflow: hidden;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -2285,7 +2285,7 @@ button.projects-thumb:focus-visible {
 	padding: 7px 19px 6px;
 	border-bottom: 1px solid var(--pe-separator);
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-weight: 600;
 }
 
@@ -2306,7 +2306,7 @@ button.projects-thumb:focus-visible {
 	gap: var(--space-12);
 	min-height: 30px;
 	padding: 3px 8px;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--pe-box);
 	outline: none;
 	cursor: default;
@@ -2375,7 +2375,7 @@ button.projects-thumb:focus-visible {
 
 .projects-point strong {
 	overflow: hidden;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -2390,7 +2390,7 @@ button.projects-thumb:focus-visible {
 	display: -webkit-box;
 	overflow: hidden;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	line-height: 1.4;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 2;
@@ -2406,11 +2406,11 @@ button.projects-thumb:focus-visible {
 	place-items: center;
 	width: 112px;
 	overflow: hidden;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--pe-thumb-empty);
 	box-shadow: inset 0 0 0 0.5px var(--pe-box-border);
 	color: var(--color-text-secondary);
-	font-size: 16px;
+	font-size: var(--text-callout);
 	aspect-ratio: 16 / 10;
 }
 
@@ -2431,7 +2431,7 @@ button.projects-thumb:focus-visible {
 	background: none;
 	color: inherit;
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	outline: none;
 }
 
@@ -2448,7 +2448,7 @@ button.projects-thumb:focus-visible {
 
 .projects-table-empty {
 	padding: 18px 12px;
-	font-size: 12px;
+	font-size: var(--text-caption);
 }
 
 .projects-table-bar {
@@ -2514,7 +2514,7 @@ button.projects-thumb:focus-visible {
 .projects-table-note {
 	min-width: 0;
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	line-height: 1.4;
 	word-break: keep-all;
 }
@@ -2564,7 +2564,7 @@ button.projects-thumb:focus-visible {
 	border-radius: 6px 0 0 6px;
 	background: none;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 	opacity: 0.6;
 	cursor: grab;
 	touch-action: none;
@@ -2646,11 +2646,11 @@ button.projects-thumb:focus-visible {
 	padding: 0;
 	overflow: hidden;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--pe-thumb-empty);
 	box-shadow: inset 0 0 0 0.5px var(--pe-box-border);
 	color: var(--color-text-secondary);
-	font-size: 16px;
+	font-size: var(--text-callout);
 	aspect-ratio: 16 / 10;
 }
 
@@ -2730,7 +2730,7 @@ button.projects-shot-thumb:focus-visible {
 		0 12px 36px rgba(0, 0, 0, 0.2),
 		0 2px 6px rgba(0, 0, 0, 0.08);
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	animation: projects-sheet-in var(--duration) var(--ease-out);
 }
 
@@ -2785,7 +2785,7 @@ button.projects-shot-thumb:focus-visible {
 	grid-column: 2;
 	overflow: hidden;
 	color: var(--color-text-strong, var(--color-text));
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 700;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -2801,11 +2801,11 @@ button.projects-shot-thumb:focus-visible {
 	height: 24px;
 	padding: 0 8px 0 6px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: none;
 	color: var(--color-text);
 	font: inherit;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
@@ -2878,7 +2878,7 @@ button.projects-shot-thumb:focus-visible {
 .projects-group.nested > .projects-group-title {
 	padding: 0;
 	color: var(--color-text);
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-weight: 400;
 }
 
@@ -2934,7 +2934,7 @@ textarea.projects-input.mono {
 	flex-direction: column;
 	min-height: 0;
 	overflow: hidden;
-	border-radius: 10px;
+	border-radius: var(--radius-lg);
 	background: var(--color-window-bg);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.22),
@@ -2963,10 +2963,10 @@ textarea.projects-input.mono {
 	margin-left: var(--space-8);
 	padding: 3px 10px;
 	overflow: hidden;
-	border-radius: 6px;
+	border-radius: var(--radius-sm);
 	background: var(--color-divider);
 	color: var(--color-text-secondary);
-	font-size: 11px;
+	font-size: var(--text-caption2);
 	font-style: normal;
 	text-align: center;
 	text-overflow: ellipsis;
