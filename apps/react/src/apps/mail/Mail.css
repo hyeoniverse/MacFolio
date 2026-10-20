@@ -264,7 +264,7 @@
 
 .mail-reader-body {
 	margin-bottom: var(--space-20);
-	font-size: 14px;
+	font-size: var(--text-subhead);
 	line-height: 1.7;
 	white-space: pre-wrap;
 }
@@ -346,7 +346,7 @@
 	background: transparent;
 	color: inherit;
 	font: inherit;
-	font-size: 14px;
+	font-size: var(--text-subhead);
 	line-height: 1.6;
 	resize: vertical;
 }
@@ -436,7 +436,7 @@
 	background: none;
 	color: var(--mail-text);
 	font: inherit;
-	font-size: 14px;
+	font-size: var(--text-subhead);
 	line-height: 1.6;
 	outline: none;
 	resize: none;

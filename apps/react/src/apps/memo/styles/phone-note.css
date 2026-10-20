@@ -47,7 +47,7 @@
 
 /* 날짜·폴더 줄은 가운데 그대로, 휴대폰에서 읽기 좋은 크기로 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader :is(.memo-reader-date, .memo-writer-meta) {
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 /* 저장 상태·게시는 날짜 줄 위의 따로 한 줄 대신, 떠 있는 버튼 줄의 오른쪽 알약 왼쪽에 띄운다.
@@ -164,7 +164,7 @@
 	min-width: 40px;
 	height: 40px;
 	color: var(--memo-text);
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-format .memo-format-quick {

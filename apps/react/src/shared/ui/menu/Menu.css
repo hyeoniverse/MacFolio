@@ -9,7 +9,7 @@
 	z-index: var(--z-menu);
 	min-width: 180px;
 	padding: 5px;
-	border-radius: 12px;
+	border-radius: var(--radius-xl);
 	background-color: var(--color-popover-bg);
 	box-shadow: var(--shadow-menu);
 	color: var(--color-popover-text);
@@ -113,7 +113,7 @@
 }
 
 .ui-menu-row-item i {
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 .ui-menu-row-item:hover:not(:disabled),
@@ -131,7 +131,7 @@
 .ui-menu.touch {
 	min-width: 250px;
 	padding: var(--space-10);
-	border-radius: 22px;
+	border-radius: var(--radius-window);
 	font-size: var(--text-callout);
 }
 

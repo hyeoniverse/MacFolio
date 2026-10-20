@@ -15,7 +15,7 @@
 
 .admin-account-head strong {
 	color: var(--color-text-strong);
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 .admin-account-avatar {
@@ -109,7 +109,7 @@
 
 /* 휴대폰: 다른 설정 화면처럼 폭을 꽉 채운 흰 카드 (iOS 설정의 Apple 계정). 데스크톱의 520px 제한과 테두리는 쓰지 않는다 */
 .container.mobile .admin-account {
-	gap: 18px;
+	gap: var(--space-16);
 	max-width: none;
 }
 

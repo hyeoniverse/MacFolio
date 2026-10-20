@@ -4,7 +4,7 @@
 	flex-direction: column;
 	height: 100%;
 	min-height: 0;
-	padding-top: 28px;
+	padding-top: var(--space-24);
 	background: var(--color-window-bg);
 	color: var(--color-text);
 }
@@ -57,7 +57,7 @@
 	display: grid;
 	gap: var(--space-10);
 	width: min(560px, calc(100% - 32px));
-	padding: 12px 18px 12px;
+	padding: 12px var(--space-16) 12px;
 	border: 1px solid rgba(255, 255, 255, 0.12);
 	border-radius: 18px;
 	background: rgba(58, 58, 60, 0.72);
@@ -116,7 +116,7 @@
 .qt-transport {
 	display: flex;
 	align-items: center;
-	gap: 18px;
+	gap: var(--space-16);
 }
 
 .qt-play {

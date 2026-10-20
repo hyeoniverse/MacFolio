@@ -73,7 +73,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-6);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 .mobile-battery {
@@ -122,7 +122,7 @@
 	position: relative;
 	padding: var(--space-14);
 	overflow: hidden;
-	border-radius: 22px;
+	border-radius: var(--radius-window);
 	color: var(--color-white);
 	text-align: left;
 	cursor: pointer;
@@ -144,7 +144,7 @@
 	width: 88px;
 	height: 88px;
 	object-fit: cover;
-	border-radius: 12px;
+	border-radius: var(--radius-lg);
 	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
@@ -197,7 +197,7 @@
 	border: none;
 	background: none;
 	color: inherit;
-	font-size: 18px;
+	font-size: var(--text-title3);
 	cursor: pointer;
 }
 
@@ -323,7 +323,7 @@
 }
 
 .cc-music .music-widget-title {
-	font-size: 14px;
+	font-size: var(--text-subhead);
 }
 
 .cc-music .music-widget-album {

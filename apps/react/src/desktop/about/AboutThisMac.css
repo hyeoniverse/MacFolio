@@ -8,7 +8,7 @@
 	flex-direction: column;
 	align-items: center;
 	width: 316px;
-	padding: 44px 24px 18px;
+	padding: 44px 24px var(--space-16);
 	border: 0.5px solid var(--color-window-border);
 	border-radius: 16px;
 	background-color: var(--color-titlebar-bg);
@@ -72,7 +72,7 @@
 	place-items: center;
 	width: 132px;
 	height: 132px;
-	margin-bottom: 18px;
+	margin-bottom: var(--space-16);
 	border-radius: 50%;
 	object-fit: cover;
 	box-shadow: var(--shadow-md);

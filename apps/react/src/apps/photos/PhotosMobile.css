@@ -105,7 +105,7 @@
 /* 앨범별: 앨범마다 제목 */
 .photos-phone-group h3 {
 	margin: 0;
-	padding: 18px 16px 8px;
+	padding: var(--space-16) 16px 8px;
 	font-size: var(--text-title3);
 }
 
@@ -317,7 +317,7 @@
 	backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--color-text-strong);
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 /* ─── 검색: 큰 제목, 최근 항목 카드, 앨범 추천, 아래의 검색 칸 ─── */
@@ -368,7 +368,7 @@
 	align-items: center;
 	gap: var(--space-10);
 	height: 52px;
-	padding: 0 18px;
+	padding: 0 var(--space-16);
 	border-radius: var(--radius-full);
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
@@ -407,8 +407,8 @@
 	justify-content: center;
 	max-width: calc(100% - 152px);
 	min-height: 44px;
-	padding: 4px 18px;
-	border-radius: 22px;
+	padding: 4px var(--space-16);
+	border-radius: var(--radius-window);
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
@@ -450,7 +450,7 @@
 	backdrop-filter: blur(16px);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--color-text-strong);
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 /* 사진: 화면 가득, 위·아래 UI는 그 위에 뜬다 (iOS 사진). 사진만 보기로 바꿔도 사진은 움직이지 않는다.
@@ -562,7 +562,7 @@
 
 .photos-phone-info-panel h3 {
 	margin: 0;
-	font-size: 18px;
+	font-size: var(--text-title3);
 	font-weight: 600;
 }
 

@@ -101,7 +101,7 @@
 
 :where(.memo-shell[data-compact]) .memo-reader-compact-bar .memo-format-button {
 	height: 30px;
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 :where(.memo-shell[data-compact]) .memo-reader .memo-share.compact-only {

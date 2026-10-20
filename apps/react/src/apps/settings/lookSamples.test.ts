@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { blankProject, parseProjects, PROJECT_LOOKS, PROJECTS_LIMITS } from '@macfolio/desktop-core/site';
-import { parsePeriod } from './projectInputs';
+import { parsePeriod } from './projects/period';
 import {
 	fillWithSample,
 	GENERAL_SAMPLE,

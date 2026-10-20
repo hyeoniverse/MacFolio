@@ -298,7 +298,7 @@
 
 .memo-item strong {
 	overflow: hidden;
-	font-size: 14px;
+	font-size: var(--text-footnote);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }

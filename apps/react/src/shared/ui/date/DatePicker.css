@@ -4,7 +4,7 @@
 	z-index: var(--z-menu);
 	width: 248px;
 	padding: var(--space-10);
-	border-radius: 12px;
+	border-radius: var(--radius-lg);
 	background-color: var(--color-popover-bg);
 	box-shadow: var(--shadow-menu);
 	color: var(--color-popover-text);

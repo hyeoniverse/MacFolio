@@ -73,7 +73,7 @@
 
 /* 도구 막대 버튼 (shared/ui/button/IconButton). 아이콘은 메모보다 조금 크다 */
 .safari-toolbar .ui-icon-button {
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 .safari-address {
@@ -317,7 +317,7 @@
 	width: 100%;
 	padding: var(--space-8) var(--space-4);
 	border: none;
-	border-radius: 12px;
+	border-radius: var(--radius-lg);
 	background: none;
 	color: var(--safari-text);
 	font: inherit;

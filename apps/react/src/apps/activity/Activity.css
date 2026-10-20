@@ -603,7 +603,7 @@
 }
 
 .server-billing-total strong {
-	font-size: 18px;
+	font-size: var(--text-title3);
 	font-variant-numeric: tabular-nums;
 }
 

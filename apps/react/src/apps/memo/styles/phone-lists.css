@@ -193,7 +193,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-tag-browser {
-	margin-top: 28px;
+	margin-top: var(--space-24);
 	padding: 0 4px;
 }
 
@@ -350,14 +350,14 @@
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--memo-text);
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list-bottom .memo-search {
 	flex: 1;
 	height: 50px;
 	margin: 0 12px 0 0;
-	padding: 0 18px;
+	padding: 0 var(--space-16);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	font-size: var(--text-body);
@@ -379,7 +379,7 @@
 	justify-content: center;
 	min-width: 44px;
 	height: 44px;
-	padding: 0 18px;
+	padding: 0 var(--space-16);
 	border: none;
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
@@ -449,7 +449,7 @@
 /* 휴대폰 목록의 갤러리: 두 줄 카드 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-cards {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 18px 14px;
+	gap: var(--space-16) 14px;
 	padding: 0;
 }
 
@@ -543,7 +543,7 @@
 	gap: var(--space-10);
 	height: 50px;
 	margin-right: var(--space-12);
-	padding: 0 18px;
+	padding: 0 var(--space-16);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	border: none;
