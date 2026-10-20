@@ -269,6 +269,9 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 			'자격증',
 			'블로그',
 			'응용 프로그램',
+			// 위치 칸: 홈과 디스크 (macOS처럼 즐겨찾기는 이 트리 안 폴더로 가는 바로가기)
+			'hyeoniverse',
+			'Macintosh HD',
 		]);
 		await expect(sidebar.getByRole('button', { name: '이력서' })).toHaveAttribute('aria-current', 'page');
 		await dropFile(page, '[data-app="finder"] .finder-sidebar [data-folder-target="docs:자격증"]', '자격.pdf', [

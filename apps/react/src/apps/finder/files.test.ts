@@ -3,11 +3,14 @@ import { fileUrl, type DocumentEntry } from './documents';
 import {
 	buildLocations,
 	countLabel,
+	FAVORITE_IDS,
 	find,
+	foldersOf,
 	pathTo,
 	previewFolder,
 	recentItems,
 	search,
+	sidebarIdOf,
 	sortItems,
 	uploadFolderOf,
 	type FolderItem,
@@ -39,8 +42,35 @@ const tree = buildLocations({
 const names = (folder: FolderItem) => folder.children.map((child) => child.name);
 
 describe('buildLocations', () => {
-	it('즐겨찾기 위치: 데스크탑(맨 앞), 문서, 블로그, 응용 프로그램 (프로젝트 폴더는 문서 › 포트폴리오 안)', () => {
-		expect(tree.map((folder) => folder.name)).toEqual(['데스크탑', '문서', '블로그', '응용 프로그램']);
+	it('macOS처럼 디스크 하나가 맨 위: Macintosh HD › 응용 프로그램, 사용자 › 홈 › 기본 폴더', () => {
+		expect(tree.map((folder) => folder.name)).toEqual(['Macintosh HD']);
+		expect(names(find(tree, 'mac') as FolderItem)).toEqual(['사용자', '응용 프로그램']);
+		expect(names(find(tree, 'users') as FolderItem)).toEqual(['hyeoniverse']);
+		expect(names(find(tree, 'home') as FolderItem)).toEqual([
+			'공용',
+			'그림',
+			'다운로드',
+			'데스크탑',
+			'동영상',
+			'문서',
+			'블로그',
+			'음악',
+		]);
+		// 내용이 없는 기본 폴더는 비어 있다는 안내를 띄운다
+		expect(find(tree, 'downloads')).toMatchObject({ children: [], emptyNote: '다운로드한 파일이 없습니다.' });
+	});
+
+	it('즐겨찾기: 데스크탑(맨 앞), 문서, 블로그, 응용 프로그램 (트리 안 폴더로 가는 바로가기)', () => {
+		expect(foldersOf(tree, FAVORITE_IDS).map((folder) => folder.name)).toEqual([
+			'데스크탑',
+			'문서',
+			'블로그',
+			'응용 프로그램',
+		]);
+		// 사이드바에서 칠할 곳은 경로에서 가장 안쪽의 사이드바 항목
+		expect(sidebarIdOf(tree, 'docs:이력서', FAVORITE_IDS)).toBe('docs');
+		expect(sidebarIdOf(tree, 'docs:이력서', ['docs', 'docs:이력서'])).toBe('docs:이력서');
+		expect(sidebarIdOf(tree, 'downloads', FAVORITE_IDS)).toBeNull();
 	});
 
 	it('사진: 프로젝트 폴더 안의 사진 폴더에 그림만 (영상은 뺀다). 키는 사이트 주소 그대로', () => {
@@ -105,6 +135,9 @@ describe('프로젝트 폴더', () => {
 		const photo = find(withProjects, 'photo:/imgs/projects/qru/home.png');
 		expect(photo).toMatchObject({ kind: 'image', key: '/imgs/projects/qru/home.png' });
 		expect(pathTo(withProjects, photo!.id).map((item) => item.id)).toEqual([
+			'mac',
+			'users',
+			'home',
 			'docs',
 			'docs:포트폴리오',
 			'projects/qru',
@@ -173,7 +206,14 @@ describe('문서 파일 목록 → 폴더 (시험용 목록)', () => {
 
 	it('폴더 수정일은 가장 최근 파일, 경로·찾기·최근 항목에도 나온다', () => {
 		expect((find(withFiles, 'docs:이력서') as FolderItem).modified).toBe('2026-10-01');
-		expect(pathTo(withFiles, 'file:certs/b.png').map((item) => item.name)).toEqual(['문서', '자격증', 'B 자격증.png']);
+		expect(pathTo(withFiles, 'file:certs/b.png').map((item) => item.name)).toEqual([
+			'Macintosh HD',
+			'사용자',
+			'hyeoniverse',
+			'문서',
+			'자격증',
+			'B 자격증.png',
+		]);
 		expect(search(withFiles, '자격증.').map((item) => item.id)).toEqual(['file:certs/a.jpg', 'file:certs/b.png']);
 		expect(recentItems(withFiles).map((item) => item.name)).toEqual(['이력서.pdf', 'B 자격증.png']);
 	});
@@ -189,6 +229,9 @@ describe('파일 주소', () => {
 describe('pathTo', () => {
 	it('위치에서 항목까지의 폴더들', () => {
 		expect(pathTo(tree, 'post:api').map((item) => item.name)).toEqual([
+			'Macintosh HD',
+			'사용자',
+			'hyeoniverse',
 			'블로그',
 			'개발기',
 			'MacFolio',

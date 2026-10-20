@@ -5,6 +5,8 @@ import {
 	find,
 	KIND_LABELS,
 	previewFolder,
+	FAVORITE_IDS,
+	foldersOf,
 	mediaKind,
 	recentItems,
 	search,
@@ -305,7 +307,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 						{(
 							[
 								['위치', [preview]],
-								['즐겨찾기', locations],
+								['즐겨찾기', foldersOf(locations, FAVORITE_IDS)],
 							] as [string, FolderItem[]][]
 						).map(([heading, places]) => (
 							<section key={heading} className="files-phone-section" aria-label={heading}>

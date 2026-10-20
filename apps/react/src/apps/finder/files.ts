@@ -273,13 +273,45 @@ function blogFolder(posts: TreeInput['posts'], folders: string[] = []): FolderIt
 	return root;
 }
 
-/** 사이드바에 보일 위치들 (휴지통은 빼고). 휴지통까지 필요하면 buildTree */
+/** Finder 트리의 맨 위 (휴지통은 빼고). 휴지통까지 필요하면 buildTree */
 export const buildLocations = (input: TreeInput): FolderItem[] => buildTree(input).roots;
+
+/** 홈 폴더 이름 (macOS의 사용자 폴더, /Users/<이름>) */
+export const HOME_NAME = 'hyeoniverse';
+
+/**
+ * 사이드바의 즐겨찾기 (macOS처럼 트리 안 폴더로 가는 바로가기). 이 순서로 보인다.
+ * 폴더 자체는 디스크 › 사용자 › 홈 아래에 있다
+ */
+export const FAVORITE_IDS = ['desktop', 'docs', 'blog', 'apps'] as const;
+/** 사이드바의 위치 칸: 홈과 디스크 */
+export const PLACE_IDS = ['home', 'mac'] as const;
+
+/** ids의 폴더들 (트리에 없는 것은 건너뛴다) */
+export const foldersOf = (roots: FinderItem[], ids: readonly string[]): FolderItem[] =>
+	ids.map((id) => find(roots, id)).filter((item): item is FolderItem => item?.kind === 'folder');
+
+/** 경로에서 가장 안쪽에 있는 사이드바 항목 (사이드바에서 칠할 곳). 없으면 null */
+export const sidebarIdOf = (roots: FinderItem[], id: string, sidebar: readonly string[]): string | null =>
+	[...pathTo(roots, id)].reverse().find((step) => sidebar.includes(step.id))?.id ?? null;
+
+/** 홈의 macOS 기본 폴더 가운데 이 사이트에 담을 것이 없는 것 (비어 있을 때의 안내와 함께) */
+const EMPTY_HOME_FOLDERS: { id: string; name: string; emptyNote: string }[] = [
+	{ id: 'public', name: '공용', emptyNote: '공유한 파일이 없습니다.' },
+	{ id: 'pictures', name: '그림', emptyNote: '그림이 없습니다.' },
+	{ id: 'downloads', name: '다운로드', emptyNote: '다운로드한 파일이 없습니다.' },
+	{ id: 'movies', name: '동영상', emptyNote: '동영상이 없습니다.' },
+	{ id: 'music', name: '음악', emptyNote: '음악이 없습니다.' },
+];
 
 /** 휴지통 폴더 id (Finder 구조에서 휴지통으로 보낸 만든 폴더·파일의 상위) */
 export const TRASH_ID = 'trash';
 
-/** 사이드바에 보일 위치들 (Finder의 즐겨찾기). 맨 앞은 macOS처럼 데스크탑 */
+/**
+ * Finder의 파일 트리. macOS처럼 디스크 하나가 맨 위에 있다:
+ * Macintosh HD › 응용 프로그램, Macintosh HD › 사용자 › 홈(hyeoniverse) › 데스크탑·문서·블로그와 macOS 기본 폴더.
+ * 폴더 id(desktop, docs, docs:이력서 …)는 서버에 저장한 구조가 쓰는 값이라 그대로 두고, 그 위에 디스크·사용자·홈을 얹었다
+ */
 export function buildTree({
 	docs,
 	posts,
@@ -297,7 +329,7 @@ export function buildTree({
 		children: [],
 		emptyNote: '휴지통이 비어 있습니다.',
 	};
-	const roots: FolderItem[] = [
+	const homeFolders: FolderItem[] = [
 		{
 			kind: 'folder',
 			id: 'desktop',
@@ -308,20 +340,26 @@ export function buildTree({
 		},
 		docsFolder(docs, files, projectFolders(projects, files, albums)),
 		blogFolder(posts, blogFolders),
-		{
-			kind: 'folder',
-			id: 'apps',
-			name: '응용 프로그램',
-			children: apps
-				.map((app): FinderItem => ({
-					kind: 'app',
-					id: `app:${app.app}`,
-					name: app.label,
-					app: app.app,
-					icon: app.icon,
-				}))
-				.sort(byName),
-		},
+		...EMPTY_HOME_FOLDERS.map((folder): FolderItem => ({ kind: 'folder', ...folder, children: [] })),
+	];
+	const applications: FolderItem = {
+		kind: 'folder',
+		id: 'apps',
+		name: '응용 프로그램',
+		children: apps
+			.map((app): FinderItem => ({
+				kind: 'app',
+				id: `app:${app.app}`,
+				name: app.label,
+				app: app.app,
+				icon: app.icon,
+			}))
+			.sort(byName),
+	};
+	const home: FolderItem = { kind: 'folder', id: 'home', name: HOME_NAME, children: homeFolders.sort(byName) };
+	const users: FolderItem = { kind: 'folder', id: 'users', name: '사용자', children: [home] };
+	const roots: FolderItem[] = [
+		{ kind: 'folder', id: 'mac', name: 'Macintosh HD', children: [applications, users].sort(byName) },
 	];
 	// 휴지통도 구조를 겹칠 때는 위치처럼 다룬다 (휴지통으로 보낸 폴더·파일이 그 안에 들어간다). 사이드바에는 보이지 않는다
 	applyLayout([...roots, trash], layout);
@@ -397,11 +435,12 @@ function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined)
 		Number(b.kind === 'alias') - Number(a.kind === 'alias') || (a.kind === 'alias' ? 0 : byName(a, b));
 	for (const folder of touched) folder.children.sort(folder === desktop ? aliasFirst : byName);
 	const refresh = (folder: FolderItem): string | undefined => {
-		folder.children.forEach((child) => child.kind === 'folder' && refresh(child));
+		// 블로그 폴더의 수정일은 blogFolder가 글 날짜로 정한다
+		folder.children.forEach((child) => child.kind === 'folder' && child.id !== 'blog' && refresh(child));
 		if (folder.id.startsWith('folder:') || touched.has(folder)) folder.modified = latest(folder.children);
 		return folder.modified;
 	};
-	roots.filter((root) => root.id !== 'blog').forEach(refresh);
+	roots.forEach(refresh);
 }
 
 /**
@@ -508,7 +547,7 @@ export function previewFolder(locations: FinderItem[]): FolderItem {
 		id: 'preview',
 		name: '미리보기',
 		// 올린 문서 파일(R2, id가 file:)만: 프로젝트의 사진 폴더 그림은 iCloud의 미리보기 폴더에 들어 있지 않다
-		children: files(locations.filter((place) => ['desktop', 'docs'].includes(place.id)))
+		children: files(foldersOf(locations, ['desktop', 'docs']))
 			.filter((item) => item.id.startsWith('file:'))
 			.sort((a, b) => a.name.localeCompare(b.name, 'ko')),
 		emptyNote: '파일이 없습니다.',

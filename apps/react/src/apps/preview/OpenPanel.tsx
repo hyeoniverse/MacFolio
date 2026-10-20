@@ -17,7 +17,17 @@ import {
 } from 'lucide-react';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import { fileUrl } from '@/apps/finder/documents';
-import { find, mediaKind, pathTo, previewFolder, search, type FileItem, type FinderItem } from '@/apps/finder/files';
+import {
+	FAVORITE_IDS,
+	find,
+	foldersOf,
+	mediaKind,
+	previewFolder,
+	search,
+	sidebarIdOf,
+	type FileItem,
+	type FinderItem,
+} from '@/apps/finder/files';
 import { useLocations } from '@/apps/finder/useLocations';
 import FinderIcon from '@/apps/finder/FinderIcon';
 import AppsGlyph from '@/apps/finder/AppsGlyph';
@@ -144,7 +154,8 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 	// 위치 칸: 미리보기 폴더는 macOS처럼 'iCloud'에 있다
 	const location = place === 'preview' ? 'iCloud' : title;
 	// 사이드바에서 칠할 곳: 폴더 안에 들어가 있으면 그 폴더가 든 즐겨찾기
-	const root = place === 'preview' || place === 'recents' ? place : (pathTo(locations, place)[0]?.id ?? place);
+	const root =
+		place === 'preview' || place === 'recents' ? place : (sidebarIdOf(locations, place, FAVORITE_IDS) ?? place);
 
 	const open = (item: FinderItem) => {
 		if (item.kind === 'folder') go(item.id);
@@ -172,7 +183,9 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 				{placeButton('preview', root === 'preview' ? FolderOpen : Folder, app.name)}
 				{placeButton('recents', Clock, '최근 항목')}
 				<p className="preview-open-heading">즐겨찾기</p>
-				{locations.map((item) => placeButton(item.id, LOCATION_ICONS[item.id] ?? Folder, item.name))}
+				{foldersOf(locations, FAVORITE_IDS).map((item) =>
+					placeButton(item.id, LOCATION_ICONS[item.id] ?? Folder, item.name)
+				)}
 			</nav>
 			<div className="preview-open-main">
 				{/* macOS 열기 창의 위 막대: 뒤로·앞으로, 보기, 위치, 찾기 */}
