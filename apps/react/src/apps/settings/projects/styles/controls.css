@@ -1,0 +1,416 @@
+/* 프로젝트 편집기의 입력 컨트롤: 글자 칸, 버튼, 팝업, 콤보·토큰 칸, 후보 목록, 창 크기 */
+
+/* 글자 칸: 둥근 테두리 칸 (macOS의 NSTextField) */
+.projects-input {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	height: 26px;
+	padding: 0 8px;
+	border: 1px solid var(--pe-field-border);
+	border-radius: var(--radius-6);
+	background: var(--pe-field-bg);
+	color: var(--color-label);
+	font: inherit;
+	font-size: var(--text-footnote);
+	outline: none;
+	transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+textarea.projects-input {
+	height: auto;
+	min-height: 64px;
+	padding: 5px 8px;
+	line-height: 1.5;
+	resize: vertical;
+}
+
+.projects-input::placeholder,
+.projects-tokens input::placeholder,
+.projects-combo input::placeholder,
+.projects-cell-input::placeholder {
+	color: var(--color-secondary-label);
+	opacity: 0.7;
+}
+
+.projects-input:focus,
+.projects-combo:focus-within,
+.projects-tokens:focus-within {
+	border-color: var(--color-control-accent);
+	box-shadow: 0 0 0 3px var(--pe-focus);
+}
+
+.projects-input.mono {
+	height: 24px;
+	color: var(--color-secondary-label);
+	font:
+		11.5px ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.projects-input.mono:focus {
+	color: var(--color-label);
+}
+
+/* 버튼: macOS의 푸시 버튼 (둥근 사각, 얇은 테두리, 기본 동작은 강조 색 채움) */
+.projects-button {
+	position: relative;
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	height: 24px;
+	padding: 0 12px;
+	border: none;
+	border-radius: var(--radius-6);
+	background: var(--pe-button-bg);
+	box-shadow:
+		0 0 0 0.5px var(--pe-button-border),
+		var(--pe-button-shadow);
+	color: var(--color-label);
+	font: inherit;
+	font-size: var(--text-footnote);
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.projects-button:active {
+	filter: brightness(0.94);
+}
+
+.projects-button.primary {
+	min-width: 64px;
+	background: var(--color-control-accent);
+	box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.2);
+	color: var(--color-white);
+	font-weight: 500;
+}
+
+/* 지우는 버튼 (macOS 시트의 항목 삭제): 빨간 글자. 흰 바탕에서 읽히도록 라이트는 짙은 빨강 */
+.projects-button.destructive {
+	color: var(--color-system-red);
+}
+
+:root[data-theme='dark'] .projects-button.destructive {
+	color: var(--color-system-red);
+}
+
+.projects-button:focus-visible,
+.projects-button:has(input:focus-visible) {
+	outline: 3px solid var(--pe-focus);
+}
+
+.projects-button.busy {
+	opacity: 0.6;
+}
+
+/* 파일 고르기: 버튼 전체를 덮는 보이지 않는 입력 */
+.projects-button input[type='file'] {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	opacity: 0;
+	cursor: pointer;
+}
+
+/* 팝업 버튼 (select·날짜): 오른쪽 강조 색 칸의 ⌃⌄ */
+.projects-popup {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	height: 24px;
+	border: none;
+	border-radius: var(--radius-6);
+	background: var(--pe-button-bg);
+	box-shadow:
+		0 0 0 0.5px var(--pe-button-border),
+		var(--pe-button-shadow);
+	color: var(--color-label);
+	font: inherit;
+	font-size: var(--text-footnote);
+	cursor: pointer;
+}
+
+.projects-popup select {
+	width: 100%;
+	min-width: 0;
+	height: 100%;
+	padding: 0 30px 0 10px;
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-overflow: ellipsis;
+	appearance: none;
+	outline: none;
+	cursor: pointer;
+}
+
+.projects-popup-chevrons,
+button.projects-popup::after {
+	position: absolute;
+	top: 50%;
+	right: 4px;
+	box-sizing: border-box;
+	width: 16px;
+	height: 16px;
+	padding: var(--space-2) var(--space-4);
+	border-radius: var(--radius-4);
+	background: var(--color-control-accent);
+	translate: 0 -50%;
+	pointer-events: none;
+}
+
+.projects-popup-chevrons {
+	fill: none;
+	stroke: var(--color-white);
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 1.5;
+}
+
+/* 날짜 버튼은 select가 아니라 버튼이라 ⌃⌄를 그림으로 붙인다 */
+button.projects-popup {
+	padding: 0 30px 0 10px;
+}
+
+button.projects-popup::after {
+	content: '';
+	background: var(--color-control-accent)
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 12'%3E%3Cpath d='M1.5 4.5 4 2l2.5 2.5M1.5 7.5 4 10l2.5-2.5' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+		center / 8px 12px no-repeat;
+}
+
+.projects-popup:focus-within,
+button.projects-popup:focus-visible,
+button.projects-popup[aria-expanded='true'] {
+	outline: 3px solid var(--pe-focus);
+}
+
+/* 기간: [시작일 ⌃⌄] – [끝날 ⌃⌄]  ☐ 진행 중 */
+.projects-period {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-6);
+}
+
+.projects-date {
+	min-width: 112px;
+	justify-content: flex-start;
+}
+
+.projects-date span {
+	color: var(--color-secondary-label);
+}
+
+.projects-period-dash {
+	color: var(--color-secondary-label);
+}
+
+.projects-input.projects-period-text {
+	flex: none;
+	width: 112px;
+	height: 24px;
+}
+
+.projects-check {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-6);
+	margin-left: var(--space-8);
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	cursor: pointer;
+}
+
+.projects-check input {
+	width: 14px;
+	height: 14px;
+	margin: 0;
+	accent-color: var(--color-control-accent);
+}
+
+/* 콤보 상자 (주 언어): 글자 칸 + 오른쪽 ⌄ 버튼 */
+.projects-combo {
+	position: relative;
+	display: flex;
+	align-items: stretch;
+	height: 26px;
+	overflow: hidden;
+	border: 1px solid var(--pe-field-border);
+	border-radius: var(--radius-6);
+	background: var(--pe-field-bg);
+	transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.projects-combo input {
+	flex: 1;
+	min-width: 0;
+	padding: 0 8px;
+	border: none;
+	background: none;
+	color: var(--color-label);
+	font: inherit;
+	font-size: var(--text-footnote);
+	outline: none;
+}
+
+.projects-combo-button {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 22px;
+	border-left: 1px solid var(--pe-field-border);
+	color: var(--color-secondary-label);
+	font-size: 9px;
+	cursor: pointer;
+}
+
+/* 토큰 칸 (기술): 칸 안에 칩과 입력 */
+.projects-tokens {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-4);
+	min-height: 26px;
+	box-sizing: border-box;
+	padding: 3px 4px;
+	border: 1px solid var(--pe-field-border);
+	border-radius: var(--radius-6);
+	background: var(--pe-field-bg);
+	cursor: text;
+	transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.projects-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-4);
+	max-width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.projects-chips li {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	height: 20px;
+	padding: 0 2px 0 8px;
+	border-radius: 5px;
+	background: color-mix(in srgb, var(--color-control-accent) 16%, transparent);
+	color: var(--color-label);
+	font-size: var(--text-caption);
+	cursor: default;
+}
+
+.projects-chips button {
+	display: grid;
+	place-items: center;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-4);
+	background: none;
+	color: var(--color-secondary-label);
+	font-size: 9px;
+	cursor: pointer;
+}
+
+.projects-chips button:hover {
+	background: color-mix(in srgb, var(--color-label) 12%, transparent);
+	color: var(--color-label);
+}
+
+.projects-tokens input {
+	flex: 1 0 90px;
+	min-width: 90px;
+	height: 20px;
+	padding: 0 4px;
+	border: none;
+	background: none;
+	color: var(--color-label);
+	font: inherit;
+	font-size: var(--text-footnote);
+	outline: none;
+}
+
+/* 후보 목록 (주 언어·기술): 칸 아래에 떠 있다 (body에 portal) */
+.projects-suggestions {
+	position: fixed;
+	z-index: var(--z-menu);
+	max-height: 300px;
+	margin: 0;
+	padding: var(--space-4);
+	overflow-y: auto;
+	border-radius: var(--radius-10);
+	background: var(--color-popover-background);
+	box-shadow: var(--shadow-menu);
+	color: var(--color-label);
+	list-style: none;
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top left;
+}
+
+.projects-suggestions li {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-8);
+	padding: 5px 9px;
+	border-radius: var(--radius-6);
+	font-size: var(--text-footnote);
+	cursor: pointer;
+}
+
+/* npm에서 찾은 후보: 오른쪽에 출처 */
+.projects-suggestion-source {
+	flex: none;
+	padding: 0 6px;
+	border-radius: var(--radius-4);
+	background: color-mix(in srgb, var(--color-brand-npm) 16%, transparent);
+	color: var(--color-brand-npm);
+	font-size: 10px;
+	font-weight: 600;
+}
+
+.projects-suggestions li[aria-selected='true'] .projects-suggestion-source {
+	background: var(--color-on-media-fill-strong);
+	color: var(--color-white);
+}
+
+.projects-suggestions li[aria-selected='true'],
+.projects-suggestions li:hover {
+	background: var(--color-control-accent);
+	color: var(--color-white);
+}
+
+.projects-suggestions li[data-current] {
+	font-weight: 600;
+}
+
+/* 스위치 (shared/ui/switch, 작은 크기): 꺼졌을 때 바탕과 초점 테두리는 편집기 색 */
+.projects-switch {
+	--ui-switch-off: var(--pe-switch-off);
+	--ui-switch-focus: var(--pe-focus);
+}
+
+/* 창 크기: [너비] × [높이] px */
+.projects-size {
+	display: flex;
+	align-items: center;
+	gap: var(--space-6);
+	color: var(--color-secondary-label);
+}
+
+.projects-size .projects-input {
+	width: 76px;
+	text-align: right;
+}

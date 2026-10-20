@@ -1,0 +1,416 @@
+/* 프로젝트 편집기의 표: 줄 목록, 바로 고치는 칸, 화면 목록 */
+
+/* 목록 (macOS의 표): 줄 목록, 아래 ＋/− 막대. 칸을 바로 고치는 표에서 고른 줄은 회색(초점이 있으면 강조 색) 바탕 */
+.projects-table-head {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+	gap: var(--space-12);
+	padding: 7px 19px 6px;
+	border-bottom: 1px solid var(--pe-separator);
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption2);
+	font-weight: 600;
+}
+
+.projects-table-rows {
+	margin: 0;
+	padding: var(--space-4);
+	list-style: none;
+}
+
+.projects-table-row {
+	position: relative;
+	display: grid;
+	/* 첫 칸이 남는 폭을 다 쓰고, 썸네일 같은 칸은 뒤에 제 폭으로 붙는다 */
+	grid-template-columns: minmax(0, 1fr);
+	grid-auto-columns: auto;
+	grid-auto-flow: column;
+	align-items: center;
+	gap: var(--space-12);
+	min-height: 30px;
+	padding: 3px 8px;
+	border-radius: var(--radius-6);
+	background: var(--pe-box);
+	outline: none;
+	cursor: default;
+	user-select: none;
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.projects-table-rows.columns .projects-table-row {
+	grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+}
+
+.projects-table-rows:not(.columns) .projects-table-row:has(.projects-cell-input),
+.projects-table-row:has(.projects-shot) {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+/* 줄 사이 선 (고른 줄 위아래는 빼서 바탕이 깔끔하게) */
+.projects-table-row + .projects-table-row::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 8px;
+	left: 8px;
+	height: 1px;
+	background: var(--pe-separator);
+}
+
+.projects-table-row[aria-selected='true']::before,
+.projects-table-row[aria-selected='true'] + .projects-table-row::before {
+	display: none;
+}
+
+.projects-table-row[aria-selected='true'] {
+	background: var(--pe-selected-quiet);
+}
+
+.projects-table-row[aria-selected='true']:focus {
+	background: var(--color-control-accent);
+	color: var(--color-white);
+}
+
+.projects-table-row:focus-visible:not([aria-selected='true']) {
+	box-shadow: inset 0 0 0 2px var(--pe-focus);
+}
+
+/* 끄는 줄은 위에 떠 보이게 */
+.projects-table-row.reordering {
+	z-index: 2;
+	background: var(--pe-box);
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+	color: var(--color-label);
+	transition: none;
+}
+
+.projects-table-cell {
+	min-width: 0;
+}
+
+.projects-point {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-width: 0;
+	padding: 5px 0;
+}
+
+.projects-point strong {
+	overflow: hidden;
+	font-size: var(--text-footnote);
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.projects-point strong.placeholder {
+	color: var(--color-secondary-label);
+	font-weight: 400;
+}
+
+.projects-point span {
+	display: -webkit-box;
+	overflow: hidden;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+	line-height: 1.4;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.projects-table-row[aria-selected='true']:focus .projects-point span,
+.projects-table-row[aria-selected='true']:focus .projects-point strong.placeholder {
+	color: var(--color-on-media-label);
+}
+
+.projects-row-thumb {
+	display: grid;
+	place-items: center;
+	width: 112px;
+	overflow: hidden;
+	border-radius: var(--radius-6);
+	background: var(--pe-thumb-empty);
+	box-shadow: inset 0 0 0 0.5px var(--pe-box-border);
+	color: var(--color-secondary-label);
+	font-size: var(--text-callout);
+	aspect-ratio: 16 / 10;
+}
+
+.projects-row-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* 표의 칸을 바로 고치는 입력: 평소엔 글자만, 가리키면 테두리, 고치는 중엔 흰 칸 */
+.projects-cell-input {
+	box-sizing: border-box;
+	width: 100%;
+	height: 24px;
+	padding: 0 7px;
+	border: 1px solid transparent;
+	border-radius: 5px;
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: var(--text-footnote);
+	outline: none;
+}
+
+.projects-cell-input:hover {
+	border-color: var(--pe-field-border);
+}
+
+.projects-cell-input:focus {
+	border-color: var(--color-control-accent);
+	background: var(--pe-field-bg);
+	box-shadow: 0 0 0 3px var(--pe-focus);
+	color: var(--color-label);
+}
+
+.projects-table-empty {
+	padding: var(--space-16) 12px;
+	font-size: var(--text-caption);
+}
+
+.projects-table-bar {
+	display: flex;
+	align-items: center;
+	gap: var(--space-10);
+	padding: var(--space-6) var(--space-8);
+	border-top: 1px solid var(--pe-separator);
+	background: var(--pe-bar);
+}
+
+.projects-segmented {
+	display: inline-flex;
+	flex: none;
+	overflow: hidden;
+	border-radius: 5px;
+	background: var(--pe-button-bg);
+	box-shadow:
+		0 0 0 0.5px var(--pe-button-border),
+		var(--pe-button-shadow);
+}
+
+.projects-segmented button {
+	display: grid;
+	place-items: center;
+	width: 26px;
+	height: 20px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-label);
+	cursor: pointer;
+}
+
+.projects-segmented button + button {
+	border-left: 1px solid var(--pe-separator);
+}
+
+.projects-segmented button:active:not(:disabled) {
+	background: var(--pe-selected-quiet);
+}
+
+.projects-segmented button:disabled {
+	color: var(--color-secondary-label);
+	opacity: 0.4;
+	cursor: default;
+}
+
+.projects-segmented button:focus-visible {
+	outline: 2px solid var(--color-control-accent);
+	outline-offset: -2px;
+}
+
+.projects-segmented svg {
+	width: 10px;
+	height: 10px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-width: 1.4;
+}
+
+.projects-table-note {
+	min-width: 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption2);
+	line-height: 1.4;
+	word-break: keep-all;
+}
+
+/*
+ * 이동 목록 (macOS 시스템 설정의 › 줄): 줄 전체가 버튼이라 누르면 시트가 열린다.
+ * 왼쪽 ≡ 손잡이로 순서를 바꾸고, 가리키면 옅은 바탕, 고른 상태(파란 채움)는 두지 않는다
+ */
+.projects-table-row.nav {
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0;
+	padding: 0;
+	transition:
+		transform var(--duration-fast) var(--ease-out),
+		background-color var(--duration-fast) var(--ease-out);
+}
+
+/* 줄 사이 선은 손잡이 뒤에서 시작한다 (macOS 목록의 들여 쓴 선) */
+.projects-table-row.nav + .projects-table-row.nav::before {
+	left: 34px;
+}
+
+.projects-table-row.nav:hover {
+	background: var(--pe-hover);
+}
+
+.projects-table-row.nav:hover::before,
+.projects-table-row.nav:hover + .projects-table-row.nav::before {
+	display: none;
+}
+
+.projects-table-row.nav:has(.projects-nav-row:active) {
+	background: var(--pe-selected-quiet);
+}
+
+.projects-table-row.nav:has(.projects-nav-row:focus-visible) {
+	box-shadow: inset 0 0 0 2px var(--pe-focus);
+}
+
+.projects-row-handle {
+	display: grid;
+	place-items: center;
+	align-self: stretch;
+	width: 30px;
+	padding: 0 0 0 4px;
+	border: none;
+	border-radius: 6px 0 0 6px;
+	background: none;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+	opacity: 0.6;
+	cursor: grab;
+	touch-action: none;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.projects-table-row.nav:hover .projects-row-handle:not(:disabled),
+.projects-row-handle:focus-visible {
+	opacity: 1;
+}
+
+.projects-row-handle:disabled {
+	opacity: 0.25;
+	cursor: default;
+}
+
+.projects-row-handle:focus-visible {
+	outline: 2px solid var(--color-control-accent);
+	outline-offset: -2px;
+}
+
+.projects-nav-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-10);
+	min-width: 0;
+	min-height: 36px;
+	padding: 3px 12px 3px 6px;
+	border: none;
+	border-radius: 0 6px 6px 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	outline: none;
+	cursor: pointer;
+}
+
+.projects-nav-cells {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-auto-columns: auto;
+	grid-auto-flow: column;
+	align-items: center;
+	gap: var(--space-12);
+	min-width: 0;
+}
+
+.projects-nav-chevron {
+	width: 7px;
+	height: 12px;
+	fill: none;
+	stroke: var(--color-secondary-label);
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 1.6;
+	opacity: 0.7;
+}
+
+/* 끄는 줄은 가리킨 바탕 없이 상자 색으로 */
+.projects-table-row.nav.reordering {
+	background: var(--pe-box);
+}
+
+/* 화면 목록의 줄: 썸네일, 설명 칸, 그 아래 주소 칸과 고르기·올리기 */
+.projects-shot {
+	display: grid;
+	grid-template-columns: 88px minmax(0, 1fr);
+	align-items: center;
+	gap: var(--space-12);
+	padding: 6px 0;
+}
+
+.projects-shot-thumb {
+	display: grid;
+	place-items: center;
+	width: 88px;
+	padding: 0;
+	overflow: hidden;
+	border: none;
+	border-radius: var(--radius-6);
+	background: var(--pe-thumb-empty);
+	box-shadow: inset 0 0 0 0.5px var(--pe-box-border);
+	color: var(--color-secondary-label);
+	font-size: var(--text-callout);
+	aspect-ratio: 16 / 10;
+}
+
+button.projects-shot-thumb {
+	cursor: zoom-in;
+}
+
+button.projects-shot-thumb:focus-visible {
+	outline: 3px solid var(--pe-focus);
+}
+
+.projects-shot-thumb img,
+.projects-shot-thumb video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.projects-shot-fields {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-6);
+	min-width: 0;
+}
+
+.projects-shot-source {
+	display: flex;
+	align-items: center;
+	gap: var(--space-6);
+	min-width: 0;
+}
+
+.projects-shot-source .projects-input {
+	flex: 1;
+}
+
+.projects-shot-source .projects-popup {
+	flex: none;
+	width: 92px;
+}

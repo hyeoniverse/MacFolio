@@ -15,6 +15,14 @@ import ProjectsPane from '@/apps/settings/ProjectsPane';
 import { requestedSection } from '@/apps/settings/settingsRequest';
 import Switch from '@/shared/ui/switch/Switch';
 import '@/apps/settings/Settings.css';
+// 아래 순서가 곧 덮어쓰는 순서다 (원래 Settings.css 한 파일이던 것을 차례대로 나눴다)
+import '@/apps/settings/SettingsMobile.css';
+import '@/apps/settings/projects/styles/editor.css';
+import '@/apps/settings/projects/styles/controls.css';
+import '@/apps/settings/projects/styles/media.css';
+import '@/apps/settings/projects/styles/lists.css';
+import '@/apps/settings/projects/styles/sheet.css';
+import '@/apps/settings/projects/styles/preview.css';
 import Sidebar from '@/shared/ui/sidebar/Sidebar';
 
 type Section = 'account' | 'appearance' | 'wallpaper' | 'sound' | 'privacy' | 'about' | 'github' | 'projects';

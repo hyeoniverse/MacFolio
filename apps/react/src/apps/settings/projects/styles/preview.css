@@ -1,0 +1,145 @@
+/* 프로젝트 편집기의 미리 보기 패널과 좁은 창 배치 */
+
+/* 미리 보기 패널: 작은 Safari 창. 페이지를 실제 크기로 그리고 0.6배로 줄여서 넓은 창 모양으로 보인다 */
+.projects-preview {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	padding: var(--space-16);
+	border-left: 1px solid var(--pe-separator);
+	background: var(--pe-inspector);
+}
+
+.projects-preview-window {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+	border-radius: var(--radius-10);
+	background: var(--color-text-background);
+	box-shadow:
+		0 0 0 0.5px rgba(0, 0, 0, 0.22),
+		0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.projects-preview-chrome {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: var(--space-6);
+	padding: var(--space-8) var(--space-10);
+	border-bottom: 1px solid var(--color-separator);
+	background: var(--color-window-background);
+}
+
+.projects-preview-chrome span {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--color-system-gray-3);
+}
+
+.projects-preview-chrome em {
+	flex: 1;
+	margin-left: var(--space-8);
+	padding: 3px 10px;
+	overflow: hidden;
+	border-radius: var(--radius-6);
+	background: var(--color-separator);
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption2);
+	font-style: normal;
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.projects-preview-page {
+	--scale: 0.6;
+	position: relative;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.projects-preview-page > .sp {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: calc(100% / var(--scale));
+	height: calc(100% / var(--scale));
+	overflow-x: hidden;
+	overflow-y: auto;
+	transform: scale(var(--scale));
+	transform-origin: top left;
+	animation: none;
+}
+
+/* 좁은 창: 미리 보기는 폼 아래로, 더 좁으면 이름을 컨트롤 위에 */
+@container (max-width: 900px) {
+	.projects-editor-body.with-preview {
+		display: block;
+		overflow-y: auto;
+	}
+
+	.projects-editor-body.with-preview .projects-editor-form {
+		overflow: visible;
+	}
+
+	.projects-editor-body.with-preview .projects-preview {
+		height: 560px;
+		border-top: 1px solid var(--pe-separator);
+		border-left: none;
+	}
+}
+
+@container (max-width: 640px) {
+	.projects-toolbar {
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		padding: 0 8px;
+	}
+
+	.projects-toolbar-title {
+		display: none;
+	}
+
+	.projects-tabs {
+		justify-self: center;
+	}
+
+	.projects-tabs button {
+		min-width: 0;
+		padding: 3px 8px;
+	}
+
+	.projects-editor-form {
+		padding: 14px 12px 32px;
+	}
+
+	.projects-item {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: var(--space-6);
+	}
+
+	.projects-item-control.end {
+		justify-content: flex-start;
+	}
+}
+
+/*
+ * 공통 Button(ui-button)으로 옮긴 글자 버튼. 공통 CSS가 더하는 값 가운데 이 앱이 정하지 않던 것을 되돌린다.
+ * :where()라 점수가 0이어서, 위에 적은 이 앱의 규칙이 늘 이긴다.
+ */
+:where(.showcase-text-button, .privacy-more):where(.ui-button) {
+	display: inline-block;
+	align-items: normal;
+	justify-content: normal;
+	gap: normal;
+	animation: none;
+	border-radius: 0;
+}
+
+:where(.showcase-text-button):where(.ui-button) {
+	font-family: revert;
+}
