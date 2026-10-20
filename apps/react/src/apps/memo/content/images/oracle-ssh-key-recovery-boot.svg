@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="470" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">임시 VM이 원래 서버 디스크로 부팅된 과정</text>
+
+  <!-- 임시 VM -->
+  <rect x="20" y="50" width="330" height="250" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+  <text x="32" y="74" font-size="13" font-weight="600" fill="#1f2937">임시 VM (디스크 두 개)</text>
+
+  <rect x="40" y="90" width="290" height="80" rx="6" fill="#fff" stroke="#d1d5db"/>
+  <text x="52" y="112" font-size="12" font-weight="600" fill="#1f2937">sda: 임시 VM 자기 디스크</text>
+  <text x="52" y="132" font-size="11" fill="#374151">sda1  LABEL=cloudimg-rootfs   (안 씀)</text>
+  <text x="52" y="150" font-size="11" fill="#4f46e5">sda15 /boot/efi · sda16 /boot   ← 여기서 씀</text>
+
+  <rect x="40" y="186" width="290" height="80" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="52" y="208" font-size="12" font-weight="600" fill="#1f2937">sdb: 붙여 둔 원래 서버 디스크</text>
+  <text x="52" y="228" font-size="11" fill="#b91c1c">sdb1  LABEL=cloudimg-rootfs   ← / 로 잡힘</text>
+  <text x="52" y="246" font-size="11" fill="#374151">~/deploy, Docker, DB 데이터가 다 여기 있다</text>
+
+  <text x="32" y="290" font-size="11" fill="#6b7280">같은 이미지에서 나온 디스크라 루트 이름표가 같다</text>
+
+  <!-- 화살표 -->
+  <path d="M350 175 L390 175" stroke="#4f46e5" stroke-width="2" fill="none"/>
+  <path d="M384 169 L392 175 L384 181" stroke="#4f46e5" stroke-width="2" fill="none"/>
+
+  <!-- cloud-init -->
+  <rect x="395" y="50" width="225" height="250" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="407" y="74" font-size="13" font-weight="600" fill="#4f46e5">재부팅: 원래 서버의 OS가 뜸</text>
+  <text x="407" y="98" font-size="11" fill="#374151">cloud-init: 처음 보는 instance-id</text>
+  <text x="407" y="114" font-size="11" fill="#374151">→ "새 VM의 첫 부팅"으로 처리</text>
+
+  <rect x="411" y="128" width="193" height="38" rx="6" fill="#fff" stroke="#a5b4fc"/>
+  <text x="421" y="151" font-size="11" fill="#1f2937">① 호스트 키를 새로 만든다</text>
+  <rect x="411" y="174" width="193" height="52" rx="6" fill="#fff" stroke="#a5b4fc"/>
+  <text x="421" y="196" font-size="11" fill="#1f2937">② 임시 VM에 등록한 새 공개 키를</text>
+  <text x="421" y="213" font-size="11" fill="#1f2937">   authorized_keys에 더한다</text>
+  <rect x="411" y="234" width="193" height="38" rx="6" fill="#fff" stroke="#a5b4fc"/>
+  <text x="421" y="257" font-size="11" fill="#1f2937">③ DB·API·터널 컨테이너가 뜬다</text>
+  <text x="407" y="290" font-size="11" fill="#6b7280">사이트 API가 임시 VM에서 돌았다</text>
+
+  <!-- 되돌린 뒤 -->
+  <rect x="20" y="320" width="600" height="130" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="32" y="344" font-size="13" font-weight="600" fill="#15803d">원래 서버에 되돌려 켠 뒤</text>
+  <text x="32" y="368" font-size="11" fill="#374151">원래 instance-id는 처음 만들 때 처리한 기록이 디스크에 남아 있어 cloud-init이 다시 하지 않는다</text>
+  <text x="32" y="390" font-size="11" fill="#374151">→ ②의 새 공개 키가 그대로 남아 새 키로 들어간다</text>
+  <text x="32" y="410" font-size="11" fill="#374151">→ ①의 새 호스트 키도 그대로라, 배포가 쓰는 DEPLOY_KNOWN_HOSTS를 바꿔야 한다</text>
+  <text x="32" y="432" font-size="11" fill="#6b7280">authorized_keys에 남은 잃어버린 옛 키 줄은 손으로 지운다</text>
+</svg>
