@@ -39,7 +39,7 @@
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	text-align: left;
 	pointer-events: auto;
-	animation: notification-in-mac 0.4s var(--ease-spring);
+	animation: notification-in-mac var(--duration-slow) var(--ease-spring);
 }
 
 :root[data-theme='dark'] .notification {
@@ -73,7 +73,7 @@
 }
 
 .notification.leaving {
-	animation: notification-out-mac 0.25s var(--ease-in) forwards;
+	animation: notification-out-mac var(--duration) var(--ease-in) forwards;
 }
 
 .notifications.ios .notification.leaving {

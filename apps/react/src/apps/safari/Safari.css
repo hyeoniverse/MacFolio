@@ -166,7 +166,7 @@
 	left: 0;
 	width: 1px;
 	background-color: var(--safari-divider);
-	transition: opacity 0.25s var(--ease-out);
+	transition: opacity var(--duration) var(--ease-out);
 	content: '';
 }
 
@@ -245,7 +245,7 @@
 
 /* 닫기 버튼이 보이는 탭: 왼쪽 버튼(18 + 5)만큼 오른쪽도 비워 제목이 탭 가운데에 온다 */
 .safari-tab-button {
-	transition: padding 0.2s var(--ease-out);
+	transition: padding var(--duration-fast) var(--ease-out);
 }
 
 .safari-tab:hover .safari-tab-button,

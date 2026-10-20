@@ -30,7 +30,7 @@
 	text-align: left;
 	container: weather / inline-size;
 	font-variant-numeric: tabular-nums;
-	transition: background-color 0.4s ease;
+	transition: background-color var(--duration-slow) ease;
 }
 
 /* 밤: 별을 흩뿌리고, 카드는 더 어둡고 투명하게 */
@@ -239,7 +239,7 @@
 	text-align: left;
 	cursor: pointer;
 	touch-action: pan-y;
-	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+	transition: transform var(--duration) var(--ease-out);
 }
 
 .weather-card-face.dragging {

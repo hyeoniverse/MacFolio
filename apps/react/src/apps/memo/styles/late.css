@@ -4,7 +4,7 @@
 .memo-new-item {
 	display: grid;
 	grid-template-rows: 1fr;
-	animation: memo-new-item-in 0.28s var(--ease-out) both;
+	animation: memo-new-item-in var(--duration) var(--ease-out) both;
 }
 
 .memo-new-item > .memo-item {
@@ -13,7 +13,7 @@
 }
 
 .memo-new-item.leaving {
-	animation: memo-new-item-out 0.24s var(--ease-out) both;
+	animation: memo-new-item-out var(--duration) var(--ease-out) both;
 	pointer-events: none;
 }
 

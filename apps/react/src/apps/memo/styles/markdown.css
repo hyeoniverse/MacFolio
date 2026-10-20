@@ -118,7 +118,7 @@
 	border-right: 2px solid var(--memo-muted);
 	border-bottom: 2px solid var(--memo-muted);
 	transform: rotate(-45deg);
-	transition: transform 0.2s ease;
+	transition: transform var(--duration-fast) ease;
 }
 
 .memo-markdown .memo-details[open] > summary::before {
@@ -208,7 +208,7 @@
 	border-right: 2px solid var(--memo-muted);
 	border-bottom: 2px solid var(--memo-muted);
 	transform: rotate(-45deg);
-	transition: transform 0.2s ease;
+	transition: transform var(--duration-fast) ease;
 	cursor: pointer;
 }
 
