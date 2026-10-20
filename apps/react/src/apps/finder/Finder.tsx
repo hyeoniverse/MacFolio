@@ -31,6 +31,7 @@ import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
 import Sidebar from '@/shared/ui/sidebar/Sidebar';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 type View = 'icons' | 'list';
 
@@ -553,13 +554,13 @@ const Finder: React.FC = () => {
 							{'doc' in place ? (
 								<DocView path={place.doc} dark={dark} onOpenDoc={(path) => go({ doc: path })} />
 							) : empty ? (
-								<p className="finder-empty">
+								<EmptyState className="finder-empty">
 									{drop.admin && dropFolder
 										? '파일을 여기에 끌어다 놓으면 올라갑니다 (PDF·그림·문서·영상·소리·ZIP, 20MB까지).'
 										: (folder.emptyNote ?? '비어 있음')}
-								</p>
+								</EmptyState>
 							) : searching && items.length === 0 ? (
-								<p className="finder-empty">찾는 이름이 없습니다.</p>
+								<EmptyState className="finder-empty">찾는 이름이 없습니다.</EmptyState>
 							) : view === 'icons' ? (
 								<div key={placeKey} className="finder-grid motion-swap" role="listbox" aria-label={title}>
 									{items.map((item) => (

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { type Breakdown, type Row } from './activityApi';
 import { labelOf } from './model';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 type SortKey = 'name' | 'value';
 
@@ -73,7 +74,7 @@ const StatTable = ({
 			<h3>{title}</h3>
 			{note && <p className="activity-table-note">{note}</p>}
 			{rows.length === 0 ? (
-				<p className="activity-empty">{empty}</p>
+				<EmptyState className="activity-empty">{empty}</EmptyState>
 			) : (
 				<table aria-label={title}>
 					<thead>

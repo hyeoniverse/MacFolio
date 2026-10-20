@@ -21,6 +21,7 @@ import Button from '@/shared/ui/button/Button';
 import TabList from '@/shared/ui/tabs/TabList';
 import Sidebar from '@/shared/ui/sidebar/Sidebar';
 import ListRow from '@/shared/ui/list-row/ListRow';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 const fromServer = (mail: ContactMail, replyable: boolean): ListMail => ({
 	id: mail.id,
@@ -303,7 +304,7 @@ const Mail: React.FC = () => {
 								</p>
 							)}
 							{mails.length === 0 ? (
-								<p className="mail-list-empty">{emptyText}</p>
+								<EmptyState className="mail-list-empty">{emptyText}</EmptyState>
 							) : (
 								// 사서함을 바꾸면 목록이 서서히 바뀐다
 								<ul key={mailbox} className="motion-swap">

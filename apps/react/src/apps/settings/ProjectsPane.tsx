@@ -51,6 +51,7 @@ import TabList from '@/shared/ui/tabs/TabList';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import { move as moveItem } from '@/apps/settings/showcase';
 import { fillWithSample } from '@/apps/settings/lookSamples';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 /** 목록의 한 줄: 프로젝트 하나 (코드의 기본값에 덮어쓴 모습) */
 interface Row {
@@ -1668,7 +1669,7 @@ function ListTable<T>({
 					</div>
 				)}
 				{items.length === 0 ? (
-					<p className="projects-table-empty">항목이 없습니다. ＋를 눌러 더합니다.</p>
+					<EmptyState className="projects-table-empty">항목이 없습니다. ＋를 눌러 더합니다.</EmptyState>
 				) : detail ? (
 					// 이동 목록 (macOS 설정의 › 줄): 왼쪽 ≡ 손잡이, 가운데 줄 버튼(제목·설명·그림·›)
 					<ol className="projects-table-rows nav" aria-label={label} ref={listRef}>

@@ -2448,9 +2448,7 @@ button.projects-thumb:focus-visible {
 
 .projects-table-empty {
 	padding: 18px 12px;
-	color: var(--color-text-secondary);
 	font-size: 12px;
-	text-align: center;
 }
 
 .projects-table-bar {

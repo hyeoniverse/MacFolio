@@ -11,6 +11,7 @@ import { MAILBOX_LABEL, type ListMail, type Mailbox } from '../model';
 import { takeComposeRequest } from '../composeRequest';
 import '@/apps/mail/components/MailMobile.css';
 import IconButton from '@/shared/ui/button/IconButton';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 const MAILBOX_ICON: Record<Mailbox, string> = { inbox: 'fa-solid fa-inbox', sent: 'fa-regular fa-paper-plane' };
 
@@ -221,13 +222,13 @@ const MailMobile: React.FC<Props> = ({
 				<h2 className="phone-title">{MAILBOX_LABEL[screen.mailbox]}</h2>
 				<p className="phone-title-sub">메일 {mails.length}통</p>
 				{mails.length === 0 ? (
-					<p className="mail-phone-empty">
+					<EmptyState className="mail-phone-empty">
 						{screen.mailbox === 'sent'
 							? '보낸 메일이 없습니다. 이 브라우저에서 보낸 메일만 보입니다.'
 							: loading
 								? '불러오는 중…'
 								: '받은 메일이 없습니다.'}
-					</p>
+					</EmptyState>
 				) : (
 					<ul className="mail-phone-list">
 						{mails.map((mail) => (
@@ -330,7 +331,7 @@ const MailMobile: React.FC<Props> = ({
 				</div>
 			</>
 		) : (
-			<p className="mail-phone-empty">메일을 찾을 수 없습니다.</p>
+			<EmptyState className="mail-phone-empty">메일을 찾을 수 없습니다.</EmptyState>
 		);
 	}
 

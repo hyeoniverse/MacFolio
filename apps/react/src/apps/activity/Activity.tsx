@@ -26,6 +26,7 @@ import { change, eventLabel, formatDuration, kstToday, labelOf, PERIODS, periodR
 import '@/apps/activity/Activity.css';
 import Button from '@/shared/ui/button/Button';
 import TabList from '@/shared/ui/tabs/TabList';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 const TABS = [
 	{ id: 'overview', label: '개요' },
@@ -118,8 +119,8 @@ const Overview = ({ summary }: { summary: Summary }) => {
 
 const Live = ({ visits }: { visits: LiveVisit[] | null }) => {
 	const [open, setOpen] = useState<string | null>(null);
-	if (!visits) return <p className="activity-empty">불러오는 중…</p>;
-	if (!visits.length) return <p className="activity-empty">최근 30분 동안 방문이 없습니다</p>;
+	if (!visits) return <EmptyState className="activity-empty">불러오는 중…</EmptyState>;
+	if (!visits.length) return <EmptyState className="activity-empty">최근 30분 동안 방문이 없습니다</EmptyState>;
 	return (
 		<section className="activity-live">
 			<h3>최근 30분 · {visits.length}개 방문</h3>
@@ -286,15 +287,15 @@ const Activity = () => {
 	]);
 
 	const body = () => {
-		if (!env.apiUrl) return <p className="activity-empty">연결된 서버가 없습니다 (VITE_API_URL)</p>;
+		if (!env.apiUrl) return <EmptyState className="activity-empty">연결된 서버가 없습니다 (VITE_API_URL)</EmptyState>;
 		if (tab === 'live' && !admin)
 			return <AdminOnly what="실시간 방문은 방문 흐름과 가린 IP가 있어서 관리자에게만 보입니다." />;
 		if (tab === 'server' && !admin)
 			return <AdminOnly what="서버 자원 사용률과 Oracle 유휴 회수 위험은 관리자에게만 보입니다." />;
-		if (error) return <p className="activity-empty error">{error}</p>;
+		if (error) return <EmptyState className="activity-empty error">{error}</EmptyState>;
 		if (tab === 'live') return <Live visits={live} />;
 		if (tab === 'server') return <Server status={resources} />;
-		if (!summary) return <p className="activity-empty">불러오는 중…</p>;
+		if (!summary) return <EmptyState className="activity-empty">불러오는 중…</EmptyState>;
 		const { breakdown } = summary;
 		switch (tab) {
 			case 'overview':

@@ -165,9 +165,7 @@
 .finder-empty {
 	margin: 0;
 	padding: 48px 24px;
-	color: var(--color-text-secondary);
 	font-size: var(--text-footnote);
-	text-align: center;
 }
 
 /* ─── 아이콘 보기 ─── */

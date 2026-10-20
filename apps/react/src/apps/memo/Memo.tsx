@@ -64,6 +64,7 @@ import { useTrash } from './useTrash';
 import { useMemoAppMenus } from './useMemoAppMenus';
 import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 /** 칸을 넓혀도 본문은 이만큼(px) 남긴다 */
 const READER_MIN = 360;
@@ -519,10 +520,10 @@ const Memo: React.FC = () => {
 
 	const empty = (
 		<>
-			{status === 'loading' && <p className="memo-empty">불러오는 중…</p>}
-			{status === 'error' && <p className="memo-empty">글을 불러오지 못했습니다.</p>}
+			{status === 'loading' && <EmptyState className="memo-empty">불러오는 중…</EmptyState>}
+			{status === 'error' && <EmptyState className="memo-empty">글을 불러오지 못했습니다.</EmptyState>}
 			{status === 'ready' && visible.length === 0 && (
-				<p className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</p>
+				<EmptyState className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</EmptyState>
 			)}
 		</>
 	);

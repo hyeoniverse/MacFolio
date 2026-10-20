@@ -23,6 +23,7 @@ import AppsGlyph from './AppsGlyph';
 import '@/apps/finder/FinderMobile.css';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import IconButton from '@/shared/ui/button/IconButton';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 type Tab = 'recents' | 'browse';
 type View = 'icons' | 'list';
@@ -196,7 +197,11 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 					{title}
 				</h2>
 				<div key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
-					{viewable ? <FileView item={viewable} /> : <p className="files-phone-empty">파일을 찾을 수 없습니다.</p>}
+					{viewable ? (
+						<FileView item={viewable} />
+					) : (
+						<EmptyState className="files-phone-empty">파일을 찾을 수 없습니다.</EmptyState>
+					)}
 				</div>
 			</div>
 		);
@@ -286,13 +291,13 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 					items.length > 0 ? (
 						grid
 					) : (
-						<p className="files-phone-empty">
+						<EmptyState className="files-phone-empty">
 							{searching
 								? '찾는 이름이 없습니다.'
 								: folder?.kind === 'folder'
 									? (folder.emptyNote ?? '비어 있음')
 									: '최근 항목이 없습니다.'}
-						</p>
+						</EmptyState>
 					)
 				) : (
 					<>

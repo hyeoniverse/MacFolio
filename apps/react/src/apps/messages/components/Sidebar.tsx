@@ -6,6 +6,7 @@ import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import SidebarPanel from '@/shared/ui/sidebar/Sidebar';
 import ListRow from '@/shared/ui/list-row/ListRow';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 interface Props {
 	threads: Thread[];
@@ -101,7 +102,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 						</ListRow>
 					))}
 					{others.length === 0 && !loading && (
-						<li className="messages-empty">
+						<EmptyState as="li" className="messages-empty">
 							<i
 								className={`messages-empty-icon ${query ? 'fa-solid fa-magnifying-glass' : 'fa-regular fa-comments'}`}
 								aria-hidden="true"
@@ -110,7 +111,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 							<span className="messages-empty-hint">
 								{query ? '맞춤법을 확인하거나 새로운 검색을 시도하십시오.' : '첫 번째 피드백을 남겨 주세요.'}
 							</span>
-						</li>
+						</EmptyState>
 					)}
 				</ul>
 			</SidebarPanel>

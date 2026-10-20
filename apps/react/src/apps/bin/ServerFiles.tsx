@@ -5,6 +5,7 @@ import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import { deleteServerFile, formatSize, type ServerFile } from './filesApi';
 import type { useServerFiles } from './useServerFiles';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString('ko-KR');
 
@@ -29,13 +30,13 @@ const ServerFiles = ({ files }: { files: ReturnType<typeof useServerFiles> }) =>
 		reload();
 	};
 
-	if (!loaded) return <p className="bin-empty-note">불러오는 중…</p>;
+	if (!loaded) return <EmptyState className="bin-empty-note">불러오는 중…</EmptyState>;
 	if (rows.length === 0)
 		return (
-			<div className="bin-empty-note">
+			<EmptyState as="div" className="bin-empty-note">
 				<p>서버에 올린 파일이 없습니다.</p>
 				<p className="bin-files-note">{SCOPE_NOTE}</p>
-			</div>
+			</EmptyState>
 		);
 	return (
 		<div className="bin-files">

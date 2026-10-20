@@ -90,8 +90,6 @@
 	min-height: 160px;
 	margin: 0;
 	padding: var(--activity-gap);
-	color: var(--color-text-secondary);
-	text-align: center;
 }
 
 .activity-empty.error {
