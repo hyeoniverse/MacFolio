@@ -125,7 +125,7 @@
 	align-items: center;
 	justify-content: flex-end;
 	min-height: 44px;
-	padding: 6px 10px 0;
+	padding: var(--space-6) var(--space-10) 0;
 }
 
 /* 좁은 창에서만 보이는 새 메시지 버튼 */
@@ -141,8 +141,8 @@
 	gap: var(--space-8);
 	height: 36px;
 	margin: var(--space-4) var(--space-12) var(--space-8);
-	padding: 0 14px;
-	border-radius: 18px;
+	padding: 0 var(--space-14);
+	border-radius: var(--radius-18);
 	background-color: var(--messages-search-bg);
 	color: var(--messages-meta);
 	font-size: var(--text-footnote);
@@ -187,7 +187,7 @@
 
 /* 대화 목록: 글자 시작점부터 들여 쓴 구분선 */
 .messages-threads {
-	padding: 0 8px 10px;
+	padding: 0 var(--space-8) var(--space-10);
 	list-style: none;
 }
 
@@ -303,7 +303,7 @@
 	flex-direction: column;
 	align-items: center;
 	gap: var(--space-4);
-	padding: 6px 60px 8px;
+	padding: var(--space-6) 60px var(--space-8);
 }
 
 .messages-name-pill {
@@ -312,8 +312,8 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--space-4);
-	padding: 5px 12px;
-	border-radius: 16px;
+	padding: var(--space-4) var(--space-12);
+	border-radius: var(--radius-14);
 	background-color: var(--messages-float-bg);
 	box-shadow: var(--messages-float-shadow);
 	color: var(--messages-text);
@@ -331,9 +331,9 @@
 	top: 12px;
 	right: 12px;
 	z-index: 4;
-	padding: 5px 12px;
+	padding: var(--space-4) var(--space-12);
 	border: none;
-	border-radius: 16px;
+	border-radius: var(--radius-14);
 	background-color: var(--messages-float-bg);
 	box-shadow: var(--messages-float-shadow);
 	color: var(--messages-text);
@@ -347,12 +347,12 @@
 
 .messages-transcript {
 	flex: 1;
-	padding: 4px 22px 12px;
+	padding: var(--space-4) var(--space-20) var(--space-12);
 	overflow-y: auto;
 }
 
 .messages-time {
-	margin: 12px 0 8px;
+	margin: var(--space-12) 0 var(--space-8);
 	color: var(--messages-meta);
 	font-size: var(--text-caption2);
 	text-align: center;
@@ -383,7 +383,7 @@
 }
 
 .messages-sender {
-	margin: 2px 14px 3px;
+	margin: var(--space-2) var(--space-14) var(--space-2);
 	color: var(--messages-meta);
 	font-size: var(--text-caption2);
 }
@@ -391,8 +391,8 @@
 .messages-bubble {
 	position: relative;
 	max-width: 70%;
-	padding: 7px 13px 8px;
-	border-radius: 19px;
+	padding: var(--space-6) var(--space-12) var(--space-8);
+	border-radius: var(--radius-18);
 	font-size: var(--text-subhead);
 	line-height: 1.35;
 	white-space: pre-wrap;
@@ -447,7 +447,7 @@
 }
 
 .messages-receipt {
-	margin: 3px 4px 0 0;
+	margin: var(--space-2) var(--space-4) 0 0;
 	color: var(--messages-meta);
 	font-size: var(--text-caption2);
 }
@@ -485,7 +485,7 @@
 
 /* 입력창 위: 이 브라우저의 이름 (이름·비밀번호는 받지 않는다) */
 .messages-as {
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 	color: var(--messages-meta);
 	font-size: var(--text-caption2);
 }
@@ -502,7 +502,7 @@
 	gap: var(--space-4);
 	min-height: 36px;
 	padding: var(--space-4) var(--space-4) var(--space-4) var(--space-16);
-	border-radius: 18px;
+	border-radius: var(--radius-18);
 	background-color: var(--messages-float-bg);
 	box-shadow: var(--messages-float-shadow);
 }
@@ -510,7 +510,7 @@
 .messages-field textarea {
 	flex: 1;
 	max-height: 7rem;
-	padding: 5px 0;
+	padding: var(--space-4) 0;
 	border: none;
 	background: none;
 	color: var(--messages-text);
@@ -623,14 +623,14 @@
 
 .container.mobile .messages-sidebar {
 	/* 아래는 떠 있는 검색 알약·새 피드백만큼 비워, 마지막 대화를 그 위로 올려 볼 수 있게 */
-	padding: var(--phone-top) 16px 120px;
+	padding: var(--phone-top) var(--space-16) 120px;
 	background-color: var(--messages-window-bg);
 }
 
 /* 고정 대화: 고른 것을 칠하지 않고 아바타만 크게 */
 .container.mobile .messages-pinned {
 	gap: var(--space-20);
-	padding: 4px 0 16px;
+	padding: var(--space-4) 0 var(--space-16);
 }
 
 .container.mobile .messages-pinned-item,
@@ -668,7 +668,7 @@
 
 .container.mobile .messages-thread {
 	align-items: center;
-	padding: 14px 0;
+	padding: var(--space-14) 0;
 	border-radius: 0;
 }
 
@@ -699,7 +699,7 @@
 }
 
 .container.mobile .messages-thread-preview {
-	margin-top: 3px;
+	margin-top: var(--space-2);
 	font-size: var(--text-subhead);
 	line-height: 1.35;
 }
@@ -711,7 +711,7 @@
 	align-items: center;
 	gap: var(--space-8);
 	margin-top: 56px;
-	padding: 0 24px;
+	padding: 0 var(--space-24);
 	font-size: var(--text-subhead);
 }
 
@@ -773,12 +773,12 @@
    앱은 상태 표시줄 밑까지 그려지므로 위 여백에 상태 표시줄 높이(--phone-status)를 더한다 */
 .container.mobile .messages-chat-header {
 	gap: var(--space-10);
-	padding: calc(var(--phone-status) + 8px) 16px 12px;
+	padding: calc(var(--phone-status) + var(--space-8)) var(--space-16) var(--space-12);
 }
 
 /* 새 피드백: 이름 알약을 떠 있는 버튼 줄(상태 표시줄 아래 6~50px) 가운데에 맞추고, 설명은 그 줄 아래로 띄운다 */
 .container.mobile .messages-chat-header:has(.messages-cancel) {
-	padding-top: calc(var(--phone-status) + 12px);
+	padding-top: calc(var(--phone-status) + var(--space-12));
 }
 
 .container.mobile .messages-chat-header:has(.messages-cancel) .messages-chat-subtitle {
@@ -824,7 +824,7 @@
 
 /* 이름 한 줄: 입력 알약 위, 알약 글자와 같은 안쪽 여백에서 시작 */
 .container.mobile .messages-as {
-	padding: 0 16px;
+	padding: 0 var(--space-16);
 	font-size: var(--text-footnote);
 }
 
@@ -835,7 +835,7 @@
 }
 
 .container.mobile .messages-field textarea {
-	padding: 8px 0;
+	padding: var(--space-8) 0;
 	font-size: var(--text-callout);
 }
 
@@ -848,14 +848,14 @@
 /* iOS 메시지 목록: 큰 제목 대신 떠 있는 뒤로 가기와 같은 줄 가운데에 작은 제목, 고정 대화는 크게 */
 .container.mobile .messages-phone-title.phone-title {
 	justify-content: center;
-	margin: 0 0 14px;
+	margin: 0 0 var(--space-14);
 	padding: 0 56px;
 	font-size: var(--text-title3);
 	font-weight: 700;
 }
 
 .container.mobile .messages-pinned {
-	padding: 4px 0 22px;
+	padding: var(--space-4) 0 var(--space-20);
 }
 
 .container.mobile .messages-pinned-item,
@@ -871,7 +871,7 @@
 }
 
 .container.mobile .messages-composer {
-	padding-bottom: calc(10px + var(--phone-bottom-inset));
+	padding-bottom: calc(var(--space-10) + var(--phone-bottom-inset));
 }
 
 /* ─── 움직임 ─── */

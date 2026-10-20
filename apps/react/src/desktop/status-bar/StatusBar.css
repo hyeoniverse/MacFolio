@@ -2,7 +2,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0 10px;
+	padding: 0 var(--space-10);
 	box-shadow: var(--shadow-raised);
 	position: fixed;
 	top: 0;
@@ -168,7 +168,7 @@
 /* 작은 화면에서 대응 */
 @media (max-width: 600px) {
 	.macos-statusbar {
-		padding: 0 5px;
+		padding: 0 var(--space-4);
 	}
 
 	.macos-statusbar .right-section {

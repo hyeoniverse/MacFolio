@@ -2,6 +2,7 @@
 
 /* macOS 메모 앱 색 */
 [data-app='memo'] {
+	--memo-avatar-gradient: linear-gradient(180deg, #b8bcc6, #8e929c); /* 댓글 아바타 */
 	--memo-rank-bronze: #c76a00;
 	--memo-scheduled-bg: #3b82f6;
 	--memo-scheduled-text: #2563eb;

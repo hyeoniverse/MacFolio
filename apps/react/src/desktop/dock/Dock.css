@@ -6,8 +6,8 @@
 .dock {
 	display: flex;
 	align-items: center;
-	gap: var(--dock-gap, 16px);
-	padding: 0 var(--dock-padding, 16px);
+	gap: var(--dock-gap, var(--space-16));
+	padding: 0 var(--dock-padding, var(--space-16));
 	box-shadow: var(--shadow-card);
 	position: fixed;
 	bottom: 2rem;

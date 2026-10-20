@@ -39,7 +39,7 @@
 .web-frame-loading img {
 	width: 64px;
 	height: 64px;
-	border-radius: 15px;
+	border-radius: var(--radius-14);
 	box-shadow: var(--shadow-card);
 	animation: web-frame-pulse 1.4s ease-in-out infinite;
 }

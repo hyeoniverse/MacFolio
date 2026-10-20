@@ -41,7 +41,7 @@
 .projects-preview-chrome em {
 	flex: 1;
 	margin-left: var(--space-8);
-	padding: 3px 10px;
+	padding: var(--space-2) var(--space-10);
 	overflow: hidden;
 	border-radius: var(--radius-6);
 	background: var(--color-separator);
@@ -95,7 +95,7 @@
 @container (max-width: 640px) {
 	.projects-toolbar {
 		grid-template-columns: auto minmax(0, 1fr) auto;
-		padding: 0 8px;
+		padding: 0 var(--space-8);
 	}
 
 	.projects-toolbar-title {
@@ -108,11 +108,11 @@
 
 	.projects-tabs button {
 		min-width: 0;
-		padding: 3px 8px;
+		padding: var(--space-2) var(--space-8);
 	}
 
 	.projects-editor-form {
-		padding: 14px 12px 32px;
+		padding: var(--space-14) var(--space-12) 32px;
 	}
 
 	.projects-item {

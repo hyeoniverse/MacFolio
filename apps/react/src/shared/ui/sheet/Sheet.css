@@ -32,7 +32,7 @@
 
 /* 아래에 떠 있는 카드: 홈 막대 위에 띄우고 네 모서리를 둥글게 */
 .ui-sheet.card {
-	margin: 0 12px calc(var(--phone-bottom-inset, 0px) + 8px);
+	margin: 0 var(--space-12) calc(var(--phone-bottom-inset, 0px) + var(--space-8));
 	border-radius: 34px;
 	box-shadow: var(--shadow-modal);
 	animation-timing-function: var(--ease-spring);
@@ -56,7 +56,7 @@
 	width: 36px;
 	height: 5px;
 	margin-bottom: var(--space-8);
-	border-radius: 3px;
+	border-radius: var(--radius-4);
 	background-color: var(--color-separator);
 }
 

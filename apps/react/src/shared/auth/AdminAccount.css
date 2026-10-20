@@ -30,9 +30,9 @@
 .admin-account-avatar.placeholder {
 	display: grid;
 	place-items: center;
-	background: linear-gradient(#b8b8be, var(--color-system-gray));
+	background: var(--gradient-avatar-placeholder);
 	color: var(--color-white);
-	font-size: 24px;
+	font-size: var(--text-title1);
 }
 
 .admin-account-status {
@@ -65,7 +65,7 @@
 }
 
 .admin-account-actions .ui-button {
-	gap: 7px;
+	gap: var(--space-6);
 	border: 1px solid var(--color-separator);
 	font-size: var(--text-footnote);
 }
@@ -85,7 +85,7 @@
 	display: flex;
 	justify-content: space-between;
 	gap: var(--space-16);
-	padding: 9px 12px;
+	padding: var(--space-8) var(--space-12);
 }
 
 .admin-account-details div + div {
@@ -116,7 +116,7 @@
 .container.mobile .admin-account-head,
 .container.mobile .admin-account-details {
 	border: none;
-	border-radius: 16px;
+	border-radius: var(--radius-14);
 	background-color: var(--phone-card-bg);
 }
 
@@ -129,7 +129,7 @@
 	justify-content: center;
 	min-height: 48px;
 	border: none;
-	border-radius: 16px;
+	border-radius: var(--radius-14);
 	font-size: var(--text-callout);
 }
 
@@ -144,7 +144,7 @@
 .container.mobile .admin-account-details div {
 	min-height: 48px;
 	align-items: center;
-	padding: 11px 16px;
+	padding: var(--space-10) var(--space-16);
 }
 
 /* 줄 사이 선은 글자가 시작하는 자리부터 (iOS) */

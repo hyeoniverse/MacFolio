@@ -109,7 +109,7 @@ test.describe('사진 (#21)', () => {
 		// 둥근 모서리 사각형 (원이 아니다: 세로가 조금 더 길고 모서리는 반지름 9px)
 		const box = (await next.boundingBox())!;
 		expect(box.height).toBeGreaterThan(box.width);
-		await expect(next).toHaveCSS('border-radius', '9px');
+		await expect(next).toHaveCSS('border-radius', '8px');
 		expect(box.height).toBeLessThanOrEqual(40);
 
 		// 가운데에서는 둘 다 숨고, 오른쪽 가장자리 가까이 가면 다음만, 왼쪽이면 이전만

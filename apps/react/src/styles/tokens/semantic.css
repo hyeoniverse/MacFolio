@@ -104,6 +104,17 @@
 	--color-brand-github: var(--palette-brand-github);
 	--color-brand-npm: var(--palette-brand-npm);
 
+	/* 그라데이션: 여러 곳에서 같은 모양으로 쓰는 것 */
+	--gradient-avatar-placeholder: linear-gradient(
+		var(--palette-gray-450),
+		var(--color-system-gray)
+	); /* 사진 없는 아바타 */
+	--gradient-graphite: linear-gradient(
+		160deg,
+		var(--color-system-gray),
+		var(--palette-gray-650)
+	); /* 흑연색 아이콘 (이 Mac에 관하여·설정) */
+
 	/* 코드 강조 (메모·Finder 미리보기·터미널) */
 	--color-code-keyword: var(--palette-code-red-light);
 	--color-code-string: var(--palette-code-navy-light);
@@ -145,6 +156,7 @@
 	--z-notifications: 9000;
 	--z-loading: 9999;
 	--z-menu: 10000; /* 펼친 메뉴·팝오버·라이트박스: 어떤 창보다 위 */
+	--z-fullscreen: 12000; /* 화면 전체를 덮는 보기: 슬라이드쇼·그림 크게 보기 (메뉴 위, 오류 화면 아래) */
 	--z-app-error: 15000; /* 앱 오류 화면 */
 	--z-login: 20000; /* 로그인: 가장 위 */
 }

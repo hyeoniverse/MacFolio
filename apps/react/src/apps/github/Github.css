@@ -58,13 +58,13 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--space-8) var(--space-10);
-	padding: 12px 24px 0;
+	padding: var(--space-12) var(--space-24) 0;
 	border-bottom: 1px solid var(--gh-border);
 	background-color: var(--gh-header-bg);
 }
 
 .gh-header > i {
-	font-size: 26px;
+	font-size: var(--text-title1);
 }
 
 .gh-header > strong {
@@ -98,7 +98,7 @@
 }
 
 .gh-counter {
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 	border-radius: 2em;
 	background-color: var(--gh-counter-bg);
 	font-size: var(--text-caption);
@@ -125,11 +125,11 @@
 }
 
 .gh-names {
-	padding: 16px 0;
+	padding: var(--space-16) 0;
 }
 
 .gh-names h1 {
-	font-size: 24px;
+	font-size: var(--text-title1);
 	font-weight: 600;
 	line-height: 1.25;
 }
@@ -148,7 +148,7 @@
 
 .gh-button {
 	display: block;
-	padding: 5px 16px;
+	padding: var(--space-4) var(--space-16);
 	border: 1px solid var(--gh-border);
 	border-radius: var(--radius-6);
 	background-color: var(--gh-button-bg);
@@ -159,7 +159,7 @@
 }
 
 .gh-follow {
-	margin: 16px 0;
+	margin: var(--space-16) 0;
 	color: var(--gh-muted);
 }
 
@@ -220,7 +220,7 @@
 }
 
 .gh-banner strong {
-	font-size: clamp(28px, 6vw, 48px);
+	font-size: clamp(var(--text-title1), 6vw, 48px);
 	font-weight: 700;
 	line-height: 1.1;
 }
@@ -248,7 +248,7 @@
 
 .gh-readme-body h1,
 .gh-readme-body h2 {
-	margin: 24px 0 16px;
+	margin: var(--space-24) 0 var(--space-16);
 	padding-bottom: 0.3em;
 	border-bottom: 1px solid var(--gh-border);
 	font-weight: 600;
@@ -264,7 +264,7 @@
 }
 
 .gh-readme-body h3 {
-	margin: 24px 0 16px;
+	margin: var(--space-24) 0 var(--space-16);
 	font-size: 1.25em;
 	font-weight: 600;
 }
@@ -296,7 +296,7 @@
 
 .gh-readme-body td,
 .gh-readme-body th {
-	padding: 6px 13px;
+	padding: var(--space-6) var(--space-12);
 	border: 1px solid var(--gh-border);
 	text-align: left;
 	vertical-align: top;
@@ -321,7 +321,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--space-6);
-	margin: 2px 0;
+	margin: var(--space-2) 0;
 	padding: var(--space-6) var(--space-12);
 	border-radius: var(--radius-4);
 	color: var(--color-white);
@@ -389,7 +389,7 @@
 .gh-badge {
 	flex: none;
 	margin-left: auto;
-	padding: 0 7px;
+	padding: 0 var(--space-6);
 	border: 1px solid var(--gh-border);
 	border-radius: 2em;
 	color: var(--gh-muted);
@@ -440,7 +440,7 @@
 /* 좁은 창 (모바일): 프로필을 위에 가로로, 저장소는 한 줄 */
 @container (max-width: 700px) {
 	.gh-header {
-		padding: 10px 16px 0;
+		padding: var(--space-10) var(--space-16) 0;
 	}
 
 	.gh-body {
@@ -477,7 +477,7 @@
 	}
 
 	.gh-bio {
-		margin: 12px 0;
+		margin: var(--space-12) 0;
 	}
 
 	.gh-readme {
@@ -534,7 +534,7 @@
 	display: grid;
 	grid-template-columns: 28px repeat(var(--weeks), var(--cell));
 	grid-template-rows: 15px repeat(7, var(--cell));
-	gap: 3px;
+	gap: var(--space-2);
 	width: max-content;
 	color: var(--gh-text);
 	font-size: var(--text-caption);
@@ -581,7 +581,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
-	gap: 3px;
+	gap: var(--space-2);
 	margin-top: var(--space-8);
 	color: var(--gh-muted);
 	font-size: var(--text-caption);
@@ -596,7 +596,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-10);
-	margin: 16px 0 4px;
+	margin: var(--space-16) 0 var(--space-4);
 	font-size: var(--text-caption);
 	font-weight: 600;
 }
@@ -618,7 +618,7 @@
 	gap: var(--space-8);
 	align-items: start;
 	position: relative;
-	padding: 8px 0;
+	padding: var(--space-8) 0;
 }
 
 /* 아이콘을 잇는 세로줄 */
@@ -647,7 +647,7 @@
 
 .gh-activity-body {
 	min-width: 0;
-	padding-top: 5px;
+	padding-top: var(--space-4);
 }
 
 .gh-activity-body p {
@@ -656,7 +656,7 @@
 
 .gh-activity-ref {
 	margin-left: var(--space-6);
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 	border-radius: var(--radius-6);
 	background-color: var(--gh-counter-bg);
 	color: var(--gh-muted);
@@ -673,7 +673,7 @@
 }
 
 .gh-activity time {
-	padding-top: 5px;
+	padding-top: var(--space-4);
 	color: var(--gh-muted);
 	font-size: var(--text-caption);
 	white-space: nowrap;
@@ -692,8 +692,8 @@
 /* 휴대폰 머리: 첫 줄(로고·이름)은 떠 있는 뒤로 가기와 같은 줄(높이 44px), 그 버튼 오른쪽 20px부터.
    탭 줄은 들여 쓰지 않고 화면 폭을 다 쓴다 */
 .container.mobile .gh-header {
-	gap: 0 10px;
-	padding: var(--phone-top) 16px 0;
+	gap: 0 var(--space-10);
+	padding: var(--phone-top) var(--space-16) 0;
 }
 
 .container.mobile .gh-header > :is(i, strong) {
@@ -704,7 +704,7 @@
 
 .container.mobile .gh-header > i {
 	margin-left: 64px;
-	font-size: 24px;
+	font-size: var(--text-title1);
 }
 
 .container.mobile .gh-header > strong {

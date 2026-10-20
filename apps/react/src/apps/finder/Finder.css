@@ -42,7 +42,7 @@
 .finder-sidebar {
 	gap: var(--space-2);
 	width: 180px;
-	padding: 0 10px 12px;
+	padding: 0 var(--space-10) var(--space-12);
 	background-color: var(--finder-sidebar-bg);
 }
 
@@ -63,7 +63,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-8);
-	padding: 5px 8px;
+	padding: var(--space-4) var(--space-8);
 	border: none;
 	border-radius: var(--radius-6);
 	background: none;
@@ -99,7 +99,7 @@
 
 .finder-toolbar {
 	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 두고 버튼·찾기 칸만 위로 올린다 */
-	padding: 0 12px;
+	padding: 0 var(--space-12);
 	border-bottom: 1px solid var(--color-separator);
 }
 
@@ -113,7 +113,7 @@
 .finder-title {
 	flex: 1;
 	min-width: 0;
-	margin: 0 4px;
+	margin: 0 var(--space-4);
 	overflow: hidden;
 	font-size: var(--text-subhead);
 	font-weight: 700;
@@ -134,8 +134,8 @@
 	gap: var(--space-6);
 	min-width: 110px;
 	height: 28px;
-	padding: 0 8px;
-	border-radius: 7px;
+	padding: 0 var(--space-8);
+	border-radius: var(--radius-6);
 	background-color: var(--color-unemphasized-selected-content-background);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
@@ -164,7 +164,7 @@
 
 .finder-empty {
 	margin: 0;
-	padding: 48px 24px;
+	padding: 48px var(--space-24);
 	font-size: var(--text-footnote);
 }
 
@@ -210,7 +210,7 @@
 .finder-img {
 	width: 48px;
 	height: 48px;
-	border-radius: 11px;
+	border-radius: var(--radius-10);
 	object-fit: cover;
 	box-shadow: var(--shadow-raised);
 }
@@ -218,7 +218,7 @@
 .finder-grid .finder-name {
 	display: -webkit-box;
 	max-width: 100%;
-	padding: 1px 5px;
+	padding: 1px var(--space-4);
 	overflow: hidden;
 	border-radius: var(--radius-4);
 	font-size: var(--text-caption);
@@ -242,7 +242,7 @@
 
 /* ─── 목록 보기 ─── */
 .finder-list {
-	padding: 0 0 8px;
+	padding: 0 0 var(--space-8);
 	font-size: var(--text-footnote);
 }
 
@@ -252,7 +252,7 @@
 	grid-template-columns: minmax(0, 1fr) 140px 110px;
 	align-items: center;
 	gap: var(--space-8);
-	padding: 0 16px;
+	padding: 0 var(--space-16);
 }
 
 .finder-list-head {
@@ -269,9 +269,9 @@
 
 .finder-list .finder-item {
 	height: 26px;
-	margin: 0 6px;
-	padding: 0 10px;
-	border-radius: 5px;
+	margin: 0 var(--space-6);
+	padding: 0 var(--space-10);
+	border-radius: var(--radius-4);
 }
 
 .finder-list .finder-item:nth-child(odd) {
@@ -340,7 +340,7 @@
 	align-items: center;
 	gap: var(--space-12);
 	height: 26px;
-	padding: 0 12px;
+	padding: 0 var(--space-12);
 	border-top: 1px solid var(--color-separator);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
@@ -362,7 +362,7 @@
 }
 
 .finder-pathbar button {
-	padding: 1px 3px;
+	padding: 1px var(--space-2);
 	border: none;
 	border-radius: var(--radius-4);
 	background: none;
@@ -390,7 +390,7 @@
 .finder-doc {
 	max-width: 760px;
 	margin: 0 auto;
-	padding: 24px 32px 48px;
+	padding: var(--space-24) 32px 48px;
 	font-size: var(--text-footnote);
 	line-height: 1.7;
 	overflow-wrap: anywhere;
@@ -491,7 +491,7 @@
 
 .finder-doc :not(pre) > code {
 	padding: 0.15em 0.4em;
-	border-radius: 5px;
+	border-radius: var(--radius-4);
 	background-color: var(--color-unemphasized-selected-content-background);
 	font-size: 0.88em;
 }
@@ -501,7 +501,7 @@
 	overflow: auto;
 	border-radius: var(--radius-8);
 	background-color: var(--sidebar-background);
-	font-size: 12.5px;
+	font-size: var(--text-footnote);
 	line-height: 1.55;
 }
 
@@ -623,7 +623,7 @@
 	}
 
 	.finder-doc {
-		padding: 16px var(--space-16) 40px;
+		padding: var(--space-16) var(--space-16) 40px;
 	}
 }
 
@@ -722,10 +722,10 @@
 	width: 100%;
 	max-width: 112px;
 	margin: 0;
-	padding: 1px 4px;
+	padding: 1px var(--space-4);
 	overflow: hidden;
 	border: none;
-	border-radius: 3px;
+	border-radius: var(--radius-4);
 	outline: 3px solid color-mix(in srgb, var(--color-control-accent) 60%, transparent);
 	background: var(--color-text-background);
 	color: var(--color-label);

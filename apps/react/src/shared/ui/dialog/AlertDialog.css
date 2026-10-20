@@ -16,8 +16,8 @@
 		display: grid;
 		gap: var(--space-10);
 		width: min(300px, calc(100% - 32px));
-		padding: 22px var(--space-16) 16px;
-		border-radius: 26px;
+		padding: var(--space-20) var(--space-16) var(--space-16);
+		border-radius: var(--radius-22);
 		background-color: var(--color-popover-background);
 		box-shadow: var(--shadow-modal);
 		color: var(--color-label);

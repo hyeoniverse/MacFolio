@@ -81,7 +81,7 @@
 
 /* ─── 사이드바 ─── */
 .music-sidebar {
-	padding: 0 10px 12px;
+	padding: 0 var(--space-10) var(--space-12);
 	overflow-y: auto;
 	background-color: var(--music-sidebar-bg);
 	border-right: 1px solid var(--music-separator);
@@ -101,8 +101,8 @@
 	display: none;
 	align-items: center;
 	gap: var(--space-6);
-	margin: 0 0 12px;
-	padding: 4px 0;
+	margin: 0 0 var(--space-12);
+	padding: var(--space-4) 0;
 	border: none;
 	background: none;
 	color: var(--music-accent);
@@ -159,7 +159,7 @@
 
 /* ─── 재생 목록 ─── */
 .music-main {
-	padding: 52px var(--space-24) 24px;
+	padding: 52px var(--space-24) var(--space-24);
 	overflow-y: auto;
 	animation: rise-in var(--duration) var(--ease-out);
 }
@@ -167,7 +167,7 @@
 .music-header {
 	display: flex;
 	align-items: flex-end;
-	gap: 22px;
+	gap: var(--space-20);
 	margin-bottom: var(--space-20);
 }
 
@@ -194,7 +194,7 @@
 }
 
 .music-header h1 {
-	font-size: 26px;
+	font-size: var(--text-title1);
 	line-height: 1.2;
 }
 
@@ -217,7 +217,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--space-6);
-	padding: 6px var(--space-16);
+	padding: var(--space-6) var(--space-16);
 	border-radius: var(--radius-8);
 	background-color: var(--music-selected);
 	color: var(--music-accent);
@@ -329,7 +329,7 @@
 
 /* ─── 다음 재생 ─── */
 .music-up-next {
-	padding: 52px 14px 16px;
+	padding: 52px var(--space-14) var(--space-16);
 	overflow-y: auto;
 	border-left: 1px solid var(--music-separator);
 	animation: fade-in var(--duration) var(--ease-out);
@@ -483,7 +483,7 @@
 	flex-direction: column;
 	align-items: center;
 	gap: var(--space-16);
-	padding: 24px var(--space-24) var(--space-24);
+	padding: var(--space-24) var(--space-24) var(--space-24);
 	color: var(--color-white);
 	isolation: isolate;
 }
@@ -530,7 +530,7 @@
 .music-now-playing .music-transport {
 	align-self: stretch;
 	justify-content: space-between;
-	font-size: 24px;
+	font-size: var(--text-title1);
 }
 
 .music-now-playing .music-transport .music-play {
@@ -552,7 +552,7 @@
 
 .music-now-playing .music-up-next {
 	align-self: stretch;
-	padding: 12px 0 0;
+	padding: var(--space-12) 0 0;
 	border: none;
 	animation: none;
 }
@@ -589,7 +589,7 @@
 
 	/* 위쪽은 신호등 버튼(닫기·최소화·확대) 줄 높이만큼 비운다. 휴대폰은 아래에서 --phone-top으로 덮어쓴다 */
 	.music-sidebar {
-		padding: 44px 16px 16px;
+		padding: 44px var(--space-16) var(--space-16);
 		border: none;
 		background-color: var(--music-bg);
 	}
@@ -602,7 +602,7 @@
 	.music-large-title {
 		display: block;
 		margin: var(--space-12) var(--space-4) var(--space-8);
-		font-size: 30px;
+		font-size: var(--text-title1);
 	}
 
 	.music-playlist-link {
@@ -633,7 +633,7 @@
 
 	/* 위쪽은 신호등 버튼 줄 높이만큼 비우고, 그 아래에 뒤로 가기 */
 	.music-main {
-		padding: 44px 16px 24px;
+		padding: 44px var(--space-16) var(--space-24);
 	}
 
 	.music-back {
@@ -663,7 +663,7 @@
 		max-width: 180px;
 		white-space: nowrap;
 		justify-content: center;
-		padding: 10px var(--space-16);
+		padding: var(--space-10) var(--space-16);
 		font-size: var(--text-subhead);
 	}
 
@@ -689,7 +689,7 @@
 	/* 미니 플레이어 */
 	.music-player-bar {
 		grid-template-columns: minmax(0, 1fr) auto;
-		margin: 0 8px 8px;
+		margin: 0 var(--space-8) var(--space-8);
 		padding: var(--space-8) var(--space-10);
 		border: none;
 		border-radius: var(--radius-14);
@@ -733,7 +733,7 @@
 	}
 
 	.container.mobile .music-sidebar {
-		padding: var(--phone-top) 16px 24px;
+		padding: var(--phone-top) var(--space-16) var(--space-24);
 	}
 
 	/* 넓은 창의 재생 목록 대신 iOS 음악의 보관함 */
@@ -751,7 +751,7 @@
 		align-items: center;
 		gap: var(--space-10);
 		width: 100%;
-		margin: 4px 0 20px;
+		margin: var(--space-4) 0 var(--space-20);
 		font-size: var(--text-body);
 		font-weight: 600;
 	}
@@ -782,7 +782,7 @@
 		gap: var(--space-16);
 		position: relative;
 		width: 100%;
-		padding: 13px 4px;
+		padding: var(--space-12) var(--space-4);
 		font-size: var(--text-title3);
 		text-align: left;
 	}
@@ -790,7 +790,7 @@
 	.container.mobile .music-phone-list-link > i:first-child {
 		width: 22px;
 		color: var(--music-accent);
-		font-size: 19px;
+		font-size: var(--text-title3);
 		text-align: center;
 	}
 
@@ -814,7 +814,7 @@
 		gap: var(--space-14);
 		position: relative;
 		width: 100%;
-		padding: 8px 0;
+		padding: var(--space-8) 0;
 		text-align: left;
 	}
 
@@ -919,7 +919,7 @@
 
 	.container.mobile .music-pill {
 		height: 50px;
-		border-radius: 25px;
+		border-radius: var(--radius-22);
 		background-color: var(--music-selected);
 		color: var(--music-accent);
 		font-size: var(--text-body);
@@ -946,7 +946,7 @@
 		grid-template-columns: 48px minmax(0, 1fr) auto;
 		gap: var(--space-14);
 		position: relative;
-		padding: 7px 0;
+		padding: var(--space-6) 0;
 		border-radius: 0;
 	}
 
@@ -964,7 +964,7 @@
 	.container.mobile .music-track img {
 		width: 48px;
 		height: 48px;
-		border-radius: 5px;
+		border-radius: var(--radius-4);
 	}
 
 	.container.mobile .music-track-number {
@@ -978,7 +978,7 @@
 		width: 48px;
 		height: 48px;
 		place-items: center;
-		border-radius: 5px;
+		border-radius: var(--radius-4);
 		background-color: var(--color-scrim);
 		color: var(--color-white);
 	}
@@ -1001,7 +1001,7 @@
 	}
 
 	.container.mobile .music-player-bar {
-		margin: 0 12px 8px;
+		margin: 0 var(--space-12) var(--space-8);
 		padding: var(--space-6) var(--space-8) var(--space-6) var(--space-6);
 		border-radius: 28px;
 		background-color: var(--phone-card-bg);
@@ -1015,7 +1015,7 @@
 
 /* 휴대폰: 홈 바가 내용 위에 떠 있어, 아래에 떠 있는 것은 홈 바 높이(--phone-bottom-inset)만큼 올린다 */
 .container.mobile .music-player-bar {
-	margin-bottom: calc(8px + var(--phone-bottom-inset));
+	margin-bottom: calc(var(--space-8) + var(--phone-bottom-inset));
 }
 
 /* 휴대폰: 시트는 떠 있는 뒤로 가기(닫기) 아래에 깔고, 그 동그라미 자리만큼 위를 비운다 */

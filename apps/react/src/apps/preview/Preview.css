@@ -29,10 +29,10 @@
 .preview-toolbar .preview-sidebar-toggle {
 	display: inline-flex;
 	align-items: center;
-	gap: 3px;
+	gap: var(--space-2);
 	width: auto;
 	height: 28px;
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 	border-radius: var(--radius-8);
 	color: var(--color-secondary-label);
 }
@@ -46,7 +46,7 @@
 
 /* 사이드바가 열리면 이름은 사이드바 오른쪽에서 시작한다 */
 .with-sidebar .preview-title {
-	margin-left: calc(var(--preview-sidebar) + 18px - 76px - 46px - var(--space-8));
+	margin-left: calc(var(--preview-sidebar) + var(--space-16) - 76px - 46px - var(--space-8));
 }
 
 .preview-title h1 {
@@ -77,7 +77,7 @@
 	display: inline-flex;
 	align-items: center;
 	height: 34px;
-	padding: 0 3px;
+	padding: 0 var(--space-2);
 	border-radius: var(--radius-full);
 	background-color: var(--preview-glass);
 	box-shadow:
@@ -155,7 +155,7 @@
 	width: var(--preview-sidebar);
 	padding: 48px var(--space-6) var(--space-12);
 	overflow-y: auto;
-	border-radius: 16px;
+	border-radius: var(--radius-14);
 	background-color: var(--sidebar-background);
 	box-shadow:
 		inset 0 0 0 0.5px color-mix(in srgb, var(--color-label) 12%, transparent),
@@ -195,8 +195,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 3px;
-	padding: 6px 6px 3px;
+	gap: var(--space-2);
+	padding: var(--space-6) var(--space-6) var(--space-2);
 	border: 0;
 	border-radius: var(--radius-8);
 	background: none;
@@ -211,7 +211,7 @@
 .preview-thumb img {
 	display: block;
 	width: 112px;
-	border-radius: 3px;
+	border-radius: var(--radius-4);
 	background-color: var(--color-white);
 	box-shadow: var(--shadow-raised);
 }
@@ -248,7 +248,7 @@
 }
 
 .with-sidebar .preview-main {
-	margin-left: calc(var(--preview-sidebar) + 16px);
+	margin-left: calc(var(--preview-sidebar) + var(--space-16));
 }
 
 .preview-pdf {
@@ -394,10 +394,10 @@
 	flex: 0 0 200px;
 	flex-direction: column;
 	gap: var(--space-2);
-	margin: 8px 0 8px 8px;
+	margin: var(--space-8) 0 var(--space-8) var(--space-8);
 	padding: 48px var(--space-8) var(--space-12);
 	overflow-y: auto;
-	border-radius: 16px;
+	border-radius: var(--radius-14);
 	background-color: var(--sidebar-background);
 	box-shadow: inset 0 0 0 0.5px color-mix(in srgb, var(--color-label) 12%, transparent);
 }
@@ -414,7 +414,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-8);
-	padding: 6px var(--space-8);
+	padding: var(--space-6) var(--space-8);
 	border: 0;
 	border-radius: var(--radius-8);
 	background: none;
@@ -469,7 +469,7 @@
 	gap: var(--space-10);
 	height: 30px;
 	padding: 0 var(--space-10);
-	border-radius: 9px;
+	border-radius: var(--radius-8);
 	background-color: var(--preview-glass);
 	color: var(--color-secondary-label);
 }
@@ -496,7 +496,7 @@
 	min-width: 0;
 	height: 30px;
 	padding: 0 var(--space-10);
-	border-radius: 9px;
+	border-radius: var(--radius-8);
 	background-color: var(--preview-glass);
 	font-size: var(--text-footnote);
 }
@@ -528,7 +528,7 @@
 	min-width: 90px;
 	height: 30px;
 	padding: 0 var(--space-10);
-	border-radius: 9px;
+	border-radius: var(--radius-8);
 	box-shadow: inset 0 0 0 1px var(--color-separator);
 	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
@@ -587,7 +587,7 @@
 .preview-open-thumb .preview-open-paper {
 	max-width: 52px;
 	max-height: 68px;
-	border-radius: 3px;
+	border-radius: var(--radius-4);
 	object-fit: contain;
 	background-color: var(--color-white);
 	box-shadow: var(--shadow-raised);
@@ -625,15 +625,15 @@
 .preview-open-blank {
 	width: 50px;
 	height: 66px;
-	border-radius: 3px;
+	border-radius: var(--radius-4);
 	background-color: var(--color-white);
 	box-shadow: var(--shadow-raised);
 }
 
 .preview-open-name {
 	max-width: 100%;
-	padding: 1px 6px;
-	border-radius: 5px;
+	padding: 1px var(--space-6);
+	border-radius: var(--radius-4);
 	overflow-wrap: anywhere;
 	text-align: center;
 }
@@ -677,7 +677,7 @@
 .slideshow {
 	position: fixed;
 	inset: 0;
-	z-index: 100000;
+	z-index: var(--z-fullscreen);
 	display: grid;
 	background: var(--color-black);
 	outline: none;
@@ -708,7 +708,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-4);
-	padding: 6px 10px;
+	padding: var(--space-6) var(--space-10);
 	border: 1px solid var(--color-on-media-separator);
 	border-radius: var(--radius-14);
 	background: var(--color-material-hud);
@@ -761,7 +761,7 @@
 .slideshow-divider {
 	width: 1px;
 	height: 18px;
-	margin: 0 4px;
+	margin: 0 var(--space-4);
 	background: var(--color-on-media-fill);
 }
 

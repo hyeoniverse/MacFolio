@@ -3,7 +3,7 @@
 /* ─── 본문 ─── */
 /* 위쪽 4px: 맨 위의 게시 버튼(편집기)이 스크롤 칸 가장자리에 붙어 위쪽이 잘리지 않게 */
 .memo-reader .memo-scroll {
-	padding: 4px 2rem 3rem;
+	padding: var(--space-4) 2rem 3rem;
 }
 
 /* 본문 아래 이전 글·다음 글: 두 칸, 다음 글은 오른쪽 정렬 */
@@ -39,9 +39,9 @@
 }
 
 .memo-like.post {
-	gap: 7px;
+	gap: var(--space-6);
 	height: 34px;
-	padding: 0 16px 0 14px;
+	padding: 0 var(--space-16) 0 var(--space-14);
 	border-radius: var(--radius-full);
 	background-color: var(--memo-fill);
 	color: var(--memo-text);
@@ -66,7 +66,7 @@
 .memo-like.comment {
 	gap: var(--space-4);
 	min-height: 24px;
-	padding: 2px 7px;
+	padding: var(--space-2) var(--space-6);
 	margin-left: -7px;
 	border-radius: var(--radius-full);
 	font-size: var(--text-caption);
@@ -134,8 +134,8 @@
 	min-width: 18px;
 	height: 18px;
 	margin-right: var(--space-6);
-	padding: 0 4px;
-	border-radius: 5px;
+	padding: 0 var(--space-4);
+	border-radius: var(--radius-4);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
 	font-size: var(--text-caption2);
@@ -214,10 +214,10 @@
 	z-index: 4;
 	flex: none;
 	align-items: center;
-	gap: 5px;
+	gap: var(--space-4);
 	white-space: nowrap;
 	margin-left: var(--space-6);
-	padding: 2px 9px;
+	padding: var(--space-2) var(--space-8);
 	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 22%, transparent);
 	color: var(--memo-text);
@@ -349,7 +349,7 @@ button.memo-admin-chip {
 /* 날짜·폴더: 글자처럼 보이다가 올리면 누를 수 있다는 표시 */
 .memo-meta-button {
 	margin: 0 -3px;
-	padding: 0 3px;
+	padding: 0 var(--space-2);
 	border: none;
 	border-radius: var(--radius-6);
 	background: none;
@@ -459,7 +459,7 @@ button.memo-admin-chip {
 .memo-status-badge {
 	display: inline-block;
 	margin-left: var(--space-6);
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 	border-radius: var(--radius-full);
 	font-size: 10px;
 	font-weight: 600;
@@ -544,7 +544,7 @@ button.memo-admin-chip {
 	display: inline-block;
 	min-width: 0;
 	height: auto;
-	padding: 3px 6px;
+	padding: var(--space-2) var(--space-6);
 	background: none;
 	border-radius: var(--radius-6);
 	color: var(--memo-accent);
@@ -572,7 +572,7 @@ button.memo-admin-chip {
 .memo-format-panel .memo-revision-restore {
 	width: 100%;
 	margin-top: var(--space-8);
-	padding: 7px 0;
+	padding: var(--space-6) 0;
 	border-radius: var(--radius-full);
 	background-color: var(--notes-accent);
 	color: var(--notes-on-accent);

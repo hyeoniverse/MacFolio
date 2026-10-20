@@ -6,7 +6,7 @@
 	width: 100%;
 	min-width: 0;
 	height: 26px;
-	padding: 0 8px;
+	padding: 0 var(--space-8);
 	border: 1px solid var(--pe-field-border);
 	border-radius: var(--radius-6);
 	background: var(--pe-field-bg);
@@ -20,7 +20,7 @@
 textarea.projects-input {
 	height: auto;
 	min-height: 64px;
-	padding: 5px 8px;
+	padding: var(--space-4) var(--space-8);
 	line-height: 1.5;
 	resize: vertical;
 }
@@ -61,9 +61,9 @@ textarea.projects-input {
 	flex: none;
 	align-items: center;
 	justify-content: center;
-	gap: 5px;
+	gap: var(--space-4);
 	height: 24px;
-	padding: 0 12px;
+	padding: 0 var(--space-12);
 	border: none;
 	border-radius: var(--radius-6);
 	background: var(--pe-button-bg);
@@ -139,7 +139,7 @@ textarea.projects-input {
 	width: 100%;
 	min-width: 0;
 	height: 100%;
-	padding: 0 30px 0 10px;
+	padding: 0 30px 0 var(--space-10);
 	border: none;
 	background: none;
 	color: inherit;
@@ -175,7 +175,7 @@ button.projects-popup::after {
 
 /* 날짜 버튼은 select가 아니라 버튼이라 ⌃⌄를 그림으로 붙인다 */
 button.projects-popup {
-	padding: 0 30px 0 10px;
+	padding: 0 30px 0 var(--space-10);
 }
 
 button.projects-popup::after {
@@ -251,7 +251,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-combo input {
 	flex: 1;
 	min-width: 0;
-	padding: 0 8px;
+	padding: 0 var(--space-8);
 	border: none;
 	background: none;
 	color: var(--color-label);
@@ -279,7 +279,7 @@ button.projects-popup[aria-expanded='true'] {
 	gap: var(--space-4);
 	min-height: 26px;
 	box-sizing: border-box;
-	padding: 3px 4px;
+	padding: var(--space-2) var(--space-4);
 	border: 1px solid var(--pe-field-border);
 	border-radius: var(--radius-6);
 	background: var(--pe-field-bg);
@@ -302,8 +302,8 @@ button.projects-popup[aria-expanded='true'] {
 	align-items: center;
 	gap: var(--space-2);
 	height: 20px;
-	padding: 0 2px 0 8px;
-	border-radius: 5px;
+	padding: 0 var(--space-2) 0 var(--space-8);
+	border-radius: var(--radius-4);
 	background: color-mix(in srgb, var(--color-control-accent) 16%, transparent);
 	color: var(--color-label);
 	font-size: var(--text-caption);
@@ -333,7 +333,7 @@ button.projects-popup[aria-expanded='true'] {
 	flex: 1 0 90px;
 	min-width: 90px;
 	height: 20px;
-	padding: 0 4px;
+	padding: 0 var(--space-4);
 	border: none;
 	background: none;
 	color: var(--color-label);
@@ -364,7 +364,7 @@ button.projects-popup[aria-expanded='true'] {
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--space-8);
-	padding: 5px 9px;
+	padding: var(--space-4) var(--space-8);
 	border-radius: var(--radius-6);
 	font-size: var(--text-footnote);
 	cursor: pointer;
@@ -373,7 +373,7 @@ button.projects-popup[aria-expanded='true'] {
 /* npm에서 찾은 후보: 오른쪽에 출처 */
 .projects-suggestion-source {
 	flex: none;
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 	border-radius: var(--radius-4);
 	background: color-mix(in srgb, var(--color-brand-npm) 16%, transparent);
 	color: var(--color-brand-npm);

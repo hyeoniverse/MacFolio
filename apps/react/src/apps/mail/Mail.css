@@ -1,5 +1,6 @@
 /* macOS 26 메일 앱 색 */
 [data-app='mail'] {
+	--mail-avatar-gradient: linear-gradient(#8e9fe0, var(--mail-quote));
 	--mail-quote: #6d7ed1;
 	--mail-window-bg: var(--color-text-background);
 	--mail-panel-bg: var(--list-pane-background);
@@ -80,7 +81,7 @@
 
 /* ─── 메일상자: 창 안에 떠 있는 둥근 패널 ─── */
 .mail-sidebar {
-	padding: 0 8px 8px;
+	padding: 0 var(--space-8) var(--space-8);
 	background-color: var(--mail-panel-bg);
 	box-shadow: var(--mail-panel-shadow);
 }
@@ -146,7 +147,7 @@
 }
 
 .mail-list ul {
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 }
 
 .mail-item {
@@ -169,7 +170,7 @@
 	flex: none;
 	width: 8px;
 	height: 8px;
-	margin-top: 5px;
+	margin-top: var(--space-4);
 	border-radius: 50%;
 	background-color: var(--mail-accent);
 }
@@ -259,7 +260,7 @@
 }
 
 .mail-reader h1 {
-	margin: 16px 0 12px;
+	margin: var(--space-16) 0 var(--space-12);
 	font-size: var(--text-title3);
 }
 
@@ -280,7 +281,7 @@
 
 /* 받은 메일 아래의 주인 답장 (보낸 편지함, 관리자의 받은 편지함) */
 .mail-thread {
-	margin: 0 0 20px;
+	margin: 0 0 var(--space-20);
 	padding: 0;
 	list-style: none;
 }
@@ -288,7 +289,7 @@
 .mail-thread-reply {
 	padding: var(--space-12) var(--space-14) var(--space-2);
 	border-left: 3px solid var(--mail-accent);
-	border-radius: 4px 10px 10px 4px;
+	border-radius: var(--radius-4) var(--radius-10) var(--radius-10) var(--radius-4);
 	background-color: var(--mail-hover-bg);
 }
 
@@ -423,7 +424,7 @@
 }
 
 .mail-recipient {
-	padding: 1px 8px;
+	padding: 1px var(--space-8);
 	border-radius: var(--radius-10);
 	background-color: var(--mail-hover-bg);
 }
@@ -517,7 +518,7 @@
 	min-width: 0;
 	height: auto;
 	margin-bottom: var(--space-12);
-	padding: 4px 0;
+	padding: var(--space-4) 0;
 	border: none;
 	border-radius: 0;
 	background: none;
@@ -538,9 +539,9 @@
 	.mail-mailbox-tabs {
 		display: flex;
 		gap: var(--space-4);
-		margin: 0 12px 8px;
+		margin: 0 var(--space-12) var(--space-8);
 		padding: var(--space-2);
-		border-radius: 9px;
+		border-radius: var(--radius-8);
 		background-color: var(--mail-hover-bg);
 	}
 
@@ -548,7 +549,7 @@
 		flex: 1;
 		padding: var(--space-4) var(--space-8);
 		border: none;
-		border-radius: 7px;
+		border-radius: var(--radius-6);
 		background: none;
 	}
 
@@ -638,7 +639,7 @@
 }
 
 .mail-copy-address.mail-recipient {
-	padding: 1px 8px;
+	padding: 1px var(--space-8);
 }
 
 .mail-copy-address.mail-recipient:hover {

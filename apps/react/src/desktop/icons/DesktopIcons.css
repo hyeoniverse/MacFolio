@@ -70,9 +70,9 @@
 
 /* 이름: 흰 글자에 그림자 (어떤 배경화면에서도 읽히게), 두 줄까지 */
 .desktop-icon-label {
-	margin-top: 3px;
+	margin-top: var(--space-2);
 	max-width: 92px;
-	padding: 1px 5px;
+	padding: 1px var(--space-4);
 	border-radius: var(--radius-4);
 	font-size: var(--text-caption);
 	line-height: 15px;
@@ -138,11 +138,11 @@
 .desktop-rename {
 	box-sizing: border-box;
 	width: 92px;
-	margin-top: 3px;
-	padding: 1px 4px;
+	margin-top: var(--space-2);
+	padding: 1px var(--space-4);
 	overflow: hidden;
 	border: none;
-	border-radius: 3px;
+	border-radius: var(--radius-4);
 	outline: 3px solid color-mix(in srgb, var(--color-control-accent) 60%, transparent);
 	background: var(--color-text-background);
 	color: var(--color-label);

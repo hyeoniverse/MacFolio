@@ -57,7 +57,7 @@
 	min-width: 0;
 	/* 접힐 때 넘친 버튼을 자르되, 버튼의 초점 테두리는 보이게 여유를 둔다 */
 	margin: -3px;
-	padding: 3px;
+	padding: var(--space-2);
 	overflow: hidden;
 }
 
@@ -182,7 +182,7 @@
 	box-sizing: border-box;
 	width: min(100%, 560px);
 	margin: 0.5em auto 0;
-	padding: 5px 10px;
+	padding: var(--space-4) var(--space-10);
 	border: 1px solid var(--memo-border);
 	border-radius: var(--radius-8);
 	background-color: var(--memo-bg);

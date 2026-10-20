@@ -132,11 +132,11 @@
 }
 
 .memo-table-handle.col.on {
-	border-radius: 6px 6px 0 0;
+	border-radius: var(--radius-6) var(--radius-6) 0 0;
 }
 
 .memo-table-handle.row.on {
-	border-radius: 6px 0 0 6px;
+	border-radius: var(--radius-6) 0 0 var(--radius-6);
 }
 
 .memo-table-handle-chevron {
@@ -283,7 +283,7 @@
 	align-items: center;
 	gap: var(--space-6);
 	max-width: 100%;
-	padding: 3px 10px;
+	padding: var(--space-2) var(--space-10);
 	border: 1px solid var(--memo-border);
 	border-radius: var(--radius-8);
 	background-color: var(--memo-code-bg);

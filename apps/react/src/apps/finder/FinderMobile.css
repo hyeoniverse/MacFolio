@@ -13,7 +13,7 @@
 .files-phone-scroll {
 	height: 100%;
 	overflow-y: auto;
-	padding: var(--phone-top) 16px calc(var(--phone-bottom-inset) + 96px);
+	padding: var(--phone-top) var(--space-16) calc(var(--phone-bottom-inset) + 96px);
 }
 
 .files-phone-scroll.inside,
@@ -66,8 +66,8 @@
 	align-items: center;
 	gap: var(--space-8);
 	height: 40px;
-	margin-bottom: 22px;
-	padding: 0 14px;
+	margin-bottom: var(--space-20);
+	padding: 0 var(--space-14);
 	border-radius: var(--radius-full);
 	background-color: var(--color-tertiary-system-fill);
 	color: var(--color-secondary-label);
@@ -103,7 +103,7 @@
 .files-phone-items.icons {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 26px 12px;
+	gap: 26px var(--space-12);
 }
 
 .files-phone-item {
@@ -144,7 +144,7 @@
 }
 
 .files-phone-icon img {
-	border-radius: 16px;
+	border-radius: var(--radius-14);
 }
 
 .files-phone-text {
@@ -206,7 +206,7 @@
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-	padding: 0 16px 10px;
+	padding: 0 var(--space-16) var(--space-10);
 	border: none;
 	background: none;
 	color: inherit;
@@ -233,7 +233,7 @@
 	gap: var(--space-16);
 	width: 100%;
 	min-height: 56px;
-	padding: 0 16px;
+	padding: 0 var(--space-16);
 	border: none;
 	background: none;
 	color: inherit;
@@ -282,9 +282,9 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 3px;
+	gap: var(--space-2);
 	min-width: 96px;
-	padding: 7px 16px 6px;
+	padding: var(--space-6) var(--space-16) var(--space-6);
 	border: none;
 	border-radius: var(--radius-full);
 	background: none;
@@ -305,7 +305,7 @@
 
 /* ─── 문서 읽기 ─── */
 .files-phone.doc .files-phone-scroll {
-	padding-bottom: calc(var(--phone-bottom-inset) + 24px);
+	padding-bottom: calc(var(--phone-bottom-inset) + var(--space-24));
 	background-color: var(--phone-card-bg);
 }
 
@@ -356,7 +356,7 @@
 }
 
 .files-phone.file .preview-pdf {
-	padding-top: calc(var(--phone-top) + 54px + 12px);
+	padding-top: calc(var(--phone-top) + 54px + var(--space-12));
 	padding-bottom: calc(var(--phone-bottom-inset) + 56px);
 }
 
@@ -382,7 +382,7 @@
 	position: absolute;
 	bottom: calc(var(--phone-bottom-inset) + 12px);
 	left: 50%;
-	padding: 6px 14px;
+	padding: var(--space-6) var(--space-14);
 	border-radius: var(--radius-full);
 	background-color: var(--color-scrim-strong);
 	color: var(--color-white);

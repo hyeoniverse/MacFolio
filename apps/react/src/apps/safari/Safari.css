@@ -61,7 +61,7 @@
 /* ─── 도구 막대 (신호등 버튼과 같은 높이) ─── */
 .safari-toolbar {
 	gap: var(--space-6);
-	padding: 0 12px;
+	padding: 0 var(--space-12);
 	background-color: var(--safari-toolbar-bg);
 }
 
@@ -83,12 +83,12 @@
 	flex: 1;
 	align-items: center;
 	justify-content: center;
-	gap: 7px;
+	gap: var(--space-6);
 	min-width: 0;
 	max-width: 520px;
 	height: 32px;
 	margin: 0 auto;
-	padding: 0 12px;
+	padding: 0 var(--space-12);
 	border-radius: var(--radius-full);
 	background-color: var(--safari-address-bg);
 	font-size: var(--text-footnote);
@@ -127,8 +127,8 @@
 	position: relative;
 	z-index: 4;
 	height: 36px;
-	margin: 0 12px 8px;
-	padding: 3px;
+	margin: 0 var(--space-12) var(--space-8);
+	padding: var(--space-2);
 	overflow-x: auto;
 	border-radius: var(--radius-full);
 	background-color: var(--safari-address-bg);
@@ -212,7 +212,7 @@
 .safari-tab.active .safari-tab-close,
 .safari-tab-close:focus-visible {
 	width: 18px;
-	margin-left: 5px;
+	margin-left: var(--space-4);
 	visibility: visible;
 	opacity: 1;
 }
@@ -230,12 +230,12 @@
 	gap: var(--space-6);
 	min-width: 0;
 	height: 100%;
-	padding: 0 8px;
+	padding: 0 var(--space-8);
 	border: none;
 	background: none;
 	color: var(--safari-muted);
 	font: inherit;
-	font-size: 12.5px;
+	font-size: var(--text-footnote);
 	cursor: default;
 }
 
@@ -250,7 +250,7 @@
 
 .safari-tab:hover .safari-tab-button,
 .safari-tab.active .safari-tab-button {
-	padding: 0 23px 0 6px;
+	padding: 0 var(--space-24) 0 var(--space-6);
 }
 
 .safari-tab-button span {
@@ -340,7 +340,7 @@
 }
 
 .safari-start-icon.fallback {
-	font-size: 24px;
+	font-size: var(--text-title1);
 }
 
 /* ─── 페이지 ─── */
@@ -375,7 +375,7 @@
 	}
 
 	.safari-tab:not(.active) .safari-tab-button {
-		padding: 0 8px;
+		padding: 0 var(--space-8);
 	}
 }
 
