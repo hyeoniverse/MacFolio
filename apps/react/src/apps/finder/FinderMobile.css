@@ -198,7 +198,7 @@
 /* ─── 둘러보기: 접히는 묶음 이름과 흰 카드 목록 ─── */
 /* 위치·즐겨찾기 묶음 사이 (iOS 파일의 둘러보기) */
 .files-phone-section + .files-phone-section {
-	margin-top: 24px;
+	margin-top: var(--space-24);
 }
 
 .files-phone-section h3 button {
@@ -383,10 +383,10 @@
 	bottom: calc(var(--phone-bottom-inset) + 12px);
 	left: 50%;
 	padding: 6px 14px;
-	border-radius: 999px;
+	border-radius: var(--radius-full);
 	background-color: rgb(0 0 0 / 0.55);
 	color: #fff;
-	font-size: 13px;
+	font-size: var(--text-footnote);
 	font-variant-numeric: tabular-nums;
 	transform: translateX(-50%);
 	backdrop-filter: blur(12px);
