@@ -95,6 +95,8 @@ $ npm run build
 | `npm install -g corepack` → `corepack enable` | Node 24 이하에서 쓰던 흐름 그대로. corepack을 npm 패키지로 받는다        |
 | Node 24 이하로 내리기                         | 저장소가 `.node-version` 등으로 버전을 정해 두었다면 그 버전을 쓰는 방법 |
 
+pnpm 공식 설치 문서는 지금 npm 쪽 방법으로 `npx get-pnpm`을 안내한다(설치 프로그램을 돌리는 데 Node.js 22.13 이상). 이번에는 이미 익숙한 `npm install -g pnpm`을 썼다.
+
 `npm install -g pnpm`으로 받으면 이렇게 된다.
 
 ```text
@@ -120,7 +122,7 @@ $ cd ~/projects/acme && pnpm -v
 10.34.5
 ```
 
-pnpm은 실행될 때 `package.json`의 `packageManager`를 보고, 적힌 버전과 자기 버전이 다르면 그 버전을 받아 대신 돌린다. corepack이 하던 일을 pnpm이 스스로 하는 셈이다. 그래서 전역에 어떤 pnpm을 깔았든, 저장소 안에서는 저장소가 정한 버전으로 돈다. `pnpm install`의 마지막 줄에서도 확인된다.
+pnpm은 실행될 때 `package.json`의 `packageManager`를 보고, 적힌 버전과 자기 버전이 다르면 그 버전을 받아 대신 돌린다. corepack이 하던 일을 pnpm이 스스로 하는 셈이다. 그래서 전역에 어떤 pnpm을 깔았든, 저장소 안에서는 저장소가 정한 버전으로 돈다. pnpm 10에서는 이 동작이 `managePackageManagerVersions` 설정(기본 `true`)이었고, pnpm 11부터는 `pmOnFail` 설정(기본 `download`)으로 바뀌었다. `pnpm install`의 마지막 줄에서도 확인된다.
 
 ```text
 Done in 14.9s using pnpm v10.34.5
@@ -161,3 +163,21 @@ pnpm install
 - pnpm workspace 저장소에서 `npm install`은 루트만 깔고, `pnpm-workspace.yaml`과 `workspace:*`를 모른다. 빌드가 `Cannot find module`로 멈추고 `package-lock.json`만 남는다
 - `npm install -g pnpm`으로 받으면 된다. 전역 버전과 상관없이 저장소 안에서는 `packageManager`에 적힌 버전으로 돈다
 - npm이 남긴 `package-lock.json`과 `node_modules`를 지우고 `pnpm install`을 다시 돌린다
+
+## 참고한 공식 문서
+
+영어 문서는 이 글과 관련된 부분만 옮겼다.
+
+- [Corepack](https://nodejs.org/docs/latest-v24.x/api/corepack.html) (Node.js v24 문서)
+  - "Corepack은 Node.js v25부터 함께 배포되지 않는다. Node.js에 들어 있던 `corepack`에 기대고 있다면 사용자 영역에서 제공하는 corepack 모듈로 바꿀 수 있다."
+- [Workspace](https://pnpm.io/workspaces) (pnpm)
+  - "워크스페이스는 루트에 `pnpm-workspace.yaml` 파일이 있어야 한다."
+  - "pnpm은 `workspace:` 프로토콜을 지원한다. 이 프로토콜을 쓰면 pnpm은 로컬 워크스페이스 패키지가 아닌 것으로는 풀지 않는다."
+- [Workspaces](https://docs.npmjs.com/cli/v11/using-npm/workspaces) (npm)
+  - "워크스페이스는 보통 package.json의 `workspaces` 속성으로 정한다." npm은 `pnpm-workspace.yaml`을 읽지 않으므로, 이 필드가 없는 저장소에서는 루트 패키지만 깐다.
+- [Settings: managePackageManagerVersions](https://pnpm.io/10.x/settings) (pnpm 10)
+  - "켜져 있으면 pnpm은 `package.json`의 `packageManager` 필드에 적힌 pnpm 버전을 자동으로 받아서 실행한다. Corepack이 쓰는 것과 같은 필드다." 기본값 `true`.
+- [v11.0.0 릴리스 노트](https://github.com/pnpm/pnpm/releases/tag/v11.0.0) (pnpm)
+  - `managePackageManagerVersions`·`packageManagerStrict`·`packageManagerStrictVersion` 설정을 없애고 `pmOnFail`로 합쳤다. `managePackageManagerVersions: true`는 `pmOnFail: download`(기본값)에 해당한다.
+- [Installation](https://pnpm.io/installation) (pnpm)
+  - npm으로 설치하는 방법은 `npx get-pnpm`이다. "이 설치 프로그램을 돌리려면 Node.js 22.13 이상이 필요하지만, 설치한 뒤 pnpm을 쓰는 데는 필요 없다."

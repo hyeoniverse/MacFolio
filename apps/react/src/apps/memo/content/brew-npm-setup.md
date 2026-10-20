@@ -74,7 +74,7 @@ $ env -i HOME=$HOME PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin /opt
 
 PATH가 이미 `/opt/homebrew/bin:/opt/homebrew/sbin`으로 **시작하면** 할 일이 없다고 보고 빈 출력을 낸다. 그래서 `.zprofile`과 `.zshrc` 양쪽에 같은 줄이 들어가도 PATH가 두 번 쌓이지 않는다. 반대로 brew 경로가 PATH 뒤쪽에만 있으면 다시 맨 앞으로 끌어온다.
 
-`.zprofile`에 두는 이유는 로그인 셸에서 한 번만 읽히기 때문이다. macOS의 터미널 앱은 새 창마다 로그인 셸을 띄우므로 이것으로 충분하다. VS Code의 통합 터미널처럼 로그인 셸이 아닌 곳에서 brew가 안 잡히면 그때 `.zshrc`로 옮긴다.
+`.zprofile`에 두는 이유는 로그인 셸에서 한 번만 읽히기 때문이다. macOS의 터미널 앱은 새 창마다 로그인 셸을 띄우므로 이것으로 충분하다. VS Code의 통합 터미널처럼 로그인 셸이 아닌 곳에서 brew가 안 잡히면 그때 `.zshrc`로 옮긴다. Homebrew 공식 설치 문서는 넣을 파일을 "셸에 따라 다르다"며 `~/.bashrc`나 `~/.zshrc`를 예로 든다. 어느 파일이든 셸이 시작할 때 이 한 줄을 읽기만 하면 된다.
 
 설정이 맞는지는 `brew config`로 본다.
 
@@ -292,3 +292,25 @@ $ ./global/bin/corepack --version
 - brew로 깐 npm은 전역 패키지를 `/opt/homebrew/lib/node_modules`에 깔므로 `sudo`가 필요 없다
 - npm 설정은 명령줄 > 환경 변수 > 프로젝트 `.npmrc` > `~/.npmrc` > 전역 > 내장 순으로 이기고, `npm config ls`가 덮인 값을 주석으로 보여 준다
 - Node 25부터 corepack이 빠졌다. `npm install -g corepack`으로 따로 받는다
+
+## 참고한 공식 문서
+
+영어 문서는 이 글과 관련된 부분만 옮겼다.
+
+- [Installation](https://docs.brew.sh/Installation) (Homebrew)
+  - "설치 스크립트는 Homebrew를 기본 접두사(Apple Silicon은 `/opt/homebrew`)에 설치한다."
+  - "Homebrew를 설치하면 셸 설정을 바꾸라는 안내가 나온다. 따르지 않으면 Homebrew가 동작하지 않는다." 넣을 줄은 `eval "$(<Homebrew 접두사>/bin/brew shellenv)"`다.
+- [FAQ](https://docs.brew.sh/FAQ) (Homebrew)
+  - keg-only: "formula가 Cellar에만 설치되고 기본 접두사에는 링크되지 않는다는 뜻이다. 그래서 대부분의 도구가 찾지 못한다." 왜 keg-only인지와 `PATH`에 넣는 방법은 `brew info <formula>`로 본다.
+  - `brew link <formula>`로 링크할 수도 있지만 "macOS 소프트웨어를 가리게 되면 예상치 못한 동작이 생길 수 있다."
+  - sudo: "Homebrew는 formula를 소유 계정으로 빌드하고 설치한다. 업스트림 빌드 스크립트가 시스템 전체에 제한 없이 접근하면 안 되기 때문이다."
+- [npmrc](https://docs.npmjs.com/cli/v11/configuring-npm/npmrc) (npm)
+  - 관련 파일은 넷이다: 프로젝트(`/path/to/my/project/.npmrc`), 사용자(`~/.npmrc`), 전역(`$PREFIX/etc/npmrc`), npm 내장(`/path/to/npm/npmrc`). "각 파일을 읽고, 설정은 우선순위대로 정해진다."
+  - `_authToken` 같은 인증 값은 "반드시 특정 레지스트리에 묶어야 한다"(`//registry.npmjs.org/:_authToken=…`). 그래야 "npm이 다른 호스트로 자격 증명을 보내지 않는다."
+- [config](https://docs.npmjs.com/cli/v11/using-npm/config) (npm)
+  - 설정이 오는 곳을 우선순위 순으로: 명령줄 플래그 → 환경 변수(`npm_config_`로 시작) → npmrc 파일 → 기본값. 기본값은 `npm config ls -l`로 본다.
+  - `save-exact`: "package.json에 저장하는 의존성을 npm 기본 semver 범위 대신 정확한 버전으로 적는다." `save-prefix`의 기본값은 `^`다.
+- [Resolving EACCES permissions errors when installing packages globally](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) (npm)
+  - 전역 설치 권한 오류는 Node 버전 관리자로 다시 까는 것이 "권한 문제를 피하는 가장 좋은 방법"이고, 아니면 npm이 다른 디렉터리를 쓰게 바꾼 뒤 "`sudo` 없이" 전역 설치로 확인한다.
+- [Corepack](https://nodejs.org/docs/latest-v24.x/api/corepack.html) (Node.js v24 문서)
+  - "Corepack은 Node.js v25부터 함께 배포되지 않는다. Node.js에 들어 있던 `corepack`에 기대고 있다면 사용자 영역에서 제공하는 [corepack](https://github.com/nodejs/corepack) 모듈로 바꿀 수 있다."
