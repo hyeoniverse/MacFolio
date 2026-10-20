@@ -10,6 +10,7 @@ import DatePicker from '@/shared/ui/date/DatePicker';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Modal from '@/shared/ui/dialog/Modal';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import ListRow from '@/shared/ui/list-row/ListRow';
 import Sheet from '@/shared/ui/sheet/Sheet';
 import Switch from '@/shared/ui/switch/Switch';
 import TabList from '@/shared/ui/tabs/TabList';
@@ -114,6 +115,14 @@ describe('입력', () => {
 		expect(out).toContain('role="tablist" aria-label="보기"');
 		expect(out).toContain('role="tab" aria-selected="false" tabindex="-1">개요');
 		expect(out).toContain('role="tab" aria-selected="true" tabindex="0">유입 경로');
+	});
+});
+
+describe('목록', () => {
+	it('목록 한 줄: li 안의 버튼이고, 고른 줄에만 aria-current가 붙는다', () => {
+		const on = html(createElement(ListRow, { current: true, className: 'mail-item' }, '받은 메일'));
+		expect(on).toBe('<li><button type="button" aria-current="true" class="mail-item">받은 메일</button></li>');
+		expect(html(createElement(ListRow, { current: false }, '다른 메일'))).not.toContain('aria-current');
 	});
 });
 

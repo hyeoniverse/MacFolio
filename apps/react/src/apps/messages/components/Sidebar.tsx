@@ -5,6 +5,7 @@ import IconButton from '@/shared/ui/button/IconButton';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import SidebarPanel from '@/shared/ui/sidebar/Sidebar';
+import ListRow from '@/shared/ui/list-row/ListRow';
 
 interface Props {
 	threads: Thread[];
@@ -60,48 +61,44 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 				{pinned.length > 0 && !query && (
 					<ul className="messages-pinned">
 						{pinned.map((thread) => (
-							<li key={thread.id}>
-								<button
-									type="button"
-									className={`messages-pinned-item ${selectedId === thread.id ? 'selected' : ''}`}
-									aria-current={selectedId === thread.id || undefined}
-									onClick={() => onSelect(thread.id)}
-								>
-									<Avatar name={thread.title} size={phone ? 128 : 66} />
-									<span>{thread.title}</span>
-								</button>
-							</li>
+							<ListRow
+								key={thread.id}
+								className={`messages-pinned-item ${selectedId === thread.id ? 'selected' : ''}`}
+								current={selectedId === thread.id}
+								onClick={() => onSelect(thread.id)}
+							>
+								<Avatar name={thread.title} size={phone ? 128 : 66} />
+								<span>{thread.title}</span>
+							</ListRow>
 						))}
 					</ul>
 				)}
 
 				<ul className="messages-threads">
 					{others.map((thread) => (
-						<li key={thread.id}>
-							<button
-								type="button"
-								className={`messages-thread ${selectedId === thread.id ? 'selected' : ''}`}
-								aria-current={selectedId === thread.id || undefined}
-								onClick={() => onSelect(thread.id)}
-							>
-								<Avatar name={thread.title} size={phone ? 62 : 40} />
-								<span className="messages-thread-text">
-									<span className="messages-thread-top">
-										<strong>
-											{displayName(thread.title, thread.ipPrefix)}
-											{thread.mine && <span className="messages-me-badge">나</span>}
-										</strong>
-										{thread.lastMessage && (
-											<time dateTime={thread.lastMessage.createdAt}>
-												{formatListTime(new Date(thread.lastMessage.createdAt), now)}
-												<i className="fa-solid fa-chevron-right messages-thread-chevron" aria-hidden="true" />
-											</time>
-										)}
-									</span>
-									<span className="messages-thread-preview">{thread.summary ?? ''}</span>
+						<ListRow
+							key={thread.id}
+							className={`messages-thread ${selectedId === thread.id ? 'selected' : ''}`}
+							current={selectedId === thread.id}
+							onClick={() => onSelect(thread.id)}
+						>
+							<Avatar name={thread.title} size={phone ? 62 : 40} />
+							<span className="messages-thread-text">
+								<span className="messages-thread-top">
+									<strong>
+										{displayName(thread.title, thread.ipPrefix)}
+										{thread.mine && <span className="messages-me-badge">나</span>}
+									</strong>
+									{thread.lastMessage && (
+										<time dateTime={thread.lastMessage.createdAt}>
+											{formatListTime(new Date(thread.lastMessage.createdAt), now)}
+											<i className="fa-solid fa-chevron-right messages-thread-chevron" aria-hidden="true" />
+										</time>
+									)}
 								</span>
-							</button>
-						</li>
+								<span className="messages-thread-preview">{thread.summary ?? ''}</span>
+							</span>
+						</ListRow>
 					))}
 					{others.length === 0 && !loading && (
 						<li className="messages-empty">

@@ -13,6 +13,7 @@ import {
 } from '@macfolio/desktop-core/memo';
 import { CONTENT_IMAGES } from '../contentImages';
 import type { PostDraft } from '../postsApi';
+import ListRow from '@/shared/ui/list-row/ListRow';
 
 /** 목록·카드를 끌 때 버튼에 붙이는 속성 (관리자만) */
 export type DragProps = {
@@ -76,42 +77,39 @@ export const NoteItem = ({
 	today,
 	popularity,
 }: NoteProps & { active: boolean; today: Date; popularity?: { rank: number; stats: PostStats } }) => (
-	<li>
-		<button
-			type="button"
-			className={`memo-item ${active ? 'active' : ''} ${dragging ? 'dragging' : ''} ${picked ? 'picking' : ''}`}
-			{...drag}
-			aria-current={active || undefined}
-			aria-pressed={picked ? picked.has(post.slug) : undefined}
-			onContextMenu={onContextMenu}
-			onClick={onOpen}
-		>
-			{picked && <PickMark on={picked.has(post.slug)} />}
-			<strong>
-				{popularity && (
-					<span className={`memo-item-rank rank-${popularity.rank}`} aria-label={`${popularity.rank}위`}>
-						{popularity.rank}
-					</span>
-				)}
-				{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
-				{post.title}
-				<StatusBadge post={post} />
-			</strong>
-			<span className="memo-item-meta">
-				{popularity ? (
-					<span className="memo-item-reactions">{reactionsOf(popularity.stats)}</span>
-				) : (
-					<>
-						<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
-					</>
-				)}
-			</span>
-			<span className="memo-item-folder">
-				<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
-				{post.deletedAt && <span className="memo-item-purge">{daysUntilPurge(post.deletedAt, today)}일 남음</span>}
-			</span>
-		</button>
-	</li>
+	<ListRow
+		className={`memo-item ${active ? 'active' : ''} ${dragging ? 'dragging' : ''} ${picked ? 'picking' : ''}`}
+		{...drag}
+		current={active}
+		aria-pressed={picked ? picked.has(post.slug) : undefined}
+		onContextMenu={onContextMenu}
+		onClick={onOpen}
+	>
+		{picked && <PickMark on={picked.has(post.slug)} />}
+		<strong>
+			{popularity && (
+				<span className={`memo-item-rank rank-${popularity.rank}`} aria-label={`${popularity.rank}위`}>
+					{popularity.rank}
+				</span>
+			)}
+			{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
+			{post.title}
+			<StatusBadge post={post} />
+		</strong>
+		<span className="memo-item-meta">
+			{popularity ? (
+				<span className="memo-item-reactions">{reactionsOf(popularity.stats)}</span>
+			) : (
+				<>
+					<time dateTime={post.date}>{formatPostDate(post.date)}</time> {post.summary}
+				</>
+			)}
+		</span>
+		<span className="memo-item-folder">
+			<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
+			{post.deletedAt && <span className="memo-item-purge">{daysUntilPurge(post.deletedAt, today)}일 남음</span>}
+		</span>
+	</ListRow>
 );
 
 /** 갤러리 카드의 미리보기: 첫 이미지, 없으면 본문 앞부분 */
@@ -172,24 +170,22 @@ export const NewDraftItem = ({
 	folder: string;
 	onOpen: () => void;
 }) => (
-	<li className={`memo-new-item ${leaving ? 'leaving' : ''}`} aria-hidden={leaving || undefined}>
-		<button
-			type="button"
-			className={`memo-item ${leaving ? '' : 'active'}`}
-			aria-current={!leaving || undefined}
-			tabIndex={leaving ? -1 : undefined}
-			onClick={onOpen}
-		>
-			<strong>{preview?.title.trim() || '새로운 메모'}</strong>
-			<span className="memo-item-meta">
-				<time>{new Intl.DateTimeFormat('ko-KR', { hour: 'numeric', minute: '2-digit' }).format(startedAt)}</time>{' '}
-				{(preview && excerpt(preview.body)) || '추가 텍스트 없음'}
-			</span>
-			<span className="memo-item-folder">
-				<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(preview?.category ?? folder)}
-			</span>
-		</button>
-	</li>
+	<ListRow
+		item={{ className: `memo-new-item ${leaving ? 'leaving' : ''}`, 'aria-hidden': leaving || undefined }}
+		className={`memo-item ${leaving ? '' : 'active'}`}
+		current={!leaving}
+		tabIndex={leaving ? -1 : undefined}
+		onClick={onOpen}
+	>
+		<strong>{preview?.title.trim() || '새로운 메모'}</strong>
+		<span className="memo-item-meta">
+			<time>{new Intl.DateTimeFormat('ko-KR', { hour: 'numeric', minute: '2-digit' }).format(startedAt)}</time>{' '}
+			{(preview && excerpt(preview.body)) || '추가 텍스트 없음'}
+		</span>
+		<span className="memo-item-folder">
+			<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(preview?.category ?? folder)}
+		</span>
+	</ListRow>
 );
 
 /**
