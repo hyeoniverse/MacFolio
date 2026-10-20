@@ -385,7 +385,7 @@
 	padding: 6px 14px;
 	border-radius: var(--radius-full);
 	background-color: rgb(0 0 0 / 0.55);
-	color: #fff;
+	color: var(--color-white);
 	font-size: var(--text-footnote);
 	font-variant-numeric: tabular-nums;
 	transform: translateX(-50%);
@@ -397,5 +397,5 @@
 .finder-file-video {
 	width: 100%;
 	max-height: 100%;
-	background: #000;
+	background: var(--color-black);
 }

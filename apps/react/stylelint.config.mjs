@@ -2,6 +2,9 @@
 // 1층 원시값(--palette-*)은 2·3층 토큰만 가리키고, 앱·부품 CSS는 직접 쓰지 않는다.
 // 이름이 없는 값(18px 간격처럼 일부러 남긴 값, 앱 고유의 값)은 막지 않는다.
 const px = (values) => new RegExp(`^(${values.join('|')})px$`);
+// 테마와 상관없는 이름 있는 색 (--color-white·black·system-*·--notes-accent). 값 하나로만 쓴 선언을 막는다 (그림자·그라데이션 속 색은 그대로)
+const namedColor =
+	/^(#fff|#ffffff|#000|#000000|#ff3b30|#34c759|#ff9f0a|#8e8e93|#5856d6|#32ade6|#ff2d55|#fcb827|#1c1c1e|white|black)$/i;
 
 export default {
 	ignoreFiles: [
@@ -20,13 +23,14 @@ export default {
 				'/^(gap|row-gap|column-gap|padding|margin)(-(top|right|bottom|left|inline|block)(-(start|end))?)?$/': [
 					px([2, 4, 6, 8, 10, 12, 14, 16, 20, 24]),
 				],
+				'/^(color|background|background-color|border-color|outline-color|fill|stroke)$/': [namedColor],
 				'/.*/': [/var\(--palette-/],
 			},
 			{
 				message: (property, value) =>
 					value.includes('--palette-')
 						? `${property}: ${value} — 원시값(--palette-*) 대신 의미 토큰(--color-* 등, styles/tokens/semantic.css)을 쓰세요`
-						: `${property}: ${value}는 이름이 있는 값입니다. styles/tokens/의 토큰(var(--…))을 쓰세요`,
+						: `${property}: ${value}는 이름이 있는 값입니다. styles/tokens/의 토큰(var(--…))을 쓰세요 (흰·검정은 --color-white·--color-black)`,
 			},
 		],
 	},

@@ -77,7 +77,7 @@
 	font-size: var(--text-caption);
 	line-height: 15px;
 	font-weight: 500;
-	color: #fff;
+	color: var(--color-white);
 	text-align: center;
 	text-shadow:
 		0 1px 2px rgb(0 0 0 / 0.75),
@@ -96,12 +96,12 @@
 }
 
 .desktop-icon.selected .desktop-icon-label {
-	background: var(--color-control-accent, #0a64d6);
+	background: var(--color-control-accent);
 	text-shadow: none;
 }
 
 .desktop-icon:focus-visible .desktop-icon-image {
-	box-shadow: 0 0 0 2px var(--color-control-accent, #0a64d6);
+	box-shadow: 0 0 0 2px var(--color-control-accent);
 }
 
 /* 끌어서 고르는 사각형: macOS처럼 옅은 흰 판에 테두리 */

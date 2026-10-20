@@ -430,7 +430,7 @@
 }
 
 .home-indicator.dark span {
-	background-color: #1c1c1e;
+	background-color: var(--color-on-bright-media);
 }
 
 .container.mobile:not(.unified) .content {

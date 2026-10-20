@@ -11,8 +11,8 @@
 
 .quicktime.playing {
 	padding-top: 0;
-	background: #000;
-	color: #fff;
+	background: var(--color-black);
+	color: var(--color-white);
 }
 
 .quicktime-stage {
@@ -32,7 +32,7 @@
 	width: 100%;
 	min-height: 0;
 	object-fit: contain;
-	background: #000;
+	background: var(--color-black);
 }
 
 .quicktime-audio {
@@ -61,7 +61,7 @@
 	border: 1px solid rgba(255, 255, 255, 0.12);
 	border-radius: 18px;
 	background: rgba(58, 58, 60, 0.72);
-	color: #fff;
+	color: var(--color-white);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 	transform: translateX(-50%);
 	backdrop-filter: blur(24px) saturate(1.4);
@@ -96,7 +96,7 @@
 }
 
 .qt-controls button:hover {
-	color: #fff;
+	color: var(--color-white);
 }
 
 .qt-controls button:focus-visible {
@@ -163,7 +163,7 @@
 	width: 14px;
 	height: 14px;
 	border-radius: 50%;
-	background: #fff;
+	background: var(--color-white);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 	appearance: none;
 }
@@ -173,5 +173,5 @@
 	height: 14px;
 	border: 0;
 	border-radius: 50%;
-	background: #fff;
+	background: var(--color-white);
 }

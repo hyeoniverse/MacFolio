@@ -31,10 +31,16 @@
 	--color-system-red: var(--palette-red-light); /* 지우기·오류·경고 */
 	--color-system-green: var(--palette-green);
 	--color-system-orange: var(--palette-orange);
+	--color-system-indigo: var(--palette-indigo);
+	--color-system-cyan: var(--palette-cyan);
+	--color-system-pink: var(--palette-pink);
 	--color-system-gray: var(--palette-gray-500); /* 빈 아바타·흐린 아이콘 */
 	--color-system-gray-6: var(--palette-gray-100);
 	--color-white: var(--palette-white); /* 테마와 상관없는 흰색 (사진 위 글자 등) */
 	--color-black: var(--palette-black);
+	--color-on-bright-media: var(
+		--palette-gray-925
+	); /* 밝은 사진·배경화면 위의 어두운 글자·막대 (휴대폰 상태 막대·홈 막대). 테마와 상관없다 */
 
 	/* 코드 강조 (메모·Finder 미리보기·터미널) */
 	--color-code-keyword: var(--palette-code-red-light);

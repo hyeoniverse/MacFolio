@@ -29,11 +29,11 @@
    시계 쪽과 아이콘 쪽을 따로 읽는다 (배경화면은 왼쪽과 오른쪽 밝기가 크게 다를 수 있다) */
 /* 막대 글자색은 시계 쪽을 따르고, 아이콘 쪽만 다르면 아이콘에서 바꾼다 */
 .mobile-statusbar.clock-dark {
-	color: #1c1c1e;
+	color: var(--color-on-bright-media);
 }
 
 .mobile-statusbar.icons-dark .mobile-statusbar-icons {
-	color: #1c1c1e;
+	color: var(--color-on-bright-media);
 }
 
 .mobile-statusbar.icons-light .mobile-statusbar-icons {

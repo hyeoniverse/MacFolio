@@ -881,15 +881,15 @@ ol.showcase-list .showcase-row.reordering {
 }
 
 .container.mobile .settings-nav-item:nth-of-type(2) > i:first-child {
-	background-color: #5856d6;
+	background-color: var(--color-system-indigo);
 }
 
 .container.mobile .settings-nav-item:nth-of-type(3) > i:first-child {
-	background-color: #32ade6;
+	background-color: var(--color-system-cyan);
 }
 
 .container.mobile .settings-nav-item:nth-of-type(4) > i:first-child {
-	background-color: #ff2d55;
+	background-color: var(--color-system-pink);
 }
 
 /* GitHub (관리자만) */
@@ -1190,7 +1190,7 @@ ol.showcase-list .showcase-row.reordering {
 	padding: 10px 14px 10px 30px;
 	border-radius: var(--radius-lg);
 	background: color-mix(in srgb, var(--color-system-red) 12%, transparent);
-	color: #d70015;
+	color: var(--color-system-red);
 	font-size: var(--text-caption);
 	line-height: 1.6;
 }
@@ -1687,7 +1687,7 @@ textarea.projects-input {
 
 /* 지우는 버튼 (macOS 시트의 항목 삭제): 빨간 글자. 흰 바탕에서 읽히도록 라이트는 짙은 빨강 */
 .projects-button.destructive {
-	color: #d70015;
+	color: var(--color-system-red);
 }
 
 :root[data-theme='dark'] .projects-button.destructive {
