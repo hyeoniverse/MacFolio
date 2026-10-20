@@ -243,7 +243,7 @@ export const HYEONIVERSE: Project = {
 				},
 				{
 					title: '발행하면 붙는 AI 요약',
-					body: '발행할 때 Gemini가 한국어와 영어 요약을 2–3문장씩 한 번에 만들고, 상세 페이지 위에 접고 펼치는 상자로 보여 줍니다. 상세 페이지의 언어 토글을 따르고, 그 언어 요약이 없으면 다른 언어 요약을 보여 줍니다. 공급자는 OpenAI나 Claude로 바꿀 수 있습니다.',
+					body: '발행할 때 Groq가 한국어와 영어 요약을 2–3문장씩 한 번에 만들고, 상세 페이지 위에 접고 펼치는 상자로 보여 줍니다. 상세 페이지의 언어 토글을 따르고, 그 언어 요약이 없으면 다른 언어 요약을 보여 줍니다. 공급자는 Gemini·OpenAI·Claude로 바꿀 수 있습니다.',
 					demo: 'summary',
 				},
 				{
@@ -274,7 +274,7 @@ export const HYEONIVERSE: Project = {
 				},
 				{
 					title: '공급자 고르기와 대체, 사용량',
-					body: '설정 › 서비스에서 기능마다 쓸 AI를 고릅니다: 번역은 DeepL · Google · Gemini · Claude, 요약은 Gemini · OpenAI · Claude, 커버는 NanoBanana · Hugging Face, 음성은 Fish · Google TTS · Edge. 대체를 켜면 기본이 실패할 때 정해 둔 순서대로 다음 공급자로 넘어갑니다. 쓴 양은 공급자마다 이번 달 글자 수·바이트로 세어 무료 한도(Google 번역 50만 자, Google TTS 100만 바이트 가운데 앱 상한 80만)와 견주고, 키 오류·한도·결제 문제로 3번(일시 오류는 5번) 거듭 실패한 공급자는 스스로 꺼서 "AI 상태·사용량"에 이유와 함께 보여 줍니다.',
+					body: '설정 › 서비스에서 기능마다 쓸 AI를 고릅니다: 번역은 DeepL · Google · Gemini · Claude, 요약은 Groq · Gemini · OpenAI · Claude, 커버는 NanoBanana · Hugging Face, 음성은 Fish · Google TTS · Edge. 대체를 켜면 기본이 실패할 때 정해 둔 순서대로 다음 공급자로 넘어갑니다. 쓴 양은 공급자마다 이번 달 글자 수·바이트로 세어 무료 한도(Google 번역 50만 자, Google TTS 100만 바이트 가운데 앱 상한 80만)와 견주고, 키 오류·한도·결제 문제로 3번(일시 오류는 5번) 거듭 실패한 공급자는 스스로 꺼서 "AI 상태·사용량"에 이유와 함께 보여 줍니다.',
 					demo: 'providers',
 				},
 				{
