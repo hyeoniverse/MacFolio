@@ -238,7 +238,7 @@
 
 .memo-handle-menu button {
 	padding-left: var(--space-12);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 /* 편집기의 표: 고른 칸, 열 너비 조절 손잡이 */

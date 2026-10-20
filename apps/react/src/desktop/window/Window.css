@@ -212,7 +212,7 @@
 
 /* 통합형 창 (chrome="unified"): 제목 표시줄 없이 신호등 버튼이 내용 위에 떠 있다 */
 .container.unified {
-	border-radius: 22px;
+	border-radius: var(--radius-window);
 	/* 모서리 크기 조절 핸들이 둥근 모서리에 잘리지 않도록 틀은 자르지 않고 내용만 자른다 */
 	overflow: visible;
 }

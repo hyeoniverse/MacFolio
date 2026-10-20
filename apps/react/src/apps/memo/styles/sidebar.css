@@ -42,7 +42,7 @@
 
 .memo-sidebar-bar .memo-new-note-button,
 .memo-sidebar-bar .memo-new-folder-button {
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 /* 새 메모·새로운 폴더는 사이드바 오른쪽 끝에 나란히 */

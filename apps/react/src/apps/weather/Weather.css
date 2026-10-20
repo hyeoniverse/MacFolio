@@ -357,7 +357,7 @@
 	border: 1px solid rgba(255, 255, 255, 0.12);
 	border-radius: 50%;
 	background-color: rgba(118, 118, 128, 0.24);
-	font-size: 18px;
+	font-size: var(--text-title3);
 	cursor: pointer;
 }
 
@@ -473,7 +473,7 @@
 	margin: 0 0 10px;
 	padding-bottom: var(--space-10);
 	border-bottom: 1px solid var(--weather-line);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 	line-height: 1.45;
 }
 
@@ -526,7 +526,7 @@
 }
 
 .weather-hours i {
-	font-size: 18px;
+	font-size: var(--text-title3);
 	line-height: 22px;
 }
 
@@ -723,7 +723,7 @@
 	order: 4;
 	height: 48px;
 	margin-top: auto;
-	padding: 0 18px;
+	padding: 0 var(--space-16);
 	border: 1px solid rgba(255, 255, 255, 0.12);
 	border-radius: var(--radius-full);
 	background-color: rgba(44, 46, 62, 0.96);
@@ -753,12 +753,12 @@
 }
 
 .weather[data-compact] .weather-card-time {
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 .weather[data-compact] .weather-card-bottom {
-	margin-top: 18px;
-	font-size: 14px;
+	margin-top: var(--space-16);
+	font-size: var(--text-footnote);
 }
 
 .weather[data-compact] .weather-scroll {
@@ -824,7 +824,7 @@
 	border-radius: 50%;
 	background-color: rgba(30, 40, 70, 0.45);
 	backdrop-filter: blur(16px);
-	font-size: 18px;
+	font-size: var(--text-title3);
 	cursor: pointer;
 }
 
@@ -863,7 +863,7 @@
 }
 
 .container.mobile .weather-sidebar {
-	padding-bottom: 28px;
+	padding-bottom: var(--space-24);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -922,7 +922,7 @@
 
 .ui-menu.weather-menu-large .ui-menu-item i {
 	width: 22px;
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 /* 카드의 오른쪽 클릭 메뉴 (macOS 날씨): 휴지통과 '삭제'만 있는 작은 알약 */
@@ -930,7 +930,7 @@
 	min-width: 0;
 	padding: var(--space-4);
 	border-radius: var(--radius-xl);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 .ui-menu.weather-menu-compact .ui-menu-item {

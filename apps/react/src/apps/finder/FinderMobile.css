@@ -42,7 +42,7 @@
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: inherit;
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 .files-phone-bar-title {
@@ -187,7 +187,7 @@
 
 .files-phone-chevron {
 	color: var(--color-text-secondary);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 	opacity: 0.6;
 }
 
@@ -222,7 +222,7 @@
 
 .files-phone-places {
 	overflow: hidden;
-	border-radius: 22px;
+	border-radius: var(--radius-window);
 	background-color: var(--phone-card-bg);
 	list-style: none;
 }

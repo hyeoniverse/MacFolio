@@ -96,7 +96,7 @@
 	padding: 0;
 	border: none;
 	color: var(--safari-text);
-	font-size: 18px;
+	font-size: var(--text-title3);
 }
 
 /* ─── 탭 모음: 두 줄 카드 ─── */
@@ -123,7 +123,7 @@
 	width: 100%;
 	padding: 0;
 	border: none;
-	border-radius: 22px;
+	border-radius: var(--radius-window);
 	background: none;
 }
 
@@ -132,7 +132,7 @@
 	position: relative;
 	overflow: hidden;
 	aspect-ratio: 390 / 560;
-	border-radius: 22px;
+	border-radius: var(--radius-window);
 	background-color: var(--safari-bg);
 	box-shadow: var(--phone-float-shadow);
 }
@@ -172,7 +172,7 @@
 	border-radius: 50%;
 	background-color: rgba(120, 120, 128, 0.32);
 	color: var(--color-white);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 	backdrop-filter: blur(12px);
 }
 
@@ -233,7 +233,7 @@
 	from {
 		opacity: 0.5;
 		transform: scale(0.88);
-		border-radius: 22px;
+		border-radius: var(--radius-window);
 	}
 }
 

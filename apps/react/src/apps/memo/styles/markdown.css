@@ -20,7 +20,7 @@
 
 .memo-markdown {
 	color: var(--memo-body);
-	font-size: 14px;
+	font-size: var(--text-subhead);
 	line-height: 1.75;
 	/* 긴 주소·코드는 칸 안에서 줄을 바꾼다 (편집기 .ProseMirror와 같은 규칙이라 두 화면의 줄이 같게 나뉜다) */
 	overflow-wrap: break-word;

@@ -145,7 +145,7 @@
 	border-radius: 18px;
 	background-color: var(--messages-search-bg);
 	color: var(--messages-meta);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 .messages-search input {
@@ -199,7 +199,7 @@
 	width: 100%;
 	padding: var(--space-10) var(--space-10);
 	border: none;
-	border-radius: 12px;
+	border-radius: var(--radius-lg);
 	background: none;
 	text-align: left;
 }
@@ -238,7 +238,7 @@
 .messages-thread-top strong {
 	overflow: hidden;
 	color: var(--messages-text);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -317,7 +317,7 @@
 	background-color: var(--messages-float-bg);
 	box-shadow: var(--messages-float-shadow);
 	color: var(--messages-text);
-	font-size: 14px;
+	font-size: var(--text-subhead);
 	font-weight: 600;
 }
 
@@ -393,7 +393,7 @@
 	max-width: 70%;
 	padding: 7px 13px 8px;
 	border-radius: 19px;
-	font-size: 14px;
+	font-size: var(--text-subhead);
 	line-height: 1.35;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
@@ -515,7 +515,7 @@
 	background: none;
 	color: var(--messages-text);
 	font: inherit;
-	font-size: 14px;
+	font-size: var(--text-subhead);
 	line-height: 1.35;
 	outline: none;
 	resize: none;
@@ -725,7 +725,7 @@
 
 .container.mobile .messages-empty strong {
 	color: var(--messages-text);
-	font-size: 18px;
+	font-size: var(--text-title3);
 	font-weight: 600;
 }
 
@@ -753,7 +753,7 @@
 	flex: 1;
 	height: 50px;
 	margin: 0;
-	padding: 0 18px;
+	padding: 0 var(--space-16);
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
@@ -805,8 +805,8 @@
 	top: var(--phone-top);
 	right: 16px;
 	height: 44px;
-	padding: 0 18px;
-	border-radius: 22px;
+	padding: 0 var(--space-16);
+	border-radius: var(--radius-window);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	font-size: var(--text-callout);
@@ -831,7 +831,7 @@
 .container.mobile .messages-field {
 	min-height: 44px;
 	padding: var(--space-4) var(--space-4) var(--space-4) var(--space-16);
-	border-radius: 22px;
+	border-radius: var(--radius-window);
 }
 
 .container.mobile .messages-field textarea {
@@ -850,7 +850,7 @@
 	justify-content: center;
 	margin: 0 0 14px;
 	padding: 0 56px;
-	font-size: 18px;
+	font-size: var(--text-title3);
 	font-weight: 700;
 }
 
