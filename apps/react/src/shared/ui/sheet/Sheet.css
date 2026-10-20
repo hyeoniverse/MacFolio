@@ -7,7 +7,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-	background-color: var(--ui-sheet-dim, var(--color-scrim));
+	background-color: var(--ui-sheet-dim);
 	animation: fade-in var(--duration) var(--ease-out);
 }
 
