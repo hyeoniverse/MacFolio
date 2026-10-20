@@ -20,12 +20,8 @@
 	border: none;
 	border-radius: 0;
 	background: none;
-	color: #b8860b;
-	font-size: var(--text-subhead);
-}
-
-:root[data-theme='dark'] [data-app='memo'] .memo-back {
 	color: var(--memo-accent);
+	font-size: var(--text-subhead);
 }
 
 :where(.memo-shell[data-compact]) .memo,

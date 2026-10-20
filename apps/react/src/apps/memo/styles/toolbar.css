@@ -183,12 +183,8 @@
 /* 고정된 메모 / 메모 묶음 이름 */
 /* 본문의 #태그 (읽기 화면은 누르면 그 태그의 글만, 편집기는 칠하기만) */
 .memo-tag {
-	color: #b07a06;
-	font-weight: 600;
-}
-
-:root[data-theme='dark'] .memo-tag {
 	color: var(--memo-accent);
+	font-weight: 600;
 }
 
 .memo-markdown .memo-tag {
@@ -226,7 +222,7 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: #b07a06;
+	color: var(--memo-accent);
 	font-size: var(--text-caption2);
 	font-weight: 600;
 	cursor: pointer;
@@ -239,10 +235,6 @@
 	gap: 1px;
 	font-size: 6px;
 	line-height: 1;
-}
-
-:root[data-theme='dark'] .memo .memo-tag-match {
-	color: var(--memo-accent);
 }
 
 .memo-tag-browser ul {
@@ -275,12 +267,8 @@
 .memo .memo-tag-chip.exclude {
 	border-color: var(--memo-accent);
 	background-color: transparent;
-	color: #b07a06;
-	text-decoration: line-through;
-}
-
-:root[data-theme='dark'] .memo .memo-tag-chip.exclude {
 	color: var(--memo-accent);
+	text-decoration: line-through;
 }
 
 .memo-section-title {

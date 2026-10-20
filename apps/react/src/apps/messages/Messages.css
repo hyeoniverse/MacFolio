@@ -3,9 +3,9 @@
 	--messages-window-bg: var(--color-content-bg);
 	--messages-panel-bg: var(--color-panel-bg);
 	--messages-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 6px 18px rgba(0, 0, 0, 0.06);
-	--messages-search-bg: #ebebeb;
-	--messages-separator: #e1e1e3;
-	--messages-selected-bg: #e3e3e8;
+	--messages-search-bg: var(--color-selected-bg);
+	--messages-separator: var(--color-divider);
+	--messages-selected-bg: var(--color-selected-bg);
 	--messages-text: var(--color-label);
 	--messages-preview: #5f5f64;
 	--messages-meta: #8a8a8e;
@@ -25,9 +25,9 @@
 	--messages-window-bg: var(--color-content-bg);
 	--messages-panel-bg: var(--color-panel-bg);
 	--messages-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 18px rgba(0, 0, 0, 0.35);
-	--messages-search-bg: #3a3a3c;
-	--messages-separator: #3a3a3c;
-	--messages-selected-bg: #3a3a3c;
+	--messages-search-bg: var(--color-selected-bg);
+	--messages-separator: var(--color-divider);
+	--messages-selected-bg: var(--color-selected-bg);
 	--messages-text: var(--color-label);
 	--messages-preview: #aeaeb2;
 	--messages-meta: #98989d;

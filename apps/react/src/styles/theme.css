@@ -126,7 +126,7 @@
 	--color-gray: #8e8e93; /* systemGray: 빈 아바타·흐린 아이콘 */
 	--color-gray-6: #f2f2f7; /* systemGray6 */
 	--color-danger: #e5484d; /* 지우기·오류 글자 (Menu·Button이 이 이름을 먼저 찾던 값) */
-	--color-notes-yellow: #edbb4d; /* 메모 앱의 노란 강조 (날짜 고르기도 같이 쓴다) */
+	--color-notes-yellow: #fcb827; /* macOS 메모 앱의 노란 강조 (라이트·다크 같은 값, Digital Color Meter로 잼). 날짜 고르기도 같이 쓴다 */
 	--color-on-notes-yellow: #2b2100; /* 노란 바탕 위 글자 */
 
 	/*
