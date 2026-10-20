@@ -538,7 +538,7 @@
 }
 
 .music-now-playing .music-toggle {
-	color: rgba(255, 255, 255, 0.55);
+	color: var(--color-on-media-secondary-label);
 }
 
 .music-now-playing .music-toggle.on {
@@ -559,11 +559,11 @@
 
 .music-now-playing .music-up-next p,
 .music-now-playing .music-up-next small {
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--color-on-media-secondary-label);
 }
 
 .music-now-playing .music-up-next button:hover {
-	background-color: rgba(255, 255, 255, 0.1);
+	background-color: var(--color-on-media-fill-subtle);
 }
 
 /* ─── 좁은 창 (모바일): 보관함 → 재생 목록을 한 화면씩, 아래 미니 플레이어 ─── */
@@ -979,7 +979,7 @@
 		height: 48px;
 		place-items: center;
 		border-radius: 5px;
-		background-color: rgba(0, 0, 0, 0.35);
+		background-color: var(--color-scrim);
 		color: var(--color-white);
 	}
 

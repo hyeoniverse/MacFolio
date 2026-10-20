@@ -170,7 +170,7 @@
 	padding: 0;
 	border: none;
 	border-radius: 50%;
-	background-color: rgba(120, 120, 128, 0.32);
+	background-color: var(--color-system-fill);
 	color: var(--color-white);
 	font-size: var(--text-footnote);
 	backdrop-filter: blur(12px);

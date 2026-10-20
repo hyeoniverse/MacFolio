@@ -1,5 +1,9 @@
 /* GitHub 프로필 화면 (Primer 색) */
 [data-app='github'] {
+	--gh-dot-border: rgba(0, 0, 0, 0.1);
+	--gh-day-outline: rgba(27, 31, 35, 0.06);
+	--gh-merged: #8250df;
+	--gh-merged-dark: #ab7df8;
 	--gh-bg: var(--color-white);
 	--gh-header-bg: #f6f8fa;
 	--gh-border: #d1d9e0;
@@ -428,7 +432,7 @@
 	width: 12px;
 	height: 12px;
 	margin-right: var(--space-4);
-	border: 1px solid rgba(0, 0, 0, 0.1);
+	border: 1px solid var(--gh-dot-border);
 	border-radius: 50%;
 	vertical-align: -1px;
 }
@@ -552,7 +556,7 @@
 	width: var(--cell, 10px);
 	height: var(--cell, 10px);
 	border-radius: 2px;
-	outline: 1px solid rgba(27, 31, 35, 0.06);
+	outline: 1px solid var(--gh-day-outline);
 	outline-offset: -1px;
 	background-color: var(--gh-day-0);
 }
@@ -677,11 +681,11 @@
 
 /* 합친 PR은 GitHub처럼 보라색 */
 .gh-activity-icon[data-action='merged'] {
-	color: #8250df;
+	color: var(--gh-merged);
 }
 
 :root[data-theme='dark'] .gh-activity-icon[data-action='merged'] {
-	color: #ab7df8;
+	color: var(--gh-merged-dark);
 }
 
 /* 휴대폰: 제목 막대가 없다. 첫 줄은 왼쪽 위에 떠 있는 뒤로 가기(16~60px) 옆에서 시작하고, 그 버튼과 높이를 맞춘다 (Window.css) */

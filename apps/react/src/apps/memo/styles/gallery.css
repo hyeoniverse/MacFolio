@@ -51,7 +51,7 @@
 	width: 26px;
 	height: 26px;
 	border-radius: 7px;
-	background-color: rgba(0, 0, 0, 0.45);
+	background-color: var(--color-scrim-strong);
 	color: var(--color-white);
 	font-size: var(--text-caption2);
 }

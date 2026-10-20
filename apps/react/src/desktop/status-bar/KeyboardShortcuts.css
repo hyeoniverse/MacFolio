@@ -11,7 +11,7 @@
 	border: 1px solid var(--window-border);
 	border-radius: var(--radius-10);
 	box-shadow: var(--shadow-window);
-	background: var(--color-text-background, var(--color-white));
+	background: var(--color-text-background);
 	color: var(--color-label, inherit);
 	font-size: var(--text-footnote);
 }
@@ -24,13 +24,13 @@
 .keyboard-shortcuts-sub,
 .keyboard-shortcuts-empty {
 	margin: 0 0 12px;
-	color: var(--color-secondary-label, #6e6e73);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
 .keyboard-shortcuts h3 {
 	margin: 12px 0 4px;
-	color: var(--color-secondary-label, #6e6e73);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	font-weight: 600;
 }

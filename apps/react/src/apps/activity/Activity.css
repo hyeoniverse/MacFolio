@@ -1,6 +1,7 @@
 /* 활동 상태 보기 (#102). 색은 테마 변수만 쓴다 (다크 모드는 styles/theme.css가 바꾼다).
    창 폭에 따라(휴대폰, 좁힌 창) 표가 한 줄로 쌓이게 컨테이너 질의를 쓴다 */
 .activity {
+	--activity-warning: #c27c0e;
 	--activity-green: var(--color-system-green);
 	--activity-red: var(--color-system-red);
 	/* 이 앱의 간격은 세 단만 쓴다: 묶음 사이, 카드 안쪽, 줄 안 (#211) */
@@ -516,7 +517,7 @@
 }
 
 .server-risk.warning strong {
-	color: #c27c0e;
+	color: var(--activity-warning);
 }
 
 .server-risk.safe strong {
@@ -641,7 +642,7 @@
 }
 
 .server-budget.near .server-budget-bar > span {
-	background: #c27c0e;
+	background: var(--activity-warning);
 }
 
 .server-budget.over .server-budget-bar > span {

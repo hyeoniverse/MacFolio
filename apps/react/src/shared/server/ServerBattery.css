@@ -29,7 +29,7 @@
 }
 
 .server-battery.danger .level {
-	fill: #ff453a;
+	fill: var(--color-system-red);
 }
 
 /* 메뉴 줄의 아이콘 칸(14px)에 맞춘다 */
