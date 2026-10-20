@@ -42,6 +42,22 @@
 		--palette-gray-925
 	); /* 밝은 사진·배경화면 위의 어두운 글자·막대 (휴대폰 상태 막대·홈 막대). 테마와 상관없다 */
 
+	/* 창 틀·칸 바탕 */
+	--color-window-frame: var(--palette-gray-300); /* 창 테두리 */
+	--color-sidebar-background: var(--palette-gray-50); /* 사이드바 칸 */
+	--color-secondary-window-background: var(--palette-gray-150); /* 목록 칸처럼 내용 옆의 한 단계 어두운 바탕 */
+
+	/* 머티리얼: 뒤가 비치는 반투명 바탕 (macOS NSVisualEffectView) */
+	--color-material-menu-bar: rgba(245, 245, 247, 0.8);
+	--color-material-dock: rgba(255, 255, 255, 0.3);
+	--color-material-fullscreen: rgba(255, 255, 255, 0.7); /* Launchpad처럼 화면을 덮는 판 */
+	--color-material-separator: rgba(0, 0, 0, 0.1); /* 머티리얼 위의 구분선 */
+	--color-material-label: rgba(0, 0, 0, 0.6); /* 머티리얼 위의 작은 표시 (Dock 실행 중 점) */
+
+	/* 메모 앱의 노란 강조 */
+	--color-notes-yellow: var(--palette-notes-yellow);
+	--color-on-notes-yellow: var(--palette-notes-yellow-ink); /* 노란 바탕 위 글자 */
+
 	/* 코드 강조 (메모·Finder 미리보기·터미널) */
 	--color-code-keyword: var(--palette-code-red-light);
 	--color-code-string: var(--palette-code-navy-light);
@@ -104,6 +120,16 @@
 	--color-link: var(--palette-link-dark);
 
 	--color-system-red: var(--palette-red-dark);
+
+	--color-window-frame: var(--palette-gray-700);
+	--color-sidebar-background: var(--palette-gray-875);
+	--color-secondary-window-background: var(--palette-gray-850);
+
+	--color-material-menu-bar: rgba(30, 30, 32, 0.7);
+	--color-material-dock: rgba(40, 40, 42, 0.45);
+	--color-material-fullscreen: rgba(40, 40, 42, 0.75);
+	--color-material-separator: rgba(255, 255, 255, 0.15);
+	--color-material-label: rgba(255, 255, 255, 0.75);
 
 	--color-code-keyword: var(--palette-code-red-dark);
 	--color-code-string: var(--palette-code-navy-dark);

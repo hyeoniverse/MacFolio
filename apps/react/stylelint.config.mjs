@@ -1,5 +1,5 @@
 // 이름(토큰)이 있는 값을 숫자로 다시 쓰지 않게 막는다 (styles/tokens/의 --text-*·--radius-*·--z-*·--space-*).
-// 1층 원시값(--palette-*)은 2·3층 토큰만 가리키고, 앱·부품 CSS는 직접 쓰지 않는다.
+// 1층 원시값(--palette-*)은 2층 의미 토큰만 가리킨다. 3층 컴포넌트 토큰과 앱·부품 CSS는 직접 쓰지 않는다.
 // 이름이 없는 값(18px 간격처럼 일부러 남긴 값, 앱 고유의 값)은 막지 않는다.
 const px = (values) => new RegExp(`^(${values.join('|')})px$`);
 // 테마와 상관없는 이름 있는 색 (--color-white·black·system-*·--notes-accent). 값 하나로만 쓴 선언을 막는다 (그림자·그라데이션 속 색은 그대로)
@@ -9,7 +9,8 @@ const namedColor =
 export default {
 	ignoreFiles: [
 		'src/styles/theme.css',
-		'src/styles/tokens/**', // 토큰을 정의하는 곳
+		'src/styles/tokens/primitives.css', // 값을 정의하는 곳 (1·2층)
+		'src/styles/tokens/semantic.css',
 		'src/apps/safari/project/**', // 프로젝트 소개 페이지: 브랜드 디자인 그대로
 		'dist/**',
 		'node_modules/**',
@@ -34,4 +35,19 @@ export default {
 			},
 		],
 	},
+	overrides: [
+		{
+			// 3층은 2층 의미 토큰만 가리킨다: 원시값(--palette-*)·hex·rgb를 쓰면 막는다
+			files: ['src/styles/tokens/components.css'],
+			rules: {
+				'declaration-property-value-disallowed-list': [
+					{ '/^--/': [/var\(--palette-/, /#[0-9a-f]{3,8}\b/i, /rgba?\(/] },
+					{
+						message: (property, value) =>
+							`${property}: ${value} — 컴포넌트 토큰은 의미 토큰(semantic.css의 --color-* 등)만 가리킵니다`,
+					},
+				],
+			},
+		},
+	],
 };

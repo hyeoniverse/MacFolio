@@ -76,7 +76,7 @@ test: 글 순서에 기대지 않게 E2E 고침
 - 디자인 토큰은 세 층이다 (`apps/react/src/styles/tokens/`)
   - 1층 원시값 `primitives.css`: `--palette-*`(색 값), 숫자 이름의 `--radius-4…22`·`--radius-full`, 높이 단계 `--shadow-1…5`, `--text-*`, `--space-*`
   - 2층 의미 `semantic.css`: 색은 macOS 시스템 색 이름(`--color-label`, `--color-separator`, `--color-control-accent` …), 쓰임새 별칭(`--radius-window`, `--shadow-menu` …), `--z-*`
-  - 3층 컴포넌트 `components.css`: 부품 하나만 쓰는 값 (`--dock-background`, `--sidebar-background`, `--notes-accent` …)
+  - 3층 컴포넌트 `components.css`: 부품 하나만 쓰는 값 (`--dock-background`, `--sidebar-background`, `--notes-accent` …). 색은 2층 의미 토큰만 가리킨다 (원시값·hex·rgb 금지, 다크 값은 2층이 바꾼다)
   - 앱·부품 CSS는 2·3층(과 글자·간격·모서리 크기)만 쓰고 `--palette-*`는 직접 쓰지 않는다. 이름이 있는 값은 숫자 대신 이름을 쓴다. `pnpm lint`의 Stylelint가 둘 다 막는다 (`apps/react/stylelint.config.mjs`)
 - API의 컨트롤러나 DTO를 바꾸면 `pnpm --filter @macfolio/api openapi`로 `apps/react/src/apps/apidocs/openapi.json`을 다시 만들어 함께 커밋한다. 사이트의 'API 문서' 앱이 이 파일을 그린다. 빠뜨리면 `pnpm test`(`apps/api/src/openapi.test.ts`)가 실패한다
 
