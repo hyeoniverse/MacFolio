@@ -566,7 +566,7 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 
 ### SSH 키를 잃어버렸을 때
 
-비밀 키는 다시 받을 수 없다 (Oracle도 사본이 없다). 새 키를 만들어 서버의 `authorized_keys`에 넣는 것이 복구다. **시리얼 콘솔(Console connection)로는 안 된다**: 로그인 화면이 OS 비밀번호를 묻는데, 이 서버는 비밀번호 있는 계정이 없다(위 하드닝 표). 배포 키(`DEPLOY_SSH_KEY`)도 `deploy.sh`만 돌아서 대신할 수 없다. 부트 볼륨을 다른 VM에 붙여 고친다. 그동안 API가 멈춘다 (2026-10-20에 실제로 한 순서, [개발기](https://macfolio.hyeoniverse.com/memo/oracle-ssh-key-recovery)).
+비밀 키는 다시 받을 수 없다 (Oracle도 사본이 없다). 새 키를 만들어 서버의 `authorized_keys`에 넣는 것이 복구다. **시리얼 콘솔(Console connection)로는 안 된다**: 로그인 화면이 OS 비밀번호를 묻는데, 이 서버는 비밀번호 있는 계정이 없다(위 하드닝 표). Oracle 문서의 유지보수 모드로 키를 바꾸는 절차는 Oracle Linux 이미지에만 해당한다. Oracle의 공식 답은 "인스턴스를 지우고 새 키로 새로 만든다"인데, 서버를 다시 세우지 않으려면 아래처럼 한다. 배포 키(`DEPLOY_SSH_KEY`)도 `deploy.sh`만 돌아서 대신할 수 없다. 부트 볼륨을 다른 VM에 붙여 고친다. 그동안 API가 멈춘다 (2026-10-20에 실제로 한 순서, [개발기](https://macfolio.hyeoniverse.com/memo/oracle-ssh-key-recovery)).
 
 1. **새 키** (내 컴퓨터): `ssh-keygen -t ed25519 -f ~/.ssh/oracle-macfolio.key -C macfolio-admin`. 암호(passphrase)를 넣었다면 그것도 함께 보관한다
 2. **임시 VM**: 원래 서버와 같은 가용 도메인에 Ubuntu, `VM.Standard.E2.1.Micro`(무료 2대 중 하나)로 만든다. SSH keys는 **Paste public keys**에 `~/.ssh/oracle-macfolio.key.pub` 내용을 넣는다. 원래 서버를 끄기 전에 만들어 두고 접속까지 확인하면 멈추는 시간이 준다
@@ -631,6 +631,14 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
      ```
 
    - 임시 VM은 Terminate하면서 "Permanently delete the attached boot volume"을 체크한다 (임시 VM 자기 디스크다)
+
+근거 문서 (Oracle·cloud-init):
+
+- [Connecting to a Linux Instance](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/connect-to-linux-instance.htm): 키를 잃어버리면 인스턴스를 종료하고 새 키로 새로 만들라는 공식 안내
+- [Instance Console Connections](https://docs.oracle.com/en-us/iaas/Content/Compute/References/serialconsole.htm): 콘솔 로그인에는 비밀번호 있는 계정이 필요하다. 유지보수 모드 키 교체는 Oracle Linux 전용
+- [Attaching a Boot Volume](https://docs.oracle.com/en-us/iaas/Content/Block/Tasks/attachingabootvolume.htm): 떼어 낸 부트 볼륨은 다른 인스턴스에 데이터 볼륨으로 붙일 수 있다 (2~4, 6)
+- [Attaching a Block Volume to an Instance](https://docs.oracle.com/en-us/iaas/Content/Block/Tasks/attach-compute-volume-attachment.htm): Paravirtualized는 Attached가 되면 바로 보이고, iSCSI는 안에서 연결 명령을 더 쳐야 한다 (4)
+- [First boot determination](https://docs.cloud-init.io/en/latest/explanation/first_boot.html), [Module reference: SSH](https://docs.cloud-init.io/en/latest/reference/modules.html): instance ID가 바뀌면 첫 부팅으로 보고, SSH 모듈이 호스트 키를 새로 만들고(`ssh_deletekeys`) 메타데이터의 공개 키를 넣는다(`allow_public_ssh_keys`). 둘 다 기본값 `true` (5, 7)
 
 ### 백업
 

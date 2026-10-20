@@ -27,13 +27,13 @@ tmutil: No destinations configured.
 
 Oracle에서 VM을 만들 때 **Download private key**로 받은 비밀 키는 그 화면에서 한 번만 받을 수 있다. Oracle도 사본을 갖고 있지 않고, 서버에는 공개 키만 있다. 그러니 비밀 키를 "다시 받는" 방법은 없다. 할 수 있는 것은 **새 키를 만들어 서버의 `~/.ssh/authorized_keys`에 등록하는** 것뿐이다. 문제는 들어가지 못하는 서버에 그 한 줄을 어떻게 넣느냐다.
 
-배포 문서에는 "키를 잃어버리면 Oracle 콘솔의 **Console connection**으로 들어가 `authorized_keys`를 바꾼다"고 적어 두었다. 그런데 이 서버에서는 안 된다. 시리얼 콘솔은 접속까지는 되지만 OS 로그인 화면에서 사용자 이름과 **비밀번호**를 묻는다. 이 서버는 하드닝 점검(`ops/audit.sh`)에서 "비밀번호 있는 계정 0"을 기대하도록 만들어 두었다. 그래서 그 화면에서 넣을 비밀번호가 없다. 보안을 위해 막아 둔 문이 복구할 때도 막혀 있었다.
+배포 문서에는 "키를 잃어버리면 Oracle 콘솔의 **Console connection**으로 들어가 `authorized_keys`를 바꾼다"고 적어 두었다. 그런데 이 서버에서는 안 된다. 시리얼 콘솔은 접속까지는 되지만 OS 로그인 화면에서 사용자 이름과 **비밀번호**를 묻는다. 이 서버는 하드닝 점검(`ops/audit.sh`)에서 "비밀번호 있는 계정 0"을 기대하도록 만들어 두었다. 그래서 그 화면에서 넣을 비밀번호가 없다. 보안을 위해 막아 둔 문이 복구할 때도 막혀 있었다. Oracle 문서도 콘솔로 로그인하려면 비밀번호 있는 계정이 따로 있어야 한다고 적고 있다. 시리얼 콘솔에서 유지보수 모드로 부팅해 키를 바꾸는 절차도 문서에 있지만, **Oracle Linux 이미지에만** 해당한다. 이 서버는 Ubuntu다.
 
 GitHub Actions가 쓰는 배포 키도 대신할 수 없다. 그 키는 `authorized_keys`에 `restrict,command="…/ops/deploy.sh"`로 묶여 있어서, 무엇을 보내든 배포 스크립트만 돈다.
 
 ## 계획: 디스크를 떼어 다른 VM에서 고친다
 
-Oracle이 안내하는 방법은 이렇다.
+Oracle 문서의 공식 답은 "키를 잃어버렸으면 인스턴스를 지우고 새 키로 새로 만들라"다. 하지만 서버를 처음부터 다시 세우고 싶지는 않았다. 대신 Block Volume 문서에 있는 한 줄을 썼다. "인스턴스에서 떼어 낸 부트 볼륨은 다른 인스턴스에 데이터 볼륨으로 붙일 수 있다." 순서는 이렇다.
 
 1. 이 Mac에서 새 키를 만든다 (`ssh-keygen -t ed25519`)
 2. 같은 가용 도메인에 작은 임시 VM을 만든다. 만들 때 **Paste public keys**에 새 공개 키를 넣어, 임시 VM에는 새 키로 들어갈 수 있게 한다
@@ -128,7 +128,7 @@ Ubuntu 클라우드 이미지는 부팅할 때 cloud-init이 돈다. cloud-init�
 - 호스트 키를 새로 만든다. 경고가 뜬 이유다
 - 메타데이터의 SSH 공개 키를 기본 사용자(`ubuntu`)의 `authorized_keys`에 넣는다. 메타데이터에 든 것은 임시 VM을 만들 때 넣은 새 공개 키다
 
-원래 서버의 OS가 임시 VM의 instance-id로 부팅됐으니, cloud-init이 이 둘을 원래 서버 디스크에 해 준 것으로 보인다. 로그로 하나하나 확인하지는 않았다. 다만 호스트 키가 모두 바뀐 것, 넣지 않은 키가 들어가 있던 것이 이 설명과 맞는다.
+원래 서버의 OS가 임시 VM의 instance-id로 부팅됐으니, cloud-init이 이 둘을 원래 서버 디스크에 해 준 것으로 보인다. 로그로 하나하나 확인하지는 않았다. 다만 호스트 키가 모두 바뀐 것, 넣지 않은 키가 들어가 있던 것이 이 설명과 맞는다. cloud-init 문서도 이 경우를 직접 다룬다. 파일시스템이 새 인스턴스에 붙어도 캐시는 남는데, 캐시의 instance-id와 지금 instance-id가 다르면 첫 부팅으로 본다. SSH 모듈은 인스턴스마다 한 번 돌고, 호스트 키 지우기(`ssh_deletekeys`)와 메타데이터의 공개 키 넣기(`allow_public_ssh_keys`)가 둘 다 기본으로 켜져 있다.
 
 목표였던 키 등록은 끝나 있었다. 덤으로, 처음에 가져오려던 `api.env`도 바로 이 디스크에 있었다. Mac에서 새 키로 받았다.
 
@@ -156,7 +156,7 @@ oci compute instance action --instance-id "$ORIG" --action START
 18:13:21 health=200 ssh=open
 ```
 
-530은 Cloudflare가 터널 너머 서버에 닿지 못할 때, 502는 터널은 붙었는데 API가 아직 준비되지 않았을 때다. 켠 뒤 2분 남짓에 돌아왔다.
+530은 Cloudflare가 원본 서버를 찾지 못할 때 내는 코드다. 서버가 꺼져 터널(`cloudflared`)이 Cloudflare에 연결되지 않은 동안이다. 502는 터널은 붙었는데 API가 아직 준비되지 않았을 때다. 켠 뒤 2분 남짓에 돌아왔다.
 
 ### 되돌린 뒤에 바뀌어 있던 것
 
@@ -201,3 +201,30 @@ oci compute instance action --instance-id "$ORIG" --action START
 - 새 비밀 키와 그 암호는 비밀번호 관리자처럼 Mac 밖에도 둔다. Mac을 바꿀 때 `~/.ssh`도 옮길 목록에 넣는다
 
 배포 문서의 키 복구 절차도 이번에 실제로 된 순서로 고쳐 두었다.
+
+## 참고한 공식 문서
+
+영어 문서는 이 글과 관련된 부분만 옮겼다.
+
+- [Connecting to a Linux Instance](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/connect-to-linux-instance.htm) (Oracle)
+  - "SSH 키를 잃어버렸으면 인스턴스를 종료하고, 제공된 SSH 키나 직접 만든 SSH 키로 새 인스턴스를 만든다."
+  - "Ubuntu 플랫폼 이미지로 만든 인스턴스의 사용자 이름은 `ubuntu`다."
+- [Instance Console Connections](https://docs.oracle.com/en-us/iaas/Content/Compute/References/serialconsole.htm) (Oracle)
+  - "사용자 이름과 비밀번호로 로그인하려면 비밀번호가 있는 사용자 계정이 있어야 한다. Oracle Cloud Infrastructure는 `opc` 사용자에게 기본 비밀번호를 설정하지 않는다."
+  - 유지보수 모드로 부팅해 SSH 키를 바꾸는 절차에는 "이 절차는 Oracle Linux 이미지에만 해당한다"는 주의가 붙어 있다.
+- [Attaching a Boot Volume](https://docs.oracle.com/en-us/iaas/Content/Block/Tasks/attachingabootvolume.htm) (Oracle)
+  - "부트 볼륨을 인스턴스에서 떼었거나 인스턴스가 멈췄거나 종료됐으면, 그 부트 볼륨을 다른 인스턴스에 데이터 볼륨으로 붙일 수 있다."
+  - 원래 인스턴스에 부트 볼륨으로 다시 붙일 때는 `oci compute boot-volume-attachment attach`에 `--boot-volume-id`와 `--instance-id`를 준다.
+- [Attaching a Block Volume to an Instance](https://docs.oracle.com/en-us/iaas/Content/Block/Tasks/attach-compute-volume-attachment.htm) (Oracle)
+  - "볼륨 상태가 Attached일 때 연결 방식이 Paravirtualized면 자동으로 연결되어 바로 쓸 수 있다. iSCSI면 먼저 볼륨에 연결해야 한다."
+- [First boot determination](https://docs.cloud-init.io/en/latest/explanation/first_boot.html) (cloud-init)
+  - "캐시에 있는 instance ID와 실행 중에 알아낸 instance ID를 비교한다. 다르면 이 인스턴스의 첫 부팅이고, 같으면 이후 부팅이다."
+  - 첫 부팅이면 "per-instance" 설정을 모두 돌리고, 이후 부팅에서는 "per-boot" 설정만 돌린다.
+  - 파일시스템이 새 인스턴스에 붙으면 캐시가 그대로 남을 수 있고, instance ID 비교가 이를 첫 부팅으로 알아채게 한다.
+- [Module reference: SSH](https://docs.cloud-init.io/en/latest/reference/modules.html) (cloud-init)
+  - `ssh_deletekeys`: "호스트 SSH 키를 지운다. 기본 호스트 키가 든 이미지의 비밀 호스트 키를 다시 쓰지 않게 한다. 기본값 `true`."
+  - `allow_public_ssh_keys`: "`true`면 데이터소스 메타데이터의 공개 SSH 키를 사용자의 `.ssh/authorized_keys` 파일로 가져온다. 기본값 `true`."
+  - 실행 빈도: 인스턴스마다 한 번(once-per-instance).
+- [Error 530](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-530/), [Error 1033](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1033/) (Cloudflare)
+  - 530: "Cloudflare가 원본 호스트 이름을 확인하지 못한다는 뜻이다." 자세한 원인은 함께 오는 1XXX 오류를 본다.
+  - 1033: "터널이 Cloudflare 네트워크에 연결되어 있지 않다. 트래픽을 받을 정상 `cloudflared` 인스턴스를 찾지 못했기 때문이다."
