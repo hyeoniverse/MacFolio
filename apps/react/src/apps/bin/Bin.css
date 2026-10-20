@@ -1,12 +1,12 @@
 /* 휴지통: 왼쪽 사이드바 + 오른쪽 목록과 정보 (Finder와 같은 모양) */
 [data-app='bin'] {
-	--bin-accent: var(--color-selected-content-bg);
+	--bin-accent: var(--color-selected-content-background);
 	--bin-accent-soft: rgba(0, 99, 225, 0.14);
 	--bin-deleted: #c4352b;
 }
 
 :root[data-theme='dark'] [data-app='bin'] {
-	--bin-accent: var(--color-selected-content-bg);
+	--bin-accent: var(--color-selected-content-background);
 	--bin-accent-soft: rgba(10, 132, 255, 0.24);
 	--bin-deleted: #ff7b72;
 }
@@ -14,8 +14,8 @@
 .bin {
 	position: relative;
 	height: 100%;
-	background-color: var(--color-window-bg);
-	color: var(--color-text);
+	background-color: var(--color-text-background);
+	color: var(--color-label);
 	text-align: left;
 	/* 창 폭에 따라 배치를 바꾼다 (아래 @container). 자기 자신은 바꿀 수 없어서 안쪽 .bin-body를 바꾼다 */
 	container-type: inline-size;
@@ -40,7 +40,7 @@
 
 .bin-sidebar h2 {
 	margin: var(--space-4) var(--space-8);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	font-weight: 600;
 }
@@ -53,7 +53,7 @@
 	border: none;
 	border-radius: var(--radius-sm);
 	background: none;
-	color: var(--color-text);
+	color: var(--color-label);
 	font-size: var(--text-footnote);
 	text-align: left;
 	cursor: default;
@@ -67,7 +67,7 @@
 
 .bin-location:hover,
 .bin-location.active {
-	background-color: var(--color-selected-bg);
+	background-color: var(--color-unemphasized-selected-content-background);
 }
 
 .bin-location.active {
@@ -76,7 +76,7 @@
 
 .bin-location-count {
 	margin-left: auto;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	font-weight: 400;
 }
@@ -93,7 +93,7 @@
 	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 둔다. 버튼이 생기면 버튼만 위로 올린다 */
 	gap: var(--space-10);
 	padding: 0 16px;
-	border-bottom: 1px solid var(--color-divider);
+	border-bottom: 1px solid var(--color-separator);
 }
 
 .bin-title {
@@ -103,7 +103,7 @@
 }
 
 .bin-count {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -144,14 +144,14 @@
 .bin-data-meta {
 	grid-column: 2;
 	grid-row: 1;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	font-variant-numeric: tabular-nums;
 }
 
 .bin-data-description {
 	grid-column: 1;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	line-height: 1.5;
 }
@@ -164,7 +164,7 @@
 
 /* 사이트가 비울 수 없는 줄: 비우기 버튼 자리에 어디서 지우는지 */
 .bin-data-elsewhere {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 }
 
@@ -193,8 +193,8 @@
 	justify-content: space-between;
 	gap: var(--space-12);
 	padding: var(--space-10) var(--space-16);
-	border-bottom: 1px solid var(--color-divider);
-	color: var(--color-text-secondary);
+	border-bottom: 1px solid var(--color-separator);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -203,20 +203,20 @@
 	padding: 2px 9px;
 	border: none;
 	border-radius: 5px;
-	background-color: var(--color-control-bg, rgba(127, 127, 127, 0.12));
-	box-shadow: inset 0 0 0 0.5px var(--color-divider);
-	color: var(--color-text);
+	background-color: var(--color-control-background, rgba(127, 127, 127, 0.12));
+	box-shadow: inset 0 0 0 0.5px var(--color-separator);
+	color: var(--color-label);
 	font: inherit;
 	font-size: var(--text-caption2);
 	cursor: pointer;
 }
 
 .bin-empty-button:hover:not(:disabled) {
-	background-color: color-mix(in srgb, var(--color-text) 10%, transparent);
+	background-color: color-mix(in srgb, var(--color-label) 10%, transparent);
 }
 
 .bin-empty-button:disabled {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	opacity: 0.6;
 	cursor: default;
 }
@@ -247,8 +247,8 @@
 	width: 40px;
 	height: 40px;
 	border-radius: var(--radius-sm);
-	background-color: var(--color-divider);
-	color: var(--color-text-secondary);
+	background-color: var(--color-separator);
+	color: var(--color-secondary-label);
 	font-size: var(--text-title3);
 	line-height: 40px;
 	text-align: center;
@@ -267,7 +267,7 @@
 .bin-file-usage {
 	grid-column: 2;
 	overflow: hidden;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -292,8 +292,8 @@
 .bin-statusbar {
 	flex: none;
 	padding: var(--space-6) var(--space-16);
-	border-top: 1px solid var(--color-divider);
-	color: var(--color-text-secondary);
+	border-top: 1px solid var(--color-separator);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	text-align: center;
 	font-variant-numeric: tabular-nums;
@@ -309,7 +309,7 @@
 	flex: none;
 	margin: 0;
 	padding: var(--space-8) var(--space-16);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	line-height: 1.5;
 }
@@ -335,7 +335,7 @@
 		width: auto;
 		padding: 0 12px 0 84px;
 		border-right: none;
-		border-bottom: 1px solid var(--color-divider);
+		border-bottom: 1px solid var(--color-separator);
 	}
 
 	.bin-lights-space,
@@ -382,6 +382,6 @@
 	justify-content: space-between;
 	gap: var(--space-8);
 	padding: 8px 16px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }

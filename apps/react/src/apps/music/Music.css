@@ -1,8 +1,8 @@
 /* 음악 앱 (macOS·iOS 음악) */
 [data-app='music'] {
 	--music-accent: #fa2d48;
-	--music-bg: var(--color-window-bg);
-	--music-sidebar-bg: var(--color-sidebar-bg);
+	--music-bg: var(--color-text-background);
+	--music-sidebar-bg: var(--sidebar-background);
 	--music-bar-bg: rgba(246, 246, 248, 0.92);
 	--music-hover: rgba(0, 0, 0, 0.05);
 	--music-selected: rgba(0, 0, 0, 0.08);
@@ -12,8 +12,8 @@
 }
 
 :root[data-theme='dark'] [data-app='music'] {
-	--music-bg: var(--color-window-bg);
-	--music-sidebar-bg: var(--color-sidebar-bg);
+	--music-bg: var(--color-text-background);
+	--music-sidebar-bg: var(--sidebar-background);
 	--music-bar-bg: rgba(40, 40, 42, 0.92);
 	--music-hover: rgba(255, 255, 255, 0.06);
 	--music-selected: rgba(255, 255, 255, 0.1);

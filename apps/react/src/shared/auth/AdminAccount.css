@@ -14,7 +14,7 @@
 }
 
 .admin-account-head strong {
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font-size: var(--text-title3);
 }
 
@@ -30,14 +30,14 @@
 .admin-account-avatar.placeholder {
 	display: grid;
 	place-items: center;
-	background: linear-gradient(#b8b8be, var(--color-gray));
+	background: linear-gradient(#b8b8be, var(--color-system-gray));
 	color: var(--color-white);
 	font-size: 24px;
 }
 
 .admin-account-status {
 	margin-top: var(--space-2);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 }
 
@@ -47,7 +47,7 @@
 	height: 7px;
 	margin-right: var(--space-6);
 	border-radius: 50%;
-	background-color: var(--color-green);
+	background-color: var(--color-system-green);
 	vertical-align: 1px;
 	content: '';
 }
@@ -59,14 +59,14 @@
 
 /* 글자 버튼 (shared/ui/button/Button): 창 바탕에 테두리 */
 .admin-account-actions {
-	--ui-button-bg: var(--color-window-bg, transparent);
-	--ui-button-color: var(--color-text);
+	--ui-button-bg: var(--color-text-background, transparent);
+	--ui-button-color: var(--color-label);
 	--ui-button-padding: 7px 14px;
 }
 
 .admin-account-actions .ui-button {
 	gap: 7px;
-	border: 1px solid var(--color-divider);
+	border: 1px solid var(--color-separator);
 	font-size: var(--text-footnote);
 }
 
@@ -76,7 +76,7 @@
 
 .admin-account-details {
 	overflow: hidden;
-	border: 1px solid var(--color-divider);
+	border: 1px solid var(--color-separator);
 	border-radius: var(--radius-lg);
 	font-size: var(--text-footnote);
 }
@@ -89,21 +89,21 @@
 }
 
 .admin-account-details div + div {
-	border-top: 1px solid var(--color-divider);
+	border-top: 1px solid var(--color-separator);
 }
 
 .admin-account-details dt {
 	flex: none;
-	color: var(--color-text);
+	color: var(--color-label);
 }
 
 .admin-account-details dd {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	text-align: right;
 }
 
 .admin-account-note {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 

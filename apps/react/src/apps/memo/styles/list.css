@@ -227,26 +227,26 @@
 }
 
 .memo-find-replace-toggle input {
-	accent-color: var(--color-notes-yellow);
+	accent-color: var(--notes-accent);
 }
 
 /* 찾은 곳 (편집기는 장식, 읽기 화면은 CSS 강조) */
 .memo-find-match {
-	background-color: color-mix(in srgb, var(--color-notes-yellow) 35%, transparent);
+	background-color: color-mix(in srgb, var(--notes-accent) 35%, transparent);
 }
 
 .memo-find-current {
-	background-color: var(--color-notes-yellow);
-	color: var(--color-on-notes-yellow);
+	background-color: var(--notes-accent);
+	color: var(--notes-on-accent);
 }
 
 ::highlight(memo-find) {
-	background-color: color-mix(in srgb, var(--color-notes-yellow) 35%, transparent);
+	background-color: color-mix(in srgb, var(--notes-accent) 35%, transparent);
 }
 
 ::highlight(memo-find-current) {
-	background-color: var(--color-notes-yellow);
-	color: var(--color-on-notes-yellow);
+	background-color: var(--notes-accent);
+	color: var(--notes-on-accent);
 }
 
 .memo-list ul {

@@ -16,19 +16,19 @@
 		padding: var(--ui-button-padding, 5px 14px);
 		border: none;
 		border-radius: var(--ui-button-radius, 8px);
-		background-color: var(--ui-button-bg, var(--color-selected-bg));
+		background-color: var(--ui-button-bg, var(--color-unemphasized-selected-content-background));
 		color: var(--ui-button-color, inherit);
 		font: inherit;
 		cursor: pointer;
 	}
 
 	.ui-button.primary {
-		background-color: var(--ui-accent, var(--color-accent));
-		color: var(--ui-on-accent, var(--color-on-accent));
+		background-color: var(--ui-accent, var(--color-control-accent));
+		color: var(--ui-on-accent, var(--color-alternate-selected-control-text));
 	}
 
 	.ui-button.danger {
-		background-color: var(--ui-danger, var(--color-danger));
+		background-color: var(--ui-danger, var(--color-system-red));
 		color: var(--color-white);
 	}
 

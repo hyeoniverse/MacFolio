@@ -14,7 +14,7 @@
 	left: 50%;
 	z-index: var(--z-dock);
 	height: calc(var(--dock-icon, 64px) + 2rem);
-	background: var(--color-dock-bg);
+	background: var(--dock-background);
 	transform: translateX(-50%);
 	backdrop-filter: blur(10px);
 	border-radius: 1rem;
@@ -32,7 +32,7 @@
 	align-self: stretch;
 	width: var(--dock-divider, 2px);
 	margin: 1rem 0;
-	background: var(--color-dock-divider);
+	background: var(--dock-divider-color);
 }
 
 /* Dock.css */
@@ -48,7 +48,7 @@
 	position: relative;
 	width: 100%;
 	max-width: 26rem;
-	background: var(--color-launchpad-bg);
+	background: var(--launchpad-background);
 	border-radius: var(--radius-lg);
 }
 

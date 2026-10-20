@@ -1,6 +1,6 @@
 /* Safari: 프로젝트마다 탭이 열린 브라우저 */
 [data-app='safari'] {
-	--safari-bg: var(--color-content-bg);
+	--safari-bg: var(--color-text-background);
 	--safari-toolbar-bg: #f6f6f6;
 	--safari-tabbar-bg: #dedede;
 	--safari-tab-hover: rgba(0, 0, 0, 0.05);
@@ -8,7 +8,7 @@
 	--safari-divider: rgba(0, 0, 0, 0.16);
 	--safari-address-bg: rgba(0, 0, 0, 0.06);
 	--safari-text: var(--color-label);
-	--safari-muted: var(--color-text-secondary);
+	--safari-muted: var(--color-secondary-label);
 	--safari-card-bg: #f5f5f7;
 	--safari-chip-bg: var(--color-white);
 	--safari-accent: var(--color-link);
@@ -21,7 +21,7 @@
 }
 
 :root[data-theme='dark'] [data-app='safari'] {
-	--safari-bg: var(--color-content-bg);
+	--safari-bg: var(--color-text-background);
 	--safari-toolbar-bg: #2c2c2e;
 	--safari-tabbar-bg: #1f1f21;
 	--safari-tab-hover: rgba(255, 255, 255, 0.06);
@@ -29,7 +29,7 @@
 	--safari-divider: rgba(255, 255, 255, 0.16);
 	--safari-address-bg: rgba(255, 255, 255, 0.1);
 	--safari-text: var(--color-label);
-	--safari-muted: var(--color-text-secondary);
+	--safari-muted: var(--color-secondary-label);
 	--safari-card-bg: #2c2c2e;
 	--safari-chip-bg: #3a3a3c;
 	--safari-accent: var(--color-link);

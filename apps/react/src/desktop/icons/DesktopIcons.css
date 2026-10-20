@@ -96,12 +96,12 @@
 }
 
 .desktop-icon.selected .desktop-icon-label {
-	background: var(--color-accent, #0a64d6);
+	background: var(--color-control-accent, #0a64d6);
 	text-shadow: none;
 }
 
 .desktop-icon:focus-visible .desktop-icon-image {
-	box-shadow: 0 0 0 2px var(--color-accent, #0a64d6);
+	box-shadow: 0 0 0 2px var(--color-control-accent, #0a64d6);
 }
 
 /* 끌어서 고르는 사각형: macOS처럼 옅은 흰 판에 테두리 */
@@ -143,9 +143,9 @@
 	overflow: hidden;
 	border: none;
 	border-radius: 3px;
-	outline: 3px solid color-mix(in srgb, var(--color-accent) 60%, transparent);
-	background: var(--color-content-bg);
-	color: var(--color-text);
+	outline: 3px solid color-mix(in srgb, var(--color-control-accent) 60%, transparent);
+	background: var(--color-text-background);
+	color: var(--color-label);
 	font: inherit;
 	font-size: var(--text-caption);
 	line-height: 15px;

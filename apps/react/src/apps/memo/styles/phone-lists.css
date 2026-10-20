@@ -15,7 +15,7 @@
 
 :root[data-theme='dark'] [data-app='memo'] {
 	--phone-page-bg: var(--memo-bg);
-	--phone-card-bg: var(--color-card-bg);
+	--phone-card-bg: var(--color-popover-background);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo :is(.memo-folders, .memo-list) {
@@ -391,7 +391,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-pill.destructive {
-	color: var(--color-danger);
+	color: var(--color-system-red);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-pill:disabled {

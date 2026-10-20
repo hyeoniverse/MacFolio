@@ -5,9 +5,9 @@
 	width: 248px;
 	padding: var(--space-10);
 	border-radius: var(--radius-lg);
-	background-color: var(--color-popover-bg);
+	background-color: var(--color-popover-background);
 	box-shadow: var(--shadow-menu);
-	color: var(--color-popover-text);
+	color: var(--color-label);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	font-size: var(--text-caption);
 	animation: pop-in var(--duration-fast) var(--ease-out);
@@ -30,14 +30,14 @@
 	width: auto;
 	margin-right: auto;
 	padding: 0 6px;
-	color: var(--color-popover-text);
+	color: var(--color-label);
 	font-size: var(--text-footnote);
 	font-weight: 700;
 	text-align: left;
 }
 
 .ui-calendar-title i {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: 9px;
 }
 
@@ -61,12 +61,12 @@
 	width: 26px;
 	height: 26px;
 	border-radius: var(--radius-sm);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .ui-calendar-head button:hover,
 .ui-calendar-today:hover {
-	background-color: var(--color-control-bg, rgba(127, 127, 127, 0.15));
+	background-color: var(--color-control-background, rgba(127, 127, 127, 0.15));
 }
 
 .ui-calendar-grid {
@@ -78,7 +78,7 @@
 
 .ui-calendar-weekday {
 	padding: 4px 0;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 }
 
@@ -103,7 +103,7 @@
 
 .ui-calendar-picks button:hover,
 .ui-calendar-grid button:hover {
-	background-color: color-mix(in srgb, var(--color-notes-yellow) 25%, transparent);
+	background-color: color-mix(in srgb, var(--notes-accent) 25%, transparent);
 }
 
 /* 범위 밖의 날·달·해 (min·max): 흐리게, 눌리지 않는다 */
@@ -122,14 +122,14 @@
 
 .ui-calendar-picks button.today,
 .ui-calendar-grid button.today {
-	color: var(--color-notes-yellow);
+	color: var(--notes-accent);
 	font-weight: 700;
 }
 
 .ui-calendar-picks button.selected,
 .ui-calendar-grid button.selected {
-	background-color: var(--color-notes-yellow);
-	color: var(--color-on-notes-yellow);
+	background-color: var(--notes-accent);
+	color: var(--notes-on-accent);
 	font-weight: 700;
 }
 

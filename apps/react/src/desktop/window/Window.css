@@ -3,7 +3,7 @@
 	display: block;
 	justify-items: center;
 	align-items: top;
-	border: 1px solid var(--color-window-border);
+	border: 1px solid var(--window-border);
 	outline: none;
 	box-shadow: var(--shadow-window);
 	/* hidden이 아니라 clip: hidden도 코드로는 스크롤된다. 창 안(iframe 등)에서 포커스가 옮겨 가면 브라우저가 창 틀을 밀어 올려 제목 막대가 잘렸다 */
@@ -12,8 +12,8 @@
 
 	z-index: 1;
 	/* 위치와 크기는 useWindowFrame이 정한다 (desktop/window/geometry.ts) */
-	background-color: var(--color-window-bg);
-	color: var(--color-text);
+	background-color: var(--color-text-background);
+	color: var(--color-label);
 
 	text-align: center;
 	border-radius: 0.8rem;
@@ -136,14 +136,14 @@
 	align-items: center;
 	justify-content: flex-start;
 	padding: 0 10px;
-	border-bottom: 1px solid var(--color-window-border);
+	border-bottom: 1px solid var(--window-border);
 	position: relative;
 	/* 상단바를 고정하여 스크롤 영향 받지 않게 함 */
 	z-index: 2;
 	/* 스크롤 콘텐츠 위에 위치 */
 	width: 100%;
 	height: 1.8rem;
-	background-color: var(--color-titlebar-bg);
+	background-color: var(--color-window-background);
 	/* 끌어서 창을 옮긴다 (터치로 끌 때 화면이 스크롤되지 않게) */
 	cursor: grab;
 	touch-action: none;
@@ -301,9 +301,9 @@
 	border: none;
 	border-radius: 50%;
 	/* 다크 모드에서도 바탕과 구분되게 카드 색 (라이트는 흰색 그대로) */
-	background-color: var(--phone-card-bg, var(--color-window-bg));
+	background-color: var(--phone-card-bg, var(--color-text-background));
 	box-shadow: var(--phone-float-shadow);
-	color: var(--color-text);
+	color: var(--color-label);
 	font: inherit;
 	cursor: pointer;
 	pointer-events: auto;
@@ -325,15 +325,15 @@
 /* 휴대폰 앱의 공통 모양 (iOS처럼, 메모와 같게): 회색 바탕 위 흰 카드 묶음, 떠 있는 버튼, 큰 제목.
    앱마다 이 값으로 바탕·카드·그림자를 칠한다 */
 .container.mobile[data-app] {
-	--phone-page-bg: var(--color-sidebar-bg);
-	--phone-card-bg: var(--color-card-bg);
+	--phone-page-bg: var(--sidebar-background);
+	--phone-card-bg: var(--color-popover-background);
 	--phone-float-shadow: var(--shadow-float);
 	--phone-separator: rgba(60, 60, 67, 0.18);
 }
 
 :root[data-theme='dark'] .container.mobile[data-app] {
 	--phone-page-bg: #1e1e1e;
-	--phone-card-bg: var(--color-card-bg);
+	--phone-card-bg: var(--color-popover-background);
 	--phone-separator: rgba(255, 255, 255, 0.12);
 }
 
@@ -355,7 +355,7 @@
 	min-height: 44px;
 	margin: 0 0 12px;
 	padding-left: 64px;
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font-size: 30px;
 	font-weight: 700;
 	line-height: 1.2;
@@ -363,7 +363,7 @@
 
 .container.mobile .phone-title-sub {
 	margin: -8px 4px 16px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
 
@@ -378,7 +378,7 @@
 	border-radius: 50%;
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
-	color: var(--color-text);
+	color: var(--color-label);
 	font-size: var(--text-title3);
 }
 
@@ -394,7 +394,7 @@
 		[data-app='messages'],
 		[data-app='music']
 	) {
-	background-color: var(--color-window-bg);
+	background-color: var(--color-text-background);
 }
 
 /* 홈 인디케이터: 쓸어 올리면 홈으로. 내용 위에 떠 있어 자리를 차지하지 않는다 (내용은 그 뒤까지 이어진다) */
@@ -419,7 +419,7 @@
 	width: 134px;
 	height: 5px;
 	border-radius: 3px;
-	background-color: var(--color-text);
+	background-color: var(--color-label);
 	opacity: 0.85;
 	transition: background-color var(--duration) var(--ease-out);
 }
@@ -434,5 +434,5 @@
 }
 
 .container.mobile:not(.unified) .content {
-	background-color: var(--color-window-bg);
+	background-color: var(--color-text-background);
 }

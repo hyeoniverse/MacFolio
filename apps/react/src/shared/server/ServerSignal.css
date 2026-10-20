@@ -35,7 +35,7 @@
 
 /* DB가 안 되면 남은 막대를 주황으로 */
 .server-signal.state-database .on {
-	color: var(--color-orange);
+	color: var(--color-system-orange);
 }
 
 .server-signal .slash {

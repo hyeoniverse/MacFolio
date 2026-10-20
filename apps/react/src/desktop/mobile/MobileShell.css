@@ -111,7 +111,7 @@
 }
 
 .mobile-battery.danger span {
-	background-color: var(--color-danger);
+	background-color: var(--color-system-red);
 }
 
 /* ─── 음악 위젯 (홈 화면, 제어 센터) ─── */
@@ -378,7 +378,7 @@
 /* 흰 막대 위에서도 보이도록 */
 .cc-slider i {
 	position: relative;
-	color: var(--color-gray);
+	color: var(--color-system-gray);
 	pointer-events: none;
 }
 
@@ -398,7 +398,7 @@
 	width: calc(var(--cc-cell) * 0.56);
 	height: calc(var(--cc-cell) * 0.56);
 	border-radius: 50%;
-	background-color: var(--color-blue);
+	background-color: var(--color-control-accent);
 	font-size: var(--text-body);
 }
 

@@ -5,8 +5,8 @@
 	height: 100%;
 	min-height: 0;
 	padding-top: var(--space-24);
-	background: var(--color-window-bg);
-	color: var(--color-text);
+	background: var(--color-text-background);
+	color: var(--color-label);
 }
 
 .quicktime.playing {

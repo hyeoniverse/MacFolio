@@ -9,13 +9,13 @@
 	align-items: center;
 	width: 316px;
 	padding: 44px 24px var(--space-16);
-	border: 0.5px solid var(--color-window-border);
+	border: 0.5px solid var(--window-border);
 	border-radius: 16px;
-	background-color: var(--color-titlebar-bg);
+	background-color: var(--color-window-background);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.12),
 		0 22px 70px rgba(0, 0, 0, 0.35);
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	text-align: center;
 	transform: translate(-50%, -50%);
 	user-select: none;
@@ -58,13 +58,13 @@
 }
 
 .about-mac-lights .close:focus-visible {
-	outline: 2px solid var(--color-accent);
+	outline: 2px solid var(--color-control-accent);
 	outline-offset: 2px;
 }
 
 /* 최소화·확대는 이 창에 없다 (macOS처럼 회색) */
 .about-mac-lights .off {
-	background-color: color-mix(in srgb, var(--color-text-secondary) 35%, transparent);
+	background-color: color-mix(in srgb, var(--color-secondary-label) 35%, transparent);
 }
 
 .about-mac-photo {
@@ -79,7 +79,7 @@
 }
 
 .about-mac-photo.monogram {
-	background: linear-gradient(160deg, var(--color-gray), #5a5a5f);
+	background: linear-gradient(160deg, var(--color-system-gray), #5a5a5f);
 	color: var(--color-white);
 	font-size: 40px;
 	font-weight: 600;
@@ -94,7 +94,7 @@
 
 .about-mac-subtitle {
 	margin: 2px 0 20px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -114,7 +114,7 @@
 }
 
 .about-mac-specs dt {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	text-align: right;
 }
 
@@ -131,28 +131,28 @@
 }
 
 .about-mac-specs a:hover {
-	color: var(--color-accent);
+	color: var(--color-control-accent);
 	text-decoration: underline;
 }
 
 .about-mac-more {
 	padding: var(--space-4) var(--space-14);
-	border: 0.5px solid var(--color-window-border);
+	border: 0.5px solid var(--window-border);
 	border-radius: var(--radius-sm);
-	background-color: var(--color-control-bg);
+	background-color: var(--color-control-background);
 	box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.12);
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font: inherit;
 	font-size: var(--text-footnote);
 	cursor: pointer;
 }
 
 .about-mac-more:active {
-	background-color: var(--color-selected-bg);
+	background-color: var(--color-unemphasized-selected-content-background);
 }
 
 .about-mac-more:focus-visible {
-	outline: 2px solid var(--color-accent);
+	outline: 2px solid var(--color-control-accent);
 	outline-offset: 2px;
 }
 
@@ -161,7 +161,7 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--color-accent);
+	color: var(--color-control-accent);
 	font: inherit;
 	font-size: var(--text-caption2);
 	cursor: pointer;
@@ -172,14 +172,14 @@
 }
 
 .about-mac-link:focus-visible {
-	outline: 2px solid var(--color-accent);
+	outline: 2px solid var(--color-control-accent);
 	outline-offset: 2px;
 	border-radius: 3px;
 }
 
 .about-mac-legal {
 	margin: 4px 0 0;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: 10px;
 }
 
@@ -193,7 +193,7 @@
 
 /* 이 창의 링크는 파란 글자 (다른 값과 구별되게), 올리면 밑줄 */
 .about-mac-specs .profile-external-link {
-	color: var(--color-accent);
+	color: var(--color-control-accent);
 	/* ↗가 다음 줄로 떨어지지 않게 링크는 한 줄로 */
 	white-space: nowrap;
 }

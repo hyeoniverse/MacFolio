@@ -1,0 +1,41 @@
+/*
+ * 3층: 컴포넌트. 부품 하나(창·Dock·메뉴 막대·사이드바·메모 등)만 쓰는 값. 2층(semantic.css)이나 1층을 가리킨다.
+ * 부품을 다시 칠할 때는 여기만 고친다.
+ */
+:root {
+	/* 창 */
+	--window-border: var(--palette-gray-300);
+	--toolbar-height: 52px; /* 창 제목 막대·도구 막대 높이 (통합형 창) */
+	--sidebar-background: var(--palette-gray-50);
+	--list-pane-background: var(--palette-gray-150); /* 메일·메시지 목록 칸 */
+
+	/* 상단 메뉴 막대 */
+	--menubar-background: rgba(245, 245, 247, 0.8);
+
+	/* Dock·Launchpad */
+	--dock-background: rgba(255, 255, 255, 0.3);
+	--dock-divider-color: rgba(0, 0, 0, 0.1);
+	--dock-indicator-color: rgba(0, 0, 0, 0.6);
+	--launchpad-background: rgba(255, 255, 255, 0.7);
+
+	/* 메모 앱의 노란 강조 (날짜 고르기도 같이 쓴다) */
+	--notes-accent: var(--palette-notes-yellow);
+	--notes-on-accent: var(--palette-notes-yellow-ink); /* 노란 바탕 위 글자 */
+
+	/* 배경화면 (Settings에서 바꾼다) */
+	--wallpaper: url('/imgs/wallpapers/highsierra.jpg');
+	--wallpaper-mobile: url('/imgs/wallpapers/ios-sky-light.jpg');
+}
+
+:root[data-theme='dark'] {
+	--window-border: var(--palette-gray-700);
+	--sidebar-background: var(--palette-gray-875);
+	--list-pane-background: var(--palette-gray-850);
+
+	--menubar-background: rgba(30, 30, 32, 0.7);
+
+	--dock-background: rgba(40, 40, 42, 0.45);
+	--dock-divider-color: rgba(255, 255, 255, 0.15);
+	--dock-indicator-color: rgba(255, 255, 255, 0.75);
+	--launchpad-background: rgba(40, 40, 42, 0.75);
+}

@@ -219,8 +219,8 @@
 	z-index: var(--z-menu);
 	margin: 0;
 	border-radius: 2px;
-	background-color: var(--color-notes-yellow);
-	box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-notes-yellow) 30%, transparent);
+	background-color: var(--notes-accent);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--notes-accent) 30%, transparent);
 }
 
 /* 휴대폰: 홈 바가 내용 위에 떠 있어, 아래에 떠 있는 것은 홈 바 높이(--phone-bottom-inset)만큼 올린다 */
