@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import IconButton from '@/shared/ui/button/IconButton';
+import Toolbar from '@/shared/ui/toolbar/Toolbar';
 
 /**
  * 본문 위 도구 막대 (넓은 창): 왼쪽에 (갤러리에서 연 글이면) 돌아가기와 관리자 표시, 오른쪽에 도구와 검색 칸.
@@ -29,7 +30,7 @@ const ReaderToolbar = ({
 	onMore: (rect: DOMRect) => void;
 	search: ReactNode;
 }) => (
-	<div className={`memo-toolbar memo-reader-toolbar ${searching ? 'searching' : ''}`}>
+	<Toolbar className={`memo-toolbar memo-reader-toolbar ${searching ? 'searching' : ''}`}>
 		{lead}
 		{admin &&
 			(readerView === null ? (
@@ -74,7 +75,7 @@ const ReaderToolbar = ({
 			icon="fa-solid fa-ellipsis"
 		/>
 		{search}
-	</div>
+	</Toolbar>
 );
 
 export default ReaderToolbar;

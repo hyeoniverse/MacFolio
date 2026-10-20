@@ -1,0 +1,10 @@
+/*
+ * 빈 상태 문구 (shared/ui/empty-state/EmptyState.tsx).
+ * components 층: 앱 규칙(여백, 글자 크기, 앱의 흐린 색)에는 진다
+ */
+@layer components {
+	.ui-empty {
+		color: var(--color-text-secondary);
+		text-align: center;
+	}
+}

@@ -13,6 +13,7 @@ import SidebarToggle from '@/shared/ui/button/SidebarToggle';
 import { captionOf, loadCaptions, useCaptions } from './captionsApi';
 import '@/apps/photos/Photos.css';
 import IconButton from '@/shared/ui/button/IconButton';
+import Sidebar from '@/shared/ui/sidebar/Sidebar';
 
 /** 보는 곳: 보관함(모든 사진), 비디오만, 앨범 하나 */
 type Place = { kind: 'all' } | { kind: 'videos' } | { kind: 'album'; id: string };
@@ -172,7 +173,13 @@ const Photos = () => {
 						className={`photos ${sidebarOpen ? '' : 'no-sidebar'} ${sidebarOpen && overlay ? 'overlay' : ''} ${compact ? 'compact' : ''}`}
 						style={cssVars({ 'photos-cell': `${CELL_SIZES[size]}px` })}
 					>
-						<aside className="photos-sidebar" aria-label="사진 보관함" hidden={!sidebarOpen}>
+						<Sidebar
+							variant="floating"
+							as="aside"
+							className="photos-sidebar"
+							aria-label="사진 보관함"
+							hidden={!sidebarOpen}
+						>
 							<div className="photos-sidebar-top">
 								<SidebarToggle open onToggle={toggleSidebar} className="photos-sidebar-toggle" />
 							</div>
@@ -202,7 +209,7 @@ const Photos = () => {
 									entry.photos.length
 								)
 							)}
-						</aside>
+						</Sidebar>
 
 						<section
 							className="photos-main"

@@ -13,6 +13,7 @@ import SeekBar from './SeekBar';
 import VolumeBar from './VolumeBar';
 import '@/apps/music/Music.css';
 import IconButton from '@/shared/ui/button/IconButton';
+import ListRow from '@/shared/ui/list-row/ListRow';
 
 const PLAYLIST_ICONS: Record<string, string> = {
 	all: 'fa-solid fa-music',
@@ -317,19 +318,17 @@ const Music: React.FC = () => {
 						<p className="music-sidebar-heading">재생 목록</p>
 						<ul className="music-playlists">
 							{PLAYLISTS.map((item) => (
-								<li key={item.id}>
-									<button
-										type="button"
-										className={`music-playlist-link ${item.id === selectedId ? 'selected' : ''}`}
-										aria-current={item.id === selectedId || undefined}
-										onClick={() => openPlaylist(item.id)}
-									>
-										<Cover playlist={item} className="small" />
-										<i className={PLAYLIST_ICONS[item.id]} aria-hidden="true"></i>
-										<span>{item.name}</span>
-										{item.id === playingId && isPlaying && <PlayingBars paused={false} />}
-									</button>
-								</li>
+								<ListRow
+									key={item.id}
+									className={`music-playlist-link ${item.id === selectedId ? 'selected' : ''}`}
+									current={item.id === selectedId}
+									onClick={() => openPlaylist(item.id)}
+								>
+									<Cover playlist={item} className="small" />
+									<i className={PLAYLIST_ICONS[item.id]} aria-hidden="true"></i>
+									<span>{item.name}</span>
+									{item.id === playingId && isPlaying && <PlayingBars paused={false} />}
+								</ListRow>
 							))}
 						</ul>
 					</nav>
@@ -372,25 +371,23 @@ const Music: React.FC = () => {
 							{tracks.map((t, index) => {
 								const current = t.id === track.id && playingId === playlist.id;
 								return (
-									<li key={t.id}>
-										<button
-											type="button"
-											className={`music-track ${current ? 'current' : ''}`}
-											aria-current={current || undefined}
-											onClick={() => (current ? togglePlayPause() : playFrom(playlist.id, t.id))}
-										>
-											<span className="music-track-number">
-												{current ? <PlayingBars paused={!isPlaying} /> : index + 1}
-											</span>
-											<img src={t.artwork} alt="" />
-											<span className="music-track-title">
-												<strong>{t.title}</strong>
-												<small>{t.artist}</small>
-											</span>
-											<span className="music-track-album">{t.album}</span>
-											<span className="music-track-time">{durations[t.id] ? formatTime(durations[t.id]) : ''}</span>
-										</button>
-									</li>
+									<ListRow
+										key={t.id}
+										className={`music-track ${current ? 'current' : ''}`}
+										current={current}
+										onClick={() => (current ? togglePlayPause() : playFrom(playlist.id, t.id))}
+									>
+										<span className="music-track-number">
+											{current ? <PlayingBars paused={!isPlaying} /> : index + 1}
+										</span>
+										<img src={t.artwork} alt="" />
+										<span className="music-track-title">
+											<strong>{t.title}</strong>
+											<small>{t.artist}</small>
+										</span>
+										<span className="music-track-album">{t.album}</span>
+										<span className="music-track-time">{durations[t.id] ? formatTime(durations[t.id]) : ''}</span>
+									</ListRow>
 								);
 							})}
 						</ol>

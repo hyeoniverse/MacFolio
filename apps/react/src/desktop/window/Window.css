@@ -222,7 +222,7 @@
 	top: 0;
 	left: 0;
 	z-index: 3;
-	height: 52px;
+	height: var(--toolbar-height);
 	padding: 0 14px;
 	border: none;
 	background: none;

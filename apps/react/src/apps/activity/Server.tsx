@@ -1,4 +1,5 @@
 import type { ResourceStatus } from './activityApi';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 const METRIC_LABEL = { cpu: 'CPU', network: '네트워크', memory: '메모리' } as const;
 const LEVEL = {
@@ -69,7 +70,7 @@ const Billing = ({ billing }: { billing: NonNullable<ResourceStatus['billing']> 
 	return (
 		<section className="server-billing" aria-label="요금">
 			<h3>요금</h3>
-			{error && <p className="activity-empty error">{error}</p>}
+			{error && <EmptyState className="activity-empty error">{error}</EmptyState>}
 			{data && (
 				<>
 					<p className="server-billing-total">
@@ -123,7 +124,7 @@ const Billing = ({ billing }: { billing: NonNullable<ResourceStatus['billing']> 
  * 서버의 RESOURCE_MONITOR가 off면 켜는 방법을 알려 준다
  */
 const Server = ({ status }: { status: ResourceStatus | null }) => {
-	if (!status) return <p className="activity-empty">불러오는 중…</p>;
+	if (!status) return <EmptyState className="activity-empty">불러오는 중…</EmptyState>;
 	if (status.mode === 'off')
 		return (
 			<div className="activity-locked">

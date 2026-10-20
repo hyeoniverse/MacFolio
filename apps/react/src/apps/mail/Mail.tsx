@@ -18,6 +18,10 @@ import { MAILBOX_LABEL, type ListMail, type Mailbox } from './model';
 import '@/apps/mail/Mail.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import Button from '@/shared/ui/button/Button';
+import TabList from '@/shared/ui/tabs/TabList';
+import Sidebar from '@/shared/ui/sidebar/Sidebar';
+import ListRow from '@/shared/ui/list-row/ListRow';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 const fromServer = (mail: ContactMail, replyable: boolean): ListMail => ({
 	id: mail.id,
@@ -244,7 +248,7 @@ const Mail: React.FC = () => {
 			) : (
 				<div className="mail-shell">
 					<div className={`mail ${detailOpen ? 'detail-open' : ''}`} data-nav={nav}>
-						<aside className="mail-sidebar" aria-label="메일상자">
+						<Sidebar variant="floating" as="aside" className="mail-sidebar" aria-label="메일상자">
 							<div className="mail-sidebar-top" />
 							<p className="mail-sidebar-heading">메일상자</p>
 							<button
@@ -268,7 +272,7 @@ const Mail: React.FC = () => {
 									<span>보낸 편지함</span>
 								</button>
 							)}
-						</aside>
+						</Sidebar>
 
 						<section className="mail-list" aria-label={MAILBOX_LABEL[mailbox]}>
 							<header className="mail-list-toolbar">
@@ -285,19 +289,13 @@ const Mail: React.FC = () => {
 							</header>
 							{/* 휴대폰: 사이드바 대신 사서함을 위에서 고른다 */}
 							{env.apiUrl && (
-								<div className="mail-mailbox-tabs" role="tablist" aria-label="사서함">
-									{(['inbox', 'sent'] as const).map((entry) => (
-										<button
-											key={entry}
-											type="button"
-											role="tab"
-											aria-selected={mailbox === entry}
-											onClick={() => showMailbox(entry)}
-										>
-											{MAILBOX_LABEL[entry]}
-										</button>
-									))}
-								</div>
+								<TabList
+									className="mail-mailbox-tabs"
+									label="사서함"
+									items={(['inbox', 'sent'] as const).map((id) => ({ id, label: MAILBOX_LABEL[id] }))}
+									value={mailbox}
+									onChange={showMailbox}
+								/>
 							)}
 							{loadError && (
 								<p className="mail-load-error" role="alert">
@@ -306,39 +304,37 @@ const Mail: React.FC = () => {
 								</p>
 							)}
 							{mails.length === 0 ? (
-								<p className="mail-list-empty">{emptyText}</p>
+								<EmptyState className="mail-list-empty">{emptyText}</EmptyState>
 							) : (
 								// 사서함을 바꾸면 목록이 서서히 바뀐다
 								<ul key={mailbox} className="motion-swap">
 									{mails.map((mail) => (
-										<li key={mail.id}>
-											<button
-												type="button"
-												className={`mail-item ${!composing && selectedId === mail.id ? 'selected' : ''}`}
-												aria-current={(!composing && selectedId === mail.id) || undefined}
-												onClick={() => open(mail.id)}
-											>
-												<span
-													className={`mail-unread ${mailbox === 'sent' || !isUnread(mail) ? 'read' : ''}`}
-													aria-hidden="true"
-												/>
-												<span className="mail-item-text">
-													<span className="mail-item-top">
-														<strong>{mailbox === 'sent' ? profile.name : mail.fromName}</strong>
-														<time dateTime={mail.date}>{formatMailDate(mail.date)}</time>
-													</span>
-													<span className="mail-item-subject">
-														{mail.subject}
-														{mail.replies.length > 0 && (
-															<span className="mail-replied">
-																<i className="fa-solid fa-reply" aria-hidden="true" /> 답장 {mail.replies.length}
-															</span>
-														)}
-													</span>
-													<span className="mail-item-preview">{mail.body}</span>
+										<ListRow
+											key={mail.id}
+											className={`mail-item ${!composing && selectedId === mail.id ? 'selected' : ''}`}
+											current={!composing && selectedId === mail.id}
+											onClick={() => open(mail.id)}
+										>
+											<span
+												className={`mail-unread ${mailbox === 'sent' || !isUnread(mail) ? 'read' : ''}`}
+												aria-hidden="true"
+											/>
+											<span className="mail-item-text">
+												<span className="mail-item-top">
+													<strong>{mailbox === 'sent' ? profile.name : mail.fromName}</strong>
+													<time dateTime={mail.date}>{formatMailDate(mail.date)}</time>
 												</span>
-											</button>
-										</li>
+												<span className="mail-item-subject">
+													{mail.subject}
+													{mail.replies.length > 0 && (
+														<span className="mail-replied">
+															<i className="fa-solid fa-reply" aria-hidden="true" /> 답장 {mail.replies.length}
+														</span>
+													)}
+												</span>
+												<span className="mail-item-preview">{mail.body}</span>
+											</span>
+										</ListRow>
 									))}
 								</ul>
 							)}

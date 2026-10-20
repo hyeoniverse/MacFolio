@@ -17,6 +17,7 @@ import { useDropTarget } from './useDropTarget';
 import { FolderIcon, FolderNameInput } from './FolderNameInput';
 import { DEPTH_LIMIT_HINT, type FolderSidebarProps } from './folderSidebar.model';
 import { FolderRow } from './FolderRow';
+import Sidebar from '@/shared/ui/sidebar/Sidebar';
 
 /** 트리에서 경로의 폴더를 찾는다 */
 const findNode = (nodes: FolderNode[], path: string): FolderNode | null => {
@@ -115,7 +116,12 @@ const FolderSidebar: React.FC<FolderSidebarProps> = (props) => {
 		);
 
 	return (
-		<nav className={`memo-folders ${editing ? 'editing' : ''}`} aria-label="카테고리" inert={!open}>
+		<Sidebar
+			variant="floating"
+			className={`memo-folders ${editing ? 'editing' : ''}`}
+			aria-label="카테고리"
+			inert={!open}
+		>
 			{/* 신호등 버튼 바로 옆에 여닫기 (접었을 때와 같은 자리), 오른쪽 끝에 새로운 폴더 */}
 			<div className="memo-sidebar-bar">
 				<span className="memo-lights-space" aria-hidden="true" />
@@ -339,7 +345,7 @@ const FolderSidebar: React.FC<FolderSidebarProps> = (props) => {
 					</section>
 				)}
 			</div>
-		</nav>
+		</Sidebar>
 	);
 };
 

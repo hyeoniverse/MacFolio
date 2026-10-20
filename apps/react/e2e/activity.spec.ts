@@ -321,4 +321,29 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await activity.getByRole('tab', { name: '서버' }).click();
 		await expect(activity.getByText('서버 자원 사용률과 Oracle 유휴 회수 위험은 관리자에게만 보입니다.')).toBeVisible();
 	});
+	test('보기 탭은 ←·→ 키로 옮기며 고르고, Tab으로는 고른 탭에만 들어온다', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		const tabs = activity.getByRole('tablist', { name: '보기' });
+		const overview = tabs.getByRole('tab', { name: '개요' });
+		await expect(overview).toHaveAttribute('tabindex', '0');
+		await expect(tabs.getByRole('tab', { name: '유입 경로' })).toHaveAttribute('tabindex', '-1');
+
+		await overview.focus();
+		await page.keyboard.press('ArrowRight');
+		await expect(tabs.getByRole('tab', { name: '유입 경로' })).toBeFocused();
+		await expect(tabs.getByRole('tab', { name: '유입 경로' })).toHaveAttribute('aria-selected', 'true');
+		await expect(activity.getByRole('table', { name: '묶어 보기' })).toBeVisible();
+
+		// 처음에서 ←는 끝으로, End·Home은 끝·처음으로
+		await page.keyboard.press('Home');
+		await expect(overview).toHaveAttribute('aria-selected', 'true');
+		await page.keyboard.press('ArrowLeft');
+		await expect(tabs.getByRole('tab', { name: '서버' })).toHaveAttribute('aria-selected', 'true');
+		await page.keyboard.press('Home');
+		await expect(overview).toBeFocused();
+	});
 });

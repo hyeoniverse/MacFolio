@@ -10,7 +10,10 @@ import DatePicker from '@/shared/ui/date/DatePicker';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Modal from '@/shared/ui/dialog/Modal';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import ListRow from '@/shared/ui/list-row/ListRow';
 import Sheet from '@/shared/ui/sheet/Sheet';
+import Switch from '@/shared/ui/switch/Switch';
+import TabList from '@/shared/ui/tabs/TabList';
 import ShareIcon from '@/shared/ui/ShareIcon';
 
 const html = (element: ReactElement) => renderToStaticMarkup(element);
@@ -89,6 +92,37 @@ describe('입력', () => {
 		expect(html(createElement(DatePicker, { value: '2026-10-17', onChange: noop, label: '게시일' }))).toContain(
 			'aria-label="게시일 2026. 10. 17., 바꾸기"'
 		);
+	});
+
+	it('스위치: 켜짐·꺼짐을 읽는 switch 역할이고, 이름은 aria-label이나 감싼 label로 준다', () => {
+		const out = html(createElement(Switch, { checked: true, onChange: noop, 'aria-label': '클릭 소리' }));
+		expect(out).toContain('type="checkbox"');
+		expect(out).toContain('role="switch"');
+		expect(out).toContain('aria-label="클릭 소리"');
+		expect(out).toContain('checked=""');
+		expect(out).toContain('class="ui-switch regular"');
+		expect(html(createElement(Switch, { checked: false, onChange: noop, size: 'small' }))).toContain(
+			'class="ui-switch small"'
+		);
+	});
+
+	it('탭 목록: tablist 이름과 tab 역할, 고른 탭은 aria-selected이고 Tab 순서에는 고른 탭만 든다', () => {
+		const items = [
+			{ id: 'a', label: '개요' },
+			{ id: 'b', label: '유입 경로' },
+		] as const;
+		const out = html(createElement(TabList<'a' | 'b'>, { label: '보기', items, value: 'b', onChange: noop }));
+		expect(out).toContain('role="tablist" aria-label="보기"');
+		expect(out).toContain('role="tab" aria-selected="false" tabindex="-1">개요');
+		expect(out).toContain('role="tab" aria-selected="true" tabindex="0">유입 경로');
+	});
+});
+
+describe('목록', () => {
+	it('목록 한 줄: li 안의 버튼이고, 고른 줄에만 aria-current가 붙는다', () => {
+		const on = html(createElement(ListRow, { current: true, className: 'mail-item' }, '받은 메일'));
+		expect(on).toBe('<li><button type="button" aria-current="true" class="mail-item">받은 메일</button></li>');
+		expect(html(createElement(ListRow, { current: false }, '다른 메일'))).not.toContain('aria-current');
 	});
 });
 

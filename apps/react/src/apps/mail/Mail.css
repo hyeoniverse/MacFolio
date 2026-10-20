@@ -80,7 +80,6 @@
 /* ─── 메일상자: 창 안에 떠 있는 둥근 패널 ─── */
 .mail-sidebar {
 	padding: 0 8px 8px;
-	border-radius: 18px;
 	background-color: var(--mail-panel-bg);
 	box-shadow: var(--mail-panel-shadow);
 }
@@ -355,7 +354,6 @@
 .mail-list-empty {
 	padding: var(--space-24) var(--space-16);
 	color: var(--mail-muted);
-	text-align: center;
 }
 
 /* 사서함 고르기: 사이드바가 숨는 좁은 창·휴대폰에서만 */

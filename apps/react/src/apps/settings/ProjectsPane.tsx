@@ -46,9 +46,12 @@ import DatePicker from '@/shared/ui/date/DatePicker';
 import { todayIso } from '@/shared/ui/date/calendar';
 import Button from '@/shared/ui/button/Button';
 import IconButton from '@/shared/ui/button/IconButton';
+import Switch from '@/shared/ui/switch/Switch';
+import TabList from '@/shared/ui/tabs/TabList';
 import { reorderKeyDelta, startPointerReorder } from '@/shared/ui/reorder/pointerReorder';
 import { move as moveItem } from '@/apps/settings/showcase';
 import { fillWithSample } from '@/apps/settings/lookSamples';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 /** 목록의 한 줄: 프로젝트 하나 (코드의 기본값에 덮어쓴 모습) */
 interface Row {
@@ -818,7 +821,7 @@ const TagInput = ({
 };
 
 /** 켜고 끄는 줄: 왼쪽 이름(아래 설명), 오른쪽 토글 */
-const Switch = ({
+const SwitchRow = ({
 	label,
 	checked,
 	onChange,
@@ -832,14 +835,13 @@ const Switch = ({
 	const id = useId();
 	return (
 		<FormRow label={label} htmlFor={id} hint={hint} hintId={`${id}-hint`} align="end">
-			<input
+			<Switch
 				id={id}
-				type="checkbox"
-				role="switch"
+				size="small"
 				className="projects-switch"
 				aria-describedby={hint ? `${id}-hint` : undefined}
 				checked={checked}
-				onChange={(event) => onChange(event.target.checked)}
+				onChange={onChange}
 			/>
 		</FormRow>
 	);
@@ -1101,12 +1103,12 @@ const ImageField = ({
 const optional = (value: string) => (value.trim() ? value : undefined);
 
 type EditorTab = 'intro' | 'pictures' | 'content' | 'app' | 'json';
-const TABS: [EditorTab, string][] = [
-	['intro', '소개'],
-	['pictures', '그림'],
-	['content', '내용'],
-	['app', '앱'],
-	['json', 'JSON'],
+const TABS: { id: EditorTab; label: string }[] = [
+	{ id: 'intro', label: '소개' },
+	{ id: 'pictures', label: '그림' },
+	{ id: 'content', label: '내용' },
+	{ id: 'app', label: '앱' },
+	{ id: 'json', label: 'JSON' },
 ];
 
 /**
@@ -1667,7 +1669,7 @@ function ListTable<T>({
 					</div>
 				)}
 				{items.length === 0 ? (
-					<p className="projects-table-empty">항목이 없습니다. ＋를 눌러 더합니다.</p>
+					<EmptyState className="projects-table-empty">항목이 없습니다. ＋를 눌러 더합니다.</EmptyState>
 				) : detail ? (
 					// 이동 목록 (macOS 설정의 › 줄): 왼쪽 ≡ 손잡이, 가운데 줄 버튼(제목·설명·그림·›)
 					<ol className="projects-table-rows nav" aria-label={label} ref={listRef}>
@@ -2368,7 +2370,7 @@ const TeamEditor = ({ members, onChange }: { members: Member[]; onChange: (membe
 						hint="비워 두면 이름 첫 글자로 그립니다."
 						onChange={(avatar) => update(patchOf(member, { avatar }))}
 					/>
-					<Switch
+					<SwitchRow
 						label="나"
 						checked={Boolean(member.me)}
 						hint="이 프로젝트에서 내가 맡은 자리입니다. 강조해서 보입니다."
@@ -2634,30 +2636,25 @@ const ProjectEditor = ({
 						</button>
 						<h3 className="projects-toolbar-title">{draft.name.trim() || '새 프로젝트'}</h3>
 					</div>
-					<div className="projects-tabs" role="tablist" aria-label="편집 항목">
-						{TABS.map(([key, label]) => (
-							<button
-								key={key}
-								type="button"
-								role="tab"
-								aria-selected={tab === key}
-								onClick={() => {
-									if (tab === key) return;
-									if (tab === 'json') {
-										const project = readJson();
-										if (!project) return;
-										setDraft(project);
-										setErrors([]);
-									}
-									if (key === 'json') openJson();
-									else setTab(key);
-									formRef.current?.scrollTo({ top: 0 });
-								}}
-							>
-								{label}
-							</button>
-						))}
-					</div>
+					<TabList
+						className="projects-tabs"
+						label="편집 항목"
+						items={TABS}
+						value={tab}
+						onChange={(key) => {
+							if (tab === key) return;
+							// JSON에서 나갈 때는 고친 JSON을 먼저 읽는다 (틀렸으면 머문다)
+							if (tab === 'json') {
+								const project = readJson();
+								if (!project) return;
+								setDraft(project);
+								setErrors([]);
+							}
+							if (key === 'json') openJson();
+							else setTab(key);
+							formRef.current?.scrollTo({ top: 0 });
+						}}
+					/>
 					<div className="projects-toolbar-end">
 						{/* 새 프로젝트만: 지금 고른 페이지 모양의 예시 내용을 칸에 채운다 (lookSamples.ts) */}
 						{row.isNew && (
@@ -2927,7 +2924,7 @@ const ProjectEditor = ({
 							{tab === 'app' && (
 								<>
 									<Group title="앱">
-										<Switch
+										<SwitchRow
 											label="이 사이트 안에서 창으로 열기"
 											checked={Boolean(app)}
 											hint="데모를 창 안(iframe)에 띄우는 앱을 만듭니다. Dock·Launchpad·터미널 open에 나옵니다."
@@ -2955,7 +2952,7 @@ const ProjectEditor = ({
 												fromPicked={(src) => src.replace(/^\/imgs\//, '')}
 												hint="Dock·Launchpad·휴대폰 홈에 보이는 아이콘입니다 (이미지 폴더 기준 경로 또는 올린 그림)."
 											/>
-											<Switch
+											<SwitchRow
 												label="Dock에 고정"
 												checked={app.inDock !== false}
 												hint="끄면 Launchpad에 두고, 실행 중에만 Dock에 나타납니다."
@@ -3204,18 +3201,15 @@ const ProjectsPane = () => {
 												onClick={() => update(rows.filter((other) => other !== row))}
 											/>
 										) : (
-											<input
-												type="checkbox"
-												role="switch"
+											<Switch
+												size="small"
 												className="projects-switch projects-row-switch"
 												aria-label={`${name} 보이기`}
 												title={row.hidden ? '숨긴 프로젝트입니다.' : '보이는 프로젝트입니다.'}
 												checked={!row.hidden}
 												disabled={busy}
-												onChange={(event) =>
-													update(
-														rows.map((other) => (other === row ? { ...row, hidden: !event.target.checked } : other))
-													)
+												onChange={(on) =>
+													update(rows.map((other) => (other === row ? { ...row, hidden: !on } : other)))
 												}
 											/>
 										)}

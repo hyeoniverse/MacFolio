@@ -5,6 +5,7 @@ import LineChart from './LineChart';
 import StatTable from './StatTable';
 import { ActivityError, fetchSummary, type Summary } from './activityApi';
 import { buildUtmUrl, UTM_FIELDS, UTM_MEDIUMS, UTM_SOURCES, utmLabel, type UtmFields } from './model';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 /** 지난 날의 집계(DailyStat)는 다시 모으지 않았다: 새 표는 배포한 날부터 찬다 */
 export const UTM_SINCE_NOTE = '이 기능을 배포한 날부터 셉니다. 그 전 날의 집계에는 없습니다.';
@@ -117,9 +118,9 @@ const UtmTrend = ({ from, to, utm }: { from: string; to: string; utm: string }) 
 		<section className="activity-table utm-trend" aria-label={`${utmLabel(utm)} 일별 방문`}>
 			<h3>{utmLabel(utm)} · 일별 방문</h3>
 			{error ? (
-				<p className="activity-empty error">{error}</p>
+				<EmptyState className="activity-empty error">{error}</EmptyState>
 			) : !trend ? (
-				<p className="activity-empty">불러오는 중…</p>
+				<EmptyState className="activity-empty">불러오는 중…</EmptyState>
 			) : (
 				<LineChart days={trend.days} label={`${utmLabel(utm)} 일별 방문`} />
 			)}

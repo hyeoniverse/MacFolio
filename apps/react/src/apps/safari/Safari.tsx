@@ -12,6 +12,7 @@ import '@/apps/safari/Safari.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import SafariMobile from '@/apps/safari/SafariMobile';
+import Toolbar from '@/shared/ui/toolbar/Toolbar';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -219,7 +220,7 @@ const Safari: React.FC = () => {
 			) : (
 				<div className="safari">
 					{/* 도구 막대: 신호등 버튼 자리, 이전·다음 탭, 주소창, 새 탭에서 열기, 새 탭 */}
-					<div className="safari-toolbar">
+					<Toolbar className="safari-toolbar">
 						<span className="safari-lights-space" aria-hidden="true" />
 						<IconButton label="이전 탭" disabled={index === 0} onClick={() => go(-1)} icon="fa-solid fa-chevron-left" />
 						<IconButton
@@ -246,7 +247,7 @@ const Safari: React.FC = () => {
 							</IconButton>
 						)}
 						<IconButton label="새 탭" onClick={newTab} icon="fa-solid fa-plus" />
-					</div>
+					</Toolbar>
 
 					{/* 탭 막대: 프로젝트마다 탭 하나. 지금 탭은 넉넉하게, 나머지는 짧게 나눠 갖는다. 올리면 닫기 버튼이 보인다 */}
 					<div ref={tabList} className="safari-tabs" role="tablist" aria-label="프로젝트 탭">

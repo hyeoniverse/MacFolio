@@ -6,6 +6,7 @@ import { useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
 import { saveSecurity, useSecurity, type HumanCheck } from '@/shared/security/security';
 import Button from '@/shared/ui/button/Button';
+import Switch from '@/shared/ui/switch/Switch';
 
 /** 사람 확인을 켜고 끄는 곳 (macOS 설정처럼 색 아이콘과 설명) */
 const CHECKS: { id: HumanCheck; label: string; note: string; icon: string; color: string }[] = [
@@ -76,15 +77,12 @@ const PrivacyPane = () => {
 											<strong>{label}</strong>
 											<span>{note}</span>
 										</label>
-										<input
+										<Switch
 											id={`privacy-${id}`}
-											className="privacy-switch"
-											type="checkbox"
-											role="switch"
 											aria-label={`${label} 사람 확인`}
 											checked={on}
 											disabled={!admin || !settings || saving !== null}
-											onChange={(event) => void toggle(id, event.target.checked)}
+											onChange={(next) => void toggle(id, next)}
 										/>
 									</li>
 								);

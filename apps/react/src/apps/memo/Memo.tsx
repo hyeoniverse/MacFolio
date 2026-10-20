@@ -63,6 +63,8 @@ import PhoneFoldersBar from './components/PhoneFoldersBar';
 import { useTrash } from './useTrash';
 import { useMemoAppMenus } from './useMemoAppMenus';
 import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
+import Toolbar from '@/shared/ui/toolbar/Toolbar';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 /** 칸을 넓혀도 본문은 이만큼(px) 남긴다 */
 const READER_MIN = 360;
@@ -518,10 +520,10 @@ const Memo: React.FC = () => {
 
 	const empty = (
 		<>
-			{status === 'loading' && <p className="memo-empty">불러오는 중…</p>}
-			{status === 'error' && <p className="memo-empty">글을 불러오지 못했습니다.</p>}
+			{status === 'loading' && <EmptyState className="memo-empty">불러오는 중…</EmptyState>}
+			{status === 'error' && <EmptyState className="memo-empty">글을 불러오지 못했습니다.</EmptyState>}
 			{status === 'ready' && visible.length === 0 && (
-				<p className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</p>
+				<EmptyState className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</EmptyState>
 			)}
 		</>
 	);
@@ -667,13 +669,13 @@ const Memo: React.FC = () => {
 					)}
 
 					<section className="memo-list" aria-label="글 목록">
-						<div className="memo-toolbar">
+						<Toolbar className="memo-toolbar">
 							<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 							<div className="memo-toolbar-heading">
 								<h2>{categoryName}</h2>
 								<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
 							</div>
-						</div>
+						</Toolbar>
 						<div className="memo-scroll">
 							<IconButton className="memo-back" onClick={() => setPane('folders')}>
 								<i className="fa-solid fa-chevron-left" aria-hidden="true" /> 폴더
@@ -749,7 +751,7 @@ const Memo: React.FC = () => {
 					{/* 갤러리는 갤러리로 볼 때만 그린다 (목록과 검색 칸·안내 문구가 겹치지 않게) */}
 					{view === 'gallery' && (
 						<section className="memo-gallery" aria-label="갤러리">
-							<div className="memo-toolbar">
+							<Toolbar className="memo-toolbar">
 								<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 								<div className="memo-toolbar-heading">
 									<h2>{categoryName}</h2>
@@ -758,7 +760,7 @@ const Memo: React.FC = () => {
 								{sortMenu()}
 								<ViewSwitch view={view} onChange={changeView} />
 								{search}
-							</div>
+							</Toolbar>
 							<div className="memo-scroll">
 								{sections(true, '고정된 메모', 'memo-cards')}
 								{empty}

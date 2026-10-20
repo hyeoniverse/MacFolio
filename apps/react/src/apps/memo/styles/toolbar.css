@@ -2,11 +2,6 @@
 
 /* ─── 도구 막대: 신호등 버튼과 같은 높이(52px)에 버튼을 차례로 놓는다 ─── */
 .memo-toolbar {
-	display: flex;
-	flex: none;
-	align-items: center;
-	gap: var(--space-8);
-	height: 52px;
 	padding: 0 12px;
 }
 

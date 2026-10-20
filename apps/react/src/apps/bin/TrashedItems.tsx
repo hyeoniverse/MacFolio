@@ -7,6 +7,7 @@ import type { FinderItem } from '@/apps/finder/files';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import Button from '@/shared/ui/button/Button';
 import '@/apps/finder/Finder.css';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 /**
  * Finder에서 휴지통으로 보낸 항목 (만든 폴더·올린 파일). macOS 휴지통처럼 오른쪽 클릭으로 되돌려 놓거나 즉시 삭제하고,
@@ -46,7 +47,7 @@ const TrashedItems: React.FC = () => {
 				)}
 			</div>
 			{items.length === 0 ? (
-				<p className="finder-empty">휴지통이 비어 있습니다.</p>
+				<EmptyState className="finder-empty">휴지통이 비어 있습니다.</EmptyState>
 			) : (
 				<div className="finder-grid" role="listbox" aria-label="휴지통 항목">
 					{items.map((item) => (

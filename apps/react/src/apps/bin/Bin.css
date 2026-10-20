@@ -28,19 +28,14 @@
 
 /* ─── 사이드바 ─── */
 .bin-sidebar {
-	display: flex;
-	flex: none;
-	flex-direction: column;
 	gap: var(--space-2);
 	width: 180px;
 	padding: 0 10px 12px;
-	border-right: 1px solid var(--color-divider);
-	background-color: var(--color-sidebar-bg);
 }
 
 .bin-lights-space {
 	flex: none;
-	height: 52px;
+	height: var(--toolbar-height);
 }
 
 .bin-sidebar h2 {
@@ -96,11 +91,7 @@
 
 .bin-toolbar {
 	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 둔다. 버튼이 생기면 버튼만 위로 올린다 */
-	display: flex;
-	flex: none;
-	align-items: center;
 	gap: var(--space-10);
-	height: 52px;
 	padding: 0 16px;
 	border-bottom: 1px solid var(--color-divider);
 }
@@ -311,9 +302,7 @@
 .bin-empty-note {
 	max-width: 360px;
 	margin: 40px auto;
-	color: var(--color-text-secondary);
 	font-size: var(--text-footnote);
-	text-align: center;
 }
 
 .bin-files-note {

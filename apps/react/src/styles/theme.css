@@ -12,6 +12,7 @@
 	--radius-lg: 10px;
 	--radius-xl: 14px;
 	--radius-full: 999px; /* 알약 */
+	--radius-panel: 18px; /* 창 안에 떠 있는 판 (사이드바) */
 
 	/*
 	 * 화면 전체에서 겹치는 층(z-index). 값이 클수록 위에 그린다.
@@ -96,6 +97,7 @@
 	--color-divider: #e5e5ea;
 	--color-control-bg: #ffffff;
 	--shadow-window: 10px 10px 10px rgba(0, 0, 0, 0.5);
+	--toolbar-height: 52px; /* 창 제목 막대·도구 막대 높이 (통합형 창) */
 
 	/* 팝업·알림 */
 	--color-popover-bg: #ffffff;

@@ -16,6 +16,7 @@ import {
 	type StockProvider,
 } from './stockApi';
 import Button from '@/shared/ui/button/Button';
+import TabList from '@/shared/ui/tabs/TabList';
 
 type Tab = 'file' | 'url' | StockProvider;
 const TABS: { id: Tab; label: string }[] = [
@@ -366,20 +367,7 @@ const ImagePanel = ({
 
 	return (
 		<div className="memo-image-panel">
-			<div className="memo-image-tabs" role="tablist" aria-label="이미지 가져올 곳">
-				{TABS.map(({ id, label }) => (
-					<button
-						key={id}
-						type="button"
-						role="tab"
-						aria-selected={tab === id}
-						className={tab === id ? 'on' : ''}
-						onClick={() => setTab(id)}
-					>
-						{label}
-					</button>
-				))}
-			</div>
+			<TabList className="memo-image-tabs" label="이미지 가져올 곳" items={TABS} value={tab} onChange={setTab} />
 			<div key={tab} className="motion-swap" role="tabpanel" aria-label={TABS.find((item) => item.id === tab)?.label}>
 				{tab === 'file' && <FileTab onDone={onDone} />}
 				{tab === 'url' && <UrlTab run={run} onDone={onDone} />}

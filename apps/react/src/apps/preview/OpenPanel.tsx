@@ -24,6 +24,7 @@ import AppsGlyph from '@/apps/finder/AppsGlyph';
 import { loadPdf } from './pdf';
 import { PdfThumb } from './PdfView';
 import './Preview.css';
+import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
 /**
  * 고른 곳. preview: iCloud의 앱 폴더(이 앱이 여는 파일 전부), recents: 최근 항목,
@@ -236,13 +237,13 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 						})}
 					</div>
 				) : (
-					<p className="preview-open-empty">
+					<EmptyState className="preview-open-empty">
 						{q
 							? '찾는 이름이 없습니다.'
 							: folder?.kind === 'folder'
 								? (folder.emptyNote ?? '비어 있음')
 								: '파일이 없습니다.'}
-					</p>
+					</EmptyState>
 				)}
 				<div className="preview-open-actions">
 					<button type="button" className="ui-button" onClick={onCancel}>
