@@ -124,28 +124,46 @@ test.describe('Finder', () => {
 		await expect(appWindow(page, 'terminal')).toBeVisible();
 	});
 
-	test('사진: 문서 › 포트폴리오 › MacFolio › 사진 폴더에 사진 앱의 그림이 있고, 미리보기에서 연다', async ({
-		page,
-	}) => {
+	test('사진: 홈 › 그림 › MacFolio 앨범 폴더에 사진 앱의 그림이 있고, 미리보기에서 연다', async ({ page }) => {
 		const finder = await openFinder(page);
-		// 사진은 따로 된 위치가 없다 (프로젝트 폴더 안에만)
-		await expect(sidebar(finder).getByRole('button', { name: '사진' })).toHaveCount(0);
-		await openPortfolio(finder);
+		await sidebar(finder).getByRole('button', { name: 'hyeoniverse', exact: true }).click();
 		await finder
-			.getByRole('listbox', { name: '포트폴리오' })
+			.getByRole('listbox', { name: 'hyeoniverse' })
+			.getByRole('option', { name: '그림', exact: true })
+			.dblclick();
+		await finder
+			.getByRole('listbox', { name: '그림' })
 			.getByRole('option', { name: 'MacFolio', exact: true })
 			.dblclick();
-		await finder
-			.getByRole('listbox', { name: 'MacFolio' })
-			.getByRole('option', { name: '사진', exact: true })
-			.dblclick();
-		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('사진');
-		const photo = finder.getByRole('listbox', { name: '사진' }).getByRole('option').first();
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('MacFolio');
+		const photo = finder.getByRole('listbox', { name: 'MacFolio' }).getByRole('option').first();
 		const name = (await photo.textContent())!.trim();
 		await photo.dblclick();
 		const preview = appWindow(page, 'preview');
 		await expect(preview.getByRole('heading', { level: 1 })).toHaveText(name);
 		await expect(preview.locator('.preview-image img')).toHaveAttribute('src', /^\/imgs\/projects\/macfolio\//);
+	});
+
+	test('음악: 홈 › 음악 › 아티스트 › 앨범의 곡을 열면 음악 앱이 그 곡을 재생한다', async ({ page }) => {
+		const finder = await openFinder(page);
+		await sidebar(finder).getByRole('button', { name: 'hyeoniverse', exact: true }).click();
+		await finder
+			.getByRole('listbox', { name: 'hyeoniverse' })
+			.getByRole('option', { name: '음악', exact: true })
+			.dblclick();
+		await finder.getByRole('listbox', { name: '음악' }).getByRole('option', { name: 'Yiruma', exact: true }).dblclick();
+		await finder
+			.getByRole('listbox', { name: 'Yiruma' })
+			.getByRole('option', { name: 'Yiruma', exact: true })
+			.dblclick();
+		await expect(finder.getByRole('navigation', { name: '경로' })).toHaveText(/음악.*Yiruma.*Yiruma/);
+		await finder
+			.getByRole('listbox', { name: 'Yiruma' })
+			.getByRole('option', { name: 'River Flows in You.mp3', exact: true })
+			.dblclick();
+		await expect(appWindow(page, 'music').getByRole('contentinfo', { name: '재생 막대' })).toContainText(
+			'River Flows in You'
+		);
 	});
 
 	test('찾는 이름이 없으면 알린다', async ({ page }) => {
@@ -356,7 +374,7 @@ test.describe('Finder', () => {
 				.getByRole('option', { name: 'MacFolio', exact: true })
 				.dblclick();
 			const folder = panel.getByRole('listbox', { name: 'MacFolio' });
-			await expect(folder.getByRole('option')).toHaveText(['사진', /MacFolio 발표\.pdf$/]);
+			await expect(folder.getByRole('option')).toHaveText([/MacFolio 발표\.pdf$/]);
 			await folder.getByRole('option', { name: 'MacFolio 발표.pdf' }).dblclick();
 			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('MacFolio 발표.pdf');
 		});
@@ -425,7 +443,7 @@ test.describe('Finder', () => {
 				.dblclick();
 			await expect(finder.getByRole('heading', { level: 1 })).toHaveText('MacFolio');
 			const folder = finder.getByRole('listbox', { name: 'MacFolio' });
-			await expect(folder.getByRole('option')).toHaveText(['사진', /MacFolio 발표\.pdf$/]);
+			await expect(folder.getByRole('option')).toHaveText([/MacFolio 발표\.pdf$/]);
 
 			await folder.getByRole('option', { name: 'MacFolio 발표.pdf' }).dblclick();
 			const preview = appWindow(page, 'preview');

@@ -521,7 +521,7 @@ test.describe('모바일', () => {
 		await expect(files.getByRole('button', { name: /시험 이력서\.pdf/ })).toBeVisible();
 		await expect(files.getByRole('button', { name: /MacFolio 발표\.pdf/ })).toBeVisible();
 		await files.locator('.mobile-navbar-home').tap();
-		// 프로젝트마다 폴더 (문서 › 포트폴리오 안): 사진, 올린 파일
+		// 프로젝트마다 폴더 (문서 › 포트폴리오 안): 올린 파일. 사진은 홈 › 그림의 앨범 폴더에 있어 여기에는 없다
 		await files.getByRole('region', { name: '즐겨찾기' }).getByRole('button', { name: '문서' }).tap();
 		await files.getByRole('button', { name: /^포트폴리오/ }).tap();
 		await files
@@ -529,7 +529,7 @@ test.describe('모바일', () => {
 			.first()
 			.tap();
 		await expect(files.locator('.files-phone-bar-title')).toHaveText('MacFolio');
-		await expect(files.getByRole('button', { name: /^사진/ })).toBeVisible();
+		await expect(files.getByRole('button', { name: /^사진/ })).toHaveCount(0);
 		await expect(files.getByRole('button', { name: /MacFolio 발표\.pdf/ })).toBeVisible();
 		await files.locator('.mobile-navbar-home').tap();
 		await files.locator('.mobile-navbar-home').tap();

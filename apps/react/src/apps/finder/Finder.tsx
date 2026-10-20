@@ -37,6 +37,7 @@ import DocView from './DocView';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
 import { openInPreview } from '@/apps/preview/previewStore';
+import { useMusic } from '@/apps/music/useMusic';
 import FinderMobile from './FinderMobile';
 import '@/apps/finder/Finder.css';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
@@ -84,6 +85,7 @@ const dateCell = (item: FinderItem) => (item.kind === 'project' ? (item.period ?
 const Finder: React.FC = () => {
 	const { openApp, bringAppToFront } = useAppState();
 	const { launch } = useLaunchApp();
+	const { playFrom } = useMusic();
 	const dark = useResolvedTheme() === 'dark';
 	const mobile = useIsMobile();
 	// 휴대폰에서는 홈 화면 이름처럼 '파일' (manifest.ts의 mobile)
@@ -290,6 +292,12 @@ const Finder: React.FC = () => {
 				return;
 			case 'app':
 				launch(item.app);
+				return;
+			case 'track':
+				// macOS에서 음악 파일을 열면 음악 앱이 재생하듯: 그 앨범을 재생 목록 삼아 이 곡부터
+				openApp('music');
+				bringAppToFront('music');
+				playFrom(item.playlistId, item.trackId);
 				return;
 			default: {
 				// 새 종류를 더하면 여기서 컴파일 오류가 난다 (여는 법을 정하게)
