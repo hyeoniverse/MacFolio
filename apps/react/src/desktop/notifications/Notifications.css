@@ -30,7 +30,7 @@
 	position: relative;
 	padding: 11px 14px 11px 11px;
 	border-radius: 18px;
-	background-color: rgba(246, 246, 248, 0.78);
+	background-color: var(--color-material-notification);
 	backdrop-filter: blur(30px) saturate(180%);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.12),
@@ -43,7 +43,7 @@
 }
 
 :root[data-theme='dark'] .notification {
-	background-color: rgba(44, 44, 46, 0.78);
+	background-color: var(--color-material-notification);
 	box-shadow:
 		0 0 0 0.5px rgba(255, 255, 255, 0.12),
 		0 10px 30px rgba(0, 0, 0, 0.4);
@@ -148,7 +148,7 @@
 	height: 20px;
 	border: none;
 	border-radius: 50%;
-	background-color: rgba(246, 246, 248, 0.95);
+	background-color: var(--color-material-notification-control);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.2),
 		0 1px 4px rgba(0, 0, 0, 0.2);
@@ -160,8 +160,8 @@
 }
 
 :root[data-theme='dark'] .notification-close {
-	background-color: rgba(58, 58, 60, 0.95);
-	color: #d1d1d6;
+	background-color: var(--color-material-notification-control);
+	color: var(--color-notification-control-label);
 }
 
 .notification:hover .notification-close,

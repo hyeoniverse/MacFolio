@@ -325,7 +325,7 @@
 
 .memo-inline-editor li[data-item-type='task'][data-checked='true']::before {
 	border-color: var(--notes-accent);
-	background: #edbb4d
+	background: var(--notes-accent)
 		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
 		center / 12px no-repeat;
 }
@@ -356,7 +356,7 @@
 
 .memo-markdown .task-list-item input:checked {
 	border-color: var(--notes-accent);
-	background: #edbb4d
+	background: var(--notes-accent)
 		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
 		center / 12px no-repeat;
 }

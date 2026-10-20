@@ -107,7 +107,7 @@
 
 /* 관리자: 서버 자원이 유휴 회수 기준에 가까우면 주황, 걸려 있으면 빨강 (테두리는 글자 색 그대로) */
 .mobile-battery.warning span {
-	background-color: var(--color-warning, #f5a623);
+	background-color: var(--color-system-yellow);
 }
 
 .mobile-battery.danger span {
@@ -283,7 +283,7 @@
 	overflow: hidden;
 	border: none;
 	border-radius: var(--cc-radius);
-	background-color: rgba(255, 255, 255, 0.16);
+	background-color: var(--color-on-media-fill);
 	color: inherit;
 	font: inherit;
 	text-decoration: none;
@@ -433,7 +433,7 @@
 }
 
 .cc-admin.on {
-	background-color: rgba(255, 255, 255, 0.3);
+	background-color: var(--color-on-media-fill-strong);
 }
 
 /* ─── 앱 화면 틀과 앱 전환기 카드 (MobileAppFrame) ─── */
@@ -493,9 +493,9 @@
 	z-index: var(--z-app-switcher);
 	display: grid;
 	place-items: center;
-	background-color: rgba(0, 0, 0, 0.35);
+	background-color: var(--color-scrim);
 	backdrop-filter: blur(24px);
-	color: rgba(255, 255, 255, 0.85);
+	color: var(--color-on-media-label);
 	font-size: var(--text-subhead);
 	animation: fade-in var(--duration) var(--ease-out);
 }

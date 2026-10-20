@@ -325,7 +325,7 @@
 }
 
 .finder-list .finder-item.selected :is(.finder-list-date, .finder-list-kind) {
-	color: rgba(255, 255, 255, 0.85);
+	color: var(--color-on-media-label);
 }
 
 /* ─── 경로 막대 ─── */
@@ -780,7 +780,7 @@
 	height: 22px;
 	place-items: center;
 	border-radius: 50%;
-	background: rgba(0, 0, 0, 0.55);
+	background: var(--color-scrim-strong);
 	color: var(--color-white);
 	font-size: 9px;
 }

@@ -1,5 +1,6 @@
 /* macOS 26 메일 앱 색 */
 [data-app='mail'] {
+	--mail-quote: #6d7ed1;
 	--mail-window-bg: var(--color-text-background);
 	--mail-panel-bg: var(--list-pane-background);
 	--mail-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 6px 18px rgba(0, 0, 0, 0.06);

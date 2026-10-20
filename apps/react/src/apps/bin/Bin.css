@@ -133,7 +133,7 @@
 }
 
 .bin-data:nth-child(even) {
-	background-color: var(--color-row-alt, rgba(127, 127, 127, 0.05));
+	background-color: var(--color-row-alt, var(--color-alternating-content-background));
 }
 
 .bin-data-name {
@@ -239,7 +239,7 @@
 }
 
 .bin-file:nth-child(even) {
-	background-color: var(--color-row-alt, rgba(127, 127, 127, 0.05));
+	background-color: var(--color-row-alt, var(--color-alternating-content-background));
 }
 
 .bin-file-thumb {

@@ -247,7 +247,7 @@
 	height: 1.8rem;
 	padding-left: 0.15rem;
 	border-radius: 50%;
-	background: rgb(0 0 0 / 45%);
+	background: var(--color-scrim-strong);
 	color: var(--color-white);
 	font-size: 0.75rem;
 	backdrop-filter: blur(6px);
@@ -276,7 +276,7 @@
 	padding: 0;
 	border: 2.5px solid var(--wallpaper-page-bg, var(--color-text-background));
 	border-radius: 50%;
-	background-color: #5a5a5e;
+	background-color: var(--color-material-hud);
 	color: var(--color-white);
 	font-size: var(--text-caption2);
 	cursor: pointer;
@@ -894,7 +894,7 @@ ol.showcase-list .showcase-row.reordering {
 
 /* GitHub (관리자만) */
 .container.mobile .settings-nav-item:nth-of-type(5) > i:first-child {
-	background-color: #24292f;
+	background-color: var(--color-brand-github);
 }
 
 /* 휴대폰: 저장소 목록은 흰 카드 (iOS 설정) */
@@ -1691,7 +1691,7 @@ textarea.projects-input {
 }
 
 :root[data-theme='dark'] .projects-button.destructive {
-	color: #ffa198;
+	color: var(--color-system-red);
 }
 
 .projects-button:focus-visible,
@@ -1971,14 +1971,14 @@ button.projects-popup[aria-expanded='true'] {
 	flex: none;
 	padding: 0 6px;
 	border-radius: var(--radius-4);
-	background: color-mix(in srgb, #cb3837 16%, transparent);
-	color: #cb3837;
+	background: color-mix(in srgb, var(--color-brand-npm) 16%, transparent);
+	color: var(--color-brand-npm);
 	font-size: 10px;
 	font-weight: 600;
 }
 
 .projects-suggestions li[aria-selected='true'] .projects-suggestion-source {
-	background: rgba(255, 255, 255, 0.25);
+	background: var(--color-on-media-fill-strong);
 	color: var(--color-white);
 }
 
@@ -2083,7 +2083,7 @@ button.projects-thumb:focus-visible {
 	display: grid;
 	place-items: center;
 	padding: 48px 80px;
-	background: rgba(0, 0, 0, 0.78);
+	background: var(--color-scrim-heavy);
 	animation: fade-in var(--duration-fast) var(--ease-out);
 	backdrop-filter: blur(6px);
 }
@@ -2102,7 +2102,7 @@ button.projects-thumb:focus-visible {
 	max-width: min(1200px, 100%);
 	max-height: calc(100vh - 150px);
 	border-radius: var(--radius-8);
-	background: #111111;
+	background: var(--color-black);
 	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 	object-fit: contain;
 }
@@ -2110,12 +2110,12 @@ button.projects-thumb:focus-visible {
 .projects-lightbox figcaption {
 	display: flex;
 	gap: var(--space-10);
-	color: rgba(255, 255, 255, 0.88);
+	color: var(--color-on-media-label);
 	font-size: var(--text-footnote);
 }
 
 .projects-lightbox figcaption span {
-	color: rgba(255, 255, 255, 0.55);
+	color: var(--color-on-media-secondary-label);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -2129,7 +2129,7 @@ button.projects-thumb:focus-visible {
 	padding: 0;
 	border: none;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.14);
+	background: var(--color-on-media-fill);
 	color: var(--color-white);
 	font-size: var(--text-subhead);
 	cursor: pointer;
@@ -2137,7 +2137,7 @@ button.projects-thumb:focus-visible {
 
 .projects-lightbox-close:hover,
 .projects-lightbox-step:hover {
-	background: rgba(255, 255, 255, 0.24);
+	background: var(--color-on-media-fill);
 }
 
 .projects-lightbox-close {
@@ -2398,7 +2398,7 @@ button.projects-thumb:focus-visible {
 
 .projects-table-row[aria-selected='true']:focus .projects-point span,
 .projects-table-row[aria-selected='true']:focus .projects-point strong.placeholder {
-	color: rgba(255, 255, 255, 0.82);
+	color: var(--color-on-media-label);
 }
 
 .projects-row-thumb {
@@ -2709,12 +2709,12 @@ button.projects-shot-thumb:focus-visible {
 	align-items: flex-start;
 	justify-content: center;
 	padding: 56px 24px 24px;
-	background: rgba(0, 0, 0, 0.14);
+	background: var(--color-scrim-subtle);
 	animation: fade-in var(--duration-fast) var(--ease-out);
 }
 
 :root[data-theme='dark'] .projects-sheet-layer {
-	background: rgba(0, 0, 0, 0.36);
+	background: var(--color-scrim);
 }
 
 .projects-sheet {
@@ -2955,7 +2955,7 @@ textarea.projects-input.mono {
 	width: 10px;
 	height: 10px;
 	border-radius: 50%;
-	background: #c7c7cc;
+	background: var(--color-system-gray-3);
 }
 
 .projects-preview-chrome em {

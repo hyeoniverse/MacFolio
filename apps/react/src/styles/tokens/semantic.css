@@ -58,6 +58,52 @@
 	--color-notes-yellow: var(--palette-notes-yellow);
 	--color-on-notes-yellow: var(--palette-notes-yellow-ink); /* 노란 바탕 위 글자 */
 
+	/* 채움: 바탕 위에 깔아 칸·버튼을 나타내는 회색 막 (iOS systemFill 4단계, 테마와 상관없는 값) */
+	--color-system-fill: rgba(120, 120, 128, 0.2);
+	--color-secondary-system-fill: rgba(120, 120, 128, 0.16);
+	--color-tertiary-system-fill: rgba(118, 118, 128, 0.12);
+	--color-alternating-content-background: rgba(127, 127, 127, 0.05); /* 표의 줄무늬 */
+
+	/* 사진·영상·어두운 화면 위에 얹는 흰 막과 글자 (날씨·QuickTime·휴대폰 홈·라이트박스). 테마와 상관없다 */
+	--color-on-media-separator: rgba(255, 255, 255, 0.12);
+	--color-on-media-fill-subtle: rgba(255, 255, 255, 0.1); /* 가리킬 때 */
+	--color-on-media-fill: rgba(255, 255, 255, 0.2);
+	--color-on-media-fill-strong: rgba(255, 255, 255, 0.3);
+	--color-on-media-fill-emphasized: rgba(255, 255, 255, 0.45); /* 고른 칸의 테두리 등 */
+	--color-on-media-secondary-label: rgba(255, 255, 255, 0.6);
+	--color-on-media-label: rgba(255, 255, 255, 0.88);
+
+	/* 스크림: 뒤를 어둡게 덮는 검은 막. 테마와 상관없다 */
+	--color-scrim-subtle: rgba(0, 0, 0, 0.2);
+	--color-scrim: rgba(0, 0, 0, 0.35);
+	--color-scrim-strong: rgba(0, 0, 0, 0.55);
+	--color-scrim-heavy: rgba(0, 0, 0, 0.78); /* 라이트박스 */
+
+	/* 어두운 HUD 머티리얼: 영상·슬라이드 위 조작 막대, 떠 있는 버튼 */
+	--color-material-hud: rgba(40, 40, 42, 0.75);
+	--color-material-hud-subtle: rgba(28, 28, 30, 0.55);
+
+	/* 알림 머티리얼 */
+	--color-material-notification: rgba(246, 246, 248, 0.78);
+	--color-material-notification-control: rgba(246, 246, 248, 0.95);
+	--color-notification-control-label: var(--color-secondary-label);
+
+	/* 찾기: 찾은 글자 위 노란 표시 (macOS findHighlightColor) */
+	--color-find-highlight: rgba(255, 214, 10, 0.45);
+	--color-find-highlight-current: rgba(255, 159, 10, 0.7);
+
+	/* 창 신호등 (닫기·내리기·전체 화면) */
+	--color-window-close: var(--palette-traffic-red);
+	--color-window-minimize: var(--palette-traffic-yellow);
+	--color-window-zoom: var(--palette-traffic-green);
+
+	/* 그 밖의 시스템 색 */
+	--color-system-yellow: var(--palette-yellow-dark);
+	--color-system-gray-3: var(--palette-gray-350);
+	--color-system-gray-4: var(--palette-gray-250);
+	--color-brand-github: var(--palette-brand-github);
+	--color-brand-npm: var(--palette-brand-npm);
+
 	/* 코드 강조 (메모·Finder 미리보기·터미널) */
 	--color-code-keyword: var(--palette-code-red-light);
 	--color-code-string: var(--palette-code-navy-light);
@@ -130,6 +176,10 @@
 	--color-material-fullscreen: rgba(40, 40, 42, 0.75);
 	--color-material-separator: rgba(255, 255, 255, 0.15);
 	--color-material-label: rgba(255, 255, 255, 0.75);
+
+	--color-material-notification: rgba(44, 44, 46, 0.78);
+	--color-material-notification-control: rgba(58, 58, 60, 0.95);
+	--color-notification-control-label: var(--palette-gray-250);
 
 	--color-code-keyword: var(--palette-code-red-dark);
 	--color-code-string: var(--palette-code-navy-dark);

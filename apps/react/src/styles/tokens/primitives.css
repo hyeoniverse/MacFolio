@@ -10,6 +10,8 @@
 	--palette-gray-200: #e5e5ea;
 	--palette-gray-300: #d6d6d6;
 	--palette-gray-500: #8e8e93;
+	--palette-gray-350: #c7c7cc; /* systemGray3 */
+	--palette-gray-250: #d1d1d6; /* systemGray4 */
 	--palette-gray-600: #6e6e73;
 	--palette-gray-400-dark: #98989d;
 	--palette-gray-700: #3a3a3c;
@@ -36,6 +38,12 @@
 	--palette-indigo: #5856d6;
 	--palette-cyan: #32ade6;
 	--palette-pink: #ff2d55;
+	--palette-yellow-dark: #ffd60a; /* systemYellow (다크 모양의 값) */
+	--palette-traffic-red: #ff5f57; /* 창 신호등 (macOS 값) */
+	--palette-traffic-yellow: #febc2e;
+	--palette-traffic-green: #28c840;
+	--palette-brand-github: #24292f;
+	--palette-brand-npm: #cb3837;
 	--palette-notes-yellow: #fcb827; /* macOS 메모 앱의 노랑 (Digital Color Meter로 잼, 라이트·다크 같은 값) */
 	--palette-notes-yellow-ink: #2b2100;
 

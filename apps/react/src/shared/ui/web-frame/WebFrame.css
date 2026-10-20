@@ -1,5 +1,7 @@
 /* 다른 페이지를 창 안에 띄우는 틀 (WebFrame.tsx): 프로젝트 앱, API 문서 앱 */
 .web-frame {
+	--web-frame-muted: #6e6e73;
+	--web-frame-muted-dark: #98989d;
 	position: relative;
 	height: 100%;
 	background-color: var(--color-white);
@@ -26,12 +28,12 @@
 	justify-content: center;
 	gap: var(--space-12);
 	background-color: inherit;
-	color: #6e6e73;
+	color: var(--web-frame-muted);
 	font-size: var(--text-footnote);
 }
 
 .web-frame.dark .web-frame-loading {
-	color: #98989d;
+	color: var(--web-frame-muted-dark);
 }
 
 .web-frame-loading img {

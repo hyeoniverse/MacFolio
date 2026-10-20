@@ -37,7 +37,7 @@
 .mobile-widget {
 	padding: var(--widget-padding);
 	border-radius: var(--radius-window);
-	background-color: rgba(255, 255, 255, 0.22);
+	background-color: var(--color-on-media-fill);
 	backdrop-filter: blur(24px) saturate(160%);
 	box-shadow: var(--shadow-3);
 	text-align: left;
@@ -139,7 +139,7 @@
 	margin: 10px auto 12px;
 	padding: var(--space-6) var(--space-10);
 	border-radius: var(--radius-full);
-	background-color: rgba(255, 255, 255, 0.18);
+	background-color: var(--color-on-media-fill);
 	backdrop-filter: blur(12px);
 }
 
@@ -149,7 +149,7 @@
 	padding: 0;
 	border: none;
 	border-radius: 50%;
-	background-color: rgba(255, 255, 255, 0.45);
+	background-color: var(--color-on-media-fill-emphasized);
 	cursor: pointer;
 }
 
@@ -205,7 +205,7 @@
 	flex: none;
 	padding: var(--space-14) var(--space-8);
 	border-radius: 30px;
-	background-color: rgba(255, 255, 255, 0.25);
+	background-color: var(--color-on-media-fill-strong);
 	backdrop-filter: blur(24px) saturate(160%);
 }
 

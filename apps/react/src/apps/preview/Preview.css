@@ -368,12 +368,12 @@
 .preview-page .textLayer mark.preview-hit {
 	position: static;
 	border-radius: 2px;
-	background-color: rgb(255 214 10 / 0.45);
+	background-color: var(--color-find-highlight);
 	color: transparent;
 }
 
 .preview-page .textLayer mark.preview-hit.current {
-	background-color: rgb(255 159 10 / 0.7);
+	background-color: var(--color-find-highlight-current);
 	box-shadow: 0 0 0 2px rgb(255 159 10 / 0.7);
 }
 
@@ -694,9 +694,9 @@
 	align-items: center;
 	gap: var(--space-4);
 	padding: 6px 10px;
-	border: 1px solid rgb(255 255 255 / 12%);
+	border: 1px solid var(--color-on-media-separator);
 	border-radius: var(--radius-14);
-	background: rgb(40 40 40 / 78%);
+	background: var(--color-material-hud);
 	color: var(--color-white);
 	box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
 	transform: translateX(-50%);
@@ -723,7 +723,7 @@
 }
 
 .slideshow-controls button:hover:not(:disabled) {
-	background: rgb(255 255 255 / 14%);
+	background: var(--color-on-media-fill);
 }
 
 .slideshow-controls button:disabled {
@@ -747,7 +747,7 @@
 	width: 1px;
 	height: 18px;
 	margin: 0 4px;
-	background: rgb(255 255 255 / 22%);
+	background: var(--color-on-media-fill);
 }
 
 @media (prefers-reduced-motion: reduce) {

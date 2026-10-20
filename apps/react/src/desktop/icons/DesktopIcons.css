@@ -91,8 +91,8 @@
 
 /* 고른 아이콘: 그림은 반투명 회색 둥근 판, 이름은 파란 알약 */
 .desktop-icon.selected .desktop-icon-image {
-	background: rgb(0 0 0 / 0.22);
-	border-color: rgb(255 255 255 / 0.18);
+	background: var(--color-scrim-subtle);
+	border-color: var(--color-on-media-separator);
 }
 
 .desktop-icon.selected .desktop-icon-label {
@@ -108,15 +108,15 @@
 .desktop-band {
 	position: absolute;
 	pointer-events: none;
-	background: rgb(255 255 255 / 0.16);
-	border: 1px solid rgb(255 255 255 / 0.55);
+	background: var(--color-on-media-fill);
+	border: 1px solid var(--color-on-media-fill-emphasized);
 	box-sizing: border-box;
 }
 
 /* 관리자가 끌어 놓을 폴더: 그림 판을 진하게 (macOS의 폴더 강조) */
 .desktop-icon.drop-target .desktop-icon-image {
-	background: rgb(0 0 0 / 0.32);
-	border-color: rgb(255 255 255 / 0.45);
+	background: var(--color-scrim);
+	border-color: var(--color-on-media-fill-emphasized);
 }
 
 /* 가상본(alias) 화살표: 아이콘 왼쪽 아래 */
