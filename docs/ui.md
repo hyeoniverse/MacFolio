@@ -19,7 +19,7 @@
 | `IconButton`    | `label`(aria-label, title 기본값), `icon`, `on`(켜진 상태), `variant`(`tool` 네모 · `float` 떠 있는 동그라미 · `circle` 떠 있지 않은 동그라미), `ref` | 32파일: 메모 도구 막대·사이드바·휴대폰 막대·서식·찾기·댓글, 메일, 메시지, 음악, 사진, 날씨, Finder, Safari, 설정                                                                                                                                         |
 | `SidebarToggle` | `open`, `onToggle`, `className`. `IconButton`에 사이드바 모양 SVG                                                                                     | 메모 도구 막대, 사진, 날씨                                                                                                                                                                                                                               |
 
-변수 (`Button.css`·`IconButton.css`): `--ui-accent`, `--ui-on-accent`, `--ui-danger`, `--ui-button-bg`, `--ui-button-color`, `--ui-button-padding`, `--ui-button-radius`, `--ui-tool-color`, `--ui-tool-hover`, `--ui-tool-on-bg`, `--ui-tool-on-color`, `--ui-float-bg`, `--ui-float-color`, `--ui-float-shadow`. 앱 루트에서 정하는 곳은 메모(`memo/styles/theme.css`)와 메일(`Mail.css`)이고, 나머지 앱은 기본값(파란 강조)을 쓴다.
+변수 (`Button.css`·`IconButton.css`): `--ui-accent`, `--ui-on-accent`, `--ui-danger`, `--ui-button-bg`, `--ui-button-color`, `--ui-button-padding`, `--ui-button-radius`, `--ui-tool-color`, `--ui-tool-hover`, `--ui-tool-on-bg`, `--ui-tool-on-color`, `--ui-float-bg`, `--ui-float-color`, `--ui-float-shadow`. 기본값은 3층 토큰(`styles/tokens/components.css`)에 있고, 앱은 자기 루트에서 같은 이름을 덮어쓴다. 덮어쓰는 곳은 메모(`memo/styles/theme.css`)와 메일(`Mail.css`) 등이고, 나머지 앱은 기본값(파란 강조)을 쓴다. 기본값을 변수에 담을 수 없는 `--ui-button-color`·`--ui-float-color`(inherit)와 휴대폰 창 안에서만 정해지는 `--ui-sheet-bg`, 부품 안의 겹침 `--ui-sheet-z`는 부품 CSS에 기본값을 둔다.
 
 ### 메뉴와 떠 있는 창
 

@@ -2,7 +2,7 @@
  * 스위치 (shared/ui/switch/Switch.tsx).
  * components 층: reset 층은 이기고, 앱의 층 밖 규칙에는 진다.
  *
- * 색은 앱이 정한다 (없으면 기본값).
+ * 색은 앱이 덮어쓴다 (기본값은 styles/tokens/components.css).
  *   --ui-switch-off: 꺼졌을 때 바탕 (기본 --color-unemphasized-selected-content-background)
  *   --ui-switch-focus: 키보드 초점 테두리 (기본 --color-control-accent)
  */
@@ -13,9 +13,9 @@
 		position: relative;
 		margin: 0;
 		border-radius: var(--radius-full);
-		background: var(--ui-switch-off, var(--color-unemphasized-selected-content-background));
+		background: var(--ui-switch-off);
 		cursor: pointer;
-		transition: background-color 0.2s;
+		transition: background-color var(--duration-fast);
 	}
 
 	.ui-switch::after {
@@ -25,7 +25,7 @@
 		left: 2px;
 		border-radius: 50%;
 		background: var(--color-white);
-		transition: transform 0.2s;
+		transition: transform var(--duration-fast);
 	}
 
 	.ui-switch:checked {
@@ -53,7 +53,7 @@
 	}
 
 	.ui-switch.regular:focus-visible {
-		outline: 2px solid var(--ui-switch-focus, var(--color-control-accent));
+		outline: 2px solid var(--ui-switch-focus);
 		outline-offset: 2px;
 	}
 
@@ -73,7 +73,7 @@
 	}
 
 	.ui-switch.small:focus-visible {
-		outline: 3px solid var(--ui-switch-focus, var(--color-control-accent));
+		outline: 3px solid var(--ui-switch-focus);
 		outline-offset: 1px;
 	}
 }

@@ -701,7 +701,7 @@
 	box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
 	transform: translateX(-50%);
 	backdrop-filter: blur(20px) saturate(160%);
-	transition: opacity 0.4s ease;
+	transition: opacity var(--duration-slow) ease;
 }
 
 .slideshow.idle .slideshow-controls {

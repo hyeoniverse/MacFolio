@@ -20,7 +20,7 @@
 	transform: translate(-50%, -50%);
 	user-select: none;
 	cursor: default;
-	animation: about-mac-in 0.22s var(--ease-out, ease-out);
+	animation: about-mac-in var(--duration-fast) var(--ease-out);
 }
 
 @keyframes about-mac-in {

@@ -23,7 +23,7 @@
 	box-sizing: border-box;
 	outline: none;
 	cursor: default;
-	transition: transform 0.18s ease;
+	transition: transform var(--duration-fast) ease;
 }
 
 /* 끄는 동안은 손을 바로 따라간다 */
