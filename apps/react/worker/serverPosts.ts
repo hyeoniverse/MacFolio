@@ -78,16 +78,16 @@ export function mergeServerPosts(posts: SeoPost[], server: ServerPost[]): SeoPos
 	return [...bySlug.values()].sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug));
 }
 
-let cached: { at: number; ttl: number; value: Promise<ServerPost[]> } | null = null;
+let cached: { at: number; ttl: number; value: Promise<ServerPost[] | null> } | null = null;
 
-/** API의 GET /posts. 닿지 않으면 빈 목록 (저장소 글만 쓴다) */
+/** API의 GET /posts. 닿지 않으면 null (저장소 글만 쓰고, 없는 글 주소도 404로 단정하지 않는다) */
 export function fetchServerPosts(
 	apiUrl: string,
 	fetchImpl: typeof fetch = fetch,
 	now = Date.now()
-): Promise<ServerPost[]> {
+): Promise<ServerPost[] | null> {
 	if (cached && now - cached.at < cached.ttl) return cached.value;
-	const entry = { at: now, ttl: SERVER_POSTS_CACHE_MS, value: Promise.resolve<ServerPost[]>([]) };
+	const entry = { at: now, ttl: SERVER_POSTS_CACHE_MS, value: Promise.resolve<ServerPost[] | null>(null) };
 	entry.value = fetchImpl(`${apiUrl}/posts`, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
 		.then(async (response) => {
 			if (!response.ok) throw new Error(String(response.status));
@@ -96,7 +96,7 @@ export function fetchServerPosts(
 		})
 		.catch(() => {
 			entry.ttl = FAILURE_CACHE_MS;
-			return [];
+			return null;
 		});
 	cached = entry;
 	return entry.value;
