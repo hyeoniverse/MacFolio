@@ -369,8 +369,7 @@ const Shell: React.FC<{ project: Project }> = ({ project }) => {
 			at = result.cwd;
 		}
 		setCwd(at);
-		// cwd는 기다리던 명령을 친 자리라 다시 돌리지 않는다
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- 저장소가 처음 불러와질 때만 기다리던 명령을 돌린다 (cwd는 그 명령을 친 자리라 바뀌어도 다시 돌리지 않는다)
 	}, [repo]);
 
 	const run = (raw: string) => {
