@@ -146,13 +146,13 @@ const AliasBadge = () => (
 const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 	switch (item.kind) {
 		case 'folder':
-			return item.aliasOf ? (
+			return <FolderSvg />;
+		case 'alias':
+			return (
 				<>
 					<FolderSvg />
 					<AliasBadge />
 				</>
-			) : (
-				<FolderSvg />
 			);
 		case 'doc':
 			return <PageSvg variant="doc" />;

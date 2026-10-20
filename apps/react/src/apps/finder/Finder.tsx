@@ -238,8 +238,11 @@ const Finder: React.FC = () => {
 	const open = (item: FinderItem) => {
 		switch (item.kind) {
 			case 'folder':
+				go({ folder: item.id });
+				return;
+			case 'alias':
 				// 바탕화면의 가상본은 원래 폴더로
-				go({ folder: item.aliasOf ?? item.id });
+				go({ folder: item.target });
 				return;
 			case 'doc':
 				go({ doc: item.path });
@@ -272,6 +275,12 @@ const Finder: React.FC = () => {
 				return;
 			case 'app':
 				launch(item.app);
+				return;
+			default: {
+				// 새 종류를 더하면 여기서 컴파일 오류가 난다 (여는 법을 정하게)
+				const unhandled: never = item;
+				return unhandled;
+			}
 		}
 	};
 
@@ -375,7 +384,8 @@ const Finder: React.FC = () => {
 
 	const itemProps = (item: FinderItem) => ({
 		'data-id': item.id,
-		'data-folder-target': item.kind === 'folder' ? item.id : undefined,
+		// 가상본에 놓아도 원래 폴더로 들어간다 (useFinderEdit의 move·uploadPlan이 resolveAlias로 찾는다)
+		'data-folder-target': item.kind === 'folder' || item.kind === 'alias' ? item.id : undefined,
 		draggable: edit.admin && canMove(item) && renaming !== item.id,
 		onDragStart: (event: React.DragEvent) => {
 			event.dataTransfer.setData(FINDER_DRAG_TYPE, JSON.stringify([item.id]));
@@ -397,7 +407,7 @@ const Finder: React.FC = () => {
 			(drop.target === item.id && dropFolder !== item.id) || (dropId === item.id && dropId !== folder?.id)
 				? ' drop-target'
 				: ''
-		}${item.kind === 'folder' && item.aliasOf ? ' alias' : ''}${renaming === item.id ? ' renaming' : ''}`,
+		}${renaming === item.id ? ' renaming' : ''}`,
 		'aria-selected': selected === item.id,
 		role: 'option' as const,
 		onClick: (event: React.MouseEvent) => {

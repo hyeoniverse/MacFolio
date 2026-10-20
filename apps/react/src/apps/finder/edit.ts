@@ -27,8 +27,8 @@ import { find, isFileItem, pathTo, TRASH_ID, uploadFolderOf, type FinderItem, ty
 export type EditKind = 'folder' | 'file' | 'blog-folder' | 'post' | 'alias';
 
 export function editKind(item: FinderItem): EditKind | null {
+	if (item.kind === 'alias') return 'alias';
 	if (item.kind === 'folder') {
-		if (item.aliasOf) return 'alias';
 		if (item.id.startsWith('folder:')) return 'folder';
 		if (item.id.startsWith('blog/')) return 'blog-folder';
 		return null;
@@ -49,7 +49,7 @@ export const canTrash = (item: FinderItem) => {
 
 /** 폴더가 받을 수 있는 쪽: 파일·만든 폴더(fs), 블로그 글·폴더(blog), 아무것도(null) */
 export function containerKind(folder: FinderItem | null | undefined): 'fs' | 'blog' | null {
-	if (!folder || folder.kind !== 'folder' || folder.aliasOf) return null;
+	if (!folder || folder.kind !== 'folder') return null;
 	if (folder.id === 'blog' || folder.id.startsWith('blog/')) return 'blog';
 	if (folder.id.startsWith('folder:') || FINDER_BUILTIN_PARENT.test(folder.id)) return 'fs';
 	return null;
@@ -57,7 +57,7 @@ export function containerKind(folder: FinderItem | null | undefined): 'fs' | 'bl
 
 /** 가상본이면 원래 폴더, 아니면 그대로 */
 export const resolveAlias = (roots: FinderItem[], item: FinderItem): FinderItem | null =>
-	item.kind === 'folder' && item.aliasOf ? find(roots, item.aliasOf) : item;
+	item.kind === 'alias' ? find(roots, item.target) : item;
 
 /** 항목이 지금 들어 있는 폴더 */
 export const parentOf = (roots: FinderItem[], id: string): FolderItem | null =>
@@ -248,10 +248,10 @@ export function trashChange(
 		} else if (kind === 'file') {
 			if (from) trash[item.id] = from;
 			layout = { ...layout, files: { ...layout.files, [item.id]: TRASH_ID } };
-		} else if (kind === 'alias' && item.kind === 'folder')
+		} else if (item.kind === 'alias')
 			layout = {
 				...layout,
-				aliases: (layout.aliases ?? [...DEFAULT_DESKTOP_ALIASES]).filter((target) => target !== item.aliasOf),
+				aliases: (layout.aliases ?? [...DEFAULT_DESKTOP_ALIASES]).filter((target) => target !== item.target),
 			};
 		else if (kind === 'blog-folder') organization = removeMemoFolder(organization, blogPath(item.id) as FolderPath);
 	}
@@ -294,7 +294,7 @@ export function deleteChange(
 			documents.push(item.documentId);
 			fileIds.add(item.id);
 		}
-		if (item.kind === 'folder' && !item.aliasOf) {
+		if (item.kind === 'folder') {
 			if (item.id.startsWith('folder:')) folderIds.add(item.id);
 			item.children.forEach(collect);
 		}
