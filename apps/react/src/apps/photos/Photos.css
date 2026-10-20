@@ -39,7 +39,7 @@
 
 /* ─── 사이드바 ─── */
 .photos-sidebar {
-	padding: 0 8px 8px;
+	padding: 0 var(--space-8) var(--space-8);
 	background-color: var(--sidebar-background);
 	overflow-y: auto;
 }
@@ -61,7 +61,7 @@
 	align-items: center;
 	gap: var(--space-10);
 	width: 100%;
-	padding: 5px 10px;
+	padding: var(--space-4) var(--space-10);
 	border: none;
 	border-radius: var(--radius-8);
 	background: none;
@@ -97,7 +97,7 @@
 	flex: none;
 	width: 22px;
 	height: 22px;
-	border-radius: 5px;
+	border-radius: var(--radius-4);
 	background: var(--color-unemphasized-selected-content-background);
 	overflow: hidden;
 }
@@ -133,7 +133,7 @@
 	align-items: center;
 	gap: var(--space-10);
 	height: 52px;
-	padding: 0 6px 0 10px;
+	padding: 0 var(--space-6) 0 var(--space-10);
 	background: linear-gradient(var(--color-text-background) 30%, transparent);
 }
 
@@ -187,7 +187,7 @@
 	display: flex;
 	align-items: center;
 	height: 34px;
-	padding: 0 4px;
+	padding: 0 var(--space-4);
 	border: 1px solid var(--window-border);
 	border-radius: var(--radius-full);
 	background: var(--photos-glass);
@@ -199,7 +199,7 @@
 	display: block;
 	min-width: 32px;
 	height: 28px;
-	padding: 0 8px;
+	padding: 0 var(--space-8);
 	border: none;
 	border-radius: var(--radius-full);
 	background: none;
@@ -218,7 +218,7 @@
 }
 
 .photos-segments button {
-	padding: 0 14px;
+	padding: 0 var(--space-14);
 	font-size: var(--text-footnote);
 }
 
@@ -243,7 +243,7 @@
 
 .photos-pill {
 	height: 34px;
-	padding: 0 14px;
+	padding: 0 var(--space-14);
 	border: 1px solid var(--window-border);
 	border-radius: var(--radius-full);
 	background: var(--photos-glass);
@@ -255,7 +255,7 @@
 .photos-scroll {
 	flex: 1;
 	min-height: 0;
-	padding: 60px 10px 16px;
+	padding: 60px var(--space-10) var(--space-16);
 	overflow-y: auto;
 }
 
@@ -273,7 +273,7 @@
 }
 
 .photos-group h3 {
-	margin: 0 0 10px;
+	margin: 0 0 var(--space-10);
 	font-size: var(--text-subhead);
 }
 
@@ -408,7 +408,7 @@
 	padding: 0;
 	border: none;
 	/* macOS 사진: 둥근 모서리 사각형. 평소엔 숨어 있다가 마우스가 그쪽 가장자리 가까이 오면 나타난다 */
-	border-radius: 9px;
+	border-radius: var(--radius-8);
 	background: var(--photos-glass);
 	backdrop-filter: blur(12px);
 	box-shadow: var(--shadow-raised);
@@ -446,7 +446,7 @@
 
 .photos-info h3,
 .photos-info-caption {
-	margin: 0 0 12px;
+	margin: 0 0 var(--space-12);
 	color: var(--color-label);
 	font-size: var(--text-footnote);
 }
@@ -586,7 +586,7 @@
 }
 
 .photos.compact .photos-group h3 {
-	margin: 0 10px 8px;
+	margin: 0 var(--space-10) var(--space-8);
 }
 
 .photos.compact .photos-thumb {

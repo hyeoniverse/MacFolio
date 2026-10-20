@@ -25,7 +25,7 @@
 	right: 16px;
 	z-index: 5;
 	height: 44px;
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--shadow-float);
@@ -36,7 +36,7 @@
 	height: 40px;
 	border-radius: 50%;
 	color: var(--memo-text);
-	font-size: 19px;
+	font-size: var(--text-title3);
 }
 
 /* 떠 있는 버튼 바로 아래부터 본문, 아래 도구에 가리지 않게 여백 */
@@ -65,7 +65,7 @@
 	height: 44px;
 	max-width: calc(100% - 68px - 118px);
 	margin: 0;
-	padding: 0 8px;
+	padding: 0 var(--space-8);
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--shadow-float);
@@ -83,13 +83,13 @@
 /* 옆의 공유·••• 알약과 같은 모양: 채운 버튼 대신 알약 안의 글자 버튼 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions {
 	gap: var(--space-2);
-	padding: 0 6px;
+	padding: 0 var(--space-6);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > button {
 	flex-shrink: 0;
 	height: 40px;
-	padding: 0 10px;
+	padding: 0 var(--space-10);
 	border-radius: var(--radius-full);
 	background: none;
 	color: var(--memo-text);
@@ -154,7 +154,7 @@
 	display: inline-flex;
 	gap: var(--space-4);
 	height: 50px;
-	padding: 0 10px;
+	padding: 0 var(--space-10);
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--shadow-float);

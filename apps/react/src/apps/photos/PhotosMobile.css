@@ -27,7 +27,7 @@
 
 /* ─── 큰 제목 ─── */
 .photos-phone-title {
-	padding: var(--phone-top) 72px 14px 64px;
+	padding: var(--phone-top) 72px var(--space-14) 64px;
 }
 
 .photos-phone-title h2 {
@@ -36,7 +36,7 @@
 	min-height: 44px;
 	margin: 0;
 	color: var(--color-label);
-	font-size: 30px;
+	font-size: var(--text-title1);
 	font-weight: 700;
 }
 
@@ -105,7 +105,7 @@
 /* 앨범별: 앨범마다 제목 */
 .photos-phone-group h3 {
 	margin: 0;
-	padding: var(--space-16) 16px 8px;
+	padding: var(--space-16) var(--space-16) var(--space-8);
 	font-size: var(--text-title3);
 }
 
@@ -128,12 +128,12 @@
 
 /* ─── 모음: 가로로 넘기는 카드 ─── */
 .photos-shelf {
-	margin-bottom: 22px;
+	margin-bottom: var(--space-20);
 }
 
 .photos-shelf h3 {
-	margin: 0 0 10px;
-	padding: 0 20px;
+	margin: 0 0 var(--space-10);
+	padding: 0 var(--space-20);
 	color: var(--color-label);
 	font-size: var(--text-title2);
 	font-weight: 700;
@@ -147,7 +147,7 @@
 .photos-shelf-row {
 	display: flex;
 	gap: var(--space-12);
-	padding: 0 20px 6px;
+	padding: 0 var(--space-20) var(--space-6);
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
 	scroll-padding-left: 20px;
@@ -161,7 +161,7 @@
 	aspect-ratio: 1;
 	padding: 0;
 	border: none;
-	border-radius: 20px;
+	border-radius: var(--radius-18);
 	background: var(--color-unemphasized-selected-content-background);
 	overflow: hidden;
 	scroll-snap-align: start;
@@ -206,7 +206,7 @@
 	left: 0;
 	display: flex;
 	flex-direction: column;
-	padding: 40px 16px 14px;
+	padding: 40px var(--space-16) var(--space-14);
 	background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
 	color: var(--color-white);
 }
@@ -217,7 +217,7 @@
 }
 
 .photos-card.big .photos-card-text strong {
-	font-size: 26px;
+	font-size: var(--text-title1);
 }
 
 .photos-card-text span {
@@ -292,7 +292,7 @@
 }
 
 .photos-phone-tabs button i {
-	font-size: 19px;
+	font-size: var(--text-title3);
 }
 
 .photos-phone-tabs button[aria-selected='true'] {
@@ -339,7 +339,7 @@
 	align-items: flex-start;
 	gap: var(--space-10);
 	margin: 26px 0 0;
-	padding: 0 20px;
+	padding: 0 var(--space-20);
 	list-style: none;
 }
 
@@ -354,8 +354,8 @@
 }
 
 .photos-phone-results {
-	margin: 0 0 10px;
-	padding: 0 20px;
+	margin: 0 0 var(--space-10);
+	padding: 0 var(--space-20);
 	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
@@ -407,7 +407,7 @@
 	justify-content: center;
 	max-width: calc(100% - 152px);
 	min-height: 44px;
-	padding: 4px var(--space-16);
+	padding: var(--space-4) var(--space-16);
 	border-radius: var(--radius-window);
 	background: var(--photos-phone-glass);
 	backdrop-filter: blur(16px);
@@ -557,7 +557,7 @@
 }
 
 .photos-phone-info-panel {
-	padding: 12px 20px 0;
+	padding: var(--space-12) var(--space-20) 0;
 }
 
 .photos-phone-info-panel h3 {
@@ -570,7 +570,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-8);
-	margin: 2px 0 10px;
+	margin: var(--space-2) 0 var(--space-10);
 	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
@@ -593,8 +593,8 @@
 }
 
 .photos-phone-format {
-	padding: 2px 7px;
-	border-radius: 5px;
+	padding: var(--space-2) var(--space-6);
+	border-radius: var(--radius-4);
 	background: var(--color-secondary-label);
 	color: var(--phone-card-bg);
 	font-size: var(--text-caption);
@@ -603,7 +603,7 @@
 
 .photos-phone-card p {
 	margin: 0;
-	padding: 6px 12px 0;
+	padding: var(--space-6) var(--space-12) 0;
 	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
@@ -615,7 +615,7 @@
 .photos-phone-stats {
 	display: flex;
 	margin: 0;
-	padding: 8px 0;
+	padding: var(--space-8) 0;
 	border-top: 0.5px solid var(--phone-separator);
 	list-style: none;
 	color: var(--color-secondary-label);
@@ -635,7 +635,7 @@
 .photos-phone-info-action {
 	width: 100%;
 	margin-top: var(--space-10);
-	padding: 11px;
+	padding: var(--space-10);
 	border: none;
 	border-radius: var(--radius-14);
 	background: var(--color-unemphasized-selected-content-background);
@@ -656,7 +656,7 @@
 	align-items: center;
 	gap: var(--space-2);
 	height: 48px;
-	margin: auto 0 12px;
+	margin: auto 0 var(--space-12);
 	padding: 0 50%;
 	overflow-x: auto;
 	list-style: none;
@@ -676,7 +676,7 @@
 
 .photos-phone-strip button[aria-current='true'] {
 	width: 58px;
-	margin: 0 6px;
+	margin: 0 var(--space-6);
 }
 
 .photos-phone-strip :is(img, video) {
@@ -697,7 +697,7 @@
 	flex: none;
 	align-items: center;
 	justify-content: space-between;
-	margin: 0 16px calc(var(--phone-bottom-inset) + 4px);
+	margin: 0 var(--space-16) calc(var(--phone-bottom-inset) + var(--space-4));
 }
 
 .photos-phone-pill {

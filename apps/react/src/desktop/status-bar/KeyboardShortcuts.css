@@ -7,7 +7,7 @@
 	width: min(420px, calc(100vw - 32px));
 	max-height: calc(100vh - 120px);
 	overflow: auto;
-	padding: var(--space-16) 20px 16px;
+	padding: var(--space-16) var(--space-20) var(--space-16);
 	border: 1px solid var(--window-border);
 	border-radius: var(--radius-10);
 	box-shadow: var(--shadow-window);
@@ -17,19 +17,19 @@
 }
 
 .keyboard-shortcuts h2 {
-	margin: 0 0 4px;
+	margin: 0 0 var(--space-4);
 	font-size: var(--text-subhead);
 }
 
 .keyboard-shortcuts-sub,
 .keyboard-shortcuts-empty {
-	margin: 0 0 12px;
+	margin: 0 0 var(--space-12);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
 .keyboard-shortcuts h3 {
-	margin: 12px 0 4px;
+	margin: var(--space-12) 0 var(--space-4);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	font-weight: 600;
@@ -42,7 +42,7 @@
 .keyboard-shortcuts dl > div {
 	display: flex;
 	justify-content: space-between;
-	padding: 4px 0;
+	padding: var(--space-4) 0;
 	border-bottom: 1px solid var(--window-border);
 }
 
@@ -60,7 +60,7 @@
 
 .keyboard-shortcuts-close {
 	display: block;
-	margin: 14px 0 0 auto;
+	margin: var(--space-14) 0 0 auto;
 	padding: var(--space-4) var(--space-14);
 	border: none;
 	border-radius: var(--radius-6);

@@ -20,8 +20,8 @@
 	align-items: center;
 	gap: var(--space-8);
 	width: min(300px, 100%);
-	padding: 22px 20px 16px;
-	border-radius: 16px;
+	padding: var(--space-20) var(--space-20) var(--space-16);
+	border-radius: var(--radius-14);
 	background-color: var(--color-popover-background);
 	box-shadow: var(--shadow-modal);
 	color: var(--color-label);
@@ -71,7 +71,7 @@
 .login-flow-button {
 	width: 100%;
 	margin-top: var(--space-8);
-	padding: 6px 0;
+	padding: var(--space-6) 0;
 	font-size: var(--text-footnote);
 }
 

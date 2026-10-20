@@ -2,7 +2,7 @@
 
 /* ─── 도구 막대: 신호등 버튼과 같은 높이(52px)에 버튼을 차례로 놓는다 ─── */
 .memo-toolbar {
-	padding: 0 12px;
+	padding: 0 var(--space-12);
 }
 
 /* 신호등 버튼 자리 (사이드바를 닫았을 때 도구 막대 앞, 사이드바 막대 앞) */
@@ -67,12 +67,12 @@
 .memo-compact-tools {
 	align-items: center;
 	gap: var(--space-2);
-	margin: 8px 8px 8px 0;
+	margin: var(--space-8) var(--space-8) var(--space-8) 0;
 }
 
 .memo-compact-tools .memo-search {
 	flex: 1;
-	margin: 0 0 0 12px;
+	margin: 0 0 0 var(--space-12);
 }
 
 /* 최근 삭제된 항목의 목록 위 안내, 줄마다 남은 날 */
@@ -119,7 +119,7 @@
 }
 
 .memo-trash-note p {
-	margin: 2px 0 0;
+	margin: var(--space-2) 0 0;
 }
 
 .memo-trash-note .memo-trash-note-hint {
@@ -142,7 +142,7 @@
 
 .memo-item-purge::before {
 	content: '·';
-	margin: 0 4px;
+	margin: 0 var(--space-4);
 }
 
 /* 잠긴 메모: 목록 제목 앞의 자물쇠, 본문 위 안내 */
@@ -163,7 +163,7 @@
 }
 
 .memo-locked-note button {
-	padding: 1px 8px;
+	padding: 1px var(--space-8);
 	border: none;
 	border-radius: var(--radius-full);
 	background-color: var(--memo-search-bg);
@@ -199,7 +199,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-8);
-	margin: 0 0 8px 4px;
+	margin: 0 0 var(--space-8) var(--space-4);
 }
 
 .memo-tag-browser h3 {
@@ -241,7 +241,7 @@
 
 /* 칩: 미선택은 회색, 포함은 강조 색으로 채움, 제외는 강조 색 테두리와 취소선 */
 .memo .memo-tag-chip {
-	padding: 3px 9px;
+	padding: var(--space-2) var(--space-8);
 	border: 1.5px solid transparent;
 	border-radius: var(--radius-8);
 	background-color: var(--memo-search-bg);

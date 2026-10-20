@@ -15,7 +15,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: 5px;
+		gap: var(--space-4);
 		/* 통합형 창의 끌기 영역(z-index 3)보다 위 */
 		position: relative;
 		z-index: 4;
@@ -27,8 +27,8 @@
 	.ui-icon-button.tool {
 		min-width: 30px;
 		height: 28px;
-		padding: 0 7px;
-		border-radius: 7px;
+		padding: 0 var(--space-6);
+		border-radius: var(--radius-6);
 		background: none;
 		color: var(--ui-tool-color);
 	}

@@ -154,7 +154,7 @@
 	align-items: center;
 	gap: var(--space-12);
 	min-height: 48px;
-	padding: 0 14px;
+	padding: 0 var(--space-14);
 	border-bottom: 1px solid var(--pe-separator);
 	background: var(--pe-toolbar);
 }
@@ -221,15 +221,15 @@
 .projects-tabs {
 	display: inline-flex;
 	padding: var(--space-2);
-	border-radius: 7px;
+	border-radius: var(--radius-6);
 	background: var(--pe-segment-bg);
 }
 
 .projects-tabs button {
 	min-width: 56px;
-	padding: 3px 14px;
+	padding: var(--space-2) var(--space-14);
 	border: none;
-	border-radius: 5px;
+	border-radius: var(--radius-4);
 	background: none;
 	color: var(--color-label);
 	font: inherit;
@@ -263,20 +263,20 @@
 
 .projects-editor-form {
 	min-height: 0;
-	padding: 20px 24px 40px;
+	padding: var(--space-20) var(--space-24) 40px;
 	overflow-y: auto;
 }
 
 .projects-editor-column {
 	display: flex;
 	flex-direction: column;
-	gap: 22px;
+	gap: var(--space-20);
 	max-width: 640px;
 	margin: 0 auto;
 }
 
 .projects-tab-hint {
-	padding: 0 10px;
+	padding: 0 var(--space-10);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	line-height: 1.5;
@@ -291,7 +291,7 @@
 }
 
 .projects-group-title {
-	padding: 0 10px;
+	padding: 0 var(--space-10);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	font-weight: 600;
@@ -303,7 +303,7 @@
 }
 
 .projects-group-hint {
-	padding: 0 10px;
+	padding: 0 var(--space-10);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	line-height: 1.5;
@@ -326,8 +326,8 @@
 	align-items: center;
 	column-gap: var(--space-16);
 	min-height: 28px;
-	margin: 0 12px;
-	padding: 8px 0;
+	margin: 0 var(--space-12);
+	padding: var(--space-8) 0;
 }
 
 .projects-item + .projects-item {
@@ -356,7 +356,7 @@
 }
 
 .projects-required {
-	padding: 0 5px;
+	padding: 0 var(--space-4);
 	border-radius: var(--radius-4);
 	background: color-mix(in srgb, var(--color-system-red) 14%, transparent);
 	color: var(--color-system-red);
@@ -383,7 +383,7 @@
 
 .projects-item-hint {
 	grid-column: 1 / -1;
-	margin-top: 5px;
+	margin-top: var(--space-4);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	line-height: 1.5;

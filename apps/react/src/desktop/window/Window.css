@@ -135,7 +135,7 @@
 	gap: 1rem;
 	align-items: center;
 	justify-content: flex-start;
-	padding: 0 10px;
+	padding: 0 var(--space-10);
 	border-bottom: 1px solid var(--window-border);
 	position: relative;
 	/* 상단바를 고정하여 스크롤 영향 받지 않게 함 */
@@ -223,7 +223,7 @@
 	left: 0;
 	z-index: 3;
 	height: var(--toolbar-height);
-	padding: 0 14px;
+	padding: 0 var(--space-14);
 	border: none;
 	background: none;
 	border-radius: 0;
@@ -269,7 +269,7 @@
 	top: 0;
 	left: 0;
 	z-index: 6;
-	padding: var(--phone-top, 6px) 16px;
+	padding: var(--phone-top, var(--space-6)) var(--space-16);
 	pointer-events: none;
 	transition:
 		opacity var(--duration) var(--ease-out),
@@ -353,16 +353,16 @@
 	display: flex;
 	align-items: center;
 	min-height: 44px;
-	margin: 0 0 12px;
+	margin: 0 0 var(--space-12);
 	padding-left: 64px;
 	color: var(--color-label);
-	font-size: 30px;
+	font-size: var(--text-title1);
 	font-weight: 700;
 	line-height: 1.2;
 }
 
 .container.mobile .phone-title-sub {
-	margin: -8px 4px 16px;
+	margin: -8px var(--space-4) var(--space-16);
 	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
@@ -418,7 +418,7 @@
 .home-indicator span {
 	width: 134px;
 	height: 5px;
-	border-radius: 3px;
+	border-radius: var(--radius-4);
 	background-color: var(--color-label);
 	opacity: 0.85;
 	transition: background-color var(--duration) var(--ease-out);

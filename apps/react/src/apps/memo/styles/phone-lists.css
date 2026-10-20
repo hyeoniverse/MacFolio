@@ -28,11 +28,11 @@
 	   오른쪽은 떠 있는 버튼(정렬·••• 또는 새로운 폴더) 자리를 비운다 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-title {
 	display: block;
-	margin: 0 4px 16px;
+	margin: 0 var(--space-4) var(--space-16);
 	padding: 0 106px 0 60px;
 	overflow: hidden;
 	color: var(--memo-text);
-	font-size: 30px;
+	font-size: var(--text-title1);
 	font-weight: 700;
 	line-height: 44px;
 	text-overflow: ellipsis;
@@ -56,7 +56,7 @@
 
 /* ── 폴더 화면 ── */
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-scroll {
-	padding: var(--phone-top) 16px 96px;
+	padding: var(--phone-top) var(--space-16) 96px;
 }
 
 /* 새로운 폴더 (관리자): 오른쪽 위의 동그란 버튼 */
@@ -75,7 +75,7 @@
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
 	color: var(--memo-text);
-	font-size: 19px;
+	font-size: var(--text-title3);
 }
 
 /* 묶음 이름('블로그')과 오른쪽의 접기 버튼 */
@@ -83,7 +83,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin: 0 4px 8px;
+	margin: 0 var(--space-4) var(--space-8);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folders .memo-folder-group-head h2,
@@ -127,7 +127,7 @@
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-row {
 	height: 52px;
 	margin: 0;
-	padding-left: calc(var(--depth, 0) * 20px + 6px);
+	padding-left: calc(var(--depth, 0) * var(--space-20) + var(--space-6));
 	border-radius: 0;
 }
 
@@ -156,14 +156,14 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder {
 	gap: var(--space-12);
-	padding: 0 16px 0 4px;
+	padding: 0 var(--space-16) 0 var(--space-4);
 	border-radius: 0;
 	font-size: var(--text-body);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder .memo-folder-icon {
 	width: 26px;
-	font-size: 21px;
+	font-size: var(--text-title3);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder .memo-count {
@@ -194,12 +194,12 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-tag-browser {
 	margin-top: var(--space-24);
-	padding: 0 4px;
+	padding: 0 var(--space-4);
 }
 
 /* 태그 칩 (iOS 메모): 둥근 네모에 굵은 글자. 미선택은 회색, 포함은 강조 색에 흰 글자, 제외는 테두리와 취소선 */
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-tag-chip {
-	padding: 7px 14px;
+	padding: var(--space-6) var(--space-14);
 	border-radius: var(--radius-10);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
@@ -225,8 +225,8 @@
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-tag-chips {
 	display: flex;
 	gap: var(--space-8);
-	margin: 6px -16px 14px;
-	padding: 0 16px;
+	margin: var(--space-6) -16px var(--space-14);
+	padding: 0 var(--space-16);
 	overflow-x: auto;
 	list-style: none;
 	scrollbar-width: none;
@@ -242,7 +242,7 @@
 
 /* 칩 아래 안내는 선 없이 회색 한 줄 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-tag-note {
-	margin: 0 4px 6px;
+	margin: 0 var(--space-4) var(--space-6);
 	padding: 0;
 	border: none;
 	font-size: var(--text-subhead);
@@ -250,11 +250,11 @@
 
 /* ── 목록 화면 ── */
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-scroll {
-	padding: var(--phone-top) 16px 96px;
+	padding: var(--phone-top) var(--space-16) 96px;
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-section-title {
-	margin: 22px 4px 8px;
+	margin: var(--space-20) var(--space-4) var(--space-8);
 	color: var(--memo-text);
 	font-size: var(--text-title3);
 }
@@ -326,7 +326,7 @@
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-trash-banner {
-	margin: 0 4px 12px;
+	margin: 0 var(--space-4) var(--space-12);
 }
 
 /* 목록 맨 위의 검색 줄 대신, 넘기는 칸 밖에 떠 있는 버튼들을 쓴다 (Memo.tsx의 memo-phone-list-top·memo-list-bottom) */
@@ -356,7 +356,7 @@
 .container.mobile :where(.memo-shell[data-compact]) .memo-list-bottom .memo-search {
 	flex: 1;
 	height: 50px;
-	margin: 0 12px 0 0;
+	margin: 0 var(--space-12) 0 0;
 	padding: 0 var(--space-16);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
@@ -408,7 +408,7 @@
 	align-items: center;
 	justify-content: center;
 	height: 50px;
-	margin: 0 12px;
+	margin: 0 var(--space-12);
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--phone-float-shadow);
@@ -449,7 +449,7 @@
 /* 휴대폰 목록의 갤러리: 두 줄 카드 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-cards {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: var(--space-16) 14px;
+	gap: var(--space-16) var(--space-14);
 	padding: 0;
 }
 
@@ -461,7 +461,7 @@
 .container.mobile :where(.memo-shell[data-compact]) .memo-folders-edit.done {
 	width: 44px;
 	padding: 0;
-	font-size: 19px;
+	font-size: var(--text-title3);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-more {

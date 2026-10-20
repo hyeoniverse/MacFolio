@@ -14,7 +14,7 @@
 	display: flex;
 	align-items: center;
 	gap: 0.4rem;
-	margin: 0 12px 8px;
+	margin: 0 var(--space-12) var(--space-8);
 	padding: 0.35rem 0.6rem;
 	border-radius: 0.5rem;
 	background-color: var(--memo-search-bg);
@@ -74,7 +74,7 @@
 	flex: none;
 	align-items: center;
 	gap: var(--space-4);
-	padding: 1px 4px 1px 7px;
+	padding: 1px var(--space-4) 1px var(--space-6);
 	border-radius: var(--radius-full);
 	background-color: color-mix(in srgb, var(--memo-accent) 30%, transparent);
 	color: var(--memo-text);
@@ -219,7 +219,7 @@
 	display: inline-flex;
 	flex: none;
 	align-items: center;
-	gap: 5px;
+	gap: var(--space-4);
 	color: var(--memo-text);
 	font-size: var(--text-footnote);
 	white-space: nowrap;
@@ -250,7 +250,7 @@
 }
 
 .memo-list ul {
-	padding: 0 8px 8px;
+	padding: 0 var(--space-8) var(--space-8);
 }
 
 .memo-item {

@@ -1,5 +1,5 @@
 .turnstile-error {
-	margin: 4px 0 0;
+	margin: var(--space-4) 0 0;
 	color: var(--color-system-red);
 	font-size: var(--text-caption);
 }

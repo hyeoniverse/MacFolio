@@ -59,7 +59,7 @@
 	height: 72px;
 	margin-bottom: var(--space-14);
 	padding: var(--space-10);
-	border-radius: 18px;
+	border-radius: var(--radius-18);
 	background-color: var(--color-white);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.08),
@@ -72,18 +72,18 @@
 	place-items: center;
 	background-color: var(--sp-alt);
 	color: var(--sp-muted);
-	font-size: 28px;
+	font-size: var(--text-title1);
 }
 
 .sp-eyebrow {
-	font-size: 19px;
+	font-size: var(--text-title3);
 	font-weight: 600;
 }
 
 .sp-hero h1 {
 	max-width: 760px;
-	margin: 4px auto 0;
-	font-size: clamp(34px, 7cqi, 64px);
+	margin: var(--space-4) auto 0;
+	font-size: clamp(var(--text-large-title), 7cqi, 64px);
 	font-weight: 700;
 	letter-spacing: -0.02em;
 	line-height: 1.08;
@@ -93,7 +93,7 @@
 	max-width: 620px;
 	margin: var(--space-16) auto 0;
 	color: var(--sp-muted);
-	font-size: clamp(17px, 2.4cqi, 21px);
+	font-size: clamp(var(--text-body), 2.4cqi, var(--text-title3));
 	line-height: 1.45;
 }
 
@@ -102,17 +102,17 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
-	gap: 16px var(--space-24);
+	gap: var(--space-16) var(--space-24);
 	margin-top: 26px;
 	font-size: var(--text-body);
 }
 
 .sp-pill {
-	padding: 10px 22px;
+	padding: var(--space-10) var(--space-20);
 	border: none;
 	font: inherit;
 	cursor: pointer;
-	border-radius: 980px;
+	border-radius: var(--radius-full);
 	background-color: var(--sp-accent);
 	transition:
 		filter var(--duration-fast) var(--ease-out),
@@ -150,7 +150,7 @@
 	max-width: 880px;
 	margin: 48px auto 0;
 	overflow: hidden;
-	border-radius: 18px 18px 0 0;
+	border-radius: var(--radius-18) var(--radius-18) 0 0;
 	box-shadow: 0 -2px 40px rgba(0, 0, 0, 0.12);
 }
 
@@ -190,7 +190,7 @@
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
-	font-size: clamp(30px, 5cqi, 48px);
+	font-size: clamp(var(--text-title1), 5cqi, 48px);
 	font-weight: 700;
 	letter-spacing: -0.02em;
 	line-height: 1.1;
@@ -218,7 +218,7 @@
 .sp-headline {
 	max-width: 720px;
 	margin-bottom: 40px;
-	font-size: clamp(28px, 4.6cqi, 44px);
+	font-size: clamp(var(--text-title1), 4.6cqi, 44px);
 	font-weight: 700;
 	letter-spacing: -0.02em;
 	line-height: 1.12;
@@ -279,7 +279,7 @@
 	flex-direction: column;
 	gap: var(--space-16);
 	list-style: none;
-	font-size: 19px;
+	font-size: var(--text-title3);
 	line-height: 1.45;
 }
 
@@ -290,7 +290,7 @@
 
 .sp-checks i {
 	flex: none;
-	margin-top: 5px;
+	margin-top: var(--space-4);
 	color: var(--sp-accent);
 	font-size: var(--text-body);
 }
@@ -303,7 +303,7 @@
 .sp-specs-title {
 	padding-bottom: var(--space-20);
 	border-bottom: 1px solid var(--sp-line);
-	font-size: clamp(28px, 4.6cqi, 40px);
+	font-size: clamp(var(--text-title1), 4.6cqi, 40px);
 	font-weight: 700;
 	letter-spacing: -0.02em;
 }
@@ -312,7 +312,7 @@
 	display: grid;
 	grid-template-columns: 200px minmax(0, 1fr);
 	gap: var(--space-16);
-	padding: 20px 0;
+	padding: var(--space-20) 0;
 	border-bottom: 1px solid var(--sp-line);
 	font-size: var(--text-body);
 	line-height: 1.45;
@@ -334,7 +334,7 @@
 }
 
 .sp-cta p {
-	font-size: clamp(26px, 4.6cqi, 40px);
+	font-size: clamp(var(--text-title1), 4.6cqi, 40px);
 	font-weight: 700;
 	letter-spacing: -0.02em;
 }
@@ -342,11 +342,11 @@
 /* ─── 좁은 창 (모바일) ─── */
 @container (max-width: 600px) {
 	.sp-hero {
-		padding: 40px 20px 0;
+		padding: 40px var(--space-20) 0;
 	}
 
 	.sp-inner {
-		padding: 0 20px;
+		padding: 0 var(--space-20);
 	}
 
 	.sp-section {

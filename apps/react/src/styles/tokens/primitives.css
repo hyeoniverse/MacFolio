@@ -83,7 +83,7 @@
 	--shadow-7: 0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 20px 60px rgba(0, 0, 0, 0.35); /* 화면 가운데 뜨는 창 */
 
 	/*
-	 * 글자 크기. Apple HIG의 글자 스타일 이름 (14·18px 등 그 밖의 값과 em·rem은 각 CSS에 그대로)
+	 * 글자 크기. Apple HIG의 글자 스타일 이름 (9·10px 배지, 40px 이상 장식 숫자와 em·rem은 각 CSS에 그대로)
 	 */
 	--text-caption2: 11px;
 	--text-caption: 12px;
@@ -93,6 +93,8 @@
 	--text-body: 17px;
 	--text-title3: 20px;
 	--text-title2: 22px;
+	--text-title1: 28px;
+	--text-large-title: 34px;
 
 	/* 간격(padding·margin·gap): px 그대로 이름을 붙였다 */
 	--space-2: 2px;

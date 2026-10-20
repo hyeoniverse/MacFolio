@@ -30,7 +30,7 @@
 .bin-sidebar {
 	gap: var(--space-2);
 	width: 180px;
-	padding: 0 10px 12px;
+	padding: 0 var(--space-10) var(--space-12);
 }
 
 .bin-lights-space {
@@ -49,7 +49,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-8);
-	padding: 5px 8px;
+	padding: var(--space-4) var(--space-8);
 	border: none;
 	border-radius: var(--radius-6);
 	background: none;
@@ -92,7 +92,7 @@
 .bin-toolbar {
 	/* 창 위쪽 52px는 창을 옮기는 자리라(끌기, 두 번 눌러 키우기) 막대는 그 아래에 둔다. 버튼이 생기면 버튼만 위로 올린다 */
 	gap: var(--space-10);
-	padding: 0 16px;
+	padding: 0 var(--space-16);
 	border-bottom: 1px solid var(--color-separator);
 }
 
@@ -200,9 +200,9 @@
 
 .bin-empty-button {
 	flex: none;
-	padding: 2px 9px;
+	padding: var(--space-2) var(--space-8);
 	border: none;
-	border-radius: 5px;
+	border-radius: var(--radius-4);
 	background-color: var(--color-control-background);
 	box-shadow: inset 0 0 0 0.5px var(--color-separator);
 	color: var(--color-label);
@@ -233,7 +233,7 @@
 	display: grid;
 	grid-template-columns: 40px minmax(0, 1fr) auto;
 	align-items: center;
-	gap: 0 12px;
+	gap: 0 var(--space-12);
 	padding: var(--space-6) var(--space-10);
 	border-radius: var(--radius-6);
 }
@@ -315,7 +315,7 @@
 }
 
 .bin-empty-note .bin-files-note {
-	padding: 8px 0 0;
+	padding: var(--space-8) 0 0;
 }
 
 /* 좁은 창: 사이드바는 위의 탭 줄로, 정보는 목록 아래로 */
@@ -333,7 +333,7 @@
 		flex-direction: row;
 		align-items: center;
 		width: auto;
-		padding: 0 12px 0 84px;
+		padding: 0 var(--space-12) 0 84px;
 		border-right: none;
 		border-bottom: 1px solid var(--color-separator);
 	}
@@ -347,7 +347,7 @@
 	.bin-location {
 		position: relative;
 		z-index: 4;
-		margin: 12px 0;
+		margin: var(--space-12) 0;
 	}
 
 	.bin-toolbar {
@@ -381,7 +381,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--space-8);
-	padding: 8px 16px;
+	padding: var(--space-8) var(--space-16);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
