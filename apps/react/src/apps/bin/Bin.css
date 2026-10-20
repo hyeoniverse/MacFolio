@@ -383,5 +383,5 @@
 	gap: var(--space-8);
 	padding: 8px 16px;
 	color: var(--color-text-secondary);
-	font-size: 12px;
+	font-size: var(--text-caption);
 }

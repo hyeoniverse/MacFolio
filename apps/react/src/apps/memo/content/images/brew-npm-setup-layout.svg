@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="470" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">Homebrew로 Node를 깔았을 때 파일이 놓이는 곳</text>
+
+  <!-- 왼쪽: /opt/homebrew -->
+  <rect x="20" y="50" width="340" height="400" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="32" y="74" font-size="13" font-weight="600" fill="#4f46e5">/opt/homebrew (Apple Silicon의 접두사)</text>
+
+  <text x="40" y="106" font-size="12" font-weight="600" fill="#1f2937">Cellar/node/26.12.0/bin/node</text>
+  <text x="40" y="122" font-size="11" fill="#6b7280">실제 파일. 버전마다 폴더가 따로 생긴다</text>
+
+  <rect x="40" y="140" width="300" height="56" rx="6" fill="#fff" stroke="#c7d2fe"/>
+  <text x="52" y="162" font-size="12" font-weight="600" fill="#1f2937">bin/node, bin/npm, bin/npx</text>
+  <text x="52" y="180" font-size="11" fill="#6b7280">Cellar를 가리키는 심볼릭 링크 (brew link)</text>
+  <line x1="190" y1="128" x2="190" y2="140" stroke="#4f46e5" stroke-width="1.5"/>
+
+  <rect x="40" y="212" width="300" height="56" rx="6" fill="#fff" stroke="#fca5a5" stroke-dasharray="4 3"/>
+  <text x="52" y="234" font-size="12" font-weight="600" fill="#1f2937">opt/node@22/bin/node</text>
+  <text x="52" y="252" font-size="11" fill="#b91c1c">keg-only: bin/에 링크되지 않는다. PATH에 직접 더한다</text>
+
+  <rect x="40" y="284" width="300" height="56" rx="6" fill="#fff" stroke="#c7d2fe"/>
+  <text x="52" y="306" font-size="12" font-weight="600" fill="#1f2937">lib/node_modules/</text>
+  <text x="52" y="324" font-size="11" fill="#6b7280">npm install -g가 까는 곳 (npm prefix = /opt/homebrew)</text>
+
+  <rect x="40" y="356" width="300" height="56" rx="6" fill="#fff" stroke="#c7d2fe"/>
+  <text x="52" y="378" font-size="12" font-weight="600" fill="#1f2937">etc/npmrc</text>
+  <text x="52" y="396" font-size="11" fill="#6b7280">npm의 전역 설정 파일 (globalconfig)</text>
+  <text x="40" y="436" font-size="11" fill="#6b7280">PATH 앞에 bin/·sbin/을 두는 것은 brew shellenv</text>
+
+  <!-- 오른쪽: npm 설정 우선순위 -->
+  <rect x="380" y="50" width="240" height="400" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+  <text x="392" y="74" font-size="13" font-weight="600" fill="#1f2937">npm이 설정을 고르는 순서</text>
+  <text x="392" y="92" font-size="11" fill="#6b7280">위에 있을수록 이긴다</text>
+
+  <rect x="396" y="108" width="208" height="40" rx="6" fill="#fff" stroke="#d1d5db"/>
+  <text x="408" y="133" font-size="12" fill="#1f2937">1. 명령줄 --save-exact</text>
+  <rect x="396" y="158" width="208" height="40" rx="6" fill="#fff" stroke="#d1d5db"/>
+  <text x="408" y="183" font-size="12" fill="#1f2937">2. 환경 변수 npm_config_*</text>
+  <rect x="396" y="208" width="208" height="40" rx="6" fill="#fff" stroke="#a5b4fc"/>
+  <text x="408" y="233" font-size="12" fill="#1f2937">3. 프로젝트 폴더의 .npmrc</text>
+  <rect x="396" y="258" width="208" height="40" rx="6" fill="#fff" stroke="#a5b4fc"/>
+  <text x="408" y="283" font-size="12" fill="#1f2937">4. ~/.npmrc (userconfig)</text>
+  <rect x="396" y="308" width="208" height="40" rx="6" fill="#fff" stroke="#a5b4fc"/>
+  <text x="408" y="333" font-size="12" fill="#1f2937">5. /opt/homebrew/etc/npmrc</text>
+  <rect x="396" y="358" width="208" height="40" rx="6" fill="#fff" stroke="#d1d5db"/>
+  <text x="408" y="383" font-size="12" fill="#1f2937">6. npm 내장 npmrc (builtin)</text>
+  <text x="392" y="436" font-size="11" fill="#6b7280">npm config ls -l로 최종 값을 본다</text>
+
+  <line x1="340" y1="384" x2="396" y2="328" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="3 3"/>
+</svg>
