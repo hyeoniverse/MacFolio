@@ -1,8 +1,8 @@
 ---
-title: 'zsh: command not found: pnpm — npm install로 대신하면 안 되는 이유'
+title: 'zsh: command not found: pnpm — Node 25부터 corepack이 빠졌다'
 date: 2026-10-20
 category: 기술 노트/개발 환경
-summary: pnpm workspace 저장소에서 pnpm이 없을 때 npm install로 대신하면 루트만 깔려 빌드가 의존성을 못 찾는다. pnpm이 Node에 없는 이유(Node 25부터 corepack도 빠졌다), pnpm을 받는 방법, 전역 버전과 저장소 버전이 다른 이유, npm이 남긴 파일을 치우는 순서를 정리했다.
+summary: corepack enable로 pnpm을 쓰던 저장소가 Node 25부터 pnpm을 못 찾는다. corepack이 Node에서 빠졌기 때문이다. pnpm을 따로 받는 방법, 전역 pnpm과 저장소의 pnpm 버전이 다른 이유, 급하게 npm install로 대신했다가 남은 파일을 치우는 순서를 정리했다.
 ---
 
 pnpm을 쓰는 저장소를 받아 `pnpm install`이나 `pnpm dev`를 치면 이런 오류가 날 때가 있다.
@@ -12,7 +12,7 @@ $ pnpm dev
 zsh: command not found: pnpm
 ```
 
-`node`와 `npm`은 되는데 `pnpm`만 없는 경우다. 이때 `npm install`로 대신하면 오류 없이 끝나는 것처럼 보이지만, 실제로는 일을 하나 더 만든다. 이 글은 왜 pnpm이 없는지, npm으로 대신하면 무엇이 잘못되는지, 어떻게 고치는지를 정리한다.
+`node`와 `npm`은 되는데 `pnpm`만 없는 경우다. 설치 안내대로 `corepack enable`을 쳐도 그 명령부터 `command not found`가 난다. Node 25부터 corepack이 Node에 들어 있지 않기 때문이다. 이 글은 왜 pnpm이 없어졌는지, pnpm을 어떻게 받는지를 정리한다. 급한 마음에 `npm install`로 대신했다가 생긴 일과 그 뒷정리도 함께 적었다.
 
 아래 출력은 앱 둘·패키지 둘로 된 pnpm workspace 예시 저장소에서 돌린 것이다.
 
@@ -43,47 +43,6 @@ pnpm은 Node에 들어 있지 않다. Node와 함께 오는 패키지 관리자�
 ```
 
 그런데 corepack은 Node 25부터 Node에 들어 있지 않다. Homebrew의 `node`처럼 늘 최신 메이저를 따라가는 설치에서는 `corepack enable`부터 `command not found`가 난다. pnpm도 corepack도 없으니 `pnpm`이 없는 것이 맞다.
-
-## `npm install`로 대신하면
-
-pnpm workspace 저장소의 루트에서 `npm install`을 돌리면 오류 없이 끝난다.
-
-```text
-$ npm install
-added 176 packages, and audited 177 packages in 3s
-
-46 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-```
-
-하지만 무엇이 깔렸는지 보면 하위 프로젝트에는 아무것도 없다.
-
-```text
-$ ls -d apps/web/node_modules
-ls: apps/web/node_modules: No such file or directory
-$ git status --short
-?? package-lock.json
-```
-
-![같은 저장소에서 npm install과 pnpm install이 까는 범위](./images/pnpm-command-not-found-install.svg '왼쪽: npm은 루트 package.json만 본다. 오른쪽: pnpm은 pnpm-workspace.yaml의 프로젝트를 모두 깐다')
-
-pnpm workspace에서 어떤 폴더가 패키지인지는 `pnpm-workspace.yaml`에 적는다. npm은 이 파일을 읽지 않고, 루트 `package.json`에도 npm이 읽는 `workspaces` 필드가 없다. 그래서 npm은 루트 `package.json`의 devDependencies와 그 의존성만 깔고, pnpm이 읽지 않는 `package-lock.json`을 하나 새로 만든다.
-
-이 상태로 빌드하면 하위 패키지에서 멈춘다.
-
-```text
-$ npm run build
-...
-@acme/contracts:build: src/settings.ts(3,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
-@acme/contracts:build: src/site.ts(9,8): error TS2307: Cannot find module '@acme/core' or its corresponding type declarations.
-...
-```
-
-`packages/contracts`에는 `node_modules`가 없으니 `zod`가 없다. `@acme/core`도 못 찾는데, 이것은 npm 레지스트리에서 받는 패키지가 아니라 같은 저장소의 패키지다. `package.json`에 `"@acme/core": "workspace:*"`로 적혀 있고, pnpm이 설치할 때 이 폴더를 링크로 이어 준다. npm으로는 이 연결이 생기지 않는다.
-
-**pnpm 저장소에서 `npm install`은 대신이 되지 않는다.** pnpm부터 받아야 한다.
 
 ## pnpm 받기
 
@@ -128,7 +87,48 @@ pnpm은 실행될 때 `package.json`의 `packageManager`를 보고, 적힌 버�
 Done in 14.9s using pnpm v10.34.5
 ```
 
-## npm이 남긴 것 치우기
+## 급하게 `npm install`로 대신했다면
+
+pnpm이 없으니 "일단 npm으로" 하고 저장소 루트에서 `npm install`을 치기 쉽다. 실제로 오류 없이 끝난다.
+
+```text
+$ npm install
+added 176 packages, and audited 177 packages in 3s
+
+46 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+```
+
+하지만 무엇이 깔렸는지 보면 하위 프로젝트에는 아무것도 없다.
+
+```text
+$ ls -d apps/web/node_modules
+ls: apps/web/node_modules: No such file or directory
+$ git status --short
+?? package-lock.json
+```
+
+![같은 저장소에서 npm install과 pnpm install이 까는 범위](./images/pnpm-command-not-found-install.svg '왼쪽: npm은 루트 package.json만 본다. 오른쪽: pnpm은 pnpm-workspace.yaml의 프로젝트를 모두 깐다')
+
+pnpm workspace에서 어떤 폴더가 패키지인지는 `pnpm-workspace.yaml`에 적는다. npm은 이 파일을 읽지 않고, 루트 `package.json`에도 npm이 읽는 `workspaces` 필드가 없다. 그래서 npm은 루트 `package.json`의 devDependencies와 그 의존성만 깔고, pnpm이 읽지 않는 `package-lock.json`을 하나 새로 만든다.
+
+이 상태로 빌드하면 하위 패키지에서 멈춘다.
+
+```text
+$ npm run build
+...
+@acme/contracts:build: src/settings.ts(3,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+@acme/contracts:build: src/site.ts(9,8): error TS2307: Cannot find module '@acme/core' or its corresponding type declarations.
+...
+```
+
+`packages/contracts`에는 `node_modules`가 없으니 `zod`가 없다. `@acme/core`도 못 찾는데, 이것은 npm 레지스트리에서 받는 패키지가 아니라 같은 저장소의 패키지다. `package.json`에 `"@acme/core": "workspace:*"`로 적혀 있고, pnpm이 설치할 때 이 폴더를 링크로 이어 준다. npm으로는 이 연결이 생기지 않는다.
+
+결국 pnpm을 받아야 하고, 받은 뒤에는 npm이 남긴 것을 치운다.
+
+### npm이 남긴 것 치우기
 
 npm이 만든 `node_modules`와 `package-lock.json`이 남아 있어도 `pnpm install`은 돈다. pnpm은 npm의 `node_modules`를 자기 방식으로 다시 깔고, 이번에는 모든 프로젝트를 깐다.
 
@@ -160,8 +160,8 @@ pnpm install
 ## 정리
 
 - `zsh: command not found: pnpm`: pnpm은 Node에 들어 있지 않다. Node 24까지는 함께 오던 corepack이 받아 줬지만, Node 25부터 corepack도 빠졌다
-- pnpm workspace 저장소에서 `npm install`은 루트만 깔고, `pnpm-workspace.yaml`과 `workspace:*`를 모른다. 빌드가 `Cannot find module`로 멈추고 `package-lock.json`만 남는다
 - `npm install -g pnpm`으로 받으면 된다. 전역 버전과 상관없이 저장소 안에서는 `packageManager`에 적힌 버전으로 돈다
+- pnpm workspace 저장소에서 `npm install`은 루트만 깔고, `pnpm-workspace.yaml`과 `workspace:*`를 모른다. 빌드가 `Cannot find module`로 멈추고 `package-lock.json`만 남는다
 - npm이 남긴 `package-lock.json`과 `node_modules`를 지우고 `pnpm install`을 다시 돌린다
 
 ## 참고한 공식 문서
