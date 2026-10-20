@@ -275,6 +275,9 @@ const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 			return <PageSvg variant="doc" />;
 		case 'post':
 			return <PageSvg variant="post" />;
+		case 'track':
+			// 곡은 앨범 그림으로 (macOS 음악 앱처럼)
+			return <img className="finder-img finder-artwork" src={item.artwork} alt="" draggable={false} />;
 		case 'project':
 			return item.icon ? <img className="finder-img" src={item.icon} alt="" draggable={false} /> : <FolderSvg />;
 		case 'pdf':

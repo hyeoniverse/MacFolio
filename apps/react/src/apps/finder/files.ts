@@ -61,6 +61,16 @@ export interface ProjectItem extends ItemBase {
 	period?: string;
 }
 
+/** 음악 앱의 곡. 홈 › 음악 › 아티스트 › 앨범 안에 있고, 열면 음악 앱이 그 앨범을 재생 목록 삼아 이 곡부터 재생한다 */
+export interface TrackItem extends ItemBase {
+	kind: 'track';
+	trackId: string;
+	/** 음악 앱의 앨범 재생 목록 id (예: album:Spirited Away) */
+	playlistId: string;
+	/** 앨범 그림 (아이콘) */
+	artwork: string;
+}
+
 /** 앱. 그 앱을 연다 */
 export interface AppItem extends ItemBase {
 	kind: 'app';
@@ -80,7 +90,7 @@ export interface FileItem extends ItemBase {
 	home?: string;
 }
 
-export type FinderItem = FolderItem | AliasItem | DocItem | PostItem | ProjectItem | AppItem | FileItem;
+export type FinderItem = FolderItem | AliasItem | DocItem | PostItem | ProjectItem | AppItem | FileItem | TrackItem;
 
 /** 목록 보기의 '종류' 칸 */
 export const KIND_LABELS: Record<FinderItem['kind'], string> = {
@@ -93,6 +103,7 @@ export const KIND_LABELS: Record<FinderItem['kind'], string> = {
 	pdf: 'PDF 문서',
 	image: '이미지',
 	file: '파일',
+	track: 'MP3 오디오',
 };
 
 /** 동영상·소리 파일이면 그 종류 (QuickTime Player가 연다). 이름의 확장자로 본다 */
@@ -117,8 +128,10 @@ export interface TreeInput {
 	apps: { app: AppName; label: string; icon: string }[];
 	/** 문서 파일 목록 (documents.ts). 없으면 폴더만 비어 있다 */
 	files?: DocumentEntry[];
-	/** 사진 앱의 앨범 (프로젝트마다). 프로젝트 폴더 안의 사진 폴더로, 그림은 미리보기에서 연다 */
+	/** 사진 앱의 앨범 (프로젝트마다). 홈 › 그림 안에 앨범마다 폴더로, 그림은 미리보기에서 연다 */
 	albums?: { id: string; name: string; photos: { src: string }[] }[];
+	/** 음악 앱의 곡. 홈 › 음악 › 아티스트 › 앨범 안에 */
+	tracks?: { id: string; title: string; artist: string; album: string; artwork: string; playlistId: string }[];
 	/** 관리자가 정한 폴더 구조 (만든 폴더, 옮긴 파일, 바탕화면의 가상본). 없으면 기본 구조 */
 	layout?: FinderLayoutValue;
 }
@@ -196,7 +209,7 @@ const isImage = (src: string) => /\.(jpe?g|png|webp|gif|svg)$/i.test(src.split('
 
 type Album = NonNullable<TreeInput['albums']>[number];
 
-/** 앨범의 그림들 (영상은 빼고). 키는 사이트 주소 그대로 (documents.ts의 fileUrl). 그림은 프로젝트 폴더의 사진 폴더에만 있다 */
+/** 앨범의 그림들 (영상은 빼고). 키는 사이트 주소 그대로 (documents.ts의 fileUrl). 그림은 홈 › 그림의 앨범 폴더에만 있다 */
 const albumPhotos = (album: Album): FileItem[] =>
 	album.photos
 		.filter((photo) => isImage(photo.src))
@@ -208,26 +221,74 @@ const albumPhotos = (album: Album): FileItem[] =>
 		}));
 
 /**
- * 프로젝트 폴더: 프로젝트마다 폴더 하나 (실제 OS처럼), 문서 › 포트폴리오 안에 놓인다. id(projects/<id>)와 폴더 값(project:<id>)은 그대로. 안에는 사진 폴더(그 프로젝트 앨범의 그림),
- * 그다음 관리자가 올린 파일(R2, 폴더 값 project:<id>)을 이름순으로. 실행하는 앱은 폴더에 두지 않는다
- * (실제 Mac처럼 응용 프로그램에만 있다)
+ * 프로젝트 폴더: 프로젝트마다 폴더 하나 (실제 OS처럼), 문서 › 포트폴리오 안에 놓인다. id(projects/<id>)와 폴더 값(project:<id>)은 그대로.
+ * 안에는 관리자가 올린 파일(R2, 폴더 값 project:<id>)을 이름순으로. 사진은 홈 › 그림에, 실행하는 앱은 응용 프로그램에만 있다
  */
-function projectFolders(projects: TreeInput['projects'], files: DocumentEntry[], albums: Album[]): FolderItem[] {
+function projectFolders(projects: TreeInput['projects'], files: DocumentEntry[]): FolderItem[] {
 	return projects.map((project): FolderItem => {
-		const album = albums.find((item) => item.id === project.id);
-		const photos = album ? albumPhotos(album) : [];
 		const uploads = files
 			.filter((file) => file.folder === projectFolderValue(project.id))
 			.map(fileItem)
 			.sort(byName);
-		const children: FinderItem[] = [
-			...(photos.length > 0
-				? [{ kind: 'folder' as const, id: `projects/${project.id}/photos`, name: '사진', children: photos }]
-				: []),
-			...uploads,
-		];
-		return { kind: 'folder', id: `projects/${project.id}`, name: project.name, children, modified: latest(uploads) };
+		return {
+			kind: 'folder',
+			id: `projects/${project.id}`,
+			name: project.name,
+			children: uploads,
+			modified: latest(uploads),
+		};
 	});
+}
+
+/**
+ * 그림 폴더: 사진 앱의 앨범마다 폴더 하나 (다른 폴더처럼 이름순). 사진의 원래 자리다
+ * (예전에는 프로젝트 폴더 안의 사진 폴더에 두어 같은 사진이 두 곳에 있었다)
+ */
+function picturesFolder(albums: Album[]): FolderItem {
+	return {
+		kind: 'folder',
+		id: 'pictures',
+		name: '그림',
+		children: albums
+			.map((album): FolderItem => ({
+				kind: 'folder',
+				id: `pictures/${album.id}`,
+				name: album.name,
+				children: albumPhotos(album),
+			}))
+			.filter((folder) => folder.children.length > 0)
+			.sort(byName),
+		emptyNote: '그림이 없습니다.',
+	};
+}
+
+/** 음악 폴더: macOS의 음악 폴더처럼 아티스트 › 앨범 › 곡. 곡 이름은 '제목.mp3' */
+function musicFolder(tracks: NonNullable<TreeInput['tracks']>): FolderItem {
+	const root: FolderItem = { kind: 'folder', id: 'music', name: '음악', children: [], emptyNote: '음악이 없습니다.' };
+	const child = (parent: FolderItem, id: string, name: string): FolderItem => {
+		let found = parent.children.find((item): item is FolderItem => item.kind === 'folder' && item.id === id);
+		if (!found) {
+			found = { kind: 'folder', id, name, children: [] };
+			parent.children.push(found);
+		}
+		return found;
+	};
+	for (const track of tracks) {
+		const artist = child(root, `music/${track.artist}`, track.artist);
+		const album = child(artist, `music/${track.artist}/${track.album}`, track.album);
+		album.children.push({
+			kind: 'track',
+			id: `track:${track.id}`,
+			name: `${track.title}.mp3`,
+			trackId: track.id,
+			playlistId: track.playlistId,
+			artwork: track.artwork,
+		});
+	}
+	// 아티스트·앨범은 이름순, 앨범 안의 곡은 보관함 순서 그대로
+	root.children.sort(byName);
+	root.children.forEach((artist) => artist.kind === 'folder' && artist.children.sort(byName));
+	return root;
 }
 
 /** 블로그 폴더: 글의 카테고리(프론트엔드/기능)를 폴더로. 같은 폴더 안은 최신 글이 위로 */
@@ -295,13 +356,11 @@ export const foldersOf = (roots: FinderItem[], ids: readonly string[]): FolderIt
 export const sidebarIdOf = (roots: FinderItem[], id: string, sidebar: readonly string[]): string | null =>
 	[...pathTo(roots, id)].reverse().find((step) => sidebar.includes(step.id))?.id ?? null;
 
-/** 홈의 macOS 기본 폴더 가운데 이 사이트에 담을 것이 없는 것 (비어 있을 때의 안내와 함께) */
+/** 홈의 macOS 기본 폴더 가운데 이 사이트에 담을 것이 없는 것 (비어 있을 때의 안내와 함께). 그림·음악은 사진·음악 앱의 것을 담는다 */
 const EMPTY_HOME_FOLDERS: { id: string; name: string; emptyNote: string }[] = [
 	{ id: 'public', name: '공용', emptyNote: '공유한 파일이 없습니다.' },
-	{ id: 'pictures', name: '그림', emptyNote: '그림이 없습니다.' },
 	{ id: 'downloads', name: '다운로드', emptyNote: '다운로드한 파일이 없습니다.' },
 	{ id: 'movies', name: '동영상', emptyNote: '동영상이 없습니다.' },
-	{ id: 'music', name: '음악', emptyNote: '음악이 없습니다.' },
 ];
 
 /** 휴지통 폴더 id (Finder 구조에서 휴지통으로 보낸 만든 폴더·파일의 상위) */
@@ -320,6 +379,7 @@ export function buildTree({
 	apps,
 	files = [],
 	albums = [],
+	tracks = [],
 	layout,
 }: TreeInput): { roots: FolderItem[]; trash: FolderItem } {
 	const trash: FolderItem = {
@@ -338,8 +398,10 @@ export function buildTree({
 			children: files.filter((file) => file.folder === DESKTOP_DOCUMENT_FOLDER).map(fileItem),
 			emptyNote: '바탕화면이 비어 있습니다.',
 		},
-		docsFolder(docs, files, projectFolders(projects, files, albums)),
+		docsFolder(docs, files, projectFolders(projects, files)),
 		blogFolder(posts, blogFolders),
+		picturesFolder(albums),
+		musicFolder(tracks),
 		...EMPTY_HOME_FOLDERS.map((folder): FolderItem => ({ kind: 'folder', ...folder, children: [] })),
 	];
 	const applications: FolderItem = {
@@ -513,7 +575,7 @@ export function recentItems(roots: FinderItem[], limit = 30): FinderItem[] {
 
 export type SortKey = 'name' | 'kind' | 'date';
 
-const KIND_ORDER: FinderItem['kind'][] = ['folder', 'alias', 'doc', 'pdf', 'image', 'post', 'project', 'app'];
+const KIND_ORDER: FinderItem['kind'][] = ['folder', 'alias', 'doc', 'pdf', 'image', 'track', 'post', 'project', 'app'];
 
 /** 정렬 (휴대폰 파일 앱의 ••• 메뉴): 이름순, 종류(폴더 먼저)마다 이름순, 날짜는 최신이 위로(날짜 없는 것은 아래에 이름순) */
 export function sortItems(items: FinderItem[], key: SortKey): FinderItem[] {

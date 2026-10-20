@@ -303,6 +303,11 @@
 }
 
 /* 그림 파일: 그림 그대로 작게 (자르지 않고, 둘레는 그림자만) */
+/* 곡: 앨범 그림 (정사각형에 가까운 모서리) */
+.finder-img.finder-artwork {
+	border-radius: 4px;
+}
+
 .finder-img.finder-thumb {
 	border-radius: 2px;
 	object-fit: contain;

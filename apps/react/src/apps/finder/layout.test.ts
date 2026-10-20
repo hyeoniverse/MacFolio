@@ -153,7 +153,7 @@ describe('폴더 구조 겹치기', () => {
 			],
 			files: { 'file:projects/qru/b.pdf': 'folder:bbbb' },
 		});
-		expect(names(folder(roots, 'projects/qru'))).toEqual(['발표', '사진']);
+		expect(names(folder(roots, 'projects/qru'))).toEqual(['발표']);
 		expect(names(folder(roots, 'folder:aaaa'))).toEqual(['초안']);
 		expect(names(folder(roots, 'folder:bbbb'))).toEqual(['발표.pdf']);
 		// 자기 안으로는 놓을 수 없다
@@ -178,11 +178,11 @@ describe('폴더 구조 겹치기', () => {
 
 	it('시스템 항목은 옮기거나 이름을 바꿀 수 없고, 쪽이 다르면 놓을 수 없다', () => {
 		const roots = build();
-		for (const id of ['docs', 'docs:이력서', 'projects/qru', 'projects/qru/photos', 'docs:README.md', 'app:memo'])
+		for (const id of ['docs', 'docs:이력서', 'projects/qru', 'pictures/qru', 'docs:README.md', 'app:memo'])
 			expect(canMove(find(roots, id)!) || canRename(find(roots, id)!)).toBe(false);
 		expect(canDropInto(roots, [find(roots, 'post:a')!], folder(roots, 'docs'))).toBe(false);
 		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'blog'))).toBe(false);
-		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'projects/qru/photos'))).toBe(false);
+		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'pictures/qru'))).toBe(false);
 		// 가상본 위에 놓으면 원래 폴더로
 		const alias = folder(roots, 'desktop').children.find((item) => item.id === 'alias:docs:자격증')!;
 		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], alias)).toBe(true);

@@ -73,11 +73,46 @@ describe('buildLocations', () => {
 		expect(sidebarIdOf(tree, 'downloads', FAVORITE_IDS)).toBeNull();
 	});
 
-	it('사진: 프로젝트 폴더 안의 사진 폴더에 그림만 (영상은 뺀다). 키는 사이트 주소 그대로', () => {
-		expect(names(find(tree, 'projects/qru/photos') as FolderItem)).toEqual(['home.png']);
+	it('사진: 홈 › 그림의 앨범 폴더에 그림만 (영상은 뺀다). 키는 사이트 주소 그대로', () => {
+		expect(names(find(tree, 'pictures') as FolderItem)).toEqual(['QRU']);
+		expect(names(find(tree, 'pictures/qru') as FolderItem)).toEqual(['home.png']);
 		const photo = find(tree, 'photo:/imgs/projects/qru/home.png');
 		expect(photo).toMatchObject({ kind: 'image', name: 'home.png', key: '/imgs/projects/qru/home.png' });
 		expect(fileUrl('/imgs/projects/qru/home.png')).toBe('/imgs/projects/qru/home.png');
+	});
+
+	it('음악: 홈 › 음악 › 아티스트 › 앨범 › 곡. 아티스트·앨범은 이름순, 곡은 보관함 순서', () => {
+		const track = (id: string, title: string, artist: string, album: string) => ({
+			id,
+			title,
+			artist,
+			album,
+			artwork: `/imgs/${id}.png`,
+			playlistId: `album:${album}`,
+		});
+		const music = buildLocations({
+			docs: [],
+			posts: [],
+			projects: [],
+			apps: [],
+			tracks: [
+				track('t2', 'Yoru', 'Yiruma', 'Yiruma'),
+				track('t1', 'Inochi', 'Joe Hisaishi', 'Spirited Away'),
+				track('t3', 'Kiss', 'Yiruma', 'Yiruma'),
+			],
+		});
+		expect(names(find(music, 'music') as FolderItem)).toEqual(['Joe Hisaishi', 'Yiruma']);
+		expect(names(find(music, 'music/Yiruma') as FolderItem)).toEqual(['Yiruma']);
+		expect(names(find(music, 'music/Yiruma/Yiruma') as FolderItem)).toEqual(['Yoru.mp3', 'Kiss.mp3']);
+		// 곡을 열면 음악 앱이 그 앨범을 재생 목록 삼아 이 곡부터 재생한다 (Finder.tsx)
+		expect(find(music, 'track:t1')).toMatchObject({
+			kind: 'track',
+			name: 'Inochi.mp3',
+			trackId: 't1',
+			playlistId: 'album:Spirited Away',
+		});
+		// 곡이 없으면 빈 음악 폴더에 안내
+		expect(find(tree, 'music')).toMatchObject({ children: [], emptyNote: '음악이 없습니다.' });
 	});
 
 	it('문서: 폴더(이력서·포트폴리오·자격증)가 위에, 문서는 이름순', () => {
@@ -123,13 +158,12 @@ describe('프로젝트 폴더', () => {
 	const albums = [{ id: 'qru', name: 'QRU', photos: [{ src: '/imgs/projects/qru/home.png' }] }];
 	const withProjects = buildLocations({ docs: [], posts: [], projects, apps: [], files, albums });
 
-	it('프로젝트마다 폴더가 문서 › 포트폴리오 안에: 사진 폴더, 올린 파일은 이름순 (실행하는 앱은 넣지 않는다)', () => {
+	it('프로젝트마다 폴더가 문서 › 포트폴리오 안에: 올린 파일은 이름순 (사진은 그림에, 실행하는 앱은 넣지 않는다)', () => {
 		expect(find(withProjects, 'projects')).toBeNull();
 		expect(names(find(withProjects, 'docs:포트폴리오') as FolderItem)).toEqual(['빈 프로젝트', 'QRU']);
 		const qru = find(withProjects, 'projects/qru') as FolderItem;
 		expect(qru.kind).toBe('folder');
-		expect(names(qru)).toEqual(['사진', '구조도.png', '발표.pdf']);
-		expect(qru.children[0]).toMatchObject({ kind: 'folder', id: 'projects/qru/photos', name: '사진' });
+		expect(names(qru)).toEqual(['구조도.png', '발표.pdf']);
 		expect(qru.modified).toBe('2026-10-02');
 		expect(find(withProjects, 'file:projects/qru/b.pdf')).toMatchObject({ kind: 'pdf', name: '발표.pdf' });
 		const photo = find(withProjects, 'photo:/imgs/projects/qru/home.png');
@@ -138,13 +172,11 @@ describe('프로젝트 폴더', () => {
 			'mac',
 			'users',
 			'home',
-			'docs',
-			'docs:포트폴리오',
-			'projects/qru',
-			'projects/qru/photos',
+			'pictures',
+			'pictures/qru',
 			photo!.id,
 		]);
-		// 사진도 올린 파일도 없으면 빈 폴더
+		// 올린 파일이 없으면 빈 폴더
 		expect(names(find(withProjects, 'projects/plain') as FolderItem)).toEqual([]);
 	});
 
@@ -160,7 +192,7 @@ describe('프로젝트 폴더', () => {
 	it('올릴 폴더 값: 문서 폴더 이름 또는 project:<id>', () => {
 		expect(uploadFolderOf(find(withProjects, 'docs:이력서'))).toBe('이력서');
 		expect(uploadFolderOf(find(withProjects, 'projects/qru'))).toBe('project:qru');
-		expect(uploadFolderOf(find(withProjects, 'projects/qru/photos'))).toBeNull();
+		expect(uploadFolderOf(find(withProjects, 'pictures/qru'))).toBeNull();
 		expect(uploadFolderOf(find(withProjects, 'docs'))).toBeNull();
 		expect(uploadFolderOf(find(withProjects, 'project:qru'))).toBeNull();
 	});

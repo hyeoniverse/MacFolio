@@ -9,6 +9,7 @@ import { buildTree, find, type FolderItem } from './files';
 import { loadDocuments, useDocumentEntries } from './documents';
 import { DOC_PATHS } from './docsBundle';
 import { ALBUMS } from '@/apps/photos/albums';
+import { ALBUMS as MUSIC_ALBUMS, ALL_SONGS, TRACKS } from '@/apps/music/library';
 import { useLocalFiles } from './localFiles';
 
 /**
@@ -64,6 +65,11 @@ function useTree(): { roots: FolderItem[]; trash: FolderItem } {
 			})),
 			files: documents,
 			albums: ALBUMS,
+			// 곡마다 그 앨범의 재생 목록 (음악 앱의 보관함 › 앨범과 같은 id)
+			tracks: TRACKS.map((track) => ({
+				...track,
+				playlistId: MUSIC_ALBUMS.find((album) => album.trackIds.includes(track.id))?.id ?? ALL_SONGS,
+			})),
 			layout,
 		});
 		// 방문자가 놓은 파일 (이 브라우저에서만): 놓은 폴더 안에
