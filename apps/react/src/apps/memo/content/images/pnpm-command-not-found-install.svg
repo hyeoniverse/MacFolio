@@ -9,16 +9,16 @@
 
   <rect x="40" y="108" width="250" height="44" rx="6" fill="#fff" stroke="#fca5a5"/>
   <text x="52" y="128" font-size="12" font-weight="600" fill="#1f2937">package.json (루트)</text>
-  <text x="52" y="144" font-size="11" fill="#b91c1c">✓ devDependencies 4개만 → 176개 설치</text>
+  <text x="52" y="144" font-size="11" fill="#b91c1c">✓ devDependencies만 → 176개 설치</text>
 
   <rect x="40" y="164" width="250" height="34" rx="6" fill="#fff" stroke="#e5e7eb"/>
-  <text x="52" y="186" font-size="12" fill="#9ca3af">apps/react — 설치 안 됨</text>
+  <text x="52" y="186" font-size="12" fill="#9ca3af">apps/web — 설치 안 됨</text>
   <rect x="40" y="206" width="250" height="34" rx="6" fill="#fff" stroke="#e5e7eb"/>
   <text x="52" y="228" font-size="12" fill="#9ca3af">apps/api — 설치 안 됨</text>
   <rect x="40" y="248" width="250" height="34" rx="6" fill="#fff" stroke="#e5e7eb"/>
   <text x="52" y="270" font-size="12" fill="#9ca3af">packages/contracts — zod 없음</text>
   <rect x="40" y="290" width="250" height="34" rx="6" fill="#fff" stroke="#e5e7eb"/>
-  <text x="52" y="312" font-size="12" fill="#9ca3af">packages/desktop-core — 설치 안 됨</text>
+  <text x="52" y="312" font-size="12" fill="#9ca3af">packages/core — 설치 안 됨</text>
 
   <text x="32" y="352" font-size="11" fill="#b91c1c">+ package-lock.json이 새로 생긴다</text>
   <text x="32" y="368" font-size="11" fill="#6b7280">빌드: Cannot find module 'zod'</text>
@@ -33,13 +33,13 @@
   <text x="362" y="144" font-size="11" fill="#4f46e5">✓ pnpm-lock.yaml 그대로</text>
 
   <rect x="350" y="164" width="250" height="34" rx="6" fill="#fff" stroke="#a5b4fc"/>
-  <text x="362" y="186" font-size="12" fill="#1f2937">✓ apps/react</text>
+  <text x="362" y="186" font-size="12" fill="#1f2937">✓ apps/web</text>
   <rect x="350" y="206" width="250" height="34" rx="6" fill="#fff" stroke="#a5b4fc"/>
   <text x="362" y="228" font-size="12" fill="#1f2937">✓ apps/api</text>
   <rect x="350" y="248" width="250" height="34" rx="6" fill="#fff" stroke="#a5b4fc"/>
   <text x="362" y="270" font-size="12" fill="#1f2937">✓ packages/contracts (zod)</text>
   <rect x="350" y="290" width="250" height="34" rx="6" fill="#fff" stroke="#a5b4fc"/>
-  <text x="362" y="312" font-size="12" fill="#1f2937">✓ packages/desktop-core</text>
+  <text x="362" y="312" font-size="12" fill="#1f2937">✓ packages/core</text>
 
   <text x="342" y="352" font-size="11" fill="#4f46e5">Packages: +1144</text>
   <text x="342" y="368" font-size="11" fill="#6b7280">workspace:* 의존성은 서로 링크한다</text>

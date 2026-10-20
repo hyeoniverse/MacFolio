@@ -2,10 +2,10 @@
 title: Mac에서 Homebrew와 npm 설정하기 — PATH, keg-only, .npmrc
 date: 2026-10-20
 category: 기술 노트/개발 환경
-summary: Apple Silicon Mac에서 Homebrew가 파일을 어디에 두고 PATH를 어떻게 잡는지, brew로 깐 Node·npm의 전역 설치 위치와 .npmrc 우선순위를 실제 출력으로 정리했다. 최신 node가 26이라 이 저장소가 요구하는 Node 22·corepack과 어긋나는 문제도 적었다.
+summary: Apple Silicon Mac에서 Homebrew가 파일을 어디에 두고 PATH를 어떻게 잡는지, brew로 깐 Node·npm의 전역 설치 위치와 .npmrc 우선순위를 실제 출력으로 정리했다. brew의 node가 늘 최신 메이저라 프로젝트가 정한 Node 버전·corepack과 어긋날 때 어떻게 하는지도 적었다.
 ---
 
-새 Mac에서 개발을 시작하면 Homebrew를 깔고, `brew install node`로 Node와 npm을 받는 것이 보통의 첫 순서다. 명령 두 줄이면 끝나지만, 그 뒤에 "왜 이 버전이 잡히지?", "`npm install -g`는 어디에 깔리지?", "이 설정은 어느 파일에서 왔지?"를 물으면 바로 답하기 어렵다. 이 글은 이 Mac에서 직접 돌려 본 출력으로 그 답을 정리한다.
+새 Mac에서 개발을 시작하면 Homebrew를 깔고, `brew install node`로 Node와 npm을 받는 것이 보통의 첫 순서다. 명령 두 줄이면 끝나지만, 그 뒤에 "왜 이 버전이 잡히지?", "`npm install -g`는 어디에 깔리지?", "이 설정은 어느 파일에서 왔지?"를 물으면 바로 답하기 어렵다. 이 글은 실제 출력으로 그 답을 정리한다.
 
 이 글의 출력은 모두 아래 환경에서 나왔다.
 
@@ -39,7 +39,7 @@ v26.12.0
 
 ## Homebrew: PATH 잡기
 
-공식 설치 스크립트가 끝나면 "Next steps"로 `~/.zprofile`에 한 줄을 더하라고 안내한다. 이 Mac의 `~/.zprofile`도 그 한 줄뿐이다.
+공식 설치 스크립트가 끝나면 "Next steps"로 `~/.zprofile`에 한 줄을 더하라고 안내한다.
 
 ```bash
 eval "$(/opt/homebrew/bin/brew shellenv zsh)"
@@ -61,7 +61,7 @@ export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
 
 핵심은 `PATH` 줄이다. `/opt/homebrew/bin`을 **맨 앞에** 두므로, macOS에 원래 있는 `/usr/bin`의 같은 이름 도구보다 brew로 깐 것이 먼저 잡힌다. `fpath`는 zsh 자동 완성 파일 위치라, 이 줄이 있어야 `brew ins<Tab>`이 채워진다.
 
-이미 설정된 셸에서 `brew shellenv`를 그냥 돌리면 아무것도 나오지 않는다. 처음엔 고장인 줄 알았는데, PATH를 바꿔 가며 줄 수를 세어 보니 규칙이 보였다.
+이미 설정된 셸에서 `brew shellenv`를 그냥 돌리면 아무것도 나오지 않는다. 고장이 아니다. PATH를 바꿔 가며 출력 줄 수를 세어 보면 규칙이 보인다.
 
 ```text
 $ env -i HOME=$HOME PATH=/usr/bin:/bin /opt/homebrew/bin/brew shellenv zsh | wc -l
@@ -95,7 +95,7 @@ Rosetta 2: false
 
 ### 실제로 무엇을 깔았는지
 
-`brew list`는 의존성까지 모두 보여 줘서, 이 Mac은 `node` 하나를 깔았는데 25개가 나온다. 내가 직접 고른 것만 보려면 `brew leaves`를 쓴다.
+`brew list`는 의존성까지 모두 보여 줘서, `node` 하나만 깔아도 25개가 나온다. 직접 깐 것만 보려면 `brew leaves`를 쓴다.
 
 ```text
 $ brew list --formula -1 | wc -l
@@ -158,7 +158,7 @@ userconfig = "~/.npmrc"
 prefix = "/opt/homebrew"
 ```
 
-이 Mac에는 `~/.npmrc`도 없는데 `prefix = /opt/homebrew`가 잡혀 있다. 6번, brew가 넣어 둔 npm 내장 설정에서 온 값이다.
+`~/.npmrc`가 없어도 `prefix = /opt/homebrew`가 잡혀 있다. 6번, brew가 넣어 둔 npm 내장 설정에서 온 값이다.
 
 ```text
 $ npm config list
@@ -169,7 +169,7 @@ prefix = "/opt/homebrew"
 
 ### 설정 바꾸기
 
-`npm config set`은 기본으로 `~/.npmrc`에 쓴다. 홈 폴더를 건드리지 않으려고 `--userconfig`로 임시 파일을 지정해 시험했다.
+`npm config set`은 기본으로 `~/.npmrc`에 쓴다. `--userconfig`로 다른 파일을 지정하면 홈 폴더를 건드리지 않고 시험할 수 있다.
 
 ```text
 $ npm config set init-license MIT --userconfig ./npmrc
@@ -192,7 +192,7 @@ save-exact=true
 
 ### 우선순위 확인하기
 
-사용자 설정에 `save-exact=true`, 프로젝트 `.npmrc`에 `save-exact=false`를 두고 값을 물었다.
+사용자 설정에 `save-exact=true`, 프로젝트 `.npmrc`에 `save-exact=false`를 두고 값을 물으면 이렇다.
 
 ```text
 $ npm config get save-exact --userconfig ../npmrc
@@ -215,11 +215,11 @@ init-license = "MIT"
 ...
 ```
 
-`save-exact=true`를 쓰면 npm이 `save-prefix`(버전 앞에 붙일 `^`)도 빈 값으로 함께 정한다는 것도 이 출력에서 처음 알았다.
+`save-exact=true`를 쓰면 npm이 `save-prefix`(버전 앞에 붙일 `^`)도 빈 값으로 함께 정한다는 것도 이 출력에서 보인다.
 
-## brew의 node 26과 이 저장소의 Node 22
+## brew의 node와 프로젝트의 Node 버전
 
-MacFolio는 `.node-version`에 `22`를 적어 두었고, README는 `corepack enable`로 pnpm을 받으라고 한다. 그런데 이 Mac에서 `brew install node`로 받은 것은 26이고, corepack이 없다.
+프로젝트가 `.node-version`이나 `engines`로 Node 버전을 정해 두었고(예: 22), 설치 안내가 `corepack enable`로 pnpm을 받으라고 한다고 하자. `brew install node`로 받은 것은 최신 메이저(지금 26)이고, corepack이 없다.
 
 ```text
 $ cat .node-version
@@ -266,7 +266,7 @@ shellenv보다 **아래에** 둬야 한다. 위에 두면 shellenv가 `/opt/home
 
 ### corepack 따로 받기
 
-Node 25 이상에서는 corepack을 npm 패키지로 받는다. 시스템을 건드리지 않으려고 임시 prefix에 깔아 확인했다.
+Node 25 이상에서는 corepack을 npm 패키지로 받는다. 임시 prefix에 깔아 보면 무엇이 생기는지 보인다.
 
 ```text
 $ npm install -g corepack --prefix ./global
@@ -282,7 +282,7 @@ $ ./global/bin/corepack --version
 0.36.0
 ```
 
-`--prefix` 없이 `npm install -g corepack`을 하면 brew의 prefix(`/opt/homebrew`)에 깔리고, `/opt/homebrew/bin/corepack`이 생겨 바로 PATH에서 보인다. 그다음 `corepack enable`을 하면 `package.json`의 `"packageManager": "pnpm@10.34.5"`대로 pnpm을 받는다. 다만 이 저장소의 CI와 Docker 이미지는 Node 22로 돌기 때문에, 로컬에서도 22를 쓰는 편이 결과가 같다. pnpm이 없을 때 `npm install`로 버티면 생기는 일은 [zsh: command not found: pnpm](/memo/pnpm-command-not-found)에 따로 적었다.
+`--prefix` 없이 `npm install -g corepack`을 하면 brew의 prefix(`/opt/homebrew`)에 깔리고, `/opt/homebrew/bin/corepack`이 생겨 바로 PATH에서 보인다. 그다음 `corepack enable`을 하면 `package.json`의 `packageManager`(예: `"pnpm@10.34.5"`)대로 pnpm을 받는다. 다만 프로젝트의 CI가 정해진 Node 버전(예: 22)으로 돈다면, 로컬에서도 같은 버전을 쓰는 편이 결과가 같다. pnpm이 없을 때 `npm install`로 버티면 생기는 일은 [zsh: command not found: pnpm](/memo/pnpm-command-not-found)에 따로 적었다.
 
 ## 정리
 
