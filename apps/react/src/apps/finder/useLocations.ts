@@ -12,7 +12,8 @@ import { ALBUMS } from '@/apps/photos/albums';
 import { useLocalFiles } from './localFiles';
 
 /**
- * Finder의 위치들(데스크탑, 문서, 블로그, 응용 프로그램. 프로젝트 폴더는 문서 › 포트폴리오 안, 사진은 프로젝트 폴더 안에)과 그 안의 트리.
+ * Finder의 트리: Macintosh HD › 응용 프로그램, 사용자 › 홈 › 데스크탑·문서·블로그와 macOS 기본 폴더
+ * (프로젝트 폴더는 문서 › 포트폴리오 안, 사진은 프로젝트 폴더 안에). 사이드바의 즐겨찾기는 files.ts의 FAVORITE_IDS.
  * Finder와 미리보기의 열기 창이 같은 트리를 본다: 글 목록·프로젝트·올린 문서 파일이 바뀌면 둘 다 바뀐다
  */
 export function useLocations(): FolderItem[] {

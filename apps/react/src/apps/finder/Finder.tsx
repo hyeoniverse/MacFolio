@@ -9,7 +9,19 @@ import { requestOpen } from '@/shared/lib/openRequest';
 import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import IconButton from '@/shared/ui/button/IconButton';
-import { countLabel, find, KIND_LABELS, mediaKind, pathTo, search, type FinderItem, type FolderItem } from './files';
+import {
+	countLabel,
+	FAVORITE_IDS,
+	find,
+	foldersOf,
+	KIND_LABELS,
+	mediaKind,
+	pathTo,
+	PLACE_IDS,
+	search,
+	type FinderItem,
+	type FolderItem,
+} from './files';
 import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from './useFinderEdit';
 import { canCreateIn, canMove, canRename, canTrash } from './edit';
 import InlineName from './InlineName';
@@ -42,10 +54,16 @@ const LOCATION_ICONS: Record<string, string> = {
 	desktop: 'fa-solid fa-display',
 	docs: 'fa-regular fa-file-lines',
 	blog: 'fa-regular fa-pen-to-square',
+	home: 'fa-solid fa-house',
+	mac: 'fa-regular fa-hard-drive',
 };
 
 /** 즐겨찾기에 함께 두는 문서 폴더 (macOS에서 자주 쓰는 폴더를 사이드바에 끌어 둔 것처럼, 문서 바로 아래) */
 const FAVORITE_FOLDERS = ['docs:이력서', 'docs:포트폴리오', 'docs:자격증'];
+/** 사이드바 즐겨찾기 칸의 순서 */
+const FAVORITE_SIDEBAR = ['desktop', 'docs', ...FAVORITE_FOLDERS, 'blog', 'apps'];
+/** 사이드바에 있는 모든 곳 (즐겨찾기와 위치) */
+const SIDEBAR_IDS = [...FAVORITE_SIDEBAR, ...PLACE_IDS];
 
 const formatDate = (date?: string) => {
 	if (!date) return '—';
@@ -58,7 +76,8 @@ const dateCell = (item: FinderItem) => (item.kind === 'project' ? (item.period ?
 
 /**
  * Finder: 사이트에 있는 것들을 파일처럼 둘러본다 (이슈 #20).
- * 왼쪽 즐겨찾기(데스크탑, 문서, 블로그, 응용 프로그램. 프로젝트 폴더는 문서 › 포트폴리오 안), 아이콘·목록 보기, 이름 찾기, 뒤로·앞으로.
+ * 왼쪽 사이드바는 즐겨찾기(데스크탑, 문서, 블로그, 응용 프로그램. 프로젝트 폴더는 문서 › 포트폴리오 안)와 위치(홈, Macintosh HD).
+ * macOS처럼 즐겨찾기는 Macintosh HD › 사용자 › 홈 트리 안 폴더로 가는 바로가기다. 아이콘·목록 보기, 이름 찾기, 뒤로·앞으로.
  * 한 번 누르면 고르고, 두 번 누르거나 Enter를 누르면 연다. 문서는 Finder 안에서 읽고, PDF·그림은 미리보기 앱,
  * 프로젝트는 Safari, 글은 메모, 앱은 그 앱을 연다.
  */
@@ -130,14 +149,10 @@ const Finder: React.FC = () => {
 			? place.doc.split('/').at(-1)!
 			: (folder?.name ?? 'Finder');
 	const crumbs = 'folder' in place ? pathTo(locations, place.folder) : pathTo(locations, `docs:${place.doc}`);
-	// 사이드바에서 칠할 곳: 경로에서 가장 안쪽의 즐겨찾기 (이력서 안이면 이력서, 그 밖의 문서면 문서)
-	const location =
-		[...crumbs].reverse().find((crumb) => FAVORITE_FOLDERS.includes(crumb.id))?.id ?? crumbs[0]?.id ?? null;
-	const favorites = locations.flatMap((item) =>
-		item.id === 'docs'
-			? [item, ...FAVORITE_FOLDERS.map((id) => find(locations, id)).filter((found): found is FinderItem => !!found)]
-			: [item]
-	);
+	// 사이드바에서 칠할 곳: 경로에서 가장 안쪽의 사이드바 항목 (이력서 안이면 이력서, 그 밖의 문서면 문서, 홈의 다른 폴더면 홈)
+	const location = [...crumbs].reverse().find((crumb) => SIDEBAR_IDS.includes(crumb.id))?.id ?? null;
+	const favorites = foldersOf(locations, FAVORITE_SIDEBAR);
+	const places = foldersOf(locations, PLACE_IDS);
 
 	// 메뉴 막대의 Finder 메뉴 (#96). 바탕화면을 눌러 Finder가 되었을 때도 보이므로, 고르면 Finder 창을 연다
 	const inFinder = (action: () => void) => () => {
@@ -226,7 +241,7 @@ const Finder: React.FC = () => {
 					onSelect: inFinder(() => parent && go({ folder: parent.id })),
 				},
 				'separator',
-				...locations.map((item) => ({
+				...foldersOf(locations, [...FAVORITE_IDS, ...PLACE_IDS]).map((item) => ({
 					label: item.name,
 					checked: location === item.id && !searching,
 					onSelect: inFinder(() => go({ folder: item.id })),
@@ -456,25 +471,34 @@ const Finder: React.FC = () => {
 				<div className="finder" {...moveHandlers}>
 					<Sidebar variant="flat" className="finder-sidebar" aria-label="즐겨찾기" {...drop.handlers}>
 						<div className="finder-lights-space" />
-						<h2>즐겨찾기</h2>
-						{favorites.map((item) => (
-							<button
-								key={item.id}
-								type="button"
-								data-folder-target={item.id}
-								className={`finder-location${location === item.id && !searching ? ' active' : ''}${
-									dropId === item.id || (drop.target === item.id && dropFolder !== item.id) ? ' drop-target' : ''
-								}`}
-								aria-current={location === item.id && !searching ? 'page' : undefined}
-								onClick={() => go({ folder: item.id })}
-							>
-								{item.id === 'apps' ? (
-									<AppsGlyph />
-								) : (
-									<i className={LOCATION_ICONS[item.id] ?? 'fa-regular fa-folder'} aria-hidden="true" />
-								)}
-								{item.name}
-							</button>
+						{(
+							[
+								['즐겨찾기', favorites],
+								['위치', places],
+							] as const
+						).map(([heading, list]) => (
+							<React.Fragment key={heading}>
+								<h2>{heading}</h2>
+								{list.map((item) => (
+									<button
+										key={item.id}
+										type="button"
+										data-folder-target={item.id}
+										className={`finder-location${location === item.id && !searching ? ' active' : ''}${
+											dropId === item.id || (drop.target === item.id && dropFolder !== item.id) ? ' drop-target' : ''
+										}`}
+										aria-current={location === item.id && !searching ? 'page' : undefined}
+										onClick={() => go({ folder: item.id })}
+									>
+										{item.id === 'apps' ? (
+											<AppsGlyph />
+										) : (
+											<i className={LOCATION_ICONS[item.id] ?? 'fa-regular fa-folder'} aria-hidden="true" />
+										)}
+										{item.name}
+									</button>
+								))}
+							</React.Fragment>
 						))}
 					</Sidebar>
 
@@ -529,7 +553,7 @@ const Finder: React.FC = () => {
 
 						{/* 좁은 창: 사이드바 대신 위치를 한 줄로 */}
 						<div className="finder-chips" role="group" aria-label="위치">
-							{locations.map((item) => (
+							{foldersOf(locations, FAVORITE_IDS).map((item) => (
 								<button
 									key={item.id}
 									type="button"

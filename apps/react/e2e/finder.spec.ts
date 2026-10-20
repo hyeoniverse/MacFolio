@@ -361,6 +361,42 @@ test.describe('Finder', () => {
 			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('MacFolio 발표.pdf');
 		});
 
+		test('홈과 디스크: 사이드바의 위치에서 홈의 기본 폴더와 디스크의 응용 프로그램으로 간다', async ({ page }) => {
+			const finder = await openFinder(page);
+			const side = sidebar(finder);
+			await side.getByRole('button', { name: 'hyeoniverse', exact: true }).click();
+			const home = finder.getByRole('listbox', { name: 'hyeoniverse' });
+			await expect(home.getByRole('option')).toHaveText([
+				'공용',
+				'그림',
+				'다운로드',
+				'데스크탑',
+				'동영상',
+				'문서',
+				'블로그',
+				'음악',
+			]);
+			await expect(side.getByRole('button', { name: 'hyeoniverse', exact: true })).toHaveAttribute(
+				'aria-current',
+				'page'
+			);
+			// 홈의 문서로 들어가면 사이드바는 문서를 칠하고, 경로 막대는 디스크부터 이어진다
+			await home.getByRole('option', { name: '문서', exact: true }).dblclick();
+			await expect(side.getByRole('button', { name: '문서', exact: true })).toHaveAttribute('aria-current', 'page');
+			await expect(finder.getByRole('navigation', { name: '경로' })).toHaveText(
+				/Macintosh HD.*사용자.*hyeoniverse.*문서/
+			);
+			// 빈 기본 폴더는 안내를 띄운다
+			await finder.getByRole('navigation', { name: '경로' }).getByRole('button', { name: 'hyeoniverse' }).click();
+			await home.getByRole('option', { name: '다운로드', exact: true }).dblclick();
+			await expect(finder.getByText('다운로드한 파일이 없습니다.')).toBeVisible();
+			await side.getByRole('button', { name: 'Macintosh HD', exact: true }).click();
+			await expect(finder.getByRole('listbox', { name: 'Macintosh HD' }).getByRole('option')).toHaveText([
+				'사용자',
+				'응용 프로그램',
+			]);
+		});
+
 		test('열기 창에서 데스크탑의 포트폴리오(가상본)를 열면 문서 › 포트폴리오가 열린다', async ({ page }) => {
 			await fakeFiles(page);
 			await enterDesktop(page);
