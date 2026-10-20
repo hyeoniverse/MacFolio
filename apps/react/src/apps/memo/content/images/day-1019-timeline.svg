@@ -2,11 +2,13 @@
 <title>10월 19일 작업 흐름</title>
 <rect width="760" height="402" rx="16" fill="#ffffff"/>
 <text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 19일</text>
-<text x="133" y="42" font-size="12.5" fill="#6b7280">커밋한 시각 기준, 오전 11시까지</text>
-<rect x="32" y="56" width="12" height="12" rx="2" fill="#fcd9a8"/><text x="50" y="66" font-size="11" fill="#6b7280">Finder·바탕화면·미리보기</text>
-<rect x="206.39999999999998" y="56" width="12" height="12" rx="2" fill="#fbcfe8"/><text x="224.39999999999998" y="66" font-size="11" fill="#6b7280">배경화면·QuickTime</text>
-<rect x="349.4" y="56" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="367.4" y="66" font-size="11" fill="#6b7280">CI·의존성</text>
-<rect x="437.29999999999995" y="56" width="12" height="12" rx="2" fill="#bbf7d0"/><text x="455.29999999999995" y="66" font-size="11" fill="#6b7280">머지·main 반영</text>
+<text x="133" y="42" font-size="12.5" fill="#6b7280">커밋한 시각 기준, 하루 전체</text>
+<rect x="32.0" y="56" width="12" height="12" rx="2" fill="#fcd9a8"/><text x="50.0" y="66" font-size="11" fill="#6b7280">Finder·바탕화면·미리보기</text>
+<rect x="204.4" y="56" width="12" height="12" rx="2" fill="#fbcfe8"/><text x="222.4" y="66" font-size="11" fill="#6b7280">배경화면·QuickTime</text>
+<rect x="345.4" y="56" width="12" height="12" rx="2" fill="#bae6fd"/><text x="363.4" y="66" font-size="11" fill="#6b7280">SEO·글</text>
+<rect x="415.6" y="56" width="12" height="12" rx="2" fill="#fde68a"/><text x="433.6" y="66" font-size="11" fill="#6b7280">메모·창</text>
+<rect x="488.9" y="56" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="506.9" y="66" font-size="11" fill="#6b7280">CI·의존성·색</text>
+<rect x="592.1" y="56" width="12" height="12" rx="2" fill="#bbf7d0"/><text x="610.1" y="66" font-size="11" fill="#6b7280">머지·main 반영</text>
 <path d="M48.0 84 V266" stroke="#eef0f3"/>
 <text x="48.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
 <path d="M133.0 84 V266" stroke="#eef0f3"/>
@@ -26,48 +28,66 @@
 <path d="M728.0 84 V266" stroke="#eef0f3"/>
 <text x="728.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
 <path d="M48 266 H728" stroke="#d1d5db"/>
-<rect x="77.5" y="259.0" width="25.9" height="7.0" rx="2" fill="#fcd9a8"/>
-<text x="90.5" y="255.0" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
-<rect x="105.9" y="259.0" width="25.9" height="7.0" rx="2" fill="#fcd9a8"/>
-<rect x="105.9" y="244.9" width="25.9" height="14.1" rx="2" fill="#bbf7d0"/>
-<text x="118.8" y="240.9" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
-<rect x="134.2" y="223.7" width="25.9" height="42.3" rx="2" fill="#fcd9a8"/>
-<text x="147.2" y="219.7" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
-<rect x="162.5" y="223.7" width="25.9" height="42.3" rx="2" fill="#fcd9a8"/>
-<text x="175.5" y="219.7" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
-<rect x="190.9" y="181.5" width="25.9" height="84.5" rx="2" fill="#fcd9a8"/>
-<rect x="190.9" y="104.0" width="25.9" height="77.5" rx="2" fill="#bbf7d0"/>
-<text x="203.8" y="100.0" font-size="9.5" fill="#6366f1" text-anchor="middle">23</text>
-<rect x="219.2" y="244.9" width="25.9" height="21.1" rx="2" fill="#fcd9a8"/>
-<rect x="219.2" y="230.8" width="25.9" height="14.1" rx="2" fill="#bbf7d0"/>
-<text x="232.2" y="226.8" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
-<rect x="247.5" y="237.8" width="25.9" height="28.2" rx="2" fill="#fcd9a8"/>
-<rect x="247.5" y="230.8" width="25.9" height="7.0" rx="2" fill="#fbcfe8"/>
-<text x="260.5" y="226.8" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
-<rect x="275.9" y="237.8" width="25.9" height="28.2" rx="2" fill="#fcd9a8"/>
-<rect x="275.9" y="223.7" width="25.9" height="14.1" rx="2" fill="#fbcfe8"/>
-<text x="288.8" y="219.7" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
-<rect x="304.2" y="251.9" width="25.9" height="14.1" rx="2" fill="#fbcfe8"/>
-<rect x="304.2" y="237.8" width="25.9" height="14.1" rx="2" fill="#c7d2fe"/>
-<rect x="304.2" y="195.6" width="25.9" height="42.3" rx="2" fill="#bbf7d0"/>
-<text x="317.2" y="191.6" font-size="9.5" fill="#6366f1" text-anchor="middle">10</text>
-<rect x="332.5" y="259.0" width="25.9" height="7.0" rx="2" fill="#fcd9a8"/>
-<rect x="332.5" y="244.9" width="25.9" height="14.1" rx="2" fill="#fbcfe8"/>
-<rect x="332.5" y="237.8" width="25.9" height="7.0" rx="2" fill="#bbf7d0"/>
-<text x="345.5" y="233.8" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="77.5" y="258.4" width="25.9" height="7.6" rx="2" fill="#fcd9a8"/>
+<text x="90.5" y="254.4" font-size="9.5" fill="#6366f1" text-anchor="middle">1</text>
+<rect x="105.9" y="258.4" width="25.9" height="7.6" rx="2" fill="#fcd9a8"/>
+<rect x="105.9" y="243.3" width="25.9" height="15.1" rx="2" fill="#bbf7d0"/>
+<text x="118.8" y="239.3" font-size="9.5" fill="#6366f1" text-anchor="middle">3</text>
+<rect x="134.2" y="228.2" width="25.9" height="37.8" rx="2" fill="#fcd9a8"/>
+<rect x="134.2" y="220.6" width="25.9" height="7.6" rx="2" fill="#c7d2fe"/>
+<text x="147.2" y="216.6" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="162.5" y="235.7" width="25.9" height="30.3" rx="2" fill="#fcd9a8"/>
+<rect x="162.5" y="220.6" width="25.9" height="15.1" rx="2" fill="#c7d2fe"/>
+<text x="175.5" y="216.6" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="190.9" y="197.9" width="25.9" height="68.1" rx="2" fill="#fcd9a8"/>
+<rect x="190.9" y="190.3" width="25.9" height="7.6" rx="2" fill="#bae6fd"/>
+<rect x="190.9" y="175.2" width="25.9" height="15.1" rx="2" fill="#c7d2fe"/>
+<rect x="190.9" y="92.0" width="25.9" height="83.2" rx="2" fill="#bbf7d0"/>
+<text x="203.8" y="88.0" font-size="9.5" fill="#6366f1" text-anchor="middle">23</text>
+<rect x="219.2" y="243.3" width="25.9" height="22.7" rx="2" fill="#fcd9a8"/>
+<rect x="219.2" y="228.2" width="25.9" height="15.1" rx="2" fill="#bbf7d0"/>
+<text x="232.2" y="224.2" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="247.5" y="235.7" width="25.9" height="30.3" rx="2" fill="#fcd9a8"/>
+<rect x="247.5" y="228.2" width="25.9" height="7.6" rx="2" fill="#fbcfe8"/>
+<text x="260.5" y="224.2" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="275.9" y="243.3" width="25.9" height="22.7" rx="2" fill="#fcd9a8"/>
+<rect x="275.9" y="235.7" width="25.9" height="7.6" rx="2" fill="#fbcfe8"/>
+<rect x="275.9" y="220.6" width="25.9" height="15.1" rx="2" fill="#c7d2fe"/>
+<text x="288.8" y="216.6" font-size="9.5" fill="#6366f1" text-anchor="middle">6</text>
+<rect x="304.2" y="250.9" width="25.9" height="15.1" rx="2" fill="#fbcfe8"/>
+<rect x="304.2" y="235.7" width="25.9" height="15.1" rx="2" fill="#c7d2fe"/>
+<rect x="304.2" y="190.3" width="25.9" height="45.4" rx="2" fill="#bbf7d0"/>
+<text x="317.2" y="186.3" font-size="9.5" fill="#6366f1" text-anchor="middle">10</text>
+<rect x="332.5" y="258.4" width="25.9" height="7.6" rx="2" fill="#fcd9a8"/>
+<rect x="332.5" y="250.9" width="25.9" height="7.6" rx="2" fill="#fbcfe8"/>
+<rect x="332.5" y="243.3" width="25.9" height="7.6" rx="2" fill="#c7d2fe"/>
+<rect x="332.5" y="235.7" width="25.9" height="7.6" rx="2" fill="#bbf7d0"/>
+<text x="345.5" y="231.7" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
+<rect x="360.9" y="235.7" width="25.9" height="30.3" rx="2" fill="#bae6fd"/>
+<rect x="360.9" y="228.2" width="25.9" height="7.6" rx="2" fill="#bbf7d0"/>
+<text x="373.8" y="224.2" font-size="9.5" fill="#6366f1" text-anchor="middle">5</text>
+<rect x="417.5" y="220.6" width="25.9" height="45.4" rx="2" fill="#bae6fd"/>
+<rect x="417.5" y="160.1" width="25.9" height="60.5" rx="2" fill="#fde68a"/>
+<rect x="417.5" y="152.5" width="25.9" height="7.6" rx="2" fill="#c7d2fe"/>
+<rect x="417.5" y="129.8" width="25.9" height="22.7" rx="2" fill="#bbf7d0"/>
+<text x="430.5" y="125.8" font-size="9.5" fill="#6366f1" text-anchor="middle">18</text>
+<rect x="445.9" y="258.4" width="25.9" height="7.6" rx="2" fill="#fde68a"/>
+<rect x="445.9" y="250.9" width="25.9" height="7.6" rx="2" fill="#c7d2fe"/>
+<rect x="445.9" y="235.7" width="25.9" height="15.1" rx="2" fill="#bbf7d0"/>
+<text x="458.8" y="231.7" font-size="9.5" fill="#6366f1" text-anchor="middle">4</text>
 <rect x="48.0" y="302" width="218.7" height="76" rx="9" fill="#fdf3dc" stroke="#ebb94c"/>
-<text x="58.0" y="321" font-size="12" font-weight="700" fill="#7a5a12">2~5시 미리보기와 바탕화면</text>
+<text x="58.0" y="321" font-size="12" font-weight="700" fill="#7a5a12">2~5시 미리보기·바탕화면</text>
 <text x="58.0" y="339" font-size="10.5" fill="#7a5a12">macOS 26 도구 막대·열기 창</text>
-<text x="58.0" y="354" font-size="10.5" fill="#7a5a12">슬라이드쇼(⇧⌘F)와 발표 자료</text>
+<text x="58.0" y="354" font-size="10.5" fill="#7a5a12">슬라이드쇼와 발표 자료</text>
 <text x="58.0" y="369" font-size="10.5" fill="#7a5a12">#259 바탕화면 폴더 아이콘</text>
 <rect x="278.7" y="302" width="218.7" height="76" rx="9" fill="#e3f6ea" stroke="#5cc489"/>
-<text x="288.7" y="321" font-size="12" font-weight="700" fill="#1f6b3f">5~9시 Finder를 파일 시스템으로</text>
-<text x="288.7" y="339" font-size="10.5" fill="#1f6b3f">#261 프로젝트마다 폴더</text>
-<text x="288.7" y="354" font-size="10.5" fill="#1f6b3f">#263 새 폴더·이름 변경·끌어 옮기기</text>
-<text x="288.7" y="369" font-size="10.5" fill="#1f6b3f">휴지통, 어디에 놓아도 올리기</text>
-<rect x="509.3" y="302" width="218.7" height="76" rx="9" fill="#efeafd" stroke="#9b84ec"/>
-<text x="519.3" y="321" font-size="12" font-weight="700" fill="#4b3392">8~11시 움직이는 것들</text>
-<text x="519.3" y="339" font-size="10.5" fill="#4b3392">#264 MP4·GIF 배경화면</text>
-<text x="519.3" y="354" font-size="10.5" fill="#4b3392">QuickTime Player 앱, #268 유지 버그</text>
-<text x="519.3" y="369" font-size="10.5" fill="#4b3392">#266 E2E 6칸, #269 SEO는 열림</text>
+<text x="288.7" y="321" font-size="12" font-weight="700" fill="#1f6b3f">5~11시 Finder·배경화면·CI</text>
+<text x="288.7" y="339" font-size="10.5" fill="#1f6b3f">#263 Finder를 파일 시스템으로</text>
+<text x="288.7" y="354" font-size="10.5" fill="#1f6b3f">#264 MP4 배경화면, QuickTime</text>
+<text x="288.7" y="369" font-size="10.5" fill="#1f6b3f">#266 E2E 6칸, 15분 → 5분</text>
+<rect x="509.3" y="302" width="218.7" height="76" rx="9" fill="#e0f2fe" stroke="#38bdf8"/>
+<text x="519.3" y="321" font-size="12" font-weight="700" fill="#075985">11~15시 SEO·글·메모</text>
+<text x="519.3" y="339" font-size="10.5" fill="#075985">#269 검색 로봇용 본문·sitemap</text>
+<text x="519.3" y="354" font-size="10.5" fill="#075985">#270 회고 13편, 글 97편 보강</text>
+<text x="519.3" y="369" font-size="10.5" fill="#075985">#273 글자 크기, #274 창 크기</text>
 </svg>
