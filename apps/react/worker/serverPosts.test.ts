@@ -59,7 +59,7 @@ describe('서버에 쓴 글', () => {
 		expect(ok).toHaveBeenCalledTimes(1);
 		clearServerPostsCache();
 		const down = vi.fn(async () => new Response('', { status: 500 }));
-		await expect(fetchServerPosts('https://api.test', down, 0)).resolves.toEqual([]);
+		await expect(fetchServerPosts('https://api.test', down, 0)).resolves.toBeNull();
 	});
 
 	it('sitemap.xml에 저장소 글과 서버에 쓴 글이 함께 들어가고, 지운 글은 빠진다', async () => {

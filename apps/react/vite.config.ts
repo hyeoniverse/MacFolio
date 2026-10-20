@@ -4,8 +4,10 @@ import { join } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import { defaultClientConditions, defaultServerConditions, defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { seoPosts, sitemapXml } from './seo/posts';
-import { DEFAULT_PROJECTS } from './src/shared/profile';
+import { ogImageName, ogImagePng } from './seo/ogImage';
+import { rssXml, seoPosts, siteChannel, sitemapXml, updatedDates, type ContentImages } from './seo/posts';
+import { SITE_ORIGIN } from './seo/site';
+import { DEFAULT_PROJECTS, PROFILE } from './src/shared/profile';
 import { headersFileBlock, securityHeaders } from './worker/securityHeaders';
 
 /**
@@ -45,18 +47,67 @@ function securityHeadersPlugin(): Plugin {
  * 검색엔진용 파일 (seo/posts.ts). 빌드하면 저장소의 글을 HTML로 그린 seo/posts.json(Worker가 글 주소의 첫 화면에 넣는다)과
  * sitemap.xml(첫 화면, 모든 글, 모든 프로젝트)을 dist에 둔다
  */
+/**
+ * 글 파일마다 마지막으로 고친 날 (git 기록). 기록을 일부만 받은 저장소(shallow clone)는 날짜가 틀리니 쓰지 않는다
+ * (CI의 deploy는 fetch-depth: 0으로 받는다)
+ */
+function contentUpdatedDates(contentDir: string): Record<string, string> {
+	try {
+		const git = (args: string) =>
+			execSync(`git ${args}`, {
+				cwd: contentDir,
+				env: { ...process.env, TZ: 'Asia/Seoul' },
+				stdio: ['ignore', 'pipe', 'ignore'],
+				maxBuffer: 64 * 1024 * 1024,
+			}).toString();
+		if (git('rev-parse --is-shallow-repository').trim() !== 'false') return {};
+		return updatedDates(git('log --format=%x00%cd --date=format-local:%Y-%m-%d --name-only --relative -- .'));
+	} catch {
+		return {};
+	}
+}
+
+const CONTENT_PREFIX = 'src/apps/memo/content/';
+
 function seoPlugin(): Plugin {
 	const contentDir = fileURLToPath(new URL('./src/apps/memo/content', import.meta.url));
+	const publicDir = fileURLToPath(new URL('./public', import.meta.url));
 	return {
 		name: 'macfolio-seo',
 		apply: 'build',
-		async generateBundle() {
+		async generateBundle(_options, bundle) {
 			const files = Object.fromEntries(
 				readdirSync(contentDir)
 					.filter((name) => name.endsWith('.md'))
 					.map((name) => [`./content/${name}`, readFileSync(join(contentDir, name), 'utf8')])
 			);
-			const posts = await seoPosts(files);
+			// 글의 그림(contentImages.ts가 빌드에 넣은 것): content 기준 경로 → 빌드한 주소. 작아서 자바스크립트 안에 넣은(inline) 그림은 여기 없어 뺀다
+			const images: ContentImages = {};
+			for (const output of Object.values(bundle)) {
+				if (output.type !== 'asset') continue;
+				for (const name of output.originalFileNames) {
+					const path = name.replace(/\\/g, '/');
+					const at = path.indexOf(CONTENT_PREFIX);
+					if (at !== -1) images[path.slice(at + CONTENT_PREFIX.length)] = `/${output.fileName}`;
+				}
+			}
+			const posts = await seoPosts(files, { images, updated: contentUpdatedDates(contentDir) });
+			// 사진이 없는 글은 제목으로 공유 카드를 그린다 (seo/ogImage.ts). 서버에 쓴 글은 사이트 기본 그림
+			const fonts = {
+				regular: readFileSync(join(publicDir, 'fonts/AppleSDGothicNeoM.ttf')),
+				bold: readFileSync(join(publicDir, 'fonts/AppleSDGothicNeoB.ttf')),
+			};
+			const icon = `data:image/png;base64,${readFileSync(join(publicDir, 'imgs/memo.png')).toString('base64')}`;
+			const site = siteChannel(PROFILE.name).title;
+			await Promise.all(
+				posts
+					.filter((post) => !post.image)
+					.map(async (post) => {
+						const fileName = ogImageName(post);
+						this.emitFile({ type: 'asset', fileName, source: await ogImagePng(post, { site, icon, fonts }) });
+						post.image = `${SITE_ORIGIN}/${fileName}`;
+					})
+			);
 			this.emitFile({ type: 'asset', fileName: 'seo/posts.json', source: JSON.stringify(posts) });
 			this.emitFile({
 				type: 'asset',
@@ -66,6 +117,7 @@ function seoPlugin(): Plugin {
 					DEFAULT_PROJECTS.map((project) => project.id)
 				),
 			});
+			this.emitFile({ type: 'asset', fileName: 'rss.xml', source: rssXml(posts, siteChannel(PROFILE.name)) });
 		},
 	};
 }

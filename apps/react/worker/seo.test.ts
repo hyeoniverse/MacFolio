@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_PROJECTS, PROFILE } from '../src/shared/profile';
 import worker from './index';
 import { applySeo, clearSeoPostsCache, escapeHtml, fetchSeoPosts, seoPage, siteDataOf, type SeoPost } from './seo';
+import { clearServerPostsCache } from './serverPosts';
 import { clearSiteContentCache } from './siteHtml';
 
 const INDEX =
@@ -17,6 +18,8 @@ const POSTS: SeoPost[] = [
 		category: '개발기',
 		tags: ['MacFolio', 'SEO'],
 		html: '<p>본문 <strong>굵게</strong></p>',
+		updated: '2026-10-05',
+		image: 'https://macfolio.hyeoniverse.com/assets/shot-1.jpg',
 	},
 	{
 		slug: '한글',
@@ -41,6 +44,7 @@ const count = (html: string, text: string) => html.split(text).length - 1;
 afterEach(() => {
 	clearSeoPostsCache();
 	clearSiteContentCache();
+	clearServerPostsCache();
 	vi.unstubAllGlobals();
 });
 
@@ -56,8 +60,12 @@ describe('검색엔진용 첫 화면', () => {
 		expect(html).toContain('<link rel="canonical" href="https://macfolio.hyeoniverse.com/memo/hello-world" />');
 		expect(html).toContain('<meta property="og:type" content="article" />');
 		expect(html).toContain('<meta property="og:url" content="https://macfolio.hyeoniverse.com/memo/hello-world" />');
-		expect(html).toContain('<meta property="og:image" content="https://macfolio.hyeoniverse.com/og-image.jpg" />');
+		expect(html).toContain('<meta property="og:image" content="https://macfolio.hyeoniverse.com/assets/shot-1.jpg" />');
+		expect(html).toContain(
+			'<meta name="twitter:image" content="https://macfolio.hyeoniverse.com/assets/shot-1.jpg" />'
+		);
 		expect(html).toContain('<meta property="article:published_time" content="2026-10-01" />');
+		expect(html).toContain('<meta property="article:modified_time" content="2026-10-05" />');
 		expect(html).toContain('<meta name="twitter:card" content="summary_large_image" />');
 		expect(html).not.toContain('noindex');
 		expect(html).toContain('<div id="root"><div class="seo-content"><article><h1>첫 글 &lt;b&gt;');
@@ -68,6 +76,8 @@ describe('검색엔진용 첫 화면', () => {
 			'@type': 'BlogPosting',
 			headline: '첫 글 <b>&</b> "인용"',
 			datePublished: '2026-10-01',
+			dateModified: '2026-10-05',
+			image: 'https://macfolio.hyeoniverse.com/assets/shot-1.jpg',
 			keywords: 'MacFolio, SEO',
 			author: { '@type': 'Person', name: PROFILE.name },
 		});
@@ -76,6 +86,10 @@ describe('검색엔진용 첫 화면', () => {
 	it('한글 글 주소도 찾고, canonical은 인코딩한 주소', () => {
 		const html = render(`/memo/${encodeURIComponent('한글')}`);
 		expect(html).toContain('<title>한글 주소 — 김정현의 Mac</title>');
+		// 고친 적 없고 그림이 없는 글: 기본 그림, 고친 날은 글 날짜
+		expect(html).toContain('<meta property="og:image" content="https://macfolio.hyeoniverse.com/og-image.jpg" />');
+		expect(html).not.toContain('article:modified_time');
+		expect(jsonLd(html)).toMatchObject({ dateModified: '2026-09-01' });
 		expect(html).toContain(`href="https://macfolio.hyeoniverse.com/memo/${encodeURIComponent('한글')}"`);
 	});
 
@@ -84,7 +98,9 @@ describe('검색엔진용 첫 화면', () => {
 			const html = render(path);
 			expect(html).toContain('<meta name="robots" content="noindex" />');
 			expect(html).not.toContain('rel="canonical"');
+			expect(seoPage(path, data).notFound).toBe(true);
 		}
+		expect(seoPage('/memo/hello-world', data).notFound).toBeUndefined();
 	});
 
 	it('프로젝트: 이름·한 줄 소개, CreativeWork, 저장소 링크', () => {
@@ -161,5 +177,35 @@ describe('Worker', () => {
 			ASSETS: assets,
 		});
 		expect(response.headers.get('X-Robots-Tag')).toBe('noindex');
+	});
+
+	it('없는 글·프로젝트 주소는 404 (첫 화면 HTML과 noindex는 그대로)', async () => {
+		for (const path of ['/memo/nope', '/safari/nope']) {
+			const response = await worker.fetch(new Request(`https://macfolio.hyeoniverse.com${path}`), { ASSETS: assets });
+			expect(response.status).toBe(404);
+			expect(response.headers.get('content-type')).toContain('text/html');
+			expect(await response.text()).toContain('<meta name="robots" content="noindex" />');
+		}
+	});
+
+	it('API에 닿지 않으면 서버에 쓴 글일 수 있어 없는 글 주소도 200 (noindex)', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async () => new Response('', { status: 503 }))
+		);
+		const response = await worker.fetch(new Request('https://macfolio.hyeoniverse.com/memo/nope'), {
+			ASSETS: assets,
+			API_URL: 'https://api.test',
+		});
+		expect(response.status).toBe(200);
+		expect(await response.text()).toContain('<meta name="robots" content="noindex" />');
+	});
+
+	it('rss.xml: 글 목록으로 만든 피드', async () => {
+		const response = await worker.fetch(new Request('https://macfolio.hyeoniverse.com/rss.xml'), { ASSETS: assets });
+		expect(response.headers.get('content-type')).toBe('application/rss+xml; charset=utf-8');
+		const xml = await response.text();
+		expect(xml).toContain('<link>https://macfolio.hyeoniverse.com/memo/hello-world</link>');
+		expect(xml).toContain('<title>김정현의 Mac</title>');
 	});
 });
