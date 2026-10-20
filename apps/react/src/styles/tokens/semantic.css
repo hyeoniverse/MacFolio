@@ -52,12 +52,12 @@
 	--color-code-tag: var(--palette-code-green-light);
 
 	/* 모서리 쓰임새 */
-	--radius-panel: var(--radius-2xl); /* 창 안에 떠 있는 판 (사이드바) */
-	--radius-window: var(--radius-3xl); /* 창·터치 메뉴처럼 큰 모서리 */
+	--radius-panel: var(--radius-18); /* 창 안에 떠 있는 판 (사이드바) */
+	--radius-window: var(--radius-22); /* 창·터치 메뉴처럼 큰 모서리 */
 
 	/* 그림자 쓰임새 */
-	--shadow-float: var(--shadow-sm); /* 휴대폰 떠 있는 버튼 */
-	--shadow-menu: var(--shadow-2xl); /* 메뉴·날짜 고르기 */
+	--shadow-float: var(--shadow-1); /* 휴대폰 떠 있는 버튼 */
+	--shadow-menu: var(--shadow-5); /* 메뉴·날짜 고르기 */
 	--shadow-window: 10px 10px 10px rgba(0, 0, 0, 0.5);
 	--shadow-popover: 0 4px 10px rgba(0, 0, 0, 0.2);
 

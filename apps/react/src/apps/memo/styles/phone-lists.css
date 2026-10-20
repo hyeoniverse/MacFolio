@@ -120,7 +120,7 @@
 /* 폴더 카드: 줄마다 아이콘·이름·수·› , 줄 사이 선은 이름부터 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-folder-scroll > ul {
 	overflow: hidden;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--phone-card-bg);
 }
 
@@ -200,7 +200,7 @@
 /* 태그 칩 (iOS 메모): 둥근 네모에 굵은 글자. 미선택은 회색, 포함은 강조 색에 흰 글자, 제외는 테두리와 취소선 */
 .container.mobile :where(.memo-shell[data-compact]) .memo .memo-tag-chip {
 	padding: 7px 14px;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
 	font-size: var(--text-body);
@@ -265,7 +265,7 @@
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-list .memo-items {
 	overflow: hidden;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--phone-card-bg);
 }
 

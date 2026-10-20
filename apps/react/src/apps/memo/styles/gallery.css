@@ -65,7 +65,7 @@
 	width: 100%;
 	aspect-ratio: 4 / 3;
 	overflow: hidden;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: var(--memo-list-bg);
 	box-shadow:
 		0 0 0 1px var(--memo-border),

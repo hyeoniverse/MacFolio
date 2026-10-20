@@ -114,7 +114,7 @@
 }
 
 .sp .np-links .sp-pill {
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	background-color: var(--sp-accent);
 	color: #ffffff;
 	font-weight: 700;

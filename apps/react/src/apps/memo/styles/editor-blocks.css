@@ -203,7 +203,7 @@
 /* 끄는 동안: 고른 행·열이 손가락을 따라오고, 놓을 자리에 선이 보인다 */
 .memo-table-selection.dragging {
 	background-color: color-mix(in srgb, var(--notes-accent) 18%, transparent);
-	box-shadow: var(--shadow-md);
+	box-shadow: var(--shadow-2);
 	transition: none;
 }
 
@@ -285,7 +285,7 @@
 	max-width: 100%;
 	padding: 3px 10px;
 	border: 1px solid var(--memo-border);
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--memo-code-bg);
 	color: var(--memo-text);
 	font-size: var(--text-footnote);

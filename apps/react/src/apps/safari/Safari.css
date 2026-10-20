@@ -271,7 +271,7 @@
 	flex: none;
 	width: 16px;
 	height: 16px;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	object-fit: contain;
 }
 
@@ -317,7 +317,7 @@
 	width: 100%;
 	padding: var(--space-8) var(--space-4);
 	border: none;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: none;
 	color: var(--safari-text);
 	font: inherit;
@@ -333,7 +333,7 @@
 	width: 64px;
 	height: 64px;
 	padding: var(--space-8);
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--color-white);
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 	object-fit: contain;

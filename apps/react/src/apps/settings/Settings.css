@@ -358,7 +358,7 @@
 	width: 100%;
 	padding: 7px 10px;
 	border: 1px solid var(--color-separator);
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--color-control-background);
 	color: var(--color-label);
 	/* 16px보다 작으면 iOS Safari가 확대한다 */
@@ -383,7 +383,7 @@
 	gap: 1rem;
 	padding: 0.75rem 1rem;
 	border: 1px solid var(--color-separator);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: var(--color-control-background);
 	cursor: pointer;
 }
@@ -413,7 +413,7 @@
 	margin: 0;
 	padding: 0;
 	border: 1px solid var(--color-separator);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: var(--color-control-background);
 	list-style: none;
 }
@@ -610,7 +610,7 @@
 .showcase-list {
 	overflow: hidden;
 	border: 1px solid var(--color-separator);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: var(--color-control-background);
 	list-style: none;
 }
@@ -774,7 +774,7 @@ ol.showcase-list .showcase-row.reordering {
 	height: 40px;
 	padding: 0 6px 0 12px;
 	border: 1px solid var(--color-separator);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: var(--color-control-background);
 }
 
@@ -901,7 +901,7 @@ ol.showcase-list .showcase-row.reordering {
 .container.mobile .showcase-list,
 .container.mobile .showcase-lookup {
 	border: none;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--phone-card-bg);
 }
 
@@ -924,7 +924,7 @@ ol.showcase-list .showcase-row.reordering {
 
 .container.mobile ol.showcase-list .showcase-row:only-child,
 .container.mobile ol.showcase-list .showcase-row.reordering {
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 }
 
 .container.mobile .showcase-row + .showcase-row {
@@ -986,7 +986,7 @@ ol.showcase-list .showcase-row.reordering {
 
 .container.mobile .settings-toggle {
 	border: none;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--phone-card-bg);
 }
 
@@ -1093,7 +1093,7 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-group dl {
 	margin: 0;
 	border: 1px solid var(--color-separator);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: var(--color-control-background);
 }
 
@@ -1188,7 +1188,7 @@ ol.showcase-list .showcase-row.reordering {
 .about-pane-errors {
 	margin: 0;
 	padding: 10px 14px 10px 30px;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: color-mix(in srgb, var(--color-system-red) 12%, transparent);
 	color: var(--color-system-red);
 	font-size: var(--text-caption);
@@ -1223,7 +1223,7 @@ ol.showcase-list .showcase-row.reordering {
 	justify-content: space-between;
 	gap: var(--space-12);
 	padding: var(--space-10) var(--space-14);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: color-mix(in srgb, var(--color-control-accent) 12%, transparent);
 	color: var(--color-label);
 	font-size: var(--text-caption);
@@ -1389,7 +1389,7 @@ ol.showcase-list .showcase-row.reordering {
 	height: 26px;
 	padding: 0;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: none;
 	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
@@ -1513,7 +1513,7 @@ ol.showcase-list .showcase-row.reordering {
 
 .projects-box {
 	overflow: hidden;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: var(--pe-box);
 	box-shadow:
 		0 0 0 0.5px var(--pe-box-border),
@@ -1558,7 +1558,7 @@ ol.showcase-list .showcase-row.reordering {
 
 .projects-required {
 	padding: 0 5px;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	background: color-mix(in srgb, var(--color-system-red) 14%, transparent);
 	color: var(--color-system-red);
 	font-size: 10px;
@@ -1604,7 +1604,7 @@ ol.showcase-list .showcase-row.reordering {
 	height: 26px;
 	padding: 0 8px;
 	border: 1px solid var(--pe-field-border);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--pe-field-bg);
 	color: var(--color-label);
 	font: inherit;
@@ -1661,7 +1661,7 @@ textarea.projects-input {
 	height: 24px;
 	padding: 0 12px;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--pe-button-bg);
 	box-shadow:
 		0 0 0 0.5px var(--pe-button-border),
@@ -1720,7 +1720,7 @@ textarea.projects-input {
 	max-width: 100%;
 	height: 24px;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--pe-button-bg);
 	box-shadow:
 		0 0 0 0.5px var(--pe-button-border),
@@ -1755,7 +1755,7 @@ button.projects-popup::after {
 	width: 16px;
 	height: 16px;
 	padding: var(--space-2) var(--space-4);
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	background: var(--color-control-accent);
 	translate: 0 -50%;
 	pointer-events: none;
@@ -1839,7 +1839,7 @@ button.projects-popup[aria-expanded='true'] {
 	height: 26px;
 	overflow: hidden;
 	border: 1px solid var(--pe-field-border);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--pe-field-bg);
 	transition: box-shadow var(--duration-fast) var(--ease-out);
 }
@@ -1877,7 +1877,7 @@ button.projects-popup[aria-expanded='true'] {
 	box-sizing: border-box;
 	padding: 3px 4px;
 	border: 1px solid var(--pe-field-border);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--pe-field-bg);
 	cursor: text;
 	transition: box-shadow var(--duration-fast) var(--ease-out);
@@ -1913,7 +1913,7 @@ button.projects-popup[aria-expanded='true'] {
 	height: 16px;
 	padding: 0;
 	border: none;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	background: none;
 	color: var(--color-secondary-label);
 	font-size: 9px;
@@ -1946,7 +1946,7 @@ button.projects-popup[aria-expanded='true'] {
 	margin: 0;
 	padding: var(--space-4);
 	overflow-y: auto;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: var(--color-popover-background);
 	box-shadow: var(--shadow-menu);
 	color: var(--color-label);
@@ -1961,7 +1961,7 @@ button.projects-popup[aria-expanded='true'] {
 	justify-content: space-between;
 	gap: var(--space-8);
 	padding: 5px 9px;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	font-size: var(--text-footnote);
 	cursor: pointer;
 }
@@ -1970,7 +1970,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-suggestion-source {
 	flex: none;
 	padding: 0 6px;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	background: color-mix(in srgb, #cb3837 16%, transparent);
 	color: #cb3837;
 	font-size: 10px;
@@ -2028,7 +2028,7 @@ button.projects-popup[aria-expanded='true'] {
 	padding: 0;
 	overflow: hidden;
 	border: none;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background: var(--pe-thumb-empty);
 	box-shadow: inset 0 0 0 0.5px var(--pe-box-border);
 	color: var(--color-secondary-label);
@@ -2038,7 +2038,7 @@ button.projects-popup[aria-expanded='true'] {
 .projects-image.wide .projects-thumb {
 	width: 128px;
 	height: 80px;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 }
 
 button.projects-thumb {
@@ -2101,7 +2101,7 @@ button.projects-thumb:focus-visible {
 .projects-lightbox video {
 	max-width: min(1200px, 100%);
 	max-height: calc(100vh - 150px);
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background: #111111;
 	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 	object-fit: contain;
@@ -2306,7 +2306,7 @@ button.projects-thumb:focus-visible {
 	gap: var(--space-12);
 	min-height: 30px;
 	padding: 3px 8px;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--pe-box);
 	outline: none;
 	cursor: default;
@@ -2406,7 +2406,7 @@ button.projects-thumb:focus-visible {
 	place-items: center;
 	width: 112px;
 	overflow: hidden;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--pe-thumb-empty);
 	box-shadow: inset 0 0 0 0.5px var(--pe-box-border);
 	color: var(--color-secondary-label);
@@ -2646,7 +2646,7 @@ button.projects-thumb:focus-visible {
 	padding: 0;
 	overflow: hidden;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--pe-thumb-empty);
 	box-shadow: inset 0 0 0 0.5px var(--pe-box-border);
 	color: var(--color-secondary-label);
@@ -2723,7 +2723,7 @@ button.projects-shot-thumb:focus-visible {
 	width: min(560px, 100%);
 	max-height: 100%;
 	overflow: hidden;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background: var(--pe-canvas);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.18),
@@ -2801,7 +2801,7 @@ button.projects-shot-thumb:focus-visible {
 	height: 24px;
 	padding: 0 8px 0 6px;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: none;
 	color: var(--color-label);
 	font: inherit;
@@ -2934,7 +2934,7 @@ textarea.projects-input.mono {
 	flex-direction: column;
 	min-height: 0;
 	overflow: hidden;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: var(--color-text-background);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.22),
@@ -2963,7 +2963,7 @@ textarea.projects-input.mono {
 	margin-left: var(--space-8);
 	padding: 3px 10px;
 	overflow: hidden;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--color-separator);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);

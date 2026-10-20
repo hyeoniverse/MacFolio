@@ -9,7 +9,7 @@
 	overflow: auto;
 	padding: var(--space-16) 20px 16px;
 	border: 1px solid var(--window-border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	box-shadow: var(--shadow-window);
 	background: var(--color-text-background);
 	color: var(--color-label, inherit);
@@ -63,7 +63,7 @@
 	margin: 14px 0 0 auto;
 	padding: var(--space-4) var(--space-14);
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: var(--color-control-accent);
 	color: var(--color-alternate-selected-control-text);
 	font: inherit;

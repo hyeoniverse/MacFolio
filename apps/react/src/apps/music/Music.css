@@ -123,7 +123,7 @@
 	gap: var(--space-8);
 	width: 100%;
 	padding: var(--space-6) var(--space-8);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	text-align: left;
 	/* 통합형 창의 끌기 영역보다 위 */
 	position: relative;
@@ -176,7 +176,7 @@
 	width: 180px;
 	aspect-ratio: 1;
 	overflow: hidden;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 	background-color: var(--music-selected);
 }
@@ -218,7 +218,7 @@
 	align-items: center;
 	gap: var(--space-6);
 	padding: 6px var(--space-16);
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--music-selected);
 	color: var(--music-accent);
 	font-weight: 600;
@@ -237,7 +237,7 @@
 	gap: var(--space-10);
 	width: 100%;
 	padding: var(--space-6) var(--space-8);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	text-align: left;
 }
 
@@ -262,7 +262,7 @@
 .music-track img {
 	width: 36px;
 	height: 36px;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	object-fit: cover;
 }
 
@@ -351,7 +351,7 @@
 	gap: var(--space-10);
 	width: 100%;
 	padding: var(--space-6);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	text-align: left;
 }
 
@@ -362,7 +362,7 @@
 .music-up-next img {
 	width: 36px;
 	height: 36px;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	object-fit: cover;
 }
 
@@ -395,7 +395,7 @@
 	flex: none;
 	width: 44px;
 	height: 44px;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	object-fit: cover;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -502,7 +502,7 @@
 	width: min(76vw, 320px);
 	aspect-ratio: 1;
 	object-fit: cover;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 	transform: scale(0.84);
 	transition: transform 0.45s var(--ease-spring);
@@ -627,7 +627,7 @@
 	.music-sidebar .music-playlist-link .music-cover {
 		display: grid;
 		width: 60px;
-		border-radius: var(--radius-sm);
+		border-radius: var(--radius-6);
 		box-shadow: none;
 	}
 
@@ -692,7 +692,7 @@
 		margin: 0 8px 8px;
 		padding: var(--space-8) var(--space-10);
 		border: none;
-		border-radius: var(--radius-xl);
+		border-radius: var(--radius-14);
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 	}
 
@@ -821,7 +821,7 @@
 	.container.mobile .music-collection .music-cover {
 		display: grid;
 		width: 62px;
-		border-radius: var(--radius-sm);
+		border-radius: var(--radius-6);
 		box-shadow: none;
 	}
 
@@ -860,7 +860,7 @@
 
 	.container.mobile .music-collection.grid .music-cover {
 		width: 100%;
-		border-radius: var(--radius-md);
+		border-radius: var(--radius-8);
 	}
 
 	.container.mobile .music-collection.grid strong {

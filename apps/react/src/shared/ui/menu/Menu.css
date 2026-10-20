@@ -9,7 +9,7 @@
 	z-index: var(--z-menu);
 	min-width: 180px;
 	padding: 5px;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--color-popover-background);
 	box-shadow: var(--shadow-menu);
 	color: var(--color-label);
@@ -25,7 +25,7 @@
 	gap: 9px;
 	padding: 5px 9px;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -104,7 +104,7 @@
 	gap: 5px;
 	padding: var(--space-8) var(--space-4);
 	border: none;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -138,7 +138,7 @@
 .ui-menu.touch .ui-menu-item {
 	gap: var(--space-14);
 	padding: 11px 12px;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 }
 
 .ui-menu.touch .ui-menu-item i {

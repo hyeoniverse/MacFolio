@@ -578,7 +578,7 @@
 /* 형식 카드: 머리(앨범 · 형식 딱지), 두 줄, 칸 나눈 줄 */
 .photos-phone-card {
 	overflow: hidden;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background: var(--color-unemphasized-selected-content-background);
 }
 
@@ -637,7 +637,7 @@
 	margin-top: var(--space-10);
 	padding: 11px;
 	border: none;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background: var(--color-unemphasized-selected-content-background);
 	color: var(--color-control-accent);
 	font-size: var(--text-body);
