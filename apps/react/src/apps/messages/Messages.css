@@ -1,11 +1,11 @@
 /* macOS 26 메시지 앱 색 */
 [data-app='messages'] {
-	--messages-window-bg: var(--color-content-bg);
-	--messages-panel-bg: var(--color-panel-bg);
+	--messages-window-bg: var(--color-text-background);
+	--messages-panel-bg: var(--list-pane-background);
 	--messages-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 6px 18px rgba(0, 0, 0, 0.06);
-	--messages-search-bg: var(--color-selected-bg);
-	--messages-separator: var(--color-divider);
-	--messages-selected-bg: var(--color-selected-bg);
+	--messages-search-bg: var(--color-unemphasized-selected-content-background);
+	--messages-separator: var(--color-separator);
+	--messages-selected-bg: var(--color-unemphasized-selected-content-background);
 	--messages-text: var(--color-label);
 	--messages-preview: #5f5f64;
 	--messages-meta: #8a8a8e;
@@ -15,30 +15,30 @@
 	--messages-received: #e9e9eb;
 	--messages-received-text: var(--color-label);
 	--messages-avatar: linear-gradient(180deg, #aab2e5 0%, #8b93d0 100%);
-	--messages-float-bg: var(--color-card-bg);
+	--messages-float-bg: var(--color-popover-background);
 	--messages-float-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 2px 10px rgba(0, 0, 0, 0.1);
 	--messages-menu-bg: rgba(246, 246, 246, 0.92);
-	--messages-error: var(--color-error);
+	--messages-error: var(--color-system-red);
 }
 
 :root[data-theme='dark'] [data-app='messages'] {
-	--messages-window-bg: var(--color-content-bg);
-	--messages-panel-bg: var(--color-panel-bg);
+	--messages-window-bg: var(--color-text-background);
+	--messages-panel-bg: var(--list-pane-background);
 	--messages-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 18px rgba(0, 0, 0, 0.35);
-	--messages-search-bg: var(--color-selected-bg);
-	--messages-separator: var(--color-divider);
-	--messages-selected-bg: var(--color-selected-bg);
+	--messages-search-bg: var(--color-unemphasized-selected-content-background);
+	--messages-separator: var(--color-separator);
+	--messages-selected-bg: var(--color-unemphasized-selected-content-background);
 	--messages-text: var(--color-label);
 	--messages-preview: #aeaeb2;
 	--messages-meta: #98989d;
-	--messages-sent: var(--color-green);
+	--messages-sent: var(--color-system-green);
 	--messages-received: #3b3b3d;
 	--messages-received-text: var(--color-label);
 	--messages-avatar: linear-gradient(180deg, #8f97cf 0%, #6c74b3 100%);
-	--messages-float-bg: var(--color-card-bg);
+	--messages-float-bg: var(--color-popover-background);
 	--messages-float-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.08), 0 2px 10px rgba(0, 0, 0, 0.4);
 	--messages-menu-bg: rgba(44, 44, 46, 0.92);
-	--messages-error: var(--color-error);
+	--messages-error: var(--color-system-red);
 }
 
 /* 공통 버튼의 색: 떠 있는 원형 버튼(새 메시지, 뒤로 가기)과 글자 버튼 (shared/ui/button) */
@@ -174,7 +174,7 @@
 	gap: var(--space-6);
 	padding: var(--space-8) var(--space-12);
 	border: none;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background: none;
 	color: var(--messages-meta);
 	font-size: var(--text-caption);
@@ -199,7 +199,7 @@
 	width: 100%;
 	padding: var(--space-10) var(--space-10);
 	border: none;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: none;
 	text-align: left;
 }
@@ -470,7 +470,7 @@
 	margin-top: var(--space-2);
 	padding: var(--space-2) var(--space-8);
 	clip-path: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background-color: var(--messages-search-bg);
 	color: var(--messages-meta);
 }

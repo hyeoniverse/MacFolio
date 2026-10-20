@@ -3,7 +3,7 @@
 	position: relative;
 	height: 100%;
 	background-color: var(--phone-page-bg);
-	color: var(--color-text-strong, var(--color-text));
+	color: var(--color-label);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	text-align: left;
 }
@@ -70,12 +70,12 @@
 	padding: 0 14px;
 	border-radius: var(--radius-full);
 	background-color: rgba(118, 118, 128, 0.12);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-callout);
 }
 
 .files-phone-search i {
-	color: var(--color-text);
+	color: var(--color-label);
 	font-size: var(--text-subhead);
 }
 
@@ -85,7 +85,7 @@
 	border: none;
 	outline: none;
 	background: none;
-	color: var(--color-text);
+	color: var(--color-label);
 	font: inherit;
 }
 
@@ -167,7 +167,7 @@
 }
 
 .files-phone-summary {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 }
 
@@ -186,7 +186,7 @@
 }
 
 .files-phone-chevron {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 	opacity: 0.6;
 }
@@ -216,7 +216,7 @@
 }
 
 .files-phone-section h3 i {
-	color: var(--color-blue);
+	color: var(--color-control-accent);
 	font-size: var(--text-body);
 }
 
@@ -245,7 +245,7 @@
 .files-phone-places button > i:first-child,
 .files-phone-places button > .apps-glyph {
 	width: 28px;
-	color: var(--color-blue);
+	color: var(--color-control-accent);
 	font-size: var(--text-title2);
 	text-align: center;
 }
@@ -288,7 +288,7 @@
 	border: none;
 	border-radius: var(--radius-full);
 	background: none;
-	color: var(--color-text);
+	color: var(--color-label);
 	font: inherit;
 	font-size: var(--text-caption2);
 	font-weight: 500;
@@ -300,7 +300,7 @@
 
 .files-phone-tabs button[aria-current] {
 	background-color: rgba(118, 118, 128, 0.14);
-	color: var(--color-blue);
+	color: var(--color-control-accent);
 }
 
 /* ─── 문서 읽기 ─── */
@@ -340,7 +340,7 @@
 	flex-direction: column;
 	padding: 0;
 	overflow: hidden;
-	background-color: color-mix(in srgb, var(--color-text) 8%, var(--phone-card-bg));
+	background-color: color-mix(in srgb, var(--color-label) 8%, var(--phone-card-bg));
 }
 
 /* 쪽은 위 버튼 줄과 홈 표시줄 밑으로도 지나간다 (iOS 훑어보기처럼 화면 끝까지). 위는 흐린 막으로 버튼 줄을 읽히게 한다 */
@@ -370,7 +370,7 @@
 	display: flex;
 	flex: 1;
 	min-height: 0;
-	background-color: color-mix(in srgb, var(--color-text) 8%, var(--phone-card-bg));
+	background-color: color-mix(in srgb, var(--color-label) 8%, var(--phone-card-bg));
 }
 
 .finder-file-phone .preview-pdf,

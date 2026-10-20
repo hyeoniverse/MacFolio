@@ -1,8 +1,8 @@
 /* macOS 터미널 기본 프로필: 라이트는 흰 바탕, 다크는 검은 바탕 */
 [data-app='terminal'] {
-	--terminal-bg: var(--color-content-bg);
+	--terminal-bg: var(--color-text-background);
 	--terminal-text: var(--color-label);
-	--terminal-muted: var(--color-text-secondary);
+	--terminal-muted: var(--color-secondary-label);
 	--terminal-key: #8a4f00;
 	--terminal-error: #c41a16;
 	--terminal-user: #1a7f37;
@@ -12,8 +12,8 @@
 }
 
 :root[data-theme='dark'] [data-app='terminal'] {
-	--terminal-bg: var(--color-content-bg);
-	--terminal-muted: var(--color-text-secondary);
+	--terminal-bg: var(--color-text-background);
+	--terminal-muted: var(--color-secondary-label);
 	--terminal-key: #f0b86e;
 	--terminal-error: #ff7b72;
 	--terminal-user: #56d364;

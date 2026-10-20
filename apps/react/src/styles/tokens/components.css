@@ -1,0 +1,29 @@
+/*
+ * 3층: 컴포넌트. 부품 하나(창·Dock·메뉴 막대·사이드바·메모 등)만 쓰는 값.
+ * 색은 2층(semantic.css)의 의미 토큰만 가리킨다 (원시값·날값을 쓰지 않는다). 다크 값도 2층이 바꾸므로 여기에는 다크 블록이 없다.
+ * 부품을 다시 칠할 때는 여기서 가리키는 의미 토큰을 바꾼다.
+ */
+:root {
+	/* 창 */
+	--window-border: var(--color-window-frame);
+	--toolbar-height: 52px; /* 창 제목 막대·도구 막대 높이 (통합형 창) */
+	--sidebar-background: var(--color-sidebar-background);
+	--list-pane-background: var(--color-secondary-window-background); /* 메일·메시지 목록 칸 */
+
+	/* 상단 메뉴 막대 */
+	--menubar-background: var(--color-material-menu-bar);
+
+	/* Dock·Launchpad */
+	--dock-background: var(--color-material-dock);
+	--dock-divider-color: var(--color-material-separator);
+	--dock-indicator-color: var(--color-material-label);
+	--launchpad-background: var(--color-material-fullscreen);
+
+	/* 메모 앱의 노란 강조 (날짜 고르기도 같이 쓴다) */
+	--notes-accent: var(--color-notes-yellow);
+	--notes-on-accent: var(--color-on-notes-yellow);
+
+	/* 배경화면 (Settings에서 바꾼다) */
+	--wallpaper: url('/imgs/wallpapers/highsierra.jpg');
+	--wallpaper-mobile: url('/imgs/wallpapers/ios-sky-light.jpg');
+}

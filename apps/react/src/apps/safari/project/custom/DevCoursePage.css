@@ -216,7 +216,7 @@
 }
 
 .tm-links .sp-pill {
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background-color: #238636;
 }
 
@@ -326,7 +326,7 @@
 	overflow: auto;
 	padding: var(--space-10) var(--space-14);
 	border: 1px solid var(--tm-line);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background-color: #010409;
 	color: var(--tm-out);
 	font: inherit;

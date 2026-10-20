@@ -30,17 +30,17 @@
 		padding: 0 7px;
 		border-radius: 7px;
 		background: none;
-		color: var(--ui-tool-color, var(--color-text-secondary));
+		color: var(--ui-tool-color, var(--color-secondary-label));
 	}
 
 	/* :where로 점수를 .on과 같게 둔다. 켜진 버튼에 올려도 켜진 색이 이긴다 (뒤에 있어서) */
 	.ui-icon-button.tool:hover:where(:not(:disabled)) {
-		background-color: var(--ui-tool-hover, var(--color-selected-bg));
+		background-color: var(--ui-tool-hover, var(--color-unemphasized-selected-content-background));
 	}
 
 	.ui-icon-button.tool.on {
-		background-color: var(--ui-tool-on-bg, var(--color-selected-bg));
-		color: var(--ui-tool-on-color, var(--color-text));
+		background-color: var(--ui-tool-on-bg, var(--color-unemphasized-selected-content-background));
+		color: var(--ui-tool-on-color, var(--color-label));
 	}
 
 	.ui-icon-button:disabled {

@@ -79,7 +79,7 @@
 
 .kb-links .sp-pill {
 	border: 3px solid var(--kb-ink);
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: #ff5a5f;
 	box-shadow: 4px 4px 0 var(--kb-ink);
 	font-weight: 700;
@@ -257,7 +257,7 @@
 	width: 26px;
 	height: 26px;
 	border: 2px solid var(--kb-ink);
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--kb-card);
 	color: var(--kb-ink);
 	font-size: var(--text-caption);
@@ -443,7 +443,7 @@
 	position: relative;
 	padding: 22px 18px 18px;
 	border: 3px solid var(--kb-ink);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background-color: color-mix(in srgb, var(--tone) 70%, var(--kb-card));
 	box-shadow: 4px 4px 0 var(--kb-ink);
 	color: #1d1d1f;

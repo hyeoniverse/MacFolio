@@ -37,12 +37,12 @@
 	z-index: var(--z-menu);
 	width: 232px;
 	padding: var(--space-8);
-	border-radius: var(--radius-xl);
-	background-color: var(--color-popover-bg);
+	border-radius: var(--radius-14);
+	background-color: var(--color-popover-background);
 	box-shadow:
 		0 0 0 0.5px rgba(0, 0, 0, 0.15),
 		0 12px 32px rgba(0, 0, 0, 0.22);
-	color: var(--color-popover-text);
+	color: var(--color-label);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	animation: pop-in var(--duration-fast) var(--ease-out);
 	transform-origin: top center;
@@ -62,8 +62,8 @@
 /* 창은 body에 그려서 메모 앱의 색 변수가 닿지 않는다. 글자 버튼의 색을 여기서 다시 정한다 */
 .memo-format-panel {
 	--ui-button-radius: 999px;
-	--ui-accent: var(--color-notes-yellow);
-	--ui-on-accent: var(--color-on-notes-yellow);
+	--ui-accent: var(--notes-accent);
+	--ui-on-accent: var(--notes-on-accent);
 }
 
 .memo-format-marks {
@@ -71,7 +71,7 @@
 	gap: var(--space-2);
 	margin-bottom: var(--space-6);
 	padding-bottom: var(--space-6);
-	border-bottom: 1px solid var(--color-divider);
+	border-bottom: 1px solid var(--color-separator);
 }
 
 .memo-format-marks button {
@@ -83,11 +83,11 @@
 
 .memo-format-marks button:hover,
 .memo-format-styles button:hover {
-	background-color: color-mix(in srgb, var(--color-popover-text) 8%, transparent);
+	background-color: color-mix(in srgb, var(--color-label) 8%, transparent);
 }
 
 .memo-format-marks button.on {
-	background-color: color-mix(in srgb, var(--color-notes-yellow) 35%, transparent);
+	background-color: color-mix(in srgb, var(--notes-accent) 35%, transparent);
 }
 
 .memo-format-marks .mark-strong {
@@ -157,7 +157,7 @@
 
 .memo-format-separator {
 	margin: 5px 6px;
-	border-top: 1px solid var(--color-divider);
+	border-top: 1px solid var(--color-separator);
 }
 
 .memo-format-uploading {
@@ -189,7 +189,7 @@
 }
 
 .memo-format-styles button.danger {
-	color: var(--color-danger);
+	color: var(--color-system-red);
 }
 
 /* 이미지 넣기 창 (넓게) */
@@ -202,19 +202,19 @@
 	gap: var(--space-2);
 	margin-bottom: var(--space-8);
 	padding: var(--space-2);
-	border-radius: var(--radius-md);
-	background-color: color-mix(in srgb, var(--color-popover-text) 7%, transparent);
+	border-radius: var(--radius-8);
+	background-color: color-mix(in srgb, var(--color-label) 7%, transparent);
 }
 
 .memo-format-panel .memo-image-tabs button {
 	flex: 1;
 	padding: 4px 0;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	font-size: var(--text-caption);
 }
 
 .memo-format-panel .memo-image-tabs button[aria-selected='true'] {
-	background-color: var(--color-popover-bg);
+	background-color: var(--color-popover-background);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 	font-weight: 600;
 }
@@ -226,16 +226,16 @@
 	align-items: center;
 	gap: var(--space-4);
 	padding: 22px 12px;
-	border: 1.5px dashed var(--color-divider);
-	border-radius: var(--radius-lg);
+	border: 1.5px dashed var(--color-separator);
+	border-radius: var(--radius-10);
 	cursor: pointer;
 	text-align: center;
 }
 
 .memo-image-drop:hover,
 .memo-image-drop:focus-within {
-	border-color: var(--color-notes-yellow);
-	background-color: color-mix(in srgb, var(--color-notes-yellow) 10%, transparent);
+	border-color: var(--notes-accent);
+	background-color: color-mix(in srgb, var(--notes-accent) 10%, transparent);
 }
 
 .memo-image-drop i {
@@ -248,7 +248,7 @@
 }
 
 .memo-image-drop span {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 }
 
@@ -270,8 +270,8 @@
 .memo-image-preview {
 	width: 100%;
 	max-height: 150px;
-	border-radius: var(--radius-md);
-	background-color: color-mix(in srgb, var(--color-popover-text) 6%, transparent);
+	border-radius: var(--radius-8);
+	background-color: color-mix(in srgb, var(--color-label) 6%, transparent);
 	object-fit: contain;
 }
 
@@ -282,7 +282,7 @@
 }
 
 .memo-image-details label span {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	font-weight: 600;
 }
@@ -290,8 +290,8 @@
 .memo-format-panel input:not([type='file']) {
 	width: 100%;
 	padding: 6px 9px;
-	border: 1px solid var(--color-divider);
-	border-radius: var(--radius-md);
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-8);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -300,18 +300,18 @@
 }
 
 .memo-format-panel input:not([type='file']):focus {
-	border-color: var(--color-notes-yellow);
+	border-color: var(--notes-accent);
 }
 
 /* 입력칸 아래 안내 */
 .memo-field-hint {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	line-height: 1.4;
 }
 
 .memo-image-credit {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 }
 
@@ -334,8 +334,8 @@
 .memo-format-panel .memo-stock-search button {
 	padding: 5px 14px;
 	border-radius: var(--radius-full);
-	background-color: var(--color-notes-yellow);
-	color: var(--color-on-notes-yellow);
+	background-color: var(--notes-accent);
+	color: var(--notes-on-accent);
 	font-size: var(--text-footnote);
 	font-weight: 600;
 }
@@ -349,7 +349,7 @@
 
 .memo-format-panel .memo-image-back:hover,
 .memo-format-panel .memo-stock-more:hover {
-	background-color: color-mix(in srgb, var(--color-popover-text) 8%, transparent);
+	background-color: color-mix(in srgb, var(--color-label) 8%, transparent);
 }
 
 .memo-format-panel button:disabled {
@@ -358,13 +358,13 @@
 }
 
 .memo-image-note {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	line-height: 1.5;
 }
 
 .memo-image-note.problem {
-	color: var(--color-danger);
+	color: var(--color-system-red);
 }
 
 .memo-image-note code {
@@ -400,7 +400,7 @@
 	aspect-ratio: 1;
 	padding: 0;
 	overflow: hidden;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 }
 
 .memo-stock-grid img {

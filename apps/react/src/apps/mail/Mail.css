@@ -1,35 +1,35 @@
 /* macOS 26 메일 앱 색 */
 [data-app='mail'] {
-	--mail-window-bg: var(--color-content-bg);
-	--mail-panel-bg: var(--color-panel-bg);
+	--mail-window-bg: var(--color-text-background);
+	--mail-panel-bg: var(--list-pane-background);
 	--mail-panel-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 6px 18px rgba(0, 0, 0, 0.06);
-	--mail-separator: var(--color-divider);
-	--mail-selected-bg: var(--color-blue);
+	--mail-separator: var(--color-separator);
+	--mail-selected-bg: var(--color-control-accent);
 	--mail-selected-text: var(--color-white);
 	--mail-hover-bg: #ececef;
 	--mail-text: var(--color-label);
-	--mail-muted: var(--color-text-secondary);
-	--mail-accent: var(--color-blue);
+	--mail-muted: var(--color-secondary-label);
+	--mail-accent: var(--color-control-accent);
 	--mail-avatar: linear-gradient(180deg, #aab2e5 0%, #8b93d0 100%);
-	--mail-float-bg: var(--color-card-bg);
+	--mail-float-bg: var(--color-popover-background);
 	--mail-float-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 2px 10px rgba(0, 0, 0, 0.1);
-	--mail-field-border: var(--color-divider);
-	--mail-error: var(--color-error);
+	--mail-field-border: var(--color-separator);
+	--mail-error: var(--color-system-red);
 }
 
 :root[data-theme='dark'] [data-app='mail'] {
-	--mail-window-bg: var(--color-content-bg);
-	--mail-panel-bg: var(--color-panel-bg);
+	--mail-window-bg: var(--color-text-background);
+	--mail-panel-bg: var(--list-pane-background);
 	--mail-panel-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 18px rgba(0, 0, 0, 0.35);
-	--mail-separator: var(--color-divider);
+	--mail-separator: var(--color-separator);
 	--mail-hover-bg: #333336;
 	--mail-text: var(--color-label);
-	--mail-muted: var(--color-text-secondary);
+	--mail-muted: var(--color-secondary-label);
 	--mail-avatar: linear-gradient(180deg, #8f97cf 0%, #6c74b3 100%);
-	--mail-float-bg: var(--color-card-bg);
+	--mail-float-bg: var(--color-popover-background);
 	--mail-float-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.08), 0 2px 10px rgba(0, 0, 0, 0.4);
-	--mail-field-border: var(--color-divider);
-	--mail-error: var(--color-error);
+	--mail-field-border: var(--color-separator);
+	--mail-error: var(--color-system-red);
 }
 
 /* 공통 버튼의 색: 떠 있는 원형 버튼(새로운 메시지)과 글자 버튼 (shared/ui/button) */
@@ -103,7 +103,7 @@
 	width: 100%;
 	padding: var(--space-6) var(--space-8);
 	border: none;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background: none;
 }
 
@@ -154,7 +154,7 @@
 	width: 100%;
 	padding: var(--space-8) var(--space-10) var(--space-10) var(--space-4);
 	border: none;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: none;
 	text-align: left;
 }
@@ -342,7 +342,7 @@
 	min-height: 120px;
 	padding: var(--space-10) var(--space-12);
 	border: 1px solid var(--mail-separator);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: transparent;
 	color: inherit;
 	font: inherit;
@@ -423,7 +423,7 @@
 
 .mail-recipient {
 	padding: 1px 8px;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: var(--mail-hover-bg);
 }
 
@@ -646,7 +646,7 @@
 }
 
 .mail-copy-address:focus-visible {
-	outline: 2px solid var(--color-accent);
+	outline: 2px solid var(--color-control-accent);
 	outline-offset: 2px;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 }

@@ -3,8 +3,8 @@
  * components 층: reset 층은 이기고, 앱의 층 밖 규칙에는 진다.
  *
  * 색은 앱이 정한다 (없으면 기본값).
- *   --ui-switch-off: 꺼졌을 때 바탕 (기본 --color-selected-bg)
- *   --ui-switch-focus: 키보드 초점 테두리 (기본 --color-accent)
+ *   --ui-switch-off: 꺼졌을 때 바탕 (기본 --color-unemphasized-selected-content-background)
+ *   --ui-switch-focus: 키보드 초점 테두리 (기본 --color-control-accent)
  */
 @layer components {
 	.ui-switch {
@@ -13,7 +13,7 @@
 		position: relative;
 		margin: 0;
 		border-radius: var(--radius-full);
-		background: var(--ui-switch-off, var(--color-selected-bg));
+		background: var(--ui-switch-off, var(--color-unemphasized-selected-content-background));
 		cursor: pointer;
 		transition: background-color 0.2s;
 	}
@@ -29,7 +29,7 @@
 	}
 
 	.ui-switch:checked {
-		background: var(--color-accent);
+		background: var(--color-control-accent);
 	}
 
 	.ui-switch:disabled {
@@ -53,7 +53,7 @@
 	}
 
 	.ui-switch.regular:focus-visible {
-		outline: 2px solid var(--ui-switch-focus, var(--color-accent));
+		outline: 2px solid var(--ui-switch-focus, var(--color-control-accent));
 		outline-offset: 2px;
 	}
 
@@ -73,7 +73,7 @@
 	}
 
 	.ui-switch.small:focus-visible {
-		outline: 3px solid var(--ui-switch-focus, var(--color-accent));
+		outline: 3px solid var(--ui-switch-focus, var(--color-control-accent));
 		outline-offset: 1px;
 	}
 }

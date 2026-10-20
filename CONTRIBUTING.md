@@ -73,7 +73,11 @@ test: 글 순서에 기대지 않게 E2E 고침
 
 - 기능을 바꾸면 **테스트와 블로그 글도 같은 PR에** 넣는다. 막혔던 곳은 그때 적지 않으면 잊는다 ([블로그 글](#블로그-글))
 - 커밋하기 전에 `pnpm format:check`, `pnpm lint`, `pnpm cycles`(파일끼리 서로 import하는 순환이 없는지), `pnpm test`를 돌린다. 두 화면이 같은 타입을 쓰면 둘 중 하나가 아니라 `model.ts` 같은 셋째 파일에 둔다
-- CSS에서 이름(토큰)이 있는 값은 숫자 대신 이름을 쓴다: 글자 크기 `--text-*`, 모서리 `--radius-*`, `z-index` `--z-*`, 간격 `--space-*` (`styles/theme.css`). `pnpm lint`의 Stylelint가 이름이 있는 값을 숫자로 쓰면 막는다 (`apps/react/stylelint.config.mjs`)
+- 디자인 토큰은 세 층이다 (`apps/react/src/styles/tokens/`)
+  - 1층 원시값 `primitives.css`: `--palette-*`(색 값), 숫자 이름의 `--radius-4…22`·`--radius-full`, 높이 단계 `--shadow-1…5`, `--text-*`, `--space-*`
+  - 2층 의미 `semantic.css`: 색은 macOS 시스템 색 이름(`--color-label`, `--color-separator`, `--color-control-accent` …), 쓰임새 별칭(`--radius-window`, `--shadow-menu` …), `--z-*`
+  - 3층 컴포넌트 `components.css`: 부품 하나만 쓰는 값 (`--dock-background`, `--sidebar-background`, `--notes-accent` …). 색은 2층 의미 토큰만 가리킨다 (원시값·hex·rgb 금지, 다크 값은 2층이 바꾼다)
+  - 앱·부품 CSS는 2·3층(과 글자·간격·모서리 크기)만 쓰고 `--palette-*`는 직접 쓰지 않는다. 이름이 있는 값은 숫자 대신 이름을 쓴다. `pnpm lint`의 Stylelint가 둘 다 막는다 (`apps/react/stylelint.config.mjs`)
 - API의 컨트롤러나 DTO를 바꾸면 `pnpm --filter @macfolio/api openapi`로 `apps/react/src/apps/apidocs/openapi.json`을 다시 만들어 함께 커밋한다. 사이트의 'API 문서' 앱이 이 파일을 그린다. 빠뜨리면 `pnpm test`(`apps/api/src/openapi.test.ts`)가 실패한다
 
 ### 마이그레이션
