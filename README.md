@@ -199,6 +199,7 @@ apps/
   api/                    NestJS API (관리자 로그인, 글, 댓글, 이미지, 메모 정리)
 packages/
   desktop-core/           프레임워크와 무관한 로직: 저장소, 창 관리, 메모, 음악 (React·DOM 없이 테스트, 서버와 함께 쓰는 규칙)
+  og-card/                글의 공유 카드 그림 (빌드는 저장소 글, API는 서버에 쓴 글을 그린다)
 docs/                     백엔드 설계, 배포, 마이그레이션 기록
 wrangler.jsonc            Cloudflare Workers 설정
 ```

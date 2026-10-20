@@ -32,6 +32,8 @@ describe('loadConfig', () => {
 				perIpPerDay: 3,
 				totalPerDay: 50,
 			},
+			// 공유 카드의 글꼴·아이콘: 저장소의 사이트 public 폴더 (배포 이미지는 OG_ASSETS_DIR)
+			ogAssetsDir: expect.stringMatching(/apps\/react\/public$/),
 			documents: { r2: undefined },
 			cover: {
 				cloudflareAccountId: undefined,

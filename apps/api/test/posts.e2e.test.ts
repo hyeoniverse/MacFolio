@@ -150,6 +150,44 @@ describe('블로그 글 (e2e)', () => {
 		expect((await request(server()).get('/posts')).body[0]).toMatchObject({ deleted: false, title: '새 글' });
 	});
 
+	it('공유 카드: 방문자에게 보이는 글만 PNG로 그리고, 제목을 고치면 다시 그린다', { timeout: 30_000 }, async () => {
+		const card = (slug: string) =>
+			request(server())
+				.get(`/posts/${slug}/og.png?v=1`)
+				.buffer(true)
+				.parse((res, done) => {
+					const chunks: Buffer[] = [];
+					res.on('data', (chunk: Buffer) => chunks.push(chunk));
+					res.on('end', () => done(null, Buffer.concat(chunks)));
+				});
+		// 없는 글, 임시 저장만 있는 글, 예약 글은 404
+		await card('no-such-post').expect(404);
+		const { slug } = (await admin('post', '/posts').send(POST).expect(201)).body;
+		await card(slug).expect(404);
+		await admin('post', '/posts/scheduled/publish')
+			.send({ ...POST, date: dayAfter(3) })
+			.expect(200);
+		await card('scheduled').expect(404);
+
+		await admin('post', `/posts/${slug}/publish`).send(POST).expect(200);
+		const first = await card(slug).expect(200).expect('Content-Type', 'image/png');
+		expect(first.headers['cache-control']).toBe('public, max-age=86400');
+		expect(first.headers['cross-origin-resource-policy']).toBe('cross-origin');
+		const png = first.body as Buffer;
+		expect(png.subarray(1, 4).toString()).toBe('PNG');
+		expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630]);
+		// 같은 글은 들고 있던 그림을 준다
+		expect(((await card(slug).expect(200)).body as Buffer).equals(png)).toBe(true);
+
+		await admin('post', `/posts/${slug}/publish`)
+			.send({ ...POST, title: '고친 제목' })
+			.expect(200);
+		expect(((await card(slug).expect(200)).body as Buffer).equals(png)).toBe(false);
+
+		await admin('delete', `/posts/${slug}`).expect(204);
+		await card(slug).expect(404);
+	});
+
 	it('게시할 때마다 버전을 남기고, 버전의 내용을 읽을 수 있다', async () => {
 		await admin('post', '/posts/cra-to-vite/publish')
 			.send({ ...POST, title: '첫 판' })

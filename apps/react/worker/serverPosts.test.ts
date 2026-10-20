@@ -1,9 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import worker from './index';
+import { ogCardVersion } from '../seo/site';
 import { clearSeoPostsCache, type SeoPost } from './seo';
 import {
 	clearServerPostsCache,
 	fetchServerPosts,
+	firstPhoto,
 	mergeServerPosts,
 	plainHtml,
 	SERVER_POSTS_CACHE_MS,
@@ -52,7 +54,26 @@ describe('서버에 쓴 글', () => {
 		expect(plainHtml(serverPost('a').body)).toBe('<h2>제목</h2><p>첫 문단 &lt;b&gt;<br>둘째 줄</p>');
 	});
 
-	it('API 목록을 잠시 기억하고, 닿지 않으면 빈 목록', async () => {
+	it('공유 그림: 본문의 첫 사진(올린 파일·사진 주소), 없으면 API가 그리는 카드. API 주소를 모르면 넣지 않는다', () => {
+		const API = 'https://api.test';
+		expect(firstPhoto(`![흐름](https://x.test/a.svg) ![화면](${API}/files/abc)`, API)).toBe(`${API}/files/abc`);
+		expect(firstPhoto('![흐름](/a.png) ![사진](https://x.test/b.JPG?w=1)', API)).toBe('https://x.test/b.JPG?w=1');
+		expect(firstPhoto('![흐름](https://x.test/a.svg)', API)).toBeUndefined();
+
+		const [withPhoto, withoutPhoto] = mergeServerPosts(
+			[],
+			[
+				serverPost('photo', { date: '2026-10-12', body: `![화면](${API}/files/abc)` }),
+				serverPost('card', { title: '제목 <b>&' }),
+			],
+			API
+		);
+		expect(withPhoto.image).toBe(`${API}/files/abc`);
+		expect(withoutPhoto.image).toBe(`${API}/posts/card/og.png?v=${ogCardVersion(withoutPhoto)}`);
+		expect(mergeServerPosts([], [serverPost('card')])[0]).not.toHaveProperty('image');
+	});
+
+	it('API 목록을 잠시 기억하고, 닿지 않으면 null', async () => {
 		const ok = vi.fn(async () => Response.json([serverPost('a'), { slug: 1 }]));
 		await expect(fetchServerPosts('https://api.test', ok, 0)).resolves.toHaveLength(1);
 		await fetchServerPosts('https://api.test', ok, SERVER_POSTS_CACHE_MS - 1);

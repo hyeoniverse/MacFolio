@@ -39,7 +39,7 @@ export default {
 			fetchSeoPosts(env.ASSETS, url.origin),
 			env.API_URL ? fetchServerPosts(env.API_URL) : [],
 		]);
-		const data = siteDataOf(content, mergeServerPosts(repoPosts, serverPosts ?? []), env.API_URL);
+		const data = siteDataOf(content, mergeServerPosts(repoPosts, serverPosts ?? [], env.API_URL), env.API_URL);
 		if (sitemap) {
 			return new Response(
 				sitemapXml(

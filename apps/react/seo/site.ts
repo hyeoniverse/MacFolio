@@ -29,6 +29,19 @@ export interface SeoPost {
 const escapeXml = (text: string) =>
 	text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+/** 공유 카드(packages/og-card)의 모양을 바꾸면 올린다. 카드 주소의 해시에 들어가 옛 그림이 캐시에 남지 않는다 */
+const OG_CARD_DESIGN = 1;
+
+/** 공유 카드의 버전 (8자리 16진수): 제목·날짜·분류·카드 모양이 같으면 같다. 빌드와 Worker가 함께 쓴다 (FNV-1a) */
+export function ogCardVersion(post: Pick<SeoPost, 'title' | 'date' | 'category'>): string {
+	let hash = 0x811c9dc5;
+	for (const char of `${OG_CARD_DESIGN}\n${post.title}\n${post.date}\n${post.category}`) {
+		hash ^= char.codePointAt(0)!;
+		hash = Math.imul(hash, 0x01000193);
+	}
+	return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
 /** 글을 마지막으로 고친 날 (고친 적 없으면 글 날짜) */
 export const lastModified = (post: Pick<SeoPost, 'date' | 'updated'>) => post.updated ?? post.date;
 

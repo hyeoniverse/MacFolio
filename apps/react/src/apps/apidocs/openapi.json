@@ -1055,6 +1055,32 @@
 				]
 			}
 		},
+		"/posts/{slug}/og.png": {
+			"get": {
+				"operationId": "PostsController_card",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "공유 카드 그림 (1200×630 PNG, 글 제목으로 그린다). 사이트의 og:image가 쓴다. 주소에 붙는 ?v=는 캐시를 바꾸려는 값이라 보지 않는다"
+					},
+					"404": {
+						"description": "방문자에게 보이는 글이 없다 (임시 저장, 지운 글, 예약 글 포함)"
+					}
+				},
+				"tags": [
+					"posts"
+				]
+			}
+		},
 		"/posts/admin": {
 			"get": {
 				"operationId": "PostsController_listAdmin",

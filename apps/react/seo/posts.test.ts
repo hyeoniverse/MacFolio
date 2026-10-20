@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_PROJECTS } from '../src/shared/profile';
 import { cardImage, markdownHtml, rssXml, seoPosts, sitemapXml, updatedDates } from './posts';
+import { ogCardVersion } from './site';
 
 const post = (title: string, date: string, body: string) =>
 	`---\ntitle: ${title}\ndate: ${date}\ncategory: 개발기\nsummary: ${title} 요약\n---\n\n${body}`;
@@ -78,6 +79,14 @@ describe('검색엔진용 파일', () => {
 		expect(xml).toContain('<loc>https://macfolio.hyeoniverse.com/memo/a%26b</loc><lastmod>2026-02-01</lastmod>');
 		expect(xml).toContain(`<loc>https://macfolio.hyeoniverse.com/memo/${encodeURIComponent('한글')}</loc>`);
 		expect(xml).toContain('<loc>https://macfolio.hyeoniverse.com/safari/qru</loc>');
+	});
+
+	it('공유 카드 버전: 8자리, 제목·날짜·분류가 같으면 같고 하나라도 바뀌면 다르다', () => {
+		const post = { title: '제목', date: '2026-10-21', category: '개발기' };
+		expect(ogCardVersion(post)).toMatch(/^[0-9a-f]{8}$/);
+		expect(ogCardVersion({ ...post })).toBe(ogCardVersion(post));
+		for (const patch of [{ title: '제목!' }, { date: '2026-10-22' }, { category: '기타' }])
+			expect(ogCardVersion({ ...post, ...patch })).not.toBe(ogCardVersion(post));
 	});
 
 	it('sitemap: 고친 글의 lastmod는 고친 날', () => {
