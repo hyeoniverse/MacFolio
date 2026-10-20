@@ -5,7 +5,7 @@
 	margin-bottom: 0.5rem;
 	position: relative;
 	width: 4rem; /* 기본 너비를 4rem로 설정 */
-	transition: transform 0.3s ease;
+	transition: transform var(--duration) ease;
 	cursor: pointer;
 	aspect-ratio: 1 / 1; /* 항상 정사각형 비율 유지 */
 }

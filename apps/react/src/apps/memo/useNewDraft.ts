@@ -2,8 +2,8 @@ import { useState } from 'react';
 import type { AdminPost, PostSlug } from '@macfolio/desktop-core/memo';
 import type { PostDraft } from './postsApi';
 
-/** 새 메모 자리가 접히며 사라지는 시간 (styles/late.css의 memo-new-item-out과 같다) */
-const NEW_ITEM_LEAVE_MS = 240;
+/** 새 메모 자리가 접히며 사라지는 시간 (styles/late.css의 memo-new-item-out이 쓰는 --duration, styles/motion.css와 같다) */
+const NEW_ITEM_LEAVE_MS = 280;
 
 /**
  * 새 메모 (관리자): 쓰기 시작하면 목록 맨 위에 '새로운 메모' 자리가 생기고, 쓰는 대로 제목·본문이 보인다.

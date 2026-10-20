@@ -177,7 +177,7 @@
 	height: var(--home-icon);
 	object-fit: cover;
 	border-radius: var(--radius-14);
-	transition: transform 0.15s ease;
+	transition: transform var(--duration-fast) ease;
 }
 
 .mobile-app img.square {

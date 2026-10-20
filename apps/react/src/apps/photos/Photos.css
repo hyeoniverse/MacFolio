@@ -308,7 +308,7 @@
 	max-height: 100%;
 	border-radius: var(--radius-4);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-	transition: transform 0.2s ease;
+	transition: transform var(--duration-fast) ease;
 }
 
 .photos-thumb:hover img,

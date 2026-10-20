@@ -25,12 +25,12 @@
 /* 꺼진 막대는 흐리게 */
 .server-signal path:not(.on) {
 	opacity: 0.25;
-	transition: opacity 0.3s ease;
+	transition: opacity var(--duration) ease;
 }
 
 .server-signal .on {
 	opacity: 1;
-	transition: opacity 0.3s ease;
+	transition: opacity var(--duration) ease;
 }
 
 /* DB가 안 되면 남은 막대를 주황으로 */

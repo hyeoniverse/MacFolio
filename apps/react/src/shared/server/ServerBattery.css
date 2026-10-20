@@ -20,7 +20,7 @@
 
 .server-battery .level {
 	fill: currentColor;
-	transition: width 0.3s ease;
+	transition: width var(--duration) ease;
 }
 
 /* 서버 자원이 유휴 회수 기준에 가까우면 (주의) 주황, 걸려 있으면 (회수 위험) 빨강 */
