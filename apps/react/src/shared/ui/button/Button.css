@@ -1,7 +1,7 @@
 /*
  * 글자가 있는 버튼 (shared/ui/button/Button.tsx). components 층 (styles/layers.css).
  *
- * 앱이 [data-app] 등에 정하는 변수
+ * 앱이 [data-app] 등에서 덮어쓰는 변수 (기본값은 styles/tokens/components.css. --ui-button-color만 기본이 inherit라 여기에 둔다)
  *   --ui-button-bg·--ui-button-color: 보통 버튼      --ui-button-radius·--ui-button-padding: 모양
  *   --ui-accent·--ui-on-accent: primary 버튼          --ui-danger: danger 버튼
  */
@@ -13,22 +13,22 @@
 		align-items: center;
 		justify-content: center;
 		gap: var(--space-6);
-		padding: var(--ui-button-padding, 5px 14px);
+		padding: var(--ui-button-padding);
 		border: none;
-		border-radius: var(--ui-button-radius, 8px);
-		background-color: var(--ui-button-bg, var(--color-unemphasized-selected-content-background));
+		border-radius: var(--ui-button-radius);
+		background-color: var(--ui-button-bg);
 		color: var(--ui-button-color, inherit);
 		font: inherit;
 		cursor: pointer;
 	}
 
 	.ui-button.primary {
-		background-color: var(--ui-accent, var(--color-control-accent));
-		color: var(--ui-on-accent, var(--color-alternate-selected-control-text));
+		background-color: var(--ui-accent);
+		color: var(--ui-on-accent);
 	}
 
 	.ui-button.danger {
-		background-color: var(--ui-danger, var(--color-system-red));
+		background-color: var(--ui-danger);
 		color: var(--color-white);
 	}
 
