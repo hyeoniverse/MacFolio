@@ -219,7 +219,7 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 ## 시험
 
 - 단위(desktop-core, `projects.test.ts`): 다듬기와 모르는 필드 버리기, `javascript:`·`data:`·http 거절, id 규칙, 안쪽 필수·열거·숫자·색, `null` 지우기, 길이·개수, 합치기 순서, 기본값과 다른 필드만, 데모 출처, 예전 모양 이름 바꾸기.
-- 단위(화면, `projectInputs.test.ts`·`packageSearch.test.ts` 등): 기간 읽기·쓰기, 언어·기술 후보와 거르기, 화면 모음 폴더와 대표 화면 대신 첫 그림, 코드의 프로젝트가 모두 검사를 통과, 이 사이트의 앱 이름이 모두 막힌 id에 있음, `PROJECTS` 배열은 그대로 두고 안만 바뀜.
+- 단위(화면, `projectInputs.test.ts`·`packageSearch.test.ts` 등): 기간 읽기·쓰기(`projects/period.ts`), 언어·기술 후보와 거르기(`projectInputs.ts`, 목록은 `commonStacks.ts`), 화면 모음 폴더와 대표 화면 대신 첫 그림, 코드의 프로젝트가 모두 검사를 통과, 이 사이트의 앱 이름이 모두 막힌 id에 있음, `PROJECTS` 배열은 그대로 두고 안만 바뀜.
 - 단위(Worker): 콘텐츠 넣기와 `</script>` 막기, 새 데모 주소가 `frame-src`에, API가 없거나 실패하면 콘텐츠 없이, 1분 캐시, 옛 코드 파일은 404.
 - API e2e: 401·400과 이유, 저장·읽기·지우기, 경로 표에 두 경로.
 - E2E(`e2e/site-projects.spec.ts`):
