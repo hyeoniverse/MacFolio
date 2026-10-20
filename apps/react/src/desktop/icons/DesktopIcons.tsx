@@ -38,7 +38,7 @@ const DRAG_THRESHOLD = 4;
 /**
  * 아이콘 자리를 저장하는 열쇠. 가상본은 원래 폴더 id (예전에 저장한 이력서·포트폴리오·자격증 자리를 그대로 쓴다)
  */
-const keyOf = (item: FinderItem) => (item.kind === 'folder' && item.aliasOf) || item.id;
+const keyOf = (item: FinderItem) => (item.kind === 'alias' ? item.target : item.id);
 
 /** Dock의 휴지통에 놓을 때의 표시 (트리의 휴지통 폴더와 같은 id) */
 const TRASH_TARGET: FinderItem = { kind: 'folder', id: TRASH_ID, name: '휴지통', children: [] };
@@ -121,7 +121,7 @@ const DesktopIcons: React.FC = () => {
 			return;
 		}
 		// 폴더 (가상본은 원래 폴더). 다른 종류는 Finder에서 그 자리를 보여 준다
-		requestFinderFolder(item.kind === 'folder' ? (item.aliasOf ?? item.id) : item.id);
+		requestFinderFolder(item.kind === 'alias' ? item.target : item.id);
 		openApp('finder');
 		bringAppToFront('finder');
 	};

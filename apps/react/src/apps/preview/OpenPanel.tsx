@@ -55,7 +55,7 @@ const PREVIEW_APP: OpenPanelApp = { name: '미리보기', icon: '/imgs/preview.s
 /** 올린 파일 전부 (폴더를 따라 내려간다, 같은 파일은 한 번) */
 const allFiles = (items: FinderItem[], seen = new Set<string>()): FileItem[] =>
 	items.flatMap((item) => {
-		if (item.kind === 'folder') return item.aliasOf ? [] : allFiles(item.children, seen);
+		if (item.kind === 'folder') return allFiles(item.children, seen);
 		if (item.kind !== 'pdf' && item.kind !== 'image' && item.kind !== 'file') return [];
 		if (seen.has(item.key)) return [];
 		seen.add(item.key);
@@ -147,8 +147,9 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 	const root = place === 'preview' || place === 'recents' ? place : (pathTo(locations, place)[0]?.id ?? place);
 
 	const open = (item: FinderItem) => {
-		// 바탕화면의 가상본은 비어 있다. Finder처럼 진짜 폴더로 간다
-		if (item.kind === 'folder') go(item.aliasOf ?? item.id);
+		if (item.kind === 'folder') go(item.id);
+		// 바탕화면의 가상본은 Finder처럼 원래 폴더로 간다
+		else if (item.kind === 'alias') go(item.target);
 		else if (isFile(item)) onOpen(item);
 	};
 
@@ -217,7 +218,7 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 					<div className="preview-open-grid" role="listbox" aria-label={q ? '찾은 항목' : title}>
 						{shown.map((item) => {
 							// 폴더와 이 앱이 여는 파일만 고를 수 있다 (macOS 열기 창처럼 나머지는 흐리게)
-							const usable = item.kind === 'folder' || isFile(item);
+							const usable = item.kind === 'folder' || item.kind === 'alias' || isFile(item);
 							return (
 								<button
 									key={item.id}

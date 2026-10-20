@@ -26,8 +26,17 @@ export interface FolderItem extends ItemBase {
 	children: FinderItem[];
 	/** 비어 있을 때 보여 줄 안내 */
 	emptyNote?: string;
-	/** 바탕화면의 가상본(alias)이면 원래 폴더의 id. 가상본은 children이 비어 있고, 열면 원래 폴더로 간다 */
-	aliasOf?: string;
+}
+
+/**
+ * 바탕화면의 가상본(alias). 폴더가 아니라 원래 폴더(target)를 가리키는 따로 된 종류다:
+ * 안에 든 것(children)이 없으므로, 폴더처럼 다루려면 원래 폴더를 찾아야 한다 (edit.ts의 resolveAlias).
+ * 폴더의 한 변형으로 두었더니 빈 폴더로 열리는 곳이 생겨서 나눴다
+ */
+export interface AliasItem extends ItemBase {
+	kind: 'alias';
+	/** 원래 폴더의 id (예: docs:포트폴리오) */
+	target: string;
 }
 
 /** 저장소의 Markdown 문서. Finder 안에서 읽는다 */
@@ -71,11 +80,12 @@ export interface FileItem extends ItemBase {
 	home?: string;
 }
 
-export type FinderItem = FolderItem | DocItem | PostItem | ProjectItem | AppItem | FileItem;
+export type FinderItem = FolderItem | AliasItem | DocItem | PostItem | ProjectItem | AppItem | FileItem;
 
 /** 목록 보기의 '종류' 칸 */
 export const KIND_LABELS: Record<FinderItem['kind'], string> = {
 	folder: '폴더',
+	alias: '가상본',
 	doc: 'Markdown 문서',
 	post: '블로그 글',
 	project: '프로젝트',
@@ -340,7 +350,7 @@ function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined)
 	for (const target of layout?.aliases ?? DEFAULT_DESKTOP_ALIASES) {
 		const real = folders.get(target);
 		if (real && !desktop.children.some((child) => child.id === `alias:${target}`))
-			desktop.children.push({ kind: 'folder', id: `alias:${target}`, name: real.name, aliasOf: target, children: [] });
+			desktop.children.push({ kind: 'alias', id: `alias:${target}`, name: real.name, target });
 	}
 
 	// 만든 폴더: 기본 자리(데스크탑·문서·문서 폴더·프로젝트 폴더)까지 고리 없이 올라갈 수 있는 것만
@@ -384,11 +394,10 @@ function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined)
 	// 바뀐 폴더를 다시 정렬하고, 만든 폴더부터 수정일(안에 든 가장 최근 항목)을 다시 잰다
 	// 바탕화면은 가상본을 정한 순서대로 먼저 (아이콘이 그 순서로 오른쪽 위부터 놓인다)
 	const aliasFirst = (a: FinderItem, b: FinderItem) =>
-		Number(b.kind === 'folder' && !!b.aliasOf) - Number(a.kind === 'folder' && !!a.aliasOf) ||
-		(a.kind === 'folder' && a.aliasOf ? 0 : byName(a, b));
+		Number(b.kind === 'alias') - Number(a.kind === 'alias') || (a.kind === 'alias' ? 0 : byName(a, b));
 	for (const folder of touched) folder.children.sort(folder === desktop ? aliasFirst : byName);
 	const refresh = (folder: FolderItem): string | undefined => {
-		folder.children.forEach((child) => child.kind === 'folder' && !child.aliasOf && refresh(child));
+		folder.children.forEach((child) => child.kind === 'folder' && refresh(child));
 		if (folder.id.startsWith('folder:') || touched.has(folder)) folder.modified = latest(folder.children);
 		return folder.modified;
 	};
@@ -440,7 +449,7 @@ export function search(roots: FinderItem[], query: string): FinderItem[] {
 	const walk = (items: FinderItem[]) =>
 		items.forEach((item) => {
 			// 바탕화면의 가상본은 원래 폴더와 겹치므로 뺀다
-			if (item.kind === 'folder' && item.aliasOf) return;
+			if (item.kind === 'alias') return;
 			if (item.name.toLowerCase().includes(needle)) found.push(item);
 			if (item.kind === 'folder') walk(item.children);
 		});
@@ -465,7 +474,7 @@ export function recentItems(roots: FinderItem[], limit = 30): FinderItem[] {
 
 export type SortKey = 'name' | 'kind' | 'date';
 
-const KIND_ORDER: FinderItem['kind'][] = ['folder', 'doc', 'pdf', 'image', 'post', 'project', 'app'];
+const KIND_ORDER: FinderItem['kind'][] = ['folder', 'alias', 'doc', 'pdf', 'image', 'post', 'project', 'app'];
 
 /** 정렬 (휴대폰 파일 앱의 ••• 메뉴): 이름순, 종류(폴더 먼저)마다 이름순, 날짜는 최신이 위로(날짜 없는 것은 아래에 이름순) */
 export function sortItems(items: FinderItem[], key: SortKey): FinderItem[] {

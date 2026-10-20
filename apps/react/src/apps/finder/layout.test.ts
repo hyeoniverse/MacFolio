@@ -2,7 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { EMPTY_FINDER_LAYOUT, type FinderLayoutValue } from '@macfolio/contracts';
 import { EMPTY_ORGANIZATION, organizePosts, type Organization, type Post } from '@macfolio/desktop-core/memo';
 import type { DocumentEntry } from './documents';
-import { buildLocations, buildTree, find, type TreeInput, type FinderItem, type FolderItem } from './files';
+import {
+	buildLocations,
+	buildTree,
+	find,
+	type TreeInput,
+	type FinderItem,
+	type FolderItem,
+	type AliasItem,
+} from './files';
 import {
 	canDropInto,
 	canMove,
@@ -78,7 +86,7 @@ describe('폴더 구조 겹치기', () => {
 
 	it('데스크탑: 처음에는 이력서·포트폴리오·자격증 가상본 (예전 프로젝트 가상본은 건너뛴다)', () => {
 		const desktop = folder(build(), 'desktop');
-		expect(desktop.children.map((item) => (item as FolderItem).aliasOf)).toEqual([
+		expect(desktop.children.map((item) => (item as AliasItem).target)).toEqual([
 			'docs:이력서',
 			'docs:포트폴리오',
 			'docs:자격증',

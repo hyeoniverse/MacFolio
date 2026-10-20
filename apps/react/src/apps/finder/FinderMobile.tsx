@@ -47,8 +47,8 @@ const formatDate = (date: string) => {
 
 /** 이름 아래 한 줄: 폴더는 항목 수, 파일은 날짜(없으면 종류) */
 const summary = (item: FinderItem) =>
-	item.kind === 'folder' && item.aliasOf
-		? '가상본'
+	item.kind === 'alias'
+		? KIND_LABELS.alias
 		: item.kind === 'folder'
 			? `${item.children.length}개의 항목`
 			: item.modified
@@ -117,7 +117,8 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	}, []);
 
 	const open = (item: FinderItem) => {
-		if (item.kind === 'folder') push({ folder: item.aliasOf ?? item.id });
+		if (item.kind === 'folder') push({ folder: item.id });
+		else if (item.kind === 'alias') push({ folder: item.target });
 		else if (item.kind === 'doc') push({ doc: item.path });
 		else if (item.kind === 'pdf' || item.kind === 'image' || (item.kind === 'file' && mediaKind(item.name)))
 			push({ file: item.id });
@@ -246,7 +247,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 							<span className="files-phone-name">{item.name}</span>
 							<span className="files-phone-summary">{summary(item)}</span>
 						</span>
-						{view === 'list' && item.kind === 'folder' && (
+						{view === 'list' && (item.kind === 'folder' || item.kind === 'alias') && (
 							<i className="fa-solid fa-chevron-right files-phone-chevron" aria-hidden="true" />
 						)}
 					</button>
