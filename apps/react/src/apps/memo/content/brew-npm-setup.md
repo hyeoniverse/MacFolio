@@ -37,15 +37,61 @@ v26.12.0
 
 ![Homebrew 접두사 안의 Node 파일 위치와 npm 설정 우선순위](./images/brew-npm-setup-layout.svg '왼쪽: 실제 파일(Cellar)과 링크(bin), 링크되지 않는 keg-only. 오른쪽: npm이 설정 값을 고르는 순서')
 
-## Homebrew: PATH 잡기
+## 설치
 
-공식 설치 스크립트가 끝나면 "Next steps"로 `~/.zprofile`에 한 줄을 더하라고 안내한다.
+### 1. Homebrew
+
+[Homebrew 설치 문서](https://docs.brew.sh/Installation)가 밝힌 macOS 요구 사항은 이렇다.
+
+- Apple Silicon CPU (64비트 Intel은 지원 등급이 가장 낮은 Tier 3)
+- macOS 15 Sequoia 이상 (11~14는 공식 지원은 아니지만 동작할 수 있다)
+- 설치 스크립트를 돌릴 `bash` (macOS에 기본으로 있다)
+- Xcode Command Line Tools: formula를 **소스에서 빌드할 때만** 필요하다. Apple Silicon에서는 미리 빌드된 bottle과 cask는 개발 도구 없이 깔 수 있다
+
+터미널에 [brew.sh](https://brew.sh/)의 한 줄을 붙여 넣는다.
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+스크립트는 무엇을 할지 먼저 보여 주고 멈춘다. 내용을 읽고 확인하면 설치를 시작한다. Apple Silicon이면 `/opt/homebrew`에 깔린다. 터미널이 낯설면 Homebrew GitHub 릴리스의 `.pkg` 설치 파일로 깔아도 된다 (Apple Silicon만 지원).
+
+설치가 끝나면 마지막에 **Next steps**가 나온다. 거기 적힌 명령으로 셸 설정 파일에 `brew shellenv` 한 줄을 넣는다. 공식 문서는 "따르지 않으면 Homebrew가 동작하지 않는다"고 적고 있다. 이 Mac의 `~/.zprofile`에 남은 줄은 이것이다.
 
 ```bash
 eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 ```
 
-`brew shellenv`는 PATH를 직접 바꾸지 않고, 바꾸는 셸 명령을 출력한다. 그것을 `eval`이 실행한다. 빈 환경에서 돌리면 무엇을 내보내는지 보인다.
+새 터미널 창을 열고 `brew`가 잡히는지 본다.
+
+```text
+$ brew --version
+Homebrew 7.0.10
+```
+
+이 한 줄이 무슨 일을 하는지는 아래 "Homebrew: PATH 잡기"에서 자세히 본다.
+
+### 2. Node와 npm
+
+npm은 Node에 함께 들어 있어서, Node를 깔면 npm도 같이 생긴다.
+
+```bash
+brew install node
+```
+
+```text
+$ node -v; npm -v
+v26.12.0
+11.20.0
+```
+
+`node`는 늘 가장 새 메이저 버전이다(지금 26). 프로젝트가 특정 버전(예: 22)을 요구하면 `brew install node@22`처럼 메이저를 붙여 깔 수 있는데, 이렇게 깐 것은 PATH에 바로 잡히지 않는다. 그 이유와 쓰는 법은 아래 "Node 22를 쓰려면"에 적었다. 여러 프로젝트가 서로 다른 Node 버전을 쓴다면 처음부터 버전 관리자(fnm, mise 등)를 brew로 깔고 그것으로 Node를 받는 방법도 있다. npm 문서도 전역 설치 권한 문제를 피하는 가장 좋은 방법으로 Node 버전 관리자를 꼽는다.
+
+여기까지면 설치는 끝이다. 아래부터는 이렇게 깐 것이 **어디에 놓이고 어떻게 잡히는지**를 본다.
+
+## Homebrew: PATH 잡기
+
+설치 끝의 Next steps로 `~/.zprofile`에 넣은 한 줄, `eval "$(/opt/homebrew/bin/brew shellenv zsh)"`부터 보자. `brew shellenv`는 PATH를 직접 바꾸지 않고, 바꾸는 셸 명령을 출력한다. 그것을 `eval`이 실행한다. 빈 환경에서 돌리면 무엇을 내보내는지 보인다.
 
 ```text
 $ env -i HOME=$HOME /bin/zsh -fc '/opt/homebrew/bin/brew shellenv zsh'
@@ -297,7 +343,10 @@ $ ./global/bin/corepack --version
 
 영어 문서는 이 글과 관련된 부분만 옮겼다.
 
+- [brew.sh](https://brew.sh/) (Homebrew)
+  - 설치 한 줄과 함께: "macOS 터미널에 붙여 넣는다. 스크립트는 무엇을 할지 설명하고, 하기 전에 멈춘다."
 - [Installation](https://docs.brew.sh/Installation) (Homebrew)
+  - macOS 요구 사항: Apple Silicon CPU(64비트 Intel은 Tier 3), macOS 15 Sequoia 이상, 설치에 쓸 `bash`. "Xcode나 CLT는 formula를 소스에서 빌드할 때 필요하다. Apple Silicon에서는 cask와 bottle을 개발 도구 없이 깔 수 있다."
   - "설치 스크립트는 Homebrew를 기본 접두사(Apple Silicon은 `/opt/homebrew`)에 설치한다."
   - "Homebrew를 설치하면 셸 설정을 바꾸라는 안내가 나온다. 따르지 않으면 Homebrew가 동작하지 않는다." 넣을 줄은 `eval "$(<Homebrew 접두사>/bin/brew shellenv)"`다.
 - [FAQ](https://docs.brew.sh/FAQ) (Homebrew)
