@@ -38,8 +38,12 @@ const Modal = ({
 	const box = useRef<HTMLDivElement>(null);
 	const overlay = useExitMotion<HTMLDivElement>('fade-out');
 
+	// 초점은 열 때 한 번만 (onClose가 다시 그릴 때마다 새 함수여도 초점이 튀지 않게 Esc 듣기와 나눈다)
 	useEffect(() => {
 		(initialFocus?.current ?? box.current)?.focus();
+	}, [initialFocus]);
+
+	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.key !== 'Escape') return;
 			event.preventDefault();
@@ -47,8 +51,6 @@ const Modal = ({
 		};
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
-		// 초점은 열 때 한 번만
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [onClose]);
 
 	const node = (
