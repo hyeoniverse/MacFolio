@@ -67,7 +67,7 @@ button.projects-thumb:focus-visible {
 /* 그림 크게 보기 */
 .projects-lightbox {
 	position: fixed;
-	z-index: 100000;
+	z-index: var(--z-fullscreen);
 	inset: 0;
 	display: grid;
 	place-items: center;

@@ -16,6 +16,14 @@ export default {
 		'node_modules/**',
 	],
 	rules: {
+		// z-index: 전역 층은 --z-*(styles/tokens/semantic.css), 부품 안의 겹침은 -1~10만 (창·떠 있는 판이 겹침 범위를 가둔다)
+		'declaration-property-value-allowed-list': [
+			{ 'z-index': [/^var\(--(z|ui)-/, /^(-1|[0-9]|10)$/] },
+			{
+				message: (property, value) =>
+					`${property}: ${value} — 화면 전체의 층은 --z-* 토큰을, 부품 안의 겹침은 -1~10을 쓰세요`,
+			},
+		],
 		'declaration-property-value-disallowed-list': [
 			{
 				'font-size': [px([11, 12, 13, 15, 16, 17, 20, 22, 28, 34])],

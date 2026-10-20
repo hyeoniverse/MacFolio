@@ -662,7 +662,7 @@
 .slideshow {
 	position: fixed;
 	inset: 0;
-	z-index: 100000;
+	z-index: var(--z-fullscreen);
 	display: grid;
 	background: var(--color-black);
 	outline: none;
