@@ -36,7 +36,7 @@
 /* 소개 위젯 */
 .mobile-widget {
 	padding: var(--widget-padding);
-	border-radius: 22px;
+	border-radius: var(--radius-window);
 	background-color: rgba(255, 255, 255, 0.22);
 	backdrop-filter: blur(24px) saturate(160%);
 	box-shadow: var(--shadow-lg);
@@ -52,7 +52,7 @@
 
 .mobile-widget p {
 	margin-top: var(--space-4);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 	opacity: 0.95;
 }
 

@@ -25,7 +25,7 @@
 .shortcuts-intro {
 	margin: 0 4px 16px;
 	color: var(--color-text-secondary);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 /* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 버튼마다 클래스로 적은 값이 늘 이긴다 */
@@ -93,7 +93,7 @@
 }
 
 .shortcut-heading {
-	margin: 18px 16px 6px;
+	margin: var(--space-16) 16px 6px;
 	color: var(--color-text-secondary);
 	font-size: var(--text-footnote);
 	font-weight: 600;
@@ -105,7 +105,7 @@
 	display: block;
 	margin-bottom: var(--space-16);
 	overflow: hidden;
-	border-radius: 12px;
+	border-radius: var(--radius-lg);
 	background-color: var(--color-window-bg);
 	list-style: none;
 }

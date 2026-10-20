@@ -13,6 +13,7 @@
 	--radius-xl: 14px;
 	--radius-full: 999px; /* 알약 */
 	--radius-panel: 18px; /* 창 안에 떠 있는 판 (사이드바) */
+	--radius-window: 22px; /* 창 · 터치 메뉴처럼 큰 모서리 */
 
 	/*
 	 * 화면 전체에서 겹치는 층(z-index). 값이 클수록 위에 그린다.

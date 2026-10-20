@@ -91,7 +91,7 @@
 
 .sp-lead {
 	max-width: 620px;
-	margin: 18px auto 0;
+	margin: var(--space-16) auto 0;
 	color: var(--sp-muted);
 	font-size: clamp(17px, 2.4cqi, 21px);
 	line-height: 1.45;
@@ -102,7 +102,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
-	gap: 16px 28px;
+	gap: 16px var(--space-24);
 	margin-top: 26px;
 	font-size: var(--text-body);
 }
@@ -198,7 +198,7 @@
 
 .sp-facts li > span {
 	color: var(--sp-muted);
-	font-size: 14px;
+	font-size: var(--text-footnote);
 }
 
 /* ─── 섹션 ─── */
@@ -277,7 +277,7 @@
 .sp-checks {
 	display: flex;
 	flex-direction: column;
-	gap: 18px;
+	gap: var(--space-16);
 	list-style: none;
 	font-size: 19px;
 	line-height: 1.45;
@@ -360,11 +360,11 @@
 	}
 
 	.sp-headline {
-		margin-bottom: 28px;
+		margin-bottom: var(--space-24);
 	}
 
 	.sp-split {
-		gap: 28px;
+		gap: var(--space-24);
 	}
 
 	.sp-checks {

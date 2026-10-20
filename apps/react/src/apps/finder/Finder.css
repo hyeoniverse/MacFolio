@@ -386,7 +386,7 @@
 	max-width: 760px;
 	margin: 0 auto;
 	padding: 24px 32px 48px;
-	font-size: 14px;
+	font-size: var(--text-footnote);
 	line-height: 1.7;
 	overflow-wrap: anywhere;
 	user-select: text;
@@ -618,7 +618,7 @@
 	}
 
 	.finder-doc {
-		padding: 16px 18px 40px;
+		padding: 16px var(--space-16) 40px;
 	}
 }
 

@@ -32,7 +32,7 @@
 	background-color: var(--gh-bg);
 	color: var(--gh-text);
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', MacSystemFont, sans-serif;
-	font-size: 14px;
+	font-size: var(--text-footnote);
 	line-height: 1.5;
 	text-align: left;
 }
@@ -64,7 +64,7 @@
 }
 
 .gh-header > strong {
-	font-size: 14px;
+	font-size: var(--text-subhead);
 }
 
 .gh-tabs {
