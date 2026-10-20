@@ -571,7 +571,7 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 1. **새 키** (내 컴퓨터): `ssh-keygen -t ed25519 -f ~/.ssh/oracle-macfolio.key -C macfolio-admin`. 암호(passphrase)를 넣었다면 그것도 함께 보관한다
 2. **임시 VM**: 원래 서버와 같은 가용 도메인에 Ubuntu, `VM.Standard.E2.1.Micro`(무료 2대 중 하나)로 만든다. SSH keys는 **Paste public keys**에 `~/.ssh/oracle-macfolio.key.pub` 내용을 넣는다. 원래 서버를 끄기 전에 만들어 두고 접속까지 확인하면 멈추는 시간이 준다
 3. **원래 서버 멈추고 부트 볼륨 떼기**: 콘솔에서 원래 서버 → Stop → Boot volume → Detach. 떼기 전에 Boot volume backup을 하나 만들어 두면 되돌릴 수 있다
-4. **임시 VM에 붙이기**: 화면의 Attach block volume이 막혀 있으면 콘솔 오른쪽 위 `>_` → **Cloud Shell**에서 CLI로 붙인다 (처음 열면 안내 투어가 떠서 다른 명령을 `Invalid command`로 막는다. Ctrl+C로 빠져나온다)
+4. **임시 VM에 붙이기**: 임시 VM 화면의 Attach block volume 버튼이 비활성화(disabled)되어 있으면 콘솔 오른쪽 위 `>_` → **Cloud Shell**에서 CLI로 붙인다 (처음 열면 안내 투어가 떠서 다른 명령을 `Invalid command`로 막는다. Ctrl+C로 빠져나온다)
 
    ```bash
    AD=$(oci iam availability-domain list --query 'data[0].name' --raw-output)

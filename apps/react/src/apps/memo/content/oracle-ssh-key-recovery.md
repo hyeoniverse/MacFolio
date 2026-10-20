@@ -45,7 +45,7 @@ Oracle 문서의 공식 답은 "키를 잃어버렸으면 인스턴스를 지우
 
 ### 화면 대신 Cloud Shell로 붙였다
 
-3에서 막혔다. 임시 VM 화면의 **Attach block volume** 버튼이 회색이었고, 툴팁에도 이유가 나오지 않았다. 그래서 콘솔 안의 터미널인 Cloud Shell에서 OCI CLI로 붙였다.
+3에서 막혔다. 임시 VM 화면의 **Attach block volume** 버튼이 비활성화(disabled)되어 눌리지 않았고, 마우스를 올려도 이유를 알려 주는 툴팁이 없었다. 그래서 콘솔 안의 터미널인 Cloud Shell에서 OCI CLI로 붙였다.
 
 ```bash
 oci compute volume-attachment attach --type paravirtualized \
