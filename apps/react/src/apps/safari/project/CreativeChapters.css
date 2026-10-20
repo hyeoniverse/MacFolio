@@ -153,7 +153,7 @@
 
 .cr-showcase-lead .cr-showcase-shot {
 	margin: 0;
-	box-shadow: var(--shadow-4);
+	box-shadow: var(--shadow-5);
 }
 
 /* 작은 칸: 둘이면 반씩, 셋이면 셋으로 */
@@ -288,7 +288,7 @@
 .cr-split-media .cr-point-shot {
 	margin: 0;
 	border: none;
-	box-shadow: var(--shadow-4);
+	box-shadow: var(--shadow-5);
 }
 
 /* dashboard (트래픽 분석): 어두운 계기판 숫자, 겹친 화면, 옆으로 넘기는 카드 */

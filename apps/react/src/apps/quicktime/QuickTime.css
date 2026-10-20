@@ -164,7 +164,7 @@
 	height: 14px;
 	border-radius: 50%;
 	background: var(--color-white);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+	box-shadow: var(--shadow-raised);
 	appearance: none;
 }
 

@@ -1,0 +1,396 @@
+/* 시스템 설정 › 프로젝트 편집기: 목록, 색 값, 도구 막대, 탭, 폼의 묶음과 줄 */
+
+/* 시스템 설정 › 프로젝트 (관리자): 목록 */
+.projects-pane {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-14);
+}
+
+.projects-row .showcase-lines {
+	flex: 1;
+	min-width: 0;
+}
+
+.projects-row.hidden .showcase-lines {
+	opacity: 0.5;
+}
+
+.projects-saved {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-12);
+	padding: var(--space-10) var(--space-14);
+	border-radius: var(--radius-10);
+	background: color-mix(in srgb, var(--color-control-accent) 12%, transparent);
+	color: var(--color-label);
+	font-size: var(--text-caption);
+}
+
+/*
+ * 프로젝트 편집 모드의 줄: 줄 전체가 편집 버튼(.projects-row-open, 줄 위에 깔린 투명 버튼)이고,
+ * 보이기 스위치·⊖·≡ 손잡이는 그 위에 따로 눌린다. 줄 끝 갈매기는 누르면 편집이 열린다는 표시
+ */
+.projects-row {
+	position: relative;
+}
+
+.projects-row-open {
+	position: absolute;
+	inset: 0;
+	padding: 0;
+	border: none;
+	border-radius: inherit;
+	background: none;
+	cursor: pointer;
+}
+
+.projects-row-open:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--color-label) 4%, transparent);
+}
+
+.projects-row-open:focus-visible {
+	outline: 2px solid var(--color-control-accent);
+	outline-offset: -2px;
+}
+
+.projects-row .showcase-actions,
+.projects-row .showcase-handle {
+	position: relative;
+}
+
+.projects-row .showcase-actions {
+	gap: var(--space-10);
+	pointer-events: none;
+}
+
+.projects-row .showcase-actions > :not(.projects-nav-chevron) {
+	pointer-events: auto;
+}
+
+.projects-row-switch {
+	--pe-switch-off: rgba(0, 0, 0, 0.1);
+	--pe-focus: color-mix(in srgb, var(--color-control-accent) 40%, transparent);
+}
+
+:root[data-theme='dark'] .projects-row-switch {
+	--pe-switch-off: rgba(255, 255, 255, 0.16);
+}
+
+/*
+ * ─── 프로젝트 하나 편집 (macOS 시스템 설정 모양) ───
+ * 창 맨 위 도구 막대(돌아가기·이름 | 탭 | 미리 보기·완료), 아래는 왼쪽 폼(회색 바탕 위 둥근 묶음 상자)과 오른쪽 미리 보기 패널.
+ * 상자 안의 줄은 왼쪽 이름 · 오른쪽 컨트롤(줄의 6할), 줄 사이는 얇은 선, 설명은 줄 아래 작은 회색 글자.
+ */
+/* 색 값은 편집 화면과, 그 위에 따로 그리는 항목 시트가 함께 쓴다 */
+.projects-editor,
+.projects-sheet-layer {
+	--pe-canvas: #f0f0f2;
+	--pe-box: var(--color-white);
+	--pe-box-border: rgba(0, 0, 0, 0.08);
+	--pe-separator: rgba(0, 0, 0, 0.08);
+	--pe-field-bg: var(--color-white);
+	--pe-field-border: rgba(0, 0, 0, 0.16);
+	--pe-button-bg: var(--color-white);
+	--pe-button-border: rgba(0, 0, 0, 0.13);
+	--pe-button-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.14);
+	--pe-toolbar: var(--sidebar-background);
+	--pe-inspector: #e8e8eb;
+	--pe-bar: #fafafb;
+	--pe-hover: rgba(0, 0, 0, 0.05);
+	--pe-selected-quiet: rgba(0, 0, 0, 0.07);
+	--pe-switch-off: rgba(0, 0, 0, 0.1);
+	--pe-thumb-empty: #ececef;
+	--pe-segment-bg: rgba(0, 0, 0, 0.06);
+	--pe-focus: color-mix(in srgb, var(--color-control-accent) 40%, transparent);
+}
+
+.projects-editor {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	height: 100%;
+	background: var(--pe-canvas);
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+}
+
+:root[data-theme='dark'] .projects-editor,
+:root[data-theme='dark'] .projects-sheet-layer {
+	--pe-canvas: #1e1e1e;
+	--pe-box: #2a2a2c;
+	--pe-box-border: rgba(255, 255, 255, 0.07);
+	--pe-separator: rgba(255, 255, 255, 0.08);
+	--pe-field-bg: rgba(255, 255, 255, 0.05);
+	--pe-field-border: rgba(255, 255, 255, 0.14);
+	--pe-button-bg: #48484b;
+	--pe-button-border: rgba(255, 255, 255, 0.06);
+	--pe-button-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.45);
+	--pe-toolbar: var(--sidebar-background);
+	--pe-inspector: #18181a;
+	--pe-bar: #2e2e30;
+	--pe-hover: rgba(255, 255, 255, 0.06);
+	--pe-selected-quiet: rgba(255, 255, 255, 0.1);
+	--pe-switch-off: rgba(255, 255, 255, 0.16);
+	--pe-thumb-empty: rgba(255, 255, 255, 0.06);
+	--pe-segment-bg: rgba(255, 255, 255, 0.08);
+}
+
+/* 편집 중에는 설정 창의 오른쪽 전체를 편집 화면이 쓴다 (위 제목은 도구 막대의 이름으로) */
+.settings-panel:has(> .projects-editor) {
+	position: relative;
+	padding: 0;
+	overflow: hidden;
+}
+
+.settings-panel:has(> .projects-editor) > h2 {
+	display: none;
+}
+
+/* 도구 막대 */
+.projects-toolbar {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: center;
+	gap: var(--space-12);
+	min-height: 48px;
+	padding: 0 14px;
+	border-bottom: 1px solid var(--pe-separator);
+	background: var(--pe-toolbar);
+}
+
+.projects-toolbar-start,
+.projects-toolbar-end {
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+	min-width: 0;
+}
+
+.projects-toolbar-end {
+	justify-content: flex-end;
+}
+
+.projects-toolbar-title {
+	overflow: hidden;
+	color: var(--color-label);
+	font-size: var(--text-subhead);
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.projects-toolbar-button {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 30px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-6);
+	background: none;
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+	cursor: pointer;
+}
+
+.projects-toolbar-button:hover {
+	background: var(--pe-hover);
+	color: var(--color-label);
+}
+
+.projects-toolbar-button[aria-pressed='true'] {
+	background: var(--pe-selected-quiet);
+	color: var(--color-label);
+}
+
+.projects-toolbar-button:focus-visible {
+	outline: 3px solid var(--pe-focus);
+}
+
+.projects-toolbar-glyph {
+	width: 18px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.3;
+}
+
+/* 탭: macOS의 세그먼트 컨트롤 */
+.projects-tabs {
+	display: inline-flex;
+	padding: var(--space-2);
+	border-radius: 7px;
+	background: var(--pe-segment-bg);
+}
+
+.projects-tabs button {
+	min-width: 56px;
+	padding: 3px 14px;
+	border: none;
+	border-radius: 5px;
+	background: none;
+	color: var(--color-label);
+	font: inherit;
+	font-size: var(--text-footnote);
+	cursor: pointer;
+}
+
+.projects-tabs button[aria-selected='true'] {
+	background: var(--pe-button-bg);
+	box-shadow:
+		0 0 0 0.5px var(--pe-button-border),
+		var(--pe-button-shadow);
+	color: var(--color-label);
+	font-weight: 500;
+}
+
+.projects-tabs button:focus-visible {
+	outline: 3px solid var(--pe-focus);
+}
+
+/* 폼과 미리 보기 */
+.projects-editor-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	min-height: 0;
+}
+
+.projects-editor-body.with-preview {
+	grid-template-columns: minmax(0, 1fr) minmax(340px, 44%);
+}
+
+.projects-editor-form {
+	min-height: 0;
+	padding: 20px 24px 40px;
+	overflow-y: auto;
+}
+
+.projects-editor-column {
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+.projects-tab-hint {
+	padding: 0 10px;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+	line-height: 1.5;
+	word-break: keep-all;
+}
+
+/* 묶음: 제목, 둥근 상자, 설명 */
+.projects-group {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-6);
+}
+
+.projects-group-title {
+	padding: 0 10px;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+	font-weight: 600;
+}
+
+.projects-group-count {
+	margin-left: var(--space-6);
+	font-weight: 400;
+}
+
+.projects-group-hint {
+	padding: 0 10px;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption2);
+	line-height: 1.5;
+	word-break: keep-all;
+}
+
+.projects-box {
+	overflow: hidden;
+	border-radius: var(--radius-10);
+	background: var(--pe-box);
+	box-shadow:
+		0 0 0 0.5px var(--pe-box-border),
+		0 0.5px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* 줄: 왼쪽 이름 · 오른쪽 컨트롤. 줄 사이 선은 상자 안쪽 여백만큼 들여 긋는다 */
+.projects-item {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+	align-items: center;
+	column-gap: var(--space-16);
+	min-height: 28px;
+	margin: 0 12px;
+	padding: 8px 0;
+}
+
+.projects-item + .projects-item {
+	border-top: 1px solid var(--pe-separator);
+}
+
+.projects-item.top {
+	align-items: start;
+}
+
+.projects-item.top .projects-item-label {
+	padding-top: var(--space-4);
+}
+
+.projects-item-label {
+	min-width: 0;
+}
+
+.projects-field-label {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-6);
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	word-break: keep-all;
+}
+
+.projects-required {
+	padding: 0 5px;
+	border-radius: var(--radius-4);
+	background: color-mix(in srgb, var(--color-system-red) 14%, transparent);
+	color: var(--color-system-red);
+	font-size: 10px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 16px;
+}
+
+.projects-item-control {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+}
+
+.projects-item-control.fill > * {
+	flex: 1;
+	min-width: 0;
+}
+
+.projects-item-control.end {
+	justify-content: flex-end;
+}
+
+.projects-item-hint {
+	grid-column: 1 / -1;
+	margin-top: 5px;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption2);
+	line-height: 1.5;
+	word-break: keep-all;
+}
+
+.projects-error {
+	color: var(--color-system-red);
+	font-size: var(--text-caption2);
+}

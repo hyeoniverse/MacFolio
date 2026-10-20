@@ -176,7 +176,7 @@
 	border: 2px solid var(--color-white);
 	border-radius: 50%;
 	background-color: var(--notes-accent);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	box-shadow: var(--shadow-raised);
 	cursor: nwse-resize;
 	touch-action: none;
 	transition: transform var(--duration-fast) var(--ease-out);
@@ -203,7 +203,7 @@
 /* 끄는 동안: 고른 행·열이 손가락을 따라오고, 놓을 자리에 선이 보인다 */
 .memo-table-selection.dragging {
 	background-color: color-mix(in srgb, var(--notes-accent) 18%, transparent);
-	box-shadow: var(--shadow-2);
+	box-shadow: var(--shadow-3);
 	transition: none;
 }
 

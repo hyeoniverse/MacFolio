@@ -177,7 +177,7 @@
 	aspect-ratio: 1;
 	overflow: hidden;
 	border-radius: var(--radius-10);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+	box-shadow: var(--shadow-card);
 	background-color: var(--music-selected);
 }
 
@@ -397,7 +397,7 @@
 	height: 44px;
 	border-radius: var(--radius-6);
 	object-fit: cover;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	box-shadow: var(--shadow-card);
 }
 
 .music-now span {
@@ -503,7 +503,7 @@
 	aspect-ratio: 1;
 	object-fit: cover;
 	border-radius: var(--radius-14);
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+	box-shadow: var(--shadow-modal);
 	transform: scale(0.84);
 	transition: transform var(--duration-slow) var(--ease-spring);
 }
@@ -693,7 +693,7 @@
 		padding: var(--space-8) var(--space-10);
 		border: none;
 		border-radius: var(--radius-14);
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		box-shadow: var(--shadow-card);
 	}
 
 	.music-bar-center,

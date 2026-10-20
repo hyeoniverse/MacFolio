@@ -19,9 +19,7 @@
 		padding: 22px var(--space-16) 16px;
 		border-radius: 26px;
 		background-color: var(--color-popover-background);
-		box-shadow:
-			0 0 0 0.5px rgba(0, 0, 0, 0.15),
-			0 16px 40px rgba(0, 0, 0, 0.25);
+		box-shadow: var(--shadow-modal);
 		color: var(--color-label);
 		text-align: center;
 		/* 한국어 문장이 낱말 중간(시도해 주/세요)에서 꺾이지 않게 */

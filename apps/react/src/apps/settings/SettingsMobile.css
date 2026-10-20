@@ -1,0 +1,397 @@
+/* 시스템 설정: 휴대폰 화면 (iOS 설정처럼)과 GitHub 칸. Settings.css 다음에 불러온다 */
+
+/* ─── 휴대폰 (iOS 설정처럼, 메모와 같은 모양) ───
+   큰 제목 '설정'과 흰 카드 목록. 항목을 누르면 그 화면으로 넘어가고, 떠 있는 뒤로 가기로 돌아온다 */
+.settings-phone-title {
+	display: none;
+}
+
+.container.mobile .settings {
+	flex-direction: column;
+	background-color: var(--phone-page-bg);
+}
+
+.container.mobile .settings.phone-open .settings-sidebar,
+.container.mobile .settings:not(.phone-open) .settings-panel {
+	display: none;
+}
+
+.container.mobile .settings-sidebar {
+	flex-direction: column;
+	gap: 0;
+	width: 100%;
+	height: 100%;
+	padding: var(--phone-top) 16px 24px;
+	border: none;
+	background-color: var(--phone-page-bg);
+	overflow-y: auto;
+}
+
+.container.mobile .settings-phone-title {
+	display: flex;
+}
+
+.container.mobile .settings-nav-item {
+	flex: none;
+	justify-content: flex-start;
+	gap: var(--space-14);
+	position: relative;
+	padding: 11px 16px;
+	border-radius: 0;
+	background-color: var(--phone-card-bg);
+	color: var(--color-label);
+	font-size: var(--text-body);
+}
+
+.container.mobile .settings-nav-item:first-of-type {
+	border-radius: 14px 14px 0 0;
+}
+
+.container.mobile .settings-nav-item:last-of-type {
+	border-radius: 0 0 14px 14px;
+}
+
+/* 줄 사이 선은 이름부터 */
+.container.mobile .settings-nav-item + .settings-nav-item::before {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 60px;
+	height: 0.5px;
+	background-color: var(--phone-separator);
+	content: '';
+}
+
+/* 항목 아이콘: iOS 설정처럼 색칠한 둥근 네모 */
+.container.mobile .settings-nav-item > i:first-child {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 7px;
+	background-color: var(--color-system-gray);
+	color: var(--color-white);
+	font-size: var(--text-callout);
+}
+
+.container.mobile .settings-nav-item:nth-of-type(2) > i:first-child {
+	background-color: var(--color-system-indigo);
+}
+
+.container.mobile .settings-nav-item:nth-of-type(3) > i:first-child {
+	background-color: var(--color-system-cyan);
+}
+
+.container.mobile .settings-nav-item:nth-of-type(4) > i:first-child {
+	background-color: var(--color-system-pink);
+}
+
+/* GitHub (관리자만) */
+.container.mobile .settings-nav-item:nth-of-type(5) > i:first-child {
+	background-color: var(--color-brand-github);
+}
+
+/* 휴대폰: 저장소 목록은 흰 카드 (iOS 설정) */
+.container.mobile .showcase-list,
+.container.mobile .showcase-lookup {
+	border: none;
+	border-radius: var(--radius-14);
+	background-color: var(--phone-card-bg);
+}
+
+.container.mobile .showcase-row {
+	min-height: 56px;
+	padding: 0 8px 0 16px;
+}
+
+.container.mobile ol.showcase-list .showcase-row {
+	background-color: var(--phone-card-bg);
+}
+
+.container.mobile ol.showcase-list .showcase-row:first-child {
+	border-radius: 14px 14px 0 0;
+}
+
+.container.mobile ol.showcase-list .showcase-row:last-child {
+	border-radius: 0 0 14px 14px;
+}
+
+.container.mobile ol.showcase-list .showcase-row:only-child,
+.container.mobile ol.showcase-list .showcase-row.reordering {
+	border-radius: var(--radius-14);
+}
+
+.container.mobile .showcase-row + .showcase-row {
+	background-position: 44px 0;
+}
+
+.container.mobile .showcase-handle {
+	width: 44px;
+	margin-right: -8px;
+	font-size: var(--text-body);
+}
+
+.container.mobile .showcase-lines strong {
+	font-size: var(--text-callout);
+	font-weight: 400;
+}
+
+.container.mobile .showcase-meta {
+	font-size: var(--text-footnote);
+}
+
+.container.mobile .showcase-group h3,
+.container.mobile .showcase-head h3,
+.container.mobile .showcase-text-button {
+	font-size: var(--text-footnote);
+}
+
+.container.mobile .showcase-text-button {
+	font-size: var(--text-callout);
+}
+
+.container.mobile .showcase-lookup {
+	height: 48px;
+	padding: 0 8px 0 16px;
+}
+
+.container.mobile .showcase-lookup input {
+	font-size: var(--text-callout);
+}
+
+/* 한 화면씩 보므로 고른 항목을 칠하지 않고, 줄 끝에 › */
+.container.mobile .settings-nav-item.active {
+	background-color: var(--phone-card-bg);
+	color: var(--color-label);
+}
+
+.container.mobile .settings-nav-chevron {
+	display: block;
+	margin-left: auto;
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+}
+
+.container.mobile .settings-panel {
+	padding: var(--phone-top) 16px 24px;
+	background-color: var(--phone-page-bg);
+	animation: nav-forward var(--duration) var(--ease-out);
+}
+
+.container.mobile .settings-toggle {
+	border: none;
+	border-radius: var(--radius-14);
+	background-color: var(--phone-card-bg);
+}
+
+/* 휴대폰: × 테두리도 회색 바탕 색으로 */
+.container.mobile .settings-panel {
+	--wallpaper-page-bg: var(--phone-page-bg);
+}
+
+/* 휴대폰: 바탕이 회색이라 사진·동영상 추가… 칸과 받는 중인 썸네일은 흰 카드 색으로 */
+.container.mobile .wallpaper-add .wallpaper-thumbnail,
+.container.mobile .wallpaper-custom .wallpaper-thumbnail,
+.container.mobile .wallpaper-add-plus {
+	background-color: var(--phone-card-bg);
+}
+
+/* 휴대폰: 썸네일을 화면 폭에 맞춰 세 칸으로 크게 (iOS 홈 화면 비율) */
+.container.mobile .wallpaper-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--space-16) 12px;
+}
+
+.container.mobile .wallpaper-option {
+	min-width: 0;
+}
+
+.container.mobile .wallpaper-thumbnail.portrait {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 9 / 19.5;
+	border-radius: 1rem;
+}
+
+.container.mobile .wallpaper-thumbnail.portrait + .wallpaper-name,
+.wallpaper-thumbnail-frame:has(.portrait) + .wallpaper-name {
+	max-width: 100%;
+}
+
+.container.mobile .wallpaper-add-icon {
+	font-size: 2rem;
+}
+
+.container.mobile .wallpaper-add-label {
+	font-size: 0.85rem;
+}
+
+/* 정보 (macOS의 일반 › 정보): 위에 사진·이름, 아래 묶음마다 둥근 칸에 이름표와 값 */
+.about-pane {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-16);
+	max-width: 560px;
+}
+
+.about-pane-head {
+	display: flex;
+	align-items: center;
+	gap: var(--space-16);
+}
+
+.about-pane-head img,
+.about-pane-monogram {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 72px;
+	height: 72px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.about-pane-monogram {
+	background: linear-gradient(160deg, var(--color-system-gray), #5a5a5f);
+	color: var(--color-white);
+	font-size: var(--text-title2);
+	font-weight: 600;
+}
+
+.about-pane-head h3 {
+	color: var(--color-label);
+	font-size: var(--text-title3);
+	font-weight: 700;
+}
+
+.about-pane-head p {
+	margin-top: var(--space-2);
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+}
+
+.about-pane-group {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-6);
+}
+
+.about-pane-group h3 {
+	padding: 0 4px;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+	font-weight: 600;
+}
+
+.about-pane-group dl {
+	margin: 0;
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-10);
+	background: var(--color-control-background);
+}
+
+.about-pane-group dl > div {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--space-16);
+	padding: 9px 14px;
+	border-bottom: 1px solid var(--color-separator);
+	font-size: var(--text-footnote);
+}
+
+.about-pane-group dl > div:last-child {
+	border-bottom: none;
+}
+
+.about-pane-group dt {
+	flex: none;
+	color: var(--color-label);
+}
+
+.about-pane-group dd {
+	margin: 0;
+	color: var(--color-secondary-label);
+	text-align: right;
+	overflow-wrap: anywhere;
+	user-select: text;
+}
+
+.about-pane-group a {
+	color: var(--color-control-accent);
+	text-decoration: none;
+}
+
+.about-pane-group a:hover {
+	text-decoration: underline;
+}
+
+/* 관리자: 편집·취소·완료는 머리 오른쪽 (GitHub 항목과 같은 파란 글자) */
+.about-pane-actions {
+	align-self: flex-start;
+	margin-left: auto;
+}
+
+.about-pane-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-16);
+}
+
+/* 편집 칸: 보기와 같은 줄에 값 대신 입력칸 (오른쪽 정렬, macOS 설정의 글자 칸처럼 테두리 없이) */
+.about-pane-form dl > div {
+	align-items: center;
+}
+
+.about-pane-form dd {
+	flex: 1;
+	min-width: 0;
+}
+
+.about-pane-form input {
+	width: 100%;
+	padding: 2px 0;
+	border: none;
+	background: none;
+	color: var(--color-label);
+	font: inherit;
+	text-align: right;
+	outline: none;
+}
+
+.about-pane-form dl > div:focus-within {
+	box-shadow: inset 0 0 0 2px var(--color-control-accent);
+}
+
+.about-pane-form dl > div:first-child:focus-within {
+	border-radius: 10px 10px 0 0;
+}
+
+.about-pane-form dl > div:last-child:focus-within {
+	border-radius: 0 0 10px 10px;
+}
+
+/* 칸 아래 작은 안내 (macOS 설정의 설명 글) */
+.about-pane-hint {
+	padding: 0 4px;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption2);
+	line-height: 1.5;
+}
+
+.about-pane-errors {
+	margin: 0;
+	padding: 10px 14px 10px 30px;
+	border-radius: var(--radius-10);
+	background: color-mix(in srgb, var(--color-system-red) 12%, transparent);
+	color: var(--color-system-red);
+	font-size: var(--text-caption);
+	line-height: 1.6;
+}
+
+.about-pane-reset {
+	align-self: flex-start;
+	padding-left: var(--space-4);
+	color: var(--color-system-red);
+}

@@ -73,12 +73,14 @@
 	--radius-22: 22px;
 	--radius-full: 999px; /* 알약 */
 
-	/* 그림자: 높이 단계 1~5. 숫자가 클수록 떠 보인다 (쓰임새 별칭은 semantic.css) */
-	--shadow-1: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.12);
-	--shadow-2: 0 6px 18px rgba(0, 0, 0, 0.18);
-	--shadow-3: 0 8px 30px rgba(0, 0, 0, 0.18);
-	--shadow-4: 0 18px 40px rgba(0, 0, 0, 0.12);
-	--shadow-5: 0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.2);
+	/* 그림자: 높이 단계 1~7. 숫자가 클수록 떠 보인다 (쓰임새 별칭은 semantic.css) */
+	--shadow-1: 0 1px 3px rgba(0, 0, 0, 0.2); /* 바탕에 얹힌 작은 것 */
+	--shadow-2: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.12);
+	--shadow-3: 0 6px 18px rgba(0, 0, 0, 0.18);
+	--shadow-4: 0 8px 30px rgba(0, 0, 0, 0.18);
+	--shadow-5: 0 18px 40px rgba(0, 0, 0, 0.12);
+	--shadow-6: 0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.2);
+	--shadow-7: 0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 20px 60px rgba(0, 0, 0, 0.35); /* 화면 가운데 뜨는 창 */
 
 	/*
 	 * 글자 크기. Apple HIG의 글자 스타일 이름 (14·18px 등 그 밖의 값과 em·rem은 각 CSS에 그대로)
