@@ -360,6 +360,22 @@ test.describe('Finder', () => {
 			await folder.getByRole('option', { name: 'MacFolio 발표.pdf' }).dblclick();
 			await expect(preview.getByRole('heading', { level: 1 })).toHaveText('MacFolio 발표.pdf');
 		});
+
+		test('열기 창에서 데스크탑의 포트폴리오(가상본)를 열면 문서 › 포트폴리오가 열린다', async ({ page }) => {
+			await fakeFiles(page);
+			await enterDesktop(page);
+			await dockItem(page, 'launchpad').click();
+			await page.locator('.launchpad-modal').getByRole('button', { name: 'preview', exact: true }).click();
+			const panel = appWindow(page, 'preview').getByRole('dialog', { name: '열기' });
+			await panel.getByRole('button', { name: '데스크탑', exact: true }).click();
+			await panel
+				.getByRole('listbox', { name: '데스크탑' })
+				.getByRole('option', { name: '포트폴리오', exact: true })
+				.dblclick();
+			await expect(
+				panel.getByRole('listbox', { name: '포트폴리오' }).getByRole('option', { name: 'MacFolio', exact: true })
+			).toBeVisible();
+		});
 	});
 
 	test.describe('프로젝트 폴더', () => {

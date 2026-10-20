@@ -147,7 +147,8 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 	const root = place === 'preview' || place === 'recents' ? place : (pathTo(locations, place)[0]?.id ?? place);
 
 	const open = (item: FinderItem) => {
-		if (item.kind === 'folder') go(item.id);
+		// 바탕화면의 가상본은 비어 있다. Finder처럼 진짜 폴더로 간다
+		if (item.kind === 'folder') go(item.aliasOf ?? item.id);
 		else if (isFile(item)) onOpen(item);
 	};
 
